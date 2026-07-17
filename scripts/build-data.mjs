@@ -393,13 +393,16 @@ for (const year of YEARS) {
     for (const [k, v] of await scanSchD(csv, year, acks)) schD.set(k, v);
   } catch (e) { console.warn(`Sch D ${year}: ${e.message}`); }
 }
+// prefer trusts whose own filing already parsed to a confident lineup
+let parsedOk = {};
+try { parsedOk = JSON.parse(readFileSync("lineups-status.json", "utf8")).plans; } catch { /* first run */ }
 const usedMtias = new Map(); // ack -> {name, year}
 for (const p of universe) {
-  const links = schD.get(p.ack) || [];
-  for (const key of links) {
-    const m = mtiaByKey.get(key);
-    if (m) { p.mtiaAck = m.ack; usedMtias.set(m.ack, m); break; }
-  }
+  const links = (schD.get(p.ack) || []).map((k) => mtiaByKey.get(k)).filter(Boolean);
+  if (!links.length) continue;
+  const best = links.find((m) => (parsedOk[m.ack] || {}).c) || links[0];
+  p.mtiaAck = best.ack;
+  for (const m of links) usedMtias.set(m.ack, m); // parse every referenced trust
 }
 console.log(`plans linked to a master trust filing: ${universe.filter((p) => p.mtiaAck).length}, trusts referenced: ${usedMtias.size}`);
 
