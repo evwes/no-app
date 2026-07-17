@@ -1,0 +1,854 @@
+{
+ "comment": "Top ~100 S&P 500 companies by market cap. aliases are normalized prefixes matched against Form 5500 SPONSOR_DFE_NAME (uppercased, punctuation stripped). Order = display order fallback.",
+ "companies": [
+  {
+   "ticker": "AAPL",
+   "name": "Apple",
+   "aliases": [
+    "APPLE INC"
+   ]
+  },
+  {
+   "ticker": "MSFT",
+   "name": "Microsoft",
+   "aliases": [
+    "MICROSOFT CORPORATION",
+    "MICROSOFT CORP"
+   ]
+  },
+  {
+   "ticker": "NVDA",
+   "name": "NVIDIA",
+   "aliases": [
+    "NVIDIA CORPORATION",
+    "NVIDIA CORP"
+   ]
+  },
+  {
+   "ticker": "GOOGL",
+   "name": "Alphabet (Google)",
+   "aliases": [
+    "GOOGLE LLC",
+    "GOOGLE INC",
+    "ALPHABET INC"
+   ]
+  },
+  {
+   "ticker": "AMZN",
+   "name": "Amazon",
+   "aliases": [
+    "AMAZON COM SERVICES",
+    "AMAZONCOM SERVICES",
+    "AMAZON COM INC",
+    "AMAZONCOM INC"
+   ]
+  },
+  {
+   "ticker": "META",
+   "name": "Meta",
+   "aliases": [
+    "META PLATFORMS"
+   ]
+  },
+  {
+   "ticker": "BRK.B",
+   "name": "Berkshire Hathaway",
+   "aliases": [
+    "BERKSHIRE HATHAWAY"
+   ]
+  },
+  {
+   "ticker": "LLY",
+   "name": "Eli Lilly",
+   "aliases": [
+    "ELI LILLY AND COMPANY",
+    "ELI LILLY & COMPANY",
+    "ELI LILLY"
+   ]
+  },
+  {
+   "ticker": "AVGO",
+   "name": "Broadcom",
+   "aliases": [
+    "BROADCOM",
+    "AVAGO TECHNOLOGIES"
+   ]
+  },
+  {
+   "ticker": "TSLA",
+   "name": "Tesla",
+   "aliases": [
+    "TESLA INC",
+    "TESLA MOTORS"
+   ]
+  },
+  {
+   "ticker": "JPM",
+   "name": "JPMorgan Chase",
+   "aliases": [
+    "JPMORGAN CHASE"
+   ]
+  },
+  {
+   "ticker": "WMT",
+   "name": "Walmart",
+   "aliases": [
+    "WALMART INC",
+    "WAL MART",
+    "WALMART ASSOCIATES"
+   ]
+  },
+  {
+   "ticker": "V",
+   "name": "Visa",
+   "aliases": [
+    "VISA INC",
+    "VISA U S A",
+    "VISA USA"
+   ]
+  },
+  {
+   "ticker": "XOM",
+   "name": "ExxonMobil",
+   "aliases": [
+    "EXXON MOBIL",
+    "EXXONMOBIL"
+   ]
+  },
+  {
+   "ticker": "UNH",
+   "name": "UnitedHealth Group",
+   "aliases": [
+    "UNITEDHEALTH GROUP"
+   ]
+  },
+  {
+   "ticker": "MA",
+   "name": "Mastercard",
+   "aliases": [
+    "MASTERCARD INTERNATIONAL",
+    "MASTERCARD INC"
+   ]
+  },
+  {
+   "ticker": "PG",
+   "name": "Procter & Gamble",
+   "aliases": [
+    "THE PROCTER GAMBLE",
+    "PROCTER GAMBLE",
+    "PROCTER AND GAMBLE"
+   ]
+  },
+  {
+   "ticker": "COST",
+   "name": "Costco",
+   "aliases": [
+    "COSTCO WHOLESALE"
+   ]
+  },
+  {
+   "ticker": "JNJ",
+   "name": "Johnson & Johnson",
+   "aliases": [
+    "JOHNSON JOHNSON",
+    "JOHNSON AND JOHNSON"
+   ]
+  },
+  {
+   "ticker": "ORCL",
+   "name": "Oracle",
+   "aliases": [
+    "ORACLE CORPORATION",
+    "ORACLE AMERICA"
+   ]
+  },
+  {
+   "ticker": "HD",
+   "name": "Home Depot",
+   "aliases": [
+    "THE HOME DEPOT",
+    "HOME DEPOT"
+   ]
+  },
+  {
+   "ticker": "ABBV",
+   "name": "AbbVie",
+   "aliases": [
+    "ABBVIE INC",
+    "ABBVIE US"
+   ]
+  },
+  {
+   "ticker": "KO",
+   "name": "Coca-Cola",
+   "aliases": [
+    "THE COCA COLA COMPANY",
+    "COCA COLA COMPANY"
+   ]
+  },
+  {
+   "ticker": "BAC",
+   "name": "Bank of America",
+   "aliases": [
+    "BANK OF AMERICA"
+   ]
+  },
+  {
+   "ticker": "MRK",
+   "name": "Merck",
+   "aliases": [
+    "MERCK CO",
+    "MERCK SHARP DOHME",
+    "MERCK AND CO"
+   ]
+  },
+  {
+   "ticker": "NFLX",
+   "name": "Netflix",
+   "aliases": [
+    "NETFLIX INC"
+   ]
+  },
+  {
+   "ticker": "CVX",
+   "name": "Chevron",
+   "aliases": [
+    "CHEVRON CORPORATION",
+    "CHEVRON U S A",
+    "CHEVRON USA"
+   ]
+  },
+  {
+   "ticker": "CRM",
+   "name": "Salesforce",
+   "aliases": [
+    "SALESFORCE INC",
+    "SALESFORCE COM",
+    "SALESFORCECOM"
+   ]
+  },
+  {
+   "ticker": "AMD",
+   "name": "AMD",
+   "aliases": [
+    "ADVANCED MICRO DEVICES"
+   ]
+  },
+  {
+   "ticker": "PEP",
+   "name": "PepsiCo",
+   "aliases": [
+    "PEPSICO INC",
+    "PEPSICO"
+   ]
+  },
+  {
+   "ticker": "TMO",
+   "name": "Thermo Fisher",
+   "aliases": [
+    "THERMO FISHER SCIENTIFIC"
+   ]
+  },
+  {
+   "ticker": "ADBE",
+   "name": "Adobe",
+   "aliases": [
+    "ADOBE INC",
+    "ADOBE SYSTEMS"
+   ]
+  },
+  {
+   "ticker": "LIN",
+   "name": "Linde",
+   "aliases": [
+    "LINDE INC",
+    "LINDE GAS",
+    "PRAXAIR"
+   ]
+  },
+  {
+   "ticker": "WFC",
+   "name": "Wells Fargo",
+   "aliases": [
+    "WELLS FARGO"
+   ]
+  },
+  {
+   "ticker": "CSCO",
+   "name": "Cisco",
+   "aliases": [
+    "CISCO SYSTEMS"
+   ]
+  },
+  {
+   "ticker": "ACN",
+   "name": "Accenture",
+   "aliases": [
+    "ACCENTURE LLP",
+    "ACCENTURE"
+   ]
+  },
+  {
+   "ticker": "QCOM",
+   "name": "Qualcomm",
+   "aliases": [
+    "QUALCOMM INCORPORATED",
+    "QUALCOMM INC"
+   ]
+  },
+  {
+   "ticker": "MCD",
+   "name": "McDonald's",
+   "aliases": [
+    "MCDONALD S CORPORATION",
+    "MCDONALDS CORPORATION",
+    "MCDONALDS CORP"
+   ]
+  },
+  {
+   "ticker": "ABT",
+   "name": "Abbott",
+   "aliases": [
+    "ABBOTT LABORATORIES"
+   ]
+  },
+  {
+   "ticker": "GE",
+   "name": "GE Aerospace",
+   "aliases": [
+    "GENERAL ELECTRIC",
+    "GE AEROSPACE"
+   ]
+  },
+  {
+   "ticker": "INTU",
+   "name": "Intuit",
+   "aliases": [
+    "INTUIT INC"
+   ]
+  },
+  {
+   "ticker": "IBM",
+   "name": "IBM",
+   "aliases": [
+    "INTERNATIONAL BUSINESS MACHINES",
+    "IBM CORPORATION"
+   ]
+  },
+  {
+   "ticker": "CAT",
+   "name": "Caterpillar",
+   "aliases": [
+    "CATERPILLAR INC"
+   ]
+  },
+  {
+   "ticker": "TXN",
+   "name": "Texas Instruments",
+   "aliases": [
+    "TEXAS INSTRUMENTS"
+   ]
+  },
+  {
+   "ticker": "DIS",
+   "name": "Disney",
+   "aliases": [
+    "DISNEY WORLDWIDE SERVICES",
+    "THE WALT DISNEY",
+    "WALT DISNEY",
+    "DISNEY"
+   ]
+  },
+  {
+   "ticker": "VZ",
+   "name": "Verizon",
+   "aliases": [
+    "VERIZON COMMUNICATIONS",
+    "VERIZON"
+   ]
+  },
+  {
+   "ticker": "AMGN",
+   "name": "Amgen",
+   "aliases": [
+    "AMGEN INC"
+   ]
+  },
+  {
+   "ticker": "PFE",
+   "name": "Pfizer",
+   "aliases": [
+    "PFIZER INC"
+   ]
+  },
+  {
+   "ticker": "PM",
+   "name": "Philip Morris",
+   "aliases": [
+    "PHILIP MORRIS",
+    "PMI GLOBAL SERVICES",
+    "PHILIP MORRIS INTERNATIONAL"
+   ]
+  },
+  {
+   "ticker": "MS",
+   "name": "Morgan Stanley",
+   "aliases": [
+    "MORGAN STANLEY"
+   ]
+  },
+  {
+   "ticker": "ISRG",
+   "name": "Intuitive Surgical",
+   "aliases": [
+    "INTUITIVE SURGICAL"
+   ]
+  },
+  {
+   "ticker": "NOW",
+   "name": "ServiceNow",
+   "aliases": [
+    "SERVICENOW"
+   ]
+  },
+  {
+   "ticker": "GS",
+   "name": "Goldman Sachs",
+   "aliases": [
+    "THE GOLDMAN SACHS GROUP",
+    "GOLDMAN SACHS"
+   ]
+  },
+  {
+   "ticker": "RTX",
+   "name": "RTX (Raytheon)",
+   "aliases": [
+    "RTX CORPORATION",
+    "RAYTHEON"
+   ]
+  },
+  {
+   "ticker": "UBER",
+   "name": "Uber",
+   "aliases": [
+    "UBER TECHNOLOGIES"
+   ]
+  },
+  {
+   "ticker": "NEE",
+   "name": "NextEra Energy",
+   "aliases": [
+    "NEXTERA ENERGY",
+    "FLORIDA POWER LIGHT"
+   ]
+  },
+  {
+   "ticker": "SPGI",
+   "name": "S&P Global",
+   "aliases": [
+    "S P GLOBAL",
+    "SP GLOBAL",
+    "MCGRAW HILL"
+   ]
+  },
+  {
+   "ticker": "T",
+   "name": "AT&T",
+   "aliases": [
+    "AT T SERVICES",
+    "ATT SERVICES",
+    "AT T INC",
+    "ATT INC"
+   ]
+  },
+  {
+   "ticker": "UNP",
+   "name": "Union Pacific",
+   "aliases": [
+    "UNION PACIFIC"
+   ]
+  },
+  {
+   "ticker": "CMCSA",
+   "name": "Comcast",
+   "aliases": [
+    "COMCAST CORPORATION",
+    "COMCAST"
+   ]
+  },
+  {
+   "ticker": "HON",
+   "name": "Honeywell",
+   "aliases": [
+    "HONEYWELL INTERNATIONAL",
+    "HONEYWELL"
+   ]
+  },
+  {
+   "ticker": "LOW",
+   "name": "Lowe's",
+   "aliases": [
+    "LOWE S COMPANIES",
+    "LOWES COMPANIES"
+   ]
+  },
+  {
+   "ticker": "BLK",
+   "name": "BlackRock",
+   "aliases": [
+    "BLACKROCK INC",
+    "BLACKROCK"
+   ]
+  },
+  {
+   "ticker": "COP",
+   "name": "ConocoPhillips",
+   "aliases": [
+    "CONOCOPHILLIPS"
+   ]
+  },
+  {
+   "ticker": "SYK",
+   "name": "Stryker",
+   "aliases": [
+    "STRYKER CORPORATION"
+   ]
+  },
+  {
+   "ticker": "BKNG",
+   "name": "Booking Holdings",
+   "aliases": [
+    "BOOKING HOLDINGS",
+    "PRICELINE"
+   ]
+  },
+  {
+   "ticker": "TJX",
+   "name": "TJX",
+   "aliases": [
+    "THE TJX COMPANIES",
+    "TJX COMPANIES"
+   ]
+  },
+  {
+   "ticker": "VRTX",
+   "name": "Vertex Pharmaceuticals",
+   "aliases": [
+    "VERTEX PHARMACEUTICALS"
+   ]
+  },
+  {
+   "ticker": "ELV",
+   "name": "Elevance Health",
+   "aliases": [
+    "ELEVANCE HEALTH",
+    "ANTHEM"
+   ]
+  },
+  {
+   "ticker": "LMT",
+   "name": "Lockheed Martin",
+   "aliases": [
+    "LOCKHEED MARTIN"
+   ]
+  },
+  {
+   "ticker": "PLD",
+   "name": "Prologis",
+   "aliases": [
+    "PROLOGIS"
+   ]
+  },
+  {
+   "ticker": "MDT",
+   "name": "Medtronic",
+   "aliases": [
+    "MEDTRONIC"
+   ]
+  },
+  {
+   "ticker": "SCHW",
+   "name": "Charles Schwab",
+   "aliases": [
+    "THE CHARLES SCHWAB",
+    "CHARLES SCHWAB"
+   ]
+  },
+  {
+   "ticker": "ADP",
+   "name": "ADP",
+   "aliases": [
+    "AUTOMATIC DATA PROCESSING",
+    "ADP INC"
+   ]
+  },
+  {
+   "ticker": "PANW",
+   "name": "Palo Alto Networks",
+   "aliases": [
+    "PALO ALTO NETWORKS"
+   ]
+  },
+  {
+   "ticker": "C",
+   "name": "Citigroup",
+   "aliases": [
+    "CITIGROUP",
+    "CITIBANK"
+   ]
+  },
+  {
+   "ticker": "DE",
+   "name": "John Deere",
+   "aliases": [
+    "DEERE COMPANY",
+    "DEERE CO",
+    "JOHN DEERE"
+   ]
+  },
+  {
+   "ticker": "AMAT",
+   "name": "Applied Materials",
+   "aliases": [
+    "APPLIED MATERIALS"
+   ]
+  },
+  {
+   "ticker": "MMC",
+   "name": "Marsh McLennan",
+   "aliases": [
+    "MARSH MCLENNAN",
+    "MARSH MCLENNAN COMPANIES"
+   ]
+  },
+  {
+   "ticker": "BMY",
+   "name": "Bristol Myers Squibb",
+   "aliases": [
+    "BRISTOL MYERS SQUIBB"
+   ]
+  },
+  {
+   "ticker": "GILD",
+   "name": "Gilead Sciences",
+   "aliases": [
+    "GILEAD SCIENCES"
+   ]
+  },
+  {
+   "ticker": "CB",
+   "name": "Chubb",
+   "aliases": [
+    "CHUBB INA",
+    "CHUBB LIMITED",
+    "CHUBB SON"
+   ]
+  },
+  {
+   "ticker": "SBUX",
+   "name": "Starbucks",
+   "aliases": [
+    "STARBUCKS CORPORATION",
+    "STARBUCKS COFFEE"
+   ]
+  },
+  {
+   "ticker": "MU",
+   "name": "Micron",
+   "aliases": [
+    "MICRON TECHNOLOGY"
+   ]
+  },
+  {
+   "ticker": "BX",
+   "name": "Blackstone",
+   "aliases": [
+    "BLACKSTONE ADMINISTRATIVE SERVICES",
+    "BLACKSTONE HOLDINGS",
+    "THE BLACKSTONE GROUP",
+    "BLACKSTONE INC"
+   ]
+  },
+  {
+   "ticker": "ETN",
+   "name": "Eaton",
+   "aliases": [
+    "EATON CORPORATION"
+   ]
+  },
+  {
+   "ticker": "ADI",
+   "name": "Analog Devices",
+   "aliases": [
+    "ANALOG DEVICES"
+   ]
+  },
+  {
+   "ticker": "MDLZ",
+   "name": "Mondelez",
+   "aliases": [
+    "MONDELEZ GLOBAL",
+    "MONDELEZ INTERNATIONAL"
+   ]
+  },
+  {
+   "ticker": "SO",
+   "name": "Southern Company",
+   "aliases": [
+    "THE SOUTHERN COMPANY",
+    "SOUTHERN COMPANY SERVICES"
+   ]
+  },
+  {
+   "ticker": "LRCX",
+   "name": "Lam Research",
+   "aliases": [
+    "LAM RESEARCH"
+   ]
+  },
+  {
+   "ticker": "REGN",
+   "name": "Regeneron",
+   "aliases": [
+    "REGENERON PHARMACEUTICALS"
+   ]
+  },
+  {
+   "ticker": "KLAC",
+   "name": "KLA",
+   "aliases": [
+    "KLA CORPORATION",
+    "KLA TENCOR"
+   ]
+  },
+  {
+   "ticker": "ICE",
+   "name": "Intercontinental Exchange",
+   "aliases": [
+    "INTERCONTINENTAL EXCHANGE"
+   ]
+  },
+  {
+   "ticker": "CME",
+   "name": "CME Group",
+   "aliases": [
+    "CME GROUP",
+    "CHICAGO MERCANTILE EXCHANGE"
+   ]
+  },
+  {
+   "ticker": "DUK",
+   "name": "Duke Energy",
+   "aliases": [
+    "DUKE ENERGY"
+   ]
+  },
+  {
+   "ticker": "ZTS",
+   "name": "Zoetis",
+   "aliases": [
+    "ZOETIS"
+   ]
+  },
+  {
+   "ticker": "EQIX",
+   "name": "Equinix",
+   "aliases": [
+    "EQUINIX"
+   ]
+  },
+  {
+   "ticker": "NKE",
+   "name": "Nike",
+   "aliases": [
+    "NIKE INC"
+   ]
+  },
+  {
+   "ticker": "CI",
+   "name": "Cigna",
+   "aliases": [
+    "THE CIGNA GROUP",
+    "CIGNA HEALTH",
+    "CIGNA CORPORATION"
+   ]
+  },
+  {
+   "ticker": "MO",
+   "name": "Altria",
+   "aliases": [
+    "ALTRIA GROUP",
+    "ALTRIA CLIENT SERVICES"
+   ]
+  },
+  {
+   "ticker": "WM",
+   "name": "Waste Management",
+   "aliases": [
+    "WASTE MANAGEMENT",
+    "WM CORPORATE SERVICES"
+   ]
+  },
+  {
+   "ticker": "GEV",
+   "name": "GE Vernova",
+   "aliases": [
+    "GE VERNOVA"
+   ]
+  },
+  {
+   "ticker": "INTC",
+   "name": "Intel",
+   "aliases": [
+    "INTEL CORPORATION"
+   ]
+  },
+  {
+   "ticker": "BA",
+   "name": "Boeing",
+   "aliases": [
+    "THE BOEING COMPANY",
+    "THE BOEING CO",
+    "BOEING COMPANY",
+    "BOEING CO"
+   ]
+  },
+  {
+   "ticker": "UPS",
+   "name": "UPS",
+   "aliases": [
+    "UNITED PARCEL SERVICE"
+   ]
+  },
+  {
+   "ticker": "GM",
+   "name": "General Motors",
+   "aliases": [
+    "GENERAL MOTORS"
+   ]
+  },
+  {
+   "ticker": "F",
+   "name": "Ford",
+   "aliases": [
+    "FORD MOTOR COMPANY",
+    "FORD MOTOR"
+   ]
+  },
+  {
+   "ticker": "PYPL",
+   "name": "PayPal",
+   "aliases": [
+    "PAYPAL INC",
+    "PAYPAL HOLDINGS"
+   ]
+  },
+  {
+   "ticker": "AXP",
+   "name": "American Express",
+   "aliases": [
+    "AMERICAN EXPRESS"
+   ]
+  }
+ ]
+}

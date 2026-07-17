@@ -1,0 +1,46 @@
+name: Build plan data from Form 5500
+
+on:
+  workflow_dispatch:
+  schedule:
+    # weekly refresh: new EFAST2 filings, plan-year rollovers, new lineups
+    - cron: "0 6 * * 1"
+  push:
+    branches: ["main", "claude/wampo-401k-live-nx1t4o"]
+    paths: ["scripts/**", ".github/workflows/build-data.yml"]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Download and process DOL Form 5500 datasets
+        run: node scripts/build-data.mjs
+
+      - name: Fetch and parse Schedule H 4i attachments
+        run: |
+          sudo apt-get install -y -q poppler-utils >/dev/null 2>&1 || true
+          node scripts/fetch-4i.mjs
+
+      - name: Commit data files
+        run: |
+          git config user.name "wampo-data-bot"
+          git config user.email "noreply@anthropic.com"
+          git add plans-all.json lineups-status.json lineups-index.json data/lineups
+          if git diff --cached --quiet; then
+            echo "No data changes."
+          else
+            git commit -m "Update filed plan data (Form 5500 + Schedule H 4i lineups)"
+            # the branch may have moved during the long run — rebase, don't fail
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push
+          fi
