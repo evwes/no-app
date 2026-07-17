@@ -1,39 +1,39 @@
 #!/usr/bin/env node
-/* One-shot probe (runs in Actions): find where EFAST2 stores the audited
- * financial statement ATTACHMENTS for filings whose main S3 PDF contains only
- * the form pages. Dumps the filing's full search document + URL probes. */
+/* Probe #2: how does 5500Search expose the audited-statement ATTACHMENTS?
+ * (a) full CloudSearch doc for a form-only filing vs an embedded one
+ * (b) mine main.js for attachment URL composition */
 
-const ACKS = [
-  "20250827060144NAL0016126496001", // Sargent Corp — no-section, form-only PDF
-  "20251008093049NAL0005343377001", // TK Elevator — attachment IS embedded (control)
-];
-
-async function j(url, opts = {}) {
+const UA = "Mozilla/5.0 (X11; Linux x86_64) wampo-research/1.0";
+async function get(url) {
   try {
-    const r = await fetch(url, { signal: AbortSignal.timeout(20000), ...opts });
-    const text = await r.text();
-    return { status: r.status, body: text.slice(0, 4000) };
-  } catch (e) { return { status: "ERR", body: e.message }; }
+    const res = await fetch(url, { headers: { "User-Agent": UA, Accept: "application/json" }, signal: AbortSignal.timeout(20000) });
+    const type = res.headers.get("content-type") || "";
+    const body = /pdf|octet|zip/.test(type) ? `<binary ${res.headers.get("content-length")}b>` : await res.text();
+    return { status: res.status, type, body };
+  } catch (e) { return { status: 0, type: "", body: String(e.message || e) }; }
 }
 
+const ACKS = [
+  "20250827060144NAL0016126496001", // form-only PDF (no audit attachment embedded)
+  "20251008093049NAL0005343377001", // control: attachment embedded
+];
+
+const base = "https://www.efast.dol.gov/services/";
 for (const ack of ACKS) {
-  console.log(`\n########## ${ack}`);
-  // 1. CloudSearch document — should list attachment metadata
-  for (const q of [
-    `https://www.efast.dol.gov/services/afs/search?q.parser=lucene&q=ack_id:${ack}&size=1`,
-    `https://www.efast.dol.gov/services/afs/search?q.parser=lucene&q=${ack}&size=1`,
-  ]) {
-    const r = await j(q, { headers: { Accept: "application/json" } });
-    console.log(`SEARCH ${r.status}: ${r.body.replace(/\s+/g, " ").slice(0, 2500)}`);
-    if (String(r.status) === "200" && r.body.includes("hit")) break;
+  const r = await get(`${base}afs?q.parser=lucene&q=${encodeURIComponent(`ack_id:'${ack}'`)}`);
+  console.log(`\n##### ${ack} -> ${r.status}`);
+  console.log(r.body.slice(0, 3500).replace(/\s+/g, " "));
+}
+
+// mine main.js for attachment handling
+const js = (await get("https://www.efast.dol.gov/5500Search/main.js")).body;
+console.log(`\nmain.js len: ${js.length}`);
+for (const needle of ["ttachment", "atch", "accountant", "Opinion", "getPdf", "pdfPath", "sched_db"]) {
+  let i = 0, n = 0;
+  while ((i = js.indexOf(needle, i)) !== -1 && n < 3) {
+    console.log(`\n--- "${needle}" @${i}:`);
+    console.log(js.slice(Math.max(0, i - 350), i + 450).replace(/\s+/g, " "));
+    i += needle.length; n++;
   }
-  // 2. filing detail endpoints seen in the 5500Search bundle
-  for (const path of [
-    `https://www.efast.dol.gov/services/afs/filing/${ack}`,
-    `https://www.efast.dol.gov/services/afs/filings/${ack}`,
-    `https://www.efast.dol.gov/services/afs/attachments/${ack}`,
-  ]) {
-    const r = await j(path, { headers: { Accept: "application/json" } });
-    console.log(`DETAIL ${path.split("/afs/")[1]} -> ${r.status}: ${r.body.replace(/\s+/g, " ").slice(0, 1200)}`);
-  }
+  if (!n) console.log(`\n--- "${needle}": not found`);
 }
