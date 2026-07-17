@@ -79,8 +79,9 @@
   }
 
   function derive(plan) {
-    plan.avgBal = plan.assetsB != null && plan.participants
-      ? (plan.assetsB * 1e9) / plan.participants : null;
+    const balCnt = plan.partBalances || plan.participants;
+    plan.avgBal = plan.assetsB != null && balCnt
+      ? (plan.assetsB * 1e9) / balCnt : null;
     const f = plan.flows || {};
     const contrib = (f.deferralsM || 0) + (f.employerM || 0);
     plan.avgContrib = contrib && plan.activeParticipants
@@ -104,12 +105,17 @@
       planYear: filed.planYear,
       participants: filed.participants,
       activeParticipants: filed.activeParticipants,
+      partBalances: filed.partBalances || 0,
       assetsB: filed.assetsEOY ? filed.assetsEOY / 1e9 : null,
       assetsYoY: yoy == null ? null : +yoy.toFixed(1),
       ein: filed.ein,
       pyb: filed.pyb || "",
       filed: fmtFiledDate(filed.filedDate),
       flows: {
+        benefitsM: filed.benefitsPaid ? filed.benefitsPaid / 1e6 : null,
+        feeProfM: filed.feeProf ? filed.feeProf / 1e6 : null,
+        feeAdminM: filed.feeAdmin ? filed.feeAdmin / 1e6 : null,
+        feeInvM: filed.feeInvMgmt ? filed.feeInvMgmt / 1e6 : null,
         deferralsM: filed.contribParticipant != null ? filed.contribParticipant / 1e6 : null,
         employerM: filed.contribEmployer != null ? filed.contribEmployer / 1e6 : null,
         rolloversM: filed.rollovers != null ? filed.rollovers / 1e6 : null,
@@ -181,6 +187,12 @@
           plan.hasLineup = !!(flag & 1);
           if (plan.brokerage == null && (flag & 2)) plan.brokerage = "Self-directed brokerage";
         }
+        // no lineup in the plan's own filing — fall back to its master trust's
+        if (!plan.hasLineup && f.mtiaAck && (lineupIndex.plans[f.mtiaAck] || 0) & 1) {
+          plan.trustKey = f.mtiaAck;
+          plan.hasLineup = true;
+        }
+        if (flag & 4) plan.featKey = f.ack;
       }
       merged.push(plan);
     }
@@ -194,17 +206,26 @@
     for (const c of ack) h = (h * 31 + c.charCodeAt(0)) >>> 0;
     return h % n;
   }
+  async function fetchEntry(key) {
+    const sid = String(shardOf(key, state.shardCount)).padStart(2, "0");
+    if (!shardCache.has(sid)) {
+      shardCache.set(sid, fetch(`data/lineups/${sid}.json`, { cache: "no-cache" }).then((r) => (r.ok ? r.json() : {})));
+    }
+    return (await shardCache.get(sid))[key];
+  }
   async function ensureLineup(plan) {
-    if (!plan || !plan.lineupKey || plan.filedLineup || plan.lineupLoading || !state.shardCount) return;
+    if (!plan || (!plan.lineupKey && !plan.trustKey) || plan.filedLineup || plan.lineupLoading || !state.shardCount) return;
     plan.lineupLoading = true;
-    const sid = String(shardOf(plan.lineupKey, state.shardCount)).padStart(2, "0");
     try {
-      if (!shardCache.has(sid)) {
-        shardCache.set(sid, fetch(`data/lineups/${sid}.json`, { cache: "no-cache" }).then((r) => (r.ok ? r.json() : {})));
+      const lu = plan.lineupKey ? await fetchEntry(plan.lineupKey) : null;
+      // the plan's own entry may hold features only; the trust holds the funds
+      if (plan.trustKey) {
+        const tlu = await fetchEntry(plan.trustKey);
+        if (tlu && tlu.confident && tlu.funds && tlu.funds.length) {
+          plan.filedLineup = { ...tlu, source: `master trust filing (${tlu.source || "Schedule H line 4i"})`, fromTrust: true };
+        }
       }
-      const bucket = await shardCache.get(sid);
-      const lu = bucket[plan.lineupKey];
-      if (lu && lu.confident && lu.funds && lu.funds.length) plan.filedLineup = lu;
+      if (!plan.filedLineup && lu && lu.confident && lu.funds && lu.funds.length) plan.filedLineup = lu;
       if (lu && lu.features) {
         const ff = lu.features;
         plan.filedFeatures = ff;
@@ -225,9 +246,11 @@
             /in.?plan.{0,30}(roth )?(conversion|rollover)/i.test((ff.rothText || "") + " " + (ff.afterTaxText || ""))) {
           plan.megaBackdoor = true;
         }
+        if (!plan.autoEscalate && ff.autoEscalate) plan.autoEscalate = ff.autoEscalate === true ? "Automatic annual increases (per filing)" : `${ff.autoEscalate} (per filing)`;
+        if (ff.sdbaBrand && (plan.brokerage == null || plan.brokerage === "Self-directed brokerage")) plan.brokerage = ff.sdbaBrand;
       }
       if (!plan.filedLineup) plan.hasLineup = false;
-      if (!plan.filedLineup && !plan.filedFeatures) plan.lineupKey = null;
+      if (!plan.filedLineup && !plan.filedFeatures) { plan.lineupKey = null; plan.trustKey = null; }
     } catch { /* leave the loading note; a retry happens on next expand */ }
     plan.lineupLoading = false;
     render();
@@ -345,8 +368,10 @@
         <span class="badge badge-green">FORM 5500 AUDIT NOTES</span>
         <span class="contrib-total">${total}</span>
       </div>
-      ${ff.match ? `<p class="max-benefit">Formula: <strong>${esc(ff.match)}</strong></p>` : ""}
+      ${ff.match ? `<p class="max-benefit">Formula: <strong>${esc(ff.match)}</strong>${ff.safeHarbor === "match" ? " · safe harbor" : ""}${ff.trueUp ? " · with annual true-up" : ""}</p>` : ""}
       ${ff.matchText ? `<blockquote class="quote">“${esc(ff.matchText)}”</blockquote>` : ""}
+      ${ff.nec ? `<p class="max-benefit">Employer nonelective contribution: <strong>${esc(ff.nec)}</strong>${ff.safeHarbor === "nonelective" ? " · safe harbor" : ""}</p>` : ""}
+      ${ff.necText ? `<blockquote class="quote">“${esc(ff.necText)}”</blockquote>` : ""}
       ${ff.vesting ? `<p class="max-benefit">Employer-money vesting: <strong>${esc(ff.vesting)}</strong></p>` : ""}
       ${ff.vestingText ? `<blockquote class="quote">“${esc(ff.vestingText)}”</blockquote>` : ""}
       <p class="contrib-note">ⓘ Quoted from the audited financial statements attached to this plan's Form 5500 filing.</p>
@@ -412,6 +437,14 @@
       ? `<span class="feat-unknown">— Not yet verified</span>`
       : plan.brokerage !== "None"
         ? `<span class="feat-on">✓ ${esc(plan.brokerage)}</span>` : `<span class="feat-off">✗ Not offered</span>`}</div>`);
+    const ff = plan.filedFeatures || {};
+    if (ff.eligibility) {
+      rows.push(`<div class="feat-block"><div class="feat-row"><span>Eligibility</span><span class="feat-on">✓ ${esc(ff.eligibility)}</span></div>
+        ${ff.eligibilityText ? `<div class="feat-blurb">“${esc(ff.eligibilityText)}”</div>` : ""}</div>`);
+    }
+    if (ff.loans) {
+      rows.push(`<div class="feat-row"><span>Participant Loans</span><span class="feat-on">✓ Permitted</span></div>`);
+    }
     for (const h of plan.highlights) {
       rows.push(`<div class="feat-row"><span>Feature</span><span class="feat-on">✓ ${esc(h)}</span></div>`);
     }
@@ -424,6 +457,10 @@
       ["Employee Deferrals", money(f.deferralsM)],
       ["Employer Contributions", money(f.employerM)],
       ["Rollovers", money(f.rolloversM)],
+      ...(f.benefitsM != null ? [["Benefits Paid", money(f.benefitsM)]] : []),
+      ...(f.feeAdminM != null ? [["— Recordkeeping / Admin Fees", money(f.feeAdminM)]] : []),
+      ...(f.feeInvM != null ? [["— Investment Mgmt Fees", money(f.feeInvM)]] : []),
+      ...(f.feeProfM != null ? [["— Professional Fees", money(f.feeProfM)]] : []),
       ["Admin Expenses", money(f.adminM != null ? f.adminM : (f.adminK != null ? f.adminK / 1000 : null))],
       ["Prior Year Assets", money(f.priorAssetsM)],
     ];

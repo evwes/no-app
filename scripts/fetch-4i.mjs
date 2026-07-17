@@ -22,6 +22,10 @@ mkdirSync(WORK, { recursive: true });
 // how many NEW filings to fetch this run (batches accumulate across runs)
 const BATCH = process.env.BATCH_4I ? +process.env.BATCH_4I : 5000;
 const TOP_N = process.env.TOP_4I ? +process.env.TOP_4I : 62000;
+// matrix mode: this job processes work items where index % PARSE_SHARDS === PARSE_SHARD
+// and writes a results-<shard>.json delta instead of rewriting the stores
+const PARSE_SHARD = process.env.PARSE_SHARD != null ? +process.env.PARSE_SHARD : null;
+const PARSE_SHARDS = process.env.PARSE_SHARDS ? +process.env.PARSE_SHARDS : 1;
 
 /* Build the work list: every S&P-tagged plan + the top N universe plans by
  * assets, skipping acks already parsed into lineups.json (incremental). */
@@ -53,6 +57,15 @@ function buildWorkList() {
     console.error("plans-all.json missing or unreadable — run build-data.mjs first:", e.message);
     process.exit(1);
   }
+  // master-trust filings: parse their 4i so member plans can show trust holdings
+  try {
+    const m = JSON.parse(readFileSync("mtias.json", "utf8"));
+    for (const t of m.trusts) {
+      if (seen.has(t.ack)) continue;
+      seen.add(t.ack);
+      wanted.push({ ack: t.ack, ticker: "", planYear: t.planYear, assetsEOY: t.assetsEOY || 0, label: `MTIA: ${t.name}` });
+    }
+  } catch { /* no trusts yet */ }
   return wanted;
 }
 
@@ -102,15 +115,22 @@ for (const b of buckets) {
   }
 }
 // reparse anything from an older parser version (or never parsed at all)
-const work = buildWorkList().filter((p) => !status.plans[p.ack] || (status.plans[p.ack].pv || 1) !== PARSER_VERSION || needsSma.has(p.ack));
-console.log(`work list: ${work.length} filings to (re)parse at parser v${PARSER_VERSION}; fetching up to ${BATCH} this run`);
+let work = buildWorkList().filter((p) => !status.plans[p.ack] || (status.plans[p.ack].pv || 1) !== PARSER_VERSION || needsSma.has(p.ack));
+if (PARSE_SHARD != null) work = work.filter((_, i) => i % PARSE_SHARDS === PARSE_SHARD);
+console.log(`work list: ${work.length} filings to (re)parse at parser v${PARSER_VERSION}` +
+  (PARSE_SHARD != null ? ` (matrix shard ${PARSE_SHARD}/${PARSE_SHARDS})` : "") + `; fetching up to ${BATCH} this run`);
 let fetched = 0;
 
+const delta = { status: {}, entries: {} };
 function record(plan, entry, features) {
   if (features) entry.features = features;
-  status.plans[plan.ack] = { pv: PARSER_VERSION, c: entry.confident ? 1 : 0, s: entry.sdba ? 1 : 0, ...(features ? { f: 1 } : {}), ...(entry.error ? { e: entry.error } : {}) };
+  const meta = { pv: PARSER_VERSION, c: entry.confident ? 1 : 0, s: entry.sdba ? 1 : 0, ...(features ? { f: 1 } : {}), ...(entry.error ? { e: entry.error } : {}) };
+  status.plans[plan.ack] = meta;
+  delta.status[plan.ack] = meta;
+  const keep = (entry.confident && entry.funds.length) || features;
+  delta.entries[plan.ack] = keep ? entry : null;
   const b = buckets[shardOf(plan.ack)];
-  if ((entry.confident && entry.funds.length) || features) b[plan.ack] = entry;
+  if (keep) b[plan.ack] = entry;
   else delete b[plan.ack];
 }
 
@@ -166,6 +186,13 @@ for (const plan of work) {
   }, features);
   summary.push(`${tag}: ${parsed.funds.length} rows, cov ${(ratio * 100).toFixed(0)}%, sdba=${parsed.sdba}, ok=${confident}`);
   await new Promise((r) => setTimeout(r, 150)); // be polite to the bucket
+}
+
+if (PARSE_SHARD != null) {
+  // matrix job: emit only this shard's results; the merge job assembles stores
+  writeFileSync(`results-${PARSE_SHARD}.json`, JSON.stringify(delta));
+  console.log(`wrote results-${PARSE_SHARD}.json: ${Object.keys(delta.status).length} entries`);
+  process.exit(0);
 }
 
 status.generated = new Date().toISOString();

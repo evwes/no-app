@@ -7,40 +7,98 @@ on:
     - cron: "0 6 * * 1"
   push:
     branches: ["main", "claude/wampo-401k-live-nx1t4o"]
-    paths: ["scripts/**", ".github/workflows/build-data.yml"]
+    paths: ["scripts/build-data.mjs", "scripts/fetch-4i.mjs", "scripts/lib-4i.mjs", "scripts/merge-4i.mjs", "scripts/.kick", ".github/workflows/build-data.yml"]
 
 permissions:
   contents: write
 
 jobs:
-  build:
+  prep:
     runs-on: ubuntu-latest
-    timeout-minutes: 350
+    timeout-minutes: 90
+    outputs:
+      shards: ${{ steps.plan.outputs.shards }}
+      count: ${{ steps.plan.outputs.count }}
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-
       - name: Download and process DOL Form 5500 datasets
         run: node scripts/build-data.mjs
+      - name: Plan parse shards
+        id: plan
+        run: |
+          WORK=$(BATCH_4I=0 node scripts/fetch-4i.mjs | grep -oP 'work list: \K\d+' || echo 0)
+          N=$(( (WORK + 5499) / 5500 )); [ "$N" -lt 1 ] && N=1; [ "$N" -gt 12 ] && N=12
+          echo "work=$WORK shards=$N"
+          echo "count=$N" >> "$GITHUB_OUTPUT"
+          echo "shards=$(node -e "console.log(JSON.stringify([...Array($N).keys()]))")" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: data-inputs
+          path: |
+            plans-all.json
+            mtias.json
+            lineups-status.json
+            lineups-index.json
+            data/lineups/
+          include-hidden-files: false
 
-      - name: Fetch and parse Schedule H 4i attachments
+  parse:
+    needs: prep
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ${{ fromJson(needs.prep.outputs.shards) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/download-artifact@v4
+        with:
+          name: data-inputs
+      - name: Parse filings (shard ${{ matrix.shard }})
         run: |
           sudo apt-get install -y -q poppler-utils >/dev/null 2>&1 || true
-          node scripts/fetch-4i.mjs
+          PARSE_SHARD=${{ matrix.shard }} PARSE_SHARDS=${{ needs.prep.outputs.count }} BATCH_4I=999999 node scripts/fetch-4i.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: results-${{ matrix.shard }}
+          path: results-${{ matrix.shard }}.json
+          if-no-files-found: warn
 
+  merge:
+    needs: [prep, parse]
+    if: always() && needs.prep.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/download-artifact@v4
+        with:
+          name: data-inputs
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: results-*
+          merge-multiple: true
+      - name: Merge shard results into stores
+        run: node scripts/merge-4i.mjs
       - name: Commit data files
         run: |
           git config user.name "wampo-data-bot"
           git config user.email "noreply@anthropic.com"
-          git add plans-all.json lineups-status.json lineups-index.json data/lineups
+          git add plans-all.json mtias.json lineups-status.json lineups-index.json data/lineups
           if git diff --cached --quiet; then
             echo "No data changes."
           else
             git commit -m "Update filed plan data (Form 5500 + Schedule H 4i lineups)"
-            # the branch may have moved during the long run — rebase, don't fail
             git pull --rebase origin "${GITHUB_REF_NAME}"
             git push
           fi

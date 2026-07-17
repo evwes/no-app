@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 5;
+export const PARSER_VERSION = 6;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink/i, "SDBA"],
@@ -272,11 +272,22 @@ export function extractPlanFeatures(text) {
   const mf =
     t.match(/match(?:ing)?[^.]{0,140}?(\d{1,3})(?:\.\d+)? ?(?:percent|%) of (?:the )?first (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i) ||
     t.match(/(\d{1,3})(?:\.\d+)? ?(?:percent|%) match(?:ing)?[^.]{0,80}?(?:up to|on the first) (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i);
+  // dollar-phrased formulas: "dollar-for-dollar up to 4%", "50 cents per dollar on the first 6%"
+  const df = !mf && (t.match(/dollar[- ]for[- ]dollar[^.]{0,80}?(?:up to|on the first) (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i)
+    ? { pct: 100, cap: null } : null);
+  const cents = !mf && !df && t.match(/(\d{1,3})(?:\.\d+)? ?cents (?:for|per|on) (?:each |every )?(?:\$1(?:\.00)?|dollar)[^.]{0,80}?(?:up to|on the first) (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i);
   if (mf) {
     out.match = `${+mf[1]}% of the first ${+mf[2]}% of pay`;
     const tier2 = t.slice(mf.index, mf.index + 300).match(/(?:and|plus) (\d{1,3})(?:\.\d+)? ?(?:percent|%) of the next (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i);
     if (tier2) out.match += ` + ${+tier2[1]}% of the next ${+tier2[2]}%`;
     out.matchText = sentence(mf.index);
+  } else if (df) {
+    const m2 = t.match(/dollar[- ]for[- ]dollar[^.]{0,80}?(?:up to|on the first) (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i);
+    out.match = `100% of the first ${+m2[1]}% of pay`;
+    out.matchText = sentence(m2.index);
+  } else if (cents) {
+    out.match = `${+cents[1]}% of the first ${+cents[2]}% of pay`;
+    out.matchText = sentence(cents.index);
   } else {
     // fall back to the descriptive sentence, skipping form-page boilerplate
     const mre = /(?:employer|company) match(?:ing)? contributions?|matching contributions? (?:is|are|equal|of|based|provided)/gi;
@@ -324,6 +335,42 @@ export function extractPlanFeatures(text) {
   if (at && !/roth/i.test(t.slice(Math.max(0, at.index - 40), at.index))) {
     out.afterTax = true; out.afterTaxText = sentence(at.index);
   }
+
+  // ---- safe harbor & true-up ----
+  if (/safe harbor match/i.test(t)) out.safeHarbor = "match";
+  else if (/safe harbor non.?elective|non.?elective safe harbor/i.test(t)) out.safeHarbor = "nonelective";
+  if (/true[- ]?up/i.test(t)) out.trueUp = true;
+
+  // ---- employer nonelective / core contribution ----
+  const nec = t.match(/non.?(?:contributory|elective)[^.]{0,80}?contribution[^.]{0,60}?(\d{1,2})(?:\.\d+)? ?(?:percent|%)/i) ||
+    t.match(/(?:employer|company) (?:core|automatic|basic|retirement) contribution[^.]{0,60}?(\d{1,2})(?:\.\d+)? ?(?:percent|%)/i) ||
+    t.match(/contribut\w+ (\d{1,2})(?:\.\d+)? ?(?:percent|%) of (?:each |eligible |annual )?(?:participant|employee)s?'? (?:eligible )?(?:compensation|pay)[^.]{0,60}?regardless of/i);
+  if (nec && +nec[1] >= 1 && +nec[1] <= 15) { out.nec = `${+nec[1]}% of pay`; out.necText = sentence(nec.index); }
+
+  // ---- auto-escalation ----
+  const esc = t.match(/(?:automatic(?:ally)? increas\w+|escalat\w+)[^.]{0,120}?(\d{1,2})(?:\.\d+)? ?(?:percent|%)[^.]{0,80}?(?:maximum|up to|cap|not to exceed)[^.]{0,40}?(\d{1,2})(?:\.\d+)? ?(?:percent|%)/i);
+  const esc2 = esc || t.match(/annual(?:ly)? [^.]{0,40}?automatic(?:ally)? increas\w+|automatic escalation/i);
+  if (esc2) {
+    out.autoEscalate = esc ? `+${+esc[1]}%/year up to ${+esc[2]}%` : true;
+    out.autoEscalateText = sentence(esc2.index);
+  }
+
+  // ---- eligibility ----
+  const elig = t.match(/eligib\w+[^.]{0,140}?(?:(\d{1,4}) ?(days?|months?|years?|hours?) of (?:service|employment|continuous)|(?:upon|on) (?:their )?(?:date of )?hire|first day of (?:employment|the month)|immediately)/i);
+  if (elig) {
+    out.eligibility = elig[1] ? `${elig[1]} ${elig[2]} of service` : "Upon hire / immediate";
+    out.eligibilityText = sentence(elig.index);
+  }
+
+  // ---- participant loans ----
+  const loan = t.match(/participants? may (?:borrow|obtain (?:a )?loans?)|loans? (?:are|is) (?:permitted|available|allowed)|loan provision/i);
+  if (loan) { out.loans = true; out.loansText = sentence(loan.index); }
+
+  // ---- brokerage window brand ----
+  const brand = t.match(/brokerage ?link/i) ? "Fidelity BrokerageLink"
+    : t.match(/personal choice retirement|pcra/i) ? "Schwab PCRA"
+    : t.match(/td ameritrade self.?directed/i) ? "TD Ameritrade SDBA" : null;
+  if (brand) out.sdbaBrand = brand;
 
   // ---- automatic enrollment ----
   const ae = t.match(/automatic(?:ally)? enroll(?:ed|ment|s)?[^.]{0,100}?(\d{1,2})(?:\.\d+)? ?(?:percent|%)/i);
