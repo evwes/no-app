@@ -39,6 +39,7 @@ function buildWorkList() {
     const rows = all.plans; // already sorted by assets desc
     for (let r = 0; r < rows.length; r++) {
       const row = rows[r];
+      if (i.sf != null && row[i.sf]) continue; // 5500-SF filers attach no audited fund schedule
       const isTop = r < TOP_N;
       const isTicker = !!row[i.ticker];
       if (!isTop && !isTicker) continue;

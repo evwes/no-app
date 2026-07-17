@@ -152,6 +152,7 @@
           for (let i = 0; i < F.length; i++) p[F[i]] = a[i];
           p.company = p.sponsorName;
           p.pensionCode = "2J";
+          p.isSF = !!p.sf;
           p.ein = p.ein ? String(p.ein).slice(0, 2) + "-" + String(p.ein).slice(2) : "";
           p.source = `Form 5500, plan year ${p.planYear} (DOL EFAST2 public dataset)`;
           return p;
@@ -483,6 +484,36 @@
     return `<span class="${cls}">${v >= 0 ? "↑" : "↓"} ${v >= 0 ? "+" : "−"}${Math.abs(v).toFixed(1)}%</span>`;
   }
 
+  /* Order a lineup so target-date families appear as one block in year order
+   * (2015, 2020, ...) instead of scattered by value. A family = 3+ funds whose
+   * names differ only by a 4-digit year; the block sits where its largest
+   * member would rank, and everything else stays sorted by value. */
+  function tdBase(name) {
+    const m = name.match(/\b(19|20)\d\d\b/);
+    return m ? name.replace(/\b(19|20)\d\d\b/, "#").replace(/\s+/g, " ").trim().toLowerCase() : null;
+  }
+  function orderLineup(funds) {
+    const fam = new Map();
+    for (const f of funds) {
+      const b = tdBase(f.name);
+      if (b) { if (!fam.has(b)) fam.set(b, []); fam.get(b).push(f); }
+    }
+    const famMax = new Map();
+    for (const [b, list] of fam) if (list.length >= 3) famMax.set(b, Math.max(...list.map((f) => f.value)));
+    const key = (f) => { const b = tdBase(f.name); return b != null && famMax.has(b) ? b : null; };
+    return [...funds].sort((a, b) => {
+      const fa = key(a), fb = key(b);
+      const ra = fa ? famMax.get(fa) : a.value;
+      const rb = fb ? famMax.get(fb) : b.value;
+      if (rb !== ra) return rb - ra;
+      if (fa && fb && fa === fb) {
+        const ya = +a.name.match(/\b(19|20)\d\d\b/)[0], yb = +b.name.match(/\b(19|20)\d\d\b/)[0];
+        return ya - yb;
+      }
+      return b.value - a.value;
+    });
+  }
+
   /* Value-weighted estimated expense ratio across a filed lineup; null until
    * fund-er.js patterns cover at least half the lineup's value. */
   function filedAvgER(plan) {
@@ -502,7 +533,7 @@
     const lu = plan.filedLineup;
     const hasSma = !!(lu.sma && lu.sma.length);
     const tab = hasSma ? (state.lineupTab[plan.id] || "menu") : "menu";
-    const list = tab === "sma" ? lu.sma : lu.funds;
+    const list = tab === "sma" ? lu.sma : orderLineup(lu.funds);
     const total = list.reduce((s, f) => s + f.value, 0);
     const rows = list.map((f) => {
       const er = tab === "menu" ? fundER(f.name) : null;
@@ -549,7 +580,7 @@
       trust and don't itemize funds). <a href="https://github.com/evwes/no-app/issues">Contribute it</a>.</p>`;
     }
     const sort = state.fundSort[plan.id || plan.ticker];
-    const funds = [...plan.funds];
+    const funds = sort ? [...plan.funds] : orderLineup(plan.funds.map((f) => ({ ...f, value: f.value ?? 0 })));
     if (sort) funds.sort((a, b) => (a[sort.key] - b[sort.key]) * sort.dir);
 
     const head = `<th class="fund-name-col">Fund Name</th>` + FUND_COLS.map(([k, label]) => {

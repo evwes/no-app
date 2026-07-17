@@ -3,13 +3,13 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 6;
+export const PARSER_VERSION = 7;
 
 const TYPE_PATTERNS = [
-  [/self[- ]directed brokerage|brokerage ?link|brokeragelink/i, "SDBA"],
+  [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b/i, "SDBA"],
   [/publicly[- ]traded stock/i, "Stock"],
   [/interest in (the )?master trust/i, "Master trust interest"],
-  [/collective trust|common\/collective|common collective|collective investment trust/i, "Collective trust"],
+  [/collective trust|common\/collective|common collective|collective investment trust|commingled/i, "Collective trust"],
   [/mutual fund|registered investment/i, "Mutual fund"],
   [/pooled separate/i, "Pooled separate account"],
   [/common stock|company stock|employer securit/i, "Company stock"],
@@ -74,7 +74,7 @@ function typeOnly(desc) {
   return r.replace(/[^a-z0-9]/gi, "").length < 6;
 }
 
-export function parseRows(section) {
+export function parseRows(section, opts = {}) {
   const rows = [];
   let sdba = false;
   let nameBuf = [];
@@ -83,8 +83,17 @@ export function parseRows(section) {
   for (const raw of section) {
     // leading "*" is the party-in-interest marker on holding rows — drop it
     // before matching so starred holdings aren't mistaken for footnotes
-    const t = raw.trim().replace(/^\*+\s*/, "");
+    let t = raw.trim().replace(/^\*+\s*/, "");
     if (!t) { nameBuf = []; continue; }
+    // "Current Value | Shares Par" layouts put the share count LAST — strip
+    // the shares column and the currency code so the dollar value is trailing
+    if (opts.sharesLast) {
+      const sp = t.match(/^(.*?)\s+(?:USD|EUR|GBP|CAD)\s+(-|\$? ?[0-9][0-9,]*(?:\.\d{2})?)\s+[0-9][0-9,]*(?:\.\d+)?\s*$/);
+      if (sp) {
+        if (sp[2] === "-") { nameBuf = []; continue; } // stale zero-value holding
+        t = sp[1] + "   " + sp[2].replace(/\.\d+$/, "");
+      }
+    }
     if (SKIP_ROW.test(t) || DATE_LINE.test(t)) { nameBuf = []; continue; }
     if (/:\s*$/.test(t)) { nameBuf = []; continue; } // section subheading
 
@@ -205,7 +214,9 @@ export function parse4i(text, assetsEOY, sponsorName = "") {
   let best = null;
   for (const [s, end] of candidates) {
     const region = lines.slice(s, end);
-    const parsed = parseRows(region);
+    const regionText = region.join("\n");
+    const sharesLast = /current\s+value\s+shares(\s*\/?\s*par)?|shares\s+par\s*$/im.test(regionText);
+    const parsed = parseRows(region, { sharesLast });
     if (parsed.funds.length < 2) continue;
     const raw = parsed.totalValue;
     // only consider (thousands) scaling when the region says so — otherwise a

@@ -130,7 +130,7 @@ async function scanMainForm(csv, year) {
     city: colIndex(H, ["SPONS_DFE_MAIL_US_CITY", "SPONS_DFE_LOC_US_CITY"], /MAIL.*CITY/),
     state: colIndex(H, ["SPONS_DFE_MAIL_US_STATE", "SPONS_DFE_LOC_US_STATE"], /MAIL.*STATE/),
     zip: colIndex(H, ["SPONS_DFE_MAIL_US_ZIP", "SPONS_DFE_LOC_US_ZIP"], /MAIL.*ZIP/),
-    partTotal: colIndex(H, ["TOT_ACT_RTD_SEP_BENEF_CNT", "TOT_PARTCP_BOY_CNT", "TOT_PARTCP_CNT"], /TOT_PARTCP/),
+    partTotal: colIndex(H, ["TOT_PARTCP_BOY_CNT", "TOT_ACT_RTD_SEP_BENEF_CNT", "TOT_PARTCP_CNT"], /TOT_PARTCP/),
     partActive: colIndex(H, ["TOT_ACTIVE_PARTCP_CNT", "TOT_ACT_PARTCP_CNT"], /ACTIVE_PARTCP|ACT_PARTCP/),
     partBalances: colIndex(H, ["PARTCP_ACCOUNT_BAL_CNT", "TOT_PARTCP_ACCOUNT_BAL_CNT"], /ACCOUNT_BAL_CNT/),
     pensionCode: colIndex(H, ["TYPE_PENSION_BNFT_CODE"], /PENSION.*CODE/),
@@ -225,6 +225,77 @@ async function scanSchH(csv, year, wantedAcks) {
     });
   }
   console.log(`rows: ${n}, joined: ${out.size}/${wantedAcks.size}`);
+  return out;
+}
+
+/* ---------- pass 1b: Form 5500-SF (small-plan short form) ----------
+ * The 80-120 rule lets plans with 100-120 participants keep filing the
+ * short form, which lives in its own dataset. They are 401(k) plans with
+ * 100+ participants and belong in the universe (basics only: the SF has
+ * no Schedule H/C/D and no audited fund schedule). */
+async function scanSF(csv, year) {
+  console.log(`\n== scanning 5500-SF ${year}`);
+  const rows = csvRows(csv);
+  const { value: header } = await rows.next();
+  const H = header.map((h) => h.toUpperCase().trim());
+  const col = {
+    ack: colIndex(H, ["ACK_ID"]),
+    sponsor: colIndex(H, ["SF_SPONSOR_NAME", "SF_SPONS_NAME"], /SPONS.*NAME/),
+    ein: colIndex(H, ["SF_SPONS_EIN", "SF_SPONSOR_EIN"], /EIN/),
+    pn: colIndex(H, ["SF_SPONS_PN", "SF_PLAN_NUM"], /_PN$|PLAN_NUM/),
+    planName: colIndex(H, ["SF_PLAN_NAME"], /PLAN_NAME/),
+    city: colIndex(H, ["SF_SPONS_US_CITY", "SF_SPONS_MAIL_US_CITY"], /CITY/),
+    state: colIndex(H, ["SF_SPONS_US_STATE", "SF_SPONS_MAIL_US_STATE"], /STATE/),
+    zip: colIndex(H, ["SF_SPONS_US_ZIP", "SF_SPONS_MAIL_US_ZIP"], /ZIP/),
+    partBOY: colIndex(H, ["SF_TOT_PARTCP_BOY_CNT"], /TOT_PARTCP_BOY/),
+    partActive: colIndex(H, ["SF_TOT_ACT_PARTCP_CNT", "SF_TOT_ACTIVE_PARTCP_CNT"], /ACT.*PARTCP/),
+    partBalances: colIndex(H, ["SF_PARTCP_ACCOUNT_BAL_CNT"], /ACCOUNT_BAL_CNT/),
+    pensionCode: colIndex(H, ["SF_TYPE_PENSION_BNFT_CODE"], /PENSION.*CODE/),
+    businessCode: colIndex(H, ["SF_BUSINESS_CODE"], /BUSINESS_CODE/),
+    assetsBOY: colIndex(H, ["SF_TOT_ASSETS_BOY_AMT", "SF_NET_ASSETS_BOY_AMT"], /ASSETS_BOY/),
+    assetsEOY: colIndex(H, ["SF_TOT_ASSETS_EOY_AMT", "SF_NET_ASSETS_EOY_AMT"], /ASSETS_EOY/),
+    contribEmployer: colIndex(H, ["SF_EMPLR_CONTRIB_AMT", "SF_EMPLR_CONTRIB_INCOME_AMT"], /EMPLR_CONTRIB/),
+    contribParticipant: colIndex(H, ["SF_PARTCP_CONTRIB_AMT"], /PARTCP_CONTRIB(?!.*BAL)/),
+    received: colIndex(H, ["DATE_RECEIVED"], /DATE_RECEIVED/),
+    planYearBegin: colIndex(H, ["SF_PLAN_YEAR_BEGIN_DATE"], /PLAN_YEAR_BEGIN/),
+  };
+  console.log("SF columns:", JSON.stringify(col));
+  const out = [];
+  let n = 0;
+  for await (const r of rows) {
+    n++;
+    const code = col.pensionCode !== -1 ? r[col.pensionCode] || "" : "";
+    if (!code.includes("2J")) continue;
+    const participants = +r[col.partBOY] || 0;
+    if (participants < MIN_UNIVERSE) continue;
+    const sponsorNorm = norm(r[col.sponsor]);
+    const company = matchCompany(sponsorNorm);
+    out.push({
+      year, sf: 1,
+      ticker: company ? company.ticker : "",
+      companyName: company ? company.name : "",
+      ack: r[col.ack],
+      sponsorName: r[col.sponsor],
+      ein: r[col.ein],
+      pn: r[col.pn],
+      planName: r[col.planName],
+      city: r[col.city], state: r[col.state], zip: (r[col.zip] || "").slice(0, 5),
+      participants,
+      activeParticipants: col.partActive !== -1 ? +r[col.partActive] || 0 : 0,
+      partBalances: col.partBalances !== -1 ? +r[col.partBalances] || 0 : 0,
+      pensionCode: code,
+      businessCode: col.businessCode !== -1 ? r[col.businessCode] : "",
+      received: r[col.received],
+      planYearBegin: col.planYearBegin !== -1 ? r[col.planYearBegin] : "",
+      sfH: {
+        assetsBOY: col.assetsBOY !== -1 ? +r[col.assetsBOY] || 0 : 0,
+        assetsEOY: col.assetsEOY !== -1 ? +r[col.assetsEOY] || 0 : 0,
+        contribEmployer: col.contribEmployer !== -1 ? +r[col.contribEmployer] || 0 : 0,
+        contribParticipant: col.contribParticipant !== -1 ? +r[col.contribParticipant] || 0 : 0,
+      },
+    });
+  }
+  console.log(`SF rows: ${n}, 401(k) >=${MIN_UNIVERSE} participants: ${out.length}`);
   return out;
 }
 
@@ -364,6 +435,12 @@ for (const year of YEARS) {
   } catch (e) {
     console.warn(`year ${year} main form failed: ${e.message}`);
   }
+  try {
+    const csv = unzip(await download(year, `F_5500_SF_${year}_Latest.zip`));
+    collected.push(...await scanSF(csv, year));
+  } catch (e) {
+    console.warn(`year ${year} 5500-SF failed: ${e.message}`);
+  }
 }
 
 // dedupe universe by EIN+PN keeping the newest filing year
@@ -430,11 +507,11 @@ function titleCase(s) {
 const FIELDS = ["ein", "pn", "sponsorName", "planName", "city", "state", "zip", "businessCode",
   "planYear", "participants", "activeParticipants", "assetsBOY", "assetsEOY",
   "contribEmployer", "contribParticipant", "rollovers", "adminExpenses",
-  "filedDate", "recordkeeper", "ticker", "ack", "codes", "pyb", "partBalances", "feeProf", "feeAdmin", "feeInvMgmt", "feeOther", "benefitsPaid", "mtiaAck"];
+  "filedDate", "recordkeeper", "ticker", "ack", "codes", "pyb", "partBalances", "feeProf", "feeAdmin", "feeInvMgmt", "feeOther", "benefitsPaid", "mtiaAck", "sf"];
 
 const rowsOut = [];
 for (const p of universe) {
-  const h = schH.get(p.ack) || {};
+  const h = p.sf ? p.sfH : (schH.get(p.ack) || {});
   rowsOut.push([
     p.ein, p.pn, titleCase(p.sponsorName), p.planName, titleCase(p.city), p.state, p.zip, p.businessCode,
     p.planYearBegin ? +String(p.planYearBegin).slice(0, 4) : p.year,
@@ -444,7 +521,7 @@ for (const p of universe) {
     p.received || "", schC.get(p.ack) || "", p.ticker || "", p.ack, p.pensionCode || "",
     p.planYearBegin ? String(p.planYearBegin).slice(0, 7) : "",
     p.partBalances || 0, h.feeProf || 0, h.feeAdmin || 0, h.feeInvMgmt || 0, h.feeOther || 0, h.benefitsPaid || 0,
-    p.mtiaAck || "",
+    p.mtiaAck || "", p.sf || 0,
   ]);
 }
 rowsOut.sort((a, b) => b[12] - a[12]); // by assets desc

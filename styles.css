@@ -416,3 +416,8 @@ main { max-width: 1060px; margin: 0 auto; padding: 0 20px 48px; }
   background: none; color: var(--text-secondary); font: inherit; font-size: 13px; cursor: pointer;
 }
 .lineup-tab.tab-on { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* grid children default to min-width:auto and refuse to shrink — that clipped
+   the Plan Features blurbs at some viewport widths */
+.two-col > * { min-width: 0; }
+.feat-blurb, .quote, .max-benefit { overflow-wrap: break-word; }
