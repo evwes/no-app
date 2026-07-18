@@ -20,9 +20,13 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   `prep` (build-data.mjs: download EFAST2 datasets, write plans-all.json +
   mtias.json, compute shard count) → `parse` (up to 12 parallel jobs,
   fetch-4i.mjs in PARSE_SHARD mode, each writes results-N.json delta) →
-  `merge` (merge-4i.mjs assembles stores, commits). Full universe re-parse ≈
-  5–6h. Weekly cron Mondays 06:00 UTC + push trigger on scripts/** (touch
-  `scripts/.kick` to force a run). workflow_dispatch works from main.
+  `merge` (merge-4i.mjs re-applies deltas on the LATEST fetched branch state
+  with a reset+retry loop — measured necessity: a plain rebase transplant
+  conflicted on the single-line JSON stores and killed a finished v9 run).
+  Full universe re-parse ≈ 1.5h wall (12-way matrix, ~50 min parse jobs,
+  ~600ms/filing incl. politeness delay). Weekly cron Mondays 06:00 UTC +
+  push trigger on scripts/** (touch `scripts/.kick` to force a run).
+  workflow_dispatch works from main.
 - **Scripts**: `scripts/build-data.mjs` (dataset ingest), `scripts/lib-4i.mjs`
   (parser + feature extractor, exports PARSER_VERSION), `scripts/fetch-4i.mjs`
   (PDF fetch/parse loop), `scripts/merge-4i.mjs` (delta merge + index).

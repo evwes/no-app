@@ -97,17 +97,27 @@ jobs:
         with:
           pattern: results-*
           merge-multiple: true
-      - name: Merge shard results into stores
-        run: node scripts/merge-4i.mjs
-      - name: Commit data files
+      - name: Merge shard results and commit
+        # Single-line JSON stores can never rebase across a concurrent push
+        # (this killed a full v9 run): so instead of transplanting a stale
+        # commit, re-apply the deltas onto the LATEST branch state and retry.
+        # plans-all/mtias come from the prep artifact and survive the reset;
+        # results-*.json are untracked. merge-4i is idempotent per attempt.
         run: |
           git config user.name "wampo-data-bot"
           git config user.email "noreply@anthropic.com"
-          git add plans-all.json mtias.json lineups-status.json lineups-index.json data/lineups
-          if git diff --cached --quiet; then
-            echo "No data changes."
-          else
+          cp plans-all.json mtias.json /tmp/
+          for attempt in 1 2 3 4 5; do
+            git fetch origin "${GITHUB_REF_NAME}"
+            git reset --hard "origin/${GITHUB_REF_NAME}"
+            cp /tmp/plans-all.json /tmp/mtias.json .
+            node scripts/merge-4i.mjs
+            git add plans-all.json mtias.json lineups-status.json lineups-index.json data/lineups
+            if git diff --cached --quiet; then echo "No data changes."; exit 0; fi
             git commit -m "Update filed plan data (Form 5500 + Schedule H 4i lineups)"
-            git pull --rebase origin "${GITHUB_REF_NAME}"
-            git push
-          fi
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then exit 0; fi
+            echo "push raced with a concurrent commit; retrying (attempt ${attempt})"
+            sleep 5
+          done
+          echo "giving up after 5 attempts" >&2
+          exit 1
