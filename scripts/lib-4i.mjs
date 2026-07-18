@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 7;
+export const PARSER_VERSION = 8;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b/i, "SDBA"],
@@ -342,6 +342,7 @@ export function extractPlanFeatures(text) {
   // ---- Roth / voluntary after-tax (only positive evidence counts) ----
   const roth = t.match(/\broth\b[^.]{0,120}(contribut|deferral|option|401)/i) || t.match(/(designated|make) \broth\b/i);
   if (roth) { out.roth = true; out.rothText = sentence(roth.index); }
+  if (/in.?plan.{0,40}(roth )?(conversion|rollover)|convert.{0,40}(to )?(a )?roth/i.test(t)) out.inPlanRoth = true;
   const at = t.match(/(?:voluntary |additional )?after[- ]tax contributions?/i);
   if (at && !/roth/i.test(t.slice(Math.max(0, at.index - 40), at.index))) {
     out.afterTax = true; out.afterTaxText = sentence(at.index);
@@ -392,4 +393,23 @@ export function extractPlanFeatures(text) {
   }
 
   return Object.keys(out).length ? out : null;
+}
+
+/* Boot-time index bitmask for a shard entry — the app filters the whole
+ * universe on these without fetching shards: 1 lineup, 2 brokerage window,
+ * 4 has features, 8 mega backdoor, 16 immediate vesting, 32 after-tax, 64 Roth. */
+export function indexFlags(e) {
+  const hasLineup = e.confident && e.funds && e.funds.length ? 1 : 0;
+  let f = hasLineup | (hasLineup && e.sdba ? 2 : 0);
+  const ff = e.features;
+  if (ff) {
+    f |= 4;
+    if (ff.afterTax) f |= 32;
+    if (ff.roth) f |= 64;
+    if (ff.afterTax && (ff.inPlanRoth || /in.?plan.{0,30}(roth )?(conversion|rollover)/i.test((ff.rothText || "") + " " + (ff.afterTaxText || "")))) f |= 8;
+    if (ff.vesting === "Immediate") f |= 16;
+    if (ff.sdbaBrand) f |= 2;
+  }
+  if (e.sdba) f |= 2;
+  return f;
 }

@@ -14,7 +14,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync, createWriteStream, 
 import { execFileSync } from "node:child_process";
 import { pipeline } from "node:stream/promises";
 import path from "node:path";
-import { parse4i, extractPlanFeatures, PARSER_VERSION } from "./lib-4i.mjs";
+import { parse4i, extractPlanFeatures, indexFlags, PARSER_VERSION } from "./lib-4i.mjs";
 
 const S3 = "https://efast2-filings-public.s3.amazonaws.com/prd";
 const WORK = process.env.WORK_DIR_4I || "/tmp/f5500-pdfs";
@@ -204,10 +204,7 @@ writeFileSync("lineups-status.json", JSON.stringify(status));
 const index = {};
 for (let i = 0; i < SHARDS; i++) {
   writeFileSync(shardName(i), JSON.stringify(buckets[i]));
-  for (const [ack, e] of Object.entries(buckets[i])) {
-    const hasLineup = e.confident && e.funds && e.funds.length ? 1 : 0;
-    index[ack] = hasLineup | (hasLineup && e.sdba ? 2 : 0) | (e.features ? 4 : 0);
-  }
+  for (const [ack, e] of Object.entries(buckets[i])) index[ack] = indexFlags(e);
 }
 writeFileSync("lineups-index.json", JSON.stringify({ generated: new Date().toISOString(), shards: SHARDS, plans: index }));
 

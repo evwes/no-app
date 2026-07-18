@@ -187,6 +187,10 @@
           plan.lineupKey = f.ack;
           plan.hasLineup = !!(flag & 1);
           if (plan.brokerage == null && (flag & 2)) plan.brokerage = "Self-directed brokerage";
+          if (plan.megaBackdoor == null && (flag & 8)) plan.megaBackdoor = true;
+          if (!plan.vesting && (flag & 16)) plan.vesting = "Immediate";
+          if (plan.afterTax == null && (flag & 32)) plan.afterTax = true;
+          if (plan.roth == null && (flag & 64)) plan.roth = true;
         }
         // no lineup in the plan's own filing — fall back to its master trust's
         if (!plan.hasLineup && f.mtiaAck && (lineupIndex.plans[f.mtiaAck] || 0) & 1) {

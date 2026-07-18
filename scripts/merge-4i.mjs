@@ -2,6 +2,7 @@
 /* Merge matrix parse deltas (results-*.json) into the lineup stores:
  * lineups-status.json, data/lineups/ shards, lineups-index.json. */
 import { readFileSync, writeFileSync, mkdirSync, readdirSync } from "node:fs";
+import { indexFlags } from "./lib-4i.mjs";
 
 const SHARDS = 64;
 const shardOf = (ack) => {
@@ -39,10 +40,7 @@ writeFileSync("lineups-status.json", JSON.stringify(status));
 const index = {};
 for (let i = 0; i < SHARDS; i++) {
   writeFileSync(shardName(i), JSON.stringify(buckets[i]));
-  for (const [ack, e] of Object.entries(buckets[i])) {
-    const hasLineup = e.confident && e.funds && e.funds.length ? 1 : 0;
-    index[ack] = hasLineup | (hasLineup && e.sdba ? 2 : 0) | (e.features ? 4 : 0);
-  }
+  for (const [ack, e] of Object.entries(buckets[i])) index[ack] = indexFlags(e);
 }
 writeFileSync("lineups-index.json", JSON.stringify({ generated: new Date().toISOString(), shards: SHARDS, plans: index }));
 
