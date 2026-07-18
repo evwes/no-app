@@ -4,10 +4,19 @@ on:
   workflow_dispatch:
   schedule:
     # weekly refresh: new EFAST2 filings, plan-year rollovers, new lineups
+    # (scheduled runs execute on the default branch only)
     - cron: "0 6 * * 1"
   push:
-    branches: ["main", "claude/wampo-401k-live-nx1t4o"]
+    # main is a force-mirror of the dev branch, so a main push trigger would
+    # run the identical parse twice — dev-branch runs are the only push runs
+    branches: ["claude/wampo-401k-live-nx1t4o"]
     paths: ["scripts/build-data.mjs", "scripts/fetch-4i.mjs", "scripts/lib-4i.mjs", "scripts/merge-4i.mjs", "scripts/.kick", ".github/workflows/build-data.yml"]
+
+# a newer push supersedes an in-flight parse of the same ref: the work list is
+# recomputed from parser versions anyway, so cancel instead of double-parsing
+concurrency:
+  group: build-data-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: write

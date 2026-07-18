@@ -82,7 +82,14 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   filings incrementally at the current version.
 - Data-bot commits rebase before push; when force-moving branches, mirror
   `claude/wampo-401k-live-nx1t4o` → `main` (`git push --force-with-lease=main
-  origin claude/wampo-401k-live-nx1t4o:main`). History was squashed once to
+  origin claude/wampo-401k-live-nx1t4o:main`). CAUTION: the weekly cron runs
+  on the DEFAULT branch only and commits data to main directly — before any
+  mirror, `git fetch origin main` and check `git log origin/main --not
+  origin/claude/...` for data-bot commits; rebase them into the branch first
+  or the mirror discards a week of fresh filings. Push triggers fire on the
+  dev branch only (main would double-run the identical parse); concurrency
+  cancels an in-flight run when a newer push supersedes it — never push to
+  scripts/** or the workflow file while a run you want to keep is in flight. History was squashed once to
   drop >100MB blobs; don't reintroduce giant files.
 
 ## Testing pattern
