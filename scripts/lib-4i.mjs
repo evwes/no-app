@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 8;
+export const PARSER_VERSION = 9;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b/i, "SDBA"],
@@ -78,6 +78,7 @@ export function parseRows(section, opts = {}) {
   const rows = [];
   let sdba = false;
   let nameBuf = [];
+  let curSection = "";
   const valueRe = /\$?\s*([0-9][0-9,]{2,})\s*$/;
 
   for (const raw of section) {
@@ -95,15 +96,15 @@ export function parseRows(section, opts = {}) {
       }
     }
     if (SKIP_ROW.test(t) || DATE_LINE.test(t)) { nameBuf = []; continue; }
-    if (/:\s*$/.test(t)) { nameBuf = []; continue; } // section subheading
+    if (/:\s*$/.test(t)) { curSection = t.replace(/:\s*$/, ""); nameBuf = []; continue; } // section subheading
 
     const vm = t.match(valueRe);
     if (!vm) {
       // short ALL-CAPS lines and bare type phrases ("MUTUAL FUNDS",
       // "Publicly-traded Common Stock") are section headers, not wrapped
       // fund names — don't glue them onto the next row
-      if (/^[A-Z][A-Z\s/&,-]*$/.test(t) && t.split(/\s+/).length <= 4) { nameBuf = []; continue; }
-      if (t.split(/\s+/).length <= 5 && classify(t) && typeOnly(t)) { nameBuf = []; continue; }
+      if (/^[A-Z][A-Z\s/&,-]*$/.test(t) && t.split(/\s+/).length <= 4) { curSection = t; nameBuf = []; continue; }
+      if (t.split(/\s+/).length <= 5 && classify(t) && typeOnly(t)) { curSection = t; nameBuf = []; continue; }
       if (t.length < 90 && !/^\d+$/.test(t)) nameBuf.push(t);
       if (nameBuf.length > 3) nameBuf = nameBuf.slice(-3);
       continue;
@@ -153,7 +154,7 @@ export function parseRows(section, opts = {}) {
     // the component rows above them
     if (/\btotal\s*$/i.test(name)) { nameBuf = []; continue; }
     name = name.replace(/\s*\*+\s*$/, ""); // trailing footnote markers
-    rows.push({ name: name.slice(0, 90), type, value });
+    rows.push({ name: name.slice(0, 90), type, value, sec: curSection });
   }
 
   const seen = new Map();
@@ -174,7 +175,7 @@ export function parseRows(section, opts = {}) {
  * TOC, statement pages, the real 4i table). Parse every candidate region and
  * keep the one whose total best matches the plan's Schedule H assets, testing
  * both as-filed dollars and (thousands) scaling. */
-export function parse4i(text, assetsEOY, sponsorName = "") {
+export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
   const lines = text.split("\n");
   const headRe = /(schedule\s+h.{0,40}line\s*4i|schedule\s+of\s+assets\s*\(held|schedule\s+of\s+assets\s+held)/i;
   const endRe = /(line\s*4j|acquired\s+and\s+disposed|signature of)/i;
@@ -241,19 +242,41 @@ export function parse4i(text, assetsEOY, sponsorName = "") {
   // Some filings itemize every security inside a separately managed account
   // or stock window. Those aren't investment choices — roll them into one
   // line. The sponsor's own stock IS a menu option and stays separate.
-  const spTokens = sponsorName.toLowerCase().split(/[^a-z0-9]+/).filter((w) => w.length > 2).slice(0, 3);
+  const GENERIC = new Set(["inc", "incorporated", "corp", "corporation", "company", "companies", "llc", "llp", "ltd", "group", "holdings", "holding", "the", "and", "trust", "master", "savings", "plan", "plans", "usa"]);
+  const spTokens = sponsorName.toLowerCase().split(/[^a-z0-9]+/).filter((w) => w.length > 2 && !GENERIC.has(w)).slice(0, 3);
   const isEmployer = (n) => spTokens.some((tok) => n.toLowerCase().includes(tok));
   const itemized = funds.filter((f) => (f.type === "Stock" || f.type === "Company stock") && !isEmployer(f.name));
-  let sma = null;
+  let sma = null, smaKind = null, sdbaOut = best.sdba;
   if (itemized.length >= 3) {
-    const sum = itemized.reduce((a, f) => a + f.value, 0);
+    // Are these the innards of a managed account (a single menu option) or
+    // participants' own brokerage picks? Section headers say; failing that,
+    // a plan with the 2R brokerage code and NO aggregate brokerage line is
+    // reporting brokerage assets individually (allowed by the instructions).
+    const brokRe = /brokerage|self.?directed|sdba|pcra/i;
+    const brokRows = itemized.filter((f) => brokRe.test(f.sec || ""));
+    const mgdRows = itemized.filter((f) => !brokRe.test(f.sec || ""));
+    const hasAggSdba = funds.some((f) => f.type === "Brokerage window");
+    const noSectionInfo = brokRows.length === 0 && !itemized.some((f) => brokRe.test(f.sec || ""));
+    const treatAllAsBrok = noSectionInfo && !hasAggSdba && /2R/.test(codes);
     const keep = funds.filter((f) => !itemized.includes(f));
-    keep.push({ name: `Individually listed securities (${itemized.length} positions)`, type: "Managed account holdings", value: sum });
+    const buckets = [];
+    if (treatAllAsBrok) buckets.push(["Participant brokerage holdings", "Brokerage window", itemized]);
+    else {
+      if (brokRows.length) buckets.push(["Participant brokerage holdings", "Brokerage window", brokRows]);
+      if (mgdRows.length) buckets.push(["Managed account holdings", "Managed account", mgdRows]);
+    }
+    for (const [label, type, list] of buckets) {
+      keep.push({ name: `${label} (${list.length} positions)`, type, value: list.reduce((a, f) => a + f.value, 0) });
+      if (type === "Brokerage window") sdbaOut = true;
+    }
     funds = keep.sort((a, b) => b.value - a.value);
-    sma = itemized.slice(0, 150); // keep the detail for the securities tab
+    sma = itemized.slice(0, 150).map((f) => ({ name: f.name, type: f.type, value: f.value }));
+    smaKind = treatAllAsBrok || (brokRows.length && !mgdRows.length) ? "brokerage"
+      : brokRows.length ? "mixed" : "managed";
   }
+  for (const f of funds) delete f.sec;
 
-  return { found: true, thousands: best.scale === 1000, sdba: best.sdba, funds, ratio: best.ratio, ...(sma ? { sma } : {}) };
+  return { found: true, thousands: best.scale === 1000, sdba: sdbaOut, funds, ratio: best.ratio, ...(sma ? { sma, smaKind } : {}) };
 }
 
 /* ---- plan-feature extraction from the filing's audit notes ---------------- */

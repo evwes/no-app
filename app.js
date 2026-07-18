@@ -550,13 +550,20 @@
         <td class="num">${total ? ((f.value / total) * 100).toFixed(1) + "%" : "—"}</td>
       </tr>`;
     }).join("");
+    const smaTitle = lu.smaKind === "brokerage" ? "Brokerage window holdings"
+      : lu.smaKind === "mixed" ? "Brokerage & managed-account holdings"
+      : lu.smaKind === "managed" ? "Managed-account holdings" : "Individually held securities";
     const tabs = hasSma ? `
     <div class="lineup-tabs">
       <button class="lineup-tab ${tab === "menu" ? "tab-on" : ""}" data-tab="menu">Plan menu (${lu.funds.length})</button>
-      <button class="lineup-tab ${tab === "sma" ? "tab-on" : ""}" data-tab="sma">Individually held securities (${lu.sma.length})</button>
+      <button class="lineup-tab ${tab === "sma" ? "tab-on" : ""}" data-tab="sma">${smaTitle} (${lu.sma.length})</button>
     </div>` : "";
     const sub = tab === "sma"
-      ? "Securities itemized in the filing — managed-account or participant-brokerage assets, not separate menu choices"
+      ? (lu.smaKind === "brokerage"
+        ? "Securities participants hold through the plan's self-directed brokerage window, reported individually in the filing"
+        : lu.smaKind === "managed"
+          ? "Securities held inside separately managed accounts — each account is a single menu choice for participants"
+          : "Securities itemized in the filing — managed-account or participant-brokerage assets, not separate menu choices")
       : `${esc(lu.source)} · values as filed · expense ratios are estimates from public fund data`;
     return `
     <div class="section-label">FUND HOLDINGS — ${tab === "sma" ? lu.sma.length + " SECURITIES" : lu.funds.length + " FILED"}

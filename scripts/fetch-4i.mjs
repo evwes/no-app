@@ -55,6 +55,7 @@ function buildWorkList() {
         planYear: row[i.planYear],
         assetsEOY: row[i.assetsEOY] || 0,
         label: row[i.sponsorName],
+        codes: i.codes != null ? row[i.codes] || "" : "",
       });
     }
   } catch (e) {
@@ -168,7 +169,7 @@ for (const plan of work) {
   // audit notes and exist even when the 4i table can't be parsed
   const features = extractPlanFeatures(text);
 
-  const parsed = parse4i(text, plan.assetsEOY, plan.label || "");
+  const parsed = parse4i(text, plan.assetsEOY, plan.label || "", plan.codes || "");
   if (!parsed.found) {
     summary.push(`${tag}: no 4i section found`);
     record(plan, { confident: false, error: "no-section", funds: [] }, features);
@@ -186,6 +187,7 @@ for (const plan of work) {
     coverageRatio: +ratio.toFixed(2),
     funds: parsed.funds,
     sma: parsed.sma,
+    smaKind: parsed.smaKind,
     source: `Schedule H line 4i attachment, plan year ${plan.planYear} filing`,
   }, features);
   summary.push(`${tag}: ${parsed.funds.length} rows, cov ${(ratio * 100).toFixed(0)}%, sdba=${parsed.sdba}, ok=${confident}`);
