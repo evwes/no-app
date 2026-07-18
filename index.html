@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,400&family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=20260718c">
+<link rel="stylesheet" href="styles.css?v=20260718d">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔎</text></svg>">
 </head>
 <body>
@@ -41,6 +41,11 @@
         <input id="search" class="search" placeholder="Search company" autocomplete="off" aria-label="Search companies">
       </div>
       <div class="toolbar-divider" aria-hidden="true"></div>
+      <select id="typeFilter" class="pill-select" aria-label="Filter by plan type">
+        <option value="">Plan type</option>
+        <option value="401(k)">401(k)</option>
+        <option value="403(b)">403(b)</option>
+      </select>
       <select id="industryFilter" class="pill-select" aria-label="Filter by industry"><option value="">Industry</option></select>
       <select id="providerFilter" class="pill-select" aria-label="Filter by recordkeeper"><option value="">Recordkeeper</option></select>
       <div class="toolbar-divider" aria-hidden="true"></div>
@@ -106,8 +111,8 @@
 
 <!-- ?v= keys assets to this HTML revision so a cached page can never mix
      old and new scripts — bump the stamp on every frontend change -->
-<script src="data.js?v=20260718c"></script>
-<script src="fund-er.js?v=20260718c"></script>
-<script src="app.js?v=20260718c"></script>
+<script src="data.js?v=20260718d"></script>
+<script src="fund-er.js?v=20260718d"></script>
+<script src="app.js?v=20260718d"></script>
 </body>
 </html>

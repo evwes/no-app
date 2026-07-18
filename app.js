@@ -16,6 +16,7 @@
     filters: { brokerage: false, megaBackdoor: false, immediateVesting: false },
     provider: "",
     industry: "",
+    planType: "",
     tableSort: { key: "assets", dir: -1 },
     expanded: new Set(),
     lineupTab: {},
@@ -304,6 +305,7 @@
     if (f.immediateVesting && plan.vesting !== "Immediate") return false;
     if (state.provider && plan.provider !== state.provider) return false;
     if (state.industry && plan.industry !== state.industry) return false;
+    if (state.planType && !(plan.planTypes || []).includes(state.planType)) return false;
     return true;
   }
 
@@ -753,6 +755,7 @@
 
   $("providerFilter").addEventListener("change", (ev) => { state.provider = ev.target.value; state.rowLimit = MAX_ROWS; render(); });
   $("industryFilter").addEventListener("change", (ev) => { state.industry = ev.target.value; state.rowLimit = MAX_ROWS; render(); });
+  $("typeFilter").addEventListener("change", (ev) => { state.planType = ev.target.value; state.rowLimit = MAX_ROWS; render(); });
 
   $("showMore").addEventListener("click", () => {
     state.rowLimit = (state.rowLimit || MAX_ROWS) + 500;
