@@ -822,5 +822,23 @@
       const tr = document.querySelector(".plan-tr.open") || document.querySelector(".detail-tr");
       if (tr) tr.scrollIntoView({ block: "start" });
     }
+    // #plan= links must also work while the app is already open (shared links,
+    // back/forward). replaceState doesn't fire hashchange, so no loop with the
+    // hash bookkeeping done on manual expand/collapse.
+    window.addEventListener("hashchange", () => {
+      const hm = location.hash.match(/^#plan=(.+)$/);
+      if (!hm) return;
+      const id = decodeURIComponent(hm[1]);
+      const plan = state.plans.find((p) => p.id === id);
+      if (!plan) return;
+      state.query = plan.company || "";
+      $("search").value = state.query;
+      state.expanded.clear();
+      state.expanded.add(id);
+      ensureLineup(plan);
+      render();
+      const tr = document.querySelector(".plan-tr.open") || document.querySelector(".detail-tr");
+      if (tr) tr.scrollIntoView({ block: "start" });
+    });
   });
 })();
