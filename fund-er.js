@@ -27,8 +27,9 @@ const FUND_ER = [
   [/fidelity managed income/i, 0.4],
   [/fidelity government cash reserves|fidelity treasury/i, 0.25],
   // --- Vanguard ---
-  [/vanguard target retirement.*trust/i, 0.045],
-  [/vanguard target retirement/i, 0.08],
+  [/vanguard target retire(ment)?.*trust/i, 0.045],
+  [/vanguard target retire(ment)?/i, 0.08],
+  [/metwest total return/i, 0.45],
   [/vanguard (500|institutional) index/i, 0.02],
   [/vanguard russell \d+ .*(index|trust)/i, 0.05],
   [/vanguard total (stock|bond|international)/i, 0.04],
@@ -47,7 +48,7 @@ const FUND_ER = [
   [/blackrock total return/i, 0.4],
   // --- State Street / SSGA / Northern Trust / Geode ---
   [/(ssga|ssg?a|state street).*(s&p 500|500 index|equity index)/i, 0.02],
-  [/(ssga|state street).*target (retirement|date)/i, 0.09],
+  [/(ssga|state st(reet)?).*target (retire(ment)?|date)/i, 0.09],
   [/(ssga|state street).*(bond|aggregate).*index/i, 0.04],
   [/(ssga|state street).*index/i, 0.05],
   [/(northern trust|nt |ntgi).*index/i, 0.05],

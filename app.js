@@ -18,7 +18,6 @@
     industry: "",
     tableSort: { key: "assets", dir: -1 },
     expanded: new Set(),
-    fundSort: {},
     lineupTab: {},
     plans: [],
   };
@@ -132,7 +131,6 @@
       highlights: c.highlights || [],
       funds: c.funds || null,
       fundsSource: c.fundsSource || null,
-      avgER: c.funds ? +(c.funds.reduce((s, f) => s + f.er, 0) / c.funds.length).toFixed(2) : null,
       notes: c.notes || "",
       dataStatus: "filed",
       source: filed.source,
@@ -472,22 +470,6 @@
     return rows.map(([k, v]) => `<div class="flow-row"><span>${k}</span><span>${v}</span></div>`).join("");
   }
 
-  const FUND_COLS = [
-    ["er", "Expense Ratio"], ["ytd", "YTD"], ["r6m", "6M Return"], ["r1y", "1Y Return"],
-    ["r3y", "3Y Return"], ["r5y", "5Y Return"], ["r10y", "10Y Return"],
-    ["a1", "Alpha (1Y)"], ["a5", "Alpha (5Y)"], ["beta", "Beta"],
-  ];
-
-  function erChip(er) {
-    const cls = er < 0.10 ? "er-low" : er < 0.60 ? "er-mid" : "er-high";
-    return `<span class="er-chip ${cls}">${er.toFixed(3)}%</span>`;
-  }
-
-  function retCell(v) {
-    const cls = v >= 0 ? "ret-up" : "ret-down";
-    return `<span class="${cls}">${v >= 0 ? "↑" : "↓"} ${v >= 0 ? "+" : "−"}${Math.abs(v).toFixed(1)}%</span>`;
-  }
-
   /* Order a lineup so target-date families appear as one block in year order
    * (2015, 2020, ...) instead of scattered by value. A family = 3+ funds whose
    * names differ only by a 4-digit year; the block sits where its largest
@@ -531,6 +513,19 @@
     }
     if (!total || matchedVal / total < 0.5) return null;
     return { er: weighted / matchedVal, matched, of: lu.funds.length };
+  }
+
+  /* Equal-weight estimate for community-sourced menus (no filed values to
+   * weight by); null until patterns cover at least half the menu. */
+  function curatedAvgER(plan) {
+    if (!plan.funds || !plan.funds.length) return null;
+    let sum = 0, matched = 0;
+    for (const f of plan.funds) {
+      const er = fundER(f.name);
+      if (er != null) { sum += er; matched++; }
+    }
+    if (!matched || matched / plan.funds.length < 0.5) return null;
+    return { er: sum / matched, matched, of: plan.funds.length };
   }
 
   function filedLineupTable(plan) {
@@ -590,34 +585,28 @@
       <p class="max-benefit">Fund lineup not parsed from this filing yet (some plans hold assets in a master
       trust and don't itemize funds). <a href="https://github.com/evwes/no-app/issues">Contribute it</a>.</p>`;
     }
-    const sort = state.fundSort[plan.id || plan.ticker];
-    const funds = sort ? [...plan.funds] : orderLineup(plan.funds.map((f) => ({ ...f, value: f.value ?? 0 })));
-    if (sort) funds.sort((a, b) => (a[sort.key] - b[sort.key]) * sort.dir);
-
-    const head = `<th class="fund-name-col">Fund Name</th>` + FUND_COLS.map(([k, label]) => {
-      const mark = sort && sort.key === k ? (sort.dir > 0 ? " ▲" : " ▼") : " ⇅";
-      return `<th><button class="th-sort" data-key="${k}">${label}<span class="sort-mark">${mark}</span></button></th>`;
-    }).join("");
-
-    const body = funds.map((f) => `
+    // community-sourced fund menu: names and tickers only — returns aren't in
+    // filings, so none are shown; ERs are pattern-based estimates like the
+    // filed table's
+    const funds = orderLineup(plan.funds.map((f) => ({ ...f, value: f.value ?? 0 })));
+    const body = funds.map((f) => {
+      const er = fundER(f.name);
+      return `
       <tr>
         <td class="fund-name-col">
           <div class="fund-name">${esc(f.name)}</div>
-          ${f.estVia ? `<span class="est-chip">est. via ${esc(f.estVia)}</span>` : ""}
           <div class="fund-ticker">${esc(f.ticker)}</div>
         </td>
-        <td>${erChip(f.er)}</td>
-        <td>${retCell(f.ytd)}</td><td>${retCell(f.r6m)}</td><td>${retCell(f.r1y)}</td>
-        <td>${retCell(f.r3y)}</td><td>${retCell(f.r5y)}</td><td>${retCell(f.r10y)}</td>
-        <td class="num">${f.a1.toFixed(2)}</td><td class="num">${f.a5.toFixed(2)}</td><td class="num">${f.beta.toFixed(2)}</td>
-      </tr>`).join("");
+        <td class="num">${er != null ? er.toFixed(er < 0.1 ? 3 : 2) + "%" : "—"}</td>
+      </tr>`;
+    }).join("");
 
     return `
     <div class="section-label">FUND HOLDINGS — ${plan.funds.length} OPTIONS
-      <span class="section-sub">${plan.fundsSource ? esc(plan.fundsSource) : "Representative lineup (community-sourced)"} · Click a column to sort</span></div>
+      <span class="section-sub">${plan.fundsSource ? esc(plan.fundsSource) : "Representative fund menu (community-sourced fund names)"} · performance is not reported in filings · expense ratios are estimates from public fund data</span></div>
     <div class="fund-scroll">
       <table class="fund-table">
-        <thead><tr>${head}</tr></thead>
+        <thead><tr><th class="fund-name-col">Fund Name</th><th>Est. ER</th></tr></thead>
         <tbody>${body}</tbody>
       </table>
     </div>`;
@@ -656,9 +645,10 @@
         <div class="stat"><p class="stat-label">Plan assets</p><p class="stat-value stat-accent">${plan.assetsB != null ? money(plan.assetsB * 1000) : "—"}</p><p class="stat-sub">${yoy || "&nbsp;"}</p></div>
         <div class="stat"><p class="stat-label">Participants</p><p class="stat-value">${plan.participants ? fmtInt.format(plan.participants) : "—"}</p><p class="stat-sub">${plan.activeParticipants ? fmtInt.format(plan.activeParticipants) + " active" : "&nbsp;"}</p></div>
         <div class="stat"><p class="stat-label">Avg expense ratio</p>${(() => {
-          if (plan.avgER != null) return `<p class="stat-value">${plan.avgER.toFixed(2)}%</p><p class="stat-sub">${plan.funds ? plan.funds.length + " fund options" : ""}</p>`;
           const fe = filedAvgER(plan);
           if (fe) return `<p class="stat-value">${fe.er.toFixed(2)}% <span class="est-chip">est.</span></p><p class="stat-sub">weighted, ${fe.matched} of ${fe.of} holdings</p>`;
+          const ce = curatedAvgER(plan);
+          if (ce) return `<p class="stat-value">${ce.er.toFixed(2)}% <span class="est-chip">est.</span></p><p class="stat-sub">${ce.matched} of ${ce.of} menu funds</p>`;
           return `<p class="stat-value">—</p><p class="stat-sub">${plan.filedLineup ? plan.filedLineup.funds.length + " filed holdings" : plan.funds ? plan.funds.length + " fund options" : "lineup not added"}</p>`;
         })()}</div>
         <div class="stat"><p class="stat-label">Recordkeeper</p><p class="stat-value stat-small">${esc(plan.provider || "—")}</p><p class="stat-sub">${esc(plan.filed || "")}</p></div>
@@ -782,19 +772,6 @@
       const prev = tr && tr.previousElementSibling;
       const id = prev ? prev.dataset.id : null;
       if (id) { state.lineupTab[id] = tabBtn.dataset.tab; render(); }
-      return;
-    }
-    const sortBtn = ev.target.closest(".th-sort");
-    if (sortBtn) {
-      const tr = sortBtn.closest(".detail-tr");
-      const prev = tr && tr.previousElementSibling;
-      const id = prev ? prev.dataset.id : null;
-      if (id) {
-        const key = sortBtn.dataset.key;
-        const cur = state.fundSort[id];
-        state.fundSort[id] = cur && cur.key === key ? { key, dir: -cur.dir } : { key, dir: -1 };
-        render();
-      }
       return;
     }
     if (ev.target.closest("a") || ev.target.closest(".detail-tr")) return;

@@ -14,57 +14,17 @@ function jit(base, key, spread) {
   return base + (hashStr(key) - 0.5) * 2 * spread;
 }
 
-/* ---- fund library -------------------------------------------------------
- * Asset-class base stats: [ytd, 6m, 1y, 3y, 5y, 10y, alpha1, alpha5, beta]
- */
-const CLASS_STATS = {
-  usLarge:  [5.2, 8.4, 15.8, 9.2, 12.1, 11.8, 0.01, 0.02, 1.00],
-  usGrowth: [7.2, 11.8, 24.1, 9.8, 14.2, 13.8, 0.48, 0.62, 1.12],
-  usValue:  [4.8, 7.1, 13.5, 7.8, 10.2, 9.8, 0.18, 0.25, 1.05],
-  usMid:    [4.1, 6.5, 12.8, 6.4, 9.8, 9.2, 0.01, 0.02, 1.03],
-  usSmall:  [3.4, 5.4, 11.2, 4.8, 8.4, 8.1, 0.01, 0.01, 1.05],
-  smValue:  [3.5, 5.2, 10.2, 5.5, 8.8, 8.5, 0.24, 0.35, 1.18],
-  intl:     [2.8, 4.4, 8.9, 3.1, 5.8, 5.2, 0.02, 0.04, 0.98],
-  emerging: [3.1, 5.8, 10.2, 4.5, 7.8, 6.5, 0.22, 0.31, 1.02],
-  bond:     [1.2, 1.9, 3.8, 0.9, 2.4, 2.9, 0.12, 0.16, 0.88],
-  intlBond: [1.4, 2.2, 4.1, 1.2, 2.1, 2.6, 0.02, 0.03, 0.52],
-  tips:     [1.1, 2.0, 4.2, 1.1, 2.8, 2.4, 0.00, 0.01, 0.45],
-  highYield:[2.9, 4.5, 8.1, 3.4, 5.6, 5.1, 0.15, 0.20, 0.62],
-  stable:   [2.2, 2.6, 5.2, 3.8, 2.9, 2.1, 0.00, 0.00, 0.00],
-  realEst:  [1.8, 3.1, 6.2, 2.8, 4.5, 5.2, 0.08, 0.12, 1.08],
-};
-
+/* Fund entries carry only the verifiable facts: name and ticker. Performance
+ * and pricing are never displayed from this file — returns aren't in filings,
+ * and expense ratios shown in the app are pattern-based estimates
+ * (fund-er.js) labeled as such. The cls/er/estVia args remain in call sites
+ * as documentation but are intentionally unused. */
 function makeFund(name, ticker, cls, er, estVia) {
-  const b = CLASS_STATS[cls];
-  const j = (i, s) => +jit(b[i], ticker + i, s).toFixed(1);
-  return {
-    name, ticker, er, estVia: estVia || null,
-    ytd: j(0, 0.5), r6m: j(1, 0.8), r1y: j(2, 1.2), r3y: j(3, 0.8),
-    r5y: j(4, 0.8), r10y: j(5, 0.8),
-    a1: +jit(b[6], ticker + "a", 0.05).toFixed(2),
-    a5: +jit(b[7], ticker + "b", 0.06).toFixed(2),
-    beta: +jit(b[8], ticker + "c", 0.04).toFixed(2),
-  };
+  return { name, ticker };
 }
 
-/* Target-date series: risk glides from bond-heavy to equity-heavy. */
-function tdStats(year) {
-  const t = Math.min(Math.max((year - 2015) / 45, 0), 1); // 0 → 1
-  const lerp = (a, b) => a + (b - a) * t;
-  return [
-    lerp(1.4, 4.2), lerp(2.4, 7.0), lerp(6.5, 13.0), lerp(1.2, 5.6),
-    lerp(4.8, 9.0), lerp(5.8, 8.3), lerp(-0.06, 0.09), lerp(-0.09, 0.14), lerp(0.60, 0.93),
-  ];
-}
 function makeTdFund(family, year, ticker, er, estVia) {
-  const b = tdStats(year);
-  const j = (i, s) => +jit(b[i], ticker + i, s).toFixed(1);
-  return {
-    name: `${family} ${year} CP D`, ticker, er, estVia: estVia || null,
-    ytd: j(0, 0.3), r6m: j(1, 0.4), r1y: j(2, 0.6), r3y: j(3, 0.4),
-    r5y: j(4, 0.4), r10y: j(5, 0.4),
-    a1: +b[6].toFixed(2), a5: +b[7].toFixed(2), beta: +b[8].toFixed(2),
-  };
+  return { name: `${family} ${year} CP D`, ticker };
 }
 
 const TD_TICKERS = {
@@ -148,19 +108,10 @@ function lineupFor(provider) {
 
 /* ---- filed lineups -------------------------------------------------------
  * Fund names transcribed from the plan's own Form 5500 "Schedule H, line 4i —
- * Schedule of Assets" attachment. Collective trusts have no public ticker, so
- * expense ratios and returns are ESTIMATED via a comparable retail fund
- * (the estVia chip), same convention as the header comment above.
+ * Schedule of Assets" attachment. Names only — no performance or pricing.
  */
 function makeTdTrust(name, year, estVia) {
-  const b = tdStats(year);
-  const j = (i, s) => +jit(b[i], name + i, s).toFixed(1);
-  return {
-    name, ticker: "", er: 0.045, estVia,
-    ytd: j(0, 0.3), r6m: j(1, 0.4), r1y: j(2, 0.6), r3y: j(3, 0.4),
-    r5y: j(4, 0.4), r10y: j(5, 0.4),
-    a1: +b[6].toFixed(2), a5: +b[7].toFixed(2), beta: +b[8].toFixed(2),
-  };
+  return { name, ticker: "" };
 }
 
 const PFE_FUNDS = [
@@ -537,7 +488,7 @@ const PLANS = [
     company: "Pfizer", ticker: "PFE", provider: "Fidelity",
     brokerage: "Self-directed brokerage",
     funds: PFE_FUNDS,
-    fundsSource: "From the plan's filed Schedule H line 4i (2024). Fund names and the self-directed brokerage account are filed facts; expense ratios and returns are estimates via the comparable retail fund shown",
+    fundsSource: "From the plan's filed Schedule H line 4i (2024). Fund names and the self-directed brokerage account are filed facts",
   },
 ];
 
@@ -547,7 +498,6 @@ for (const p of PLANS) {
   p.ein = `${String(Math.floor(h("e1", 10, 99))).padStart(2, "0")}-${String(Math.floor(h("e2", 1000000, 9999999)))}`;
   p.activeParticipants = Math.round(p.participants * p.activePct);
   if (!p.funds) p.funds = lineupFor(p.provider);
-  p.avgER = +(p.funds.reduce((s, f) => s + f.er, 0) / p.funds.length).toFixed(2);
   const assetsM = p.assetsB * 1000;
   p.flows = {
     deferralsM: +(assetsM * h("d", 0.05, 0.07)).toFixed(1),

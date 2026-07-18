@@ -9,8 +9,13 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
 ## Architecture
 
 - **Frontend**: `index.html` + `app.js` + `styles.css` + `data.js` (curated
-  overlay) + `fund-er.js` (estimated expense-ratio pattern table). Vanilla JS,
-  no build step. Pages should serve `main`.
+  overlay — fund NAMES/TICKERS + community-sourced features only; synthetic
+  returns/ERs were stripped 2026-07-18, never reintroduce fabricated numbers)
+  + `fund-er.js` (estimated expense-ratio pattern table — the only ER source,
+  always labeled "est."). Vanilla JS, no build step. Pages should serve
+  `main`. The expanded report renders inside a `.detail-clamp` div
+  (width:0/min-width:100%) so it can't widen the plans table — wide content
+  must wrap or scroll internally.
 - **Data pipeline** (`.github/workflows/build-data.yml`): 3-stage matrix —
   `prep` (build-data.mjs: download EFAST2 datasets, write plans-all.json +
   mtias.json, compute shard count) → `parse` (up to 12 parallel jobs,
