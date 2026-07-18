@@ -709,7 +709,7 @@
       <td class="right mono">${plan.avgBal != null ? money(plan.avgBal / 1e6) : "—"}</td>
       <td class="right mono">${plan.avgContrib != null ? money(plan.avgContrib / 1e6) : "—"}</td>
     </tr>
-    ${open ? `<tr class="detail-tr"><td colspan="6">${report(plan)}</td></tr>` : ""}`;
+    ${open ? `<tr class="detail-tr"><td colspan="6"><div class="detail-clamp">${report(plan)}</div></td></tr>` : ""}`;
   }
 
   function renderHero() {

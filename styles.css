@@ -421,3 +421,18 @@ main { max-width: 1060px; margin: 0 auto; padding: 0 20px 48px; }
    the Plan Features blurbs at some viewport widths */
 .two-col > * { min-width: 0; }
 .feat-blurb, .quote, .max-benefit { overflow-wrap: break-word; }
+
+/* The expanded report lives in a td of the plans table. Without this clamp,
+   wide report content inflates the table's min-content width past the card,
+   and .table-section{overflow:hidden} clips it — no scrollbar, the right
+   side just vanishes (font-metric dependent, so it only bites on some
+   machines). width:0 makes the cell contribute nothing to table sizing;
+   min-width:100% re-fills the available row width. Wide innards must wrap
+   (quotes, stats) or scroll in their own wrapper (.fund-scroll). */
+.detail-clamp { width: 0; min-width: 100%; }
+.stat { min-width: 0; }
+.stat-value, .stat-sub, .feat-row { overflow-wrap: break-word; }
+/* long feature values (eligibility sentences, brokerage brands) wrap inside
+   the row instead of forcing it wide; the label keeps its width */
+.feat-row > span:first-child { flex: none; }
+.feat-row > span:last-child { min-width: 0; text-align: right; overflow-wrap: break-word; }
