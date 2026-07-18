@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 10;
+export const PARSER_VERSION = 11;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b/i, "SDBA"],
@@ -204,6 +204,12 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
   const lines = text.split("\n");
   const headRe = /(schedule\s+h.{0,40}line\s*4i|schedule\s+of\s+assets\s*\(held|schedule\s+of\s+assets\s+held)/i;
   const endRe = /(line\s*4j|acquired\s+and\s+disposed|signature of)/i;
+  // an SMA's attached security-level statement follows the 4i table and its
+  // headers/totals leak junk rows — a standalone statement heading ends the
+  // region. Anchored to the whole trimmed line so the in-table reference
+  // "(see attached Portfolio Statement)" doesn't truncate the real table.
+  const stopRe = /^portfolio (valuation|statement)s?$|^(schedule|statement) of (portfolio )?investments?$/i;
+  const atStop = (line) => stopRe.test(line.trim());
 
   const starts = [];
   for (let i = 0; i < lines.length; i++) if (headRe.test(lines[i])) starts.push(i);
@@ -214,7 +220,7 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
   for (let s = 0; s < starts.length; s++) {
     let end = s + 1 < starts.length ? starts[s + 1] : Math.min(lines.length, starts[s] + 4000);
     for (let i = starts[s] + 3; i < end; i++) {
-      if (endRe.test(lines[i])) { end = i; break; }
+      if (endRe.test(lines[i]) || atStop(lines[i])) { end = i; break; }
     }
     candidates.push([starts[s], end]);
   }
@@ -232,7 +238,7 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
     const nxt = starts.find((x) => x > lastStart);
     if (nxt) end = Math.min(end, nxt);
     for (let i = lastStart + 3; i < end; i++) {
-      if (endRe.test(lines[i])) { end = i; break; }
+      if (endRe.test(lines[i]) || atStop(lines[i])) { end = i; break; }
     }
     candidates.push([cl[0], end]);
   }
