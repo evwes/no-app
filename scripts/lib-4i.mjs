@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 9;
+export const PARSER_VERSION = 10;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b/i, "SDBA"],
@@ -18,7 +18,7 @@ const TYPE_PATTERNS = [
   [/government securit|u\.?s\.? treasur/i, "Government securities"],
   [/corporate debt|corporate bond/i, "Corporate debt"],
   [/guaranteed investment|synthetic|wrapper/i, "Stable value / GIC"],
-  [/separate account/i, "Separate account"],
+  [/separately managed|separate account/i, "Separate account"],
 ];
 
 export function classify(text) {
@@ -70,7 +70,7 @@ function cleanDesc(desc) {
 function typeOnly(desc) {
   let r = desc;
   for (const [re] of TYPE_PATTERNS) r = r.replace(re, " ");
-  r = r.replace(/\b(value of|interest in|the|a|an|of|in|at|held|funds?|accounts?|companies|company|end of year|publicly[- ]traded|common)\b/gi, " ");
+  r = r.replace(/\b(value of|interest in|the|a|an|of|in|at|held|funds?|accounts?|companies|company|end of year|publicly[- ]traded|common|trusts?|securit(y|ies)|contracts?|investments?)\b/gi, " ");
   return r.replace(/[^a-z0-9]/gi, "").length < 6;
 }
 
@@ -79,6 +79,9 @@ export function parseRows(section, opts = {}) {
   let sdba = false;
   let nameBuf = [];
   let curSection = "";
+  // a valueless "Total ..." line means the subtotal WRAPPED: its value arrives
+  // on the next short line ("Total Registered Investment" ↵ "Companies  613,913,288")
+  let totalWrap = false;
   const valueRe = /\$?\s*([0-9][0-9,]{2,})\s*$/;
 
   for (const raw of section) {
@@ -95,10 +98,19 @@ export function parseRows(section, opts = {}) {
         t = sp[1] + "   " + sp[2].replace(/\.\d+$/, "");
       }
     }
-    if (SKIP_ROW.test(t) || DATE_LINE.test(t)) { nameBuf = []; continue; }
-    if (/:\s*$/.test(t)) { curSection = t.replace(/:\s*$/, ""); nameBuf = []; continue; } // section subheading
+    if (SKIP_ROW.test(t) || DATE_LINE.test(t)) {
+      nameBuf = [];
+      totalWrap = /^(sub|grand )?total\b/i.test(t) && !valueRe.test(t);
+      continue;
+    }
+    if (/:\s*$/.test(t)) { curSection = t.replace(/:\s*$/, ""); nameBuf = []; totalWrap = false; continue; } // section subheading
 
     const vm = t.match(valueRe);
+    if (vm && totalWrap && t.slice(0, t.length - vm[0].length).trim().split(/\s+/).length <= 3) {
+      totalWrap = false;
+      continue; // the wrapped subtotal's value line — not a holding
+    }
+    totalWrap = false;
     if (!vm) {
       // short ALL-CAPS lines and bare type phrases ("MUTUAL FUNDS",
       // "Publicly-traded Common Stock") are section headers, not wrapped
@@ -121,6 +133,9 @@ export function parseRows(section, opts = {}) {
     const { nameCol, descCol } = splitNameDesc(body);
     const full = (nameBuf.join(" ") + " " + nameCol).trim();
     nameBuf = [];
+    // wrapped subtotals ("Total Registered Investment" ↵ "Companies  613,913,288")
+    // defeat the line-level ^total filter — catch them once assembled
+    if (/^(sub|grand )?total\b/i.test(full)) continue;
     const type = classify(descCol ? descCol + " " + full : full);
     if (type === "SDBA") { sdba = true; rows.push({ name: "Self-Directed Brokerage Account", type: "Brokerage window", value }); continue; }
     if (type === "Participant loans") continue;
@@ -154,7 +169,17 @@ export function parseRows(section, opts = {}) {
     // the component rows above them
     if (/\btotal\s*$/i.test(name)) { nameBuf = []; continue; }
     name = name.replace(/\s*\*+\s*$/, ""); // trailing footnote markers
-    rows.push({ name: name.slice(0, 90), type, value, sec: curSection });
+    // wrapped lines carry their column gaps into the assembled name
+    name = name.replace(/\s{2,}/g, " ");
+    // rows often carry no type of their own — it lives in the section header
+    // ("Common/Collective Trusts"). SDBA/loans must not inherit: those section
+    // types would wrongly collapse itemized rows.
+    let rowType = type;
+    if (!rowType && curSection) {
+      const secType = classify(curSection);
+      if (secType && secType !== "SDBA" && secType !== "Participant loans") rowType = secType;
+    }
+    rows.push({ name: name.slice(0, 90), type: rowType, value, sec: curSection });
   }
 
   const seen = new Map();
