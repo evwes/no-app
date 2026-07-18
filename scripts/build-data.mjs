@@ -153,7 +153,9 @@ async function scanMainForm(csv, year) {
       continue;
     }
     const code = col.pensionCode !== -1 ? r[col.pensionCode] || "" : "";
-    if (!code.includes("2J")) continue; // 401(k) plans only
+    // 401(k)-type (2J) and ERISA 403(b) plans (2L annuity / 2M custodial) —
+    // both file the same schedules; the codes drive the plan-type badge
+    if (!/2J|2L|2M/.test(code)) continue;
     const participants = +r[col.partTotal] || 0;
     if (participants < MIN_UNIVERSE) continue;
     const sponsorNorm = norm(r[col.sponsor]);
@@ -265,7 +267,7 @@ async function scanSF(csv, year) {
   for await (const r of rows) {
     n++;
     const code = col.pensionCode !== -1 ? r[col.pensionCode] || "" : "";
-    if (!code.includes("2J")) continue;
+    if (!/2J|2L|2M/.test(code)) continue;
     const participants = +r[col.partBOY] || 0;
     if (participants < MIN_UNIVERSE) continue;
     const sponsorNorm = norm(r[col.sponsor]);

@@ -21,7 +21,8 @@ const WORK = process.env.WORK_DIR_4I || "/tmp/f5500-pdfs";
 mkdirSync(WORK, { recursive: true });
 // how many NEW filings to fetch this run (batches accumulate across runs)
 const BATCH = process.env.BATCH_4I ? +process.env.BATCH_4I : 5000;
-const TOP_N = process.env.TOP_4I ? +process.env.TOP_4I : 70000;
+// the >=100-participant floor already bounds the universe; parse everything
+const TOP_N = process.env.TOP_4I ? +process.env.TOP_4I : 999999;
 // matrix mode: this job processes work items where index % PARSE_SHARDS === PARSE_SHARD
 // and writes a results-<shard>.json delta instead of rewriting the stores
 const PARSE_SHARD = process.env.PARSE_SHARD != null ? +process.env.PARSE_SHARD : null;

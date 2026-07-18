@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>wampo — inside every 401(k)</title>
-<meta name="description" content="Intelligence on U.S. 401(k) plans — assets, fees, employers, and participation, from public Form 5500 filings.">
+<title>wampo — inside every 401(k) &amp; 403(b)</title>
+<meta name="description" content="Intelligence on U.S. 401(k) and 403(b) plans — assets, fees, employers, and participation, from public Form 5500 filings.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,400&family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=20260718b">
+<link rel="stylesheet" href="styles.css?v=20260718c">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔎</text></svg>">
 </head>
 <body>
@@ -23,8 +23,8 @@
   <section class="hero-strip">
     <div>
       <div class="hero-eyebrow">Retirement Plan Intelligence</div>
-      <h1 class="hero-title">Inside every <em>401(k)</em> in America</h1>
-      <p class="hero-sub">Assets, fees, employers, and participation — from public Form 5500 filings</p>
+      <h1 class="hero-title">Inside every <em>401(k)</em> &amp; <em>403(b)</em> in America</h1>
+      <p class="hero-sub">401(k) &amp; 403(b) assets, fees, employers, and participation — from public Form 5500 filings</p>
     </div>
     <div class="hero-stats">
       <div class="hero-stat"><div class="hero-stat-val" id="statPlans">0</div><div class="hero-stat-label">Plans</div></div>
@@ -81,7 +81,7 @@
     <h2>How this works</h2>
     <p>Every U.S. retirement plan with 100+ participants must file a full Form 5500 with the Department of Labor.
     wampo ingests the public EFAST2 datasets — the main filing, Schedule H (financials), and Schedule C
-    (service providers) — for every 401(k) plan that files one, and additionally parses each large plan's
+    (service providers) — for every 401(k) and ERISA 403(b) plan that files one, and additionally parses each large plan's
     “Schedule H, line 4i — Schedule of Assets” PDF attachment into the fund-by-fund holdings table you see on plan
     pages. Search covers <strong>every</strong> full-filing 401(k) plan, and the filing's audited statements are
     additionally mined for the employer match formula, vesting schedule, Roth/after-tax options, and
@@ -106,8 +106,8 @@
 
 <!-- ?v= keys assets to this HTML revision so a cached page can never mix
      old and new scripts — bump the stamp on every frontend change -->
-<script src="data.js?v=20260718b"></script>
-<script src="fund-er.js?v=20260718b"></script>
-<script src="app.js?v=20260718b"></script>
+<script src="data.js?v=20260718c"></script>
+<script src="fund-er.js?v=20260718c"></script>
+<script src="app.js?v=20260718c"></script>
 </body>
 </html>

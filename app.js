@@ -63,10 +63,13 @@
   /* ---- merge filed + curated -------------------------------------------- */
 
   function planTypesFromCode(code) {
+    // 8a characteristic codes per the official Form 5500 instructions:
+    // 2J=401(k), 2L=403(b)(1) annuity, 2M=403(b)(7) custodial, 2O/2P=ESOP
     const types = [];
     if (/2J/.test(code)) types.push("401(k)");
+    if (/2L|2M/.test(code)) types.push("403(b)");
     if (/2E/.test(code)) types.push("Profit Sharing");
-    if (/2L/.test(code)) types.push("ESOP");
+    if (/2O|2P/.test(code)) types.push("ESOP");
     return types.length ? types : ["Pension"];
   }
 
@@ -149,7 +152,7 @@
           const p = {};
           for (let i = 0; i < F.length; i++) p[F[i]] = a[i];
           p.company = p.sponsorName;
-          p.pensionCode = "2J";
+          p.pensionCode = p.codes || "2J"; // full 8a code string drives the badges
           p.isSF = !!p.sf;
           p.ein = p.ein ? String(p.ein).slice(0, 2) + "-" + String(p.ein).slice(2) : "";
           p.source = `Form 5500, plan year ${p.planYear} (DOL EFAST2 public dataset)`;
@@ -177,7 +180,7 @@
       plan.matchCode = /2K/.test(codes); // employer contributions based on deferrals
       if (plan.autoEnroll == null && /2S/.test(codes)) plan.autoEnroll = "enrollment is automatic (Form 5500 code 2S)";
       if (plan.brokerage == null && /2R/.test(codes)) plan.brokerage = "Self-directed brokerage";
-      if (plan.pretax == null) plan.pretax = true; // every 2J plan takes pre-tax deferrals
+      if (plan.pretax == null) plan.pretax = true; // 401(k)/403(b) elective deferrals are pre-tax
       if (lineupIndex) {
         let flag = f.ack ? lineupIndex.plans[f.ack] || 0 : 0;
         if (flag === 2) flag = 3; // legacy encoding: 2 meant lineup+sdba
@@ -279,7 +282,7 @@
     if (!q) return true;
     if (!plan.hay) {
       plan.hay = (plan.company + " " + plan.ticker + " " + (plan.provider || "") + " " + plan.planName +
-        " " + (plan.city || "") + " " + (plan.state || "") + " " + (plan.ein || "")).toLowerCase();
+        " " + plan.planTypes.join(" ") + " " + (plan.city || "") + " " + (plan.state || "") + " " + (plan.ein || "")).toLowerCase();
       plan.hayNorm = plan.hay.replace(/[^a-z0-9]/g, "");
     }
     // bare two-letter query = state filter ("wa", "tx")
