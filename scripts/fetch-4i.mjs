@@ -21,7 +21,7 @@ const WORK = process.env.WORK_DIR_4I || "/tmp/f5500-pdfs";
 mkdirSync(WORK, { recursive: true });
 // how many NEW filings to fetch this run (batches accumulate across runs)
 const BATCH = process.env.BATCH_4I ? +process.env.BATCH_4I : 5000;
-const TOP_N = process.env.TOP_4I ? +process.env.TOP_4I : 62000;
+const TOP_N = process.env.TOP_4I ? +process.env.TOP_4I : 70000;
 // matrix mode: this job processes work items where index % PARSE_SHARDS === PARSE_SHARD
 // and writes a results-<shard>.json delta instead of rewriting the stores
 const PARSE_SHARD = process.env.PARSE_SHARD != null ? +process.env.PARSE_SHARD : null;
@@ -37,10 +37,13 @@ function buildWorkList() {
     const F = all.fields;
     const i = Object.fromEntries(F.map((f, x) => [f, x]));
     const rows = all.plans; // already sorted by assets desc
+    let fullFormSeen = 0; // TOP_N must count full-form rows, not table rows —
+    // the table interleaves SF filers that are excluded from parsing
     for (let r = 0; r < rows.length; r++) {
       const row = rows[r];
       if (i.sf != null && row[i.sf]) continue; // 5500-SF filers attach no audited fund schedule
-      const isTop = r < TOP_N;
+      fullFormSeen++;
+      const isTop = fullFormSeen <= TOP_N;
       const isTicker = !!row[i.ticker];
       if (!isTop && !isTicker) continue;
       const ack = row[i.ack];
