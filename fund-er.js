@@ -118,3 +118,69 @@ function fundER(name) {
   for (const [re, er] of FUND_ER) if (re.test(name)) return er;
   return null;
 }
+
+/* ---- ticker identification --------------------------------------------------
+ * A ticker is attached ONLY when the filed name identifies a specific
+ * registered fund (mutual fund/ETF). Institutional vehicles — collective
+ * trusts, commingled pools, separate accounts, annuity contracts — have no
+ * public ticker and never get one. First match wins. */
+const FUND_TICKER = [
+  // Fidelity index funds (single retail class)
+  [/fidelity (500|s&p 500) index/i, "FXAIX"],
+  [/fidelity total market index/i, "FSKAX"],
+  [/fidelity extended market index/i, "FSMAX"],
+  [/fidelity mid ?cap index/i, "FSMDX"],
+  [/fidelity small ?cap index/i, "FSSNX"],
+  [/fidelity total international index/i, "FTIHX"],
+  [/fidelity international index/i, "FSPSX"],
+  [/fidelity global ex.?u\.?s\.? index/i, "FSGGX"],
+  [/fidelity (us|u\.s\.) bond index/i, "FXNAX"],
+  [/fidelity infl.*(protected|pr).*(bond|bd).*(index|idx)/i, "FIPDX"],
+  // Fidelity active (name = one fund; class suffixes K/K6 share the strategy)
+  [/fidelity contrafund/i, "FCNTX"],
+  [/fidelity growth company/i, "FDGRX"],
+  [/fidelity blue chip growth/i, "FBGRX"],
+  [/fidelity low[- ]priced stock/i, "FLPSX"],
+  [/fidelity puritan/i, "FPURX"],
+  [/fidelity balanced/i, "FBALX"],
+  [/fidelity diversified international/i, "FDIVX"],
+  [/fidelity otc/i, "FOCPX"],
+  // Vanguard — only class-explicit or single-purpose names
+  [/vanguard 500 index (adm|admiral)/i, "VFIAX"],
+  [/vanguard institutional index/i, "VINIX"],
+  [/vanguard total stock market index/i, "VTSAX"],
+  [/vanguard total international stock (index|market)/i, "VTIAX"],
+  [/vanguard total bond market index/i, "VBTLX"],
+  [/vanguard extended market index/i, "VEXAX"],
+  [/vanguard small[- ]cap index/i, "VSMAX"],
+  [/vanguard mid[- ]cap index/i, "VIMAX"],
+  [/vanguard wellington/i, "VWENX"],
+  [/vanguard primecap/i, "VPMAX"],
+  [/vanguard windsor ii/i, "VWNAX"],
+  [/vanguard federal money market/i, "VMFXX"],
+  // other managers with distinctive single-strategy names
+  [/dodge & cox stock/i, "DODGX"],
+  [/dodge & cox income/i, "DODIX"],
+  [/dodge & cox international/i, "DODFX"],
+  [/american funds.*europacific.*r6|europacific growth r6/i, "RERGX"],
+  [/american funds.*washington mutual.*r6/i, "RWMGX"],
+  [/american funds.*growth fund of america.*r6/i, "RGAGX"],
+  [/pimco income (inst|institutional)/i, "PIMIX"],
+  [/pimco total return (inst|institutional)/i, "PTTRX"],
+  [/metropolitan west total return|metwest total return/i, "MWTIX"],
+  [/baird aggregate bond/i, "BAGIX"],
+  [/baird core plus/i, "BCOIX"],
+  [/t\.? ?rowe price blue chip growth fund/i, "TRBCX"],
+  [/harbor capital appreciation/i, "HACAX"],
+  [/oakmark international/i, "OAKIX"],
+  [/mfs value fund/i, "MEIKX"],
+];
+
+// eslint-disable-next-line no-unused-vars
+function fundTicker(name) {
+  if (!name) return null;
+  // institutional vehicles and non-fund rows never get a ticker
+  if (/trust|commingled|collective|pool\b|unitized|separate account|\bcit\b|annuity|tiaa traditional|guaranteed|\bgic\b|stable value|separately managed|brokerage|self-directed|common stock|company stock|participant loan/i.test(name)) return null;
+  for (const [re, tk] of FUND_TICKER) if (re.test(name)) return tk;
+  return null;
+}

@@ -45,6 +45,7 @@
     return String(s || "").toLowerCase()
       .replace(/\b[a-z]/g, (c) => c.toUpperCase())
       .replace(/401\(K\)/gi, "401(k)")
+      .replace(/403\(B\)/gi, "403(b)")
       .replace(/\b(Llc|Llp|Esop|Ira|Us|Usa)\b/g, (m) => m.toUpperCase());
   }
 
@@ -541,9 +542,10 @@
     const total = list.reduce((s, f) => s + f.value, 0);
     const rows = list.map((f) => {
       const er = tab === "menu" ? fundER(f.name) : null;
+      const tk = tab === "menu" ? fundTicker(f.name) : null;
       return `
       <tr>
-        <td class="fund-name-col"><div class="fund-name">${esc(f.name)}</div></td>
+        <td class="fund-name-col"><div class="fund-name">${esc(f.name)}</div>${tk ? `<div class="fund-ticker">${esc(tk)}</div>` : ""}</td>
         <td class="fund-type">${esc(f.type || "—")}</td>
         <td class="num">${er != null ? er.toFixed(er < 0.1 ? 3 : 2) + "%" : "—"}</td>
         <td class="num">${money(f.value / 1e6)}</td>
@@ -564,7 +566,7 @@
         : lu.smaKind === "managed"
           ? "Securities held inside separately managed accounts — each account is a single menu choice for participants"
           : "Securities itemized in the filing — managed-account or participant-brokerage assets, not separate menu choices")
-      : `${esc(lu.source)} · values as filed · expense ratios are estimates from public fund data`;
+      : `${esc(lu.source)} · values as filed · tickers shown where the filed name identifies a registered fund · expense ratios are estimates from public fund data`;
     return `
     <div class="section-label">FUND HOLDINGS — ${tab === "sma" ? lu.sma.length + " SECURITIES" : lu.funds.length + " FILED"}
       <span class="section-sub">${sub}</span></div>
