@@ -394,10 +394,35 @@ async function scanSchC(year, wantedAcks) {
     const codes = col.codes !== -1 ? String(r[col.codes] || "") : "";
     const comp = col.comp !== -1 ? +r[col.comp] || 0 : 0;
     const isRk = /(^|\D)15(\D|$)/.test(codes) || /RECORDKEEP/i.test(name);
+    // the participant-facing platform (the site employees log into) beats
+    // advisors/auditors that also file with recordkeeping-ish codes
+    const isPlatform = RK_BRANDS.some(([re]) => re.test(name));
     const cur = best.get(ack);
-    const score = (isRk ? 1e15 : 0) + comp;
+    const score = (isPlatform ? 2e15 : 0) + (isRk ? 1e15 : 0) + comp;
     if (!cur || score > cur.score) best.set(ack, { name, score });
   }
+  // Part I line 1(b) — disclosers of eligible indirect compensation. Many
+  // filings (esp. master trusts) name the recordkeeper ONLY here (Voya on
+  // the Kohler trust). Used when item 2 produced nothing for the ack.
+  try {
+    const csv1 = unzip(await download(year, `F_SCH_C_PART1_ITEM1_${year}_Latest.zip`));
+    const rows1 = csvRows(csv1);
+    const { value: h1 } = await rows1.next();
+    const H1 = h1.map((h) => h.toUpperCase().trim());
+    const c1 = { ack: colIndex(H1, ["ACK_ID"]), name: colIndex(H1, ["PROVIDER_INDIRECT_NAME", "PROVIDER_NAME"], /PROVIDER.*NAME|NAME/) };
+    if (c1.ack !== -1 && c1.name !== -1) {
+      for await (const r of rows1) {
+        const ack = r[c1.ack];
+        if (!wantedAcks.has(ack)) continue;
+        const name = r[c1.name];
+        if (!name) continue;
+        const isPlatform = RK_BRANDS.some(([re]) => re.test(name));
+        const cur = best.get(ack);
+        const score = (isPlatform ? 2 : 0) + 1; // always below any item-2 pick
+        if (!cur || (cur.score < 1e6 && score > cur.score)) best.set(ack, { name, score });
+      }
+    }
+  } catch (e) { console.warn(`  SCH_C item1 ${year}: ${e.message}`); }
   const out = new Map();
   for (const [ack, v] of best) out.set(ack, brandOf(v.name));
   console.log(`rows: ${n}, recordkeepers matched: ${out.size}/${wantedAcks.size}`);
@@ -558,7 +583,7 @@ for (const p of universe) {
     p.participants, p.activeParticipants,
     h.assetsBOY || 0, h.assetsEOY || 0,
     h.contribEmployer || 0, h.contribParticipant || 0, h.rollovers || 0, h.adminExpenses || 0,
-    p.received || "", schC.get(p.ack) || "", p.ticker || "", p.ack, p.pensionCode || "",
+    p.received || "", schC.get(p.ack) || (p.mtiaAck && schC.get(p.mtiaAck)) || "", p.ticker || "", p.ack, p.pensionCode || "",
     p.planYearBegin ? String(p.planYearBegin).slice(0, 7) : "",
     p.partBalances || 0, h.feeProf || 0, h.feeAdmin || 0, h.feeInvMgmt || 0, h.feeOther || 0, h.benefitsPaid || 0,
     p.mtiaAck || "", p.sf || 0,
