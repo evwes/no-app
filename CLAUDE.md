@@ -115,7 +115,11 @@ throughout: TK Elevator (2025100809...343377001), Microsoft, Pfizer, Walmart,
 Black Hills (match "equal to N%...up to M%", after-tax enumeration), Kohler
 (3-tier match, vesting TABLE, statement-row junk + master-trust unblock),
 Coca-Cola (master trust, correctly non-confident), Siemens Medical trust
-(sharesLast). Frontend: python http.server + Playwright at
+(sharesLast), Northrop Grumman (2026061611...907005 — match as column TABLE
+"First 2%...100 %", cliff phrased "upon completion of three years",
+after-tax as BASIS enumeration, eligibility %-window guard; its DC master
+trust ...907002 is form-only, and the VEBA trust is a different entity —
+don't confuse them). Frontend: python http.server + Playwright at
 /opt/pw-browsers/chromium; verify TK page, tabs, filters, deep links
 (#plan=EIN|PN|TICKER).
 
