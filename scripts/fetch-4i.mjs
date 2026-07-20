@@ -21,7 +21,7 @@ import { parse4i, extractPlanFeatures, indexFlags, PARSER_VERSION } from "./lib-
  * encodings that extract as cipher-garbage. Rasterize just those pages and
  * OCR them, then re-run the normal parser on the combined text. Bump
  * OCR_VERSION to re-attempt every no-section filing. */
-const OCR_VERSION = 1;
+const OCR_VERSION = 2; // v2: tail-scan detection fix — re-attempt everything marked under v1
 const OCR_MAX_PAGES = 40; // 4i + notes fit well within this
 const OCR_SKIP_BAD = 120; // a fully-scanned 300-page filing isn't worth 10 min
 let hasOcrTools = true;
@@ -32,7 +32,11 @@ catch { hasOcrTools = false; console.log("tesseract/pdftoppm missing — OCR fal
  * (subset-font cipher text like "&GFG3>G@6" for "Mutual Fund"). */
 function findBadPages(text) {
   const pages = text.split("\f");
-  while (pages.length && !pages[pages.length - 1].trim()) pages.pop();
+  // pdftotext ends output with one \f, leaving ONE empty split artifact.
+  // Popping ALL trailing empties (a while-loop here once) deleted entire
+  // tail-of-file scanned attachments — the most common layout — before
+  // detection ever saw them. Pop exactly one.
+  if (pages.length && !pages[pages.length - 1].trim()) pages.pop();
   const bad = [];
   for (let i = 0; i < pages.length; i++) {
     const t = pages[i];
