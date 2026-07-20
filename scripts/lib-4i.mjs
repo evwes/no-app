@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 11;
+export const PARSER_VERSION = 12;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b/i, "SDBA"],
@@ -337,7 +337,10 @@ export function extractPlanFeatures(text) {
   // ---- employer match formula ----
   const mf =
     t.match(/match(?:ing)?[^.]{0,140}?(\d{1,3})(?:\.\d+)? ?(?:percent|%) of (?:the )?first (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i) ||
-    t.match(/(\d{1,3})(?:\.\d+)? ?(?:percent|%) match(?:ing)?[^.]{0,80}?(?:up to|on the first) (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i);
+    t.match(/(\d{1,3})(?:\.\d+)? ?(?:percent|%) match(?:ing)?[^.]{0,80}?(?:up to|on the first) (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i) ||
+    // "matching contribution ... equal to 100% of ... deferral contributions
+    // up to 6% of ... compensation" (Black Hills style — no "first")
+    t.match(/match(?:ing)?[^.]{0,160}?(\d{1,3})(?:\.\d+)? ?(?:percent|%) of [^.]{0,140}?(?:up to|not to exceed|to a maximum of) (\d{1,2})(?:\.\d+)? ?(?:percent|%) of/i);
   // dollar-phrased formulas: "dollar-for-dollar up to 4%", "50 cents per dollar on the first 6%"
   const df = !mf && (t.match(/dollar[- ]for[- ]dollar[^.]{0,80}?(?:up to|on the first) (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i)
     ? { pct: 100, cap: null } : null);
@@ -398,9 +401,15 @@ export function extractPlanFeatures(text) {
   const roth = t.match(/\broth\b[^.]{0,120}(contribut|deferral|option|401)/i) || t.match(/(designated|make) \broth\b/i);
   if (roth) { out.roth = true; out.rothText = sentence(roth.index); }
   if (/in.?plan.{0,40}(roth )?(conversion|rollover)|convert.{0,40}(to )?(a )?roth/i.test(t)) out.inPlanRoth = true;
-  const at = t.match(/(?:voluntary |additional )?after[- ]tax contributions?/i);
-  if (at && !/roth/i.test(t.slice(Math.max(0, at.index - 40), at.index))) {
-    out.afterTax = true; out.afterTaxText = sentence(at.index);
+  // "after-tax [deferral] contributions", incl. enumerations like
+  // "pre-tax, Roth and after-tax deferral contributions". Veto only the
+  // "Roth contributions are made on an after-tax basis" phrasing, where
+  // "roth" directly modifies the after-tax words with no list separator.
+  const at = t.match(/(?:voluntary |additional |employee )?after[- ]tax (?:deferral |employee |savings )?contributions?/i);
+  if (at) {
+    const pre = t.slice(Math.max(0, at.index - 40), at.index);
+    const rothModifies = /roth\b[^.]{0,30}$/i.test(pre) && !/(?:,|\band\b|\bor\b)\s*$/i.test(pre);
+    if (!rothModifies) { out.afterTax = true; out.afterTaxText = sentence(at.index); }
   }
 
   // ---- safe harbor & true-up ----
