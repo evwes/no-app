@@ -171,6 +171,12 @@ async function download(url, dest) {
 /* ---- main ---------------------------------------------------------------- */
 
 const summary = [];
+// A job that hits the Actions timeout never uploads its artifact — hours of
+// OCR work vanish (measured: 20 shards × 5.9h lost). Stop cleanly inside the
+// budget instead: the partial delta uploads, ov markers persist, and the next
+// run continues from the remainder.
+const TIME_BUDGET_MIN = process.env.TIME_BUDGET_MIN ? +process.env.TIME_BUDGET_MIN : 0;
+const runStart = Date.now();
 // entries parsed before the securities detail was kept need one more pass
 const needsSma = new Set();
 for (const b of buckets) {
@@ -207,6 +213,10 @@ function record(plan, entry, features) {
 
 for (const plan of work) {
   if (fetched >= BATCH) break;
+  if (TIME_BUDGET_MIN && (Date.now() - runStart) / 60000 > TIME_BUDGET_MIN) {
+    console.log(`time budget (${TIME_BUDGET_MIN} min) reached after ${fetched} filings — stopping cleanly`);
+    break;
+  }
   fetched++;
   const url = pdfUrl(plan.ack);
   const dest = path.join(WORK, plan.ack + ".pdf");

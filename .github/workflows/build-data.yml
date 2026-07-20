@@ -78,7 +78,7 @@ jobs:
       - name: Parse filings (shard ${{ matrix.shard }})
         run: |
           sudo apt-get install -y -q poppler-utils tesseract-ocr >/dev/null 2>&1 || true
-          PARSE_SHARD=${{ matrix.shard }} PARSE_SHARDS=${{ needs.prep.outputs.count }} BATCH_4I=999999 node scripts/fetch-4i.mjs
+          TIME_BUDGET_MIN=320 PARSE_SHARD=${{ matrix.shard }} PARSE_SHARDS=${{ needs.prep.outputs.count }} BATCH_4I=999999 node scripts/fetch-4i.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: results-${{ matrix.shard }}
