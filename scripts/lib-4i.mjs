@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 13;
+export const PARSER_VERSION = 14;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b/i, "SDBA"],
@@ -349,6 +349,19 @@ export function extractPlanFeatures(text) {
   const df = !mf && (t.match(/dollar[- ]for[- ]dollar[^.]{0,80}?(?:up to|on the first) (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i)
     ? { pct: 100, cap: null } : null);
   const cents = !mf && !df && t.match(/(\d{1,3})(?:\.\d+)? ?cents (?:for|per|on) (?:each |every )?(?:\$1(?:\.00)?|dollar)[^.]{0,80}?(?:up to|on the first) (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i);
+  // match stated as a TABLE, not prose: "Employee Contribution | Employer
+  // Match / First 2% of eligible compensation 100 % / Next 2% ... 50 %"
+  // (Northrop Grumman). Table columns collapse onto one line in the
+  // flattened text; require a nearby "match" so unrelated tables can't
+  // masquerade as a formula.
+  let mtab = null;
+  if (!mf && !df && !cents) {
+    const tabRe = /first (\d{1,2})(?:\.\d+)? ?(?:percent|%) of (?:eligible |annual |base )?(?:compensation|pay|earnings) (\d{1,3}) ?(?:percent|%)/gi;
+    let c;
+    while ((c = tabRe.exec(t))) {
+      if (/match/i.test(t.slice(Math.max(0, c.index - 300), c.index))) { mtab = c; break; }
+    }
+  }
   if (mf) {
     out.match = `${+mf[1]}% of the first ${+mf[2]}% of pay`;
     // capture EVERY additional tier — "75% of the first 1%, 50% of the next
@@ -365,6 +378,13 @@ export function extractPlanFeatures(text) {
   } else if (cents) {
     out.match = `${+cents[1]}% of the first ${+cents[2]}% of pay`;
     out.matchText = sentence(cents.index);
+  } else if (mtab) {
+    out.match = `${+mtab[2]}% of the first ${+mtab[1]}% of pay`;
+    const tierRe2 = /next (\d{1,2})(?:\.\d+)? ?(?:percent|%) of (?:eligible |annual |base )?(?:compensation|pay|earnings) (\d{1,3}) ?(?:percent|%)/gi;
+    const tail = t.slice(mtab.index, mtab.index + 400);
+    let tm2; let tg = 0;
+    while ((tm2 = tierRe2.exec(tail)) && tg++ < 4) out.match += ` + ${+tm2[2]}% of the next ${+tm2[1]}%`;
+    out.matchText = sentence(mtab.index);
   } else {
     // fall back to the descriptive sentence, skipping form-page boilerplate
     const mre = /(?:employer|company) match(?:ing)? contributions?|matching contributions? (?:is|are|equal|of|based|provided)/gi;
@@ -386,7 +406,10 @@ export function extractPlanFeatures(text) {
   // graded/cliff language always describes employer money — check it FIRST
   for (const s of vestSentences) {
     const graded = s.match(/(\d{1,2}) ?(?:percent|%) (?:per|each|for each) year|graded vesting|graduated vesting/i);
-    const cliff = s.match(/(?:(\w{3,5}|\d)[- ]year cliff|cliff vesting[^.]{0,40}?(\w{3,5}|\d) years?|(?:100 ?(?:percent|%)|fully) vested (?:only )?(?:after|upon completing) (\w{3,5}|\d) years?)/i);
+    // 3rd alternative tolerates intervening words — "fully vested in
+    // employer matching contributions, and earnings thereon, upon
+    // completion of three years of service" (Northrop Grumman)
+    const cliff = s.match(/(?:(\w{3,5}|\d)[- ]year cliff|cliff vesting[^.]{0,40}?(\w{3,5}|\d) years?|(?:100 ?(?:percent|%)|fully) vest(?:ed)?[^.]{0,80}?(?:after|upon)(?: the)?(?: complet\w+(?: of)?)? (\w{3,5}|\d) years?)/i);
     if (graded) { out.vesting = "Graded schedule"; out.vestingText = cap(s); break; }
     if (cliff) {
       const n = cliff[1] || cliff[2] || cliff[3];
@@ -435,6 +458,18 @@ export function extractPlanFeatures(text) {
     const rothModifies = /roth\b[^.]{0,30}$/i.test(pre) && !/(?:,|\band\b|\bor\b)\s*$/i.test(pre);
     if (!rothModifies) { out.afterTax = true; out.afterTaxText = sentence(at.index); }
   }
+  // BASIS enumerations never say "after-tax contributions": "Contributions
+  // can be made on a tax-deferred (pre-tax) basis, after-tax basis or to a
+  // Roth 401(k) on an after-tax basis" (Northrop Grumman). Accept when a
+  // contribution verb governs the phrase and Roth doesn't directly modify it.
+  if (!out.afterTax) {
+    for (const m2 of t.matchAll(/after[- ]tax basis/gi)) {
+      const pre = t.slice(Math.max(0, m2.index - 90), m2.index);
+      const rothMod = /roth\b[^.]{0,40}$/i.test(pre) && !/(?:,|\band\b|\bor\b)\s*$/i.test(pre);
+      if (rothMod || !/contribut\w+[^.]{0,80}$/i.test(pre)) continue;
+      out.afterTax = true; out.afterTaxText = sentence(m2.index); break;
+    }
+  }
 
   // ---- safe harbor & true-up ----
   if (/safe harbor match/i.test(t)) out.safeHarbor = "match";
@@ -456,7 +491,11 @@ export function extractPlanFeatures(text) {
   }
 
   // ---- eligibility ----
-  const elig = t.match(/eligib\w+[^.]{0,140}?(?:(\d{1,4}) ?(days?|months?|years?|hours?) of (?:service|employment|continuous)|(?:upon|on) (?:their )?(?:date of )?hire|first day of (?:employment|the month)|immediately)/i);
+  // window excludes % — a match/vesting TABLE ("First 4% of eligible
+  // compensation 100 % ... less than 5 years of service") once bridged
+  // "eligible" to an unrelated service count (Northrop Grumman); cohort
+  // qualifiers like "less than N years" are never eligibility rules
+  const elig = t.match(/eligib\w+[^.%]{0,140}?(?:(?<!(?:less|more|fewer) than )(\d{1,4}) ?(days?|months?|years?|hours?) of (?:service|employment|continuous)|(?:upon|on) (?:their )?(?:date of )?hire|first day of (?:employment|the month)|immediately)/i);
   if (elig) {
     out.eligibility = elig[1] ? `${elig[1]} ${elig[2]} of service` : "Upon hire / immediate";
     out.eligibilityText = sentence(elig.index);
