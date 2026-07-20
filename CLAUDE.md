@@ -119,9 +119,11 @@ Coca-Cola (master trust, correctly non-confident), Siemens Medical trust
 
 ## Current state (2026-07-18)
 
-- Universe 95,637 plans ($8.01T); all 62,377 parseable filings at parser v7+;
-  ~44.7k confident lineups; ~50k with features; filters universe-wide via
-  index bits. Mega-backdoor CHIP matches afterTax OR mega bits (~5.8k plans);
+- Universe 102,632 plans ($8.82T, incl. ERISA 403(b)s); 67,861 parseable
+  filings at parser v11 + OCR v2; 53.5k confident lineups (5.1k via OCR,
+  disclosed in source), 60k with features; ~7k no-section residual after
+  full-strength OCR (form-only or unparseable — honest gap). Filters
+  universe-wide via index bits. Mega-backdoor CHIP matches afterTax OR mega bits (~5.8k plans);
   strict documented-conversion count is ~200 — auditors rarely write the
   conversion step down.
 - Owner to-dos: point GitHub Pages at `main`; custom domain.
