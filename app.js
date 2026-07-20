@@ -302,7 +302,9 @@
   function passesFilters(plan) {
     const f = state.filters;
     if (f.brokerage && !(plan.brokerage && plan.brokerage !== "None")) return false;
-    if (f.megaBackdoor && !plan.megaBackdoor) return false;
+    // after-tax contributions are the gate for the mega backdoor; audit notes
+    // rarely spell out the conversion step, so the chip matches either signal
+    if (f.megaBackdoor && !(plan.megaBackdoor || plan.afterTax === true)) return false;
     if (f.immediateVesting && plan.vesting !== "Immediate") return false;
     if (state.provider && plan.provider !== state.provider) return false;
     if (state.industry && plan.industry !== state.industry) return false;

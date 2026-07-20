@@ -38,9 +38,14 @@ jobs:
       - name: Plan parse shards
         id: plan
         run: |
-          WORK=$(BATCH_4I=0 node scripts/fetch-4i.mjs | grep -oP 'work list: \K\d+' || echo 0)
-          N=$(( (WORK + 5499) / 5500 )); [ "$N" -lt 1 ] && N=1; [ "$N" -gt 12 ] && N=12
-          echo "work=$WORK shards=$N"
+          OUT=$(BATCH_4I=0 node scripts/fetch-4i.mjs)
+          WORK=$(echo "$OUT" | grep -oP 'work list: \K\d+' || echo 0)
+          OCR=$(echo "$OUT" | grep -oP 'ocr candidates: \K\d+' || echo 0)
+          # OCR items cost ~20-45s vs ~0.6s for text parses — shard for both
+          N1=$(( (WORK + 5499) / 5500 )); N2=$(( (OCR + 599) / 600 ))
+          N=$N1; [ "$N2" -gt "$N" ] && N=$N2
+          [ "$N" -lt 1 ] && N=1; [ "$N" -gt 20 ] && N=20
+          echo "work=$WORK ocr=$OCR shards=$N"
           echo "count=$N" >> "$GITHUB_OUTPUT"
           echo "shards=$(node -e "console.log(JSON.stringify([...Array($N).keys()]))")" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-artifact@v4
@@ -57,7 +62,7 @@ jobs:
   parse:
     needs: prep
     runs-on: ubuntu-latest
-    timeout-minutes: 340
+    timeout-minutes: 355
     strategy:
       fail-fast: false
       matrix:
@@ -72,7 +77,7 @@ jobs:
           name: data-inputs
       - name: Parse filings (shard ${{ matrix.shard }})
         run: |
-          sudo apt-get install -y -q poppler-utils >/dev/null 2>&1 || true
+          sudo apt-get install -y -q poppler-utils tesseract-ocr >/dev/null 2>&1 || true
           PARSE_SHARD=${{ matrix.shard }} PARSE_SHARDS=${{ needs.prep.outputs.count }} BATCH_4I=999999 node scripts/fetch-4i.mjs
       - uses: actions/upload-artifact@v4
         with:

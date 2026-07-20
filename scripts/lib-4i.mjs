@@ -86,8 +86,9 @@ export function parseRows(section, opts = {}) {
 
   for (const raw of section) {
     // leading "*" is the party-in-interest marker on holding rows — drop it
-    // before matching so starred holdings aren't mistaken for footnotes
-    let t = raw.trim().replace(/^\*+\s*/, "");
+    // before matching so starred holdings aren't mistaken for footnotes.
+    // trailing "**" (assets >5% of plan) hides the line-terminal value.
+    let t = raw.trim().replace(/^\*+\s*/, "").replace(/\s*\*{1,3}\s*$/, "");
     if (!t) { nameBuf = []; continue; }
     // "Current Value | Shares Par" layouts put the share count LAST — strip
     // the shares column and the currency code so the dollar value is trailing

@@ -84,6 +84,16 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
 - **Bumping PARSER_VERSION re-parses everything overnight** — that is the
   intended, affordable path for parser changes. Weekly cron picks up new
   filings incrementally at the current version.
+- **OCR fallback (v12)**: ~half of "no-section" filings are SCANNED auditor
+  attachments; many others use broken font encodings (cipher-looking text).
+  fetch-4i rasterizes the unreadable pages (pdftoppm 200dpi, ≤40 pages) and
+  tesseract-OCRs them 4-wide, then re-parses combined text. `ov` in status =
+  OCR_VERSION attempted; work list re-adds no-section acks when OCR_VERSION
+  moves. NOTE: OCR text is not cached — every PARSER_VERSION bump re-OCRs
+  ~12k filings (~4h at 20 shards); prep shard formula sizes for
+  max(work/5500, ocr/600) cap 20. Entries carry ocr:1 and the source string
+  discloses OCR. Trailing "**" (>5% marker) after values is stripped in
+  parseRows — that alone recovered most OCR rows.
 - Data-bot commits rebase before push; when force-moving branches, mirror
   `claude/wampo-401k-live-nx1t4o` → `main` (`git push --force-with-lease=main
   origin claude/wampo-401k-live-nx1t4o:main`). CAUTION: the weekly cron runs
@@ -98,9 +108,9 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
 
 ## Testing pattern
 
-Real filings, locally: S3 PDFs download in-sandbox; extract text with
-pdfplumber (`layout=True` ≈ pdftotext -layout; poppler not installable in
-sandbox — production uses pdftotext in Actions). Regression set used
+Real filings, locally: S3 PDFs download in-sandbox. poppler-utils AND
+tesseract-ocr install fine in the sandbox after `apt-get update` — use real
+`pdftotext -layout` (matches production) rather than pdfplumber approximation. Regression set used
 throughout: TK Elevator (2025100809...343377001), Microsoft, Pfizer, Walmart,
 Coca-Cola (master trust, correctly non-confident), Siemens Medical trust
 (sharesLast). Frontend: python http.server + Playwright at
@@ -111,8 +121,9 @@ Coca-Cola (master trust, correctly non-confident), Siemens Medical trust
 
 - Universe 95,637 plans ($8.01T); all 62,377 parseable filings at parser v7+;
   ~44.7k confident lineups; ~50k with features; filters universe-wide via
-  index bits. v9 run in flight (brokerage/managed split, full-text conversion
-  scan, employer-token fix) — on landing, verify counts + Deere, mirror main.
+  index bits. Mega-backdoor CHIP matches afterTax OR mega bits (~5.8k plans);
+  strict documented-conversion count is ~200 — auditors rarely write the
+  conversion step down.
 - Owner to-dos: point GitHub Pages at `main`; custom domain.
 - Roadmap ideas (not started): static SEO pages per plan/recordkeeper, fee
   percentiles vs peers, compare view, correction-form issue template, OCR for

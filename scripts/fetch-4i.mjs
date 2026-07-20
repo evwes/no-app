@@ -10,11 +10,69 @@
  *
  * Requires pdftotext (poppler-utils). Runs in GitHub Actions.
  */
-import { readFileSync, writeFileSync, mkdirSync, existsSync, createWriteStream, statSync, unlinkSync } from "node:fs";
-import { execFileSync } from "node:child_process";
+import { readFileSync, writeFileSync, mkdirSync, existsSync, createWriteStream, statSync, unlinkSync, readdirSync, rmSync } from "node:fs";
+import { execFileSync, execFile } from "node:child_process";
 import { pipeline } from "node:stream/promises";
 import path from "node:path";
 import { parse4i, extractPlanFeatures, indexFlags, PARSER_VERSION } from "./lib-4i.mjs";
+
+/* OCR fallback: ~half the "no 4i section" filings have a SCANNED auditor
+ * attachment (zero extractable text) and many others have broken font
+ * encodings that extract as cipher-garbage. Rasterize just those pages and
+ * OCR them, then re-run the normal parser on the combined text. Bump
+ * OCR_VERSION to re-attempt every no-section filing. */
+const OCR_VERSION = 1;
+const OCR_MAX_PAGES = 40; // 4i + notes fit well within this
+const OCR_SKIP_BAD = 120; // a fully-scanned 300-page filing isn't worth 10 min
+let hasOcrTools = true;
+try { execFileSync("tesseract", ["--version"], { stdio: "ignore" }); execFileSync("pdftoppm", ["-v"], { stdio: "ignore" }); }
+catch { hasOcrTools = false; console.log("tesseract/pdftoppm missing — OCR fallback disabled"); }
+
+/* Pages needing OCR: near-empty (scanned image) or mostly non-letters
+ * (subset-font cipher text like "&GFG3>G@6" for "Mutual Fund"). */
+function findBadPages(text) {
+  const pages = text.split("\f");
+  while (pages.length && !pages[pages.length - 1].trim()) pages.pop();
+  const bad = [];
+  for (let i = 0; i < pages.length; i++) {
+    const t = pages[i];
+    const chars = (t.match(/\S/g) || []).length;
+    const letters = (t.match(/[a-zA-Z]/g) || []).length;
+    if (chars < 50 || (chars > 200 && letters / chars < 0.5)) bad.push(i + 1);
+  }
+  return bad;
+}
+
+async function ocrPages(pdfPath, badPages, workDir) {
+  const take = badPages.slice(0, OCR_MAX_PAGES);
+  const ranges = [];
+  for (const p of take) {
+    const last = ranges[ranges.length - 1];
+    if (last && p === last[1] + 1) last[1] = p;
+    else ranges.push([p, p]);
+  }
+  mkdirSync(workDir, { recursive: true });
+  for (const [f, l] of ranges) {
+    try {
+      execFileSync("pdftoppm", ["-r", "200", "-gray", "-f", String(f), "-l", String(l), pdfPath, path.join(workDir, "pg")]);
+    } catch { /* damaged pages render what they can */ }
+  }
+  const imgs = readdirSync(workDir).filter((f) => /\.p[gpb]m$/.test(f)).sort().map((f) => path.join(workDir, f));
+  const results = new Array(imgs.length).fill("");
+  let next = 0;
+  async function worker() {
+    while (next < imgs.length) {
+      const mine = next++;
+      results[mine] = await new Promise((resolve) => {
+        execFile("tesseract", [imgs[mine], "stdout", "--psm", "6", "-c", "preserve_interword_spaces=1"],
+          { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 }, (e, out) => resolve(out || ""));
+      });
+    }
+  }
+  await Promise.all([worker(), worker(), worker(), worker()]);
+  rmSync(workDir, { recursive: true, force: true });
+  return results.join("\f");
+}
 
 const S3 = "https://efast2-filings-public.s3.amazonaws.com/prd";
 const WORK = process.env.WORK_DIR_4I || "/tmp/f5500-pdfs";
@@ -120,17 +178,24 @@ for (const b of buckets) {
     if (!e.sma && e.funds && e.funds.some((f) => f.name.startsWith("Individually listed securities"))) needsSma.add(ack);
   }
 }
-// reparse anything from an older parser version (or never parsed at all)
-let work = buildWorkList().filter((p) => !status.plans[p.ack] || (status.plans[p.ack].pv || 1) !== PARSER_VERSION || needsSma.has(p.ack));
+// reparse anything from an older parser version (or never parsed at all);
+// no-section filings additionally re-enter the queue when OCR_VERSION moves
+let work = buildWorkList().filter((p) => {
+  const st = status.plans[p.ack];
+  if (!st || (st.pv || 1) !== PARSER_VERSION || needsSma.has(p.ack)) return true;
+  return st.e === "no-section" && (st.ov || 0) !== OCR_VERSION;
+});
+const ocrCandidates = work.filter((p) => (status.plans[p.ack] || {}).e === "no-section").length;
 if (PARSE_SHARD != null) work = work.filter((_, i) => i % PARSE_SHARDS === PARSE_SHARD);
 console.log(`work list: ${work.length} filings to (re)parse at parser v${PARSER_VERSION}` +
   (PARSE_SHARD != null ? ` (matrix shard ${PARSE_SHARD}/${PARSE_SHARDS})` : "") + `; fetching up to ${BATCH} this run`);
+console.log(`ocr candidates: ${ocrCandidates}`);
 let fetched = 0;
 
 const delta = { status: {}, entries: {} };
 function record(plan, entry, features) {
   if (features) entry.features = features;
-  const meta = { pv: PARSER_VERSION, c: entry.confident ? 1 : 0, s: entry.sdba ? 1 : 0, ...(features ? { f: 1 } : {}), ...(entry.error ? { e: entry.error } : {}) };
+  const meta = { pv: PARSER_VERSION, ov: OCR_VERSION, c: entry.confident ? 1 : 0, s: entry.sdba ? 1 : 0, ...(features ? { f: 1 } : {}), ...(entry.error ? { e: entry.error } : {}) };
   status.plans[plan.ack] = meta;
   delta.status[plan.ack] = meta;
   const keep = (entry.confident && entry.funds.length) || features;
@@ -164,13 +229,36 @@ for (const plan of work) {
     try { unlinkSync(dest); } catch { /* ignore */ }
     continue;
   }
-  try { unlinkSync(dest); } catch { /* keep disk bounded */ }
-
   // plan features (match formula, vesting, Roth, auto-enroll) live in the
   // audit notes and exist even when the 4i table can't be parsed
-  const features = extractPlanFeatures(text);
+  let features = extractPlanFeatures(text);
+  let parsed = parse4i(text, plan.assetsEOY, plan.label || "", plan.codes || "");
+  let usedOcr = false;
 
-  const parsed = parse4i(text, plan.assetsEOY, plan.label || "", plan.codes || "");
+  // scanned or cipher-encoded attachments: OCR just the unreadable pages and
+  // re-run the same parser on the combined text
+  if (!parsed.found && hasOcrTools) {
+    const bad = findBadPages(text);
+    if (bad.length >= 3 && bad.length <= OCR_SKIP_BAD) {
+      try {
+        const otext = await ocrPages(dest, bad, path.join(WORK, "ocr-" + plan.ack.slice(-12)));
+        if (otext && otext.replace(/\s+/g, "").length > 500) {
+          const combined = text + "\f" + otext;
+          const p2 = parse4i(combined, plan.assetsEOY, plan.label || "", plan.codes || "");
+          const f2 = extractPlanFeatures(combined);
+          if (p2.found || (f2 && !features)) {
+            parsed = p2;
+            features = f2 || features;
+            usedOcr = true;
+          }
+        }
+      } catch (e) {
+        summary.push(`${tag}: ocr failed ${e.message}`);
+      }
+    }
+  }
+  try { unlinkSync(dest); } catch { /* keep disk bounded */ }
+
   if (!parsed.found) {
     summary.push(`${tag}: no 4i section found`);
     record(plan, { confident: false, error: "no-section", funds: [] }, features);
@@ -189,7 +277,8 @@ for (const plan of work) {
     funds: parsed.funds,
     sma: parsed.sma,
     smaKind: parsed.smaKind,
-    source: `Schedule H line 4i attachment, plan year ${plan.planYear} filing`,
+    ...(usedOcr ? { ocr: 1 } : {}),
+    source: `Schedule H line 4i attachment, plan year ${plan.planYear} filing${usedOcr ? " (digitized from scanned pages via OCR)" : ""}`,
   }, features);
   summary.push(`${tag}: ${parsed.funds.length} rows, cov ${(ratio * 100).toFixed(0)}%, sdba=${parsed.sdba}, ok=${confident}`);
   await new Promise((r) => setTimeout(r, 150)); // be polite to the bucket
