@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 12;
+export const PARSER_VERSION = 13;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b/i, "SDBA"],
@@ -172,6 +172,10 @@ export function parseRows(section, opts = {}) {
     name = name.replace(/\s*\*+\s*$/, ""); // trailing footnote markers
     // wrapped lines carry their column gaps into the assembled name
     name = name.replace(/\s{2,}/g, " ");
+    // financial-statement rows ("Participants 41,200,000", "Company",
+    // "Rollover", "From participants") leak in when a candidate region
+    // sweeps a contributions schedule — bare finance nouns are never funds
+    if (/^(participants?|company|employer|employee|rollovers?|forfeitures?|interest|dividends|other|contributions?|(?:from|to) participants?|other net disbursements?|net disbursements?)$/i.test(name.trim())) continue;
     // rows often carry no type of their own — it lives in the section header
     // ("Common/Collective Trusts"). SDBA/loans must not inherit: those section
     // types would wrongly collapse itemized rows.
@@ -347,8 +351,12 @@ export function extractPlanFeatures(text) {
   const cents = !mf && !df && t.match(/(\d{1,3})(?:\.\d+)? ?cents (?:for|per|on) (?:each |every )?(?:\$1(?:\.00)?|dollar)[^.]{0,80}?(?:up to|on the first) (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i);
   if (mf) {
     out.match = `${+mf[1]}% of the first ${+mf[2]}% of pay`;
-    const tier2 = t.slice(mf.index, mf.index + 300).match(/(?:and|plus) (\d{1,3})(?:\.\d+)? ?(?:percent|%) of the next (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i);
-    if (tier2) out.match += ` + ${+tier2[1]}% of the next ${+tier2[2]}%`;
+    // capture EVERY additional tier — "75% of the first 1%, 50% of the next
+    // 4%, and 25% of the next 1%" (Kohler) has a comma-joined middle tier
+    const tierRe = /(\d{1,3})(?:\.\d+)? ?(?:percent|%) of the next (\d{1,2})(?:\.\d+)? ?(?:percent|%)/gi;
+    const tail = t.slice(mf.index, mf.index + 400);
+    let tm; let tguard = 0;
+    while ((tm = tierRe.exec(tail)) && tguard++ < 4) out.match += ` + ${+tm[1]}% of the next ${+tm[2]}%`;
     out.matchText = sentence(mf.index);
   } else if (df) {
     const m2 = t.match(/dollar[- ]for[- ]dollar[^.]{0,80}?(?:up to|on the first) (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i);
@@ -384,6 +392,22 @@ export function extractPlanFeatures(text) {
       const n = cliff[1] || cliff[2] || cliff[3];
       const num = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6 }[String(n).toLowerCase()] || +n;
       if (num >= 1 && num <= 6) { out.vesting = `${num}-year cliff`; out.vestingText = cap(s); break; }
+    }
+  }
+  // vesting stated as a service-year TABLE rather than prose ("2 Years 20,
+  // 3 Years 40, ... 5 Years 100" — Kohler style). Require 3+ pairs with
+  // non-decreasing percentages ending at 100 within reach of a "vest" word.
+  if (!out.vesting) {
+    for (const m of t.matchAll(/\bvest(?:ed|ing)?\b/gi)) {
+      const win = t.slice(m.index, m.index + 500);
+      const pairs = [...win.matchAll(/(?<!than )\b(\d{1,2}) ?years? +(\d{1,3})(?: ?(?:percent|%))?(?=[ .,;)])/gi)]
+        .map((p) => [+p[1], +p[2]]).filter(([y, pc]) => y >= 1 && y <= 10 && pc <= 100);
+      if (pairs.length >= 3 && pairs[pairs.length - 1][1] === 100 &&
+          pairs.every(([, pc], i2) => i2 === 0 || pc >= pairs[i2 - 1][1])) {
+        out.vesting = "Graded schedule";
+        out.vestingText = cap("Vesting schedule as filed — " + pairs.map(([y, pc]) => `${y} yr: ${pc}%`).join(", "));
+        break;
+      }
     }
   }
   // "immediate" only counts when the sentence explicitly covers employer money

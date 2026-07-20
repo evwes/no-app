@@ -112,6 +112,8 @@ Real filings, locally: S3 PDFs download in-sandbox. poppler-utils AND
 tesseract-ocr install fine in the sandbox after `apt-get update` — use real
 `pdftotext -layout` (matches production) rather than pdfplumber approximation. Regression set used
 throughout: TK Elevator (2025100809...343377001), Microsoft, Pfizer, Walmart,
+Black Hills (match "equal to N%...up to M%", after-tax enumeration), Kohler
+(3-tier match, vesting TABLE, statement-row junk + master-trust unblock),
 Coca-Cola (master trust, correctly non-confident), Siemens Medical trust
 (sharesLast). Frontend: python http.server + Playwright at
 /opt/pw-browsers/chromium; verify TK page, tabs, filters, deep links
