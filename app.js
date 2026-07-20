@@ -170,6 +170,12 @@
       const res = await fetch("lineups-index.json", { cache: "no-cache" });
       if (res.ok) lineupIndex = await res.json();
     } catch { /* none yet */ }
+    // master-trust registry: names and totals for labeling trust-sourced lineups
+    state.trusts = {};
+    try {
+      const res = await fetch("mtias.json", { cache: "no-cache" });
+      if (res.ok) for (const t of (await res.json()).trusts) state.trusts[t.ack] = t;
+    } catch { /* optional */ }
     state.shardCount = lineupIndex ? lineupIndex.shards : 0;
 
     const curatedByTicker = new Map(PLANS.map((p) => [p.ticker, p]));
@@ -195,6 +201,7 @@
           if (plan.afterTax == null && (flag & 32)) plan.afterTax = true;
           if (plan.roth == null && (flag & 64)) plan.roth = true;
         }
+        plan.mtiaAck = f.mtiaAck || null;
         // no lineup in the plan's own filing — fall back to its master trust's
         if (!plan.hasLineup && f.mtiaAck && (lineupIndex.plans[f.mtiaAck] || 0) & 1) {
           plan.trustKey = f.mtiaAck;
@@ -230,7 +237,12 @@
       if (plan.trustKey) {
         const tlu = await fetchEntry(plan.trustKey);
         if (tlu && tlu.confident && tlu.funds && tlu.funds.length) {
-          plan.filedLineup = { ...tlu, source: `master trust filing (${tlu.source || "Schedule H line 4i"})`, fromTrust: true };
+          const tm = state.trusts[plan.trustKey];
+          plan.filedLineup = { ...tlu, fromTrust: true,
+            trustName: tm ? titlePlanName(tm.name) : "the plan's master trust",
+            trustAssets: tm ? tm.assetsEOY : null,
+            sisters: state.plans.filter((p) => p.mtiaAck === plan.trustKey).length,
+            source: `master trust filing (${tlu.source || "Schedule H line 4i"})` };
         }
       }
       if (!plan.filedLineup && lu && lu.confident && lu.funds && lu.funds.length) plan.filedLineup = lu;
@@ -568,14 +580,16 @@
         : lu.smaKind === "managed"
           ? "Securities held inside separately managed accounts — each account is a single menu choice for participants"
           : "Securities itemized in the filing — managed-account or participant-brokerage assets, not separate menu choices")
-      : `${esc(lu.source)} · values as filed · tickers shown where the filed name identifies a registered fund · expense ratios are estimates from public fund data`;
+      : lu.fromTrust
+        ? `Holdings of ${esc(lu.trustName)} — this plan invests through the master trust${lu.sisters > 1 ? ` alongside ${lu.sisters - 1} sister plan${lu.sisters > 2 ? "s" : ""}` : ""}${lu.trustAssets ? ` · trust total ${money(lu.trustAssets / 1e6)}` : ""} · percentages are of the trust, not this plan · tickers shown where the filed name identifies a registered fund · expense ratios are estimates`
+        : `${esc(lu.source)} · values as filed · tickers shown where the filed name identifies a registered fund · expense ratios are estimates from public fund data`;
     return `
-    <div class="section-label">FUND HOLDINGS — ${tab === "sma" ? lu.sma.length + " SECURITIES" : lu.funds.length + " FILED"}
+    <div class="section-label">${lu.fromTrust && tab !== "sma" ? `MASTER TRUST HOLDINGS — ${lu.funds.length}` : `FUND HOLDINGS — ${tab === "sma" ? lu.sma.length + " SECURITIES" : lu.funds.length + " FILED"}`}
       <span class="section-sub">${sub}</span></div>
     ${tabs}
     <div class="fund-scroll">
       <table class="fund-table">
-        <thead><tr><th class="fund-name-col">Holding</th><th>Type</th><th>Est. ER</th><th>Value</th><th>% of ${tab === "sma" ? "account" : "holdings"}</th></tr></thead>
+        <thead><tr><th class="fund-name-col">Holding</th><th>Type</th><th>Est. ER</th><th>Value</th><th>% of ${tab === "sma" ? "account" : (lu.fromTrust ? "trust" : "holdings")}</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
     </div>`;
