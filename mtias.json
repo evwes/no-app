@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-20T02:22:49.485Z",
+ "generated": "2026-07-20T08:23:17.705Z",
  "count": 378,
  "trusts": [
   {
@@ -235,12 +235,6 @@
    "name": "FORTUNE BRANDS INNOVATIONS, INC. DEFINED CONTRIBUTION MASTER TRUST",
    "planYear": 2024,
    "assetsEOY": 963602411
-  },
-  {
-   "ack": "20250411131325NAL0023254833001",
-   "name": "METALTEK INTERNATIONAL MASTER TRUST I",
-   "planYear": 2024,
-   "assetsEOY": 0
   },
   {
    "ack": "20250711111938NAL0004626179001",
@@ -2220,6 +2214,12 @@
    "ack": "20240221131134NAL0002184257001",
    "name": "THE PRUDENTIAL DEFINED CONTRIBUTION MASTER TRUST",
    "planYear": 2023,
+   "assetsEOY": 0
+  },
+  {
+   "ack": "20250411131325NAL0023254833001",
+   "name": "METALTEK INTERNATIONAL MASTER TRUST I",
+   "planYear": 2024,
    "assetsEOY": 0
   },
   {
