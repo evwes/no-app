@@ -64,8 +64,12 @@ async function ocrPages(pdfPath, badPages, workDir) {
     while (next < imgs.length) {
       const mine = next++;
       results[mine] = await new Promise((resolve) => {
+        // OMP_THREAD_LIMIT=1: tesseract's own multithreading burns 4x CPU for
+        // HALF the speed (measured), and 4 workers x 4 OMP threads thrashed the
+        // 4-core runner to ~20 min per filing. Parallelism stays process-level.
         execFile("tesseract", [imgs[mine], "stdout", "--psm", "6", "-c", "preserve_interword_spaces=1"],
-          { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 }, (e, out) => resolve(out || ""));
+          { encoding: "utf8", maxBuffer: 64 * 1024 * 1024, env: { ...process.env, OMP_THREAD_LIMIT: "1" } },
+          (e, out) => resolve(out || ""));
       });
     }
   }
@@ -251,7 +255,9 @@ for (const plan of work) {
     const bad = findBadPages(text);
     if (bad.length >= 3 && bad.length <= OCR_SKIP_BAD) {
       try {
+        const t0 = Date.now();
         const otext = await ocrPages(dest, bad, path.join(WORK, "ocr-" + plan.ack.slice(-12)));
+        console.log(`${tag}: ocr ${Math.min(bad.length, OCR_MAX_PAGES)} pages in ${((Date.now() - t0) / 1000).toFixed(0)}s`);
         if (otext && otext.replace(/\s+/g, "").length > 500) {
           const combined = text + "\f" + otext;
           const p2 = parse4i(combined, plan.assetsEOY, plan.label || "", plan.codes || "");
