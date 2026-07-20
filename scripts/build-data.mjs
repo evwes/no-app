@@ -492,7 +492,36 @@ for (const p of universe) {
   p.mtiaAck = best.ack;
   for (const m of links) usedMtias.set(m.ack, m); // parse every referenced trust
 }
-console.log(`plans linked to a master trust filing: ${universe.filter((p) => p.mtiaAck).length}, trusts referenced: ${usedMtias.size}`);
+// EIN fallback: some filings omit Schedule D even though the plan's 4i shows
+// only "Investment in Master Trust" (Elevance et al.). A trust filed under
+// the sponsor's own EIN is that sponsor's trust. Link only when unambiguous:
+// never a pension-named trust, and when several viable trusts share the EIN,
+// require a single DC-named or confidently-parsed candidate — else skip.
+const trustsByEin = new Map();
+for (const m of mtiaByKey.values()) {
+  const e = String(m.ein).trim();
+  if (!trustsByEin.has(e)) trustsByEin.set(e, []);
+  trustsByEin.get(e).push(m);
+}
+let einLinked = 0;
+for (const p of universe) {
+  if (p.mtiaAck) continue;
+  const cands = (trustsByEin.get(String(p.ein).trim()) || [])
+    .filter((m) => !/pension|defined benefit|\bdb\b/i.test(m.name || ""));
+  if (!cands.length) continue;
+  let pick = null;
+  if (cands.length === 1) pick = cands[0];
+  else {
+    const dc = cands.filter((m) => /401\(?k\)?|savings|defined contribution|thrift|profit sharing/i.test(m.name || ""));
+    if (dc.length === 1) pick = dc[0];
+    else pick = (dc.length ? dc : cands).find((m) => (parsedOk[m.ack] || {}).c) || null;
+  }
+  if (!pick) continue;
+  p.mtiaAck = pick.ack;
+  usedMtias.set(pick.ack, pick);
+  einLinked++;
+}
+console.log(`plans linked to a master trust filing: ${universe.filter((p) => p.mtiaAck).length} (${einLinked} via EIN fallback), trusts referenced: ${usedMtias.size}`);
 
 // join Schedule H + Schedule C per year
 const schH = new Map();
