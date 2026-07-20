@@ -202,8 +202,10 @@
           if (plan.roth == null && (flag & 64)) plan.roth = true;
         }
         plan.mtiaAck = f.mtiaAck || null;
-        // no lineup in the plan's own filing — fall back to its master trust's
-        if (!plan.hasLineup && f.mtiaAck && (lineupIndex.plans[f.mtiaAck] || 0) & 1) {
+        // keep the trust key whenever the trust has a lineup — ensureLineup
+        // decides between the plan's own schedule and the trust's (a plan
+        // whose own 4i is just "Investment in Master Trust" gets the trust)
+        if (f.mtiaAck && (lineupIndex.plans[f.mtiaAck] || 0) & 1) {
           plan.trustKey = f.mtiaAck;
           plan.hasLineup = true;
         }
@@ -233,8 +235,16 @@
     plan.lineupLoading = true;
     try {
       const lu = plan.lineupKey ? await fetchEntry(plan.lineupKey) : null;
-      // the plan's own entry may hold features only; the trust holds the funds
-      if (plan.trustKey) {
+      // use the plan's own schedule unless it is missing or majority
+      // "Investment in Master Trust" — then the trust's real holdings win
+      let ownUsable = !!(lu && lu.confident && lu.funds && lu.funds.length);
+      if (ownUsable && plan.trustKey) {
+        const tot = lu.funds.reduce((a, f) => a + f.value, 0) || 1;
+        const mti = lu.funds.filter((f) => f.type === "Master trust interest" || /master trust/i.test(f.name))
+          .reduce((a, f) => a + f.value, 0);
+        if (mti / tot > 0.5) ownUsable = false;
+      }
+      if (!ownUsable && plan.trustKey) {
         const tlu = await fetchEntry(plan.trustKey);
         if (tlu && tlu.confident && tlu.funds && tlu.funds.length) {
           const tm = state.trusts[plan.trustKey];
