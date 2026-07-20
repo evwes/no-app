@@ -670,7 +670,10 @@
 
       <div class="two-col">
         <div>
-          <div class="section-label">${plan.planYear} CONTRIBUTIONS <span class="section-sub">${plan.dataStatus === "filed" ? "Form 5500 Schedule H" : "sample"}</span></div>
+          <div class="section-label">${(() => {
+            const m = plan.pyb ? +plan.pyb.slice(5, 7) : 1;
+            return m > 1 ? `FY ${plan.planYear}–${String(plan.planYear + 1).slice(2)}` : plan.planYear;
+          })()} CONTRIBUTIONS <span class="section-sub">${plan.dataStatus === "filed" ? "Form 5500 Schedule H" : "sample"}</span></div>
           ${flowsTable(plan)}
         </div>
         <div>

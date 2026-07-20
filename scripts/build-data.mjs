@@ -20,7 +20,12 @@ import path from "node:path";
 const WORK = process.env.WORK_DIR || "/tmp/f5500";
 mkdirSync(WORK, { recursive: true });
 
-const YEARS = [2025, 2024, 2023];
+// dataset years roll automatically: the DOL posts each year's received
+// filings under that year's "Latest" folder; missing years (early January,
+// not-yet-published) are tolerated by the per-year try/catch below.
+// Four years back covers late fiscal-year filers.
+const Y0 = new Date().getUTCFullYear();
+const YEARS = [Y0, Y0 - 1, Y0 - 2, Y0 - 3];
 const MIN_UNIVERSE = 100; // full Form 5500 filing threshold
 const BASES = [
   (y, f) => `https://askebsa.dol.gov/FOIA%20Files/${y}/Latest/${f}`,
@@ -414,7 +419,9 @@ function pickTickered(all) {
     const byPlan = new Map();
     for (const m of list) {
       const key = `${m.ein}|${m.pn}`;
-      if (!byPlan.has(key) || m.year > byPlan.get(key).year) byPlan.set(key, m);
+      const cur = byPlan.get(key);
+  if (!cur || m.year > cur.year ||
+      (m.year === cur.year && String(m.received || "") > String(cur.received || ""))) byPlan.set(key, m);
     }
     const pool = [...byPlan.values()].sort((a, b) => b.participants - a.participants);
     const best = pool[0];
@@ -449,7 +456,9 @@ for (const year of YEARS) {
 const byPlan = new Map();
 for (const m of collected) {
   const key = `${m.ein}|${m.pn}`;
-  if (!byPlan.has(key) || m.year > byPlan.get(key).year) byPlan.set(key, m);
+  const cur = byPlan.get(key);
+  if (!cur || m.year > cur.year ||
+      (m.year === cur.year && String(m.received || "") > String(cur.received || ""))) byPlan.set(key, m);
 }
 const universe = [...byPlan.values()];
 console.log(`\nuniverse: ${universe.length} unique 401(k) plans with ≥${MIN_UNIVERSE} participants`);
