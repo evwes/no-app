@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,400&family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=20260720a">
+<link rel="stylesheet" href="styles.css?v=20260720b">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔎</text></svg>">
 </head>
 <body>
@@ -82,24 +82,6 @@
     filing doesn't state is community-maintained — corrections via <a href="https://github.com/evwes/no-app/issues">GitHub issues</a>.</p>
   </section>
 
-  <section class="cta-card" id="methodology">
-    <h2>How this works</h2>
-    <p>Every U.S. retirement plan with 100+ participants must file a full Form 5500 with the Department of Labor.
-    wampo ingests the public EFAST2 datasets — the main filing, Schedule H (financials), and Schedule C
-    (service providers) — for every 401(k) and ERISA 403(b) plan that files one, and additionally parses each large plan's
-    “Schedule H, line 4i — Schedule of Assets” PDF attachment into the fund-by-fund holdings table you see on plan
-    pages. Search covers <strong>every</strong> full-filing 401(k) plan, and the filing's audited statements are
-    additionally mined for the employer match formula, vesting schedule, Roth/after-tax options, and
-    auto-enrollment — quoted with their source sentences. Data refreshes weekly as new filings post to EFAST2.</p>
-    <p>Per the official Form 5500 instructions, plans with 100–120 participants may keep filing the
-    short-form Schedule I instead of Schedule H (the “80-120 rule”), which is why some smaller plans
-    show limited financial detail. A minority of filings publish a PDF containing only the government
-    form pages without the auditor's attachment — for those, no public source for the fund schedule
-    exists. Plans whose assets live in a master trust show the trust's own filed holdings instead.</p>
-    <p>Where a filing's notes don't state a detail, the field stays “not yet verified” rather than guessed.
-    Expense ratios shown on filed lineups are estimates matched from public fund data, not plan-negotiated pricing.
-    Interpretation follows the official DOL/IRS Form 5500 instructions.</p>
-  </section>
 </main>
 
 <footer class="site-footer">
@@ -111,8 +93,8 @@
 
 <!-- ?v= keys assets to this HTML revision so a cached page can never mix
      old and new scripts — bump the stamp on every frontend change -->
-<script src="data.js?v=20260720a"></script>
-<script src="fund-er.js?v=20260720a"></script>
-<script src="app.js?v=20260720a"></script>
+<script src="data.js?v=20260720b"></script>
+<script src="fund-er.js?v=20260720b"></script>
+<script src="app.js?v=20260720b"></script>
 </body>
 </html>
