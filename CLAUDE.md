@@ -29,7 +29,13 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   workflow_dispatch works from main.
 - **Scripts**: `scripts/build-data.mjs` (dataset ingest), `scripts/lib-4i.mjs`
   (parser + feature extractor, exports PARSER_VERSION), `scripts/fetch-4i.mjs`
-  (PDF fetch/parse loop), `scripts/merge-4i.mjs` (delta merge + index).
+  (PDF fetch/parse loop), `scripts/merge-4i.mjs` (delta merge + index),
+  `scripts/audit-data.mjs` (post-merge sanity audit, runs in the merge job —
+  cross-checks the identities filings state redundantly: participant counts,
+  415(c)-bounded contribution averages, lineup sums vs Sch H, top holding vs
+  plan assets. Every production bug so far violated one of these BEFORE a
+  user noticed; check the merge-job log tail after each run and investigate
+  HIGH findings).
 
 ## Data files (all generated; never hand-edit)
 

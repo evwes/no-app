@@ -117,6 +117,7 @@ jobs:
             git reset --hard "origin/${GITHUB_REF_NAME}"
             cp /tmp/plans-all.json /tmp/mtias.json .
             node scripts/merge-4i.mjs
+            node scripts/audit-data.mjs || true
             git add plans-all.json mtias.json lineups-status.json lineups-index.json data/lineups
             if git diff --cached --quiet; then echo "No data changes."; exit 0; fi
             git commit -m "Update filed plan data (Form 5500 + Schedule H 4i lineups)"
