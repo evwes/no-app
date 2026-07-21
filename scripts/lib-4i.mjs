@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 14;
+export const PARSER_VERSION = 15;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b/i, "SDBA"],
@@ -510,6 +510,30 @@ export function extractPlanFeatures(text) {
     : t.match(/personal choice retirement|pcra/i) ? "Schwab PCRA"
     : t.match(/td ameritrade self.?directed/i) ? "TD Ameritrade SDBA" : null;
   if (brand) out.sdbaBrand = brand;
+
+  // ---- named investment menu ----
+  // Master-trust plans whose per-fund schedule isn't public still NAME their
+  // options in the notes as "Fund Name — description" paragraphs under an
+  // "Investment Options/Funds" heading (Northrop: "U.S. Equity Fund — The
+  // U.S. Equity Fund primarily consists of..."). Names only, no values.
+  const menuHead = t.match(/investment (?:options|funds|programs|line ?up)\b/i);
+  if (menuHead) {
+    const win = t.slice(menuHead.index, menuHead.index + 9000);
+    const menu = [];
+    const nameRe = /([A-Z][\w .,&/()'’-]{1,60}?(?:Funds?|Portfolios?|Accounts?|Pools?)) ?[—–] ?(?=["“A-Z(])/g;
+    let nm;
+    while ((nm = nameRe.exec(win)) && menu.length < 40) {
+      // drop any earlier sentence the lazy match dragged in ("...common
+      // stock. Balanced Fund" → "Balanced Fund"); lowercase-before-period
+      // marks a sentence end, unlike abbreviations ("U.S. Equity Fund")
+      const n = nm[1].split(/(?<=[a-z]{2})[.;:] /).pop()
+        .replace(/^(?:The|A|An|Each|These|Certain) /, "").trim();
+      // generic asset-class rows aren't menu entries
+      if (/^(?:mutual|collective|common|pooled|master|trust|investment|the|other|various)\b/i.test(n)) continue;
+      if (n.length >= 6 && !menu.includes(n)) menu.push(n);
+    }
+    if (menu.length >= 3) out.menu = menu;
+  }
 
   // ---- automatic enrollment ----
   const ae = t.match(/automatic(?:ally)? enroll(?:ed|ment|s)?[^.]{0,100}?(\d{1,2})(?:\.\d+)? ?(?:percent|%)/i);

@@ -79,7 +79,10 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   (match formula incl. tiers/dollar phrasing, vesting graded/cliff/immediate
   with employer-scope rules, Roth, after-tax, in-plan conversion → mega
   backdoor, auto-enroll %, auto-escalate, eligibility, loans, NEC%, safe
-  harbor, true-up, brokerage brand). 2K = 401(m) (match AND/OR after-tax),
+  harbor, true-up, brokerage brand, named investment menu — "Fund Name —
+  description" paragraphs under an Investment Options heading, ≥3 names
+  required; frontend shows the menu only when no lineup exists, labeled
+  "per-option balances aren't public"). 2K = 401(m) (match AND/OR after-tax),
   not purely a match flag.
 - **Bumping PARSER_VERSION re-parses everything overnight** — that is the
   intended, affordable path for parser changes. Weekly cron picks up new

@@ -613,6 +613,21 @@
       <p class="max-benefit">Loading fund holdings from the filing…</p>`;
     }
     if (!plan.funds) {
+      // no parsed lineup, but the audited notes NAME the options (common for
+      // master-trust plans whose per-fund schedule isn't public)
+      const menu = plan.filedFeatures && plan.filedFeatures.menu;
+      if (menu && menu.length) {
+        return `
+      <div class="section-label">INVESTMENT OPTIONS</div>
+      <p class="max-benefit">Named in the plan's audited notes. Per-option balances aren't public —
+      this plan's assets sit in a master trust whose fund-level schedule isn't published.</p>
+      <div class="fund-scroll">
+        <table class="fund-table">
+          <thead><tr><th class="fund-name-col">Option (as filed)</th></tr></thead>
+          <tbody>${menu.map((n) => `<tr><td class="fund-name-col">${esc(n)}</td></tr>`).join("")}</tbody>
+        </table>
+      </div>`;
+      }
       return `
       <div class="section-label">FUND HOLDINGS</div>
       <p class="max-benefit">Fund lineup not parsed from this filing yet (some plans hold assets in a master
@@ -682,7 +697,7 @@
           if (fe) return `<p class="stat-value">${fe.er.toFixed(2)}% <span class="est-chip">est.</span></p><p class="stat-sub">weighted, ${fe.matched} of ${fe.of} holdings</p>`;
           const ce = curatedAvgER(plan);
           if (ce) return `<p class="stat-value">${ce.er.toFixed(2)}% <span class="est-chip">est.</span></p><p class="stat-sub">${ce.matched} of ${ce.of} menu funds</p>`;
-          return `<p class="stat-value">—</p><p class="stat-sub">${plan.filedLineup ? plan.filedLineup.funds.length + " filed holdings" : plan.funds ? plan.funds.length + " fund options" : "lineup not added"}</p>`;
+          return `<p class="stat-value">—</p><p class="stat-sub">${plan.filedLineup ? plan.filedLineup.funds.length + " filed holdings" : plan.funds ? plan.funds.length + " fund options" : plan.filedFeatures && plan.filedFeatures.menu ? plan.filedFeatures.menu.length + " named options" : "lineup not added"}</p>`;
         })()}</div>
         <div class="stat"><p class="stat-label">Recordkeeper</p><p class="stat-value stat-small">${esc(plan.provider || "—")}</p><p class="stat-sub">${esc(plan.filed || "")}</p></div>
       </div>
