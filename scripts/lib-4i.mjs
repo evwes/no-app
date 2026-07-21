@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 15;
+export const PARSER_VERSION = 16;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b/i, "SDBA"],
@@ -97,6 +97,16 @@ export function parseRows(section, opts = {}) {
       if (sp) {
         if (sp[2] === "-") { nameBuf = []; continue; } // stale zero-value holding
         t = sp[1] + "   " + sp[2].replace(/\.\d+$/, "");
+      }
+    }
+    // "PAR/SHARES | COST | MARKET VALUE | UNREALIZED GAIN/LOSS" layouts
+    // (Verizon Master Savings Trust) put the GAIN last — drop it (negatives
+    // are parenthesized) so the market value becomes line-terminal
+    if (opts.gainLast) {
+      const gp = t.match(/^(.*?[0-9][0-9,]*(?:\.\d+)?)\s+(?:-|\(? ?-?[0-9][0-9,]*(?:\.\d+)?\)?)\s*$/);
+      if (gp) {
+        t = gp[1].replace(/\.\d+$/, "");
+        if (/(^|\s)-$/.test(t)) { nameBuf = []; continue; } // worthless holding
       }
     }
     if (SKIP_ROW.test(t) || DATE_LINE.test(t)) {
@@ -253,17 +263,30 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
     const region = lines.slice(s, end);
     const regionText = region.join("\n");
     const sharesLast = /current\s+value\s+shares(\s*\/?\s*par)?|shares\s+par\s*$/im.test(regionText);
-    const parsed = parseRows(region, { sharesLast });
+    // header ends with an unrealized gain/loss column AFTER the value column
+    // — without this the parser reads each row's GAIN as its value
+    const gainLast = /(?:market|current|fair) value unrealized (?:gain|appreciation)/i
+      .test(regionText.replace(/[ \t]+/g, " "));
+    const parsed = parseRows(region, { sharesLast, gainLast });
     if (parsed.funds.length < 2) continue;
     const raw = parsed.totalValue;
     // only consider (thousands) scaling when the region says so — otherwise a
     // page of small full-dollar rows can fake a good ratio at 1000x
     const marked = /thousands? of dollars|\(in thousands|\(thousands|\(\$000|000s? omitted|dollars in thousands/i.test(region.join("\n"));
+    // trustee statements (Verizon Master Savings Trust) file a CLASS-LEVEL
+    // summary page followed by thousands of per-security detail pages that
+    // double-count it. Prefer the summary; penalize security floods in
+    // gain-last statements so an arbitrary detail slice can't outscore it.
+    const CLASS_STEM = /^(interest[- ]bearing cash|u\.? ?s\.? government securities|corporate debt|corporate stock|common\/?collective trust|pooled separate account|master trust|103[- ]12 investment|registered investment compan|insurance company general|other investments?|participant loans?|partnership\/joint venture|real estate|loans \(other|employer[- ]related securit)/i;
+    const classy = parsed.funds.filter((f) => CLASS_STEM.test(f.name)).length;
+    const isSummary = parsed.funds.length >= 4 && classy / parsed.funds.length >= 0.8;
     for (const scale of marked ? [1, 1000] : [1]) {
       const ratio = assetsEOY ? (raw * scale) / assetsEOY : 0;
       if (!ratio) continue;
       const closeness = Math.abs(Math.log(ratio));
-      const score = -closeness + Math.min(parsed.funds.length, 40) * 0.005;
+      const score = -closeness + Math.min(parsed.funds.length, 40) * 0.005
+        + (isSummary && closeness < 0.5 ? 0.1 : 0)
+        - (gainLast && parsed.funds.length >= 60 ? 0.2 : 0);
       if (!best || score > best.score) {
         best = { score, ratio, scale, ...parsed };
       }

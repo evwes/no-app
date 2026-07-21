@@ -65,7 +65,12 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   leading `*` = party-in-interest (not footnote); "(thousands)" scaling only
   when region says so; multi-page heading clusters merged; description column
   usually holds the fund name; "Current Value | Shares Par" layouts (Siemens
-  trusts) need sharesLast mode; section headers must not glue into names.
+  trusts) need sharesLast mode; "COST | MARKET VALUE | UNREALIZED GAIN/LOSS"
+  layouts (Verizon Master Savings Trust) need gainLast mode or every value
+  is the GAIN column; trustee statements file a class-level summary page +
+  thousands of per-security detail pages — summary candidates (≥80% class-
+  stem rows) get a score bonus and gain-last security floods a penalty so
+  the honest summary wins; section headers must not glue into names.
 - **Itemized securities**: classified via section headers + 2R code +
   aggregate-SDBA presence into participant brokerage picks vs managed-account
   innards (`smaKind`). Employer-stock matching must skip generic tokens
