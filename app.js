@@ -83,7 +83,11 @@
   }
 
   function derive(plan) {
-    const balCnt = plan.partBalances || plan.participants;
+    // line 6g(2) is filer-entered and occasionally absurd (Union Savings
+    // Bank filed 3 with-balance participants against 500 total and $77M —
+    // a "$26M average"); trust it only when it covers a plausible share
+    const balCnt = plan.partBalances && plan.partBalances >= (plan.participants || 0) * 0.05
+      ? plan.partBalances : plan.participants;
     plan.avgBal = plan.assetsB != null && balCnt
       ? (plan.assetsB * 1e9) / balCnt : null;
     const f = plan.flows || {};
