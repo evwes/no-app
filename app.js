@@ -83,11 +83,17 @@
   }
 
   function derive(plan) {
-    // line 6g(2) is filer-entered and occasionally absurd (Union Savings
-    // Bank filed 3 with-balance participants against 500 total and $77M —
-    // a "$26M average"); trust it only when it covers a plausible share
-    const balCnt = plan.partBalances && plan.partBalances >= (plan.participants || 0) * 0.05
-      ? plan.partBalances : plan.participants;
+    // line 6g(2) is filer-entered and occasionally absurd: Union Savings
+    // Bank filed 3 with-balance participants against 500 total ($26M
+    // "average"), Verizon Management filed 12,068 against 119,145 ($2.6M
+    // "average"). Distrust it when it's under 5% of participants, or under
+    // half of them while implying a >$1M average — genuine $1M+ plans
+    // (Cravath, Lone Pine, anesthesia groups) have counts that agree, so
+    // they keep the filed figure. Threshold adjustable as cases surface.
+    const pb = plan.partBalances, pt = plan.participants || 0;
+    const balCnt = pb && pb >= pt * 0.05 &&
+      (pb >= pt * 0.5 || plan.assetsB == null || (plan.assetsB * 1e9) / pb <= 1e6)
+      ? pb : pt;
     plan.avgBal = plan.assetsB != null && balCnt
       ? (plan.assetsB * 1e9) / balCnt : null;
     const f = plan.flows || {};
