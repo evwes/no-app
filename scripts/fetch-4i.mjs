@@ -285,7 +285,12 @@ for (const plan of work) {
     continue;
   }
   const ratio = parsed.ratio || 0;
-  const confident = parsed.funds.length >= 3 && ratio > 0.45 && ratio < 1.6;
+  // tiny parses get a tighter band: every junk fair-value-table parse the
+  // audit caught (MP Materials, Ruhlin, Food Express — 3 rows summing both
+  // comparative-year columns) landed at ratio 1.5-1.6 with exactly 3 rows,
+  // while genuine 3-4 row lineups sit near 1.0
+  const confident = parsed.funds.length >= 3 && ratio > 0.45 && ratio < 1.6 &&
+    (parsed.funds.length >= 5 || (ratio > 0.7 && ratio < 1.3));
   record(plan, {
     ack: plan.ack,
     ticker: plan.ticker,

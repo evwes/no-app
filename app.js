@@ -100,6 +100,10 @@
     const contrib = (f.deferralsM || 0) + (f.employerM || 0);
     plan.avgContrib = contrib && plan.activeParticipants
       ? (contrib * 1e6) / plan.activeParticipants : null;
+    // IRC 415(c) caps annual additions (~$77.5K with catch-up in 2025); an
+    // average above that means the filed contribution line includes merger
+    // transfers or similar — the true average is unknowable, so show none
+    if (plan.avgContrib > 80000) plan.avgContrib = null;
     return plan;
   }
 
