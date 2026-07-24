@@ -76,10 +76,17 @@ jobs:
         with:
           name: data-inputs
       - name: Parse filings (shard ${{ matrix.shard }})
+        env:
+          # the 2026-07-24 run OOM'd on every shard at the default heap cap;
+          # public runners have 16 GB — give node real headroom
+          NODE_OPTIONS: --max-old-space-size=12288
         run: |
           sudo apt-get install -y -q poppler-utils tesseract-ocr >/dev/null 2>&1 || true
           TIME_BUDGET_MIN=320 PARSE_SHARD=${{ matrix.shard }} PARSE_SHARDS=${{ needs.prep.outputs.count }} BATCH_4I=999999 node scripts/fetch-4i.mjs
       - uses: actions/upload-artifact@v4
+        # always upload: fetch-4i flushes results-N.json every 250 filings, so
+        # even a crashed shard hands its progress to the merge job
+        if: always()
         with:
           name: results-${{ matrix.shard }}
           path: results-${{ matrix.shard }}.json

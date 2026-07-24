@@ -44,12 +44,14 @@ for (const r of d.plans) {
 
 // lineup shards: sums vs Schedule H, single-holding dominance
 const byAck = new Map(d.plans.map((r) => [g(r, "ack"), r]));
+const entriesByAckCov = {};
 let entries = 0, confident = 0;
 for (let i = 0; i < 64; i++) {
   let sh;
   try { sh = JSON.parse(readFileSync(`data/lineups/${String(i).padStart(2, "0")}.json`, "utf8")); } catch { continue; }
   for (const [ack, e] of Object.entries(sh)) {
     entries++;
+    entriesByAckCov[ack] = e;
     if (!e.confident || !e.funds || !e.funds.length) continue;
     confident++;
     const row = byAck.get(ack);
@@ -65,7 +67,35 @@ for (let i = 0; i < 64; i++) {
   }
 }
 
-console.log(`audit: ${statTotal} plans, ${entries} lineup entries (${confident} confident)`);
+// ---- per-field coverage: the completeness scorecard --------------------
+// Printed every run so extractor progress is a number that moves and any
+// regression shows the night it happens. "unextracted match" = plans where
+// employer money demonstrably flowed but no formula came out — the
+// correctable backlog, distinct from plans that genuinely have no match.
+const covTot = { full: 0, rk: 0, match: 0, vesting: 0, roth: 0, afterTax: 0, lineup: 0, menu: 0, noMatchBacklog: 0, noEmployerMoney: 0 };
+for (const r of d.plans) {
+  if (g(r, "sf")) continue;
+  covTot.full++;
+  if (g(r, "recordkeeper")) covTot.rk++;
+  const e = entriesByAckCov[g(r, "ack")];
+  const f = e && e.features;
+  if (e && e.confident && e.funds && e.funds.length) covTot.lineup++;
+  if (!f) continue;
+  if (f.match || f.matchText) covTot.match++;
+  else if ((g(r, "contribEmployer") || 0) === 0) covTot.noEmployerMoney++;
+  else if (!f.nec && !f.safeHarbor) covTot.noMatchBacklog++;
+  if (f.vesting || f.vestingText) covTot.vesting++;
+  if (f.roth) covTot.roth++;
+  if (f.afterTax) covTot.afterTax++;
+  if (f.menu) covTot.menu++;
+}
+const pct = (n) => (100 * n / covTot.full).toFixed(1) + "%";
+console.log(`\n== COVERAGE (of ${covTot.full} full-form filers; SF filers carry none of this by law)`);
+console.log(`  recordkeeper ${covTot.rk} (${pct(covTot.rk)}) | match ${covTot.match} (${pct(covTot.match)}) | vesting ${covTot.vesting} (${pct(covTot.vesting)})`);
+console.log(`  roth ${covTot.roth} | after-tax ${covTot.afterTax} | lineups ${covTot.lineup} (${pct(covTot.lineup)}) | named menus ${covTot.menu}`);
+console.log(`  match backlog (employer money but no formula extracted): ${covTot.noMatchBacklog} | genuinely no employer money: ${covTot.noEmployerMoney}`);
+
+console.log(`\naudit: ${statTotal} plans, ${entries} lineup entries (${confident} confident)`);
 for (const sev of ["high", "warn"]) {
   console.log(`\n== ${sev.toUpperCase()} (${findings[sev].length})`);
   for (const f of findings[sev].slice(0, 40)) console.log("  " + f);

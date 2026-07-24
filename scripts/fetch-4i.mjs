@@ -306,6 +306,12 @@ for (const plan of work) {
     source: `Schedule H line 4i attachment, plan year ${plan.planYear} filing${usedOcr ? " (digitized from scanned pages via OCR)" : ""}`,
   }, features);
   summary.push(`${tag}: ${parsed.funds.length} rows, cov ${(ratio * 100).toFixed(0)}%, sdba=${parsed.sdba}, ok=${confident}`);
+  // flush the delta every 250 filings: a crash (the Jul-24 run OOM'd every
+  // shard ~3h in) then costs minutes of progress, not the whole job, and the
+  // merge job can ingest partials from failed shards
+  if (PARSE_SHARD != null && fetched % 250 === 0) {
+    writeFileSync(`results-${PARSE_SHARD}.json`, JSON.stringify(delta));
+  }
   await new Promise((r) => setTimeout(r, 150)); // be polite to the bucket
 }
 

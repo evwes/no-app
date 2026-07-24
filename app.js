@@ -127,6 +127,7 @@
       assetsB: filed.assetsEOY ? filed.assetsEOY / 1e9 : null,
       assetsYoY: yoy == null ? null : +yoy.toFixed(1),
       ein: filed.ein,
+      isSF: !!filed.isSF,
       pyb: filed.pyb || "",
       filed: fmtFiledDate(filed.filedDate),
       flows: {
@@ -426,9 +427,34 @@
   }
 
   function unknownContributionCard(plan) {
+    // Schedule H/SF reports the actual dollars — $0 is an ANSWER, not a gap
+    if (plan.flows.employerM === 0) {
+      return `
+      <div class="contrib-card">
+        <div class="contrib-head">
+          <span class="contrib-title">Employer Contributions</span>
+          <span class="badge badge-gray">NONE FILED — FORM 5500</span>
+        </div>
+        <p class="max-benefit">The employer contributed <strong>$0</strong> in plan year ${plan.planYear} per the
+        filing — no match or nonelective contribution was made this year.</p>
+      </div>`;
+    }
     const filedLine = plan.flows.employerM != null
       ? `The employer contributed <strong>${money(plan.flows.employerM)}</strong> in plan year ${plan.planYear} (Form 5500).`
       : "";
+    if (plan.isSF) {
+      return `
+      <div class="contrib-card">
+        <div class="contrib-head">
+          <span class="contrib-title">Employer Contributions</span>
+          <span class="badge badge-gray">SHORT-FORM FILING</span>
+        </div>
+        <p class="max-benefit">${filedLine}
+        This plan files the short Form 5500-SF, which carries no audited attachment — the DOL
+        doesn't collect the match formula, vesting schedule, or fund lineup for it.
+        Know this plan? <a href="https://github.com/evwes/no-app/issues">Add it</a>.</p>
+      </div>`;
+    }
     if (plan.matchCode) {
       return `
       <div class="contrib-card">
@@ -455,8 +481,17 @@
     </div>`;
   }
 
-  function taxRow(label, on, blurb) {
-    if (on == null) return `<div class="feat-row"><span>${esc(label)}</span><span class="feat-unknown">— Not yet verified</span></div>`;
+  /* Three kinds of "missing" deserve three different labels: the DOL never
+   * collects it (short-form filers), the filing was parsed but the auditor
+   * didn't state it, or the attachment couldn't be read at all. */
+  function whyUnknown(plan) {
+    if (plan.isSF) return "Not collected — DOL short-form filing";
+    if (plan.filedFeatures) return "Not stated in the audited notes";
+    return "Not stated — filing attachment absent or unreadable";
+  }
+
+  function taxRow(label, on, blurb, why) {
+    if (on == null) return `<div class="feat-row"><span>${esc(label)}</span><span class="feat-unknown">— ${esc(why || "Not yet verified")}</span></div>`;
     if (!on) return `<div class="feat-row"><span>${esc(label)}</span><span class="feat-off">✗ Not offered</span></div>`;
     return `
     <div class="feat-block">
@@ -474,14 +509,15 @@
       rows.push(`<div class="feat-block"><div class="feat-row"><span>Auto-Escalate</span><span class="feat-on">✓ Yes</span></div>
         <div class="feat-blurb">${esc(plan.autoEscalate)}</div></div>`);
     }
+    const why = whyUnknown(plan);
     rows.push(taxRow("Pre-Tax (Traditional)", plan.pretax,
-      "Contributions reduce current taxable income. Taxes paid upon withdrawal in retirement."));
+      "Contributions reduce current taxable income. Taxes paid upon withdrawal in retirement.", why));
     rows.push(taxRow("Roth (After-Tax Designated)", plan.roth,
-      "Contributions made with after-tax dollars. Qualified withdrawals in retirement are tax-free."));
+      "Contributions made with after-tax dollars. Qualified withdrawals in retirement are tax-free.", why));
     rows.push(taxRow("Voluntary After-Tax", plan.afterTax,
-      plan.megaBackdoor ? "Supports in-plan Roth conversion — the “mega backdoor Roth”." : ""));
+      plan.megaBackdoor ? "Supports in-plan Roth conversion — the “mega backdoor Roth”." : "", why));
     rows.push(`<div class="feat-row"><span>Self-Directed Brokerage</span>${plan.brokerage == null
-      ? `<span class="feat-unknown">— Not yet verified</span>`
+      ? `<span class="feat-unknown">— ${esc(why)}</span>`
       : plan.brokerage !== "None"
         ? `<span class="feat-on">✓ ${esc(plan.brokerage)}</span>` : `<span class="feat-off">✗ Not offered</span>`}</div>`);
     const ff = plan.filedFeatures || {};
@@ -489,9 +525,12 @@
       rows.push(`<div class="feat-block"><div class="feat-row"><span>Eligibility</span><span class="feat-on">✓ ${esc(ff.eligibility)}</span></div>
         ${ff.eligibilityText ? `<div class="feat-blurb">“${esc(ff.eligibilityText)}”</div>` : ""}</div>`);
     }
-    if (ff.loans) {
-      rows.push(`<div class="feat-row"><span>Participant Loans</span><span class="feat-on">✓ Permitted</span></div>`);
-    }
+    rows.push(ff.loans
+      ? `<div class="feat-row"><span>Participant Loans</span><span class="feat-on">✓ Permitted</span></div>`
+      : `<div class="feat-row"><span>Participant Loans</span><span class="feat-unknown">— ${esc(why)}</span></div>`);
+    // ESPPs are IRC §423 stock plans, not retirement plans — they never
+    // appear in any Form 5500; say so instead of implying it's pending
+    rows.push(`<div class="feat-row"><span>ESPP</span><span class="feat-unknown">— Not in retirement filings (source: SEC, planned)</span></div>`);
     for (const h of plan.highlights) {
       rows.push(`<div class="feat-row"><span>Feature</span><span class="feat-on">✓ ${esc(h)}</span></div>`);
     }
@@ -644,8 +683,10 @@
       }
       return `
       <div class="section-label">FUND HOLDINGS</div>
-      <p class="max-benefit">Fund lineup not parsed from this filing yet (some plans hold assets in a master
-      trust and don't itemize funds). <a href="https://github.com/evwes/no-app/issues">Contribute it</a>.</p>`;
+      <p class="max-benefit">${plan.isSF
+        ? "No fund schedule exists for this plan — short-form (5500-SF) filers don't attach audited statements, so the DOL never receives one."
+        : "No readable fund schedule in this filing's public copy — the attachment is scanned/absent, or the plan holds assets through a trust that doesn't itemize funds."}
+      <a href="https://github.com/evwes/no-app/issues">Contribute it</a>.</p>`;
     }
     // community-sourced fund menu: names and tickers only — returns aren't in
     // filings, so none are shown; ERs are pattern-based estimates like the
