@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 17;
+export const PARSER_VERSION = 18;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b/i, "SDBA"],
@@ -362,7 +362,13 @@ export function extractPlanFeatures(text) {
   const sentence = (idx) => {
     let a = t.lastIndexOf(". ", idx); a = a === -1 ? Math.max(0, idx - 220) : a + 2;
     let b = t.indexOf(". ", idx); b = b === -1 ? Math.min(t.length, idx + 280) : b + 1;
-    return cap(clean(t.slice(a, b)).replace(/^[a-z]/, (c) => c.toUpperCase()));
+    // bullet lists parse as one endless "sentence" — if the matched phrase
+    // sits past the display cap, window the excerpt around it so the quote
+    // always contains the text the extraction came from (audit-verified)
+    let cut = false;
+    if (idx - a > 200) { a = idx - 100; cut = true; }
+    const s = clean(t.slice(a, b)).replace(/^[a-z]/, (c) => c.toUpperCase());
+    return cap((cut ? "…" : "") + s);
   };
 
   // ---- employer match formula ----
@@ -371,7 +377,7 @@ export function extractPlanFeatures(text) {
     t.match(/(\d{1,3})(?:\.\d+)? ?(?:percent|%) match(?:ing)?[^.]{0,80}?(?:up to|on the first) (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i) ||
     // "matching contribution ... equal to 100% of ... deferral contributions
     // up to 6% of ... compensation" (Black Hills style — no "first")
-    t.match(/match(?:ing)?[^.]{0,160}?(\d{1,3})(?:\.\d+)? ?(?:percent|%) of [^.]{0,140}?(?:up to|not to exceed|to a maximum of) (\d{1,2})(?:\.\d+)? ?(?:percent|%) of/i);
+    t.match(/match(?:ing)?[^.]{0,160}?(\d{1,3})(?:\.\d+)? ?(?:percent|%) of [^.]{0,140}?(?:up to|not to exceed|to a maximum of|maximum[^.]{0,60}? of) (\d{1,2})(?:\.\d+)? ?(?:percent|%) of/i);
   // dollar-phrased formulas: "dollar-for-dollar up to 4%", "50 cents per dollar on the first 6%"
   const df = !mf && (t.match(/dollar[- ]for[- ]dollar[^.]{0,80}?(?:up to|on the first) (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i)
     ? { pct: 100, cap: null } : null);
@@ -413,12 +419,27 @@ export function extractPlanFeatures(text) {
     while ((tm2 = tierRe2.exec(tail)) && tg++ < 4) out.match += ` + ${+tm2[2]}% of the next ${+tm2[1]}%`;
     out.matchText = sentence(mtab.index);
   } else {
-    // fall back to the descriptive sentence, skipping form-page boilerplate
-    const mre = /(?:employer|company) match(?:ing)? contributions?|matching contributions? (?:is|are|equal|of|based|provided)/gi;
-    let mm;
-    while ((mm = mre.exec(t))) {
-      const s = sentence(mm.index);
-      if (!BOILER.test(s) && s.length > 60) { out.matchText = s; break; }
+    // "The Company made a match of up to 1% of compensation" (Columbia
+    // Ford) — a stated cap with no rate is still a formula worth showing
+    const upTo = t.match(/(?:made |makes )?a match of up to (\d{1,2})(?:\.\d+)? ?(?:percent|%) of (?:eligible |annual )?compensation/i);
+    // "may elect to make discretionary matching contributions … determined
+    // by the Board" — roughly half the no-formula backlog. There IS no
+    // formula; discretionary is the answer, not a gap.
+    const disc = t.match(/discretionary (?:401\(k\) )?match(?:ing)?(?: and profit[- ]sharing)? contributions?|match(?:ing)? contributions? [^.]{0,80}?(?:discretionary|determined (?:annually |each year )?by (?:its |the )?(?:board|company|employer|trustees))/i);
+    if (upTo) {
+      out.match = `Up to ${+upTo[1]}% of pay`;
+      out.matchText = sentence(upTo.index);
+    } else if (disc) {
+      out.match = "Discretionary — set year to year";
+      out.matchText = sentence(disc.index);
+    } else {
+      // fall back to the descriptive sentence, skipping form-page boilerplate
+      const mre = /(?:employer|company|plan sponsor)(?:['’]s)? match(?:ing)? contributions?|matching contributions? (?:is|are|equal|of|based|provided)/gi;
+      let mm;
+      while ((mm = mre.exec(t))) {
+        const s = sentence(mm.index);
+        if (!BOILER.test(s) && s.length > 60) { out.matchText = s; break; }
+      }
     }
   }
 

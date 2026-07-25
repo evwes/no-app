@@ -1,0 +1,23 @@
+name: Site smoke test
+on:
+  push:
+    branches: ["claude/wampo-401k-live-nx1t4o"]
+    paths: ["app.js", "index.html", "styles.css", "data.js", "fund-er.js", "scripts/smoke-test.mjs"]
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install Playwright
+        run: |
+          npm init -y >/dev/null
+          npm i --no-save playwright >/dev/null
+          npx playwright install --with-deps chromium >/dev/null
+      - name: Smoke test the site as a visitor
+        run: node scripts/smoke-test.mjs

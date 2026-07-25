@@ -120,6 +120,31 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   scripts/** or the workflow file while a run you want to keep is in flight. History was squashed once to
   drop >100MB blobs; don't reintroduce giant files.
 
+## Operating protocol (hard-learned)
+
+- **Verify starts, not just finishes**: after ANY push meant to trigger a
+  run, confirm within a minute that the run actually exists (list runs via
+  API/MCP). A dropped webhook once went unnoticed for two days because
+  monitoring only watched for the data commit. Never tell the owner
+  "lands tonight" until the run is observed in_progress.
+- Runner OOM (Jul 24): parse jobs need NODE_OPTIONS=--max-old-space-size,
+  results flush every 250 filings, artifacts upload if: always() — crashed
+  shards hand progress to the merge; retries converge.
+- Repo must stay PUBLIC — private-repo Actions quota dies in one re-parse
+  (~45 runner-hours). Changing visibility unpublishes GitHub Pages
+  (re-enable in Settings → Pages, serve main).
+- **Curated overlay never beats filed data** (flipped 2026-07-24):
+  provider/match/vesting/tax flags prefer extraction; curated only fills
+  gaps. data.js predates the pipeline and goes stale.
+- **Smoke test** (site-test.yml → scripts/smoke-test.mjs) runs on every
+  frontend push: boots the site, opens full-form/master-trust/short-form
+  specimens picked from live data, fails on undefined/NaN leaks or missing
+  explanation rows. Run locally before pushing frontend changes.
+- **Correctness check** in audit-data.mjs: every displayed formula's numbers
+  must appear in its own quote (Jul-24 baseline: 252/43,488 = 0.58%
+  mismatches, mostly quotes truncated before the formula — fixed by
+  windowing sentence() around the match; expect near-zero after v18).
+
 ## Testing pattern
 
 Real filings, locally: S3 PDFs download in-sandbox. poppler-utils AND

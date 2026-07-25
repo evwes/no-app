@@ -114,8 +114,10 @@
     return derive({
       ticker: filed.ticker,
       company: filed.company,
-      provider: c.provider || filed.recordkeeper || null,
-      providerFiled: !c.provider && !!filed.recordkeeper,
+      // FILED beats curated wherever both exist — the overlay predates the
+      // extraction pipeline and can go stale; filings are re-pulled weekly
+      provider: filed.recordkeeper || c.provider || null,
+      providerFiled: !!filed.recordkeeper,
       planName: titlePlanName(filed.planName),
       city: filed.city, state: filed.state, zip: filed.zip,
       planTypes: planTypesFromCode(filed.pensionCode || ""),
@@ -192,6 +194,12 @@
       if (res.ok) for (const t of (await res.json()).trusts) state.trusts[t.ack] = t;
     } catch { /* optional */ }
     state.shardCount = lineupIndex ? lineupIndex.shards : 0;
+    // tell visitors how fresh the data is — the pipeline stamps every merge
+    if (lineupIndex && lineupIndex.generated) {
+      const el = $("dataAsOf");
+      if (el) el.textContent = " Data refreshed " + new Date(lineupIndex.generated)
+        .toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) + ".";
+    }
 
     const curatedByTicker = new Map(PLANS.map((p) => [p.ticker, p]));
     const merged = [];
@@ -274,12 +282,13 @@
       if (lu && lu.features) {
         const ff = lu.features;
         plan.filedFeatures = ff;
-        if (plan.roth == null && ff.roth) plan.roth = true;
-        if (plan.afterTax == null && ff.afterTax) plan.afterTax = true;
-        if ((plan.autoEnroll == null || /code 2S/.test(plan.autoEnroll)) && ff.autoEnroll) {
+        // filed evidence overrides curated values (curated can be stale)
+        if (ff.roth) plan.roth = true;
+        if (ff.afterTax) plan.afterTax = true;
+        if (ff.autoEnroll) {
           plan.autoEnroll = ff.autoEnroll === true ? "enrollment is automatic (per filing)" : ff.autoEnroll;
         }
-        if (!plan.vesting && ff.vesting) {
+        if (ff.vesting) {
           plan.vesting = ff.vesting;
           // enrich a bare "Graded schedule" with the rate stated in the quote
           const g = ff.vesting === "Graded schedule" && ff.vestingText &&
@@ -292,7 +301,7 @@
           plan.megaBackdoor = true;
         }
         if (!plan.autoEscalate && ff.autoEscalate) plan.autoEscalate = ff.autoEscalate === true ? "Automatic annual increases (per filing)" : `${ff.autoEscalate} (per filing)`;
-        if (ff.sdbaBrand && (plan.brokerage == null || plan.brokerage === "Self-directed brokerage")) plan.brokerage = ff.sdbaBrand;
+        if (ff.sdbaBrand) plan.brokerage = ff.sdbaBrand;
       }
       if (!plan.filedLineup) plan.hasLineup = false;
       if (!plan.filedLineup && !plan.filedFeatures) { plan.lineupKey = null; plan.trustKey = null; }
@@ -758,9 +767,10 @@
       </div>
 
       <div class="section-label">EMPLOYER CONTRIBUTIONS <span class="section-sub">${plan.filedFeatures ? "Source: Form 5500 filing (audit notes) — verify details with HR" : "Source: Form 5500 codes + plan document / SPD — verify with HR"}</span></div>
-      ${plan.contributions ? plan.contributions.map((c) => contributionCard(c, plan)).join("")
-        : plan.filedFeatures && (plan.filedFeatures.match || plan.filedFeatures.matchText || plan.filedFeatures.vesting)
-          ? filedContributionCard(plan) : unknownContributionCard(plan)}
+      ${plan.filedFeatures && (plan.filedFeatures.match || plan.filedFeatures.matchText || plan.filedFeatures.vesting)
+        ? filedContributionCard(plan)
+        : plan.contributions ? plan.contributions.map((c) => contributionCard(c, plan)).join("")
+          : unknownContributionCard(plan)}
 
       <div class="two-col">
         <div>

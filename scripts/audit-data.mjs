@@ -67,6 +67,33 @@ for (let i = 0; i < 64; i++) {
   }
 }
 
+// ---- extraction correctness: formula must agree with its own quote -----
+// A WRONG formula is worse than a missing one. Every structured value we
+// display was derived from a quoted sentence — so every number in the
+// formula must appear in that quote (digits, or spelled out for vesting).
+const WORDS = { 1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six" };
+let checked = 0, mismatches = 0;
+const mmList = [];
+for (const [ack, e] of Object.entries(entriesByAckCov)) {
+  const f = e && e.features;
+  if (!f) continue;
+  if (f.match && f.matchText && !/discretionary|up to/i.test(f.match)) {
+    checked++;
+    const nums = (f.match.match(/\d+(?:\.\d+)?/g) || []).filter((n) => +n !== 100 || !/dollar[- ]for[- ]dollar/i.test(f.matchText));
+    const bad = nums.filter((n) => !f.matchText.includes(n));
+    if (bad.length) { mismatches++; if (mmList.length < 12) mmList.push(`${ack.slice(0, 14)}: match "${f.match}" but quote lacks [${bad}]`); }
+  }
+  if (f.vesting && f.vestingText && /(\d)-year cliff/.test(f.vesting)) {
+    checked++;
+    const n = +f.vesting.match(/(\d)-year/)[1];
+    if (!f.vestingText.includes(String(n)) && !new RegExp(`\\b${WORDS[n]}\\b`, "i").test(f.vestingText)) {
+      mismatches++; if (mmList.length < 12) mmList.push(`${ack.slice(0, 14)}: vesting "${f.vesting}" not in its quote`);
+    }
+  }
+}
+console.log(`\n== CORRECTNESS (formula-vs-quote): ${checked} checked, ${mismatches} mismatches${mismatches ? "" : " — all consistent"}`);
+for (const l of mmList) console.log("  " + l);
+
 // ---- per-field coverage: the completeness scorecard --------------------
 // Printed every run so extractor progress is a number that moves and any
 // regression shows the night it happens. "unextracted match" = plans where
