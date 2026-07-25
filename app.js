@@ -425,7 +425,7 @@
         <span class="badge badge-green">FORM 5500 AUDIT NOTES</span>
         <span class="contrib-total">${total}</span>
       </div>
-      ${ff.match ? `<p class="max-benefit">Formula: <strong>${esc(ff.match)}</strong>${ff.safeHarbor === "match" ? " · safe harbor" : ""}${ff.trueUp ? " · with annual true-up" : ""}</p>` : ""}
+      ${ff.match ? `<p class="max-benefit">Formula: <strong>${esc(ff.match)}</strong>${ff.safeHarbor === "match" ? " · safe harbor" : ""}${ff.trueUp ? " · with annual true-up" : ""}${/discretionary/i.test(ff.match) && plan.flows.employerM === 0 ? " · <strong>none made this plan year</strong>" : ""}</p>` : ""}
       ${ff.matchText ? `<blockquote class="quote">“${esc(ff.matchText)}”</blockquote>` : ""}
       ${ff.nec ? `<p class="max-benefit">Employer nonelective contribution: <strong>${esc(ff.nec)}</strong>${ff.safeHarbor === "nonelective" ? " · safe harbor" : ""}</p>` : ""}
       ${ff.necText ? `<blockquote class="quote">“${esc(ff.necText)}”</blockquote>` : ""}
@@ -767,7 +767,8 @@
       </div>
 
       <div class="section-label">EMPLOYER CONTRIBUTIONS <span class="section-sub">${plan.filedFeatures ? "Source: Form 5500 filing (audit notes) — verify details with HR" : "Source: Form 5500 codes + plan document / SPD — verify with HR"}</span></div>
-      ${plan.filedFeatures && (plan.filedFeatures.match || plan.filedFeatures.matchText || plan.filedFeatures.vesting)
+      ${plan.filedFeatures && (plan.filedFeatures.match
+          || ((plan.filedFeatures.matchText || plan.filedFeatures.vesting) && plan.flows.employerM !== 0))
         ? filedContributionCard(plan)
         : plan.contributions ? plan.contributions.map((c) => contributionCard(c, plan)).join("")
           : unknownContributionCard(plan)}

@@ -108,8 +108,12 @@ for (const r of d.plans) {
   const f = e && e.features;
   if (e && e.confident && e.funds && e.funds.length) covTot.lineup++;
   if (!f) continue;
-  if (f.match || f.matchText) covTot.match++;
-  else if ((g(r, "contribEmployer") || 0) === 0) covTot.noEmployerMoney++;
+  // "covered" must not be inflated by boilerplate mentions in plans that
+  // paid nothing — count $0-employer plans separately (their answer is
+  // "none this year", which the site now states)
+  const zeroEmp = (g(r, "contribEmployer") || 0) === 0;
+  if (zeroEmp) covTot.noEmployerMoney++;
+  else if (f.match || f.matchText) covTot.match++;
   else if (!f.nec && !f.safeHarbor) covTot.noMatchBacklog++;
   if (f.vesting || f.vestingText) covTot.vesting++;
   if (f.roth) covTot.roth++;
