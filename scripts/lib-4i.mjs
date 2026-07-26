@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 18;
+export const PARSER_VERSION = 19;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b/i, "SDBA"],
@@ -359,14 +359,16 @@ export function extractPlanFeatures(text) {
     .replace(/\bDecember 31, 20\d\d(?: and 20\d\d)?\b/g, " ")
     .replace(/\s{2,}/g, " ").trim();
   const cap = (s) => (s.length > 300 ? s.slice(0, 297) + "…" : s);
-  const sentence = (idx) => {
+  const sentence = (idx, span = 0) => {
     let a = t.lastIndexOf(". ", idx); a = a === -1 ? Math.max(0, idx - 220) : a + 2;
     let b = t.indexOf(". ", idx); b = b === -1 ? Math.min(t.length, idx + 280) : b + 1;
-    // bullet lists parse as one endless "sentence" — if the matched phrase
-    // sits past the display cap, window the excerpt around it so the quote
-    // always contains the text the extraction came from (audit-verified)
+    // bullet lists parse as one endless "sentence" — window the excerpt so
+    // the quote always contains the FULL matched span (through the last
+    // tier), not just its start (audit-verified: formula ⊆ quote)
+    const end = idx + span;
+    if (end + 20 > b) b = Math.min(t.length, end + 20);
     let cut = false;
-    if (idx - a > 200) { a = idx - 100; cut = true; }
+    if (end - a > 270) { a = Math.max(a, end - 250); cut = true; }
     const s = clean(t.slice(a, b)).replace(/^[a-z]/, (c) => c.toUpperCase());
     return cap((cut ? "…" : "") + s);
   };
@@ -377,7 +379,10 @@ export function extractPlanFeatures(text) {
     t.match(/(\d{1,3})(?:\.\d+)? ?(?:percent|%) match(?:ing)?[^.]{0,80}?(?:up to|on the first) (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i) ||
     // "matching contribution ... equal to 100% of ... deferral contributions
     // up to 6% of ... compensation" (Black Hills style — no "first")
-    t.match(/match(?:ing)?[^.]{0,160}?(\d{1,3})(?:\.\d+)? ?(?:percent|%) of [^.]{0,140}?(?:up to|not to exceed|to a maximum of|maximum[^.]{0,60}? of) (\d{1,2})(?:\.\d+)? ?(?:percent|%) of/i);
+    // "up to a 1%" — without the optional article the engine backtracks
+    // into pairing the wrong numbers (QACA filings extracted "1% of the
+    // first 6%" instead of "100% of the first 1%")
+    t.match(/match(?:ing)?[^.]{0,160}?(\d{1,3})(?:\.\d+)? ?(?:percent|%) of [^.]{0,140}?(?:up to|not to exceed|to a maximum of|maximum[^.]{0,60}? of) (?:an? )?(\d{1,2})(?:\.\d+)? ?(?:percent|%) of/i);
   // dollar-phrased formulas: "dollar-for-dollar up to 4%", "50 cents per dollar on the first 6%"
   const df = !mf && (t.match(/dollar[- ]for[- ]dollar[^.]{0,80}?(?:up to|on the first) (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i)
     ? { pct: 100, cap: null } : null);
@@ -401,9 +406,22 @@ export function extractPlanFeatures(text) {
     // 4%, and 25% of the next 1%" (Kohler) has a comma-joined middle tier
     const tierRe = /(\d{1,3})(?:\.\d+)? ?(?:percent|%) of the next (\d{1,2})(?:\.\d+)? ?(?:percent|%)/gi;
     const tail = t.slice(mf.index, mf.index + 400);
-    let tm; let tguard = 0;
-    while ((tm = tierRe.exec(tail)) && tguard++ < 4) out.match += ` + ${+tm[1]}% of the next ${+tm[2]}%`;
-    out.matchText = sentence(mf.index);
+    let tm; let tguard = 0; let lastTierEnd = mf[0].length;
+    while ((tm = tierRe.exec(tail)) && tguard++ < 4) {
+      out.match += ` + ${+tm[1]}% of the next ${+tm[2]}%`;
+      lastTierEnd = tm.index + tm[0].length;
+    }
+    // QACA/two-part safe harbor phrasing: "…and 50% of the deferral which
+    // exceeds 1% up to 6% of compensation" → 50% of the next (6−1)%
+    if (tguard === 0) {
+      const ex = tail.match(/\b(?:and|plus) (\d{1,3})(?:\.\d+)? ?(?:percent|%) of [^.]{0,140}?(?:(?:exceeds?|in excess of|above)[^.]{0,100}?(?:up to|not to exceed)|between [^.]{0,40}? and) (?:an? )?(\d{1,2})(?:\.\d+)? ?(?:percent|%)/i);
+      if (ex && +ex[2] > +mf[2]) {
+        out.match += ` + ${+ex[1]}% of the next ${+ex[2] - +mf[2]}%`;
+        lastTierEnd = ex.index + ex[0].length;
+      }
+    }
+    // the quote must contain every tier the formula states
+    out.matchText = sentence(mf.index, lastTierEnd);
   } else if (df) {
     const m2 = t.match(/dollar[- ]for[- ]dollar[^.]{0,80}?(?:up to|on the first) (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i);
     out.match = `100% of the first ${+m2[1]}% of pay`;
@@ -449,7 +467,10 @@ export function extractPlanFeatures(text) {
   let vm; let guard = 0;
   while ((vm = vre.exec(t)) && guard++ < 40) {
     const s = clean(vm[0]);
-    if (!BOILER.test(s) && !/defined benefit|pension benefit/i.test(s)) vestSentences.push(s);
+    // conditional/alternative schedules are not the plan's actual schedule:
+    // top-heavy fallbacks and death/disability accelerations produced
+    // "5-year cliff" claims that contradict the real graded schedule
+    if (!BOILER.test(s) && !/defined benefit|pension benefit|top[- ]heavy|in the event (?:the plan|of death|of disab)|should the plan (?:be|become)|alternative vesting|if the plan (?:is|becomes)/i.test(s)) vestSentences.push(s);
   }
   // graded/cliff language always describes employer money — check it FIRST
   for (const s of vestSentences) {
@@ -462,7 +483,9 @@ export function extractPlanFeatures(text) {
     if (cliff) {
       const n = cliff[1] || cliff[2] || cliff[3];
       const num = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6 }[String(n).toLowerCase()] || +n;
-      if (num >= 1 && num <= 6) { out.vesting = `${num}-year cliff`; out.vestingText = cap(s); break; }
+      // IRC §411(a)(2)(B) caps DC cliff vesting at 3 years — a "5-year
+      // cliff" reading is a misparsed graded schedule or service reference
+      if (num >= 1 && num <= 3) { out.vesting = `${num}-year cliff`; out.vestingText = cap(s); break; }
     }
   }
   // vesting stated as a service-year TABLE rather than prose ("2 Years 20,
@@ -485,7 +508,7 @@ export function extractPlanFeatures(text) {
   if (!out.vesting) {
     for (const s of vestSentences) {
       if (!/(matching|employer|company|non.?elective|profit.?sharing) (?:contributions?|accounts?)|company match/i.test(s)) continue;
-      if (/immediately? (?:100 ?(?:percent|%) )?(?:fully )?vested|fully vested (?:at all times|immediately|upon)|100 ?(?:percent|%) vested (?:at all times|immediately|in all)/i.test(s)) {
+      if (/immediately? (?:100 ?(?:percent|%) )?(?:fully )?vested|fully vested (?:at all times|immediately|upon)|100 ?(?:percent|%) vested (?:at all times|immediately|in all)|always (?:fully |100 ?(?:percent|%) )?vested/i.test(s)) {
         out.vesting = "Immediate"; out.vestingText = cap(s); break;
       }
       if (!out.vestingText) out.vestingText = cap(s);
@@ -526,9 +549,17 @@ export function extractPlanFeatures(text) {
 
   // ---- employer nonelective / core contribution ----
   const nec = t.match(/non.?(?:contributory|elective)[^.]{0,80}?contribution[^.]{0,60}?(\d{1,2})(?:\.\d+)? ?(?:percent|%)/i) ||
-    t.match(/(?:employer|company) (?:core|automatic|basic|retirement) contribution[^.]{0,60}?(\d{1,2})(?:\.\d+)? ?(?:percent|%)/i) ||
+    t.match(/(?:employer|company|university|college|institution|organization|hospital|health system) (?:core|automatic|basic|retirement) contribution[^.]{0,60}?(\d{1,2})(?:\.\d+)? ?(?:percent|%)/i) ||
+    t.match(/(?:university|college|institution|organization|hospital|health system|employer|company) (?:also )?contributes? (?:an amount )?(?:equal to )?(\d{1,2})(?:\.\d+)? ?(?:percent|%) of/i) ||
     t.match(/contribut\w+ (\d{1,2})(?:\.\d+)? ?(?:percent|%) of (?:each |eligible |annual )?(?:participant|employee)s?'? (?:eligible )?(?:compensation|pay)[^.]{0,60}?regardless of/i);
   if (nec && +nec[1] >= 1 && +nec[1] <= 15) { out.nec = `${+nec[1]}% of pay`; out.necText = sentence(nec.index); }
+  // multiemployer/union plans: the employer contribution is an hourly rate
+  // set by the CBA, not a formula — say so instead of showing nothing
+  if (!out.nec && !out.match && !out.matchText) {
+    const cba = t.match(/(?:contribut\w+|amounts?) [^.]{0,120}?(?:collective bargaining agreements?|rates? specified in the (?:applicable )?(?:labor|bargaining) agreements?|per hour worked)/i) ||
+      t.match(/signatory employers? [^.]{0,80}?(?:make|remit) contributions?/i);
+    if (cba) { out.nec = "Set by collective bargaining agreement"; out.necText = sentence(cba.index); }
+  }
 
   // ---- auto-escalation ----
   const esc = t.match(/(?:automatic(?:ally)? increas\w+|escalat\w+)[^.]{0,120}?(\d{1,2})(?:\.\d+)? ?(?:percent|%)[^.]{0,80}?(?:maximum|up to|cap|not to exceed)[^.]{0,40}?(\d{1,2})(?:\.\d+)? ?(?:percent|%)/i);

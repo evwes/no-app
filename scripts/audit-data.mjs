@@ -80,8 +80,15 @@ for (const [ack, e] of Object.entries(entriesByAckCov)) {
   if (f.match && f.matchText && !/discretionary|up to/i.test(f.match)) {
     checked++;
     const nums = (f.match.match(/\d+(?:\.\d+)?/g) || []).filter((n) => +n !== 100 || !/dollar[- ]for[- ]dollar/i.test(f.matchText));
-    const bad = nums.filter((n) => !f.matchText.includes(n));
+    // "next N%" tiers derived from cumulative caps ("exceeds 1% up to 6%" →
+    // next 5%) are consistent when the quote shows the cumulative number
+    const first = +(f.match.match(/first (\d+)/) || [])[1] || 0;
+    const bad = nums.filter((n) => !f.matchText.includes(n) &&
+      !(first && f.match.includes(`next ${n}%`) && f.matchText.includes(String(first + +n))));
     if (bad.length) { mismatches++; if (mmList.length < 12) mmList.push(`${ack.slice(0, 14)}: match "${f.match}" but quote lacks [${bad}]`); }
+  }
+  if (f.vesting && /([4-9])-year cliff/.test(f.vesting)) {
+    mismatches++; if (mmList.length < 12) mmList.push(`${ack.slice(0, 14)}: "${f.vesting}" exceeds the IRC 3-year DC cliff limit — misparse`);
   }
   if (f.vesting && f.vestingText && /(\d)-year cliff/.test(f.vesting)) {
     checked++;

@@ -160,6 +160,10 @@
   }
 
   async function loadPlans() {
+    // the universe file is ~10 MB compressed — tell slow connections what's
+    // happening instead of showing a dead page
+    const rc = $("resultCount");
+    if (rc) rc.textContent = "Loading all 100,000+ plans (about 10 MB — a few seconds on slower connections)…";
     let filedList = [];
     // Full universe: every 401(k) plan with ≥100 participants (compact arrays)
     try {
@@ -431,6 +435,10 @@
       ${ff.necText ? `<blockquote class="quote">“${esc(ff.necText)}”</blockquote>` : ""}
       ${ff.vesting ? `<p class="max-benefit">Employer-money vesting: <strong>${esc(ff.vesting)}</strong></p>` : ""}
       ${ff.vestingText ? `<blockquote class="quote">“${esc(ff.vestingText)}”</blockquote>` : ""}
+      ${!ff.vesting && !ff.vestingText ? (
+        ff.safeHarbor && !/QACA|qualified automatic/i.test((ff.matchText || "") + (ff.necText || ""))
+          ? `<p class="max-benefit">Employer-money vesting: <strong>immediate for the safe-harbor contribution</strong> — required by law (IRC §401(k)(12)); the audited notes don't state a schedule for any other employer money.</p>`
+          : `<p class="max-benefit">Employer-money vesting: <span class="feat-unknown">not stated in the audited notes</span> — check the plan's SPD.</p>`) : ""}
       <p class="contrib-note">ⓘ Quoted from the audited financial statements attached to this plan's Form 5500 filing.</p>
     </div>`;
   }
@@ -768,7 +776,7 @@
 
       <div class="section-label">EMPLOYER CONTRIBUTIONS <span class="section-sub">${plan.filedFeatures ? "Source: Form 5500 filing (audit notes) — verify details with HR" : "Source: Form 5500 codes + plan document / SPD — verify with HR"}</span></div>
       ${plan.filedFeatures && (plan.filedFeatures.match
-          || ((plan.filedFeatures.matchText || plan.filedFeatures.vesting) && plan.flows.employerM !== 0))
+          || ((plan.filedFeatures.matchText || plan.filedFeatures.vesting || plan.filedFeatures.nec) && plan.flows.employerM !== 0))
         ? filedContributionCard(plan)
         : plan.contributions ? plan.contributions.map((c) => contributionCard(c, plan)).join("")
           : unknownContributionCard(plan)}
