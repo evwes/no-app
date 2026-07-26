@@ -122,6 +122,14 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
 
 ## Operating protocol (hard-learned)
 
+- **ACCURACY IS THE FIRST PRINCIPLE (owner directive, 2026-07-25).** Every
+  accuracy defect gets a permanent entry in `docs/accuracy-log.md`: what was
+  wrong → the change → the prevention. Never delete entries. Every parser
+  cycle must include hands-on filing review — sample the worst
+  coverage/correctness class, compare extraction to the filing text, feed
+  fixes back as patterns + regression specimens + log entries. This loop
+  never stops.
+
 - **Verify starts, not just finishes**: after ANY push meant to trigger a
   run, confirm within a minute that the run actually exists (list runs via
   API/MCP). A dropped webhook once went unnoticed for two days because
