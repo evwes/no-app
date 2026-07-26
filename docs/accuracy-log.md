@@ -120,6 +120,27 @@ prevention machinery is listed at the bottom.
   extraction capped at 3 years.
 - **Prevention:** audit flags any cliff reading above 3 years as a misparse.
 
+## 2026-07-26 — 6,132 orphaned entries from superseded filings polluted stores and metrics
+- **Wrong:** when a newer filing replaced a plan's ack, the old parsed entry
+  stayed in the shards/status forever — stale data parsed under years-old
+  parser rules (including pre-fix wrong formulas and illegal cliff readings)
+  inflated the correctness mismatch count (538 reported vs 26 real) and the
+  shard payload. Never displayed, but stored and counted.
+- **Change:** the merge step now purges any entry whose ack is no longer in
+  the current plan universe or trust list.
+- **Prevention:** the purge runs on every merge; audit metrics therefore
+  only ever describe data the site can actually display.
+
+## 2026-07-26 — v19 verification snapshot (for the record)
+- Formula-vs-quote correctness after purge: **26 mismatches / 31,220
+  checked (0.08%)**, from 0.58% at instrument introduction. The residual 26
+  include a handful of suspicious duplicate-tier formulas — under
+  individual investigation for the next parser cycle.
+- Match backlog: 72 filings (from 10,087 at instrument introduction).
+- Education-industry vesting stays ~49%: sampled filings confirm auditors
+  in that sector rarely state schedules — an honest source gap, labeled as
+  such on every affected page, not an extraction failure.
+
 ---
 
 ## Standing prevention machinery

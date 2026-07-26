@@ -35,6 +35,22 @@ for (const f of files) {
   }
 }
 
+// purge entries for superseded filings: when a newer filing replaces an
+// ack in plans-all, the old entry is never displayed again but its stale
+// data (parsed under years-old rules) polluted the audit and the payload —
+// 6,132 orphans found 2026-07-26
+try {
+  const pd = JSON.parse(readFileSync("plans-all.json", "utf8"));
+  const ai = pd.fields.indexOf("ack");
+  const current = new Set(pd.plans.map((r) => r[ai]));
+  for (const t of JSON.parse(readFileSync("mtias.json", "utf8")).trusts) current.add(t.ack);
+  let purged = 0;
+  for (const ack of Object.keys(status.plans)) {
+    if (!current.has(ack)) { delete status.plans[ack]; delete buckets[shardOf(ack)][ack]; purged++; }
+  }
+  if (purged) console.log(`purged ${purged} orphaned entries (superseded filings)`);
+} catch { /* plans-all absent in some local invocations — skip the purge */ }
+
 status.generated = new Date().toISOString();
 writeFileSync("lineups-status.json", JSON.stringify(status));
 const index = {};
