@@ -98,6 +98,15 @@ for (const [ack, e] of Object.entries(entriesByAckCov)) {
     }
   }
 }
+// form-question text must never appear as an audit-note quote (30,795
+// false quotes shipped before this check existed)
+let formQuotes = 0;
+for (const e of Object.values(entriesByAckCov)) {
+  const f = e && e.features;
+  if (f && f.matchText && /permissive aggregation|check all boxes|design[- ]based safe harbor|complete this item/i.test(f.matchText)) formQuotes++;
+}
+if (formQuotes) { mismatches += formQuotes; mmList.unshift(formQuotes + " quotes contain FORM-QUESTION text (must be zero)"); }
+
 console.log(`\n== CORRECTNESS (formula-vs-quote): ${checked} checked, ${mismatches} mismatches${mismatches ? "" : " — all consistent"}`);
 for (const l of mmList) console.log("  " + l);
 

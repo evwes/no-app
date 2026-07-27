@@ -141,6 +141,46 @@ prevention machinery is listed at the bottom.
   in that sector rarely state schedules — an honest source gap, labeled as
   such on every affected page, not an extraction failure.
 
+## 2026-07-27 — 30,795 match "quotes" were Form 5500 question text (hourly DD, batch 2)
+- **Wrong:** the quote fallback matched "matching contributions" inside the
+  form's own checkbox question (21b, "check all boxes that apply …
+  permissive aggregation rules") — nearly half of all displayed match
+  quotes were form boilerplate, not audit notes. This also silently
+  inflated the v18 match-coverage jump.
+- **Change:** the boilerplate veto now covers "check all boxes",
+  "permissive aggregation", "design-based safe harbor", question numbers,
+  and checkbox residue; all affected quotes vanish on the v20 re-parse.
+- **Prevention:** the audit now scans every quote for form-question markers
+  and reports the count each run (must be zero); the hourly due-diligence
+  loop that found this keeps sampling quote-only extractions. NOTE: match
+  coverage will drop sharply and honestly when v20 lands — those "answers"
+  were never real.
+
+## 2026-07-27 — Discontinued formulas presented as current (Cooper Tire)
+- **Wrong:** "Prior to January 1, 2023, the Company made matching
+  contributions equal to 100% … up to 6%" was displayed as the current
+  formula.
+- **Change:** formulas introduced by "prior to / before / until / through
+  [date]" now prefer a later-stated current formula, and when none exists
+  the formula is labeled "(formula in effect before YYYY per the filing)".
+- **Prevention:** Cooper Tire joins the regression set; the temporal guard
+  is exercised on every parse.
+
+## 2026-07-27 — "100% ON the first 3%" phrasing missed (Pacific Drilling)
+- **Wrong:** the formula pattern required "of the first"; filings phrased
+  "on the first" showed only a quote, no structured formula.
+- **Change:** the pattern accepts of/on.
+- **Prevention:** Pacific Drilling joins the regression set.
+
+## 2026-07-27 — New CBA pattern initially matched Schedule R form tables (caught pre-ship)
+- **Wrong (never shipped):** the new "Set by collective bargaining
+  agreement" extraction fired on Schedule R's multiemployer table headers
+  ("Date collective bargaining agreement expires"), tagging non-union plans.
+- **Change:** CBA extraction requires a prose sentence that passes the
+  boilerplate veto and excludes the table's header phrases.
+- **Prevention:** caught by the core regression diff before push — the
+  same gate that must stay green on every parser release.
+
 ---
 
 ## Standing prevention machinery

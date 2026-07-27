@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 19;
+export const PARSER_VERSION = 20;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b/i, "SDBA"],
@@ -352,7 +352,10 @@ export function extractPlanFeatures(text) {
   const t = text.replace(/\s+/g, " ");
   const out = {};
   // form-page boilerplate that must never pass as a plan-description note
-  const BOILER = /_{3,}|provide explanation|part [ivx]+\b|schedule [a-z]\b|check(?:box| the box)|see instructions|yes ?\/ ?no/i;
+  // form-question text mentions "matching contributions" as a checkbox
+  // option (21b) — 30,795 false "quotes" shipped before these markers were
+  // vetoed (found by hourly due diligence 2026-07-27)
+  const BOILER = /_{3,}|provide explanation|part [ivx]+\b|schedule [a-z]\b|check(?:box| the box| all boxes)|see instructions|yes ?\/ ?no|permissive aggregation|design[- ]based safe harbor|\b2[01][abc]\b|complete this item|\bX\b ?(?:Yes|No)|(?:Yes|No) ?\bX\b/i;
   const clean = (s) => s
     .replace(/\b[\w .,]{0,60}Notes? to Financial Statements\b/gi, " ")
     .replace(/\bNote \d+ ?[-–—] ?[^.]{0,60}\((?:Continued|concluded)\)/gi, " ")
@@ -375,7 +378,7 @@ export function extractPlanFeatures(text) {
 
   // ---- employer match formula ----
   const mf =
-    t.match(/match(?:ing)?[^.]{0,140}?(\d{1,3})(?:\.\d+)? ?(?:percent|%) of (?:the )?first (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i) ||
+    t.match(/match(?:ing)?[^.]{0,140}?(\d{1,3})(?:\.\d+)? ?(?:percent|%) (?:of|on) (?:the )?first (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i) ||
     t.match(/(\d{1,3})(?:\.\d+)? ?(?:percent|%) match(?:ing)?[^.]{0,80}?(?:up to|on the first) (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i) ||
     // "matching contribution ... equal to 100% of ... deferral contributions
     // up to 6% of ... compensation" (Black Hills style — no "first")
@@ -400,8 +403,23 @@ export function extractPlanFeatures(text) {
       if (/match/i.test(t.slice(Math.max(0, c.index - 300), c.index))) { mtab = c; break; }
     }
   }
+  // a formula introduced by "Prior to January 1, 2023 …" is DISCONTINUED
+  // (Cooper Tire) — prefer a later-stated current formula; if none exists,
+  // label the era so the site never presents an old formula as current
+  let mfEra = "";
   if (mf) {
-    out.match = `${+mf[1]}% of the first ${+mf[2]}% of pay`;
+    const pre = t.slice(Math.max(0, mf.index - 130), mf.index + 40);
+    const era = pre.match(/(?:prior to|before|until|through) (?:[A-Z][a-z]+ \d{1,2},? )?(\d{4})/i);
+    if (era) {
+      const rest = t.slice(mf.index + mf[0].length);
+      const again = rest.match(/match(?:ing)?[^.]{0,140}?(\d{1,3})(?:\.\d+)? ?(?:percent|%) (?:of|on) (?:the )?first (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i) ||
+        rest.match(/match(?:ing)?[^.]{0,160}?(\d{1,3})(?:\.\d+)? ?(?:percent|%) of [^.]{0,140}?(?:up to|not to exceed|to a maximum of) (?:an? )?(\d{1,2})(?:\.\d+)? ?(?:percent|%) of/i);
+      if (again) { again.index += mf.index + mf[0].length; Object.assign(mf, { 1: again[1], 2: again[2], index: again.index, 0: again[0] }); }
+      else mfEra = ` (formula in effect before ${era[1]} per the filing)`;
+    }
+  }
+  if (mf) {
+    out.match = `${+mf[1]}% of the first ${+mf[2]}% of pay${mfEra}`;
     // capture EVERY additional tier — "75% of the first 1%, 50% of the next
     // 4%, and 25% of the next 1%" (Kohler) has a comma-joined middle tier
     const tierRe = /(\d{1,3})(?:\.\d+)? ?(?:percent|%) of the next (\d{1,2})(?:\.\d+)? ?(?:percent|%)/gi;
@@ -558,7 +576,13 @@ export function extractPlanFeatures(text) {
   if (!out.nec && !out.match && !out.matchText) {
     const cba = t.match(/(?:contribut\w+|amounts?) [^.]{0,120}?(?:collective bargaining agreements?|rates? specified in the (?:applicable )?(?:labor|bargaining) agreements?|per hour worked)/i) ||
       t.match(/signatory employers? [^.]{0,80}?(?:make|remit) contributions?/i);
-    if (cba) { out.nec = "Set by collective bargaining agreement"; out.necText = sentence(cba.index); }
+    if (cba) {
+      const s = sentence(cba.index);
+      // Schedule R's multiemployer TABLE mentions the CBA too — only prose counts
+      if (!BOILER.test(s) && !/name of contributing employer|dollar amount contributed|date collective bargaining agreement/i.test(s)) {
+        out.nec = "Set by collective bargaining agreement"; out.necText = s;
+      }
+    }
   }
 
   // ---- auto-escalation ----
