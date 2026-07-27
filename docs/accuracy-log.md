@@ -211,6 +211,51 @@ prevention machinery is listed at the bottom.
   asserted; Chantecaille and Citizens Bank & Trust join for the temporal
   and phrasing classes.
 
+## 2026-07-27 — 51% of after-tax flags were Roth described as "after-tax" (hourly review, batch 6)
+- **Wrong:** 4,149 of 8,173 plans flagged "after-tax contributions: yes"
+  from sentences like "participants may designate some of their
+  contributions as after-tax contributions to a Roth 401(k) option" —
+  that is Roth (which IS after-tax money), not a voluntary after-tax
+  source, and it inflated the mega-backdoor chip. Found while
+  due-diligencing Rental One in the hourly loop.
+- **Change:** the after-tax matcher now also vetoes a Roth AFTER the
+  phrase when no list separator intervenes ("after-tax contributions
+  to/into a Roth …" = Roth; "Roth and after-tax contributions" still
+  counts), scanning all occurrences so a genuine mention elsewhere in the
+  filing still qualifies.
+- **Prevention:** Rental One and two more Roth-phrased specimens join the
+  regression corpus; the hourly DD checklist now reads the after-tax
+  quote's own sentence, not just the flag.
+
+## 2026-07-27 — 3,582 vesting quotes showed forfeiture accounting, not the schedule
+- **Wrong:** "forfeited non-vested accounts totaling $1,128 … were used to
+  reduce Company contributions" shipped as the vesting quote — it contains
+  vesting words but says nothing about the schedule, while the filing's
+  real schedule sentence sat unquoted.
+- **Change:** forfeiture-accounting sentences rank last among vesting
+  candidates and are barred from the quote-only fallback entirely.
+- **Prevention:** covered by the same regression corpus diff; coverage
+  drop from suppressed forfeiture-only quotes is honest and expected.
+
+## 2026-07-27 — match template with no "match" word: "The Company contributed X% of the first Y% … that a participant contributed"
+- **Wrong:** a common auditor template states the match without ever using
+  the word "match" (Rabun Gap-Nacoochee School "100% of the first 5%",
+  Rental One "25 percent of the first 3 percent", plus a third specimen at
+  25%/6%) — all showed as unanswered despite an explicit formula.
+- **Change:** new formula pattern anchored on the trailing
+  "that a participant contributed" clause (which is what distinguishes a
+  match from a nonelective contribution). Same cycle: "on a discretionary
+  basis, contributes a matching amount" now reads as Discretionary
+  (Sunstreet Mortgage), "shall/may make safe harbor matching
+  contributions" joins the quote fallback (TST Insulation),
+  "following vesting schedule: Years / Employer Contributions" tables
+  parse (Sunstreet's 6-row graded schedule), and rate-after-tier prose
+  ("the first 3% … are matched 100%, and … up to 5% … matched at a rate
+  of 50%" — Berry Foundation) parses with both tiers.
+- **Prevention:** all four filings join the regression corpus; the hourly
+  loop's match-miss lane keeps sampling exactly this class (plans with
+  employer money and audited notes but no extracted formula).
+
 ---
 
 ## Standing prevention machinery

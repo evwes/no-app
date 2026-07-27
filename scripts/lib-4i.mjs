@@ -385,7 +385,12 @@ export function extractPlanFeatures(text) {
     // "up to a 1%" — without the optional article the engine backtracks
     // into pairing the wrong numbers (QACA filings extracted "1% of the
     // first 6%" instead of "100% of the first 1%")
-    t.match(/match(?:ing|ed)?[^.]{0,160}?(\d{1,3})(?:\.\d+)? ?(?:percent|%) of [^.]{0,140}?(?:up to|not to exceed|not in excess of|to a maximum of|maximum[^.]{0,60}? of) (?:an? )?(\d{1,2})(?:\.\d+)? ?(?:percent|%) of/i);
+    t.match(/match(?:ing|ed)?[^.]{0,160}?(\d{1,3})(?:\.\d+)? ?(?:percent|%) of [^.]{0,140}?(?:up to|not to exceed|not in excess of|to a maximum of|maximum[^.]{0,60}? of) (?:an? )?(\d{1,2})(?:\.\d+)? ?(?:percent|%) of/i) ||
+    // auditor template with no "match" word — "The Company contributed 25
+    // percent of the first 3 percent of eligible compensation that a
+    // participant contributed" (Rental One, Rabun Gap); the trailing
+    // participant-deferral anchor is what makes it a match, not an NEC
+    t.match(/(?:company|employer|school|organization|foundation|sponsor)[^.]{0,40}?contribut(?:es|ed) (\d{1,3})(?:\.\d+)? ?(?:percent|%) of (?:the )?first (\d{1,2})(?:\.\d+)? ?(?:percent|%) of [^.]{0,90}?that (?:a|the|each) participant contribut/i);
   // dollar-phrased formulas: "dollar-for-dollar up to 4%", "50 cents per dollar on the first 6%"
   const df = !mf && (t.match(/dollar[- ]for[- ]dollar[^.]{0,80}?(?:up to|on the first) (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i)
     ? { pct: 100, cap: null } : null);
@@ -402,6 +407,13 @@ export function extractPlanFeatures(text) {
     while ((c = tabRe.exec(t))) {
       if (/match/i.test(t.slice(Math.max(0, c.index - 300), c.index))) { mtab = c; break; }
     }
+  }
+  // rate-after-tier prose: "the first 3% of salary deferrals are matched
+  // 100%, and salary deferrals greater than 3% and up to 5% are matched at
+  // a rate of 50%" (Berry Foundation) — mf's rate-first shapes can't bind it
+  let minv = null;
+  if (!mf && !df && !cents && !mtab) {
+    minv = t.match(/first (\d{1,2})(?:\.\d+)? ?(?:percent|%) of [^.]{0,60}?(?:is|are) matched (?:at (?:a rate of )?)?(\d{1,3})(?:\.\d+)? ?(?:percent|%)/i);
   }
   // a formula introduced by "Prior to January 1, 2023 …" is DISCONTINUED
   // (Cooper Tire) — prefer a later-stated current formula; if none exists,
@@ -449,6 +461,12 @@ export function extractPlanFeatures(text) {
   } else if (cents) {
     out.match = `${+cents[1]}% of the first ${+cents[2]}% of pay`;
     out.matchText = sentence(cents.index);
+  } else if (minv) {
+    out.match = `${+minv[2]}% of the first ${+minv[1]}% of pay`;
+    const ex2 = t.slice(minv.index, minv.index + 300).match(/greater than (\d{1,2})(?:\.\d+)? ?(?:percent|%) and up to (\d{1,2})(?:\.\d+)? ?(?:percent|%) [^.]{0,60}?matched (?:at (?:a rate of )?)?(\d{1,3})(?:\.\d+)? ?(?:percent|%)/i);
+    let invEnd = minv[0].length;
+    if (ex2 && +ex2[2] > +ex2[1]) { out.match += ` + ${+ex2[3]}% of the next ${+ex2[2] - +ex2[1]}%`; invEnd = ex2.index + ex2[0].length; }
+    out.matchText = sentence(minv.index, invEnd);
   } else if (mtab) {
     out.match = `${+mtab[2]}% of the first ${+mtab[1]}% of pay`;
     const tierRe2 = /next (\d{1,2})(?:\.\d+)? ?(?:percent|%) of (?:eligible |annual |base )?(?:compensation|pay|earnings) (\d{1,3}) ?(?:percent|%)/gi;
@@ -463,7 +481,7 @@ export function extractPlanFeatures(text) {
     // "may elect to make discretionary matching contributions … determined
     // by the Board" — roughly half the no-formula backlog. There IS no
     // formula; discretionary is the answer, not a gap.
-    const disc = t.match(/discretionary (?:401\(k\) )?match(?:ing)?(?: and profit[- ]sharing)? contributions?|match(?:ing)? contributions? [^.]{0,80}?(?:discretionary|determined (?:annually |each year )?by (?:its |the )?(?:board|company|employer|trustees))/i);
+    const disc = t.match(/discretionary (?:401\(k\) )?match(?:ing)?(?: and profit[- ]sharing)? contributions?|match(?:ing)? contributions? [^.]{0,80}?(?:discretionary|determined (?:annually |each year )?by (?:its |the )?(?:board|company|employer|trustees))|on a discretionary basis,? contribut[^.]{0,30}?match/i);
     if (upTo) {
       out.match = `Up to ${+upTo[1]}% of pay`;
       out.matchText = sentence(upTo.index);
@@ -472,7 +490,7 @@ export function extractPlanFeatures(text) {
       out.matchText = sentence(disc.index);
     } else {
       // fall back to the descriptive sentence, skipping form-page boilerplate
-      const mre = /(?:employer|company|plan sponsor)(?:['’]s)? (?:made |makes |will make |also )?match(?:ing|ed)? (?:safe harbor )?(?:401\(k\) )?contributions?|matching contributions? (?:is|are|equal|of|based|provided)/gi;
+      const mre = /(?:employer|company|plan sponsor)(?:['’]s)? (?:made |makes |will make |shall make |may make |also )?(?:safe harbor )?match(?:ing|ed)? (?:safe harbor )?(?:401\(k\) )?contributions?|matching contributions? (?:is|are|equal|of|based|provided)/gi;
       let mm;
       while ((mm = mre.exec(t))) {
         const s = sentence(mm.index);
@@ -494,9 +512,13 @@ export function extractPlanFeatures(text) {
   }
   // sentences describing a SUPERSEDED schedule ("prior to January 1, 2021,
   // vesting was based on…", Silvertip) rank behind current-tense ones
-  vestSentences.sort((a, b) =>
-    (/(?:prior to|before|until|through) (?:[a-z]+ \d{1,2},? )?\d{4}/i.test(a) ? 1 : 0) -
-    (/(?:prior to|before|until|through) (?:[a-z]+ \d{1,2},? )?\d{4}/i.test(b) ? 1 : 0));
+  // forfeiture-accounting sentences ("forfeited non-vested accounts …
+  // were used to reduce Company contributions") mention vesting words but
+  // never state the schedule — 3,582 of them shipped as the vesting quote
+  const vRank = (s) =>
+    (/(?:prior to|before|until|through) (?:[a-z]+ \d{1,2},? )?\d{4}/i.test(s) ? 2 : 0) +
+    (/forfeit/i.test(s) ? 1 : 0);
+  vestSentences.sort((a, b) => vRank(a) - vRank(b));
   // graded/cliff language always describes employer money — check it FIRST
   for (const s of vestSentences) {
     const graded = s.match(/(\d{1,2}) ?(?:percent|%) (?:per|each|for each) year|graded vesting|graduated vesting/i);
@@ -533,9 +555,9 @@ export function extractPlanFeatures(text) {
   // Percentage / Less than 1  0% / 1  20% / … / 5 or more  100%" (Simmons
   // Foods) carry no "years" word per row, so the pairs fallback misses them
   if (!out.vesting) {
-    const th = t.match(/years of (?:credited |continuous )?(?:service|vesting service)\s+(?:vesting|vested) percentage/i);
+    const th = t.match(/years of (?:credited |continuous )?(?:service|vesting service)\s+(?:vesting|vested) percentage|following vesting schedule:?\s+years\s+(?:employer|vested|vesting)/i);
     if (th) {
-      const win = t.slice(th.index + th[0].length, th.index + th[0].length + 220);
+      const win = t.slice(th.index + th[0].length, th.index + th[0].length + 320);
       const pairs = [...win.matchAll(/(less than \d{1,2}|\d{1,2}(?: or more| ?\+)?) +(\d{1,3}) ?%/gi)]
         .map((p) => [p[1].toLowerCase(), +p[2]]).filter(([, pc]) => pc <= 100);
       if (pairs.length >= 3 && pairs[pairs.length - 1][1] === 100 &&
@@ -552,7 +574,7 @@ export function extractPlanFeatures(text) {
       if (/immediately? (?:100 ?(?:percent|%) )?(?:fully )?vested|fully vested (?:at all times|immediately|upon)|100 ?(?:percent|%) vested (?:at all times|immediately|in all)|always (?:fully |100 ?(?:percent|%) )?vested/i.test(s)) {
         out.vesting = "Immediate"; out.vestingText = cap(s); break;
       }
-      if (!out.vestingText) out.vestingText = cap(s);
+      if (!out.vestingText && !/forfeit/i.test(s)) out.vestingText = cap(s);
     }
   }
 
@@ -564,11 +586,20 @@ export function extractPlanFeatures(text) {
   // "pre-tax, Roth and after-tax deferral contributions". Veto only the
   // "Roth contributions are made on an after-tax basis" phrasing, where
   // "roth" directly modifies the after-tax words with no list separator.
-  const at = t.match(/(?:voluntary |additional |employee )?after[- ]tax (?:deferral |employee |savings )?contributions?/i);
-  if (at) {
+  // "after-tax contributions to a Roth 401(k) option" is ROTH, not
+  // voluntary after-tax — Roth money IS after-tax and auditors say so.
+  // 4,149 of 8,173 flags (51%) were this phrasing before the post-window
+  // veto: a Roth within reach after the phrase, with no list separator
+  // ("and"/"or"/comma) in between, means after-tax feeds Roth rather than
+  // standing beside it ("Roth and after-tax contributions" still counts).
+  for (const at of t.matchAll(/(?:voluntary |additional |employee )?after[- ]tax (?:deferral |employee |savings )?contributions?/gi)) {
     const pre = t.slice(Math.max(0, at.index - 40), at.index);
     const rothModifies = /roth\b[^.]{0,30}$/i.test(pre) && !/(?:,|\band\b|\bor\b)\s*$/i.test(pre);
-    if (!rothModifies) { out.afterTax = true; out.afterTaxText = sentence(at.index); }
+    const post = t.slice(at.index + at[0].length, at.index + at[0].length + 45);
+    const ri = post.search(/\broth\b/i);
+    const rothTarget = ri >= 0 && !/[.,;]|\b(?:and|or)\b/i.test(post.slice(0, ri));
+    if (rothModifies || rothTarget) continue;
+    out.afterTax = true; out.afterTaxText = sentence(at.index); break;
   }
   // BASIS enumerations never say "after-tax contributions": "Contributions
   // can be made on a tax-deferred (pre-tax) basis, after-tax basis or to a
