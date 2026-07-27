@@ -181,6 +181,20 @@ prevention machinery is listed at the bottom.
 - **Prevention:** caught by the core regression diff before push — the
   same gate that must stay green on every parser release.
 
+## 2026-07-27 — Simmons Foods match tier missed (owner-submitted filing)
+- **Wrong:** "plus 50% of a participant's contributions up to the next 2%"
+  wasn't captured — the tier pattern required "of the next" adjacency, so
+  the site showed only "100% of the first 3%".
+- **Change:** tiers accept words between the rate and "next" (percent signs
+  excluded from the bridge — the naive widening corrupted Kohler's middle
+  tier in testing and was caught by the core regression diff before ship).
+  Also: era labels now carry the filing's own connector ("in effect
+  through 2023" vs "before 2023"), and vesting sentences describing
+  superseded schedules ("prior to January 1, 2021…") rank behind
+  current ones.
+- **Prevention:** Simmons Foods and Boardwalk 1000 join the regression set;
+  the tier bridge is percent-blocked by construction.
+
 ---
 
 ## Standing prevention machinery

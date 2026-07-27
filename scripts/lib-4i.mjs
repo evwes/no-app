@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 20;
+export const PARSER_VERSION = 21;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b/i, "SDBA"],
@@ -409,20 +409,22 @@ export function extractPlanFeatures(text) {
   let mfEra = "";
   if (mf) {
     const pre = t.slice(Math.max(0, mf.index - 130), mf.index + 40);
-    const era = pre.match(/(?:prior to|before|until|through) (?:[A-Z][a-z]+ \d{1,2},? )?(\d{4})/i);
+    const era = pre.match(/((?:prior to|before|until|through)) (?:[A-Z][a-z]+ \d{1,2},? )?(\d{4})/i);
     if (era) {
       const rest = t.slice(mf.index + mf[0].length);
       const again = rest.match(/match(?:ing)?[^.]{0,140}?(\d{1,3})(?:\.\d+)? ?(?:percent|%) (?:of|on) (?:the )?first (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i) ||
         rest.match(/match(?:ing)?[^.]{0,160}?(\d{1,3})(?:\.\d+)? ?(?:percent|%) of [^.]{0,140}?(?:up to|not to exceed|to a maximum of) (?:an? )?(\d{1,2})(?:\.\d+)? ?(?:percent|%) of/i);
       if (again) { again.index += mf.index + mf[0].length; Object.assign(mf, { 1: again[1], 2: again[2], index: again.index, 0: again[0] }); }
-      else mfEra = ` (formula in effect before ${era[1]} per the filing)`;
+      else mfEra = ` (formula in effect ${era[1].toLowerCase()} ${era[2]} per the filing)`;
     }
   }
   if (mf) {
     out.match = `${+mf[1]}% of the first ${+mf[2]}% of pay${mfEra}`;
     // capture EVERY additional tier — "75% of the first 1%, 50% of the next
-    // 4%, and 25% of the next 1%" (Kohler) has a comma-joined middle tier
-    const tierRe = /(\d{1,3})(?:\.\d+)? ?(?:percent|%) of the next (\d{1,2})(?:\.\d+)? ?(?:percent|%)/gi;
+    // 4%, and 25% of the next 1%" (Kohler) has a comma-joined middle tier;
+    // "50% of a participant's contributions up to the next 2%" (Simmons
+    // Foods) puts words between the rate and "next"
+    const tierRe = /(\d{1,3})(?:\.\d+)? ?(?:percent|%) of [^.%]{0,60}?next (\d{1,2})(?:\.\d+)? ?(?:percent|%)/gi;
     const tail = t.slice(mf.index, mf.index + 400);
     let tm; let tguard = 0; let lastTierEnd = mf[0].length;
     while ((tm = tierRe.exec(tail)) && tguard++ < 4) {
@@ -490,6 +492,11 @@ export function extractPlanFeatures(text) {
     // "5-year cliff" claims that contradict the real graded schedule
     if (!BOILER.test(s) && !/defined benefit|pension benefit|top[- ]heavy|in the event (?:the plan|of death|of disab)|should the plan (?:be|become)|alternative vesting|if the plan (?:is|becomes)/i.test(s)) vestSentences.push(s);
   }
+  // sentences describing a SUPERSEDED schedule ("prior to January 1, 2021,
+  // vesting was based on…", Silvertip) rank behind current-tense ones
+  vestSentences.sort((a, b) =>
+    (/(?:prior to|before|until|through) (?:[a-z]+ \d{1,2},? )?\d{4}/i.test(a) ? 1 : 0) -
+    (/(?:prior to|before|until|through) (?:[a-z]+ \d{1,2},? )?\d{4}/i.test(b) ? 1 : 0));
   // graded/cliff language always describes employer money — check it FIRST
   for (const s of vestSentences) {
     const graded = s.match(/(\d{1,2}) ?(?:percent|%) (?:per|each|for each) year|graded vesting|graduated vesting/i);
