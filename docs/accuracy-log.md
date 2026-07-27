@@ -195,6 +195,22 @@ prevention machinery is listed at the bottom.
 - **Prevention:** Simmons Foods and Boardwalk 1000 join the regression set;
   the tier bridge is percent-blocked by construction.
 
+## 2026-07-27 — Simmons Foods (owner review, round 2): vesting table and eligibility missed
+- **Wrong:** the filed graded schedule ("Years of Service / Vesting
+  Percentage — Less than 1: 0% … 5 or more: 100%") uses bare digit rows the
+  table fallback couldn't read, and "completing six months of service"
+  spelled the count out — both showed "not stated" despite being in the
+  filing.
+- **Change:** header-anchored bare-digit vesting tables parse; eligibility
+  accepts spelled-out counts. Also from the same review cycle: past-tense
+  "matched", "not in excess of" caps, verb-separated quote phrasings
+  ("the Company made matching safe harbor 401(k) contributions"), and
+  temporal markers AFTER the formula ("… until December 31, 2022" —
+  Chantecaille now labels the era honestly).
+- **Prevention:** Simmons joins the regression set with all three fields
+  asserted; Chantecaille and Citizens Bank & Trust join for the temporal
+  and phrasing classes.
+
 ---
 
 ## Standing prevention machinery

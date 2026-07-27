@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 21;
+export const PARSER_VERSION = 22;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b/i, "SDBA"],
@@ -378,14 +378,14 @@ export function extractPlanFeatures(text) {
 
   // ---- employer match formula ----
   const mf =
-    t.match(/match(?:ing)?[^.]{0,140}?(\d{1,3})(?:\.\d+)? ?(?:percent|%) (?:of|on) (?:the )?first (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i) ||
+    t.match(/match(?:ing|ed)?[^.]{0,140}?(\d{1,3})(?:\.\d+)? ?(?:percent|%) (?:of|on) (?:the )?first (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i) ||
     t.match(/(\d{1,3})(?:\.\d+)? ?(?:percent|%) match(?:ing)?[^.]{0,80}?(?:up to|on the first) (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i) ||
     // "matching contribution ... equal to 100% of ... deferral contributions
     // up to 6% of ... compensation" (Black Hills style — no "first")
     // "up to a 1%" — without the optional article the engine backtracks
     // into pairing the wrong numbers (QACA filings extracted "1% of the
     // first 6%" instead of "100% of the first 1%")
-    t.match(/match(?:ing)?[^.]{0,160}?(\d{1,3})(?:\.\d+)? ?(?:percent|%) of [^.]{0,140}?(?:up to|not to exceed|to a maximum of|maximum[^.]{0,60}? of) (?:an? )?(\d{1,2})(?:\.\d+)? ?(?:percent|%) of/i);
+    t.match(/match(?:ing|ed)?[^.]{0,160}?(\d{1,3})(?:\.\d+)? ?(?:percent|%) of [^.]{0,140}?(?:up to|not to exceed|not in excess of|to a maximum of|maximum[^.]{0,60}? of) (?:an? )?(\d{1,2})(?:\.\d+)? ?(?:percent|%) of/i);
   // dollar-phrased formulas: "dollar-for-dollar up to 4%", "50 cents per dollar on the first 6%"
   const df = !mf && (t.match(/dollar[- ]for[- ]dollar[^.]{0,80}?(?:up to|on the first) (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i)
     ? { pct: 100, cap: null } : null);
@@ -408,12 +408,12 @@ export function extractPlanFeatures(text) {
   // label the era so the site never presents an old formula as current
   let mfEra = "";
   if (mf) {
-    const pre = t.slice(Math.max(0, mf.index - 130), mf.index + 40);
+    const pre = t.slice(Math.max(0, mf.index - 130), mf.index + mf[0].length + 90);
     const era = pre.match(/((?:prior to|before|until|through)) (?:[A-Z][a-z]+ \d{1,2},? )?(\d{4})/i);
     if (era) {
       const rest = t.slice(mf.index + mf[0].length);
-      const again = rest.match(/match(?:ing)?[^.]{0,140}?(\d{1,3})(?:\.\d+)? ?(?:percent|%) (?:of|on) (?:the )?first (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i) ||
-        rest.match(/match(?:ing)?[^.]{0,160}?(\d{1,3})(?:\.\d+)? ?(?:percent|%) of [^.]{0,140}?(?:up to|not to exceed|to a maximum of) (?:an? )?(\d{1,2})(?:\.\d+)? ?(?:percent|%) of/i);
+      const again = rest.match(/match(?:ing|ed)?[^.]{0,140}?(\d{1,3})(?:\.\d+)? ?(?:percent|%) (?:of|on) (?:the )?first (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i) ||
+        rest.match(/match(?:ing|ed)?[^.]{0,160}?(\d{1,3})(?:\.\d+)? ?(?:percent|%) of [^.]{0,140}?(?:up to|not to exceed|to a maximum of) (?:an? )?(\d{1,2})(?:\.\d+)? ?(?:percent|%) of/i);
       if (again) { again.index += mf.index + mf[0].length; Object.assign(mf, { 1: again[1], 2: again[2], index: again.index, 0: again[0] }); }
       else mfEra = ` (formula in effect ${era[1].toLowerCase()} ${era[2]} per the filing)`;
     }
@@ -472,7 +472,7 @@ export function extractPlanFeatures(text) {
       out.matchText = sentence(disc.index);
     } else {
       // fall back to the descriptive sentence, skipping form-page boilerplate
-      const mre = /(?:employer|company|plan sponsor)(?:['’]s)? match(?:ing)? contributions?|matching contributions? (?:is|are|equal|of|based|provided)/gi;
+      const mre = /(?:employer|company|plan sponsor)(?:['’]s)? (?:made |makes |will make |also )?match(?:ing|ed)? (?:safe harbor )?(?:401\(k\) )?contributions?|matching contributions? (?:is|are|equal|of|based|provided)/gi;
       let mm;
       while ((mm = mre.exec(t))) {
         const s = sentence(mm.index);
@@ -526,6 +526,22 @@ export function extractPlanFeatures(text) {
         out.vesting = "Graded schedule";
         out.vestingText = cap("Vesting schedule as filed — " + pairs.map(([y, pc]) => `${y} yr: ${pc}%`).join(", "));
         break;
+      }
+    }
+  }
+  // header-labeled tables with BARE digit rows — "Years of Service  Vesting
+  // Percentage / Less than 1  0% / 1  20% / … / 5 or more  100%" (Simmons
+  // Foods) carry no "years" word per row, so the pairs fallback misses them
+  if (!out.vesting) {
+    const th = t.match(/years of (?:credited |continuous )?(?:service|vesting service)\s+(?:vesting|vested) percentage/i);
+    if (th) {
+      const win = t.slice(th.index + th[0].length, th.index + th[0].length + 220);
+      const pairs = [...win.matchAll(/(less than \d{1,2}|\d{1,2}(?: or more| ?\+)?) +(\d{1,3}) ?%/gi)]
+        .map((p) => [p[1].toLowerCase(), +p[2]]).filter(([, pc]) => pc <= 100);
+      if (pairs.length >= 3 && pairs[pairs.length - 1][1] === 100 &&
+          pairs.every(([, pc], i2) => i2 === 0 || pc >= pairs[i2 - 1][1])) {
+        out.vesting = "Graded schedule";
+        out.vestingText = cap("Vesting schedule as filed — " + pairs.map(([y, pc]) => `${y} yr: ${pc}%`).join(", "));
       }
     }
   }
@@ -605,9 +621,12 @@ export function extractPlanFeatures(text) {
   // compensation 100 % ... less than 5 years of service") once bridged
   // "eligible" to an unrelated service count (Northrop Grumman); cohort
   // qualifiers like "less than N years" are never eligibility rules
-  const elig = t.match(/eligib\w+[^.%]{0,140}?(?:(?<!(?:less|more|fewer) than )(\d{1,4}) ?(days?|months?|years?|hours?) of (?:service|employment|continuous)|(?:upon|on) (?:their )?(?:date of )?hire|first day of (?:employment|the month)|immediately)/i);
+  const elig = t.match(/eligib\w+[^.%]{0,140}?(?:(?<!(?:less|more|fewer) than )(\d{1,4}|one|two|three|six|nine|twelve) ?(days?|months?|years?|hours?) of (?:service|employment|continuous)|(?:upon|on) (?:their )?(?:date of )?hire|first day of (?:employment|the month)|immediately)/i);
   if (elig) {
-    out.eligibility = elig[1] ? `${elig[1]} ${elig[2]} of service` : "Upon hire / immediate";
+    // "completing six months of service" (Simmons Foods) — spelled-out counts
+    const W = { one: 1, two: 2, three: 3, six: 6, nine: 9, twelve: 12 };
+    const n = elig[1] ? (W[elig[1].toLowerCase()] || elig[1]) : null;
+    out.eligibility = n ? `${n} ${elig[2]} of service` : "Upon hire / immediate";
     out.eligibilityText = sentence(elig.index);
   }
 
