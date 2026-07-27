@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 22;
+export const PARSER_VERSION = 23;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b/i, "SDBA"],
@@ -421,7 +421,19 @@ export function extractPlanFeatures(text) {
   let mfEra = "";
   if (mf) {
     const pre = t.slice(Math.max(0, mf.index - 130), mf.index + mf[0].length + 90);
-    const era = pre.match(/((?:prior to|before|until|through)) (?:[A-Z][a-z]+ \d{1,2},? )?(\d{4})/i);
+    let era = pre.match(/((?:prior to|before|until|through)) (?:[A-Z][a-z]+ \d{1,2},? )?(\d{4})/i);
+    // "The employer match for the year ended December 31, 2019 was 100%…"
+    // in a plan-year-2023 filing is a STALE formula (Freedom Boat Club).
+    // Two-year audit phrasing ("years ended 2023 and 2022") stays current;
+    // a lone year ≥2 behind the filing's newest year gets the era label.
+    if (!era) {
+      const era2 = pre.match(/for the (?:plan )?year ended (?:[A-Z][a-z]+ \d{1,2},? )?(\d{4})\b(?!,? and)/i);
+      if (era2) {
+        let maxYear = 0;
+        for (const y of t.matchAll(/\b(20[0-4]\d)\b/g)) maxYear = Math.max(maxYear, +y[1]);
+        if (+era2[1] <= maxYear - 2) era = { 1: "for plan year", 2: era2[1], index: era2.index };
+      }
+    }
     if (era) {
       const rest = t.slice(mf.index + mf[0].length);
       const again = rest.match(/match(?:ing|ed)?[^.]{0,140}?(\d{1,3})(?:\.\d+)? ?(?:percent|%) (?:of|on) (?:the )?first (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i) ||
@@ -431,7 +443,15 @@ export function extractPlanFeatures(text) {
     }
   }
   if (mf) {
-    out.match = `${+mf[1]}% of the first ${+mf[2]}% of pay${mfEra}`;
+    // "limited to 50% of employee contributions with a maximum of up to 2%
+    // of the participant's compensation" (Yesler) caps the MATCH, not the
+    // matched-deferral tier — rendering it "50% of the first 2%" halves the
+    // real benefit. State it the way the filing does.
+    const capStyle = /with a maximum of up to|up to a maximum match(?:ing)? (?:contribution )?of/i.test(mf[0]) &&
+      /(?:percent|%) of (?:the )?(?:employee|participant)s?'? (?:elective )?(?:deferral|contribution)/i.test(mf[0]);
+    out.match = capStyle
+      ? `${+mf[1]}% of contributions, max match ${+mf[2]}% of pay`
+      : `${+mf[1]}% of the first ${+mf[2]}% of pay`;
     // capture EVERY additional tier — "75% of the first 1%, 50% of the next
     // 4%, and 25% of the next 1%" (Kohler) has a comma-joined middle tier;
     // "50% of a participant's contributions up to the next 2%" (Simmons
@@ -452,6 +472,8 @@ export function extractPlanFeatures(text) {
         lastTierEnd = ex.index + ex[0].length;
       }
     }
+    // era label goes after ALL tiers so the annotation reads as one unit
+    out.match += mfEra;
     // the quote must contain every tier the formula states
     out.matchText = sentence(mf.index, lastTierEnd);
   } else if (df) {
@@ -481,7 +503,7 @@ export function extractPlanFeatures(text) {
     // "may elect to make discretionary matching contributions … determined
     // by the Board" — roughly half the no-formula backlog. There IS no
     // formula; discretionary is the answer, not a gap.
-    const disc = t.match(/discretionary (?:401\(k\) )?match(?:ing)?(?: and profit[- ]sharing)? contributions?|match(?:ing)? contributions? [^.]{0,80}?(?:discretionary|determined (?:annually |each year )?by (?:its |the )?(?:board|company|employer|trustees))|on a discretionary basis,? contribut[^.]{0,30}?match/i);
+    const disc = t.match(/discretionary (?:401\(k\) )?match(?:ing)?(?: and profit[- ]sharing)? contributions?|match(?:ing)? contributions? [^.]{0,80}?(?:discretionary|determined (?:annually |each year )?by (?:its |the )?(?:board|company|employer|trustees))|on a discretionary basis,? contribut[^.]{0,30}?match|(?:contribute|make) a discretionary match(?:ing)?\b/i);
     if (upTo) {
       out.match = `Up to ${+upTo[1]}% of pay`;
       out.matchText = sentence(upTo.index);
@@ -521,7 +543,7 @@ export function extractPlanFeatures(text) {
   vestSentences.sort((a, b) => vRank(a) - vRank(b));
   // graded/cliff language always describes employer money — check it FIRST
   for (const s of vestSentences) {
-    const graded = s.match(/(\d{1,2}) ?(?:percent|%) (?:per|each|for each) year|graded vesting|graduated vesting/i);
+    const graded = s.match(/(\d{1,2}) ?(?:percent|%) (?:per|each|for each|after each) year|vests? (\d{1,2}) ?(?:percent|%) after each year|graded vesting|graduated vesting/i);
     // 3rd alternative tolerates intervening words — "fully vested in
     // employer matching contributions, and earnings thereon, upon
     // completion of three years of service" (Northrop Grumman)
@@ -623,7 +645,11 @@ export function extractPlanFeatures(text) {
   const nec = t.match(/non.?(?:contributory|elective)[^.]{0,80}?contribution[^.]{0,60}?(\d{1,2})(?:\.\d+)? ?(?:percent|%)/i) ||
     t.match(/(?:employer|company|university|college|institution|organization|hospital|health system) (?:core|automatic|basic|retirement) contribution[^.]{0,60}?(\d{1,2})(?:\.\d+)? ?(?:percent|%)/i) ||
     t.match(/(?:university|college|institution|organization|hospital|health system|employer|company) (?:also )?contributes? (?:an amount )?(?:equal to )?(\d{1,2})(?:\.\d+)? ?(?:percent|%) of/i) ||
-    t.match(/contribut\w+ (\d{1,2})(?:\.\d+)? ?(?:percent|%) of (?:each |eligible |annual )?(?:participant|employee)s?'? (?:eligible )?(?:compensation|pay)[^.]{0,60}?regardless of/i);
+    t.match(/contribut\w+ (\d{1,2})(?:\.\d+)? ?(?:percent|%) of (?:each |eligible |annual )?(?:participant|employee)s?'? (?:eligible )?(?:compensation|pay)[^.]{0,60}?regardless of/i) ||
+    // "Company contributions under the safe harbor provision are equal to
+    // 3% of compensation" (Eiwa) — a safe-harbor nonelective with neither
+    // "nonelective" nor "safe harbor nonelective" in the sentence
+    t.match(/(?:company|employer) contributions? under the safe harbor provision (?:is|are) equal to (\d{1,2})(?:\.\d+)? ?(?:percent|%) of/i);
   if (nec && +nec[1] >= 1 && +nec[1] <= 15) { out.nec = `${+nec[1]}% of pay`; out.necText = sentence(nec.index); }
   // multiemployer/union plans: the employer contribution is an hourly rate
   // set by the CBA, not a formula — say so instead of showing nothing

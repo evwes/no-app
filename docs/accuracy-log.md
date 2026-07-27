@@ -256,6 +256,42 @@ prevention machinery is listed at the bottom.
   loop's match-miss lane keeps sampling exactly this class (plans with
   employer money and audited notes but no extracted formula).
 
+## 2026-07-27 — match cap misread as deferral tier (hourly review, batch 8)
+- **Wrong:** "matching contributions are limited to 50% of employee
+  contributions with a maximum of up to 2% of the participant's
+  compensation" (Yesler) rendered as "50% of the first 2% of pay" — the 2%
+  caps the MATCH, not the matched deferrals, so the display halved the
+  real benefit. 12 live entries shared the phrasing.
+- **Change:** cap-style phrasings render the way the filing states them:
+  "50% of contributions, max match 2% of pay" — every number in the
+  display remains a number in the quote.
+- **Prevention:** Yesler joins the regression corpus; the audit's
+  formula-vs-quote check inherently polices this format since the display
+  no longer invents a derived tier.
+
+## 2026-07-27 — stale formula presented as current: "for the year ended 2019 was…"
+- **Wrong:** Freedom Boat Club's notes state the match "for the year ended
+  December 31, 2019" inside a 2023 filing of a discretionary annual
+  provision — we showed the 2019 formula with no caveat. The existing
+  temporal guard only knew "prior to/before/until/through".
+- **Change:** a lone "for the year ended <date>" at least 2 years behind
+  the filing's newest year now gets the era label ("formula in effect for
+  plan year 2019 per the filing"); two-year audit phrasing ("years ended
+  2023 and 2022") stays unlabeled. Era labels also now append after ALL
+  tiers, not mid-formula.
+- **Prevention:** Freedom Boat joins the regression corpus; 2 live entries
+  had the stale-year phrasing and re-parse under v23.
+
+## 2026-07-27 — batch-8 phrasing pack: "vests 25% after each year", "contribute a discretionary match", safe-harbor-provision NEC
+- **Wrong:** Blue Nile's graded schedule ("vests 25% after each year of
+  service"), Toyo's "may contribute a discretionary match as determined
+  each year", and Eiwa's "Company contributions under the safe harbor
+  provision are equal to 3% of compensation" all showed "not stated".
+- **Change:** each phrasing added to its extractor (graded, discretionary,
+  nonelective).
+- **Prevention:** all three join the regression corpus via the cached-PDF
+  diff harness, which must show only intended changes per release.
+
 ---
 
 ## Standing prevention machinery
