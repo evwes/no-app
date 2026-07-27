@@ -292,6 +292,32 @@ prevention machinery is listed at the bottom.
 - **Prevention:** all three join the regression corpus via the cached-PDF
   diff harness, which must show only intended changes per release.
 
+## 2026-07-27 — one employer group's formula shown as the whole plan's (hourly review, batch 9)
+- **Wrong:** Continental Tire The Americas' plan pays Hoosier Racing Tire
+  employees 100% of the first 5% and O'Sullivan Films employees 100% of
+  the first 6% — we displayed "100% of the first 5% of pay" as the plan
+  match with no qualifier. 22 live entries carry a formula whose sentence
+  is scoped "For participants of <entity>".
+- **Change:** a formula whose sentence begins with a population qualifier
+  renders as "Varies by employer group" with the group formulas quoted
+  (same-sentence detection tolerates abbreviation periods — "Corp., the").
+- **Prevention:** Continental joins the regression corpus; the audit's
+  formula-vs-quote check skips digit-free labels, so no false positives.
+
+## 2026-07-27 — batch-9 pack: past-tense NEC, tier formula without participant anchor, frozen plans
+- **Wrong:** Cazenovia College's "The College contributed 3% of eligible
+  wages" (past tense) and Daycon's "the Company contributed 50% of the
+  first 6% of base compensation" (no "that a participant contributed"
+  anchor) showed as unanswered; Bay Photo's plan has been FROZEN since
+  2021 — no flag existed for that state, so its quote-only match text
+  implied an active match.
+- **Change:** NEC accepts "contributed"; the sponsor-contributed match
+  template accepts a compensation-anchored tier ("of the first N% of …
+  compensation"); new `frozen`/`frozenText` feature flags plans whose
+  contributions are permanently discontinued (display wiring to follow in
+  the next frontend pass).
+- **Prevention:** all three join the regression corpus.
+
 ---
 
 ## Standing prevention machinery

@@ -390,7 +390,7 @@ export function extractPlanFeatures(text) {
     // percent of the first 3 percent of eligible compensation that a
     // participant contributed" (Rental One, Rabun Gap); the trailing
     // participant-deferral anchor is what makes it a match, not an NEC
-    t.match(/(?:company|employer|school|organization|foundation|sponsor)[^.]{0,40}?contribut(?:es|ed) (\d{1,3})(?:\.\d+)? ?(?:percent|%) of (?:the )?first (\d{1,2})(?:\.\d+)? ?(?:percent|%) of [^.]{0,90}?that (?:a|the|each) participant contribut/i);
+    t.match(/(?:company|employer|school|organization|foundation|sponsor)[^.]{0,40}?contribut(?:es|ed) (\d{1,3})(?:\.\d+)? ?(?:percent|%) of (?:the )?first (\d{1,2})(?:\.\d+)? ?(?:percent|%) of [^.]{0,90}?(?:that (?:a|the|each) participant contribut|compensation|pay|wages)/i);
   // dollar-phrased formulas: "dollar-for-dollar up to 4%", "50 cents per dollar on the first 6%"
   const df = !mf && (t.match(/dollar[- ]for[- ]dollar[^.]{0,80}?(?:up to|on the first) (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i)
     ? { pct: 100, cap: null } : null);
@@ -443,6 +443,18 @@ export function extractPlanFeatures(text) {
     }
   }
   if (mf) {
+    // a formula prefixed "For participants of <entity>," is scoped to one
+    // employer group — Continental Tire's plan pays Hoosier employees
+    // 100%/5% and O'Sullivan employees 100%/6%; presenting either as THE
+    // plan match is wrong. Say it varies and quote the group formulas.
+    const scopePre = t.slice(Math.max(0, mf.index - 110), mf.index);
+    // same-sentence test tolerates abbreviation periods ("Corp., the …");
+    // only a period followed by a space and a capital ends the sentence
+    const sm = scopePre.match(/for (?:participants|employees) (?:of|employed by|at) [A-Z]/i);
+    if (sm && !/\. +[A-Z]/.test(scopePre.slice(sm.index))) {
+      out.match = "Varies by employer group";
+      out.matchText = sentence(mf.index);
+    } else {
     // "limited to 50% of employee contributions with a maximum of up to 2%
     // of the participant's compensation" (Yesler) caps the MATCH, not the
     // matched-deferral tier — rendering it "50% of the first 2%" halves the
@@ -476,6 +488,7 @@ export function extractPlanFeatures(text) {
     out.match += mfEra;
     // the quote must contain every tier the formula states
     out.matchText = sentence(mf.index, lastTierEnd);
+    }
   } else if (df) {
     const m2 = t.match(/dollar[- ]for[- ]dollar[^.]{0,80}?(?:up to|on the first) (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i);
     out.match = `100% of the first ${+m2[1]}% of pay`;
@@ -636,6 +649,10 @@ export function extractPlanFeatures(text) {
     }
   }
 
+  // ---- frozen plans: contributions permanently discontinued ----
+  const froz = t.match(/(?:plan (?:was|has been|is) (?:amended to )?(?:frozen|freeze)|amended to freeze the plan|permanently discontinu\w+[^.]{0,60}?contributions)/i);
+  if (froz) { out.frozen = true; out.frozenText = sentence(froz.index); }
+
   // ---- safe harbor & true-up ----
   if (/safe harbor match/i.test(t)) out.safeHarbor = "match";
   else if (/safe harbor non.?elective|non.?elective safe harbor/i.test(t)) out.safeHarbor = "nonelective";
@@ -644,7 +661,7 @@ export function extractPlanFeatures(text) {
   // ---- employer nonelective / core contribution ----
   const nec = t.match(/non.?(?:contributory|elective)[^.]{0,80}?contribution[^.]{0,60}?(\d{1,2})(?:\.\d+)? ?(?:percent|%)/i) ||
     t.match(/(?:employer|company|university|college|institution|organization|hospital|health system) (?:core|automatic|basic|retirement) contribution[^.]{0,60}?(\d{1,2})(?:\.\d+)? ?(?:percent|%)/i) ||
-    t.match(/(?:university|college|institution|organization|hospital|health system|employer|company) (?:also )?contributes? (?:an amount )?(?:equal to )?(\d{1,2})(?:\.\d+)? ?(?:percent|%) of/i) ||
+    t.match(/(?:university|college|institution|organization|hospital|health system|employer|company) (?:also )?contribut(?:es|ed) (?:an amount )?(?:equal to )?(\d{1,2})(?:\.\d+)? ?(?:percent|%) of/i) ||
     t.match(/contribut\w+ (\d{1,2})(?:\.\d+)? ?(?:percent|%) of (?:each |eligible |annual )?(?:participant|employee)s?'? (?:eligible )?(?:compensation|pay)[^.]{0,60}?regardless of/i) ||
     // "Company contributions under the safe harbor provision are equal to
     // 3% of compensation" (Eiwa) — a safe-harbor nonelective with neither
