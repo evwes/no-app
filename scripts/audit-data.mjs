@@ -79,7 +79,10 @@ for (const [ack, e] of Object.entries(entriesByAckCov)) {
   if (!f) continue;
   if (f.match && f.matchText && !/discretionary|up to/i.test(f.match)) {
     checked++;
-    const nums = (f.match.match(/\d+(?:\.\d+)?/g) || []).filter((n) => +n !== 100 || !/dollar[- ]for[- ]dollar/i.test(f.matchText));
+    // the era label's year ("… (formula in effect prior to 2024 per the
+    // filing)") is annotation, not formula — strip it before number checks
+    const mFormula = f.match.replace(/ \(formula in effect [^)]*\)$/i, "");
+    const nums = (mFormula.match(/\d+(?:\.\d+)?/g) || []).filter((n) => +n !== 100 || !/dollar[- ]for[- ]dollar/i.test(f.matchText));
     // "next N%" tiers derived from cumulative caps ("exceeds 1% up to 6%" →
     // next 5%) are consistent when the quote shows the cumulative number
     const first = +(f.match.match(/first (\d+)/) || [])[1] || 0;
