@@ -357,9 +357,11 @@ export function extractPlanFeatures(text) {
   // vetoed (found by hourly due diligence 2026-07-27)
   const BOILER = /_{3,}|provide explanation|part [ivx]+\b|schedule [a-z]\b|check(?:box| the box| all boxes)|see instructions|yes ?\/ ?no|permissive aggregation|design[- ]based safe harbor|\b2[01][abc]\b|complete this item|\bX\b ?(?:Yes|No)|(?:Yes|No) ?\bX\b/i;
   const clean = (s) => s
-    .replace(/\b[\w .,]{0,60}Notes? to Financial Statements\b/gi, " ")
+    // page-heading glue: strip the date ONLY as part of the heading block —
+    // a blanket date removal ate real dates mid-sentence ("During the year
+    // ended December 31, 2022, the Company…" became "the year ended ,")
+    .replace(/\b[\w .,]{0,60}Notes? to Financial Statements\b(?:[\s,]*December 31, 20\d\d(?: and 20\d\d)?)?/gi, " ")
     .replace(/\bNote \d+ ?[-–—] ?[^.]{0,60}\((?:Continued|concluded)\)/gi, " ")
-    .replace(/\bDecember 31, 20\d\d(?: and 20\d\d)?\b/g, " ")
     .replace(/\s{2,}/g, " ").trim();
   const cap = (s) => (s.length > 300 ? s.slice(0, 297) + "…" : s);
   const sentence = (idx, span = 0) => {
@@ -378,23 +380,23 @@ export function extractPlanFeatures(text) {
 
   // ---- employer match formula ----
   const mf =
-    t.match(/match(?:ing|ed)?[^.]{0,140}?(\d{1,3})(?:\.\d+)? ?(?:percent|%) (?:of|on) (?:the )?first (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i) ||
-    t.match(/(\d{1,3})(?:\.\d+)? ?(?:percent|%) match(?:ing)?[^.]{0,80}?(?:up to|on the first) (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i) ||
+    t.match(/match(?:ing|ed)?[^.]{0,140}?(\d{1,3}(?:\.\d+)?) ?(?:percent|%) (?:of|on) (?:the )?first (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i) ||
+    t.match(/(\d{1,3}(?:\.\d+)?) ?(?:percent|%) match(?:ing)?[^.]{0,80}?(?:up to|on the first) (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i) ||
     // "matching contribution ... equal to 100% of ... deferral contributions
     // up to 6% of ... compensation" (Black Hills style — no "first")
     // "up to a 1%" — without the optional article the engine backtracks
     // into pairing the wrong numbers (QACA filings extracted "1% of the
     // first 6%" instead of "100% of the first 1%")
-    t.match(/match(?:ing|ed)?[^.]{0,160}?(\d{1,3})(?:\.\d+)? ?(?:percent|%) of [^.]{0,140}?(?:up to|not to exceed|not in excess of|to a maximum of|maximum[^.]{0,60}? of) (?:an? )?(\d{1,2})(?:\.\d+)? ?(?:percent|%) of/i) ||
+    t.match(/match(?:ing|ed)?[^.]{0,160}?(\d{1,3}(?:\.\d+)?) ?(?:percent|%) of [^.]{0,140}?(?:up to|not to exceed|not in excess of|to a maximum of|maximum[^.]{0,60}? of) (?:an? )?(\d{1,2}(?:\.\d+)?) ?(?:percent|%) of/i) ||
     // auditor template with no "match" word — "The Company contributed 25
     // percent of the first 3 percent of eligible compensation that a
     // participant contributed" (Rental One, Rabun Gap); the trailing
     // participant-deferral anchor is what makes it a match, not an NEC
-    t.match(/(?:company|employer|school|organization|foundation|sponsor)[^.]{0,40}?contribut(?:es|ed) (\d{1,3})(?:\.\d+)? ?(?:percent|%) of (?:the )?first (\d{1,2})(?:\.\d+)? ?(?:percent|%) of [^.]{0,90}?(?:that (?:a|the|each) participant contribut|compensation|pay|wages)/i);
+    t.match(/(?:company|employer|school|organization|foundation|sponsor)[^.]{0,40}?contribut(?:es|ed) (\d{1,3}(?:\.\d+)?) ?(?:percent|%) of (?:the )?first (\d{1,2}(?:\.\d+)?) ?(?:percent|%) of [^.]{0,90}?(?:that (?:a|the|each) participant contribut|compensation|pay|wages)/i);
   // dollar-phrased formulas: "dollar-for-dollar up to 4%", "50 cents per dollar on the first 6%"
-  const df = !mf && (t.match(/dollar[- ]for[- ]dollar[^.]{0,80}?(?:up to|on the first) (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i)
+  const df = !mf && (t.match(/dollar[- ]for[- ]dollar[^.]{0,80}?(?:up to|on the first) (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i)
     ? { pct: 100, cap: null } : null);
-  const cents = !mf && !df && t.match(/(\d{1,3})(?:\.\d+)? ?cents (?:for|per|on) (?:each |every )?(?:\$1(?:\.00)?|dollar)[^.]{0,80}?(?:up to|on the first) (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i);
+  const cents = !mf && !df && t.match(/(\d{1,3}(?:\.\d+)?) ?cents (?:for|per|on) (?:each |every )?(?:\$1(?:\.00)?|dollar)[^.]{0,80}?(?:up to|on the first) (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i);
   // match stated as a TABLE, not prose: "Employee Contribution | Employer
   // Match / First 2% of eligible compensation 100 % / Next 2% ... 50 %"
   // (Northrop Grumman). Table columns collapse onto one line in the
@@ -402,7 +404,7 @@ export function extractPlanFeatures(text) {
   // masquerade as a formula.
   let mtab = null;
   if (!mf && !df && !cents) {
-    const tabRe = /first (\d{1,2})(?:\.\d+)? ?(?:percent|%) of (?:eligible |annual |base )?(?:compensation|pay|earnings) (\d{1,3}) ?(?:percent|%)/gi;
+    const tabRe = /first (\d{1,2}(?:\.\d+)?) ?(?:percent|%) of (?:eligible |annual |base )?(?:compensation|pay|earnings) (\d{1,3}) ?(?:percent|%)/gi;
     let c;
     while ((c = tabRe.exec(t))) {
       if (/match/i.test(t.slice(Math.max(0, c.index - 300), c.index))) { mtab = c; break; }
@@ -413,7 +415,7 @@ export function extractPlanFeatures(text) {
   // a rate of 50%" (Berry Foundation) — mf's rate-first shapes can't bind it
   let minv = null;
   if (!mf && !df && !cents && !mtab) {
-    minv = t.match(/first (\d{1,2})(?:\.\d+)? ?(?:percent|%) of [^.]{0,60}?(?:is|are) matched (?:at (?:a rate of )?)?(\d{1,3})(?:\.\d+)? ?(?:percent|%)/i);
+    minv = t.match(/first (\d{1,2}(?:\.\d+)?) ?(?:percent|%) of [^.]{0,60}?(?:is|are) matched (?:at (?:a rate of )?)?(\d{1,3}(?:\.\d+)?) ?(?:percent|%)/i);
   }
   // a formula introduced by "Prior to January 1, 2023 …" is DISCONTINUED
   // (Cooper Tire) — prefer a later-stated current formula; if none exists,
@@ -436,8 +438,8 @@ export function extractPlanFeatures(text) {
     }
     if (era) {
       const rest = t.slice(mf.index + mf[0].length);
-      const again = rest.match(/match(?:ing|ed)?[^.]{0,140}?(\d{1,3})(?:\.\d+)? ?(?:percent|%) (?:of|on) (?:the )?first (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i) ||
-        rest.match(/match(?:ing|ed)?[^.]{0,160}?(\d{1,3})(?:\.\d+)? ?(?:percent|%) of [^.]{0,140}?(?:up to|not to exceed|to a maximum of) (?:an? )?(\d{1,2})(?:\.\d+)? ?(?:percent|%) of/i);
+      const again = rest.match(/match(?:ing|ed)?[^.]{0,140}?(\d{1,3}(?:\.\d+)?) ?(?:percent|%) (?:of|on) (?:the )?first (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i) ||
+        rest.match(/match(?:ing|ed)?[^.]{0,160}?(\d{1,3}(?:\.\d+)?) ?(?:percent|%) of [^.]{0,140}?(?:up to|not to exceed|to a maximum of) (?:an? )?(\d{1,2}(?:\.\d+)?) ?(?:percent|%) of/i);
       if (again) { again.index += mf.index + mf[0].length; Object.assign(mf, { 1: again[1], 2: again[2], index: again.index, 0: again[0] }); }
       else mfEra = ` (formula in effect ${era[1].toLowerCase()} ${era[2]} per the filing)`;
     }
@@ -468,7 +470,7 @@ export function extractPlanFeatures(text) {
     // 4%, and 25% of the next 1%" (Kohler) has a comma-joined middle tier;
     // "50% of a participant's contributions up to the next 2%" (Simmons
     // Foods) puts words between the rate and "next"
-    const tierRe = /(\d{1,3})(?:\.\d+)? ?(?:percent|%) of [^.%]{0,60}?next (\d{1,2})(?:\.\d+)? ?(?:percent|%)/gi;
+    const tierRe = /(\d{1,3}(?:\.\d+)?) ?(?:percent|%) of [^.%]{0,60}?next (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/gi;
     const tail = t.slice(mf.index, mf.index + 400);
     let tm; let tguard = 0; let lastTierEnd = mf[0].length;
     while ((tm = tierRe.exec(tail)) && tguard++ < 4) {
@@ -478,7 +480,7 @@ export function extractPlanFeatures(text) {
     // QACA/two-part safe harbor phrasing: "…and 50% of the deferral which
     // exceeds 1% up to 6% of compensation" → 50% of the next (6−1)%
     if (tguard === 0) {
-      const ex = tail.match(/\b(?:and|plus) (\d{1,3})(?:\.\d+)? ?(?:percent|%) of [^.]{0,140}?(?:(?:exceeds?|in excess of|above)[^.]{0,100}?(?:up to|not to exceed)|between [^.]{0,40}? and) (?:an? )?(\d{1,2})(?:\.\d+)? ?(?:percent|%)/i);
+      const ex = tail.match(/\b(?:and|plus) (\d{1,3}(?:\.\d+)?) ?(?:percent|%) of [^.]{0,140}?(?:(?:exceeds?|in excess of|above)[^.]{0,100}?(?:up to|not to exceed)|between [^.]{0,40}? and) (?:an? )?(\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i);
       if (ex && +ex[2] > +mf[2]) {
         out.match += ` + ${+ex[1]}% of the next ${+ex[2] - +mf[2]}%`;
         lastTierEnd = ex.index + ex[0].length;
@@ -490,7 +492,7 @@ export function extractPlanFeatures(text) {
     out.matchText = sentence(mf.index, lastTierEnd);
     }
   } else if (df) {
-    const m2 = t.match(/dollar[- ]for[- ]dollar[^.]{0,80}?(?:up to|on the first) (\d{1,2})(?:\.\d+)? ?(?:percent|%)/i);
+    const m2 = t.match(/dollar[- ]for[- ]dollar[^.]{0,80}?(?:up to|on the first) (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i);
     out.match = `100% of the first ${+m2[1]}% of pay`;
     out.matchText = sentence(m2.index);
   } else if (cents) {
@@ -498,13 +500,13 @@ export function extractPlanFeatures(text) {
     out.matchText = sentence(cents.index);
   } else if (minv) {
     out.match = `${+minv[2]}% of the first ${+minv[1]}% of pay`;
-    const ex2 = t.slice(minv.index, minv.index + 300).match(/greater than (\d{1,2})(?:\.\d+)? ?(?:percent|%) and up to (\d{1,2})(?:\.\d+)? ?(?:percent|%) [^.]{0,60}?matched (?:at (?:a rate of )?)?(\d{1,3})(?:\.\d+)? ?(?:percent|%)/i);
+    const ex2 = t.slice(minv.index, minv.index + 300).match(/greater than (\d{1,2}(?:\.\d+)?) ?(?:percent|%) and up to (\d{1,2}(?:\.\d+)?) ?(?:percent|%) [^.]{0,60}?matched (?:at (?:a rate of )?)?(\d{1,3}(?:\.\d+)?) ?(?:percent|%)/i);
     let invEnd = minv[0].length;
     if (ex2 && +ex2[2] > +ex2[1]) { out.match += ` + ${+ex2[3]}% of the next ${+ex2[2] - +ex2[1]}%`; invEnd = ex2.index + ex2[0].length; }
     out.matchText = sentence(minv.index, invEnd);
   } else if (mtab) {
     out.match = `${+mtab[2]}% of the first ${+mtab[1]}% of pay`;
-    const tierRe2 = /next (\d{1,2})(?:\.\d+)? ?(?:percent|%) of (?:eligible |annual |base )?(?:compensation|pay|earnings) (\d{1,3}) ?(?:percent|%)/gi;
+    const tierRe2 = /next (\d{1,2}(?:\.\d+)?) ?(?:percent|%) of (?:eligible |annual |base )?(?:compensation|pay|earnings) (\d{1,3}) ?(?:percent|%)/gi;
     const tail = t.slice(mtab.index, mtab.index + 400);
     let tm2; let tg = 0;
     while ((tm2 = tierRe2.exec(tail)) && tg++ < 4) out.match += ` + ${+tm2[2]}% of the next ${+tm2[1]}%`;
@@ -512,7 +514,7 @@ export function extractPlanFeatures(text) {
   } else {
     // "The Company made a match of up to 1% of compensation" (Columbia
     // Ford) — a stated cap with no rate is still a formula worth showing
-    const upTo = t.match(/(?:made |makes )?a match of up to (\d{1,2})(?:\.\d+)? ?(?:percent|%) of (?:eligible |annual )?compensation/i);
+    const upTo = t.match(/(?:made |makes )?a match of up to (\d{1,2}(?:\.\d+)?) ?(?:percent|%) of (?:eligible |annual )?compensation/i);
     // "may elect to make discretionary matching contributions … determined
     // by the Board" — roughly half the no-formula backlog. There IS no
     // formula; discretionary is the answer, not a gap.
@@ -659,14 +661,14 @@ export function extractPlanFeatures(text) {
   if (/true[- ]?up/i.test(t)) out.trueUp = true;
 
   // ---- employer nonelective / core contribution ----
-  const nec = t.match(/non.?(?:contributory|elective)[^.]{0,80}?contribution[^.]{0,60}?(\d{1,2})(?:\.\d+)? ?(?:percent|%)/i) ||
-    t.match(/(?:employer|company|university|college|institution|organization|hospital|health system) (?:core|automatic|basic|retirement) contribution[^.]{0,60}?(\d{1,2})(?:\.\d+)? ?(?:percent|%)/i) ||
-    t.match(/(?:university|college|institution|organization|hospital|health system|employer|company) (?:also )?contribut(?:es|ed) (?:an amount )?(?:equal to )?(\d{1,2})(?:\.\d+)? ?(?:percent|%) of/i) ||
-    t.match(/contribut\w+ (\d{1,2})(?:\.\d+)? ?(?:percent|%) of (?:each |eligible |annual )?(?:participant|employee)s?'? (?:eligible )?(?:compensation|pay)[^.]{0,60}?regardless of/i) ||
+  const nec = t.match(/non.?(?:contributory|elective)[^.]{0,80}?contribution[^.]{0,60}?(\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i) ||
+    t.match(/(?:employer|company|university|college|institution|organization|hospital|health system) (?:core|automatic|basic|retirement) contribution[^.]{0,60}?(\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i) ||
+    t.match(/(?:university|college|institution|organization|hospital|health system|employer|company) (?:also )?contribut(?:es|ed) (?:an amount )?(?:equal to )?(\d{1,2}(?:\.\d+)?) ?(?:percent|%) of/i) ||
+    t.match(/contribut\w+ (\d{1,2}(?:\.\d+)?) ?(?:percent|%) of (?:each |eligible |annual )?(?:participant|employee)s?'? (?:eligible )?(?:compensation|pay)[^.]{0,60}?regardless of/i) ||
     // "Company contributions under the safe harbor provision are equal to
     // 3% of compensation" (Eiwa) — a safe-harbor nonelective with neither
     // "nonelective" nor "safe harbor nonelective" in the sentence
-    t.match(/(?:company|employer) contributions? under the safe harbor provision (?:is|are) equal to (\d{1,2})(?:\.\d+)? ?(?:percent|%) of/i);
+    t.match(/(?:company|employer) contributions? under the safe harbor provision (?:is|are) equal to (\d{1,2}(?:\.\d+)?) ?(?:percent|%) of/i);
   if (nec && +nec[1] >= 1 && +nec[1] <= 15) { out.nec = `${+nec[1]}% of pay`; out.necText = sentence(nec.index); }
   // multiemployer/union plans: the employer contribution is an hourly rate
   // set by the CBA, not a formula — say so instead of showing nothing
@@ -683,7 +685,7 @@ export function extractPlanFeatures(text) {
   }
 
   // ---- auto-escalation ----
-  const esc = t.match(/(?:automatic(?:ally)? increas\w+|escalat\w+)[^.]{0,120}?(\d{1,2})(?:\.\d+)? ?(?:percent|%)[^.]{0,80}?(?:maximum|up to|cap|not to exceed)[^.]{0,40}?(\d{1,2})(?:\.\d+)? ?(?:percent|%)/i);
+  const esc = t.match(/(?:automatic(?:ally)? increas\w+|escalat\w+)[^.]{0,120}?(\d{1,2}(?:\.\d+)?) ?(?:percent|%)[^.]{0,80}?(?:maximum|up to|cap|not to exceed)[^.]{0,40}?(\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i);
   const esc2 = esc || t.match(/annual(?:ly)? [^.]{0,40}?automatic(?:ally)? increas\w+|automatic escalation/i);
   if (esc2) {
     out.autoEscalate = esc ? `+${+esc[1]}%/year up to ${+esc[2]}%` : true;
@@ -739,7 +741,7 @@ export function extractPlanFeatures(text) {
   }
 
   // ---- automatic enrollment ----
-  const ae = t.match(/automatic(?:ally)? enroll(?:ed|ment|s)?[^.]{0,100}?(\d{1,2})(?:\.\d+)? ?(?:percent|%)/i);
+  const ae = t.match(/automatic(?:ally)? enroll(?:ed|ment|s)?[^.]{0,100}?(\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i);
   const ae2 = ae || t.match(/automatic(?:ally)? enroll(?:ed|ment|s)?/i);
   if (ae2) {
     out.autoEnroll = ae ? `${+ae[1]}% default deferral` : true;

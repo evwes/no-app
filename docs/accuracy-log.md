@@ -318,6 +318,29 @@ prevention machinery is listed at the bottom.
   the next frontend pass).
 - **Prevention:** all three join the regression corpus.
 
+## 2026-07-28 — decimal tiers silently truncated: "up to 1.5%" displayed as "1%" (hourly review, batch 10)
+- **Wrong:** every formula pattern captured `(\d{1,2})(?:\.\d+)?` — the
+  decimal sat OUTSIDE the capture group, so Bureau Veritas' "100% of
+  deferrals up to 1.5% of eligible compensation" displayed as "100% of the
+  first 1% of pay". 327 live formulas had a truncated decimal ("200% of
+  the first 2%" that is really 2.5%, etc.).
+- **Change:** decimals moved inside every numeric capture group in the
+  match/tier/NEC patterns (group counts unchanged); tier arithmetic
+  already handles floats.
+- **Prevention:** Bureau Veritas joins the regression corpus; the audit's
+  formula-vs-quote number check now naturally flags any future truncation
+  (the quote's "1.5" no longer matches a displayed "1").
+
+## 2026-07-28 — quote cleaner ate real dates: "During the year ended , the Company…"
+- **Wrong:** the quote cleaner blanket-removed "December 31, 20XX" to kill
+  page-heading glue, which also deleted legitimate in-sentence dates —
+  5,010 live quotes read like "During the year ended , the Company made…",
+  garbling the site's own evidence and hiding era information.
+- **Change:** the date is stripped only as part of the
+  "Notes to Financial Statements <date>" heading block.
+- **Prevention:** same specimen; the hourly DD checklist now reads quotes
+  for grammatical holes, not just numbers.
+
 ---
 
 ## Standing prevention machinery
