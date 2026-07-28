@@ -393,6 +393,10 @@ export function extractPlanFeatures(text) {
     // participant contributed" (Rental One, Rabun Gap); the trailing
     // participant-deferral anchor is what makes it a match, not an NEC
     t.match(/(?:company|employer|school|organization|foundation|sponsor)[^.]{0,40}?contribut(?:es|ed) (\d{1,3}(?:\.\d+)?) ?(?:percent|%) of (?:the )?first (\d{1,2}(?:\.\d+)?) ?(?:percent|%) of [^.]{0,90}?(?:that (?:a|the|each) participant contribut|compensation|pay|wages)/i);
+  // spelled-out fraction rates: "one-half of the first 8% of base
+  // compensation" (Opus Inspection) — map to a percentage
+  const FRAC = { "one-half": 50, "one half": 50, "one-third": 33, "one third": 33, "one-quarter": 25, "one quarter": 25, "two-thirds": 67, "two thirds": 67 };
+  const frac = !mf && t.match(/match(?:ing|ed)?[^.]{0,160}?\b(one[- ]half|one[- ]third|one[- ]quarter|two[- ]thirds)\b of the first (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i);
   // dollar-phrased formulas: "dollar-for-dollar up to 4%", "50 cents per dollar on the first 6%"
   const df = !mf && (t.match(/dollar[- ]for[- ]dollar[^.]{0,80}?(?:up to|on the first) (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i)
     ? { pct: 100, cap: null } : null);
@@ -489,7 +493,7 @@ export function extractPlanFeatures(text) {
     // QACA/two-part safe harbor phrasing: "…and 50% of the deferral which
     // exceeds 1% up to 6% of compensation" → 50% of the next (6−1)%
     if (tguard === 0) {
-      const ex = tail.match(/\b(?:and|plus) (?:an additional )?(\d{1,3}(?:\.\d+)?) ?(?:percent|%) of [^.]{0,140}?(?:(?:exceeds?|exceeding|in excess of|above)[^.]{0,100}?(?:up to|not to exceed|(?:but )?not?,? more than)|between [^.]{0,40}? and) (?:an? )?(\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i);
+      const ex = tail.match(/\b(?:and|plus) (?:an additional )?(\d{1,3}(?:\.\d+)?) ?(?:percent|%) (?:match )?of [^.]{0,140}?(?:(?:exceeds?|exceeding|in excess of|above)[^.]{0,100}?(?:up to|not to exceed|(?:but )?not?,? more than)|between [^.]{0,40}? and) (?:an? )?(\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i);
       if (ex && +ex[2] > +mf[2]) {
         out.match += ` + ${+ex[1]}% of the next ${+ex[2] - +mf[2]}%`;
         lastTierEnd = ex.index + ex[0].length;
@@ -509,6 +513,9 @@ export function extractPlanFeatures(text) {
     // the quote must contain every tier the formula states
     out.matchText = sentence(mf.index, lastTierEnd);
     }
+  } else if (frac) {
+    out.match = `${FRAC[frac[1].toLowerCase().replace(/ /, "-")] || FRAC[frac[1].toLowerCase()]}% of the first ${+frac[2]}% of pay`;
+    out.matchText = sentence(frac.index);
   } else if (df) {
     const m2 = t.match(/dollar[- ]for[- ]dollar[^.]{0,80}?(?:up to|on the first) (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i);
     out.match = `100% of the first ${+m2[1]}% of pay`;

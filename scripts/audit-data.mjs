@@ -86,7 +86,10 @@ for (const [ack, e] of Object.entries(entriesByAckCov)) {
     // "next N%" tiers derived from cumulative caps ("exceeds 1% up to 6%" →
     // next 5%) are consistent when the quote shows the cumulative number
     const first = +(f.match.match(/first (\d+)/) || [])[1] || 0;
+    // spelled-fraction rates ("one-half of the first 8%") display as digits
+    const RATE_WORDS = { 50: /one[- ]half/i, 33: /one[- ]third/i, 25: /one[- ]quarter/i, 67: /two[- ]thirds/i };
     const bad = nums.filter((n) => !f.matchText.includes(n) &&
+      !(RATE_WORDS[n] && RATE_WORDS[n].test(f.matchText)) &&
       !(first && f.match.includes(`next ${n}%`) && f.matchText.includes(String(first + +n))));
     if (bad.length) { mismatches++; if (mmList.length < 12) mmList.push(`${ack.slice(0, 14)}: match "${f.match}" but quote lacks [${bad}]`); }
   }

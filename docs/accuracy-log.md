@@ -488,6 +488,21 @@ prevention machinery is listed at the bottom.
 - **Prevention:** Grandsouth, Center Line, and Annapolis join the corpus.
   Life Storage (33%/5%) and Ideal Credit Union verified exact this batch.
 
+## 2026-07-28 — spelled fractions and "N% match of" tier phrasing (hourly review, batch 19)
+- **Wrong:** Opus Inspection's "discretionary matching contribution equal
+  to one-half of the first 8% of base compensation" showed only
+  "Discretionary" (the spelled fraction beat the digit patterns), and
+  TCGplayer's second tier ("and 50% match of the participant's
+  contributions between 3% and 5%") was dropped because "match" sat
+  between the rate and "of".
+- **Change:** one-half/one-third/one-quarter/two-thirds map to
+  percentages (the audit accepts the word form in quotes); the
+  exceeds-tier pattern tolerates "match" after the rate.
+- **Prevention:** Opus and TCGplayer join the corpus. FDIC-as-receiver
+  for Signature Bank and Inland Bancorp verified exact this batch; Banc
+  of California and Tredence are scanned attachments (OCR path,
+  runner-parity sampling queue).
+
 ---
 
 ## Standing prevention machinery
