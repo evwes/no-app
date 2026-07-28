@@ -528,6 +528,16 @@ prevention machinery is listed at the bottom.
   Engineering, and Crucible verified exact this batch (3/3); Metairie
   Bank is a scanned attachment (OCR queue).
 
+## 2026-07-28 — "up to the first N%" connector variant (hourly review, batch 25)
+- **Wrong:** P2ES Holdings' required match ("50 percent of elective
+  deferrals up to the first 8 percent of eligible compensation") missed —
+  the cap connector expected an article ("up to a"), not "the first".
+- **Change:** "the first" joins the connector's article set (main pattern
+  and the era-retry copy).
+- **Prevention:** P2ES joins the corpus. Nebraska Methodist verified
+  correct (discretionary + 3-year cliff; its quote is the vesting
+  sentence — cosmetic); Maple Knoll and Omnion are form-only.
+
 ---
 
 ## Standing prevention machinery
