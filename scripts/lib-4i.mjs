@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 24;
+export const PARSER_VERSION = 25;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b/i, "SDBA"],
@@ -521,11 +521,25 @@ export function extractPlanFeatures(text) {
     while ((tm2 = tierRe2.exec(tail)) && tg++ < 4) out.match += ` + ${+tm2[2]}% of the next ${+tm2[1]}%`;
     out.matchText = sentence(mtab.index);
   } else {
+    // cumulative match tables — "When an Employee Contributes | Company
+    // Will Match an Additional | Cumulative Company Match … 6% of their
+    // pay … 3.00%" (Northcentral University): the last cumulative percent
+    // is the total-match cap; the tier structure is non-linear, so state
+    // the cap and let the quote carry the table
+    const cumH = t.match(/when an employee contributes[^.]{0,60}?will match/i);
+    if (cumH) {
+      const win = t.slice(cumH.index, cumH.index + 700);
+      const rows = [...win.matchAll(/(\d{1,2})(?:\.\d+)? ?% of (?:their|the employee'?s?) pay ([\d.]+) ?%[^%]{0,60}?([\d.]+) ?%/gi)];
+      if (rows.length >= 3) {
+        out.match = `Tiered schedule — up to ${+rows[rows.length - 1][3]}% of pay total match`;
+        out.matchText = sentence(cumH.index, Math.min(700, win.length));
+      }
+    }
     // rate-only match with no stated cap: "The company contributed 10% of
     // the employee qualified contributions" (Exeter) — show the rate the
     // filing states rather than nothing
     const rateOnly = t.match(/(?:company|employer|plan sponsor)[^.]{0,40}?contribut(?:es|ed) (\d{1,3}(?:\.\d+)?) ?(?:percent|%) of the (?:employee|participant)s?'? ?(?:qualified |elective |eligible )?(?:deferral )?contributions/i);
-    if (rateOnly) {
+    if (!out.match && rateOnly) {
       out.match = `${+rateOnly[1]}% of contributions`;
       out.matchText = sentence(rateOnly.index);
     }
@@ -645,7 +659,9 @@ export function extractPlanFeatures(text) {
   // "immediate" only counts when the sentence explicitly covers employer money
   if (!out.vesting) {
     for (const s of vestSentences) {
-      if (!/(matching|employer|company|non.?elective|profit.?sharing) (?:contributions?|accounts?)|company match/i.test(s)) continue;
+      // "always 100% vested in ALL of their Plan accounts" (EP Energy)
+      // covers employer money without naming it
+      if (!/(matching|employer|company|non.?elective|profit.?sharing) (?:contributions?|accounts?)|company match|all (?:of (?:their|his|her) )?(?:plan )?accounts|all contribution sources/i.test(s)) continue;
       if (/immediately? (?:100 ?(?:percent|%) )?(?:fully )?vested|fully vested (?:at all times|immediately|upon)|100 ?(?:percent|%) vested (?:at all times|immediately|in all)|always (?:fully |100 ?(?:percent|%) )?vested/i.test(s)) {
         out.vesting = "Immediate"; out.vestingText = cap(s); break;
       }
@@ -698,7 +714,7 @@ export function extractPlanFeatures(text) {
   }
 
   // ---- frozen plans: contributions permanently discontinued ----
-  const froz = t.match(/(?:plan (?:was|has been|is) (?:amended to )?(?:frozen|freeze)|amended to freeze the plan|permanently discontinu\w+[^.]{0,60}?contributions|(?:board|company|sponsor)[^.]{0,60}?(?:resolved|elected|adopted a resolution|approved a resolution)[^.]{0,40}? to terminate the plan|plan was terminated effective)/i);
+  const froz = t.match(/(?:plan (?:was|has been|is) (?:amended to )?(?:frozen|freeze)|amended to freeze the plan|permanently discontinu\w+[^.]{0,60}?contributions|(?:board|company|sponsor)[^.]{0,60}?(?:resolved|elected|adopted a resolution|approved a resolution)[^.]{0,40}? to terminate the plan|plan was terminated effective|prior to the plan[’']?s termination)/i);
   if (froz) { out.frozen = true; out.frozenText = sentence(froz.index); }
 
   // ---- safe harbor & true-up ----

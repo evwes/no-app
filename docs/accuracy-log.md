@@ -420,6 +420,37 @@ prevention machinery is listed at the bottom.
   (merger-source terminations must not flag the host plan) is part of the
   DD checklist.
 
+## 2026-07-28 — v23 era labels misfired on 2,286 CURRENT formulas (hourly review, batch 15 — VMware)
+- **Wrong:** v23's staleness scan read BARE years, so target-date fund
+  names ("Retirement 2045") inflated the "newest year in the filing"
+  estimate and current formulas got era labels: 2,114 live entries say
+  "formula in effect for plan year 2024", 172 say 2025 — VMware's active
+  100%-of-6% among them. Only ~9 pre-2021 labels were genuine.
+- **Change:** already fixed in v24 (dated-token scan), which was in flight
+  when the DD caught this; verified VMware extracts clean under v24 code.
+  Verify the label histogram after the v24 data lands: 2024/2025 counts
+  must go to ~zero.
+- **Prevention:** the label-year histogram joins the audit as a standing
+  check — any label year ≥ the current filing season is a red flag.
+
+## 2026-07-28 — batch-15 pack: "all of their Plan accounts" vesting, cumulative match tables, OCR-sourced DD limits
+- **Wrong:** EP Energy's "always 100% vested in all of their Plan
+  accounts" wasn't accepted as employer-money vesting evidence (the gate
+  wanted an explicit employer word); Northcentral University's cumulative
+  match TABLE ("When an Employee Contributes | … | Cumulative Company
+  Match … 3.00%") had no pattern; and Mid-States/Amsted proved
+  unverifiable locally — their attachments are scanned, production's
+  features came from the OCR path, and a truncated download (102KB of
+  2.26MB, silent curl failure) initially masqueraded as "form-only".
+- **Change:** vesting gate accepts all-accounts phrasing; cumulative
+  tables render "Tiered schedule — up to N% of pay total match" with the
+  table quoted; "Prior to the Plan's termination" (curly apostrophe
+  included) joins the frozen detection.
+- **Prevention:** DD downloads must be size-checked against S3
+  Content-Length before declaring a filing form-only; OCR-sourced entries
+  are sampled on runner-parity tooling, not the sandbox (local tesseract
+  is ~50x slower than production).
+
 ---
 
 ## Standing prevention machinery
