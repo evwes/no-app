@@ -463,6 +463,16 @@ prevention machinery is listed at the bottom.
   the audit strips all "per the filing" annotations before number checks.
 - **Prevention:** Digirad and VMware join the corpus with cap assertions.
 
+## 2026-07-28 — "Company contributions are discretionary." missed for plainness (hourly review, batch 17)
+- **Wrong:** Stamps.com's notes state the employer arrangement in four
+  words — "Company contributions are discretionary." — and every
+  discretionary pattern demanded fancier phrasing, so a plan with $4.5M
+  of employer money showed match "not stated".
+- **Change:** the plain form joins the discretionary alternation (a
+  second corpus filing was caught by the same addition).
+- **Prevention:** Stamps.com joins the corpus. Veritas (discretionary +
+  2-year cliff), Channel Partners, and Seven Z verified exact this batch.
+
 ---
 
 ## Standing prevention machinery

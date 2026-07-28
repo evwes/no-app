@@ -558,7 +558,7 @@ export function extractPlanFeatures(text) {
     // "may elect to make discretionary matching contributions … determined
     // by the Board" — roughly half the no-formula backlog. There IS no
     // formula; discretionary is the answer, not a gap.
-    const disc = t.match(/discretionary (?:401\(k\) )?match(?:ing)?(?: and profit[- ]sharing)? contributions?|match(?:ing)?(?: and profit[- ]sharing)? contributions? [^.]{0,80}?(?:discretionary|determined (?:annually |each year )?by (?:its |the )?(?:board|company|employer|trustees|firm|plan sponsor|management))|on a discretionary basis,? contribut[^.]{0,30}?match|(?:contribute|make) a discretionary match(?:ing)?\b|at (?:its|their) discretion,? (?:may )?contribut\w+ a match/i);
+    const disc = t.match(/discretionary (?:401\(k\) )?match(?:ing)?(?: and profit[- ]sharing)? contributions?|match(?:ing)?(?: and profit[- ]sharing)? contributions? [^.]{0,80}?(?:discretionary|determined (?:annually |each year )?by (?:its |the )?(?:board|company|employer|trustees|firm|plan sponsor|management))|on a discretionary basis,? contribut[^.]{0,30}?match|(?:contribute|make) a discretionary match(?:ing)?\b|at (?:its|their) discretion,? (?:may )?contribut\w+ a match|(?:company|employer) contributions are (?:entirely )?discretionary/i);
     if (out.match) {
       // rate-only already answered it
     } else if (upTo) {
