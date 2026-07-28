@@ -451,6 +451,18 @@ prevention machinery is listed at the bottom.
   are sampled on runner-parity tooling, not the sandbox (local tesseract
   is ~50x slower than production).
 
+## 2026-07-28 — dollar caps omitted from match formulas (hourly review, batch 16)
+- **Wrong:** Digirad's match is "25% of deferrals up to 6% … not to
+  exceed $2,500 on an annual basis" and VMware's is capped at "$2,250 per
+  quarter for a total of $9,000 per year" — we displayed the percentage
+  formula with no cap, materially overstating the benefit for higher
+  earners. First fix attempt labeled VMware "$2,250/yr" (the quarterly
+  figure) — caught in the same session by re-reading the sentence.
+- **Change:** an annual dollar cap appends "(max $N/yr per the filing)",
+  preferring the stated annual total and refusing shorter-period figures;
+  the audit strips all "per the filing" annotations before number checks.
+- **Prevention:** Digirad and VMware join the corpus with cap assertions.
+
 ---
 
 ## Standing prevention machinery

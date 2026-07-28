@@ -496,6 +496,15 @@ export function extractPlanFeatures(text) {
       }
     }
     // era label goes after ALL tiers so the annotation reads as one unit
+    // a dollar cap changes the real benefit — "25% of deferrals up to 6%,
+    // not to exceed $2,500 on an annual basis" (Digirad) is NOT the same
+    // match as an uncapped 25%/6% for anyone earning over ~$167k
+    const capWin = t.slice(mf.index, mf.index + lastTierEnd + 160);
+    // "not to exceed $2,250 per quarter for a total of $9,000 per year"
+    // (VMware) — take the ANNUAL total, never a shorter-period figure
+    const dcap = capWin.match(/total of \$([\d,]+) per year/i) ||
+      capWin.match(/not to exceed \$([\d,]+)(?! per (?:quarter|month|pay))[^.]{0,40}?(?: on an annual basis| per year| per plan year| each year| annually)/i);
+    if (dcap) out.match += ` (max $${dcap[1]}/yr per the filing)`;
     out.match += mfEra;
     // the quote must contain every tier the formula states
     out.matchText = sentence(mf.index, lastTierEnd);
