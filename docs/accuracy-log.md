@@ -503,6 +503,20 @@ prevention machinery is listed at the bottom.
   of California and Tredence are scanned attachments (OCR path,
   runner-parity sampling queue).
 
+## 2026-07-28 — affirmative "no employer contributions" statements captured (hourly review, batch 22)
+- **Wrong:** Amphenol's filing states "The Plan does not provide for
+  employer contributions." — a by-design answer we reduced to the weaker
+  "$0 this year" inference from Schedule H.
+- **Change:** new `noEmployer`/`noEmployerText` feature captures the
+  affirmative statement (display wiring in the next frontend pass, with
+  the frozen banner precedent).
+- **Prevention:** Amphenol joins the corpus. Also verified this batch:
+  Medical Management International's "for plan year 2022" era label is
+  GENUINE (2022 formula in a 2023 filing) — the v24 heuristics survive
+  adversarial sampling; Registered Agents' safe-harbor formula recovers
+  via v26's "that do not exceed" connector; New London Hospital and
+  Kinsley vesting absences honest.
+
 ---
 
 ## Standing prevention machinery

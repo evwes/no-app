@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 26;
+export const PARSER_VERSION = 27;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b/i, "SDBA"],
@@ -728,6 +728,13 @@ export function extractPlanFeatures(text) {
       out.afterTax = true; out.afterTaxText = sentence(m2.index); break;
     }
   }
+
+  // ---- affirmative no-employer-contribution statements ----
+  // "The Plan does not provide for employer contributions." (Amphenol) is
+  // stronger evidence than a $0 Schedule H line — it's by design, not a
+  // skipped year
+  const noer = t.match(/plan does not (?:currently )?provide for (?:any )?(?:employer|company|matching)(?: matching)? contributions|no employer (?:matching )?contributions are (?:provided|permitted|made under the plan)/i);
+  if (noer) { out.noEmployer = true; out.noEmployerText = sentence(noer.index); }
 
   // ---- frozen plans: contributions permanently discontinued ----
   const froz = t.match(/(?:plan (?:was|has been|is) (?:amended to )?(?:frozen|freeze)|amended to freeze the plan|permanently discontinu\w+[^.]{0,60}?contributions|(?:board|company|sponsor)[^.]{0,60}?(?:resolved|elected|adopted a resolution|approved a resolution)[^.]{0,40}? to terminate the plan|plan was terminated effective|prior to the plan[’']?s termination)/i);
