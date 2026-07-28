@@ -546,7 +546,7 @@ export function extractPlanFeatures(text) {
       out.matchText = sentence(disc.index);
     } else {
       // fall back to the descriptive sentence, skipping form-page boilerplate
-      const mre = /(?:employer|company|plan sponsor)(?:['’]s)? (?:made |makes |will make |shall make |may make |also )?(?:safe harbor )?match(?:ing|ed)? (?:safe harbor )?(?:401\(k\) )?contributions?|matching contributions? (?:is|are|equal|of|based|provided)/gi;
+      const mre = /(?:employer|company|plan sponsor|organization|school|firm)(?:['’]s)? (?:made |makes |will make |shall make |may make |also )?(?:safe harbor )?match(?:ing|ed)? (?:safe harbor )?(?:401\(k\) )?contributions?|matching contributions? (?:is|are|equal|of|based|provided)/gi;
       let mm;
       while ((mm = mre.exec(t))) {
         const s = sentence(mm.index);
@@ -698,7 +698,7 @@ export function extractPlanFeatures(text) {
   }
 
   // ---- frozen plans: contributions permanently discontinued ----
-  const froz = t.match(/(?:plan (?:was|has been|is) (?:amended to )?(?:frozen|freeze)|amended to freeze the plan|permanently discontinu\w+[^.]{0,60}?contributions)/i);
+  const froz = t.match(/(?:plan (?:was|has been|is) (?:amended to )?(?:frozen|freeze)|amended to freeze the plan|permanently discontinu\w+[^.]{0,60}?contributions|(?:board|company|sponsor)[^.]{0,60}?(?:resolved|elected|adopted a resolution|approved a resolution)[^.]{0,40}? to terminate the plan|plan was terminated effective)/i);
   if (froz) { out.frozen = true; out.frozenText = sentence(froz.index); }
 
   // ---- safe harbor & true-up ----

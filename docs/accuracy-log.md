@@ -406,6 +406,20 @@ prevention machinery is listed at the bottom.
   contributions equal to a discretionary percentage … determined by the
   Firm" (Connell Foley) now read as Discretionary.
 
+## 2026-07-28 — terminated plans presented like active ones (hourly review, batch 14)
+- **Wrong:** early-ack filings are dominated by FINAL returns of
+  terminating plans (PGDX, Annadel, Yesler, APP, R&D — all confirmed
+  termination sentences), and nothing on the plan record said so; a
+  reader could take a dissolved plan's formula as a live benefit.
+- **Change:** the frozen flag also detects termination resolutions
+  ("Board adopted a resolution … to terminate the Plan", "Plan was
+  terminated effective …") — 15 of 133 corpus filings carry it, each
+  verified against its sentence. Display wiring is the next frontend
+  pass.
+- **Prevention:** PGDX joins the corpus; the sentence-context check
+  (merger-source terminations must not flag the host plan) is part of the
+  DD checklist.
+
 ---
 
 ## Standing prevention machinery
