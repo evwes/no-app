@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 23;
+export const PARSER_VERSION = 24;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b/i, "SDBA"],
@@ -666,7 +666,13 @@ export function extractPlanFeatures(text) {
     for (const m2 of t.matchAll(/after[- ]tax basis/gi)) {
       const pre = t.slice(Math.max(0, m2.index - 90), m2.index);
       const rothMod = /roth\b[^.]{0,40}$/i.test(pre) && !/(?:,|\band\b|\bor\b)\s*$/i.test(pre);
-      if (rothMod || !/contribut\w+[^.]{0,80}$/i.test(pre)) continue;
+      // "on an after-tax basis as a Roth contribution" is Roth — same
+      // post-window veto as the contributions branch (list separators keep
+      // NG's "after-tax basis or to a Roth 401(k)" enumeration genuine)
+      const post2 = t.slice(m2.index + m2[0].length, m2.index + m2[0].length + 45);
+      const ri2 = post2.search(/\broth\b/i);
+      const rothTarget2 = ri2 >= 0 && !/[.,;]|\b(?:and|or)\b/i.test(post2.slice(0, ri2));
+      if (rothMod || rothTarget2 || !/contribut\w+[^.]{0,80}$/i.test(pre)) continue;
       out.afterTax = true; out.afterTaxText = sentence(m2.index); break;
     }
   }

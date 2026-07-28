@@ -362,6 +362,21 @@ prevention machinery is listed at the bottom.
   "10% of contributions".
 - **Prevention:** Exeter joins the regression corpus.
 
+## 2026-07-28 — after-tax Roth veto missed the basis branch (residue sweep, batch 12)
+- **Wrong:** after v22 cut the Roth-phrased after-tax flags from 8,173 to
+  4,218, a 136-entry residue remained: "contribute on an after-tax basis
+  as a Roth contribution" enters through the BASIS-enumeration branch,
+  which only vetoed a Roth BEFORE the phrase.
+- **Change:** the basis branch gets the same post-window veto (Roth after
+  the phrase with no list separator = Roth); Northrop Grumman's genuine
+  "after-tax basis or to a Roth 401(k)" enumeration keeps its flag via the
+  separator rule — verified against the corpus (zero changes).
+- **Prevention:** residue scans after every fix class — the follow-up
+  count is part of the fix, not optional. Also verified the 338
+  "forfeiture" vesting-quote residue is benign: those are legitimate
+  "nonforfeitable interest" sentences and "Vesting and Forfeitures"
+  headings, not the accounting sentences v22 barred.
+
 ---
 
 ## Standing prevention machinery
