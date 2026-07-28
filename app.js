@@ -429,6 +429,7 @@
         <span class="badge badge-green">FORM 5500 AUDIT NOTES</span>
         <span class="contrib-total">${total}</span>
       </div>
+      ${ff.frozen ? `<p class="max-benefit"><strong>⚠ Plan frozen or terminated</strong> — the filing states contributions have been discontinued; details below describe the plan as it operated.</p>${ff.frozenText ? `<blockquote class="quote">“${esc(ff.frozenText)}”</blockquote>` : ""}` : ""}
       ${ff.match ? `<p class="max-benefit">Formula: <strong>${esc(ff.match)}</strong>${ff.safeHarbor === "match" ? " · safe harbor" : ""}${ff.trueUp ? " · with annual true-up" : ""}${/discretionary/i.test(ff.match) && plan.flows.employerM === 0 ? " · <strong>none made this plan year</strong>" : ""}</p>` : ""}
       ${ff.matchText ? `<blockquote class="quote">“${esc(ff.matchText)}”</blockquote>` : ""}
       ${ff.nec ? `<p class="max-benefit">Employer nonelective contribution: <strong>${esc(ff.nec)}</strong>${ff.safeHarbor === "nonelective" ? " · safe harbor" : ""}</p>` : ""}
@@ -446,6 +447,7 @@
   function unknownContributionCard(plan) {
     // Schedule H/SF reports the actual dollars — $0 is an ANSWER, not a gap
     if (plan.flows.employerM === 0) {
+      const fz = plan.filedFeatures && plan.filedFeatures.frozen;
       return `
       <div class="contrib-card">
         <div class="contrib-head">
@@ -454,6 +456,7 @@
         </div>
         <p class="max-benefit">The employer contributed <strong>$0</strong> in plan year ${plan.planYear} per the
         filing — no match or nonelective contribution was made this year.</p>
+        ${fz ? `<p class="max-benefit"><strong>⚠ Plan frozen or terminated</strong> — the filing states contributions have been discontinued.</p>${plan.filedFeatures.frozenText ? `<blockquote class="quote">“${esc(plan.filedFeatures.frozenText)}”</blockquote>` : ""}` : ""}
       </div>`;
     }
     const filedLine = plan.flows.employerM != null
