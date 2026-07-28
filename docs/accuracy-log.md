@@ -517,6 +517,17 @@ prevention machinery is listed at the bottom.
   via v26's "that do not exceed" connector; New London Hospital and
   Kinsley vesting absences honest.
 
+## 2026-07-28 — tenure-graded nonelective tables (hourly review, batch 24)
+- **Wrong:** Colorado Academy contributes 6%–10% of pay rising with years
+  of service, stated as a schedule table — no pattern fit, so a plan whose
+  employer contributes for everyone showed "not stated".
+- **Change:** "contributes a percentage of compensation based on the
+  following schedule" tables render the range ("6%–10% of pay, rising
+  with years of service") with the table quoted.
+- **Prevention:** Colorado Academy joins the corpus. Clutter, Graham
+  Engineering, and Crucible verified exact this batch (3/3); Metairie
+  Bank is a scanned attachment (OCR queue).
+
 ---
 
 ## Standing prevention machinery

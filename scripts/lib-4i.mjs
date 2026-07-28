@@ -755,6 +755,19 @@ export function extractPlanFeatures(text) {
     // "nonelective" nor "safe harbor nonelective" in the sentence
     t.match(/(?:company|employer) contributions? under the safe harbor provision (?:is|are) equal to (\d{1,2}(?:\.\d+)?) ?(?:percent|%) of/i);
   if (nec && +nec[1] >= 1 && +nec[1] <= 15) { out.nec = `${+nec[1]}% of pay`; out.necText = sentence(nec.index); }
+  // tenure-graded nonelective tables — "Employer contributes a percentage
+  // of base compensation based on the following schedule: ≤7 yrs 6% … >10
+  // yrs 10%" (Colorado Academy): state the range, quote the table
+  if (!out.nec) {
+    const svc = t.match(/(?:employer|company|school|academy|organization|university) contribut\w+ a percentage of [^.]{0,80}?compensation based on the following schedule/i);
+    if (svc) {
+      const pcts = [...t.slice(svc.index, svc.index + 420).matchAll(/(\d{1,2}(?:\.\d+)?) ?%/g)].map((m) => +m[1]).filter((p) => p > 0 && p <= 25);
+      if (pcts.length >= 3) {
+        out.nec = `${Math.min(...pcts)}%–${Math.max(...pcts)}% of pay, rising with years of service`;
+        out.necText = sentence(svc.index, 380);
+      }
+    }
+  }
   // multiemployer/union plans: the employer contribution is an hourly rate
   // set by the CBA, not a formula — say so instead of showing nothing
   if (!out.nec && !out.match && !out.matchText) {
