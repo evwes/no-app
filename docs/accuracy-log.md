@@ -473,6 +473,21 @@ prevention machinery is listed at the bottom.
 - **Prevention:** Stamps.com joins the corpus. Veritas (discretionary +
   2-year cliff), Channel Partners, and Seven Z verified exact this batch.
 
+## 2026-07-28 — "Discretionary" shown where the filing states a full formula (hourly review, batch 18)
+- **Wrong:** Grandsouth Bank's notes state "matches 100% of the
+  employee's contributions that do not exceed 3% … plus 50% … between 3%
+  and 5%" — but "do not exceed" wasn't a recognized cap connector, the
+  formula patterns missed, and a discretionary sentence elsewhere won:
+  the site showed "Discretionary — set year to year" over an explicit
+  two-tier formula. Center Line's second tier ("plus an additional 50% of
+  contributions exceeding 3%, but not more than 5%") was also dropped.
+- **Change:** "do(es) not exceed" joins the cap connectors; the
+  exceeds-tier pattern accepts "exceeding", "but not more than", and the
+  "an additional" filler. Bonus: Annapolis Pediatrics' QACA formula
+  (batch-16 "no formula stated") now extracts via the same connector.
+- **Prevention:** Grandsouth, Center Line, and Annapolis join the corpus.
+  Life Storage (33%/5%) and Ideal Credit Union verified exact this batch.
+
 ---
 
 ## Standing prevention machinery

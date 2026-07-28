@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 25;
+export const PARSER_VERSION = 26;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b/i, "SDBA"],
@@ -387,7 +387,7 @@ export function extractPlanFeatures(text) {
     // "up to a 1%" — without the optional article the engine backtracks
     // into pairing the wrong numbers (QACA filings extracted "1% of the
     // first 6%" instead of "100% of the first 1%")
-    t.match(/match(?:ing|ed)?[^.]{0,160}?(\d{1,3}(?:\.\d+)?) ?(?:percent|%) of [^.]{0,140}?(?:up to|not to exceed|not in excess of|to a maximum of|maximum[^.]{0,60}? of) (?:an? )?(\d{1,2}(?:\.\d+)?) ?(?:percent|%) of/i) ||
+    t.match(/match(?:ing|ed)?[^.]{0,160}?(\d{1,3}(?:\.\d+)?) ?(?:percent|%) of [^.]{0,140}?(?:up to|not to exceed|not in excess of|(?:that )?do(?:es)? not exceed|to a maximum of|maximum[^.]{0,60}? of) (?:an? )?(\d{1,2}(?:\.\d+)?) ?(?:percent|%) of/i) ||
     // auditor template with no "match" word — "The Company contributed 25
     // percent of the first 3 percent of eligible compensation that a
     // participant contributed" (Rental One, Rabun Gap); the trailing
@@ -489,7 +489,7 @@ export function extractPlanFeatures(text) {
     // QACA/two-part safe harbor phrasing: "…and 50% of the deferral which
     // exceeds 1% up to 6% of compensation" → 50% of the next (6−1)%
     if (tguard === 0) {
-      const ex = tail.match(/\b(?:and|plus) (\d{1,3}(?:\.\d+)?) ?(?:percent|%) of [^.]{0,140}?(?:(?:exceeds?|in excess of|above)[^.]{0,100}?(?:up to|not to exceed)|between [^.]{0,40}? and) (?:an? )?(\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i);
+      const ex = tail.match(/\b(?:and|plus) (?:an additional )?(\d{1,3}(?:\.\d+)?) ?(?:percent|%) of [^.]{0,140}?(?:(?:exceeds?|exceeding|in excess of|above)[^.]{0,100}?(?:up to|not to exceed|(?:but )?not?,? more than)|between [^.]{0,40}? and) (?:an? )?(\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i);
       if (ex && +ex[2] > +mf[2]) {
         out.match += ` + ${+ex[1]}% of the next ${+ex[2] - +mf[2]}%`;
         lastTierEnd = ex.index + ex[0].length;
