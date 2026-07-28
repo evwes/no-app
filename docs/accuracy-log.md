@@ -341,6 +341,27 @@ prevention machinery is listed at the bottom.
 - **Prevention:** same specimen; the hourly DD checklist now reads quotes
   for grammatical holes, not just numbers.
 
+## 2026-07-28 — old formula shown for a plan that made NO match this year (hourly review, batch 11)
+- **Wrong:** American Physician Partners' filing says "There were no
+  discretionary Plan Sponsor matching contributions for the 2023 plan
+  year" and then describes 2022's 100%-of-3% — we displayed the 2022
+  formula as if current. Its 3-year cliff ("0% vested until three years of
+  service") was also missed for word order.
+- **Change:** an explicit no-match-this-year sentence plus a "During
+  <older year>" formula quote appends "(none made for plan year YYYY per
+  the filing)"; cliff accepts the "0% vested until N years" order; the
+  audit strips both label forms before number checks.
+- **Prevention:** APP joins the regression corpus with all three fields
+  asserted.
+
+## 2026-07-28 — rate-only match with no cap: "contributed 10% of the employee qualified contributions"
+- **Wrong:** Exeter Government Services states a match rate with no tier
+  cap — no pattern fit, so match showed "not stated" despite an explicit
+  rate.
+- **Change:** rate-only sponsor-contributed phrasing renders
+  "10% of contributions".
+- **Prevention:** Exeter joins the regression corpus.
+
 ---
 
 ## Standing prevention machinery

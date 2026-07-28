@@ -512,6 +512,14 @@ export function extractPlanFeatures(text) {
     while ((tm2 = tierRe2.exec(tail)) && tg++ < 4) out.match += ` + ${+tm2[2]}% of the next ${+tm2[1]}%`;
     out.matchText = sentence(mtab.index);
   } else {
+    // rate-only match with no stated cap: "The company contributed 10% of
+    // the employee qualified contributions" (Exeter) — show the rate the
+    // filing states rather than nothing
+    const rateOnly = t.match(/(?:company|employer|plan sponsor)[^.]{0,40}?contribut(?:es|ed) (\d{1,3}(?:\.\d+)?) ?(?:percent|%) of the (?:employee|participant)s?'? ?(?:qualified |elective |eligible )?(?:deferral )?contributions/i);
+    if (rateOnly) {
+      out.match = `${+rateOnly[1]}% of contributions`;
+      out.matchText = sentence(rateOnly.index);
+    }
     // "The Company made a match of up to 1% of compensation" (Columbia
     // Ford) — a stated cap with no rate is still a formula worth showing
     const upTo = t.match(/(?:made |makes )?a match of up to (\d{1,2}(?:\.\d+)?) ?(?:percent|%) of (?:eligible |annual )?compensation/i);
@@ -519,7 +527,9 @@ export function extractPlanFeatures(text) {
     // by the Board" — roughly half the no-formula backlog. There IS no
     // formula; discretionary is the answer, not a gap.
     const disc = t.match(/discretionary (?:401\(k\) )?match(?:ing)?(?: and profit[- ]sharing)? contributions?|match(?:ing)? contributions? [^.]{0,80}?(?:discretionary|determined (?:annually |each year )?by (?:its |the )?(?:board|company|employer|trustees))|on a discretionary basis,? contribut[^.]{0,30}?match|(?:contribute|make) a discretionary match(?:ing)?\b/i);
-    if (upTo) {
+    if (out.match) {
+      // rate-only already answered it
+    } else if (upTo) {
       out.match = `Up to ${+upTo[1]}% of pay`;
       out.matchText = sentence(upTo.index);
     } else if (disc) {
@@ -534,6 +544,16 @@ export function extractPlanFeatures(text) {
         if (!BOILER.test(s) && s.length > 60) { out.matchText = s; break; }
       }
     }
+  }
+
+  // "There were no discretionary Plan Sponsor matching contributions for
+  // the 2023 plan year. During 2022, the Plan Sponsor matched 100%…"
+  // (American Physician Partners) — the extracted formula is the OLD one;
+  // say so instead of presenting it as current
+  if (out.match && out.matchText && !/\(formula in effect|\(none made/.test(out.match)) {
+    const neg = t.match(/(?:there (?:were|was)|made) no [^.]{0,80}?match(?:ing)? contributions? [^.]{0,60}?(?:for|in|during) the (\d{4}) plan year/i);
+    const dur = out.matchText.match(/\bDuring (20\d\d)\b/i);
+    if (neg && dur && +dur[1] < +neg[1]) out.match += ` (none made for plan year ${neg[1]} per the filing)`;
   }
 
   // ---- vesting of EMPLOYER money (employee deferrals are always immediate) ----
@@ -562,10 +582,10 @@ export function extractPlanFeatures(text) {
     // 3rd alternative tolerates intervening words — "fully vested in
     // employer matching contributions, and earnings thereon, upon
     // completion of three years of service" (Northrop Grumman)
-    const cliff = s.match(/(?:(\w{3,5}|\d)[- ]year cliff|cliff vesting[^.]{0,40}?(\w{3,5}|\d) years?|(?:100 ?(?:percent|%)|fully) vest(?:ed)?[^.]{0,80}?(?:after|upon)(?: the)?(?: complet\w+(?: of)?)? (\w{3,5}|\d) years?)/i);
+    const cliff = s.match(/(?:(\w{3,5}|\d)[- ]year cliff|cliff vesting[^.]{0,40}?(\w{3,5}|\d) years?|(?:100 ?(?:percent|%)|fully) vest(?:ed)?[^.]{0,80}?(?:after|upon)(?: the)?(?: complet\w+(?: of)?)? (\w{3,5}|\d) years?|0 ?(?:percent|%) vested until (\w{3,5}|\d) years)/i);
     if (graded) { out.vesting = "Graded schedule"; out.vestingText = cap(s); break; }
     if (cliff) {
-      const n = cliff[1] || cliff[2] || cliff[3];
+      const n = cliff[1] || cliff[2] || cliff[3] || cliff[4];
       const num = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6 }[String(n).toLowerCase()] || +n;
       // IRC §411(a)(2)(B) caps DC cliff vesting at 3 years — a "5-year
       // cliff" reading is a misparsed graded schedule or service reference
