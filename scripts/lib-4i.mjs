@@ -424,15 +424,24 @@ export function extractPlanFeatures(text) {
   if (mf) {
     const pre = t.slice(Math.max(0, mf.index - 130), mf.index + mf[0].length + 90);
     let era = pre.match(/((?:prior to|before|until|through)) (?:[A-Z][a-z]+ \d{1,2},? )?(\d{4})/i);
+    // "the period from January 1, 2023 through March 17, 2023" is an
+    // AUDIT-PERIOD range, not a formula expiry — H Enterprises' real 50%
+    // match was swapped for a later discretionary sentence by this misfire
+    if (era && /from (?:[A-Z][a-z]+ \d{1,2},? ?)?\d{0,4},? ?$/i.test(pre.slice(0, era.index))) era = null;
     // "The employer match for the year ended December 31, 2019 was 100%…"
     // in a plan-year-2023 filing is a STALE formula (Freedom Boat Club).
     // Two-year audit phrasing ("years ended 2023 and 2022") stays current;
     // a lone year ≥2 behind the filing's newest year gets the era label.
     if (!era) {
       const era2 = pre.match(/for the (?:plan )?year ended (?:[A-Z][a-z]+ \d{1,2},? )?(\d{4})\b(?!,? and)/i);
-      if (era2) {
+      // "…through March 17, 2023 AND for the year ended December 31, 2022"
+      // enumerates a terminated plan's two audit periods — not staleness
+      if (era2 && !/\band +$/i.test(pre.slice(0, era2.index))) {
+        // newest year from DATED tokens only (month-name dates, mm/dd/yyyy,
+        // "plan year YYYY") — bare years pollute (loan maturity ranges like
+        // "2023-2027" made everything "stale")
         let maxYear = 0;
-        for (const y of t.matchAll(/\b(20[0-4]\d)\b/g)) maxYear = Math.max(maxYear, +y[1]);
+        for (const y of t.matchAll(/(?:(?:january|february|march|april|may|june|july|august|september|october|november|december) \d{1,2},? |\d{1,2}\/\d{1,2}\/|plan year )(20[0-4]\d)/gi)) maxYear = Math.max(maxYear, +y[1]);
         if (+era2[1] <= maxYear - 2) era = { 1: "for plan year", 2: era2[1], index: era2.index };
       }
     }
@@ -526,7 +535,7 @@ export function extractPlanFeatures(text) {
     // "may elect to make discretionary matching contributions … determined
     // by the Board" — roughly half the no-formula backlog. There IS no
     // formula; discretionary is the answer, not a gap.
-    const disc = t.match(/discretionary (?:401\(k\) )?match(?:ing)?(?: and profit[- ]sharing)? contributions?|match(?:ing)? contributions? [^.]{0,80}?(?:discretionary|determined (?:annually |each year )?by (?:its |the )?(?:board|company|employer|trustees))|on a discretionary basis,? contribut[^.]{0,30}?match|(?:contribute|make) a discretionary match(?:ing)?\b/i);
+    const disc = t.match(/discretionary (?:401\(k\) )?match(?:ing)?(?: and profit[- ]sharing)? contributions?|match(?:ing)?(?: and profit[- ]sharing)? contributions? [^.]{0,80}?(?:discretionary|determined (?:annually |each year )?by (?:its |the )?(?:board|company|employer|trustees|firm|plan sponsor|management))|on a discretionary basis,? contribut[^.]{0,30}?match|(?:contribute|make) a discretionary match(?:ing)?\b|at (?:its|their) discretion,? (?:may )?contribut\w+ a match/i);
     if (out.match) {
       // rate-only already answered it
     } else if (upTo) {
@@ -545,6 +554,15 @@ export function extractPlanFeatures(text) {
       }
     }
   }
+
+  // schedules split by hire date ("hired before September 1, 2016 are
+  // immediately vested … hired after … after three years" — United Farmers
+  // Cooperative): showing one cohort's schedule alone misstates the other's
+  const hireSplitLabel = (which) => {
+    if (out[which] && out[which + "Text"] && !/varies|hire date/i.test(out[which]) &&
+        /hired (?:before|after|on or after|prior to)/i.test(out[which + "Text"]))
+      out[which] += " (varies by hire date per the filing)";
+  };
 
   // "There were no discretionary Plan Sponsor matching contributions for
   // the 2023 plan year. During 2022, the Plan Sponsor matched 100%…"
@@ -634,6 +652,8 @@ export function extractPlanFeatures(text) {
       if (!out.vestingText && !/forfeit/i.test(s)) out.vestingText = cap(s);
     }
   }
+  hireSplitLabel("vesting");
+  hireSplitLabel("match");
 
   // ---- Roth / voluntary after-tax (only positive evidence counts) ----
   const roth = t.match(/\broth\b[^.]{0,120}(contribut|deferral|option|401)/i) || t.match(/(designated|make) \broth\b/i);

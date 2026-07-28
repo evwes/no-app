@@ -377,6 +377,35 @@ prevention machinery is listed at the bottom.
   "nonforfeitable interest" sentences and "Vesting and Forfeitures"
   headings, not the accounting sentences v22 barred.
 
+## 2026-07-28 — era guard swapped a real formula for a discretionary maximum (hourly review, batch 13)
+- **Wrong:** H Enterprises' filing states a 50%-of-first-6% match, then a
+  separate discretionary component "up to 80% of the first 6%". The era
+  guard misread the audit-period phrase "from January 1, 2023 through
+  March 17, 2023 and for the year ended December 31, 2022" as a formula
+  expiry, retried, and replaced the real 50% with the discretionary 80%.
+  Compounding it, the staleness year-scan counted loan-maturity ranges
+  ("2023-2027") as filing dates.
+- **Change:** "from <date> through <date>" ranges and "…and for the year
+  ended" period enumerations no longer count as expiries; the staleness
+  scan only reads dated tokens (month-name dates, mm/dd/yyyy, "plan year
+  YYYY"). Freedom Boat's genuine 2019 label and APP's none-made label
+  survive; H Enterprises shows the real 50%.
+- **Prevention:** H Enterprises joins the regression corpus alongside the
+  era set (Freedom Boat, APP, Blue Nile) — all four asserted together.
+
+## 2026-07-28 — vesting/match split by hire date shown as one cohort's schedule
+- **Wrong:** United Farmers Cooperative vests pre-Sep-2016 hires
+  immediately and later hires on a 3-year cliff — we showed "3-year cliff"
+  alone. The same check revealed Northrop Grumman's match table is scoped
+  "For employees hired before April 1, 2016" — also shown unqualified.
+- **Change:** a vesting or match whose quote contains a hire-date
+  qualifier appends "(varies by hire date per the filing)".
+- **Prevention:** UFC joins the corpus; NG's assertion updated to include
+  the label. Also from batch 13: "at its discretion, may contribute a
+  matching contribution" (R.T. Patterson) and "matching and profit sharing
+  contributions equal to a discretionary percentage … determined by the
+  Firm" (Connell Foley) now read as Discretionary.
+
 ---
 
 ## Standing prevention machinery
