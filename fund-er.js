@@ -46,6 +46,7 @@ const FUND_ER = [
   [/blackrock (short[- ]term investment|stif|liquidity)/i, 0.1],
   [/blackrock (us|u\.s\.) debt index/i, 0.03],
   [/blackrock total return/i, 0.4],
+  [/blackrock high yield/i, 0.5],
   // --- State Street / SSGA / Northern Trust / Geode ---
   [/(ssga|ssg?a|state street).*(s&p 500|500 index|equity index)/i, 0.02],
   [/(ssga|state st(reet)?).*target (retire(ment)?|date)/i, 0.09],
@@ -59,7 +60,9 @@ const FUND_ER = [
   [/t\.? ?rowe price retirement/i, 0.49],
   [/t\.? ?rowe price (blue chip|growth stock|large[- ]cap growth)/i, 0.57],
   [/t\.? ?rowe price mid[- ]cap growth/i, 0.61],
+  [/t\.? ?rowe price mid[- ]cap value/i, 0.65],
   [/t\.? ?rowe price small[- ]cap/i, 0.66],
+  [/t\.? ?rowe price spectrum conservative/i, 0.62],
   [/t\.? ?rowe price stable value/i, 0.3],
   // --- American Funds (R6) ---
   [/american funds.*europacific/i, 0.46],
@@ -67,6 +70,9 @@ const FUND_ER = [
   [/american funds.*washington mutual/i, 0.26],
   [/american funds.*growth fund of america/i, 0.3],
   [/american funds.*target date/i, 0.32],
+  // filings sometimes drop the n ("America Funds American Balanced") —
+  // match on the fund name itself
+  [/american balanced/i, 0.28],
   [/american funds/i, 0.4],
   // --- other managers ---
   [/dodge & cox stock/i, 0.51],
@@ -100,6 +106,9 @@ const FUND_ER = [
   [/metropolitan west total return/i, 0.44],
   [/loomis sayles/i, 0.6],
   [/columbia (dividend|contrarian)/i, 0.65],
+  [/columbia emerging markets/i, 1.0],
+  [/lord abbett growth leaders/i, 0.55],
+  [/diamond hill large cap/i, 0.55],
   [/goldman sachs stable value/i, 0.35],
   // --- generic fallbacks (keep last) ---
   [/target (retirement|date) .*index|index target/i, 0.1],

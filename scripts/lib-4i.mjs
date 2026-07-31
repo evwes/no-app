@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 29;
+export const PARSER_VERSION = 30;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b/i, "SDBA"],
@@ -664,8 +664,17 @@ export function extractPlanFeatures(text) {
     (/(?:prior to|before|until|through) (?:[a-z]+ \d{1,2},? )?\d{4}/i.test(s) ? 2 : 0) +
     (/forfeit/i.test(s) ? 1 : 0);
   vestSentences.sort((a, b) => vRank(a) - vRank(b));
+  // "are vested immediately" word order counts the same as "immediately
+  // vested"; and when the MATCH is stated immediately vested, a graded/
+  // cliff schedule scoped ONLY to discretionary non-elective / profit-
+  // sharing money must not displace it (Kast: safe-harbor match immediate,
+  // PS graded 2–6 yrs — the match is the plan's active employer money)
+  const IMMED = /immediately? (?:100 ?(?:percent|%) )?(?:fully )?vested|vested immediately|fully vested (?:at all times|immediately|upon)|100 ?(?:percent|%) vested (?:at all times|immediately|in all)|always (?:fully |100 ?(?:percent|%) )?vested/i;
+  const matchImmediate = vestSentences.some((s) =>
+    /matching (?:contributions?|accounts?)|company match/i.test(s) && IMMED.test(s));
   // graded/cliff language always describes employer money — check it FIRST
   for (const s of vestSentences) {
+    if (matchImmediate && /non.?elective|profit.?sharing/i.test(s) && !/match/i.test(s)) continue;
     const graded = s.match(/(\d{1,2}) ?(?:percent|%) (?:per|each|for each|after each) year|vests? (\d{1,2}) ?(?:percent|%) after each year|graded vesting|graduated vesting/i);
     // 3rd alternative tolerates intervening words — "fully vested in
     // employer matching contributions, and earnings thereon, upon
@@ -718,7 +727,7 @@ export function extractPlanFeatures(text) {
       // "always 100% vested in ALL of their Plan accounts" (EP Energy)
       // covers employer money without naming it
       if (!/(matching|employer|company|non.?elective|profit.?sharing) (?:contributions?|accounts?)|company match|all (?:of (?:their|his|her) )?(?:plan )?accounts|all contribution sources/i.test(s)) continue;
-      if (/immediately? (?:100 ?(?:percent|%) )?(?:fully )?vested|fully vested (?:at all times|immediately|upon)|100 ?(?:percent|%) vested (?:at all times|immediately|in all)|always (?:fully |100 ?(?:percent|%) )?vested/i.test(s)) {
+      if (IMMED.test(s)) {
         out.vesting = "Immediate"; out.vestingText = cap(s); break;
       }
       if (!out.vestingText && !/forfeit/i.test(s)) out.vestingText = cap(s);
@@ -728,7 +737,11 @@ export function extractPlanFeatures(text) {
   hireSplitLabel("match");
 
   // ---- Roth / voluntary after-tax (only positive evidence counts) ----
-  const roth = t.match(/\broth\b[^.]{0,120}(contribut|deferral|option|401)/i) || t.match(/(designated|make) \broth\b/i);
+  // "designate … deferral contributions as after-tax contributions into a
+  // Roth account" (Kast) puts Roth LAST — accept contribution words before
+  // "into/to/as a Roth" as positive evidence too
+  const roth = t.match(/\broth\b[^.]{0,120}(contribut|deferral|option|401)/i) || t.match(/(designated|make) \broth\b/i) ||
+    t.match(/(?:contribut|deferral)\w*[^.]{0,80}?(?:into|to|as) an? \broth\b/i);
   if (roth) { out.roth = true; out.rothText = sentence(roth.index); }
   if (/in.?plan.{0,40}(roth )?(conversion|rollover)|convert.{0,40}(to )?(a )?roth/i.test(t)) out.inPlanRoth = true;
   // "after-tax [deferral] contributions", incl. enumerations like

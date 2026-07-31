@@ -576,6 +576,33 @@ against their filings:
   (quote windowed past the leading rate, formula itself correct) is
   cosmetic — next review cycle.
 
+## 2026-07-31 — Kast Construction (owner-submitted): Roth-last phrasing, "vested immediately" order, PS schedule displacing the match's (v30)
+
+- **Wrong:** Kast (EIN 980456507) showed no Roth and no vesting despite the
+  filing stating both. Three gaps: (1) "designate … deferral contributions
+  as after-tax contributions into a Roth account" puts Roth LAST — both
+  Roth patterns required Roth before the contribution words (the after-tax
+  veto correctly suppressed the after-tax flag; the Roth flag just never
+  set). A common auditor template — 5 more filings in the 250-specimen
+  corpus gained Roth from this fix alone. (2) "are vested immediately" word
+  order wasn't in the immediate-vesting regex (only "immediately vested").
+  (3) Plans whose safe-harbor match vests immediately but whose
+  discretionary profit sharing is graded/cliff showed the PS schedule as
+  THE vesting — the match is the plan's active employer money and its
+  schedule should lead, with the quote disclosing scope.
+- **Change:** contribution-words-then-"into/to/as a Roth" joins the Roth
+  patterns; "vested immediately" joins the immediate regex; a graded/cliff
+  sentence scoped only to non-elective/profit-sharing money no longer
+  displaces a stated immediate match schedule.
+- **Prevention:** Kast joins the corpus. 250-filing diff: 18 diffs, all
+  intended classes (5 Roth gains, 7 vesting fills, 3 PS-displacement
+  corrections verified by hand against their quotes). Also filled 7 fund
+  expense-ratio patterns Kast's lineup exposed (Lord Abbett Growth Leaders,
+  T. Rowe Mid-Cap Value & Spectrum Conservative, Diamond Hill Large Cap,
+  BlackRock High Yield, Columbia Emerging Markets, American Balanced — the
+  last also catching the "America Funds" filing typo); all values remain
+  estimates labeled "est." per the standing rule.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
