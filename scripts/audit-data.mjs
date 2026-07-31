@@ -86,8 +86,12 @@ for (const [ack, e] of Object.entries(entriesByAckCov)) {
     // "next N%" tiers derived from cumulative caps ("exceeds 1% up to 6%" →
     // next 5%) are consistent when the quote shows the cumulative number
     const first = +(f.match.match(/first (\d+)/) || [])[1] || 0;
-    // spelled-fraction rates ("one-half of the first 8%") display as digits
-    const RATE_WORDS = { 50: /one[- ]half/i, 33: /one[- ]third/i, 25: /one[- ]quarter/i, 67: /two[- ]thirds/i };
+    // spelled-fraction rates ("one-half of the first 8%") display as
+    // digits, as do fully spelled numbers ("one hundred percent of the
+    // first one percent", O'Neal Steel)
+    const RATE_WORDS = { 50: /one[- ]half|\bfifty\b/i, 33: /one[- ]third/i, 25: /one[- ]quarter|twenty[- ]five/i, 67: /two[- ]thirds/i,
+      100: /one hundred/i, 75: /seventy[- ]five/i, 20: /\btwenty\b/i, 15: /\bfifteen\b/i, 10: /\bten\b/i,
+      1: /\bone\b/i, 2: /\btwo\b/i, 3: /\bthree\b/i, 4: /\bfour\b/i, 5: /\bfive\b/i, 6: /\bsix\b/i, 7: /\bseven\b/i, 8: /\beight\b/i, 9: /\bnine\b/i };
     const bad = nums.filter((n) => !f.matchText.includes(n) &&
       !(RATE_WORDS[n] && RATE_WORDS[n].test(f.matchText)) &&
       !(first && f.match.includes(`next ${n}%`) && f.matchText.includes(String(first + +n))));

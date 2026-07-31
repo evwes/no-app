@@ -603,6 +603,37 @@ against their filings:
   last also catching the "America Funds" filing typo); all values remain
   estimates labeled "est." per the standing rule.
 
+## 2026-07-31 — O'Neal Steel (owner-submitted): spelled-out numbers; tier regex crossed the word "percent" (v31)
+
+- **Wrong:** O'Neal Steel (EIN 630196990) showed NO match and vesting
+  "Immediate" although the filing states "a safe-harbor match of one
+  hundred percent of the first one percent and fifty percent of the next
+  five percent" and "become one hundred percent vested in the Sponsor
+  safe-harbor matching contributions after one year of service" — every
+  number spelled out in words, which no head/tier/cliff/immediate pattern
+  accepted. Owner's 2026 benefits book independently confirms both (100%
+  of first 1% + 50% of next 5%; 1-year vesting on employer money).
+- **Also wrong (silent digit-era bug found by the fix):** the tier regex's
+  gap guard excluded only the '%' CHARACTER, so filings phrased with the
+  word "percent" let the gap cross another rate — "matches 100 percent of
+  the first 3 percent … and 50 percent of the next 2 percent" shipped as
+  "+ 3% of the next 2%" (rate bound to the head's cap). The quote
+  contained the numbers, so the formula-vs-quote audit could not see it.
+- **Change:** match head/tier patterns and the cliff/immediate vesting
+  patterns accept spelled numbers (rendered as digits via W(); quotes stay
+  verbatim); the tier gap now refuses to cross the WORD "percent" via
+  lookahead; the audit's number check recognizes spelled forms in quotes.
+- **Prevention:** O'Neal joins the corpus (also exercises the v30
+  match-priority rule: its mixed sentence "immediately vested in
+  non-elective … matching after one year" now correctly yields 1-year
+  cliff, the match's schedule). 250-filing diff: only the intended
+  changes, including one bonus tier correction verified against its
+  filing text. Brokerage-window note: O'Neal's SDBA was already extracted,
+  indexed, and displayed — the "missing brokerage" report traced to the
+  live site serving a main branch 7 commits stale; mirrored. The filing
+  never names the BrokerageLink brand, so the site's generic
+  "Self-directed brokerage" label is the honest filed answer.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 30;
+export const PARSER_VERSION = 31;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b/i, "SDBA"],
@@ -379,8 +379,13 @@ export function extractPlanFeatures(text) {
   };
 
   // ---- employer match formula ----
+  // some auditors spell every number out — "a safe-harbor match of one
+  // hundred percent of the first one percent and fifty percent of the next
+  // five percent" (O'Neal Steel). The head/tier patterns accept the words
+  // and W() renders them as digits; quotes stay verbatim from the filing.
+  const W = (x) => ({ "one hundred": 100, "seventy five": 75, "twenty five": 25, fifteen: 15, fifty: 50, forty: 40, thirty: 30, twenty: 20, sixty: 60, ten: 10, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9 }[String(x).toLowerCase().replace(/-/g, " ")] ?? +x);
   const mf =
-    t.match(/match(?:ing|ed)?[^.]{0,140}?(\d{1,3}(?:\.\d+)?) ?(?:percent|%) (?:of|on) (?:the )?first (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i) ||
+    t.match(/match(?:ing|ed)?[^.]{0,140}?(\d{1,3}(?:\.\d+)?|one hundred|seventy[- ]five|twenty[- ]five|fifteen|fifty|forty|thirty|twenty|sixty|ten|one|two|three|four|five|six|seven|eight|nine) ?(?:percent|%) (?:of|on) (?:the )?first (\d{1,2}(?:\.\d+)?|ten|one|two|three|four|five|six|seven|eight|nine) ?(?:percent|%)/i) ||
     t.match(/(\d{1,3}(?:\.\d+)?) ?(?:percent|%) match(?:ing)?[^.]{0,80}?(?:up to|on the first) (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i) ||
     // "matching contribution ... equal to 100% of ... deferral contributions
     // up to 6% of ... compensation" (Black Hills style — no "first")
@@ -392,8 +397,8 @@ export function extractPlanFeatures(text) {
     // and b) … 50% … up to the next 5%" (Rotary) — "for the first" binds
     // the head; without it the maximum-of shape below grabs clause b)'s
     // rate with the 6% total cap ("50% of the first 6%")
-    t.match(/match(?:ing|ed)?[^.]{0,160}?(\d{1,3}(?:\.\d+)?) ?(?:percent|%) of [^.]{0,80}?for the first (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i) ||
-    t.match(/match(?:ing|ed)?[^.]{0,160}?(\d{1,3}(?:\.\d+)?) ?(?:percent|%) of [^.]{0,140}?(?:up to|not to exceed|not in excess of|(?:that )?do(?:es)? not exceed|to a maximum of|maximum[^.]{0,60}? of) (?:an? |the first )?(\d{1,2}(?:\.\d+)?) ?(?:percent|%) of/i) ||
+    t.match(/match(?:ing|ed)?[^.]{0,160}?(\d{1,3}(?:\.\d+)?|one hundred|seventy[- ]five|twenty[- ]five|fifty|twenty) ?(?:percent|%) of [^.]{0,80}?for the first (\d{1,2}(?:\.\d+)?|ten|one|two|three|four|five|six|seven|eight|nine) ?(?:percent|%)/i) ||
+    t.match(/match(?:ing|ed)?[^.]{0,160}?(\d{1,3}(?:\.\d+)?|one hundred|seventy[- ]five|twenty[- ]five|fifty|twenty) ?(?:percent|%) of [^.]{0,140}?(?:up to|not to exceed|not in excess of|(?:that )?do(?:es)? not exceed|to a maximum of|maximum[^.]{0,60}? of) (?:an? |the first )?(\d{1,2}(?:\.\d+)?|ten|one|two|three|four|five|six|seven|eight|nine) ?(?:percent|%) of/i) ||
     // auditor template with no "match" word — "The Company contributed 25
     // percent of the first 3 percent of eligible compensation that a
     // participant contributed" (Rental One, Rabun Gap); the trailing
@@ -506,13 +511,16 @@ export function extractPlanFeatures(text) {
     const capStyle = /with a maximum of up to|up to a maximum match(?:ing)? (?:contribution )?of/i.test(mf[0]) &&
       /(?:percent|%) of (?:the )?(?:employee|participant)s?'? (?:elective )?(?:deferral|contribution)/i.test(mf[0]);
     out.match = capStyle
-      ? `${+mf[1]}% of contributions, max match ${+mf[2]}% of pay`
-      : `${+mf[1]}% of the first ${+mf[2]}% of pay`;
+      ? `${W(mf[1])}% of contributions, max match ${W(mf[2])}% of pay`
+      : `${W(mf[1])}% of the first ${W(mf[2])}% of pay`;
     // capture EVERY additional tier — "75% of the first 1%, 50% of the next
     // 4%, and 25% of the next 1%" (Kohler) has a comma-joined middle tier;
     // "50% of a participant's contributions up to the next 2%" (Simmons
     // Foods) puts words between the rate and "next"
-    const tierRe = /(\d{1,3}(?:\.\d+)?) ?(?:percent|%) of [^.%]{0,60}?next (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/gi;
+    // the gap must not cross another rate: '%' is excluded by character
+    // class, spelled "percent" needs the lookahead (O'Neal double-bound
+    // "one hundred" onto the second tier without it)
+    const tierRe = /(\d{1,3}(?:\.\d+)?|one hundred|seventy[- ]five|twenty[- ]five|fifty|twenty) ?(?:percent|%) of (?:(?!percent\b)[^.%]){0,60}?next (\d{1,2}(?:\.\d+)?|ten|one|two|three|four|five|six|seven|eight|nine) ?(?:percent|%)/gi;
     // a NEW match head in the following sentence is a separate formula —
     // its tiers must not chain onto this head (5%−4% once fabricated
     // "+ 50% of the next 1%"). Legit continuations ("In addition, … 50%
@@ -527,15 +535,15 @@ export function extractPlanFeatures(text) {
     }
     let tm; let tguard = 0; let lastTierEnd = mf[0].length;
     while ((tm = tierRe.exec(tail)) && tguard++ < 4) {
-      out.match += ` + ${+tm[1]}% of the next ${+tm[2]}%`;
+      out.match += ` + ${W(tm[1])}% of the next ${W(tm[2])}%`;
       lastTierEnd = tm.index + tm[0].length;
     }
     // QACA/two-part safe harbor phrasing: "…and 50% of the deferral which
     // exceeds 1% up to 6% of compensation" → 50% of the next (6−1)%
     if (tguard === 0) {
       const ex = tail.match(/\b(?:and|plus) (?:an additional )?(\d{1,3}(?:\.\d+)?) ?(?:percent|%) (?:match )?of [^.]{0,140}?(?:(?:exceeds?|exceeding|in excess of|above)[^.]{0,100}?(?:up to|not to exceed|(?:but )?not?,? more than)|between [^.]{0,40}? and) (?:an? )?(\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i);
-      if (ex && +ex[2] > +mf[2]) {
-        out.match += ` + ${+ex[1]}% of the next ${+ex[2] - +mf[2]}%`;
+      if (ex && +ex[2] > W(mf[2])) {
+        out.match += ` + ${+ex[1]}% of the next ${+ex[2] - W(mf[2])}%`;
         lastTierEnd = ex.index + ex[0].length;
       }
     }
@@ -669,7 +677,7 @@ export function extractPlanFeatures(text) {
   // cliff schedule scoped ONLY to discretionary non-elective / profit-
   // sharing money must not displace it (Kast: safe-harbor match immediate,
   // PS graded 2–6 yrs — the match is the plan's active employer money)
-  const IMMED = /immediately? (?:100 ?(?:percent|%) )?(?:fully )?vested|vested immediately|fully vested (?:at all times|immediately|upon)|100 ?(?:percent|%) vested (?:at all times|immediately|in all)|always (?:fully |100 ?(?:percent|%) )?vested/i;
+  const IMMED = /immediately? (?:(?:100|one hundred) ?(?:percent|%) )?(?:fully )?vested|vested immediately|fully vested (?:at all times|immediately|upon)|(?:100|one hundred) ?(?:percent|%) vested (?:at all times|immediately|in all)|always (?:fully |(?:100|one hundred) ?(?:percent|%) )?vested/i;
   const matchImmediate = vestSentences.some((s) =>
     /matching (?:contributions?|accounts?)|company match/i.test(s) && IMMED.test(s));
   // graded/cliff language always describes employer money — check it FIRST
@@ -679,7 +687,7 @@ export function extractPlanFeatures(text) {
     // 3rd alternative tolerates intervening words — "fully vested in
     // employer matching contributions, and earnings thereon, upon
     // completion of three years of service" (Northrop Grumman)
-    const cliff = s.match(/(?:(\w{3,5}|\d)[- ]year cliff|cliff vesting[^.]{0,40}?(\w{3,5}|\d) years?|(?:100 ?(?:percent|%)|fully) vest(?:ed)?[^.]{0,80}?(?:after|upon)(?: the)?(?: complet\w+(?: of)?)? (\w{3,5}|\d) years?|0 ?(?:percent|%) vested until (\w{3,5}|\d) years)/i);
+    const cliff = s.match(/(?:(\w{3,5}|\d)[- ]year cliff|cliff vesting[^.]{0,40}?(\w{3,5}|\d) years?|(?:(?:100|one hundred) ?(?:percent|%)|fully) vest(?:ed)?[^.]{0,80}?(?:after|upon)(?: the)?(?: complet\w+(?: of)?)? (\w{3,5}|\d) years?|0 ?(?:percent|%) vested until (\w{3,5}|\d) years)/i);
     if (graded) { out.vesting = "Graded schedule"; out.vestingText = cap(s); break; }
     if (cliff) {
       const n = cliff[1] || cliff[2] || cliff[3] || cliff[4];
