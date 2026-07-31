@@ -634,6 +634,36 @@ against their filings:
   never names the BrokerageLink brand, so the site's generic
   "Self-directed brokerage" label is the honest filed answer.
 
+## 2026-07-31 — Verizon Master Savings Trust: letter-poor name residue dropped the $2.77B government-securities row (v32)
+
+- **Wrong:** the trust's class-level 4i summary (the honest lineup for all
+  four Verizon plans, $41.1B combined) displayed 11 of its 12 rows —
+  "U. S. GOVERNMENT SECURITIES" ($2,765,872,513) was silently missing, so
+  the shown holdings summed to $36.16B against the filing's stated
+  $38.93B total.
+- **Why:** the type-phrase name stripper matched /government securit/ at
+  index 6 and cut the name to "U. S." — two "words", so it passed the
+  ≥2-word guard — and the downstream non-name residue filter (letters < 3)
+  then discarded the whole row instead of falling back to the full name.
+- **Change (v32):** a cut name must also keep ≥3 letters; otherwise the
+  full name is retained. The row now survives as "U. S. GOVERNMENT
+  SECURITIES" with the Government-securities type from classify().
+- **Prevention:** Verizon trust summary joins the regression checks with
+  its exact 12-row sum (38,926,187,308); 20-specimen before/after diff
+  showed only the intended change. The audit's lineup-sum check couldn't
+  see this because MTIA lineups aren't cross-checked against trust
+  assets — plan-level Sch H is. Related honest gaps recorded while
+  investigating: the Verizon Management plan's own 2025 filing
+  (ack 20260622130903…) returns 403 from the EFAST2 S3 bucket (not yet
+  public; siblings from the same day serve fine) — it will retry on
+  future version bumps; and the trust's per-security detail pages carry
+  ~26 NAMED funds (CCT/PSA/RIC subtotal-adjacent rows: Fidelity Magellan
+  Commingled Pool, EB Daily Liquidity Stock Index at $11.0B, Arrowstreet
+  Global Equity, Verizon PRISA Fund, DFA Micro Cap, …) that the
+  summary-wins rule intentionally passes over — a future enhancement
+  could surface named pooled-vehicle rows without re-admitting the
+  per-security flood.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

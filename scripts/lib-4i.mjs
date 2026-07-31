@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 31;
+export const PARSER_VERSION = 32;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b/i, "SDBA"],
@@ -169,8 +169,13 @@ export function parseRows(section, opts = {}) {
         if (m && m.index > 3) {
           const cut = full.slice(0, m.index).replace(/[-–—,\s]+$/, "");
           // only strip a type phrase when a real name remains — "BlackRock
-          // Short-Term Investment Fund" must not shrink to "BlackRock"
-          if (cut.split(/\s+/).length >= 2) { name = cut; break; }
+          // Short-Term Investment Fund" must not shrink to "BlackRock".
+          // "U. S. GOVERNMENT SECURITIES" splits into two "words" but its
+          // cut is letter-poor punctuation — keep the full name so the
+          // residue filter below doesn't silently drop the row (Verizon
+          // Master Savings Trust summary lost its $2.77B govt row this way)
+          if (cut.split(/\s+/).length >= 2 &&
+              cut.replace(/[^a-z]/gi, "").length >= 3) { name = cut; break; }
         }
       }
       if (name.length < 3) name = full;
