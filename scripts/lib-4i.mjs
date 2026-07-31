@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 28;
+export const PARSER_VERSION = 29;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b/i, "SDBA"],
@@ -387,6 +387,12 @@ export function extractPlanFeatures(text) {
     // "up to a 1%" — without the optional article the engine backtracks
     // into pairing the wrong numbers (QACA filings extracted "1% of the
     // first 6%" instead of "100% of the first 1%")
+    // enumerated clauses — "a) a matching contribution of 100% of
+    // participant contributions for the first 1% of … base compensation
+    // and b) … 50% … up to the next 5%" (Rotary) — "for the first" binds
+    // the head; without it the maximum-of shape below grabs clause b)'s
+    // rate with the 6% total cap ("50% of the first 6%")
+    t.match(/match(?:ing|ed)?[^.]{0,160}?(\d{1,3}(?:\.\d+)?) ?(?:percent|%) of [^.]{0,80}?for the first (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i) ||
     t.match(/match(?:ing|ed)?[^.]{0,160}?(\d{1,3}(?:\.\d+)?) ?(?:percent|%) of [^.]{0,140}?(?:up to|not to exceed|not in excess of|(?:that )?do(?:es)? not exceed|to a maximum of|maximum[^.]{0,60}? of) (?:an? |the first )?(\d{1,2}(?:\.\d+)?) ?(?:percent|%) of/i) ||
     // auditor template with no "match" word — "The Company contributed 25
     // percent of the first 3 percent of eligible compensation that a
@@ -420,6 +426,29 @@ export function extractPlanFeatures(text) {
   let minv = null;
   if (!mf && !df && !cents && !mtab) {
     minv = t.match(/first (\d{1,2}(?:\.\d+)?) ?(?:percent|%) of [^.]{0,60}?(?:is|are) matched (?:at (?:a rate of )?)?(\d{1,3}(?:\.\d+)?) ?(?:percent|%)/i);
+  }
+  // a hedged "may contribute a discretionary match of 6% of the first 4%"
+  // followed by a DEFINITE formula ("The Company makes a safe harbor
+  // matching contribution equal to 100%…") must yield to the definite one
+  // — the discretionary head once fused with the adjacent safe-harbor
+  // sentence into "6% of the first 4% + 50% of the next 1%"
+  if (mf) {
+    const hedgePre = t.slice(Math.max(0, mf.index - 90), mf.index);
+    if (/\bmay (?:elect to )?(?:make|contribute|provide)\b[^.]*?discretionary[^.]*$/i.test(hedgePre)) {
+      const rest = t.slice(mf.index + mf[0].length, mf.index + mf[0].length + 600);
+      const def = rest.match(/(?:makes|will make|provides)[^.]{0,60}?match(?:ing|ed)?[^.]{0,160}?(\d{1,3}(?:\.\d+)?) ?(?:percent|%) of [^.]{0,140}?(?:up to|not to exceed|not in excess of|(?:that )?do(?:es)? not exceed|to a maximum of) (?:an? |the first )?(\d{1,2}(?:\.\d+)?) ?(?:percent|%) of/i) ||
+        rest.match(/(?:makes|will make|provides)[^.]{0,60}?match(?:ing|ed)?[^.]{0,140}?(\d{1,3}(?:\.\d+)?) ?(?:percent|%) (?:of|on) (?:the )?first (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i);
+      if (def) Object.assign(mf, { 1: def[1], 2: def[2], index: def.index + mf.index + mf[0].length, 0: def[0] });
+    }
+  }
+  // "Effective January 1, 2022, the Plan changed the safe harbor
+  // contribution formula to contribute 200% of the first 2%…" supersedes
+  // a formula stated EARLIER in the paragraph — mirror of the "prior to"
+  // era handling below, which only catches backward-looking phrasing
+  if (mf) {
+    const rest = t.slice(mf.index + mf[0].length, mf.index + mf[0].length + 700);
+    const chg = rest.match(/(?:effective|beginning) [^.]{0,60}?\bchanged\b[^.]{0,80}?formula to (?:contribute|match|provide)[^.]{0,40}?(\d{1,3}(?:\.\d+)?) ?(?:percent|%) of (?:the )?first (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i);
+    if (chg) Object.assign(mf, { 1: chg[1], 2: chg[2], index: chg.index + mf.index + mf[0].length, 0: chg[0] });
   }
   // a formula introduced by "Prior to January 1, 2023 …" is DISCONTINUED
   // (Cooper Tire) — prefer a later-stated current formula; if none exists,
@@ -484,7 +513,18 @@ export function extractPlanFeatures(text) {
     // "50% of a participant's contributions up to the next 2%" (Simmons
     // Foods) puts words between the rate and "next"
     const tierRe = /(\d{1,3}(?:\.\d+)?) ?(?:percent|%) of [^.%]{0,60}?next (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/gi;
-    const tail = t.slice(mf.index, mf.index + 400);
+    // a NEW match head in the following sentence is a separate formula —
+    // its tiers must not chain onto this head (5%−4% once fabricated
+    // "+ 50% of the next 1%"). Legit continuations ("In addition, … 50%
+    // of the next 2%") carry no head phrase and still chain.
+    let tail = t.slice(mf.index, mf.index + 400);
+    const sEnd = tail.slice(mf[0].length).search(/\. +[A-Z(]/);
+    if (sEnd !== -1) {
+      const cont = tail.slice(mf[0].length + sEnd);
+      if (/(?:makes?|may (?:elect to )?(?:make|contribute)|will make)[^.]{0,90}?match(?:ing)?\b|match(?:ing)? contribution equal to/i.test(cont)) {
+        tail = tail.slice(0, mf[0].length + sEnd + 1);
+      }
+    }
     let tm; let tguard = 0; let lastTierEnd = mf[0].length;
     while ((tm = tierRe.exec(tail)) && tguard++ < 4) {
       out.match += ` + ${+tm[1]}% of the next ${+tm[2]}%`;

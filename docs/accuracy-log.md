@@ -540,6 +540,42 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-07-31 — cross-sentence match fusion, three variants (v28 audit mismatch review)
+
+The 31 persistent formula-vs-quote mismatches in the v27/v28 audits turned
+out to be at least three distinct real-defect classes, all sampled by hand
+against their filings:
+
+- **Wrong (fused discretionary + safe harbor):** "The Company may
+  contribute a discretionary match of 6 percent of the first 4 percent…
+  The Company makes a safe harbor matching contribution equal to 100
+  percent … 3 percent, plus 50 percent … between 3 percent and 5 percent"
+  extracted as "6% of the first 4% + 50% of the next 1%" — the head came
+  from the hedged discretionary sentence and the tier fallback's 400-char
+  window chained the NEXT sentence's safe-harbor clause onto it,
+  fabricating next = 5%−4% = 1%.
+- **Wrong (superseded head):** "The Company contributes 100 percent of the
+  first 5 percent… Effective January 1, 2022, the Plan changed the safe
+  harbor contribution formula to contribute 200 percent of the first 2
+  percent … and 100 percent of the next 3 percent" extracted as "100% of
+  the first 5% + 100% of the next 3%" — old head, new tier.
+- **Wrong (enumerated clauses):** "a) a matching contribution of 100% of
+  participant contributions for the first 1% … and b) … 50% … up to the
+  next 5%, up to a maximum of 6%" (Rotary) extracted as "50% of the first
+  6% + 50% of the next 5%" — "for the first" phrasing wasn't a bindable
+  head, so the maximum-of shape grabbed clause b)'s rate with the 6%
+  TOTAL cap, then re-counted clause b) as a tier.
+- **Change:** (1) a hedged "may … discretionary" head yields to a definite
+  formula within 600 chars; (2) tier continuation stops at a sentence
+  boundary when the next sentence carries its own match head; (3)
+  "effective …, changed the … formula to contribute X% of the first Y%"
+  re-anchors the head (mirror of the "prior to" era rule); (4) "for the
+  first N%" joins the head alternations ahead of the maximum-of shape.
+- **Prevention:** all three filings join the corpus; 250-filing old-vs-new
+  diff ran clean (zero unintended changes). Remaining mismatch class
+  (quote windowed past the leading rate, formula itself correct) is
+  cosmetic — next review cycle.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
