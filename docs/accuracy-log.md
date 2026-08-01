@@ -685,9 +685,11 @@ against their filings:
   Treasury Bond Fund F") survives, and no entry ends worse than its v31
   state.
 - **Known remaining defects (pre-existing, v32 had accidentally fixed
-  them via the same unsafe mechanism):** acks 20251008082518…266417 and
-  20260130102131…208033 show confident lineups of 3-4 generic statement
-  rows instead of their real menus — proper fix is scoring statement
+  them via the same unsafe mechanism):** acks 20251008082518…266417,
+  20260130102131…208033, and 20251014104258…251491 (a $2.26B plan whose
+  28-fund BlackRock LifePath menu briefly surfaced under v32) show
+  confident lineups of 3-4 generic statement rows instead of their real
+  menus — proper fix is scoring statement
   regions down (or excluding glue-kept rows from scores), not keeping
   glue rows. Queued with the other v33+ candidates: temporal formula
   ranking (ack 20250903063307 shows the pre-April-2023 formula) and OCR
