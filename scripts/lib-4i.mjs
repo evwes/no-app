@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 32;
+export const PARSER_VERSION = 33;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b/i, "SDBA"],
@@ -173,9 +173,16 @@ export function parseRows(section, opts = {}) {
           // "U. S. GOVERNMENT SECURITIES" splits into two "words" but its
           // cut is letter-poor punctuation — keep the full name so the
           // residue filter below doesn't silently drop the row (Verizon
-          // Master Savings Trust summary lost its $2.77B govt row this way)
-          if (cut.split(/\s+/).length >= 2 &&
-              cut.replace(/[^a-z]/gi, "").length >= 3) { name = cut; break; }
+          // Master Savings Trust summary lost its $2.77B govt row this way).
+          // EXCEPT when the letter-poor cut is column glue swept into the
+          // name cell ("6,793,341 $ 6,793,341 $ - $ -", "$ $ $ $",
+          // "2020 2019 |"): those are statement fragments, and keeping them
+          // let junk statement regions outscore real 4i tables — surface
+          // the cut so the residue filter drops the row as it did pre-v32.
+          if (cut.split(/\s+/).length >= 2) {
+            if (cut.replace(/[^a-z]/gi, "").length >= 3) { name = cut; break; }
+            if (/[$|]|\d,\d{3}/.test(cut)) { name = cut; break; }
+          }
         }
       }
       if (name.length < 3) name = full;

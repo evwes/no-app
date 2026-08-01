@@ -664,6 +664,41 @@ against their filings:
   could surface named pooled-vehicle rows without re-admitting the
   per-security flood.
 
+## 2026-08-01 — v32 side effect: kept column-glue rows let statement pages outscore real 4i tables (v33)
+
+- **Wrong (introduced by v32, caught in the same night's verification diff
+  before mirroring to main):** keeping rows whose letter-poor cut was
+  COLUMN GLUE — statement values swept into the name cell like
+  "6,793,341 $ 6,793,341 $ - $ - Common Collective Trusts" — added rows to
+  financial-statement regions, and in region scoring a statement page then
+  beat the real 4i table. Worst case ack 20251014135916…957697: a real
+  25-fund State Street lineup was replaced by 3 statement fragments WHILE
+  STILL MARKED CONFIDENT. Also demoted one confident lineup to
+  non-confident and appended junk rows to two others.
+- **Change (v33):** a letter-poor cut containing glue markers ($, |, or a
+  thousands-grouped number) surfaces the cut so the residue filter drops
+  the row exactly as it did before v32; letter-poor cuts that are clean
+  punctuation prefixes ("U. S.", "EQ /", "20 Pl") still keep the full
+  name. Verified across all 33 entries v32 changed plus the 20-specimen
+  regression set: the State Street lineup returns, every intended v32
+  recovery (Verizon govt row, ~10 "EQ / Money Market" rows, "20 Plus
+  Treasury Bond Fund F") survives, and no entry ends worse than its v31
+  state.
+- **Known remaining defects (pre-existing, v32 had accidentally fixed
+  them via the same unsafe mechanism):** acks 20251008082518…266417 and
+  20260130102131…208033 show confident lineups of 3-4 generic statement
+  rows instead of their real menus — proper fix is scoring statement
+  regions down (or excluding glue-kept rows from scores), not keeping
+  glue rows. Queued with the other v33+ candidates: temporal formula
+  ranking (ack 20250903063307 shows the pre-April-2023 formula) and OCR
+  "SO percent"→"50 percent" normalization (ack 20251014120944 lost its
+  second tier).
+- **Prevention:** verification diffs after a parser release now
+  explicitly include the FULL universe-wide lineup diff of the data
+  commit, not just the targeted specimens — this regression was invisible
+  in the 20-specimen set and the audit (the junk lineup still summed
+  plausibly) and only surfaced in the v31→v32 whole-data diff.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
