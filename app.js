@@ -442,8 +442,15 @@
    * is an affirmative answer that the plan is NOT a safe-harbor design. */
   function schRLine(plan) {
     const s = plan.shr || "";
+    const notesSH = !!(plan.filedFeatures && plan.filedFeatures.safeHarbor);
     if (s.includes("D")) return `<p class="max-benefit">Nondiscrimination: <strong>design-based safe harbor</strong> — Schedule R (line 21b) reports the plan satisfies §401(k) testing by design (safe harbor or QACA).</p>`;
-    if (s.includes("A")) return `<p class="max-benefit">Nondiscrimination: <strong>ADP-tested</strong> — Schedule R (line 21b) reports annual ADP testing, meaning not a safe-harbor design.</p>`;
+    // a plan can be safe harbor for one employee group and ADP-tested for
+    // another (the instructions' disaggregation example) — when the audited
+    // notes describe a safe-harbor contribution, don't let the ADP box read
+    // as a contradiction
+    if (s.includes("A")) return notesSH
+      ? `<p class="max-benefit">Nondiscrimination: Schedule R (line 21b) reports <strong>ADP testing</strong> while the audited notes describe a safe-harbor contribution — plans can be safe harbor for one employee group and tested for another.</p>`
+      : `<p class="max-benefit">Nondiscrimination: <strong>ADP-tested</strong> — Schedule R (line 21b) reports annual ADP testing, meaning not a safe-harbor design.</p>`;
     if (s.includes("N")) return `<p class="max-benefit">Nondiscrimination: Schedule R (line 21b) reports §401(k) testing <strong>not applicable</strong> to this plan.</p>`;
     return "";
   }
