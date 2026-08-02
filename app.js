@@ -17,6 +17,7 @@
     provider: "",
     industry: "",
     planType: "",
+    matchType: "",
     tableSort: { key: "assets", dir: -1 },
     expanded: new Set(),
     lineupTab: {},
@@ -130,6 +131,7 @@
       assetsYoY: yoy == null ? null : +yoy.toFixed(1),
       ein: filed.ein,
       isSF: !!filed.isSF,
+      shr: filed.shr || "", // Schedule R line 21b: D design-based safe harbor, A ADP-tested, N n/a
       pyb: filed.pyb || "",
       filed: fmtFiledDate(filed.filedDate),
       flows: {
@@ -237,7 +239,23 @@
           plan.hasLineup = true;
         }
         if (flag & 4) plan.featKey = f.ack;
+        // brokerage three-state: the plan's OWN confident 4i parsed with no
+        // SDBA row AND no 2R code → the filing indicates no brokerage window.
+        // Trust-sourced lineups don't count — a trust's 4i can't show a
+        // member plan's windows.
+        if (plan.brokerage == null && (flag & 1) && !(flag & 2) && !/2R/.test(codes)) {
+          plan.brokerage = "None";
+          plan.brokerageInferred = true;
+        }
       }
+      // match-type facet: Schedule R line 21b (structured, filed) beats the
+      // audited-note bits; each is filed truth, shown with its source
+      const b = f.ack && lineupIndex ? lineupIndex.plans[f.ack] || 0 : 0;
+      plan.matchTypes = [];
+      if ((plan.shr || "").includes("D") || (b & 1024)) plan.matchTypes.push("safe-harbor");
+      if (b & 128) plan.matchTypes.push("scheduled");
+      if (b & 256) plan.matchTypes.push("discretionary");
+      if ((b & 512) || plan.flows.employerM === 0) plan.matchTypes.push("none");
       merged.push(plan);
     }
     state.plans = merged;
@@ -359,6 +377,7 @@
     if (state.provider && plan.provider !== state.provider) return false;
     if (state.industry && plan.industry !== state.industry) return false;
     if (state.planType && !(plan.planTypes || []).includes(state.planType)) return false;
+    if (state.matchType && !(plan.matchTypes || []).includes(state.matchType)) return false;
     return true;
   }
 
@@ -418,6 +437,17 @@
     </div>`;
   }
 
+  /* Schedule R line 21b is the only STRUCTURED safe-harbor disclosure in the
+   * filing: how the plan satisfies §401(k) nondiscrimination. "ADP-tested"
+   * is an affirmative answer that the plan is NOT a safe-harbor design. */
+  function schRLine(plan) {
+    const s = plan.shr || "";
+    if (s.includes("D")) return `<p class="max-benefit">Nondiscrimination: <strong>design-based safe harbor</strong> — Schedule R (line 21b) reports the plan satisfies §401(k) testing by design (safe harbor or QACA).</p>`;
+    if (s.includes("A")) return `<p class="max-benefit">Nondiscrimination: <strong>ADP-tested</strong> — Schedule R (line 21b) reports annual ADP testing, meaning not a safe-harbor design.</p>`;
+    if (s.includes("N")) return `<p class="max-benefit">Nondiscrimination: Schedule R (line 21b) reports §401(k) testing <strong>not applicable</strong> to this plan.</p>`;
+    return "";
+  }
+
   function filedContributionCard(plan) {
     const ff = plan.filedFeatures;
     const total = plan.flows.employerM != null
@@ -434,6 +464,7 @@
       ${ff.matchText ? `<blockquote class="quote">“${esc(ff.matchText)}”</blockquote>` : ""}
       ${ff.nec ? `<p class="max-benefit">Employer nonelective contribution: <strong>${esc(ff.nec)}</strong>${ff.safeHarbor === "nonelective" ? " · safe harbor" : ""}</p>` : ""}
       ${ff.necText ? `<blockquote class="quote">“${esc(ff.necText)}”</blockquote>` : ""}
+      ${schRLine(plan)}
       ${ff.vesting ? `<p class="max-benefit">Employer-money vesting: <strong>${esc(ff.vesting)}</strong></p>` : ""}
       ${ff.vestingText ? `<blockquote class="quote">“${esc(ff.vestingText)}”</blockquote>` : ""}
       ${!ff.vesting && !ff.vestingText ? (
@@ -456,6 +487,7 @@
         </div>
         <p class="max-benefit">The employer contributed <strong>$0</strong> in plan year ${plan.planYear} per the
         filing — no match or nonelective contribution was made this year.</p>
+        ${schRLine(plan)}
         ${fz ? `<p class="max-benefit"><strong>⚠ Plan frozen or terminated</strong> — the filing states contributions have been discontinued.</p>${plan.filedFeatures.frozenText ? `<blockquote class="quote">“${esc(plan.filedFeatures.frozenText)}”</blockquote>` : ""}` : ""}
       </div>`;
     }
@@ -486,6 +518,7 @@
         The filing reports a 401(m) arrangement (code 2K) — employer matching contributions
         and/or after-tax employee contributions. The exact formula lives in the plan document / SPD.
         Know it? <a href="https://github.com/evwes/no-app/issues">Add it</a>.</p>
+        ${schRLine(plan)}
       </div>`;
     }
     return `
@@ -498,6 +531,7 @@
       This filing's characteristic codes don't report a deferral-based match, and the formula
       isn't published on Form 5500 — it lives in the plan document / SPD.
       Know this plan? <a href="https://github.com/evwes/no-app/issues">Add it</a>.</p>
+      ${schRLine(plan)}
     </div>`;
   }
 
@@ -539,7 +573,10 @@
     rows.push(`<div class="feat-row"><span>Self-Directed Brokerage</span>${plan.brokerage == null
       ? `<span class="feat-unknown">— ${esc(why)}</span>`
       : plan.brokerage !== "None"
-        ? `<span class="feat-on">✓ ${esc(plan.brokerage)}</span>` : `<span class="feat-off">✗ Not offered</span>`}</div>`);
+        ? `<span class="feat-on">✓ ${esc(plan.brokerage)}</span>`
+        : plan.brokerageInferred
+          ? `<span class="feat-off">✗ None indicated — no brokerage window in the schedule of assets or plan codes</span>`
+          : `<span class="feat-off">✗ Not offered</span>`}</div>`);
     const ff = plan.filedFeatures || {};
     if (ff.eligibility) {
       rows.push(`<div class="feat-block"><div class="feat-row"><span>Eligibility</span><span class="feat-on">✓ ${esc(ff.eligibility)}</span></div>
@@ -774,7 +811,11 @@
           if (ce) return `<p class="stat-value">${ce.er.toFixed(2)}% <span class="est-chip">est.</span></p><p class="stat-sub">${ce.matched} of ${ce.of} menu funds</p>`;
           return `<p class="stat-value">—</p><p class="stat-sub">${plan.filedLineup ? plan.filedLineup.funds.length + " filed holdings" : plan.funds ? plan.funds.length + " fund options" : plan.filedFeatures && plan.filedFeatures.menu ? plan.filedFeatures.menu.length + " named options" : "lineup not added"}</p>`;
         })()}</div>
-        <div class="stat"><p class="stat-label">Recordkeeper</p><p class="stat-value stat-small">${esc(plan.provider || "—")}</p><p class="stat-sub">${esc(plan.filed || "")}</p></div>
+        <div class="stat"><p class="stat-label">Recordkeeper</p><p class="stat-value stat-small">${esc(plan.provider || "—")}</p><p class="stat-sub">${plan.provider
+          ? esc(plan.filed || "")
+          : plan.isSF
+            ? "Short-form filers don't file Schedule C, which names service providers"
+            : "No recordkeeping provider identified in this filing's Schedule C"}</p></div>
       </div>
 
       <div class="section-label">EMPLOYER CONTRIBUTIONS <span class="section-sub">${plan.filedFeatures ? "Source: Form 5500 filing (audit notes) — verify details with HR" : "Source: Form 5500 codes + plan document / SPD — verify with HR"}</span></div>
@@ -879,6 +920,7 @@
   $("providerFilter").addEventListener("change", (ev) => { state.provider = ev.target.value; state.rowLimit = MAX_ROWS; render(); });
   $("industryFilter").addEventListener("change", (ev) => { state.industry = ev.target.value; state.rowLimit = MAX_ROWS; render(); });
   $("typeFilter").addEventListener("change", (ev) => { state.planType = ev.target.value; state.rowLimit = MAX_ROWS; render(); });
+  $("matchTypeFilter").addEventListener("change", (ev) => { state.matchType = ev.target.value; state.rowLimit = MAX_ROWS; render(); });
 
   $("showMore").addEventListener("click", () => {
     state.rowLimit = (state.rowLimit || MAX_ROWS) + 500;

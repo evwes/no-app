@@ -936,6 +936,11 @@ export function indexFlags(e) {
     if (ff.afterTax && (ff.inPlanRoth || /in.?plan.{0,30}(roth )?(conversion|rollover)/i.test((ff.rothText || "") + " " + (ff.afterTaxText || "")))) f |= 8;
     if (ff.vesting === "Immediate") f |= 16;
     if (ff.sdbaBrand) f |= 2;
+    // match-type facet bits: 128 stated formula, 256 discretionary,
+    // 512 affirmatively none/frozen, 1024 safe harbor per audited notes
+    if (ff.match) f |= /^Discretionary/.test(ff.match) ? 256 : 128;
+    if (ff.noEmployer || ff.frozen) f |= 512;
+    if (ff.safeHarbor) f |= 1024;
   }
   if (e.sdba) f |= 2;
   return f;

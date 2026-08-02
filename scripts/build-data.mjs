@@ -354,6 +354,50 @@ function brandOf(name) {
   return String(name || "").toLowerCase().replace(/\b[a-z]/g, (c) => c.toUpperCase()).slice(0, 40);
 }
 
+/* ---------- schedule R: 401(k) nondiscrimination method (line 21b) ---------- */
+// The 2023-revision Schedule R asks how the plan satisfies Code §401(k)
+// nondiscrimination: a design-based safe harbor (SIMPLE 401(k), §401(k)(12)
+// safe harbor, or QACA), the ADP test (current/prior year), or N/A. This is
+// the only STRUCTURED safe-harbor disclosure in the whole filing — audited
+// notes only say "safe harbor" when the auditor happens to write it.
+// Column names for this recent line aren't pinned down offline (askebsa is
+// unreachable from the dev sandbox), so match loosely, log every candidate
+// header, and degrade to "" — never guess a value.
+async function scanSchR(csv, year, wantedAcks) {
+  console.log(`\n== scanning SCH_R ${year}`);
+  const rows = csvRows(csv);
+  const { value: header } = await rows.next();
+  const H = header.map((h) => h.toUpperCase().trim());
+  console.log("SCH_R candidate headers:", H.filter((h) => /ADP|SAFE|HARBOR|NONDISCRIM|DSGN|DESIGN/.test(h)).join(", ") || "(none)");
+
+  const find = (re) => H.findIndex((h) => re.test(h));
+  const col = {
+    ack: colIndex(H, ["ACK_ID"]),
+    sh: find(/SAFE_?HARBOR|DSGN_?BASED|DESIGN_?BASED/),
+    curAdp: find(/CUR(R(ENT)?)?_?(YR|YEAR)?_?ADP|ADP_?CUR(R(ENT)?)?/),
+    priorAdp: find(/PRIOR_?(YR|YEAR)?_?ADP|ADP_?PRIOR/),
+    na: find(/(NONDISCRIM|401K?)\w*_NA(_IND)?$|_TEST_NA/),
+  };
+  console.log("columns:", JSON.stringify(col));
+  if (col.ack === -1 || col.sh === -1) { console.warn("SCH_R: safe-harbor column not found — skipping year"); return new Map(); }
+
+  const truthy = (v) => { const s = String(v ?? "").trim(); return s !== "" && s !== "0"; };
+  const out = new Map();
+  let n = 0, d = 0;
+  for await (const r of rows) {
+    n++;
+    const ack = r[col.ack];
+    if (!wantedAcks.has(ack)) continue;
+    let s = "";
+    if (truthy(r[col.sh])) { s += "D"; d++; }
+    if ((col.curAdp !== -1 && truthy(r[col.curAdp])) || (col.priorAdp !== -1 && truthy(r[col.priorAdp]))) s += "A";
+    if (col.na !== -1 && truthy(r[col.na])) s += "N";
+    if (s) out.set(ack, s);
+  }
+  console.log(`SCH_R rows: ${n}, matched plans with an answer: ${out.size} (design-based safe harbor: ${d})`);
+  return out;
+}
+
 async function scanSchC(year, wantedAcks) {
   const files = [
     `F_SCH_C_PART1_ITEM2_${year}_Latest.zip`,
@@ -551,6 +595,7 @@ console.log(`plans linked to a master trust filing: ${universe.filter((p) => p.m
 // join Schedule H + Schedule C per year
 const schH = new Map();
 const schC = new Map();
+const schR = new Map();
 for (const year of YEARS) {
   const acks = new Set(universe.filter((p) => p.year === year).map((p) => p.ack));
   for (const [ack, m] of usedMtias) if (m.year === year) acks.add(ack);
@@ -562,6 +607,10 @@ for (const year of YEARS) {
   try {
     for (const [k, v] of await scanSchC(year, acks)) schC.set(k, v);
   } catch (e) { console.warn(`Sch C ${year}: ${e.message}`); }
+  try {
+    const csv = unzip(await download(year, `F_SCH_R_${year}_Latest.zip`));
+    for (const [k, v] of await scanSchR(csv, year, acks)) schR.set(k, v);
+  } catch (e) { console.warn(`Sch R ${year}: ${e.message}`); }
 }
 
 function titleCase(s) {
@@ -572,7 +621,7 @@ function titleCase(s) {
 const FIELDS = ["ein", "pn", "sponsorName", "planName", "city", "state", "zip", "businessCode",
   "planYear", "participants", "activeParticipants", "assetsBOY", "assetsEOY",
   "contribEmployer", "contribParticipant", "rollovers", "adminExpenses",
-  "filedDate", "recordkeeper", "ticker", "ack", "codes", "pyb", "partBalances", "feeProf", "feeAdmin", "feeInvMgmt", "feeOther", "benefitsPaid", "mtiaAck", "sf"];
+  "filedDate", "recordkeeper", "ticker", "ack", "codes", "pyb", "partBalances", "feeProf", "feeAdmin", "feeInvMgmt", "feeOther", "benefitsPaid", "mtiaAck", "sf", "shr"];
 
 const rowsOut = [];
 for (const p of universe) {
@@ -586,7 +635,7 @@ for (const p of universe) {
     p.received || "", schC.get(p.ack) || (p.mtiaAck && schC.get(p.mtiaAck)) || "", p.ticker || "", p.ack, p.pensionCode || "",
     p.planYearBegin ? String(p.planYearBegin).slice(0, 7) : "",
     p.partBalances || 0, h.feeProf || 0, h.feeAdmin || 0, h.feeInvMgmt || 0, h.feeOther || 0, h.benefitsPaid || 0,
-    p.mtiaAck || "", p.sf || 0,
+    p.mtiaAck || "", p.sf || 0, schR.get(p.ack) || "",
   ]);
 }
 rowsOut.sort((a, b) => b[12] - a[12]); // by assets desc
