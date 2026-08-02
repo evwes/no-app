@@ -184,6 +184,16 @@ don't confuse them). Frontend: python http.server + Playwright at
   universe-wide via index bits. Mega-backdoor CHIP matches afterTax OR mega bits (~5.8k plans);
   strict documented-conversion count is ~200 — auditors rarely write the
   conversion step down.
+- **Schedule R line 21b ingested (2026-08-02)**: plans-all `shr` field —
+  D design-based safe harbor (incl. QACA), A ADP-tested (affirmative
+  not-safe-harbor), N n/a. Dataset columns: PEN_401K_DESIGN_BASED_SAFE_IND
+  + PRIOR/CURRENT_YEAR_ADP_IND (+ NA col 53). Universe: 22.7k D / 36.2k A /
+  5.1k N; blanks = SF filers (no Sch R) + 3.5k full-form. 1,396 plans have
+  notes-safe-harbor + Sch R ADP — legitimate disaggregation, display says
+  so. Index bits added: 128 stated formula, 256 discretionary, 512
+  affirmatively-none/frozen, 1024 notes-safe-harbor → match-type filter
+  select in toolbar. Brokerage is three-state: 2R/SDBA yes; own confident
+  lineup + no SDBA + no 2R → "None indicated" (trust lineups never infer).
 - Owner to-dos: point GitHub Pages at `main`; custom domain.
 - Roadmap ideas (not started): static SEO pages per plan/recordkeeper, fee
   percentiles vs peers, compare view, correction-form issue template, OCR for
