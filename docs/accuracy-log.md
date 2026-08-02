@@ -701,6 +701,34 @@ against their filings:
   in the 20-specimen set and the audit (the junk lineup still summed
   plausibly) and only surfaced in the v31→v32 whole-data diff.
 
+## 2026-08-02 — statement pages beat real fund tables because filings render the schedule TWICE (v34)
+
+- **Wrong:** three confident lineups (acks 20251008082518…266417,
+  20260130102131…208033, 20251014104258…251491 — the $2.26B Avangrid
+  plan) showed 3-4 Statement-of-Net-Assets rows ("Investments, at fair
+  value", "Mutual funds", "Cash") instead of their real 26/47/28-fund
+  menus. Root cause found by instrumenting region scores: NOT the
+  statement page scoring high — the REAL table scoring low, because
+  (a) filings usually render the schedule twice (auditor statements +
+  form-page attachment copy) and cluster-merged regions summed both
+  copies (ratio 2.7/2.0 instead of ~1.0), and (b) EIN-heading lines
+  glued to column values ("SPONSOR EIN: 23-" = $1.6M fake holding)
+  inflated single-copy sums. The by-construction-perfect statement page
+  (sum ≈ plan assets) then won on closeness.
+- **Change (v34):** identical (name, value) pairs within a region count
+  once (repeated-page dedup; differing values still sum for share
+  classes); EIN/plan-number heading rows are dropped as junk; and a
+  belt-and-braces statement-vocabulary penalty (-0.35 for ≤8-row regions
+  that are ≥50% statement line items — trustee CLASS summaries like
+  Verizon's are ≥10 rows and unaffected); bare "Brokerage Account" rows
+  now classify as the brokerage window.
+- **Prevention:** the three filings join the regression corpus with
+  their expected menus and ratios (0.998 / 0.987 / 0.803 — the third via
+  the production OCR recipe reproduced locally); 52-specimen sweep shows
+  only intended changes (two more lineups shed EIN junk rows); the
+  mandatory full-universe diff at the post-run check-in verifies the
+  fleet-wide effect before mirroring.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

@@ -3,10 +3,10 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 33;
+export const PARSER_VERSION = 34;
 
 const TYPE_PATTERNS = [
-  [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b/i, "SDBA"],
+  [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b|^brokerage accounts?$/i, "SDBA"],
   [/publicly[- ]traded stock/i, "Stock"],
   [/interest in (the )?master trust/i, "Master trust interest"],
   [/collective trust|common\/collective|common collective|collective investment trust|commingled/i, "Collective trust"],
@@ -202,6 +202,10 @@ export function parseRows(section, opts = {}) {
     // "Rollover", "From participants") leak in when a candidate region
     // sweeps a contributions schedule — bare finance nouns are never funds
     if (/^(participants?|company|employer|employee|rollovers?|forfeitures?|interest|dividends|other|contributions?|(?:from|to) participants?|other net disbursements?|net disbursements?)$/i.test(name.trim())) continue;
+    // EIN/plan-number heading lines glue to a column value and land as fake
+    // $1M+ "holdings" ("SPONSOR EIN: 23-", "Employee Identification Number:
+    // 83-") — they inflate the region sum and tank its assets ratio
+    if (/^(sponsor(?:'s)? |plan )?(federal )?(employer|employee) identification number\b|^(sponsor |plan )?ein\b|^plan number\b/i.test(name.trim())) continue;
     // rows often carry no type of their own — it lives in the section header
     // ("Common/Collective Trusts"). SDBA/loans must not inherit: those section
     // types would wrongly collapse itemized rows.
@@ -217,14 +221,22 @@ export function parseRows(section, opts = {}) {
   let totalValue = 0;
   for (const r of rows) {
     if (!r.value) continue;
-    totalValue += r.value;
     const k = r.name.toLowerCase();
-    if (seen.has(k)) seen.get(k).value += r.value;
-    else seen.set(k, r);
+    const e = seen.get(k);
+    // filings usually render the schedule TWICE (once in the auditor's
+    // statements, once as the form-page attachment copy) — the same name at
+    // the same dollar value inside one region is that duplicate, not a
+    // second holding. Counting it doubled region sums and let statement
+    // pages outscore the real table. Different values still sum (share
+    // classes reported on one name).
+    if (e && e.vals.has(r.value)) continue;
+    totalValue += r.value;
+    if (e) { e.row.value += r.value; e.vals.add(r.value); }
+    else seen.set(k, { row: r, vals: new Set([r.value]) });
   }
   // totalValue covers every row, not just the displayed top 80 — huge filings
   // list thousands of individual securities and the ratio must reflect all.
-  return { funds: [...seen.values()].sort((a, b) => b.value - a.value).slice(0, 80), sdba, totalValue };
+  return { funds: [...seen.values()].map((e) => e.row).sort((a, b) => b.value - a.value).slice(0, 80), sdba, totalValue };
 }
 
 /* The full filing contains several look-alike headings (financial-statement
@@ -296,12 +308,22 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
     const CLASS_STEM = /^(interest[- ]bearing cash|u\.? ?s\.? government securities|corporate debt|corporate stock|common\/?collective trust|pooled separate account|master trust|103[- ]12 investment|registered investment compan|insurance company general|other investments?|participant loans?|partnership\/joint venture|real estate|loans \(other|employer[- ]related securit)/i;
     const classy = parsed.funds.filter((f) => CLASS_STEM.test(f.name)).length;
     const isSummary = parsed.funds.length >= 4 && classy / parsed.funds.length >= 0.8;
+    // a Statement of Net Assets page ("Investments, at fair value",
+    // "Mutual funds", "Cash and cash equivalents") sums to ≈ plan assets by
+    // construction, so it beats the real table on closeness whenever the
+    // table's own ratio is imperfect. Its vocabulary gives it away; trustee
+    // CLASS summaries (Verizon) are ≥10 rows of 4i class names and stay
+    // above the ≤8-row gate.
+    const STMT_ROW = /^(total )?(investments?,?( at (fair|contract) value.*)?|net assets( available for benefits)?|assets\b.*|cash( and cash equivalents)?|receivables?\b.*|notes? receivable\b.*|mutual funds?|common[- /]?collective trusts?\b.*|pooled separate accounts?|(employer|participant)s?['’]?s?( contributions?( receivable)?)?)$/i;
+    const stmty = parsed.funds.filter((f) => STMT_ROW.test(f.name)).length;
+    const isStatement = parsed.funds.length <= 8 && stmty / parsed.funds.length >= 0.5;
     for (const scale of marked ? [1, 1000] : [1]) {
       const ratio = assetsEOY ? (raw * scale) / assetsEOY : 0;
       if (!ratio) continue;
       const closeness = Math.abs(Math.log(ratio));
       const score = -closeness + Math.min(parsed.funds.length, 40) * 0.005
         + (isSummary && closeness < 0.5 ? 0.1 : 0)
+        - (isStatement ? 0.35 : 0)
         - (gainLast && parsed.funds.length >= 60 ? 0.2 : 0);
       if (!best || score > best.score) {
         best = { score, ratio, scale, ...parsed };
