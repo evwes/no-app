@@ -42,7 +42,12 @@ function findBadPages(text) {
     const t = pages[i];
     const chars = (t.match(/\S/g) || []).length;
     const letters = (t.match(/[a-zA-Z]/g) || []).length;
-    if (chars < 50 || (chars > 200 && letters / chars < 0.5)) bad.push(i + 1);
+    // control characters never appear in honest pdftotext output — a page
+    // full of them is subset-font cipher even when its letter ratio looks
+    // fine (Avista 401(k): schedule pages at 63% letters slipped past the
+    // ratio test and their cipher text silently lost the whole menu)
+    const ctl = (t.match(/[\x00-\x08\x0b\x0e-\x1f]/g) || []).length;
+    if (chars < 50 || (chars > 200 && letters / chars < 0.5) || ctl > 15) bad.push(i + 1);
   }
   return bad;
 }

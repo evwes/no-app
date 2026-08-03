@@ -793,6 +793,32 @@ against their filings:
   omits/scans the schedule, labeled with its plan year — would recover
   AVI-SPL's 41-fund menu and likely part of the ~7k no-section class.
 
+## 2026-08-03 — Avista (owner-submitted): cipher schedule pages evade OCR detection; hire-date cohort mislabeled as stale formula (v37)
+
+- **Context:** the owner's upload was Avista's PENSION plan (PN 001) —
+  out of scope by design (DB plan). The review moved to the 401(k)/ESOP
+  (PN 003, $843M) wampo displays, whose entry was non-confident junk.
+- **Wrong:** (1) the filing's schedule-of-assets pages carry subset-font
+  CIPHER text at 63% letter ratio — above the 50% bad-page threshold —
+  so they were never OCR'd, and the whole 32-fund menu (ratio 0.990,
+  incl. company stock and the SDBA fund) was lost while OCR'd statement
+  pages produced junk; (2) match shown as "75% of the first 6% (formula
+  in effect prior to 2006)" — but "prior to January 1, 2006" modifies
+  EMPLOYEES HIRED (a cohort), not the formula: current hires get 100% of
+  the first 6%; (3) vesting missed because the notes phrase it "vest
+  100% … after one year" (verb before the percent), an order the cliff
+  pattern lacked.
+- **Change (v37):** findBadPages flags pages containing >15 control
+  characters (honest pdftotext output never has them) regardless of
+  letter ratio; the era guard skips "hired prior to …" cohort phrases;
+  when the first-found formula is the legacy cohort's, the current-hire
+  cohort's formula is preferred (hire-split label still marks the
+  variation); cliff vesting accepts "vests 100% … after N years" order.
+  Verified: Avista → 32-fund confident menu, match "100% of the first 6%
+  of pay (varies by hire date)", 1-year cliff (match schedule), NEC 5%,
+  Roth, 3% auto-enroll. 56-specimen feature sweep sane (one "400% of the
+  first 1%" verified verbatim in its filing); AVI-SPL v36 results intact.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

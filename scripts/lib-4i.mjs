@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 36;
+export const PARSER_VERSION = 37;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b|^brokerage accounts?$/i, "SDBA"],
@@ -515,6 +515,10 @@ export function extractPlanFeatures(text) {
     // AUDIT-PERIOD range, not a formula expiry — H Enterprises' real 50%
     // match was swapped for a later discretionary sentence by this misfire
     if (era && /from (?:[A-Z][a-z]+ \d{1,2},? ?)?\d{0,4},? ?$/i.test(pre.slice(0, era.index))) era = null;
+    // "employees HIRED prior to January 1, 2006 … receive 75%" (Avista) is
+    // a hire-date COHORT, not a discontinued formula — the era label
+    // wrongly implied staleness; hireSplitLabel covers the cohort split
+    if (era && /hired (?:on or )?$/i.test(pre.slice(0, era.index))) era = null;
     // "The employer match for the year ended December 31, 2019 was 100%…"
     // in a plan-year-2023 filing is a STALE formula (Freedom Boat Club).
     // Two-year audit phrasing ("years ended 2023 and 2022") stays current;
@@ -539,6 +543,16 @@ export function extractPlanFeatures(text) {
       if (again) { again.index += mf.index + mf[0].length; Object.assign(mf, { 1: again[1], 2: again[2], index: again.index, 0: again[0] }); }
       else mfEra = ` (formula in effect ${era[1].toLowerCase()} ${era[2]} per the filing)`;
     }
+  }
+  // hire-date cohorts: when the first-found formula belongs to the LEGACY
+  // cohort ("hired prior to January 1, 2006 … 75%"), prefer the
+  // current-hire cohort's formula stated later ("hired on or after
+  // January 1, 2006 … 100% … does not exceed 6%") — the hire-split label
+  // still says both exist, and the quote shows the picked sentence
+  if (mf && /hired (?:prior to|before) [^.]{0,60}$/i.test(t.slice(Math.max(0, mf.index - 220), mf.index))) {
+    const rest = t.slice(mf.index + mf[0].length);
+    const cur = rest.match(/hired on or after [^.]{0,200}?match(?:ing|ed)?[^.]{0,140}?(\d{1,3}(?:\.\d+)?) ?(?:percent|%) of [^.]{0,140}?(?:does not exceed|up to|not to exceed|to a maximum of) (?:an? |the first )?(\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i);
+    if (cur) { cur.index += mf.index + mf[0].length; Object.assign(mf, { 1: cur[1], 2: cur[2], index: cur.index, 0: cur[0] }); }
   }
   if (mf) {
     // a formula prefixed "For participants of <entity>," is scoped to one
@@ -736,10 +750,10 @@ export function extractPlanFeatures(text) {
     // 3rd alternative tolerates intervening words — "fully vested in
     // employer matching contributions, and earnings thereon, upon
     // completion of three years of service" (Northrop Grumman)
-    const cliff = s.match(/(?:(\w{3,5}|\d)[- ]year cliff|cliff vesting[^.]{0,40}?(\w{3,5}|\d) years?|(?:(?:100|one hundred) ?(?:percent|%)|fully) vest(?:ed)?[^.]{0,80}?(?:after|upon)(?: the)?(?: complet\w+(?: of)?)? (\w{3,5}|\d) years?|0 ?(?:percent|%) vested until (\w{3,5}|\d) years)/i);
+    const cliff = s.match(/(?:(\w{3,5}|\d)[- ]year cliff|cliff vesting[^.]{0,40}?(\w{3,5}|\d) years?|(?:(?:100|one hundred) ?(?:percent|%)|fully) vest(?:ed)?[^.]{0,80}?(?:after|upon)(?: the)?(?: complet\w+(?: of)?)? (\w{3,5}|\d) years?|0 ?(?:percent|%) vested until (\w{3,5}|\d) years|vests? (?:100|one hundred) ?(?:percent|%)[^.]{0,60}?(?:after|upon)(?: the)?(?: complet\w+(?: of)?)? (\w{3,5}|\d) years?)/i);
     if (graded) { out.vesting = "Graded schedule"; out.vestingText = cap(s); break; }
     if (cliff) {
-      const n = cliff[1] || cliff[2] || cliff[3] || cliff[4];
+      const n = cliff[1] || cliff[2] || cliff[3] || cliff[4] || cliff[5];
       const num = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6 }[String(n).toLowerCase()] || +n;
       // IRC §411(a)(2)(B) caps DC cliff vesting at 3 years — a "5-year
       // cliff" reading is a misparsed graded schedule or service reference
