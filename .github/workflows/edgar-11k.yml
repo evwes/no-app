@@ -1,0 +1,33 @@
+name: EDGAR 11-K fund lineups
+
+# SEC EDGAR is unreachable from the dev sandbox, so this workflow is the
+# integration environment: specimen mode uploads raw FTS JSON + 11-K HTML as
+# an artifact for local parser development; sweep mode (added once the parser
+# is verified) will commit edgar-lineups.json.
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "specimens | sweep"
+        default: "specimens"
+
+permissions:
+  contents: write
+
+jobs:
+  edgar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Fetch EDGAR 11-K data
+        run: MODE=${{ github.event.inputs.mode || 'specimens' }} node scripts/fetch-11k.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: edgar-specimens
+          path: edgar-specimens/
+          if-no-files-found: warn
