@@ -40,8 +40,9 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
 ## Data files (all generated; never hand-edit)
 
 - `plans-all.json` — whole universe, compact array-of-arrays with `fields`
-  header. 100k+ rows: every 401(k)-type (2J) AND ERISA 403(b) (2L/2M) plan with ≥100 BOY
-  participants, from F_5500 (full form) AND F_5500_SF (`sf` flag = short-form
+  header. 100k+ rows: every 401(k)-type (2J) AND ERISA 403(b) (2L/2M) plan with ≥100
+  participants at EITHER end of the plan year (BOY-only once hid first-year
+  spinoffs like GE Vernova: 0 BOY, 33k EOY), from F_5500 (full form) AND F_5500_SF (`sf` flag = short-form
   filer, no audited attachment → excluded from PDF parsing). Newest filing per
   EIN|PN wins across years [2025, 2024, 2023]. Includes 8a characteristic
   codes (`codes`), plan-year-begin month (`pyb`), participants-with-balances,
@@ -85,7 +86,9 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   parsed confidently. Some trusts (Deere pension trust) are form-only PDFs —
   honest gap.
 - **Fiscal years**: `pyb` month ≠ 01 → display "Plan Year Nov 2023–Oct 2024
-  (fiscal)"; a "2023" label can be the newest filing (Deere).
+  (fiscal)"; a "2023" label can be the newest filing (Deere). `pye` is set
+  only for IRREGULAR years (short first/final years, e.g. GE Vernova
+  Apr–Dec 2024) → "(short year)" label instead of the fiscal rule.
 - **Features from audit notes** are quoted verbatim with regex extraction
   (match formula incl. tiers/dollar phrasing, vesting graded/cliff/immediate
   with employer-scope rules, Roth, after-tax, in-plan conversion → mega

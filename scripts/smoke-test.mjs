@@ -28,7 +28,10 @@ if (!fullPlan || !trustPlan || !sfPlan) fail("could not pick specimen plans from
 
 const server = spawn("python3", ["-m", "http.server", String(PORT)], { stdio: "ignore" });
 try {
-  const browser = await chromium.launch();
+  // CHROMIUM_PATH: run against a system chromium when the pinned Playwright
+  // version's own browser download isn't present (e.g. the CCR sandbox)
+  const browser = await chromium.launch(
+    process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
   const page = await browser.newPage();
   page.on("pageerror", (e) => fail("page JS error: " + e.message));
 

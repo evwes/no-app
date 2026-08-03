@@ -800,8 +800,11 @@
             ${plan.planTypes.map((t) => `<span class="badge badge-blue">${esc(t)}</span>`).join(" ")}
             <span class="badge badge-gray">${(() => {
               const m = plan.pyb ? +plan.pyb.slice(5, 7) : 1;
-              if (m <= 1) return `Plan Year ${plan.planYear}`;
               const MO = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+              // pye is set only when the plan year ends off the natural
+              // 12-month boundary — a short first or final year
+              if (plan.pye) return `Plan Year ${MO[m]} ${plan.planYear}–${MO[+plan.pye.slice(5, 7)]} ${+plan.pye.slice(0, 4)} (short year)`;
+              if (m <= 1) return `Plan Year ${plan.planYear}`;
               return `Plan Year ${MO[m]} ${plan.planYear}–${MO[m === 1 ? 12 : m - 1]} ${plan.planYear + 1} (fiscal)`;
             })()}</span>
             <span class="badge ${plan.dataStatus === "filed" ? "badge-green" : "badge-gray"}">${plan.dataStatus === "filed" ? "FORM 5500" : "SAMPLE"}</span></p>
@@ -836,6 +839,10 @@
         <div>
           <div class="section-label">${(() => {
             const m = plan.pyb ? +plan.pyb.slice(5, 7) : 1;
+            if (plan.pye) {
+              const MO = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+              return `${MO[m]}–${MO[+plan.pye.slice(5, 7)]} ${+plan.pye.slice(0, 4)}`;
+            }
             return m > 1 ? `FY ${plan.planYear}–${String(plan.planYear + 1).slice(2)}` : plan.planYear;
           })()} CONTRIBUTIONS <span class="section-sub">${plan.dataStatus === "filed" ? "Form 5500 Schedule H" : "sample"}</span></div>
           ${flowsTable(plan)}

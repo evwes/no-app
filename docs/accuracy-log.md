@@ -819,6 +819,32 @@ against their filings:
   Roth, 3% auto-enroll. 56-specimen feature sweep sane (one "400% of the
   first 1%" verified verbatim in its filing); AVI-SPL v36 results intact.
 
+## 2026-08-03 — GE Vernova (owner-submitted): first-year plans invisible — universe filter reads only the BEGINNING-of-year count
+
+- **Context:** the owner asked why the GE Vernova Retirement Savings Plan
+  (ROPCOR, INC., EIN 61-1399608, PN 004 — the April 2024 GE spinoff)
+  doesn't show up. It filed a 2024 first return/report with a SHORT plan
+  year (Apr 2–Dec 31, 2024): $8.1B in assets, 32,995 participants at
+  year end — and 0 at the beginning, because the plan didn't exist yet.
+- **Wrong:** build-data filtered on line 5 (TOT_PARTCP_BOY_CNT) ≥ 100
+  only, so EVERY new large plan — spinoffs, new MEPs — was silently
+  excluded for its entire first filing year. The SF path had the same
+  gap. Once visible, the short year would also have been mislabeled
+  "Plan Year Apr 2024–Mar 2025 (fiscal)" by the pyb-only frontend rule.
+- **Change:** filter keeps a plan when max(BOY, line-6d EOY subtotal)
+  ≥ 100; displayed participants stay BOY when BOY ≥ 100 (existing rows
+  byte-identical), else the EOY count. New `pye` field in plans-all,
+  stored ONLY when the year end is off the natural 12-month boundary;
+  frontend renders "Plan Year Apr 2024–Dec 2024 (short year)" and the
+  contributions header "Apr–Dec 2024" when present. GE Vernova's
+  composite PDF carries a real Schedule of Assets (SSGA menu, total
+  $8,145,458,662 ≈ Sch H), so the parser gets a real lineup once the
+  prep run lands.
+- **Prevention:** the rescue rule is symmetric (any sub-100 BOY with
+  ≥100 EOY enters), so plans that cross the threshold by growth arrive
+  a year earlier too; audit-data's balances-vs-total identity now
+  compares EOY against EOY for these rows, which is the consistent pair.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

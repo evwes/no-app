@@ -2,7 +2,11 @@
 /* wampo Form 5500 ingest.
  * Downloads the DOL EFAST2 datasets and builds two outputs:
  *
- *   plans-all.json    — EVERY 401(k) plan with ≥100 participants (compact
+ *   plans-all.json    — EVERY 401(k) plan with ≥100 participants at either
+ *                       end of the plan year (first-year filings — spinoffs,
+ *                       new MEPs — legitimately report 0 at the beginning;
+ *                       GE Vernova's first short year had 0 BOY / 32,995 EOY)
+ *                       (compact
  *                       array-of-arrays; ~80-90k plans), joined with
  *                       Schedule H financials and the Schedule C
  *                       recordkeeper.
@@ -136,12 +140,14 @@ async function scanMainForm(csv, year) {
     state: colIndex(H, ["SPONS_DFE_MAIL_US_STATE", "SPONS_DFE_LOC_US_STATE"], /MAIL.*STATE/),
     zip: colIndex(H, ["SPONS_DFE_MAIL_US_ZIP", "SPONS_DFE_LOC_US_ZIP"], /MAIL.*ZIP/),
     partTotal: colIndex(H, ["TOT_PARTCP_BOY_CNT", "TOT_ACT_RTD_SEP_BENEF_CNT", "TOT_PARTCP_CNT"], /TOT_PARTCP/),
+    partEOY: colIndex(H, ["TOT_ACT_RTD_SEP_BENEF_CNT"], /ACT_RTD_SEP_BENEF/),
     partActive: colIndex(H, ["TOT_ACTIVE_PARTCP_CNT", "TOT_ACT_PARTCP_CNT"], /ACTIVE_PARTCP|ACT_PARTCP/),
     partBalances: colIndex(H, ["PARTCP_ACCOUNT_BAL_CNT", "TOT_PARTCP_ACCOUNT_BAL_CNT"], /ACCOUNT_BAL_CNT/),
     pensionCode: colIndex(H, ["TYPE_PENSION_BNFT_CODE"], /PENSION.*CODE/),
     businessCode: colIndex(H, ["BUSINESS_CODE"], /BUSINESS_CODE/),
     received: colIndex(H, ["DATE_RECEIVED"], /DATE_RECEIVED/),
     planYearBegin: colIndex(H, ["FORM_PLAN_YEAR_BEGIN_DATE"], /PLAN_YEAR_BEGIN/),
+    planYearEnd: colIndex(H, ["FORM_TAX_PRD", "FORM_PLAN_YEAR_END_DATE"], /TAX_PRD|PLAN_YEAR_END/),
     dfeType: colIndex(H, ["TYPE_DFE_PLAN_ENTITY_CD"], /DFE_PLAN_ENTITY/),
   };
   console.log("columns:", JSON.stringify(col));
@@ -161,8 +167,13 @@ async function scanMainForm(csv, year) {
     // 401(k)-type (2J) and ERISA 403(b) plans (2L annuity / 2M custodial) —
     // both file the same schedules; the codes drive the plan-type badge
     if (!/2J|2L|2M/.test(code)) continue;
-    const participants = +r[col.partTotal] || 0;
-    if (participants < MIN_UNIVERSE) continue;
+    // line 5 (beginning of year) is the primary count, but a first-year
+    // filing (spinoff, new MEP) legitimately reports 0 there — line 6d
+    // (end-of-year subtotal) keeps those plans in the universe
+    const partBOY = +r[col.partTotal] || 0;
+    const partEOY = col.partEOY !== -1 ? +r[col.partEOY] || 0 : 0;
+    if (Math.max(partBOY, partEOY) < MIN_UNIVERSE) continue;
+    const participants = partBOY >= MIN_UNIVERSE ? partBOY : partEOY;
     const sponsorNorm = norm(r[col.sponsor]);
     const company = matchCompany(sponsorNorm);
     out.push({
@@ -182,6 +193,7 @@ async function scanMainForm(csv, year) {
       businessCode: col.businessCode !== -1 ? r[col.businessCode] : "",
       received: r[col.received],
       planYearBegin: col.planYearBegin !== -1 ? r[col.planYearBegin] : "",
+      planYearEnd: col.planYearEnd !== -1 ? r[col.planYearEnd] : "",
     });
   }
   console.log(`rows: ${n}, 401(k) ≥${MIN_UNIVERSE} participants: ${out.length}`);
@@ -255,6 +267,7 @@ async function scanSF(csv, year) {
     state: colIndex(H, ["SF_SPONS_US_STATE", "SF_SPONS_MAIL_US_STATE"], /STATE/),
     zip: colIndex(H, ["SF_SPONS_US_ZIP", "SF_SPONS_MAIL_US_ZIP"], /ZIP/),
     partBOY: colIndex(H, ["SF_TOT_PARTCP_BOY_CNT"], /TOT_PARTCP_BOY/),
+    partEOY: colIndex(H, ["SF_TOT_PARTCP_EOY_CNT", "SF_TOT_ACT_RTD_SEP_BENEF_CNT"], /PARTCP_EOY|ACT_RTD_SEP_BENEF/),
     partActive: colIndex(H, ["SF_TOT_ACT_PARTCP_CNT", "SF_TOT_ACTIVE_PARTCP_CNT"], /ACT.*PARTCP/),
     partBalances: colIndex(H, ["SF_PARTCP_ACCOUNT_BAL_CNT"], /ACCOUNT_BAL_CNT/),
     pensionCode: colIndex(H, ["SF_TYPE_PENSION_BNFT_CODE"], /PENSION.*CODE/),
@@ -265,6 +278,7 @@ async function scanSF(csv, year) {
     contribParticipant: colIndex(H, ["SF_PARTCP_CONTRIB_AMT"], /PARTCP_CONTRIB(?!.*BAL)/),
     received: colIndex(H, ["DATE_RECEIVED"], /DATE_RECEIVED/),
     planYearBegin: colIndex(H, ["SF_PLAN_YEAR_BEGIN_DATE"], /PLAN_YEAR_BEGIN/),
+    planYearEnd: colIndex(H, ["SF_TAX_PRD", "SF_PLAN_YEAR_END_DATE"], /TAX_PRD|PLAN_YEAR_END/),
   };
   console.log("SF columns:", JSON.stringify(col));
   const out = [];
@@ -273,8 +287,11 @@ async function scanSF(csv, year) {
     n++;
     const code = col.pensionCode !== -1 ? r[col.pensionCode] || "" : "";
     if (!/2J|2L|2M/.test(code)) continue;
-    const participants = +r[col.partBOY] || 0;
-    if (participants < MIN_UNIVERSE) continue;
+    // same first-year rescue as the full form: EOY count keeps new plans in
+    const sfBOY = +r[col.partBOY] || 0;
+    const sfEOY = col.partEOY !== -1 ? +r[col.partEOY] || 0 : 0;
+    if (Math.max(sfBOY, sfEOY) < MIN_UNIVERSE) continue;
+    const participants = sfBOY >= MIN_UNIVERSE ? sfBOY : sfEOY;
     const sponsorNorm = norm(r[col.sponsor]);
     const company = matchCompany(sponsorNorm);
     out.push({
@@ -294,6 +311,7 @@ async function scanSF(csv, year) {
       businessCode: col.businessCode !== -1 ? r[col.businessCode] : "",
       received: r[col.received],
       planYearBegin: col.planYearBegin !== -1 ? r[col.planYearBegin] : "",
+      planYearEnd: col.planYearEnd !== -1 ? r[col.planYearEnd] : "",
       sfH: {
         assetsBOY: col.assetsBOY !== -1 ? +r[col.assetsBOY] || 0 : 0,
         assetsEOY: col.assetsEOY !== -1 ? +r[col.assetsEOY] || 0 : 0,
@@ -621,7 +639,20 @@ function titleCase(s) {
 const FIELDS = ["ein", "pn", "sponsorName", "planName", "city", "state", "zip", "businessCode",
   "planYear", "participants", "activeParticipants", "assetsBOY", "assetsEOY",
   "contribEmployer", "contribParticipant", "rollovers", "adminExpenses",
-  "filedDate", "recordkeeper", "ticker", "ack", "codes", "pyb", "partBalances", "feeProf", "feeAdmin", "feeInvMgmt", "feeOther", "benefitsPaid", "mtiaAck", "sf", "shr"];
+  "filedDate", "recordkeeper", "ticker", "ack", "codes", "pyb", "partBalances", "feeProf", "feeAdmin", "feeInvMgmt", "feeOther", "benefitsPaid", "mtiaAck", "sf", "shr", "pye"];
+
+// pye is stored only for IRREGULAR plan years (short first/final years) —
+// blank means the year ends at the natural 12-month boundary, which keeps
+// the file size flat across 104k rows
+function irregularYearEnd(p) {
+  if (!p.planYearBegin || !p.planYearEnd) return "";
+  const pyb = String(p.planYearBegin), pye = String(p.planYearEnd);
+  const by = +pyb.slice(0, 4), bm = +pyb.slice(5, 7);
+  const natural = bm === 1
+    ? `${by}-12`
+    : `${by + 1}-${String(bm - 1).padStart(2, "0")}`;
+  return pye.slice(0, 7) === natural ? "" : pye.slice(0, 7);
+}
 
 const rowsOut = [];
 for (const p of universe) {
@@ -635,7 +666,7 @@ for (const p of universe) {
     p.received || "", schC.get(p.ack) || (p.mtiaAck && schC.get(p.mtiaAck)) || "", p.ticker || "", p.ack, p.pensionCode || "",
     p.planYearBegin ? String(p.planYearBegin).slice(0, 7) : "",
     p.partBalances || 0, h.feeProf || 0, h.feeAdmin || 0, h.feeInvMgmt || 0, h.feeOther || 0, h.benefitsPaid || 0,
-    p.mtiaAck || "", p.sf || 0, schR.get(p.ack) || "",
+    p.mtiaAck || "", p.sf || 0, schR.get(p.ack) || "", irregularYearEnd(p),
   ]);
 }
 rowsOut.sort((a, b) => b[12] - a[12]); // by assets desc
