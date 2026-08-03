@@ -144,6 +144,8 @@ async function runProbe() {
       const body = await res.text();
       report[label] = { status: res.status, bytes: body.length, head: body.slice(0, 200) };
       console.log(`${label}: ${res.status} (${body.length} bytes)`);
+      if (!res.ok) console.log(`  body head: ${body.replace(/\s+/g, " ").slice(0, 300)}`);
+      console.log(`  resp headers: ${JSON.stringify(Object.fromEntries([...res.headers].filter(([k]) => /server|akamai|cf-|x-|retry/.test(k))))}`);
       if (res.ok) writeFileSync(`edgar-specimens/probe-${label.replace(/[^a-z0-9]+/gi, "-")}.txt`, body.slice(0, 500000));
     } catch (e) {
       report[label] = { error: String(e) };
