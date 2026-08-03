@@ -290,7 +290,8 @@ for (const plan of work) {
   // comparative-year columns) landed at ratio 1.5-1.6 with exactly 3 rows,
   // while genuine 3-4 row lineups sit near 1.0
   const confident = parsed.funds.length >= 3 && ratio > 0.45 && ratio < 1.6 &&
-    (parsed.funds.length >= 5 || (ratio > 0.7 && ratio < 1.3));
+    (parsed.funds.length >= 5 || (ratio > 0.7 && ratio < 1.3)) &&
+    !parsed.stmt; // statement-vocabulary fragments are never a real menu
   record(plan, {
     ack: plan.ack,
     ticker: plan.ticker,

@@ -757,6 +757,42 @@ against their filings:
   them). v34's overall universe effect (kept): +549 confident lineups,
   5,898 entries touched, 91 tiny junk regions honestly demoted.
 
+## 2026-08-03 — AVI-SPL (owner-submitted): four defects in one filing (v36)
+
+- **Wrong (all four verified against the owner's uploaded 2023+2024
+  filings):** (1) a confident 5-row "lineup" of OCR'd statement fragments
+  — worse, valued from the PRIOR-year comparative column ("Registered
+  investment companies … $205.8M" is the Dec-31-2023 figure in a
+  plan-year-2024 filing); (2) match shown as a standing formula
+  ("22.5% of the first 6% of pay") when the filing says the match is
+  DISCRETIONARY with a per-period declared rate; (3) the clean 6-year
+  graded vesting table (0/20/40/60/80/100%) extracted nothing — its
+  header variant puts "Vested" above "Years of Service / Percentage";
+  (4) afterTax:true from a sentence that says the plan was AMENDED TO
+  REMOVE after-tax contributions — a false positive feeding the
+  mega-backdoor chip.
+- **Root context:** the 2024 filing's public copy (EFAST2 and the owner's
+  own copy are byte-identical, 34 pages) genuinely OMITS the schedule of
+  assets page — the filer attached an incomplete statement set. The 2023
+  filing carries a perfect 41-fund text schedule. No parse of the 2024
+  copy can produce a lineup; the honest state is the gap message.
+- **Change (v36):** statement/note junk rows ("Net income per Form
+  5500", "Interest and dividend income", "Contributions receivable",
+  "Participants may borrow", "Notes receivable") drop in parseRows; the
+  winning candidate's statement flag now rides through parse4i and
+  fetch-4i marks such fragments NEVER confident (previously a
+  statement-only filing's fragment could pass the ratio band); vesting
+  table headers accept the "Vested / Years of Service / Percentage"
+  order; declared-rate discretionary matches render as "Discretionary —
+  YYYY declared: …"; an amendment removing after-tax sets the field
+  affirmatively false with the removal quote.
+- **Prevention:** AVI-SPL joins the corpus (both years); 52-specimen
+  sweep clean (one bonus junk-row removal); Avangrid OCR menu and all
+  v34/v35 targets intact. Open idea from this case: fall back to the
+  PRIOR year's filing for the lineup when the newest filing's attachment
+  omits/scans the schedule, labeled with its plan year — would recover
+  AVI-SPL's 41-fund menu and likely part of the ~7k no-section class.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

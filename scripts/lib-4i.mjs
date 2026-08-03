@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 35;
+export const PARSER_VERSION = 36;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b|^brokerage accounts?$/i, "SDBA"],
@@ -209,6 +209,11 @@ export function parseRows(section, opts = {}) {
     // dotted-leader runs are form/TOC lines ("(1) Employer Securities .......")
     // — OCR-garbled form pages produced whole confident "lineups" of them
     if (/\.{6,}/.test(name)) continue;
+    // financial-statement line items and note prose that sweep in with a
+    // trailing number ("Net income per Form 5500", "Interest and dividend
+    // income - investments", "Participants may borrow …") — AVI-SPL's
+    // junk-confident 5-row "lineup" was built of these
+    if (/^net (?:income|assets)\b|per form 5500|^interest and dividend|^contributions? receivable|^participants may borrow|^notes? receivable/i.test(name.trim())) continue;
     // rows often carry no type of their own — it lives in the section header
     // ("Common/Collective Trusts"). SDBA/loans must not inherit: those section
     // types would wrongly collapse itemized rows.
@@ -333,7 +338,7 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
         - (isStatement ? 0.35 : 0)
         - (gainLast && parsed.funds.length >= 60 ? 0.2 : 0);
       if (!best || score > best.score) {
-        best = { score, ratio, scale, ...parsed };
+        best = { score, ratio, scale, stmt: isStatement, ...parsed };
       }
     }
   }
@@ -380,7 +385,10 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
   }
   for (const f of funds) delete f.sec;
 
-  return { found: true, thousands: best.scale === 1000, sdba: sdbaOut, funds, ratio: best.ratio, ...(sma ? { sma, smaKind } : {}) };
+  // a statement-vocabulary fragment can still WIN when it's the only
+  // candidate (the real schedule is scanned or absent) — surface the flag
+  // so it can never be marked confident
+  return { found: true, thousands: best.scale === 1000, sdba: sdbaOut, funds, ratio: best.ratio, ...(best.stmt ? { stmt: 1 } : {}), ...(sma ? { sma, smaKind } : {}) };
 }
 
 /* ---- plan-feature extraction from the filing's audit notes ---------------- */
@@ -758,7 +766,9 @@ export function extractPlanFeatures(text) {
   // Percentage / Less than 1  0% / 1  20% / … / 5 or more  100%" (Simmons
   // Foods) carry no "years" word per row, so the pairs fallback misses them
   if (!out.vesting) {
-    const th = t.match(/years of (?:credited |continuous )?(?:service|vesting service)\s+(?:vesting|vested) percentage|following vesting schedule:?\s+years\s+(?:employer|vested|vesting)/i);
+    // header variants: "Vested / Years of Service / Percentage" (AVI-SPL)
+    // puts "Vested" ABOVE the column pair — the label order is free-form
+    const th = t.match(/years of (?:credited |continuous )?(?:service|vesting service)\s+(?:vesting|vested) percentage|following vesting schedule:?\s+years\s+(?:employer|vested|vesting)|vested\s+years of service\s+percentage|following schedule:?\s*vested\s+years of service\s+percentage|years of service\s+percentage/i);
     if (th) {
       const win = t.slice(th.index + th[0].length, th.index + th[0].length + 320);
       const pairs = [...win.matchAll(/(less than \d{1,2}|\d{1,2}(?: or more| ?\+)?) +(\d{1,3}) ?%/gi)]
@@ -781,6 +791,17 @@ export function extractPlanFeatures(text) {
       }
       if (!out.vestingText && !/forfeit/i.test(s)) out.vestingText = cap(s);
     }
+  }
+  // a DECLARED-RATE discretionary match is not a standing formula: "The
+  // Company may make matching contributions, at its discretion, equal to
+  // the declared percentage … The Company's discretionary match formula
+  // for 2024 was 22.5% of employee deferrals up to a maximum of 6%"
+  // (AVI-SPL, owner-submitted). Label it so the year-specific rate can't
+  // read as a plan commitment; the verbatim quote carries the details.
+  if (out.match && !/^Discretionary/.test(out.match) &&
+      /at (?:its|their) discretion,? equal to the declared percentage|discretionary match(?:ing)? formula for (?:the )?(?:first |second )?(?:half of )?\d{4}/i.test(out.matchText || "")) {
+    const yr = /formula for [^.]*?(\d{4})/i.exec(out.matchText || "");
+    out.match = `Discretionary — ${yr ? yr[1] + " declared: " : "most recent declared rate: "}${out.match}`;
   }
   hireSplitLabel("vesting");
   hireSplitLabel("match");
@@ -829,6 +850,14 @@ export function extractPlanFeatures(text) {
       if (rothMod || rothTarget2 || !/contribut\w+[^.]{0,80}$/i.test(pre)) continue;
       out.afterTax = true; out.afterTaxText = sentence(m2.index); break;
     }
+  }
+  // an amendment REMOVING after-tax is an affirmative no, not a feature:
+  // "amended the plan document effective June 1, 2023, to remove the
+  // option for after-tax employee contributions" (AVI-SPL) shipped as
+  // afterTax:true and joined the mega-backdoor chip
+  if (out.afterTax &&
+      /(?:remov\w+|eliminat\w+|discontinu\w+|no longer (?:permits?|allows?|offers?))[^.]{0,80}after[- ]tax|after[- ]tax[^.]{0,60}(?:was|were|has been|have been|is no longer) (?:remov|eliminat|discontinu|permitt|allow|offer)/i.test(out.afterTaxText || "")) {
+    out.afterTax = false; // quote stays — it documents the removal
   }
 
   // ---- affirmative no-employer-contribution statements ----
