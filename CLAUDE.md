@@ -202,6 +202,26 @@ don't confuse them). Frontend: python http.server + Playwright at
   select in toolbar. Brokerage is three-state: 2R/SDBA yes; own confident
   lineup + no SDBA + no 2R → "None indicated" (trust lineups never infer).
 - Owner to-dos: point GitHub Pages at `main`; custom domain.
+- **EDGAR 11-K research (2026-08-03, specimens in hand)**: SEC blocks
+  requests whose User-Agent contains parens/URLs — the plain documented
+  "name email" UA works from GitHub Actions (all four hosts 200; do NOT
+  enrich the UA string in scripts/fetch-11k.mjs). Sandbox cannot reach SEC
+  or the Actions artifact blob host — the retrieval loop is: dispatch
+  edgar-11k.yml → workflow pushes files to the throwaway `edgar-scratch`
+  branch → git fetch. KEY FINDING: master-trust plans' 11-Ks are as opaque
+  as their DOL filings — Verizon Management's FY2025 11-K schedule shows
+  ONLY participant loans, and its Master Trust note discloses general
+  types only. Lockheed moved into a trust too (FY2025 11-K loans-only,
+  contradicting the prototype's FY2024 test). The "11-K unlocks
+  master-trust menus" premise is FALSE. Remaining value: (1) freshness —
+  Chevron-class non-trust public plans file real FY2025 fund schedules a
+  YEAR before EFAST2 has them; (2) rescue for public plans whose EFAST2
+  attachment is scanned/unreadable; (3) cross-validation. Specimens:
+  Chevron = clean CIT menu + BrokerageLink + separate-account bond flood;
+  Microsoft 16MB SDBA flood; J&J/Verizon/Lockheed = trust-opaque
+  must-reject controls. Query ladder needs "&"→"and" variants (two
+  Verizon sisters got 0 hits). Acceptance gate when built: schedule total
+  within 0.5-2.0x Sch H assets, thousands-aware.
 - Roadmap ideas (not started): static SEO pages per plan/recordkeeper, fee
   percentiles vs peers, compare view, correction-form issue template, OCR for
   scanned filings, (403(b) expansion shipped 2026-07-18; governmental/church 403(b)s exempt from filing — absent by law, note when asked).
