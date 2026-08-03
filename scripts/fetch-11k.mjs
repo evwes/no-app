@@ -138,9 +138,12 @@ async function runProbe() {
   ];
   mkdirSync("edgar-specimens", { recursive: true });
   const report = {};
+  // SEC's documented "declared bot" header format, exactly:
+  // User-Agent: Company Name admin@example.com / Accept-Encoding: gzip, deflate
+  const HDRS = { "User-Agent": "wampo evanatchley1@gmail.com", "Accept-Encoding": "gzip, deflate", "Accept": "application/json, text/html" };
   for (const [label, url] of targets) {
     try {
-      const res = await fetch(url, { headers: { "User-Agent": UA } });
+      const res = await fetch(url, { headers: HDRS });
       const body = await res.text();
       report[label] = { status: res.status, bytes: body.length, head: body.slice(0, 200) };
       console.log(`${label}: ${res.status} (${body.length} bytes)`);
