@@ -125,6 +125,36 @@ async function runSpecimens() {
   console.log(`\nwrote ${out}/summary.json`);
 }
 
+/* Which SEC hosts does this egress reach? efts (full-text search) 403s from
+ * Azure datacenter IPs; data.sec.gov + Archives are the workaround path:
+ * ticker→CIK from company_tickers.json, 11-K list from the submissions API,
+ * documents from Archives. */
+async function runProbe() {
+  const targets = [
+    ["efts FTS", `${FTS}?q=%22VERIZON%20SAVINGS%20PLAN%22&forms=11-K&startdt=2025-01-01&enddt=2026-08-01`],
+    ["company_tickers", "https://www.sec.gov/files/company_tickers.json"],
+    ["submissions API (VZ)", "https://data.sec.gov/submissions/CIK0000732712.json"],
+    ["archives dir (VZ)", "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000732712&type=11-K&count=5"],
+  ];
+  mkdirSync("edgar-specimens", { recursive: true });
+  const report = {};
+  for (const [label, url] of targets) {
+    try {
+      const res = await fetch(url, { headers: { "User-Agent": UA } });
+      const body = await res.text();
+      report[label] = { status: res.status, bytes: body.length, head: body.slice(0, 200) };
+      console.log(`${label}: ${res.status} (${body.length} bytes)`);
+      if (res.ok) writeFileSync(`edgar-specimens/probe-${label.replace(/[^a-z0-9]+/gi, "-")}.txt`, body.slice(0, 500000));
+    } catch (e) {
+      report[label] = { error: String(e) };
+      console.log(`${label}: ERROR ${e.message}`);
+    }
+    await sleep(500);
+  }
+  writeFileSync("edgar-specimens/probe-report.json", JSON.stringify(report, null, 1));
+}
+
 const MODE = process.env.MODE || "specimens";
 if (MODE === "specimens") await runSpecimens();
+else if (MODE === "probe") await runProbe();
 else { console.error(`unknown MODE ${MODE} (sweep mode lands after the parser is verified)`); process.exit(1); }
