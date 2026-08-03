@@ -1,0 +1,98 @@
+[
+ {
+  "label": "verizon-mgmt",
+  "plan": "VERIZON SAVINGS PLAN FOR MANAGEMENT EMPLOYEES",
+  "sponsor": "Verizon Communications Inc.",
+  "ein": "232259884",
+  "pn": "102",
+  "assets": 31319296635,
+  "query": "VERIZON SAVINGS PLAN FOR MANAGEMENT EMPLOYEES",
+  "id": "0000732712-26-000033:vz-20260618.htm",
+  "period": "2025-12-31",
+  "url": "https://www.sec.gov/Archives/edgar/data/732712/000073271226000033/vz-20260618.htm",
+  "bytes": 443755
+ },
+ {
+  "label": "verizon-nyne",
+  "plan": "VERIZON SAVINGS & SECURITY PLAN FOR NEW YORK AND NEW ENGLAND ASSOCIATES",
+  "sponsor": "Verizon Communications Inc.",
+  "ein": "232259884",
+  "pn": "011",
+  "assets": 6162578449,
+  "hit": null
+ },
+ {
+  "label": "verizon-midatl",
+  "plan": "VERIZON SAVINGS SECURITY PLAN FOR MID-ATLANTIC ASSOCIATES",
+  "sponsor": "Verizon Communications Inc.",
+  "ein": "232259884",
+  "pn": "004",
+  "assets": 3726083852,
+  "hit": null
+ },
+ {
+  "label": "lockheed",
+  "plan": "LOCKHEED MARTIN CORPORATION SALARIED SAVINGS PLAN",
+  "sponsor": "Lockheed Martin Corporation",
+  "ein": "521893632",
+  "pn": "017",
+  "assets": 51448624264,
+  "query": "LOCKHEED MARTIN CORPORATION SALARIED SAVINGS PLAN",
+  "id": "0001628280-26-045282:lmt-20260624.htm",
+  "period": "2025-12-31",
+  "url": "https://www.sec.gov/Archives/edgar/data/936468/000162828026045282/lmt-20260624.htm",
+  "bytes": 379959
+ },
+ {
+  "label": "chevron",
+  "plan": "CHEVRON EMPLOYEE SAVINGS INVESTMENT PLAN",
+  "sponsor": "Chevron Corporation",
+  "ein": "940890210",
+  "pn": "001",
+  "assets": 20378704663,
+  "query": "CHEVRON EMPLOYEE SAVINGS INVESTMENT PLAN",
+  "id": "0000093410-26-000158:cvx-20260624.htm",
+  "period": "2025-12-31",
+  "url": "https://www.sec.gov/Archives/edgar/data/93410/000009341026000158/cvx-20260624.htm",
+  "bytes": 2139840
+ },
+ {
+  "label": "microsoft",
+  "plan": "MICROSOFT CORPORATION SAVINGS PLUS 401K PLAN",
+  "sponsor": "Microsoft Corporation",
+  "ein": "911144442",
+  "pn": "001",
+  "assets": 77853223310,
+  "query": "MICROSOFT CORPORATION SAVINGS PLUS",
+  "id": "0001193125-26-282773:d839790d11k.htm",
+  "period": "2025-12-31",
+  "url": "https://www.sec.gov/Archives/edgar/data/789019/000119312526282773/d839790d11k.htm",
+  "bytes": 16443153
+ },
+ {
+  "label": "jnj-mastertrust",
+  "plan": "JOHNSON AND JOHNSON SAVINGS PLAN",
+  "sponsor": "Johnson And Johnson",
+  "ein": "221024240",
+  "pn": "100",
+  "assets": 23584765150,
+  "query": "JOHNSON AND JOHNSON SAVINGS PLAN",
+  "id": "0000200406-26-000135:jnj-20260624.htm",
+  "period": "2025-12-31",
+  "url": "https://www.sec.gov/Archives/edgar/data/200406/000020040626000135/jnj-20260624.htm",
+  "bytes": 585055
+ },
+ {
+  "label": "walmart-flood",
+  "plan": "WALMART 401(K) PLAN",
+  "sponsor": "Walmart Inc.",
+  "ein": "710415188",
+  "pn": "003",
+  "assets": 50790179678,
+  "query": "WALMART 401(K) PLAN",
+  "id": "0000104169-26-000136:wmt-20260716.htm",
+  "period": "2026-01-31",
+  "url": "https://www.sec.gov/Archives/edgar/data/104169/000010416926000136/wmt-20260716.htm",
+  "bytes": 3607326
+ }
+]
