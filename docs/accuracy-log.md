@@ -729,6 +729,34 @@ against their filings:
   mandatory full-universe diff at the post-run check-in verifies the
   fleet-wide effect before mirroring.
 
+## 2026-08-03 — v34 verification: dedup also fixed STATEMENT pages' ratios; 22 tiny fragments displaced real menus (v35)
+
+- **Wrong (v34 side effect, caught in the mandatory universe diff before
+  mirroring):** the repeated-page dedup repaired double-rendered ratios
+  for statement fragments too — 22 plans' confident 15-35 row menus were
+  displaced by 2-3 row class-aggregate fragments ("Registered investment
+  companies", "Pooled separate accounts, at fair value") whose deduped
+  sums now matched plan assets (Shintech: 20 Vanguard funds → 2 rows).
+  Also: two OCR-garbled filings still showed confident "lineups" of
+  dotted-leader form text, and "E.I.N.:"/"Plan #001 EIN #82-" variants
+  slipped the EIN junk filter (one $5.2M fake holding in a confident
+  lineup).
+- **Change (v35):** the statement penalty also covers ≤3-row regions of
+  class/statement aggregates (classy counts toward the threshold);
+  statement vocabulary gains suffix/variant forms (pooled separate
+  accounts + suffix, guaranteed investment/interest accounts, space-form
+  common collective trust); rows with 6+ dot leaders are dropped as
+  form/TOC lines; the EIN filter catches E.I.N. and trailing EIN#NN-
+  forms.
+- **Verified:** Shintech back to its 20-fund menu (0.712), Scantibodies
+  33 rows (real JP Morgan/Schwab menu, EIN rows gone), Cotton Holdings
+  21 rows (Principal Lifetime menu); all v34 targets intact (JF Martin
+  26 / Atlanta IEC 47 / Avangrid 28 via OCR repro / Verizon 12-row sum
+  exact); 52-specimen sweep shows only junk-row removals; the two
+  form-garbage filings now honestly find no section (production re-OCRs
+  them). v34's overall universe effect (kept): +549 confident lineups,
+  5,898 entries touched, 91 tiny junk regions honestly demoted.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 34;
+export const PARSER_VERSION = 35;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b|^brokerage accounts?$/i, "SDBA"],
@@ -205,7 +205,10 @@ export function parseRows(section, opts = {}) {
     // EIN/plan-number heading lines glue to a column value and land as fake
     // $1M+ "holdings" ("SPONSOR EIN: 23-", "Employee Identification Number:
     // 83-") — they inflate the region sum and tank its assets ratio
-    if (/^(sponsor(?:'s)? |plan )?(federal )?(employer|employee) identification number\b|^(sponsor |plan )?ein\b|^plan number\b/i.test(name.trim())) continue;
+    if (/^(sponsor(?:'s)? |plan )?(federal )?(employer|employee) identification number\b|^(sponsor |plan )?ein\b|^e\.\s?i\.\s?n\.?\s*[:#]|^plan number\b|\bein\s*#?\s*\d{0,2}-?$/i.test(name.trim())) continue;
+    // dotted-leader runs are form/TOC lines ("(1) Employer Securities .......")
+    // — OCR-garbled form pages produced whole confident "lineups" of them
+    if (/\.{6,}/.test(name)) continue;
     // rows often carry no type of their own — it lives in the section header
     // ("Common/Collective Trusts"). SDBA/loans must not inherit: those section
     // types would wrongly collapse itemized rows.
@@ -305,7 +308,7 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
     // summary page followed by thousands of per-security detail pages that
     // double-count it. Prefer the summary; penalize security floods in
     // gain-last statements so an arbitrary detail slice can't outscore it.
-    const CLASS_STEM = /^(interest[- ]bearing cash|u\.? ?s\.? government securities|corporate debt|corporate stock|common\/?collective trust|pooled separate account|master trust|103[- ]12 investment|registered investment compan|insurance company general|other investments?|participant loans?|partnership\/joint venture|real estate|loans \(other|employer[- ]related securit)/i;
+    const CLASS_STEM = /^(interest[- ]bearing cash|u\.? ?s\.? government securities|corporate debt|corporate stock|common[/ ]?collective trust|pooled separate account|master trust|103[- ]12 investment|registered investment compan|insurance company general|other investments?|participant loans?|partnership\/joint venture|real estate|loans \(other|employer[- ]related securit)/i;
     const classy = parsed.funds.filter((f) => CLASS_STEM.test(f.name)).length;
     const isSummary = parsed.funds.length >= 4 && classy / parsed.funds.length >= 0.8;
     // a Statement of Net Assets page ("Investments, at fair value",
@@ -314,9 +317,13 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
     // table's own ratio is imperfect. Its vocabulary gives it away; trustee
     // CLASS summaries (Verizon) are ≥10 rows of 4i class names and stay
     // above the ≤8-row gate.
-    const STMT_ROW = /^(total )?(investments?,?( at (fair|contract) value.*)?|net assets( available for benefits)?|assets\b.*|cash( and cash equivalents)?|receivables?\b.*|notes? receivable\b.*|mutual funds?|common[- /]?collective trusts?\b.*|pooled separate accounts?|(employer|participant)s?['’]?s?( contributions?( receivable)?)?)$/i;
+    const STMT_ROW = /^(total )?(investments?,?( at (fair|contract) value.*)?|net assets( available for benefits)?|assets\b.*|cash( and cash equivalents)?|receivables?\b.*|notes? receivable\b.*|mutual funds?\b.*|common[- /]?collective trusts?\b.*|pooled separate accounts?\b.*|guaranteed (investment|interest) (accounts?|contracts?)\b.*|employee rollovers?\b.*|(employer|participant)s?['’]?s?( contributions?( receivable)?)?)$/i;
     const stmty = parsed.funds.filter((f) => STMT_ROW.test(f.name)).length;
-    const isStatement = parsed.funds.length <= 8 && stmty / parsed.funds.length >= 0.5;
+    // ≤3-row regions of class aggregates ("Registered investment companies")
+    // are statement fragments too — v34's dedup fixed THEIR double-rendered
+    // ratios as well, and 22 of them displaced real 15-35 row menus
+    const isStatement = (parsed.funds.length <= 8 && stmty / parsed.funds.length >= 0.5)
+      || (parsed.funds.length <= 3 && (stmty + classy) / parsed.funds.length >= 0.5);
     for (const scale of marked ? [1, 1000] : [1]) {
       const ratio = assetsEOY ? (raw * scale) / assetsEOY : 0;
       if (!ratio) continue;
