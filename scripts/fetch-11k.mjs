@@ -17,7 +17,11 @@
 import { writeFileSync, mkdirSync, readFileSync, existsSync } from "fs";
 import path from "path";
 
-const UA = "wampo 401(k) plan research (https://github.com/evwes/no-app; evanatchley1@gmail.com)";
+// SEC/Akamai REJECTS User-Agents containing parens or URLs (serves the
+// "Undeclared Automated Tool" page, and a fake rate-limit page on the static
+// host). The documented plain "name email" format passes — even from GitHub
+// Actions runners. Probed 2026-08-03; do not "enrich" this string.
+const UA = "wampo evanatchley1@gmail.com";
 const FTS = "https://efts.sec.gov/LATEST/search-index";
 const DELAY_MS = 400; // SEC asks for <=10 req/s; stay far under it
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -27,7 +31,7 @@ async function polite(url, type = "json") {
   const wait = lastReq + DELAY_MS - Date.now();
   if (wait > 0) await sleep(wait);
   lastReq = Date.now();
-  const res = await fetch(url, { headers: { "User-Agent": UA, "Accept-Encoding": "gzip" } });
+  const res = await fetch(url, { headers: { "User-Agent": UA, "Accept-Encoding": "gzip, deflate" } });
   if (!res.ok) throw new Error(`HTTP ${res.status} ${url}`);
   return type === "json" ? res.json() : res.text();
 }

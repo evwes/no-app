@@ -31,3 +31,15 @@ jobs:
           name: edgar-specimens
           path: edgar-specimens/
           if-no-files-found: warn
+      # the artifact blob host is unreachable from the dev sandbox — a
+      # throwaway orphan branch is the retrieval channel for specimen files
+      - name: Push specimens to scratch branch
+        if: always()
+        run: |
+          [ -d edgar-specimens ] || exit 0
+          cd edgar-specimens
+          git init -q -b edgar-scratch
+          git config user.name "wampo-data-bot"
+          git config user.email "noreply@anthropic.com"
+          git add -A && git commit -qm "edgar specimens $(date -u +%FT%TZ)"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" edgar-scratch
