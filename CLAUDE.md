@@ -172,10 +172,17 @@ don't confuse them). Frontend: python http.server + Playwright at
 
 ## Current state (2026-07-21)
 
-- Universe 102,632 plans ($8.82T, incl. ERISA 403(b)s); 67,985 parseable
-  filings at parser v14 + OCR v2; 56.4k confident lineups (5.15k via OCR,
-  disclosed in source), 63.3k with features; ~7k no-section residual after
-  full-strength OCR (form-only or unparseable — honest gap). Trust links
+- Universe 104,393 plans (incl. ERISA 403(b)s); 68,042 parseable filings
+  at parser v35 + OCR v2; 53.2k confident lineups, 60.3k with features.
+  v34/v35 (2026-08-03): repeated-page dedup (schedules render twice per
+  filing!), EIN-heading + dotted-leader junk rows, statement-page penalty
+  — net +817 confident lineups; statement fragments no longer displace
+  real menus. Known residuals: 2 cipher-text junk-confident filings
+  (S@CUrities class), a handful of legit dotted-leader menus losing rows
+  (one confident Vanguard menu 17→12 — v36 candidate: strip leaders
+  instead of dropping when the de-leadered name isn't form vocabulary).
+  GitHub cron note: Monday 06:00 runs fire HOURS late (Jul 27 fired
+  10:02) — don't diagnose a dropped schedule before ~noon UTC. Trust links
   898 (193 via EIN fallback); Elevance has NO MTIA filing in EFAST2 at all
   (checked 2023-25) — unlinkable, honest gap. Recordkeeper = platform-brand
   priority over top-fee line (NG shows Fidelity not Strategic Advisors,
