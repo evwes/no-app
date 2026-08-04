@@ -54,17 +54,16 @@ function findBadPages(text) {
 
 async function ocrPages(pdfPath, badPages, workDir) {
   const take = badPages.slice(0, OCR_MAX_PAGES);
-  const ranges = [];
-  for (const p of take) {
-    const last = ranges[ranges.length - 1];
-    if (last && p === last[1] + 1) last[1] = p;
-    else ranges.push([p, p]);
-  }
   mkdirSync(workDir, { recursive: true });
-  for (const [f, l] of ranges) {
+  // one pdftoppm call PER PAGE: rendering merged ranges let a single
+  // damaged page (broken Type 3 glyphs) kill the whole invocation and
+  // silently drop every later page in the range — Cochrane lost pages
+  // 29-34 (the fund schedule) exactly that way and its 21-fund menu with
+  // them. Per-page, a crash costs only its own page.
+  for (const p of take) {
     try {
-      execFileSync("pdftoppm", ["-r", "200", "-gray", "-f", String(f), "-l", String(l), pdfPath, path.join(workDir, "pg")]);
-    } catch { /* damaged pages render what they can */ }
+      execFileSync("pdftoppm", ["-r", "200", "-gray", "-f", String(p), "-l", String(p), pdfPath, path.join(workDir, "pg")]);
+    } catch { /* damaged page renders what it can */ }
   }
   const imgs = readdirSync(workDir).filter((f) => /\.p[gpb]m$/.test(f)).sort().map((f) => path.join(workDir, f));
   const results = new Array(imgs.length).fill("");
@@ -238,7 +237,16 @@ for (const plan of work) {
     await download(url, dest);
   } catch (e) {
     summary.push(`${tag}: download failed ${e.message}`);
-    record(plan, { confident: false, error: "download", funds: [] });
+    // a failed download must never clobber a previous parse of the same
+    // ack (transient S3 errors and withdrawn-from-bucket filings both
+    // surface here — v37 dropped 6 good lineups this way). Keep the old
+    // meta (old pv keeps the ack on future work lists for retry) and do
+    // NOT touch the shard entry; only acks never parsed before get a
+    // status record, with pv:0 so they too retry next run.
+    const prev = status.plans[plan.ack];
+    const meta = prev ? { ...prev, e: "download" } : { pv: 0, ov: 0, c: 0, s: 0, e: "download" };
+    status.plans[plan.ack] = meta;
+    delta.status[plan.ack] = meta;
     continue;
   }
   let text;

@@ -103,8 +103,13 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   filings incrementally at the current version.
 - **OCR fallback (v12)**: ~half of "no-section" filings are SCANNED auditor
   attachments; many others use broken font encodings (cipher-looking text).
-  fetch-4i rasterizes the unreadable pages (pdftoppm 200dpi, ≤40 pages) and
-  tesseract-OCRs them 4-wide, then re-parses combined text. `ov` in status =
+  fetch-4i rasterizes the unreadable pages (pdftoppm 200dpi, ≤40 pages,
+  ONE page per invocation — a damaged Type-3-glyph page crashes pdftoppm
+  and range-mode silently lost every later page in the range) and
+  tesseract-OCRs them 4-wide, then re-parses combined text. Download
+  failures preserve the previous parse (merge: ack absent from
+  delta.entries = keep stored entry; null = remove) — S3 403s are
+  withdrawn-from-bucket filings, retried each run via stale pv. `ov` in status =
   OCR_VERSION attempted; work list re-adds no-section acks when OCR_VERSION
   moves. NOTE: OCR text is not cached — every PARSER_VERSION bump re-OCRs
   ~12k filings (~4h at 20 shards); prep shard formula sizes for

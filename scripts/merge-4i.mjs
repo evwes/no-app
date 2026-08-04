@@ -27,10 +27,15 @@ for (const f of files) {
   const d = JSON.parse(readFileSync(f, "utf8"));
   for (const [ack, meta] of Object.entries(d.status)) {
     status.plans[ack] = meta;
-    const entry = d.entries[ack];
     const b = buckets[shardOf(ack)];
-    if (entry) b[ack] = entry;
-    else delete b[ack];
+    // an ack absent from d.entries means "leave the stored entry alone"
+    // (download failures preserve the previous parse); an explicit null
+    // means "remove it" (parse produced nothing worth keeping)
+    if (ack in d.entries) {
+      const entry = d.entries[ack];
+      if (entry) b[ack] = entry;
+      else delete b[ack];
+    }
     applied++;
   }
 }

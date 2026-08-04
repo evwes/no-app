@@ -845,6 +845,39 @@ against their filings:
   a year earlier too; audit-data's balances-vs-total identity now
   compares EOY against EOY for these rows, which is the consistent pair.
 
+## 2026-08-04 — v37 verification: download failures clobbered good entries; range-mode pdftoppm silently truncated OCR page sets (v38)
+
+- **Context:** v37 post-run diff: +50 confident (cipher-page class incl.
+  Avista, verified), −7. Two of the 7 losses were honest (junk lineups
+  demoted); five were NEW defects found by sampling the losses.
+- **Wrong (1):** a failed PDF download re-recorded the ack as
+  `{pv:current, e:download, funds:[]}` — clobbering the previous good
+  parse AND advancing pv so it wasn't even retried until the next
+  version bump. Three confident menus died this way in one night
+  (S3 403s: filings withdrawn from the public bucket; plus transients).
+- **Wrong (2):** ocrPages merged bad pages into contiguous pdftoppm
+  ranges; ONE damaged page (broken Type 3 glyphs) crashed the whole
+  range invocation and silently dropped every later page. Cochrane
+  (20250924093907...): v37's correct cipher-page detection joined pages
+  18-34 into one range, pdftoppm died at 29, pages 29-34 — the fund
+  schedule — never rendered, and a 21-fund ratio-1.000 menu became
+  "no-section". The bug predates v37 (v36's range [21-31] also died at
+  31) — every OCR'd filing with a damaged page may have lost tail pages.
+- **Change (v38):** download failures now preserve the previous entry
+  and status verbatim (old pv keeps the ack on the retry list; merge
+  treats an ack absent from delta.entries as "leave stored entry
+  alone", null as explicit removal); never-parsed acks record pv:0 so
+  they retry too. ocrPages renders ONE page per pdftoppm call — a
+  damaged page costs only itself (verified: all 20 Cochrane pages
+  render individually; parse recovers 21 funds at 1.000 WITH cipher
+  pages included). The two 403-clobbered confident menus (25 and 27
+  funds) restored from v36 data with e:download status. PARSER_VERSION
+  38 re-parses the universe with honest page rendering.
+- **Prevention:** the verification loop itself caught both — sampling
+  the LOSS side of the diff is mandatory, not optional; losses that
+  correlate with e:download or with damaged-page warnings are pipeline
+  defects, not parser regressions, and the fix belongs in the pipeline.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
