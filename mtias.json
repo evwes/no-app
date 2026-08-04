@@ -1,6 +1,6 @@
 {
- "generated": "2026-08-03T21:11:50.479Z",
- "count": 503,
+ "generated": "2026-08-04T01:47:33.100Z",
+ "count": 506,
  "trusts": [
   {
    "ack": "20251010213934NAL0019537394001",
@@ -2145,6 +2145,12 @@
    "assetsEOY": 2783582544
   },
   {
+   "ack": "20251015151934NAL0004970145001",
+   "name": "DISCOVERY ENERGY 401(K) MASTER TRUST",
+   "planYear": 2024,
+   "assetsEOY": 255034440
+  },
+  {
    "ack": "20251015104839NAL0002167699001",
    "name": "USIBELLI COAL MINE, INC. MASTER TRUST",
    "planYear": 2024,
@@ -2493,6 +2499,12 @@
    "assetsEOY": 483223544
   },
   {
+   "ack": "20250729103029NAL0004424880001",
+   "name": "ALLIED PILOTS ASSOCIATION WELFARE BENEFITS PLAN MASTER TRUST",
+   "planYear": 2024,
+   "assetsEOY": 227469963
+  },
+  {
    "ack": "20251017125353NAL0003743427005",
    "name": "NV ENERGY MASTER TRUST",
    "planYear": 2024,
@@ -2647,6 +2659,12 @@
    "name": "AM GENERAL LLC RETIREMENT FUND MASTER TRUST",
    "planYear": 2024,
    "assetsEOY": 288712548
+  },
+  {
+   "ack": "20251203145826NAL0000493523001",
+   "name": "G & E HOCKER'S MTIA PLAN",
+   "planYear": 2023,
+   "assetsEOY": 5618517
   },
   {
    "ack": "20251009100126NAL0003479731001",
