@@ -550,6 +550,32 @@ for (const m of collected) {
 const universe = [...byPlan.values()];
 console.log(`\nuniverse: ${universe.length} unique 401(k) plans with ≥${MIN_UNIVERSE} participants`);
 
+// prior-year fallback map: for each plan whose NEWEST filing may lack a
+// readable schedule, the next-newest FULL-FORM filing of the same EIN|PN.
+// fetch-4i tries it when the primary parse yields no confident lineup, and
+// labels the result with the fallback plan year. Artifact-only — the
+// frontend never sees this file.
+const fallback = {};
+{
+  const runnerUp = new Map();
+  for (const m of collected) {
+    if (m.sf) continue; // SF filings carry no schedule — useless as fallback
+    const key = `${m.ein}|${m.pn}`;
+    const primary = byPlan.get(key);
+    if (!primary || m.ack === primary.ack) continue;
+    const cur = runnerUp.get(key);
+    if (!cur || m.year > cur.year ||
+        (m.year === cur.year && String(m.received || "") > String(cur.received || ""))) runnerUp.set(key, m);
+  }
+  for (const [key, m] of runnerUp) {
+    const primary = byPlan.get(key);
+    if (primary.sf) continue; // primary SF filers are excluded from PDF parsing
+    fallback[primary.ack] = { a: m.ack, y: m.planYearBegin ? +String(m.planYearBegin).slice(0, 4) : m.year };
+  }
+  writeFileSync("fallbacks.json", JSON.stringify({ generated: new Date().toISOString(), count: Object.keys(fallback).length, acks: fallback }));
+  console.log(`wrote fallbacks.json: ${Object.keys(fallback).length} plans with a prior-year full-form filing`);
+}
+
 // master-trust registry: newest filing per trust EIN|PN
 const mtiaByKey = new Map();
 for (const m of mtiaFilings) {

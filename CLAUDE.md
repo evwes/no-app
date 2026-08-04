@@ -17,8 +17,12 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   (width:0/min-width:100%) so it can't widen the plans table — wide content
   must wrap or scroll internally.
 - **Data pipeline** (`.github/workflows/build-data.yml`): 3-stage matrix —
-  `prep` (build-data.mjs: download EFAST2 datasets, write plans-all.json +
-  mtias.json, compute shard count) → `parse` (up to 12 parallel jobs,
+  `prep` (FIRST runs scripts/parser-gate.mjs: ten live specimens, fails the
+  run before the matrix if any regresses — update expectations in the same
+  commit for intentional moves; then build-data.mjs: download EFAST2
+  datasets, write plans-all.json + mtias.json + fallbacks.json
+  [prior-year full-form ack per plan, artifact-only], compute shard count)
+  → `parse` (up to 12 parallel jobs,
   fetch-4i.mjs in PARSE_SHARD mode, each writes results-N.json delta) →
   `merge` (merge-4i.mjs re-applies deltas on the LATEST fetched branch state
   with a reset+retry loop — measured necessity: a plain rebase transplant
@@ -49,8 +53,15 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   Sch H fee breakdown, benefits paid, `mtiaAck` (linked master trust).
 - `mtias.json` — master trusts (Sch D links → MTIA filings); their 4i is
   parsed so member plans show trust holdings.
-- `lineups-status.json` — per-ack metadata {pv, c, s, f, e}. `pv` =
+- `lineups-status.json` — per-ack metadata {pv, c, s, f, e, fb}. `pv` =
   PARSER_VERSION that produced it; work list = acks with pv ≠ current.
+  `fb` = plan year of a PRIOR-YEAR filing whose schedule supplied the
+  lineup (v41: when the newest filing has no readable schedule, fetch-4i
+  tries the same plan's next-newest full-form filing; ratio is judged
+  against current-year assets, entry source discloses the year, features
+  still come from the newest filing when present). Merge prints a
+  CONFIDENCE DIFF (gained/lost acks) every run — sample LOSSES before the
+  next parser change.
 - `data/lineups/NN.json` (64 shards, hash = sum(c*31) % 64) — full entries
   (funds, sma detail, features with source quotes). Fetched per-plan on demand.
 - `lineups-index.json` — boot-time bitmask per ack: 1 lineup, 2 brokerage,
@@ -111,8 +122,9 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   delta.entries = keep stored entry; null = remove) — S3 403s are
   withdrawn-from-bucket filings, retried each run via stale pv. `ov` in status =
   OCR_VERSION attempted; work list re-adds no-section acks when OCR_VERSION
-  moves. NOTE: OCR text is not cached — every PARSER_VERSION bump re-OCRs
-  ~12k filings (~4h at 20 shards); prep shard formula sizes for
+  moves. OCR text is CACHED as of v41 (Actions cache mounts OCR_CACHE_DIR;
+  filenames carry OCR_VERSION so bumping it repopulates) — PARSER_VERSION
+  bumps no longer re-rasterize; prep shard formula sizes for
   max(work/5500, ocr/600) cap 20. Entries carry ocr:1 and the source string
   discloses OCR. Trailing "**" (>5% marker) after values is stripped in
   parseRows — that alone recovered most OCR rows.

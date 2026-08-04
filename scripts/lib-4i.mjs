@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 40;
+export const PARSER_VERSION = 41;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b|^brokerage accounts?$/i, "SDBA"],
@@ -218,14 +218,29 @@ export function parseRows(section, opts = {}) {
     // $1M+ "holdings" ("SPONSOR EIN: 23-", "Employee Identification Number:
     // 83-") — they inflate the region sum and tank its assets ratio
     if (/^(sponsor(?:'s)? |plan )?(federal )?(employer|employee) identification number\b|^(sponsor |plan )?ein\b|^e\.\s?i\.\s?n\.?\s*[:#]|^plan number\b|\bein\s*#?\s*\d{0,2}-?$/i.test(name.trim())) continue;
-    // dotted-leader runs are form/TOC lines ("(1) Employer Securities .......")
-    // — OCR-garbled form pages produced whole confident "lineups" of them
-    if (/\.{6,}/.test(name)) continue;
+    // dotted-leader runs are USUALLY form/TOC lines ("(1) Employer
+    // Securities ......."), but some real menus typeset leaders between the
+    // fund name and its value — dropping those cost a confident Vanguard
+    // menu 5 of 17 rows. Strip the leaders and keep the row when what
+    // remains reads like a fund name; item-numbered and type-only residue
+    // is still the form/TOC junk the original rule targeted.
+    if (/\.{6,}/.test(name)) {
+      const del = name.replace(/ ?\.{3,} ?/g, " ").replace(/\s{2,}/g, " ").trim();
+      if (/^\(?[a-z0-9]{1,3}\)/i.test(del) || typeOnly(del) || !/[a-z]{3}/i.test(del)) continue;
+      name = del;
+    }
+    // cipher-font residue that reached row shape ("S@CUrities"): symbols
+    // embedded inside words, or several non-name symbols, never appear in
+    // honest fund names — these built the 2 known junk-confident lineups
+    if (/[a-z][@#$%=_~`^{}\[\]<>][a-z]/i.test(name) || (name.match(/[@#=_~`^{}\[\]<>\\]/g) || []).length >= 2) continue;
     // financial-statement line items and note prose that sweep in with a
     // trailing number ("Net income per Form 5500", "Interest and dividend
     // income - investments", "Participants may borrow …") — AVI-SPL's
     // junk-confident 5-row "lineup" was built of these
     if (/^net (?:income|assets)\b|per form 5500|^interest and dividend|^contributions? receivable|^participants may borrow|^notes? receivable/i.test(name.trim())) continue;
+    // Schedule H part-II item lines ("(c) Value of interest in ...") leak
+    // when a type-cut removes their dotted leaders before the leader check
+    if (/^\(?[a-z0-9]{1,3}\)\s*value of\b|^value of interest\b/i.test(name.trim())) continue;
     // rows often carry no type of their own — it lives in the section header
     // ("Common/Collective Trusts"). SDBA/loans must not inherit: those section
     // types would wrongly collapse itemized rows.

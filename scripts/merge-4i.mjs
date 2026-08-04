@@ -19,6 +19,8 @@ for (let i = 0; i < SHARDS; i++) {
 }
 let status = { plans: {} };
 try { status = JSON.parse(readFileSync("lineups-status.json", "utf8")); } catch { /* first run */ }
+// snapshot pre-merge confidence for the post-merge diff report
+const prevConfident = new Set(Object.entries(status.plans).filter(([, m]) => m.c).map(([a]) => a));
 
 const files = readdirSync(".").filter((f) => /^results-\d+\.json$/.test(f));
 console.log(`merging ${files.length} delta files`);
@@ -67,3 +69,21 @@ writeFileSync("lineups-index.json", JSON.stringify({ generated: new Date().toISO
 
 const vals = Object.values(status.plans);
 console.log(`merged ${applied} entries; totals: ${vals.length} parsed, ${vals.filter((p) => p.c).length} confident lineups, ${vals.filter((p) => p.f).length} with features`);
+
+// confidence diff report: every run prints WHAT moved, so a regression is
+// visible in the log without a by-hand diff (v39 shipped +13/-38 that only
+// a manual diff caught — see accuracy log 2026-08-04). LOSSES especially
+// must be sampled against filing text before the next parser change.
+{
+  const gained = [], lost = [];
+  for (const [a, m] of Object.entries(status.plans)) {
+    if (m.c && !prevConfident.has(a)) gained.push(a);
+    if (!m.c && prevConfident.has(a)) lost.push(a);
+  }
+  for (const a of prevConfident) if (!(a in status.plans)) lost.push(a + " (entry purged)");
+  console.log(`\n== CONFIDENCE DIFF vs previous data: +${gained.length} / -${lost.length}`);
+  if (gained.length) console.log(`  gained: ${gained.slice(0, 25).join(", ")}${gained.length > 25 ? ` … +${gained.length - 25} more` : ""}`);
+  if (lost.length) console.log(`  LOST:   ${lost.slice(0, 25).join(", ")}${lost.length > 25 ? ` … +${lost.length - 25} more` : ""}`);
+  const fb = vals.filter((p) => p.fb).length;
+  if (fb) console.log(`  prior-year fallback lineups in store: ${fb}`);
+}

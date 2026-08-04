@@ -33,6 +33,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Parser gate (ten live specimens — fails fast before the matrix)
+        run: |
+          sudo apt-get install -y -q poppler-utils >/dev/null 2>&1 || true
+          node scripts/parser-gate.mjs
       - name: Download and process DOL Form 5500 datasets
         run: node scripts/build-data.mjs
       - name: Plan parse shards
@@ -54,6 +58,7 @@ jobs:
           path: |
             plans-all.json
             mtias.json
+            fallbacks.json
             lineups-status.json
             lineups-index.json
             data/lineups/
@@ -75,11 +80,24 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: data-inputs
+      # OCR text cache: parser-version bumps re-parse everything but should
+      # NOT re-rasterize ~12k scanned filings (~4h). Keyed per shard with a
+      # unique suffix so every run SAVES its updated cache; restore-keys pick
+      # the newest previous one. OCR_VERSION lives in the cached filenames,
+      # so bumping it simply misses and repopulates.
+      - uses: actions/cache@v4
+        with:
+          path: ocr-cache
+          key: ocr-cache-shard${{ matrix.shard }}-${{ github.run_id }}
+          restore-keys: |
+            ocr-cache-shard${{ matrix.shard }}-
+            ocr-cache-
       - name: Parse filings (shard ${{ matrix.shard }})
         env:
           # the 2026-07-24 run OOM'd on every shard at the default heap cap;
           # public runners have 16 GB — give node real headroom
           NODE_OPTIONS: --max-old-space-size=12288
+          OCR_CACHE_DIR: ocr-cache
         run: |
           sudo apt-get install -y -q poppler-utils tesseract-ocr >/dev/null 2>&1 || true
           TIME_BUDGET_MIN=320 PARSE_SHARD=${{ matrix.shard }} PARSE_SHARDS=${{ needs.prep.outputs.count }} BATCH_4I=999999 node scripts/fetch-4i.mjs

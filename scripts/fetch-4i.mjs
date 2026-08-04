@@ -89,6 +89,15 @@ async function ocrPages(pdfPath, badPages, workDir) {
 const S3 = "https://efast2-filings-public.s3.amazonaws.com/prd";
 const WORK = process.env.WORK_DIR_4I || "/tmp/f5500-pdfs";
 mkdirSync(WORK, { recursive: true });
+// OCR text cache (Actions cache mounts it): keyed by ack + OCR_VERSION so
+// PARSER_VERSION bumps stop re-rasterizing ~12k scanned filings (~4h/run)
+const OCR_CACHE = process.env.OCR_CACHE_DIR || "";
+if (OCR_CACHE) mkdirSync(OCR_CACHE, { recursive: true });
+// prior-year fallback map from prep (fallbacks.json is artifact-only):
+// primary ack -> { a: prior full-form ack, y: its plan year }
+let FALLBACKS = {};
+try { FALLBACKS = JSON.parse(readFileSync("fallbacks.json", "utf8")).acks || {}; }
+catch { console.log("fallbacks.json absent — prior-year fallback disabled this run"); }
 // how many NEW filings to fetch this run (batches accumulate across runs)
 const BATCH = process.env.BATCH_4I ? +process.env.BATCH_4I : 5000;
 // the >=100-participant floor already bounds the universe; parse everything
@@ -213,7 +222,7 @@ let fetched = 0;
 const delta = { status: {}, entries: {} };
 function record(plan, entry, features) {
   if (features) entry.features = features;
-  const meta = { pv: PARSER_VERSION, ov: OCR_VERSION, c: entry.confident ? 1 : 0, s: entry.sdba ? 1 : 0, ...(features ? { f: 1 } : {}), ...(entry.error ? { e: entry.error } : {}) };
+  const meta = { pv: PARSER_VERSION, ov: OCR_VERSION, c: entry.confident ? 1 : 0, s: entry.sdba ? 1 : 0, ...(features ? { f: 1 } : {}), ...(entry.error ? { e: entry.error } : {}), ...(entry.fb ? { fb: entry.fb } : {}) };
   status.plans[plan.ack] = meta;
   delta.status[plan.ack] = meta;
   const keep = (entry.confident && entry.funds.length) || features;
@@ -223,42 +232,32 @@ function record(plan, entry, features) {
   else delete b[plan.ack];
 }
 
-for (const plan of work) {
-  if (fetched >= BATCH) break;
-  if (TIME_BUDGET_MIN && (Date.now() - runStart) / 60000 > TIME_BUDGET_MIN) {
-    console.log(`time budget (${TIME_BUDGET_MIN} min) reached after ${fetched} filings — stopping cleanly`);
-    break;
-  }
-  fetched++;
-  const url = pdfUrl(plan.ack);
-  const dest = path.join(WORK, plan.ack + ".pdf");
-  const tag = `${plan.ticker || plan.label} (${plan.ack.slice(0, 14)})`;
-  try {
-    await download(url, dest);
-  } catch (e) {
-    summary.push(`${tag}: download failed ${e.message}`);
-    // a failed download must never clobber a previous parse of the same
-    // ack (transient S3 errors and withdrawn-from-bucket filings both
-    // surface here — v37 dropped 6 good lineups this way). Keep the old
-    // meta (old pv keeps the ack on future work lists for retry) and do
-    // NOT touch the shard entry; only acks never parsed before get a
-    // status record, with pv:0 so they too retry next run.
-    const prev = status.plans[plan.ack];
-    const meta = prev ? { ...prev, e: "download" } : { pv: 0, ov: 0, c: 0, s: 0, e: "download" };
-    status.plans[plan.ack] = meta;
-    delta.status[plan.ack] = meta;
-    continue;
-  }
+/* lineup confidence: shared by the primary and fallback attempts */
+function isConfident(parsed) {
+  const ratio = parsed.ratio || 0;
+  // tiny parses get a tighter band: every junk fair-value-table parse the
+  // audit caught (MP Materials, Ruhlin, Food Express — 3 rows summing both
+  // comparative-year columns) landed at ratio 1.5-1.6 with exactly 3 rows,
+  // while genuine 3-4 row lineups sit near 1.0
+  return parsed.funds.length >= 3 && ratio > 0.45 && ratio < 1.6 &&
+    (parsed.funds.length >= 5 || (ratio > 0.7 && ratio < 1.3)) &&
+    !parsed.stmt; // statement-vocabulary fragments are never a real menu
+}
+
+/* download + extract + parse (with OCR fallback) for ONE ack. Throws on
+ * download failure — the caller decides whether that clobbers status
+ * (primary) or is silently ignored (prior-year fallback attempt). */
+async function analyzePdf(ack, plan, tag) {
+  const dest = path.join(WORK, ack + ".pdf");
+  await download(pdfUrl(ack), dest);
   let text;
   try {
     text = execFileSync("pdftotext", ["-layout", "-q", dest, "-"], {
       encoding: "utf8", maxBuffer: 200 * 1024 * 1024,
     });
-  } catch (e) {
-    summary.push(`${tag}: pdftotext failed`);
-    record(plan, { confident: false, error: "pdftotext", funds: [] });
+  } catch {
     try { unlinkSync(dest); } catch { /* ignore */ }
-    continue;
+    return { err: "pdftotext" };
   }
   // plan features (match formula, vesting, Roth, auto-enroll) live in the
   // audit notes and exist even when the 4i table can't be parsed
@@ -272,9 +271,15 @@ for (const plan of work) {
     const bad = findBadPages(text);
     if (bad.length >= 3 && bad.length <= OCR_SKIP_BAD) {
       try {
-        const t0 = Date.now();
-        const otext = await ocrPages(dest, bad, path.join(WORK, "ocr-" + plan.ack.slice(-12)));
-        console.log(`${tag}: ocr ${Math.min(bad.length, OCR_MAX_PAGES)} pages in ${((Date.now() - t0) / 1000).toFixed(0)}s`);
+        const cacheFile = OCR_CACHE ? path.join(OCR_CACHE, `${ack}.v${OCR_VERSION}.txt`) : null;
+        let otext = null;
+        if (cacheFile) { try { otext = readFileSync(cacheFile, "utf8"); } catch { /* cache miss */ } }
+        if (otext === null) {
+          const t0 = Date.now();
+          otext = await ocrPages(dest, bad, path.join(WORK, "ocr-" + ack.slice(-12)));
+          console.log(`${tag}: ocr ${Math.min(bad.length, OCR_MAX_PAGES)} pages in ${((Date.now() - t0) / 1000).toFixed(0)}s`);
+          if (cacheFile && otext) { try { writeFileSync(cacheFile, otext); } catch { /* best-effort */ } }
+        }
         if (otext && otext.replace(/\s+/g, "").length > 500) {
           const combined = text + "\f" + otext;
           const p2 = parse4i(combined, plan.assetsEOY, plan.label || "", plan.codes || "");
@@ -291,6 +296,60 @@ for (const plan of work) {
     }
   }
   try { unlinkSync(dest); } catch { /* keep disk bounded */ }
+  return { parsed, features, usedOcr };
+}
+
+for (const plan of work) {
+  if (fetched >= BATCH) break;
+  if (TIME_BUDGET_MIN && (Date.now() - runStart) / 60000 > TIME_BUDGET_MIN) {
+    console.log(`time budget (${TIME_BUDGET_MIN} min) reached after ${fetched} filings — stopping cleanly`);
+    break;
+  }
+  fetched++;
+  const tag = `${plan.ticker || plan.label} (${plan.ack.slice(0, 14)})`;
+  let a;
+  try {
+    a = await analyzePdf(plan.ack, plan, tag);
+  } catch (e) {
+    summary.push(`${tag}: download failed ${e.message}`);
+    // a failed download must never clobber a previous parse of the same
+    // ack (transient S3 errors and withdrawn-from-bucket filings both
+    // surface here — v37 dropped 6 good lineups this way). Keep the old
+    // meta (old pv keeps the ack on future work lists for retry) and do
+    // NOT touch the shard entry; only acks never parsed before get a
+    // status record, with pv:0 so they too retry next run.
+    const prev = status.plans[plan.ack];
+    const meta = prev ? { ...prev, e: "download" } : { pv: 0, ov: 0, c: 0, s: 0, e: "download" };
+    status.plans[plan.ack] = meta;
+    delta.status[plan.ack] = meta;
+    continue;
+  }
+  if (a.err === "pdftotext") {
+    summary.push(`${tag}: pdftotext failed`);
+    record(plan, { confident: false, error: "pdftotext", funds: [] });
+    continue;
+  }
+  let { parsed, features, usedOcr } = a;
+
+  // prior-year fallback: when the newest filing yields no confident lineup
+  // (schedule missing from the public copy, or unreadable even via OCR),
+  // the SAME plan's next-newest full-form filing often carries a good one —
+  // AVI-SPL's 2024 public copy omits the schedule its 2023 filing includes.
+  // Ratio is judged against the CURRENT year's assets; the confidence band
+  // absorbs a year of drift. The entry discloses the fallback year.
+  let fbUsed = null;
+  const fb = FALLBACKS[plan.ack];
+  if (fb && !(parsed.found && isConfident(parsed))) {
+    try {
+      const b = await analyzePdf(fb.a, plan, `${tag} fb${fb.y}`);
+      if (!b.err && b.parsed.found && isConfident(b.parsed)) {
+        parsed = b.parsed;
+        usedOcr = b.usedOcr;
+        fbUsed = fb;
+        if (!features) features = b.features;
+      }
+    } catch { /* fallback download failed — keep the primary outcome */ }
+  }
 
   if (!parsed.found) {
     summary.push(`${tag}: no 4i section found`);
@@ -298,17 +357,11 @@ for (const plan of work) {
     continue;
   }
   const ratio = parsed.ratio || 0;
-  // tiny parses get a tighter band: every junk fair-value-table parse the
-  // audit caught (MP Materials, Ruhlin, Food Express — 3 rows summing both
-  // comparative-year columns) landed at ratio 1.5-1.6 with exactly 3 rows,
-  // while genuine 3-4 row lineups sit near 1.0
-  const confident = parsed.funds.length >= 3 && ratio > 0.45 && ratio < 1.6 &&
-    (parsed.funds.length >= 5 || (ratio > 0.7 && ratio < 1.3)) &&
-    !parsed.stmt; // statement-vocabulary fragments are never a real menu
+  const confident = isConfident(parsed);
   record(plan, {
     ack: plan.ack,
     ticker: plan.ticker,
-    planYear: plan.planYear,
+    planYear: fbUsed ? fbUsed.y : plan.planYear,
     sdba: parsed.sdba,
     thousands: parsed.thousands,
     confident,
@@ -317,9 +370,12 @@ for (const plan of work) {
     sma: parsed.sma,
     smaKind: parsed.smaKind,
     ...(usedOcr ? { ocr: 1 } : {}),
-    source: `Schedule H line 4i attachment, plan year ${plan.planYear} filing${usedOcr ? " (digitized from scanned pages via OCR)" : ""}`,
+    ...(fbUsed ? { fb: fbUsed.y } : {}),
+    source: fbUsed
+      ? `Schedule H line 4i attachment from the plan's ${fbUsed.y} filing — the newest filing's public copy has no readable schedule${usedOcr ? "; digitized from scanned pages via OCR" : ""}`
+      : `Schedule H line 4i attachment, plan year ${plan.planYear} filing${usedOcr ? " (digitized from scanned pages via OCR)" : ""}`,
   }, features);
-  summary.push(`${tag}: ${parsed.funds.length} rows, cov ${(ratio * 100).toFixed(0)}%, sdba=${parsed.sdba}, ok=${confident}`);
+  summary.push(`${tag}: ${parsed.funds.length} rows, cov ${(ratio * 100).toFixed(0)}%, sdba=${parsed.sdba}, ok=${confident}${fbUsed ? ` [prior-year ${fbUsed.y} filing]` : ""}`);
   // flush the delta every 250 filings: a crash (the Jul-24 run OOM'd every
   // shard ~3h in) then costs minutes of progress, not the whole job, and the
   // merge job can ingest partials from failed shards

@@ -1,0 +1,51 @@
+name: Plan data correction
+description: Report incorrect or outdated information on a plan page
+title: "[Correction] "
+labels: ["data-correction"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Everything wampo shows comes from the plan's own Form 5500 filing
+        (DOL EFAST2 public data). If something looks wrong, it is either a
+        parsing defect on our side — which we want to fix and will log
+        permanently — or the filing itself says something different from
+        what you know. Either way, this report helps.
+  - type: input
+    id: plan
+    attributes:
+      label: Plan (employer name, and EIN/plan number if you have them)
+      placeholder: "GE Vernova Retirement Savings Plan — EIN 61-1399608, PN 004"
+    validations:
+      required: true
+  - type: dropdown
+    id: field
+    attributes:
+      label: What field is wrong?
+      options:
+        - Fund lineup / holdings
+        - Employer match formula
+        - Vesting schedule
+        - Roth / after-tax / mega backdoor flags
+        - Auto-enrollment
+        - Recordkeeper
+        - Participants / assets / fees
+        - Plan missing entirely
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: wrong
+    attributes:
+      label: What does wampo show, and what should it show?
+      description: Paste what the site displays and what you believe is correct.
+    validations:
+      required: true
+  - type: textarea
+    id: source
+    attributes:
+      label: How do you know? (optional)
+      description: >
+        SPD, enrollment materials, a newer filing, personal knowledge as a
+        participant — anything that helps us check. We only publish what
+        public filings support, but a correct report tells us where to look.
