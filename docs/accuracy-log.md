@@ -902,6 +902,38 @@ against their filings:
   three before value matching, and any future "region parses 0 rows
   despite a 4i heading" finding should check the raw line tails first.
 
+## 2026-08-04 — v39 verification: unconditional footnote strip minted fake values from "401(a)"; class stems in TYPE_PATTERNS re-typed trustee summaries (v40)
+
+- **Context:** v39 landed GE Vernova (17 funds, 0.99 confident) but the
+  diff read +13/−38 and Verizon's trust summary shrank 12→10 rows —
+  both new defects introduced BY v39's two fixes.
+- **Wrong (1):** the trailing-footnote strip ran unconditionally, so
+  "Total Fidelity Retirement Contribution and 401(a)" became "…401",
+  whose bare digits matched the value regex: the wrapped-subtotal
+  defense broke (UPenn Health System's $1.1B "Matching Program" total
+  parsed as a holding, ratio 2.0, menu demoted) and form-page "401(k)"
+  lines faked ≥2-row parses whose found:true SUPPRESSED the OCR
+  fallback (a 25-fund OCR menu vanished with no error).
+- **Wrong (2):** adding corporate-stocks/collective-funds to
+  TYPE_PATTERNS re-typed Verizon's trustee CLASS-summary rows
+  ("CORPORATE STOCK - COMMON" $9.7B) into the managed-account bucket —
+  class detail lost, mislabeled.
+- **Change (v40):** the strip now fires only after a COMMA-GROUPED
+  number ("442,273,650 (a), (b), (c)" still cleans; "401(a)"/"401(k)"
+  untouched); the class-header vocabulary moved OUT of TYPE_PATTERNS
+  into the valueless-line header guard where it can't touch valued
+  rows. Verified on all six live specimens (UPenn 30@0.999 restored,
+  form-only found:false → OCR re-enabled, CCT 4@0.94, GEV 17@0.985,
+  Verizon 12 rows exact, Cochrane) + four standing specimens
+  byte-match.
+- **Prevention:** BOTH v39 defects were introduced by fixes verified
+  only on the filing being fixed plus byte-match specimens — neither
+  specimen set exercised wrapped subtotals, form-only filings, or
+  trustee summaries. The six-specimen live set above (menu + subtotal
+  wrap + form-only + tiny-CCT + trust summary + OCR base) is the new
+  minimum pre-push gate for ANY parseRows/TYPE_PATTERNS change; run it
+  before bumping PARSER_VERSION.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
