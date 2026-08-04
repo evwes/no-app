@@ -3,16 +3,16 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 38;
+export const PARSER_VERSION = 39;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b|^brokerage accounts?$/i, "SDBA"],
   [/publicly[- ]traded stock/i, "Stock"],
   [/interest in (the )?master trust/i, "Master trust interest"],
-  [/collective trust|common\/collective|common collective|collective investment trust|commingled/i, "Collective trust"],
+  [/collective trust|common\/collective|common collective|collective investment trust|commingled|collective funds?\b/i, "Collective trust"],
   [/mutual fund|registered investment/i, "Mutual fund"],
   [/pooled separate/i, "Pooled separate account"],
-  [/common stock|company stock|employer securit/i, "Company stock"],
+  [/common stock|company stock|employer securit|corporate stocks?\b/i, "Company stock"],
   [/interest[- ]bearing cash|short[- ]term investment|money market/i, "Cash / short-term"],
   [/participant loans?|loans to participants|participant notes/i, "Participant loans"],
   [/government securit|u\.?s\.? treasur/i, "Government securities"],
@@ -91,8 +91,11 @@ export function parseRows(section, opts = {}) {
   for (const raw of section) {
     // leading "*" is the party-in-interest marker on holding rows — drop it
     // before matching so starred holdings aren't mistaken for footnotes.
-    // trailing "**" (assets >5% of plan) hides the line-terminal value.
-    let t = raw.trim().replace(/^\*+\s*/, "").replace(/\s*\*{1,3}\s*$/, "");
+    // trailing "**" (assets >5% of plan) hides the line-terminal value, and
+    // trailing footnote-letter runs — "442,273,650 (a), (b), (c)" (GE
+    // Vernova) — hide it the same way.
+    let t = raw.trim().replace(/^\*+\s*/, "").replace(/\s*\*{1,3}\s*$/, "")
+      .replace(/(?:\s*[,.]?\s*\(\s*[a-z]\s*\)){1,4}\s*$/i, "");
     if (!t) { nameBuf = []; continue; }
     // "Current Value | Shares Par" layouts put the share count LAST — strip
     // the shares column and the currency code so the dollar value is trailing

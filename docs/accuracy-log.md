@@ -878,6 +878,30 @@ against their filings:
   correlate with e:download or with damaged-page warnings are pipeline
   defects, not parser regressions, and the fix belongs in the pipeline.
 
+## 2026-08-04 — GE Vernova: trailing footnote letters hid every value; two section headers missing from type vocabulary (v39)
+
+- **Context:** v38 verification. GE Vernova entered the universe as
+  designed (33,134 participants, $8.2B, short-year fields correct) but
+  its lineup parsed non-confident: the fair-value NOTE region (in
+  thousands) won because the REAL 4i schedule parsed 0 rows.
+- **Wrong:** the schedule's every value line ends in footnote-letter
+  runs — "442,273,650 (a), (b), (c)" — so the line-terminal value regex
+  never matched and the honest region self-eliminated. Separately,
+  "Corporate Stocks - Common" and "Collective Funds" aren't in
+  TYPE_PATTERNS, so the section-header guard let them glue onto fund
+  names.
+- **Change (v39):** parseRows strips trailing footnote-letter runs
+  (≤4 of "(a)"-style markers) exactly like the OCR "**" fix; TYPE
+  vocabulary gains corporate-stocks and collective-funds stems.
+  Verified: GE Vernova → 17 funds, ratio 0.985, correct types (GE
+  Vernova + GE stock, BlackRock CCTs, SSGA funds). Regression: TK
+  Elevator, Northrop Grumman, Kohler, Black Hills all byte-match their
+  stored v38 parses.
+- **Prevention:** this is the third "value hidden by trailing markers"
+  variant (**, OCR **, footnote letters) — parseRows now normalizes all
+  three before value matching, and any future "region parses 0 rows
+  despite a 4i heading" finding should check the raw line tails first.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
