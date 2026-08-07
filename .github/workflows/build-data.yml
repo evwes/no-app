@@ -62,6 +62,7 @@ jobs:
             lineups-status.json
             lineups-index.json
             data/lineups/
+            data/fees/
           include-hidden-files: false
 
   parse:
@@ -137,13 +138,15 @@ jobs:
           git config user.name "wampo-data-bot"
           git config user.email "noreply@anthropic.com"
           cp plans-all.json mtias.json /tmp/
+          rm -rf /tmp/fees && cp -r data/fees /tmp/fees 2>/dev/null || true
           for attempt in 1 2 3 4 5; do
             git fetch origin "${GITHUB_REF_NAME}"
             git reset --hard "origin/${GITHUB_REF_NAME}"
             cp /tmp/plans-all.json /tmp/mtias.json .
+            if [ -d /tmp/fees ]; then rm -rf data/fees && cp -r /tmp/fees data/fees; fi
             node scripts/merge-4i.mjs
             node scripts/audit-data.mjs || true
-            git add plans-all.json mtias.json lineups-status.json lineups-index.json data/lineups
+            git add plans-all.json mtias.json lineups-status.json lineups-index.json data/lineups data/fees
             if git diff --cached --quiet; then echo "No data changes."; exit 0; fi
             git commit -m "Update filed plan data (Form 5500 + Schedule H 4i lineups)"
             if git push origin "HEAD:${GITHUB_REF_NAME}"; then exit 0; fi

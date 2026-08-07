@@ -64,6 +64,14 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   next parser change.
 - `data/lineups/NN.json` (64 shards, hash = sum(c*31) % 64) — full entries
   (funds, sma detail, features with source quotes). Fetched per-plan on demand.
+- `data/fees/NN.json` (64 shards, same ack hash) — per-plan fee schedule
+  from prep: Sch C Part I item 2 provider rows {n,c,d,i,e,t,fm} (≤12, filed
+  order = descending comp) + Sch A insurance commissions {cm,fe,cr}.
+  Frontend fetches on demand (plan.feeKey), renders Sch H expense lines +
+  provider table (service codes decoded per the official instructions) +
+  Sch A note; a missing shard hides the section (never claim "none filed"
+  when the data just isn't published yet). plans-all gained feeSal
+  (salaries) and feeOther now resolves.
 - `lineups-index.json` — boot-time bitmask per ack: 1 lineup, 2 brokerage,
   4 features, 8 mega backdoor, 16 immediate vesting, 32 after-tax, 64 Roth.
   Regenerate anytime with `node scripts/merge-4i.mjs` (no deltas needed).

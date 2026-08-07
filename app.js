@@ -134,11 +134,15 @@
       shr: filed.shr || "", // Schedule R line 21b: D design-based safe harbor, A ADP-tested, N n/a
       pyb: filed.pyb || "",
       filed: fmtFiledDate(filed.filedDate),
+      feeKey: filed.ack || null, // fee-schedule shard lookup (never nulled)
       flows: {
         benefitsM: filed.benefitsPaid ? filed.benefitsPaid / 1e6 : null,
         feeProfM: filed.feeProf ? filed.feeProf / 1e6 : null,
         feeAdminM: filed.feeAdmin ? filed.feeAdmin / 1e6 : null,
         feeInvM: filed.feeInvMgmt ? filed.feeInvMgmt / 1e6 : null,
+        feeOtherM: filed.feeOther ? filed.feeOther / 1e6 : null,
+        feeSalM: filed.feeSal ? filed.feeSal / 1e6 : null,
+        adminRaw: filed.adminExpenses || null,
         deferralsM: filed.contribParticipant != null ? filed.contribParticipant / 1e6 : null,
         employerM: filed.contribEmployer != null ? filed.contribEmployer / 1e6 : null,
         rolloversM: filed.rollovers != null ? filed.rollovers / 1e6 : null,
@@ -275,7 +279,30 @@
     }
     return (await shardCache.get(sid))[key];
   }
+  /* Per-plan fee schedule (Sch C provider table + Sch A commissions) lives in
+   * data/fees shards, fetched on demand exactly like lineups. Fixed 64
+   * shards, same ack hash. */
+  const feeShardCache = new Map();
+  async function ensureFees(plan) {
+    if (!plan || !plan.feeKey || plan.isSF || plan.feeSchedule !== undefined || plan.feeLoading) return;
+    plan.feeLoading = true;
+    try {
+      const sid = String(shardOf(plan.feeKey, 64)).padStart(2, "0");
+      if (!feeShardCache.has(sid)) {
+        // a missing shard (pipeline hasn't produced fee data yet) must NOT
+        // read as "this plan filed no providers" — null means the shard
+        // exists and the plan isn't in it; unavailable hides the section
+        feeShardCache.set(sid, fetch(`data/fees/${sid}.json`, { cache: "no-cache" }).then((r) => (r.ok ? r.json() : null)));
+      }
+      const shard = await feeShardCache.get(sid);
+      plan.feeSchedule = shard === null ? { unavailable: 1 } : shard[plan.feeKey] || null;
+    } catch { plan.feeSchedule = undefined; }
+    plan.feeLoading = false;
+    render();
+  }
+
   async function ensureLineup(plan) {
+    ensureFees(plan); // independent on-demand fetch; self-guarded, re-renders on arrival
     if (!plan || (!plan.lineupKey && !plan.trustKey) || plan.filedLineup || plan.lineupLoading || !state.shardCount) return;
     plan.lineupLoading = true;
     try {
@@ -601,6 +628,97 @@
     return rows.join("");
   }
 
+  /* ---- comprehensive fee schedule (Sch H lines + Sch C providers + Sch A) ---- */
+  // Schedule C element (b) service codes, from the official Form 5500
+  // instructions (docs/form5500-instructions-2025.txt)
+  const SERVICE_CODES = {
+    10: "Accounting / audit", 11: "Actuarial", 12: "Claims processing", 13: "Contract administrator",
+    14: "Plan administrator", 15: "Recordkeeping", 16: "Consulting (general)", 17: "Consulting (pension)",
+    18: "Custodial (non-securities)", 19: "Custodial (securities)", 20: "Trustee (individual)",
+    21: "Trustee (bank/trust co.)", 22: "Insurance agent / broker", 23: "Insurance services",
+    24: "Trustee (discretionary)", 25: "Trustee (directed)", 26: "Investment advisory (participants)",
+    27: "Investment advisory (plan)", 28: "Investment management", 29: "Legal", 30: "Employee (plan)",
+    31: "Named fiduciary", 32: "Real estate brokerage", 33: "Securities brokerage", 34: "Valuation / appraisal",
+    35: "Employee (sponsor)", 36: "Copying / duplicating", 37: "Participant loan processing",
+    38: "Participant communication", 40: "Foreign entity", 49: "Other services", 50: "Direct payment from plan",
+    51: "Inv. mgmt fees (paid directly)", 52: "Inv. mgmt fees (paid indirectly)", 53: "Insurance brokerage commissions",
+    54: "Sales loads", 55: "Other commissions", 56: "Non-monetary compensation", 57: "Redemption fees",
+    58: "Product termination fees", 59: "Shareholder servicing fees", 60: "Sub-transfer agency fees",
+    61: "Finders' / placement fees", 62: "Float revenue", 63: "12b-1 distribution fees", 64: "Recordkeeping fees",
+    65: "Account maintenance fees", 66: "Insurance M&E charge", 67: "Other insurance wrap fees",
+    68: "Soft-dollar commissions", 70: "Consulting fees", 71: "Securities brokerage fees",
+    72: "Other investment fees", 73: "Other insurance fees", 99: "Other fees",
+  };
+  function decodeServices(codeStr) {
+    const seen = [];
+    for (const c of String(codeStr || "").match(/\d{2}/g) || []) {
+      const label = SERVICE_CODES[+c];
+      if (label && !seen.includes(label)) seen.push(label);
+    }
+    return seen;
+  }
+  const usd = (v) => "$" + Math.round(v).toLocaleString("en-US");
+
+  function feeSection(plan) {
+    if (plan.dataStatus !== "filed") return "";
+    if (plan.isSF) {
+      return `
+      <div class="section-label">PLAN FEES <span class="section-sub">Form 5500-SF</span></div>
+      <p class="max-benefit">Short-form filers don't file Schedule C or Schedule H, which itemize
+      service-provider compensation and plan expenses — no fee detail is public for this plan.</p>`;
+    }
+    const rows = [];
+    // what the plan paid out of assets (Schedule H expense lines)
+    const f = plan.flows || {};
+    const hLines = [
+      ["Recordkeeping / contract administration", f.feeAdminM],
+      ["Professional fees (audit, legal, actuarial)", f.feeProfM],
+      ["Investment management fees", f.feeInvM],
+      ["Salaries & allowances", f.feeSalM],
+      ["Other administrative expenses", f.feeOtherM],
+    ].filter(([, v]) => v > 0).map(([k, v]) => [k, v * 1e6]);
+    if (hLines.length) {
+      const perHead = f.adminRaw > 0 && plan.participants > 0 ? f.adminRaw / plan.participants : null;
+      rows.push(`<div class="section-label">PLAN FEES — PAID FROM PLAN ASSETS <span class="section-sub">Form 5500 Schedule H expense lines</span></div>`);
+      rows.push(hLines.map(([k, v]) => `<div class="flow-row"><span>${k}</span><span>${usd(v)}</span></div>`).join(""));
+      rows.push(`<div class="flow-row"><span><strong>Total administrative expenses</strong>${perHead != null ? ` <span class="section-sub">≈ ${usd(perHead)} per participant</span>` : ""}</span><span><strong>${f.adminRaw > 0 ? usd(f.adminRaw) : "—"}</strong></span></div>`);
+    }
+    // who was paid (Schedule C provider table)
+    const fsch = plan.feeSchedule;
+    if (fsch && fsch.unavailable) {
+      // fee shards not published yet — say nothing rather than something false
+    } else if (fsch === undefined) {
+      rows.push(`<div class="section-label">SERVICE PROVIDER COMPENSATION</div><p class="max-benefit">Loading the provider fee table from the filing…</p>`);
+    } else if (fsch && fsch.p && fsch.p.length) {
+      const provRows = fsch.p.map((p) => {
+        const svcs = decodeServices(p.c);
+        const indirect = p.t ? `Yes — ${usd(p.t)} reported` : p.i || p.e ? "Yes (revenue sharing / fund fees)" : p.fm ? "Formula disclosed" : "—";
+        return `<tr><td class="fund-name-col">${esc(titlePlanName(p.n))}</td><td>${esc(svcs.slice(0, 3).join(", ") || "—")}${svcs.length > 3 ? ` +${svcs.length - 3}` : ""}</td><td style="text-align:right">${usd(p.d)}</td><td>${indirect}</td></tr>`;
+      }).join("");
+      rows.push(`
+      <div class="section-label">SERVICE PROVIDER COMPENSATION <span class="section-sub">Schedule C — providers paid ≥$5,000, as filed</span></div>
+      <div class="fund-scroll"><table class="fund-table">
+        <thead><tr><th class="fund-name-col">Provider</th><th>Services</th><th style="text-align:right">Paid directly by plan</th><th>Indirect compensation</th></tr></thead>
+        <tbody>${provRows}</tbody>
+      </table></div>
+      <p class="max-benefit">"Indirect" = revenue sharing, 12b-1 fees, float and similar amounts paid out of
+      investments rather than by the plan. Providers receiving only disclosed eligible indirect
+      compensation may be listed without amounts, per the form's rules.</p>`);
+    } else {
+      rows.push(`<div class="section-label">SERVICE PROVIDER COMPENSATION</div>
+      <p class="max-benefit">No itemized provider compensation in this filing's Schedule C — providers paid
+      under $5,000, or paid only via disclosed eligible indirect compensation (fund revenue sharing),
+      aren't required to be itemized.</p>`);
+    }
+    // insurance commissions (Schedule A)
+    if (fsch && fsch.a && (fsch.a.cm || fsch.a.fe)) {
+      rows.push(`<div class="section-label">INSURANCE COMMISSIONS & FEES <span class="section-sub">Schedule A</span></div>
+      <p class="max-benefit">Brokers and agents received ${fsch.a.cm ? usd(fsch.a.cm) + " in commissions" : ""}${fsch.a.cm && fsch.a.fe ? " and " : ""}${fsch.a.fe ? usd(fsch.a.fe) + " in fees" : ""}
+      across ${fsch.a.cr} insurance contract${fsch.a.cr === 1 ? "" : "s"} — costs carried inside insurance products, on top of the expense lines above.</p>`);
+    }
+    return rows.join("");
+  }
+
   function flowsTable(plan) {
     const f = plan.flows;
     const rows = [
@@ -854,6 +972,8 @@
       </div>
 
       ${fundTable(plan)}
+
+      ${feeSection(plan)}
 
       <p class="sample-note">${plan.dataStatus === "filed" ? "ⓘ" : "⚠"} ${sourceNote}</p>
     </div>`;

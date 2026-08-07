@@ -218,7 +218,8 @@ async function scanSchH(csv, year, wantedAcks) {
     feeProf: colIndex(H, ["PROFESSIONAL_FEES_AMT"], /PROFESSIONAL_FEES/),
     feeAdmin: colIndex(H, ["CONTRACT_ADMIN_FEES_AMT"], /CONTRACT_ADMIN/),
     feeInvMgmt: colIndex(H, ["INVST_MGMT_FEES_AMT"], /INVST_MGMT|INVEST.*MGMT.*FEES/),
-    feeOther: colIndex(H, ["OTH_ADMIN_FEES_AMT"], /OTH_ADMIN_FEES/),
+    feeOther: colIndex(H, ["OTH_ADMIN_FEES_AMT", "OTHER_ADMIN_FEES_AMT"], /OTH(ER)?_ADMIN|ADMIN.*OTH(ER)?_FEES/),
+    feeSalaries: colIndex(H, ["SALARIES_ALLWNC_AMT", "TOT_SALARIES_ALLWNC_AMT"], /SALARIES/),
     benefitsPaid: colIndex(H, ["TOT_DISTRIB_BNFT_AMT", "BENEFIT_PAYMENT_DIRECT_AMT"], /DISTRIB_BNFT|BENEFIT_PAYMENT/),
   };
   console.log("columns:", JSON.stringify(col));
@@ -240,6 +241,7 @@ async function scanSchH(csv, year, wantedAcks) {
       feeAdmin: col.feeAdmin !== -1 ? +r[col.feeAdmin] || 0 : 0,
       feeInvMgmt: col.feeInvMgmt !== -1 ? +r[col.feeInvMgmt] || 0 : 0,
       feeOther: col.feeOther !== -1 ? +r[col.feeOther] || 0 : 0,
+      feeSalaries: col.feeSalaries !== -1 ? +r[col.feeSalaries] || 0 : 0,
       benefitsPaid: col.benefitsPaid !== -1 ? +r[col.benefitsPaid] || 0 : 0,
     });
   }
@@ -416,7 +418,7 @@ async function scanSchR(csv, year, wantedAcks) {
   return out;
 }
 
-async function scanSchC(year, wantedAcks) {
+async function scanSchC(year, wantedAcks, feeTables) {
   const files = [
     `F_SCH_C_PART1_ITEM2_${year}_Latest.zip`,
     `F_SCH_C_PART1_ITEM2_CODES_${year}_Latest.zip`,
@@ -440,6 +442,12 @@ async function scanSchC(year, wantedAcks) {
     name: colIndex(H, ["PROVIDER_OTHER_NAME", "PROVIDER_NAME"], /PROVIDER.*NAME/),
     codes: colIndex(H, ["SERVICE_CODES", "PROVIDER_OTHER_SRVC_CODES"], /SERVICE.*CODE|SRVC/),
     comp: colIndex(H, ["PROVIDER_OTHER_DIRECT_COMP_AMT", "DIRECT_COMP_AMT"], /DIRECT.*COMP|COMP.*AMT/),
+    // fee-schedule elements (e)-(h): indirect-comp received, eligible-only,
+    // non-eligible indirect total, formula-instead-of-amount
+    indirect: colIndex(H, ["PROV_OTHER_INDIRECT_COMP_IND"], /INDIRECT_COMP_IND/),
+    eligInd: colIndex(H, ["PROV_OTHER_ELIG_IND_COMP_IND"], /ELIG_IND_COMP/),
+    indAmt: colIndex(H, ["PROV_OTHER_TOT_IND_COMP_AMT"], /TOT_IND_COMP_AMT/),
+    formula: colIndex(H, ["PROVIDER_OTHER_AMT_FORMULA_IND"], /FORMULA_IND/),
   };
   console.log("columns:", JSON.stringify(col));
   if (col.ack === -1 || col.name === -1) { console.warn("SCH_C: required columns missing"); return new Map(); }
@@ -455,6 +463,21 @@ async function scanSchC(year, wantedAcks) {
     if (!name) continue;
     const codes = col.codes !== -1 ? String(r[col.codes] || "") : "";
     const comp = col.comp !== -1 ? +r[col.comp] || 0 : 0;
+    // full provider fee table (Sch C Part I item 2 files providers in
+    // descending order of compensation) — cap 12 per plan to bound shards
+    if (feeTables) {
+      let list = feeTables.get(ack);
+      if (!list) { list = []; feeTables.set(ack, list); }
+      if (list.length < 12) {
+        list.push({
+          n: name, c: codes, d: comp,
+          ...(col.indirect !== -1 && /^(yes|1|x)$/i.test(String(r[col.indirect] || "").trim()) ? { i: 1 } : {}),
+          ...(col.eligInd !== -1 && /^(yes|1|x)$/i.test(String(r[col.eligInd] || "").trim()) ? { e: 1 } : {}),
+          ...(col.indAmt !== -1 && +r[col.indAmt] ? { t: +r[col.indAmt] } : {}),
+          ...(col.formula !== -1 && /^(yes|1|x)$/i.test(String(r[col.formula] || "").trim()) ? { fm: 1 } : {}),
+        });
+      }
+    }
     const isRk = /(^|\D)15(\D|$)/.test(codes) || /RECORDKEEP/i.test(name);
     // the participant-facing platform (the site employees log into) beats
     // advisors/auditors that also file with recordkeeping-ish codes
@@ -488,6 +511,48 @@ async function scanSchC(year, wantedAcks) {
   const out = new Map();
   for (const [ack, v] of best) out.set(ack, brandOf(v.name));
   console.log(`rows: ${n}, recordkeepers matched: ${out.size}/${wantedAcks.size}`);
+  return out;
+}
+
+/* ---------- Schedule A: insurance carrier commissions & fees ----------
+ * Insurance-platform plans (common under ~$50M) pay much of their real cost
+ * as broker commissions and fees reported ONLY on Schedule A — invisible in
+ * Sch H expense lines and Sch C. Aggregated per ack for the fee schedule.
+ * Column names are guarded: if a year's layout doesn't match, the year is
+ * skipped with a warning and the prep log shows the resolved columns. */
+async function scanSchA(year, wantedAcks) {
+  const out = new Map();
+  let csv;
+  try { csv = unzip(await download(year, `F_SCH_A_${year}_Latest.zip`)); }
+  catch (e) { console.warn(`SCH_A ${year}: ${e.message}`); return out; }
+  console.log(`\n== scanning SCH_A ${year}`);
+  const rows = csvRows(csv);
+  const { value: header } = await rows.next();
+  const H = header.map((h) => h.toUpperCase().trim());
+  const col = {
+    ack: colIndex(H, ["ACK_ID"]),
+    carrier: colIndex(H, ["INS_CARRIER_NAME"], /CARRIER.*NAME/),
+    comm: colIndex(H, ["INS_BROKER_COMM_TOT_AMT", "TOT_COMMISSIONS_PD_AMT"], /BROKER_COMM|COMM.*TOT_AMT|TOT.*COMM.*AMT/),
+    fees: colIndex(H, ["INS_BROKER_FEES_TOT_AMT", "TOT_FEES_PD_AMT"], /BROKER_FEES|FEES.*TOT_AMT|TOT.*FEES.*AMT/),
+  };
+  console.log("SCH_A columns:", JSON.stringify(col));
+  if (col.ack === -1 || (col.comm === -1 && col.fees === -1)) {
+    console.warn("SCH_A: required columns missing — skipped");
+    return out;
+  }
+  let n = 0;
+  for await (const r of rows) {
+    n++;
+    const ack = r[col.ack];
+    if (!wantedAcks.has(ack)) continue;
+    const comm = col.comm !== -1 ? +r[col.comm] || 0 : 0;
+    const fees = col.fees !== -1 ? +r[col.fees] || 0 : 0;
+    if (!comm && !fees) continue;
+    const cur = out.get(ack) || { cm: 0, fe: 0, cr: 0 };
+    cur.cm += comm; cur.fe += fees; cur.cr++;
+    out.set(ack, cur);
+  }
+  console.log(`SCH_A rows: ${n}, plans with commissions/fees: ${out.size}`);
   return out;
 }
 
@@ -640,6 +705,8 @@ console.log(`plans linked to a master trust filing: ${universe.filter((p) => p.m
 const schH = new Map();
 const schC = new Map();
 const schR = new Map();
+const feeTables = new Map(); // ack -> Sch C provider fee rows
+const schA = new Map();      // ack -> insurance commissions/fees
 for (const year of YEARS) {
   const acks = new Set(universe.filter((p) => p.year === year).map((p) => p.ack));
   for (const [ack, m] of usedMtias) if (m.year === year) acks.add(ack);
@@ -649,12 +716,44 @@ for (const year of YEARS) {
     for (const [k, v] of await scanSchH(csv, year, acks)) schH.set(k, v);
   } catch (e) { console.warn(`Sch H ${year}: ${e.message}`); }
   try {
-    for (const [k, v] of await scanSchC(year, acks)) schC.set(k, v);
+    for (const [k, v] of await scanSchC(year, acks, feeTables)) schC.set(k, v);
   } catch (e) { console.warn(`Sch C ${year}: ${e.message}`); }
   try {
     const csv = unzip(await download(year, `F_SCH_R_${year}_Latest.zip`));
     for (const [k, v] of await scanSchR(csv, year, acks)) schR.set(k, v);
   } catch (e) { console.warn(`Sch R ${year}: ${e.message}`); }
+  try {
+    for (const [k, v] of await scanSchA(year, acks)) schA.set(k, v);
+  } catch (e) { console.warn(`Sch A ${year}: ${e.message}`); }
+}
+
+// per-plan fee schedule shards (fetched on demand like lineups): Sch C
+// provider table + Sch A insurance commissions, keyed by ack, hash matches
+// data/lineups sharding
+{
+  const FEE_SHARDS = 64;
+  const shardOf = (ack) => {
+    let h = 0;
+    for (const c of ack) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+    return h % FEE_SHARDS;
+  };
+  const buckets = Array.from({ length: FEE_SHARDS }, () => ({}));
+  let plansWithFees = 0;
+  for (const p of universe) {
+    const entry = {};
+    const provs = feeTables.get(p.ack);
+    if (provs && provs.length) entry.p = provs;
+    const a = schA.get(p.ack);
+    if (a) entry.a = a;
+    if (!entry.p && !entry.a) continue;
+    buckets[shardOf(p.ack)][p.ack] = entry;
+    plansWithFees++;
+  }
+  mkdirSync("data/fees", { recursive: true });
+  for (let i = 0; i < FEE_SHARDS; i++) {
+    writeFileSync(`data/fees/${String(i).padStart(2, "0")}.json`, JSON.stringify(buckets[i]));
+  }
+  console.log(`wrote data/fees shards: ${plansWithFees} plans with a provider fee table or Sch A entry`);
 }
 
 function titleCase(s) {
@@ -665,7 +764,7 @@ function titleCase(s) {
 const FIELDS = ["ein", "pn", "sponsorName", "planName", "city", "state", "zip", "businessCode",
   "planYear", "participants", "activeParticipants", "assetsBOY", "assetsEOY",
   "contribEmployer", "contribParticipant", "rollovers", "adminExpenses",
-  "filedDate", "recordkeeper", "ticker", "ack", "codes", "pyb", "partBalances", "feeProf", "feeAdmin", "feeInvMgmt", "feeOther", "benefitsPaid", "mtiaAck", "sf", "shr", "pye"];
+  "filedDate", "recordkeeper", "ticker", "ack", "codes", "pyb", "partBalances", "feeProf", "feeAdmin", "feeInvMgmt", "feeOther", "benefitsPaid", "mtiaAck", "sf", "shr", "pye", "feeSal"];
 
 // pye is stored only for IRREGULAR plan years (short first/final years) —
 // blank means the year ends at the natural 12-month boundary, which keeps
@@ -693,6 +792,7 @@ for (const p of universe) {
     p.planYearBegin ? String(p.planYearBegin).slice(0, 7) : "",
     p.partBalances || 0, h.feeProf || 0, h.feeAdmin || 0, h.feeInvMgmt || 0, h.feeOther || 0, h.benefitsPaid || 0,
     p.mtiaAck || "", p.sf || 0, schR.get(p.ack) || "", irregularYearEnd(p),
+    h.feeSalaries || 0,
   ]);
 }
 rowsOut.sort((a, b) => b[12] - a[12]); // by assets desc
