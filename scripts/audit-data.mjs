@@ -152,6 +152,27 @@ console.log(`  recordkeeper ${covTot.rk} (${pct(covTot.rk)}) | match ${covTot.ma
 console.log(`  roth ${covTot.roth} | after-tax ${covTot.afterTax} | lineups ${covTot.lineup} (${pct(covTot.lineup)}) | named menus ${covTot.menu}`);
 console.log(`  match backlog (employer money but no formula extracted): ${covTot.noMatchBacklog} | genuinely no employer money: ${covTot.noEmployerMoney}`);
 
+// Fee-shard sanity: a structurally-present-but-empty column (the Sch C
+// service codes shipped blank in every Latest ITEM2 extract, 2026-08-07)
+// passes every row-level check — only an aggregate coverage floor sees it.
+try {
+  const { existsSync } = await import("fs");
+  let provRows = 0, provWithCodes = 0, feePlans = 0;
+  for (let i = 0; i < 64; i++) {
+    const p = `data/fees/${String(i).padStart(2, "0")}.json`;
+    if (!existsSync(p)) continue;
+    for (const e of Object.values(JSON.parse(readFileSync(p, "utf8")))) {
+      feePlans++;
+      for (const pr of e.p || []) { provRows++; if (pr.c) provWithCodes++; }
+    }
+  }
+  if (provRows) {
+    const share = 100 * provWithCodes / provRows;
+    console.log(`\n== FEES: ${feePlans} plans, ${provRows} provider rows, ${provWithCodes} with service codes (${share.toFixed(1)}%)`);
+    if (share < 50) flag("high", "fee-codes", `only ${share.toFixed(1)}% of Sch C provider rows carry service codes — codes ingestion is broken (child-table join?)`);
+  }
+} catch (e) { console.warn("fee-shard audit skipped: " + e.message); }
+
 console.log(`\naudit: ${statTotal} plans, ${entries} lineup entries (${confident} confident)`);
 for (const sev of ["high", "warn"]) {
   console.log(`\n== ${sev.toUpperCase()} (${findings[sev].length})`);

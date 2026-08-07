@@ -441,6 +441,7 @@ async function scanSchC(year, wantedAcks, feeTables) {
     ack: colIndex(H, ["ACK_ID"]),
     name: colIndex(H, ["PROVIDER_OTHER_NAME", "PROVIDER_NAME"], /PROVIDER.*NAME/),
     codes: colIndex(H, ["SERVICE_CODES", "PROVIDER_OTHER_SRVC_CODES"], /SERVICE.*CODE|SRVC/),
+    row: colIndex(H, ["ROW_ORDER"], /^ROW/),
     comp: colIndex(H, ["PROVIDER_OTHER_DIRECT_COMP_AMT", "DIRECT_COMP_AMT"], /DIRECT.*COMP|COMP.*AMT/),
     // fee-schedule elements (e)-(h): indirect-comp received, eligible-only,
     // non-eligible indirect total, formula-instead-of-amount
@@ -452,6 +453,38 @@ async function scanSchC(year, wantedAcks, feeTables) {
   console.log("columns:", JSON.stringify(col));
   if (col.ack === -1 || col.name === -1) { console.warn("SCH_C: required columns missing"); return new Map(); }
 
+  // Service codes: ITEM2's PROVIDER_OTHER_SRVC_CODES column exists in the
+  // header but is EMPTY in the Latest extracts (verified 2026-08-07: 0 of
+  // 155k rows) — the filed codes ship in the ITEM2_CODES child table, one
+  // row per code, keyed by ACK_ID + ROW_ORDER.
+  const codesByRow = new Map();
+  try {
+    const csvC = unzip(await download(year, `F_SCH_C_PART1_ITEM2_CODES_${year}_Latest.zip`));
+    const rowsC = csvRows(csvC);
+    const { value: hC } = await rowsC.next();
+    const HC = hC.map((h) => h.toUpperCase().trim());
+    const cc = {
+      ack: colIndex(HC, ["ACK_ID"]),
+      row: colIndex(HC, ["ROW_ORDER"], /ROW/),
+      code: colIndex(HC, ["SERVICE_CODE", "PROVIDER_OTHER_SERVICE_CODE"], /SERVICE.*CODE|SRVC/),
+    };
+    console.log("SCH_C codes header:", HC.join(", "));
+    console.log("SCH_C codes columns:", JSON.stringify(cc));
+    if (cc.ack === -1 || cc.row === -1 || cc.code === -1) {
+      console.warn("SCH_C codes: required columns missing — skipped");
+    } else {
+      for await (const r of rowsC) {
+        const ack = r[cc.ack];
+        if (!wantedAcks.has(ack)) continue;
+        const code = String(r[cc.code] || "").trim();
+        if (!code) continue;
+        const k = ack + "|" + r[cc.row];
+        codesByRow.set(k, codesByRow.has(k) ? codesByRow.get(k) + " " + code : code);
+      }
+      console.log(`SCH_C codes: ${codesByRow.size} provider rows carry service codes`);
+    }
+  } catch (e) { console.warn(`SCH_C codes table unavailable: ${e.message}`); }
+
   // per ack keep best row: recordkeeping service code (15) beats compensation size
   const best = new Map();
   let n = 0;
@@ -461,7 +494,9 @@ async function scanSchC(year, wantedAcks, feeTables) {
     if (!wantedAcks.has(ack)) continue;
     const name = r[col.name];
     if (!name) continue;
-    const codes = col.codes !== -1 ? String(r[col.codes] || "") : "";
+    // inline column when populated (older extracts), else the child table
+    const codes = (col.codes !== -1 && String(r[col.codes] || "").trim()) ||
+      (col.row !== -1 && codesByRow.get(ack + "|" + r[col.row])) || "";
     const comp = col.comp !== -1 ? +r[col.comp] || 0 : 0;
     // full provider fee table (Sch C Part I item 2 files providers in
     // descending order of compensation) — cap 12 per plan to bound shards

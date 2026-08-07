@@ -934,6 +934,43 @@ against their filings:
   minimum pre-push gate for ANY parseRows/TYPE_PATTERNS change; run it
   before bumping PARSER_VERSION.
 
+## 2026-08-07 — Fee schedule launch review: service codes empty in every provider row (+ a testing-environment trap documented)
+
+**What was wrong (caught in pre-mirror verification, never shipped to
+users).** All 155,023 Schedule C provider rows across the new data/fees
+shards carried an empty `c` (service codes) field, so the provider
+table's "Services" column rendered "—" for every provider. The ITEM2
+extract's PROVIDER_OTHER_SRVC_CODES column exists in the header —
+project memory even asserted it was populated ("no separate codes table
+needed") — but it ships blank in the Latest files; the filed codes (TK
+Elevator: Fidelity "37 60 64 65 71", Plante & Moran "10", verified
+against the filing PDF) live in the F_SCH_C_PART1_ITEM2_CODES child
+table, one row per code, keyed by ACK_ID+ROW_ORDER.
+
+**The change.** build-data ingests the ITEM2_CODES child table (header
+logged, defensive column resolution, falls back to the inline column if
+a year ever populates it).
+
+**The prevention.** audit-data now enforces an aggregate floor — HIGH
+finding if <50% of provider rows carry service codes (a present-but-empty
+column passes every row-level check; only aggregate coverage sees it).
+Memory rule reinforced: a column existing in a dataset header is NOT
+evidence it is populated — check value coverage before building on it.
+
+**Also found, NOT an accuracy defect: sandbox renderer freeze.** During
+verification, deep-linked pages appeared stuck at "Loading the provider
+fee table…" locally. Root cause after extensive tracing: the CCR
+sandbox's headless Chromium freezes the renderer ~1s after load absent
+user activation — timers stop and already-received response bodies are
+never delivered to page JS (network reports finished; `json()` never
+resolves; evaluate still works, which makes it look exactly like an app
+async bug). A single synthetic click unfreezes everything and the page
+renders correctly; the shipped code needed no change (an initially
+committed "re-arm" patch built on the wrong theory was reverted). The
+smoke test now clicks after load — imitating a real visitor — and then
+asserts the fee section resolved, which keeps the check honest in both
+frozen and normal environments.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

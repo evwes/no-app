@@ -38,10 +38,18 @@ try {
   const openPlan = async (r, label) => {
     await page.goto(`http://localhost:${PORT}/#plan=${encodeURIComponent(id(r))}`);
     await page.waitForFunction(() => /\d{4,}/.test((document.getElementById("statPlans") || {}).textContent?.replace(/,/g, "") || ""), { timeout: 45000 });
+    // imitate a real visitor: some headless environments (CCR sandbox) freeze
+    // the renderer ~1s after load absent user activation — timers stop and
+    // in-flight response bodies never reach page JS, so on-demand shard
+    // fetches stall forever without this
+    await page.mouse.click(2, 2);
     await page.waitForTimeout(2500);
     const txt = await page.evaluate(() => (document.querySelector(".detail-clamp") || {}).innerText || "");
     if (!txt) fail(`${label}: report did not render (id ${id(r)})`);
     if (/\bundefined\b|\bNaN\b|\[object /.test(txt)) fail(`${label}: leaked undefined/NaN into the page`);
+    // the on-demand fee fetch must have settled — a stuck placeholder means
+    // the async data-layer rebuild orphaned the fetch (deep-link race)
+    if (txt.includes("Loading the provider fee table")) fail(`${label}: fee table never resolved (deep-link race)`);
     if (!txt.includes("PLAN FEATURES")) fail(`${label}: features panel missing`);
     if (!txt.includes("ESPP")) fail(`${label}: ESPP status row missing`);
     return txt;

@@ -66,7 +66,16 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   (funds, sma detail, features with source quotes). Fetched per-plan on demand.
 - `data/fees/NN.json` (64 shards, same ack hash) — per-plan fee schedule
   from prep: Sch C Part I item 2 provider rows {n,c,d,i,e,t,fm} (≤12, filed
-  order = descending comp) + Sch A insurance commissions {cm,fe,cr}.
+  order = descending comp; `c` service codes come from the ITEM2_CODES
+  child table — the inline ITEM2 column is empty) + Sch A insurance
+  commissions {cm,fe,cr}. TESTING TRAP (2026-08-07): the CCR sandbox's
+  headless Chromium FREEZES the renderer ~1s after load absent user
+  activation — timers stop and in-flight response bodies never deliver,
+  so on-demand shard fetches look "stuck" on deep-linked pages and hours
+  can be lost chasing phantom async bugs (fetch fine, `json()` never
+  resolves, evaluate still works). One synthetic click unfreezes it.
+  Playwright checks must interact (mouse.click) after load before
+  asserting async content; smoke test does this.
   Frontend fetches on demand (plan.feeKey), renders Sch H expense lines +
   provider table (service codes decoded per the official instructions) +
   Sch A note; a missing shard hides the section (never claim "none filed"
@@ -214,8 +223,10 @@ don't confuse them). Frontend: python http.server + Playwright at
   898 (193 via EIN fallback); Elevance has NO MTIA filing in EFAST2 at all
   (checked 2023-25) — unlinkable, honest gap. Recordkeeper = platform-brand
   priority over top-fee line (NG shows Fidelity not Strategic Advisors,
-  Kohler inherits Voya via trust); ITEM2 carries PROVIDER_OTHER_SRVC_CODES
-  natively (col 15) — no separate codes table needed. Filters
+  Kohler inherits Voya via trust); ITEM2's PROVIDER_OTHER_SRVC_CODES column
+  exists in the header but is EMPTY in the Latest extracts (0/155k rows,
+  found 2026-08-07) — filed codes live in F_SCH_C_PART1_ITEM2_CODES (one
+  row per code, join on ACK_ID+ROW_ORDER), ingested since the codes fix. Filters
   universe-wide via index bits. Mega-backdoor CHIP matches afterTax OR mega bits (~5.8k plans);
   strict documented-conversion count is ~200 — auditors rarely write the
   conversion step down.
