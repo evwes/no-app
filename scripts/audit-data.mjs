@@ -5,7 +5,7 @@
  * doubled summary pages — was visible as a violated identity long before a
  * human noticed it on the site. This prints violations after each merge so
  * the run log surfaces them. Informational: it never fails the build. */
-import { readFileSync } from "fs";
+import { readFileSync, writeFileSync, appendFileSync } from "fs";
 
 const d = JSON.parse(readFileSync("plans-all.json", "utf8"));
 const F = d.fields; const ix = Object.fromEntries(F.map((f, i) => [f, i]));
@@ -155,6 +155,7 @@ console.log(`  match backlog (employer money but no formula extracted): ${covTot
 // Fee-shard sanity: a structurally-present-but-empty column (the Sch C
 // service codes shipped blank in every Latest ITEM2 extract, 2026-08-07)
 // passes every row-level check — only an aggregate coverage floor sees it.
+let feeCodesShare = null;
 try {
   const { existsSync } = await import("fs");
   let provRows = 0, provWithCodes = 0, feePlans = 0;
@@ -168,6 +169,7 @@ try {
   }
   if (provRows) {
     const share = 100 * provWithCodes / provRows;
+    feeCodesShare = +share.toFixed(1);
     console.log(`\n== FEES: ${feePlans} plans, ${provRows} provider rows, ${provWithCodes} with service codes (${share.toFixed(1)}%)`);
     if (share < 50) flag("high", "fee-codes", `only ${share.toFixed(1)}% of Sch C provider rows carry service codes — codes ingestion is broken (child-table join?)`);
   }
@@ -179,3 +181,19 @@ for (const sev of ["high", "warn"]) {
   for (const f of findings[sev].slice(0, 40)) console.log("  " + f);
   if (findings[sev].length > 40) console.log(`  … and ${findings[sev].length - 40} more`);
 }
+
+// Machine-readable accuracy trail: one JSONL line per pipeline run,
+// committed with the data — coverage trends are diffable, and a silent
+// regression shows up as a dip in the next line rather than needing
+// someone to read run logs. audit-high.txt feeds the workflow step that
+// keeps the auto-managed "HIGH findings" GitHub issue current.
+try {
+  appendFileSync("docs/coverage-history.jsonl", JSON.stringify({
+    d: new Date().toISOString().slice(0, 10),
+    plans: statTotal, fullForm: covTot.full, entries, confident,
+    rk: covTot.rk, match: covTot.match, vesting: covTot.vesting,
+    lineups: covTot.lineup, feeCodesPct: feeCodesShare,
+    high: findings.high.length, warn: findings.warn.length,
+  }) + "\n");
+  writeFileSync("audit-high.txt", findings.high.join("\n") + (findings.high.length ? "\n" : ""));
+} catch (e) { console.warn("accuracy trail write skipped: " + e.message); }

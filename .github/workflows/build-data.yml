@@ -1,5 +1,11 @@
 name: Build plan data from Form 5500
 
+# issues: write powers the auto-managed "Data audit: HIGH findings" issue —
+# audit failures page a human instead of sitting unread in run logs
+permissions:
+  contents: write
+  issues: write
+
 on:
   workflow_dispatch:
   schedule:
@@ -153,7 +159,7 @@ jobs:
             if [ -d /tmp/fees ]; then rm -rf data/fees && cp -r /tmp/fees data/fees; fi
             node scripts/merge-4i.mjs
             node scripts/audit-data.mjs || true
-            git add plans-all.json plans-list.json plans-index.json mtias.json fee-percentiles.json lineups-status.json lineups-index.json data/lineups data/fees data/plans
+            git add plans-all.json plans-list.json plans-index.json mtias.json fee-percentiles.json lineups-status.json lineups-index.json data/lineups data/fees data/plans docs/coverage-history.jsonl
             if git diff --cached --quiet; then echo "No data changes."; exit 0; fi
             git commit -m "Update filed plan data (Form 5500 + Schedule H 4i lineups)"
             if git push origin "HEAD:${GITHUB_REF_NAME}"; then exit 0; fi
@@ -162,3 +168,19 @@ jobs:
           done
           echo "giving up after 5 attempts" >&2
           exit 1
+      - name: Surface audit HIGH findings (auto-managed issue)
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          [ -f audit-high.txt ] || exit 0
+          TITLE="Data audit: HIGH findings (auto)"
+          NUM=$(gh issue list --state open --search "in:title \"$TITLE\"" --json number --jq '.[0].number' 2>/dev/null || true)
+          if [ -s audit-high.txt ]; then
+            BODY=$(printf 'The latest pipeline run flagged these HIGH findings — investigate per the accuracy protocol (docs/accuracy-log.md) and log the outcome there. This issue is auto-updated by every run and closes itself when the findings clear.\n\n```\n%s```\n\nRun: %s' "$(cat audit-high.txt)" "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID")
+            if [ -n "$NUM" ]; then gh issue edit "$NUM" --body "$BODY" >/dev/null; else gh issue create --title "$TITLE" --body "$BODY" >/dev/null; fi
+            echo "HIGH findings surfaced on issue ${NUM:-new}"
+          elif [ -n "$NUM" ]; then
+            gh issue close "$NUM" --comment "Latest run reports no HIGH findings — closing." >/dev/null
+            echo "cleared and closed issue $NUM"
+          fi

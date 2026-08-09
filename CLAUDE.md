@@ -188,6 +188,16 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   fixes back as patterns + regression specimens + log entries. This loop
   never stops.
 
+- **Always-on accuracy machinery (2026-08-09, owner directive: constant
+  checking/updating/improving)**: (1) every merge run appends a line to
+  `docs/coverage-history.jsonl` (universe, confident lineups, match/vesting/
+  rk coverage, fee-codes %, HIGH/WARN counts) — trends are diffable, dips
+  are regressions; (2) the merge job maintains an auto-managed GitHub issue
+  "Data audit: HIGH findings (auto)" from audit-high.txt — updated every
+  run, self-closing when clear; (3) a daily 13:00 UTC scheduled session
+  ("wampo daily accuracy cycle" Routine) reviews runs, checks the trail,
+  does one hands-on filing review from the worst class, ships clear-cut
+  fixes, and mirrors main. Known-baseline HIGHs: 4 contrib-limit outliers.
 - **Verify starts, not just finishes**: after ANY push meant to trigger a
   run, confirm within a minute that the run actually exists (list runs via
   API/MCP). A dropped webhook once went unnoticed for two days because
@@ -262,6 +272,16 @@ don't confuse them). Frontend: python http.server + Playwright at
   select in toolbar. Brokerage is three-state: 2R/SDBA yes; own confident
   lineup + no SDBA + no 2R → "None indicated" (trust lineups never infer).
 - Owner to-dos: point GitHub Pages at `main`; custom domain.
+- **LAUNCH WEEK (owner directive 2026-08-09: fully live by 2026-08-14)**:
+  shipped so far — fee schedule w/ service codes, fee percentiles vs peers,
+  About/methodology page, boot payload split (12→2.8 MB gz). Remaining, in
+  order: static SEO pages (top ~5k plans by assets + sitemap + robots,
+  generator in the merge job; real crawlable URLs are the growth engine),
+  v36 dotted-leader lineup recovery (Costco/JPM class, biggest coverage
+  win), OCR page-targeting for >40-page scanned attachments, glossary/
+  accessibility pass. Owner blockers for "live": GitHub Pages must serve
+  main (Settings→Pages), custom domain DNS, approve the daily accuracy
+  Routine. Daily cycle sessions pick up any of this that isn't done.
 - **EDGAR 11-K research (2026-08-03, specimens in hand)**: SEC blocks
   requests whose User-Agent contains parens/URLs — the plain documented
   "name email" UA works from GitHub Actions (all four hosts 200; do NOT
