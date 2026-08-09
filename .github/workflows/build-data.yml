@@ -1,11 +1,5 @@
 name: Build plan data from Form 5500
 
-# issues: write powers the auto-managed "Data audit: HIGH findings" issue —
-# audit failures page a human instead of sitting unread in run logs
-permissions:
-  contents: write
-  issues: write
-
 on:
   workflow_dispatch:
   schedule:
@@ -26,6 +20,8 @@ concurrency:
 
 permissions:
   contents: write
+  # issues: write powers the auto-managed "Data audit: HIGH findings" issue
+  issues: write
 
 jobs:
   prep:
