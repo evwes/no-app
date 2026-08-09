@@ -997,6 +997,22 @@ Lesson recorded: token-count heuristics must normalize typography
 (leaders, column glue) BEFORE counting — a filter that never sees clean
 text can't judge it.
 
+**Re-parse verification (run 31326177741).** Full-universe diff: +2 / −1.
+Gains: Costco ($41.5B, 30 funds) and Panera Bread (30,381 participants,
+26-fund Vanguard menu, previously nothing) — the spaced-leader class is
+real but SMALL universe-wide; the other F500 no-lineup flagships fail
+for different reasons (State Farm's stmt-flagged umbrella row, JPM's
+scan). The one loss, Plexsys ($36M), was investigated per protocol:
+v41 and v42 parse its current filing IDENTICALLY (61 rows, ratio 2.02 —
+the filing renders its schedule twice, and the second rendition glues a
+"0" cost column into names, defeating the same-name dedup). The old
+entry was a prior-year fb:2023 fallback that no longer engages; net
+effect is an honest gap replacing a stale-year lineup — accepted.
+**v43 candidate:** normalize names (strip trailing " 0" column glue)
+before the dedup merge — both renditions would collapse, ratio → ~1.0,
+recovering the double-render class properly. Plexsys
+20260706150053NAL0023514192001 is the specimen.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
