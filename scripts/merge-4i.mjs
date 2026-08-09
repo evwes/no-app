@@ -67,6 +67,23 @@ for (let i = 0; i < SHARDS; i++) {
 }
 writeFileSync("lineups-index.json", JSON.stringify({ generated: new Date().toISOString(), shards: SHARDS, plans: index }));
 
+// Row-aligned effective bits for the site's boot (plans-list.json order ==
+// plans-all order): the browser no longer knows acks at boot, so the flags
+// are positional. Extra bits beyond indexFlags: 2048 = this plan's linked
+// master trust has a confident lineup (the trust ack itself arrives with
+// the detail shard on expand).
+try {
+  const pa = JSON.parse(readFileSync("plans-all.json", "utf8"));
+  const ai = pa.fields.indexOf("ack"), mi = pa.fields.indexOf("mtiaAck");
+  const bits = pa.plans.map((r) => {
+    let b = index[r[ai]] || 0;
+    if (r[mi] && (index[r[mi]] || 0) & 1) b |= 2048;
+    return b;
+  });
+  writeFileSync("plans-index.json", JSON.stringify({ generated: new Date().toISOString(), count: bits.length, bits }));
+  console.log(`wrote plans-index.json: ${bits.length} rows, ${bits.filter((b) => b & 2048).length} trust-lineup plans`);
+} catch (e) { console.warn("plans-index skipped (plans-all absent?): " + e.message); }
+
 const vals = Object.values(status.plans);
 console.log(`merged ${applied} entries; totals: ${vals.length} parsed, ${vals.filter((p) => p.c).length} confident lineups, ${vals.filter((p) => p.f).length} with features`);
 

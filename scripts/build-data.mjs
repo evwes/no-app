@@ -869,6 +869,60 @@ console.log(`wrote plans-all.json: ${rowsOut.length} plans, ${(Buffer.byteLength
   console.log("fee percentiles: " + cohorts.map((c) => `${c.label}: n=${c.n} zero=${(100 * c.zeroShare).toFixed(0)}% median=$${c.p[3]}`).join(" | "));
 }
 
+/* --- boot-payload split ---------------------------------------------------
+ * The site never downloads plans-all.json (pipeline-internal). Visitors get:
+ *  - plans-list.json: columnar table/search/filter data (~2.7 MB gzipped)
+ *  - data/plans/NN.json: per-plan filing detail, fetched on expand
+ * List numbers are display-precision (am = assets in $100k units; ab/ac =
+ * avg balance/contribution in $100 units, replicating derive()'s distrust
+ * rule for the filer-entered with-balance count); exact figures come from
+ * the detail shard. plan name ships only where a sponsor files several
+ * plans (disambiguation); everyone gets the full name on expand.
+ * cf bits: 1=2R brokerage, 2=2S auto-enroll, 4=2K match, 8=short-form,
+ * 16=no employer contributions that year, 32=403(b). */
+{
+  const ix = Object.fromEntries(FIELDS.map((f, i) => [f, i]));
+  const g = (r, f) => r[ix[f]];
+  const einCount = new Map();
+  for (const r of rowsOut) einCount.set(g(r, "ein"), (einCount.get(g(r, "ein")) || 0) + 1);
+  const cols = { ein: [], pn: [], name: [], plan: [], st: [], bc: [], parts: [], am: [], ab: [], ac: [], rk: [], tk: [], cf: [], shr: [] };
+  const DETAIL_SHARDS = 64;
+  const shardOfKey = (k) => { let h = 0; for (const c of k) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h % DETAIL_SHARDS; };
+  const buckets = Array.from({ length: DETAIL_SHARDS }, () => ({}));
+  const DETAIL_FIELDS = ["ack", "planName", "city", "zip", "planYear", "pyb", "pye", "filedDate", "codes",
+    "mtiaAck", "assetsBOY", "assetsEOY", "contribEmployer", "contribParticipant", "rollovers",
+    "adminExpenses", "feeProf", "feeAdmin", "feeInvMgmt", "feeOther", "feeSal", "benefitsPaid",
+    "partBalances", "activeParticipants"];
+  for (const r of rowsOut) {
+    const codes = g(r, "codes") || "";
+    const cf = (/2R/.test(codes) ? 1 : 0) | (/2S/.test(codes) ? 2 : 0) | (/2K/.test(codes) ? 4 : 0) |
+      (g(r, "sf") ? 8 : 0) | ((g(r, "contribEmployer") || 0) === 0 ? 16 : 0) | (/2L|2M/.test(codes) ? 32 : 0);
+    const parts = g(r, "participants") || 0, act = g(r, "activeParticipants") || 0;
+    const assets = g(r, "assetsEOY") || 0, pb = g(r, "partBalances") || 0;
+    const balCnt = pb && pb >= parts * 0.05 && (pb >= parts * 0.5 || !assets || assets / pb <= 1e6) ? pb : parts;
+    const avgBal = assets > 0 && balCnt ? Math.round(assets / balCnt / 100) : 0;
+    const totContrib = (g(r, "contribParticipant") || 0) + (g(r, "contribEmployer") || 0);
+    let avgC = totContrib > 0 && act ? Math.round(totContrib / act / 100) : 0;
+    if (avgC > 800) avgC = 0;
+    cols.ein.push(g(r, "ein")); cols.pn.push(+g(r, "pn") || 0);
+    cols.name.push(g(r, "sponsorName"));
+    cols.plan.push(einCount.get(g(r, "ein")) > 1 ? g(r, "planName") : "");
+    cols.st.push(g(r, "state") || ""); cols.bc.push(g(r, "businessCode") || "");
+    cols.parts.push(parts); cols.am.push(Math.round(assets / 1e5));
+    cols.ab.push(avgBal); cols.ac.push(avgC);
+    cols.rk.push(g(r, "recordkeeper") || ""); cols.tk.push(g(r, "ticker") || "");
+    cols.cf.push(cf); cols.shr.push(g(r, "shr") || "");
+    const entry = {};
+    for (const f of DETAIL_FIELDS) { const v = g(r, f); if (v) entry[f] = v; }
+    const key = g(r, "ein") + "|" + g(r, "pn");
+    buckets[shardOfKey(key)][key] = entry;
+  }
+  writeFileSync("plans-list.json", JSON.stringify({ generated: new Date().toISOString(), count: rowsOut.length, cols }));
+  mkdirSync("data/plans", { recursive: true });
+  for (let i = 0; i < DETAIL_SHARDS; i++) writeFileSync(`data/plans/${String(i).padStart(2, "0")}.json`, JSON.stringify(buckets[i]));
+  console.log(`wrote plans-list.json (${(Buffer.byteLength(JSON.stringify(cols)) / 1e6).toFixed(1)} MB raw) + ${DETAIL_SHARDS} data/plans shards`);
+}
+
 // master-trust parse work list for fetch-4i
 const mtiaOut = [...usedMtias.entries()].map(([ack, m]) => ({
   ack, name: m.name, planYear: m.year, assetsEOY: (schH.get(ack) || {}).assetsEOY || 0,

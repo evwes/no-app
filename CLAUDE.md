@@ -15,7 +15,18 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   always labeled "est."). Vanilla JS, no build step. Pages should serve
   `main`. The expanded report renders inside a `.detail-clamp` div
   (width:0/min-width:100%) so it can't widen the plans table — wide content
-  must wrap or scroll internally.
+  must wrap or scroll internally. BOOT PAYLOAD SPLIT (2026-08-09): the site
+  fetches `plans-list.json` (columnar, ~2.7 MB gz) + `plans-index.json`
+  (row-aligned bits, ~80 KB gz) + `mtias.json` — it NEVER downloads
+  plans-all.json (pipeline-internal, 33 MB). Everything else is on-demand:
+  `ensureDetail` (data/plans shard, keyed EIN|PN, carries the acks) chains
+  `ensureLineup`/`ensureFees`. The report body gates on `detailLoaded` —
+  detail-only fields (planYear, pyb, city, flows) would render NaN before
+  the shard lands. List numbers are display-precision (assets in $100k
+  units, avg bal/contrib in $100s replicating derive()'s distrust rule);
+  exact values re-derive on expand. Plan names ship at boot only for
+  multi-plan sponsors; search-by-city no longer works (city is detail-only).
+  `about.html` = static About/methodology page.
 - **Data pipeline** (`.github/workflows/build-data.yml`): 3-stage matrix —
   `prep` (FIRST runs scripts/parser-gate.mjs: ten live specimens, fails the
   run before the matrix if any regresses — update expectations in the same
@@ -43,8 +54,18 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
 
 ## Data files (all generated; never hand-edit)
 
+- `plans-list.json` — columnar boot file for the site (cols: ein/pn/name/
+  plan/st/bc/parts/am/ab/ac/rk/tk/cf/shr; same row order as plans-all).
+  cf bits: 1=2R, 2=2S, 4=2K, 8=SF, 16=no-employer-contrib, 32=403(b).
+- `plans-index.json` — row-aligned effective lineup/feature bits (written
+  by merge): indexFlags bits + 2048 = linked trust has a confident lineup.
+- `data/plans/NN.json` (64 shards, key `EIN|PN`) — per-plan filing detail
+  (acks, codes, dates, Sch H lines); prep drops zero/empty fields.
+- `fee-percentiles.json` — per-participant admin-expense percentiles by
+  plan-size cohort (5 cohorts, p5–p95 + zeroShare), recomputed every prep.
 - `plans-all.json` — whole universe, compact array-of-arrays with `fields`
-  header. 100k+ rows: every 401(k)-type (2J) AND ERISA 403(b) (2L/2M) plan with ≥100
+  header, PIPELINE-INTERNAL (parser gate, fetch-4i, merge, audit, smoke
+  specimen picking — the site never fetches it). 100k+ rows: every 401(k)-type (2J) AND ERISA 403(b) (2L/2M) plan with ≥100
   participants at EITHER end of the plan year (BOY-only once hid first-year
   spinoffs like GE Vernova: 0 BOY, 33k EOY), from F_5500 (full form) AND F_5500_SF (`sf` flag = short-form
   filer, no audited attachment → excluded from PDF parsing). Newest filing per

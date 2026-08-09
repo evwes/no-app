@@ -105,6 +105,11 @@
     // average above that means the filed contribution line includes merger
     // transfers or similar — the true average is unknowable, so show none
     if (plan.avgContrib > 80000) plan.avgContrib = null;
+    // boot-time rows carry prep-precomputed averages (same rules, rounded to
+    // $100); the exact re-derivation above takes over once the detail shard
+    // supplies the raw components
+    if (plan.avgBal == null && plan.avgBalPre) plan.avgBal = plan.avgBalPre;
+    if (plan.avgContrib == null && plan.avgContribPre) plan.avgContrib = plan.avgContribPre;
     return plan;
   }
 
@@ -127,6 +132,8 @@
       participants: filed.participants,
       activeParticipants: filed.activeParticipants,
       partBalances: filed.partBalances || 0,
+      avgBalPre: filed.avgBalPre ?? null,
+      avgContribPre: filed.avgContribPre ?? null,
       assetsB: filed.assetsEOY ? filed.assetsEOY / 1e9 : null,
       assetsYoY: yoy == null ? null : +yoy.toFixed(1),
       ein: filed.ein,
@@ -166,36 +173,51 @@
   }
 
   async function loadPlans() {
-    // the universe file is ~10 MB compressed — tell slow connections what's
-    // happening instead of showing a dead page
     const rc = $("resultCount");
-    if (rc) rc.textContent = "Loading all 100,000+ plans (about 10 MB — a few seconds on slower connections)…";
+    if (rc) rc.textContent = "Loading 110,000+ plans (about 3 MB)…";
     let filedList = [];
-    // Full universe: every 401(k) plan with ≥100 participants (compact arrays)
+    // Columnar list file: just enough for the table, search, and filters.
+    // Full filing detail (financial lines, codes, dates, acks) arrives
+    // per-plan on expand from data/plans shards — the site never downloads
+    // the pipeline's 33 MB universe file.
     try {
-      const res = await fetch("plans-all.json", { cache: "no-cache" });
+      const res = await fetch("plans-list.json", { cache: "no-cache" });
       if (res.ok) {
         const j = await res.json();
-        const F = j.fields;
-        filedList = j.plans.map((a) => {
-          const p = {};
-          for (let i = 0; i < F.length; i++) p[F[i]] = a[i];
-          p.company = p.sponsorName;
-          p.pensionCode = p.codes || "2J"; // full 8a code string drives the badges
-          p.isSF = !!p.sf;
-          p.ein = p.ein ? String(p.ein).slice(0, 2) + "-" + String(p.ein).slice(2) : "";
-          p.source = `Form 5500, plan year ${p.planYear} (DOL EFAST2 public dataset)`;
-          return p;
-        });
+        const c = j.cols;
+        for (let i = 0; i < j.count; i++) {
+          const cf = c.cf[i] || 0;
+          filedList.push({
+            row: i,
+            einRaw: c.ein[i],
+            ein: c.ein[i] ? String(c.ein[i]).slice(0, 2) + "-" + String(c.ein[i]).slice(2) : "",
+            pn: String(c.pn[i]).padStart(3, "0"),
+            sponsorName: c.name[i], company: c.name[i],
+            planName: c.plan[i] || "", // only multi-plan sponsors ship a name at boot
+            state: c.st[i], businessCode: c.bc[i],
+            participants: c.parts[i],
+            assetsEOY: c.am[i] ? c.am[i] * 1e5 : 0, // display precision; exact on expand
+            avgBalPre: c.ab[i] ? c.ab[i] * 100 : null,
+            avgContribPre: c.ac[i] ? c.ac[i] * 100 : null,
+            recordkeeper: c.rk[i], ticker: c.tk[i] || "",
+            cf, isSF: !!(cf & 8), sf: cf & 8 ? 1 : 0,
+            shr: c.shr[i] || "",
+            pensionCode: cf & 32 ? "2L" : "2J", // refined from full 8a codes on expand
+            source: "Form 5500 (DOL EFAST2 public dataset)",
+          });
+        }
       }
     } catch { /* fall through */ }
 
-    // Lineups: a small index says which plans have parsed data; the holdings
-    // and features live in shard files fetched per-plan on demand.
-    let lineupIndex = null;
+    // Row-aligned lineup/feature bits (positional — acks live in the detail
+    // shards); shape mirrors what merge-4i writes alongside the list file.
+    let bootBits = null, lineupIndex = null;
     try {
-      const res = await fetch("lineups-index.json", { cache: "no-cache" });
-      if (res.ok) lineupIndex = await res.json();
+      const res = await fetch("plans-index.json", { cache: "no-cache" });
+      if (res.ok) {
+        lineupIndex = await res.json();
+        bootBits = lineupIndex.bits || null;
+      }
     } catch { /* none yet */ }
     // master-trust registry: names and totals for labeling trust-sourced lineups
     state.trusts = {};
@@ -203,7 +225,7 @@
       const res = await fetch("mtias.json", { cache: "no-cache" });
       if (res.ok) for (const t of (await res.json()).trusts) state.trusts[t.ack] = t;
     } catch { /* optional */ }
-    state.shardCount = lineupIndex ? lineupIndex.shards : 0;
+    state.shardCount = bootBits ? 64 : 0; // lineup/fee shard fanout is fixed
     // tell visitors how fresh the data is — the pipeline stamps every merge
     if (lineupIndex && lineupIndex.generated) {
       const el = $("dataAsOf");
@@ -216,50 +238,41 @@
     for (const f of filedList) {
       const plan = mergePlan(f.ticker ? curatedByTicker.get(f.ticker) : null, f);
       plan.id = (f.ein || "") + "|" + (f.pn || "") + "|" + (f.ticker || "");
-      // Form 5500 plan-characteristic codes (field 8a) — filed, universe-wide
-      const codes = f.codes || "";
-      plan.matchCode = /2K/.test(codes); // employer contributions based on deferrals
-      if (plan.autoEnroll == null && /2S/.test(codes)) plan.autoEnroll = "enrollment is automatic (Form 5500 code 2S)";
-      if (plan.brokerage == null && /2R/.test(codes)) plan.brokerage = "Self-directed brokerage";
+      plan.einRaw = f.einRaw;
+      plan.pn = f.pn;
+      // cf bits (from the 8a codes at prep): 1=2R brokerage, 2=2S auto-enroll,
+      // 4=2K match, 8=short-form, 16=no employer contributions, 32=403(b)
+      const cf = f.cf || 0;
+      plan.cf = cf;
+      plan.matchCode = !!(cf & 4); // employer contributions based on deferrals
+      if (plan.autoEnroll == null && (cf & 2)) plan.autoEnroll = "enrollment is automatic (Form 5500 code 2S)";
+      if (plan.brokerage == null && (cf & 1)) plan.brokerage = "Self-directed brokerage";
       if (plan.pretax == null) plan.pretax = true; // 401(k)/403(b) elective deferrals are pre-tax
-      if (lineupIndex) {
-        let flag = f.ack ? lineupIndex.plans[f.ack] || 0 : 0;
-        if (flag === 2) flag = 3; // legacy encoding: 2 meant lineup+sdba
-        if (flag) {
-          plan.lineupKey = f.ack;
-          plan.hasLineup = !!(flag & 1);
-          if (plan.brokerage == null && (flag & 2)) plan.brokerage = "Self-directed brokerage";
-          if (plan.megaBackdoor == null && (flag & 8)) plan.megaBackdoor = true;
-          if (!plan.vesting && (flag & 16)) plan.vesting = "Immediate";
-          if (plan.afterTax == null && (flag & 32)) plan.afterTax = true;
-          if (plan.roth == null && (flag & 64)) plan.roth = true;
-        }
-        plan.mtiaAck = f.mtiaAck || null;
-        // keep the trust key whenever the trust has a lineup — ensureLineup
-        // decides between the plan's own schedule and the trust's (a plan
-        // whose own 4i is just "Investment in Master Trust" gets the trust)
-        if (f.mtiaAck && (lineupIndex.plans[f.mtiaAck] || 0) & 1) {
-          plan.trustKey = f.mtiaAck;
-          plan.hasLineup = true;
-        }
-        if (flag & 4) plan.featKey = f.ack;
-        // brokerage three-state: the plan's OWN confident 4i parsed with no
-        // SDBA row AND no 2R code → the filing indicates no brokerage window.
-        // Trust-sourced lineups don't count — a trust's 4i can't show a
-        // member plan's windows.
-        if (plan.brokerage == null && (flag & 1) && !(flag & 2) && !/2R/.test(codes)) {
-          plan.brokerage = "None";
-          plan.brokerageInferred = true;
-        }
+      // positional lineup/feature bits; the acks they refer to arrive with
+      // the detail shard on expand (ensureDetail sets lineupKey/trustKey)
+      const b = bootBits ? bootBits[f.row] || 0 : 0;
+      plan.bits = b;
+      if (b) {
+        plan.hasLineup = !!(b & 1) || !!(b & 2048); // own confident 4i, or linked trust's
+        if (plan.brokerage == null && (b & 2)) plan.brokerage = "Self-directed brokerage";
+        if (plan.megaBackdoor == null && (b & 8)) plan.megaBackdoor = true;
+        if (!plan.vesting && (b & 16)) plan.vesting = "Immediate";
+        if (plan.afterTax == null && (b & 32)) plan.afterTax = true;
+        if (plan.roth == null && (b & 64)) plan.roth = true;
+      }
+      // brokerage three-state: the plan's OWN confident 4i parsed with no
+      // SDBA row AND no 2R code → the filing indicates no brokerage window.
+      if (plan.brokerage == null && (b & 1) && !(b & 2) && !(cf & 1)) {
+        plan.brokerage = "None";
+        plan.brokerageInferred = true;
       }
       // match-type facet: Schedule R line 21b (structured, filed) beats the
       // audited-note bits; each is filed truth, shown with its source
-      const b = f.ack && lineupIndex ? lineupIndex.plans[f.ack] || 0 : 0;
       plan.matchTypes = [];
       if ((plan.shr || "").includes("D") || (b & 1024)) plan.matchTypes.push("safe-harbor");
       if (b & 128) plan.matchTypes.push("scheduled");
       if (b & 256) plan.matchTypes.push("discretionary");
-      if ((b & 512) || plan.flows.employerM === 0) plan.matchTypes.push("none");
+      if ((b & 512) || (cf & 16)) plan.matchTypes.push("none");
       merged.push(plan);
     }
     state.plans = merged;
@@ -338,6 +351,67 @@
     } catch { plan.feeSchedule = undefined; }
     plan.feeLoading = false;
     render();
+  }
+
+  /* Per-plan filing detail (financial lines, dates, codes, acks) lives in
+   * data/plans shards keyed "EIN|PN" — fetched on expand, then the lineup
+   * and fee fetches chain off the acks it carries. */
+  const detailShardCache = new Map();
+  async function ensureDetail(plan) {
+    if (!plan) return;
+    if (plan.detailLoaded || plan.detailLoading || plan.dataStatus !== "filed") { ensureLineup(plan); return; }
+    plan.detailLoading = true;
+    try {
+      const key = plan.einRaw + "|" + plan.pn;
+      const sid = String(shardOf(key, 64)).padStart(2, "0");
+      if (!detailShardCache.has(sid)) {
+        detailShardCache.set(sid, fetch(`data/plans/${sid}.json`, { cache: "no-cache" }).then((r) => (r.ok ? r.json() : {})));
+      }
+      const d = (await detailShardCache.get(sid))[key];
+      if (d) {
+        if (d.planName) plan.planName = titlePlanName(d.planName);
+        plan.city = d.city || ""; plan.zip = d.zip || "";
+        plan.planYear = d.planYear;
+        plan.pyb = d.pyb || ""; plan.pye = d.pye || "";
+        plan.filed = fmtFiledDate(d.filedDate);
+        plan.codes = d.codes || "";
+        plan.planTypes = planTypesFromCode(plan.codes || (plan.cf & 32 ? "2L" : "2J"));
+        if (d.assetsEOY) plan.assetsB = d.assetsEOY / 1e9;
+        plan.assetsYoY = d.assetsBOY && d.assetsEOY ? +(((d.assetsEOY / d.assetsBOY) - 1) * 100).toFixed(1) : null;
+        plan.activeParticipants = d.activeParticipants || 0;
+        plan.partBalances = d.partBalances || 0;
+        // same null semantics as mergePlan (prep omits zero fields)
+        plan.flows = {
+          benefitsM: d.benefitsPaid ? d.benefitsPaid / 1e6 : null,
+          feeProfM: d.feeProf ? d.feeProf / 1e6 : null,
+          feeAdminM: d.feeAdmin ? d.feeAdmin / 1e6 : null,
+          feeInvM: d.feeInvMgmt ? d.feeInvMgmt / 1e6 : null,
+          feeOtherM: d.feeOther ? d.feeOther / 1e6 : null,
+          feeSalM: d.feeSal ? d.feeSal / 1e6 : null,
+          adminRaw: d.adminExpenses || null,
+          deferralsM: (d.contribParticipant || 0) / 1e6,
+          employerM: (d.contribEmployer || 0) / 1e6,
+          rolloversM: (d.rollovers || 0) / 1e6,
+          adminM: (d.adminExpenses || 0) / 1e6,
+          priorAssetsM: (d.assetsBOY || 0) / 1e6,
+        };
+        plan.source = `Form 5500, plan year ${d.planYear} (DOL EFAST2 public dataset)`;
+        plan.feeKey = d.ack || null;
+        plan.mtiaAck = d.mtiaAck || null;
+        const b = plan.bits || 0;
+        if ((b & 1) && d.ack) plan.lineupKey = d.ack;
+        if ((b & 2048) && d.mtiaAck) plan.trustKey = d.mtiaAck;
+        if ((b & 4) && d.ack) plan.featKey = d.ack;
+        delete plan.avgBalPre; delete plan.avgContribPre; // exact components now present
+        derive(plan);
+        plan.detailLoaded = true;
+      } else {
+        plan.detailLoaded = true; // no entry: render the sparse row honestly
+      }
+    } catch { /* transient fetch failure — retried on next expand */ }
+    plan.detailLoading = false;
+    render();
+    ensureLineup(plan);
   }
 
   async function ensureLineup(plan) {
@@ -938,6 +1012,10 @@
   }
 
   function report(plan) {
+    // filed detail (financial lines, dates, codes) streams in per-plan; the
+    // full report renders only from complete data — never NaN placeholders
+    if (plan.dataStatus === "filed" && !plan.detailLoaded)
+      return `<div class="report"><p class="max-benefit">Loading this plan's filing…</p></div>`;
     const yoy = plan.assetsYoY == null ? "" :
       `${plan.assetsYoY >= 0 ? "+" : "−"}${Math.abs(plan.assetsYoY)}% YoY`;
     const sourceNote = plan.dataStatus === "filed"
@@ -1124,7 +1202,7 @@
     if (!row) return;
     const id = row.dataset.id;
     state.expanded.has(id) ? state.expanded.delete(id) : state.expanded.add(id);
-    if (state.expanded.has(id)) ensureLineup(state.plans.find((p) => p.id === id));
+    if (state.expanded.has(id)) ensureDetail(state.plans.find((p) => p.id === id));
     // keep a shareable link to the open plan in the URL
     const last = [...state.expanded].pop();
     history.replaceState(null, "", last ? "#plan=" + encodeURIComponent(last) : location.pathname + location.search);
@@ -1159,7 +1237,7 @@
         state.query = plan.company || "";
         $("search").value = state.query;
         state.expanded.add(id);
-        ensureLineup(plan);
+        ensureDetail(plan);
       }
     }
     render();
@@ -1180,7 +1258,7 @@
       $("search").value = state.query;
       state.expanded.clear();
       state.expanded.add(id);
-      ensureLineup(plan);
+      ensureDetail(plan);
       render();
       const tr = document.querySelector(".plan-tr.open") || document.querySelector(".detail-tr");
       if (tr) tr.scrollIntoView({ block: "start" });
