@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://evwes.github.io/no-app/sitemap.xml

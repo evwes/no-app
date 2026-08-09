@@ -155,7 +155,8 @@ jobs:
             if [ -d /tmp/fees ]; then rm -rf data/fees && cp -r /tmp/fees data/fees; fi
             node scripts/merge-4i.mjs
             node scripts/audit-data.mjs || true
-            git add plans-all.json plans-list.json plans-index.json mtias.json fee-percentiles.json lineups-status.json lineups-index.json data/lineups data/fees data/plans docs/coverage-history.jsonl
+            node scripts/build-seo-pages.mjs || true
+            git add plans-all.json plans-list.json plans-index.json mtias.json fee-percentiles.json lineups-status.json lineups-index.json data/lineups data/fees data/plans docs/coverage-history.jsonl p sitemap.xml robots.txt
             if git diff --cached --quiet; then echo "No data changes."; exit 0; fi
             git commit -m "Update filed plan data (Form 5500 + Schedule H 4i lineups)"
             if git push origin "HEAD:${GITHUB_REF_NAME}"; then exit 0; fi
