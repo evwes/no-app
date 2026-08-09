@@ -31,6 +31,11 @@ const SPECIMENS = [
     { found: false }],
   ["TK Elevator", "20251008093049NAL0005343377001", 667683248,
     { found: true, n: 34, sum: 658091857 }],
+  // v42: spaced dot-leaders (". . . .") between issuer and description
+  // columns — counted as "words", they tripped the prose filter and emptied
+  // the whole menu (1 junk row from a $41.5B plan)
+  ["Costco (spaced leaders)", "20260723165543NAL0014354289001", 41523678630,
+    { found: true, n: 30, sum: 38997301000 }],
   ["Northrop Grumman", "20260616115726NAL0000593907005", 44357243320,
     { found: true, n: 10, sum: 150128940 }],
   ["Kohler (trust interest)", "20251014134011NAL0002916849001", 781346186,

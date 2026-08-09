@@ -240,8 +240,9 @@ don't confuse them). Frontend: python http.server + Playwright at
 
 ## Current state (2026-07-21)
 
-- Universe 104,393 plans (incl. ERISA 403(b)s); 68,042 parseable filings
-  at parser v35 + OCR v2; 53.2k confident lineups, 60.3k with features.
+- Universe 110,555 plans (incl. ERISA 403(b)s); ~68.7k parseable filings
+  at parser v42 + OCR v2 (v42 2026-08-09: spaced dot-leader recovery —
+  Costco class; leaders counted as "words" and tripped the prose filter); 53.2k confident lineups, 60.3k with features.
   v34/v35 (2026-08-03): repeated-page dedup (schedules render twice per
   filing!), EIN-heading + dotted-leader junk rows, statement-page penalty
   — net +817 confident lineups; statement fragments no longer displace

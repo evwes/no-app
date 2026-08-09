@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 41;
+export const PARSER_VERSION = 42;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b|^brokerage accounts?$/i, "SDBA"],
@@ -150,8 +150,11 @@ export function parseRows(section, opts = {}) {
     }
 
     const value = +vm[1].replace(/,/g, "");
-    // prose sentences that happen to end in a number are not holdings
-    if (t.split(/\s+/).length > 14 && !/\$/.test(t)) { nameBuf = []; continue; }
+    // prose sentences that happen to end in a number are not holdings.
+    // Spaced dot-leaders (". . . .", the Costco class) are typography, not
+    // words — counting them as words made every leadered holding without a
+    // $ look like prose and silently emptied whole real menus.
+    if (t.split(/\s+/).filter((w) => !/^\.+$/.test(w)).length > 14 && !/\$/.test(t)) { nameBuf = []; continue; }
     let body = t.slice(0, t.length - vm[0].length).trim().replace(/^\*+\s*/, "");
     body = stripTrailingColumns(body);
     // a bare number with no name on the same line is a leaked year/page/column
@@ -224,8 +227,13 @@ export function parseRows(section, opts = {}) {
     // menu 5 of 17 rows. Strip the leaders and keep the row when what
     // remains reads like a fund name; item-numbered and type-only residue
     // is still the form/TOC junk the original rule targeted.
-    if (/\.{6,}/.test(name)) {
-      const del = name.replace(/ ?\.{3,} ?/g, " ").replace(/\s{2,}/g, " ").trim();
+    // leaders come in two typesettings: consecutive dots ("Fund......") and
+    // SPACED dots ("PIMCO . . . . Income Institutional", the Costco/JPM
+    // class, where the run separates the issuer column from the description
+    // column of the SAME row). Both strip to a space; initials like "U.S."
+    // have only two dots and never match the 3+/4+ runs.
+    if (/\.{6,}/.test(name) || /(?:\.\s){4,}/.test(name)) {
+      const del = name.replace(/ ?\.{3,} ?/g, " ").replace(/(?: ?\. ){3,}\.? ?/g, " ").replace(/\s{2,}/g, " ").trim();
       if (/^\(?[a-z0-9]{1,3}\)/i.test(del) || typeOnly(del) || !/[a-z]{3}/i.test(del)) continue;
       name = del;
     }

@@ -971,6 +971,32 @@ smoke test now clicks after load — imitating a real visitor — and then
 asserts the fee section resolved, which keeps the check honest in both
 frozen and normal environments.
 
+## 2026-08-09 — v42: spaced dot-leaders read as "words" — the prose filter silently emptied whole real menus (Costco class)
+
+**What was wrong.** Filings that typeset spaced dot-leaders between the
+issuer and description columns ("PIMCO . . . . . . Income Institutional
+. . . ** $610,665" — Costco, and the wider class the F500 audit flagged
+as no-lineup with section-found status) lost nearly every holding: the
+prose-sentence guard counts whitespace-separated tokens, each ". " leader
+dot counted as a word, and any leadered row without a literal "$" looked
+like >14-word prose. Costco's $41.5B plan parsed to a single junk row
+("PIMCO . . . . ." with leaders intact — the v41 leader recovery only
+matched CONSECUTIVE dots, not spaced ones). Found via the Fortune 500
+coverage audit's no-lineup diagnostics, confirmed against the filing PDF.
+
+**The change (v42).** (1) The prose filter excludes bare dot tokens from
+its word count; (2) the leader-strip recovery also fires on spaced runs
+(`(?:\.\s){4,}`) and strips them (`(?: ?\. ){3,}`) — initials like
+"U.S." carry only two dots and never match. Costco now parses 30 funds,
+ratio 0.97, confident: the full T. Rowe Price target-date family,
+$18.3B company stock, and the managed-account bucket classified.
+
+**The prevention.** Costco joins the parser gate as a permanent live
+specimen (n=30, sum $39.0B); the gate runs before every universe parse.
+Lesson recorded: token-count heuristics must normalize typography
+(leaders, column glue) BEFORE counting — a filter that never sees clean
+text can't judge it.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
