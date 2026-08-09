@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About wampo — how the 401(k) &amp; 403(b) data works</title>
+<meta name="description" content="Where wampo's 401(k) and 403(b) plan data comes from, how it's extracted from Form 5500 filings, what's verified, what isn't, and how to submit corrections.">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,400&family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=20260807a">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔎</text></svg>">
+<style>
+  .about-page { max-width: 760px; margin: 0 auto; padding: 32px 20px 60px; }
+  .about-page h1 { font-family: "Fraunces", serif; font-weight: 400; font-size: 34px; margin: 0 0 6px; }
+  .about-page h2 { font-family: "Fraunces", serif; font-weight: 600; font-size: 21px; margin: 34px 0 10px; }
+  .about-page p, .about-page li { font-size: 15px; line-height: 1.65; color: var(--text-secondary); }
+  .about-page strong { color: var(--text-primary); }
+  .about-page ul { padding-left: 22px; }
+  .about-page a { color: inherit; }
+  .back-link { display: inline-block; margin-bottom: 26px; font-size: 14px; }
+</style>
+</head>
+<body>
+<main class="about-page">
+  <a class="back-link" href="./">&larr; Back to the plan explorer</a>
+  <h1>About wampo</h1>
+  <p>wampo shows what's actually inside U.S. workplace retirement plans — the employer match, vesting
+  schedule, fund lineup, fees, and design features of every 401(k) and ERISA 403(b) plan with 100 or more
+  participants. Everything filed comes from public government filings; nothing is guessed.</p>
+
+  <h2>Where the data comes from</h2>
+  <ul>
+    <li><strong>Form 5500 filings (DOL EFAST2).</strong> Every plan on the site is built from its sponsor's
+    own annual Form 5500 filing: participant counts, assets, contributions, and expense lines from
+    Schedule&nbsp;H; service-provider compensation from Schedule&nbsp;C; insurance commissions from
+    Schedule&nbsp;A; testing/safe-harbor status from Schedule&nbsp;R; master-trust links from Schedule&nbsp;D.</li>
+    <li><strong>The audited financial statements attached to those filings.</strong> Fund lineups come from the
+    auditor's Schedule of Assets (Schedule H line 4i); match formulas, vesting schedules, Roth and after-tax
+    provisions, auto-enrollment, eligibility, and loan terms are extracted from the audit notes and quoted
+    <em>verbatim</em> next to what we display. Scanned attachments are recovered with OCR and labeled as such.</li>
+    <li><strong>A community-maintained overlay</strong> fills small gaps (fund tickers, some plan features).
+    It never overrides filed data — where the two disagree, the filing wins.</li>
+  </ul>
+
+  <h2>What "not yet verified" means</h2>
+  <p>If a field is blank or marked "not yet verified," the public filings genuinely don't state it — we show
+  the gap rather than a guess. Three states appear throughout the site: <strong>as filed</strong>,
+  <strong>affirmatively none</strong> (the filing says the plan doesn't have it), and <strong>not stated</strong>.
+  Silence in a filing is never rendered as "no."</p>
+
+  <h2>Known limitations — honestly</h2>
+  <ul>
+    <li><strong>Timing.</strong> Form 5500s are filed 7–19 months after the plan year ends, so most plans show
+    the prior plan year. The footer datestamp shows when data was last refreshed (weekly).</li>
+    <li><strong>Small plans.</strong> Plans that file the short-form 5500-SF (allowed for some plans) carry no
+    audited attachment by law — no fund lineup or feature notes exist publicly for them.</li>
+    <li><strong>Master trusts.</strong> Some large employers invest through master trusts whose own filings
+    disclose only asset categories, not funds. We link the trust and show what it files; where it files
+    nothing readable, that's a real gap in the public record, and we say so.</li>
+    <li><strong>Government and church plans.</strong> Governmental 457/401(a) plans and non-electing church
+    plans are exempt from filing — they're absent by law, not by oversight.</li>
+    <li><strong>No performance data.</strong> Filings don't contain fund returns, and we don't fabricate them.
+    Expense ratios shown are estimates from public fund data and are always labeled "est."</li>
+  </ul>
+
+  <h2>Fee comparisons</h2>
+  <p>Per-participant fee comparisons rank a plan's Schedule&nbsp;H administrative-expense line against every
+  other filed plan in the same size cohort — filed numbers against filed numbers, recomputed on every data
+  refresh. They exclude fund expense ratios, which are paid inside the investments.</p>
+
+  <h2>Corrections</h2>
+  <p>Every accuracy issue gets investigated and permanently logged. If your plan looks wrong or is missing,
+  open a <a href="https://github.com/evwes/no-app/issues">GitHub issue</a> with the company name — filings are
+  rechecked against the source PDF.</p>
+
+  <p class="muted" style="margin-top:40px">wampo is informational only and is not financial, legal, or tax
+  advice. Verify plan details against your own plan documents before acting on them.</p>
+</main>
+</body>
+</html>

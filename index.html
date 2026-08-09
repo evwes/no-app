@@ -11,7 +11,7 @@
 <!-- start the big data fetch during HTML parse, not after app.js runs -->
 <link rel="preload" href="plans-all.json" as="fetch" crossorigin>
 <link rel="preload" href="lineups-index.json" as="fetch" crossorigin>
-<link rel="stylesheet" href="styles.css?v=20260728a">
+<link rel="stylesheet" href="styles.css?v=20260807a">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔎</text></svg>">
 </head>
 <body>
@@ -98,14 +98,15 @@
   <div class="footer-inner">
     <p class="muted">© 2026 wampo. Data compiled from publicly available Form 5500 filings (DOL EFAST2).
     Informational only — not financial advice. Plan features marked "not yet verified" are absent from public filings.
+    <a href="about.html">About &amp; methodology</a>.
     <span id="dataAsOf"></span></p>
   </div>
 </footer>
 
 <!-- ?v= keys assets to this HTML revision so a cached page can never mix
      old and new scripts — bump the stamp on every frontend change -->
-<script src="data.js?v=20260728a"></script>
-<script src="fund-er.js?v=20260728a"></script>
-<script src="app.js?v=20260728a"></script>
+<script src="data.js?v=20260807a"></script>
+<script src="fund-er.js?v=20260807a"></script>
+<script src="app.js?v=20260807a"></script>
 </body>
 </html>

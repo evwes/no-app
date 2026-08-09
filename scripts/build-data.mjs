@@ -834,6 +834,41 @@ rowsOut.sort((a, b) => b[12] - a[12]); // by assets desc
 writeFileSync("plans-all.json", JSON.stringify({ generated: new Date().toISOString(), fields: FIELDS, count: rowsOut.length, plans: rowsOut }));
 console.log(`wrote plans-all.json: ${rowsOut.length} plans, ${(Buffer.byteLength(JSON.stringify(rowsOut)) / 1e6).toFixed(1)} MB`);
 
+/* --- fee percentiles: admin-expense-per-participant by plan-size cohort.
+ * Distribution over full-form filers that charged anything to plan assets;
+ * zeroShare separately reports how many comparable plans filed $0 (fees
+ * employer-paid or netted inside fund expenses — Sch H can't distinguish). */
+{
+  const iPart = FIELDS.indexOf("participants"), iAdmin = FIELDS.indexOf("adminExpenses"), iSF = FIELDS.indexOf("sf");
+  const COHORTS = [
+    { min: 100, max: 500, label: "100–499 participants" },
+    { min: 500, max: 1000, label: "500–999 participants" },
+    { min: 1000, max: 5000, label: "1,000–4,999 participants" },
+    { min: 5000, max: 20000, label: "5,000–19,999 participants" },
+    { min: 20000, max: Infinity, label: "20,000+ participants" },
+  ].map((c) => ({ ...c, perHead: [], zero: 0 }));
+  for (const r of rowsOut) {
+    if (r[iSF] || !(r[iPart] > 0)) continue;
+    const c = COHORTS.find((x) => r[iPart] >= x.min && r[iPart] < x.max);
+    if (!c) continue;
+    const admin = r[iAdmin] || 0;
+    if (admin > 0) c.perHead.push(admin / r[iPart]);
+    else c.zero++;
+  }
+  const QS = [0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95];
+  const cohorts = COHORTS.map((c) => {
+    c.perHead.sort((a, b) => a - b);
+    const q = (f) => c.perHead.length ? c.perHead[Math.min(c.perHead.length - 1, Math.floor(f * c.perHead.length))] : null;
+    return {
+      min: c.min, max: c.max === Infinity ? null : c.max, label: c.label,
+      n: c.perHead.length, zeroShare: +(c.zero / Math.max(1, c.zero + c.perHead.length)).toFixed(3),
+      qs: QS, p: QS.map((f) => c.perHead.length ? +q(f).toFixed(2) : null),
+    };
+  });
+  writeFileSync("fee-percentiles.json", JSON.stringify({ generated: new Date().toISOString(), cohorts }));
+  console.log("fee percentiles: " + cohorts.map((c) => `${c.label}: n=${c.n} zero=${(100 * c.zeroShare).toFixed(0)}% median=$${c.p[3]}`).join(" | "));
+}
+
 // master-trust parse work list for fetch-4i
 const mtiaOut = [...usedMtias.entries()].map(([ack, m]) => ({
   ack, name: m.name, planYear: m.year, assetsEOY: (schH.get(ack) || {}).assetsEOY || 0,

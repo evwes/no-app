@@ -283,7 +283,46 @@
    * data/fees shards, fetched on demand exactly like lineups. Fixed 64
    * shards, same ack hash. */
   const feeShardCache = new Map();
+  // Peer context for the Sch H expense lines: per-participant percentiles by
+  // plan-size cohort, computed across the whole universe in prep. Absence
+  // just hides the comparison — never blocks the filed numbers.
+  let feePctl = null, feePctlLoading = false;
+  async function ensureFeePctl() {
+    if (feePctl || feePctlLoading) return;
+    feePctlLoading = true;
+    try {
+      const r = await fetch("fee-percentiles.json", { cache: "no-cache" });
+      if (r.ok) { feePctl = await r.json(); render(); }
+    } catch { /* comparison unavailable; filed numbers still shown */ }
+  }
+  function feePeerNote(plan, perHead, adminRaw) {
+    if (!feePctl || !(plan.participants > 0)) return "";
+    const c = feePctl.cohorts.find((x) => plan.participants >= x.min && (x.max == null || plan.participants < x.max));
+    if (!c || !c.n) return "";
+    if (perHead == null) {
+      if (adminRaw > 0) return "";
+      return `<p class="max-benefit">No administrative expenses were charged to plan assets in this filing —
+        costs were either paid by the employer or netted inside fund expense ratios (the filing doesn't say which).
+        ${(100 * c.zeroShare).toFixed(0)}% of plans with ${c.label} also report $0.</p>`;
+    }
+    // estimated share of peer plans charging LESS per participant
+    let r;
+    if (perHead <= c.p[0]) r = c.qs[0];
+    else if (perHead >= c.p[c.p.length - 1]) r = c.qs[c.qs.length - 1];
+    else {
+      let i = 0;
+      while (perHead > c.p[i + 1]) i++;
+      const span = c.p[i + 1] - c.p[i];
+      r = c.qs[i] + (span > 0 ? (perHead - c.p[i]) / span : 0) * (c.qs[i + 1] - c.qs[i]);
+    }
+    const cheaper = r <= 0.5;
+    const pct = Math.round(100 * (cheaper ? 1 - r : r));
+    return `<p class="max-benefit"><strong>${usd(perHead)} per participant is ${cheaper ? "lower" : "higher"} than
+      ≈${pct}% of comparable plans</strong> (${c.label}; median ≈ ${usd(c.p[3])}/participant across ${c.n.toLocaleString()}
+      filings). Peer figures compare the same Schedule H administrative-expense line; fund expense ratios are separate.</p>`;
+  }
   async function ensureFees(plan) {
+    ensureFeePctl();
     if (!plan || !plan.feeKey || plan.isSF || plan.feeSchedule !== undefined || plan.feeLoading) return;
     plan.feeLoading = true;
     try {
@@ -682,6 +721,7 @@
       rows.push(`<div class="section-label">PLAN FEES — PAID FROM PLAN ASSETS <span class="section-sub">Form 5500 Schedule H expense lines</span></div>`);
       rows.push(hLines.map(([k, v]) => `<div class="flow-row"><span>${k}</span><span>${usd(v)}</span></div>`).join(""));
       rows.push(`<div class="flow-row"><span><strong>Total administrative expenses</strong>${perHead != null ? ` <span class="section-sub">≈ ${usd(perHead)} per participant</span>` : ""}</span><span><strong>${f.adminRaw > 0 ? usd(f.adminRaw) : "—"}</strong></span></div>`);
+      rows.push(feePeerNote(plan, perHead, f.adminRaw));
     }
     // who was paid (Schedule C provider table)
     const fsch = plan.feeSchedule;
