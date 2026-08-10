@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 43;
+export const PARSER_VERSION = 44;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b|^brokerage accounts?$/i, "SDBA"],
@@ -29,7 +29,11 @@ export function classify(text) {
 
 const SKIP_ROW = new RegExp("^(total|subtotal|grand total|schedule|page \\d|form 5500|ein[: ]|employer id|sponsor name|plan number|as of|see accompanying|\\(thousands|identity of issue|description of investment|rate of|maturity|cost\\b|current value|sales\\b|purchases\\b|dividends\\b|assets in.transit|investments? at fair value|dividend income|other income|administrative fees)|" +
   // financial-statement lines that are not 4i holdings
-  "(net assets|benefits paid|investment (income|gain|loss)|interest and dividends|realized|unrealized|appreciat|depreciat|transfers?\\b|contributions?\\b|deemed distribut|administrative expense|beginning of year|end of year|financial statements|indirect compensation|reconcil|adjustment|level [123]\\b|liabilit|receivable|payable|expenses\\b|distribution|net (increase|decrease|change)|due (to|from)|notes? (to|receivable)|similar party|description of investment|current value)|" +
+  // "investments?,? at (fair|contract) value" must tolerate the comma/dash
+  // spellings — 631 confident lineups carried "Investments, at fair value"
+  // statement rows (up to 97% of the shown sum) because only the bare
+  // space-separated form was covered
+  "(net assets|benefits paid|investment (income|gain|loss)|interest and dividends|realized|unrealized|appreciat|depreciat|transfers?\\b|contributions?\\b|deemed distribut|administrative expense|beginning of year|end of year|financial statements|indirect compensation|reconcil|adjustment|level [123]\\b|liabilit|receivable|payable|expenses\\b|distribution|net (increase|decrease|change)|due (to|from)|notes? (to|receivable)|similar party|description of investment|current value|investments?,?\\s*[—–-]?\\s*at (fair|contract) value)|" +
   // form-page boilerplate: a filing with NO 4i attachment can still seed a
   // region from the Schedule H checkbox line, and the parser then reads phone
   // numbers and zip codes off address/signature pages as \"values\" (Aramark)
@@ -229,14 +233,42 @@ export function parseRows(section, opts = {}) {
     name = name.replace(/\s*\*+\s*$/, ""); // trailing footnote markers
     // wrapped lines carry their column gaps into the assembled name
     name = name.replace(/\s{2,}/g, " ");
+    // "N/A" is the cost column (col d) gluing onto the name — 20k+ stored
+    // names carried it ("500 Index Fund N/A"); note references are auditor
+    // cross-refs, not part of the fund's name ("... (see Note 5)")
+    name = name.replace(/(^|\s)N\/A(?=\s|$)/gi, " ")
+      .replace(/\s*\(\s*(see\s+)?notes?\s+[^)]{1,16}\)\s*$/i, "")
+      // a lone trailing "0" is a glued zero-cost column (double-rendered
+      // schedules, Plexsys class) — with it stripped, both renditions
+      // produce the same name and the same-value dedup collapses them
+      .replace(/\s+0$/, "")
+      // trailing footnote-column residue: "Target date fund #",
+      // "Interest in Eaton Stable Value Fund - See" (wrapped "- See
+      // Footnote 1" cross-ref) — never part of the fund's name
+      .replace(/\s+#$/, "")
+      .replace(/\s*[-–—]\s*see$/i, "")
+      .replace(/\s{2,}/g, " ").trim();
+    if (!name || name.length < 4) continue;
     // financial-statement rows ("Participants 41,200,000", "Company",
     // "Rollover", "From participants") leak in when a candidate region
     // sweeps a contributions schedule — bare finance nouns are never funds
     if (/^(participants?|company|employer|employee|rollovers?|forfeitures?|interest|dividends|other|contributions?|(?:from|to) participants?|other net disbursements?|net disbursements?)$/i.test(name.trim())) continue;
+    // administrative-expense NOTE rows ("Payroll taxes 79,790 74,287",
+    // "Occupancy", "Printing and postage") leak from two-column expense
+    // schedules with the PRIOR-year figure as the line-terminal "value" —
+    // bare accounting nouns are never funds
+    if (/^(payroll( taxes| audits)?|employee benefits|occupancy|office( expenses?)?|office equipment( and rental)?|printing( and postage)?|postage|legal( and collection| fees)?|accounting( fees)?|audit(ing)? fees?|consulting|insurance|utilities|earnings|custodial (fees?|services)|recordkeeping fees?|trustee fees?|investment and custodial services|outside services|temporary services|security expense|conferences and meetings|travel( and conferences?)?|repairs and maintenance|reimbursements to related organizations?)$/i.test(name.trim())) continue;
+    // page carry-forward subtotals ("Forward  $21,786,094  $23,237,830" at
+    // the top of every continuation page) — the same-name dedup SUMS the
+    // distinct per-page values into a fake nine-figure "fund"
+    if (/^(balance |carried |brought )?forwards?$/i.test(name.trim())) continue;
+    // form/signature boilerplate that assembles into a named row
+    if (/signature of (the )?(plan administrator|plan sponsor|employer|dfe)|^amounts per (the )?form \$?5?500\b/i.test(name)) continue;
     // EIN/plan-number heading lines glue to a column value and land as fake
-    // $1M+ "holdings" ("SPONSOR EIN: 23-", "Employee Identification Number:
-    // 83-") — they inflate the region sum and tank its assets ratio
-    if (/^(sponsor(?:'s)? |plan )?(federal )?(employer|employee) identification number\b|^(sponsor |plan )?ein\b|^e\.\s?i\.\s?n\.?\s*[:#]|^plan number\b|\bein\s*#?\s*\d{0,2}-?$/i.test(name.trim())) continue;
+    // $1M+ "holdings" ("SPONSOR EIN: 23-", "PLAN'S EMPLOYER IDENTIFICATION
+    // NUMBER: 34-" — that one displayed the EIN's own last digits as a
+    // $4.4M fund) — they inflate the region sum and tank its assets ratio
+    if (/^(sponsor(?:['’]s)? |plan(?:['’]s)? )?(federal )?(employer|employee) identification number\b|^(sponsor |plan )?ein\b|^e\.\s?i\.\s?n\.?\s*[:#]|^plan number\b|\bein\s*#?\s*\d{0,2}-?$/i.test(name.trim())) continue;
     // dotted-leader runs are USUALLY form/TOC lines ("(1) Employer
     // Securities ......."), but some real menus typeset leaders between the
     // fund name and its value — dropping those cost a confident Vanguard
@@ -262,6 +294,10 @@ export function parseRows(section, opts = {}) {
     // income - investments", "Participants may borrow …") — AVI-SPL's
     // junk-confident 5-row "lineup" was built of these
     if (/^net (?:income|assets)\b|per form 5500|^interest and dividend|^contributions? receivable|^participants may borrow|^notes? receivable/i.test(name.trim())) continue;
+    // statement-of-net-assets lines assembled across wraps ("Assets
+    // Investments, at fair value") — the line-level SKIP_ROW can't see
+    // the assembled form
+    if (/^(assets[.,]?\s+)?investments?,?\s*[—–-]?\s*at (fair|contract) value/i.test(name.trim())) continue;
     // Schedule H part-II item lines ("(c) Value of interest in ...") leak
     // when a type-cut removes their dotted leaders before the leader check
     if (/^\(?[a-z0-9]{1,3}\)\s*value of\b|^value of interest\b/i.test(name.trim())) continue;

@@ -48,6 +48,16 @@ const SPECIMENS = [
     { found: true, n: 2, sum: 8313440378 }],
   ["Eaton trust (cents values)", "20251014082229NAL0001120627001", 8537015596,
     { found: true, n: 51, sum: 8530688968 }],
+  // v44: double-rendered schedule whose second rendition glues a "0" cost
+  // column onto names — same-name dedup missed it and the region summed
+  // both copies (ratio 2.02, lost the lineup)
+  ["Plexsys (glued-0 dedup)", "20260706150053NAL0023514192001", 36432027,
+    { found: true, n: 32, sum: 37829365 }],
+  // v44: page carry-forward subtotals ("Forward $21,786,094 ...") summed
+  // across pages into a fake $197M top "fund" on a statement-page win;
+  // with Forward dropped this filing honestly fails the ratio band
+  ["Carry-forward subtotals", "20251008154534NAL0005779537001", 295570079,
+    { found: true, n: 6, sum: 551546250 }],
   ["Black Hills", "20260623190115NAL0012535394001", 933735584,
     { found: true, n: 21, sum: 911785769 }],
 ];

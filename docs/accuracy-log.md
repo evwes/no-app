@@ -1068,6 +1068,69 @@ Lesson recorded: a confidence rule keyed to count+ratio treats a POINTER
 at the right total as a lineup — provenance-shaped rows (interest-in-X)
 need their own class, not just better thresholds.
 
+## 2026-08-10 — v44: proactive universe sweep for Eaton-class junk in CONFIDENT lineups (owner directive: apply the learnings everywhere)
+
+**What was wrong.** After the Eaton fixes, a scan of all 55,961 confident
+stored lineups for junk signatures found five more classes being displayed
+as "FUND HOLDINGS" (each verified by hand against the actual filing before
+a pattern was written):
+
+1. **Statement rows in 631 lineups** — "Investments, at fair value" was
+   only skipped in its comma-less spelling; the comma/dash variants leaked,
+   and in the worst filings the row is 80–97% of the shown sum (one $259M
+   "lineup" was just a Statement of Net Assets). Verified: comma variant
+   confirmed in 20250930101132NAL0005432355001 (via its fb:2023 entry) and
+   others.
+2. **Administrative-expense notes in ~25 filings** — two-column expense
+   schedules ("Payroll taxes 79,790 74,287") parse the PRIOR-year column
+   as a value; "Occupancy", "Office", "Printing and postage" displayed as
+   funds. Verified in NYC Carpenters 20260325100850NAL0004138785001.
+3. **EIN headings in 293 filings** — "PLAN'S EMPLOYER IDENTIFICATION
+   NUMBER: 34-" glued to the EIN's own digits and displayed as a $4.4M
+   fund; the existing guard missed the possessive "PLAN'S" form. Verified
+   in 20251014145624NAL0001541123001.
+4. **Page carry-forward subtotals** — "Forward $21,786,094 $23,237,830" at
+   the top of every continuation page; the same-name dedup SUMS the
+   distinct per-page values into a fake nine-figure holding ($197.5M in
+   20251008154534NAL0005779537001). With Forward dropped, that filing's
+   statement parse honestly fails the ratio band — a junk-confident entry
+   becomes a truthful gap.
+5. **"N/A" cost-column glue in 1,262 filings (20,494 rows)** — "500 Index
+   Fund N/A"; plus "(see Note 5)" cross-refs, trailing "#" footnote
+   markers, and "- See" truncations in fund names. Cosmetic, but at scale
+   it reads as sloppiness and erodes trust in the numbers next to it.
+
+Also shipped: the v43-recorded Plexsys candidate — double-rendered
+schedules whose second rendition glues a "0" cost column onto names,
+defeating dedup (ratio 2.02). Stripping the lone trailing "0" collapses
+both renditions; Plexsys recovers a confident 32-fund Vanguard menu at
+ratio 1.04.
+
+**Why they survived.** Same root cause as Eaton: every guard was written
+against the specific rendering that produced a known defect, and no sweep
+ever hunted the PATTERN CLASS across stored output. The audit checks
+identities (sums, counts) — junk rows that are small, or statement rows
+that make the sum look RIGHT, pass identity checks by construction.
+
+**The change (v44).** SKIP_ROW: comma/dash-tolerant
+"investments,? at (fair|contract) value". Name filters: bare accounting
+nouns (payroll/occupancy/office/printing…), signature/"amounts per Form
+5500" boilerplate, possessive EIN headings, carry-forward subtotals.
+Name cleanup: strip "N/A" tokens, "(see Note X)" refs, trailing "#",
+trailing "- See", and the lone trailing "0" (dedup fix). PARSER_VERSION
+44 re-parses the universe.
+
+**The prevention.** Plexsys and the carry-forward filing join the gate
+(15 specimens, all green; Eaton pair unchanged byte-for-byte). The
+junk-signature scan itself (scratchpad junk-hunt) becomes part of the
+daily accuracy cycle: after each re-parse, re-scan confident lineups for
+the signature classes and for NEW suspicious shapes (bare single-word
+names with tiny values, digit-heavy names). Known residual, recorded
+honestly: NYC Carpenters-class filings where a Statement of Net Assets
+outscores the real per-class 4i pages — needs region-scoring work, not
+row patterns; their display is class-aggregate (defensible) with junk
+rows now removed.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

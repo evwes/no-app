@@ -241,14 +241,21 @@ don't confuse them). Frontend: python http.server + Playwright at
 ## Current state (2026-07-21)
 
 - Universe 110,555 plans (incl. ERISA 403(b)s); ~68.7k parseable filings
-  at parser v43 + OCR v2 (v43 2026-08-10, Eaton owner report: cents-tolerant
+  at parser v44 + OCR v2 (v44 2026-08-10, junk sweep of confident lineups:
+  comma-tolerant "Investments, at fair value" statement rows [631 lineups
+  affected, worst 97% of shown sum], expense-note nouns, possessive EIN
+  headings, page carry-forward subtotals [dedup summed them to fake $197M
+  funds], N/A///(see Note)/#/"- See"/trailing-0 name cleanup — the
+  trailing-0 strip is the Plexsys double-render dedup fix, recovers that
+  class. v43 same day, Eaton owner report: cents-tolerant
   valueRe + $0.00/paren-negative/columnized-address row guards + trustPtr
   flag — trust-interest-dominated parses [≤8 rows, ≥60% of sum] are never
   confident, status carries tp:1; frontend never shows a trust-pointer as
   last resort, search ranks word-boundary company matches first. v42
-  2026-08-09: spaced dot-leader recovery — Costco class; leaders counted
-  as "words" and tripped the prose filter); 53.2k confident lineups
-  pre-v43, 60.3k with features.
+  2026-08-09: spaced dot-leader recovery — Costco class. Gate is 15 live
+  specimens. Known residual: NYC-Carpenters class where a Statement of
+  Net Assets outscores real per-class 4i pages — region-scoring work);
+  53.2k confident lineups pre-v43, 60.3k with features.
   v34/v35 (2026-08-03): repeated-page dedup (schedules render twice per
   filing!), EIN-heading + dotted-leader junk rows, statement-page penalty
   — net +817 confident lineups; statement fragments no longer displace
