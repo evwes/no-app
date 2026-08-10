@@ -222,7 +222,7 @@ let fetched = 0;
 const delta = { status: {}, entries: {} };
 function record(plan, entry, features) {
   if (features) entry.features = features;
-  const meta = { pv: PARSER_VERSION, ov: OCR_VERSION, c: entry.confident ? 1 : 0, s: entry.sdba ? 1 : 0, ...(features ? { f: 1 } : {}), ...(entry.error ? { e: entry.error } : {}), ...(entry.fb ? { fb: entry.fb } : {}) };
+  const meta = { pv: PARSER_VERSION, ov: OCR_VERSION, c: entry.confident ? 1 : 0, s: entry.sdba ? 1 : 0, ...(features ? { f: 1 } : {}), ...(entry.error ? { e: entry.error } : {}), ...(entry.fb ? { fb: entry.fb } : {}), ...(entry.trustPtr ? { tp: 1 } : {}) };
   status.plans[plan.ack] = meta;
   delta.status[plan.ack] = meta;
   const keep = (entry.confident && entry.funds.length) || features;
@@ -241,7 +241,8 @@ function isConfident(parsed) {
   // while genuine 3-4 row lineups sit near 1.0
   return parsed.funds.length >= 3 && ratio > 0.45 && ratio < 1.6 &&
     (parsed.funds.length >= 5 || (ratio > 0.7 && ratio < 1.3)) &&
-    !parsed.stmt; // statement-vocabulary fragments are never a real menu
+    !parsed.stmt && // statement-vocabulary fragments are never a real menu
+    !parsed.trustPtr; // "interest in master trust" pages point AT a lineup, they aren't one
 }
 
 /* download + extract + parse (with OCR fallback) for ONE ack. Throws on
@@ -371,6 +372,7 @@ for (const plan of work) {
     smaKind: parsed.smaKind,
     ...(usedOcr ? { ocr: 1 } : {}),
     ...(fbUsed ? { fb: fbUsed.y } : {}),
+    ...(parsed.trustPtr ? { trustPtr: 1 } : {}),
     source: fbUsed
       ? `Schedule H line 4i attachment from the plan's ${fbUsed.y} filing — the newest filing's public copy has no readable schedule${usedOcr ? "; digitized from scanned pages via OCR" : ""}`
       : `Schedule H line 4i attachment, plan year ${plan.planYear} filing${usedOcr ? " (digitized from scanned pages via OCR)" : ""}`,

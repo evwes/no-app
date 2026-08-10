@@ -1013,6 +1013,61 @@ before the dedup merge — both renditions would collapse, ratio → ~1.0,
 recovering the double-render class properly. Plexsys
 20260706150053NAL0023514192001 is the specimen.
 
+## 2026-08-10 — Eaton (owner-submitted): trust-pointer page displayed as a confident "lineup" (incl. a zip code as a $44k fund); the trust's real menu lost to cents-formatted values; substring search outranked the named company (v43)
+
+**What was wrong.** The owner searched "Eaton corp" and got two defects at
+once. (1) Eaton Savings Plan ($8.4B, EIN 34-0196300/055) displayed "FUND
+HOLDINGS — 3 FILED": "Master Trust N/A" $8.0B, "Interest in Eaton Stable
+Value Fund - See" $292.4M, and "CLEVELAND" $44,122 — that last "fund" is
+the sponsor's ZIP code (44122) read off the form's address block, because
+the 4i region runs to the signature page and the address-line guard in
+SKIP_ROW only matched the comma form ("Cleveland, OH 44122") while
+`-layout` renders it columnized ("CLEVELAND   OH   44122"). The page is a
+trust POINTER — its 3 rows at ratio 0.99 sailed through the confidence
+rule (≥3 funds, ratio 0.7–1.3), and the junk displaced the honest gap.
+(2) The real menu exists in the Eaton Savings Trust's own filing (EIN
+47-5346861, linked via Schedule D since the first parse) but every value
+there carries CENTS ("$175,869,410.45") and valueRe demanded a
+line-terminal comma-grouped INTEGER — zero rows parsed, c:0, so the
+frontend's trust-preference logic had nothing to fall back to and showed
+the pointer rows as a last resort. (3) Search ranked substring matches
+(Wheaton College, Neaton Auto) level with the company actually named.
+
+**Why it survived this long.** No specimen in the regression set files
+cents-formatted values — the class was invisible to the gate. The
+trust-pointer hole was HALF-known: Kohler's 1-row variant is a specimen,
+but 1 row fails the ≥3-funds rule on its own, so no confidence guard for
+the 3-row variant (pointer + stable value + a junk row) ever existed.
+The zip guard was written against the comma rendering seen in Aramark and
+never re-tested against columnized addresses. Search ranking was a known
+cosmetic issue that never got prioritized — wrongly, since search is the
+front door.
+
+**The change (v43).** (1) valueRe tolerates cents (`(?:\.\d{1,2})?`);
+rates like "10.50" still fail the 3-digit minimum. Three new row guards
+keep cents layouts clean: "$0.00" holdings drop instead of gluing into
+the next row's name, line-terminal parenthesized negatives (accrued
+fees/liabilities on trust fund-accounting pages) drop, and columnized
+`CITY  ST  12345` lines drop. (2) parse4i flags parses where
+trust-interest rows dominate (≤8 rows, ≥60% of the sum) as `trustPtr`;
+isConfident rejects them, and the TYPE_PATTERN now matches named-trust
+phrasing ("Interest in Eaton Savings Trust Master Trust"). (3) app.js
+never displays a majority-trust-pointer lineup as a last resort — the
+honest gap wins until the trust parses. (4) visiblePlans applies
+relevance tiers under every column sort: exact/word-boundary sponsor
+or ticker matches first, mid-word prefixes next, substrings last.
+Result: the plan page now shows the trust's real 51-fund menu (ratio
+0.999 — full LifePath family, Vanguard 500 $772.3M, Eaton shares $2.1B),
+and "eaton" ranks both Eaton Corporation plans first.
+
+**The prevention.** Both Eaton filings join the parser gate as permanent
+live specimens: the plan (n=2, sum $8.31B, trust-pointer) and the trust
+(n=51, sum $8.53B, cents). Gate is 13 specimens, all green. `tp:1` in
+lineups-status marks every trust-pointer parse so the class is countable.
+Lesson recorded: a confidence rule keyed to count+ratio treats a POINTER
+at the right total as a lineup — provenance-shaped rows (interest-in-X)
+need their own class, not just better thresholds.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

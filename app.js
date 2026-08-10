@@ -423,11 +423,12 @@
       // use the plan's own schedule unless it is missing or majority
       // "Investment in Master Trust" — then the trust's real holdings win
       let ownUsable = !!(lu && lu.confident && lu.funds && lu.funds.length);
+      let trustPointer = !!(lu && lu.trustPtr);
       if (ownUsable && plan.trustKey) {
         const tot = lu.funds.reduce((a, f) => a + f.value, 0) || 1;
         const mti = lu.funds.filter((f) => f.type === "Master trust interest" || /master trust/i.test(f.name))
           .reduce((a, f) => a + f.value, 0);
-        if (mti / tot > 0.5) ownUsable = false;
+        if (mti / tot > 0.5) { ownUsable = false; trustPointer = true; }
       }
       if (!ownUsable && plan.trustKey) {
         const tlu = await fetchEntry(plan.trustKey);
@@ -440,7 +441,10 @@
             source: `master trust filing (${tlu.source || "Schedule H line 4i"})` };
         }
       }
-      if (!plan.filedLineup && lu && lu.confident && lu.funds && lu.funds.length) plan.filedLineup = lu;
+      // a trust-POINTER page ("Interest in X Master Trust $8B") is never a
+      // menu — when the trust's own filing isn't parsed, show the honest gap
+      // rather than the pointer rows (Eaton showed 3 junk "funds" this way)
+      if (!plan.filedLineup && !trustPointer && lu && lu.confident && lu.funds && lu.funds.length) plan.filedLineup = lu;
       if (lu && lu.features) {
         const ff = lu.features;
         plan.filedFeatures = ff;
@@ -521,11 +525,35 @@
     return true;
   }
 
+  // relevance tier for an active search: 0 = the company the user named
+  // (exact/word-prefix sponsor name, or exact ticker), 1 = name starts with
+  // the query mid-word ("Eatontown"), 2 = substring/other-field match
+  // ("Wheaton College"). Sorting applies tiers first so "eaton" can never
+  // rank Wheaton above Eaton Corporation under ANY column sort.
+  function searchRank(plan, q) {
+    if ((plan.ticker || "").toLowerCase() === q) return 0;
+    const name = (plan.company || "").toLowerCase();
+    const i = name.indexOf(q);
+    if (i < 0) return 2;
+    const before = i === 0 || /[^a-z0-9]/.test(name[i - 1]);
+    const after = i + q.length >= name.length || /[^a-z0-9]/.test(name[i + q.length]);
+    if (i === 0 && after) return 0;   // "eaton" → "Eaton Corporation"
+    if (before && after) return 0;    // "chase" → "JPMorgan Chase & Co"
+    if (before) return 1;             // prefix of a longer word: "Eatontown"
+    return 2;                         // mid-word: "Wheaton"
+  }
+
   function visiblePlans() {
     const q = state.query.trim().toLowerCase();
-    const out = state.plans.filter((p) => matchesQuery(p, q) && passesFilters(p));
+    const out = [];
+    for (const p of state.plans) {
+      if (!matchesQuery(p, q) || !passesFilters(p)) continue;
+      p.rank = q ? searchRank(p, q) : 0;
+      out.push(p);
+    }
     const { key, dir } = state.tableSort;
     out.sort((a, b) => {
+      if (a.rank !== b.rank) return a.rank - b.rank;
       if (key === "company") return a.company.localeCompare(b.company) * -dir;
       const va = key === "assets" ? a.assetsB : key === "participants" ? a.participants : a[key];
       const vb = key === "assets" ? b.assetsB : key === "participants" ? b.participants : b[key];

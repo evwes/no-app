@@ -40,6 +40,14 @@ const SPECIMENS = [
     { found: true, n: 10, sum: 150128940 }],
   ["Kohler (trust interest)", "20251014134011NAL0002916849001", 781346186,
     { found: true, n: 1, sum: 845895707 }],
+  // v43: a trust-POINTER page ("Interest in Eaton Savings Trust Master
+  // Trust" + stable value) hit 3 rows at ratio 0.99 — incl. a $44k "fund"
+  // that was really the sponsor's zip code — and displayed as a confident
+  // lineup while the trust's real menu failed on cents-formatted values
+  ["Eaton plan (trust pointer)", "20251014081726NAL0003409184002", 8394581291,
+    { found: true, n: 2, sum: 8313440378 }],
+  ["Eaton trust (cents values)", "20251014082229NAL0001120627001", 8537015596,
+    { found: true, n: 51, sum: 8530688968 }],
   ["Black Hills", "20260623190115NAL0012535394001", 933735584,
     { found: true, n: 21, sum: 911785769 }],
 ];

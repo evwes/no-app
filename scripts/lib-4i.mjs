@@ -3,12 +3,13 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 42;
+export const PARSER_VERSION = 43;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b|^brokerage accounts?$/i, "SDBA"],
   [/publicly[- ]traded stock/i, "Stock"],
-  [/interest in (the )?master trust/i, "Master trust interest"],
+  // named trusts intervene: "Interest in Eaton Savings Trust Master Trust"
+  [/interest in .{0,40}\bmaster trust\b/i, "Master trust interest"],
   [/collective trust|common\/collective|common collective|collective investment trust|commingled/i, "Collective trust"],
   [/mutual fund|registered investment/i, "Mutual fund"],
   [/pooled separate/i, "Pooled separate account"],
@@ -86,7 +87,10 @@ export function parseRows(section, opts = {}) {
   // a valueless "Total ..." line means the subtotal WRAPPED: its value arrives
   // on the next short line ("Total Registered Investment" ↵ "Companies  613,913,288")
   let totalWrap = false;
-  const valueRe = /\$?\s*([0-9][0-9,]{2,})\s*$/;
+  // values may carry cents ("$175,869,410.45" — Eaton Savings Trust files its
+  // whole menu that way); capture the dollars, tolerate the cents. Rates like
+  // "10.50" stay out: the capture needs 3+ digit/comma chars before the dot.
+  const valueRe = /\$?\s*([0-9][0-9,]{2,})(?:\.\d{1,2})?\s*$/;
 
   for (const raw of section) {
     // leading "*" is the party-in-interest marker on holding rows — drop it
@@ -120,6 +124,18 @@ export function parseRows(section, opts = {}) {
         if (/(^|\s)-$/.test(t)) { nameBuf = []; continue; } // worthless holding
       }
     }
+    // cents layouts write empty holdings as "$0.00" — a zero row is not a
+    // holding and must never glue into the NEXT row's name via nameBuf
+    if (/(?:^|[\s$])0\.0{1,2}\s*$/.test(t)) { nameBuf = []; continue; }
+    // line-terminal parenthesized numbers are negatives (accrued fees /
+    // liabilities on trust fund-accounting pages) — not holdings, and not
+    // wrapped name fragments either
+    if (/\(\s*\$?\s*[0-9][0-9,]*(?:\.\d{1,2})?\s*\)\s*$/.test(t)) { nameBuf = []; continue; }
+    // columnized address lines ("CLEVELAND   OH   44122"): the comma form is
+    // in SKIP_ROW, but -layout renders sponsor addresses as columns and the
+    // zip then parses as a $44k holding (Eaton)
+    if (/\s[A-Z]{2}\s+\d{5}(?:-\d{4})?\s*$/.test(t) && !/\$/.test(t) &&
+        t.split(/\s+/).length <= 5) { nameBuf = []; continue; }
     if (SKIP_ROW.test(t) || DATE_LINE.test(t)) {
       nameBuf = [];
       totalWrap = /^(sub|grand )?total\b/i.test(t) && !valueRe.test(t);
@@ -420,10 +436,22 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
   }
   for (const f of funds) delete f.sec;
 
+  // trust-POINTER pages: a member plan's own 4i is often just "Interest in
+  // <X> Master Trust $8B" plus a stray row or two (Eaton: + stable value +
+  // loans). At 3+ rows and ratio ≈ 1 it sailed through the confidence rule
+  // and displayed as a "lineup" — the real menu lives in the trust's own
+  // filing. When trust-interest rows dominate a small parse, flag it so it
+  // can never be marked confident.
+  const trustish = funds.filter((f) => f.type === "Master trust interest" ||
+    /^(value of )?interest in .{0,50}\btrust\b/i.test(f.name) || /^master trust\b/i.test(f.name));
+  const tSum = trustish.reduce((a, f) => a + f.value, 0);
+  const allSum = funds.reduce((a, f) => a + f.value, 0);
+  const trustPtr = funds.length <= 8 && allSum > 0 && tSum / allSum >= 0.6;
+
   // a statement-vocabulary fragment can still WIN when it's the only
   // candidate (the real schedule is scanned or absent) — surface the flag
   // so it can never be marked confident
-  return { found: true, thousands: best.scale === 1000, sdba: sdbaOut, funds, ratio: best.ratio, ...(best.stmt ? { stmt: 1 } : {}), ...(sma ? { sma, smaKind } : {}) };
+  return { found: true, thousands: best.scale === 1000, sdba: sdbaOut, funds, ratio: best.ratio, ...(best.stmt ? { stmt: 1 } : {}), ...(trustPtr ? { trustPtr: 1 } : {}), ...(sma ? { sma, smaKind } : {}) };
 }
 
 /* ---- plan-feature extraction from the filing's audit notes ---------------- */
