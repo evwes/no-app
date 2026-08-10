@@ -1131,6 +1131,59 @@ outscores the real per-class 4i pages — needs region-scoring work, not
 row patterns; their display is class-aggregate (defensible) with junk
 rows now removed.
 
+## 2026-08-10 — v43 re-parse verification + v45: the cents fix made appended recordkeeper statements readable, doubling regions that used to parse clean
+
+**v43 diff (run 31411969272): +654 / −181, confident 55,961 → 56,434.**
+Both Eaton plans now tp:1 with the trust confident at 51 funds — the
+owner-reported page is fixed end-to-end. Losses sampled per protocol
+(pull the filing, compare v42 output vs current):
+
+- The trust-pointer cohort (Eaton ×2, a $4.96B and $3.36B and $3.25B
+  "Master Trust" lineup, Dairy Farmers, …) — intended: junk pointers
+  became honest gaps that fall through to trust lineups where linked.
+- 20251008145355 (22-fund CIT menu) — transient: v43's parse shifted its
+  dedup, v44's name normalization restores it confident (verified
+  locally, ratio 0.64). Self-heals in the v44 re-parse.
+- 20251015115746 (Sierra Space, real 29-fund menu, was ratio 1.0) — REAL
+  REGRESSION, root-caused: the filing appends a recordkeeper "SUMMARY OF
+  NET TRUST ASSETS" page after the 4i table — the same menu in ALL CAPS
+  with cents values. Pre-v43 the cents were unreadable so the summary
+  contributed nothing; the cents fix made it parse and the region summed
+  BOTH copies (ratio 1.89 → rejected). **v45**: the summary heading joins
+  stopRe (region ends there, like Portfolio Statement); Sierra Space
+  recovers n=29 sum=$291,893,410 exactly, and joins the gate (16
+  specimens, green). Lesson: widening what the parser can READ widens
+  what junk it can read too — every reader fix needs a matching look at
+  what NEW text it now ingests.
+- 20251014104258 (LifePath Paycheck menu, OCR-sourced, was ratio 0.8) —
+  under investigation for the daily cycle: OCR-cached text at v43 no
+  longer yields a confident parse; needs the production OCR text to
+  reproduce. Recorded honestly as a coverage loss, not junk on display.
+
+**Second v43 regression, found via the coverage-history line (match
+47,922 → 47,191): 902 plans silently lost their features.** All stayed
+c:1; only f: disappeared. Root cause verified on
+20251015151039NAL0010300146001 (23 of 54 pages scanned): the OCR
+fallback is gated on `!parsed.found`. Pre-v43 these filings' 4i didn't
+parse from text, OCR ran, and BOTH the lineup and the match/vesting
+features came from the combined text. The cents fix made the text parse
+succeed → OCR stopped running → features (which live in the scanned
+notes) vanished. v42's extractor returns null on the same pdftotext
+text, proving the features were always OCR-sourced. **v45 fix**: the OCR
+gate becomes `!parsed.found || !features` (still requires ≥3 unreadable
+pages, so fully-readable filings never OCR), and a successful text parse
+is never replaced by the combined-text parse — OCR fills features, and
+the lineup only when text found nothing (else the OCR'd pages could
+re-add junk to a clean region). The OCR cache makes the 902-ack retry
+cheap. Lesson doubled from the Sierra Space entry: every fix that makes
+MORE text readable must be checked against every path gated on
+readability FAILING.
+
+Correctness mismatches 25/37,570 (0.07%); HIGHs = the 4 known baseline
+contrib outliers; auto-issue #1 updated. Coverage-history is doing its
+job — the match/vesting dip was invisible in the confidence diff and
+only the trend line exposed it.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

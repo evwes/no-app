@@ -58,6 +58,11 @@ const SPECIMENS = [
   // with Forward dropped this filing honestly fails the ratio band
   ["Carry-forward subtotals", "20251008154534NAL0005779537001", 295570079,
     { found: true, n: 6, sum: 551546250 }],
+  // v45: recordkeeper "SUMMARY OF NET TRUST ASSETS" page appended after
+  // the real 4i table — same menu in ALL CAPS with cents; v43's cents fix
+  // made it readable and the doubled region lost a real 29-fund menu
+  ["Sierra Space (rk summary after 4i)", "20251015115746NAL0005999248001", 293042847,
+    { found: true, n: 29, sum: 291893410 }],
   ["Black Hills", "20260623190115NAL0012535394001", 933735584,
     { found: true, n: 21, sum: 911785769 }],
 ];

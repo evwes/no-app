@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 44;
+export const PARSER_VERSION = 45;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b|^brokerage accounts?$/i, "SDBA"],
@@ -346,7 +346,11 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
   // headers/totals leak junk rows — a standalone statement heading ends the
   // region. Anchored to the whole trimmed line so the in-table reference
   // "(see attached Portfolio Statement)" doesn't truncate the real table.
-  const stopRe = /^portfolio (valuation|statement)s?$|^(schedule|statement) of (portfolio )?investments?$/i;
+  // "SUMMARY OF NET TRUST ASSETS" = a recordkeeper statement page appended
+  // AFTER the 4i table, same funds in ALL CAPS with cents values — v43's
+  // cents tolerance made it readable and the region summed both copies
+  // (Sierra Space, ratio 1.0 → 1.89, real 29-fund menu lost)
+  const stopRe = /^portfolio (valuation|statement)s?$|^(schedule|statement) of (portfolio )?investments?$|^summary of (net )?(trust|plan) assets$/i;
   const atStop = (line) => stopRe.test(line.trim());
 
   const starts = [];

@@ -241,7 +241,7 @@ don't confuse them). Frontend: python http.server + Playwright at
 ## Current state (2026-07-21)
 
 - Universe 110,555 plans (incl. ERISA 403(b)s); ~68.7k parseable filings
-  at parser v44 + OCR v2 (v44 2026-08-10, junk sweep of confident lineups:
+  at parser v45 + OCR v2 (v45 2026-08-10: "SUMMARY OF NET TRUST ASSETS" recordkeeper pages end the 4i region — the cents fix had made them readable and doubled region sums, losing real menus [Sierra Space gate specimen]. v44 2026-08-10, junk sweep of confident lineups:
   comma-tolerant "Investments, at fair value" statement rows [631 lineups
   affected, worst 97% of shown sum], expense-note nouns, possessive EIN
   headings, page carry-forward subtotals [dedup summed them to fake $197M

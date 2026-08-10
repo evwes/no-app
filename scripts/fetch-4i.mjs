@@ -267,8 +267,12 @@ async function analyzePdf(ack, plan, tag) {
   let usedOcr = false;
 
   // scanned or cipher-encoded attachments: OCR just the unreadable pages and
-  // re-run the same parser on the combined text
-  if (!parsed.found && hasOcrTools) {
+  // re-run the same parser on the combined text. Trigger on a MISSING 4i
+  // *or* missing features — v43 made cents-formatted schedules readable,
+  // parsed.found went true for filings whose audit NOTES are scanned, OCR
+  // stopped running, and 902 plans silently lost their match/vesting
+  // features (the OCR cache makes the retry cheap for that class)
+  if ((!parsed.found || !features) && hasOcrTools) {
     const bad = findBadPages(text);
     if (bad.length >= 3 && bad.length <= OCR_SKIP_BAD) {
       try {
@@ -283,12 +287,15 @@ async function analyzePdf(ack, plan, tag) {
         }
         if (otext && otext.replace(/\s+/g, "").length > 500) {
           const combined = text + "\f" + otext;
-          const p2 = parse4i(combined, plan.assetsEOY, plan.label || "", plan.codes || "");
           const f2 = extractPlanFeatures(combined);
-          if (p2.found || (f2 && !features)) {
-            parsed = p2;
-            features = f2 || features;
-            usedOcr = true;
+          if (f2 && !features) { features = f2; usedOcr = true; }
+          // never replace a SUCCESSFUL text parse with the combined-text
+          // parse — the OCR'd pages can add junk rows to a clean region
+          // (Sierra Space class); OCR fills the lineup only when the text
+          // parse found nothing
+          if (!parsed.found) {
+            const p2 = parse4i(combined, plan.assetsEOY, plan.label || "", plan.codes || "");
+            if (p2.found) { parsed = p2; usedOcr = true; }
           }
         }
       } catch (e) {
