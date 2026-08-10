@@ -1184,6 +1184,33 @@ contrib outliers; auto-issue #1 updated. Coverage-history is doing its
 job — the match/vesting dip was invisible in the confidence diff and
 only the trend line exposed it.
 
+## 2026-08-10 — v46: removing junk rows PROMOTED a junky region into confidence (Galliano, caught by the audit the same run v44 shipped)
+
+**What was wrong.** The v44 run's audit flagged a new HIGH: Galliano
+Marine Service showed a top holding of $584M against $381M plan assets.
+The filing is all-scanned; its OCR text contains a brokerage-style
+statement page ("Mutual funds $583.8M / Common stocks / Exchange traded
+funds / Money market funds / Other revenue"). Pre-v44 that region parsed
+with extra junk rows and failed the ratio band; v44's junk guards removed
+those rows and the remainder slipped INTO the band (ratio ~1.59 < 1.6,
+6 rows). The isStatement gate missed it because its vocabulary knew
+"mutual funds" but not the other brokerage class nouns — 1 of 6 rows
+counted as statement vocabulary, under the 50% threshold.
+
+**The change (v46).** STMT_ROW gains (common|preferred) stocks, exchange
+traded funds, money market funds, other revenue/income. The Galliano
+region now counts 5/6 statement rows → flagged stmt → never confident.
+The raw-text parse joins the gate as found=false (all-scanned filing).
+The gate flagged one intentional move: the carry-forward specimen's
+statement region is now penalized too, so a per-security region wins at
+ratio 2.5 — still non-confident, expectation updated after review.
+
+**The prevention + lesson.** Every junk-row removal changes region
+RATIOS, and a ratio-gated confidence rule can flip regions INTO
+confidence when junk shrinks a sum — the audit's top-holding-vs-assets
+identity caught it within one run, which is the machinery working. Row
+guards and region-class vocabulary must move together.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

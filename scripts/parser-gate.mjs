@@ -55,14 +55,23 @@ const SPECIMENS = [
     { found: true, n: 32, sum: 37829365 }],
   // v44: page carry-forward subtotals ("Forward $21,786,094 ...") summed
   // across pages into a fake $197M top "fund" on a statement-page win;
-  // with Forward dropped this filing honestly fails the ratio band
+  // with Forward dropped this filing honestly fails the ratio band.
+  // v46 moved it again (intentional): the brokerage vocabulary flags its
+  // "Common stock / Preferred stock / Mutual funds" region as a statement,
+  // so a per-security region wins instead — ratio 2.5, still non-confident
   ["Carry-forward subtotals", "20251008154534NAL0005779537001", 295570079,
-    { found: true, n: 6, sum: 551546250 }],
+    { found: true, n: 10, sum: 739354953 }],
   // v45: recordkeeper "SUMMARY OF NET TRUST ASSETS" page appended after
   // the real 4i table — same menu in ALL CAPS with cents; v43's cents fix
   // made it readable and the doubled region lost a real 29-fund menu
   ["Sierra Space (rk summary after 4i)", "20251015115746NAL0005999248001", 293042847,
     { found: true, n: 29, sum: 291893410 }],
+  // v46: Galliano — raw text has no readable schedule (all-scanned); its
+  // OCR'd statement page ("Mutual funds" $584M > plan assets) got
+  // confident when v44 removed the OTHER junk rows. Text parse must stay
+  // found=false; the OCR-path fix is the STMT_ROW brokerage vocabulary.
+  ["Galliano (scanned, OCR statement)", "20251013201846NAL0000931539001", 380897686,
+    { found: false }],
   ["Black Hills", "20260623190115NAL0012535394001", 933735584,
     { found: true, n: 21, sum: 911785769 }],
 ];

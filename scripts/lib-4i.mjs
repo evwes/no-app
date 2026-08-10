@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 45;
+export const PARSER_VERSION = 46;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b|^brokerage accounts?$/i, "SDBA"],
@@ -413,7 +413,11 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
     // table's own ratio is imperfect. Its vocabulary gives it away; trustee
     // CLASS summaries (Verizon) are ≥10 rows of 4i class names and stay
     // above the ≤8-row gate.
-    const STMT_ROW = /^(total )?(investments?,?( at (fair|contract) value.*)?|net assets( available for benefits)?|assets\b.*|cash( and cash equivalents)?|receivables?\b.*|notes? receivable\b.*|mutual funds?\b.*|common[- /]?collective trusts?\b.*|pooled separate accounts?\b.*|guaranteed (investment|interest) (accounts?|contracts?)\b.*|employee rollovers?\b.*|(employer|participant)s?['’]?s?( contributions?( receivable)?)?)$/i;
+    // brokerage-statement class nouns (common stocks / ETFs / money market)
+    // joined the vocabulary after Galliano: an OCR'd statement page of
+    // exactly those rows slipped INTO the confidence band when v44 removed
+    // its other junk rows — removing junk can promote a still-junky region
+    const STMT_ROW = /^(total )?(investments?,?( at (fair|contract) value.*)?|net assets( available for benefits)?|assets\b.*|cash( and cash equivalents)?|receivables?\b.*|notes? receivable\b.*|mutual funds?\b.*|(common|preferred) stocks?\b.*|exchange[- ]traded funds?\b.*|money market funds?\b.*|other (revenues?|income)\b.*|common[- /]?collective trusts?\b.*|pooled separate accounts?\b.*|guaranteed (investment|interest) (accounts?|contracts?)\b.*|employee rollovers?\b.*|(employer|participant)s?['’]?s?( contributions?( receivable)?)?)$/i;
     const stmty = parsed.funds.filter((f) => STMT_ROW.test(f.name)).length;
     // ≤3-row regions of class aggregates ("Registered investment companies")
     // are statement fragments too — v34's dedup fixed THEIR double-rendered
