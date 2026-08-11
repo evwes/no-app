@@ -281,7 +281,7 @@ export function parseRows(section, opts = {}) {
     // Sponsor: BitGo, Inc. Employee Identification Nu…" (511 confident
     // lineups carried this class, found by the audit's lineup-junk
     // tripwire; "EMPLOYEER" is a common OCR misread)
-    if (/name of plan sponsor|employe{1,2}r? identification/i.test(name)) continue;
+    if (/name of plan sponsor|employe{1,2}r(?:['’]s)? identification|identification number/i.test(name)) continue;
     // v48 residue sweep (the tripwire's remaining ~165): every EIN-heading
     // spelling, statement-reconciliation rows ("Net gain per the Form
     // 5500"), OCR'd Paperwork Reduction notices ("lnstructlons"), and

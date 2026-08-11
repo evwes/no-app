@@ -1265,6 +1265,34 @@ Expected post-v48 HIGH count: the 4 contrib baseline + single digits —
 whatever remains is by definition a class we haven't named yet, and the
 tripwire will keep printing it every run until we do.
 
+## 2026-08-11 — v48 verified: the tripwire converged (544 → 169 → 12)
+
+**Run 31455613248.** HIGH count 12 = the 4 contrib baseline + 8
+lineup-junk. Coverage at new highs: match 48,721 / vesting 49,696 /
+confident 56,493. The 8 residuals classified per protocol:
+
+- **4 stale entries** (pv 37–43, e:download) — S3 fetch failures whose
+  old parses are preserved by design; they clear when a download
+  succeeds. Not guard gaps.
+- **1 label ambiguity that sent the investigation to the wrong plan**:
+  the audit labeled findings with the 14-char ack timestamp, which THREE
+  different filings can share ("The Ross School 20251015141408" pointed
+  at a clean 19-fund menu; the junk was in a sibling ack). Audit labels
+  now carry the full ack.
+- **2 real guard gaps, 3 junk rows universe-wide**: "Employer's
+  Identification Number: #75-" (possessive) and "Identification Number
+  (EIN): 92-". Guards extended (blanket "identification number" — never
+  a fund name); they take effect at the next PARSER_VERSION bump (the
+  OCR page-targeting cycle) rather than burning a full re-parse on
+  3 rows. The tripwire keeps them visible until then.
+
+Day's arc closed: v43 (Eaton, cents, trust-pointers) → v44 (junk sweep)
+→ v45 (Sierra Space region + OCR-features gate) → v46 (statement
+vocabulary) → v47 (form-text guards + tripwire) → v48 (residue sweep).
+Confident 55,961 → 56,493; match/vesting above every prior baseline;
+62 master trusts recovered; 17 gate specimens; the lineup-junk counter
+is the standing convergence metric.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

@@ -57,7 +57,10 @@ for (let i = 0; i < 64; i++) {
     const row = byAck.get(ack);
     const schH = row ? g(row, "assetsEOY") : 0;
     const sum = e.funds.reduce((x, f) => x + (f.value || 0), 0);
-    const label = row ? `${g(row, "sponsorName")} ${ack.slice(0, 14)}` : ack;
+    // full ack, not the 14-char timestamp — three different filings can
+    // share one submission timestamp and the truncated label sent an
+    // investigation to the wrong plan (Ross School, 2026-08-11)
+    const label = row ? `${g(row, "sponsorName")} ${ack}` : ack;
     // a confident lineup whose sum strays far from Schedule H usually means a
     // wrong value column, a doubled summary page, or (thousands) mis-scaling
     if (schH > 1e7 && (sum > schH * 1.6 || sum < schH * 0.25))
