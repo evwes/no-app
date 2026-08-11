@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 47;
+export const PARSER_VERSION = 48;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b|^brokerage accounts?$/i, "SDBA"],
@@ -282,6 +282,12 @@ export function parseRows(section, opts = {}) {
     // lineups carried this class, found by the audit's lineup-junk
     // tripwire; "EMPLOYEER" is a common OCR misread)
     if (/name of plan sponsor|employe{1,2}r? identification/i.test(name)) continue;
+    // v48 residue sweep (the tripwire's remaining ~165): every EIN-heading
+    // spelling, statement-reconciliation rows ("Net gain per the Form
+    // 5500"), OCR'd Paperwork Reduction notices ("lnstructlons"), and
+    // truncated sponsor headings — none of these words appear in real
+    // fund names
+    if (/\bform\s+\$?5?500\b|(federal|pension) identification num|identification number:?\s*\d{0,2}[-–]?\s*$|\bof plan sponsor:|paperwork reduct|the [li]nstruct[li]ons for|\bschedule\s+h\b/i.test(name)) continue;
     // dotted-leader runs are USUALLY form/TOC lines ("(1) Employer
     // Securities ......."), but some real menus typeset leaders between the
     // fund name and its value — dropping those cost a confident Vanguard

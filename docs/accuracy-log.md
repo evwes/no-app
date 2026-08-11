@@ -1245,6 +1245,26 @@ never ship silently again; the HIGH count after the v47 re-parse is the
 measure (expect ~4 baseline + residue = new classes to hunt). Gate: 17
 specimens green (Galliano's raw-text expectation locked at found=false).
 
+## 2026-08-11 — v47 verified + v48 residue sweep: the tripwire is converging
+
+**v47 (run 31447742753).** Galliano resolved BETTER than predicted: with
+the form-text junk unable to win, its prior-year (fb:2023) filing
+supplied a confident REAL 80-fund menu (JPMorgan LCG, AUL Stable Value,
+Fidelity 500, Nuveen Lifecycle…), ratio 0.81. Coverage rose again
+(match 48,720 / vesting 49,695); confident 56,478 (−33 net, the
+EIN-heading junk class turning honest). lineup-junk HIGHs: ~540 → 169.
+
+**v48.** The 165 residual findings classify into ~30 small shapes, all
+form/reconciliation vocabulary: "Federal/Pension Identification Number"
+spellings, "Net gain per the Form 5500"-style reconciliation-note rows,
+OCR'd Paperwork Reduction Act notices ("lnstructlons", l-for-i), and
+truncated sponsor headings ("e of plan sponsor: Ameren…"). One guard
+sweep covers them: any name containing form-5500/Schedule-H references,
+any EIN-heading spelling, paperwork-notice vocabulary. Gate 17 green.
+Expected post-v48 HIGH count: the 4 contrib baseline + single digits —
+whatever remains is by definition a class we haven't named yet, and the
+tripwire will keep printing it every run until we do.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
