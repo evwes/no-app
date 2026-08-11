@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 49;
+export const PARSER_VERSION = 50;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b|^brokerage accounts?$/i, "SDBA"],
@@ -288,7 +288,6 @@ export function parseRows(section, opts = {}) {
     // custodian name ("Vanguard" $19M) is an assets-at-provider aggregate,
     // never a menu option
     if (/^\W*ranging from\b|^common ?\/?$/i.test(name.trim())) continue;
-    if (/^(vanguard|fidelity(?: investments)?|t\.? ?rowe price|american funds|blackrock|charles schwab|schwab|principal|voya|empower|john hancock|nationwide|transamerica|mass ?mutual|prudential|merrill(?: lynch)?|morgan stanley|wells fargo)$/i.test(name.trim())) continue;
     // v48 residue sweep (the tripwire's remaining ~165): every EIN-heading
     // spelling, statement-reconciliation rows ("Net gain per the Form
     // 5500"), OCR'd Paperwork Reduction notices ("lnstructlons"), and
@@ -518,10 +517,20 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
   const allSum = funds.reduce((a, f) => a + f.value, 0);
   const trustPtr = funds.length <= 8 && allSum > 0 && tSum / allSum >= 0.6;
 
+  // provider-TOTAL statement pages: "T. Rowe Price $479M / Vanguard $271M /
+  // Ariel $12M" is assets-at-custodian, not a menu. Judged at PARSE level,
+  // not row level — a v49 row-level drop of bare provider names shifted
+  // sums/region scores and killed ~1,300 real menus that carry ONE
+  // legitimate provider-aggregate row among their real funds.
+  const provRe = /^(vanguard|fidelity(?: investments)?|t\.? ?rowe price|american funds|blackrock|charles schwab|schwab|principal|voya|empower|john hancock|nationwide|transamerica|mass ?mutual|prudential|merrill(?: lynch)?|morgan stanley|wells fargo|mn life insurance co\.?|minnesota life)$/i;
+  const provRows = funds.filter((f) => provRe.test(f.name.trim()));
+  const provSum = provRows.reduce((a, f) => a + f.value, 0);
+  const provAgg = funds.length <= 8 && provRows.length >= 2 && allSum > 0 && provSum / allSum >= 0.5;
+
   // a statement-vocabulary fragment can still WIN when it's the only
   // candidate (the real schedule is scanned or absent) — surface the flag
   // so it can never be marked confident
-  return { found: true, thousands: best.scale === 1000, sdba: sdbaOut, funds, ratio: best.ratio, ...(best.stmt ? { stmt: 1 } : {}), ...(trustPtr ? { trustPtr: 1 } : {}), ...(sma ? { sma, smaKind } : {}) };
+  return { found: true, thousands: best.scale === 1000, sdba: sdbaOut, funds, ratio: best.ratio, ...(best.stmt || provAgg ? { stmt: 1 } : {}), ...(trustPtr ? { trustPtr: 1 } : {}), ...(sma ? { sma, smaKind } : {}) };
 }
 
 /* ---- plan-feature extraction from the filing's audit notes ---------------- */

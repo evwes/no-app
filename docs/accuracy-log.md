@@ -1338,6 +1338,37 @@ the tripwire vocabulary grows with every class; the audit mismatch count
 after the v49 re-parse is the metric — expect low single digits, each
 individually explained.
 
+## 2026-08-11 — v49 verified + v50: the row-level provider guard over-cut; parse-level flag restores ~1,300 real menus
+
+**v49 (run 31524736924) — the review's fixes verified.**
+Formula-vs-quote mismatches 22 → 3 (all remaining are vesting-cliff
+quotes queued for the next cycle); vesting coverage rose to 50,037 (the
+graded-list fix found ~340 more); match held at 48,719.
+
+**But the diff was +246 / −1,590, and loss-sampling caught an over-cut
+before it ever reached users.** The v49 row-level guard dropped bare
+provider names ("Vanguard") EVERYWHERE — including from real menus that
+legitimately carry one assets-at-custodian aggregate row among their
+funds. Removing the row shifted sums and region scores, and ~1,300
+genuine lineups (one sampled: a 24-fund Fidelity menu at ratio 0.98)
+lost confidence. Because the mirror to main is gated on diff review,
+the site never served the regression — main stayed on the prior data.
+
+**The change (v50).** The row guard is gone; provider-total pages are
+judged at the PARSE level like trust pointers: ≤8 rows, ≥2 bare-provider
+rows, ≥50% of the sum → statement flag, never confident. Verified on
+the sampled losses: the 24-fund menu is confident again with its
+aggregate row kept (honest), and the provider-total pages
+("T. Rowe Price $479M / Vanguard $271M / Ariel $12M"; MN Life $1.08B)
+are flagged. Gate 17 green.
+
+**Lesson (permanent).** Row-level deletion is the WRONG tool for rows
+that are junk only in aggregate — it changes every parse the row
+appears in. Classes that are "junk when dominant" get parse-level flags
+(trustPtr, provAgg); row guards are only for text that is junk in ANY
+context (form vocabulary, addresses, garble). And the mirror-after-
+review discipline is what kept 1,300 broken pages off the live site.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
