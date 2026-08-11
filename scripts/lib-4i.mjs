@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 46;
+export const PARSER_VERSION = 47;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b|^brokerage accounts?$/i, "SDBA"],
@@ -264,11 +264,24 @@ export function parseRows(section, opts = {}) {
     if (/^(balance |carried |brought )?forwards?$/i.test(name.trim())) continue;
     // form/signature boilerplate that assembles into a named row
     if (/signature of (the )?(plan administrator|plan sponsor|employer|dfe)|^amounts per (the )?form \$?5?500\b/i.test(name)) continue;
+    // OCR'd FORM-PAGE lines (Schedule H Part II items) parse as holdings on
+    // scanned filings: "K Net income (loss). Subtract lime 2j..." $55M,
+    // "companies (e.g., Mutual FUNGS)", "(6)Total Additions" (Galliano) —
+    // form-instruction vocabulary never appears in a real fund's name
+    if (/subtract li[nm]e|add lines? \d|net income \(loss\)|\(e\.?g\.?[,.]|transferred (from|to)\b|total (additions|deductions)\b|balance and additions|\(specify\)|type of contract|disbursed from|to pay benefits\b/i.test(name)) continue;
+    // OCR-garbled dot leaders ("seecseecsessseesess", "..sscesss") — runs of
+    // only s/c/e letters that real words never reach ("assesses" peaks at 7)
+    if (/[sce]{8,}/i.test(name)) continue;
     // EIN/plan-number heading lines glue to a column value and land as fake
     // $1M+ "holdings" ("SPONSOR EIN: 23-", "PLAN'S EMPLOYER IDENTIFICATION
     // NUMBER: 34-" — that one displayed the EIN's own last digits as a
     // $4.4M fund) — they inflate the region sum and tank its assets ratio
     if (/^(sponsor(?:['’]s)? |plan(?:['’]s)? )?(federal )?(employer|employee) identification number\b|^(sponsor |plan )?ein\b|^e\.\s?i\.\s?n\.?\s*[:#]|^plan number\b|\bein\s*#?\s*\d{0,2}-?$/i.test(name.trim())) continue;
+    // heading variants that defeat the anchored guard above: "Name of Plan
+    // Sponsor: BitGo, Inc. Employee Identification Nu…" (511 confident
+    // lineups carried this class, found by the audit's lineup-junk
+    // tripwire; "EMPLOYEER" is a common OCR misread)
+    if (/name of plan sponsor|employe{1,2}r? identification/i.test(name)) continue;
     // dotted-leader runs are USUALLY form/TOC lines ("(1) Employer
     // Securities ......."), but some real menus typeset leaders between the
     // fund name and its value — dropping those cost a confident Vanguard

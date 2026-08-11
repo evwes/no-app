@@ -1211,6 +1211,40 @@ confidence when junk shrinks a sum — the audit's top-holding-vs-assets
 identity caught it within one run, which is the machinery working. Row
 guards and region-class vocabulary must move together.
 
+## 2026-08-11 — v47: OCR'd form-page text as fund names (Galliano round 2) + the lineup-junk tripwire that found 500 more
+
+**What was wrong.** v46 correctly demoted Galliano's OCR'd brokerage
+statement — and the next-best region was WORSE: Schedule H form
+instructions as fund names ("K Net income (loss). Subtract lime 2j from
+lime 2C...sscesss" $55M, "companies (e.g., Mutual FUNGS)" $41M), ratio
+0.53, confident. No identity check can catch it — the sum is plausible;
+only the NAMES give it away. Reproduced locally by OCR'ing the scanned
+pages (20 of 23) and parsing the combined text with production code.
+
+**The change (v47).** Row guards for form-instruction vocabulary
+("subtract line" incl. the "lime" misread, "(add lines 7b…)",
+"(e.g.,…)", "(specify)", "type of contract", "disbursed from", "total
+additions/deductions") and OCR-garbled dot-leader runs (`[sce]{8,}` —
+"seecseecsess…"; real words peak at 7 in "assesses"). With the junk
+dropped, Galliano's region becomes the plan's REAL menu (Nuveen
+Lifecycle/PIMCO/Schwab, ratio 0.44 on 20/23 pages locally — production's
+fuller OCR should clear the 0.45 floor; either way honest).
+
+**The tripwire, and what it immediately caught.** audit-data now flags
+`lineup-junk` HIGH: any confident lineup containing form/statement
+vocabulary in a fund name. First local run: **~540 confident lineups**
+— dominated by a "Name of Plan Sponsor: X Employee Identification
+Number" heading class (with "EMPLOYEER" OCR misreads) that the anchored
+EIN guard missed. v47 adds the unanchored guard; the tripwire also
+caught its own false positive in review ("TCW Trans**form 500** ETF"
+matching `form 500` — fixed with a word boundary). audit-high.txt caps
+at 150 lines so a mass finding can't break the auto-issue step.
+
+**The prevention.** The tripwire runs in every merge — this class can
+never ship silently again; the HIGH count after the v47 re-parse is the
+measure (expect ~4 baseline + residue = new classes to hunt). Gate: 17
+specimens green (Galliano's raw-text expectation locked at found=false).
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

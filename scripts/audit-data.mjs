@@ -64,6 +64,14 @@ for (let i = 0; i < 64; i++) {
       flag("warn", "lineup-sum", `${label}: funds sum $${(sum / 1e6).toFixed(0)}M vs Sch H $${(schH / 1e6).toFixed(0)}M`);
     if (schH > 1e7 && e.funds[0] && e.funds[0].value > schH * 1.5)
       flag("high", "lineup-row", `${label}: top holding $${(e.funds[0].value / 1e6).toFixed(0)}M exceeds plan assets`);
+    // form-instruction vocabulary displayed as a fund name = OCR'd form
+    // pages or statement text leaked into a confident lineup (Galliano
+    // shipped "K Net income (loss). Subtract lime 2j..." as a $55M fund —
+    // its sum was plausible so no identity check fired; only the NAME
+    // gives it away)
+    const junkName = e.funds.find((f) => /subtract li[nm]e|add lines? \d|net income \(loss\)|\(e\.?g\.?[,.]|total (additions|deductions)\b|\(specify\)|type of contract|disbursed from|to pay benefits\b|[sce]{8,}|employe{1,2}r? identification|identification number|name of plan sponsor|schedule\s+h\b|\bform\s+\$?5?500\b/i.test(f.name || ""));
+    if (junkName)
+      flag("high", "lineup-junk", `${label}: fund name reads as form/statement text: "${junkName.name.slice(0, 60)}"`);
   }
 }
 
@@ -195,5 +203,10 @@ try {
     lineups: covTot.lineup, feeCodesPct: feeCodesShare,
     high: findings.high.length, warn: findings.warn.length,
   }) + "\n");
-  writeFileSync("audit-high.txt", findings.high.join("\n") + (findings.high.length ? "\n" : ""));
+  // cap the issue feed — GitHub bodies max out at 65k chars, and a mass
+  // finding (like the 500+ lineup-junk sweep) must not break the step
+  const highLines = findings.high.length > 150
+    ? [...findings.high.slice(0, 150), `… and ${findings.high.length - 150} more (full list in the run log)`]
+    : findings.high;
+  writeFileSync("audit-high.txt", highLines.join("\n") + (highLines.length ? "\n" : ""));
 } catch (e) { console.warn("accuracy trail write skipped: " + e.message); }
