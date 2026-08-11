@@ -1293,6 +1293,51 @@ Confident 55,961 → 56,493; match/vesting above every prior baseline;
 62 master trusts recovered; 17 gate specimens; the lineup-junk counter
 is the standing convergence metric.
 
+## 2026-08-11 — v49: owner-directed accuracy review of the three displayed claim types (match, vesting, lineups)
+
+**Scope.** Every displayed claim audited against its own evidence: all 22
+formula-vs-quote mismatches classified with filing pulls, both vesting
+mismatches root-caused, and confident lineups sampled at the confidence
+band's risk edges (682 at ratio ≤0.55, 308 at ≥1.45, 1,269 with ≤4 rows).
+
+**Match formulas — 22 mismatches → 3 classes.**
+(1) *Checker gap* (1): "sixty percent" spelled out — RATE_WORDS extended
+30–90. (2) *Quote truncation* (~12): sentence() trimmed long windows from
+the FRONT to keep the last tier, cutting the leading "100% of" — a dozen
+quotes started mid-word after the number they existed to prove. The
+window now never starts past the match head; the cap stretches instead.
+(3) *Formula fusion* (~9, the real defects): filings with multiple
+formulas (eras, union/non-union groups, service-year alternatives) fused
+into one formula nobody gets. Fixes: the tier-chain now breaks on
+re-statement verbs ("provided a match", "receive a match", "the Employer
+matches"), on era openers ("Prior to January 1, 2024"), and lettered
+alternatives ("(a) 30% … or (b) 50%") render as "a further tier that
+varies by participant group" instead of chaining. All six pulled filings
+now display correctly (e.g. the era-fusion case picks the CURRENT
+amended formula with its quote); Kohler/TK/Northrop/Black Hills
+regression formulas byte-identical.
+
+**Vesting — both mismatches were one bug.** A multi-step percent-at-year
+list ("20% after one year, 20% after two, 100% after three") matched the
+CLIFF pattern via its final step and shipped a graded schedule as
+"3-year cliff" with the wrong cohort's quote. Multi-step lists (≥2
+steps) now classify as graded before the cliff test; Northrop's genuine
+3-year cliff unaffected.
+
+**Lineup edges — 4 junk-confident classes from the tiny-lineup sample:**
+loan-rate fragments ("ranging from 4.25% to" = a $13M "fund"),
+"Benefit payments to participants" (SKIP_ROW knew "benefits paid" only),
+truncated class stems ("Common /"), bare PROVIDER-TOTAL rows ("Vanguard"
+$19M — assets-at-custodian aggregates, never menu options), and the
+"Plan Name X" heading. All guarded; "Plan Name"/rate-range join the
+lineup-junk tripwire. Trust-pointer name test now tolerates the
+"Plan's interest in…" possessive prefix (Black & Veatch).
+
+**Prevention.** Gate 17 green (unchanged specimens prove no regression);
+the tripwire vocabulary grows with every class; the audit mismatch count
+after the v49 re-parse is the metric — expect low single digits, each
+individually explained.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

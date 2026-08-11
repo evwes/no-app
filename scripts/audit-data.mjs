@@ -72,7 +72,7 @@ for (let i = 0; i < 64; i++) {
     // shipped "K Net income (loss). Subtract lime 2j..." as a $55M fund —
     // its sum was plausible so no identity check fired; only the NAME
     // gives it away)
-    const junkName = e.funds.find((f) => /subtract li[nm]e|add lines? \d|net income \(loss\)|\(e\.?g\.?[,.]|total (additions|deductions)\b|\(specify\)|type of contract|disbursed from|to pay benefits\b|[sce]{8,}|employe{1,2}r? identification|identification number|name of plan sponsor|schedule\s+h\b|\bform\s+\$?5?500\b/i.test(f.name || ""));
+    const junkName = e.funds.find((f) => /subtract li[nm]e|add lines? \d|net income \(loss\)|\(e\.?g\.?[,.]|total (additions|deductions)\b|\(specify\)|type of contract|disbursed from|to pay benefits\b|[sce]{8,}|employe{1,2}r? identification|identification number|name of plan sponsor|^plan name\b|^\W*ranging from\b|schedule\s+h\b|\bform\s+\$?5?500\b/i.test(f.name || ""));
     if (junkName)
       flag("high", "lineup-junk", `${label}: fund name reads as form/statement text: "${junkName.name.slice(0, 60)}"`);
   }
@@ -102,6 +102,7 @@ for (const [ack, e] of Object.entries(entriesByAckCov)) {
     // first one percent", O'Neal Steel)
     const RATE_WORDS = { 50: /one[- ]half|\bfifty\b/i, 33: /one[- ]third/i, 25: /one[- ]quarter|twenty[- ]five/i, 67: /two[- ]thirds/i,
       100: /one hundred/i, 75: /seventy[- ]five/i, 20: /\btwenty\b/i, 15: /\bfifteen\b/i, 10: /\bten\b/i,
+      30: /\bthirty\b/i, 40: /\bforty\b/i, 60: /\bsixty\b/i, 70: /\bseventy\b/i, 80: /\beighty\b/i, 90: /\bninety\b/i,
       1: /\bone\b/i, 2: /\btwo\b/i, 3: /\bthree\b/i, 4: /\bfour\b/i, 5: /\bfive\b/i, 6: /\bsix\b/i, 7: /\bseven\b/i, 8: /\beight\b/i, 9: /\bnine\b/i };
     const bad = nums.filter((n) => !f.matchText.includes(n) &&
       !(RATE_WORDS[n] && RATE_WORDS[n].test(f.matchText)) &&

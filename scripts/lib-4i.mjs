@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 48;
+export const PARSER_VERSION = 49;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b|^brokerage accounts?$/i, "SDBA"],
@@ -37,7 +37,7 @@ const SKIP_ROW = new RegExp("^(total|subtotal|grand total|schedule|page \\d|form
   // form-page boilerplate: a filing with NO 4i attachment can still seed a
   // region from the Schedule H checkbox line, and the parser then reads phone
   // numbers and zip codes off address/signature pages as \"values\" (Aramark)
-  "(mailing address|include room|city or town|telephone|preparer|acknowledg|,\\s*[A-Za-z]{2}\\s+\\d{5}(-\\d{4})?\\s*$)", "i");
+  "(mailing address|include room|city or town|telephone|preparer|acknowledg|benefit payments?\\b|,\\s*[A-Za-z]{2}\\s+\\d{5}(-\\d{4})?\\s*$)", "i");
 
 // "December 31, 2024" style heading lines — the year parses as a value otherwise
 const DATE_LINE = /(january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,2},?(\s+(19|20)\d\d)?(\s+and)?\s*$/i;
@@ -281,7 +281,14 @@ export function parseRows(section, opts = {}) {
     // Sponsor: BitGo, Inc. Employee Identification Nu…" (511 confident
     // lineups carried this class, found by the audit's lineup-junk
     // tripwire; "EMPLOYEER" is a common OCR misread)
-    if (/name of plan sponsor|employe{1,2}r(?:['’]s)? identification|identification number/i.test(name)) continue;
+    if (/name of plan sponsor|employe{1,2}r(?:['’]s)? identification|identification number|^plan name\b/i.test(name)) continue;
+    // v49 edge-sample findings (all were confident rows): loan-rate range
+    // fragments ("ranging from 4.25% to" = a $13M "fund"), truncated class
+    // stems ("Common /"), and PROVIDER-TOTAL statement rows — a bare
+    // custodian name ("Vanguard" $19M) is an assets-at-provider aggregate,
+    // never a menu option
+    if (/^\W*ranging from\b|^common ?\/?$/i.test(name.trim())) continue;
+    if (/^(vanguard|fidelity(?: investments)?|t\.? ?rowe price|american funds|blackrock|charles schwab|schwab|principal|voya|empower|john hancock|nationwide|transamerica|mass ?mutual|prudential|merrill(?: lynch)?|morgan stanley|wells fargo)$/i.test(name.trim())) continue;
     // v48 residue sweep (the tripwire's remaining ~165): every EIN-heading
     // spelling, statement-reconciliation rows ("Net gain per the Form
     // 5500"), OCR'd Paperwork Reduction notices ("lnstructlons"), and
@@ -506,7 +513,7 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
   // filing. When trust-interest rows dominate a small parse, flag it so it
   // can never be marked confident.
   const trustish = funds.filter((f) => f.type === "Master trust interest" ||
-    /^(value of )?interest in .{0,50}\btrust\b/i.test(f.name) || /^master trust\b/i.test(f.name));
+    /^(?:the )?(?:plan(?:['’]s)? )?(?:value of )?interest in .{0,50}\btrust\b/i.test(f.name) || /^master trust\b/i.test(f.name));
   const tSum = trustish.reduce((a, f) => a + f.value, 0);
   const allSum = funds.reduce((a, f) => a + f.value, 0);
   const trustPtr = funds.length <= 8 && allSum > 0 && tSum / allSum >= 0.6;
@@ -538,7 +545,7 @@ export function extractPlanFeatures(text) {
     .replace(/\b[\w .,]{0,60}Notes? to Financial Statements\b(?:[\s,]*December 31, 20\d\d(?: and 20\d\d)?)?/gi, " ")
     .replace(/\bNote \d+ ?[-–—] ?[^.]{0,60}\((?:Continued|concluded)\)/gi, " ")
     .replace(/\s{2,}/g, " ").trim();
-  const cap = (s) => (s.length > 300 ? s.slice(0, 297) + "…" : s);
+  const cap = (s, n = 300) => (s.length > n ? s.slice(0, n - 3) + "…" : s);
   const sentence = (idx, span = 0) => {
     let a = t.lastIndexOf(". ", idx); a = a === -1 ? Math.max(0, idx - 220) : a + 2;
     let b = t.indexOf(". ", idx); b = b === -1 ? Math.min(t.length, idx + 280) : b + 1;
@@ -548,9 +555,14 @@ export function extractPlanFeatures(text) {
     const end = idx + span;
     if (end + 20 > b) b = Math.min(t.length, end + 20);
     let cut = false;
-    if (end - a > 270) { a = Math.max(a, end - 250); cut = true; }
+    // trim leading context on long windows, but NEVER past the match head —
+    // trimming to (end − 250) kept the last tier while cutting the leading
+    // "100% of", so a dozen quotes started mid-word AFTER the very number
+    // they existed to prove; the cap stretches instead when the formula
+    // span itself is long
+    if (end - a > 270) { const a0 = a; a = Math.max(a, Math.min(idx, end - 250)); cut = a > a0; }
     const s = clean(t.slice(a, b)).replace(/^[a-z]/, (c) => c.toUpperCase());
-    return cap((cut ? "…" : "") + s);
+    return cap((cut ? "…" : "") + s, Math.max(300, span + 60));
   };
 
   // ---- employer match formula ----
@@ -688,7 +700,7 @@ export function extractPlanFeatures(text) {
     const scopePre = t.slice(Math.max(0, mf.index - 110), mf.index);
     // same-sentence test tolerates abbreviation periods ("Corp., the …");
     // only a period followed by a space and a capital ends the sentence
-    const sm = scopePre.match(/for (?:participants|employees) (?:of|employed by|at) [A-Z]/i);
+    const sm = scopePre.match(/for (?:participants|employees) (?:of|employed by|at) [A-Z]|(?:those|these) (?:union )?participants? who are employed by|for these (?:union |non-union )?participants/i);
     if (sm && !/\. +[A-Z]/.test(scopePre.slice(sm.index))) {
       out.match = "Varies by employer group";
       out.matchText = sentence(mf.index);
@@ -718,12 +730,31 @@ export function extractPlanFeatures(text) {
     const sEnd = tail.slice(mf[0].length).search(/\. +[A-Z(]/);
     if (sEnd !== -1) {
       const cont = tail.slice(mf[0].length + sEnd);
-      if (/(?:makes?|may (?:elect to )?(?:make|contribute)|will make)[^.]{0,90}?match(?:ing)?\b|match(?:ing)? contribution equal to/i.test(cont)) {
+      // break on any re-statement verb ("provided a discretionary match",
+      // "receive a match" — union/group formulas fused into one wrong
+      // formula without these), on flexible "contributions was/were equal
+      // to", and on era openers ("Prior to January 1, 2024, …" chained a
+      // dead formula's tier onto the current one)
+      if (/(?:makes?|may (?:elect to )?(?:make|contribute)|will make|provide[ds]?|receives?|offer(?:s|ed)?)[^.]{0,90}?match(?:ing)?\b|\b(?:employer|company|plan|organization)\b[^.]{0,40}?\bmatch(?:es|ed)\b|match(?:ing)? contributions? (?:was |were |is |are )?equal to|^\. +\W{0,3}(?:prior to|effective|before|beginning|starting|through|until)\b[^.]{0,60}?(?:19|20)\d\d/i.test(cont)) {
         tail = tail.slice(0, mf[0].length + sEnd + 1);
       }
     }
     let tm; let tguard = 0; let lastTierEnd = mf[0].length;
     while ((tm = tierRe.exec(tail)) && tguard++ < 4) {
+      // "(a) 30% of the next 5% … for participants with less than 20 years
+      // … or (b) 50% of the next 5%" — lettered alternatives are cohort
+      // CHOICES, not consecutive tiers; chaining them fabricated a formula
+      // no participant gets. Say the tier varies and stop.
+      const between = tail.slice(lastTierEnd, tm.index);
+      // the varies-vocabulary often trails the FIRST lettered tier ("(a)
+      // 30% of the next 5% … for participants with less than 20 years …
+      // or (b) …") — look past the tier itself when judging
+      const ahead = tail.slice(lastTierEnd, Math.min(tail.length, tm.index + tm[0].length + 130));
+      if (/\(\s*[a-z]\s*\)/i.test(between) && /\bor\b *\(|less than|more than|years of (?:credited )?service/i.test(ahead)) {
+        out.match += " + a further tier that varies by participant group (per the filing)";
+        lastTierEnd = tm.index + tm[0].length;
+        break;
+      }
       out.match += ` + ${W(tm[1])}% of the next ${W(tm[2])}%`;
       lastTierEnd = tm.index + tm[0].length;
     }
@@ -873,6 +904,12 @@ export function extractPlanFeatures(text) {
   for (const s of vestSentences) {
     if (matchImmediate && /non.?elective|profit.?sharing/i.test(s) && !/match/i.test(s)) continue;
     const graded = s.match(/(\d{1,2}) ?(?:percent|%) (?:per|each|for each|after each) year|vests? (\d{1,2}) ?(?:percent|%) after each year|graded vesting|graduated vesting/i);
+    // a multi-step percent-at-year LIST is a graded schedule even though
+    // no single step says "per year" — its final "100% after three years"
+    // step matched the cliff pattern and shipped a graded schedule as
+    // "3-year cliff" (Wisconsin Cheese class, both hire-date cohorts)
+    const steps = (s.match(/\d{1,2} ?(?:percent|%)(?: vested)? after (?:\w{3,5}|\d{1,2}) years?/gi) || []).length;
+    if (steps >= 2) { out.vesting = "Graded schedule"; out.vestingText = cap(s); break; }
     // 3rd alternative tolerates intervening words — "fully vested in
     // employer matching contributions, and earnings thereon, upon
     // completion of three years of service" (Northrop Grumman)
