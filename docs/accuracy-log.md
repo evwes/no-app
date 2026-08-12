@@ -1414,6 +1414,29 @@ like "bad names" from the outside. And impossible-value bounds belong
 at parse time: closeness scoring is defenseless against a quadrillion-
 dollar row.
 
+## 2026-08-12 — re-parse improvement contract (owner directive: every re-parse must use everything learned and produce a better version)
+
+The v49→v51 sequence proved the review DISCIPLINE works but showed its
+two slowest steps were manual: classifying losses and comparing runs.
+Both are now machinery:
+
+1. **Loss triage in merge** — every confidence loss whose old parse was
+   real-menu-shaped (n≥7, or n≥5 at ratio 0.7–1.3) is written to
+   losses-triage.txt and surfaced by the audit as a `reparse-loss` HIGH
+   ("pull the filing before accepting"). Junk-cleanup losses stay quiet;
+   a broken real menu can no longer hide inside a big diff. Had this
+   existed at v49, the 754-menu over-cut would have been a wall of HIGHs
+   in the same run that caused it.
+2. **Reparse verdict in audit** — each run's confident/match/vesting/
+   lineups are compared to the previous coverage-history line and
+   printed as "== REPARSE VERDICT … improved or held / ⚠ REGRESSED";
+   regressions beyond tolerance (confident −200, match/vesting −150)
+   flag `reparse-regression` HIGH. The contract: regressions are
+   justified with sampled losses or rolled back before main is mirrored.
+
+Both verified locally (no-op merge → verdict "+0 … improved or held",
+zero triage). They run in every pipeline run from the next push on.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

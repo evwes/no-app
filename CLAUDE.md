@@ -198,6 +198,17 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   ("wampo daily accuracy cycle" Routine) reviews runs, checks the trail,
   does one hands-on filing review from the worst class, ships clear-cut
   fixes, and mirrors main. Known-baseline HIGHs: 4 contrib-limit outliers.
+- **Every re-parse must be a provably better version (owner directive
+  2026-08-12)**: (4) merge auto-triages confidence LOSSES — any lost
+  lineup whose old parse was real-menu-shaped (n≥7, or n≥5 at ratio
+  0.7–1.3) becomes a `reparse-loss` HIGH (losses-triage.txt → audit);
+  junk-cleanup losses pass silently, broken real menus cannot; (5) audit
+  prints a REPARSE VERDICT comparing confident/match/vesting/lineups to
+  the previous run's coverage line and flags `reparse-regression` HIGH
+  beyond tolerance (confident −200, match/vesting −150) — a regression
+  must be justified with sampled losses or rolled back BEFORE mirroring
+  main. Mirroring after diff review is what kept the v49 over-cut
+  (−1,590) off the live site.
 - **Verify starts, not just finishes**: after ANY push meant to trigger a
   run, confirm within a minute that the run actually exists (list runs via
   API/MCP). A dropped webhook once went unnoticed for two days because

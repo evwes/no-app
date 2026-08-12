@@ -194,6 +194,42 @@ for (const sev of ["high", "warn"]) {
   if (findings[sev].length > 40) console.log(`  … and ${findings[sev].length - 40} more`);
 }
 
+// LOSS TRIAGE (from merge-4i): every confidence loss whose old parse was
+// real-menu-shaped is a HIGH — junk-cleanup losses are expected on guard
+// changes, but a lost real menu means the new version broke something.
+// Owner directive 2026-08-12: every re-parse must use everything learned
+// and produce a provably BETTER version — these two blocks are the proof.
+try {
+  const triage = readFileSync("losses-triage.txt", "utf8").trim().split("\n").filter(Boolean);
+  if (triage.length) {
+    for (const a of triage.slice(0, 20))
+      flag("high", "reparse-loss", `real-menu-shaped lineup lost confidence this run: ${a} — pull the filing before accepting`);
+    if (triage.length > 20)
+      flag("high", "reparse-loss", `… and ${triage.length - 20} more real-menu-shaped losses (losses-triage.txt in the merge log)`);
+  }
+} catch { /* no triage file — merge didn't run in this invocation */ }
+
+// REPARSE VERDICT: compare this run's coverage line to the previous one.
+// Improvement is the contract; a regression beyond tolerance is a HIGH
+// that demands diff-sampling before the data is mirrored to main.
+let verdictNote = "";
+try {
+  const hist = readFileSync("docs/coverage-history.jsonl", "utf8").trim().split("\n").map((l) => JSON.parse(l));
+  if (hist.length >= 1) {
+    const p = hist[hist.length - 1];
+    const c = { confident, match: covTot.match, vesting: covTot.vesting, lineups: covTot.lineup, entries };
+    const d = (k, pv) => { const x = c[k] - pv; return `${k} ${x >= 0 ? "+" : ""}${x}`; };
+    verdictNote = [d("confident", p.confident), d("match", p.match), d("vesting", p.vesting), d("lineups", p.lineups)].join(", ");
+    const regress = [];
+    if (c.confident - p.confident < -200) regress.push(`confident ${c.confident - p.confident}`);
+    if (c.match - p.match < -150) regress.push(`match ${c.match - p.match}`);
+    if (c.vesting - p.vesting < -150) regress.push(`vesting ${c.vesting - p.vesting}`);
+    if (regress.length)
+      flag("high", "reparse-regression", `coverage regressed vs previous run (${regress.join(", ")}) — justify with sampled losses or roll back before mirroring`);
+    console.log(`\n== REPARSE VERDICT vs previous run: ${verdictNote}${regress.length ? "  ⚠ REGRESSED" : "  — improved or held"}`);
+  }
+} catch { /* first run — no history yet */ }
+
 // Machine-readable accuracy trail: one JSONL line per pipeline run,
 // committed with the data — coverage trends are diffable, and a silent
 // regression shows up as a dip in the next line rather than needing

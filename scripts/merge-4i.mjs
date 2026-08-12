@@ -21,6 +21,16 @@ let status = { plans: {} };
 try { status = JSON.parse(readFileSync("lineups-status.json", "utf8")); } catch { /* first run */ }
 // snapshot pre-merge confidence for the post-merge diff report
 const prevConfident = new Set(Object.entries(status.plans).filter(([, m]) => m.c).map(([a]) => a));
+// snapshot the SHAPE of every confident entry too: a loss whose old parse
+// looked like a real menu (many rows, sane ratio) is a regression candidate
+// that must be triaged, not scrolled past — v49 lost 754 real menus and
+// only a by-hand classification caught it (accuracy log 2026-08-11)
+const prevShape = {};
+for (let i = 0; i < SHARDS; i++) {
+  for (const [a, e] of Object.entries(buckets[i])) {
+    if (e.confident && e.funds) prevShape[a] = { n: e.funds.length, r: e.coverageRatio || 0 };
+  }
+}
 
 const files = readdirSync(".").filter((f) => /^results-\d+\.json$/.test(f));
 console.log(`merging ${files.length} delta files`);
@@ -103,4 +113,14 @@ console.log(`merged ${applied} entries; totals: ${vals.length} parsed, ${vals.fi
   if (lost.length) console.log(`  LOST:   ${lost.slice(0, 25).join(", ")}${lost.length > 25 ? ` … +${lost.length - 25} more` : ""}`);
   const fb = vals.filter((p) => p.fb).length;
   if (fb) console.log(`  prior-year fallback lineups in store: ${fb}`);
+  // LOSS TRIAGE: losses whose OLD parse was real-menu-shaped go to the
+  // audit as HIGH findings — junk-cleanup losses (tiny/edge-band parses)
+  // are expected on guard changes, but a lost 20-row ratio-1.0 menu means
+  // the new version broke something real. audit-data reads this file.
+  const realish = lost.filter((a) => {
+    const s = prevShape[a.split(" ")[0]];
+    return s && (s.n >= 7 || (s.n >= 5 && s.r >= 0.7 && s.r <= 1.3));
+  });
+  console.log(`  real-menu-shaped losses (auto-triage → audit HIGH): ${realish.length}`);
+  writeFileSync("losses-triage.txt", realish.join("\n") + (realish.length ? "\n" : ""));
 }
