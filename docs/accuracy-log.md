@@ -1437,6 +1437,36 @@ Both are now machinery:
 Both verified locally (no-op merge → verdict "+0 … improved or held",
 zero triage). They run in every pipeline run from the next push on.
 
+## 2026-08-12 — v51 verified: +2,576 / −91, the review ends net-positive; the new machinery immediately caught two more defects
+
+**Run 31549449210.** Confident 57,872 (**+1,379 above the pre-review
+peak**), lineup coverage 84.5% (from 82.4%). Restorations spot-verified
+with clean names (ClinicalMind 27 funds topped by "AMERFUNDS 2050", UJET
+25 TRP funds). Losses sampled: contribution-schedule junk, class-
+aggregate edge parses, statement fragments — honest removals — plus ONE
+real-shaped case (20251015134924, a 14-fund Fidelity menu at ratio 0.61
+edged out by its own flagged statement region at ~0.87; the display is
+an honest gap, not junk). Recorded as the v52 scoring candidate: a
+stmt-flagged region should not be able to outscore an unflagged real
+menu on closeness alone.
+
+**The tripwire caught a regression IN the regression-catcher**: Werner's
+"EMPLOYEE IDENTIFICATION NO." row survived because the v49 possessive
+edit accidentally made the "r" in employe{1,2}r? required — "employer"
+matched, "EMPLOYEE" didn't. One-character fix, guarded by the audit
+either way. And all 3 residual vesting-cliff mismatches were one class:
+long amendment sentences bury the cliff phrase past the 300-char quote
+cap — the vesting quote now windows around the cliff match, same fix as
+the match quotes. 8 of 9 remaining lineup-junk HIGHs are stale
+download-failure retentions (pv 36–43) that clear if S3 ever serves
+those files.
+
+Review arc closed: v49 (fix wrong displays) → v50 (reverse the fix's
+over-cut) → v51 (root-cause the losses; region selection structurally
+improved). Net: more accurate on all three claim types AND +1,379
+confident lineups. The improvement contract (loss triage + reparse
+verdict) is live in CI as of the next run.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

@@ -292,7 +292,9 @@ export function parseRows(section, opts = {}) {
     // Sponsor: BitGo, Inc. Employee Identification Nu…" (511 confident
     // lineups carried this class, found by the audit's lineup-junk
     // tripwire; "EMPLOYEER" is a common OCR misread)
-    if (/name of plan sponsor|employe{1,2}r(?:['’]s)? identification|identification number|^plan name\b/i.test(name)) continue;
+    // r? must stay OPTIONAL: "EMPLOYEE IDENTIFICATION NO." (Werner) — a
+    // v49 edit made the r required and the tripwire caught the survivor
+    if (/name of plan sponsor|employe{1,2}r?(?:['’]s)? identification|identification number|^plan name\b/i.test(name)) continue;
     // v49 edge-sample findings (all were confident rows): loan-rate range
     // fragments ("ranging from 4.25% to" = a $13M "fund"), truncated class
     // stems ("Common /"), and PROVIDER-TOTAL statement rows — a bare
@@ -946,7 +948,18 @@ export function extractPlanFeatures(text) {
       const num = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6 }[String(n).toLowerCase()] || +n;
       // IRC §411(a)(2)(B) caps DC cliff vesting at 3 years — a "5-year
       // cliff" reading is a misparsed graded schedule or service reference
-      if (num >= 1 && num <= 3) { out.vesting = `${num}-year cliff`; out.vestingText = cap(s); break; }
+      if (num >= 1 && num <= 3) {
+        out.vesting = `${num}-year cliff`;
+        // long amendment sentences bury the cliff phrase past the 300-char
+        // cap — window the quote around the MATCH so it always contains
+        // the number it proves (the 3 residual audit mismatches were all
+        // this: "amended … to retain the six-year schedule … and reduce …"
+        // with "three-year cliff" cut off at char 300)
+        out.vestingText = s.length > 300 && cliff.index > 60
+          ? cap("…" + s.slice(Math.max(0, cliff.index - 60)))
+          : cap(s);
+        break;
+      }
     }
   }
   // vesting stated as a service-year TABLE rather than prose ("2 Years 20,
