@@ -23,8 +23,11 @@ const SPECIMENS = [
     { found: true, n: 30, sum: 1108624094 }],
   ["Verizon trust (class summary)", "20250922070418NAL0002030595001", 41099764177,
     { found: true, n: 12, sum: 38926187308 }],
-  ["CCT 4-row (statement aggregate)", "20250912103135NAL0003410034001", 139583948,
-    { found: true, n: 4, sum: 131590242 }],
+  // v51's cluster suffix candidates unlocked this filing's REAL 27-fund
+  // menu (Contrafund, TRP target dates, ratio 0.995) — the 4-row class
+  // aggregate this specimen originally locked in was second-best all along
+  ["CCT (real menu via suffix candidates)", "20250912103135NAL0003410034001", 139583948,
+    { found: true, n: 27, sum: 138922286 }],
   ["form-only (must leave OCR open)", "20251010094924NAL0012761840001", 74759678,
     { found: false }],
   ["Cochrane (OCR-sourced menu)", "20250924093907NAL0002944403001", 19416362,
@@ -54,13 +57,12 @@ const SPECIMENS = [
   ["Plexsys (glued-0 dedup)", "20260706150053NAL0023514192001", 36432027,
     { found: true, n: 32, sum: 37829365 }],
   // v44: page carry-forward subtotals ("Forward $21,786,094 ...") summed
-  // across pages into a fake $197M top "fund" on a statement-page win;
-  // with Forward dropped this filing honestly fails the ratio band.
-  // v46 moved it again (intentional): the brokerage vocabulary flags its
-  // "Common stock / Preferred stock / Mutual funds" region as a statement,
-  // so a per-security region wins instead — ratio 2.5, still non-confident
+  // across pages into a fake $197M top "fund" on a statement-page win.
+  // v46: brokerage vocabulary demoted its statement region. v51's suffix
+  // candidates reach the honest result: managed-account rollup (74
+  // positions) + real rows (Vanguard 500, Pershing cash)
   ["Carry-forward subtotals", "20251008154534NAL0005779537001", 295570079,
-    { found: true, n: 10, sum: 739354953 }],
+    { found: true, n: 7, sum: 192739241 }],
   // v45: recordkeeper "SUMMARY OF NET TRUST ASSETS" page appended after
   // the real 4i table — same menu in ALL CAPS with cents; v43's cents fix
   // made it readable and the doubled region lost a real 29-fund menu

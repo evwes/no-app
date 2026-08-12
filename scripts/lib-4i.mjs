@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 50;
+export const PARSER_VERSION = 51;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b|^brokerage accounts?$/i, "SDBA"],
@@ -27,7 +27,12 @@ export function classify(text) {
   return "";
 }
 
-const SKIP_ROW = new RegExp("^(total|subtotal|grand total|schedule|page \\d|form 5500|ein[: ]|employer id|sponsor name|plan number|as of|see accompanying|\\(thousands|identity of issue|description of investment|rate of|maturity|cost\\b|current value|sales\\b|purchases\\b|dividends\\b|assets in.transit|investments? at fair value|dividend income|other income|administrative fees)|" +
+// "plan name|plan sponsor's name": recordkeeper attachments repeat a
+// "Plan Name X ... EIN: .." heading on EVERY page; valueless, it glued
+// onto each page's first fund via nameBuf, and dropping the assembled row
+// (v49) lost one REAL fund per page — 754 small-plan menus fell out of
+// confidence. Skipping the heading LINE keeps the funds clean instead.
+const SKIP_ROW = new RegExp("^(total|subtotal|grand total|schedule|page \\d|form 5500|ein[: ]|employer id|sponsor name|plan name\\b|plan sponsor'?s name\\b|plan number|as of|see accompanying|\\(thousands|identity of issue|description of investment|rate of|maturity|cost\\b|current value|sales\\b|purchases\\b|dividends\\b|assets in.transit|investments? at fair value|dividend income|other income|administrative fees)|" +
   // financial-statement lines that are not 4i holdings
   // "investments?,? at (fair|contract) value" must tolerate the comma/dash
   // spellings — 631 confident lineups carried "Investments, at fair value"
@@ -170,6 +175,12 @@ export function parseRows(section, opts = {}) {
     }
 
     const value = +vm[1].replace(/,/g, "");
+    // no real holding reaches $100B (the largest master-trust interests are
+    // ~$50B) — bigger "values" are pre-printed form watermark digits
+    // ("123456789012" under the EIN boxes) or OCR garbage, and one such row
+    // poisoned every candidate region containing it (ClinicalMind's merged
+    // cluster summed to $1.6 QUADRILLION and the real menu could never win)
+    if (value >= 1e11) { nameBuf = []; continue; }
     // prose sentences that happen to end in a number are not holdings.
     // Spaced dot-leaders (". . . .", the Costco class) are typography, not
     // words — counting them as words made every leadered holding without a
@@ -408,6 +419,12 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
       if (endRe.test(lines[i]) || atStop(lines[i])) { end = i; break; }
     }
     candidates.push([cl[0], end]);
+    // SUFFIX candidates: a cluster often chains a TOC line and statement
+    // pages onto the real multi-page attachment (headings all <400 apart),
+    // and the polluted whole can never outscore fragments. Every suffix
+    // gets to compete so the attachment-only span exists as a candidate
+    // (ClinicalMind: [attachment..end] is the real 29-fund menu).
+    for (let k = 1; k < Math.min(cl.length, 12); k++) candidates.push([cl[k], end]);
   }
 
   let best = null;

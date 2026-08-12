@@ -1369,6 +1369,51 @@ appears in. Classes that are "junk when dominant" get parse-level flags
 context (form vocabulary, addresses, garble). And the mirror-after-
 review discipline is what kept 1,300 broken pages off the live site.
 
+## 2026-08-11/12 — v50 verified, v51: the heading-glue class was 754 REAL menus, and pulling its thread fixed region selection itself
+
+**v50 (run 31538231084)** restored the provider-guard over-cut (+245,
+sampled classes all correct) — but the v48→v50 net was still −1,106, so
+the loss classification continued. Result: 220 provider-total pages and
+~150 tiny statement fragments were honest removals, but **754 lineups
+with 7–12 REAL funds** (AmerFunds/TRP/Vanguard small-plan menus) were
+collateral: their recordkeeper attachment repeats a "Plan Name X …
+EIN:" heading on every page, the valueless heading GLUED onto each
+page's first fund via nameBuf, and v49's name-level junk guard then
+dropped that fund WITH its value — ratios fell out of the band.
+
+**v51, fix 1 — kill the glue at the line level.** "Plan Name" /
+"Plan Sponsor's Name" heading LINES join SKIP_ROW, so every page's
+first fund keeps its own clean name and value. Row-name guards remain
+as backstops.
+
+**v51, fix 2 — found while verifying fix 1.** ClinicalMind's real
+29-fund menu STILL couldn't win: the pre-printed form watermark digits
+("123456789012" under the EIN boxes) parse as a $123B "value", and one
+such row poisoned every candidate region containing it — the merged
+cluster summed to $1.6 QUADRILLION (score −18) while single pages sat
+at ratio 0.15–0.34, so a statement fragment won by default. Values
+≥ $100B are now dropped at parse (the largest real master-trust
+interests are ~$50B).
+
+**v51, fix 3 — the structural one.** Clusters chain the TOC and
+statement pages onto the real attachment (headings all <400 lines
+apart), and the polluted whole can never outscore fragments. Every
+cluster SUFFIX now competes as its own candidate, so the
+attachment-only span exists. ClinicalMind: 27 funds, ratio 1.00,
+confident, clean names. The gate then reported two specimen movements —
+both IMPROVEMENTS on review: the "CCT 4-row aggregate" specimen's real
+27-fund menu (Contrafund, TRP suite, ratio 0.995) was reachable for the
+first time, and the carry-forward filing landed on an honest
+managed-account rollup. Expectations updated with relabeled comments.
+Eaton pair, Costco, Verizon, Sierra Space, Galliano: byte-stable.
+
+**Lesson (permanent).** A "junk row" investigation must end at the LINE
+that produced it, not the name that displayed it — three different
+layers (heading glue, watermark values, cluster pollution) each looked
+like "bad names" from the outside. And impossible-value bounds belong
+at parse time: closeness scoring is defenseless against a quadrillion-
+dollar row.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
