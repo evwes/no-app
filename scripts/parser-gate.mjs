@@ -74,6 +74,13 @@ const SPECIMENS = [
   // found=false; the OCR-path fix is the STMT_ROW brokerage vocabulary.
   ["Galliano (scanned, OCR statement)", "20251013201846NAL0000931539001", 380897686,
     { found: false }],
+  // v52: Empower group-annuity CODE page ("1NTSPI4", "1GGCG50") files
+  // under its own SCHEDULE OF ASSETS heading and tied the real schedule
+  // at ratio ~0.97 once v43 made its cents columns readable — 28 fund
+  // codes displayed as names (Power Design, owner report). The code-page
+  // penalty must keep the NAMED rendition winning.
+  ["Power Design (Empower code page)", "20251015163402NAL0010660226001", 79416197,
+    { found: true, n: 27, sum: 73531649 }],
   ["Black Hills", "20260623190115NAL0012535394001", 933735584,
     { found: true, n: 21, sum: 911785769 }],
 ];

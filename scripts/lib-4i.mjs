@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 51;
+export const PARSER_VERSION = 52;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b|^brokerage accounts?$/i, "SDBA"],
@@ -468,6 +468,15 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
     // ratios as well, and 22 of them displaced real 15-35 row menus
     const isStatement = (parsed.funds.length <= 8 && stmty / parsed.funds.length >= 0.5)
       || (parsed.funds.length <= 3 && (stmty + classy) / parsed.funds.length >= 0.5);
+    // recordkeeper CODE pages (Empower group-annuity renditions): the same
+    // menu re-filed as fund codes ("1GGCG50", "1NTSPI4") under its OWN
+    // "SCHEDULE OF ASSETS" heading, with cents columns the v43 fix made
+    // readable — it ties the real schedule on ratio and the tie broke
+    // wrong (Power Design showed 28 codes as fund names). Code tokens
+    // have no spaces and carry digits; real names have spaces, and pure
+    // ticker menus (VFIAX) have no digits — both stay unpenalized.
+    const codeish = parsed.funds.filter((f) => /^[A-Z0-9][A-Z0-9-]{3,9}$/.test(f.name.trim()) && /\d/.test(f.name)).length;
+    const isCodePage = parsed.funds.length >= 5 && codeish / parsed.funds.length >= 0.6;
     for (const scale of marked ? [1, 1000] : [1]) {
       const ratio = assetsEOY ? (raw * scale) / assetsEOY : 0;
       if (!ratio) continue;
@@ -475,6 +484,7 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
       const score = -closeness + Math.min(parsed.funds.length, 40) * 0.005
         + (isSummary && closeness < 0.5 ? 0.1 : 0)
         - (isStatement ? 0.35 : 0)
+        - (isCodePage ? 0.35 : 0)
         - (gainLast && parsed.funds.length >= 60 ? 0.2 : 0);
       if (!best || score > best.score) {
         best = { score, ratio, scale, stmt: isStatement, ...parsed };

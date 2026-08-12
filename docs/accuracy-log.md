@@ -1467,6 +1467,35 @@ improved). Net: more accurate on all three claim types AND +1,379
 confident lineups. The improvement contract (loss triage + reparse
 verdict) is live in CI as of the next run.
 
+## 2026-08-12 — Power Design (owner-submitted): 28 recordkeeper fund CODES displayed as fund names (v52)
+
+**What was wrong.** Power Design, Inc. Retirement Plan (EIN 65-0147539,
+$79.4M) showed "FUND HOLDINGS — 28 FILED" whose names were Empower fund
+codes — "1NTSPI4" ($9.6M), "1GGCG50" ($8.7M), "1TRGSTE" — every row
+mistyped "Stable value / GIC". The VALUES were real (1NTSPI4 = NT Col
+S&P 500 Idx Fd DC NL 4, $9,599,124); the names were useless.
+
+**Why.** The filing contains the schedule TWICE: the auditor's clean
+named table, and the recordkeeper's group-annuity rendition listing the
+same funds by CODE with cents-formatted cost/value columns — filed
+under its own "SCHEDULE OF ASSETS (HELD AT END OF YEAR)" heading, so it
+competes as a first-class candidate region. Before v43 its cents values
+were unreadable and it summed to nothing; the cents fix made it a
+ratio-0.97 twin of the real schedule, and the tie broke wrong. Same
+lesson as Sierra Space, third instance: every fix that makes MORE text
+readable must be re-checked against every page it newly ingests.
+
+**The change (v52).** Code-page penalty in region scoring: when ≥60% of
+a region's names are space-less digit-bearing tokens ("1GGCG50",
+"1TRSV-A"), it takes the statement-grade −0.35 penalty. Real names have
+spaces; pure ticker menus (VFIAX) have no digits — both unpenalized.
+Power Design now renders its named schedule: 27 funds, correct
+Collective-trust types, ratio 0.93. Joins the gate (18 specimens,
+green). v52 also carries the Werner employe{1,2}r? one-char fix and the
+vesting quote window. Future idea recorded: these filings include a
+code→name LEGEND page; mapping it would let the code rendition enrich
+rather than compete.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
