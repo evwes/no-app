@@ -1551,6 +1551,31 @@ stays vocabulary-guarded ("Page subtotal" added). One specimen's menu
 IMPROVED from 18 junk-tainted rows to a full 34-row menu at ratio
 0.956. Sempra byte-stable; gate 19 green.
 
+## 2026-08-14 — OCR v3: page targeting — big scans OCR the RIGHT pages instead of the first 40 (launch item)
+
+**What was wrong.** Two silent gaps in the OCR lane: filings with 41–120
+scanned pages OCR'd the FIRST 40 bad pages — but schedules live at the
+END of filings, so the budget went to financial statements and the menu
+was never seen; filings beyond 120 scanned pages were skipped outright
+(the large-plan class).
+
+**The change (OCR v3).** A strip-scan pre-pass renders only the top 3
+inches of each bad page at 100dpi (~1-2s/page vs ~30s full-page) and
+OCRs the strips with garble-tolerant heading vocabulary ("schedu1e h",
+"1ine 4(i)"…). Full OCR then targets heading hits + 2 continuation
+pages each; if no heading is found, the LAST 40 pages (not the first).
+The skip ceiling rises 120 → 250 pages. Verified on a real scanned
+filing: the strip pass found the exact schedule start (page 40 of 56)
+plus the form's Schedule H page, in seconds.
+
+**Rollout.** OCR_VERSION 2 → 3 re-queues every no-section filing
+(~7,000) for a targeted attempt; the per-run time budget spreads the
+backlog over the nightly/weekly runs and the work list converges as
+each ack records ov:3. Recoveries and any junk the new text introduces
+land in the normal diff/triage/verdict review — the Sierra Space lesson
+(new readability = new junk surface) applies and the machinery watches
+for it.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

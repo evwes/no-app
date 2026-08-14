@@ -21,9 +21,9 @@ import { parse4i, extractPlanFeatures, indexFlags, PARSER_VERSION } from "./lib-
  * encodings that extract as cipher-garbage. Rasterize just those pages and
  * OCR them, then re-run the normal parser on the combined text. Bump
  * OCR_VERSION to re-attempt every no-section filing. */
-const OCR_VERSION = 2; // v2: tail-scan detection fix — re-attempt everything marked under v1
-const OCR_MAX_PAGES = 40; // 4i + notes fit well within this
-const OCR_SKIP_BAD = 120; // a fully-scanned 300-page filing isn't worth 10 min
+const OCR_VERSION = 3; // v3: page targeting — strip-scan finds the schedule pages; big scans re-attempt
+const OCR_MAX_PAGES = 40; // full-OCR budget per filing; TARGETING picks which 40
+const OCR_SKIP_BAD = 250; // strip-scan makes big scans affordable; only 250+ page monsters skip
 let hasOcrTools = true;
 try { execFileSync("tesseract", ["--version"], { stdio: "ignore" }); execFileSync("pdftoppm", ["-v"], { stdio: "ignore" }); }
 catch { hasOcrTools = false; console.log("tesseract/pdftoppm missing — OCR fallback disabled"); }
@@ -50,6 +50,53 @@ function findBadPages(text) {
     if (chars < 50 || (chars > 200 && letters / chars < 0.5) || ctl > 15) bad.push(i + 1);
   }
   return bad;
+}
+
+/* PAGE TARGETING (v3): for scans too big to OCR whole, find the schedule
+ * pages first. Renders only the TOP STRIP of each page (3in at 100dpi —
+ * headings live there) and OCRs the strips; a strip costs ~1-2s vs ~30s+
+ * for a full page. Schedules also live at the END of filings, so the old
+ * "first 40 bad pages" slice usually OCR'd financial statements and
+ * missed the menu entirely; >120-page scans were skipped outright. */
+async function stripScan(pdfPath, pages, workDir) {
+  mkdirSync(workDir, { recursive: true });
+  for (const p of pages) {
+    try {
+      execFileSync("pdftoppm", ["-r", "100", "-gray", "-y", "0", "-H", "300",
+        "-f", String(p), "-l", String(p), pdfPath, path.join(workDir, "s" + String(p).padStart(4, "0"))]);
+    } catch { /* damaged page — no strip */ }
+  }
+  const imgs = readdirSync(workDir).filter((f) => /\.p[gpb]m$/.test(f)).sort();
+  const byPage = {};
+  let next = 0;
+  async function worker() {
+    while (next < imgs.length) {
+      const mine = next++;
+      const page = +imgs[mine].slice(1, 5);
+      byPage[page] = await new Promise((resolve) => {
+        execFile("tesseract", [path.join(workDir, imgs[mine]), "stdout", "--psm", "6"],
+          { encoding: "utf8", maxBuffer: 8 * 1024 * 1024, env: { ...process.env, OMP_THREAD_LIMIT: "1" } },
+          (e, out) => resolve(out || ""));
+      });
+    }
+  }
+  await Promise.all([worker(), worker(), worker(), worker()]);
+  rmSync(workDir, { recursive: true, force: true });
+  return byPage;
+}
+
+// OCR-garble-tolerant 4i heading vocabulary for strip text
+const STRIP_HEAD = /schedu[l1i]e\s*h\b|[l1i]ine\s*4\s*\(?\s*i\s*\)?|schedu[l1i]e\s*of\s*assets|assets\s*.{0,4}he[l1i]d\s*for\s*investment/i;
+
+/* choose which bad pages deserve full OCR: heading hits + 2 continuation
+ * pages each; no hits → the LAST 40 (schedules sit at the end) */
+function targetPages(badPages, stripText) {
+  const badSet = new Set(badPages);
+  const hits = badPages.filter((p) => STRIP_HEAD.test(stripText[p] || ""));
+  if (!hits.length) return badPages.slice(-OCR_MAX_PAGES);
+  const chosen = new Set();
+  for (const h of hits) for (const q of [h, h + 1, h + 2]) if (badSet.has(q)) chosen.add(q);
+  return [...chosen].sort((a, b) => a - b).slice(0, OCR_MAX_PAGES);
 }
 
 async function ocrPages(pdfPath, badPages, workDir) {
@@ -281,8 +328,14 @@ async function analyzePdf(ack, plan, tag) {
         if (cacheFile) { try { otext = readFileSync(cacheFile, "utf8"); } catch { /* cache miss */ } }
         if (otext === null) {
           const t0 = Date.now();
-          otext = await ocrPages(dest, bad, path.join(WORK, "ocr-" + ack.slice(-12)));
-          console.log(`${tag}: ocr ${Math.min(bad.length, OCR_MAX_PAGES)} pages in ${((Date.now() - t0) / 1000).toFixed(0)}s`);
+          let pages = bad;
+          if (bad.length > OCR_MAX_PAGES) {
+            const strips = await stripScan(dest, bad, path.join(WORK, "strips-" + ack.slice(-12)));
+            pages = targetPages(bad, strips);
+            console.log(`${tag}: strip-scan ${bad.length} bad pages → targeting ${pages.length}`);
+          }
+          otext = await ocrPages(dest, pages, path.join(WORK, "ocr-" + ack.slice(-12)));
+          console.log(`${tag}: ocr ${Math.min(pages.length, OCR_MAX_PAGES)} pages in ${((Date.now() - t0) / 1000).toFixed(0)}s`);
           if (cacheFile && otext) { try { writeFileSync(cacheFile, otext); } catch { /* best-effort */ } }
         }
         if (otext && otext.replace(/\s+/g, "").length > 500) {
