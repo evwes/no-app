@@ -1631,6 +1631,73 @@ scratchpad rev500/report.json; each is a distinct long-tail phrasing to
 be reviewed by hand. Regression set (Northrop/TK/Kohler/Black Hills/
 WI-Cheese/Sempra) byte-identical; gate 19 green.
 
+## 2026-08-14/15 — OCR v4: the rotated trustee-table class, root-caused three layers deep; recovery is real but partial (honest)
+
+**Layer 1 (v3's miss, caught by its own +0/−0 diff):** a heading hit on
+the form's own Schedule H page starved the real schedule — "strip-scan
+76 pages → targeting 3". Fixed: targeting tops up the full budget from
+the document's tail.
+
+**Layer 2 (found investigating layer 1):** the PSEG-class pages aren't
+scans — they're LANDSCAPE trustee tables (BNY "Schedule of Investments")
+that fixed-orientation OCR reads as vertical garble. OSD confirms 270°;
+psm 1 reads them cleanly. v4 probes orientation once per filing and
+auto-orients.
+
+**Layer 3 (found verifying layer 2):** these reports carry NO 4i heading
+at all — their title is stopRe vocabulary. A trustee-title fallback now
+seeds regions ONLY in documents with zero 4i headings (nothing
+legitimate can be displaced; gate 19 unchanged).
+
+**Honest outcome:** PSEG end-to-end now reads and parses (80 rows) but
+the 40-page budget landed on one fund's bond-detail section — ratio
+0.093, correctly non-confident. The class moves from "unreadable" to
+"readable, honestly incomplete". Full recovery needs EDGE-strip
+targeting inside rotated reports (per-fund section headers run along
+the physical page edge) — recorded as the next OCR iteration for the
+daily cycle. The confidence band and triage machinery guarantee the
+partial text can't ship junk meanwhile.
+
+## 2026-08-15 — Publish gate caught its first real regression: v3 OCR targeting dropped OCR-sourced features (match −179), fixed with a notes-head reserve
+
+**What was wrong.** The v55 full re-parse failed the new publish gate:
+REPARSE VERDICT match −179 vs the previous run — data was correctly NOT
+committed (the gate doing exactly what the owner demanded after the 99%
+incident). Root cause was not the v55 feature regexes: OCR v3's page
+targeting spends the whole 40-page OCR budget on schedule-of-assets
+pages (strip-vocabulary hits + tail). OCR v2 had OCR'd the FIRST 40 bad
+pages — which included the auditor's notes where match/vesting prose
+lives. On every >40-bad-page scanned filing, the full re-parse therefore
+re-extracted features from text that no longer contained the notes, and
+OCR-sourced match/vesting silently vanished. The v3 run itself hid this
+because it only re-ran the OCR worklist, not the whole universe.
+Reproduced deterministically on a 111-bad-page specimen
+(20250821152449…): first-40 OCR extracts "100% of the first 5% of pay",
+targeted/last-40 extracts nothing.
+
+**Diagnosis trap worth remembering.** A local re-scan of the 500-filing
+review cache first suggested 26 lost matches + 23 lost vestings — 46 of
+49 were artifacts of the harness itself (cached pdftotext-only text
+lacks the OCR pages that produced the stored quotes; ocr=1 on nearly
+all). The 3 "real" ones were the intended v55 acceleration-boilerplate
+cleanup. Never diagnose OCR-filing feature changes from pdftotext-only
+text.
+
+**The change (OCR v4, same commit as the rotated-class work).**
+`targetPages` now reserves OCR_HEAD_PAGES=12 of the 40-page budget for
+the first bad pages (the notes head) after schedule hits, before the
+tail top-up; the rotated branch takes head-12 + tail-28 instead of
+tail-40. Verified: head12+tail28 on the 111-bad specimen recovers the
+match. Parser gate 19/19 green.
+
+**Prevention.** (1) The publish gate itself — this entry exists because
+the gate blocked the bad data before the site saw it. (2) OCR targeting
+changes must be tested for FEATURE retention, not just lineup reach:
+the schedule and the notes are different pages, and the budget must
+cover both. (3) Run-level verdicts are the only trustworthy regression
+signal for OCR filings; local caches without OCR text cannot adjudicate
+them.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

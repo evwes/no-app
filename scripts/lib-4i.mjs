@@ -414,11 +414,23 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
   // cents tolerance made it readable and the region summed both copies
   // (Sierra Space, ratio 1.0 → 1.89, real 29-fund menu lost)
   const stopRe = /^portfolio (valuation|statement)s?$|^(schedule|statement) of (portfolio )?investments?$|^summary of (net )?(trust|plan) assets$/i;
-  const atStop = (line) => stopRe.test(line.trim());
+  const atStop = (line) => !trusteeMode && stopRe.test(line.trim());
 
   const starts = [];
   for (let i = 0; i < lines.length; i++) if (headRe.test(lines[i])) starts.push(i);
-  if (!starts.length) return { found: false };
+  // trustee-report fallback: some filings (PSEG's rotated BNY report) carry
+  // NO 4i heading at all — their only schedule is titled "Schedule of
+  // Investments…". That title is normally stopRe vocabulary (it ENDS
+  // regions to fence off SMA floods), so it may seed regions ONLY when the
+  // document has zero real 4i headings — nothing legitimate can be
+  // displaced, and scoring/guards judge the result as usual.
+  let trusteeMode = false;
+  if (!starts.length) {
+    const trusteeHead = /^(?:schedule|statement)\s+of\s+(?:portfolio\s+)?investments\b/i;
+    for (let i = 0; i < lines.length; i++) if (trusteeHead.test(lines[i].trim())) starts.push(i);
+    if (!starts.length) return { found: false };
+    trusteeMode = true;
+  }
 
   // single-heading regions
   const candidates = [];

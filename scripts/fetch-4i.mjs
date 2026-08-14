@@ -21,8 +21,9 @@ import { parse4i, extractPlanFeatures, indexFlags, PARSER_VERSION } from "./lib-
  * encodings that extract as cipher-garbage. Rasterize just those pages and
  * OCR them, then re-run the normal parser on the combined text. Bump
  * OCR_VERSION to re-attempt every no-section filing. */
-const OCR_VERSION = 3; // v3: page targeting — strip-scan finds the schedule pages; big scans re-attempt
+const OCR_VERSION = 4; // v4: orientation-aware (PSEG's rotated landscape tables) + tail top-up targeting
 const OCR_MAX_PAGES = 40; // full-OCR budget per filing; TARGETING picks which 40
+const OCR_HEAD_PAGES = 12; // notes-head reserve inside the budget (features prose)
 const OCR_SKIP_BAD = 250; // strip-scan makes big scans affordable; only 250+ page monsters skip
 let hasOcrTools = true;
 try { execFileSync("tesseract", ["--version"], { stdio: "ignore" }); execFileSync("pdftoppm", ["-v"], { stdio: "ignore" }); }
@@ -62,7 +63,7 @@ async function stripScan(pdfPath, pages, workDir) {
   mkdirSync(workDir, { recursive: true });
   for (const p of pages) {
     try {
-      execFileSync("pdftoppm", ["-r", "100", "-gray", "-y", "0", "-H", "300",
+      execFileSync("pdftoppm", ["-r", "100", "-gray", "-y", "0", "-H", "420",
         "-f", String(p), "-l", String(p), pdfPath, path.join(workDir, "s" + String(p).padStart(4, "0"))]);
     } catch { /* damaged page — no strip */ }
   }
@@ -85,21 +86,49 @@ async function stripScan(pdfPath, pages, workDir) {
   return byPage;
 }
 
-// OCR-garble-tolerant 4i heading vocabulary for strip text
-const STRIP_HEAD = /schedu[l1i]e\s*h\b|[l1i]ine\s*4\s*\(?\s*i\s*\)?|schedu[l1i]e\s*of\s*assets|assets\s*.{0,4}he[l1i]d\s*for\s*investment/i;
+// OCR-garble-tolerant 4i heading vocabulary for strip text (v4 adds the
+// trustee-statement titles: "Schedule of Investments", "Statement of …")
+const STRIP_HEAD = /schedu[l1i]e\s*h\b|[l1i]ine\s*4\s*\(?\s*i\s*\)?|schedu[l1i]e\s*of\s*(?:assets|invest)|statement\s*of\s*(?:net\s*)?assets|assets\s*.{0,4}he[l1i]d\s*(?:for|at)|he[l1i]d\s*at\s*end\s*of/i;
 
 /* choose which bad pages deserve full OCR: heading hits + 2 continuation
- * pages each; no hits → the LAST 40 (schedules sit at the end) */
+ * pages each, then TOP UP the remaining budget from the document's tail —
+ * a heading hit on the FORM's own Schedule H page must not starve the
+ * real schedule (PSEG targeted 3 of 76 pages and recovered nothing) */
 function targetPages(badPages, stripText) {
   const badSet = new Set(badPages);
   const hits = badPages.filter((p) => STRIP_HEAD.test(stripText[p] || ""));
-  if (!hits.length) return badPages.slice(-OCR_MAX_PAGES);
   const chosen = new Set();
   for (const h of hits) for (const q of [h, h + 1, h + 2]) if (badSet.has(q)) chosen.add(q);
+  // reserve budget for the NOTES head: match/vesting prose lives in the
+  // first pages of the auditor's report, which the strip vocabulary never
+  // hits — v3's schedule-only targeting silently dropped OCR-sourced
+  // features on every >40-bad-page filing during the v55 full re-parse
+  // (REPARSE VERDICT match −179; reproduced on a 111-bad specimen where
+  // first-40 kept the formula and targeted/last-40 lost it)
+  for (const p of badPages.slice(0, OCR_HEAD_PAGES)) if (chosen.size < OCR_MAX_PAGES) chosen.add(p);
+  for (let i = badPages.length - 1; i >= 0 && chosen.size < OCR_MAX_PAGES; i--) chosen.add(badPages[i]);
   return [...chosen].sort((a, b) => a - b).slice(0, OCR_MAX_PAGES);
 }
 
-async function ocrPages(pdfPath, badPages, workDir) {
+/* orientation check: trustee statements file LANDSCAPE tables the PDF
+ * doesn't mark as rotated — psm 6 reads them as vertical garble while
+ * psm 1 (auto page segmentation with OSD) reads them cleanly. One OSD
+ * probe on a middle bad page decides the whole filing. */
+function detectRotation(pdfPath, probePage, workDir) {
+  try {
+    mkdirSync(workDir, { recursive: true });
+    execFileSync("pdftoppm", ["-r", "120", "-gray", "-f", String(probePage), "-l", String(probePage), pdfPath, path.join(workDir, "osd")]);
+    const img = readdirSync(workDir).filter((f) => /^osd.*\.p[gpb]m$/.test(f))[0];
+    if (!img) return 0;
+    const out = execFileSync("tesseract", [path.join(workDir, img), "stdout", "--psm", "0"],
+      { encoding: "utf8", env: { ...process.env, OMP_THREAD_LIMIT: "1" } });
+    const m = out.match(/Rotate:\s*(\d+)/);
+    return m ? +m[1] : 0;
+  } catch { return 0; }
+  finally { try { rmSync(workDir, { recursive: true, force: true }); } catch { /* ignore */ } }
+}
+
+async function ocrPages(pdfPath, badPages, workDir, psm = "6") {
   const take = badPages.slice(0, OCR_MAX_PAGES);
   mkdirSync(workDir, { recursive: true });
   // one pdftoppm call PER PAGE: rendering merged ranges let a single
@@ -122,7 +151,7 @@ async function ocrPages(pdfPath, badPages, workDir) {
         // OMP_THREAD_LIMIT=1: tesseract's own multithreading burns 4x CPU for
         // HALF the speed (measured), and 4 workers x 4 OMP threads thrashed the
         // 4-core runner to ~20 min per filing. Parallelism stays process-level.
-        execFile("tesseract", [imgs[mine], "stdout", "--psm", "6", "-c", "preserve_interword_spaces=1"],
+        execFile("tesseract", [imgs[mine], "stdout", "--psm", psm, "-c", "preserve_interword_spaces=1"],
           { encoding: "utf8", maxBuffer: 64 * 1024 * 1024, env: { ...process.env, OMP_THREAD_LIMIT: "1" } },
           (e, out) => resolve(out || ""));
       });
@@ -326,15 +355,33 @@ async function analyzePdf(ack, plan, tag) {
         const cacheFile = OCR_CACHE ? path.join(OCR_CACHE, `${ack}.v${OCR_VERSION}.txt`) : null;
         let otext = null;
         if (cacheFile) { try { otext = readFileSync(cacheFile, "utf8"); } catch { /* cache miss */ } }
+        // small scans produced identical text at v3 (targeting only changes
+        // >40-page filings) — accept the v3 cache for them so the version
+        // bump doesn't re-rasterize ~7k already-done filings
+        if (otext === null && OCR_CACHE && bad.length <= OCR_MAX_PAGES) {
+          try { otext = readFileSync(path.join(OCR_CACHE, `${ack}.v3.txt`), "utf8"); } catch { /* miss */ }
+        }
         if (otext === null) {
           const t0 = Date.now();
           let pages = bad;
+          // one OSD probe decides the filing's orientation: trustee
+          // statements file LANDSCAPE tables (PSEG) that psm 6 reads as
+          // vertical garble — psm 1 auto-orients and reads them cleanly
+          const rot = detectRotation(dest, bad[Math.floor(bad.length / 2)], path.join(WORK, "osd-" + ack.slice(-12)));
+          const psm = rot ? "1" : "6";
           if (bad.length > OCR_MAX_PAGES) {
-            const strips = await stripScan(dest, bad, path.join(WORK, "strips-" + ack.slice(-12)));
-            pages = targetPages(bad, strips);
-            console.log(`${tag}: strip-scan ${bad.length} bad pages → targeting ${pages.length}`);
+            if (rot) {
+              // strips are sideways slices on rotated pages, so no
+              // targeting — take the notes head + the tail (schedule)
+              pages = [...new Set([...bad.slice(0, OCR_HEAD_PAGES), ...bad.slice(-(OCR_MAX_PAGES - OCR_HEAD_PAGES))])].sort((a, b) => a - b);
+              console.log(`${tag}: rotated ${rot}° — head ${OCR_HEAD_PAGES} + tail of ${bad.length} pages, psm 1`);
+            } else {
+              const strips = await stripScan(dest, bad, path.join(WORK, "strips-" + ack.slice(-12)));
+              pages = targetPages(bad, strips);
+              console.log(`${tag}: strip-scan ${bad.length} bad pages → targeting ${pages.length}`);
+            }
           }
-          otext = await ocrPages(dest, pages, path.join(WORK, "ocr-" + ack.slice(-12)));
+          otext = await ocrPages(dest, pages, path.join(WORK, "ocr-" + ack.slice(-12)), psm);
           console.log(`${tag}: ocr ${Math.min(pages.length, OCR_MAX_PAGES)} pages in ${((Date.now() - t0) / 1000).toFixed(0)}s`);
           if (cacheFile && otext) { try { writeFileSync(cacheFile, otext); } catch { /* best-effort */ } }
         }
