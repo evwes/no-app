@@ -1524,6 +1524,33 @@ ratio 0.999, SDBA detected) and joins the gate (19 specimens, green).
 Every Sempra plan linked to the trust inherits the menu on the next
 re-parse.
 
+## 2026-08-13 — v54: the Sempra takeaway, generalized to all filers — a subtotal is ARITHMETIC, not spelling
+
+**Owner directive** (standing): every case's takeaways apply to all
+full-form filers. Sempra's lesson wasn't "add these four phrases" — it
+was that subtotal VOCABULARY is a losing game: auditors spell totals
+however they like, in class descriptions, footnote fragments, page
+carries, or OCR-garble no wordlist will ever cover.
+
+**The change (v54).** parseRows now removes subtotals by arithmetic:
+walking rows in file order, any row whose value equals the sum of the
+preceding rows — since the last boundary (section subtotal) or overall
+(grand total / carry-forward) — is a subtotal regardless of its name.
+Tolerance scales with group size (cents truncate per-row). Single-row
+sections stay vocabulary-guarded so a coincidental equal-value pair
+can never merge.
+
+**What it caught immediately.** A scan of stored confident lineups
+found 10 displaying an arithmetic grand-total as a fund inside the
+band — names like "Page subtotal", "Investments", "Common Stock
+Subtotal", and "Indicates party-in-interest." (a footnote line that
+swallowed the total's value). Two pulled and verified fixed; the
+page-subtotal case also exposed the one arithmetic blind spot —
+subtotals covering rows the parser deliberately skips (loans) — which
+stays vocabulary-guarded ("Page subtotal" added). One specimen's menu
+IMPROVED from 18 junk-tainted rows to a full 34-row menu at ratio
+0.956. Sempra byte-stable; gate 19 green.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

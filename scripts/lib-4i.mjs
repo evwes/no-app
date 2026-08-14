@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 53;
+export const PARSER_VERSION = 54;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b|^brokerage accounts?$/i, "SDBA"],
@@ -239,8 +239,9 @@ export function parseRows(section, opts = {}) {
     // date fragments assembled from wrapped heading lines
     if (/(january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,2}\b/i.test(name)) continue;
     // "Artisan Mid Cap Account Total" style subtotal rows would double-count
-    // the component rows above them
-    if (/\btotal\s*$/i.test(name)) { nameBuf = []; continue; }
+    // the component rows above them; "Page subtotal" survives arithmetic
+    // detection when the page holds skipped rows (loans)
+    if (/\btotal\s*$/i.test(name) || /^page (sub)?totals?\b/i.test(name.trim())) { nameBuf = []; continue; }
     name = name.replace(/\s*\*+\s*$/, ""); // trailing footnote markers
     // wrapped lines carry their column gaps into the assembled name
     name = name.replace(/\s{2,}/g, " ");
@@ -358,9 +359,25 @@ export function parseRows(section, opts = {}) {
     rows.push({ name: name.slice(0, 90), type: rowType, value, sec: curSection });
   }
 
+  // ARITHMETIC subtotal removal (owner directive after Sempra: takeaways
+  // apply to ALL filers): a subtotal is arithmetic, not spelling. A row
+  // whose value equals the sum of the preceding rows — since the last
+  // boundary (section subtotal) or overall (grand total / carry-forward)
+  // — is a subtotal no matter what it is called, in any auditor's
+  // phrasing, any language, even OCR-garbled. Tolerance scales with group
+  // size because cents are truncated per-row. Single-row "sections" stay
+  // vocabulary-guarded (a coincidental equal-value pair must not merge).
+  const leaves = [];
+  let group = 0, groupN = 0, leafSum = 0;
+  for (const r of rows) {
+    if (groupN >= 2 && Math.abs(r.value - group) <= groupN + 2) { group = 0; groupN = 0; continue; }
+    if (leaves.length >= 3 && Math.abs(r.value - leafSum) <= leaves.length + 2) continue;
+    leaves.push(r); group += r.value; groupN++; leafSum += r.value;
+  }
+
   const seen = new Map();
   let totalValue = 0;
-  for (const r of rows) {
+  for (const r of leaves) {
     if (!r.value) continue;
     const k = r.name.toLowerCase();
     const e = seen.get(k);
