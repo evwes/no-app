@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 52;
+export const PARSER_VERSION = 53;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b|^brokerage accounts?$/i, "SDBA"],
@@ -336,6 +336,14 @@ export function parseRows(section, opts = {}) {
     // Investments, at fair value") — the line-level SKIP_ROW can't see
     // the assembled form
     if (/^(assets[.,]?\s+)?investments?,?\s*[—–-]?\s*at (fair|contract) value/i.test(name.trim())) continue;
+    // section SUBTOTALS spelled as class descriptions instead of "Total…"
+    // ("Interest in common/collective trusts $4,474,697,107", "Assets Held
+    // for Investment", "Employer-related investments: Employer securities")
+    // — Sempra Savings Master Trust double-counted its whole schedule to
+    // ratio 3.0 and lost a clean $5.95B menu. Bare "Interest in" is the
+    // type-cut residue of the same rows. Kohler-style "interest in master
+    // trust" HOLDINGS are untouched (different stem, gate-verified).
+    if (/^assets held for investment\b|^employer-related investments?\b|^interest in$|^interest in (?:common ?\/? ?collective trusts?|registered investment compan(?:y|ies)|pooled separate accounts?|103-12 investments?)\s*$/i.test(name.trim())) continue;
     // Schedule H part-II item lines ("(c) Value of interest in ...") leak
     // when a type-cut removes their dotted leaders before the leader check
     if (/^\(?[a-z0-9]{1,3}\)\s*value of\b|^value of interest\b/i.test(name.trim())) continue;

@@ -81,6 +81,12 @@ const SPECIMENS = [
   // penalty must keep the NAMED rendition winning.
   ["Power Design (Empower code page)", "20251015163402NAL0010660226001", 79416197,
     { found: true, n: 27, sum: 73531649 }],
+  // v53: section subtotals spelled as class descriptions ("Interest in
+  // common/collective trusts $4.47B", "Assets Held for Investment")
+  // double-counted the whole schedule to ratio 3.0 — a clean $5.95B
+  // trust menu lost (Sempra, owner report)
+  ["Sempra trust (class-worded subtotals)", "20260710080100NAL0000893043001", 5960266194,
+    { found: true, n: 31, sum: 5951844380 }],
   ["Black Hills", "20260623190115NAL0012535394001", 933735584,
     { found: true, n: 21, sum: 911785769 }],
 ];

@@ -1496,6 +1496,34 @@ vesting quote window. Future idea recorded: these filings include a
 code→name LEGEND page; mapping it would let the code rendition enrich
 rather than compete.
 
+## 2026-08-12 — Sempra (owner-submitted): subtotals spelled as class descriptions double-counted a clean $5.95B trust menu (v53)
+
+**What was wrong.** Sempra Savings Plan showed "no readable fund
+schedule" although the linked SEMPRA SAVINGS MASTER TRUST ($5.96B, PN
+006) files a perfectly clean, textual 4i: the full T. Rowe Price
+target-date suite, VFTC 500 Index $1.125B, Sempra Common Stock $1.03B.
+The link and trust registry were correct; the trust's own parse was
+non-confident.
+
+**Why.** This filing's section subtotals aren't spelled "Total …" —
+they're spelled as CLASS DESCRIPTIONS: "Interest in common/collective
+trusts $4,474,697,107", "Interest in registered investment companies",
+"Employer-related investments: Employer securities", "Assets Held for
+Investment $5,951,844,380". None matched the subtotal filters, every
+one parsed as a holding, the type-cut even fused two of them into a
+summed "Interest in" $4.9B row — and the schedule double-counted to
+ratio 2.996, outside the band. Honest gap displayed; real menu lost.
+
+**The change (v53).** Class-worded subtotal names are dropped like
+"Total" rows ("assets held for investment", "employer-related
+investments", "interest in <class-plural>", and the bare "Interest in"
+cut residue). Kohler-style "interest in master trust" HOLDINGS are a
+different stem and untouched (gate-verified, n=1 unchanged). Sempra's
+trust now parses 31 funds at the exact filed total ($5,951,844,380,
+ratio 0.999, SDBA detected) and joins the gate (19 specimens, green).
+Every Sempra plan linked to the trust inherits the menu on the next
+re-parse.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
