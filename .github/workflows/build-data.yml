@@ -155,6 +155,16 @@ jobs:
             if [ -d /tmp/fees ]; then rm -rf data/fees && cp -r /tmp/fees data/fees; fi
             node scripts/merge-4i.mjs
             node scripts/audit-data.mjs || true
+            # PUBLISH GATE (owner directive): a run whose REPARSE VERDICT
+            # regressed beyond tolerance must NOT publish its data — the
+            # run fails here, the diff and losses-triage stay in this log
+            # for review, and the previous (better) data keeps serving.
+            # After review, either fix the parser or, for a justified
+            # intentional regression, re-run with ALLOW_REGRESSION=1.
+            if [ "${ALLOW_REGRESSION:-0}" != "1" ] && grep -q "reparse-regression" audit-high.txt 2>/dev/null; then
+              echo "::error::REPARSE VERDICT regressed beyond tolerance — data NOT committed. Review the confidence diff and losses-triage above, then fix or justify (accuracy protocol)."
+              exit 1
+            fi
             node scripts/build-seo-pages.mjs || true
             git add plans-all.json plans-list.json plans-index.json mtias.json fee-percentiles.json lineups-status.json lineups-index.json data/lineups data/fees data/plans docs/coverage-history.jsonl p sitemap.xml robots.txt
             if git diff --cached --quiet; then echo "No data changes."; exit 0; fi
