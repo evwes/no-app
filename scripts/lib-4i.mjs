@@ -952,7 +952,7 @@ export function extractPlanFeatures(text) {
     // conditional/alternative schedules are not the plan's actual schedule:
     // top-heavy fallbacks and death/disability accelerations produced
     // "5-year cliff" claims that contradict the real graded schedule
-    if (!BOILER.test(s) && !/defined benefit|pension benefit|top[- ]heavy|in the event (?:the plan|of death|of disab)|should the plan (?:be|become)|alternative vesting|if the plan (?:is|becomes)|vested upon (?:the )?(?:termination|discontinuation)|termination or discontinuation of the plan/i.test(s)) vestSentences.push(s);
+    if (!BOILER.test(s) && !/defined benefit|pension benefit|top[- ]heavy|in the event (?:the plan|of death|of disab)|should the plan (?:be|become)|alternative vesting|if the plan (?:is|becomes)|vested upon (?:the )?(?:termination|discontinuation)|termination or discontinuation of the plan|upon (?:such |the |any )?termination of the plan|vested [^.]{0,60}?upon [^.]{0,25}?(?:death|disab)/i.test(s)) vestSentences.push(s);
   }
   // sentences describing a SUPERSEDED schedule ("prior to January 1, 2021,
   // vesting was based on…", Silvertip) rank behind current-tense ones
@@ -1035,15 +1035,33 @@ export function extractPlanFeatures(text) {
   if (!out.vesting) {
     // header variants: "Vested / Years of Service / Percentage" (AVI-SPL)
     // puts "Vested" ABOVE the column pair — the label order is free-form
-    const th = t.match(/years of (?:credited |continuous )?(?:service|vesting service)\s+(?:vesting|vested) percentage|following vesting schedule:?\s+years\s+(?:employer|vested|vesting)|vested\s+years of service\s+percentage|following schedule:?\s*vested\s+years of service\s+percentage|years of service\s+percentage/i);
+    // floating-label headers put "Vesting"/"Vested" ABOVE the columns, so
+    // the linearized order is "Vesting Years of Credited Service
+    // Percentage" (AbbVie) or just "Vesting Service percentage" (Abbott)
+    const th = t.match(/years of (?:credited |continuous )?(?:service|vesting service)\s+(?:vesting|vested) percentage|following vesting schedule:?\s+years\s+(?:employer|vested|vesting)|vested\s+years of service\s+percentage|following schedule:?\s*vested\s+years of service\s+percentage|years of service\s+percentage|(?:vesting|vested)\s+(?:years of (?:credited |continuous )?service|service)\s+percentage/i);
     if (th) {
-      const win = t.slice(th.index + th[0].length, th.index + th[0].length + 320);
-      const pairs = [...win.matchAll(/(less than \d{1,2}|\d{1,2}(?: or more| ?\+)?) +(\d{1,3}) ?%/gi)]
+      let win = t.slice(th.index + th[0].length, th.index + th[0].length + 320);
+      // stop at resumed prose — back-to-back tables (AbbVie files the
+      // match cliff then the ASP+ graded schedule) otherwise interleave
+      // into one non-monotonic pair list that fails both shapes
+      const cut = win.search(/(?:vesting|vested) in\b|is based on|according to|are forfeited/i);
+      if (cut > 0) win = win.slice(0, cut);
+      const W2N = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6 };
+      const pairs = [...win.matchAll(/(less than (?:\d{1,2}|one|two|three|four|five|six)(?: years?)?|(?:\d{1,2}|one|two|three|four|five|six)(?: years?)?(?: or more| ?\+)?) +(\d{1,3}) ?%/gi)]
         .map((p) => [p[1].toLowerCase(), +p[2]]).filter(([, pc]) => pc <= 100);
-      if (pairs.length >= 3 && pairs[pairs.length - 1][1] === 100 &&
-          pairs.every(([, pc], i2) => i2 === 0 || pc >= pairs[i2 - 1][1])) {
+      const mono = pairs.every(([, pc], i2) => i2 === 0 || pc >= pairs[i2 - 1][1]);
+      if (pairs.length >= 3 && pairs[pairs.length - 1][1] === 100 && mono) {
         out.vesting = "Graded schedule";
         out.vestingText = cap("Vesting schedule as filed — " + pairs.map(([y, pc]) => `${y} yr: ${pc}%`).join(", "));
+      } else if (pairs.length === 2 && pairs[0][1] === 0 && pairs[1][1] === 100) {
+        // a two-row 0%→100% table is a CLIFF stated tabularly ("Less than
+        // two years 0% / Two years or more 100%" — Abbott, AbbVie)
+        const yw = pairs[1][0].match(/\d{1,2}|one|two|three|four|five|six/);
+        const n = yw ? (W2N[yw[0]] || +yw[0]) : 0;
+        if (n >= 1 && n <= 3) {
+          out.vesting = `${n}-year cliff`;
+          out.vestingText = cap("Vesting schedule as filed — " + pairs.map(([y, pc]) => `${y}: ${pc}%`).join(", "));
+        }
       }
     }
   }

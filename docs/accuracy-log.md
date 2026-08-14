@@ -1600,6 +1600,37 @@ TK/Kohler/Black Hills/WI-Cheese graded) byte-identical. Audit gains a
 correctness tripwire: "Immediate" quoting termination text counts as a
 formula-vs-quote mismatch every run.
 
+## 2026-08-14 — 500-filing hands-on review (owner directive after Sempra): two more variants fixed, table-header class recovered, worklist recorded
+
+**Method.** The v55 extractor ran against the actual filing text of 500
+full-form filers (top 250 by assets + 250 stratified) checking:
+termination-boilerplate-as-Immediate, mis-sourced Immediate quotes,
+schedule vocabulary with nothing extracted, ramp phrasing missing from
+formulas, match vocabulary with nothing extracted, and every
+v55-vs-stored difference. (The review harness itself needed one fix:
+its "vested in accordance" probe substring-matched "inVESTED IN
+ACCORDANCE" and falsely implicated Ford/UnitedHealth-class filings.)
+
+**Found and fixed in the same pass:**
+- Two acceleration variants the Sempra fix missed: "Upon such
+  termination of the Plan, participants become 100% vested" (reversed
+  order — P1 Technologies) and "100% vested in all accounts … upon
+  death, total disability…" (Community Wholesale Tire). Both excluded;
+  re-run over the 500: **0 acceleration-as-Immediate**.
+- The floating-label vesting TABLE class (Abbott, AbbVie): headers
+  linearize as "Vesting [Years of Credited] Service Percentage", and a
+  two-row 0%→100% table is a CLIFF stated tabularly ("Less than two
+  years 0% / Two years or more 100%" → 2-year cliff). Also: the table
+  window now stops at resumed prose — AbbVie's back-to-back tables
+  (match cliff + ASP+ graded) interleaved into one non-monotonic list
+  that failed both shapes. Abbott and AbbVie now extract correctly.
+
+**Residual worklist (daily cycle):** 21 filings with schedule vocabulary
+but no extraction and 8 with match vocabulary but no formula — acks in
+scratchpad rev500/report.json; each is a distinct long-tail phrasing to
+be reviewed by hand. Regression set (Northrop/TK/Kohler/Black Hills/
+WI-Cheese/Sempra) byte-identical; gate 19 green.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
