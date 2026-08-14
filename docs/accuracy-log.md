@@ -1576,6 +1576,30 @@ land in the normal diff/triage/verdict review — the Sierra Space lesson
 (new readability = new junk surface) applies and the machinery watches
 for it.
 
+## 2026-08-14 — Sempra round 2 (owner-submitted): termination boilerplate shipped as "Immediate" vesting; the rate-ramp match tier had no pattern (v55)
+
+**What was wrong (verified against the owner's uploaded filing).**
+(1) Vesting showed "Immediate" — sourced from "Employer matching
+contributions … become fully vested upon the TERMINATION OR
+DISCONTINUATION OF THE PLAN", the IRC-required acceleration clause
+every plan carries. The real schedule ("occurs upon the earliest of …
+credited with one year of vesting service") sits in an earliest-of
+alternatives list no cliff pattern knew. First scan: **43 stored plans**
+display "Immediate" quoting termination text. (2) The match head
+("50% of the first 6%") extracted and is live, but the incremental
+tier — "an additional 0.2% for each 1% incremental increase over 6%,
+up to 11%" — had no pattern; the displayed formula was incomplete.
+
+**The change (v55).** IMMED's bare "fully vested upon" now requires an
+enrollment-type event (hire/enrollment/eligibility/entry); termination/
+discontinuation sentences are excluded from vesting ranking entirely;
+"credited with N years of vesting service" joins the cliff shapes; and
+rate-RAMP tiers render as "+ 0.2% per 1% contributed above 6%, up to
+11%". Sempra now extracts both exactly. Regression set (Northrop cliff,
+TK/Kohler/Black Hills/WI-Cheese graded) byte-identical. Audit gains a
+correctness tripwire: "Immediate" quoting termination text counts as a
+formula-vs-quote mismatch every run.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

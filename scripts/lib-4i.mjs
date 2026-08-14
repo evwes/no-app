@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 54;
+export const PARSER_VERSION = 55;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b|^brokerage accounts?$/i, "SDBA"],
@@ -830,6 +830,14 @@ export function extractPlanFeatures(text) {
         lastTierEnd = ex.index + ex[0].length;
       }
     }
+    // rate-RAMP tiers: "an additional 0.2% for each 1% incremental
+    // increase … over 6%, up to 11% of eligible pay" (Sempra) — a
+    // per-increment formula no fixed-tier pattern can express
+    const ramp = tail.match(/additional (\d+(?:\.\d+)?) ?(?:percent|%) for each (\d+(?:\.\d+)?) ?(?:percent|%)[^.]{0,80}?(?:over|above|in excess of) (\d+(?:\.\d+)?) ?(?:percent|%)[^.]{0,60}?up to (\d+(?:\.\d+)?) ?(?:percent|%)/i);
+    if (ramp) {
+      out.match += ` + ${ramp[1]}% per ${ramp[2]}% contributed above ${ramp[3]}%, up to ${ramp[4]}%`;
+      lastTierEnd = Math.max(lastTierEnd, ramp.index + ramp[0].length);
+    }
     // era label goes after ALL tiers so the annotation reads as one unit
     // a dollar cap changes the real benefit — "25% of deferrals up to 6%,
     // not to exceed $2,500 on an annual basis" (Digirad) is NOT the same
@@ -944,7 +952,7 @@ export function extractPlanFeatures(text) {
     // conditional/alternative schedules are not the plan's actual schedule:
     // top-heavy fallbacks and death/disability accelerations produced
     // "5-year cliff" claims that contradict the real graded schedule
-    if (!BOILER.test(s) && !/defined benefit|pension benefit|top[- ]heavy|in the event (?:the plan|of death|of disab)|should the plan (?:be|become)|alternative vesting|if the plan (?:is|becomes)/i.test(s)) vestSentences.push(s);
+    if (!BOILER.test(s) && !/defined benefit|pension benefit|top[- ]heavy|in the event (?:the plan|of death|of disab)|should the plan (?:be|become)|alternative vesting|if the plan (?:is|becomes)|vested upon (?:the )?(?:termination|discontinuation)|termination or discontinuation of the plan/i.test(s)) vestSentences.push(s);
   }
   // sentences describing a SUPERSEDED schedule ("prior to January 1, 2021,
   // vesting was based on…", Silvertip) rank behind current-tense ones
@@ -960,7 +968,12 @@ export function extractPlanFeatures(text) {
   // cliff schedule scoped ONLY to discretionary non-elective / profit-
   // sharing money must not displace it (Kast: safe-harbor match immediate,
   // PS graded 2–6 yrs — the match is the plan's active employer money)
-  const IMMED = /immediately? (?:(?:100|one hundred) ?(?:percent|%) )?(?:fully )?vested|vested immediately|fully vested (?:at all times|immediately|upon)|(?:100|one hundred) ?(?:percent|%) vested (?:at all times|immediately|in all)|always (?:fully |(?:100|one hundred) ?(?:percent|%) )?vested/i;
+  // "fully vested upon" must name an ENROLLMENT-type event — the bare
+  // "upon" alternative matched "fully vested upon the termination or
+  // discontinuation of the Plan", which is universal IRC-required
+  // boilerplate in every plan, and shipped Sempra's 1-year cliff as
+  // "Immediate" (owner-caught)
+  const IMMED = /immediately? (?:(?:100|one hundred) ?(?:percent|%) )?(?:fully )?vested|vested immediately|fully vested (?:at all times|immediately|upon (?:hire|enrollment|eligibility|entry|participation))|(?:100|one hundred) ?(?:percent|%) vested (?:at all times|immediately|in all)|always (?:fully |(?:100|one hundred) ?(?:percent|%) )?vested/i;
   const matchImmediate = vestSentences.some((s) =>
     /matching (?:contributions?|accounts?)|company match/i.test(s) && IMMED.test(s));
   // graded/cliff language always describes employer money — check it FIRST
@@ -976,10 +989,13 @@ export function extractPlanFeatures(text) {
     // 3rd alternative tolerates intervening words — "fully vested in
     // employer matching contributions, and earnings thereon, upon
     // completion of three years of service" (Northrop Grumman)
-    const cliff = s.match(/(?:(\w{3,5}|\d)[- ]year cliff|cliff vesting[^.]{0,40}?(\w{3,5}|\d) years?|(?:(?:100|one hundred) ?(?:percent|%)|fully) vest(?:ed)?[^.]{0,80}?(?:after|upon)(?: the)?(?: complet\w+(?: of)?)? (\w{3,5}|\d) years?|0 ?(?:percent|%) vested until (\w{3,5}|\d) years|vests? (?:100|one hundred) ?(?:percent|%)[^.]{0,60}?(?:after|upon)(?: the)?(?: complet\w+(?: of)?)? (\w{3,5}|\d) years?)/i);
+    // 6th alternative: "Vesting … occurs upon the earliest of … credited
+    // with one year of vesting service" (Sempra) — earliest-of lists put
+    // the schedule behind an alternatives structure no other shape catches
+    const cliff = s.match(/(?:(\w{3,5}|\d)[- ]year cliff|cliff vesting[^.]{0,40}?(\w{3,5}|\d) years?|(?:(?:100|one hundred) ?(?:percent|%)|fully) vest(?:ed)?[^.]{0,80}?(?:after|upon)(?: the)?(?: complet\w+(?: of)?)? (\w{3,5}|\d) years?|0 ?(?:percent|%) vested until (\w{3,5}|\d) years|vests? (?:100|one hundred) ?(?:percent|%)[^.]{0,60}?(?:after|upon)(?: the)?(?: complet\w+(?: of)?)? (\w{3,5}|\d) years?|vest(?:ing|s)?\b[^.]{0,170}?credited with (\w{3,5}|\d) years? of (?:vesting |credited |continuous )?service)/i);
     if (graded) { out.vesting = "Graded schedule"; out.vestingText = cap(s); break; }
     if (cliff) {
-      const n = cliff[1] || cliff[2] || cliff[3] || cliff[4] || cliff[5];
+      const n = cliff[1] || cliff[2] || cliff[3] || cliff[4] || cliff[5] || cliff[6];
       const num = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6 }[String(n).toLowerCase()] || +n;
       // IRC §411(a)(2)(B) caps DC cliff vesting at 3 years — a "5-year
       // cliff" reading is a misparsed graded schedule or service reference

@@ -85,6 +85,16 @@ for (let i = 0; i < 64; i++) {
 const WORDS = { 1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six" };
 let checked = 0, mismatches = 0;
 const mmList = [];
+// "Immediate" vesting quoting plan-TERMINATION text is the IRC-required
+// acceleration boilerplate misread as a schedule (Sempra shipped a 1-year
+// cliff as Immediate; 43 stored cases found on first scan)
+for (const [ack, e] of Object.entries(entriesByAckCov)) {
+  const f = e && e.features;
+  if (f && f.vesting === "Immediate" && f.vestingText && /termination|discontinuation/i.test(f.vestingText)) {
+    mismatches++;
+    if (mmList.length < 12) mmList.push(`${ack.slice(0, 20)}: vesting "Immediate" quotes plan-termination boilerplate`);
+  }
+}
 for (const [ack, e] of Object.entries(entriesByAckCov)) {
   const f = e && e.features;
   if (!f) continue;
