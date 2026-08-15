@@ -330,3 +330,14 @@ don't confuse them). Frontend: python http.server + Playwright at
 - Roadmap ideas (not started): static SEO pages per plan/recordkeeper, fee
   percentiles vs peers, compare view, correction-form issue template, OCR for
   scanned filings, (403(b) expansion shipped 2026-07-18; governmental/church 403(b)s exempt from filing — absent by law, note when asked).
+- **Run-duration candidate (recorded 2026-08-15)**: full re-parses run
+  ~4.5h (vs ~1.5h pre-OCR-v3) because every scanned filing re-rasterizes —
+  the OCR text cache only holds acks the last incremental run touched, and
+  strip-scans on >40-bad filings add per-page pdftoppm cost. Fix candidates,
+  in order: (1) cache the OCR text for EVERY filing processed (already
+  written per-ack; the gap is cache retention across OCR_VERSION bumps for
+  unchanged ≤40-bad filings — the v3-accept fallback in fetch-4i is the
+  pattern to extend); (2) persist a per-ack "no readable attachment" marker
+  so form-only PDFs skip download+scan entirely on re-parses; (3) sort
+  OCR-heavy acks first in shard work lists so the matrix balances instead
+  of one shard tail-dragging.
