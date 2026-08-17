@@ -1698,6 +1698,62 @@ cover both. (3) Run-level verdicts are the only trustworthy regression
 signal for OCR filings; local caches without OCR text cannot adjudicate
 them.
 
+## 2026-08-15 — S&P 500 full base review (owner directive): all 458 matched plans tested end-to-end, 356 pass, defect classes harvested
+
+**What was done.** Every S&P 500 constituent was matched to its largest
+full-form plan (458 matched; 47 name variants unmatched — subsidiary
+names/SF filers, listed for manual mapping). Each filing was downloaded,
+text-extracted with production-equivalent OCR (v4 page selection), parsed
+with live lib-4i v55, and judged against the shipped data: lineup shown
+(own or master-trust), ratio, junk names, match/vesting extraction vs
+vocabulary present, and the false-Immediate tripwire. Result: 356 pass,
+48 fix-queued defects, 17 honest gaps, 37 drift checks. Owner-facing
+audit page + CSV produced (sp500-audit) as the shared baseline for the
+owner's manual pass.
+
+**Defect classes found (v56+ worklist, in impact order):**
+1. Stated-unit scaling: schedules filed "($ in millions)" or thousands
+   the parser doesn't scale (PPG, Regions, Dow, Molson Coors, Norfolk
+   Southern, PNC, Meta, Moody's ...) — sums come out microscopic, real
+   menus lost. Big plans round to millions; this class concentrates in
+   exactly the S&P base.
+2. Region selection on clean tables: Mastercard's readable 23-fund
+   "$ in thousands" CIT table parses to a 3-row fragment; JPMorgan's
+   80-fund menu extracts locally at ratio 0.70 while production stores
+   nothing (OCR page-pick divergence — investigate against the v4
+   targeting). Both gate-specimen candidates.
+3. Match phrasing long tail: dollar-capped matches ("50% ... not to
+   exceed $1,000" Palo Alto; F5 $4,400; Expeditors $3,000; MarketAxess
+   $17,500; Gartner lesser-of-4%-or-$7,200), "up to a maximum of X%"
+   (Eversource, Synchrony), "not exceeding/not over X%" (Accenture,
+   Kenvue), cents-per-dollar tiers (Kraft Heinz), "on up to X%"
+   (Campbell's), "attributable to the first X%" (Nordson), "amounts on
+   the first X% and Y% on the next Z%" (Ulta).
+4. Vesting table long tail: reversed/floating headers (Weyerhaeuser
+   "Percent / Years of vesting service / vested"; Rollins), "Percent
+   Vested" label variants (Micron, Generac, UnitedHealth, Transdigm),
+   bare-number percent columns (Simon Property "Less than 2 –% / 2 20
+   / 3 40"), months-based cliff (FedEx "fewer than 12 months – 0%"),
+   semicolon graded prose (J.B. Hunt), graded-prose spans (Omnicom,
+   AvalonBay), "vest over a two-year period" (ADM), "vest immediately"
+   verb form (Arista).
+5. Honest gaps confirmed working: Verizon plan PDF withdrawn from the
+   public bucket (holdings via master trust), Colgate/Northrop/Deere
+   trust-form-only, PSEG rotated-scan trust, Marathon Oil no 4i
+   attachment.
+
+**Harness lessons (recorded so the next reviewer doesn't repeat them):**
+status lookups must use lineups-status.json `.plans`; vocabulary probes
+must not substring-match ("inVESTED in accordance"); never judge OCR
+filings from pdftotext-only text; typed acks must be copied, not
+reconstructed from truncated prefixes.
+
+**Prevention.** The S&P-458 text cache and per-company report persist in
+the session scratchpad for regression re-runs; the defect classes above
+become v56/v57 patterns each with a gate or regression specimen; the
+audit page is the owner-visible ledger of exactly what is claimed
+accurate as of parser v55.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
