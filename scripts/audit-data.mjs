@@ -6,6 +6,7 @@
  * human noticed it on the site. This prints violations after each merge so
  * the run log surfaces them. Informational: it never fails the build. */
 import { readFileSync, writeFileSync, appendFileSync } from "fs";
+import { JUNK_NAME_RE } from "./lib-4i.mjs";
 
 const d = JSON.parse(readFileSync("plans-all.json", "utf8"));
 const F = d.fields; const ix = Object.fromEntries(F.map((f, i) => [f, i]));
@@ -72,7 +73,7 @@ for (let i = 0; i < 64; i++) {
     // shipped "K Net income (loss). Subtract lime 2j..." as a $55M fund —
     // its sum was plausible so no identity check fired; only the NAME
     // gives it away)
-    const junkName = e.funds.find((f) => /subtract li[nm]e|add lines? \d|net income \(loss\)|\(e\.?g\.?[,.]|total (additions|deductions)\b|\(specify\)|type of contract|disbursed from|to pay benefits\b|[sce]{8,}|employe{1,2}r? identification|identification number|name of plan sponsor|^plan name\b|^\W*ranging from\b|schedule\s+h\b|\bform\s+\$?5?500\b/i.test(f.name || ""));
+    const junkName = e.funds.find((f) => JUNK_NAME_RE.test(f.name || ""));
     if (junkName)
       flag("high", "lineup-junk", `${label}: fund name reads as form/statement text: "${junkName.name.slice(0, 60)}"`);
   }
@@ -237,7 +238,15 @@ try {
 // that demands diff-sampling before the data is mirrored to main.
 let verdictNote = "";
 try {
-  const hist = readFileSync("docs/coverage-history.jsonl", "utf8").trim().split("\n").map((l) => JSON.parse(l));
+  // parse per line: one corrupt line must not skip the verdict — a
+  // hand-edited rebase line missing its closing brace crashed this block's
+  // JSON.parse and silently BYPASSED the publish gate (run 2026-08-18);
+  // corrupt lines are a HIGH and the verdict uses the last parseable line
+  const hist = [];
+  for (const l of readFileSync("docs/coverage-history.jsonl", "utf8").trim().split("\n")) {
+    try { hist.push(JSON.parse(l)); }
+    catch { flag("high", "coverage-history", `unparseable coverage-history line (fix it — the verdict compared against the line before it): ${l.slice(0, 80)}`); }
+  }
   if (hist.length >= 1) {
     const p = hist[hist.length - 1];
     const c = { confident, match: covTot.match, vesting: covTot.vesting, lineups: covTot.lineup, entries };

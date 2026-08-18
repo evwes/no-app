@@ -2,7 +2,7 @@
 /* Merge matrix parse deltas (results-*.json) into the lineup stores:
  * lineups-status.json, data/lineups/ shards, lineups-index.json. */
 import { readFileSync, writeFileSync, mkdirSync, readdirSync } from "node:fs";
-import { indexFlags } from "./lib-4i.mjs";
+import { indexFlags, JUNK_NAME_RE } from "./lib-4i.mjs";
 
 const SHARDS = 64;
 const shardOf = (ack) => {
@@ -68,6 +68,29 @@ try {
   if (purged) console.log(`purged ${purged} orphaned entries (superseded filings)`);
 } catch { /* plans-all absent in some local invocations — skip the purge */ }
 
+// junk-name demotion: a stored entry whose fund names carry form/statement
+// vocabulary must not STAY confident just because its PDF became
+// undownloadable — S3-withdrawn filings keep their last parse forever, so
+// parser-side junk guards can never reach them (the 2026-08-18 audit
+// carried the same 8 lineup-junk HIGHs across every run; all 8 were
+// e:'download' at pv 36-43). A future successful re-parse writes a fresh
+// entry and is judged on its own merits.
+let demoted = 0;
+const demotedAcks = new Set();
+for (let i = 0; i < SHARDS; i++) {
+  for (const [ack, e] of Object.entries(buckets[i])) {
+    if (!e.confident || !e.funds) continue;
+    const junk = e.funds.find((f) => JUNK_NAME_RE.test(f.name || ""));
+    if (!junk) continue;
+    e.confident = false;
+    if (status.plans[ack]) status.plans[ack].c = 0;
+    demoted++;
+    demotedAcks.add(ack);
+    console.log(`junk-name demotion: ${ack} — "${String(junk.name).slice(0, 60)}"`);
+  }
+}
+if (demoted) console.log(`demoted ${demoted} junk-named confident entries (stored, unfetchable)`);
+
 status.generated = new Date().toISOString();
 writeFileSync("lineups-status.json", JSON.stringify(status));
 const index = {};
@@ -117,8 +140,12 @@ console.log(`merged ${applied} entries; totals: ${vals.length} parsed, ${vals.fi
   // audit as HIGH findings — junk-cleanup losses (tiny/edge-band parses)
   // are expected on guard changes, but a lost 20-row ratio-1.0 menu means
   // the new version broke something real. audit-data reads this file.
+  // junk-name demotions are excluded: the demotion IS the triage verdict
+  // (the entry's own fund names prove it was never a real menu)
   const realish = lost.filter((a) => {
-    const s = prevShape[a.split(" ")[0]];
+    const ack = a.split(" ")[0];
+    if (demotedAcks.has(ack)) return false;
+    const s = prevShape[ack];
     return s && (s.n >= 7 || (s.n >= 5 && s.r >= 0.7 && s.r <= 1.3));
   });
   console.log(`  real-menu-shaped losses (auto-triage → audit HIGH): ${realish.length}`);

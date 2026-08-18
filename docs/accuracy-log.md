@@ -2010,6 +2010,40 @@ CHANGES-in-net-assets statement, not just the assets statement — "net
 income of the Master Trust" is that statement's signature row. Feature
 merges must operate on value+quote GROUPS, never individual keys.
 
+## 2026-08-18 — v58 landed; the gate was silently bypassed by a missing brace; 8 unfetchable junk lineups demoted for good
+
+**The run.** v58 (run #142) published: match 41,019 (+138 vs the
+corrected v56 baseline), vesting 39,887 (+912), boilerplate vesting
+quotes down 3,368, confident 58,033 (−4). Confidence diff +4/−8; the
+one real-menu-shaped loss was sampled: Plumbers Local 68 DC plan
+(scanned multiemployer filing) — its old "confident lineup" was 59
+OCR'd individual securities (Treasury notes, FNMA pools, single
+stocks), a trustee-directed holdings flood, not a fund menu; OCR v6
+reads more of the same flood (n=80) and lands non-confident, the
+honest state. Accepted.
+
+**Defect 1 (process): the gate didn't actually run.** The hand-written
+baseline-rebase line in coverage-history.jsonl was missing its closing
+`}`. The verdict block parsed the whole history inside one try/catch,
+so one corrupt line skipped the verdict entirely — run #142 published
+UNGATED (verified within tolerance by hand afterward, so no harm, but
+only by luck). Fix: per-line parsing — a corrupt line is now a HIGH
+finding and the verdict still runs against the last parseable line.
+Rule: hand-edited JSONL must be machine-validated before commit, and
+a gate must fail LOUD, never skip, when its reference data is broken.
+
+**Defect 2 (data): junk lineups that can never be re-parsed.** The 8
+lineup-junk HIGHs ("Plan Name SILA SERVICES…", "Net income (loss).
+Subtract lime 2j…" as fund names) persisted across every run because
+all 8 filings are S3-withdrawn (e:'download', pv 36-43) — download
+failures preserve the stored parse, so parser-side guards can never
+reach them. Fix: the merge now demotes stored confident entries whose
+fund names match the shared JUNK_NAME_RE (exported from lib-4i, same
+regex the audit flags on): exactly the 8 demoted, idempotent, excluded
+from loss-triage (the demotion IS the triage verdict), and a future
+successful re-parse is judged on its own merits. Audit HIGHs 12 → 4
+(the known contrib-outlier baseline).
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

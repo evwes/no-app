@@ -5,6 +5,12 @@
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
 export const PARSER_VERSION = 58;
 
+// form/statement vocabulary that must never appear as a fund NAME in a
+// confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
+// stored entries whose PDFs can no longer be re-fetched — S3-withdrawn
+// filings otherwise keep junk parses from old parser versions forever).
+export const JUNK_NAME_RE = /subtract li[nm]e|add lines? \d|net income \(loss\)|\(e\.?g\.?[,.]|total (additions|deductions)\b|\(specify\)|type of contract|disbursed from|to pay benefits\b|[sce]{8,}|employe{1,2}r? identification|identification number|name of plan sponsor|^plan name\b|^\W*ranging from\b|schedule\s+h\b|\bform\s+\$?5?500\b/i;
+
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b|^brokerage accounts?$/i, "SDBA"],
   [/publicly[- ]traded stock/i, "Stock"],
