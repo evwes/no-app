@@ -1919,6 +1919,50 @@ code diffs or same-text sweeps — recorded as a standing rule alongside
 the v4 lesson ("schedule and notes are different pages"). The publish
 gate has now blocked two real regressions before the site saw either.
 
+## 2026-08-18 — The −2,529 "vesting regression" was 3,322 misleading boilerplate quotes; the coverage metric couldn't tell values from quotes
+
+**What was wrong (two defects, one discovery).** (1) SITE-VISIBLE: 3,322
+plans displayed, as their vesting evidence, the quote "In the event of
+Plan termination, participants would become 100% vested in their
+employer contributions" (or close variants) — IRC-mandated termination
+boilerplate that says nothing about the plan's actual ongoing vesting
+schedule. These were quote-only entries (`vestingText` with no `vesting`
+value): stored data held 12,465 quote-only vestings, of which 3,322 were
+this termination class. A reader would take "would become 100% vested"
+as the plan's schedule. (2) METRIC: the audit's vesting coverage counter
+counted `f.vesting || f.vestingText` — extracted values and bare quotes
+as one number. So when v57's termination-phrase exclusions correctly
+removed ~2,500 of the boilerplate quotes, the counter read −2,529 and
+the publish gate blocked runs #139 AND #140 as regressions.
+
+**How it was found.** Elimination, after the OCR-allocation theory (gate
+save #2, above) was falsified by #140 regressing identically under OCR
+v6: a 40-ack stored-OCR-vesting sample showed 0 losses under
+production-exact semantics; #138→#139 "entries with features" moved only
+−36 while vesting moved −2,538 — entries kept features but lost the
+vesting FIELD, impossible for a text-supply problem; a 958-filing
+quote-inclusive A/B (v56 vs v57 on identical text) showed the net change
+was −8 and every sampled lost quote was the same termination sentence.
+The "regression" was v57 doing exactly what the Sempra round-2 entry
+(2026-08-14) shipped it to do.
+
+**The fix.** `audit-data.mjs` now counts match/vesting coverage as
+extracted VALUES only; quote-only entries are tracked and printed
+separately (matchQuote 8,785 / vestQuote 12,465 on v56 data) and carried
+in coverage-history.jsonl as their own fields. A synthetic rebase line
+(same v56 data, new definition: match 43,599 / vesting 38,975) was
+appended so the next run's verdict compares like-to-like instead of
+re-flagging the definition change as a −7,841 collapse.
+
+**Prevention.** A coverage counter must count ONE claim type; mixing
+"we extracted the value" with "we found a sentence" hides both real
+regressions (value losses masked by quote gains) and real improvements
+(this incident). When the gate blocks a run, the first check is now:
+did the METRIC's population change, or the data? — diff "entries with
+features" alongside the headline number. The boilerplate class itself
+stays excluded (v57); residual quote-only vestings remain honest
+descriptive sentences and are now visible as their own trend line.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

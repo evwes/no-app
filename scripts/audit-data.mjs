@@ -151,7 +151,7 @@ for (const l of mmList) console.log("  " + l);
 // regression shows the night it happens. "unextracted match" = plans where
 // employer money demonstrably flowed but no formula came out — the
 // correctable backlog, distinct from plans that genuinely have no match.
-const covTot = { full: 0, rk: 0, match: 0, vesting: 0, roth: 0, afterTax: 0, lineup: 0, menu: 0, noMatchBacklog: 0, noEmployerMoney: 0 };
+const covTot = { full: 0, rk: 0, match: 0, vesting: 0, matchQuote: 0, vestQuote: 0, roth: 0, afterTax: 0, lineup: 0, menu: 0, noMatchBacklog: 0, noEmployerMoney: 0 };
 for (const r of d.plans) {
   if (g(r, "sf")) continue;
   covTot.full++;
@@ -165,9 +165,17 @@ for (const r of d.plans) {
   // "none this year", which the site now states)
   const zeroEmp = (g(r, "contribEmployer") || 0) === 0;
   if (zeroEmp) covTot.noEmployerMoney++;
-  else if (f.match || f.matchText) covTot.match++;
+  // v57 metric redefinition: coverage counts EXTRACTED VALUES only.
+  // Quote-only entries are tracked separately — 3,322 of the 12,465
+  // stored quote-only vesting entries were the IRC plan-termination
+  // boilerplate displayed as if it described the plan's vesting, and
+  // removing them (a pure accuracy win) read as "vesting -2,529" under
+  // the old quote-inclusive count and blocked two publishes
+  else if (f.match) covTot.match++;
+  else if (f.matchText) { covTot.matchQuote++; }
   else if (!f.nec && !f.safeHarbor) covTot.noMatchBacklog++;
-  if (f.vesting || f.vestingText) covTot.vesting++;
+  if (f.vesting) covTot.vesting++;
+  else if (f.vestingText) covTot.vestQuote++;
   if (f.roth) covTot.roth++;
   if (f.afterTax) covTot.afterTax++;
   if (f.menu) covTot.menu++;
@@ -175,6 +183,7 @@ for (const r of d.plans) {
 const pct = (n) => (100 * n / covTot.full).toFixed(1) + "%";
 console.log(`\n== COVERAGE (of ${covTot.full} full-form filers; SF filers carry none of this by law)`);
 console.log(`  recordkeeper ${covTot.rk} (${pct(covTot.rk)}) | match ${covTot.match} (${pct(covTot.match)}) | vesting ${covTot.vesting} (${pct(covTot.vesting)})`);
+console.log(`  quote-only (descriptive sentence shown, no value extracted): match ${covTot.matchQuote} | vesting ${covTot.vestQuote}`);
 console.log(`  roth ${covTot.roth} | after-tax ${covTot.afterTax} | lineups ${covTot.lineup} (${pct(covTot.lineup)}) | named menus ${covTot.menu}`);
 console.log(`  match backlog (employer money but no formula extracted): ${covTot.noMatchBacklog} | genuinely no employer money: ${covTot.noEmployerMoney}`);
 
@@ -254,6 +263,7 @@ try {
     d: new Date().toISOString().slice(0, 10),
     plans: statTotal, fullForm: covTot.full, entries, confident,
     rk: covTot.rk, match: covTot.match, vesting: covTot.vesting,
+    matchQuote: covTot.matchQuote, vestQuote: covTot.vestQuote,
     lineups: covTot.lineup, feeCodesPct: feeCodesShare,
     high: findings.high.length, warn: findings.warn.length,
   }) + "\n");
