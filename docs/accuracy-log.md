@@ -1963,6 +1963,19 @@ features" alongside the headline number. The boilerplate class itself
 stays excluded (v57); residual quote-only vestings remain honest
 descriptive sentences and are now visible as their own trend line.
 
+**Correction (same day — the rebase itself repeated the mistake).** The
+first synthetic baseline was computed over RAW SHARD ENTRIES (match
+43,599), but the audit's match counter runs over full-form,
+plan-linked rows and sits behind an else-chain that excludes
+zero-employer plans — its population. Run #141 landed match 40,966 and
+the gate read a phantom −2,633 against the inflated baseline; the true
+comparison (baseline recomputed with the audit's exact loop: match
+40,881 / vesting 38,975) shows v57 IMPROVED everything: match +85,
+vesting +852, vestQuote −3,381, matchQuote −70. Rule extended: a
+rebased baseline must be produced by the SAME code path (same
+population, same conditionals) as the counter it feeds — recompute
+with the audit's loop, never with an ad-hoc query over the stores.
+
 ## 2026-08-18 — v58: "Participation in net income of Master Trust" as a $1.45B "fund"; partial features suppressed OCR of the scanned notes
 
 **What was wrong.** (1) Trust-member filings list "Participation in net
