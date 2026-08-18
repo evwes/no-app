@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 56;
+export const PARSER_VERSION = 57;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b|^brokerage accounts?$/i, "SDBA"],
@@ -316,7 +316,15 @@ export function parseRows(section, opts = {}) {
     // tripwire; "EMPLOYEER" is a common OCR misread)
     // r? must stay OPTIONAL: "EMPLOYEE IDENTIFICATION NO." (Werner) — a
     // v49 edit made the r required and the tripwire caught the survivor
-    if (/name of plan sponsor|employe{1,2}r?(?:['’]s)? identification|identification number|^plan name\b/i.test(name)) continue;
+    if (/name of plan sponsor|employe{1,2}r?(?:['’]s)? identification|identification number|^\s*plan name\b/i.test(name)) continue;
+    // OCR'd Schedule H form lines that reach row shape (v57, from the
+    // #136 lineup-junk HIGHs): "d Total of balance and additions (add
+    // lines 7b and 7C(6))", "K Net income (loss). Subtract lime 2j from
+    // lime 2C" ("lime" is tesseract's favorite misread of "line"),
+    // "@ Type of contract: (1) [] individual policies", and form-item
+    // rows like "(13) [Pl]ans) interest in master trust…" (Paychex)
+    if (/\b(?:add|subtract) l[i1]nes? \d|\bl[i1]me \d|total of balance and additions|^\W*type of contract\b/i.test(name)) continue;
+    if (/^\(\d{1,2}\)\s.{0,15}?(?:interest|value of plan|total\b|net (?:income|assets)|receivables)/i.test(name.trim())) continue;
     // v49 edge-sample findings (all were confident rows): loan-rate range
     // fragments ("ranging from 4.25% to" = a $13M "fund"), truncated class
     // stems ("Common /"), and PROVIDER-TOTAL statement rows — a bare
@@ -636,7 +644,7 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
     // "Participation in … Defined Contribution Plans Master Trust"
     // (Northrop) — the name can END with the trust rather than start with
     // "interest in"
-    /^participation in\b/i.test(f.name) || /\bmaster trust\s*$/i.test(f.name));
+    /^participation in\b[^.]{0,60}?\bmaster trust\b/i.test(f.name) || /\bmaster trust\s*$/i.test(f.name));
   const tSum = trustish.reduce((a, f) => a + f.value, 0);
   const allSum = funds.reduce((a, f) => a + f.value, 0);
   const trustPtr = funds.length <= 8 && allSum > 0 && tSum / allSum >= 0.6;
@@ -705,6 +713,9 @@ export function extractPlanFeatures(text) {
   // and W() renders them as digits; quotes stay verbatim from the filing.
   const W = (x) => ({ "one hundred": 100, "seventy five": 75, "twenty five": 25, fifteen: 15, fifty: 50, forty: 40, thirty: 30, twenty: 20, sixty: 60, ten: 10, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9 }[String(x).toLowerCase().replace(/-/g, " ")] ?? +x);
   const mf =
+    // "safe harbor matching contribution equal to 100% up to 3% and 50%
+    // up to an additional 2%" — QACA phrasing with no "of <deferrals>"
+    t.match(/match(?:ing|ed)?[^.]{0,120}?equal to (\d{1,3}(?:\.\d+)?) ?(?:percent|%) up to (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i) ||
     // bullet-style benefit summaries: "Up to 3% of eligible compensation,
     // calculated as 100% Company match on the first 3% of associate
     // deferrals" (Capital One) — the cap bullet must not become the rate
@@ -721,12 +732,12 @@ export function extractPlanFeatures(text) {
     // and b) … 50% … up to the next 5%" (Rotary) — "for the first" binds
     // the head; without it the maximum-of shape below grabs clause b)'s
     // rate with the 6% total cap ("50% of the first 6%")
-    t.match(/match(?:ing|ed)?[^.]{0,160}?(\d{1,3}(?:\.\d+)?|one hundred|seventy[- ]five|twenty[- ]five|fifty|twenty) ?(?:percent|%) of [^.]{0,80}?(?:for|on|attributable to) the first (\d{1,2}(?:\.\d+)?|ten|one|two|three|four|five|six|seven|eight|nine) ?(?:percent|%)/i) ||
+    t.match(/match(?:ing|ed)?[^.]{0,160}?(\d{1,3}(?:\.\d+)?|one hundred|seventy[- ]five|twenty[- ]five|fifty|twenty) ?(?:percent|%) of [^.]{0,80}?(?:for|on|attributable to|up to) the first (\d{1,2}(?:\.\d+)?|ten|one|two|three|four|five|six|seven|eight|nine) ?(?:percent|%)/i) ||
     // v56 S&P sweep widened the cap vocabulary and gaps: "(not exceeding 6%
     // of compensation)" (Accenture), "which are not over 6%" (Kenvue),
     // "up to the lesser of 4% … or $7,200" (Gartner), a parenthetical
     // between rate and "of" ("100% (Company Match) of …" Synchrony)
-    t.match(/match(?:ing|ed)?[^.]{0,160}?(\d{1,3}(?:\.\d+)?|one hundred|seventy[- ]five|twenty[- ]five|fifty|twenty) ?(?:percent|%) (?:\([^)]{0,30}\) )?of [^.]{0,140}?(?:up to|not to exceed|not exceeding|not in excess of|(?:which |that )?(?:is |are )?not over|(?:that )?do(?:es)? not exceed|to a maximum of|maximum[^.]{0,60}? of) (?:the lesser of )?(?:an? |the first )?(\d{1,2}(?:\.\d+)?|ten|one|two|three|four|five|six|seven|eight|nine) ?(?:percent|%) of/i) ||
+    t.match(/match(?:ing|ed)?[^.]{0,160}?(\d{1,3}(?:\.\d+)?|one hundred|seventy[- ]five|twenty[- ]five|fifty|twenty) ?(?:percent|%) (?:\([^)]{0,30}\) )?of [^.]{0,140}?(?:up to|not to exceed|not exceeding|not in excess of|(?:which |that )?(?:is |are )?not over|(?:that )?do(?:es)? not exceed|to a maximum of|with a match(?:ing)? limit of|maximum[^.]{0,60}? of) (?:the lesser of )?(?:an? |the first )?(\d{1,2}(?:\.\d+)?|ten|one|two|three|four|five|six|seven|eight|nine) ?(?:percent|%) of/i) ||
     // "matching contributions of 100 percent up to a maximum of six percent"
     // (Eversource) — no "of <deferrals>" between the rate and the cap
     t.match(/match(?:ing|ed)? contributions? of (\d{1,3}(?:\.\d+)?|one hundred|fifty) ?(?:percent|%) up to a maximum of (\d{1,2}(?:\.\d+)?|ten|one|two|three|four|five|six|seven|eight|nine) ?(?:percent|%)/i) ||
@@ -772,8 +783,12 @@ export function extractPlanFeatures(text) {
   // maximum employer contribution of $4,400" (F5), "100% of the
   // participants' elective deferral to $17,500" (MarketAxess). The IRS/
   // statutory-limit guard keeps 402(g)/catch-up dollar figures out.
+  // "Participants who contribute at least 5% … received a matching
+  // contribution of 5% of compensation" — contributing the threshold earns
+  // the full flat match, i.e. 100% of the first N%
+  const mcond = !mf && t.match(/contribute at least (\d{1,2}) ?(?:percent|%)[^.]{0,80}?match(?:ing)? contributions? of \1 ?(?:percent|%) of compensation/i);
   let mdol = null;
-  if (!mf && !df && !cents && !mtab && !minv) {
+  if (!mf && !df && !cents && !mtab && !minv && !mcond) {
     mdol = t.match(/match(?:ing|ed)?[^.]{0,120}?(\d{1,3}(?:\.\d+)?|one hundred|fifty) ?(?:percent|%) of [^.]{0,120}?(?:contribution|deferral)s?[^.]{0,80}?(?:not to exceed|up to (?:a )?(?:maximum[^.]{0,50}?of )?|to ) ?\$ ?([\d,]{3,7})(?!\d)/i);
     if (mdol && /IRS|Internal Revenue|402\(g\)|catch[- ]up|statutory|Code limit/i.test(mdol[0])) mdol = null;
   }
@@ -867,8 +882,8 @@ export function extractPlanFeatures(text) {
     // of the participant's compensation" (Yesler) caps the MATCH, not the
     // matched-deferral tier — rendering it "50% of the first 2%" halves the
     // real benefit. State it the way the filing does.
-    const capStyle = /with a maximum of up to|up to a maximum match(?:ing)? (?:contribution )?of/i.test(mf[0]) &&
-      /(?:percent|%) of (?:the )?(?:employee|participant)s?'? (?:elective )?(?:deferral|contribution)/i.test(mf[0]);
+    const capStyle = /with a maximum of up to|up to a maximum match(?:ing)? (?:contribution )?of|with a match(?:ing)? limit of/i.test(mf[0]) &&
+      /(?:percent|%) of (?:the |a )?(?:employee|participant)s?['’]?s? (?:elective )?(?:deferrals?|contributions?|compensation)/i.test(mf[0]);
     out.match = capStyle
       ? `${W(mf[1])}% of contributions, max match ${W(mf[2])}% of pay`
       : `${W(mf[1])}% of the first ${W(mf[2])}% of pay`;
@@ -925,6 +940,11 @@ export function extractPlanFeatures(text) {
         lastTierEnd = ex.index + ex[0].length;
       }
     }
+    // "and 50% up to an additional 2%" — QACA second tier without "next"
+    if (tguard === 0) {
+      const ad = tail.match(/\b(?:and|plus) (\d{1,3}(?:\.\d+)?) ?(?:percent|%) up to an additional (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i);
+      if (ad) { out.match += ` + ${+ad[1]}% of the next ${+ad[2]}%`; lastTierEnd = Math.max(lastTierEnd, ad.index + ad[0].length); tguard++; }
+    }
     // rate-RAMP tiers: "an additional 0.2% for each 1% incremental
     // increase … over 6%, up to 11% of eligible pay" (Sempra) — a
     // per-increment formula no fixed-tier pattern can express
@@ -970,6 +990,9 @@ export function extractPlanFeatures(text) {
     let invEnd = minv[0].length;
     if (ex2 && +ex2[2] > +ex2[1]) { out.match += ` + ${+ex2[3]}% of the next ${+ex2[2] - +ex2[1]}%`; invEnd = ex2.index + ex2[0].length; }
     out.matchText = sentence(minv.index, invEnd);
+  } else if (mcond) {
+    out.match = `100% of the first ${+mcond[1]}% of pay`;
+    out.matchText = sentence(mcond.index);
   } else if (mdol) {
     out.match = `${W(mdol[1])}% of contributions, capped at $${mdol[2]} per year`;
     out.matchText = sentence(mdol.index);
@@ -994,6 +1017,14 @@ export function extractPlanFeatures(text) {
         out.match = `Tiered schedule — up to ${+rows[rows.length - 1][3]}% of pay total match`;
         out.matchText = sentence(cumH.index, Math.min(700, win.length));
       }
+    }
+    // service-tiered flat rates: "matching contributions of 5%, 6%, or 8%
+    // of each eligible participant's basic compensation, depending on
+    // years of eligible service" (Stanford Health) — no single formula
+    const svcTier = t.match(/match(?:ing)? contributions? of (\d{1,2}) ?(?:percent|%),? (\d{1,2}) ?(?:percent|%),? or (\d{1,2}) ?(?:percent|%) [^.]{0,80}?depending (?:up)?on (?:years of|length of|the participant)/i);
+    if (!out.match && svcTier) {
+      out.match = `Varies by years of service — ${+svcTier[1]}%, ${+svcTier[2]}%, or ${+svcTier[3]}% of pay (per the filing)`;
+      out.matchText = sentence(svcTier.index);
     }
     // rate-only match with no stated cap: "The company contributed 10% of
     // the employee qualified contributions" (Exeter) — show the rate the
@@ -1057,7 +1088,12 @@ export function extractPlanFeatures(text) {
     // conditional/alternative schedules are not the plan's actual schedule:
     // top-heavy fallbacks and death/disability accelerations produced
     // "5-year cliff" claims that contradict the real graded schedule
-    if (!BOILER.test(s) && !/defined benefit|pension benefit|top[- ]heavy|in the event (?:the plan|of death|of disab)|should the plan (?:be|become)|alternative vesting|if the plan (?:is|becomes)|vested upon (?:the )?(?:termination|discontinuation)|termination or discontinuation of the plan|upon (?:such |the |any )?termination of the plan|vested [^.]{0,60}?upon [^.]{0,25}?(?:death|disab)/i.test(s) || /\bvests? immediately\b/i.test(s)) vestSentences.push(s);
+    if (!BOILER.test(s) && !/defined benefit|pension benefit|top[- ]heavy|in the event (?:the plan|of (?:plan |the plan['’]s )?terminat|of death|of disab)|should the plan (?:be|become)|alternative vesting|if the plan (?:is|becomes)|vested upon (?:the )?(?:termination|discontinuation)|termination or discontinuation of the plan|upon (?:such |the |any )?termination of the plan/i.test(s) &&
+      // death/disability ACCELERATION only excludes when the sentence has
+      // no service schedule of its own — "100% vested after the completion
+      // of three years of service or upon death" is a real 3-year cliff
+      !(/vested [^.]{0,60}?upon [^.]{0,25}?(?:death|disab)/i.test(s) && !/years? of (?:vesting |credited |continuous )?service|completion of/i.test(s))
+      || /\bvests? immediately\b/i.test(s)) vestSentences.push(s);
   }
   // sentences describing a SUPERSEDED schedule ("prior to January 1, 2021,
   // vesting was based on…", Silvertip) rank behind current-tense ones
@@ -1148,7 +1184,7 @@ export function extractPlanFeatures(text) {
     // "Years of Service Vested %" (Transdigm), reversed "Percent Years of
     // vesting service vested" (Weyerhaeuser), "Vested Percentage Years of
     // service" (Rollins)
-    const th = t.match(/years of (?:credited |continuous )?(?:service|vesting service)\s+(?:vesting|vested) percentage|following vesting schedule:?\s+years\s+(?:employer|vested|vesting)|vested\s+years of service\s+percentage|following schedule:?\s*vested\s+years of service\s+percentage|years of service\s+percentage|(?:vesting|vested)\s+(?:years of (?:credited |continuous )?service|service)\s+percentage|(?:completed )?years of (?:credited |continuous )?service\s+percent(?:age)? vested|years of service\s+vesting\b|years of (?:credited |continuous )?service\s+vested ?%?|percent\s+years of (?:vesting |credited |continuous )?service\s+vested|vested percentage\s+years of service/i);
+    const th = t.match(/years of (?:credited |continuous )?(?:service|vesting service)\s+(?:vesting|vested) percentage|following vesting schedule:?\s+years\s+(?:employer|vested|vesting)|vested\s+years of service\s+percentage|following schedule:?\s*vested\s+years of service\s+percentage|years of service\s+percentage|(?:vesting|vested)\s+(?:years of (?:credited |continuous )?service|service)\s+percentage|(?:completed )?years of (?:credited |continuous )?service\s+percent(?:age)? vested|years of service\s+vesting\b|years of (?:credited |continuous )?service\s+vested ?%?|percent\s+years of (?:vesting |credited |continuous )?service\s+vested|vested percentage\s+years of service|years of (?:credited |continuous )?service\s+%\s*vested|years\s+percentage\s+of service\s+vested/i);
     if (th) {
       let win = t.slice(th.index + th[0].length, th.index + th[0].length + 340);
       // stop at resumed prose — back-to-back tables (AbbVie files the
@@ -1161,6 +1197,19 @@ export function extractPlanFeatures(text) {
       const W2N = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6 };
       const pairs = [...win.matchAll(/(less than (?:\d{1,2}|one|two|three|four|five|six)(?: years?(?: of service)?)?|(?:\d{1,2}|one|two|three|four|five|six)(?: or more)?(?: years?(?: of service)?)?(?: or more| ?\+)?) +(\d{1,3}) ?%/gi)]
         .map((p) => [p[1].toLowerCase(), +p[2]]).filter(([, pc]) => pc <= 100);
+      // bare-number tables ("Less than 2  0% / 2  20 / 3  40 … 6 or more
+      // 100") print the percent sign only on the first row or not at all
+      // (Simon Property) — a second scan without the % requirement,
+      // accepted only with the strong structural guards below (>=4 rows,
+      // ascending years, monotonic to exactly 100)
+      if (pairs.length < 3) {
+        const bare = [...win.matchAll(/(less than \d{1,2}|\d{1,2}(?: or more| ?\+)?)(?: years?(?: of service)?)? +(\d{1,3}) ?%?(?=[ \n]|$)/gi)]
+          .map((p) => [p[1].toLowerCase(), +p[2]]).filter(([, pc]) => pc <= 100);
+        const yrs = bare.map(([y]) => +(y.match(/\d+/) || [0])[0]);
+        const yAsc = yrs.every((v, i2) => i2 === 0 || v >= yrs[i2 - 1]);
+        if (bare.length >= 4 && yAsc && bare[bare.length - 1][1] === 100 &&
+            bare.every(([, pc], i2) => i2 === 0 || pc >= bare[i2 - 1][1])) { pairs.length = 0; pairs.push(...bare); }
+      }
       const mono = pairs.every(([, pc], i2) => i2 === 0 || pc >= pairs[i2 - 1][1]);
       // an OCR-garbled 100% row ("Sy) 100%" — Builders FirstSource) drops
       // the terminal pair; ≥4 monotonic rows rising from ≤25 is still a
@@ -1168,7 +1217,7 @@ export function extractPlanFeatures(text) {
       if (mono && (pairs.length >= 3 && pairs[pairs.length - 1][1] === 100 ||
                    pairs.length >= 4 && pairs[pairs.length - 1][1] >= 80 && pairs[0][1] <= 25)) {
         out.vesting = "Graded schedule";
-        out.vestingText = cap("Vesting schedule as filed — " + pairs.map(([y, pc]) => `${y} yr: ${pc}%`).join(", "));
+        out.vestingText = cap("Vesting schedule as filed — " + pairs.map(([y, pc]) => `${y.replace(/ ?(?:or more )?years?(?: of service)?$/, "")} yr: ${pc}%`).join(", "));
       } else if (pairs.length === 2 && pairs[0][1] === 0 && pairs[1][1] === 100) {
         // a two-row 0%→100% table is a CLIFF stated tabularly ("Less than
         // two years 0% / Two years or more 100%" — Abbott, AbbVie)
@@ -1215,7 +1264,7 @@ export function extractPlanFeatures(text) {
   // Demands ≥3 tightly-spaced pairs, monotonic, ending at exactly 100,
   // with vesting vocabulary just before the run.
   if (!out.vesting) {
-    const runs = [...t.matchAll(/(\d{1,2}) ?years?(?: of (?:vesting |credited |continuous )?service)?(?: (?:or more|and (?:greater|above|over|more)))? ?[–—:-]? ?(\d{1,3}) ?%/gi)];
+    const runs = [...t.matchAll(/(\d{1,2}) ?years?(?: of (?:vesting |credited |continuous )?service)?(?: (?:or more|and (?:greater|above|over|more)))? ?[–—:=-]? ?(\d{1,3}) ?%/gi)];
     let cur = [], best = null;
     for (const m of runs) {
       if (cur.length && m.index - cur[cur.length - 1].index > 90) cur = [];
@@ -1247,6 +1296,19 @@ export function extractPlanFeatures(text) {
       if (mono && /vest/i.test(t.slice(Math.max(0, best[0].index - 260), best[0].index))) {
         out.vesting = "Graded schedule";
         out.vestingText = cap("Vesting schedule as filed — " + best.map((m) => `${m[2]} yr: ${+m[1]}%`).join(", "));
+      }
+    }
+  }
+  // a bare "subject to a five-year vesting schedule" / "based on a 6-year
+  // vesting schedule" states the horizon but not the shape — say exactly
+  // that much rather than nothing (or worse, guessing cliff vs graded)
+  if (!out.vesting) {
+    const horizon = t.match(/(?:subject to|based (?:up)?on|follows?|under) a (\w{3,5}|\d)[- ]year (?:graded )?vesting schedule/i);
+    if (horizon) {
+      const num = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6 }[String(horizon[1]).toLowerCase()] || +horizon[1];
+      if (num >= 2 && num <= 6) {
+        out.vesting = `${num}-year schedule (shape not stated)`;
+        out.vestingText = sentence(horizon.index);
       }
     }
   }

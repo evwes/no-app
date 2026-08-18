@@ -1832,6 +1832,55 @@ OCR-appended local caches for non-OCR entries), and a "regression" is
 only attributable to a code change after re-running the OLD code on the
 IDENTICAL text.
 
+## 2026-08-15 — v57 + OCR v5 (queued behind the v56 run): JPM's repeated-header OCR class, the #136 junk classes, and another dozen phrasings
+
+**OCR v5 — the JPM class.** JPMorgan's 155-page scanned filing repeats
+its schedule header on 90 of 111 bad pages; v4's hits-first allocation
+spent the whole 40-page budget on the document's MIDDLE (per-security
+detail), the notes-head reserve never executed, and the tail summary
+that actually parses (80 funds at ratio 0.70) was never OCR'd —
+production stored nothing while a local head+tail pick recovered the
+menu. v5 allocates head-first, then consumes heading hits from the END
+of the hit list (schedules conclude with summaries/totals), then tail
+top-up; simulated picks for JPM now equal the recovering set. Cache
+fallback accepts v4/v3 text for ≤40-bad filings so the bump doesn't
+re-rasterize ~7k done filings.
+
+**Junk-row guards from run #136's HIGH findings:** "Plan Name …" rows
+survived because the existing guard tested the un-trimmed name; OCR'd
+Schedule H form lines now dropped ("add/subtract li(n|m)e N" — tesseract
+misreads "line" as "lime", "Total of balance and additions", "Type of
+contract:", and "(13) …ans) interest in" form-item rows — the
+Paychex/Meta garble class).
+
+**False-Immediate residuals:** "in the event OF PLAN termination" joined
+the acceleration exclusions (three tripwire specimens shared it); the
+audit tripwire itself narrowed to acceleration phrasings so a terminated
+plan truthfully describing immediate vesting no longer counts as a
+mismatch; and the death-acceleration exclusion learned not to fire when
+the same sentence states a real service schedule ("100% vested after the
+completion of three years of service or upon death" is a 3-year cliff,
+not boilerplate — a v55-era exclusion had eaten it).
+
+**Another dozen phrasings from the rev500 re-scan under v56:** "with a
+matching limit of N%" cap-style, "up to the first N%" connector, QACA
+"equal to 100% up to 3% and 50% up to an additional 2%", conditional
+flat matches ("contribute at least 5% … matching contribution of 5%" =
+100% of the first 5%), service-tiered flat rates ("5%, 6%, or 8%
+depending on years of service" — stated as varying, never averaged);
+vesting: "% Vested" and interleaved "Years Percentage of Service Vested"
+headers, bare-number table rows accepted only with structural guards
+(≥4 rows, ascending years, monotonic to 100 — Simon Property), "="
+connectors ("1 year of service = 0% vested"), and bare "subject to a
+five-year vesting schedule" rendered honestly as "5-year schedule
+(shape not stated)".
+
+**Verification:** 444-filing sweep — lineups +4/−1 (the −1 is United
+Airlines' trust-pointer page, a correct demotion), match +15/−0 real,
+vesting +27/−0, every change quote-adjudicated; gate 19/19. Queued to
+push immediately after the v56 run's merge commits (pushing scripts
+mid-run cancels the run).
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

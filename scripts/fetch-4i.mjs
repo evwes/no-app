@@ -21,7 +21,7 @@ import { parse4i, extractPlanFeatures, indexFlags, PARSER_VERSION } from "./lib-
  * encodings that extract as cipher-garbage. Rasterize just those pages and
  * OCR them, then re-run the normal parser on the combined text. Bump
  * OCR_VERSION to re-attempt every no-section filing. */
-const OCR_VERSION = 4; // v4: orientation-aware (PSEG's rotated landscape tables) + tail top-up targeting
+const OCR_VERSION = 5; // v5: head-first + end-of-hits allocation (JPM repeated-header class)
 const OCR_MAX_PAGES = 40; // full-OCR budget per filing; TARGETING picks which 40
 const OCR_HEAD_PAGES = 12; // notes-head reserve inside the budget (features prose)
 const OCR_SKIP_BAD = 250; // strip-scan makes big scans affordable; only 250+ page monsters skip
@@ -90,22 +90,26 @@ async function stripScan(pdfPath, pages, workDir) {
 // trustee-statement titles: "Schedule of Investments", "Statement of …")
 const STRIP_HEAD = /schedu[l1i]e\s*h\b|[l1i]ine\s*4\s*\(?\s*i\s*\)?|schedu[l1i]e\s*of\s*(?:assets|invest)|statement\s*of\s*(?:net\s*)?assets|assets\s*.{0,4}he[l1i]d\s*(?:for|at)|he[l1i]d\s*at\s*end\s*of/i;
 
-/* choose which bad pages deserve full OCR: heading hits + 2 continuation
- * pages each, then TOP UP the remaining budget from the document's tail —
- * a heading hit on the FORM's own Schedule H page must not starve the
- * real schedule (PSEG targeted 3 of 76 pages and recovered nothing) */
+/* choose which bad pages deserve full OCR. Allocation order (v5):
+ * 1. the NOTES head first — match/vesting prose lives in the first pages
+ *    of the auditor's report, which the strip vocabulary never hits (v3's
+ *    schedule-only targeting cost match −179 on the v55 full re-parse);
+ * 2. heading hits + 2 continuations, consumed from the END of the hit
+ *    list — when a giant schedule repeats its header on every page (JPM:
+ *    90 of 111 bad pages hit), hits alone ate the whole budget on the
+ *    document's MIDDLE, the head reserve never ran, and the tail summary
+ *    that actually parses (80 funds at ratio 0.70) was never OCR'd;
+ * 3. tail top-up — a heading hit on the FORM's own Schedule H page must
+ *    not starve the real schedule (PSEG targeted 3 of 76 pages and
+ *    recovered nothing). */
 function targetPages(badPages, stripText) {
   const badSet = new Set(badPages);
-  const hits = badPages.filter((p) => STRIP_HEAD.test(stripText[p] || ""));
   const chosen = new Set();
-  for (const h of hits) for (const q of [h, h + 1, h + 2]) if (badSet.has(q)) chosen.add(q);
-  // reserve budget for the NOTES head: match/vesting prose lives in the
-  // first pages of the auditor's report, which the strip vocabulary never
-  // hits — v3's schedule-only targeting silently dropped OCR-sourced
-  // features on every >40-bad-page filing during the v55 full re-parse
-  // (REPARSE VERDICT match −179; reproduced on a 111-bad specimen where
-  // first-40 kept the formula and targeted/last-40 lost it)
-  for (const p of badPages.slice(0, OCR_HEAD_PAGES)) if (chosen.size < OCR_MAX_PAGES) chosen.add(p);
+  for (const p of badPages.slice(0, OCR_HEAD_PAGES)) chosen.add(p);
+  const hits = badPages.filter((p) => STRIP_HEAD.test(stripText[p] || ""));
+  const hitExp = [];
+  for (const h of hits) for (const q of [h, h + 1, h + 2]) if (badSet.has(q) && !hitExp.includes(q)) hitExp.push(q);
+  for (let i = hitExp.length - 1; i >= 0 && chosen.size < OCR_MAX_PAGES; i--) chosen.add(hitExp[i]);
   for (let i = badPages.length - 1; i >= 0 && chosen.size < OCR_MAX_PAGES; i--) chosen.add(badPages[i]);
   return [...chosen].sort((a, b) => a - b).slice(0, OCR_MAX_PAGES);
 }
@@ -355,11 +359,14 @@ async function analyzePdf(ack, plan, tag) {
         const cacheFile = OCR_CACHE ? path.join(OCR_CACHE, `${ack}.v${OCR_VERSION}.txt`) : null;
         let otext = null;
         if (cacheFile) { try { otext = readFileSync(cacheFile, "utf8"); } catch { /* cache miss */ } }
-        // small scans produced identical text at v3 (targeting only changes
-        // >40-page filings) — accept the v3 cache for them so the version
-        // bump doesn't re-rasterize ~7k already-done filings
+        // small scans produce identical text across targeting versions
+        // (targeting only changes >40-page filings) — accept any older
+        // cache for them so version bumps don't re-rasterize ~7k
+        // already-done filings
         if (otext === null && OCR_CACHE && bad.length <= OCR_MAX_PAGES) {
-          try { otext = readFileSync(path.join(OCR_CACHE, `${ack}.v3.txt`), "utf8"); } catch { /* miss */ }
+          for (const v of [4, 3]) {
+            try { otext = readFileSync(path.join(OCR_CACHE, `${ack}.v${v}.txt`), "utf8"); break; } catch { /* miss */ }
+          }
         }
         if (otext === null) {
           const t0 = Date.now();

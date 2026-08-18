@@ -90,7 +90,11 @@ const mmList = [];
 // cliff as Immediate; 43 stored cases found on first scan)
 for (const [ack, e] of Object.entries(entriesByAckCov)) {
   const f = e && e.features;
-  if (f && f.vesting === "Immediate" && f.vestingText && /termination|discontinuation/i.test(f.vestingText)) {
+  // narrow to ACCELERATION phrasings — a terminated plan truthfully
+  // describing its immediate vesting ("Prior to the Plan's termination,
+  // participants were immediately vested…") is correct extraction
+  if (f && f.vesting === "Immediate" && f.vestingText &&
+      /(?:in the event of|upon|would become|will become|shall become)[^.]{0,50}?(?:termination|discontinuation)|termination or discontinuation/i.test(f.vestingText)) {
     mismatches++;
     if (mmList.length < 12) mmList.push(`${ack.slice(0, 20)}: vesting "Immediate" quotes plan-termination boilerplate`);
   }
