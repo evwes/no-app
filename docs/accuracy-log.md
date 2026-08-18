@@ -1754,6 +1754,84 @@ become v56/v57 patterns each with a gate or regression specimen; the
 audit page is the owner-visible ledger of exactly what is claimed
 accurate as of parser v55.
 
+## 2026-08-15 — v56: the S&P-review fix wave — stated-unit scaling, notes-vocabulary long tail, and a $39B row the parser had never read
+
+**Changes, each anchored to an S&P audit specimen and verified against the
+cached filing text before shipping:**
+
+1. **Stated-unit scaling.** The thousands marker now covers "($ in
+   thousands)" (Mastercard), "(Dollar amounts in thousands)"
+   (Weyerhaeuser), "(amounts in 000's)" (Molson Coors), and OCR-garbled
+   "(3 in thousands)" (Norfolk Southern); a millions marker joins it
+   (PPG, Regions — "($ in millions)"). Millions tables print 1-2 digit
+   values, so a small-value row parse runs as an ADDITIONAL candidate
+   scored only at 1e6 — never replacing the normal parse (a first draft
+   that switched modes in place regressed Ecolab/Baxter/GM/Comcast and
+   was caught by the pre-ship sweep). Both scales are offered when both
+   markers appear and closeness picks (Exxon files "(millions of
+   dollars)" statements around a "($000's)" schedule). A physical guard
+   rejects any scale where a single holding would exceed 105% of plan
+   assets (Northrop's $150M note fragment otherwise "rescaled" to $150B).
+   Recovered confident menus include Mastercard 23@0.99, PPG 80@1.05,
+   Regions 29@1.00, Dow 40@0.90, Molson 34@0.98, Moody's 29@0.99,
+   PNC 26@0.99, Comerica 33@0.99, Weyerhaeuser 30@0.99, Hartford, Monster,
+   Vulcan, Mass General Brigham.
+
+2. **The Northrop $39.3B row.** SKIP_ROW's unanchored statement
+   vocabulary ("contributions?") swallowed any holding whose NAME
+   contains the word — "Defined Contribution Plans Master Trust
+   $39,301,997" (89% of the plan) had never parsed. A master-trust
+   holding bypass admits participation/interest rows (excluding
+   gain/loss/income/transfer statement lines — Kohler's "NET INVESTMENT
+   GAIN FROM MASTER TRUST" tested the first draft). Northrop's true
+   $44.28B schedule now parses at ratio 0.991, correctly trust-pointer
+   flagged; the gate expectation moved in the same commit.
+
+3. **Match phrasing long tail** (13 S&P companies): "up to a maximum of
+   X%" (Eversource, Synchrony), "not exceeding / not over X%" (Accenture,
+   Kenvue), "on up to X%" (Campbell's), "attributable to the first X%"
+   (Nordson), "(Company Match) of" parentheticals, "lesser of X% or $Y"
+   with the dollar cap appended (Gartner), dollar-capped matches with no
+   percent cap ("50% … not to exceed $1,000" Palo Alto; F5, Expeditors,
+   MarketAxess), "$1.00/one dollar for every dollar" heads with
+   cents-per-dollar second tiers (Kraft Heinz "100% of first 2% + 50% of
+   next 4%"), bullet-style "calculated as 100% Company match on the first
+   3%" with "match on the next" tier connector (Capital One — the old
+   parse "3% of the first 1.5%" was wrong twice over). Tier connector
+   recovery also completed Dow's "+ 50% of the next 2%".
+
+4. **Vesting long tail** (~15 companies): header variants ("Completed
+   Years of Service Percent Vested" Micron/Generac, "Years of Service
+   Vesting" UnitedHealth, "Vested %" Transdigm/Builders, reversed
+   "Percent Years of vesting service vested" Weyerhaeuser, "Vested
+   Percentage Years of service" Rollins), em-dash zero cells ("—%"),
+   "N years of service and greater" pairs (AvalonBay), months-stated
+   cliffs ("fewer than 12 months – 0%" FedEx = 1-year cliff) and
+   months-graded tables (Textron), prose pair runs ("2 years – 20%; …"
+   J.B. Hunt), rate-first spans ("70% for 4 years … 100% for 5 or more"
+   Omnicom), OCR-garbled terminal rows (≥4 monotonic pairs from ≤25
+   accepted without the garbled 100% row — Builders), "vest(s)
+   immediately" verb form with plan-sponsor scope (Arista).
+
+**Pre-ship verification (the provably-better rule):** 444 cached filings
+whose production entries are OCR-free were re-extracted and diffed
+against live data: lineups +4/−1 (the −1 is United Airlines' 3-row
+trust-pointer page correctly losing its pseudo-lineup display), match
++8/−0 real (2 reported "losses" proved to be harness text divergence —
+production had OCR'd notes the local cache lacks; v55 on identical text
+also extracts nothing), vesting +24/−0. Every changed value was
+adjudicated against its verbatim quote (Intel/S&P Global
+Immediate→Graded follow the established employer-money-first precedence;
+W.K.S. Graded→Immediate matches its safe-harbor quote; Dow/Capital
+One/Paramount/Philips quotes confirm the new formulas). Parser gate
+19/19 with the Northrop move documented above.
+
+**Harness lessons appended to the S&P-review entry's list:** verification
+sweeps must compare same-text-to-same-text (rev500 pdftotext cache beats
+OCR-appended local caches for non-OCR entries), and a "regression" is
+only attributable to a code change after re-running the OLD code on the
+IDENTICAL text.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

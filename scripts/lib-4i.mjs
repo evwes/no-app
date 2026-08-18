@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 55;
+export const PARSER_VERSION = 56;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b|^brokerage accounts?$/i, "SDBA"],
@@ -99,7 +99,13 @@ export function parseRows(section, opts = {}) {
   // values may carry cents ("$175,869,410.45" — Eaton Savings Trust files its
   // whole menu that way); capture the dollars, tolerate the cents. Rates like
   // "10.50" stay out: the capture needs 3+ digit/comma chars before the dot.
-  const valueRe = /\$?\s*([0-9][0-9,]{2,})(?:\.\d{1,2})?\s*$/;
+  // millions-stated schedules (PPG "($ in millions)") print 1-2 digit
+  // holding values ("JP Morgan Equity Income Fund   57") — allow them ONLY
+  // when the caller saw the millions marker, so ordinary regions can't grow
+  // fake rows from stray digits
+  const valueRe = opts.smallValues
+    ? /\$?\s*([0-9][0-9,]*)(?:\.\d{1,2})?\s*$/
+    : /\$?\s*([0-9][0-9,]{2,})(?:\.\d{1,2})?\s*$/;
 
   for (const raw of section) {
     // leading "*" is the party-in-interest marker on holding rows — drop it
@@ -145,7 +151,17 @@ export function parseRows(section, opts = {}) {
     // zip then parses as a $44k holding (Eaton)
     if (/\s[A-Z]{2}\s+\d{5}(?:-\d{4})?\s*$/.test(t) && !/\$/.test(t) &&
         t.split(/\s+/).length <= 5) { nameBuf = []; continue; }
-    if (SKIP_ROW.test(t) || DATE_LINE.test(t)) {
+    // SKIP_ROW's statement vocabulary ("contributions?") is unanchored and
+    // swallowed master-trust holdings whose NAME contains it — Northrop's
+    // "Defined Contribution Plans Master Trust  ** $39,301,997" ($39.3B,
+    // 89% of the plan) never parsed. An explicit participation/interest
+    // phrase, or "Master Trust" directly before the trailing value, marks
+    // a real holding row.
+    const trustRow = (/\b(?:participation|interest) in\b[^.]{0,80}\bmaster trust\b|\bmaster trust\b\W*(?:\*{1,3})?\s*\$?\s*[\d,]+\s*$/i.test(t)) &&
+      // "NET INVESTMENT GAIN FROM MASTER TRUST $105,798,097" (Kohler) is a
+      // statement line, not a holding
+      !/\b(?:gain|loss|income|transfers?|expenses?|contributions? (?:to|from))\b/i.test(t);
+    if ((SKIP_ROW.test(t) && !trustRow) || DATE_LINE.test(t)) {
       nameBuf = [];
       totalWrap = /^(sub|grand )?total\b/i.test(t) && !valueRe.test(t);
       continue;
@@ -175,6 +191,11 @@ export function parseRows(section, opts = {}) {
     }
 
     const value = +vm[1].replace(/,/g, "");
+    // in millions mode a bare 4-digit trailing number in 1900-2100 is a
+    // target-date year at the end of a fund name, not a value — real $2B
+    // rows print with a thousands separator ("2,045")
+    if (opts.smallValues && value >= 1900 && value <= 2100 &&
+        !vm[0].includes(",") && !/\$/.test(vm[0])) { nameBuf = []; continue; }
     // no real holding reaches $100B (the largest master-trust interests are
     // ~$50B) — bigger "values" are pre-printed form watermark digits
     // ("123456789012" under the EIN boxes) or OCR garbage, and one such row
@@ -475,61 +496,94 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
     // — without this the parser reads each row's GAIN as its value
     const gainLast = /(?:market|current|fair) value unrealized (?:gain|appreciation)/i
       .test(regionText.replace(/[ \t]+/g, " "));
-    const parsed = parseRows(region, { sharesLast, gainLast });
-    if (parsed.funds.length < 2) continue;
-    const raw = parsed.totalValue;
     // only consider (thousands) scaling when the region says so — otherwise a
-    // page of small full-dollar rows can fake a good ratio at 1000x
-    const marked = /thousands? of dollars|\(in thousands|\(thousands|\(\$000|000s? omitted|dollars in thousands/i.test(region.join("\n"));
-    // trustee statements (Verizon Master Savings Trust) file a CLASS-LEVEL
-    // summary page followed by thousands of per-security detail pages that
-    // double-count it. Prefer the summary; penalize security floods in
-    // gain-last statements so an arbitrary detail slice can't outscore it.
-    const CLASS_STEM = /^(interest[- ]bearing cash|u\.? ?s\.? government securities|corporate debt|corporate stock|common[/ ]?collective trust|pooled separate account|master trust|103[- ]12 investment|registered investment compan|insurance company general|other investments?|participant loans?|partnership\/joint venture|real estate|loans \(other|employer[- ]related securit)/i;
-    const classy = parsed.funds.filter((f) => CLASS_STEM.test(f.name)).length;
-    const isSummary = parsed.funds.length >= 4 && classy / parsed.funds.length >= 0.8;
-    // a Statement of Net Assets page ("Investments, at fair value",
-    // "Mutual funds", "Cash and cash equivalents") sums to ≈ plan assets by
-    // construction, so it beats the real table on closeness whenever the
-    // table's own ratio is imperfect. Its vocabulary gives it away; trustee
-    // CLASS summaries (Verizon) are ≥10 rows of 4i class names and stay
-    // above the ≤8-row gate.
-    // brokerage-statement class nouns (common stocks / ETFs / money market)
-    // joined the vocabulary after Galliano: an OCR'd statement page of
-    // exactly those rows slipped INTO the confidence band when v44 removed
-    // its other junk rows — removing junk can promote a still-junky region
-    const STMT_ROW = /^(total )?(investments?,?( at (fair|contract) value.*)?|net assets( available for benefits)?|assets\b.*|cash( and cash equivalents)?|receivables?\b.*|notes? receivable\b.*|mutual funds?\b.*|(common|preferred) stocks?\b.*|exchange[- ]traded funds?\b.*|money market funds?\b.*|other (revenues?|income)\b.*|common[- /]?collective trusts?\b.*|pooled separate accounts?\b.*|guaranteed (investment|interest) (accounts?|contracts?)\b.*|employee rollovers?\b.*|(employer|participant)s?['’]?s?( contributions?( receivable)?)?)$/i;
-    const stmty = parsed.funds.filter((f) => STMT_ROW.test(f.name)).length;
-    // ≤3-row regions of class aggregates ("Registered investment companies")
-    // are statement fragments too — v34's dedup fixed THEIR double-rendered
-    // ratios as well, and 22 of them displaced real 15-35 row menus
-    const isStatement = (parsed.funds.length <= 8 && stmty / parsed.funds.length >= 0.5)
-      || (parsed.funds.length <= 3 && (stmty + classy) / parsed.funds.length >= 0.5);
-    // recordkeeper CODE pages (Empower group-annuity renditions): the same
-    // menu re-filed as fund codes ("1GGCG50", "1NTSPI4") under its OWN
-    // "SCHEDULE OF ASSETS" heading, with cents columns the v43 fix made
-    // readable — it ties the real schedule on ratio and the tie broke
-    // wrong (Power Design showed 28 codes as fund names). Code tokens
-    // have no spaces and carry digits; real names have spaces, and pure
-    // ticker menus (VFIAX) have no digits — both stay unpenalized.
-    const codeish = parsed.funds.filter((f) => /^[A-Z0-9][A-Z0-9-]{3,9}$/.test(f.name.trim()) && /\d/.test(f.name)).length;
-    const isCodePage = parsed.funds.length >= 5 && codeish / parsed.funds.length >= 0.6;
-    for (const scale of marked ? [1, 1000] : [1]) {
-      const ratio = assetsEOY ? (raw * scale) / assetsEOY : 0;
-      if (!ratio) continue;
-      const closeness = Math.abs(Math.log(ratio));
-      const score = -closeness + Math.min(parsed.funds.length, 40) * 0.005
-        + (isSummary && closeness < 0.5 ? 0.1 : 0)
-        - (isStatement ? 0.35 : 0)
-        - (isCodePage ? 0.35 : 0)
-        - (gainLast && parsed.funds.length >= 60 ? 0.2 : 0);
-      if (!best || score > best.score) {
-        best = { score, ratio, scale, stmt: isStatement, ...parsed };
+    // page of small full-dollar rows can fake a good ratio at 1000x.
+    // "$ in thousands" / "$ amounts in thousands" joined at v56: Mastercard's
+    // clean 23-fund table was summing to ~$4.6M unscaled and losing to a
+    // 3-row junk region. Millions is the same S&P-class phenomenon one unit
+    // up (PPG, Regions, Dow — large plans round the schedule to millions),
+    // and millions tables print 1-2 digit values, so the row parser needs
+    // to know before it runs.
+    // phrasing variants from the S&P sweep: "($ in thousands)" (Mastercard),
+    // "(Dollar amounts in thousands)" (Weyerhaeuser), "(amounts in 000's)"
+    // (Molson Coors), "(3 in thousands)" (Norfolk Southern — OCR reads the
+    // $ as a 3/S), "($ in millions)" (PPG), "($ amounts in millions)"
+    // (Regions)
+    // markers scan the WHOLE region (GM/Comcast state units 20+ lines below
+    // the region head), and BOTH scales are offered as candidates when both
+    // markers appear — closeness picks. (An earlier head-window scope broke
+    // GM/Comcast; a millions-overrides-thousands ternary broke Exxon, whose
+    // merged region carries "(millions of dollars)" statements alongside
+    // the "($000's)" 4i schedule.)
+    const marked = /thousands? of dollars|\(in thousands|\(thousands|\(\$000|000s? omitted|(?:amounts?|dollars?|\$|\b[3sS]) ?in thousands|in 0{3}['’]?s?\)/i.test(regionText);
+    const markedM = /millions? of dollars|\(in millions|\(millions|(?:amounts?|dollars?|\$|\b[3sS]) ?in millions/i.test(regionText);
+    // a millions-stated header ADDS a small-value candidate scored at 1e6
+    // only — it must never replace the normal parse: statement pages and
+    // merged clusters mention millions in prose, and small-value mode on a
+    // full-dollar table fabricates rows (Ecolab/Baxter/GM/Comcast verified
+    // regressing before this split)
+    const variants = [{ parsed: parseRows(region, { sharesLast, gainLast }), scales: [1, ...(marked ? [1000] : [])] }];
+    if (markedM) variants.push({ parsed: parseRows(region, { sharesLast, gainLast, smallValues: true }), scales: [1e6] });
+    for (const va of variants) {
+    const parsed = va.parsed;
+      if (parsed.funds.length < 2) continue;
+      const raw = parsed.totalValue;
+      // trustee statements (Verizon Master Savings Trust) file a CLASS-LEVEL
+      // summary page followed by thousands of per-security detail pages that
+      // double-count it. Prefer the summary; penalize security floods in
+      // gain-last statements so an arbitrary detail slice can't outscore it.
+      const CLASS_STEM = /^(interest[- ]bearing cash|u\.? ?s\.? government securities|corporate debt|corporate stock|common[/ ]?collective trust|pooled separate account|master trust|103[- ]12 investment|registered investment compan|insurance company general|other investments?|participant loans?|partnership\/joint venture|real estate|loans \(other|employer[- ]related securit)/i;
+      const classy = parsed.funds.filter((f) => CLASS_STEM.test(f.name)).length;
+      const isSummary = parsed.funds.length >= 4 && classy / parsed.funds.length >= 0.8;
+      // a Statement of Net Assets page ("Investments, at fair value",
+      // "Mutual funds", "Cash and cash equivalents") sums to ≈ plan assets by
+      // construction, so it beats the real table on closeness whenever the
+      // table's own ratio is imperfect. Its vocabulary gives it away; trustee
+      // CLASS summaries (Verizon) are ≥10 rows of 4i class names and stay
+      // above the ≤8-row gate.
+      // brokerage-statement class nouns (common stocks / ETFs / money market)
+      // joined the vocabulary after Galliano: an OCR'd statement page of
+      // exactly those rows slipped INTO the confidence band when v44 removed
+      // its other junk rows — removing junk can promote a still-junky region
+      const STMT_ROW = /^(total )?(investments?,?( at (fair|contract) value.*)?|net assets( available for benefits)?|assets\b.*|cash( and cash equivalents)?|receivables?\b.*|notes? receivable\b.*|mutual funds?\b.*|(common|preferred) stocks?\b.*|exchange[- ]traded funds?\b.*|money market funds?\b.*|other (revenues?|income)\b.*|common[- /]?collective trusts?\b.*|pooled separate accounts?\b.*|guaranteed (investment|interest) (accounts?|contracts?)\b.*|employee rollovers?\b.*|(employer|participant)s?['’]?s?( contributions?( receivable)?)?)$/i;
+      const stmty = parsed.funds.filter((f) => STMT_ROW.test(f.name)).length;
+      // ≤3-row regions of class aggregates ("Registered investment companies")
+      // are statement fragments too — v34's dedup fixed THEIR double-rendered
+      // ratios as well, and 22 of them displaced real 15-35 row menus
+      const isStatement = (parsed.funds.length <= 8 && stmty / parsed.funds.length >= 0.5)
+        || (parsed.funds.length <= 3 && (stmty + classy) / parsed.funds.length >= 0.5);
+      // recordkeeper CODE pages (Empower group-annuity renditions): the same
+      // menu re-filed as fund codes ("1GGCG50", "1NTSPI4") under its OWN
+      // "SCHEDULE OF ASSETS" heading, with cents columns the v43 fix made
+      // readable — it ties the real schedule on ratio and the tie broke
+      // wrong (Power Design showed 28 codes as fund names). Code tokens
+      // have no spaces and carry digits; real names have spaces, and pure
+      // ticker menus (VFIAX) have no digits — both stay unpenalized.
+      const codeish = parsed.funds.filter((f) => /^[A-Z0-9][A-Z0-9-]{3,9}$/.test(f.name.trim()) && /\d/.test(f.name)).length;
+      const isCodePage = parsed.funds.length >= 5 && codeish / parsed.funds.length >= 0.6;
+      const maxV = parsed.funds.reduce((a, f) => Math.max(a, f.value), 0);
+      for (const scale of va.scales) {
+        const ratio = assetsEOY ? (raw * scale) / assetsEOY : 0;
+        if (!ratio) continue;
+        // physical impossibility guard: no single holding exceeds the
+        // plan's total assets — a bogus x1000 on a tiny trust-side parse
+        // otherwise lands "nearer" ratio 1 and wins (Northrop gate caught
+        // its 150M parse rescaling to 150B against 40B of plan assets)
+        if (scale > 1 && maxV * scale > assetsEOY * 1.05) continue;
+        const closeness = Math.abs(Math.log(ratio));
+        const score = -closeness + Math.min(parsed.funds.length, 40) * 0.005
+          + (isSummary && closeness < 0.5 ? 0.1 : 0)
+          - (isStatement ? 0.35 : 0)
+          - (isCodePage ? 0.35 : 0)
+          - (gainLast && parsed.funds.length >= 60 ? 0.2 : 0);
+        if (!best || score > best.score) {
+          best = { score, ratio, scale, stmt: isStatement, ...parsed };
+        }
       }
     }
   }
   if (!best) return { found: false };
-  let funds = best.scale === 1000 ? best.funds.map((f) => ({ ...f, value: f.value * 1000 })) : best.funds;
+  let funds = best.scale > 1 ? best.funds.map((f) => ({ ...f, value: f.value * best.scale })) : best.funds;
 
   // sub-$10k rows are residue (leaked years, currency cents), not menu options
   funds = funds.filter((f) => f.value >= 10000);
@@ -578,7 +632,11 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
   // filing. When trust-interest rows dominate a small parse, flag it so it
   // can never be marked confident.
   const trustish = funds.filter((f) => f.type === "Master trust interest" ||
-    /^(?:the )?(?:plan(?:['’]s)? )?(?:value of )?interest in .{0,50}\btrust\b/i.test(f.name) || /^master trust\b/i.test(f.name));
+    /^(?:the )?(?:plan(?:['’]s)? )?(?:value of )?interest in .{0,50}\btrust\b/i.test(f.name) || /^master trust\b/i.test(f.name) ||
+    // "Participation in … Defined Contribution Plans Master Trust"
+    // (Northrop) — the name can END with the trust rather than start with
+    // "interest in"
+    /^participation in\b/i.test(f.name) || /\bmaster trust\s*$/i.test(f.name));
   const tSum = trustish.reduce((a, f) => a + f.value, 0);
   const allSum = funds.reduce((a, f) => a + f.value, 0);
   const trustPtr = funds.length <= 8 && allSum > 0 && tSum / allSum >= 0.6;
@@ -596,7 +654,7 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
   // a statement-vocabulary fragment can still WIN when it's the only
   // candidate (the real schedule is scanned or absent) — surface the flag
   // so it can never be marked confident
-  return { found: true, thousands: best.scale === 1000, sdba: sdbaOut, funds, ratio: best.ratio, ...(best.stmt || provAgg ? { stmt: 1 } : {}), ...(trustPtr ? { trustPtr: 1 } : {}), ...(sma ? { sma, smaKind } : {}) };
+  return { found: true, thousands: best.scale > 1, sdba: sdbaOut, funds, ratio: best.ratio, ...(best.stmt || provAgg ? { stmt: 1 } : {}), ...(trustPtr ? { trustPtr: 1 } : {}), ...(sma ? { sma, smaKind } : {}) };
 }
 
 /* ---- plan-feature extraction from the filing's audit notes ---------------- */
@@ -647,6 +705,10 @@ export function extractPlanFeatures(text) {
   // and W() renders them as digits; quotes stay verbatim from the filing.
   const W = (x) => ({ "one hundred": 100, "seventy five": 75, "twenty five": 25, fifteen: 15, fifty: 50, forty: 40, thirty: 30, twenty: 20, sixty: 60, ten: 10, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9 }[String(x).toLowerCase().replace(/-/g, " ")] ?? +x);
   const mf =
+    // bullet-style benefit summaries: "Up to 3% of eligible compensation,
+    // calculated as 100% Company match on the first 3% of associate
+    // deferrals" (Capital One) — the cap bullet must not become the rate
+    t.match(/calculated as (\d{1,3}(?:\.\d+)?) ?(?:percent|%) (?:company )?match(?:ing)? on the first (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i) ||
     t.match(/match(?:ing|ed)?[^.]{0,140}?(\d{1,3}(?:\.\d+)?|one hundred|seventy[- ]five|twenty[- ]five|fifteen|fifty|forty|thirty|twenty|sixty|ten|one|two|three|four|five|six|seven|eight|nine) ?(?:percent|%) (?:of|on) (?:the )?first (\d{1,2}(?:\.\d+)?|ten|one|two|three|four|five|six|seven|eight|nine) ?(?:percent|%)/i) ||
     t.match(/(\d{1,3}(?:\.\d+)?) ?(?:percent|%) match(?:ing)?[^.]{0,80}?(?:up to|on the first) (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i) ||
     // "matching contribution ... equal to 100% of ... deferral contributions
@@ -659,8 +721,17 @@ export function extractPlanFeatures(text) {
     // and b) … 50% … up to the next 5%" (Rotary) — "for the first" binds
     // the head; without it the maximum-of shape below grabs clause b)'s
     // rate with the 6% total cap ("50% of the first 6%")
-    t.match(/match(?:ing|ed)?[^.]{0,160}?(\d{1,3}(?:\.\d+)?|one hundred|seventy[- ]five|twenty[- ]five|fifty|twenty) ?(?:percent|%) of [^.]{0,80}?for the first (\d{1,2}(?:\.\d+)?|ten|one|two|three|four|five|six|seven|eight|nine) ?(?:percent|%)/i) ||
-    t.match(/match(?:ing|ed)?[^.]{0,160}?(\d{1,3}(?:\.\d+)?|one hundred|seventy[- ]five|twenty[- ]five|fifty|twenty) ?(?:percent|%) of [^.]{0,140}?(?:up to|not to exceed|not in excess of|(?:that )?do(?:es)? not exceed|to a maximum of|maximum[^.]{0,60}? of) (?:an? |the first )?(\d{1,2}(?:\.\d+)?|ten|one|two|three|four|five|six|seven|eight|nine) ?(?:percent|%) of/i) ||
+    t.match(/match(?:ing|ed)?[^.]{0,160}?(\d{1,3}(?:\.\d+)?|one hundred|seventy[- ]five|twenty[- ]five|fifty|twenty) ?(?:percent|%) of [^.]{0,80}?(?:for|on|attributable to) the first (\d{1,2}(?:\.\d+)?|ten|one|two|three|four|five|six|seven|eight|nine) ?(?:percent|%)/i) ||
+    // v56 S&P sweep widened the cap vocabulary and gaps: "(not exceeding 6%
+    // of compensation)" (Accenture), "which are not over 6%" (Kenvue),
+    // "up to the lesser of 4% … or $7,200" (Gartner), a parenthetical
+    // between rate and "of" ("100% (Company Match) of …" Synchrony)
+    t.match(/match(?:ing|ed)?[^.]{0,160}?(\d{1,3}(?:\.\d+)?|one hundred|seventy[- ]five|twenty[- ]five|fifty|twenty) ?(?:percent|%) (?:\([^)]{0,30}\) )?of [^.]{0,140}?(?:up to|not to exceed|not exceeding|not in excess of|(?:which |that )?(?:is |are )?not over|(?:that )?do(?:es)? not exceed|to a maximum of|maximum[^.]{0,60}? of) (?:the lesser of )?(?:an? |the first )?(\d{1,2}(?:\.\d+)?|ten|one|two|three|four|five|six|seven|eight|nine) ?(?:percent|%) of/i) ||
+    // "matching contributions of 100 percent up to a maximum of six percent"
+    // (Eversource) — no "of <deferrals>" between the rate and the cap
+    t.match(/match(?:ing|ed)? contributions? of (\d{1,3}(?:\.\d+)?|one hundred|fifty) ?(?:percent|%) up to a maximum of (\d{1,2}(?:\.\d+)?|ten|one|two|three|four|five|six|seven|eight|nine) ?(?:percent|%)/i) ||
+    // "100% on up to 4% of an employee's compensation" (Campbell's)
+    t.match(/match(?:ing|ed)?[^.]{0,120}?(\d{1,3}(?:\.\d+)?|one hundred|fifty) ?(?:percent|%) on up to (\d{1,2}(?:\.\d+)?|ten|one|two|three|four|five|six|seven|eight|nine) ?(?:percent|%)/i) ||
     // auditor template with no "match" word — "The Company contributed 25
     // percent of the first 3 percent of eligible compensation that a
     // participant contributed" (Rental One, Rabun Gap); the trailing
@@ -670,8 +741,9 @@ export function extractPlanFeatures(text) {
   // compensation" (Opus Inspection) — map to a percentage
   const FRAC = { "one-half": 50, "one half": 50, "one-third": 33, "one third": 33, "one-quarter": 25, "one quarter": 25, "two-thirds": 67, "two thirds": 67 };
   const frac = !mf && t.match(/match(?:ing|ed)?[^.]{0,160}?\b(one[- ]half|one[- ]third|one[- ]quarter|two[- ]thirds)\b of the first (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i);
-  // dollar-phrased formulas: "dollar-for-dollar up to 4%", "50 cents per dollar on the first 6%"
-  const df = !mf && (t.match(/dollar[- ]for[- ]dollar[^.]{0,80}?(?:up to|on the first) (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i)
+  // dollar-phrased formulas: "dollar-for-dollar up to 4%", "50 cents per dollar
+  // on the first 6%", "$1.00 for every dollar … up to 2%" (Kraft Heinz)
+  const df = !mf && (t.match(/(?:dollar[- ]for[- ]dollar|(?:\$1(?:\.00)?|one dollar) for (?:each|every) dollar)[^.]{0,80}?(?:up to|on the first) (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i)
     ? { pct: 100, cap: null } : null);
   const cents = !mf && !df && t.match(/(\d{1,3}(?:\.\d+)?) ?cents (?:for|per|on) (?:each |every )?(?:\$1(?:\.00)?|dollar)[^.]{0,80}?(?:up to|on the first) (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i);
   // match stated as a TABLE, not prose: "Employee Contribution | Employer
@@ -693,6 +765,17 @@ export function extractPlanFeatures(text) {
   let minv = null;
   if (!mf && !df && !cents && !mtab) {
     minv = t.match(/first (\d{1,2}(?:\.\d+)?) ?(?:percent|%) of [^.]{0,60}?(?:is|are) matched (?:at (?:a rate of )?)?(\d{1,3}(?:\.\d+)?) ?(?:percent|%)/i);
+  }
+  // DOLLAR-capped matches with no percent cap: "matched 50 percent of each
+  // eligible participant's contribution, not to exceed $1,000 per year"
+  // (Palo Alto), "matched 100% … up to $3,000" (Expeditors), "up to a
+  // maximum employer contribution of $4,400" (F5), "100% of the
+  // participants' elective deferral to $17,500" (MarketAxess). The IRS/
+  // statutory-limit guard keeps 402(g)/catch-up dollar figures out.
+  let mdol = null;
+  if (!mf && !df && !cents && !mtab && !minv) {
+    mdol = t.match(/match(?:ing|ed)?[^.]{0,120}?(\d{1,3}(?:\.\d+)?|one hundred|fifty) ?(?:percent|%) of [^.]{0,120}?(?:contribution|deferral)s?[^.]{0,80}?(?:not to exceed|up to (?:a )?(?:maximum[^.]{0,50}?of )?|to ) ?\$ ?([\d,]{3,7})(?!\d)/i);
+    if (mdol && /IRS|Internal Revenue|402\(g\)|catch[- ]up|statutory|Code limit/i.test(mdol[0])) mdol = null;
   }
   // a hedged "may contribute a discretionary match of 6% of the first 4%"
   // followed by a DEFINITE formula ("The Company makes a safe harbor
@@ -796,7 +879,7 @@ export function extractPlanFeatures(text) {
     // the gap must not cross another rate: '%' is excluded by character
     // class, spelled "percent" needs the lookahead (O'Neal double-bound
     // "one hundred" onto the second tier without it)
-    const tierRe = /(\d{1,3}(?:\.\d+)?|one hundred|seventy[- ]five|twenty[- ]five|fifty|twenty) ?(?:percent|%) of (?:(?!percent\b)[^.%]){0,60}?next (\d{1,2}(?:\.\d+)?|ten|one|two|three|four|five|six|seven|eight|nine) ?(?:percent|%)/gi;
+    const tierRe = /(\d{1,3}(?:\.\d+)?|one hundred|seventy[- ]five|twenty[- ]five|fifty|twenty) ?(?:percent|%) (?:of (?:(?!percent\b)[^.%]){0,60}?|(?:company )?match(?:ing)? on the )next (\d{1,2}(?:\.\d+)?|ten|one|two|three|four|five|six|seven|eight|nine) ?(?:percent|%)/gi;
     // a NEW match head in the following sentence is a separate formula —
     // its tiers must not chain onto this head (5%−4% once fabricated
     // "+ 50% of the next 1%"). Legit continuations ("In addition, … 50%
@@ -858,7 +941,9 @@ export function extractPlanFeatures(text) {
     // "not to exceed $2,250 per quarter for a total of $9,000 per year"
     // (VMware) — take the ANNUAL total, never a shorter-period figure
     const dcap = capWin.match(/total of \$([\d,]+) per year/i) ||
-      capWin.match(/not to exceed \$([\d,]+)(?! per (?:quarter|month|pay))[^.]{0,40}?(?: on an annual basis| per year| per plan year| each year| annually)/i);
+      capWin.match(/not to exceed \$([\d,]+)(?! per (?:quarter|month|pay))[^.]{0,40}?(?: on an annual basis| per year| per plan year| each year| annually)/i) ||
+      // "up to the lesser of 4% of … compensation or $7,200" (Gartner)
+      capWin.match(/lesser of[^.]{0,80}? or \$([\d,]+)(?!\d)/i);
     if (dcap) out.match += ` (max $${dcap[1]}/yr per the filing)`;
     out.match += mfEra;
     // the quote must contain every tier the formula states
@@ -868,9 +953,14 @@ export function extractPlanFeatures(text) {
     out.match = `${FRAC[frac[1].toLowerCase().replace(/ /, "-")] || FRAC[frac[1].toLowerCase()]}% of the first ${+frac[2]}% of pay`;
     out.matchText = sentence(frac.index);
   } else if (df) {
-    const m2 = t.match(/dollar[- ]for[- ]dollar[^.]{0,80}?(?:up to|on the first) (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i);
+    const m2 = t.match(/(?:dollar[- ]for[- ]dollar|(?:\$1(?:\.00)?|one dollar) for (?:each|every) dollar)[^.]{0,80}?(?:up to|on the first) (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i);
     out.match = `100% of the first ${+m2[1]}% of pay`;
-    out.matchText = sentence(m2.index);
+    let dEnd = m2[0].length;
+    // cents-per-dollar SECOND tier: "plus 50 cents for every dollar … that
+    // is between 2% and 6% of eligible pay" (Kraft Heinz)
+    const ct = t.slice(m2.index, m2.index + 400).match(/(\d{1,3}) ?cents (?:for|per|on) (?:each |every )?dollar[^.]{0,80}?between (\d{1,2}(?:\.\d+)?) ?(?:percent|%) and (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i);
+    if (ct && +ct[3] > +ct[2]) { out.match += ` + ${+ct[1]}% of the next ${+ct[3] - +ct[2]}%`; dEnd = ct.index + ct[0].length; }
+    out.matchText = sentence(m2.index, dEnd);
   } else if (cents) {
     out.match = `${+cents[1]}% of the first ${+cents[2]}% of pay`;
     out.matchText = sentence(cents.index);
@@ -880,6 +970,9 @@ export function extractPlanFeatures(text) {
     let invEnd = minv[0].length;
     if (ex2 && +ex2[2] > +ex2[1]) { out.match += ` + ${+ex2[3]}% of the next ${+ex2[2] - +ex2[1]}%`; invEnd = ex2.index + ex2[0].length; }
     out.matchText = sentence(minv.index, invEnd);
+  } else if (mdol) {
+    out.match = `${W(mdol[1])}% of contributions, capped at $${mdol[2]} per year`;
+    out.matchText = sentence(mdol.index);
   } else if (mtab) {
     out.match = `${+mtab[2]}% of the first ${+mtab[1]}% of pay`;
     const tierRe2 = /next (\d{1,2}(?:\.\d+)?) ?(?:percent|%) of (?:eligible |annual |base )?(?:compensation|pay|earnings) (\d{1,3}) ?(?:percent|%)/gi;
@@ -964,7 +1057,7 @@ export function extractPlanFeatures(text) {
     // conditional/alternative schedules are not the plan's actual schedule:
     // top-heavy fallbacks and death/disability accelerations produced
     // "5-year cliff" claims that contradict the real graded schedule
-    if (!BOILER.test(s) && !/defined benefit|pension benefit|top[- ]heavy|in the event (?:the plan|of death|of disab)|should the plan (?:be|become)|alternative vesting|if the plan (?:is|becomes)|vested upon (?:the )?(?:termination|discontinuation)|termination or discontinuation of the plan|upon (?:such |the |any )?termination of the plan|vested [^.]{0,60}?upon [^.]{0,25}?(?:death|disab)/i.test(s)) vestSentences.push(s);
+    if (!BOILER.test(s) && !/defined benefit|pension benefit|top[- ]heavy|in the event (?:the plan|of death|of disab)|should the plan (?:be|become)|alternative vesting|if the plan (?:is|becomes)|vested upon (?:the )?(?:termination|discontinuation)|termination or discontinuation of the plan|upon (?:such |the |any )?termination of the plan|vested [^.]{0,60}?upon [^.]{0,25}?(?:death|disab)/i.test(s) || /\bvests? immediately\b/i.test(s)) vestSentences.push(s);
   }
   // sentences describing a SUPERSEDED schedule ("prior to January 1, 2021,
   // vesting was based on…", Silvertip) rank behind current-tense ones
@@ -985,7 +1078,7 @@ export function extractPlanFeatures(text) {
   // discontinuation of the Plan", which is universal IRC-required
   // boilerplate in every plan, and shipped Sempra's 1-year cliff as
   // "Immediate" (owner-caught)
-  const IMMED = /immediately? (?:(?:100|one hundred) ?(?:percent|%) )?(?:fully )?vested|vested immediately|fully vested (?:at all times|immediately|upon (?:hire|enrollment|eligibility|entry|participation))|(?:100|one hundred) ?(?:percent|%) vested (?:at all times|immediately|in all)|always (?:fully |(?:100|one hundred) ?(?:percent|%) )?vested/i;
+  const IMMED = /immediately? (?:(?:100|one hundred) ?(?:percent|%) )?(?:fully )?vested|vested immediately|\bvests? immediately\b|fully vested (?:at all times|immediately|upon (?:hire|enrollment|eligibility|entry|participation))|(?:100|one hundred) ?(?:percent|%) vested (?:at all times|immediately|in all)|always (?:fully |(?:100|one hundred) ?(?:percent|%) )?vested/i;
   const matchImmediate = vestSentences.some((s) =>
     /matching (?:contributions?|accounts?)|company match/i.test(s) && IMMED.test(s));
   // graded/cliff language always describes employer money — check it FIRST
@@ -1050,19 +1143,30 @@ export function extractPlanFeatures(text) {
     // floating-label headers put "Vesting"/"Vested" ABOVE the columns, so
     // the linearized order is "Vesting Years of Credited Service
     // Percentage" (AbbVie) or just "Vesting Service percentage" (Abbott)
-    const th = t.match(/years of (?:credited |continuous )?(?:service|vesting service)\s+(?:vesting|vested) percentage|following vesting schedule:?\s+years\s+(?:employer|vested|vesting)|vested\s+years of service\s+percentage|following schedule:?\s*vested\s+years of service\s+percentage|years of service\s+percentage|(?:vesting|vested)\s+(?:years of (?:credited |continuous )?service|service)\s+percentage/i);
+    // v56 S&P-sweep header variants: "Completed Years of Service Percent
+    // Vested" (Micron, Generac), "Years of Service Vesting" (UnitedHealth),
+    // "Years of Service Vested %" (Transdigm), reversed "Percent Years of
+    // vesting service vested" (Weyerhaeuser), "Vested Percentage Years of
+    // service" (Rollins)
+    const th = t.match(/years of (?:credited |continuous )?(?:service|vesting service)\s+(?:vesting|vested) percentage|following vesting schedule:?\s+years\s+(?:employer|vested|vesting)|vested\s+years of service\s+percentage|following schedule:?\s*vested\s+years of service\s+percentage|years of service\s+percentage|(?:vesting|vested)\s+(?:years of (?:credited |continuous )?service|service)\s+percentage|(?:completed )?years of (?:credited |continuous )?service\s+percent(?:age)? vested|years of service\s+vesting\b|years of (?:credited |continuous )?service\s+vested ?%?|percent\s+years of (?:vesting |credited |continuous )?service\s+vested|vested percentage\s+years of service/i);
     if (th) {
-      let win = t.slice(th.index + th[0].length, th.index + th[0].length + 320);
+      let win = t.slice(th.index + th[0].length, th.index + th[0].length + 340);
       // stop at resumed prose — back-to-back tables (AbbVie files the
       // match cliff then the ASP+ graded schedule) otherwise interleave
       // into one non-monotonic pair list that fails both shapes
       const cut = win.search(/(?:vesting|vested) in\b|is based on|according to|are forfeited/i);
       if (cut > 0) win = win.slice(0, cut);
+      // "—%" / "–%" is a zero cell (Weyerhaeuser, Simon Property)
+      win = win.replace(/[–—]\s*%/g, "0%");
       const W2N = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6 };
-      const pairs = [...win.matchAll(/(less than (?:\d{1,2}|one|two|three|four|five|six)(?: years?)?|(?:\d{1,2}|one|two|three|four|five|six)(?: years?)?(?: or more| ?\+)?) +(\d{1,3}) ?%/gi)]
+      const pairs = [...win.matchAll(/(less than (?:\d{1,2}|one|two|three|four|five|six)(?: years?(?: of service)?)?|(?:\d{1,2}|one|two|three|four|five|six)(?: or more)?(?: years?(?: of service)?)?(?: or more| ?\+)?) +(\d{1,3}) ?%/gi)]
         .map((p) => [p[1].toLowerCase(), +p[2]]).filter(([, pc]) => pc <= 100);
       const mono = pairs.every(([, pc], i2) => i2 === 0 || pc >= pairs[i2 - 1][1]);
-      if (pairs.length >= 3 && pairs[pairs.length - 1][1] === 100 && mono) {
+      // an OCR-garbled 100% row ("Sy) 100%" — Builders FirstSource) drops
+      // the terminal pair; ≥4 monotonic rows rising from ≤25 is still a
+      // graded schedule even when the readable rows stop at 80%
+      if (mono && (pairs.length >= 3 && pairs[pairs.length - 1][1] === 100 ||
+                   pairs.length >= 4 && pairs[pairs.length - 1][1] >= 80 && pairs[0][1] <= 25)) {
         out.vesting = "Graded schedule";
         out.vestingText = cap("Vesting schedule as filed — " + pairs.map(([y, pc]) => `${y} yr: ${pc}%`).join(", "));
       } else if (pairs.length === 2 && pairs[0][1] === 0 && pairs[1][1] === 100) {
@@ -1077,12 +1181,81 @@ export function extractPlanFeatures(text) {
       }
     }
   }
+  // months-based cliff: "fewer than 12 months – 0%; 12 or more months –
+  // 100%" (FedEx) — a 1-year cliff stated in months
+  if (!out.vesting) {
+    const mo = t.match(/(?:fewer|less) than (\d{1,2}) months?[^%]{0,12}?0 ?%;? ?\1 (?:months? )?or more(?: months?)?[^%]{0,12}?100 ?%/i);
+    if (mo && +mo[1] % 12 === 0 && +mo[1] <= 36) {
+      out.vesting = `${+mo[1] / 12}-year cliff`;
+      out.vestingText = sentence(mo.index);
+    }
+  }
+  // months-stated graded tables: "24 months but less than 36 months 25% …
+  // 60 months or more 100%" (Textron)
+  if (!out.vesting) {
+    const runs = [...t.matchAll(/(\d{1,3}) months?(?: but less than \d{1,3} months?| or more)? +(\d{1,3}) ?%/gi)];
+    let cur = [], best = null;
+    for (const m of runs) {
+      if (cur.length && m.index - cur[cur.length - 1].index > 110) cur = [];
+      cur.push(m);
+      if (cur.length >= 3 && +cur[cur.length - 1][2] === 100) best = [...cur];
+    }
+    if (best) {
+      const vals = best.map((m) => +m[2]);
+      const mono = vals.every((v, i2) => i2 === 0 || v >= vals[i2 - 1]) && vals.every((v) => v <= 100);
+      if (mono && /vest/i.test(t.slice(Math.max(0, best[0].index - 260), best[0].index))) {
+        out.vesting = "Graded schedule";
+        out.vestingText = cap("Vesting schedule as filed — " + best.map((m) => `${+m[1]} mo: ${+m[2]}%`).join(", "));
+      }
+    }
+  }
+  // graded schedules as PROSE pair runs with no table header:
+  // "2 years – 20%; 3 years – 40%; … 6 years – 100%" (J.B. Hunt),
+  // "0 years of service 0% 1 year of service 25% …" (AvalonBay).
+  // Demands ≥3 tightly-spaced pairs, monotonic, ending at exactly 100,
+  // with vesting vocabulary just before the run.
+  if (!out.vesting) {
+    const runs = [...t.matchAll(/(\d{1,2}) ?years?(?: of (?:vesting |credited |continuous )?service)?(?: (?:or more|and (?:greater|above|over|more)))? ?[–—:-]? ?(\d{1,3}) ?%/gi)];
+    let cur = [], best = null;
+    for (const m of runs) {
+      if (cur.length && m.index - cur[cur.length - 1].index > 90) cur = [];
+      cur.push(m);
+      if (cur.length >= 3 && +cur[cur.length - 1][2] === 100) best = [...cur];
+    }
+    if (best) {
+      const vals = best.map((m) => +m[2]);
+      const mono = vals.every((v, i2) => i2 === 0 || v >= vals[i2 - 1]) && vals.every((v) => v <= 100);
+      if (mono && /vest/i.test(t.slice(Math.max(0, best[0].index - 260), best[0].index))) {
+        out.vesting = "Graded schedule";
+        out.vestingText = cap("Vesting schedule as filed — " + best.map((m) => `${m[1]} yr: ${+m[2]}%`).join(", "));
+      }
+    }
+  }
+  // rate-first prose spans: "40% for 3 years but less than 4 years, 70% for
+  // 4 years …, 100% for 5 years or more" (Omnicom)
+  if (!out.vesting) {
+    const runs = [...t.matchAll(/(\d{1,3}) ?% for (\d{1,2}) years?/gi)];
+    let cur = [], best = null;
+    for (const m of runs) {
+      if (cur.length && m.index - cur[cur.length - 1].index > 130) cur = [];
+      cur.push(m);
+      if (cur.length >= 2 && +cur[cur.length - 1][1] === 100) best = [...cur];
+    }
+    if (best) {
+      const vals = best.map((m) => +m[1]);
+      const mono = vals.every((v, i2) => i2 === 0 || v >= vals[i2 - 1]) && vals.every((v) => v <= 100);
+      if (mono && /vest/i.test(t.slice(Math.max(0, best[0].index - 260), best[0].index))) {
+        out.vesting = "Graded schedule";
+        out.vestingText = cap("Vesting schedule as filed — " + best.map((m) => `${m[2]} yr: ${+m[1]}%`).join(", "));
+      }
+    }
+  }
   // "immediate" only counts when the sentence explicitly covers employer money
   if (!out.vesting) {
     for (const s of vestSentences) {
       // "always 100% vested in ALL of their Plan accounts" (EP Energy)
       // covers employer money without naming it
-      if (!/(matching|employer|company|non.?elective|profit.?sharing) (?:contributions?|accounts?)|company match|all (?:of (?:their|his|her) )?(?:plan )?accounts|all contribution sources/i.test(s)) continue;
+      if (!/(matching|employer|company|non.?elective|profit.?sharing|plan sponsor) (?:contributions?|accounts?)|company match|all (?:of (?:their|his|her) )?(?:plan )?accounts|all contribution sources/i.test(s)) continue;
       if (IMMED.test(s)) {
         out.vesting = "Immediate"; out.vestingText = cap(s); break;
       }

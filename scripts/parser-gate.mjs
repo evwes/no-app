@@ -39,8 +39,11 @@ const SPECIMENS = [
   // the whole menu (1 junk row from a $41.5B plan)
   ["Costco (spaced leaders)", "20260723165543NAL0014354289001", 41523678630,
     { found: true, n: 30, sum: 38997301000 }],
+  // v56: the REAL "$ in thousands" schedule ($39.3B master-trust
+  // participation + $4.6B BrokerageLink) replaced a fair-value-note
+  // fragment — trust-pointer flagged, so it can never display as a lineup
   ["Northrop Grumman", "20260616115726NAL0000593907005", 44357243320,
-    { found: true, n: 10, sum: 150128940 }],
+    { found: true, n: 3, sum: 43943483000 }],
   ["Kohler (trust interest)", "20251014134011NAL0002916849001", 781346186,
     { found: true, n: 1, sum: 845895707 }],
   // v43: a trust-POINTER page ("Interest in Eaton Savings Trust Master
