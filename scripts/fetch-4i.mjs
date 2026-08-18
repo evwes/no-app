@@ -21,9 +21,16 @@ import { parse4i, extractPlanFeatures, indexFlags, PARSER_VERSION } from "./lib-
  * encodings that extract as cipher-garbage. Rasterize just those pages and
  * OCR them, then re-run the normal parser on the combined text. Bump
  * OCR_VERSION to re-attempt every no-section filing. */
-const OCR_VERSION = 5; // v5: head-first + end-of-hits allocation (JPM repeated-header class)
+const OCR_VERSION = 6; // v6: 52-page budget for big scans — notes head AND schedule tail
 const OCR_MAX_PAGES = 40; // full-OCR budget per filing; TARGETING picks which 40
-const OCR_HEAD_PAGES = 12; // notes-head reserve inside the budget (features prose)
+const OCR_HEAD_PAGES = 12; // bad-list head reserve (v5, proven on JPM)
+const OCR_NOTES_WINDOW = 30; // absolute-page ceiling of the auditor's notes region
+const OCR_NOTES_EXTRA = 18; // extra budget granted ONLY for notes pages 13-30:
+// vesting prose sits there in fully-scanned filings (v5's 12-page head lost
+// 2,538 OCR-sourced vestings — v4 had covered those pages only by the
+// accident of front statement-heading hits, and the gate caught the loss).
+// Filings with readable early pages (JPM) add zero notes pages and keep
+// v5's exact proven allocation.
 const OCR_SKIP_BAD = 250; // strip-scan makes big scans affordable; only 250+ page monsters skip
 let hasOcrTools = true;
 try { execFileSync("tesseract", ["--version"], { stdio: "ignore" }); execFileSync("pdftoppm", ["-v"], { stdio: "ignore" }); }
@@ -104,14 +111,19 @@ const STRIP_HEAD = /schedu[l1i]e\s*h\b|[l1i]ine\s*4\s*\(?\s*i\s*\)?|schedu[l1i]e
  *    recovered nothing). */
 function targetPages(badPages, stripText) {
   const badSet = new Set(badPages);
-  const chosen = new Set();
-  for (const p of badPages.slice(0, OCR_HEAD_PAGES)) chosen.add(p);
+  const head = badPages.slice(0, OCR_HEAD_PAGES);
+  // supplemental NOTES window: bad pages at absolute positions ≤30 beyond
+  // the head — the budget grows by exactly these pages, so filings whose
+  // early pages are readable (JPM) keep v5's proven allocation unchanged
+  const notes = badPages.filter((q) => q <= OCR_NOTES_WINDOW && !head.includes(q)).slice(0, OCR_NOTES_EXTRA);
+  const chosen = new Set([...head, ...notes]);
+  const budget = OCR_MAX_PAGES + notes.length;
   const hits = badPages.filter((p) => STRIP_HEAD.test(stripText[p] || ""));
   const hitExp = [];
   for (const h of hits) for (const q of [h, h + 1, h + 2]) if (badSet.has(q) && !hitExp.includes(q)) hitExp.push(q);
-  for (let i = hitExp.length - 1; i >= 0 && chosen.size < OCR_MAX_PAGES; i--) chosen.add(hitExp[i]);
-  for (let i = badPages.length - 1; i >= 0 && chosen.size < OCR_MAX_PAGES; i--) chosen.add(badPages[i]);
-  return [...chosen].sort((a, b) => a - b).slice(0, OCR_MAX_PAGES);
+  for (let i = hitExp.length - 1; i >= 0 && chosen.size < budget; i--) chosen.add(hitExp[i]);
+  for (let i = badPages.length - 1; i >= 0 && chosen.size < budget; i--) chosen.add(badPages[i]);
+  return [...chosen].sort((a, b) => a - b).slice(0, budget);
 }
 
 /* orientation check: trustee statements file LANDSCAPE tables the PDF
@@ -133,7 +145,7 @@ function detectRotation(pdfPath, probePage, workDir) {
 }
 
 async function ocrPages(pdfPath, badPages, workDir, psm = "6") {
-  const take = badPages.slice(0, OCR_MAX_PAGES);
+  const take = badPages.slice(0, OCR_MAX_PAGES + OCR_NOTES_EXTRA + 12);
   mkdirSync(workDir, { recursive: true });
   // one pdftoppm call PER PAGE: rendering merged ranges let a single
   // damaged page (broken Type 3 glyphs) kill the whole invocation and
@@ -364,7 +376,7 @@ async function analyzePdf(ack, plan, tag) {
         // cache for them so version bumps don't re-rasterize ~7k
         // already-done filings
         if (otext === null && OCR_CACHE && bad.length <= OCR_MAX_PAGES) {
-          for (const v of [4, 3]) {
+          for (const v of [5, 4, 3]) {
             try { otext = readFileSync(path.join(OCR_CACHE, `${ack}.v${v}.txt`), "utf8"); break; } catch { /* miss */ }
           }
         }
@@ -380,7 +392,7 @@ async function analyzePdf(ack, plan, tag) {
             if (rot) {
               // strips are sideways slices on rotated pages, so no
               // targeting — take the notes head + the tail (schedule)
-              pages = [...new Set([...bad.slice(0, OCR_HEAD_PAGES), ...bad.slice(-(OCR_MAX_PAGES - OCR_HEAD_PAGES))])].sort((a, b) => a - b);
+              pages = [...new Set([...bad.slice(0, OCR_HEAD_PAGES), ...bad.filter((q) => q <= OCR_NOTES_WINDOW).slice(0, OCR_NOTES_EXTRA), ...bad.slice(-28)])].sort((a, b) => a - b);
               console.log(`${tag}: rotated ${rot}° — head ${OCR_HEAD_PAGES} + tail of ${bad.length} pages, psm 1`);
             } else {
               const strips = await stripScan(dest, bad, path.join(WORK, "strips-" + ack.slice(-12)));

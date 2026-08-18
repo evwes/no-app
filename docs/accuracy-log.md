@@ -1881,6 +1881,44 @@ vesting +27/−0, every change quote-adjudicated; gate 19/19. Queued to
 push immediately after the v56 run's merge commits (pushing scripts
 mid-run cancels the run).
 
+## 2026-08-18 — Gate save #2: OCR v5's page allocation cost 2,538 OCR-sourced vestings; v6 funds the notes window explicitly
+
+**What the gate caught.** Run #139 (v57 + OCR v5): REPARSE VERDICT
+vesting −2,538 — data NOT committed, the site kept serving v56. The
+lineup side of v5 worked (JPM's 80-fund menu and Iberia's restored
+confidence both appear in the run's gained list; zero real-menu-shaped
+losses), and match moved +13. Vesting alone collapsed.
+
+**Root cause (measured, not guessed).** 3,652 stored vesting values come
+from OCR text, and the loss concentrates in >40-bad-page scans. v4's
+allocation OCR'd strip-vocabulary hits from the FRONT of the document —
+financial-statement headings ("Statement of Net Assets") hit there, and
+their +2-page continuations happened to cover auditor-notes pages
+~13-30, where vesting prose lives. v5 consumed hits from the END to fix
+JPM, silently dropping those middle notes pages. Match survived because
+match prose sits early in Note 1, inside the 12-page head reserve;
+vesting sits deeper. A code-level diff could never show this — v56 and
+v57 extract identically on identical text (verified: −2/+9 over 958
+cached filings); the change was in WHICH pages became text.
+
+**The fix (OCR v6).** The v5 allocation is kept exactly (bad-list
+head-12, hits consumed from the end, tail top-up, 40-page budget) and a
+supplemental NOTES WINDOW is added: bad pages at absolute positions ≤30
+beyond the head, up to 18, with the budget growing by exactly the pages
+added. Filings whose early pages are readable add zero notes pages and
+keep v5's proven picks byte-for-byte (verified against JPM's gained
+parse); fully-scanned filings now OCR pages 1-30 plus the schedule
+tail. Two intermediate designs failed verification before this one:
+head-24-of-bad-list re-broke JPM (its 24th bad page is page 68), and a
+flat 52-page budget flooded JPM's region scoring with detail pages
+(ratio 2.4).
+
+**Prevention.** OCR allocation changes are text-supply changes: they
+must be judged by FEATURE retention counts on the affected class, not by
+code diffs or same-text sweeps — recorded as a standing rule alongside
+the v4 lesson ("schedule and notes are different pages"). The publish
+gate has now blocked two real regressions before the site saw either.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
