@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 57;
+export const PARSER_VERSION = 58;
 
 const TYPE_PATTERNS = [
   [/self[- ]directed brokerage|brokerage ?link|brokeragelink|\bSDBA\b|self[- ]directed\b|^brokerage accounts?$/i, "SDBA"],
@@ -38,7 +38,7 @@ const SKIP_ROW = new RegExp("^(total|subtotal|grand total|schedule|page \\d|form
   // spellings — 631 confident lineups carried "Investments, at fair value"
   // statement rows (up to 97% of the shown sum) because only the bare
   // space-separated form was covered
-  "(net assets|benefits paid|investment (income|gain|loss)|interest and dividends|realized|unrealized|appreciat|depreciat|transfers?\\b|contributions?\\b|deemed distribut|administrative expense|beginning of year|end of year|financial statements|indirect compensation|reconcil|adjustment|level [123]\\b|liabilit|receivable|payable|expenses\\b|distribution|net (increase|decrease|change)|due (to|from)|notes? (to|receivable)|similar party|description of investment|current value|investments?,?\\s*[—–-]?\\s*at (fair|contract) value)|" +
+  "(net assets|benefits paid|investment (income|gain|loss)|(participation|interest) in (the )?net (income|loss)|net income \\(?loss\\)?|net income (of|from)\\b|interest and dividends|realized|unrealized|appreciat|depreciat|transfers?\\b|contributions?\\b|deemed distribut|administrative expense|beginning of year|end of year|financial statements|indirect compensation|reconcil|adjustment|level [123]\\b|liabilit|receivable|payable|expenses\\b|distribution|net (increase|decrease|change)|due (to|from)|notes? (to|receivable)|similar party|description of investment|current value|investments?,?\\s*[—–-]?\\s*at (fair|contract) value)|" +
   // form-page boilerplate: a filing with NO 4i attachment can still seed a
   // region from the Schedule H checkbox line, and the parser then reads phone
   // numbers and zip codes off address/signature pages as \"values\" (Aramark)

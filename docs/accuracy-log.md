@@ -1963,6 +1963,40 @@ features" alongside the headline number. The boilerplate class itself
 stays excluded (v57); residual quote-only vestings remain honest
 descriptive sentences and are now visible as their own trend line.
 
+## 2026-08-18 — v58: "Participation in net income of Master Trust" as a $1.45B "fund"; partial features suppressed OCR of the scanned notes
+
+**What was wrong.** (1) Trust-member filings list "Participation in net
+income of Master Trust" in their statements; the row escaped SKIP_ROW
+(vocabulary had "net (increase|decrease|change)" and "investment
+income", not "net income of/from"), and the v56 master-trust row BYPASS
+didn't rescue it either — its income exclusion correctly refused the
+bypass, but nothing then junked the row, so it parsed as a holding
+(Avery Dennison class: $1.45B; a second filing showed $181.5 in a
+millions-labeled statement, which v56 unit scaling would inflate).
+(2) fetch-4i's OCR gate fired on `!parsed.found || !features` — a
+filing whose readable pages yielded ANY feature (a lone Roth mention)
+never OCR'd its scanned plan-description note, and the old merge
+`if (f2 && !features)` threw OCR features away wholesale whenever base
+features existed. 3,269 stored entries have features but neither a
+match nor a vesting group.
+
+**The fix (v58).** SKIP_ROW gains `(participation|interest) in (the )?
+net (income|loss)`, `net income \(?loss\)?`, `net income (of|from)`.
+Verified: 822-filing cached-text sweep — 3 filings changed, every
+removal is exactly the junk row, 0 confidence flips; 19-specimen gate
+green. fetch-4i: the gate now fires when no match AND no vesting group
+exists (`notesMissing`), and OCR features merge field-GROUP-wise —
+base-text groups always win whole, so a value and its quote stay from
+one source (the audit's formula-in-quote invariant cannot be broken by
+mixing an OCR value with a base-text quote); OCR fills only absent
+groups. Merge semantics unit-tested (base quote-only match group blocks
+the OCR match; identity when nothing to add).
+
+**Prevention.** Statement-line vocabulary reviews must cover the
+CHANGES-in-net-assets statement, not just the assets statement — "net
+income of the Master Trust" is that statement's signature row. Feature
+merges must operate on value+quote GROUPS, never individual keys.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

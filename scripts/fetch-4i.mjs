@@ -363,8 +363,13 @@ async function analyzePdf(ack, plan, tag) {
   // *or* missing features — v43 made cents-formatted schedules readable,
   // parsed.found went true for filings whose audit NOTES are scanned, OCR
   // stopped running, and 902 plans silently lost their match/vesting
-  // features (the OCR cache makes the retry cheap for that class)
-  if ((!parsed.found || !features) && hasOcrTools) {
+  // features (the OCR cache makes the retry cheap for that class).
+  // v58: a PARTIAL feature set (e.g. Roth read off a readable page while
+  // the plan-description note is scanned) used to suppress OCR entirely —
+  // fire whenever neither a match nor a vesting group exists (~3.3k
+  // stored entries qualify; only the scanned subset actually OCRs)
+  const notesMissing = (f) => !f || !["match", "matchText", "vesting", "vestingText"].some((k) => k in f);
+  if ((!parsed.found || notesMissing(features)) && hasOcrTools) {
     const bad = findBadPages(text);
     if (bad.length >= 3 && bad.length <= OCR_SKIP_BAD) {
       try {
@@ -407,7 +412,13 @@ async function analyzePdf(ack, plan, tag) {
         if (otext && otext.replace(/\s+/g, "").length > 500) {
           const combined = text + "\f" + otext;
           const f2 = extractPlanFeatures(combined);
-          if (f2 && !features) { features = f2; usedOcr = true; }
+          // v58: field-GROUP-wise merge — base-text groups always win (the
+          // value+quote pair stays from ONE source so the audit's
+          // formula-in-quote invariant holds); OCR fills whole groups the
+          // base text lacks. Replacing only when base was null left partial
+          // feature sets permanently missing match/vesting.
+          const fm = mergeFeatures(features, f2);
+          if (fm !== features) { features = fm; usedOcr = true; }
           // never replace a SUCCESSFUL text parse with the combined-text
           // parse — the OCR'd pages can add junk rows to a clean region
           // (Sierra Space class); OCR fills the lineup only when the text
@@ -424,6 +435,28 @@ async function analyzePdf(ack, plan, tag) {
   }
   try { unlinkSync(dest); } catch { /* keep disk bounded */ }
   return { parsed, features, usedOcr };
+}
+
+// feature groups: a value and its quote are ONE unit — mixing a base-text
+// quote with an OCR value (or vice versa) would break the audit invariant
+// that every displayed formula's numbers appear in its own quote
+const FEATURE_GROUPS = [
+  ["match", "matchText"], ["vesting", "vestingText"], ["afterTax", "afterTaxText"],
+  ["autoEnroll", "autoEnrollText"], ["autoEscalate", "autoEscalateText"],
+  ["eligibility", "eligibilityText"], ["frozen", "frozenText"], ["loans", "loansText"],
+  ["nec", "necText"], ["noEmployer", "noEmployerText"], ["roth", "rothText"],
+  ["inPlanRoth"], ["menu"], ["safeHarbor"], ["sdbaBrand"], ["trueUp"],
+];
+function mergeFeatures(base, ocr) {
+  if (!ocr) return base;
+  if (!base) return ocr;
+  const out = { ...base };
+  let added = false;
+  for (const g of FEATURE_GROUPS) {
+    if (g.some((k) => k in base)) continue;
+    for (const k of g) if (k in ocr) { out[k] = ocr[k]; added = true; }
+  }
+  return added ? out : base;
 }
 
 for (const plan of work) {
