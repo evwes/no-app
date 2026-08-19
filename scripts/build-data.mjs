@@ -348,7 +348,11 @@ async function scanSchD(csv, year, wantedAcks) {
     // labelled 13 Great Gray CITs (70% of plan assets) that way, so the site
     // typed them as mutual funds and priced them off a mutual-fund share
     // class. An exact value match is the join.
-    value: colIndex(H, ["MTIA_CCT_PSA_DOLLAR_VALUE", "DFE_DOLLAR_VALUE", "MTIA_CCT_PSA_DOLLAR_VALUE_AMT", "DFE_DOLLAR_VALUE_AMT"], /DOLLAR_VALUE|VALUE_AMT/),
+    // the real column is DFE_P1_PLAN_INT_EOY_AMT ("plan's interest at end of
+    // year"), confirmed from the header the run printed — the guessed
+    // DOLLAR_VALUE names resolved to -1 and correctly disabled CIT typing
+    // rather than mistyping anything
+    value: colIndex(H, ["DFE_P1_PLAN_INT_EOY_AMT", "MTIA_CCT_PSA_DOLLAR_VALUE", "DFE_DOLLAR_VALUE"], /PLAN_INT_EOY_AMT|DOLLAR_VALUE|VALUE_AMT/),
   };
   console.log("SCH_D columns:", JSON.stringify(col), "| header sample:", H.slice(0, 14).join(","));
   const out = new Map(); // plan ack -> [einpn,...] of MTIAs
