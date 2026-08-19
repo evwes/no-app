@@ -2148,6 +2148,22 @@ admitting an OCR'd form subtotal ("@ Total noninterest-bearing CASH …
 sub-$10k rows now additionally exclude subtotal, wrapper and
 manager-name vocabulary.
 
+**Collective-trust typing, verified (2026-08-19 evening).** The first
+v59 run resolved the Schedule D value column to -1 and DISABLED CIT
+typing rather than guessing — the safe-degradation branch worked as
+designed, and the run printed the true header: the column is
+`DFE_P1_PLAN_INT_EOY_AMT`, not any of the DOLLAR_VALUE names guessed
+from other schedules. With it wired in: 28,365 plans carry Schedule D
+collective-trust values and **116,407 holdings across 23,064 plans**
+are now typed "Collective trust" instead of inheriting the filer's
+description column. R.H. White's 13 Great Gray trusts flipped, and
+nothing else in that plan did — the 16 mutual funds and the GIC kept
+their types, which is the precision an exact-dollar join buys. Lesson
+recorded: dataset column names are not guessable across schedules, and
+a resolver that cannot find its column must disable the feature and
+print the header rather than fall back to a regex that might match the
+wrong field.
+
 **Prevention.** Three of these (2, 3, 9) are the same failure: a number
 or rule that is TRUE OF ONE MONEY SOURCE presented as true of the plan.
 Prevailing-wage, QNEC, safe-harbor and profit-sharing money each carry
