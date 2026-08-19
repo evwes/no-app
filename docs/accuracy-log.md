@@ -2171,6 +2171,80 @@ their own eligibility, vesting and totals, and a filing that names the
 scope must have that scope carried through to the display. Added as a
 standing review question alongside the hire-date-cohort rule.
 
+## 2026-08-19 — Eaton (owner-submitted): 6,424 plans' audited-notes features were fetched but never shown; and a vesting refinement REFUSED after five rounds (v60)
+
+**The defect that mattered was in the FRONTEND, not the parser.** Eaton
+Savings Plan's page showed "The exact formula lives in the plan document
+/ SPD" and three rows reading "Not stated — filing attachment absent or
+unreadable", while its stored entry held the match (50% of the first 6%
+of pay), a 3-year cliff, the 4% Eaton Retirement Contribution, loans,
+Roth and 6% auto-enroll — every one quoted from its audited notes.
+
+`ensureLineup` fetched a plan's own shard entry only when the boot
+bitmask said the plan had a CONFIDENT LINEUP (bit 1). Eaton invests
+through the Eaton Savings Trust, so its own Schedule H 4i is a trust
+pointer, the lineup bit is off, the fetch never happened — and the
+audited-notes features died with it. `featKey` (bit 4, "this entry has
+features") was computed at boot and never read by anything. **6,424
+plans** have features but no confident own lineup; every one of them was
+falling back to characteristic-code text while the filing's own words
+sat in the shard. Fixed by fetching on `lineupKey || featKey`; the
+lineup itself still requires confidence, so a trust pointer is still
+never shown as a menu. Verified in a browser against Eaton, smoke test
+green, no re-parse required.
+
+**Voluntary after-tax missed on list enumerations.** "Employees may make
+a combination of before-tax, after-tax, and Roth contributions" — the
+patterns required "contributions" to follow "after-tax" directly, so a
+list sharing one noun never matched. 12 filings in the 822-filing set
+gained the flag; all 12 read by hand and all genuine (Goldman Sachs, one
+that spells out "other voluntary after-tax contributions", one "at all
+times fully 100% vested in their pretax, Roth, after tax…"). This
+matters beyond a checkbox: after-tax plus in-plan conversion drives the
+mega-backdoor flag.
+
+**REFUSED: vesting-by-source from "100% / fully vested in X".** Eaton
+vests matching contributions immediately while its 3-year cliff covers
+only retirement and transitional-pay money — the same money-source split
+R.H. White surfaced hours earlier, which v59 already reads from the
+unambiguous "vested immediately in X" wording. Extending it to the
+looser "100% / fully vested in X" phrasing failed five successive
+rounds of hardening, each sweep surfacing a new shape that means the
+OPPOSITE:
+1. the schedule TRAILS the source ("100% vested in the Company's
+   matching contributions after completion of one or more years");
+2. IRC plan-termination boilerplate;
+3. a clause bridged by a period pdftotext dropped ("fully vested in
+   their own contributions and earnings thereon  Vesting in employer
+   matching contributions is based on…");
+4. NEGATED forfeiture ("if a participant is NOT fully vested in matching
+   and non-elective contributions upon severance");
+5. employee-GROUP splits (one population vested at all times, another at
+   20 percent per year) and join-date eras;
+6. event ACCELERATION ("immediately fully vested … upon reaching age 65,
+   becoming disabled … or death");
+7. explicit EXCLUSION — "fully vested in his or her account balance at
+   all times, WITH THE EXCEPTION OF the employer-matching contribution
+   subaccount", the exact opposite claim.
+After all seven guards, hand-review of the 49 surviving changes still
+found ~15% wrong, and the guard strict enough to suppress them (an
+explicit immediacy adverb) also suppressed Eaton's own honest wording.
+The branch was deleted, with the reasoning left in the code so it is not
+re-attempted blind. Eaton keeps "3-year cliff" — true of the retirement
+money, incomplete about the match. An incomplete-but-true label beats a
+specific claim about someone's vested money that is wrong one time in
+seven.
+
+**Review discipline note.** During that review I wrongly flagged a QNEC
+case as a false positive: the sweep's evidence line printed a different
+sentence (age-65 acceleration) than the extractor had actually matched
+("Participants are vested immediately in their contributions and the
+Company's qualified nonelective contributions"), which was correct. A
+sweep that prints evidence must print the SAME match the extractor used,
+or the review judges the wrong text — and the fix was then measured
+against the SHIPPED version rather than an older snapshot, so the delta
+reflects what users would actually see change.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

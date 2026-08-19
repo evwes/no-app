@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 59;
+export const PARSER_VERSION = 60;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -1130,10 +1130,28 @@ export function extractPlanFeatures(text) {
   // over all employer money. Only sources the filing names as immediately
   // vested are called out, and never for a plan whose whole schedule is
   // already immediate.
+  // NOT IMPLEMENTED, deliberately: the looser wording "100% / fully vested
+  // in <source>" cannot be read safely. Across 822 filings it was
+  // indistinguishable from a schedule's END state, event acceleration
+  // ("immediately fully vested … upon reaching age 65, becoming disabled or
+  // death"), employee-group splits, date-scoped eras, negated forfeiture
+  // clauses ("if a participant is NOT fully vested in matching…") and
+  // outright exclusions ("fully vested … WITH THE EXCEPTION OF the
+  // employer-matching subaccount" — the opposite claim). Five rounds of
+  // guards still left ~15% wrong, and the guard strict enough to suppress
+  // them also suppressed the honest Eaton wording. Only the unambiguous
+  // "vested immediately in X" / "X contributions are vested immediately"
+  // forms below are read. See accuracy log 2026-08-19.
   const srcImmediate = () => {
-    if (!out.vesting || /^Immediate/i.test(out.vesting) || /vest immediately/i.test(out.vesting)) return;
+    // never stack a second parenthetical onto a value that already carries one
+    // (a hire-date-split schedule read "3-year cliff (varies by hire date per
+    // the filing) (matching contributions vest immediately)")
+    if (!out.vesting || /^Immediate/i.test(out.vesting) || /vest immediately|\(/.test(out.vesting)) return;
     const m = t.match(/vested immediately in [^.]{0,120}?\b(prevailing wage|safe harbor|qualified non-?elective|QNEC|profit sharing|matching)\b[^.]{0,40}?contributions?/i)
-      || t.match(/\b(prevailing wage|safe harbor|qualified non-?elective|QNEC|profit sharing)\b[^.]{0,60}?contributions? are (?:100 ?(?:percent|%) |fully )?vested immediately/i);
+      || t.match(/\b(prevailing wage|safe harbor|qualified non-?elective|QNEC|profit sharing)\b[^.]{0,60}?contributions? are (?:100 ?(?:percent|%) |fully )?vested immediately/i)
+      // deliberately NOT extended to "100% / fully vested in X" — see the
+      // note above srcImmediate for why that wording cannot be read safely
+      ;
     if (m) out.vesting += ` (${m[1].toLowerCase().replace(/^qnec$/i, "QNEC")} contributions vest immediately)`;
   };
 
@@ -1450,6 +1468,19 @@ export function extractPlanFeatures(text) {
       const rothTarget2 = ri2 >= 0 && !/[.,;]|\b(?:and|or)\b/i.test(post2.slice(0, ri2));
       if (rothMod || rothTarget2 || !/contribut\w+[^.]{0,80}$/i.test(pre)) continue;
       out.afterTax = true; out.afterTaxText = sentence(m2.index); break;
+    }
+  }
+  // list enumerations share ONE noun: "a combination of before-tax,
+  // after-tax, and Roth contributions" (Eaton). "contributions" sits after
+  // the other list items, so the branches above — which need the noun to
+  // follow "after-tax" directly — never fire, and a real voluntary after-tax
+  // option reads as "not stated". A separator right after "after-tax" also
+  // proves Roth is a sibling item, not a modifier.
+  if (!out.afterTax) {
+    for (const m3 of t.matchAll(/\bafter[- ]tax\b(?=\s*(?:,|\bor\b|\band\b))[^.]{0,60}?contributions?/gi)) {
+      const pre = t.slice(Math.max(0, m3.index - 80), m3.index);
+      if (!/(?:before[- ]tax|pre[- ]tax|roth|combination of|may (?:make|contribute|elect)|contribute)\b/i.test(pre)) continue;
+      out.afterTax = true; out.afterTaxText = sentence(m3.index); break;
     }
   }
   // an amendment REMOVING after-tax is an affirmative no, not a feature:
