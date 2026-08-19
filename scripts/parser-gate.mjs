@@ -19,8 +19,10 @@ const SPECIMENS = [
   // [label, ack, assetsEOY, expect]
   ["GE Vernova (footnote letters)", "20251014171116NAL0004605680001", 8206402143,
     { found: true, n: 17, sum: 8083350345 }],
+  // v59 +1: "CREF Money Market Account | Registered Investment Companies |
+  // 1,193" is a filed holding the sub-$10k residue floor used to hide
   ["UPenn Health (wrapped subtotal)", "20251015190140NAL0007224432001", 1110204528,
-    { found: true, n: 30, sum: 1108624094 }],
+    { found: true, n: 31, sum: 1108625287 }],
   ["Verizon trust (class summary)", "20250922070418NAL0002030595001", 41099764177,
     { found: true, n: 12, sum: 38926187308 }],
   // v51's cluster suffix candidates unlocked this filing's REAL 27-fund
@@ -90,8 +92,10 @@ const SPECIMENS = [
   // trust menu lost (Sempra, owner report)
   ["Sempra trust (class-worded subtotals)", "20260710080100NAL0000893043001", 5960266194,
     { found: true, n: 31, sum: 5951844380 }],
+  // v59 +1: "Schwab U.S. Treasury Money Fund 2,784" — the notes confirm the
+  // holding ("the Plan held Schwab U.S. Treasury Money Fund of $2,784")
   ["Black Hills", "20260623190115NAL0012535394001", 933735584,
-    { found: true, n: 21, sum: 911785769 }],
+    { found: true, n: 22, sum: 911788553 }],
 ];
 
 const work = mkdtempSync(path.join(tmpdir(), "gate-"));

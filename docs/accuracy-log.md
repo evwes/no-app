@@ -2044,6 +2044,97 @@ from loss-triage (the demotion IS the triage verdict), and a future
 successful re-parse is judged on its own merits. Audit HIGHs 12 → 4
 (the known contrib-outlier baseline).
 
+## 2026-08-19 — R.H. White (owner-submitted, annotated): eight defects in one plan, including a match formula the filing states outright (v59)
+
+The owner sent the filing with the Contributions note and the whole
+schedule of assets highlighted. Every finding below was reproduced
+against the live PDF (ack 20251008132857NAL0003040291001) before it was
+fixed.
+
+**1. The match formula was missing entirely.** The notes say "The
+Company contribute 50 percent of the first 6 percent of base
+compensation that a participant contributes to the Plan." The
+no-"match"-word template (2026-07-27) covers `contributes|contributed`
+but not the filer's bare `contribute`, so a plain 50%-of-6% match was
+hidden behind subject-verb disagreement. The card showed no formula at
+all — just an employer total. Verb alternation widened; the
+participant-deferral anchor still proves it is a match, not an NEC.
+
+**2. Eligibility was the wrong rule.** The site showed "Upon hire /
+immediate", quoting "For purposes of prevailing wage contributions,
+employees are eligible upon hire." The plan's actual rule sits one
+sentence earlier — "who have completed one month of service" — and
+BEHIND the word "eligible", where a forward-only scan could never see
+it. Two fixes: a scope veto (a sentence scoped to one money source
+never states the plan-wide rule), and a "who have completed N <unit> of
+service" template that reads the idiom directly, since the sponsor list
+between "The Plan covers" and the rule is full of "Inc." periods that
+no sentence-bounded window can cross.
+
+**3. Vesting hid that most employer money vests immediately.** The
+filing vests prevailing-wage QNECs immediately — $2,087,932 of the
+plan's $3,164,887 in employer contributions — while the match vests
+20%/year. The site showed a flat "Graded schedule" over all employer
+money. Vesting now carries the source split when the filing names it.
+
+**4. The stable-value fund was missing from the lineup.** "Investment,
+at contract value: Key Guaranteed Portfolio Fund … 2,322,156" was eaten
+by the v44 statement-row guard, which exists for bare subtotals
+("Investments, at fair value  66,846,124"). The colon plus a name tells
+a labelled holding from a subtotal; the label is stripped and the
+holding kept. The plan's only capital-preservation option had been
+invisible.
+
+**5. A $81 holding was dropped, so 28 options showed where 29 were
+filed.** The sub-$10k residue floor and the 3-digit value floor both
+exist to stop stray digits faking rows. Both now yield to a row that
+proved itself by carrying its own investment-type column. Two gate
+specimens moved with it, both verified real: UPenn's "CREF Money Market
+Account | Registered Investment Companies | 1,193" and Black Hills'
+"Schwab U.S. Treasury Money Fund 2,784" (the notes state that exact
+amount).
+
+**6. Form column-header text was displayed as a fund name.** The 4i
+heading wraps over four lines; only its first was known vocabulary, so
+"including maturity date, rate of" glued onto the first holding and the
+site showed "including maturity date, rate of American Funds Europacific
+GR R6".
+
+**7. Collective trusts were typed and priced as mutual funds.** The 13
+"T. Rowe Price Retirement 20XX Adv" rows are Great Gray COLLECTIVE
+INVESTMENT TRUSTS: Schedule D lists them with values summing exactly to
+$49,004,522 = Schedule H line 1c(9) = the notes' NAV-measured
+"Common collective trust". The filer's own description column calls them
+"Mutual Fund", so the site inherited that and attached a 0.49% estimate
+from the T. Rowe Price Retirement **Advisor mutual fund** share class —
+to 70% of plan assets, and through it to the headline average expense
+ratio. Schedule D entity-code-C rows and their dollar values are now
+ingested; merge retypes exact-value matches as "Collective trust" and
+marks them `cit`, and the frontend never prices a `cit` holding off a
+mutual-fund table. Where CITs dominate, the plan-level average ER now
+declines to show rather than quote a number built on the wrong vehicle.
+
+**8. The participant headline mixed year ends.** "693 participants, 520
+active" paired line 5 (BEGINNING of year) with line 6a(2) (end of year),
+alongside end-of-year assets; 733 were in the plan at year end. The
+end-of-year total (line 6d) is now carried and used for the headline and
+for average balance. The audit's participant identity was comparing
+end-of-year balance counts against a beginning-of-year total, which is
+what most of its 1,760 `[counts]` warnings were.
+
+**9. Employer money was labelled as match money.** The card headed
+"Employer Match" showed "2024 total: $3.2M", which is Schedule H
+2a(1)(A) — ALL employer contributions. Here that is $2.09M of
+prevailing-wage QNECs plus ~$1.08M of match. The label now says
+"employer contributions".
+
+**Prevention.** Three of these (2, 3, 9) are the same failure: a number
+or rule that is TRUE OF ONE MONEY SOURCE presented as true of the plan.
+Prevailing-wage, QNEC, safe-harbor and profit-sharing money each carry
+their own eligibility, vesting and totals, and a filing that names the
+scope must have that scope carried through to the display. Added as a
+standing review question alongside the hire-date-cohort rule.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

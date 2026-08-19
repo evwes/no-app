@@ -178,6 +178,11 @@ async function scanMainForm(csv, year) {
     const company = matchCompany(sponsorNorm);
     out.push({
       year,
+      // line 6d, the END-of-year headcount. line 5 (BOY) was the only count
+      // carried, so the site paired a beginning-of-year total with the
+      // end-of-year active count and end-of-year assets — R.H. White read
+      // "693 participants, 520 active" when 733 were in the plan at year end.
+      partEOY,
       ticker: company ? company.ticker : "",
       companyName: company ? company.name : "",
       ack: r[col.ack],
@@ -337,21 +342,40 @@ async function scanSchD(csv, year, wantedAcks) {
     ein: colIndex(H, ["MTIA_CCT_PSA_EIN", "DFE_EIN"], /EIN/),
     pn: colIndex(H, ["MTIA_CCT_PSA_PN", "DFE_PN"], /_PN$|PLAN_NUM/),
     type: colIndex(H, ["MTIA_CCT_PSA_ENTITY_CODE", "DFE_ENTITY_CODE", "TYPE_DFE_ENTITY_CD"], /ENTITY.*(CODE|CD)|TYPE/),
+    // entity code C rows are COLLECTIVE TRUSTS the plan holds. Their dollar
+    // values identify which schedule-of-assets rows are CITs even when the
+    // filer's own description column calls them "Mutual Fund" — R.H. White
+    // labelled 13 Great Gray CITs (70% of plan assets) that way, so the site
+    // typed them as mutual funds and priced them off a mutual-fund share
+    // class. An exact value match is the join.
+    value: colIndex(H, ["MTIA_CCT_PSA_DOLLAR_VALUE", "DFE_DOLLAR_VALUE", "MTIA_CCT_PSA_DOLLAR_VALUE_AMT", "DFE_DOLLAR_VALUE_AMT"], /DOLLAR_VALUE|VALUE_AMT/),
   };
-  console.log("SCH_D columns:", JSON.stringify(col), "| header sample:", H.slice(0, 12).join(","));
+  console.log("SCH_D columns:", JSON.stringify(col), "| header sample:", H.slice(0, 14).join(","));
   const out = new Map(); // plan ack -> [einpn,...] of MTIAs
-  let n = 0;
+  const cct = new Map(); // plan ack -> Set of collective-trust dollar values
+  let n = 0, cctRows = 0;
   for await (const r of rows) {
     n++;
     const ack = r[col.ack];
     if (!wantedAcks.has(ack)) continue;
-    if (col.type !== -1 && String(r[col.type]).trim().toUpperCase() !== "M") continue;
+    const code = col.type === -1 ? "" : String(r[col.type]).trim().toUpperCase();
+    if (code === "C" && col.value !== -1) {
+      const v = Math.round(Number(String(r[col.value]).replace(/[^0-9.-]/g, "")) || 0);
+      if (v > 0) {
+        cctRows++;
+        if (!cct.has(ack)) cct.set(ack, new Set());
+        if (cct.get(ack).size < 60) cct.get(ack).add(v);
+      }
+      continue;
+    }
+    if (col.type !== -1 && code !== "M") continue;
     const key = `${String(r[col.ein]).trim()}|${String(r[col.pn]).trim()}`;
     if (!out.has(ack)) out.set(ack, []);
     if (out.get(ack).length < 4) out.get(ack).push(key);
   }
-  console.log(`SCH_D rows: ${n}, plans with MTIA links: ${out.size}`);
-  return out;
+  console.log(`SCH_D rows: ${n}, plans with MTIA links: ${out.size}, collective-trust rows: ${cctRows} across ${cct.size} plans` +
+    (col.value === -1 ? "  ⚠ no dollar-value column resolved — CIT typing disabled" : ""));
+  return { mtia: out, cct };
 }
 
 /* ---------- pass 3: schedule C (recordkeeper) ---------- */
@@ -686,14 +710,23 @@ console.log(`MTIA filings: ${mtiaFilings.length}, unique trusts: ${mtiaByKey.siz
 
 // plan -> trust links from Schedule D
 const schD = new Map();
+const schDCct = new Map(); // plan ack -> Set of Schedule D collective-trust values
 for (const year of YEARS) {
   const acks = new Set(universe.filter((p) => p.year === year).map((p) => p.ack));
   if (!acks.size) continue;
   try {
     const csv = unzip(await download(year, `F_SCH_D_PART1_${year}_Latest.zip`));
-    for (const [k, v] of await scanSchD(csv, year, acks)) schD.set(k, v);
+    const { mtia, cct } = await scanSchD(csv, year, acks);
+    for (const [k, v] of mtia) schD.set(k, v);
+    for (const [k, v] of cct) schDCct.set(k, v);
   } catch (e) { console.warn(`Sch D ${year}: ${e.message}`); }
 }
+// attach the collective-trust values so merge can retype matching holdings
+for (const p of universe) {
+  const s = schDCct.get(p.ack);
+  if (s && s.size) p.cctVals = [...s].join(" ");
+}
+console.log(`plans carrying Schedule D collective-trust values: ${universe.filter((p) => p.cctVals).length}`);
 // prefer trusts whose own filing already parsed to a confident lineup
 let parsedOk = {};
 try { parsedOk = JSON.parse(readFileSync("lineups-status.json", "utf8")).plans; } catch { /* first run */ }
@@ -799,7 +832,7 @@ function titleCase(s) {
 const FIELDS = ["ein", "pn", "sponsorName", "planName", "city", "state", "zip", "businessCode",
   "planYear", "participants", "activeParticipants", "assetsBOY", "assetsEOY",
   "contribEmployer", "contribParticipant", "rollovers", "adminExpenses",
-  "filedDate", "recordkeeper", "ticker", "ack", "codes", "pyb", "partBalances", "feeProf", "feeAdmin", "feeInvMgmt", "feeOther", "benefitsPaid", "mtiaAck", "sf", "shr", "pye", "feeSal"];
+  "filedDate", "recordkeeper", "ticker", "ack", "codes", "pyb", "partBalances", "feeProf", "feeAdmin", "feeInvMgmt", "feeOther", "benefitsPaid", "mtiaAck", "sf", "shr", "pye", "feeSal", "cctVals", "partEOY"];
 
 // pye is stored only for IRREGULAR plan years (short first/final years) —
 // blank means the year ends at the natural 12-month boundary, which keeps
@@ -827,7 +860,7 @@ for (const p of universe) {
     p.planYearBegin ? String(p.planYearBegin).slice(0, 7) : "",
     p.partBalances || 0, h.feeProf || 0, h.feeAdmin || 0, h.feeInvMgmt || 0, h.feeOther || 0, h.benefitsPaid || 0,
     p.mtiaAck || "", p.sf || 0, schR.get(p.ack) || "", irregularYearEnd(p),
-    h.feeSalaries || 0,
+    h.feeSalaries || 0, p.cctVals || "", p.partEOY || 0,
   ]);
 }
 rowsOut.sort((a, b) => b[12] - a[12]); // by assets desc
@@ -897,7 +930,7 @@ console.log(`wrote plans-all.json: ${rowsOut.length} plans, ${(Buffer.byteLength
     const codes = g(r, "codes") || "";
     const cf = (/2R/.test(codes) ? 1 : 0) | (/2S/.test(codes) ? 2 : 0) | (/2K/.test(codes) ? 4 : 0) |
       (g(r, "sf") ? 8 : 0) | ((g(r, "contribEmployer") || 0) === 0 ? 16 : 0) | (/2L|2M/.test(codes) ? 32 : 0);
-    const parts = g(r, "participants") || 0, act = g(r, "activeParticipants") || 0;
+    const parts = g(r, "partEOY") || g(r, "participants") || 0, act = g(r, "activeParticipants") || 0;
     const assets = g(r, "assetsEOY") || 0, pb = g(r, "partBalances") || 0;
     const balCnt = pb && pb >= parts * 0.05 && (pb >= parts * 0.5 || !assets || assets / pb <= 1e6) ? pb : parts;
     const avgBal = assets > 0 && balCnt ? Math.round(assets / balCnt / 100) : 0;

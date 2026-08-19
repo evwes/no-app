@@ -68,6 +68,37 @@ try {
   if (purged) console.log(`purged ${purged} orphaned entries (superseded filings)`);
 } catch { /* plans-all absent in some local invocations — skip the purge */ }
 
+// COLLECTIVE-TRUST typing from Schedule D. Filers routinely describe CIT
+// holdings as "Mutual Fund" in the schedule-of-assets description column —
+// R.H. White did it for 13 Great Gray T. Rowe Price trusts worth $49.0M, 70%
+// of the plan. Schedule D reports those same trusts with exact dollar values,
+// so an exact value match retypes the row and marks it `cit`, which stops the
+// site pricing it off a mutual-fund share class it does not hold.
+try {
+  const pa = JSON.parse(readFileSync("plans-all.json", "utf8"));
+  const ai = pa.fields.indexOf("ack"), ci = pa.fields.indexOf("cctVals");
+  if (ci !== -1) {
+    const byAck = new Map();
+    for (const r of pa.plans) if (r[ci]) byAck.set(r[ai], new Set(String(r[ci]).split(" ").map(Number)));
+    let plansTyped = 0, rowsTyped = 0;
+    for (let i = 0; i < SHARDS; i++) {
+      for (const [ack, e] of Object.entries(buckets[i])) {
+        const vals = byAck.get(ack);
+        if (!vals || !e.funds) continue;
+        let hit = 0;
+        for (const f of e.funds) {
+          if (!vals.has(f.value) || f.cit) continue;
+          f.cit = 1;
+          f.type = "Collective trust";
+          hit++;
+        }
+        if (hit) { plansTyped++; rowsTyped += hit; }
+      }
+    }
+    console.log(`Schedule D collective-trust typing: ${rowsTyped} holdings retyped across ${plansTyped} plans`);
+  }
+} catch (e) { console.warn("CIT typing skipped: " + e.message); }
+
 // junk-name demotion: a stored entry whose fund names carry form/statement
 // vocabulary must not STAY confident just because its PDF became
 // undownloadable — S3-withdrawn filings keep their last parse forever, so

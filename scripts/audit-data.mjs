@@ -19,7 +19,11 @@ let statTotal = 0;
 for (const r of d.plans) {
   statTotal++;
   const name = `${g(r, "sponsorName")} (${g(r, "ein")}|${g(r, "pn")})`;
-  const pt = g(r, "participants") || 0, pb = g(r, "partBalances") || 0;
+  // compare like with like: line 6g(2) (with balances) and the assets are
+  // END-of-year, so the denominator must be the end-of-year headcount too.
+  // Against line 5 (BOY) every growing plan looked like a filer error —
+  // that mismatch is what most [counts] warnings were.
+  const pt = g(r, "partEOY") || g(r, "participants") || 0, pb = g(r, "partBalances") || 0;
   const a = g(r, "assetsEOY") || 0, boy = g(r, "assetsBOY") || 0;
   const defer = g(r, "contribParticipant") || 0, er = g(r, "contribEmployer") || 0;
   const act = g(r, "activeParticipants") || 0;

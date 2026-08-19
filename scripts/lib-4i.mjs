@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 58;
+export const PARSER_VERSION = 59;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -38,7 +38,13 @@ export function classify(text) {
 // onto each page's first fund via nameBuf, and dropping the assembled row
 // (v49) lost one REAL fund per page — 754 small-plan menus fell out of
 // confidence. Skipping the heading LINE keeps the funds clean instead.
-const SKIP_ROW = new RegExp("^(total|subtotal|grand total|schedule|page \\d|form 5500|ein[: ]|employer id|sponsor name|plan name\\b|plan sponsor'?s name\\b|plan number|as of|see accompanying|\\(thousands|identity of issue|description of investment|rate of|maturity|cost\\b|current value|sales\\b|purchases\\b|dividends\\b|assets in.transit|investments? at fair value|dividend income|other income|administrative fees)|" +
+const SKIP_ROW = new RegExp("^(total|subtotal|grand total|schedule|page \\d|form 5500|ein[: ]|employer id|sponsor name|plan name\\b|plan sponsor'?s name\\b|plan number|as of|see accompanying|\\(thousands|identity of issue|description of investment|rate of|maturity|cost\\b|current value|sales\\b|purchases\\b|dividends\\b|assets in.transit|investments? at fair value|dividend income|other income|administrative fees|" +
+  // the 4i column heading wraps across up to four lines; only its first line
+  // ("(c) Description of investment") was covered, so the continuation
+  // "including maturity date, rate of" had no value, survived as a name
+  // fragment, and glued onto the FIRST holding row (R.H. White shipped
+  // "including maturity date, rate of American Funds Europacific GR R6")
+  "including maturity date|interest, collateral|collateral, par)|" +
   // financial-statement lines that are not 4i holdings
   // "investments?,? at (fair|contract) value" must tolerate the comma/dash
   // spellings — 631 confident lineups carried "Investments, at fair value"
@@ -163,6 +169,13 @@ export function parseRows(section, opts = {}) {
     // 89% of the plan) never parsed. An explicit participation/interest
     // phrase, or "Master Trust" directly before the trailing value, marks
     // a real holding row.
+    // "Investment, at contract value: Key Guaranteed Portfolio Fund" is a
+    // LABELLED HOLDING, not the statement subtotal the v44 guard was built
+    // for ("Investments, at fair value   66,846,124"). The colon plus a name
+    // tells them apart; strip the label so the fund keeps its own name.
+    // R.H. White's $2.3M stable-value option — the plan's only capital-
+    // preservation choice — was dropped from the lineup entirely.
+    t = t.replace(/^investments?\s*,?\s*at\s+(?:fair|contract)\s+value\s*:\s*(?=\S)/i, "");
     const trustRow = (/\b(?:participation|interest) in\b[^.]{0,80}\bmaster trust\b|\bmaster trust\b\W*(?:\*{1,3})?\s*\$?\s*[\d,]+\s*$/i.test(t)) &&
       // "NET INVESTMENT GAIN FROM MASTER TRUST $105,798,097" (Kohler) is a
       // statement line, not a holding
@@ -174,7 +187,18 @@ export function parseRows(section, opts = {}) {
     }
     if (/:\s*$/.test(t)) { curSection = t.replace(/:\s*$/, ""); nameBuf = []; totalWrap = false; continue; } // section subheading
 
-    const vm = t.match(valueRe);
+    // a genuine holding can be worth $81 (R.H. White's T. Rowe Price 2010
+    // fund, the last dollars of a wound-down vintage). The 3-digit floor
+    // exists to stop stray digits on form pages faking rows, so lift it only
+    // where the row proves itself a 4i data row: it carries an investment
+    // TYPE column ("Mutual Fund", "Guaranteed Investment Contract") and a
+    // real name ahead of it. Filings that hide such a row leave the shown
+    // fund count one short of what was filed.
+    let vm = t.match(valueRe);
+    if (!vm && !opts.smallValues) {
+      const sm = t.match(/\$?\s*([0-9]{1,2})\s*$/);
+      if (sm && classify(t) && t.slice(0, t.length - sm[0].length).trim().length >= 12) vm = sm;
+    }
     if (vm && totalWrap && t.slice(0, t.length - vm[0].length).trim().split(/\s+/).length <= 3) {
       totalWrap = false;
       continue; // the wrapped subtotal's value line — not a holding
@@ -391,7 +415,10 @@ export function parseRows(section, opts = {}) {
       const secType = classify(curSection);
       if (secType && secType !== "SDBA" && secType !== "Participant loans") rowType = secType;
     }
-    rows.push({ name: name.slice(0, 90), type: rowType, value, sec: curSection });
+    // ownType = the row carried its OWN investment-type column, so it is a
+    // proven 4i data row rather than a plausible-looking text line; the
+    // sub-$10k residue filter trusts that proof (see parse4i)
+    rows.push({ name: name.slice(0, 90), type: rowType, value, sec: curSection, ...(type ? { ownType: 1 } : {}) });
   }
 
   // ARITHMETIC subtotal removal (owner directive after Sempra: takeaways
@@ -599,8 +626,21 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
   if (!best) return { found: false };
   let funds = best.scale > 1 ? best.funds.map((f) => ({ ...f, value: f.value * best.scale })) : best.funds;
 
-  // sub-$10k rows are residue (leaked years, currency cents), not menu options
-  funds = funds.filter((f) => f.value >= 10000);
+  // sub-$10k rows are residue (leaked years, currency cents), not menu
+  // options — UNLESS the row proved itself by carrying its own investment-type
+  // column, which residue never does. A wound-down vintage really can hold $81
+  // (R.H. White's T. Rowe Price 2010), and dropping it made the site show 28
+  // holdings where 29 were filed. Values in 1900-2100 stay excluded: those are
+  // target-date years that leaked out of a fund name into the value column.
+  // Sub-$10k rows are held to a higher bar than the row guards above, because
+  // that is exactly the band where an OCR'd Schedule H form line ("@ Total
+  // noninterest-bearing CASH … 8181") and stable-value plumbing ("Contract
+  // Wrapper - No. GA-63066") live. A subtotal, a wrapper contract or a
+  // manager's own name is not a menu option at any size.
+  const TINY_JUNK = /\btotals?\b|contract wrapper|\bwrapper\b|capital management|asset management|\bLLC\b|\bL\.L\.C\b/i;
+  funds = funds.filter((f) => f.value >= 10000 ||
+    (f.ownType && f.value > 0 && !(f.value >= 1900 && f.value <= 2100) &&
+     !TINY_JUNK.test(f.name) && !JUNK_NAME_RE.test(f.name)));
 
   // Some filings itemize every security inside a separately managed account
   // or stock window. Those aren't investment choices — roll them into one
@@ -678,7 +718,10 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
  * out the match formula, vesting schedule, Roth/after-tax options, and
  * auto-enrollment in prose. Extract what's stated; stay silent otherwise. */
 export function extractPlanFeatures(text) {
-  const t = text.replace(/\s+/g, " ");
+  // zero-width characters survive \s normalization and shipped inside quotes
+  // (R.H. White's eligibility quote began with U+200B); strip them first so
+  // every offset below is computed on the same clean text
+  const t = text.replace(/[​-‏﻿]/g, "").replace(/\s+/g, " ");
   const out = {};
   // form-page boilerplate that must never pass as a plan-description note
   // form-question text mentions "matching contributions" as a checkbox
@@ -753,7 +796,12 @@ export function extractPlanFeatures(text) {
     // percent of the first 3 percent of eligible compensation that a
     // participant contributed" (Rental One, Rabun Gap); the trailing
     // participant-deferral anchor is what makes it a match, not an NEC
-    t.match(/(?:company|employer|school|organization|foundation|sponsor)[^.]{0,40}?contribut(?:es|ed) (\d{1,3}(?:\.\d+)?) ?(?:percent|%) of (?:the )?first (\d{1,2}(?:\.\d+)?) ?(?:percent|%) of [^.]{0,90}?(?:that (?:a|the|each) participant contribut|compensation|pay|wages)/i);
+    // …and its bare-verb spelling. R.H. White files "The Company contribute
+    // 50 percent of the first 6 percent of base compensation that a
+    // participant contributes to the Plan" — a filer typo that hid a plain
+    // 50%-of-6% match behind subject-verb disagreement. The participant-
+    // deferral anchor still does the work of proving it is a match.
+    t.match(/(?:company|employer|school|organization|foundation|sponsor)[^.]{0,40}?contribut(?:es|ed|e) (\d{1,3}(?:\.\d+)?) ?(?:percent|%) of (?:the )?first (\d{1,2}(?:\.\d+)?) ?(?:percent|%) of [^.]{0,90}?(?:that (?:a|the|each) participant contribut|compensation|pay|wages)/i);
   // spelled-out fraction rates: "one-half of the first 8% of base
   // compensation" (Opus Inspection) — map to a percentage
   const FRAC = { "one-half": 50, "one half": 50, "one-third": 33, "one third": 33, "one-quarter": 25, "one quarter": 25, "two-thirds": 67, "two thirds": 67 };
@@ -1075,6 +1123,20 @@ export function extractPlanFeatures(text) {
       out[which] += " (varies by hire date per the filing)";
   };
 
+  // Vesting can differ BY MONEY SOURCE, and showing only the graded schedule
+  // overstates what a participant forfeits. R.H. White vests prevailing-wage
+  // QNECs immediately — $2,087,932 of its $3,164,887 in employer money —
+  // while the match vests 20%/year; the site showed a flat "Graded schedule"
+  // over all employer money. Only sources the filing names as immediately
+  // vested are called out, and never for a plan whose whole schedule is
+  // already immediate.
+  const srcImmediate = () => {
+    if (!out.vesting || /^Immediate/i.test(out.vesting) || /vest immediately/i.test(out.vesting)) return;
+    const m = t.match(/vested immediately in [^.]{0,120}?\b(prevailing wage|safe harbor|qualified non-?elective|QNEC|profit sharing|matching)\b[^.]{0,40}?contributions?/i)
+      || t.match(/\b(prevailing wage|safe harbor|qualified non-?elective|QNEC|profit sharing)\b[^.]{0,60}?contributions? are (?:100 ?(?:percent|%) |fully )?vested immediately/i);
+    if (m) out.vesting += ` (${m[1].toLowerCase().replace(/^qnec$/i, "QNEC")} contributions vest immediately)`;
+  };
+
   // "There were no discretionary Plan Sponsor matching contributions for
   // the 2023 plan year. During 2022, the Plan Sponsor matched 100%…"
   // (American Physician Partners) — the extracted formula is the OLD one;
@@ -1343,6 +1405,7 @@ export function extractPlanFeatures(text) {
   }
   hireSplitLabel("vesting");
   hireSplitLabel("match");
+  srcImmediate();
 
   // ---- Roth / voluntary after-tax (only positive evidence counts) ----
   // "designate … deferral contributions as after-tax contributions into a
@@ -1464,7 +1527,44 @@ export function extractPlanFeatures(text) {
   // compensation 100 % ... less than 5 years of service") once bridged
   // "eligible" to an unrelated service count (Northrop Grumman); cohort
   // qualifiers like "less than N years" are never eligibility rules
-  const elig = t.match(/eligib\w+[^.%]{0,140}?(?:(?<!(?:less|more|fewer) than )(\d{1,4}|one|two|three|six|nine|twelve) ?(days?|months?|years?|hours?) of (?:service|employment|continuous)|(?:upon|on) (?:their )?(?:date of )?hire|first day of (?:employment|the month)|immediately)/i);
+  // A sentence scoped to ONE money source states that source's rule, not the
+  // plan's. R.H. White shipped "Upon hire / immediate" from "For purposes of
+  // prevailing wage contributions, employees are eligible upon hire" while
+  // the plan's actual rule — "who have completed one month of service" — sat
+  // in the sentence before it, and BEHIND the word "eligible" where a
+  // forward-only scan could never see it.
+  // The veto must name a NON-DEFERRAL source. A bare "for purposes of" also
+  // trails legitimate rules — KeyCorp is "eligible to participate … as of
+  // their first day of employment … for purposes of making pre-tax
+  // contributions, Roth contributions" — and vetoing on the phrase alone
+  // threw that plan's real eligibility away.
+  const SCOPED_ELIG = /prevailing wage|davis[- ]bacon|qualified non-?elective|\bQNEC\b|(?:for purposes of|with respect to) (?:the )?(?:matching|profit[- ]sharing|discretionary|non-?elective|employer) contributions?/i;
+  const eligRe = /eligib\w+[^.%]{0,140}?(?:(?<!(?:less|more|fewer) than )(\d{1,4}|one|two|three|six|nine|twelve) ?(days?|months?|years?|hours?) of (?:service|employment|continuous)|(?:upon|on) (?:their )?(?:date of )?hire|first day of (?:employment|the month)|immediately)/gi;
+  // "…who have completed one month of service" is a plan-wide eligibility
+  // idiom on its own; the sponsor list before it is full of "Inc." periods,
+  // so no sentence-bounded window can reach back to "The Plan covers".
+  // …but "Eligible participants who have completed two years of service … may
+  // request an additional withdrawal" is a DISTRIBUTION rule wearing the same
+  // words. The idiom only states plan entry inside a coverage clause, and the
+  // clause head can sit a few hundred characters back behind a sponsor list
+  // ("…LaFleur Electrical Co. (referred to collectively as the Company) who
+  // have completed one month of service"), so the context window is wider
+  // than a sentence.
+  const COVERS = /\b(?:plan covers|covers all|covering|eligible to participate|participate in the plan|becomes? (?:a )?participants?|entry into the plan|eligible employees)\b/i;
+  const NOT_ENTRY = /withdraw|hardship|\bloans?\b|distribution|in-?service|rollover|request/i;
+  let elig = null;
+  for (const m of t.matchAll(/who (?:have |has )?complet\w+ (\d{1,4}|one|two|three|six|nine|twelve) ?(days?|months?|years?|hours?) of (?:service|employment)/gi)) {
+    const ctx = t.slice(Math.max(0, m.index - 400), m.index);
+    if (!COVERS.test(ctx) || NOT_ENTRY.test(t.slice(Math.max(0, m.index - 250), m.index))) continue;
+    if (SCOPED_ELIG.test(sentence(m.index))) continue;
+    elig = m; break;
+  }
+  if (!elig) {
+    for (const m of t.matchAll(eligRe)) {
+      if (SCOPED_ELIG.test(sentence(m.index))) continue;
+      elig = m; break;
+    }
+  }
   if (elig) {
     // "completing six months of service" (Simmons Foods) — spelled-out counts
     const W = { one: 1, two: 2, three: 3, six: 6, nine: 9, twelve: 12 };

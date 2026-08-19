@@ -589,8 +589,12 @@
   }
 
   function contributionCard(c, plan) {
+    // Schedule H 2a(1)(A) is ALL employer money — match plus profit sharing,
+    // prevailing-wage QNECs, safe harbor. Labelling it "total" inside a card
+    // headed "Employer Match" read as the match total: R.H. White's $3.2M is
+    // $2.09M of prevailing-wage QNECs plus ~$1.08M of match.
     const total = plan.flows.employerM != null
-      ? `${plan.planYear} total: <strong>${money(plan.flows.employerM)}</strong>` : "";
+      ? `${plan.planYear} employer contributions: <strong>${money(plan.flows.employerM)}</strong>` : "";
     return `
     <div class="contrib-card">
       <div class="contrib-head">
@@ -625,8 +629,12 @@
 
   function filedContributionCard(plan) {
     const ff = plan.filedFeatures;
+    // Schedule H 2a(1)(A) is ALL employer money — match plus profit sharing,
+    // prevailing-wage QNECs, safe harbor. Labelling it "total" inside a card
+    // headed "Employer Match" read as the match total: R.H. White's $3.2M is
+    // $2.09M of prevailing-wage QNECs plus ~$1.08M of match.
     const total = plan.flows.employerM != null
-      ? `${plan.planYear} total: <strong>${money(plan.flows.employerM)}</strong>` : "";
+      ? `${plan.planYear} employer contributions: <strong>${money(plan.flows.employerM)}</strong>` : "";
     return `
     <div class="contrib-card">
       <div class="contrib-head">
@@ -915,7 +923,7 @@
     let total = 0, matchedVal = 0, weighted = 0, matched = 0;
     for (const f of lu.funds) {
       total += f.value;
-      const er = fundER(f.name);
+      const er = f.cit ? null : fundER(f.name);
       if (er != null) { matchedVal += f.value; weighted += er * f.value; matched++; }
     }
     if (!total || matchedVal / total < 0.5) return null;
@@ -942,7 +950,10 @@
     const list = tab === "sma" ? lu.sma : orderLineup(lu.funds);
     const total = list.reduce((s, f) => s + f.value, 0);
     const rows = list.map((f) => {
-      const er = tab === "menu" ? fundER(f.name) : null;
+      // a holding Schedule D reports as a collective trust is NOT the
+      // same-named mutual fund: CIT pricing is negotiated per plan and is not
+      // public, so no estimate is honest here
+      const er = tab === "menu" && !f.cit ? fundER(f.name) : null;
       const tk = tab === "menu" ? fundTicker(f.name) : null;
       return `
       <tr>
