@@ -1553,10 +1553,24 @@ export function extractPlanFeatures(text) {
   const COVERS = /\b(?:plan covers|covers all|covering|eligible to participate|participate in the plan|becomes? (?:a )?participants?|entry into the plan|eligible employees)\b/i;
   const NOT_ENTRY = /withdraw|hardship|\bloans?\b|distribution|in-?service|rollover|request/i;
   let elig = null;
+  // Eligibility to RECEIVE a contribution is not eligibility to JOIN: "who
+  // have completed one year of service … are eligible for Employer
+  // nonelective contributions" and "…eligible to receive allocations of
+  // employer matching contributions" are money-source rules, and one of them
+  // displaced a correct "immediately upon the start of employment". Same
+  // defect class as the prevailing-wage sentence this release started with.
+  const FOR_MONEY = /eligible (?:for|to receive)[^.]{0,80}?(?:matching|non-?elective|profit[- ]sharing|discretionary|employer)\b[^.]{0,20}?contribution|eligible for the employer\b/i;
+  // rules written for one workforce slice are carve-outs, not the plan rule
+  const SUBGROUP = /\b(?:temporary|part[- ]time|seasonal|per[- ]diem|intern|union|collectively bargained)\b[^.]{0,40}?employees?/i;
   for (const m of t.matchAll(/who (?:have |has )?complet\w+ (\d{1,4}|one|two|three|six|nine|twelve) ?(days?|months?|years?|hours?) of (?:service|employment)/gi)) {
     const ctx = t.slice(Math.max(0, m.index - 400), m.index);
     if (!COVERS.test(ctx) || NOT_ENTRY.test(t.slice(Math.max(0, m.index - 250), m.index))) continue;
     if (SCOPED_ELIG.test(sentence(m.index))) continue;
+    if (FOR_MONEY.test(t.slice(m.index, m.index + 220))) continue;
+    // the money type can also lead: "The Company will provide a matching
+    // contribution for participants who have completed one year of service"
+    if (/(?:matching|non-?elective|profit[- ]sharing|discretionary) contributions?\b/i.test(t.slice(Math.max(0, m.index - 130), m.index))) continue;
+    if (SUBGROUP.test(t.slice(Math.max(0, m.index - 160), m.index))) continue;
     elig = m; break;
   }
   if (!elig) {

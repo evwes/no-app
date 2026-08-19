@@ -2128,6 +2128,26 @@ what most of its 1,760 `[counts]` warnings were.
 prevailing-wage QNECs plus ~$1.08M of match. The label now says
 "employer contributions".
 
+**Follow-up the same day (caught by the 822-filing sweep, before the
+data shipped).** The new eligibility template repeated the very defect
+it was written to fix: it read "…who have completed one year of service
+… are eligible for Employer nonelective contributions", "…eligible to
+receive allocations of employer matching contributions" and "The Company
+will provide a matching contribution for participants who have completed
+one year of service" as plan-entry rules — and in one plan it DISPLACED
+a correct "eligible to participate in the Plan immediately upon the
+start of employment". Eligibility to RECEIVE a contribution is not
+eligibility to JOIN, and the money-type phrase can lead or trail the
+service clause, so both directions are vetoed now; workforce-slice
+carve-outs ("temporary employees who completed 500 hours") are declined
+for the same reason a part-time rule is not the plan's rule. Net over
+822 filings: 34 eligibility changes → 29, every remaining one a general
+coverage clause. The first sweep also caught the relaxed value floor
+admitting an OCR'd form subtotal ("@ Total noninterest-bearing CASH …
+8181") and stable-value plumbing ("Contract Wrapper - No. GA-63066");
+sub-$10k rows now additionally exclude subtotal, wrapper and
+manager-name vocabulary.
+
 **Prevention.** Three of these (2, 3, 9) are the same failure: a number
 or rule that is TRUE OF ONE MONEY SOURCE presented as true of the plan.
 Prevailing-wage, QNEC, safe-harbor and profit-sharing money each carry
