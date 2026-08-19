@@ -416,10 +416,19 @@
 
   async function ensureLineup(plan) {
     ensureFees(plan); // independent on-demand fetch; self-guarded, re-renders on arrival
-    if (!plan || (!plan.lineupKey && !plan.trustKey) || plan.filedLineup || plan.lineupLoading || !state.shardCount) return;
+    if (!plan || (!plan.lineupKey && !plan.trustKey && !plan.featKey) || plan.filedLineup ||
+        plan.lineupLoading || plan.lineupTried || !state.shardCount) return;
     plan.lineupLoading = true;
     try {
-      const lu = plan.lineupKey ? await fetchEntry(plan.lineupKey) : null;
+      // A plan's own entry carries the audited-notes features (match formula,
+      // vesting, loans, auto-enroll) even when its 4i schedule is NOT a usable
+      // menu — a master-trust pointer, or a schedule that never parsed
+      // confidently. Fetching it only when the lineup bit was set threw those
+      // features away for 6,424 plans that had them stored, so Eaton showed
+      // "the exact formula lives in the plan document / SPD" while its filing
+      // states "a Company matching contribution of 50% of the first 6%".
+      const ownKey = plan.lineupKey || plan.featKey;
+      const lu = ownKey ? await fetchEntry(ownKey) : null;
       // use the plan's own schedule unless it is missing or majority
       // "Investment in Master Trust" — then the trust's real holdings win
       let ownUsable = !!(lu && lu.confident && lu.funds && lu.funds.length);
@@ -470,7 +479,8 @@
         if (ff.sdbaBrand) plan.brokerage = ff.sdbaBrand;
       }
       if (!plan.filedLineup) plan.hasLineup = false;
-      if (!plan.filedLineup && !plan.filedFeatures) { plan.lineupKey = null; plan.trustKey = null; }
+      if (!plan.filedLineup && !plan.filedFeatures) { plan.lineupKey = null; plan.trustKey = null; plan.featKey = null; }
+      plan.lineupTried = true; // a thrown fetch skips this, so failures still retry
     } catch { /* leave the loading note; a retry happens on next expand */ }
     plan.lineupLoading = false;
     render();
