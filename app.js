@@ -13,7 +13,7 @@
 
   const state = {
     query: "",
-    filters: { brokerage: false, megaBackdoor: false, immediateVesting: false },
+    filters: { brokerage: false, megaBackdoor: false, immediateVesting: false, fullFiling: false },
     provider: "",
     industry: "",
     planType: "",
@@ -528,6 +528,11 @@
     // rarely spell out the conversion step, so the chip matches either signal
     if (f.megaBackdoor && !(plan.megaBackdoor || plan.afterTax === true)) return false;
     if (f.immediateVesting && plan.vesting !== "Immediate") return false;
+    // Short-form (5500-SF) filers are exempt from attaching an audited
+    // financial statement, so they can never carry a fund lineup, fee
+    // schedule or plan-feature detail — 42,389 of the 110,555 plans. This
+    // chip drops them so a search returns only plans with filed detail.
+    if (f.fullFiling && (plan.cf & 8)) return false;
     if (state.provider && plan.provider !== state.provider) return false;
     if (state.industry && plan.industry !== state.industry) return false;
     if (state.planType && !(plan.planTypes || []).includes(state.planType)) return false;
@@ -1190,8 +1195,14 @@
     const more = plans.length - limit;
     $("showMore").hidden = more <= 0;
     if (more > 0) $("showMore").textContent = `Show ${fmtInt.format(Math.min(more, 500))} more of ${fmtInt.format(more)}`;
+    // with the full-filing chip on, the denominator is the filtered universe,
+    // not all 110,555 — "3 of 110,555" would misdescribe what was searched
+    const universe = state.filters.fullFiling
+      ? state.plans.reduce((n, p) => n + ((p.cf & 8) ? 0 : 1), 0)
+      : state.plans.length;
     $("resultCount").textContent =
-      `${fmtInt.format(plans.length)} of ${fmtInt.format(state.plans.length)} plans` +
+      `${fmtInt.format(plans.length)} of ${fmtInt.format(universe)}` +
+      (state.filters.fullFiling ? " full-filing plans" : " plans") +
       (plans.length > limit ? ` · showing top ${fmtInt.format(limit)}` : "") +
       (state.query.trim() ? ` for “${state.query.trim()}”` : "");
     document.querySelectorAll(".col-sort").forEach((b) => {
