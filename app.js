@@ -938,7 +938,7 @@
     let total = 0, matchedVal = 0, weighted = 0, matched = 0;
     for (const f of lu.funds) {
       total += f.value;
-      const er = f.cit ? null : fundER(f.name);
+      const er = (f.cit || /collective trust|pooled separate/i.test(f.type || "")) ? null : fundER(f.name);
       if (er != null) { matchedVal += f.value; weighted += er * f.value; matched++; }
     }
     if (!total || matchedVal / total < 0.5) return null;
@@ -967,8 +967,14 @@
     const rows = list.map((f) => {
       // a holding Schedule D reports as a collective trust is NOT the
       // same-named mutual fund: CIT pricing is negotiated per plan and is not
-      // public, so no estimate is honest here
-      const er = tab === "menu" && !f.cit ? fundER(f.name) : null;
+      // public, so no estimate is honest here. The same is true of any row
+      // the FILING types as a collective trust or an insurance pooled
+      // separate account, whether or not Schedule D happened to carry a
+      // matching dollar value — keying only on the Sch D match priced some
+      // flexPath vintages at 0.10% and left their siblings blank in one
+      // table (Swinerton).
+      const noPublicPrice = f.cit || /collective trust|pooled separate/i.test(f.type || "");
+      const er = tab === "menu" && !noPublicPrice ? fundER(f.name) : null;
       const tk = tab === "menu" ? fundTicker(f.name) : null;
       return `
       <tr>

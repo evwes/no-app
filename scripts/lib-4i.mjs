@@ -1215,6 +1215,7 @@ export function extractPlanFeatures(text) {
   const matchImmediate = vestSentences.some((s) =>
     /matching (?:contributions?|accounts?)|company match/i.test(s) && IMMED.test(s));
   // graded/cliff language always describes employer money — check it FIRST
+  let horizonFallback = null; // 4-6yr full-vesting horizon, used only if nothing better is found
   for (const s of vestSentences) {
     if (matchImmediate && /non.?elective|profit.?sharing/i.test(s) && !/match/i.test(s)) continue;
     const graded = s.match(/(\d{1,2}) ?(?:percent|%) (?:per|each|for each|after each) year|vests? (\d{1,2}) ?(?:percent|%) after each year|graded vesting|graduated vesting/i);
@@ -1239,14 +1240,13 @@ export function extractPlanFeatures(text) {
       // cliff" reading is a misparsed graded schedule or service reference
       // 4-6 years cannot be a cliff, but the filing DOES state when the
       // participant is fully vested — Swinerton's "100% vested after five
-      // years of credited service" was dropped to nothing. Say the horizon
-      // without asserting the shape, the same wording the bare-schedule
-      // fallback below uses.
-      if (num >= 4 && num <= 6) {
-        out.vesting = `${num}-year schedule (shape not stated)`;
-        out.vestingText = s.length > 300 && cliff.index > 60
-          ? cap("…" + s.slice(Math.max(0, cliff.index - 60))) : cap(s);
-        break;
+      // years of credited service" was dropped to nothing. Remember it as a
+      // LAST RESORT only: taking it here would break the sentence loop and
+      // preempt a graded schedule or an immediate-vesting statement later in
+      // the notes, which the sweep caught it doing to 20 plans.
+      if (num >= 4 && num <= 6 && !horizonFallback) {
+        horizonFallback = { num, text: s.length > 300 && cliff.index > 60
+          ? cap("…" + s.slice(Math.max(0, cliff.index - 60))) : cap(s) };
       }
       if (num >= 1 && num <= 3) {
         out.vesting = `${num}-year cliff`;
@@ -1410,6 +1410,10 @@ export function extractPlanFeatures(text) {
   // a bare "subject to a five-year vesting schedule" / "based on a 6-year
   // vesting schedule" states the horizon but not the shape — say exactly
   // that much rather than nothing (or worse, guessing cliff vs graded)
+  if (!out.vesting && horizonFallback) {
+    out.vesting = `${horizonFallback.num}-year schedule (shape not stated)`;
+    out.vestingText = horizonFallback.text;
+  }
   if (!out.vesting) {
     const horizon = t.match(/(?:subject to|based (?:up)?on|follows?|under) a (\w{3,5}|\d)[- ]year (?:graded )?vesting schedule/i);
     if (horizon) {
@@ -1706,7 +1710,9 @@ export function extractPlanFeatures(text) {
   if (elig) {
     // "completing six months of service" (Simmons Foods) — spelled-out counts
     const W = { one: 1, two: 2, three: 3, six: 6, nine: 9, twelve: 12 };
-    const n = elig[1] ? (W[elig[1].toLowerCase()] || elig[1].replace(/,/g, "")) : null;
+    const n = elig[1]
+      ? (W[elig[1].toLowerCase()] || (+elig[1].replace(/,/g, "")).toLocaleString("en-US"))
+      : null;
     out.eligibility = n ? `${n} ${elig[2]} of service` : "Upon hire / immediate";
     out.eligibilityText = sentence(elig.index);
   }
