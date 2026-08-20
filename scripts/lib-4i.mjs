@@ -1410,10 +1410,6 @@ export function extractPlanFeatures(text) {
   // a bare "subject to a five-year vesting schedule" / "based on a 6-year
   // vesting schedule" states the horizon but not the shape — say exactly
   // that much rather than nothing (or worse, guessing cliff vs graded)
-  if (!out.vesting && horizonFallback) {
-    out.vesting = `${horizonFallback.num}-year schedule (shape not stated)`;
-    out.vestingText = horizonFallback.text;
-  }
   if (!out.vesting) {
     const horizon = t.match(/(?:subject to|based (?:up)?on|follows?|under) a (\w{3,5}|\d)[- ]year (?:graded )?vesting schedule/i);
     if (horizon) {
@@ -1435,6 +1431,16 @@ export function extractPlanFeatures(text) {
       }
       if (!out.vestingText && !/forfeit/i.test(s)) out.vestingText = cap(s);
     }
+  }
+  // LAST of the vesting readers: a 4-6yr full-vesting horizon fills a gap
+  // only when nothing better was found. Placed after the immediate-vesting
+  // pass on purpose — sitting before it, this overwrote "Immediate" on 11
+  // plans whose notes vest deferrals immediately and employer money over
+  // years ("Participants are immediately vested in their contributions, and
+  // become fully vested in their profit sharing contributions after six").
+  if (!out.vesting && horizonFallback) {
+    out.vesting = `${horizonFallback.num}-year schedule (shape not stated)`;
+    out.vestingText = horizonFallback.text;
   }
   // a DECLARED-RATE discretionary match is not a standing formula: "The
   // Company may make matching contributions, at its discretion, equal to
