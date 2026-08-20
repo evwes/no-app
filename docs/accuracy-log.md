@@ -2245,6 +2245,80 @@ or the review judges the wrong text — and the fix was then measured
 against the SHIPPED version rather than an older snapshot, so the delta
 reflects what users would actually see change.
 
+## 2026-08-20 — Swinerton (owner-submitted): the site showed the WRONG match — the paragraph saying no match was made (v62)
+
+**The worst display defect an owner report has surfaced.** Swinerton's
+notes carry two employer-matching paragraphs back to back. The first —
+*discretionary matching* — says "The Company may elect to make
+discretionary matching contributions… For the years ended December 31,
+2024 and 2023, **the Company did not make any matching contributions**."
+The second — *safe harbor matching* — states the formula actually in
+force: "Contributions are equal to 100% of the participant's elective
+deferrals, up to 3% plus 50% of the next 3%," worth $13,105,446 in 2024.
+
+The page showed **"Discretionary — set year to year"** and quoted the
+first paragraph. Someone comparing employers would conclude the match is
+discretionary and unpredictable, when it is a formula, guaranteed by
+safe-harbor rules, and immediately vested. Cause: the safe-harbor tier
+phrasing had no pattern, so extraction fell through to the discretionary
+branch sitting directly above it. Fixed by reading the "equal to X% …
+up to Y% plus Z% of the next W%" form; a stated formula already outranks
+the discretionary label once it parses.
+
+**Eligibility read a broken number from a replaced rule.** The page said
+"✓ **000** hours of service" — "1,000" with its comma-grouped digits lost
+to a bare `\d{1,4}` — quoting "If this requirement was not met, the
+employee would have become eligible after completing 12 months and 1,000
+hours." That sentence describes the rule **the filing had already
+replaced**: "Prior to January 1, 2024…" opens the paragraph, and the rule
+in force is "Effective January 1, 2024… three consecutive calendar months
+of service." Three fixes: comma-grouped numbers parse, adjectives may sit
+between the number and its unit ("three consecutive calendar months"),
+and superseded rules are vetoed. 23 plans in the 822-filing corpus were
+showing "000 hours of service".
+
+**Vesting was dropped for being legally impossible.** "A participant is
+100% vested after five years of credited service" exceeds the IRC
+§411(a)(2)(B) 3-year cliff limit, so the legal-bounds guard rejected it
+and showed nothing. A 4-6 year reading now reports the horizon without
+asserting the shape — the wording the bare-schedule fallback already
+used. 29 plans gain a vesting figure they previously lacked.
+
+**The sweep corrected that fix TWICE, the same way both times.** First it
+broke the sentence loop, preempting better answers on 20 plans. Made
+last-resort, it still sat 20 lines before the immediate-vesting reader
+and overwrote "Immediate" on 11 plans whose notes vest deferrals
+immediately and employer money over years. Reporting that as a flat
+6-year schedule tells a participant their own money is locked when it is
+not. The reader now runs LAST, after every other vesting path. Rule
+recorded: a fallback is defined by its POSITION as much as its condition
+— "only if nothing better was found" means after everything that could
+find something better.
+
+**Expense ratios followed a coincidence instead of the vehicle.** v59
+suppressed mutual-fund ER estimates for collective trusts, but keyed it
+on whether Schedule D carried a matching dollar value. Schedule D matched
+9 of Swinerton's flexPath vintages and missed the rest, so one table
+priced some at 0.10% and left their siblings blank. The estimate now
+follows what the filing says the vehicle IS: no mutual-fund price for a
+collective trust or an insurance pooled separate account, matched or not.
+Universe-wide that removes a wrong-vehicle price from 8,831
+collective-trust rows and 52,703 pooled separate accounts — neither has
+public pricing.
+
+**Verified against the ORIGINAL filing, not the annotated copy.** The
+owner's highlighted PDF OCRs badly — the ink degrades the glyphs, and the
+vesting paragraph came back as "vested after —————". Re-pulled from S3 to
+work against the text production actually reads. Recorded as method: an
+annotated copy is for finding WHAT is wrong, never for reproducing it.
+
+**Not fixed, measured and deferred:** several plans quote a money-scoped
+rule ("eligible for these discretionary contributions after at least
+1,000 hours") as plan entry — the same class as R.H. White's
+prevailing-wage sentence. The veto exists but is not applied on the
+`eligRe` path. Pre-existing, not a regression, and kept out of a release
+already corrected twice.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
