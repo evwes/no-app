@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 60;
+export const PARSER_VERSION = 61;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -1425,6 +1425,19 @@ export function extractPlanFeatures(text) {
   hireSplitLabel("match");
   srcImmediate();
 
+  // SCOPE FROM THE QUOTE ITSELF. Some filings name the money their schedule
+  // covers inside the very sentence shown as evidence: "Participants fully
+  // vest in the employer NON-ELECTIVE CONTRIBUTIONS and the related earnings
+  // thereon after being credited with three years of vesting service"
+  // (Caterpillar, whose matching contributions are fully vested). Labelling
+  // that "3-year cliff" over all employer money overstates what a
+  // participant forfeits. This is not the inference refused above — the
+  // scope is read from the displayed sentence, so the evidence is on screen.
+  if (out.vesting && out.vestingText && !/\(/.test(out.vesting) && !/^Immediate/i.test(out.vesting)) {
+    const sc = out.vestingText.match(/\bvests?(?:ed|s)? in (?:the |their )?(?:employer(?:'s)? |company(?:'s)? )?(non-?elective|matching|profit[- ]sharing|safe harbor|discretionary)\b/i);
+    if (sc) out.vesting += ` (${sc[1].toLowerCase().replace(/nonelective/, "non-elective")} contributions)`;
+  }
+
   // ---- Roth / voluntary after-tax (only positive evidence counts) ----
   // "designate … deferral contributions as after-tax contributions into a
   // Roth account" (Kast) puts Roth LAST — accept contribution words before
@@ -1483,6 +1496,28 @@ export function extractPlanFeatures(text) {
       out.afterTax = true; out.afterTaxText = sentence(m3.index); break;
     }
   }
+  // DOCUMENT-LEVEL Roth veto: a filing that defines the arrangement as "an
+  // after-tax Roth 401(k) arrangement" is describing Roth everywhere it later
+  // says "pre-tax and after-tax contributions" — the disambiguating words sit
+  // in a different paragraph than the phrase we matched, so the neighbouring-
+  // window vetoes above cannot see them (Caterpillar: "elect to defer …
+  // through pre-tax and after-tax contributions" two sentences before "a
+  // pre-tax deferral arrangement and an after-tax Roth 401(k) arrangement").
+  // A plan that genuinely offers BOTH says so — "Roth 401(k) after-tax, and
+  // other voluntary after-tax contributions" — and keeps the flag.
+  // …but a filing that lists them as SEPARATE items keeps the flag, even
+  // when it also writes "after-tax Roth" elsewhere: Goldman Sachs describes
+  // deferrals as "before-tax 401(k) basis or after-tax Roth 401(k) basis"
+  // (Roth) AND names the account types as "before-tax, Roth 401(k),
+  // after-tax, catch-up, Company matching" (distinct). A list separator
+  // BETWEEN the two words is what tells them apart — "after-tax Roth" with
+  // nothing between is one arrangement.
+  const distinctFromRoth = /\broth\b[^.]{0,30}?(?:,|\band\b|\bor\b)\s*after[- ]tax|after[- ]tax\s*(?:,|\band\b|\bor\b)[^.]{0,30}?\broth\b/i.test(t);
+  if (out.afterTax && /after[- ]tax roth|roth (?:401\(k\) )?after[- ]tax/i.test(t) && !distinctFromRoth &&
+      !/(?:voluntary|additional|non-?roth|employee)\s+after[- ]tax/i.test(t) &&
+      !/after[- ]tax\b[^.]{0,40}\bnon-?roth/i.test(t)) {
+    out.afterTax = false; // quote stays: it documents what the filing said
+  }
   // an amendment REMOVING after-tax is an affirmative no, not a feature:
   // "amended the plan document effective June 1, 2023, to remove the
   // option for after-tax employee contributions" (AVI-SPL) shipped as
@@ -1517,7 +1552,17 @@ export function extractPlanFeatures(text) {
     // 3% of compensation" (Eiwa) — a safe-harbor nonelective with neither
     // "nonelective" nor "safe harbor nonelective" in the sentence
     t.match(/(?:company|employer) contributions? under the safe harbor provision (?:is|are) equal to (\d{1,2}(?:\.\d+)?) ?(?:percent|%) of/i);
-  if (nec && +nec[1] >= 1 && +nec[1] <= 15) { out.nec = `${+nec[1]}% of pay`; out.necText = sentence(nec.index); }
+  // an ENUMERATED rate ("a non-elective contribution of 3, 4 or 5 percent of
+  // eligible compensation", Caterpillar — the rate depends on an age +
+  // service point total) must not be reported as its largest member: the
+  // single-value patterns above skip to the number that sits directly before
+  // "percent", which is always the last one, overstating the contribution for
+  // everyone below the top band.
+  const necRange = t.match(/non.?(?:contributory|elective)[^.]{0,80}?contribution[^.]{0,80}?\b(\d{1,2})(?:\s*,\s*\d{1,2})*\s*,?\s*or\s+(\d{1,2}) ?(?:percent|%)/i);
+  if (necRange && +necRange[1] >= 1 && +necRange[2] <= 15 && +necRange[1] < +necRange[2]) {
+    out.nec = `${+necRange[1]}%–${+necRange[2]}% of pay (rate varies per the filing)`;
+    out.necText = sentence(necRange.index);
+  } else if (nec && +nec[1] >= 1 && +nec[1] <= 15) { out.nec = `${+nec[1]}% of pay`; out.necText = sentence(nec.index); }
   // tenure-graded nonelective tables — "Employer contributes a percentage
   // of base compensation based on the following schedule: ≤7 yrs 6% … >10
   // yrs 10%" (Colorado Academy): state the range, quote the table
