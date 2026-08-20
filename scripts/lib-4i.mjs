@@ -1456,7 +1456,13 @@ export function extractPlanFeatures(text) {
   // veto: a Roth within reach after the phrase, with no list separator
   // ("and"/"or"/comma) in between, means after-tax feeds Roth rather than
   // standing beside it ("Roth and after-tax contributions" still counts).
-  const DEFERRAL_ROTH = (s) => /\bdefer(?:s|red|ral|rals)?\b/i.test(s) &&
+  // the deferral verb must GOVERN the after-tax phrase, not merely share a
+  // sentence with it: "All pre-tax elective deferral, after-tax and Roth
+  // contributions" lists after-tax as a SIBLING of the deferral (comma), and
+  // that plan's after-tax money is real. Barring commas between the two
+  // keeps government ("defer … through pre-tax and after-tax") and drops
+  // enumeration.
+  const DEFERRAL_ROTH = (s) => /\bdefer\w*\b[^.,]{0,90}?after[- ]tax/i.test(s) &&
     !/(voluntary|traditional|regular|non-?deductible|thrift|additional)/i.test(s);
   for (const at of t.matchAll(/(?:voluntary |additional |employee )?after[- ]tax (?:deferral |employee |savings )?contributions?/gi)) {
     const pre = t.slice(Math.max(0, at.index - 40), at.index);
