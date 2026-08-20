@@ -1080,6 +1080,17 @@ export function extractPlanFeatures(text) {
       out.match = `Varies by years of service — ${+svcTier[1]}%, ${+svcTier[2]}%, or ${+svcTier[3]}% of pay (per the filing)`;
       out.matchText = sentence(svcTier.index);
     }
+    // safe-harbor basic match written as one cap plus a second tier:
+    // "Contributions are equal to 100% of the participant's elective
+    // deferrals, up to 3% plus 50% of the next 3%" (Swinerton). Without it
+    // the plan fell through to the DISCRETIONARY paragraph directly above —
+    // the one that says the Company "did not make any matching
+    // contributions" — so a real safe-harbor match read as "Discretionary".
+    const shTier = t.match(/equal to (\d{1,3}(?:\.\d+)?) ?(?:percent|%) of[^.]{0,70}?deferrals?,? ?up to (\d{1,2}(?:\.\d+)?) ?(?:percent|%),? plus (\d{1,3}(?:\.\d+)?) ?(?:percent|%) of the next (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i);
+    if (!out.match && shTier) {
+      out.match = `${+shTier[1]}% of the first ${+shTier[2]}% of pay + ${+shTier[3]}% of the next ${+shTier[4]}%`;
+      out.matchText = sentence(shTier.index);
+    }
     // rate-only match with no stated cap: "The company contributed 10% of
     // the employee qualified contributions" (Exeter) — show the rate the
     // filing states rather than nothing
@@ -1226,6 +1237,17 @@ export function extractPlanFeatures(text) {
       const num = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6 }[String(n).toLowerCase()] || +n;
       // IRC §411(a)(2)(B) caps DC cliff vesting at 3 years — a "5-year
       // cliff" reading is a misparsed graded schedule or service reference
+      // 4-6 years cannot be a cliff, but the filing DOES state when the
+      // participant is fully vested — Swinerton's "100% vested after five
+      // years of credited service" was dropped to nothing. Say the horizon
+      // without asserting the shape, the same wording the bare-schedule
+      // fallback below uses.
+      if (num >= 4 && num <= 6) {
+        out.vesting = `${num}-year schedule (shape not stated)`;
+        out.vestingText = s.length > 300 && cliff.index > 60
+          ? cap("…" + s.slice(Math.max(0, cliff.index - 60))) : cap(s);
+        break;
+      }
       if (num >= 1 && num <= 3) {
         out.vesting = `${num}-year cliff`;
         // long amendment sentences bury the cliff phrase past the 300-char
@@ -1630,7 +1652,18 @@ export function extractPlanFeatures(text) {
   // contributions, Roth contributions" — and vetoing on the phrase alone
   // threw that plan's real eligibility away.
   const SCOPED_ELIG = /prevailing wage|davis[- ]bacon|qualified non-?elective|\bQNEC\b|(?:for purposes of|with respect to) (?:the )?(?:matching|profit[- ]sharing|discretionary|non-?elective|employer) contributions?/i;
-  const eligRe = /eligib\w+[^.%]{0,140}?(?:(?<!(?:less|more|fewer) than )(\d{1,4}|one|two|three|six|nine|twelve) ?(days?|months?|years?|hours?) of (?:service|employment|continuous)|(?:upon|on) (?:their )?(?:date of )?hire|first day of (?:employment|the month)|immediately)/gi;
+  // a rule the filing has already REPLACED is not this plan's rule:
+  // "Prior to January 1, 2024, employees … were eligible after completing
+  // three calendar months … If this requirement was not met, the employee
+  // WOULD HAVE BECOME eligible after completing 12 months and 1,000 hours"
+  // (Swinerton) sits one sentence before the rule now in force
+  const SUPERSEDED_ELIG = /\bprior to (?:january|february|march|april|may|june|july|august|september|october|november|december|\d)|would have become|were eligible to participate/i;
+  // "1,000 hours" lost its leading digits to a bare \d{1,4} and shipped as
+  // "000 hours of service"; "three consecutive calendar months" puts
+  // adjectives between the number and its unit
+  const ENUM = String.raw`\d{1,3}(?:,\d{3})+|\d{1,4}|one|two|three|four|five|six|nine|twelve`;
+  const EUNIT = String.raw`(?:consecutive |calendar |full |complete |continuous )*(days?|months?|years?|hours?)`;
+  const eligRe = new RegExp(String.raw`eligib\w+[^.%]{0,140}?(?:(?<!(?:less|more|fewer) than )(${ENUM}) ?${EUNIT} of (?:service|employment|continuous)|(?:upon|on) (?:their )?(?:date of )?hire|first day of (?:employment|the month)|immediately)`, "gi");
   // "…who have completed one month of service" is a plan-wide eligibility
   // idiom on its own; the sponsor list before it is full of "Inc." periods,
   // so no sentence-bounded window can reach back to "The Plan covers".
@@ -1653,7 +1686,7 @@ export function extractPlanFeatures(text) {
   const FOR_MONEY = /eligible (?:for|to receive)[^.]{0,80}?(?:matching|non-?elective|profit[- ]sharing|discretionary|employer)\b[^.]{0,20}?contribution|eligible for the employer\b/i;
   // rules written for one workforce slice are carve-outs, not the plan rule
   const SUBGROUP = /\b(?:temporary|part[- ]time|seasonal|per[- ]diem|intern|union|collectively bargained)\b[^.]{0,40}?employees?/i;
-  for (const m of t.matchAll(/who (?:have |has )?complet\w+ (\d{1,4}|one|two|three|six|nine|twelve) ?(days?|months?|years?|hours?) of (?:service|employment)/gi)) {
+  for (const m of t.matchAll(new RegExp(String.raw`who (?:have |has )?complet\w+ (${ENUM}) ?${EUNIT} of (?:service|employment)`, "gi"))) {
     const ctx = t.slice(Math.max(0, m.index - 400), m.index);
     if (!COVERS.test(ctx) || NOT_ENTRY.test(t.slice(Math.max(0, m.index - 250), m.index))) continue;
     if (SCOPED_ELIG.test(sentence(m.index))) continue;
@@ -1666,14 +1699,14 @@ export function extractPlanFeatures(text) {
   }
   if (!elig) {
     for (const m of t.matchAll(eligRe)) {
-      if (SCOPED_ELIG.test(sentence(m.index))) continue;
+      if (SCOPED_ELIG.test(sentence(m.index)) || SUPERSEDED_ELIG.test(sentence(m.index))) continue;
       elig = m; break;
     }
   }
   if (elig) {
     // "completing six months of service" (Simmons Foods) — spelled-out counts
     const W = { one: 1, two: 2, three: 3, six: 6, nine: 9, twelve: 12 };
-    const n = elig[1] ? (W[elig[1].toLowerCase()] || elig[1]) : null;
+    const n = elig[1] ? (W[elig[1].toLowerCase()] || elig[1].replace(/,/g, "")) : null;
     out.eligibility = n ? `${n} ${elig[2]} of service` : "Upon hire / immediate";
     out.eligibilityText = sentence(elig.index);
   }
