@@ -1456,6 +1456,8 @@ export function extractPlanFeatures(text) {
   // veto: a Roth within reach after the phrase, with no list separator
   // ("and"/"or"/comma) in between, means after-tax feeds Roth rather than
   // standing beside it ("Roth and after-tax contributions" still counts).
+  const DEFERRAL_ROTH = (s) => /\bdefer(?:s|red|ral|rals)?\b/i.test(s) &&
+    !/(voluntary|traditional|regular|non-?deductible|thrift|additional)/i.test(s);
   for (const at of t.matchAll(/(?:voluntary |additional |employee )?after[- ]tax (?:deferral |employee |savings )?contributions?/gi)) {
     const pre = t.slice(Math.max(0, at.index - 40), at.index);
     const rothModifies = /roth\b[^.]{0,30}$/i.test(pre) && !/(?:,|\band\b|\bor\b)\s*$/i.test(pre);
@@ -1463,6 +1465,15 @@ export function extractPlanFeatures(text) {
     const ri = post.search(/\broth\b/i);
     const rothTarget = ri >= 0 && !/[.,;]|\b(?:and|or)\b/i.test(post.slice(0, ri));
     if (rothModifies || rothTarget) continue;
+    // An elective DEFERRAL made "after-tax" is a Roth deferral by
+    // definition — voluntary after-tax contributions are not deferrals.
+    // Caterpillar's "elect to defer a portion of their eligible
+    // compensation through pre-tax and after-tax contributions" is its Roth
+    // arrangement, spelled out two sentences later as "an after-tax Roth
+    // 401(k) arrangement", too far for the windows above to see. A sentence
+    // that also says voluntary/traditional/regular/non-deductible/thrift is
+    // describing the separate after-tax money and keeps the flag.
+    if (DEFERRAL_ROTH(sentence(at.index))) continue;
     out.afterTax = true; out.afterTaxText = sentence(at.index); break;
   }
   // BASIS enumerations never say "after-tax contributions": "Contributions
@@ -1493,30 +1504,9 @@ export function extractPlanFeatures(text) {
     for (const m3 of t.matchAll(/\bafter[- ]tax\b(?=\s*(?:,|\bor\b|\band\b))[^.]{0,60}?contributions?/gi)) {
       const pre = t.slice(Math.max(0, m3.index - 80), m3.index);
       if (!/(?:before[- ]tax|pre[- ]tax|roth|combination of|may (?:make|contribute|elect)|contribute)\b/i.test(pre)) continue;
+      if (DEFERRAL_ROTH(sentence(m3.index))) continue;
       out.afterTax = true; out.afterTaxText = sentence(m3.index); break;
     }
-  }
-  // DOCUMENT-LEVEL Roth veto: a filing that defines the arrangement as "an
-  // after-tax Roth 401(k) arrangement" is describing Roth everywhere it later
-  // says "pre-tax and after-tax contributions" — the disambiguating words sit
-  // in a different paragraph than the phrase we matched, so the neighbouring-
-  // window vetoes above cannot see them (Caterpillar: "elect to defer …
-  // through pre-tax and after-tax contributions" two sentences before "a
-  // pre-tax deferral arrangement and an after-tax Roth 401(k) arrangement").
-  // A plan that genuinely offers BOTH says so — "Roth 401(k) after-tax, and
-  // other voluntary after-tax contributions" — and keeps the flag.
-  // …but a filing that lists them as SEPARATE items keeps the flag, even
-  // when it also writes "after-tax Roth" elsewhere: Goldman Sachs describes
-  // deferrals as "before-tax 401(k) basis or after-tax Roth 401(k) basis"
-  // (Roth) AND names the account types as "before-tax, Roth 401(k),
-  // after-tax, catch-up, Company matching" (distinct). A list separator
-  // BETWEEN the two words is what tells them apart — "after-tax Roth" with
-  // nothing between is one arrangement.
-  const distinctFromRoth = /\broth\b[^.]{0,30}?(?:,|\band\b|\bor\b)\s*after[- ]tax|after[- ]tax\s*(?:,|\band\b|\bor\b)[^.]{0,30}?\broth\b/i.test(t);
-  if (out.afterTax && /after[- ]tax roth|roth (?:401\(k\) )?after[- ]tax/i.test(t) && !distinctFromRoth &&
-      !/(?:voluntary|additional|non-?roth|employee)\s+after[- ]tax/i.test(t) &&
-      !/after[- ]tax\b[^.]{0,40}\bnon-?roth/i.test(t)) {
-    out.afterTax = false; // quote stays: it documents what the filing said
   }
   // an amendment REMOVING after-tax is an affirmative no, not a feature:
   // "amended the plan document effective June 1, 2023, to remove the
