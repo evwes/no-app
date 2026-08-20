@@ -1177,17 +1177,51 @@
     ${open ? `<tr class="detail-tr"><td colspan="6"><div class="detail-clamp">${report(plan)}</div></td></tr>` : ""}`;
   }
 
+  /* The hero totals describe the CATEGORY the filters select, so the
+   * full-filing chip (and plan type / industry / recordkeeper / match type)
+   * re-total all four figures. The free-text query is deliberately excluded:
+   * searching one company should not turn a page-level summary into that
+   * company's balance sheet — the result line under the toolbar already
+   * reports the search. Money figures count only plans with filed financials,
+   * as they always have. */
+  let heroSig = null;
   function renderHero() {
-    const filed = state.plans.filter((p) => p.dataStatus === "filed");
+    // filtering 110k plans is cheap but not free, and render() runs on every
+    // keystroke — the totals only move when a FILTER moves, so memo on that
+    const sig = JSON.stringify([state.filters, state.planType, state.industry,
+      state.provider, state.matchType, state.plans.length]);
+    if (sig === heroSig) return;
+    heroSig = sig;
+    const scoped = state.plans.filter(passesFilters);
+    const filed = scoped.filter((p) => p.dataStatus === "filed");
     const ppl = filed.reduce((s, p) => s + (p.participants || 0), 0);
     const assets = filed.reduce((s, p) => s + (p.assetsB || 0), 0);
-    $("statPlans").textContent = fmtInt.format(state.plans.length);
+    $("statPlans").textContent = fmtInt.format(scoped.length);
     $("statPpl").textContent = fmtCompact.format(ppl);
-    $("statAssets").textContent = "$" + (assets / 1000).toFixed(2) + "T";
+    // a filtered slice can fall well under a trillion — "$0.43T" reads worse
+    // than "$434B", so the unit follows the number
+    $("statAssets").textContent = assets >= 1000
+      ? "$" + (assets / 1000).toFixed(2) + "T"
+      : "$" + fmtCompact.format(assets * 1e9);
     $("statAvgBal").textContent = ppl ? "$" + fmtCompact.format((assets * 1e9) / ppl) : "—";
+    // say plainly what the totals cover whenever they are not the whole universe
+    const f = state.filters;
+    const bits = [
+      f.fullFiling ? "full-filing plans (audited financial statement attached)" : "",
+      f.brokerage ? "with a brokerage window" : "",
+      f.megaBackdoor ? "with after-tax / mega backdoor" : "",
+      f.immediateVesting ? "with immediate vesting" : "",
+      state.planType || "", state.industry || "",
+      state.provider ? state.provider + " plans" : "",
+      state.matchType ? state.matchType.replace(/-/g, " ") + " match" : "",
+    ].filter(Boolean);
+    const el = $("heroScope");
+    el.textContent = bits.length ? "Totals cover " + bits.join(" · ") : "";
+    el.hidden = !bits.length;
   }
 
   function render() {
+    renderHero(); // no-op unless a filter changed (memoised)
     const plans = visiblePlans();
     const limit = state.rowLimit || MAX_ROWS;
     $("tbody").innerHTML = plans.slice(0, limit).map(planRow).join("");
