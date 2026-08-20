@@ -1434,8 +1434,15 @@ export function extractPlanFeatures(text) {
   // participant forfeits. This is not the inference refused above — the
   // scope is read from the displayed sentence, so the evidence is on screen.
   if (out.vesting && out.vestingText && !/\(/.test(out.vesting) && !/^Immediate/i.test(out.vesting)) {
-    const sc = out.vestingText.match(/\bvests?(?:ed|s)? in (?:the |their )?(?:employer(?:'s)? |company(?:'s)? )?(non-?elective|matching|profit[- ]sharing|safe harbor|discretionary)\b/i);
-    if (sc) out.vesting += ` (${sc[1].toLowerCase().replace(/nonelective/, "non-elective")} contributions)`;
+    // capture the LITERAL phrase the quote uses, not just its first keyword:
+    // "employer matching and employer retirement contributions" covers two
+    // sources, and naming only the first understates what the schedule
+    // reaches. Compounds ("discretionary matching") survive intact this way.
+    const sc = out.vestingText.match(/\bvests?(?:ed|s)? in ((?:the |their )?(?:[A-Za-z][A-Za-z-]* ){0,6}?(?:non-?elective|matching|profit[- ]sharing|safe harbor|discretionary)(?: (?:and|or) (?:[A-Za-z][A-Za-z-]* ){0,3}?(?:non-?elective|matching|profit[- ]sharing|safe harbor|discretionary))?) ?(?:contribution|account)/i);
+    if (sc) {
+      const scope = sc[1].replace(/^(?:the|their|in)\s+/i, "").replace(/\b(company's|employer's)\b/gi, "").replace(/\s{2,}/g, " ").trim().toLowerCase();
+      if (scope && scope.length <= 60) out.vesting += ` (${scope} contributions)`;
+    }
   }
 
   // ---- Roth / voluntary after-tax (only positive evidence counts) ----
@@ -1456,14 +1463,18 @@ export function extractPlanFeatures(text) {
   // veto: a Roth within reach after the phrase, with no list separator
   // ("and"/"or"/comma) in between, means after-tax feeds Roth rather than
   // standing beside it ("Roth and after-tax contributions" still counts).
-  // the deferral verb must GOVERN the after-tax phrase, not merely share a
-  // sentence with it: "All pre-tax elective deferral, after-tax and Roth
-  // contributions" lists after-tax as a SIBLING of the deferral (comma), and
-  // that plan's after-tax money is real. Barring commas between the two
-  // keeps government ("defer … through pre-tax and after-tax") and drops
-  // enumeration.
-  const DEFERRAL_ROTH = (s) => /\bdefer\w*\b[^.,]{0,90}?after[- ]tax/i.test(s) &&
+  // An elective DEFERRAL made "after-tax" is a Roth deferral by definition —
+  // voluntary after-tax contributions are not deferrals. The discriminator is
+  // whether the SAME sentence names Roth separately: "pretax salary deferrals,
+  // Roth elective deferrals and/or after-tax contributions" lists three things,
+  // so its after-tax money is real, while Caterpillar's "elect to defer …
+  // through pre-tax and after-tax contributions" names no Roth at all and is
+  // its Roth arrangement, spelled out two sentences later as "an after-tax
+  // Roth 401(k) arrangement" — too far for the neighbouring windows to see.
+  const DEFERRAL_ROTH = (s) => /\bdefer\w*\b[^.]{0,90}?after[- ]tax/i.test(s) &&
+    !/\broth\b/i.test(s) &&
     !/(voluntary|traditional|regular|non-?deductible|thrift|additional)/i.test(s);
+
   for (const at of t.matchAll(/(?:voluntary |additional |employee )?after[- ]tax (?:deferral |employee |savings )?contributions?/gi)) {
     const pre = t.slice(Math.max(0, at.index - 40), at.index);
     const rothModifies = /roth\b[^.]{0,30}$/i.test(pre) && !/(?:,|\band\b|\bor\b)\s*$/i.test(pre);
