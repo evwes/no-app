@@ -1440,7 +1440,15 @@ export function extractPlanFeatures(text) {
     // reaches. Compounds ("discretionary matching") survive intact this way.
     const sc = out.vestingText.match(/\bvests?(?:ed|s)? in ((?:the |their )?(?:[A-Za-z][A-Za-z-]* ){0,6}?(?:non-?elective|matching|profit[- ]sharing|safe harbor|discretionary)(?: (?:and|or) (?:[A-Za-z][A-Za-z-]* ){0,3}?(?:non-?elective|matching|profit[- ]sharing|safe harbor|discretionary))?) ?(?:contribution|account)/i);
     if (sc) {
-      const scope = sc[1].replace(/^(?:the|their|in)\s+/i, "").replace(/\b(company's|employer's)\b/gi, "").replace(/\s{2,}/g, " ").trim().toLowerCase();
+      // keep the filing's own capitalisation — lowercasing turned KeyCorp's
+      // "Key matching contributions" into "key matching" and "QACA" into
+      // "qaca" — and drop pronouns and the hyphen a line-wrap leaves behind
+      // ("his or her employer- matching contribution subaccount")
+      const scope = sc[1]
+        .replace(/^(?:the|their|its|his or her|his|her|in)\s+/i, "")
+        .replace(/\b(?:company's|employer's)\b/gi, "")
+        .replace(/(\w)-\s+(\w)/g, "$1 $2")
+        .replace(/\s{2,}/g, " ").trim();
       if (scope && scope.length <= 60) out.vesting += ` (${scope} contributions)`;
     }
   }
