@@ -2319,6 +2319,65 @@ prevailing-wage sentence. The veto exists but is not applied on the
 `eligRe` path. Pre-existing, not a regression, and kept out of a release
 already corrected twice.
 
+## 2026-08-20 — Swinerton, second pass: half the "fund lineup" is money no participant chose (v63)
+
+**The holdings table presented employer-directed stock as an investment
+option.** Swinerton's 29-row FUND HOLDINGS table totals $824,138,844.
+Company stock is **$410,158,397 of it — 49.8%** — rendered like any other
+row, with a "% of holdings" share, a type, and a place in the menu. The
+filing itself draws the line the site erased: Note 3 states *"Investments
+in Company stock are nonparticipant directed and held in both the
+profit-sharing and ESOP portions of the Plan,"* and the statements
+separate $413,980,459 of participant-directed assets (pooled separate
+accounts, registered investment companies, common collective trusts) from
+$410,158,398 that are not. A reader comparing menus would have counted
+the employer's ESOP contribution as a fund choice and read every other
+holding's share as half what it is of the money participants actually
+direct.
+
+Neither `app.js` nor `scripts/lib-4i.mjs` contained the string
+"nonparticipant" before this change — the distinction had never been
+represented at all.
+
+**Fixed by quoting the filing, not by inferring rows.** A new
+`nonPartDirected` feature captures the filing's own sentence and the
+holdings section prints it above the table. Row-level re-labelling was
+considered and rejected: 34 of the 911 corpus filings use the phrase, and
+most of those uses are **not** about employer-directed holdings —
+forfeiture suspense accounts, money markets that exist to pay plan
+expenses, wrap-contract "non-participant directed withdrawal" clauses,
+`** Historical cost is disclosed only for nonparticipant-directed
+investments` footnotes, a section heading glued to unrelated QDIA text
+(GSK), and flat negations ("There are no non-participant directed
+investments"). Inferring which *row* each of those refers to is guesswork;
+quoting the sentence is not. So the sentence must tie the phrase to
+employer stock or an ESOP, and 4i/statement table rows are excluded.
+
+**The table guard has to run on the raw text, not the quote.** The first
+version tested the extracted quote for dollar columns. `sentence()` caps
+at ~300 characters, so a table row's dollar columns fell off the end of
+the string and Vertex's statement line and Lennar's 4i row both passed as
+prose. Judging a ±(250,150) raw window instead rejects both while keeping
+an intro sentence that merely *precedes* a table (Vertex's real Note
+sentence, which names the fund, is picked up two occurrences later).
+Recorded as a rule: **a guard against tabular text must see the text the
+table is in, never a truncated excerpt of it.**
+
+**A lock without its escape overstates the lock.** Some plans direct the
+employer contribution into stock *and* let participants move it out —
+Skyworks says both in one sentence, NextEra and Regeneron in the sentence
+after. Quoting only the first would misrepresent a plan that is not
+locked. A second quote is captured when the filing makes the
+counter-statement, and printed with the first.
+
+7 of 911 corpus filings flag (Swinerton, NextEra, Skyworks, Vertex,
+Regeneron, Occidental, and Swinerton's second copy); every accepted quote
+was read against its filing. The 822-filing delta versus shipped v62 is
+**0 changes to match, vesting, eligibility, and every other field** —
+purely additive. Known residual, conservative by design: 3M's
+"non-participant-directed 3M-provided Company Contribution Account" says
+so without the word "stock" and is not flagged.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

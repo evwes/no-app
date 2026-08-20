@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 62;
+export const PARSER_VERSION = 63;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -1755,6 +1755,66 @@ export function extractPlanFeatures(text) {
       if (n.length >= 6 && !menu.includes(n)) menu.push(n);
     }
     if (menu.length >= 3) out.menu = menu;
+  }
+
+  // ---- employer-directed (nonparticipant-directed) holdings ----
+  // The 4i schedule lists everything the trust owns, including money the
+  // EMPLOYER directs. Company stock contributed to an ESOP component is not a
+  // menu choice a participant can make, yet it renders in the holdings table
+  // with a "% of holdings" share exactly like a fund — Swinerton's company
+  // stock is $410,158,397, 49.8% of the filed table, and the filing's own
+  // statements separate it from the $413,980,459 participants direct.
+  // Report it ONLY where the filing says so, quoted. The phrase also appears
+  // in contexts that say nothing about employer-directed holdings —
+  // forfeiture suspense accounts, money markets that exist to pay plan
+  // expenses, wrap-contract "non-participant directed withdrawal" clauses,
+  // "Historical cost is disclosed only for nonparticipant-directed
+  // investments" footnotes, section headings glued to unrelated QDIA text
+  // (GSK), and flat negations ("There are no non-participant directed
+  // investments") — so the sentence must tie the phrase to employer stock or
+  // an ESOP, and a 4i/financial-statement TABLE row never qualifies as prose.
+  const NPD = /non-? ?participant[- ]directed/i;
+  const npdAll = [...t.matchAll(/non-? ?participant[- ]directed/gi)];
+  for (const m of npdAll) {
+    const s = sentence(m.index);
+    if (!/\bstock\b|\bESOP\b/i.test(s)) continue;
+    // negations
+    if (/\b(?:there (?:are|were|is|was)|had) no\b[^.]{0,40}?non-? ?participant/i.test(s)) continue;
+    // wrap/GIC contract boilerplate: the phrase qualifies a WITHDRAWAL, not a holding
+    if (/non-? ?participant[- ]directed (?:withdrawal|transfer|loan|event)/i.test(s)) continue;
+    // Table rows must be judged on the RAW text around the phrase, not on the
+    // quote: sentence() caps at ~300 chars, so a 4i row's dollar columns fall
+    // off the end of the string and the row passes as prose (Vertex's
+    // statement line and Lennar's 4i row both did). The forward window stays
+    // short so a real intro sentence that merely PRECEDES a table survives.
+    const raw = t.slice(Math.max(0, m.index - 250), m.index + 150);
+    if ((raw.match(/\$/g) || []).length >= 2 || (raw.match(/\b\d{1,3}(?:,\d{3}){2,}\b/g) || []).length >= 2) continue;
+    if (/Description of Investment|Identity of Issue|Party Par or Maturity|\(a\)\s*\(b\)|\(c\)\s*\(d\)/i.test(raw)) continue;
+    // cost footnotes carry no plan fact
+    if (/^\W*(?:\*+\s*)?(?:historical )?cost(?:s)? (?:is|are|of)\b/i.test(s)) continue;
+    out.nonPartDirected = true;
+    // an intro sentence ends at the colon its table follows — keep the
+    // sentence, drop the column dump it drags in
+    out.nonPartDirectedText = s.replace(/(:)\s+(?=(?:As of |For the |20\d\d\b|\$|Net [Aa]ssets\b)).*$/, "$1");
+    break;
+  }
+  // A plan can lock the employer's stock contribution and still let
+  // participants move it ("participants may diversify the company common
+  // stock allocated to their account", Skyworks; NextEra says so in a
+  // separate sentence). Quoting only the lock would overstate it, so carry
+  // the counter-statement when the filing makes one.
+  if (out.nonPartDirected) {
+    const dv = t.match(/(?:participants?|employees?)[^.]{0,80}?(?:may|can|are (?:permitted|able|allowed) to|have the option to) (?:elect to )?(?:diversify|reinvest|transfer|redirect|move|reallocate)[^.]{0,160}?\./i);
+    if (dv && (NPD.test(dv[0]) || /\bstock\b/i.test(dv[0]))) {
+      // anchor the quote at the sentence START — the diversify verb can sit
+      // late in a long sentence, and sentence() trims leading context around
+      // a far-in match, which opened Regeneron's quote mid-clause
+      const head = t.lastIndexOf(". ", dv.index);
+      const q = sentence(head === -1 ? dv.index : head + 2);
+      // Skyworks states the lock and the escape in ONE sentence — don't
+      // print the same quote twice
+      if (q && q !== out.nonPartDirectedText && !out.nonPartDirectedText.includes(q.slice(0, 60))) out.nonPartDirectedDiversify = q;
+    }
   }
 
   // ---- automatic enrollment ----

@@ -1002,10 +1002,21 @@
       : lu.fromTrust
         ? `Holdings of ${esc(lu.trustName)} — this plan invests through the master trust${lu.sisters > 1 ? ` alongside ${lu.sisters - 1} sister plan${lu.sisters > 2 ? "s" : ""}` : ""}${lu.trustAssets ? ` · trust total ${money(lu.trustAssets / 1e6)}` : ""} · percentages are of the trust, not this plan · tickers shown where the filed name identifies a registered fund · expense ratios are estimates`
         : `${esc(lu.source)} · values as filed · tickers shown where the filed name identifies a registered fund · expense ratios are estimates from public fund data`;
+    // Employer-directed money sits in the same 4i table as the menu. Where
+    // the filing says so, say so — Swinerton's company stock is half the
+    // table and no participant chose it, so a bare "% of holdings" column
+    // reads as a menu weighting it isn't. Only on the plan's OWN table: a
+    // master trust's holdings are a different pool.
+    const ffl = plan.filedFeatures;
+    const npd = tab === "menu" && !lu.fromTrust && ffl && ffl.nonPartDirected ? `
+    <p class="max-benefit"><strong>Part of these holdings is employer-directed.</strong> The filing states some of this plan's assets are not participant-directed — those holdings are listed here with the menu, so their share of the table is not a share of what participants chose.</p>
+    <blockquote class="quote">“${esc(ffl.nonPartDirectedText)}”</blockquote>
+    ${ffl.nonPartDirectedDiversify ? `<blockquote class="quote">“${esc(ffl.nonPartDirectedDiversify)}”</blockquote>` : ""}` : "";
     return `
     <div class="section-label">${lu.fromTrust && tab !== "sma" ? `MASTER TRUST HOLDINGS — ${lu.funds.length}` : `FUND HOLDINGS — ${tab === "sma" ? lu.sma.length + " SECURITIES" : lu.funds.length + " FILED"}`}
       <span class="section-sub">${sub}</span></div>
     ${tabs}
+    ${npd}
     <div class="fund-scroll">
       <table class="fund-table">
         <thead><tr><th class="fund-name-col">Holding</th><th>Type</th><th>Est. ER</th><th>Value</th><th>% of ${tab === "sma" ? "account" : (lu.fromTrust ? "trust" : "holdings")}</th></tr></thead>
