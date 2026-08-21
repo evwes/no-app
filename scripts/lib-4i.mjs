@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 64;
+export const PARSER_VERSION = 65;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -808,8 +808,15 @@ export function extractPlanFeatures(text) {
   const frac = !mf && t.match(/match(?:ing|ed)?[^.]{0,160}?\b(one[- ]half|one[- ]third|one[- ]quarter|two[- ]thirds)\b of the first (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i);
   // dollar-phrased formulas: "dollar-for-dollar up to 4%", "50 cents per dollar
   // on the first 6%", "$1.00 for every dollar … up to 2%" (Kraft Heinz)
-  const df = !mf && (t.match(/(?:dollar[- ]for[- ]dollar|(?:\$1(?:\.00)?|one dollar) for (?:each|every) dollar)[^.]{0,80}?(?:up to|on the first) (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i)
-    ? { pct: 100, cap: null } : null);
+  // A percentage cap on a dollar-for-dollar match normally means percent OF
+  // PAY. Meta's does not: "a dollar-for-dollar match, up to 50% of the IRS
+  // employee deferral limit" caps the match at half the 402(g) dollar limit,
+  // and reading it as a pay cap published "100% of the first 50% of pay" —
+  // telling 93,515 participants their employer matches half their salary.
+  // Report the ceiling the filing actually names.
+  const dfm = !mf && t.match(/(?:dollar[- ]for[- ]dollar|(?:\$1(?:\.00)?|one dollar) for (?:each|every) dollar)[^.]{0,80}?(?:up to|on the first) (\d{1,2}(?:\.\d+)?) ?(?:percent|%)(?<tail>[^.]{0,60})/i);
+  const dfLimit = dfm && /^\s*of (?:the |a )?(?:IRS|Internal Revenue|Code|statutory|annual|applicable|maximum|402\(?g\)?)/i.test(dfm.groups.tail);
+  const df = dfm && !dfLimit ? { pct: 100, cap: null } : null;
   const cents = !mf && !df && t.match(/(\d{1,3}(?:\.\d+)?) ?cents (?:for|per|on) (?:each |every )?(?:\$1(?:\.00)?|dollar)[^.]{0,80}?(?:up to|on the first) (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i);
   // match stated as a TABLE, not prose: "Employee Contribution | Employer
   // Match / First 2% of eligible compensation 100 % / Next 2% ... 50 %"
@@ -1108,6 +1115,12 @@ export function extractPlanFeatures(text) {
     const disc = t.match(/discretionary (?:401\(k\) )?match(?:ing)?(?: and profit[- ]sharing)? contributions?|match(?:ing)?(?: and profit[- ]sharing)? contributions? [^.]{0,80}?(?:discretionary|determined (?:annually |each year )?by (?:its |the )?(?:board|company|employer|trustees|firm|plan sponsor|management))|on a discretionary basis,? contribut[^.]{0,30}?match|(?:contribute|make) a discretionary match(?:ing)?\b|at (?:its|their) discretion,? (?:may )?contribut\w+ a match|(?:company|employer) contributions are (?:entirely )?discretionary/i);
     if (out.match) {
       // rate-only already answered it
+    } else if (dfLimit) {
+      // a match capped at a share of the statutory deferral limit IS a stated
+      // formula — it must outrank the discretionary sentence sitting beside
+      // it, the same way Swinerton's safe-harbor tier does (2026-08-20)
+      out.match = `100% of deferrals, capped at ${+dfm[1]}% of the IRS deferral limit`;
+      out.matchText = sentence(dfm.index);
     } else if (upTo) {
       out.match = `Up to ${+upTo[1]}% of pay`;
       out.matchText = sentence(upTo.index);
@@ -1673,7 +1686,7 @@ export function extractPlanFeatures(text) {
   // adjectives between the number and its unit
   const ENUM = String.raw`\d{1,3}(?:,\d{3})+|\d{1,4}|one|two|three|four|five|six|nine|twelve`;
   const EUNIT = String.raw`(?:consecutive |calendar |full |complete |continuous )*(days?|months?|years?|hours?)`;
-  const eligRe = new RegExp(String.raw`eligib\w+[^.%]{0,140}?(?:(?<!(?:less|more|fewer) than )(${ENUM}) ?${EUNIT} of (?:service|employment|continuous)|(?:upon|on) (?:their )?(?:date of )?hire|first day of (?:employment|the month)|immediately)`, "gi");
+  const eligRe = new RegExp(String.raw`eligib\w+[^.%]{0,140}?(?:(?<!(?:less|more|fewer) than )(${ENUM}) ?${EUNIT} of (?:service|employment|continuous)|(?:upon|on) (?:their )?(?:date of )?(?:hire|employment)|first day of (?:employment|the month)|immediately)`, "gi");
   // "…who have completed one month of service" is a plan-wide eligibility
   // idiom on its own; the sponsor list before it is full of "Inc." periods,
   // so no sentence-bounded window can reach back to "The Plan covers".
@@ -1707,9 +1720,32 @@ export function extractPlanFeatures(text) {
     if (SUBGROUP.test(t.slice(Math.max(0, m.index - 160), m.index))) continue;
     elig = m; break;
   }
+  // an EXCLUSION list states who the plan keeps out, and the carve-outs it
+  // writes for them are not the plan's entry rule. Meta's notes enumerate ten
+  // excluded classes, one of which carries the SECURE long-term part-time
+  // rule ("interns or co-op employees, unless they have reached … age 21 and
+  // have completed at least 500 hours of service during each of three
+  // consecutive 12-month periods"). Read as plan entry that becomes
+  // "500 hours of service" for a plan whose actual rule is entry on hire.
+  const EXCLUDED = /\b(?:are|is) not eligible to participate|following (?:employees|classes|individuals)[^.]{0,60}?(?:are|is) (?:not|excluded)|excluded from participation/i;
   if (!elig) {
     for (const m of t.matchAll(eligRe)) {
       if (SCOPED_ELIG.test(sentence(m.index)) || SUPERSEDED_ELIG.test(sentence(m.index))) continue;
+      // Scoped to the matched SENTENCE, deliberately. I first imported the
+      // primary path's NOT_ENTRY/FOR_MONEY/SUBGROUP vetoes here and tested
+      // EXCLUDED over a 700-char lookback: that dropped 87 values in the
+      // 822-filing corpus, most of them correct — "Full-time and part-time
+      // employees … are eligible to participate upon hire" is a plan-wide
+      // rule that SUBGROUP reads as a carve-out, and a lookback window
+      // catches any filing that merely lists exclusions somewhere nearby.
+      // Those vetoes were tuned for the "who completed N units" shape and
+      // misfire on this one.
+      if (EXCLUDED.test(sentence(m.index))) continue;
+      // NOT_ENTRY is the one import that survives review: a rollover, loan or
+      // withdrawal rule is never a plan-entry rule, whatever shape it takes
+      // ("Employee Rollovers — Employees are eligible to invest amounts from
+      // prior eligible employer plans … upon employment" read as entry)
+      if (NOT_ENTRY.test(sentence(m.index))) continue;
       elig = m; break;
     }
   }

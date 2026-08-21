@@ -2419,6 +2419,79 @@ first hit is a header now falls through to its next occurrence, which is
 usually the real Note. All 7 corpus specimens keep byte-identical quotes,
 822-filing delta on every other field is 0, parser gate green.
 
+## 2026-08-21 — Meta's $22.4B plan showed nothing: cipher that maps onto LETTERS (v65 + OCR v7)
+
+**Found by sweeping the "nothing extracted" class at the owner's request.**
+3,883 full-form filers have no lineup and no features. Sorted by assets,
+the top entry is **Meta Platforms, 401(k), $22.4B, 93,515 participants** —
+blank on every field.
+
+The attachment is complete (pp. 200–215 of a 215-page filing). Its text
+layer is a substitution cipher: p210 extracts as `:3A 9 A4 : 7 1 ( O 9 A3
+A 47 17 9`. Rasterized and OCR'd, the same page reads perfectly. So the
+data was always reachable; the pipeline never tried. Our OCR trigger flags
+a page that is near-empty, under 50% letters, or full of control
+characters. **This cipher maps glyphs onto letters**, so the pages score
+0.73–0.93 letters and pass all three tests — 5 of 214 pages were flagged,
+none of them the notes.
+
+**The first discriminator I built was wrong, and the corpus said so.**
+Scoring pages by how many tokens are ordinary English/filing words
+separated cipher (0.019–0.042) from Meta's readable pages (0.449–0.525)
+— but it also condemned **legitimate securities schedules**: Goldman's and
+MetLife's 4i pages and a global equity listing score 0.013–0.096, because
+"AFFLE (INDIA) LTD INR2", "HENRY HB LD1 FUT (IFE) EXP APR 30" are proper
+nouns and abbreviations, not vocabulary. Across the corpus it would have
+added 175 OCR pages, most of them readable tables — the same budget flood
+that cost the JPM class its real schedule.
+
+What cipher cannot fake is **case shape**. Substituted glyphs mix upper
+and lower inside a token (`cNYbR`, `aUNa`, `dVaU`); real text, including
+ALL-CAPS security names, is all-lower, ALL-UPPER, or Capitalized. Measured
+over 822 filings: cipher pages 0.62–0.82, every readable page 0.000–0.007
+— and the rule adds **8 pages across 2 filings**. Threshold 0.25 sits in
+a gap two orders of magnitude wide.
+
+**Reading the recovered text found two more defects before they shipped.**
+Running the extractor on Meta's OCR'd notes produced:
+
+- **`match: "100% of the first 50% of pay"`** from *"a dollar-for-dollar
+  match, up to 50% of the IRS employee deferral limit."* The percentage
+  caps the **402(g) dollar limit**, not pay. Published, it would have told
+  93,515 people their employer matches half their salary. Now the cap's
+  own object is checked, and the formula reads *"100% of deferrals, capped
+  at 50% of the IRS deferral limit"* — a stated formula, which must
+  outrank the discretionary sentence beside it exactly as Swinerton's
+  safe-harbor tier does.
+- **`eligibility: "500 hours of service"`**, quoting the SECURE
+  long-term-part-time rule from inside a list of **ten excluded classes**
+  ("interns or co-op employees, unless…"). Meta's actual rule is entry on
+  employment. The fallback eligibility path applied only two of the four
+  vetoes the primary path uses.
+
+**Importing the other vetoes wholesale cost 87 correct values.** SUBGROUP
+reads *"Full-time and **part-time** employees … are eligible to participate
+upon hire"* as a carve-out when it is the plan-wide rule; an EXCLUDED
+lookback window catches any filing that lists exclusions anywhere nearby;
+NOT_ENTRY over a 250-char window cost 19. Scoping both surviving vetoes to
+the matched **sentence** — and dropping SUBGROUP and FOR_MONEY entirely —
+leaves 22 changes: 13 gap-fills, 6 corrections ("1,000 hours" → "Upon
+hire" where the filing says *"eligible to participate in the Plan upon
+employment"*), 3 losses of which 2 are right. Recorded as a rule: **a veto
+tuned for one match shape is not evidence about another; re-measure it on
+the shape you are adding it to.**
+
+Residual, accepted: one filing states immediate entry and its exclusion in
+a single sentence ("…except that employees scheduled fewer than 20 hours
+per week are not eligible to participate until…"), and the sentence-scoped
+EXCLUDED veto drops it. One loss against thirteen gains.
+
+Meta now extracts: match *100% of deferrals, capped at 50% of the IRS
+deferral limit*; vesting *Immediate*; eligibility *Upon hire*; Roth;
+auto-enrollment 10%; Fidelity BrokerageLink. OCR_VERSION 7 is required —
+the OCR text cache is keyed by ack + OCR version, so without the bump the
+cached v6 text (which never saw these pages) would hide the fix.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

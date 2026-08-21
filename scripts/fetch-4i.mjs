@@ -21,7 +21,7 @@ import { parse4i, extractPlanFeatures, indexFlags, PARSER_VERSION } from "./lib-
  * encodings that extract as cipher-garbage. Rasterize just those pages and
  * OCR them, then re-run the normal parser on the combined text. Bump
  * OCR_VERSION to re-attempt every no-section filing. */
-const OCR_VERSION = 6; // v6: 52-page budget for big scans — notes head AND schedule tail
+const OCR_VERSION = 7; // v7: mixed-case cipher pages join the bad list (Meta class)
 const OCR_MAX_PAGES = 40; // full-OCR budget per filing; TARGETING picks which 40
 const OCR_HEAD_PAGES = 12; // bad-list head reserve (v5, proven on JPM)
 const OCR_NOTES_WINDOW = 30; // absolute-page ceiling of the auditor's notes region
@@ -55,7 +55,23 @@ function findBadPages(text) {
     // fine (Avista 401(k): schedule pages at 63% letters slipped past the
     // ratio test and their cipher text silently lost the whole menu)
     const ctl = (t.match(/[\x00-\x08\x0b\x0e-\x1f]/g) || []).length;
-    if (chars < 50 || (chars > 200 && letters / chars < 0.5) || ctl > 15) bad.push(i + 1);
+    // Cipher that maps glyphs onto LETTERS defeats every test above: Meta's
+    // audit notes (pp. 200-215 of a 215-page filing, a $22.4B / 93,515-
+    // participant plan) extract as ":3A 9 A4 : 7 1 ( O 9 A3 A 47 17 9" and
+    // score 0.73-0.93 letters, so only 5 of 214 pages were ever flagged and
+    // the notes went into the parser as garbage. What such text CANNOT fake
+    // is case shape: a glyph-substituted token mixes upper and lower inside
+    // the word ("cNYbR", "aUNa", "dVaU"). Real text — including the
+    // abbreviation-dense security listings that a vocabulary test wrongly
+    // condemns (Goldman/MetLife 4i schedules, "AFFLE (INDIA) LTD INR2") —
+    // is all-lower, ALL-UPPER, or Capitalized. Measured over the 822-filing
+    // corpus: cipher pages score 0.62-0.82, every readable page 0.000-0.007,
+    // and the rule adds 8 OCR pages across 2 filings.
+    const toks = t.match(/[A-Za-z]{3,}/g) || [];
+    let odd = 0;
+    for (const s of toks) if (!/^[a-z]+$/.test(s) && !/^[A-Z]+$/.test(s) && !/^[A-Z][a-z]+$/.test(s)) odd++;
+    const mixedCase = toks.length >= 20 && odd / toks.length >= 0.25;
+    if (chars < 50 || (chars > 200 && letters / chars < 0.5) || ctl > 15 || mixedCase) bad.push(i + 1);
   }
   return bad;
 }
