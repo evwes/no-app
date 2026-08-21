@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 63;
+export const PARSER_VERSION = 64;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -1792,10 +1792,38 @@ export function extractPlanFeatures(text) {
     if (/Description of Investment|Identity of Issue|Party Par or Maturity|\(a\)\s*\(b\)|\(c\)\s*\(d\)/i.test(raw)) continue;
     // cost footnotes carry no plan fact
     if (/^\W*(?:\*+\s*)?(?:historical )?cost(?:s)? (?:is|are|of)\b/i.test(s)) continue;
+    // v64, from reviewing all 133 quotes the first version shipped: a quote
+    // has to READ as a sentence. ESOP filings print a two-column statement
+    // whose header stacks the column labels ("Participant Nonparticipant
+    // Directed Directed Allocated Unallocated Total"), and a match inside a
+    // table leaves sentence() opening mid-word with its "…" truncation
+    // marker, dragging in fund rows and share counts. 16 of 133 shipped
+    // quotes were one of those two shapes. Skipping the candidate (rather
+    // than the filing) lets a later occurrence — usually the real Note —
+    // supply the quote instead.
+    if (/^…/.test(s)) continue;
+    // A lead sentence often runs straight into the statement it introduces.
+    // Cut the table off and judge what's left — trimming AFTER the shape
+    // guards threw away two correct lead sentences whose only sin was the
+    // column header glued to their tail.
+    const q = s
+      .replace(/(:)\s+(?=(?:As of |For the |20\d\d\b|\$|Net [Aa]ssets\b)).*$/, "$1")
+      .replace(/\s+(?=\bDirected\s+Directed\b|\b(?:Non-?)?Participant\s+(?:Non-?)?Participant\b|\bAllocated\s+Unallocated\b|\bStatements? of (?:Changes in )?Net Assets\b).*$/i, "")
+      .replace(/\s*[-–—_]{6,}.*$/, "") // the rule line a table draws under its heading
+      .trim();
+    // The header signature is a REPEATED column label — "Participant
+    // Nonparticipant / Directed Directed", "Allocated Unallocated". Matching
+    // "participant directed" instead would reject the phrase this whole
+    // reader exists to find: the first cut of this guard threw out 65 of 133
+    // quotes, including Skyworks' correct one.
+    if (/\bDirected\s+Directed\b|\b(?:Non-?)?Participant\s+(?:Non-?)?Participant\b|\bAllocated\s+Unallocated\b/i.test(q)) continue;
+    if (/Statements? of (?:Changes in )?Net Assets/i.test(q)) continue;
+    // an ALL-CAPS statement heading carries almost no lowercase words
+    if ((q.match(/\b[a-z]{3,}\b/g) || []).length < 4) continue;
+    // the trim must not have eaten the phrase the quote exists to show
+    if (!NPD.test(q)) continue;
     out.nonPartDirected = true;
-    // an intro sentence ends at the colon its table follows — keep the
-    // sentence, drop the column dump it drags in
-    out.nonPartDirectedText = s.replace(/(:)\s+(?=(?:As of |For the |20\d\d\b|\$|Net [Aa]ssets\b)).*$/, "$1");
+    out.nonPartDirectedText = q;
     break;
   }
   // A plan can lock the employer's stock contribution and still let

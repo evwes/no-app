@@ -2378,6 +2378,47 @@ purely additive. Known residual, conservative by design: 3M's
 "non-participant-directed 3M-provided Company Contribution Account" says
 so without the word "stock" and is not flagged.
 
+## 2026-08-21 — v63 shipped 133 employer-directed quotes; 19 of them were table wreckage (v64)
+
+**Reviewing my own release found the defect.** v63's `nonPartDirected`
+reader landed on 133 plans. Reading all 133 quotes: 19 were not sentences.
+Eleven were financial-statement page headings whose column labels stack
+("EMPLOYEE STOCK OWNERSHIP AND 401(K) … STATEMENT OF NET ASSETS AVAILABLE
+FOR BENEFITS DECEMBER 31, 2024 Participant Nonparticipant Directed
+Directed Allocated Unallocated"), and eight opened mid-word with the "…"
+truncation marker, dragging in fund rows and share counts (*"…Ap Index
+Fund Admiral Mutual Fund 398,133 Vanguard ShtTrm Invstmnt Grade
+Admiral…"*). The v63 raw-window guard catches dollar columns; it does not
+catch a header, because a header has no dollars in it.
+
+ESOP filings are the concentration: they present a two-column statement
+splitting participant-directed from nonparticipant-directed money, so the
+phrase appears in the column header of nearly every such filing.
+
+**The first version of the guard was worse than the bug.** Matching
+`Participant|Nonparticipant|Directed` followed by any of the same words
+rejected **65 of 133** — because "non-participant directed", the exact
+phrase this reader exists to find, *is* two of those words adjacent. It
+threw out Skyworks' correct quote. The signature of a stacked header is a
+REPEATED label — `Directed Directed`, `Participant Nonparticipant`,
+`Allocated Unallocated` — not the phrase itself. Recorded as a rule:
+**a junk-shape guard written from the junk's vocabulary will match the
+signal, because the junk is made of the signal's own words. Anchor on
+what is repeated or misordered, never on the words themselves.**
+
+**Order mattered again.** Judging shape before trimming threw away two
+correct lead sentences whose only fault was the column header glued to
+their tail (*"The Plan's investments in the Company's common stock, which
+are non-participant directed investments, … are presented in the
+following table:"*). Trimming first and judging the remainder keeps them.
+This is the second release running where a fix was correct but placed
+wrong — see the v62 vesting-horizon entry.
+
+Net: 133 → 114 quotes, the 19 unreadable ones dropped; a filing whose
+first hit is a header now falls through to its next occurrence, which is
+usually the real Note. All 7 corpus specimens keep byte-identical quotes,
+822-filing delta on every other field is 0, parser gate green.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
