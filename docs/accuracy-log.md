@@ -2535,6 +2535,55 @@ letters ("M utual funds", "M ainStay M K", "M SCI"); one row currently
 parses with the name "M utual fund". Held for its own release so the
 lineup delta can be attributed.
 
+## 2026-08-21 — Meta recovered, but run #153 traded 20 real menus for statement rows; NOT mirrored
+
+**The fix worked.** Meta Platforms (`20-1665019|001`, $22.4B, 93,515
+participants) came back at `pv 66, ov 8, ocr 1` carrying match *"100% of
+deferrals, capped at 50% of the IRS deferral limit"*, vesting *Immediate*,
+eligibility *Upon hire*, Roth, 10% auto-enrollment and Fidelity
+BrokerageLink. The cache diagnosis was right.
+
+**And the same run broke 20 other plans.** Audit HIGH went 4 → 24, all
+new ones `reparse-loss`. Sampling seven against the previous data commit:
+every one was an OCR-sourced confident menu of 25–33 real funds
+(Fidelity/Vanguard/Schwab names) now reduced to 1–6 asset-class summary
+rows — *"Mutual funds"*, *"Common collective fund"*, *"Pooled separate
+accounts"*, *"Beginning of the year"*. Net `confident` stayed flat only
+because roughly as many filings gained. **Main was not mirrored**; it
+still serves the v65 data.
+
+**Proven, by reconstructing one filing end to end**
+(`20241010154722NAL0011685891001`): OCR'ing all 26 of its bad pages
+reproduces the correct 28-fund, $501.5M menu — at psm 6 *and* at psm 1.
+OCR'ing only the **head** pages produces exactly the junk that shipped:
+3 rows, *"End of the year / Beginning of the year / Participant
+rollovers"*. So production OCR'd the head only, which happens solely when
+`bad.length > 40` sends the filing through `targetPages`. Locally that
+filing has 26 bad pages under both the old and the new detector.
+
+**Two hypotheses tested and disproven before that** — recorded because
+being wrong twice is the point of writing it down. (1) *The v7 mixed-case
+detector pushed filings over the 40-page targeting threshold*: it adds
+**zero** pages to this filing. (2) *The cache had been skipping
+`detectRotation`, which now false-positives and forces psm 1*: OSD does
+report `Rotate: 180` at confidence 5.45 on a page psm 6 reads perfectly,
+so the probe **is** unreliable — but psm 1 parses this filing to 29 funds
+and $514.7M, so it is not what broke these plans. A guard was written for
+it and **reverted unshipped**, because a change defended by a disproven
+hypothesis has no business in the parser.
+
+Left open deliberately rather than guessed at a third time: why the
+runner's bad-page list exceeds 40 when the sandbox's is 26. The parse-job
+log holds the answer (`ocr N pages`, `strip-scan N bad pages →
+targeting N`) and the Actions blob host is unreachable from this sandbox
+via curl, so it needs `get_job_logs`.
+
+The durable fix this argues for, independent of that answer: **a stored
+confident, real-menu-shaped lineup should never be replaced by a smaller,
+lower-ratio parse of the same filing.** The merge already keeps stored
+entries when a download fails; it should also keep them when a re-parse
+comes back materially worse, and flag rather than overwrite.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
