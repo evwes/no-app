@@ -2492,6 +2492,49 @@ auto-enrollment 10%; Fidelity BrokerageLink. OCR_VERSION 7 is required —
 the OCR text cache is keyed by ack + OCR version, so without the bump the
 cached v6 text (which never saw these pages) would hide the fix.
 
+## 2026-08-21 — the v65 Meta fix shipped, re-parsed, and changed nothing: the OCR cache was keyed by page COUNT (v66 + OCR v8)
+
+**Verifying the fix is what caught this.** Run #152 re-parsed Meta at
+`pv 65, ov 7` — the new detector ran — and the plan came back with no
+entry and no features, exactly as before. The verdict line moved by
+`entries +1, match +1`, nowhere near what recovering a cipher class
+should look like.
+
+Cause: the OCR text cache. Cache files are named `{ack}.v{OCR_VERSION}.txt`,
+and a deliberate fallback accepts an **older version's file** for any
+filing with ≤40 bad pages, on the reasoning that "small scans produce
+identical text across targeting versions — targeting only changes
+>40-page filings." That reasoning held for v3→v5, which changed only
+*which* of many bad pages to spend the budget on. **v7 changed detection
+itself**: Meta's bad-page set went from 5 pages to 12, the 7 new ones
+being the cipher notes. With 12 ≤ 40, the fallback happily returned the
+v5 text — OCR'd from the five pages that were never the notes — and the
+combined re-parse saw the same garbage as before.
+
+The v65 log entry even says "OCR_VERSION 7 is required: the OCR cache is
+keyed by ack + OCR version, so cached v6 text would hide the fix." That
+was right about the mechanism and wrong about the remedy: bumping the
+version does not help when the code reads older versions anyway.
+
+**Fixed by keying the cache on the thing that actually determines the
+text.** Every cache file now opens with `#bad:<page,list>`, and a file is
+reused only when that list still matches what detection produces now. A
+pre-header file is never trusted, so the first run after this pays a
+one-time re-rasterize for the OCR set and every later version bump is
+both cheap and correct. Recorded as a rule: **a cache key must name every
+input that changes the cached value. "Same version" and "same size" are
+proxies; the page list is the input.**
+
+Not yet fixed, measured: SMART Local 265 (`36-3911499|002`, $378M, 2,490
+participants) files a complete audit whose 4i schedule has `N/A N/A N/A`
+filler columns between the description and the numbers. Four of its seven
+holdings are dropped, leaving ratio 0.441 — below the display bar — where
+ignoring the filler columns yields all seven at ratio 0.988 against plan
+assets. A second, cosmetic defect in the same filing splits capital
+letters ("M utual funds", "M ainStay M K", "M SCI"); one row currently
+parses with the name "M utual fund". Held for its own release so the
+lineup delta can be attributed.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

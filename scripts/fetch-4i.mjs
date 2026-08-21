@@ -21,7 +21,7 @@ import { parse4i, extractPlanFeatures, indexFlags, PARSER_VERSION } from "./lib-
  * encodings that extract as cipher-garbage. Rasterize just those pages and
  * OCR them, then re-run the normal parser on the combined text. Bump
  * OCR_VERSION to re-attempt every no-section filing. */
-const OCR_VERSION = 7; // v7: mixed-case cipher pages join the bad list (Meta class)
+const OCR_VERSION = 8; // v8: OCR cache is keyed by the bad-page LIST, not just the version
 const OCR_MAX_PAGES = 40; // full-OCR budget per filing; TARGETING picks which 40
 const OCR_HEAD_PAGES = 12; // bad-list head reserve (v5, proven on JPM)
 const OCR_NOTES_WINDOW = 30; // absolute-page ceiling of the auditor's notes region
@@ -389,17 +389,31 @@ async function analyzePdf(ack, plan, tag) {
     const bad = findBadPages(text);
     if (bad.length >= 3 && bad.length <= OCR_SKIP_BAD) {
       try {
+        // The cache must be keyed by WHICH pages were OCR'd, not just how
+        // many. v7 changed detection itself (mixed-case cipher pages joined
+        // the bad list), so Meta's bad set went 5 → 12 — but the older-cache
+        // fallback below accepts any v5/v4/v3 file for a ≤40-page filing,
+        // and served back text OCR'd from the five pages that were never
+        // the notes. The fix shipped, the run re-parsed at ov 7, and the
+        // plan stayed blank. Every cache file now carries its bad-page list
+        // and is only reused when that list still matches.
+        const badKey = bad.join(",");
+        const readCache = (v) => {
+          try {
+            const raw = readFileSync(path.join(OCR_CACHE, `${ack}.v${v}.txt`), "utf8");
+            const nl = raw.indexOf("\n");
+            if (!raw.startsWith("#bad:")) return null; // pre-header cache: pages unknown, never trust it
+            return raw.slice(5, nl) === badKey ? raw.slice(nl + 1) : null;
+          } catch { return null; }
+        };
         const cacheFile = OCR_CACHE ? path.join(OCR_CACHE, `${ack}.v${OCR_VERSION}.txt`) : null;
-        let otext = null;
-        if (cacheFile) { try { otext = readFileSync(cacheFile, "utf8"); } catch { /* cache miss */ } }
+        let otext = OCR_CACHE ? readCache(OCR_VERSION) : null;
         // small scans produce identical text across targeting versions
         // (targeting only changes >40-page filings) — accept any older
         // cache for them so version bumps don't re-rasterize ~7k
         // already-done filings
         if (otext === null && OCR_CACHE && bad.length <= OCR_MAX_PAGES) {
-          for (const v of [5, 4, 3]) {
-            try { otext = readFileSync(path.join(OCR_CACHE, `${ack}.v${v}.txt`), "utf8"); break; } catch { /* miss */ }
-          }
+          for (const v of [7, 6, 5, 4, 3]) { otext = readCache(v); if (otext !== null) break; }
         }
         if (otext === null) {
           const t0 = Date.now();
@@ -423,7 +437,7 @@ async function analyzePdf(ack, plan, tag) {
           }
           otext = await ocrPages(dest, pages, path.join(WORK, "ocr-" + ack.slice(-12)), psm);
           console.log(`${tag}: ocr ${Math.min(pages.length, OCR_MAX_PAGES)} pages in ${((Date.now() - t0) / 1000).toFixed(0)}s`);
-          if (cacheFile && otext) { try { writeFileSync(cacheFile, otext); } catch { /* best-effort */ } }
+          if (cacheFile && otext) { try { writeFileSync(cacheFile, `#bad:${badKey}\n${otext}`); } catch { /* best-effort */ } }
         }
         if (otext && otext.replace(/\s+/g, "").length > 500) {
           const combined = text + "\f" + otext;
