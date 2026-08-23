@@ -41,6 +41,16 @@ const ABBREV = [
   [/\bsoc\b/g, "social"], [/\bstk\b/g, "stock"], [/\brtn\b/g, "return"],
   [/\bmm\b/g, "money market"], [/\badm\b/g, "admiral"], [/\binst\b/g, "institutional"],
   [/\bret\b/g, "retirement"], [/\bsvng\b/g, "savings"], [/\beuropac\b/g, "europacific"],
+  /* Measured against the ranked gap list 2026-08-23: these spellings alone
+   * account for ~10k unmatched holdings whose SEC series exists verbatim.
+   * "Vanguard Tgt Rmt 2030 Inv Fund" and "Vanguard Target Retirement 2030
+   * Fund" are the same fund; only the abbreviation stood between them. */
+  [/\btgt\b/g, "target"], [/\brmt\b|\brtmt\b|\bretrmnt\b|\brtm\b|\bretire\b/g, "retirement"],
+  [/\binstl\b|\binstitution\b/g, "institutional"],
+  // SSgA is State Street Global Advisors; SEC registers the funds as "State Street".
+  [/\bssga\b|\bssgs\b|\bssb\b/g, "state street"],
+  [/\bjpm\b|\bjp morgan\b|\bj p morgan\b|\bjpmorgan\b/g, "jpmorgan"],
+  [/\bblk\b/g, "blackrock"],
 ];
 // words that carry no identity — dropped from BOTH sides before comparison
 // "series" is deliberately NOT here: "Fidelity Series Bond Index Fund" is a
@@ -49,7 +59,7 @@ const ABBREV = [
 const NOISE = new Set(["fund", "funds", "the", "inc", "trust", "portfolio", "shares", "share",
   "class", "cl", "account", "of", "and", "co", "company", "lp", "llc", "incorporated"]);
 
-function norm(s) {
+export function norm(s) {
   let t = String(s).toLowerCase()
     .replace(/[®™℠]/g, " ")
     .replace(/[^a-z0-9 ]/g, " ")
@@ -80,6 +90,20 @@ const DISCRIMINATORS = new Set(["value", "growth", "index", "blend", "internatio
   "municipal", "corporate", "government", "treasury", "highyield", "high", "yield",
   "russell", "socially", "esg", "sustainable", "hedged", "unhedged"]);
 
+/* The superset pass drops every filed word the series lacks, so any word that
+ * changes WHAT THE FUND HOLDS has to be checked. DISCRIMINATORS alone was too
+ * narrow: "PIMCO Commodity Real Return Strategy Fund" resolved to PRRIX, the
+ * PIMCO REAL RETURN fund — a TIPS fund standing in for a commodities fund,
+ * because neither "commodity" nor "strategy" was on the list. Asset class,
+ * sector and region words all belong here. */
+const ASSET_WORDS = new Set([...DISCRIMINATORS, "bond", "stock", "stocks", "equity",
+  "equities", "money", "market", "return", "real", "estate", "reit", "tips", "balanced",
+  "commodity", "commodities", "strategy", "strategies", "currency", "gold", "precious",
+  "energy", "technology", "healthcare", "health", "utilities", "financial", "financials",
+  "natural", "resources", "infrastructure", "convertible", "floating", "science",
+  "world", "pacific", "europe", "european", "japan", "china", "asia", "asian",
+  "dividend", "fixed", "allocation", "target", "retirement", "total", "core", "plus"]);
+
 const hintOf = (s) => { const t = norm(s); for (const [k, re] of CLASS_HINTS) if (re.test(t)) return k; return null; };
 
 /* Manager vocabulary, derived from the SEC entity names rather than hand-listed
@@ -91,6 +115,52 @@ const GENERIC_LEAD = new Set(["etf", "etfs", "variable", "insurance", "mutual", 
   "government", "income", "growth", "value", "equity", "bond", "index", "international", "capital",
   "select", "strategic", "advisors", "advisor", "investors", "investment", "investments", "target",
   "retirement", "large", "small", "mid", "short", "long", "high", "real", "new", "north"]);
+
+/* A manager is a PHRASE long enough to name a house, and a one- or two-letter
+ * "manager" names every house. Taking the entity's leading token alone put
+ * "t" (from "T. Rowe Price Growth Stock Fund, Inc."), "j", "x", "m" and the
+ * English word "for" (from "TRUST FOR PROFESSIONAL MANAGERS") into the
+ * vocabulary. "t" is a token of every normalized T. Rowe Price name, so the
+ * manager gate below admitted the entire index for every T. Rowe Price
+ * holding in the universe — the gate was doing nothing exactly where it was
+ * most needed. Extend the phrase until it is distinctive: keep taking tokens
+ * while the phrase so far is generic or three characters or shorter.
+ *
+ * The phrase is built from the entity name WITHOUT the NOISE list applied,
+ * because "funds" is noise inside a series name but is half the house name in
+ * "American Funds". Stripping it produced the phrase "american target date"
+ * for the American Funds Target Date Retirement Series, which no filed name
+ * contains (the vintage year sits between "funds" and "target"), and the whole
+ * 20k-row family failed the gate. Filed names are matched against the same
+ * un-stripped normalization, so both sides keep the house word. */
+const STRUCTURAL = new Set(["trust", "trusts", "fund", "funds", "portfolio", "portfolios",
+  "series", "company", "companies", "group", "the", "of", "for", "and", "inc", "llc", "lp",
+  "plc", "corporation", "corp", "holdings", "shares", "class", "account", "ii", "iii", "iv"]);
+/* Words that describe what a fund HOLDS. A registrant named after its own
+ * product ("BOND FUND OF AMERICA", "INCOME FUND OF AMERICA") yields a phrase
+ * made only of these, and such a phrase names no house — "bond fund" matched
+ * the filed "High Yield Bd Fund", which states no manager at all, and handed
+ * it a ticker. Same failure as the single-letter "t", one level up. A phrase
+ * built entirely from description is rejected; a single long token is kept,
+ * because that is how genuine houses whose name is also a word appear
+ * ("Russell", "Oakmark"). */
+const DESCRIPTIVE = new Set([...DISCRIMINATORS, "bond", "stock", "stocks", "equity",
+  "equities", "money", "market", "return", "estate", "cap", "balanced", "date",
+  "dividend", "fixed", "opportunity", "opportunities", "asset", "allocation",
+  "target", "retirement", "total"]);
+function managerPhrase(entity) {
+  const t = norm(entity).split(" ").filter(Boolean);
+  if (!t.length) return null;
+  let n = 1;
+  // extend while the phrase so far cannot stand for a house on its own
+  while (n < 3 && t.length > n
+    && (t.slice(0, n).join(" ").length <= 4
+      || (n === 1 && (GENERIC_LEAD.has(t[0]) || STRUCTURAL.has(t[0]))))) n++;
+  const parts = t.slice(0, n);
+  const p = parts.join(" ");
+  if (parts.length > 1 && parts.every((w) => DESCRIPTIVE.has(w) || STRUCTURAL.has(w))) return null;
+  return p.length >= 5 || p.includes(" ") ? p : null;
+}
 
 export function buildIndex(indexPath) {
   const j = JSON.parse(fs.readFileSync(indexPath, "utf8"));
@@ -116,6 +186,20 @@ export function buildIndex(indexPath) {
     byLead.set(st[0], arr);
   }
   for (const arr of byLead.values()) arr.sort((a, b) => b[0].length - a[0].length);
+  // Series carrying a vintage year, bucketed by that year, for the year-pinned
+  // pass in resolve(). Keeps that pass to a few dozen candidates instead of
+  // every series in the file.
+  const byYear = new Map();
+  for (const [key, list] of bySeries) {
+    const st = key.split(" ");
+    for (const w of st) {
+      if (!/^(19|20)\d\d$/.test(w)) continue;
+      const arr = byYear.get(w) || [];
+      arr.push([st, list]);
+      byYear.set(w, arr);
+      break;
+    }
+  }
   // "American Funds" and "American Century" are real managers even though
   // "american" is a generic lead -- a two-word manager phrase is kept whole.
   // Managers are PHRASES, not words. Taking the second token when the first is
@@ -125,12 +209,10 @@ export function buildIndex(indexPath) {
   // the manager-less "Large Cap Growth II". A phrase cannot do that: the filed
   // name must literally contain "american growth" to match that registrant.
   for (const [name] of j.funds) {
-    const ent = String(name).split(" :: ")[0];
-    const et = tokens(ent);
-    if (!et.length) continue;
-    MANAGERS.add(GENERIC_LEAD.has(et[0]) && et[1] ? et[0] + " " + et[1] : et[0]);
+    const p = managerPhrase(String(name).split(" :: ")[0]);
+    if (p) MANAGERS.add(p);
   }
-  return { bySeries, byLead, memo: new Map(), generated: j.generated, source: j.source, rows: j.funds.length };
+  return { bySeries, byLead, byYear, managers: MANAGERS, memo: new Map(), generated: j.generated, source: j.source, rows: j.funds.length };
 }
 
 /* Resolve one filed holding name. Returns null, or
@@ -154,6 +236,18 @@ function resolveUncached(idx, filedName) {
   const fset = new Set(ft);
   const key = ft.join(" ");
 
+  // The manager is needed before the year-pinned pass below, not only after,
+  // so it is resolved up front. Un-stripped normalization, to match
+  // managerPhrase's un-stripped entity normalization.
+  const filedNorm = " " + norm(filedName) + " ";
+  const filedMgrs = [];
+  for (const m of MANAGERS) if (filedNorm.includes(" " + m + " ")) filedMgrs.push(m);
+  if (!filedMgrs.length) return null;
+  const mgrHit = (c) => {
+    const hay = " " + norm(c.entity + " " + c.series) + " ";
+    return filedMgrs.some((m) => hay.includes(" " + m + " "));
+  };
+
   let classes = idx.bySeries.get(key);
   let why = "exact";
   if (!classes) {
@@ -171,7 +265,43 @@ function resolveUncached(idx, filedName) {
         if (all) { best = list; bestLen = st.length; bestKey = st; break; }
       }
     }
-    if (!best) return null;
+    /* YEAR-PINNED PASS. The superset test requires the registered name to be
+     * SHORTER than the filed one, and target-date filings are routinely the
+     * other way round: "American Funds 2040 Retirement" is filed for
+     * "American Funds 2040 Target Date Retirement Fund", and the 2010-2025
+     * vintages register as "... Retirement INCOME Fund" — a word the filing
+     * omits. 35,546 holdings sat in that gap.
+     *
+     * Running the subset in the other direction is only safe because a vintage
+     * year pins the product: within ONE manager and ONE year, a target-date
+     * series is unique. All four conditions are required — the filed name
+     * carries a year, names a manager, is a token-subset of the series, and
+     * exactly one series in that manager+year survives. Two candidates (say
+     * Vanguard's "Target Retirement 2025" and "Institutional Target Retirement
+     * 2025") means the filing did not say which, so it resolves to nothing. */
+    if (!best) {
+      const yr = ft.find((w) => /^(19|20)\d\d$/.test(w));
+      // The subset test runs on the fund's name, not its share class. R-6 is
+      // the dominant 401(k) class for American Funds, and "American Funds 2025
+      // Target Date Retirement R6" failed only because "r6" is absent from the
+      // registered series name. Drop the class markers here; the class-hint
+      // step below is what turns them back into the right ticker.
+      const core = ft.filter((w) => !/^(?:r[1-6]|k6|[akyzci]|investor|admiral|adv|advisor)$/.test(w));
+      if (!yr || core.length < 3) return null;
+      const uniq = new Map();
+      for (const [st, list] of idx.byYear.get(yr) || []) {
+        if (st.length - core.length > 3) continue;     // series may add a little, not a lot
+        const sset = new Set(st);
+        let all = true;
+        for (const w of core) if (!sset.has(w)) { all = false; break; }
+        if (!all || !list.some(mgrHit)) continue;
+        uniq.set(st.join(" "), list);
+        if (uniq.size > 1) break;
+      }
+      if (uniq.size !== 1) return null;
+      classes = [...uniq.values()][0];
+      why = "year-pinned";
+    } else {
     classes = best; why = "superset";
     // A superset match must not drop a DISCRIMINATOR. "BLACKROCK RUSSELL 2000
     // VAL IDX FD" is not "Russell 2000 Fund" -- value/index change which
@@ -179,8 +309,9 @@ function resolveUncached(idx, filedName) {
     // states a discriminator the series does not, they are different funds.
     const sset = new Set(bestKey);
     for (const w of ft) {
-      if (!DISCRIMINATORS.has(w) && !/^(19|20)\d\d$/.test(w)) continue;
+      if (!ASSET_WORDS.has(w) && !/^(19|20)\d\d$/.test(w)) continue;
       if (!sset.has(w)) return null;
+    }
     }
   }
 
@@ -189,20 +320,17 @@ function resolveUncached(idx, filedName) {
   // "Total Stock Market Index Trust", and "Government Bond Fund R6" -- which
   // names no manager at all -- was handed to American Century. A fund name
   // without an identifiable manager is not identifiable, full stop.
-  const filedNorm = " " + ft.join(" ") + " ";
-  const filedMgrs = [];
-  for (const m of MANAGERS) if (filedNorm.includes(" " + m + " ")) filedMgrs.push(m);
-  if (!filedMgrs.length) return null;
   // Series names are NOT unique across managers -- "SMALL CAP GROWTH FUND"
   // exists at American Century, DFA and others, and they all share one bucket.
   // Checking that SOME class in the bucket matches the manager let a DFA
   // filing satisfy the gate while an American Century class was handed back as
   // the answer. Filter the bucket to the manager the filing names, and let
   // only those classes supply the ticker.
-  const mine = classes.filter((c) => {
-    const hay = norm(c.entity + " " + c.series);
-    return filedMgrs.some((m) => hay.includes(m));
-  });
+  // The comparison must be on WHOLE TOKENS. `hay.includes("t")` is true of
+  // almost every fund name in existence, so a substring test let a manager
+  // gate built from short phrases pass anything; pad both sides so a phrase
+  // only matches at token boundaries.
+  const mine = classes.filter(mgrHit);
   if (!mine.length) return null;
   classes = mine;
 

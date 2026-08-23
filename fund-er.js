@@ -3,6 +3,69 @@
  * the named fund or its typical institutional share class; collective trusts
  * vary by plan pricing. Everything shown from this table is labeled "est."
  * Order matters: first match wins, so specific patterns come first. */
+
+/* ---- T. Rowe Price name shapes ----------------------------------------------
+ * TRP is the largest single family in the filed universe ($273B of holdings
+ * matched nothing before these rows) and every recordkeeper spells it
+ * differently: "T. Rowe Price Retirement 2035 Fund", "T ROWE PRICE RETIRE
+ * 2035 TR B", "TROWEPRICE RETRMNT 2035 TRST K", "T. ROWE PRICE RTMT 2035 I
+ * FD", "TRP Ret 2035 Active Trust K". One builder per series keeps a row per
+ * vintage readable and puts the share-class rules in a single place.
+ *
+ * A name is REJECTED (left blank) rather than given the Investor ticker when
+ * it names:
+ *   another sponsor — see TRP_SPONSOR below
+ *   advisor / adv, trailing "-R"/" R" — a different share class of the same
+ *                fund. Only Investor and I Class tickers were verified, and
+ *                a wrong class misstates the fee a participant pays
+ *   blend / hybrid / target — separate TRP series with their own tickers
+ *                (Blend has its own rows; Hybrid is trust-only, no
+ *                registered analogue exists, so it stays blank)
+ * The I Class is filed at the END of a name ("... Fund I Class", "... 2040
+ * I", "... Bl Chip Gr I Fd"), which is what I_CLASS matches. */
+const TRP_MGR = "t\\.? ?rowe(?: ?pr\\w*)?";
+/* Another sponsor's fund that merely hires T. Rowe Price as sub-adviser is a
+ * DIFFERENT registered fund with its own ticker: "Empower T. Rowe Price Mid
+ * Cap Growth Fund", "MM Select T. Rowe Price Rtmt 2040 Fund", "JNL/T. Rowe
+ * Price MidCap Growth", "SA/T. Rowe Price Equity Income Strategy". Those get
+ * nothing — the universe sweep caught all four claiming TRP's own tickers.
+ * A collective trust that names its TRUSTEE first ("Great Gray Trust T. Rowe
+ * Price Retirement 2040", "Empower Trust Company, LLC T. Rowe Price
+ * Retirement 2040 Fund") IS the TRP strategy in a wrapper, so a sponsor name
+ * only disqualifies when no trust word follows it. */
+const TRP_SPONSOR = "^(?!.*(?:empower|emp\\b|mm\\b|s(?:el(?:ect|ct)?|lct)\\b|massmutual"
+  + "|jnl|sa/|lvip|lincoln|jackson|transamerica|nationwide|voya|vy\\b|john hancock"
+  + "|brighthouse|met ?life|pacific life|great.?west)(?![\\s\\S]*\\b(?:tr|trust)\\b))";
+const TRP_NOT = TRP_SPONSOR + "(?!.*(?:adv|hybrid|hyb\\b|blend|target|trgt))";
+const I_CLASS = "(?:[^a-z0-9]|fund|fd|cl|class|shares?)*i\\b";
+// a name ENDING in "- R" / "Class R" is the R share class ("T. ROWE PRICE
+// GRTH STK FD - R"), whose ticker is not verified here
+const NOT_R_TAIL = "(?![\\s\\S]*(?:[-\\s]r|\\bclass\\s+r|\\br\\s+class(?:es)?)\\s*$)";
+const TRP_RET = "(?:retire(?:ment)?|retrmnt|rtmt|rtm)\\s*(?:i |date )?";
+// " 2040-R" / " 2040 R" is the R share class; "2040 R1" is a trust class
+const NOT_R = "\\b(?!\\s*-?\\s*r\\b)";
+// a few recordkeepers file the vintage first ("T. Rowe Price 2030 Retirement Fund")
+const trpRet = (y) => new RegExp(TRP_NOT + NOT_R_TAIL + ".*?" + TRP_MGR + ".{0,24}(?:" + TRP_RET + y + NOT_R
+  + "|" + y + "\\s+retire(?:ment)?\\b)", "i");
+const trpRetI = (y) => new RegExp(TRP_NOT + NOT_R_TAIL + ".*?" + TRP_MGR + ".{0,24}(?:" + TRP_RET + y
+  + "|" + y + "\\s+retire(?:ment)?)\\b" + I_CLASS, "i");
+const TRP_BL = TRP_SPONSOR + "(?!.*(?:adv|hybrid|hyb\\b)).*?" + TRP_MGR
+  + ".{0,24}(?:retire(?:ment)?|ret)\\s*blend\\s*";
+const trpBlend = (y) => new RegExp(NOT_R_TAIL + TRP_BL + y + NOT_R, "i");
+const trpBlendI = (y) => new RegExp(NOT_R_TAIL + TRP_BL + y + "\\b" + I_CLASS, "i");
+const TRP_TGT = TRP_SPONSOR + "(?!.*(?:adv|retire|hybrid|blend)).*?" + TRP_MGR + ".{0,16}target\\s*";
+const trpTarget = (y) => new RegExp(NOT_R_TAIL + TRP_TGT + y + NOT_R, "i");
+const trpTargetI = (y) => new RegExp(NOT_R_TAIL + TRP_TGT + y + "\\b" + I_CLASS, "i");
+// single-strategy funds: "<strategy>" and "<strategy> I" / "... Fund I Class"
+const trpFund = (s, no) => new RegExp(
+  TRP_SPONSOR + "(?!.*adv)" + NOT_R_TAIL + (no ? "(?!.*" + no + ")" : "") + ".*?" + TRP_MGR + ".{0,24}" + s, "i");
+const trpI = (s, no) => new RegExp(
+  TRP_SPONSOR + "(?!.*adv)" + NOT_R_TAIL + (no ? "(?!.*" + no + ")" : "") + ".*?" + TRP_MGR + ".{0,16}" + s + I_CLASS, "i");
+// "Value" must follow the manager name directly: "Large Cap Value",
+// "Mid-Cap Value", "U.S. Value Equity" and "Stable Value" are other funds
+const trpValue = (tail) => new RegExp(
+  TRP_SPONSOR + "(?!.*adv)" + NOT_R_TAIL + ".*?" + TRP_MGR + "\\s+value\\b" + tail, "i");
+
 const FUND_ER = [
   // --- Fidelity index ---
   [/fidelity (500|s&p 500) index/i, 0.015],
@@ -60,12 +123,43 @@ const FUND_ER = [
   [/(northern trust|ntgi).*(government|short[- ]term|stif)/i, 0.15],
   [/geode/i, 0.05],
   // --- T. Rowe Price ---
+  // Retirement Blend is priced as ONE all-inclusive fee across every vintage:
+  // 0.41% Investor, 0.24% I Class (2035/2040 prospectus + fact sheets).
+  [trpI("(?:retire(?:ment)?|ret)\\s*blend\\s*(?:20\\d\\d)?", null), 0.24],
+  [/t\.? ?rowe(?: ?pr\w*)?.{0,24}(?:retire(?:ment)?|ret)\s*blend/i, 0.41],
+  // Retirement (active) collective-trust editions — negotiated per plan class
   [/t\.? ?rowe price retirement.*trust/i, 0.37],
-  [/t\.? ?rowe price retirement/i, 0.49],
-  [/t\.? ?rowe price (blue chip|growth stock|large[- ]cap growth)/i, 0.57],
-  [/t\.? ?rowe price mid[- ]cap growth/i, 0.61],
-  [/t\.? ?rowe price mid[- ]cap value/i, 0.65],
-  [/t\.? ?rowe price small[- ]cap/i, 0.66],
+  // Retirement (active) mutual funds — Investor class net ER, per vintage
+  // (fact sheets; the series runs 0.49 short-dated to 0.64 long-dated).
+  // I Class names get the Investor figure as an upper bound: only the 2060
+  // I Class ER (0.46) could be verified, so no I-class row is asserted.
+  [trpRet("2005"), 0.49],
+  [trpRet("2020"), 0.51],
+  [trpRet("2025"), 0.53],
+  [trpRet("2030"), 0.55],
+  [trpRet("2035"), 0.58],
+  [trpRet("2040"), 0.59],
+  [trpRet("2045"), 0.60],
+  [trpRet("2050"), 0.62],
+  [trpRet("2055"), 0.64],
+  [trpRet("2060"), 0.64],
+  [trpRet("2065"), 0.64],
+  // Retirement Balanced / 2010 / 2015 all file 0.49 (fact sheets)
+  [new RegExp(TRP_SPONSOR + ".*?t\\.? ?rowe price retirement", "i"), 0.49],
+  [trpI("bl(?:ue)? chip\\s*(?:growth|gr\\w*)"), 0.57],        // I Class TBCIX
+  [trpFund("(?:bl(?:ue)? chip|bc grwth)"), 0.70],  // Investor TRBCX
+  [trpI("growth stock"), 0.52],                          // I Class PRUFX
+  [trpFund("growth stock"), 0.66],  // Investor PRGFX
+  [trpFund("large[- ]?cap core growth"), 0.56],  // TPLGX
+  [trpFund("(?:large|lrg)[- ]?ca?p growth"), 0.55],  // TRLGX
+  [trpI("mid[- ]?cap growth", "diversified"), 0.63],                    // I Class RPTIX
+  [trpFund("mid[- ]?cap growth", "diversified"), 0.77],  // Investor RPMGX
+  [trpFund("mid[- ]?cap value"), 0.65],
+  [trpFund("new horizons"), 0.64],
+  [trpFund("equity income"), 0.68],
+  [trpFund("institutional small[-. ]?\\s*cap stock"), 0.66],
+  [trpFund("small[-. ]?\\s*cap value"), 0.79],
+  [trpFund("small[-. ]?\\s*cap stock"), 0.92],
   [/t\.? ?rowe price spectrum conservative/i, 0.62],
   [/t\.? ?rowe price stable value/i, 0.3],
   // --- American Funds (R6) ---
@@ -238,7 +332,83 @@ const FUND_TICKER = [
   [/metropolitan west total return|metwest total return/i, "MWTIX"],
   [/baird aggregate bond/i, "BAGIX"],
   [/baird core plus/i, "BCOIX"],
-  [/t\.? ?rowe price blue chip growth fund/i, "TRBCX"],
+  // --- T. Rowe Price, I Class (verified per vintage/fund; these must sit
+  // above the Investor-class rows in FUND_COMPARABLE, which double as the
+  // exact match for a mutual fund that does not state a class) ---
+  [trpRetI("2005"), "TRAJX"],
+  [trpRetI("2010"), "TRPUX"],
+  [trpRetI("2015"), "TRUBX"],
+  [trpRetI("2020"), "TRDBX"],
+  [trpRetI("2025"), "TREHX"],
+  [trpRetI("2030"), "TRFHX"],
+  [trpRetI("2035"), "TRFJX"],
+  [trpRetI("2040"), "TRHDX"],
+  [trpRetI("2045"), "TRIKX"],
+  [trpRetI("2050"), "TRJLX"],
+  [trpRetI("2055"), "TRJMX"],
+  [trpRetI("2060"), "TRLNX"],
+  [trpRetI("2065"), "TRMOX"],
+  [trpI("retirement balanced"), "TRJWX"],
+  [trpBlendI("2020"), "TBLDX"],
+  [trpBlendI("2025"), "TBLEX"],
+  [trpBlendI("2030"), "TBLGX"],
+  [trpBlendI("2035"), "TBLHX"],
+  [trpBlendI("2040"), "TBLJX"],
+  [trpBlendI("2045"), "TBLKX"],
+  [trpBlendI("2050"), "TBLLX"],
+  [trpBlendI("2055"), "TBLMX"],
+  [trpBlendI("2060"), "TBLNX"],
+  // Target series (a lower-equity glide path than Retirement — different
+  // funds, different tickers). Only the vintages whose ticker was verified
+  // appear; the rest stay blank.
+  [trpTargetI("2015"), "TTRTX"],
+  [trpTargetI("2025"), "TRVVX"],
+  [trpTargetI("2030"), "TWRRX"],
+  [trpTargetI("2035"), "TPGPX"],
+  [trpTargetI("2040"), "TRXRX"],
+  [trpTargetI("2045"), "TRFWX"],
+  [trpTargetI("2050"), "TOORX"],
+  [trpTargetI("2055"), "TRPPX"],
+  [trpTargetI("2060"), "TTOIX"],
+  [trpTarget("2010"), "TRROX"],
+  [trpTarget("2015"), "TRRTX"],
+  [trpTarget("2035"), "RPGRX"],
+  [trpTarget("2040"), "TRHRX"],
+  [trpTarget("2050"), "TRFOX"],
+  [trpTarget("2060"), "TRTFX"],
+  // Single-strategy funds, I Class
+  [trpI("bl(?:ue)? chip\\s*(?:growth|gr\\w*)"), "TBCIX"],
+  [trpI("growth stock"), "PRUFX"],
+  [trpI("mid[- ]?cap growth", "diversified"), "RPTIX"],
+  [trpI("mid[- ]?cap value"), "TRMIX"],
+  [trpI("new horizons"), "PRJIX"],
+  [trpI("equity income"), "REIPX"],
+  [trpI("dividend growth"), "PDGIX"],
+  [trpI("small[-. ]?\\s*cap value"), "PRVIX"],
+  [trpI("small[-. ]?\\s*cap stock"), "OTIIX"],
+  [trpI("overseas stock"), "TROIX"],
+  [trpI("all[- ]?cap opportunities"), "PNAIX"],
+  [trpI("capital appreciation"), "TRAIX"],
+  [trpI("equity index 500"), "PRUIX"],
+  // Value Fund I Class — "value" must follow the manager name directly, or
+  // this eats "Large Cap Value I" (a different fund)
+  [trpValue(I_CLASS), "TRPIX"],
+  // Single-strategy funds with no collective-trust edition in the filed
+  // universe (and so no comparable row): Investor class.
+  [trpFund("mid[- ]?cap value"), "TRMCX"],
+  [trpFund("dividend growth"), "PRDGX"],
+  [trpFund("overseas stock"), "TROSX"],
+  [trpFund("all[- ]?cap opportunities"), "PRWAX"],
+  [trpFund("capital appreciation(?! equity etf)"), "PRWCX"],
+  [trpFund("equity index 500"), "PREIX"],
+  [trpFund("health sciences"), "PRHSX"],
+  // "Value Fund" only when Value follows the manager name — "Large Cap
+  // Value", "Mid-Cap Value", "U.S. Value Equity" and "Stable Value" are
+  // different funds (or no fund at all)
+  [trpValue(""), "TRVLX"],
+  // plain Balanced Fund, never "Retirement Balanced"
+  [/^(?!.*retire).*?t\.? ?rowe(?: ?pr\w*)?\s+balanced(?:[^a-z0-9]|fund|fd|cl|class|shares?)*i\b/i, "RBAIX"],
+  [/^(?!.*retire).*?t\.? ?rowe(?: ?pr\w*)?\s+balanced/i, "RPBAX"],
   [/harbor capital appreciation/i, "HACAX"],
   // "Oakmark International Small Cap" is a different fund (OAKEX); the
   // unqualified pattern claimed it as OAKIX until the universe sweep
@@ -292,6 +462,55 @@ const FUND_COMPARABLE = [
   [/vanguard russell 2000 value/i, ["VRTVX", 0.08]],
   [/vanguard russell 2000(?! growth| value)/i, ["VRTIX", 0.08]],
   [/dodge & cox stock/i, ["DODGX", 0.51]],
+  /* T. Rowe Price. The Retirement / Retirement Blend collective trusts are
+   * the trust editions of the identically named registered funds — same
+   * manager, same strategy, same vintage — so they are comparables; the
+   * mutual funds themselves match here too and are returned as exact.
+   * Investor class throughout: these rows are only reached when the filed
+   * name states no share class (I Class is handled in FUND_TICKER above).
+   * NOT here, deliberately: Retirement HYBRID trusts (no registered
+   * edition exists), stable value / common trust vehicles, and bare
+   * "Retirement 2045 Class T6" names that never say who manages them. */
+  // 2005 reuses the 0.49 the 2010/2015 fact sheets show (same short-dated
+  // end of one fee schedule); its own current figure was not published
+  [trpRet("2005"), ["TRRFX", 0.49]],
+  [trpRet("2010"), ["TRRAX", 0.49]],
+  [trpRet("2015"), ["TRRGX", 0.49]],
+  [trpRet("2020"), ["TRRBX", 0.51]],
+  [trpRet("2025"), ["TRRHX", 0.53]],
+  [trpRet("2030"), ["TRRCX", 0.55]],
+  [trpRet("2035"), ["TRRJX", 0.58]],
+  [trpRet("2040"), ["TRRDX", 0.59]],
+  [trpRet("2045"), ["TRRKX", 0.60]],
+  [trpRet("2050"), ["TRRMX", 0.62]],
+  [trpRet("2055"), ["TRRNX", 0.64]],
+  [trpRet("2060"), ["TRRLX", 0.64]],
+  [trpRet("2065"), ["TRSJX", 0.64]],
+  [new RegExp(TRP_NOT + NOT_R_TAIL + ".*?" + TRP_MGR + "\\s+retirement balanced", "i"), ["TRRIX", 0.49]],
+  [trpBlend("2020"), ["TSBAX", 0.41]],
+  [trpBlend("2025"), ["TBLVX", 0.41]],
+  [trpBlend("2030"), ["TBLWX", 0.41]],
+  [trpBlend("2035"), ["TBLYX", 0.41]],
+  [trpBlend("2040"), ["TRBLX", 0.41]],
+  [trpBlend("2045"), ["TRBQX", 0.41]],
+  [trpBlend("2050"), ["TRBSX", 0.41]],
+  [trpBlend("2055"), ["TRBOX", 0.41]],
+  [trpBlend("2060"), ["TRBNX", 0.41]],
+  [trpBlend("2065"), ["TRBPX", 0.41]],
+  // single-strategy funds whose CIT editions show up in filings
+  // ("Blue Chip Growth Trust T4", "US Mid Cap Growth Equity Trust Z")
+  [trpFund("(?:bl(?:ue)? chip|bc grwth)"), ["TRBCX", 0.70]],
+  [trpFund("growth stock"), ["PRGFX", 0.66]],
+  [trpFund("large[- ]?cap core growth"), ["TPLGX", 0.56]],
+  // the Large-Cap Growth Fund was the Institutional Large-Cap Growth Fund
+  // until 2020 and TRLGX is still the class plans hold
+  [trpFund("(?:large|lrg)[- ]?ca?p growth"), ["TRLGX", 0.55]],
+  [trpFund("mid[- ]?cap growth", "diversified"), ["RPMGX", 0.77]],
+  [trpFund("new horizons"), ["PRNHX", 0.64]],
+  [trpFund("equity income"), ["PRFDX", 0.68]],
+  [trpFund("institutional small[-. ]?\\s*cap stock"), ["TRSSX", 0.66]],
+  [trpFund("small[-. ]?\\s*cap value"), ["PRSVX", 0.79]],
+  [trpFund("small[-. ]?\\s*cap stock"), ["OTCFX", 0.92]],
 ];
 
 /* Ticker for a holding. Returns {tk, comparable} or null.

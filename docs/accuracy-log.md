@@ -2584,6 +2584,94 @@ lower-ratio parse of the same filing.** The merge already keeps stored
 entries when a download fails; it should also keep them when a re-parse
 comes back materially worse, and flag rather than overwrite.
 
+## 2026-08-23 — the SEC ticker matcher's manager gate was a no-op for every T. Rowe Price holding
+
+**What was wrong.** `scripts/match-sec-tickers.mjs` refuses to hand a filed
+holding a ticker unless the filed name names the same fund manager as the
+series it matched. That gate had three independent holes, and together they
+made it decorative:
+
+1. **The manager vocabulary admitted single letters.** It was built by taking
+   each SEC registrant's leading token. "T. Rowe Price Growth Stock Fund,
+   Inc." contributed **`"t"`**; "J.P. Morgan Exchange-Traded Fund Trust"
+   contributed `"j"`; "X-Square Balanced Fund, LLC" contributed `"x"`; "M
+   Fund Inc" contributed `"m"`. "TRUST FOR PROFESSIONAL MANAGERS"
+   contributed the English word **`"for"`**. `"t"` is a token of every
+   normalized T. Rowe Price name, so every TRP holding in the universe
+   presented a satisfied manager gate.
+2. **The bucket filter compared substrings, not tokens** —
+   `hay.includes(m)` with `m = "t"` is true of essentially every fund name in
+   the SEC file. Even a correct short manager phrase could not constrain
+   anything.
+3. **Registrants named after their own product leaked descriptive phrases.**
+   "BOND FUND OF AMERICA" yielded the manager `"bond fund"`, which matched
+   the filed `"High Yield Bd Fund"` — a string that names no manager at all —
+   and handed it a ticker.
+
+**Also found in the same review**, and separately wrong: the superset pass
+checked only `DISCRIMINATORS` for words it was dropping, and neither
+"commodity" nor "strategy" was on that list. **"PIMCO Commodity Real Return
+Strategy Fund" resolved to PRRIX — the PIMCO Real Return fund.** A TIPS fund
+was standing in for a commodities fund, at a different fee, under a ticker
+asserted as fact.
+
+**Blast radius.** None live. The matcher is committed but was never wired
+into the pipeline or the site, and its output has never been published. The
+44.0% coverage figure reported to the owner on 2026-08-23 was measured
+behind the broken gate and is withdrawn.
+
+**The change.**
+- `managerPhrase()` builds a manager as a PHRASE, extending while the phrase
+  so far is generic or ≤4 characters, so "t" becomes "t rowe" and "j p"
+  becomes "j p morgan". It is built from the entity name WITHOUT the NOISE
+  list applied, because "funds" is noise inside a series name but is half the
+  house name in "American Funds" — stripping it produced "american target
+  date", which no filed name contains, and failed that whole 20k-row family.
+- A phrase built entirely from description or structure words is rejected, so
+  "bond fund", "income fund", "growth fund", "total fund", "target portfolio"
+  and "international growth" leave the vocabulary while "first trust",
+  "first eagle", "value line", "global x" and "american funds" stay.
+- The bucket filter matches on token boundaries.
+- The superset pass now checks `ASSET_WORDS` — asset class, sector and region
+  — instead of the narrower `DISCRIMINATORS`. "PIMCO Commodity Real Return
+  Strategy Fund" now resolves to nothing rather than to the wrong fund.
+
+**The prevention.** `scripts/ticker-precision.mjs` samples matched holdings
+**stratified by match reason** (`exact`, `superset`, `year-pinned`, `+class`,
+`+ambiguous`), one row per distinct filed string, and prints filed name
+against SEC series for hand review. An unstratified sample hides exactly the
+paths that fail: the common reasons are overwhelmingly right, and drown the
+rare ones. Every one of the four defects above was found by reading that
+output. Nothing from the matcher ships without a pass through it.
+
+## 2026-08-23 — rejected: inferring a fund's manager from the rest of the plan's lineup
+
+**The idea, and why it was tempting.** 478,611 filed holdings name no manager
+at all ("TARGET RETIREMENT 2030", "500 Index Fund", "Large Cap Growth R6") —
+30% of every row, and the single largest bucket. Recordkeepers abbreviate
+consistently within one filing, so a lineup that spells "Vanguard 500 Index
+Fund" elsewhere should identify its terse rows. Measured: **68.9% of those
+rows sit in a plan with a single dominant manager**, and prefixing that
+manager resolved 52,201 of them.
+
+**Why it was rejected.** The sample was full of cross-manager contamination,
+because the rows that name no manager *we recognise* are frequently rows that
+name a manager perfectly well in words the vocabulary missed:
+
+```
+fidelity   + AMERICAN EUROPACIFIC GROWTH R6   -> FDGRX   (American Funds' fund, Fidelity's ticker)
+vanguard   + Great Gray Mid Cap Growth Fund   -> VMGRX   (Great Gray is the TRUSTEE)
+blackrock  + TRP Inst Lg Cp Core Grwth        -> WLCGX   (T. Rowe Price's fund)
+t          + JPM Large Cap Growth Fund        -> DTLGX   (JPMorgan's fund)
+t          + Frontegra Small Cap Core Fund    -> JAHBX
+```
+
+A plan's dominant manager is evidence about a name that says nothing; it is
+not evidence about a name that says something we failed to read. Separating
+those two cases reliably is the same problem as reading the name, so the
+technique buys nothing it does not also cost. Recorded here so it is not
+re-proposed: the yield is real, the precision is not.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
