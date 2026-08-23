@@ -165,7 +165,10 @@ const ABBREV = [
 ];
 // eslint-disable-next-line no-unused-vars
 function expandFundName(name) {
-  let s = String(name);
+  // (R)/(TM)/(SM) marks sit mid-name in recordkeeper feeds and broke every
+  // contiguous pattern: "Fidelity(R) Growth Company" never matched
+  // /fidelity growth company/ -- $43.5B of holdings across the universe.
+  let s = String(name).replace(/[\u00ae\u2122\u2120]/g, " ");
   for (const [re, full] of ABBREV) s = s.replace(re, full);
   return s.replace(/\s{2,}/g, " ").trim();
 }
@@ -274,6 +277,20 @@ const FUND_COMPARABLE = [
   [/vanguard.*total stock market index/i, ["VTSAX", 0.04]],
   [/oakmark international(?!\s+small)|harris.*oakmark.*international(?!\s+small)/i, ["OAKIX", 0.98]],
   [/pimco total return/i, ["PTTRX", 0.46]],
+  // Fidelity files its CIT editions as "... Pool Class S/K" — same manager and
+  // same strategy as the registered fund, which is the bar for a comparable
+  [/fidelity.{0,4} ?contrafund/i, ["FCNTX", 0.39]],
+  [/fidelity.{0,4} ?growth company/i, ["FDGRX", 0.61]],
+  [/fidelity.{0,4} ?low[- ]priced stock/i, ["FLPSX", 0.58]],
+  [/fidelity.{0,4} ?diversified international/i, ["FDIVX", 0.60]],
+  [/fidelity.{0,4} ?blue chip growth/i, ["FBGRX", 0.48]],
+  // Vanguard's Russell index trusts map 1:1 to the institutional funds
+  [/vanguard russell 1000 growth/i, ["VRGWX", 0.07]],
+  [/vanguard russell 1000 value/i, ["VRVIX", 0.07]],
+  [/vanguard russell 1000(?! growth| value)/i, ["VRNIX", 0.07]],
+  [/vanguard russell 2000 growth/i, ["VRTGX", 0.08]],
+  [/vanguard russell 2000 value/i, ["VRTVX", 0.08]],
+  [/vanguard russell 2000(?! growth| value)/i, ["VRTIX", 0.08]],
   [/dodge & cox stock/i, ["DODGX", 0.51]],
 ];
 
@@ -289,6 +306,12 @@ function fundTickerInfo(name, type) {
     || /collective trust|pooled separate/i.test(type || "");
   if (!pooled) {
     for (const [re, tk] of FUND_TICKER) if (re.test(name) || re.test(n)) return { tk, comparable: false };
+    // The comparable table lists retail funds. When the holding is NOT a
+    // pooled vehicle, a match there is the fund itself, not an analogue --
+    // exact, no asterisk. Without this, every target-date MUTUAL fund
+    // ("Vanguard Target Retirement 2040 Fund", $197B universe-wide) fell
+    // through to nothing while its trust edition resolved fine.
+    for (const [re, pair] of FUND_COMPARABLE) if (re.test(name) || re.test(n)) return { tk: pair[0], comparable: false };
     return null;
   }
   // a stable value / guaranteed vehicle has no registered analogue at all
