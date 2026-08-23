@@ -38,7 +38,11 @@ const FUND_ER = [
   [/vanguard wellington/i, 0.17],
   [/vanguard primecap/i, 0.31],
   [/vanguard windsor/i, 0.3],
+  [/vanguard cash reserves federal money market/i, 0.10],
   [/vanguard federal money market/i, 0.11],
+  [/vanguard explorer/i, 0.30],
+  [/vanguard ftse social index/i, 0.12],
+  [/vanguard small[- ]?(cap )?value index/i, 0.06],
   // --- BlackRock ---
   [/blackrock lifepath index/i, 0.09],
   [/blackrock lifepath/i, 0.2],
@@ -119,12 +123,60 @@ const FUND_ER = [
   [/stable value|managed income|guaranteed|gic\b/i, 0.35],
 ];
 
+/* ---- recordkeeper abbreviations ---------------------------------------------
+ * Big plans file the recordkeeper's SHORT name, not the fund's: Amazon's 4i
+ * lists "VANG EXPLORER ADM", "VANG FTSE SOC IDX IS", "AF EUROPAC GROWTH R6".
+ * Every pattern below expects the written-out name, so these rows matched
+ * nothing and showed a blank ticker and no ER. Expansion happens only for
+ * LOOKUP — the filed name is what the table still displays.
+ * Only unambiguous contractions are listed. "IS" is expanded solely at the end
+ * of a name (a share class there, but the verb anywhere else), and no entry
+ * invents a share class the filed name doesn't state. */
+const ABBREV = [
+  [/\bVANG\b|\bVG\b/gi, "Vanguard"],
+  [/\bAF\b/gi, "American Funds"],
+  [/\bAM ?FDS\b/gi, "American Funds"],
+  [/\bTRP\b/gi, "T. Rowe Price"],
+  [/\bOAKMRK\b/gi, "Oakmark"],
+  [/\bSVNG\b/gi, "Savings"],
+  [/\bRET\b/gi, "Retirement"],
+  [/\bIDX\b/gi, "Index"],
+  [/\bINTL\b/gi, "International"],
+  [/\bMKT\b|\bMK\b/gi, "Market"],
+  [/\bTL\b/gi, "Total"],
+  [/\bTOT\b/gi, "Total"],
+  [/\bBD\b/gi, "Bond"],
+  [/\bSM\b/gi, "Small"],
+  [/\bLG\b/gi, "Large"],
+  [/\bVAL\b/gi, "Value"],
+  [/\bGRWTH\b|\bGRTH\b/gi, "Growth"],
+  [/\bSOC\b/gi, "Social"],
+  [/\bSTK\b/gi, "Stock"],
+  [/\bRTN\b/gi, "Return"],
+  // "INC" is Incorporated almost everywhere; inside a target-date name it is
+  // the Income vintage ("VANGUARD TARGET INC")
+  [/\bTARGET INC\b/gi, "Target Retirement Income"],
+  [/\bEUROPAC\b/gi, "EuroPacific"],
+  [/\bCR FED MM\b/gi, "Cash Reserves Federal Money Market"],
+  [/\bMM\b/gi, "Money Market"],
+  [/\bADM\b/gi, "Admiral"],
+  [/\bINST\b/gi, "Institutional"],
+  [/\bIS$/i, "Institutional Shares"],
+];
+// eslint-disable-next-line no-unused-vars
+function expandFundName(name) {
+  let s = String(name);
+  for (const [re, full] of ABBREV) s = s.replace(re, full);
+  return s.replace(/\s{2,}/g, " ").trim();
+}
+
 // eslint-disable-next-line no-unused-vars
 function fundER(name) {
   if (!name) return null;
   if (/self-directed|brokerage|individually listed|participant loan/i.test(name)) return null;
   if (/common stock|company stock|employer stock/i.test(name)) return null;
-  for (const [re, er] of FUND_ER) if (re.test(name)) return er;
+  const n = expandFundName(name);
+  for (const [re, er] of FUND_ER) if (re.test(name) || re.test(n)) return er;
   return null;
 }
 
@@ -155,7 +207,7 @@ const FUND_TICKER = [
   [/fidelity diversified international/i, "FDIVX"],
   [/fidelity otc/i, "FOCPX"],
   // Vanguard — only class-explicit or single-purpose names
-  [/vanguard 500 index (adm|admiral)/i, "VFIAX"],
+  [/vanguard 500 index.{0,12}(adm|admiral)/i, "VFIAX"],
   [/vanguard institutional index/i, "VINIX"],
   [/vanguard total stock market index/i, "VTSAX"],
   [/vanguard total international stock (index|market)/i, "VTIAX"],
@@ -166,7 +218,11 @@ const FUND_TICKER = [
   [/vanguard wellington/i, "VWENX"],
   [/vanguard primecap/i, "VPMAX"],
   [/vanguard windsor ii/i, "VWNAX"],
+  [/vanguard cash reserves federal money market.{0,12}(adm|admiral)/i, "VMRXX"],
   [/vanguard federal money market/i, "VMFXX"],
+  [/vanguard explorer.{0,12}(adm|admiral)/i, "VEXRX"],
+  [/vanguard ftse social index.{0,24}institutional/i, "VFTNX"],
+  [/vanguard small[- ]?(cap )?value index.{0,16}institutional/i, "VSIIX"],
   // other managers with distinctive single-strategy names
   [/dodge & cox stock/i, "DODGX"],
   [/dodge & cox income/i, "DODIX"],
@@ -181,15 +237,68 @@ const FUND_TICKER = [
   [/baird core plus/i, "BCOIX"],
   [/t\.? ?rowe price blue chip growth fund/i, "TRBCX"],
   [/harbor capital appreciation/i, "HACAX"],
-  [/oakmark international/i, "OAKIX"],
+  // "Oakmark International Small Cap" is a different fund (OAKEX); the
+  // unqualified pattern claimed it as OAKIX until the universe sweep
+  [/oakmark international(?!\s+small)/i, "OAKIX"],
   [/mfs value fund/i, "MEIKX"],
 ];
 
+/* ---- comparable registered funds --------------------------------------------
+ * A collective trust has NO ticker and NO public expense ratio — its fee is
+ * negotiated per plan. But most large-plan CITs are the trust edition of a
+ * named retail fund, and naming that fund tells a participant what they
+ * actually hold. Those are marked "*" and labelled "comparable fund"; the
+ * comparable's expense ratio is the RETAIL fund's, and a plan's CIT class is
+ * usually cheaper, so it is shown as an upper-bound reference, never as the
+ * plan's own fee.
+ * Strict rule for entries here: the filed name must identify the same manager
+ * AND the same strategy as one specific registered fund. Generic index trusts
+ * whose benchmark the name never states (e.g. "SSGA LG CAP GROWTH") get
+ * nothing — guessing their index would be invention. */
+const FUND_COMPARABLE = [
+  [/vanguard target (retirement )?income/i, ["VTINX", 0.08]],
+  [/vanguard target (retirement )?2020/i, ["VTWNX", 0.08]],
+  [/vanguard target (retirement )?2025/i, ["VTTVX", 0.08]],
+  [/vanguard target (retirement )?2030/i, ["VTHRX", 0.08]],
+  [/vanguard target (retirement )?2035/i, ["VTTHX", 0.08]],
+  [/vanguard target (retirement )?2040/i, ["VFORX", 0.08]],
+  [/vanguard target (retirement )?2045/i, ["VTIVX", 0.08]],
+  [/vanguard target (retirement )?2050/i, ["VFIFX", 0.08]],
+  [/vanguard target (retirement )?2055/i, ["VFFVX", 0.08]],
+  [/vanguard target (retirement )?2060/i, ["VTTSX", 0.08]],
+  [/vanguard target (retirement )?2065/i, ["VLXVX", 0.08]],
+  [/vanguard target (retirement )?2070/i, ["VSVNX", 0.08]],
+  [/vanguard (institutional )?(500|s&p 500) index/i, ["VFIAX", 0.04]],
+  [/vanguard.*total international stock.*(index|market)/i, ["VTIAX", 0.09]],
+  [/vanguard.*total bond market index/i, ["VBTLX", 0.05]],
+  [/vanguard.*total stock market index/i, ["VTSAX", 0.04]],
+  [/oakmark international(?!\s+small)|harris.*oakmark.*international(?!\s+small)/i, ["OAKIX", 0.98]],
+  [/pimco total return/i, ["PTTRX", 0.46]],
+  [/dodge & cox stock/i, ["DODGX", 0.51]],
+];
+
+/* Ticker for a holding. Returns {tk, comparable} or null.
+ * comparable=true means "this is what the holding tracks", not "this is the
+ * holding" — the caller must render the asterisk and the footnote. */
+// eslint-disable-next-line no-unused-vars
+function fundTickerInfo(name, type) {
+  if (!name) return null;
+  if (/brokerage|self-directed|common stock|company stock|employer (security|stock)|participant loan|maturing through/i.test(name)) return null;
+  const n = expandFundName(name);
+  const pooled = /trust|commingled|collective|pool\b|unitized|separate account|\bcit\b|annuity|tiaa traditional|guaranteed|\bgic\b|stable value|separately managed/i.test(name)
+    || /collective trust|pooled separate/i.test(type || "");
+  if (!pooled) {
+    for (const [re, tk] of FUND_TICKER) if (re.test(name) || re.test(n)) return { tk, comparable: false };
+    return null;
+  }
+  // a stable value / guaranteed vehicle has no registered analogue at all
+  if (/stable value|guaranteed|\bgic\b|annuity|tiaa traditional|retirement savings trust/i.test(n)) return null;
+  for (const [re, pair] of FUND_COMPARABLE) if (re.test(name) || re.test(n)) return { tk: pair[0], comparable: true, er: pair[1] };
+  return null;
+}
+
 // eslint-disable-next-line no-unused-vars
 function fundTicker(name) {
-  if (!name) return null;
-  // institutional vehicles and non-fund rows never get a ticker
-  if (/trust|commingled|collective|pool\b|unitized|separate account|\bcit\b|annuity|tiaa traditional|guaranteed|\bgic\b|stable value|separately managed|brokerage|self-directed|common stock|company stock|participant loan/i.test(name)) return null;
-  for (const [re, tk] of FUND_TICKER) if (re.test(name)) return tk;
-  return null;
+  const info = fundTickerInfo(name, "");
+  return info && !info.comparable ? info.tk : null;
 }

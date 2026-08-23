@@ -964,6 +964,7 @@
     const tab = hasSma ? (state.lineupTab[plan.id] || "menu") : "menu";
     const list = tab === "sma" ? lu.sma : orderLineup(lu.funds);
     const total = list.reduce((s, f) => s + f.value, 0);
+    let starred = false;
     const rows = list.map((f) => {
       // a holding Schedule D reports as a collective trust is NOT the
       // same-named mutual fund: CIT pricing is negotiated per plan and is not
@@ -974,13 +975,23 @@
       // flexPath vintages at 0.10% and left their siblings blank in one
       // table (Swinerton).
       const noPublicPrice = f.cit || /collective trust|pooled separate/i.test(f.type || "");
-      const er = tab === "menu" && !noPublicPrice ? fundER(f.name) : null;
-      const tk = tab === "menu" ? fundTicker(f.name) : null;
+      // A collective trust has no ticker and no published fee. Where its name
+      // identifies the trust edition of a specific registered fund, that fund
+      // is shown with a "*" — what the holding tracks, not what it is; its
+      // expense ratio is the RETAIL class, an upper bound on the plan's own.
+      const info = tab === "menu" ? fundTickerInfo(f.name, f.type) : null;
+      // employer stock IS a listed security: the plan's own ticker names it
+      const stockRow = /company stock|employer (security|stock)/i.test((f.type || "") + " " + f.name);
+      const tk = stockRow ? (plan.ticker || null) : (info ? info.tk : null);
+      const star = !stockRow && info && info.comparable;
+      if (star) starred = true;
+      const er = tab !== "menu" || stockRow ? null
+        : star ? info.er : (noPublicPrice ? null : fundER(f.name));
       return `
       <tr>
-        <td class="fund-name-col"><div class="fund-name">${esc(f.name)}</div>${tk ? `<div class="fund-ticker">${esc(tk)}</div>` : ""}</td>
+        <td class="fund-name-col"><div class="fund-name">${esc(f.name)}</div>${tk ? `<div class="fund-ticker">${esc(tk)}${star ? "*" : ""}</div>` : ""}</td>
         <td class="fund-type">${esc(f.type || "—")}</td>
-        <td class="num">${er != null ? er.toFixed(er < 0.1 ? 3 : 2) + "%" : "—"}</td>
+        <td class="num">${er != null ? er.toFixed(er < 0.1 ? 3 : 2) + "%" + (star ? "*" : "") : "—"}</td>
         <td class="num">${money(f.value / 1e6)}</td>
         <td class="num">${total ? ((f.value / total) * 100).toFixed(1) + "%" : "—"}</td>
       </tr>`;
@@ -1001,7 +1012,7 @@
           : "Securities itemized in the filing — managed-account or participant-brokerage assets, not separate menu choices")
       : lu.fromTrust
         ? `Holdings of ${esc(lu.trustName)} — this plan invests through the master trust${lu.sisters > 1 ? ` alongside ${lu.sisters - 1} sister plan${lu.sisters > 2 ? "s" : ""}` : ""}${lu.trustAssets ? ` · trust total ${money(lu.trustAssets / 1e6)}` : ""} · percentages are of the trust, not this plan · tickers shown where the filed name identifies a registered fund · expense ratios are estimates`
-        : `${esc(lu.source)} · values as filed · tickers shown where the filed name identifies a registered fund · expense ratios are estimates from public fund data`;
+        : `${esc(lu.source)} · values as filed · tickers are exact where the filed name identifies a registered fund, and marked * where a collective trust\u2019s registered equivalent is shown instead · expense ratios are estimates`;
     // Employer-directed money sits in the same 4i table as the menu. Where
     // the filing says so, say so — Swinerton's company stock is half the
     // table and no participant chose it, so a bare "% of holdings" column
@@ -1022,7 +1033,9 @@
         <thead><tr><th class="fund-name-col">Holding</th><th>Type</th><th>Est. ER</th><th>Value</th><th>% of ${tab === "sma" ? "account" : (lu.fromTrust ? "trust" : "holdings")}</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
-    </div>`;
+    </div>
+    ${starred ? `<p class="fund-note"><strong>*Comparable fund.</strong> That holding is a collective trust or separate account — it has no ticker and no published expense ratio, because its fee is negotiated by the plan. The fund shown is its registered equivalent, so you can look up what it holds; the plan's trust class is normally <em>cheaper</em> than the retail fee shown, so read it as a ceiling, not the plan's price.</p>` : ""}
+    ${tab === "menu" && list.some((f) => !fundTickerInfo(f.name, f.type) && !/company stock|employer (security|stock)|brokerage/i.test((f.type || "") + " " + f.name)) ? `<p class="fund-note">Holdings with no ticker are pooled vehicles whose filed name doesn't identify a specific registered fund — naming one would be a guess.</p>` : ""}`;
   }
 
   function fundTable(plan) {

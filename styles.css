@@ -444,3 +444,12 @@ main { max-width: 1060px; margin: 0 auto; padding: 0 20px 48px; }
   letter-spacing: .02em;
   color: rgba(255, 255, 255, .62);
 }
+
+/* footnotes under the holdings table — the "*Comparable fund" explainer */
+.fund-note {
+  margin: 8px 2px 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted, #6b7280);
+}
+.fund-note strong { color: var(--fg, #111827); }
