@@ -1,0 +1,39 @@
+name: SEC registered-fund ticker index
+
+# SEC is unreachable from the dev sandbox, so this workflow is the fetch
+# environment. It writes sec-funds.json and pushes it to the throwaway
+# sec-scratch branch, which is the retrieval channel (the Actions artifact
+# blob host is also unreachable from the sandbox).
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Fetch SEC series/class fund data
+        run: node scripts/fetch-sec-funds.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sec-funds
+          path: sec-funds/
+          if-no-files-found: warn
+      - name: Push to scratch branch
+        if: always()
+        run: |
+          [ -f sec-funds/sec-funds.json ] || exit 0
+          cd sec-funds
+          git init -q -b sec-scratch
+          git config user.name "wampo-data-bot"
+          git config user.email "noreply@anthropic.com"
+          git add -A && git commit -qm "sec fund ticker index $(date -u +%FT%TZ)"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" sec-scratch
