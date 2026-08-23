@@ -74,7 +74,28 @@ async function discover() {
   return [...new Set(found)];
 }
 
+/* CONFIRMED by the probe run (#2, 2026-08-23): 200, 8,051,160 bytes, header
+ *   Reporting File Number,CIK Number,Entity Name,Entity Org Type,Series ID,
+ *   Series Name,Class ID,Class Name,Class Ticker,Address_1,…
+ * Note the shape my guesses got wrong: HYPHENS in the file name, and the
+ * directory has no "and" in it. Discovery stays as the fallback so a future
+ * path change is self-healing rather than another round of 404s. */
+const CONFIRMED = [
+  "https://www.sec.gov/files/investment/data/other/investment-company-series-class-information/investment-company-series-class-2026.csv",
+  "https://www.sec.gov/files/investment/data/other/investment-company-series-class-information/investment-company-series-class-2025.csv",
+];
+
 async function fetchSeriesClass() {
+  for (const url of CONFIRMED) {
+    try {
+      const t = await get(url);
+      if (t && t.length > 5000 && /series/i.test(t.slice(0, 2000))) {
+        console.log(`series/class file: ${url} (${(t.length / 1e6).toFixed(1)} MB)`);
+        console.log(`  header: ${t.slice(0, t.indexOf("\n"))}`);
+        return { url, csv: t };
+      }
+    } catch (e) { console.log(`  confirmed URL failed, falling back to discovery: ${e.message}`); }
+  }
   const candidates = await discover();
   if (!candidates.length) throw new Error("no candidate data links found on any SEC index page — see the pages probed above");
   for (const url of candidates) {
