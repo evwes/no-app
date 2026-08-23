@@ -42,28 +42,54 @@ async function get(url, kind = "text") {
   }
 }
 
-/* The series/class file is published per year and the path has changed shape
- * over time, so try the known forms newest-first and use the first that
- * answers. Every candidate is logged so a future break is diagnosable. */
-async function fetchSeriesClass() {
-  const year = new Date().getUTCFullYear();
-  const candidates = [];
-  for (const y of [year, year - 1, year - 2]) {
-    candidates.push(`https://www.sec.gov/files/investment/data/other/investment-company-series-class-information/investment_company_series_class_${y}.csv`);
-    candidates.push(`https://www.sec.gov/files/investment/data/other/investment-company-series-and-class-information/investment_company_series_class_${y}.csv`);
-    candidates.push(`https://www.sec.gov/open/investment-company-series-class-${y}.csv`);
+/* DISCOVERY, not guessing. Run #1 tried nine invented paths and got nine
+ * 404s — the file's URL is not something to recall, it is something to look
+ * up. This asks SEC's own landing pages where the data is, and follows the
+ * link they give. MODE=probe prints everything it finds and exits without
+ * failing, so one Actions run tells us the real path. */
+const INDEX_PAGES = [
+  "https://www.sec.gov/dera/data/investment-company-series-and-class-information",
+  "https://www.sec.gov/about/opendatasetsshtmlinvestment_company",
+  "https://www.sec.gov/open/datasets-investment_company",
+  "https://www.sec.gov/data-research/sec-markets-data/investment-company-series-class-information",
+  "https://www.sec.gov/data-research/sec-markets-data",
+  "https://www.sec.gov/open/datasets",
+];
+
+async function discover() {
+  const found = [];
+  for (const page of INDEX_PAGES) {
+    let html;
+    try { html = await get(page); } catch (e) { console.log(`index ${page}: ${e.message}`); continue; }
+    console.log(`index ${page}: ${html.length} bytes`);
+    const links = [...html.matchAll(/href="([^"]+\.(?:csv|json|zip))"/gi)].map((m) => m[1]);
+    const rel = links.filter((h) => /series|class|company_tickers|investment/i.test(h));
+    for (const h of new Set(rel)) {
+      const abs = h.startsWith("http") ? h : "https://www.sec.gov" + (h.startsWith("/") ? h : "/" + h);
+      console.log(`   candidate: ${abs}`);
+      found.push(abs);
+    }
+    if (!rel.length && links.length) console.log(`   (${links.length} data links, none matched series/class)`);
   }
+  return [...new Set(found)];
+}
+
+async function fetchSeriesClass() {
+  const candidates = await discover();
+  if (!candidates.length) throw new Error("no candidate data links found on any SEC index page — see the pages probed above");
   for (const url of candidates) {
+    if (!/\.csv$/i.test(url)) continue;
     try {
       const t = await get(url);
       if (t && t.length > 5000 && /series/i.test(t.slice(0, 2000))) {
         console.log(`series/class file: ${url} (${(t.length / 1e6).toFixed(1)} MB)`);
+        console.log(`  header: ${t.slice(0, t.indexOf("\n"))}`);
         return { url, csv: t };
       }
-      console.log(`  rejected ${url}: ${t ? t.length + " bytes, no header match" : "empty"}`);
-    } catch { /* try the next shape */ }
+      console.log(`  rejected ${url}: ${t ? t.length + " bytes, no series header" : "empty"}`);
+    } catch (e) { console.log(`  ${url}: ${e.message}`); }
   }
-  throw new Error("no series/class file reachable — inspect the candidates above");
+  throw new Error("candidates found but none carried a series header — see above");
 }
 
 // minimal CSV reader: SEC quotes fields containing commas
@@ -87,6 +113,28 @@ function parseCsv(text) {
 
 const main = async () => {
   mkdirSync(OUT, { recursive: true });
+
+  // MODE=probe: report what SEC actually serves and stop. One run answers
+  // "where is the file" without burning attempts on invented URLs.
+  if (process.env.MODE === "probe") {
+    const cands = await discover();
+    console.log(`\ncandidates found: ${cands.length}`);
+    for (const c of cands) {
+      try {
+        const res = await fetch(c, { method: "GET", headers: HDRS });
+        const body = await res.text();
+        console.log(`  ${res.status}  ${String(res.headers.get("content-type")).slice(0, 40).padEnd(42)} ${String(body.length).padStart(10)}  ${c}`);
+        if (res.ok && /\.csv$/i.test(c) && body.length > 1000) console.log(`        header: ${body.slice(0, body.indexOf("\n")).slice(0, 300)}`);
+      } catch (e) { console.log(`  ERR ${e.message}  ${c}`); }
+    }
+    // also confirm the ticker file, which is the one URL run #1 never reached
+    try {
+      const j = await get("https://www.sec.gov/files/company_tickers_mf.json", "json");
+      console.log(`\ncompany_tickers_mf.json OK: fields=${JSON.stringify(j.fields)} rows=${j.data.length}`);
+      console.log(`  sample: ${JSON.stringify(j.data.slice(0, 3))}`);
+    } catch (e) { console.log("company_tickers_mf.json: " + e.message); }
+    return;
+  }
 
   const { url, csv } = await fetchSeriesClass();
   const rows = parseCsv(csv);
