@@ -1653,3 +1653,132 @@ holding. The fix is a parser change and a PARSER_VERSION bump; the specimens
 that must all pass together are HP Inc. (join (a)+(b)), Sanofi (keep (a), (b)
 is `Common Trust`), Eversource and Iowa Health (the parser already flips
 per-row), and Arcadis (it already joins, sometimes).
+---
+
+## (10 fund report) #10 — 2026-08-24 — the large-plan stratum, and a first assets-weighted range
+
+**Running count of the column-(a) defect, hand-verified (cumulative):**
+
+| | filings |
+|---|---:|
+| **CONFIRMED** issuer column present in the 4i table and discarded | **60** |
+| **DISPROVED** — filing read, no column (a) to drop | **29** |
+| **PARTIAL** — a minority of rows carry a discarded issuer | **8** |
+| **UNVERIFIABLE** — source filing not in hand | **1** |
+| hand-read to date | 98 |
+
+### Why this batch exists
+
+Reports #8 and #9 measured the defect on a random sample of the candidate frame
+and deliberately refused to convert it to dollars. The reason is in the frame's
+own shape:
+
+```
+frame: 5,314 lineups, $1,091B
+  >= $1B        129 lineups   $798B    73.1% of frame assets
+  $100M - $1B   688 lineups   $191B    17.5%
+  $10M - $100M  2,948 lineups  $95B     8.7%
+  < $10M        1,549 lineups   $9B     0.8%
+```
+
+Three-quarters of the money sits in 129 lineups — and those are precisely the
+plans where reports #3–#7 kept finding *other* defects. So the dollar question
+is really a question about those 129. `docs/filing-worklist-big.json` is that
+stratum, shuffled with its own seed (99991); this batch is the first 10 of it.
+
+### Result in the ≥$1B stratum: 4 of 10, against 34 of 40 in the frame overall
+
+| ack | plan assets | rows losing an issuer | verdict |
+|---|---:|---:|---|
+| `20251015122459NAL0009204242001` | $1.24B | 25 / 26 | confirmed |
+| `20251003132311NAL0001451697001` | $1.24B | 32 / 33 | confirmed |
+| `20251015144139NAL0002471715001` | $1.32B | 17 / 17 | confirmed |
+| `20250910093647NAL0020983057001` | $1.18B | 45 / 46 | confirmed |
+| `20251013180453NAL0001710769001` | $1.11B | 19 / 77 | partial |
+| `20251014105114NAL0005497426001` | $1.02B | 10 / 26 | partial |
+| `20251013085832NAL0000397331001` | $1.40B | 1 / 24 | disproved |
+| `20251015155740NAL0002707907001` | $2.04B | 0 / 9 | **other defect** |
+| `20260630102859NAL0010559635001` | $1.52B | 0 / 8 | **other defect** |
+| `20250924074912NAL0007259441001` | $1.52B | 0 / 9 | **other defect** |
+
+Confirmed rate **40%** (Wilson 95%: 17%–69%) against **85%** in the frame as a
+whole. The large-plan stratum really is different, and the difference is not a
+sampling accident: it reproduces the 46% seen across 48 assets-ranked filings in
+reports #3–#7.
+
+Evidence for one of the confirmed, `20251015144139NAL0002471715001` — 17 of 17
+rows, thirteen of them State Street:
+```
+left column, discarded:  State Street Bank and Trust x13,
+                         Fidelity Management Trust Company, PGIM Fixed Income,
+                         Invesco, Fidelity Investments
+```
+
+### The three "other defect" filings are the statement-page class again
+
+All three are 8–9 row lineups worth $1.5–2.0B whose rows are asset categories:
+
+```
+   924,000,000   Collective investment trusts
+   215,000,000   Company common stock
+   159,000,000   Synthetic GICs
+   120,000,000   Self-Directed Brokerage Account
+    88,000,000   Fully benefit-responsive investment contracts, at contract value
+     6,000,000   Traditional GICs
+     5,000,000   Money market funds
+     1,000,000   Interest income
+```
+
+**And they are a year stale.** The filing (`20260630102859NAL0010559635001`,
+plan year 2025) prints four columns — 2025 total, 2025 level, 2024 total, 2024
+level:
+
+```
+Collective investment trusts        1,070.6      1,070.5      924.4      924.3
+Company common stock              $   190.4    $   190.4    $ 215.6    $ 215.6
+```
+
+wampo stored **924.4** and **215.6** — the 2024 pair. That is the **third**
+independent confirmation of the wrong-year-column class (Comcast in report #1,
+Fresenius in report #4, this one). Three plans, three unrelated auditors, same
+error: when a statement table has a prior-year column, the parser takes it.
+
+`20250924074912NAL0007259441001` additionally stores a row called
+`Independent Auditor's Report` worth **$1,000,000** — a page heading whose
+adjacent `1` became a value in millions.
+
+### First assets-weighted range — stated with its weaknesses
+
+Post-stratifying the random work: 33 of 39 sub-$1B draws confirmed (84.6%,
+CI 70.3–92.8), 4 of 10 ≥$1B draws confirmed (40%, CI 17–69).
+
+| stratum | lineups | assets | confirmed rate | assets affected |
+|---|---:|---:|---:|---:|
+| ≥ $1B | 129 | $798B | 40% (17–69) | $319B (136–551) |
+| < $1B | 5,185 | $294B | 84.6% (70.3–92.8) | $248B (206–273) |
+| **total** | **5,314** | **$1,091B** | | **$567B (340–820)** |
+
+**Two reasons to treat that as an upper-leaning figure, not a result:**
+
+1. The ≥$1B draw skews small *within its own stratum*. Drawn median $1.32B;
+   stratum median **$2.30B**; stratum maximum **$53.0B**. The giants — Morgan
+   Stanley $21.6B, AT&T $42.7B, ExxonMobil $23.5B — were all read in reports
+   #2–#5 and **none** of them was a column-(a) case. Weighting by dollars gives
+   those plans most of the weight and the sample barely reaches them.
+2. Ten draws is a 17–69 confidence interval. The dollar figure inherits that.
+
+The defensible statement today is the lineup count, not the dollar count:
+**an estimated 4,400–4,500 of the 5,314 candidate lineups are affected**
+(point 4,439 from the stratified calculation, 4,517 from the unstratified one —
+they agree). The dollar exposure is **somewhere in $340B–$820B and needs a
+size-stratified sample of the top 129 to pin down.** That is the single
+highest-value remaining measurement and it is 119 filings of work, not 5,000.
+
+### Note on tester reliability, now quantifiable
+
+Across the 60 confirmed filings, the mechanical classifier called
+ISSUER_DROPPED on fewer than half. Its three systematic blind spots, all
+evidenced in earlier reports: issuer strings over 5 words or 46 characters
+(`State Street Global Advisors Trust Company`), values not ending the line
+(`**` and `N/R` footnote markers), and OCR-derived entries whose source pages
+`pdftotext` cannot see. It remains a good queue and a bad measurement.
