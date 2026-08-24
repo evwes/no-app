@@ -2879,6 +2879,50 @@ kept, the name tests see "Interest Held in Master Trust" and the shape rule
 becomes a backstop instead of the only defense. That parser change remains
 the open owner decision.
 
+## 2026-08-24 — v67: the identity column is kept (owner approved the re-parse)
+
+**What was wrong.** The largest defect in the inventory: `parseRows` split
+every 4i row into the identity column (b) and description column (c), and
+when (c) named the fund, (b) was discarded at the `name = dClean` branch.
+28 billion-dollar filings confirmed by hand across the day's test cycles:
+"Vanguard | Institutional 500 Index Trust D" stored without Vanguard,
+"Western Asset | Core Bond IS" stored as a share class naming nothing, and —
+the compounding case — Harley-Davidson's "Interest Held in Master Trust"
+discarded so that every master-trust guard keyed on those words passed the
+wreckage in (c).
+
+**The change.** Additive by design: the issuer is stored as its own field
+(`iss`, ≤60 chars) on the fund row, never merged into the name — names stay
+byte-identical to v66, so dedup keys, region scores, confidence and the
+parser gate are untouched. `iss` is kept only when name-shaped: not a type
+phrase (TYPE-first layouts like "Registered Investment Company | Fidelity
+500 Index" store nothing), not numeric or footnote residue, not a duplicate
+or substring of the fund name, not "See attached"/"Various". Layouts where
+(b) holds the whole name and (c) only a type (Sanofi class) already used (b)
+and are unchanged. One name change rides along: the empty cost column's
+en/em dash is stripped from row tails, so the BWXT class loses its trailing
+" —" (that dash also broke the tester's needle search, report #18).
+
+**Verification before shipping.** v66 and v67 run side by side on six
+specimens: identical fund counts everywhere, identical names everywhere
+except the intended BWXT dash strip (diff printed name by name — only
+dashes). Issuer capture spot-read: BWXT 24/27 rows Vanguard, Whiting-Turner
+29/48 rows T. Rowe Price on its Retirement Hybrid trusts, Tortoise-plan
+rows gain Fidelity/Western Asset/New York Life. The full 19-specimen parser
+gate passes with ZERO expectation changes — the additive claim, proven.
+
+**Frontend, shipped with it.** The issuer renders as a muted prefix in the
+holdings table; ticker matching sees issuer + name together (this is what
+makes "Core Bond IS" identifiable); the master-trust pointer test includes
+`iss`, so the Harley class is now caught by NAME as well as by shape.
+Entries parsed before v67 lack the field and render exactly as before.
+
+**The prevention.** The bar for the re-parse verdict is the standing one:
+merge's CONFIDENCE DIFF and the REPARSE VERDICT must come back flat on
+confident/match/vesting/lineups (names did not change; any movement beyond
+the BWXT dash class is a regression to investigate before mirroring), plus
+`iss` coverage becomes a new counted column to trend.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

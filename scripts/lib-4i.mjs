@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 66;
+export const PARSER_VERSION = 67;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -65,7 +65,7 @@ function stripTrailingColumns(body) {
   // trim token-by-token from the end WITHOUT re-joining — internal column
   // gaps (3+ spaces) must survive for splitNameDesc
   let b = body;
-  const tail = /\s+(?:[*$-]+|\$?\d{1,3}(?:,\d{3})+(?:\.\d+)?%?|\d+\.\d+%?|\d+%)\s*$/;
+  const tail = /\s+(?:[*$\u2013\u2014-]+|\$?\d{1,3}(?:,\d{3})+(?:\.\d+)?%?|\d+\.\d+%?|\d+%)\s*$/;  // \u2013/\u2014: the empty cost column renders as an en/em dash and glued onto names (BWXT, report #18)
   for (let m = b.match(tail); m; m = b.match(tail)) b = b.slice(0, b.length - m[0].length);
   return b.trim();
 }
@@ -256,9 +256,33 @@ export function parseRows(section, opts = {}) {
     // the manager in the issuer column and the actual fund in the description.
     const dClean = cleanDesc(descCol);
     let name;
+    let iss = null;
     if (dClean && dClean.split(/\s+/).length >= 2 &&
         dClean.replace(/[^a-z]/gi, "").length >= 8 && !typeOnly(dClean)) {
       name = dClean;
+      /* v67: KEEP the identity column instead of discarding it. This branch
+       * is exactly where "Vanguard | Institutional 500 Index Trust D" lost
+       * its Vanguard — 25+ billion-dollar filings confirmed by hand in the
+       * 2026-08-24 test cycles, and the loss is worse than a missing ticker:
+       * Harley-Davidson filed "Interest Held in Master Trust" in this column
+       * with only "Various (includes Registered..." in the description, so
+       * every master-trust guard keyed on those words passed the wreckage.
+       * The issuer is stored as its own field (iss), never merged into the
+       * name: names stay byte-identical to v66, so dedup keys, region
+       * scores, confidence and the parser gate are untouched by design.
+       * Kept only when it is name-shaped: not a type phrase ("Registered
+       * Investment Company" is a TYPE-first layout, not an issuer), not
+       * numeric residue, not a duplicate of the fund name itself. */
+      const cand = full.replace(/\s{2,}/g, " ").trim();
+      if (cand && cand.length >= 3 && cand.length <= 60 &&
+          cand.split(/\s+/).length <= 7 &&
+          cand.replace(/[^a-z]/gi, "").length >= 3 &&
+          !/^[\d$*(]/.test(cand) && !typeOnly(cand) &&
+          !/^(see attached|see accompanying|various|note \d)/i.test(cand) &&
+          cand.toLowerCase() !== name.toLowerCase() &&
+          !name.toLowerCase().includes(cand.toLowerCase())) {
+        iss = cand;
+      }
     } else {
       name = full;
       for (const [re] of TYPE_PATTERNS) {
@@ -418,7 +442,7 @@ export function parseRows(section, opts = {}) {
     // ownType = the row carried its OWN investment-type column, so it is a
     // proven 4i data row rather than a plausible-looking text line; the
     // sub-$10k residue filter trusts that proof (see parse4i)
-    rows.push({ name: name.slice(0, 90), type: rowType, value, sec: curSection, ...(type ? { ownType: 1 } : {}) });
+    rows.push({ name: name.slice(0, 90), type: rowType, value, sec: curSection, ...(type ? { ownType: 1 } : {}), ...(iss ? { iss: iss.slice(0, 60) } : {}) });
   }
 
   // ARITHMETIC subtotal removal (owner directive after Sempra: takeaways

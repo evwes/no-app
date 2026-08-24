@@ -538,7 +538,7 @@
       let trustPointer = !!(lu && lu.trustPtr);
       if (ownUsable && plan.mtiaAck) {
         const tot = lu.funds.reduce((a, f) => a + f.value, 0) || 1;
-        const mti = lu.funds.filter((f) => f.type === "Master trust interest" || /master trust/i.test(f.name))
+        const mti = lu.funds.filter((f) => f.type === "Master trust interest" || /master trust/i.test((f.iss || "") + " " + f.name))
           .reduce((a, f) => a + f.value, 0);
         const top = Math.max(...lu.funds.map((f) => f.value));
         /* Two tests, and the second exists because the first is defeatable.
@@ -1194,7 +1194,11 @@
        * fund-family pattern was pricing it at 0.45% (Westinghouse, owner
        * report 2026-08-24). Bonds have no expense ratio and no fund ticker. */
       const gicRow = /stable value|\bgic\b/i.test(f.type || "");
-      const info = tab === "menu" && !gicRow ? fundTickerInfo(f.name, f.type) : null;
+      /* v67 entries carry the 4i identity column as f.iss ("Vanguard",
+       * "Western Asset"). Ticker matching sees issuer + name together, which
+       * is what makes "Core Bond IS" resolvable at all; entries parsed
+       * before v67 simply lack the field and behave as before. */
+      const info = tab === "menu" && !gicRow ? fundTickerInfo((f.iss ? f.iss + " " : "") + f.name, f.type) : null;
       // employer stock IS a listed security: the plan's own ticker names it
       const stockRow = /company stock|employer (security|stock)/i.test((f.type || "") + " " + f.name);
       const tk = stockRow ? (plan.ticker || null) : (info ? info.tk : null);
@@ -1209,7 +1213,7 @@
       const shownType = f.type || (brokRow ? "Brokerage window" : "—");
       return `
       <tr${brokRow ? ` class="row-brokerage"` : ""}>
-        <td class="fund-name-col"><div class="fund-name">${esc(f.name)}</div>${tk ? `<div class="fund-ticker">${esc(tk)}${star ? "*" : ""}</div>` : ""}</td>
+        <td class="fund-name-col"><div class="fund-name">${f.iss ? `<span class="fund-issuer">${esc(f.iss)} · </span>` : ""}${esc(f.name)}</div>${tk ? `<div class="fund-ticker">${esc(tk)}${star ? "*" : ""}</div>` : ""}</td>
         <td class="fund-type">${esc(shownType)}</td>
         <td class="num">${er != null ? er.toFixed(er < 0.1 ? 3 : 2) + "%" + (star ? "*" : "") : "—"}</td>
         <td class="num">${money(f.value / 1e6)}</td>
