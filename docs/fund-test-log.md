@@ -2963,3 +2963,26 @@ Also: another State Street Global Advisors x8 filing joins the column-(b)
 tally (SSgA's own trusts, $1.0B), and two NAMES_MATCH filings still showed
 dropped issuers — names match AND the issuer column exists, the mildest form
 of the same defect. 190 filings tested cumulatively.
+
+## (10 fund report) #23 — 2026-08-24 22:52Z cycle — the fourth Harley plan, and a withdrawn filing
+
+General worklist: 4 NAMES_MATCH, 3 ISSUER_DROPPED, 1 WRONG_REGION, 1
+PRIOR_YEAR_SOURCE (self-reported), 1 FETCH_FAIL.
+
+**The WRONG_REGION is the fourth and final Harley-Davidson plan** (York
+Hourly, newest filing) — same pointer-wreckage class as #17/#21. Guard check:
+4 rows, top 92.8%, trust linked and confident → the shape test fires, page
+shows the trust menu. The whole Harley family is now accounted for: four
+plans, five filings, one defect class, display fixed, stored entries queued
+for the v68 re-parse.
+
+**The FETCH_FAIL is a withdrawn-from-bucket filing**, not a transient:
+Ellenoff Grossman & Schole (law firm, $0.1B), S3 returns an AccessDenied XML
+body, matching the documented "S3 403s are withdrawn filings, retried each
+run via stale pv" behavior. Nothing to fix; the pipeline's own retry path
+owns it.
+
+Three more ISSUER_DROPPED filings — notable that the defect reaches down to
+$0.1B plans with rich multi-manager menus (Fidelity/Vanguard/Federated
+Hermes/Victory/Allspring/PIMCO on one; Invesco/Guggenheim/Franklin on
+another). 200 filings tested cumulatively.
