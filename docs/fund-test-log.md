@@ -2986,3 +2986,27 @@ Three more ISSUER_DROPPED filings — notable that the defect reaches down to
 $0.1B plans with rich multi-manager menus (Fidelity/Vanguard/Federated
 Hermes/Victory/Allspring/PIMCO on one; Invesco/Guggenheim/Franklin on
 another). 200 filings tested cumulatively.
+
+## (10 fund report) #24 — 2026-08-24 23:15Z cycle — the auditor's letterhead beat the real menu
+
+General worklist (issuer queue retired this cycle — its question is answered
+and v67 is the answer, in flight as run #156): 3 ISSUER_DROPPED (tally only
+now), 2 PRIOR_YEAR_SOURCE, 2 OCR_SOURCE, 2 NAMES_MATCH, 1 WRONG_REGION.
+
+**The WRONG_REGION (Global Tax Management, ~$40M) is a real parser miss with
+a new mechanism.** The stored confident "lineup" is six rows including the
+plan's AUDITOR'S LETTERHEAD as a holding — "Maillie LLP | maillie.com 500
+North Lewis Road, Limerick PA" — plus bare type words ("Mutual funds",
+"trust (a)"). The cause is visible in the filing: the page that carries the
+"Schedule H, Line 4i" TITLE is the auditor's letterhead/report page (title
+line 1380, letterhead 1381-1384), and that region outscored the REAL
+schedule at the "- 14 -" page (line 2031+), which is clean and readable:
+TRP Capital Appreciation $11.0M, Vanguard index funds, MetLife stable value
+— names in column (b), types in (c). v68 candidate #3: auditor-letterhead
+vocabulary as region poison ("LLP | domain", PO Box rows). Note the real
+table is a TYPE-in-(c) layout, so once the right region wins, v67's issuer
+handling already stores its names correctly.
+
+No tester artefacts this cycle — the five fixed classes stayed fixed. 210
+filings tested cumulatively. v67 re-parse in flight (run #156, queued
+23:18Z); cycles hold all scripts/** pushes until it lands.
