@@ -312,12 +312,47 @@
    * with a cost marker glued to it. Only these two exact markers are removed;
    * "NR" without the slash is left alone, because it can be a share class.
    * Idempotent and marked, since shard entries are cached and shared. */
+  /* A SECURITIES ID IS NOT A HOLDING EITHER.
+   *
+   * Custodian statements print each security over two lines — name, shares,
+   * cost and value on the first, "CUSIP: 00724F101" alone on the second. Where
+   * the parser reads one of those identifier lines as a row, the whole class of
+   * them reduces to the same residual name and dedup sums them into one
+   * enormous holding called "CUSIP:".
+   *
+   * Measured 2026-08-24: 58 such rows in 31 lineups carrying $85,445,244,635.
+   * By what a reader actually sees — the lineup each plan displays, own entry
+   * or master trust — **30 plans covering 1,356,613 participants and $134.2B of
+   * plan assets** show a table containing one, and in 25 of them it is more than
+   * half the table:
+   *
+   *   Kroger 401(k) Retirement Savings Account Plan   160,358 participants
+   *     one holding, named "CUSIP:", $8,696,053,053, 100% of the table
+   *   Marriott Retirement Savings Plan                137,769 participants   99%
+   *   Kohl's Savings Plan                              68,903 participants   54%
+   *   Caterpillar 401(k) Savings Plan                  60,484 participants   61%
+   *   HCA 401(k) Plan                                 377,504 participants   32%
+   *
+   * The Kroger figure is a fabrication, not a mis-labelled real total: it does
+   * not appear anywhere in the trust's filing (checked over the full text
+   * extraction of 20251013091841NAL0001583216001, whose 4i is a 206-page
+   * Northern Trust security-detail statement with 1,165 "CUSIP:" lines).
+   *
+   * Dropped rather than renamed: there is no name to recover. What remains is
+   * the statement's individual stock rows, which the coverage note will then
+   * correctly describe as a fraction of the plan — an honest thin table instead
+   * of a confident wrong one. The pattern matches ONLY a name made entirely of
+   * identifier labels and codes, so a real security whose name happens to carry
+   * a CUSIP keeps its row. */
+  const ID_ONLY = /^(?:\s*(?:CUSIP|SEDOL|ISIN)\s*[:#]?\s*[A-Z0-9]{0,12}\s*)+$/i;
   function cleanCostMarkers(e) {
     if (!e || !e.funds || e._nameClean) return e;
     e._nameClean = true;
     for (const f of e.funds) {
       if (typeof f.name === "string") f.name = f.name.replace(/\s+(?:N\/R|\$?0\.00)$/i, "").trim();
     }
+    const keep = e.funds.filter((f) => !ID_ONLY.test(f.name || ""));
+    if (keep.length !== e.funds.length) e.funds = keep;
     return e;
   }
   /* Per-plan fee schedule (Sch C provider table + Sch A commissions) lives in

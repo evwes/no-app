@@ -102,6 +102,22 @@ const pdfUrl = (ack) => {
 const VALUE_RIGHT = /[\d,]{4,}(?:\.\d\d)?\s*$/;
 const PROSE = /[.:;—]|\b(?:the|of|and|is|are|was|were|which|that|percent|plan|total|note)\b/i;
 const FORM_LABEL = /^[a-e]\s|^\(\d|^\d/;
+/* Parser residue makes a stored name unfindable in the filing that produced it.
+ * Report #14 found the third case: the cost column's "N/R" glued onto every
+ * name made ACI Worldwide score WRONG_REGION 0/12 on a schedule the parser had
+ * read correctly. The first two were prior-year and OCR entries, handled by
+ * their own verdicts. This strips known residue and retries, so a stored name
+ * is judged on the fund it names rather than on what the parser welded to it. */
+const RESIDUE = [
+  /\s*\bN\/?R\b\s*$/i, /\s*\bN\/?A\b\s*$/i, /\s*\*+\s*$/, /\s*\$?0\.00\s*$/,
+  /\s*-\s*See.*$/i, /\s*\(see note.*$/i, /\s*#\s*$/, /\s+0$/,
+];
+function stripResidue(name) {
+  let n = name, prev;
+  do { prev = n; for (const re of RESIDUE) n = n.replace(re, ""); } while (n !== prev);
+  return n.trim();
+}
+
 function issuerBefore(lines, name) {
   const needle = name.toLowerCase().replace(/\s+/g, " ").trim();
   if (needle.length < 10) return null;            // short names are ambiguous
@@ -160,7 +176,11 @@ for (const w of batch) {
   let found = 0, withIssuer = 0;
   const issuers = new Map();
   for (const name of w.names) {
-    const hit = issuerBefore(lines, name);
+    let hit = issuerBefore(lines, name);
+    if (!hit) {
+      const bare = stripResidue(name);
+      if (bare !== name && bare.length >= 10) { hit = issuerBefore(lines, bare); if (hit) rec.residue = (rec.residue || 0) + 1; }
+    }
     if (!hit) continue;
     found++;
     if (hit.issuer) { withIssuer++; issuers.set(hit.issuer, (issuers.get(hit.issuer) || 0) + 1); }
