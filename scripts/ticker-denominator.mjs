@@ -63,6 +63,8 @@ const NO_TICKER = [
   [/company stock|employer (?:security|stock)|common stock fund|esop|unitized stock/i, "employer stock"],
   [/stable value|guaranteed|\bgic\b|annuity|tiaa traditional|guaranteed (?:income|interest)|general account|retirement savings trust/i, "stable value / insurance"],
   [/brokerage|self-directed|\bsdba\b|brokeragelink|personal choice|schwab pcra/i, "brokerage window"],
+  // wampo's own label for the innards of a managed account, not a filed fund
+  [/^managed account holdings|^managed by |\(\d+ positions\)/i, "managed account"],
   [/^\s*cash\b|cash equivalent|money market|short.?term investment fund|\bstif\b|interest.?bearing/i, "cash / sweep"],
   [/real estate|property fund|\breit\b.*(?:separate|collective)|hedge fund|private equity|limited partnership/i, "private / real asset"],
 ];

@@ -51,6 +51,11 @@ const ABBREV = [
   [/\bssga\b|\bssgs\b|\bssb\b/g, "state street"],
   [/\bjpm\b|\bjp morgan\b|\bj p morgan\b|\bjpmorgan\b/g, "jpmorgan"],
   [/\bblk\b/g, "blackrock"],
+  // "R-6" survives punctuation-stripping as the two tokens "r" and "6", which
+  // no series name contains, so the whole American Funds R-6 family failed the
+  // subset test. Rejoin them before anything else looks at the tokens.
+  [/\br (\d)\b/g, "r$1"],
+  [/\btrgt\b/g, "target"],
 ];
 // words that carry no identity — dropped from BOTH sides before comparison
 // "series" is deliberately NOT here: "Fidelity Series Bond Index Fund" is a
@@ -65,6 +70,12 @@ export function norm(s) {
     .replace(/[^a-z0-9 ]/g, " ")
     .replace(/\s+/g, " ").trim();
   for (const [re, full] of ABBREV) t = t.replace(re, full);
+  /* "TD" is target-date, but only where a vintage year says so. Audited across
+   * the universe 2026-08-23: all 3,004 holdings carrying a standalone "td"
+   * token are target-date funds ("American Funds 2050 TD Ret R6"), and none is
+   * a TD Asset Management fund — but the year condition keeps the expansion
+   * from ever reaching one. */
+  if (/\b(?:19|20)\d\d\b/.test(t)) t = t.replace(/\btd\b/g, "target date");
   return t.replace(/\s+/g, " ").trim();
 }
 const tokens = (s) => norm(s).split(" ").filter((w) => w && !NOISE.has(w));
@@ -287,6 +298,11 @@ function resolveUncached(idx, filedName) {
       // registered series name. Drop the class markers here; the class-hint
       // step below is what turns them back into the right ticker.
       const core = ft.filter((w) => !/^(?:r[1-6]|k6|[akyzci]|investor|admiral|adv|advisor)$/.test(w));
+      if (core.length === ft.length && ft.length > 3) {
+        // a trailing bare class letter the strip above does not name
+        const last = ft[ft.length - 1];
+        if (last.length === 1 || /^[a-z]\d$/.test(last)) core.pop();
+      }
       if (!yr || core.length < 3) return null;
       const uniq = new Map();
       for (const [st, list] of idx.byYear.get(yr) || []) {
