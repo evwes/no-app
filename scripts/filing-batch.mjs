@@ -40,8 +40,11 @@ const N = +arg("--n", 10);
 const WORKLIST = arg("--worklist", path.join(root, "docs/filing-worklist.json"));
 const OUT = arg("--out", path.join(root, "docs/filing-tests.jsonl"));
 const TMP = process.env.SCRATCH || "/tmp/wampo-filing-batch";
-const SEC = arg("--index", process.env.SEC_INDEX
-  || "/tmp/claude-0/-home-user-no-app/ab0d8313-9407-5a0a-9583-f46430634c3c/scratchpad/sec-funds.json");
+/* The repo copy is the default. It used to be a scratchpad path, which is a
+ * single point of failure for unattended runs: this container is ephemeral and
+ * /tmp does not survive a recycle, so every overnight cycle would have failed
+ * on a missing index with no one awake to rebuild it. */
+const SEC = arg("--index", process.env.SEC_INDEX || path.join(root, "sec-funds.json"));
 
 /* An issuer is a FUND MANAGER, not any text to the left. Without this check the
  * classifier reported "INSTITUTIONAL x5" and "HIGH YIELD BOND FUND x1" as
