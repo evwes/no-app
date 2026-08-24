@@ -1038,6 +1038,32 @@
     // reads as a menu weighting it isn't. Only on the plan's OWN table: a
     // master trust's holdings are a different pool.
     const ffl = plan.filedFeatures;
+    /* WHAT SHARE OF THE PLAN IS THIS TABLE? The holdings table has always been
+     * presented as though it were the whole plan. Measured 2026-08-24 across
+     * 57,514 confident lineups with a comparable Schedule H total (master-trust
+     * plans excluded, since a trust's holdings are a different pool):
+     *
+     *   displayed / Sch H assets   <50%      57     50-70%    378
+     *                              70-85%  1,558    85-95%  6,033
+     *                              95-105% 48,012   >105%   1,476
+     *
+     * 8,026 plans (14%) show less than 95% of what the filing accounts for --
+     * $152B of money that is in the plan and not on the page -- and 1,476 show
+     * MORE than the plan owns. A reader looking at a table covering 60% of a
+     * plan has no way to know that today. coverageRatio is computed and stored
+     * on every entry and used only inside merge-4i.mjs to compare runs; it has
+     * never been shown to anyone.
+     *
+     * Bands, not a bare percentage: the comparison is a display-precision sum
+     * against a filed total, so small differences are noise and only a material
+     * gap is worth a reader's attention. */
+    const planAssets = plan.assetsB ? plan.assetsB * 1e9 : null;
+    const covPct = tab === "menu" && !lu.fromTrust && planAssets && total
+      ? (total / planAssets) * 100 : null;
+    const coverage = covPct == null || (covPct >= 95 && covPct <= 105) ? "" : `
+    <p class="max-benefit">${covPct < 95
+      ? `<strong>This table is ${covPct < 50 ? "a small part of" : "not all of"} the plan.</strong> The holdings below total ${money(total / 1e6)}, about ${covPct.toFixed(0)}% of the ${money(planAssets / 1e6)} this plan reports on its Schedule H. The rest is money the filing accounts for that its schedule of assets does not itemise here.`
+      : `<strong>These holdings exceed the plan's reported assets.</strong> They total ${money(total / 1e6)} against ${money(planAssets / 1e6)} reported on Schedule H — about ${covPct.toFixed(0)}%. Treat the table as unreconciled.`}</p>`;
     const npd = tab === "menu" && !lu.fromTrust && ffl && ffl.nonPartDirected ? `
     <p class="max-benefit"><strong>Part of these holdings is employer-directed.</strong> The filing states some of this plan's assets are not participant-directed — those holdings are listed here with the menu, so their share of the table is not a share of what participants chose.</p>
     <blockquote class="quote">“${esc(ffl.nonPartDirectedText)}”</blockquote>
@@ -1046,6 +1072,7 @@
     <div class="section-label">${lu.fromTrust && tab !== "sma" ? `MASTER TRUST HOLDINGS — ${lu.funds.length}` : `FUND HOLDINGS — ${tab === "sma" ? lu.sma.length + " SECURITIES" : lu.funds.length + " FILED"}`}
       <span class="section-sub">${sub}</span></div>
     ${tabs}
+    ${coverage}
     ${npd}
     <div class="fund-scroll">
       <table class="fund-table">
