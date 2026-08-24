@@ -135,6 +135,32 @@ function parseCsv(text) {
 const main = async () => {
   mkdirSync(OUT, { recursive: true });
 
+  /* MODE=companies: the ticker -> public-company-name map for EVERY SEC
+   * registrant (~10k), which is what lets a Form 5500 sponsor name be matched
+   * to a listed company. company_tickers.json is {cik_str, ticker, title} and
+   * is the same source family as the fund index above, so it inherits the UA
+   * discipline: SEC/Akamai rejects User-Agents containing parens or URLs, and
+   * the plain "name email" form is the one that works. Do not enrich it.
+   *
+   * Fetched here rather than hand-listed because a hand-typed list of 500
+   * companies is a list of 500 chances to invent a ticker, and this project
+   * does not guess. */
+  if (process.env.MODE === "companies") {
+    const j = await get("https://www.sec.gov/files/company_tickers.json", "json");
+    const rows = Object.values(j)
+      .filter((r) => r && r.ticker && r.title)
+      .map((r) => [String(r.ticker).toUpperCase(), String(r.title), r.cik_str]);
+    console.log(`company_tickers.json: ${rows.length.toLocaleString()} registrants`);
+    console.log(`  sample: ${JSON.stringify(rows.slice(0, 3))}`);
+    writeFileSync(`${OUT}/sec-companies.json`, JSON.stringify({
+      generated: new Date().toISOString(),
+      source: "https://www.sec.gov/files/company_tickers.json",
+      count: rows.length, companies: rows,
+    }));
+    console.log(`wrote ${OUT}/sec-companies.json`);
+    return;
+  }
+
   // MODE=probe: report what SEC actually serves and stop. One run answers
   // "where is the file" without burning attempts on invented URLs.
   if (process.env.MODE === "probe") {

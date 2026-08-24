@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "probe | build"
+        description: "probe | build | companies"
         default: "probe"
 
 permissions:
