@@ -683,3 +683,202 @@ re-queued, not counted.
    wrong region suppresses OCR of an unreadable right one. The audit cannot see
    this because the result is confident.
 
+---
+
+## (10 fund report) #4 — 2026-08-24
+
+**Running count of the column-(a) defect, hand-verified (cumulative):**
+
+| | filings |
+|---|---:|
+| **CONFIRMED** issuer column present in the 4i table and discarded | **4** |
+| **DISPROVED** — filing read, no column (a) to drop | **12** |
+| **PARTIAL** — a minority of rows carry a discarded issuer | **2** |
+| hand-read to date | 18 |
+
+**Batch:** 10 filings from `docs/filing-worklist-issuer.json` ($3.8B–$8.0B).
+Classifier said 8 NAMES_MATCH / 2 ISSUER_DROPPED. After reading all ten:
+**3 confirmed** column-(a) cases, one of which the classifier scored
+NAMES_MATCH; both its ISSUER_DROPPED verdicts were right this time.
+
+### CONFIRMED ×3
+
+**1. `20251008163343NAL0003432819001` — $5.97B, 27 rows. 23 of 25 rows lose an
+issuer.**
+
+```
+      Identity of Issue, Borrower,               Rate of Interest, Collateral,        (d)      Current
+(a)     Lessor or Similar Party                     Par or Maturity Value            Cost       Value
+                                     Registered investment companies
+ *   Fidelity Institutional Asset Management   FIAM Index TD 2040 R              **    528,327,474
+ *   Fidelity Institutional Asset Management   FIAM Index TD 2035 R              **    457,748,889
+     Columbia Contrarian                       Col Contr Large Cap Core          **    285,130,773
+     Atlanta Capital                           AC High Qual Smid                 **    123,632,755
+     Northern Trust                            NT S&P 500 Index                  **  1,307,164,572
+```
+
+Stored: `NT S&P 500 Index` $1,307,164,572 · `FIAM Index TD 2040 R` $528,327,474
+· `Col Contr Large Cap Core` $285,130,773. Left column present on every row and
+kept on none. Managers lost: Fidelity Institutional Asset Management ×13,
+Northern Trust ×4, Columbia Contrarian, Invesco, Atlanta Capital, MFS
+Investment, Prudential, Fidelity Management Trust Company.
+
+**2. `20251015163209NAL0002755331001` — $4.55B, 38 rows. 37 of 38.** A Principal
+recordkeeper schedule:
+
+```
+   *   Principal Life Insurance Company   Prin LargeCap Growth I SA-Z    $  0.00   $274,769,131.84
+   *   Principal Life Insurance Company   Prin LgCp S&P 500 Idx SA-NE    $  0.00   $680,074,317.73
+```
+
+Stored: `Prin LgCp S&P 500 Idx SA-NE` $680,074,317, issuer gone. Managers lost:
+Principal Life Insurance Company ×18, Principal Global Investors Trust Co ×15,
+SEI Trust Company ×2, Schwab Funds ×1.
+
+Worth noting this filing carries **two** 4i tables. The auditor's own version
+prints the issuer in column (a) and a plain-English description in column (b) —
+`Principal Life Insurance Company | Deposits in insurance company Large-Cap
+Stock Index Separate Account | $680,074,318`. The parser used the other one.
+Either way the issuer was available and discarded.
+
+**3. `20260719202551NAL0010630832001` — $4.58B, 23 rows. 23 of 23.** OCR-derived
+entry, values in thousands and scaled correctly:
+
+```
+    Identity of issuer, borrower, lessor or similar party    collateral, par or maturity value   Current Value ($)
+   State Street Global Advisors Trust Company               U.S. Large Cap Equity Fund - P              902,574
+   T. Rowe Price Associates, Inc.                          Large Cap Growth Trust Class D               381,967
+   Prudential Trust Company                                     Core Plus Bond Fund                     278,383
+   Aristotle Capital Management                              Value Equity Collective Trust              140,580
+   MacKay Shields                                       High Yield Collective Investment Trust           35,285
+```
+
+Stored: `U.S. Large Cap Equity Fund - P` $902,574,000, `Core Plus Bond Fund`
+$278,383,000, `Target Retirement Date 2045` $257,057,000 — a target-date series
+with **no manager on any row**, when SSGA is printed beside every one of them.
+Managers lost: State Street Global Advisors Trust Company ×13, plus T. Rowe
+Price, Prudential Trust, Invesco, Aristotle, Artisan, BlackRock, MacKay
+Shields, Earnest Partners.
+
+The classifier scored this **NAMES_MATCH**. The reason is worth recording,
+because it caps what the mechanical tester can measure: the tester requires the
+left-hand token to be ≤5 words and ≤46 characters and to match the SEC manager
+vocabulary. `State Street Global Advisors Trust Company` is six words, and
+`Earnest Parners Multiple Investment Trust` is a typo in the filing. **The
+ISSUER_DROPPED verdict is a lower bound and always will be.** Only hand-reading
+settles a filing.
+
+### DISPROVED ×6 — and one of them is a warning about the fix
+
+**`20251001104613NAL0013099169001` — SANOFI U.S. plans, $8.46B.** 26 of 26
+stored names sit in the 4i region and the parser took the **right** column:
+
+```
+(a)          (b) Identity of Issue, Borrower,       ( c) Description of        (d)     (e) Current
+                 Lessor, or Similar Party                Investment           Cost      Market Value
+      *   TROWE PRICE RET HYB 2035 TR T9              Common Trust             **       1,204,024,103
+```
+
+Here the fund name is in the **identity** column and the description column
+says only `Common Trust`. Stored: `TROWEPRICE RET HYB 2035 TR`. Correct.
+
+**This filing is the argument against a blind fix.** A rule of "join column (a)
+to column (b)" would turn this menu into `TROWE PRICE RET HYB 2035 TR T9 Common
+Trust`, and a rule of "prefer column (a)" would be right here and wrong on HP
+Inc. The layouts are genuinely both ways round; whichever way lib-4i is
+changed, this specimen and the HP Inc. specimen have to pass together.
+(One junk row here: `Comingle trust` $1,463,803,357, a misspelled category
+heading carrying the class subtotal.)
+
+**`20251014085508NAL0005127714001` — $4.97B, 80 rows.** Trustee security detail
+(`NVIDIA CORP`, `APPLE INC`, `MICROSOFT CORP`), and the names are truncated —
+but **the filer truncates them, not us**, at a fixed 25-character column:
+
+```
+MITSUBISHI UFJ FINL SPON        1,013,500        11,878,220
+SSGA S&P 500 FLAGSHIP SER       1,003,653     1,600,639,641
+```
+
+Stored `SSGA S&P 500 FLAGSHIP SER` is exactly what the filing says. Nothing is
+recoverable here by parsing; recorded so nobody re-investigates it.
+
+Also disproved, all with a readable 4i region and no issuer column:
+`20251013120611NAL0002786642001` (79/80 in region, 0 with left text),
+`20260708100014NAL0035008786001` (19/21, 0), `20251008150655NAL0005738545001`
+(69/69, 1 — and that one is the word `Charles` from a wrapped "Charles Schwab").
+
+### The sixth disproved filing is a four-defect specimen worth keeping
+
+**`20251007125615NAL0004795969001` — FRESENIUS MEDICAL CARE NORTH AMERICA
+401(k) SAVINGS PLAN, $4.42B, 26 rows.** Not one row comes from a 4i schedule:
+14 trace to the Notes, 4 to the Statement of Changes, 2 to the fair-value
+table, 1 to the Statement of Net Assets.
+
+*Defect 1 — prose sentence tails as fund names.* Stored: `the S&P 500® Index by
+investing in stocks that make up the index.` at **$755,422,355**. The filing:
+
+```
+BlackRock Large Cap Blend Index Fund Option - This option invests in the Equity Index Fund F, a collective
+investment fund offered by BlackRock Institutional Trust Company N.A., that seeks to match the performance of
+the S&P 500® Index by investing in stocks that make up the index.        $   891,265,424   $   755,422,355
+```
+
+The real name, `BlackRock Large Cap Blend Index Fund Option`, is two lines
+above. We stored the third line of its sentence. Same for `market. The fixed
+rate of return resets quarterly.` ($481,663,282), `index.` ($68,601,123),
+`investments.` ($59,295,880), `interest.` ($14,348,777).
+
+*Defect 2 — the prior-year column again.* The note's header is:
+
+```
+                                                                          2024              2023
+```
+
+Stored `Target Retirement 2035 Fund Option` = **$363,732,055**, which is the
+**2023** figure; 2024 is $429,670,822. Every target-date row is a year stale.
+This is the Comcast wrong-column defect from report #1, now confirmed on a
+second, unrelated plan — so it is a class, not a one-off.
+
+*Defect 3 — cash flows stored as investments.* From the Statement of Changes:
+
+```
+   Salary deferrals                         $    273,027,902
+   Matching                                       80,711,968
+   Dividend and interest income                   43,699,611
+NET ADDITIONS                                    402,061,084
+```
+
+All four are stored as holdings. `NET ADDITIONS` $402,061,084 is a *net change
+for the year* being displayed as a $402M fund.
+
+*Defect 4 — form-label fragment.* `I.D. NO. - 04-` at $2,835,488.
+
+### PARTIAL ×1
+
+**`20251205083856NAL0003062993001` — Procter & Gamble Savings Plan, $5.23B, 80
+rows.** 78 stored names are in the 4i region; **7** lose an issuer:
+
+```
+   Common Collective Trust Funds
+         BlackRock(1)     US Debt Index Non-Lendable Fund(2)             361,180,310
+         BlackRock(1)     Global Equity Index Fund(2)                    854,661,806
+         BlackRock(1)     Blackrock Equity Non-Lending Class(2)        1,706,809,917
+```
+
+The remaining 71 rows are company stock and security detail that name no
+issuer, so this plan is only fractionally affected.
+
+### Cumulative reading of the evidence
+
+Eighteen filings hand-read. The column-(a) defect is **confirmed on 4** and
+when it hits it hits total — 23/25, 37/38, 29/30, 23/23 rows. It is **absent on
+12**, for five distinct structural reasons: the name already occupies column
+(a) (Sanofi, ExxonMobil), the left column is a share count (Charter), a
+security ID (AT&T), or a filer-truncated security name (`20251014085508…`), or
+the 4i is unreadable so there is no column at all (Morgan Stanley).
+
+That 4-of-18 rate is on a queue deliberately enriched for the signature, so it
+is **not** an estimate of the 6,098-lineup candidate set — but it is the first
+measured evidence that the candidate set is a mixture, and the mixture includes
+at least three defect classes that are *worse* than a dropped issuer, because
+they put money against rows that are not investments at all.
