@@ -57,6 +57,8 @@ fees          Sch C provider rows (name, codes, direct/indirect comp)
 | n/a | **dataset** | Plan entity type — single-employer / multiple-employer / multiemployer / PEP (added #13) |
 | n/a | no | Who *funded* an expense the plan reports (forfeitures, employer, revenue sharing) (added #13) |
 | n/a | no | Auditor **change** between years (two audit reports, different PCAOB IDs) (added #13) |
+| n/a | no | Who the plan actually **covers**, and who is excluded — bargaining unit, non-resident aliens, Puerto Rico, and HCEs barred from deferring (added #14) |
+| n/a | no | Reconciliation of the audited financial statements to the Form 5500 total (added #14) |
 
 `dataset` = the answer is a structured column in the EFAST2 files the pipeline
 **already downloads**. `build-data.mjs` reads only the money columns from
@@ -116,21 +118,29 @@ plan design" below.
 
 ### Parsing gaps — the information is in the PDF and the parser drops it
 
-**The 4i "Identity of Issuer" column (a).** The largest one. The standard layout
-puts the manager in column (a) and the product in column (b); `lib-4i.mjs` reads
-(b) and discards (a), so `Fidelity | 500 Index Fund` is stored as
+**The 4i "Identity of Issue" column — (b) on the form, not (a).** The largest
+one. Reports #8–#13 and every earlier version of this file called it "column
+(a)"; that is wrong, and it collided with the party-in-interest row below, which
+is the *real* column (a). Filings label their own columns and agree with the
+instructions: **(a)** party-in-interest marker, **(b)** identity of issue,
+borrower, lessor or similar party, **(c)** description of investment, **(d)**
+cost, **(e)** current value. The standard layout puts the manager in **(b)** and
+the product in **(c)**; `lib-4i.mjs` reads (c) and discards (b), so
+`Fidelity Investments | 500 Index Fund` is stored as
 `500 Index Fund` and becomes unidentifiable. Verified in filings; the reason is
 that the parser was built around recordkeeper layouts where the description
 column does hold the whole name, and that assumption is recorded in project
-memory as if it were general.
+memory as if it were general. (Specimen with the header printed in full: ACI
+Worldwide `20250923101453NAL0005573025001`.)
 
 **Party-in-interest (`*`).** The parser strips the leading asterisk so it does not
 corrupt fund names, and then discards it. That flag marks holdings in the
 recordkeeper's own funds — the classic conflict-of-interest signal, and one of
 the few things on a 4i that a participant could act on.
 
-**Shares / units (column c) and cost (column d).** The parser reads column (c) to
-decide which money column is the value, then keeps only `value`. Units would let
+**Shares / units and cost (columns (c) and (d)).** The parser reads the
+description/units column to decide which money column is the value, then keeps
+only `value`. Units would let
 a reader reconcile a row to a published NAV, which is also the cheapest possible
 check on a mis-scaled row.
 
@@ -142,9 +152,10 @@ to find" has been sitting in a schedule the pipeline already fetches.
 
 **Category-noun rows — employer stock, GICs, brokerage, cash, loans (added #13).**
 A sub-case of the column-(a) gap with its own consequence, so it is listed
-separately. On these rows column (b) is a *category*, not a name — "Common
-stock", "Investment contract - at contract value", "Brokerage account" — and
-the identity is only in column (a). Dropping (a) therefore does not degrade
+separately. On these rows the description column (c) is a *category*, not a
+name — "Common stock", "Investment contract - at contract value", "Brokerage
+account" — and the identity is only in the issuer column (b). Dropping (b)
+therefore does not degrade
 these rows, it deletes them: LNC's stored lineup omits $113,237,840 of the
 sponsor's own common stock and a $414,453,295 stable-value contract, 15% of a
 schedule the pipeline nonetheless marks `confident`. The gap is
@@ -202,8 +213,8 @@ question; the other half is "what does wampo report that is not true".
 
 **A fabricated holding that reconciles.** Stanley Black & Decker,
 `20250729083806NAL0006830290001`. Four insurance contracts — Pacific Life, RGA,
-Transamerica, Voya — are each described "Constant Duration". Discard column (a)
-and all four become the same name, so dedup summed them:
+Transamerica, Voya — are each described "Constant Duration". Discard the issuer
+column and all four become the same name, so dedup summed them:
 
 ```
 27,062,239 + 26,598,708 + 26,518,314 + 24,883,597 = 105,062,858
@@ -227,6 +238,52 @@ as a menu, with a derivative *liability* summed in as an asset, overstating the
 plan by $46,007,140. Its real 45-page 4i is image-only; OCR never fired because
 a readable **wrong** region satisfied the parser first — the failure is not that
 the right pages were unreadable, but that the wrong ones were readable.
+
+**The sponsor's own EIN, printed as a holding (added #14, exact, largest
+fabrication class measured).** A 4i attachment's header carries the plan
+sponsor's EIN, and the layout splits it: the label and the two-digit prefix stay
+left, the seven digits after the hyphen land where a value column belongs.
+Scanning **every one of 1,627,519 stored fund rows** for a value equal to that
+plan's own sponsor EIN (last seven digits or all nine):
+
+| | |
+|---|---:|
+| holdings whose value **is** the sponsor's EIN | **1,921** |
+| lineups affected | **1,802** |
+| fabricated dollars | **$4,220,282,954** |
+| …inside `confident` lineups, shown to readers as the plan's menu | **1,598 lineups, $2,989,639,761** |
+| lineups where it is the **largest holding on the page** | **392** |
+
+```
+EIN 23-7268394  ->  "Plan Sponsor EIN: 23-"     $7,268,394   ICMA-RC
+EIN 84-0858329  ->  "Plan Sponsor EIN: 84-"       $858,329   IMI Americas
+EIN 04-3599000  ->  "PLAN SPONSOR EIN - 04-"    $3,599,000   Quotient Sciences
+```
+
+Expectation from chance is ~0.2 rows; 1,921 observed. All 1,921 names were
+tested against a fund vocabulary and the 36 that matched are plan names, not
+funds — **the class has no true positives**. The plan number does the same thing
+where the schedule is thousands-scaled: Mass General Brigham
+`20260702112746NAL0014451521001` stores a holding named **"ERISA Plan" worth
+$500,000** from the cover sheet's `ERISA Plan #  500`. Unlike every other
+fabrication here this one has a *free exact detector* — the pipeline already
+knows the sponsor's EIN — and it is filtered at display as of #14
+(`dropFormNumberRows` in `app.js`), pending a parser fix.
+
+**ZIP codes as dollar values, now measured.** Found twice by hand in #13;
+across the corpus it is **97 rows in 96 lineups, $5,252,738** — `"Houston,
+Texas"` $77,002, `"Bethesda, Maryland"` $20,814, `"H&R Block, Inc. One H&R
+Block Way Kansas City, Missouri"` $64,105. Deliberately **not** display-filtered:
+a five-digit ZIP collides with a plausible small holding, so a guard would start
+deleting real rows. Parser work.
+
+**Loan descriptions as fund names (added #14).** The participant-loan row's
+description wraps, the value lands on its continuation line, and the
+continuation becomes the name: MGB shows a holding called **"Dates Ranging From
+October 2025 To November 2044"** worth $1,213,000. Corpus: **2,871 rows /
+2,856 lineups / $5.62B** matching loan-description continuations, plus **596
+rows / 589 lineups / $1.19B** that are bare date fragments. The *value* is real
+(it is the loan balance); only the name is invented.
 
 **Prior-year figures shown as current.** Confirmed in three plans across three
 auditors (Comcast among them): the parser takes the comparative column. Comcast
@@ -275,6 +332,59 @@ pooled-employer and 200 more multiple-employer** (name matching only, a floor,
 and it catches a false positive called "PEP PRINTING, INC.") out of 110,555.
 Suppressing design claims here requires the entity-type column above.
 
+**Eligibility labelled immediate over a quote that states a waiting period
+(added #14).** Measured over all 62,377 feature-carrying lineups: 9,849 are
+labelled `Upon hire / immediate`, and **991 of them print a quote that states a
+wait and never says entry is immediate**. Six Continents Hotels
+`20251015085526NAL0002047779001` renders "Eligibility ✓ Upon hire / immediate"
+directly above its own filing's words, "eligible to join the Plan on the first
+day of the month following the completion of **6 months** of employment". Others
+quote three months, 90 days, 60 days, or an age-21 condition. **Fixed at display
+in #14**: when the label and its quote disagree, the quote stands alone.
+
+**"Discretionary" asserted on a plan that filed a safe-harbor formula
+(added #14).** Two independent counts of the same contradiction:
+
+- **946 lineups** carry `match: "Discretionary — set year to year"` *and*
+  `safeHarbor: "match"` on the same entry (of 11,012 discretionary labels).
+- **1,488 lineups** carry a discretionary match label while **Schedule R line
+  21b** — a separate filed field wampo already ingests as `shr` — reports the
+  plan as design-based safe harbor `D`. (7,667 more are `A`, ADP-tested, where
+  discretionary is consistent.) The two counts overlap by an uncomputed amount.
+
+Same specimen: the quote behind the discretionary label is an accounting-policy
+sentence ("…are considered payable to the Plan when the related participant's
+contributions are payable"), while the filing states "a **safe harbor matching
+contribution** … equal to **100% of a participant's contribution limited to
+6%**", 4% for hotel employees, **$18,993,509** paid in 2024. A design-based safe
+harbor match is fixed in the plan document; "the employer decides year to year"
+is the opposite claim. **Not fixed** — choosing which of the two labels survives
+is a judgement, not a display condition.
+
+Allied Universal `20251002102450NAL0000272179001` (258,360 participants) is the
+sharpest form of it: wampo shows "Discretionary — set year to year", quoting the
+one sentence about a discretionary match that the filing then negates —
+"**There were no discretionary matching contributions for the year ended
+December 31, 2024**" — while its real match, never stored, is "20 cents, 25
+cents, and 50 cents for each dollar … for participants with less than 10 years,
+greater than 10 but less than 19 years, and more than 19 years of service …
+**For administrative personnel only**".
+
+**Reconstructed vesting tables that repeat a year (added #14, small).**
+`"5 yr: 80%, 5 yr: 100%"` — the `<` bound dropped. **138 of 11,801** tables.
+Recorded with its own disproof: a first pass that matched `(\d+) yr:` counted
+**4,762**, because the extractor usually *does* render the bound as "less than
+1 yr: 0%, 1 yr: 20%" and the pattern matched inside it.
+
+**Cost-column markers glued to fund names (added #14).** Column (d) is Cost, not
+required for participant-directed money, so auditors print `N/R` there — and
+where it sits between the name and the value the parser keeps it. **32,346 rows
+in 1,286 lineups end in "N/R", $150.7B of holdings**; another **949 rows in 35
+lineups** end in `$0.00`. Specimen: every one of ACI Worldwide's 27 holdings.
+The name is also the ticker-index and expense-ratio key, so the whole class
+silently loses both. **Stripped at display in #14** (`cleanCostMarkers`); "NR"
+without the slash is left alone because it can be a share class.
+
 **A cost attributed to participants who did not pay it.** `app.js:848` prints
 "Total administrative expenses ≈ $X per participant" and `feePeerNote` ranks
 that per-head figure against peers. LNC's Schedule H 2i(12) is $182,511; its
@@ -304,11 +414,16 @@ whether a stored value appears in the filing at all, which is exactly what
 
 0. **The fabrications.** An omission is a gap; a wrong number is a defect, and
    two of the four classes above put invented values on the page. They share a
-   root cause with item 2, so fixing column (a) removes the Stanley Black &
+   root cause with item 2, so fixing the issuer column removes the Stanley Black &
    Decker class outright — but the wrong-region cases (ZIP codes, fair-value
    tables, prior-year columns) are separate and need region scoring, not column
    handling.
-0b. **The false statements (#13).** Cheaper than everything below it and
+0a. **The EIN rows (#14).** $4.22B of holdings whose value is the sponsor's own
+   EIN, $2.99B of it inside lineups readers see, and in 392 plans it is the
+   largest holding on the page. It is the only fabrication with an exact,
+   already-available detector, so it is also the cheapest thing on this list.
+   Display-guarded as of #14; the parser should stop producing them.
+0b. **The false statements (#13, #14).** Cheaper than everything below it and
    nothing else on this list is a *claim the filing contradicts*. Gating
    `matchText` on a formula having been found is one condition in `app.js` and
    removes 4,350 digit-free quotes from a card headed "Employer Match";
@@ -320,8 +435,16 @@ whether a stored value appears in the filing at all, which is exactly what
    fields and the plan-entity type. Late deposits alone is a genuine red flag no
    competitor surfaces; entity type is what stops wampo asserting a plan design
    for ~390 pooled and multiple-employer plans that do not have one.
-2. **Column (a) issuer.** Largest correctness gain; needs a parser cycle.
+2. **The issuer column (b).** Largest correctness gain; needs a parser cycle.
 3. **Schedule D Part I as a lineup source.** The only public route to naming
    collective trusts.
 4. **Party-in-interest flag.** One line of parser change for a real signal.
-5. Everything else, in the order the audited-notes extractor can absorb them.
+5. **The value-regex floor on thousands-scaled schedules.** `lib-4i.mjs:118`
+   requires three characters in a value, so in a "($ in thousands)" schedule
+   every holding under $100,000 is invisible. MGB stores 34 of the filing's 65
+   rows and still reconciles to 99.93% of plan assets, because the 30 dropped
+   rows are small — which means the coverage note added in #13 says the table
+   is the whole plan while the menu is half of it. **Share of assets is not
+   share of holdings.** Bounded: only 207 lineups (5,316 rows) are
+   thousands-scaled at all.
+6. Everything else, in the order the audited-notes extractor can absorb them.

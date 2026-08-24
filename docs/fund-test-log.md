@@ -2268,3 +2268,261 @@ does not), and the 2024 PDF it was tested against is font-ciphered so no stored
 name could ever match. `20250926144818NAL0013938530001` scores WRONG_REGION
 because every stored name carries the glued cost suffix `$0.00` (CHS, the known
 class). Neither is a region error.
+
+## (10 fund report) #14 — 2026-08-24 — the sponsor's EIN is on the page as money
+
+Batch 16 (10 filings, $0.6B–$0.5B): 5 NAMES_MATCH, 3 ISSUER_DROPPED,
+1 WRONG_REGION, 1 PRIOR_YEAR_SOURCE. Running total tested by the script: 128.
+
+Three filings read structurally — every schedule title, column header and note
+heading — and all three carried something the previous thirteen reports had not
+named. Two of the three findings are **fabrications**: dollar figures on the
+page that are not money at all. All counts below are over the **whole stored
+corpus** (1,627,519–1,636,130 fund rows in 64,606 lineups; 62,377 of those
+lineups carry features), not a sample.
+
+### 1. 1,921 holdings whose value is the plan sponsor's own EIN — $4.22B
+
+Specimen, Mass General Brigham `20260702112746NAL0014451521001`. Its 4i
+attachment ends with a cover sheet:
+
+```
+ Plan Name               The Consolidated 401(a) and 401(k) Program of Mass General Brigham
+ Plan Sponsor EIN        04-3230035
+ ERISA Plan #            500
+ Plan Year Ending        September 30, 2025
+```
+
+The schedule is stated "($ in thousands)". wampo stores a holding named
+**"ERISA Plan" worth $500,000** — the plan number, 500, scaled by a thousand.
+
+That is one instance of a much larger exact class. The EIN itself lands in the
+value column far more often, because the layout splits it: the label and the
+two-digit prefix stay left, the seven digits after the hyphen sit where a value
+belongs. Scanning **every stored fund row** for a value equal to that plan's own
+sponsor EIN (last seven digits, or all nine):
+
+| | |
+|---|---:|
+| holdings whose value **is** the sponsor's EIN | **1,921** |
+| lineups affected | **1,802** |
+| fabricated dollars | **$4,220,282,954** |
+| …of which sit in `confident` lineups, i.e. shown as the plan's menu | **1,598 lineups, $2,989,639,761** |
+| lineups where the fabricated row is the **largest holding on the page** | **392** |
+
+Six confirmed by cross-checking the EIN in `plans-all.json`, all six exact:
+
+```
+EIN 23-7268394  ->  "Plan Sponsor EIN: 23-"     $7,268,394   ICMA-RC
+EIN 84-0858329  ->  "Plan Sponsor EIN: 84-"       $858,329   IMI Americas
+EIN 43-1383893  ->  "Plan Sponsor EIN: 43-"     $1,383,893   Esse Health
+EIN 04-3599000  ->  "PLAN SPONSOR EIN - 04-"    $3,599,000   Quotient Sciences
+EIN 81-1010753  ->  "Plan Sponsor ID # 81-"     $1,010,753   Bayberry Financial
+EIN 42-0150820  ->  "Plan Sponsor EIN:"           $150,820   Pro Cooperative
+```
+
+This cannot be coincidence and the arithmetic says so: a specific seven-digit
+number recurring by chance across 1.6M rows has an expectation near 0.2 rows,
+against 1,921 observed. All 1,921 names were inspected against a fund
+vocabulary; the 36 that matched are plan names and header fragments
+("BERGER CHEVROLET, INC. 401(K) PLAN & TRUST 38-"), not funds. **There are no
+true positives in the class.**
+
+It is also the first fabrication with a *free, exact* detector: the pipeline
+already knows the sponsor's EIN. Shipped this cycle as a display guard in
+`app.js` (`dropFormNumberRows`) — no parser change, smoke test green.
+
+The ZIP-code variant report #13 found twice by hand is now measured too:
+**97 rows in 96 lineups, $5,252,738** — holdings named
+`"Houston, Texas"` ($77,002), `"Bethesda, Maryland"` ($20,814),
+`"H&R Block, Inc. One H&R Block Way Kansas City, Missouri"` ($64,105). Small
+money, and deliberately **not** filtered: a five-digit ZIP collides with a
+plausible small holding often enough that a display guard would start deleting
+real rows. That one needs the parser.
+
+### 2. 32,346 fund names carry the cost column's "N/R" — $150.7B of holdings
+
+ACI Worldwide `20250923101453NAL0005573025001` files a textbook schedule:
+
+```
+ (a)         (b) Identity of Issue, Borrower,   (c) Description of Investment    (d)      (e)
+             Lessor or Similar Party                                             Cost     Current Value
+ *           Fidelity Investments               500 Index Fund                   N/R  $   96,773,304
+             BlackRock                          LifePath Index 2035 Fund         N/R      33,121,021
+...
+N/R - cost omitted for participant directed investments
+```
+
+Every one of wampo's 27 stored holdings for this plan is named
+`... N/R` — `"500 Index Fund N/R"`, `"LifePath Index 2035 Fund N/R"`. Corpus
+count: **32,346 rows in 1,286 lineups, $150,733,000,000**, plus **949 rows in
+35 lineups** ending in `$0.00` (the same defect where the auditor printed a zero
+cost instead of a marker). Nothing in `app.js`, `lib-4i.mjs`, `fund-er.js` or
+`match-sec-tickers.mjs` mentions `N/R`.
+
+This is not only ugly. The fund name is the key for the ticker index and for the
+expense-ratio pattern table, and neither can match a name with a cost marker
+glued on, so the whole class silently loses its ticker and its ER estimate.
+Stripped at display this cycle (`cleanCostMarkers`); "NR" without the slash is
+left alone because it can be a share class.
+
+**It also produced a false verdict in my own tester**: the batch scored ACI
+`WRONG_REGION — 0/12 stored names appear in the filing text`. Every stored name
+*is* in the filing; none matches with " N/R" appended. Add it to the blind-spot
+list beside prior-year and OCR sources.
+
+### 3. Column (a) is the party-in-interest marker. The issuer is column (b).
+
+Both filings label their columns explicitly, and both agree with the Form 5500
+instructions: **(a)** party-in-interest, **(b)** identity of issue, **(c)**
+description of investment, **(d)** cost, **(e)** current value. The inventory
+and every report since #8 call the dropped issuer column "column (a)". That
+name is wrong, and it collides with a *different* inventory row — the
+party-in-interest asterisk, which is the real column (a). Corrected in the
+inventory; the defect is unchanged, its name was not.
+
+### 4. Three contradictions computable from what wampo already stores
+
+None of these needs a filing. They are labels that disagree with the evidence
+printed underneath them, or with a second filed field.
+
+**(a) Eligibility says immediate; its own quote states a waiting period —
+991 lineups** (of 9,849 labelled immediate). Six Continents Hotels
+`20251015085526NAL0002047779001` renders
+
+> Eligibility ✓ **Upon hire / immediate**
+> "Employees of the Company generally become eligible to join the Plan on the
+> first day of the month following the completion of **6 months** of employment."
+
+Others in the class quote three months, 90 days, 60 days, or an age-21
+condition. **Fixed this cycle**: when the label asserts immediate entry and the
+quote states a wait and never says otherwise, the label is withheld and the
+filing's sentence stands alone.
+
+**(b) The match is "Discretionary" on a plan whose own entry says safe
+harbor — 946 lineups** (of 11,012 discretionary labels). Same filing. wampo
+stores `match: "Discretionary — set year to year"` *and* `safeHarbor: "match"`
+simultaneously, quoting an accounting-policy sentence — "The Company safe
+harbor matching and discretionary matching contributions are considered payable
+to the Plan when the related participant's contributions are payable" — which
+states an accrual convention, not a formula. The filing's actual match:
+
+> "the Company makes a **safe harbor matching contribution** to the Plan equal
+> to **100% of a participant's contribution limited to 6%** of the
+> participant's eligible compensation … For IHG eligible hotel employees …
+> **limited to 4%** … Safe harbor matching contributions totaled **$18,993,509**
+> for the year ended December 31, 2024."
+
+A design-based safe harbor match is fixed in the plan document; "the employer
+decides year to year" is the opposite claim. Not fixed — which of the two labels
+to keep is a judgement I will not make unattended.
+
+**(c) The match is "Discretionary" while Schedule R line 21b says design-based
+safe harbor — 1,488 lineups** (7,667 more are `A`, ADP-tested, where
+discretionary is consistent). This is the same contradiction reached from an
+independent filed source rather than from wampo's own second field; the two
+counts overlap by an amount I did not compute.
+
+### 5. Non-holdings presented as holdings, beyond the EIN class
+
+Same MGB schedule, its last row:
+
+```
+ *   Participant Loans
+     Total participant loans   Participant Loans Interest From 3.25% To 8.50% With Maturity
+                               Dates Ranging From October 2025 To November 2044      1,213
+```
+
+The description wraps, the value sits on the second line, so wampo stores a
+holding named **"Dates Ranging From October 2025 To November 2044"** worth
+$1,213,000. Corpus counts:
+
+| pattern | rows | lineups | value |
+|---|---:|---:|---:|
+| loan-description continuations (`maturing through…`, `interest rates range from…`) | 2,871 | 2,856 | $5.62B |
+| bare date fragments (`June 2031`, `November 2034, With Interest Rates Ranging From 4.25% to`) | 596 | 589 | $1.19B |
+| schedule-header metadata (`Plan Sponsor EIN: 23-`, `ERISA Plan`) | 383 | 378 | $775M |
+
+The first two carry a *correct* value — the loan balance — under a fabricated
+name, so they are a naming defect, not invented money. The third is the EIN
+class above, reached by name instead of by value.
+
+### 6. Thousands-scaled schedules have a $100,000 floor
+
+MGB's schedule lists **65 holding rows**; wampo stores **34**, and the missing
+30 are almost all small: 28 of them are under $100 thousand. The reason is one
+regex. `lib-4i.mjs:118` requires at least three characters in the value —
+`/\$?\s*([0-9][0-9,]{2,})(?:\.\d{1,2})?\s*$/` — which in a "($ in thousands)"
+schedule means **any holding below $100,000 is unmatched**. The arithmetic
+closes exactly: filing total $645,069K, minus the 30 dropped rows ($953K), plus
+the fabricated "ERISA Plan" row ($500K), equals the stored sum of $644,616K.
+
+So the entry reconciles to **99.93%** of the plan and `coverageRatio` reports
+`1`. Last night's coverage note would tell a reader this table is the whole
+plan. In dollars it nearly is; in holdings it is 34 of 65. **Share of assets is
+not share of holdings, and the new note only claims the first.**
+
+Scope, stated because it bounds the finding: only **207 lineups (5,316 rows)**
+are thousands-scaled at all. Real, exactly explained, and **small**.
+
+### 7. Who the plan actually covers is never on the page
+
+Two of three filings restrict coverage in their Description of Plan and wampo
+shows nothing:
+
+- MGB, a plan filed by a $20B health system, "cover[s] all eligible employees of
+  Newton-Wellesley Hospital who are members of the **Massachusetts Nurses
+  Association bargaining unit** and all eligible employees of Martha's Vineyard
+  Hospital who are members of the **SEIU bargaining unit**", plus the frozen
+  assets of eleven merged-in plans. Sponsor and plan name imply the whole
+  system; the notes say two bargaining units.
+- Allied Universal `20251002102450NAL0000272179001` (258,360 participants):
+  "Employees who are union members covered under a collective bargaining
+  agreement … non-resident aliens, or residents of Puerto Rico, are not eligible
+  … Additionally, **the Plan prohibits highly compensated employees … from
+  making elective contributions.**"
+
+An HCE ban on deferrals is a first-order design fact and there is no field for
+it anywhere in what wampo stores. Not measured corpus-wide — it lives in prose
+the pipeline reads but does not keep, so measuring it means re-reading filings.
+
+Allied Universal is also a fourth instance of the scoped-formula problem, from a
+new direction: its real match is **"20 cents, 25 cents, and 50 cents for each
+dollar … for participants with less than 10 years, greater than 10 but less than
+19 years, and more than 19 years of service … For administrative personnel
+only"**, and for everyone else "the Company offers a match if an employee meets
+certain requirements, such as holding certain primary jobs". wampo shows
+"Discretionary — set year to year" — quoting the one sentence about a
+discretionary match that the filing then explicitly negates: "**There were no
+discretionary matching contributions for the year ended December 31, 2024.**"
+
+### 8. Reconciliation of financial statements to Form 5500
+
+A note heading present in all three filings and absent from the inventory.
+Allied Universal:
+
+> Net assets available for benefits **per the financial statements** $689,106,319
+> Less: Employer contribution receivable (5,560,357)
+> Less: Participant contribution receivable (2,092,064)
+> Net assets available for benefits **per Form 5500** $681,453,898
+
+wampo shows the Form 5500 figure. That is the right choice, but the note is the
+only place a reader can learn why the audited statements say a different number
+— and on other filings the reconciling items are deemed distributions of
+defaulted loans and benefits payable, which are facts in their own right.
+
+### What was disproved this cycle
+
+- **"Reconstructed vesting tables repeat a year, so the `<` is being dropped."**
+  A first pass counted **4,762** tables with a duplicated year. Nearly all are
+  the detector's fault: the extractor renders the bound as *"less than 1 yr:
+  0%, 1 yr: 20%"* and my `(\d+) yr:` pattern matched inside "less than 1 yr".
+  Requiring a *bare* repeated year leaves **138 of 11,801** — e.g.
+  `"5 yr: 80%, 5 yr: 100%"`. Real, and two orders of magnitude smaller than the
+  first number. Recorded because the first number is exactly the kind that gets
+  quoted.
+- **"WRONG_REGION on ACI Worldwide."** False. The stored names are the filing's
+  names with the cost column's `N/R` appended; the region is correct. A tester
+  artefact, now understood (§2).
+- **The category-noun class from #13 is not what killed MGB's small rows.** It
+  is a plain value-regex floor (§6), and it is confined to 207 lineups.

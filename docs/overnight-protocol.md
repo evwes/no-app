@@ -80,6 +80,11 @@ Per-cycle narrative goes in `docs/fund-test-log.md`.
   something it was written to reject, suspect the vocabulary before the filing.
 - The **classifier is a queue, not a measurement.** Confirm every
   non-`NAMES_MATCH` verdict by reading the filing.
+- **A stored name that carries parser residue can never be found in the filing.**
+  Prior-year (`fb`) and OCR entries were the known cases; #14 added a third —
+  the cost column's `N/R` glued to every name made ACI Worldwide score
+  `WRONG_REGION 0/12` on a schedule the parser read correctly. Before believing
+  a WRONG_REGION verdict, strip the suffix and search again.
 - **Sampling frame decides the answer.** An assets-ranked queue gave 46% where a
   random sample gave 85%, because large plans fail a different way. State the
   frame with the number.

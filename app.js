@@ -290,7 +290,35 @@
     if (!shardCache.has(sid)) {
       shardCache.set(sid, fetch(`data/lineups/${sid}.json`, { cache: "no-cache" }).then((r) => (r.ok ? r.json() : {})));
     }
-    return (await shardCache.get(sid))[key];
+    const e = (await shardCache.get(sid))[key];
+    return cleanCostMarkers(e);
+  }
+  /* "N/R" IS THE COST COLUMN, NOT PART OF THE FUND'S NAME.
+   *
+   * A 4i schedule's column (d) is Cost, and for participant-directed money it
+   * is not required, so auditors print a marker there — most often "N/R", with
+   * the legend "N/R - cost omitted for participant directed investments".
+   * Where that marker sits between the name and the value the parser keeps it,
+   * and the holding is stored — and displayed — as "500 Index Fund N/R".
+   *
+   * Measured 2026-08-24 over all 1,636,130 stored fund rows: 32,346 rows in
+   * 1,286 lineups end in "N/R", holding $150.7B; 949 rows in 35 lineups end in
+   * "$0.00" (the same defect with a zero cost printed instead of a marker).
+   * Specimen: ACI Worldwide 20250923101453NAL0005573025001, every one of whose
+   * 27 holdings carries the suffix.
+   *
+   * Stripping it at display is not cosmetic — the name is also the key for the
+   * ticker index and the expense-ratio patterns, and neither can match a name
+   * with a cost marker glued to it. Only these two exact markers are removed;
+   * "NR" without the slash is left alone, because it can be a share class.
+   * Idempotent and marked, since shard entries are cached and shared. */
+  function cleanCostMarkers(e) {
+    if (!e || !e.funds || e._nameClean) return e;
+    e._nameClean = true;
+    for (const f of e.funds) {
+      if (typeof f.name === "string") f.name = f.name.replace(/\s+(?:N\/R|\$?0\.00)$/i, "").trim();
+    }
+    return e;
   }
   /* Per-plan fee schedule (Sch C provider table + Sch A commissions) lives in
    * data/fees shards, fetched on demand exactly like lineups. Fixed 64
@@ -419,6 +447,41 @@
     ensureLineup(plan);
   }
 
+  /* THE SPONSOR'S EIN IS NOT A HOLDING.
+   *
+   * A 4i schedule's own header line carries the plan sponsor's EIN, and on
+   * plenty of filings it is laid out so that the digits after the "NN-" prefix
+   * sit where a value column belongs: "Plan Sponsor EIN: 23-" + "7268394".
+   * The parser reads that as a $7,268,394 holding named "Plan Sponsor EIN: 23-".
+   *
+   * Measured 2026-08-24 over all 1,627,519 stored fund rows: 1,921 rows in
+   * 1,802 lineups have a value exactly equal to their own sponsor's EIN (last
+   * seven digits, or all nine) — $4,220,282,954 of money that does not exist.
+   * 1,598 of those lineups are `confident`, i.e. shown to a reader as the
+   * plan's fund lineup, carrying $2,989,639,761 of it; in 392 of them the
+   * fabricated row is the LARGEST holding on the page. Every one of the 1,921
+   * names was inspected for fund-shape: the 36 that matched a fund vocabulary
+   * are plan names and header fragments ("BERGER CHEVROLET, INC. 401(K) PLAN &
+   * TRUST 38-"), not funds. There are no true positives to lose.
+   *
+   * Coincidence is not a real risk: a specific seven-digit number appearing by
+   * chance across 1.6M rows has an expectation near 0.2 rows, and we observe
+   * 1,921. The ZIP-code variant of the same defect (address lines parsed as
+   * values) is NOT filtered here — a five-digit ZIP collides with a plausible
+   * small holding often enough to matter, and it is only $5.3M across 96
+   * lineups. That one needs the parser, not a display guard.
+   *
+   * Applied to the plan's OWN entry only: a master trust files under a
+   * different EIN, so the test does not transfer. */
+  function dropFormNumberRows(lu, plan) {
+    if (!lu || !lu.funds || !lu.funds.length || !plan || !plan.einRaw) return lu;
+    const ein = String(plan.einRaw).padStart(9, "0");
+    const t9 = +ein, t7 = +ein.slice(2);
+    if (!t7) return lu;
+    const funds = lu.funds.filter((f) => f.value !== t7 && f.value !== t9);
+    return funds.length === lu.funds.length ? lu : { ...lu, funds };
+  }
+
   async function ensureLineup(plan) {
     ensureFees(plan); // independent on-demand fetch; self-guarded, re-renders on arrival
     if (!plan || (!plan.lineupKey && !plan.trustKey && !plan.featKey) || plan.filedLineup ||
@@ -433,7 +496,7 @@
       // "the exact formula lives in the plan document / SPD" while its filing
       // states "a Company matching contribution of 50% of the first 6%".
       const ownKey = plan.lineupKey || plan.featKey;
-      const lu = ownKey ? await fetchEntry(ownKey) : null;
+      const lu = dropFormNumberRows(ownKey ? await fetchEntry(ownKey) : null, plan);
       // use the plan's own schedule unless it is missing or majority
       // "Investment in Master Trust" — then the trust's real holdings win
       let ownUsable = !!(lu && lu.confident && lu.funds && lu.funds.length);
@@ -819,7 +882,30 @@
           : `<span class="feat-off">✗ Not offered</span>`}</div>`);
     const ff = plan.filedFeatures || {};
     if (ff.eligibility) {
-      rows.push(`<div class="feat-block"><div class="feat-row"><span>Eligibility</span><span class="feat-on">✓ ${esc(ff.eligibility)}</span></div>
+      /* THE LABEL MUST NOT CONTRADICT THE QUOTE PRINTED UNDER IT.
+       *
+       * "Upon hire / immediate" is a derived label; the sentence below it is
+       * the filed evidence. Measured 2026-08-24 over all 62,377 lineups that
+       * carry features: 9,849 are labelled immediate, and 991 of those print a
+       * quote that states a waiting period and never says entry is immediate —
+       * Six Continents Hotels (20251015085526NAL0002047779001) is shown
+       * "Eligibility ✓ Upon hire / immediate" above its own filing's words,
+       * "eligible to join the Plan on the first day of the month following the
+       * completion of 6 months of employment". Others in the class quote three
+       * months, 90 days, 60 days, or an age-21 condition.
+       *
+       * When the two disagree the quote wins and the label goes: a reader is
+       * better served by the filing's sentence with no headline than by a
+       * headline the sentence denies. The extractor keeps its value in the
+       * data; only the assertion is withheld. */
+      const svc = /\b(\d+|one|two|three|six|twelve)\s*(month|day|year)s?\b/i;
+      const immediate = /upon hire|immediate/i.test(ff.eligibility);
+      const quoteSaysWait = ff.eligibilityText && svc.test(ff.eligibilityText) &&
+        !/immediate|upon hire|date of hire|first day of employment/i.test(ff.eligibilityText);
+      const label = immediate && quoteSaysWait
+        ? `<span class="feat-unknown">— as stated in the filing, below</span>`
+        : `<span class="feat-on">✓ ${esc(ff.eligibility)}</span>`;
+      rows.push(`<div class="feat-block"><div class="feat-row"><span>Eligibility</span>${label}</div>
         ${ff.eligibilityText ? `<div class="feat-blurb">“${esc(ff.eligibilityText)}”</div>` : ""}</div>`);
     }
     rows.push(ff.loans
