@@ -1999,3 +1999,229 @@ from both ends and the point estimate has been stable:
 | share class discarded (both columns are names) | Brown University `20251008130018…` | 1 plan |
 | zero-valued row glued to the next row | Marmon `20251014113306…` | 1 plan |
 | date/heading fragment as a holding | ExxonMobil `FOR THE YEAR ENDED` $2,024,000 | 3 plans |
+
+---
+
+## (10 fund report) #13 — 2026-08-24 — the goal changed: hunting information classes, not instances
+
+Two batches (20 filings, positions 29–48 of the issuer worklist; running total
+tested by the batch script: 48). Batch verdicts, for the record:
+
+| batch | ISSUER_DROPPED | NAMES_MATCH | WRONG_REGION |
+|---|---:|---:|---:|
+| 13 | 4 | 3 | 3 |
+| 14 | 4 | 6 | 0 |
+
+Those verdicts are queue output, not measurement, and the column-(a) count is
+no longer the objective. The batches exist to surface filings; the work of this
+cycle was reading three of them line by line — every schedule title, note
+heading and table column — and asking what the filing carries that a wampo
+reader never sees, **or sees stated wrongly**.
+
+The primary specimen is **LNC Employees' 401(k) Savings Plan**,
+`20251009112104NAL0011345952001`, EIN 35-1140070 PN 009, $3.52B, 16,727
+participants with balances. It is a clean, well-typeset filing: nothing here is
+an OCR artefact or a layout trap. Everything below is what the pipeline does
+with a filing it parses *successfully* — `confident: true`, ratio 0.83.
+
+### 1. The Employer Match card can quote a paragraph that is not about the match
+
+Stored for LNC:
+
+```
+matchText: "Vesting Participants' pre-tax contributions, Roth 401(k)
+            contributions, Employer match contributions and earnings thereon
+            are fully vested at all times."
+match:     (absent)
+nec:       (absent)
+```
+
+The filing states, in its own Contributions note:
+
+> "The basic Employer match is $1.00 for each $1.00 that a participant
+> contributes each pay period, up to 6% of eligible earnings. The Employer
+> 'Core' contribution is 4% of eligible earnings and is contributed to each
+> eligible employee regardless of whether the employee elects to defer."
+
+So the plan has a dollar-for-dollar match to 6% **and** a 4% non-elective, and
+wampo stores neither — while displaying, under the heading "Employer Match"
+with a green `FORM 5500 AUDIT NOTES` badge, a sentence whose first word is
+"Vesting". `app.js:662` renders `matchText` unconditionally; there is no gate
+requiring that a formula was actually found.
+
+**Measured across all 62,377 lineup entries that carry features:**
+
+| | lineups |
+|---|---:|
+| carry a `matchText` quote | 52,514 |
+| …of those, **no `match` formula was extracted** — quote shown alone | **8,704** |
+| …of those, the quote **contains no digit at all** | **4,350** |
+| `matchText` quotes whose first word is "Vesting" | **800** |
+
+A match formula requires a number. A quote with no digit in it cannot be
+stating one, so the 4,350 is a floor on quotes that cannot support the card
+they appear in. Hand-read confirmations of that class:
+
+- `20251230144924NAL0010542115001` — quote is a revenue-recognition sentence,
+  "Participant contributions and any related Participating Employer matching
+  contributions are recognized in the period in which the employer makes the
+  respective payroll deductions". See §4 — this one is a pooled employer plan
+  and has no single match to state.
+- `20251007110955NAL0004482145001` — quote is the Participant Accounts
+  paragraph, "Each participant's account is credited with the participant's
+  contributions, and allocations of (a) Company matching contributions…".
+
+### 2. One sentence is quoted as evidence for two different features
+
+LNC again: `eligibility: "2 years of service"`, and its `eligibilityText` is
+the identical vesting sentence used for `vestingText`. The filing's actual
+eligibility rule is "covers substantially all employees … who meet the
+conditions of eligibility to participate as defined by the Plan document" — no
+service requirement is stated anywhere. wampo tells a reader they must work two
+years before they can join a plan they can join on hire. The extractor matched
+the word "eligible" inside a sentence about vesting of the Core contribution.
+
+Measured over the same 62,377: **3,007 feature pairs share a verbatim quote.**
+Largest pairs: `rothText=afterTaxText` 826, `matchText=vestingText` 669,
+`matchText=eligibilityText` 419, `rothText=autoEnrollText` 193,
+`eligibilityText=autoEnrollText` 173, `matchText=necText` 145.
+
+Sharing a quote is not automatically an error — one sentence can genuinely
+state two facts. It is a *detector*, and a cheap one: it is exactly the
+signature of a regex that matched a keyword in a neighbouring topic.
+
+### 3. `vesting: "2-year cliff"` is scope-wrong in the direction that penalises the plan
+
+The same LNC sentence pair says match and deferrals are "fully vested at all
+times" and only the Core contribution vests after two years. wampo prints one
+flat "Employer-money vesting: 2-year cliff". Half the employer money in that
+plan is immediately vested. Project memory claims the vesting extractor applies
+"employer-scope rules"; on this filing it does not.
+
+### 4. Pooled employer plans have no plan design to state, and wampo states one anyway
+
+`20251230144924NAL0010542115001` is **SUCCESSWISE POOLED EMPLOYER PLAN**,
+sponsor "Plan Professionals, LLC" — a pooled plan provider, not an employer.
+From its notes:
+
+> "Under the terms of the Participating Employer adoption agreements, the
+> Participating Employers may elect to make matching contributions,
+> profit-sharing contributions, safe harbor, prevailing wage and nonelective
+> contributions to the PEP."
+> "The Participating Employers in the PEP may elect automatic enrollment and
+> escalation features."
+
+Every design fact wampo shows for a plan — match, vesting, auto-enrol,
+eligibility — is per-participating-employer here, and a single answer is not
+merely unknown, it is **unknowable from this filing**. The same applies to the
+sponsor name (nobody works at Plan Professionals LLC) and to average balance
+across unrelated employers.
+
+The plan-entity type is a Form 5500 Part I line A checkbox (single-employer /
+multiple-employer / multiemployer / DFE). `scripts/build-data.mjs:151` reads
+`TYPE_DFE_PLAN_ENTITY_CD` for exactly one purpose — spotting `M` for master
+trusts — and the plan-entity column is never read at all. Counting by plan
+**name** only (a floor, and it catches a false positive called "PEP PRINTING,
+INC."): **195 plans name themselves a pooled employer plan and 200 more name
+themselves multiple-employer, out of 110,555.**
+
+### 5. Employer stock and the stable-value contract are missing from a "confident" lineup
+
+The LNC 4i schedule, verbatim, after the collective-trust block:
+
+```
+*   LNC                Common stock                                    113,237,840
+*   LNL                Investment contract - at contract value         414,453,295
+*   Matrix Trust Co.   Cash and invested cash                            3,304,562
+*   Charles Schwab     Brokerage account                               185,845,091
+*   Participant loans  Maturing through December 2044, interest
+                         rates ranging from 3.25% to 9.50%              39,300,797
+```
+
+Stored lineup: 31 funds summing to $2,902,001,352 against a 4i total of
+$3,468,993,317. **LNC common stock and the $414M LNL contract are simply
+absent** — $528M, 15% of the schedule, and precisely the two holdings a
+participant most wants named: their own employer's stock and the stable-value
+option. Schwab survives only because the parser took column (a) on that row;
+"Cash and invested cash" survives as column (b) and is typed "Collective
+trust".
+
+The reason is the mechanism, not an accident: on exactly these rows column (b)
+is a **category noun** — "Common stock", "Investment contract", "Brokerage
+account" — and the identity lives only in column (a). The column the parser
+discards is not redundant metadata for this class of row; it is the only name
+there is. That reframes the column-(a) defect: it is also a *coverage* defect,
+and it removes employer stock and GICs preferentially.
+
+Two further things visible only in that block:
+- every one of those rows carries the party-in-interest `*`, and the legend
+  says so: "\* Represents a permitted party-in-interest". The LNL contract is a
+  guaranteed contract issued by the sponsor's own life-insurance subsidiary —
+  12% of plan assets in a product sold by the employer. wampo shows nothing.
+- the cost column is empty by right, with the reason printed: "\*\* Cost
+  information is not required for participant-directed investments."
+
+### 6. Sch H per-participant expense is attributed to participants who did not pay it
+
+LNC's Schedule H line 2i(12), total administrative expenses: **$182,511**.
+LNC's forfeiture note:
+
+> "During the year ended December 31, 2024, forfeitures of $303,047 were used
+> to reduce Employer contributions, and forfeitures of $182,511 were used to
+> pay administrative expenses of the Plan."
+
+The two figures are the same number. Every dollar of this plan's reported
+administrative expense was paid out of forfeited employer money; participants
+bore none of it. `app.js:848` prints "Total administrative expenses ≈ $X per
+participant" and `feePeerNote` then ranks that per-head figure against peers.
+The $0 branch of that function is carefully hedged ("paid by the employer or
+netted inside fund expense ratios"); the non-zero branch is not hedged at all,
+and asserts a per-participant charge the filing contradicts.
+
+### 7. Smaller classes noticed while reading
+
+- **Auditor identity and opinion type are structured form fields, not prose.**
+  Schedule H Part III line 3a is a four-way checkbox
+  (unmodified/qualified/disclaimer/adverse), 3b is the ERISA §103(a)(3)(C)
+  election, 3c is the accountant's name and EIN — LNC's page carries
+  "ERNST & YOUNG … EIN 35-6565596". The gap inventory filed both of these under
+  *extraction gaps, no extractor written*. That classification is wrong: they
+  are Schedule H columns, in the same file the pipeline already downloads, and
+  belong with the cheap dataset items. (Caveat, stated because it is not
+  measured: `askebsa.dol.gov` is unreachable from the sandbox — 403 through the
+  proxy — so I verified the *form structure* in the PDF, not the extract's
+  column names. The check is one line in the prep log.)
+- **Auditor changes are visible and unreported.** LNC's table of contents lists
+  two audit reports: FY2024 "(PCAOB ID 42)" and FY2023 "(PCAOB ID 2468)" — a
+  different firm signed the prior year. Schedule C Part III (Termination
+  Information on Accountants) is blank template on this filing.
+- **Fidelity bond amounts do print in the PDF** even though the checkboxes do
+  not: LNC's line 4e carries "15000000" as a rendered value. The inventory's
+  0/18 for bonds is a detector artefact of looking in the notes.
+
+### What was disproved this cycle
+
+- **"sdba: false will make wampo deny an obvious brokerage window."** LNC's
+  stored lineup has `sdba: false` despite a $185.8M Schwab brokerage account in
+  the 4i and an explicit note ("participants have the option of utilizing a
+  self-directed brokerage account"). The display is nonetheless correct,
+  because the plan carries characteristic code **2R** and the three-state rule
+  reads the codes first. The exposure is real but conditional: an identical
+  parse on a plan without 2R would print "✗ None indicated — no brokerage
+  window in the schedule of assets or plan codes" over a filing that names one.
+  Not counted as a defect; recorded as a dependency.
+- **"Shared feature quotes are proof of a wrong field."** They are not, on their
+  own — some sentences legitimately state two facts. Reported as a detector
+  with a measured count, not as 3,007 errors.
+
+### Where the loop goes next
+
+1. Gate `matchText` on having found a formula, or label the quote as context.
+   4,350 digit-free quotes is the floor and it is a one-condition change in
+   `app.js`, not a parser cycle.
+2. Ingest the plan-entity type and suppress single-plan design claims on
+   MEPs/PEPs.
+3. Read the next filings for the *value*-level twin of §5: how much employer
+   stock and stable value is missing corpus-wide. It is measurable from stored
+   ratios plus 4i totals and is likely the largest single missing-dollars class
+   after the statement-page defects.

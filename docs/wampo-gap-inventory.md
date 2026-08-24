@@ -41,9 +41,9 @@ fees          Sch C provider rows (name, codes, direct/indirect comp)
 | 18/18 | no | Corrective distributions / ADP-ACP refunds *(loose detector)* |
 | 16/18 | no | Forfeiture balance and how forfeitures are used *(loose detector)* |
 | 16/18 | no | Fair value hierarchy (Level 1/2/3) |
-| 14/18 | no | ERISA 103(a)(3)(C) limited-scope audit election |
+| 14/18 | **dataset** | ERISA 103(a)(3)(C) limited-scope audit election (Sch H Part III 3b) |
 | 14/18 | partial | Plan termination, partial termination, or freeze |
-| 9/18 | no | Auditor name and opinion type |
+| 9/18 | **dataset** | Auditor name, EIN and opinion type (Sch H Part III 3a/3c) |
 | 8/18 | partial | Shares / units held per holding (4i column c) |
 | 6/18 | partial | Cost column (4i column d) |
 | 4/18 | **dataset** | Delinquent participant contributions (Sch H 4a) |
@@ -54,6 +54,9 @@ fees          Sch C provider rows (name, codes, direct/indirect comp)
 | 0/18 | **dataset** | Nonexempt prohibited transactions (Sch H 4d) |
 | 0/18 | **dataset** | Fidelity bond coverage |
 | 0/18 | no | Plan's percentage interest in a master trust |
+| n/a | **dataset** | Plan entity type — single-employer / multiple-employer / multiemployer / PEP (added #13) |
+| n/a | no | Who *funded* an expense the plan reports (forfeitures, employer, revenue sharing) (added #13) |
+| n/a | no | Auditor **change** between years (two audit reports, different PCAOB IDs) (added #13) |
 
 `dataset` = the answer is a structured column in the EFAST2 files the pipeline
 **already downloads**. `build-data.mjs` reads only the money columns from
@@ -91,7 +94,25 @@ deposit deadline — one of the clearest fiduciary red flags on the form.
 material whenever present. Same ingest gap.
 
 **Fidelity bond coverage (Form 5500 line 4e).** A plan bonded below the statutory
-10% minimum is a compliance issue. Same ingest gap.
+10% minimum is a compliance issue. Same ingest gap. (The bond *amount* does
+render in the PDF even though the checkboxes do not — LNC's line 4e prints
+`15000000`. The 0/18 above is a detector artefact of looking in the notes.)
+
+**Auditor name/EIN, opinion type, and the §103(a)(3)(C) election
+(Sch H Part III 3a–3c).** Moved here from "extraction gaps" in report #13.
+These are not prose in the notes: 3a is a four-way checkbox
+(unmodified / qualified / disclaimer / adverse), 3b is the limited-scope
+election, 3c is the firm's name and EIN — printed on the form page of
+`20251009112104NAL0011345952001` as `ERNST & YOUNG … EIN 35-6565596`. Structured
+Schedule H fields, in a file already downloaded. Not verified against the
+extract header, because `askebsa.dol.gov` is unreachable from the sandbox; the
+check is one line in the prep job's `columns:` log.
+
+**Plan entity type (Form 5500 Part I line A).** Single-employer /
+multiple-employer / multiemployer / DFE. `build-data.mjs:151` reads
+`TYPE_DFE_PLAN_ENTITY_CD` solely to spot `M` for master trusts; the plan-entity
+column is never read. This is not cosmetic — see "A pooled employer plan has no
+plan design" below.
 
 ### Parsing gaps — the information is in the PDF and the parser drops it
 
@@ -119,12 +140,25 @@ trusts have no public ticker and no published fee, this is the one public source
 that identifies them by name — the standing answer to "CITs are private and hard
 to find" has been sitting in a schedule the pipeline already fetches.
 
+**Category-noun rows — employer stock, GICs, brokerage, cash, loans (added #13).**
+A sub-case of the column-(a) gap with its own consequence, so it is listed
+separately. On these rows column (b) is a *category*, not a name — "Common
+stock", "Investment contract - at contract value", "Brokerage account" — and
+the identity is only in column (a). Dropping (a) therefore does not degrade
+these rows, it deletes them: LNC's stored lineup omits $113,237,840 of the
+sponsor's own common stock and a $414,453,295 stable-value contract, 15% of a
+schedule the pipeline nonetheless marks `confident`. The gap is
+size-correlated with exactly the two holdings a participant most wants named.
+Fixing (a) fixes this; nothing else will.
+
 ### Extraction gaps — in the audited notes, no extractor written
 
-**ERISA 103(a)(3)(C) limited-scope election.** When elected, the auditor does not
-audit the investment information; the custodian certifies it and the opinion is
-scoped out. wampo presents every audited figure identically, so a reader cannot
-tell which numbers an auditor actually stood behind.
+*(The §103(a)(3)(C) election moved to the dataset section in #13 — it is a
+Schedule H checkbox, not prose. Its consequence is unchanged and worth keeping
+here: when elected, the auditor does not audit the investment information, the
+custodian certifies it, and the opinion is scoped out. wampo presents every
+audited figure identically, so a reader cannot tell which numbers an auditor
+actually stood behind.)*
 
 **Forfeiture balance and use.** Notes routinely state the unused balance and
 whether forfeitures reduce employer contributions or pay plan expenses. Real
@@ -198,6 +232,58 @@ the right pages were unreadable, but that the wrong ones were readable.
 auditors (Comcast among them): the parser takes the comparative column. Comcast
 shows $16.3B when the current year reads $18.67B.
 
+### A second kind of wrong: the numbers are right and the *statement* is not (added #13)
+
+The four cases above are wrong **values**. Report #13 found wrong **claims** —
+fields where the number or the quote is genuine but the label attached to it
+asserts something the filing does not say. Counts are measured over all
+**62,377 lineup entries carrying features**, not sampled.
+
+**An unrelated paragraph presented as the plan's match disclosure.**
+`app.js:662` renders `matchText` inside the "Employer Match" card,
+badged `FORM 5500 AUDIT NOTES`, with no requirement that a formula was found.
+52,514 lineups carry a `matchText`; **8,704 have no `match` formula at all**, and
+**4,350 of those quotes contain no digit** — they cannot be stating a match.
+**800 begin with the word "Vesting."** LNC `20251009112104NAL0011345952001`
+shows a vesting sentence under Employer Match while the filing's own words,
+never stored, are "$1.00 for each $1.00 that a participant contributes each pay
+period, up to 6% of eligible earnings" plus a 4% Core non-elective.
+*The fix is a display condition, not a parser cycle.*
+
+**One sentence quoted as evidence for two different features.** 3,007 feature
+pairs share a verbatim quote — `rothText=afterTaxText` 826,
+`matchText=vestingText` 669, `matchText=eligibilityText` 419. Sharing is not
+proof of error (a sentence can state two facts) but it is the exact signature of
+a regex matching a keyword in a neighbouring topic, and it is free to compute.
+Confirmed instance: LNC is shown `Eligibility ✓ 2 years of service`, quoting a
+sentence about *vesting* of the Core contribution, for a plan whose notes state
+it "covers substantially all employees" with no service requirement anywhere.
+
+**Vesting stated without its scope.** Same filing: match and deferrals are
+"fully vested at all times", only the Core contribution has a two-year cliff.
+wampo prints one flat "Employer-money vesting: 2-year cliff" — wrong in the
+direction that penalises the plan.
+
+**A pooled employer plan has no plan design, and wampo states one.**
+`20251230144924NAL0010542115001`, SUCCESSWISE POOLED EMPLOYER PLAN: "the
+Participating Employers may elect to make matching contributions,
+profit-sharing contributions, safe harbor, prevailing wage and nonelective
+contributions". Match, vesting, auto-enrol and eligibility are per-employer and
+unknowable from the filing; the "sponsor" is a pooled plan provider nobody works
+for; an average balance spans unrelated employers. **195 plans name themselves
+pooled-employer and 200 more multiple-employer** (name matching only, a floor,
+and it catches a false positive called "PEP PRINTING, INC.") out of 110,555.
+Suppressing design claims here requires the entity-type column above.
+
+**A cost attributed to participants who did not pay it.** `app.js:848` prints
+"Total administrative expenses ≈ $X per participant" and `feePeerNote` ranks
+that per-head figure against peers. LNC's Schedule H 2i(12) is $182,511; its
+forfeiture note reads "forfeitures of $182,511 were used to pay administrative
+expenses of the Plan" — the identical figure. Participants bore none of it. The
+`$0` branch of `feePeerNote` is carefully hedged; the non-zero branch asserts a
+per-participant charge with no hedge at all. Schedule H reports what the plan
+spent; only the notes say who funded it.
+
 ### Why this category exists at all
 
 Each of these follows from the same root as the omissions — a region or a column
@@ -222,9 +308,18 @@ whether a stored value appears in the filing at all, which is exactly what
    Decker class outright — but the wrong-region cases (ZIP codes, fair-value
    tables, prior-year columns) are separate and need region scoring, not column
    handling.
-1. **The three dataset columns.** Already downloaded, no parsing, no
-   PARSER_VERSION bump. Late deposits alone is a genuine red flag no
-   competitor surfaces.
+0b. **The false statements (#13).** Cheaper than everything below it and
+   nothing else on this list is a *claim the filing contradicts*. Gating
+   `matchText` on a formula having been found is one condition in `app.js` and
+   removes 4,350 digit-free quotes from a card headed "Employer Match";
+   hedging the non-zero branch of `feePeerNote` is one sentence. Neither needs
+   a re-parse.
+1. **The dataset columns.** Already downloaded, no parsing, no
+   PARSER_VERSION bump: late deposits, prohibited transactions, fidelity bond,
+   plus (added #13) the Schedule H Part III auditor/opinion/§103(a)(3)(C)
+   fields and the plan-entity type. Late deposits alone is a genuine red flag no
+   competitor surfaces; entity type is what stops wampo asserting a plan design
+   for ~390 pooled and multiple-employer plans that do not have one.
 2. **Column (a) issuer.** Largest correctness gain; needs a parser cycle.
 3. **Schedule D Part I as a lineup source.** The only public route to naming
    collective trusts.
