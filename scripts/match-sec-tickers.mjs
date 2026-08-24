@@ -158,6 +158,15 @@ const GENERIC_LEAD = new Set(["etf", "etfs", "variable", "insurance", "mutual", 
 const STRUCTURAL = new Set(["trust", "trusts", "fund", "funds", "portfolio", "portfolios",
   "series", "company", "companies", "group", "the", "of", "for", "and", "inc", "llc", "lp",
   "plc", "corporation", "corp", "holdings", "shares", "class", "account", "ii", "iii", "iv"]);
+/* Share-class and role words. A registrant named "INSTITUTIONAL FIDUCIARY
+ * TRUST" contributed the single-token manager "institutional", which is a
+ * token of every institutional share class in the universe -- the same failure
+ * as "t" and "bond fund", one level along. These extend to a second token
+ * rather than being dropped, so that registrant stays usable as "institutional
+ * fiduciary" while the bare word stops naming every house. */
+const CLASS_WORDS = new Set(["institutional", "investor", "premier", "premium", "advisor",
+  "advisors", "adviser", "retail", "service", "services", "fiduciary", "admiral", "select",
+  "administrative", "signal", "founders", "flagship"]);
 /* Words that describe what a fund HOLDS. A registrant named after its own
  * product ("BOND FUND OF AMERICA", "INCOME FUND OF AMERICA") yields a phrase
  * made only of these, and such a phrase names no house — "bond fund" matched
@@ -177,7 +186,7 @@ function managerPhrase(entity) {
   // extend while the phrase so far cannot stand for a house on its own
   while (n < 3 && t.length > n
     && (t.slice(0, n).join(" ").length <= 4
-      || (n === 1 && (GENERIC_LEAD.has(t[0]) || STRUCTURAL.has(t[0]))))) n++;
+      || (n === 1 && (GENERIC_LEAD.has(t[0]) || STRUCTURAL.has(t[0]) || CLASS_WORDS.has(t[0]))))) n++;
   const parts = t.slice(0, n);
   const p = parts.join(" ");
   if (parts.length > 1 && parts.every((w) => DESCRIPTIVE.has(w) || STRUCTURAL.has(w))) return null;
