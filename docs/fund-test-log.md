@@ -2917,3 +2917,23 @@ running issuer tally at: Fidelity x36, Vanguard x?+dozens more across 18
 confirmed ISSUER_DROPPED filings since the cadence re-armed.
 
 170 filings tested cumulatively. No new classes this cycle; no code changes.
+
+## (10 fund report) #21 — 2026-08-24 22:14Z cycle — the #17 guard holds
+
+General worklist: 4 NAMES_MATCH, 3 ISSUER_DROPPED, 2 WRONG_REGION, 1
+OCR_SOURCE.
+
+**Both WRONG_REGIONs are the Harley-Davidson Milwaukee & Tomahawk hourly plan**
+(two filing years, same trust as report #17s salaried pair) — the identical
+pointer-wreckage class. Verified the #17 frontend guard covers them: 4 rows,
+top row 96.1% / 96.6% of value, trust linked and confident → shape test fires,
+pages show the trusts real 23-fund menu. No new defect; the class is closed
+frontend-side, and these two acks join the v68 re-parse list (the stored
+entries themselves are still wreckage).
+
+Three more ISSUER_DROPPED in the $0.2-0.3B range with unusually diverse
+issuer columns — one filing drops NINE different managers (Vanguard, John
+Hancock, Principal, BlackRock, Hartford, JPMorgan, New York Life...). The
+column-(b) tally since re-arm: 21 confirmed filings.
+
+180 filings tested cumulatively. No code changes.
