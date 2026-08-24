@@ -416,6 +416,85 @@ const FUND_TICKER = [
   [/mfs value fund/i, "MEIKX"],
 ];
 
+/* ---- BlackRock Institutional Trust Company collective index trusts ----------
+ * "BlackRock Equity Index Fund", "BlackRock EAFE Equity Index Fund" and
+ * "BlackRock Mid Cap Equity Index Fund" are collective trusts managed by
+ * BlackRock Institutional Trust Company (now BlackRock Fund Advisors)
+ * tracking the S&P 500, MSCI EAFE and S&P MidCap 400 respectively — each
+ * fund's own objective/strategy language names its index (BTC fund
+ * descriptions, verified per strategy, 2026-08-24). Their registered
+ * analogues are filed under the ISHARES brand, not "BlackRock", so the SEC
+ * name-matcher's same-manager gate cannot bridge the two automatically;
+ * these are hand-verified comparables instead.
+ * A long tail of OTHER "BlackRock ... Equity Index" strategies exists in the
+ * filed universe (Emerging Markets, ACWI, Global, Extended Market, Russell,
+ * Small-Cap, Non-U.S.) that were NOT individually verified against a specific
+ * registered fund — deliberately excluded below rather than guessed. */
+const BR_EI_OTHER = "(eafe|international|emerging|acwi|global|extended|russell|small|non-?u\\.?s|debt|advantage|value|multi.?cap|opportunit|investment|strategic|bond|msci|total)";
+const BR_MIDCAP_RE = "(?:mid.{0,3}cap|\\bmd\\b.{0,8}c[ap])";
+const brEquityIndexEafe = new RegExp("(?=[\\s\\S]*blackrock)(?=[\\s\\S]*index)(?=[\\s\\S]*(?:eafe|international))"
+  + "(?![\\s\\S]*(?:total|advantage|multi.?cap|value|opportunit|investment|strategic|bond|small|emerging))", "i");
+const brEquityIndexMidCap = new RegExp("(?=[\\s\\S]*blackrock)(?=[\\s\\S]*index)(?=[\\s\\S]*" + BR_MIDCAP_RE + ")"
+  + "(?![\\s\\S]*(?:eafe|international|emerging|acwi|global|russell|advantage|value|opportunit|investment|strategic|bond|extended))", "i");
+const brEquityIndexPlain = new RegExp("(?=[\\s\\S]*blackrock)(?=[\\s\\S]*index)(?=[\\s\\S]*(?:equity|s ?& ?p|500))"
+  + "(?!" + "[\\s\\S]*" + BR_MIDCAP_RE + ")(?![\\s\\S]*" + BR_EI_OTHER + ")", "i");
+
+/* ---- SSGA / State Street S&P index collective trusts -------------------------
+ * "SSGA S&P 500 Index NL Series", "State Street S&P 500 Index", "State Street
+ * S&P Mid Cap Index" are collective trusts managed by State Street Global
+ * Advisors tracking the S&P 500 and S&P MidCap 400 respectively (SSGA fund
+ * descriptions). The registered mutual-fund editions are SSGA's own — State
+ * Street Equity 500 Index Fund (formerly "SSgA S&P 500 Index Fund") — and the
+ * SPDR S&P MidCap 400 ETF Trust for the mid-cap strategy (State Street runs
+ * no registered MID-CAP *mutual fund*, only the SPDR ETF).
+ * "SSGA Russell Small/Mid Cap Index" ($31.9B across 600+ filed spellings —
+ * "SSGA Russ Sm Md Cp Idx", "State Street Sm Md Cp Eq Idx K", "STATE STREET
+ * SM MD CAP IND NLC" — is a DIFFERENT benchmark (Russell Small Cap
+ * Completeness, confirmed by one filing's own longhand "SSGA RUSS SM/MD CAP
+ * INDX SER A RUSSELL SMALL CAP COMPLETENESS"), not S&P MidCap 400. The
+ * abbreviations for "Russell" and "Small" here are too varied to exclude by
+ * name (Russ/Rsl/RSL, Sm/SM), so the mid-cap comparable requires "S&P"
+ * literally stated instead of merely excluding the Russell family's words —
+ * every verified S&P MidCap 400 filed name states "S&P" (or "SP"); the
+ * Russell Small/Mid family does not. Caught by the universe sweep review
+ * 2026-08-24: the word-exclusion version wrongly mapped "SSGA Russ Sm Md Cp
+ * Idx Cl II" to the S&P MidCap 400 ETF. */
+const ssMidCapRe = new RegExp("(?=[\\s\\S]*(?:ssga|ssgs|state street))(?=[\\s\\S]*s ?& ?p)"
+  + "(?![\\s\\S]*russ)(?=[\\s\\S]*" + BR_MIDCAP_RE + ")", "i");
+const ssSp500Re = new RegExp("(?=[\\s\\S]*(?:ssga|ssgs|state street))(?![\\s\\S]*(?:russ|" + BR_MIDCAP_RE + "))"
+  + "(?=[\\s\\S]*(?:s ?& ?p ?500|equity ?500|500 ?index))", "i");
+
+/* ---- Northern Trust collective S&P index funds --------------------------------
+ * "Northern Trust Collective S&P 500 Index Fund" / "NT Collective S&P 500
+ * Index Fund" are collective trusts managed by Northern Trust Asset
+ * Management tracking the S&P 500 and S&P MidCap 400. Their registered
+ * mutual-fund editions are Northern Funds' own "Stock Index Fund" (NOSIX)
+ * and "Mid Cap Index Fund" (NOMIX) — same manager, same benchmark (Northern
+ * Trust / Northern Funds fund descriptions). The bare "NT" abbreviation is
+ * only trusted next to "collective", since "NT" alone is too short to be an
+ * unambiguous manager token. */
+const ntSp500Re = new RegExp("(?=[\\s\\S]*(?:northern trust|\\bnt\\b\\s{0,3}collective))"
+  + "(?=[\\s\\S]*s ?& ?p.{0,15}500)", "i");
+const ntSp400Re = new RegExp("(?=[\\s\\S]*(?:northern trust|\\bnt\\b\\s{0,3}collective))"
+  + "(?=[\\s\\S]*s ?& ?p.{0,15}400)", "i");
+
+/* ---- BlackRock Russell index collective trusts --------------------------------
+ * "BlackRock Russell 1000 Index Non-Lendable Fund" / "BlackRock Russell 2500
+ * Index Non-Lendable Fund" are collective trusts run by BlackRock tracking
+ * the Russell 1000 and Russell 2500 respectively. The plain Russell 1000
+ * strategy has a same-name registered mutual fund (formerly "BlackRock
+ * Russell 1000 Index Fund", now "iShares Russell 1000 Large-Cap Index Fund",
+ * BRGNX); the Growth/Value tilts are separate iShares ETFs (IWF/IWD). No
+ * BlackRock/iShares Russell 2500 MUTUAL FUND was found, so the iShares
+ * Russell 2500 ETF (SMMD) stands in for that one.
+ * A handful of filings drop the "BlackRock" prefix entirely ("Russell 1000
+ * Index Non-Lendable Fund") — those state no manager and are deliberately
+ * left unmatched, same rule as "TARGET RETIREMENT 2030" above. */
+const brRussell1000GrowthRe = /blackrock russell 1000 (?:index )?growth/i;
+const brRussell1000ValueRe = /blackrock russell 1000 (?:index )?value/i;
+const brRussell1000Re = /blackrock russell 1000 (?:index|large.?cap)/i;
+const brRussell2500Re = /blackrock russell 2500 index/i;
+
 /* ---- comparable registered funds --------------------------------------------
  * A collective trust has NO ticker and NO public expense ratio — its fee is
  * negotiated per plan. But most large-plan CITs are the trust edition of a
@@ -429,6 +508,21 @@ const FUND_TICKER = [
  * whose benchmark the name never states (e.g. "SSGA LG CAP GROWTH") get
  * nothing — guessing their index would be invention. */
 const FUND_COMPARABLE = [
+  // BlackRock BTC index trusts (order matters: EAFE and Mid Cap before plain)
+  [brEquityIndexEafe, ["MAIIX", 0.10]],
+  [brEquityIndexMidCap, ["IJH", 0.05]],
+  [brEquityIndexPlain, ["BSPIX", 0.10]],
+  [brRussell1000GrowthRe, ["IWF", 0.18]],
+  [brRussell1000ValueRe, ["IWD", 0.18]],
+  [brRussell1000Re, ["BRGNX", 0.11]],
+  [brRussell2500Re, ["SMMD", 0.15]],
+  // SSGA / State Street (order matters: mid cap before plain S&P 500)
+  [ssMidCapRe, ["MDY", 0.23]],
+  [ssSp500Re, ["SSSYX", 0.02]],
+  // Northern Trust / Northern Funds (order matters: 400 before 500 is moot —
+  // the digit itself discriminates — but 500 leads since it is the larger family)
+  [ntSp500Re, ["NOSIX", 0.05]],
+  [ntSp400Re, ["NOMIX", 0.15]],
   [/vanguard target (retirement )?income/i, ["VTINX", 0.08]],
   [/vanguard target (retirement )?2020/i, ["VTWNX", 0.08]],
   [/vanguard target (retirement )?2025/i, ["VTTVX", 0.08]],
@@ -511,6 +605,13 @@ const FUND_COMPARABLE = [
   [trpFund("institutional small[-. ]?\\s*cap stock"), ["TRSSX", 0.66]],
   [trpFund("small[-. ]?\\s*cap value"), ["PRSVX", 0.79]],
   [trpFund("small[-. ]?\\s*cap stock"), ["OTCFX", 0.92]],
+  // "T. Rowe Price Structured Research Tr-C" / "... Common Trust Fund" — the
+  // CIT edition of the "U.S. Structured Research Equity" strategy, whose
+  // registered mutual fund is "T. Rowe Price U.S. Equity Research Fund"
+  // (PRCOX): both are described identically (30+ analysts allocated capital
+  // in proportion to the S&P 500 weight of the stocks they cover). The
+  // "... Extended" trust is a different, unverified strategy and is excluded.
+  [trpFund("structured research", "extended"), ["PRCOX", 0.45]],
 ];
 
 /* Ticker for a holding. Returns {tk, comparable} or null.
@@ -521,7 +622,16 @@ function fundTickerInfo(name, type) {
   if (!name) return null;
   if (/brokerage|self-directed|common stock|company stock|employer (security|stock)|participant loan|maturing through/i.test(name)) return null;
   const n = expandFundName(name);
+  // "Tr" (never "TRP", which is the T. Rowe Price manager abbreviation) is a
+  // recordkeeper-shortened "Trust" when it carries a trailing trust-class
+  // letter at the END of the name ("... 2035 TR B", "... Structured Research
+  // Tr-C") -- discovered via the universe sweep: 1,141 distinct T. Rowe Price
+  // filed names spelled this way were falling through as if they were the
+  // exact mutual fund, with no asterisk, because "trust" never appears
+  // spelled out. The trailing anchor is what keeps this from also matching
+  // "TRP RETIRE 2030 F" (a bare class letter, no "Tr" marker at all).
   const pooled = /trust|commingled|collective|pool\b|unitized|separate account|\bcit\b|annuity|tiaa traditional|guaranteed|\bgic\b|stable value|separately managed/i.test(name)
+    || /\btr[\s-][a-z0-9]\s*$/i.test(name)
     || /collective trust|pooled separate/i.test(type || "");
   if (!pooled) {
     for (const [re, tk] of FUND_TICKER) if (re.test(name) || re.test(n)) return { tk, comparable: false };
