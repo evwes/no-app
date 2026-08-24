@@ -34,6 +34,24 @@ mode: a cycle that dies before re-arming ends the night.
 - `create_trigger` and `update_trigger` require approval the owner cannot give
   while asleep. Do not plan around them overnight.
 
+## When the dedicated agent keeps dying
+
+Two consecutive failures with `API Error: 529 Overloaded` on 2026-08-24 (05:04
+and 05:20), the second producing no output at all. A 529 is server-side and
+transient, but respawning into an overloaded API costs a full agent spin-up to
+learn that it is still overloaded, and each spin-up re-reads the protocol and
+the log before doing any work.
+
+**Rule: after two consecutive 529 failures, stop respawning.** Carry the
+investigation in the cadence cycles instead — those are ordinary turns and have
+kept working throughout — and try the agent again after roughly an hour. Note
+in the report that the agent is down and why, so a gap in its report numbering
+is not read as a gap in the work.
+
+The related fix already applied to its brief: commit BEFORE starting a long
+write. The first 529 landed mid-write to the gap inventory; nothing was lost
+only because it had committed the preceding report first.
+
 ## What survives a container recycle
 
 This container is ephemeral and `/tmp` does not survive it. Anything a cycle
