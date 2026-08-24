@@ -3010,3 +3010,15 @@ handling already stores its names correctly.
 No tester artefacts this cycle — the five fixed classes stayed fixed. 210
 filings tested cumulatively. v67 re-parse in flight (run #156, queued
 23:18Z); cycles hold all scripts/** pushes until it lands.
+
+## (10 fund report) #25 — 2026-08-24 23:36Z cycle — quiet, and correctly quiet
+
+General worklist: 4 PRIOR_YEAR_SOURCE, 3 OCR_SOURCE, 3 ISSUER_DROPPED.
+No WRONG_REGION, no new classes, nothing requiring hand confirmation —
+every verdict is a self-explaining known class, which is the tester
+working as calibrated after five artefact fixes. The three issuer-dropped
+filings (Vanguard/Nuveen/JPMorgan-heavy, all sub-$100M) go to the tally
+only: v67 is re-parsing the universe right now and fixes the class.
+
+220 filings tested cumulatively. v67 re-parse (run #156) in flight;
+scripts/** frozen until it lands.
