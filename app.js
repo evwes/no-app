@@ -644,6 +644,24 @@
 
   function filedContributionCard(plan) {
     const ff = plan.filedFeatures;
+    /* A match quote is only evidence of a match. Measured across all 62,377
+     * lineups carrying features: 52,514 have a match quote, 8,704 of those have
+     * NO extracted formula, and 4,350 of those quotes contain no digit at all.
+     * A match formula cannot be stated without a number, so those paragraphs
+     * are something else entirely -- "Participant Accounts Each participant's
+     * account is credited with...", "Description of the Plan (continued)" --
+     * and rendering them under the Employer Match heading asserts the filing
+     * said something it did not. A further 669 lineups use one sentence as the
+     * evidence for both the match and the vesting schedule; where that sentence
+     * leads with "Vesting" it is the vesting note, not the match.
+     *
+     * Suppressed rather than hedged: a quote with no number in it cannot be
+     * made true by a caveat. Where nothing survives, the card says so, which is
+     * the same three-state honesty the vesting line below already uses. */
+    const matchQuote = ff.matchText
+      && /\d/.test(ff.matchText)
+      && !/^\s*Vesting\b/i.test(ff.matchText)
+      ? ff.matchText : null;
     // Schedule H 2a(1)(A) is ALL employer money — match plus profit sharing,
     // prevailing-wage QNECs, safe harbor. Labelling it "total" inside a card
     // headed "Employer Match" read as the match total: R.H. White's $3.2M is
@@ -659,7 +677,8 @@
       </div>
       ${ff.frozen ? `<p class="max-benefit"><strong>⚠ Plan frozen or terminated</strong> — the filing states contributions have been discontinued; details below describe the plan as it operated.</p>${ff.frozenText ? `<blockquote class="quote">“${esc(ff.frozenText)}”</blockquote>` : ""}` : ""}
       ${ff.match ? `<p class="max-benefit">Formula: <strong>${esc(ff.match)}</strong>${ff.safeHarbor === "match" ? " · safe harbor" : ""}${ff.trueUp ? " · with annual true-up" : ""}${/discretionary/i.test(ff.match) && plan.flows.employerM === 0 ? " · <strong>none made this plan year</strong>" : ""}</p>` : ""}
-      ${ff.matchText ? `<blockquote class="quote">“${esc(ff.matchText)}”</blockquote>` : ""}
+      ${matchQuote ? `<blockquote class="quote">“${esc(matchQuote)}”</blockquote>` : ""}
+      ${!ff.match && !matchQuote ? `<p class="max-benefit">Employer match: <span class="feat-unknown">no formula stated in the audited notes</span> — check the plan's SPD.</p>` : ""}
       ${ff.nec ? `<p class="max-benefit">Employer nonelective contribution: <strong>${esc(ff.nec)}</strong>${ff.safeHarbor === "nonelective" ? " · safe harbor" : ""}</p>` : ""}
       ${ff.necText ? `<blockquote class="quote">“${esc(ff.necText)}”</blockquote>` : ""}
       ${schRLine(plan)}
