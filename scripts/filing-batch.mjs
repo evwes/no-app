@@ -178,9 +178,28 @@ for (const w of batch) {
   const issuers = new Map();
   for (const name of w.names) {
     let hit = issuerBefore(lines, name);
+    const bare = stripResidue(name);
+    if (!hit && bare !== name && bare.length >= 10) { hit = issuerBefore(lines, bare); if (hit) rec.residue = (rec.residue || 0) + 1; }
+    /* Fifth artefact class (report #22): the parser also normalizes MID-name
+     * text — Whiting-Turner's "Treasury Notes, interest rate 1.125%" was
+     * stored as "Treasury Notes rate 1.125%", so no contiguous needle can
+     * match and 46 correctly-parsed rows scored WRONG_REGION 0/12. Fallback:
+     * the stored name's tokens must appear IN ORDER in a line that carries a
+     * value — insertions ("interest") and punctuation stop mattering. Loose
+     * matches count only toward found-in-filing, never toward issuer
+     * detection, and are tallied separately so a verdict that leaned on them
+     * is visible as such. */
     if (!hit) {
-      const bare = stripResidue(name);
-      if (bare !== name && bare.length >= 10) { hit = issuerBefore(lines, bare); if (hit) rec.residue = (rec.residue || 0) + 1; }
+      const toks = bare.toLowerCase().match(/[a-z0-9.%-]+/g) || [];
+      if (toks.length >= 3) {
+        for (const raw of lines) {
+          if (!VALUE_RIGHT.test(raw)) continue;
+          const lt = raw.toLowerCase().match(/[a-z0-9.%-]+/g) || [];
+          let i = 0;
+          for (const t of lt) if (t === toks[i] && ++i === toks.length) break;
+          if (i === toks.length) { hit = { found: true, issuer: null }; rec.loose = (rec.loose || 0) + 1; break; }
+        }
+      }
     }
     if (!hit) continue;
     found++;

@@ -2937,3 +2937,29 @@ Hancock, Principal, BlackRock, Hartford, JPMorgan, New York Life...). The
 column-(b) tally since re-arm: 21 confirmed filings.
 
 180 filings tested cumulatively. No code changes.
+
+## (10 fund report) #22 — 2026-08-24 22:31Z cycle — the fifth tester artefact: mid-name normalization
+
+Issuer worklist: 4 ISSUER_DROPPED, 4 NAMES_MATCH, 1 WRONG_REGION, 1
+PRIOR_YEAR_SOURCE (self-reported correctly).
+
+**The WRONG_REGION (Whiting-Turner, $0.9B) was the tester's fault, and the
+class is new.** The plan's 4i legitimately holds ~46 direct Treasury notes
+("Government Bonds:" section, "U.S Treasury" in column (b)). The parser
+stored "Treasury Notes rate 1.125% due, 02-29-2028" where the filing prints
+"Treasury Notes, interest rate 1.125% due, 02-29-2028" — mid-name
+normalization, so no contiguous substring can ever match, and 46
+correctly-parsed rows scored WRONG_REGION 0/12. Unlike the four suffix-residue
+classes, no suffix strip fixes this.
+
+**Tester fix shipped:** a token-subsequence fallback — the stored name's
+tokens must appear in order in a line carrying a value, so insertions and
+punctuation stop mattering. Loose matches never feed issuer detection and are
+tallied separately (`loose:` in the record). Re-test: 12/12 found,
+NAMES_MATCH. The original WRONG_REGION row in filing-tests.jsonl stands as
+history; this entry is the correction.
+
+Also: another State Street Global Advisors x8 filing joins the column-(b)
+tally (SSgA's own trusts, $1.0B), and two NAMES_MATCH filings still showed
+dropped issuers — names match AND the issuer column exists, the mildest form
+of the same defect. 190 filings tested cumulatively.
