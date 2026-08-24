@@ -17,6 +17,184 @@ Rules this log runs by:
 
 ---
 
+## (10 fund report) #1 — ADDENDUM, after owner review
+
+The owner corrected three of my classifications and asked for examples. Two of
+the corrections were right and one of them found a defect far larger than
+anything the ticker machine has fixed.
+
+### THE BIG ONE — the parser is throwing away the "Identity of Issuer" column
+
+I classified `500 Index Fund` (3,186 holdings, $19.7B) as "names no manager —
+correctly refused". The owner pushed back: a 500 index fund belongs to some
+institution. He was right, and the manager is **in the filing**.
+
+The canonical Form 5500 Schedule H line 4i layout has the manager in column
+**(a)** and the product in column **(b)**:
+
+```
+ (a) Identity of Issuer, Borrower,   (b) Description of Investment,
+     Lessor, or Similar Party            Including Maturity Date, Rate...     Current Value
+     Dodge & Cox                         Income Fund Class X                    73,185,362
+ *   Fidelity                            Balanced Fund Class K                 406,583,845
+ *   Fidelity                            500 Index Fund                        903,147,541
+     Vanguard                            Target Retirement 2040 Fund Inst.     265,618,388
+```
+
+`scripts/lib-4i.mjs` reads column (b) and **discards column (a)**. What wampo
+stored for that plan (ack `20250910130052NAL0013182099001`, 35 rows):
+
+```
+ $903M  500 Index Fund                              <- Fidelity, dropped
+ $327M  Target Retirement 2050 Fund Institutional    <- Vanguard, dropped
+ $407M  Balanced Fund Class K                        <- Fidelity, dropped
+ $398M  Large Cap Growth Institutional               <- issuer dropped
+```
+
+Every row in that plan lost its manager, so every row is unidentifiable, so the
+plan shows **no tickers at all** — while the filing names the manager on every
+single line. The project memory says "description column usually holds the fund
+name", and for many recordkeeper layouts that is true; for the **standard**
+layout it is wrong, and the standard layout is common.
+
+**Verified by hand, 3 filings of 3:**
+
+| ack | issuers present in column (a), all discarded |
+|---|---|
+| `20250910130052NAL0013182099001` | Fidelity, Vanguard, Dodge & Cox |
+| `20251015163940NAL0005444321001` | Fidelity, JP Morgan, Morgan Stanley, Neuberger Berman, TCW Group |
+| `20251015155423NAL0002702403001` | Fidelity (whole menu) |
+
+**Scale, measured across the universe.** Signature: a lineup with ≥8 fund rows
+where ≤15% of rows name any manager — a genuinely terse filing has a few such
+rows, a dropped column (a) loses the manager on every row at once.
+
+```
+lineups with >=8 fund rows:                     56,328   (1,539,198 rows)
+  where <=15% of rows name a manager:            6,098   (10.8% of lineups)
+  rows in them:                                154,917   (10.1% of all fund rows)
+  assets in them:                             $1,019B
+```
+
+Three sampled at random from that set were all the same cause. I have not
+verified all 6,098, so treat $1.02T as the size of the *candidate set*, not a
+proven count — but the mechanism is confirmed and the sample is 3/3.
+
+**Why this outranks everything else on the list:** it is the largest single
+source of the 520,794 "names no manager" rows, and those rows are the reason
+coverage on identifiable rows sits at 65.5% instead of higher. It also
+retroactively explains why lineup-context inference looked attractive — the
+context was not missing from the filing, it was missing from our parse.
+
+**This also kills the inference idea for good.** There is no need to guess a
+plan's manager from its other holdings when the filing states the issuer on
+every row. Fix the parse, do not infer.
+
+Next parser cycle: keep column (a), join it to column (b), and re-parse.
+Requires a PARSER_VERSION bump. Gate the change on the 19 live specimens plus
+these three.
+
+### CUSIP — I was wrong to call this junk
+
+I filed `CUSIP:` ($81.0B, 29 holdings) as "column header parsed as a holding".
+The owner pointed out CUSIP is a real security identifier that can be looked up.
+He is right about what it is; what the filing actually shows (ack
+`20251013091841NAL0001583216001`, a Northern Trust trustee statement) is that
+each security carries an identifier on a **continuation line**:
+
+```
+ CARVANA CO SR SECD NT 9% CASH INT 144A 14% 06-01-2031   149,108.000   253,840.06   178,774.89
+ SEDOL: BMTYZ89
+ DEFAULTED MAGNETATION LLC/FIXED 0% DUE 12-31-2040       374,000.000   410,326.87         3.74
+ CUSIP: 559417AA8
+```
+
+So there are two separate facts, and I collapsed them into one wrong statement:
+
+1. **A defect**: the parser emits the `CUSIP:`/`SEDOL:` continuation line as its
+   own holding row and gives it a value. That part stands.
+2. **An opportunity I missed**: filings *do* carry CUSIPs and SEDOLs, and a
+   CUSIP identifies a fund far more reliably than a recordkeeper's spelling of
+   its name. Recorded as a research item — the blocker is a CUSIP→ticker
+   mapping source, which the SEC series/class file does not provide.
+
+Note the context: these particular CUSIPs sit on individual securities inside a
+trustee statement (Carvana bonds, Shopify), which is also the wrong region — the
+same trustee-statement class as `CORPORATE STOCKS - COMMON`. Both come from
+security-level detail pages being parsed as a fund menu.
+
+### "VALUE OF INTEREST IN" — the example the owner asked for
+
+ack `20251014143400NAL0006349954001`. The $21.1B row is a fragment of the
+**Schedule D Part I** form label, not a holding. The page reads:
+
+```
+a Name of MTIA, CCT, PSA, or 103-12 IE:  JP MORGAN EQUITY FOCUSED COMMINGLED
+b Name of sponsor of entity listed in (a): JPMORGAN CHASE BANK, N.A.
+c EIN-PN 13-4179575-001   d Entity code 1C
+e Dollar value of interest in MTIA, CCT, PSA, or 103-12 IE at end of year   27,922,302
+```
+
+The parser scored a **Schedule D** page as a 4i region and turned the printed
+label "Dollar value of interest in..." into a fund name.
+
+Worth noting for the owner's "collective trusts are private and hard to find"
+point: this page is where the trust NAMES live — JP MORGAN EQUITY FOCUSED
+COMMINGLED, ROBECO EMERGING MKT EQUITIES CIT, PRUDENTIAL EMERGING MKT BLEND
+DEBT — each with a sponsor, an EIN and a dollar value. Schedule D Part I is
+already used to link master trusts; it is not yet used as a **lineup source for
+CIT-heavy plans**. That is a real answer to the CIT problem and it is filed
+public data.
+
+### "Various" — the example the owner asked for
+
+ack `20251015171731NAL0002804531001`:
+
+```
+ (A) Identity of issue              (B) Description of investment        Current Value
+ *   Participant Loans                  Participant Loans                  115,142,476
+     TIAA CREF                          REGISTERED INVESTMENT COMPANY          771,915
+     TIAA CREF                          General Insurance Contracts            252,223
+     Interest Held in Master Trust      Various (includes Registered      9,659,350,978
+                                          Investment Companies, Self
+                                            Directed Brokerage, etc.)
+     TOTAL                                                              9,775,517,592
+```
+
+"Various (includes Registered Investment Companies, Self Directed Brokerage,
+etc.)" is the **description** for the row whose identity is *"Interest Held in
+Master Trust"*. Same defect as above from the other direction: here the parser
+took column (B) when the meaning is in column (A). The honest display for this
+plan is "$9.66B held in a master trust", not a fund.
+
+### Corrections accepted, no argument
+
+- **Corporate stocks** are not 401(k) lineup investment choices — correct. They
+  are trustee-statement innards. They should never appear as menu rows.
+- **`At fair value`** is not a fund — confirmed by the Comcast specimen above.
+- **`Common collective trusts` / `COMMON/COLLECTIVE TRUSTS` / `Collective
+  Investment Fund` (#2, #3, #6, #10)** are one item, not four: unnamed
+  collective-trust aggregates. Counted once from here on.
+- **Collective trusts and CIFs are private and hard to identify** — agreed, and
+  parked. The Schedule D finding above is the first real lead on it.
+
+### Revised scoreboard for batch #1
+
+Deduplicating the collective-trust rows into one item, the 10 names were really
+**6 distinct problems**, and not one of them is a ticker-coverage problem:
+
+| Problem | Rows | What it actually is |
+|---|---:|---|
+| issuer column discarded | ~154,917 candidate | **parser** — the big one |
+| trustee-statement detail parsed as a menu | 36 | parser (CUSIP:, CORPORATE STOCKS) |
+| Schedule D page parsed as 4i | 1 | parser |
+| financial-statement line parsed as a holding | 6 | parser (Comcast, also wrong year column) |
+| master-trust row read from the description column | 7 | parser |
+| unnamed collective-trust aggregates | 72 | genuinely unidentifiable; Schedule D is the lead |
+
+
+---
+
 ## Machine state (updated every cycle)
 
 **Coverage, 2026-08-24:** 627,593 of 1,542,984 fund-like holdings resolve
