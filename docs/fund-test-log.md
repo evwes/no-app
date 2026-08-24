@@ -1515,3 +1515,141 @@ describe, and on that layout the defect is close to universal.
 
 So the defect is **not concentrated in the biggest plans; it is concentrated in
 the ordinary ones**, which is most of the site.
+---
+
+## (10 fund report) #9 — 2026-08-24 — the random sample doubled to 40
+
+**Running count of the column-(a) defect, hand-verified (cumulative):**
+
+| | filings |
+|---|---:|
+| **CONFIRMED** issuer column present in the 4i table and discarded | **56** |
+| **DISPROVED** — filing read, no column (a) to drop | **25** |
+| **PARTIAL** — a minority of rows carry a discarded issuer | **6** |
+| **UNVERIFIABLE** — source filing not in hand | **1** |
+| hand-read to date | 88 |
+
+Two further batches from `docs/filing-worklist-random.json`. The random sample
+is now **40 filings**, every one read against its filing.
+
+### Random-sample result at n = 40
+
+| | filings | share |
+|---|---:|---:|
+| fully affected (majority of rows lose an issuer) | **34** | 85.0% |
+| partially affected (some rows lose an issuer) | **3** | 7.5% |
+| not affected | **3** | 7.5% |
+
+- Fully affected: **85.0%**, Wilson 95% interval **70.9% – 92.9%** →
+  **3,769 – 4,939** of the 5,314-lineup frame, point estimate **4,517**.
+- Affected at all (fully + partially): **92.5%**, interval **80.1% – 97.4%** →
+  **4,258 – 5,177**, point estimate **4,915**.
+
+The interval narrowed from 69.9–97.2 (n=20) to 70.9–92.9 (n=40) and the point
+estimate moved from 90% to 85%. Both batches behaved like the first two; there
+is no sign of the rate being an artefact of the first draw.
+
+Still not measured, and still must not be inferred: the **assets-weighted**
+share. The sample is unweighted by plan size, and reports #3–#7 showed the
+largest plans fail differently. $1,125B remains the size of the candidate set,
+not of the confirmed defect.
+
+### Batch A — 8 confirmed, 2 partial
+
+| ack | plan | rows losing an issuer |
+|---|---|---:|
+| `20250926111853NAL0010073920001` | PHYSICIANS & SURGEONS CLINIC OB/GYN PROFIT SHARING | 16 / 17 |
+| `20251007115723NAL0008077152001` | STRIDES PHARMA 401(K) PROFIT SHARING | 26 / 26 |
+| `20250709140247NAL0008199568001` | CORVESTA NEW COMPARABILITY CODA PROFIT SHARING | 15 / 15 |
+| `20251015171707NAL0010807442001` | GEN II MANAGEMENT 401(K) | 41 / 41 |
+| `20250919103554NAL0005243730001` | LOFFREDO GARDENS PROFIT SHARING | 34 / 35 |
+| `20250923110933NAL0002519059001` | VSC FIRE & SECURITY 401(K) SAVINGS | 22 / 23 |
+| `20251014123154NAL0002767617001` | HEADWATERS SALONS 401(K) | 21 / 21 |
+| `20251015115055NAL0002356131001` | ABEL CONSTRUCTION 401K SAVINGS | 28 / 28 |
+| `20251015155925NAL0002711283002` | AIR WISCONSIN FLIGHT ATTENDANTS RETIREMENT | 7 / 27 partial |
+| `20250924124250NAL0010597714001` | SEAGRAVE FIRE APPARATUS UNION 401(K) | 5 / 24 partial |
+
+Gen II Management, 41 of 41 rows:
+```
+             Identity of Issuer, Borrower,     Maturity Date, Rate of Interest, Collateral,       Current
+                Lessor, or Similar Party                Par, or Maturity Value            Cost      Value
+     Mutual Funds
+      Aristotle                            STRATEGIC INCOME I                          **   $   284,735
+      Blackrock                            CORE BOND K                                 **       407,992
+      Cohen & Steers                       REALTY SHARES Z                             **       424,553
+      DODGE & COX                          DODGE & COX INCOME- I                       **         1,119
+```
+Note the last row: when the filer repeats the manager inside column (b), the
+name survives. `DODGE & COX INCOME- I` is stored intact while `CORE BOND K`
+loses BlackRock — from adjacent lines of the same table. That is the clearest
+possible demonstration that the information is present and the loss is ours.
+
+Air Wisconsin is the partial case, and shows why partials happen:
+```
+Collective Investment Trust Funds
+              Great Gray Trust Company    Flexpath Stable Value Fund     N/R    $   932,053
+              Great Gray Trust Company    Large Cap Growth Fund          N/R         822,108
+              Great Gray Trust Company    EuroPacific Growth Fund        N/R         490,659
+Mutual Funds
+```
+The collective-trust block loses its issuer; the mutual-fund block below it
+already carries manager-prefixed names, so only part of the menu is damaged.
+
+### Batch B — 8 confirmed, 2 disproved
+
+| ack | plan | rows losing an issuer |
+|---|---|---:|
+| `20251014080513NAL0001099699001` | GREATER NASHUA MENTAL HEALTH 403(B) | 24 / 25 |
+| `20251001160350NAL0018037219001` | SAVINGS PLAN OF HARMONIC DRIVE LLC | 27 / 27 |
+| `20260626073611NAL0016208178001` | KIEL CENTER 401(K) | 25 / 26 |
+| `20250826093826NAL0016958418001` | MULTIVAC PROFIT SHARING 401(K) | 39 / 40 |
+| `20251030085608NAL0004269682001` | S & S FIRESTONE 401(K) RETIREMENT | 24 / 26 |
+| `20251009182853NAL0004164579001` | J. DAVID GLADSTONE INSTITUTES POSTDOC PROFIT SHARING | 21 / 21 |
+| `20260722135759NAL0010182323001` | SPARROW & KENNEDY TRACTOR CO RETIREMENT | 30 / 31 |
+| `20251013140824NAL0000691539001` | PDF INC. 401(K) PROFIT SHARING | 22 / 22 (OCR) |
+| `20260707142910NAL0016333923001` | JOLLY ROOFING 401(K) | 0 / 11 — disproved |
+| `20251009094141NAL0015702498001` | SPUNTECH 401(K) | 0 / 24 — disproved |
+
+**Sparrow & Kennedy Tractor Co** is a single-issuer menu: 30 of 31 rows are
+`SENTRY LIFE INSURANCE COMPANY`, and every stored name is a bare
+`2045 TARGET RETIREMENT ACCOUNT III`, `GUARANTEED FUND`. A plan whose entire
+lineup is one insurer's separate accounts shows on wampo as anonymous accounts.
+
+**PDF Inc. 401(k)** — OCR-derived, scored WRONG_REGION as predicted in report
+#8. Rasterised PDF page 29:
+```
+FORM 5500, SCHEDULE H 4i
+SCHEDULE OF ASSETS HELD FOR INVESTMENT PURPOSES
+     (b)                          (c)                                          (e)
+     Identity of issue, borrower, Description of investment including...     Current
+(a)  lessor, or similar party     rate of interest, collateral...             Value
+Mutual Funds:
+*  American Funds    The Growth Fund of America                       $   185,461
+*  American Funds    Smallcap World Fund                                   69,404
+*  American Funds    Growth Portfolio Fund                                241,952
+*  American Funds    Washington Mutual Investors Fund                       2,844
+*  American Funds    Investment Company of America Fund                    94,023
+```
+Twenty-two rows, one manager on every one, none of it stored. `Growth Portfolio
+Fund` is unidentifiable; `American Funds Growth Portfolio Fund` is a specific
+registered fund with a ticker.
+
+The two disproved filings (Jolly Roofing, Spuntech) both have all their names
+inside a genuine 4i region with **zero** left-column text — single-column
+schedules where the filer put the whole name in one cell.
+
+### What the loop has established, in one paragraph
+
+The Form 5500 line 4i schedule normally prints the fund manager in column (a)
+and the product in column (b). `scripts/lib-4i.mjs` keeps one column per row
+and, on the standard layout, keeps the wrong one. On a random sample of 40
+filings drawn from the 5,314-lineup candidate frame, **85% lose the manager on
+most rows and 92.5% lose it on some** — an estimated 3,769–4,939 lineups fully
+affected. The loss is not cosmetic: it makes rows unmatchable to a ticker
+(`500 Index Fund`, `Growth Portfolio Fund`, `2045 Retirement Fund`), it
+discards share class on layouts like Brown University's, and on Stanley Black &
+Decker it silently merged four issuers' contracts into one fabricated $105M
+holding. The fix is a parser change and a PARSER_VERSION bump; the specimens
+that must all pass together are HP Inc. (join (a)+(b)), Sanofi (keep (a), (b)
+is `Common Trust`), Eversource and Iowa Health (the parser already flips
+per-row), and Arcadis (it already joins, sometimes).
