@@ -2758,3 +2758,43 @@ lineups** are pending/unsettled trade lines (`"PENDING PURCHASES"` $6,136,324).
   is absent from the filing. The mechanism is dedup summation, which is why the
   class was invisible to every sum-based audit check — the sums are internally
   consistent by construction.
+
+## (10 fund report) #16 — 2026-08-24 — the issuer column, 8 out of 10
+
+First batch since the cadence chain lapsed at 05:52Z. Ten filings from the
+issuer-targeted worklist (`docs/filing-worklist-issuer.json`, which is built to
+enrich for low manager-share and so is NOT a random sample of the universe —
+state the frame with the number).
+
+    ISSUER_DROPPED   8
+    NAMES_MATCH      2
+
+**What was found.** The same defect, at scale, on large plans:
+
+| filing | assets | issuers wampo discarded |
+|---|---|---|
+| 20251020143231NAL0000699057001 | $5.9B | Vanguard ×11 |
+| 20250709085932NAL0003206963001 | $5.0B | Vanguard ×12 |
+| 20251014135322NAL0004142848001 | $4.7B | Vanguard Fiduciary Trust ×8, Fidelity Management Trust ×1 |
+| 20251001145816NAL0031932674001 | $3.7B | JP Morgan ×7, Vanguard ×3, Fidelity ×1 |
+| 20251010150149NAL0008363457001 | $3.1B | Vanguard ×12 |
+| 20251015122510NAL0002403219001 | $2.7B | Nuveen ×10 |
+| 20251013103210NAL0000490947001 | $2.7B | Vanguard ×9, Loomis Sayles ×1, American Funds ×1 |
+| 20250725145420NAL0003257235001 | $2.4B | Vanguard ×4, Northern Trust ×2, Prudential ×1, Fidelity ×1, Eaton Vance ×1, Dodge & Cox ×1, BlackRock ×1 |
+
+**Why it is not reported.** Schedule H line 4i has column (b) "identity of
+issue" and column (c) "description of investment". The parser reads (c) and
+discards (b). On these filings the fund house is in (b) and only the product is
+in (c), so a holding stored as "500 Index Fund" has lost the one word —
+Vanguard — that makes it identifiable, and with it any chance of a ticker or an
+expense ratio.
+
+**Why a blind fix is still disproved.** Sanofi files the whole fund name in (b)
+with only "Common Trust" in (c); Gen II has both patterns on adjacent lines.
+Concatenating (b) and (c) universally would corrupt those. The fix has to
+decide per-region which column carries the name, which is why this is still an
+open parser change rather than a one-line patch.
+
+**Machine state.** No parser change was made — a measurement was running (the
+sponsor-ticker work) and the standing rule is not to move `lib-4i.mjs` or
+`PARSER_VERSION` underneath one. 130 filings tested cumulatively.
