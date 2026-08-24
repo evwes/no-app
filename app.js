@@ -605,10 +605,28 @@
     "raytheon": "rtx", "exxon": "exxon mobil", "esso": "exxon mobil",
   };
 
+  /* PUBLIC-COMPANY NAMES. A Form 5500 is filed by a legal entity, which is
+   * often not the name anyone knows the company by: GE Vernova's plan is filed
+   * by "Ropcor, Inc.", Alphabet's by "Google LLC". Searching GEV already
+   * returned that plan ranked first — it just said "Ropcor, Inc.", so it read
+   * as a miss.
+   *
+   * scripts/companies.json carries the public name and is a BUILD-time file the
+   * browser never sees; the boot payload ships only the ticker. Embedding the
+   * map here fixes the display against data already published, with no pipeline
+   * run. It is small (~109 entries) and changes only when the curated list
+   * does. */
+  const TICKER_NAME = {"AAPL": "Apple", "ABBV": "AbbVie", "ABT": "Abbott", "ACN": "Accenture", "ADBE": "Adobe", "ADI": "Analog Devices", "ADP": "ADP", "AMAT": "Applied Materials", "AMD": "AMD", "AMGN": "Amgen", "AMZN": "Amazon", "AVGO": "Broadcom", "AXP": "American Express", "BA": "Boeing", "BAC": "Bank of America", "BKNG": "Booking Holdings", "BLK": "BlackRock", "BMY": "Bristol Myers Squibb", "BRK.B": "Berkshire Hathaway", "BX": "Blackstone", "C": "Citigroup", "CAT": "Caterpillar", "CB": "Chubb", "CI": "Cigna", "CMCSA": "Comcast", "CME": "CME Group", "COP": "ConocoPhillips", "COST": "Costco", "CRM": "Salesforce", "CSCO": "Cisco", "CVX": "Chevron", "DE": "John Deere", "DIS": "Disney", "DUK": "Duke Energy", "ELV": "Elevance Health", "EQIX": "Equinix", "ETN": "Eaton", "F": "Ford", "GE": "GE Aerospace", "GEV": "GE Vernova", "GILD": "Gilead Sciences", "GM": "General Motors", "GOOGL": "Alphabet (Google)", "GS": "Goldman Sachs", "HD": "Home Depot", "HON": "Honeywell", "IBM": "IBM", "ICE": "Intercontinental Exchange", "INTC": "Intel", "INTU": "Intuit", "ISRG": "Intuitive Surgical", "JNJ": "Johnson & Johnson", "JPM": "JPMorgan Chase", "KLAC": "KLA", "KO": "Coca-Cola", "LIN": "Linde", "LLY": "Eli Lilly", "LMT": "Lockheed Martin", "LOW": "Lowe's", "LRCX": "Lam Research", "MA": "Mastercard", "MCD": "McDonald's", "MDLZ": "Mondelez", "MDT": "Medtronic", "META": "Meta", "MMC": "Marsh McLennan", "MO": "Altria", "MRK": "Merck", "MS": "Morgan Stanley", "MSFT": "Microsoft", "MU": "Micron", "NEE": "NextEra Energy", "NFLX": "Netflix", "NKE": "Nike", "NOW": "ServiceNow", "NVDA": "NVIDIA", "ORCL": "Oracle", "PANW": "Palo Alto Networks", "PEP": "PepsiCo", "PFE": "Pfizer", "PG": "Procter & Gamble", "PLD": "Prologis", "PM": "Philip Morris", "PYPL": "PayPal", "QCOM": "Qualcomm", "REGN": "Regeneron", "RTX": "RTX (Raytheon)", "SBUX": "Starbucks", "SCHW": "Charles Schwab", "SO": "Southern Company", "SPGI": "S&P Global", "SYK": "Stryker", "T": "AT&T", "TJX": "TJX", "TMO": "Thermo Fisher", "TSLA": "Tesla", "TXN": "Texas Instruments", "UBER": "Uber", "UNH": "UnitedHealth Group", "UNP": "Union Pacific", "UPS": "UPS", "V": "Visa", "VRTX": "Vertex Pharmaceuticals", "VZ": "Verizon", "WFC": "Wells Fargo", "WM": "Waste Management", "WMT": "Walmart", "XOM": "ExxonMobil", "ZTS": "Zoetis"};
+
+  function publicName(plan) {
+    const n = plan.ticker && TICKER_NAME[plan.ticker];
+    return n && n.toLowerCase() !== (plan.company || "").toLowerCase() ? n : null;
+  }
+
   function matchesQuery(plan, q) {
     if (!q) return true;
     if (!plan.hay) {
-      plan.hay = (plan.company + " " + plan.ticker + " " + (plan.provider || "") + " " + plan.planName +
+      plan.hay = (plan.company + " " + (publicName(plan) || "") + " " + plan.ticker + " " + (plan.provider || "") + " " + plan.planName +
         " " + plan.planTypes.join(" ") + " " + (plan.city || "") + " " + (plan.state || "") + " " + (plan.ein || "")).toLowerCase();
       plan.hayNorm = plan.hay.replace(/[^a-z0-9]/g, "");
     }
@@ -650,6 +668,8 @@
   // rank Wheaton above Eaton Corporation under ANY column sort.
   function searchRank(plan, q) {
     if ((plan.ticker || "").toLowerCase() === q) return 0;
+    const pub = (publicName(plan) || "").toLowerCase();
+    if (pub && (pub === q || pub.startsWith(q + " "))) return 0;
     const name = (plan.company || "").toLowerCase();
     const i = name.indexOf(q);
     if (i < 0) return 2;
@@ -1396,7 +1416,7 @@
     return `
     <tr class="plan-tr ${open ? "plan-tr-open" : ""}" data-id="${esc(plan.id || plan.ticker)}">
       <td>
-        <div class="sponsor-name">${esc(plan.company)} ${plan.ticker ? `<span class="plan-ticker">${esc(plan.ticker)}</span>` : ""}</div>
+        <div class="sponsor-name">${esc(publicName(plan) || plan.company)} ${plan.ticker ? `<span class="plan-ticker">${esc(plan.ticker)}</span>` : ""}</div>${publicName(plan) ? `<div class="section-sub">filed by ${esc(plan.company)}</div>` : ""}
         <div class="sponsor-sub">${esc(plan.planName)}</div>
       </td>
       <td class="industry-col">${esc(plan.industry || "—")}</td>

@@ -114,10 +114,33 @@ function norm(s) {
 const { companies } = JSON.parse(readFileSync(new URL("./companies.json", import.meta.url), "utf8"));
 for (const c of companies) c.aliasNorms = c.aliases.map(norm);
 
+/* Entities whose name begins with a public company's but which are NOT that
+ * company. The old rule ended in a bare `startsWith(a)`, so any sponsor whose
+ * name merely opened with an alias inherited its ticker:
+ *   "GENERAL ELECTRIC CREDIT UNION"  -> GE    (a credit union, not GE)
+ *   "MCGRAW-HILL EDUCATION HOLDINGS" -> SPGI  (divested from S&P Global, 2013)
+ * The middle clause has the same hole, since "GENERAL ELECTRIC" + a space is
+ * also a prefix of the credit union.
+ *
+ * The distinction is not "extra words" — most extra words are innocent. Of the
+ * 160 ticker attributions, 36 carry extra tokens and most are legitimate:
+ * "UnitedHealth Group Incorporated", "United Parcel Service Of America",
+ * "Union Pacific Railroad Company", "Medtronic Puerto Rico Operations" are all
+ * the same employer group. What disqualifies a match is a token naming a
+ * DIFFERENT KIND OF INSTITUTION, which no amount of corporate-suffix stripping
+ * will turn back into the parent. */
+const NOT_THE_SAME_EMPLOYER = /\b(credit union|federal credit|savings bank|foundation|charitable|university|college|school district|academy|hospital|health system|medical center|clinic|church|ministries|diocese|synagogue|temple|municipal|county of|city of|state of|township|authority|cooperative|co-?op|mutual insurance|fraternal|union local|local \d+|district council|pension fund|welfare fund)\b/i;
+
 function matchCompany(sponsorNorm) {
   for (const c of companies) {
     for (const a of c.aliasNorms) {
-      if (sponsorNorm === a || sponsorNorm.startsWith(a + " ") || sponsorNorm.startsWith(a)) return c;
+      if (sponsorNorm === a) return c;
+      // a prefix match is only the same employer when what FOLLOWS the alias
+      // does not name a different kind of institution
+      if (sponsorNorm.startsWith(a)) {
+        const rest = sponsorNorm.slice(a.length);
+        if (!NOT_THE_SAME_EMPLOYER.test(rest)) return c;
+      }
     }
   }
   return null;
