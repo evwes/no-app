@@ -882,3 +882,169 @@ is **not** an estimate of the 6,098-lineup candidate set — but it is the first
 measured evidence that the candidate set is a mixture, and the mixture includes
 at least three defect classes that are *worse* than a dropped issuer, because
 they put money against rows that are not investments at all.
+---
+
+## (10 fund report) #5 — 2026-08-24
+
+**Running count of the column-(a) defect, hand-verified (cumulative):**
+
+| | filings |
+|---|---:|
+| **CONFIRMED** issuer column present in the 4i table and discarded | **10** |
+| **DISPROVED** — filing read, no column (a) to drop | **15** |
+| **PARTIAL** — a minority of rows carry a discarded issuer | **2** |
+| **UNVERIFIABLE** — source filing not in hand | **1** |
+| hand-read to date | 28 |
+
+**Batch:** 10 filings from `docs/filing-worklist-issuer.json` ($2.8B–$3.8B).
+Classifier: 4 NAMES_MATCH / 3 ISSUER_DROPPED / 3 WRONG_REGION.
+After reading all ten: **6 confirmed**. The classifier got 3 of those 6 wrong —
+two as WRONG_REGION, one as NAMES_MATCH.
+
+### CONFIRMED ×6
+
+| ack | plan | rows losing an issuer | managers discarded |
+|---|---|---:|---|
+| `20251009075503NAL0003724867001` | IQVIA 401(K) PLAN | **28 / 28** | Vanguard ×14, Fidelity ×4, Spartan ×4, BNY Mellon, Western Asset, Wilmington Trust |
+| `20250918132424NAL0001473457001` | IOWA HEALTH SYSTEM 401(K) | **26 / 28** | JPMorgan ×13, Fidelity ×4, Vanguard ×3, American Funds, Allspring, Meridian |
+| `20251009112104NAL0011345952001` | LNC EMPLOYEES' 401(K) | **30 / 31** | State Street Global Advisors Ltd. ×15, Income America ×5, Macquarie ×3, J.P. Morgan, Acadian, MFS, AllianceBernstein, PIMCO |
+| `20251009102138NAL0006818097001` | TYSON FOODS RETIREMENT SAVINGS | **22 / 22** | State Street ×15, Invesco ×2, Parnassus, Earnest Partners, GQG International, PIMCO, BlackRock |
+| `20251014110009NAL0001255027008` | EVERSOURCE 401K PLAN | **18 / 24** | Fidelity ×14, Vanguard, IR+M |
+| `20250926144818NAL0013938530001` | CHS/COMMUNITY HEALTH SYSTEMS | **15 / 15** | Principal Life Insurance Company ×13 |
+
+Evidence, one quote each of the two clearest:
+
+```
+IQVIA        Identity of Issue,          Including Maturity Date,          (e)
+             Borrower, Lessor or        Rate of Interest, Collateral,     Current
+ (a)            Similar Party              Par or Maturity Value           Value
+        Mutual Funds
+  *      Fidelity        US Bond Index                                    89,137,043
+         Vanguard        Equity Income Admiral                            71,945,696
+  *      Fidelity        Diversified International Commingled Pool Class A 66,278,033
+```
+stored → `500 Index Pool` $431,925,864 · `Target Retirement 2035 Trust Plus`
+$323,143,643 · `Contrafund Pool` $310,132,868.
+
+```
+TYSON                Identity of Issue                    Description     Cost    Current Value
+      Collective Investment Trusts
+             State Street                            SS TRGT RET 2035 IV    *          313,527 **
+             State Street                            SS TRGT RET 2030 IV    *          309,715 **
+```
+stored → `SS TRGT RET 2035 IV` $313,527,000 (thousands scaled correctly), issuer
+gone. Fifteen State Street rows, fifteen anonymous target-date funds.
+
+### The most important finding of this batch: the parser is INCONSISTENT WITHIN ONE TABLE
+
+Two of the six confirmed filings drop the issuer on most rows and drop the
+**product** on one — from the very same table.
+
+**Iowa Health System.** The filing:
+
+```
+       Identity of Issue,       Description of Investment
+      Borrower, Lessor or     Including Maturity Date, Rate of        Current
+         Similar Party         Collateral, Par, or Maturity Value      Value
+                            Mutual Funds:
+ *     Fidelity              500 Index                              298,606,477
+       JPMorgan              Large Cap Growth Fund R6               133,073,492
+```
+
+Stored: `SmartRetirement 2035 Fund` (JPMorgan dropped) — **and** `Fidelity`
+$298,606,477, where the product `500 Index` is what got dropped.
+
+**Eversource.** Same pattern:
+
+```
+      (b) Identity of Issuer, Borrower,   (c) Description of Investment Including Maturity Date,   (e) Current
+(a)        Lessor or Similar Party          Rate of Interest, Collateral, Par or Maturity Value       Value
+      Prudential                          Investment Contract                                        465,481
+*     Fidelity                            Growth Company Commingled Pool Class F                      641,630
+```
+
+Stored: `Growth Company Commingled Pool Class F` $641,630,000 (issuer dropped)
+**and** `Prudential` $465,481,000 (product dropped). Also stored from this
+table: `allocated Eversource Energy Common Shares), $5 par` $522,976,000 — the
+tail of a wrapped description, complete with its closing parenthesis.
+
+So this is not "lib-4i always reads column (b)". It picks a column per row, and
+on short or generic products it picks the other one. Any fix has to be checked
+against **both** failure directions, and against the Sanofi specimen from
+report #4 where reading the identity column is correct.
+
+### Why the classifier missed two of them
+
+**`20250926144818NAL0013938530001` (CHS) scored WRONG_REGION, "0/12 stored
+names appear in the filing text."** The names *are* in the filing. They do not
+match because the parser glued the **cost column** onto the end of every name:
+
+```
+ *    CHS/Community Health Systems, Inc.   CHS Stable Value Fund Master Trust Inv estment Account   $0.00   $1,138,846,661.16
+```
+
+stored name: `"CHS Stable Value Fund Master Trust Inv estment Account $0.00"`.
+All 16 rows carry a trailing `$0.00`: `"Ret Target 2035 Sept Acct $0.00"`
+$531,249,038, `"Ret Target 2030 Sept Acct $0.00"` $523,449,940, and so on —
+**$4.72B of lineup where every name ends in a dollar amount.** That is a
+display defect visible to any user, independent of the issuer question. (The
+`Inv estment` split is the filer's own; that part is not ours.)
+
+**`20251009102138NAL0006818097001` (Tyson) scored WRONG_REGION for the same
+class of reason** — its value column is followed by a `**` footnote marker, so
+the tester's "value ends the line" test failed on every row.
+
+WRONG_REGION over-fires whenever the stored name has trailing junk or the value
+is not the last thing on the line. Combined with the ISSUER_DROPPED lower bound
+noted in report #4, **the mechanical verdicts are a triage queue, not a
+measurement.** Every number in these reports comes from reading the filing.
+
+### DISPROVED ×3
+
+- `20251013175103NAL0000880243001` — 21 of 22 names in the 4i region, only one
+  with an issuer to its left. Names are already manager-prefixed
+  (`NT S&P 500 IDX NL 4`, `NT R1000 GR IDX NL 4`). Not affected.
+- `20250930180301NAL0013547008001` and `20250930154556NAL0013461200001` — 78 of
+  79 names each inside the 4i region with **zero** left-column text. Single-
+  column schedules.
+
+### UNVERIFIABLE ×1 — recorded rather than guessed
+
+`20250731064450NAL0002381251001` — **FIRSTENERGY CORP. SAVINGS PLAN**, 59 rows,
+$3.43B. Its stored lineup is made of strategy descriptions, not fund names:
+
+```
+   872,225,750   Large cap stocks
+   799,229,580   Blend of stocks, fixed income
+   226,152,423   International stocks
+   173,820,730   Equities, fixed income
+   147,946,737   Balanced fund
+   138,156,056   stocks
+    63,499,878   Small cap value stocks
+```
+
+That is exactly what a discarded column (a) looks like when column (b) holds a
+strategy phrase — but **I could not confirm it**, and the reason is specific:
+the entry's source is `"Schedule H line 4i attachment from the plan's 2023
+filing — the newest filing's public copy has no readable schedule"`, the 2024
+filing I can fetch contains neither the string `large cap stocks` (0 hits in
+664,763 characters) nor any `Identity of Issue` header, and the 2023 filing's
+ack is not derivable from anything in the repo. Left as a hypothesis with a
+named blocker: **needs the prior-year ack, which lives in the pipeline-only
+`fallbacks.json` artifact.**
+
+Separately and regardless of the issuer question, this plan's published lineup
+includes `Cash Equivalent - 4.38%, 2024`, `Mortgage - 4.00%, 2052`,
+`US 2YR NOTE (CBT) FUT MAR24` and `UMBS 30YR` — bond and futures detail from
+inside a fund, shown to users as menu options.
+
+### Where the measurement stands
+
+Twenty-eight filings read by hand. Confirmed 10, disproved 15, partial 2,
+unverifiable 1. On the ten confirmed, the defect is near-total within the
+filing: 28/28, 26/28, 30/31, 22/22, 23/23, 23/25, 37/38, 29/30, 18/24, 15/15.
+
+The honest statement of scale today: **the column-(a) defect is confirmed on 10
+filings covering $52.6B in stored assets, all drawn from a 2,873-filing queue
+built to select for its signature. It is not yet a measured share of the 6,098
+candidate lineups**, and a third of the queue turns out to be other defects.
