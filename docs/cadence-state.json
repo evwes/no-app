@@ -1,7 +1,9 @@
 {
   "purpose": "Prevents overnight chain multiplication. Each cadence/watchdog cycle reads this BEFORE arming anything. If a fire time here is still in the future, a chain is already armed -- run the cycle and do NOT arm another. Only arm when the relevant slot is in the past, then update it here and commit.",
   "why": "Several chains were firing simultaneously around 05:00-05:35. The cause is structural: a one-shot send_later chain re-arms itself, so any cycle that arms 'just in case' permanently doubles the chain. list_triggers, update_trigger and delete_trigger all require an approval the owner cannot give while asleep, so pruning afterwards is impossible -- the only lever is not arming in the first place.",
-  "cadenceFireAt": "2026-08-24T05:52:00Z",
+  "cadenceFireAt": "2026-08-24T21:06:00Z",
   "watchdogFireAt": "2026-08-24T06:19:00Z",
-  "knownExtraChains": "At least one duplicate cadence chain exists (trig_016YbJdxno7guTWeKWnpuynK fired 05:35 unprompted). Harmless per cycle -- filing-batch skips already-tested acks -- but do not add more."
+  "knownExtraChains": "Cleared 2026-08-24 20:52Z. Every chain from the overnight run was a one-shot and all had fired by 06:19Z, so the duplicates noted below are dead. Re-armed by owner request at 21:06Z as a single chain. If a cycle finds cadenceFireAt in the future, it must NOT arm -- that is what doubled the chain last night.",
+  "cadenceTriggerId": "trig_01GuEactDchpQNubNxSgPNDg",
+  "armedBy": "owner request, 2026-08-24 -- 'rearm'"
 }
