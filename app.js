@@ -376,7 +376,12 @@
         plan.filed = fmtFiledDate(d.filedDate);
         plan.codes = d.codes || "";
         plan.planTypes = planTypesFromCode(plan.codes || (plan.cf & 32 ? "2L" : "2J"));
-        if (d.assetsEOY) plan.assetsB = d.assetsEOY / 1e9;
+        // assetsExact distinguishes the exact filed total from the boot
+        // payload's display-precision one (assets ship in $100k units). Any
+        // comparison AGAINST the plan total — the holdings-coverage note — must
+        // require it: on a small plan, $100k of rounding alone can move the
+        // ratio across a band boundary and make a correct table look short.
+        if (d.assetsEOY) { plan.assetsB = d.assetsEOY / 1e9; plan.assetsExact = true; }
         plan.assetsYoY = d.assetsBOY && d.assetsEOY ? +(((d.assetsEOY / d.assetsBOY) - 1) * 100).toFixed(1) : null;
         plan.activeParticipants = d.activeParticipants || 0;
         plan.partBalances = d.partBalances || 0;
@@ -1057,7 +1062,7 @@
      * Bands, not a bare percentage: the comparison is a display-precision sum
      * against a filed total, so small differences are noise and only a material
      * gap is worth a reader's attention. */
-    const planAssets = plan.assetsB ? plan.assetsB * 1e9 : null;
+    const planAssets = plan.assetsExact && plan.assetsB ? plan.assetsB * 1e9 : null;
     const covPct = tab === "menu" && !lu.fromTrust && planAssets && total
       ? (total / planAssets) * 100 : null;
     const coverage = covPct == null || (covPct >= 95 && covPct <= 105) ? "" : `
