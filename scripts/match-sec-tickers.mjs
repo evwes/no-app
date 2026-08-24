@@ -182,7 +182,14 @@ export function buildIndex(indexPath) {
     const key = tokens(series).join(" ");
     if (!key) continue;
     const list = bySeries.get(key) || [];
-    list.push({ ticker, className: className || "", hint: hintOf(className || ""), entity, series });
+    /* The manager keys are the registrant's own name and the name the SERIES
+     * LEADS with -- never a name appearing anywhere inside the series. A fund
+     * sponsored by one house and sub-advised by another puts the sub-adviser
+     * mid-name ("Virtus DFA 2015 Target Date Retirement Income Fund"), and a
+     * substring test read that as Dimensional's own fund. It is Virtus's, at
+     * Virtus's fee. Same failure as "Empower T. Rowe Price Mid Cap Growth". */
+    list.push({ ticker, className: className || "", hint: hintOf(className || ""), entity, series,
+      mgrKeys: [managerPhrase(entity), managerPhrase(series)].filter(Boolean) });
     bySeries.set(key, list);
   }
   // Inverted index on the series' LEADING token (the manager/family word).
@@ -254,10 +261,7 @@ function resolveUncached(idx, filedName) {
   const filedMgrs = [];
   for (const m of MANAGERS) if (filedNorm.includes(" " + m + " ")) filedMgrs.push(m);
   if (!filedMgrs.length) return null;
-  const mgrHit = (c) => {
-    const hay = " " + norm(c.entity + " " + c.series) + " ";
-    return filedMgrs.some((m) => hay.includes(" " + m + " "));
-  };
+  const mgrHit = (c) => c.mgrKeys.some((k) => filedMgrs.includes(k));
 
   let classes = idx.bySeries.get(key);
   let why = "exact";
@@ -265,15 +269,32 @@ function resolveUncached(idx, filedName) {
     // token-superset: every series token present in the filed name, and the
     // series' leading (manager/family) token among them. Longest series wins,
     // so "vanguard 500 index" beats "vanguard index".
-    let best = null, bestLen = 0, bestKey = [];
+    /* Score = token count first, then characters matched. Token count alone
+     * ties, and the tie was broken by iteration order: "American Funds
+     * EuroPacific Growth Fund R6" matched BOTH "EuroPacific Growth" and
+     * "American Funds Growth Portfolio" at two tokens each, and returned the
+     * second -- a different fund. The character tie-break prefers the series
+     * that explains more of the filed name, which is the one that named
+     * "europacific". */
+    let best = null, bestLen = 0, bestKey = [], bestScore = 0;
     for (const w of fset) {
       const cands = idx.byLead.get(w);
       if (!cands) continue;
       for (const [st, list] of cands) {              // sorted longest-first
-        if (st.length < 2 || st.length <= bestLen) break;
+        if (st.length < 2 || st.length < bestLen) break;
         let all = true;
         for (const x of st) if (!fset.has(x)) { all = false; break; }
-        if (all) { best = list; bestLen = st.length; bestKey = st; break; }
+        if (!all) continue;
+        /* A series whose whole name is generic finance words identifies
+         * nothing. "American Funds Growth Portfolio" reduces to the key
+         * "american growth", which is a subset of "American Funds EuroPacific
+         * Growth Fund R6" and of "American Funds Growth Fund of America R6" --
+         * two different funds, neither of them it. EuroPacific is not in the
+         * SEC file at all, so the honest answer there is nothing. */
+        if (st.every((x) => GENERIC_LEAD.has(x) || ASSET_WORDS.has(x) || STRUCTURAL.has(x))) continue;
+        const score = st.length * 1000 + st.join("").length;
+        if (score <= bestScore) continue;
+        best = list; bestLen = st.length; bestKey = st; bestScore = score;
       }
     }
     /* YEAR-PINNED PASS. The superset test requires the registered name to be
@@ -346,7 +367,23 @@ function resolveUncached(idx, filedName) {
   // almost every fund name in existence, so a substring test let a manager
   // gate built from short phrases pass anything; pad both sides so a phrase
   // only matches at token boundaries.
-  const mine = classes.filter(mgrHit);
+  let mine = classes.filter(mgrHit);
+  /* Some registrants' legal names omit the house entirely: "GROWTH FUND OF
+   * AMERICA" and "INVESTMENT COMPANY OF AMERICA" are American Funds funds and
+   * say so nowhere, so they carry no manager key and the gate refuses them --
+   * two of the largest funds held in 401(k) plans. Accept when the filed name
+   * is exactly the series name plus a house name we DO recognise: every filed
+   * token is either in the series, part of that house's name, or a share-class
+   * marker. Nothing looser -- this is what keeps it from also accepting
+   * "American Funds EuroPacific Growth Fund R6", whose "europacific" belongs
+   * to none of the three and which is absent from the SEC file entirely. */
+  if (!mine.length && classes.every((c) => !c.mgrKeys.length)) {
+    const sset = new Set(tokens(classes[0].series));
+    const house = new Set(filedMgrs.flatMap((m) => m.split(" ")));
+    const ok = ft.every((w) => sset.has(w) || house.has(w)
+      || /^(?:r[1-6]|k6|[akyzci]|investor|admiral|adv|advisor)$/.test(w));
+    if (ok) mine = classes;
+  }
   if (!mine.length) return null;
   classes = mine;
 
@@ -364,7 +401,11 @@ function resolveUncached(idx, filedName) {
   }
   // AMBIGUOUS: the fund is identified, the class is not. Prefer a retail class
   // as the representative and mark it comparable so the page shows the asterisk.
-  const rep = uniq.find((c) => c.hint === "investor") || uniq.find((c) => c.hint === "admiral") || uniq[0];
+  // a retail class is the honest representative when the filing names none;
+  // American Funds has no Investor class, so Class A is its retail face and
+  // picking uniq[0] handed back whichever R-class happened to sort first
+  const rep = uniq.find((c) => c.hint === "investor") || uniq.find((c) => c.hint === "a")
+    || uniq.find((c) => c.hint === "admiral") || uniq.find((c) => c.hint === "institutional") || uniq[0];
   return { ticker: rep.ticker, comparable: true, why: why + "+ambiguous", series: rep.series, className: rep.className, classes: uniq.length };
 }
 
