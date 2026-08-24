@@ -34,7 +34,10 @@ jobs:
       - name: Push to scratch branch
         if: always()
         run: |
-          [ -f sec-funds/sec-funds.json ] || exit 0
+          # push whatever the mode produced. This guarded on sec-funds.json
+          # specifically, so MODE=companies wrote sec-companies.json, the guard
+          # exited 0, and a successful run delivered nothing.
+          ls sec-funds/*.json >/dev/null 2>&1 || exit 0
           cd sec-funds
           git init -q -b sec-scratch
           git config user.name "wampo-data-bot"
