@@ -22,7 +22,7 @@ Built 2026-08-24 from 5,046 distinct tickers across the confident lineups.
 - **exact / comp** — how many holdings resolved as a stated fact versus as a
   comparable.
 
-Coverage: **624,976 of 1,542,984** fund-like holdings resolve (40.5%).
+Coverage: **627,593 of 1,542,984** fund-like holdings resolve (40.7%).
 A further 67,584 rows are excluded from that denominator because no ticker exists for them —
 participant loans, employer stock, stable-value and guaranteed contracts,
 brokerage windows, cash sweeps, and managed-account aggregates.
@@ -32,59 +32,61 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | Ticker | Registered name | Plans | Holdings | Assets | exact / comp | Filed as |
 |---|---|---:|---:|---:|---|---|
 | `FXAIX` | Fidelity 500 Index Fund | 15,367 | 15,431 | $161.7B | 15,412 / 19 | Fidelity 500 Index Fund · Fidelity 500 Index · FID 500 INDEX · FIDELITY 500 INDEX · FIDELITY 500 INDEX FUND · Fidelity 500 Index Fund N/R |
-| `VFIAX` | Vanguard 500 Index Fund | 9,371 | 9,422 | $129.2B | 8,688 / 734 | Vanguard 500 Index Admiral · Vanguard 500 Index Fund · VANGUARD 500 INDEX FUND - ADM · Vanguard 500 Index Fund Admiral Shares · Vanguard 500 Index Adm · Vanguard 500 Index Admiral Fd |
+| `VFIAX` | Vanguard 500 Index Fund | 9,355 | 9,406 | $129.1B | 8,686 / 720 | Vanguard 500 Index Admiral · Vanguard 500 Index Fund · VANGUARD 500 INDEX FUND - ADM · Vanguard 500 Index Fund Admiral Shares · Vanguard 500 Index Adm · Vanguard 500 Index Admiral Fd |
 | `VINIX` | Vanguard Institutional Index Fund | 1,860 | 1,881 | $119.7B | 1,668 / 213 | Vanguard Institutional Index Fund · Vanguard Institutional Index · Vanguard Institutional Index Fund Inst'l Shares · Vanguard Inst Idx Inst · Vanguard Instl Index · Vanguard Institutional Index Fund Institutional Shares |
-| `VTTHX` | Vanguard Target Retirement 2035 Fund | 8,619 | 8,636 | $103.1B | 7,546 / 1,090 | Vanguard Target Retirement 2035 Fund · Vanguard Target Retirement 2035 · VAN TARGET RETIRE 2035 · Vanguard Target Retirement 2035 Inv · Vanguard Tgt Rmt 2035 Inv Fund · Vanguard Target Retirement 2035 Trust II |
-| `VTHRX` | Vanguard Target Retirement 2030 Fund | 8,651 | 8,669 | $99.0B | 7,566 / 1,103 | Vanguard Target Retirement 2030 Fund · Vanguard Target Retirement 2030 · VAN TARGET RETIRE 2030 · Vanguard Target Retirement 2030 Inv · Vanguard Tgt Rmt 2030 Inv Fund · Vanguard Target Retirement 2030 Trust II |
-| `VFORX` | Vanguard Target Retirement 2040 Fund | 8,729 | 8,745 | $98.1B | 7,630 / 1,115 | Vanguard Target Retirement 2040 Fund · Vanguard Target Retirement 2040 · VAN TARGET RETIRE 2040 · Vanguard Target Retirement 2040 Inv · Vanguard Tgt Rmt 2040 Inv Fund · Vanguard Target Retirement 2040 Trust II |
-| `VTIVX` | Vanguard Target Retirement 2045 Fund | 8,648 | 8,665 | $95.0B | 7,564 / 1,101 | Vanguard Target Retirement 2045 Fund · Vanguard Target Retirement 2045 · VAN TARGET RETIRE 2045 · Vanguard Target Retirement 2045 Inv · Vanguard Tgt Rmt 2045 Inv Fund · Vanguard Target Retirement 2045 Trust II |
-| `VFIFX` | Vanguard Target Retirement 2050 Fund | 8,705 | 8,724 | $87.8B | 7,622 / 1,102 | Vanguard Target Retirement 2050 Fund · Vanguard Target Retirement 2050 · VAN TARGET RETIRE 2050 · Vanguard Target Retirement 2050 Inv · Vanguard Tgt Rmt 2050 Inv Fund · Vanguard Target Retirement 2050 Trust II |
-| `VTTVX` | Vanguard Target Retirement 2025 Fund | 8,270 | 8,289 | $66.1B | 7,234 / 1,055 | Vanguard Target Retirement 2025 Fund · Vanguard Target Retirement 2025 · VAN TARGET RETIRE 2025 · Vanguard Target Retirement 2025 Inv · Vanguard Tgt Rmt 2025 Inv Fund · Vanguard Target Retirement 2025 Trust II |
-| `VFFVX` | Vanguard Target Retirement 2055 Fund | 8,543 | 8,557 | $64.3B | 7,459 / 1,098 | Vanguard Target Retirement 2055 Fund · Vanguard Target Retirement 2055 · VAN TARGET RETIRE 2055 · Vanguard Target Retirement 2055 Inv · Vanguard Tgt Rmt 2055 Inv Fund · Vanguard Target Retirement 2055 Trust II |
+| `VTTHX` | Vanguard Target Retirement 2035 Fund | 8,600 | 8,617 | $103.1B | 7,542 / 1,075 | Vanguard Target Retirement 2035 Fund · Vanguard Target Retirement 2035 · VAN TARGET RETIRE 2035 · Vanguard Target Retirement 2035 Inv · Vanguard Tgt Rmt 2035 Inv Fund · Vanguard Target Retirement 2035 Trust II |
+| `VTHRX` | Vanguard Target Retirement 2030 Fund | 8,633 | 8,651 | $99.0B | 7,563 / 1,088 | Vanguard Target Retirement 2030 Fund · Vanguard Target Retirement 2030 · VAN TARGET RETIRE 2030 · Vanguard Target Retirement 2030 Inv · Vanguard Tgt Rmt 2030 Inv Fund · Vanguard Target Retirement 2030 Trust II |
+| `VFORX` | Vanguard Target Retirement 2040 Fund | 8,708 | 8,723 | $98.1B | 7,624 / 1,099 | Vanguard Target Retirement 2040 Fund · Vanguard Target Retirement 2040 · VAN TARGET RETIRE 2040 · Vanguard Target Retirement 2040 Inv · Vanguard Tgt Rmt 2040 Inv Fund · Vanguard Target Retirement 2040 Trust II |
+| `VTIVX` | Vanguard Target Retirement 2045 Fund | 8,628 | 8,645 | $94.9B | 7,560 / 1,085 | Vanguard Target Retirement 2045 Fund · Vanguard Target Retirement 2045 · VAN TARGET RETIRE 2045 · Vanguard Target Retirement 2045 Inv · Vanguard Tgt Rmt 2045 Inv Fund · Vanguard Target Retirement 2045 Trust II |
+| `VFIFX` | Vanguard Target Retirement 2050 Fund | 8,687 | 8,706 | $87.8B | 7,621 / 1,085 | Vanguard Target Retirement 2050 Fund · Vanguard Target Retirement 2050 · VAN TARGET RETIRE 2050 · Vanguard Target Retirement 2050 Inv · Vanguard Tgt Rmt 2050 Inv Fund · Vanguard Target Retirement 2050 Trust II |
+| `NOSIX` | Stock Index Fund | 180 | 181 | $75.7B | 3 / 178 | Northern Trust S&P 500 Index Fund · Northern Trust Collective S&P 500 Index Fund · Northern Trust S&P 500 Index · NORTHERN TRUST S&P 500 TIER 3 · NT Collective S&P 500 Index Fund · Northern Trust S&P 500 |
+| `SSSYX` | — | 721 | 727 | $69.3B | 0 / 727 | State Street Equity 500 Indx K · State Street S&P 500 Index Class II (1) · State Street Equity 500 Index K · State Street S&P 500 Index · STATE STREET EQUTY 500 IDX ADM MUTUAL FUND SHARES · State Street S&P 500 Index Fund |
+| `VTTVX` | Vanguard Target Retirement 2025 Fund | 8,256 | 8,275 | $66.1B | 7,232 / 1,043 | Vanguard Target Retirement 2025 Fund · Vanguard Target Retirement 2025 · VAN TARGET RETIRE 2025 · Vanguard Target Retirement 2025 Inv · Vanguard Tgt Rmt 2025 Inv Fund · Vanguard Target Retirement 2025 Trust II |
+| `VFFVX` | Vanguard Target Retirement 2055 Fund | 8,527 | 8,541 | $64.3B | 7,456 / 1,085 | Vanguard Target Retirement 2055 Fund · Vanguard Target Retirement 2055 · VAN TARGET RETIRE 2055 · Vanguard Target Retirement 2055 Inv · Vanguard Tgt Rmt 2055 Inv Fund · Vanguard Target Retirement 2055 Trust II |
 | `FDGRX` | Fidelity Growth Company Fund | 908 | 946 | $57.7B | 573 / 373 | Fidelity Growth Company Fund · Fidelity Growth Company · Fidelity Growth Company K6 Fund · FID GROWTH COMPANY · Fidelity Growth Portfolio · Fidelity Growth Company K6 |
-| `FCNTX` | Fidelity Contrafund | 3,013 | 3,058 | $55.5B | 2,274 / 784 | Fidelity Contrafund · Fidelity VIP Contrafund Portfolio · Fidelity Contrafund K6 · Fidelity ContraFund · Fidelity Contrafund Fund · Fidelity VIP Contrafund |
-| `VTTSX` | Vanguard Target Retirement 2060 Fund | 7,543 | 7,557 | $36.5B | 6,455 / 1,102 | Vanguard Target Retirement 2060 Fund · Vanguard Target Retirement 2060 · Vanguard Target Retirement 2060 Inv · Vanguard Tgt Rmt 2060 Inv Fund · Vanguard Target Retirement 2060 Trust II · VANGUARD TARGET RETIREMENT 2060 INV |
-| `VBTLX` | Vanguard Total Bond Market Index Fund | 5,600 | 5,640 | $33.6B | 5,149 / 491 | Vanguard Total Bond Market Index Fund · Vanguard Total Bond Market Index Admiral · Vanguard Total Bond Market Index Adm · Vanguard Total Bond Market Index Fund Admiral Shares · Vanguard Total Bond Market Index · Vanguard VIF Total Bond Market Index Portfolio |
-| `VTSAX` | Vanguard Total Stock Market Index Fund | 2,863 | 2,885 | $31.5B | 2,678 / 207 | Vanguard Total Stock Market Index Fund · Vanguard Total Stock Market Index Fund Admiral Shares · Vanguard Total Stock Mkt Idx Adm · VANG TOT STK MKT IDX - ADMIRAL · Vanguard Total Stock Market Index Adm · Vanguard Total Stock Market Index Admiral |
-| `VTIAX` | Vanguard Total International Stock Index Fund | 4,451 | 4,486 | $29.7B | 4,137 / 349 | Vanguard Total Intl Stock Index Admiral · Vanguard Total International Stock Index Fund · Vanguard Total Intl Stock Index Adm · Vanguard Total International Stock Index Fund Admiral Shares · Vanguard Total International Stock Index · Vanguard Total International Stock Index Admiral |
-| `DODGX` | Dodge & Cox Stock Fund | 2,554 | 2,574 | $29.2B | 2,320 / 254 | Dodge & Cox Stock Fund · Dodge & Cox Stock · Dodge & Cox Stock Fund Class X · Dodge & Cox Stock X · DODGE & COX STOCK I · Dodge & Cox Stock Fund Class I |
-| `VTWNX` | Vanguard Target Retirement 2020 Fund | 7,307 | 7,319 | $27.5B | 6,351 / 968 | Vanguard Target Retirement 2020 Fund · Vanguard Target Retirement 2020 · VAN TARGET RETIRE 2020 · Vanguard Target Retirement 2020 Inv · Vanguard Tgt Rmt 2020 Inv Fund · Vanguard Target Retirement 2020 Trust II |
-| `TRRDX` | T. Rowe Price Retirement 2040 Fund | 2,394 | 2,396 | $26.8B | 1,288 / 1,108 | T. Rowe Price Retirement 2040 Fund · T. Rowe Price Retirement 2040 · T. ROWE PRICE RETIREMENT 2040 INV · T Rowe Price Retirement 2040 · T.ROWE PRICE RETIRE 2040 - ADV · TROWEPRICE RETIREMENT 2040 INV |
-| `TRRCX` | T. Rowe Price Retirement 2030 Fund | 2,391 | 2,394 | $26.5B | 1,294 / 1,100 | T. Rowe Price Retirement 2030 Fund · T. Rowe Price Retirement 2030 · T. ROWE PRICE RETIREMENT 2030 INV · T Rowe Price Retirement 2030 · T.ROWE PRICE RETIRE 2030 - ADV · TROWEPRICE RETIREMENT 2030 INV |
+| `WFSPX` | — | 699 | 714 | $56.3B | 0 / 714 | BlackRock Equity Index Fund · BlackRock Equity Index Fund Class 1 · Blackrock Equity Index 1 · Blackrock Equity Index Fund R · BlackRock Equity Index 1 · BlackRock Equity Index |
+| `FCNTX` | Fidelity Contrafund | 3,008 | 3,052 | $55.5B | 2,272 / 780 | Fidelity Contrafund · Fidelity VIP Contrafund Portfolio · Fidelity Contrafund K6 · Fidelity ContraFund · Fidelity Contrafund Fund · Fidelity VIP Contrafund |
+| `VTTSX` | Vanguard Target Retirement 2060 Fund | 7,523 | 7,537 | $36.5B | 6,450 / 1,087 | Vanguard Target Retirement 2060 Fund · Vanguard Target Retirement 2060 · Vanguard Target Retirement 2060 Inv · Vanguard Tgt Rmt 2060 Inv Fund · Vanguard Target Retirement 2060 Trust II · VANGUARD TARGET RETIREMENT 2060 INV |
+| `VBTLX` | Vanguard Total Bond Market Index Fund | 5,595 | 5,635 | $33.6B | 5,151 / 484 | Vanguard Total Bond Market Index Fund · Vanguard Total Bond Market Index Admiral · Vanguard Total Bond Market Index Adm · Vanguard Total Bond Market Index Fund Admiral Shares · Vanguard Total Bond Market Index · Vanguard VIF Total Bond Market Index Portfolio |
+| `VTSAX` | Vanguard Total Stock Market Index Fund | 2,857 | 2,879 | $31.5B | 2,678 / 201 | Vanguard Total Stock Market Index Fund · Vanguard Total Stock Market Index Fund Admiral Shares · Vanguard Total Stock Mkt Idx Adm · VANG TOT STK MKT IDX - ADMIRAL · Vanguard Total Stock Market Index Adm · Vanguard Total Stock Market Index Admiral |
+| `VTIAX` | Vanguard Total International Stock Index Fund | 4,447 | 4,482 | $29.7B | 4,138 / 344 | Vanguard Total Intl Stock Index Admiral · Vanguard Total International Stock Index Fund · Vanguard Total Intl Stock Index Adm · Vanguard Total International Stock Index Fund Admiral Shares · Vanguard Total International Stock Index · Vanguard Total International Stock Index Admiral |
+| `DODGX` | Dodge & Cox Stock Fund | 2,553 | 2,573 | $29.2B | 2,320 / 253 | Dodge & Cox Stock Fund · Dodge & Cox Stock · Dodge & Cox Stock Fund Class X · Dodge & Cox Stock X · DODGE & COX STOCK I · Dodge & Cox Stock Fund Class I |
+| `VTWNX` | Vanguard Target Retirement 2020 Fund | 7,298 | 7,310 | $27.5B | 6,350 / 960 | Vanguard Target Retirement 2020 Fund · Vanguard Target Retirement 2020 · VAN TARGET RETIRE 2020 · Vanguard Target Retirement 2020 Inv · Vanguard Tgt Rmt 2020 Inv Fund · Vanguard Target Retirement 2020 Trust II |
+| `TRRDX` | T. Rowe Price Retirement 2040 Fund | 2,393 | 2,395 | $26.8B | 1,276 / 1,119 | T. Rowe Price Retirement 2040 Fund · T. Rowe Price Retirement 2040 · T. ROWE PRICE RETIREMENT 2040 INV · T Rowe Price Retirement 2040 · T.ROWE PRICE RETIRE 2040 - ADV · TROWEPRICE RETIREMENT 2040 INV |
+| `TRRCX` | T. Rowe Price Retirement 2030 Fund | 2,389 | 2,392 | $26.5B | 1,281 / 1,111 | T. Rowe Price Retirement 2030 Fund · T. Rowe Price Retirement 2030 · T. ROWE PRICE RETIREMENT 2030 INV · T Rowe Price Retirement 2030 · T.ROWE PRICE RETIRE 2030 - ADV · TROWEPRICE RETIREMENT 2030 INV |
 | `VIMAX` | Vanguard Mid-Cap Index Fund | 10,621 | 10,685 | $24.7B | 10,646 / 39 | VANGUARD MID CAP INDEX - ADM · Vanguard Mid Cap Index Adm · Vanguard Mid Cap Index Admiral · Vanguard Mid-Cap Index Fund Admiral Shares · Vanguard Mid Cap Index Fund · Vanguard Mid Cap Index Adm Fd |
 | `VPMAX` | Vanguard PRIMECAP Fund | 388 | 397 | $24.4B | 397 / 0 | Vanguard PRIMECAP Fund Admiral Shares · Vanguard PRIMECAP Adm · Vanguard PRIMECAP Fund · Vanguard PRIMECAP Admiral Fund · Vanguard PRIMECAP Fund Investor Shares · Vanguard PRIMECAP Core Fund |
-| `TRRJX` | T. Rowe Price Retirement 2035 Fund | 2,223 | 2,227 | $24.1B | 1,150 / 1,077 | T. Rowe Price Retirement 2035 Fund · T. Rowe Price Retirement 2035 · T. ROWE PRICE RETIREMENT 2035 INV · T Rowe Price Retirement 2035 · T. ROWE PRICE RET 2035 - ADV · T. Rowe Price Retirement 2035 Trust |
+| `TRRJX` | T. Rowe Price Retirement 2035 Fund | 2,222 | 2,226 | $24.0B | 1,138 / 1,088 | T. Rowe Price Retirement 2035 Fund · T. Rowe Price Retirement 2035 · T. ROWE PRICE RETIREMENT 2035 INV · T Rowe Price Retirement 2035 · T. ROWE PRICE RET 2035 - ADV · T. Rowe Price Retirement 2035 Trust |
 | `VSMAX` | Vanguard Small-Cap Index Fund | 11,218 | 11,303 | $22.3B | 11,299 / 4 | VANGUARD SMALL CAP INDEX ADMRL · Vanguard Small Cap Index Adm · Vanguard Small Cap Index Fund · Vanguard Small Cap Index Admiral · Vanguard Small-Cap Index Fund Admiral Shares · Vanguard Sm Cap Index Adm Fund |
-| `TRRKX` | T. Rowe Price Retirement 2045 Fund | 2,255 | 2,258 | $21.9B | 1,182 / 1,076 | T. Rowe Price Retirement 2045 Fund · T. Rowe Price Retirement 2045 · T. ROWE PRICE RETIREMENT 2045 INV · T Rowe Price Retirement 2045 · T. ROWE PRICE RET 2045 - ADV · T. Rowe Price Retirement 2045 Trust |
-| `TRRMX` | T. Rowe Price Retirement 2050 Fund | 2,369 | 2,373 | $20.8B | 1,267 / 1,106 | T. Rowe Price Retirement 2050 Fund · T. Rowe Price Retirement 2050 · T. ROWE PRICE RETIREMENT 2050 INV · T Rowe Price Retirement 2050 · T. ROWE PRICE RETIRE 2050-ADV · TROWEPRICE RETIREMENT 2050 INV |
-| `SVSPX` | State Street S&P 500 Index Fund | 136 | 136 | $20.1B | 133 / 3 | State Street S&P 500 Index · State Street S&P 500 Index Fund · SSGA S&P 500 Index · STATE STREET S&P 500 INDEX · State Street S&P 500 Index K · SSGA S&P 500 Index Fund |
-| `FBGRX` | — | 1,465 | 1,469 | $19.7B | 1,409 / 60 | Fidelity Blue Chip Growth Fund · Fidelity Blue Chip Growth · Fidelity Blue Chip Growth K6 Fund · Fidelity Blue Chip Growth K6 · Fidelity Blue Chip Growth K · FIDELITY BLUE CHIP GROWTH FUND |
+| `TRRKX` | T. Rowe Price Retirement 2045 Fund | 2,254 | 2,257 | $21.8B | 1,169 / 1,088 | T. Rowe Price Retirement 2045 Fund · T. Rowe Price Retirement 2045 · T. ROWE PRICE RETIREMENT 2045 INV · T Rowe Price Retirement 2045 · T. ROWE PRICE RET 2045 - ADV · T. Rowe Price Retirement 2045 Trust |
+| `TRRMX` | T. Rowe Price Retirement 2050 Fund | 2,368 | 2,372 | $20.8B | 1,255 / 1,117 | T. Rowe Price Retirement 2050 Fund · T. Rowe Price Retirement 2050 · T. ROWE PRICE RETIREMENT 2050 INV · T Rowe Price Retirement 2050 · T. ROWE PRICE RETIRE 2050-ADV · TROWEPRICE RETIREMENT 2050 INV |
+| `FBGRX` | — | 1,462 | 1,466 | $19.7B | 1,409 / 57 | Fidelity Blue Chip Growth Fund · Fidelity Blue Chip Growth · Fidelity Blue Chip Growth K6 Fund · Fidelity Blue Chip Growth K6 · Fidelity Blue Chip Growth K · FIDELITY BLUE CHIP GROWTH FUND |
 | `JLGMX` | JPMorgan Large Cap Growth Fund | 3,435 | 3,439 | $18.1B | 3,437 / 2 | JPMorgan Large Cap Growth R6 · JPMORGAN LARGE CAP GROWTH R6 · JPMorgan Large Cap Growth Fund Class R6 · JP Morgan Large Cap Growth R6 · JPM LG CAP GROWTH R6 · JPMorgan Large Cap Growth Fund R6 |
 | `RERGX` | — | 5,619 | 5,640 | $17.5B | 5,640 / 0 | Am Fds EuroPacific Grth R6 Fd · American Funds EuroPacific Gr R6 · American Funds Europacific Growth R6 · AMERICAN FUNDS EUROPAC GRO- R6 · American Funds EuroPacific Growth R6 · American Funds EuroPacific R6 |
-| `VTINX` | Vanguard Target Retirement Income Fund | 5,276 | 5,453 | $17.3B | 4,518 / 935 | Vanguard Target Retirement Income Fund · Vanguard Target Retirement Income · Vanguard Target Retirement Income Inv · Vanguard Target Retirement Income Trust II · VANGUARD TARGET RETIREMENT INCOME INV · Vanguard Target Ret Income |
+| `VTINX` | Vanguard Target Retirement Income Fund | 5,267 | 5,444 | $17.3B | 4,515 / 929 | Vanguard Target Retirement Income Fund · Vanguard Target Retirement Income · Vanguard Target Retirement Income Inv · Vanguard Target Retirement Income Trust II · VANGUARD TARGET RETIREMENT INCOME INV · Vanguard Target Ret Income |
 | `VWENX` | VANGUARD WELLINGTON FUND | 1,327 | 1,340 | $16.1B | 1,340 / 0 | Vanguard Wellington Fund Admiral Shares · Vanguard Wellington Fund · Vanguard Wellington Admiral · Vanguard Wellington Adm · Vanguard Wellington Adm Fund · Vanguard Wellington Fund Investor Shares |
-| `TRRHX` | T. Rowe Price Retirement 2025 Fund | 2,196 | 2,200 | $15.5B | 1,153 / 1,047 | T. Rowe Price Retirement 2025 Fund · T. Rowe Price Retirement 2025 · T. ROWE PRICE RETIREMENT 2025 INV · T Rowe Price Retirement 2025 · T. ROWE PRICE RET 2025 - ADV · T. Rowe Price Retirement 2025 Trust |
-| `TRBCX` | T. Rowe Price Blue Chip Growth Fund, Inc. | 1,576 | 1,580 | $15.1B | 1,198 / 382 | T. Rowe Price Blue Chip Growth Portfolio · T. Rowe Price Blue Chip Growth Fund · T. Rowe Price Blue Chip Growth · T. ROWE PRICE BLUE CHIP GROWTH INV · T Rowe Price Blue Chip Growth Fund · T Rowe Price Blue Chip Growth |
-| `TRRNX` | T. Rowe Price Retirement 2055 Fund | 2,231 | 2,233 | $14.8B | 1,170 / 1,063 | T. Rowe Price Retirement 2055 Fund · T. Rowe Price Retirement 2055 · T. ROWE PRICE RETIREMENT 2055 INV · T Rowe Price Retirement 2055 · T. Rowe Price Retirement 2055 Trust · T Rowe Price Retirement 2055 Fund |
+| `TRRHX` | T. Rowe Price Retirement 2025 Fund | 2,195 | 2,199 | $15.4B | 1,141 / 1,058 | T. Rowe Price Retirement 2025 Fund · T. Rowe Price Retirement 2025 · T. ROWE PRICE RETIREMENT 2025 INV · T Rowe Price Retirement 2025 · T. ROWE PRICE RET 2025 - ADV · T. Rowe Price Retirement 2025 Trust |
+| `TRBCX` | T. Rowe Price Blue Chip Growth Fund, Inc. | 1,575 | 1,579 | $15.1B | 1,198 / 381 | T. Rowe Price Blue Chip Growth Portfolio · T. Rowe Price Blue Chip Growth Fund · T. Rowe Price Blue Chip Growth · T. ROWE PRICE BLUE CHIP GROWTH INV · T Rowe Price Blue Chip Growth Fund · T Rowe Price Blue Chip Growth |
+| `TRRNX` | T. Rowe Price Retirement 2055 Fund | 2,230 | 2,232 | $14.7B | 1,158 / 1,074 | T. Rowe Price Retirement 2055 Fund · T. Rowe Price Retirement 2055 · T. ROWE PRICE RETIREMENT 2055 INV · T Rowe Price Retirement 2055 · T. Rowe Price Retirement 2055 Trust · T Rowe Price Retirement 2055 Fund |
 | `FXNAX` | — | 6,570 | 6,591 | $14.5B | 6,591 / 0 | Fidelity US Bond Index Fund · Fidelity U.S. Bond Index Fund · Fidelity US Bond Index · FIDELITY US BOND INDEX · Fidelity U.S. Bond Index · FIDELITY US BOND INDEX FUND |
 | `FSMDX` | Fidelity Mid Cap Index Fund | 10,500 | 10,527 | $14.1B | 10,515 / 12 | Fidelity Mid Cap Index Fund · Fidelity Mid Cap Index · Fidelity Mid Cp Index Fund · FID MID CAP IDX · FID MID CAP INDEX · FIDELITY MID CAP INDEX |
 | `DODIX` | Dodge & Cox Income Fund | 3,280 | 3,298 | $13.2B | 3,123 / 175 | Dodge & Cox Income Fund · Dodge & Cox Income X · Dodge & Cox Income · DODGE & COX INCOME X · Dodge & Cox Income Fund Class X · DODGE & COX INCOME I |
 | `FSPSX` | Fidelity International Index Fund | 7,603 | 7,617 | $12.5B | 7,612 / 5 | Fidelity International Index Fund · Fidelity International Index · FID INTL INDEX · Fidelity International Idx Fd · FID INTERNATIONAL INDEX · FIDELITY INTERNATIONAL INDEX |
-| `VLXVX` | Vanguard Target Retirement 2065 Fund | 6,509 | 6,527 | $12.3B | 5,492 / 1,035 | Vanguard Target Retirement 2065 Fund · Vanguard Target Retirement 2065 · Vanguard Target Retirement 2065 Inv · Vanguard Tgt Rmt 2065 Inv Fund · Vanguard Target Retirement 2065 Trust II · Vanguard Target Ret 2065 |
+| `VLXVX` | Vanguard Target Retirement 2065 Fund | 6,489 | 6,507 | $12.3B | 5,488 / 1,019 | Vanguard Target Retirement 2065 Fund · Vanguard Target Retirement 2065 · Vanguard Target Retirement 2065 Inv · Vanguard Tgt Rmt 2065 Inv Fund · Vanguard Target Retirement 2065 Trust II · Vanguard Target Ret 2065 |
 | `VEXMX` | Vanguard Extended Market Index Fund | 85 | 85 | $11.6B | 2 / 83 | Vanguard Institutional Extended Market Index Trust · Vanguard Extended Market Index · Vanguard Extended Market Index Institutional Fund · Vanguard Institutional Extended Market Index · VANGUARD EXTENDED MARKET INDEX TRUST · Vanguard Extended Market Index Fund Institutional |
 | `VEXAX` | Vanguard Extended Market Index Fund | 1,409 | 1,414 | $11.2B | 1,413 / 1 | Vanguard Extended Market Index Fund · Vanguard Extended Market Index Fund Admiral Shares · Vanguard Extended Mkt Idx Adm · Vanguard Extended Market Index Adm · Vanguard Extended Market Index · Vanguard Extended Market Index Admiral |
 | `VWNAX` | Vanguard Windsor II Fund | 1,293 | 1,308 | $11.2B | 1,308 / 0 | Vanguard Windsor II Fund Admiral Shares · Vanguard Windsor II Fund · Vanguard Windsor II Admiral · Vanguard Windsor II · Vanguard Windsor II Adm · Vanguard Windsor II Adm Fund |
 | `FSSNX` | Fidelity Small Cap Index Fund | 9,265 | 9,288 | $10.8B | 9,275 / 13 | Fidelity Small Cap Index Fund · Fidelity Small Cap Index · Fidelity Sm Cap Index Fund · FID SM CAP IDX · FID SMALL CAP INDEX · FIDELITY SMALL CAP INDEX |
-| `PTTRX` | PIMCO Total Return Fund | 2,135 | 2,146 | $10.4B | 2,014 / 132 | PIMCO Total Return Fund · PIMCO Total Return Instl · PIMCO Total Return Instl Fund · PIMCO Total Return Fund Institutional Class · PIMCO TOTAL RETURN FUND - INST · PIMCO TOTAL RETURN FUND - A |
-| `TRLGX` | T. Rowe Price Large-Cap Growth Fund | 453 | 460 | $10.2B | 358 / 102 | T ROWE LARGE CAP GROWTH I · T. Rowe Price Large Cap Growth · T. Rowe Price Large Cap Growth I · T. Rowe Price Institutional Large Cap Growth Fund · T. Rowe Price Large-Cap Growth Fund I Class · T. Rowe Price Large Cap Growth Fund |
+| `PTTRX` | PIMCO Total Return Fund | 2,132 | 2,143 | $10.4B | 2,014 / 129 | PIMCO Total Return Fund · PIMCO Total Return Instl · PIMCO Total Return Instl Fund · PIMCO Total Return Fund Institutional Class · PIMCO TOTAL RETURN FUND - INST · PIMCO TOTAL RETURN FUND - A |
+| `TRLGX` | T. Rowe Price Large-Cap Growth Fund | 445 | 452 | $10.2B | 358 / 94 | T ROWE LARGE CAP GROWTH I · T. Rowe Price Large Cap Growth · T. Rowe Price Large Cap Growth I · T. Rowe Price Institutional Large Cap Growth Fund · T. Rowe Price Large-Cap Growth Fund I Class · T. Rowe Price Large Cap Growth Fund |
 | `OLGAX` | JPMorgan Large Cap Growth Fund | 1,526 | 1,528 | $9.3B | 6 / 1,522 | JPMorgan Large Cap Growth Fund · JPMorgan Large Cap Growth · JP Morgan Large Cap Growth · JP Morgan Large Cap Growth Fund · JPMORGAN LARGE CAP GROWTH · JPMorgan Large-Cap Growth Fund |
 | `FSMAX` | Fidelity Extended Market Index Fund | 2,250 | 2,253 | $9.2B | 2,251 / 2 | Fidelity Extended Market Index Fund · Fidelity Extended Market Index · Fidelity Extended Mkt Idx Fd · FIDELITY EXTENDED MARKET INDEX · Fidelity Extended Market Index N/R · Fidelity Extended Market Index Fund N/R |
-| `TRRLX` | T. Rowe Price Retirement 2060 Fund | 2,176 | 2,180 | $8.4B | 1,148 / 1,032 | T. Rowe Price Retirement 2060 Fund · T. Rowe Price Retirement 2060 · T. ROWE PRICE RETIREMENT 2060 INV · T Rowe Price Retirement 2060 · T Rowe Price Retirement 2060 Fund · T. Rowe Price Retirement 2060 Trust |
+| `TRRLX` | T. Rowe Price Retirement 2060 Fund | 2,175 | 2,179 | $8.4B | 1,136 / 1,043 | T. Rowe Price Retirement 2060 Fund · T. Rowe Price Retirement 2060 · T. ROWE PRICE RETIREMENT 2060 INV · T Rowe Price Retirement 2060 · T Rowe Price Retirement 2060 Fund · T. Rowe Price Retirement 2060 Trust |
 | `FBIFX` | Fidelity Freedom Index 2040 Fund | 1,802 | 1,802 | $8.2B | 236 / 1,566 | FID FREEDOM INDEX 2040 PREMIER · Fidelity Freedom Index 2040 Fund · Fidelity Freedom Index 2040 · Fidelity Freedom Index 2040 Fund Institutional Premium Class · Fidelity Freedom Index 2040 Fund Investor Class · Fidelity Freedom Index 2040 Investor |
 | `SWPPX` | Schwab S&P 500 Index Fund | 770 | 772 | $8.2B | 772 / 0 | Schwab S&P 500 Index Fund · Schwab S&P 500 Index · SCHWAB S&P 500 INDEX FUND · Schwab S&P 500 Index Fund - Select S · SCHWAB S&P 500 INDEX · SCHWAB S&P 500 INDEX FUND - SELECT S |
 | `FSKAX` | Fidelity Total Market Index Fund | 1,499 | 1,500 | $8.1B | 1,500 / 0 | Fidelity Total Market Index Fund · Fidelity Total Market Index · FID TOTAL MKT IDX · Fidelity Total Market Index Fd · FIDELITY TOTAL MARKET INDEX · FID TOTAL MARKET INDEX |
 | `FIOFX` | Fidelity Freedom Index 2045 Fund | 1,825 | 1,825 | $7.9B | 243 / 1,582 | FID FREEDOM INDEX 2045 PREMIER · Fidelity Freedom Index 2045 Fund · Fidelity Freedom Index 2045 · Fidelity Freedom Index 2045 Fund Institutional Premium Class · Fidelity Freedom Index 2045 Fund Investor Class · Fidelity Freedom Index 2045 Investor |
-| `TRRBX` | T. Rowe Price Retirement 2020 Fund | 2,160 | 2,163 | $7.8B | 1,144 / 1,019 | T. Rowe Price Retirement 2020 Fund · T. Rowe Price Retirement 2020 · T. ROWE PRICE RETIREMENT 2020 INV · T Rowe Price Retirement 2020 · T.ROWE PRICE RETIRE 2020 - ADV · T Rowe Price Retirement 2020 Fund |
+| `TRRBX` | T. Rowe Price Retirement 2020 Fund | 2,159 | 2,162 | $7.8B | 1,133 / 1,029 | T. Rowe Price Retirement 2020 Fund · T. Rowe Price Retirement 2020 · T. ROWE PRICE RETIREMENT 2020 INV · T Rowe Price Retirement 2020 · T.ROWE PRICE RETIRE 2020 - ADV · T Rowe Price Retirement 2020 Fund |
 | `FIHFX` | Fidelity Freedom Index 2035 Fund | 1,792 | 1,792 | $7.8B | 242 / 1,550 | FID FREEDOM INDEX 2035 PREMIER · Fidelity Freedom Index 2035 Fund · Fidelity Freedom Index 2035 · Fidelity Freedom Index 2035 Fund Institutional Premium Class · Fidelity Freedom Index 2035 Fund Investor Class · Fidelity Freedom Index 2035 Investor |
 | `FIPFX` | Fidelity Freedom Index 2050 Fund | 1,820 | 1,820 | $7.6B | 240 / 1,580 | FID FREEDOM INDEX 2050 PREMIER · Fidelity Freedom Index 2050 Fund · Fidelity Freedom Index 2050 · Fidelity Freedom Index 2050 Fund Institutional Premium Class · Fidelity Freedom Index 2050 Fund Investor Class · Fidelity Freedom Index 2050 Investor |
 | `VEIRX` | Vanguard Equity Income Fund | 2,122 | 2,128 | $7.6B | 2,127 / 1 | Vanguard Equity Income Adm · Vanguard Equity-Income Adm · Vanguard Equity-Income Fund Admiral Shares · Vanguard Equity Income Admiral · Vanguard Equity Income Fund Admiral Shares · VANGUARD EQUITY-INCOME ADM |
@@ -110,13 +112,14 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `VWUAX` | Vanguard U.S. Growth Fund | 476 | 478 | $5.3B | 477 / 1 | Vanguard U.S. Growth Fund Admiral Shares · VANGUARD US GROWTH FUND ADM · Vanguard US Growth Admiral · Vanguard U.S. Growth Adm · Vanguard US Growth Adm · VANGUARD US GROWTH ADM MUTUAL FUND SHARES |
 | `VIGAX` | Vanguard Growth Index Fund | 3,130 | 3,139 | $5.2B | 3,135 / 4 | Vanguard Growth Index Adm · Vanguard Growth Index Admiral · VANGUARD GROWTH INDEX FUND ADM · Vanguard Growth Index Fund Admiral Shares · Vanguard Growth Index Adm Fund · Vanguard Growth Index Admiral Fund |
 | `FFPFX` | Fidelity Freedom 2050 Fund | 1,275 | 1,277 | $5.2B | 10 / 1,267 | Fidelity Freedom 2050 Fund · Fidelity Freedom 2050 · FID FREEDOM 2050 K · Fidelity Freedom 2050 K · Fidelity Freedom 2050 K Fund · Fidelity Freedom 2050 Fund K |
-| `VFINX` | Vanguard 500 Index Fund | 55 | 55 | $5.2B | 0 / 55 | Vanguard Index 500 Fund · Vanguard Index 500 · Vanguard Instl 500 Index Trust · 500 Index (Vanguard) · VANGUARD INDEX 500 · Vngrd 500 Index Fund |
-| `FLPSX` | — | 921 | 922 | $5.1B | 883 / 39 | Fidelity Low-Priced Stock Fund · Fidelity Low Priced Stock Fund · Fidelity Low-Priced Stock · Fidelity Low Priced Stock · Fidelity Low-Priced Stock K6 Fund · Fidelity Low Priced Stock K |
+| `VFINX` | Vanguard 500 Index Fund | 57 | 57 | $5.2B | 0 / 57 | Vanguard Index 500 Fund · Vanguard Index 500 · Vanguard Instl 500 Index Trust · 500 Index (Vanguard) · VANGUARD INDEX 500 · Vngrd 500 Index Fund |
+| `FLPSX` | — | 920 | 921 | $5.1B | 883 / 38 | Fidelity Low-Priced Stock Fund · Fidelity Low Priced Stock Fund · Fidelity Low-Priced Stock · Fidelity Low Priced Stock · Fidelity Low-Priced Stock K6 Fund · Fidelity Low Priced Stock K |
 | `FSPGX` | Fidelity Large Cap Growth Index Fund | 1,310 | 1,311 | $5.0B | 1,310 / 1 | Fidelity Large Cap Growth Index Fund · Fidelity Large Cap Growth Index · FID LARGE CAP GROWTH INDEX · FIDELITY LARGE CAP GROWTH INDEX · Fidelity Large Cap Growth Idx · FIDELITY LARGE CAP GROWTH IDX |
 | `JBGAX` | Blue Chip Growth Fund | 1,309 | 1,311 | $5.0B | 2 / 1,309 | Blue Chip Growth Fund · Blue Chip Growth · Blue Chip Growth I · Blue Chip Growth K6 Fund · Blue Chip Growth K6 · Blue Chip Growth Portfolio |
 | `RFKTX` | American Funds 2055 Target Date Retirement Fund | 2,682 | 2,683 | $5.0B | 2,683 / 0 | AMERICAN FUNDS 2055 TARGET R6 · American Funds 2055 Trgt Date Retire R6 · American Funds 2055 Target Date Fund R6 · American Funds 2055 Target Date Retirement Fund Class R-6 · AMERICAN FUNDS 2055 TRGT DATE RETIRE R6 · American Funds 2055 Target Date Retire R6 |
 | `ABALX` | AMERICAN BALANCED FUND | 1,930 | 1,932 | $5.0B | 7 / 1,925 | American Balanced Fund · American Funds American Balanced Fund · AF American Balanced Fund · American Funds American Balanced · American Balanced · AMERICAN BALANCED FUND |
-| `PRGFX` | T. Rowe Price Growth Stock Fund, Inc. | 551 | 554 | $4.7B | 435 / 119 | T. Rowe Price Growth Stock Fund · T. Rowe Price Growth Stock · T Rowe Price Growth Stock Fund · T Rowe Price Growth Stock · T. ROWE PRICE GROWTH STOCK · T. ROWE PRICE GROWTH STOCK INV |
+| `EFA` | iShares MSCI EAFE ETF | 547 | 550 | $4.8B | 13 / 537 | BlackRock EAFE Equity Index Fund · BLACKROCK EAFE EQ IDX 1 · BlackRock EAFE Equity Index · BlackRock EAFE Eq Idx Cl R FD · BLACKROCK EAFE EQ IDX R · BlackRock EAFE Equity Index Fund Class 1 |
+| `PRGFX` | T. Rowe Price Growth Stock Fund, Inc. | 550 | 552 | $4.7B | 435 / 117 | T. Rowe Price Growth Stock Fund · T. Rowe Price Growth Stock · T Rowe Price Growth Stock Fund · T Rowe Price Growth Stock · T. ROWE PRICE GROWTH STOCK · T. ROWE PRICE GROWTH STOCK INV |
 | `FBALX` | — | 799 | 799 | $4.7B | 799 / 0 | Fidelity Balanced Fund · Fidelity Balanced · Fidelity Balanced K · Fidelity Balanced K6 Fund · Fidelity Balanced K6 · Fidelity Balanced Fund Class K |
 | `ANWPX` | NEW PERSPECTIVE FUND | 1,961 | 1,964 | $4.5B | 14 / 1,950 | American Funds New Perspective Fund · American Funds New Perspective · New Perspective Fund · New Perspective · AMERICAN FUNDS NEW PERSPECTIVE · AF New Perspective Fund |
 | `PIMIX` | PIMCO Income Fund | 4,238 | 4,248 | $4.4B | 4,241 / 7 | PIMCO Income Instl · PIMCO Income Fund Institutional Class · PIMCO INCOME FUND - INSTL · PIMCO Income Institutional Fd · PIMCO INCOME INSTL · Pimco Income Instl |
@@ -125,6 +128,7 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `FFPAX` | Fidelity Freedom 2025 Fund | 1,262 | 1,262 | $4.4B | 10 / 1,252 | Fidelity Freedom 2025 Fund · FID FREEDOM 2025 K · Fidelity Freedom 2025 · Fidelity Freedom 2025 K · Fidelity Freedom 2025 K Fund · Fidelity Freedom 2025 Fund K |
 | `PEYAX` | PUTNAM LARGE CAP VALUE FUND | 2,152 | 2,156 | $4.3B | 14 / 2,142 | Putnam Large Cap Value R6 · Putnam Large Cap Value Fund · PUTNAM LARGE CAP VALUE R6 · Putnam Large Cap Value Fund Class R6 · Putnam Large Cap Value R6 Fund · Putnam Large Cap Value Fund R6 |
 | `FTIHX` | Fidelity Total International Index Fund | 1,699 | 1,702 | $4.3B | 1,702 / 0 | Fidelity Total International Index Fund · Fidelity Total International Index · Fidelity Total Intl Index · FID TOTAL INTL IDX · FID TOTAL INTERNATIONAL INDEX · FIDELITY TOTAL INTERNATIONAL INDEX |
+| `MDY` | — | 438 | 438 | $4.2B | 0 / 438 | State Street S&P Mid Cap Index Ret Opt · State Street S&P Mid Cap Index (1) · State Street S&P Md Cap Indx Ret Acct · State Street S&P Md cp Idx Ret Opt · State Street S&P Mid Cap Index · State Street S&P Md cp Idx Ret Acct |
 | `AGTHX` | GROWTH FUND OF AMERICA | 729 | 729 | $4.2B | 7 / 722 | American Funds Growth Fund of America · AF The Growth Fund of America · American Funds The Growth Fund of America · American Funds Growth Fund of America Fund · American Funds The Growth Fund of America Fund · AF Growth Fund of America |
 | `TRFHX` | — | 879 | 880 | $4.1B | 880 / 0 | TRP RETIREMENT 2030 I · T. ROWE PRICE RTMT 2030 I FD · T. Rowe Price Retirement 2030 Fund I · T. Rowe Price Retirement 2030 I · T. Rowe Price Retirement I 2030 I · T. Rowe Price Ret 2030 I |
 | `MEIKX` | — | 1,432 | 1,447 | $4.1B | 1,447 / 0 | MFS Value Fund · MFS Value Fund Class R6 · MFS Value Fund R6 · MFS Value Fund Class R4 · MFS Value Fund Class R3 · MFS VALUE FUND R6 |
@@ -152,18 +156,21 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `FGTKX` | Fidelity Freedom 2030 Fund | 616 | 616 | $3.2B | 616 / 0 | FID FREEDOM 2030 K6 · Fidelity Freedom 2030 K6 · Fidelity Freedom 2030 Fund Class K6 · Fidelity Freedom 2030 Fund K6 · Fidelity Freedom 2030 Fund - Class K6 · Fidelity Freedom 2030 K6 Fund |
 | `MWTIX` | — | 1,163 | 1,166 | $3.2B | 1,166 / 0 | Metropolitan West Total Return Bond Fund · Metropolitan West Total Return Bond · Metropolitan West Total Return Bond Plan · Metropolitan West Total Return Bond I · TCW MetWest Total Return Bond Fund · Metropolitan West Total Return Bond Fund Class I |
 | `SSBUX` | State Street Target Retirement 2030 Fund | 228 | 229 | $3.2B | 0 / 229 | State Street Target Retirement 2030 · State Street Target Retirement 2030 K · State Street Target Retirement 2030 Fund · State Street Target Ret 2030 · SSgA Target Ret 2030 K Fund · STATE STREET TARGET RETIREMENT 2030 K |
+| `IJH` | iShares Core S&P Mid-Cap ETF | 358 | 359 | $3.2B | 27 / 332 | BLACKROCK MID CAP EQ IDX 1 · Blackrock Mid Cap Equity Index Fund R · iShares Core S&P Mid-Cap ETF · BlackRock Mid Cap Equity Index Fund · BlackRock Mid Cap Eq Idx Cl 1 · BlackRock Mid Cap Equity Index |
 | `FDKLX` | Fidelity Freedom Index 2060 Fund | 1,790 | 1,790 | $3.1B | 242 / 1,548 | FID FREEDOM INDEX 2060 PREMIER · Fidelity Freedom Index 2060 Fund · Fidelity Freedom Index 2060 · Fidelity Freedom Index 2060 Fund Institutional Premium Class · Fidelity Freedom Index 2060 Fund Investor Class · Fidelity Freedom Index 2060 Investor |
 | `APGAX` | AB LARGE CAP GROWTH FUND INC | 1,585 | 1,587 | $3.1B | 18 / 1,569 | AB Large Cap Growth Fund · AB Large Cap Growth Z · AB Large Cap Growth Z Fund · AB LARGE CAP GROWTH FUND Z · AB Large Cap Growth Fund Z · AB Large Cap Growth |
 | `FHTKX` | Fidelity Freedom 2040 Fund | 617 | 617 | $3.0B | 617 / 0 | FID FREEDOM 2040 K6 · Fidelity Freedom 2040 K6 · Fidelity Freedom 2040 Fund Class K6 · Fidelity Freedom 2040 Fund K6 · Fidelity Freedom 2040 Fund - Class K6 · Fidelity Freedom 2040 K6 Fund |
 | `FGKFX` | Fidelity Growth Company K6 Fund | 69 | 71 | $3.0B | 71 / 0 | FID GROWTH CO K6 · Fidelity Growth Co K6 · Fidelity Growth CO K6 · Fid Growth Co K6 · Fidelity Growth Strategy K6 · FID Growth Co K6 |
-| `TRBLX` | T. Rowe Price Retirement Blend 2040 Fund | 165 | 165 | $2.9B | 32 / 133 | T. Rowe Price Retirement Blend 2040 · T. Rowe Price Retirement Blend 2040 Fund · T. Rowe Price Retirement Blend Select Trust 2040 · T Rowe Price Retirement Blend 2040 · T. Rowe Price Retirement Blend 2040 Trust A · TRP Ret Blend 2040 Trust A |
+| `TRBLX` | T. Rowe Price Retirement Blend 2040 Fund | 165 | 165 | $2.9B | 30 / 135 | T. Rowe Price Retirement Blend 2040 · T. Rowe Price Retirement Blend 2040 Fund · T. Rowe Price Retirement Blend Select Trust 2040 · T Rowe Price Retirement Blend 2040 · T. Rowe Price Retirement Blend 2040 Trust A · TRP Ret Blend 2040 Trust A |
 | `FWTKX` | Fidelity Freedom 2035 Fund | 609 | 609 | $2.9B | 609 / 0 | FID FREEDOM 2035 K6 · Fidelity Freedom 2035 K6 · Fidelity Freedom 2035 Fund Class K6 · Fidelity Freedom 2035 Fund K6 · Fidelity Freedom 2035 Fund - Class K6 · Fidelity Freedom 2035 K6 Fund |
-| `TBLWX` | — | 138 | 138 | $2.9B | 32 / 106 | T. Rowe Price Retirement Blend 2030 · T. Rowe Price Retirement Blend 2030 Fund · T Rowe Price Retirement Blend 2030 · T. Rowe Price Retirement Blend 2030 Trust A · TRP Ret Blend 2030 Trust A · TRP Retirement Blend 2030 |
+| `TBLWX` | — | 136 | 136 | $2.9B | 30 / 106 | T. Rowe Price Retirement Blend 2030 · T. Rowe Price Retirement Blend 2030 Fund · T Rowe Price Retirement Blend 2030 · T. Rowe Price Retirement Blend 2030 Trust A · TRP Ret Blend 2030 Trust A · TRP Retirement Blend 2030 |
 | `SSCLX` | State Street Target Retirement 2040 Fund | 231 | 231 | $2.9B | 0 / 231 | State Street Target Retirement 2040 · State Street Target Retirement 2040 K · State Street Target Retirement 2040 Fund · State Street Target Ret 2040 · SSgA Target Ret 2040 K Fund · STATE STREET TARGET RETIREMENT 2040 K |
 | `RPMGX` | T. Rowe Price Mid-Cap Growth Fund, Inc. | 554 | 555 | $2.9B | 482 / 73 | T. Rowe Price Mid-Cap Growth Fund · T. Rowe Price Mid Cap Growth Fund · T. Rowe Price Mid-Cap Growth · T. Rowe Price Mid Cap Growth · T. ROWE PRICE MID-CAP GROWTH INV · T Rowe Price Mid-Cap Growth Fund |
 | `SSBZX` | State Street Target Retirement 2035 Fund | 231 | 231 | $2.9B | 0 / 231 | State Street Target Retirement 2035 · State Street Target Retirement 2035 K · State Street Target Retirement 2035 Fund · State Street Target Ret 2035 · SSgA Target Ret 2035 K Fund · STATE STREET TARGET RETIREMENT 2035 K |
+| `IWF` | iShares Russell 1000 Growth ETF | 56 | 56 | $2.9B | 7 / 49 | Blackrock Russell 1000 Growth Index R · iShares Russell 1000 Growth ETF · BlackRock Russell 1000 Growth Index R · Blackrock Russell 1000 Growth Fund · BlackRock Russell 1000® Growth Index Fund · BLACKROCK RUSSELL 1000 GROWTH INDEX R |
+| `IWB` | iShares Russell 1000 ETF | 50 | 50 | $2.8B | 3 / 47 | Blackrock Russell 1000 Index 1 · BlackRock Russell 1000 Index 1 · BLACKROCK RUSSELL 1000 INDEX 1 · Blackrock Russell 1000 Index · Blackrock Russell 1000 Index I · BlackRock Russell 1000 Index Fund |
 | `FHDEX` | Fidelity Freedom Blend 2040 Fund | 95 | 95 | $2.8B | 1 / 94 | Fidelity Freedom Blend 2040 · Fidelity Freedom Blend 2040 Fund · Fidelity Freedom® Blend 2040 · Fidelity Advisor Freedom Blend 2040 Fund · Fidelity Advisor Freedom Blend 2040 · FIDELITY FREEDOM BLEND 2040 |
-| `TBLYX` | T. Rowe Price Retirement Blend 2035 Fund | 164 | 164 | $2.8B | 30 / 134 | T. Rowe Price Retirement Blend 2035 · T. Rowe Price Retirement Blend 2035 Fund · T. Rowe Price Retirement Blend Select Trust 2035 · T Rowe Price Retirement Blend 2035 · T. Rowe Price Retirement Blend 2035 Trust A · TRP Ret Blend 2035 Trust A |
+| `TBLYX` | T. Rowe Price Retirement Blend 2035 Fund | 164 | 164 | $2.8B | 28 / 136 | T. Rowe Price Retirement Blend 2035 · T. Rowe Price Retirement Blend 2035 Fund · T. Rowe Price Retirement Blend Select Trust 2035 · T Rowe Price Retirement Blend 2035 · T. Rowe Price Retirement Blend 2035 Trust A · TRP Ret Blend 2035 Trust A |
 | `FEPAX` | Fidelity Total Bond Fund | 2,185 | 2,187 | $2.8B | 11 / 2,176 | Fidelity Total Bond Fund · Fidelity Advisor Total Bond · Fidelity Total Bond · Fidelity Advisor Total Bond Fund · Fidelity Advisor Total Bond Z · FIDELITY ADVISOR TOTAL BOND Z |
 | `FUBFX` | Fidelity U.S. Bond Index Fund | 1,036 | 1,036 | $2.8B | 0 / 1,036 | FID US BOND IDX · Fid Us Bond Idx · Fid US Bond Idx · Fidelity US Bond Index · Fidelity U.S Bond Index Fund · FID US Bond Idx |
 | `RNWGX` | NEW WORLD FUND INC | 5,095 | 5,103 | $2.7B | 5,102 / 1 | American Funds New World R6 · AMERICAN FUNDS NEW WORLD R6 · New World R6 · American Funds New World Fund Class R-6 · American Funds New World Fund R6 · AF NEW WORLD R6 |
@@ -178,7 +185,7 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `FHGFX` | Fidelity Freedom Blend 2045 Fund | 95 | 95 | $2.6B | 1 / 94 | Fidelity Freedom Blend 2045 · Fidelity Freedom Blend 2045 Fund · Fidelity Freedom® Blend 2045 · Fidelity Advisor Freedom Blend 2045 Fund · Fidelity Advisor Freedom Blend 2045 · FIDELITY FREEDOM BLEND 2045 |
 | `RWMGX` | Washington Mutual Investors Fund | 806 | 808 | $2.6B | 808 / 0 | American Funds Washington Mutual R6 · AMERICAN FUNDS WASHINGTON MUTUAL R6 · American Funds Washington Mutual Investors Fund Class R-6 · American Funds Washington Mutual Investors Fund R6 · American Funds Washington Mutual Investors Fund Class R6 · American Funds Washington Mutual Investors R6 |
 | `FSGGX` | Fidelity Global ex U.S. Index Fund | 1,107 | 1,107 | $2.6B | 1,105 / 2 | Fidelity Global ex U.S. Index Fund · Fidelity Global ex US Index Fund · Fidelity Global ex US Index · Fidelity Global Ex US Index · Fidelity Global Ex US Index Fund · Fidelity Global Ex U.S. Index Fund |
-| `TRBQX` | T. Rowe Price Retirement Blend 2045 Fund | 161 | 161 | $2.5B | 28 / 133 | T. Rowe Price Retirement Blend 2045 · T. Rowe Price Retirement Blend 2045 Fund · T. Rowe Price Retirement Blend Select Trust 2045 · T. Rowe Price Retirement Blend 2045 Trust A · T Rowe Price Retirement Blend 2045 · TRP Ret Blend 2045 Trust A |
+| `TRBQX` | T. Rowe Price Retirement Blend 2045 Fund | 161 | 161 | $2.5B | 26 / 135 | T. Rowe Price Retirement Blend 2045 · T. Rowe Price Retirement Blend 2045 Fund · T. Rowe Price Retirement Blend Select Trust 2045 · T. Rowe Price Retirement Blend 2045 Trust A · T Rowe Price Retirement Blend 2045 · TRP Ret Blend 2045 Trust A |
 | `TBCIX` | — | 735 | 743 | $2.5B | 743 / 0 | T. Rowe Price Blue Chip Growth I · T ROWE PRICE BLUE CHIP GR I · T.Rowe Price Bl Chip Gr I Fd · T. Rowe Price Blue Chip Growth Fund I Class · T. Rowe Price Blue Chip Gr I · T. ROWE PRICE BLUE CHIP GROWTH I |
 | `FJAMX` | Fidelity Freedom Blend 2030 Fund | 94 | 94 | $2.5B | 1 / 93 | Fidelity Freedom Blend 2030 · Fidelity Freedom Blend 2030 Fund · Fidelity Freedom® Blend 2030 · Fidelity Advisor Freedom Blend 2030 Fund · Fidelity Advisor Freedom Blend 2030 · FIDELITY FREEDOM BLEND 2030 |
 | `FJTKX` | Fidelity Freedom 2045 Fund | 614 | 614 | $2.4B | 614 / 0 | FID FREEDOM 2045 K6 · Fidelity Freedom 2045 K6 · Fidelity Freedom 2045 Fund Class K6 · Fidelity Freedom 2045 Fund K6 · Fidelity Freedom 2045 Fund - Class K6 · Fidelity Freedom 2045 K6 Fund |
@@ -191,7 +198,7 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `TRJMX` | — | 835 | 836 | $2.3B | 836 / 0 | TRP RETIREMENT 2055 I · T. ROWE PRICE RTMT 2055 I FD · T. Rowe Price Retirement 2055 Fund I · T. Rowe Price Retirement 2055 I · T. Rowe Price Retirement I 2055 I · T. Rowe Price Ret 2055 I |
 | `FHJKX` | Fidelity Freedom Blend 2050 Fund | 96 | 96 | $2.2B | 1 / 95 | Fidelity Freedom Blend 2050 · Fidelity Freedom Blend 2050 Fund · Fidelity Freedom® Blend 2050 · Fidelity Advisor Freedom Blend 2050 Fund · Fidelity Advisor Freedom Blend 2050 · FIDELITY FREEDOM BLEND 2050 |
 | `FFOZX` | Fidelity Freedom 2020 Fund | 1,206 | 1,209 | $2.2B | 9 / 1,200 | Fidelity Freedom 2020 Fund · FID FREEDOM 2020 K · Fidelity Freedom 2020 · Fidelity Freedom 2020 K · Fidelity Freedom 2020 K Fund · Fidelity Freedom 2020 Fund K |
-| `TRBSX` | — | 137 | 137 | $2.1B | 32 / 105 | T. Rowe Price Retirement Blend 2050 · T. Rowe Price Retirement Blend 2050 Fund · T Rowe Price Retirement Blend 2050 · T. Rowe Price Retirement Blend 2050 Trust A · TRP Ret Blend 2050 Trust A · TRP Retirement Blend 2050 |
+| `TRBSX` | — | 135 | 135 | $2.1B | 30 / 105 | T. Rowe Price Retirement Blend 2050 · T. Rowe Price Retirement Blend 2050 Fund · T Rowe Price Retirement Blend 2050 · T. Rowe Price Retirement Blend 2050 Trust A · TRP Ret Blend 2050 Trust A · TRP Retirement Blend 2050 |
 | `SSDFX` | State Street Target Retirement 2050 Fund | 231 | 231 | $2.1B | 0 / 231 | State Street Target Retirement 2050 · State Street Target Retirement 2050 K · State Street Target Retirement 2050 Fund · State Street Target Ret 2050 · SSgA Target Ret 2050 K Fund · STATE STREET TARGET RETIREMENT 2050 K |
 | `VDVIX` | Vanguard Developed Markets Index Fund | 636 | 636 | $2.1B | 6 / 630 | Vanguard Developed Markets Index Fund · Vanguard Developed Markets Index · Vanguard Developed Markets Index Fund Institutional Shares · Vanguard Funds Developed Markets Index Fund · Vanguard Funds Developed Markets Index · VANGUARD DEVELOPED MARKETS INDEX |
 | `VVIAX` | Vanguard Value Index Fund | 2,334 | 2,343 | $2.1B | 2,340 / 3 | Vanguard Value Index Adm · Vanguard Value Index Fund Admiral Shares · Vanguard Value Index Admiral · Vanguard Value Index Adm Fund · Vanguard Value Index Admiral Fund · VANGUARD VALUE INDEX ADM |
@@ -199,17 +206,17 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `SNXFX` | Schwab 1000 Index Fund | 25 | 25 | $2.1B | 25 / 0 | Schwab 1000 Index Fund · SCHWAB 1000 INDEX FUND · Schwab 1000 Index · SCHWAB 1000 INDEX · Schwab 1000 Index® Fund · Schwab 1000 Index Inv |
 | `SSBPX` | State Street Target Retirement 2025 Fund | 220 | 220 | $2.0B | 0 / 220 | State Street Target Retirement 2025 · State Street Target Retirement 2025 K · State Street Target Retirement 2025 Fund · State Street Target Ret 2025 · STATE STREET TARGET RETIREMENT 2025 K · SSgA Target Ret 2025 K Fund |
 | `FFPMX` | Fidelity Freedom 2060 Fund | 1,198 | 1,199 | $2.0B | 9 / 1,190 | Fidelity Freedom 2060 Fund · FID FREEDOM 2060 K · Fidelity Freedom 2060 · Fidelity Freedom 2060 K · Fidelity Freedom 2060 K Fund · Fidelity Freedom 2060 Fund K |
-| `TRSJX` | — | 1,492 | 1,494 | $2.0B | 774 / 720 | T. Rowe Price Retirement 2065 Fund · T. Rowe Price Retirement 2065 · T. ROWE PRICE RETIREMENT 2065 INV · T Rowe Price Retirement 2065 · T. ROWE PRICE RETIREMENT 2065 · T. Rowe Price Retirement 2065 Trust |
+| `TRSJX` | — | 1,491 | 1,493 | $2.0B | 762 / 731 | T. Rowe Price Retirement 2065 Fund · T. Rowe Price Retirement 2065 · T. ROWE PRICE RETIREMENT 2065 INV · T Rowe Price Retirement 2065 · T. ROWE PRICE RETIREMENT 2065 · T. Rowe Price Retirement 2065 Trust |
 | `FPIFX` | Fidelity Freedom Index 2020 Fund | 1,338 | 1,338 | $2.0B | 178 / 1,160 | FID FREEDOM INDEX 2020 PREMIER · Fidelity Freedom Index 2020 Fund · Fidelity Freedom Index 2020 · Fidelity Freedom Index 2020 Fund Institutional Premium Class · Fidelity Freedom Index 2020 Fund Investor Class · Fidelity Freedom Index 2020 Investor |
 | `FDTKX` | Fidelity Freedom 2025 Fund | 601 | 601 | $1.9B | 601 / 0 | FID FREEDOM 2025 K6 · Fidelity Freedom 2025 K6 · Fidelity Freedom 2025 Fund Class K6 · Fidelity Freedom 2025 Fund K6 · Fidelity Freedom 2025 Fund - Class K6 · Fidelity Freedom 2025 K6 Fund |
 | `PONAX` | PIMCO Income Fund | 1,164 | 1,164 | $1.9B | 51 / 1,113 | PIMCO Income Fund · PIMCO Income · PIMCO Income A · PIMCO INCOME FUND - A · PIMCO Income Fund Class A · Pimco Income Fund |
-| `PRFDX` | T. Rowe Price Equity Income Fund | 321 | 323 | $1.9B | 248 / 75 | T. Rowe Price Equity Income Fund · T. Rowe Price Equity Income · T. ROWE PRICE EQUITY INCOME INV · TRP EQUITY INCOME · T Rowe Price Equity Income Fund · T ROWE PRICE EQUITY INCOME |
+| `PRFDX` | T. Rowe Price Equity Income Fund | 320 | 322 | $1.9B | 247 / 75 | T. Rowe Price Equity Income Fund · T. Rowe Price Equity Income · T. ROWE PRICE EQUITY INCOME INV · TRP EQUITY INCOME · T Rowe Price Equity Income Fund · T ROWE PRICE EQUITY INCOME |
 | `RRCTX` | American Funds 2020 Target Date Retirement Income Fund | 1,891 | 1,892 | $1.9B | 1,892 / 0 | American Funds 2020 Trgt Date Retire R6 · American Funds 2020 Target Date Fund R6 · American Funds 2020 Target Date Retirement Fund Class R-6 · AF TRGT DATE 2020 R6 · American Funds 2020 Target Date Retire R6 · AMERICAN FUNDS 2020 TRGT DATE RETIRE R6 |
-| `TRRGX` | T. Rowe Price Retirement 2015 Fund | 1,548 | 1,549 | $1.9B | 744 / 805 | T. Rowe Price Retirement 2015 Fund · T. Rowe Price Retirement 2015 · T. ROWE PRICE RETIREMENT 2015 INV · T. Rowe Price Retirement 2015 Trust · T Rowe Price Retirement 2015 · T Rowe Price Retirement 2015 Fund |
 | `JUEMX` | JPMorgan U.S. Equity Fund | 1,055 | 1,056 | $1.9B | 1,056 / 0 | JPMorgan US Equity R6 · JPMORGAN US EQUITY FUND R6 · JP Morgan US Equity R6 Fund · JPMorgan US Equity Fund R6 · JPMorgan U.S. Equity Fund Class R6 · JP Morgan US Equity R6 |
+| `TRRGX` | T. Rowe Price Retirement 2015 Fund | 1,547 | 1,548 | $1.9B | 736 / 812 | T. Rowe Price Retirement 2015 Fund · T. Rowe Price Retirement 2015 · T. ROWE PRICE RETIREMENT 2015 INV · T. Rowe Price Retirement 2015 Trust · T Rowe Price Retirement 2015 · T Rowe Price Retirement 2015 Fund |
 | `RGAGX` | GROWTH FUND OF AMERICA | 388 | 389 | $1.9B | 389 / 0 | American Funds Growth Fund of America R6 · American Funds The Growth Fund of America Class R-6 · American Funds The Growth Fund of America R6 · American Funds Growth Fund of America R6 Fund · American Growth of America R6 · American Funds The Growth Fund of America Class R6 |
 | `VIVAX` | Vanguard Value Index Fund | 1,078 | 1,084 | $1.9B | 22 / 1,062 | Vanguard Value Index Fund · Vanguard Value Index · Vanguard Value Index I · VANGUARD VALUE INDEX FUND · Vanguard Value Index Fund Investor Shares · VANGUARD VALUE INDEX |
-| `TBLVX` | — | 135 | 135 | $1.8B | 30 / 105 | T. Rowe Price Retirement Blend 2025 · T. Rowe Price Retirement Blend 2025 Fund · T Rowe Price Retirement Blend 2025 · TRP Ret Blend 2025 Trust A · T. Rowe Price Retirement Blend 2025 Trust A · TRP RET BLEND 2025 TRUST A |
+| `TBLVX` | — | 134 | 134 | $1.8B | 28 / 106 | T. Rowe Price Retirement Blend 2025 · T. Rowe Price Retirement Blend 2025 Fund · T Rowe Price Retirement Blend 2025 · TRP Ret Blend 2025 Trust A · T. Rowe Price Retirement Blend 2025 Trust A · TRP RET BLEND 2025 TRUST A |
 | `FBAOX` | Fidelity Balanced Fund | 235 | 235 | $1.8B | 0 / 235 | FID BALANCED · FID BALANCED K · Fid Balanced · FID Balanced · Fidelity Adv Balanced Z · FIDELITY ADV BALANCED Z FUND |
 | `BAGIX` | Baird Aggregate Bond Fund | 672 | 677 | $1.8B | 677 / 0 | Baird Aggregate Bond Inst · Baird Aggregate Bond Fund · BAIRD AGGREGATE BOND INST · Baird Aggregate Bond Fund Class Institutional · Baird Aggregate Bond Class Institutional · Baird Aggregate Bond Inst Fund |
 | `LBSAX` | Columbia Dividend Income Fund | 680 | 681 | $1.7B | 49 / 632 | Columbia Dividend Income Fund · Columbia Dividend Income · Columbia Dividend Income A · Columbia Dividend Income Fund Class A · COLUMBIA DIVIDEND INCOME · Columbia Dividend Income Inst |
@@ -222,11 +229,11 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `LPHAX` | BlackRock LifePath Dynamic 2045 Fund | 219 | 219 | $1.6B | 0 / 219 | BLACKROCK LIFEPATH 2045 FUND K · BLACKROCK LIFEPATH 2045 K · BlackRock Lifepath 2045 K · BlackRock LifePath 2045 · BLACKROCK LIFEPATH 2045 R · BLACKROCK LP DYNAMIC 2045 R6 |
 | `FCTKX` | Fidelity Freedom 2055 Fund | 618 | 618 | $1.6B | 618 / 0 | FID FREEDOM 2055 K6 · Fidelity Freedom 2055 K6 · Fidelity Freedom 2055 Fund Class K6 · Fidelity Freedom 2055 Fund K6 · Fidelity Freedom 2055 Fund - Class K6 · Fidelity Freedom 2055 K6 Fund |
 | `VMVAX` | Vanguard Mid-Cap Value Index Fund | 1,650 | 1,659 | $1.6B | 1,659 / 0 | Vanguard Mid-Cap Value Index Admiral · Vanguard Mid-Cap Value Index Fund Admiral Shares · Vanguard Mid-Cap Value Index Adm · Vanguard Mid Cap Value Index Admiral · Vanguard Mid-Cap Value Index Fund Admiral · Vanguard Mid-Cap Value Index Admiral Fund |
-| `TRBOX` | — | 134 | 134 | $1.5B | 29 / 105 | T. Rowe Price Retirement Blend 2055 · T. Rowe Price Retirement Blend 2055 Fund · T Rowe Price Retirement Blend 2055 · T. Rowe Price Retirement Blend 2055 Trust A · TRP Ret Blend 2055 Trust A · TRP Retirement Blend 2055 |
+| `TRBOX` | — | 132 | 132 | $1.5B | 27 / 105 | T. Rowe Price Retirement Blend 2055 · T. Rowe Price Retirement Blend 2055 Fund · T Rowe Price Retirement Blend 2055 · T. Rowe Price Retirement Blend 2055 Trust A · TRP Ret Blend 2055 Trust A · TRP Retirement Blend 2055 |
 | `DFSTX` | U.S. SMALL CAP PORTFOLIO | 1,258 | 1,258 | $1.5B | 1,257 / 1 | DFA U.S. Small Cap Fund · DFA US Small Cap I · DFA US Small Cap Fund · DFA US SM CAP PORTFOLIO INST · DFA US Small Cap · DFA U.S. Small Cap Portfolio Institutional Class |
 | `JOBYX` | JPMorgan SmartRetirement* Blend 2040 Fund | 60 | 60 | $1.5B | 60 / 0 | JPMorgan SmartRetirement Blend 2040 R6 · JPMorgan Smartretirement Blend 2040 R6 · JPMorgan SmartRetirement Blend 2040 Fund Class R6 · JP Morgan Smartretirement Blend 2040 R6 · JP Morgan SmartRetirement Blend 2040 R6 · JPMORGAN SMARTRETIREMENT BLEND 2040 R6 |
 | `FJAHX` | Fidelity Freedom Blend 2025 Fund | 95 | 95 | $1.5B | 1 / 94 | Fidelity Freedom Blend 2025 · Fidelity Freedom Blend 2025 Fund · Fidelity Freedom® Blend 2025 · Fidelity Advisor Freedom Blend 2025 Fund · Fidelity Advisor Freedom Blend 2025 · FIDELITY FREEDOM BLEND 2025 |
-| `VSVNX` | Vanguard Target Retirement 2070 Fund | 3,270 | 3,283 | $1.5B | 2,613 / 670 | Vanguard Target Retirement 2070 Fund · Vanguard Target Retirement 2070 · Vanguard Tgt Rmt 2070 Inv Fund · Vanguard Target Retirement 2070 Trust II · Vanguard Target Retirement 2070 Inv · VANG TARGET RET 2070 |
+| `VSVNX` | Vanguard Target Retirement 2070 Fund | 3,267 | 3,280 | $1.5B | 2,613 / 667 | Vanguard Target Retirement 2070 Fund · Vanguard Target Retirement 2070 · Vanguard Tgt Rmt 2070 Inv Fund · Vanguard Target Retirement 2070 Trust II · Vanguard Target Retirement 2070 Inv · VANG TARGET RET 2070 |
 | `VEXPX` | VANGUARD EXPLORER FUND | 731 | 733 | $1.5B | 84 / 649 | Vanguard Explorer Fund · Vanguard Explorer · VANGUARD EXPLORER FUND · Vanguard Explorer Fund Investor Shares · Vanguard Explorer Inv · Vanguard Explorer Inv Fund |
 | `JRBYX` | JPMorgan SmartRetirement* Blend 2030 Fund | 60 | 60 | $1.5B | 60 / 0 | JPMorgan SmartRetirement Blend 2030 R6 · JPMorgan Smartretirement Blend 2030 R6 · JPMorgan SmartRetirement Blend 2030 Fund Class R6 · JP Morgan Smartretirement Blend 2030 R6 · JP Morgan SmartRetirement Blend 2030 R6 · JPMORGAN SMARTRETIREMENT BLEND 2030 R6 |
 | `SSMJX` | STATE STREET SMALL/MID CAP EQUITY INDEX FUND | 53 | 53 | $1.5B | 2 / 51 | State Street Small/Mid Cap Equity Idx K · State Street Small/Mid Cap Equity Index Fund · STATE STREET SMALL/MID CAP EQUITY IDX K · State Street Small/Mid Cap Equity Index · State Street Small/Mid Cap Equity Index K · State Street Small Mid Cap Equity Index K |
@@ -235,7 +242,9 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `VFTAX` | Vanguard FTSE Social Index Fund | 1,183 | 1,187 | $1.5B | 887 / 300 | Vanguard FTSE Social Index Fund · Vanguard FTSE Social Index Admiral · Vanguard FTSE Social Index Adm · Vanguard FTSE Social Index Fund Admiral Shares · Vanguard FTSE Social Index Fund Admiral · VANGUARD FTSE SOCIAL INDEX ADM |
 | `LPREX` | BlackRock LifePath Dynamic 2040 Fund | 237 | 237 | $1.5B | 0 / 237 | BLACKROCK LIFEPATH 2040 FUND K · BLACKROCK LIFEPATH 2040 K · BlackRock Lifepath 2040 K · BLACKROCK LIFEPATH 2040 A · BLACKROCK LIFEPATH 2040 R · BlackRock LifePath 2040 |
 | `FOCSX` | Fidelity Small Cap Growth K6 Fund | 474 | 474 | $1.4B | 474 / 0 | Fidelity Small Cap Growth K6 · Fidelity Small Cap Growth K6 Fund · FIDELITY SMALL CAP GROWTH K6 · Fidelity Small Cap Growth Fund K6 · Fidelity Small Cap Growth Fund Class K6 · Fidelity® Small Cap Growth K6 Fund |
+| `SMMD` | — | 35 | 35 | $1.4B | 0 / 35 | BlackRock Russell 2500 Index Fund · BlackRock Russell 2500 Index M Fund · BLACKROCK RUSSELL 2500 IDX M · BlackRock Russell 2500 Index Fund N/R · Blackrock Russell 2500 Index No Load-M · Blackrock Russell 2500 Index |
 | `VTMGX` | Vanguard Developed Markets Index Fund | 1,470 | 1,472 | $1.4B | 1,471 / 1 | Vanguard Developed Markets Index Admiral · Vanguard Developed Markets Index Fund Admiral Shares · Vanguard Funds Developed Markets Index Admiral · Vanguard Developed Markets Index Adm · Vanguard Developed Markets Index Admiral Fund · Vanguard Developed Markets Index Fund Admiral |
+| `NOMIX` | MID CAP INDEX FUND | 102 | 102 | $1.4B | 71 / 31 | Northern Mid Cap Index · Northern Mid Cap Index Fund · NORTHERN MID CAP INDEX · Northern Trust Collective S&P 400 Index Fund · Northern Funds Mid Cap Index · Northern Trust Collective S&P 400 Index |
 | `VIPSX` | Vanguard Inflation-Protected Securities Fund | 555 | 556 | $1.4B | 41 / 515 | Vanguard Inflation-Protected Securities Fund · Vanguard Inflation-Protected Securities · Vanguard Inflation Protected Securities Fund · Vanguard Inflation Protected Securities · Vanguard Inflation-Protected Securities Fund Investor Shares · Vanguard Inflation-Protected Securities Fund: Inv Shares |
 | `VETAX` | Victory Sycamore Established Value Fund | 899 | 899 | $1.4B | 43 / 856 | Victory Sycamore Established Value Fund · Victory Sycamore Established Value · Victory Sycamore Established Value I · Victory Sycamore Established Value A · Victory Sycamore Established Value Fund Class A · VICTORY SYCAMORE ESTABLISHED VALUE I |
 | `TRDBX` | — | 796 | 798 | $1.4B | 798 / 0 | TRP RETIREMENT 2020 I · T. ROWE PRICE RTMT 2020 I FD · T. Rowe Price Retirement 2020 Fund I · T. Rowe Price Retirement 2020 I · T. Rowe Price Retirement I 2020 I · T. Rowe Price Ret 2020 I |
@@ -268,6 +277,7 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `LGRRX` | Loomis Sayles Growth Fund | 71 | 71 | $1.1B | 3 / 68 | Loomis Sayles Growth Portfolio · Loomis Sayles Growth Fund · Loomis Sayles Growth · LOOMIS SAYLES GROWTH FUND - A · LOOMIS SAYLES GROWTH FUND Y · LOOMIS SAYLES GROWTH A FUND |
 | `VBIAX` | VANGUARD BALANCED INDEX FUND | 981 | 982 | $1.1B | 982 / 0 | Vanguard Balanced Index Adm · Vanguard Balanced Index Fund Admiral Shares · Vanguard Balanced Index Admiral · Vanguard Balanced Index Fund Admiral · Vanguard Balanced Index Fund Adm · VANGUARD BALANCED INDEX ADM |
 | `OTCFX` | T. Rowe Price Small-Cap Stock Fund, Inc. | 224 | 224 | $1.1B | 173 / 51 | T. Rowe Price Small Cap Stock · T. Rowe Price Small-Cap Stock Fund · T. Rowe Price Small Cap Stock Fund · T Rowe Price Sm Cap Stock Fund · T. Rowe Price Small-Cap Stock · T. ROWE PRICE SMALL-CAP STOCK INV |
+| `PRCOX` | T. Rowe Price U.S. Equity Research Fund | 112 | 112 | $1.1B | 1 / 111 | T. Rowe Price U.S. Equity Research Fund · T. Rowe Price U.S. Equity Research I · T. Rowe Price U.S. Equity Research · T. Rowe Price US Equity Research · T. ROWE PRICE U.S. EQUITY RESEARCH I · T. Rowe Price US Equity Research Fund |
 | `VBISX` | Vanguard Short-Term Bond Index Fund | 255 | 255 | $1.1B | 7 / 248 | Vanguard Short-Term Bond Index Fund · Vanguard Short-Term Bond Index · Vanguard Short Term Bond Index Fund · Vanguard Short Term Bond Index · Vanguard Short-Term Bond Index Fund Institutional Shares · Vanguard Short-Term Bond Index Fund Institutional |
 | `LPRDX` | BlackRock LifePath Dynamic 2030 Fund | 228 | 228 | $1.1B | 0 / 228 | BLACKROCK LIFEPATH 2030 FUND K · BLACKROCK LIFEPATH 2030 K · BlackRock Lifepath 2030 K · BLACKROCK LIFEPATH 2030 A · BlackRock LifePath 2030 · BlackRock LifePath 2030 Fund |
 | `PGBOX` | JPMorgan Core Bond Fund | 301 | 302 | $1.1B | 5 / 297 | JPMorgan Core Bond Fund · JP Morgan Core Bond Fund · JPMorgan Core Bond · JPMORGAN CORE BOND FUND - A · JPMORGAN CORE BOND - R2 · JP Morgan Core Bond |
@@ -282,7 +292,7 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `AACTX` | American Funds 2020 Target Date Retirement Income Fund | 1,315 | 1,315 | $1.0B | 4 / 1,311 | American Funds 2020 Target Date Retirement Fund · American Funds 2020 Target Date Fund · American Funds 2020 Target Date · American Funds 2020 TD · American Funds 2020 Target Date Retirement · American Funds Target Date 2020 |
 | `TILCX` | T. Rowe Price Large-Cap Value Fund | 98 | 98 | $999M | 0 / 98 | T. Rowe Price Large Cap Value · T. Rowe Price Large Cap Value Fund · T. Rowe Price Large-Cap Value Fund · T. Rowe Price Lg Cp Val I Fund · T. Rowe Price Instl Large Cap Value · T. Rowe Price Large-Cap Val I |
 | `VCOBX` | Vanguard Core Bond Fund | 60 | 60 | $994M | 60 / 0 | Vanguard Core Bond Fund Admiral Shares · Vanguard Core Bond Admiral · Vanguard Core Bond Adm · VANGUARD CORE BOND FUND - ADM · Vanguard Core Bond Fund Admiral · Vanguard Core Bd Adm |
-| `TRRAX` | T. Rowe Price Retirement 2010 Fund | 1,325 | 1,328 | $993M | 629 / 699 | T. Rowe Price Retirement 2010 Fund · T. Rowe Price Retirement 2010 · T. ROWE PRICE RETIREMENT 2010 INV · T. Rowe Price Retirement 2010 Trust · T Rowe Price Retirement 2010 · T Rowe Price Retirement 2010 Fund |
+| `TRRAX` | T. Rowe Price Retirement 2010 Fund | 1,324 | 1,327 | $993M | 620 / 707 | T. Rowe Price Retirement 2010 Fund · T. Rowe Price Retirement 2010 · T. ROWE PRICE RETIREMENT 2010 INV · T. Rowe Price Retirement 2010 Trust · T Rowe Price Retirement 2010 · T Rowe Price Retirement 2010 Fund |
 | `VISVX` | Vanguard Small-Cap Value Index Fund | 1,222 | 1,223 | $985M | 16 / 1,207 | Vanguard Small Cap Value Index · Vanguard Small Cap Value Index Fund · Vanguard Small-Cap Value Index Fund · Vanguard Small-Cap Value Index · VANGUARD SMALL CAP VALUE INDEX · Vanguard Small-Cap Val Index Fund |
 | `TRMCX` | T. Rowe Price Mid-Cap Value Fund, Inc. | 339 | 340 | $983M | 292 / 48 | T. Rowe Price Mid-Cap Value Fund · T. Rowe Price Mid Cap Value · T. Rowe Price Mid-Cap Value · T. ROWE PRICE MID-CAP VALUE INV · T. Rowe Price Mid Cap Value Fund · T Rowe Price Mid Cap Value |
 | `SWISX` | Schwab International Index Fund | 179 | 179 | $980M | 179 / 0 | Schwab International Index Fund · Schwab International Index · SCHWAB INTERNATIONAL INDEX · Schwab Intl Index Fund · SCHWAB INTL INDEX · Schwab International Index Select |
@@ -306,7 +316,7 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `JMVYX` | JPMorgan Mid Cap Value Fund | 387 | 388 | $847M | 388 / 0 | JPMorgan Mid Cap Value R6 · JP Morgan Mid Cap Value R6 · JPMorgan Mid Cap Value Fund Class R6 · JPMORGAN MID CAP VALUE R6 · JPMORGAN MID CAP VALUE FUND R6 · JPMorgan Mid Cap Value Fund R6 |
 | `AVPAX` | American Beacon Small Cap Value Fund | 474 | 474 | $845M | 49 / 425 | American Beacon Small Cap Value Fund · American Beacon Small Cap Value · American Beacon Small Cap Value Fund Investor Class · American Beacon Small Cap Value Institutional · American Beacon Small Cap Value Fund Class Institutional · American Beacon Small Cap Value Inst |
 | `VISGX` | Vanguard Small-Cap Growth Index Fund | 850 | 850 | $844M | 21 / 829 | Vanguard Small Cap Growth Index Fund · Vanguard Small Cap Growth Index · Vanguard Small-Cap Growth Index Fund · Vanguard Small-Cap Growth Index · VANGUARD SMALL CAP GRTH INDEX · VANGUARD SMALL CAP GROWTH INDEX |
-| `TRBNX` | T. Rowe Price Retirement Blend 2060 Fund | 163 | 163 | $842M | 32 / 131 | T. Rowe Price Retirement Blend 2060 · T. Rowe Price Retirement Blend 2060 Fund · T. Rowe Price Retirement Blend Select Trust 2060 · T Rowe Price Retirement Blend 2060 · T. Rowe Price Retirement Blend 2060 Trust A · TRP Ret Blend 2060 Trust A |
+| `TRBNX` | T. Rowe Price Retirement Blend 2060 Fund | 163 | 163 | $842M | 30 / 133 | T. Rowe Price Retirement Blend 2060 · T. Rowe Price Retirement Blend 2060 Fund · T. Rowe Price Retirement Blend Select Trust 2060 · T Rowe Price Retirement Blend 2060 · T. Rowe Price Retirement Blend 2060 Trust A · TRP Ret Blend 2060 Trust A |
 | `TLYIX` | Nuveen Lifecycle Index 2035 Fund | 455 | 455 | $839M | 454 / 1 | Nuveen Lifecycle Index 2035 R6 · NUVEEN LIFECYCLE IDX 2035 R6 MUTUAL FUND SHARES · NUVEEN LIFECYCLE INDEX 2035 R6 · Nuveen Lifecycle Index 2035 Fund R6 Class · Nuveen Lifecycle Index 2035 Fund R6 · Nuveen Lifecycle Index 2035 Fund - Class R6 |
 | `FHNEX` | Fidelity Freedom Blend 2060 Fund | 96 | 96 | $838M | 1 / 95 | Fidelity Freedom Blend 2060 · Fidelity Freedom Blend 2060 Fund · Fidelity Freedom® Blend 2060 · Fidelity Advisor Freedom Blend 2060 Fund · Fidelity Advisor Freedom Blend 2060 · — Fidelity Freedom Blend 2060 |
 | `ARTMX` | Artisan Mid Cap Fund | 84 | 84 | $836M | 36 / 48 | Artisan Mid Cap Fund · Artisan Mid Cap Inv · Artisan Mid Cap Investor · Artisan Mid Cap · ARTISAN MID CAP INV · Artisan Mid Cap Fund Investor Class |
@@ -315,7 +325,7 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `PIGFX` | Pioneer Fundamental Growth Fund | 234 | 234 | $824M | 4 / 230 | PIONEER FUNDAMENTAL GROWTH K · Pioneer Fundamental Growth Fund · Pioneer Fundamental Growth Y · Pioneer Fundamental Growth K · Pioneer Fundamental Growth · PIONEER FUNDAMENTAL GROWTH Y |
 | `TCOIX` | Nuveen Lifecycle 2040 Fund | 99 | 99 | $816M | 99 / 0 | Nuveen Lifecycle 2040 R6 · Nuveen Lifecycle 2040 Fund R6 · Nuveen Lifecycle 2040 Fund R6 Class · NUVEEN LIFECYCLE 2040 R6 · NUVEEN LIFECYCLE 2040 R6 MUTUAL FUND SHARES · Nuveen Lifecycle 2040 R6 — |
 | `JUEAX` | JPMorgan U.S. Equity Fund | 803 | 804 | $815M | 10 / 794 | JPMorgan U.S. Equity Fund · JPMorgan US Equity Fund · JP Morgan US Equity Fund · JPMORGAN US EQUITY - R2 · JPMORGAN US EQUITY - A · JP Morgan U.S. Equity Fund |
-| `TSBAX` | T. Rowe Price Retirement Blend 2020 Fund | 149 | 149 | $815M | 26 / 123 | T. Rowe Price Retirement Blend 2020 · T. Rowe Price Retirement Blend 2020 Fund · T. Rowe Price Retirement Blend Select Trust 2020 · T Rowe Price Retirement Blend 2020 · T. Rowe Price Retirement Blend 2020 Trust A · TRP Ret Blend 2020 Trust A |
+| `TSBAX` | T. Rowe Price Retirement Blend 2020 Fund | 149 | 149 | $815M | 24 / 125 | T. Rowe Price Retirement Blend 2020 · T. Rowe Price Retirement Blend 2020 Fund · T. Rowe Price Retirement Blend Select Trust 2020 · T Rowe Price Retirement Blend 2020 · T. Rowe Price Retirement Blend 2020 Trust A · TRP Ret Blend 2020 Trust A |
 | `TLZIX` | Nuveen Lifecycle Index 2040 Fund | 436 | 436 | $812M | 435 / 1 | Nuveen Lifecycle Index 2040 R6 · NUVEEN LIFECYCLE IDX 2040 R6 MUTUAL FUND SHARES · NUVEEN LIFECYCLE INDEX 2040 R6 · Nuveen Lifecycle Index 2040 Fund R6 Class · Nuveen Lifecycle Index 2040 Fund R6 · Nuveen Lifecycle Index 2040 Fund - Class R6 |
 | `OSGIX` | JPMorgan Mid Cap Growth Fund | 562 | 562 | $805M | 9 / 553 | JPMorgan Mid Cap Growth Fund · JP Morgan Mid Cap Growth Fund · JPMorgan Mid Cap Growth · JP Morgan Mid Cap Growth · JPMorgan Mid Cap Growth I · JPMORGAN MID CAP GROWTH |
 | `PAAIX` | PIMCO All Asset Fund | 267 | 267 | $796M | 146 / 121 | PIMCO All Asset Fund · PIMCO All Asset · PIMCO All Asset Instl · PIMCO All Asset Fund Institutional Class · PIMCO All Asset Institutional · PIMCO ALL ASSET INSTL |
@@ -360,16 +370,14 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `VUSXX` | Vanguard Treasury Money Market Fund | 54 | 54 | $617M | 54 / 0 | VANG TREASURY MM · Vanguard Treasury MM · Vanguard Treasury Money Mkt Inv · Vanguard Treasury MM Inv Fund · Vanguard Treasury MM Fund · Vanguard Treasury Money Mkt |
 | `TLMPX` | Nuveen Lifecycle Index 2045 Fund | 271 | 271 | $617M | 65 / 206 | Nuveen Lifecycle Index 2045 Fund · Nuveen Lifecycle Index 2045 · Nuveen Lifecycle Index 2045 Inst · NUVEEN LIFECYCLE INDEX 2045 FUND - CLASS · NUVEEN LIFECYCLE INDEX 2045 · Nuveen Lifecycle Idx 2045 |
 | `TCRIX` | Nuveen Lifecycle 2030 Fund | 100 | 100 | $614M | 100 / 0 | Nuveen Lifecycle 2030 R6 · Nuveen Lifecycle 2030 Fund R6 · NUVEEN LIFECYCLE 2030 R6 · Nuveen Lifecycle 2030 Fund R6 Class · Nuveen Lifecycle 2030 R6 — · NUVEEN LIFECYCLE 2030 R6 MUTUAL FUND SHARES |
-| `TRRFX` | T. Rowe Price Retirement 2005 Fund | 907 | 908 | $611M | 383 / 525 | T. Rowe Price Retirement 2005 Fund · T. Rowe Price Retirement 2005 · T. ROWE PRICE RETIREMENT 2005 INV · T. Rowe Price Retirement 2005 Trust · T Rowe Price Retirement 2005 · T Rowe Price Retirement 2005 Fund |
 | `NEFRX` | Loomis Sayles Core Plus Bond Fund | 193 | 193 | $610M | 6 / 187 | Loomis Sayles Core Plus Bond Fund · Loomis Sayles Core Plus Bond · Loomis Sayles Core Plus Bond A · LOOMIS SAYLES CORE PLUS BOND A · Loomis Sayles Core Plus Bond Y · LOOMIS SAYLES CORE PLUS BOND FUND, Y |
 | `AMDVX` | MID CAP VALUE FUND | 807 | 807 | $605M | 807 / 0 | American Century Mid Cap Value R6 · AMERICAN CENTURY MID CP VAL R6 · American Century Mid Cap Value Fund R6 Class · American Century Mid Cap Value Fund R6 · AMERICAN CENTURY MID CAP VALUE R6 · American Century Mid Cap Val R6 |
 | `TTFIX` | Nuveen Lifecycle 2045 Fund | 100 | 100 | $601M | 100 / 0 | Nuveen Lifecycle 2045 R6 · Nuveen Lifecycle 2045 Fund R6 · Nuveen Lifecycle 2045 Fund R6 Class · NUVEEN LIFECYCLE 2045 R6 · NUVEEN LIFECYCLE 2045 R6 MUTUAL FUND SHARES · Nuveen LifeCycle 2045 R6 |
 | `FSRNX` | Fidelity Real Estate Index Fund | 1,040 | 1,042 | $600M | 1,039 / 3 | Fidelity Real Estate Index Fund · Fidelity Real Estate Index · FIDELITY REAL ESTATE INDEX · FID REAL ESTATE IDX · Fidelity Real Estate Index Institutional · Fid Real Estate Idx |
-| `PRCOX` | T. Rowe Price U.S. Equity Research Fund | 104 | 104 | $599M | 0 / 104 | T. Rowe Price U.S. Equity Research Fund · T. Rowe Price U.S. Equity Research I · T. Rowe Price U.S. Equity Research · T. Rowe Price US Equity Research · T. ROWE PRICE U.S. EQUITY RESEARCH I · T. Rowe Price US Equity Research Fund |
+| `TRRFX` | T. Rowe Price Retirement 2005 Fund | 906 | 907 | $600M | 375 / 532 | T. Rowe Price Retirement 2005 Fund · T. Rowe Price Retirement 2005 · T. ROWE PRICE RETIREMENT 2005 INV · T. Rowe Price Retirement 2005 Trust · T Rowe Price Retirement 2005 · T Rowe Price Retirement 2005 Fund |
 | `SFLNX` | Schwab Fundamental U.S. Large Company Index Fund | 88 | 89 | $599M | 89 / 0 | Schwab Fundamental US Large Company Index Fund · Schwab Fundamental US Large Company Index · Schwab Fundamental U.S. Large Company Index · Schwab Fundamental US Large Co Index · Schwab Fundamental U.S. Large Company Index Fund · Schwab Fundamental US Large Co Index Fund |
 | `FFPKX` | Fidelity Freedom 2065 Fund | 1,117 | 1,119 | $597M | 10 / 1,109 | Fidelity Freedom 2065 Fund · Fidelity Freedom 2065 · FID FREEDOM 2065 K · Fidelity Freedom 2065 K · Fidelity Freedom 2065 K Fund · Fidelity Freedom 2065 Fund K |
 | `VHCOX` | Vanguard Capital Opportunity Fund | 27 | 27 | $594M | 14 / 13 | Vanguard Capital Opportunity Fund Investor Shares · Vanguard Capital Opportunity · Vanguard Capital Opportunity Fund |
-| `SSSVX` | State Street Equity 500 Index Fund | 103 | 103 | $592M | 0 / 103 | State Street Equity 500 Index K · State Street Equity 500 Index · State Street Equity 500 Index Fund · STATE STREET EQUITY 500 INDEX K · State Street Equity 500 Index Fund K · State Street Equity 500 Idx Adm |
 | `FAIDX` | Fidelity International Discovery Fund | 340 | 341 | $589M | 4 / 337 | Fidelity International Discovery Fund · Fidelity International Discovery · FID INTL DISCOVERY · FID INTL DISCOVERY K · Fidelity International Discovery K · Fidelity Intl Discovery |
 | `EAASX` | Eaton Vance Atlanta Capital SMID-Cap Fund | 207 | 207 | $587M | 11 / 196 | Eaton Vance Atlanta Capital SMID-Cap Fund · Eaton Vance Atlanta Capital SMID-Cap A · Eaton Vance Atlanta Capital SMID-Cap · Eaton Vance Atlanta Capital SMID Cap Fund · Eaton Vance Atlanta Capital SMID-Cap I · Eaton Vance Atlanta Capital Smid-Cap I |
 | `FLIFX` | Fidelity Freedom Index 2015 Fund | 693 | 693 | $581M | 105 / 588 | Fidelity Freedom Index 2015 Fund · Fidelity Freedom Index 2015 · Fidelity Freedom Index 2015 Fund Institutional Premium Class · Fidelity Freedom Index 2015 Fund Investor Class · Fidelity Freedom Index 2015 Premier · Fidelity Freedom Index 2015 Investor |
@@ -432,7 +440,7 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `TRMIX` | — | 177 | 177 | $456M | 177 / 0 | T. Rowe Price Mid-Cap Value I · T ROWE PRICE MID CAP VALUE I · T. Rowe Price Mid Cap Value I · T. ROWE PRICE MID-CAP VALUE I · TRP MID CAP VALUE I · T. Rowe Price Mid-Cap Value Fund I Class |
 | `IIBAX` | Voya Intermediate Bond Fund | 353 | 355 | $453M | 6 / 349 | Voya Intermediate Bond Fund · Voya Intermediate Bond · Voya Intermediate Bond I · Voya Intermediate Bond Fund Class I · Voya Intermediate Bond Fund A · Voya Intermediate Bond Fund I |
 | `RPBAX` | T. Rowe Price Balanced Fund, Inc. | 134 | 134 | $451M | 127 / 7 | T. Rowe Price Balanced Fund · T. Rowe Price Balanced · T. ROWE PRICE BALANCED INV · T. Rowe Price Balanced Adv · TRP BALANCED · T Rowe Price Balanced Fund |
-| `TRRIX` | T. Rowe Price Retirement Balanced Fund | 506 | 518 | $448M | 316 / 202 | T. Rowe Price Retirement Balanced Fund · T. Rowe Price Retirement Balanced · T. ROWE PRICE RET BALANCED INV · T.ROWE PRICE RETIRE BALANCED · T Rowe Price Retirement Balanced Fund · T Rowe Price Retirement Balanced |
+| `TRRIX` | T. Rowe Price Retirement Balanced Fund | 505 | 517 | $448M | 315 / 202 | T. Rowe Price Retirement Balanced Fund · T. Rowe Price Retirement Balanced · T. ROWE PRICE RET BALANCED INV · T.ROWE PRICE RETIRE BALANCED · T Rowe Price Retirement Balanced Fund · T Rowe Price Retirement Balanced |
 | `VGSTX` | Vanguard Star Fund | 141 | 141 | $445M | 141 / 0 | Vanguard STAR Fund · Vanguard Star Fund · Vanguard STAR Inv · Vanguard Star · VAN STAR - INV · Vanguard STAR Inv Fund |
 | `JLGRX` | JPMorgan Large Cap Growth Fund | 63 | 63 | $444M | 63 / 0 | JPMorgan Large Cap Growth R5 · JPMorgan Large Cap Growth Fund Class R5 · JP Morgan Large Cap Growth R5 · JPM LG CAP GROWTH R5 · JPMORGAN LARGE CAP GROWTH R5 · JPMorgan Large Cap Growth Fund R5 |
 | `BSFIX` | BARON SMALL CAP FUND | 222 | 222 | $442M | 125 / 97 | Baron Small Cap Fund · Baron Small Cap Instl · Baron Small Cap · Baron Small Cap Fund Institutional Class · Baron Small Cap Institutional · BARON SMALL CAP INST |
@@ -458,6 +466,7 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `TRUBX` | — | 513 | 515 | $411M | 515 / 0 | TRP RETIREMENT 2015 I · T. ROWE PRICE RTMT 2015 I FD · T. Rowe Price Ret 2015 I · T. Rowe Price Retirement 2015 Fund I · T. Rowe Price Retirement 2015 I · T. ROWE PRICE RETIREMENT 2015 I CLASS |
 | `HLMNX` | Harding Loevner International Equity Portfolio | 82 | 83 | $411M | 0 / 83 | Harding Loevner International Equity · Harding Loevner International Equity Fund · Harding Loevner International Equity Portfolio · Harding Loevner International Equity Portfolio Institutional Class · Harding Loevner International Equity Institutional Fund · Harding Loevner International Equity Institutional |
 | `VWEAX` | Vanguard High-Yield Corporate Fund | 421 | 424 | $409M | 424 / 0 | Vanguard High-Yield Corporate Adm · Vanguard High-Yield Corporate Fund Admiral Shares · Vanguard High-Yield Corporate Admiral · Vanguard High Yield Corporate Admiral · Vanguard High-Yield Corporate Fund Admiral · VANGUARD HIGH-YIELD CORPORATE ADM |
+| `IWD` | iShares Russell 1000 Value ETF | 41 | 41 | $408M | 2 / 39 | Blackrock Russell 1000 Value Index R · BlackRock Russell 1000 Value Index R · BlackRock Russell 1000 Value Index R Fund · BLACKROCK RUSSELL 1000 VALUE INDEX R · Blackrock Russell 1000 Value Fund · BlackRock Russell 1000 Value Fund F |
 | `LCGNX` | William Blair Large Cap Growth Fund | 57 | 57 | $404M | 0 / 57 | William Blair Large Cap Growth Fund · William Blair Large Cap Growth · William Blair Large Cap Growth I · WILLIAM BLAIR LARGE CAP GRTH I · WILLIAM BLAIR LARGE CAP GROWTH I · William Blair Lg Cap Growth |
 | `TRPIX` | — | 175 | 177 | $402M | 177 / 0 | T. Rowe Price Value I Fund · T. Rowe Price Value I · T. ROWE PRICE VALUE I · T Rowe Price Value Fund I · T ROWE PRICE VALUE FUND I · T. Rowe Price Value Fund I |
 | `ESPRX` | Allspring Special Small Cap Value Fund | 615 | 615 | $401M | 615 / 0 | Allspring Special Small Cap Value R6 · ALLSPRING SPECIAL SMALL CAP VALUE R6 · Allspring Special Small Cap Value Fund - Class R6 · Allspring Special Small Cap Value Fund R6 · Allspring Special Small Cap Value Fund Class R6 · Allspring Special Small Cap Value R6 Fund |
@@ -507,7 +516,6 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `JIYBX` | JPMorgan SmartRetirement* Blend Income Fund | 23 | 23 | $337M | 23 / 0 | JPMorgan SmartRetirement Blend Income R6 · JPMorgan SmartRetirement Blend Income Fund Class R6 · JPMorgan SmartRetirement Blend Income Fund, Class R6 · JPMorgan SmartRetirement Blend Income Fund; Class R6 · JPMorgan SmartRetirement Blend Income Fund R6 a · Jpmorgan Smartretirement Blend Income-R6 |
 | `JSAAX` | JPMorgan SmartRetirement 2045 Fund | 96 | 96 | $337M | 0 / 96 | JPMorgan SmartRetirement 2045 · JPMorgan SmartRetirement 2045 Fund · JPMorgan SmartRetirement 2045 A · JP Morgan SmartRetirement 2045 Fund · JPMORGAN SMARTRETIREMENT 2045 I · JPMORGAN SMARTRETIREMENT 2045 |
 | `FKGRX` | FRANKLIN GROWTH FUND | 136 | 136 | $337M | 3 / 133 | Franklin Growth Fund · Franklin Growth A · Franklin Growth · FRANKLIN GROWTH FUND - A · Franklin Growth Adv · Franklin Growth Adv Fund |
-| `SSEYX` | State Street Equity 500 Index II Portfolio | 4 | 4 | $337M | 4 / 0 | State Street Equity 500 Index II |
 | `HOIBX` | Intermediate Bond Fund | 260 | 261 | $335M | 261 / 0 | Intermediate Bond Fund · Intermediate Bond Fund R6 · Intermediate Bond · Intermediate Bond R6 · Intermediate Bond I · Intermediate Bond Fund Class R6 |
 | `OLVAX` | JPMorgan Large Cap Value Fund | 62 | 62 | $332M | 0 / 62 | JPMorgan Large Cap Value Fund · JPMorgan Large Cap Value · JP Morgan Large Cap Value Fund · JPMorgan Large Cap Value I · JPMORGAN LG CP VAL - R2 · Large Cap Value I (JPMorgan) |
 | `VBIIX` | Vanguard Intermediate-Term Bond Index Fund | 251 | 251 | $332M | 2 / 249 | Vanguard Intermediate-Term Bond Index Fund · Vanguard Intermediate Term Bond Index Fund · Vanguard Intermediate-Term Bond Index · Vanguard Intermediate Term Bond Index · Vanguard Intermediate-Term Bond Index Fund Institutional Shares · Vanguard Intermediate-Term Bond Idx Fund |
@@ -593,7 +601,6 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `OIERX` | JPMorgan Equity Income Fund | 165 | 165 | $254M | 165 / 0 | JPMorgan Equity Income R5 · JPMorgan Equity Income Fund Class R5 · JP Morgan Equity Income R5 · JPM Equity Income R5 · JPM EQUITY INCOME R5 · JPMORGAN EQUITY INCOME FUND R5 |
 | `DFCEX` | Emerging Markets Core Equity 2 Portfolio | 99 | 99 | $253M | 99 / 0 | DFA Emerging Markets Core Equity 2 Portfolio Institutional Class · DFA Emerging Markets Core Equity 2 I · DFA Emerging Markets Core Equity 2 · DFA Emerging Markets Core Equity 2 Portfolio · Emerging Markets Core Equity 2 · DFA EMERGING MARKETS CORE EQUITY 2 I |
 | `PHTQX` | Principal LifeTime Hybrid 2025 Fund | 87 | 87 | $253M | 5 / 82 | Principal LifeTime Hybrid 2025 Fund · Principal Lifetime Hybrid 2025 · Principal LifeTime Hybrid 2025 · Principal Lifetime Hybrid 2025 Fund · PRINCIPAL LIFETIME HYBRID 2025 · Principal LifeTime Hybrid 2025 Instl |
-| `SSSYX` | State Street Equity 500 Index Fund | 30 | 30 | $252M | 30 / 0 | State Street Equity 500 Index Fund Class K · State Street Equity 500 Index Fund - Class K · STATE STREET EQUITY 500 INDEX FUND, CLASS K · State Street Equity 500 Index Class K · State Street Equity 500 Index Fund, Class K · STATE STREET EQUITY 500 INDEX FUND CLASS K |
 | `PAJRX` | T. Rowe Price Target 2025 Fund | 44 | 44 | $252M | 0 / 44 | T. Rowe Price Target 2025 · T. ROWE PRICE TARGET 2025 INV · T. Rowe Price Target 2025 Fund · T. Rowe Price Target 2025 Trust Fund · T. Rowe Price Target C Trust 2025 · T. ROWE PRICE TARGET 2025 \| |
 | `SSDQX` | State Street Target Retirement 2055 Fund | 40 | 40 | $252M | 40 / 0 | State Street Target Retirement 2055 Fund Class K · State Street Target Retirement Fund 2055 Class K · State Street Target Retirement 2055 Fund - Class K · State Street Target Retirement 2055 - Class K · SsgA Target Retirement 2055 Class K · STATE STREET TARGET RETIREMENT 2055 FUND CLASS K |
 | `TRFOX` | T. Rowe Price Target 2050 Fund | 41 | 41 | $251M | 31 / 10 | T. Rowe Price Target 2050 · T. ROWE PRICE TARGET 2050 INV · T. Rowe Price Target 2050 Fund · T. Rowe Price Target 2050 Trust Fund · T. Rowe Price Target C Trust 2050 · T Rowe Price Target 2050 \| |
@@ -606,12 +613,12 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `UBVFX` | Undiscovered Managers Behavioral Value Fund | 292 | 292 | $244M | 292 / 0 | Undiscovered Managers Behavioral Value Fund Class R6 · Undiscovered Managers Behavioral Value R6 · Undiscovered Managers Behavioral Value Fund R6 · Undiscovered Managers Behavioral Val R6 · Undiscovered Managers Behavioral Value R6 Fund · Undiscovered Managers Behavioral Value Class R6 |
 | `DFEMX` | Emerging Markets Portfolio | 274 | 275 | $244M | 274 / 1 | DFA Emerging Markets Portfolio Institutional Class · DFA Emerging Markets Portfolio Inst · Emerging Markets Portfolio Institutional Class · DFA Emerging Markets Portfolio Institutional · Emerging Markets Institutional · Emerging Markets Instl |
 | `TRRWX` | T. Rowe Price Target 2030 Fund | 40 | 40 | $243M | 0 / 40 | T. Rowe Price Target 2030 · T. ROWE PRICE TARGET 2030 INV · T. Rowe Price Target 2030 Fund · T. Rowe Price Target 2030 Trust Fund · T. Rowe Price Target C Trust 2030 · T Rowe Price Target 2030 \| |
-| `TRBPX` | — | 163 | 164 | $243M | 68 / 96 | T. Rowe Price Retirement Blend 2065 · T. Rowe Price Retirement Blend 2065 Fund · T. ROWE PRICE RETIREMENT BLEND 2065 - I · T. Rowe Price Retirement Blend 2065 Trust A · TRP Ret Blend 2065 Trust A · T Rowe Price Retirement Blend 2065 |
+| `TRBPX` | — | 161 | 162 | $242M | 66 / 96 | T. Rowe Price Retirement Blend 2065 · T. Rowe Price Retirement Blend 2065 Fund · T. ROWE PRICE RETIREMENT BLEND 2065 - I · T. Rowe Price Retirement Blend 2065 Trust A · TRP Ret Blend 2065 Trust A · T Rowe Price Retirement Blend 2065 |
 | `CBLAX` | Columbia Balanced Fund | 113 | 113 | $242M | 11 / 102 | Columbia Balanced Fund · COLUMBIA BALANCED A · Columbia Balanced · Columbia Balanced A · Columbia Balanced Fund Class A · Columbia Balanced Instl |
 | `RDDTX` | American Funds 2025 Target Date Retirement Income Fund | 169 | 169 | $242M | 169 / 0 | American Funds 2025 Target Date Fund R4 · American Funds 2025 Trgt Date Retire R4 · AF TRGT DATE 2025 R4 · American Funds 2025 Target Date Retirement Fund Class R-4 · American Funds 2025 Target R4 · AMERICAN FUNDS 2025 TARGET DATE FUND R4 |
 | `FRVLX` | FRANKLIN SMALL CAP VALUE FUND | 447 | 447 | $241M | 11 / 436 | Franklin Small Cap Value Fund · Franklin Small Cap Value · Franklin Small Cap Value Adv · Franklin Small Cap Value A · FRANKLIN SMALL CAP VALUE - ADV · FRANKLIN SMALL CAP VALUE CL A |
 | `ICSFX` | INVESCO COMSTOCK FUND | 173 | 173 | $240M | 173 / 0 | Invesco Comstock R6 · Invesco Comstock Fund R6 · Invesco Comstock R6 Fund · INVESCO COMSTOCK FUND - R6 · Invesco Comstock Fund Class R6 · INVESCO COMSTOCK R6 |
-| `FLPCX` | Fidelity Low-Priced Stock Fund | 146 | 146 | $240M | 0 / 146 | FID LOW PRICED STK · FID LOW PRICED STK K · Fid Low Priced Stk · Fid Low Priced Stk K · FID Low Priced Stk · FID LOW PRICED STK Mutual Fund |
+| `FLPCX` | Fidelity Low-Priced Stock Fund | 147 | 147 | $240M | 0 / 147 | FID LOW PRICED STK · FID LOW PRICED STK K · Fid Low Priced Stk · Fid Low Priced Stk K · FID Low Priced Stk · FID LOW PRICED STK Mutual Fund |
 | `ANODX` | SMALL CAP GROWTH FUND | 489 | 491 | $240M | 491 / 0 | American Century Small Cap Growth R6 · AMERICAN CENTURY SMALL CAP GROWTH R6 · American Century Small Cap Growth Fund R6 Class · American Century Small Cap Growth Fund R6 · American Century Small Cap Growth R6 Fund · American Century Small Cap Growth Fund Class R6 |
 | `CSXAX` | Calvert US Large-Cap Core Responsible Index Fund | 138 | 138 | $240M | 5 / 133 | Calvert US Large Cap Core Responsible Index Fund · Calvert US Large-Cap Core Responsible Index Fund · Calvert U.S. Large Cap Core Responsible Index Fund · Calvert U.S. Large-Cap Core Responsible Index Fund · Calvert US Large Cap Core Responsible Index · Calvert U.S. Large Cap Core Responsible Index Fund Cl I |
 | `TLWIX` | Nuveen Lifecycle Index 2020 Fund | 337 | 337 | $239M | 336 / 1 | Nuveen Lifecycle Index 2020 R6 · NUVEEN LIFECYCLE IDX 2020 R6 MUTUAL FUND SHARES · NUVEEN LIFECYCLE INDEX 2020 R6 · Nuveen Lifecycle Index 2020 Fund R6 Class · Nuveen Lifecycle Index 2020 Fund R6 · Nuveen Lifecycle Index 2020 Fund - Class R6 |
@@ -830,6 +837,7 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `TCNIX` | Nuveen Lifecycle 2015 Fund | 77 | 77 | $125M | 77 / 0 | Nuveen Lifecycle 2015 R6 · Nuveen Lifecycle 2015 Fund R6 · NUVEEN LIFECYCLE 2015 R6 · Nuveen Lifecycle 2015 R6 — · Nuveen LifeCycle 2015 R6 · Nuveen Lifecycle 2015 Fund R6 Class |
 | `VGRIX` | JPMorgan U.S. Value Fund | 83 | 83 | $125M | 0 / 83 | JPMorgan US Value Fund · JPMorgan U.S. Value Fund · JP Morgan US Value Fund · JP Morgan US Value · JP Morgan U.S. Value Fund · JPMorgan U.S. Value |
 | `VSCVX` | Victory Integrity Small-Cap Value Fund | 62 | 62 | $125M | 2 / 60 | Victory Integrity Small Cap Value Fund · Victory Integrity Small-Cap Value Fund · Victory Integrity Small-Cap Value Y · VICTORY INTEGRITY SM CAP VAL A · Victory Integrity Small-Cap Value · VICTORY INTEGRITY SM CAP VAL Y |
+| `TBLGX` | T. Rowe Price Retirement Blend 2030 Fund | 68 | 69 | $124M | 42 / 27 | T. ROWE PRICE RETIREMENT BLEND 2030 - I · T. Rowe Price Retirement Blend Select Trust 2030 · T. Rowe Price Retirement Blend 2030 I · TRP RET BLEND 2030 I · TRP RETIRE BLEND 2030 - I · TRP RET BLEND 2030 I FD |
 | `LTIUX` | Principal LifeTime 2035 Fund | 76 | 76 | $124M | 11 / 65 | Principal LifeTime 2035 · Principal Lifetime 2035 · Principal LifeTime 2035 Fund · Principal Lifetime 2035 Fund · Principal LifeTime 2035 Inst Fund · Principal Lifetime 2035 Inst Fund |
 | `RDKTX` | American Funds 2060 Target Date Retirement Fund | 174 | 174 | $123M | 174 / 0 | American Funds 2060 Target Date Fund R4 · American Funds 2060 Trgt Date Retire R4 · AF TRGT DATE 2060 R4 · AMERICAN FUNDS 2060 TARGET DATE FUND R4 · American Funds Target Date 2060 R4 · American Funds 2060 Target R4 |
 | `GSINX` | Goldman Sachs GQG Partners International Opportunities Fund | 59 | 59 | $123M | 0 / 59 | Goldman Sachs GQG Partners International Opportunities Fund · Goldman Sachs GQG Partners International Opportunities · Goldman Sachs GQG Partners International Opportunities Fund. · Goldman Sachs Goldman Sachs GQG Partners International Opportunities Fund · The Goldman Sachs GQG Partners International Opportunities Fund · Goldman Sachs GQG Partners International Opportunities Fund Class |
@@ -837,7 +845,6 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `FDKFX` | Fidelity International Discovery K6 Fund | 39 | 39 | $122M | 39 / 0 | Fidelity International Discovery K6 Fund · Fidelity International Discovery K6 · Fidelity International Discovery Fund Class K6 · Fidelity International Discovery Fund K6 · Fidelity International Discovery Fund - Class K6 · FID INTL DISCOVERY K6 |
 | `FDKPX` | Fidelity Advisor Freedom 2060 Fund | 195 | 195 | $121M | 39 / 156 | Fidelity Advisor Freedom 2060 Fund · Fidelity Advisor Freedom 2060 A · Fidelity Advisor Freedom 2060 · Fidelity Advisor Freedom 2060 Fund Class A · Fidelity Advisor Freedom 2060 Fund - Class A · Fidelity Advisor Freedom 2060 Z |
 | `PRRAX` | Real Estate Securities Fund | 287 | 287 | $120M | 2 / 285 | Principal Real Estate Securities Fund · Principal Real Estate Securities · Principal Real Estate Securities A · Principal Real Estate Securities Fund I · PRINCIPAL REAL ESTATE SECURITIES · Principal Real Estate Inv - Principal Real Estate Securities |
-| `TBLGX` | T. Rowe Price Retirement Blend 2030 Fund | 66 | 67 | $120M | 42 / 25 | T. ROWE PRICE RETIREMENT BLEND 2030 - I · T. Rowe Price Retirement Blend Select Trust 2030 · T. Rowe Price Retirement Blend 2030 I · TRP RET BLEND 2030 I · TRP RETIRE BLEND 2030 - I · TRP RET BLEND 2030 I FD |
 | `RITGX` | AMERICAN HIGH INCOME TRUST | 97 | 97 | $120M | 14 / 83 | American Funds American High-Income Trust Class R-6 · American High Income Trust R6 · American Funds American High-Income Trust R6 · American Funds American High Income Trust R6 · American High-Income Trust Class R-6 · American High-Income Trust R6 |
 | `PLTHX` | Principal LifeTime Hybrid 2060 Fund | 86 | 86 | $120M | 5 / 81 | Principal LifeTime Hybrid 2060 Fund · Principal LifeTime Hybrid 2060 · Principal Lifetime Hybrid 2060 · Principal Lifetime Hybrid 2060 Fund · PRINCIPAL LIFETIME HYBRID 2060 · Principal LifeTime Hybrid 2060 Instl |
 | `JNSIX` | JPMorgan SmartRetirement 2025 Fund | 25 | 25 | $120M | 25 / 0 | JPMorgan SmartRetirement 2025 R5 · JPMorgan Smartretirement 2025 R5 · JPMorgan SmartRetirement 2025 Fund Class R5 · JP Morgan SmartRetirement 2025 Fund R5 · JP Morgan SmartRetirement 2025 Fund Class R5 · JPMorgan SmartRetirement 2025 Fund R5 |
@@ -894,6 +901,7 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `FHDDX` | Fidelity Freedom Blend 2055 Fund | 51 | 51 | $101M | 51 / 0 | Fidelity Freedom Blend 2055 Fund Class K6 · FIDELITY FREEDOM BLEND 2055 K6 · Fidelity Freedom Blend 2055 K6 · Fidelity Freedom Blend 2055 Fund - Class K6 · Fidelity Freedom Blend 2055 K6 Fund · Fidelity Freedom® Blend 2055 Fund Class K6 |
 | `LDLVX` | Lord Abbett Short Duration Income Fund | 189 | 190 | $101M | 190 / 0 | Lord Abbett Short Duration Income R6 · Lord Abbett Short Duration Income Fund Class R6 · LORD ABBETT SHORT DURATION INCOME R6 · Lord Abbett Short Duration Income R6 Fund · Lord Abbett Short Duration Income Fund R6 · Lord Abbett Short Duration Income Class R6 |
 | `RCFTX` | American Funds 2035 Target Date Retirement Fund | 126 | 126 | $100M | 126 / 0 | American Funds 2035 Target Date Fund R3 · American Funds 2035 Target Date Retirement Fund Class R-3 · American Funds 2035 Target Date-R3 · American Funds 2035 Trgt Date Retire R3 · American Funds 2035 Target Date R3 · American Funds 2035 Target Date Retirement R3 |
+| `TBLLX` | T. Rowe Price Retirement Blend 2050 Fund | 73 | 74 | $100M | 45 / 29 | T. ROWE PRICE RETIREMENT BLEND 2050 - I · T. Rowe Price Retirement Blend Select Trust 2050 · T. Rowe Price Retirement Blend 2050 I · TRP RET BLEND 2050 I FD · T Rowe Price Retirement Blend Select Trust 2050 · TRP RETIRE BLEND 2050 - I |
 | `SWYGX` | Schwab Target 2040 Index Fund | 59 | 59 | $100M | 59 / 0 | Schwab Target 2040 Index Fund · Schwab Target 2040 Index · SCHWAB TARGET 2040 INDEX · SCHWAB TARGET 2040 INDEX FUND · Schwab Target 2040 Index Fund Institutional Shares · Schwab Target 2040 Index Institutional |
 | `FSKGX` | Fidelity Growth Strategies K6 Fund | 62 | 62 | $100M | 62 / 0 | Fidelity Growth Strategies K6 · Fidelity Growth Strategies K6 Fund · FID GROWTH STRATEGIES K6 · FIDELITY GROWTH STRATEGIES K6 · Fidelity Growth Strategies Fund - Class K6 · Fidelity Growth Strategies Fund Class K6 |
 | `SPICX` | INVESCO S&P 500 INDEX FUND | 1 | 1 | $100M | 1 / 0 | Invesco S&P 500 Index Fund Class C |
@@ -912,7 +920,6 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `MGRFX` | MassMutual Mid Cap Growth Fund | 50 | 50 | $96M | 50 / 0 | MassMutual Mid Cap Growth R5 · MassMutual Select Mid Cap Growth R5 · Massmutual Mid Cap Growth R5 · MassMutual Mid Cap Growth Fund R5 · MASSMUTUAL MID CAP GROWTH R5 · MassMutual Select Mid Cap Growth Fund Class R5 |
 | `FRSXX` | Treasury Only Portfolio | 12 | 12 | $96M | 1 / 11 | Fidelity Treasury Only · Fidelity Instl Treasury Only I |
 | `SWYFX` | Schwab Target 2035 Index Fund | 54 | 54 | $96M | 54 / 0 | Schwab Target 2035 Index Fund · SCHWAB TARGET 2035 INDEX · Schwab Target 2035 Index · SCHWAB TARGET 2035 INDEX FUND · Schwab Target 2035 Index Fund Institutional Shares · Schwab Target 2035 Index Institutional |
-| `TBLLX` | T. Rowe Price Retirement Blend 2050 Fund | 71 | 72 | $96M | 45 / 27 | T. ROWE PRICE RETIREMENT BLEND 2050 - I · T. Rowe Price Retirement Blend Select Trust 2050 · T. Rowe Price Retirement Blend 2050 I · TRP RET BLEND 2050 I FD · T Rowe Price Retirement Blend Select Trust 2050 · TRP RETIRE BLEND 2050 - I |
 | `SWLGX` | Schwab U.S. Large-Cap Growth Index Fund | 36 | 36 | $96M | 36 / 0 | Schwab US Large Cap Growth Index · Schwab US Large Cap Growth Index Fund · Schwab US Large Cap Growth Idx · Schwab US Large-Cap Growth Index · Schwab U.S. Large-Cap Growth Index Fund · Schwab U.S. Large-Cap Growth Index |
 | `SWYMX` | Schwab Target 2050 Index Fund | 59 | 59 | $95M | 59 / 0 | Schwab Target 2050 Index Fund · SCHWAB TARGET 2050 INDEX · Schwab Target 2050 Index · SCHWAB TARGET 2050 INDEX FUND · Schwab Target 2050 Index Fund Institutional Shares · Schwab Target 2050 Index Institutional |
 | `VSIGX` | Vanguard Intermediate-Term Treasury Index Fund | 80 | 80 | $95M | 40 / 40 | Vanguard Intermediate-Term Treasury Index Fund Admiral Shares · Vanguard Intermediate-Term Treasury Index Fund · Vanguard Intermediate-Term Treasury Index · Vanguard Intermediate-Term Treasury Index Fund Admiral · Vanguard Intermediate Term Treasury Index Fund · Vanguard Intermediate-Term Treasury Index Admiral |
@@ -955,6 +962,7 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `TBLSX` | T. Rowe Price Retirement Blend 2015 Fund | 102 | 103 | $88M | 0 / 103 | T. Rowe Price Retirement Blend 2015 · T. Rowe Price Retirement Blend 2015 Fund · T. Rowe Price Retirement Blend 2015 Trust A · T. ROWE PRICE RETIREMENT BLEND 2015 - I · TRP Ret Blend 2015 Trust A · T Rowe Price Retirement Blend 2015 |
 | `PRWBX` | T. Rowe Price Short-Term Bond Fund, Inc. | 65 | 65 | $88M | 0 / 65 | T. Rowe Price Short Term Bond · T. Rowe Price Short-Term Bond Fund · T. Rowe Price Short Term Bond Fund · T Rowe Price Short Term Bond · T Rowe Price Short Term Bond Fund · T. ROWE PRICE SHORT-TERM BOND I |
 | `BDSAX` | BlackRock Advantage Small Cap Core Fund | 109 | 109 | $88M | 0 / 109 | BlackRock Advantage Small Cap Core Fund · BlackRock Advantage Small Cap Core K · Blackrock Advantage Small Cap Core K · BLACKROCK ADVANTAGE SMALL CAP CORE K · BlackRock Advantage Small Cap Core · BlackRock Advantage Small Cap Core Fund K |
+| `FBCCX` | Fidelity Blue Chip Growth Fund | 18 | 18 | $87M | 0 / 18 | Fid Blue Chip Growth · FID Blue Chip Growth · Fidelity Advisor Blue Chip Growth Fund · FID Blue Chip Growth Fund · Empower Trust Company, LLC Fidelity Blue Chip Growth Fund · Empower Trust Company, LLC Fidelity Blue Chip Growth |
 | `AMAGX` | Amana Growth Fund | 58 | 58 | $87M | 32 / 26 | Amana Growth Fund · Amana Growth Investor · Amana Growth Investor Fund · Amana Growth Fund Inv · Amana Trust Growth · Amana Mutual Fund Trust Growth |
 | `MXKLX` | Empower Lifetime 2035 Fund | 26 | 26 | $87M | 5 / 21 | Empower Lifetime 2035 Fund · Empower Lifetime 2035 Trust · Empower Lifetime 2035 Fund Inv · Empower Lifetime 2035 Fund Service Class · - Empower Lifetime 2035 Fund · EMPOWER LIFETIME 2035 FUND INV |
 | `BPTIX` | Baron Partners Fund | 57 | 57 | $87M | 35 / 22 | Baron Partners Fund · Baron Partners Institutional · Baron Partners Fund Institutional Shares · Baron Partners Instl · BARON PARTNERS INST · Baron Partners |
@@ -971,19 +979,21 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `PPLIX` | Principal LifeTime 2050 Fund | 12 | 12 | $85M | 12 / 0 | Principal LifeTime 2050 Inst Fund · Principal LifeTime 2050 Fund Institutional Class · Principal Lifetime 2050 Inst Fund · Principal LifeTime 2050 Institutional · Principal Lifetime 2050 Instl |
 | `WIPIX` | Allspring Core Plus Bond Fund | 13 | 13 | $85M | 13 / 0 | Allspring Core Plus Bond Instl · Allspring Core Plus Bd Instl · Allspring Core Plus Bond Fund Class Institutional · ALLSPRING CORE PLUS BOND INST · Allspring Core Plus Bond Fund Institutional · Allspring Core Plus Bond Inst. |
 | `MXQLX` | Empower Lifetime 2045 Fund | 27 | 27 | $85M | 7 / 20 | Empower Lifetime 2045 Fund · Empower Lifetime 2045 Trust · Empower Lifetime 2045 Fund Inv · EMPOWER LIFETIME 2045 FUND INV · - Empower Lifetime 2045 Fund · Empower Lifetime 2045 Fund Investor Class |
+| `TBLEX` | T. Rowe Price Retirement Blend 2025 Fund | 59 | 60 | $85M | 37 / 23 | T. ROWE PRICE RETIREMENT BLEND 2025 - I · T. Rowe Price Retirement Blend Select Trust 2025 · T. Rowe Price Retirement Blend 2025 I · TRP RETIRE BLEND 2025 - I · TRP RET BLEND 2025 I FD · TRP RET BLEND 2025 I |
 | `LSGRX` | Loomis Sayles Growth Fund | 4 | 4 | $85M | 4 / 0 | Loomis Sayles Growth Fund Class Y · Loomis Sayles Growth Class Y |
 | `HISGX` | Harbor Small Cap Growth Fund | 34 | 34 | $84M | 0 / 34 | Harbor Small Cap Growth Fund · Harbor Small Cap Growth · Harbor Funds Small Cap Growth · HARBOR SMALL CAP GROWTH · HARBOR SMALL CAP GROWTH I · Harbor Small-Cap Growth Fund |
 | `LAGWX` | LORD ABBETT DEVELOPING GROWTH FUND INC | 61 | 61 | $84M | 3 / 58 | Lord Abbett Developing Growth Fund · Lord Abbett Developing Growth · Lord Abbett Developing Growth Fund Class A · Lord Abbett Developing Growth Fund Inc · Lord Abbett Developing Growth I · Lord Abbett Developing Growth A |
 | `DDFIX` | Invesco Diversified Dividend Fund | 75 | 75 | $84M | 75 / 0 | Invesco Diversified Dividend R5 · Invesco Diversified Dividend Fund R5 Class · Invesco Diversified Dividend R5 Fund · Invesco Diversified Dividend Fund R5 · INVESCO DIVERSIFIED DIVIDEND R5 · Invesco Diversified Dividend Fund Class R5 |
 | `MXFDX` | Empower Core Bond Fund | 7 | 7 | $84M | 0 / 7 | Empower Core Bond Fund · Empower Core Intermediate Bond Fund · Empower Trust Company, LLC Empower Core Bond Fund · Empower MassMutual Core Bond I · Empower Core Bond Fund ( ) |
 | `RNWEX` | NEW WORLD FUND INC | 224 | 224 | $83M | 224 / 0 | American Funds New World Fund R4 · American Funds New World R4 · New World Fund R4 · AF NEW WORLD FUND R4 · AMERICAN FUNDS NEW WORLD FUND R4 · AMERICAN FUNDS NEW WORLD R4 |
-| `FBCCX` | Fidelity Blue Chip Growth Fund | 15 | 15 | $83M | 0 / 15 | Fid Blue Chip Growth · FID Blue Chip Growth · Fidelity Advisor Blue Chip Growth Fund · FID Blue Chip Growth Fund · FID BLUE CHIP GROWTH · Fidelity Advisor Blue Chip Growth |
 | `SWYEX` | Schwab Target 2030 Index Fund | 58 | 58 | $83M | 58 / 0 | Schwab Target 2030 Index Fund · Schwab Target 2030 Index · SCHWAB TARGET 2030 INDEX · Schwab Target 2030 Index Fund Institutional Shares · Schwab Target 2030 Index Institutional · SCHWAB TARGET 2030 INDEX FUND |
 | `FOSKX` | Fidelity Overseas Fund | 29 | 29 | $83M | 29 / 0 | Fidelity Overseas Fund Class K · Fidelity Overseas Fund - Class K · FIDELITY OVERSEAS FUND CLASS K · Fidelity Overseas Fund—Class K · of Fidelity Overseas Fund - Class K |
 | `PFGKX` | Pioneer Fundamental Growth Fund | 15 | 15 | $83M | 15 / 0 | Pioneer Fundamental Growth Fund Class K Shares · VICTORY PIONEER FUNDAMENTAL GROWTH R6 · Pioneer Fundamental Growth Class K Shares · Pioneer Fundamental Growth Fund - Class K · Pioneer Fundamental Growth Class K · Victory Pioneer Fundamental Growth R6 Fund |
 | `FFSDX` | Fidelity Freedom 2065 Fund | 163 | 163 | $83M | 163 / 0 | Fidelity Freedom 2065 Fund Class K · Fidelity Freedom 2065 Fund - Class K · Fidelity Freedom 2065 Class K · Fidelity Freedom 2065 - Class K · Fidelity Freedom 2065 Fund – Class K · Fidelity Freedom 2065 Fund- Class K |
 | `GTSCX` | Small Cap Equity Portfolio | 77 | 77 | $82M | 12 / 65 | Glenmede Small Cap Equity Adv · Glenmede Small Cap Equity Fund · Glenmede Small Cap Equity Portfolio Class Advisor · Glenmede Small Cap Equity · Glenmede Small Cap Equity Portfolio · Glenmede Small Cap Equity Portfolio Institutional Class |
 | `FDGLX` | Fidelity Advisor Freedom 2030 Fund | 28 | 28 | $82M | 28 / 0 | Fidelity Advisor Freedom 2030 K6 · Fidelity Advisor Freedom 2030 Fund Class K6 · Fidelity Advisor Freedom 2030 Fund K6 · Fidelity Advisor Freedom 2030 Fund - Class K6 · FIDELITY ADVISOR FREEDOM 2030 - K6 · Fidelity Advisor Freedom 2030 Fund, K6 |
+| `TBLMX` | T. Rowe Price Retirement Blend 2055 Fund | 71 | 72 | $82M | 44 / 28 | T. ROWE PRICE RETIREMENT BLEND 2055 - I · T. Rowe Price Retirement Blend Select Trust 2055 · T. Rowe Price Retirement Blend 2055 I · TRP RET BLEND 2055 I FD · TRP RETIRE BLEND 2055 - I · TRP RET BLEND 2055 I |
+| `VBMFX` | Vanguard Total Bond Market Index Fund | 11 | 11 | $82M | 0 / 11 | VAN TOTAL BOND MKT IDX - INST · Empower Trust Company, LLC Vanguard Total Bond Market Index · Principal - Vanguard Total Bond Market Index Fund · Vanguard Total Market Bond Index · Empower Trust Company, LLC Vanguard Total Bond Market Index •• |
 | `LTSTX` | Principal LifeTime 2025 Fund | 76 | 76 | $82M | 10 / 66 | Principal LifeTime 2025 · Principal Lifetime 2025 · Principal LifeTime 2025 Fund · Principal Lifetime 2025 Fund · Principal LifeTime 2025 Inst Fund · Principal LifeTime 2025 R2 Fund |
 | `REHTX` | American Funds 2045 Target Date Retirement Fund | 46 | 46 | $82M | 46 / 0 | American Funds 2045 Target Date Fund R5 · AMERICAN FUNDS 2045 TARGET DATE FUND R5 · American Funds 2045 Target Date Retirement Fund Class R-5 · American Funds 2045 Target Date R5 · American Funds 2045 Trgt Date Retire R5 · American Funds 2045 Target Date Retirement R5 |
 | `FLAFX` | Fidelity Large Cap Stock Fund | 122 | 122 | $81M | 0 / 122 | Fidelity Large Cap Stock Fund · Fidelity Large Cap Stock · FID LARGE CAP STOCK · FID Large Cap Stock · Fidelity Large-Cap Stock Fund · FIDELITY LARGE CAP STOCK |
@@ -1002,18 +1012,14 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `DGSIX` | GLOBAL ALLOCATION 60/40 PORTFOLIO | 36 | 36 | $80M | 36 / 0 | DFA Global Allocation 60/40 I · DFA Global Allocation 60/40 Portfolio Institutional Class · DFA Global Allocation 60/40 Portfolio · DFA Global Allocation 60/40 Portfolio Institutional · DFA Global Allocation 60/40 · DFA Global Allocation 60/40 Fund |
 | `CSZIX` | Cohen & Steers Real Estate Securities Fund | 135 | 135 | $80M | 135 / 0 | Cohen & Steers Real Estate Securities Fund, Inc. Class Z · Cohen & Steers Real Estate Securities Fund Class Z · Cohen & Steers Real Estate Securities Class Z · Cohen & Steers Real Estate Securities Fund; Class Z · Cohen & Steers Real Estate Securities Fund - Class Z · Cohen and Steers Real Estate Securities Inc Class Z |
 | `GAIOX` | American Funds Growth and Income Portfolio | 212 | 214 | $80M | 0 / 214 | American Funds Growth-Income · AMERICAN FUNDS GROWTH-INCOME · American Funds Growth and Income Portfolio · American Funds Growth - Income · American Funds Growth-Income Fund · American Funds Growth and Income |
-| `TBLEX` | T. Rowe Price Retirement Blend 2025 Fund | 58 | 59 | $79M | 37 / 22 | T. ROWE PRICE RETIREMENT BLEND 2025 - I · T. Rowe Price Retirement Blend Select Trust 2025 · T. Rowe Price Retirement Blend 2025 I · TRP RETIRE BLEND 2025 - I · TRP RET BLEND 2025 I FD · TRP RET BLEND 2025 I |
 | `PRDSX` | T. Rowe Price Integrated U.S. Small-Cap Growth Equity Fund | 71 | 71 | $79M | 0 / 71 | T. Rowe Price Integrated U.S. Small-Cap Growth Equity Fund · T. Rowe Price Integrated US Small-Cap Growth Equity Fund · T Rowe Price Integrated US Small-Cap Growth Equity Fund · T Rowe Price Integrated US Small Cap Growth Equity Fund · T. Rowe Price Integrated U.S. Small-Cap Growth Equity · T Rowe Price Integrated US Small-Cap Growth Equity Inv |
 | `TCSEX` | Nuveen Quant Small Cap Equity Fund | 15 | 15 | $79M | 0 / 15 | Nuveen Quant Small Cap Equity · Nuveen Quant Small Cap Equity Fund · Nuveen Quant Small-Cap Equity · Nuveen Quant Small-Cap Equity Fund · Empower Trust Company Nuveen Quant Small Cap Equity Fund |
-| `VBMFX` | Vanguard Total Bond Market Index Fund | 7 | 7 | $79M | 0 / 7 | VAN TOTAL BOND MKT IDX - INST · Vanguard Total Market Bond Index |
 | `FHGLX` | Fidelity Advisor Freedom 2035 Fund | 28 | 28 | $79M | 28 / 0 | Fidelity Advisor Freedom 2035 K6 · Fidelity Advisor Freedom 2035 Fund Class K6 · Fidelity Advisor Freedom 2035 Fund K6 · Fidelity Advisor Freedom 2035 Fund - Class K6 · FIDELITY ADVISOR FREEDOM 2035 - K6 · Fidelity Advisor Freedom 2035 Fund, K6 |
 | `TRJWX` | — | 196 | 196 | $79M | 196 / 0 | TRP RETIREMENT BALANCED I · T. Rowe Price Retirement Balanced I · T. Rowe Price Retirement Balanced Fund I · T. Rowe Price Retirement Balanced I Fund · T. Rowe Price Ret Balanced I · TROWEPRICE RET BALANCED I MUTUAL FUND SHARES |
 | `WTRIX` | Allspring Core Bond Fund | 97 | 97 | $79M | 96 / 1 | Allspring Core Bond R6 · ALLSPRING CORE BOND R6 · Allspring Core Bond Fund R6 · Allspring Core Bond Fund - Class R6 · ALLSPRING CORE BOND FUND R6 · Allspring Core Bond Fund Class R6 |
 | `PYACX` | Payden Corporate Bond Fund | 11 | 11 | $78M | 1 / 10 | Payden Corporate Bond Fund · Payden Corporate Bond · PAYDEN CORPORATE BOND FUND INVESTOR |
-| `TBLMX` | T. Rowe Price Retirement Blend 2055 Fund | 69 | 70 | $78M | 44 / 26 | T. ROWE PRICE RETIREMENT BLEND 2055 - I · T. Rowe Price Retirement Blend Select Trust 2055 · T. Rowe Price Retirement Blend 2055 I · TRP RET BLEND 2055 I FD · TRP RETIRE BLEND 2055 - I · TRP RET BLEND 2055 I |
 | `VENAX` | Vanguard Energy Index Fund | 464 | 465 | $78M | 387 / 78 | Vanguard Energy Index Admiral · Vanguard Energy Index Adm · Vanguard Energy Index Fund · Vanguard Energy Index Fund Admiral Shares · VANGUARD ENERGY INDEX FUND ADM · Vanguard Energy Index |
 | `TICRX` | Nuveen Large Cap Responsible Equity Fund | 44 | 44 | $78M | 0 / 44 | Nuveen Large Cap Responsible Equity Fund · Nuveen Large Cap Responsible Equity · Nuveen Large-Cap Responsible Equity Fund · NUVEEN LARGE CAP RESPONSIBLE EQUITY FUND · NUVEEN LARGE CAP RESPONSIBLE EQUITY · Nuveen Large Cap Responsible Equity Premium Fund |
-| `NOMIX` | MID CAP INDEX FUND | 72 | 72 | $78M | 71 / 1 | Northern Mid Cap Index · Northern Mid Cap Index Fund · NORTHERN MID CAP INDEX · Northern Funds Mid Cap Index · Northern Funds Mid Cap Index Fund · Northern Mid Cap Index Fund † |
 | `TBLHX` | — | 42 | 43 | $77M | 43 / 0 | T. ROWE PRICE RETIREMENT BLEND 2035 - I · T. Rowe Price Retirement Blend 2035 I · TRP RET BLEND 2035 I FD · TRP RETIRE BLEND 2035 - I · TRP RET BLEND 2035 I · T. Rowe Price Retirement Blend 2035 - I |
 | `FDRXX` | Fidelity Government Cash Reserves | 75 | 75 | $77M | 74 / 1 | Fidelity Government Cash Reserves · Fidelity Government Cash Reserves Fund · Fidelity® Government Cash Reserves · FIDELITY GOVERNMENT CASH RESERVES · Fidelity ® Government Cash Reserves · Fidelity Government Cash Reserves ¹ |
 | `RGACX` | GROWTH FUND OF AMERICA | 53 | 53 | $77M | 53 / 0 | American Funds Growth Fund of America R3 · American Funds The Growth Fund of America Class R-3 · American Funds The Growth Fund of America - Class R-3 · American Funds Growth Fund of America - R3 · American Funds The Growth Fund of America Class R3 · American Funds The Growth Fund of America R3 |
@@ -1126,9 +1132,9 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `JMSSX` | JPMorgan SmartRetirement* Blend 2045 Fund | 18 | 18 | $62M | 0 / 18 | JPMorgan SmartRetirement Blend 2045 · JPMorgan SmartRetirement Blend 2045 Fund · JP Morgan SmartRetirement Blend 2045 Fund · JPMORGAN SMARTRETIREMENT BLEND 2045 · J.P. Morgan SmartRetirement Blend 2045 Fund · JPMorgan Smartretirement Blend 2045 |
 | `RGGRX` | Victory RS Global Fund | 75 | 75 | $61M | 75 / 0 | Victory RS Global R6 · Victory RS Global R6 Fund · Victory RS Global Fund Class R6 · Victory RS Global Fund R6 · VICTORY RS GLOBAL FUND R6 · VICTORY RS GLOBAL R6 |
 | `RNWFX` | NEW WORLD FUND INC | 77 | 77 | $61M | 77 / 0 | American Funds New World Fund R5 · American Funds New World R5 · New World Fund R5 · AF NEW WORLD R5 · New World Fund-R5 · American Funds New World Fund Class R-5 |
+| `VGTSX` | Vanguard Total International Stock Index Fund | 8 | 8 | $61M | 0 / 8 | VAN TOTAL INTL STK IDX - INST · Vanguard Total Intl. Stock Index Fund · Vanguard Total Intl. Stock Index · Empower Trust Company, LLC Vanguard Total International Stock Index |
 | `STFFX` | Allspring Large Cap Growth Fund | 4 | 4 | $61M | 4 / 0 | Allspring Large Cap Growth R6 |
 | `CHCZX` | AB DISCOVERY GROWTH FUND, INC. | 11 | 11 | $61M | 11 / 0 | AB Discovery Growth Fund Class Z · AB Discovery Growth Class Z · Ab Discovery Growth Class Z |
-| `VGTSX` | Vanguard Total International Stock Index Fund | 7 | 7 | $61M | 0 / 7 | VAN TOTAL INTL STK IDX - INST · Vanguard Total Intl. Stock Index Fund · Vanguard Total Intl. Stock Index |
 | `PEIYX` | PUTNAM LARGE CAP VALUE FUND | 32 | 32 | $61M | 32 / 0 | Putnam Large Cap Value Fund Class Y · Putnam Large Cap Value Class Y · Putnam Large Cap Value Fund Class Y ^ · PUTNAM LARGE CAP VALUE FUND CLASS Y · Putnam Large Cap Value Fund Class Y “ · Putnam Large Cap Value Fund – Class Y |
 | `PALGX` | Putnam Retirement Advantage 2045 Fund | 51 | 51 | $61M | 0 / 51 | Putnam Retirement Advantage Trust 2045 · Putnam Retirement Advantage 2045 · Putnam Retirement Advantage 2045 Fund · Putnam Retirement Advantage 2045 I · Putnam Retirement Advantage 2045 Trust · PUTNAM RETIREMENT ADVANTAGE 2045 |
 | `TRWAX` | Transamerica International Equity | 86 | 86 | $61M | 0 / 86 | Transamerica International Equity · Transamerica International Equity Fund · Transamerica International Equity I · Transamerica Intl Equity I · Transamerica Intl Equity · TRANSAMERICA INTL EQUITY A |
@@ -1618,7 +1624,6 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `IHIYX` | Transamerica High Yield Bond | 14 | 15 | $23M | 0 / 15 | Transamerica High Yield Bond I · Transamerica High Yield Bond · Transamerica High Yield Bond Fund · TRANSAMERICA HIGH YIELD BOND · Transamerica High Yield Bond I Fund · Transamerica BlackRock High Yield Bond |
 | `JMBUX` | JPMorgan Mortgage-Backed Securities Fund | 14 | 14 | $23M | 14 / 0 | JPMorgan Mortgage-Backed Securities Fund Class R6 · JPMorgan Mortgage-Backed Securities R6 · JP Morgan Mortgage Backed Securities R6 Fund · JPMorgan Mortgage Backed Securities Class R6 · JP Morgan Mortgage-Backed Securities R6 · JPMorgan Mortgage Backed Securities Fund R6 |
 | `FALAX` | Fidelity Advisor Large Cap Fund | 37 | 37 | $23M | 2 / 35 | Fidelity Advisor Large Cap Fund · FIDELITY ADVISOR LARGE CAP A · Fidelity Advisor Large Cap I · Fidelity Advisor Large Cap A · Fidelity Advisor Large Cap · Fidelity Advisor Large Cap Z |
-| `IJH` | iShares Core S&P Mid-Cap ETF | 27 | 27 | $23M | 27 / 0 | iShares Core S&P Mid-Cap ETF · Ishares Core S&P Mid-Cap ETF · Ishares Core S&P Mid‐Cap ETF · ISHARES CORE S&P MID-CAP ETF · ISHARES CORE S&P MID CAP ETF · Ishares Core S&P Mid-cap ETF |
 | `GCMTX` | Goldman Sachs Mid Cap Value Fund | 56 | 56 | $23M | 3 / 53 | Goldman Sachs Mid Cap Value A · Goldman Sachs Mid Cap Value Fund · Goldman Sachs Mid Cap Value · Goldman Sachs Mid Cap Val A · Goldman Sachs Mid Cap Value Fund A · Goldman Sachs Mid Cap Value Inv |
 | `RDLTX` | American Funds 2065 Target Date Retirement Fund | 112 | 112 | $23M | 112 / 0 | American Funds 2065 Target Date Fund R4 · AMERICAN FUNDS 2065 TARGET DATE FUND R4 · American Funds 2065 Trgt Date Retire R4 · AF TRGT DATE 2065 R4 · American Funds 2065 Target Date Retirement Fund R4 · American Funds 2065 Target Date-R4 |
 | `MXMPX` | Empower Moderate Profile Fund | 41 | 41 | $23M | 28 / 13 | Empower Moderate Profile Fund Inv · Empower Moderate Profile Fund · EMPOWER MODERATE PROFILE FUND INV · Empower Moderate Profile Fund Investor Class · Empower Empower Moderate Profile Fund Inv “ · - Empower Moderate Profile Fund |
@@ -1839,7 +1844,6 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `FEPIX` | Fidelity Total Bond Fund | 18 | 18 | $15M | 18 / 0 | Fidelity Advisor Total Bond Fund - Class I · Fidelity Advisor Total Bond Fund Class I · Fidelity Advisor® Total Bond Fund Class I · Fidelity Advisor® Total Bond Fund-Class I · Fidelity Mutual Fund Fidelity Advisor Total Bond Fund Class I |
 | `HSNTX` | THE HARTFORD STRATEGIC INCOME FUND | 11 | 11 | $15M | 11 / 0 | Hartford Strategic Income R5 · Hartford Strategic Income Fund Class R5 · The Hartford Strategic Income Fund Class R5 · HARTFORD STRATEGIC INCOME R5 · Hartford Strategic Income Fund R5 |
 | `RUDAX` | BNY Mellon Small Cap Value Fund | 4 | 4 | $15M | 0 / 4 | BNY Mellon Small Cap Value Fund · BNY Mellon Small Cap Value |
-| `NOSIX` | Stock Index Fund | 3 | 3 | $15M | 3 / 0 | Northern Stock Index · Northern Stock Index Fund |
 | `MXYKX` | Empower T. Rowe Price Mid Cap Growth Fund | 15 | 15 | $15M | 15 / 0 | Empower T. Rowe Price Mid Cap Growth Institutional Fund · Empower T. Rowe Price Mid Cap Growth Fund Institutional Class · Empower T. Rowe Price Mid Cap Growth Inst · Empower T. Rowe Price Mid Cap Growth Fund Institutional · Empower T.Rowe Price Mid Cap Growth Inst · Empower T. Rowe Price Mid Cap Growth Fund; Institutional Class |
 | `FQLSX` | Fidelity Flex Freedom Blend 2055 Fund | 5 | 5 | $15M | 5 / 0 | Fidelity Flex® Freedom Blend 2055 Fund · Fidelity Flex Freedom Blend 2055 Fund · Fidelity Flex Freedom Blend 2055 |
 | `LGLVX` | Lord Abbett Growth Leaders Fund | 19 | 19 | $15M | 19 / 0 | Lord Abbett Growth Leaders R6 · LORD ABBETT GROWTH LEADERS R6 · Lord Abbett Growth Leaders Fund R6 · Lord Abbett Growth Leaders Fund Class R6 · Lord Abbett Growth Leaders Fund; Class R6 |
@@ -2364,6 +2368,7 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `MRRAX` | MassMutual 80/20 Allocation Fund | 8 | 8 | $7M | 0 / 8 | MassMutual 80/20 Allocation · MassMutual 80/20 Allocation Fund |
 | `LVOAX` | Lord Abbett Value Opportunities Fund | 33 | 33 | $7M | 2 / 31 | Lord Abbett Value Opportunities Fund · Lord Abbett Value Opportunities A · Lord Abbett Value Opportunities · Lord Abbett Value Opportunities Fund Class A · Lord Abbett Value Opportunities Fund A · - Lord Abbett Value Opportunities Fund |
 | `DDCFX` | DoubleLine Core Fixed Income Fund | 12 | 12 | $7M | 12 / 0 | DOUBLELINE CORE FIXED INCOME R6 · Doubleline Core Fixed Income Fund Class R6 · DoubleLine Core Fixed Income R6 · R6 DoubleLine Core Fixed Income · Doubleline Core Fixed Income R6 |
+| `TBLOX` | T. Rowe Price Retirement Blend 2065 Fund | 27 | 27 | $7M | 0 / 27 | T. Rowe Price Retirement Blend Select Trust 2065 · T Rowe Price Retirement Blend Select Trust 2065 · T. Rowe Price Retirement Blend Trust 2065 · T. Rowe Price Blend 2065 Trust A · TRP Retirement Blend Select Trust 2065 Fund · T Rowe Price Ret Blend Select Trust 2065 |
 | `CGIOX` | Calamos Growth & Income Fund | 2 | 2 | $7M | 2 / 0 | CALAMOS GROWTH AND INCOME R6 |
 | `PHRAX` | Virtus Duff & Phelps Real Estate Securities Fund | 35 | 35 | $7M | 2 / 33 | Virtus Duff & Phelps Real Estate Securities Fund · Virtus Duff & Phelps Real Estate Securities · Virtus Duff & Phelps Real Estate Securities I · Virtus Duff Phelps Real Estate Securities · Virtus Duff Phelps Real Estate Securities I · Virtus Duff & Phelps Real Estate Securities Fund Class A |
 | `HQIYX` | THE HARTFORD EQUITY INCOME FUND | 1 | 1 | $7M | 1 / 0 | Hartford Equity Income Fund Class Y |
@@ -2388,7 +2393,6 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `JSEPX` | JPMorgan Small Cap Equity Fund | 1 | 1 | $6M | 1 / 0 | JP Morgan Small Cap Equity R3 Fund |
 | `FSTLX` | Federated Hermes MDT Large Cap Value Fund | 6 | 6 | $6M | 6 / 0 | Federated Hermes MDT Large Cap Value Fund R6 · Federated Hermes MDT Large Cap Value Fund CL R6 · Federated Hermes MDT Large Cap Value R6 · Federated Hermes MDT Large Cap Value R-6 |
 | `CBDIX` | Calvert Bond Fund | 22 | 22 | $6M | 22 / 0 | Calvert Bond Fund Class I · Calvert Bond Portfolio Class I · Calvert Bond Fund; Class I · Calvert Bond Class I |
-| `TBLOX` | T. Rowe Price Retirement Blend 2065 Fund | 25 | 25 | $6M | 0 / 25 | T. Rowe Price Retirement Blend Select Trust 2065 · T Rowe Price Retirement Blend Select Trust 2065 · T. Rowe Price Retirement Blend Trust 2065 · T. Rowe Price Blend 2065 Trust A · TRP Retirement Blend Select Trust 2065 Fund · T Rowe Price Ret Blend Select Trust 2065 |
 | `WBCRX` | William Blair Small-Mid Cap Core Fund | 4 | 4 | $6M | 4 / 0 | William Blair Small-Mid Cap Core Fund Class R6 · William Blair Small-Mid Cap Core R6 Fund · William Blair Small-Mid Cap Core R6 |
 | `PGSYX` | Pioneer Global Sustainable Equity Fund | 3 | 3 | $6M | 3 / 0 | Pioneer Global Sustainable Equity Fund; Class Y · Pioneer Global Sustainable Equity Fund Class Y · Victory Pioneer Global Equity Fund Class Y |
 | `FKRCX` | FRANKLIN GOLD & PRECIOUS METALS FUND | 55 | 55 | $6M | 1 / 54 | Franklin Gold and Precious Metals Fund · Franklin Gold & Precious Metals Adv · Franklin Gold and Precious Metals · Franklin Gold & Precious Metals · Franklin Gold and Precious Metals Adv · Franklin Gold & Precious Metals Fund |
@@ -2529,7 +2533,6 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `NWZLX` | Nationwide Loomis All Cap Growth Fund | 28 | 28 | $5M | 1 / 27 | Nationwide Loomis All Cap Growth Fund · Nationwide Loomis All Cap Growth · Nationwide Loomis All-Cap Growth Fund · Nationwide Loomis All Cap Growth Fund Nationwide · Nationwide Loomis All Cap Growth Fund Class A |
 | `ALBAX` | Alger Growth & Income Fund | 6 | 6 | $5M | 0 / 6 | ALGER GROWTH AND INCOME Z · Alger Growth & Income CL Z · Alger Growth & Income A · ALGER GROWTH AND INCOME A · Alger Growth & Income |
 | `POSIX` | Global Real Estate Securities Fund | 12 | 12 | $5M | 12 / 0 | Principal Global Real Estate Securities Fund Institutional Class · Principal Global Real Estate Securities Fund Institutional · Principal Global Real Estate Securities Institutional Fund · Principal Global Real Estate Securities Fund Inst Cl · Principal Global Real Estate Securities Fund - Institutional Class |
-| `EFA` | iShares MSCI EAFE ETF | 13 | 13 | $5M | 13 / 0 | iShares MSCI EAFE ETF · Ishares MSCI EAFE ETF · iShares Msci Eafe ETF · Ishares Msci Eafe ETF |
 | `LEAIX` | Lazard Emerging Markets Equity Advantage Portfolio | 9 | 9 | $5M | 4 / 5 | Lazard Emerging Markets Equity Advantage Fund - Lazard · Lazard Emerging Markets Equity Advantage Portfolio Institutional · Lazard Emerging Markets Equity Advantage Portfolio Institutional Shares · Lazard Emerging Markets Equity Advantage Institutional share class · Lazard Emerging Markets Equity Advantage Inst · Lazard Emerging Markets Equity Advantage Fund |
 | `TSORX` | Nuveen International Responsible Equity Fund | 9 | 9 | $5M | 0 / 9 | Nuveen International Responsible Equity Fund · Nuveen International Responsible Equity |
 | `CGJAX` | Calvert US Large-Cap Growth Responsible Index Fund | 9 | 9 | $5M | 1 / 8 | Calvert US Large Cap Growth Responsible Index Fund · Calvert US Large-Cap Growth Responsible Index Fund · Calvert U.S. Large-Cap Growth Responsible Index Fund · Calvert US Large CAP Growth Responsible Index Class A · Calvert US Large Cap Growth Responsible Index · Calvert US Large Cap Growth Responsible Idx Fund |
@@ -2631,6 +2634,7 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `LMCSX` | LORD ABBETT MID CAP STOCK FUND INC | 5 | 5 | $4M | 5 / 0 | LORD ABBETT MID CAP STOCK R4 · Lord Abbett Mid Cap Stock Fund Class R4 · Lord Abbett Mid Cap Stock R4 |
 | `SBHVX` | Segall Bryant & Hamill Small Cap Value Fund | 5 | 5 | $4M | 2 / 3 | Segall Bryant & Hamill Small Cap Value Fund · Segall Bryant Segall Bryant & Hamill Small Cap Value Fund Institutional Class · Segall Bryant & Hamill Small Cap Value Institutional Class · Segall Bryant&Hamill Sm Cp Val |
 | `RIRFX` | Capital Income Builder | 13 | 13 | $4M | 13 / 0 | American Funds Capital Income Builder R5 · Capital Income Builder-R5 · Capital Income Builder R5 · American Funds Capital Income Builder R5 Fund · American Funds Capital Income Builder Class R-5 · American Funds Capital Income Builder Class R5 |
+| `VTSMX` | Vanguard Total Stock Market Index Fund | 6 | 6 | $4M | 0 / 6 | Vngrd Total Stock Market Index Fund · Vanguard Index Trust Total Stock Mkt · Empower Trust Company, LLC Vanguard Total Stock Market Index Fund · Principal Trust Company Vanguard Total Stock Market Index Fund · Transamerica Vanguard Total Stock Market Index Fund |
 | `CAPAX` | Federated Hermes Capital Income Fund | 2 | 2 | $4M | 0 / 2 | Federated Hermes Capital Income Fund A · Federated Hermes Capital Income Fund |
 | `TSNAX` | TOUCHSTONE SANDS CAPITAL SELECT GROWTH FUND | 4 | 4 | $4M | 0 / 4 | Touchstone Sands Capital Select Growth Fund · TOUCHSTONE SANDS CAPITAL SELECT GROWTH FUND · TOUCHSTONE SANDS CAPITAL SELECT GROWTH Y |
 | `FDKQX` | Fidelity Advisor Freedom 2060 Fund | 8 | 8 | $4M | 8 / 0 | Fidelity Advisor Freedom 2060 Fund Class I · — Fidelity Advisor Freedom 2060 Fund Class I · Fidelity Advisor Freedom 2060 Fund - Class I · Fidelity Advisor Freedom 2060 Class I Fund · Fidelity Advisor Freedom 2060 class I |
@@ -2829,7 +2833,6 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `MMXZX` | MassMutual RetireSMART by JPMorgan 2035 Fund | 3 | 3 | $3M | 3 / 0 | MassMutual RetireSMART by JPM 2035 R4 · MASSMUTUAL RETIRESMART BY JPM 2035 R4 |
 | `RCWEX` | Capital World Bond Fund | 32 | 32 | $3M | 32 / 0 | American Funds Capital World Bond R4 · American Funds Capital World Bond Fund Class R-4 · AMERICAN FUNDS CAPITAL WORLD BOND R4 · CAPITAL WORLD BOND FUND-R4 · American Funds Capital World Bond, Class R4 · American Funds Capital World Bond Fund R4 |
 | `JAAGX` | Janus Henderson Enterprise Portfolio | 4 | 4 | $3M | 4 / 0 | Janus Henderson Enterprise Institutional Portfolio · Fund Instl Janus Henderson Enterprise I · Janus Henderson Enterprise Inst |
-| `IWF` | iShares Russell 1000 Growth ETF | 7 | 7 | $3M | 7 / 0 | iShares Russell 1000 Growth ETF · Ishares Russell 1000 Growth ETF |
 | `AGREX` | INVESCO Global Real Estate Fund | 25 | 25 | $3M | 1 / 24 | Invesco Global Real Estate · Invesco Global Real Estate Fund · Invesco Global Real Estate A · Invesco Global Real Estate Inc · Invesco Global Real Estate Fund A · Invesco Invesco Global Real Estate |
 | `JHQAX` | JPMorgan Hedged Equity Fund | 13 | 13 | $3M | 1 / 12 | JPMorgan Hedged Equity Fund · JP Morgan Hedged Equity · JPMorgan Hedged Equity · JP Morgan Hedged Equity Cl A · JP Morgan Hedged Equity Fund · JP Morgan Hedged Equity Class A |
 | `GBEMX` | Victory Sophus Emerging Markets Fund | 16 | 17 | $3M | 3 / 14 | Victory Sophus Emerging Markets Fund · Victory Sophus Emerging Markets · Victory Sophus Emerging Markets Fund Class A · Victory Sophus Emerging Markets A · Victory Sophus Emerging Markets Fund A · Victory Sophus Emerging Markets Fund, Class A —_ |
@@ -3130,6 +3133,7 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `BGESX` | Baillie Gifford International Growth Fund | 2 | 2 | $2M | 0 / 2 | Baillie Gifford Intl Growth K · Baillie Gifford International Growth Fund |
 | `JSMEX` | JPMorgan SmartRetirement 2065 Fund | 17 | 17 | $2M | 0 / 17 | JPMorgan SmartRetirement 2065 Fund · JPMorgan SmartRetirement 2065 · JP Morgan SmartRetirement 2065- A · J P Morgan SmartRetirement 2065 Select · JPMorgan Smartretirement 2065 Fund · JPMorgan SmartRetirement® 2065 Fund Select Class |
 | `JPTLX` | JPMorgan SmartRetirement* Blend 2035 Fund | 1 | 1 | $2M | 1 / 0 | JPMORGAN SMARTRETIREMENT BLEND 2035 R3 |
+| `SVSPX` | State Street S&P 500 Index Fund | 3 | 3 | $2M | 2 / 1 | Empower Trust Company, LLC - State Street S&P 500 Index Fund K · Lincoln SSGA S&P 500 Index Fund · SSgA S&P Index 500 |
 | `AAEVX` | ONE CHOICE BLEND+ 2065 PORTFOLIO | 2 | 2 | $2M | 2 / 0 | American Century One Choice Blend+ 2065 Portfolio R6 Class = · American Century One Choice Blend 2065 Portfolio - Class R6 |
 | `JMVQX` | JPMorgan Mid Cap Value Fund | 7 | 7 | $2M | 7 / 0 | JPMorgan Mid Cap Value R4 · JPMORGAN MID CAP VALUE R4 · JP Morgan Mid Cap Value R4 · J P MORGAN MID CAP VALUE R4 · JPMorgan Mid Cap Value Fund Class R4 · JPMorgan Mid Cap Value Fund R4 |
 | `GFVUX` | Goldman Sachs Focused Value Fund | 1 | 1 | $2M | 1 / 0 | Goldman Sachs Focused Value R6 |
@@ -3415,7 +3419,6 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `FFVKX` | Fidelity Blue Chip Value Fund | 16 | 16 | $1M | 0 / 16 | FID BLUE CHIP VALUE · Fidelity Blue Chip Value Fund · Fidelity Blue Chip Value · Fidelity Blue Chip Value a · FID Blue Chip Value · FID Blue Chip Value Mutual fund |
 | `AGOZX` | Alger Small Cap Focus Fund | 4 | 4 | $1M | 4 / 0 | Alger Small Cap Focus Fund Class Z · Alger Small Cap Focus Class Z |
 | `AMIDX` | Amana Developing World Fund | 7 | 7 | $1M | 7 / 0 | AMANA DEVELOPING WORLD - INST · Amana Developing World-Inst · Amana Developing World - Inst · AMANA DEVELOPING WORLD INSTL MUTUAL FUND SHARES · Amana Developing World Inst. |
-| `VTSMX` | Vanguard Total Stock Market Index Fund | 3 | 3 | $1M | 0 / 3 | Vngrd Total Stock Market Index Fund · Vanguard Index Trust Total Stock Mkt |
 | `FHYAX` | Federated Hermes Opportunistic High Yield Bond Fund | 9 | 9 | $1M | 0 / 9 | Federated Hermes Opportunistic High Yield Bond · Federated Hermes Opportunistic High Yield Bond Fund Service Shares · Federated Hermes Opportunistic High Yield Bond Fund · Federated Federated Hermes Opportunistic High Yield Bond Fund |
 | `EQTIX` | Shelton Equity Income Fund | 2 | 2 | $1M | 1 / 1 | SHELTON EQUITY INCOME · — Shelton Equity Income Fund Inv Class |
 | `FIDFX` | Fidelity Mid Cap Value Fund | 2 | 2 | $1M | 2 / 0 | Fidelity Advisor Mid Cap Value Fund Class Z · Fidelity Advisor Mid Cap Value Fund – Class Z |
@@ -3621,7 +3624,6 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `SDSCX` | BNY Mellon Small/Mid Cap Growth Fund | 5 | 5 | $735k | 5 / 0 | BNY Mellon Small/Mid Cap Growth Fund Class I · BNY Mellon Small/Mid Cap Growth Fund Class I Fund |
 | `AMIPX` | Amana Participation Fund | 11 | 11 | $735k | 11 / 0 | Amana Participation Fund Institutional Shares · Amana Participation Institutional · Amana Participation Fund Instl · . Amana Participation institutional · Amana Participation Institutional Fund · AMANA PARTICIPATION - INST |
 | `ARMZX` | Western Asset Ultra-Short Income Fund | 1 | 1 | $734k | 0 / 1 | WESTERN ASSET ULTRA-SHORT INCOME I |
-| `SIDSX` | State Street Institutional S&P 500 Index Fund | 1 | 1 | $733k | 0 / 1 | SSgA S&P 500 Index Fund Institutional Class |
 | `FZAMX` | Fidelity Advisor Mid Cap II Fund | 3 | 3 | $731k | 3 / 0 | Fidelity Advisor Mid Cap II Fund Class Z · Fidelity Advisor Mid Cap II Fund - Class Z |
 | `DNVYX` | Davis New York Venture Fund | 2 | 2 | $730k | 2 / 0 | Davis New York Venture Fund; Class Y · Davis New York Venture Fund Class Y |
 | `GCFUX` | Goldman Sachs Core Fixed Income Fund | 3 | 3 | $729k | 3 / 0 | Goldman Sachs Core Fixed Income R6 · Goldman Sachs Core Fixed Income Fund R6 |
@@ -3860,7 +3862,6 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `SASVX` | Virtus Ceredex Small-Cap Value Equity Fund | 3 | 3 | $469k | 0 / 3 | Virtus Ceredex Small-Cap Value Equity · Virtus Ceredex Small Cap Value Equity A · Virtus Ceredex Small-Cap Value Equity Fund |
 | `GSOIX` | Goldman Sachs Government Income Fund | 2 | 2 | $468k | 2 / 0 | Goldman Sachs Government Income Fund Institutional class · GOLDMAN SACHS GOVERNMENT INCOME INSTL |
 | `FNORX` | Fidelity Nordic Fund | 9 | 9 | $467k | 9 / 0 | Fidelity Nordic Fund · FID NORDIC · Fidelity Nordic |
-| `IWB` | iShares Russell 1000 ETF | 3 | 3 | $467k | 3 / 0 | iShares Russell 1000 ETF |
 | `PINRX` | Diversified International Fund | 4 | 4 | $466k | 4 / 0 | Principal Diversified International R3 Fund · Principal Diversified International R3 Fund+ · PRINCIPAL DIVERSIFIED INTL R3 |
 | `WSHNX` | Short Duration Income Fund | 1 | 1 | $465k | 0 / 1 | Weitz Short Duration Income Fund (I) |
 | `UBVUX` | Undiscovered Managers Behavioral Value Fund | 2 | 2 | $465k | 2 / 0 | Undiscovered Managers Behavioral Value R4 · Undiscovered Managers Behavioral Value Class R4 |
@@ -4116,7 +4117,6 @@ brokerage windows, cash sweeps, and managed-account aggregates.
 | `PIFFX` | Invesco Multi-Asset Income Fund | 3 | 3 | $285k | 3 / 0 | Invesco Multi Asset Income R6 · Invesco Multi-Asset income R6 · Invesco Multi-Asset Income R6 Fund |
 | `ASVGX` | SMALL CAP VALUE FUND | 3 | 3 | $282k | 3 / 0 | American Century Small Cap Val R5 · American Century Small Cap Value R5 Fund |
 | `LICAX` | Lord Abbett International Equity Fund | 2 | 2 | $281k | 0 / 2 | Lord Abbett International Equity · Lord Abbett International Equity Fund (A) |
-| `IWD` | iShares Russell 1000 Value ETF | 2 | 2 | $281k | 2 / 0 | Ishares Russell 1000 Value ETF · iShares Russell 1000 Value ETF |
 | `TOBIX` | Touchstone Active Bond Fund | 1 | 1 | $281k | 1 / 0 | Touchstone Active Bond Institutional |
 | `CYBRX` | Calvert High Yield Bond Fund | 4 | 4 | $280k | 4 / 0 | CALVERT HIGH YIELD BOND R6 · Calvert High Yield Bond Fund R6 · Calvert High Yield Bond R6 |
 | `LBNRX` | LORD ABBETT BOND DEBENTURE FUND INC | 4 | 4 | $278k | 4 / 0 | Lord Abbett Bond Debenture R3 · LORD ABBETT BOND DEBENTURE R3 |
@@ -5088,7 +5088,6 @@ here is **not** a claim that no fund exists — only that wampo will not guess.
 |---|---:|---:|
 | CUSIP: | 29 | $81.0B |
 | COMMON/COLLECTIVE TRUSTS | 12 | $60.8B |
-| NT COLLECTIVE S&P500 INDEX FUND-DC-NON LENDING (TIER J) | 4 | $48.4B |
 | Collective Investment Fund (1) | 2 | $36.4B |
 | CORPORATE STOCKS - COMMON | 7 | $29.2B |
 | At fair value | 6 | $24.1B |
@@ -5108,7 +5107,6 @@ here is **not** a claim that no fund exists — only that wampo will not guess.
 | Charlotte NC 28202ABCDE CITYEFGHI ABCDEFGHI AB, ST | 1 | $12.3B |
 | 123456789 ABCDEFGHI ABCDEFGHI ABCDE CITYEFGHI ABCDEFGHI AB, ST | 1 | $12.3B |
 | Fidelity | 1,560 | $11.7B |
-| BlackRock Equity Index Fund F | 6 | $11.7B |
 | REGISTERED INVESTMENT COMPANY | 9 | $11.5B |
 | Mutual funds | 247 | $11.1B |
 | BOEING CO COM | 2 | $10.9B |
@@ -5136,7 +5134,6 @@ here is **not** a claim that no fund exists — only that wampo will not guess.
 | Institutional Index Fund | 188 | $7.2B |
 | Target Retirement Trust 2050 | 1 | $7.1B |
 | NT S&P 500 INDEX FUND | 1 | $7.0B |
-| BlackRock Equity Index Account C | 1 | $6.8B |
 | SSALT Fund Ltd | 1 | $6.7B |
 | Regi s tered Inves tment Compa ny | 1 | $6.6B |
 | Participant-directed | 1 | $6.6B |
@@ -5156,19 +5153,14 @@ here is **not** a claim that no fund exists — only that wampo will not guess.
 | Master Trust | 6 | $5.7B |
 | Target Retirement Trust 2045 | 1 | $5.6B |
 | Vanguard Retirement Savings Trust III | 313 | $5.5B |
-| Northern Trust Collective S&P 500 Index Fund | 20 | $5.5B |
-| SSGA S&P 500 NL Ser A | 1 | $5.2B |
-| Blackrock Equity Index Fund | 17 | $5.2B |
 | CREF Stock R3 | 27 | $5.1B |
 | BlackRock LifePath Index 2040 Unitized Account M | 1 | $5.1B |
 | Common/collective trust funds | 6 | $5.1B |
 | Other investments measured at NAV(b) | 1 | $5.0B |
-| MFB NT COLLECTIVE S&P 500 INDEX FUND - LENDING | 2 | $5.0B |
 | Corporate stocks (pages 56-155) | 1 | $5.0B |
 | Conservative Income Fund | 3 | $4.7B |
 | Plans Master Trust | 2 | $4.7B |
 | 990049520 STABLE VL FD GRP TRUST MTU | 1 | $4.6B |
-| BlackRock Equity Index Fund | 74 | $4.6B |
 | Investment in BNSF 401(k) Plans Master Trust | 2 | $4.6B |
 | Mutual Funds | 86 | $4.5B |
 | STOCK FUND CL X SHARES | 1 | $4.5B |
@@ -5212,7 +5204,6 @@ here is **not** a claim that no fund exists — only that wampo will not guess.
 | Core Plus Bond Fund | 224 | $3.5B |
 | Common-collective trusts | 1 | $3.4B |
 | Insurance Company Separate Account | 1 | $3.4B |
-| BLACKROCK SP 500 IDX (IS) Separate Account | 1 | $3.4B |
 | of The Progressive Corporation Common Shares | 1 | $3.4B |
 | Various investments, including registered market funds and cash | 1 | $3.4B |
 | American Funds EuroPacific Growth Fund | 758 | $3.3B |
@@ -5230,13 +5221,9 @@ here is **not** a claim that no fund exists — only that wampo will not guess.
 | Pooled separate accounts | 55 | $3.1B |
 | Institutional Total Bond Market Index Trust | 16 | $3.1B |
 | NT EXTENDED EQUITY MARKET INDEX FUND | 1 | $3.1B |
-| State Street S&P 500 Index Securities Lending Series Fund Class II | 11 | $3.1B |
 | United States - USD MFB NT COLLECTIVE AGGREGATE BOND INDEX FUND - LENDING | 1 | $3.0B |
 | Russell 1000 Index Fund F | 2 | $3.0B |
 | Russell 1000 Index Fd Cl F | 1 | $3.0B |
-| State Street S&P 500 Index Non-Lending Series Fund (Class A) | 1 | $3.0B |
-| SSGA S+P 500 INDEX SER A S+P 500 FLAGSHIP NON LENDING | 1 | $3.0B |
-| MFB NT COLLECTIVE S&P500 INDEX FUND-NON LENDING | 1 | $3.0B |
 | Represents a party-in-interest. | 3 | $3.0B |
 | Target Retirement 2050 Fund | 688 | $2.9B |
 | Large Cap Growth Fund | 524 | $2.9B |
@@ -5247,7 +5234,6 @@ here is **not** a claim that no fund exists — only that wampo will not guess.
 | US Equity S&P 500 Index Fund | 1 | $2.9B |
 | American Funds | 947 | $2.9B |
 | Retirement 2035 Fund | 267 | $2.9B |
-| SSGA S&P 500® INDEX NON-LENDING SERIES FUND | 1 | $2.9B |
 | Prin LgCp S&P 500 Index SA-Z | 697 | $2.8B |
 | Vanguard International Growth Fund Admiral International Equity Index Fund | 1 | $2.8B |
 | Tota l inves tments | 1 | $2.8B |
@@ -5261,7 +5247,6 @@ here is **not** a claim that no fund exists — only that wampo will not guess.
 | Target Retirement 2025 Fund | 650 | $2.8B |
 | VFTC Institutional Stock Market Index Trust | 1 | $2.7B |
 | Prin Fixed Inc Guar Option | 874 | $2.7B |
-| SSGA S&P 500 Index Fund N/R | 1 | $2.7B |
 | Dodge & Cox | 557 | $2.6B |
 | lifecycle investment option | 1 | $2.6B |
 | Vanguard Retirement Savings Trust II | 25 | $2.6B |
@@ -5275,10 +5260,8 @@ here is **not** a claim that no fund exists — only that wampo will not guess.
 | Spartan 500 Index Pool | 20 | $2.5B |
 | Growth Company Commingled Pool | 12 | $2.5B |
 | BLCKRCK U.S, DEBT | 1 | $2.5B |
-| SSGA S&P MIDCAP INDEX | 1 | $2.5B |
 | BlackRock Russell 3000® Index Fund Class F | 1 | $2.5B |
 | Dodge and Cox | 24 | $2.5B |
-| The Northern Trust Company MFB NT COLLECTIVE S&P 500 INDEX FUND - LENDING | 1 | $2.5B |
 | Target Retirement 2050 | 400 | $2.5B |
 | SP 500 INDEX PL CL F | 6 | $2.5B |
 | BLACKROCK RUSSELL 3000 INDEX FUND | 1 | $2.5B |
@@ -5289,7 +5272,6 @@ here is **not** a claim that no fund exists — only that wampo will not guess.
 | 999E98387 BGI MSCI ACWI EX-US INDEX SUPERFUND F | 1 | $2.4B |
 | SP 500 INDEX PL CL D | 6 | $2.4B |
 | SP 500 INDEX PL CL C | 11 | $2.4B |
-| STATE STREET S&P 500(R) INDEX | 1 | $2.4B |
 | MFB NT COLLECTIVE RUSSELL 1000 VALUE INDEX FUND - LENDING | 1 | $2.4B |
 | BLACKROCK GOVT/CREDIT | 1 | $2.4B |
 | Vanguard Small-Cap Fund | 4 | $2.4B |
@@ -5315,7 +5297,6 @@ here is **not** a claim that no fund exists — only that wampo will not guess.
 | MFO S&P 500 NON LENDING SER CL | 1 | $2.2B |
 | BLACKROCK GLOBAL LIFEPATH INDEX 2050 ACCOUNT A | 1 | $2.2B |
 | Vanguard Mid-Cap Fund | 4 | $2.2B |
-| Blackrock Equity Index Fund F | 1 | $2.2B |
 | AbbVie Inc., common shares | 1 | $2.2B |
 | Target Retirement 2025 | 376 | $2.2B |
 | BLACKROCK US EQUITY MARKET FUND F | 1 | $2.2B |
@@ -5365,12 +5346,10 @@ here is **not** a claim that no fund exists — only that wampo will not guess.
 | Collective Investment Trusts | 5 | $1.9B |
 | U.S. Debt Index Fund F | 3 | $1.9B |
 | The Vanguard Group | 10 | $1.9B |
-| BLACKROCK EQUITY INDEX FUND F | 1 | $1.9B |
 | Fidelity Managed Income Portfolio II | 66 | $1.9B |
 | BlackRock Russell 3000 Index Fund F | 3 | $1.9B |
 | Fidelity Large Cap Growth Fund | 26 | $1.9B |
 | FID FDM IDX 2040 IPR | 288 | $1.8B |
-| BlackRock Equity Index Fund J | 5 | $1.8B |
 | LENDING | 3 | $1.8B |
 | Prin/BR S&P 500 Index CIT N | 152 | $1.8B |
 | Mid Cap Index Fund | 2,044 | $1.8B |
@@ -5383,11 +5362,9 @@ here is **not** a claim that no fund exists — only that wampo will not guess.
 | VANGUARD IS EXTENDED MARKET INDEX TRUST | 1 | $1.8B |
 | BLACKROCK GLOBAL LIFEPATH INDEX 2055 ACCOUNT A | 1 | $1.8B |
 | NT S&P 500 IDX FUND DC NL T5 | 3 | $1.8B |
-| Blackrock Russell 1000 Growth Fund | 3 | $1.8B |
 | Large Cap Growth R6 | 353 | $1.7B |
 | BLCKRCK RUSSELL VALUE 1000 | 1 | $1.7B |
 | 500 Index Admiral | 374 | $1.7B |
-| S&P 500 Index Securities Lending Series State Street Fund Class X | 1 | $1.7B |
 | T. Rowe Price | 425 | $1.7B |
 | International Region - USD MFB NT COLLECTIVE EAFE INDEX FUND - LENDING | 1 | $1.7B |
 | Common/collective trusts | 18 | $1.7B |
@@ -5415,8 +5392,6 @@ here is **not** a claim that no fund exists — only that wampo will not guess.
 | Northern Trust Russell 1000 Growth Equity Index Northern Trust Investments, N.A. | 1 | $1.6B |
 | LifePath Index 2035 Fund F | 3 | $1.6B |
 | Target Retirement 2040 Trust II | 50 | $1.6B |
-| Northern Trust S&P 500 Index Fund | 31 | $1.6B |
-| SSGA S&P 500 FLAGSHIP SER | 1 | $1.6B |
 | Growth Company Commingled Pool, Class 3 | 1 | $1.6B |
 | BlackRock LifePath Index 2045 Unitized Account M | 1 | $1.6B |
 | Equity Index Fund | 188 | $1.6B |
@@ -5431,12 +5406,10 @@ here is **not** a claim that no fund exists — only that wampo will not guess.
 | MFO BLACKROCK US DEBT INDEX F | 2 | $1.5B |
 | Cusip: | 1 | $1.5B |
 | Managed by State Street Global Advisors Inflation Protected Bond (refer to Exhibit D – inv | 1 | $1.5B |
-| Blackrock U.S. Equity Index Fund | 2 | $1.5B |
 | Vanguard U.S. Bond Index Fund | 5 | $1.5B |
 | U.S. Debt Index Non Lendable Fund | 1 | $1.5B |
 | BlackRock MSCI ACWI Ex-US IMI Index, 92,383,792 units | 1 | $1.5B |
 | Investments measured at net asset value “) ®) | 1 | $1.5B |
-| Northern Trust S&P 500 Index Fund NORTHERN TRUST S&P 500 INDEX FUND | 1 | $1.5B |
 | Prin LifeTime Hyb 2030 CIT X | 74 | $1.5B |
 | Intel Target Date 2030 Fund | 1 | $1.5B |
 | BlackRock Extended Equity Market Fund M | 1 | $1.5B |
@@ -5461,7 +5434,6 @@ here is **not** a claim that no fund exists — only that wampo will not guess.
 | BLACKROCK GLOBAL LIFEPATH INDEX 2040 ACCOUNT A | 1 | $1.4B |
 | Russell 2000 Index Fund F | 2 | $1.4B |
 | Retirement 2035 Active Trust Class K (2) | 2 | $1.4B |
-| BlackRock EAFE Equity Index Fund F | 3 | $1.4B |
 | Russell 2500 Index Non-Lendable Fund | 1 | $1.4B |
 | FID FDM IDX 2050 IPR | 287 | $1.4B |
 | Developed Markets Index Trust | 3 | $1.4B |
@@ -5486,5 +5458,33 @@ here is **not** a claim that no fund exists — only that wampo will not guess.
 | Retirement 2040 Active Trust Class K (2) | 2 | $1.3B |
 | Wellington CIF II Growth S5 | 1 | $1.3B |
 | Employer, net of forfeitures | 17 | $1.3B |
+| Extended Market, 5,680,080 units | 1 | $1.3B |
+| LifePath Index Growth Retirement Fund | 1 | $1.3B |
+| BLCKRCK RUSSELL 2000 | 1 | $1.3B |
+| Insurance contracts | 9 | $1.3B |
+| INSTITUTIONAL TOTAL BOND MARKET INDEX TRUST | 1 | $1.3B |
+| Common/Collective Trust Funds | 2 | $1.3B |
+| College Retirement Equities Fund variable annuities | 57 | $1.3B |
+| Vanguard Fiduciary Trust Company | 9 | $1.3B |
+| Target Retirement 2020 Fund | 569 | $1.3B |
+| Developed Markets Index Fund | 134 | $1.3B |
+| International Index Fund | 807 | $1.3B |
+| Inst Tot Intl St Mt Ix Tr | 14 | $1.3B |
+| Global All Cap Equity Index NL | 1 | $1.3B |
+| FIMM MMKT INST (1) | 1 | $1.3B |
+| Prin LifeTime Hy 2050 CIT X | 73 | $1.3B |
+| FID FDM IDX 2045 IPR | 280 | $1.3B |
+| Retirement 2055 Fund | 271 | $1.3B |
+| ISHARES S&P 500 INDEX FD CL K | 116 | $1.3B |
+| LifePath Index 2045 Fund F | 3 | $1.3B |
+| Intel Target Date 2045 Fund | 1 | $1.3B |
+| MFB NT COLLECTIVE RUSSELL 2000 GROWTH INDEX FUND-LENDING | 1 | $1.3B |
+| BTC Life Path Index 2040 Fund F | 1 | $1.3B |
+| Managed by Neuberger Berman Total Bond Market (refer to Exhibit E – investments) | 1 | $1.3B |
+| Vanguard Value Fund | 5 | $1.3B |
+| MFO BLACKROCK LIFEPATH INDEX 2035 FUND F | 2 | $1.3B |
+| Large Cap Growth | 225 | $1.3B |
+| Investments measured at NAV (practical expedient) | 1 | $1.3B |
+| S&P 500 Index Fund Class K | 13 | $1.3B |
 
-_300,145 distinct unresolved names in total; the 400 largest by assets are listed._
+_299,203 distinct unresolved names in total; the 400 largest by assets are listed._
