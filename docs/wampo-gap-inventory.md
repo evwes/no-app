@@ -270,6 +270,28 @@ fabrication here this one has a *free exact detector* — the pipeline already
 knows the sponsor's EIN — and it is filtered at display as of #14
 (`dropFormNumberRows` in `app.js`), pending a parser fix.
 
+**A securities identifier summed into a multi-billion-dollar holding
+(added #15, largest by dollars).** Custodian statements print each holding over
+two lines, the second being `CUSIP: 00724F101`. Where the parser reads those
+identifier lines as rows they all reduce to the same residual name and dedup
+sums them. **58 rows in 31 lineups, $85,445,244,635**; by displayed exposure,
+**30 plans covering 1,356,613 participants and $134.2B of plan assets** show a
+table containing one, in **25 of them it is more than half the table**, and the
+distinct dollars under an identifier label are **$59,223,106,612**. The Kroger
+Co. 401(k) Retirement Savings Account Plan (160,358 participants) displays a
+menu of exactly one holding, named **"CUSIP:"**, worth **$8,696,053,053** —
+a figure that appears nowhere in the trust's filing, whose 4i is a 206-page
+Northern Trust security-detail statement with 1,165 `CUSIP:` lines. Marriott
+99%, Caterpillar 61%, Kohl's 54%, HCA 32%. Dropped at display in #15
+(`ID_ONLY`); the parser still produces them.
+
+**Futures contracts and lending collateral as menu options (added #15).** The
+same statement-detail regions put instruments in the table that no participant
+can choose: **202 rows in 91 lineups** name a futures contract
+(`"Purchased Futures Contracts"` $1,087,807,083), **30 rows in 28 lineups** are
+pending-trade lines. Timken's bargaining-unit savings plan shows seven Treasury
+futures as its menu, one position counted twice under two CUSIPs.
+
 **ZIP codes as dollar values, now measured.** Found twice by hand in #13;
 across the corpus it is **97 rows in 96 lineups, $5,252,738** — `"Houston,
 Texas"` $77,002, `"Bethesda, Maryland"` $20,814, `"H&R Block, Inc. One H&R

@@ -2526,3 +2526,121 @@ defaulted loans and benefits payable, which are facts in their own right.
   artefact, now understood (§2).
 - **The category-noun class from #13 is not what killed MGB's small rows.** It
   is a plain value-regex floor (§6), and it is confined to 207 lineups.
+
+## (10 fund report) #15 — 2026-08-24 — a $8.7 billion fund called "CUSIP:"
+
+Batch 17 (10 filings, all ≈$0.5B): 6 ISSUER_DROPPED, 2 NAMES_MATCH,
+1 WRONG_REGION, 1 OCR_SOURCE. Running total tested by the script: 138.
+
+The WRONG_REGION filing was not a plan at all — `20251013155830NAL0000793475001`
+is **THE PITNEY BOWES RETIREMENT PLANS TRUST**, whose stored "menu" is eighty
+individual Treasury issues, futures contracts and a securities-lending line.
+Pulling that thread produced the largest fabrication yet measured.
+
+### 1. Thirty plans, 1,356,613 participants, are shown a holding named "CUSIP:"
+
+Custodian statements print each security over two lines:
+
+```
+ ABBOTT LAB COM                             67,149.000    6,612,183.33    7,595,223.39
+ CUSIP: 002824100
+ ACADIA HEALTHCARE CO INC COM               30,870.000    1,555,269.41    1,223,995.50
+ CUSIP: 00404A109
+```
+
+Where the parser takes those identifier lines as rows, every one of them
+reduces to the same residual name and dedup — the Stanley Black & Decker
+mechanism from report #13 — sums them into a single holding. The Kroger Co.
+Defined Contribution Plan Master Trust, whose 4i is a **206-page Northern Trust
+security-detail statement containing 1,165 `CUSIP:` lines**, produces:
+
+```
+ 8,696,053,053   | CUSIP:
+    17,186,887   | VISA INC COM CL A STK
+     6,156,875   | WALT DISNEY CO
+     3,462,832   | WELLS FARGO & CO NEW COM STK
+     2,575,356   | SEDOL: BPGMZQ5 VERIZON COMMUNICATIONS COM
+```
+
+`confident: true`, `coverageRatio: 0.87`. **The string 8,696,053,053 appears
+nowhere in the filing** — checked across the full text extraction. It is not a
+mislabelled real total; it is a sum of rows that were never holdings.
+
+Measured by **what a reader actually sees** — for every plan, the lineup wampo
+would display, own entry or master-trust fallback:
+
+| | |
+|---|---:|
+| plans whose displayed table contains an identifier-label row | **30** |
+| participants in those plans | **1,356,613** |
+| plan assets | **$134.2B** |
+| plans where such rows are **more than half** the table | **25** (902,054 participants) |
+| distinct lineups affected | **19** |
+| distinct dollars under an identifier label | **$59,223,106,612** |
+
+(The per-plan sum is $116.6B, but sister plans share a trust; $59.2B is the
+distinct figure and the one to quote.)
+
+The largest, by participants:
+
+```
+  377,504  32%   HCA 401(K) PLAN                                    $9,544,212,396
+  262,794 100%   THE KROGER CO. SAVINGS PLAN                        $8,699,166,102
+  160,358 100%   THE KROGER CO. 401(K) RETIREMENT SAVINGS ACCOUNT   $8,699,166,102
+  137,769  99%   MARRIOTT RETIREMENT SAVINGS PLAN                   $6,698,568,702
+   68,903  54%   KOHL'S INC. SAVINGS PLAN                           $1,391,570,299
+   60,484  61%   CATERPILLAR 401(K) SAVINGS PLAN                    $6,655,434,038
+   39,176 100%   SCHLUMBERGER … SAVINGS AND RETIREMENT PLAN         $7,832,374,261
+   26,098 100%   CORTEVA … RETIREMENT SAVINGS PLAN                  $6,437,069,362
+   20,731 100%   THE COCA-COLA COMPANY 401K PLAN                    $3,753,005,426
+```
+
+A Kroger participant opening wampo today sees a fund menu with **one line in
+it**, named `CUSIP:`, worth $8.7 billion.
+
+**Fixed this cycle, display only, smoke green.** Rows whose name consists
+entirely of identifier labels and codes are dropped (`ID_ONLY` in `app.js`).
+They are not renameable — there is no name in them to recover — and what is left
+is the statement's individual stock rows, which the coverage note added in #13
+then correctly describes as a fraction of the plan. An honest thin table beats a
+confident wrong one. A real security whose name merely contains a CUSIP keeps
+its row; the pattern requires the *whole* name to be identifiers.
+
+### 2. Futures contracts and securities-lending collateral as menu options
+
+The same region class puts instruments in the table that no participant can
+choose. The Timken Company Savings Plan for Certain Bargaining Associates (105
+participants) displays a nine-row "menu" of which seven are Treasury futures:
+
+```
+ 24,931,781  CUSIP: 999599GH0 FUT MAR 25 U.S. T-BONDS
+ 18,811,812  CUSIP: 999599GH0 FUT MAR 25 CBT ULT TNOTE
+ 17,835,937  CUSIP: 156ESCAN5 FUT MAR 25 CBT UL T-BONDS
+ 17,835,937  CUSIP: 999599GH0 FUT MAR 25 CBT UL T-BONDS   <- same position, twice
+    622,977  CUSIP:
+     85,114  Pending trade purchases: United States dollar
+```
+
+Two rows are the *same* futures position at the same value under two CUSIPs
+(`999599GH0` is a placeholder identifier, not a security), so it is also double
+counted. Pitney Bowes' trust adds `"FROM SECURITY LENDING - PARTY IN INTEREST"`
+at $109,131,567 — lending collateral, which is not participant money at all.
+
+Corpus counts: **202 rows in 91 lineups** name a futures contract
+(`"Purchased Futures Contracts"` $1,087,807,083 is the largest); **30 rows in 28
+lineups** are pending/unsettled trade lines (`"PENDING PURCHASES"` $6,136,324).
+
+### 3. What was disproved
+
+- **"Master-trust fallback routinely shows 401(k) participants a defined-benefit
+  bond portfolio."** It does not. Of **369 plans** that display a master trust's
+  holdings rather than their own, only **19** have any derivative or
+  securities-lending row and exactly **one** — Timken above — is majority
+  bonds/derivatives. Pitney Bowes, the filing that raised the question, is not
+  affected: its 401(k) parses its own schedule confidently, so the DB trust is
+  never displayed. The risk is real and conditional on the plan's own parse, not
+  a live defect at scale. Recorded as a dependency, not a finding.
+- **"The identifier rows are mislabelled subtotals."** For Kroger, no: the value
+  is absent from the filing. The mechanism is dedup summation, which is why the
+  class was invisible to every sum-based audit check — the sums are internally
+  consistent by construction.
