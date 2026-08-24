@@ -1,7 +1,8 @@
-# What wampo does not report, and why
+# What wampo does not report, or reports wrongly — and why
 
-A standing inventory of information that Form 5500 filings **carry** and wampo
-**does not surface** — with the reason for each gap. Regenerate the presence
+A standing inventory in two halves: information Form 5500 filings **carry** that
+wampo **does not surface**, and values wampo **does** surface that are **not in
+the filing at all**. Each with the reason. Regenerate the presence
 rates with `node scripts/gap-inventory.mjs --n 18`.
 
 This exists because counting confirmed instances of a defect we already
@@ -153,8 +154,74 @@ Without it a reader sees an unexplained jump and cannot tell why.
 **Named investment manager / 3(38).** Who chooses the menu, as distinct from the
 recordkeeper, which wampo does show.
 
+## The category this inventory was missing: information wampo reports that is WRONG
+
+Everything above is an **omission** — filings carry it, wampo does not show it.
+Filing tests through 2026-08-24 found a second and worse category: values wampo
+**does** show that are not in the filing at all. An omission leaves a reader
+uninformed. A fabrication leaves them confidently misinformed, and it is
+invisible to a reader who has no reason to doubt the page.
+
+These are recorded here rather than only in the per-cycle reports because they
+change what this document is for. "What does wampo not report" is only half the
+question; the other half is "what does wampo report that is not true".
+
+**A fabricated holding that reconciles.** Stanley Black & Decker,
+`20250729083806NAL0006830290001`. Four insurance contracts — Pacific Life, RGA,
+Transamerica, Voya — are each described "Constant Duration". Discard column (a)
+and all four become the same name, so dedup summed them:
+
+```
+27,062,239 + 26,598,708 + 26,518,314 + 24,883,597 = 105,062,858
+stored value                                      = 105,062,858
+```
+
+A $105M holding that does not exist, at a name no issuer filed. **It reconciles
+to the lineup total**, so no sum-based audit check can detect it — the class of
+error our existing checks are structurally blind to.
+
+**ZIP codes as dollar values.** Delta pilots, `20251014143617NAL0003173265001`.
+A Schedule C service-provider page parsed as a 4i schedule: six rows valued at
+exactly **$782,514,321**, which is American Funds' ZIP+4 **78251-4321**, under
+names cut from address lines (`PORTFOLIO US`, `CLASS A US`, `AMERICA US`).
+**$4.70B of postcode inside a $10.66B displayed lineup.** Found twice — Altria
+stores a holding named `WASHINGTON, D.C.` worth $20,549.
+
+**A liability presented as an asset.** Morgan Stanley,
+`20251010150034NAL0004732579001`, $21.64B. A fair-value hierarchy table parsed
+as a menu, with a derivative *liability* summed in as an asset, overstating the
+plan by $46,007,140. Its real 45-page 4i is image-only; OCR never fired because
+a readable **wrong** region satisfied the parser first — the failure is not that
+the right pages were unreadable, but that the wrong ones were readable.
+
+**Prior-year figures shown as current.** Confirmed in three plans across three
+auditors (Comcast among them): the parser takes the comparative column. Comcast
+shows $16.3B when the current year reads $18.67B.
+
+### Why this category exists at all
+
+Each of these follows from the same root as the omissions — a region or a column
+chosen wrongly — but the consequence inverts. When the parser drops information
+the page is merely thin. When it *keeps* the wrong information, the page is
+authoritative and wrong, and every downstream check that reconciles totals
+agrees with it.
+
+The practical consequence for the audit machinery: `scripts/audit-data.mjs`
+cross-checks identities (lineup sums vs Schedule H, top holding vs plan assets).
+Every fabrication above **passes** those checks, because summing four real
+contracts produces a real total and a ZIP-code row sits inside a plausible
+lineup. Detecting this class needs a different kind of check — one that asks
+whether a stored value appears in the filing at all, which is exactly what
+`scripts/filing-batch.mjs` does and no pipeline stage does.
+
 ## Priority
 
+0. **The fabrications.** An omission is a gap; a wrong number is a defect, and
+   two of the four classes above put invented values on the page. They share a
+   root cause with item 2, so fixing column (a) removes the Stanley Black &
+   Decker class outright — but the wrong-region cases (ZIP codes, fair-value
+   tables, prior-year columns) are separate and need region scoring, not column
+   handling.
 1. **The three dataset columns.** Already downloaded, no parsing, no
    PARSER_VERSION bump. Late deposits alone is a genuine red flag no
    competitor surfaces.
