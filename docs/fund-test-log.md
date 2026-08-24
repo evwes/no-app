@@ -1902,3 +1902,100 @@ reached through the `fb` fallback, and that ack is only in the pipeline-only
 findings now blocked on the same missing thing — worth publishing the fallback
 ack into `lineups-status.json` so a tester can reach the filing that was
 actually parsed.**
+---
+
+## (10 fund report) #12 — 2026-08-24 — ≥$1B stratum to n=30, and the closing numbers
+
+**Running count of the column-(a) defect, hand-verified (cumulative):**
+
+| | filings |
+|---|---:|
+| **CONFIRMED** issuer column present in the 4i table and discarded | **67** |
+| **DISPROVED** — filing read, no column (a) to drop | **34** |
+| **PARTIAL** — a minority of rows carry a discarded issuer | **8** |
+| **UNVERIFIABLE** — source filing not in hand | **1** |
+| **hand-read to date** | **110** |
+
+Positions 21–30 of the shuffled ≥$1B stratum, six of them newly adjudicated.
+
+| # | plan | assets | verdict |
+|---:|---|---:|---|
+| 21 | THE CIGNA GROUP 401(K) | $13.35B | partial (6/74, report #3) |
+| 22 | BOSTON UNIVERSITY RETIREMENT | $2.98B | **confirmed** 30/30 |
+| 23 | (NT-prefixed names) | $4.08B | disproved (report #5) |
+| 24 | ARKEMA INC. EMPLOYEES' RETIREMENT SAVINGS | $1.22B | **confirmed** 33/33 |
+| 25 | NVIDIA CORPORATION 401(K) | $4.75B | **confirmed** 24/26 |
+| 26 | (trustee statement) | $3.76B | disproved — the `CUSIP:` class |
+| 27 | DOVER CORPORATION RETIREMENT SAVINGS | $1.81B | **confirmed** (report #7) |
+| 28 | LVMH AFFILIATES' 401(K) | $1.13B | **confirmed** 25/27 |
+| 29 | (single column) | $4.50B | disproved (report #6) |
+| 30 | INTUIT INC. 401(K) | $3.68B | **confirmed** 20/20 |
+
+Arkema, 33 of 33: `Fidelity Management Trust Company` ×26,
+`Vanguard Fiduciary Trust Company` ×3, Parnassus, Janus Henderson, MFS, PIMCO.
+NVIDIA, 24 of 26: T. Rowe Price ×13, Vanguard ×6. Intuit, 20 of 20:
+Vanguard ×13, State Street ×5. Boston University, 30 of 30: Vanguard ×17,
+CREF ×8, TIAA ×2.
+
+Position 26 is a reminder that report #1's very first finding is still live:
+its stored top holding is literally
+
+```
+   3,739,343,827   CUSIP:
+      12,813,990   SEDOL:
+         913,686   MURPHY USA INC COM
+```
+
+— a $3.74B "fund" named `CUSIP:` on a $3.76B plan, i.e. **99.4% of the
+displayed lineup**, followed by individual common stocks.
+
+### Final numbers from this loop
+
+**≥$1B stratum, n = 30:** 14 confirmed, 3 partial, 13 disproved.
+Rate **46.7%**, Wilson 95% **30.2% – 63.9%**.
+**Sub-$1B, n = 39:** 33 confirmed. Rate **84.6%**, Wilson **70.3% – 92.8%**.
+
+| stratum | lineups | assets | confirmed rate (95% CI) | assets affected |
+|---|---:|---:|---|---:|
+| ≥ $1B | 129 | $798B | 46.7% (30.2 – 63.9) | $373B (241 – 510) |
+| < $1B | 5,185 | $294B | 84.6% (70.3 – 92.8) | $248B (207 – 273) |
+| **total** | **5,314** | **$1,091B** | | **$621B ($448 – $782B)** |
+
+**Lineups affected: 4,448 (range 3,683 – 4,892) of 5,314.**
+
+Progression of the dollar range as the sample grew — it has been narrowing
+from both ends and the point estimate has been stable:
+
+| stage | ≥$1B n | range |
+|---|---:|---|
+| report #10 | 10 | $340B – $820B |
+| report #11 | 20 | $381B – $762B |
+| report #12 | 30 | **$448B – $782B** |
+
+### What a future cycle should do next, in order
+
+1. **Read the remaining 99 filings of the ≥$1B stratum.** It is the only
+   remaining source of width in the dollar figure, and it is 99 filings, not
+   5,000. Everything below $1B is already measured to ±11 points.
+2. **Publish the `fb` fallback ack into `lineups-status.json`.** Two findings
+   in this loop (FirstEnergy in #5, Altria in #11) could not be quoted against
+   their source because the filing that was actually parsed is only named in
+   the pipeline-only `fallbacks.json` artifact.
+3. **Fix the classifier's three known blind spots** before trusting any future
+   verdict count: issuer strings over 5 words / 46 characters, values not ending
+   the line (`**`, `N/R` markers), and OCR-derived entries, which will always
+   score WRONG_REGION because their source pages have no text layer.
+
+### The defect classes this loop found that were NOT in the four verdicts
+
+| class | first specimen | scale seen |
+|---|---|---|
+| fair-value hierarchy table parsed as a menu | Morgan Stanley `20251010150034…` | 6 filings, incl. a liability summed into an asset |
+| Schedule C indirect-fee page parsed as 4i, **ZIP codes as dollar values** | Delta pilots `20251014143617…` | 3 plans (2 Delta, Altria), $24.5B |
+| prior-year column read instead of current | Comcast `20251007174512…` | 3 plans, 3 auditors |
+| Statement-of-Changes cash flows stored as holdings | Fresenius `20251007125615…` | 2 plans (`NET ADDITIONS` $402M) |
+| cost column glued into the fund name | CHS `20250926144818…` | 2 plans (`… $0.00`, `… N/R`) |
+| issuer discarded → identical names → **dedup sums them** | Stanley Black & Decker `20250729083806…` | 1 plan, a fabricated $105M holding |
+| share class discarded (both columns are names) | Brown University `20251008130018…` | 1 plan |
+| zero-valued row glued to the next row | Marmon `20251014113306…` | 1 plan |
+| date/heading fragment as a holding | ExxonMobil `FOR THE YEAR ENDED` $2,024,000 | 3 plans |
