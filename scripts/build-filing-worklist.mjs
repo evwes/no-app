@@ -25,6 +25,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const arg = (k, d) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : d; };
 const N = +arg("--n", 4000);
 const OUT = arg("--out", path.join(root, "docs/filing-worklist.json"));
+const MODE_TOP = arg("--mode", "all");
 const idx = buildIndex(arg("--index", path.join(root, "sec-funds.json")));
 
 const namesMgr = (n) => {
@@ -52,10 +53,25 @@ for (let i = 0; i < 64; i++) {
     const top = Math.max(...funds.map((f) => f.value || 0));
     const furniture = funds.filter((f) => FURNITURE.test(String(f.name || "").trim())).length;
 
+    /* MODE MATTERS. Scoring all three signals together sorts the queue by
+     * "most broken overall", and the first 20 filings that produced were all
+     * score 6 -- every one of them a wrong-region/statement case, and NONE of
+     * them the column-(a) defect. The two defects have overlapping signatures
+     * but different populations, so measuring one requires isolating it:
+     * --mode issuer keeps ONLY the low-manager-share signal and actively
+     * EXCLUDES the dominance and furniture signals, which are what drag
+     * statement pages to the top. */
+    const MODE = arg("--mode", "all");
     let score = 0;
-    if (withMgr / funds.length <= 0.15) score += 3;
-    if (top / assets >= 0.5) score += 2;
-    if (furniture) score += 1;
+    if (MODE === "issuer") {
+      if (withMgr / funds.length > 0.15) continue;   // must carry the signature
+      if (top / assets >= 0.5 || furniture) continue; // and nothing else
+      score = 3;
+    } else {
+      if (withMgr / funds.length <= 0.15) score += 3;
+      if (top / assets >= 0.5) score += 2;
+      if (furniture) score += 1;
+    }
 
     rows.push({
       ack, rows: funds.length, assets, score,
@@ -74,6 +90,6 @@ const out = rows.filter((r) => r.names.length >= 3).slice(0, N);
 fs.writeFileSync(OUT, JSON.stringify(out));
 const byScore = {};
 for (const r of out) byScore[r.score] = (byScore[r.score] || 0) + 1;
-console.log(`wrote ${OUT} — ${out.length.toLocaleString()} filings queued (of ${rows.length.toLocaleString()} eligible)`);
+console.log(`wrote ${OUT} [mode=${MODE_TOP}] — ${out.length.toLocaleString()} filings queued (of ${rows.length.toLocaleString()} eligible)`);
 for (const k of Object.keys(byScore).sort((a, b) => b - a)) console.log(`  suspicion ${k}: ${byScore[k].toLocaleString()}`);
 console.log(`  total assets queued: $${(out.reduce((a, r) => a + r.assets, 0) / 1e12).toFixed(2)}T`);

@@ -32,6 +32,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { buildIndex, norm } from "./match-sec-tickers.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const arg = (k, d) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : d; };
@@ -39,6 +40,26 @@ const N = +arg("--n", 10);
 const WORKLIST = arg("--worklist", path.join(root, "docs/filing-worklist.json"));
 const OUT = arg("--out", path.join(root, "docs/filing-tests.jsonl"));
 const TMP = process.env.SCRATCH || "/tmp/wampo-filing-batch";
+const SEC = arg("--index", process.env.SEC_INDEX
+  || "/tmp/claude-0/-home-user-no-app/ab0d8313-9407-5a0a-9583-f46430634c3c/scratchpad/sec-funds.json");
+
+/* An issuer is a FUND MANAGER, not any text to the left. Without this check the
+ * classifier reported "INSTITUTIONAL x5" and "HIGH YIELD BOND FUND x1" as
+ * dropped issuers: the first is a wrapped Schedule C provider-name fragment on
+ * a service-provider page, the second is part of the fund's own name on a
+ * continuation line. Two of the first three ISSUER_DROPPED verdicts were false
+ * for this reason. Requiring the left column to name a manager the rest of the
+ * system already recognises makes the verdict mean what it says -- and those
+ * are the only ones that would gain a ticker from the fix anyway. */
+let MGRS = null;
+try { MGRS = buildIndex(SEC).managers; }
+catch (e) { console.log("WARN: no SEC index, issuer check degraded: " + e.message); }
+const isManager = (tok) => {
+  if (!MGRS) return true;
+  const h = " " + norm(tok) + " ";
+  for (const m of MGRS) if (h.includes(" " + m + " ")) return true;
+  return false;
+};
 
 fs.mkdirSync(TMP, { recursive: true });
 
@@ -96,6 +117,7 @@ function issuerBefore(lines, name) {
     if (!tok || tok.length < 3 || tok.length > 46) return seen;
     if (PROSE.test(tok) || FORM_LABEL.test(tok)) return seen;
     if (tok.split(/\s+/).length > 5) return seen;
+    if (!isManager(tok)) return seen;
     return { found: true, issuer: tok };
   }
   return seen;
