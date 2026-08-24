@@ -56,6 +56,14 @@ const ABBREV = [
   // subset test. Rejoin them before anything else looks at the tokens.
   [/\br (\d)\b/g, "r$1"],
   [/\btrgt\b/g, "target"],
+  /* Spellings measured off the loss sample, 2026-08-23. Each one was costing
+   * hundreds to thousands of holdings and none of them is ambiguous:
+   * "VANGUARD SMALL CAP INDEX ADMRL", "VAN TARGET RETIRE 2050", "FID 500
+   * INDEX", "Fidelity US Bond Index" (SEC registers it "U.S."), "Fidelity Mid
+   * Cp Index". "van" is guarded against Van Kampen, a real and different
+   * family. */
+  [/\badmrl\b/g, "admiral"], [/\bvan\b(?! kampen)/g, "vanguard"], [/\bfid\b/g, "fidelity"],
+  [/\bu s\b/g, "us"], [/\bcp\b/g, "cap"],
 ];
 // words that carry no identity — dropped from BOTH sides before comparison
 // "series" is deliberately NOT here: "Fidelity Series Bond Index Fund" is a
@@ -114,6 +122,9 @@ const ASSET_WORDS = new Set([...DISCRIMINATORS, "bond", "stock", "stocks", "equi
   "natural", "resources", "infrastructure", "convertible", "floating", "science",
   "world", "pacific", "europe", "european", "japan", "china", "asia", "asian",
   "dividend", "fixed", "allocation", "target", "retirement", "total", "core", "plus"]);
+
+/* Share-class markers: words a filing adds that name a class, not a fund. */
+const CLASS_MARK = /^(?:r[1-6]|k6|[akyzci]|inv|investor|adm|admrl|admiral|adv|advisor|institutional|instl|inst|premier|premium|retail|service|select|shares?)$/;
 
 const hintOf = (s) => { const t = norm(s); for (const [k, re] of CLASS_HINTS) if (re.test(t)) return k; return null; };
 
@@ -262,6 +273,9 @@ function resolveUncached(idx, filedName) {
   for (const m of MANAGERS) if (filedNorm.includes(" " + m + " ")) filedMgrs.push(m);
   if (!filedMgrs.length) return null;
   const mgrHit = (c) => c.mgrKeys.some((k) => filedMgrs.includes(k));
+  // tokens of the houses the filing names, and share-class markers: the two
+  // kinds of filed word a series is allowed to leave unaccounted for
+  const house = new Set(filedMgrs.flatMap((m) => m.split(" ")));
 
   let classes = idx.bySeries.get(key);
   let why = "exact";
@@ -285,14 +299,19 @@ function resolveUncached(idx, filedName) {
         let all = true;
         for (const x of st) if (!fset.has(x)) { all = false; break; }
         if (!all) continue;
-        /* A series whose whole name is generic finance words identifies
-         * nothing. "American Funds Growth Portfolio" reduces to the key
-         * "american growth", which is a subset of "American Funds EuroPacific
-         * Growth Fund R6" and of "American Funds Growth Fund of America R6" --
-         * two different funds, neither of them it. EuroPacific is not in the
-         * SEC file at all, so the honest answer there is nothing. */
-        if (st.every((x) => GENERIC_LEAD.has(x) || ASSET_WORDS.has(x) || STRUCTURAL.has(x))) continue;
-        const score = st.length * 1000 + st.join("").length;
+        /* Rank by how much of the FILED name the series leaves unexplained,
+         * before token count or length. "American Funds Growth Fund of America
+         * R6" matches both "american growth" (leaving "america" dangling) and
+         * "growth america" (leaving only the house word and the class); the
+         * second is the fund. Ranking by size alone picked the first, and an
+         * earlier attempt to fix it by discarding all-generic series keys threw
+         * away "New World Fund" and "American Balanced Fund" too -- real funds
+         * whose names happen to be ordinary words. Counting what is left over
+         * separates them without a vocabulary judgement. */
+        const st1 = new Set(st);
+        let left = 0;
+        for (const w of ft) if (!st1.has(w) && !house.has(w) && !CLASS_MARK.test(w)) left++;
+        const score = (9 - Math.min(left, 9)) * 1e6 + st.length * 1000 + st.join("").length;
         if (score <= bestScore) continue;
         best = list; bestLen = st.length; bestKey = st; bestScore = score;
       }
@@ -345,9 +364,22 @@ function resolveUncached(idx, filedName) {
     // product it is, and a subset match silently discards them. If the filing
     // states a discriminator the series does not, they are different funds.
     const sset = new Set(bestKey);
+    /* Every filed token the series does not account for has to be explained by
+     * something. A word left over is either a different product or a different
+     * sponsor's version of one, and both were shipping wrong tickers:
+     *   "VANGUARD MIDCAP INDEX INSTL" -> Vanguard INSTITUTIONAL INDEX (VINIX),
+     *      an S&P 500 fund, because "midcap" was simply dropped
+     *   "LVIP SSGA S&P 500 Index"     -> State Street's own fund, when it is a
+     *      Lincoln Variable Insurance Products fund sub-advised by SSgA, with
+     *      Lincoln's fee
+     * Only two kinds of leftover are legitimate: a share-class marker, and a
+     * house name the filing states and the registrant's legal name omits
+     * ("American Funds Growth Fund of America"). Anything else and we do not
+     * know what we are looking at. */
     for (const w of ft) {
-      if (!ASSET_WORDS.has(w) && !/^(19|20)\d\d$/.test(w)) continue;
-      if (!sset.has(w)) return null;
+      if (sset.has(w) || house.has(w)) continue;
+      if (CLASS_MARK.test(w)) continue;
+      return null;
     }
     }
   }
