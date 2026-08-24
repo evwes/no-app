@@ -337,6 +337,18 @@ second specimen and the larger plan. The values are the filing's values — the
 names are not the filing's names, which puts this in the fabrication
 category: a user sees "VARIABLE 8,330,607 sh" listed as a holding.
 
+**Buchanan Ingersoll & Rooney, $0.4B — an OCR typo defeats the junk
+vocabulary (report #19, 2026-08-24).** The stored confident "lineup" is six
+rows of a financial-statement rollforward: "Investments at fair valuc"
+($412M, 99.4% of the plan), "Notes recervable from participants", "Balance
+January |", "New forfeitures", "Life insurance premiums". The v44 junk sweep
+rejects exactly these rows — by exact vocabulary — and OCR misreads ("valuc",
+"recervable") slip past it. The guard class is right and its matching is too
+literal for OCR text: on `ocr:1` entries the statement-row vocabulary needs
+one-character tolerance (v68 candidate, with the BWXT trailing-dash strip).
+No master trust is linked, so the new frontend pointer guard does not catch
+it either; the junk renders today.
+
 ### A second kind of wrong: the numbers are right and the *statement* is not (added #13)
 
 The four cases above are wrong **values**. Report #13 found wrong **claims** —

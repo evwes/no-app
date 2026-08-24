@@ -2870,3 +2870,29 @@ names fabricated, confident, live.
 believing a WRONG_REGION, strip the residue and read the filing — both of
 tonight's would have gone into the inventory as "wrong region" and both are
 something else entirely.
+
+## (10 fund report) #19 — 2026-08-24 21:41Z cycle — "Investments at fair valuc"
+
+General worklist batch: 7 NAMES_MATCH, 2 ISSUER_DROPPED ($0.4B Vanguard/JPM/
+MassMutual/American Funds; $0.2B Fidelity ×5/DFA/Dodge & Cox), 1 WRONG_REGION.
+
+**The WRONG_REGION (Buchanan Ingersoll & Rooney, $0.4B law-firm plan) is real
+junk, and its mechanism is new.** The stored confident lineup is a
+financial-statement ROLLFORWARD, not a menu: "Investments at fair valuc"
+$412M (99.4% of plan), "Notes recervable from participants", "Balance
+January |", "New forfeitures", "Life insurance premiums". Two lessons:
+
+1. **An OCR typo defeats an exact-vocabulary guard.** The v44 junk sweep
+   rejects "Investments at fair value" rows — spelled correctly. The OCR
+   misreads ("valuc", "recervable") sailed past. v68 candidate: on ocr:1
+   entries, apply the statement vocabulary with one-character tolerance.
+2. **The tester's own bookkeeping hid the OCR provenance.** The entry is
+   ocr:1 in the shard, but docs/filing-worklist.json predated the builder's
+   fb/ocr carriage, so the batch ran a text search that could never succeed
+   against a scanned filing. Regenerated the worklist with the current
+   builder: 329 OCR / 191 prior-year entries now flagged of 4,000 — those
+   will report as OCR_SOURCE / PRIOR_YEAR_SOURCE instead of polluting
+   WRONG_REGION.
+
+The plan has no linked trust, so the new pointer guard from report #17 does
+not suppress this one — it renders today. 160 filings tested cumulatively.
