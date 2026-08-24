@@ -332,3 +332,354 @@ them "unmatched funds" overstates the ticker gap and hides a parser bug.
 | CIT-only pattern returned `comparable: false` | `BlackRock Equity Index F` → WFSPX with no asterisk | always-comparable flag |
 | third-party wrappers took the sub-adviser's fund | `LVIP SSGA S&P 500` → SSGA's 0.02% ER on a Lincoln account | wrapper gate, on the **raw** name |
 | wrapper gate silently did nothing (first attempt) | it lived in each pattern, but `expandFundName` rewrites `"MM"` | one up-front gate, raw name only |
+
+---
+
+## (10 fund report) #2 — 2026-08-24
+
+**Running count of the column-(a) defect, hand-verified:**
+
+| | filings |
+|---|---:|
+| **CONFIRMED** issuer column present in the 4i table and discarded | **1** |
+| **DISPROVED** — filing read, no column (a) to drop | **6** |
+| **PARTIAL** — some rows carry an issuer, most do not | **1** |
+| hand-read this cycle | 8 |
+
+The mechanical batch is `scripts/filing-batch.mjs`; verdicts land in
+`docs/filing-tests.jsonl`. Every verdict below was re-checked against the
+filing text before being believed. Two of them did not survive that check.
+
+### Batch: 10 filings from the top of the all-signals worklist — 10/10 NAMES_MATCH
+
+Acks `20251010143418…`, `20251015131942…`, `20251001104049…`,
+`20241011170433…`, `20260714103132…`, `20251009140011…`, `20251009130556…`,
+`20251013230937…`, `20260126143510…`, `20250714153130…` ($1.3B–$4.0B).
+Zero ISSUER_DROPPED at the very top of the suspicion queue.
+
+That result is not the reassurance it looks like, for a reason worth writing
+down: **NAMES_MATCH only means the stored strings occur somewhere in the PDF.**
+It does not mean they came from Schedule H line 4i. The next section is a
+filing that scores NAMES_MATCH and whose entire lineup is fabricated from a
+footnote table.
+
+### NEW DEFECT CLASS — the fair-value hierarchy table parsed as a fund menu
+
+`20251010150034NAL0004732579001` — **Morgan Stanley 401(k) Plan**, stored as a
+confident 10-row, **$21.64B** lineup. Every row is a line of the Level 1/2/3
+fair-value table in Note 4, not a holding:
+
+```
+                                    Level 1             Level 2            Level 3            Total
+Investment Assets:
+Registered Investment Companies      78,829,907                 -                -          78,829,907
+Separately Managed Accounts
+   Corporate equities             6,134,331,011                 -          237,475       6,134,568,486
+   Cash and cash equivalents          3,329,031         4,294,246                -           7,623,277
+   Government and agency securities
+     U.S. Treasury and agency…     869,592,096       284,877,550                -       1,154,469,646
+     Other sovereign government…      8,643,551         1,487,796                -          10,131,347
+   Corporate debt instruments                -       171,927,434                -         171,927,434
+   Derivative instruments           18,583,234         8,496,358                -          27,079,592
+   Repurchase agreements                     -       570,000,000                -         570,000,000
+Collective Trust Funds *                                                                13,434,874,093
+Participant-directed investments                                                        21,589,503,782
+Investment Liabilities:
+   Derivative instruments           19,256,791         3,746,779                -          23,003,570
+Participant-directed investments    19,256,791         3,746,779                -          23,003,570
+```
+
+Compare wampo's stored lineup, row for row: `Collective Trust Funds`
+$13,434,874,093 · `Corporate equities` $6,134,568,486 · `Government and agency
+securities` $1,154,469,646 · `Repurchase agreements` $570,000,000 ·
+`Corporate debt instruments` $171,927,434 · `Registered Investment Companies`
+$78,829,907 · `Derivative instruments` $50,083,162 · `Participant-directed
+investments` $23,003,570 · `Other sovereign government obligations`
+$10,131,347 · `Cash and cash equivalents` $7,623,277.
+
+Three separate errors compound here:
+
+1. **Not a menu.** These are asset classes. No participant can choose
+   "Repurchase agreements". Not one row is identifiable as a fund.
+2. **A liability counted as an asset.** Stored `Derivative instruments` is
+   **$50,083,162** — which is asset derivatives $27,079,592 **plus liability
+   derivatives $23,003,570**. The liability is then *also* stored a second time
+   as `Participant-directed investments` $23,003,570.
+3. **Stated total is wrong.** Stored rows sum to **$21,635,510,922**; the
+   filing's participant-directed investments are **$21,589,503,782**. wampo
+   overstates the plan by **$46,007,140**, exactly twice the liability line.
+
+**Why the parser never saw the real schedule.** The filing *has* a 4i schedule
+— the index says so, "Form 5500, Schedule H, Line 4i — Schedule of Assets
+(Held at End of Year) at December 31, 2024 … 19–63". Forty-five pages of it.
+Under `pdftotext -layout` those pages yield **only their page numbers**:
+
+```
+- 27 -
+- 28 -
+- 29 -
+```
+
+They are images inside an otherwise-textual PDF. Rasterising PDF page 55 at
+200dpi and OCRing it returns the schedule immediately:
+
+```
+FORM 5500, SCHEDULE H, LINE 4i—
+SCHEDULE OF ASSETS (HELD AT END OF YEAR)
+      (a) Identity of Issuer     (b) Description of Investment    Cost**    Current Value
+      Kenvue Inc Com             1,620,655 Shares of Common Stock          34,600,984
+      Kimberly-Clark Corp Com      148,852 Shares of Common Stock          19,505,566
+      Kinder Morgan Inc Del Com    145,300 Shares of Common Stock           3,981,220
+```
+
+The stored entry carries `ocr: 0`. **OCR never fired because a readable wrong
+region satisfied the parser first.** That is the mechanism, and it is general:
+OCR is gated on finding *no* section, so any filing that pairs an unreadable 4i
+with a readable footnote table gets a confident fabricated lineup instead of an
+honest gap. This class cannot be found by looking for low confidence — by
+construction it is confident.
+
+### Region audit of the rest of the batch-1 acks
+
+Where do stored names actually live in the filing? (`4i` = inside a Schedule H
+line 4i region, `STMT` = Statement of Net Assets, `?` = neither.)
+
+| ack | rows | region of stored names |
+|---|---:|---|
+| `20251014161215NAL0003254097001` | 25 | 4i=16, notes=1 — genuine |
+| `20251013172855NAL0000860659001` | 9 | **STMT=7, Sched D=1, Changes=1 — zero from 4i** |
+| `20251013091841NAL0001583216001` | 19 | ?=15 (Northern Trust security detail, the CUSIP class from #1) |
+| `20251014103917NAL0001230179001` | 9 | 4i=4, STMT=1, Changes=1 — mixed |
+| `20251010144546NAL0018281538001` | 17 | ?=9 |
+
+`20251013172855NAL0000860659001` ($12.21B, 9 rows) is a second confirmed
+statement-page lineup: **nine of nine** stored names trace to the Statement of
+Net Assets, Schedule D or the Statement of Changes. None to a 4i schedule.
+
+---
+
+## (10 fund report) #3 — 2026-08-24
+
+**Batch:** 10 filings from `docs/filing-worklist-issuer.json`, built with
+`--mode issuer`, which keeps *only* the low-manager-share signal and excludes
+the dominance and furniture signals. 2,873 filings, $0.42T. This is the
+population the $1.02T column-(a) candidate set is drawn from, with the
+statement-page cases deliberately filtered out.
+
+| verdict | n |
+|---|---:|
+| NAMES_MATCH | 3 |
+| WRONG_REGION | 2 |
+| ISSUER_DROPPED | 2 |
+| FETCH_FAIL | 2 |
+| NO_TEXT | 1 |
+
+**After hand-checking every one of them, the true tally is different:**
+1 confirmed column-(a) case (which the classifier called NAMES_MATCH), 0 of the
+2 ISSUER_DROPPED verdicts survived, 1 of the 2 WRONG_REGION verdicts was wrong,
+and the NO_TEXT was a download failure, not a filing property.
+
+### CONFIRMED — the column-(a) defect, 29 rows of 29
+
+`20260622163704NAL0006526769001` — **HP INC. 401(K) PLAN**, PN 004, plan year
+2025, $10.77B stored. The classifier scored this **NAMES_MATCH**. It is the
+cleanest confirmation of the defect found so far. The filing:
+
+```
+ * BlackRock                     Russell 1000 Index Fund F              2,308,933,976
+   SEI Trust Company             US Large Cap Equity Fund               2,051,603,120
+   SEI Trust Company             International Equity Fund                477,342,952
+   SEI Trust Company             1965 Birth Date Fund                     464,342,949
+ * BlackRock                     Russell 2500 Index Fund F                446,080,100
+ * Vanguard                      Federal Money Market Fund          $     416,616,883
+ * BlackRock                     MSCI ACWI EX-US Index Fund F             254,763,205
+ * BlackRock                     US Debt Index Fund F               $     180,464,082
+```
+
+What wampo stored: `Russell 1000 Index Fund F`, `US Large Cap Equity Fund`,
+`International Equity Fund`, `1965 Birth Date Fund`, `Russell 2500 Index Fund
+F`, `Federal Money Market Fund`, `MSCI ACWI EX-US Index Fund F`, `US Debt Index
+Fund F`. Every manager discarded.
+
+Measured over the whole entry: **29 of 30 stored names appear on a line inside
+the 4i region, and all 29 of those carry left-column text** —
+`SEI Trust Company` ×22, `BlackRock` ×4, `Fidelity` ×1, `Vanguard` ×1,
+`Dreyfus` ×1. There is no ambiguity and no alternative reading.
+
+This retroactively corrects a line in project memory. `Russell 1000 Index
+Non-Lendable Fund` was recorded as "stays unresolved **by design** — it drops
+the BlackRock prefix, so it names no manager". The prefix is not dropped by the
+filer. It is dropped by us.
+
+Also in this entry, one junk row: `instructions) BUILDING #2, SUITE 100`,
+$334,110 — a Schedule D form label glued to a street address.
+
+### DISPROVED ×2 — a Schedule C fee page parsed as a 4i schedule, with ZIP CODES as dollar values
+
+Both ISSUER_DROPPED verdicts named the same "issuer": `INSTITUTIONAL`. Neither
+is a dropped issuer. Both are something worse.
+
+`20251014143617NAL0003173265001` — **Delta 401(k) Retirement Plan for Pilots**,
+stored confident, 31 rows, **$10.70B**. The stored rows read:
+
+```
+   3,061,946,038   INC.
+   2,898,903,943   OPERATIONS COMPANY,
+     782,514,321   PORTFOLIO US
+     782,514,321   CLASS A US
+     782,514,321   AMERICA US
+          10,320   THERMOSTAT CL A
+          10,022   ITIES C US
+```
+
+They come from the **Schedule C Supplemental Report, Part I Line 3 —
+Information on Service Providers Receiving Indirect Fees**:
+
+```
+SERVICE                   SERVICE CODE    AMOUNT OF      NAME OF SOURCE       EIN/ADDRESS OF
+PROVIDER NAME             Part I,Line 3(b) INDIRECT      OF INDIRECT          SOURCE OF INDIRECT
+FIDELITY INVESTMENTS           60             $0         BLACKROCK            40 EAST 52ND ST
+INSTITUTIONAL                                            TECHNOLOGYOPPORTUN   NEW YORK NY
+OPERATIONS COMPANY,                                      ITIES C              US 10022
+LLC.
+```
+
+- `INSTITUTIONAL` and `OPERATIONS COMPANY,` are **wrapped fragments of the
+  service provider's name**, "FIDELITY INVESTMENTS INSTITUTIONAL OPERATIONS
+  COMPANY, LLC." — column (a) of a fee table, not an issuer.
+- `ITIES C US` is the tail of "BLACKROCK TECHNOLOGY OPPORTUNITIES C", broken
+  mid-word by the column width.
+- **`10,022` is BlackRock's ZIP code** (40 East 52nd St, New York NY 10022),
+  stored as a dollar value.
+
+The largest rows are the same error at scale:
+
+```
+FIDELITY INVESTMENTS           60             $0         AMERICAN INC FD OF   3500 WISEMAN BLVD    $18.00
+INSTITUTIONAL                                            AMERICA CLA         SAN ANTONIO TX
+OPERATIONS COMPANY,                                                          US 782514321
+```
+
+`782514321` is **ZIP+4 78251-4321**, American Funds' San Antonio service
+address, printed without the hyphen. wampo stores it as **$782,514,321** —
+six separate times, once per wrapped row, for **$4.70B of pure ZIP code**.
+
+`20251014143425NAL0004243664001` — the sister Delta plan, 35 rows, **$9.72B** —
+is the identical failure with the identical values (`782,514,321` ×4,
+`10,320` ×22, `10,022` ×2).
+
+Both entries' `source` field reads *"Schedule H line 4i attachment from the
+plan's 2023 filing"*. The provenance we display is wrong as well as the data.
+
+**This is a new defect class, not one of the four verdicts.** Call it
+`SCHEDULE_C_FEE_PAGE`. It has a signature no existing check catches: many rows
+sharing one identical value, and values in the 10,000–99,999 band that are
+US ZIP codes. Two plans, $20.4B, found in a batch of ten.
+
+### DISPROVED ×4 — real 4i regions with no column (a) to drop
+
+Each read by hand; each has a specific reason.
+
+**`20251002123423NAL0000783584001` — EXXONMOBIL SAVINGS PLAN, $23.45B.**
+Header is the canonical one, but the layout is a bond schedule: column (a) *is*
+the name we store and column (b) is coupon/maturity.
+
+```
+(a)                   (b)                                  (c)        (d)      (e)
+              IDENTITY OF ISSUE            DESCRIPTION OF INVESTMENT   COST   CURRENT
+                                          coupon     maturity  par/units       ($000's)
+      FEDERAL FARM CREDIT                 5.000 %    01/08/27   12,826          12,827
+      FANNIE MAE                          4.920 %    10/22/27   50,000          49,900
+```
+
+Thousands scaling is applied correctly ($23.45B stored against `TOTAL ASSETS
+HELD 23,541,037` in $000s). **One junk row though**, and it is a clean new
+specimen: stored `FOR THE YEAR ENDED`, value **$2,024,000**. Source:
+
+```
+                   STATEMENT OF CHANGES IN NET ASSETS AVAILABLE FOR BENEFITS
+                                    FOR THE YEAR ENDED 2024
+                                        (millions of dollars)
+```
+
+A date header became a holding and **the year 2024 became its value**, then got
+thousands-scaled to $2,024,000.
+
+**`20251008165336NAL0014306450001` — AT&T SAVINGS PLAN MASTER TRUST, $42.66B.**
+Left column is a CUSIP, not an issuer:
+
+```
+                    Security ID     Security Description        Shares      Cost    Market Value   Unrealized Gain/Loss
+TEAF20300002        996032397       LOANS TO PARTICIPANTS…  620,687,369.96  620,687,369.98  620,687,369.98   0.00
+TEAF87000002        999D34418       SELF DIRECTED ACCOUNT VALUE  3,243,308,024.95  …
+```
+
+The classifier called this WRONG_REGION on "0/12 stored names appear in the
+filing text". **That verdict is false**: 23 of 26 stored names are inside the
+4i region. The classifier missed them because its "value to the right" test
+requires the number to end the line, and this layout has three more columns
+after it. WRONG_REGION over-fires on gain-last layouts.
+
+**`20251013164803NAL0001619809001` — CHARTER COMMUNICATIONS, INC. DEFINED
+CONTRIBUTION PLANS MASTER TRUST, $9.98B, 80 rows.** Shares-first layout, so the
+text to the left of every name is a share count:
+
+```
+ Face Amount or
+Number of Shares Security Description                            Current value**
+       1,053,755 FID BANK TRST ST INV FUND                             1,060,733
+         282,979 8X8 INC                                                 756,062
+```
+
+74 of 80 names have left-column text and it is numeric every time. No issuer
+column exists. (Separately: this is another security-detail flood — `8X8 INC`,
+`1 800 FLOWERS.COM INC CL A` are not menu options.)
+
+**`20251010150034NAL0004732579001` — Morgan Stanley**, covered in report #2:
+the 4i pages are images, so there is no column (a) in the text to drop.
+
+### PARTIAL ×1
+
+**`20251014151025NAL0001561267001` — THE CIGNA GROUP 401(K) PLAN, $13.35B, 80
+rows.** 74 stored names sit in the 4i region; **6** carry an issuer:
+
+```
+*PRIAC   LARGE CAP BLEND FUND              Account            $   827,253
+*PRIAC   ALL WORLD EX-US STOCK INDEX FUND  Separate Account   $ 1,888,244
+```
+
+`PRIAC` ×4 and `Cigna` ×1 are dropped; the other 68 rows genuinely name no
+issuer. Also visible: `*PRIAC  FUND  Separate Account  $1,709,292` — the stored
+name is the bare word `FUND`, the rest of it lost to a line wrap.
+
+### The tester is not reliable on NO_TEXT or FETCH_FAIL
+
+`20251013090403NAL0002149570001` was scored **NO_TEXT** (`chars < 4000`). Re-
+fetched by hand it is a **496-page PDF yielding 2,254,466 characters** of
+extractable text. The two FETCH_FAILs (`20250821152449NAL0004385233001`,
+`20251010120735NAL0008123201001`) print `I/O Error: Couldn't open file` — the
+`curl -sS --max-time 120` in the batch has no retry and large filings exceed it.
+**3 of 10 verdicts in this batch were transport artefacts.** They should be
+re-queued, not counted.
+
+### What this batch changes
+
+1. **The column-(a) defect is real and it is not what the suspicion score
+   finds.** Confirmed 1 of 8 filings hand-read; the confirmed one was scored
+   NAMES_MATCH, and *both* filings the classifier scored ISSUER_DROPPED were
+   something else. Present classifier accuracy on this defect, measured on this
+   batch: 0 of 2 positives correct, 1 false negative. The $1.02T candidate set
+   is still a candidate set and this cycle did not narrow it — but it did show
+   that the low-manager-share signature is reached by at least four distinct
+   mechanisms (bond schedules, shares-first layouts, CUSIP-left trustee
+   statements, image-only 4i pages), so a large part of that $1.02T is almost
+   certainly not column-(a).
+2. **A new defect class with a testable signature:** Schedule C fee pages
+   parsed as 4i, ZIP codes as dollar values. $20.4B across two Delta plans in
+   one batch of ten. Detection rule to propose: reject a lineup where ≥3 rows
+   share one identical value, or where a value is a valid US ZIP or ZIP+4 and
+   the row name is a fragment.
+3. **OCR's gate is the wrong way round.** Morgan Stanley proves a readable
+   wrong region suppresses OCR of an unreadable right one. The audit cannot see
+   this because the result is confident.
+
