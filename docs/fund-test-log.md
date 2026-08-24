@@ -2896,3 +2896,24 @@ January |", "New forfeitures", "Life insurance premiums". Two lessons:
 
 The plan has no linked trust, so the new pointer guard from report #17 does
 not suppress this one — it renders today. 160 filings tested cumulatively.
+
+## (10 fund report) #20 — 2026-08-24 21:57Z cycle — a clean batch, and "Core Bond IS"
+
+Issuer worklist: 4 ISSUER_DROPPED, 4 NAMES_MATCH, 2 OCR_SOURCE. No
+WRONG_REGION — and the two OCR filings now report themselves as OCR_SOURCE
+instead of polluting the defect count, which is the #19 worklist fix working.
+
+Spot-checked the least typical ISSUER_DROPPED (20251016012843NAL0002983475001,
+$1.1B, six claimed issuers) against the filing. Lines 2080-2086:
+
+    Tortoise         MLP & Pipeline IS        4,563,312
+    Western Asset    Core Bond IS            59,808,337
+    New York Life    NYL Guar Int Account    43,918,108
+
+All real. This filing is the starkest column-(b) example yet: wampo's stored
+fund names are "MLP & Pipeline IS" and "Core Bond IS" — a share class with no
+manager attached identifies nothing at all. The four batches tonight put the
+running issuer tally at: Fidelity x36, Vanguard x?+dozens more across 18
+confirmed ISSUER_DROPPED filings since the cadence re-armed.
+
+170 filings tested cumulatively. No new classes this cycle; no code changes.
