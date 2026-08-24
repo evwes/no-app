@@ -532,15 +532,30 @@
       // states "a Company matching contribution of 50% of the first 6%".
       const ownKey = plan.lineupKey || plan.featKey;
       const lu = dropFormNumberRows(ownKey ? await fetchEntry(ownKey) : null, plan);
-      // use the plan's own schedule unless it is missing or majority
-      // "Investment in Master Trust" — then the trust's real holdings win
+      // use the plan's own schedule unless it is missing or a POINTER at the
+      // master trust — then the trust's real holdings win (or the honest gap).
       let ownUsable = !!(lu && lu.confident && lu.funds && lu.funds.length);
       let trustPointer = !!(lu && lu.trustPtr);
-      if (ownUsable && plan.trustKey) {
+      if (ownUsable && plan.mtiaAck) {
         const tot = lu.funds.reduce((a, f) => a + f.value, 0) || 1;
         const mti = lu.funds.filter((f) => f.type === "Master trust interest" || /master trust/i.test(f.name))
           .reduce((a, f) => a + f.value, 0);
-        if (mti / tot > 0.5) { ownUsable = false; trustPointer = true; }
+        const top = Math.max(...lu.funds.map((f) => f.value));
+        /* Two tests, and the second exists because the first is defeatable.
+         * Harley-Davidson's 4i files "Interest Held in Master Trust" in column
+         * (b) and "Various (includes Registered Investment Companies...)" in
+         * column (c); the parser keeps (c), so the words "master trust" are in
+         * the column it discarded and the name test sees an ordinary fund
+         * worth $951M of $955M. A schedule of <=8 rows with one row >=60% of
+         * the value is the parser's own trust-pointer shape, name-blind.
+         * Measured over all 343 trust-linked plans with own confident
+         * lineups: the shape test fires on 37, and a sample of 10 held zero
+         * real menus — "At fair value" (Comcast), OCR cipher (Home Depot),
+         * "Investments Held in the Trust" (United). This check also now runs
+         * whenever a trust is LINKED (mtiaAck), not only when that trust
+         * parsed confidently — a pointer at an unparsed trust is still not a
+         * menu (Altria's $911M "Master Trust" row rendered as its top fund). */
+        if (mti / tot > 0.5 || (lu.funds.length <= 8 && top / tot >= 0.6)) { ownUsable = false; trustPointer = true; }
       }
       if (!ownUsable && plan.trustKey) {
         const tlu = await fetchEntry(plan.trustKey);

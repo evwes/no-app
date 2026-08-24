@@ -162,6 +162,21 @@ schedule the pipeline nonetheless marks `confident`. The gap is
 size-correlated with exactly the two holdings a participant most wants named.
 Fixing (a) fixes this; nothing else will.
 
+**The same drop also defeats the master-trust guards (report #17, cycle of
+2026-08-24 21:08Z).** Harley-Davidson's 4i files "Interest Held in Master
+Trust" in column (b) and "Various (includes Registered Investment Companies,
+Self Directed Brokerage, etc.)" in column (c). With (b) discarded, the
+$951.8M master-trust interest became a confident "fund" named "Various
+(includes Registered", and every trust-pointer test — all keyed on the words
+"master trust" — passed it. The site rendered four junk rows while the
+trust's real 23-fund menu sat parsed and confident one link away. Measured:
+37 of 343 trust-linked plans with own confident lineups had this shape
+(Home Depot's top "fund" was OCR cipher; Comcast's was "At fair value").
+A frontend shape rule now suppresses the class, but the *information* fix —
+these rows should say what the filing says, "Interest Held in Master Trust"
+— is the column-(b) ingest. This upgrades the (b) fix from "adds tickers"
+to "restores the identity the guards depend on."
+
 ### Extraction gaps — in the audited notes, no extractor written
 
 *(The §103(a)(3)(C) election moved to the dataset section in #13 — it is a

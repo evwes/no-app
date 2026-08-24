@@ -2837,6 +2837,48 @@ list still wins over the SEC match everywhere, and it now lives in one module
 (`scripts/match-curated.mjs`) imported by both the pipeline and the applier, so
 the two cannot drift into showing different companies.
 
+## 2026-08-24 — the dropped issuer column defeats the master-trust guard: Harley-Davidson showed 4 junk rows over a real 23-fund menu
+
+**What was wrong.** Harley-Davidson's salaried plan ($967M, 4,000 participants)
+displayed a confident "lineup" of four rows: a $951.8M fund named "Various
+(includes Registered" and three "funds" that are actually participant-loan
+rows with the plan's own name glued on. Its master trust had parsed
+confidently with the real menu — Fidelity Contra pool, BlackRock LifePath,
+an SDBA — and never rendered. The Milwaukee/Tomahawk and York hourly plans
+had the same wreckage; Altria's hourly plan rendered a $911.7M "Master Trust"
+top fund plus "ALTRIA CLIENT SERVICES LLC" ($2.9M) as holdings.
+
+**Why.** Compounding of the known column-(b) defect with the trust-pointer
+guards. The filing (ack 20251209140245NAL0003813122001, line ~1964) puts
+"Interest Held in Master Trust" in column (b) and "Various (includes
+Registered Investment Companies, Self Directed Brokerage, etc.)" in column
+(c). The parser keeps (c) and discards (b) — so the words "master trust"
+lived only in the discarded column. Every guard keyed on those words: the
+parser's trustPtr shape rule (requires trust-interest-looking rows), and the
+frontend's majority-master-trust test. Both passed the junk. The frontend
+test additionally only ran when the linked trust had a CONFIDENT lineup, so
+Altria — whose trust is honestly unparsed — skipped the test entirely and
+adopted its own pointer rows as a menu.
+
+**The change** (frontend, `app.js`; no parser change — a measurement was
+running). The pointer test now runs whenever a trust is LINKED (`mtiaAck`),
+not only when it parsed confidently, and gains a name-blind shape test:
+own lineup of <=8 rows with one row >=60% of value on a trust-linked plan is
+a pointer, never a menu. Measured over all 343 trust-linked plans with own
+confident lineups before shipping: the shape test fires on 37, and a sample
+of 10 contained zero real menus — "At fair value" (Comcast), OCR cipher
+"CITYEFGHI ABCDEFGHI" (Home Depot), "Investments Held in the Trust" (United
+Airlines), "Trust" (Koch). Trust-confident plans flip to the real trust
+menu; the rest to the honest gap. Verified in-browser on Harley (junk gone,
+Contra/LifePath menu shown); smoke test green.
+
+**The prevention.** The shape thresholds are the parser's own trustPtr
+numbers applied where the trust link is extra evidence, not new constants.
+The permanent fix is still the column-(b) ingest — when identity text is
+kept, the name tests see "Interest Held in Master Trust" and the shape rule
+becomes a backstop instead of the only defense. That parser change remains
+the open owner decision.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

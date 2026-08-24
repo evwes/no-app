@@ -2798,3 +2798,47 @@ open parser change rather than a one-line patch.
 **Machine state.** No parser change was made — a measurement was running (the
 sponsor-ticker work) and the standing rule is not to move `lib-4i.mjs` or
 `PARSER_VERSION` underneath one. 130 filings tested cumulatively.
+
+## (10 fund report) #17 — 2026-08-24 21:08Z cycle — the junk that outranked a real menu
+
+First firing of the re-armed chain. Ten filings from the GENERAL worklist
+(`docs/filing-worklist.json` — assets-ranked, not a random frame), alternating
+per the cycle brief.
+
+    NAMES_MATCH      6
+    WRONG_REGION     3
+    ISSUER_DROPPED   1
+
+**Confirmed by reading the filings — all three WRONG_REGION are real, and the
+class is new.** The three are Harley-Davidson salaried (×2 filing years, $1.0B)
+and Altria hourly ($0.9B). What wampo stored as their confident lineups:
+
+    Harley: "Various (includes Registered"                    $951,781,293
+            "Plan for Salaried Employees (Plan 4.25% to..."  $  3,918,793
+            (+2 more loan rows wearing plan names)
+    Altria: "Master Trust"                                    $911,730,261
+            "ALTRIA CLIENT SERVICES LLC"                      $  2,929,146
+            "(Full title of the plan) ALTRIA GROUP, INC..."   (11-K cover text)
+
+**Why it was not reported correctly.** The filing puts "Interest Held in
+Master Trust" in 4i column (b) and "Various (includes Registered Investment
+Companies, Self Directed Brokerage, etc.)" in column (c) — primary source, line
+1964 of the Harley attachment. The parser keeps (c), drops (b), so the words
+"master trust" lived only in the discarded column and BOTH pointer guards
+(parser trustPtr, frontend majority-name test) waved the junk through. Harley's
+trust meanwhile parsed confidently with the real menu (Fidelity Contra pool,
+BlackRock LifePath, SDBA) and never rendered. The column-(b) defect is not just
+lost tickers — it deletes the identity the guards key on.
+
+**Fix shipped this cycle** (frontend only; no parser change — standing rule):
+the pointer test now runs whenever a trust is linked, and a name-blind shape
+test (<=8 rows, one row >=60% of value) catches what the name test cannot see.
+Measured before shipping: fires on 37 of 343 trust-linked plans with own
+confident lineups; a sample of 10 held zero real menus (Comcast "At fair
+value", Home Depot OCR cipher, United "Investments Held in the Trust").
+Verified in-browser: Harley now shows the trust's 23 holdings; smoke test
+green.
+
+**Also this batch:** one more ISSUER_DROPPED at $1.1B (Vanguard ×8, Northern
+Trust, Goldman) for the standing column-(b) tally. 140 filings tested
+cumulatively.
