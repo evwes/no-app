@@ -1782,3 +1782,123 @@ evidenced in earlier reports: issuer strings over 5 words or 46 characters
 (`State Street Global Advisors Trust Company`), values not ending the line
 (`**` and `N/R` footnote markers), and OCR-derived entries whose source pages
 `pdftotext` cannot see. It remains a good queue and a bad measurement.
+---
+
+## (10 fund report) #11 — 2026-08-24 — the ≥$1B stratum completed to n=20
+
+**Running count of the column-(a) defect, hand-verified (cumulative):**
+
+| | filings |
+|---|---:|
+| **CONFIRMED** issuer column present in the 4i table and discarded | **62** |
+| **DISPROVED** — filing read, no column (a) to drop | **33** |
+| **PARTIAL** — a minority of rows carry a discarded issuer | **8** |
+| **UNVERIFIABLE** — source filing not in hand | **1** |
+| hand-read to date | 104 |
+
+### A bias I had to avoid
+
+`scripts/filing-batch.mjs` skips acks already in `filing-tests.jsonl`. Running
+it again on the ≥$1B stratum would therefore have skipped exactly the filings
+reports #3–#7 already visited — and those were the *largest* in the stratum,
+because that queue is assets-ranked. The remainder would have been
+systematically smaller and the rate would have looked higher than it is.
+
+So this batch walks positions **1–20 of the shuffled stratum in order**, reusing
+my own hand verdicts for the ones already adjudicated and reading the six that
+were not: `20250714153130…`, `20250821152449…`, `20260611104321…`,
+`20251014161215…`, `20251013105633…`, `20260716150825…`.
+
+### ≥$1B stratum, positions 1–20 of the shuffle
+
+| # | plan | assets | verdict |
+|---:|---|---:|---|
+| 1 | (1/24 rows) | $1.40B | disproved |
+| 2 | ADT SECURITY RETIREMENT SAVINGS & INVESTMENT | $1.24B | **confirmed** 25/26 |
+| 3 | ADIENT US LLC SAVINGS AND INVESTMENT (401K) | $1.34B | disproved — 0/8 in a 4i region |
+| 4 | (statement categories) | $2.04B | disproved — other defect |
+| 5 | JPMORGAN CHASE 401(K) SAVINGS | $37.18B | disproved — names already carry the manager |
+| 6 | EASTMAN KODAK SAVINGS & INVESTMENT | $2.15B | **confirmed** 21/22 |
+| 7 | (19/77 rows) | $1.11B | partial |
+| 8 | QORVO 401(K) | $1.24B | **confirmed** 32/33 |
+| 9 | DEFERRED PROFIT-SHARING PLAN FOR SALARIED EMPLOYEES (Altria) | $4.08B | disproved — other defect, see below |
+| 10 | DHL RETIREMENT SAVINGS | $1.32B | **confirmed** 17/17 |
+| 11 | (10/26 rows) | $1.02B | partial |
+| 12 | (statement categories) | $1.52B | disproved — other defect |
+| 13 | 401(K) PENSION PLAN | $19.09B | disproved — 14/19 in region, no left column |
+| 14 | (statement categories) | $1.52B | disproved — other defect |
+| 15 | VILLANOVA UNIVERSITY RETIREMENT SAVINGS | $1.18B | **confirmed** 45/46 |
+| 16 | BLUE 401(K) | $1.17B | **confirmed** 29/35 |
+| 17 | (JP Morgan Schedule D page, report #1) | $29.20B | disproved — other defect |
+| 18 | CHS/COMMUNITY HEALTH SYSTEMS | $4.72B | **confirmed** 15/15 |
+| 19 | OSHKOSH CORPORATION TAX-DEFERRED INVESTMENT | $2.32B | **confirmed** 29/29 |
+| 20 | (Northern Trust trustee statement, report #1) | $8.74B | disproved — other defect |
+
+**8 confirmed of 20. Rate 40.0%, Wilson 95% interval 21.9% – 61.3%.** The first
+ten gave 40% and the second ten gave 40%; the estimate is stable.
+
+Oshkosh, 29 of 29 rows — Fidelity ×17, Vanguard ×3, T. Rowe Price ×2, Putnam,
+American Funds, Hartford, Janus, JP Morgan, Columbia, ClearBridge — every one
+discarded. Villanova, 45 of 46 — Vanguard ×36, CREF ×5, TIAA ×2.
+
+`20250821152449NAL0004385233001` — **JPMORGAN CHASE 401(K) SAVINGS PLAN**,
+$37.18B — is worth noting as a disproof: its stored names are
+`BLCKRCK EQUITY INDEX`, `BLCKRCK RUSSELL GROWTH 1000`, `SSGA S&P MIDCAP INDEX`.
+The manager is already inside the name, so nothing was dropped. This is what
+the largest plans tend to look like, and it is why the stratum rate is low.
+
+### Updated stratified estimate
+
+| stratum | lineups | assets | confirmed rate (95% CI) | assets affected |
+|---|---:|---:|---|---:|
+| ≥ $1B | 129 | $798B | 40.0% (21.9 – 61.3) | $319B (175 – 489) |
+| < $1B | 5,185 | $294B | 84.6% (70.3 – 92.8) | $248B (206 – 273) |
+| **total** | **5,314** | **$1,091B** | | **$568B ($381 – $762B)** |
+
+**Lineups affected: point 4,439, range 3,672 – 4,888.**
+
+The dollar range has tightened from $340–820B to **$381–762B** and no longer
+rests on ten draws. The remaining weakness is unchanged and worth restating:
+the stratum spans $1.02B to $53.0B, and the sampled median ($1.4B) is below the
+stratum median ($2.30B), so the very largest plans are still thinly covered.
+Reading all 129 would remove the last of that uncertainty.
+
+### A SECOND independent case of ZIP codes stored as dollar values
+
+Position 9, `20260611104321NAL0017242610001` — **DEFERRED PROFIT-SHARING PLAN
+FOR SALARIED EMPLOYEES** (Altria), $4.08B, confident, OCR-derived from a
+prior-year fallback filing. Its stored lineup:
+
+```
+   4,059,105,847   Master Trust
+       6,241,639   Collective investment funds
+       2,929,146   y ALTRIA CLIENT SERVICES LLC
+       2,486,785   Master Trust B Altria Stock
+       2,388,990   Plan's interest in Master Trust A at fair value
+         476,622   Registered investment companies
+         419,815   Fully benefit-responsive investment contracts
+          81,206   By employer
+          56,881   By participants
+          23,230   6601 West Broad Street Richmond, Virginia
+          20,549   WASHINGTON, D.C.
+```
+
+The last two rows are self-evidencing: a holding named
+`6601 West Broad Street Richmond, Virginia` worth **$23,230** — Richmond's ZIP
+is 23230 — and a holding named `WASHINGTON, D.C.` worth **$20,549** — the
+SEC's ZIP is 20549, the address printed on every 11-K cover page. **The name is
+the address and the value is its ZIP code.** Together with the two Delta plans
+in report #3 (BlackRock's 10022, American Funds' 78251-4321) that is three
+plans in this loop where a postal code is displayed to users as a fund balance.
+
+`By employer` $81,206 and `By participants` $56,881 are contribution lines,
+the Fresenius class from report #4. `Master Trust` $4,059,105,847 is Form 5500
+line 1c(11), *Value of interest in master trust investment accounts* — the
+right number under a name that is not a fund.
+
+I could not quote the source page: the entry comes from a prior-year filing
+reached through the `fb` fallback, and that ack is only in the pipeline-only
+`fallbacks.json` artifact. Same blocker as FirstEnergy in report #5. **Two
+findings now blocked on the same missing thing — worth publishing the fallback
+ack into `lineups-status.json` so a tester can reach the filing that was
+actually parsed.**
