@@ -416,6 +416,20 @@ const FUND_TICKER = [
   [/mfs value fund/i, "MEIKX"],
 ];
 
+/* A third-party WRAPPER's product is not the underlying manager's fund.
+ * "LVIP SSGA S&P 500 Index" is a Lincoln separate account, "Principal/
+ * BlackRock S&P 500 Index" is Principal's, "MM S&P 500 Index Fd(Northern
+ * Trust)" is MassMutual's. Each tracks the same index through the same
+ * sub-adviser, so naming the sub-adviser's fund looks harmless -- but the
+ * wrapper's fee is materially higher than the underlying fund's, and this
+ * site exists to show fees. Measured across the universe: 356 holdings, LVIP
+ * 225 of them. They get nothing rather than a fee that understates what the
+ * participant pays.
+ * A bare TRUSTEE name is not a wrapper in this sense -- "Great Gray Trust Co.
+ * BlackRock EAFE Eq. Index" is BlackRock's strategy in a collective trust,
+ * with no registered product of its own to name, so it is left alone. */
+const WRAPPER = /\b(?:lvip|jnl|principal|transamerica|nationwide|voya|vy|john hancock|brighthouse|met ?life|metropolitan|pacific life|lincoln|empower|great.?west|mm|massmutual|prudential|talcott|corebridge|equitable)\b/i;
+
 /* ---- BlackRock Institutional Trust Company collective index trusts ----------
  * "BlackRock Equity Index Fund", "BlackRock EAFE Equity Index Fund" and
  * "BlackRock Mid Cap Equity Index Fund" are collective trusts managed by
@@ -481,19 +495,20 @@ const ntSp400Re = new RegExp("(?=[\\s\\S]*(?:northern trust|\\bnt\\b\\s{0,3}coll
 /* ---- BlackRock Russell index collective trusts --------------------------------
  * "BlackRock Russell 1000 Index Non-Lendable Fund" / "BlackRock Russell 2500
  * Index Non-Lendable Fund" are collective trusts run by BlackRock tracking
- * the Russell 1000 and Russell 2500 respectively. The plain Russell 1000
- * strategy has a same-name registered mutual fund (formerly "BlackRock
- * Russell 1000 Index Fund", now "iShares Russell 1000 Large-Cap Index Fund",
- * BRGNX); the Growth/Value tilts are separate iShares ETFs (IWF/IWD). No
- * BlackRock/iShares Russell 2500 MUTUAL FUND was found, so the iShares
- * Russell 2500 ETF (SMMD) stands in for that one.
+ * the Russell 1000 and Russell 2500 respectively. The Growth/Value tilts are
+ * separate iShares ETFs (IWF/IWD). No BlackRock/iShares Russell 2500 MUTUAL
+ * FUND exists, so the iShares Russell 2500 ETF (SMMD) stands in for that one,
+ * and the plain Russell 1000 strategy takes the iShares Russell 1000 ETF
+ * (IWB) for the same reason -- BRGNX, the "iShares Russell 1000 Large-Cap
+ * Index Fund" mutual fund, is ABSENT from the current SEC series/class
+ * snapshot and is not a live ticker to quote.
  * A handful of filings drop the "BlackRock" prefix entirely ("Russell 1000
  * Index Non-Lendable Fund") — those state no manager and are deliberately
  * left unmatched, same rule as "TARGET RETIREMENT 2030" above. */
-const brRussell1000GrowthRe = /blackrock russell 1000 (?:index )?growth/i;
-const brRussell1000ValueRe = /blackrock russell 1000 (?:index )?value/i;
-const brRussell1000Re = /blackrock russell 1000 (?:index|large.?cap)/i;
-const brRussell2500Re = /blackrock russell 2500 index/i;
+const brRussell1000GrowthRe = new RegExp("blackrock russell 1000 (?:index )?growth", "i");
+const brRussell1000ValueRe = new RegExp("blackrock russell 1000 (?:index )?value", "i");
+const brRussell1000Re = new RegExp("blackrock russell 1000 (?:index|large.?cap)", "i");
+const brRussell2500Re = new RegExp("blackrock russell 2500 index", "i");
 
 /* ---- comparable registered funds --------------------------------------------
  * A collective trust has NO ticker and NO public expense ratio — its fee is
@@ -507,22 +522,33 @@ const brRussell2500Re = /blackrock russell 2500 index/i;
  * AND the same strategy as one specific registered fund. Generic index trusts
  * whose benchmark the name never states (e.g. "SSGA LG CAP GROWTH") get
  * nothing — guessing their index would be invention. */
+/* A comparable must be a fund that still EXISTS. Three entries here first
+ * named funds that are absent from the current SEC series/class snapshot --
+ * BSPIX and MAIIX (iShares S&P 500 / MSCI EAFE International index mutual
+ * funds) and BRGNX (iShares Russell 1000 Large-Cap Index Fund) -- share
+ * classes and funds BlackRock has since consolidated or wound up. Quoting a
+ * dead ticker is the same error as quoting a wrong one. Each was replaced
+ * with the same manager's surviving vehicle for the same index, verified
+ * present in the snapshot: the S&P 500 index fund's Class K (WFSPX), and the
+ * iShares MSCI EAFE (EFA) and Russell 1000 (IWB) ETFs. Their expense ratios
+ * are left null -- the fund is identified, the fee is not verified, and the
+ * table renders "--" rather than a number nobody checked. */
 const FUND_COMPARABLE = [
   // BlackRock BTC index trusts (order matters: EAFE and Mid Cap before plain)
-  [brEquityIndexEafe, ["MAIIX", 0.10]],
-  [brEquityIndexMidCap, ["IJH", 0.05]],
-  [brEquityIndexPlain, ["BSPIX", 0.10]],
-  [brRussell1000GrowthRe, ["IWF", 0.18]],
-  [brRussell1000ValueRe, ["IWD", 0.18]],
-  [brRussell1000Re, ["BRGNX", 0.11]],
-  [brRussell2500Re, ["SMMD", 0.15]],
+  [brEquityIndexEafe, ["EFA", null, true]],
+  [brEquityIndexMidCap, ["IJH", 0.05, true]],
+  [brEquityIndexPlain, ["WFSPX", null, true]],
+  [brRussell1000GrowthRe, ["IWF", 0.18, true]],
+  [brRussell1000ValueRe, ["IWD", 0.18, true]],
+  [brRussell1000Re, ["IWB", null, true]],
+  [brRussell2500Re, ["SMMD", 0.15, true]],
   // SSGA / State Street (order matters: mid cap before plain S&P 500)
-  [ssMidCapRe, ["MDY", 0.23]],
-  [ssSp500Re, ["SSSYX", 0.02]],
+  [ssMidCapRe, ["MDY", 0.23, true]],
+  [ssSp500Re, ["SSSYX", 0.02, true]],
   // Northern Trust / Northern Funds (order matters: 400 before 500 is moot —
   // the digit itself discriminates — but 500 leads since it is the larger family)
-  [ntSp500Re, ["NOSIX", 0.05]],
-  [ntSp400Re, ["NOMIX", 0.15]],
+  [ntSp500Re, ["NOSIX", 0.05, true]],
+  [ntSp400Re, ["NOMIX", 0.15, true]],
   [/vanguard target (retirement )?income/i, ["VTINX", 0.08]],
   [/vanguard target (retirement )?2020/i, ["VTWNX", 0.08]],
   [/vanguard target (retirement )?2025/i, ["VTTVX", 0.08]],
@@ -633,18 +659,33 @@ function fundTickerInfo(name, type) {
   const pooled = /trust|commingled|collective|pool\b|unitized|separate account|\bcit\b|annuity|tiaa traditional|guaranteed|\bgic\b|stable value|separately managed/i.test(name)
     || /\btr[\s-][a-z0-9]\s*$/i.test(name)
     || /collective trust|pooled separate/i.test(type || "");
+  /* Tested against the RAW name, never the expanded one: expandFundName
+   * rewrites "MM" (to "Money Market"), which silently defeated this guard when
+   * it lived inside the individual patterns, and "MM S&P 500 Index Fd(Northern
+   * Trust)" kept resolving to Northern's own fund. */
+  const wrapped = WRAPPER.test(name);
   if (!pooled) {
     for (const [re, tk] of FUND_TICKER) if (re.test(name) || re.test(n)) return { tk, comparable: false };
+    if (wrapped) return null;
     // The comparable table lists retail funds. When the holding is NOT a
     // pooled vehicle, a match there is the fund itself, not an analogue --
     // exact, no asterisk. Without this, every target-date MUTUAL fund
     // ("Vanguard Target Retirement 2040 Fund", $197B universe-wide) fell
     // through to nothing while its trust edition resolved fine.
-    for (const [re, pair] of FUND_COMPARABLE) if (re.test(name) || re.test(n)) return { tk: pair[0], comparable: false };
+    /* A third element marks a pattern that can ONLY ever be a collective
+     * trust -- "BlackRock Equity Index F" and "SSGA S&P 500 Index NL Series N"
+     * name no trust anywhere, so the pooled test above misses them, and they
+     * were being returned as the iShares/State Street MUTUAL fund with no
+     * asterisk. That is a false claim about what the plan holds. */
+    for (const [re, pair] of FUND_COMPARABLE) {
+      if (!re.test(name) && !re.test(n)) continue;
+      return pair[2] ? { tk: pair[0], comparable: true, er: pair[1] } : { tk: pair[0], comparable: false };
+    }
     return null;
   }
   // a stable value / guaranteed vehicle has no registered analogue at all
   if (/stable value|guaranteed|\bgic\b|annuity|tiaa traditional|retirement savings trust/i.test(n)) return null;
+  if (wrapped) return null;
   for (const [re, pair] of FUND_COMPARABLE) if (re.test(name) || re.test(n)) return { tk: pair[0], comparable: true, er: pair[1] };
   return null;
 }

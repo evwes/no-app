@@ -2672,6 +2672,76 @@ those two cases reliably is the same problem as reading the name, so the
 technique buys nothing it does not also cost. Recorded here so it is not
 re-proposed: the yield is real, the precision is not.
 
+## 2026-08-24 — pooled-vehicle comparables: three dead tickers, a missing asterisk, and 356 wrapper rows
+
+The funds-and-tickers agent added comparable registered funds for the large
+collective-trust families (BlackRock BTC index trusts, SSGA/State Street,
+Northern Trust, BlackRock Russell, T. Rowe Price Structured Research). Its own
+work found and fixed a real shipped defect; reviewing it before it landed found
+three more.
+
+**What the agent got right, and it was already live-wrong.** The `pooled` test
+in `fund-er.js` recognised "trust" spelled out but not the recordkeeper
+abbreviation "Tr". So `T. ROWE PRICE RETIREMENT 2050 TR-K` and
+`T. Rowe Price Structured Research Tr-C` were being shown with the mutual
+fund's ticker and **no asterisk** — a claim that the plan holds the registered
+fund when it holds the collective trust, at a different fee. Fixed with a
+trailing-anchor pattern (`/\btr[\s-][a-z0-9]\s*$/i`) narrow enough not to
+collide with "TRP", the T. Rowe Price manager abbreviation. Measured across the
+universe: **166 holdings** flip from exact to asterisked-comparable, every one
+of them a genuine trust, **zero** flipped without a trust marker. (The agent
+reported ~1,600 distinct filed names matching the pattern; the number that were
+actually getting a wrong exact ticker is 166. The measured figure is the one
+that counts.)
+
+**Defect 1 — three of the twelve proposed tickers name funds that no longer
+exist.** BSPIX and MAIIX (iShares S&P 500 / MSCI EAFE International index
+mutual funds) and BRGNX (iShares Russell 1000 Large-Cap Index Fund) are all
+absent from the current SEC series/class snapshot; BlackRock has consolidated
+or wound them up. The `iShares S&P 500 Index Fund` survives in the snapshot
+only as WFSPX (Class K). This is notable because the agent applied exactly this
+test elsewhere and correctly refused BlackRock LifePath Index on the strength
+of it — the registered LifePath Index mutual funds are being liquidated on or
+about 2026-10-16 and are already gone from the snapshot — but did not apply it
+to its own additions. Replaced with the same manager's surviving vehicle for
+the same index, each verified present: **WFSPX**, **EFA**, **IWB**. Their
+expense ratios are left `null`: the fund is identified, the fee is not
+verified, and the table renders "—" rather than a number nobody checked.
+
+**Defect 2 — a comparable was being asserted as the fund itself.** The
+non-pooled branch of `fundTickerInfo` returns `comparable: false` for a
+FUND_COMPARABLE hit, which is right for a retail mutual fund
+("Vanguard Target Retirement 2040 Fund") and wrong for a pattern that can only
+ever describe a collective trust. `BlackRock Equity Index F` and
+`SSGA S&P 500 Index NL Series N` name no trust anywhere, so the pooled test
+missed them and they returned WFSPX / SSSYX with **no asterisk** — the same
+false claim the "Tr" fix had just removed, reintroduced through a different
+door. Entries whose pattern is CIT-only now carry a third element marking them
+always-comparable.
+
+**Defect 3 — 356 holdings were third-party wrappers.** `LVIP SSGA S&P 500
+Index` is a Lincoln separate account, `Principal/BlackRock S&P 500 Index` is
+Principal's, `MM S&P 500 Index Fd(Northern Trust)` is MassMutual's. Each tracks
+the same index through the same sub-adviser, so naming the sub-adviser's fund
+looks harmless — but the wrapper's fee is materially higher, and understating a
+fee is the one error this site cannot afford. Measured: LVIP 225, Principal
+~116, MassMutual 9, Transamerica 5. They now resolve to nothing.
+
+A first attempt at that guard was embedded in each individual pattern and
+**silently did not work**: `fundTickerInfo` tests both the raw name and the
+abbreviation-expanded one, and `expandFundName` rewrites "MM", so
+`MM S&P 500 Index Fd(Northern Trust)` still resolved. The guard is now a single
+up-front gate tested against the RAW name only. A bare trustee name is
+deliberately not treated as a wrapper — "Great Gray Trust Co. BlackRock EAFE
+Eq. Index" is BlackRock's strategy in a collective trust with no registered
+product of its own to name.
+
+**The prevention.** A comparable must name a fund that still EXISTS: every
+proposed ticker is now checked against the current SEC series/class snapshot
+before it ships, which is a local, primary-source check requiring no network.
+Absence from the snapshot is what caught all three, and it is the same test
+that correctly killed LifePath.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
