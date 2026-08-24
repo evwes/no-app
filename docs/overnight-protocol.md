@@ -33,6 +33,13 @@ mode: a cycle that dies before re-arming ends the night.
   already-tested acks, so a duplicate firing simply advances the queue.
 - `create_trigger` and `update_trigger` require approval the owner cannot give
   while asleep. Do not plan around them overnight.
+- **Check `docs/cadence-state.json` before arming anything.** If the fire time
+  recorded there is still in the future, a chain is already armed: run the cycle
+  and arm nothing. A one-shot chain re-arms itself, so a cycle that arms "just
+  in case" permanently doubles it — and `list_triggers`, `update_trigger` and
+  `delete_trigger` all need an approval nobody is awake to give, so a duplicate
+  chain cannot be pruned afterwards. Update and commit the file whenever you do
+  arm.
 
 ## When the dedicated agent keeps dying
 
