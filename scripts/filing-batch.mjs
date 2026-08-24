@@ -1,0 +1,158 @@
+#!/usr/bin/env node
+/* wampo — automated filing test batch.
+ *
+ * WHY THIS EXISTS. Testing filings by hand is the only way to find parse
+ * defects, and doing it by hand is also what makes it slow enough to stall
+ * behind report-writing. This does the mechanical half — fetch the filing,
+ * read its Schedule H line 4i region, compare it to what wampo stored, and
+ * classify the difference — so a batch of ten never waits on prose. The
+ * judgement half (is this classification right, what does it mean, what do we
+ * change) stays with a reviewer reading this output.
+ *
+ * It answers one question per filing: DOES OUR STORED LINEUP MATCH THE FILING,
+ * and if not, in which of the known ways does it fail?
+ *
+ *   ISSUER_DROPPED  the filing prints "Fidelity | 500 Index Fund" in columns
+ *                   (a) and (b); we stored only "500 Index Fund". Discovered
+ *                   2026-08-24 and the single largest defect found so far.
+ *   WRONG_REGION    stored names are not in the 4i schedule at all — they came
+ *                   from a Statement of Net Assets, a Schedule D page, or a
+ *                   trustee statement's security detail.
+ *   NAMES_MATCH     stored names appear in the filing as filed. Clean.
+ *   NO_TEXT         form-only PDF, or a scanned attachment this pass can't read
+ *                   (no OCR here — that is the pipeline's job, not the test's).
+ *
+ * Usage:
+ *   node scripts/filing-batch.mjs [--n 10] [--worklist docs/filing-worklist.json]
+ *                                 [--out docs/filing-tests.jsonl]
+ * Re-running continues where the last batch stopped: acks already present in
+ * the output file are skipped, so the cadence can be a dumb timer.
+ */
+import fs from "node:fs";
+import path from "node:path";
+import { execFileSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const arg = (k, d) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : d; };
+const N = +arg("--n", 10);
+const WORKLIST = arg("--worklist", path.join(root, "docs/filing-worklist.json"));
+const OUT = arg("--out", path.join(root, "docs/filing-tests.jsonl"));
+const TMP = process.env.SCRATCH || "/tmp/wampo-filing-batch";
+
+fs.mkdirSync(TMP, { recursive: true });
+
+// already-tested acks, so a repeated run advances instead of repeating
+const done = new Set();
+if (fs.existsSync(OUT)) {
+  for (const line of fs.readFileSync(OUT, "utf8").split("\n")) {
+    if (!line.trim()) continue;
+    try { done.add(JSON.parse(line).ack); } catch { /* partial last line */ }
+  }
+}
+
+const work = JSON.parse(fs.readFileSync(WORKLIST, "utf8"));
+const batch = work.filter((w) => !done.has(w.ack)).slice(0, N);
+if (!batch.length) { console.log("worklist exhausted — regenerate it"); process.exit(0); }
+
+const pdfUrl = (ack) => {
+  const y = ack.slice(0, 4), m = ack.slice(4, 6), d = ack.slice(6, 8);
+  return `https://efast2-filings-public.s3.amazonaws.com/prd/${y}/${m}/${d}/${ack}.pdf`;
+};
+
+/* Find the line in the filing that carries a stored fund name, and report what
+ * sits to its LEFT.
+ *
+ * The first version searched the whole document for the name and treated any
+ * leading text as an issuer. That matched prose in the notes ("Risks and
+ * Uncertainties — The Plan utilizes...") and form labels ("a Name of MTIA,
+ * CCT, PSA..."), and reported them as dropped issuers. Three structural
+ * conditions separate a real two-column table row from a sentence that happens
+ * to contain a fund name:
+ *   1. a WIDE GAP (3+ spaces) between the issuer and the product — columns are
+ *      laid out, sentences are not;
+ *   2. a VALUE to the right of the name — every 4i row carries one;
+ *   3. the left text is name-shaped: a few words, no sentence punctuation, not
+ *      a form label, not a number.
+ * All three, or it does not count. */
+const VALUE_RIGHT = /[\d,]{4,}(?:\.\d\d)?\s*$/;
+const PROSE = /[.:;—]|\b(?:the|of|and|is|are|was|were|which|that|percent|plan|total|note)\b/i;
+const FORM_LABEL = /^[a-e]\s|^\(\d|^\d/;
+function issuerBefore(lines, name) {
+  const needle = name.toLowerCase().replace(/\s+/g, " ").trim();
+  if (needle.length < 10) return null;            // short names are ambiguous
+  let seen = null;
+  for (const raw of lines) {
+    const low = raw.toLowerCase();
+    const at = low.indexOf(needle);
+    if (at < 0) continue;
+    const rest = raw.slice(at + needle.length);
+    if (!VALUE_RIGHT.test(rest)) continue;         // no value -> not a table row
+    seen = { found: true, issuer: null };
+    const left = raw.slice(0, at);
+    const gap = left.match(/\s{3,}$/);             // column gap, not a word space
+    if (!gap) return seen;
+    const tok = left.slice(0, left.length - gap[0].length).replace(/^[\s*]+/, "").trim();
+    if (!tok || tok.length < 3 || tok.length > 46) return seen;
+    if (PROSE.test(tok) || FORM_LABEL.test(tok)) return seen;
+    if (tok.split(/\s+/).length > 5) return seen;
+    return { found: true, issuer: tok };
+  }
+  return seen;
+}
+
+const results = [];
+for (const w of batch) {
+  const rec = { ack: w.ack, ein: w.ein || null, plan: w.plan || null, rows: w.rows,
+    assets: w.assets, tested: new Date().toISOString() };
+  const pdf = path.join(TMP, w.ack + ".pdf");
+  const txt = path.join(TMP, w.ack + ".txt");
+  try {
+    execFileSync("curl", ["-sS", "--max-time", "120", "-o", pdf, pdfUrl(w.ack)]);
+    execFileSync("pdftotext", ["-layout", pdf, txt]);
+  } catch (e) {
+    rec.verdict = "FETCH_FAIL"; rec.note = String(e.message).slice(0, 120);
+    results.push(rec); continue;
+  }
+  let text = "";
+  try { text = fs.readFileSync(txt, "utf8"); } catch { /* empty */ }
+  const lines = text.split("\n");
+  rec.chars = text.length;
+
+  if (text.length < 4000) { rec.verdict = "NO_TEXT"; results.push(rec); continue; }
+  rec.hasIssuerHeader = /identity of\s+(?:issue|issuer|party)/i.test(text)
+    || /Identity of issue, borrower/i.test(text);
+
+  let found = 0, withIssuer = 0;
+  const issuers = new Map();
+  for (const name of w.names) {
+    const hit = issuerBefore(lines, name);
+    if (!hit) continue;
+    found++;
+    if (hit.issuer) { withIssuer++; issuers.set(hit.issuer, (issuers.get(hit.issuer) || 0) + 1); }
+  }
+  rec.namesChecked = w.names.length;
+  rec.namesFoundInFiling = found;
+  rec.namesWithIssuerToLeft = withIssuer;
+  rec.issuers = [...issuers.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8).map(([n, c]) => `${n} x${c}`);
+
+  if (found === 0) rec.verdict = "WRONG_REGION";
+  else if (withIssuer / found >= 0.6) rec.verdict = "ISSUER_DROPPED";
+  else if (found / w.names.length < 0.4) rec.verdict = "WRONG_REGION";
+  else rec.verdict = "NAMES_MATCH";
+  results.push(rec);
+  try { fs.unlinkSync(pdf); fs.unlinkSync(txt); } catch { /* best effort */ }
+}
+
+fs.appendFileSync(OUT, results.map((r) => JSON.stringify(r)).join("\n") + "\n");
+
+const tally = {};
+for (const r of results) tally[r.verdict] = (tally[r.verdict] || 0) + 1;
+console.log(`batch of ${results.length}  (${done.size} previously tested)`);
+for (const [k, v] of Object.entries(tally).sort((a, b) => b[1] - a[1])) console.log(`  ${k.padEnd(16)} ${v}`);
+console.log("");
+for (const r of results) {
+  console.log(`${r.verdict.padEnd(16)} ${r.ack}  ${String(r.rows).padStart(3)} rows  $${(r.assets / 1e9).toFixed(1)}B`);
+  if (r.issuers && r.issuers.length) console.log(`                 issuers dropped: ${r.issuers.join(", ")}`);
+  else if (r.verdict === "WRONG_REGION") console.log(`                 ${r.namesFoundInFiling}/${r.namesChecked} stored names appear in the filing text`);
+}
