@@ -649,6 +649,23 @@
 
   function filedContributionCard(plan) {
     const ff = plan.filedFeatures;
+    /* A MULTIPLE-EMPLOYER or POOLED EMPLOYER PLAN has no single plan design.
+     * Each participating employer adopts its own match, vesting and
+     * eligibility; the audited notes describe one arrangement, or describe the
+     * range, and wampo renders whatever it extracted as though it were the
+     * plan's. Measured 2026-08-24: 289 plans self-identify as pooled or
+     * multiple-employer by name and 111 of them carry an asserted match
+     * formula -- "EQUITY HR, INC. 401(K) MULTIPLE EMPLOYER PLAN" is shown
+     * "100% of the first 4% of pay", which is at best one employer's terms
+     * presented as everyone's.
+     *
+     * The name is a proxy. The Form 5500 entity-type field is the real signal
+     * and build-data.mjs does not ingest it (it reads TYPE_DFE_PLAN_ENTITY_CD
+     * only to spot master trusts), so this matches only unambiguous markers --
+     * "multiple employer plan", "pooled employer plan", MEP, PEP -- and says
+     * the terms may differ rather than suppressing them. */
+    const pooledPlan = /\bmultiple[- ]employer plan\b|\bpooled employer plan\b|\bMEP\b|\bPEP\b/i
+      .test(plan.planName || "");
     /* A match quote is only evidence of a match. Measured across all 62,377
      * lineups carrying features: 52,514 have a match quote, 8,704 of those have
      * NO extracted formula, and 4,350 of those quotes contain no digit at all.
@@ -680,6 +697,7 @@
         <span class="badge badge-green">FORM 5500 AUDIT NOTES</span>
         <span class="contrib-total">${total}</span>
       </div>
+      ${pooledPlan ? `<p class="max-benefit"><strong>This is a multiple-employer plan.</strong> Each participating employer adopts its own terms, so any formula below is what the audited notes describe — it may not be the arrangement that applies to a particular employer's staff.</p>` : ""}
       ${ff.frozen ? `<p class="max-benefit"><strong>⚠ Plan frozen or terminated</strong> — the filing states contributions have been discontinued; details below describe the plan as it operated.</p>${ff.frozenText ? `<blockquote class="quote">“${esc(ff.frozenText)}”</blockquote>` : ""}` : ""}
       ${ff.match ? `<p class="max-benefit">Formula: <strong>${esc(ff.match)}</strong>${ff.safeHarbor === "match" ? " · safe harbor" : ""}${ff.trueUp ? " · with annual true-up" : ""}${/discretionary/i.test(ff.match) && plan.flows.employerM === 0 ? " · <strong>none made this plan year</strong>" : ""}</p>` : ""}
       ${matchQuote ? `<blockquote class="quote">“${esc(matchQuote)}”</blockquote>` : ""}
