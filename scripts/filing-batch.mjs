@@ -145,6 +145,15 @@ for (const w of batch) {
   rec.chars = text.length;
 
   if (text.length < 4000) { rec.verdict = "NO_TEXT"; results.push(rec); continue; }
+  /* Two verdicts that are NOT defects, separated out because lumping them into
+   * WRONG_REGION overstated it: measured over the first 98 filings, prior-year
+   * entries were 5 of 19 WRONG_REGION against 1 of 56 NAMES_MATCH -- a 13x
+   * enrichment that is entirely explained by this tester fetching the newest
+   * filing while the entry was built from an older one. OCR entries cannot be
+   * found by pdftotext at all, which the previous run flagged as a permanent
+   * blind spot. */
+  if (w.fb) { rec.verdict = "PRIOR_YEAR_SOURCE"; rec.note = `lineup built from the ${w.fb} filing`; results.push(rec); continue; }
+  if (w.ocr) { rec.verdict = "OCR_SOURCE"; rec.note = "lineup built from OCR; pdftotext cannot reproduce it"; results.push(rec); continue; }
   rec.hasIssuerHeader = /identity of\s+(?:issue|issuer|party)/i.test(text)
     || /Identity of issue, borrower/i.test(text);
 

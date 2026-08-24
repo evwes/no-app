@@ -75,6 +75,13 @@ for (let i = 0; i < 64; i++) {
 
     rows.push({
       ack, rows: funds.length, assets, score,
+      /* Carried so the batch tester can tell its own artefacts from real
+       * defects. fb means the lineup came from a PRIOR-YEAR filing because the
+       * newest one had no readable schedule; the tester downloads the newest
+       * filing, so those names are correctly absent from it and the entry is
+       * working as designed. ocr means the text came from rasterised pages,
+       * which pdftotext will not reproduce. Both scored WRONG_REGION. */
+      fb: e.fb || null, ocr: e.ocr ? 1 : 0,
       mgrShare: +(withMgr / funds.length).toFixed(2),
       // the names the batch tester will look for in the filing text; longest
       // first, since a long name is a less ambiguous needle
