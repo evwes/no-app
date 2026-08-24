@@ -549,6 +549,33 @@ const FUND_COMPARABLE = [
   // the digit itself discriminates — but 500 leads since it is the larger family)
   [ntSp500Re, ["NOSIX", 0.05, true]],
   [ntSp400Re, ["NOMIX", 0.15, true]],
+  /* State Street Target Retirement collective trusts -> the same-vintage
+   * Class K mutual funds (State Street Institutional Investment Trust).
+   * Same manager, same strategy, same vintage — the bar for a comparable.
+   * Owner request 2026-08-24 (Westinghouse review): a target-date trust row
+   * should carry its manager's public edition below the name. Every ticker
+   * verified present in the current SEC series/class snapshot; 0.09% is the
+   * K-class fee as published (matches this table's long-standing series
+   * estimate). Marked always-comparable: the plan holds the TRUST, never
+   * this fund. */
+  [/(state street|ssga).*target retirement income/i, ["SSFOX", 0.09, true]],
+  [/(state street|ssga).*target retirement 2020/i, ["SSBOX", 0.09, true]],
+  [/(state street|ssga).*target retirement 2025/i, ["SSBSX", 0.09, true]],
+  [/(state street|ssga).*target retirement 2030/i, ["SSBYX", 0.09, true]],
+  [/(state street|ssga).*target retirement 2035/i, ["SSCKX", 0.09, true]],
+  [/(state street|ssga).*target retirement 2040/i, ["SSCQX", 0.09, true]],
+  [/(state street|ssga).*target retirement 2045/i, ["SSDEX", 0.09, true]],
+  [/(state street|ssga).*target retirement 2050/i, ["SSDLX", 0.09, true]],
+  [/(state street|ssga).*target retirement 2055/i, ["SSDQX", 0.09, true]],
+  [/(state street|ssga).*target retirement 2060/i, ["SSDYX", 0.09, true]],
+  [/(state street|ssga).*target retirement 2065/i, ["SSFKX", 0.09, true]],
+  [/(state street|ssga).*target retirement 2070/i, ["SSGNX", 0.09, true]],
+  /* BlackRock LifePath Index trusts get NO comparable, deliberately: the
+   * LifePath Index MUTUAL funds are absent from the current SEC snapshot
+   * (0 entries — the series was consolidated), and the surviving public
+   * LifePath Dynamic funds are actively managed, a different product. The
+   * dead-ticker rule (BSPIX/MAIIX/BRGNX, above) applies: quoting a fund
+   * that no longer exists — or a wrong one that does — is invention. */
   [/vanguard target (retirement )?income/i, ["VTINX", 0.08]],
   [/vanguard target (retirement )?2020/i, ["VTWNX", 0.08]],
   [/vanguard target (retirement )?2025/i, ["VTTVX", 0.08]],

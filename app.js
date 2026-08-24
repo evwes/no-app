@@ -1188,18 +1188,29 @@
       // identifies the trust edition of a specific registered fund, that fund
       // is shown with a "*" — what the holding tracks, not what it is; its
       // expense ratio is the RETAIL class, an upper bound on the plan's own.
-      const info = tab === "menu" ? fundTickerInfo(f.name, f.type) : null;
+      /* A row typed Stable value / GIC is a contract issuer or an individual
+       * security inside the stable value option's synthetic-GIC portfolio —
+       * "Wells Fargo & Co" there is a corporate BOND, and the Wells Fargo
+       * fund-family pattern was pricing it at 0.45% (Westinghouse, owner
+       * report 2026-08-24). Bonds have no expense ratio and no fund ticker. */
+      const gicRow = /stable value|\bgic\b/i.test(f.type || "");
+      const info = tab === "menu" && !gicRow ? fundTickerInfo(f.name, f.type) : null;
       // employer stock IS a listed security: the plan's own ticker names it
       const stockRow = /company stock|employer (security|stock)/i.test((f.type || "") + " " + f.name);
       const tk = stockRow ? (plan.ticker || null) : (info ? info.tk : null);
       const star = !stockRow && info && info.comparable;
       if (star) starred = true;
-      const er = tab !== "menu" || stockRow ? null
+      const er = tab !== "menu" || stockRow || gicRow ? null
         : star ? info.er : (noPublicPrice ? null : fundER(f.name));
+      // the brokerage window is a menu choice with no holdings of its own —
+      // tint it so it reads as a doorway, not a fund (owner request)
+      const brokRow = /brokerage window/i.test(f.type || "")
+        || /brokerage|self.?directed|self.?managed|brokeragelink|\bpcra\b/i.test(f.name);
+      const shownType = f.type || (brokRow ? "Brokerage window" : "—");
       return `
-      <tr>
+      <tr${brokRow ? ` class="row-brokerage"` : ""}>
         <td class="fund-name-col"><div class="fund-name">${esc(f.name)}</div>${tk ? `<div class="fund-ticker">${esc(tk)}${star ? "*" : ""}</div>` : ""}</td>
-        <td class="fund-type">${esc(f.type || "—")}</td>
+        <td class="fund-type">${esc(shownType)}</td>
         <td class="num">${er != null ? er.toFixed(er < 0.1 ? 3 : 2) + "%" + (star ? "*" : "") : "—"}</td>
         <td class="num">${money(f.value / 1e6)}</td>
         <td class="num">${total ? ((f.value / total) * 100).toFixed(1) + "%" : "—"}</td>
@@ -1271,7 +1282,8 @@
       </table>
     </div>
     ${starred ? `<p class="fund-note"><strong>*Comparable fund.</strong> That holding is a collective trust or separate account — it has no ticker and no published expense ratio, because its fee is negotiated by the plan. The fund shown is its registered equivalent, so you can look up what it holds; the plan's trust class is normally <em>cheaper</em> than the retail fee shown, so read it as a ceiling, not the plan's price.</p>` : ""}
-    ${tab === "menu" && list.some((f) => !fundTickerInfo(f.name, f.type) && !/company stock|employer (security|stock)|brokerage/i.test((f.type || "") + " " + f.name)) ? `<p class="fund-note">Holdings with no ticker are pooled vehicles whose filed name doesn't identify a specific registered fund — naming one would be a guess.</p>` : ""}`;
+    ${tab === "menu" && list.filter((f) => /stable value|\bgic\b/i.test(f.type || "")).length >= 5 ? `<p class="fund-note">The many <strong>Stable value / GIC</strong> rows are one menu option, itemized: plans file each piece of the stable value fund — the insurance-company contracts that wrap it and the individual securities inside its synthetic GICs (agency pools, corporate notes, asset-backed trusts). Participants choose the stable value fund as a single option; these securities are not separate choices, which is why they carry no expense ratio or ticker.</p>` : ""}
+    ${tab === "menu" && list.some((f) => !fundTickerInfo(f.name, f.type) && !/company stock|employer (security|stock)|brokerage|stable value|\bgic\b/i.test((f.type || "") + " " + f.name)) ? `<p class="fund-note">Holdings with no ticker are pooled vehicles whose filed name doesn't identify a specific registered fund — naming one would be a guess.</p>` : ""}`;
   }
 
   function fundTable(plan) {

@@ -365,6 +365,9 @@ main { max-width: 1060px; margin: 0 auto; padding: 0 20px 48px; }
 .fund-name-col { text-align: left !important; max-width: 260px; white-space: normal !important; }
 .fund-name { font-weight: 600; font-family: "Instrument Sans", sans-serif; font-size: 13.5px; }
 .fund-ticker { font-size: 11.5px; color: var(--text-muted); letter-spacing: 0.04em; }
+/* the brokerage window row is a doorway, not a fund — tint it so it reads apart */
+.row-brokerage td { background: #fdf6dd; }
+@media (prefers-color-scheme: dark) { .row-brokerage td { background: #3a3413; } }
 .fund-type { color: var(--text-muted); font-size: 12px; text-align: left !important; font-family: "Instrument Sans", sans-serif; }
 .est-chip {
   display: inline-block;
