@@ -2225,3 +2225,46 @@ and asserts a per-participant charge the filing contradicts.
    stock and stable value is missing corpus-wide. It is measurable from stored
    ratios plus 4i totals and is likely the largest single missing-dollars class
    after the statement-page defects.
+
+### Addendum, same day — batch 15, and one class measured down to size
+
+Batch 15 (10 filings, $2.0B–$1.7B): 4 ISSUER_DROPPED, 5 NAMES_MATCH,
+1 WRONG_REGION. Running total tested by the script: 58.
+
+**A candidate class that the corpus refused to support.** FirstEnergy
+`20250731064450NAL0002381251001` ($2.9B, `confident`, ratio 0.94) displays a
+menu that contains no funds:
+
+```
+872,225,750  Large cap stocks
+799,229,580  Blend of stocks, fixed income
+384,839,458  FirstEnergy common stock
+226,152,423  International stocks
+173,820,730  Equities, fixed income
+138,156,056  stocks
+147,946,737  Balanced fund
+```
+
+Those strings are the *Description of Investment* column. The current filing's
+text layer is the broken-font cipher class, and decoding enough of it shows the
+same rows as identity `'&-*&'$! +/#$) 3!0)2` (BLACKROCK LIFEPATH INDEX FUND W,
+eight vintages) against description `B;D:E<IJE9AI <?N;:?D9EC;` — "Blend of
+stocks, fixed income". So the reader of a $2.9B plan is shown asset-class
+phrases where the filing names BlackRock LifePath vintages.
+
+It looked like a large class. It is not. Scanning all **1,636,130 stored fund
+rows in 61,092 lineups** with a deliberately narrow whole-string
+category-only vocabulary: **2,497 rows, in only 44 lineups with three or more
+such names, holding $5.2B.** And most of those 44 are false positives —
+"Domestic Equity", "Core Bond", "Stable Value" are the actual names of
+white-label options in plenty of plans, indistinguishable from a description
+column by string alone. Recorded as: real, specimen-backed, **small**, and not
+separable from legitimate white-label menus without column (a).
+
+Two tester notes from these three WRONG_REGION filings, both already-known
+blind spots now with specimens: FirstEnergy scores WRONG_REGION because its
+stored lineup came from the plan's **2023** filing (`source` says so, the ack
+does not), and the 2024 PDF it was tested against is font-ciphered so no stored
+name could ever match. `20250926144818NAL0013938530001` scores WRONG_REGION
+because every stored name carries the glued cost suffix `$0.00` (CHS, the known
+class). Neither is a region error.
