@@ -111,6 +111,7 @@ const FORM_LABEL = /^[a-e]\s|^\(\d|^\d/;
 const RESIDUE = [
   /\s*\bN\/?R\b\s*$/i, /\s*\bN\/?A\b\s*$/i, /\s*\*+\s*$/, /\s*\$?0\.00\s*$/,
   /\s*-\s*See.*$/i, /\s*\(see note.*$/i, /\s*#\s*$/, /\s+0$/,
+  /\s+[—–]\s*$/,  // empty cost column's em dash, glued to every name (BWXT, report #18)
 ];
 function stripResidue(name) {
   let n = name, prev;

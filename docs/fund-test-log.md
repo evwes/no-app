@@ -2842,3 +2842,31 @@ green.
 **Also this batch:** one more ISSUER_DROPPED at $1.1B (Vanguard ×8, Northern
 Trust, Goldman) for the standing column-(b) tally. 140 filings tested
 cumulatively.
+
+## (10 fund report) #18 — 2026-08-24 21:24Z cycle — both WRONG_REGIONs were wrong about themselves
+
+Issuer worklist batch: 4 NAMES_MATCH, 3 ISSUER_DROPPED ($2.2B Vanguard/JPM/
+Empower, $2.1B Vanguard ×12, $1.6B Vanguard/Northern Trust/BlackRock), 1
+OCR_SOURCE, 2 WRONG_REGION. Both WRONG_REGIONs read against the primary
+source, and neither verdict survived:
+
+**BWXT ($1.4B) — tester artefact, fourth residue pattern.** The filing:
+`* Vanguard   Institutional 500 Index Trust D   —   228,484,736`. The parse
+read the right region; the stored trailing " —" is the EMPTY COST COLUMN's em
+dash glued onto every name, which makes the needle search fail. Fixed in
+filing-batch.mjs (em/en dash added to RESIDUE). The real defect on this
+filing is ISSUER_DROPPED — Vanguard is column (b), discarded. Also logged as
+a v68 parser candidate: the site displays the dash ("Institutional 500 Index
+Trust D —").
+
+**Old Republic ($1.4B) — fabrication, second v67 specimen.** The filing:
+`FIDELITY 500 INDEX   N/A   VARIABLE   N/A   1,056,601 sh   #   215,747,363`.
+The parser stored "VARIABLE 1,056,601 sh" as all 28 names — the N/A-filler-
+column layout from the SMART Local 265 candidate, now confirmed on a second,
+larger plan. The real menu is readable in the first column. Values right,
+names fabricated, confident, live.
+
+150 filings tested cumulatively. The trap list already said it: before
+believing a WRONG_REGION, strip the residue and read the filing — both of
+tonight's would have gone into the inventory as "wrong region" and both are
+something else entirely.

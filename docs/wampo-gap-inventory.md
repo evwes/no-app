@@ -326,6 +326,17 @@ rows / 589 lineups / $1.19B** that are bare date fragments. The *value* is real
 auditors (Comcast among them): the parser takes the comparative column. Comcast
 shows $16.3B when the current year reads $18.67B.
 
+**Old Republic International, $1.4B — 28 fund names fabricated from filler
+columns (report #18, 2026-08-24).** The filing's schedule reads
+`FIDELITY 500 INDEX   N/A   VARIABLE   N/A   1,056,601 sh   #   215,747,363` —
+name first, then rate/maturity filler. The parser stored "VARIABLE 1,056,601
+sh" as the fund name for every row, confident, while PIMCO RealPath, Fidelity
+500 and Vanguard Growth Index sit unread in the first column. Same class as
+the SMART Local 265 v67 candidate (N/A filler columns); Old Republic is the
+second specimen and the larger plan. The values are the filing's values — the
+names are not the filing's names, which puts this in the fabrication
+category: a user sees "VARIABLE 8,330,607 sh" listed as a holding.
+
 ### A second kind of wrong: the numbers are right and the *statement* is not (added #13)
 
 The four cases above are wrong **values**. Report #13 found wrong **claims** —
