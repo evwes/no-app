@@ -1190,3 +1190,139 @@ Managers most often discarded, counted across the 15 confirmed filings:
 Vanguard (~54 rows), Fidelity/FIAM (~42), BlackRock (~25), State Street/SSGA
 (~43), T. Rowe Price (~30), Principal Life (~31), JPMorgan (~14), SEI Trust
 Company (~24), Northern Trust (~6).
+---
+
+## (10 fund report) #7 — 2026-08-24
+
+**Running count of the column-(a) defect, hand-verified (cumulative):**
+
+| | filings |
+|---|---:|
+| **CONFIRMED** issuer column present in the 4i table and discarded | **22** |
+| **DISPROVED** — filing read, no column (a) to drop | **22** |
+| **PARTIAL** — a minority of rows carry a discarded issuer | **3** |
+| **UNVERIFIABLE** — source filing not in hand | **1** |
+| hand-read to date | 48 |
+
+**Batch:** 10 filings ($1.4B–$2.3B). Classifier: 6 NAMES_MATCH / 4
+ISSUER_DROPPED. Hand-read: **7 confirmed**, 1 partial, 2 disproved.
+
+### CONFIRMED ×7
+
+| ack | plan | rows losing an issuer | managers discarded |
+|---|---|---:|---|
+| `20250821093854NAL0002008867001` | TELEPHONE AND DATA SYSTEMS TAX-DEFERRED SAVINGS | **21 / 23** | Vanguard ×20, BlackRock |
+| `20251009091303NAL0011132032001` | ASTELLAS US RETIREMENT AND SAVINGS | **24 / 25** | JPMorgan ×10, State Street Bank & Trust ×5, AON Trust ×5, Invesco, T. Rowe Price, Vanguard |
+| `20250730150446NAL0002473811001` | NOVANT HEALTH SAVINGS AND SUPPLEMENTAL RETIREMENT | **23 / 23** | State Street Global Advisors ×15, DFA ×2, Ameriprise Trust, Vanguard, Fidelity, Prudential Trust, Baird, MFS Heritage Trust |
+| `20250905113357NAL0028919216001` | ATRIUS 401K RETIREMENT SAVINGS | **39 / 43** | Vanguard ×15, Nuveen ×7, CREF ×6, Wellington ×2, State Street ×2, TIAA ×3, JPMorgan, Dodge & Cox, FIAM |
+| `20260702105125NAL0012952931001` | DOMINION ENERGY 401(K) PLAN | **16 / 17** | The Vanguard Group, Inc. ×11, Capital Group, Charles Schwab, Fidelity Investments, BNY Mellon |
+| `20250917123504NAL0000359441001` | DOVER CORPORATION RETIREMENT SAVINGS | **23 / 29 in region** | Vanguard ×16, T. Rowe, William Blair, GQG, Prudential, Aristotle, Principal Life |
+| `20251008130018NAL0005876449001` | BROWN UNIVERSITY DC LEGACY RETIREMENT | **8 / 14** | see variant below |
+
+Dominion Energy is the tidiest quote in the batch:
+
+```
+       Identity of Issuer, Borrower,     date, rate of interest, collateral, par, or       (d)      Current
+         Lessor or Similar Party                      maturity value                     Cost***     Value
+* Dominion Energy, Inc.           Dominion Energy Common Stock                                    $ 592,040,555
+                                  Common/Collective Trust Funds:
+* Bank of New York Mellon           BNY EB Temporary Investment Fund**                                  205,506
+  Capital Group                     EuroPacific Growth Trust                                        135,460,877
+  Fidelity Investments              FIAM Small Cap Core Commingled Pool                              12,111,765
+  The Vanguard Group, Inc.          Target Retirement Income & Growth Trust Plus                     138,790,530
+```
+stored → `Target Retirement 2030 Trust Plus` $204,981,646, `Target Retirement
+2035 Trust Plus` $203,391,328 — eleven Vanguard trusts with no Vanguard on them.
+
+Novant Health:
+```
+                 Identity of Issuer,        Rate of Interest,                        (e)
+                 Borrower, Lessor,          Collateral, Par or           (d)       Current
+    (a)           or Similar Party            Maturity Value            Cost        Value
+          Registered Investment Companies:
+            DFA                            U.S. Small Cap I              #    $  18,771,662
+            Vanguard                       VMMR-Fed Money Market         #       44,470,105
+            Baird                          Short Term Bond Fund          #        8,673,777
+```
+stored → `Target Retirement 2035` $223,145,554 and 22 more, all anonymous.
+
+### A VARIANT WORTH NAMING — both columns are names, and the discarded one is the specific one
+
+`20251008130018NAL0005876449001` — **BROWN UNIVERSITY DC LEGACY RETIREMENT
+PLAN**. The filing:
+
+```
+        CREF Stock Account - R3            CREF Stock Fund     275,772 shares    252,943,137
+```
+
+Column (a) is `CREF Stock Account - R3`; column (b) is `CREF Stock Fund`.
+wampo stored `CREF Stock Fund`. Both are names — but **the discarded one
+carries the share class**, and share class is what determines the expense
+ratio. Eight of fourteen rows are like this: the left column holds
+`Vanguard FTSE Social Index Fund;Admiral`, `Fidelity Freedom Index Income Fund,
+Institutional Premium Class`, `JPMorgan Core Bond Fund Class R6`, and we keep
+the shorter, class-less version.
+
+So the defect is not only "manager lost". On this layout it is "share class
+lost", which silently degrades every expense-ratio estimate on the plan.
+
+### PARTIAL ×1 — and it shows the parser sometimes DOES join the columns
+
+`20250825165917NAL0003981491001` — **ARCADIS U.S. RETIREMENT SAVINGS PLAN**,
+33 rows. 14 of 33 lose an issuer. But look at the top stored row:
+
+```
+   361,148,173   Fidelity Management & Research Company Growth Company
+```
+
+That is column (a) **joined to** column (b). The same parser, on the same
+schedule, joins on one row and drops on fourteen. Whatever the fix is, this
+specimen proves the joining code path already exists and is firing
+inconsistently — which is a better starting point than writing it from scratch.
+
+### DISPROVED ×2, both with a specific reason
+
+**`20251008164923NAL0003157075001` — BELLSOUTH SAVINGS AND SECURITY PLAN.**
+14 of 15 names in the 4i region, 2 with left text, and those two left tokens are
+themselves fund names (`BGI MSCI ACWI EX-US INDEX`, `LIFEPATH 2065 FUND`) —
+a wrapped single-column schedule, not an issuer column.
+
+**`20251014113306NAL0005639234001` — MARMON EMPLOYEES' RETIREMENT PLAN,
+$1.63B.** There is no 4i region in the filing at all (0 header matches). The
+lineup comes from a plain two-column plan summary:
+
+```
+Name                                           Dollar Amount
+S&P 500 INDEX FUND                              438,389,487
+TARGET RETIREMENT 2030 FUND                     195,872,844
+US SMALL/MID CAP STOCK FUND                      48,967,280
+FIDELITY MANAGED INCOME PORTFOLIO FUND                    0
+STABLE VALUE FUND                               146,800,947
+```
+
+No issuer column exists, so nothing was dropped. **But a different defect is
+here in plain sight**: wampo stores
+
+```
+   146,800,947   FIDELITY MANAGED INCOME PORTFOLIO FUND 0 STABLE VALUE FUND
+```
+
+The zero-valued row was glued to the following row's name and took its value.
+A `0` in the value column makes the parser treat the line as a continuation.
+Clean, reproducible specimen for that class.
+
+### Cumulative
+
+Forty-eight filings read by hand: **22 confirmed, 22 disproved, 3 partial, 1
+unverifiable.** On the confirmed filings the defect is near-total — the
+per-filing rates are 15/15, 16/17, 18/24, 21/22, 21/23, 22/22, 23/23, 23/23,
+23/25, 24/25, 25/25, 25/26, 26/28, 28/28, 29/30, 30/31, 37/38, 39/43, 75/78,
+8/14, 23/29, 25/25.
+
+**What is now measured, and what still is not.** Measured: on a 2,873-filing
+queue selected for the low-manager-share signature, 22 of 48 filings read
+carry the defect and 22 do not. That is a property of *this queue*, not of the
+6,098-lineup candidate set, and it must not be quoted as one. Not measured:
+the share of all confident lineups affected — that needs a random sample of
+the candidate set rather than an assets-ranked one, which is the next thing
+this loop should do.
