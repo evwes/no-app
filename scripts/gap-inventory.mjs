@@ -17,6 +17,19 @@
  *   features:      match vesting eligibility roth afterTax inPlanRoth nec
  *                  autoEnroll autoEscalate loans trueUp safeHarbor sdbaBrand
  *                  frozen noEmployer nonPartDirected menu
+ * TWO KINDS OF EVIDENCE, and conflating them produces nonsense. Every filing
+ * embeds the blank Form 5500 pages, so the QUESTION "were there any nonexempt
+ * prohibited transactions?" appears in 100% of filings whether or not the
+ * answer is yes. The first version of this script matched those question
+ * strings and reported prohibited transactions, fidelity bonds and blackouts
+ * in 100% of filings, which is meaningless. Detectors here must match an
+ * AFFIRMATIVE disclosure in the audited notes. For the yes/no compliance
+ * answers the right source is not the PDF at all: they are structured
+ * indicator columns in the EFAST2 dataset the pipeline already downloads, and
+ * build-data.mjs reads only the money columns from Schedule H (verified by
+ * inspection). Those are marked "dataset" below -- an ingest gap, not a
+ * parsing problem.
+ *
  *   plan detail:   ack codes planYear pyb pye filedDate city zip planName
  *                  activeParticipants partBalances assetsBOY assetsEOY
  *                  contribEmployer contribParticipant rollovers benefitsPaid
@@ -43,16 +56,16 @@ fs.mkdirSync(TMP, { recursive: true });
  *        would have to change. */
 const CLASSES = [
   ["late-deposits", "Delinquent participant contributions (Sch H 4a)",
-    /delinquent (?:participant )?contribution|late (?:remittance|deposit|contribution)|4a\b[^\n]{0,60}delinquent/i,
-    "no", "Schedule H line 4a is a yes/no + amount in the DOL dataset and a note in the audit. It is a fiduciary red flag — the employer held participants' own deferrals past the deadline. Nothing in the pipeline reads it."],
+    /delinquent (?:participant )?contribution|late (?:remittance|deposit)s? of (?:participant )?contribution|contributions were not (?:remitted|deposited) (?:timely|within)/i,
+    "dataset", "Schedule H line 4a is a yes/no plus amount indicator column in the EFAST2 dataset the pipeline already downloads; build-data.mjs reads only the money columns from that file. An ingest gap, not a parsing problem -- and a fiduciary red flag, because the employer held participant deferrals past the deadline."],
 
   ["limited-scope", "ERISA 103(a)(3)(C) limited-scope audit election",
-    /103\(a\)\(3\)\(C\)|limited[- ]scope (?:audit|certification)|29 CFR 2520\.103-8/i,
-    "no", "When elected, the auditor does NOT audit the investment information — the custodian certifies it and the opinion is scoped out. It changes what the audited numbers mean, and wampo presents all audited figures identically."],
+    /(?:we were not (?:required|engaged) to audit|did not audit)[^.]{0,120}(?:103\(a\)\(3\)\(C\)|certif)|permitted by ERISA Section 103\(a\)\(3\)\(C\)/i,
+    "no", "When elected, the auditor does NOT audit the investment information -- the custodian certifies it and the opinion is scoped out. It changes what the audited numbers mean, and wampo presents every audited figure identically. Also carried as an accountant-opinion column in the dataset."],
 
   ["prohibited-txn", "Nonexempt prohibited transactions (Sch H 4d)",
-    /nonexempt prohibited transaction|prohibited transaction[^\n]{0,40}(?:occurred|disclosed|Schedule G)|Schedule G/i,
-    "no", "Schedule G Part III. Rare but material when present. Not read."],
+    /prohibited transaction[^\n]{0,80}(?:occurred|in the amount of|\$[\d,]+)|Schedule G[^\n]{0,40}Part III[^\n]{0,200}\$[\d,]+/i,
+    "dataset", "Schedule G Part III, carried as an indicator column in the dataset. Rare but material when present. Not ingested."],
 
   ["corrective", "Corrective distributions / ADP-ACP refunds / excess deferrals",
     /corrective distribution|excess (?:contribution|deferral|aggregate)|refund(?:ed)? to (?:highly compensated|participants)|failed the (?:ADP|ACP)/i,
@@ -95,16 +108,16 @@ const CLASSES = [
     "partial", "features.loans records THAT loans exist. The filed rate range and outstanding balance are not captured."],
 
   ["fidelity-bond", "Fidelity bond coverage",
-    /fidelity bond|ERISA bond/i,
-    "no", "A plan with inadequate bonding is a compliance issue. Form 5500 line 4e. Not read."],
+    /(?:fidelity|ERISA) bond[^\n]{0,60}\$\s?[\d,]{4,}|bond(?:ed)? in the amount of \$\s?[\d,]{4,}/i,
+    "dataset", "Form 5500 line 4e is an amount column in the dataset. A plan bonded below the statutory 10% minimum is a compliance issue worth flagging. Not ingested."],
 
   ["plan-termination", "Plan termination, partial termination, or freeze",
     /plan (?:was |has been )?(?:terminat|frozen|froze)|partial termination|discontinu(?:e|ance) of contributions/i,
     "partial", "features.frozen catches some freeze language. Termination and partial termination are not distinguished."],
 
   ["blackout", "Blackout period / recordkeeper conversion",
-    /blackout|conversion to [A-Z][a-z]+ (?:as )?recordkeeper|transition(?:ed)? to a new recordkeeper/i,
-    "no", "A conversion year explains discontinuities in the numbers. Not captured, so a reader sees an unexplained jump."],
+    /blackout period (?:began|commenced|occurred|from|during)|blackout notice was (?:provided|sent)|during the blackout/i,
+    "no", "A recordkeeper conversion explains discontinuities in the numbers. Without it a reader sees an unexplained jump between years and has no way to know why."],
 
   ["investment-adviser", "Named investment manager / 3(38) fiduciary",
     /investment (?:manager|adviser|advisor) (?:is|are|named|appointed)|3\(38\)|3\(21\)|discretionary investment manage/i,
