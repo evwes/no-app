@@ -871,6 +871,17 @@
       rows.push(hLines.map(([k, v]) => `<div class="flow-row"><span>${k}</span><span>${usd(v)}</span></div>`).join(""));
       rows.push(`<div class="flow-row"><span><strong>Total administrative expenses</strong>${perHead != null ? ` <span class="section-sub">≈ ${usd(perHead)} per participant</span>` : ""}</span><span><strong>${f.adminRaw > 0 ? usd(f.adminRaw) : "—"}</strong></span></div>`);
       rows.push(feePeerNote(plan, perHead, f.adminRaw));
+      /* "per participant" is arithmetic, not a statement about whose money paid
+       * it. Schedule H reports what left plan assets; it does not say whether
+       * the source was participant balances, the employer, revenue sharing, or
+       * forfeited employer contributions. Found on LNC's plan, where Sch H
+       * 2i(12) is $182,511 and the notes say forfeitures of exactly $182,511
+       * paid administrative expenses -- so no participant balance was charged,
+       * while the page divided it across every participant and ranked it
+       * against peers. wampo has no forfeiture extractor, so this cannot be
+       * said per plan; saying it once, plainly, beats implying the opposite on
+       * every plan. */
+      rows.push(`<p class="contrib-note">ⓘ Schedule H reports what left plan assets, not whose money paid it. Some plans meet these costs from forfeited employer contributions, employer payments, or revenue sharing rather than from participant balances — the filing's notes say which, and wampo does not yet extract that.</p>`);
     }
     // who was paid (Schedule C provider table)
     const fsch = plan.feeSchedule;
