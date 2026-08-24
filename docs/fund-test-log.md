@@ -15,6 +15,120 @@ Rules this log runs by:
 - Numbers are measured, never estimated. If a count came from a sample, it
   says so.
 
+
+---
+
+# MORNING SUMMARY — night of 2026-08-23/24
+
+**298 filings tested** (178 issuer-targeted, 120 general). 39 commits, all pushed
+to `claude/wampo-401k-live-nx1t4o`. Nothing mirrored to `main`; `lib-4i.mjs` and
+`PARSER_VERSION` untouched, deliberately — a parser change mid-measurement
+destroys the measurement, and the identity-column fix needs a decision that is
+not mine to make.
+
+| verdict | n |
+|---|---:|
+| NAMES_MATCH | 147 |
+| ISSUER_DROPPED | 101 |
+| WRONG_REGION | 42 |
+| FETCH_FAIL / NO_TEXT | 4 |
+| PRIOR_YEAR_SOURCE / OCR_SOURCE *(tester artefacts, now separated)* | 4 |
+
+**1,209 individual holdings** had their manager recovered from the column the
+parser discards — Vanguard 283, Fidelity 145 across four legal-entity spellings,
+American Funds/Capital Group 87, State Street 52, JPMorgan 51, BlackRock 27.
+Those are the largest and most identifiable houses in the universe, which is why
+this defect and the ticker-coverage work are the same problem.
+
+## Shipped — five display fixes, one family
+
+Every one is the page asserting more than the filing supports. All display-only,
+all smoke-tested.
+
+1. **Employer Match card quoted paragraphs that are not the match.** 8,704
+   lineups had a quote with no extracted formula; 4,350 of those quotes contain
+   no digit at all, and a match formula cannot be stated without a number.
+   12,772 suppressed, 39,742 kept.
+2. **The holdings table never said what share of the plan it covered.** 8,026
+   plans display <95% of Schedule H assets — **$152B in the plan and not on the
+   page** — and 1,476 display *more* than the plan owns, $31B. `coverageRatio`
+   was computed and stored all along, used only to compare pipeline runs.
+3. **That comparison used a rounded total.** The boot payload ships assets in
+   $100k units; on a small plan the rounding alone crosses a band. Now requires
+   the exact filed figure or renders nothing.
+4. **Fee card divided plan-level expense per participant.** Schedule H reports
+   what left plan assets, not whose money it was. LNC's $182,511 was paid by
+   forfeitures of exactly $182,511 — no participant balance was touched.
+5. **Multiple-employer plans were shown one employer's terms as everyone's.**
+   218 MEP/PEP plans, 108 carrying an asserted match, vesting or eligibility.
+
+## The inventory gained a category
+
+`docs/wampo-gap-inventory.md` began as omissions — filings carry it, wampo does
+not show it. It now has three, in increasing severity:
+
+- **omissions** — the filing carries it, wampo does not show it
+- **fabrications** — wampo shows a value not in the filing: a **$105M holding
+  that is the exact sum of four insurers' contracts** and reconciles to the
+  lineup total; **ZIP codes as dollar values** ($4.70B of postcode in a $10.66B
+  lineup); a derivative liability summed as an asset; prior-year columns
+- **contradictions** — wampo asserting what the filing denies, on filings that
+  parsed successfully. This is where all five fixes above came from, and it was
+  not a category anyone was looking at 24 hours ago.
+
+**`audit-data.mjs` passes every fabrication above**, because summing four real
+contracts produces a real total and a ZIP-code row sits inside a plausible
+lineup. The existing audit machinery is structurally blind to this class.
+
+## Four corrections to my own work — read these first
+
+The night's most useful output was catching my own instruments, not the parser.
+
+1. **Sampling frame decided the answer.** An assets-ranked queue gave 46% where
+   a random sample gave 85%, because large plans fail a different way. I nearly
+   reported the first as the rate.
+2. **`"institutional"` was in the manager vocabulary** (from a registrant named
+   INSTITUTIONAL FIDUCIARY TRUST) and passed a check written to reject it —
+   third instance of that shape after `"t"` and `"bond fund"`. It also inflated
+   `mgrShare`, biasing the worklist *against* finding the defect it was built to
+   find.
+3. **Three tester artefacts inflated WRONG_REGION** — prior-year entries, OCR
+   entries, and parser residue glued into stored names. Up to 9 of the 19
+   WRONG_REGION verdicts reported early in the night were not defects.
+4. **I had the column letter wrong all night.** It is **(b)**, not (a); (a) is
+   the party-in-interest asterisk column. Verified by measuring header
+   positions, not taken on report. Substance unchanged, but I was calling two
+   different defects by the same name.
+
+## Waiting on you
+
+1. **Promote `filing-batch.mjs` into a pipeline check?** It asks the one
+   question no pipeline stage asks — *does this stored value appear in the
+   filing at all* — which is exactly the fabrication class the audit cannot see.
+2. **Do the free ingest columns go first?** Sch H **4a** (delinquent participant
+   contributions — the employer held deferrals past the deadline), **4d**
+   (prohibited transactions), **4e** (fidelity bond), and Part III **3a–3c**
+   (auditor name/EIN, opinion type, the §103(a)(3)(C) limited-scope election)
+   are structured columns in files the pipeline **already downloads**.
+   `build-data.mjs` reads only the money columns. No parsing, no
+   PARSER_VERSION bump.
+3. **The identity-column fix cannot be blind.** Sanofi's names are already
+   complete because there the name is in (b) and (c) says only "Common Trust";
+   Gen II Management has both patterns on adjacent lines of one table. The
+   columns must be joined by judgement, not by rule.
+
+## Operational notes
+
+- The dedicated agent died twice on transient `529 Overloaded`. Its report
+  numbering has a gap where that happened; the gap is the outage, not idle time.
+- Trigger chains multiplied overnight — a one-shot `send_later` chain re-arms
+  itself, so arming "just in case" permanently doubles it, and
+  `list_triggers`/`update_trigger`/`delete_trigger` all need an approval nobody
+  was awake to give. `docs/cadence-state.json` now gates arming.
+- `sec-funds.json` is committed to the repo; it was on a `/tmp` path that would
+  not have survived a container recycle, and the failure would have looked like
+  "no results" rather than "broken".
+
 ---
 
 ## (10 fund report) #1 — ADDENDUM, after owner review
