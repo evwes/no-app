@@ -1048,3 +1048,145 @@ The honest statement of scale today: **the column-(a) defect is confirmed on 10
 filings covering $52.6B in stored assets, all drawn from a 2,873-filing queue
 built to select for its signature. It is not yet a measured share of the 6,098
 candidate lineups**, and a third of the queue turns out to be other defects.
+---
+
+## (10 fund report) #6 — 2026-08-24
+
+**Running count of the column-(a) defect, hand-verified (cumulative):**
+
+| | filings |
+|---|---:|
+| **CONFIRMED** issuer column present in the 4i table and discarded | **15** |
+| **DISPROVED** — filing read, no column (a) to drop | **20** |
+| **PARTIAL** — a minority of rows carry a discarded issuer | **2** |
+| **UNVERIFIABLE** — source filing not in hand | **1** |
+| hand-read to date | 38 |
+
+**Batch:** 10 filings from `docs/filing-worklist-issuer.json` ($1.8B–$2.5B).
+Classifier: 9 NAMES_MATCH / 1 ISSUER_DROPPED. Hand-read result: **5 confirmed**,
+so the classifier found 1 of the 5. Its false-negative rate in this batch is
+80%, for the reasons given in reports #4 and #5.
+
+### CONFIRMED ×5
+
+| ack | plan | rows losing an issuer | managers discarded |
+|---|---|---:|---|
+| `20251008121939NAL0005829681001` | WOOD 401(K) PLAN | **25 / 25** | Vanguard ×14, Blackrock ×4, Wilmington Trust ×3, T Rowe, Putnam, William Blair, DFA |
+| `20250902150819NAL0014415937001` | FOX SAVINGS PLAN | **75 / 78** | Vanguard ×12, Blackrock ×10, Fidelity ×6, T. Rowe Price, MFS, Wellington, Prudential |
+| `20251015131746NAL0002351971001` | EASTMAN KODAK SAVINGS & INVESTMENT | **21 / 22** | T. Rowe Price ×13, BlackRock ×5, Vanguard ×2 |
+| `20251001094755NAL0005855811001` | HYATT CORPORATION RETIREMENT SAVINGS | **25 / 26** | T. Rowe Price Trust Company ×16, Great Gray Trust ×2, JPMorgan, FullerThaler, Baron Capital, GQG Partners, Vanguard |
+| `20250729083806NAL0006830290001` | STANLEY BLACK & DECKER RETIREMENT ACCOUNT | see below | Neuberger Berman, Pacific Life, RGA, Transamerica Premier Life, Voya |
+
+Wood 401(k):
+
+```
+             Identity of Issue,        Description of Investment Including
+             Borrower, Lessor           Maturity Date, Rate of Interest,               Current
+              or Similar Party          Collateral, Par or Maturity Value     Cost      Value
+      Registered investment companies (mutual funds):
+        Vanguard                  International Growth ADM              **   $  38,152,677
+        DFA                       US Targeted Value 1                   **      35,718,658
+```
+stored → `Equity Index Fund J` $254,297,420 · `Target Retire Trust Plus 2030`
+$162,032,303. Fourteen Vanguard rows, none say Vanguard.
+
+Eastman Kodak:
+
+```
+Identity of Issue                 Description of Investment            Current Value
+Registered Investment Companies
+  Vanguard                   Short-Term Bond Index Premium            $  323,346,766
+  Vanguard                   Treasury Money Market Fund                  222,111,833
+  BlackRock                  Liquidity Fed Fund                            1,767,988
+```
+stored → `Short-Term Bond Index Premium` $323,346,766, `Treasury Money Market
+Fund` $222,111,833. A Vanguard Treasury Money Market Fund is identifiable; a
+`Treasury Money Market Fund` is not.
+
+Hyatt:
+
+```
+    *    T. Rowe Price Trust Company    Retirement 2025 Active Trust Fund    #   118,022,881
+    *    T. Rowe Price Trust Company    Retirement 2020 Active Trust Fund    #    50,189,416
+```
+stored → `Retirement 2040 Active Trust Fund` $191,958,291, manager gone.
+
+### THE FINDING THAT MATTERS MOST IN THIS BATCH — the discarded issuer also corrupts a VALUE
+
+`20250729083806NAL0006830290001` — **Stanley Black & Decker Retirement Account
+Plan**. Its 4i schedule is on scanned pages (PDF pages 38–54 yield 1 character
+each under `pdftotext`; the stored entry is correctly marked `ocr: 1`).
+Rasterising page 50 and OCRing it gives the schedule:
+
+```
+Schedule H, Line 4(i) - Schedule of Assets (Held At End of Year)
+                                             Description of Investment, Including
+                                             Maturity Date, Rate of Interest, Par or
+Identity of Issue, Borrower, or Similar Party  Maturity Value          Cost      Current Value
+Common Stock:
+Stanley Black & Decker, Inc.*      1,255,469 shares of Common Stock; par value
+                                   $2.50 per share                $ 45,954,998   $ 100,801,606
+Short-Term Investments:
+Principal/Wells Fargo*             Short-Term Investment Fund          7,492,033     7,492,033
+Mutual Funds:
+Neuberger Berman                   Genesis Fund                       81,921,601    83,708,394
+Synthetic Investment Contracts:
+Pacific Life                       Constant Duration                  27,062,239    27,062,239
+RGA                                Constant Duration                  26,598,708    26,598,708
+Transamerica Premier Life          Constant Duration                  26,518,314    26,518,314
+Voya Retirement Insurance & Annuity Constant Duration                 24,883,597    24,883,597
+American Life                      Fixed Maturity                      8,977,103     8,977,103
+```
+
+What wampo stored from it:
+
+```
+   105,062,858   Constant Duration          <- FOUR contracts, FOUR issuers, ONE row
+   100,801,606   $2.50 per share            <- wrapped 2nd line of a description
+    83,708,394   Genesis Fund               <- Neuberger Berman dropped
+     8,977,103   American Life              <- here it kept (a) and dropped (b)
+     7,492,033   Principal/Wells Fargo      <- ditto
+```
+
+**`Constant Duration` $105,062,858 is the sum of four separate insurance
+contracts**: 27,062,239 + 26,598,708 + 26,518,314 + 24,883,597 = **105,062,858**,
+matching the stored value exactly. Because the issuer was thrown away, four
+rows became name-identical, and the dedup step then added them together.
+
+This is the first hard evidence that the column-(a) defect is **not only a
+naming problem**. It manufactures a $105M holding that does not exist, from
+four that do — and it does so silently, because the total still reconciles.
+Any audit check based on "lineup sum vs Schedule H assets" is blind to it.
+
+The same filing again shows the per-row column flip-flop from report #5:
+`Genesis Fund` keeps column (b), `American Life` and `Principal/Wells Fargo`
+keep column (a), inside the same schedule.
+
+### DISPROVED ×5
+
+- `20251004163433NAL0001390915001` — 21/21 names in the 4i region, zero left-
+  column text.
+- `20251015095724NAL0002203219001` — 80/80 in region, one left token and it is
+  the character `^`.
+- `20260708140943NAL0020169617001` — AIR PRODUCTS & CHEMICALS RETIREMENT
+  SAVINGS: 30/32 in region, one left token, itself a full fund name.
+- `20251014120428NAL0005743890001` — VISTRA THRIFT PLAN: single-column
+  schedule, `SP 500 Index PL CL E   1,475,016.774 Class E shares   406,765,376`.
+  The apparent left-column hits are the schedule being rendered twice in the
+  PDF (lines 5963 and 6123 are identical), the known repeated-page artefact.
+- `20251008164728NAL0009795232001` — AT&T SAVINGS AND SECURITY PLAN: 42 of 78
+  stored names are outside any 4i region — a separate wrong-region case, not an
+  issuer case.
+
+### Cumulative
+
+Thirty-eight filings read. Confirmed 15, disproved 20, partial 2, unverifiable
+1. Confirmed filings now cover **$71.4B** in stored assets and, on them, the
+defect takes 25/25, 75/78, 21/22, 25/26, 28/28, 26/28, 30/31, 22/22, 23/23,
+23/25, 37/38, 29/30, 18/24, 15/15 of the rows — it is essentially never
+partial when it occurs.
+
+Managers most often discarded, counted across the 15 confirmed filings:
+Vanguard (~54 rows), Fidelity/FIAM (~42), BlackRock (~25), State Street/SSGA
+(~43), T. Rowe Price (~30), Principal Life (~31), JPMorgan (~14), SEI Trust
+Company (~24), Northern Trust (~6).
