@@ -1326,3 +1326,192 @@ carry the defect and 22 do not. That is a property of *this queue*, not of the
 the share of all confident lineups affected — that needs a random sample of
 the candidate set rather than an assets-ranked one, which is the next thing
 this loop should do.
+---
+
+## (10 fund report) #8 — 2026-08-24 — THE MEASUREMENT
+
+Two batches (20 filings), and for the first time drawn **at random from the
+candidate set itself** rather than from an assets-ranked queue. This is the
+report that turns the $1.02T candidate set into a measured one.
+
+**Running count of the column-(a) defect, hand-verified (cumulative):**
+
+| | filings |
+|---|---:|
+| **CONFIRMED** issuer column present in the 4i table and discarded | **40** |
+| **DISPROVED** — filing read, no column (a) to drop | **23** |
+| **PARTIAL** — a minority of rows carry a discarded issuer | **4** |
+| **UNVERIFIABLE** — source filing not in hand | **1** |
+| hand-read to date | 68 |
+
+### Why a new sampling frame was needed
+
+Reports #3–#7 read 48 filings off `filing-worklist-issuer.json`, which sorts by
+**assets**. On that queue the defect confirmed on 22 of 48 — 46%. But the
+largest plans are exactly the ones that file master trusts, separately managed
+accounts and trustee security detail, so an assets-ranked rate measures the mix
+of *big* plans, not the mix of the candidate set. It cannot be generalised.
+
+`docs/filing-worklist-random.json` reproduces the report-#1 candidate-set
+definition exactly and then shuffles it with a fixed seed (20260824):
+
+```
+lineups with >=8 fund rows:                     56,615   (1,603,462 rows)
+  where <=15% of rows name a manager:            6,043
+  rows in them:                                159,838
+  assets in them:                             $1,125B
+sampling frame (>=3 usable names for the tester): 5,314   (87.9% of the set)
+```
+
+(The original figures were 6,098 / 154,917 / $1,019B; the small drift is data
+refreshed since, not a methodology change.)
+
+### RESULT — 18 of 20 randomly drawn candidate filings carry the defect
+
+| ack | plan | rows losing an issuer | verdict |
+|---|---|---:|---|
+| `20251014123610NAL0001351731001` | STRATEGIC RETIREMENT PROGRAM | 26 / 27 | confirmed |
+| `20250715132238NAL0002140833001` | MIDWAY PRODUCTS GROUP 401(K) | 30 / 30 | confirmed |
+| `20251014162705NAL0003282673001` | SUNLAND LOGISTICS SOLUTIONS 401(K) | 19 / 20 | confirmed |
+| `20251008092229NAL0005331297001` | XCALIBER INTERNATIONAL RETIREMENT SAVINGS | 23 / 23 | confirmed |
+| `20251013090219NAL0002237650001` | IDEATEK TELCOM 401(K) | 22 / 22 | confirmed |
+| `20251010074646NAL0012098496001` | TRANSOURCE 401(K) INVESTMENT PLAN | 34 / 34 | confirmed |
+| `20251007144656NAL0008138912001` | CHILD DEVELOPMENT RESOURCES BENEFIT PLAN | 35 / 36 | confirmed |
+| `20251010161922NAL0008008865001` | ARDENT HEALTH SERVICES RETIREMENT SAVINGS | 28 / 30 | confirmed |
+| `20251212151518NAL0009075808001` | TNEMEC COMPANY 401(K) SAVINGS | 26 / 27 | confirmed (OCR) |
+| `20260701103150NAL0017364656001` | CROWE & DUNLEVY PROFIT SHARING AND THRIFT | 29 / 29 | confirmed |
+| `20250930213058NAL0020038482001` | HONOLULU MUSEUM OF ART 401(K) | 23 / 23 | confirmed |
+| `20251003155021NAL0001584481001` | ONESMILE 401(K) PLAN AND TRUST | 29 / 29 | confirmed |
+| `20251015171748NAL0002694211001` | COMPASS KOONS GAS 401(K) | 16 / 18 | confirmed |
+| `20250925103159NAL0003472355001` | EAGLEBANK 401(K) | 34 / 34 | confirmed |
+| `20250926172147NAL0008780225001` | COBORN'S INC. PROFIT SHARING 401(K) | 23 / 25 | confirmed |
+| `20251014114641NAL0003827760001` | TEMPUR SEALY 401(K) RETIREMENT | 22 / 22 | confirmed |
+| `20250826052545NAL0004237027001` | T & R PROPERTIES PROFIT SHARING | 17 / 18 | confirmed |
+| `20251006174221NAL0009977202001` | KEYSTONE PLANET FITNESS RETIREMENT | 27 / 27 | confirmed (OCR) |
+| `20250829133523NAL0006149299001` | CARRINGTON 401(K) | 7 / 24 | **partial** |
+| `20260717071717NAL0003792179003` | (not in plans-all) | 2 / 78 | **disproved** — CUSIP-first single column |
+
+**18 confirmed / 20 read. Point estimate 90%; Wilson 95% interval
+69.9%–97.2%.** Applied to the 5,314-lineup sampling frame that is
+**3,714 – 5,166 lineups affected, point estimate 4,783.**
+
+Stated precisely, and this is the sentence to quote: *of the 5,314 confident
+lineups that carry the low-manager-share signature and have at least three
+usable names, an estimated 70%–97% have a fund manager printed in the filing
+that wampo discarded. The estimate comes from a random sample of 20, every
+one read by hand against the filing.*
+
+What the sample does **not** license: multiplying that share by $1,125B. The
+sample is unweighted by plan size and, as reports #3–#7 showed, the largest
+plans in the set fail for *different* reasons. Assets-weighted exposure needs a
+size-stratified sample and has not been measured.
+
+### Evidence
+
+Honolulu Museum of Art — 23 of 23, one manager:
+```
+          (b) Identity of Issue,     (c) Description of Investment including
+          Borrower, Lessor or      Maturity Date, Rate of Interest, Collateral, Par     (e) Current
+   (a)        Similar Party                     or Maturity Value              (d) Cost    Value
+         Mutual Funds:
+   **    Vanguard                  Target Retirement 2040 Fund                    *    $  1,122,040
+   **    Vanguard                  Target Retirement 2035 Fund                    *         977,546
+```
+
+EagleBank — 34 of 34:
+```
+      Identity of issue, borrower, lessor, or
+                    similar party                    Description of investment        Cost    Current value
+      Alliance Bernstein                   Large Cap Growth Fund III Fee Class I1     n/a   $  3,471,969
+      American Century Investments         Small Cap Value Fund II Class I1           n/a        612,393
+      Blackrock                            High Yield Bond Portfolio Class K          n/a        599,703
+```
+
+Transource — 34 of 34:
+```
+  Party-        Identity of Issuer,          Description of Investment, Including
+   in-         Borrower, Lessor, or            Maturity Date, Rate of Interest,          Current
+ Interest         Similar Party               Collateral, Par, or Maturity Value          Value
+              Mutual funds/Money market:
+    *        FIDELITY                      DIVERSIFIED INTERNATIONAL FUND          $        1,477
+    *        FIDELITY                      CAPITAL & INCOME FUND - CLASS M                 27,517
+```
+
+Child Development Resources — 35 of 36, and the discarded name is the *only*
+identifying text on the row:
+```
+ *    Mutual of America Life Insurance     Interest Accumulation Fund    $     1,531,836
+ *    Mutual of America Life Insurance     2045 Retirement Fund                724,877
+```
+stored → `2045 Retirement Fund`. Twenty-two rows lose "Mutual of America".
+
+### The two OCR confirmations — and a systematic tester failure they expose
+
+Both OCR-derived entries were scored **WRONG_REGION, "0/12 stored names appear
+in the filing text."** That verdict is structurally impossible to get right:
+the parse came from pages `pdftotext` cannot read, so of course the names are
+absent from the text layer. **Every OCR-derived entry will score WRONG_REGION
+in this tester.** They have to be rasterised to be judged.
+
+Rasterising them confirms both.
+
+`20251212151518NAL0009075808001` — **TNEMEC COMPANY 401(K)**, PDF page 35:
+```
+Schedule H, Part IV, Line 4i—Schedule of Assets (Held at End of Year)
+Identity of Issue, Borrower,   Including Maturity Date, Rate of Interest,   Current
+Lessor, or Similar Party       Collateral, Par, Maturity Value              Value
+Mutual funds:
+Blackrock        Equity Dividend A                    $ 3,371,276
+Columbia         Mid Cap Value A                        2,503,435
+Eaton Vance      Atlanta SMID A                         3,008,082
+Pioneer          Fundamental Growth CL A                3,671,588
+iShares          S&P 500 Index K                        2,508,885
+AMERICAN FUNDS   2030 TARGET RETIRE                     6,960,491
+```
+stored → `Equity Dividend A`, `Mid Cap Value A`, `Atlanta SMID A`,
+`Fundamental Growth CL A`, `S&P 500 Index K`, `2030 TARGET RETIRE`.
+
+`20251006174221NAL0009977202001` — **KEYSTONE PLANET FITNESS RETIREMENT**,
+PDF page 47:
+```
+(a) Identity of Issue, Borrower,   (b) Description of Investment Including       (d)      (e)
+    Lessor or Similar Party            Maturity Date, Rate of Interest...        Cost   Current Value
+Fully Benefit-Responsive Investment Contract
+* John Hancock          Stable Value Guaranteed Income Fund   N/R   $   212,667
+Mutual Funds
+American Century        Ultra R6                              N/R       464,574
+American Funds          Target 2050 Fund R6                   N/R     1,914,710
+BNY Mellon              Dynamic Value Y                       N/R       522,584
+```
+stored → `Ultra R6 N/R` $464,574, `Target 2050 Fund R6 N/R` $1,914,710,
+`Dynamic Value Y N/R` $522,584. **Every issuer dropped and the cost column's
+`N/R` glued onto every name** — the same cost-column glue seen on CHS in
+report #5, here in its OCR form. `Ultra R6 N/R` is American Century Ultra; as
+stored it identifies nothing.
+
+### PARTIAL ×1
+
+`20250829133523NAL0006149299001` — CARRINGTON 401(K). 24 of 25 names in the 4i
+region, 7 with a discarded issuer (Northern Trust ×3, Reliance Trust, Great
+Gray Trust, Allspring, Vanguard Investments). The rest already carry a manager.
+
+### DISPROVED ×1
+
+`20260717071717NAL0003792179003` — 78 of 80 names in the 4i region with only 2
+left-column hits, and those are CUSIP-prefixed names
+(`554517102 MACKAY SHIELDS COLLECTIVE INVT TR`). Single-column, security-ID-
+first layout. Nothing dropped.
+
+### Why the two queues disagree so sharply
+
+46% on the assets-ranked queue, 90% on the random one, and the reason is
+structural rather than statistical. Very large plans file master trusts,
+separately managed accounts, trustee security detail and image-only schedules;
+those produce the *other* defect classes catalogued in reports #2–#7 (fair-value
+tables, Schedule C fee pages, statement lines, cash-flow rows). Ordinary plans
+— the Honolulu Museum of Art, Coborn's, Tempur Sealy, a Planet Fitness
+franchisee — file the plain two-column Form 5500 schedule the instructions
+describe, and on that layout the defect is close to universal.
+
+So the defect is **not concentrated in the biggest plans; it is concentrated in
+the ordinary ones**, which is most of the site.
