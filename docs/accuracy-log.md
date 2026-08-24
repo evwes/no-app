@@ -2742,6 +2742,101 @@ before it ships, which is a local, primary-source check requiring no network.
 Absence from the snapshot is what caught all three, and it is the same test
 that correctly killed LifePath.
 
+## 2026-08-24 — sponsor-to-ticker matching: four rounds of refusals before anything shipped
+
+**What was wrong.** Only 160 of 110,555 plans carried a ticker, because
+`scripts/companies.json` is a hand-built list of ~110 large employers. Searching
+"GEV" found GE Vernova only because someone had written Ropcor into that list by
+hand; searching almost any other listed company's ticker found nothing. The fix
+is a second pass that matches sponsor names against the SEC's full registrant
+list (10,403 tickers, `sec-companies.json`).
+
+Coverage is trivial to get here and precision is the entire product, so this
+entry records the four rules that had to be added, each of them measured against
+filings and sponsor names read by hand rather than assumed.
+
+1. **A bare prefix match is not identification.** "General Electric Credit
+   Union", "McGraw-Hill Education Holdings", "Target Foundation" all begin with
+   a listed company's name and are none of them. The guard is a vocabulary of
+   words naming a DIFFERENT KIND OF INSTITUTION, not a count of extra words —
+   most extra words are innocent ("Union Pacific Railroad Company").
+
+2. **A one-token company name is unsafe as a prefix.** Split by token count over
+   625 attributions on sponsors with >=5,000 participants — 479 exact, 42
+   multi-token prefix, 104 single-token prefix — every error found by hand
+   review was in the last group: Compass Group USA -> COMP (a brokerage),
+   Banner Health -> BANR (a bank), Citizens Financial Group -> CIA (a Texas
+   insurer), Latham & Watkins -> SWIM (a pool company). Twelve sampled
+   multi-token prefix matches were all correct, so the boundary is token count,
+   not a hand-listed vocabulary of "common" words — that list would have been a
+   guess and would never have caught Banner or Citizens.
+
+3. **Suffix stripping manufactures false exactness.** The rule above said a
+   single-token name may still match EXACTLY. Sampling the sub-5,000-participant
+   tail — a different population, per the standing "sampling frame decides the
+   answer" trap — showed exactness there is worthless: "Superior Holding, Inc."
+   and "SUPERIOR GROUP OF COMPANIES, INC." both reduce to the token "superior"
+   and scored [exact]. So did "Parsons Group, Llc" against PARSONS CORP. Also
+   fixed here: a possessive "s" was counting as a token, which is how a Maine
+   car dealership ("Charlie's Motor Mall") and a Toledo one both drew CHUC, a
+   vape company.
+
+4. **A two-token ordinary-English name plus extra words is not identification
+   either.** "National Bank Of Middlebury" -> NBHC (National Bank Holdings);
+   "James River Home Health Care, Llc" -> JRVR (an insurer). Neither is caught
+   by the institution vocabulary and neither can be — "of middlebury" names
+   nothing at all. Prefix matches now require a company name of three or more
+   tokens.
+
+**The self-correction.** Rule 3 as first written refused EVERY single-token
+company name, which also lost Kroger, Insperity, DaVita, Cintas, Albertsons and
+AutoZone — brands that are not ambiguous at all. The difference between those
+and "Superior" is whether the word is coined or ordinary, and that turned out to
+be measurable in data already in the repo: how many distinct sponsors in the
+110k-plan universe lead with the word, and how many SEC registrants use it.
+
+    kroger    1 sponsor /  1 registrant      superior  105 /  4
+    cintas    1 /  1                         national  397 / 71
+    davita    1 /  1                         premier   155 /  5
+
+Scored over 22 known-good and 15 known-bad single tokens, "<=2 sponsors lead AND
+<=3 registrants" admits 16 of the good and NONE of the bad, including the three
+errors that motivated the rule (parsons 4 sponsors, charlie 4, latham 3). The
+safe list is GENERATED from those counts and committed
+(`scripts/sponsor-single-tokens.json`, `node scripts/match-sponsors.mjs
+--tokens`), not hand-written.
+
+An earlier attempt scored distinctiveness by how many sponsors share a matched
+key — it separated National Bank (5) and James River (8) from Best Buy (3) and
+Colliers (4), but on four data points that is a fitted threshold, not a
+measurement, and it was not used.
+
+**What shipped.** 1,825 plans across 1,672 tickers, up from 160. The entire
+prefix-match class (23 attributions) was read in full rather than sampled: all
+23 are wholly-owned subsidiaries of the named parent. A 40-row spread sample of
+the exact-match class in the sub-5,000-participant tail read clean.
+
+**What did not ship.** 3,365 plans across 3,236 sponsors are REFUSED and written
+to `docs/sponsor-review-queue.json`. Roughly half of that queue's largest
+entries are traps the guards caught: Target Corporation -> CBDY (a Canadian
+cannabis shell, not TGT), CHS/Community Health Systems -> CHS INC (an
+agricultural co-op), The Prudential Insurance Company of America -> PUK (UK
+Prudential), The Crawford Group -> CRD-A (Crawford & Co; the filer is Enterprise
+Rent-A-Car's private parent), Unifi Aviation -> UFI (a textile maker). Nineteen
+of the correct ones were hand-confirmed into `companies.json` — FedEx, American
+Airlines, Best Buy, Aramark, Quest Diagnostics, Allstate, CBRE, Dillard's,
+Maximus, Travelers, Cummins, Gap, Concentrix, Amentum, Ensign, WPP, Toyota,
+Takeda, UBS. PEO and multiple-employer filers (Paychex Retirement, TriNet HR
+III/IV) were deliberately left refused: the plan is not that company's employees'
+plan, so its ticker would misattribute 900k participants.
+
+**The prevention.** A refused match is a blank field; a wrong match is a wrong
+company on a live page. Every rule above exists to refuse, the review queue is
+the only path from refusal to the site, and it requires a human. The curated
+list still wins over the SEC match everywhere, and it now lives in one module
+(`scripts/match-curated.mjs`) imported by both the pipeline and the applier, so
+the two cannot drift into showing different companies.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

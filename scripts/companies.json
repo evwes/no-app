@@ -850,6 +850,147 @@
    "aliases": [
     "AMERICAN EXPRESS"
    ]
+  },
+  {
+   "ticker": "FDX",
+   "name": "FedEx",
+   "aliases": [
+    "FEDEX CORPORATION",
+    "FEDEX CORPORATE SERVICES, INC."
+   ]
+  },
+  {
+   "ticker": "AAL",
+   "name": "American Airlines",
+   "aliases": [
+    "AMERICAN AIRLINES, INC. - RETIREMENT",
+    "AMERICAN AIRLINES, INC."
+   ]
+  },
+  {
+   "ticker": "BBY",
+   "name": "Best Buy",
+   "aliases": [
+    "BEST BUY ENTERPRISE SERVICES, INC.",
+    "BEST BUY CO., INC."
+   ]
+  },
+  {
+   "ticker": "ARMK",
+   "name": "Aramark",
+   "aliases": [
+    "ARAMARK SERVICES, INC."
+   ]
+  },
+  {
+   "ticker": "DGX",
+   "name": "Quest Diagnostics",
+   "aliases": [
+    "QUEST DIAGNOSTICS CLINICAL LABORATORIES, INC.",
+    "QUEST DIAGNOSTICS INCORPORATED"
+   ]
+  },
+  {
+   "ticker": "ALL",
+   "name": "Allstate",
+   "aliases": [
+    "THE ALLSTATE CORPORATION",
+    "ALLSTATE INSURANCE COMPANY"
+   ]
+  },
+  {
+   "ticker": "CBRE",
+   "name": "CBRE",
+   "aliases": [
+    "CBRE SERVICES, INC.",
+    "CBRE, INC."
+   ]
+  },
+  {
+   "ticker": "DDS",
+   "name": "Dillards",
+   "aliases": [
+    "DILLARD S, INC."
+   ]
+  },
+  {
+   "ticker": "MMS",
+   "name": "Maximus",
+   "aliases": [
+    "MAXIMUS, INC."
+   ]
+  },
+  {
+   "ticker": "TRV",
+   "name": "Travelers",
+   "aliases": [
+    "TRAVELERS COMPANIES, INC.",
+    "THE TRAVELERS COMPANIES, INC."
+   ]
+  },
+  {
+   "ticker": "CMI",
+   "name": "Cummins",
+   "aliases": [
+    "CUMMINS INC."
+   ]
+  },
+  {
+   "ticker": "GAP",
+   "name": "Gap",
+   "aliases": [
+    "GAP INC."
+   ]
+  },
+  {
+   "ticker": "CNXC",
+   "name": "Concentrix",
+   "aliases": [
+    "CONCENTRIX CVG CORPORATION",
+    "CONCENTRIX CORPORATION"
+   ]
+  },
+  {
+   "ticker": "AMTM",
+   "name": "Amentum",
+   "aliases": [
+    "AMENTUM SERVICES, INC."
+   ]
+  },
+  {
+   "ticker": "ENSG",
+   "name": "Ensign Group",
+   "aliases": [
+    "ENSIGN SERVICES, INC."
+   ]
+  },
+  {
+   "ticker": "WPP",
+   "name": "WPP",
+   "aliases": [
+    "WPP GROUP USA, INC."
+   ]
+  },
+  {
+   "ticker": "TM",
+   "name": "Toyota",
+   "aliases": [
+    "TOYOTA MOTOR NORTH AMERICA, INC"
+   ]
+  },
+  {
+   "ticker": "TAK",
+   "name": "Takeda",
+   "aliases": [
+    "TAKEDA PHARMACEUTICAL U.S.A., INC."
+   ]
+  },
+  {
+   "ticker": "UBS",
+   "name": "UBS",
+   "aliases": [
+    "UBS AG"
+   ]
   }
  ]
 }
