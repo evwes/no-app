@@ -3657,3 +3657,41 @@ where a real fix would go, rather than shipped.
 93 cached filings: confident 25 → 35, no confident losses. Gate 27/27.
 
 498 filings tested cumulatively. v73 re-parsing as #161; v74 committed [skip ci].
+
+## Report #46 — the guard that had been looking at the wrong line since Honeywell
+
+Batch verdicts: PRIOR_YEAR_SOURCE 5, NAMES_MATCH 3, OCR_SOURCE 2. No defect
+verdicts, third cycle running. The row-quality review found the biggest clean
+class of the day.
+
+**390 confident plans were holding a NAICS business code.** Two of this batch's
+ten entries carried an "ABCDEFGHI" address row, and so had two of the previous
+twenty — this class kept surfacing and kept looking like it should already be
+guarded, because a guard for it exists. Reading the filing text explained it:
+EFAST2's placeholder text and the number are on DIFFERENT lines, because the
+sponsor's address block wraps.
+
+    738 ABCDEFGHI
+    c/o NE Davis St
+    Portland      OR  97232        624100
+
+The first two lines buffer as a wrapped name; 624100 — the business code from
+box 2d, Individual and Family Services — becomes its value. The guard tests the
+line carrying the value, which has no placeholder text on it at all.
+
+Measured: **411 rows, 410 entries, 390 confident.** "3326ABCDEFGHI c/o 160th
+Avenue SE Suite 120 … Bellevue $623,000" was Regency Pacific's FIFTH LARGEST
+holding. The business codes recur across unrelated plans — 623000, 623110,
+541330, 624100 — which is what confirms the mechanism.
+
+Fix: test the ASSEMBLED name, not the line. 102 cached filings, confident 28 →
+38, six junk rows removed and zero confidence losses — every removal moves its
+region's ratio toward 1.00 (Regency 1.08 → 0.99, BMC 1.02 → 1.00). Gate 28/28.
+
+**Three guards this session were testing a proxy for their own signal.** "First
+three tokens" for "inside the word total"; "fourteen words on the line" for
+"this is a sentence"; and now "the value line" for "the row". A wrapped name is
+assembled from several lines, so a guard that runs before assembly can only
+ever see one of them. Where a rule condemns a row, test the row.
+
+508 filings tested cumulatively. v73 re-parsing as #161; v74 committed [skip ci].
