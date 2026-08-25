@@ -3474,3 +3474,35 @@ Gate 20/20.
 
 370 filings tested cumulatively. v71 re-parsing as #160; main still on v69
 pending the region-scoring question from #38.
+
+## (10 fund report) #41 — 2026-08-25 07:52Z cycle — a confirmed win, a new class, and a regression caught in the act
+
+8 NAMES_MATCH, 2 OCR_SOURCE.
+
+**Confirmed win.** The CMFG plan whose 25-fund menu v69 found and one plural
+subtotal blocked is now CONFIDENT at 24 rows, ratio 0.95, reading
+"T Rowe Price | Retirement 2045 Fund I". v70's plural-total fix did exactly
+what it was written for — the first end-to-end confirmation of a fix
+predicted, shipped and observed within the night.
+
+**New class: Morningstar CATEGORY labels as names**, fund in the identity
+column: "BLACKROCK LIFEPATH INDEX 2030 K || Target-date retirement",
+"FIDELITY 500 INDEX || Large blend". Measured 1,642 rows.
+
+**But the examples split in two, and that changed the fix** — and exposed a
+regression I had already shipped in v72's first version. For rows where the
+identity is only the HOUSE ("VANGUARD || MID CAP GROWTH"), making the
+category type-only collapses the row to "Vanguard": a bare manager, the exact
+defect v70 spent the night fixing.
+
+The rule now discards a category description only when the identity actually
+names a product (digit, 3+ words, or share-class marker). Where the filing
+gives just a house and a category, "Vanguard · Mid Cap Growth" is the most it
+says, and the page already renders that. Verified across seven shapes; gate
+20/20.
+
+Two habits compounding: #35 (read the examples) revealed the split, and #40
+(test the real shapes) caught the misfire — because the test was built from
+the split I had just measured.
+
+390 filings tested cumulatively.

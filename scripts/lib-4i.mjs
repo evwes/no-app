@@ -365,7 +365,21 @@ export function parseRows(section, opts = {}) {
     const shortIdentity = nc && (nc.split(/\s+/).length <= 3 ||
       (/\b(?:trust (?:company|co)|bank|advisors?|asset management|investments?)\.?$/i.test(nc) && nc.split(/\s+/).length <= 5));
     const dLetters = dClean.replace(/[^a-z]/gi, "").length;
-    const dUsable = dClean && !typeOnly(dClean) &&
+    /* A CATEGORY phrase in the description is only worth discarding when the
+     * identity actually names a product. "BLACKROCK LIFEPATH INDEX 2030 K |
+     * Target-date retirement" should keep the fund; "Vanguard | Target Date
+     * Retirement" must NOT collapse to "Vanguard" — that is the bare-manager
+     * defect v70 fixed, and the first version of the category list
+     * reintroduced it. Measured: 1,642 rows carry a Morningstar-style
+     * category as the name, and they split in two — some have the whole fund
+     * in the identity, others only the house. Where only the house is there,
+     * "Vanguard · Mid Cap Growth" is the most the filing gives, and the
+     * existing rendering already says exactly that. */
+    const identityIsProduct = nc && (/\d/.test(nc) || nc.split(/\s+/).length >= 3 ||
+      /\b(?:r[1-6]|k\d?|adm|inv|instl?|idx|index|fund|trust|pool)\b/i.test(nc));
+    const catDesc = dClean && CATEGORY_PHRASE.test(
+      String(dClean).replace(/\s+[\d,]{3,}(?:\.\d+)?\s*(?:\(\d+\))?\s*$/, "").trim());
+    const dUsable = dClean && (!typeOnly(dClean) || (catDesc && !identityIsProduct)) &&
       (dLetters >= 8 ? dClean.split(/\s+/).length >= 2
         : shortIdentity && dLetters >= 4 && (/\d/.test(dClean) || dClean.split(/\s+/).length >= 2));
     if (dUsable) {

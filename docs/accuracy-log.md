@@ -3355,6 +3355,49 @@ undo v70's headline fix. Verified in one pass — the three reversed rows now
 name their fund, while "Great Gray | Index 2040 R" and "Fidelity | Contrafund
 Commingled Pool K6" are untouched. Gate 20/20.
 
+## 2026-08-25 — v72 completed: Morningstar categories, and a regression I shipped and caught
+
+**A confirmed win first.** The CMFG plan (20251015195704NAL0002948995001) —
+the one whose recovered 25-fund menu v69 found and one plural subtotal
+blocked — is now CONFIDENT at 24 rows, ratio 0.95, reading
+"T Rowe Price | Retirement 2045 Fund I" across its vintages. v70's
+plural-total fix delivered exactly what it was written for.
+
+**The new class.** A filing put Morningstar CATEGORY labels in the
+description column and the fund in the identity column:
+
+    BLACKROCK LIFEPATH INDEX 2030 K  ||  Target-date retirement
+    FIDELITY 500 INDEX               ||  Large blend
+    AMERICAN FUNDS BOND FUND OF AMER R6  ||  Intermediate core bond
+
+Measured: **1,642 rows** carry a category-shaped name. But the examples split
+in TWO, and that changed the fix:
+
+    BLACKROCK LIFEPATH INDEX 2030 K  ||  Target-date retirement   <- fund in identity
+    VANGUARD                         ||  MID CAP GROWTH           <- only the HOUSE
+
+**The regression I shipped and then caught.** v72's first version made every
+category phrase type-only, which for the second sub-class collapses the row
+to "Vanguard" — a bare manager, the exact defect v70 spent the night fixing.
+I verified this by testing the shape rather than assuming, and it reproduced
+immediately.
+
+The rule now discards a category description ONLY when the identity actually
+names a product (carries a digit, three or more words, or a share-class
+marker). Where the filing gives just a house and a category, "Vanguard · Mid
+Cap Growth" is the most it says, and the existing rendering already says
+exactly that. Verified across seven shapes in one pass: the fund wins where
+there is one, the house-plus-category rows are untouched, and "Great Gray |
+Index 2040 R" and "T. Rowe Price | Retirement 2040 Fund I" still hold. Gate
+20/20.
+
+**Two lessons compounding.** #35 said read the examples, not the count — that
+is what revealed the two sub-classes. #40 said verify against real rows, not
+synthetic ones — and here the synthetic test is what CAUGHT the regression,
+because I wrote it to include the sub-class I had just learned about. The
+habits work together: measurement finds the split, and a test built from the
+split finds the misfire.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
