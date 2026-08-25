@@ -13,7 +13,49 @@ import { execFileSync } from "node:child_process";
 import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { parse4i } from "./lib-4i.mjs";
+import { parse4i, extractPlanFeatures } from "./lib-4i.mjs";
+
+/* FEATURE specimens (added 2026-08-25). Until now the gate protected only
+ * lineup parsing: a vesting or match regression could not be seen until the
+ * audit ran at the END of a 75-minute re-parse. These seven filings were read
+ * by hand against their notes while building v81's vesting work, and they
+ * pin the two things that are easy to get backwards — the phrasings that DO
+ * state a schedule, and the ones that must state NOTHING because the sentence
+ * covers only part of the money.
+ * `vesting: null` means "must not claim a schedule" and is as load-bearing as
+ * any positive expectation: three of these filings say "immediately vested"
+ * in a sentence that does not cover the employer money, and reading them as
+ * Immediate tells the user the opposite of the truth. */
+const FEATURE_SPECIMENS = [
+  ["Novus (universal 'all contributions')", "20260722074735NAL0014440048001",
+    { vesting: "Immediate" }],
+  ["Safe-harbor possessive ('the Company's safe harbor contributions')",
+    "20251015123436NAL0002414595001", { vesting: "Immediate" }],
+  ["Bank of Utica (colon-introduced graded TABLE)", "20240826174823NAL0009941537001",
+    { vesting: "Graded schedule" }],
+  ["'increasing by 25% per additional year'", "20251103113117NAL0009671920001",
+    { vesting: "Graded schedule" }],
+  // the three that must stay silent
+  ["Remainder graded ('vesting in the remainder … years of credited service')",
+    "20251015102315NAL0005785280001", { vesting: null }],
+  ["Union cohort vests over three years", "20251006094618NAL0008580162001",
+    { vesting: null }],
+  ["Carve-out ('except for … Company Non-Matching contributions')",
+    "20260714155753NAL0002191952001", { vesting: null }],
+  /* OPEN QUESTION, pinned so it cannot drift unnoticed. This filing states
+   * TWO real schedules: "100% fully vested after five years of credited
+   * service in the Company's discretionary nonelective and prior matching
+   * contributions (20% per completed year)" AND "100% vested after 2 years
+   * of credited service in safe harbor matching contributions". v80 read the
+   * cliff; v81's "per completed year" fix makes the graded sentence match
+   * first and it wins on document order. Both labels are true of different
+   * money, and the verbatim quote ships with either, so no guard was added —
+   * adding an untested one is the mistake this cycle already made once. If a
+   * later change decides the ACTIVE match should win, this expectation moves
+   * to "2-year cliff" and that is the review moment. */
+  ["Two schedules, graded wins on document order", "20250716082243NAL0004508352001",
+    { vesting: "Graded schedule" }],
+];
 
 const SPECIMENS = [
   // [label, ack, assetsEOY, expect]
@@ -197,6 +239,26 @@ for (const [label, ack, assets, expect] of SPECIMENS) {
     (expect.sum === undefined || sum === expect.sum);
   console.log(`GATE ${ok ? "OK  " : "FAIL"} ${label}: found=${p.found} n=${n} sum=${sum}` +
     (ok ? "" : ` (expected found=${expect.found} n=${expect.n ?? "-"} sum=${expect.sum ?? "-"})`));
+  if (!ok) failed++;
+}
+
+for (const [label, ack, expect] of FEATURE_SPECIMENS) {
+  const url = `https://efast2-filings-public.s3.amazonaws.com/prd/${ack.slice(0, 4)}/${ack.slice(4, 6)}/${ack.slice(6, 8)}/${ack}.pdf`;
+  const pdf = path.join(work, ack + ".pdf");
+  let text = null;
+  for (let attempt = 0; attempt < 3 && text === null; attempt++) {
+    try {
+      execFileSync("curl", ["-sf", "--retry", "2", "-o", pdf, url]);
+      text = execFileSync("pdftotext", ["-layout", "-q", pdf, "-"],
+        { encoding: "utf8", maxBuffer: 200 * 1024 * 1024 });
+    } catch { await new Promise((r) => setTimeout(r, 3000 * (attempt + 1))); }
+  }
+  if (text === null) { console.log(`GATE SKIP  ${label}: specimen unreachable after retries`); continue; }
+  const ff = extractPlanFeatures(text) || {};
+  const got = ff.vesting || null;
+  const ok = expect.vesting === null ? got === null : got === expect.vesting;
+  console.log(`GATE ${ok ? "OK  " : "FAIL"} ${label}: vesting=${got === null ? "(none)" : got}` +
+    (ok ? "" : ` (expected ${expect.vesting === null ? "(none)" : expect.vesting})`));
   if (!ok) failed++;
 }
 

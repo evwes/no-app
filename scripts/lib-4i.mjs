@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 80;
+export const PARSER_VERSION = 81;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -1982,7 +1982,12 @@ export function extractPlanFeatures(text) {
   let horizonFallback = null; // 4-6yr full-vesting horizon, used only if nothing better is found
   for (const s of vestSentences) {
     if (matchImmediate && /non.?elective|profit.?sharing/i.test(s) && !/match/i.test(s)) continue;
-    const graded = s.match(/(\d{1,2}) ?(?:percent|%) (?:per|each|for each|after each) year|vests? (\d{1,2}) ?(?:percent|%) after each year|graded vesting|graduated vesting/i);
+    // v81: an adjective between "per" and "year" is common and broke the
+    // whole pattern — "A participant becomes 25% vested after one year of
+    // service, INCREASING BY 25% PER ADDITIONAL YEAR, with full vesting
+    // after four years of credited service" is a 4-year graded schedule
+    // that read as nothing at all
+    const graded = s.match(/(\d{1,2}) ?(?:percent|%) (?:per|each|for each|after each) (?:additional |subsequent |succeeding |full |completed |further )?year|vests? (\d{1,2}) ?(?:percent|%) after each year|graded vesting|graduated vesting/i);
     // a multi-step percent-at-year LIST is a graded schedule even though
     // no single step says "per year" — its final "100% after three years"
     // step matched the cliff pattern and shipped a graded schedule as
@@ -2056,7 +2061,7 @@ export function extractPlanFeatures(text) {
     // "Years of Service Vested %" (Transdigm), reversed "Percent Years of
     // vesting service vested" (Weyerhaeuser), "Vested Percentage Years of
     // service" (Rollins)
-    const th = t.match(/years of (?:credited |continuous )?(?:service|vesting service)\s+(?:vesting|vested) percentage|following vesting schedule:?\s+years\s+(?:employer|vested|vesting)|vested\s+years of service\s+percentage|following schedule:?\s*vested\s+years of service\s+percentage|years of service\s+percentage|(?:vesting|vested)\s+(?:years of (?:credited |continuous )?service|service)\s+percentage|(?:completed )?years of (?:credited |continuous )?service\s+percent(?:age)? vested|years of service\s+vesting\b|years of (?:credited |continuous )?service\s+vested ?%?|percent\s+years of (?:vesting |credited |continuous )?service\s+vested|vested percentage\s+years of service|years of (?:credited |continuous )?service\s+%\s*vested|years\s+percentage\s+of service\s+vested/i);
+    const th = t.match(/years of (?:credited |continuous )?(?:service|vesting service)\s+(?:vesting|vested) percentage|following vesting schedule:?\s+years\s+(?:employer|vested|vesting)|vested\s+years of service\s+percentage|following schedule:?\s*vested\s+years of service\s+percentage|years of service\s+percentage|(?:vesting|vested)\s+(?:years of (?:credited |continuous )?service|service)\s+percentage|(?:completed )?years of (?:credited |continuous )?service\s+percent(?:age)? vested|years of service\s+vesting\b|years of (?:credited |continuous )?service\s+vested ?%?|percent\s+years of (?:vesting |credited |continuous )?service\s+vested|vested percentage\s+years of service|years of (?:credited |continuous )?service\s+%\s*vested|years\s+percentage\s+of service\s+vested|vested\s+(?:completed\s+)?years of (?:credited |continuous )?service\s+percent/i);
     if (th) {
       let win = t.slice(th.index + th[0].length, th.index + th[0].length + 340);
       // stop at resumed prose — back-to-back tables (AbbVie files the
@@ -2189,7 +2194,77 @@ export function extractPlanFeatures(text) {
     for (const s of vestSentences) {
       // "always 100% vested in ALL of their Plan accounts" (EP Energy)
       // covers employer money without naming it
-      if (!/(matching|employer|company|non.?elective|profit.?sharing|plan sponsor) (?:contributions?|accounts?)|company match|all (?:of (?:their|his|her) )?(?:plan )?accounts|all contribution sources/i.test(s)) continue;
+      /* v81: the gate demanded the employer noun ADJACENT to "contributions",
+       * and three phrasings auditors actually use never satisfy that:
+       *   "immediately vested in ALL contributions plus actual earnings"
+       *   "immediately vested in ... the Company's SAFE HARBOR contributions"
+       *   "... as well as the Bank's safe harbor contributions"
+       * A safe harbor contribution is employer money by statute (IRC
+       * 401(k)(12)/(13)), and "all contributions" covers employer money by
+       * definition unless the sentence narrows it to the participant's own.
+       * Measured on 39 filings sampled from the match-but-no-vesting backlog:
+       * 22 carried a real immediate-vesting sentence and the gate rejected
+       * every one of them. */
+      const employerMoney =
+        /(?:matching|employer|company|corporation|bank|partnership|association|non.?elective|profit.?sharing|plan sponsor|sponsor)(?:'s|s'|’s|s’)?(?:\s+\w+){0,3}\s+contributions?/i.test(s)
+        || /(?:matching|employer|company|non.?elective|profit.?sharing|plan sponsor)(?:'s|s'|’s|s’)?\s+accounts?|company match/i.test(s)
+        || /safe.?harbor(?:\s+\w+){0,2}\s+contributions?/i.test(s)
+        || /all (?:of (?:their|his|her) )?(?:plan )?accounts|all contribution sources/i.test(s);
+      // "all contributions" is universal only when nothing narrows it to the
+      // participant's own money ("all of their own contributions", "all
+      // elective contributions" are employee-side statements)
+      const universal = /\ball (?:of the |the )?contributions?\b/i.test(s)
+        && !/\ball (?:of )?(?:their|his|her|its) own\b|\ball (?:elective|salary|employee|participant|pre.?tax|voluntary|deferral)/i.test(s);
+      // the ORIGINAL gate: the employer noun adjacent to "contributions". A
+      // sentence that satisfies it kept its v80 answer and must keep it —
+      // measured on 955 cached filings, applying the guards below to these
+      // too cost 35 correct "Immediate" readings against 27 gains, because
+      // plans that vest the MATCH immediately and profit-sharing over years
+      // are common and the pre-existing non-elective scoping already handles
+      // them. The new guards therefore police only the new admissions.
+      const strictGate = /(matching|employer|company|non.?elective|profit.?sharing|plan sponsor) (?:contributions?|accounts?)|company match|all (?:of (?:their|his|her) )?(?:plan )?accounts|all contribution sources/i.test(s);
+      if (!strictGate && !employerMoney && !universal) continue;
+      /* …and the widened gate must not answer for a plan that vests the
+       * PARTICIPANT's money immediately and the employer's over years:
+       *   "immediately vested in their voluntary contributions as well as
+       *    Company safe harbor contributions. Vesting in the remainder of
+       *    their accounts is based on full years of credited service"
+       * The second sentence is the plan's actual schedule. When any vesting
+       * sentence scopes some other portion to years of service, this pass
+       * states nothing rather than the opposite of the truth — and does not
+       * leave the immediate sentence behind as the quote either. */
+      /* The guard has to be general, not shape-specific. Two shapes turned up
+       * in five sampled gains, and a pattern written for either one alone
+       * would have shipped the other as a false "Immediate":
+       *   remainder — "Vesting in the Bank's discretionary profit sharing
+       *     contributions … is based on years of continuous service"
+       *   cohort — "Participants covered by a collective bargaining agreement
+       *     are vested in the Employer's non-safe-harbor contribution … after
+       *     the completion of three years of service"
+       * So: ANY other vesting sentence that puts employer money behind a
+       * service condition means the plan is not uniformly immediate. */
+      const remainderGraded = vestSentences.some((o) => o !== s
+        && (/(?:matching|employer|company|bank|partnership|association|sponsor|non.?elective|profit.?sharing)/i.test(o)
+          // "Vesting in THE REMAINDER of their accounts is based on full years
+          // of credited service" names no employer at all — the portion the
+          // immediate sentence did not cover is identified only by exclusion
+          || /\bthe (?:remainder|balance|rest|remaining portion)\b/i.test(o))
+        && /\bvest\w*\b[^.]{0,140}?(?:\bis\s+based\s+on\b[^.]{0,40}?\byears?\b|\bafter\s+(?:the\s+)?(?:completion\s+of\s+)?(?:\w+|\d+)\s+years?\b|\byears?\s+of\s+(?:vesting|credited|continuous)\s+service\b|\bvesting schedule\b)/i.test(o))
+        /* …and a schedule introduced by a COLON and rendered as a table is
+         * invisible to the sentence scanner above, which requires a
+         * terminating period: "Vesting in the Bank's discretionary profit
+         * sharing contributions … is based on years of continuous service
+         * with the Bank as follows:" followed by a Years/Percent table. That
+         * filing's only readable vesting sentence is the immediate one, so
+         * the sentence-level guard cannot see the schedule that contradicts
+         * it. Fall back to the raw notes text for that shape. */
+        || /\bvest\w*[^.:]{0,140}?\bis\s+based\s+on\b[^.:]{0,60}?\byears?\s+of\b[^.:]{0,30}?\bservice\b/i.test(t)
+        || /(?:completed\s+)?years?\s+of\s+(?:vesting\s+|credited\s+|continuous\s+)?service\s+(?:vested\s+)?percent/i.test(t);
+      // "…immediately vested in their own contributions, Company matching
+      // contributions … EXCEPT for the portion attributable to Company
+      // Non-Matching contributions" — the exception is the schedule
+      const carveOut = /\bexcept\b[^.]{0,90}?(?:matching|employer|company|non.?elective|profit.?sharing)/i.test(s);
+      if (!strictGate && (remainderGraded || carveOut)) continue;
       /* v78: vesting accelerated BY PLAN TERMINATION is not the plan's vesting
        * schedule. Every plan must fully vest affected participants on
        * termination or partial termination — IRC 411(d)(3) — so the auditor's

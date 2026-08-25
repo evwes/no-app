@@ -4024,6 +4024,111 @@ whether OCR produced either side (`ocr`), and — for anything that survives bot
 — whether the shape it lost to occurs at population scale. Three of this run's
 ten losses were not even the same *document* as the entry they replaced.
 
+### v81 — the vesting backlog was one gate clause, and widening it needed three guards
+
+**The defect.** 10,189 plans had readable auditor notes — loan, match and Roth
+quotes all extracted from them — and no vesting at all. 5,622 of those had an
+extracted employer match, so employer money exists and a schedule for it is
+almost certainly written down. 39 were sampled from that class and downloaded.
+**Every one of the 39 discusses vesting**, 24 to 333 times.
+
+The cause was a single clause. "Immediate" only counts when the sentence covers
+employer money, and the test for that demanded the employer noun *adjacent* to
+"contributions":
+
+```
+(matching|employer|company|non.?elective|profit.?sharing|plan sponsor) (?:contributions?|accounts?)
+```
+
+Three phrasings auditors actually write never satisfy it:
+
+| phrasing | why it failed |
+|---|---|
+| "immediately vested in **all contributions** plus actual earnings thereon" | universal claim, no employer noun at all |
+| "…their contributions, **the Company's safe harbor** contributions" | possessive plus an intervening qualifier |
+| "…as well as **the Bank's safe harbor** contributions" | "bank" was not in the vocabulary |
+
+22 of the 39 carried a real immediate-vesting sentence. The gate rejected all 22.
+
+**Why widening it alone would have been worse than the defect.** Of the first
+five gains the widened gate produced, **two were false**. A false "Immediate"
+is not a smaller error than a blank — it tells a participant their employer
+money is theirs today when it is not:
+
+- *Bank of Utica* — "immediately vested in their elective deferral … as well as
+  the Bank's safe harbor contributions", followed by "Vesting in the Bank's
+  discretionary profit sharing contributions … is based on years of continuous
+  service **as follows:**" and a 0/20/40/60/80/100% table.
+- *a 403(b) filer* — "All participants are immediately vested in their
+  contributions… Participants **covered by a collective bargaining agreement**
+  are vested in the Employer's non-safe-harbor contribution … after the
+  completion of three years of service."
+
+So the widening ships with three guards, and each was written only after a
+filing proved it necessary — a guard for the remainder shape alone would have
+passed the cohort filing, and vice versa:
+
+1. **remainder / cohort** — any *other* vesting sentence that puts employer
+   money (or "the remainder", which names no employer at all) behind a service
+   condition means the plan is not uniformly immediate.
+2. **colon-table fallback** — the sentence scanner requires a terminating
+   period, so a schedule introduced by "…as follows:" and rendered as a table
+   is invisible to guard 1. Bank of Utica's *only* readable vesting sentence is
+   the immediate one. That shape falls back to the raw notes text.
+3. **carve-out** — "…immediately vested in their own contributions, Company
+   matching contributions … **except** for the portion attributable to Company
+   Non-Matching contributions".
+
+**Two schedules the widening then let through.** With the guards in place, two
+more readers were extended to answer the filings the guards correctly silenced:
+
+- `"increasing by 25% **per additional year**"` — the graded pattern demanded
+  "per year" and an adjective between the two words killed the whole match.
+  Three sampled filings state their entire schedule that way.
+- table header `"Vested / Completed Years of Service / Percent"` — a floating
+  "Vested" label above the column pair, a variant the header list did not carry.
+
+**Result on the sampled class: 0 of 39 → 17 of 39**, every one read against its
+filing text by hand. 13 Immediate, 4 graded. The eight filings whose immediate
+sentence covers only the participant's own money still return nothing, which is
+the correct answer until their schedule can be read.
+
+**The guards were themselves too broad, and only a population measurement
+showed it.** The first version applied all three guards to *every* sentence
+reaching the immediate pass. On the 39-filing sample that looked perfect. On
+955 cached filings it was **35 correct "Immediate" readings lost against 27
+gains — a net regression**, and the lost ones were unambiguous:
+
+> "Participants' contributions and the Company's matching contributions to the
+> Plan vest immediately."
+
+Those sentences satisfy the *original* strict gate. What killed them was the
+colon-table fallback searching the whole document: a plan that vests the match
+immediately and profit-sharing over years has graded language somewhere in its
+notes, and the pre-existing non-elective scoping already handled that case
+correctly. The fix is a scoping rule that should be the default for any gate
+widening:
+
+> **A sentence that satisfied the old gate keeps its old answer. New guards
+> police only the sentences the widening newly admits.**
+
+That makes the change strictly additive by construction — the old behaviour is
+preserved by the code path, not by hoping the new tests happen to agree with it.
+
+**Measured result of the scoped version, on the same 955 filings: 27 gained,
+0 lost, 1 relabelled.** The relabelled one states two real schedules (5-year
+graded on discretionary non-elective, 2-year cliff on the safe-harbor match)
+and is pinned as a gate specimen with the question written down rather than
+patched over.
+
+**New standing machinery: the gate now has a features arm.** Until this change
+the parser gate protected lineup parsing only — a vesting or match regression
+could not be seen until the audit ran at the *end* of a 75-minute re-parse.
+Seven of these filings are now gate specimens, and three of them assert
+`vesting: null`. Those three do not discriminate v80 from v81 (both are silent
+on them); they exist to fail the *next* person who widens this gate without
+writing the guards, which is exactly the mistake the measurement caught here.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
