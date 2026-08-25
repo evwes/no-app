@@ -91,6 +91,41 @@ So vesting's realistic ceiling is better than the ~72% estimated above, but it
 is still **not 90%**: the binding constraint is the 91.5% notes ceiling minus
 the plans whose auditors describe vesting only for the participant's own money.
 
+## What the 5,776 vesting quote-only rows actually contain (measured 2026-08-25)
+
+These are plans where a vesting sentence was located and no label came out.
+Classified by topic:
+
+| bucket | rows | verdict |
+|---|---|---|
+| quote states schedule language | 2,103 | see the split below |
+| quote is about the match only | 1,927 | partial-money sentence, correctly unlabelled |
+| other / no topic marker | 1,370 | |
+| distribution, eligibility, plan-termination, loans | 376 | **wrong topic — a display defect, not coverage** |
+
+Splitting the 2,103 that carry schedule language:
+
+- **855 assert that a schedule exists and state no percentage at all** —
+  "Vesting in the Company's matching contributions is based on years of
+  continuous service." Full stop. **756 of those name no year count either.**
+  Nothing further can be extracted from the notes; the quote already carries
+  everything the filing says.
+- **683 point somewhere else** — "as summarized below", "according to the
+  following vesting schedule", "as defined in the plan document". Mostly
+  honest pointers; a handful carry the table inline and are extractable.
+- the remainder state percentages inline and are the extractable pool.
+
+**Extractable by known near-miss patterns: ~280 rows total**, sized against
+the real quotes: cliff-window 80→130 chars (156), "attains N years" (35),
+"ratably over N years" (36), "following completion of N years" (17), "at all
+times" preceding "100% vested" (12), "not vested until N years" (6), "vested
+upon entry" (6), plus four shapes worth ≤7 each. Worth doing, and small.
+
+**This is the concrete reason vesting cannot reach 90% by extraction.** The
+756-row floor is filings whose auditors chose not to print the schedule. No
+parser change reaches them, and inferring a schedule from Schedule R or plan
+type would be inventing filed data.
+
 ## Recommended next work, in order
 
 1. **Wrong-topic quotes** (2,242 match + 363 vesting): a sentence about
