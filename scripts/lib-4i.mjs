@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 82;
+export const PARSER_VERSION = 83;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -2297,6 +2297,54 @@ export function extractPlanFeatures(text) {
       // no \b after the percent sign — "20% vested" has no word boundary there,
       // which is why the first version of this let a 2-to-6-year ladder through
       if (/\b[1-9]\d?\s?(?:%|percent\b)[^.]{0,40}?\bafter\b[^.]{0,30}?\byears?\b/i.test(s)) continue;
+      /* v83: four gaps in the guards above, found by self-checking all 3,907
+       * new Immediate labels v81 produced against their own quotes. 4 were
+       * wrong — 0.10%, and the false-Immediate RATE across the whole stock
+       * actually improved (0.130% → 0.122%), but wrong is worse than blank
+       * here: it tells a participant their employer money is theirs today.
+       *   1. "100" cannot match [1-9]\d? — two digits max — so the guard
+       *      immediately above was blind to "immediately vested at 100
+       *      percent AFTER three years of service", the commonest way to
+       *      write a cliff while using the word "immediately".
+       *   2. the condition can OPEN the sentence: "Upon three years of
+       *      service, the participant is 100% vested in all contributions".
+       *   3. the carve-out is not always worded "except": "…immediately 100%
+       *      vested in the Organization's safe harbor contributions, BUT DO
+       *      NOT VEST in discretionary contributions UNTIL after three years".
+       *   4. a loan sentence that happens to carry "vested" and employer
+       *      money produced a label out of nothing — v82 kept loan text out
+       *      of the QUOTE but the LABEL path had no such test. */
+      /* …but not when the MATCH is immediate and only non-elective /
+       * profit-sharing money carries the years — that split is already the
+       * project's settled reading (the graded loop's matchImmediate rule),
+       * and this guard was overriding it: "immediately vested in the
+       * matching contributions received and 100% vested after five years of
+       * vesting service in the nonelective contributions" is an immediate
+       * match, and the plan's active employer money is the match. */
+      // safe-harbor money counts as active employer money exactly like a
+      // match — "immediately vested in the safe harbor contributions and 100%
+      // vested after five years … in the discretionary non-elective
+      // contributions" is the same split, written without the word "match".
+      // The exemption must NOT cover an either/or across participant GROUPS:
+      // "contributions vest under EITHER 'safe harbor' provisions … WHEREBY
+      // such contributions are immediately vested OR under a vesting schedule
+      // whereby the participant is 100% vested after five or six years" is
+      // two populations, and "Immediate" is wrong for one of them.
+      const activeImm = /(?:match\w*|safe.?harbor)[^.]{0,80}?(?:immediat|at all times)|(?:immediat|at all times)[^.]{0,80}?(?:match\w*|safe.?harbor)/i.test(s);
+      const otherGraded = /non.?elective|profit.?sharing|discretionary|other (?:sponsor|company|employer|plan sponsor) contributions/i.test(s);
+      const eitherOr = /\beither\b[^.]{0,120}?\bor\b|\bwhereby\b/i.test(s);
+      const matchImmNonElecGraded = activeImm && otherGraded && !eitherOr;
+      if (/(?:100|one hundred) ?(?:percent|%)[^.]{0,40}?\bafter\b[^.]{0,30}?\byears?\b/i.test(s)
+          && !/regardless of (?:the )?(?:number of )?years/i.test(s)
+          && !matchImmNonElecGraded) continue;
+      if (/^[^.]{0,30}\bupon\s+(?:the\s+)?(?:completion\s+of\s+)?(?:one|two|three|four|five|six|\d)\s+years?\s+of\s+service/i.test(s)) continue;
+      if (/\bbut\b[^.]{0,60}?\bnot\b[^.]{0,40}?\bvest\w*[^.]{0,40}?\buntil\b/i.test(s)) continue;
+      // the immediate-vesting words can sit on EITHER side of "vest"
+      // ("immediately vested" vs "vested … at all times"), so this test must
+      // be order-independent — the first version required them after, and
+      // dropped a correct Immediate whose window happened to reach a loan note
+      if (/loan application|prevailing interest rates|\bborrow\b|obtain loans/i.test(s)
+          && !/(?:immediat|at all times|regardless of (?:the )?(?:number of )?years)/i.test(s)) continue;
       if (IMMED.test(s)) {
         out.vesting = "Immediate"; out.vestingText = cap(s); break;
       }

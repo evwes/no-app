@@ -4156,6 +4156,59 @@ text. The gate's feature arm gained a `quote: null` specimen, which is what
 makes it protective: a change that restores a wrong-topic quote still passes
 the vesting check and fails on the quote.
 
+### v83 — self-checking 3,907 new labels against their own quotes
+
+v81's widening produced 3,907 new "Immediate" vesting labels in run #167. Rather
+than trust the pre-ship measurement, every one was re-read against its own
+stored quote by machine: does the sentence that produced the label actually
+support it? **4 did not — 0.10%.** For scale, the false-Immediate rate across
+the whole stock *improved* (0.130% → 0.122%) even as the Immediate population
+grew from 10,776 to 14,712, so the data did not get less trustworthy. But wrong
+is worse than blank here: it tells a participant their employer money is theirs
+today when it vests over years. The four gaps:
+
+1. **`100` has three digits.** The guard meant to catch exactly this shape was
+   `[1-9]\d?` — two digits max — so "immediately vested at 100 percent AFTER
+   three years of service" sailed through. The commonest way to write a cliff
+   while using the word "immediately".
+2. **The condition can open the sentence**: "Upon three years of service, the
+   participant is 100% vested in all contributions."
+3. **The carve-out is not always "except"**: "…immediately 100% vested in the
+   Organization's safe harbor contributions, BUT DO NOT VEST in discretionary
+   contributions UNTIL after three years."
+4. **A loan sentence produced a label out of nothing.** v82 kept loan text out
+   of the *quote*; the *label* path had no such test.
+
+All three sentence-to-sentence guards were blind to 1–3 for the same reason:
+the condition sits in the **same sentence** as the immediate claim.
+
+**Replaying the fixed guards against all 14,712 stored Immediate labels removes
+13 — and 9 of them pre-dated v81.** The widening did not create this class; it
+made it visible by growing the population until a systematic self-check was
+worth writing.
+
+**Two corrections the replay forced, both from reading the full quotes:**
+
+- *Safe harbor is active employer money.* "Immediately vested in the safe
+  harbor contributions and 100% vested after five years … in the discretionary
+  non-elective contributions" is the same match-wins split the graded loop
+  already settles — written without the word "match". The exemption now covers
+  it, but must NOT cover an either/or across participant *groups*
+  ("contributions vest under EITHER 'safe harbor' provisions … WHEREBY such
+  contributions are immediately vested OR under a vesting schedule…"), which is
+  two populations where "Immediate" is wrong for one.
+- *Order-independence.* The loan test first required the immediate words to
+  follow "vest", which dropped a correct Immediate whose window happened to
+  reach a loan note — "immediately vested" puts them before.
+
+**And the gate corrected the fix's own author.** The specimen for shape 1 was
+written expecting `null`; the run returned `5-year schedule (shape not stated)`.
+Blocking the false Immediate does not leave a blank — the horizon fallback
+behind the immediate pass then reads the five years correctly. The specimen now
+pins the better answer. This is the second time this cycle that writing the
+expectation down before running it surfaced something the measurement had
+missed.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

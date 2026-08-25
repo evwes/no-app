@@ -63,6 +63,25 @@ const FEATURE_SPECIMENS = [
    * restores the quote passes the vesting check and fails here. */
   ["Loan note shown as the vesting quote", "20251205083856NAL0003062993001",
     { vesting: null, quote: null }],
+  /* v83: three false-"Immediate" shapes the v81 widening let through, found
+   * by self-checking all 3,907 new Immediate labels against their own quotes.
+   * Each states a service condition in the SAME sentence as the immediate
+   * claim, which is why the sentence-to-sentence guards could not see them. */
+  /* "100" has three digits and could not match the [1-9]\d? in the guard that
+   * was supposed to catch exactly this: "GEP participants become 100% vested
+   * in all Company contributions after five years of credited service" read
+   * as Immediate. Blocking it does not leave a blank — the horizon fallback
+   * behind the immediate pass then reads the five years correctly. The gate
+   * caught this: the expectation was written as null and the run said
+   * otherwise, which is a better answer than the one assumed. */
+  ["100-percent-after-N-years evades the two-digit guard", "20251014091821NAL0005204978001",
+    { vesting: "5-year schedule (shape not stated)" }],
+  // the condition OPENS the sentence instead of following the percentage
+  ["'Upon three years of service, … 100% vested'", "20251013092109NAL0001025329001",
+    { vesting: null }],
+  // a carve-out worded "but do not vest … until", not "except"
+  ["'but do not vest in discretionary contributions until after three years'",
+    "20260405212116NAL0005689857001", { vesting: null }],
 ];
 
 const SPECIMENS = [
