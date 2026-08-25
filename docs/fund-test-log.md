@@ -3371,3 +3371,38 @@ HEADER rather than the manager-fallback class v70/v71 handle, and one
 instance is not a measurement.
 
 340 filings tested cumulatively. v70 re-parsing as #159; v71 behind it.
+
+## (10 fund report) #37 — 2026-08-25 06:27Z cycle — the measurement that said "don't fix this"
+
+6 NAMES_MATCH, 3 PRIOR_YEAR_SOURCE, 1 OCR_SOURCE. Nothing new in the batch
+itself; the work was closing the open question from #36.
+
+**"American Funds" as a top row: measured, diagnosed, and left alone.** The
+hypothesis was a section HEADER leaking into the rows. Measured across the
+universe: 7,305 valued rows sit inside two-column entries (>=50% of rows
+resolve to issuer|product) yet carry no issuer and a name of two words or
+fewer.
+
+The hypothesis is WRONG, and the measurement is what showed it: every one of
+those rows carries a VALUE, and a section header does not. They are rows
+whose product name was lost — empty description cell, or a wrapped name.
+
+And the class is heterogeneous, so nothing is dropped: "TRANSAMERICA",
+"PACIFIC LIFE" and "RGA REINSURANCE" are plausibly the plan's real insurance
+CONTRACT holdings; "Cavanal Hill" is a real fund family; "Adm Shr" is a
+share-class fragment; only "Vanguard"/"Fidelity" are unmistakable
+manager-fallbacks. Dropping the class would delete real money from real
+tables — exactly the trap the 3,034 institution-suffixed rows set two cycles
+ago, where the examples turned out to be employer stock.
+
+Recorded in the gap inventory with its numbers so the next attempt starts
+from evidence. A safe fix needs per-row proof that the product name exists
+elsewhere in the filing, which the current parse does not carry.
+
+**This is the first cycle whose output is a decision NOT to change code**, and
+it belongs in the log as much as the fixes do. Three of the last four
+measurements have contradicted the specimen that prompted them; a night of
+only-fixes would have shipped at least two deletions of real holdings.
+
+350 filings tested cumulatively. v70 re-parsing as #159 (~70 min in); v71
+committed behind it.

@@ -369,6 +369,28 @@ asset-class totals rather than individual funds, names the classes, and says
 the fund lineup is not public in this filing. This is an honest gap in the
 FILING, not in the parse, and it is now labelled as one.
 
+**7,305 valued rows inside two-column entries carry no identity and a
+two-word name — measured, and deliberately NOT fixed (report #37,
+2026-08-25).** In entries where most rows resolve correctly to
+`issuer | product`, some rows still read "Vanguard", "Fidelity Investments",
+"TRANSAMERICA", "PACIFIC LIFE", "Cavanal Hill", "Adm Shr", "Various".
+
+They are NOT section headers, which was the initial hypothesis: every one
+carries a VALUE, and a header does not. So they are rows whose product name
+was lost — the description cell was empty on that line, or the name wrapped.
+
+The class is heterogeneous, and that is why nothing is dropped:
+"TRANSAMERICA" and "PACIFIC LIFE" are plausibly the plan's real insurance
+CONTRACT holdings, "Cavanal Hill" is a real fund family, "Adm Shr" is a
+share-class fragment, and only "Vanguard"/"Fidelity" are unambiguous
+manager-fallbacks. Dropping the class would delete real money from real
+tables — the same trap that 3,034 "institution-suffixed" rows set two cycles
+earlier, when the examples turned out to include employer stock.
+
+Recorded here with its measurement so the next attempt starts from evidence
+rather than the hunch. A safe fix would need per-row proof that the product
+name exists elsewhere in the filing, which the current parse does not carry.
+
 ### A second kind of wrong: the numbers are right and the *statement* is not (added #13)
 
 The four cases above are wrong **values**. Report #13 found wrong **claims** —
