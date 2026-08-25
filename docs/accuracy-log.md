@@ -3195,6 +3195,58 @@ is right, and the tester scores NAMES_MATCH because "Great Gray" does appear
 on that line. Only asking "is this row a FUND?" surfaces it — the question
 report #28 added, now paying for itself twice.
 
+## 2026-08-25 — v69's verdict: +944 confident, and the "losses" were mostly wins
+
+Run #158 landed. Like-for-like:
+
+    confident acks   58,141 -> 59,085   (+944; 983 gained, 39 lost)
+    acks at v69                        68,482
+
+The largest single-version gain recorded. But the loss review is where the
+work was, and it inverted the reading twice.
+
+**Most of the 39 losses are junk correctly removed:** fourteen
+"INVESTMENTS (at Fair Value)" statement rows, three blank-form placeholder
+tables ("CITYEFGHI ABCDEFGHI AB, ST", "Charlotte NC 28202ABCDE...",
+"123456789 ABCDEFGHI..."), plus bare "Vanguard", "Mutual funds",
+"Investments". Those are the v69 fixes doing exactly their job.
+
+**But sixteen looked like REAL MENUS** — "AF AMCAP" (32 rows, ratio 0.98),
+"MassMutual Select TRP Retirement 2050" (30 rows), "JH Multimanager Growth
+LS" (33 rows). A headline of +944 would have shipped those quietly.
+
+**Reading one inverted the story.** For ack 20251015195704NAL0002948995001,
+v68 stored FOUR junk rows ("INVESTMENTS (at Fair Value)", "Employee
+Deferrals", "Employee Rollover") and called them confident. v69 finds the
+plan's REAL 25-row menu — Retirement 2030/2035/2040/2045/2050/2055 Fund I,
+CMFG Life Insurance Company. It is non-confident only because its coverage
+ratio came out 1.94, and the ratio is inflated by ONE row: **"Investment
+Totals"**. The trailing-total guard was SINGULAR (`\btotal\s*$`), so the
+plural survived, and a subtotal repeats the value of everything above it.
+One plural word disqualified a whole recovered menu.
+
+**Fixed (v70): the guard is now `\btotals?\s*$`.** An anchored `^totals?`
+was tried at the same time and immediately dropped "Total Return Bond Fund
+Class I" — PIMCO, Met West and Baird all run funds by that name — so only the
+trailing form ships. (SKIP_ROW's line-level `^total` carries the same hazard
+and predates this; it needs its own measurement before anyone touches it.)
+
+**A second self-correction in the same pass.** The spaced-letter subtotal
+guard added an hour earlier fired on ANY single-letter word in the name,
+which dropped "Vanguard | Total Return Bond Fund Class I" on the "I" — the
+precise hazard ("Class A", "Fund I", "TR B") named when that class was first
+left alone, walked into one rule later. The damage signature is now scoped to
+the first THREE tokens, where damage to the word "total" would land, and
+matches fragments of one OR two characters ("Tot al cont r i but i ons").
+Verified both directions in one pass: four damaged subtotals drop; "Total
+Return Bond Fund Class I", "AB Total Return Portfolio", "US Total Market
+Index Fund" and "Contrafund Commingled Pool Class 3" all survive.
+
+**The lesson.** The rule "sample every loss even when the delta is positive"
+has now paid twice in one night, and differently each time: on v68 it caught
+a regression hiding under a gain; on v69 it caught a GAIN hiding under an
+apparent loss, and turned it into another fix.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

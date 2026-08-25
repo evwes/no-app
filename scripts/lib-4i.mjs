@@ -396,7 +396,18 @@ export function parseRows(section, opts = {}) {
     // "Artisan Mid Cap Account Total" style subtotal rows would double-count
     // the component rows above them; "Page subtotal" survives arithmetic
     // detection when the page holds skipped rows (loans)
-    if (/\btotal\s*$/i.test(name) || /^page (sub)?totals?\b/i.test(name.trim())) { nameBuf = []; continue; }
+    /* v70: the trailing-total guard was SINGULAR. "Investment Totals" — a
+     * subtotal — survived it, and because a subtotal repeats the value of
+     * everything above it, the region sum doubled and its coverage ratio hit
+     * 1.94, which cost the plan its whole 24-fund target-date menu. Found by
+     * reading v69's losses: what looked like a lost menu was a FOUND menu
+     * that one plural word disqualified.
+     * ONLY the trailing form is added. An anchored "^totals?" was tried and
+     * immediately dropped "Total Return Bond Fund Class I" — PIMCO, Met West
+     * and Baird all run funds by that name. (SKIP_ROW's line-level "^total"
+     * has the same hazard and predates this; it needs its own measurement
+     * before anyone touches it.) */
+    if (/\btotals?\s*$/i.test(name) || /^page (sub)?totals?\b/i.test(name.trim())) { nameBuf = []; continue; }
     /* v69: a leading bare maturity date is column glue, never the start of a
      * security's name ("01-29-2031 BRITISH COLUMBIA..."). Backstop for the
      * duplicated-column fix above, since other layouts reach the same shape. */
@@ -462,8 +473,14 @@ export function parseRows(section, opts = {}) {
      * summarises. Fire only on the damage signature: removing all spaces
      * reveals a leading "total", AND the raw name contains a single-letter
      * word. A genuine fund ("To Talent Fund") squashes to "totalent" but has
-     * no lone letter, so it is untouched. */
-    if (/^(?:sub)?total/i.test(name.replace(/\s+/g, "")) && /(?:^|\s)[a-z](?:\s|$)/i.test(name)) { nameBuf = []; continue; }
+     * no lone letter, so it is untouched. The lone letter must appear in the
+     * first THREE tokens, where damage to the word "total" would land: a
+     * trailing share class is not damage, and requiring it anywhere in the
+     * name dropped "Vanguard | Total Return Bond Fund Class I" on the "I".
+     * That is the hazard flagged when this class was first left alone —
+     * "Class A", "Fund I", "TR B" — walked into one rule later. */
+    if (/^(?:sub)?total/i.test(name.replace(/\s+/g, "")) &&
+        name.trim().split(/\s+/).slice(0, 3).some((w) => w.length <= 2 && /^[a-z]+$/i.test(w))) { nameBuf = []; continue; }
     /* v70: STOPWORD FRAGMENTS. "of year" was a $0.3B plan's top holding —
      * the tail of a wrapped "…at end of year" heading, four characters past
      * the minimum-length check and made of nothing but function words. A name
