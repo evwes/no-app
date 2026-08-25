@@ -3785,3 +3785,38 @@ recorded in the gap inventory with two candidate fixes.
 131 cached filings: confident 40 → 51. Gate 28/28.
 
 528 filings tested cumulatively. v74 re-parsing as #162; v75 committed [skip ci].
+
+## Report #49 — four guards, one defect
+
+Batch verdicts: ISSUER_KEPT 3, NAMES_MATCH 3, PRIOR_YEAR_SOURCE 2, OCR_SOURCE 2.
+No defect verdicts, sixth cycle running.
+
+**"c/o" is an address — 19 rows, 19 entries, 18 CONFIDENT, every value a NAICS
+business code.** "c/o Katy Freeway Houston $522,130". "c/o WINOOSKI PARK
+COLCHESTER $611,000". "2 Nazareth c/o Lane St. Louis $623,000". These are the
+rows the v74 placeholder guard cannot see, because the filer's address is real
+text — nothing alphabetic to condemn, but the wrapped address still becomes a
+name and box 2d still becomes its value.
+
+**"Balance (Previous) $6,819,178"** was 99% of one plan's displayed lineup. With
+it gone the plan reads 16 American Funds target-date funds at ratio 0.99. 14
+rows, 8 confident, across "Beginning balance" / "Balance Forward (" / "Beginning
+Balance 1/1/22".
+
+**The pattern is now the finding.** Four guards exist for what is ONE defect: a
+Form 5500 page swept into a candidate region, the sponsor's address wrapping
+into a row name, the box-2d business code landing in the value column. Each was
+written against whatever the last filing happened to show — placeholder letters
+(v74, 411 rows / 390 confident), then instruction text (v75, 72 / 36), then
+care-of notation (v75, 19 / 18).
+
+None of them uses the signal that actually identifies it: **the value IS a NAICS
+business code** — six digits from a closed published list, recurring across
+unrelated plans as a "holding" worth exactly $522,130 or $624,100. Building that
+would subsume all three; it is now the top entry in the gap inventory, with the
+caveat that it must be measured against real holdings that happen to be worth
+exactly such a figure before shipping.
+
+135 cached filings: confident 40 → 51. Gate 28/28.
+
+538 filings tested cumulatively. v74 re-parsing as #162; v75 committed [skip ci].
