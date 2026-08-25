@@ -3109,6 +3109,47 @@ like unambiguous success and shipped a regression to nine plans underneath
 it. The rule earned its keep tonight; do not skip it because the delta is
 positive.
 
+## 2026-08-25 — v70: the 4i column HEADER was stored as a fund name 459 times
+
+Found by measuring rather than by a single specimen. A cycle turned up
+"Collectiv e Inv estment Trust" (spaced-letter OCR damage), and rather than
+generalise from one row — the last two attempts to do that were both refused
+by the gate — I counted the pattern universe-wide. The count came back mostly
+FALSE POSITIVES, and the false positives were the real finding:
+
+    459  column-header fragments stored as fund names
+    758  participant-loan prose fragments
+         of 1,638,473 rows
+
+**The header.** Filings print "(b) identity of issue, borrower, lessor or
+similar party | (c) description of investment including maturity date, rate
+of interest, collateral, par, or maturity value". SKIP_ROW catches that when
+it begins a line, but a WRAPPED continuation begins mid-phrase — "party
+date,rate of interest, collateral, par, or maturity" — and parses as a
+holding. One instance reads "par, or maturity value Fidelity Government":
+the header ran into the next row's real name. So the rule STRIPS rather than
+drops, and recovers the fund.
+
+**The loan prose.** 758 rows are a loan row's runaway continuation lines
+("Interest rates ranging from 4.25% to 9.50%", "maturing at various dates
+through October 2034"). The loan row itself is excluded by type; these name
+nothing.
+
+**Two self-corrections, both caught by the gate.** The first version stripped
+each header word independently with no word boundary: "Parnassus Core Equity
+Fund" became "nassus Core Equity Fund", and a full header line eroded to the
+bare word "maturity". Fixed by (a) requiring an unmistakable header PHRASE
+before touching the name at all — a fund merely starting with "Par" is not a
+header — and (b) rejecting a remainder that is itself header vocabulary.
+Verified in one pass: "par, or maturity value Fidelity Government" → "Fidelity
+Government", the pure-header row drops, and Parnassus and Partners Group both
+survive intact. Gate 20/20.
+
+**The lesson worth keeping:** the measurement was more valuable than the
+specimen that prompted it. Counting a suspected pattern across 1.6M rows
+found two defect classes that no single filing would have revealed, and
+disproved the one I set out to fix.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

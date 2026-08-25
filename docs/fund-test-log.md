@@ -3181,3 +3181,35 @@ not junk — the filler strip had eaten "Variable Annuity Contract". v69 ships
 that repair and is re-parsing now as run #158.
 
 280 filings tested cumulatively.
+
+## (10 fund report) #31 — 2026-08-25 04:18Z cycle — measuring beat guessing
+
+4 NAMES_MATCH, 2 OCR_SOURCE, 2 ISSUER_KEPT (82% and 75% of rows), 1
+PRIOR_YEAR_SOURCE, 1 WRONG_REGION (Cravath — master-trust statement lines,
+the known pointer class).
+
+Row-quality check surfaced "Collectiv e Inv estment Trust" — spaced-letter
+OCR damage, the long-noted SMART Local class. Instead of fixing from that one
+specimen (the last two single-specimen generalisations were both refused by
+the gate), I MEASURED the pattern across all 1,638,473 stored rows. It came
+back 0.19% and mostly false positives — and the false positives were the
+finding:
+
+    459  4i COLUMN HEADER fragments stored as fund names
+    758  participant-LOAN prose fragments
+
+Both fixed as v70. The header rule STRIPS rather than drops, because one
+instance reads "par, or maturity value Fidelity Government" — the header ran
+into the next row's real name, so stripping recovers the fund.
+
+Two of my own bugs caught by the gate on the way: unanchored strips turned
+"Parnassus Core Equity Fund" into "nassus Core Equity Fund", and a truncated
+header eroded to the bare word "maturity". Both fixed by requiring a real
+header PHRASE before touching the name, and rejecting a remainder that is
+itself header vocabulary.
+
+The spaced-letter class remains UNFIXED and that is deliberate: the
+measurement says it is rare, and merging letter fragments risks damaging real
+names ("Class A", "Fund I", "TR B").
+
+290 filings tested cumulatively. Gate 20/20.

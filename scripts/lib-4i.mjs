@@ -402,6 +402,40 @@ export function parseRows(section, opts = {}) {
       .replace(/\s*[-–—]\s*see$/i, "")
       .replace(/\s{2,}/g, " ").trim();
     if (!name || name.length < 4) continue;
+    /* v70: the 4i COLUMN HEADER, wrapped and parsed as a holding. 459 stored
+     * rows begin with a fragment of "(b) identity of issue, borrower, lessor
+     * or similar party | (c) description of investment including maturity
+     * date, rate of interest, collateral, par, or maturity value". SKIP_ROW
+     * catches the header when it starts a line, but a wrapped continuation
+     * starts mid-phrase ("party date,rate of interest, collateral, par, or
+     * maturity"). STRIP rather than drop: one in this class reads "par, or
+     * maturity value Fidelity Government" — the header ran into the next
+     * row's real name, so removing the header RECOVERS the fund. */
+    /* Strip ONLY when the row actually opens with unmistakable header text —
+     * "party date", "rate of interest", "maturity value", "identity of
+     * issue". The first version stripped each header word independently and
+     * had no word boundary, so "Parnassus Core Equity Fund" became "nassus
+     * Core Equity Fund" and a full header line eroded to "maturity". The gate
+     * caught both. Requiring the phrase before touching anything makes the
+     * strip safe: a fund whose name merely starts with "Par" is not a header. */
+    if (/^[^a-z]*(?:(?:similar\s+)?party\s+date|rate of interest|maturity value|par\s*,\s*(?:or\s+)?maturity|identity of issue|description of investment)/i.test(name)) {
+      const stripped = name
+        .replace(/^(?:(?:similar\s+)?party\b|\bdate\b|\brate of interest\b|\bcollateral\b|\bpar\b|\bor\b|\bmaturity value\b|\bidentity of issue\b|\bdescription of investment\b|\(\$\)|[\s,()])+/i, "")
+        .trim();
+      /* And the REMAINDER must not itself be header vocabulary: a truncated
+       * header ("...par, or maturity") erodes to the bare word "maturity",
+       * which is 8 characters of nothing. */
+      if (stripped.length >= 4 && /[a-z]{3}/i.test(stripped) &&
+          !/^(?:maturity|value|par|interest|collateral|date|issue|investment|borrower|lessor)s?$/i.test(stripped)) name = stripped;
+      else { nameBuf = []; continue; }
+    }
+    if (!name || name.length < 4) { nameBuf = []; continue; }
+    /* v70: participant-LOAN prose. 758 stored rows are the wrapped text of a
+     * loan row's description ("Interest rates ranging from 4.25% to 9.50%",
+     * "maturing at various dates through October 2034", "from participants
+     * ranging from..."). The loan row itself is excluded by type; these are
+     * its runaway continuation lines, and they name nothing. */
+    if (/^(?:from participants|maturing at various|various maturity|interest rates? ranging|bearing interest at|range from \d{4}|collateralized by|secured by participants|with various maturity)/i.test(name)) { nameBuf = []; continue; }
     /* v70: STOPWORD FRAGMENTS. "of year" was a $0.3B plan's top holding —
      * the tail of a wrapped "…at end of year" heading, four characters past
      * the minimum-length check and made of nothing but function words. A name
