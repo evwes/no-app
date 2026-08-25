@@ -3562,6 +3562,58 @@ amounts as investment menus. The tester answers "is this name in the filing?";
 nobody had been asking "is this name a fund?". Row-quality review of every
 batch is now the part that finds things.
 
+## 2026-08-25 — v74 (2/2): the share count in front of the name, and two measurements that said stop
+
+**The fix.** Money-market and stable-value funds hold units at $1.00, so a
+holding's share count and its dollar value are the same number — and in 80
+rows across 57 entries (56 confident) that count is glued to the front of the
+name: "12,553,193 Money Market Fund", "8,669,840 FIDELITY BANK TRUST SHORT TERM
+INVESTMENT FUND", "299,638.1700 Par Value Money Market Fund". Reading them, the
+HOLDINGS ARE REAL. So this is a naming fix, not a drop: the leading number goes
+(plus any unit word it strands), the row and its value stay, and region sums are
+untouched by construction. A leading number equal to the row's own value is
+never part of a fund name.
+
+**The collision it created, and the gate catching my fix for that.** Stripping
+made Janus's two money funds collide — "12,553,193 Money Market Fund" and
+"2,665,839 Money Market Fund" both became "Money Market Fund" and merged into
+one $15.2M row, even though column (b) named Vanguard Treasury on one and Janus
+Henderson Government on the other. So different issuers under one product name
+became separate rows. Unscoped, the gate caught that immediately: a brokerage
+listing carries "Preferred stock" dozens of times under different issuers, and
+collapsing those is DELIBERATE — the carry-forward specimen's honest result is a
+managed-account rollup, and splitting them moved $19.4M out of the displayed
+list. The split is now scoped to rows the strip actually renamed. A fix for a
+collision I introduced must not change rows I never touched.
+
+**Two measurements said don't (#37).**
+
+1. *Class-label rows as subtotals.* Materials Testing Consultants carries 34
+   real Principal rows plus "Common Collective Trusts $10,420,331", "Pooled
+   Separate Accounts $5,890,411" and "Mutual Funds $1,415,043" — ratio 2.98, and
+   the plan shows nothing. The mechanism is now understood: those labels appear
+   on BOTH the current- and prior-year columns of a comparative statement and in
+   the fair-value hierarchy, and the same-name dedup SUMS the year columns
+   ($5,502,063 + $4,918,268 = $10,420,331, exactly). But the obvious rule —
+   drop pure class-label rows in tables of ≥10 rows — measured 3,378 entries,
+   3,091 confident, and reading them the matches are overwhelmingly REAL
+   holdings whose names merely START with class vocabulary: "MUTUAL FUNDS SHARES
+   / UNITS Vanguard Target Retirement 2030 Inv", "Money market fund, Fidelity
+   Govt Money Market Fund", "Common Stock, Class B", "Guaranteed Interest
+   Contract $10,249,450". STMT_ROW's alternatives end in `\b.*`, so it matches
+   any prefix. Shipping that would have deleted thousands of real holdings.
+   Recorded in the gap inventory instead, with the mechanism written down.
+2. *Delinquent-contribution rows.* Claim Assist Solutions displays seven rows
+   like "43,206 13 days delinquent $43,206" — Schedule H line 4a late
+   contributions. Measured universe-wide: ONE entry, seven rows. Too small for
+   a rule of its own. But generalising the SHAPE — a name beginning with its own
+   value — found the 80-row money-market class above, which is the fix that
+   shipped. The narrow case was not worth a rule; the shape behind it was.
+
+**Verified.** 93 cached filings, confident 25 → 35, no confident losses (one
+non-confident junk entry drops a row). Gate 27/27 with the Janus specimen,
+which pins both halves: names clean AND the two money funds separate.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

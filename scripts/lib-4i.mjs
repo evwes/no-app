@@ -486,6 +486,24 @@ export function parseRows(section, opts = {}) {
      * security's name ("01-29-2031 BRITISH COLUMBIA..."). Backstop for the
      * duplicated-column fix above, since other layouts reach the same shape. */
     name = name.replace(/^(?:\d{1,2}[-\/]\d{1,2}[-\/]\d{2,4}|\d{4}-\d{2}-\d{2})\s+(?=\S)/, "");
+    /* v74: a leading number EQUAL to the row's own value is the share column,
+     * not part of the name. Money-market and stable-value funds hold units at
+     * $1.00, so shares and dollars coincide and the count lands in front of
+     * the name: "12,553,193 Money Market Fund", "8,669,840 FIDELITY BANK TRUST
+     * SHORT TERM INVESTMENT FUND", "299,638.1700 Par Value Money Market Fund".
+     * 80 rows across 57 entries, 56 of them confident — and reading them, the
+     * HOLDINGS ARE REAL. This is a naming fix, so the row and its value stay;
+     * only the prefix goes, and region sums are untouched by construction.
+     * A unit word left stranded by the strip goes with it. */
+    let leadStripped = 0;
+    {
+      const lead = name.match(/^([\d,]{4,})(?:\.\d+)?\s+(?=\S)/);
+      if (lead && Number(lead[1].replace(/,/g, "")) === value) {
+        name = name.slice(lead[0].length)
+          .replace(/^(?:sh\.?|shares?(?:\s+of)?|units?|par value)\s+(?=\S)/i, "");
+        leadStripped = 1;
+      }
+    }
     name = name.replace(/\s*\*+\s*$/, ""); // trailing footnote markers
     // wrapped lines carry their column gaps into the assembled name
     name = name.replace(/\s{2,}/g, " ");
@@ -768,7 +786,7 @@ export function parseRows(section, opts = {}) {
     // ownType = the row carried its OWN investment-type column, so it is a
     // proven 4i data row rather than a plausible-looking text line; the
     // sub-$10k residue filter trusts that proof (see parse4i)
-    rows.push({ name: name.slice(0, 90), type: rowType, value, sec: curSection, ...(type ? { ownType: 1 } : {}), ...(iss ? { iss: iss.slice(0, 60) } : {}) });
+    rows.push({ name: name.slice(0, 90), type: rowType, value, sec: curSection, ...(type ? { ownType: 1 } : {}), ...(iss ? { iss: iss.slice(0, 60) } : {}), ...(leadStripped ? { _sl: 1 } : {}) });
   }
 
   // ARITHMETIC subtotal removal (owner directive after Sempra: takeaways
@@ -826,6 +844,32 @@ export function parseRows(section, opts = {}) {
     // pages outscore the real table. Different values still sum (share
     // classes reported on one name).
     if (e && e.vals.has(r.value)) continue;
+    /* v74: two DIFFERENT issuers under one product name are two holdings, not
+     * one to be summed. Stripping the leading share count made this visible:
+     * "12,553,193 Money Market Fund" and "2,665,839 Money Market Fund" both
+     * became "Money Market Fund" and merged into a single $15.2M row, even
+     * though column (b) named Vanguard Treasury on one and Janus Henderson
+     * Government on the other. The double-render dedup above is untouched —
+     * a schedule rendered twice carries the SAME issuer, and an equal value
+     * still collapses first — so this only splits rows the filing itself
+     * distinguishes. Rows missing an issuer keep merging as before, which is
+     * the case where a second render captured (b) and the first did not.
+     * Scoped to rows the strip above actually renamed (_sl). Unscoped, the
+     * parser gate caught it splitting a managed account's itemized
+     * securities: a brokerage listing carries "Preferred stock" dozens of
+     * times under different issuers, and collapsing those to one row is
+     * deliberate — the specimen's honest result is a rollup, and splitting
+     * them moved $19.4M out of the displayed list. This fix exists to undo a
+     * collision the strip creates, so it applies only where the strip fired. */
+    if (e && r._sl && r.iss && e.row.iss && r.iss.toLowerCase() !== e.row.iss.toLowerCase()) {
+      let alt = k + " " + r.iss.toLowerCase(), n = 1;
+      while (seen.has(alt) && seen.get(alt).vals.has(r.value)) alt += " " + n++;
+      const ea = seen.get(alt);
+      totalValue += r.value;
+      if (ea) { ea.row.value += r.value; ea.vals.add(r.value); }
+      else seen.set(alt, { row: r, vals: new Set([r.value]) });
+      continue;
+    }
     totalValue += r.value;
     if (e) { e.row.value += r.value; e.vals.add(r.value); }
     else seen.set(k, { row: r, vals: new Set([r.value]) });
@@ -1088,7 +1132,7 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
     smaKind = treatAllAsBrok || (brokRows.length && !mgdRows.length) ? "brokerage"
       : brokRows.length ? "mixed" : "managed";
   }
-  for (const f of funds) delete f.sec;
+  for (const f of funds) { delete f.sec; delete f._sl; }
 
   // trust-POINTER pages: a member plan's own 4i is often just "Interest in
   // <X> Master Trust $8B" plus a stray row or two (Eaton: + stable value +

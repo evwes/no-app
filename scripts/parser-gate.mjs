@@ -139,6 +139,12 @@ const SPECIMENS = [
   // 16-1187872" read as a $1,187,872 holding
   ["Hydro-Air (EIN digits as a value)", "20251008065619NAL0005202321001", 10456947,
     { found: true, n: 15, sum: 10448933 }],
+  // v74: money-market units are $1.00, so the share count equals the value and
+  // lands in front of the name ("12,553,193 Money Market Fund"). Stripping it
+  // makes two DIFFERENT money funds collide, so this pins both: the names are
+  // clean AND Vanguard Treasury / Janus Henderson stay separate rows.
+  ["Janus (share count glued to the name)", "20250917145716NAL0000658547001", 544769954,
+    { found: true, n: 57, sum: 541264001 }],
 ];
 
 const work = mkdtempSync(path.join(tmpdir(), "gate-"));

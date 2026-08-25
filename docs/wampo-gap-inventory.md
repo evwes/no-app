@@ -550,3 +550,30 @@ whether a stored value appears in the filing at all, which is exactly what
    share of holdings.** Bounded: only 207 lineups (5,316 rows) are
    thousands-scaled at all.
 6. Everything else, in the order the audited-notes extractor can absorb them.
+
+## Comparative-statement class labels double-counted (measured 2026-08-25, NOT fixed)
+
+**Shape.** A filing's region spans the statement of net assets, the fair-value
+hierarchy table AND the real 4i schedule. Class labels ("Common Collective
+Trusts", "Pooled Separate Accounts", "Mutual Funds") appear in all three, with
+the CURRENT-year value in one place and the PRIOR-year value in another. The
+same-name dedup treats different values as different lots and sums them.
+
+**Worked example.** Materials Testing Consultants
+(20260114130255NAL0015309297001, assets $8,941,364): "Common Collective Trusts"
+is filed at $5,502,063 (2024) and $4,918,268 (2023); stored as $10,420,331 —
+exactly the sum. Same for Pooled Separate Accounts ($2,635,532 + $3,254,879 =
+$5,890,411). Region ratio 2.98, so the plan shows NOTHING despite 34 correctly
+parsed Principal holdings sitting in the same region.
+
+**Why it is not fixed.** The obvious rule — drop pure class-label rows in
+tables of >=10 rows — measures 3,378 entries and 3,091 confident, and the
+matches are mostly REAL holdings: STMT_ROW's alternatives end in `\b.*`, so
+"Money market fund, Fidelity Govt Money Market Fund" and "Common Stock, Class B"
+match too. Shipping it would delete thousands of genuine rows.
+
+**Where a real fix would go.** Either (a) the dedup, which currently sums
+same-name/different-value rows on the theory that they are share classes — a
+prior-year column is the counter-example; or (b) region selection, so a
+candidate spanning both a detail table and its own aggregates is recognised as
+double-counting. (b) is the more principled and the harder.
