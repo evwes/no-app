@@ -3047,3 +3047,36 @@ share.
 230 filings tested cumulatively. v68 shipped (commit 64f86475) and
 re-parsing as run #157; scripts/** frozen until it lands, docs commits
 [skip ci] only.
+
+## (10 fund report) #27 — 2026-08-25 02:53Z cycle — two billion-dollar plans showing junk, both fixed
+
+General worklist, and the largest plans yet tested: 5 NAMES_MATCH (including
+two $45.2B filings and a $19.8B, all clean), 2 PRIOR_YEAR_SOURCE, 1
+OCR_SOURCE, 2 WRONG_REGION — both real, both fixed this cycle as v69.
+
+**MetLife 401(k), $8.3B — 58 holdings wearing their maturity dates as
+prefixes.** Stored: "01-29-2031 BRITISH COLUMBIA(PROVINCE OF)CANADA 1.3%
+01-29-2031". The filing prints columns (b) and (c) as the SAME text, and the
+security's own name carries a wide internal gap, so splitNameDesc cut
+mid-name and the description's leading date fragment became the start of the
+fund name. Fixed: a description that merely repeats the identity loses to it.
+
+**Honeywell 401(k), $12.5B — the plan was showing the BLANK FORM.** Ten rows
+of Form 5500 template placeholder: "Charlotte NC 28202ABCDE CITYEFGHI
+ABCDEFGHI AB, ST" at $12,345,678,901, 99% of the table. The trap list already
+says the form's QUESTION text is never evidence; this is its SAMPLE ANSWERS
+parsing as data. Fixed by matching either half of the signature (alphabet run
+in the text, or a literal 12345/123456789/1234567890 value). Worth noting the
+v67 shape guard did NOT cover it — 10 rows exceeds its <=8 limit, which is
+the honest limit of a shape rule.
+
+**A self-correction the gate caught.** The first MetLife fix tested plain
+containment — "does the description contain the identity?" — which is the
+ordinary CORRECT layout ("American Funds | Growth Fund of America R6").
+Plexsys collapsed 32 rows to 3 bare manager names and Power Design 27 to 15
+(same sum: the signature of a dedup collapse, not a parse failure). The rule
+is now narrow: remove the identity from the description, require fewer than
+four LETTERS to remain. Dates and punctuation are not information.
+
+Gate 20/20 green throughout. v69 is committed with [skip ci] and ships once
+run #157 (v68) lands. 250 filings tested cumulatively.
