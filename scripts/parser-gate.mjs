@@ -19,6 +19,13 @@ const SPECIMENS = [
   // [label, ack, assetsEOY, expect]
   ["GE Vernova (footnote letters)", "20251014171116NAL0004605680001", 8206402143,
     { found: true, n: 17, sum: 8083350345 }],
+  /* v68: the filler-column class. Before the fix, all 28 of this plan's
+   * holdings were stored as "VARIABLE 1,056,601 sh" — the (c) sub-columns
+   * ("N/A  VARIABLE  N/A  ... sh  #") beat the real name in column (b).
+   * After: FIDELITY 500 INDEX, PIMCO REALPATH BLEND vintages, VANGUARD
+   * GROWTH INDEX INSTITUTIONAL. Guards the whole SMART Local 265 class. */
+  ["Old Republic (N/A filler columns)", "20250911133230NAL0000243699001", 1400000000,
+    { found: true, n: 30, sum: 2079074463 }],
   // v59 +1: "CREF Money Market Account | Registered Investment Companies |
   // 1,193" is a filed holding the sub-$10k residue floor used to hide
   ["UPenn Health (wrapped subtotal)", "20251015190140NAL0007224432001", 1110204528,

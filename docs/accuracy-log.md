@@ -2953,6 +2953,52 @@ be attempted at all.
 
 Mirrored to main as b1a59bf after the diff review above.
 
+## 2026-08-25 — v68: filler columns, OCR-tolerant guards, and the auditor's letterhead
+
+Shipped under the owner's 2026-08-25 directive ("every problem at every point
+should be fixed by yourself at all times"). Four defects, each found by a
+filing-test cycle, each with a specimen read against the primary source.
+
+**1. Filler columns fabricated 28 fund names.** Old Republic ($1.4B) files
+`FIDELITY 500 INDEX   N/A   VARIABLE   N/A   1,056,601 sh   #   215,747,363`.
+The (c) column's rate/collateral cells hold literal "N/A" and "VARIABLE",
+which `cleanDesc` left word-shaped and letter-rich enough to be preferred
+over the real name in column (b) — so every holding stored as
+"VARIABLE 1,056,601 sh". `cleanDesc` now strips the filler vocabulary
+(N/A, not applicable, variable, none, fixed, bare "#"), which empties the
+description and lets the name column win. Verified row by row: 28 of 30 rows
+changed, 0 "VARIABLE" names remain, and the plan now reads FIDELITY 500
+INDEX / PIMCO REALPATH BLEND vintages / VANGUARD GROWTH INDEX INSTITUTIONAL.
+This is the SMART Local 265 class; the specimen is now in the parser gate.
+
+**2. An OCR typo defeated an exact-spelling guard — twice.** Buchanan
+Ingersoll's scanned schedule stored "Investments at fair valuc" as a $412M
+fund (99.4% of the plan) because the v44 rule spells "value"; the same
+filing's "Notes recervable from participants" passed the loan filter for the
+same reason. Both guards now match the stem and tolerate the middle
+(`valu\w{0,2}`, `rec\w{0,3}vable`). The general lesson, recorded because it
+will recur: **a vocabulary guard must be as tolerant as the text it reads.**
+Exact spelling is correct for `pdftotext` output and wrong for OCR.
+
+**3. The auditor's letterhead was a plan's largest holding.** Global Tax
+Management stored "Maillie LLP | maillie.com 500 North Lewis Road, Limerick
+PA" — the page carrying the "Schedule H, Line 4i" TITLE is the audit firm's
+report page, so its region won scoring while the real menu (TRP Capital
+Appreciation $11.0M, Vanguard index funds) sat unread 650 lines later. Web
+domains, "Firm LLP |" mastheads and PO Box lines are now dropped, which also
+lowers the letterhead region's score so the real schedule can win.
+
+**4. Spelled-out street addresses.** The existing address guard required ≤5
+words, so "500 North Lewis Road, Limerick PA 19468" survived with its street
+number reading as data. A street suffix followed by a state and ZIP is now
+dropped at any length.
+
+**Verification.** All four guards tested against the exact filing shapes: five
+junk rows dropped, both real rows (Vanguard, T. Rowe Price) kept WITH their
+v67 issuers. Parser gate 20/20 green — the 19 existing specimens unchanged,
+zero expectation edits, plus Old Republic added so the filler class cannot
+regress.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

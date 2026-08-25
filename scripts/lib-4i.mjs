@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 67;
+export const PARSER_VERSION = 68;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -88,6 +88,16 @@ function cleanDesc(desc) {
   d = d.replace(/\b[\d,]+(\.\d+)?\s*(shares?|units?|interests?)\b/gi, " ");
   d = d.replace(/\b(interest )?rates? (of|from|ranging).*$/i, " ");
   d = d.replace(/\bmaturit(y|ies).*$/i, " ");
+  /* v68: FILLER columns. Many filings print the (c) sub-columns literally —
+   * "FIDELITY 500 INDEX   N/A   VARIABLE   N/A   1,056,601 sh   #   215,747,363"
+   * (Old Republic, $1.4B) — where the rate/maturity/collateral cells hold
+   * "N/A" and "VARIABLE" rather than a description. Left in, the residue was
+   * word-shaped and letter-rich enough to be preferred over the real name in
+   * column (b), so all 28 of that plan's holdings were stored as "VARIABLE
+   * 1,056,601 sh". Stripping the filler empties the description, and the
+   * name column wins as it should. Same class as SMART Local 265. */
+  d = d.replace(/\b(?:n\s*\/\s*a|n\.?a\.?|not applicable|variable|none|fixed)\b/gi, " ");
+  d = d.replace(/(^|\s)#(\s|$)/g, " ");
   return d.replace(/[\s,;:-]+$/g, "").replace(/\s{2,}/g, " ").trim();
 }
 
@@ -163,6 +173,12 @@ export function parseRows(section, opts = {}) {
     // zip then parses as a $44k holding (Eaton)
     if (/\s[A-Z]{2}\s+\d{5}(?:-\d{4})?\s*$/.test(t) && !/\$/.test(t) &&
         t.split(/\s+/).length <= 5) { nameBuf = []; continue; }
+    /* v68: the same address, spelled out. An auditor's letterhead prints
+     * "500 North Lewis Road, Limerick PA 19468" — more than five words, so
+     * the compact guard above misses it, and the leading street number makes
+     * it look like a data row. A street suffix followed by a state and ZIP is
+     * an address in any filing, never a fund. */
+    if (/\b(?:street|st|road|rd|avenue|ave|boulevard|blvd|drive|dr|lane|ln|way|suite|ste|floor|fl)\b[^0-9]{0,40}\b[A-Z]{2}\s+\d{5}(?:-\d{4})?\b/i.test(t)) { nameBuf = []; continue; }
     // SKIP_ROW's statement vocabulary ("contributions?") is unanchored and
     // swallowed master-trust holdings whose NAME contains it — Northrop's
     // "Defined Contribution Plans Master Trust  ** $39,301,997" ($39.3B,
@@ -349,6 +365,17 @@ export function parseRows(section, opts = {}) {
     // the top of every continuation page) — the same-name dedup SUMS the
     // distinct per-page values into a fake nine-figure "fund"
     if (/^(balance |carried |brought )?forwards?$/i.test(name.trim())) continue;
+    /* v68: AUDITOR LETTERHEAD. The page carrying the "Schedule H, Line 4i"
+     * TITLE is often the audit firm's report page, and its letterhead parses
+     * as holdings — Global Tax Management stored "Maillie LLP | maillie.com
+     * 500 North Lewis Road, Limerick PA" as its largest "fund" while the real
+     * menu (TRP Capital Appreciation $11.0M, Vanguard index funds) sat
+     * unread 650 lines later. A web domain, a "Firm LLP |" masthead, or a PO
+     * Box is never a fund name; killing these rows also drops the region's
+     * score so the real schedule can win. */
+    if (/\b[a-z0-9-]+\.(?:com|net|org|us)\b/i.test(name) ||
+        /\b(?:llp|llc|p\.?c\.?|cpas?)\s*\|/i.test(name) ||
+        /\bp\.?\s?o\.?\s+box\s+\d/i.test(name)) { nameBuf = []; continue; }
     // form/signature boilerplate that assembles into a named row
     if (/signature of (the )?(plan administrator|plan sponsor|employer|dfe)|^amounts per (the )?form \$?5?500\b/i.test(name)) continue;
     // OCR'd FORM-PAGE lines (Schedule H Part II items) parse as holdings on
@@ -415,11 +442,19 @@ export function parseRows(section, opts = {}) {
     // trailing number ("Net income per Form 5500", "Interest and dividend
     // income - investments", "Participants may borrow …") — AVI-SPL's
     // junk-confident 5-row "lineup" was built of these
-    if (/^net (?:income|assets)\b|per form 5500|^interest and dividend|^contributions? receivable|^participants may borrow|^notes? receivable/i.test(name.trim())) continue;
+    /* v68: OCR turns "receivable" into "recervable"/"recelvable", so an exact
+     * spelling let Buchanan's participant-loan row through as a fund. Same
+     * lesson as the "fair valuc" guard: match the stem, tolerate the middle. */
+    if (/^net (?:income|assets)\b|per form 5500|^interest and dividend|^contributions? rec\w{0,3}vable|^participants may borrow|^notes? rec\w{0,3}vable/i.test(name.trim())) continue;
     // statement-of-net-assets lines assembled across wraps ("Assets
     // Investments, at fair value") — the line-level SKIP_ROW can't see
     // the assembled form
-    if (/^(assets[.,]?\s+)?investments?,?\s*[—–-]?\s*at (fair|contract) value/i.test(name.trim())) continue;
+    /* v68: OCR misreads defeat an exact-spelling guard. Buchanan Ingersoll's
+     * scanned schedule stored "Investments at fair valuc" — $412M, 99.4% of the
+     * plan — because the v44 rule spells "value". The stem plus one or two
+     * trailing characters covers valuc/valuo/valu without matching real fund
+     * names, which never open with "investments at fair". */
+    if (/^(assets[.,]?\s+)?investments?,?\s*[—–-]?\s*at (fair|contract) valu\w{0,2}\b/i.test(name.trim())) continue;
     // section SUBTOTALS spelled as class descriptions instead of "Total…"
     // ("Interest in common/collective trusts $4,474,697,107", "Assets Held
     // for Investment", "Employer-related investments: Employer securities")
