@@ -3886,6 +3886,45 @@ found", but measured at three residual rows out of 1.68M.
 
 140 cached filings: confident 41 → 52, gate 28/28, no new losses.
 
+## 2026-08-25 — v75's verdict: confidence flat, HIGH findings 21 → 5, mirrored
+
+Run #163. Against live main (v74): **59,309 → 59,308 confident, −1 net (12 lost,
+11 gained)** — and **audit HIGH findings 21 → 5**.
+
+A flat headline with a collapsing HIGH count is what a junk-removal release
+should look like. v75 took rows OUT of entries that mostly stayed confident:
+183 contribution-source rows, 72 Form 5500 instruction lines, 19 c/o addresses,
+14 carry-forwards. Coverage does not move; correctness does.
+
+**All 12 losses read, and all 12 are the same intended story** — a
+contribution-source row removed, leaving the entry below the three-row floor or
+outside the ratio band. What they were before is the point:
+
+- Rite Aid ×2 — "Participant-Directed Investments − Interest in Rite Aid Master
+  Trust" plus "Employee 401(k) Deferral" and "Company Match". A master-trust
+  POINTER with the contributions table appended; never a menu.
+- Volvo Construction Equipment — "Plan's Interest in Master Trust" + deferrals.
+  Same shape.
+- Tower Semiconductor, Northwood Investors, Diehl Management, Gwa, Gleneagles,
+  Baker Places — "statements", "at Fair Value", "Recurring Fair Value",
+  "hierarchy 67,047,169 67,047,169 - - Private investme…", class labels. Junk
+  lineups propped to three rows by contribution lines.
+- North Mill Equipment — the St. Louis Auto Dealers shape exactly: "Pooled
+  separate accounts" plus THREE contribution-source rows.
+
+Two of the twelve (Clampco, Avalon Apparel) flipped to a different region that
+is itself doubled at ratio 1.99–2.77 — the known double-render family, already
+recorded. Neither was confident before or after.
+
+**Mirrored to main** (a9abf489). Second mirror of the day; main is current
+again within the hour.
+
+**What "improved" means here.** Judged on the confident count alone this release
+did nothing. Judged on what the confident lineups CONTAIN, it removed 288 rows
+that were never holdings from plans that keep their lineups, and took the audit's
+HIGH findings down by three quarters. The coverage number is not the accuracy
+number, and a release that only moves the second one is still worth shipping.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

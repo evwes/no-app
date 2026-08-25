@@ -3904,3 +3904,35 @@ class labels (3,091 confident entries, mostly real holdings) and now this. Both
 looked like clean wins at the count and fell apart at the examples.
 
 558 filings tested cumulatively. v75 re-parsing as #163; v76 committed [skip ci].
+
+## Report #52 — a release that moved no coverage and a lot of accuracy
+
+v75's verdict (#163): confident 59,309 → 59,308, **−1 net**. Audit HIGH findings
+**21 → 5**.
+
+That is the shape a junk-removal release should have. v75 took 288 rows OUT of
+entries that mostly stayed confident — 183 contribution sources, 72 Form 5500
+instruction lines, 19 c/o addresses, 14 carry-forwards. The coverage number
+cannot move when the rows removed were never the reason a plan counted.
+
+All 12 losses read; all 12 the intended story, and worth naming for what they
+were: Rite Aid ×2 and Volvo Construction were master-trust POINTERS with the
+contributions table appended ("Interest in Rite Aid Master Trust" + "Employee
+401(k) Deferral" + "Company Match"). Tower Semiconductor, Northwood, Diehl, Gwa,
+Gleneagles and Baker Places were statement fragments propped to three rows by
+contribution lines. North Mill Equipment was the St. Louis shape exactly —
+"Pooled separate accounts" plus three contribution-source rows.
+
+Two (Clampco, Avalon Apparel) flipped to a different region that is itself
+doubled at ratio 1.99–2.77 — the known double-render family, already recorded,
+and neither was confident before or after.
+
+**Mirrored** (a9abf489) — second mirror of the day, main current within the hour.
+v76 shipped as #164.
+
+The lesson to keep: the coverage number is not the accuracy number. Judged on
+confident count this release did nothing; judged on what the confident lineups
+contain, it removed 288 non-holdings and cut audit HIGH findings by three
+quarters.
+
+568 filings tested cumulatively.
