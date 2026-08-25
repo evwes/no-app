@@ -636,7 +636,33 @@ Not yet built. It needs the NAICS list (or at least the ~1,000 codes valid for
 box 2d) and a name-shape test, and it should be measured against real holdings
 that happen to be worth exactly $522,130 before shipping.
 
-## Issuer column wrapping around the fund name (seen 2026-08-25, not measured)
+## Issuer column wrapping around the fund name — MEASURED, deliberately NOT fixed
+
+**Measured 2026-08-25:** 249 rows across 190 entries (187 confident) where a
+known house name appears split around other words. Attempting the obvious repair
+— strip the house prefix and corporate suffix, keep the middle as the fund name
+— and reading the output showed it MANGLES REAL FUNDS:
+
+| stored name | naive repair | verdict |
+|---|---|---|
+| John Hancock Lifetime Blend 2030 Trust | "time Blend 2030" | **destroys a real fund** — the "John Hancock Life" prefix eats the *Life* of *Lifetime* |
+| Alta Trust RetireGuide Cons Growth & Inc | "Trust RetireGuide Cons Growth &" | **destroys a real fund** — the "Inc" tail is the *Inc* of *Income* |
+| Great Gray Trust EuroPacific Growth Trust | "Trust EuroPacific Growth" | wrong — the trailing "Trust" belongs to the fund |
+| John Hancock Life John Hancock Multi-Index LS Growth Insurance Company | "John Hancock Multi-Index LS Growth" | correct |
+| Fidelity Management Trust Fidelity Contrafund Company | "Fidelity Contrafund" | correct |
+
+The genuine wraps and the false positives are not separable by house-prefix +
+corporate-suffix + fund-vocabulary tests: "Lifetime" and "Life Insurance" share
+a prefix, "Income" and "Inc." share a suffix, and "Trust" is both a corporate
+suffix and a fund-name word. A fix here needs the FILING TEXT — checking that
+the house name really does occupy column (b) across two physical lines — not
+string surgery on the stored name.
+
+Value/coverage are unaffected either way: this is a display-quality defect, the
+dollar figures and the plans' confidence are correct. That is why it stays
+unfixed rather than being fixed approximately.
+
+## (earlier note) Issuer column wrapping around the fund name (seen 2026-08-25)
 
 20251014152028NAL0006620962001 stores rows like "Great Gray Trust Retirement
 Plan Moderate 2045 Fund R1, Company" — the issuer "Great Gray Trust Company"
