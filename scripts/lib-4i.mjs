@@ -454,6 +454,16 @@ export function parseRows(section, opts = {}) {
      * ranging from..."). The loan row itself is excluded by type; these are
      * its runaway continuation lines, and they name nothing. */
     if (/^(?:from participants|maturing at various|various maturity|interest rates? ranging|bearing interest at|range from \d{4}|collateralized by|secured by participants|with various maturity)/i.test(name)) { nameBuf = []; continue; }
+    /* v70: SUBTOTALS HIDDEN BY SPACED-LETTER DAMAGE. Some PDFs extract with
+     * letters scattered — "Tota l mutua l funds", "Tot al cont r i but i ons",
+     * "To tal In ve stm e n t A sse ts" — and the damage carries the row
+     * straight past every ^total guard. 58 such rows are stored, and a
+     * subtotal is worse than a bad name because it DOUBLE-COUNTS the rows it
+     * summarises. Fire only on the damage signature: removing all spaces
+     * reveals a leading "total", AND the raw name contains a single-letter
+     * word. A genuine fund ("To Talent Fund") squashes to "totalent" but has
+     * no lone letter, so it is untouched. */
+    if (/^(?:sub)?total/i.test(name.replace(/\s+/g, "")) && /(?:^|\s)[a-z](?:\s|$)/i.test(name)) { nameBuf = []; continue; }
     /* v70: STOPWORD FRAGMENTS. "of year" was a $0.3B plan's top holding —
      * the tail of a wrapped "…at end of year" heading, four characters past
      * the minimum-length check and made of nothing but function words. A name

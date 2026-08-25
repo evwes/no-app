@@ -3244,3 +3244,34 @@ product. Verified: "Great Gray | Index 2040 R", "Blackrock | U.S. Debt Index
 300 filings tested cumulatively. Every check the system had was satisfied by
 these rows — name printed, value right, ratio right, NAMES_MATCH. Only "is
 this a FUND?" found it.
+
+## (10 fund report) #33 — 2026-08-25 04:51Z cycle — a subtotal wearing OCR damage as a disguise
+
+9 NAMES_MATCH, 1 PRIOR_YEAR_SOURCE. No flagged verdicts; the row-quality
+check found two things.
+
+**"Tota l mutua l funds" was a stored holding.** It is the schedule's SUBTOTAL
+row, and the spaced-letter extraction damage carried it straight past every
+`^total` guard. Measured universe-wide: 58 rows squash to a leading
+"total"/"subtotal" once spaces are removed — "T otal assets", "Tot al cont r
+i but i ons", "To tal In ve stm e n t A sse ts". A subtotal is worse than a
+bad name: it DOUBLE-COUNTS the rows it summarises, inflating the table and
+the coverage ratio that judges it.
+
+Fixed as v70, firing only on the damage signature — squashed name starts with
+"total" AND the raw name contains a single-letter word. A real fund
+("To Talent Fund") squashes to "totalent" but has no lone letter, so it is
+untouched. Verified both ways; gate 20/20.
+
+This also settles the spaced-letter class left open in report #31. Merging
+the fragments back into words is still unsafe ("Class A", "Fund I", "TR B"),
+but the damage does not need repairing to be DETECTED — squashing is enough
+to recognise a subtotal. Detect, don't repair.
+
+**Second: the frontend class vocabulary had gaps** this batch exposed —
+"Common Collective Trusts" (plural, no "funds"), "Collective Trust Funds",
+"Shares of registered investment companies", "equity shares". Widened, and
+verified it still excludes real funds: "Mutual of America" (an insurer),
+"Great Gray Index 2040 R". Smoke green.
+
+310 filings tested cumulatively.

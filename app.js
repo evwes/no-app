@@ -1274,7 +1274,10 @@
      * gives, and for master trusts class-level IS the filed detail — the
      * parser gate refused a parser-side fix for exactly that reason). What
      * changes is the claim made about them. */
-    const CLASS_ROW = /^(?:common[ /-]?)?(?:collective|commingled) (?:trust|investment) (?:funds?|trusts?)$|^registered investment compan(?:y|ies)|^(?:common|preferred|corporate) stocks?\b|^mutual funds?$|^participant[- ]directed investments?\b|^(?:pooled separate accounts?|103-12 investments?|government securities|interest[- ]bearing cash)$/i;
+    /* Widened 05:00Z after a batch showed variants the first version missed:
+     * "Common Collective Trusts" (plural, no "funds"), "Collective Trust
+     * Funds", "Shares of registered investment companies", "equity shares". */
+    const CLASS_ROW = /^(?:common[ /-]?)?(?:collective|commingled) (?:trust|investment)s? (?:funds?|trusts?)?$|^(?:common[ /-]?)?collective trusts?$|^(?:shares of )?registered investment compan(?:y|ies)|^(?:common|preferred|corporate) stocks?\b|^mutual funds?$|^(?:equity|debt|bond) shares?$|^participant[- ]directed investments?\b|^(?:pooled separate accounts?|103-12 investments?|government securities|interest[- ]bearing cash)$/i;
     const classRows = tab === "menu" ? list.filter((f) => CLASS_ROW.test(String(f.name || "").trim())) : [];
     const classShare = classRows.length && total
       ? classRows.reduce((a, f) => a + f.value, 0) / total : 0;
