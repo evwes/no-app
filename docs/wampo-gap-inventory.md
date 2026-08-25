@@ -616,3 +616,22 @@ row names — parse4i already receives sponsorName, parseRows does not; (b) pair
 rows whose values agree to within rounding (round both to 3 significant figures
 before pairing) rather than exactly. (b) is the more general and the riskier —
 exactness is what made the v74 value-pair view safe.
+
+## The NAICS business code as a value — the fix that would subsume three guards
+
+Form 5500 box 2d carries a 6-digit NAICS business code. When a candidate region
+sweeps a form page, the sponsor's wrapped address becomes a row name and that
+code becomes its dollar value. Three guards now catch three surface forms of it:
+EFAST2 placeholder letters (v74, 411 rows / 390 confident), "(see instructions)"
+text (v75, 72 rows / 36 confident), and "c/o" notation (v75, 19 rows / 18
+confident).
+
+The identifying signal is the VALUE, not the name: a 6-digit number drawn from a
+closed published list, recurring across unrelated plans (522130, 624100, 623000,
+611000, 541700, 541512, 447100, 236200, 483000, 524150, 561790, 339900, 315990,
+621420, 522120, 333310, 111210 all seen). A row whose value is a NAICS code AND
+whose name is address-shaped is this defect regardless of how the address reads.
+
+Not yet built. It needs the NAICS list (or at least the ~1,000 codes valid for
+box 2d) and a name-shape test, and it should be measured against real holdings
+that happen to be worth exactly $522,130 before shipping.

@@ -685,6 +685,20 @@ export function parseRows(section, opts = {}) {
     // "CHESTNUT RIDGE ROAD"), which is no more a holding than the whole line
     if (/\(see instructions?\)|\benter total\b|\badd all\b.{0,24}\bamounts?\b|\benter name and ein\b|\benter the (?:number|amount) of\b/i
         .test(name + " " + full)) { nameBuf = []; continue; }
+    /* v75: "c/o" is an ADDRESS, and the third variant of the same defect. The
+     * ABCDEFGHI guard catches the sponsor address block when EFAST2 left its
+     * placeholder text in; where the filer's address is real text there is
+     * nothing alphabetic to condemn — but the wrapped address still becomes a
+     * name and the box-2d business code still becomes its value.
+     * Measured on rows the placeholder guard does NOT already catch: 19 rows,
+     * 19 entries, 18 CONFIDENT, and every single value is a NAICS code —
+     * "c/o Katy Freeway Houston $522,130", "c/o WINOOSKI PARK COLCHESTER
+     * $611,000", "2 Nazareth c/o Lane St. Louis $623,000". Care-of is postal
+     * notation; no fund is named with it. */
+    if (/\bc\s?\/\s?o\b/i.test(name)) { nameBuf = []; continue; }
+    /* statement carry-forward openings. "Balance (Previous) $6,819,178" was
+     * 99% of its plan's displayed lineup. 14 rows, 8 confident. */
+    if (/^balance\s*\((?:previous|prior|forward|beginning)\)?|^(?:previous|prior|beginning|opening)\s+balance\b|^balance\s+forward\b/i.test(name.trim())) { nameBuf = []; continue; }
     // administrative-expense NOTE rows ("Payroll taxes 79,790 74,287",
     // "Occupancy", "Printing and postage") leak from two-column expense
     // schedules with the PRIOR-year figure as the line-terminal "value" —

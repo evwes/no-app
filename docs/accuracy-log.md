@@ -3752,6 +3752,39 @@ recorded in the gap inventory.
 
 131 cached filings: confident 40 → 51, gate 28/28.
 
+## 2026-08-25 — v75 (2/2): "c/o" is an address, and the business code is still not money
+
+**The third variant of one defect.** The ABCDEFGHI guard (v74) catches the
+sponsor's address block when EFAST2 left its placeholder text in the empty
+boxes. The instruction-text guard (v75) catches it when the line carries "(see
+instructions)". Neither fires when the filer's address is entirely real text —
+and the wrapped address still becomes a name, and the box-2d NAICS code still
+becomes its value.
+
+Measured on rows the placeholder guard does NOT already catch: **19 rows, 19
+entries, 18 CONFIDENT — and every single value is a business code.** "c/o Katy
+Freeway Houston $522,130". "c/o WINOOSKI PARK COLCHESTER $611,000". "2 Nazareth
+c/o Lane St. Louis $623,000". "c/o Bubb Road Cupertino $541,700". Care-of is
+postal notation; no fund is named with it.
+
+**And statement carry-forwards.** "Balance (Previous) $6,819,178" was 99% of one
+plan's displayed lineup — 14 rows, 8 confident, across "Beginning balance",
+"Balance Forward (", "Beginning Balance 1/1/22". With it gone that plan reads 16
+American Funds target-date funds at ratio 0.99 instead of four rows dominated by
+a carry-forward.
+
+**What this family has taught.** Four guards now exist for what is one defect —
+a Form 5500 page swept into a candidate region, its address block wrapping into
+a name and its business code landing in the value column. Each was written
+against the evidence the last filing happened to show: placeholder letters, then
+instruction text, then care-of notation. The signal none of them uses is the one
+that actually identifies it — **the value IS a NAICS business code**, a 6-digit
+number from a closed list, appearing as a "holding" worth exactly $522,130 or
+$624,100 across unrelated plans. That is the fix worth building next, and it
+would subsume all three.
+
+135 cached filings: confident 40 → 51, gate 28/28.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
