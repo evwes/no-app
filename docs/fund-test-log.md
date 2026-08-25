@@ -3985,3 +3985,56 @@ because each attempt only saw the copies that differed the way that attempt
 could detect. What finally worked ignored the text entirely.
 
 578 filings tested cumulatively. v76 re-parsing as #164; v77 committed [skip ci].
+
+## Report #54 — the five sections, measured against what the filings can support
+
+Owner asked for all five tracked sections above 90%. Measured the ceilings
+first (docs/coverage-ceilings.md), because three of the five cannot get there
+and grinding at them would mean stating things the filings do not say.
+
+**Hard ceiling for anything read from the audit notes: 91.5%.** 5,817 of 68,166
+full-form filings have no usable notes text at all.
+
+| field | now | reachable |
+|---|---|---|
+| Provider (Sch C item 2) | **93.3%** | already there |
+| Investment options (Sch H 4i) | 86.5% | ~94% |
+| Match (notes) | 64.3% | **~68%** |
+| Vesting (notes) | 68.2% | ~72% |
+| Roth / after-tax | 35,081 / 4,110 | **no denominator exists** |
+
+**Why match stops near 68%.** Read all 8,711 quote-only rows: only ~13% contain
+an extractable formula, ~26% are the wrong topic, and the rest genuinely state
+none — "discretionary", "as determined by each respective Adopting Employer",
+"the CBA determines the rate". Pulled 8 backlog filings and grepped the raw
+text: 1 had a findable match formula, 2 had non-elective formulas, 5 said
+nothing.
+
+**Shipped from that analysis:**
+
+- **v79, +440 plans.** The commonest match formula in the country was sitting as
+  quote-only: "100% of the participant's deferral **up to 3%** plus 50% of
+  deferrals from the next 2%". Every reader expected "up to THE FIRST 3%";
+  without the word "first" they all fell through. 411 rows, most verbatim
+  safe-harbor basic or enhanced. Plus 29 decimal-dollar ratios ("$0.75 for each
+  $1.00 of the first 6%"). Bounds rejected 14, all correctly — including
+  deferral LIMITS misread as match caps ("from 1% up to 50% of eligible
+  compensation"). Break case holds: "Participants may defer up to 100% of
+  compensation" is not a match.
+- **v80, 2,689 misleading quotes removed (30.9%).** A third of the match quotes
+  shown to users described eligibility, vesting, account mechanics or a dollar
+  total. Conservative test — another topic's vocabulary only disqualifies a
+  sentence stating no rate — and the loop now continues instead of stopping, so
+  some filings will reach their real match sentence further down.
+
+**The one honest way to add 7.2pp, put to the owner rather than taken:** 4,902
+plans file Schedule R line 21b = D (design-based safe harbor) with no extracted
+formula; 3,276 of those also have employer money and code 2K. Displaying that
+filed status is real information. Folding it into the "match formula" number
+would move the headline by redefining what it counts, so it is proposed as a
+separate line.
+
+**Watch the next verdict carefully**: matchQuote will FALL by up to 2,689. That
+is v80 working. Compare the match line, which v79 raised.
+
+588 filings tested cumulatively. v76+v77 re-parsing as #165; v78/v79/v80 committed.
