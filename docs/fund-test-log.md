@@ -3540,3 +3540,45 @@ halves, and "Vanguard 500 Index ADM || Blended fund" now names the fund.
 Gate 20/20.
 
 400 filings tested cumulatively. v71 still re-parsing as #160.
+
+## Report #43 — the v71 loss review, and what the aggregate could never show
+
+The v69→v71 verdict was **+72 confident** — a clean number, comfortably inside
+every tolerance the pipeline checks. Reading the twelve net losses one at a
+time found six plans that had been showing their filed menu and had stopped:
+Ramos Oil (13 Great Gray target-date trusts → 4 class labels), Reliance One
+(26 Vanguard Target Retirement rows → 4 class labels), Bridgestone Americas
+×2 (17 Fidelity Freedom Blend rows → "fair value hierarchy", "companies",
+"accounts"), Producers Rice Mill (11 funds → 8 bare house names), Ebara
+(14 rows → "Participant-directed investments").
+
+Four independent causes, all of the same shape: **a guard matching a PROXY for
+its damage signature rather than the signature itself.** "First three tokens"
+proxied for "inside the word total". "Fourteen words on the line" proxied for
+"this is a sentence". "Every cell under fourteen words" was that same proxy one
+level down — my own first attempt at the fix, which still ate $18.4M of Ebara's
+holdings because broken font encodings inject spaces inside words.
+
+Each defect made the real region's sum too small, and the winning region is
+whichever candidate sums closest to Schedule H assets — so an undersummed real
+table loses to a note table that equals plan assets by construction. Reliance
+One is the clearest chain: one dropped $5,394 row ("Vanguard | Total Intl Bd
+Idx Admiral", killed on the "Bd") broke arithmetic subtotal detection, which
+let "Mutual funds, at fair value $4,484,527" survive as a holding, which
+doubled the region to ratio 1.95, which cost thirty funds their place.
+
+Measured before fixing, not after: **283 of 61,133 stored lineups are a page of
+bare fund-house names, and 226 of them are CONFIDENT** — 226 plans showing
+"Vanguard / Fidelity / Schwab" as their investment menu today.
+
+78 cached filings, before → after: confident **19 → 28**, zero losses, zero row
+losses. All six regressed plans recovered; three now beat their v69 state
+(Bridgestone's two plans moved off the 2023 prior-year fallback onto the
+current-year filing at 29 rows each; Orange County Bancorp 5 → 29). Gate 24/24
+with four new specimens.
+
+**v71 was not mirrored.** Main stays on v69 until #161 (v73) returns a verdict.
+Shipping six known real-menu regressions to tidy up a version number is not a
+trade worth making.
+
+478 filings tested cumulatively. v73 re-parsing as #161.
