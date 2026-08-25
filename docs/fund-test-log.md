@@ -3275,3 +3275,33 @@ verified it still excludes real funds: "Mutual of America" (an insurer),
 "Great Gray Index 2040 R". Smoke green.
 
 310 filings tested cumulatively.
+
+## (10 fund report) #34 — 2026-08-25 05:28Z cycle — "Gra nd tota l", and v67 visibly working
+
+7 NAMES_MATCH, 2 PRIOR_YEAR_SOURCE, 1 ISSUER_KEPT. The row-quality check
+shows v67+v70's identity handling paying off across the batch:
+
+    Matrix Trust Company | RetirementTrack Moderate 2055 Fund CI R2
+    Vanguard             | Wellington Admiral
+    Minnesota Life       | BlackRock LifePath Index 2050 Instl
+
+Those are issuer + product, exactly the shape the pipeline was losing a day
+ago.
+
+**"Gra nd tota l" was a stored holding** — a grand-total row whose spaced
+letters carried it past yesterday's own fix, because that guard squashed the
+name and tested for a leading "total", and "grandtotal" starts with "grand".
+Prefix set widened to grand/net/sub. Break case verified: "Grand Slam Growth
+Fund Class A" and "Total Return Bond Fund Class I" both survive. Gate 20/20.
+
+Also widened the frontend class vocabulary for "Mutual funds, at fair value"
+— the anchored form missed the trailing qualifier. Smoke green.
+
+**Worth naming:** this is the third consecutive fix where the defect was a
+NARROWER VERSION OF ONE I HAD JUST SHIPPED — singular vs plural "total",
+single-letter vs two-letter damage, "total" vs "grand total". A guard written
+from one specimen matches that specimen's exact spelling. The habit that
+catches it is the row-quality check on the next batch, not more thought at
+write time.
+
+320 filings tested cumulatively. v70 re-parsing as run #159.

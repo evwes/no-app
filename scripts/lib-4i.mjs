@@ -479,7 +479,9 @@ export function parseRows(section, opts = {}) {
      * name dropped "Vanguard | Total Return Bond Fund Class I" on the "I".
      * That is the hazard flagged when this class was first left alone —
      * "Class A", "Fund I", "TR B" — walked into one rule later. */
-    if (/^(?:sub)?total/i.test(name.replace(/\s+/g, "")) &&
+    /* grand/net variants too: "Gra nd tota l" squashes to "grandtotal", which
+     * a bare ^total test misses. */
+    if (/^(?:grand|net|sub)?total/i.test(name.replace(/\s+/g, "")) &&
         name.trim().split(/\s+/).slice(0, 3).some((w) => w.length <= 2 && /^[a-z]+$/i.test(w))) { nameBuf = []; continue; }
     /* v70: STOPWORD FRAGMENTS. "of year" was a $0.3B plan's top holding —
      * the tail of a wrapped "…at end of year" heading, four characters past
