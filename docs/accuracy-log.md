@@ -3866,6 +3866,24 @@ concept but NOT matching my new rule") would have found all 255 of these
 immediately after v74 shipped, and would have found the c/o rows immediately
 after the ABCDEFGHI fix. That query is cheap and it is now part of the loop.
 
+**The sweep, run immediately.** Applying the new rule to the address family:
+rows whose value is NAICS-shaped (six digits, valid box-2d sector prefix) and
+whose name is address-shaped, minus everything the four existing guards already
+catch. **The answer was three** — "250 MUNOZ RIVERA AVENUE $524,150" (insurance
+agencies), "8280 WILLOW OAKS CORPORATE DRIVE SUITE 450 $541,330" (engineering
+services), and one more. Added, chiefly to close the family.
+
+The sweep's first version returned **2,094 rows** and every one was a real fund:
+"State Street Target Retirement 2020", "Dodge & Cox International St", "State St
+Russ Sm Cp Val Idx Rt Acct" — matched on the word "St". The query was wrong,
+not the data (#35 again, this time about my own diagnostic). Requiring a house
+NUMBER before the street suffix and no fund vocabulary anywhere in the name took
+it from 2,094 to 3.
+
+That is the useful result: after v74's placeholder guard, v75's instruction-text
+and care-of guards, and this, **the address family is closed** — not "no more
+found", but measured at three residual rows out of 1.68M.
+
 140 cached filings: confident 41 → 52, gate 28/28, no new losses.
 
 ## Standing prevention machinery

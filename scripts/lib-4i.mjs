@@ -696,6 +696,22 @@ export function parseRows(section, opts = {}) {
      * $611,000", "2 Nazareth c/o Lane St. Louis $623,000". Care-of is postal
      * notation; no fund is named with it. */
     if (/\bc\s?\/\s?o\b/i.test(name)) { nameBuf = []; continue; }
+    /* …and the plain street address, with no care-of and no placeholder text.
+     * Found by the near-miss sweep the FEIN entry introduced: rows whose value
+     * is NAICS-shaped and whose name is address-shaped but which no existing
+     * guard catches. The answer was THREE — "250 MUNOZ RIVERA AVENUE
+     * $524,150" (insurance agencies), "8280 WILLOW OAKS CORPORATE DRIVE SUITE
+     * 450 $541,330" (engineering services), one more. Three rows is below the
+     * bar for a new rule on its own; it is worth it here only because it
+     * closes the family, and because the sweep's real finding is that the
+     * family IS now closed — after four guards, three rows remain.
+     * A house number followed by a street suffix, with no fund vocabulary
+     * anywhere in the name. "State Street", "Dodge & Cox International St" and
+     * every other house whose name contains a street word are excluded by the
+     * fund-vocabulary test — that false positive is exactly what the first
+     * version of this sweep returned, 2,094 rows of real funds. */
+    if (/^\s*(?:\d{1,6}|p\.?\s?o\.?\s+box)\b[^,]{0,40}?\b(?:street|avenue|road|drive|boulevard|lane|suite|highway|parkway|court|place|circle|plaza|blvd|pkwy)\b/i.test(name)
+        && !/\b(fund|trust|index|idx|class|portfolio|pool|equity|bond|stock|cap|growth|value|income|target|retirement|admiral|instl|institutional|annuity|market|account)\b/i.test(name)) { nameBuf = []; continue; }
     /* statement carry-forward openings. "Balance (Previous) $6,819,178" was
      * 99% of its plan's displayed lineup. 14 rows, 8 confident. */
     if (/^balance\s*\((?:previous|prior|forward|beginning)\)?|^(?:previous|prior|beginning|opening)\s+balance\b|^balance\s+forward\b/i.test(name.trim())) { nameBuf = []; continue; }
