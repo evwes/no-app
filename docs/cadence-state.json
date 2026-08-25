@@ -1,12 +1,13 @@
 {
   "purpose": "Prevents overnight chain multiplication. Each cadence/watchdog cycle reads this BEFORE arming anything. If a fire time here is still in the future, a chain is already armed -- run the cycle and do NOT arm another. Only arm when the relevant slot is in the past, then update it here and commit.",
   "why": "Several chains were firing simultaneously around 05:00-05:35. The cause is structural: a one-shot send_later chain re-arms itself, so any cycle that arms 'just in case' permanently doubles the chain. list_triggers, update_trigger and delete_trigger all require an approval the owner cannot give while asleep, so pruning afterwards is impossible -- the only lever is not arming in the first place.",
-  "cadenceFireAt": "2026-08-25T03:10:00Z",
+  "cadenceFireAt": "2026-08-25T03:27:00Z",
   "watchdogFireAt": "2026-08-24T06:19:00Z",
   "knownExtraChains": "Cleared 2026-08-24 20:52Z. Every chain from the overnight run was a one-shot and all had fired by 06:19Z, so the duplicates noted below are dead. Re-armed by owner request at 21:06Z as a single chain. If a cycle finds cadenceFireAt in the future, it must NOT arm -- that is what doubled the chain last night.",
-  "cadenceTriggerId": "trig_01PRYTq5FzgNKBzHnysPwKgK",
+  "cadenceTriggerId": "trig_01UL7xBg36SvZnw6FCu1DuSB",
   "armedBy": "owner request, 2026-08-24 -- 'rearm'",
   "reparseInFlight": "run #157 (v68, commit 64f86475, queued 02:26Z) -- NO scripts/** pushes until it completes",
   "lastGap": "Chain died after the 23:52Z cycle and was revived at 02:05Z: ~2h10m, roughly 8 cycles missed. Cause was session idleness, not a trigger failure.",
-  "directive": "2026-08-25: fix every problem yourself, in the cycle, including parser changes. Gate must pass; one re-parse at a time; verdict read before mirroring. See docs/overnight-protocol.md."
+  "directive": "2026-08-25: fix every problem yourself, in the cycle, including parser changes. Gate must pass; one re-parse at a time; verdict read before mirroring. See docs/overnight-protocol.md.",
+  "v69": "committed with [skip ci], gate 20/20 green, NOT yet run \u2014 ship via scripts/.kick after #157 lands and mirrors"
 }
