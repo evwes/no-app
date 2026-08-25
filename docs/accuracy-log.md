@@ -3074,6 +3074,41 @@ report #28, which the frontend now labels rather than the parser deleting —
 the gate refused a parser-side fix for that family, and these two do not
 change that answer.
 
+## 2026-08-25 — v68's verdict: +20 confident, and the loss review caught my own overreach
+
+Run #157 landed. Like-for-like against `lineups-status.json`:
+
+    confident acks   58,121 -> 58,141   (+20; 30 gained, 10 lost)
+    match / vesting                flat
+    acks at v68                  68,482
+
+**Wins verified by name.** Old Republic: 30 rows, ZERO "VARIABLE" names —
+the filler-column class is fixed. Buchanan: the fabricated $412M
+"Investments at fair valuc" row is gone. Global Tax Management: the Maillie
+letterhead is gone.
+
+**Nine of the ten losses were MY BUG, not junk.** Every lost entry was a
+3-row "Variable Annuity Contract" table — small plans whose entire balance
+sits in a group annuity. v68's filler strip removed the word "variable"
+everywhere, because it is filler in the `N/A  VARIABLE  N/A` rate cell of the
+Old Republic layout. It is not filler in "Variable Annuity Contract", which
+is the product itself, and stripping it took those plans' only holding row
+with it. The strip now skips the word when it names a product (annuity, life,
+income, universal, account, fund, contract), and the same care is applied to
+"fixed" (Fixed Income Account, Fixed Annuity). Verified in one pass: the Old
+Republic row still resolves to FIDELITY 500 INDEX, and Variable Annuity /
+Fixed Income rows survive. Gate 20/20.
+
+The tenth loss was genuine junk: a row named "Denotes party-in-interest as
+defined by ERISA." — a footnote.
+
+**Why this entry matters more than the numbers.** The re-parse verdict rule
+says sample every lost lineup and confirm it was junk. Nine of ten were not,
+and the only way to know was reading them. A +20 headline would have looked
+like unambiguous success and shipped a regression to nine plans underneath
+it. The rule earned its keep tonight; do not skip it because the delta is
+positive.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

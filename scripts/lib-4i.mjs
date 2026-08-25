@@ -96,7 +96,14 @@ function cleanDesc(desc) {
    * column (b), so all 28 of that plan's holdings were stored as "VARIABLE
    * 1,056,601 sh". Stripping the filler empties the description, and the
    * name column wins as it should. Same class as SMART Local 265. */
-  d = d.replace(/\b(?:n\s*\/\s*a|n\.?a\.?|not applicable|variable|none|fixed)\b/gi, " ");
+  /* "variable" is filler in the "N/A  VARIABLE  N/A" rate cell, and a real
+   * word in "Variable Annuity Contract" — the product a small plan's whole
+   * balance sits in. v68 stripped it everywhere and took nine such plans'
+   * only holding row with it (found by reading v68's re-parse losses, which
+   * is exactly what that review is for). Strip it only when it is NOT naming
+   * a product. Same care for "fixed" (Fixed Annuity, Fixed Income). */
+  d = d.replace(/\b(?:variable|fixed)\b(?!\s+(?:annuity|life|income|universal|account|fund|contract))/gi, " ");
+  d = d.replace(/\b(?:n\s*\/\s*a|n\.?a\.?|not applicable|none)\b/gi, " ");
   d = d.replace(/(^|\s)#(\s|$)/g, " ");
   return d.replace(/[\s,;:-]+$/g, "").replace(/\s{2,}/g, " ").trim();
 }
