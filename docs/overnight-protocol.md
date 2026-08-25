@@ -162,3 +162,23 @@ check whether a run is in_progress and whether the staged commit message
 contains `[skip ci]`. That is two commands and it is now the rule — not "remember
 to add the marker", which is exactly the kind of instruction that fails on the
 message you write differently.
+
+
+### Follow-up: a cancelled run still COMMITS (2026-08-25 15:0xZ)
+
+The earlier note said the cost of the `[skip ci]` omission was ~40 minutes of
+compute. That was incomplete. Run #164 was cancelled mid-matrix, but the parse
+jobs upload their artifacts `if: always()` and the merge job ran anyway — so it
+merged whatever shards had finished and **pushed a PARTIAL re-parse to the
+branch**: 42,408 entries at parser v76 alongside 26,074 still at v75.
+
+Nothing is corrupted — merge re-applies deltas onto the latest branch state, so
+the store is internally consistent — but the branch spent an hour holding a
+half-re-parsed universe, and a verdict computed against it is meaningless. I
+computed one before noticing, read "3 lost / 1 gained", and had to throw it out.
+
+**Two rules from this:**
+1. Before reading any verdict, check the stored parser versions
+   (`lineups-status.json` → `.plans[*].pv`). A single value means a complete
+   re-parse; a mix means a partial one and the verdict is not comparable.
+2. Never mirror after a cancelled run. Wait for a complete one.
