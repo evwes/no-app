@@ -3695,3 +3695,50 @@ assembled from several lines, so a guard that runs before assembly can only
 ever see one of them. Where a rule condemns a row, test the row.
 
 508 filings tested cumulatively. v73 re-parsing as #161; v74 committed [skip ci].
+
+## Report #47 — v73's verdict, and the 24 losses that did not fit the story
+
+Run #161 read well: confident +71, match +13, vesting +14, lineups +67; net
+against live main (v69) **+143 confident, 150 lost, 293 gained**.
+
+Triaging all 150 losses: **126 were the fund-house pages v73 deliberately
+demoted** — "Vanguard / Fidelity / JP Morgan / Schwab" — exactly the class
+measured before that fix. The remaining **24 were real menus at ratio
+1.86–2.20**. They had not lost rows; most had MORE than before. v73's prose fix
+let a SECOND rendering of the schedule parse where half of it used to be eaten.
+
+Four mechanisms, found by reading the added rows filing by filing:
+
+- **"TOTAL b b" $18,971,978** — Historic Tours gained exactly one row, its own
+  grand total. My own v73 narrowing let it through; the old rule had caught the
+  stray "b" of an empty column. Now a fund must have a 3+ letter token after
+  "Total"; column debris does not.
+- **Punctuation** — "T Rowe Price" in one copy, "T. Rowe Price" in the other
+  (Blain Supply). Dedup key normalised.
+- **"Represent parties-in-interest."** — v71's guard matched only "party". That
+  row carries the grand total, so one plural doubled Current Lighting's whole
+  region. Four of the twenty-four.
+- **Copies sharing values but not names** — Brakebush files "2030 Target Date
+  Fund N/R" and "American Funds 2030 Trgt Date Retire R6"; nothing in the text
+  links them, but 25 of 29 distinct values are exact pairs covering 99% of the
+  sum. No heading separates the copies, so no candidate region covers just one.
+
+For the last, parseRows now returns two reconstructed views per region (first
+row per normalised name; exact value-pair collapse), offered as ordinary
+scoring candidates at no extra parsing cost.
+
+**The gate caught the reconstructions twice.** Black Hills — a correct 22-row
+schedule at ratio 0.98 — lost to a repaired view of a different region that
+scored higher purely on carrying one more row. Gating repairs to regions at
+1.5x assets was not enough (a millions-scaled sibling vouched for it), so the
+gate is per-variant and a repair pays 0.05. A reconstruction is a repair, not a
+reading of the filing.
+
+12 of 24 recovered at ratio 0.95–1.23; ten remain, in the gap inventory with
+the mechanism. 127 cached filings: confident 40 → 51. Gate 28/28.
+
+**What made these findable:** the losses SORTED. 126 fell into a class I had
+deliberately created; the 24 that did not fit that story were the ones to open.
+A loss you can explain is not the same as a loss you predicted.
+
+518 filings tested cumulatively. v74 shipped as run #162.
