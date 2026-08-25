@@ -3305,3 +3305,38 @@ catches it is the row-quality check on the next batch, not more thought at
 write time.
 
 320 filings tested cumulatively. v70 re-parsing as run #159.
+
+## (10 fund report) #35 — 2026-08-25 05:45Z cycle — the footnote, and a contaminated measurement caught in time
+
+9 NAMES_MATCH, 1 OCR_SOURCE. Row-quality check shows the identity work
+holding up — "Vanguard | 500 Index Admiral", "Fidelity | 500 Index Fund",
+"Vanguard institutional Target Retirement 2035" — and surfaced two things.
+
+**"Indicates a party-in-interest." was a 21-row plan's TOP holding.** Every
+4i schedule closes with "* Indicates a party-in-interest as defined by
+ERISA", and the leading asterisk is stripped upstream as the
+party-in-interest MARKER — which is exactly what lets the sentence through as
+a name. Measured: 107 rows across the universe, in five spellings
+("Represents…", "Denotes…", "Party-in-Interest"). Fixed in v71.
+
+**"Great Gray Trust Company" was still a top row** — the bare-manager class
+v70 addressed, but v70's rule required an identity column of ≤3 words and
+this one is four. Widened to include institution-suffixed houses (Trust
+Company, Bank, Advisors, Asset Management).
+
+**And the measurement that would have caused real damage.** Counting
+institution-suffixed names returned 3,034 rows — but the examples were
+"Genuine Parts Company", "Hess Corporation", "DFA International Small
+Company". Those are EMPLOYER STOCK and a real fund. Dropping that class would
+have deleted a plan's own company stock from its holdings table. So nothing
+is dropped: the rule only decides WHICH COLUMN WINS, and rows whose
+description is type-only ("Common Stock") keep their own name. Verified
+exactly that: Genuine Parts and Hess survive intact while Great Gray resolves
+to "Index 2040 R".
+
+That is the second time in three cycles that reading the measurement's
+EXAMPLES — not just its count — stopped a bad fix. The count says how big;
+only the examples say whether it is what you think.
+
+330 filings tested cumulatively. Gate 20/20. v70 re-parsing as #159; v71
+committed behind it.

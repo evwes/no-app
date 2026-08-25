@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 70;
+export const PARSER_VERSION = 71;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -333,7 +333,16 @@ export function parseRows(section, opts = {}) {
      * i.e. a house name rather than a fund name) a description of four-plus
      * letters that carries a digit or a second word is the product, and the
      * house belongs in `iss` where v67 put it. */
-    const shortIdentity = nameCol && nameCol.trim().split(/\s+/).length <= 3;
+    /* An identity column is a HOUSE NAME when it is short, or when it ends in
+     * an institution suffix — "Great Gray Trust Company" is four words and was
+     * missing the <=3 test, so its funds kept falling back to the house.
+     * This only decides WHICH COLUMN WINS; it never drops a row, so employer
+     * stock ("Genuine Parts Company", "Hess Corporation" — measured as 3,034
+     * institution-suffixed names, many of them real holdings) is untouched:
+     * those rows carry a type-only description and keep their own name. */
+    const nc = nameCol ? nameCol.trim() : "";
+    const shortIdentity = nc && (nc.split(/\s+/).length <= 3 ||
+      (/\b(?:trust (?:company|co)|bank|advisors?|asset management|investments?)\.?$/i.test(nc) && nc.split(/\s+/).length <= 5));
     const dLetters = dClean.replace(/[^a-z]/gi, "").length;
     const dUsable = dClean && !typeOnly(dClean) &&
       (dLetters >= 8 ? dClean.split(/\s+/).length >= 2
@@ -483,6 +492,13 @@ export function parseRows(section, opts = {}) {
      * a bare ^total test misses. */
     if (/^(?:grand|net|sub)?total/i.test(name.replace(/\s+/g, "")) &&
         name.trim().split(/\s+/).slice(0, 3).some((w) => w.length <= 2 && /^[a-z]+$/i.test(w))) { nameBuf = []; continue; }
+    /* v71: the 4i FOOTNOTE. Schedules close with "* Indicates a
+     * party-in-interest as defined by ERISA", and 107 stored rows are that
+     * sentence — one of them a 21-row plan's TOP holding, because the
+     * footnote sits near a value on the same line. The leading asterisk is
+     * stripped upstream as the party-in-interest MARKER, which is what lets
+     * the sentence through. */
+    if (/^\s*(?:indicates?|denotes?|represents?)\b.{0,60}party[- ]in[- ]interest|^party[- ]in[- ]interest\b/i.test(name)) { nameBuf = []; continue; }
     /* v70: STOPWORD FRAGMENTS. "of year" was a $0.3B plan's top holding —
      * the tail of a wrapped "…at end of year" heading, four characters past
      * the minimum-length check and made of nothing but function words. A name
