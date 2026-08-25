@@ -3506,3 +3506,37 @@ Two habits compounding: #35 (read the examples) revealed the split, and #40
 the split I had just measured.
 
 390 filings tested cumulatively.
+
+## (10 fund report) #42 — 2026-08-25 08:09Z cycle — harvesting a vocabulary instead of guessing one
+
+6 NAMES_MATCH, 2 PRIOR_YEAR_SOURCE, 1 ISSUER_KEPT, 1 OCR_SOURCE. Two more
+reversed-column rows: "Vanguard 500 Index ADM || Blended fund" and
+"American Funds 2010 Target D || Target date" (the second already covered by
+v72).
+
+**"Blended fund" was not in the category list — so instead of adding one
+phrase (rule #34), I harvested the vocabulary.** Measured 3,928 rows where a
+PRODUCT-shaped identity sits behind a short generic name, and ranked what
+those names actually are:
+
+     324 "tiaa real estate"          126 "group annuity contract"
+     171 "cash reserve account"      113 "variable annuity"
+     140 "tiaa stable value"          94 "fixed annuity"
+      77 "variable annuity contract"  61 "guaranteed interest account"
+
+**And the harvest is contaminated, exactly as #35 warned.** "TIAA Real
+Estate", "TIAA Stable Value", "Fidelity Contrafund" and "Cash Reserve
+Account" are REAL investment options, not type labels — adding them would
+rename a plan's actual holding. So the list added is deliberately PARTIAL:
+only contract/category vocabulary from the Form 5500 instructions.
+
+**The break case is the one that matters most.** Every phrase is gated by
+identityIsProduct, so a plan whose entire balance IS a group annuity — no
+product identity behind it — keeps "Variable Annuity Contract" as its
+holding. That is the v68 regression that cost nine plans their only row, and
+it must never repeat. Verified directly: the bare row survives, "TIAA Real
+Estate" survives, "Metropolitan Life || Variable Annuity Contract" keeps both
+halves, and "Vanguard 500 Index ADM || Blended fund" now names the fund.
+Gate 20/20.
+
+400 filings tested cumulatively. v71 still re-parsing as #160.

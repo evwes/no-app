@@ -116,7 +116,17 @@ function cleanDesc(desc) {
  * type-only and hand the row back to the issuer column. An anchored phrase
  * list cannot do that, because a real fund name carries something more.
  * "inves\w{0,2}ment" absorbs the OCR spelling "invesment". */
-const CATEGORY_PHRASE = /^(?:target[- ]date(?: retirement)?(?: funds?)?|retirement (?:date )?funds?|registered inves\w{0,2}ments? compan(?:y|ies)|(?:common[\/ ]?)?collective trust funds?|separate accounts?|group annuity contracts?|guaranteed (?:interest|investment) contracts?|insurance company (?:general|pooled separate) accounts?)$/i;
+const CATEGORY_PHRASE = /^(?:target[- ]date(?: retirement)?(?: funds?)?|retirement (?:date )?funds?|registered inves\w{0,2}ments? compan(?:y|ies)|(?:common[\/ ]?)?collective trust funds?|separate accounts?|group annuity contracts?|guaranteed (?:interest|investment) contracts?|insurance company (?:general|pooled separate) accounts?|(?:group|variable|fixed) annuity(?: contracts?| accounts?)?|guaranteed (?:interest )?accounts?|insurance (?:general )?accounts?|general accounts?|insurance contracts?|guaranteed insurance contracts?|blended funds?|balanced funds?)$/i;
+/* Harvested by measuring 3,928 rows where a PRODUCT-shaped identity sits
+ * behind a short generic name. The list is deliberately PARTIAL: the same
+ * measurement returned "TIAA Real Estate" (324), "TIAA Stable Value" (140),
+ * "Fidelity Contrafund" (33) and "Cash Reserve Account" (171) — those are
+ * REAL investment options, not type labels, and adding them would rename a
+ * plan's actual holding. Only contract/category vocabulary from the Form
+ * 5500 instructions is included. Every phrase here is additionally gated by
+ * identityIsProduct, so a plan whose entire balance IS a group annuity
+ * (no product identity behind it) keeps "Variable Annuity Contract" as its
+ * holding — the v68 regression this must never repeat. */
 
 function typeOnly(desc) {
   /* v72: a trailing VALUE or footnote marker defeats the type test. Filings
