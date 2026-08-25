@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 78;
+export const PARSER_VERSION = 79;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -1520,6 +1520,24 @@ export function extractPlanFeatures(text) {
   const dfLimit = dfm && /^\s*of (?:the |a )?(?:IRS|Internal Revenue|Code|statutory|annual|applicable|maximum|402\(?g\)?)/i.test(dfm.groups.tail);
   const df = dfm && !dfLimit ? { pct: 100, cap: null } : null;
   const cents = !mf && !df && t.match(/(\d{1,3}(?:\.\d+)?) ?cents (?:for|per|on) (?:each |every )?(?:\$1(?:\.00)?|dollar)[^.]{0,80}?(?:up to|on the first) (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i);
+  /* v79: the same ratio written in DOLLARS rather than cents or words —
+   * "$0.75 for each $1.00 of the first 6% contributed by a participant",
+   * "$.50 per $1.00 of the participant's deferral contribution up to 5%".
+   * The dollar-for-dollar reader above only matches an exact $1, and the cents
+   * reader only matches the word "cents", so this very ordinary phrasing fell
+   * through to quote-only. The numerator is dollars-per-dollar, so 0.50 is a
+   * 50% match; anything above $1.00 per $1.00 is a >100% match, which exists
+   * but is rare enough to bound at 300% rather than accept a typo. */
+  /* v79: "N% of the participant's deferral UP TO M%" — the plain safe-harbor
+   * phrasing, with an optional second tier "plus P% of deferrals from the next
+   * Q%". The existing readers all expect "up to THE FIRST m%" or "on the first
+   * m%"; without the word "first" the commonest match formula in the country
+   * fell through to quote-only. 446 stored rows read like this, most of them
+   * verbatim safe-harbor basic ("100% … up to 3% plus 50% … next 2%") or
+   * enhanced ("100% … up to 4%"). */
+  const shm = !mf && t.match(/(\d{1,3}(?:\.\d+)?)\s?(?:percent|%)\s*(?:of\s+)?(?:the\s+|each\s+)?(?:(?:participant'?s?|employee'?s?|eligible|salary|elective|annual|base|plan)\s+){0,3}(?:deferrals?|contributions?|compensation)?\s*up to\s+(?:the first\s+)?(\d{1,2}(?:\.\d+)?)\s?(?:percent|%)/i);
+  const shmTier2 = shm && t.slice(shm.index, shm.index + 220).match(/\bplus\s+(\d{1,3}(?:\.\d+)?)\s?(?:percent|%)[^.]{0,60}?(?:next|additional)\s+(\d{1,2}(?:\.\d+)?)\s?(?:percent|%)/i);
+  const dolRatio = !mf && !df && !cents && t.match(/\$\s?(\d?(?:\.\d{1,2})?|\d{1,2})\s*(?:for|per)\s+(?:each|every)?\s*\$\s?1(?:\.00?)?\b[^.]{0,90}?(?:up to|on the first|of the first)\s+(?:a\s+maximum\s+of\s+|the\s+first\s+)?(\d{1,2}(?:\.\d+)?)\s?(?:percent|%)/i);
   // match stated as a TABLE, not prose: "Employee Contribution | Employer
   // Match / First 2% of eligible compensation 100 % / Next 2% ... 50 %"
   // (Northrop Grumman). Table columns collapse onto one line in the
@@ -1747,6 +1765,17 @@ export function extractPlanFeatures(text) {
   } else if (cents) {
     out.match = `${+cents[1]}% of the first ${+cents[2]}% of pay`;
     out.matchText = sentence(cents.index);
+  } else if (shm && +shm[1] > 0 && +shm[1] <= 300 && +shm[2] > 0 && +shm[2] <= 25) {
+    out.match = `${+shm[1]}% of the first ${+shm[2]}% of pay`;
+    let shEnd = shm[0].length;
+    if (shmTier2 && +shmTier2[1] > 0 && +shmTier2[1] <= 300 && +shmTier2[2] > 0 && +shmTier2[2] <= 25) {
+      out.match += ` + ${+shmTier2[1]}% of the next ${+shmTier2[2]}%`;
+      shEnd = shmTier2.index + shmTier2[0].length;
+    }
+    out.matchText = sentence(shm.index, shEnd);
+  } else if (dolRatio && +dolRatio[1] > 0 && +dolRatio[1] <= 3) {
+    out.match = `${Math.round(+dolRatio[1] * 100)}% of the first ${+dolRatio[2]}% of pay`;
+    out.matchText = sentence(dolRatio.index);
   } else if (minv) {
     out.match = `${+minv[2]}% of the first ${+minv[1]}% of pay`;
     const ex2 = t.slice(minv.index, minv.index + 300).match(/greater than (\d{1,2}(?:\.\d+)?) ?(?:percent|%) and up to (\d{1,2}(?:\.\d+)?) ?(?:percent|%) [^.]{0,60}?matched (?:at (?:a rate of )?)?(\d{1,3}(?:\.\d+)?) ?(?:percent|%)/i);
