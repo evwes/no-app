@@ -3022,3 +3022,28 @@ only: v67 is re-parsing the universe right now and fixes the class.
 
 220 filings tested cumulatively. v67 re-parse (run #156) in flight;
 scripts/** frozen until it lands.
+
+## (10 fund report) #26 — 2026-08-25 02:36Z cycle — the first cycle where the fix reports itself
+
+First batch after v67 landed: 3 NAMES_MATCH, 5 ISSUER_KEPT, 1
+PRIOR_YEAR_SOURCE, 1 OCR_SOURCE. Zero WRONG_REGION, zero ISSUER_DROPPED.
+
+**ISSUER_KEPT is new this cycle, and it exists because the tester was
+reporting a fixed defect.** The 02:20Z batch returned four ISSUER_DROPPED
+verdicts; checking the stored entries showed all four now carry `iss` on
+80%+ of rows (Vanguard | Total Stock Mkt Idx Adm, Comerica Bank & Trust |
+Balanced Portfolio Class B...). The verdict was asking "does the filing
+print an issuer?" when the question is "did we keep it?". The worklist
+builder now carries `issShare` and the tester reports ISSUER_KEPT when the
+stored entry already has it. Five filings in this batch — Fidelity x11 on
+one, Vanguard x7 on another — are now confirmations that v67 works rather
+than defect reports.
+
+**A second, smaller self-correction in the same cycle:** ISSUER_KEPT rows
+still printed "issuers dropped:" underneath, which is the same stale claim
+one layer down. The label now follows the verdict and shows the stored
+share.
+
+230 filings tested cumulatively. v68 shipped (commit 64f86475) and
+re-parsing as run #157; scripts/** frozen until it lands, docs commits
+[skip ci] only.
