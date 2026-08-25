@@ -71,6 +71,33 @@ depends on must be in the repo:
 If a script fails on a missing file, check whether it is reaching into a
 scratchpad path before assuming the data is gone.
 
+## Owner directive, 2026-08-25: FIX IT YOURSELF, ALWAYS
+
+> "EVERY PROBLEM AT EVERY POINT SHOULD BE FIXED BY YOURSELF AT ALL TIMES.
+> YOU ARE A CONTINUOUSLY LEARNING/IMPROVING PROGRAM."
+
+This supersedes the earlier caution about queuing parser work for approval.
+A defect found in a cycle is a defect to FIX in that cycle — including
+`lib-4i.mjs` and a PARSER_VERSION bump. Do not park specimens and wait.
+
+What does NOT change, because it is what makes a fix a fix rather than a
+gamble:
+
+1. **The parser gate must pass** (`node scripts/parser-gate.mjs`) before any
+   parser change is pushed. If an expectation moves, the move is reviewed and
+   updated in the same commit, with the reason written down.
+2. **Verify before/after on the specimen that motivated the change**, and on
+   at least one specimen the change could plausibly break.
+3. **One re-parse in flight at a time.** Pushing `scripts/**` while a run is
+   in flight cancels it — check first, and if a run is live, land the change
+   after it (the fix is not lost, it is sequenced).
+4. **The re-parse verdict still has to be read** before mirroring: compare
+   `lineups-status.json` before/after (the like-for-like count), sample the
+   losses, and only mirror when the losses are junk or explained.
+
+Autonomy is in deciding and doing. The evidence discipline is what makes the
+autonomy worth having.
+
 ## What must not happen unattended
 
 - **No `lib-4i.mjs` or `PARSER_VERSION` changes.** A parser change mid-measurement

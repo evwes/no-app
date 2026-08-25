@@ -210,7 +210,14 @@ for (const w of batch) {
   rec.namesWithIssuerToLeft = withIssuer;
   rec.issuers = [...issuers.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8).map(([n, c]) => `${n} x${c}`);
 
+  /* v67 keeps the identity column, so "the filing prints an issuer" is no
+   * longer the same claim as "we lost it". When the stored entry already
+   * carries issuers on most rows, the filing's issuer column is EVIDENCE OF
+   * A FIX, not of a defect — report it as ISSUER_KEPT so the cadence stops
+   * re-reporting a solved problem. */
+  rec.issShare = w.issShare ?? null;
   if (found === 0) rec.verdict = "WRONG_REGION";
+  else if (withIssuer / found >= 0.6 && (w.issShare ?? 0) >= 0.5) rec.verdict = "ISSUER_KEPT";
   else if (withIssuer / found >= 0.6) rec.verdict = "ISSUER_DROPPED";
   else if (found / w.names.length < 0.4) rec.verdict = "WRONG_REGION";
   else rec.verdict = "NAMES_MATCH";

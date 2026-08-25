@@ -88,6 +88,15 @@ for (let i = 0; i < 64; i++) {
       names: funds.map((f) => String(f.name || "").trim())
         .filter((n) => n.length >= 8 && !FURNITURE.test(n))
         .sort((a, b) => b.length - a.length).slice(0, 12),
+      /* v67 stores the 4i identity column as f.iss. The tester's
+       * ISSUER_DROPPED verdict asks "does the filing print an issuer we did
+       * not keep?" — once the parser keeps it, that verdict is answered by
+       * the DATA, not by the filing. Carrying the share here lets the tester
+       * say "still dropped" only when it is actually still dropped; without
+       * it the cadence kept reporting a defect that v67 had already fixed
+       * (four filings in the 02:20Z cycle, all of which do store their
+       * issuers). */
+      issShare: funds.length ? +(funds.filter((f) => f.iss).length / funds.length).toFixed(2) : 0,
     });
   }
 }
