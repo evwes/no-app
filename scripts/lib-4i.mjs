@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 74;
+export const PARSER_VERSION = 75;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -655,6 +655,36 @@ export function parseRows(section, opts = {}) {
     // "Rollover", "From participants") leak in when a candidate region
     // sweeps a contributions schedule — bare finance nouns are never funds
     if (/^(participants?|company|employer|employee|rollovers?|forfeitures?|interest|dividends|other|contributions?|(?:from|to) participants?|other net disbursements?|net disbursements?)$/i.test(name.trim())) continue;
+    /* v75: the same schedule with a SECOND word. "Employer match", "Participant
+     * rollovers", "Employee deferrals" name where the money came from, not what
+     * it is invested in — a contributions-by-source table, swept in when a
+     * candidate region reaches it. The v44 rule above is anchored to bare
+     * nouns, so every two-word form walked past it.
+     * Measured: 183 rows across 137 entries, 83 of them confident, 45 distinct
+     * names, and reading all 45 they are sources without exception
+     * ("Participant rollovers" 49, "Employee Rollover" 14, "Employer match" 8).
+     * The second word carries the whole rule: "Employer Stock Fund" and
+     * "Company Stock" name real holdings and are untouched, as are participant
+     * LOANS, which are a filed 4i line. */
+    if (/^(?:employer|employee|participants?|company)['’]?s?\s+(?:match(?:ing)?|profit\s+sharing|rollovers?|contributions?|deferrals?|discretionary|elective|safe\s+harbor|non-?elective|forfeitures?)\b/i.test(name.trim())) { nameBuf = []; continue; }
+    /* v75: Form 5500 INSTRUCTION TEXT read as a holding. "d Total income. Add
+     * all income amounts in column (b) and enter total" was Westlie Motor's
+     * largest "fund" at $2,497,256 — the Schedule H line 2d figure. v73's
+     * laid-out-row exemption is what let these through: form lines are dot-
+     * leadered and columnar, which is exactly what that rule takes as evidence
+     * of a table row.
+     * Measured: 72 rows across 49 entries, 36 confident, 50 distinct names, and
+     * all 50 are form boilerplate. "2d Business code (see instructions) 75
+     * CHESTNUT RIDGE ROAD" is the same NAICS-code-as-dollars mechanism the
+     * ABCDEFGHI guard catches, in filings whose address block is real text so
+     * that guard never fires. No fund is named after the instructions for
+     * filling in a form. */
+    // tested against the RAW assembled cell as well as the cut name: a type
+    // cut can strip the instruction text and leave the street address behind
+    // ("2d Business code (see instructions) 75 CHESTNUT RIDGE ROAD" ->
+    // "CHESTNUT RIDGE ROAD"), which is no more a holding than the whole line
+    if (/\(see instructions?\)|\benter total\b|\badd all\b.{0,24}\bamounts?\b|\benter name and ein\b|\benter the (?:number|amount) of\b/i
+        .test(name + " " + full)) { nameBuf = []; continue; }
     // administrative-expense NOTE rows ("Payroll taxes 79,790 74,287",
     // "Occupancy", "Printing and postage") leak from two-column expense
     // schedules with the PRIOR-year figure as the line-terminal "value" —

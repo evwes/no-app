@@ -3715,6 +3715,43 @@ a class I had deliberately created, and the 24 that did not fit that story were
 the ones worth opening. A loss you can explain is not the same as a loss you
 predicted.
 
+## 2026-08-25 — v75: contribution sources and Form 5500 instruction text as holdings
+
+Two classes from one filing-test batch, both measured universe-wide first.
+
+**1. Contribution-source rows — 183 rows, 137 entries, 83 confident.** "Employer
+match", "Participant rollovers", "Employee deferrals" name where money came
+from, not what it is invested in: a contributions-by-source table swept in when
+a candidate region reaches it. The v44 rule for this was anchored to BARE nouns
+("Employer", "Rollover"), so every two-word form walked past it. All 45 distinct
+names are sources without exception. The second word carries the rule, which is
+what keeps "Employer Stock Fund" and "Company Stock" — real holdings — intact.
+
+**2. Form 5500 instruction text — 72 rows, 49 entries, 36 confident.** "d Total
+income. Add all income amounts in column (b) and enter total" was Westlie Motor
+Company's LARGEST holding at $2,497,256 — the Schedule H line 2d figure. v73's
+laid-out-row exemption is what admitted these: form lines are dot-leadered and
+columnar, which is exactly the evidence that rule takes for a table row. Another
+variant, "2d Business code (see instructions) 75 CHESTNUT RIDGE ROAD", is the
+same NAICS-code-as-dollars mechanism the ABCDEFGHI guard catches, in filings
+whose address block is real text so that guard never fires.
+
+The test runs against the RAW assembled cell as well as the cut name, because a
+type cut strips the instruction text and leaves the street address behind —
+"CHESTNUT RIDGE ROAD" is no more a holding than the whole line was. That is the
+same lesson as the ABCDEFGHI fix one cycle earlier: a guard placed after the
+name has been rewritten is judging something the filing never said.
+
+**A note on what v73 cost.** Both of these classes exist BECAUSE of v73's prose
+fix, which was itself correct and recovered six plans plus thousands of rows.
+Relaxing a guard admits everything the guard was incidentally catching, and the
+only way to find out what that was is to read the rows afterwards. Westlie
+Motor's region went 2.20 → 1.85 with the form lines gone; the rest of its
+doubling is a rounded second rendering with the plan name glued to each row,
+recorded in the gap inventory.
+
+131 cached filings: confident 40 → 51, gate 28/28.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

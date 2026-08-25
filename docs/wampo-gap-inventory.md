@@ -597,3 +597,22 @@ two renderings of the same schedule and splitting it — rather than repairing t
 row set afterwards. The reconstructions in v74 are a measured stopgap, penalised
 0.05 and gated to regions already at 1.5x assets so they cannot touch a correct
 parse.
+
+## Rounded second renderings with a plan-name prefix (measured 2026-08-25)
+
+Westlie Motor Company (20250821150052NAL0002159299001) files its schedule twice:
+once with exact values ("Vanguard Growth Index Admiral Shares $1,904,199") and
+once ROUNDED TO THOUSANDS with the plan name glued to the front of every row
+("Westlie Motor Company 401(k) Profit Sharing Plan FIMKX Fidelity Advisor
+Focused Emerging M $949,000").
+
+Neither v74 reconstruction reaches it: the names differ (plan-name prefix) and
+the values do not pair exactly (rounding). After v75 removes the form-boilerplate
+rows the region sits at ratio 1.85 rather than 2.20, so the remaining excess is
+this rounded copy.
+
+Two candidate fixes, unbuilt: (a) strip a leading sponsor/plan-name prefix from
+row names — parse4i already receives sponsorName, parseRows does not; (b) pair
+rows whose values agree to within rounding (round both to 3 significant figures
+before pairing) rather than exactly. (b) is the more general and the riskier —
+exactness is what made the v74 value-pair view safe.
