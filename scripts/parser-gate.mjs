@@ -145,6 +145,12 @@ const SPECIMENS = [
   // clean AND Vanguard Treasury / Janus Henderson stay separate rows.
   ["Janus (share count glued to the name)", "20250917145716NAL0000658547001", 544769954,
     { found: true, n: 57, sum: 541264001 }],
+  // v74: the sponsor's address block wraps across form-page lines, so the
+  // ABCDEFGHI placeholder and the value land on DIFFERENT lines and the
+  // line-level guard never saw it. "3326ABCDEFGHI c/o 160th Avenue SE …" was
+  // this plan's 5th largest holding at $623,000 — a NAICS business code.
+  ["Regency Pacific (address block as a holding)", "20251014143740NAL0004250880001", 6877199,
+    { found: true, n: 28, sum: 6786907 }],
 ];
 
 const work = mkdtempSync(path.join(tmpdir(), "gate-"));

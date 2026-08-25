@@ -507,6 +507,21 @@ export function parseRows(section, opts = {}) {
     name = name.replace(/\s*\*+\s*$/, ""); // trailing footnote markers
     // wrapped lines carry their column gaps into the assembled name
     name = name.replace(/\s{2,}/g, " ");
+    /* v74: the EFAST2 placeholder guard, applied to the ASSEMBLED NAME.
+     * The line-level test above only sees the line carrying the VALUE, and on
+     * a rendered form page the placeholder text and the number are on
+     * different lines. The sponsor's address block wraps —
+     *     738 ABCDEFGHI
+     *     c/o NE Davis St
+     *     Portland      OR  97232        624100
+     * — so the first two lines buffer as a wrapped name and "624100" becomes
+     * its value. That number is the NAICS BUSINESS CODE from box 2d, not a
+     * dollar amount (624100 = Individual and Family Services; 623000, 623110,
+     * 541330 and friends show up the same way).
+     * Measured: 411 rows across 410 entries, 390 of them CONFIDENT, and every
+     * sample is a sponsor address block. Nothing legitimate contains a run of
+     * the alphabet, so the name is enough to condemn the row. */
+    if (/ABCDEFGHI|CITYEFGHI|\bABCDE\b/.test(name + " " + (iss || ""))) { nameBuf = []; continue; }
     // "N/A" is the cost column (col d) gluing onto the name — 20k+ stored
     // names carried it ("500 Index Fund N/A"); note references are auditor
     // cross-refs, not part of the fund's name ("... (see Note 5)")

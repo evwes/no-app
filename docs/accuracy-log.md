@@ -3614,6 +3614,44 @@ collision I introduced must not change rows I never touched.
 non-confident junk entry drops a row). Gate 27/27 with the Janus specimen,
 which pins both halves: names clean AND the two money funds separate.
 
+## 2026-08-25 — v74 (3/3): 390 confident plans held a NAICS business code as a holding
+
+**What was wrong.** EFAST2 renders Form 5500 pages with "ABCDEFGHI" placeholder
+text in the empty boxes. A guard for that has existed since Honeywell's $12.5B
+plan stored ten of them, and it tests the line carrying the VALUE. But the
+sponsor's address block WRAPS, so the placeholder text and the number are on
+different lines:
+
+    738 ABCDEFGHI
+    c/o NE Davis St
+    Portland      OR  97232        624100
+
+The first two lines buffer as a wrapped name; "624100" becomes its value. That
+number is the **NAICS business code from box 2d** — 624100 is Individual and
+Family Services — not a dollar amount. The value-bearing line contains no
+placeholder text at all, so the guard never fired.
+
+**Measured: 411 rows across 410 entries, 390 of them CONFIDENT.** Every sample
+is a sponsor address block: "3326ABCDEFGHI c/o 160th Avenue SE Suite 120 …
+Bellevue $623,000" was Regency Pacific's FIFTH LARGEST holding; "1105ABCDEFGHI
+c/o N. Hollywood Way Burbank $515,100"; "c/o PRINCESSABCDEFGHI GRANGER
+$444,190". The business codes give them away — 623000, 623110, 541330, 624100
+recur across unrelated plans.
+
+**The fix.** Apply the same placeholder test to the ASSEMBLED name (and the
+issuer), not only to the value line. Nothing legitimate contains a run of the
+alphabet, so the name alone is enough to condemn the row.
+
+**Verified.** 102 cached filings, confident 28 → 38. Six rows removed across
+six filings and NOT ONE confidence loss — every removal moves its region's
+ratio toward 1.00: Regency Pacific 1.08 → 0.99, BMC Aggregates 1.02 → 1.00,
+another 1.04 → 0.99. Gate 28/28 with the Regency specimen.
+
+**The lesson.** This is the third guard this session that was testing a proxy
+for its own signal — the line, rather than the row the line becomes. A wrapped
+name is assembled from several lines, and a guard that runs before assembly can
+only ever see one of them. Where a rule condemns a ROW, test the row.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
