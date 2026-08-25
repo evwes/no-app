@@ -3977,6 +3977,53 @@ saw the copies that differed the way that attempt could detect. The thing that
 finally worked ignored the text entirely and used arithmetic the filing cannot
 fake: a schedule sums to the plan's assets exactly once.
 
+### Run #165 (v76+v77) loss triage — and a source of loss that is not the parser
+
+The verdict was confident 59,308 → 59,487 (+179), lineups +174, match +11,
+vesting +8, against 10 confidence losses. Every one was opened. **None was a
+parser regression**, but two of the three causes were new to this log:
+
+**Cause 1 — the prior-year fallback silently not applied (3 plans).** Foot And
+Ankle Specialists, Step Up On Second Street, and one other lost their `fb` year
+and their lineup together. The mechanism looked alarming: a 30-fund menu
+replaced by a 2-row class summary. It was not. Step Up's newest filing parses to
+the *same* 2 rows under `origin/main`'s parser and under v77 — byte-identical —
+so its old 32-row entry had always come from the 2021 fallback filing, and this
+run simply did not use the fallback. `fetch-4i` swallows a failed fallback
+download in a bare `catch`, so an S3 hiccup is indistinguishable from "the
+fallback parsed badly". Population check: 1,586 acks used a fallback before,
+1,472 after — but **175 of the 178 that stopped using one are upgrades**, plans
+whose newest filing now parses confidently on its own. Only 3 lost coverage.
+Self-healing (the next run retries the download), so no fix shipped; the lesson
+is that `fb`-carrying acks must be triaged against the *primary* parse, never
+against the stored entry, because the stored entry is a different filing.
+
+**Cause 2 — OCR text is not reproducible run to run (1 plan).** Respitech
+Medical lost 29 rows → 2. Locally, OCR'd from the same PDF with the same
+bad-page list, **both parser versions return the identical 16-row Vanguard menu
+at ratio 0.932**. The parse is a pure function of its input; the input changed.
+OCR-sourced lineups can therefore flip confidence with no code change at all,
+which means an OCR-sourced ack in a loss list is evidence of nothing until the
+same text is run through both versions. Recorded, not fixed — making OCR
+deterministic is a much larger piece of work than this run's budget.
+
+**Cause 3 — junk shrinking to junk (5 plans) and one honest scoring loss.**
+Five losses were class-label or FEIN/address rows going from 3–5 junk rows to
+2 junk rows, exactly what v75/v76's guards were built to do. The sixth, Unity
+Bank, is a real change of winner: the Statement of Net Assets region ("Mutual
+funds / Pooled separate accounts / Common collective trusts", ratio 1.02) now
+beats a 17-row region whose fund names are raw ticker codes ("1FSPSX",
+"1ASTLV1") at ratio 0.56. This is the known NYC-Carpenters residual. Scoped
+before deciding: across all 59,487 confident lineups, entries that are **only**
+class labels number **4, up from 1**. Three plans universe-wide is not a class,
+and the region it displaced was ticker-garbage. Left alone.
+
+**The rule this produces.** A loss list is not a list of regressions. Before
+reading any loss as one, establish which filing produced the old entry (`fb`),
+whether OCR produced either side (`ocr`), and — for anything that survives both
+— whether the shape it lost to occurs at population scale. Three of this run's
+ten losses were not even the same *document* as the entry they replaced.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
