@@ -1277,7 +1277,24 @@
     /* Widened 05:00Z after a batch showed variants the first version missed:
      * "Common Collective Trusts" (plural, no "funds"), "Collective Trust
      * Funds", "Shares of registered investment companies", "equity shares". */
-    const CLASS_ROW = /^(?:common[ /-]?)?(?:collective|commingled) (?:trust|investment)s? (?:funds?|trusts?)?$|^(?:common[ /-]?)?collective trusts?$|^(?:shares of )?registered investment compan(?:y|ies)|^(?:common|preferred|corporate) stocks?\b|^mutual funds?(?:,? at (?:fair|contract) value)?$|^(?:equity|debt|bond) shares?$|^participant[- ]directed investments?\b|^(?:pooled separate accounts?|103-12 investments?|government securities|interest[- ]bearing cash)$/i;
+    /* The trailing qualifier applies to EVERY alternative, not one of them.
+     * It was added for "Mutual funds, at fair value" and an hour later
+     * "Pooled separate accounts, at fair value" walked past — the same
+     * too-narrow-fix pattern the parser guards kept hitting. Built once, at
+     * the end, so a new class label inherits it automatically. */
+    const CLASS_ROW = new RegExp("^(?:" + [
+      "(?:common[ /-]?)?(?:collective|commingled) (?:trust|investment)s? (?:funds?|trusts?)?",
+      "(?:common[ /-]?)?collective trusts?",
+      "(?:shares of )?registered investment compan(?:y|ies)",
+      "(?:common|preferred|corporate) stocks?",
+      "mutual funds?",
+      "(?:equity|debt|bond) shares?",
+      "participant[- ]directed investments?",
+      "pooled separate accounts?",
+      "103-12 investments?",
+      "government securities",
+      "interest[- ]bearing cash",
+    ].join("|") + ")(?:\\s*,?\\s*at (?:fair|contract) value)?\\s*$", "i");
     const classRows = tab === "menu" ? list.filter((f) => CLASS_ROW.test(String(f.name || "").trim())) : [];
     const classShare = classRows.length && total
       ? classRows.reduce((a, f) => a + f.value, 0) / total : 0;

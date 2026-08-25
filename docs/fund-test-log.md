@@ -3340,3 +3340,34 @@ only the examples say whether it is what you think.
 
 330 filings tested cumulatively. Gate 20/20. v70 re-parsing as #159; v71
 committed behind it.
+
+## (10 fund report) #36 — 2026-08-25 06:06Z cycle — fixing the fix's shape, not another instance
+
+5 NAMES_MATCH, 3 PRIOR_YEAR_SOURCE, 1 ISSUER_KEPT (78% of rows: DFA x3,
+Vanguard x3, Hartford, Baird, BlackRock, JPMorgan), 1 OCR_SOURCE. The
+identity work continues to read correctly — "CuraFin | Disciplined Risk
+Balanced Fund", "Vanguard | Int-Term Bd Indx Adm".
+
+**"Pooled separate accounts, at fair value" escaped the class check** — and
+the trailing-qualifier tolerance for exactly that shape was added ONE CYCLE
+EARLIER, for "Mutual funds, at fair value". I had appended it to a single
+alternative instead of the whole set.
+
+So this cycle's fix is structural rather than another instance: the class
+vocabulary is now built as a list, with the ", at fair/contract value"
+qualifier applied ONCE to the whole alternation. Any class label added later
+inherits it. Verified both directions — every qualifier variant is caught,
+while "Mutual of America" (an insurer), "Great Gray Index 2040 R" and "Common
+Stock Fund" are correctly NOT class labels. Smoke green.
+
+This is the fourth consecutive too-narrow fix, and the first one where the
+answer was to change the SHAPE of the rule rather than add another spelling.
+The standing lesson gains a corollary: when a guard has been widened twice,
+stop widening and restructure it so widening is not needed a third time.
+
+**Noted, not fixed:** "American Funds" is still the top row of a 23-row entry
+whose other rows carry issuers correctly (78%). That looks like a section
+HEADER rather than the manager-fallback class v70/v71 handle, and one
+instance is not a measurement.
+
+340 filings tested cumulatively. v70 re-parsing as #159; v71 behind it.
