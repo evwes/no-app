@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 77;
+export const PARSER_VERSION = 78;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -2141,6 +2141,38 @@ export function extractPlanFeatures(text) {
       // "always 100% vested in ALL of their Plan accounts" (EP Energy)
       // covers employer money without naming it
       if (!/(matching|employer|company|non.?elective|profit.?sharing|plan sponsor) (?:contributions?|accounts?)|company match|all (?:of (?:their|his|her) )?(?:plan )?accounts|all contribution sources/i.test(s)) continue;
+      /* v78: vesting accelerated BY PLAN TERMINATION is not the plan's vesting
+       * schedule. Every plan must fully vest affected participants on
+       * termination or partial termination — IRC 411(d)(3) — so the auditor's
+       * sentence saying so is boilerplate, and reading it as "Immediate" states
+       * the opposite of the truth for a plan that actually has a graded
+       * schedule. 19 stored rows carry this shape.
+       * The line between the two is whether the immediate claim is CONDITIONED
+       * on that event. "In the event of a plan termination, participants become
+       * 100% vested in all employer contributions" is conditioned; "Participants
+       * are immediately vested in their contributions as well as employer
+       * contributions… upon termination of employment" is not — it states the
+       * schedule and merely mentions when accounts are paid out. Termination of
+       * EMPLOYMENT is the ordinary vesting trigger and exempts the sentence. */
+      const employmentEnd = /termination of (?:employment|service)|terminates? employment|separation from service/i.test(s);
+      const planTermCond = !employmentEnd && (
+        /(?:in the event of|upon|at|on)\s+(?:a\s+|the\s+|such\s+)?(?:partial\s+)?plan\s+termination|upon\s+termination\s+of\s+the\s+plan|the plan (?:is|was|were|be) terminated|termination or discontinuan?ce of the plan/i.test(s)
+        // the condition can follow the verb ("became 100% vested … upon
+        // termination") or open the sentence ("Upon termination, participants
+        // were immediately vested …"); "such termination" refers back to a
+        // plan-termination sentence before it
+        || /\b(?:became|become|becomes|will become|shall become|would become|shall vest|vest)\b[^.]{0,70}?\b(?:upon|at|in the event of)\s+(?:the\s+|such\s+)?(?:partial\s+)?termination\b/i.test(s)
+        || /^\s*(?:upon|at|in the event of)\s+(?:the\s+|such\s+)?(?:partial\s+)?termination\b/i.test(s));
+      if (planTermCond) continue;
+      /* …and a sentence that spells out a GRADED schedule is not describing
+       * immediate vesting, whatever else it says. "A participant is 20% vested
+       * after two years of service and is 100% vested in all accounts after six
+       * years or upon termination due to death, disability or retirement" was
+       * stored as Immediate — the IMMED pattern's "100% vested in all" arm
+       * matched the six-year end of a 2-to-6-year ladder. */
+      // no \b after the percent sign — "20% vested" has no word boundary there,
+      // which is why the first version of this let a 2-to-6-year ladder through
+      if (/\b[1-9]\d?\s?(?:%|percent\b)[^.]{0,40}?\bafter\b[^.]{0,30}?\byears?\b/i.test(s)) continue;
       if (IMMED.test(s)) {
         out.vesting = "Immediate"; out.vestingText = cap(s); break;
       }

@@ -98,8 +98,21 @@ for (const [ack, e] of Object.entries(entriesByAckCov)) {
   // narrow to ACCELERATION phrasings — a terminated plan truthfully
   // describing its immediate vesting ("Prior to the Plan's termination,
   // participants were immediately vested…") is correct extraction
-  if (f && f.vesting === "Immediate" && f.vestingText &&
-      /(?:in the event of|upon|would become|will become|shall become)[^.]{0,50}?(?:termination|discontinuation)|termination or discontinuation/i.test(f.vestingText)) {
+  /* v78: the flag used to fire on any mention of termination, so it counted
+   * the CORRECT extractions too — "Participants are immediately vested in their
+   * contributions as well as employer contributions… upon termination of
+   * employment" states the schedule and merely says when accounts are paid.
+   * Of 19 flagged rows, 8 were right. Termination of EMPLOYMENT is the ordinary
+   * vesting trigger and exempts the sentence; what condemns it is the immediate
+   * claim being CONDITIONED on the plan terminating. Same test as the extractor
+   * now applies, so a row that survives extraction is not then reported as a
+   * mismatch. */
+  const vt = f && f.vestingText ? String(f.vestingText) : "";
+  const employmentEnd = /termination of (?:employment|service)|terminates? employment|separation from service/i.test(vt);
+  if (f && f.vesting === "Immediate" && vt && !employmentEnd &&
+      (/(?:in the event of|upon|at|on)\s+(?:a\s+|the\s+|such\s+)?(?:partial\s+)?plan\s+termination|upon\s+termination\s+of\s+the\s+plan|the plan (?:is|was|were|be) terminated|termination or discontinuan?ce of the plan/i.test(vt)
+       || /\b(?:became|become|becomes|will become|shall become|would become|shall vest|vest)\b[^.]{0,70}?\b(?:upon|at|in the event of)\s+(?:the\s+|such\s+)?(?:partial\s+)?termination\b/i.test(vt)
+       || /^\s*(?:upon|at|in the event of)\s+(?:the\s+|such\s+)?(?:partial\s+)?termination\b/i.test(vt))) {
     mismatches++;
     if (mmList.length < 12) mmList.push(`${ack.slice(0, 20)}: vesting "Immediate" quotes plan-termination boilerplate`);
   }
