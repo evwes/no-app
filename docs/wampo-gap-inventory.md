@@ -635,3 +635,17 @@ whose name is address-shaped is this defect regardless of how the address reads.
 Not yet built. It needs the NAICS list (or at least the ~1,000 codes valid for
 box 2d) and a name-shape test, and it should be measured against real holdings
 that happen to be worth exactly $522,130 before shipping.
+
+## Issuer column wrapping around the fund name (seen 2026-08-25, not measured)
+
+20251014152028NAL0006620962001 stores rows like "Great Gray Trust Retirement
+Plan Moderate 2045 Fund R1, Company" — the issuer "Great Gray Trust Company"
+wraps across two lines in column (b), and the fund name from the middle line is
+assembled between its halves. The filing-batch tester scores this WRONG_REGION
+(0/6 stored names appear in the filing) because the stored string is not
+contiguous anywhere in the text.
+
+The funds are identifiable and the values are right, so this is a naming defect
+rather than a coverage one. Not yet measured universe-wide; the query to run is
+stored names where a known house name appears SPLIT around other words
+(house-first-word … house-last-word).

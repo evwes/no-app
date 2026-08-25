@@ -3820,3 +3820,48 @@ exactly such a figure before shipping.
 135 cached filings: confident 40 → 51. Gate 28/28.
 
 538 filings tested cumulatively. v74 re-parsing as #162; v75 committed [skip ci].
+
+## Report #50 — the guard that could not see its own commonest spelling
+
+Batch verdicts: NAMES_MATCH 4, PRIOR_YEAR_SOURCE 2, ISSUER_KEPT 2, OCR_SOURCE 1,
+**WRONG_REGION 1** — the first WRONG_REGION in five batches.
+
+**FEIN.** "OCEAN'S ELEVEN CASINO 401(k) PLAN PLAN FEIN#: 33- $733,380" walked
+straight past the EIN guard shipped THIS MORNING. That rule anchors on
+`\bein\b`, and in "FEIN" there is no word boundary before the "ein". Measured on
+rows v74 does not catch: **255 rows, 252 entries, 236 confident**, fabricated
+values to $4.7M — "FEIN 36-", "FEIN: 94-", "FEIN #75-", "EIN; 54-", "Plan
+No./EIN: 003/38-".
+
+**The standing rule this adds: after fixing a class, query for the variants you
+did not sample.** The same shape has now happened four times in one day —
+placeholder letters, instruction text, care-of notation, FEIN — each a different
+spelling of one defect, each found only when a filing happened to show it. A
+one-line near-miss query ("matches the concept, does NOT match my new rule")
+would have found all 255 the moment v74 shipped.
+
+**So I ran it, on the address family.** Rows whose value is NAICS-shaped and
+whose name is address-shaped, minus everything four guards already catch. **The
+answer was three.** "250 MUNOZ RIVERA AVENUE $524,150" (insurance agencies),
+"8280 WILLOW OAKS CORPORATE DRIVE SUITE 450 $541,330" (engineering services),
+one more. Added — mainly to close the family.
+
+The first version of that sweep returned **2,094 rows and every one was a real
+fund**: "State Street Target Retirement 2020", "Dodge & Cox International St",
+"State St Russ Sm Cp Val Idx Rt Acct" — all matched on the word "St". The query
+was wrong, not the data. Requiring a house NUMBER before the street suffix and
+no fund vocabulary took it from 2,094 to 3. Read the examples even when the
+thing you are reading is your own diagnostic.
+
+**The useful result: the address family is now measured CLOSED** — three
+residual rows out of 1.68M, not merely "none found today".
+
+Also seen, not yet fixed: a Great Gray filing whose ISSUER column wraps across
+two lines, so the fund name is sandwiched inside it ("Great Gray Trust
+Retirement Plan Moderate 2045 Fund R1, Company"). That is the WRONG_REGION —
+the names are unfindable in the filing text because they are not contiguous
+there. Recorded for the next cycle.
+
+140 cached filings: confident 41 → 52. Gate 28/28.
+
+548 filings tested cumulatively. v75 re-parsing as #163; v76 committed [skip ci].
