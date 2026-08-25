@@ -1263,6 +1263,26 @@
      * against a filed total, so small differences are noise and only a material
      * gap is worth a reader's attention. */
     const planAssets = plan.assetsExact && plan.assetsB ? plan.assetsB * 1e9 : null;
+    /* A filing that discloses only ASSET-CLASS totals is not a menu, and
+     * listing "Common collective trust funds — $1.2B" under a HOLDINGS
+     * heading tells a reader those are the choices. Measured 2026-08-25 on
+     * the 03:11Z test cycle: five of ten filings were this shape, each a
+     * billion-dollar plan whose whole table was four to eight class labels at
+     * coverage ratio ~1.0 — so they pass every correctness check, because the
+     * label really is printed and the class really is worth that much. The
+     * rows are kept (deleting them would discard the only detail the filing
+     * gives, and for master trusts class-level IS the filed detail — the
+     * parser gate refused a parser-side fix for exactly that reason). What
+     * changes is the claim made about them. */
+    const CLASS_ROW = /^(?:common[ /-]?)?(?:collective|commingled) (?:trust|investment) (?:funds?|trusts?)$|^registered investment compan(?:y|ies)|^(?:common|preferred|corporate) stocks?\b|^mutual funds?$|^participant[- ]directed investments?\b|^(?:pooled separate accounts?|103-12 investments?|government securities|interest[- ]bearing cash)$/i;
+    const classRows = tab === "menu" ? list.filter((f) => CLASS_ROW.test(String(f.name || "").trim())) : [];
+    const classShare = classRows.length && total
+      ? classRows.reduce((a, f) => a + f.value, 0) / total : 0;
+    const classNote = classShare >= 0.5 ? `
+    <p class="max-benefit"><strong>This filing reports asset-class totals, not individual funds.</strong>
+    ${Math.round(classShare * 100)}% of the value below sits in rows like
+    ${classRows.slice(0, 2).map((f) => `\u201c${esc(f.name)}\u201d`).join(" and ")} \u2014 categories, not choices a participant can pick.
+    The plan's actual fund lineup is not public in this filing; the schedule of assets its auditor attached goes no deeper.</p>` : "";
     const covPct = tab === "menu" && !lu.fromTrust && planAssets && total
       ? (total / planAssets) * 100 : null;
     const coverage = covPct == null || (covPct >= 95 && covPct <= 105) ? "" : `
@@ -1286,6 +1306,7 @@
       </table>
     </div>
     ${starred ? `<p class="fund-note"><strong>*Comparable fund.</strong> That holding is a collective trust or separate account — it has no ticker and no published expense ratio, because its fee is negotiated by the plan. The fund shown is its registered equivalent, so you can look up what it holds; the plan's trust class is normally <em>cheaper</em> than the retail fee shown, so read it as a ceiling, not the plan's price.</p>` : ""}
+    ${classNote}
     ${tab === "menu" && list.filter((f) => /stable value|\bgic\b/i.test(f.type || "")).length >= 5 ? `<p class="fund-note">The many <strong>Stable value / GIC</strong> rows are one menu option, itemized: plans file each piece of the stable value fund — the insurance-company contracts that wrap it and the individual securities inside its synthetic GICs (agency pools, corporate notes, asset-backed trusts). Participants choose the stable value fund as a single option; these securities are not separate choices, which is why they carry no expense ratio or ticker.</p>` : ""}
     ${tab === "menu" && list.some((f) => !fundTickerInfo(f.name, f.type) && !/company stock|employer (security|stock)|brokerage|stable value|\bgic\b/i.test((f.type || "") + " " + f.name)) ? `<p class="fund-note">Holdings with no ticker are pooled vehicles whose filed name doesn't identify a specific registered fund — naming one would be a guess.</p>` : ""}`;
   }

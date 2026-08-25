@@ -349,6 +349,26 @@ one-character tolerance (v68 candidate, with the BWXT trailing-dash strip).
 No master trust is linked, so the new frontend pointer guard does not catch
 it either; the junk renders today.
 
+**380 plans whose "holdings table" is a list of asset CLASSES, not funds
+(report #28, 2026-08-25).** Five of ten filings in one cycle were this shape —
+billion-dollar plans whose entire table is four to eight rows reading "Common
+collective trust funds" (78% of one table), "Registered investment companies,
+at fair value" (53%), "Participant-Directed Investments — Interest in..."
+(97%), "INVESTMENTS (at Fair Value)" (99%). They pass every correctness check
+we have, because the label really is printed in the filing and the class
+really is worth that much; the tester scores them NAMES_MATCH. The defect is
+the CLAIM: rendering them under a HOLDINGS heading tells a reader those are
+the choices available to a participant.
+
+Measured universe-wide: **380 plans** have class rows worth ≥50% of their
+table. A parser-side fix was written and REFUSED BY THE GATE — Verizon's and
+Sempra's master trusts legitimately file class-level detail, and deleting
+those rows would discard the only holdings information those filings give.
+So the rows stay and the claim changes: the page now says the filing reports
+asset-class totals rather than individual funds, names the classes, and says
+the fund lineup is not public in this filing. This is an honest gap in the
+FILING, not in the parse, and it is now labelled as one.
+
 ### A second kind of wrong: the numbers are right and the *statement* is not (added #13)
 
 The four cases above are wrong **values**. Report #13 found wrong **claims** —

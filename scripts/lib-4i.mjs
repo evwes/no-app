@@ -497,7 +497,10 @@ export function parseRows(section, opts = {}) {
      * plan — because the v44 rule spells "value". The stem plus one or two
      * trailing characters covers valuc/valuo/valu without matching real fund
      * names, which never open with "investments at fair". */
-    if (/^(assets[.,]?\s+)?investments?,?\s*[—–-]?\s*at (fair|contract) valu\w{0,2}\b/i.test(name.trim())) continue;
+    /* v69: also "INVESTMENTS (at Fair Value)" — the parenthesised form, which a
+     * $2.8B plan stored as 99% of its table. Parens and case vary; the phrase
+     * does not. */
+    if (/^(assets[.,]?\s+)?investments?,?\s*[—–(-]{0,2}\s*at (fair|contract) valu\w{0,2}\b/i.test(name.trim())) continue;
     // section SUBTOTALS spelled as class descriptions instead of "Total…"
     // ("Interest in common/collective trusts $4,474,697,107", "Assets Held
     // for Investment", "Employer-related investments: Employer securities")
