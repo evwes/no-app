@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 83;
+export const PARSER_VERSION = 84;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -2000,11 +2000,44 @@ export function extractPlanFeatures(text) {
     // 6th alternative: "Vesting … occurs upon the earliest of … credited
     // with one year of vesting service" (Sempra) — earliest-of lists put
     // the schedule behind an alternatives structure no other shape catches
-    const cliff = s.match(/(?:(\w{3,5}|\d)[- ]year cliff|cliff vesting[^.]{0,40}?(\w{3,5}|\d) years?|(?:(?:100|one hundred) ?(?:percent|%)|fully) vest(?:ed)?[^.]{0,80}?(?:after|upon)(?: the)?(?: complet\w+(?: of)?)? (\w{3,5}|\d) years?|0 ?(?:percent|%) vested until (\w{3,5}|\d) years|vests? (?:100|one hundred) ?(?:percent|%)[^.]{0,60}?(?:after|upon)(?: the)?(?: complet\w+(?: of)?)? (\w{3,5}|\d) years?|vest(?:ing|s)?\b[^.]{0,170}?credited with (\w{3,5}|\d) years? of (?:vesting |credited |continuous )?service)/i);
+    /* v84: a LADDER is not a cliff. The reversed-order arms added below
+     * ("are vested 100% after three years") match the first step of a
+     * multi-step sentence too — "become 50% vested … after completing one
+     * year … and 100% vested after completing two years" read as a 1-year
+     * cliff, worse than the 2-year cliff it replaced. Two DISTINCT
+     * percentages with at least one under 100 is a ladder; two 100% steps
+     * are two cliffs for two money types, which is why the test is on
+     * distinct values and not on step count. Measured: this leaves the
+     * existing cliff readings untouched and only holds the new arms back.
+     * (The 237 rows where a ladder currently reads as an N-year schedule or
+     * a cliff are a separate change — relabelling them "Graded schedule"
+     * would drop the horizon, and "6-year graded" needs the frontend
+     * considered. Recorded as a v85 candidate, not smuggled in here.) */
+    const ladderPcts = [...new Set([...s.matchAll(/(\d{1,2}|100) ?(?:percent|%)(?: vested)?[^.]{0,130}?after(?: completing| the completion of)?[^.]{0,25}?(?:\w{3,5}|\d{1,2}) years?/gi)].map((m) => +m[1]))];
+    const isLadder = ladderPcts.length >= 2 && ladderPcts.some((v) => v < 100);
+    const cliff = s.match(/(?:(\w{3,5}|\d)[- ]year cliff|cliff vesting[^.]{0,40}?(\w{3,5}|\d) years?|(?:(?:100|one hundred) ?(?:percent|%)|fully) vest(?:ed)?[^.]{0,80}?(?:after|upon)(?: the)?(?: complet\w+(?: of)?)? (\w{3,5}|\d) years?|0 ?(?:percent|%) vested until (\w{3,5}|\d) years|vests? (?:100|one hundred) ?(?:percent|%)[^.]{0,60}?(?:after|upon)(?: the)?(?: complet\w+(?: of)?)? (\w{3,5}|\d) years?|vest(?:ing|s)?\b[^.]{0,170}?credited with (\w{3,5}|\d) years? of (?:vesting |credited |continuous )?service|\bvest(?:ed|s)?\s+(?:at\s+)?(?:100|one hundred) ?(?:percent|%)[^.]{0,60}?(?:after|upon|following)(?: the)?(?: complet\w+(?: of)?)?\s+(\w{3,5}|\d)[\s(]*\d?\)?\s*years?|vesting of (?:100|one hundred) ?(?:percent|%)[^.]{0,40}?after[^.]{0,25}?(\w{3,5}|\d) years?|(?:100|one hundred) ?(?:percent|%) vesting occurr\w+[^.]{0,40}?after[^.]{0,25}?(\w{3,5}|\d)[\s(]*\d?\)?\s*years?|\b(?:fully |(?:100|one hundred) ?(?:percent|%) )vest\w*[^.]{0,110}?after (?:obtaining|completing|they complete)[^.]{0,25}?(\w{3,5}|\d) (?:or more )?years?|\bvest\w*[^.]{0,60}?(?:fully|(?:100|one hundred) ?(?:percent|%))[^.]{0,60}?after (?:obtaining|completing|they complete)[^.]{0,25}?(\w{3,5}|\d) (?:or more )?years?|\bis (?:100|one hundred) ?(?:percent|%) after[^.]{0,25}?(\w{3,5}|\d) years?)/i);
     if (graded) { out.vesting = "Graded schedule"; out.vestingText = cap(s); break; }
     if (cliff) {
-      const n = cliff[1] || cliff[2] || cliff[3] || cliff[4] || cliff[5] || cliff[6];
-      const num = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6 }[String(n).toLowerCase()] || +n;
+      // v84 added five arms with the percentage AFTER the verb ("are vested
+      // 100% after three years"); their capture groups are 7-11, and reading
+      // only 1-6 would have matched the sentence and then produced NaN
+      // groups 7-11 are the v84 reversed-order arms; on a ladder they are
+      // matching a step, not the plan's cliff, so let the sentence fall
+      // through to the graded readers instead of naming a wrong year
+      const gi = cliff.slice(1).findIndex((g) => g != null);
+      // a ladder IS a graded schedule, so say that rather than falling
+      // through to nothing: "become 50% vested … after completing one year
+      // … and 100% vested after completing two years" is graded, and the
+      // step-count detector above missed it because its window could not
+      // span the clause between the percentage and "after"
+      if (isLadder && gi >= 6) { out.vesting = "Graded schedule"; out.vestingText = cap(s); break; }
+      const n = cliff[gi + 1];
+      // ordinals too: "100% vesting is achieved after the FIFTH year of
+      // service" — 9 quotes state the year that way and captured a word the
+      // map did not know, yielding NaN. NaN was harmless (both range tests
+      // below fail) but the filing does state the number.
+      const num = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6,
+        first: 1, second: 2, third: 3, fourth: 4, fifth: 5, sixth: 6 }[String(n).toLowerCase()] || +n;
       // IRC §411(a)(2)(B) caps DC cliff vesting at 3 years — a "5-year
       // cliff" reading is a misparsed graded schedule or service reference
       // 4-6 years cannot be a cliff, but the filing DOES state when the
@@ -2334,17 +2367,37 @@ export function extractPlanFeatures(text) {
       const otherGraded = /non.?elective|profit.?sharing|discretionary|other (?:sponsor|company|employer|plan sponsor) contributions/i.test(s);
       const eitherOr = /\beither\b[^.]{0,120}?\bor\b|\bwhereby\b/i.test(s);
       const matchImmNonElecGraded = activeImm && otherGraded && !eitherOr;
+      /* v84: these four block the LABEL, not the QUOTE. v83 wrote them as
+       * bare `continue`s, which skipped the quote fallback at the bottom of
+       * the loop too — and measured over the universe that removed 195
+       * quotes of which 188 carried real schedule content ("Plan Sponsor
+       * contributions are vested 100% after three years of service"). That
+       * was a worse regression than the 4 false labels v83 fixed: the
+       * sentence is the most informative thing the filing offers about
+       * vesting, and it is exactly the sentence these guards recognise.
+       * Blocking a wrong ANSWER must never suppress the honest EVIDENCE. */
+      // WHY it was blocked decides whether the quote survives: the first
+      // three guards fire on genuine vesting sentences that merely state a
+      // service condition, so the sentence is the best evidence available
+      // and must still be quoted. The loan guard fires on text that is not
+      // about vesting at all — quoting it is the defect v82 removed, and
+      // the gate caught this reintroducing it.
+      let labelBlocked = false, blockedButQuotable = false;
       if (/(?:100|one hundred) ?(?:percent|%)[^.]{0,40}?\bafter\b[^.]{0,30}?\byears?\b/i.test(s)
           && !/regardless of (?:the )?(?:number of )?years/i.test(s)
-          && !matchImmNonElecGraded) continue;
-      if (/^[^.]{0,30}\bupon\s+(?:the\s+)?(?:completion\s+of\s+)?(?:one|two|three|four|five|six|\d)\s+years?\s+of\s+service/i.test(s)) continue;
-      if (/\bbut\b[^.]{0,60}?\bnot\b[^.]{0,40}?\bvest\w*[^.]{0,40}?\buntil\b/i.test(s)) continue;
+          && !matchImmNonElecGraded) labelBlocked = blockedButQuotable = true;
+      if (/^[^.]{0,30}\bupon\s+(?:the\s+)?(?:completion\s+of\s+)?(?:one|two|three|four|five|six|\d)\s+years?\s+of\s+service/i.test(s)) labelBlocked = blockedButQuotable = true;
+      if (/\bbut\b[^.]{0,60}?\bnot\b[^.]{0,40}?\bvest\w*[^.]{0,40}?\buntil\b/i.test(s)) labelBlocked = blockedButQuotable = true;
       // the immediate-vesting words can sit on EITHER side of "vest"
       // ("immediately vested" vs "vested … at all times"), so this test must
       // be order-independent — the first version required them after, and
       // dropped a correct Immediate whose window happened to reach a loan note
       if (/loan application|prevailing interest rates|\bborrow\b|obtain loans/i.test(s)
-          && !/(?:immediat|at all times|regardless of (?:the )?(?:number of )?years)/i.test(s)) continue;
+          && !/(?:immediat|at all times|regardless of (?:the )?(?:number of )?years)/i.test(s)) labelBlocked = true;
+      if (labelBlocked) {
+        if (blockedButQuotable && !out.vestingText && !/forfeit/i.test(s)) out.vestingText = cap(s);
+        continue;
+      }
       if (IMMED.test(s)) {
         out.vesting = "Immediate"; out.vestingText = cap(s); break;
       }

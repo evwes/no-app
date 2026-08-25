@@ -4209,6 +4209,65 @@ pins the better answer. This is the second time this cycle that writing the
 expectation down before running it surfaced something the measurement had
 missed.
 
+### v84 — the fix suppressed the evidence, and four bugs found by reading
+
+Run #168 landed v83 cleanly on labels (vesting −4 net: 13 false Immediates
+removed, ~9 replaced by a correct horizon-fallback schedule). But `vestQuote`
+fell 191, which was **not** predicted, and reading the dropped quotes showed
+**188 of 195 carried real schedule content**:
+
+> "Plan Sponsor contributions are vested 100% after three years of service."
+
+v83's guards were written as bare `continue`s, which skipped the quote fallback
+at the bottom of the loop as well as the label. That is a worse regression than
+the 4 false labels v83 fixed — the sentence is the most informative thing the
+filing offers about vesting, and it is *exactly* the sentence those guards
+recognise. **Blocking a wrong answer must never suppress the honest evidence.**
+
+The fix is not "keep every blocked quote" either: three guards fire on genuine
+vesting sentences (keep the quote), the loan guard fires on text that is not
+about vesting at all (drop it). The gate caught the first attempt reintroducing
+v82's loan quote — the `quote: null` specimen paid for itself within an hour of
+being written.
+
+**Then those 188 quotes revealed why they were never labelled**, and chasing it
+produced four distinct bugs, each found only by reading the result:
+
+1. **Reversed word order.** Every cliff arm required "100% vested … after N
+   years"; auditors write "are vested 100% after three years", "vesting of 100
+   percent after 3 years", "100% vesting occurring after two (2) years". Five
+   arms added, sized at 71 rows against the stored quotes.
+2. **The new arms' capture groups are 7-11**, and the extractor read only 1-6 —
+   it would have matched the sentence and then produced `NaN`.
+3. **`vest\w*` matches inside "in*vest*ment".** One arm was matching
+   "…in**vestment** gains and losses after completing one year" and calling it a
+   1-year cliff. A `\b` fixes it — and a "gain" I had already verified as
+   correct turned out to have been produced by that substring, correct by
+   accident.
+4. **A ladder is not a cliff.** "become 50% vested … after completing one year
+   … and 100% vested after completing two years" read as a 1-year cliff, worse
+   than the 2-year cliff it replaced. The step detector missed it because its
+   window could not span the clause between the percentage and "after". A
+   ladder — two *distinct* percentages, at least one under 100 — now labels as
+   Graded. The test is on distinct values, not step count, because two 100%
+   steps are two cliffs for two money types, not a ladder.
+
+And the loosest arm needed a fifth pass: it required no full-vesting language
+at all, so "Participants vest **40%** … after completing two years" became a
+2-year cliff. It now requires "fully" or "100%". That costs one row I had
+verified as a gain — a sentence that never claims full vesting — which is the
+right trade.
+
+**Measured, 955 filings: 0 lost, 2 gained, 4 changed, every one read against
+its filing.** Two changes fix a wrong horizon and a false Immediate; one
+converts a ladder to Graded; one converts a real cliff away from Graded.
+
+**Deliberately NOT bundled.** A sharpened ladder rule would relabel 237 more
+rows that currently read as "N-year schedule (shape not stated)" or a cliff.
+Most are genuine improvements, but "Graded schedule" *drops the horizon* a
+participant cares about, and "6-year graded" needs the frontend considered.
+Recorded as a v85 candidate rather than smuggled into a regression fix.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
