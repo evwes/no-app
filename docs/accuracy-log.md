@@ -3036,6 +3036,23 @@ fund name.
 
 Gate 20/20 green with zero expectation changes.
 
+**Second v69 fix, found in the same cycle — Honeywell's $12.5B plan showed
+the BLANK FORM.** Its stored confident lineup was ten rows of Form 5500
+template placeholder text: "Charlotte NC 28202ABCDE CITYEFGHI ABCDEFGHI AB,
+ST" at $12,345,678,901 (99% of the table), "S. Mint ABCDEFGHI 123456789
+ABCDEFGHI ABCDEFGHI", "BENEFIT PLAN REPORTING". Every filing embeds the empty
+form pages, which are pre-printed with sample text and ascending digit runs
+in the value boxes — the standing trap list has warned that the form's
+QUESTION text is never evidence, and this is the same trap one level deeper:
+the form's SAMPLE ANSWERS parse as data. The existing `value >= 1e11` cap was
+built for exactly this class but sits above the placeholders that matter
+(1.2e10). Rows are now dropped on either half of the signature — an alphabet
+run in the text, or a value that is literally 12345 / 123456789 /
+1234567890(1)(2) — which also collapses the region's score so a real schedule
+can win. Note the v67 trust-pointer shape guard did NOT cover this one: it
+requires <=8 rows and Honeywell has 10, which is the limit of a shape rule
+and the reason the vocabulary fix is the right layer.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

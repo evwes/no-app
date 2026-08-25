@@ -248,6 +248,20 @@ export function parseRows(section, opts = {}) {
     // poisoned every candidate region containing it (ClinicalMind's merged
     // cluster summed to $1.6 QUADRILLION and the real menu could never win)
     if (value >= 1e11) { nameBuf = []; continue; }
+    /* v69: BLANK-FORM PLACEHOLDERS. Every filing embeds the empty Form 5500
+     * pages, which are pre-printed with sample text — "ABCDEFGHI ABCDEFGHI
+     * AB, ST", "CITYEFGHI", and ascending digit runs (123456789,
+     * 12345678901) in the value boxes. Honeywell's $12.5B plan stored ten of
+     * these as a CONFIDENT lineup, top "holding" $12,345,678,901 at 99% of
+     * the table: "Charlotte NC 28202ABCDE CITYEFGHI ABCDEFGHI AB, ST". The
+     * existing >=1e11 cap was built for this class but sits above the
+     * placeholders that matter. Both halves are unmistakable — no fund name
+     * contains a run of the alphabet, and no holding is worth exactly
+     * 1234567890 — so match either and drop the row, which also collapses
+     * the region's score so a real schedule can win. */
+    if (/ABCDEFGHI|CITYEFGHI|\bABCDE\b/.test(t) ||
+        /^1234567890?1?2?$/.test(String(value)) || /^123456789$/.test(String(value)) ||
+        /^12345$/.test(String(value))) { nameBuf = []; continue; }
     // prose sentences that happen to end in a number are not holdings.
     // Spaced dot-leaders (". . . .", the Costco class) are typography, not
     // words — counting them as words made every leadered holding without a
