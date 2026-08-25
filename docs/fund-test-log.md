@@ -3119,3 +3119,31 @@ Two parser fixes also landed in v69 from this cycle: "INVESTMENTS (at Fair
 Value)" (the parenthesised statement row) now matches the v44 guard.
 
 260 filings tested cumulatively. Gate 20/20 green; smoke green.
+
+## (10 fund report) #29 — 2026-08-25 03:27Z cycle — the quiet batch, checked properly
+
+8 NAMES_MATCH, 2 OCR_SOURCE. Nothing flagged — so, per report #28, I checked
+what the rows ARE rather than trusting the clean sheet:
+
+    n= 9 class%= 1  "Investments in Master Trust"        (x3, trust pointers)
+    n= 9 class%=68  "Mutual funds"                       <- class table
+    n= 4 class%=47  "(a) Investments using NAV (CCT funds)"
+    n=15 class%= 0  "Balance Forward from Page 12"       <- REAL DEFECT
+    n=13 class%= 0  "Multi-strategy funds"
+
+**"Balance Forward from Page 12" was a $0.5B plan's top holding.** The v44
+carry-forward guard anchored at the end of the name, so the page reference
+kept the row alive — and since the same-name dedup SUMS distinct values,
+several per-page carry-forwards compound into one large fake fund. Fixed in
+v69; "Forward Air Corporation Common Stock" verified still parsing. Gate
+20/20.
+
+The two class-label rows are the report #28 family: the frontend now labels
+those tables as asset-class totals rather than a menu, and the gate refused a
+parser-side deletion because master trusts legitimately file class detail.
+The three "Investments in Master Trust" tables are trust pointers already
+covered by the v67 shape guard.
+
+270 filings tested cumulatively. This cycle is the argument for the #28
+lesson: a batch with zero flagged verdicts still contained a defect that had
+been sitting in the largest row of a half-billion-dollar plan.

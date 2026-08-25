@@ -407,7 +407,12 @@ export function parseRows(section, opts = {}) {
     // page carry-forward subtotals ("Forward  $21,786,094  $23,237,830" at
     // the top of every continuation page) — the same-name dedup SUMS the
     // distinct per-page values into a fake nine-figure "fund"
-    if (/^(balance |carried |brought )?forwards?$/i.test(name.trim())) continue;
+    /* v69: the same carry-forward, with the page reference still attached.
+     * The v44 rule anchored at the end of the name, so "Balance Forward from
+     * Page 12" survived and became a $0.5B plan's TOP holding — and because
+     * the same-name dedup SUMS distinct per-page values, several of them
+     * compound into one large fake fund. Allow the trailing reference. */
+    if (/^(balance |carried |brought )?forwards?(\s+(from|to)\b.*)?$/i.test(name.trim())) { nameBuf = []; continue; }
     /* v68: AUDITOR LETTERHEAD. The page carrying the "Schedule H, Line 4i"
      * TITLE is often the audit firm's report page, and its letterhead parses
      * as holdings — Global Tax Management stored "Maillie LLP | maillie.com

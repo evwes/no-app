@@ -3053,6 +3053,27 @@ can win. Note the v67 trust-pointer shape guard did NOT cover this one: it
 requires <=8 rows and Honeywell has 10, which is the limit of a shape rule
 and the reason the vocabulary fix is the right layer.
 
+## 2026-08-25 — v69 (3/3): "Balance Forward from Page 12" was a $0.5B plan's largest holding
+
+Found by the 03:27Z cycle applying report #28's lesson — that a quiet
+NAMES_MATCH batch still deserves a look at WHAT the rows are. The v44
+carry-forward guard was anchored at the end of the name
+(`^(balance |carried |brought )?forwards?$`), so the page reference kept the
+row alive. It matters more than one bad label: the same-name dedup SUMS
+distinct values, so several per-page carry-forwards compound into a single
+large fake fund. The guard now allows a trailing "from/to ..." reference.
+
+Verified that "Forward Air Corporation Common Stock" — a real company whose
+name begins with the guard word — still parses. Gate 20/20 green.
+
+Two more shapes were seen in the same batch and are NOT yet fixed, recorded
+so they are not lost: "(a) Investments using NAV (CCT funds)" (a form-label
+prefix on a note row) and "Multi-strategy funds" (an asset-class label
+outside the current class vocabulary). Both are the class-label family from
+report #28, which the frontend now labels rather than the parser deleting —
+the gate refused a parser-side fix for that family, and these two do not
+change that answer.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
