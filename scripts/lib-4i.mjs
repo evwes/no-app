@@ -319,8 +319,26 @@ export function parseRows(section, opts = {}) {
     }
     let name;
     let iss = null;
-    if (dClean && dClean.split(/\s+/).length >= 2 &&
-        dClean.replace(/[^a-z]/gi, "").length >= 8 && !typeOnly(dClean)) {
+    /* v70: the 8-LETTER FLOOR was silently renaming 12,850 rows after the
+     * manager. Great Gray files a textbook two-column schedule —
+     *   "Great Gray  |  Index 2040 R  |  **  |  12,945,215"
+     * — but "Index 2040 R" carries only six letters, so the description was
+     * rejected and the row fell back to the identity column: the fund became
+     * "Great Gray", and so did the twenty other vintages beside it. Measured
+     * universe-wide: 12,850 rows across 5,392 entries (8.3%) are named
+     * nothing but a manager — Vanguard 1,928, Fidelity 1,827, American Funds
+     * 1,342. A target-date vintage is exactly the kind of real fund whose
+     * name is mostly digits, so the floor was excluding the names it should
+     * have been protecting. When the identity column is SHORT (<=3 words,
+     * i.e. a house name rather than a fund name) a description of four-plus
+     * letters that carries a digit or a second word is the product, and the
+     * house belongs in `iss` where v67 put it. */
+    const shortIdentity = nameCol && nameCol.trim().split(/\s+/).length <= 3;
+    const dLetters = dClean.replace(/[^a-z]/gi, "").length;
+    const dUsable = dClean && !typeOnly(dClean) &&
+      (dLetters >= 8 ? dClean.split(/\s+/).length >= 2
+        : shortIdentity && dLetters >= 4 && (/\d/.test(dClean) || dClean.split(/\s+/).length >= 2));
+    if (dUsable) {
       name = dClean;
       /* v67: KEEP the identity column instead of discarding it. This branch
        * is exactly where "Vanguard | Institutional 500 Index Trust D" lost

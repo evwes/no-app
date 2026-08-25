@@ -3150,6 +3150,51 @@ specimen that prompted it. Counting a suspected pattern across 1.6M rows
 found two defect classes that no single filing would have revealed, and
 disproved the one I set out to fix.
 
+## 2026-08-25 — v70: an 8-letter floor renamed 12,850 holdings after their manager
+
+The largest single naming defect found since the identity column itself, and
+found by following report #31's rule: a second bare-manager row appeared
+("Great Gray" as a 25-row entry's top holding), so I measured the pattern
+before touching it.
+
+    EXACT bare-manager names   12,850 rows / 1,638,473  (0.78%)
+    entries affected            5,392 / 64,605          (8.3%)
+    Vanguard 1,928 · Fidelity 1,827 · American Funds 1,342 · BlackRock 492 ·
+    PIMCO 476 · JP Morgan 436 · Invesco 420 · John Hancock 385
+
+**A first measurement was contaminated and had to be thrown away.** It
+normalized names by stripping trailing "Fund"/"Trust" before comparing, which
+made real American Funds products — "American Balanced Fund" (646), "New
+World Fund" (553), "New Perspective Fund" (479) — look like bare manager
+names. Re-measured with exact comparison; those disappeared, which is how I
+know the remaining 12,850 are real.
+
+**Then I read the filing rather than inferring.** Great Gray files a textbook
+two-column schedule:
+
+    Great Gray   |   Index 2040 R   |   **   |   12,945,215
+    Great Gray   |   Index 2035 R   |   **   |    6,829,742
+
+"Index 2040 R" carries six letters. The description column was required to
+have EIGHT before it could be preferred, so it was rejected and the row fell
+back to the identity column — the fund became "Great Gray", and so did every
+vintage beside it. The floor was excluding precisely the names it should have
+protected: a target-date vintage is mostly digits by nature.
+
+**The change.** When the identity column is SHORT (≤3 words — a house name,
+not a fund name), a description of four-plus letters carrying a digit or a
+second word is the product, and the house goes to `iss` where v67 puts it.
+The 8-letter rule still governs everything else. Verified in one pass:
+"Great Gray | Index 2040 R", "Blackrock | U.S. Debt Index 1", while a
+type-only description ("Common Collective Trust") is still correctly
+rejected. Gate 20/20.
+
+**Why this sat undetected.** Every check the system has was satisfied: the
+name is really printed in the filing, the value is right, the coverage ratio
+is right, and the tester scores NAMES_MATCH because "Great Gray" does appear
+on that line. Only asking "is this row a FUND?" surfaces it — the question
+report #28 added, now paying for itself twice.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

@@ -3213,3 +3213,34 @@ measurement says it is rare, and merging letter fragments risks damaging real
 names ("Class A", "Fund I", "TR B").
 
 290 filings tested cumulatively. Gate 20/20.
+
+## (10 fund report) #32 — 2026-08-25 04:35Z cycle — 12,850 holdings named after their manager
+
+8 NAMES_MATCH, 1 OCR_SOURCE, 1 PRIOR_YEAR_SOURCE. No flagged verdicts — and
+the row-quality check found the biggest naming defect since the identity
+column itself.
+
+"Great Gray" appeared as a 25-row entry's TOP holding: the second instance of
+the bare-manager class first seen at 04:00Z. Per report #31, I measured
+before fixing — and the first measurement was contaminated (it stripped
+trailing "Fund", making real American Funds products look like manager
+names). Re-measured exactly:
+
+    12,850 rows / 1,638,473 named nothing but a manager
+     5,392 entries affected (8.3% of all entries)
+     Vanguard 1,928 · Fidelity 1,827 · American Funds 1,342 · BlackRock 492
+
+Then read the filing: `Great Gray | Index 2040 R | ** | 12,945,215`. The
+description column needed EIGHT letters to be preferred; "Index 2040 R" has
+six. So it was rejected, the row fell back to the identity column, and every
+target-date vintage in that plan became "Great Gray". The floor was
+excluding exactly the names it should protect — a vintage is mostly digits.
+
+Fixed as v70: when the identity column is ≤3 words (a house name), a
+description with four-plus letters plus a digit or a second word is the
+product. Verified: "Great Gray | Index 2040 R", "Blackrock | U.S. Debt Index
+1", type-only descriptions still rejected. Gate 20/20.
+
+300 filings tested cumulatively. Every check the system had was satisfied by
+these rows — name printed, value right, ratio right, NAMES_MATCH. Only "is
+this a FUND?" found it.
