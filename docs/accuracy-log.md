@@ -3247,6 +3247,52 @@ has now paid twice in one night, and differently each time: on v68 it caught
 a regression hiding under a gain; on v69 it caught a GAIN hiding under an
 apparent loss, and turned it into another fix.
 
+## 2026-08-25 — v70: the headline fix worked, and it cost five real menus. NOT MIRRORED.
+
+Run #159. Like-for-like: confident 59,085 -> 59,093 (+8; 17 gained, 9 lost).
+
+**The headline fix is confirmed at scale.** Rows named after their manager
+fell from **12,850 to 3,282**, and the plan that motivated it now reads what
+its filing says:
+
+    Great Gray | Index 2040 R      (32 rows, confident)
+    Great Gray | Index 2050 R
+    Great Gray | Index 2045 R
+
+The residual 3,282 is the heterogeneous class measured in report #37 and
+deliberately left alone.
+
+**But the loss review does not clear the mirror bar, so v70 was NOT
+mirrored.** Of nine losses, about five are real menus:
+
+    "Fidelity Contra Fund K"            30 rows r=1.00 -> "Party in interest" r=1.99
+    "Schwab S&P 500 Index Fund"         27 rows r=1.00 -> "Indicates party-in-interest" r=1.99
+    "Target Retirement 2045 Inv"        26 rows      -> "Mutual funds", 4 rows
+    "John Hancock Disciplined Value R6" 11 rows      -> "Fidelity", 8 rows
+
+**The mechanism is one this project already learned once.** Removing junk
+rows from a GOOD region lowers that region's score, and a junk region wins
+the comparison instead. CLAUDE.md records the identical failure at v46:
+"junk-row removal promoted an OCR statement region into the confidence band".
+A cleanup that is correct row-by-row can still be wrong region-by-region.
+Every junk-removal version from here on has to be read with that in mind —
+the metric to watch is not how much junk left, but whether the RIGHT REGION
+still wins.
+
+**Why v71 was shipped anyway.** Two of the four flipped to a region led by a
+party-in-interest FOOTNOTE, and v71's new footnote guard removes exactly
+those rows, which should collapse those regions' scores and hand the menus
+back. That is a prediction, not a result: these four filings are OCR-sourced
+and cannot be reproduced locally (pdftotext returns nothing usable), so the
+only available check is v71's own verdict.
+
+**What was NOT done, deliberately.** v70 was not reverted — the name fix is
+large, real, and verified. The proper repair is at region SCORING, so that
+cleaning a region does not cost it the comparison, and that needs a
+measurement rather than a 07:00 guess. Holding the mirror is the honest
+middle: the improvement stays in the branch, the live site keeps v69, and
+nobody sees a page lose its menu while this is worked out.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

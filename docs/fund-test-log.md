@@ -3406,3 +3406,31 @@ only-fixes would have shipped at least two deletions of real holdings.
 
 350 filings tested cumulatively. v70 re-parsing as #159 (~70 min in); v71
 committed behind it.
+
+## (10 fund report) #38 — 2026-08-25 07:00Z cycle — v70's verdict: the fix worked, and I am not mirroring it
+
+Run #159 landed. confident 59,085 -> 59,093 (+8; 17 gained, 9 lost).
+
+**Headline fix confirmed:** manager-named rows 12,850 -> 3,282, and the Great
+Gray plan now reads "Great Gray | Index 2040 R" across 32 confident rows.
+
+**Five of the nine losses are real menus** — Fidelity Contra Fund K (30 rows),
+Schwab S&P 500 (27), Target Retirement 2045 (26), John Hancock Disciplined
+Value R6 (11). Two flipped to regions led by a party-in-interest FOOTNOTE and
+their ratios doubled to 1.99.
+
+The mechanism is in CLAUDE.md already, from v46: **removing junk from a good
+region lowers its score, and a junk region wins instead.** Correct row-by-row,
+wrong region-by-region. That is now the thing to watch on every junk-removal
+version — not how much junk left, but whether the right region still wins.
+
+**v70 is NOT mirrored.** The live site keeps v69 until the verdict is clean.
+v71 shipped instead (run #160): its footnote guard removes exactly the rows
+leading two of those junk regions, which should collapse their scores. That
+is a prediction — these four filings are OCR-sourced and cannot be reproduced
+locally, so v71's verdict is the only available test.
+
+Not reverted, because the name fix is large and real. The proper repair is at
+region SCORING and needs a measurement, not a 07:00 guess.
+
+360 filings tested cumulatively.
