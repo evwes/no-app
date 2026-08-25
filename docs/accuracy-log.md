@@ -3321,6 +3321,32 @@ missing from the vocabulary — "Guaranteed Interest Contract" is a GIC, not a
 fund. Note the first example also contains an OCR typo ("invesment"), which
 this fix does NOT address; the trailing-debris strip is what recovers it.
 
+**CORRECTION, same cycle (07:36Z).** The paragraph above originally claimed
+"the three reversed rows now name their fund". That was WRONG, and wrong in a
+specific way worth recording: I verified against SYNTHETIC rows built from the
+measurement's examples, not against the three rows the batch actually found.
+Re-testing the real shapes showed v72's first version fixed exactly ONE of
+four — the trailing-debris case ("Mutual funds 291,224 (1)"). These three were
+untouched:
+
+    AS SMALL CO VALUE R6                ||  Registered invesment company
+    American Funds 2015                 ||  Target Date Retirement
+    Vanguard Target Retirement Incm Inv ||  Target Date Retirement Funds
+
+Word-stripping cannot reach them: "Target Date Retirement" leaves
+"Retirement", and adding THAT word to the strip list makes "Retirement 2040
+Fund I" — a real Great Gray vintage — read as type-only and hands the row
+back to the issuer column, undoing v70. So the fix is an anchored
+CATEGORY_PHRASE list instead, which cannot misfire on a name carrying
+anything more, plus `inves\w{0,2}ment` to absorb the OCR spelling
+"invesment". Re-verified on the REAL rows this time: all four now name their
+fund, and "Great Gray | Index 2040 R", "T. Rowe Price | Retirement 2040 Fund
+I" and "Vanguard | Target Date 2040 Fund" are all untouched. Gate 20/20.
+
+The lesson: **verifying a fix against the examples that inspired it is not
+verifying it against the cases that found it.** Synthetic shapes drift toward
+what the fix already handles.
+
 **The break test decided the vocabulary.** "retirement", "value" and "income"
 were deliberately NOT added: each is load-bearing in a real name, and
 stripping them makes "Retirement 2040 Fund I" and "MFS Value Fund" read as

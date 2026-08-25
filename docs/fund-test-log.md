@@ -3457,6 +3457,15 @@ Fixed as v72, two causes: a trailing value or footnote ("Mutual funds 291,224
 phrases were missing from the vocabulary ("Guaranteed Interest Contract" is a
 GIC).
 
+**CORRECTION (same cycle):** the claim above that the fix handled these three
+rows was wrong. I verified against synthetic shapes from the measurement's
+examples, not against the rows the batch actually found — v72's first version
+fixed only the trailing-debris case. Word-stripping cannot reach "Target Date
+Retirement" without also breaking "Retirement 2040 Fund I", so an anchored
+CATEGORY_PHRASE list was added instead (plus OCR-tolerant "invesment").
+Re-verified on the real rows: all four now name their fund; Great Gray,
+T. Rowe Price and Vanguard target-date names untouched.
+
 **The break test picked the vocabulary.** "retirement", "value" and "income"
 were left OUT on purpose: strip them and "Retirement 2040 Fund I" and "MFS
 Value Fund" read as type-only, which would hand those rows back to the issuer

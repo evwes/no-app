@@ -110,6 +110,14 @@ function cleanDesc(desc) {
 
 /* True when a description column only states the investment TYPE ("Registered
  * Investment Company", "Common/Collective Trust") rather than naming a fund. */
+/* Whole-phrase categories. Word-stripping cannot reach these: "Target Date
+ * Retirement" leaves "Retirement", and adding that word to the strip list
+ * would make "Retirement 2040 Fund I" — a real Great Gray vintage — read as
+ * type-only and hand the row back to the issuer column. An anchored phrase
+ * list cannot do that, because a real fund name carries something more.
+ * "inves\w{0,2}ment" absorbs the OCR spelling "invesment". */
+const CATEGORY_PHRASE = /^(?:target[- ]date(?: retirement)?(?: funds?)?|retirement (?:date )?funds?|registered inves\w{0,2}ments? compan(?:y|ies)|(?:common[\/ ]?)?collective trust funds?|separate accounts?|group annuity contracts?|guaranteed (?:interest|investment) contracts?|insurance company (?:general|pooled separate) accounts?)$/i;
+
 function typeOnly(desc) {
   /* v72: a trailing VALUE or footnote marker defeats the type test. Filings
    * print "Mutual funds   291,224 (1)" in the description column, and those
@@ -118,6 +126,7 @@ function typeOnly(desc) {
    * to the issuer field. Measured: 2,174 rows have the product in `iss` and a
    * type in the name. */
   let r = String(desc).replace(/\s+[\d,]{3,}(?:\.\d+)?\s*(?:\(\d+\))?\s*$/, "").trim();
+  if (CATEGORY_PHRASE.test(r)) return true;
   for (const [re] of TYPE_PATTERNS) r = r.replace(re, " ");
   /* "guaranteed", "registered", "pooled", "separate", "collective",
    * "commingled", "insurance", "mutual", "stable" are TYPE words, never a
