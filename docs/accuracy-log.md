@@ -2999,6 +2999,43 @@ v67 issuers. Parser gate 20/20 green — the 19 existing specimens unchanged,
 zero expectation edits, plus Old Republic added so the filler class cannot
 regress.
 
+## 2026-08-25 — v69: MetLife's $8.3B plan wore its maturity dates as prefixes
+
+**What was wrong.** Every one of the 58 holdings in the MetLife 401(k) plan
+was stored with its maturity date glued to the FRONT of the name:
+"01-29-2031 BRITISH COLUMBIA(PROVINCE OF)CANADA 1.3% 01-29-2031". Found by
+the 02:53Z filing-test cycle as a WRONG_REGION (0/12 names findable — the
+names cannot be found in the filing because the filing never prints them
+that way).
+
+**Why.** Trustee-generated schedules often print columns (b) and (c) as the
+SAME text, and this security's own name contains a wide internal gap:
+
+    BRITISH COLUMBIA(PROVINCE OF)CANADA 1.3%    01-29-2031    <same again>    ****    165
+
+`splitNameDesc` splits on 3+ spaces, so it cut mid-name: nameCol =
+"...CANADA 1.3%", descCol = "01-29-2031 ...CANADA 1.3% 01-29-2031". The
+description was letter-rich enough to be preferred, and its leading date
+fragment became the start of the fund's name.
+
+**The change.** When the description merely REPEATS the identity, it carries
+nothing the identity lacks, so the identity wins. Plus a backstop that strips
+a leading bare date from any assembled name.
+
+**The self-correction, and why the gate exists.** The first version tested
+plain containment — "does the description contain the identity?" — which is
+the ordinary and CORRECT layout ("American Funds | Growth Fund of America
+R6"), where the description is the informative half. The parser gate caught
+it immediately: Plexsys collapsed 32 rows to 3 bare manager names, and Power
+Design 27 to 15 (same sum, which is the signature of a dedup collapse rather
+than a parse failure). The rule is now narrow: remove the identity from the
+description and require that fewer than four LETTERS remain — dates and
+punctuation do not count as information. Verified both layouts in one pass:
+the MetLife row loses its date prefix, the American Funds row keeps its full
+fund name.
+
+Gate 20/20 green with zero expectation changes.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

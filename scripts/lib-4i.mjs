@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 68;
+export const PARSER_VERSION = 69;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -270,7 +270,32 @@ export function parseRows(section, opts = {}) {
 
     // Prefer the description column when it names the fund; many filings put
     // the manager in the issuer column and the actual fund in the description.
-    const dClean = cleanDesc(descCol);
+    let dClean = cleanDesc(descCol);
+    /* v69: DUPLICATED IDENTITY COLUMN. Trustee-generated schedules often print
+     * (b) and (c) as the SAME text, and when the security's own name contains a
+     * wide gap the row splits mid-name:
+     *   "BRITISH COLUMBIA(PROVINCE OF)CANADA 1.3%    01-29-2031    <same again>"
+     * splitNameDesc then hands back nameCol = "...1.3%" and descCol =
+     * "01-29-2031 ...1.3% 01-29-2031", which is letter-rich enough to be
+     * preferred — so MetLife's $8.3B plan stored 58 holdings each wearing its
+     * maturity date as a PREFIX ("01-29-2031 BRITISH COLUMBIA..."). A
+     * description that merely repeats the identity carries no information the
+     * identity lacks, so the identity wins and the glue never happens. */
+    if (dClean && nameCol && nameCol.length >= 12) {
+      const a = dClean.toLowerCase().replace(/\s+/g, " ");
+      const b = nameCol.toLowerCase().replace(/\s+/g, " ");
+      /* The test is NOT "does the description contain the identity" — that is
+       * the ordinary and correct "American Funds | Growth Fund of America R6"
+       * layout, where the description is the informative half and must win.
+       * (The first version of this check used containment and collapsed
+       * Plexsys's menu from 32 rows to 3 manager names; the gate caught it.)
+       * The duplicate case is narrower: removing the identity from the
+       * description leaves no WORDS behind, only dates and punctuation. */
+      if (a.includes(b)) {
+        const residue = a.split(b).join(" ").replace(/[^a-z]/g, "");
+        if (residue.length < 4) dClean = "";
+      }
+    }
     let name;
     let iss = null;
     if (dClean && dClean.split(/\s+/).length >= 2 &&
@@ -333,6 +358,10 @@ export function parseRows(section, opts = {}) {
     // the component rows above them; "Page subtotal" survives arithmetic
     // detection when the page holds skipped rows (loans)
     if (/\btotal\s*$/i.test(name) || /^page (sub)?totals?\b/i.test(name.trim())) { nameBuf = []; continue; }
+    /* v69: a leading bare maturity date is column glue, never the start of a
+     * security's name ("01-29-2031 BRITISH COLUMBIA..."). Backstop for the
+     * duplicated-column fix above, since other layouts reach the same shape. */
+    name = name.replace(/^(?:\d{1,2}[-\/]\d{1,2}[-\/]\d{2,4}|\d{4}-\d{2}-\d{2})\s+(?=\S)/, "");
     name = name.replace(/\s*\*+\s*$/, ""); // trailing footnote markers
     // wrapped lines carry their column gaps into the assembled name
     name = name.replace(/\s{2,}/g, " ");
