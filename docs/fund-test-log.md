@@ -3742,3 +3742,46 @@ deliberately created; the 24 that did not fit that story were the ones to open.
 A loss you can explain is not the same as a loss you predicted.
 
 518 filings tested cumulatively. v74 shipped as run #162.
+
+## Report #48 — two classes v73 created, both found by reading rows
+
+Batch verdicts: NAMES_MATCH 4, OCR_SOURCE 2, ISSUER_KEPT 2, PRIOR_YEAR_SOURCE 2.
+No defect verdicts, fifth cycle running. Two of the ten entries carried classes
+v74 already fixes and is re-parsing now ("1743ABCDEFGHI c/o First Ave…
+$238,210"; "Plan Sponsor EIN: 33- $594,844") — confirmation the in-flight run is
+aimed at real damage.
+
+Two NEW classes, both measured before touching code:
+
+- **Contribution sources as holdings** — 183 rows, 137 entries, **83
+  confident**. "Employer match", "Participant rollovers", "Employee deferrals":
+  a contributions-by-source table. The v44 rule for this was anchored to BARE
+  nouns, so every two-word form walked past it. All 45 distinct names are
+  sources. "Employer Stock Fund" and "Company Stock" stay — the second word is
+  the whole rule.
+- **Form 5500 instruction text** — 72 rows, 49 entries, **36 confident**. "d
+  Total income. Add all income amounts in column (b) and enter total" was
+  Westlie Motor Company's LARGEST holding at $2,497,256. Also "2d Business code
+  (see instructions) 75 CHESTNUT RIDGE ROAD" — the NAICS-code-as-dollars
+  mechanism again, in filings whose address block is real text so the ABCDEFGHI
+  guard cannot see it.
+
+**Both classes exist because of v73.** Its laid-out-row exemption was correct —
+it recovered six plans and thousands of rows — but form lines are dot-leadered
+and columnar, which is precisely the evidence that rule takes for a table row.
+Relaxing a guard admits everything it was incidentally catching, and the only
+way to learn what that was is to read the rows afterwards.
+
+The instruction-text test runs against the RAW assembled cell as well as the cut
+name: a type cut strips the boilerplate and leaves "CHESTNUT RIDGE ROAD", which
+is no more a holding than the whole line. Same lesson as the ABCDEFGHI fix one
+cycle earlier — a guard placed after the name has been rewritten is judging
+something the filing never said.
+
+Westlie Motor's region moved 2.20 → 1.85 with the form lines gone. The rest of
+its doubling is a rounded second rendering with the plan name glued to each row;
+recorded in the gap inventory with two candidate fixes.
+
+131 cached filings: confident 40 → 51. Gate 28/28.
+
+528 filings tested cumulatively. v74 re-parsing as #162; v75 committed [skip ci].

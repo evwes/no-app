@@ -17,5 +17,6 @@
   "v72": "landed in the branch as part of #160/#161 lineage; superseded by v73",
   "v73": "LANDED as #161 and verdict READ: net vs main +143 confident (150 lost / 293 gained). 126 losses were the intended house-page demotions; 24 were real menus doubled to ratio 1.86-2.20 by v73's prose fix letting a second rendering parse. NOT mirrored.",
   "v74": "SHIPPED as #162 in four parts. EIN digits as dollars (773 rows/679 confident); fee+expense rows; suffix subtotals (exact equality); share-count strip + issuer split; ABCDEFGHI guard on the ASSEMBLED name (411 rows/390 confident holding a NAICS business code); double-render repairs (TOTAL-debris, punctuation dedup, parties-in-interest plural, name/value reconstruction views). 12 of v73's 24 casualties recovered. Gate 28/28.",
-  "nextRunNote": "After #161's verdict is read and (if clean) mirrored, ship v74 by appending a dated line to scripts/.kick and pushing WITHOUT [skip ci]. Confirm the run exists within a minute."
+  "nextRunNote": "After #161's verdict is read and (if clean) mirrored, ship v74 by appending a dated line to scripts/.kick and pushing WITHOUT [skip ci]. Confirm the run exists within a minute.",
+  "v75": "COMMITTED [skip ci], gate 28/28, NOT yet run \u2014 ships after #162. Contribution-source rows (183 rows/137 entries/83 confident) and Form 5500 instruction text (72 rows/49 entries/36 confident), both classes admitted by v73's laid-out-row exemption."
 }
