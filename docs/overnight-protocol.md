@@ -140,3 +140,25 @@ Per-cycle narrative goes in `docs/fund-test-log.md`.
 - **Sampling frame decides the answer.** An assets-ranked queue gave 46% where a
   random sample gave 85%, because large plans fail a different way. State the
   frame with the number.
+
+## Process error, 2026-08-25 14:2xZ — [skip ci] omitted while a run was in flight
+
+The v77 commit (7f9b6937) went out without `[skip ci]` while run #164 (v76) was
+still parsing. GitHub's concurrency setting cancelled #164 and started #165 on
+v77.
+
+**No data was lost**: v77's code contains v76's FEIN and street-address fixes, so
+#165 parses the superset. The real costs were ~40 minutes of matrix compute and
+the ability to read v76's verdict on its own — v76 and v77 now share one, so the
+loss triage has to expect both versions' classes at once.
+
+**Why it happened**: every parser commit that cycle used `[skip ci]` from a
+heredoc template, and the v77 message was written fresh (it was long, with a
+table of gate findings) and the marker was simply left off. The rule was known
+and followed four times that hour; the fifth message was composed from scratch.
+
+**The guard that would have caught it**: before any `git push` of scripts/**,
+check whether a run is in_progress and whether the staged commit message
+contains `[skip ci]`. That is two commands and it is now the rule — not "remember
+to add the marker", which is exactly the kind of instruction that fails on the
+message you write differently.

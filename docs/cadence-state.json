@@ -6,7 +6,7 @@
   "knownExtraChains": "Cleared 2026-08-24 20:52Z. Every chain from the overnight run was a one-shot and all had fired by 06:19Z, so the duplicates noted below are dead. Re-armed by owner request at 21:06Z as a single chain. If a cycle finds cadenceFireAt in the future, it must NOT arm -- that is what doubled the chain last night.",
   "cadenceTriggerId": "trig_01EHt1H4yeHGFtFhFqe6pxH8",
   "armedBy": "cycle self-rearm, 2026-08-25 13:36Z",
-  "reparseInFlight": "run #164 (v76, commit 3d4e9a8c, started ~13:34Z)",
+  "reparseInFlight": "run #165 (v77, commit 7f9b6937). NOTE: #164 (v76) was CANCELLED by this push \u2014 the v77 commit was missing [skip ci], which is a process error against the one-re-parse-at-a-time rule. No work lost: v77's code contains v76's FEIN and street-address fixes, so #165 parses the superset. The cost is that v76 and v77 now share one verdict.",
   "lastGap": "Chain died after the 23:52Z cycle and was revived at 02:05Z: ~2h10m, roughly 8 cycles missed. Cause was session idleness, not a trigger failure.",
   "directive": "2026-08-25: fix every problem yourself, in the cycle, including parser changes. Gate must pass; one re-parse at a time; verdict read before mirroring. See docs/overnight-protocol.md.",
   "v69": "shipped; v68 landed and mirrored (202a56c)",
@@ -21,5 +21,6 @@
   "v75": "LANDED as #163 and MIRRORED. Verdict vs v74: 59,309 -> 59,308 confident (-1; 12 lost / 11 gained) but audit HIGH 21 -> 5. All 12 losses read: contribution-source rows removed from trust-pointer and class-label lineups that were never menus.",
   "v76": "SHIPPED as #164. FEIN spellings (255 rows/252 entries/236 confident) + plain street addresses (3 rows, closing the address family).",
   "doNotRefix": "Two classes measured and deliberately unfixed, evidence in docs/wampo-gap-inventory.md: comparative-statement class labels (3,091 confident entries, mostly real holdings); issuer-wrap around fund names (249 rows/187 confident, but the repair destroys 'Lifetime' and 'Growth & Income').",
-  "v77": "COMMITTED [skip ci], gate 28/28 \u2014 ships after #164. PREFIX SPLIT at region selection: cut where the running total passes plan assets, gated on the suffix re-stating the prefix. Recovers 22 of v73's 24 doubled menus. Also: repairs are now classified by their PARENT region; Old Republic gate specimen's assets corrected from a rounded 1.4e9 to the filed 2,125,326,350."
+  "v77": "COMMITTED [skip ci], gate 28/28 \u2014 ships after #164. PREFIX SPLIT at region selection: cut where the running total passes plan assets, gated on the suffix re-stating the prefix. Recovers 22 of v73's 24 doubled menus. Also: repairs are now classified by their PARENT region; Old Republic gate specimen's assets corrected from a rounded 1.4e9 to the filed 2,125,326,350.",
+  "verdictSpans": "#165's verdict spans v76 AND v77. Expected loss classes: FEIN/EIN rows, street addresses (v76); plus large GAINS from the v77 prefix split recovering doubled regions."
 }
