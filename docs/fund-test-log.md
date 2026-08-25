@@ -3582,3 +3582,41 @@ Shipping six known real-menu regressions to tidy up a version number is not a
 trade worth making.
 
 478 filings tested cumulatively. v73 re-parsing as #161.
+
+## Report #44 — ten filings, zero defect verdicts, four broken lineups
+
+Batch verdicts: NAMES_MATCH 5, ISSUER_KEPT 2, OCR_SOURCE 2, PRIOR_YEAR_SOURCE
+1. No WRONG_REGION, no ISSUER_DROPPED — clean by every measure the tester has.
+Four of the ten entries had only 4-5 rows, and reading those rows found four
+separate defects:
+
+- **St. Louis Auto Dealers** showed "Collective trusts", "Mutual funds",
+  **"Advisory fees" $69,206** and **"Professional fees" $20,964** — an expense
+  note at ratio 0.93. Its real 20-fund schedule was in the filing, losing
+  because two class subtotals doubled it to ratio 1.96.
+- **Hydro-Air Components** showed "Shares of", "Fixed account", **"Dividend and
+  interest income"** and "Investments". Its real menu (Fidelity 500 Index,
+  BlackRock LifePath) now parses at ratio **exactly 1.00**.
+- **BMC Aggregates** carried "101 ABCDEFGHI Elk Run Heights $212,320" — the
+  placeholder-address class. Already fixed by v73; it now reads 27 pooled
+  separate accounts.
+- **No/AIDS Task Force** carried "1631ABCDEFGHI c/o Elysian Fields New Orleans
+  $624,100".
+
+**The measurement that mattered most: 773 rows across 728 entries — 679 of them
+CONFIDENT — are an EIN read as money.** "PLAN ID #002; EIN: 16-1187872" becomes
+a $1,187,872 holding, and the fabricated amounts reach $14,400,225.
+
+**Two measurements said don't.** Income-shaped names are 6,890 rows of real
+fund vocabulary ("Vanguard Target Retirement Income" 1,223); only three
+accounting phrases were added. Names ending in a preposition are led by "pimco
+income **a**" — a share class, not an article — so nothing changed there.
+
+**The gate earned its keep again.** The first suffix-subtotal implementation
+used the existing cents tolerance and dropped a real Reliance One fund that sat
+$5 from the sum of the three rows above it; that removal then broke the real
+subtotal below, and the filing went 26 rows to 4. Exact equality only.
+
+84 cached filings: confident 22 → 32, zero losses. Gate 26/26.
+
+488 filings tested cumulatively. v73 re-parsing as #161; v74 committed [skip ci].

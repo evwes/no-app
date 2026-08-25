@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 73;
+export const PARSER_VERSION = 74;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -606,6 +606,44 @@ export function parseRows(section, opts = {}) {
     // schedules with the PRIOR-year figure as the line-terminal "value" —
     // bare accounting nouns are never funds
     if (/^(payroll( taxes| audits)?|employee benefits|occupancy|office( expenses?)?|office equipment( and rental)?|printing( and postage)?|postage|legal( and collection| fees)?|accounting( fees)?|audit(ing)? fees?|consulting|insurance|utilities|earnings|custodial (fees?|services)|recordkeeping fees?|trustee fees?|investment and custodial services|outside services|temporary services|security expense|conferences and meetings|travel( and conferences?)?|repairs and maintenance|reimbursements to related organizations?)$/i.test(name.trim())) continue;
+    /* v74: the SAME expense schedule, phrased the ways the v44 list did not
+     * enumerate. "Advisory fees" and "Professional fees" were two of the four
+     * "holdings" St. Louis Auto Dealers displayed, next to "Collective trusts"
+     * and "Mutual funds" — an expense note that reached ratio 0.93 and won.
+     * Harvested rather than appended (report #42): every stored holding name
+     * of four words or fewer ending in fee/expense/revenue/compensation/charge
+     * vocabulary is 75 distinct names over 139 rows, and reading all 75 they
+     * are accounting lines without exception — "administration fees",
+     * "contract administrator fees", "bad debt expense", "prepaid expense".
+     * The few that carry a fund name ("Mid Cap Value Fee", "S&P 500 Revenue")
+     * are revenue-SHARING schedules, per-fund fee disclosures rather than
+     * holdings, so they belong out too.
+     * The break case is the share class, which is where the trailing-word
+     * rules have gone wrong before: "Great Gray Retirement Date 2045 Trust Fee
+     * Class R1" ends in "R1", "AST Wilmington … Fee Class" ends in "Class".
+     * Only a name ENDING in the accounting noun matches. */
+    if (/\b(?:fees?|expenses?|revenues?|compensation|charges?)$/i.test(name.trim())) { nameBuf = []; continue; }
+    /* v74: an EIN is not a dollar amount. Employer identification numbers are
+     * written NN-NNNNNNN, so a page heading like "PLAN ID #002; EIN:
+     * 16-1187872" hands the row parser a name ending in "EIN:" and a
+     * seven-digit "value" of $1,187,872. Measured across the stored lineups:
+     * 728 entries carry one, 679 of them CONFIDENT, 773 rows in total, and
+     * the fabricated amounts run to $14,400,225. Every one of the 25 sampled
+     * was this same heading; no fund name ends in "EIN".
+     * Removing them lowers those regions' sums (report #38 — judge junk
+     * removal region by region): the fake row is a median 4.8% of its entry,
+     * but in 99 entries it is over a quarter, and those are the ones to read
+     * in the re-parse verdict. A confidence band propped up by an invented
+     * seven-figure holding was never real. */
+    if (/\b(?:ein|employer identification(?: number)?)\s*[:#–—-]?\s*\d{0,2}\s*[-–—]?\s*$/i.test(name.trim())) { nameBuf = []; continue; }
+    /* Income phrases that name no fund. Deliberately only these three: the
+     * measurement over 6,890 income-shaped stored rows is overwhelmingly REAL
+     * fund vocabulary ("Vanguard Target Retirement Income" 1,223, "Dodge & Cox
+     * Income" 341, "PIMCO Income" 170), so a general income rule would rename
+     * thousands of genuine holdings. Interest/dividend/accrued income are the
+     * only unambiguous accounting members, and "Dividend and interest income"
+     * was a displayed holding at Hydro-Air Components. */
+    if (/^(?:accrued income|interest income|dividend and interest income|interest and dividend income)$/i.test(name.trim())) { nameBuf = []; continue; }
     // page carry-forward subtotals ("Forward  $21,786,094  $23,237,830" at
     // the top of every continuation page) — the same-name dedup SUMS the
     // distinct per-page values into a fake nine-figure "fund"
@@ -741,11 +779,37 @@ export function parseRows(section, opts = {}) {
   // phrasing, any language, even OCR-garbled. Tolerance scales with group
   // size because cents are truncated per-row. Single-row "sections" stay
   // vocabulary-guarded (a coincidental equal-value pair must not merge).
+  /* v74: the group is whatever sits ABOVE the subtotal, which is not always
+   * "everything since the last subtotal". St. Louis Auto Dealers opens with a
+   * Cash Equivalents section that has NO subtotal of its own, so by the time
+   * "Mutual Funds $852,305" arrives the running group carries an extra
+   * $9,534 of cash and the equality test misses by exactly that. Two class
+   * subtotals survived, the region doubled to ratio 1.96, and a two-row
+   * class-label fragment won the filing instead.
+   * So ALSO test every SUFFIX: a row equal to the sum of the last j rows for
+   * some j >= 2 is a subtotal of those j.
+   * This runs as a FALLBACK after the original running-group test, and it
+   * demands EXACT equality where that test tolerates j+2 dollars of cents
+   * truncation. The loose tolerance is safe against one candidate group; it is
+   * not safe against every suffix at once. Tried loose first and the parser
+   * gate caught it: Reliance One's "Mid-Cap Growth Index Admiral" ($34,875)
+   * sits $5 from the sum of the three rows above it, so it was dropped as a
+   * subtotal — and removing it then broke the arithmetic for the REAL subtotal
+   * below, which survived, doubled the region and cost the filing its menu,
+   * 26 rows down to 4. A false positive here does not stay local; it corrupts
+   * every later test in the same table. Real subtotals matched to the dollar
+   * in every case examined, so exactness costs nothing. */
   const leaves = [];
   let group = 0, groupN = 0, leafSum = 0;
   for (const r of rows) {
     if (groupN >= 2 && Math.abs(r.value - group) <= groupN + 2) { group = 0; groupN = 0; continue; }
     if (leaves.length >= 3 && Math.abs(r.value - leafSum) <= leaves.length + 2) continue;
+    let hit = 0, suffix = 0;                    // suffix grows monotonically,
+    for (let j = 1; j <= leaves.length; j++) {  // so the first exact hit is
+      suffix += leaves[leaves.length - j].value; // the only one
+      if (j >= 2 && suffix === r.value) { hit = j; break; }
+    }
+    if (hit) { group = 0; groupN = 0; continue; }
     leaves.push(r); group += r.value; groupN++; leafSum += r.value;
   }
 
@@ -920,7 +984,7 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
       // joined the vocabulary after Galliano: an OCR'd statement page of
       // exactly those rows slipped INTO the confidence band when v44 removed
       // its other junk rows — removing junk can promote a still-junky region
-      const STMT_ROW = /^(total )?(investments?,?( at (fair|contract) value.*)?|net assets( available for benefits)?|assets\b.*|cash( and cash equivalents)?|receivables?\b.*|notes? receivable\b.*|mutual funds?\b.*|(common|preferred) stocks?\b.*|exchange[- ]traded funds?\b.*|money market funds?\b.*|other (revenues?|income)\b.*|common[- /]?collective trusts?\b.*|pooled separate accounts?\b.*|guaranteed (investment|interest) (accounts?|contracts?)\b.*|employee rollovers?\b.*|(employer|participant)s?['’]?s?( contributions?( receivable)?)?)$/i;
+      const STMT_ROW = /^(total )?(investments?,?( at (fair|contract) value.*)?|net assets( available for benefits)?|assets\b.*|cash( and cash equivalents)?|receivables?\b.*|notes? receivable\b.*|mutual funds?\b.*|(common|preferred) stocks?\b.*|exchange[- ]traded funds?\b.*|money market funds?\b.*|other (revenues?|income)\b.*|(?:common[- /]?)?collective (?:investment )?(?:trusts?|funds?)\b.*|pooled separate accounts?\b.*|guaranteed (investment|interest) (accounts?|contracts?)\b.*|employee rollovers?\b.*|(employer|participant)s?['’]?s?( contributions?( receivable)?)?)$/i;
       const stmty = parsed.funds.filter((f) => STMT_ROW.test(f.name)).length;
       // ≤3-row regions of class aggregates ("Registered investment companies")
       // are statement fragments too — v34's dedup fixed THEIR double-rendered

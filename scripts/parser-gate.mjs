@@ -126,6 +126,19 @@ const SPECIMENS = [
   // still ate seven holdings worth $18.4M (Ebara)
   ["Ebara (spaced-letter wide rows)", "20251010185246NAL0004866995001", 53096393,
     { found: true, n: 23, sum: 52038566 }],
+  /* v74 specimens, both from one filing-test batch the tester scored clean —
+   * its verdicts check that stored names appear in the filing, not that they
+   * are funds. Row-quality review is what found these. */
+  // displayed four "holdings": two class labels and two EXPENSE lines
+  // ("Advisory fees", "Professional fees"). Also the suffix-subtotal case: a
+  // cash section with no subtotal of its own broke the running group, so two
+  // class subtotals survived and doubled the region to ratio 1.96.
+  ["St. Louis Auto Dealers (expense rows + suffix subtotal)", "20251014103524NAL0001241955001", 11319490,
+    { found: true, n: 20, sum: 11080906 }],
+  // "Dividend and interest income" as a holding, and "PLAN ID #002; EIN:
+  // 16-1187872" read as a $1,187,872 holding
+  ["Hydro-Air (EIN digits as a value)", "20251008065619NAL0005202321001", 10456947,
+    { found: true, n: 15, sum: 10448933 }],
 ];
 
 const work = mkdtempSync(path.join(tmpdir(), "gate-"));

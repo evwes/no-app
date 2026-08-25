@@ -3493,6 +3493,75 @@ filing.** The verdict was +72 confident, comfortably inside tolerance, and
 nothing in the aggregate would have flagged six plans losing their menus. The
 only thing that found them was opening twelve filings and looking.
 
+## 2026-08-25 — v74: an EIN is not a dollar amount (773 fabricated holdings)
+
+**How they were found.** A ten-filing test batch scored clean — five
+NAMES_MATCH, two ISSUER_KEPT, two OCR_SOURCE, one PRIOR_YEAR_SOURCE, no
+WRONG_REGION and no ISSUER_DROPPED. The tester checks that stored names appear
+in the filing, not that they are *funds*. Four of the entries had only 4-5
+rows, and reading those rows found four defects.
+
+**1. EIN digits parsed as dollars — 773 rows, 679 confident lineups.** An
+employer identification number is written NN-NNNNNNN, so a page heading like
+`PLAN ID #002; EIN: 16-1187872` hands the row parser a name ending in "EIN:"
+and a seven-digit value of **$1,187,872**. Measured universe-wide before
+fixing: 728 entries carry one, the fabricated amounts run to $14,400,225, and
+all 25 sampled were the same heading. No fund name ends in "EIN". Hydro-Air
+Components' schedule went to ratio **exactly 1.00** once its fake row left.
+
+The removal lowers those regions' sums (report #38): the fake row is a median
+4.8% of its entry, but in 99 entries it is over a quarter. Those are the ones
+to read in the verdict — though a confidence band propped up by an invented
+seven-figure holding was never real.
+
+**2. Expense-note rows displayed as holdings.** "Advisory fees $69,206" and
+"Professional fees $20,964" were two of the four "holdings" St. Louis Auto
+Dealers showed. Harvested rather than appended (#42): every stored holding
+name of ≤4 words ending in fee/expense/revenue/compensation/charge vocabulary
+is 75 distinct names over 139 rows, and reading all 75, they are accounting
+lines without exception. The break case is the share class, where trailing-word
+rules have gone wrong before — "Great Gray Retirement Date 2045 Trust Fee Class
+R1" ends in "R1", "AST Wilmington … Fee Class" ends in "Class" — so only a name
+ENDING in the accounting noun matches.
+
+**3. Income rows — and the measurement that said DON'T.** "Dividend and
+interest income" was a Hydro-Air holding, but the harvest over 6,890
+income-shaped stored rows is overwhelmingly REAL fund vocabulary: "Vanguard
+Target Retirement Income" 1,223, "Dodge & Cox Income" 341, "PIMCO Income" 170.
+A general income rule would rename thousands of genuine holdings. Only three
+unambiguous phrases were added. The same test on names ending in a preposition
+looked promising until the list came back led by "pimco income **a**",
+"invesco comstock **a**" — a share class, not an article. No code changed there
+(#37).
+
+**4. Section subtotals the arithmetic detector missed.** St. Louis opens with a
+Cash Equivalents section that has no subtotal of its own, so by the time
+"Mutual Funds $852,305" arrives the running group carries an extra $9,534 and
+the equality test misses by exactly that. Two class subtotals survived, the
+region doubled to ratio 1.96, and a two-row class-label fragment won. The fix
+adds a SUFFIX test: a row equal to the sum of the last j rows for some j ≥ 2.
+
+**The gate caught my first version of that fix.** Written with the same j+2
+cents tolerance as the existing test, it dropped Reliance One's "Mid-Cap Growth
+Index Admiral" ($34,875 — five dollars from the sum of the three rows above
+it), and removing that row then broke the arithmetic for the REAL subtotal
+below, which survived, doubled the region, and took the filing from 26 rows to
+4. A loose tolerance is safe against ONE candidate group; it is not safe
+against every suffix at once, and a false positive here does not stay local —
+it corrupts every later test in the same table. The suffix test now demands
+exact equality, which costs nothing: real subtotals matched to the dollar in
+every case examined.
+
+**Verified.** 84 cached filings, confident 22 → 32, **zero losses**. Gate 26/26
+with two new specimens.
+
+**The lesson this adds.** A clean tester verdict is not a clean lineup. The
+batch scored 5/10 NAMES_MATCH with no defect verdicts at all, and four of those
+ten filings were displaying expense lines, class labels or invented dollar
+amounts as investment menus. The tester answers "is this name in the filing?";
+nobody had been asking "is this name a fund?". Row-quality review of every
+batch is now the part that finds things.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
