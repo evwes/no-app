@@ -3398,6 +3398,101 @@ because I wrote it to include the sub-class I had just learned about. The
 habits work together: measurement finds the split, and a test built from the
 split finds the misfire.
 
+## 2026-08-25 — v71's verdict: +72 confident, and six of the twelve losses were real menus
+
+**What was wrong.** Reading the v69→v71 net losses one by one — twelve acks —
+six were junk shedding confidence correctly and six were plans that had been
+showing their filed menu and stopped. In every one of the six a class-label or
+house-total page beat the real Schedule H 4i table on coverage ratio:
+
+| plan | v69 showed | v71 showed |
+|---|---|---|
+| Ramos Oil | 18 rows incl. 13 Great Gray target-date trusts | "Registered investment companies", "Investments measured at NAV practical expedient", 2 more |
+| Reliance One | 26 rows of Vanguard Target Retirement | "Mutual funds", "Common/collective trust funds", 2 more |
+| Bridgestone Americas (2 plans) | 17 rows from the 2023 filing | "Investments measured at NAV", "fair value hierarchy", "companies", "accounts" |
+| Producers Rice Mill | 11 funds incl. John Hancock Disciplined Value R6 | "Fidelity $8,971,947", "John Hancock", "BlackRock", 5 more house names |
+| Ebara Technologies | 14 rows (font-damaged but real) | "Participant-directed investments" |
+
+**Why.** Four independent defects, all of which made the real region's sum too
+small — and the winner is chosen by whichever candidate region sums closest to
+Schedule H assets, so an undersummed real table loses to a note table that
+sums to plan assets by construction.
+
+1. **The prose guard counted words across the whole line.** A 4i row is wide:
+   `* | GREAT GRAY CAP GROUP 2015 TARGET DATE TR CL CT | Common Collective
+   Trust | ** | 151,024` is sixteen words and carries no `$`, so it was
+   discarded as a sentence that happened to end in a number. Twelve of Ramos
+   Oil's thirteen target-date trusts went that way; what remained summed to
+   31% of plan assets.
+2. **The v70 spaced-letter subtotal guard ate real fund names.** It fired on a
+   leading "total" plus any ≤2-letter word in the first three tokens — the
+   damage signature of "To tal In ve stm e n t". "Vanguard | Total Intl Bd Idx
+   Admiral" matched on "Bd". Losing that one $5,394 row then broke the
+   arithmetic subtotal detector downstream: "Mutual funds, at fair value
+   $4,484,527" no longer equalled the rows above it, so it survived as a
+   holding, the region doubled to ratio 1.95, and Reliance One's whole menu
+   lost to a four-row class-label table. One dropped row, thirty lost.
+3. **The provider-total test ran only on the winning region.** All it could do
+   there was withhold confidence after the wrong region had already won.
+4. **A per-cell word cap** (my own first attempt at fix 1) still ate rows in
+   filings with broken font encodings, where spaces are injected inside words:
+   "Ameri ca n Funds EuroPa ci fi c Growth Fund Cl a s s R-6" counts sixteen.
+   Seven of Ebara's holdings, worth $18.4M of a $53M plan.
+
+**The changes (v73).**
+
+1. Prose has no COLUMNS. A line with three or more cells separated by 3+
+   spaces is a laid-out row and is exempt from the word-count test entirely.
+   The columns are a better sentence-detector than any word cap — which is
+   also why the per-cell cap had to go rather than be raised.
+2. The spaced-letter guard now consumes only the leading tokens that spell the
+   matched word and looks for damage THERE. An undamaged "Total …" spells it
+   in one token and can never match; "To tal", "Tota l", "T otal", "Gra nd
+   tota l" all still do.
+3. `isProviderAgg` moved to module scope and now applies a −0.35 penalty
+   inside the region-scoring loop as well as setting the confidence flag.
+   Measured across the 61,133 stored lineups first: **283 entries are a page
+   of bare fund-house names, and 226 of them were CONFIDENT** — 226 plans
+   showing "Vanguard / Fidelity / Schwab" as their investment menu. It stays
+   region-level and never row-level; a row-level version cost ~1,300 real
+   menus at v49.
+4. "Total number of participants at the beginning of the plan year" — a Form
+   5500 line item that leads with its line number, so SKIP_ROW's anchored
+   `^total` never saw it. The old spaced-letter rule was swallowing it by
+   accident, on the "of"; narrowing that rule meant naming this class
+   properly. Howmet's stored lineup carries one today.
+
+**Verified.** Across 78 cached filings, confident 19 → 28 with **zero losses
+and zero row losses**; every gain replaces class labels or house names with a
+real menu at ratio ≈ 1.00. All six regressed plans recovered, and three of
+them now beat their v69 state: Bridgestone's two plans moved off the 2023
+prior-year fallback onto the current-year filing at 29 rows each, and Orange
+County Bancorp went from 5 rows to 29. Gate 24/24 with four new specimens
+(Ramos Oil, Reliance One, Producers Rice, Ebara) and one intentional
+expectation move (Power Design 27 → 28: "Northern Trust Asset Management | NT
+ACWI ex US IMI Fd DC NL Tier 4 1,985,195", verified in the filing at line
+2155, fifteen words with no `$`).
+
+**Decision: v71 was NOT mirrored.** The brief said mirroring v71 would clear
+v70 and v71 together, and it would have — but that was written before the
+losses were read. Six known real-menu regressions is not a thing to put live
+for a day to tidy up a version number. Main stays on v69 until v73's re-parse
+returns a verdict.
+
+**The prevention.** Three of these four defects are the same shape: a guard
+built for one damage signature, matching on a proxy for that signature rather
+than the signature itself. "First three tokens" was a proxy for "inside the
+word total". "Fourteen words on the line" was a proxy for "this is a
+sentence". "Every cell under fourteen words" was the same proxy one level
+down. Each proxy was right for the filings in front of me and wrong for the
+next ones. When a guard fires on a signature, encode the signature.
+
+**The compounding lesson.** #35: read the examples, not the count. #40: verify
+against real rows. This entry adds: **read every loss, and read it against the
+filing.** The verdict was +72 confident, comfortably inside tolerance, and
+nothing in the aggregate would have flagged six plans losing their menus. The
+only thing that found them was opening twelve filings and looking.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

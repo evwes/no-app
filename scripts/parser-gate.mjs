@@ -91,8 +91,11 @@ const SPECIMENS = [
   // at ratio ~0.97 once v43 made its cents columns readable — 28 fund
   // codes displayed as names (Power Design, owner report). The code-page
   // penalty must keep the NAMED rendition winning.
+  // v73 +1 row: "Northern Trust Asset Management | NT ACWI ex US IMI Fd DC NL
+  // Tier 4  1,985,195" is 15 words with no $, so the whole-line prose guard
+  // was eating it. Verified in the filing at line 2155; ratio 0.93 -> 0.95.
   ["Power Design (Empower code page)", "20251015163402NAL0010660226001", 79416197,
-    { found: true, n: 27, sum: 73531649 }],
+    { found: true, n: 28, sum: 75516844 }],
   // v53: section subtotals spelled as class descriptions ("Interest in
   // common/collective trusts $4.47B", "Assets Held for Investment")
   // double-counted the whole schedule to ratio 3.0 — a clean $5.95B
@@ -103,6 +106,26 @@ const SPECIMENS = [
   // holding ("the Plan held Schwab U.S. Treasury Money Fund of $2,784")
   ["Black Hills", "20260623190115NAL0012535394001", 933735584,
     { found: true, n: 22, sum: 911788553 }],
+  /* v73 specimens — four filings whose real menus lost to a class-label or
+   * house-total page. Each pins a different half of the fix; all four were
+   * found by reading the v69->v71 confidence losses one by one. */
+  // wide laid-out rows read as prose: twelve "GREAT GRAY CAP GROUP 20XX
+  // TARGET DATE TR CL CT" rows are 16 words with no $ (Ramos Oil)
+  ["Ramos Oil (wide rows read as prose)", "20260105123510NAL0007177842001", 17544597,
+    { found: true, n: 27, sum: 17537726 }],
+  // "Vanguard | Total Intl Bd Idx Admiral" died on the spaced-letter subtotal
+  // guard's "Bd"; losing that $5,394 row broke arithmetic subtotal detection
+  // downstream and doubled the region (Reliance One)
+  ["Reliance One (Total-prefixed fund name)", "20250926115624NAL0003997507001", 4979584,
+    { found: true, n: 26, sum: 4873717 }],
+  // a recordkeeper page of bare house totals ("Fidelity $8,971,947") beat the
+  // filed 21-fund schedule on closeness (Producers Rice Mill)
+  ["Producers Rice (house-total page)", "20251009155148NAL0006843793001", 23935999,
+    { found: true, n: 10, sum: 21945392 }],
+  // broken font encoding injects spaces inside words, so a per-cell word cap
+  // still ate seven holdings worth $18.4M (Ebara)
+  ["Ebara (spaced-letter wide rows)", "20251010185246NAL0004866995001", 53096393,
+    { found: true, n: 23, sum: 52038566 }],
 ];
 
 const work = mkdtempSync(path.join(tmpdir(), "gate-"));

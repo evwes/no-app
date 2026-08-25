@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 72;
+export const PARSER_VERSION = 73;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -304,7 +304,27 @@ export function parseRows(section, opts = {}) {
     // Spaced dot-leaders (". . . .", the Costco class) are typography, not
     // words — counting them as words made every leadered holding without a
     // $ look like prose and silently emptied whole real menus.
-    if (t.split(/\s+/).filter((w) => !/^\.+$/.test(w)).length > 14 && !/\$/.test(t)) { nameBuf = []; continue; }
+    /* v73: PROSE HAS NO COLUMNS. Counting words across the WHOLE line made
+     * the guard fire on wide 4i rows whose cells are individually short:
+     * "* | GREAT GRAY CAP GROUP 2015 TARGET DATE TR CL CT | Common
+     * Collective Trust | ** | 151,024" is 16 words and carries no $, so
+     * every one of Ramos Oil's twelve target-date trusts was dropped as a
+     * sentence. What was left summed to 31% of plan assets, and a
+     * fair-value-hierarchy note table won the region on closeness — the
+     * plan showed four class labels where 30 funds were filed.
+     * A laid-out row is recognisable without reading it: three or more cells
+     * separated by 3+ spaces. Prose reflowed by pdftotext has no such
+     * structure, so it still meets the original whole-line test.
+     * A per-cell word cap was tried first and had to go: broken font
+     * encodings inject spaces INSIDE words, so "Ameri ca n Funds EuroPa ci fi
+     * c Growth Fund Cl a s s R-6" counts sixteen. That cap was the same crude
+     * sentence-detector one level down, and it cost Ebara seven holdings
+     * worth $18.4M of a $53M plan. The columns are the better signal; trust
+     * them. */
+    const wordsIn = (s) => s.split(/\s+/).filter((w) => !/^\.+$/.test(w)).length;
+    const cells = t.split(/\s{3,}/).filter(Boolean);
+    const laidOut = cells.length >= 3;
+    if (!laidOut && wordsIn(t) > 14 && !/\$/.test(t)) { nameBuf = []; continue; }
     let body = t.slice(0, t.length - vm[0].length).trim().replace(/^\*+\s*/, "");
     body = stripTrailingColumns(body);
     // a bare number with no name on the same line is a leaked year/page/column
@@ -535,8 +555,36 @@ export function parseRows(section, opts = {}) {
      * "Class A", "Fund I", "TR B" — walked into one rule later. */
     /* grand/net variants too: "Gra nd tota l" squashes to "grandtotal", which
      * a bare ^total test misses. */
-    if (/^(?:grand|net|sub)?total/i.test(name.replace(/\s+/g, "")) &&
-        name.trim().split(/\s+/).slice(0, 3).some((w) => w.length <= 2 && /^[a-z]+$/i.test(w))) { nameBuf = []; continue; }
+    /* v73: the short token must be part of the DAMAGED WORD, not merely near
+     * it. "first three tokens" was a proxy for "inside the word total", and
+     * it went wrong the moment a fund's own name began with Total and used a
+     * two-letter abbreviation: "Vanguard | Total Intl Bd Idx Admiral" died on
+     * "Bd", and with it went Reliance One's whole 30-fund menu — losing that
+     * $5,394 row broke the arithmetic subtotal detector downstream (the
+     * "Mutual funds, at fair value" subtotal no longer equalled the rows
+     * above it), the region doubled to ratio 1.95, and a four-row class-label
+     * table won instead. "Total Bd Idx", "Total US Bond", "Total Intl Bd" are
+     * ordinary recordkeeper abbreviations of the most widely held funds in
+     * the country.
+     * The damage signature is exact: the word "total" is SPLIT, so the
+     * fragments spelling it are themselves short. Consume only the leading
+     * tokens that spell the matched word and look for damage there. An
+     * undamaged "Total …" spells it in one token and can never match. */
+    /* Form 5500 line items, not holdings: "5 Total number of participants at
+     * the beginning of the plan year   5   439,390" leads with the line
+     * number, so SKIP_ROW's line-anchored ^total never sees it. The old
+     * spaced-letter rule swallowed it by accident, on the "of" — narrowing
+     * that rule to real damage means naming this class properly. No fund is
+     * called "Total number of …". (Howmet's stored lineup carries one of
+     * these today; this removes it there too.) */
+    if (/^total\s+(?:number|amount|value|dollar value)\s+of\b/i.test(name.trim())) { nameBuf = []; continue; }
+    const sqTot = name.replace(/\s+/g, "").match(/^(?:grand|net|sub)?total/i);
+    if (sqTot) {
+      const toks = name.trim().split(/\s+/);
+      let acc = "", k = 0;
+      while (k < toks.length && acc.length < sqTot[0].length) { acc += toks[k]; k++; }
+      if (toks.slice(0, k).some((w) => w.length <= 2 && /^[a-z]+$/i.test(w))) { nameBuf = []; continue; }
+    }
     /* v71: the 4i FOOTNOTE. Schedules close with "* Indicates a
      * party-in-interest as defined by ERISA", and 107 stored rows are that
      * sentence — one of them a 21-row plan's TOP holding, because the
@@ -727,6 +775,28 @@ export function parseRows(section, opts = {}) {
  * TOC, statement pages, the real 4i table). Parse every candidate region and
  * keep the one whose total best matches the plan's Schedule H assets, testing
  * both as-filed dollars and (thousands) scaling. */
+/* A page of bare fund-house names against dollar totals ("Fidelity $8,971,947
+ * / John Hancock $5,171,802 / BlackRock $2,355,232") is assets-at-custodian,
+ * not a menu. It arises from a recordkeeper rendition that prints the fund
+ * name on one line and the issuer + value on the NEXT, so the parser only
+ * ever sees the house — then merges every row of that house into one.
+ * Anchored: only a name that is NOTHING but the house matches, so "Vanguard
+ * 500 Index Fund" and "Fidelity Contrafund Commingled Pool" are untouched.
+ * Shared by the region SCORE and the final confidence flag. */
+const PROVIDER_TOTAL_RE = /^(vanguard|fidelity(?: investments)?|t\.? ?rowe price|american funds|american century|blackrock|charles schwab|schwab|principal|voya|empower|john hancock|nationwide|transamerica|mass ?mutual|prudential|merrill(?: lynch)?|morgan stanley|wells fargo|mn life insurance co\.?|minnesota life|putnam|hartford|pimco|pgim|invesco|jp ?morgan|j\.?p\.? morgan|dodge & cox|mfs|janus(?: henderson)?|franklin(?: templeton)?|neuberger(?: berman)?|victory|baird|loomis(?: sayles)?|artisan|dimensional|great gray|wilmington(?: trust)?|northern trust|state street|ssga|carillon|macquarie|winslow|nyli|new york life|columbia|federated(?: hermes)?|goldman sachs|lord abbett|oppenheimer|thornburg|virtus|william blair|allspring|amundi|aberdeen|harbor|touchstone|calvert|parnassus|legg mason|pioneer|metlife|iShares|first eagle|nuveen|alliance ?bernstein)$/i;
+/* Measured over the 61,133 stored lineups before this landed: 283 entries are
+ * this shape and 226 of them were CONFIDENT — 226 plans showing "Vanguard /
+ * Fidelity / Schwab" where a real menu was filed. Every sampled one was the
+ * split-line rendition. The share tests do the work: a genuine schedule names
+ * funds, so it cannot be half bare houses by count AND by value. */
+const isProviderAgg = (rows) => {
+  if (rows.length > 16) return false;
+  const prov = rows.filter((f) => PROVIDER_TOTAL_RE.test(f.name.trim()));
+  if (prov.length < 3 || prov.length / rows.length < 0.5) return false;
+  const all = rows.reduce((a, f) => a + f.value, 0);
+  return all > 0 && prov.reduce((a, f) => a + f.value, 0) / all >= 0.5;
+};
+
 export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
   const lines = text.split("\n");
   const headRe = /(schedule\s+h.{0,40}line\s*4i|schedule\s+of\s+assets\s*\(held|schedule\s+of\s+assets\s+held)/i;
@@ -866,6 +936,18 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
       // ticker menus (VFIAX) have no digits — both stay unpenalized.
       const codeish = parsed.funds.filter((f) => /^[A-Z0-9][A-Z0-9-]{3,9}$/.test(f.name.trim()) && /\d/.test(f.name)).length;
       const isCodePage = parsed.funds.length >= 5 && codeish / parsed.funds.length >= 0.6;
+      /* v73: the provider-TOTAL test used to run only on the WINNER, where
+       * all it could do was withhold confidence after the damage was done.
+       * Producers Rice Mill filed a clean 21-fund schedule AND a
+       * recordkeeper page of eight house totals; the house page hit ratio
+       * 0.997 against the schedule's 0.918 (the schedule's loan row wraps
+       * over three lines and is not counted) and won on closeness, so the
+       * plan showed "Fidelity $8,971,947" where twenty-one funds were
+       * filed. The same signal, applied where regions compete, prevents it.
+       * Still region-level, never row-level: the ≤8-row bar means a real
+       * menu carrying one legitimate provider-aggregate row is untouched —
+       * that row-level version cost ~1,300 menus at v49. */
+      const isProvPage = isProviderAgg(parsed.funds);
       const maxV = parsed.funds.reduce((a, f) => Math.max(a, f.value), 0);
       for (const scale of va.scales) {
         const ratio = assetsEOY ? (raw * scale) / assetsEOY : 0;
@@ -880,6 +962,7 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
           + (isSummary && closeness < 0.5 ? 0.1 : 0)
           - (isStatement ? 0.35 : 0)
           - (isCodePage ? 0.35 : 0)
+          - (isProvPage ? 0.35 : 0)
           - (gainLast && parsed.funds.length >= 60 ? 0.2 : 0);
         if (!best || score > best.score) {
           best = { score, ratio, scale, stmt: isStatement, ...parsed };
@@ -964,10 +1047,7 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
   // not row level — a v49 row-level drop of bare provider names shifted
   // sums/region scores and killed ~1,300 real menus that carry ONE
   // legitimate provider-aggregate row among their real funds.
-  const provRe = /^(vanguard|fidelity(?: investments)?|t\.? ?rowe price|american funds|blackrock|charles schwab|schwab|principal|voya|empower|john hancock|nationwide|transamerica|mass ?mutual|prudential|merrill(?: lynch)?|morgan stanley|wells fargo|mn life insurance co\.?|minnesota life)$/i;
-  const provRows = funds.filter((f) => provRe.test(f.name.trim()));
-  const provSum = provRows.reduce((a, f) => a + f.value, 0);
-  const provAgg = funds.length <= 8 && provRows.length >= 2 && allSum > 0 && provSum / allSum >= 0.5;
+  const provAgg = isProviderAgg(funds);
 
   // a statement-vocabulary fragment can still WIN when it's the only
   // candidate (the real schedule is scanned or absent) — surface the flag
