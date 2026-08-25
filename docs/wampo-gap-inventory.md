@@ -577,3 +577,23 @@ same-name/different-value rows on the theory that they are share classes — a
 prior-year column is the counter-example; or (b) region selection, so a
 candidate spanning both a detail table and its own aggregates is recognised as
 double-counting. (b) is the more principled and the harder.
+
+## Double-rendered regions still unrepaired (measured 2026-08-25, 10 plans)
+
+v74 recovers 12 of the 24 v73 doubling casualties. The remaining ten sit at
+ratio ~1.9 and show no lineup: CMD Corporation, Mitek, Westlie Motor, 4 Bears
+Casino & Lodge, New Challenges, Catalyst Medical Group, Coldwater Veneer, MB
+Precision, VP Holdings, Hertzberg-New Method.
+
+They are the same "two copies inside one region" family, but neither
+reconstruction reaches them: the copies share neither normalised names (so the
+name view does nothing) nor enough exact value pairs to clear the 0.6 gate (so
+the value view does not fire). Likely causes to check next: copies whose values
+differ by rounding or by year column, and copies where one is partially eaten so
+the pairing is incomplete.
+
+The principled fix is at REGION SELECTION — recognising that a candidate spans
+two renderings of the same schedule and splitting it — rather than repairing the
+row set afterwards. The reconstructions in v74 are a measured stopgap, penalised
+0.05 and gated to regions already at 1.5x assets so they cannot touch a correct
+parse.

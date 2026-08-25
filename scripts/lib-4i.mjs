@@ -617,6 +617,20 @@ export function parseRows(section, opts = {}) {
       let acc = "", k = 0;
       while (k < toks.length && acc.length < sqTot[0].length) { acc += toks[k]; k++; }
       if (toks.slice(0, k).some((w) => w.length <= 2 && /^[a-z]+$/i.test(w))) { nameBuf = []; continue; }
+      /* v74: …but "TOTAL b b  $18,971,978" is still a grand total. v73 narrowed
+       * this guard to damage INSIDE the word "total", which was right for
+       * "Total Intl Bd Idx Admiral" and wrong here: the old first-three-tokens
+       * test had been catching these by the stray "b" (empty column letters
+       * from the form rendering), and v73's laid-out-row exemption then let
+       * the wide line through the prose guard too. Both halves together
+       * doubled 24 confident lineups to ratio ~1.9-2.2 — Historic Tours of
+       * America gained exactly one row, its own $18.9M total, and lost its
+       * menu.
+       * What separates them is what FOLLOWS the word: a fund has real words
+       * after "Total", a damaged total has only column debris. Require at
+       * least one remaining token of three or more letters. */
+      const rest = toks.slice(k);
+      if (!rest.some((w) => /[a-z]{3,}/i.test(w))) { nameBuf = []; continue; }
     }
     /* v71: the 4i FOOTNOTE. Schedules close with "* Indicates a
      * party-in-interest as defined by ERISA", and 107 stored rows are that
@@ -624,7 +638,14 @@ export function parseRows(section, opts = {}) {
      * footnote sits near a value on the same line. The leading asterisk is
      * stripped upstream as the party-in-interest MARKER, which is what lets
      * the sentence through. */
-    if (/^\s*(?:indicates?|denotes?|represents?)\b.{0,60}party[- ]in[- ]interest|^party[- ]in[- ]interest\b/i.test(name)) { nameBuf = []; continue; }
+    /* v74: PLURAL. Auditors write "Represent parties-in-interest." as often as
+     * the singular, and v71's guard only matched "party". The row carries the
+     * schedule's grand total because the footnote sits beside it, so a missed
+     * one doubles the whole region: Current Lighting's "Represent
+     * parties-in-interest. $77,822,202" put its 30-fund menu at ratio 1.96 and
+     * cost it confidence. Four of the twenty-four v73 casualties were this
+     * word. */
+    if (/^\s*(?:indicates?|denotes?|represents?)\b.{0,60}part(?:y|ies)[- ]in[- ]interest|^part(?:y|ies)[- ]in[- ]interest\b/i.test(name)) { nameBuf = []; continue; }
     /* v70: STOPWORD FRAGMENTS. "of year" was a $0.3B plan's top holding —
      * the tail of a wrapped "…at end of year" heading, four characters past
      * the minimum-length check and made of nothing but function words. A name
@@ -850,7 +871,16 @@ export function parseRows(section, opts = {}) {
   let totalValue = 0;
   for (const r of leaves) {
     if (!r.value) continue;
-    const k = r.name.toLowerCase();
+    /* v74: dedup on PUNCTUATION-INSENSITIVE names. Filings render the schedule
+     * twice and the two renders do not always agree on typography: Blain
+     * Supply files "T Rowe Price Retirement 2030 Fund I" in one and "T. Rowe
+     * Price Retirement 2030 Fund I" in the other. Same fund, same dollar
+     * value, but the raw-name key made them two holdings and the region
+     * summed to 1.93x plan assets. Twenty-two confident lineups landed at
+     * ratio 1.86-2.20 this way once v73's prose fix let the second render
+     * parse at all — the rows were always there, only half of them used to be
+     * eaten. */
+    const k = r.name.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
     const e = seen.get(k);
     // filings usually render the schedule TWICE (once in the auditor's
     // statements, once as the form-page attachment copy) — the same name at
@@ -889,9 +919,55 @@ export function parseRows(section, opts = {}) {
     if (e) { e.row.value += r.value; e.vals.add(r.value); }
     else seen.set(k, { row: r, vals: new Set([r.value]) });
   }
+  /* v74: a SINGLE-RENDER view of the same region, offered alongside the normal
+   * one so scoring can choose. Some filings print the schedule twice with no
+   * 4i heading between the copies, so no candidate region covers just one
+   * copy and every candidate double-counts. The copies often disagree on
+   * wording ("2030 Target Date Fund N/R" vs "American Funds 2030 Trgt Date
+   * Retire R6") or on which YEAR's column they carry, so neither the
+   * name+value dedup nor punctuation normalisation collapses them.
+   * Here the first occurrence of each normalised name wins outright and later
+   * ones are discarded rather than summed. On a genuine single-render table
+   * this is identical to the normal view and cannot win anything; on a
+   * doubled one it lands near ratio 1.0 and does. Computed in the same pass,
+   * so it costs no extra parsing. */
+  const hard = new Map();
+  let hardTotal = 0;
+  for (const r of leaves) {
+    if (!r.value) continue;
+    const k = r.name.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+    if (hard.has(k)) continue;
+    hard.set(k, r); hardTotal += r.value;
+  }
+  /* …and the same view keyed by VALUE, because the two copies do not always
+   * share a name. Brakebush Brothers files "2030 Target Date Fund N/R" in one
+   * copy and "American Funds 2030 Trgt Date Retire R6" in the other — nothing
+   * about the text says they are the same holding, but $15,530,426 appears
+   * twice and 25 of its 29 distinct values are exact pairs covering 99% of the
+   * sum. A dollar figure repeating to the cent across a schedule is a second
+   * rendering, not two holdings that happen to match. Gated hard: only when
+   * pairs dominate, so a menu with a couple of coincidentally equal small
+   * positions is untouched, and the longer name of each pair is kept because
+   * the fuller rendering is the more useful one. */
+  const byVal = new Map();
+  for (const r of leaves) if (r.value) (byVal.get(r.value) || byVal.set(r.value, []).get(r.value)).push(r);
+  let pairedSum = 0, total = 0;
+  for (const [v, rs] of byVal) { total += v * rs.length; if (rs.length === 2) pairedSum += v * 2; }
+  let pairFunds = null, pairTotal = 0;
+  if (total > 0 && pairedSum / total >= 0.6) {
+    pairFunds = [];
+    for (const [v, rs] of byVal) {
+      const keep = rs.length === 2 ? [rs.slice().sort((a, b) => b.name.length - a.name.length)[0]] : rs;
+      for (const r of keep) { pairFunds.push(r); pairTotal += r.value; }
+    }
+    pairFunds.sort((a, b) => b.value - a.value);
+    pairFunds = pairFunds.slice(0, 80);
+  }
   // totalValue covers every row, not just the displayed top 80 — huge filings
   // list thousands of individual securities and the ratio must reflect all.
-  return { funds: [...seen.values()].map((e) => e.row).sort((a, b) => b.value - a.value).slice(0, 80), sdba, totalValue };
+  return { funds: [...seen.values()].map((e) => e.row).sort((a, b) => b.value - a.value).slice(0, 80), sdba, totalValue,
+    hardFunds: [...hard.values()].sort((a, b) => b.value - a.value).slice(0, 80), hardTotal,
+    ...(pairFunds ? { pairFunds, pairTotal } : {}) };
 }
 
 /* The full filing contains several look-alike headings (financial-statement
@@ -1022,6 +1098,29 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
     // regressing before this split)
     const variants = [{ parsed: parseRows(region, { sharesLast, gainLast }), scales: [1, ...(marked ? [1000] : [])] }];
     if (markedM) variants.push({ parsed: parseRows(region, { sharesLast, gainLast, smallValues: true }), scales: [1e6] });
+    /* v74: the single-render view of each variant competes as its own
+     * candidate (see parseRows' hardFunds). It only differs where a region
+     * repeats names, and it only wins where that repetition was inflating the
+     * region's sum. */
+    /* Offered ONLY where the normal view is already too big to be right. These
+     * views exist to undo a doubled region, and the parser gate proved they
+     * must not be free to win anywhere else: on Black Hills — a correctly
+     * parsed schedule at ratio 0.98 — the pair view scored higher purely on
+     * carrying one more row, and swapped which rendering of two funds was
+     * displayed. Requiring the normal view to sit at 1.5x assets or above
+     * confines them to the defect they were built for. */
+    for (const va of [...variants]) {
+      const p = va.parsed;
+      // per-variant: a millions-scaled sibling of the same region must not
+      // vouch for this one
+      if (!(assetsEOY > 0 && va.scales.some((sc) => (p.totalValue * sc) / assetsEOY >= 1.5))) continue;
+      if (p.hardFunds && p.hardTotal && p.hardTotal !== p.totalValue) {
+        variants.push({ parsed: { ...p, funds: p.hardFunds, totalValue: p.hardTotal }, scales: va.scales, repair: 1 });
+      }
+      if (p.pairFunds && p.pairTotal && p.pairTotal !== p.totalValue) {
+        variants.push({ parsed: { ...p, funds: p.pairFunds, totalValue: p.pairTotal }, scales: va.scales, repair: 1 });
+      }
+    }
     for (const va of variants) {
     const parsed = va.parsed;
       if (parsed.funds.length < 2) continue;
@@ -1086,6 +1185,11 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
           - (isStatement ? 0.35 : 0)
           - (isCodePage ? 0.35 : 0)
           - (isProvPage ? 0.35 : 0)
+          /* a reconstructed view is a repair, not a reading of the filing, so
+           * it must win clearly rather than by a hair. Without this Black
+           * Hills' honest 22-row region lost by 0.003 to a repaired sibling
+           * carrying one more row. */
+          - (va.repair ? 0.05 : 0)
           - (gainLast && parsed.funds.length >= 60 ? 0.2 : 0);
         if (!best || score > best.score) {
           best = { score, ratio, scale, stmt: isStatement, ...parsed };

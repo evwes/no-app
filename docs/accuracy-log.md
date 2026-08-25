@@ -3652,6 +3652,69 @@ for its own signal — the line, rather than the row the line becomes. A wrapped
 name is assembled from several lines, and a guard that runs before assembly can
 only ever see one of them. Where a rule condemns a ROW, test the row.
 
+## 2026-08-25 — v73's verdict: +143 confident, and 24 plans lost their menus to DOUBLING
+
+**The verdict read well.** Run #161: confident +71, match +13, vesting +14,
+lineups +67 vs the previous run; net against live main (v69) **+143 confident,
+150 lost, 293 gained**. "Improved or held" on every metric.
+
+**Triaging all 150 losses:** 126 were the bare-fund-house pages v73 deliberately
+demoted ("Vanguard / Fidelity / JP Morgan / Schwab") — correct, and exactly the
+226 confident house-total plans measured before that fix. The other **24 were
+real menus**, and nearly every one had landed at ratio **1.86–2.20**. They had
+not lost their rows; most had MORE rows than before. They had lost the
+confidence band to double-counting, because v73's prose fix let a SECOND
+rendering of the schedule parse where half of it used to be eaten.
+
+Four distinct mechanisms, found by reading the added rows one filing at a time:
+
+1. **"TOTAL b b" $18,971,978.** v73 narrowed the spaced-letter total guard to
+   damage inside the word "total" — right for "Total Intl Bd Idx Admiral", wrong
+   here, where the old first-three-tokens test had been catching the stray "b"
+   of an empty column. Historic Tours of America gained exactly one row, its own
+   grand total, and lost its menu. Fixed by requiring a token of three or more
+   letters AFTER the word: a fund has real words there, a damaged total has only
+   column debris.
+2. **Punctuation.** Blain Supply files "T Rowe Price Retirement 2030 Fund I" in
+   one copy and "T. Rowe Price Retirement 2030 Fund I" in the other. Same fund,
+   same value, two rows. Fixed by normalising the dedup key.
+3. **"Represent parties-in-interest."** v71's footnote guard matched only
+   "party". The row carries the schedule's grand total, so a missed one doubles
+   the region outright — Current Lighting's 30-fund menu sat at 1.96 because of
+   one plural. Four of the twenty-four.
+4. **Copies that share values but not names.** Brakebush Brothers files "2030
+   Target Date Fund N/R" and "American Funds 2030 Trgt Date Retire R6" — nothing
+   in the text says they are the same holding, but $15,530,426 appears twice and
+   25 of 29 distinct values are exact pairs covering 99% of the sum. No 4i
+   heading separates the copies, so no candidate region covers just one, and
+   every candidate double-counted.
+
+**The fix for (4) is structural.** parseRows now also returns two reconstructed
+views of each region — one keeping the first row per normalised NAME, one
+collapsing exact VALUE pairs — and parse4i offers them as ordinary candidates so
+scoring picks. They cost no extra parsing (same pass) and cannot fire on a
+single-render table, where they are identical to the normal view.
+
+**The gate caught this being too free, twice.** First on Black Hills, a
+correctly parsed 22-row schedule at ratio 0.98: the repaired view of a
+*different* region scored higher purely by carrying one more row, and swapped
+which rendering of two funds was displayed. Gating the repairs to regions
+already at 1.5x assets was not enough — a millions-scaled sibling of the same
+region vouched for it — so the gate is per-variant, and a repair now also pays
+0.05. A reconstruction is a repair, not a reading of the filing; it must win
+clearly rather than by 0.003.
+
+**Result: 12 of the 24 recovered**, all landing at ratio 0.95–1.23. Ten remain
+doubled and are recorded in the gap inventory. 127 cached filings: confident
+40 → 51, gate 28/28.
+
+**The lesson.** v73's own accuracy log entry ends "read every loss, and read it
+against the filing" — and the +143 verdict would have passed any aggregate
+check. What made these findable was that the losses were *sorted*: 126 fell into
+a class I had deliberately created, and the 24 that did not fit that story were
+the ones worth opening. A loss you can explain is not the same as a loss you
+predicted.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
