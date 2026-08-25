@@ -2923,6 +2923,36 @@ confident/match/vesting/lineups (names did not change; any movement beyond
 the BWXT dash class is a regression to investigate before mirroring), plus
 `iss` coverage becomes a new counted column to trend.
 
+## 2026-08-25 — v67 re-parse verdict: one lost lineup, and it was junk
+
+Run #156 (commit d13052f) completed 00:48Z. Verdict, measured against the
+previous run's `lineups-status.json` rather than the coverage line (the two
+count slightly different populations — the status file is the like-for-like
+comparison, and the discrepancy is worth remembering before reading a future
+delta as a regression):
+
+    confident acks   58,122 -> 58,121   (-1)
+    gained                          0
+    match / vesting              flat
+    acks re-parsed to v67      68,482
+
+**The single loss was a defect being removed, not a menu.** PetSmart's
+$667M plan (ack 20250730114353NAL0002310499001) had a v66 CONFIDENT lineup
+of six fair-value-hierarchy statement rows — "Mutual Funds $158,695,971 $",
+"hierarchy 158,695,971", "statements", "Certain Plan investments are or were
+shares of mutual funds" — at ratio 1.03, which is why it passed. v67 demotes
+it, so the page shows the honest gap instead of six fabricated funds. Read
+the filing to confirm before mirroring; both v66 and v67 produce junk from
+that region, and v67 simply stops believing it.
+
+**The payoff, measured:** 525,645 of 1,635,672 stored holdings (32.1%) now
+carry the 4i identity column, across 33,838 of 64,604 entries (52.4%). Those
+are the manager names that were being discarded — the field that makes
+"Core Bond IS" mean Western Asset's Core Bond fund and lets a ticker match
+be attempted at all.
+
+Mirrored to main as b1a59bf after the diff review above.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
