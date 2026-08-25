@@ -24,7 +24,10 @@ const SPECIMENS = [
    * ("N/A  VARIABLE  N/A  ... sh  #") beat the real name in column (b).
    * After: FIDELITY 500 INDEX, PIMCO REALPATH BLEND vintages, VANGUARD
    * GROWTH INDEX INSTITUTIONAL. Guards the whole SMART Local 265 class. */
-  ["Old Republic (N/A filler columns)", "20250911133230NAL0000243699001", 1400000000,
+  // assets corrected 2026-08-25: the specimen had been running against a rounded
+  // 1.4e9 while the filing reports 2,125,326,350, which made its stored sum look
+  // like ratio 1.49 instead of 0.98 and drew a spurious prefix-split repair
+  ["Old Republic (N/A filler columns)", "20250911133230NAL0000243699001", 2125326350,
     { found: true, n: 30, sum: 2079074463 }],
   // v59 +1: "CREF Money Market Account | Registered Investment Companies |
   // 1,193" is a filed holding the sub-$10k residue floor used to hide
@@ -151,6 +154,19 @@ const SPECIMENS = [
   // this plan's 5th largest holding at $623,000 — a NAICS business code.
   ["Regency Pacific (address block as a holding)", "20251014143740NAL0004250880001", 6877199,
     { found: true, n: 28, sum: 6786907 }],
+  /* v77 — the PREFIX SPLIT. Both filings print the schedule twice with no 4i
+   * heading between the copies, so no candidate region covers just one and
+   * every candidate double-counted. The second copy re-states the first with
+   * the plan's own name prefixed and values rounded to thousands, which is why
+   * neither the name view nor the value-pair view could reach them. */
+  // 18 real rows summing to $7,540,902 against $7.78M, then the same funds as
+  // "4 Bears Casino & Lodge 401(k) Plan AVUVX Avantis…" at $753,000, $546,000
+  ["4 Bears (second rendering, plan-name prefix)", "20251013153937NAL0003409698001", 7781659,
+    { found: true, n: 17, sum: 7540902 }],
+  // same shape; also the filing whose Schedule H line 2d text was its largest
+  // "holding" until v75
+  ["Westlie Motor (rounded second rendering)", "20250821150052NAL0002159299001", 11337379,
+    { found: true, n: 18, sum: 11308642 }],
 ];
 
 const work = mkdtempSync(path.join(tmpdir(), "gate-"));

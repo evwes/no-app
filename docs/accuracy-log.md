@@ -3925,6 +3925,58 @@ that were never holdings from plans that keep their lineups, and took the audit'
 HIGH findings down by three quarters. The coverage number is not the accuracy
 number, and a release that only moves the second one is still worth shipping.
 
+## 2026-08-25 — v77: the prefix split, and the last of v73's doubled menus
+
+**The class.** Ten plans had sat at ratio ~1.9 since v73, showing no lineup at
+all, and neither v74 reconstruction could reach them: the two copies of the
+schedule share neither names (the second prefixes the plan's own name) nor exact
+values (the second rounds to thousands). 4 Bears Casino & Lodge is the clearest:
+
+```
+  0    245250  cum=    245250  Fidelity Brokerage Services, LLC Avantis U.S Sma…
+  …
+ 17    233344  cum=   7543234  Victory Sycamore Established Value      <- assets $7.78M
+ 18    753000  cum=   8296234  4 Bears Casino & Lodge 401(k) Plan AVUVX Avantis…
+ 19    546000  cum=   8842234  4 Bears Casino & Lodge 401(k) Plan BSIIX BlackRo…
+```
+
+Read in FILED ORDER the boundary needs no interpretation: the running total
+passes the plan's assets and keeps going. So parseRows now returns the rows in
+filed order and parse4i offers the prefix landing closest to ratio 1.0 as its
+own candidate — the fix at REGION SELECTION the gap inventory had been asking
+for, rather than more repair of the row set.
+
+**The gate stopped it twice, and both stops were right.**
+
+1. *The rounded-assets specimen.* Old Republic's expectation had been running
+   against `1400000000` while the filing reports **2,125,326,350** — so its
+   stored sum looked like ratio 1.49 instead of 0.98, and the split obligingly
+   trimmed a correct 30-row schedule to 27. The specimen was wrong, not the
+   parser; assets corrected in the same commit. A gate is only as good as its
+   inputs, and this one had been quietly mis-stating a plan's size.
+2. *Trim-until-the-arithmetic-works.* On Power Design the split lopped the tail
+   off an Empower CODE page and scored the remainder — four "1GGCG25" fund codes
+   included — past the honest 27-row schedule, because four codes in
+   thirty-three rows falls under the code-page share and the v52 penalty
+   stopped applying. Two fixes, both general: a repair is now classified by its
+   PARENT region (a view cannot dilute the signal its parent was penalised
+   for), and a cut only counts as a rendering boundary when what FOLLOWS it
+   re-states what precedes it — ≥40% of the suffix rows sharing two substantial
+   words with some prefix row. 4 Bears' second copy shares "avantis", "small",
+   "value"; a code page shares nothing.
+
+**Result: 22 of v73's 24 doubled menus are back**, all at ratio 0.95–1.07.
+Of the two that remain, Joy Holdings is a fund-house page correctly demoted, and
+Hertzberg-New Method has no readable region at all. 140 cached filings:
+confident 41 → 65. Gate 28/28 with 4 Bears and Westlie Motor added.
+
+**What the whole double-render episode taught.** v73 opened it by relaxing a
+guard, and closing it took four attempts: hard-dedup by name (v74), value-pair
+collapse (v74), and finally the ordered prefix (v77) — because each attempt only
+saw the copies that differed the way that attempt could detect. The thing that
+finally worked ignored the text entirely and used arithmetic the filing cannot
+fake: a schedule sums to the plan's assets exactly once.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

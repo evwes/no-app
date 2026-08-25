@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 76;
+export const PARSER_VERSION = 77;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -1034,7 +1034,11 @@ export function parseRows(section, opts = {}) {
   // list thousands of individual securities and the ratio must reflect all.
   return { funds: [...seen.values()].map((e) => e.row).sort((a, b) => b.value - a.value).slice(0, 80), sdba, totalValue,
     hardFunds: [...hard.values()].sort((a, b) => b.value - a.value).slice(0, 80), hardTotal,
-    ...(pairFunds ? { pairFunds, pairTotal } : {}) };
+    ...(pairFunds ? { pairFunds, pairTotal } : {}),
+    /* v77: the rows in FILED ORDER, so parse4i can look for the point where one
+     * rendering of the schedule ends and the next begins. Only the caller knows
+     * the plan's assets, which is the only thing that identifies that point. */
+    ordered: leaves };
 }
 
 /* The full filing contains several look-alike headings (financial-statement
@@ -1182,23 +1186,83 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
       // vouch for this one
       if (!(assetsEOY > 0 && va.scales.some((sc) => (p.totalValue * sc) / assetsEOY >= 1.5))) continue;
       if (p.hardFunds && p.hardTotal && p.hardTotal !== p.totalValue) {
-        variants.push({ parsed: { ...p, funds: p.hardFunds, totalValue: p.hardTotal }, scales: va.scales, repair: 1 });
+        variants.push({ parsed: { ...p, funds: p.hardFunds, totalValue: p.hardTotal }, scales: va.scales, repair: 1, parentFunds: p.funds });
       }
       if (p.pairFunds && p.pairTotal && p.pairTotal !== p.totalValue) {
-        variants.push({ parsed: { ...p, funds: p.pairFunds, totalValue: p.pairTotal }, scales: va.scales, repair: 1 });
+        variants.push({ parsed: { ...p, funds: p.pairFunds, totalValue: p.pairTotal }, scales: va.scales, repair: 1, parentFunds: p.funds });
+      }
+      /* v77: PREFIX SPLIT. Some filings print the schedule twice with no 4i
+       * heading between the copies, so no candidate region covers just one and
+       * the two reconstructions above cannot help: the copies share neither
+       * names (the second prefixes the plan's own name) nor exact values (the
+       * second rounds to thousands). 4 Bears Casino files eighteen real rows
+       * summing to $7,543,234 against $7.53M of assets, then the same
+       * eighteen funds again as "4 Bears Casino & Lodge 401(k) Plan AVUVX
+       * Avantis…" at $753,000, $546,000, $144,000.
+       * In filed order the boundary is visible without reading anything: the
+       * running total passes the plan's assets and keeps going. Offer the
+       * prefix that lands closest to 1.0 as its own candidate. Like the other
+       * repairs it pays 0.05 and is only built for a region already at 1.5x,
+       * so it cannot touch a correctly parsed schedule. */
+      if (p.ordered && p.ordered.length >= 6) {
+        let cum = 0, cut = null;
+        for (let i = 0; i < p.ordered.length; i++) {
+          cum += p.ordered[i].value;
+          if (i + 1 < 3) continue;
+          const r = cum / assetsEOY;
+          if (r < 0.7) continue;
+          if (r > 1.3) break;
+          const d = Math.abs(Math.log(r));
+          if (!cut || d < cut.d) cut = { d, k: i + 1, sum: cum };
+        }
+        /* The cut is only a rendering boundary if what FOLLOWS it re-states
+         * what precedes it. Without that test the split is just "trim the
+         * region until the arithmetic works", and the parser gate showed where
+         * that leads: on Power Design it lopped off the tail of an Empower code
+         * page and scored the remainder — four "1GGCG25" fund codes and all —
+         * past the honest 27-row schedule.
+         * Re-statement is visible in the words: 4 Bears' second copy reads "4
+         * Bears Casino & Lodge 401(k) Plan AVUVX Avantis U.S Small Cap Value"
+         * against the first copy's "Avantis U.S Small Cap Value", sharing
+         * three substantial tokens. A code page shares none. */
+        if (cut && cut.k < p.ordered.length) {
+          const sig = (r) => new Set(String(r.name).toLowerCase().match(/[a-z]{4,}/g) || []);
+          const pre = p.ordered.slice(0, cut.k).map(sig);
+          const post = p.ordered.slice(cut.k).map(sig);
+          const restated = post.filter((t) =>
+            pre.some((q) => [...t].filter((w) => q.has(w)).length >= 2)).length;
+          if (!post.length || restated / post.length < 0.4) continue;
+          const keep = new Map();
+          for (const r of p.ordered.slice(0, cut.k)) {
+            const k = r.name.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+            if (!keep.has(k)) keep.set(k, r);
+          }
+          variants.push({ parsed: { ...p,
+            funds: [...keep.values()].sort((a, b) => b.value - a.value).slice(0, 80),
+            totalValue: cut.sum }, scales: va.scales, repair: 1, parentFunds: p.funds });
+        }
       }
     }
     for (const va of variants) {
     const parsed = va.parsed;
       if (parsed.funds.length < 2) continue;
+      /* v77: a repair is a VIEW of its parent region, so the region's character
+       * still condemns it. Judged on its own trimmed rows a repair can dilute
+       * the very signal the parent was penalised for — the parser gate caught
+       * the prefix split of an Empower code page scoring past Power Design's
+       * honest 27-row schedule while carrying four "1GGCG25"-style fund codes,
+       * because four codes in thirty-three rows is under the code-page share
+       * and the penalty stopped applying. Classify the parent, not the view. */
+      const judged = va.parentFunds || parsed.funds;
+
       const raw = parsed.totalValue;
       // trustee statements (Verizon Master Savings Trust) file a CLASS-LEVEL
       // summary page followed by thousands of per-security detail pages that
       // double-count it. Prefer the summary; penalize security floods in
       // gain-last statements so an arbitrary detail slice can't outscore it.
       const CLASS_STEM = /^(interest[- ]bearing cash|u\.? ?s\.? government securities|corporate debt|corporate stock|common[/ ]?collective trust|pooled separate account|master trust|103[- ]12 investment|registered investment compan|insurance company general|other investments?|participant loans?|partnership\/joint venture|real estate|loans \(other|employer[- ]related securit)/i;
-      const classy = parsed.funds.filter((f) => CLASS_STEM.test(f.name)).length;
-      const isSummary = parsed.funds.length >= 4 && classy / parsed.funds.length >= 0.8;
+      const classy = judged.filter((f) => CLASS_STEM.test(f.name)).length;
+      const isSummary = judged.length >= 4 && classy / judged.length >= 0.8;
       // a Statement of Net Assets page ("Investments, at fair value",
       // "Mutual funds", "Cash and cash equivalents") sums to ≈ plan assets by
       // construction, so it beats the real table on closeness whenever the
@@ -1210,12 +1274,12 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
       // exactly those rows slipped INTO the confidence band when v44 removed
       // its other junk rows — removing junk can promote a still-junky region
       const STMT_ROW = /^(total )?(investments?,?( at (fair|contract) value.*)?|net assets( available for benefits)?|assets\b.*|cash( and cash equivalents)?|receivables?\b.*|notes? receivable\b.*|mutual funds?\b.*|(common|preferred) stocks?\b.*|exchange[- ]traded funds?\b.*|money market funds?\b.*|other (revenues?|income)\b.*|(?:common[- /]?)?collective (?:investment )?(?:trusts?|funds?)\b.*|pooled separate accounts?\b.*|guaranteed (investment|interest) (accounts?|contracts?)\b.*|employee rollovers?\b.*|(employer|participant)s?['’]?s?( contributions?( receivable)?)?)$/i;
-      const stmty = parsed.funds.filter((f) => STMT_ROW.test(f.name)).length;
+      const stmty = judged.filter((f) => STMT_ROW.test(f.name)).length;
       // ≤3-row regions of class aggregates ("Registered investment companies")
       // are statement fragments too — v34's dedup fixed THEIR double-rendered
       // ratios as well, and 22 of them displaced real 15-35 row menus
-      const isStatement = (parsed.funds.length <= 8 && stmty / parsed.funds.length >= 0.5)
-        || (parsed.funds.length <= 3 && (stmty + classy) / parsed.funds.length >= 0.5);
+      const isStatement = (judged.length <= 8 && stmty / judged.length >= 0.5)
+        || (judged.length <= 3 && (stmty + classy) / judged.length >= 0.5);
       // recordkeeper CODE pages (Empower group-annuity renditions): the same
       // menu re-filed as fund codes ("1GGCG50", "1NTSPI4") under its OWN
       // "SCHEDULE OF ASSETS" heading, with cents columns the v43 fix made
@@ -1223,8 +1287,8 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
       // wrong (Power Design showed 28 codes as fund names). Code tokens
       // have no spaces and carry digits; real names have spaces, and pure
       // ticker menus (VFIAX) have no digits — both stay unpenalized.
-      const codeish = parsed.funds.filter((f) => /^[A-Z0-9][A-Z0-9-]{3,9}$/.test(f.name.trim()) && /\d/.test(f.name)).length;
-      const isCodePage = parsed.funds.length >= 5 && codeish / parsed.funds.length >= 0.6;
+      const codeish = judged.filter((f) => /^[A-Z0-9][A-Z0-9-]{3,9}$/.test(f.name.trim()) && /\d/.test(f.name)).length;
+      const isCodePage = judged.length >= 5 && codeish / judged.length >= 0.6;
       /* v73: the provider-TOTAL test used to run only on the WINNER, where
        * all it could do was withhold confidence after the damage was done.
        * Producers Rice Mill filed a clean 21-fund schedule AND a
@@ -1236,7 +1300,7 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
        * Still region-level, never row-level: the ≤8-row bar means a real
        * menu carrying one legitimate provider-aggregate row is untouched —
        * that row-level version cost ~1,300 menus at v49. */
-      const isProvPage = isProviderAgg(parsed.funds);
+      const isProvPage = isProviderAgg(judged);
       const maxV = parsed.funds.reduce((a, f) => Math.max(a, f.value), 0);
       for (const scale of va.scales) {
         const ratio = assetsEOY ? (raw * scale) / assetsEOY : 0;
