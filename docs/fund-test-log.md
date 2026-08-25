@@ -3865,3 +3865,42 @@ there. Recorded for the next cycle.
 140 cached filings: confident 41 → 52. Gate 28/28.
 
 548 filings tested cumulatively. v75 re-parsing as #163; v76 committed [skip ci].
+
+## Report #51 — the repair that would have destroyed real funds
+
+No batch this cycle; #163 was still parsing, so the window went to the open item
+logged last cycle: the issuer column wrapping AROUND the fund name.
+
+**Measured: 249 rows across 190 entries, 187 confident** — a known house name
+appearing split around other words. Big enough to be worth fixing, and the
+repair looked obvious: strip the house prefix and the corporate suffix, keep the
+middle as the fund name.
+
+**Then I read the output.**
+
+| stored name | naive repair |
+|---|---|
+| John Hancock **Life**time Blend 2030 Trust | "time Blend 2030" |
+| Alta Trust RetireGuide Cons Growth & **Inc**ome | "Trust RetireGuide Cons Growth &" |
+| Great Gray Trust EuroPacific Growth **Trust** | "Trust EuroPacific Growth" |
+| John Hancock Life **John Hancock Multi-Index LS Growth** Insurance Company | correct |
+| Fidelity Management Trust **Fidelity Contrafund** Company | correct |
+
+"John Hancock Lifetime" and "John Hancock Life Insurance" share a prefix.
+"Income" and "Inc." share a suffix. "Trust" is both a corporate suffix and a
+fund-name word. The genuine wraps and the false positives are **not separable**
+by house-prefix + corporate-suffix + fund-vocabulary tests — the three signals I
+had. A real fix needs the FILING TEXT, to confirm the house name actually
+occupies column (b) across two physical lines, rather than string surgery on the
+stored name.
+
+**Not shipped.** Values and confidence are unaffected — this is display quality
+— so an approximate fix would trade a cosmetic defect for destroyed fund names.
+Recorded in the gap inventory with the table above, so the next attempt starts
+from the trap rather than rediscovering it.
+
+That is the second measurement today that said DON'T: the comparative-statement
+class labels (3,091 confident entries, mostly real holdings) and now this. Both
+looked like clean wins at the count and fell apart at the examples.
+
+558 filings tested cumulatively. v75 re-parsing as #163; v76 committed [skip ci].
