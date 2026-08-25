@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 84;
+export const PARSER_VERSION = 85;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -2392,8 +2392,21 @@ export function extractPlanFeatures(text) {
       // ("immediately vested" vs "vested … at all times"), so this test must
       // be order-independent — the first version required them after, and
       // dropped a correct Immediate whose window happened to reach a loan note
+      /* v85: the loan guard needs v82's escape hatch too. Measured over the
+       * universe after v84: it still suppressed 26 quotes and ALL 26 carried
+       * the plan's real schedule — "Employer contributions are subject to the
+       * following vesting schedule: Notes receivable from participants —
+       * Participants may borrow from their fund accounts…" is one sentence
+       * window spanning the schedule AND the loan heading after it. The label
+       * must still be blocked (that text is not a vesting claim), but the
+       * schedule is the best evidence the filing offers and has to survive.
+       * This is the same escape hatch v82 put on the quote fallback; v84 put
+       * the guard on the label path and did not carry it across. */
       if (/loan application|prevailing interest rates|\bborrow\b|obtain loans/i.test(s)
-          && !/(?:immediat|at all times|regardless of (?:the )?(?:number of )?years)/i.test(s)) labelBlocked = true;
+          && !/(?:immediat|at all times|regardless of (?:the )?(?:number of )?years)/i.test(s)) {
+        labelBlocked = true;
+        if (/years? of (?:vesting |credited |continuous )?service|vesting schedule|\bgraded\b|\bcliff\b|\d{1,2} ?% vested|percentage vested|vested percentage|schedule below|as follows|following schedule/i.test(s)) blockedButQuotable = true;
+      }
       if (labelBlocked) {
         if (blockedButQuotable && !out.vestingText && !/forfeit/i.test(s)) out.vestingText = cap(s);
         continue;

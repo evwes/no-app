@@ -4268,6 +4268,42 @@ Most are genuine improvements, but "Graded schedule" *drops the horizon* a
 participant cares about, and "6-year graded" needs the frontend considered.
 Recorded as a v85 candidate rather than smuggled into a regression fix.
 
+### v85 — the same escape hatch, on the path that did not have it
+
+Run #169 (v84) was measured against the LIVE baseline (v82), not against the
+held v83 data: vesting 50,600 → 50,721 (+121), vestQuote 5,970 → 5,847, and
+everything else — confident, lineups, match, matchQuote — flat. The 4 label
+losses were exactly the false Immediates v83 targeted. Mirrored.
+
+But the quote check — the one that caught v83 and that the coverage line cannot
+show — found **26 dropped quotes, and all 26 carried the plan's real schedule**:
+
+> "Employer contributions are subject to the following vesting schedule: Notes
+> receivable from participants — Participants may borrow from their fund
+> accounts a minimum of $1,000…"
+
+One sentence window spanning the schedule AND the loan heading after it. v82 had
+already solved this exact problem on the quote fallback with an escape hatch
+(off-topic **and** no schedule content). v84 added a loan guard on the *label*
+path and did not carry the hatch across. The label must still be blocked — that
+text is not a vesting claim — but the schedule has to survive.
+
+**This is the third time in one day that this shape appeared**, which is what
+makes it worth a permanent note rather than a fix:
+
+| version | guard | what it suppressed |
+|---|---|---|
+| v82 | quote fallback | 38 schedules, caught before shipping |
+| v83 | four label guards | 188 schedules, caught after shipping |
+| v84 | loan label guard | 26 schedules, caught after shipping |
+
+Every time, the guard was right about the *label* and wrong about the *quote*.
+**A new suppression rule is not finished until it has been asked, separately,
+what it does to the evidence.** The corpus diff will not answer that question —
+v85 moves 0 labels across 955 filings — so the check has to be run against the
+stored quotes at population scale, looking specifically for schedule content in
+whatever the rule removes.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
