@@ -1,10 +1,10 @@
 {
   "purpose": "Prevents overnight chain multiplication. Each cadence/watchdog cycle reads this BEFORE arming anything. If a fire time here is still in the future, a chain is already armed -- run the cycle and do NOT arm another. Only arm when the relevant slot is in the past, then update it here and commit.",
   "why": "Several chains were firing simultaneously around 05:00-05:35. The cause is structural: a one-shot send_later chain re-arms itself, so any cycle that arms 'just in case' permanently doubles the chain. list_triggers, update_trigger and delete_trigger all require an approval the owner cannot give while asleep, so pruning afterwards is impossible -- the only lever is not arming in the first place.",
-  "cadenceFireAt": "2026-08-25T07:18:00Z",
+  "cadenceFireAt": "2026-08-25T07:36:00Z",
   "watchdogFireAt": "2026-08-24T06:19:00Z",
   "knownExtraChains": "Cleared 2026-08-24 20:52Z. Every chain from the overnight run was a one-shot and all had fired by 06:19Z, so the duplicates noted below are dead. Re-armed by owner request at 21:06Z as a single chain. If a cycle finds cadenceFireAt in the future, it must NOT arm -- that is what doubled the chain last night.",
-  "cadenceTriggerId": "trig_01D2LkMHAsSJr4SBp8PSAkcB",
+  "cadenceTriggerId": "trig_01YZdtqNx18Hv5WRxGpZE2gG",
   "armedBy": "owner request, 2026-08-24 -- 'rearm'",
   "reparseInFlight": "run #160 (v71, commit 00bda330, started 06:47Z)",
   "lastGap": "Chain died after the 23:52Z cycle and was revived at 02:05Z: ~2h10m, roughly 8 cycles missed. Cause was session idleness, not a trigger failure.",
@@ -13,5 +13,6 @@
   "watchdog": "hourly cron watchdog proposed to owner 03:40Z, approval pending \u2014 would revive the chain when cadenceFireAt is in the past. Chain died 23:52Z-02:05Z once tonight (~8 cycles); that is the failure mode it covers.",
   "v70": "SHIPPED as #159; v69 landed and mirrored (55c25f5)",
   "v71": "committed [skip ci], gate 20/20: grand/net damaged totals, 4i footnote rows (107), institution-suffixed house names \u2014 ships after #159",
-  "mainVersion": "v69 \u2014 v70 landed but was NOT mirrored (five real-menu losses; region-scoring regression)"
+  "mainVersion": "v69 \u2014 v70 landed but was NOT mirrored (five real-menu losses; region-scoring regression)",
+  "v72": "committed [skip ci], gate 20/20: 2,174 type-named rows \u2014 ships after #160"
 }
