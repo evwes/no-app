@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 79;
+export const PARSER_VERSION = 80;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -1861,10 +1861,30 @@ export function extractPlanFeatures(text) {
     } else {
       // fall back to the descriptive sentence, skipping form-page boilerplate
       const mre = /(?:employer|company|plan sponsor|organization|school|firm)(?:['’]s)? (?:made |makes |will make |shall make |may make |also )?(?:safe harbor )?match(?:ing|ed)? (?:safe harbor )?(?:401\(k\) )?contributions?|matching contributions? (?:is|are|equal|of|based|provided)/gi;
+      /* v80: the fallback takes the first sentence carrying match vocabulary,
+       * and "matching contributions" appears in sentences that are ABOUT
+       * something else — who is eligible for them, when they vest, how much
+       * was contributed in dollars, how accounts are credited. Measured across
+       * the 8,711 quote-only rows: 2,242 (26%) are one of those, so a quarter
+       * of the match quotes shown to users describe eligibility or vesting.
+       * A blank is better than a sentence about the wrong thing.
+       * The test is conservative: another topic's vocabulary only disqualifies
+       * a sentence that states NO RATE. "The Company matches 50% … and
+       * matching contributions vest over three years" keeps its quote, because
+       * the rate is right there. And the loop now CONTINUES rather than
+       * stopping, so a filing whose first hit is the eligibility paragraph can
+       * still reach its real match sentence further down. */
+      const OTHER_TOPIC = /\b(?:are eligible|becomes? eligible|eligibility|entry date|attain(?:ed|ing) (?:the )?age|vested|vesting|non-?forfeitable|forfeit\w*)\b/i;
+      const DOLLAR_TOTAL = /\b(?:amounted to|totall?ing)\s*\$[\d,]|\bcontributions? of (?:approximately )?\$[\d,]/i;
+      const ACCT_MECH = /each participant'?s? account is credited|participant accounts?\s*[-:\u2013]/i;
+      const HAS_RATE = /\d\s?(?:percent|%)|\$\s?\d[\d.]*\s*(?:for|per)\s+(?:each|every)?\s*\$/i;
       let mm;
       while ((mm = mre.exec(t))) {
         const s = sentence(mm.index);
-        if (!BOILER.test(s) && s.length > 60) { out.matchText = s; break; }
+        if (BOILER.test(s) || s.length <= 60) continue;
+        if (ACCT_MECH.test(s)) continue;
+        if (!HAS_RATE.test(s) && (OTHER_TOPIC.test(s) || DOLLAR_TOTAL.test(s))) continue;
+        out.matchText = s; break;
       }
     }
   }
