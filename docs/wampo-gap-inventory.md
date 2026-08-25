@@ -675,3 +675,15 @@ The funds are identifiable and the values are right, so this is a naming defect
 rather than a coverage one. Not yet measured universe-wide; the query to run is
 stored names where a known house name appears SPLIT around other words
 (house-first-word … house-last-word).
+
+
+## RESOLVED 2026-08-25 — double-rendered regions (v77 prefix split)
+
+The "ten double-rendered regions at ratio ~1.9" and "Westlie Motor's rounded
+second rendering with a plan-name prefix" entries above are CLOSED. v77 reads
+the region's rows in filed order and cuts where the running total passes the
+plan's assets, gated on the suffix re-stating the prefix. 22 of the 24 v73
+casualties are confident again at ratio 0.95-1.07.
+
+Still open from that family: Hertzberg-New Method (20260715120255NAL0002049331001)
+has no readable region at all — a different problem, not a doubling.

@@ -3936,3 +3936,52 @@ contain, it removed 288 non-holdings and cut audit HIGH findings by three
 quarters.
 
 568 filings tested cumulatively.
+
+## Report #53 — the boundary the filing cannot fake
+
+No batch; #164 was still parsing, so the window went to the last big item on the
+board: the ten double-rendered regions stuck at ratio ~1.9 since v73.
+
+**What made them unreachable.** Two copies of the schedule inside one region,
+with no 4i heading between them — so no candidate region covers just one — and
+the copies share neither names nor values. The second prefixes the plan's own
+name and rounds to thousands. v74's name-dedup view saw nothing to merge;
+v74's value-pair view saw no pairs.
+
+**What worked: filed order and arithmetic.**
+
+```
+ 17    233344  cum=  7,543,234   Victory Sycamore Established Value   <- assets $7.78M
+ 18    753000  cum=  8,296,234   4 Bears Casino & Lodge 401(k) Plan AVUVX Avantis…
+```
+
+A schedule sums to the plan's assets exactly once. Cut where the running total
+passes it, offer the prefix as a candidate, let scoring decide.
+
+**The gate stopped it twice.**
+
+1. **A specimen was lying.** Old Republic had been running against a rounded
+   `1400000000` while the filing reports **2,125,326,350** — so a correct parse
+   looked like ratio 1.49, and the new split obligingly trimmed it from 30 rows
+   to 27. The gate caught a parser change that was reacting to a bad input. A
+   gate is only as good as its inputs; that one had been mis-stating a $2.1B
+   plan's size for as long as the specimen existed.
+2. **"Trim until the arithmetic works" is not a fix.** On Power Design the split
+   lopped the tail off an Empower code page and scored the remainder — four
+   "1GGCG25" codes and all — past the honest 27-row schedule, because four codes
+   in thirty-three rows falls under the code-page share and the v52 penalty
+   stopped applying. Two general fixes: a repair is classified by its PARENT
+   region, and a cut only counts as a boundary when the suffix RE-STATES the
+   prefix (≥40% of suffix rows sharing two substantial words with some prefix
+   row). 4 Bears' second copy shares "avantis", "small", "value". A code page
+   shares nothing.
+
+**22 of 24 recovered**, ratio 0.95–1.07. 140 cached filings: confident 41 → 65,
+one loss (a fund-house page already correctly demoted). Gate 28/28.
+
+**The episode in full:** v73 opened it by relaxing a guard; closing it took four
+attempts — hard-dedup by name, value-pair collapse, then the ordered prefix —
+because each attempt only saw the copies that differed the way that attempt
+could detect. What finally worked ignored the text entirely.
+
+578 filings tested cumulatively. v76 re-parsing as #164; v77 committed [skip ci].
