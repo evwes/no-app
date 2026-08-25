@@ -3785,6 +3785,58 @@ would subsume all three.
 
 135 cached filings: confident 40 → 51, gate 28/28.
 
+## 2026-08-25 — v74's verdict: +224 confident, every loss explained, MAIN MIRRORED
+
+Run #162: confident +81, lineups +80, HIGH 25 → 21 vs the previous run. Against
+live main (v69): **59,085 → 59,309 confident, +224 net — 177 lost, 401 gained.**
+
+**All 177 losses triaged by class**, the way v73's were:
+
+| class | lost | intended? |
+|---|---|---|
+| bare fund-house pages | 115 | yes — the v73 provider-page fix |
+| address blocks (ABCDEFGHI / c/o) | 17 | yes — v74 |
+| EIN digits as dollars | 5 | yes — v74 |
+| fee / expense note rows | 4 | yes — v74 |
+| contribution-source rows | 3 | yes — v75 (already in these acks' data) |
+| other junk (<5 fund-shaped rows) | 18 | yes |
+| **did not fit any story** | **15** | **opened individually** |
+
+Of the 15: **six are the known v73 doubling casualties** already recorded in the
+gap inventory (CMD, Mitek, 4 Bears, New Challenges, Catalyst Medical,
+Hertzberg-New Method). The other **nine were correct demotions**, confirmed by
+reading the rows on both sides:
+
+- Cleveland-Cliffs ×4 — dropping one junk row took them from 9 rows to 8, which
+  is where the trust-pointer rule starts applying. "Investments in Master
+  Trust", "Net Master Trust assets" — these plans DO point at a master trust and
+  the real menu lives in the trust's own filing. Right answer, reached
+  incidentally.
+- National Pool Partners — same rows, same ratio, but "Mutual fund - balanced",
+  "Collective funds" now register as statement vocabulary. Class labels, not a
+  menu.
+- Select Sires — five rows reading "DESCRIPTION: MUTUAL FUND", "DESCRIPTION:
+  MUTUAL FUND +", "DESCRIPTION: MUTUAL FUND ”". The punctuation-normalised dedup
+  key merged them, correctly: it was one garbage string rendered four ways.
+- Aero Gear — OCR gibberish on both sides ("; . 63,916 Units ee aneuard I
+  Wangued LifeStrateey Income Fund"). Sixteen junk rows became two.
+- Variety Child Learning Center — nine rows of the plan's own title block.
+- Cleveland-Cliffs Steel (another) — statement rows ("NET (DECREASE) INCREASE",
+  "in value of investments") replaced by two honest class aggregates, below the
+  three-row floor.
+
+**Mirrored to main** (deb7bd1d), clearing v70, v71, v73 and v74 together. Main
+had been on v69 since the v70 hold. As of this mirror the live site no longer
+shows 390 plans a NAICS business code as a holding, 728 an EIN's digits as
+dollars, or 226 a bare list of fund houses.
+
+**What the triage-by-class method bought.** v73's verdict hid 24 broken menus
+behind +143. This time the same +224-shaped number came with 162 losses that
+fell into classes I had deliberately created and 15 that did not — and the 15
+were the entire reading list. Sorting losses by expected cause turns "read every
+loss" from an unbounded chore into a short list, and the short list is where the
+findings are.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
