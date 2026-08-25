@@ -3620,3 +3620,40 @@ subtotal below, and the filing went 26 rows to 4. Exact equality only.
 84 cached filings: confident 22 → 32, zero losses. Gate 26/26.
 
 488 filings tested cumulatively. v73 re-parsing as #161; v74 committed [skip ci].
+
+## Report #45 — the shape behind the small class
+
+Batch verdicts: NAMES_MATCH 5, PRIOR_YEAR_SOURCE 3, OCR_SOURCE 1, ISSUER_KEPT
+1. Again no defect verdicts; again the row-quality review is what found things.
+
+**Shipped: the share count glued to the name.** Claim Assist Solutions was
+displaying seven rows like "43,206 13 days delinquent $43,206" — Schedule H
+line 4a late contributions, with the value duplicated into the name. Measured
+universe-wide: ONE entry, seven rows. Not worth a rule.
+
+But the SHAPE was — a name beginning with its own value. Measured that instead:
+**80 rows across 57 entries, 56 confident**, and reading them they are real
+holdings. Money-market and stable-value funds hold units at $1.00, so shares
+and dollars coincide and the count lands in front of the name: "12,553,193
+Money Market Fund", "8,669,840 FIDELITY BANK TRUST SHORT TERM INVESTMENT FUND".
+So: strip the prefix, keep the row, leave every sum untouched.
+
+**The fix needed its own fix, and the gate found it.** Stripping made Janus's
+two money funds collide into one $15.2M row — column (b) said Vanguard Treasury
+on one and Janus Henderson Government on the other. Splitting by issuer fixed
+that, but unscoped it also split a managed account's itemized "Preferred stock"
+rows, which are collapsed on purpose, moving $19.4M out of the carry-forward
+specimen's displayed list. Scoped to rows the strip renamed, both are right.
+
+**Two classes measured and deliberately left alone.** Materials Testing
+Consultants shows nothing despite 34 correctly parsed Principal holdings,
+because comparative-statement class labels get summed across the current and
+prior year columns ($5,502,063 + $4,918,268 = $10,420,331, exactly) and push
+the region to ratio 2.98. The obvious rule matches 3,378 entries / 3,091
+confident, and reading them, most matches are REAL holdings that merely start
+with class vocabulary. Recorded in the gap inventory with the mechanism and
+where a real fix would go, rather than shipped.
+
+93 cached filings: confident 25 → 35, no confident losses. Gate 27/27.
+
+498 filings tested cumulatively. v73 re-parsing as #161; v74 committed [skip ci].
