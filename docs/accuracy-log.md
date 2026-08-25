@@ -3837,6 +3837,37 @@ were the entire reading list. Sorting losses by expected cause turns "read every
 loss" from an unbounded chore into a short list, and the short list is where the
 findings are.
 
+## 2026-08-25 — v76: FEIN. A guard is only as wide as the spellings it was shown
+
+**The defect.** "OCEAN'S ELEVEN CASINO 401(k) PLAN PLAN FEIN#: 33- $733,380"
+walked straight past the EIN guard shipped in v74 the SAME DAY. That rule
+anchors on `\bein\b`, and in "FEIN" there is no word boundary before the "ein".
+
+Measured on rows the v74 rule does NOT already catch: **255 rows across 252
+entries, 236 of them CONFIDENT**, with fabricated values to $4.7M. Filers write
+it every way there is — "FEIN 36-", "FEIN: 94-", "FEIN #75-", "PLAN FEIN 98-",
+"EIN; 54-", "Plan No./EIN: 003/38-".
+
+**The fix** widens both halves: an optional F, and a permissive separator run
+after the word rather than a fixed punctuation class. Verified against surnames
+that end in the same letters — Bernstein, Klein, AllianceBernstein all survive,
+because the word boundary is what excludes them and that part was never wrong.
+
+**Why this one is worth an entry despite being three characters of regex.** The
+original v74 measurement found 773 rows and I treated the class as closed. It
+was not closed; it was as closed as the sample I had looked at. The same shape
+has now happened four times in one day — placeholder letters, then instruction
+text, then care-of notation, then FEIN — each a different spelling of the same
+underlying defect, each found only when a filing happened to show it.
+
+The standing rule this adds: **after fixing a class, search for the variants
+you did not sample.** A one-line query for near-misses ("rows matching the
+concept but NOT matching my new rule") would have found all 255 of these
+immediately after v74 shipped, and would have found the c/o rows immediately
+after the ABCDEFGHI fix. That query is cheap and it is now part of the loop.
+
+140 cached filings: confident 41 → 52, gate 28/28, no new losses.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

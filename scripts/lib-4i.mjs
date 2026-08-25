@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 75;
+export const PARSER_VERSION = 76;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -733,7 +733,14 @@ export function parseRows(section, opts = {}) {
      * but in 99 entries it is over a quarter, and those are the ones to read
      * in the re-parse verdict. A confidence band propped up by an invented
      * seven-figure holding was never real. */
-    if (/\b(?:ein|employer identification(?: number)?)\s*[:#–—-]?\s*\d{0,2}\s*[-–—]?\s*$/i.test(name.trim())) { nameBuf = []; continue; }
+    /* v76: FEIN. The v74 rule above anchored on `\bein\b`, and in "FEIN" the
+     * word boundary is not there — "OCEAN'S ELEVEN CASINO 401(k) PLAN PLAN
+     * FEIN#: 33- $733,380" walked straight past a guard written that same day.
+     * Measured on rows the v74 rule does NOT already catch: 255 rows across
+     * 252 entries, 236 of them CONFIDENT, values to $4.7M. Filers write it
+     * "FEIN 36-", "FEIN: 94-", "FEIN #75-", "PLAN FEIN 98-".
+     * A guard is only as wide as the spellings it was shown. */
+    if (/\b(?:f?ein|employer identification(?: number)?)\b[\s:;#.,\/–—-]*\d{0,3}(?:[\/–—-]\d{0,3})?[\s–—-]*$/i.test(name.trim())) { nameBuf = []; continue; }
     /* Income phrases that name no fund. Deliberately only these three: the
      * measurement over 6,890 income-shaped stored rows is overwhelmingly REAL
      * fund vocabulary ("Vanguard Target Retirement Income" 1,223, "Dodge & Cox
