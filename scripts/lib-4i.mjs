@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 69;
+export const PARSER_VERSION = 70;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -402,6 +402,11 @@ export function parseRows(section, opts = {}) {
       .replace(/\s*[-–—]\s*see$/i, "")
       .replace(/\s{2,}/g, " ").trim();
     if (!name || name.length < 4) continue;
+    /* v70: STOPWORD FRAGMENTS. "of year" was a $0.3B plan's top holding —
+     * the tail of a wrapped "…at end of year" heading, four characters past
+     * the minimum-length check and made of nothing but function words. A name
+     * that is only prepositions plus a generic time/scope noun names nothing. */
+    if (/^(?:of|at|in|for|to|from|the|and|as)(?:\s+(?:of|at|in|the|a))?\s+(?:years?|periods?|dates?|plans?|end|beginning|december|june)$/i.test(name.trim())) { nameBuf = []; continue; }
     // financial-statement rows ("Participants 41,200,000", "Company",
     // "Rollover", "From participants") leak in when a candidate region
     // sweeps a contributions schedule — bare finance nouns are never funds

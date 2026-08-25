@@ -3147,3 +3147,37 @@ covered by the v67 shape guard.
 270 filings tested cumulatively. This cycle is the argument for the #28
 lesson: a batch with zero flagged verdicts still contained a defect that had
 been sitting in the largest row of a half-billion-dollar plan.
+
+## (10 fund report) #30 — 2026-08-25 04:00Z cycle — "of year", and v68's verdict read
+
+5 NAMES_MATCH, 4 PRIOR_YEAR_SOURCE, 1 ISSUER_KEPT (Vanguard x5, PIMCO x2,
+American Funds, DFA, Fidelity, BlackRock — stored on 75% of rows, v67
+confirmed working again).
+
+Ran the #28/#29 check on the quiet verdicts, and it paid again:
+
+    n= 6 class%=29  "Collective Investment Trust Fund"
+    n= 6 class%=83  "Mutual Funds"                      <- class table
+    n= 6 class%= 0  "INVESTMENTS (at Fair Value)"       <- v69 fixes
+    n= 4 class%= 0  "of year"                           <- NEW DEFECT
+    n= 9 class%= 3  "Investments in Master Trust"       (trust pointer)
+    n=21 class%= 0  "Vanguard"                          <- bare manager name
+
+**"of year" was a $0.3B plan's top holding** — the tail of a wrapped "…at end
+of year" heading, four characters past the minimum-length check and made of
+nothing but function words. Fixed as v70: a name that is only prepositions
+plus a generic time/scope noun names nothing. Verified that "Fund of Funds
+Growth Portfolio" and "Bank of America…" still parse. Gate 20/20.
+
+**Noted, not yet fixed:** a row whose NAME is a bare manager ("Vanguard") on
+a 21-row entry. Since v67 stores the manager separately as `iss`, a name that
+is only a manager is likely a header leak — but one instance is not a
+measurement, and the last two attempts to generalise from one specimen were
+both refused by the gate. Watching for a second.
+
+**Also this cycle: v68's re-parse verdict was read and mirrored** (see the
+accuracy log). +20 confident, and nine of ten losses were a v68 bug of mine,
+not junk — the filler strip had eaten "Variable Annuity Contract". v69 ships
+that repair and is re-parsing now as run #158.
+
+280 filings tested cumulatively.
