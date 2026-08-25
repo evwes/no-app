@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 81;
+export const PARSER_VERSION = 82;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -2300,7 +2300,22 @@ export function extractPlanFeatures(text) {
       if (IMMED.test(s)) {
         out.vesting = "Immediate"; out.vestingText = cap(s); break;
       }
-      if (!out.vestingText && !/forfeit/i.test(s)) out.vestingText = cap(s);
+      /* v82: the same wrong-topic defect v80 fixed for the match quote —
+       * measured separately here rather than ported blind, because the two
+       * fields fail differently. A sentence can mention employer money AND
+       * the word "vested" while describing loans, in-service withdrawals,
+       * hardship distributions or "refer to the plan document"; 93 stored
+       * rows display one under Vesting ("The Plan permits participants … to
+       * borrow a minimum of $500 …").
+       * The escape hatch is load-bearing and was found by measuring: 38 of
+       * the 108 sentences this pattern matches ALSO carry the plan's real
+       * schedule, because the sentence window spans the schedule and the
+       * "Notes Receivable from Participants" heading that follows it. Some
+       * carry a whole Years/Percent table. Dropping on the topic marker
+       * alone would have deleted them. */
+      const offTopic = /notes receivable from participants|\bborrow\b|obtain loans|in.?service withdrawal|available for withdrawal|\bhardship|refer to the (?:basic )?plan document|reference should be made to|summary plan description|eligibility (?:requirements|rules)|payment of benefits|lump.?sum distribution|may be withdrawn/i.test(s)
+        && !/years? of (?:vesting |credited |continuous )?service|vesting schedule|\bgraded\b|\bcliff\b|\d{1,2} ?% vested|percentage vested|vested percentage|immediately vested|vested immediately|fully vested (?:at all times|immediately|in all)|100 ?% vested (?:at all times|immediately|in all)|at all times|schedule below|as follows|following schedule/i.test(s);
+      if (!out.vestingText && !/forfeit/i.test(s) && !offTopic) out.vestingText = cap(s);
     }
   }
   // LAST of the vesting readers: a 4-6yr full-vesting horizon fills a gap

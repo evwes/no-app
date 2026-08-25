@@ -4129,6 +4129,33 @@ Seven of these filings are now gate specimens, and three of them assert
 on them); they exist to fail the *next* person who widens this gate without
 writing the guards, which is exactly the mistake the measurement caught here.
 
+### v82 — 93 plans showed their loan note under "Vesting"
+
+The same wrong-topic defect v80 fixed for the match quote, measured separately
+because the two fields fail differently. A sentence can name employer money and
+the word "vested" while describing something else entirely:
+
+> "Notes Receivable from Participants — The Plan has a loan feature under which
+> active participants may borrow up to 50% of the current value of…"
+
+That shipped as a plan's vesting disclosure. 93 stored rows carry one — loan
+provisions, in-service withdrawals, hardship distributions, "reference should be
+made to the summary plan description".
+
+**The escape hatch is the whole fix, and only measuring found it.** The topic
+pattern matches 108 sentences, but **38 of them also carry the plan's real
+schedule** — some an entire Years/Percent table — because the sentence window
+spans the schedule and the "Notes Receivable from Participants" heading that
+follows it. Dropping on the topic marker alone would have deleted real
+schedules to remove misleading ones. The rule is therefore *off-topic AND no
+schedule content*, which drops 93 and keeps all 38.
+
+Measured on the 955 cached filings: labels unchanged (27 gained, 0 lost, 1
+relabelled — identical to v81), 4 quotes dropped, every one loan or hardship
+text. The gate's feature arm gained a `quote: null` specimen, which is what
+makes it protective: a change that restores a wrong-topic quote still passes
+the vesting check and fails on the quote.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

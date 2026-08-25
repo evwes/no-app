@@ -55,6 +55,14 @@ const FEATURE_SPECIMENS = [
    * to "2-year cliff" and that is the review moment. */
   ["Two schedules, graded wins on document order", "20250716082243NAL0004508352001",
     { vesting: "Graded schedule" }],
+  /* v82 quote hygiene: no schedule AND no quote. This filing's only sentence
+   * mentioning employer money and "vested" is its loan note — "The Plan has a
+   * loan feature under which active participants may borrow up to 50% of the
+   * current value of…" — which shipped as the plan's vesting disclosure.
+   * `quote: null` is what makes this specimen protective: a change that
+   * restores the quote passes the vesting check and fails here. */
+  ["Loan note shown as the vesting quote", "20251205083856NAL0003062993001",
+    { vesting: null, quote: null }],
 ];
 
 const SPECIMENS = [
@@ -256,9 +264,14 @@ for (const [label, ack, expect] of FEATURE_SPECIMENS) {
   if (text === null) { console.log(`GATE SKIP  ${label}: specimen unreachable after retries`); continue; }
   const ff = extractPlanFeatures(text) || {};
   const got = ff.vesting || null;
-  const ok = expect.vesting === null ? got === null : got === expect.vesting;
+  const gotQuote = ff.vestingText || null;
+  let ok = expect.vesting === null ? got === null : got === expect.vesting;
+  // `quote: null` asserts NO quote either — a change that restores a
+  // wrong-topic quote passes the vesting check and must still fail here
+  if (ok && "quote" in expect) ok = expect.quote === null ? gotQuote === null : !!gotQuote;
   console.log(`GATE ${ok ? "OK  " : "FAIL"} ${label}: vesting=${got === null ? "(none)" : got}` +
-    (ok ? "" : ` (expected ${expect.vesting === null ? "(none)" : expect.vesting})`));
+    ("quote" in expect ? ` quote=${gotQuote === null ? "(none)" : "present"}` : "") +
+    (ok ? "" : ` (expected ${expect.vesting === null ? "(none)" : expect.vesting}${"quote" in expect ? ` / quote ${expect.quote === null ? "(none)" : "present"}` : ""})`));
   if (!ok) failed++;
 }
 
