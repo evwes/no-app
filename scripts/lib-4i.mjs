@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 71;
+export const PARSER_VERSION = 72;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -111,9 +111,21 @@ function cleanDesc(desc) {
 /* True when a description column only states the investment TYPE ("Registered
  * Investment Company", "Common/Collective Trust") rather than naming a fund. */
 function typeOnly(desc) {
-  let r = desc;
+  /* v72: a trailing VALUE or footnote marker defeats the type test. Filings
+   * print "Mutual funds   291,224 (1)" in the description column, and those
+   * digits kept the phrase from reading as type-only — so the type won the
+   * name and the real fund ("BlackRock Lifepath Index 2035 Fd") was demoted
+   * to the issuer field. Measured: 2,174 rows have the product in `iss` and a
+   * type in the name. */
+  let r = String(desc).replace(/\s+[\d,]{3,}(?:\.\d+)?\s*(?:\(\d+\))?\s*$/, "").trim();
   for (const [re] of TYPE_PATTERNS) r = r.replace(re, " ");
-  r = r.replace(/\b(value of|interest in|the|a|an|of|in|at|held|funds?|accounts?|companies|company|end of year|publicly[- ]traded|common|trusts?|securit(y|ies)|contracts?|investments?)\b/gi, " ");
+  /* "guaranteed", "registered", "pooled", "separate", "collective",
+   * "commingled", "insurance", "mutual", "stable" are TYPE words, never a
+   * whole fund name on their own. Deliberately NOT added: "retirement",
+   * "value", "income" — each is load-bearing in real names ("Retirement 2040
+   * Fund I", "MFS Value Fund"), and stripping them would make a genuine fund
+   * read as type-only and hand the row back to the issuer column. */
+  r = r.replace(/\b(value of|interest in|the|a|an|of|in|at|held|funds?|accounts?|companies|company|end of year|publicly[- ]traded|common|trusts?|securit(y|ies)|contracts?|investments?|guaranteed|registered|pooled|separate|collective|commingled|insurance|mutual|stable|interest)\b/gi, " ");
   return r.replace(/[^a-z0-9]/gi, "").length < 6;
 }
 

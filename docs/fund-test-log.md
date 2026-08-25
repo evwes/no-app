@@ -3434,3 +3434,34 @@ Not reverted, because the name fix is large and real. The proper repair is at
 region SCORING and needs a measurement, not a 07:00 guess.
 
 360 filings tested cumulatively.
+
+## (10 fund report) #39 — 2026-08-25 07:18Z cycle — the mirror image of v70's defect
+
+7 NAMES_MATCH, 3 PRIOR_YEAR_SOURCE. Verdicts all clean; the row-quality check
+found three rows with their COLUMNS REVERSED:
+
+    AS SMALL CO VALUE R6                ||  Registered invesment company
+    Vanguard Target Retirement Incm Inv ||  Target Date Retirement Funds
+    American Funds 2015                 ||  Target Date Retirement
+
+The product sits in the issuer field and a TYPE is the displayed name — the
+exact mirror of the defect v67-v70 spent the night fixing.
+
+Measured: **2,174 rows** universe-wide. And this time the examples were
+HOMOGENEOUS, every one pointing the same way — which is what separated this
+from reports #35 and #37, where the examples were mixed and the right answer
+was to change nothing. The rule is doing real work in both directions now.
+
+Fixed as v72, two causes: a trailing value or footnote ("Mutual funds 291,224
+(1)") kept the phrase from reading as type-only, and several real type
+phrases were missing from the vocabulary ("Guaranteed Interest Contract" is a
+GIC).
+
+**The break test picked the vocabulary.** "retirement", "value" and "income"
+were left OUT on purpose: strip them and "Retirement 2040 Fund I" and "MFS
+Value Fund" read as type-only, which would hand those rows back to the issuer
+column and undo v70's headline fix. Verified both directions in one pass.
+Gate 20/20.
+
+370 filings tested cumulatively. v71 re-parsing as #160; main still on v69
+pending the region-scoring question from #38.

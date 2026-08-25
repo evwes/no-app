@@ -3293,6 +3293,42 @@ measurement rather than a 07:00 guess. Holding the mirror is the honest
 middle: the improvement stays in the branch, the live site keeps v69, and
 nobody sees a page lose its menu while this is worked out.
 
+## 2026-08-25 — v72: 2,174 rows named after the TYPE while the fund sat in the issuer field
+
+The reverse of the v70 defect, and found the same way — a row-quality check on
+a batch whose verdicts were all clean. Three rows in one batch read:
+
+    AS SMALL CO VALUE R6           ||  Registered invesment company
+    Vanguard Target Retirement Incm Inv ||  Target Date Retirement Funds
+    American Funds 2015            ||  Target Date Retirement
+
+The product is in the identity column, the TYPE is the displayed name.
+Measured universe-wide: **2,174 rows** where `iss` carries a share class,
+vintage or "Fund" and the name is a bare type. Unlike the last two
+measurements, the examples are HOMOGENEOUS — every one points the same way —
+which is what justified fixing rather than recording and stopping:
+
+    BlackRock Lifepath Index 2035 Fd  ||  Mutual funds 291,224 (1)
+    MFS Value Fund                    ||  Mutual funds 57,018 (1)
+    Empower Select Guaranteed Fund    ||  Guaranteed Interest Contract
+    Large Cap Growth II               ||  Common/collective trust 208,324
+
+**Two causes, both confirmed by reproducing the shapes locally.** First, a
+trailing VALUE or footnote defeats the type test: `typeOnly` sees "Mutual
+funds 291,224 (1)", strips its type words, and the digits keep the residue
+long enough to read as a real name. Second, several genuine type phrases were
+missing from the vocabulary — "Guaranteed Interest Contract" is a GIC, not a
+fund. Note the first example also contains an OCR typo ("invesment"), which
+this fix does NOT address; the trailing-debris strip is what recovers it.
+
+**The break test decided the vocabulary.** "retirement", "value" and "income"
+were deliberately NOT added: each is load-bearing in a real name, and
+stripping them makes "Retirement 2040 Fund I" and "MFS Value Fund" read as
+type-only, which would hand those rows straight back to the issuer column and
+undo v70's headline fix. Verified in one pass — the three reversed rows now
+name their fund, while "Great Gray | Index 2040 R" and "Fidelity | Contrafund
+Commingled Pool K6" are untouched. Gate 20/20.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
