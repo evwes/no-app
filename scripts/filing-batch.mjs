@@ -234,6 +234,14 @@ for (const [k, v] of Object.entries(tally).sort((a, b) => b[1] - a[1])) console.
 console.log("");
 for (const r of results) {
   console.log(`${r.verdict.padEnd(16)} ${r.ack}  ${String(r.rows).padStart(3)} rows  $${(r.assets / 1e9).toFixed(1)}B`);
-  if (r.issuers && r.issuers.length) console.log(`                 issuers dropped: ${r.issuers.join(", ")}`);
+  /* The label has to follow the verdict, not the detection. Once ISSUER_KEPT
+   * existed, printing "issuers dropped" under it reported a fixed defect as a
+   * live one — the same stale-claim mistake the verdict was added to end. */
+  if (r.issuers && r.issuers.length) {
+    const lbl = r.verdict === "ISSUER_KEPT" ? `issuers KEPT (stored on ${Math.round((r.issShare || 0) * 100)}% of rows)`
+      : r.verdict === "NAMES_MATCH" ? "issuers in the filing, partly stored"
+        : "issuers dropped";
+    console.log(`                 ${lbl}: ${r.issuers.join(", ")}`);
+  }
   else if (r.verdict === "WRONG_REGION") console.log(`                 ${r.namesFoundInFiling}/${r.namesChecked} stored names appear in the filing text`);
 }
