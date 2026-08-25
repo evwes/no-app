@@ -3080,3 +3080,42 @@ four LETTERS to remain. Dates and punctuation are not information.
 
 Gate 20/20 green throughout. v69 is committed with [skip ci] and ships once
 run #157 (v68) lands. 250 filings tested cumulatively.
+
+## (10 fund report) #28 — 2026-08-25 03:11Z cycle — the defect the tester cannot see
+
+General worklist, billion-dollar band: 7 NAMES_MATCH, 2 PRIOR_YEAR_SOURCE,
+1 OCR_SOURCE. Zero WRONG_REGION, zero ISSUER_DROPPED — and that clean sheet
+is what exposed the finding.
+
+**Five of the ten are billion-dollar plans whose entire "menu" is four to
+eight ASSET-CLASS labels**, and every one scored NAMES_MATCH:
+
+    ratio 0.97, top 78%  "Common collective trust funds"
+    ratio 1.04, top 97%  "Participant-Directed Investments - Interest in..."
+    ratio 0.90, top 99%  "INVESTMENTS (at Fair Value)"
+    ratio 0.97, top 87%  "CNA 401k PLAN"
+    ratio 0.88, top 53%  "Registered investment companies, at fair value"
+
+They pass every check the machine has. The label IS printed in the filing;
+the class IS worth that much; coverage ratio is ~1.0. NAMES_MATCH asks "is
+what we stored real?" and the answer is yes. It never asks "are these
+FUNDS?" — so a whole class of misrepresentation has been invisible to the
+instrument this whole time. Measured universe-wide: **380 plans** have class
+rows worth ≥50% of their table.
+
+**The fix is not in the parser, and the gate proved it.** I wrote a
+parser-side guard to drop bare class rows; it failed three specimens —
+Verizon trust 12→10 rows, Old Republic 30→11, carry-forward 7→6. Master
+trusts legitimately FILE class-level detail, and deleting those rows discards
+the only holdings information those filings give. Reverted.
+
+**So the rows stay and the claim changes.** The page now says the filing
+reports asset-class totals rather than individual funds, names the classes in
+the reader's own words, and states that the fund lineup is not public in this
+filing. An honest gap in the FILING, now labelled as one instead of dressed
+as a menu. Verified rendering on the NYDCC annuity plan ($3.7B, 55%).
+
+Two parser fixes also landed in v69 from this cycle: "INVESTMENTS (at Fair
+Value)" (the parenthesised statement row) now matches the v44 guard.
+
+260 filings tested cumulatively. Gate 20/20 green; smoke green.
