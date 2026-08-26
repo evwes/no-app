@@ -126,6 +126,37 @@ upon entry" (6), plus four shapes worth ≤7 each. Worth doing, and small.
 parser change reaches them, and inferring a schedule from Schedule R or plan
 type would be inventing filed data.
 
+## The match side, re-measured 2026-08-26 (the estimates above are stale)
+
+The figures earlier in this document — "~2,242 wrong-topic" and "~1,175 with an
+extractable formula" — were measured BEFORE v79 and v80 shipped. v79 took 1,176
+match formulas and v80 removed 2,556 misleading quotes. Re-measured against the
+current stored quotes, **the match side has no large well-evidenced target
+left**:
+
+| shape | rows |
+|---|---|
+| off-topic quote carrying no match evidence at all (pure display defect) | **1** |
+| tiered "N% of first M% and N% of next M%" the reader misses (no "match" word before the rate) | 3 |
+| single-tier "N% of first M%" with no "match" word | 9 |
+| off-topic but the sentence DOES discuss the match — leave alone | 1,801 |
+| no rate or dollar figure anywhere — nothing to extract | 3,320 |
+
+**A predicate error worth recording.** A first pass counted **412** rows as
+"containing an extractable formula". That was wrong: the pattern
+`match\w*[^.]{0,40}?\d{1,3}%` also matches dollar *totals* ("matching
+contributions of $412,000") and rate mentions that are not formulas. Narrowing
+to shapes that actually state a rate applied to deferrals collapsed 412 → 12.
+This is the third time this session that a population sweep over-counted because
+the predicate was loose, after 2,094 phantom "State Street" hits and 21 false
+ladder alarms. **Suspect the predicate before the data, and before writing any
+code against the number.**
+
+**Conclusion: no parser change was shipped for the match side.** Twelve rows do
+not justify a re-parse. The remaining match gap is the honest one — auditors who
+write "the Company may make a discretionary matching contribution" and never
+state a rate.
+
 ## Recommended next work, in order
 
 1. **Wrong-topic quotes** (2,242 match + 363 vesting): a sentence about
