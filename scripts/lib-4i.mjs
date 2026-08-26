@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 88;
+export const PARSER_VERSION = 89;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -1993,7 +1993,24 @@ export function extractPlanFeatures(text) {
     // step matched the cliff pattern and shipped a graded schedule as
     // "3-year cliff" (Wisconsin Cheese class, both hire-date cohorts)
     const steps = (s.match(/\d{1,2} ?(?:percent|%)(?: vested)? after (?:\w{3,5}|\d{1,2}) years?/gi) || []).length;
-    if (steps >= 2) { out.vesting = "Graded schedule"; out.vestingText = cap(s); break; }
+    /* v89: that pattern needs the percentage ADJACENT to "after N years", and
+     * auditors put the money type in between: "Participants become 50% vested
+     * in the Employer's matching contributions AND EARNINGS THEREON after two
+     * years of service and 100% vested after three years" counted one step, so
+     * the sentence fell through and its final step matched the cliff reader —
+     * shipping a 2-step ladder as a 3-year CLIFF. Measured on the v88 data:
+     * 175 rows, 75 stored as a cliff and 100 as "N-year schedule (shape not
+     * stated)". Held back until v88 because relabelling to a bare "Graded
+     * schedule" dropped the horizon; the post-pass now restores it, so the
+     * 100 schedule rows keep their year and gain the shape.
+     * Two DISTINCT percentages with at least one under 100 — distinct values,
+     * not step count, because two 100% steps are two cliffs for two money
+     * types. Additive by construction: only sentences the narrow detector
+     * could not see reach this. */
+    const wideSteps = [...new Set([...s.matchAll(/(\d{1,3}|one hundred) ?(?:percent|%)[^.]{0,130}?after(?: completing| the completion of)?[^.]{0,25}?\b(?:\w{3,5}|\d)\s+years?/gi)]
+      .map((m) => (String(m[1]).toLowerCase() === "one hundred" ? 100 : +m[1])))];
+    const wideLadder = wideSteps.length >= 2 && wideSteps.some((v) => v < 100);
+    if (steps >= 2 || wideLadder) { out.vesting = "Graded schedule"; out.vestingText = cap(s); break; }
     // 3rd alternative tolerates intervening words — "fully vested in
     // employer matching contributions, and earnings thereon, upon
     // completion of three years of service" (Northrop Grumman)

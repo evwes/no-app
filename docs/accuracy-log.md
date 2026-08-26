@@ -4456,6 +4456,43 @@ That labelled a 6-year schedule **4-year**. The horizon is now taken from the
 tables alike. Final: **0 lost, 0 gained, 72 enriched**, spread 2y(3) 3y(12)
 4y(12) 5y(29) 6y(16), which is the shape real DC schedules have.
 
+### v89 — the ladder the step detector could not see, unblocked by v88
+
+The multi-step detector requires the percentage ADJACENT to "after N years",
+and auditors put the money type in between:
+
+> "Participants become 50% vested in the Employer's matching contributions
+> **and earnings thereon** after two years of service and 100% vested after
+> three years"
+
+counted ONE step, so the sentence fell through and its final step matched the
+cliff reader — shipping a two-step ladder as a **3-year cliff**. Re-measured on
+the v88 data: **174 rows**, 75 stored as a cliff and 100 as "N-year schedule
+(shape not stated)". (The original sizing said 237; v86 and v87 had since
+absorbed part of it, which is why the rule is to re-measure rather than reuse a
+number.)
+
+**This was held back three cycles for a good reason and released for a good
+one.** Relabelling to a bare "Graded schedule" would have dropped the horizon —
+"6-year schedule" tells a participant when everything is theirs, "Graded
+schedule" does not. v88's horizon post-pass removed that objection: the 100
+schedule rows now become "6-year graded schedule" and gain the shape *without*
+losing the year.
+
+Additive by construction — only sentences the narrow detector could not see
+reach the new test — and the rule is two DISTINCT percentages with at least one
+under 100, because two 100% steps are two cliffs for two money types.
+
+**A verification note worth keeping.** The corpus diff saw **2** of the 174
+changes. Verification had to run against the stored quotes at population scale,
+where a first pass flagged 21 as lacking a clear sub-100 → 100 progression.
+Reading them, all were genuine ladders that write full vesting as "until the
+participant becomes **fully vested**" rather than a literal paired "100" — the
+CHECK was too strict, not the data. That is the second time this cycle a
+population sweep produced false positives from an over-strict predicate (the
+first cost 2,094 phantom hits on "State Street"). **When a sweep flags a
+surprising number, suspect the predicate before the data.**
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
