@@ -82,6 +82,18 @@ const FEATURE_SPECIMENS = [
   // a carve-out worded "but do not vest … until", not "except"
   ["'but do not vest in discretionary contributions until after three years'",
     "20260405212116NAL0005689857001", { vesting: null }],
+  /* v86: the cliff window between "100% vested" and "after N years" widened
+   * 80->130 chars, because the money-type list auditors write is long. These
+   * three pin the widening and the two guards it needed. */
+  ["Long money-type list bridged by the 130-char window",
+    "20250721115147NAL0001839184001", { vesting: "3-year cliff (Company matching contributions)" }],
+  // "ratably" means a share each year — calling it an N-year cliff says the
+  // participant gets nothing until year N, the opposite of true
+  ["'vest ratably … fully vested after three years' is graded, not a cliff",
+    "20251009151421NAL0015898770001", { vesting: "Graded schedule" }],
+  // a rule the filing has already replaced is not this plan's rule
+  ["'Prior to July 1, 2019, participants were fully vested … after three years'",
+    "20250522164643NAL0002778387001", { vesting: null }],
 ];
 
 const SPECIMENS = [

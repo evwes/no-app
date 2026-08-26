@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 85;
+export const PARSER_VERSION = 86;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -2013,9 +2013,29 @@ export function extractPlanFeatures(text) {
      * a cliff are a separate change — relabelling them "Graded schedule"
      * would drop the horizon, and "6-year graded" needs the frontend
      * considered. Recorded as a v85 candidate, not smuggled in here.) */
+    /* v86: the 80-char window between "100% vested" and "after N years" was
+     * cutting off the money-type list auditors actually write — "100% vested
+     * in the Company's discretionary employer match and discretionary
+     * non-elective profit-sharing contributions, if any, after 5 years" is
+     * 130 characters wide. Sized against the stored quotes: 163 rows that
+     * state a plain cliff and carried no label, none of them ladders, none
+     * with an unusable year.
+     * The extra width can bridge TWO vesting claims, though, and then the
+     * years belong only to the later one: "100% vested in the Company match
+     * … and are vested in the Company RETIREMENT CONTRIBUTION upon completion
+     * of 2 years" is two employer sources with different rules.
+     * Scoped per the standing rule: this guard applies ONLY where the extra
+     * width was needed. A span the 80-char window already matched keeps its
+     * old answer — measured, a global version would have removed 13 existing
+     * cliff labels, and reading them they are almost all correct, because the
+     * commonest two-claim sentence is "employee money immediate AND employer
+     * money after N years", where the cliff describes the employer money. */
+    const cliffNarrow = /(?:(?:100|one hundred) ?(?:percent|%)|fully) vest(?:ed)?[^.]{0,80}?(?:after|upon)(?: the)?(?: complet\w+(?: of)?)? (?:\w{3,5}|\d) years?/i.test(s);
+    const twoClaims = (span) => !cliffNarrow
+      && /\bvest(?:ed|s|ing)?\b[^.]{0,120}?\b(?:and|but|while|whereas)\b[^.]{0,60}?\bvest(?:ed|s|ing)?\b/i.test(span);
     const ladderPcts = [...new Set([...s.matchAll(/(\d{1,2}|100) ?(?:percent|%)(?: vested)?[^.]{0,130}?after(?: completing| the completion of)?[^.]{0,25}?(?:\w{3,5}|\d{1,2}) years?/gi)].map((m) => +m[1]))];
     const isLadder = ladderPcts.length >= 2 && ladderPcts.some((v) => v < 100);
-    const cliff = s.match(/(?:(\w{3,5}|\d)[- ]year cliff|cliff vesting[^.]{0,40}?(\w{3,5}|\d) years?|(?:(?:100|one hundred) ?(?:percent|%)|fully) vest(?:ed)?[^.]{0,80}?(?:after|upon)(?: the)?(?: complet\w+(?: of)?)? (\w{3,5}|\d) years?|0 ?(?:percent|%) vested until (\w{3,5}|\d) years|vests? (?:100|one hundred) ?(?:percent|%)[^.]{0,60}?(?:after|upon)(?: the)?(?: complet\w+(?: of)?)? (\w{3,5}|\d) years?|vest(?:ing|s)?\b[^.]{0,170}?credited with (\w{3,5}|\d) years? of (?:vesting |credited |continuous )?service|\bvest(?:ed|s)?\s+(?:at\s+)?(?:100|one hundred) ?(?:percent|%)[^.]{0,60}?(?:after|upon|following)(?: the)?(?: complet\w+(?: of)?)?\s+(\w{3,5}|\d)[\s(]*\d?\)?\s*years?|vesting of (?:100|one hundred) ?(?:percent|%)[^.]{0,40}?after[^.]{0,25}?(\w{3,5}|\d) years?|(?:100|one hundred) ?(?:percent|%) vesting occurr\w+[^.]{0,40}?after[^.]{0,25}?(\w{3,5}|\d)[\s(]*\d?\)?\s*years?|\b(?:fully |(?:100|one hundred) ?(?:percent|%) )vest\w*[^.]{0,110}?after (?:obtaining|completing|they complete)[^.]{0,25}?(\w{3,5}|\d) (?:or more )?years?|\bvest\w*[^.]{0,60}?(?:fully|(?:100|one hundred) ?(?:percent|%))[^.]{0,60}?after (?:obtaining|completing|they complete)[^.]{0,25}?(\w{3,5}|\d) (?:or more )?years?|\bis (?:100|one hundred) ?(?:percent|%) after[^.]{0,25}?(\w{3,5}|\d) years?)/i);
+    const cliff = s.match(/(?:(\w{3,5}|\d)[- ]year cliff|cliff vesting[^.]{0,40}?(\w{3,5}|\d) years?|(?:(?:100|one hundred) ?(?:percent|%)|fully) vest(?:ed)?[^.]{0,130}?(?:after|upon)(?: the)?(?: complet\w+(?: of)?)? (\w{3,5}|\d) years?|0 ?(?:percent|%) vested until (\w{3,5}|\d) years|vests? (?:100|one hundred) ?(?:percent|%)[^.]{0,60}?(?:after|upon)(?: the)?(?: complet\w+(?: of)?)? (\w{3,5}|\d) years?|vest(?:ing|s)?\b[^.]{0,170}?credited with (\w{3,5}|\d) years? of (?:vesting |credited |continuous )?service|\bvest(?:ed|s)?\s+(?:at\s+)?(?:100|one hundred) ?(?:percent|%)[^.]{0,60}?(?:after|upon|following)(?: the)?(?: complet\w+(?: of)?)?\s+(\w{3,5}|\d)[\s(]*\d?\)?\s*years?|vesting of (?:100|one hundred) ?(?:percent|%)[^.]{0,40}?after[^.]{0,25}?(\w{3,5}|\d) years?|(?:100|one hundred) ?(?:percent|%) vesting occurr\w+[^.]{0,40}?after[^.]{0,25}?(\w{3,5}|\d)[\s(]*\d?\)?\s*years?|\b(?:fully |(?:100|one hundred) ?(?:percent|%) )vest\w*[^.]{0,110}?after (?:obtaining|completing|they complete)[^.]{0,25}?(\w{3,5}|\d) (?:or more )?years?|\bvest\w*[^.]{0,60}?(?:fully|(?:100|one hundred) ?(?:percent|%))[^.]{0,60}?after (?:obtaining|completing|they complete)[^.]{0,25}?(\w{3,5}|\d) (?:or more )?years?|\bis (?:100|one hundred) ?(?:percent|%) after[^.]{0,25}?(\w{3,5}|\d) years?)/i);
     if (graded) { out.vesting = "Graded schedule"; out.vestingText = cap(s); break; }
     if (cliff) {
       // v84 added five arms with the percentage AFTER the verb ("are vested
@@ -2030,6 +2050,17 @@ export function extractPlanFeatures(text) {
       // … and 100% vested after completing two years" is graded, and the
       // step-count detector above missed it because its window could not
       // span the clause between the percentage and "after"
+      if (twoClaims(cliff[0])) continue;
+      /* …and a rule the filing has already REPLACED is not this plan's rule:
+       * "PRIOR TO JULY 1, 2019, participants were fully vested in the
+       * employer's matching and profit-sharing contributions … after three
+       * years". Same scoping as twoClaims — 99 EXISTING cliff labels open
+       * with a date clause and that population is contaminated: "Participants
+       * HIRED BEFORE July 1, 2009 are 100% vested after three years" is a
+       * cohort, already labelled correctly by hireSplitLabel. Untangling
+       * those needs its own pass; this only stops the widening adding new ones. */
+      if (!cliffNarrow && /^[^.]{0,40}?\b(?:prior to|before)\s+(?:january|february|march|april|may|june|july|august|september|october|november|december|\d{1,2}\/|\d{4})/i.test(s)
+          && !/\bhired?\b|\bemployed\b|\bparticipants? (?:who|hired)\b/i.test(s)) continue;
       if (isLadder && gi >= 6) { out.vesting = "Graded schedule"; out.vestingText = cap(s); break; }
       const n = cliff[gi + 1];
       // ordinals too: "100% vesting is achieved after the FIFTH year of
@@ -2049,6 +2080,23 @@ export function extractPlanFeatures(text) {
       if (num >= 4 && num <= 6 && !horizonFallback) {
         horizonFallback = { num, text: s.length > 300 && cliff.index > 60
           ? cap("…" + s.slice(Math.max(0, cliff.index - 60))) : cap(s) };
+      }
+      /* v86: "ratably" / "pro-rata" / "in equal installments" means the
+       * participant earns a share each year — that is a GRADED schedule, and
+       * calling it an N-year cliff tells them they get nothing until year N,
+       * which is the opposite of true. 17 stored cliff labels say it outright:
+       * "A participant is 100% vested RATABLY after three years of credited
+       * service", "Vesting is on a ratable, three-year GRADUATED basis",
+       * "fully vested on a PRO-RATA basis after three years".
+       * Scoped to the CLIFF range (1-3) on purpose: a 4-6 year reading is
+       * already stored as "N-year schedule (shape not stated)", and turning
+       * that into a bare "Graded schedule" would DROP the horizon, which is
+       * the trade deferred as the v85 label-format candidate. */
+      if (num >= 1 && num <= 3 && /\bratabl[ey]\b|\bpro[- ]rata\b|\bin equal (?:annual )?installments\b/i.test(s)) {
+        out.vesting = "Graded schedule";
+        out.vestingText = s.length > 300 && cliff.index > 60
+          ? cap("…" + s.slice(Math.max(0, cliff.index - 60))) : cap(s);
+        break;
       }
       if (num >= 1 && num <= 3) {
         out.vesting = `${num}-year cliff`;

@@ -4304,6 +4304,57 @@ v85 moves 0 labels across 955 filings — so the check has to be run against the
 stored quotes at population scale, looking specifically for schedule content in
 whatever the rule removes.
 
+### v86 — a wider window, and two defect classes it exposed
+
+The largest item on the sized worklist: the cliff reader's window between
+"100% vested" and "after N years" was 80 characters, and the money-type list
+auditors actually write is longer than that —
+
+> "100% vested in the Company's discretionary employer match and discretionary
+> non-elective profit-sharing contributions, if any, **after 5 years**"
+
+is 130 characters wide. Widening it matches **163 stored quotes** that state a
+plain cliff and carried no label — none of them ladders, none with an unusable
+year. But the extra width can bridge two separate vesting claims, and then the
+years belong only to the later one:
+
+> "100% vested in the Company match … **and are vested in** the Company
+> RETIREMENT CONTRIBUTION upon completion of 2 years"
+
+**The guard is scoped to spans that needed the extra width**, per the rule
+earned on v81. Measured, a global version would have removed 13 existing cliff
+labels — and reading them they are almost all *correct*, because the commonest
+two-claim sentence is "employee money immediate AND employer money after N
+years", where the cliff describes the employer money. Two rows are excluded, 161
+kept.
+
+**Two pre-existing defect classes surfaced while sizing this**, neither of them
+caused by the widening:
+
+**"Ratably" is not a cliff — 17 stored labels.** "A participant is 100% vested
+RATABLY after three years of credited service"; "Vesting is on a ratable,
+three-year GRADUATED basis"; "fully vested on a PRO-RATA basis after three
+years". All were stored as N-year cliffs. That is not a smaller error than a
+blank: a cliff tells the participant they get **nothing** until year N, and
+ratable vesting gives them a share every year. Fixed — and deliberately scoped
+to the 1-3 cliff range, because a 4-6 year reading is already stored as
+"N-year schedule (shape not stated)" and converting that to a bare "Graded
+schedule" would DROP the horizon. That is the same trade held back as the v85
+label-format candidate, and it is not going to be smuggled in through a
+different door.
+
+**Superseded rules — 99 stored labels open with a date clause.** "PRIOR TO
+JULY 1, 2019, participants were fully vested … after three years" is the rule
+the plan *replaced*. But that population is contaminated and must not be swept:
+"Participants **HIRED BEFORE** July 1, 2009 are 100% vested after three years"
+is a cohort, not a superseded rule, and `hireSplitLabel` already labels it
+correctly. Only the newly-admitted spans are guarded here; untangling the
+existing 99 needs its own pass with the cohort distinction measured first.
+
+**Final: 0 lost, 0 changed, 4 gained on 955 filings** — strictly additive, each
+gain read against its filing. Three new gate specimens pin the widening and both
+guards.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
