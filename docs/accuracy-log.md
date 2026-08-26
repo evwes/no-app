@@ -4663,6 +4663,64 @@ Count replacements, not just gains and losses. Two runs in a row now (v87's
 suppressed quotes, this) the headline verdict was green while a same-state
 substitution went unmeasured underneath it.
 
+## 2026-08-26 (3/3) — v91: a match formula spliced from two different cohorts
+
+**Found by reading the plan the owner asked about.** The rescue recovered
+Verizon's management plan and it came back with a match — so I read the quote
+before reporting it, and the quote does not say what the label says:
+
+> "…Matching contributions are equivalent in value to **100% of the first 6%**
+> of eligible compensation that the participant contributes to the Plan. **For
+> all other union represented employees** eligible to participate in the Plan,
+> the employer-matching contributions are equivalent to **100% of the first 4%
+> and 50% of the next 2%** of eligible compensation."
+
+The label read **"100% of the first 6% of pay + 50% of the next 2%"** — the
+first tier of one population's formula welded to the second tier of another's.
+No participant in that plan receives it. The audit's formula-vs-quote check
+passes it, because 100, 6, 50 and 2 all appear in the quote.
+
+**The class, measured.** Of 6,853 two-tier labels in the store, **14** have a
+sentence boundary between their two tiers; reading all 14, **7 are cross-cohort
+or cross-period splices** (union vs non-union, hire-date classes, "certain
+other locations", two subsidiaries, a prior plan year) and **7 are genuine
+one-formula-two-sentences continuations** ("The Company will also contribute
+50% of the next 2%").
+
+**Why the existing guard missed them.** There *is* a break for a new match head
+in the following sentence, and it is a **verb-and-spelling list**:
+`makes|may make|will make|provide[ds]|receives|offers`, plus "match(ing)
+contributions was/were equal to". Verizon says "the employer-matching
+contributions **are equivalent to**" — missed by one word. Thetford says "The
+Company **contributes**". Ferroglobe says "The discretionary match … **is equal
+to**" without the word "contributions". This is the same failure shape as v76's
+FEIN guard: *a guard is only as wide as the spellings it was shown.*
+
+**The change (v91), vocabulary-free.** If the continuation sentence states its
+**own complete head** — "N% of the first M%" — whose rate or bound **differs**
+from ours, it is a different formula and its tiers do not chain. A restatement
+of the *same* head keeps chaining, which is what protects the legitimate cases
+("…to become a tiered match paying 100% of the first 3%, plus 50% of the next
+2%" restates our own head, so its tier is ours).
+
+**Verified both directions.** Across the 14: the 7 splices lose the fabricated
+tier and keep a true single-tier label; the 7 continuations are byte-identical.
+Across **1,265 locally cached filings**: exactly **2 field diffs**, both on the
+one splice filing in that set — the label loses the fabricated tier and the
+quote ends at the sentence that supports it. No quote was suppressed (the
+population check that has caught four regressions this month).
+
+Two gate specimens pin both directions, and the gate grew a **match arm** so a
+match label can be asserted at all: "Union tiers must not chain onto the
+non-union head" (must be single-tier) and "Same-population continuation still
+chains" (must keep both tiers). A guard wide enough to fix the first will
+silently eat the second, so neither ships alone.
+
+**Sequencing.** Run #178's rescue data is correct and unmirrored; it is held
+until the v91 re-parse lands so that main takes one mirror that is better on
+both axes — the 198 recovered plans AND the corrected formulas — rather than
+publishing a known-wrong formula for a 119,145-participant plan in between.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 90;
+export const PARSER_VERSION = 91;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -1690,6 +1690,24 @@ export function extractPlanFeatures(text) {
       // to", and on era openers ("Prior to January 1, 2024, …" chained a
       // dead formula's tier onto the current one)
       if (/(?:makes?|may (?:elect to )?(?:make|contribute)|will make|provide[ds]?|receives?|offer(?:s|ed)?)[^.]{0,90}?match(?:ing)?\b|\b(?:employer|company|plan|organization)\b[^.]{0,40}?\bmatch(?:es|ed)\b|match(?:ing)? contributions? (?:was |were |is |are )?equal to|^\. +\W{0,3}(?:prior to|effective|before|beginning|starting|through|until)\b[^.]{0,60}?(?:19|20)\d\d/i.test(cont)) {
+        tail = tail.slice(0, mf[0].length + sEnd + 1);
+      }
+      // v91, vocabulary-free companion to the verb list above: if the next
+      // sentence states its OWN complete head ("100% of the first 4%") whose
+      // rate or bound differs from ours, it is a DIFFERENT formula — another
+      // cohort, location, hire-date class or plan year — and its tiers must
+      // not chain onto ours. Verizon's management plan read "100% of the
+      // first 6% … For all other union represented employees … 100% of the
+      // first 4% and 50% of the next 2%" and shipped the splice
+      // "100% of the first 6% + 50% of the next 2%", a formula no
+      // participant receives. The verb list missed it by one word
+      // ("equivalent to" rather than "equal to"), which is the third time a
+      // spelling list has been the thing that failed; matching on the SHAPE
+      // of a competing head needs no vocabulary. A restatement of the same
+      // head ("…to become a tiered match paying 100% of the first 3%,
+      // plus 50% of the next 2%") keeps chaining, because it is our formula.
+      const rival = cont.match(/(\d{1,3}(?:\.\d+)?) ?(?:percent|%) of (?:the )?first (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i);
+      if (rival && (W(mf[1]) !== +rival[1] || W(mf[2]) !== +rival[2])) {
         tail = tail.slice(0, mf[0].length + sEnd + 1);
       }
     }

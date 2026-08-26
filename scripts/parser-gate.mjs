@@ -67,6 +67,19 @@ const FEATURE_SPECIMENS = [
    * restores the quote passes the vesting check and fails here. */
   ["Loan note shown as the vesting quote", "20251205083856NAL0003062993001",
     { vesting: null, quote: null }],
+  /* v91 cross-cohort tier splice. The first filing states a non-union match
+   * ("100% of the first 6% of compensation contributed to the Plan.") and then
+   * a SEPARATE union formula ("Union employees are eligible for a match equal
+   * to 100% of the first 3% …, plus 50% of the next 2% …, plus 20% of the next
+   * 1%"). Chaining the union tiers onto the non-union head shipped a formula
+   * no participant receives. The second filing is the shape that must keep
+   * chaining — one formula, two sentences, same population ("The Company will
+   * also contribute 50% of the next 2%"). Both directions are asserted because
+   * a guard wide enough to fix the first will silently eat the second. */
+  ["Union tiers must not chain onto the non-union head", "20251014104315NAL0001234147001",
+    { match: "100% of the first 6% of pay" }],
+  ["Same-population continuation still chains", "20251219112023NAL0003370419001",
+    { match: "100% of the first 3% of pay + 50% of the next 2%" }],
   /* v83: three false-"Immediate" shapes the v81 widening let through, found
    * by self-checking all 3,907 new Immediate labels against their own quotes.
    * Each states a service condition in the SAME sentence as the immediate
@@ -298,6 +311,16 @@ for (const [label, ack, expect] of FEATURE_SPECIMENS) {
   }
   if (text === null) { console.log(`GATE SKIP  ${label}: specimen unreachable after retries`); continue; }
   const ff = extractPlanFeatures(text) || {};
+  // a match specimen asserts the match label (and that its quote survives) —
+  // the same loop, a different field
+  if ("match" in expect) {
+    const gotM = ff.match || null;
+    const okM = gotM === expect.match && (expect.match === null || !!ff.matchText);
+    console.log(`GATE ${okM ? "OK  " : "FAIL"} ${label}: match=${gotM === null ? "(none)" : gotM}` +
+      (okM ? "" : ` (expected ${expect.match === null ? "(none)" : expect.match}${ff.matchText ? "" : ", quote missing"})`));
+    if (!okM) failed++;
+    continue;
+  }
   const got = ff.vesting || null;
   const gotQuote = ff.vestingText || null;
   let ok = expect.vesting === null ? got === null : got === expect.vesting;
