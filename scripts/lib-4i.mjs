@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 86;
+export const PARSER_VERSION = 87;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -1987,7 +1987,7 @@ export function extractPlanFeatures(text) {
     // service, INCREASING BY 25% PER ADDITIONAL YEAR, with full vesting
     // after four years of credited service" is a 4-year graded schedule
     // that read as nothing at all
-    const graded = s.match(/(\d{1,2}) ?(?:percent|%) (?:per|each|for each|after each) (?:additional |subsequent |succeeding |full |completed |further )?year|vests? (\d{1,2}) ?(?:percent|%) after each year|graded vesting|graduated vesting/i);
+    const graded = s.match(/(\d{1,2}) ?(?:percent|%) (?:per|a|each|for each|after each) (?:additional |subsequent |succeeding |full |completed |further )?year|vests? (\d{1,2}) ?(?:percent|%) after each year|graded vesting|graduated vesting/i);
     // a multi-step percent-at-year LIST is a graded schedule even though
     // no single step says "per year" — its final "100% after three years"
     // step matched the cliff pattern and shipped a graded schedule as
@@ -2034,7 +2034,18 @@ export function extractPlanFeatures(text) {
     const twoClaims = (span) => !cliffNarrow
       && /\bvest(?:ed|s|ing)?\b[^.]{0,120}?\b(?:and|but|while|whereas)\b[^.]{0,60}?\bvest(?:ed|s|ing)?\b/i.test(span);
     const ladderPcts = [...new Set([...s.matchAll(/(\d{1,2}|100) ?(?:percent|%)(?: vested)?[^.]{0,130}?after(?: completing| the completion of)?[^.]{0,25}?(?:\w{3,5}|\d{1,2}) years?/gi)].map((m) => +m[1]))];
-    const isLadder = ladderPcts.length >= 2 && ladderPcts.some((v) => v < 100);
+    /* v87: a bare percentage TABLE is graded evidence too, and the ladder
+     * test above could not see it — it requires "% … after N years", which a
+     * rendered table never says: "…ntage Less than 1 0% 1 33% 2 67% 3 100%
+     * Participants become fully vested in the Company's discretionary
+     * non-elective contribution portion…" shipped as a 3-year CLIFF, which
+     * tells the participant they get nothing for three years when they are
+     * earning a third a year. Three of v86's 30 Graded->cliff moves were
+     * this shape. Three or more distinct percentages with at least two under
+     * 100 is a schedule, not a cliff. */
+    const allPcts = [...new Set((s.match(/\b(\d{1,3}) ?%/g) || []).map((x) => parseInt(x)))];
+    const pctTable = allPcts.length >= 3 && allPcts.filter((v) => v < 100).length >= 2;
+    const isLadder = (ladderPcts.length >= 2 && ladderPcts.some((v) => v < 100)) || pctTable;
     const cliff = s.match(/(?:(\w{3,5}|\d)[- ]year cliff|cliff vesting[^.]{0,40}?(\w{3,5}|\d) years?|(?:(?:100|one hundred) ?(?:percent|%)|fully) vest(?:ed)?[^.]{0,130}?(?:after|upon)(?: the)?(?: complet\w+(?: of)?)? (\w{3,5}|\d) years?|0 ?(?:percent|%) vested until (\w{3,5}|\d) years|vests? (?:100|one hundred) ?(?:percent|%)[^.]{0,60}?(?:after|upon)(?: the)?(?: complet\w+(?: of)?)? (\w{3,5}|\d) years?|vest(?:ing|s)?\b[^.]{0,170}?credited with (\w{3,5}|\d) years? of (?:vesting |credited |continuous )?service|\bvest(?:ed|s)?\s+(?:at\s+)?(?:100|one hundred) ?(?:percent|%)[^.]{0,60}?(?:after|upon|following)(?: the)?(?: complet\w+(?: of)?)?\s+(\w{3,5}|\d)[\s(]*\d?\)?\s*years?|vesting of (?:100|one hundred) ?(?:percent|%)[^.]{0,40}?after[^.]{0,25}?(\w{3,5}|\d) years?|(?:100|one hundred) ?(?:percent|%) vesting occurr\w+[^.]{0,40}?after[^.]{0,25}?(\w{3,5}|\d)[\s(]*\d?\)?\s*years?|\b(?:fully |(?:100|one hundred) ?(?:percent|%) )vest\w*[^.]{0,110}?after (?:obtaining|completing|they complete)[^.]{0,25}?(\w{3,5}|\d) (?:or more )?years?|\bvest\w*[^.]{0,60}?(?:fully|(?:100|one hundred) ?(?:percent|%))[^.]{0,60}?after (?:obtaining|completing|they complete)[^.]{0,25}?(\w{3,5}|\d) (?:or more )?years?|\bis (?:100|one hundred) ?(?:percent|%) after[^.]{0,25}?(\w{3,5}|\d) years?)/i);
     if (graded) { out.vesting = "Graded schedule"; out.vestingText = cap(s); break; }
     if (cliff) {
@@ -2061,7 +2072,7 @@ export function extractPlanFeatures(text) {
        * those needs its own pass; this only stops the widening adding new ones. */
       if (!cliffNarrow && /^[^.]{0,40}?\b(?:prior to|before)\s+(?:january|february|march|april|may|june|july|august|september|october|november|december|\d{1,2}\/|\d{4})/i.test(s)
           && !/\bhired?\b|\bemployed\b|\bparticipants? (?:who|hired)\b/i.test(s)) continue;
-      if (isLadder && gi >= 6) { out.vesting = "Graded schedule"; out.vestingText = cap(s); break; }
+      if (isLadder && (gi >= 6 || pctTable)) { out.vesting = "Graded schedule"; out.vestingText = cap(s); break; }
       const n = cliff[gi + 1];
       // ordinals too: "100% vesting is achieved after the FIFTH year of
       // service" — 9 quotes state the year that way and captured a word the
@@ -2346,6 +2357,15 @@ export function extractPlanFeatures(text) {
       // Non-Matching contributions" — the exception is the schedule
       const carveOut = /\bexcept\b[^.]{0,90}?(?:matching|employer|company|non.?elective|profit.?sharing)/i.test(s);
       if (!strictGate && (remainderGraded || carveOut)) continue;
+      /* v87: a superseded sentence is not this plan's rule on the IMMEDIATE
+       * path either — "PRIOR TO MARCH 31, 2024, participants were immediately
+       * vested in their elective salary deferral … and were vested on Plan
+       * Sponsor contributions after …" shipped as Immediate. v86 put this
+       * guard on the cliff path and did not carry it here, which is the same
+       * miss v84 made with the loan hatch. Cohorts are exempt: "participants
+       * HIRED BEFORE July 1, 2009" is a group, not a replaced rule. */
+      if (/^[^.]{0,40}?\b(?:prior to|before)\s+(?:january|february|march|april|may|june|july|august|september|october|november|december|\d{1,2}\/|\d{4})/i.test(s)
+          && !/\bhired?\b|\bemployed\b|\bparticipants? (?:who|hired)\b/i.test(s)) continue;
       /* v78: vesting accelerated BY PLAN TERMINATION is not the plan's vesting
        * schedule. Every plan must fully vest affected participants on
        * termination or partial termination — IRC 411(d)(3) — so the auditor's

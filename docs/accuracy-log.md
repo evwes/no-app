@@ -4355,6 +4355,48 @@ existing 99 needs its own pass with the cohort distinction measured first.
 gain read against its filing. Three new gate specimens pin the widening and both
 guards.
 
+### v87 — five wrong labels out of 289, and the third miss of the same kind
+
+Run #171 (v86) moved **289 vesting labels: 197 gained, 92 changed, 3 lost** —
+all three losses being the superseded guard working. Vesting 50,721 → 50,915.
+The suppression check returned **0 quotes dropped**, so the streak stayed closed.
+
+Reading the changes rather than the totals found **5 wrong, 1.7%**, and each one
+names a gap:
+
+1. **A percentage TABLE is graded evidence the ladder test could not see** (3
+   rows). The test requires "% … after N years"; a rendered table never says
+   that. "…ntage Less than 1 0% 1 33% 2 67% 3 100% Participants become fully
+   vested in the Company's discretionary non-elective contribution portion…"
+   shipped as a 3-year **cliff** — telling the participant they get nothing for
+   three years while they are earning a third a year.
+2. **"vest 20% a year"** (1 row) — the graded pattern accepted "per year" and
+   "each year" but not "a year".
+3. **A superseded sentence reached the IMMEDIATE pass** (1 row). "PRIOR TO
+   MARCH 31, 2024, participants were immediately vested…" v86 put that guard on
+   the cliff path and did not carry it to the immediate path.
+
+**Number 3 is the third time this exact miss has happened**: v84 added the loan
+guard to the label path and left the quote path without its escape hatch; v85
+fixed it; v86 added the superseded guard to the cliff path and left the
+immediate path without it. The pattern is always "a rule was added to one of
+several paths that read the same sentences". Worth stating as a rule of its own:
+**when a new guard describes a property of the SENTENCE rather than of one
+reader, it belongs to every reader of that sentence — enumerate them.**
+
+v87 measured 0 lost, 0 gained, 6 changed on 955 filings, all six read: three
+fix a flatly wrong "Immediate" on plans that vest 40%→100% over five years.
+
+**And the deferred label-format question now has an answer.** Two of the six go
+from "5-year schedule (shape not stated)" to a bare "Graded schedule", losing
+the horizon — the trade held back three times. Checking the frontend to see
+whether the format was actually constrained: `vestingBar` is fed from the
+CURATED overlay, not the extractor, and the extracted label is printed as a
+free-form string (`app.js` even enriches "Graded schedule" into "Graded —
+N%/year" already). **The format was never blocked.** A combined "5-year graded
+schedule" is a drop-in — it needs the enrichment check at app.js:587 updated and
+the smoke test run, so it is its own change, not an addendum to this one.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
