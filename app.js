@@ -575,6 +575,12 @@
       if (lu && lu.features) {
         const ff = lu.features;
         plan.filedFeatures = ff;
+        // features read from a PRIOR year's filing because the newest filing's
+        // public copy is withdrawn from the EFAST2 bucket: a match formula can
+        // change between plan years, so the report says which year it read.
+        // (An ordinary fb entry does NOT imply this — there the notes usually
+        // still come from the newest filing; only fbNoCopy is certain.)
+        if (lu.fbNoCopy && lu.fb) plan.featuresFb = lu.fb;
         // filed evidence overrides curated values (curated can be stale)
         if (ff.roth) plan.roth = true;
         if (ff.afterTax) plan.afterTax = true;
@@ -1405,7 +1411,9 @@
     const yoy = plan.assetsYoY == null ? "" :
       `${plan.assetsYoY >= 0 ? "+" : "−"}${Math.abs(plan.assetsYoY)}% YoY`;
     const sourceNote = plan.dataStatus === "filed"
-      ? `Financial figures from ${esc(plan.source)}. ${plan.filedFeatures ? "Match, vesting, and feature details quoted from the filing's audited statements — verify with your plan documents." : "Plan features from the filing's characteristic codes where shown — verify details with your plan documents."}`
+      ? `Financial figures from ${esc(plan.source)}. ${plan.filedFeatures ? (plan.featuresFb
+          ? `Match, vesting, and feature details are quoted from the plan's ${plan.featuresFb} audited statements: the newest filing's public copy has been withdrawn from the EFAST2 bucket, so its notes cannot be read. Verify with your plan documents.`
+          : "Match, vesting, and feature details quoted from the filing's audited statements — verify with your plan documents.") :"Plan features from the filing's characteristic codes where shown — verify details with your plan documents."}`
       : `Sample data for demonstration — figures are plausible, not filed values.`;
     return `
     <div class="report">
@@ -1450,7 +1458,7 @@
             : "No recordkeeping provider identified in this filing's Schedule C"}</p></div>
       </div>
 
-      <div class="section-label">EMPLOYER CONTRIBUTIONS <span class="section-sub">${plan.filedFeatures ? "Source: Form 5500 filing (audit notes) — verify details with HR" : "Source: Form 5500 codes + plan document / SPD — verify with HR"}</span></div>
+      <div class="section-label">EMPLOYER CONTRIBUTIONS <span class="section-sub">${plan.filedFeatures ? `Source: Form 5500 filing${plan.featuresFb ? ` for ${plan.featuresFb}` : ""} (audit notes) — verify details with HR` : "Source: Form 5500 codes + plan document / SPD — verify with HR"}</span></div>
       ${plan.filedFeatures && (plan.filedFeatures.match
           || ((plan.filedFeatures.matchText || plan.filedFeatures.vesting || plan.filedFeatures.nec) && plan.flows.employerM !== 0))
         ? filedContributionCard(plan)

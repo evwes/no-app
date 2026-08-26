@@ -326,11 +326,12 @@ console.log(`work list: ${work.length} filings to (re)parse at parser v${PARSER_
   (PARSE_SHARD != null ? ` (matrix shard ${PARSE_SHARD}/${PARSE_SHARDS})` : "") + `; fetching up to ${BATCH} this run`);
 console.log(`ocr candidates: ${ocrCandidates}`);
 let fetched = 0;
+let fbRescued = 0; // filings whose newest public copy is gone, read from the prior year instead
 
 const delta = { status: {}, entries: {} };
 function record(plan, entry, features) {
   if (features) entry.features = features;
-  const meta = { pv: PARSER_VERSION, ov: OCR_VERSION, c: entry.confident ? 1 : 0, s: entry.sdba ? 1 : 0, ...(features ? { f: 1 } : {}), ...(entry.error ? { e: entry.error } : {}), ...(entry.fb ? { fb: entry.fb } : {}), ...(entry.trustPtr ? { tp: 1 } : {}) };
+  const meta = { pv: PARSER_VERSION, ov: OCR_VERSION, c: entry.confident ? 1 : 0, s: entry.sdba ? 1 : 0, ...(features ? { f: 1 } : {}), ...(entry.error ? { e: entry.error } : {}), ...(entry.fb ? { fb: entry.fb } : {}), ...(entry.fbNoCopy ? { fbnc: 1 } : {}), ...(entry.trustPtr ? { tp: 1 } : {}) };
   status.plans[plan.ack] = meta;
   delta.status[plan.ack] = meta;
   const keep = (entry.confident && entry.funds.length) || features;
@@ -497,22 +498,41 @@ for (const plan of work) {
   }
   fetched++;
   const tag = `${plan.ticker || plan.label} (${plan.ack.slice(0, 14)})`;
+  const fb = FALLBACKS[plan.ack];
+  let fbUsed = null, fbNoCopy = false;
   let a;
   try {
     a = await analyzePdf(plan.ack, plan, tag);
   } catch (e) {
-    summary.push(`${tag}: download failed ${e.message}`);
-    // a failed download must never clobber a previous parse of the same
-    // ack (transient S3 errors and withdrawn-from-bucket filings both
-    // surface here — v37 dropped 6 good lineups this way). Keep the old
-    // meta (old pv keeps the ack on future work lists for retry) and do
-    // NOT touch the shard entry; only acks never parsed before get a
-    // status record, with pv:0 so they too retry next run.
-    const prev = status.plans[plan.ack];
-    const meta = prev ? { ...prev, e: "download" } : { pv: 0, ov: 0, c: 0, s: 0, e: "download" };
-    status.plans[plan.ack] = meta;
-    delta.status[plan.ack] = meta;
-    continue;
+    // The newest filing's public copy is usually GONE, not temporarily
+    // unreachable: 40 of 40 sampled download failures answered 403
+    // permanently (measured 2026-08-26), i.e. filings withdrawn from the
+    // bucket. Retrying them forever therefore yields nothing, and until
+    // now this path skipped the prior-year fallback below entirely — so
+    // 200 plans holding $39.8B, including Verizon's $31.3B management
+    // plan (stuck at pv:37 for 53 parser versions), carried no lineup and
+    // no match/vesting features at all. The prior-year filing is a real
+    // public copy of the same plan and is the only remaining source.
+    let b = null;
+    if (fb) { try { b = await analyzePdf(fb.a, plan, `${tag} fb${fb.y}`); } catch { /* prior year gone too */ } }
+    if (!b || b.err || !(b.parsed.found || b.features)) {
+      summary.push(`${tag}: download failed ${e.message}${fb ? " (prior-year filing gave nothing)" : ""}`);
+      // a failed download must never clobber a previous parse of the same
+      // ack (transient S3 errors and withdrawn-from-bucket filings both
+      // surface here — v37 dropped 6 good lineups this way). Keep the old
+      // meta (old pv keeps the ack on future work lists for retry) and do
+      // NOT touch the shard entry; only acks never parsed before get a
+      // status record, with pv:0 so they too retry next run.
+      const prev = status.plans[plan.ack];
+      const meta = prev ? { ...prev, e: "download" } : { pv: 0, ov: 0, c: 0, s: 0, e: "download" };
+      status.plans[plan.ack] = meta;
+      delta.status[plan.ack] = meta;
+      continue;
+    }
+    a = b;
+    fbUsed = fb;
+    fbNoCopy = true; // disclosure differs: no public copy at all, not an unreadable one
+    fbRescued++;
   }
   if (a.err === "pdftotext") {
     summary.push(`${tag}: pdftotext failed`);
@@ -527,9 +547,7 @@ for (const plan of work) {
   // AVI-SPL's 2024 public copy omits the schedule its 2023 filing includes.
   // Ratio is judged against the CURRENT year's assets; the confidence band
   // absorbs a year of drift. The entry discloses the fallback year.
-  let fbUsed = null;
-  const fb = FALLBACKS[plan.ack];
-  if (fb && !(parsed.found && isConfident(parsed))) {
+  if (fb && !fbUsed && !(parsed.found && isConfident(parsed))) {
     try {
       const b = await analyzePdf(fb.a, plan, `${tag} fb${fb.y}`);
       if (!b.err && b.parsed.found && isConfident(b.parsed)) {
@@ -542,8 +560,11 @@ for (const plan of work) {
   }
 
   if (!parsed.found) {
-    summary.push(`${tag}: no 4i section found`);
-    record(plan, { confident: false, error: "no-section", funds: [] }, features);
+    summary.push(`${tag}: no 4i section found${fbUsed ? ` [prior-year ${fbUsed.y} filing]` : ""}`);
+    // features rescued from a prior-year filing must say so: a match formula
+    // can change between plan years, and the reader is entitled to know which
+    // year's notes they are reading
+    record(plan, { confident: false, error: "no-section", funds: [], ...(fbUsed ? { fb: fbUsed.y, fbNoCopy: 1 } : {}) }, features);
     continue;
   }
   const ratio = parsed.ratio || 0;
@@ -561,9 +582,10 @@ for (const plan of work) {
     smaKind: parsed.smaKind,
     ...(usedOcr ? { ocr: 1 } : {}),
     ...(fbUsed ? { fb: fbUsed.y } : {}),
+    ...(fbNoCopy ? { fbNoCopy: 1 } : {}),
     ...(parsed.trustPtr ? { trustPtr: 1 } : {}),
     source: fbUsed
-      ? `Schedule H line 4i attachment from the plan's ${fbUsed.y} filing — the newest filing's public copy has no readable schedule${usedOcr ? "; digitized from scanned pages via OCR" : ""}`
+      ? `Schedule H line 4i attachment from the plan's ${fbUsed.y} filing — the newest filing's public copy ${fbNoCopy ? "has been withdrawn from the EFAST2 public bucket" : "has no readable schedule"}${usedOcr ? "; digitized from scanned pages via OCR" : ""}`
       : `Schedule H line 4i attachment, plan year ${plan.planYear} filing${usedOcr ? " (digitized from scanned pages via OCR)" : ""}`,
   }, features);
   summary.push(`${tag}: ${parsed.funds.length} rows, cov ${(ratio * 100).toFixed(0)}%, sdba=${parsed.sdba}, ok=${confident}${fbUsed ? ` [prior-year ${fbUsed.y} filing]` : ""}`);
@@ -579,7 +601,8 @@ for (const plan of work) {
 if (PARSE_SHARD != null) {
   // matrix job: emit only this shard's results; the merge job assembles stores
   writeFileSync(`results-${PARSE_SHARD}.json`, JSON.stringify(delta));
-  console.log(`wrote results-${PARSE_SHARD}.json: ${Object.keys(delta.status).length} entries`);
+  console.log(`wrote results-${PARSE_SHARD}.json: ${Object.keys(delta.status).length} entries` +
+    (fbRescued ? `; ${fbRescued} withdrawn filings read from the prior year instead` : ""));
   process.exit(0);
 }
 

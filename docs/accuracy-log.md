@@ -4536,6 +4536,69 @@ group that broke module load. The fix both times was to stop generating regex
 source through two layers of string escaping — write the pattern into a patch
 FILE, not through nested shell/Python quoting.
 
+## 2026-08-26 — 200 withdrawn filings never tried the prior-year fallback ($39.8B blank)
+
+**What was wrong.** The owner asked why the Verizon plan shows no 401(k) match.
+Three of Verizon's four plans do carry the match sentence, and it states a cap
+with no rate — *"employer-matching contributions equal to a percentage of the
+initial 6% of eligible compensation"* — so showing the quote and no formula is
+correct. The fourth plan, **VERIZON SAVINGS PLAN FOR MANAGEMENT EMPLOYEES**
+(EIN 232259884|102, 119,145 participants, **$31.32B**, $450.1M/yr employer
+contributions), had **nothing at all**: no lineup, no match, no vesting, no
+Roth. Its status row read `{"pv":37,"ov":2,"c":0,"s":0,"e":"download"}` — the
+PDF fetch had failed and stayed failed since **parser v37, 53 versions ago**.
+
+Widening the search: **200 acks sit at `e:"download"`, 196 of them on parser
+versions below 85, covering 198 plans and $39.8B in assets.** This is the
+~195-row tail that every completeness check this month waved through as benign
+residue.
+
+**What it actually is, measured.** 40 of 40 sampled download failures answer
+**HTTP 403 permanently** — filings withdrawn from the EFAST2 public bucket, not
+transient S3 errors. So the retry-forever design (keep the old `pv` so the ack
+stays on every work list) buys nothing for this class: the object is gone and
+will not come back.
+
+**The defect.** `fetch-4i.mjs` already has a prior-year fallback for exactly
+this situation — "the newest filing's public copy has no readable schedule, so
+read the same plan's next-newest full-form filing." But the download-failure
+`catch` block recorded `e:"download"` and `continue`d **before** reaching it, at
+line ~515, while the fallback lives at ~550. A filing whose public copy was
+missing entirely — the strongest possible case for the fallback — was the one
+case that never tried it.
+
+**The change.** On download failure, try `FALLBACKS[ack]` first; only if that
+also yields nothing does the old preserve-and-retry behaviour run unchanged. A
+rescued entry carries `fb` (the year read) plus `fbNoCopy`, and its source line
+says *"from the plan's 2024 filing — the newest filing's public copy has been
+withdrawn from the EFAST2 public bucket."*
+
+**Disclosure, because a match formula can change between plan years.** `fbNoCopy`
+is the only state where the audit-note features are certainly from the older
+filing (an ordinary `fb` entry usually still has the newest filing's notes), so
+it is the only state that re-labels them: the report footer and the EMPLOYER
+CONTRIBUTIONS source line name the year, and the static plan page prints a note
+saying the schedule and notes are from the prior filing while participants,
+assets and fees are from the current one. Each parse job now logs how many
+withdrawn filings it rescued.
+
+**Verified end-to-end before shipping** on the real withdrawn Verizon ack in a
+scratch copy of the pipeline (never the repo — `audit-data.mjs` appends to
+`coverage-history.jsonl`, and a local run corrupts the regression trend): the
+primary threw, the fallback downloaded and parsed 28 rows, the entry stored
+`fb`/`fbNoCopy` with the disclosure string, and the features came through
+(Roth, match quote). No `PARSER_VERSION` bump is needed — the 200 acks are on
+every work list already because their `pv` is stale, so the next ordinary run
+picks them up.
+
+**The prevention.** A *permanent* tail in a status file is a class, not noise.
+It had a name (`e:"download"`), a stable size (~195-200), and a queryable value
+($39.8B) the whole time, and I read it as residue in every completeness check
+because it never changed. Count a tail and price it before calling it benign —
+and when an alarm turns out to be half right, record which half: 200 plans
+genuinely had no data (real), and the pipeline was not failing to retry them
+(my initial reading, wrong).
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

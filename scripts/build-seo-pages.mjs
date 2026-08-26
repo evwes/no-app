@@ -151,6 +151,9 @@ for (const r of d.plans.slice(0, TOP_N)) {
 <p class="muted">Everything below comes from the plan's own Form 5500 filing (plan year ${planYear},
 DOL EFAST2 public data). Fields the filing doesn't state are shown as not stated — never guessed.
 <a href="${deepLink}">Open the interactive report</a>.</p>
+${entry && entry.fbNoCopy && entry.fb ? `<p class="muted"><strong>Note:</strong> the ${planYear} filing's public copy has been withdrawn from the
+EFAST2 document bucket, so the fund schedule and audit-note details below are read from this plan's
+${entry.fb} filing instead. The participant, asset and fee figures still come from the ${planYear} filing.</p>` : ""}
 <h2>Plan facts</h2>
 <table class="facts">${facts.map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join("")}</table>
 ${ff.matchText ? `<h2>Match formula, as filed</h2><blockquote>${esc(ff.matchText)}</blockquote>` : ""}
