@@ -4493,6 +4493,49 @@ population sweep produced false positives from an over-strict predicate (the
 first cost 2,094 phantom hits on "State Street"). **When a sweep flags a
 surprising number, suspect the predicate before the data.**
 
+### v90 — what the date modifies, not what tense it is
+
+The superseded-rule backlog was recorded as "99 cliff labels opening with a date
+clause" and flagged as contaminated. Re-measured on v89 data it is **465
+labelled rows** whose quote carries a "prior to \<date\>", and the split is not
+the one the earlier note assumed. **Tense is a trap in both directions**:
+
+- the past-tense bucket held **live** rules — "Non-elective contributions that
+  **were made** prior to July 1, 2002 **are** subject to a vesting schedule" is
+  the plan's current treatment of legacy money;
+- the present-tense bucket held **replaced** ones — "Prior to September 11,
+  2023, a participant **is** 100% vested after three years" is an auditor
+  writing loosely, not a rule in force.
+
+What actually decides it is **what the date modifies**:
+
+| the date modifies | example | verdict | rows |
+|---|---|---|---|
+| the MONEY or SERVICE | "contributions **made** prior to July 1, 2002 **are** subject to…" | live legacy rule — KEEP | 36 |
+| the PARTICIPANT | "participants **enrolled** in the Plan prior to July 29, 2015 **are** immediately vested" | cohort in force — KEEP | 132 |
+| the RULE, sentence-initial | "**Prior to January 1, 2020,** participants were fully vested … after two years" | REPLACED | 98 |
+
+v86 had scoped this guard to spans the old gate had not already answered,
+because a crude version removed correct labels. With the money/participant split
+measured, the guard runs unscoped and takes the 98 — each of a 14-row sample
+verified as a replaced rule. **The label goes; the quote stays**, because the
+sentence is still the only thing the filing says about vesting and it dates
+itself so a reader can see what it is.
+
+**The corpus diff shows 0 changes** — 98 rows in 68,475 is 0.14%, so a
+955-filing sample contains none of them. This change is sized and verified
+entirely against the stored quotes, which is now the third time in two days that
+the corpus could not see a change it had no business judging (v88: 72 of 6,978;
+v89: 2 of 174).
+
+**Two self-inflicted regex-escaping failures on the way in**, both worth naming
+because they cost a restore: building a pattern with `new RegExp` from a Python
+heredoc double-escaped `\\b` into a literal backslash, and the second attempt
+double-escaped `\\d` inside a regex *literal* and produced an unterminated
+group that broke module load. The fix both times was to stop generating regex
+source through two layers of string escaping — write the pattern into a patch
+FILE, not through nested shell/Python quoting.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

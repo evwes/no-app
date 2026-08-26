@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 89;
+export const PARSER_VERSION = 90;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -1940,6 +1940,30 @@ export function extractPlanFeatures(text) {
     if (neg && dur && +dur[1] < +neg[1]) out.match += ` (none made for plan year ${neg[1]} per the filing)`;
   }
 
+  /* v90: whether a "prior to <date>" sentence states a REPLACED rule turns on
+   * WHAT THE DATE MODIFIES, not on tense. Measured over the 465 labelled rows
+   * whose quote carries such a date:
+   *   36  the date modifies the MONEY or SERVICE - "Non-elective contributions
+   *       that were MADE prior to July 1, 2002 ARE subject to a vesting
+   *       schedule" is a live rule about legacy money. KEEP.
+   *   132 the date modifies the PARTICIPANT - "participants ENROLLED in the
+   *       Plan prior to July 29, 2015 ARE immediately vested" is a cohort
+   *       still in force. KEEP.
+   *   98  the date modifies the RULE, sentence-initial - "Prior to January 1,
+   *       2020, participants were fully vested ... after two years". REPLACED.
+   * Tense is a trap in both directions: the past-tense bucket held live
+   * legacy-money rules ("were made ... are subject to") and the present-tense
+   * bucket held superseded ones ("Prior to September 11, 2023, a participant
+   * is 100% vested"), which is an auditor writing loosely, not a live rule.
+   * v86 scoped this guard to spans the old gate had not answered because a
+   * crude version removed correct labels. With the money/participant split
+   * measured it can run unscoped. The label goes, the QUOTE STAYS - the
+   * sentence is still the only thing the filing says about vesting. */
+  const supersededRule = (x) =>
+    /^[^.]{0,40}?\b(?:prior to|before)\s+(?:january|february|march|april|may|june|july|august|september|october|november|december|\d{1,2}\/|\d{4})/i.test(x)
+    && !/(?:contributions?|amounts?|balances?|service|deferrals?)[^.]{0,30}?(?:made|earned|credited|allocated|incurred)?\s*(?:prior to|before)\s+(?:january|february|march|april|may|june|july|august|september|october|november|december|\d{1,2}\/|\d{4})/i.test(x)
+    && !/\b(?:hired?|employed|enrolled|anyone who|who entered|terminated|participants? (?:who|in the plan|with)|employees? (?:who|in the plan|of))\b/i.test(x.slice(0, 140));
+
   // ---- vesting of EMPLOYER money (employee deferrals are always immediate) ----
   const vestSentences = [];
   const vre = /[^.]{0,220}\bvest(?:ed|ing)?\b[^.]{0,220}\./gi;
@@ -2099,8 +2123,7 @@ export function extractPlanFeatures(text) {
        * itself so a reader can see what it is. 13 schedule-bearing quotes were
        * suppressed — the FOURTH time a new guard has taken the evidence with
        * the answer (v82, v83, v84, now v86/87). */
-      if (!cliffNarrow && /^[^.]{0,40}?\b(?:prior to|before)\s+(?:january|february|march|april|may|june|july|august|september|october|november|december|\d{1,2}\/|\d{4})/i.test(s)
-          && !/\bhired?\b|\bemployed\b|\benrolled\b|\banyone who\b|\bwho entered\b|\bparticipants? (?:who|hired|in the plan|before|enrolled)\b|\bemployees? (?:who|in the plan)\b|\b(?:is|are) (?:always|immediately|100)/i.test(s)) {
+      if (supersededRule(s)) {
         if (!out.vestingText && !/forfeit/i.test(s)) out.vestingText = cap(s);
         continue;
       }
@@ -2396,8 +2419,7 @@ export function extractPlanFeatures(text) {
        * guard on the cliff path and did not carry it here, which is the same
        * miss v84 made with the loan hatch. Cohorts are exempt: "participants
        * HIRED BEFORE July 1, 2009" is a group, not a replaced rule. */
-      if (/^[^.]{0,40}?\b(?:prior to|before)\s+(?:january|february|march|april|may|june|july|august|september|october|november|december|\d{1,2}\/|\d{4})/i.test(s)
-          && !/\bhired?\b|\bemployed\b|\benrolled\b|\banyone who\b|\bwho entered\b|\bparticipants? (?:who|hired|in the plan|before|enrolled)\b|\bemployees? (?:who|in the plan)\b|\b(?:is|are) (?:always|immediately|100)/i.test(s)) {
+      if (supersededRule(s)) {
         if (!out.vestingText && !/forfeit/i.test(s)) out.vestingText = cap(s);
         continue;
       }
