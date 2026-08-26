@@ -4397,6 +4397,65 @@ N%/year" already). **The format was never blocked.** A combined "5-year graded
 schedule" is a drop-in — it needs the enrichment check at app.js:587 updated and
 the smoke test run, so it is its own change, not an addendum to this one.
 
+### v88 — a guard that ate the evidence for the fourth time, and a format unblocked
+
+Run #172 (v87) was **held, not mirrored.** Its 302 changes were a strong win —
+141 cliffs corrected to Graded off real percentage tables, 34 flatly-wrong
+"Immediate" labels fixed — but reading the losses found two defects I had just
+introduced:
+
+**The cohort exemption was too narrow (5 correct labels dropped).** v86's
+superseded guard skips a sentence opening "Prior to \<date\>". But:
+
+> "**Anyone who entered** the Plan prior to January 1, 2008, **is** always 100%
+> vested in the matching contribution account."
+> "Participants **in the Plan before** November 21, 2019 **are** immediately
+> vested…"
+> "participants **enrolled on or before** December 31, 2021 **are** immediately
+> vested…"
+
+Those describe WHO, in the present tense. They are live cohort rules, not rules
+the plan replaced. The exemption only knew about "hired".
+
+**And the guard suppressed the quote — the FOURTH occurrence** (v82: 38 rows,
+v83: 188, v84: 26, now 13). A superseded sentence is still the only thing the
+filing says about vesting; it is verbatim and it dates itself, so a reader can
+see exactly what it is. The label must go, the evidence must stay.
+
+The galling part: **rule (f) — "a guard belongs to every reader of the sentence"
+— was written in the same commit that broke rule (c) on a new path.** Writing a
+rule down is not the same as applying it. The check that caught it is the same
+population suppression scan that has now earned its place four times over, and
+the coverage line showed nothing all four times.
+
+**The label-format question, deferred three times, turned out to be a false
+constraint.** 104 rows in #172 moved from "N-year schedule (shape not stated)"
+to a bare "Graded schedule" — more accurate about shape, but dropping the fact a
+participant most wants: *when is it all mine?* Both are in the filing:
+
+> "A participant is vested 20% a year beginning in year two and **100% vested
+> after six years** of credited service."
+
+I had held this back believing the frontend needed considering. Reading `app.js`
+settled it: `vestingBar()` is fed from the CURATED `data.js` overlay, not the
+extractor, and the extracted label prints as a free-form string. The only real
+coupling was an exact-match test enriching "Graded schedule" into "Graded —
+N%/year", which would have **silently stopped firing** on every row that gained
+a horizon — updated in the same commit, and the smoke test run because this
+touches the frontend.
+
+**One bug found only by reading the 72 changed rows.** The first version took
+the first "after N years" in the sentence. A ladder names several:
+
+> "20 percent after two years, 40 percent after three years, 60 percent after
+> **four** years, 80 percent after five years, and 100 percent after **six**
+> years"
+
+That labelled a 6-year schedule **4-year**. The horizon is now taken from the
+100% step by pairing each percentage with its year — robust for ladders and
+tables alike. Final: **0 lost, 0 gained, 72 enriched**, spread 2y(3) 3y(12)
+4y(12) 5y(29) 6y(16), which is the shape real DC schedules have.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

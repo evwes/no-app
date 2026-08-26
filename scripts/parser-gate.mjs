@@ -53,8 +53,12 @@ const FEATURE_SPECIMENS = [
    * adding an untested one is the mistake this cycle already made once. If a
    * later change decides the ACTIVE match should win, this expectation moves
    * to "2-year cliff" and that is the review moment. */
+  // v88 moved this from "Graded schedule" to "5-year graded schedule": the
+  // filing states the horizon ("100% fully vested after five years") as well as
+  // the shape ("20% per completed year"), and the label now carries both. Which
+  // of the two schedules wins is still the open question above — unchanged.
   ["Two schedules, graded wins on document order", "20250716082243NAL0004508352001",
-    { vesting: "Graded schedule" }],
+    { vesting: "5-year graded schedule" }],
   /* v82 quote hygiene: no schedule AND no quote. This filing's only sentence
    * mentioning employer money and "vested" is its loan note — "The Plan has a
    * loan feature under which active participants may borrow up to 50% of the

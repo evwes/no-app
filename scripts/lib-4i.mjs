@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 87;
+export const PARSER_VERSION = 88;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -2070,8 +2070,23 @@ export function extractPlanFeatures(text) {
        * HIRED BEFORE July 1, 2009 are 100% vested after three years" is a
        * cohort, already labelled correctly by hireSplitLabel. Untangling
        * those needs its own pass; this only stops the widening adding new ones. */
+      /* v88: the cohort exemption was too narrow and the guard suppressed the
+       * quote. Both found by reading run #172. "ANYONE WHO ENTERED the Plan
+       * prior to January 1, 2008, IS always 100% vested", "Participants IN THE
+       * PLAN before November 21, 2019 ARE immediately vested", "participants
+       * ENROLLED on or before December 31, 2021 ARE immediately vested" all
+       * describe WHO, in the present tense — they are live cohort rules, not
+       * rules the plan replaced. 5 correct labels were dropped.
+       * And the guard must keep the QUOTE: a superseded sentence is still the
+       * only thing the filing says about vesting, it is verbatim, and it dates
+       * itself so a reader can see what it is. 13 schedule-bearing quotes were
+       * suppressed — the FOURTH time a new guard has taken the evidence with
+       * the answer (v82, v83, v84, now v86/87). */
       if (!cliffNarrow && /^[^.]{0,40}?\b(?:prior to|before)\s+(?:january|february|march|april|may|june|july|august|september|october|november|december|\d{1,2}\/|\d{4})/i.test(s)
-          && !/\bhired?\b|\bemployed\b|\bparticipants? (?:who|hired)\b/i.test(s)) continue;
+          && !/\bhired?\b|\bemployed\b|\benrolled\b|\banyone who\b|\bwho entered\b|\bparticipants? (?:who|hired|in the plan|before|enrolled)\b|\bemployees? (?:who|in the plan)\b|\b(?:is|are) (?:always|immediately|100)/i.test(s)) {
+        if (!out.vestingText && !/forfeit/i.test(s)) out.vestingText = cap(s);
+        continue;
+      }
       if (isLadder && (gi >= 6 || pctTable)) { out.vesting = "Graded schedule"; out.vestingText = cap(s); break; }
       const n = cliff[gi + 1];
       // ordinals too: "100% vesting is achieved after the FIFTH year of
@@ -2365,7 +2380,10 @@ export function extractPlanFeatures(text) {
        * miss v84 made with the loan hatch. Cohorts are exempt: "participants
        * HIRED BEFORE July 1, 2009" is a group, not a replaced rule. */
       if (/^[^.]{0,40}?\b(?:prior to|before)\s+(?:january|february|march|april|may|june|july|august|september|october|november|december|\d{1,2}\/|\d{4})/i.test(s)
-          && !/\bhired?\b|\bemployed\b|\bparticipants? (?:who|hired)\b/i.test(s)) continue;
+          && !/\bhired?\b|\bemployed\b|\benrolled\b|\banyone who\b|\bwho entered\b|\bparticipants? (?:who|hired|in the plan|before|enrolled)\b|\bemployees? (?:who|in the plan)\b|\b(?:is|are) (?:always|immediately|100)/i.test(s)) {
+        if (!out.vestingText && !/forfeit/i.test(s)) out.vestingText = cap(s);
+        continue;
+      }
       /* v78: vesting accelerated BY PLAN TERMINATION is not the plan's vesting
        * schedule. Every plan must fully vest affected participants on
        * termination or partial termination — IRC 411(d)(3) — so the auditor's
@@ -2520,6 +2538,40 @@ export function extractPlanFeatures(text) {
       /at (?:its|their) discretion,? equal to the declared percentage|discretionary match(?:ing)? formula for (?:the )?(?:first |second )?(?:half of )?\d{4}/i.test(out.matchText || "")) {
     const yr = /formula for [^.]*?(\d{4})/i.exec(out.matchText || "");
     out.match = `Discretionary — ${yr ? yr[1] + " declared: " : "most recent declared rate: "}${out.match}`;
+  }
+  /* v88: a graded schedule that also states its HORIZON should say so. 104
+   * rows in run #172 moved from "N-year schedule (shape not stated)" to a bare
+   * "Graded schedule" — more accurate about shape, but it dropped the one fact
+   * a participant most wants ("when is it all mine?"). Both are in the filing:
+   * "A participant is vested 20% a year beginning in year two and 100% vested
+   * after six years of credited service."
+   * Held back three times on the belief the frontend constrained the format.
+   * It does not: vestingBar() is fed from the CURATED data.js overlay, not the
+   * extractor, and the extracted label prints as a free-form string. The one
+   * real coupling is app.js's exact-match enrichment of "Graded schedule",
+   * updated in the same commit. Done as a single post-pass because nine
+   * separate sites set this label. */
+  if (out.vesting === "Graded schedule" && out.vestingText) {
+    const W = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6 };
+    /* Take the year attached to the 100% STEP, not the first "after N years"
+     * in the sentence. A ladder names several: "20 percent after two years, 40
+     * percent after three years, 60 percent after four years, 80 percent after
+     * five years, and 100 percent after SIX years" — a first-match read picked
+     * "four" out of the middle of that and labelled a 6-year schedule 4-year.
+     * So pair every percentage with its year and use the 100% pair; fall back
+     * to the "100% vested … after N years" prose form only when no pair is
+     * found. Caught by reading the 71 changed rows, not by the totals. */
+    const yrOf = (w) => W[String(w).toLowerCase()] || +w;
+    let n = 0;
+    for (const m of out.vestingText.matchAll(/(\d{1,3}|one hundred) ?(?:percent|%)[^.]{0,25}?after[^.]{0,20}?\b(\w{3,5}|\d)\s+years?/gi)) {
+      const pct = String(m[1]).toLowerCase() === "one hundred" ? 100 : +m[1];
+      if (pct === 100) n = Math.max(n, yrOf(m[2]));
+    }
+    if (!n) {
+      const h = out.vestingText.match(/(?:(?:100|one hundred) ?(?:percent|%)|fully)\s+vest\w*[^.]{0,60}?after[^.]{0,30}?\b(\w{3,5}|\d)\s+years?/i);
+      if (h) n = yrOf(h[1]);
+    }
+    if (n >= 2 && n <= 6) out.vesting = `${n}-year graded schedule`;
   }
   hireSplitLabel("vesting");
   hireSplitLabel("match");

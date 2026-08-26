@@ -583,10 +583,19 @@
         }
         if (ff.vesting) {
           plan.vesting = ff.vesting;
-          // enrich a bare "Graded schedule" with the rate stated in the quote
-          const g = ff.vesting === "Graded schedule" && ff.vestingText &&
-            ff.vestingText.match(/(\d{1,2}) ?(?:percent|%) (?:per|each|for each) year/i);
-          if (g) plan.vesting = `Graded — ${g[1]}%/year`;
+          /* enrich a graded label with the rate stated in the quote. v88: the
+           * extractor now also emits "N-year graded schedule" when the filing
+           * states the horizon as well as the shape, so this test can no longer
+           * be an exact match on "Graded schedule" — it would silently stop
+           * firing on every row that gained a horizon. Keep the horizon when
+           * there is one: "6-year graded — 20%/year" says both facts. */
+          const isGraded = /^(?:\d-year )?[Gg]raded schedule$/.test(ff.vesting || "");
+          const g = isGraded && ff.vestingText &&
+            ff.vestingText.match(/(\d{1,2}) ?(?:percent|%) (?:per|a|each|for each) year/i);
+          if (g) {
+            const yr = (ff.vesting.match(/^(\d)-year/) || [])[1];
+            plan.vesting = yr ? `${yr}-year graded — ${g[1]}%/year` : `Graded — ${g[1]}%/year`;
+          }
         }
         // in-plan Roth conversion + after-tax contributions = mega backdoor Roth
         if (plan.megaBackdoor == null && ff.afterTax &&
