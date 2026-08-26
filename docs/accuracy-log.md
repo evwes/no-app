@@ -4599,6 +4599,70 @@ and when an alarm turns out to be half right, record which half: 200 plans
 genuinely had no data (real), and the pipeline was not failing to retry them
 (my initial reading, wrong).
 
+## 2026-08-26 (2/2) — the rescue itself replaced 73 stored menus; gap-fill only
+
+**What was wrong, in my own change from an hour earlier.** Run #177 shipped the
+prior-year rescue and reported a clean verdict: confident +43, match +42,
+vesting +73, HIGH back to the baseline 4, CONFIDENCE DIFF +44/−1. The single
+LOST ack was auto-triaged as real-menu-shaped, so I read it: **Patient First
+Corporation** (5,113 participants, $286M) had a **confident 29-fund 2024 menu**
+— Vanguard Institutional Index, the full T. Rowe Price Retirement series,
+Galliard Stable Return — parsed by OCR back when its PDF was still in the
+bucket. The rescue replaced it with a 2023 parse that wasn't confident, and the
+entry was dropped entirely.
+
+**Then the number that the verdict could not show.** Of the 200 acks in the
+run, **103 already had a stored entry**, and the rescue overwrote them:
+
+| | acks |
+|---|---|
+| stored menu **replaced** by a prior-year read | **73** |
+| …of those, now labelled an **older plan year** | **45** |
+| lineups genuinely gained (nothing was stored) | 44 |
+| feature sets genuinely gained | 73 |
+| lineup lost outright | 1 (Patient First) |
+| feature set lost outright | 1 |
+
+The confidence diff saw one loss out of seventy-four substitutions, because
+**both parses were confident** — a swap from a good 2024 menu to a good 2023
+menu is invisible to a counter that only asks "confident before, confident
+after". Every guard in this pipeline counts state changes; none of them counts
+a *replacement of the same state with worse-sourced content*.
+
+**The rule I broke.** The comment I edited around said it outright: *"a failed
+download must never clobber a previous parse of the same ack — v37 dropped 6
+good lineups this way."* I preserved the letter (I kept the retry semantics)
+and broke the spirit (I let the fallback write over the preserved entry).
+
+**The change.** The rescue is now **gap-fill only**: a stored entry was parsed
+from this plan's OWN newest filing while its public copy still existed, so a
+prior-year read may only fill what is empty.
+
+- stored confident menu + non-confident prior year → the stored menu stands
+- stored menu, no stored notes → the menu stands and the prior-year notes are
+  attached, tagged `featFb` with their year
+- stored notes, no stored menu → the notes stand (they are the newer ones) and
+  the prior-year menu is added with its own fallback source line
+- nothing stored → the rescue writes both, as before
+
+The disclosure split follows: `fb` marks the year the **schedule** came from,
+`featFb` marks the year the **notes** came from, and they can differ. The
+frontend and the static plan pages key the "read from the plan's N filing"
+label on `featFb` alone, so a merged entry never mislabels a schedule that came
+from the newest filing.
+
+**Data restored, not left standing.** `lineups-status.json` and the 64 lineup
+shards were reverted to the pre-run commit, which puts all 200 acks back on the
+work list and restores Patient First's 29 funds. Run #177's data was never
+mirrored to main, so the live site never carried the substitution.
+
+**The prevention.** When a change makes the pipeline read a *different source
+document* for an existing record, the question is not "did the counters go up"
+— it is **"how many records changed source, and was each one an upgrade?"**
+Count replacements, not just gains and losses. Two runs in a row now (v87's
+suppressed quotes, this) the headline verdict was green while a same-state
+substitution went unmeasured underneath it.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

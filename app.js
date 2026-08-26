@@ -575,12 +575,12 @@
       if (lu && lu.features) {
         const ff = lu.features;
         plan.filedFeatures = ff;
-        // features read from a PRIOR year's filing because the newest filing's
-        // public copy is withdrawn from the EFAST2 bucket: a match formula can
-        // change between plan years, so the report says which year it read.
-        // (An ordinary fb entry does NOT imply this — there the notes usually
-        // still come from the newest filing; only fbNoCopy is certain.)
-        if (lu.fbNoCopy && lu.fb) plan.featuresFb = lu.fb;
+        // features read from a PRIOR year's filing (the newest filing's public
+        // copy is withdrawn from the EFAST2 bucket, or carries no readable
+        // notes): a match formula can change between plan years, so the report
+        // says which year it read. featFb marks the NOTES only — an entry's fb
+        // marks the schedule, and the two can come from different filings.
+        if (lu.featFb) plan.featuresFb = lu.featFb;
         // filed evidence overrides curated values (curated can be stale)
         if (ff.roth) plan.roth = true;
         if (ff.afterTax) plan.afterTax = true;

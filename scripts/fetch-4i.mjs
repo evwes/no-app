@@ -331,7 +331,7 @@ let fbRescued = 0; // filings whose newest public copy is gone, read from the pr
 const delta = { status: {}, entries: {} };
 function record(plan, entry, features) {
   if (features) entry.features = features;
-  const meta = { pv: PARSER_VERSION, ov: OCR_VERSION, c: entry.confident ? 1 : 0, s: entry.sdba ? 1 : 0, ...(features ? { f: 1 } : {}), ...(entry.error ? { e: entry.error } : {}), ...(entry.fb ? { fb: entry.fb } : {}), ...(entry.fbNoCopy ? { fbnc: 1 } : {}), ...(entry.trustPtr ? { tp: 1 } : {}) };
+  const meta = { pv: PARSER_VERSION, ov: OCR_VERSION, c: entry.confident ? 1 : 0, s: entry.sdba ? 1 : 0, ...(features ? { f: 1 } : {}), ...(entry.error ? { e: entry.error } : {}), ...(entry.fb ? { fb: entry.fb } : {}), ...(entry.featFb ? { ffb: entry.featFb } : {}), ...(entry.trustPtr ? { tp: 1 } : {}) };
   status.plans[plan.ack] = meta;
   delta.status[plan.ack] = meta;
   const keep = (entry.confident && entry.funds.length) || features;
@@ -499,7 +499,7 @@ for (const plan of work) {
   fetched++;
   const tag = `${plan.ticker || plan.label} (${plan.ack.slice(0, 14)})`;
   const fb = FALLBACKS[plan.ack];
-  let fbUsed = null, fbNoCopy = false;
+  let fbUsed = null, fbNoCopy = false, keptFeatures = null;
   let a;
   try {
     a = await analyzePdf(plan.ack, plan, tag);
@@ -515,8 +515,21 @@ for (const plan of work) {
     // public copy of the same plan and is the only remaining source.
     let b = null;
     if (fb) { try { b = await analyzePdf(fb.a, plan, `${tag} fb${fb.y}`); } catch { /* prior year gone too */ } }
-    if (!b || b.err || !(b.parsed.found || b.features)) {
-      summary.push(`${tag}: download failed ${e.message}${fb ? " (prior-year filing gave nothing)" : ""}`);
+    // The rescue FILLS GAPS ONLY. A stored entry was parsed from this plan's
+    // OWN newest filing back when its public copy still existed, so a
+    // prior-year read must never replace it — the first cut of this rescue
+    // overwrote 73 stored menus (45 of them with an older plan year) and
+    // dropped Patient First's real 29-fund 2024 menu for a 2023 parse that
+    // wasn't confident. The confidence diff could not see it: both parses
+    // were confident, so the substitution was silent.
+    const prevEntry = buckets[shardOf(plan.ack)][plan.ack];
+    const prevLineup = !!(prevEntry && prevEntry.confident && prevEntry.funds && prevEntry.funds.length);
+    const prevFeatures = !!(prevEntry && prevEntry.features);
+    const ok = b && !b.err;
+    const addsLineup = !!(ok && b.parsed.found && isConfident(b.parsed)) && !prevLineup;
+    const addsFeatures = !!(ok && b.features) && !prevFeatures;
+    if (!ok || (!addsLineup && !addsFeatures)) {
+      summary.push(`${tag}: download failed ${e.message}${fb ? " (prior-year filing adds nothing)" : ""}`);
       // a failed download must never clobber a previous parse of the same
       // ack (transient S3 errors and withdrawn-from-bucket filings both
       // surface here — v37 dropped 6 good lineups this way). Keep the old
@@ -529,9 +542,23 @@ for (const plan of work) {
       delta.status[plan.ack] = meta;
       continue;
     }
+    if (!addsLineup) {
+      // features only: keep the stored schedule exactly as it is (its own
+      // source line still describes the filing it was read from) and attach
+      // the prior-year notes, labelled with the year they came from
+      const merged = prevEntry
+        ? { ...prevEntry, featFb: fb.y }
+        : { confident: false, error: "no-section", funds: [], featFb: fb.y };
+      delete merged.features;
+      record(plan, merged, b.features);
+      summary.push(`${tag}: withdrawn — kept stored schedule, added ${fb.y} notes`);
+      fbRescued++;
+      continue;
+    }
     a = b;
     fbUsed = fb;
     fbNoCopy = true; // disclosure differs: no public copy at all, not an unreadable one
+    if (!b.features && prevFeatures) keptFeatures = prevEntry.features; // stored notes are the newer ones
     fbRescued++;
   }
   if (a.err === "pdftotext") {
@@ -540,6 +567,12 @@ for (const plan of work) {
     continue;
   }
   let { parsed, features, usedOcr } = a;
+  // notes read from a prior-year filing get labelled with their year, because
+  // a match formula can change between plan years. keptFeatures are the stored
+  // ones from this plan's own newest filing — newer than the fallback's, so
+  // they win and carry no prior-year label.
+  let featFb = fbNoCopy && features ? fbUsed.y : null;
+  if (keptFeatures) { features = keptFeatures; featFb = null; }
 
   // prior-year fallback: when the newest filing yields no confident lineup
   // (schedule missing from the public copy, or unreadable even via OCR),
@@ -554,7 +587,7 @@ for (const plan of work) {
         parsed = b.parsed;
         usedOcr = b.usedOcr;
         fbUsed = fb;
-        if (!features) features = b.features;
+        if (!features && b.features) { features = b.features; featFb = fb.y; }
       }
     } catch { /* fallback download failed — keep the primary outcome */ }
   }
@@ -564,7 +597,7 @@ for (const plan of work) {
     // features rescued from a prior-year filing must say so: a match formula
     // can change between plan years, and the reader is entitled to know which
     // year's notes they are reading
-    record(plan, { confident: false, error: "no-section", funds: [], ...(fbUsed ? { fb: fbUsed.y, fbNoCopy: 1 } : {}) }, features);
+    record(plan, { confident: false, error: "no-section", funds: [], ...(featFb ? { featFb } : {}) }, features);
     continue;
   }
   const ratio = parsed.ratio || 0;
@@ -582,7 +615,7 @@ for (const plan of work) {
     smaKind: parsed.smaKind,
     ...(usedOcr ? { ocr: 1 } : {}),
     ...(fbUsed ? { fb: fbUsed.y } : {}),
-    ...(fbNoCopy ? { fbNoCopy: 1 } : {}),
+    ...(featFb ? { featFb } : {}),
     ...(parsed.trustPtr ? { trustPtr: 1 } : {}),
     source: fbUsed
       ? `Schedule H line 4i attachment from the plan's ${fbUsed.y} filing — the newest filing's public copy ${fbNoCopy ? "has been withdrawn from the EFAST2 public bucket" : "has no readable schedule"}${usedOcr ? "; digitized from scanned pages via OCR" : ""}`
