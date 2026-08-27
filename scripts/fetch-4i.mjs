@@ -565,7 +565,13 @@ for (const plan of work) {
     a = b;
     fbUsed = fb;
     fbNoCopy = true; // disclosure differs: no public copy at all, not an unreadable one
-    if (!b.features && prevFeatures) keptFeatures = prevEntry.features; // stored notes are the newer ones
+    // stored notes from the plan's own newest filing are the NEWER ones and
+    // always win, even when the prior-year filing also has notes. Guarding
+    // this only on "the fallback found nothing" let 26 plans have their
+    // newest notes overwritten while the rescue refreshed their schedule —
+    // one of them then displayed a superseded formula, its own filing having
+    // said "Effective January 1, 2024 … 200% on the first 2%".
+    if (prevFeatures) keptFeatures = prevEntry.features;
     fbRescued++;
   }
   if (a.err === "pdftotext") {

@@ -4721,6 +4721,50 @@ until the v91 re-parse lands so that main takes one mirror that is better on
 both axes — the 198 recovered plans AND the corrected formulas — rather than
 publishing a known-wrong formula for a 119,145-participant plan in between.
 
+## 2026-08-26 (4/4) — the rescue froze, then the unfreezing overwrote newer notes
+
+Two more defects in the same rescue, both found by checking the *plan*, not the
+counters. Run #179's verdict was clean on every axis — 0 quotes suppressed, 0
+menus replaced, 13 match labels changed and all 13 improvements — and Verizon's
+match was **still the splice v91 was written to fix**.
+
+**(a) A rescued entry froze at the version that wrote it.** Run #178's rescue had
+filled the gap, so run #179's gap-fill rule saw nothing missing and preserved the
+v90 entry untouched; v91 never re-read the plan. Because a withdrawn filing can
+never be downloaded again, that entry would have stayed at v90 **forever**.
+
+The rule was keying on *presence* when it should key on *provenance*: what
+deserves protection is content from the plan's OWN newest filing. Content the
+rescue itself wrote is the same prior-year document and a newer parser may
+re-read it — so the protection now tests `fb` (schedule) and `featFb` (notes),
+not mere existence. Entries also record **`fbAck`**, the exact filing a
+prior-year read came from, because this investigation needed that document and
+had no way to name it.
+
+**(b) Unfreezing then overwrote notes that were newer.** With the schedule
+refreshable and the notes protected, run #180 still let the fallback's notes win
+whenever the fallback *had* notes — the guard only fired when it found none.
+**26 plans** had their newest-filing notes replaced by prior-year notes. Most
+produced an identical label (formulas rarely move year to year), but one
+displayed a **superseded formula**: its own newest filing says *"Effective
+January 1, 2024, the Company makes safe harbor matching contributions of 200% on
+the first 2% and 25% of the next 4%"*, and the 2023 notes we swapped in state the
+old 100%/3% + 50%/2% schedule. Fixed: protected notes always win, whether or not
+the fallback has its own.
+
+**Verified against the real document this time.** With `fbAck` in hand, the 2024
+Verizon filing was downloaded and read: the filing states 100% of the first 6%
+for management and Wireless-union employees, and 100% of the first 4% + 50% of
+the next 2% for all other union employees, in two separate sentences. The
+extractor run on that full text now returns **"100% of the first 6% of pay"**
+with the management-population sentence as its quote. **The stored-quote test
+that passed while production failed is the lesson**: a 300-character normalized
+quote is not the document, and a guard verified only against quotes has been
+verified against the extractor's own output, not against the filing.
+
+Run #179's lineup data was restored before re-running, so the 26 downgraded
+notes were never published.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline
