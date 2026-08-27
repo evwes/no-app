@@ -522,9 +522,16 @@ for (const plan of work) {
     // dropped Patient First's real 29-fund 2024 menu for a 2023 parse that
     // wasn't confident. The confidence diff could not see it: both parses
     // were confident, so the substitution was silent.
+    // What is protected is content from the plan's OWN newest filing; content
+    // the rescue itself wrote (marked fb for the schedule, featFb for the
+    // notes) is the same prior-year document and may be re-read by a newer
+    // parser. Without this distinction a rescued entry freezes at whatever
+    // parser version first filled the gap: v91 fixed Verizon's spliced match
+    // formula and never reached the plan, because v90's rescue had already
+    // filled the same gap and "no gap" meant "skip".
     const prevEntry = buckets[shardOf(plan.ack)][plan.ack];
-    const prevLineup = !!(prevEntry && prevEntry.confident && prevEntry.funds && prevEntry.funds.length);
-    const prevFeatures = !!(prevEntry && prevEntry.features);
+    const prevLineup = !!(prevEntry && prevEntry.confident && prevEntry.funds && prevEntry.funds.length && !prevEntry.fb);
+    const prevFeatures = !!(prevEntry && prevEntry.features && !prevEntry.featFb);
     const ok = b && !b.err;
     const addsLineup = !!(ok && b.parsed.found && isConfident(b.parsed)) && !prevLineup;
     const addsFeatures = !!(ok && b.features) && !prevFeatures;
@@ -547,8 +554,8 @@ for (const plan of work) {
       // source line still describes the filing it was read from) and attach
       // the prior-year notes, labelled with the year they came from
       const merged = prevEntry
-        ? { ...prevEntry, featFb: fb.y }
-        : { confident: false, error: "no-section", funds: [], featFb: fb.y };
+        ? { ...prevEntry, featFb: fb.y, fbAck: fb.a }
+        : { confident: false, error: "no-section", funds: [], featFb: fb.y, fbAck: fb.a };
       delete merged.features;
       record(plan, merged, b.features);
       summary.push(`${tag}: withdrawn — kept stored schedule, added ${fb.y} notes`);
@@ -597,7 +604,7 @@ for (const plan of work) {
     // features rescued from a prior-year filing must say so: a match formula
     // can change between plan years, and the reader is entitled to know which
     // year's notes they are reading
-    record(plan, { confident: false, error: "no-section", funds: [], ...(featFb ? { featFb } : {}) }, features);
+    record(plan, { confident: false, error: "no-section", funds: [], ...(featFb ? { featFb, fbAck: fbUsed.a } : {}) }, features);
     continue;
   }
   const ratio = parsed.ratio || 0;
@@ -616,6 +623,7 @@ for (const plan of work) {
     ...(usedOcr ? { ocr: 1 } : {}),
     ...(fbUsed ? { fb: fbUsed.y } : {}),
     ...(featFb ? { featFb } : {}),
+    ...(fbUsed ? { fbAck: fbUsed.a } : {}),
     ...(parsed.trustPtr ? { trustPtr: 1 } : {}),
     source: fbUsed
       ? `Schedule H line 4i attachment from the plan's ${fbUsed.y} filing — the newest filing's public copy ${fbNoCopy ? "has been withdrawn from the EFAST2 public bucket" : "has no readable schedule"}${usedOcr ? "; digitized from scanned pages via OCR" : ""}`
