@@ -4901,6 +4901,40 @@ two days ago, one level up.
 became a literal backslash. The log already says to write patterns into a FILE.
 Re-run from a file, it was 88 of 157.
 
+## 2026-08-28 (2/2) — run #183: the deferral was right, the precedence was not
+
+v93's run was clean where v92's was not: against the **live** data, **700 vesting
+labels gained, 0 lost, 0 quotes suppressed, and zero graded-or-table → cliff
+moves** — the class that held v92 was gone. But 19 plans changed from
+`N-year schedule (shape not stated)` to a specific cliff, and reading five of
+them, three were worse:
+
+- "A participant is 100% vested after **six** years of credited service" lost to
+  "Participants are vested in **their contributions** plus actual earnings at two
+  years of service" — that sentence is about participant money, not employer.
+- "Discretionary profit-sharing contributions vest in increments of 20% … 100%
+  vested after six years" lost to an **unscoped** "2-year cliff" that described
+  only the safe-harbor match.
+- "…20%, increasing by 20% annually, until becoming fully vested after six
+  years" lost to "become vested … **on a schedule beginning after** two years of
+  service" — a schedule's starting point read as the year the money is earned.
+
+**v94 fixes the order and the wording.** A 4–6 year full-vesting horizon is the
+plan's own statement of when the money is entirely earned; a 1–3 year cliff
+found in another sentence is usually one money type inside it. So the horizon
+now outranks the held cliff, reversing what v93 shipped. And two more phrasings
+join the graded list: "on a schedule", "beginning at/after", "graduated basis".
+
+**The shape of the lesson.** v92 preempted the table readers, v93 preempted the
+horizon fallback. Both times the new reader was correct about the *sentence* and
+wrong about its *rank* among readers that already existed. A new extraction pass
+should enter at the BOTTOM of the precedence order and be promoted only with
+evidence, never inserted in the middle because that is where the code happened
+to be edited.
+
+Measured against the live parser: 28 gained, 0 lost, **0 changed**, 0 quotes
+suppressed across 1,272 cached filings.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

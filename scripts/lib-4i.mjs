@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 93;
+export const PARSER_VERSION = 94;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -2165,7 +2165,10 @@ export function extractPlanFeatures(text) {
       // three years", "vesting … is BASED ON years of service" all describe
       // earning the money across the years, or state no shape at all. Reading
       // any of them as a cliff says the participant gets nothing until year N.
-      const gradedWording = /over a period of|proportionally over|\bover \w+ years?\b|based on (?:continuous |credited )?years of service|ratabl[ey]|in increments|each year thereafter/i.test(s);
+      // "vest … ON A SCHEDULE BEGINNING AFTER two years of service" and "vest in
+      // increments of 20% BEGINNING AT the end of the second year" both name a
+      // schedule's STARTING point, not the year the money is fully earned
+      const gradedWording = /over a period of|proportionally over|\bover \w+ years?\b|based on (?:continuous |credited )?years of service|ratabl[ey]|in increments|each year thereafter|on a (?:graduated |vesting |graded )?schedule|beginning (?:at|after)|graduated basis/i.test(s);
       const claimRe = partialPct || carveOut || unionCohort || gradedWording ? null
         : fullClaim.test(s) ? fullClaim : (!isLadder && onlyFullPcts ? bareClaim : null);
       const cm = claimRe && claimRe.exec(s);
@@ -2682,13 +2685,22 @@ export function extractPlanFeatures(text) {
    * where neither single label is complete. Deciding those needs a money-type
    * arbitration pass, sized and evidenced on its own. Until then the blank
    * rows gain a label and the labelled rows keep the one they had. */
-  if (shapeCliff && !out.vesting) {
-    out.vesting = `${shapeCliff.num}-year cliff`;
-    out.vestingText = shapeCliff.text;
-  }
   if (!out.vesting && horizonFallback) {
     out.vesting = `${horizonFallback.num}-year schedule (shape not stated)`;
     out.vestingText = horizonFallback.text;
+  }
+  /* v94: and the HORIZON outranks the held cliff, which is the reverse of the
+   * order v93 shipped. A 4-6 year "100% vested after six years" sentence is the
+   * plan's own full-vesting horizon; a 1-3 year cliff found elsewhere is
+   * usually one money type inside it. Run #183 replaced 19 horizons with a
+   * cliff and reading them, three of five sampled were worse: "A participant
+   * is 100% vested after six years of credited service" lost to "Participants
+   * are vested in THEIR contributions … at two years" (participant money, not
+   * employer), and a 20%-a-year six-year schedule lost to an unscoped "2-year
+   * cliff" that described only the safe-harbor match. */
+  if (shapeCliff && !out.vesting) {
+    out.vesting = `${shapeCliff.num}-year cliff`;
+    out.vestingText = shapeCliff.text;
   }
   // a DECLARED-RATE discretionary match is not a standing formula: "The
   // Company may make matching contributions, at its discretion, equal to
