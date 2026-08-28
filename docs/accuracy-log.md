@@ -4839,6 +4839,68 @@ years. All eight were read against their filings by hand before shipping.
 universe must be re-read against its own stored quote by machine before this
 mirrors. The corpus rate projects roughly 350 flips, too many to eyeball.
 
+## 2026-08-28 — run #182's verdict: v92 was right about the gap and wrong about precedence
+
+Run #182 landed **vesting 50,987 → 51,748 (+761)**, quote-only pool −608, 0
+quotes suppressed, HIGH at the baseline 4. The gate was green, the verdict was
+green, and the data was **not fit to mirror.** Two classes, both found by
+diffing labels rather than counting them.
+
+**(a) 48 plans lost a filed TABLE to a single sentence.** The table readers run
+*after* the sentence loop, gated on `!out.vesting` — so v92's shape-based cliff,
+which breaks the loop on first match, preempted them:
+
+| was | now | the filing actually says |
+|---|---|---|
+| Graded schedule (0/20/40/60/80/100 over 6 yr) | 1-year cliff (Company matching) | both — the table is the plan, the cliff is one money type |
+| 3-year graded (25/50/100) | 3-year cliff | "100% vested **over a period of** three years" — graded |
+| 5-year graded (varies by hire date) | 1-year cliff | "The Employer base contribution, which is **made** after one year of service, is vested **based on** continuous years of service" — no cliff at all |
+
+**(b) 157 Immediate → cliff flips, mostly right, not separable.** A machine
+re-read of all 157 against their own quotes (v83 precedent) passed 88 strictly;
+reading the remainder by hand, most of the rest are also correct — the checker
+was stricter than the extractor, rejecting "Matching contributions are vested
+after one year of service" for lacking the word "fully", and rejecting "after
+their **third** year" for naming an ordinal rather than "three". But the class
+contains real counterexamples in both directions: United's filing states a
+plan-wide "100% vested after their third year of service" **and** a bullet
+"Pre-merger Continental and CMI Flight Attendants — Participants are always 100%
+vested in their Employer Matching Contributions", so the cliff is the rule and
+the immediate claim is one cohort; elsewhere a plan vests matching immediately
+and non-matching over three years, where no single label is complete.
+
+**v93 ships the part that is provably better and defers the rest.**
+
+1. The shape-cliff becomes a **held candidate**, applied only where nothing else
+   was found — filed tables, graded readings and immediate readings all get
+   first refusal. This is the same last-resort discipline the 4–6 year horizon
+   fallback has carried since v77, and for the same reason.
+2. **Graded wording can never read as a cliff**: "over a period of",
+   "proportionally over", "over N years", "based on years of service",
+   "ratably", "in increments", "each year thereafter".
+3. **The Immediate arbitration is deliberately not attempted.** Deciding it
+   needs a money-type pass, sized and evidenced on its own; adding a third
+   heuristic on top of two at the end of a long session is how the last two
+   regressions got written. The 157 flips and both counterexamples are recorded
+   above so that work starts with evidence rather than from scratch.
+
+**Net effect measured against the live parser: 28 labels gained, 0 lost, 0
+changed, 0 quotes suppressed** across 1,271 cached filings. Nothing that already
+had an answer is touched.
+
+**The method note worth keeping.** Run #182's verdict line was green on every
+metric the pipeline prints. What surfaced both defects was diffing the *labels
+themselves* against the previous run and reading the changes by class —
+`Graded schedule -> 2-year cliff` is invisible to a coverage count, because the
+count is identical either way. **A label that changes shape is a change even
+when the totals do not move**, which is the same lesson as the replacement rule
+two days ago, one level up.
+
+**And a predicate error, the fourth this week**: the first self-check reported
+0 of 157 flips passing, because `new RegExp("\\\\b…")` inside a `node -e` string
+became a literal backslash. The log already says to write patterns into a FILE.
+Re-run from a file, it was 88 of 157.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

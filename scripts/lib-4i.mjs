@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 92;
+export const PARSER_VERSION = 93;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -2022,6 +2022,11 @@ export function extractPlanFeatures(text) {
     /matching (?:contributions?|accounts?)|company match/i.test(s) && IMMED.test(s));
   // graded/cliff language always describes employer money — check it FIRST
   let horizonFallback = null; // 4-6yr full-vesting horizon, used only if nothing better is found
+  // v93: a cliff read by SHAPE (v92) is a last resort, never a preemption. It
+  // broke the sentence loop on first match and so beat the filed TABLE readers
+  // that run after the loop: 48 plans lost a real "less than 2 yr: 0%, 2 yr:
+  // 20% … 6 yr: 100%" schedule to one money type's single sentence.
+  let shapeCliff = null;
   for (const s of vestSentences) {
     if (matchImmediate && /non.?elective|profit.?sharing/i.test(s) && !/match/i.test(s)) continue;
     // v81: an adjective between "per" and "year" is common and broke the
@@ -2120,6 +2125,7 @@ export function extractPlanFeatures(text) {
      * splice. So match on SHAPE instead: a full-vesting claim and a service
      * duration inside one sentence, close together. Every existing guard still
      * applies, because this only supplies the match the alternation missed. */
+    let cliffFromShape = false;
     if (!cliff) {
       const fullClaim = /(?:(?:100|one hundred) ?(?:percent|%)|fully)[ -]?vest\w*|vest\w* fully|not vested until|(?:are|is) not vested/i;
       // "becomes vested after one year of service" states a cliff without the
@@ -2155,7 +2161,12 @@ export function extractPlanFeatures(text) {
       // exists for bargaining units, so the sentence stays with its quote.
       const unionCohort = /collective(?:ly)? bargain|union[- ]represent|\bunion\b[^.]{0,40}(?:employee|participant|member)|(?:not )?covered by a (?:collective|cba)/i.test(s);
       const onlyFullPcts = allPcts.every((v) => v === 100);
-      const claimRe = partialPct || carveOut || unionCohort ? null
+      // "100% vested PROPORTIONALLY OVER three years", "vested OVER a period of
+      // three years", "vesting … is BASED ON years of service" all describe
+      // earning the money across the years, or state no shape at all. Reading
+      // any of them as a cliff says the participant gets nothing until year N.
+      const gradedWording = /over a period of|proportionally over|\bover \w+ years?\b|based on (?:continuous |credited )?years of service|ratabl[ey]|in increments|each year thereafter/i.test(s);
+      const claimRe = partialPct || carveOut || unionCohort || gradedWording ? null
         : fullClaim.test(s) ? fullClaim : (!isLadder && onlyFullPcts ? bareClaim : null);
       const cm = claimRe && claimRe.exec(s);
       const dm = cm && /(\w{3,5}|\d)\+? (?:plan )?years? of (?:vesting |credited |continuous |eligibility )?(?:service|employment)/i.exec(s);
@@ -2168,6 +2179,7 @@ export function extractPlanFeatures(text) {
         if (b - a <= 200 && !/[.;]\s/.test(s.slice(a, b))) {
           cliff = [s.slice(a, b), dm[1]];
           cliff.index = a;
+          cliffFromShape = true;
         }
       }
     }
@@ -2245,6 +2257,17 @@ export function extractPlanFeatures(text) {
         out.vestingText = s.length > 300 && cliff.index > 60
           ? cap("…" + s.slice(Math.max(0, cliff.index - 60))) : cap(s);
         break;
+      }
+      if (num >= 1 && num <= 3 && cliffFromShape) {
+        // hold it: a table or graded reading later in the notes is the more
+        // complete answer and must get first refusal
+        // employerMoney belongs to the immediate-vesting loop; test this
+        // sentence directly rather than reaching for a name from another scope
+        if (!shapeCliff) shapeCliff = { num,
+          employer: /matching|employer|company|non.?elective|profit.?sharing|discretionary/i.test(s),
+          text: s.length > 300 && cliff.index > 60
+            ? cap("…" + s.slice(Math.max(0, cliff.index - 60))) : cap(s) };
+        continue;
       }
       if (num >= 1 && num <= 3) {
         out.vesting = `${num}-year cliff`;
@@ -2645,6 +2668,24 @@ export function extractPlanFeatures(text) {
   // plans whose notes vest deferrals immediately and employer money over
   // years ("Participants are immediately vested in their contributions, and
   // become fully vested in their profit sharing contributions after six").
+  /* v93: the held shape-cliff fills a BLANK and nothing else. It does not
+   * arbitrate against "Immediate", and that is a deliberate deferral, not an
+   * oversight. v92 let it win and produced 157 Immediate -> cliff flips;
+   * reading them, most are right (the plan vests deferrals immediately and
+   * employer money over years) but the class is not separable by any rule
+   * tried here. Two counterexamples from the corpus: United's filing states a
+   * plan-wide "100% vested after their third year of service" AND a bullet
+   * "Pre-merger Continental and CMI Flight Attendants - Participants are
+   * always 100% vested in their Employer Matching Contributions", where the
+   * cliff is the general rule and the immediate claim is one cohort; while
+   * another plan vests matching immediately and non-matching over three years,
+   * where neither single label is complete. Deciding those needs a money-type
+   * arbitration pass, sized and evidenced on its own. Until then the blank
+   * rows gain a label and the labelled rows keep the one they had. */
+  if (shapeCliff && !out.vesting) {
+    out.vesting = `${shapeCliff.num}-year cliff`;
+    out.vestingText = shapeCliff.text;
+  }
   if (!out.vesting && horizonFallback) {
     out.vesting = `${horizonFallback.num}-year schedule (shape not stated)`;
     out.vestingText = horizonFallback.text;
