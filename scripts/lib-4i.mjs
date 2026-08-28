@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 91;
+export const PARSER_VERSION = 92;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -2105,8 +2105,72 @@ export function extractPlanFeatures(text) {
     const allPcts = [...new Set((s.match(/\b(\d{1,3}) ?%/g) || []).map((x) => parseInt(x)))];
     const pctTable = allPcts.length >= 3 && allPcts.filter((v) => v < 100).length >= 2;
     const isLadder = (ladderPcts.length >= 2 && ladderPcts.some((v) => v < 100)) || pctTable;
-    const cliff = s.match(/(?:(\w{3,5}|\d)[- ]year cliff|cliff vesting[^.]{0,40}?(\w{3,5}|\d) years?|(?:(?:100|one hundred) ?(?:percent|%)|fully) vest(?:ed)?[^.]{0,130}?(?:after|upon)(?: the)?(?: complet\w+(?: of)?)? (\w{3,5}|\d) years?|0 ?(?:percent|%) vested until (\w{3,5}|\d) years|vests? (?:100|one hundred) ?(?:percent|%)[^.]{0,60}?(?:after|upon)(?: the)?(?: complet\w+(?: of)?)? (\w{3,5}|\d) years?|vest(?:ing|s)?\b[^.]{0,170}?credited with (\w{3,5}|\d) years? of (?:vesting |credited |continuous )?service|\bvest(?:ed|s)?\s+(?:at\s+)?(?:100|one hundred) ?(?:percent|%)[^.]{0,60}?(?:after|upon|following)(?: the)?(?: complet\w+(?: of)?)?\s+(\w{3,5}|\d)[\s(]*\d?\)?\s*years?|vesting of (?:100|one hundred) ?(?:percent|%)[^.]{0,40}?after[^.]{0,25}?(\w{3,5}|\d) years?|(?:100|one hundred) ?(?:percent|%) vesting occurr\w+[^.]{0,40}?after[^.]{0,25}?(\w{3,5}|\d)[\s(]*\d?\)?\s*years?|\b(?:fully |(?:100|one hundred) ?(?:percent|%) )vest\w*[^.]{0,110}?after (?:obtaining|completing|they complete)[^.]{0,25}?(\w{3,5}|\d) (?:or more )?years?|\bvest\w*[^.]{0,60}?(?:fully|(?:100|one hundred) ?(?:percent|%))[^.]{0,60}?after (?:obtaining|completing|they complete)[^.]{0,25}?(\w{3,5}|\d) (?:or more )?years?|\bis (?:100|one hundred) ?(?:percent|%) after[^.]{0,25}?(\w{3,5}|\d) years?)/i);
+    let cliff = s.match(/(?:(\w{3,5}|\d)[- ]year cliff|cliff vesting[^.]{0,40}?(\w{3,5}|\d) years?|(?:(?:100|one hundred) ?(?:percent|%)|fully) vest(?:ed)?[^.]{0,130}?(?:after|upon)(?: the)?(?: complet\w+(?: of)?)? (\w{3,5}|\d) years?|0 ?(?:percent|%) vested until (\w{3,5}|\d) years|vests? (?:100|one hundred) ?(?:percent|%)[^.]{0,60}?(?:after|upon)(?: the)?(?: complet\w+(?: of)?)? (\w{3,5}|\d) years?|vest(?:ing|s)?\b[^.]{0,170}?credited with (\w{3,5}|\d) years? of (?:vesting |credited |continuous )?service|\bvest(?:ed|s)?\s+(?:at\s+)?(?:100|one hundred) ?(?:percent|%)[^.]{0,60}?(?:after|upon|following)(?: the)?(?: complet\w+(?: of)?)?\s+(\w{3,5}|\d)[\s(]*\d?\)?\s*years?|vesting of (?:100|one hundred) ?(?:percent|%)[^.]{0,40}?after[^.]{0,25}?(\w{3,5}|\d) years?|(?:100|one hundred) ?(?:percent|%) vesting occurr\w+[^.]{0,40}?after[^.]{0,25}?(\w{3,5}|\d)[\s(]*\d?\)?\s*years?|\b(?:fully |(?:100|one hundred) ?(?:percent|%) )vest\w*[^.]{0,110}?after (?:obtaining|completing|they complete)[^.]{0,25}?(\w{3,5}|\d) (?:or more )?years?|\bvest\w*[^.]{0,60}?(?:fully|(?:100|one hundred) ?(?:percent|%))[^.]{0,60}?after (?:obtaining|completing|they complete)[^.]{0,25}?(\w{3,5}|\d) (?:or more )?years?|\bis (?:100|one hundred) ?(?:percent|%) after[^.]{0,25}?(\w{3,5}|\d) years?)/i);
     if (graded) { out.vesting = "Graded schedule"; out.vestingText = cap(s); break; }
+    /* v92: the cliff alternation above is a SPELLING LIST, and a sample of 12
+     * real filings drawn from the 2,159 vesting-quote-only rows showed 12 of 12
+     * stating a plain cliff it cannot read: "vest fully when such participant
+     * ATTAINS two years of credited service", "fully vested … FOLLOWING
+     * COMPLETION of three years", "are NOT VESTED UNTIL completion of 2 years
+     * … at which time they become 100% vested", "fully vested … after
+     * ATTAINING six years", "AFTER 4 years of service, Company contributions
+     * become fully vested". Each needs its own arm in a regex that is already
+     * 1,400 characters long, and the next filing will use a verb none of them
+     * lists — the same failure that produced v76's FEIN guard and v91's match
+     * splice. So match on SHAPE instead: a full-vesting claim and a service
+     * duration inside one sentence, close together. Every existing guard still
+     * applies, because this only supplies the match the alternation missed. */
+    if (!cliff) {
+      const fullClaim = /(?:(?:100|one hundred) ?(?:percent|%)|fully)[ -]?vest\w*|vest\w* fully|not vested until|(?:are|is) not vested/i;
+      // "becomes vested after one year of service" states a cliff without the
+      // word "fully" — trustworthy only when the sentence names no partial
+      // percentage, otherwise it is one step of a ladder
+      const bareClaim = /becomes? vested|(?:are|is) vested/i;
+      // A PARTIAL percentage anywhere in the sentence means the participant
+      // earns the money in pieces, so the year count is the END of a graded
+      // schedule, not a cliff: "Company contributions vest 25% FOR EACH of the
+      // first two calendar years … and become fully vested after the
+      // participant completes three years" reads as a 3-year cliff under a
+      // count-based ladder test (only two distinct percentages) and would tell
+      // that participant they get nothing for three years when they earn a
+      // quarter of it a year. 0 and 100 are the cliff's OWN vocabulary
+      // ("0% vested … until they complete two years, after which … 100%") and
+      // stay allowed.
+      const partialPct = allPcts.some((v) => v > 0 && v < 100);
+      // and a carve-out sentence describes two money types at once ("all
+      // contributions are fully vested at all times, EXCEPT the employer's
+      // non-elective contributions, which require three years"). Naming
+      // either half alone misdescribes the other, so leave the sentence to
+      // the paths v81 already settled rather than relitigating it here.
+      const carveOut = /\b(?:except|other than|with the exception of)\b/i.test(s);
+      // a COLLECTIVELY BARGAINED cohort is not the plan: "All participants are
+      // immediately vested … Participants NOT COVERED by a collective
+      // bargaining agreement are also immediately vested in the Employer's safe
+      // harbor contributions. Participants COVERED by a collective bargaining
+      // agreement are vested in the Employer's non-safe-harbor contribution …
+      // after the completion of three years of service." Everyone outside the
+      // CBA gets employer money immediately, so "3-year cliff" would be wrong
+      // for most of the plan. Hire-date cohorts differ — those already carry a
+      // "(varies by hire date per the filing)" label — but no such disclosure
+      // exists for bargaining units, so the sentence stays with its quote.
+      const unionCohort = /collective(?:ly)? bargain|union[- ]represent|\bunion\b[^.]{0,40}(?:employee|participant|member)|(?:not )?covered by a (?:collective|cba)/i.test(s);
+      const onlyFullPcts = allPcts.every((v) => v === 100);
+      const claimRe = partialPct || carveOut || unionCohort ? null
+        : fullClaim.test(s) ? fullClaim : (!isLadder && onlyFullPcts ? bareClaim : null);
+      const cm = claimRe && claimRe.exec(s);
+      const dm = cm && /(\w{3,5}|\d)\+? (?:plan )?years? of (?:vesting |credited |continuous |eligibility )?(?:service|employment)/i.exec(s);
+      if (cm && dm && !isLadder) {
+        const a = Math.min(cm.index, dm.index);
+        const b = Math.max(cm.index + cm[0].length, dm.index + dm[0].length);
+        // the claim and the duration must belong to each other: a full stop
+        // between them is two statements, and 200 characters is the widest
+        // span any of the 12 sampled filings needed
+        if (b - a <= 200 && !/[.;]\s/.test(s.slice(a, b))) {
+          cliff = [s.slice(a, b), dm[1]];
+          cliff.index = a;
+        }
+      }
+    }
     if (cliff) {
       // v84 added five arms with the percentage AFTER the verb ("are vested
       // 100% after three years"); their capture groups are 7-11, and reading

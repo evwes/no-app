@@ -4765,6 +4765,80 @@ verified against the extractor's own output, not against the filing.
 Run #179's lineup data was restored before re-running, so the 26 downgraded
 notes were never published.
 
+## 2026-08-27 — v92: the cliff reader was a spelling list too
+
+**Found by following a loose thread.** Verizon's 2024 filing says participants
+"shall be fully vested … **upon completing** three years of vesting service" and
+we showed the quote with no label — while a gate specimen proves "upon
+**completion of** three years" extracts fine. One word apart.
+
+**Sized before writing code.** Of 5,718 vesting quote-only rows, 2,159 make a
+vesting claim about employer money AND name a service duration. Classified:
+**408 cliff-shaped, 123 graded-shaped, 1,628 unclassified** — and the
+unclassified are the known floor, "Vesting in the Company's matching
+contributions is based on years of continuous service", full stop, no number.
+
+**Then read 12 real filings, not the stored quotes** (the discipline this week
+paid for). 12 of 12 located the right sentence and produced nothing:
+
+> "vest fully when such participant **attains** two years of credited service" ·
+> "fully vested … **following completion of** three years" · "are **not vested
+> until** completion of 2 years … at which time they become 100% vested" ·
+> "**After** 4 years of service, Company contributions … become fully vested" ·
+> "fully vested … after **attaining** six years"
+
+The cliff alternation is a 1,400-character regex of verb spellings, and every
+one of these needs another arm. That is the failure shape of v76's FEIN guard
+and v91's match splice, twice over.
+
+**The change: match on SHAPE, not vocabulary.** A full-vesting claim and a
+service duration, in one sentence, within 200 characters, with no sentence
+boundary between them. Every existing guard still runs, because the pass only
+supplies the match the alternation missed — ladders still become "Graded
+schedule", 4–6 years still become "N-year schedule (shape not stated)" under the
+§411(a)(2)(B) three-year cliff cap, superseded rules are still dropped.
+
+**Three guards, each earned by a filing that would otherwise be wrong:**
+
+1. **A partial percentage means graded, not cliff.** "Company contributions vest
+   **25% for each** of the first two calendar years … and become fully vested
+   after … three years" has only two distinct percentages, so the count-based
+   ladder test misses it — and "3-year cliff" tells that participant they get
+   nothing for three years when they earn a quarter of it a year. 0 and 100 stay
+   allowed; they are the cliff's own vocabulary ("0% vested … until two years,
+   after which … 100%").
+2. **A carve-out describes two money types at once.** "All … contributions are
+   fully vested at all times, **except** the employer's non-elective
+   contributions, which require three years": naming either half misdescribes
+   the other.
+3. **A collectively bargained cohort is not the plan.** The gate caught this
+   one. Its filing reads: participants **not covered** by a CBA are immediately
+   vested in employer safe-harbor money; participants **covered** by one vest in
+   non-safe-harbor money after three years. Most of the plan gets employer money
+   immediately, so "3-year cliff" would be wrong for them. Hire-date cohorts are
+   different — those already ship a "(varies by hire date per the filing)"
+   label — but bargaining units have no such disclosure, so the sentence keeps
+   its quote and no label.
+
+**One gate expectation moved, deliberately, in this commit.** "Upon three years
+of service, … 100% vested" was pinned at `null` in v83 because the sentence was
+producing a false "Immediate"; null was the best answer available then. Its
+filing reads: "The portion … attributable to the Company's profit sharing and
+matching contributions is **not vested until** the participant reaches three
+years of service." That is a real 3-year cliff, so the expectation is now
+"3-year cliff". The specimen keeps its protective value — it still fails if the
+label ever returns to "Immediate".
+
+**Measured on 1,268 cached filings: 16 labels gained, 8 corrected, 0 lost, 0
+quotes suppressed.** Seven of the eight corrections are **Immediate → N-year
+cliff**, the direction that matters most: each was a plan telling participants
+their employer money was already theirs when the filing says it vests over
+years. All eight were read against their filings by hand before shipping.
+
+**Post-run check owed** (the v83 precedent): every Immediate → cliff flip in the
+universe must be re-read against its own stored quote by machine before this
+mirrors. The corpus rate projects roughly 350 flips, too many to eyeball.
+
 ## Standing prevention machinery
 
 1. **Post-merge audit** (`scripts/audit-data.mjs`, prints in every pipeline

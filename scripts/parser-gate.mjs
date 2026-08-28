@@ -94,8 +94,18 @@ const FEATURE_SPECIMENS = [
   ["100-percent-after-N-years evades the two-digit guard", "20251014091821NAL0005204978001",
     { vesting: "5-year schedule (shape not stated)" }],
   // the condition OPENS the sentence instead of following the percentage
+  /* v92 MOVED this expectation from null to "3-year cliff", deliberately.
+   * It was pinned at null in v83 because the sentence was producing a false
+   * "Immediate"; null was the correct answer available then — block the wrong
+   * label, keep the quote. Reading the filing: "Participants are vested
+   * immediately in their contributions … The portion attributable to the
+   * Company's profit sharing and matching contributions is NOT VESTED UNTIL the
+   * participant reaches three years of service. Upon three years of service,
+   * the participant is 100% vested." That is a real 3-year cliff on employer
+   * money, so the label is now better than the silence. The specimen keeps its
+   * value: it still fails if the label ever returns to "Immediate". */
   ["'Upon three years of service, … 100% vested'", "20251013092109NAL0001025329001",
-    { vesting: null }],
+    { vesting: "3-year cliff" }],
   // a carve-out worded "but do not vest … until", not "except"
   ["'but do not vest in discretionary contributions until after three years'",
     "20260405212116NAL0005689857001", { vesting: null }],
