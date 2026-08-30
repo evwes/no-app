@@ -182,3 +182,31 @@ computed one before noticing, read "3 lost / 1 gained", and had to throw it out.
    (`lineups-status.json` → `.plans[*].pv`). A single value means a complete
    re-parse; a mix means a partial one and the verdict is not comparable.
 2. Never mirror after a cancelled run. Wait for a complete one.
+
+## Filing review: never read the same company twice (owner directive 2026-08-30)
+
+Every hands-on review sample now goes through `scripts/sample-filings.mjs`,
+which keeps a company-level memory in `docs/reviewed-filings.jsonl`.
+
+    node scripts/sample-filings.mjs <class> [count] [--allow-repeat] [--dry]
+    classes: vesting-quote-only · match-quote-only · no-features · no-lineup
+
+Two things it guarantees, both of which were being violated:
+
+1. **One plan per company inside a sample.** A sponsor with several plans was
+   being sampled once per plan, so a "12-filing sample" could be eight
+   companies.
+2. **No company twice across cycles.** The downloaded corpus lives in an
+   ephemeral scratch directory and does not survive a container recycle — so
+   before this ledger, every cycle re-picked from the same top-of-universe
+   candidates and re-read filings already read. The ledger is in the repo, so
+   it persists.
+
+The ledger was seeded with 592 filings across 520 companies from the
+ticker-issuer campaign, the accuracy log's named specimens, and the parser
+gate's live specimens. It records ack, EIN, sponsor, plan, size, the class the
+filing was sampled for, and what the extractor said at the time.
+
+Sampling is largest-first: a defect on a big plan reaches more participants and
+is the likeliest thing an owner checks by hand. `--allow-repeat` exists for
+deliberately re-reading a company; use it knowingly, not by default.
