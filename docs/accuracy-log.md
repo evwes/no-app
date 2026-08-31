@@ -4958,3 +4958,48 @@ suppressed across 1,272 cached filings.
 5. **Display honesty rules** — three distinct states everywhere: as filed /
    affirmatively none / not stated (with the reason). Silence in a filing is
    never rendered as "no".
+
+## 2026-08-31 — v95: four ways to say "how long", found by not re-reading the same companies
+
+The owner's instruction — do not repeat companies when reviewing filings — paid
+for itself on its first application. `scripts/sample-filings.mjs` now excludes
+every company in `docs/reviewed-filings.jsonl` (seeded with 592 filings across
+520 companies), takes one plan per company, and samples largest-first. Six
+companies came back, none previously read, and **five of the six were showing no
+vesting answer while their filings state one plainly**:
+
+| plan | participants | the filing says | why it was missed |
+|---|---|---|---|
+| Ford salaried | 52,244 | "Company matching contributions and FRP Contributions **vest three years after the original date of hire**" | bare verb, and the period is anchored to a hire date, not "years of service" |
+| American Airlines | 114,844 | "requires participants to be **employed for two years** before becoming 100% vested" | "employed for N years" |
+| Johnson & Johnson | 72,991 | "become vested after the participant has completed a **three-year period of service**" | hyphenated adjective form |
+| Fidelity (FMR) | 90,445 | a filed table: <2 yr 0%, 2 yr 20%, 3 yr 40%, 4 yr 60%, 5 yr 100% | the column header is split across **two lines** |
+| Bank of America | 254,477 | "fully vested after completion of **36 months** of vesting service" | duration stated in MONTHS |
+
+v95 reads all five shapes. Months convert only in whole years (12/24/36/48/60/
+72) — a filing that says 18 months means something a year label cannot express,
+and the quote states it exactly.
+
+**Bank of America is fixed as a reader and still unlabelled, on purpose.** Its
+paragraph says company **matching** is vested immediately and only the *annual
+company contribution* carries the 36-month cliff. That is the money-type
+arbitration deferred on 2026-08-28, and this is one more piece of evidence for
+it rather than a reason to guess now. Its displayed quote is also a match
+*eligibility* sentence — the wrong-topic class, still open.
+
+**A predicate error worth recording, the fifth this month.** The first sizing
+pass reported only 13 candidate rows because the gate I wrote required
+"vested"/"fully"/"100%" — which excludes Ford's "contributions **vest** three
+years after…", the very filing that started this. Fixed, it was 24. And 24 is
+still only a lower bound: **stored quotes are capped near 300 characters, so any
+phrasing past the cap cannot be counted from stored data at all.** Sizing a
+class from stored quotes measures the quotes, not the class.
+
+Measured on a 199-filing corpus: **9 vesting labels gained, 0 changed, 0 lost,
+0 quotes suppressed.** Four new gate specimens pin the four shapes.
+
+**Tooling that came out of this**, both because a container recycle destroyed
+the previous corpus and the ad-hoc scripts that built it:
+`scripts/build-review-corpus.mjs` rebuilds a class-spread corpus on demand, and
+`scripts/diff-parser.mjs` diffs the working parser against any committed ref and
+prints every label change — not just the totals.

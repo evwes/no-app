@@ -78,6 +78,17 @@ const FEATURE_SPECIMENS = [
    * a guard wide enough to fix the first will silently eat the second. */
   ["Union tiers must not chain onto the non-union head", "20251014104315NAL0001234147001",
     { match: "100% of the first 6% of pay" }],
+  /* v95: four ways of stating a vesting period that the reader did not know,
+   * every one of them found on a plan with tens of thousands of participants
+   * showing no vesting answer at all. Each specimen pins one phrasing. */
+  ["Ford: bare verb, hire-date anchor ('vest three years after the original date of hire')",
+    "20251009165049NAL0016131874001", { vesting: "3-year cliff" }],
+  ["American: 'employed for two years before becoming 100% vested'",
+    "20251013090518NAL0001566176001", { vesting: "2-year cliff" }],
+  ["J&J: hyphenated 'completed a three-year period of service'",
+    "20251015120755NAL0006024272001", { vesting: "3-year cliff (varies by hire date per the filing)" }],
+  ["Fidelity: filed table under a TWO-LINE column header",
+    "20251010153157NAL0004375043001", { vesting: "Graded schedule" }],
   ["Same-population continuation still chains", "20251219112023NAL0003370419001",
     { match: "100% of the first 3% of pay + 50% of the next 2%" }],
   /* v83: three false-"Immediate" shapes the v81 widening let through, found

@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 94;
+export const PARSER_VERSION = 95;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -2127,11 +2127,25 @@ export function extractPlanFeatures(text) {
      * applies, because this only supplies the match the alternation missed. */
     let cliffFromShape = false;
     if (!cliff) {
+      // "36 months of vesting service" is three years; anything not a whole
+      // number of years is left to the quote, which states it exactly
+      const monthsAsYears = (txt) => {
+        const m = /\b(\d{1,3}) months? of (?:vesting |credited |continuous )?(?:service|employment)/i.exec(txt);
+        if (!m || +m[1] % 12 || +m[1] < 12 || +m[1] > 84) return null;
+        const out = [m[0], String(+m[1] / 12)];
+        out.index = m.index;
+        return out;
+      };
       const fullClaim = /(?:(?:100|one hundred) ?(?:percent|%)|fully)[ -]?vest\w*|vest\w* fully|not vested until|(?:are|is) not vested/i;
       // "becomes vested after one year of service" states a cliff without the
       // word "fully" — trustworthy only when the sentence names no partial
       // percentage, otherwise it is one step of a ladder
-      const bareClaim = /becomes? vested|(?:are|is) vested/i;
+      // Ford states the whole rule with the bare verb and no adverb at all:
+      // "Company matching contributions and FRP Contributions VEST three years
+      // after the original date of hire." Requiring "vested"/"fully"/"100%"
+      // loses it, so accept "<contributions> vest" — anchored on the noun, not
+      // on the verb alone, which would fire on any vesting sentence anywhere.
+      const bareClaim = /becomes? vested|(?:are|is) vested|contributions?\b[^.]{0,60}?\bvest\b/i;
       // A PARTIAL percentage anywhere in the sentence means the participant
       // earns the money in pieces, so the year count is the END of a graded
       // schedule, not a cliff: "Company contributions vest 25% FOR EACH of the
@@ -2172,7 +2186,22 @@ export function extractPlanFeatures(text) {
       const claimRe = partialPct || carveOut || unionCohort || gradedWording ? null
         : fullClaim.test(s) ? fullClaim : (!isLadder && onlyFullPcts ? bareClaim : null);
       const cm = claimRe && claimRe.exec(s);
-      const dm = cm && /(\w{3,5}|\d)\+? (?:plan )?years? of (?:vesting |credited |continuous |eligibility )?(?:service|employment)/i.exec(s);
+      /* v95, from six of the largest plans in the country, each showing no
+       * vesting answer while its filing states one plainly. The duration
+       * pattern only knew "N years of service":
+       *   Ford            "vest three years after the original date of hire"
+       *   American        "employed for two years before becoming 100% vested"
+       *   Johnson&Johnson "completed a three-year period of service"
+       *   Bank of America "fully vested after completion of 36 MONTHS of
+       *                    vesting service"
+       * Months are accepted only in whole years (12/24/36/48/60/72): a filing
+       * that says 18 months means something the year label cannot express, and
+       * guessing is worse than the quote alone. */
+      const dm = cm && (/(\w{3,5}|\d)\+? (?:plan )?years? of (?:vesting |credited |continuous |eligibility )?(?:service|employment)/i.exec(s)
+        || /(\w{3,5}|\d{1,2}) years? (?:after|from)[^.]{0,40}?(?:date of hire|hire date|original hire|date of employment|employment date)/i.exec(s)
+        || /\bemployed[^.]{0,20}?for (\w{3,5}|\d{1,2}) years?/i.exec(s)
+        || /(\w{3,5}|\d{1,2})[- ]year period of (?:credited |continuous |vesting )?service/i.exec(s)
+        || monthsAsYears(s));
       if (cm && dm && !isLadder) {
         const a = Math.min(cm.index, dm.index);
         const b = Math.max(cm.index + cm[0].length, dm.index + dm[0].length);
@@ -2316,7 +2345,7 @@ export function extractPlanFeatures(text) {
     // "Years of Service Vested %" (Transdigm), reversed "Percent Years of
     // vesting service vested" (Weyerhaeuser), "Vested Percentage Years of
     // service" (Rollins)
-    const th = t.match(/years of (?:credited |continuous )?(?:service|vesting service)\s+(?:vesting|vested) percentage|following vesting schedule:?\s+years\s+(?:employer|vested|vesting)|vested\s+years of service\s+percentage|following schedule:?\s*vested\s+years of service\s+percentage|years of service\s+percentage|(?:vesting|vested)\s+(?:years of (?:credited |continuous )?service|service)\s+percentage|(?:completed )?years of (?:credited |continuous )?service\s+percent(?:age)? vested|years of service\s+vesting\b|years of (?:credited |continuous )?service\s+vested ?%?|percent\s+years of (?:vesting |credited |continuous )?service\s+vested|vested percentage\s+years of service|years of (?:credited |continuous )?service\s+%\s*vested|years\s+percentage\s+of service\s+vested|vested\s+(?:completed\s+)?years of (?:credited |continuous )?service\s+percent/i);
+    const th = t.match(/years of\s+percent\s+(?:credited |continuous |vesting )?service\s+vested|years of (?:credited |continuous )?(?:service|vesting service)\s+(?:vesting|vested) percentage|following vesting schedule:?\s+years\s+(?:employer|vested|vesting)|vested\s+years of service\s+percentage|following schedule:?\s*vested\s+years of service\s+percentage|years of service\s+percentage|(?:vesting|vested)\s+(?:years of (?:credited |continuous )?service|service)\s+percentage|(?:completed )?years of (?:credited |continuous )?service\s+percent(?:age)? vested|years of service\s+vesting\b|years of (?:credited |continuous )?service\s+vested ?%?|percent\s+years of (?:vesting |credited |continuous )?service\s+vested|vested percentage\s+years of service|years of (?:credited |continuous )?service\s+%\s*vested|years\s+percentage\s+of service\s+vested|vested\s+(?:completed\s+)?years of (?:credited |continuous )?service\s+percent/i);
     if (th) {
       let win = t.slice(th.index + th[0].length, th.index + th[0].length + 340);
       // stop at resumed prose — back-to-back tables (AbbVie files the
