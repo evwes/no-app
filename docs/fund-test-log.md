@@ -4038,3 +4038,64 @@ separate line.
 is v80 working. Compare the match line, which v79 raised.
 
 588 filings tested cumulatively. v76+v77 re-parsing as #165; v78/v79/v80 committed.
+
+## 2026-08-31 — J.P. Morgan, and the abbreviation gap behind it
+
+Owner report: JPMorgan Mid Cap Value Fund Class R6 (JMVYX) showed no ticker and
+no expense ratio. It was not a missing fund — it was a missing FAMILY. The table
+held exactly two JPMorgan rows (SmartRetirement and Core Bond, ER only), while
+the filed universe carried **32,964 plan-appearances of JPMorgan funds across
+6,913 distinct spellings, $128.3B**, matching nothing.
+
+**Added, R6 class only** (every fee read from a fund-level source and
+cross-checked — a quote aggregator returned 0.84% for JLGMX, which is a
+different share class, so each was confirmed twice):
+
+| fund | R6 ticker | net ER |
+|---|---|---|
+| JPMorgan Large Cap Growth | JLGMX | 0.44% |
+| JPMorgan Equity Income | OIEJX | 0.45% |
+| JPMorgan Mid Cap Value | JMVYX | 0.60% |
+| JPMorgan Mid Cap Growth | JMGMX | 0.65% |
+| JPMorgan US Equity | JUEMX | 0.44% |
+| JPMorgan Small Cap Growth | JGSMX | 0.74% |
+| JPMorgan Core Plus Bond | JCPUX | 0.38% |
+
+The ticker is claimed **only when the filed name states R6**, following the rule
+this table already carries: a name with no class does not identify a class, and
+a wrong class misstates the fee. Unclassed names still get the strategy's
+expense estimate, which is what the "est." label is for.
+
+Two sponsor rules came with it. A fund that merely hires J.P. Morgan as
+sub-adviser is a different registered fund ("JNL/JPMorgan…", "SA JPMorgan MFS
+Core Bond Strategy"), so a competing sponsor name disqualifies unless a trust
+word follows — the wrapper case. That also **fixed a pre-existing defect**: the
+old `/jpmorgan .*core bond/` row was handing JPMorgan's own estimate to
+sub-advised funds.
+
+**The larger finding: most blanks are spellings, not missing funds.** Ranking
+the unmatched holdings showed the top names were funds the table already knew,
+filed in contraction: "Vanguard Tgt Rmt 2050 Inv Fund" (549 plans), "Fid 500
+Ind" (512), "Fid Govt Mmkt" (490), "Fidelity Total Bond K6" (392), "BlackRock
+Md-Cp Gr Eq K Fd" (179). 24 contractions were added to the expander, plus five
+funds: FTBFX, SPAXX, VMFXX, VEIRX, BMGKX with their fees.
+
+"DIV" and "CONS" were deliberately **left out** — "DIV" is Diversified as often
+as Dividend and "CONS" is Consumer as often as Conservative, and an expansion
+that can mean two things is not an abbreviation.
+
+**Result across 1,633,939 filed fund rows:**
+
+| | before | after |
+|---|---|---|
+| rows with a ticker | 276,876 (16.9%) | **319,003 (19.5%)** |
+| rows with an expense ratio | 810,019 (49.6%) | **868,317 (53.1%)** |
+
+Every one of the top 10 recordkeepers improved. JPMorgan's own blank fell from
+32,964 plan-appearances to 12,164.
+
+**Still open, ranked by how many blanks a reader sees** — the next passes:
+Vanguard 58k → now lower, Fidelity 48k, TIAA/CREF 38.8k (variable annuity
+accounts, which have no ticker by nature and need ER estimates only),
+BlackRock 16.4k, Principal 16.1k (mostly separate accounts and CITs), John
+Hancock 14.4k, Invesco 13.5k, T. Rowe Price 13.4k, PGIM 11.9k, PIMCO 11.8k.

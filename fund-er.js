@@ -66,6 +66,37 @@ const trpI = (s, no) => new RegExp(
 const trpValue = (tail) => new RegExp(
   TRP_SPONSOR + "(?!.*adv)" + NOT_R_TAIL + ".*?" + TRP_MGR + "\\s+value\\b" + tail, "i");
 
+/* ---- J.P. Morgan name shapes -------------------------------------------------
+ * Every recordkeeper spells this family differently, and the filed universe
+ * carries all of these for ONE fund: "JPMorgan Large Cap Growth Fund; Class
+ * R6", "JP MORGAN LARGE CAP GROWTH R6", "JPMorgan LgCp Grw Fnd R6",
+ * "JPM LG CAP GROWTH R6", "JP Morgan Large Cap Gr R6 Fd".
+ *
+ * A fund that merely hires J.P. Morgan as SUB-ADVISER is a different
+ * registered fund with its own ticker and fee ("JNL/JPMorgan U.S. Government
+ * & Quality Bond", "SA JPMorgan MFS Core Bond Strategy"), so a competing
+ * sponsor name disqualifies — unless a trust word follows it, which marks the
+ * strategy in a wrapper rather than someone else's fund. This is the same rule
+ * the T. Rowe Price block already carries, for the same reason. */
+const JPM_MGR = "^(?!.*(?:jnl|sa/|sa jpm|lvip|lincoln|jackson|transamerica|nationwide"
+  + "|voya|vy\\b|john hancock|brighthouse|met ?life|pacific life|great.?west|empower"
+  + "|mm\\b|massmutual|sel(?:ect|ct)?\\b|principal life|pace\\b)(?![\\s\\S]*\\b(?:tr|trust|cit|cf)\\b))"
+  + "(?=.*\\b(?:jp\\.? ?morgan|jpmorgan|jpmcb|jpm)\\b)";
+// strategy shapes, abbreviation-tolerant: filings drop vowels ("Grw", "Val"),
+// split or fuse the cap word ("LgCp", "Lg Cap", "LargeCap") and abbreviate the
+// fund word ("Fd", "Fnd")
+const JPM_LCG = "l(?:arge|g)\\w*\\.? ?ca?p\\w*\\.? ?gr\\w*";
+const JPM_MCV = "mid\\w*\\.? ?ca?p\\w*\\.? ?val\\w*";
+const JPM_MCG = "mid\\w*\\.? ?ca?p\\w*\\.? ?gr\\w*";
+const JPM_SCG = "sm(?:all)?\\w*\\.? ?ca?p\\w*\\.? ?gr\\w*";
+const JPM_EQINC = "eq(?:uity|ty)?\\w*\\.? ?inc\\w*";
+const JPM_USEQ = "u\\.? ?s\\.?\\b[^a-z]*eq(?:uity|ty)\\w*";
+const JPM_COREPLUS = "core ?plus";
+// R6 is the retirement class and the only one whose ticker is claimed here: a
+// filed name that states a DIFFERENT class names a different ticker and a
+// different fee, and one that states no class does not identify a class at all
+const JPM_R6 = "(?:[^a-z0-9]|class|cl|shares?|fd|fund)*r-? ?6\\b";
+
 const FUND_ER = [
   // --- Fidelity index ---
   [/fidelity (500|s&p 500) index/i, 0.015],
@@ -179,8 +210,28 @@ const FUND_ER = [
   [/mfs value/i, 0.44],
   [/mfs .*(growth|international)/i, 0.6],
   [/undiscovered managers behavioral value/i, 0.8],
-  [/jpmorgan .*(smartretirement|target)/i, 0.29],
-  [/jpmorgan .*core bond/i, 0.34],
+  [/fidelity.*total bond/i, 0.45],
+  [/fidelity.*government money market/i, 0.42],
+  [/vanguard federal(?! reserve)/i, 0.11],
+  [/vanguard equity income/i, 0.17],
+  [/blackrock mid cap growth equity/i, 0.71],
+  /* J.P. Morgan, added 2026-08-31 after an owner report that JMVYX showed no
+   * ticker or fee. The family was the fourth largest blank in the filed
+   * universe: 32,964 plan-appearances across 6,913 distinct spellings and
+   * $128.3B, and the table held exactly two JPMorgan rows. Net expense ratios
+   * below are the R6 class, which is what a 401(k) menu almost always holds;
+   * every one was read from a fund-level source and cross-checked, after a
+   * quote aggregator returned 0.84% for JLGMX — a different share class, and
+   * the reason each of these was confirmed twice rather than once. */
+  [new RegExp(JPM_MGR + ".*" + JPM_LCG, "i"), 0.44],
+  [new RegExp(JPM_MGR + ".*" + JPM_EQINC, "i"), 0.45],
+  [new RegExp(JPM_MGR + ".*" + JPM_MCV, "i"), 0.6],
+  [new RegExp(JPM_MGR + ".*" + JPM_MCG, "i"), 0.65],
+  [new RegExp(JPM_MGR + ".*" + JPM_SCG, "i"), 0.74],
+  [new RegExp(JPM_MGR + ".*" + JPM_USEQ, "i"), 0.44],
+  [new RegExp(JPM_MGR + ".*" + JPM_COREPLUS, "i"), 0.38],
+  [new RegExp(JPM_MGR + ".*(?:smartretirement|target)", "i"), 0.29],
+  [new RegExp(JPM_MGR + ".*core bond", "i"), 0.34],
   [/pimco (total return|income)/i, 0.51],
   [/pimco inflation/i, 0.45],
   [/pimco all asset/i, 0.87],
@@ -256,6 +307,44 @@ const ABBREV = [
   [/\bADM\b/gi, "Admiral"],
   [/\bINST\b/gi, "Institutional"],
   [/\bIS$/i, "Institutional Shares"],
+  /* Added 2026-08-31 from the ranked blanks, after an owner report about a
+   * missing ticker. Every contraction below was taken from filed names that
+   * matched nothing, and each one names a fund the table ALREADY carries — so
+   * these are spelling gaps, not missing funds:
+   *   "Vanguard Tgt Rmt 2050 Inv Fund"   549 plans
+   *   "Fid 500 Ind" / "Fid Govt Mmkt"    512 / 490 plans
+   *   "Fidelity Total Bond K6"           392 plans
+   *   "BlackRock Md-Cp Gr Eq K Fd"       179 plans
+   * "INV" is deliberately absent: it is the Investor share class in a Vanguard
+   * name and "Investment"/"Investors" in a hundred others, and inventing a
+   * share class is the one thing this table must not do. */
+  [/\bTGT\b/gi, "Target"],
+  [/\bRMT\b|\bRTMT\b|\bRETIRE\b/gi, "Retirement"],
+  [/\bFID\b/gi, "Fidelity"],
+  [/\bIND\b(?! ?fd)/gi, "Index"],
+  [/\bGOVT\b|\bGVT\b/gi, "Government"],
+  [/\bMMKT\b|\bMMKTS\b/gi, "Money Market"],
+  [/\bMD-?CP\b/gi, "Mid Cap"],
+  [/\bMID-?CAP\b/gi, "Mid Cap"],
+  [/\bSM-?CP\b|\bSMCP\b/gi, "Small Cap"],
+  [/\bLGCP\b|\bLG-?CP\b/gi, "Large Cap"],
+  [/\bGR\b|\bGRW\b|\bGRO\b/gi, "Growth"],
+  [/\bEQ\b/gi, "Equity"],
+  [/\bFND\b|\bFD\b/gi, "Fund"],
+  [/\bDIVID\b/gi, "Dividend"],
+  [/\bAPPREC\b|\bAPPR\b/gi, "Appreciation"],
+  [/\bDEVELOP\b|\bDEVLP\b/gi, "Developed"],
+  [/\bEMRG\b|\bEMERG\b|\bEMG\b/gi, "Emerging"],
+  [/\bMKTS\b/gi, "Markets"],
+  [/\bINFL\b/gi, "Inflation"],
+  [/\bPROT\b|\bPROTECT\b/gi, "Protected"],
+  [/\bSECS\b|\bSEC\b/gi, "Securities"],
+  [/\bBAL\b/gi, "Balanced"],
+  [/\bMOD\b/gi, "Moderate"],
+  [/\bALLOC\b|\bALLOCTN\b/gi, "Allocation"],
+  [/\bGLBL\b|\bGLB\b/gi, "Global"],
+  [/\bOPPTY\b|\bOPP\b/gi, "Opportunity"],
+  [/\bSTRAT\b/gi, "Strategic"],
 ];
 // eslint-disable-next-line no-unused-vars
 function expandFundName(name) {
@@ -324,6 +413,27 @@ const FUND_TICKER = [
   [/dodge & cox stock/i, "DODGX"],
   [/dodge & cox income/i, "DODIX"],
   [/dodge & cox international/i, "DODFX"],
+  /* --- added 2026-08-31 from the ranked blanks (see the ABBREV note) --- */
+  // Fidelity Total Bond: one strategy, and the K6 suffix is a share class of
+  // it, which is why the row matches the name rather than the class
+  // "Fidelity Advisor" is a separate product line with its own tickers and
+  // fees — "Fidelity Advisor Total Bond Z" is not FTBFX — so the exact ticker
+  // excludes it while the ER row below still estimates the strategy
+  [/^(?!.*advisor).*fidelity.*total bond/i, "FTBFX"],
+  [/^(?!.*advisor).*fidelity.*government money market/i, "SPAXX"],
+  // "Vanguard Federal" is filed truncated by 1,972 plans; Federal Money Market
+  // is the only Vanguard fund that name can mean
+  [/vanguard federal(?! reserve)/i, "VMFXX"],
+  [/vanguard equity income.*admiral/i, "VEIRX"],
+  [/blackrock mid cap growth equity.*\bk\b/i, "BMGKX"],
+  /* --- J.P. Morgan, R6 class only (see JPM_MGR above) --- */
+  [new RegExp(JPM_MGR + ".*" + JPM_LCG + ".*" + JPM_R6, "i"), "JLGMX"],
+  [new RegExp(JPM_MGR + ".*" + JPM_EQINC + ".*" + JPM_R6, "i"), "OIEJX"],
+  [new RegExp(JPM_MGR + ".*" + JPM_MCV + ".*" + JPM_R6, "i"), "JMVYX"],
+  [new RegExp(JPM_MGR + ".*" + JPM_MCG + ".*" + JPM_R6, "i"), "JMGMX"],
+  [new RegExp(JPM_MGR + ".*" + JPM_SCG + ".*" + JPM_R6, "i"), "JGSMX"],
+  [new RegExp(JPM_MGR + ".*" + JPM_USEQ + ".*" + JPM_R6, "i"), "JUEMX"],
+  [new RegExp(JPM_MGR + ".*" + JPM_COREPLUS + ".*" + JPM_R6, "i"), "JCPUX"],
   [/american funds.*europacific.*r6|europacific growth r6/i, "RERGX"],
   [/american funds.*washington mutual.*r6/i, "RWMGX"],
   [/american funds.*growth fund of america.*r6/i, "RGAGX"],
