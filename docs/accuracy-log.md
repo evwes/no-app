@@ -5003,3 +5003,49 @@ the previous corpus and the ad-hoc scripts that built it:
 `scripts/build-review-corpus.mjs` rebuilds a class-spread corpus on demand, and
 `scripts/diff-parser.mjs` diffs the working parser against any committed ref and
 prints every label change — not just the totals.
+
+## 2026-08-31 — map view, and two things it surfaced
+
+Added a Map view: every full-form filer placed at its filing ZIP, clustered,
+with the existing filters applied unchanged. Two design rules worth recording.
+
+**It reuses `passesFilters()` rather than reimplementing it.** The map draws
+from the same filtered set as the table, so the two views cannot disagree about
+what a filter means. `map-points.json` is row-aligned to the boot payload, and
+the plan's boot row index is carried through `mergePlan` for the lookup —
+dropping it there is what made the first draw produce 51 state outlines and
+zero dots.
+
+**Nothing was added to the boot payload.** `us-states.json` (16 KB gz) and
+`map-points.json` (231 KB gz) are fetched the first time a reader opens the Map
+view. Given the site is already under scrutiny for a loading problem, a feature
+that made the first paint heavier would have been the wrong trade.
+
+**What the dots mean, stated on the page:** a Form 5500 carries the SPONSOR'S
+address — a headquarters or benefits office — not where participants live. A
+250,000-participant plan filed from one Manhattan ZIP is one dot in Manhattan,
+not 250,000 people there. 508 of 68,166 full-form filers (0.75%) have a ZIP with
+no published centroid and are counted as unplaced on the page rather than
+dropped silently.
+
+**Two defects the map surfaced, both caught by testing rather than by reading:**
+
+1. **A total that rendered as `$0`.** The cluster summed `plan.assetsEOY`, which
+   exists only on the pre-merge boot record — after `mergePlan` the field is
+   `assetsB`, in billions. NaN checks do not catch this: `$0` is a perfectly
+   well-formed number. The map test now fails on an implausible zero total, not
+   just on NaN. Corrected, the map's $8.7T ties to the $8.78T in plans-all, the
+   difference being the unplaced 508.
+
+2. **The site's participant count is EOY; plans-all's is BOY.** The boot column
+   is `partEOY || participants`, while `plans-all.participants` is
+   `partBOY >= 100 ? partBOY : partEOY`. Summed over full-form filers that is
+   **105.0M vs 102.8M** — a real 2.2M gap between two honest measurements taken
+   at different points in the plan year. Neither is wrong and the map is
+   consistent with the rest of the site, but **nothing on the site says which
+   point in the year the headline count refers to.** Labeling it is open work,
+   not a silent choice to leave standing.
+
+A `scripts/map-test.mjs` boots the site, opens the map, and asserts: state
+outlines drawn, clusters drawn, a filter reduces the count, all four totals
+non-zero and non-NaN, and both caveats present in the note.

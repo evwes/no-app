@@ -457,3 +457,40 @@ main { max-width: 1060px; margin: 0 auto; padding: 0 20px 48px; }
   color: var(--muted, #6b7280);
 }
 .fund-note strong { color: var(--fg, #111827); }
+
+/* ---- map view -------------------------------------------------------------
+ * Filed-from locations for full-form filers. The SVG is inline and the state
+ * outlines ship with the site: no tile server, no external map dependency, and
+ * nothing added to the boot payload. */
+.view-toggle { display: inline-flex; gap: 0; margin-left: auto; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.view-btn { background: var(--card); border: 0; padding: 5px 14px; font: inherit; font-size: 13px; color: var(--muted); cursor: pointer; }
+.view-btn + .view-btn { border-left: 1px solid var(--line); }
+.view-btn.view-on { background: var(--accent); color: #fff; }
+.map-section { padding: 18px 20px 14px; }
+.map-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; flex-wrap: wrap; }
+.map-sub { margin: 2px 0 0; font-size: 13px; color: var(--muted); }
+.map-stats { display: flex; gap: 22px; flex-wrap: wrap; }
+.map-stats div { display: flex; flex-direction: column; }
+.map-stats span { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.map-stats strong { font-size: 19px; font-variant-numeric: tabular-nums; }
+.map-canvas { position: relative; margin-top: 12px; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.map-canvas svg { display: block; width: 100%; height: auto; touch-action: none; cursor: grab; }
+.map-canvas svg:active { cursor: grabbing; }
+.map-loading { padding: 60px 0; text-align: center; color: var(--muted); font-size: 14px; }
+.map-state { fill: var(--card); stroke: var(--line); stroke-width: .8; }
+.map-dot circle { fill-opacity: .82; stroke: #fff; stroke-width: 1; }
+.map-dot.b1 circle { fill: #f4a582; }
+.map-dot.b2 circle { fill: #e8734a; }
+.map-dot.b3 circle { fill: #7fa8d4; }
+.map-dot.b4 circle { fill: #1f4e79; }
+.map-count { fill: #fff; font-size: 10px; font-weight: 600; text-anchor: middle; pointer-events: none; }
+.map-zoom { position: absolute; left: 10px; bottom: 10px; display: flex; flex-direction: column; gap: 4px; }
+.map-zoom button { width: 28px; height: 28px; font-size: 17px; line-height: 1; background: var(--card); border: 1px solid var(--line); border-radius: 5px; cursor: pointer; color: var(--fg); }
+.map-foot { margin-top: 10px; }
+.map-legend { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
+.legend-title { text-transform: uppercase; letter-spacing: .06em; font-size: 11px; }
+.legend-item { display: inline-flex; align-items: center; gap: 6px; }
+.legend-item .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.legend-item .dot.b1 { background: #f4a582; } .legend-item .dot.b2 { background: #e8734a; }
+.legend-item .dot.b3 { background: #7fa8d4; } .legend-item .dot.b4 { background: #1f4e79; }
+@media (max-width: 700px) { .map-stats { gap: 14px; } .map-stats strong { font-size: 16px; } }

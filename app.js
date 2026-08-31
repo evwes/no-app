@@ -118,6 +118,10 @@
     const c = curated || {};
     const yoy = filed.assetsBOY && filed.assetsEOY ? (filed.assetsEOY / filed.assetsBOY - 1) * 100 : null;
     return derive({
+      // the boot file's ROW INDEX, carried through so row-aligned side files
+      // (map-points.json) can be looked up without shipping coordinates at
+      // boot. Dropping it here is what made the first map draw zero dots.
+      row: filed.row,
       ticker: filed.ticker,
       company: filed.company,
       // FILED beats curated wherever both exist — the overlay predates the
@@ -1562,6 +1566,8 @@
 
   function render() {
     renderHero(); // no-op unless a filter changed (memoised)
+    // the map reads the same filtered set, so it repaints with the table
+    if (state.view === "map" && MAP.points) renderMap();
     const plans = visiblePlans();
     const limit = state.rowLimit || MAX_ROWS;
     $("tbody").innerHTML = plans.slice(0, limit).map(planRow).join("");
@@ -1584,6 +1590,194 @@
       b.dataset.dir = state.tableSort.dir > 0 ? "asc" : "desc";
     });
   }
+
+
+  /* ---- map view -------------------------------------------------------------
+   * Where each plan was FILED FROM, not where its participants are. A Form
+   * 5500 carries the sponsor's address — usually a headquarters or a benefits
+   * office — so a 250,000-participant plan filed from one Manhattan ZIP is one
+   * dot in Manhattan, not 250,000 people there. The map says so on its face.
+   *
+   * Nothing here is in the boot payload: us-states.json (16 KB gz) and
+   * map-points.json (231 KB gz) are fetched the first time a reader opens the
+   * Map view. Points are row-aligned to the boot file, so the map reuses
+   * passesFilters() exactly as the table does — one filter implementation, two
+   * views, and no way for them to disagree.
+   *
+   * Short-form filers are excluded by construction: map-points.json only
+   * carries full-form rows, which is also what the owner asked for. */
+  const MAP = { states: null, points: null, loading: false, zoom: 1, cx: 0.5, cy: 0.5 };
+  const MAP_W = 960, MAP_H = 600;
+
+  /* Albers conic equal-area. One function, three parameter sets: the lower 48,
+   * then Alaska and Hawaii projected on their own parallels and placed as
+   * insets — dropping them would hide real plans, and stretching one projection
+   * over Alaska would misplace them. */
+  function albers(lat, lon, p) {
+    const rad = Math.PI / 180;
+    const n = (Math.sin(p.p1 * rad) + Math.sin(p.p2 * rad)) / 2;
+    const C = Math.cos(p.p1 * rad) ** 2 + 2 * n * Math.sin(p.p1 * rad);
+    const rho = Math.sqrt(C - 2 * n * Math.sin(lat * rad)) / n;
+    const rho0 = Math.sqrt(C - 2 * n * Math.sin(p.lat0 * rad)) / n;
+    const theta = n * ((lon - p.lon0) * rad);
+    return [rho * Math.sin(theta), rho0 - rho * Math.cos(theta)];
+  }
+  const CONUS = { p1: 29.5, p2: 45.5, lat0: 37.5, lon0: -96, k: 1280, dx: 480, dy: 300 };
+  const ALASKA = { p1: 55, p2: 65, lat0: 60, lon0: -154, k: 380, dx: 150, dy: 500 };
+  const HAWAII = { p1: 8, p2: 18, lat0: 20, lon0: -157, k: 900, dx: 320, dy: 520 };
+
+  function project(lat, lon) {
+    let p = CONUS;
+    if (lat > 50 && lon < -128) p = ALASKA;          // Alaska
+    else if (lat < 25 && lon < -140) p = HAWAII;      // Hawaii
+    else if (lon > -70 && lat < 20) return null;      // Puerto Rico: no inset yet
+    const [x, y] = albers(lat, lon, p);
+    return [p.dx + x * p.k, p.dy + y * p.k];
+  }
+
+  async function ensureMapData() {
+    if (MAP.points || MAP.loading) return;
+    MAP.loading = true;
+    try {
+      const [st, pts] = await Promise.all([
+        fetch("us-states.json").then((r) => r.ok ? r.json() : null),
+        fetch("map-points.json").then((r) => r.ok ? r.json() : null),
+      ]);
+      MAP.states = st;
+      MAP.points = pts;
+    } catch { /* leave null; renderMap says so rather than drawing nothing */ }
+    MAP.loading = false;
+    renderMap();
+  }
+
+  function statePaths() {
+    if (!MAP.states) return "";
+    const out = [];
+    for (const f of MAP.states.features) {
+      const polys = f.geometry.type === "Polygon" ? [f.geometry.coordinates] : f.geometry.coordinates;
+      let d = "";
+      for (const poly of polys) {
+        for (const ring of poly) {
+          let started = false;
+          for (const [lon, lat] of ring) {
+            const q = project(lat, lon);
+            if (!q) { started = false; continue; }
+            d += (started ? "L" : "M") + q[0].toFixed(1) + " " + q[1].toFixed(1);
+            started = true;
+          }
+          if (started) d += "Z";
+        }
+      }
+      if (d) out.push(`<path class="map-state" d="${d}"><title>${esc(f.properties.name)}</title></path>`);
+    }
+    return out.join("");
+  }
+
+  // asset bands, matching the legend
+  const BANDS = [[5e6, "b1", "Under $5M"], [25e6, "b2", "$5M – $25M"],
+    [100e6, "b3", "$25M – $100M"], [Infinity, "b4", "$100M+"]];
+  const bandOf = (assets) => BANDS.find(([lim]) => assets < lim)[1];
+
+  function renderMap() {
+    const canvas = $("mapCanvas");
+    if (!MAP.points || !MAP.states) {
+      canvas.innerHTML = MAP.loading
+        ? `<p class="map-loading">Loading the map…</p>`
+        : `<p class="map-loading">The map data didn’t load. Reload the page to try again.</p>`;
+      return;
+    }
+    const pts = MAP.points;
+    // cluster in PROJECTED space so a cluster is a fixed distance on screen at
+    // the current zoom, not a fixed distance on the ground
+    const cell = 26 / MAP.zoom;
+    const cells = new Map();
+    let shown = 0, unplaceable = 0;
+    for (const plan of state.plans) {
+      if (plan.cf & 8) continue;                    // short-form: not on this map
+      if (!passesFilters(plan)) continue;
+      const ci = pts.rows[plan.row];
+      if (ci == null || ci < 0) { unplaceable++; continue; }
+      const c = pts.coords[ci];
+      const q = project(c[0], c[1]);
+      if (!q) { unplaceable++; continue; }
+      shown++;
+      const key = Math.round(q[0] / cell) + ":" + Math.round(q[1] / cell);
+      let g = cells.get(key);
+      if (!g) { g = { x: 0, y: 0, n: 0, ppl: 0, assets: 0 }; cells.set(key, g); }
+      g.x += q[0]; g.y += q[1]; g.n++;
+      g.ppl += plan.participants || 0;
+      // assetsB (billions) is the field the hero totals use; assetsEOY exists
+      // only on the pre-merge boot record, so reading it here summed to $0
+      g.assets += (plan.assetsB || 0) * 1e9;
+    }
+
+    const groups = [...cells.values()].sort((a, b) => b.n - a.n);
+    const maxN = groups.length ? groups[0].n : 1;
+    const circles = groups.map((g) => {
+      const x = g.x / g.n, y = g.y / g.n;
+      // area ∝ plan count, floored so a single plan is still clickable
+      const r = Math.max(4, Math.min(34, 4 + 30 * Math.sqrt(g.n / maxN)));
+      const avg = g.assets / g.n;
+      const label = g.n >= 3 ? `<text class="map-count" x="${x.toFixed(1)}" y="${(y + 3.5).toFixed(1)}">${g.n >= 1000 ? (g.n / 1000).toFixed(1) + "k" : g.n}</text>` : "";
+      return `<g class="map-dot ${bandOf(avg)}"><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(1)}">` +
+        `<title>${fmtInt.format(g.n)} plan${g.n === 1 ? "" : "s"} · ${fmtCompact.format(g.ppl)} participants · $${fmtCompact.format(g.assets)}</title>` +
+        `</circle>${label}</g>`;
+    }).join("");
+
+    const vw = MAP_W / MAP.zoom, vh = MAP_H / MAP.zoom;
+    const vx = Math.max(0, Math.min(MAP_W - vw, MAP.cx * MAP_W - vw / 2));
+    const vy = Math.max(0, Math.min(MAP_H - vh, MAP.cy * MAP_H - vh / 2));
+    canvas.innerHTML =
+      `<svg id="mapSvg" viewBox="${vx.toFixed(1)} ${vy.toFixed(1)} ${vw.toFixed(1)} ${vh.toFixed(1)}" ` +
+      `preserveAspectRatio="xMidYMid meet" role="img" aria-label="Plans by filing location">` +
+      `<g class="map-states">${statePaths()}</g><g class="map-dots">${circles}</g></svg>` +
+      `<div class="map-zoom"><button id="mapIn" aria-label="Zoom in">+</button>` +
+      `<button id="mapOut" aria-label="Zoom out">−</button></div>`;
+
+    const ppl = groups.reduce((s, g) => s + g.ppl, 0);
+    const assets = groups.reduce((s, g) => s + g.assets, 0);
+    $("mapStats").innerHTML =
+      `<div><span>Plans</span><strong>${fmtInt.format(shown)}</strong></div>` +
+      `<div><span>Participants</span><strong>${fmtCompact.format(ppl)}</strong></div>` +
+      `<div><span>Assets</span><strong>$${fmtCompact.format(assets)}</strong></div>` +
+      `<div><span>Avg / plan</span><strong>${shown ? "$" + fmtCompact.format(assets / shown) : "—"}</strong></div>`;
+    $("mapLegend").innerHTML = "<span class=\"legend-title\">Average plan assets</span>" +
+      BANDS.map(([, cls, txt]) => `<span class="legend-item"><i class="dot ${cls}"></i>${txt}</span>`).join("");
+    // the two honest caveats, always visible, never buried
+    $("mapNote").textContent =
+      `Each dot is where the plan was FILED FROM — the sponsor's address on the Form 5500, ` +
+      `usually a headquarters or benefits office, not where participants live or work. ` +
+      `Short-form filers are excluded: they file no audited attachment, so none of the filters above apply to them.` +
+      (unplaceable ? ` ${fmtInt.format(unplaceable)} matching plan${unplaceable === 1 ? "" : "s"} could not be placed: ${unplaceable === 1 ? "its" : "their"} filed ZIP has no published centroid.` : "");
+
+    $("mapIn").onclick = () => { MAP.zoom = Math.min(8, MAP.zoom * 1.6); renderMap(); };
+    $("mapOut").onclick = () => { MAP.zoom = Math.max(1, MAP.zoom / 1.6); renderMap(); };
+    const svg = $("mapSvg");
+    let drag = null;
+    svg.addEventListener("pointerdown", (e) => { drag = { x: e.clientX, y: e.clientY, cx: MAP.cx, cy: MAP.cy }; svg.setPointerCapture(e.pointerId); });
+    svg.addEventListener("pointermove", (e) => {
+      if (!drag) return;
+      const rect = svg.getBoundingClientRect();
+      MAP.cx = Math.max(0, Math.min(1, drag.cx - (e.clientX - drag.x) / rect.width / MAP.zoom));
+      MAP.cy = Math.max(0, Math.min(1, drag.cy - (e.clientY - drag.y) / rect.height / MAP.zoom));
+      renderMap();
+    });
+    svg.addEventListener("pointerup", () => { drag = null; });
+  }
+
+  function setView(which) {
+    const map = which === "map";
+    $("mapSection").hidden = !map;
+    $("tableSection").hidden = map;
+    $("viewMap").classList.toggle("view-on", map);
+    $("viewTable").classList.toggle("view-on", !map);
+    $("viewMap").setAttribute("aria-pressed", String(map));
+    $("viewTable").setAttribute("aria-pressed", String(!map));
+    state.view = which;
+    if (map) { ensureMapData(); if (MAP.points) renderMap(); }
+  }
+  $("viewMap").addEventListener("click", () => setView("map"));
+  $("viewTable").addEventListener("click", () => setView("table"));
 
   /* ---- events -------------------------------------------------------------- */
 

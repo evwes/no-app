@@ -1,0 +1,76 @@
+// Map view check: it draws, it counts, it responds to a filter, and it never
+// claims to place a plan it could not place.
+import { chromium } from "playwright";
+import { spawn } from "node:child_process";
+
+
+// The sandbox's headless Chromium stops animation frames ~1s after load unless
+// the page keeps receiving input, and waitForFunction polls on those frames —
+// so it hangs while the page underneath is perfectly healthy. Poll manually,
+// nudging the page between checks.
+async function until(page, fn, label, tries = 40) {
+  for (let i = 0; i < tries; i++) {
+    await page.mouse.move(400 + (i % 5), 300);
+    await page.waitForTimeout(1500);
+    if (await page.evaluate(fn)) return;
+  }
+  throw new Error("timed out waiting for " + label);
+}
+
+const srv = spawn("python3", ["-m", "http.server", "8899"], { cwd: "/home/user/no-app", stdio: "ignore" });
+await new Promise((r) => setTimeout(r, 2500));
+
+const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH });
+const page = await browser.newPage({ viewport: { width: 1400, height: 1000 } });
+page.setDefaultTimeout(90000);
+const errors = [];
+page.on("pageerror", (e) => errors.push(String(e)));
+// python's http.server resets a connection under parallel fetches; that is a
+// harness artifact, not a page defect, and must not mask real errors
+page.on("console", (m) => { if (m.type() === "error" && !/ERR_CONNECTION_RESET|favicon/.test(m.text())) errors.push(m.text()); });
+
+await page.goto("http://localhost:8899/index.html", { waitUntil: "domcontentloaded" });
+await page.mouse.click(700, 300);              // the sandbox freezes an untouched page
+await until(page, () => document.querySelectorAll("#tbody tr").length > 0, "the plans table");
+
+await page.click("#viewMap");
+await until(page, () => document.querySelectorAll("#mapSvg .map-dot").length > 0, "map clusters");
+
+const read = () => page.evaluate(() => ({
+  dots: document.querySelectorAll("#mapSvg .map-dot").length,
+  states: document.querySelectorAll("#mapSvg .map-state").length,
+  plans: document.querySelector("#mapStats strong")?.textContent,
+  stats: [...document.querySelectorAll("#mapStats strong")].map((e) => e.textContent),
+  note: document.querySelector("#mapNote")?.textContent || "",
+  legend: document.querySelectorAll("#mapLegend .legend-item").length,
+}));
+
+const before = await read();
+console.log("unfiltered:", JSON.stringify(before, null, 1));
+
+// a filter must move the map, and it must move it DOWN
+await page.evaluate(() => document.querySelector('.chip[data-filter="brokerage"]')?.click());
+await page.waitForTimeout(2500);
+const after = await read();
+console.log("brokerage filter:", JSON.stringify({ dots: after.dots, plans: after.plans }, null, 1));
+
+const num = (s) => Number(String(s || "").replace(/[^0-9.]/g, ""));
+const fail = [];
+if (before.states < 40) fail.push(`only ${before.states} state outlines drawn`);
+if (before.dots < 50) fail.push(`only ${before.dots} clusters drawn`);
+if (before.legend !== 4) fail.push(`legend has ${before.legend} bands, expected 4`);
+if (!/FILED FROM/.test(before.note)) fail.push("the filed-from caveat is missing");
+if (!/Short-form filers are excluded/.test(before.note)) fail.push("the short-form exclusion is not stated");
+if (!(num(after.plans) < num(before.plans))) fail.push(`filter did not reduce the plan count (${before.plans} -> ${after.plans})`);
+if (before.stats.some((s) => /NaN|undefined/.test(s))) fail.push("a stat rendered NaN/undefined: " + before.stats.join(" "));
+// a zero total is not a crash, so NaN checks miss it — and $0 across 67k plans
+// is exactly what a wrong field name produces (assetsEOY vs assetsB)
+if (before.stats.slice(1).some((s) => /^\$?0$/.test(String(s).trim()))) fail.push("a total rendered as zero: " + before.stats.join(" | "));
+if (errors.length) fail.push("page errors: " + errors.slice(0, 3).join(" | "));
+
+await page.screenshot({ path: "/tmp/map.png" });
+await browser.close();
+srv.kill();
+
+if (fail.length) { console.log("\nMAP TEST FAILED:\n  " + fail.join("\n  ")); process.exit(1); }
+console.log("\nMAP OK — outlines, clusters, live filtering, honest caveats, no NaN");
