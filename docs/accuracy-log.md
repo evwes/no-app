@@ -5136,3 +5136,55 @@ fee is overstated. TRP's trust fees vary by trust class and are not published
 in the filing, so the fix is a research task, not a pattern — and inventing a
 number would be worse than the overstatement. Named here so it is a known
 open item rather than an undiscovered one.
+
+---
+
+## 2026-09-01 — A vesting table the filing had already replaced
+
+**What is wrong, and it is live.** Plan `20251006163156NAL0004018177001` shows
+**"Graded schedule"**. It vests **immediately**. Its filing prints a 6-year
+20/40/60/80/100 table, introduced as the schedule *"through the year ended
+December 31, 2023"*, and then says:
+
+> Effective January 1, 2024, matching contributions and non-elective Employer
+> contributions are 100 percent vested at all times.
+
+The table reader read the table and never read the sentence that retired it.
+The previous label, `Immediate`, was correct.
+
+**How it got here.** v95 added a two-line table-header variant (`Years of /
+Percent / Vesting Service / Vested`) so more filed tables became readable. That
+is a good change — it moved 20 labels, and 19 of them are improvements,
+including plans whose old `Immediate` came from reading an elective-deferral or
+safe-harbor carve-out sentence instead of the employer schedule. But a table
+reader that outranks the other passes inherits responsibility for asking
+whether the table is still in force, and this one does not ask.
+
+**Why the existing guard did not catch it.** v86/v87 added a superseded-schedule
+guard for `Prior to <date>` phrasing, and the rule recorded then was *classify
+by what the date modifies, never by tense*. This filing uses neither shape. It
+scopes the table with **"through the year ended December 31, 2023"** and states
+the replacement as **"Effective January 1, 2024 … 100 percent vested at all
+times"**. Both sentences sit outside the table the reader captured.
+
+**Not rolled back.** The same run delivered 112 vesting gains with **zero
+losses and zero quotes suppressed**, plus an entire new filing season. Reverting
+to remove one wrong label would discard all of that. It is fixed forward
+instead, and named here so it is not silently carried.
+
+**v96 candidate, specified:** when a vesting table is captured, scan the
+enclosing note for a scope marker (`through the (year|plan year) ended <date>`,
+`for plan years prior to <date>`) and for a replacement clause (`effective
+<date>` within the same note asserting full or immediate vesting). When both are
+present and the replacement date is at or before the plan year being reported,
+the table is history — the replacement is the answer. Size the class across
+stored entries before writing the pattern: the table-derived quote is
+synthesized (`Vesting schedule as filed — …`) and therefore contains none of
+this language, so sizing needs the document text, not the stored quote.
+
+**The process failure worth recording separately.** This run was mirrored before
+the label-level diff was run. Completeness, loss classification and the
+universe-superset check all passed and all three were done — the label read was
+not, and it is the only check that could have found this. **Mirror after the
+label diff, not after the counts.** The counts said +157 vesting and zero
+losses, which is exactly what a run containing this defect looks like.
