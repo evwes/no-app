@@ -56,11 +56,16 @@ for (const f of files) {
 // ack in plans-all, the old entry is never displayed again but its stale
 // data (parsed under years-old rules) polluted the audit and the payload —
 // 6,132 orphans found 2026-07-26
+/* Also used by the loss triage below, which is why it is hoisted out of the
+ * try block: an ack that is no longer any plan's CURRENT filing cannot be a
+ * parser regression, whatever its old lineup looked like. */
+let currentAcks = null;
 try {
   const pd = JSON.parse(readFileSync("plans-all.json", "utf8"));
   const ai = pd.fields.indexOf("ack");
   const current = new Set(pd.plans.map((r) => r[ai]));
   for (const t of JSON.parse(readFileSync("mtias.json", "utf8")).trusts) current.add(t.ack);
+  currentAcks = current;
   let purged = 0;
   for (const ack of Object.keys(status.plans)) {
     if (!current.has(ack)) { delete status.plans[ack]; delete buckets[shardOf(ack)][ack]; purged++; }
@@ -173,12 +178,31 @@ console.log(`merged ${applied} entries; totals: ${vals.length} parsed, ${vals.fi
   // the new version broke something real. audit-data reads this file.
   // junk-name demotions are excluded: the demotion IS the triage verdict
   // (the entry's own fund names prove it was never a real menu)
+  /* SUPERSESSION IS NOT REGRESSION — the fix for run #186, which raised 4,741
+   * HIGH findings of which 4,737 were false and buried the four real ones.
+   *
+   * That run ingested a new filing season, so thousands of plans moved to a
+   * newer ack. The triage compared ack to ack and never asked whether the
+   * PLAN had moved, so every superseded filing looked like a lineup that had
+   * "lost confidence". Triaged by hand afterwards: 4,505 were replaced by a
+   * newer filing that is itself confident, 250 by a newer filing that is not
+   * yet, 12 were master-trust acks, and ZERO were the only shape that is
+   * actually a regression — the same ack still current with its lineup gone.
+   *
+   * An ack that is no longer any plan's current filing is never displayed
+   * again, so its lineup cannot have regressed for a reader. Only acks still
+   * in plans-all (or mtias.json) can. When plans-all is unavailable the set is
+   * null and the filter is skipped rather than silently passing everything. */
+  let superseded = 0;
   const realish = lost.filter((a) => {
     const ack = a.split(" ")[0];
     if (demotedAcks.has(ack)) return false;
+    if (currentAcks && !currentAcks.has(ack)) { superseded++; return false; }
     const s = prevShape[ack];
     return s && (s.n >= 7 || (s.n >= 5 && s.r >= 0.7 && s.r <= 1.3));
   });
+  if (superseded) console.log(`  of those losses, ${superseded} are superseded filings (the plan moved to a newer ack) — not regressions, not triaged`);
+  else if (!currentAcks) console.log("  supersession filter SKIPPED (plans-all unavailable) — losses may include superseded filings");
   console.log(`  real-menu-shaped losses (auto-triage → audit HIGH): ${realish.length}`);
   writeFileSync("losses-triage.txt", realish.join("\n") + (realish.length ? "\n" : ""));
 }

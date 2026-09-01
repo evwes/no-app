@@ -5262,3 +5262,46 @@ specimens, including three deliberate decoy controls: a genuine 6-year graded
 schedule with an immediate safe-harbor carve-out, a genuine graded schedule
 carrying an unrelated "Effective January 1, 2023" clause about catch-up
 contributions, and XPO's real 2-year cliff.
+
+---
+
+## 2026-09-01 — The audit cried wolf 4,737 times
+
+**What was wrong.** Run #186 raised **4,741 HIGH findings**. Four were real —
+the known contribution-limit outliers. The other **4,737 were false**, and they
+buried the real ones at the bottom of an auto-managed issue nobody could read.
+
+An accuracy instrument that fires 4,737 false alarms is worse than no
+instrument: it trains everyone to skim past exactly the output it exists to
+surface.
+
+**Why.** That run ingested a new filing season, so thousands of plans moved to
+a newer ack. The loss triage compared **ack to ack** and never asked whether the
+**plan** had moved. Every superseded filing therefore looked like a lineup that
+had "lost confidence".
+
+Triaged by hand: **4,505** were replaced by a newer filing that is itself
+confident, **250** by a newer filing not yet confident, **12** were master-trust
+acks that live in `mtias.json` rather than `plans-all`, and **zero** were the
+only shape that is actually a regression — the same ack still current with its
+lineup gone.
+
+**The fix.** An ack that is no longer any plan's current filing **is never
+displayed again**, so its lineup cannot have regressed for a reader. The triage
+now skips those, using the same `plans-all` + `mtias.json` ack set the orphan
+purge already builds — hoisted out of that block rather than rebuilt. When
+`plans-all` is unavailable the set is null and the filter is **skipped with a
+warning** rather than silently passing everything.
+
+**Verified both directions, because a filter is only trustworthy if it does
+both:**
+- Replayed against run #186's real data: all **4,767** losses suppressed,
+  **0** left to triage — matching the hand triage exactly. `reparse-loss` HIGHs
+  go 4,737 → 0, and the four genuine findings stop being buried.
+- Negative control: a currently-confident ack that **is** still its plan's
+  current filing survives the filter, so a real regression is still caught.
+
+**The general rule:** *an alarm that cannot distinguish "the input changed"
+from "the code broke" is not an alarm.* Before adding any auto-triage, ask what
+routine, expected event will trip it, and encode that difference — otherwise
+the instrument's own noise destroys the signal it was built for.
