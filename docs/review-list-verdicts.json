@@ -1,0 +1,402 @@
+{
+ "20260724161454NAL0015864273001": {
+  "pages": 40,
+  "chars": 105257,
+  "perPage": 2631,
+  "headers": 0,
+  "titles": 2,
+  "verdict": "referenced but ABSENT — the schedule pages are not in the public copy"
+ },
+ "20260618145652NAL0004417570001": {
+  "pages": 215,
+  "chars": 933251,
+  "perPage": 4341,
+  "headers": 0,
+  "titles": 1,
+  "verdict": "referenced but ABSENT — the schedule pages are not in the public copy"
+ },
+ "20251010104106NAL0007965633001": {
+  "pages": 44,
+  "chars": 185963,
+  "perPage": 4226,
+  "headers": 4,
+  "titles": 10,
+  "verdict": "TABLE PRESENT — we cannot read it (parser gap)"
+ },
+ "20251007154215NAL0002583779001": {
+  "pages": 49,
+  "chars": 207694,
+  "perPage": 4239,
+  "headers": 2,
+  "titles": 0,
+  "verdict": "TABLE PRESENT — we cannot read it (parser gap)"
+ },
+ "20251015115659NAL0004465985003": {
+  "pages": 50,
+  "chars": 240378,
+  "perPage": 4808,
+  "headers": 1,
+  "titles": 7,
+  "verdict": "TABLE PRESENT — we cannot read it (parser gap)"
+ },
+ "20250812122928NAL0007212931001": {
+  "pages": 25,
+  "chars": 138225,
+  "perPage": 5529,
+  "headers": 4,
+  "titles": 5,
+  "verdict": "TABLE PRESENT — we cannot read it (parser gap)"
+ },
+ "20250929100558NAL0012035056001": {
+  "pages": 188,
+  "chars": 793779,
+  "perPage": 4222,
+  "headers": 4,
+  "titles": 10,
+  "verdict": "TABLE PRESENT — we cannot read it (parser gap)"
+ },
+ "20251009091215NAL0003450099001": {
+  "pages": 190,
+  "chars": 864813,
+  "perPage": 4552,
+  "headers": 0,
+  "titles": 7,
+  "verdict": "referenced but ABSENT — the schedule pages are not in the public copy"
+ },
+ "20260220163023NAL0012236099001": {
+  "pages": 134,
+  "chars": 706620,
+  "perPage": 5273,
+  "headers": 4,
+  "titles": 8,
+  "verdict": "TABLE PRESENT — we cannot read it (parser gap)"
+ },
+ "20250930101132NAL0005432355001": {
+  "pages": 44,
+  "chars": 190510,
+  "perPage": 4330,
+  "headers": 0,
+  "titles": 8,
+  "verdict": "referenced but ABSENT — the schedule pages are not in the public copy"
+ },
+ "20251001122333NAL0005919155001": {
+  "pages": 24,
+  "chars": 121557,
+  "perPage": 5065,
+  "headers": 0,
+  "titles": 0,
+  "verdict": "no schedule table and no reference — form-only filing"
+ },
+ "20260727072454NAL0014832323002": {
+  "pages": 41,
+  "chars": 126911,
+  "perPage": 3095,
+  "headers": 0,
+  "titles": 3,
+  "verdict": "referenced but ABSENT — the schedule pages are not in the public copy"
+ },
+ "20251008095017NAL0005364081001": {
+  "pages": 121,
+  "chars": 505559,
+  "perPage": 4178,
+  "headers": 0,
+  "titles": 8,
+  "verdict": "referenced but ABSENT — the schedule pages are not in the public copy"
+ },
+ "20250729115442NAL0007362866001": {
+  "pages": 54,
+  "chars": 249136,
+  "perPage": 4614,
+  "headers": 2,
+  "titles": 10,
+  "verdict": "TABLE PRESENT — we cannot read it (parser gap)"
+ },
+ "20250826134737NAL0015182848001": {
+  "pages": 42,
+  "chars": 165404,
+  "perPage": 3938,
+  "headers": 0,
+  "titles": 3,
+  "verdict": "referenced but ABSENT — the schedule pages are not in the public copy"
+ },
+ "20251015095409NAL0008606082005": {
+  "pages": 51,
+  "chars": 278864,
+  "perPage": 5468,
+  "headers": 0,
+  "titles": 2,
+  "verdict": "referenced but ABSENT — the schedule pages are not in the public copy"
+ },
+ "20260722132017NAL0012692753001": {
+  "pages": 67,
+  "chars": 211720,
+  "perPage": 3160,
+  "headers": 0,
+  "titles": 0,
+  "verdict": "no schedule table and no reference — form-only filing"
+ },
+ "20251007114707NAL0002435171001": {
+  "pages": 42,
+  "chars": 186312,
+  "perPage": 4436,
+  "headers": 2,
+  "titles": 7,
+  "verdict": "TABLE PRESENT — we cannot read it (parser gap)"
+ },
+ "20251015083145NAL0004346177001": {
+  "pages": 39,
+  "chars": 167394,
+  "perPage": 4292,
+  "headers": 0,
+  "titles": 4,
+  "verdict": "referenced but ABSENT — the schedule pages are not in the public copy"
+ },
+ "20260715172557NAL0002477779001": {
+  "pages": 57,
+  "chars": 246055,
+  "perPage": 4317,
+  "headers": 4,
+  "titles": 4,
+  "verdict": "TABLE PRESENT — we cannot read it (parser gap)"
+ },
+ "20250623132312NAL0003563811002": {
+  "pages": 50,
+  "chars": 264436,
+  "perPage": 5289,
+  "headers": 2,
+  "titles": 2,
+  "verdict": "TABLE PRESENT — we cannot read it (parser gap)"
+ },
+ "20251007203132NAL0008468256002": {
+  "pages": 73,
+  "chars": 275794,
+  "perPage": 3778,
+  "headers": 0,
+  "titles": 0,
+  "verdict": "no schedule table and no reference — form-only filing"
+ },
+ "20251015193624NAL0005744705001": {
+  "pages": 57,
+  "chars": 259592,
+  "perPage": 4554,
+  "headers": 4,
+  "titles": 4,
+  "verdict": "TABLE PRESENT — we cannot read it (parser gap)"
+ },
+ "20250919093540NAL0002884803001": {
+  "pages": 58,
+  "chars": 250001,
+  "perPage": 4310,
+  "headers": 0,
+  "titles": 2,
+  "verdict": "referenced but ABSENT — the schedule pages are not in the public copy"
+ },
+ "20251113130733NAL0001076643001": {
+  "pages": 26,
+  "chars": 134575,
+  "perPage": 5176,
+  "headers": 4,
+  "titles": 9,
+  "verdict": "TABLE PRESENT — we cannot read it (parser gap)"
+ },
+ "20260812113906NAL0013526306001": {
+  "pages": 28,
+  "chars": 117038,
+  "perPage": 4180,
+  "headers": 4,
+  "titles": 10,
+  "verdict": "TABLE PRESENT — we cannot read it (parser gap)"
+ },
+ "20260715192621NAL0004779394001": {
+  "pages": 43,
+  "chars": 189074,
+  "perPage": 4397,
+  "headers": 4,
+  "titles": 5,
+  "verdict": "TABLE PRESENT — we cannot read it (parser gap)"
+ },
+ "20251007173250NAL0005126097001": {
+  "pages": 49,
+  "chars": 215864,
+  "perPage": 4405,
+  "headers": 6,
+  "titles": 14,
+  "verdict": "TABLE PRESENT — we cannot read it (parser gap)"
+ },
+ "20241015175511NAL0015204099001": {
+  "pages": 44,
+  "chars": 173131,
+  "perPage": 3935,
+  "headers": 2,
+  "titles": 10,
+  "verdict": "TABLE PRESENT — we cannot read it (parser gap)"
+ },
+ "20250825175407NAL0015831298001": {
+  "pages": 26,
+  "chars": 145162,
+  "perPage": 5583,
+  "headers": 4,
+  "titles": 9,
+  "verdict": "TABLE PRESENT — we cannot read it (parser gap)"
+ },
+ "20251010185507NAL0004867427001": {
+  "pages": 47,
+  "chars": 215971,
+  "perPage": 4595,
+  "headers": 2,
+  "titles": 8,
+  "verdict": "TABLE PRESENT — we cannot read it (parser gap)"
+ },
+ "20251015113118NAL0002329043004": {
+  "pages": 69,
+  "chars": 292405,
+  "perPage": 4238,
+  "headers": 2,
+  "titles": 3,
+  "verdict": "TABLE PRESENT — we cannot read it (parser gap)"
+ },
+ "20250724210936NAL0003049139001": {
+  "pages": 27,
+  "chars": 150002,
+  "perPage": 5556,
+  "headers": 2,
+  "titles": 1,
+  "verdict": "TABLE PRESENT — we cannot read it (parser gap)"
+ },
+ "20251014134042NAL0004109328001": {
+  "pages": 26,
+  "chars": 138089,
+  "perPage": 5311,
+  "headers": 1,
+  "titles": 3,
+  "verdict": "TABLE PRESENT — we cannot read it (parser gap)"
+ },
+ "20251013200651NAL0002687120001": {
+  "pages": 49,
+  "chars": 199268,
+  "perPage": 4067,
+  "headers": 2,
+  "titles": 11,
+  "verdict": "TABLE PRESENT — we cannot read it (parser gap)"
+ },
+ "20251013145704NAL0001567697001": {
+  "pages": 28,
+  "chars": 146170,
+  "perPage": 5220,
+  "headers": 4,
+  "titles": 10,
+  "verdict": "TABLE PRESENT — we cannot read it (parser gap)"
+ },
+ "20251015104002NAL0004320145003": {
+  "pages": 30,
+  "chars": 136890,
+  "perPage": 4563,
+  "headers": 10,
+  "titles": 6,
+  "verdict": "TABLE PRESENT — we cannot read it (parser gap)"
+ },
+ "20251014180612NAL0007091666001": {
+  "pages": 43,
+  "chars": 4545713,
+  "perPage": 105714,
+  "headers": 0,
+  "titles": 0,
+  "verdict": "no schedule table and no reference — form-only filing"
+ },
+ "20260819091937NAL0018476145001": {
+  "pages": 62,
+  "chars": 233882,
+  "perPage": 3772,
+  "headers": 2,
+  "titles": 12,
+  "verdict": "TABLE PRESENT — we cannot read it (parser gap)"
+ },
+ "20251007205144NAL0002697523002": {
+  "pages": 44,
+  "chars": 148669,
+  "perPage": 3379,
+  "headers": 0,
+  "titles": 0,
+  "verdict": "no schedule table and no reference — form-only filing"
+ },
+ "20250819172711NAL0002431009001": {
+  "pages": 39,
+  "chars": 146874,
+  "perPage": 3766,
+  "headers": 0,
+  "titles": 6,
+  "verdict": "referenced but ABSENT — the schedule pages are not in the public copy"
+ },
+ "20251007215502NAL0002954115001": {
+  "pages": 63,
+  "chars": 295433,
+  "perPage": 4689,
+  "headers": 2,
+  "titles": 44,
+  "verdict": "TABLE PRESENT — we cannot read it (parser gap)"
+ },
+ "20251014130322NAL0002838097001": {
+  "pages": 37,
+  "chars": 133296,
+  "perPage": 3603,
+  "headers": 0,
+  "titles": 6,
+  "verdict": "referenced but ABSENT — the schedule pages are not in the public copy"
+ },
+ "20251014180528NAL0004742384001": {
+  "pages": 74,
+  "chars": 329661,
+  "perPage": 4455,
+  "headers": 4,
+  "titles": 3,
+  "verdict": "TABLE PRESENT — we cannot read it (parser gap)"
+ },
+ "20260819103704NAL0018540401001": {
+  "pages": 43,
+  "chars": 152554,
+  "perPage": 3548,
+  "headers": 2,
+  "titles": 15,
+  "verdict": "TABLE PRESENT — we cannot read it (parser gap)"
+ },
+ "20251010122329NAL0007711425003": {
+  "pages": 35,
+  "chars": 155555,
+  "perPage": 4444,
+  "headers": 4,
+  "titles": 5,
+  "verdict": "TABLE PRESENT — we cannot read it (parser gap)"
+ },
+ "20260717140006NAL0004644035001": {
+  "pages": 52,
+  "chars": 171181,
+  "perPage": 3292,
+  "headers": 4,
+  "titles": 6,
+  "verdict": "TABLE PRESENT — we cannot read it (parser gap)"
+ },
+ "20250715133413NAL0002153377001": {
+  "pages": 60,
+  "chars": 230203,
+  "perPage": 3837,
+  "headers": 0,
+  "titles": 0,
+  "verdict": "no schedule table and no reference — form-only filing"
+ },
+ "20251015125830NAL0006165104001": {
+  "pages": 53,
+  "chars": 310648,
+  "perPage": 5861,
+  "headers": 0,
+  "titles": 4,
+  "verdict": "referenced but ABSENT — the schedule pages are not in the public copy"
+ },
+ "20251015151026NAL0010298386003": {
+  "pages": 37,
+  "chars": 159507,
+  "perPage": 4311,
+  "headers": 0,
+  "titles": 4,
+  "verdict": "referenced but ABSENT — the schedule pages are not in the public copy"
+ }
+}

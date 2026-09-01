@@ -14,6 +14,11 @@
 import { readFileSync } from "node:fs";
 
 const N = +(process.argv[2] || 50);
+/* --direct: only plans that file their OWN schedule. A plan whose assets sit
+ * in a master trust has no gap in its own filing — the trust's filing is
+ * where the missing data lives, so it is a different piece of work and
+ * cannot be acted on from the plan document. */
+const DIRECT_ONLY = process.argv.includes("--direct");
 const all = JSON.parse(readFileSync("plans-all.json", "utf8"));
 const F = Object.fromEntries(all.fields.map((f, i) => [f, i]));
 const st = JSON.parse(readFileSync("lineups-status.json", "utf8")).plans;
@@ -35,6 +40,8 @@ for (const r of all.plans) {
   const parts = +g(r, "partEOY") || +g(r, "participants") || 0;
   if (assets < 5e7) continue;                     // keep the list worth a human's time
 
+  const mtia = g(r, "mtiaAck");
+  if (DIRECT_ONLY && mtia) continue;            // trust-held: gap is in the trust filing
   const gaps = [];
   // 1. the fund lineup
   if (!s || !s.c) {
