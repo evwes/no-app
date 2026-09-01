@@ -178,6 +178,57 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   scripts/** or the workflow file while a run you want to keep is in flight. History was squashed once to
   drop >100MB blobs; don't reintroduce giant files.
 
+## GitHub efficiency — what is actually scarce (MEASURED 2026-09-01)
+
+**Do not optimise for GitHub Actions minutes. They are free and unlimited here,
+and that is verified, not assumed.** Run #186 — the full universe re-parse, 15
+jobs, 13 parse shards, 5h11m wall and roughly 55 runner-hours — reports
+`billable.UBUNTU.total_ms = 0`. The repo is `"private": false`,
+`"visibility": "public"`, and GitHub bills nothing for standard hosted runners
+on public repositories. Check it yourself before believing otherwise:
+`actions_get` with `method: "get_workflow_run_usage"` on any run id.
+
+**This means the repo staying PUBLIC is the entire basis of the free tier.**
+Making it private would put ~55 runner-hours per re-parse against a 2,000
+minute/month allowance — one re-parse would exhaust roughly 27 months of quota.
+That is why "keep the repo public" is an invariant and not a preference. Note
+that changing visibility also unpublishes GitHub Pages.
+
+**What IS scarce, in order:**
+
+1. **Wall-clock time before a deadline.** A full re-parse costs 4.5 hours of
+   calendar time whether or not it costs money. Cancelling one by pushing to
+   `scripts/**` mid-run destroys those hours — that is the expensive mistake,
+   not the minutes.
+2. **Assistant session usage.** The genuine monthly limit that has actually
+   been hit is the assistant's, not GitHub's. Long polling loops, re-reading
+   large tool outputs, and re-deriving facts already written in
+   `docs/cadence-state.json` burn it for nothing.
+3. **Concurrency**, not consumption: 20 concurrent jobs on the free tier. The
+   matrix uses 13 shards plus prep and merge, so there is headroom but not
+   unlimited headroom for widening the matrix.
+4. **GitHub API rate limit** (5,000 authenticated requests/hour) — reached only
+   by polling in a tight loop, which is never necessary here.
+
+**The rules that follow, all of which save the scarce things:**
+
+- **Never push to `scripts/build-data.mjs`, `fetch-4i.mjs`, `lib-4i.mjs`,
+  `merge-4i.mjs`, `scripts/.kick` or the workflow file while a run is in
+  flight.** Concurrency cancels it and 4.5 hours evaporate.
+- **`[skip ci]` on every parser commit made outside the 1–7 AM window**, so
+  work batches into one nightly re-parse instead of firing several.
+- **One re-parse in flight at a time**, and every scheduled cycle
+  de-duplicates by checking for an in-flight run before dispatching.
+- **Only a `PARSER_VERSION`/`OCR_VERSION` bump justifies a full re-parse.**
+  Without a bump the work list is just the stale acks: run #187 took 7 minutes
+  and 23 seconds of parsing. Do not bump a version to "refresh" data.
+- **Do not poll a running job.** Dispatch, verify it started, and let a later
+  hourly cycle pick up the verdict.
+- The largest real inefficiency is measured and queued, not hypothetical:
+  **3,700 filings (5.4% of the universe) are downloaded, rasterised and OCR'd
+  on every full re-parse and produce nothing readable at all.** That is the
+  thing to fix if a re-parse needs to be cheaper — not the runner count.
+
 ## Work cadence and time (owner directive 2026-09-01)
 
 **Automated work runs at ALL times. HEAVY workloads run 1:00–7:00 AM Eastern.**
