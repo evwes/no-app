@@ -494,3 +494,8 @@ main { max-width: 1060px; margin: 0 auto; padding: 0 20px 48px; }
 .legend-item .dot.b1 { background: #f4a582; } .legend-item .dot.b2 { background: #e8734a; }
 .legend-item .dot.b3 { background: #7fa8d4; } .legend-item .dot.b4 { background: #1f4e79; }
 @media (max-width: 700px) { .map-stats { gap: 14px; } .map-stats strong { font-size: 16px; } }
+
+/* the basis of the headline participant count, said on the page rather than
+   left for a reader to guess. Deliberately quiet: it qualifies the number, it
+   is not a second label competing with it. */
+.hero-stat-note{display:block;font-weight:400;opacity:.65;font-size:.82em;letter-spacing:.01em;}

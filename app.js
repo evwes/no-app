@@ -1447,7 +1447,7 @@
 
       <div class="stat-row">
         <div class="stat"><p class="stat-label">Plan assets</p><p class="stat-value stat-accent">${plan.assetsB != null ? money(plan.assetsB * 1000) : "—"}</p><p class="stat-sub">${yoy || "&nbsp;"}</p></div>
-        <div class="stat"><p class="stat-label">Participants</p><p class="stat-value">${plan.participants ? fmtInt.format(plan.participants) : "—"}</p><p class="stat-sub">${plan.activeParticipants ? fmtInt.format(plan.activeParticipants) + " active" : "&nbsp;"}</p></div>
+        <div class="stat"><p class="stat-label">Participants</p><p class="stat-value">${plan.participants ? fmtInt.format(plan.participants) : "—"}</p><p class="stat-sub">${plan.activeParticipants ? fmtInt.format(plan.activeParticipants) + " active · at plan year end" : "at plan year end"}</p></div>
         <div class="stat"><p class="stat-label">Avg expense ratio</p>${(() => {
           const fe = filedAvgER(plan);
           if (fe) return `<p class="stat-value">${fe.er.toFixed(2)}% <span class="est-chip">est.</span></p><p class="stat-sub">weighted, ${fe.matched} of ${fe.of} holdings</p>`;
@@ -1541,7 +1541,16 @@
     const ppl = filed.reduce((s, p) => s + (p.participants || 0), 0);
     const assets = filed.reduce((s, p) => s + (p.assetsB || 0), 0);
     $("statPlans").textContent = fmtInt.format(scoped.length);
+    /* Say WHICH headcount this is. A Form 5500 reports participants at both
+     * ends of the plan year, and the site uses the END-of-year count
+     * (partEOY, falling back to the beginning-of-year figure when a filing
+     * has no EOY subtotal). Summed over full-form filers the two bases differ
+     * by 2.2M — 105.0M end-of-year against 102.8M beginning-of-year — so a
+     * reader reconciling this against any other source cannot do it unless
+     * the page says which one it is. Both numbers are honest; only the
+     * silence was not. */
     $("statPpl").textContent = fmtCompact.format(ppl);
+    $("statPpl").title = "Participants at the end of each plan's reported plan year, summed across the plans shown";
     // a filtered slice can fall well under a trillion — "$0.43T" reads worse
     // than "$434B", so the unit follows the number
     $("statAssets").textContent = assets >= 1000
