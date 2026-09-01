@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 98;
+export const PARSER_VERSION = 99;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -2460,16 +2460,25 @@ export function extractPlanFeatures(text) {
       // "—%" / "–%" is a zero cell (Weyerhaeuser, Simon Property)
       win = win.replace(/[–—]\s*%/g, "0%");
       const W2N = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6 };
-      const pairs = [...win.matchAll(/(less than (?:\d{1,2}|one|two|three|four|five|six)(?: years?(?: of service)?)?|(?:\d{1,2}|one|two|three|four|five|six)(?: or more)?(?: years?(?: of service)?)?(?: or more| ?\+)?) +(\d{1,3}) ?%/gi)]
-        .map((p) => [p[1].toLowerCase(), +p[2]]).filter(([, pc]) => pc <= 100);
+      /* v99: a RANGE row names the year the percentage STARTS, not the year it
+       * ends. US Foods files "Less than 1 / 0%, 1 to 2 / 33%, 2 to 3 / 67%,
+       * 3 or more / 100%" — a participant with ONE year of service is 33%
+       * vested. Matching a bare number grabbed the range's UPPER bound and
+       * stored "2 yr: 33%, 3 yr: 67%", shifting the whole schedule a year
+       * later and understating every participant's vested balance.
+       * Owner-reported 2026-09-01 from the filing itself. */
+      const lowerBound = (lbl) => lbl.replace(/^(\d{1,2})\s*(?:to|through|[-–—])\s*\d{1,2}/, "$1");
+      const RANGE = "\\d{1,2}\\s*(?:to|through|[-–—])\\s*\\d{1,2}(?: years?(?: of service)?)?";
+      const pairs = [...win.matchAll(new RegExp("(" + RANGE + "|less than (?:\\d{1,2}|one|two|three|four|five|six)(?: years?(?: of service)?)?|(?:\\d{1,2}|one|two|three|four|five|six)(?: or more)?(?: years?(?: of service)?)?(?: or more| ?\\+)?) +(\\d{1,3}) ?%", "gi"))]
+        .map((p) => [lowerBound(p[1].toLowerCase()), +p[2]]).filter(([, pc]) => pc <= 100);
       // bare-number tables ("Less than 2  0% / 2  20 / 3  40 … 6 or more
       // 100") print the percent sign only on the first row or not at all
       // (Simon Property) — a second scan without the % requirement,
       // accepted only with the strong structural guards below (>=4 rows,
       // ascending years, monotonic to exactly 100)
       if (pairs.length < 3) {
-        const bare = [...win.matchAll(/(less than \d{1,2}|\d{1,2}(?: or more| ?\+)?)(?: years?(?: of service)?)? +(\d{1,3}) ?%?(?=[ \n]|$)/gi)]
-          .map((p) => [p[1].toLowerCase(), +p[2]]).filter(([, pc]) => pc <= 100);
+        const bare = [...win.matchAll(new RegExp("(" + RANGE + "|less than \\d{1,2}|\\d{1,2}(?: or more| ?\\+)?)(?: years?(?: of service)?)? +(\\d{1,3}) ?%?(?=[ \\n]|$)", "gi"))]
+          .map((p) => [lowerBound(p[1].toLowerCase()), +p[2]]).filter(([, pc]) => pc <= 100);
         const yrs = bare.map(([y]) => +(y.match(/\d+/) || [0])[0]);
         const yAsc = yrs.every((v, i2) => i2 === 0 || v >= yrs[i2 - 1]);
         if (bare.length >= 4 && yAsc && bare[bare.length - 1][1] === 100 &&
@@ -2929,8 +2938,17 @@ export function extractPlanFeatures(text) {
   // "designate … deferral contributions as after-tax contributions into a
   // Roth account" (Kast) puts Roth LAST — accept contribution words before
   // "into/to/as a Roth" as positive evidence too
+  /* v99: Roth offered as an ALTERNATIVE inside a contribution sentence —
+   * "participants may contribute up to 75% of annual compensation (pre-tax or
+   * Roth)". Nothing follows "Roth" but a closing paren, so the arms that need
+   * a contribution word AFTER it all miss, and a $2.5B plan that plainly
+   * offers Roth showed nothing. Requires the pre-tax/Roth pairing AND
+   * contribution language, so it cannot fire on a passing mention.
+   * Owner-reported 2026-09-01 from the filing itself. */
   const roth = t.match(/\broth\b[^.]{0,120}(contribut|deferral|option|401)/i) || t.match(/(designated|make) \broth\b/i) ||
-    t.match(/(?:contribut|deferral)\w*[^.]{0,80}?(?:into|to|as) an? \broth\b/i);
+    t.match(/(?:contribut|deferral)\w*[^.]{0,80}?(?:into|to|as) an? \broth\b/i) ||
+    t.match(/(?:contribut|defer)\w*[^.]{0,140}?(?:pre-?tax|before-?tax)\s*(?:,|\bor\b|\band\b|\/)\s*\broth\b/i) ||
+    t.match(/(?:contribut|defer)\w*[^.]{0,140}?\broth\b\s*(?:,|\bor\b|\band\b|\/)\s*(?:pre-?tax|before-?tax)/i);
   if (roth) { out.roth = true; out.rothText = sentence(roth.index); }
   if (/in.?plan.{0,40}(roth )?(conversion|rollover)|convert.{0,40}(to )?(a )?roth/i.test(t)) out.inPlanRoth = true;
   // "after-tax [deferral] contributions", incl. enumerations like

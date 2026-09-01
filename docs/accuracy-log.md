@@ -5603,3 +5603,58 @@ isolated and a patch that made the target filing parse. Shipping it would have
 traded one silent gap for a visible wrong number across an unknown number of
 filings. The accuracy log's own rule — *wrong is worse than blank* — applies to
 the fix as much as to the data.
+
+---
+
+## 2026-09-01 — US Foods: a vesting schedule shifted a year later, and a missed Roth
+
+**Owner-supplied filing.** The owner uploaded US Foods' PY2024 Form 5500 (EIN
+36-3642294, PN 001, $2.5B, 33,662 participants) and pointed at match, Roth and
+vesting. Checking all three against the document found one correct and two
+wrong.
+
+**1. Vesting was understated by a full year — the serious one.** The filing
+files a RANGE table:
+
+| Years of Service | Vesting % |
+|---|---|
+| Less than 1 | 0% |
+| **1 to 2** | **33%** |
+| **2 to 3** | **67%** |
+| 3 or more | 100% |
+
+We stored `2 yr: 33%, 3 yr: 67%`. The row matcher took a bare number before the
+percentage, which in "1 to 2  33%" is the **2** — the range's upper bound. A
+range names the year a percentage **starts**: a participant with one year of
+service is 33% vested. We told them they would be 33% vested at two years, and
+did the same at every other rung. **This understates the vested balance of
+every participant in any plan that files its schedule as ranges.**
+
+Fixed by matching the range form explicitly and keeping the lower bound. US
+Foods now reads `less than 1 yr: 0%, 1 yr: 33%, 2 yr: 67%, 3 or more yr: 100%`.
+
+**2. Roth was missed.** The filing says participants "may contribute up to 75%
+of annual compensation **(pre-tax or Roth)**". Nothing follows "Roth" but a
+closing parenthesis, so all three existing arms — which need a contribution
+word *after* Roth, or "designated/make Roth", or "into/to/as a Roth" — miss it.
+A $2.5B plan that plainly offers Roth showed nothing. The new arm requires the
+pre-tax/Roth pairing **and** contribution language, so a passing mention cannot
+trigger it.
+
+**3. Match was already right** and is recorded as such: "100% of the first 3% of
+pay + 50% of the next 2%", against a filing that says exactly that with a 4%
+maximum.
+
+**A negative result worth as much as the fixes.** The same filing exposed a
+heading defect — its title reads `FORM 5500, SCHEDULE H, PART IV, ITEM 4i -
+SCHEDULE OF` / `ASSETS (HELD AT END OF YEAR)`, which fails our detector twice
+over: the filing says **ITEM** 4i where we require **line** 4i, and the title
+**wraps**, while the heading is tested one line at a time. Joined, it matches.
+That is why US Foods carries `s:0` and serves a 2023 fallback lineup.
+
+Before fixing it I measured the proposed rule against the 30 filings we know
+contain a schedule table we cannot read. It recovers **zero** of them: 29
+already seed correctly and fail further downstream, and one seeds by neither
+rule. **The US Foods heading shape is specific to US Foods**, not the general
+cause, and claiming otherwise would have been a confident wrong answer about a
+$150B+ class. Sizing a fix before believing in it is what turned that around.
