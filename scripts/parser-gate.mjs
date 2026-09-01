@@ -107,6 +107,19 @@ const FEATURE_SPECIMENS = [
     "20251003165214NAL0003875602001", { vesting: "Graded schedule" }],
   ["v96 control: XPO 'vest after two years of service'",
     "20251009141940NAL0015760994001", { vesting: "2-year cliff" }],
+  /* v97: the replacement must cover the money that carries the schedule.
+   * Caught by the label diff on run #188, BEFORE it was mirrored. This plan's
+   * 2026 amendment freed only the NONELECTIVE discretionary money while the
+   * discretionary MATCH kept its three-year cliff, and v96 called the whole
+   * plan "Immediate" — telling a participant their match was theirs today
+   * when it was not. It must stay a cliff. */
+  ["v97: partial replacement — only one money type was freed",
+    "20260707164235NAL0032859234001", { vesting: "3-year cliff" }],
+  /* …and the genuine case v97 must NOT break: the three-year rule here is
+   * confined to "plan years prior to January 1, 2010" while every ongoing
+   * money type vests immediately, so Immediate is the plan's actual rule. */
+  ["v97: schedule confined to a retired pre-2010 cohort",
+    "20250923152523NAL0006535681001", { vesting: "Immediate" }],
   ["Same-population continuation still chains", "20251219112023NAL0003370419001",
     { match: "100% of the first 3% of pay + 50% of the next 2%" }],
   /* v83: three false-"Immediate" shapes the v81 widening let through, found

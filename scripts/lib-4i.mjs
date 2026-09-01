@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 96;
+export const PARSER_VERSION = 97;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -1472,7 +1472,41 @@ function supersededSchedule(t) {
   if (!/matching|employer|company|non.?elective|profit.?sharing|safe.?harbor/i.test(win)) return null;
   const ry = v96ReportYear(t);
   if (ry && +rm[1] > ry) return null;
-  return { effective: +rm[1], text: (win.split(/(?<=\.)\s/)[0] || win).trim() };
+
+  /* v97: THE REPLACEMENT MUST COVER THE MONEY THAT CARRIES THE SCHEDULE.
+   *
+   * Caught by the label diff on run #188 before it was mirrored. Plan
+   * 20260707164235NAL0032859234001 says:
+   *
+   *   "Participants become 100 percent vested in the discretionary MATCH
+   *    company contributions and the nonelective discretionary company
+   *    contributions after three years of service. … Effective January 1,
+   *    2026, the Plan was amended and participants are immediately 100
+   *    percent vested in NONELECTIVE DISCRETIONARY company contributions."
+   *
+   * The amendment freed one money type. The discretionary match still has a
+   * three-year cliff, and v96 relabelled the plan "Immediate" — telling a
+   * participant their match is theirs today when it is not. Wrong is worse
+   * than blank here, as v83 already recorded.
+   *
+   * So: if any OTHER sentence still puts employer money behind a service
+   * condition, and that sentence is NOT itself scoped to a past period, the
+   * schedule has not been replaced — only part of it has. Sentences scoped to
+   * a prior period are exempt, which is what keeps the genuine case working:
+   * 20250923152523NAL0006535681001 confines its three-year rule to
+   * "contributions made … for plan years prior to January 1, 2010" while
+   * every ongoing money type vests immediately. */
+  const EMPLOYER = /matching|employer|company|non.?elective|profit.?sharing|discretionary/i;
+  const SERVICE = /\b(?:after|once|upon|following)\b[^.]{0,60}?\b(?:\w+|\d+)\s+years?\s+of\s+(?:vesting |credited |continuous )?service|\byears? of (?:vesting |credited |continuous )?service has been completed/i;
+  const PAST_SCOPE = /\b(?:for|to)\s+plan\s+years?\s+(?:beginning\s+)?(?:prior\s+to|before)\b|\b(?:through|thru)\s+the\s+(?:year|plan\s+year|period)\s+ended\b|\bmade\s+(?:to\s+the\s+plan\s+)?for\s+plan\s+years\s+prior\b/i;
+  const repSentence = win.split(/(?<=\.)\s/)[0] || win;
+  for (const sent of t.split(/(?<=\.)\s+/)) {
+    if (sent === repSentence) continue;
+    if (!EMPLOYER.test(sent) || !SERVICE.test(sent)) continue;
+    if (PAST_SCOPE.test(sent)) continue;          // a retired cohort, not the current rule
+    return null;                                   // part of the schedule survives
+  }
+  return { effective: +rm[1], text: repSentence.trim() };
 }
 
 export function extractPlanFeatures(text) {

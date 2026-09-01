@@ -5350,3 +5350,58 @@ not have would be inventing one, which is worse than an overstated fee that is
 labelled "est." The ticker is correctly suppressed on all of them, so no false
 claim about *what* the plan holds is displayed — only the fee is high. This is
 a research task, and it stays named here until someone does the research.
+
+---
+
+## 2026-09-01 — v96 freed one money type and called the whole plan vested
+
+**Caught by the label diff on run #188, before it was mirrored.** The run's
+counts were immaculate: coverage line byte-identical to the previous run,
+HIGH back at the known baseline of 4, and the label diff showed **0 gained,
+0 lost, 0 quotes suppressed** with exactly **3 relabels** — precisely the
+narrow v96 class the 0-of-40 sizing predicted. Every count-based check said
+ship it.
+
+Reading the three filings said otherwise.
+
+**Plan `20260707164235NAL0032859234001`:**
+
+> Participants become 100 percent vested in the discretionary **match**
+> company contributions **and** the nonelective discretionary company
+> contributions **after three years of service**. … Effective January 1, 2026,
+> the Plan was amended and participants are immediately 100 percent vested in
+> **nonelective discretionary** company contributions.
+
+The amendment freed **one** money type. The discretionary match kept its
+three-year cliff. v96 relabelled the plan "Immediate" — which tells a
+participant their match is theirs today when it is not. **Wrong is worse than
+blank here**, as v83 already recorded for this exact field.
+
+**v97: the replacement must cover the money that carries the schedule.** If any
+other sentence still puts employer money behind a service condition, and that
+sentence is not itself scoped to a past period, the schedule has not been
+replaced — only part of it has.
+
+The past-period exemption is what keeps the genuine cases working, and one of
+the other two relabels proves it is needed. Plan
+`20250923152523NAL0006535681001` confines its three-year rule to
+"contributions made … **for plan years prior to January 1, 2010**" while every
+ongoing money type vests immediately — automated employer since 2010,
+discretionary since 2012, matching since 2016. There "Immediate" is the plan's
+actual rule and the old "3-year cliff" label described a retired cohort as if
+it were current. **v96 improved that one and broke the other, and only reading
+both told them apart.**
+
+**Two lessons, both already in this log and both re-earned:**
+
+1. **A clean diff is not a correct diff.** Three changes out of 64,782 shared
+   acks, in exactly the predicted class, with zero losses — and one of them was
+   a wrong answer about someone's money. The label diff's value is not the
+   counts, it is that the counts are small enough to *read every one*.
+2. **Money-type scope is the recurring failure mode of this field.** v78, v81,
+   v83, v87 and now v97 are all the same shape: a sentence true of one
+   contribution type applied to the whole plan. Any future vesting change
+   should be tested against a filing that vests one money type and not another.
+
+Gate green at 55 specimens, now including the false positive as a control that
+must stay a cliff, and the pre-2010 case that must stay Immediate.
