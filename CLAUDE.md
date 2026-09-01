@@ -178,6 +178,39 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   scripts/** or the workflow file while a run you want to keep is in flight. History was squashed once to
   drop >100MB blobs; don't reintroduce giant files.
 
+## Daily rhythm and time (owner directive 2026-09-01)
+
+- **ALL schedules are defined in EASTERN time.** Cron speaks only UTC, so an
+  Eastern schedule written as a fixed UTC cron is right for eight months and
+  silently an hour wrong for the other four. `scripts/et-schedule.mjs` is the
+  single place that conversion lives: `node scripts/et-schedule.mjs 1` gives
+  the cron for 1 AM Eastern, and `--check <cronH> <cronM> <wantEtH> <wantEtM>`
+  reports whether an existing cron still means what it was written to mean
+  (exit 0 = fine, non-zero = drifted, with the corrected cron). **Every
+  scheduled session runs `--check` on its own trigger first and fixes the cron
+  before doing anything else.** Next transition: **2026-11-01**, when Eastern
+  goes to UTC-5 and every Eastern-based cron must be re-derived.
+- **01:00–06:00 ET is the automated work window.** The nightly run starts at
+  1 AM: a full re-parse takes ~4.5h and ends ~5:30 AM, leaving an hour for the
+  verdict, loss triage, label diff and mirror. 3 AM was tried and is wrong for
+  this purpose — the verdict would not be ready until ~8:30 AM, missing most of
+  the review window.
+- **07:00–09:00 ET is the owner's review window.** `docs/morning-brief.md` is
+  written and committed before 7 AM, overwritten nightly. It is
+  decision-shaped, not a log: what shipped and what it changed in numbers, what
+  was found wrong and whether it is fixed or queued, what was MIRRORED to the
+  live site, **what was HELD and why** (the most important line), what is
+  waiting on the owner, and what continues during the day. A partial brief on
+  time beats a complete one late.
+- **After the review, work continues through the day** — the 09:00 ET accuracy
+  cycle picks up the queue in `docs/cadence-state.json`.
+- The nightly run **dispatches on the dev branch, never main**. GitHub's own
+  cron can only run on the default branch and would commit data straight to
+  main every night, turning the once-a-week "check main for data-bot commits
+  before mirroring" hazard into a nightly one. GitHub cron also fires hours
+  late (a Monday 06:00 job once fired at 10:02), which is why the schedule is a
+  precise dispatch rather than a workflow cron.
+
 ## Operating protocol (hard-learned)
 
 - **ACCURACY IS THE FIRST PRINCIPLE (owner directive, 2026-07-25).** Every
