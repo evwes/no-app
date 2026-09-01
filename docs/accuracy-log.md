@@ -5405,3 +5405,54 @@ both told them apart.**
 
 Gate green at 55 specimens, now including the false positive as a control that
 must stay a cliff, and the pre-2010 case that must stay Immediate.
+
+---
+
+## 2026-09-01 — The "250 plans the fallback failed" was three different things
+
+**The queue carried this as one bug**: 250 plans lost their lineup because the
+v41 prior-year fallback didn't fire. Investigating four of them found the
+framing wrong, and classifying all 9,022 full-form plans that lack their own
+confident lineup found it wrong in both cause and magnitude.
+
+| plans | assets | cause |
+|---|---|---|
+| 7,071 | $26.4B | **no readable 4i section in the public copy** — form-only, or the schedule pages are simply absent |
+| 1,350 | $152.0B | parsed, section found, **below the confidence band** (Cisco, Meta) |
+| 366 | $826.5B | **linked to a master trust that IS confident — the site already shows those holdings** (RTX, Lockheed) |
+| 182 | $280.0B | linked to a master trust whose **own filing** isn't confident (Northrop, L3Harris) |
+| 46 | $0.5B | trust-pointer schedule with no linked trust — honest gap |
+| 7 | $0.1B | public copy withdrawn from the bucket (403) |
+
+**Why the fallback framing was wrong.** Garmin's newest filing has no schedule
+— and neither does its prior-year filing. That PDF's table of contents promises
+"Schedule H, Line 4i" on page 16 and the auditor's report references it, but
+**the document ends at page 16 with the words "Supplementary Information" and
+nothing after them.** The pages are not in the public copy. The fallback had
+nothing to fall back to. Kulicke & Soffa's filing never mentions a schedule at
+all.
+
+Zimmer Biomet, also on the "lost" list, holds everything through a master trust:
+its schedule contains participant loans and one line reading "Interest Held in
+Master Trust". That is the `trustPtr` shape the parser deliberately refuses to
+call confident — **and its trust IS linked and confident, so the site shows the
+trust's holdings.** It was never lost.
+
+**Two corrections I made to my own analysis while doing this**, both worth
+recording because either would have produced a confident wrong number:
+
+1. I first classified trust confidence from a `confident` field on
+   `mtias.json` objects. **That field does not exist** — those objects carry
+   only `ack`, `name`, `planYear`, `assetsEOY`. Trust confidence lives in
+   `lineups-status.json`, keyed by the trust's own ack. The bug moved
+   **$826.5B** from "trust not confident" into "already displayed", and I only
+   caught it because a bucket I expected Zimmer to land in came out empty.
+2. The empty bucket was the tell. **A classifier that produces an impossible
+   zero is reporting on itself, not on the data.**
+
+**What this changes about priorities.** The largest remaining lineup gap by
+money is not the 7,071 unreadable filings ($26.4B) — it is **182 plans holding
+$280.0B whose master trust filing does not parse confidently**, followed by
+**1,350 plans holding $152.0B that parse but fall below the band**. Those are
+$1.5B and $113M per plan respectively, against $3.7M per plan for the
+unreadable class. The queue is re-ordered accordingly.
