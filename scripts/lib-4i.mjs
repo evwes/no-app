@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 95;
+export const PARSER_VERSION = 96;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -1419,6 +1419,62 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
  * the audited statements (attached to every 100+ participant filing) spells
  * out the match formula, vesting schedule, Roth/after-tax options, and
  * auto-enrollment in prose. Extract what's stated; stay silent otherwise. */
+/* ---- v96: a vesting schedule the filing has already replaced ----------------
+ * Found 2026-09-01 by diffing labels after run #186 and then reading the
+ * filing rather than the stored quote. Plan 20251006163156NAL0004018177001
+ * shipped as "Graded schedule" and vests IMMEDIATELY. Its note prints a
+ * 20/40/60/80/100 table introduced as the schedule "through the year ended
+ * December 31, 2023", and then says:
+ *
+ *   "Effective January 1, 2024, matching contributions and non-elective
+ *    Employer contributions are 100 percent vested at all times."
+ *
+ * Every table reader read the table and none read the sentence retiring it.
+ * v86/v87 already guard superseded PROSE, but only in the "Prior to <date>"
+ * shape and only on the cliff and immediate paths.
+ *
+ * This is a property of the NOTE, not of any one reader, so per the rule
+ * earned in v84/v86 it is applied once, after every vesting reader has run,
+ * and corrects whichever label they produced.
+ *
+ * Three conditions, all required, because each one alone is common and
+ * harmless:
+ *   1. the schedule is explicitly confined to a PAST period;
+ *   2. a DATED replacement asserts full vesting;
+ *   3. that replacement covers EMPLOYER money — "effective January 1 2024
+ *      participants are 100% vested in their elective deferrals" is always
+ *      true and supersedes nothing.
+ * Plus: the replacement must already be in force for the year the document
+ * reports, so a subsequent-event note in an earlier filing cannot rewrite
+ * that year's actual schedule. */
+const V96_MONTH = "(?:January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept?|Oct|Nov|Dec)";
+const V96_SCOPE = new RegExp(
+  "(?:through|thru)\\s+the\\s+(?:year|plan\\s+year|period)\\s+ended\\b"
+  + "|for\\s+plan\\s+years\\s+(?:beginning\\s+)?(?:prior\\s+to|before)\\b"
+  + "|(?:applicable|in\\s+effect)\\s+(?:for|through)\\s+(?:plan\\s+)?years?\\s+(?:prior|ended|ending)\\b", "i");
+const V96_REPLACEMENT = new RegExp(
+  "effective\\s+(?:as\\s+of\\s+)?" + V96_MONTH + "\\s+\\d{1,2},?\\s+(20\\d\\d)"
+  + "[^.]{0,240}?(?:100\\s*(?:percent|%)|fully)\\s*vested", "i");
+
+// the document's own reporting year: the latest year stated in a full date
+function v96ReportYear(t) {
+  let y = 0;
+  for (const m of t.matchAll(new RegExp(V96_MONTH + "\\s+\\d{1,2},?\\s+(20\\d\\d)", "gi")))
+    if (+m[1] > y && +m[1] <= 2030) y = +m[1];
+  return y || null;
+}
+
+function supersededSchedule(t) {
+  if (!V96_SCOPE.test(t)) return null;
+  const rm = V96_REPLACEMENT.exec(t);
+  if (!rm) return null;
+  const win = t.slice(rm.index, rm.index + 320);
+  if (!/matching|employer|company|non.?elective|profit.?sharing|safe.?harbor/i.test(win)) return null;
+  const ry = v96ReportYear(t);
+  if (ry && +rm[1] > ry) return null;
+  return { effective: +rm[1], text: (win.split(/(?<=\.)\s/)[0] || win).trim() };
+}
+
 export function extractPlanFeatures(text) {
   // zero-width characters survive \s normalization and shipped inside quotes
   // (R.H. White's eligibility quote began with U+200B); strip them first so
@@ -2730,6 +2786,19 @@ export function extractPlanFeatures(text) {
   if (shapeCliff && !out.vesting) {
     out.vesting = `${shapeCliff.num}-year cliff`;
     out.vestingText = shapeCliff.text;
+  }
+  /* v96, LAST of all: whatever schedule the readers above settled on, the
+   * filing may have already replaced it. Only a SCHEDULE can be superseded
+   * this way — an "Immediate" label is what the replacement says anyway, so
+   * there is nothing to correct. The quote becomes the replacement sentence,
+   * because that sentence is now the plan's rule and the reader deserves to
+   * see the words rather than a table that no longer applies. */
+  if (out.vesting && /schedule|cliff|graded/i.test(out.vesting)) {
+    const sup = supersededSchedule(text);
+    if (sup) {
+      out.vesting = "Immediate";
+      out.vestingText = cap(sup.text);
+    }
   }
   // a DECLARED-RATE discretionary match is not a standing formula: "The
   // Company may make matching contributions, at its discretion, equal to

@@ -31,8 +31,7 @@ function fetchText(url, binary) {
   return binary ? null : execFileSync("curl", args, { maxBuffer: 256 * 1024 * 1024, encoding: "utf8" });
 }
 
-function loadCentroids() {
-  // 1. Census ZCTA Gazetteer — authoritative, public domain
+function censusCentroids() {
   try {
     execFileSync("curl", ["-sfL", "--max-time", "180", "-o", "/tmp/gaz.zip", CENSUS], { stdio: "ignore" });
     const txt = execFileSync("unzip", ["-p", "/tmp/gaz.zip"], { encoding: "utf8", maxBuffer: 256 * 1024 * 1024 });
@@ -43,19 +42,52 @@ function loadCentroids() {
       const z = p[0], la = +p[p.length - 2], lo = +p[p.length - 1];
       if (/^\d{5}$/.test(z) && isFinite(la) && isFinite(lo)) out[z] = [la, lo];
     }
-    if (Object.keys(out).length > 20000) return { z: out, source: "US Census ZCTA Gazetteer 2023 (public domain)" };
-    console.log("census gazetteer parsed too few rows — falling back");
-  } catch { console.log("census gazetteer unreachable — falling back to the mirror"); }
+    if (Object.keys(out).length > 20000) return out;
+    console.log("census gazetteer parsed too few rows");
+  } catch { console.log("census gazetteer unreachable"); }
+  return null;
+}
 
-  // 2. mirrored copy, used only when Census cannot be reached
-  const csv = execFileSync("curl", ["-sfL", "--max-time", "180", MIRROR], { encoding: "utf8", maxBuffer: 256 * 1024 * 1024 });
-  const out = {};
-  for (const line of csv.split("\n").slice(1)) {
-    const p = line.split(",");
-    const z = p[0], la = parseFloat(p[5]), lo = parseFloat(p[6]);
-    if (/^\d{5}$/.test(z) && isFinite(la) && isFinite(lo)) out[z] = [la, lo];
-  }
-  return { z: out, source: "mirrored US ZIP centroids (midwire/free_zipcode_data), Census-derived" };
+function mirrorCentroids() {
+  try {
+    const csv = execFileSync("curl", ["-sfL", "--max-time", "180", MIRROR], { encoding: "utf8", maxBuffer: 256 * 1024 * 1024 });
+    const out = {};
+    for (const line of csv.split("\n").slice(1)) {
+      const p = line.split(",");
+      const z = p[0], la = parseFloat(p[5]), lo = parseFloat(p[6]);
+      if (/^\d{5}$/.test(z) && isFinite(la) && isFinite(lo)) out[z] = [la, lo];
+    }
+    return Object.keys(out).length ? out : null;
+  } catch { console.log("mirror unreachable"); return null; }
+}
+
+/* A UNION, Census first — and that ordering is the whole point.
+ *
+ * The Census ZCTA Gazetteer is authoritative, but ZCTAs are TABULATION areas
+ * built from populated census blocks, so USPS ZIPs that are PO-box-only or a
+ * single large employer have no ZCTA at all. Measured 2026-09-01, when the
+ * pipeline reached Census for the first time while the sandbox had been
+ * falling back to the mirror: Census alone placed 65,441 of 68,259 full-form
+ * filers (95.87%), the mirror alone placed 67,746 (99.25%). The authoritative
+ * source had the WORSE coverage, and the 2,305-plan difference is mostly
+ * business and PO-box ZIPs — exactly the kind a plan sponsor files from.
+ *
+ * So Census supplies every coordinate it has, the mirror fills only the ZIPs
+ * Census lacks, and the output records the split so any coordinate can be
+ * traced to the source that produced it. Neither source alone is right here. */
+function loadCentroids() {
+  const census = censusCentroids();
+  const mirror = mirrorCentroids();
+  if (!census && !mirror) throw new Error("no ZIP centroid source is reachable — refusing to build a map with no coordinates");
+  if (!census) return { z: mirror, source: "mirrored US ZIP centroids (midwire/free_zipcode_data), Census-derived — Census gazetteer unreachable this run", filled: 0 };
+  if (!mirror) return { z: census, source: "US Census ZCTA Gazetteer 2023 (public domain) — mirror unreachable, ZIPs without a ZCTA are unplaced", filled: 0 };
+  const out = { ...census };
+  let filled = 0;
+  for (const z of Object.keys(mirror)) if (!(z in out)) { out[z] = mirror[z]; filled++; }
+  return { z: out,
+    source: `US Census ZCTA Gazetteer 2023 (public domain) for ${Object.keys(census).length.toLocaleString()} ZIPs, `
+      + `plus ${filled.toLocaleString()} ZIPs with no ZCTA filled from a Census-derived mirror (midwire/free_zipcode_data)`,
+    filled };
 }
 
 const { z: CENT, source } = loadCentroids();

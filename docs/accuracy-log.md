@@ -5240,3 +5240,25 @@ identity has this failure mode, and its failure is silent by construction.
 would cancel the running job") is still an open defect until it is closed. It
 needs to be written down where the next cycle will act on it, not carried in
 someone's head.
+
+**v96 shipped 2026-09-01.** The guard requires three things together, because
+each alone is common and harmless: the schedule is confined to a past period;
+a DATED replacement asserts full vesting; and that replacement covers EMPLOYER
+money ("effective January 1 2024 participants are 100% vested in their elective
+deferrals" is always true and supersedes nothing). Plus the replacement must
+already be in force for the year the document reports, so a subsequent-event
+note in an earlier filing cannot rewrite that year's actual schedule.
+
+Applied ONCE, after every vesting reader has run, because this is a property of
+the NOTE rather than of any single reader — the rule earned in v84 and v86,
+where a guard added to one reader's path left the others exposed. Five separate
+table readers would otherwise each need it.
+
+Measured before shipping: 11,654 stored labels are table-derived schedules; a
+40-filing sample spread evenly across the sorted ack space flipped **0**. The
+class is rare by construction, which is the intended shape — this corrects a
+known-wrong label without disturbing the population. Gate green at 53
+specimens, including three deliberate decoy controls: a genuine 6-year graded
+schedule with an immediate safe-harbor carve-out, a genuine graded schedule
+carrying an unrelated "Effective January 1, 2023" clause about catch-up
+contributions, and XPO's real 2-year cliff.

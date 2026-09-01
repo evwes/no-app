@@ -89,6 +89,24 @@ const FEATURE_SPECIMENS = [
     "20251015120755NAL0006024272001", { vesting: "3-year cliff (varies by hire date per the filing)" }],
   ["Fidelity: filed table under a TWO-LINE column header",
     "20251010153157NAL0004375043001", { vesting: "Graded schedule" }],
+  /* v96: a table the filing had already replaced. This plan shipped as
+   * "Graded schedule" and vests IMMEDIATELY — its 20/40/60/80/100 table is
+   * introduced as the schedule "through the year ended December 31, 2023",
+   * and the note then states that "Effective January 1, 2024, matching
+   * contributions and non-elective Employer contributions are 100 percent
+   * vested at all times." Every table reader read the table; none read the
+   * sentence retiring it. The five specimens below it are genuine graded
+   * schedules that must NOT flip — one of them carries an unrelated
+   * "Effective January 1, 2023" clause about catch-up contributions, which is
+   * exactly the decoy a looser rule would trip on. */
+  ["v96: schedule superseded by a dated full-vesting clause",
+    "20251006163156NAL0004018177001", { vesting: "Immediate" }],
+  ["v96 control: genuine 6-year graded with an immediate safe-harbor carve-out",
+    "20251009074251NAL0006626929001", { vesting: "Graded schedule" }],
+  ["v96 control: genuine graded, unrelated 'Effective January 1, 2023' catch-up clause",
+    "20251003165214NAL0003875602001", { vesting: "Graded schedule" }],
+  ["v96 control: XPO 'vest after two years of service'",
+    "20251009141940NAL0015760994001", { vesting: "2-year cliff" }],
   ["Same-population continuation still chains", "20251219112023NAL0003370419001",
     { match: "100% of the first 3% of pay + 50% of the next 2%" }],
   /* v83: three false-"Immediate" shapes the v81 widening let through, found
