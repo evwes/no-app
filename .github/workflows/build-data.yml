@@ -3,6 +3,23 @@ name: Build plan data from Form 5500
 on:
   workflow_dispatch:
   schedule:
+    # DAILY refresh at 05:12 UTC — 1:12 AM Eastern while EDT, 12:12 AM once EST
+    # returns on 2026-11-01. This is the DURABLE half of the cadence: the
+    # hourly agent cycle is session-scoped and dies with its session, whereas
+    # this runs whether or not any session exists, so new EFAST2 filings are
+    # still ingested, the audit still runs, and HIGH findings still reach the
+    # auto-managed issue during any gap.
+    #
+    # Off-minute on purpose: every schedule written by hand lands on :00, and
+    # GitHub's own queue is worst there — a Monday 06:00 job here once fired at
+    # 10:02. :12 is likelier to start near its time.
+    #
+    # A scheduled run executes on the DEFAULT branch and therefore commits its
+    # data to main, exactly as the weekly cron below already has for months.
+    # That is why the mirror protocol requires checking
+    # `git log origin/main --not origin/<dev branch>` before every force-mirror
+    # — a daily schedule makes that check daily rather than weekly.
+    - cron: "12 5 * * *"
     # weekly refresh: new EFAST2 filings, plan-year rollovers, new lineups
     # (scheduled runs execute on the default branch only)
     - cron: "0 6 * * 1"
