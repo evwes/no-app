@@ -229,67 +229,51 @@ that changing visibility also unpublishes GitHub Pages.
   on every full re-parse and produce nothing readable at all.** That is the
   thing to fix if a re-parse needs to be cheaper — not the runner count.
 
-## Work cadence and time (owner directive 2026-09-01)
+## Work cadence (owner directive 2026-09-01)
 
-**Automated work runs at ALL times. HEAVY workloads run 1:00–7:00 AM Eastern.**
-The cadence never idles waiting for a window; only the expensive jobs are
-fenced into one.
+**Work, report, continue. NEVER delay finished work for a clock.**
 
-- **What "heavy" means here is a `PARSER_VERSION` (or `OCR_VERSION`) bump, not
-  "a pipeline run".** Measured: run #186 bumped the version and re-parsed the
-  universe — 13 shards, 4h18m–5h00m each, ~4.5h wall, ~55 runner-hours. Run
-  #187 changed no version and finished in **7 minutes**, with 23 seconds of
-  actual parsing. So a version bump is the thing to schedule; an incremental
-  refresh is not.
-- **Therefore: never push a `PARSER_VERSION` bump outside the 1–7 AM window.**
-  Parser work done during the day is committed with **`[skip ci]`** so it does
-  not fire a full matrix, and ships in the next 1 AM run. This is why
-  `scripts/.kick` and the `[skip ci]` convention exist.
-- **Light work, any hour:** incremental data refreshes, frontend changes with
-  the smoke and map tests, `fund-er.js` research, hands-on filing review and
-  sampling, audits, analysis, documentation, and gating parser changes for the
-  next heavy window.
-- **01:00 ET — heavy window opens.** The nightly re-parse starts here: ~4.5h
-  ends about 5:30 AM, leaving the verdict, loss triage, label diff and mirror
-  to finish by ~6:30. 3 AM was tried and is wrong — the verdict would not land
-  until ~8:30 AM.
-- **Before 07:00 ET — `docs/morning-brief.md`** is written and committed,
-  overwritten nightly. Decision-shaped, not a log: what shipped and what it
+This supersedes an earlier framing that batched parser work into the overnight
+window. That framing was justified partly by conserving Actions minutes, and
+those minutes were then measured at **zero** (see the section above). With the
+justification gone, holding a gated, ready change until 1 AM buys nothing and
+costs a night.
+
+- **The blocker is never the hour. It is an in-flight run.** Pushing to
+  `scripts/build-data.mjs`, `fetch-4i.mjs`, `lib-4i.mjs`, `merge-4i.mjs`,
+  `scripts/.kick` or the workflow file while a run is going **cancels it** and
+  destroys hours of wall clock. That is the only thing worth serialising on.
+- **When a change is gated and ready and no run is in flight: dispatch it now**,
+  whatever the hour. Verify it started, report, and move to the next item.
+- **While a run IS in flight, keep working — do not poll and do not idle.**
+  Frontend work, `fund-er.js` research, hands-on filing review, audits,
+  sizing, documentation: none of it touches the pipeline. Pipeline changes get
+  written and committed with **`[skip ci]`**, which stops GitHub creating a run
+  at all — so the commit lands without cancelling what is running — and are
+  dispatched the moment the current run finishes.
+- **The instant a run finishes:** verdict → loss triage → label diff → mirror →
+  **immediately dispatch the next ready parser change** → carry on with the
+  queue. No waiting for the next window.
+- **1:00–7:00 AM ET is a FLOOR, not a gate.** If nothing else has triggered a
+  re-parse, the nightly sweep happens there so results are ready for the 7–9 AM
+  review. It never means "hold work until 1 AM."
+- **Hourly cycles run around the clock.** Each takes the next item from the
+  queue in `docs/cadence-state.json` and finishes it, recording which item it
+  took so the next hour does not collide.
+- **`docs/morning-brief.md`** is current and committed before 7:00 AM ET,
+  overwritten nightly — decision-shaped, not a log: what shipped and what it
   changed in numbers, what was found wrong and whether it is fixed or queued,
-  what was MIRRORED to the live site, **what was HELD and why** (the most
-  important line), what is waiting on the owner, what continues during the day.
-  A partial brief on time beats a complete one late.
-- **07:00–09:00 ET — the owner's review window.**
-- **HOURLY cycles, around the clock.** One recurring Routine on `0 * * * *`,
-  which is deliberately the whole cadence rather than one Routine per job.
-  Three reasons: an hourly cron is immune to the DST problem (it fires every
-  hour whatever the offset, so it needs no Eastern conversion and cannot
-  drift); no session has to babysit a 4.5h re-parse, because the next hour
-  picks it up; and a single recurring Routine cannot multiply, which is the
-  failure recorded at the top of `docs/cadence-state.json` — self-re-arming
-  one-shot chains once fired several at once. **Cycles never arm another
-  trigger.**
-  Each hour decides what it is for, in order: is a run in flight (then no
-  pipeline-script pushes this hour) → is it the 1 AM hour or a 1–6 AM hour with
-  an unshipped version bump (dispatch) → did a run just finish (verdict, label
-  diff, mirror) → otherwise take the next queue item from
-  `docs/cadence-state.json` and finish it, recording which item was taken so
-  the next hour does not collide.
+  what was MIRRORED to the live site, **what was HELD and why**, what is
+  waiting on the owner, what continues during the day.
 - **ALL schedules are defined in EASTERN time.** Cron speaks only UTC, so a
   fixed UTC cron is right for eight months and silently an hour wrong for the
-  other four. `scripts/et-schedule.mjs` is the single place that conversion
-  lives: `node scripts/et-schedule.mjs 1` gives the cron for 1 AM Eastern, and
-  `--check <cronH> <cronM> <wantEtH> <wantEtM>` reports whether an existing
-  cron still means what it was written to mean (exit 0 fine, non-zero drifted,
-  with the correction). **Every scheduled session runs `--check` on its own
-  trigger first and repairs the cron before doing anything else.** Next
-  transition **2026-11-01**, when Eastern goes to UTC-5.
-- The nightly run **dispatches on the dev branch, never main**. GitHub's own
-  cron can only run on the default branch and would commit data straight to
-  main nightly, turning the once-a-week "check main for data-bot commits before
-  mirroring" hazard into a nightly one — and GitHub cron fires hours late (a
-  Monday 06:00 job once fired at 10:02), which is why the schedule is a precise
-  dispatch rather than a workflow cron.
+  rest. `scripts/et-schedule.mjs` is the single place that conversion lives;
+  `--check <cronH> <cronM> <wantEtH> <wantEtM>` reports drift and the
+  correction, and every scheduled session checks its own trigger first. An
+  hourly cron is the exception: it cannot drift. Next transition **2026-11-01**.
+- Runs **dispatch on the dev branch, never main** — GitHub's cron only runs on
+  the default branch and would commit data straight to main, turning the
+  "check main for data-bot commits before mirroring" hazard into a nightly one.
 
 ## Operating protocol (hard-learned)
 
