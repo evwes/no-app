@@ -5556,3 +5556,50 @@ the pattern cost real time:**
 result.** Three separate conclusions here were drawn from a harness that could
 not have produced a positive, and every one of them was wrong. A test that
 cannot pass is not evidence.
+
+---
+
+## 2026-09-01 — Medtronic's menu: cause isolated, fix attempted and reverted
+
+**The defect.** Medtronic's master trust files its whole menu with the
+description in a middle column:
+
+```
+BROKERAGELINK       Liabilities                      $779,839,368
+BOND INDEX FUND     Payable and Operating Payables   $421,458,501
+```
+
+Every row is skipped, so the trust parses to nothing and **two plans holding
+$14.1B show no lineup**.
+
+**Cause, isolated this time.** `SKIP_ROW`'s statement vocabulary — `liabilit`,
+`payable`, `receivable`, `expenses` — is **unanchored**, deliberately, so it can
+catch "Assets Investments, at fair value" wherever it sits. A separately-managed
+account legitimately *describes itself* with those same words, in the
+description column of a real holding. Proof: swapping only the description words
+on the verbatim rows, changing nothing else, yields **23 funds, $13.77B against
+$13.78B of trust assets — ratio 0.999.**
+
+**The fix I tried, and why it is not in the tree.** Exempting the skip when the
+junk word sits past a name column and the line carries a value produced
+`found=true` with only 13 funds at ratio 0.562, and — worse — two rows *named*
+`Operating Payables, Other Liabilities` ($1,753M) and `Payable and Operating
+Payables` ($728M). Not skipping those lines lets the description text reach the
+name buffer and become a holding. **A partial parse with junk names is worse
+than a clean failure**: the clean failure shows nothing, the partial one shows a
+$1.75B "fund" that does not exist.
+
+Reverted. `PARSER_VERSION` stays at 98.
+
+**What the next attempt needs.** The exemption cannot be decided per-line. It
+needs the row's NAME COLUMN, established from the header positions `(A) (B) (C)
+(E)`, so the description column can be excluded from both the junk test and the
+name buffer. That is a column-aware change to `parseRows`, which sits behind
+59,237 confident lineups, and it must be sized against the full corpus before
+shipping — not against one filing.
+
+**The judgement recorded, because it is the reusable part.** I had the cause
+isolated and a patch that made the target filing parse. Shipping it would have
+traded one silent gap for a visible wrong number across an unknown number of
+filings. The accuracy log's own rule — *wrong is worse than blank* — applies to
+the fix as much as to the data.
