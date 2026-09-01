@@ -5503,3 +5503,56 @@ is **not** supported. The real-region result stands; the cause does not.
 not isolated, risks far more than the $50.6B it would recover. The next cycle
 should start from the reproducible case above — the real 145-line region, not a
 synthetic one — and size any change against the full corpus before shipping.
+
+---
+
+## 2026-09-01 — One footnote hid a $16.4B fund menu
+
+**What was wrong.** The L3Harris Retirement Savings Plan Master Trust filing
+carries this line in its schedule:
+
+> NOTE: TRANSACTIONS ARE BASED ON THE 2023-12-31 VALUE …
+
+It parsed as a **$14.19 billion holding**. That pushed the trust's parsed sum
+to **$29.98B against $16.23B of real assets — a coverage ratio of 1.848**, far
+outside the confidence band, so the entire **80-fund menu was rejected**. Two
+plans holding **$16.4B** showed no lineup because of one footnote.
+
+The confidence band did its job: a sum nearly double the plan's assets *should*
+be refused. The defect is upstream — a footnote was counted as a holding.
+
+**The fix is deliberately narrow, because "Note" is also a security type.**
+`Note 0.500% due 01/15/2028` is a real Treasury holding and the store contains
+**26** of them. So the rule matches only a colon straight after the word
+(`NOTE:`) or a numbered note followed by prose (`Note 9: Related Party…`,
+`Note 7. Exempt Party-in-Interest…`). A rate-and-due-date never matches.
+
+**Verified against every real stored name beginning with "Note":**
+
+| | |
+|---|---|
+| debt securities (`Note <rate>% due …`) | 26 — **0 wrongly matched** |
+| footnotes removed | 5, carrying $701M |
+| other `Note*` names untouched (incl. `Notes Receivable from Participants`) | 72 |
+
+L3Harris after the fix: 80 funds retained, sum $15.79B, **ratio 0.973** —
+squarely confident.
+
+**Three invalid experiments I ran before getting a valid one, recorded because
+the pattern cost real time:**
+
+1. I fed `parseRows` synthetic rows to isolate a column layout. Everything
+   returned zero *including the benign controls* — `parseRows` needs a real
+   section, not fabricated lines.
+2. I "confirmed" a junk-vocabulary theory the same way, and again the controls
+   were zero.
+3. I ran a **known-confident filing** through the same harness and it also
+   returned `found=false` — which is what finally exposed the harness, not the
+   parser. The cause was mine: I passed `assetsEOY = 0`, and for a trust I
+   passed the *plan's* assets rather than the *trust's*. With the right figures
+   the control returned 28 funds and L3Harris returned 80.
+
+**The rule: run the control through the harness before trusting any negative
+result.** Three separate conclusions here were drawn from a harness that could
+not have produced a positive, and every one of them was wrong. A test that
+cannot pass is not evidence.

@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 97;
+export const PARSER_VERSION = 98;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -45,6 +45,20 @@ const SKIP_ROW = new RegExp("^(total|subtotal|grand total|schedule|page \\d|form
   // fragment, and glued onto the FIRST holding row (R.H. White shipped
   // "including maturity date, rate of American Funds Europacific GR R6")
   "including maturity date|interest, collateral|collateral, par)|" +
+  /* FOOTNOTE REFERENCES, not holdings. L3Harris's master trust carries the
+   * line "NOTE: TRANSACTIONS ARE BASED ON THE 2023-12-31 VALUE …" alongside a
+   * figure, and it parsed as a $14.19 BILLION holding — which pushed the
+   * trust's sum to $29.98B against $16.23B of real assets, ratio 1.848, so
+   * the whole 80-fund menu was rejected as not confident. Two plans holding
+   * $16.4B showed no lineup because of one footnote.
+   *
+   * The vocabulary has to be narrow, because "Note" is also a SECURITY type:
+   * "Note 0.500% due 01/15/2028" is a real debt holding and there are stored
+   * rows of exactly that shape. So this matches only a colon straight after
+   * the word ("NOTE:"), or a numbered note followed by PROSE ("Note 9:
+   * Related Party…", "Note 7. Exempt Party-in-Interest…"). A rate-and-due
+   * date never matches either arm. */
+  "notes?\\s*:|notes?\\s+\\d{1,2}\\s*[:.]\\s*[a-z]|" +
   // financial-statement lines that are not 4i holdings
   // "investments?,? at (fair|contract) value" must tolerate the comma/dash
   // spellings — 631 confident lineups carried "Investments, at fair value"
