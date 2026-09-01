@@ -208,9 +208,22 @@ fenced into one.
   what was MIRRORED to the live site, **what was HELD and why** (the most
   important line), what is waiting on the owner, what continues during the day.
   A partial brief on time beats a complete one late.
-- **07:00–09:00 ET — the owner's review window.** Then work continues: cycles
-  at 09:00, 12:00, 15:00, 18:00 and 21:00 ET take the next item from the queue
-  in `docs/cadence-state.json`.
+- **07:00–09:00 ET — the owner's review window.**
+- **HOURLY cycles, around the clock.** One recurring Routine on `0 * * * *`,
+  which is deliberately the whole cadence rather than one Routine per job.
+  Three reasons: an hourly cron is immune to the DST problem (it fires every
+  hour whatever the offset, so it needs no Eastern conversion and cannot
+  drift); no session has to babysit a 4.5h re-parse, because the next hour
+  picks it up; and a single recurring Routine cannot multiply, which is the
+  failure recorded at the top of `docs/cadence-state.json` — self-re-arming
+  one-shot chains once fired several at once. **Cycles never arm another
+  trigger.**
+  Each hour decides what it is for, in order: is a run in flight (then no
+  pipeline-script pushes this hour) → is it the 1 AM hour or a 1–6 AM hour with
+  an unshipped version bump (dispatch) → did a run just finish (verdict, label
+  diff, mirror) → otherwise take the next queue item from
+  `docs/cadence-state.json` and finish it, recording which item was taken so
+  the next hour does not collide.
 - **ALL schedules are defined in EASTERN time.** Cron speaks only UTC, so a
   fixed UTC cron is right for eight months and silently an hour wrong for the
   other four. `scripts/et-schedule.mjs` is the single place that conversion
