@@ -5456,3 +5456,50 @@ $280.0B whose master trust filing does not parse confidently**, followed by
 **1,350 plans holding $152.0B that parse but fall below the band**. Those are
 $1.5B and $113M per plan respectively, against $3.7M per plan for the
 unreadable class. The queue is re-ordered accordingly.
+
+---
+
+## 2026-09-01 — Where the $280B master-trust gap actually is (investigation, not yet a fix)
+
+Following the re-ordered queue, the 182 plans holding **$280.0B** that link to a
+master trust whose own filing does not parse confidently resolve to **97
+distinct trusts**:
+
+| trusts | plans | assets | cause |
+|---|---|---|---|
+| 77 | 140 | $218.1B | no readable 4i section in the **trust's** public copy |
+| 15 | 36 | **$50.6B** | trust parsed, **no section found and no error recorded** |
+| 3 | 4 | $11.2B | section found, below the confidence band |
+| 2 | 2 | $0.0B | the trust's own schedule is itself a trust pointer |
+
+The 15-trust class is the anomaly worth chasing: no error was recorded, so
+nothing flagged them. The two largest are **L3Harris ($16.4B, 2 plans)** and
+**Medtronic ($14.1B, 2 plans)**.
+
+**What is established about Medtronic, with a reproducible case:**
+
+- Its trust filing is 483 pages / 2.3M characters of readable text — not
+  scanned, so OCR is not involved.
+- The schedule is real and present, beginning at **line 26,727 of 26,865** —
+  the last ~140 lines of the document — under the heading `ATTACHMENT TO FORM
+  5500, SCH H, 4i` / `SCHEDULE OF ASSETS HELD FOR INVESTMENT PURPOSES`, with
+  holdings including `BROKERAGELINK $779,839,368` and `BOND INDEX FUND
+  $421,458,501`.
+- **`headRe` does seed a region there** (index 26,721), running 145 lines to
+  end of document. So detection is not the failure.
+- `parseRows` on that real region returns **zero funds**.
+- L3Harris fails differently: `found=true, rows=0`.
+
+**What is NOT established, and I am recording the correction rather than the
+guess.** I tried to isolate the cause by feeding `parseRows` synthetic
+two-, three- and four-column rows. All returned zero — *including the benign
+controls* — because `parseRows` takes a **section**, not arbitrary lines, and a
+bare fragment carries no heading for it to work from. That test was
+uninformative, so my first reading ("`parseRows` rejects this column layout")
+is **not** supported. The real-region result stands; the cause does not.
+
+**Deliberately not fixed in this session.** `parseRows` is the function behind
+59,237 confident lineups. Changing it late in a long session, on a cause I have
+not isolated, risks far more than the $50.6B it would recover. The next cycle
+should start from the reproducible case above — the real 145-line region, not a
+synthetic one — and size any change against the full corpus before shipping.
