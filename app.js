@@ -1687,6 +1687,22 @@
       return;
     }
     const pts = MAP.points;
+    /* map-points.json is POSITIONAL: rows[i] is the coordinate for plan i of
+     * the boot payload. If it was built against a different universe, every
+     * row after the first inserted plan names a different plan — and the map
+     * still draws, confidently, in the wrong places. It happened once: a
+     * pipeline run grew the universe by 1,227 plans while this file stayed
+     * behind, and 23% of the dots moved to the wrong plan with nothing on
+     * screen to say so.
+     *
+     * Drawing nothing is the honest failure. Drawing the wrong thing is not. */
+    if (pts.universe != null && pts.universe !== state.plans.length) {
+      canvas.innerHTML = `<p class="map-loading">The map is being rebuilt for the latest filings and is briefly unavailable. Every plan is still in the table.</p>`;
+      $("mapStats").innerHTML = "";
+      $("mapLegend").innerHTML = "";
+      $("mapNote").textContent = "";
+      return;
+    }
     // cluster in PROJECTED space so a cluster is a fixed distance on screen at
     // the current zoom, not a fixed distance on the ground
     const cell = 26 / MAP.zoom;

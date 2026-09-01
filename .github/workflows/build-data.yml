@@ -166,7 +166,14 @@ jobs:
               exit 1
             fi
             node scripts/build-seo-pages.mjs || true
-            git add plans-all.json plans-list.json plans-index.json mtias.json fee-percentiles.json lineups-status.json lineups-index.json data/lineups data/fees data/plans docs/coverage-history.jsonl p sitemap.xml robots.txt
+            # map-points.json is row-aligned to plans-all, so it MUST be
+            # rebuilt in the same job that rewrites plans-all. Shipped once
+            # by hand and left out of the pipeline, it silently put 23% of
+            # the map's dots on the wrong plan the moment the universe grew.
+            # No "|| true" here: a map built against the wrong universe is a
+            # wrong answer, and a failed build should fail the run.
+            node scripts/build-map-points.mjs
+            git add plans-all.json plans-list.json plans-index.json mtias.json fee-percentiles.json lineups-status.json lineups-index.json data/lineups data/fees data/plans docs/coverage-history.jsonl p sitemap.xml robots.txt map-points.json
             if git diff --cached --quiet; then echo "No data changes."; exit 0; fi
             git commit -m "Update filed plan data (Form 5500 + Schedule H 4i lineups)"
             if git push origin "HEAD:${GITHUB_REF_NAME}"; then exit 0; fi

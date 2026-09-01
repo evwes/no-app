@@ -2,7 +2,13 @@ name: Site smoke test
 on:
   push:
     branches: ["claude/wampo-401k-live-nx1t4o"]
-    paths: ["app.js", "index.html", "styles.css", "data.js", "fund-er.js", "scripts/smoke-test.mjs"]
+    # DATA paths are here deliberately. The smoke test used to run only when
+    # frontend code changed, so the pipeline could rewrite every data file and
+    # nothing checked that the site still booted against it — which is exactly
+    # how a broken map reached the live site unnoticed.
+    paths: ["app.js", "index.html", "styles.css", "data.js", "fund-er.js",
+            "scripts/smoke-test.mjs", "scripts/map-test.mjs",
+            "plans-list.json", "plans-index.json", "map-points.json"]
   workflow_dispatch:
 
 jobs:
@@ -21,3 +27,5 @@ jobs:
           npx playwright install --with-deps chromium >/dev/null
       - name: Smoke test the site as a visitor
         run: node scripts/smoke-test.mjs
+      - name: Map view — draws, filters, and never misplaces a plan
+        run: node scripts/map-test.mjs

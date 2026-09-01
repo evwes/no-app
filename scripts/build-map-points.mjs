@@ -91,6 +91,21 @@ const out = {
   generated: new Date().toISOString(),
   source,
   note: "Points are the plan sponsor's filing ZIP — a headquarters or benefits office, not where participants live.",
+  /* The fingerprint that makes this file safe to ship. `rows` is positional:
+   * entry i is the coordinate for plan i of plans-all / plans-list. If the
+   * universe changes and this file is not regenerated, every row after the
+   * first inserted plan points at the WRONG plan — and nothing about the file
+   * looks broken, so the map silently draws confident, wrong dots.
+   *
+   * That is not hypothetical: it happened. This file was generated against a
+   * 110,555-plan universe, a pipeline run grew it to 111,782, and 15,774 of
+   * 67,658 placed plans (23%) ended up on the wrong plan before anyone
+   * noticed. The reader saw no error.
+   *
+   * So the file now states what it was aligned to, and the map refuses to
+   * draw when the boot payload disagrees. A row-aligned sidecar must always
+   * carry a fingerprint of the thing it is aligned to. */
+  universe: all.plans.length,
   fullForm: full,
   placed,
   unplaced: full - placed,

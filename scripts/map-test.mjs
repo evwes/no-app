@@ -17,6 +17,9 @@ async function until(page, fn, label, tries = 40) {
   throw new Error("timed out waiting for " + label);
 }
 
+// a failure that names its own cause, before the browser work starts
+async function die(msg) { console.log("\nMAP TEST FAILED:\n  " + msg); process.exit(1); }
+
 const srv = spawn("python3", ["-m", "http.server", "8899"], { cwd: "/home/user/no-app", stdio: "ignore" });
 await new Promise((r) => setTimeout(r, 2500));
 
@@ -32,6 +35,25 @@ page.on("console", (m) => { if (m.type() === "error" && !/ERR_CONNECTION_RESET|f
 await page.goto("http://localhost:8899/index.html", { waitUntil: "domcontentloaded" });
 await page.mouse.click(700, 300);              // the sandbox freezes an untouched page
 await until(page, () => document.querySelectorAll("#tbody tr").length > 0, "the plans table");
+
+/* Checked BEFORE waiting for dots, on purpose. map-points.json is POSITIONAL
+ * against the boot payload; a stale one makes the page refuse to draw, and if
+ * that surfaced only as "timed out waiting for map clusters" the next person
+ * would hunt a rendering bug instead of a stale file. Name the real cause. */
+const align = await page.evaluate(async () => {
+  const pts = await fetch("map-points.json").then((r) => r.json());
+  const list = await fetch("plans-list.json").then((r) => r.json());
+  const boot = (list.ein || list.cols?.ein || []).length;
+  return { universe: pts.universe, rows: pts.rows.length, boot };
+});
+console.log(`alignment: fingerprint ${align.universe}, rows ${align.rows}, boot payload ${align.boot}`);
+if (align.universe == null)
+  die("map-points.json carries no `universe` fingerprint — a stale file could not be detected");
+if (align.universe !== align.boot)
+  die(`STALE map-points.json: aligned to ${align.universe} plans, site boots ${align.boot}. `
+    + `Regenerate with: node scripts/build-map-points.mjs`);
+if (align.rows !== align.boot)
+  die(`map-points.json has ${align.rows} rows for a ${align.boot}-plan universe`);
 
 await page.click("#viewMap");
 await until(page, () => document.querySelectorAll("#mapSvg .map-dot").length > 0, "map clusters");
@@ -67,6 +89,7 @@ if (before.stats.some((s) => /NaN|undefined/.test(s))) fail.push("a stat rendere
 // is exactly what a wrong field name produces (assetsEOY vs assetsB)
 if (before.stats.slice(1).some((s) => /^\$?0$/.test(String(s).trim()))) fail.push("a total rendered as zero: " + before.stats.join(" | "));
 if (errors.length) fail.push("page errors: " + errors.slice(0, 3).join(" | "));
+
 
 await page.screenshot({ path: "/tmp/map.png" });
 await browser.close();
