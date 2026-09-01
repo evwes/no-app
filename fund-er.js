@@ -97,6 +97,26 @@ const JPM_COREPLUS = "core ?plus";
 // different fee, and one that states no class does not identify a class at all
 const JPM_R6 = "(?:[^a-z0-9]|class|cl|shares?|fd|fund)*r-? ?6\\b";
 
+/* ---- collective-trust class markers -----------------------------------------
+ * A recordkeeper rarely writes "Trust". It writes the trust's CLASS at the end
+ * of the name: "Vanguard Tgt Retire 2035 Tr I", "... Tr II", "... TR SEL",
+ * "... Tr Plus", "T Rowe Price Equity Income TR F". Those are collective
+ * trusts — a different vehicle from the mutual fund, with a different fee and
+ * NO ticker at all.
+ *
+ * Found 2026-08-31 by ranking the fund-lookup gap: the guard in
+ * fundTickerInfo anchored on "Tr" plus exactly ONE character, so "Tr II" and
+ * "TR SEL" walked through it. 308 rows / $13.1B were showing a mutual-fund
+ * ticker with no asterisk for a trust the plan actually holds — the precise
+ * false claim that guard exists to prevent — and 1,800 rows / $44.8B carried
+ * the mutual fund's expense ratio.
+ *
+ * The class list is CLOSED on purpose. A pattern like "Tr \w+$" would turn
+ * every name whose last word follows a stray "Tr" into a trust; only the
+ * Roman numerals, the named tiers and a bare single character are trust
+ * classes. "TRP" cannot match — \btr\b requires the word boundary. */
+const TRUST_CLASS = "\\btr[\\s.-]+(?:i{1,3}|iv|vi{0,3}|sel(?:ect)?|plus|[a-z0-9])\\s*$";
+
 const FUND_ER = [
   // --- Fidelity index ---
   [/fidelity (500|s&p 500) index/i, 0.015],
@@ -121,7 +141,29 @@ const FUND_ER = [
   [/fidelity managed income/i, 0.4],
   [/fidelity government cash reserves|fidelity treasury/i, 0.25],
   // --- Vanguard ---
-  [/vanguard target retire(ment)?.*trust/i, 0.045],
+  /* Order is the whole point here: the TRUST editions must be tested before
+   * the mutual fund, because they are a different vehicle at a different
+   * price. Recordkeepers abbreviate the trust to a class marker rather than
+   * the word — "Vanguard Tgt Retire 2035 Tr I", "MFO VANGUARD TARGET RET 2035
+   * TR SEL" — so TRUST_CLASS carries that vocabulary and the plain word
+   * "trust" is only one of the spellings. Measured 2026-08-31: 1,800 rows /
+   * $44.8B of collective trusts were being priced as the mutual fund. */
+  /* Lookaheads, not a sequence: the trust word is as often BEFORE the strategy
+   * as after it, because the filing names the TRUSTEE first — "Vanguard
+   * Fiduciary Trust Vanguard Target 2050 N/R", "Fidelity Management Trust
+   * Company - Vanguard Target 2030". Both are collective trusts ("N/R" is the
+   * filer saying not registered), and an ordered pattern priced all 26 of them
+   * as the mutual fund. */
+  [new RegExp("(?=[\\s\\S]*vanguard)(?=[\\s\\S]*t(?:ar)?g(?:e)?t)"
+    + "(?:(?=[\\s\\S]*(?:trust|collective|commingled|pool\\b))|(?=[\\s\\S]*" + TRUST_CLASS + "))", "i"), 0.045],
+  /* "Retirement" is optional because 8,201 filed rows spell the series
+   * "Vanguard Target 2045" with no such word, and the ticker table already
+   * resolves those to VTIVX — a name identified well enough to earn a ticker
+   * must not be denied its fee. "Institutional" is optional because Vanguard
+   * merged the Institutional Target Retirement funds into these on
+   * 2022-02-11; every filing in this universe post-dates that merger, so the
+   * surviving fund's 0.08% is the right answer for both spellings. */
+  [/vanguard (?:instl?|institutional)? ?target (?:retire(?:ment)? )?(?:20\d\d|income)/i, 0.08],
   [/vanguard target retire(ment)?/i, 0.08],
   [/metwest total return/i, 0.45],
   [/vanguard (500|institutional) index/i, 0.02],
@@ -686,18 +728,27 @@ const FUND_COMPARABLE = [
    * LifePath Dynamic funds are actively managed, a different product. The
    * dead-ticker rule (BSPIX/MAIIX/BRGNX, above) applies: quoting a fund
    * that no longer exists — or a wrong one that does — is invention. */
-  [/vanguard target (retirement )?income/i, ["VTINX", 0.08]],
-  [/vanguard target (retirement )?2020/i, ["VTWNX", 0.08]],
-  [/vanguard target (retirement )?2025/i, ["VTTVX", 0.08]],
-  [/vanguard target (retirement )?2030/i, ["VTHRX", 0.08]],
-  [/vanguard target (retirement )?2035/i, ["VTTHX", 0.08]],
-  [/vanguard target (retirement )?2040/i, ["VFORX", 0.08]],
-  [/vanguard target (retirement )?2045/i, ["VTIVX", 0.08]],
-  [/vanguard target (retirement )?2050/i, ["VFIFX", 0.08]],
-  [/vanguard target (retirement )?2055/i, ["VFFVX", 0.08]],
-  [/vanguard target (retirement )?2060/i, ["VTTSX", 0.08]],
-  [/vanguard target (retirement )?2065/i, ["VLXVX", 0.08]],
-  [/vanguard target (retirement )?2070/i, ["VSVNX", 0.08]],
+  /* "Institutional" is optional, and that is a statement about a merger, not
+   * a spelling. Vanguard reorganised the Vanguard Institutional Target
+   * Retirement Funds into these funds on 2022-02-11, which is why the
+   * surviving series costs 0.08%. Every plan year in this universe (2023-2025)
+   * post-dates that merger, so a filing still headed "Vanguard Institutional
+   * Target Retirement 2040 Fund" — 4,894 rows, $43.9B — is an auditor using
+   * the old name for the fund the plan now holds. Quoting the dead
+   * institutional ticker would name a fund that no longer exists; the
+   * successor's ticker is the honest answer. */
+  [/vanguard (?:instl?|institutional)? ?target (?:retirement )?income/i, ["VTINX", 0.08]],
+  [/vanguard (?:instl?|institutional)? ?target (?:retirement )?2020/i, ["VTWNX", 0.08]],
+  [/vanguard (?:instl?|institutional)? ?target (?:retirement )?2025/i, ["VTTVX", 0.08]],
+  [/vanguard (?:instl?|institutional)? ?target (?:retirement )?2030/i, ["VTHRX", 0.08]],
+  [/vanguard (?:instl?|institutional)? ?target (?:retirement )?2035/i, ["VTTHX", 0.08]],
+  [/vanguard (?:instl?|institutional)? ?target (?:retirement )?2040/i, ["VFORX", 0.08]],
+  [/vanguard (?:instl?|institutional)? ?target (?:retirement )?2045/i, ["VTIVX", 0.08]],
+  [/vanguard (?:instl?|institutional)? ?target (?:retirement )?2050/i, ["VFIFX", 0.08]],
+  [/vanguard (?:instl?|institutional)? ?target (?:retirement )?2055/i, ["VFFVX", 0.08]],
+  [/vanguard (?:instl?|institutional)? ?target (?:retirement )?2060/i, ["VTTSX", 0.08]],
+  [/vanguard (?:instl?|institutional)? ?target (?:retirement )?2065/i, ["VLXVX", 0.08]],
+  [/vanguard (?:instl?|institutional)? ?target (?:retirement )?2070/i, ["VSVNX", 0.08]],
   [/vanguard (institutional )?(500|s&p 500) index/i, ["VFIAX", 0.04]],
   [/vanguard.*total international stock.*(index|market)/i, ["VTIAX", 0.09]],
   [/vanguard.*total bond market index/i, ["VBTLX", 0.05]],
@@ -794,7 +845,7 @@ function fundTickerInfo(name, type) {
   // spelled out. The trailing anchor is what keeps this from also matching
   // "TRP RETIRE 2030 F" (a bare class letter, no "Tr" marker at all).
   const pooled = /trust|commingled|collective|pool\b|unitized|separate account|\bcit\b|annuity|tiaa traditional|guaranteed|\bgic\b|stable value|separately managed/i.test(name)
-    || /\btr[\s-][a-z0-9]\s*$/i.test(name)
+    || new RegExp(TRUST_CLASS, "i").test(name)
     || /collective trust|pooled separate/i.test(type || "");
   /* Tested against the RAW name, never the expanded one: expandFundName
    * rewrites "MM" (to "Money Market"), which silently defeated this guard when

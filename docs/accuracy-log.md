@@ -5049,3 +5049,90 @@ dropped silently.
 A `scripts/map-test.mjs` boots the site, opens the map, and asserts: state
 outlines drawn, clusters drawn, a filter reduces the count, all four totals
 non-zero and non-NaN, and both caveats present in the note.
+
+---
+
+## 2026-08-31 — A collective trust wearing a mutual fund's ticker
+
+**What was wrong.** 308 filed holdings, carrying **$13.1B**, displayed an exact
+mutual-fund ticker for a vehicle the plan does not hold. `MFO VANGUARD TARGET
+RET 2035 TR SEL` is Vanguard's Target Retirement 2035 **Trust Select** — a
+collective trust, with its own fee and no ticker at all. The site showed it as
+**VTTHX**, with no asterisk, which is the site's notation for "this is exactly
+the fund named". That is a false claim about what the plan holds, and it is
+precisely the claim the guard in `fundTickerInfo` was written to prevent.
+
+A further 1,800 rows / **$44.8B** of trusts were priced at the mutual fund's
+expense ratio rather than the trust's.
+
+**Why the guard missed them.** It anchored on `\btr[\s-][a-z0-9]\s*$` — the
+letters "Tr" followed by exactly **one** character at the end of the name. That
+catches `Tr I` and `Tr P`. It does not catch `Tr II`, `TR SEL`, `Tr Select` or
+`Tr Plus`. The guard was built from the examples in front of it at the time,
+and the class marker is simply wider than one character.
+
+**The change.** A named `TRUST_CLASS` fragment now carries the trust-class
+vocabulary — Roman numerals, `Sel`/`Select`, `Plus`, and a bare single
+character — and both the ticker guard and the Vanguard fee rows read from it.
+The list is **closed on purpose**: a pattern like `Tr \w+$` would convert every
+name whose last word trails a stray "Tr" into a trust. `TRP` cannot match it;
+`\btr\b` requires the word boundary, which is the same reason the original
+guard was written that way.
+
+**Two fee gaps closed alongside it, both found by ranking the gap by dollars
+rather than by row count:**
+
+- **`Vanguard Target 2045`** — 8,201 rows spell the series with no
+  "Retirement". The ticker table already resolved those to VTIVX while the fee
+  table demanded the word, so a fund identified well enough to earn a ticker
+  was denied its fee. The two tables disagreed about the same name.
+- **`Vanguard Institutional Target Retirement 2040 Fund`** — 4,894 rows,
+  **$43.9B**, matched nothing at all. This one is a merger, not a spelling:
+  Vanguard reorganised the Institutional Target Retirement Funds into the
+  Target Retirement Funds on **2022-02-11**, which is why the survivor costs
+  0.08%. Every plan year in this universe (2023–2025) post-dates that merger,
+  so a filing still headed "Institutional" is an auditor using the old name for
+  the fund the plan now holds. Quoting the dead institutional ticker would name
+  a fund that no longer exists — the dead-ticker rule already recorded for
+  BSPIX/MAIIX/BRGNX — so the successor's ticker is the honest answer.
+
+**One defect I introduced and caught in my own diff.** The first trust rule was
+an ORDERED pattern — Vanguard, then target, then the trust word. It missed 26
+names / $0.90B where the filing names the **trustee first**: "Vanguard
+Fiduciary Trust Vanguard Target 2050 **N/R**", "Fidelity Management Trust
+Company - Vanguard Target 2030". Those are collective trusts — `N/R` is the
+filer saying *not registered* — and the ordered pattern priced every one of
+them as the mutual fund. Rewritten as order-independent lookaheads. The rule:
+**a vehicle test must not depend on where in the name the vehicle is named.**
+
+**Final measured effect** (1.70M holdings, $10.80T filed):
+
+| | before | after |
+|---|---|---|
+| expense ratio | 899,948 rows / $4,582.8B | 906,176 rows / $4,740.7B |
+| ticker | 306,644 rows / $1,524.6B | 310,503 rows / $1,549.5B |
+
+Gained 6,228 ER rows / $158.7B and 4,178 ticker rows / $38.0B. **Zero expense
+ratios lost. Zero tickers swapped. Zero tickers removed from a non-trust.**
+1,025 rows / $33.2B were re-priced from the fund's fee to the trust's, and 319
+rows / $13.2B correctly stopped claiming a ticker. Every single change was
+classified by machine and every one falls in an intended class, with one
+exception worth naming: a single row ($0.4M) whose filed name is two holdings
+glued together by the parser — `Index Fund - Admiral(TM) Shares Account
+Nationwide Trust Company, FSB Vanguard Target Reti`. Its fee moved 0.10 to
+0.045. That is a row-merge artifact in the parser, not a fee-table question.
+
+**The prevention.** Rank the gap by **filed dollars, not by row count.** The
+false tickers sat in names appearing once or twice; by row count they are
+invisible, and by dollars they were on the first screen. Every fee and ticker
+added here was verified twice against published sources, following the
+Google-Finance share-class error of 2026-08-30.
+
+**Measured and deliberately NOT fixed:** roughly **$19B** of T. Rowe Price
+collective trusts still carry the mutual fund's expense ratio — `T Rowe Price
+Equity Income TR F` reads 0.68%, which is the fee for the fund, not the trust.
+The ticker is correctly suppressed, so no false claim is displayed; only the
+fee is overstated. TRP's trust fees vary by trust class and are not published
+in the filing, so the fix is a research task, not a pattern — and inventing a
+number would be worse than the overstatement. Named here so it is a known
+open item rather than an undiscovered one.
