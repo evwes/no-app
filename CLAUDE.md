@@ -178,38 +178,54 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   scripts/** or the workflow file while a run you want to keep is in flight. History was squashed once to
   drop >100MB blobs; don't reintroduce giant files.
 
-## Daily rhythm and time (owner directive 2026-09-01)
+## Work cadence and time (owner directive 2026-09-01)
 
-- **ALL schedules are defined in EASTERN time.** Cron speaks only UTC, so an
-  Eastern schedule written as a fixed UTC cron is right for eight months and
-  silently an hour wrong for the other four. `scripts/et-schedule.mjs` is the
-  single place that conversion lives: `node scripts/et-schedule.mjs 1` gives
-  the cron for 1 AM Eastern, and `--check <cronH> <cronM> <wantEtH> <wantEtM>`
-  reports whether an existing cron still means what it was written to mean
-  (exit 0 = fine, non-zero = drifted, with the corrected cron). **Every
-  scheduled session runs `--check` on its own trigger first and fixes the cron
-  before doing anything else.** Next transition: **2026-11-01**, when Eastern
-  goes to UTC-5 and every Eastern-based cron must be re-derived.
-- **01:00–06:00 ET is the automated work window.** The nightly run starts at
-  1 AM: a full re-parse takes ~4.5h and ends ~5:30 AM, leaving an hour for the
-  verdict, loss triage, label diff and mirror. 3 AM was tried and is wrong for
-  this purpose — the verdict would not be ready until ~8:30 AM, missing most of
-  the review window.
-- **07:00–09:00 ET is the owner's review window.** `docs/morning-brief.md` is
-  written and committed before 7 AM, overwritten nightly. It is
-  decision-shaped, not a log: what shipped and what it changed in numbers, what
-  was found wrong and whether it is fixed or queued, what was MIRRORED to the
-  live site, **what was HELD and why** (the most important line), what is
-  waiting on the owner, and what continues during the day. A partial brief on
-  time beats a complete one late.
-- **After the review, work continues through the day** — the 09:00 ET accuracy
-  cycle picks up the queue in `docs/cadence-state.json`.
+**Automated work runs at ALL times. HEAVY workloads run 1:00–7:00 AM Eastern.**
+The cadence never idles waiting for a window; only the expensive jobs are
+fenced into one.
+
+- **What "heavy" means here is a `PARSER_VERSION` (or `OCR_VERSION`) bump, not
+  "a pipeline run".** Measured: run #186 bumped the version and re-parsed the
+  universe — 13 shards, 4h18m–5h00m each, ~4.5h wall, ~55 runner-hours. Run
+  #187 changed no version and finished in **7 minutes**, with 23 seconds of
+  actual parsing. So a version bump is the thing to schedule; an incremental
+  refresh is not.
+- **Therefore: never push a `PARSER_VERSION` bump outside the 1–7 AM window.**
+  Parser work done during the day is committed with **`[skip ci]`** so it does
+  not fire a full matrix, and ships in the next 1 AM run. This is why
+  `scripts/.kick` and the `[skip ci]` convention exist.
+- **Light work, any hour:** incremental data refreshes, frontend changes with
+  the smoke and map tests, `fund-er.js` research, hands-on filing review and
+  sampling, audits, analysis, documentation, and gating parser changes for the
+  next heavy window.
+- **01:00 ET — heavy window opens.** The nightly re-parse starts here: ~4.5h
+  ends about 5:30 AM, leaving the verdict, loss triage, label diff and mirror
+  to finish by ~6:30. 3 AM was tried and is wrong — the verdict would not land
+  until ~8:30 AM.
+- **Before 07:00 ET — `docs/morning-brief.md`** is written and committed,
+  overwritten nightly. Decision-shaped, not a log: what shipped and what it
+  changed in numbers, what was found wrong and whether it is fixed or queued,
+  what was MIRRORED to the live site, **what was HELD and why** (the most
+  important line), what is waiting on the owner, what continues during the day.
+  A partial brief on time beats a complete one late.
+- **07:00–09:00 ET — the owner's review window.** Then work continues: cycles
+  at 09:00, 12:00, 15:00, 18:00 and 21:00 ET take the next item from the queue
+  in `docs/cadence-state.json`.
+- **ALL schedules are defined in EASTERN time.** Cron speaks only UTC, so a
+  fixed UTC cron is right for eight months and silently an hour wrong for the
+  other four. `scripts/et-schedule.mjs` is the single place that conversion
+  lives: `node scripts/et-schedule.mjs 1` gives the cron for 1 AM Eastern, and
+  `--check <cronH> <cronM> <wantEtH> <wantEtM>` reports whether an existing
+  cron still means what it was written to mean (exit 0 fine, non-zero drifted,
+  with the correction). **Every scheduled session runs `--check` on its own
+  trigger first and repairs the cron before doing anything else.** Next
+  transition **2026-11-01**, when Eastern goes to UTC-5.
 - The nightly run **dispatches on the dev branch, never main**. GitHub's own
   cron can only run on the default branch and would commit data straight to
-  main every night, turning the once-a-week "check main for data-bot commits
-  before mirroring" hazard into a nightly one. GitHub cron also fires hours
-  late (a Monday 06:00 job once fired at 10:02), which is why the schedule is a
-  precise dispatch rather than a workflow cron.
+  main nightly, turning the once-a-week "check main for data-bot commits before
+  mirroring" hazard into a nightly one — and GitHub cron fires hours late (a
+  Monday 06:00 job once fired at 10:02), which is why the schedule is a precise
+  dispatch rather than a workflow cron.
 
 ## Operating protocol (hard-learned)
 
