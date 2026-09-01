@@ -200,8 +200,22 @@ const FUND_ER = [
   // 0.41% Investor, 0.24% I Class (2035/2040 prospectus + fact sheets).
   [trpI("(?:retire(?:ment)?|ret)\\s*blend\\s*(?:20\\d\\d)?", null), 0.24],
   [/t\.? ?rowe(?: ?pr\w*)?.{0,24}(?:retire(?:ment)?|ret)\s*blend/i, 0.41],
-  // Retirement (active) collective-trust editions — negotiated per plan class
-  [/t\.? ?rowe price retirement.*trust/i, 0.37],
+  /* Retirement (active) collective-trust editions — negotiated per plan class.
+   *
+   * TRUST_CLASS is here for the same reason it is in the Vanguard rows, and
+   * this family proves the point with its own inconsistency. Measured
+   * 2026-09-01, these two sat side by side in the shipped data:
+   *   "T. Rowe Price Retirement 2040 Trust"  ->  0.37   (the trust fee)
+   *   "TRP Retirement 2040 TR-E"             ->  0.59   (the MUTUAL FUND fee)
+   * Same manager, same strategy, same vintage, same vehicle — two different
+   * answers, because this row demanded the word "trust" spelled out and the
+   * recordkeeper wrote the trust's CLASS instead ("TR-E", "TR-D", "Trust E").
+   *
+   * Nothing is invented here: the marker-spelled names are routed to the
+   * trust estimate this table already carries, rather than being given the
+   * fee of a different vehicle. */
+  [new RegExp("t\\.? ?rowe(?: ?pr\\w*)?.{0,24}retire(?:ment)?"
+    + "(?:[\\s\\S]*(?:trust|\\bcit\\b|collective|commingled)|[\\s\\S]*" + TRUST_CLASS + ")", "i"), 0.37],
   // Retirement (active) mutual funds — Investor class net ER, per vintage
   // (fact sheets; the series runs 0.49 short-dated to 0.64 long-dated).
   // I Class names get the Investor figure as an upper bound: only the 2060

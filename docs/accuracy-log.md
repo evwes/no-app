@@ -5305,3 +5305,48 @@ both:**
 from "the code broke" is not an alarm.* Before adding any auto-triage, ask what
 routine, expected event will trip it, and encode that difference — otherwise
 the instrument's own noise destroys the signal it was built for.
+
+---
+
+## 2026-09-01 — The same trust, two different fees, from one table
+
+**What was wrong.** These two rows sat side by side in the shipped data:
+
+| filed name | fee shown |
+|---|---|
+| `T. Rowe Price Retirement 2040 Trust` | **0.37** — the trust's fee |
+| `TRP Retirement 2040 TR-E` | **0.59** — the MUTUAL FUND's fee |
+
+Same manager, same strategy, same vintage, **same vehicle** — two different
+answers from the same table, because one filing spelled the word "trust" and
+the other wrote the trust's *class* (`TR-E`, `TR-B`, `Trust E`, `CIT`). An
+internal inconsistency like this is the clearest possible evidence of a bug:
+the table already knew the right answer and simply failed to recognise the
+name.
+
+**Scale: 794 names / 1,431 rows / $15.84B** were priced at a mutual fund's
+expense ratio while being collective trusts.
+
+**Nothing was invented to fix it.** The marker-spelled names are routed to the
+**trust estimate this table already carries** (0.37), rather than being given
+the fee of a different vehicle. This is the sibling of the Vanguard `Tr II` /
+`TR SEL` defect logged earlier today, in the family that entry explicitly
+deferred — and it is the same root cause: **a vehicle test that depends on the
+vehicle being spelled out.**
+
+**Verified as a safety property, not just a diff.** Every single name whose fee
+changed is trust-shaped, and **zero tickers moved** — the change touches fees
+only, and no actual mutual fund was pulled to the trust price. The Retirement
+series consolidated from $63.8B to $79.7B at 0.37.
+
+**What is deliberately NOT fixed, and why.** Roughly **$15B** of *other* T.
+Rowe Price collective trusts still carry their mutual fund's expense ratio —
+Blue Chip Growth Trust (0.70, $6.6B), Large Cap Growth Trust Class D (0.55,
+$4.3B), Equity Income TR F (0.68, $2.0B), Growth Stock Trust E (0.66, $1.6B),
+New Horizons Trust Z (0.64). Unlike the Retirement series, **this table holds
+no trust-specific estimate for those strategies**, and TRP's CIT fees vary by
+trust class and are not disclosed in the filing. Routing them to a number I do
+not have would be inventing one, which is worse than an overstated fee that is
+labelled "est." The ticker is correctly suppressed on all of them, so no false
+claim about *what* the plan holds is displayed — only the fee is high. This is
+a research task, and it stays named here until someone does the research.
