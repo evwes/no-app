@@ -328,6 +328,20 @@ costs a night.
 
 ## Operating protocol (hard-learned)
 
+- **EVERY FULL FORM GETS LISTED AND DESCRIBED, AND EVERY UNKNOWN GETS A
+  DIAGNOSED CAUSE (owner directive, 2026-09-02).** The work does not stop at
+  "no schedule found". That label describes US, not the filing, and shipping it
+  as though it described the filing is how State Farm sat for weeks marked as a
+  gap while its 55-fund Vanguard menu sat on page 3 under a textbook heading.
+  So: an item is not allowed to rest as unknown. Open the filing, find out why,
+  and record the cause — parser defect, absent from the public copy, scanned,
+  master-trust-held, or genuinely not filed. `scripts/size-class.mjs` buckets a
+  whole set by cause in one pass and is the cheap way to do this at scale;
+  `scripts/gap-verify.mjs` distinguishes "we cannot read it" from "it is not
+  there". A cause that is merely plausible is not a cause — **instrument before
+  believing one.** The v100 defect was first diagnosed by reading the text and
+  the reading was wrong; printing the parser's actual loop state gave a
+  different and correct answer in one run.
 - **ACCURACY IS THE FIRST PRINCIPLE (owner directive, 2026-07-25).** Every
   accuracy defect gets a permanent entry in `docs/accuracy-log.md`: what was
   wrong → the change → the prevention. Never delete entries. Every parser

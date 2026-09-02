@@ -5746,3 +5746,35 @@ them myself, and then reading them. The parser had been reporting State Farm as
 "no schedule found" for weeks; the schedule is on page 3 under a textbook
 heading. A gap label that says something about *us* had been read as saying
 something about the *filing*.
+
+**Cause corrected, same day, before shipping.** The paragraph above blamed a
+general "description column read as the fund name". Instrumenting the parser on
+the real filing showed that was wrong, and the true cause is narrower and more
+embarrassing: the joined name was RIGHT all along. `full` came out as
+"NT Collective Russell 3000 Index Fund / Non Lending". But the two predicates
+that decide whether the identity column names a product or only a house —
+`shortIdentity` and `identityIsProduct` — read `nameCol`, the fragment sitting
+on the VALUE line, which for a wrapped name is just "Lending*". One word, no
+digit, no fund/trust token, so the identity was judged not-a-product, the
+generic description won, and six rows collapsed onto one shared name. Sister
+rows survived only because their fragment happened to contain "Fund" or "Trust"
+("Ex/US Fund / Non Lending*", "Investment Trust II*") — which is exactly why
+half the menu looked fine and hid the other half.
+
+**Change (v100):** `const nc = (full || nameCol || "").trim()` — judge the whole
+identity, not its last line. `full` always contains `nameCol`, so this widens
+what the predicates see and never narrows it. Amgen goes from 30 rows with a
+fabricated $3.59B holding to 33 rows at ratio 1.00 with the real funds named.
+
+**State Farm is NOT fixed by this and is not the same defect.** It still returns
+3 rows at ratio 0.99 with an $18.0B "Common Collective Trust Portfolio". Its
+real 55-fund Vanguard menu loses region scoring to a Statement of Net Assets
+page — the known NYC-Carpenters class. Recorded separately rather than folded
+into this fix, because two defects sharing a symptom is how the first wrong
+diagnosis happened.
+
+**Prevention:** Amgen is a permanent gate specimen, asserted on row COUNT and
+SUM so a returning merge fails the gate rather than showing a plausible number.
+And the method note: the first diagnosis was reasoned from the shape of the
+text; the correct one came from printing the loop's actual state. Instrument
+before believing a cause.

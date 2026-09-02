@@ -169,6 +169,19 @@ const SPECIMENS = [
   // [label, ack, assetsEOY, expect]
   ["GE Vernova (footnote letters)", "20251014171116NAL0004605680001", 8206402143,
     { found: true, n: 17, sum: 8083350345 }],
+  /* v100: the WRAPPED-IDENTITY class, and the only specimen here that guards
+   * against publishing a fund that does not exist. Amgen wraps its collective
+   * trust names across two lines, leaving "Lending*" on the value line. The
+   * product/house predicates read that fragment instead of the joined name,
+   * judged it not-a-product, and let the generic description win — so six rows
+   * were all named "Collective Trust Fund" and merged on that shared name into
+   * a single $3,587,717,422 holding, 47% of the plan's shown assets. Sister
+   * rows survived only because their fragment happened to contain "Fund" or
+   * "Trust", which is how half the menu stayed correct and hid the rest.
+   * Expectation is deliberately the row COUNT and SUM: if the merge returns,
+   * n drops and the fake row reappears at the top of the lineup. */
+  ["Amgen (wrapped identity, generic description)", "20251009163950NAL0007320609001", 7720000000,
+    { found: true, n: 33, sum: 7685297822 }],
   /* v68: the filler-column class. Before the fix, all 28 of this plan's
    * holdings were stored as "VARIABLE 1,056,601 sh" — the (c) sub-columns
    * ("N/A  VARIABLE  N/A  ... sh  #") beat the real name in column (b).

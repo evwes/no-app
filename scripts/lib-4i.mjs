@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 99;
+export const PARSER_VERSION = 100;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -405,7 +405,28 @@ export function parseRows(section, opts = {}) {
      * stock ("Genuine Parts Company", "Hess Corporation" — measured as 3,034
      * institution-suffixed names, many of them real holdings) is untouched:
      * those rows carry a type-only description and keep their own name. */
-    const nc = nameCol ? nameCol.trim() : "";
+    /* v100: JUDGE THE WHOLE IDENTITY, NOT THE LAST LINE OF IT. These two
+     * predicates decide whether the identity column names a product or merely
+     * a house, and they were reading `nameCol` — the fragment that happens to
+     * sit on the VALUE line — while the name actually used is `full`, which
+     * includes the wrapped prefix accumulated in nameBuf.
+     *
+     * Amgen files its collective trusts wrapped:
+     *     NT Collective Russell 3000 Index Fund / Non
+     *     Lending*            Collective Trust Fund 22,328,542 units   2,073,570,958
+     * `full` is right ("NT Collective Russell 3000 Index Fund / Non Lending"),
+     * but `nc` was "Lending*" — one word, no digit, no fund/trust token — so
+     * the identity was judged not-a-product, the generic description won, and
+     * the row was named "Collective Trust Fund". Six such rows then merged on
+     * that shared name into ONE holding of $3,587,717,422, 47% of the plan's
+     * shown assets, displayed as a fund that does not exist. Sister rows
+     * survived only because their fragment happened to contain "Fund" or
+     * "Trust" ("Ex/US Fund / Non Lending*", "Investment Trust II*"), which is
+     * how the same menu ended up half right.
+     *
+     * `full` always contains nameCol, so this widens what the predicates see;
+     * it never narrows it. */
+    const nc = (full || nameCol || "").trim();
     const shortIdentity = nc && (nc.split(/\s+/).length <= 3 ||
       (/\b(?:trust (?:company|co)|bank|advisors?|asset management|investments?)\.?$/i.test(nc) && nc.split(/\s+/).length <= 5));
     const dLetters = dClean.replace(/[^a-z]/gi, "").length;
