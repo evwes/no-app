@@ -206,6 +206,18 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   schedule in a workflow file already under our control. When a mechanism
   refuses, enumerate the other mechanisms that reach the same outcome before
   reporting the outcome as impossible.
+- **And the sharper version (2026-09-02): DIAGNOSE the refusal before reporting
+  it.** "`create_trigger` requires approval" was repeated NINE times as a fact
+  about `create_trigger`. It never was: read-only `get_session` on the same
+  server returns the identical error, so the whole `Claude_Code_Remote` MCP
+  server is unapproved and the unblock is one server-level grant. The
+  discriminating experiment was a single call to the most harmless tool on the
+  same server. **When a tool refuses, call the most harmless tool on that
+  server before concluding anything about the tool you wanted** — otherwise a
+  server-level fact gets filed as a tool-level one and stays wrong for days.
+  `.claude/settings.json` allowlists the server; settings load at session
+  start, so every new session should try `create_trigger` once and, on success,
+  create the Routine and `CronDelete` the in-memory job.
 
 ## GitHub efficiency — what is actually scarce (MEASURED 2026-09-01)
 
