@@ -5658,3 +5658,45 @@ already seed correctly and fail further downstream, and one seeds by neither
 rule. **The US Foods heading shape is specific to US Foods**, not the general
 cause, and claiming otherwise would have been a confident wrong answer about a
 $150B+ class. Sizing a fix before believing in it is what turned that around.
+
+---
+
+## 2026-09-02 — I ran the mirror check, then read my own reassurance instead of it
+
+**What happened.** Mirroring v98/v99 to the live site, I ran the documented
+pre-mirror check — `git log --oneline origin/main --not HEAD` — and it printed
+`3a42d77`, a data commit on main that the branch did not have. I then
+force-pushed over it.
+
+The reason is worth recording exactly. My command was:
+
+```
+git log --oneline origin/main --not HEAD | head -5
+echo "(nothing above = main has nothing the branch lacks)"
+```
+
+The echo prints **unconditionally**. It said "nothing above" while the commit
+was sitting directly above it, and I read the reassurance instead of the
+output. A check whose summary line is independent of its result is not a check;
+it is a suggestion with a confident caption.
+
+**What was lost: nothing — and that is luck, not process.** `3a42d77` was the
+scheduled run #194's data commit. Compared against what is now live: identical
+universe, 111,782 plans, **0 acks missing**. The overnight schedule had found no
+new filings. Had it run a day earlier, or after an EFAST2 drop, it would have
+destroyed a day of ingestion.
+
+**The fix: the check is no longer advisory.** `scripts/mirror.sh` refuses to
+push when main carries commits the branch lacks, prints exactly what would be
+destroyed, and exits non-zero. `--force` exists but must be justified.
+
+Proven in both directions, because a guard that has never refused is not known
+to work:
+- against a level branch it mirrors and exits 0;
+- against a branch deliberately pushed one commit behind main it **refuses**,
+  names the commit, and exits 1.
+
+**Why this is now a daily hazard rather than a weekly one.** Scheduled runs
+execute on the default branch and commit to main. Yesterday I added a daily
+05:12 UTC schedule, which is what makes this collision routine — so the control
+had to stop being a habit and become code.
