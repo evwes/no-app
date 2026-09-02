@@ -5778,3 +5778,42 @@ SUM so a returning merge fails the gate rather than showing a plausible number.
 And the method note: the first diagnosis was reasoned from the shape of the
 text; the correct one came from printing the loop's actual state. Instrument
 before believing a cause.
+
+## 2026-09-02 — The schedule's own grand total, parsed as a holding
+
+**Wrong.** Many 4i tables end with an unlabelled grand total: the identity
+column is blank and only the value is printed, so the row inherits whatever the
+wrapped-name buffer still holds from the line above. Fremont Motor ends exactly
+that way and the row was stored as a holding named "participants -" worth
+$19,197,798 — the entire plan. Its 33 real Fidelity funds sum to $18.7M, so the
+region came to **1.974x plan assets** and lost region scoring to a two-row
+fragment off the Statement of Net Assets ("for benefits", $18,389,464) sitting
+at ratio 1.005 by construction. The plan published no lineup at all while a
+complete Fidelity menu sat in the same PDF.
+
+**Change (v101).** A row within 2% of plan assets is the schedule's grand total
+whenever the remaining rows still account for at least half the plan. The test
+is a physical impossibility rather than vocabulary — one holding cannot BE the
+whole plan while other holdings also exist — which is what makes it safe for a
+plan that genuinely holds a single pooled vehicle: there the remainder is near
+zero and the row is kept. Subtracts from `totalValue` instead of re-summing
+`funds`, because `funds` is capped at 80 rows and `totalValue` is not.
+Fremont: 1.974 -> 0.975, 30 rows, confident. Amgen unchanged at ratio 0.995.
+Gate green.
+
+**Size — and the prediction it falsified.** I expected this to be the dominant
+cause of the no-cause bucket and said so: the mechanism produces the ~2x ratios
+AND, by pushing a real menu out of the band, hands the win to any tiny
+total-shaped fragment. Re-running the same stratified 40-filing sample under
+v101 moved **1 filing of 40**, not the ~65% projected. too-few 18->16, stmt
+5->6, band-high unchanged at 5. So the fix is correct, safe and small — roughly
+32 of the 1,289 plans — and the bucket's real causes are still open.
+
+**Prevention / method.** The before-and-after on a fixed stratified sample is
+what caught the overclaim, and it cost one re-run. A mechanism that plainly
+explains one filing is not thereby the explanation for its bucket; measure the
+bucket, not the specimen. The remaining causes — no-heading at 20%, band-high
+at 12.5%, and a house-name merge visible on Physician's Computer Company, where
+every Vanguard row collapses to "Vanguard" at $16.2M because the value line
+carries only the house — are separate and are being diagnosed separately rather
+than folded into this entry.

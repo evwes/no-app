@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 100;
+export const PARSER_VERSION = 101;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -1290,7 +1290,50 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
        * and the penalty stopped applying. Classify the parent, not the view. */
       const judged = va.parentFunds || parsed.funds;
 
-      const raw = parsed.totalValue;
+      /* v101: THE SCHEDULE'S OWN GRAND TOTAL, PARSED AS A HOLDING.
+       *
+       * Many 4i tables end with an unlabelled total — the identity column is
+       * blank and only the value is printed, so the row inherits whatever
+       * nameBuf still holds from the wrapped line above it. Fremont Motor
+       * ends exactly this way:
+       *
+       *     Notes receivable from   Interest rate 4.25%-9.50%  -      485,533
+       *     participants
+       *                                                        -  $19,197,798
+       *
+       * The last line has no name of its own, so it was stored as a holding
+       * called "participants -" worth $19,197,798 — the ENTIRE plan. Its 33
+       * real Fidelity funds sum to $18.7M, so the region came to 1.974x plan
+       * assets and lost scoring to a two-row "for benefits" fragment off the
+       * Statement of Net Assets, which sits at ratio 1.005 by construction.
+       * The plan then published no lineup at all.
+       *
+       * This is the dominant failure in the no-cause bucket, measured over a
+       * stratified sample: it produces the ~2x ratios (band-high) AND, by
+       * pushing a real menu out of the band, hands the win to whatever tiny
+       * total-shaped fragment scores nearest 1.0 (too-few, stmt).
+       *
+       * The test is a physical impossibility, not vocabulary: one holding
+       * cannot BE the whole plan while other holdings also exist. So a row
+       * within 2% of plan assets is the grand total whenever the remaining
+       * rows still account for at least half the plan — which is what makes
+       * it safe for a plan that genuinely holds one pooled vehicle, where the
+       * remainder is near zero and the row is kept. Subtracting from
+       * totalValue rather than re-summing funds keeps menus over 80 rows
+       * correct, since funds is capped at 80 and totalValue is not. */
+      let pFunds = parsed.funds, pTotal = parsed.totalValue;
+      if (assetsEOY && pFunds.length >= 5) {
+        const ti = pFunds.findIndex((f) => Math.abs(f.value / assetsEOY - 1) <= 0.02);
+        if (ti >= 0) {
+          const rest = pTotal - pFunds[ti].value;
+          if (rest >= assetsEOY * 0.5) {
+            pFunds = pFunds.filter((_, i) => i !== ti);
+            pTotal = rest;
+          }
+        }
+      }
+
+      const raw = pTotal;
       // trustee statements (Verizon Master Savings Trust) file a CLASS-LEVEL
       // summary page followed by thousands of per-security detail pages that
       // double-count it. Prefer the summary; penalize security floods in
@@ -1336,7 +1379,7 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
        * menu carrying one legitimate provider-aggregate row is untouched —
        * that row-level version cost ~1,300 menus at v49. */
       const isProvPage = isProviderAgg(judged);
-      const maxV = parsed.funds.reduce((a, f) => Math.max(a, f.value), 0);
+      const maxV = pFunds.reduce((a, f) => Math.max(a, f.value), 0);
       for (const scale of va.scales) {
         const ratio = assetsEOY ? (raw * scale) / assetsEOY : 0;
         if (!ratio) continue;
@@ -1346,7 +1389,7 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
         // its 150M parse rescaling to 150B against 40B of plan assets)
         if (scale > 1 && maxV * scale > assetsEOY * 1.05) continue;
         const closeness = Math.abs(Math.log(ratio));
-        const score = -closeness + Math.min(parsed.funds.length, 40) * 0.005
+        const score = -closeness + Math.min(pFunds.length, 40) * 0.005
           + (isSummary && closeness < 0.5 ? 0.1 : 0)
           - (isStatement ? 0.35 : 0)
           - (isCodePage ? 0.35 : 0)
@@ -1358,7 +1401,7 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
           - (va.repair ? 0.05 : 0)
           - (gainLast && parsed.funds.length >= 60 ? 0.2 : 0);
         if (!best || score > best.score) {
-          best = { score, ratio, scale, stmt: isStatement, ...parsed };
+          best = { score, ratio, scale, stmt: isStatement, ...parsed, funds: pFunds, totalValue: pTotal };
         }
       }
     }
