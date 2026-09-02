@@ -5700,3 +5700,49 @@ to work:
 execute on the default branch and commit to main. Yesterday I added a daily
 05:12 UTC schedule, which is what makes this collision routine — so the control
 had to stop being a habit and become code.
+
+## 2026-09-02 — The description column became the fund name, and dedup summed a whole menu into one fake fund
+
+**Wrong.** On filings whose 4i table puts the fund name in the *Identity of
+Issue* column and a generic type in the *Description of Investment* column, the
+parser took the description as the name. Every holding of the same type then
+carried an identical name, and the name-keyed dedup — added so page
+carry-forward subtotals would not double-count — summed them into a single
+enormous row.
+
+Amgen is the clearest case, and we are publishing it today: its schedule lists
+roughly twenty separately named collective trusts (Galliard Intermediate Core
+Fund L, MetLife Core Plus Collective Fund, Wellington Core Bond Plus Portfolio
+CIT II, NT Collective Aggregate Bond Index Fund …), each described as
+"Collective Trust Fund N units". The published lineup shows **one row named
+"Collective Trust Fund" holding 47% of the plan's shown assets**, and every
+real fund name is gone. State Farm fails the same way and is worse: 55 Vanguard
+CITs, all described "Common Collective Trust Portfolio", collapse into one
+$18.0B row — which then trips the statement-fragment guard, so the plan shows
+no lineup at all rather than a wrong one.
+
+**Size, measured before any fix.** Scanning published lineups for a generic
+type-word name carrying ≥25% of the shown sum: **63 plans, $19.0B in plan
+assets, 79 such rows** — SAP America ($9.2B, 26%) and Amgen ($7.7B, 47%) are
+the material ones. Separately it withholds State Farm's real $19.0B menu.
+
+**Two distinct harms, and the second is the serious one.** The withheld menus
+are a coverage gap. The published collapsed rows are *wrong data on the site* —
+a fund that does not exist, holding a plausible-looking share of the plan.
+
+**Change.** Prefer the identity column when the description-derived name is
+generic investment-type vocabulary rather than a fund name. Specimens: Amgen
+20251009163950NAL0007320609001 and State Farm 20251010104106NAL0007965633001;
+decoy controls must not move, because on most filings the description column
+genuinely does hold the fund name and that heuristic has to survive.
+
+**Prevention.** The audit gains a check that no confident lineup may have a
+single generic type-word row carrying a large share of its sum — the shape is
+never a real fund, so it can be rejected by machine rather than by noticing.
+
+**How it was found, which is the part worth keeping.** Not by an audit. By
+being asked why I had handed the owner two filings to read instead of reading
+them myself, and then reading them. The parser had been reporting State Farm as
+"no schedule found" for weeks; the schedule is on page 3 under a textbook
+heading. A gap label that says something about *us* had been read as saying
+something about the *filing*.
