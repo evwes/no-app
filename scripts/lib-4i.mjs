@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 101;
+export const PARSER_VERSION = 102;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -130,6 +130,24 @@ function cleanDesc(desc) {
  * type-only and hand the row back to the issuer column. An anchored phrase
  * list cannot do that, because a real fund name carries something more.
  * "inves\w{0,2}ment" absorbs the OCR spelling "invesment". */
+/* Does this identity column name a FIRM rather than a product? Used to decide
+ * whether a generic category description ("Registered investment company") is
+ * more informative than the identity beside it. The houses listed are the ones
+ * v70 measured as actually causing the bare-manager defect — Vanguard 1,928
+ * rows, Fidelity 1,827, American Funds 1,342 — plus institution suffixes, so a
+ * firm keeps yielding to the category while a short fund name ("Explorer",
+ * "Wellington", "Windsor II") keeps its own name. Anchored whole-string: a
+ * fund whose name merely CONTAINS a house ("Vanguard Wellington Fund") is a
+ * product and must not match. */
+const HOUSE_ONLY = /^(?:the\s+)?(?:vanguard|fidelity(?:\s+investments)?|american funds?|t\.?\s*rowe\s*price|blackrock|state street(?:\s+global(?:\s+advisors)?)?|schwab|charles schwab|jp\s?morgan|j\.?p\.?\s*morgan|goldman sachs|pimco|invesco|franklin(?:\s+templeton)?|templeton|dodge\s*&\s*cox|nuveen|janus(?:\s+henderson)?|wellington management|northern trust|principal|prudential|metlife|voya|empower|transamerica|john hancock|nationwide|lincoln|great gray|great-west|columbia|putnam|dimensional(?:\s+fund\s+advisors)?|dfa|allspring|abrdn|aberdeen|mfs|neuberger berman|pgim|tiaa|cref|galliard|reliance trust|matrix trust|alight|ascensus|milliman)\s*(?:funds?|trusts?|group|inc\.?|llc|company|co\.?)?[.,]?$/i;
+const INSTITUTION_SUFFIX = /\b(?:trust (?:company|co)|bank|advisors?|asset management|investments?|capital management|fund management)\.?$/i;
+function isHouseName(nc) {
+  const s = String(nc || "").trim().replace(/\s+/g, " ").replace(/^[*(]+\s*|\s*[*)]+$/g, "");
+  if (!s) return true;                 // no identity at all — the description is all there is
+  if (HOUSE_ONLY.test(s)) return true;
+  return INSTITUTION_SUFFIX.test(s) && s.split(/\s+/).length <= 5;
+}
+
 const CATEGORY_PHRASE = /^(?:target[- ]date(?: retirement)?(?: funds?)?|retirement (?:date )?funds?|registered inves\w{0,2}ments? compan(?:y|ies)|(?:common[\/ ]?)?collective trust funds?|separate accounts?|group annuity contracts?|guaranteed (?:interest|investment) contracts?|insurance company (?:general|pooled separate) accounts?|(?:group|variable|fixed) annuity(?: contracts?| accounts?)?|guaranteed (?:interest )?accounts?|insurance (?:general )?accounts?|general accounts?|insurance contracts?|guaranteed insurance contracts?|blended funds?|balanced funds?)$/i;
 /* Harvested by measuring 3,928 rows where a PRODUCT-shaped identity sits
  * behind a short generic name. The list is deliberately PARTIAL: the same
@@ -444,7 +462,33 @@ export function parseRows(section, opts = {}) {
       /\b(?:r[1-6]|k\d?|adm|inv|instl?|idx|index|fund|trust|pool)\b/i.test(nc));
     const catDesc = dClean && CATEGORY_PHRASE.test(
       String(dClean).replace(/\s+[\d,]{3,}(?:\.\d+)?\s*(?:\(\d+\))?\s*$/, "").trim());
-    const dUsable = dClean && (!typeOnly(dClean) || (catDesc && !identityIsProduct)) &&
+    /* v102: A CATEGORY DESCRIPTION MAY ONLY BEAT A HOUSE, NOT A SHORT FUND.
+     *
+     * `!identityIsProduct` was standing in for "the identity is only a house
+     * name", but it actually tests word count and fund-ish tokens, so any
+     * SHORT REAL FUND NAME failed it. SAP America files its menu as a group
+     * header with indented members:
+     *
+     *     (*)  Vanguard Funds:
+     *            Emerging Markets Stock Index   Registered investment company
+     *            Explorer                       Registered investment company
+     *            Wellington                     Registered investment company
+     *            Windsor II                     Registered investment company
+     *
+     * "Emerging Markets Stock Index" survives on word count; "Explorer",
+     * "Wellington" and "Windsor II" do not, so they were all renamed
+     * "Registered investment company" and merged on that shared name into one
+     * row — 26% of a $9.2B plan, a fund that does not exist. Third distinct
+     * cause of the same fabrication after v100 and v101.
+     *
+     * The real question was never length, it is whether the identity names a
+     * FIRM. So ask that directly. v70 measured the opposite failure — 12,850
+     * rows renamed after their manager because the description was rejected,
+     * Vanguard 1,928, Fidelity 1,827, American Funds 1,342 — so the houses
+     * that caused it are named explicitly and keep their v70 behaviour:
+     * "Vanguard | Target Date Retirement" still yields the category, because
+     * there the identity really is just the firm. */
+    const dUsable = dClean && (!typeOnly(dClean) || (catDesc && isHouseName(nc))) &&
       (dLetters >= 8 ? dClean.split(/\s+/).length >= 2
         : shortIdentity && dLetters >= 4 && (/\d/.test(dClean) || dClean.split(/\s+/).length >= 2));
     if (dUsable) {

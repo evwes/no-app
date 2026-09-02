@@ -5817,3 +5817,61 @@ at 12.5%, and a house-name merge visible on Physician's Computer Company, where
 every Vanguard row collapses to "Vanguard" at $16.2M because the value line
 carries only the house — are separate and are being diagnosed separately rather
 than folded into this entry.
+
+## 2026-09-02 — A category description outranked short real fund names (v102), and "See attachment" was Emory's largest holding
+
+**Wrong (v102's defect).** The test deciding whether a generic category
+description should beat the identity column was `!identityIsProduct`, which
+sounds like "the identity is only a house name" but actually measures word
+count and fund-ish tokens. Any SHORT REAL FUND NAME failed it. SAP America
+files a group header with indented members:
+
+```
+(*)  Vanguard Funds:
+       Emerging Markets Stock Index   Registered investment company
+       Explorer                       Registered investment company
+       Wellington                     Registered investment company
+       Windsor II                     Registered investment company
+```
+
+"Emerging Markets Stock Index" survived on word count. "Explorer",
+"Wellington" and "Windsor II" did not, were all renamed "Registered investment
+company", and merged on that shared name into one row holding **26% of a $9.2B
+plan** — a fund that does not exist. This is the THIRD distinct cause of the
+same fabrication, after v100 (wrapped identity) and v101 (grand total).
+
+**Change.** Ask the real question directly: does the identity name a FIRM?
+`isHouseName()` tests an explicit house vocabulary plus institution suffixes.
+v70 measured the opposite failure — 12,850 rows renamed after their manager,
+Vanguard 1,928, Fidelity 1,827, American Funds 1,342 — so those houses are
+named explicitly and keep v70's behaviour: "Vanguard | Target Date Retirement"
+still yields the category, because there the identity really is only the firm.
+Anchored whole-string, so "Vanguard Wellington Fund" is a product and does not
+match. SAP: 34 rows with a $2.4B phantom -> 38 rows, ratio 0.996, confident,
+zero generic-named rows.
+
+**And a bigger one found by the new tooling.** Emory's plan was CONFIDENT at
+v100 and publishing a holding called **"See attachment" worth $5,526,161,000 —
+99.7% of a $5.54B plan**. v101's grand-total guard removes it (it is within 2%
+of plan assets), the real region then wins scoring, and 36 genuine funds appear:
+VANG INST INDEX PLUS $576.6M, FID CONTRAFUND $316.0M, the target-date vintages.
+Ratio 1.233 -> 0.893. Nothing flagged this before: it was confident, its ratio
+was inside the band, and "See attachment" is not in any type vocabulary, so
+scripts/audit-generic-names.mjs cannot see it either.
+
+**Prevention — the tooling gap this exposed.** Three consecutive parser
+versions were lineup work, and the only corpus-level tool, diff-parser.mjs,
+compares FEATURE fields; it reported "no changes" for v101, which was true and
+useless. scripts/diff-lineups.mjs now diffs lineups over the corpus and reports
+confidence gained/lost, row-count moves, and rows whose name is a bare
+investment type carrying >=15% of the lineup — the fabricated-fund signature.
+It exits non-zero if a change INTRODUCES one. v102 measured on 184 corpus
+filings: 0 confidence lost, 0 fabrications introduced, 1 removed, 4 row-count
+moves, all four verified as real recoveries.
+
+**Correction to the v101 entry.** That entry says the fix is "roughly 32 of the
+1,289 plans", from 1 of 40 in the stratified A6 sample. That remains the honest
+estimate for THAT bucket, but it understates the fix overall: the sample
+contained no Emory-class filing, and Emory alone was a $5.5B plan publishing a
+fabricated largest holding. A sample sized for one bucket does not measure a
+change's whole effect.
