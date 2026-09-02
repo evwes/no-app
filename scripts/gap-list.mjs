@@ -11,7 +11,7 @@
  *
  * Usage: node scripts/gap-list.mjs [count] > docs/review-list.md
  */
-import { readFileSync } from "node:fs";
+import { loadPlans, loadStatus, loadTrusts } from "./lib-schema.mjs";
 
 const N = +(process.argv[2] || 50);
 /* --direct: only plans that file their OWN schedule. A plan whose assets sit
@@ -19,20 +19,21 @@ const N = +(process.argv[2] || 50);
  * where the missing data lives, so it is a different piece of work and
  * cannot be acted on from the plan document. */
 const DIRECT_ONLY = process.argv.includes("--direct");
-const all = JSON.parse(readFileSync("plans-all.json", "utf8"));
-const F = Object.fromEntries(all.fields.map((f, i) => [f, i]));
-const st = JSON.parse(readFileSync("lineups-status.json", "utf8")).plans;
-const trusts = JSON.parse(readFileSync("mtias.json", "utf8")).trusts;
-const trustByAck = new Map(trusts.map((t) => [t.ack, t]));
+/* Field names go through lib-schema: an earlier version of this script read
+ * `provider` instead of `recordkeeper`, every plan came back missing one, and
+ * the list led with Microsoft and Boeing. Unknown names now throw. */
+const all = loadPlans();
+const st = loadStatus().plans;
+const trustByAck = loadTrusts().byAck();
 
 // the filing PDF lives at a path derived from the ack's date prefix
 const pdfUrl = (ack) =>
   `https://efast2-filings-public.s3.amazonaws.com/prd/${ack.slice(0, 4)}/${ack.slice(4, 6)}/${ack.slice(6, 8)}/${ack}.pdf`;
 
-const g = (r, k) => r[F[k]];
+const g = (r, k) => all.get(r, k);
 const rows = [];
 
-for (const r of all.plans) {
+for (const r of all.rows) {
   if (g(r, "sf")) continue;                       // full-form filers only
   const ack = g(r, "ack");
   const s = st[ack];

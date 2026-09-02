@@ -70,3 +70,38 @@ fi
 if [ ! -d /tmp/wampo-corpus ]; then
   echo "session-start: no local filing corpus — rebuild with: node scripts/build-review-corpus.mjs 200"
 fi
+
+# ---------------------------------------------------------------------------
+# OPERATING STATE. Everything above makes the container work; this makes the
+# session know where the project stands without spending turns finding out.
+#
+# Why it is here and not in a document: hook output is the only channel that
+# reaches a session before it acts, and container restarts are the recurring
+# fact of this project. The hourly agent cron is held in memory and has now
+# died four times; on 2026-09-02 a force-mirror nearly destroyed a scheduled
+# run's data commit. Both are checks that must happen FIRST or not at all, so
+# a session cannot be trusted to remember them — print them instead.
+BR="claude/wampo-401k-live-nx1t4o"
+echo "---- wampo operating state ----"
+
+git fetch -q origin main "$BR" 2>/dev/null || echo "  (fetch failed — refs below may be stale)"
+
+if [ -n "$(git log --oneline "origin/main" --not "origin/$BR" 2>/dev/null)" ]; then
+  echo "  MAIN IS AHEAD of $BR — a scheduled run committed data to main."
+  git log --oneline "origin/main" --not "origin/$BR" 2>/dev/null | sed 's/^/    /'
+  echo "  Rebase it in BEFORE any mirror. Always mirror via scripts/mirror.sh."
+else
+  echo "  main: nothing the dev branch lacks"
+fi
+
+UNPUSHED=$(git log --oneline "$BR" --not "origin/$BR" 2>/dev/null | wc -l | tr -d ' ')
+[ "$UNPUSHED" != "0" ] && echo "  $UNPUSHED UNPUSHED commit(s) on $BR — push before mirroring"
+[ -n "$(git status --porcelain 2>/dev/null)" ] && echo "  working tree is DIRTY"
+
+echo "  RUN 'CronList' NOW. If it says \"No scheduled jobs\", the hourly agent"
+echo "  cycle died with the last container — re-create it from"
+echo "  docs/hourly-cycle-prompt.md (cron '7 * * * *', recurring). It has died"
+echo "  four times; this is expected, not a surprise."
+echo "  Before pushing scripts/** or the workflow: confirm no pipeline run is"
+echo "  in flight, or concurrency cancels it and hours of wall clock are lost."
+echo "-------------------------------"

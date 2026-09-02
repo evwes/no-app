@@ -27,6 +27,24 @@ cd "$(git rev-parse --show-toplevel)" || exit 1
 
 git fetch -q origin main "$BRANCH" || { echo "fetch failed"; exit 1; }
 
+# The push below uses the LOCAL branch ref, so local and origin disagreeing is
+# not cosmetic: mirroring while a commit sits unpushed puts work on main that
+# is not on the dev branch, and every later mirror then refuses. This is the
+# other half of the 2026-09-02 near-miss — the main-ahead check passed, but a
+# commit had not been pushed yet and only a stop-hook caught it.
+LOCAL=$(git rev-parse "$BRANCH" 2>/dev/null)
+REMOTE=$(git rev-parse "origin/$BRANCH" 2>/dev/null)
+if [ "$LOCAL" != "$REMOTE" ]; then
+  echo "REFUSING TO MIRROR — local $BRANCH and origin/$BRANCH disagree:"
+  echo "    local  $(git rev-parse --short "$BRANCH")"
+  echo "    origin $(git rev-parse --short "origin/$BRANCH")"
+  git log --oneline "$BRANCH" --not "origin/$BRANCH" 2>/dev/null | sed 's/^/    unpushed: /'
+  git log --oneline "origin/$BRANCH" --not "$BRANCH" 2>/dev/null | sed 's/^/    unpulled: /'
+  echo
+  echo "  Push the branch first (git push -u origin $BRANCH), then re-run."
+  exit 1
+fi
+
 AHEAD=$(git log --oneline "origin/main" --not "origin/$BRANCH" 2>/dev/null)
 if [ -n "$AHEAD" ]; then
   echo "REFUSING TO MIRROR — main carries commits the branch does not have:"

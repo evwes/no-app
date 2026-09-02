@@ -4,12 +4,13 @@
  *   node scripts/gap-report.mjs <verdicts.json> > docs/review-list-direct.md
  */
 import { readFileSync } from "node:fs";
+import { loadPlans, loadStatus } from "./lib-schema.mjs";
 
 const verd = JSON.parse(readFileSync(process.argv[2], "utf8"));
-const all = JSON.parse(readFileSync("plans-all.json", "utf8"));
-const F = Object.fromEntries(all.fields.map((f, i) => [f, i]));
-const st = JSON.parse(readFileSync("lineups-status.json", "utf8")).plans;
-const byAck = new Map(all.plans.map((r) => [r[F.ack], r]));
+const all = loadPlans();          // field names checked against the header
+const F = new Proxy({}, { get: (_, k) => all.col(k) });   // F.ack still works, F.provider throws
+const st = loadStatus().plans;
+const byAck = all.byAck();
 
 const url = (a) => `https://efast2-filings-public.s3.amazonaws.com/prd/${a.slice(0, 4)}/${a.slice(4, 6)}/${a.slice(6, 8)}/${a}.pdf`;
 const B = (v) => (v >= 1e9 ? `$${(v / 1e9).toFixed(1)}B` : `$${(v / 1e6).toFixed(0)}M`);

@@ -300,6 +300,16 @@ costs a night.
   `--check <cronH> <cronM> <wantEtH> <wantEtM>` reports drift and the
   correction, and every scheduled session checks its own trigger first. An
   hourly cron is the exception: it cannot drift. Next transition **2026-11-01**.
+- **GitHub's scheduled start time is fiction (MEASURED 2026-09-02).** The
+  `12 5 * * *` nightly sweep (1:12 AM ET) actually fired at 09:31Z on run #194
+  (**4h20m late**, landing 5:31 AM ET) and 13:18Z on run #185 (**8h06m late**,
+  landing 9:18 AM ET). Free public runners de-prioritise cron, and the lateness
+  is not a constant to subtract — it ranged 4–8h across two samples. The runs
+  report "success", so nothing in the logs reveals it. **Never plan the 1–7 AM
+  window around the GitHub schedule.** `workflow_dispatch` starts within
+  seconds: an hourly cycle that sees the window open and no run in flight
+  dispatches the sweep ITSELF. The schedule stays only as the backstop that
+  runs when no session exists.
 - Runs **dispatch on the dev branch, never main** — GitHub's cron only runs on
   the default branch and would commit data straight to main, turning the
   "check main for data-bot commits before mirroring" hazard into a nightly one.
@@ -340,6 +350,33 @@ costs a night.
   API/MCP). A dropped webhook once went unnoticed for two days because
   monitoring only watched for the data commit. Never tell the owner
   "lands tonight" until the run is observed in_progress.
+- **Read the data stores through `scripts/lib-schema.mjs`** — `loadPlans()`,
+  `loadStatus()`, `loadTrusts()`. A guessed field name throws and names the
+  real fields instead of returning `undefined`. Three wrong published numbers
+  in one session came from `plan.provider` (it is `recordkeeper`; population
+  inflated 611→15,024), `trust.confident` (mtias trusts carry only ack/name/
+  planYear/assetsEOY — confidence is in lineups-status; **$826.5B** misfiled),
+  and a plan's `assetsEOY` passed to a harness parsing the TRUST. Self-test:
+  `node scripts/lib-schema.mjs --selftest`. **Corollary rule:** a number that
+  comes out suspiciously round, uniform, or exactly zero is reporting on the
+  query, not the data — check the query before publishing it.
+- **Mirror ONLY with `bash scripts/mirror.sh`.** It refuses when main carries a
+  commit the branch lacks (the daily schedule commits data straight to main)
+  and when local disagrees with origin, and prints what a force push would
+  destroy. Both refusals have negative-control tests. The hand-rolled
+  `git push --force-with-lease=main …` is retired: running the check by eye
+  failed on 2026-09-02 — the check printed the offending commit and an
+  unconditional "(nothing above…)" echo overrode the reading of it.
+- **Size the class before reading the filing.** The measurement script is
+  usually ten lines and either justifies the deep dive or cancels it. The
+  US Foods heading defect, sized first, recovered **0** of its 30 target
+  filings; the Medtronic column investigation was sized only after it had
+  consumed most of a session.
+- **Write scripts to a FILE, never inline in `node -e` or a heredoc.**
+  Backticks and parens trigger shell command substitution — this mangled two
+  commit messages and broke a report script mid-run, all after the rule was
+  already written down.
+- **Full process review with evidence: `docs/process-review.md` (2026-09-02).**
 - Runner OOM (Jul 24): parse jobs need NODE_OPTIONS=--max-old-space-size,
   results flush every 250 filings, artifacts upload if: always() — crashed
   shards hand progress to the merge; retries converge.
