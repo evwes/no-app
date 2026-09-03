@@ -67,8 +67,42 @@ const read = () => page.evaluate(() => ({
   legend: document.querySelectorAll("#mapLegend .legend-item").length,
 }));
 
+const fail0 = [];   // orientation findings, merged into `fail` below
 const before = await read();
 console.log("unfiltered:", JSON.stringify(before, null, 1));
+
+/* ORIENTATION. The map shipped upside down — Maine at the bottom, Florida at
+ * the top — because the textbook Albers y increases NORTH while SVG's y
+ * increases DOWN. Every existing check passed: the outlines and the dots were
+ * flipped together, so they agreed with each other and only disagreed with the
+ * country. Alignment tests cannot catch that; only an absolute fact about the
+ * world can. Maine is north of Florida, so it must be drawn above it. */
+const orient = await page.evaluate(() => {
+  const named = {};
+  for (const p of document.querySelectorAll("#mapSvg .map-state")) {
+    const t = p.querySelector("title")?.textContent;
+    if (!t) continue;
+    /* getBBox() returns an SVGRect, which does NOT survive serialization out of
+     * the page — it arrives as {} and every field reads undefined, so the
+     * comparison became NaN >= NaN, which is false, and the check silently
+     * passed on an upside-down map. Caught by running the negative control.
+     * Copy the numbers out explicitly. */
+    const b = p.getBBox();
+    named[t] = { y: b.y, height: b.height };
+  }
+  return { maine: named.Maine, florida: named.Florida, texas: named.Texas, minnesota: named.Minnesota,
+           names: Object.keys(named).length };
+});
+if (!orient.names) fail0.push("no named state outlines found — orientation could not be checked");
+if (!orient.maine || !orient.florida) {
+  fail0.push("could not find Maine and Florida outlines to check orientation");
+} else {
+  const mid = (b) => b.y + b.height / 2;
+  if (mid(orient.maine) >= mid(orient.florida))
+    fail0.push(`MAP IS UPSIDE DOWN: Maine centre y=${mid(orient.maine).toFixed(0)} is not above Florida y=${mid(orient.florida).toFixed(0)}`);
+  if (orient.texas && orient.minnesota && mid(orient.minnesota) >= mid(orient.texas))
+    fail0.push(`MAP IS UPSIDE DOWN: Minnesota y=${mid(orient.minnesota).toFixed(0)} is not above Texas y=${mid(orient.texas).toFixed(0)}`);
+}
 
 // a filter must move the map, and it must move it DOWN
 await page.evaluate(() => document.querySelector('.chip[data-filter="brokerage"]')?.click());
@@ -77,7 +111,7 @@ const after = await read();
 console.log("brokerage filter:", JSON.stringify({ dots: after.dots, plans: after.plans }, null, 1));
 
 const num = (s) => Number(String(s || "").replace(/[^0-9.]/g, ""));
-const fail = [];
+const fail = [...fail0];
 if (before.states < 40) fail.push(`only ${before.states} state outlines drawn`);
 if (before.dots < 50) fail.push(`only ${before.dots} clusters drawn`);
 if (before.legend !== 4) fail.push(`legend has ${before.legend} bands, expected 4`);

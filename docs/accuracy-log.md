@@ -6062,3 +6062,40 @@ feeds the auto-managed HIGH-findings issue, instead of running when someone
 remembers. Not one of the five v100–v105 fabrications tripped an existing
 check: they were confident, their ratios sat inside the band, and their names
 looked like something. The shape is the check.
+
+## 2026-09-03 — The map was upside down, and the map ALSO ignored the search
+
+**Wrong (1): the country was inverted.** Maine at the bottom, Florida at the
+top. The projection used the textbook Albers formula `y = rho0 - rho*cos(theta)`,
+which increases going NORTH because it assumes mathematical axes. SVG's y
+increases DOWNWARD. Measured: Portland ME landed at y=494 and Miami at y=64 on a
+600-tall canvas; corrected they are 106 and 536.
+
+**Why every existing check passed.** The state outlines and the plan dots go
+through the SAME projection, so both were flipped together. They agreed with
+each other perfectly — alignment, clustering, counts, the stale-fingerprint
+guard, all green. The map was internally consistent and disagreed only with the
+world. **An alignment test cannot catch a shared frame error; only an absolute
+fact can.** The new check asserts Maine is drawn above Florida and Minnesota
+above Texas.
+
+**Wrong (2), found while looking at the same screenshot.** The map panel says
+"Full-form filers only. Every filter above applies." It did not apply the SEARCH
+BOX: `passesFilters()` covers the chips and dropdowns, while the text query is
+applied separately in `visiblePlans()` via `matchesQuery()`. So a search for
+"devon" listed 3 plans in the table while the map drew 67,914 and reported
+105.7M participants and $8.8T underneath a sentence promising otherwise. A
+caption that misdescribes what is drawn is a wrong statement on the page.
+
+**The part worth keeping: the guard did not work the first time.** The
+orientation check passed against a deliberately re-broken projection. Cause:
+`getBBox()` returns an `SVGRect`, which does not survive serialization out of
+`page.evaluate` — every field arrived `undefined`, the comparison became
+`NaN >= NaN`, which is false, and the assertion silently approved an upside-down
+map. Fixed by copying the numbers out explicitly. Then the control failed
+correctly with "Maine centre y=531 is not above Florida y=108", and passes with
+the fix.
+
+**Prevention.** Prove a new guard FIRES before trusting it. A guard written and
+never seen to fail is not a guard; it is a comment. This one would have shipped
+as decoration.

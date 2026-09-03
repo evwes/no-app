@@ -1629,7 +1629,16 @@
     const rho = Math.sqrt(C - 2 * n * Math.sin(lat * rad)) / n;
     const rho0 = Math.sqrt(C - 2 * n * Math.sin(p.lat0 * rad)) / n;
     const theta = n * ((lon - p.lon0) * rad);
-    return [rho * Math.sin(theta), rho0 - rho * Math.cos(theta)];
+    /* The textbook Albers y is `rho0 - rho*cos(theta)`, which increases going
+     * NORTH because it assumes mathematical axes. SVG's y increases DOWNWARD,
+     * so used as-is it draws the country upside down: Maine at the bottom,
+     * Florida at the top. Measured before the fix — Portland ME landed at
+     * y=494 and Miami at y=64 on a 600-tall canvas. Negating puts them at 106
+     * and 536. The dots were always on the right plans and the state outlines
+     * always matched the dots, which is exactly why this survived a map test
+     * that checks alignment: both halves were flipped together, so they agreed
+     * with each other and disagreed with the country. */
+    return [rho * Math.sin(theta), -(rho0 - rho * Math.cos(theta))];
   }
   const CONUS = { p1: 29.5, p2: 45.5, lat0: 37.5, lon0: -96, k: 1280, dx: 480, dy: 300 };
   const ALASKA = { p1: 55, p2: 65, lat0: 60, lon0: -154, k: 380, dx: 150, dy: 500 };
@@ -1717,9 +1726,17 @@
     const cell = 26 / MAP.zoom;
     const cells = new Map();
     let shown = 0, unplaceable = 0;
+    /* The panel says "Every filter above applies", and it has to be true.
+     * passesFilters() covers the chips and the dropdowns but NOT the search
+     * box, which visiblePlans() applies separately via matchesQuery — so a
+     * search for "devon" listed 3 plans in the table while the map drew 67,914
+     * and reported their totals underneath a sentence promising otherwise.
+     * A caption that misdescribes what is drawn is a wrong statement on the
+     * page, not a cosmetic bug. */
+    const mapQ = state.query.trim().toLowerCase();
     for (const plan of state.plans) {
       if (plan.cf & 8) continue;                    // short-form: not on this map
-      if (!passesFilters(plan)) continue;
+      if (!matchesQuery(plan, mapQ) || !passesFilters(plan)) continue;
       const ci = pts.rows[plan.row];
       if (ci == null || ci < 0) { unplaceable++; continue; }
       const c = pts.coords[ci];
