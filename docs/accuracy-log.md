@@ -6099,3 +6099,40 @@ the fix.
 **Prevention.** Prove a new guard FIRES before trusting it. A guard written and
 never seen to fail is not a guard; it is a comment. This one would have shipped
 as decoration.
+
+## 2026-09-03 — Every SEO page's "Open the interactive report" link pointed nowhere
+
+**Wrong.** `scripts/build-seo-pages.mjs` wrote the deep link with a DASH in the
+EIN — `#plan=91-1144442|001|MSFT` — while `app.js` builds `plan.id` as
+`ein|pn|ticker` with no punctuation, and matched it byte-exactly. The link
+resolved to nothing, and the app's response to "nothing" was to render the
+homepage as if no plan had been asked for. **All 5,062 published pages, every
+one of them in sitemap.xml, had a dead primary call to action** — on the
+crawlable pages that project memory calls the growth engine.
+
+**How it was found.** Not by a test. By typing a plausible deep link by hand
+while taking screenshots to LOOK at the site, landing on the homepage, and
+checking why instead of assuming a typo. The typo was real — and it was the
+same one the generator makes.
+
+**Two changes, and the order matters.** Fixing the generator only helps pages
+built after the next merge, while 5,062 pages are already published and
+indexed. So `app.js` now resolves `#plan=` ids tolerantly: exact match first,
+then punctuation-insensitive, then EIN+PN ignoring the ticker. That repairs the
+live pages the moment the frontend ships. The generator was fixed too, so new
+pages carry the real id.
+
+**A second fragility, closed by the same change.** `plan.id` embeds the TICKER,
+so a company changing ticker or being acquired silently broke every link ever
+shared to that plan. The EIN+PN fallback survives that.
+
+**And the failure is now visible.** An unresolvable link says so in the result
+line instead of silently showing everything. It also CLEARS the previously
+opened report: leaving one plan's report on screen beside "that link didn't
+resolve" invites the reader to take the plan they can see for the plan they
+asked for — another plan's assets and match formula under someone else's link.
+
+**Prevention.** The map being upside down and this both shipped because every
+check tested internal consistency. A screenshot sweep of the main views is
+cheap and finds what consistency checks cannot: both defects were obvious in
+one glance and invisible to every assertion in the suite.

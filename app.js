@@ -12,6 +12,7 @@
   const $ = (id) => document.getElementById(id);
 
   const state = {
+    deepLinkMiss: null,   // a #plan= link that matched nothing, surfaced instead of ignored
     query: "",
     filters: { brokerage: false, megaBackdoor: false, immediateVesting: false, fullFiling: false },
     provider: "",
@@ -1593,7 +1594,8 @@
       `${fmtInt.format(plans.length)} of ${fmtInt.format(universe)}` +
       (state.filters.fullFiling ? " full-filing plans" : " plans") +
       (plans.length > limit ? ` · showing top ${fmtInt.format(limit)}` : "") +
-      (state.query.trim() ? ` for “${state.query.trim()}”` : "");
+      (state.query.trim() ? ` for “${state.query.trim()}”` : "") +
+      (state.deepLinkMiss ? ` — the shared link named a plan (${state.deepLinkMiss}) that isn’t in the current filings; showing everything instead` : "");
     document.querySelectorAll(".col-sort").forEach((b) => {
       b.classList.toggle("sorted", b.dataset.sort === state.tableSort.key);
       b.dataset.dir = state.tableSort.dir > 0 ? "asc" : "desc";
@@ -1898,16 +1900,49 @@
       $("industryFilter").appendChild(opt);
     }
     renderHero();
+    /* Resolve a #plan= id TOLERANTLY. plan.id is `ein|pn|ticker`, and an exact
+     * match was the only thing accepted — so any link whose id is not
+     * byte-identical fell through to the homepage with no report and no
+     * message. Two real ways that happens:
+     *
+     *  - scripts/build-seo-pages.mjs writes the EIN with a dash
+     *    ("91-1144442|001|MSFT") while the app builds it without one. Every
+     *    "Open the interactive report" link on all 5,062 published SEO pages —
+     *    the crawlable pages that are the growth engine — pointed nowhere.
+     *  - the id embeds the TICKER, so a company changing ticker or being
+     *    acquired silently breaks every link ever shared to that plan.
+     *
+     * Fixing the generator only helps pages built after the next merge. This
+     * repairs the links that are already published and indexed, and makes the
+     * failure visible instead of silent when nothing matches at all. */
+    function resolveHashId(raw) {
+      const id = decodeURIComponent(raw);
+      let hit = state.plans.find((p) => p.id === id);
+      if (hit) return hit;
+      const norm = (v) => String(v).replace(/[^0-9a-z|]/gi, "").toUpperCase();
+      const want = norm(id);
+      hit = state.plans.find((p) => norm(p.id) === want);
+      if (hit) return hit;
+      const [ein, pn] = want.split("|");
+      if (!ein || !pn) return null;
+      return state.plans.find((p) => {
+        const parts = norm(p.id).split("|");
+        return parts[0] === ein && parts[1] === pn;      // ticker may have changed
+      }) || null;
+    }
+
     // deep link: #plan=<id> opens that plan's report directly
     const m = location.hash.match(/^#plan=(.+)$/);
     if (m) {
-      const id = decodeURIComponent(m[1]);
-      const plan = state.plans.find((p) => p.id === id);
+      const plan = resolveHashId(m[1]);
       if (plan) {
         state.query = plan.company || "";
         $("search").value = state.query;
-        state.expanded.add(id);
+        state.expanded.add(plan.id);
         ensureDetail(plan);
+      } else {
+        // say so rather than showing the homepage as if nothing was asked for
+        state.deepLinkMiss = decodeURIComponent(m[1]);
       }
     }
     render();
@@ -1921,13 +1956,24 @@
     window.addEventListener("hashchange", () => {
       const hm = location.hash.match(/^#plan=(.+)$/);
       if (!hm) return;
-      const id = decodeURIComponent(hm[1]);
-      const plan = state.plans.find((p) => p.id === id);
-      if (!plan) return;
+      const plan = resolveHashId(hm[1]);
+      if (!plan) {
+        /* Clear what was on screen. Leaving the previously opened report up
+         * beside "that link didn't resolve" invites the reader to take the
+         * plan they can see for the plan they asked for — a different plan's
+         * assets and match formula under someone else's link. */
+        state.deepLinkMiss = decodeURIComponent(hm[1]);
+        state.expanded.clear();
+        state.query = "";
+        $("search").value = "";
+        render();
+        return;
+      }
+      state.deepLinkMiss = null;
       state.query = plan.company || "";
       $("search").value = state.query;
       state.expanded.clear();
-      state.expanded.add(id);
+      state.expanded.add(plan.id);
       ensureDetail(plan);
       render();
       const tr = document.querySelector(".plan-tr.open") || document.querySelector(".detail-tr");

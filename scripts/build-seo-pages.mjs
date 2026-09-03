@@ -131,7 +131,13 @@ for (const r of d.plans.slice(0, TOP_N)) {
   const provRows = fee && fee.p ? fee.p.slice(0, 6).map((p) =>
     `<tr><td>${esc(titleCase(p.n))}</td><td>${esc(decodeServices(p.c).slice(0, 3).join(", ") || "—")}</td><td class="num">${usd(p.d || 0)}</td></tr>`).join("") : "";
   const peers = peerNote(participants, adminRaw);
-  const deepLink = `${BASE}/#plan=${encodeURIComponent(ein.slice(0, 2) + "-" + ein.slice(2) + "|" + pn + "|" + (g(r, "ticker") || ""))}`;
+  /* The app builds plan.id as `ein|pn|ticker` with NO punctuation in the EIN.
+   * Writing a dashed EIN here made every "Open the interactive report" link on
+   * all 5,062 published pages resolve to nothing — the app matched the id
+   * exactly and silently fell back to the homepage. The app now resolves these
+   * tolerantly too, so already-indexed pages work, but the generator must emit
+   * the real id. */
+  const deepLink = `${BASE}/#plan=${encodeURIComponent(ein + "|" + pn + "|" + (g(r, "ticker") || ""))}`;
   const url = `${BASE}/p/${ein}-${pn}.html`;
   const desc = `${company} ${planType}: ${participants.toLocaleString("en-US")} participants, ` +
     `${usdB(assets)} in assets${ff.match ? `, employer match ${ff.match}` : ""}. From the plan's own Form 5500 filing.`;
