@@ -201,6 +201,15 @@ const SPECIMENS = [
    * plan's funds and merged them into one $16.2M row, 75% of the plan. */
   ["Physician's Computer (group header + cost column)", "20251010104425NAL0012869808001", 21684776,
     { found: true, n: 32, sum: 21672058 }],
+  /* v105: a NEGATIVE specimen — this parse must never be publishable. Comcast's
+   * public filing contains no Schedule H 4i table at all; its money sits in a
+   * master trust. We published a confident five-row lineup whose top row was
+   * "At fair value" at 91% of the shown sum, a dot-leader line lifted off the
+   * Statement of Net Assets, on a $19.69B plan. stmt:true is the assertion
+   * that matters here — the row count is beside the point, because the whole
+   * parse is the defect. */
+  ["Comcast (no 4i table; statement line published as a lineup)", "20251007174512NAL0008660608001", 19692061354,
+    { found: true, stmt: true }],
   /* v68: the filler-column class. Before the fix, all 28 of this plan's
    * holdings were stored as "VARIABLE 1,056,601 sh" — the (c) sub-columns
    * ("N/A  VARIABLE  N/A  ... sh  #") beat the real name in column (b).
@@ -374,11 +383,18 @@ for (const [label, ack, assets, expect] of SPECIMENS) {
   const p = parse4i(text, assets, "", "");
   const n = (p.funds || []).length;
   const sum = (p.funds || []).reduce((s, f) => s + (f.value || 0), 0);
+  /* `stmt` lets a specimen assert that a parse must NOT be publishable. Some
+   * of the worst defects are not a wrong row count but a plausible-looking
+   * lineup that should never have been shown at all — Comcast's filing has no
+   * 4i table and we published five rows off its Statement of Net Assets. Row
+   * count and sum cannot express that; the flag can. */
   const ok = p.found === expect.found &&
     (expect.n === undefined || n === expect.n) &&
-    (expect.sum === undefined || sum === expect.sum);
+    (expect.sum === undefined || sum === expect.sum) &&
+    (expect.stmt === undefined || !!p.stmt === expect.stmt);
   console.log(`GATE ${ok ? "OK  " : "FAIL"} ${label}: found=${p.found} n=${n} sum=${sum}` +
-    (ok ? "" : ` (expected found=${expect.found} n=${expect.n ?? "-"} sum=${expect.sum ?? "-"})`));
+    (expect.stmt === undefined ? "" : ` stmt=${!!p.stmt}`) +
+    (ok ? "" : ` (expected found=${expect.found} n=${expect.n ?? "-"} sum=${expect.sum ?? "-"}${expect.stmt === undefined ? "" : ` stmt=${expect.stmt}`})`));
   if (!ok) failed++;
 }
 

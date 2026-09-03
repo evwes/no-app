@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 104;
+export const PARSER_VERSION = 105;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -1592,10 +1592,42 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
   // legitimate provider-aggregate row among their real funds.
   const provAgg = isProviderAgg(funds);
 
+  /* v105: ONE ROW THAT IS NOT A FUND, CARRYING THE WHOLE PLAN.
+   *
+   * A menu is many holdings. When a single row is 90%+ of the shown sum AND
+   * that row is not even fund-shaped, what was parsed is an aggregate or a
+   * statement line, not a lineup — and publishing it puts a holding on the
+   * page that no participant can own.
+   *
+   * Comcast is the clearest: its public filing contains NO Schedule H 4i
+   * table at all (no "Identity of issue" header anywhere), its money sits in
+   * a master trust, and we published a confident 5-row lineup whose top row
+   * was "At fair value" at 91% — a dot-leader line lifted off the Statement
+   * of Net Assets, on a $19.69B plan. Others in the same shape: United
+   * Airlines "Investments Held in the Trust" 96%, Providence and Albertsons
+   * and Robert Bosch "Various (includes Registered Investment Companies…)"
+   * 100%, Altria "Master Trust" 100%, Alight "CUSIP:" 95%, WVU "b Total
+   * mutual funds" 92%.
+   *
+   * Measured across published lineups: of 373 whose top row is >=90% of the
+   * sum, 50 have a top row that is not fund-shaped — $83.9B of plan assets —
+   * and the other 323 ($34.8B) are plausible single-holding plans, which this
+   * must not touch. So the test is BOTH conditions, never dominance alone.
+   * The existing trustPtr rule misses these because it needs trust vocabulary
+   * and <=8 rows; "At fair value" is neither.
+   *
+   * Flagged as `stmt`, which the confidence predicate already refuses, so
+   * these become honest gaps with a recorded cause rather than a fabricated
+   * menu. */
+  const NOT_FUND_SHAPED = /^(?:at (?:fair|contract) value|investments?(?:,? at .*)?|total\b.*|various\b.*|master trust.*|investments? held in the trust.*|participants?[- ]directed.*|cusip:?.*|net assets.*|assets\b.*|cash(?: and cash equivalents)?|other\b.*|[a-z]\s+total\b.*|see (?:note|attach).*|interest[- ]bearing cash|value of interest in .*)$/i;
+  const topRow = funds.reduce((a, f) => (f.value > (a ? a.value : -1) ? f : a), null);
+  const aggOnly = !!topRow && allSum > 0 && topRow.value / allSum >= 0.9 &&
+    NOT_FUND_SHAPED.test(String(topRow.name || "").trim());
+
   // a statement-vocabulary fragment can still WIN when it's the only
   // candidate (the real schedule is scanned or absent) — surface the flag
   // so it can never be marked confident
-  return { found: true, thousands: best.scale > 1, sdba: sdbaOut, funds, ratio: best.ratio, ...(best.stmt || provAgg ? { stmt: 1 } : {}), ...(trustPtr ? { trustPtr: 1 } : {}), ...(sma ? { sma, smaKind } : {}) };
+  return { found: true, thousands: best.scale > 1, sdba: sdbaOut, funds, ratio: best.ratio, ...(best.stmt || provAgg || aggOnly ? { stmt: 1 } : {}), ...(trustPtr ? { trustPtr: 1 } : {}), ...(sma ? { sma, smaKind } : {}) };
 }
 
 /* ---- plan-feature extraction from the filing's audit notes ---------------- */

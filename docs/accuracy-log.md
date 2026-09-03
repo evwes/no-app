@@ -5939,3 +5939,50 @@ separately managed bond sleeve. So the data is faithful and the DISPLAY is
 what misleads: a page showing one giant aggregate reads as a fund lineup when
 no per-fund detail was ever filed. That belongs in the frontend labelling, not
 in the parser.
+
+## 2026-09-02 — One row that is not a fund, carrying the whole plan (v105)
+
+**Wrong.** A menu is many holdings. Fifty confident lineups — **$83.9B of plan
+assets** — published a "lineup" whose single largest row was 90% or more of the
+shown sum and was not even fund-shaped.
+
+Comcast is the clearest and the largest. Its public filing contains **no
+Schedule H 4i table at all** — the string "Identity of issue" does not appear
+anywhere in it — and the plan's money sits in a master trust. We published a
+CONFIDENT five-row lineup whose top row was "At fair value" at 91%: a
+dot-leader line lifted off the Statement of Net Assets, presented as the
+largest holding of a $19.69B plan. Others of the same shape: United Airlines
+"Investments Held in the Trust" 96% of $10.29B; Providence Health, Albertsons
+and Robert Bosch all "Various (includes Registered Investment Companies…)" at
+100%; Altria "Master Trust" 100%; Alight "CUSIP:" 95%; WVU Health "b Total
+mutual funds" 92%; MetLife "Participant-directed investments" 100%.
+
+**Change.** A parse whose top row is >=90% of the sum AND whose top row matches
+statement/aggregate vocabulary is flagged `stmt`, which the confidence
+predicate already refuses. These become honest gaps with a recorded cause
+instead of a fabricated menu.
+
+**Why BOTH conditions, and the number that forced it.** Of 373 confident
+lineups whose top row is >=90% of the sum, only 50 have a top row that is not
+fund-shaped. The other **323, holding $34.8B, are plausible single-holding
+plans** — a small plan whose whole balance sits in one collective trust is real
+and must keep its lineup. Dominance alone would have destroyed all 323. The
+existing trustPtr rule misses this class entirely because it requires trust
+vocabulary and <=8 rows, and "At fair value" is neither.
+
+**Proof.** Corpus diff over 184 filings: exactly 3 confidence losses — MetLife,
+Comcast, Providence — every one of them a documented fabrication, and no
+collateral loss anywhere. Gate green.
+
+**Prevention.** Comcast is a permanent NEGATIVE gate specimen, and the gate
+gained the ability to express one: `stmt: true` asserts that a parse must never
+be publishable. Row count and sum cannot say that, and the worst defects in this
+class are not a wrong count but a plausible-looking lineup that should never
+have been shown. scripts/audit-dominant-row.mjs keeps the population measurable
+between runs.
+
+**How it was found.** Not by an audit and not by a specimen. By asking, after
+MetLife turned out to be a faithful aggregate rather than a merge, how many
+other plans publish one row as their whole lineup — and then splitting that
+population by whether the dominant row is a fund at all. The question was
+cheap; nothing in the pipeline was asking it.
