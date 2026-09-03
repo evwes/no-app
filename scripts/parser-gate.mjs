@@ -182,6 +182,25 @@ const SPECIMENS = [
    * n drops and the fake row reappears at the top of the lineup. */
   ["Amgen (wrapped identity, generic description)", "20251009163950NAL0007320609001", 7720000000,
     { found: true, n: 33, sum: 7685297822 }],
+  /* v104: the TARGET-DATE VINTAGE class. "American Funds | American Funds 2010
+   * R6" — house in the identity, real fund in the description. v69's
+   * duplicate-identity guard removed the identity from the description and
+   * asked whether letters survived; "2010 r6" has one, so the description was
+   * blanked and all twelve vintages fell back to "American Funds" and merged
+   * into a single holding worth 43% of the plan. A vintage year is
+   * information. Measured: 272 published lineups carry a house-only row worth
+   * ≥25% of the shown sum; this recovers about 29% of them, none made worse.
+   * The decoy that must NOT move is the v69 case itself — a description that
+   * only repeats the identity plus a maturity date still yields the identity. */
+  ["W. L. Gore (house identity, vintage description)", "20250730154304NAL0002504883001", 2009619555,
+    { found: true, n: 31, sum: 1988919337 }],
+  /* v103: the GROUP-HEADER + COST-COLUMN class. "* Vanguard | Registered
+   * Investment Company" is a valueless group header, not the first line of a
+   * wrapped name, and "Participant Directed" is the Cost column's standing
+   * answer, not a description. Together they renamed all fifteen of this
+   * plan's funds and merged them into one $16.2M row, 75% of the plan. */
+  ["Physician's Computer (group header + cost column)", "20251010104425NAL0012869808001", 21684776,
+    { found: true, n: 32, sum: 21672058 }],
   /* v68: the filler-column class. Before the fix, all 28 of this plan's
    * holdings were stored as "VARIABLE 1,056,601 sh" — the (c) sub-columns
    * ("N/A  VARIABLE  N/A  ... sh  #") beat the real name in column (b).

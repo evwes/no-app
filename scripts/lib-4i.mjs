@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 102;
+export const PARSER_VERSION = 104;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -118,6 +118,19 @@ function cleanDesc(desc) {
    * a product. Same care for "fixed" (Fixed Annuity, Fixed Income). */
   d = d.replace(/\b(?:variable|fixed)\b(?!\s+(?:annuity|life|income|universal|account|fund|contract))/gi, " ");
   d = d.replace(/\b(?:n\s*\/\s*a|n\.?a\.?|not applicable|none)\b/gi, " ");
+  /* v103: the COST column's standing answer. Column (d) is Cost, and plans
+   * whose investments are participant-directed are permitted to leave it out;
+   * most write a dash, but many type the reason instead — "Participant
+   * Directed", "Participant-directed", "Cost not required". That phrase then
+   * sits where a description belongs, and it is letter-rich and two words, so
+   * it is preferred over the real fund name in column (c). Physician's
+   * Computer Company files fifteen Vanguard funds this way and every row was
+   * named "Participant Directed"; identical names then merge, so the whole
+   * menu became one holding. It is never a description of an investment, so
+   * strip it and let the name column win, exactly as with the N/A filler
+   * above. Anchored to the whole remaining cell so a real product containing
+   * the word (there is none in the corpus, but the guard is free) survives. */
+  d = d.replace(/^\s*(?:participants?[\s-]*directed(?:\s+investments?)?|cost\s+not\s+required|not\s+required)\s*$/gi, " ");
   d = d.replace(/(^|\s)#(\s|$)/g, " ");
   return d.replace(/[\s,;:-]+$/g, "").replace(/\s{2,}/g, " ").trim();
 }
@@ -301,6 +314,29 @@ export function parseRows(section, opts = {}) {
       // ("CORPORATE STOCK - COMMON" $9.7B) into the managed-account bucket,
       // so the vocabulary lives only here, on valueless lines
       if (/^(corporate stocks?|collective funds?|common stocks?|preferred stocks?|registered investment companies)(\s*[-–]\s*(common|preferred))?$/i.test(t)) { curSection = t; nameBuf = []; continue; }
+      /* v103: A GROUP HEADER, not the first line of a wrapped name. Filings
+       * that group a menu by manager print a valueless header row carrying the
+       * house in the identity column and the type in the description column,
+       * then indent the members beneath it:
+       *
+       *     * Vanguard                     Registered Investment Company
+       *                                    Vanguard Target Retirement 2025 Fund   ...
+       *
+       * Treated as a wrapped name, that header glues onto every member row, so
+       * `full` became "Vanguard Registered Investment Company Vanguard Target
+       * Retirement 2025 Fund" and the type-phrase cut reduced it to "Vanguard"
+       * — one name for the whole menu, which then merged into a single
+       * holding. A line with BOTH a house identity and a type-only
+       * description describes a group, never an investment, so it ends the
+       * name buffer instead of joining it. Requires a real description column
+       * (3+ space gap), so a genuinely wrapped name — which has no second
+       * column on its first line — is untouched. */
+      {
+        const gh = splitNameDesc(t.trim());
+        if (gh.descCol && typeOnly(cleanDesc(gh.descCol)) && isHouseName(gh.nameCol)) {
+          curSection = gh.nameCol.trim(); nameBuf = []; continue;
+        }
+      }
       if (t.length < 90 && !/^\d+$/.test(t)) nameBuf.push(t);
       if (nameBuf.length > 3) nameBuf = nameBuf.slice(-3);
       continue;
@@ -396,8 +432,35 @@ export function parseRows(section, opts = {}) {
        * The duplicate case is narrower: removing the identity from the
        * description leaves no WORDS behind, only dates and punctuation. */
       if (a.includes(b)) {
-        const residue = a.split(b).join(" ").replace(/[^a-z]/g, "");
-        if (residue.length < 4) dClean = "";
+        /* v104: A VINTAGE IS INFORMATION. The residue test asked whether any
+         * LETTERS survived removing the identity from the description, which
+         * is right for v69's case — "01-29-2031 BRITISH COLUMBIA…1.3%
+         * 01-29-2031", where the residue is the same maturity date twice and
+         * carries nothing. It is wrong for the commonest target-date layout
+         * there is:
+         *
+         *     American Funds     American Funds 2010 R6
+         *     American Funds     American Funds 2015 R6
+         *
+         * The residue "2010 r6" has exactly one letter, so the description was
+         * blanked and every vintage fell back to the house. All twelve then
+         * merged on the name "American Funds" into one holding worth 43% of
+         * W. L. Gore's $2.0B plan. Measured across published lineups: 273
+         * plans and $10.3B carry a row named only after a house holding at
+         * least a quarter of the lineup.
+         *
+         * So strip what v69 actually meant by "no information" — dates and
+         * rates — and then ask whether anything identifying is left. A
+         * four-digit year or a share-class token is as distinguishing as a
+         * word: it is the entire difference between one vintage and the next. */
+        const residue = a.split(b).join(" ");
+        const stripped = residue
+          .replace(/\d{1,2}\s*[-\/]\s*\d{1,2}\s*[-\/]\s*\d{2,4}/g, " ")   // 01-29-2031
+          .replace(/\d+(?:\.\d+)?\s*%/g, " ")                              // 1.3%
+          .replace(/\bdue\b|\bmaturing\b/g, " ");
+        const letters = stripped.replace(/[^a-z]/g, "").length;
+        const vintage = /(?:19|20)\d{2}\b/.test(stripped) || /\b[a-z]{1,3}\d{1,2}\b/.test(stripped);
+        if (letters < 4 && !vintage) dClean = "";
       }
     }
     let name;

@@ -5875,3 +5875,67 @@ estimate for THAT bucket, but it understates the fix overall: the sample
 contained no Emory-class filing, and Emory alone was a $5.5B plan publishing a
 fabricated largest holding. A sample sized for one bucket does not measure a
 change's whole effect.
+
+## 2026-09-02 — Two more merge causes: the cost column as a description (v103), and a vintage judged uninformative (v104)
+
+Causes four and five of the same fabrication. In every one of them several real
+holdings collapse onto a shared name and are summed into a holding that does
+not exist.
+
+**v103 — the group header and the cost column, together.** Physician's Computer
+Company files fifteen Vanguard funds like this:
+
+```
+* Vanguard                     Registered Investment Company
+                               Vanguard Target Retirement 2025 Fund   Participant Directed   2,585,344
+```
+
+Two independent errors on the same row. The header line was treated as the
+first line of a WRAPPED NAME, so it glued onto every member and the type-phrase
+cut reduced the result to "Vanguard". And "Participant Directed" is column (d),
+Cost — the standing answer plans give when cost is omitted for
+participant-directed investments — but it sat where a description belongs and
+was letter-rich enough to be preferred over the real fund name in column (c).
+Result: 15 rows, one of them "Vanguard" at $16,265,518, **75% of the plan**, and
+not confident. Now 32 rows at ratio 1.000, confident, every fund named.
+Fixes: a valueless line carrying a house identity AND a type-only description
+is a group header, so it ends the name buffer instead of joining it; and the
+cost-column phrases are stripped like the existing N/A filler.
+
+**v104 — a vintage is information.** W. L. Gore files
+"American Funds | American Funds 2010 R6", one row per vintage. v69's
+duplicate-identity guard removes the identity from the description and asks
+whether any LETTERS survive; "2010 r6" has exactly one, so the description was
+blanked and all twelve vintages fell back to the house and merged into
+**$852,278,192, 43% of a $2.0B plan**. That guard is right for what it was
+built for — "01-29-2031 BRITISH COLUMBIA…1.3% 01-29-2031", where the residue is
+one maturity date twice — so the fix strips what v69 actually meant by "no
+information" (dates, rates) and then accepts a four-digit year or a share-class
+token as identifying. It is the entire difference between one vintage and the
+next. W. L. Gore: 20 rows -> 31, the merged row gone.
+
+**Size, measured on published data and then on filings.** 272 confident
+lineups carry a row named only after a house holding >=25% of the shown sum,
+$10.3B of plan assets. A stratified 14-filing sample re-parsed under v104:
+**4 fixed, 10 unchanged, 0 made worse** — about 29% of the class, and the
+largest plan in it is among the four. The ten unchanged carry three to nine
+house-named rows each, a different layout, and are NOT claimed as fixed.
+
+**Prevention.** Both filings are permanent gate specimens asserted on row count
+and sum. The v69 case is the decoy that must not move, and it does not.
+
+**Method note, because it keeps being the same note.** For the third time today
+the cause I reasoned from the layout was wrong, and the cause printed by the
+parser's own loop state was right. Reading the text said Physician's was losing
+its name to nameBuf; the trace showed dUsable was true and the name was coming
+from the COST column. Instrument first.
+
+**Not fixed, and diagnosed rather than left unknown.** MetLife Group ($8.32B)
+publishes one row, "Participant-directed investments" at $8,278,095,000, 99.5%
+of the plan. That is not a merge — the filing itself reports the
+participant-directed portion in aggregate and states "Cost has been omitted
+with respect to Participant-directed investments". The remaining 79 rows are a
+separately managed bond sleeve. So the data is faithful and the DISPLAY is
+what misleads: a page showing one giant aggregate reads as a fund lineup when
+no per-fund detail was ever filed. That belongs in the frontend labelling, not
+in the parser.
