@@ -6032,3 +6032,33 @@ that appear on the form.
 as the parser. Before believing a bucket, open the filing at the TOP of the
 bucket you are most pleased to have found; if the script is fooling itself, that
 is where it shows.
+
+## 2026-09-03 — Three copies of one definition, three different numbers
+
+**Wrong.** The check for a fabricated holding — a row whose name is only an
+investment type — existed in three places with three vocabularies:
+`audit-generic-names.mjs`, `diff-lineups.mjs`, and the new run-time check in
+`audit-data.mjs`. On the same store they reported **45 plans** and **206
+plans**. Both were "correct"; neither was a fact about the data.
+
+This is the same failure as the `provider` / `confident` field-name bugs, one
+level up: a number that describes the query being confidently reported as a
+number that describes the world. It would have been worse than those, because
+the audit was about to set a HIGH-finding threshold against the wrong baseline
+and fire on every run.
+
+**Change.** `GENERIC_TYPE_NAME` and `NOT_FUND_SHAPED` are now exported from
+`lib-4i.mjs` and imported by all three consumers. One definition, three
+readers. Baselines on v104 data: **206 generic-named, 50 dominant non-fund**.
+
+**Correction to the earlier entries.** The v100–v102 log entries record the
+generic-name population falling 63 → 45 plans and $19.0B → $1.7B. That
+IMPROVEMENT is real — each end was measured with the same narrow copy — but the
+absolute population under the shared definition is 206 / $48.1B. Where a number
+depends on a definition, the definition has to travel with it.
+
+**Prevention.** The check now runs inside `audit-data.mjs` on every merge and
+feeds the auto-managed HIGH-findings issue, instead of running when someone
+remembers. Not one of the five v100–v105 fabrications tripped an existing
+check: they were confident, their ratios sat inside the band, and their names
+looked like something. The shape is the check.

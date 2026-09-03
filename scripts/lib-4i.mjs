@@ -73,6 +73,57 @@ const SKIP_ROW = new RegExp("^(total|subtotal|grand total|schedule|page \\d|form
 // "December 31, 2024" style heading lines — the year parses as a value otherwise
 const DATE_LINE = /(january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,2},?(\s+(19|20)\d\d)?(\s+and)?\s*$/i;
 
+/* ---------------------------------------------------------------------------
+ * TRACE — why this is in the library and not in a throwaway script.
+ *
+ * The standing rule is to instrument before believing a cause, and it has
+ * earned itself repeatedly: on 2026-09-02/03 the cause reasoned from the
+ * layout was wrong four times running, and the cause printed from this loop's
+ * actual state was right every time. But each of those investigations was done
+ * by copying lib-4i.mjs to /tmp, injecting a console.log, and importing the
+ * copy — four hand-patches in two days, each one a chance to instrument a
+ * DIFFERENT file from the one production runs.
+ *
+ * So the hooks live here, off by default and costing one boolean test:
+ *
+ *   WAMPO_TRACE=rows    name resolution per row: nameBuf, the two columns,
+ *                       the joined identity, the cleaned description, which
+ *                       side won and why
+ *   WAMPO_TRACE=cands   every region candidate with its score and penalties
+ *   WAMPO_TRACE=all     both
+ *   WAMPO_TRACE_MATCH=  only emit rows whose value or name contains this
+ *                       (a bare number matches the value exactly)
+ *
+ * Example — the v103 diagnosis, which took a hand-patch, is now:
+ *   WAMPO_TRACE=rows WAMPO_TRACE_MATCH=2585344 node scripts/trace-filing.mjs <ack>
+ */
+/* The two shapes a PUBLISHED holding must never have, exported so that the
+ * parser, the run-time audit and the standalone audits all count the same
+ * thing. They did not: three copies of this vocabulary drifted apart and the
+ * same store reported 45 fabricated lineups by one definition and 206 by
+ * another, which is a measurement of the query rather than the data. One
+ * definition, three consumers.
+ *
+ *   GENERIC_TYPE_NAME  a name that is ONLY an investment type. Never a fund;
+ *                      when several rows share one, they have merged.
+ *   NOT_FUND_SHAPED    a statement line item or aggregate. Legitimate for a
+ *                      filing to report, never legitimate as a plan's whole
+ *                      published lineup.
+ */
+export const GENERIC_TYPE_NAME = /^(?:total )?(?:registered investment compan(?:y|ies)|(?:common[\/ ]?)?collective (?:investment )?trust(?: fund| portfolio)?|collective trust fund|mutual funds?|common (?:and preferred )?stocks?|corporate stocks?|pooled separate accounts?|separate accounts?|guaranteed (?:investment|interest) contracts?|group annuity contracts?)$/i;
+export const NOT_FUND_SHAPED = /^(?:at (?:fair|contract) value|investments?(?:,? at .*)?|total\b.*|various\b.*|master trust.*|investments? held in the trust.*|participants?[- ]directed.*|cusip:?.*|net assets.*|assets\b.*|cash(?: and cash equivalents)?|other\b.*|[a-z]\s+total\b.*|see (?:note|attach).*|interest[- ]bearing cash|value of interest in .*)$/i;
+
+const TRACE = process.env.WAMPO_TRACE || "";
+const TRACE_ROWS = TRACE === "rows" || TRACE === "all";
+const TRACE_CANDS = TRACE === "cands" || TRACE === "all";
+const TRACE_MATCH = process.env.WAMPO_TRACE_MATCH || "";
+const traceHit = (value, ...names) => {
+  if (!TRACE_MATCH) return true;
+  if (String(value) === TRACE_MATCH) return true;
+  const n = TRACE_MATCH.toLowerCase();
+  return names.some((s) => String(s || "").toLowerCase().includes(n));
+};
+
 /* Strip trailing column values (cost, shares, rates) from a row body without
  * eating year-like name tails such as "RETIREMENT 2045". */
 function stripTrailingColumns(body) {
@@ -554,6 +605,15 @@ export function parseRows(section, opts = {}) {
     const dUsable = dClean && (!typeOnly(dClean) || (catDesc && isHouseName(nc))) &&
       (dLetters >= 8 ? dClean.split(/\s+/).length >= 2
         : shortIdentity && dLetters >= 4 && (/\d/.test(dClean) || dClean.split(/\s+/).length >= 2));
+    if (TRACE_ROWS && traceHit(value, nameCol, descCol, dClean, full)) {
+      console.error(`[row] value=${value}
+   nameBuf = ${JSON.stringify(nameBuf)}
+   nameCol = ${JSON.stringify(nameCol)}
+   descCol = ${JSON.stringify(descCol)}
+   full    = ${JSON.stringify(full)}
+   dClean  = ${JSON.stringify(dClean)}  typeOnly=${dClean ? typeOnly(dClean) : "-"} catDesc=${!!catDesc} house=${isHouseName(nc)}
+   -> name from ${dUsable ? "DESCRIPTION" : "IDENTITY"}`);
+    }
     if (dUsable) {
       name = dClean;
       /* v67: KEEP the identity column instead of discarding it. This branch
@@ -1507,6 +1567,11 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
            * carrying one more row. */
           - (va.repair ? 0.05 : 0)
           - (gainLast && parsed.funds.length >= 60 ? 0.2 : 0);
+        if (TRACE_CANDS) {
+          console.error(`[cand] rows=${String(pFunds.length).padStart(3)} ratio=${ratio.toFixed(3).padStart(7)} scale=${scale} score=${score.toFixed(4).padStart(9)}` +
+            ` stmt=${isStatement ? 1 : 0} prov=${isProvPage ? 1 : 0} code=${isCodePage ? 1 : 0} summary=${isSummary ? 1 : 0} repair=${va.repair ? 1 : 0}` +
+            `  top=${JSON.stringify((pFunds[0] || {}).name || "").slice(0, 46)}`);
+        }
         if (!best || score > best.score) {
           best = { score, ratio, scale, stmt: isStatement, ...parsed, funds: pFunds, totalValue: pTotal };
         }
@@ -1619,7 +1684,6 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
    * Flagged as `stmt`, which the confidence predicate already refuses, so
    * these become honest gaps with a recorded cause rather than a fabricated
    * menu. */
-  const NOT_FUND_SHAPED = /^(?:at (?:fair|contract) value|investments?(?:,? at .*)?|total\b.*|various\b.*|master trust.*|investments? held in the trust.*|participants?[- ]directed.*|cusip:?.*|net assets.*|assets\b.*|cash(?: and cash equivalents)?|other\b.*|[a-z]\s+total\b.*|see (?:note|attach).*|interest[- ]bearing cash|value of interest in .*)$/i;
   const topRow = funds.reduce((a, f) => (f.value > (a ? a.value : -1) ? f : a), null);
   const aggOnly = !!topRow && allSum > 0 && topRow.value / allSum >= 0.9 &&
     NOT_FUND_SHAPED.test(String(topRow.name || "").trim());

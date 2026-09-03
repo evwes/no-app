@@ -23,6 +23,7 @@ import { execFileSync } from "node:child_process";
 import os from "node:os";
 import path from "node:path";
 import { loadPlans } from "./lib-schema.mjs";
+import { GENERIC_TYPE_NAME } from "./lib-4i.mjs";
 
 const ref = process.argv[2];
 if (!ref) { console.error("usage: node scripts/diff-lineups.mjs <git-ref>"); process.exit(2); }
@@ -43,11 +44,10 @@ const isConfident = (p) => p.found && p.funds.length >= 3 && (p.ratio || 0) > 0.
 /* a name that is nothing but an investment TYPE is never a real fund; when one
  * carries a large share of a lineup it is several holdings merged onto a
  * shared generic name */
-const GENERIC = /^(?:total )?(?:registered investment compan(?:y|ies)|(?:common[\/ ]?)?collective (?:investment )?trust(?: fund| portfolio)?|collective trust fund|mutual funds?|common (?:and preferred )?stocks?|corporate stocks?|pooled separate accounts?|separate accounts?|guaranteed (?:investment|interest) contracts?|group annuity contracts?)$/i;
 const fabricated = (p) => {
   if (!p.found || !p.funds.length) return 0;
   const sum = p.funds.reduce((s, f) => s + (+f.value || 0), 0) || 1;
-  return p.funds.filter((f) => GENERIC.test(String(f.name).trim()) && f.value / sum >= 0.15).length;
+  return p.funds.filter((f) => GENERIC_TYPE_NAME.test(String(f.name).trim()) && f.value / sum >= 0.15).length;
 };
 
 const P = loadPlans();

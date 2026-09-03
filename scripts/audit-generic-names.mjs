@@ -5,18 +5,18 @@
  * into one giant fake fund. State Farm: 55 Vanguard CITs -> one $18.0B row.
  * Any lineup we already publish containing such a name is showing wrong data. */
 import { readFileSync, readdirSync } from "node:fs";
-import { loadPlans, loadStatus } from "/home/user/no-app/scripts/lib-schema.mjs";
+import { loadPlans, loadStatus } from "./lib-schema.mjs";
+import { GENERIC_TYPE_NAME } from "./lib-4i.mjs";
 
-const GENERIC = /^(common[\/ ]?(collective )?trust( portfolio| fund)?|collective (investment )?trust( fund)?|registered investment compan(y|ies)|mutual fund|common stock|corporate stock|pooled separate account|separate account|interest[- ]bearing cash|participant loans?|value of interest in .{0,40}$|guaranteed investment contract)$/i;
 
-const P = loadPlans("/home/user/no-app/plans-all.json");
-const S = loadStatus("/home/user/no-app/lineups-status.json");
+const P = loadPlans();
+const S = loadStatus();
 const byAckPlan = new Map();
 for (const r of P.rows) byAckPlan.set(P.get(r, "ack"), r);
 
 let scanned = 0, hitPlans = 0, hitDollars = 0, hitRows = 0;
 const worst = [];
-const dir = "/home/user/no-app/data/lineups";
+const dir = "data/lineups";
 for (const f of readdirSync(dir)) {
   if (!f.endsWith(".json")) continue;
   const shard = JSON.parse(readFileSync(`${dir}/${f}`, "utf8"));
@@ -26,7 +26,7 @@ for (const f of readdirSync(dir)) {
     scanned++;
     const st = S.at(ack);
     if (!st || !st.c) continue;               // only lineups we actually PUBLISH
-    const bad = funds.filter((x) => GENERIC.test(String(x.name || "").trim()));
+    const bad = funds.filter((x) => GENERIC_TYPE_NAME.test(String(x.name || "").trim()));
     if (!bad.length) continue;
     const sum = funds.reduce((s, x) => s + (+x.value || 0), 0);
     const badSum = bad.reduce((s, x) => s + (+x.value || 0), 0);

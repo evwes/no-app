@@ -438,31 +438,57 @@ don't confuse them). Frontend: python http.server + Playwright at
 /opt/pw-browsers/chromium; verify TK page, tabs, filters, deep links
 (#plan=EIN|PN|TICKER).
 
-## Current state (2026-07-21)
+## Current state (2026-09-03)
 
-- Universe 110,555 plans (incl. ERISA 403(b)s); ~68.7k parseable filings
-  at parser v46 + OCR v2 (v46 2026-08-10: brokerage statement-class vocabulary [Galliano HIGH — junk-row removal promoted an OCR statement region into the confidence band]. v45 2026-08-10: "SUMMARY OF NET TRUST ASSETS" recordkeeper pages end the 4i region — the cents fix had made them readable and doubled region sums, losing real menus [Sierra Space gate specimen]. v44 2026-08-10, junk sweep of confident lineups:
-  comma-tolerant "Investments, at fair value" statement rows [631 lineups
-  affected, worst 97% of shown sum], expense-note nouns, possessive EIN
-  headings, page carry-forward subtotals [dedup summed them to fake $197M
-  funds], N/A///(see Note)/#/"- See"/trailing-0 name cleanup — the
-  trailing-0 strip is the Plexsys double-render dedup fix, recovers that
-  class. v43 same day, Eaton owner report: cents-tolerant
-  valueRe + $0.00/paren-negative/columnized-address row guards + trustPtr
-  flag — trust-interest-dominated parses [≤8 rows, ≥60% of sum] are never
-  confident, status carries tp:1; frontend never shows a trust-pointer as
-  last resort, search ranks word-boundary company matches first. v42
-  2026-08-09: spaced dot-leader recovery — Costco class. Gate is 15 live
-  specimens. Known residual: NYC-Carpenters class where a Statement of
-  Net Assets outscores real per-class 4i pages — region-scoring work);
-  53.2k confident lineups pre-v43, 60.3k with features.
-  v34/v35 (2026-08-03): repeated-page dedup (schedules render twice per
-  filing!), EIN-heading + dotted-leader junk rows, statement-page penalty
-  — net +817 confident lineups; statement fragments no longer displace
-  real menus. Known residuals: 2 cipher-text junk-confident filings
-  (S@CUrities class), a handful of legit dotted-leader menus losing rows
-  (one confident Vanguard menu 17→12 — v36 candidate: strip leaders
-  instead of dropping when the de-leadered name isn't form vocabulary).
+- **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
+  participants at either end of the plan year), of which **68,259 are
+  full-form** filers; 68,767 parse-status entries. **Parser v105, OCR v8.**
+  **59,574 confident lineups, 62,651 with features.** Numbers move every run —
+  `docs/coverage-history.jsonl` is the source of truth, and the merge job
+  appends to it.
+- **Parser history lives in `docs/accuracy-log.md`, not here.** Every version
+  is recorded there with what was wrong, the change, and the prevention. This
+  section previously carried a wall of v34-v46 detail that read as current
+  while production was sixty versions ahead; do not rebuild it. What belongs
+  here is the state a new session needs before it acts.
+- **The v100-v105 arc (2026-09-02/03), because it is one defect with five
+  causes and the sixth will look like the others.** In each, several real
+  holdings collapsed onto a SHARED NAME and were summed into a holding that
+  does not exist, published as a confident lineup:
+  v100 wrapped identity judged by its last line only ("Lending*" -> Amgen's
+  $3.59B "Collective Trust Fund"); v101 the schedule's own unlabelled GRAND
+  TOTAL parsed as a holding (Fremont 1.974x ratio; also cleared Emory's "See
+  attachment" at 99.7% of $5.54B); v102 a category description outranking
+  SHORT real fund names ("Explorer", "Wellington" -> SAP's $2.4B row);
+  v103 a group header glued into names, plus the COST column's "Participant
+  Directed" read as a description; v104 a vintage judged uninformative
+  ("American Funds 2010 R6" minus the house leaves "2010 r6") -> W. L. Gore's
+  $852M row; v105 a single NON-FUND row carrying >=90% of the sum (Comcast
+  published "At fair value" at 91% of a $19.69B plan whose filing contains no
+  4i table at all). Audits: `audit-generic-names.mjs` fell 63 plans/$19.0B ->
+  45/$1.7B across v100-v102; `audit-dominant-row.mjs` holds the v105
+  population. **Neither may grow.**
+- **Diagnosing a defect is a fixed loop now, and the tools exist —
+  do not rebuild them.** `gap-census.mjs` buckets the full-form universe by
+  which field is missing; `size-class.mjs` buckets a set of acks by WHY the
+  parse fails; `size-features.mjs` does the same for missing match/vesting;
+  `trace-filing.mjs` runs the production parser over one filing and prints its
+  working (`WAMPO_TRACE=rows|cands`, `WAMPO_TRACE_MATCH=<value|substring>`);
+  `diff-lineups.mjs` diffs lineups against any git ref over the local corpus
+  and exits non-zero if a change INTRODUCES a fabricated row.
+- **Known residuals, live:** the no-heading class (~20% of the 1,289-plan
+  no-cause bucket); band-high (~12.5%, $14.3B - UPS, Nuvance, Marriott
+  Vacations, A O Smith); State Farm 20251010104106NAL0007965633001, whose real
+  55-fund Vanguard menu loses region scoring to a Statement of Net Assets page;
+  323 dominated-but-fund-shaped lineups ($34.8B) believed to be honest
+  single-holding plans but not yet confirmed; 2 cipher-text junk-confident
+  filings (S@CUrities class).
+- **NOT worth parser work (measured 2026-09-03):** features missing though the
+  lineup parsed. 1,887 plans and 1.86M participants looks like the biggest
+  bucket on the board and is not ours — ~67% have no attachment prose in the
+  public copy, 27% have notes that never discuss contributions, only ~7% is a
+  real parser gap. Dollar General (201,691 participants) is the type case: its
+  public copy holds the auditors' report and the 4i table and then stops.
   GitHub cron note: Monday 06:00 runs fire HOURS late (Jul 27 fired
   10:02) — don't diagnose a dropped schedule before ~noon UTC. Trust links
   898 (193 via EIN fallback); Elevance has NO MTIA filing in EFAST2 at all

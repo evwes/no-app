@@ -5,8 +5,8 @@
  * doubled summary pages — was visible as a violated identity long before a
  * human noticed it on the site. This prints violations after each merge so
  * the run log surfaces them. Informational: it never fails the build. */
-import { readFileSync, writeFileSync, appendFileSync } from "fs";
-import { JUNK_NAME_RE } from "./lib-4i.mjs";
+import { readFileSync, writeFileSync, appendFileSync, readdirSync } from "fs";
+import { JUNK_NAME_RE, GENERIC_TYPE_NAME, NOT_FUND_SHAPED } from "./lib-4i.mjs";
 
 const d = JSON.parse(readFileSync("plans-all.json", "utf8"));
 const F = d.fields; const ix = Object.fromEntries(F.map((f, i) => [f, i]));
@@ -227,6 +227,53 @@ try {
     if (share < 50) flag("high", "fee-codes", `only ${share.toFixed(1)}% of Sch C provider rows carry service codes — codes ingestion is broken (child-table join?)`);
   }
 } catch (e) { console.warn("fee-shard audit skipped: " + e.message); }
+
+/* FABRICATED HOLDINGS — the v100-v105 class, checked every run instead of
+ * whenever someone remembers to run the audit scripts by hand.
+ *
+ * Five separate parser causes over 2026-09-02/03 all produced the same harm:
+ * several real holdings collapsing onto a SHARED NAME and summed into one
+ * holding that does not exist, published as a confident lineup. Amgen showed a
+ * $3.59B "Collective Trust Fund"; SAP a $2.4B "Registered investment company";
+ * W. L. Gore an $852M "American Funds"; Comcast published "At fair value" at
+ * 91% of a $19.69B plan whose filing contains no 4i table at all.
+ *
+ * Not one of these tripped an existing check. They were confident, their ratios
+ * were inside the band, and their names looked like something. So the shape
+ * itself is the check: a row whose NAME is only an investment type or a bare
+ * house, or a single non-fund row carrying almost the whole plan.
+ *
+ * BASELINES, measured 2026-09-03 on v104 data with the SHARED definitions in
+ * lib-4i (GENERIC_TYPE_NAME, NOT_FUND_SHAPED): **206 generic-named, 50
+ * dominant non-fund**. Those exports exist because three copies of this
+ * vocabulary had drifted and the same store reported 45 by one definition and
+ * 206 by another — a measurement of the query, not the data. Earlier figures
+ * in the accuracy log (63 -> 45 plans) used the narrower copy; the IMPROVEMENT
+ * they record is real because each end was measured the same way, but the
+ * absolute population is the number here. Thresholds sit just above baseline
+ * so a rise fires and normal drift does not. */
+try {
+  let genericPlans = 0, dominantPlans = 0;
+  const worstGeneric = [], worstDominant = [];
+  {
+    // entriesByAckCov already holds every lineup entry, loaded above — a second
+    // pass over 64 shards would double the audit's IO for nothing
+    for (const [ack, e] of Object.entries(entriesByAckCov)) {
+      if (!e || !e.confident || !Array.isArray(e.funds) || !e.funds.length) continue;
+      const sum = e.funds.reduce((a, x) => a + (+x.value || 0), 0) || 1;
+      const top = e.funds.reduce((a, x) => ((+x.value || 0) > (a ? +a.value : -1) ? x : a), null);
+      const genericShare = e.funds.filter((x) => GENERIC_TYPE_NAME.test(String(x.name).trim()))
+        .reduce((a, x) => a + (+x.value || 0), 0) / sum;
+      if (genericShare >= 0.25) { genericPlans++; if (worstGeneric.length < 6) worstGeneric.push(ack); }
+      if (top && (+top.value || 0) / sum >= 0.9 && NOT_FUND_SHAPED.test(String(top.name).trim())) {
+        dominantPlans++; if (worstDominant.length < 6) worstDominant.push(`${ack} ("${String(top.name).slice(0, 34)}")`);
+      }
+    }
+  }
+  console.log(`\n== FABRICATED-HOLDING SHAPES: ${genericPlans} generic-named, ${dominantPlans} dominant non-fund`);
+  if (genericPlans > 230) flag("high", "fabricated-name", `${genericPlans} published lineups carry a bare investment-type name holding >=25% of the shown sum (baseline 206 on v104 data) — several real funds have merged onto one name: ${worstGeneric.join(" ")}`);
+  if (dominantPlans > 60) flag("high", "fabricated-name", `${dominantPlans} published lineups are one non-fund row carrying >=90% of the sum (baseline 50 on v104 data) — that is not a menu: ${worstDominant.join(" ")}`);
+} catch (e) { console.warn("fabricated-holding audit skipped: " + e.message); }
 
 console.log(`\naudit: ${statTotal} plans, ${entries} lineup entries (${confident} confident)`);
 for (const sev of ["high", "warn"]) {
