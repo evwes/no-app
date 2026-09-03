@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 105;
+export const PARSER_VERSION = 106;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -1296,7 +1296,12 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
   if (!starts.length) {
     const trusteeHead = /^(?:schedule|statement)\s+of\s+(?:portfolio\s+)?investments\b/i;
     for (let i = 0; i < lines.length; i++) if (trusteeHead.test(lines[i].trim())) starts.push(i);
-    if (!starts.length) return { found: false };
+    /* v106: say WHY. These two returns are the difference between "no heading
+     * anywhere seeded a region" and "headings fired but nothing scored as a
+     * table", which are different defects with different fixes — and until now
+     * both reached the status store as the same silence. Diagnosing them meant
+     * re-downloading and re-parsing filings the pipeline had already read. */
+    if (!starts.length) return { found: false, why: "nohead" };
     trusteeMode = true;
   }
 
@@ -1578,7 +1583,7 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
       }
     }
   }
-  if (!best) return { found: false };
+  if (!best) return { found: false, why: "noregion" };
   let funds = best.scale > 1 ? best.funds.map((f) => ({ ...f, value: f.value * best.scale })) : best.funds;
 
   // sub-$10k rows are residue (leaked years, currency cents), not menu

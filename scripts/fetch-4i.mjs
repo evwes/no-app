@@ -331,7 +331,7 @@ let fbRescued = 0; // filings whose newest public copy is gone, read from the pr
 const delta = { status: {}, entries: {} };
 function record(plan, entry, features) {
   if (features) entry.features = features;
-  const meta = { pv: PARSER_VERSION, ov: OCR_VERSION, c: entry.confident ? 1 : 0, s: entry.sdba ? 1 : 0, ...(features ? { f: 1 } : {}), ...(entry.error ? { e: entry.error } : {}), ...(entry.fb ? { fb: entry.fb } : {}), ...(entry.featFb ? { ffb: entry.featFb } : {}), ...(entry.trustPtr ? { tp: 1 } : {}) };
+  const meta = { pv: PARSER_VERSION, ov: OCR_VERSION, c: entry.confident ? 1 : 0, s: entry.sdba ? 1 : 0, ...(entry.dx ? { dx: entry.dx } : {}), ...(entry.rw !== undefined ? { rw: entry.rw } : {}), ...(entry.rt !== undefined ? { rt: entry.rt } : {}), ...(features ? { f: 1 } : {}), ...(entry.error ? { e: entry.error } : {}), ...(entry.fb ? { fb: entry.fb } : {}), ...(entry.featFb ? { ffb: entry.featFb } : {}), ...(entry.trustPtr ? { tp: 1 } : {}) };
   status.plans[plan.ack] = meta;
   delta.status[plan.ack] = meta;
   const keep = (entry.confident && entry.funds.length) || features;
@@ -339,6 +339,40 @@ function record(plan, entry, features) {
   const b = buckets[shardOf(plan.ack)];
   if (keep) b[plan.ack] = entry;
   else delete b[plan.ack];
+}
+
+/* DIAGNOSIS — record WHY a filing did not produce a publishable lineup, at the
+ * moment the parser already knows, instead of rediscovering it later.
+ *
+ * The 1,289-plan "no cause recorded" bucket existed because this information
+ * was computed on every run and thrown away. Diagnosing it meant re-downloading
+ * filings the pipeline had just read, and it could only ever be SAMPLED — 40
+ * of 1,289 — so every bucket estimate carried sampling error and every deep
+ * dive started with a fresh download. Two fields per ack remove that entirely:
+ * the whole population is bucketed by cause, exactly, for free.
+ *
+ *   dx  one of: nohead noregion stmt trust few band-lo band-hi narrow
+ *   rw  rows the winning region produced
+ *   rt  ratio x100 (holdings sum against plan assets)
+ *
+ * Confident parses carry no dx — the absence IS the good case, and writing a
+ * code for it would double the store for nothing.
+ */
+function diagnose(parsed, confident) {
+  if (confident) return {};
+  if (!parsed.found) return { dx: parsed.why || "noregion" };
+  const rows = parsed.funds.length;
+  const ratio = parsed.ratio || 0;
+  const out = { rw: rows, rt: Math.round(ratio * 100) };
+  if (parsed.stmt) return { dx: "stmt", ...out };
+  if (parsed.trustPtr) return { dx: "trust", ...out };
+  if (rows < 3) return { dx: "few", ...out };
+  if (ratio <= 0.45) return { dx: "band-lo", ...out };
+  if (ratio >= 1.6) return { dx: "band-hi", ...out };
+  /* 3-4 rows inside the wide band but outside the tight one: the parse is
+   * plausible and simply too thin to trust, which is a different answer from
+   * "the numbers are wrong" and deserves its own bucket */
+  return { dx: "narrow", ...out };
 }
 
 /* lineup confidence: shared by the primary and fallback attempts */
@@ -610,12 +644,13 @@ for (const plan of work) {
     // features rescued from a prior-year filing must say so: a match formula
     // can change between plan years, and the reader is entitled to know which
     // year's notes they are reading
-    record(plan, { confident: false, error: "no-section", funds: [], ...(featFb ? { featFb, fbAck: fbUsed.a } : {}) }, features);
+    record(plan, { confident: false, error: "no-section", funds: [], ...diagnose(parsed, false), ...(featFb ? { featFb, fbAck: fbUsed.a } : {}) }, features);
     continue;
   }
   const ratio = parsed.ratio || 0;
   const confident = isConfident(parsed);
   record(plan, {
+    ...diagnose(parsed, confident),
     ack: plan.ack,
     ticker: plan.ticker,
     planYear: fbUsed ? fbUsed.y : plan.planYear,

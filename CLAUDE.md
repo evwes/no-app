@@ -556,3 +556,40 @@ don't confuse them). Frontend: python http.server + Playwright at
   so form-only PDFs skip download+scan entirely on re-parses; (3) sort
   OCR-heavy acks first in shard work lists so the matrix balances instead
   of one shard tail-dragging.
+
+## The gap method (2026-09-03) — diagnose at parse time, not by re-download
+
+The gap work was serial and expensive: pick a bucket, download 30-40 filings,
+re-parse them, infer a cause distribution with sampling error, then download the
+interesting ones again to investigate. The pipeline had already read every one
+of those PDFs and thrown the reason away. Four things fix that, and together
+they are the method:
+
+1. **The parser records WHY (v106).** `parse4i` returns `why: "nohead" |
+   "noregion"`, and `fetch-4i`'s `diagnose()` writes a compact cause into
+   `lineups-status.json` for any ack that does not yield a publishable lineup:
+   `dx` (nohead / noregion / stmt / trust / few / band-lo / band-hi / narrow)
+   plus `rw` rows and `rt` ratio x100. Confident parses carry no `dx` — absence
+   is the good case. **Cost: two small fields per non-confident ack. Benefit:
+   the ENTIRE gap population is bucketed exactly, for free, with no downloads
+   and no sampling error.** `gap-census.mjs` reads `dx` and falls back to the
+   old inference for pre-v106 data, labelling it as such.
+2. **`trace-filing.mjs` + `WAMPO_TRACE`** replace hand-patching a copy of the
+   parser. `WAMPO_TRACE=rows|cands`, `WAMPO_TRACE_MATCH=<value|substring>`,
+   `--vs <ref>` to compare versions on one filing.
+3. **`docs/defect-specimens.json` pins one filing per solved class**, and
+   `diff-lineups.mjs` tops the corpus up from it before comparing. The corpus is
+   sampled by assets, so it holds what is common rather than what is broken:
+   the tool reported "no changes" for v101, v103 AND v104 because none of those
+   classes were in it. With the pins it immediately showed Physician's Computer
+   gaining confidence 15->32 rows and W. L. Gore moving 20->31. **Add a specimen
+   whenever a version fixes a class; never remove one.**
+4. **`audit-data.mjs` counts the fabricated shapes every merge** against the
+   shared `GENERIC_TYPE_NAME` / `NOT_FUND_SHAPED` exports, feeding the
+   auto-managed HIGH issue. Baselines on v104 data: 206 generic-named, 50
+   dominant non-fund.
+
+**The order of work, once dx is populated:** read the census, take the largest
+bucket by participants that is OURS, pull its acks straight from `dx` (no
+sampling), trace two or three, fix, gate, `diff-lineups`, re-read the census.
+A bucket that shrinks is proof; a bucket that does not is a wrong diagnosis.

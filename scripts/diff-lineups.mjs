@@ -18,7 +18,7 @@
  * Usage: node scripts/diff-lineups.mjs <git-ref>     # e.g. the previous version
  *        CORPUS_DIR=/tmp/wampo-corpus (default)
  */
-import { readFileSync, readdirSync, writeFileSync, mkdtempSync } from "node:fs";
+import { readFileSync, readdirSync, writeFileSync, mkdtempSync, existsSync, unlinkSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import os from "node:os";
 import path from "node:path";
@@ -52,6 +52,31 @@ const fabricated = (p) => {
 
 const P = loadPlans();
 const byAck = P.byAck();
+
+/* ENSURE THE SOLVED CLASSES ARE IN THE COMPARISON. The corpus is sampled by
+ * assets, so it contains whatever is common rather than whatever is broken:
+ * this tool reported "no changes" for v101, v103 and v104 because not one of
+ * those defect classes was in it, and three fixes shipped measured only by a
+ * single filing each. docs/defect-specimens.json pins one filing per class;
+ * anything missing is fetched once and cached into the corpus. */
+try {
+  const spec = JSON.parse(readFileSync("docs/defect-specimens.json", "utf8")).specimens;
+  let fetched = 0;
+  for (const sp of spec) {
+    const dest = path.join(DIR, `${sp.ack}.txt`);
+    if (existsSync(dest)) continue;
+    if (!byAck.get(sp.ack)) continue;                 // not in this plans-all
+    const url = `https://efast2-filings-public.s3.amazonaws.com/prd/${sp.ack.slice(0, 4)}/${sp.ack.slice(4, 6)}/${sp.ack.slice(6, 8)}/${sp.ack}.pdf`;
+    const pdf = path.join(DIR, `${sp.ack}.pdf`);
+    try {
+      execFileSync("curl", ["-sfL", "--max-time", "180", "-o", pdf, url], { stdio: "ignore" });
+      writeFileSync(dest, execFileSync("pdftotext", ["-layout", "-q", pdf, "-"], { encoding: "utf8", maxBuffer: 300 * 1024 * 1024 }));
+      fetched++;
+    } catch { /* leave it out rather than fail the diff */ }
+    finally { try { unlinkSync(pdf); } catch { /* ignore */ } }
+  }
+  if (fetched) console.log(`(fetched ${fetched} pinned defect specimen(s) into the corpus)\n`);
+} catch (e) { console.warn("defect-specimen top-up skipped: " + e.message); }
 
 const gained = [], lost = [], rowMoved = [], fabFixed = [], fabNew = [];
 let n = 0;

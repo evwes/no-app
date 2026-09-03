@@ -1,0 +1,34 @@
+{
+  "why": [
+    "One filing per KNOWN defect class, pinned. The local corpus is sampled by",
+    "assets and therefore contains whatever is common, not what is broken:",
+    "diff-lineups.mjs reported 'no changes' for v101, v103 and v104 because not",
+    "one of those classes was in it. Three fixes shipped on a single-filing check",
+    "because the tool that should have measured them was looking elsewhere.",
+    "diff-lineups ensures every ack here is present before it compares, so a",
+    "regression in any solved class fails loudly instead of silently.",
+    "Add an entry whenever a parser version fixes a new class. Never remove one."
+  ],
+  "specimens": [
+    { "ack": "20251009163950NAL0007320609001", "class": "wrapped-identity", "fixed": "v100",
+      "sponsor": "Amgen", "was": "six wrapped CIT rows merged onto 'Collective Trust Fund' = $3.59B, 47% of the plan" },
+    { "ack": "20251008110159NAL0002941891001", "class": "grand-total-row", "fixed": "v101",
+      "sponsor": "Fremont Motor", "was": "the schedule's own unlabelled total parsed as a holding; ratio 1.974, menu lost scoring to a 'for benefits' fragment" },
+    { "ack": "20251014195156NAL0003665937004", "class": "placeholder-row", "fixed": "v101",
+      "sponsor": "Emory", "was": "published 'See attachment' at $5.53B, 99.7% of the plan, while confident" },
+    { "ack": "20260618172339NAL0002209875001", "class": "short-fund-name", "fixed": "v102",
+      "sponsor": "SAP America", "was": "'Explorer', 'Wellington', 'Windsor II' renamed to the category and merged, 26% of $9.2B" },
+    { "ack": "20251010104425NAL0012869808001", "class": "group-header-and-cost-column", "fixed": "v103",
+      "sponsor": "Physician's Computer", "was": "header glued into names + 'Participant Directed' read as a description; one 'Vanguard' row = 75% of the plan" },
+    { "ack": "20250730154304NAL0002504883001", "class": "vintage-residue", "fixed": "v104",
+      "sponsor": "W. L. Gore", "was": "'American Funds 2010 R6' minus the house leaves '2010 r6'; twelve vintages merged into $852M, 43%" },
+    { "ack": "20251007174512NAL0008660608001", "class": "dominant-non-fund-row", "fixed": "v105",
+      "sponsor": "Comcast", "was": "no 4i table in the filing at all; published 'At fair value' at 91% of a $19.69B plan" },
+    { "ack": "20251007065040NAL0007624240001", "class": "filed-aggregate-control", "fixed": "v105",
+      "sponsor": "MetLife Group", "was": "NOT a defect — the filing genuinely reports participant-directed investments in aggregate. Control: must stay non-confident without being called a merge" },
+    { "ack": "20251010104106NAL0007965633001", "class": "region-scoring-OPEN", "fixed": null,
+      "sponsor": "State Farm", "was": "OPEN: real 55-fund Vanguard menu on page 3 loses region scoring to a Statement of Net Assets page" },
+    { "ack": "20251007154215NAL0002583779001", "class": "unlinked-master-trust-OPEN", "fixed": null,
+      "sponsor": "Genentech", "was": "OPEN: whole schedule is one line, 'Plan Interest in Roche U.S. Retirement Plans Master Trust'; trust not linked" }
+  ]
+}

@@ -80,7 +80,9 @@ export function loadPlans(path = "plans-all.json") {
 
 /* lineups-status.json — nested under .plans, keyed by ack. Reading the top
  * level as if it were the map is its own recurring mistake. */
-export const STATUS_FIELDS = ["pv", "ov", "c", "s", "f", "e", "fb", "ffb", "tp", "ocr"];
+/* dx/rw/rt added v106: the parser's own diagnosis, written at parse time so the
+ * whole gap population carries a cause without re-downloading anything. */
+export const STATUS_FIELDS = ["pv", "ov", "c", "s", "f", "e", "fb", "ffb", "tp", "ocr", "dx", "rw", "rt"];
 export function loadStatus(path = "lineups-status.json") {
   const raw = JSON.parse(readFileSync(path, "utf8"));
   if (!raw.plans) throw new Error(`${path}: expected a .plans map; got keys ${Object.keys(raw).join(",")}`);

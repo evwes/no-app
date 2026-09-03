@@ -50,15 +50,31 @@ for (const r of P.rows) {
 
   if (mtia) { trustHeld++; add("Z. master-trust held (excluded — gap lives in the trust filing)", r, assets, parts); continue; }
 
-  /* 1. the fund lineup, split by the CAUSE the pipeline recorded */
+  /* 1. the fund lineup. Prefer the cause the PARSER recorded (dx, written at
+   * parse time since v106). Before that the store kept only an error string,
+   * so 1,289 plans landed in "no cause recorded" and the only way to bucket
+   * them was to re-download and re-parse a 40-filing sample — sampling error
+   * on every estimate, and a fresh download before every investigation. With
+   * dx the whole population is bucketed exactly, for free. */
+  const DX = {
+    nohead:   "A-nohead    no 4i heading anywhere seeded a region",
+    noregion: "A-noregion  headings fired, no candidate scored as a table",
+    stmt:     "A-stmt      parsed region is a statement/aggregate, not a menu",
+    trust:    "A-trust     'interest in master trust' pointer, not a lineup",
+    few:      "A-few       fewer than 3 rows",
+    "band-lo": "A-band-lo   holdings sum FAR BELOW plan assets",
+    "band-hi": "A-band-hi   holdings sum ABOVE plan assets",
+    narrow:   "A-narrow    3-4 rows, plausible but too thin to trust",
+  };
   if (!s) add("A1. lineup — no status entry at all (never attempted)", r, assets, parts);
   else if (!s.c) {
     const e = s.e || "";
-    if (e === "no-section") add("A2. lineup — no readable 4i section in the public PDF", r, assets, parts);
-    else if (e === "download") add("A3. lineup — public copy withdrawn from the bucket (403)", r, assets, parts);
-    else if (s.tp) add("A4. lineup — schedule is a bare 'interest in master trust' line, no trust linked", r, assets, parts);
-    else if (s.s) add("A5. lineup — schedule FOUND but holdings do not reconcile to plan assets", r, assets, parts);
-    else add("A6. lineup — section not found, no cause recorded  <-- UNDIAGNOSED", r, assets, parts);
+    if (e === "download") add("A3. lineup — public copy withdrawn from the bucket (403)", r, assets, parts);
+    else if (s.dx && DX[s.dx]) add(DX[s.dx], r, assets, parts);
+    else if (e === "no-section") add("A2. lineup — no readable 4i section (pre-v106, cause not recorded)", r, assets, parts);
+    else if (s.tp) add("A4. lineup — bare 'interest in master trust' line, no trust linked", r, assets, parts);
+    else if (s.s) add("A5. lineup — schedule FOUND but does not reconcile", r, assets, parts);
+    else add("A6. lineup — UNDIAGNOSED (pre-v106 data; re-parse to get a cause)", r, assets, parts);
   }
 
   /* 2. plan features: match, vesting, Roth. Read from the audit NOTES, a
