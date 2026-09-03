@@ -5986,3 +5986,49 @@ MetLife turned out to be a faithful aggregate rather than a merge, how many
 other plans publish one row as their whole lineup — and then splitting that
 population by whether the dominant row is a fund at all. The question was
 cheap; nothing in the pipeline was asking it.
+
+## 2026-09-03 — Features missing though the lineup parsed: mostly not ours, and a measuring script that said otherwise
+
+**The question.** 1,887 confident-lineup plans, 1,857,789 participants, carry no
+match, vesting or Roth. The features come from the audit NOTES and the lineup
+from the 4i attachment; both live in the same PDF we already read successfully,
+so this looked like an extraction failure and had been recorded as an unknown.
+
+**The answer, from a stratified 30-filing sample.** It is overwhelmingly a
+PUBLICATION gap, not a parser gap:
+
+```
+  18   60%   no attachment prose in the public copy at all
+   8   27%   notes present but they never discuss contributions
+   2    7%   notes absent
+   2    7%   PARSER GAP — the notes describe it and we miss it
+```
+
+Dollar General, the largest plan in the bucket at 201,691 participants, is the
+clearest case: its public copy contains the auditors' report and the Schedule H
+4i table and then stops. The report refers to "the related notes to the
+financial statements" and those notes are not in the document. There is nothing
+to extract. Roughly 132 of the 1,887 plans are ours to fix, not 1,887 — so this
+bucket is now explicitly NOT worth a parser change, and that is recorded in the
+hourly prompt so a later cycle does not re-open it on the strength of its
+participant count.
+
+**The defect in the measurement, which is the part worth keeping.** The first
+run of scripts/size-features.mjs reported **30% parser gap**. It was wrong, and
+wrong in the most ordinary way: when the attachment anchor was not found it fell
+back to scanning the WHOLE document, and the Form 5500's own printed pages say
+"Employer contributions", "less than 100% vested", and "employee deferrals and
+employer matching contributions (as applicable) under Code sections 401(k)(3)".
+Every filing whose anchor was missing therefore scored as a plan describing its
+own match. Caught by opening the top-ranked "parser gap" filing (WVP of
+Washington) and finding its anchor line number printed EMPTY.
+
+Fixed two ways: a missing anchor is now its own finding rather than a licence to
+guess, and the contribution test requires PROSE — a sentence a plan document
+writes about itself, carrying a rate or an entitlement — instead of bare nouns
+that appear on the form.
+
+**The rule this earns.** A measuring script is code and gets the same suspicion
+as the parser. Before believing a bucket, open the filing at the TOP of the
+bucket you are most pleased to have found; if the script is fooling itself, that
+is where it shows.
