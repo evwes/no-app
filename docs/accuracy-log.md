@@ -6136,3 +6136,45 @@ asked for — another plan's assets and match formula under someone else's link.
 check tested internal consistency. A screenshot sweep of the main views is
 cheap and finds what consistency checks cannot: both defects were obvious in
 one glance and invisible to every assertion in the suite.
+
+## 2026-09-04 — The nohead bucket, measured: the largest gap on the board is not ours
+
+**The question.** With dx populated, `nohead` — no 4i heading anywhere in the
+text — is the largest lineup gap by a wide margin: 5,966 plans, 3,496,805
+participants, $24.1B. Is any of it a parser defect?
+
+**The answer, from 50 stratified filings, after correcting the measuring tool
+twice:** effectively none of it.
+
+```
+28  56%  no attachment at all — form pages only
+18  36%  audit attachment present, but it contains no schedule table
+ 3   6%  schedule EXPLICITLY OMITTED, stated by the filing itself
+ 1   2%  a real per-fund table — in the NOTES of a terminating plan,
+         current-date column all zeros; publishing it as a lineup would
+         show funds the plan no longer holds
+```
+
+The bucket is the law and the filings, not the parser. Parser work moves to
+`noregion` (1,099 — still undiagnosed at document level), `stmt` (326, incl.
+State Farm), `band-hi` (270, incl. Compass Group USA at 312,914 participants),
+`few` (660) and `band-lo` (57). Caveat recorded honestly: 0-1 fixable in 50
+bounds the fixable share below ~6%, not at zero.
+
+**The tool had to be corrected twice, and both corrections are the lesson.**
+gap-verify's first ladder called a 57-page filing "form-only" while its pages
+29-56 were a Grant Thornton audit whose contents page said the DOL schedules
+"have been omitted because they are not applicable" — the verdict was right by
+accident and wrong in mechanism. The upgraded ladder then flagged 9 of 50 as
+"table-like pages under an unrecognised heading"; the first three inspected
+were Statements of Changes in Net Assets and fair-value notes — money-dense,
+fund-free. Requiring the MENU signature (>=6 fund-token rows among >=12 money
+rows) collapsed 9 to 1, and the 1 was the terminating plan above. A page of
+money rows is not a holdings table; rows that NAME PRODUCTS are.
+
+**What this closes.** Combined with the features measurement (only ~7% ours)
+and the fabricated-lineup class (v100-v105, closed at zero), the three largest
+"gaps" on the board — nohead lineups, missing features, and dominated lineups —
+are now all diagnosed: overwhelmingly absent from the public record, honestly
+withheld, or already fixed. What remains OURS is specific and small enough to
+enumerate, which is what the census now does every run.

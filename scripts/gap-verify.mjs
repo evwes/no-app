@@ -44,14 +44,50 @@ for (const ack of acks) {
   }
   const headers = (text.match(new RegExp(HEADER, "gi")) || []).length;
   const titles = (text.match(new RegExp(TITLE, "gi")) || []).length;
-  const pages = (text.match(/\f/g) || []).length + 1;
+  const pageList = text.split("\f");
+  const pages = pageList.length;
   const perPage = Math.round(text.length / Math.max(pages, 1));
+
+  /* The first ladder stopped at "form-only" for anything without the statutory
+   * header, and a 57-page filing whose pages 29-56 were a Grant Thornton audit
+   * report landed there — its OWN contents page said the DOL schedules "have
+   * been omitted because they are not applicable". Three genuinely different
+   * documents were sharing one verdict:
+   *   - an attachment that states the schedule is omitted (nothing to fix)
+   *   - an attachment with prose but no schedule (nothing to fix)
+   *   - an attachment holding a TABLE under a heading we do not recognise
+   *     (the only fixable shape, and the one worth finding)
+   * So look at what the pages contain, not just what the regexes matched. */
+  const isFormPage = (p) => /form 5500|schedule [a-z] \(form 5500\)|omb no\.? 1210/i.test(p.slice(0, 400));
+  const hasAudit = /report of independent|independent (?:certified public )?(?:accountants?|auditors?)/i.test(text);
+  const omitted = /schedules?[^.]{0,200}?omitted[^.]{0,120}?(?:not applicable|no such|none)/is.test(text) ||
+    /omitted because they are not applicable/i.test(text);
+  /* A page of money rows is NOT the signature of a holdings table — the first
+   * version of this check fired on Statements of Changes in Net Assets
+   * ("Total contributions … 16,018,341", "Benefits paid to participants …")
+   * and on fair-value-hierarchy notes, three false positives out of three
+   * inspected. What distinguishes a MENU is that its rows NAME PRODUCTS: a
+   * real lineup page is dense with fund tokens, a financial statement carries
+   * at most one or two. Require both. */
+  const MONEY_ROW = /[A-Za-z]{4,}.{0,90}[\d,]{4,}(?:\.\d{2})?\s*$/;
+  const FUNDISH = /\b(?:fund|trust|portfolio|index|target|instl?|admiral|shares|cl(?:ass)? [a-z0-9]|r[1-6]\b|equity|growth fund|value fund|bond fund|retirement 20\d\d)\b/i;
+  let tableLikePages = 0;
+  for (const p of pageList) {
+    if (isFormPage(p)) continue;
+    const rows = p.split("\n").map((l) => l.trim()).filter((l) => MONEY_ROW.test(l));
+    if (rows.length < 12) continue;
+    const fundy = rows.filter((l) => FUNDISH.test(l)).length;
+    if (fundy >= 6) tableLikePages++;
+  }
   out[ack] = {
-    pages, chars: text.length, perPage, headers, titles,
+    pages, chars: text.length, perPage, headers, titles, hasAudit, omitted, tableLikePages,
     verdict: headers > 0 ? "TABLE PRESENT — we cannot read it (parser gap)"
       : titles > 0 ? "referenced but ABSENT — the schedule pages are not in the public copy"
+      : tableLikePages > 0 ? "TABLE-LIKE pages under an unrecognised heading — probable parser gap"
+      : omitted ? "schedule EXPLICITLY OMITTED by the filing (stated in the attachment)"
+      : hasAudit ? "audit attachment present, but it contains no schedule table"
       : perPage < 800 ? "little extractable text — likely scanned or image-only"
-      : "no schedule table and no reference — form-only filing",
+      : "no attachment at all — form pages only",
   };
   try { unlinkSync(pdf); } catch { /* ignore */ }
   console.error(`${ack} ${out[ack].verdict}`);
