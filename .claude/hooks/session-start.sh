@@ -98,10 +98,17 @@ UNPUSHED=$(git log --oneline "$BR" --not "origin/$BR" 2>/dev/null | wc -l | tr -
 [ "$UNPUSHED" != "0" ] && echo "  $UNPUSHED UNPUSHED commit(s) on $BR — push before mirroring"
 [ -n "$(git status --porcelain 2>/dev/null)" ] && echo "  working tree is DIRTY"
 
-echo "  RUN 'CronList' NOW. If it says \"No scheduled jobs\", the hourly agent"
-echo "  cycle died with the last container — re-create it from"
-echo "  docs/hourly-cycle-prompt.md (cron '7 * * * *', recurring). It has died"
-echo "  four times; this is expected, not a surprise."
+LAST_DATA=$(git log -1 --format=%ct origin/main -- plans-all.json 2>/dev/null || echo 0)
+if [ "$LAST_DATA" != "0" ]; then
+  AGE_H=$(( ( $(date +%s) - LAST_DATA ) / 3600 ))
+  echo "  newest data commit on main is ${AGE_H}h old (pipeline cron: hourly at :23, daily 05:12Z)"
+  [ "$AGE_H" -gt 6 ] && echo "  >6h WITHOUT A DATA COMMIT — check Actions: the pipeline cron may be stalled"
+fi
+echo "  DURABLE SCHEDULER: MCP Routine 'wampo hourly cycle' (trig_01XBJTunkpj2T8bLKHzdsKsA,"
+echo "  created 2026-09-06) fires a fresh session hourly. Verify with list_triggers —"
+echo "  last_run should be recent and SUCCEEDED. Only if the Routine is GONE or"
+echo "  failing, fall back to CronCreate from docs/hourly-cycle-prompt.md. The"
+echo "  in-memory cron died nine times; it is the fallback now, not the mechanism."
 echo "  Before pushing scripts/** or the workflow: confirm no pipeline run is"
 echo "  in flight, or concurrency cancels it and hours of wall clock are lost."
 echo "-------------------------------"

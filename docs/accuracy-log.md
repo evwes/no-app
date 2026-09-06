@@ -6178,3 +6178,42 @@ and the fabricated-lineup class (v100-v105, closed at zero), the three largest
 are now all diagnosed: overwhelmingly absent from the public record, honestly
 withheld, or already fixed. What remains OURS is specific and small enough to
 enumerate, which is what the census now does every run.
+
+## 2026-09-06 — Two silent days, diagnosed; the durable scheduler finally exists
+
+**What the owner saw:** nothing happened for two days. **What actually
+happened:** the two automation layers behaved exactly as previously documented,
+and the documentation was not a fix.
+
+- **The pipeline ran both days.** Scheduled data commits landed on main at
+  2026-09-05 09:05Z and 2026-09-06 09:26Z (the 05:12Z daily cron firing ~4h
+  late, consistent with its measured lateness). Parsing of new filings was
+  automatic and healthy — pv106 dominant, confident lineups stable.
+- **The agent layer ran zero times.** The hourly cycle lived in a `CronCreate`
+  job that is session-memory only and fires only while a container is alive.
+  The container is reclaimed shortly after the owner leaves. So between the
+  owner's visits the cycle could not fire even once — by construction, every
+  time. This was its NINTH death. Recreating it on every visit treated the
+  symptom and guaranteed the recurrence.
+
+**The fix that closes it:** on this session's container restart, the
+2026-09-02 allowlist in `.claude/settings.json` finally loaded, and
+`create_trigger` — refused ten times before — succeeded on the first try.
+MCP Routine `trig_01XBJTunkpj2T8bLKHzdsKsA` now fires a fresh session hourly
+with a push notification, and it survives restarts because it lives
+server-side, not in a container's memory.
+
+**Two mechanical hardenings shipped with it, so even zero sessions degrade
+gracefully:** the pipeline gained an hourly cron (`23 * * * *`; a no-change
+hour exits before committing, so quiet hours cost nothing), and the merge job
+now fast-forwards the dev branch after committing data to main whenever the
+branch is a strict ancestor — the exact by-hand sync whose absence let main
+run ahead for two days. Divergence is still left to a session and mirror.sh.
+
+**The lesson, stated so it stops recurring in other clothes:** a mechanism
+that dies with its host is not a schedule, it is an intention. It failed nine
+times before being replaced rather than recreated, and the recreation ritual —
+documented, hooked, and performed faithfully — was effort spent making the
+wrong mechanism easier to revive. The session-start hook now checks the
+Routine's pulse (`list_triggers` last_run) and the data's age instead of
+instructing the ritual.

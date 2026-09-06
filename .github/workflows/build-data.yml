@@ -20,6 +20,12 @@ on:
     # `git log origin/main --not origin/<dev branch>` before every force-mirror
     # — a daily schedule makes that check daily rather than weekly.
     - cron: "12 5 * * *"
+    # hourly incremental backstop (owner directive 2026-09-06 after two days of
+    # silence): parse new filings on the hour with no session anywhere. A no-op
+    # hour exits at "No data changes" without committing, so this is free and
+    # quiet; GitHub delays cron on public runners (measured 4-8h on the daily),
+    # so treat the stated minute as approximate.
+    - cron: "23 * * * *"
     # weekly refresh: new EFAST2 filings, plan-year rollovers, new lineups
     # (scheduled runs execute on the default branch only)
     - cron: "0 6 * * 1"
@@ -199,6 +205,25 @@ jobs:
           done
           echo "giving up after 5 attempts" >&2
           exit 1
+      - name: Keep the dev branch level with main
+        if: always() && github.ref_name == 'main'
+        run: |
+          # Scheduled runs execute on main and commit data there, while all
+          # development lives on the dev branch — so every scheduled commit
+          # used to strand main AHEAD until a live session noticed and
+          # fast-forwarded by hand. Two days without a session meant two days
+          # of that gap (2026-09-05/06). When the dev branch is a strict
+          # ancestor of main this sync is a pure fast-forward — nothing can be
+          # lost — so the runner does it itself. Any real divergence is left
+          # alone for a session and scripts/mirror.sh, which refuse and prove
+          # before forcing.
+          BR="claude/wampo-401k-live-nx1t4o"
+          git fetch origin "$BR" || exit 0
+          if git merge-base --is-ancestor "origin/$BR" HEAD; then
+            git push origin "HEAD:$BR" && echo "dev branch fast-forwarded to $(git rev-parse --short HEAD)"
+          else
+            echo "dev branch has diverged from main — leaving it for a session to reconcile"
+          fi
       - name: Surface audit HIGH findings (auto-managed issue)
         if: always()
         env:
