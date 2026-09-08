@@ -450,6 +450,11 @@
         // require it: on a small plan, $100k of rounding alone can move the
         // ratio across a band boundary and make a correct table look short.
         if (d.assetsEOY) { plan.assetsB = d.assetsEOY / 1e9; plan.assetsExact = true; }
+        // prep drops zero fields, so a missing assetsEOY on a filed detail
+        // entry means Schedule H reported $0 year-end assets — a final or
+        // transition-year filing of a plan that ended (terminated, merged,
+        // or moved to a successor) during this plan year
+        plan.zeroEOY = !d.assetsEOY;
         plan.assetsYoY = d.assetsBOY && d.assetsEOY ? +(((d.assetsEOY / d.assetsBOY) - 1) * 100).toFixed(1) : null;
         plan.activeParticipants = d.activeParticipants || 0;
         plan.partBalances = d.partBalances || 0;
@@ -1359,6 +1364,16 @@
       <p class="max-benefit">Loading fund holdings from the filing…</p>`;
     }
     if (!plan.funds) {
+      if (plan.zeroEOY && plan.detailLoaded) {
+        // wound-down plan: explaining the wind-down beats implying a data gap
+        // (a menu for a plan nobody is in anymore would be fabrication risk —
+        // some of these filings are internally inconsistent, reporting $0 on
+        // Schedule H while the attached audit still itemizes holdings)
+        const boyM = plan.flows && plan.flows.priorAssetsM;
+        return `
+      <div class="section-label">FUND HOLDINGS</div>
+      <p class="max-benefit">This is a final or transition-year filing: Schedule H reports <strong>$0 in year-end assets</strong>${boyM ? `, after beginning the year with ${money(boyM)}` : ""}. The plan terminated, merged, or moved its assets to a successor plan during this plan year, so there is no current fund menu to show. If your account was in this plan, it now lives with the successor plan or was distributed — check the successor's page or your own statements.</p>`;
+      }
       // no parsed lineup, but the audited notes NAME the options (common for
       // master-trust plans whose per-fund schedule isn't public)
       const menu = plan.filedFeatures && plan.filedFeatures.menu;
