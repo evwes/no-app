@@ -494,10 +494,10 @@ don't confuse them). Frontend: python http.server + Playwright at
   | plans | participants | assets | cause |
   |---|---|---|---|
   | 660 | 498,540 | $54.1B | `few` fewer than 3 rows |
-  | 529 | 397,707 | $24.1B | `nohead` no heading seeded a region |
-  | 326 | 303,829 | $38.0B | `stmt` statement/aggregate won, not a menu |
-  | 270 | 684,737 | $33.1B | `band-hi` holdings sum ABOVE plan assets |
-  | 57 | 262,678 | $35.8B | `band-lo` far below |
+  | 528 | 397,151 | $24.1B | `nohead` no heading seeded a region |
+  | 324 | 303,306 | $38.0B | `stmt` statement/aggregate won, not a menu |
+  | 230 | 502,565 | $16.6B | `band-hi` holdings sum ABOVE plan assets (v107 recovered 40 plans/$16.5B incl. UPS; remainder is a different sub-shape) |
+  | 56 | 262,154 | $35.8B | `band-lo` far below |
   | 44 | 20,016 | $463M | `trust` bare trust pointer, unlinked |
   | 11 | 12,444 | $2.2B | `noregion` heading fired, nothing scored |
 

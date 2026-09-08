@@ -6315,3 +6315,12 @@ corpus up with all three before any future comparison. `diff-lineups.mjs
 0 row moves. The rule the two drafts teach: a repair that runs during
 scoring changes which candidate wins — repairs run AFTER selection, on the
 winner alone.
+
+**RE-SIZE after shipping (run #219, same day).** Production: confident +48,
+lineups +45, match +2, vesting +3 — "improved or held"; 0 lost; generic-named
+fell 208→203; dominant-row held at 0. Band-hi bucket: 270→230 plans,
+684,737→502,565 participants, $33.1B→$16.6B — the fix recovered ~15% of the
+bucket's plans and HALF its dollars (UPS's $14.2B left the bucket). The
+remaining 230 (Compass Group 312,914 participants at the top) are a
+different sub-shape — no single dominant total row — and need their own
+trace before more parser work.
