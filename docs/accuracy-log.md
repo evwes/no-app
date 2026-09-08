@@ -6217,3 +6217,40 @@ documented, hooked, and performed faithfully — was effort spent making the
 wrong mechanism easier to revive. The session-start hook now checks the
 Routine's pulse (`list_triggers` last_run) and the data's age instead of
 instructing the ritual.
+
+## 2026-09-08 — 6,530 of the "gap" plans ended: the final-year split
+
+**Wrong (in our accounting, not on the site).** The gap census counted 8,400
+lineup gaps and ranked `nohead` (5,966 plans, 3.5M participants) the top
+priority. **6,530 of those plans filed Schedule H with $0 year-end assets** —
+final/transition-year filings of plans that terminated, merged, or moved. 99%
+of `noregion` and 91% of `nohead`. Their "participants" are people who were
+moved to successor plans; a fund menu for them is not a gap, it is a ghost.
+
+**Found by tracing, not by counting.** The largest noregion filing — Red
+Lobster, 27,299 participants — traced to `assets $0.000B` and zero candidate
+regions printed: with assetsEOY=0 the ratio guard (`if (!ratio) continue`)
+skips every candidate, so `noregion` is INEVITABLE whenever a heading fires.
+The 99% correlation is causal, not a smell.
+
+**The Red Lobster filing itself is the second finding.** Full calendar-year
+2024, BOY $257.4M, notes disclosing $234.6M sold in a recordkeeper transition —
+and Schedule H filed $0 EOY while the SAME filing's audited 4i, dated December
+31, 2024, itemizes $25,249,336 (Putnam Stable Value $21.3M + participant loans
+$4.0M). The filing is internally inconsistent; our ingest reflects what was
+filed. Deliberately NOT "fixed" in the parser: accepting a schedule validated
+only against its own Total row would reopen the fabrication class for plans
+nobody participates in anymore. Census category now; a frontend wind-down line
+("final filing: $0 year-end assets; $X transferred per the notes") is queued.
+
+**What the live gap table now says:** ~1,900 live-plan lineup gaps total, every
+one with a recorded cause — few 660, nohead 529, stmt 326, band-hi 270 ($33.1B,
+Compass Group USA at 312,914 participants), band-lo 57, trust 44, noregion 11.
+The nohead measurement of 2026-09-04 (~0 fixable) was taken on the pre-split,
+ghost-dominated bucket and does not transfer to the 529 live-plan remainder.
+
+**Also under test right now:** the hourly Routine fires and reports SUCCEEDED
+but ~40 firings have committed nothing (morning-brief stale since Sep 1). A
+diagnostic firing at 19:17Z instructs the session to write a heartbeat commit
+and report any denied tool — discriminating push-blocked from
+deciding-not-to-act. Verdict goes here when it lands.

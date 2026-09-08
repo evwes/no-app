@@ -476,29 +476,37 @@ don't confuse them). Frontend: python http.server + Playwright at
   working (`WAMPO_TRACE=rows|cands`, `WAMPO_TRACE_MATCH=<value|substring>`);
   `diff-lineups.mjs` diffs lineups against any git ref over the local corpus
   and exits non-zero if a change INTRODUCES a fabricated row.
-- **Known residuals, EXACT (v106 populated `dx` for the whole universe on
-  2026-09-03 — these are counts, not estimates):**
+- **Known residuals, EXACT — corrected 2026-09-08 after the final-year split.**
+  The earlier version of this table named `nohead` (5,966 plans) the priority.
+  That was ghosts: **6,530 of the apparent gap plans filed Schedule H with $0
+  year-end assets — final/transition-year filings of plans that terminated,
+  merged, or transferred.** 99% of `noregion` and 91% of `nohead` were this.
+  Mechanism, not coincidence: with assetsEOY=0 the ratio guard can never accept
+  a region, and a wound-down plan usually files no schedule at all. Red Lobster
+  is the type case — Sch H filed $0 EOY while its own attached audit itemizes
+  $25.2M still in stable value and loans; the FILING is inconsistent, our
+  ingest is faithful. **Do not "fix" the parser to accept self-totaled
+  schedules for these** — a lineup for a plan nobody is in anymore is
+  fabrication risk for zero user value; the right treatment is the census
+  category (done) and a frontend wind-down explanation line (queued).
+  The LIVE-plan lineup gaps, whole-universe counts from dx:
 
   | plans | participants | assets | cause |
   |---|---|---|---|
-  | 5,966 | 3,496,805 | $24.1B | `nohead` no 4i heading seeded a region |
-  | 1,099 | 678,195 | $2.2B | `noregion` headings fired, nothing scored as a table |
   | 660 | 498,540 | $54.1B | `few` fewer than 3 rows |
-  | 326 | 303,829 | $38.0B | `stmt` statement/aggregate, not a menu |
+  | 529 | 397,707 | $24.1B | `nohead` no heading seeded a region |
+  | 326 | 303,829 | $38.0B | `stmt` statement/aggregate won, not a menu |
   | 270 | 684,737 | $33.1B | `band-hi` holdings sum ABOVE plan assets |
-  | 57 | 262,678 | $35.8B | `band-lo` holdings sum far below |
-  | 44 | 20,016 | $463M | `trust` bare trust pointer, no trust linked |
+  | 57 | 262,678 | $35.8B | `band-lo` far below |
+  | 44 | 20,016 | $463M | `trust` bare trust pointer, unlinked |
+  | 11 | 12,444 | $2.2B | `noregion` heading fired, nothing scored |
 
-  **`nohead` is the priority by a wide margin** — 5,966 plans and 3.5M
-  participants, previously buried inside a 7,071-plan "no readable 4i section"
-  bucket that mixed it with genuinely absent attachments. Largest `band-hi` is
-  Compass Group USA (312,914 participants, $2.5B), then UPS. Still open:
-  State Farm 20251010104106NAL0007965633001 (`stmt`; real 55-fund Vanguard menu
-  loses region scoring to a Statement of Net Assets page); Genentech
-  20251007154215NAL0002583779001 (`nohead`; whole schedule is one unlinked
-  master-trust line); 319 dominated-but-fund-shaped lineups ($34.6B) believed
-  honest single-holding plans, unconfirmed; 2 cipher-text junk-confident
-  filings (S@CUrities class).
+  ~1,900 live plans total. Priorities: `band-hi` by dollars and participants
+  (Compass Group USA 312,914 participants; UPS $14.2B), `few`/`nohead` by
+  count, `stmt` includes State Farm 20251010104106NAL0007965633001. The
+  nohead 50-sample measurement (56% no attachment / ~0 fixable) was taken on
+  the PRE-split bucket dominated by final-year plans — the 529 live-plan
+  nohead remainder is unmeasured and needs its own gap-verify pass.
 - **The fabricated-lineup class is CLOSED and must stay closed.**
   `audit-dominant-row.mjs`: 50 plans / $83.9B -> **0** at v105, while all 319
   honest single-holding plans were preserved. `audit-generic-names.mjs` sits at

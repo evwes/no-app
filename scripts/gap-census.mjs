@@ -66,7 +66,22 @@ for (const r of P.rows) {
     "band-hi": "A-band-hi   holdings sum ABOVE plan assets",
     narrow:   "A-narrow    3-4 rows, plausible but too thin to trust",
   };
-  if (!s) add("A1. lineup — no status entry at all (never attempted)", r, assets, parts);
+  /* FINAL/TRANSITION-YEAR FILINGS ARE NOT LINEUP GAPS (found 2026-09-08).
+   * 6,525 of the remaining "gap" plans filed Schedule H with $0 year-end
+   * assets — plans that terminated, merged, or transferred mid-year. 99% of
+   * the noregion bucket and 91% of nohead were this. Two mechanisms:
+   * with assetsEOY=0 the parser's ratio guard can never accept ANY region
+   * (noregion is inevitable when a heading fires), and a wound-down plan
+   * usually files no schedule at all (nohead). Red Lobster is the type case:
+   * Sch H filed $0 EOY while its own attached audit itemizes $25.2M still in
+   * stable value and loans — the FILING is internally inconsistent, not our
+   * ingest. These are not plans a participant opens looking for a menu; they
+   * are plans that ended. Counted separately so the live-plan gap table stops
+   * being 85% ghosts. */
+  if (s && !s.c && !(+P.get(r, "assetsEOY"))) {
+    add("F. final/transition-year filing — Schedule H reports $0 year-end assets", r, assets, parts);
+  }
+  else if (!s) add("A1. lineup — no status entry at all (never attempted)", r, assets, parts);
   else if (!s.c) {
     const e = s.e || "";
     if (e === "download") add("A3. lineup — public copy withdrawn from the bucket (403)", r, assets, parts);
