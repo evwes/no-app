@@ -6255,6 +6255,29 @@ diagnostic firing at 19:17Z instructs the session to write a heartbeat commit
 and report any denied tool — discriminating push-blocked from
 deciding-not-to-act. Verdict goes here when it lands.
 
+**VERDICT (same day, 20:10Z): push-blocked, structurally.** No heartbeat
+landed on any branch after 44 minutes, yet the probe session ran 20 minutes
+and produced 50k output tokens — it worked hard and had nowhere to land it.
+The cause is in the trigger record itself, no transcript needed:
+fresh-session Routines store `sources: []` and `mcp_connections: []`, so
+every fired session starts with NO repository attached and NO `add_repo`
+tool to attach one — no push credential can exist. `last_run: SUCCEEDED`
+records that the firing was DELIVERED, not that anything landed; ~40
+firings of session work were silently discarded behind a green status.
+The probe itself had a design flaw worth recording: it was told to report
+failures BY COMMITTING, which is unreachable exactly when the thing being
+tested is broken. **Fix shipped:** `create_trigger`'s connectors parameter
+is refused for this org, so the Routine was recreated as a SELF-BIND
+(`trig_017vdX5dSSYh5v68Cwe6EUBu`) firing hourly into the main web session,
+which holds the repo with push credentials — the same delivery path
+`send_later` reminders have already proven survives container restarts.
+The old trigger is deleted. **Prevention:** the heartbeat line in
+docs/hourly-cycle-prompt.md stays — every wake after a reprovision proves
+push EARLY, and a scheduler whose sessions cannot write is now a diagnosed
+class, not a mystery: when a scheduled mechanism reports success but its
+work never appears, check what the fired context is MISSING before reading
+any transcript.
+
 ## 2026-09-08 — v107: the winner's own total row, dropped post-selection
 
 **Wrong.** Marriott Vacations (24,960 participants, $903M) filed a clean

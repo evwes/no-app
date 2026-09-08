@@ -1,8 +1,11 @@
 # Hourly cycle prompt
 
-**The durable scheduler EXISTS as of 2026-09-06.** MCP Routine
-`trig_01XBJTunkpj2T8bLKHzdsKsA` ("wampo hourly cycle", cron `7 * * * *`) fires
-a FRESH session every hour with a push notification on completion. It survives
+**The durable scheduler EXISTS — self-bind since 2026-09-08.** MCP Routine
+`trig_017vdX5dSSYh5v68Cwe6EUBu` ("wampo hourly cycle (self-bind)", cron
+`7 * * * *`) wakes the MAIN WEB SESSION every hour. Its predecessor
+(`trig_01XBJTunkpj2T8bLKHzdsKsA`, created 2026-09-06, fresh-session mode)
+fired ~40 times and committed NOTHING — see the diagnosis below. The Routine
+mechanism itself survives
 container restarts, which the in-memory `CronCreate` job never did — that job
 died **nine times**, and the price of relying on it was two days (2026-09-05/06)
 in which the pipeline ran but no agent work happened at all. `create_trigger`
@@ -18,17 +21,38 @@ audit running with no session anywhere, and its merge job fast-forwards the dev
 branch after committing to main, so pure data commits no longer strand main
 ahead.
 
-**Routine-fired sessions have NO MCP connector tools** (no `mcp__github__*`) —
-the trigger stores no connectors. Everything below has a git-only fallback:
-run state is read from commits, and a run is started by pushing, not by API.
+**Why ~40 firings committed nothing (diagnosed 2026-09-08).** The original
+Routine stored `sources: []` and `mcp_connections: []`: every fired session
+started with NO repository attached and NO MCP tools — no push credential and
+no `add_repo` to obtain one. Each session did 15–20 minutes of work that could
+never land, and reported "SUCCEEDED" because delivery, not outcome, is what
+last_run records. The 19:17Z diagnostic probe confirmed it by construction:
+50k output tokens of work, zero commits on any branch, its report trapped in
+its own transcript because reporting required the push it lacked.
+
+**The repair paths, in the order they were closed or taken:** granting fired
+sessions the `Claude_Code_Remote` connector (so they could `add_repo` with
+push access) is refused — `create_trigger`'s connectors parameter "is not
+available for this organization". So the Routine was recreated as a
+**SELF-BIND**: it fires hourly INTO the main web session
+(`session_01EhZqtGepgDtE1DhzXJu3A9`), which has the repo attached with push
+credentials; a wake re-provisions the container with the repo when it was
+reclaimed, exactly as `send_later` reminders already demonstrably do. This
+also puts the hourly work where the owner looks. If that session is ever
+archived and wakes start failing (list_triggers shows non-SUCCEEDED
+last_run), the fallback is a fresh web session: attach the repo, run
+`create_trigger` self-bind again from it, delete the stale trigger, and
+update the ID below.
 
 ---
 
 wampo hourly cycle. Work, report, continue — never delay finished work for a clock. Repo evwes/no-app, dev branch claude/wampo-401k-live-nx1t4o.
 
+BOOTSTRAP (each wake, before anything else): `git fetch origin main claude/wampo-401k-live-nx1t4o` and reconcile — the container may have been reprovisioned since the last wake, and the pipeline commits data hourly. Verify push works EARLY in the first wake after any reprovision: append a line `<UTC timestamp> alive` to docs/routine-heartbeat.log, commit with [skip ci], push. If the push is denied, report the exact error to the owner and stop — that diagnosis is worth more than silent work that cannot land. If a previous cycle in this session left work mid-flight, continue it rather than starting anew.
+
 Read CLAUDE.md first — especially "The gap method (2026-09-03)" and "Current state (2026-09-03)". Do not rediscover what is written there.
 
-FIRST: if `mcp__Claude_Code_Remote__list_triggers` is available, confirm the Routine trig_01XBJTunkpj2T8bLKHzdsKsA is enabled and its last_run SUCCEEDED; if the tool is unavailable (Routine-fired sessions carry no MCP connectors) skip this check — you ARE the Routine firing. Do not create CronCreate jobs unless the Routine is confirmed gone.
+FIRST: confirm via `mcp__Claude_Code_Remote__list_triggers` that Routine trig_017vdX5dSSYh5v68Cwe6EUBu ("wampo hourly cycle (self-bind)") is enabled with a recent SUCCEEDED last_run — no more than once per session, not on every wake. Do not create CronCreate jobs unless the Routine is confirmed gone.
 
 SERIALISATION: pushing scripts/build-data.mjs, fetch-4i.mjs, lib-4i.mjs, merge-4i.mjs, scripts/.kick or the workflow while a run is in flight CANCELS it — use [skip ci]. Actions minutes are free (measured). GitHub cron start times are fiction (4-8h late, measured) — dispatch with workflow_dispatch. The daily schedule commits data straight to MAIN, so check `git log origin/main --not origin/<branch>` and bring its commit into the branch (usually a plain fast-forward) BEFORE any mirror; mirror ONLY via `bash scripts/mirror.sh`.
 
