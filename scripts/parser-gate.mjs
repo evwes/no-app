@@ -210,6 +210,17 @@ const SPECIMENS = [
    * parse is the defect. */
   ["Comcast (no 4i table; statement line published as a lineup)", "20251007174512NAL0008660608001", 19692061354,
     { found: true, stmt: true }],
+  /* v107: the winner's own TOTAL row, dropped post-selection. Marriott filed a
+   * clean 31-fund menu plus one mangled total ("Participants $", $861.8M,
+   * 95.4% of the plan) that v101's 2% window missed — region sat at ratio
+   * 1.88, menu withheld. The wider drop requires the remainder alone to land
+   * in-band AND the remainder's top row under 50% of it, and runs on the
+   * WINNER only: applied per-candidate it flipped Capital Group's honest
+   * 73-row menu to a junk sibling, and without the remainder-shape test it
+   * shipped HCA's trust-note aggregates as a confident $19B lineup. Both
+   * live as pinned specimens in docs/defect-specimens.json. */
+  ["Marriott Vacations (mangled total row dropped post-selection)", "20241015175511NAL0015204099001", 903033467,
+    { found: true, n: 30, sum: 837352887 }],
   /* v68: the filler-column class. Before the fix, all 28 of this plan's
    * holdings were stored as "VARIABLE 1,056,601 sh" — the (c) sub-columns
    * ("N/A  VARIABLE  N/A  ... sh  #") beat the real name in column (b).

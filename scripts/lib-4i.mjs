@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 106;
+export const PARSER_VERSION = 107;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -1585,6 +1585,43 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
   }
   if (!best) return { found: false, why: "noregion" };
   let funds = best.scale > 1 ? best.funds.map((f) => ({ ...f, value: f.value * best.scale })) : best.funds;
+
+  /* v107: drop the winner's own total row — POST-selection, deliberately.
+   * Marriott Vacations filed a clean 31-fund menu plus one mangled total row
+   * ("Participants $", $861.8M, 95.4% of the $903M plan); v101's 2% window
+   * missed it and the region sat at ratio 1.88, real menu withheld. The wider
+   * test drops one row at 50-108% of plan assets when the REMAINDER alone
+   * lands in the confidence band (0.7-1.3) — arithmetic a legitimate dominant
+   * holding cannot satisfy, since its remainder sits near zero — AND the
+   * remainder's largest row is under 50% of the remainder, because a menu's
+   * top fund does not own half a plan while a trust-note aggregate region is
+   * always dominated by one class row (HCA: "Corporate bonds" plus a 63.7%
+   * participation-in-master-trust row would otherwise have shipped as a
+   * confident $19B lineup).
+   *
+   * Post-selection matters as much as the conditions. The first version ran
+   * inside the candidate loop, where changing a candidate's total changes its
+   * ratio, its score, and therefore WHICH REGION WINS — Capital Group's
+   * honest 73-row menu lost to a 76-row sibling carrying a $511M "American
+   * Funds" house-merge row. Repairing only the already-chosen winner cannot
+   * flip a winner by construction. */
+  if (assetsEOY && funds.length >= 6 && (best.ratio || 0) > 1.5) {
+    const wTotal = funds.reduce((a, f) => a + f.value, 0);
+    const wi = funds.findIndex((f) => {
+      const share = f.value / assetsEOY;
+      if (share < 0.5 || share > 1.08) return false;
+      const rest = (wTotal - f.value) / assetsEOY;
+      return rest >= 0.7 && rest <= 1.3;
+    });
+    if (wi >= 0) {
+      const rest = wTotal - funds[wi].value;
+      const maxRest = funds.reduce((a, f, i) => (i === wi ? a : Math.max(a, f.value)), 0);
+      if (maxRest <= rest * 0.5) {
+        funds = funds.filter((_, i) => i !== wi);
+        best.ratio = rest / assetsEOY;
+      }
+    }
+  }
 
   // sub-$10k rows are residue (leaked years, currency cents), not menu
   // options — UNLESS the row proved itself by carrying its own investment-type

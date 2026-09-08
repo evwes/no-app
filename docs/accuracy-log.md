@@ -6254,3 +6254,41 @@ but ~40 firings have committed nothing (morning-brief stale since Sep 1). A
 diagnostic firing at 19:17Z instructs the session to write a heartbeat commit
 and report any denied tool — discriminating push-blocked from
 deciding-not-to-act. Verdict goes here when it lands.
+
+## 2026-09-08 — v107: the winner's own total row, dropped post-selection
+
+**Wrong.** Marriott Vacations (24,960 participants, $903M) filed a clean
+31-fund menu plus one mangled total row — the name column ends "Participants
+$" — at $861.8M, 95.4% of plan assets. v101's grand-total window (98–102% of
+the region sum) missed it, so the winning region sat at ratio 1.88 and the
+real menu was withheld as `band-hi`. A stratified sample of the band-hi
+bucket (270 live plans, 684,737 participants, $33.1B) found ~14 of 40
+menu-shaped, and this shape in 4 of those 14.
+
+**The change (v107).** After the winning candidate is selected — never
+per-candidate — if assets are known, the region has ≥6 rows and sits above
+ratio 1.5, find a single row worth 50–108% of plan assets whose REMOVAL
+leaves the remainder in-band (0.7–1.3) AND whose remainder's largest row is
+≤50% of the remainder. Drop that row and re-ratio. Result: Marriott 30 rows,
+ratio 0.927, confident; ~4 of 14 menu-shaped band-hi specimens recover.
+
+**Two drafts were wrong first, and the controls that caught them are pinned:**
+- Draft 1 ran the drop per-candidate during scoring. Capital Group's honest
+  73-row menu at ratio 1.000 flipped its winner to a junk sibling with a
+  $511M "American Funds" house-merge row. Post-selection placement only
+  repairs the already-chosen winner and cannot flip one. Pinned as
+  `winner-flip-control`.
+- Draft 2 lacked the remainder-shape condition and shipped HCA as a
+  confident $19B lineup built from trust-note aggregates ("Corporate
+  bonds", a 63.7% participation-in-master-trust row). The `maxRest <=
+  rest * 0.5` condition rejects it: after removing the dominant row the
+  remainder is still headed by an aggregate. Pinned as
+  `trust-note-aggregates-control`.
+
+**Prevention.** Gate specimen (Marriott, n=30, exact sum) plus both control
+filings in `docs/defect-specimens.json`, so `diff-lineups.mjs` tops the
+corpus up with all three before any future comparison. `diff-lineups.mjs
+41f12218` over the local corpus: 0 confidence lost, 0 fabricated introduced,
+0 row moves. The rule the two drafts teach: a repair that runs during
+scoring changes which candidate wins — repairs run AFTER selection, on the
+winner alone.
