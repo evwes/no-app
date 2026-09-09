@@ -157,11 +157,15 @@ writeFileSync("lineups-index.json", JSON.stringify({ generated: new Date().toISO
 // plans-all order): the browser no longer knows acks at boot, so the flags
 // are positional. Extra bits beyond indexFlags: 2048 = this plan's linked
 // master trust has a confident lineup (the trust ack itself arrives with
-// the detail shard on expand); 4096 = the parser found the filing's
+// the detail shard on expand); bits 13-15 = document-shape enum (DS_ENUM,
+// frozen order); 4096 = the parser found the filing's
 // schedule but it reports investments in AGGREGATE (dx=stmt: MetLife,
 // Comcast, Albertsons class, plus the generic-dominant lineups v111
 // withdrew) — the frontend explains that instead of implying an unread
 // schedule.
+/* Document-shape enum for plans-index bits 13-15. Order is FROZEN: the
+ * frontend decodes by number, so appending is safe and reordering is not. */
+const DS_ENUM = { noattach: 1, notable: 2, omitted: 3, absent: 4, scanned: 5, readfail: 6, unread: 7 };
 try {
   const pa = JSON.parse(readFileSync("plans-all.json", "utf8"));
   const ai = pa.fields.indexOf("ack"), mi = pa.fields.indexOf("mtiaAck");
@@ -170,10 +174,16 @@ try {
     if (r[mi] && (index[r[mi]] || 0) & 1) b |= 2048;
     const st = status.plans[r[ai]];
     if (st && !st.c && st.dx === "stmt" && !(b & (1 | 2048))) b |= 4096;
+    /* v113 data: bits 13-15 carry the DOCUMENT SHAPE as a 3-bit enum so a
+     * plan with no lineup can state the real reason instead of the hedge
+     * "scanned/absent, or held through a trust". Read ONLY when there is no
+     * lineup to show — `ds` describes the FILING, not our success, and must
+     * be conditioned (a band-hi plan legitimately carries ds=readfail). */
+    if (st && !st.c && !(b & (1 | 2048 | 4096)) && DS_ENUM[st.ds]) b |= DS_ENUM[st.ds] << 13;
     return b;
   });
   writeFileSync("plans-index.json", JSON.stringify({ generated: new Date().toISOString(), count: bits.length, bits }));
-  console.log(`wrote plans-index.json: ${bits.length} rows, ${bits.filter((b) => b & 2048).length} trust-lineup plans, ${bits.filter((b) => b & 4096).length} filed-in-aggregate`);
+  console.log(`wrote plans-index.json: ${bits.length} rows, ${bits.filter((b) => b & 2048).length} trust-lineup plans, ${bits.filter((b) => b & 4096).length} filed-in-aggregate, ${bits.filter((b) => (b >> 13) & 7).length} with a document-shape reason`);
 } catch (e) { console.warn("plans-index skipped (plans-all absent?): " + e.message); }
 
 const vals = Object.values(status.plans);

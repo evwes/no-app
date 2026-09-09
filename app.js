@@ -263,6 +263,10 @@
         // 4096: the schedule was found but reports investments in AGGREGATE
         // (dx=stmt) — say so instead of implying an unread schedule
         plan.filedAggregate = !!(b & 4096);
+        // bits 13-15: why the FILING yields no schedule (v113 `ds`). Set only
+        // for plans with no lineup, so it always describes a gap the reader
+        // is actually looking at. Enum order is frozen in merge-4i's DS_ENUM.
+        plan.docShape = (b >> 13) & 7;
         if (plan.brokerage == null && (b & 2)) plan.brokerage = "Self-directed brokerage";
         if (plan.megaBackdoor == null && (b & 8)) plan.megaBackdoor = true;
         if (!plan.vesting && (b & 16)) plan.vesting = "Immediate";
@@ -1419,6 +1423,28 @@
           <tbody>${menu.map((n) => `<tr><td class="fund-name-col">${esc(n)}</td></tr>`).join("")}</tbody>
         </table>
       </div>`;
+      }
+      /* The DOCUMENT's own reason, when the pipeline recorded one (v113).
+       * The old sentence hedged every one of these plans identically as
+       * "scanned/absent, or held through a trust"; a random 30-filing sample
+       * measured 77% as simply having no audited attachment published. Say
+       * which it is. Codes 6/7 are OUR failure and keep honest wording. */
+      const DOC_SHAPE_TEXT = [
+        null,
+        "This filing's public copy contains only the Form 5500 pages — no audited attachment was published with it, and the fund schedule lives in that attachment. That's what the DOL received, not something we failed to read.",
+        "This filing includes its audited attachment, but that attachment contains no schedule of assets — so no fund-by-fund detail was published.",
+        "This filing states that the schedule of assets was omitted as not applicable, so no fund detail was published.",
+        "This filing references a schedule of assets, but those pages are not present in the public copy.",
+        "This filing's attachment is image-only in the public copy, and the pages could not be read even after OCR.",
+        "This filing does contain a schedule of assets, but we could not read it — that's our gap, not the filing's.",
+        "This filing contains table pages that look like a schedule under a heading we don't yet recognise — our gap, not the filing's.",
+      ];
+      const shapeText = !plan.isSF && DOC_SHAPE_TEXT[plan.docShape || 0];
+      if (shapeText) {
+        return `
+      <div class="section-label">FUND HOLDINGS</div>
+      <p class="max-benefit">${shapeText}
+      <a href="https://github.com/evwes/no-app/issues">Contribute it</a>.</p>`;
       }
       return `
       <div class="section-label">FUND HOLDINGS</div>

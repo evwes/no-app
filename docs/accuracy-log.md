@@ -6732,3 +6732,26 @@ DOCUMENT, not our success, so it must be read CONDITIONED ON `dx`. A
 `band-hi` plan legitimately carries `ds: readfail` — its filing does have a
 statutory header, and we did read rows from it. Only inside `nohead` (we
 found no region at all) does `readfail` mean a failure.
+
+## 2026-09-09 — the document's reason now reaches the reader
+
+`ds` shipped as bits 13-15 of plans-index (a frozen 3-bit enum in
+merge-4i's `DS_ENUM`), set only for plans with no lineup — the condition
+under which the frontend renders gap text, satisfying the "read `ds`
+conditioned on `dx`" rule. **8,145 plans** carry a reason. The hedge
+"the attachment is scanned/absent, or the plan holds assets through a
+trust that doesn't itemize funds" is replaced by what is actually true of
+that filing, e.g. "This filing's public copy contains only the Form 5500
+pages — no audited attachment was published with it… That's what the DOL
+received, not something we failed to read." Codes 6/7 stay OURS in
+wording: "we could not read it — that's our gap, not the filing's."
+
+**Verified on a real specimen per code** (noattach: Nestle 50,509
+participants; notable: S&C Electric; absent: Cisco 70,957; plus a
+control with a lineup that must show none of this). Two specimens
+rendered something else and BOTH were correct precedence, not bugs:
+Northrop shows its named menu from the audited notes, and Utex shows the
+wind-down line because it is a $0-EOY ended plan. The ladder is
+wind-down → filed-in-aggregate → named menu → document shape → generic
+hedge, and each rung is strictly more informative than the one below it.
+Smoke and map suites green.
