@@ -6755,3 +6755,70 @@ wind-down line because it is a $0-EOY ended plan. The ladder is
 wind-down → filed-in-aggregate → named menu → document shape → generic
 hedge, and each rung is strictly more informative than the one below it.
 Smoke and map suites green.
+
+## 2026-09-09 — v114 REVERTED: the merge-count signal cannot separate constructed
+## summaries from real merged holdings (negative result, band-hi)
+
+**Recorded because it did not ship.** A failed attempt that leaves no trace
+gets re-attempted; this one cost most of a cycle and the next person to look
+at `band-hi` will arrive at the same idea.
+
+**What was wrong.** `band-hi` (212 live plans, 200,850 participants, $15.1B)
+publishes lineups whose holdings sum ABOVE plan assets. On Vandalia the
+winning region carries a genuine 30+ fund menu (largest real holding $136.7M)
+PLUS two rows that exist nowhere in the filing as single values:
+"Investments measured at net asset value (a) Collective i…" $1,144,169,199
+(134% of plan assets) and "Mutual funds:" $272,080,672 (32%). They are
+shared-name merges — the v100 family — summed out of the fair-value note
+sitting beside the real schedule.
+
+**Three models were tried and each was killed by a cheap instrument before
+any code shipped**, which is the part that worked:
+1. *Trust opacity* — refuted: the giants are already linked and excluded.
+2. *Section subtotals counted beside the menu* — refuted by arithmetic: a
+   $1.14B NAV row cannot be a subtotal of an $853M plan.
+3. *Cross-plan composite* — refuted by plans-all: `pn=005` matches the
+   schedule page's own plan number.
+
+**The change that was built.** A name-independent signal: `parse4i` already
+merges rows by name into `seen`, so `seen.vals.size` counts how many distinct
+filed values collapsed into one published row. v114 exposed it as `_m` on the
+fund row (stripped before return) and treated `_m >= 2` as aggregate evidence
+alongside `GENERIC_TYPE_NAME` / `AGG_DISCLOSURE` / `NOT_FUND_SHAPED`, guarded
+on ≥7 product-named rows surviving, the aggregate exceeding the biggest
+product row, and the remainder landing back inside the confident band.
+
+**It worked on the target and was still wrong.** Vandalia recovered — 36
+rows, ratio 1.053, CONFIDENT. Nuvance and Conagra untouched. Parser gate
+green, zero fabricated rows introduced, zero confidence lost. But
+`diff-lineups.mjs` showed four plans each losing one row, and every one was a
+REAL holding:
+
+| plan | dropped row | why it merges legitimately |
+|---|---|---|
+| Intermountain | Vanguard Institutional 500 Index Trust ($1.21B) | one fund, several share classes filed as separate rows |
+| Mass General | aggregate brokerage line | genuinely one filed aggregate |
+| Columbia | unallocated annuity contracts | multiple contracts, one product |
+| Fremont | "Fidelity Investments" | platform rows filed per-source |
+
+Merging across share classes is the case the existing code comment in
+`parse4i` already warns about; `_m >= 2` is exactly the shape of an honest
+menu row.
+
+**The observed separator, NOT validated.** Vandalia's two bad rows sit at
+134% and 32% of plan assets; all four false positives sit at 14–18%. That is
+a lead, not a discriminator — it was measured on six filings, and a threshold
+tuned on two is precisely the mistake that produced v110 and the 12x v112
+projection.
+
+**The change.** Reverted whole (`git checkout -- scripts/lib-4i.mjs`);
+PARSER_VERSION stays 113. No threshold was tuned to make the diff green.
+
+**The prevention.** *A signal that recovers the target is not a fix until it
+is shown not to fire on the honest population.* `diff-lineups.mjs` over the
+local corpus is what caught this, and it caught it only because the corpus is
+topped up from `docs/defect-specimens.json` — the specimens are what make a
+negative result cheap. Second: **revert beats tune.** A guard whose threshold
+has to be fitted to two filings is a guard that has no cause behind it yet;
+`band-hi` stays open with the note that the next attempt needs a signal
+validated against the honest menus, not only against Vandalia.
