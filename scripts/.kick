@@ -17,3 +17,4 @@ kick 2026-08-26T11:46:17Z v89
 kick 2026-08-26T16:08:58Z v90
 2026-09-09 kick: v114 + v115 together (caption seed; band-hi retry)
 2026-09-09 kick: v116 (unit list before "in thousands")
+2026-09-09 kick: v117 (adopt OCR schedule over a junk text parse)
