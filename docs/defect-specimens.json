@@ -64,7 +64,7 @@
    "class": "filed-aggregate-control",
    "fixed": "v105",
    "sponsor": "MetLife Group",
-   "was": "NOT a defect \u2014 the filing genuinely reports participant-directed investments in aggregate. Control: must stay non-confident without being called a merge. BREACHED ONCE (run #223, v109 data): the prior-year FALLBACK ladder rescued its 2023 filing (ack 20241008081623NAL0017271841001) whose two aggregates split dominance 58/41 under the single-row >=90% test, padded by auditor letterhead rows (Tel:/Fax:/Suite as $8.3M/$7.7M/$3.6M holdings) \u2014 shipped confident, caught in the mirror-gate review before reaching main. v110 closed it (aggSplit + letterhead condemnation); the 2023 ack is a gate specimen with expect stmt"
+   "was": "NOT a defect — the filing genuinely reports participant-directed investments in aggregate. Control: must stay non-confident without being called a merge. BREACHED ONCE (run #223, v109 data): the prior-year FALLBACK ladder rescued its 2023 filing (ack 20241008081623NAL0017271841001) whose two aggregates split dominance 58/41 under the single-row >=90% test, padded by auditor letterhead rows (Tel:/Fax:/Suite as $8.3M/$7.7M/$3.6M holdings) — shipped confident, caught in the mirror-gate review before reaching main. v110 closed it (aggSplit + letterhead condemnation); the 2023 ack is a gate specimen with expect stmt"
   },
   {
    "ack": "20251010104106NAL0007965633001",
@@ -92,21 +92,35 @@
    "class": "trust-note-aggregates-control",
    "fixed": null,
    "sponsor": "HCA",
-   "was": "CONTROL: must stay non-confident \u2014 trust-note aggregates ('Corporate bonds', 63.7% participation-in-master-trust row); the first v107 draft shipped it as a confident $19B lineup"
+   "was": "CONTROL: must stay non-confident — trust-note aggregates ('Corporate bonds', 63.7% participation-in-master-trust row); the first v107 draft shipped it as a confident $19B lineup"
   },
   {
    "ack": "20260407122345NAL0004976899001",
    "class": "winner-flip-control",
    "fixed": null,
    "sponsor": "Capital Group",
-   "was": "CONTROL: 73 rows at ratio 1.000 exactly \u2014 a per-candidate version of the total-drop flipped its winner to a junk sibling with a $511M 'American Funds' house-merge row"
+   "was": "CONTROL: 73 rows at ratio 1.000 exactly — a per-candidate version of the total-drop flipped its winner to a junk sibling with a $511M 'American Funds' house-merge row"
   },
   {
    "ack": "20251008095017NAL0005364081001",
    "class": "image-table-page",
    "fixed": "v108",
    "sponsor": "Compass Group USA",
-   "was": "the whole 40-fund menu embedded as a JPEG under a native-text 4i title page; every unreadable-page test passed, OCR never fired, note aggregates published band-hi at 2.49x (312,914 participants). NOTE: the fix lives in fetch-4i's OCR path \u2014 the text-only parse diff-lineups runs stays non-confident by design; the census (band-hi count) and the pinned J&J/Home Depot refuse-cases are the guard"
+   "was": "the whole 40-fund menu embedded as a JPEG under a native-text 4i title page; every unreadable-page test passed, OCR never fired, note aggregates published band-hi at 2.49x (312,914 participants). NOTE: the fix lives in fetch-4i's OCR path — the text-only parse diff-lineups runs stays non-confident by design; the census (band-hi count) and the pinned J&J/Home Depot refuse-cases are the guard"
+  },
+  {
+   "ack": "20260228103447NAL0002165200001",
+   "class": "aggsplit-three-fund-control",
+   "fixed": "v111",
+   "sponsor": "Hari Donuts Batavia",
+   "was": "CONTROL: genuine three-fund Vanguard menu ('Total Stock Market Index' + Intl + Bond) — v110's split-aggregate test read all three 'Total ...' names as aggregates and withdrew five such menus; must stay CONFIDENT"
+  },
+  {
+   "ack": "20250930150209NAL0012438417001",
+   "class": "generic-dominant-row",
+   "fixed": "v111",
+   "sponsor": "Premier Care Dental",
+   "was": "2023 fallback published 'Mutual Funds' at 99.4% of a $55M plan as a confident lineup after v110's letterhead cleanup promoted the region into band; aggOnly now also condemns GENERIC_TYPE_NAME dominant rows (fallback ack 20241007155035NAL0016364977001 is the gate specimen)"
   }
  ]
 }

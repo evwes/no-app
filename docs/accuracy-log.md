@@ -6464,3 +6464,42 @@ control's specimen entry records the breach permanently. Corpus diff vs
 the v109 tip: zero changes of any kind. The process rule this reaffirms:
 **the CONFIDENCE DIFF's gains are checked against the pinned controls
 before every mirror — a gain on a control is a stop, not a win.**
+
+## 2026-09-09 — v111: v110's split test withdrew five real menus; the cleanup promoted a sixth junk region
+
+**Wrong, both directions at once, in data that never reached the live site.**
+Run #224's CONFIDENCE DIFF read +1/−6. Only MetLife was intended. The other
+five losses were honest three-fund Vanguard menus on tiny plans — "Total
+Stock Market Index" + "Total International Stock Index" + "Total Bond Market
+Index" — because v110's split-aggregate test used the full NOT_FUND_SHAPED
+list, whose `total\b.*` arm is safe for a single 90%-dominant row (always a
+subtotal) but reads every "Total …"-named FUND as an aggregate. And the one
+GAIN was junk: Premier Care Dental's 2023 fallback published "Mutual Funds"
+at 99.4% of a $55M plan — v110's letterhead condemnation removed the rows
+that had been keeping that region out of band, the exact "removing junk can
+promote a still-junky region" failure the Galliano comment in the code
+already warns about, one paragraph above where I was editing.
+
+**The change (v111).** The split test gets its own NARROW vocabulary —
+unambiguous accounting-disclosure phrasing only (participant-directed,
+fully-benefit-responsive, investments-at-value, net assets, interest-in-
+trust) — never the broad junk list. And the single-dominant-row test now
+also condemns GENERIC_TYPE_NAME rows ("Mutual Funds", "Common Stocks",
+"Collective Trust") at ≥90%: a category is not a holding, while
+product-named single holdings (the 319 honest ones) match neither list.
+
+**Verified:** gate green with two new pinned specimens — Hari Donuts (the
+three-fund menu MUST be confident, n=3 exact sum) and Premier Care's
+fallback ack (MUST be stmt) — alongside MetLife's (still stmt); corpus diff
+vs the v109 ref: zero changes across 192 filings.
+
+**Two process findings worth keeping:**
+- The loss auto-triage flags n≥7, or n≥5 in-band — all five withdrawn
+  menus were n=3-4 and sailed under it; only reading the raw CONFIDENCE
+  DIFF caught them. Small honest menus are invisible to the triage
+  threshold; the diff itself is the check, every run, no exceptions.
+- A guard built from a shared vocabulary inherits every arm of that
+  vocabulary. NOT_FUND_SHAPED was tuned for one question ("is a single
+  dominant row junk?"); reusing it verbatim for a different question
+  ("are these 2-3 rows jointly junk?") imported `total\b.*` into a
+  context where it is wrong. Vocabularies are per-question.

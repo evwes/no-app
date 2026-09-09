@@ -239,6 +239,21 @@ const SPECIMENS = [
    * CURRENT plan year's, exactly as the fallback path judges its ratio. */
   ["MetLife 2023 fallback (split-aggregate dominance + letterhead rows must stay stmt)", "20241008081623NAL0017271841001", 8316000000,
     { found: true, stmt: true }],
+  /* v111 control: v110's split test used the full NOT_FUND_SHAPED list,
+   * whose `total\b.*` arm made all three rows of a genuine three-fund
+   * Vanguard menu read as aggregates ("Total Stock Market Index" starts
+   * with "Total") — five honest tiny-plan menus were withdrawn on run
+   * #224 and caught in loss triage. This one must stay CONFIDENT. */
+  ["Hari Donuts (three-fund 'Total ...' Vanguard menu is a menu, not aggregates)", "20260228103447NAL0002165200001", 119600,
+    { found: true, n: 3, sum: 101395 }],
+  /* v111: a GENERIC TYPE as the dominant row. Premier Care's 2023 fallback
+   * filing reports "Mutual Funds" at 99.4% of the sum — a category, not a
+   * holding — and v110's letterhead cleanup promoted the region into the
+   * confidence band (removing junk can promote a still-junky region: the
+   * Galliano lesson). Assets are the CURRENT plan year's, as the fallback
+   * path judges ratio. */
+  ["Premier Care 2023 fallback ('Mutual Funds' at 99% is a category, stmt)", "20241007155035NAL0016364977001", 54677749,
+    { found: true, stmt: true }],
   /* v68: the filler-column class. Before the fix, all 28 of this plan's
    * holdings were stored as "VARIABLE 1,056,601 sh" — the (c) sub-columns
    * ("N/A  VARIABLE  N/A  ... sh  #") beat the real name in column (b).

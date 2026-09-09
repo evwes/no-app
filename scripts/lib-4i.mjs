@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 110;
+export const PARSER_VERSION = 111;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -1747,18 +1747,29 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
    * these become honest gaps with a recorded cause rather than a fabricated
    * menu. */
   const topRow = funds.reduce((a, f) => (f.value > (a ? a.value : -1) ? f : a), null);
+  /* v111: the single-dominant-row test also condemns a GENERIC TYPE name.
+   * Premier Care's fallback filing published "Mutual Funds" at 99.4% of a
+   * $55M plan — a category, not a holding — which NOT_FUND_SHAPED misses
+   * ("mutual funds" lives in GENERIC_TYPE_NAME). Product-named single
+   * holdings (the 319 honest ones v105 preserved) match neither list. */
   const aggOnly = !!topRow && allSum > 0 && topRow.value / allSum >= 0.9 &&
-    NOT_FUND_SHAPED.test(String(topRow.name || "").trim());
-  /* v110: dominance SPLIT between aggregates evades the single-row test.
-   * MetLife's fallback filing reports "Participant directed investments"
-   * ($4.12B, 58%) plus "Fully benefit responsive investment contract"
-   * ($2.89B, 41%) — together 99.7% of the region, neither alone >=90% —
-   * padded to five rows by the auditor's letterhead, and shipped as a
-   * confident lineup of an $8.3B plan. Two or three non-fund-shaped rows
-   * jointly carrying >=90% of the sum are the same disclosure-in-aggregate,
-   * just typeset in two lines. A real menu cannot trip this: no menu puts
-   * 90% of its assets in rows named like accounting categories. */
-  const aggRows = funds.filter((f) => NOT_FUND_SHAPED.test(String(f.name || "").trim()));
+    (NOT_FUND_SHAPED.test(String(topRow.name || "").trim()) ||
+     GENERIC_TYPE_NAME.test(String(topRow.name || "").trim()));
+  /* v110/v111: dominance SPLIT between aggregates evades the single-row
+   * test. MetLife's fallback filing reports "Participant directed
+   * investments" ($4.12B, 58%) plus "Fully benefit responsive investment
+   * contract" ($2.89B, 41%) — together 99.7% of the region, neither alone
+   * >=90% — and shipped as a confident lineup of an $8.3B plan.
+   *
+   * The vocabulary here must be NARROWER than NOT_FUND_SHAPED: its
+   * `total\b.*` arm is safe when one row carries 90% alone (that is always
+   * a subtotal) but v110 used the full list for the split test and
+   * withdrew five honest three-fund Vanguard menus — "Total Stock Market
+   * Index", "Total International Stock Index", "Total Bond Market Index"
+   * are real funds whose names START with "Total". Only unambiguous
+   * accounting-disclosure phrasing counts toward a split. */
+  const AGG_DISCLOSURE = /^(?:participants?[- ]directed.*|fully benefit[- ]responsive.*|investments?(?:,? at .*)?|at (?:fair|contract) value|net assets.*|value of interest in .*|master trust.*|investments? held in the trust.*)$/i;
+  const aggRows = funds.filter((f) => AGG_DISCLOSURE.test(String(f.name || "").trim()));
   const aggSum = aggRows.reduce((a, f) => a + f.value, 0);
   const aggSplit = allSum > 0 && aggRows.length >= 2 && aggRows.length <= 3 && aggSum / allSum >= 0.9;
 
