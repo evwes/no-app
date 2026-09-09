@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 114;
+export const PARSER_VERSION = 115;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -1926,7 +1926,31 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
  * describing the first pass and the census stays comparable across versions. */
 export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
   const first = parse4iPass(text, assetsEOY, sponsorName, codes, false);
-  if (first.found) return first;
+  if (first.found) {
+    /* v115: BAND-HI also gets the retry. A region whose holdings sum at or
+     * above 1.6x the plan's assets is never published — it fails the
+     * confidence band — so retrying it cannot withdraw anything; the only
+     * possible outcome is a lineup where there was none. The mechanism the
+     * retry fixes is specific: the statutory TITLE sits above a fair-value
+     * note, and the region seeded from it swallows the note's own totals
+     * alongside the real table. The COLUMN CAPTION sits at the top of the
+     * table itself, so a caption-seeded candidate excludes the note and
+     * competes on its own merits.
+     *
+     * The retry's result is accepted ONLY if it is confident by the exact
+     * production predicate; anything less and the first pass's diagnosis is
+     * kept untouched, so `dx` keeps meaning what it meant and the census
+     * stays comparable. Measured on a RANDOM 40-plan draw from the 212 live
+     * band-hi plans: 9 recovered, every one of their 315 published values
+     * present verbatim in its own filing, zero generic-named rows. */
+    if ((first.ratio || 0) >= 1.6 && !first.stmt && !first.trustPtr) {
+      const r = parse4iPass(text, assetsEOY, sponsorName, codes, true);
+      const ok = r.found && r.funds.length >= 3 && (r.ratio || 0) > 0.45 && (r.ratio || 0) < 1.6 &&
+        (r.funds.length >= 5 || ((r.ratio || 0) > 0.7 && (r.ratio || 0) < 1.3)) && !r.stmt && !r.trustPtr;
+      if (ok) return r;
+    }
+    return first;
+  }
   const retry = parse4iPass(text, assetsEOY, sponsorName, codes, true);
   if (retry.found) return retry;
   // "consolidated" is a fact about the DOCUMENT, not about which seed fired,

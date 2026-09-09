@@ -6894,3 +6894,54 @@ Lucas, and it is the reason this version ships with a guard instead of a
 defect. Second, **a recovery is not measured by how many lineups appear but by
 whether each one is TRUE**: the count went 29 → 28 on inspection, and the row
 that left was the only one worth arguing about.
+
+## 2026-09-09 — v115: band-hi gets the retry, and the fair-value note stops
+## being read as the schedule
+
+**What was wrong.** `band-hi` — holdings summing at or above 1.6x the plan's
+Schedule H assets — was the largest OURS bucket by dollars: 212 live plans,
+200,850 participants, $15.1B. Its cause was misdiagnosed three times this
+month before instrumentation settled it: the region seeded from the statutory
+TITLE begins above the FAIR VALUE HIERARCHY NOTE and runs through the table
+below it, so the note's own totals are summed as holdings beside the real menu.
+Vandalia Health sat at 2.71x, Nuvance at 3.27x, and both published nothing.
+
+**Why the fix is the same one v114 shipped.** The statutory COLUMN CAPTION sits
+at the top of the TABLE, not at the top of the section — so a caption-seeded
+candidate contains the table and excludes the note. v114 already added that
+seed on the retry pass; v115 simply lets the retry run for `band-hi` as well
+as for `found:false`.
+
+**Why that is still strictly additive.** A `band-hi` parse fails the confidence
+band, so it publishes nothing. Retrying it cannot withdraw a lineup; the only
+possible outcome is a lineup where there was none. The retry's result is
+accepted ONLY if it is confident by the exact production predicate — anything
+less and the first pass's diagnosis is kept untouched, so `dx` keeps meaning
+what it meant and the census stays comparable across versions. Corpus diff:
+0 gained, 0 lost, 0 rows moved. Gate green.
+
+**Measured on a RANDOM 40-plan draw** from the 212 (drawn from a pool rebuilt
+to match the census exactly — 212 plans / $15.1B — after an earlier sizing
+forgot the master-trust-held exclusion and reported 388): **9 recovered,
+22.5%**, which projects to roughly 48 plans. The projection is from a random
+draw rather than the top of a ranked list, which is the corollary this month
+earned twice; it is still a projection, and the re-size after the run decides
+whether it was right.
+
+**Every recovered lineup was verified against its own filing, not eyeballed.**
+Across the 9, all 315 published values appear VERBATIM in the filing text, and
+every sum reconciles to Schedule H (SRI International 40 rows at 0.999, Law
+School Admission Council 63 at 0.997, Gateway First Bank 36 at 0.972). Zero
+generic-named rows, zero dominant non-fund rows. The two named type cases both
+recover: Vandalia 33 rows at 0.97, Nuvance 30 at 1.00. Vandalia's one value not
+found as a literal is the deliberate SDBA aggregation of its two disclosed
+BrokerageLink lines ($1,622,489 + $19,648,427), which is existing behaviour and
+correct.
+
+**The prevention, and it is the general one.** *When a diagnosis is right, the
+fix is often already built for another bucket.* The caption seed was written
+for `nohead/readfail` — 32 small plans — and reached $15.1B of `band-hi`
+without a line of new parsing logic, because both buckets have the same
+underlying cause: the parser was told where the SECTION starts and never where
+the TABLE starts. Before writing a new mechanism for a bucket, check whether an
+existing one, gated differently, already reaches it.

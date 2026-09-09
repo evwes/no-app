@@ -156,6 +156,20 @@
    "fixed": null,
    "sponsor": "Genentech",
    "was": "CONTROL: $14.3B plan whose entire 4i schedule is one line, 'Plan Interest in Roche U.S. Retirement Plans Master Trust'. The caption seed must reach it and still publish nothing — the honest gap is the unlinked trust (Sch D names EIN 94-2347624 PN 002; no MTIA filing for it exists in the datasets), not the schedule"
+  },
+  {
+   "ack": "20251015113118NAL0002329043004",
+   "class": "fair-value-note-swallowed-by-title",
+   "fixed": "v115",
+   "sponsor": "Vandalia Health",
+   "was": "the region seeded from the statutory TITLE spanned the fair-value hierarchy note as well as the table, so the note's own totals summed beside the real menu and the plan sat at 2.71x plan assets. Caption-seeded retry on band-hi gives the table its own candidate: 33 rows at ratio 0.97, every value verbatim in the filing (the one apparent exception is the deliberate SDBA aggregation of the two disclosed BrokerageLink lines)"
+  },
+  {
+   "ack": "20251013200651NAL0002687120001",
+   "class": "band-hi-retry",
+   "fixed": "v115",
+   "sponsor": "SRI International",
+   "was": "$787M plan, 40 rows at ratio 0.999 after the band-hi retry, sum reconciling to Schedule H within 0.1%; pinned as the value case for the class"
   }
  ]
 }
