@@ -462,7 +462,7 @@ don't confuse them). Frontend: python http.server + Playwright at
 
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
-  full-form** filers; 68,767 parse-status entries. **Parser v115, OCR v8.**
+  full-form** filers; 68,767 parse-status entries. **Parser v116, OCR v8.**
   **59,610 confident lineups, 62,660 with features.** Numbers move every run —
   `docs/coverage-history.jsonl` is the source of truth, and the merge job
   appends to it.
@@ -517,7 +517,7 @@ don't confuse them). Frontend: python http.server + Playwright at
   | 527 | 397,007 | $24.1B | `nohead` no heading seeded a region. SPLIT by `ds` (v113): 484 permanently unreachable, 43 ours. The `readfail` half of "ours" is CLOSED by v114 — the statutory column caption now seeds a region, and 28 of those 32 plans publish a real menu; the residue is 2 unlinked-trust pointers (Genentech $14.3B), 1 truncated attachment, 1 CONSOLIDATED filing. What remains ours here is the 11 `nohead/unread` plans ($178M): table-shaped pages under a heading we do not know |
   | 374 | 211,809 | $19.0B | `stmt` statement/aggregate won, not a menu (+57 from few/band-hi; these now render the filed-in-aggregate line, bit 4096) |
   | 212 | 200,850 | $15.1B | `band-hi` holdings sum ABOVE plan assets. **ADDRESSED IN v115** — the caption-seeded retry (built for nohead/readfail in v114) also runs for band-hi, giving the TABLE its own candidate so the fair-value note is no longer summed beside the menu; a random 40-plan draw recovered 9 (22.5%, ~48 projected), Vandalia and Nuvance among them, with all 315 published values verbatim in their filings. Re-size after the run. History: DIAGNOSED 2026-09-09: NOT trust opacity (those giants are already linked and excluded) — these are mid-size plans whose real menu is read correctly but SECTION SUBTOTALS from the fair-value note are counted as holdings beside it (Vandalia 2.71x, Nuvance 3.27x). 95 of 212 carry 20+ rows. CORRECTED same day: the winning region is the FAIR VALUE HIERARCHY NOTE (Level 1/2/3 columns, two plan years, its own totals, ASC 820-10 practical-expedient text) being read as the schedule — Vandalia's NAV row is $1.14B against $853M of plan assets, so it cannot be a subtotal of this plan. Both filings also carry a statutory 4i header and show only ONE candidate, so the region boundary swallows the note. Fix = keep fair-value-note regions out of candidacy / seed from the statutory header. NOT subtotal arithmetic, NOT vocabulary |
-  | 52 | 261,344 | $35.7B | `band-lo` far below |
+  | 52 | 261,344 | $35.7B | `band-lo` far below. OPENED WHOLE 2026-09-09 (53 live plans by the local count) — four causes, only one ours: Paychex's unscaled "(Dollars, Units, and Shares in Thousands)" schedule, fixed in v116; YMCA is the Fund's own asset-class statement (truer label `stmt`); Aramark seeds its region off a TABLE-OF-CONTENTS line onto the Form 5500 cover pages; Cisco parses as `noregion` under every version and its stored band-lo diagnosis comes from the PRIOR-YEAR FALLBACK ack. Extending v115's caption retry to band-lo was built, measured at 1 recovery of 52, and reverted unshipped |
   | 43 | 19,877 | $455M | `trust` bare trust pointer, unlinked |
   | 8 | 10,746 | $2.1B | `noregion` heading fired, nothing scored |
 
