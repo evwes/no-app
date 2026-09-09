@@ -6628,3 +6628,41 @@ different claims and the site has been conflating them. The census now splits
 `nohead` by `ds` with the not-ours rows labelled NOT OURS, and the frontend
 line that states the honest cause follows once the re-parse populates the
 field.
+
+## 2026-09-09 — band-hi diagnosed: SECTION SUBTOTALS, not trust opacity
+
+**The belief being carried was wrong, and the census had already said so.**
+Both CLAUDE.md and the brief recorded band-hi's remainder as
+"master-trust-opaque giants (HCA/AT&T/J&J) — trust linking or a label, not
+parser work". Those giants are **already trust-linked and therefore already
+excluded** from the actionable bucket; the census counts 212, and a first
+sizing script that forgot the exclusion counted 388 and re-printed the giants
+at the top, which is what kept the wrong belief alive. (A measuring script is
+code: the 212/388 disagreement against the census is what exposed it.)
+
+**What the 212 actually are.** Mid-size plans — the largest is Conagra at
+28,863 participants — and 95 of them carry 20+ rows, i.e. a real menu is
+being read. Ratio bands: 33 at 1.6-2x, 72 at 2-3x, 54 at 3-5x, 53 above 5x.
+
+**The diagnosed cause, from two traces.** Vandalia Health (38 rows, 2.71x)
+and Nuvance Health (34 rows, 3.27x) both parse their genuine menus —
+FlexPath vintages, Fidelity 500 Index, Capital Group target-date trusts —
+AND, interleaved with them, the fair-value note's SECTION SUBTOTALS:
+"Investments measured at net asset value (a)" at $1.14B / $1.47B, "Mutual
+funds:" at $272M, "Common Collective Trusts" at $667M. Each subtotal is
+counted as a holding on top of the rows it subtotals, so the sum inflates to
+2-3x while every individual fund is correct.
+
+**Why the existing guards miss it.** This is neither v105's single dominant
+non-fund row nor v110/v111's 2-3 rows jointly carrying 90% — the subtotals
+are a minority of the sum and sit beside a real menu. Vocabulary alone also
+fails: `NOT_FUND_SHAPED` matches "Investments, at fair value" but not
+"Investments measured at net asset value" (the ASC 820 phrasing), and
+`GENERIC_TYPE_NAME` matches "Mutual funds" but not the plural "Common
+Collective Trusts".
+
+**The fix direction, deliberately NOT vocabulary.** A row whose value equals
+the sum of a contiguous run of rows that follow it is a subtotal, structurally,
+whatever it is called. That test is general where a phrase list is a
+whack-a-mole, and it is the next parser cycle's work — written up here rather
+than rushed in beside an in-flight run.

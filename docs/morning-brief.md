@@ -1,4 +1,4 @@
-# Morning brief — 2026-09-09 (final, 07:30Z / 3:30 AM ET — everything is LIVE)
+# Morning brief — 2026-09-09 (updated 14:35Z / 10:35 AM ET)
 
 ## The headline
 
@@ -43,15 +43,27 @@ and corrected BEFORE it ever reached the site.
 
 ## Continues next
 
-- Queued frontend line for filed-aggregate plans (MetLife/Comcast class +
-  the 15 newly withdrawn) — "the filing reports investments in aggregate".
-- Consider lowering the loss-triage floor below n=5.
-- Band-hi remainder = master-trust-opaque giants: trust linking or a label.
-- `few` SIZED (10:20Z, from dx alone): 667 live plans / 799k participants;
-  **501 are 1-2 rows summing to ~plan assets** — Nestle, General Mills,
-  State Street class: master-trust two-liners reaching the store via the
-  FALLBACK/OCR paths (Nestle's own newest filing has no 4i header; the
-  stored rw=2 came from a prior-year rescue). Next step is a fetch-4i-aware
-  sampler over ~10 of the 501, not parse4i traces; likely verdict is trust
-  linking / honest trust label, same direction as band-hi's giants.
-- live-`nohead` (528) sizing pass still queued.
+### Done since (all mirrored except v113, which is mid-run)
+
+- **Filed-in-aggregate line SHIPPED** (bit 4096, 405 plans).
+- **Loss-triage floor lowered** to n>=3 in-band, aggregate cleanups exempt.
+- **v112** recovered 10 menus hidden behind fair-value notes (projected 125 —
+  the projection was wrong, see the sampling corollary now in CLAUDE.md).
+- **v113 IN FLIGHT (run #232, lands ~14:50Z):** records the DOCUMENT's shape
+  (`ds`) at parse time. A RANDOM 30-filing sample of live-`nohead` measured
+  **93% permanently not ours** (77% no attachment published at all), ~7%
+  parser gaps on tiny plans. So nohead is not a parser project; the win is
+  telling those ~420 plans' readers the true reason.
+
+### Queue, re-ordered by what the evidence now says
+
+1. **`band-hi` (212 plans) — DIAGNOSED, fix designed, not yet built.** The
+   old note in this brief said "master-trust-opaque giants"; that was WRONG.
+   Those giants are already trust-linked and excluded. The real 212 are
+   mid-size plans (largest: Conagra, 28,863 participants) whose menus parse
+   correctly but whose fair-value SECTION SUBTOTALS are counted as holdings
+   beside them — Vandalia 2.71x, Nuvance 3.27x, 95 of 212 carrying 20+ rows.
+   Fix = structural subtotal detection (a row equal to the sum of the run
+   that follows it), NOT more vocabulary.
+2. Frontend line for the `ds` codes, once #232 populates the field.
+3. `few` remainder and the trust-pointer label.
