@@ -177,6 +177,13 @@
    "fixed": "v116",
    "sponsor": "Paychex",
    "was": "schedule headed '(Dollars, Units, and Shares in Thousands)'; every scale-marker arm required the unit noun immediately before the phrase, so the real 39-fund menu was read unscaled at 0.23% of a $2.26B plan and lost to the fair-value note. 30 rows at ratio 0.987 once scaled"
+  },
+  {
+   "ack": "20260618145652NAL0004417570001",
+   "class": "ocr-lineup-blocked-by-junk-text-parse",
+   "fixed": "v117",
+   "sponsor": "Meta Platforms",
+   "was": "214-page filing whose entire attachment is a substituted-font cipher. The cipher text yielded ONE junk row, so parsed.found was true and the combined text+OCR parse was never attempted (that branch was gated on imgPages). The OCR text holds the real 21-fund menu at ratio 1.000 of a $22.4B / 84,993-participant plan. NOTE: diff-lineups runs the TEXT parse only, so this specimen stays non-confident there by design - the guard is the census and the >=7-row menu-shape floor"
   }
  ]
 }

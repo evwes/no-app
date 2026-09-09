@@ -7030,3 +7030,55 @@ nothing where we used to show last year's match formula. A dated
 "as filed for plan year N−1" label would keep it honest and keep it useful.
 27 plans today, and the number grows every time a lineup fix removes a
 fallback.
+
+## 2026-09-09 — v117: a junk text parse was blocking the OCR'd schedule
+
+**What was wrong.** `fetch-4i` OCRs the unreadable pages of a cipher or scanned
+filing and re-parses the COMBINED text — but only adopts the result under two
+conditions: when the text parse found nothing at all, or (v108) when the filing
+has image-table pages. A filing whose cipher text yields **one junk row** fails
+both: `parsed.found` is true, so the first branch is skipped, and there are no
+image pages, so the second is too. The OCR text is then used for FEATURES only
+and the recovered schedule is discarded.
+
+**Meta Platforms is the type case and the reason it matters.** 214 pages, the
+whole attachment in a substituted font that `pdftotext` renders as
+`JN TbN Q HN TRa FRaV R R a` ("Vanguard Target Retirement"). The production
+bad-page detector fires correctly on 12 pages; OCR ran (`ov: 8`); and the plan
+still published nothing, because its text parse had "succeeded" with a single
+cipher row at ratio 0.000. Rasterising those pages by hand and re-parsing the
+combined text gives a **21-row menu at ratio 1.000** — State Street U.S. Total
+Market Index $4.58B, the Vanguard Target Retirement Trust Select series,
+BrokerageLink $2.89B — on a **$22.4B / 84,993-participant** plan. That is the
+largest single gap identified this month, and it was one gate away.
+
+**The measurement that changed the fix, and this is the part worth keeping.**
+A random 30-filing draw from the 1,169 live non-confident plans whose text parse
+found rows produced **5** confident combined parses. Printing their ROWS rather
+than counting them showed **four of the five were OCR debris**:
+
+| plan | what it would have published |
+|---|---|
+| Shonto Governing Board | "John Hancock USA" $4.05M, **the sponsor's own name** at $827k, "@ Total non", "J Other Wiabilities eee eee teee…" |
+| Queen Enterprises | "Value of Int in Regist Invest Co", the sponsor's name, "@ Total non" |
+| Crow Wing Recycling | "DESCRIPTION: POOLED SEPARATE ACCOUNT", the sponsor's name, OCR garbage |
+| Willamette Valley | "Standard Pooled", "Standard Stable Asset A", the sponsor's name, "instructions) Eugene" |
+
+Those are fabricated lineups of exactly the class v100–v105 closed. Shipping the
+naive widening would have put roughly 150 of them on the site.
+
+**The change.** The second branch now fires for ANY non-confident text parse,
+and adoption requires the combined parse to be confident **and menu-shaped** —
+`>=7` rows, reusing v112's existing floor rather than a number fitted here. The
+four junk cases are 3–4 rows; the two genuine menus are 21 and 29. Re-measured
+on the same 30: **1 adopted** (Crossover Market, 29 real Voya/American Funds
+rows at ratio 1.00), zero junk. Projected ~39 plans plus Meta. Gate green,
+corpus diff zero (lib-4i's parsing is untouched; the change is in the OCR
+adoption path, which `diff-lineups` does not exercise — the census is the guard).
+
+**The prevention.** *Count the gains, then READ them.* The first measurement
+said "5 of 30, 17%" and was arithmetically correct and completely misleading;
+the second printed the row names and turned a shippable-looking win into a
+fabrication risk in one screen. A yield number is not a verdict on a change —
+it is a prompt to look at what the change publishes. Every bucket measurement
+from here prints rows, not just counts.

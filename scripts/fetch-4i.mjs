@@ -538,14 +538,35 @@ async function analyzePdf(ack, plan, tag) {
           if (!parsed.found) {
             const p2 = parse4i(combined, plan.assetsEOY, plan.label || "", plan.codes || "");
             if (p2.found) { parsed = p2; usedOcr = true; }
-          } else if (!isConfident(parsed) && imgPages.length) {
+          } else if (!isConfident(parsed)) {
             // v108: the text parse "succeeded" on note aggregates while the
             // real menu sat in the page-104 image — a CONFIDENT combined
             // parse supersedes a non-confident text one. The Sierra Space
             // guard holds: adoption requires strictly MORE confidence, so a
             // clean parse can never be degraded and junk cannot swap for junk.
+            //
+            // v117: this branch was gated on imgPages, so it fired ONLY for
+            // the image-table class. Every other filing whose cipher text
+            // yielded a junk row or two — `parsed.found` true, so the
+            // `!parsed.found` branch above is skipped — threw its OCR'd
+            // schedule away. Meta Platforms is the type case: 214 pages, the
+            // whole attachment in a substituted font, one cipher row parsed
+            // at ratio 0.000, while the OCR text holds the real 21-fund menu
+            // that sums to ratio 1.000 of a $22.4B / 84,993-participant plan.
+            //
+            // MENU-SHAPED IS REQUIRED, and that is not a threshold fitted
+            // here. A random 30-filing draw from the 1,169 live non-confident
+            // plans whose text parse found rows produced 5 confident combined
+            // parses — and FOUR of them were OCR junk: the sponsor's own name
+            // as an $827k holding, "@ Total non", "J Other Wiabilities eee
+            // eee teee…". All four were 3-4 rows; the two genuine menus were
+            // 21 and 29. So adoption reuses v112's existing menu-shape floor
+            // (>=7 rows) rather than trusting confidence alone, because the
+            // confidence band was never designed to tell a real 3-fund menu
+            // from three pieces of OCR debris that happen to sum right.
             const p2 = parse4i(combined, plan.assetsEOY, plan.label || "", plan.codes || "");
-            if (p2.found && isConfident(p2)) { parsed = p2; usedOcr = true; }
+            const menuShaped = p2.found && (imgPages.length || p2.funds.length >= 7);
+            if (menuShaped && isConfident(p2)) { parsed = p2; usedOcr = true; }
           }
         }
       } catch (e) {
