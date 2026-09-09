@@ -6698,3 +6698,37 @@ count, the trace, the filing text. The rule already written says INSTRUMENT
 BEFORE BELIEVING; what today adds is that the instrument must be applied to
 the CAUSE, not only to the size. Sizing a bucket correctly says nothing about
 why it is that size.
+
+## 2026-09-09 — v113 landed: the nohead bucket splits 484 unreachable / 43 ours
+
+Run #232 populated `ds` on **9,133 of 9,157** non-confident acks; confident
+held at exactly 59,610 (diagnostic-only, zero movement, as intended).
+Universe-wide `ds`: noattach 4,087, readfail 2,343, notable 1,967, absent
+530, omitted 161, unread 45.
+
+**The census now splits `nohead` (527 live plans) into:**
+
+| plans | participants | assets | |
+|---|---|---|---|
+| 396 | 171,584 | $5.5B | NOT OURS — no audited attachment published |
+| 78 | 159,516 | $3.6B | NOT OURS — attachment carries no schedule |
+| 9 + 1 | 3,824 | $85M | NOT OURS — referenced-but-absent / explicitly omitted |
+| **32** | **54,854** | **$14.7B** | **OURS — statutory header present, we cannot read it** |
+| **11** | **7,229** | **$178M** | **OURS — table-shaped pages, unknown heading** |
+
+484 plans are permanently unreachable and 43 are a real target — 8% of the
+bucket by count but **62% of its dollars**. "nohead" as a single label was
+hiding a concentrated $14.7B parser target inside a mostly-unreachable mass.
+That is the whole argument for recording the document's shape.
+
+**The random sample was RIGHT, and that is worth as much as the split.** Its
+prediction from 30 filings was ~7% ours; the exact census says 43/527 = 8.2%.
+After two top-N projections missed by 12x and 26x, the first randomly drawn
+one landed within a point and a half. The corollary written this morning now
+has a positive control, not just two failures.
+
+**IMPORTANT nuance for anyone reading `ds` elsewhere:** it describes the
+DOCUMENT, not our success, so it must be read CONDITIONED ON `dx`. A
+`band-hi` plan legitimately carries `ds: readfail` — its filing does have a
+statutory header, and we did read rows from it. Only inside `nohead` (we
+found no region at all) does `readfail` mean a failure.
