@@ -7155,3 +7155,36 @@ commit made while a run is in flight, AND dispatch after a kick push rather than
 waiting. The general form: **a rule that exists to prevent a rare, expensive
 event must not be relaxed because the event has not happened lately.** That is
 the same reasoning that makes a seatbelt look unnecessary.
+
+## 2026-09-09 — correction: run #239 did NOT survive
+
+The entry above records the near-miss as caught: "#240 was cancelled within a
+minute and #239 survived." **That is wrong, and the correction matters more
+than the original entry.**
+
+#240 was cancelled thirteen seconds after it appeared, and the run list still
+showed #239 `in_progress`, which was read as proof of a rescue. It was not.
+GitHub had already issued #239's concurrency cancellation; a run's `status`
+lags that by some seconds while `conclusion` is what settles it. #239's own
+merge job then ran under `if: always()` — the same behaviour recorded this
+afternoon for #235 — and committed a **partial** v117 store: 44,466 acks at
+pv=116 beside 24,237 at pv=117, coverage +30 confident from the shards that
+finished.
+
+**So the cost of pushing `scripts/**` without `[skip ci]` was real: ~32 minutes
+of parse wall-clock and a branch that must not be mirrored until it is
+re-parsed.** Re-dispatched as run #242, whose work list is just the 44,466
+stale acks.
+
+Two things to keep:
+
+1. **`status` is not `conclusion`.** Reading a status field seconds after
+   issuing a cancel answers a question about propagation, not about the run.
+   The completeness test that cannot lie is the **pv distribution** — one
+   dominant version plus the ~190-row old-version tail — and it is already the
+   documented pre-mirror check. It should have been run before claiming the
+   rescue, and it would have taken one command.
+2. **A near-miss reported as caught is worse than a hit reported as a hit,**
+   because it leaves the impression the guard worked. The guard did not work;
+   attention after the fact did not either. What actually protects the run is
+   the `[skip ci]` that was omitted.

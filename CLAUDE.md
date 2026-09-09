@@ -394,8 +394,15 @@ costs a night.
   within seconds each time. That looked like a dead trigger, and it was written
   up as one. **Forty minutes later a merge-4i commit pushed WITHOUT `[skip ci]`
   fired instantly** — run #240 — while #239 was 30 minutes into the v117 parse,
-  and concurrency would have cancelled it. #240 was cancelled in time and #239
-  survived, but only because the run list was checked straight after the push.
+  and concurrency cancelled it. **CORRECTED 2026-09-09 22:10Z: #239 did NOT
+  survive.** #240 was cancelled thirteen seconds after it appeared and the run
+  list still showed #239 `in_progress`, which was read as a rescue — but the
+  cancellation of #239 had already been issued, its merge job ran under
+  `if: always()`, and the branch took a PARTIAL v117 store (44,466 acks at
+  pv=116 beside 24,237 at pv=117). A run's status in the listing lags its
+  cancellation; only `conclusion` settles it, and the honest test of
+  completeness is the pv distribution, not a status field read seconds after
+  the event.
   So both halves of the rule stand and neither may be relaxed:
   **(1)** `[skip ci]` on EVERY `scripts/**` commit made while a run is in
   flight — a trigger that fires only sometimes still fires; **(2)** after a
