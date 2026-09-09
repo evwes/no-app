@@ -371,6 +371,13 @@ async function scanSchD(csv, year, wantedAcks) {
     // DOLLAR_VALUE names resolved to -1 and correctly disabled CIT typing
     // rather than mistyping anything
     value: colIndex(H, ["DFE_P1_PLAN_INT_EOY_AMT", "MTIA_CCT_PSA_DOLLAR_VALUE", "DFE_DOLLAR_VALUE"], /PLAN_INT_EOY_AMT|DOLLAR_VALUE|VALUE_AMT/),
+    // the trust's NAME as the plan filed it. Worth keeping even when the link
+    // fails: Genentech's $14.3B schedule is one line, "Plan Interest in Roche
+    // U.S. Retirement Plans Master Trust", and no MTIA filing under that EIN
+    // exists in the datasets — so the page can either say "we could not read
+    // it", which is false, or name the trust the filing points at, which is
+    // exactly what the filing says.
+    name: colIndex(H, ["MTIA_CCT_PSA_NAME", "DFE_NAME", "DFE_ENTITY_NAME"], /(?:MTIA|DFE|ENTITY).*NAME/),
   };
   console.log("SCH_D columns:", JSON.stringify(col), "| header sample:", H.slice(0, 14).join(","));
   const out = new Map(); // plan ack -> [einpn,...] of MTIAs
@@ -393,7 +400,9 @@ async function scanSchD(csv, year, wantedAcks) {
     if (col.type !== -1 && code !== "M") continue;
     const key = `${String(r[col.ein]).trim()}|${String(r[col.pn]).trim()}`;
     if (!out.has(ack)) out.set(ack, []);
-    if (out.get(ack).length < 4) out.get(ack).push(key);
+    if (out.get(ack).length < 4) {
+      out.get(ack).push({ key, name: col.name === -1 ? "" : String(r[col.name] || "").trim() });
+    }
   }
   console.log(`SCH_D rows: ${n}, plans with MTIA links: ${out.size}, collective-trust rows: ${cctRows} across ${cct.size} plans` +
     (col.value === -1 ? "  ⚠ no dollar-value column resolved — CIT typing disabled" : ""));
@@ -755,9 +764,38 @@ console.log(`plans carrying Schedule D collective-trust values: ${universe.filte
 let parsedOk = {};
 try { parsedOk = JSON.parse(readFileSync("lineups-status.json", "utf8")).plans; } catch { /* first run */ }
 const usedMtias = new Map(); // ack -> {name, year}
+/* EIN|PN as filed on Schedule D and as filed on the trust's own Form 5500 do
+ * not always agree on zero padding ("002" vs "2"), and a key miss is silent:
+ * the plan simply reports no trust. So the raw key is tried first — that is
+ * v113 behaviour exactly — and a digits-normalised key only as a fallback,
+ * counted separately so the log says whether padding was ever the problem
+ * rather than leaving it a guess. */
+const normKey = (k) => {
+  const [e, pn] = String(k).split("|");
+  return `${String(e).replace(/\D/g, "")}|${String(+String(pn).replace(/\D/g, "") || 0)}`;
+};
+const mtiaByNorm = new Map();
+for (const [k, m] of mtiaByKey) if (!mtiaByNorm.has(normKey(k))) mtiaByNorm.set(normKey(k), m);
+let linkedRaw = 0, linkedNorm = 0;
+const unlinkable = [];   // Schedule D names a trust that filed nothing we hold
 for (const p of universe) {
-  const links = (schD.get(p.ack) || []).map((k) => mtiaByKey.get(k)).filter(Boolean);
-  if (!links.length) continue;
+  const refs = schD.get(p.ack) || [];
+  if (!refs.length) continue;
+  const links = [];
+  for (const ref of refs) {
+    const m = mtiaByKey.get(ref.key);
+    if (m) { links.push(m); linkedRaw++; continue; }
+    const n = mtiaByNorm.get(normKey(ref.key));
+    if (n) { links.push(n); linkedNorm++; }
+  }
+  if (!links.length) {
+    // only a name-shaped value reaches the page: the column is filer-entered
+    // free text and a placeholder or a bare code would be worse than silence
+    const named = refs.find((r) => /[A-Za-z]{3}/.test(r.name || "") && r.name.length <= 120);
+    if (named) p.mtiaName = titleCase(named.name);
+    unlinkable.push(p);
+    continue;
+  }
   const best = links.find((m) => (parsedOk[m.ack] || {}).c) || links[0];
   p.mtiaAck = best.ack;
   for (const m of links) usedMtias.set(m.ack, m); // parse every referenced trust
@@ -788,6 +826,7 @@ for (const p of universe) {
   }
   if (!pick) continue;
   p.mtiaAck = pick.ack;
+  delete p.mtiaName;      // a real link outranks the filed name
   usedMtias.set(pick.ack, pick);
   einLinked++;
 }
@@ -817,6 +856,17 @@ for (const year of YEARS) {
   try {
     for (const [k, v] of await scanSchA(year, acks)) schA.set(k, v);
   } catch (e) { console.warn(`Sch A ${year}: ${e.message}`); }
+}
+
+/* Schedule D linking, reported AFTER Schedule H so the unlinkable trusts can
+ * be ranked by the dollars sitting behind them. A plan whose Schedule D names
+ * a master trust that filed nothing we hold is not a parser gap and never
+ * will be — it is the Elevance class, and the honest treatment is to say
+ * which trust holds the money. */
+console.log(`Sch D MTIA references: linked on the filed key ${linkedRaw}, linked after zero-pad normalisation ${linkedNorm}, unlinkable ${unlinkable.length}`);
+for (const p of unlinkable.sort((a, b) => ((schH.get(b.ack) || {}).assetsEOY || 0) - ((schH.get(a.ack) || {}).assetsEOY || 0)).slice(0, 10)) {
+  const a = (schH.get(p.ack) || {}).assetsEOY || 0;
+  console.log(`  unlinkable trust  $${(a / 1e6).toFixed(0)}M  ${p.sponsorName} -> ${(schD.get(p.ack) || []).map((r) => `${r.name || "(unnamed)"} [${r.key}]`).join("; ")}`);
 }
 
 // per-plan fee schedule shards (fetched on demand like lineups): Sch C
@@ -856,7 +906,7 @@ function titleCase(s) {
 const FIELDS = ["ein", "pn", "sponsorName", "planName", "city", "state", "zip", "businessCode",
   "planYear", "participants", "activeParticipants", "assetsBOY", "assetsEOY",
   "contribEmployer", "contribParticipant", "rollovers", "adminExpenses",
-  "filedDate", "recordkeeper", "ticker", "ack", "codes", "pyb", "partBalances", "feeProf", "feeAdmin", "feeInvMgmt", "feeOther", "benefitsPaid", "mtiaAck", "sf", "shr", "pye", "feeSal", "cctVals", "partEOY"];
+  "filedDate", "recordkeeper", "ticker", "ack", "codes", "pyb", "partBalances", "feeProf", "feeAdmin", "feeInvMgmt", "feeOther", "benefitsPaid", "mtiaAck", "sf", "shr", "pye", "feeSal", "cctVals", "partEOY", "mtiaName"];
 
 // pye is stored only for IRREGULAR plan years (short first/final years) —
 // blank means the year ends at the natural 12-month boundary, which keeps
@@ -884,7 +934,7 @@ for (const p of universe) {
     p.planYearBegin ? String(p.planYearBegin).slice(0, 7) : "",
     p.partBalances || 0, h.feeProf || 0, h.feeAdmin || 0, h.feeInvMgmt || 0, h.feeOther || 0, h.benefitsPaid || 0,
     p.mtiaAck || "", p.sf || 0, schR.get(p.ack) || "", irregularYearEnd(p),
-    h.feeSalaries || 0, p.cctVals || "", p.partEOY || 0,
+    h.feeSalaries || 0, p.cctVals || "", p.partEOY || 0, p.mtiaName || "",
   ]);
 }
 rowsOut.sort((a, b) => b[12] - a[12]); // by assets desc
@@ -947,7 +997,7 @@ console.log(`wrote plans-all.json: ${rowsOut.length} plans, ${(Buffer.byteLength
   const shardOfKey = (k) => { let h = 0; for (const c of k) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h % DETAIL_SHARDS; };
   const buckets = Array.from({ length: DETAIL_SHARDS }, () => ({}));
   const DETAIL_FIELDS = ["ack", "planName", "city", "zip", "planYear", "pyb", "pye", "filedDate", "codes",
-    "mtiaAck", "assetsBOY", "assetsEOY", "contribEmployer", "contribParticipant", "rollovers",
+    "mtiaAck", "mtiaName", "assetsBOY", "assetsEOY", "contribEmployer", "contribParticipant", "rollovers",
     "adminExpenses", "feeProf", "feeAdmin", "feeInvMgmt", "feeOther", "feeSal", "benefitsPaid",
     "partBalances", "activeParticipants"];
   for (const r of rowsOut) {

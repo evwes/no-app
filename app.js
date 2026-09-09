@@ -484,6 +484,11 @@
         plan.source = `Form 5500, plan year ${d.planYear} (DOL EFAST2 public dataset)`;
         plan.feeKey = d.ack || null;
         plan.mtiaAck = d.mtiaAck || null;
+        // the trust named on Schedule D when NO master-trust filing exists to
+        // link to (Genentech -> Roche U.S. Retirement Plans Master Trust).
+        // Naming it beats claiming we failed to read the schedule: the
+        // schedule is one line and that line is the trust.
+        plan.mtiaName = d.mtiaName || null;
         const b = plan.bits || 0;
         if ((b & 1) && d.ack) plan.lineupKey = d.ack;
         if ((b & 2048) && d.mtiaAck) plan.trustKey = d.mtiaAck;
@@ -1423,6 +1428,20 @@
           <tbody>${menu.map((n) => `<tr><td class="fund-name-col">${esc(n)}</td></tr>`).join("")}</tbody>
         </table>
       </div>`;
+      }
+      /* The plan's Schedule D names a master trust, and no filing for that
+       * trust exists in EFAST2 to follow (Genentech's $14.3B plan is the type
+       * case: its whole schedule of assets is the single line "Plan Interest
+       * in Roche U.S. Retirement Plans Master Trust"). Saying which trust
+       * holds the money is both true and useful; "we could not read it" would
+       * be neither. */
+      if (plan.mtiaName && plan.detailLoaded) {
+        return `
+      <div class="section-label">FUND HOLDINGS</div>
+      <p class="max-benefit">This plan holds its investments through <strong>${esc(plan.mtiaName)}</strong>,
+      a master trust it reports on Schedule D. Its own schedule of assets is that single line, and the trust
+      files no itemized schedule of its own with the DOL — so no fund-by-fund detail is public for this plan.
+      That's how the money is held, not a gap in our reading of the filing.</p>`;
       }
       /* The DOCUMENT's own reason, when the pipeline recorded one (v113).
        * The old sentence hedged every one of these plans identically as
