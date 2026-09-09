@@ -6666,3 +6666,35 @@ the sum of a contiguous run of rows that follow it is a subtotal, structurally,
 whatever it is called. That test is general where a phrase list is a
 whack-a-mole, and it is the next parser cycle's work — written up here rather
 than rushed in beside an in-flight run.
+
+**CORRECTION, same day, before any code was written.** The entry above named
+the cause "section subtotals counted beside the menu". That was still wrong,
+and the arithmetic said so: Vandalia's "Investments measured at net asset
+value" row is $1.144B against $853M of plan assets — a subtotal of this plan's
+holdings cannot exceed them. Reading the filing settles it: the winning region
+is the **FAIR VALUE HIERARCHY NOTE**, a multi-column table ("Level 1 | Level 2
+| Level 3 | Total") printed for TWO plan years, with its own subtotals
+("Total assets in the fair value hierarchy", "Investments at Fair Value") and
+its ASC 820-10 practical-expedient paragraph. The parser is reading a NOTE as
+if it were the schedule. Nuvance carries the same markers (8 "fair value
+hierarchy", "Level 1/2" columns). Both filings ALSO have a statutory 4i header
+elsewhere, and `WAMPO_TRACE=cands` shows only ONE real candidate — so the
+region boundary is swallowing the note rather than the note beating a clean
+rival.
+
+So the fix is not subtotal arithmetic and not vocabulary: it is to stop
+fair-value-hierarchy note regions from being schedule candidates at all
+(markers: the Level-1/2/3 column header, "fair value hierarchy",
+"practical expedient", "NOTES TO FINANCIAL STATEMENTS"), or to seed regions
+from the statutory header these filings already carry. Deliberately left
+unbuilt this cycle: two wrong models in one hour is the argument for building
+against a verified one, not a third guess.
+
+**The pattern worth naming, because it has now happened three times today.**
+v112's `few` projection, this morning's band-hi "trust opacity", and this
+entry's "section subtotals" were each a plausible story adopted before the
+document was read. Each was overturned by one cheap instrument — the census
+count, the trace, the filing text. The rule already written says INSTRUMENT
+BEFORE BELIEVING; what today adds is that the instrument must be applied to
+the CAUSE, not only to the size. Sizing a bucket correctly says nothing about
+why it is that size.
