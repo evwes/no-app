@@ -477,8 +477,18 @@ main { max-width: 1060px; margin: 0 auto; padding: 0 20px 48px; }
 .map-canvas svg { display: block; width: 100%; height: auto; touch-action: none; cursor: grab; }
 .map-canvas svg:active { cursor: grabbing; }
 .map-loading { padding: 60px 0; text-align: center; color: var(--muted); font-size: 14px; }
-.map-state { fill: var(--card); stroke: var(--line); stroke-width: .8; }
-.map-dot circle { fill-opacity: .82; stroke: #fff; stroke-width: 1; }
+/* internal borders must survive every theme: with fill and stroke both from
+ * theme tokens they once rendered as one black silhouette, and a correctly
+ * placed Florida-panhandle dot read as "on the Georgia coast". The stroke is
+ * therefore a fixed translucent gray that contrasts with the fill in both
+ * themes; vector-effect keeps it hairline at any zoom. */
+.map-state { fill: var(--card); stroke: rgba(128,128,128,.55); stroke-width: .8; vector-effect: non-scaling-stroke; cursor: pointer; }
+.map-state:hover { fill-opacity: .85; stroke: rgba(128,128,128,.9); }
+.map-state-sel { stroke: #e8734a; stroke-width: 1.6; }
+.map-dot circle { fill-opacity: .82; stroke: #fff; stroke-width: 1; cursor: pointer; }
+.map-dot:hover circle { fill-opacity: 1; stroke-width: 1.6; }
+.map-pick { display: flex; align-items: center; gap: 12px; padding: 9px 14px; margin: 0 0 6px; font-size: 13px; background: color-mix(in srgb, #e8734a 12%, transparent); border: 1px solid color-mix(in srgb, #e8734a 35%, transparent); border-radius: 7px; }
+.map-pick button { font-size: 12px; padding: 3px 10px; background: var(--card); border: 1px solid var(--line); border-radius: 5px; cursor: pointer; color: var(--fg); }
 .map-dot.b1 circle { fill: #f4a582; }
 .map-dot.b2 circle { fill: #e8734a; }
 .map-dot.b3 circle { fill: #7fa8d4; }

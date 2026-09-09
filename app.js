@@ -22,6 +22,7 @@
     tableSort: { key: "assets", dir: -1 },
     expanded: new Set(),
     lineupTab: {},
+    dotPick: null, // Set of plan ids from a clicked map dot; narrows the table
     plans: [],
   };
 
@@ -663,15 +664,28 @@
     return n && n.toLowerCase() !== (plan.company || "").toLowerCase() ? n : null;
   }
 
+  // full state names -> postal codes, so "florida" and "fl" both select the
+  // state. A bare code or full name is an EXCLUSIVE state filter: the old
+  // behavior OR'd the code against the text search, so "fl" returned Florida
+  // plus every "Flowers Foods" in the country.
+  const US_STATES = { alabama: "al", alaska: "ak", arizona: "az", arkansas: "ar", california: "ca", colorado: "co", connecticut: "ct", delaware: "de", florida: "fl", georgia: "ga", hawaii: "hi", idaho: "id", illinois: "il", indiana: "in", iowa: "ia", kansas: "ks", kentucky: "ky", louisiana: "la", maine: "me", maryland: "md", massachusetts: "ma", michigan: "mi", minnesota: "mn", mississippi: "ms", missouri: "mo", montana: "mt", nebraska: "ne", nevada: "nv", "new hampshire": "nh", "new jersey": "nj", "new mexico": "nm", "new york": "ny", "north carolina": "nc", "north dakota": "nd", ohio: "oh", oklahoma: "ok", oregon: "or", pennsylvania: "pa", "rhode island": "ri", "south carolina": "sc", "south dakota": "sd", tennessee: "tn", texas: "tx", utah: "ut", vermont: "vt", virginia: "va", washington: "wa", "west virginia": "wv", wisconsin: "wi", wyoming: "wy", "district of columbia": "dc", "puerto rico": "pr" };
+  const STATE_CODES = new Set(Object.values(US_STATES));
+  function stateFromQuery(q) {
+    if (US_STATES[q]) return US_STATES[q];
+    if (q.length === 2 && STATE_CODES.has(q)) return q;
+    return null;
+  }
+
   function matchesQuery(plan, q) {
     if (!q) return true;
+    // "fl" / "florida" selects the state and nothing else
+    const sc = stateFromQuery(q);
+    if (sc) return (plan.state || "").toLowerCase() === sc;
     if (!plan.hay) {
       plan.hay = (plan.company + " " + (publicName(plan) || "") + " " + plan.ticker + " " + (plan.provider || "") + " " + plan.planName +
         " " + plan.planTypes.join(" ") + " " + (plan.city || "") + " " + (plan.state || "") + " " + (plan.ein || "")).toLowerCase();
       plan.hayNorm = plan.hay.replace(/[^a-z0-9]/g, "");
     }
-    // bare two-letter query = state filter ("wa", "tx")
-    if (q.length === 2 && plan.state && plan.state.toLowerCase() === q) return true;
     if (plan.hay.includes(q)) return true;
     // punctuation/space-insensitive: "fed ex" → fedex, "at&t" → att
     const qNorm = q.replace(/[^a-z0-9]/g, "");
@@ -723,10 +737,13 @@
 
   function visiblePlans() {
     const q = state.query.trim().toLowerCase();
+    const stateQ = !!stateFromQuery(q); // relevance tiers are meaningless for a state filter
     const out = [];
     for (const p of state.plans) {
+      // a dot clicked on the map narrows the table to that dot's plans
+      if (state.dotPick && !state.dotPick.has(p.id)) continue;
       if (!matchesQuery(p, q) || !passesFilters(p)) continue;
-      p.rank = q ? searchRank(p, q) : 0;
+      p.rank = q && !stateQ ? searchRank(p, q) : 0;
       out.push(p);
     }
     const { key, dir } = state.tableSort;
@@ -1596,6 +1613,9 @@
     const plans = visiblePlans();
     const limit = state.rowLimit || MAX_ROWS;
     $("tbody").innerHTML = plans.slice(0, limit).map(planRow).join("");
+    $("mapPick").hidden = !state.dotPick;
+    if (state.dotPick) $("mapPickText").textContent =
+      `Showing ${fmtInt.format(plans.length)} plan${plans.length === 1 ? "" : "s"} from the dot selected on the map.`;
     $("empty").hidden = plans.length > 0;
     const more = plans.length - limit;
     $("showMore").hidden = more <= 0;
@@ -1632,8 +1652,35 @@
    *
    * Short-form filers are excluded by construction: map-points.json only
    * carries full-form rows, which is also what the owner asked for. */
-  const MAP = { states: null, points: null, loading: false, zoom: 1, cx: 0.5, cy: 0.5 };
+  const MAP = { states: null, points: null, loading: false, zoom: 1, cx: 0.5, cy: 0.5, autoState: null, groups: [] };
   const MAP_W = 960, MAP_H = 600;
+  // projected bounding box per state, computed lazily from the outlines the
+  // map already draws — so zoom-to-state can never disagree with the drawing
+  const STATE_BBOX = {};
+  function stateBBox(code) {
+    if (STATE_BBOX[code]) return STATE_BBOX[code];
+    if (!MAP.states) return null;
+    const wanted = Object.keys(US_STATES).find((n) => US_STATES[n] === code);
+    const f = MAP.states.features.find((x) => (x.properties.name || "").toLowerCase() === wanted);
+    if (!f) return null;
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    const polys = f.geometry.type === "Polygon" ? [f.geometry.coordinates] : f.geometry.coordinates;
+    for (const poly of polys) for (const ring of poly) for (const [lon, lat] of ring) {
+      const q = project(lat, lon);
+      if (!q) continue;
+      if (q[0] < x0) x0 = q[0]; if (q[0] > x1) x1 = q[0];
+      if (q[1] < y0) y0 = q[1]; if (q[1] > y1) y1 = q[1];
+    }
+    return (STATE_BBOX[code] = x0 < x1 ? [x0, y0, x1, y1] : null);
+  }
+  function fitState(code) {
+    const b = stateBBox(code);
+    if (!b) return;
+    const pad = 1.35; // breathing room around the outline
+    MAP.zoom = Math.max(1, Math.min(8, Math.min(MAP_W / ((b[2] - b[0]) * pad), MAP_H / ((b[3] - b[1]) * pad))));
+    MAP.cx = (b[0] + b[2]) / 2 / MAP_W;
+    MAP.cy = (b[1] + b[3]) / 2 / MAP_H;
+  }
 
   /* Albers conic equal-area. One function, three parameter sets: the lower 48,
    * then Alaska and Hawaii projected on their own parallels and placed as
@@ -1703,7 +1750,11 @@
           if (started) d += "Z";
         }
       }
-      if (d) out.push(`<path class="map-state" d="${d}"><title>${esc(f.properties.name)}</title></path>`);
+      if (d) {
+        const code = US_STATES[(f.properties.name || "").toLowerCase()] || "";
+        const sel = code && code === MAP.autoState ? " map-state-sel" : "";
+        out.push(`<path class="map-state${sel}" data-state="${code}" d="${d}"><title>${esc(f.properties.name)}</title></path>`);
+      }
     }
     return out.join("");
   }
@@ -1751,6 +1802,16 @@
      * A caption that misdescribes what is drawn is a wrong statement on the
      * page, not a cosmetic bug. */
     const mapQ = state.query.trim().toLowerCase();
+    /* typing a state selects it: zoom to its outline once per state change,
+     * and reset to the whole country when the state query is cleared. Manual
+     * zoom/pan afterwards is untouched — autoState only moves the view when
+     * it CHANGES. */
+    const sc = stateFromQuery(mapQ);
+    if (sc !== MAP.autoState) {
+      MAP.autoState = sc;
+      if (sc) fitState(sc);
+      else { MAP.zoom = 1; MAP.cx = 0.5; MAP.cy = 0.5; }
+    }
     for (const plan of state.plans) {
       if (plan.cf & 8) continue;                    // short-form: not on this map
       if (!matchesQuery(plan, mapQ) || !passesFilters(plan)) continue;
@@ -1762,8 +1823,9 @@
       shown++;
       const key = Math.round(q[0] / cell) + ":" + Math.round(q[1] / cell);
       let g = cells.get(key);
-      if (!g) { g = { x: 0, y: 0, n: 0, ppl: 0, assets: 0 }; cells.set(key, g); }
+      if (!g) { g = { x: 0, y: 0, n: 0, ppl: 0, assets: 0, plans: [] }; cells.set(key, g); }
       g.x += q[0]; g.y += q[1]; g.n++;
+      g.plans.push(plan);
       g.ppl += plan.participants || 0;
       // assetsB (billions) is the field the hero totals use; assetsEOY exists
       // only on the pre-merge boot record, so reading it here summed to $0
@@ -1771,15 +1833,17 @@
     }
 
     const groups = [...cells.values()].sort((a, b) => b.n - a.n);
+    MAP.groups = groups; // dot clicks resolve through this, by index
     const maxN = groups.length ? groups[0].n : 1;
-    const circles = groups.map((g) => {
+    const circles = groups.map((g, gi) => {
       const x = g.x / g.n, y = g.y / g.n;
       // area ∝ plan count, floored so a single plan is still clickable
       const r = Math.max(4, Math.min(34, 4 + 30 * Math.sqrt(g.n / maxN)));
       const avg = g.assets / g.n;
       const label = g.n >= 3 ? `<text class="map-count" x="${x.toFixed(1)}" y="${(y + 3.5).toFixed(1)}">${g.n >= 1000 ? (g.n / 1000).toFixed(1) + "k" : g.n}</text>` : "";
-      return `<g class="map-dot ${bandOf(avg)}"><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(1)}">` +
-        `<title>${fmtInt.format(g.n)} plan${g.n === 1 ? "" : "s"} · ${fmtCompact.format(g.ppl)} participants · $${fmtCompact.format(g.assets)}</title>` +
+      const one = g.n === 1 ? esc(g.plans[0].company) : `${fmtInt.format(g.n)} plans`;
+      return `<g class="map-dot ${bandOf(avg)}" data-g="${gi}"><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(1)}">` +
+        `<title>${one} · ${fmtCompact.format(g.ppl)} participants · $${fmtCompact.format(g.assets)} — click to open in the table</title>` +
         `</circle>${label}</g>`;
     }).join("");
 
@@ -1813,16 +1877,62 @@
     $("mapOut").onclick = () => { MAP.zoom = Math.max(1, MAP.zoom / 1.6); renderMap(); };
     const svg = $("mapSvg");
     let drag = null;
-    svg.addEventListener("pointerdown", (e) => { drag = { x: e.clientX, y: e.clientY, cx: MAP.cx, cy: MAP.cy }; svg.setPointerCapture(e.pointerId); });
+    svg.addEventListener("pointerdown", (e) => { drag = { x: e.clientX, y: e.clientY, cx: MAP.cx, cy: MAP.cy, moved: false }; svg.setPointerCapture(e.pointerId); });
     svg.addEventListener("pointermove", (e) => {
       if (!drag) return;
+      if (Math.abs(e.clientX - drag.x) + Math.abs(e.clientY - drag.y) > 4) drag.moved = true;
+      if (!drag.moved) return;
       const rect = svg.getBoundingClientRect();
       MAP.cx = Math.max(0, Math.min(1, drag.cx - (e.clientX - drag.x) / rect.width / MAP.zoom));
       MAP.cy = Math.max(0, Math.min(1, drag.cy - (e.clientY - drag.y) / rect.height / MAP.zoom));
       renderMap();
     });
-    svg.addEventListener("pointerup", () => { drag = null; });
+    svg.addEventListener("pointerup", () => { const moved = drag && drag.moved; drag = null; if (moved) suppressClick = true; });
+    // wheel zoom toward the cursor: the point under the pointer stays put
+    svg.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      const rect = svg.getBoundingClientRect();
+      const fx = (e.clientX - rect.left) / rect.width, fy = (e.clientY - rect.top) / rect.height;
+      const px = (vx + fx * vw) / MAP_W, py = (vy + fy * vh) / MAP_H; // map-space point under cursor
+      const nz = Math.max(1, Math.min(8, MAP.zoom * (e.deltaY < 0 ? 1.25 : 0.8)));
+      if (nz === MAP.zoom) return;
+      // keep (px,py) at the same screen fraction after the zoom
+      MAP.cx = px + (0.5 - fx) / nz;
+      MAP.cy = py + (0.5 - fy) / nz;
+      MAP.zoom = nz;
+      renderMap();
+    }, { passive: false });
+    /* click = select. A dot pulls its plans into the table (a single-plan dot
+     * opens that plan's report); a state click types the state into the
+     * search box, which filters everything and zooms here. A drag never
+     * counts as a click. */
+    svg.addEventListener("click", (e) => {
+      if (suppressClick) { suppressClick = false; return; }
+      const dot = e.target.closest(".map-dot");
+      if (dot) {
+        const g = MAP.groups[+dot.dataset.g];
+        if (!g) return;
+        state.dotPick = new Set(g.plans.map((p) => p.id));
+        if (g.n === 1) {
+          const plan = g.plans[0];
+          state.expanded.add(plan.id);
+          ensureDetail(plan);
+        }
+        setView("table");
+        render();
+        window.scrollTo({ top: $("tableSection").offsetTop - 70, behavior: "smooth" });
+        return;
+      }
+      const st = e.target.closest(".map-state");
+      if (st && st.dataset.state) {
+        $("search").value = st.dataset.state;
+        state.query = st.dataset.state;
+        state.dotPick = null;
+        render();
+      }
+    });
   }
+  let suppressClick = false; // a completed drag must not fire the click handler
 
   function setView(which) {
     const map = which === "map";
@@ -1843,6 +1953,12 @@
   $("search").addEventListener("input", (ev) => {
     state.query = ev.target.value;
     state.rowLimit = MAX_ROWS;
+    state.dotPick = null; // typing supersedes a map-dot selection
+    render();
+  });
+
+  $("mapPickClear").addEventListener("click", () => {
+    state.dotPick = null;
     render();
   });
 

@@ -125,6 +125,80 @@ if (before.stats.slice(1).some((s) => /^\$?0$/.test(String(s).trim()))) fail.pus
 if (errors.length) fail.push("page errors: " + errors.slice(0, 3).join(" | "));
 
 
+/* STATE SELECTION. Typing a full state name or its code is an exclusive state
+ * filter, and the map zooms to that state's outline. */
+await page.evaluate(() => document.querySelector('.chip[data-filter="brokerage"]')?.click()); // restore
+const setQuery = (q) => page.evaluate((v) => {
+  const s = document.querySelector("#search");
+  s.value = v;
+  s.dispatchEvent(new Event("input", { bubbles: true }));
+}, q);
+await setQuery("florida");
+await page.waitForTimeout(2000);
+const fla = await page.evaluate(() => ({
+  vb: document.querySelector("#mapSvg")?.getAttribute("viewBox"),
+  count: document.querySelector("#resultCount")?.textContent,
+  sel: document.querySelectorAll("#mapSvg .map-state-sel").length,
+}));
+const vbW = (vb) => Number(String(vb || "").split(/\s+/)[2]);
+if (!(vbW(fla.vb) < 900)) fail.push(`typing "florida" did not zoom the map (viewBox ${fla.vb})`);
+if (fla.sel !== 1) fail.push(`typing "florida" did not highlight the state outline (${fla.sel} selected)`);
+const flaN = num((fla.count || "").split(" of ")[0]);
+await setQuery("fl");
+await page.waitForTimeout(2000);
+const flCode = await page.evaluate(() => document.querySelector("#resultCount")?.textContent);
+if (num((flCode || "").split(" of ")[0]) !== flaN)
+  fail.push(`"fl" and "florida" disagree: ${flCode} vs ${fla.count}`);
+if (!flaN) fail.push(`state query returned zero plans (${fla.count})`);
+await setQuery("microsoft");
+await page.waitForTimeout(2000);
+const msVb = await page.evaluate(() => document.querySelector("#mapSvg")?.getAttribute("viewBox"));
+if (vbW(msVb) < 900) fail.push(`clearing the state query did not reset the zoom (viewBox ${msVb})`);
+
+/* DOT CLICK. A dot pulls its plans into the table with a visible, clearable
+ * selection banner. */
+await setQuery("");
+await page.waitForTimeout(2000);
+await page.evaluate(() => {
+  document.querySelector("#mapSvg .map-dot")
+    ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+});
+await page.waitForTimeout(2000);
+const pick = await page.evaluate(() => ({
+  tableShown: !document.querySelector("#tableSection").hidden,
+  banner: !document.querySelector("#mapPick").hidden,
+  bannerText: document.querySelector("#mapPickText")?.textContent || "",
+  rows: document.querySelectorAll("#tbody tr").length,
+}));
+if (!pick.tableShown) fail.push("clicking a dot did not switch to the table view");
+if (!pick.banner) fail.push("clicking a dot did not show the selection banner");
+if (!pick.rows) fail.push("clicking a dot produced an empty table");
+if (!/plan/.test(pick.bannerText)) fail.push(`selection banner text is wrong: "${pick.bannerText}"`);
+await page.evaluate(() => document.querySelector("#mapPickClear")?.click());
+await page.waitForTimeout(1500);
+const cleared = await page.evaluate(() => ({
+  banner: !document.querySelector("#mapPick").hidden,
+  count: document.querySelector("#resultCount")?.textContent,
+}));
+if (cleared.banner) fail.push("Clear selection did not hide the banner");
+if (num((cleared.count || "").split(" of ")[0]) <= pick.rows)
+  fail.push(`Clear selection did not restore the full table (${cleared.count})`);
+
+/* STATE CLICK. Clicking a state outline types its code into the search box. */
+await page.click("#viewMap");
+await page.waitForTimeout(1500);
+await page.evaluate(() => {
+  document.querySelector('#mapSvg .map-state[data-state="tx"]')
+    ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+});
+await page.waitForTimeout(2000);
+const tx = await page.evaluate(() => ({
+  box: document.querySelector("#search")?.value,
+  vb: document.querySelector("#mapSvg")?.getAttribute("viewBox"),
+}));
+if (tx.box !== "tx") fail.push(`clicking Texas did not set the search box (got "${tx.box}")`);
+if (!(vbW(tx.vb) < 900)) fail.push(`clicking Texas did not zoom to it (viewBox ${tx.vb})`);
+
 await page.screenshot({ path: "/tmp/map.png" });
 await browser.close();
 srv.kill();
