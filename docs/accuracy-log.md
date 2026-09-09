@@ -7092,3 +7092,44 @@ sweep over 325 cached texts predicted the scale-marker widening would move,
 and nothing else moved in either direction. A one-plan fix is not a big fix,
 but a projection of "1, and no losses" that lands as "1, and no losses" is the
 strongest evidence the local sweep is measuring what production does.
+
+## 2026-09-09 — 64 more plans stop being told "we could not read it"
+
+**What was wrong.** A plan whose entire schedule is one or two lines summing to
+its own Schedule H assets did not defeat our reading — it **reported in
+aggregate**, exactly like the `stmt` class that already renders the
+filed-in-aggregate line. Those plans landed in `few` instead, so the page fell
+through to the document-shape sentence and, for the `readfail` ones, said "we
+could not read it — that's our gap". Of a filing that prints "Master Pooled
+Separate Account" at 99% of the plan and stops, that is simply false.
+
+**Measured before writing the rule, both ways.** Requiring EVERY parsed row to
+be aggregate-shaped labelled 35 plans. Requiring only the DOMINANT row (≥80% of
+the parsed sum) labelled **63** — 61,976 participants, $3.3B — and printing
+those rows showed why the looser form is the right one: "Master Pooled Separate
+Account [99%]" (14,091 participants), "403(b) annuity contracts and custodial
+accounts [100%]", "Value of Int in Regist Invest Co. [91%]", "Empower Separate
+Account- Annuity Contract [98%]". The small second row is usually a stable-value
+sleeve, not junk.
+
+**What it still refuses matters more than what it admits**, because the page is
+making a claim about the FILING: "of participation [91%]" (State Street, 21,964
+participants), "PNC Bank [96%]", "Beginning of the year – End of the year
+[100%]", "AMERITAS LIFE INSURANCE CORP [97%]". Those are the parser's own
+debris, and a junk row must never be allowed to stand in for a filer's
+aggregate. 347 plans stay unlabelled for exactly that reason.
+
+**The change.** `merge-4i` sets bit 4096 for `dx=few` with ratio 90–110 when the
+dominant stored row is aggregate-shaped, reusing the imported `AGG_DISCLOSURE`
+and `GENERIC_TYPE_NAME` plus a narrow `AGG_VEHICLE` arm for separate accounts,
+annuity contracts and aggregate brokerage lines. Verified by running the merge
+locally: bit 4096 **398 → 462**, document-shape-only plans 8,020 → 7,956,
+confidence diff 0/0 — a labelling change that touches no lineup. The frontend
+sentence gained the separate-account/annuity example so it is accurate for the
+newly covered filings; smoke green.
+
+**The prevention.** *Before the site asserts something about a filing, look at
+the row the assertion rests on.* This rule and v117's OCR gate were measured on
+the same day and both turned on the same discipline: the count said one thing,
+the rows said another, and only the rows could tell a filer's aggregate from
+our own garbage.

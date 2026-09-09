@@ -1412,10 +1412,11 @@
         // per-fund menu exists in the public copy to read
         return `
       <div class="section-label">FUND HOLDINGS</div>
-      <p class="max-benefit">This plan's filing reports its investments <strong>in aggregate</strong> — lines like
-      "participant-directed investments at fair value" — rather than fund by fund, so no per-fund menu is
-      published in the public copy. That's how the plan filed, not a gap in our reading of it. Plan features
-      from the audited notes still appear below where the filing states them.</p>`;
+      <p class="max-benefit">This plan's filing reports its investments <strong>in aggregate</strong> — a line like
+      "participant-directed investments at fair value", or a single entry for a master separate account or group
+      annuity contract — rather than fund by fund, so no per-fund menu is published in the public copy. That's how
+      the plan filed, not a gap in our reading of it. Plan features from the audited notes still appear below where
+      the filing states them.</p>`;
       }
       if (menu && menu.length) {
         return `

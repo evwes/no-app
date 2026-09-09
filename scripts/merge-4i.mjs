@@ -163,6 +163,40 @@ writeFileSync("lineups-index.json", JSON.stringify({ generated: new Date().toISO
 // Comcast, Albertsons class, plus the generic-dominant lineups v111
 // withdrew) — the frontend explains that instead of implying an unread
 // schedule.
+/* `few` that is really an AGGREGATE FILING (2026-09-09). A plan whose whole
+ * schedule is one or two lines summing to the plan's own assets did not defeat
+ * our reading — it reported in aggregate, exactly like the `stmt` class, and
+ * saying "we could not read it" of such a filing is false. The test is the
+ * DOMINANT row: >=80% of the parsed sum, under a name that is a whole-plan
+ * wrapper rather than a fund.
+ *
+ * The dominant-row form is deliberate and measured. Requiring EVERY row to be
+ * aggregate-shaped labelled 35 plans; the dominant form labels 63 (61,976
+ * participants, $3.3B) and the rows it admits are "Master Pooled Separate
+ * Account [99%]", "403(b) annuity contracts and custodial accounts [100%]",
+ * "Value of Int in Regist Invest Co. [91%]". What it still refuses is the
+ * parser's own debris — "of participation [91%]", "PNC Bank [96%]",
+ * "Beginning of the year - End of the year [100%]" — which is the whole point:
+ * the page makes a claim about the FILING here, so a junk row must never be
+ * allowed to stand in for one.
+ *
+ * AGG_VEHICLE is narrow on purpose and lives here because this is merge's
+ * question. GENERIC_TYPE_NAME and AGG_DISCLOSURE are imported rather than
+ * re-typed — three copies of a vocabulary have drifted apart once already. */
+const AGG_VEHICLE = /^(?:master |group |unallocated )?(?:pooled )?separate account.*|^.*annuity contracts?(?: and custodial accounts?)?$|^(?:self[- ]?directed|individually directed|self managed) brokerage accounts?$|^403\(b\) .*(?:contracts?|accounts?)$|^interest in .*|^value of int(?:erest)? in .*/i;
+function filedAggregate(st, ack) {
+  if (st.dx !== "few" || !(st.rt >= 90 && st.rt <= 110)) return false;
+  const e = buckets[shardOf(ack)][ack];
+  const funds = (e && e.funds) || [];
+  if (!funds.length) return false;
+  const sum = funds.reduce((a, f) => a + (+f.value || 0), 0);
+  if (!(sum > 0)) return false;
+  const dom = funds.reduce((a, f) => ((+f.value || 0) > (+a.value || 0) ? f : a), funds[0]);
+  if ((+dom.value || 0) / sum < 0.8) return false;
+  const n = String(dom.name || "").trim();
+  return AGG_DISCLOSURE.test(n) || GENERIC_TYPE_NAME.test(n) || AGG_VEHICLE.test(n);
+}
+
 /* Document-shape enum for plans-index bits 13-15. Order is FROZEN: the
  * frontend decodes by number, so appending is safe and reordering is not. */
 const DS_ENUM = { noattach: 1, notable: 2, omitted: 3, absent: 4, scanned: 5, readfail: 6, unread: 7 };
@@ -173,7 +207,7 @@ try {
     let b = index[r[ai]] || 0;
     if (r[mi] && (index[r[mi]] || 0) & 1) b |= 2048;
     const st = status.plans[r[ai]];
-    if (st && !st.c && st.dx === "stmt" && !(b & (1 | 2048))) b |= 4096;
+    if (st && !st.c && (st.dx === "stmt" || filedAggregate(st, r[ai])) && !(b & (1 | 2048))) b |= 4096;
     /* v113 data: bits 13-15 carry the DOCUMENT SHAPE as a 3-bit enum so a
      * plan with no lineup can state the real reason instead of the hedge
      * "scanned/absent, or held through a trust". Read ONLY when there is no
