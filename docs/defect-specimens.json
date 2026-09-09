@@ -100,6 +100,13 @@
    "fixed": null,
    "sponsor": "Capital Group",
    "was": "CONTROL: 73 rows at ratio 1.000 exactly \u2014 a per-candidate version of the total-drop flipped its winner to a junk sibling with a $511M 'American Funds' house-merge row"
+  },
+  {
+   "ack": "20251008095017NAL0005364081001",
+   "class": "image-table-page",
+   "fixed": "v108",
+   "sponsor": "Compass Group USA",
+   "was": "the whole 40-fund menu embedded as a JPEG under a native-text 4i title page; every unreadable-page test passed, OCR never fired, note aggregates published band-hi at 2.49x (312,914 participants). NOTE: the fix lives in fetch-4i's OCR path \u2014 the text-only parse diff-lineups runs stays non-confident by design; the census (band-hi count) and the pinned J&J/Home Depot refuse-cases are the guard"
   }
  ]
 }

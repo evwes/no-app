@@ -6324,3 +6324,48 @@ bucket's plans and HALF its dollars (UPS's $14.2B left the bucket). The
 remaining 230 (Compass Group 312,914 participants at the top) are a
 different sub-shape — no single dominant total row — and need their own
 trace before more parser work.
+
+## 2026-09-09 — v108: the 4i table filed as an IMAGE under a text title
+
+**Wrong.** Compass Group USA (312,914 participants — the largest live-plan
+lineup gap by participants on the whole board) filed its entire 40-fund menu
+as a JPEG pasted under a native-text title page: sponsor name, "Schedule of
+Assets (Held at End of Year)", "Schedule H, Line 4i", EIN — clean text, then
+the table as a picture. Every unreadable-page test passed (231 readable
+chars), OCR never fired, and the parser published five fair-value note
+aggregates at ratio 2.49 as band-hi. Found by tracing the band-hi remainder
+top-down after v107; `pdfimages -list` showed a 2351x2015 image on the title
+page and OCR of that one page produced the full Fidelity TRIM / BlackRock
+menu.
+
+**The change (v108).** `findImageTablePages` in fetch-4i: a page whose text
+carries the statutory 4i title, has <700 non-space chars and <=3 money-ish
+numbers, AND carries an embedded image >=900x500 (pdfimages -list, no
+rendering) joins the OCR page list even though it is "readable"; the >=3
+bad-page minimum is waived when such pages exist. Adoption gate extended: a
+found-but-NON-CONFIDENT text parse may be replaced by a CONFIDENT combined
+parse — strictly more confidence, so a clean parse can never degrade and
+junk cannot swap for junk. Plus a one-glyph name cleanup: trailing "=" (the
+OCR'd empty cost-column dash) is stripped from fund names.
+
+**Three drafts were wrong first, each caught by measuring:**
+- The text-only signature (no image check) matched **135 of 199** corpus
+  filings — every TOC line and bare title page. The image requirement
+  collapsed it to 2/199 (3 pages). The rule: the discriminator you MEASURED
+  with (the sizing scan checked for the image) must be the discriminator you
+  SHIP; the prose signature alone was a different, untested predicate.
+- Stripping trailing separator runs `[=~—–-]` from names admitted a
+  Teamsters form-page line at $452k: WAMPO_TRACE showed its name ends in
+  `~~~~~` — a Form-5500 dotted leader pdftotext renders as tildes, which was
+  (accidentally but correctly) condemning the row downstream. Only "=" is
+  stripped; tildes and hyphens are evidence, not noise.
+- Verified refusals on the two corpus filings the detector does flag: J&J
+  (8.81x, master-trust aggregates behind the image) and Home Depot (one-line
+  trust-interest schedule) both OCR and both correctly refuse adoption —
+  the confidence-upgrade gate is the second fence behind the detector.
+
+**Prevention.** Compass pinned in `docs/defect-specimens.json`
+(image-table-page). The fix is OCR-path-level, invisible to text-only
+diff-lineups — the census band-hi count and the refuse-cases are the guard.
+Gate green; `diff-lineups.mjs` vs shipped v107: zero changes of any kind
+over the corpus.

@@ -76,6 +76,49 @@ function findBadPages(text) {
   return bad;
 }
 
+/* IMAGE-TABLE pages (v108): the 4i table embedded as an IMAGE under a
+ * native-text TITLE. The page reads as clean text — sponsor name,
+ * "Schedule of Assets (Held at End of Year)", "Schedule H, Line 4i", EIN —
+ * so every unreadable-page test above passes and OCR never fires, while the
+ * actual menu sits inside a JPEG on the same page. Compass Group
+ * (312,914 participants) filed its entire 40-fund menu this way and the
+ * parser published fair-value note aggregates at ratio 2.5 instead. The
+ * signature is deliberately narrow: statutory title present, almost no
+ * other text, and no money rows (a page with real rows is a real table). */
+function findImageTablePages(text, pdfPath) {
+  const pages = text.split("\f");
+  if (pages.length && !pages[pages.length - 1].trim()) pages.pop();
+  const out = [];
+  for (let i = 0; i < pages.length; i++) {
+    const t = pages[i];
+    if (!/schedu[l1i]e\s*of\s*assets/i.test(t)) continue;
+    if (!/he[l1i]d\s*at\s*end\s*of\s*year|[l1i]ine\s*4\s*\(?\s*i\s*\)?/i.test(t)) continue;
+    const chars = (t.match(/\S/g) || []).length;
+    if (chars < 50 || chars > 700) continue; // <50 is already a bad page; >700 holds a real table
+    if ((t.match(/\d[\d,]{5,}/g) || []).length > 2) continue; // money rows -> not an image table
+    // the text signature alone is 135/199 over the corpus — every TOC line
+    // and bare title page matches it. What the sizing scan actually
+    // discriminated on is the page CARRYING A LARGE IMAGE (the table
+    // itself); pdfimages -list confirms that in milliseconds with no
+    // rendering, and it measured 1/21 in the stratified gap sample.
+    if (!pageHasLargeImage(pdfPath, i + 1)) continue;
+    out.push(i + 1);
+  }
+  return out.slice(0, 6);
+}
+
+function pageHasLargeImage(pdfPath, page) {
+  try {
+    const out = execFileSync("pdfimages", ["-f", String(page), "-l", String(page), "-list", pdfPath],
+      { encoding: "utf8", maxBuffer: 4 * 1024 * 1024 });
+    for (const line of out.split("\n").slice(2)) {
+      const c = line.trim().split(/\s+/);
+      if (c.length > 5 && +c[3] >= 900 && +c[4] >= 500) return true;
+    }
+  } catch { /* damaged page or pdfimages absent — treat as no image */ }
+  return false;
+}
+
 /* PAGE TARGETING (v3): for scans too big to OCR whole, find the schedule
  * pages first. Renders only the TOP STRIP of each page (3in at 100dpi —
  * headings live there) and OCRs the strips; a strip costs ~1-2s vs ~30s+
@@ -420,9 +463,12 @@ async function analyzePdf(ack, plan, tag) {
   // fire whenever neither a match nor a vesting group exists (~3.3k
   // stored entries qualify; only the scanned subset actually OCRs)
   const notesMissing = (f) => !f || !["match", "matchText", "vesting", "vestingText"].some((k) => k in f);
-  if ((!parsed.found || notesMissing(features)) && hasOcrTools) {
-    const bad = findBadPages(text);
-    if (bad.length >= 3 && bad.length <= OCR_SKIP_BAD) {
+  const imgPages = hasOcrTools && !(parsed.found && isConfident(parsed)) ? findImageTablePages(text, dest) : [];
+  if ((!parsed.found || notesMissing(features) || imgPages.length) && hasOcrTools) {
+    const bad = [...new Set([...findBadPages(text), ...imgPages])].sort((a, b) => a - b);
+    // image-table pages relax the >=3 minimum: Compass has exactly two such
+    // pages (duplicate copies of the audit) and zero conventionally-bad ones
+    if ((bad.length >= 3 || imgPages.length) && bad.length <= OCR_SKIP_BAD) {
       try {
         // The cache must be keyed by WHICH pages were OCR'd, not just how
         // many. v7 changed detection itself (mixed-case cipher pages joined
@@ -491,6 +537,14 @@ async function analyzePdf(ack, plan, tag) {
           if (!parsed.found) {
             const p2 = parse4i(combined, plan.assetsEOY, plan.label || "", plan.codes || "");
             if (p2.found) { parsed = p2; usedOcr = true; }
+          } else if (!isConfident(parsed) && imgPages.length) {
+            // v108: the text parse "succeeded" on note aggregates while the
+            // real menu sat in the page-104 image — a CONFIDENT combined
+            // parse supersedes a non-confident text one. The Sierra Space
+            // guard holds: adoption requires strictly MORE confidence, so a
+            // clean parse can never be degraded and junk cannot swap for junk.
+            const p2 = parse4i(combined, plan.assetsEOY, plan.label || "", plan.codes || "");
+            if (p2.found && isConfident(p2)) { parsed = p2; usedOcr = true; }
           }
         }
       } catch (e) {

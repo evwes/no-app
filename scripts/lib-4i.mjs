@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 107;
+export const PARSER_VERSION = 108;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -707,6 +707,13 @@ export function parseRows(section, opts = {}) {
       }
     }
     name = name.replace(/\s*\*+\s*$/, ""); // trailing footnote markers
+    // OCR reads an empty cost-column dash as "=" glued to the name's tail
+    // ("Fidelity TRIM 2030 Trust Company ="). ONLY "=": a trailing "~" run
+    // is a Form-5500 dotted LEADER (pdftotext renders "......" as tildes)
+    // and condemns its row downstream — stripping it admitted a Teamsters
+    // form-page line at $452k; hyphens are the same trap
+    // (v108, Compass image-table class)
+    name = name.replace(/[\s=]+$/, "");
     // wrapped lines carry their column gaps into the assembled name
     name = name.replace(/\s{2,}/g, " ");
     /* v74: the EFAST2 placeholder guard, applied to the ASSEMBLED NAME.
