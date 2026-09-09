@@ -1877,10 +1877,20 @@
     $("mapOut").onclick = () => { MAP.zoom = Math.max(1, MAP.zoom / 1.6); renderMap(); };
     const svg = $("mapSvg");
     let drag = null;
-    svg.addEventListener("pointerdown", (e) => { drag = { x: e.clientX, y: e.clientY, cx: MAP.cx, cy: MAP.cy, moved: false }; svg.setPointerCapture(e.pointerId); });
+    /* Capture the pointer only once a DRAG has actually started. Capturing on
+     * pointerdown retargets every later pointer event — including the derived
+     * CLICK — to the svg element itself, so e.target was never a dot or a
+     * state and every click handler below fell through silently. The map test
+     * passed anyway because it dispatched synthetic MouseEvents, which skip
+     * pointer capture; it now drives real mouse input for exactly this
+     * reason. */
+    svg.addEventListener("pointerdown", (e) => { drag = { x: e.clientX, y: e.clientY, cx: MAP.cx, cy: MAP.cy, moved: false, id: e.pointerId }; });
     svg.addEventListener("pointermove", (e) => {
       if (!drag) return;
-      if (Math.abs(e.clientX - drag.x) + Math.abs(e.clientY - drag.y) > 4) drag.moved = true;
+      if (!drag.moved && Math.abs(e.clientX - drag.x) + Math.abs(e.clientY - drag.y) > 4) {
+        drag.moved = true;
+        try { svg.setPointerCapture(drag.id); } catch { /* pointer already gone */ }
+      }
       if (!drag.moved) return;
       const rect = svg.getBoundingClientRect();
       MAP.cx = Math.max(0, Math.min(1, drag.cx - (e.clientX - drag.x) / rect.width / MAP.zoom));

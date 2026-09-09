@@ -155,14 +155,21 @@ await page.waitForTimeout(2000);
 const msVb = await page.evaluate(() => document.querySelector("#mapSvg")?.getAttribute("viewBox"));
 if (vbW(msVb) < 900) fail.push(`clearing the state query did not reset the zoom (viewBox ${msVb})`);
 
-/* DOT CLICK. A dot pulls its plans into the table with a visible, clearable
- * selection banner. */
+/* DOT CLICK — with REAL mouse input, never synthetic MouseEvents. The first
+ * version dispatched a synthetic click and passed while every real click was
+ * dead: setPointerCapture on pointerdown retargeted the derived click to the
+ * svg element, and synthetic events skip pointer capture entirely. A UI test
+ * that does not use the input path users use certifies nothing. */
 await setQuery("");
 await page.waitForTimeout(2000);
-await page.evaluate(() => {
-  document.querySelector("#mapSvg .map-dot")
-    ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+const dotXY = await page.evaluate(() => {
+  const c = document.querySelector("#mapSvg .map-dot circle");
+  if (!c) return null;
+  const b = c.getBoundingClientRect();
+  return { x: b.x + b.width / 2, y: b.y + b.height / 2 };
 });
+if (!dotXY) fail.push("no dot found to click");
+else await page.mouse.click(dotXY.x, dotXY.y);
 await page.waitForTimeout(2000);
 const pick = await page.evaluate(() => ({
   tableShown: !document.querySelector("#tableSection").hidden,
@@ -184,13 +191,18 @@ if (cleared.banner) fail.push("Clear selection did not hide the banner");
 if (num((cleared.count || "").split(" of ")[0]) <= pick.rows)
   fail.push(`Clear selection did not restore the full table (${cleared.count})`);
 
-/* STATE CLICK. Clicking a state outline types its code into the search box. */
+/* STATE CLICK (real mouse). Clicking a state outline types its code into the
+ * search box, which filters and zooms. */
 await page.click("#viewMap");
 await page.waitForTimeout(1500);
-await page.evaluate(() => {
-  document.querySelector('#mapSvg .map-state[data-state="tx"]')
-    ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+const txXY = await page.evaluate(() => {
+  const p = document.querySelector('#mapSvg .map-state[data-state="tx"]');
+  if (!p) return null;
+  const b = p.getBoundingClientRect();
+  return { x: b.x + b.width / 2, y: b.y + b.height / 2 };
 });
+if (!txXY) fail.push("no Texas outline found to click");
+else await page.mouse.click(txXY.x, txXY.y);
 await page.waitForTimeout(2000);
 const tx = await page.evaluate(() => ({
   box: document.querySelector("#search")?.value,
@@ -198,6 +210,33 @@ const tx = await page.evaluate(() => ({
 }));
 if (tx.box !== "tx") fail.push(`clicking Texas did not set the search box (got "${tx.box}")`);
 if (!(vbW(tx.vb) < 900)) fail.push(`clicking Texas did not zoom to it (viewBox ${tx.vb})`);
+
+/* WHEEL ZOOM (real wheel input over the svg's centre). */
+const wheelBefore = tx.vb;
+const svgXY = await page.evaluate(() => {
+  const b = document.querySelector("#mapSvg").getBoundingClientRect();
+  return { x: b.x + b.width / 2, y: b.y + b.height / 2 };
+});
+await page.mouse.move(svgXY.x, svgXY.y);
+await page.mouse.wheel(0, -400);
+await page.waitForTimeout(1500);
+const wheelAfter = await page.evaluate(() => document.querySelector("#mapSvg")?.getAttribute("viewBox"));
+if (!(vbW(wheelAfter) < vbW(wheelBefore)))
+  fail.push(`wheel did not zoom in (viewBox ${wheelBefore} -> ${wheelAfter})`);
+/* DRAG must still pan and must NOT count as a click: drag across the map and
+ * confirm the view moved while the search box kept its state query. */
+await page.mouse.move(svgXY.x - 100, svgXY.y);
+await page.mouse.down();
+await page.mouse.move(svgXY.x + 60, svgXY.y + 40, { steps: 8 });
+await page.mouse.up();
+await page.waitForTimeout(1500);
+const dragged = await page.evaluate(() => ({
+  vb: document.querySelector("#mapSvg")?.getAttribute("viewBox"),
+  box: document.querySelector("#search")?.value,
+  table: !document.querySelector("#tableSection").hidden,
+}));
+if (dragged.vb === wheelAfter) fail.push("drag did not pan the view");
+if (dragged.table) fail.push("a drag counted as a click and opened the table");
 
 await page.screenshot({ path: "/tmp/map.png" });
 await browser.close();
