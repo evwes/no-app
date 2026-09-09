@@ -6986,3 +6986,47 @@ through both versions in both directions: 1 gained, **0 lost**.
 `ds` are stored per ACK, and the fallback ladder means the ack a plan is judged
 by is not always the ack of its newest filing. Bucket work that pulls acks from
 `dx` must either exclude `fb` entries or say which filing it is talking about.
+
+## 2026-09-09 — run #236 verdict (v114 + v115): 123 gained, ZERO lost
+
+The cleanest re-parse verdict the project has produced alongside v80's.
+Measured against the last pure v113 store (both versions of
+`lineups-status.json` recovered from git, since the merge job's
+`losses-triage.txt` is local-only):
+
+| | v113 | v115 | |
+|---|---|---|---|
+| confident | 59,610 | **59,733** | **+123** |
+| lineups | 59,320 | 59,432 | +112 |
+| entries | 64,782 | 64,809 | +27 |
+| match | 42,353 | 42,338 | −15 |
+| vesting | 51,849 | 51,826 | −23 |
+| HIGH | 4 | 4 | the known contribution-limit baseline |
+
+**Confidence LOST: 0.** Not one plan that had a lineup lost it — which is
+what "strictly additive by code path" was supposed to buy and now has
+whole-universe evidence rather than a corpus diff's word for it. The 123
+gains are dominated by `band-hi` (v115): Nuvance $1.2B, CMFG Life $1.1B,
+Maritime Assoc. $1.0B, Vandalia $853M, SRI International $787M, F.N.B.
+$603M — $8.3B and **100,550 participants** of newly published menus.
+
+**The projection was low, and that is worth recording too.** v114 was
+measured exhaustively at 28 and v115 projected at ~48 from a random draw;
+together ~76 against 123 delivered. The random draw under-predicted by 60%
+where the two previous TOP-N draws over-predicted by 12x and 26x. A random
+sample's error is the honest kind: symmetric and bounded, not systematic.
+
+**The −15 match / −23 vesting, explained rather than tolerated.** Zero
+lineups were lost, so a feature dip needed a mechanism. It has one, exactly:
+**27 acks lost their feature flag, and all 27 are among the 94 that stopped
+using the PRIOR-YEAR FALLBACK.** Their newest filing now parses its own
+schedule, so the ladder no longer consults last year's filing — and last
+year's filing was the one carrying the feature prose. Extraction did not
+regress; the ladder simply stopped reaching a document it no longer needed.
+
+**Queued question this raises (not a defect, a design choice):** when the
+newest filing has no feature prose and the prior year's does, we now show
+nothing where we used to show last year's match formula. A dated
+"as filed for plan year N−1" label would keep it honest and keep it useful.
+27 plans today, and the number grows every time a lineup fix removes a
+fallback.
