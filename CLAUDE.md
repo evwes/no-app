@@ -398,6 +398,16 @@ costs a night.
   US Foods heading defect, sized first, recovered **0** of its 30 target
   filings; the Medtronic column investigation was sized only after it had
   consumed most of a session.
+- **RANK to pick what to read; draw RANDOMLY to predict what a fix wins**
+  (2026-09-09, after the same error twice). v101 was projected at 65% and
+  delivered 2.5%; v112 was projected at ~125 plans from a 2-of-8 hit rate
+  and delivered 10. Both projections came from samples taken off the TOP of
+  a size-ranked list. Large plans are systematically different — they file
+  long attachments where both a fair-value note and a real menu exist, while
+  the bucket's bulk is small plans with nothing to recover. A top-N sample is
+  the right way to choose which filings to OPEN and the wrong way to estimate
+  a bucket-wide yield. Both times the RE-SIZE caught it, which is why the
+  re-size is not optional.
 - **Write scripts to a FILE, never inline in `node -e` or a heredoc.**
   Backticks and parens trigger shell command substitution — this mangled two
   commit messages and broke a report script mid-run, all after the rule was
@@ -442,8 +452,8 @@ don't confuse them). Frontend: python http.server + Playwright at
 
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
-  full-form** filers; 68,767 parse-status entries. **Parser v111, OCR v8.**
-  **59,600 confident lineups, 62,658 with features.** Numbers move every run —
+  full-form** filers; 68,767 parse-status entries. **Parser v112, OCR v8.**
+  **59,610 confident lineups, 62,660 with features.** Numbers move every run —
   `docs/coverage-history.jsonl` is the source of truth, and the merge job
   appends to it.
 - **Parser history lives in `docs/accuracy-log.md`, not here.** Every version
@@ -493,13 +503,13 @@ don't confuse them). Frontend: python http.server + Playwright at
 
   | plans | participants | assets | cause |
   |---|---|---|---|
-  | 660 | 498,540 | $54.1B | `few` fewer than 3 rows |
-  | 528 | 397,151 | $24.1B | `nohead` no heading seeded a region |
-  | 324 | 303,306 | $38.0B | `stmt` statement/aggregate won, not a menu |
-  | 230 | 502,565 | $16.6B | `band-hi` holdings sum ABOVE plan assets (v107 recovered 40 plans/$16.5B incl. UPS; remainder is a different sub-shape) |
-  | 56 | 262,154 | $35.8B | `band-lo` far below |
-  | 44 | 20,016 | $463M | `trust` bare trust pointer, unlinked |
-  | 11 | 12,444 | $2.2B | `noregion` heading fired, nothing scored |
+  | 615 | 460,830 | $52.5B | `few` fewer than 3 rows (v112: -52, mostly RECLASSIFIED to stmt — a truer cause, not a loss) |
+  | 527 | 397,007 | $24.1B | `nohead` no heading seeded a region |
+  | 374 | 211,809 | $19.0B | `stmt` statement/aggregate won, not a menu (+57 from few/band-hi; these now render the filed-in-aggregate line, bit 4096) |
+  | 212 | 200,850 | $15.1B | `band-hi` holdings sum ABOVE plan assets (v107 took 40 plans/$16.5B incl. UPS; v108 Compass; remainder is master-trust-opaque giants) |
+  | 52 | 261,344 | $35.7B | `band-lo` far below |
+  | 43 | 19,877 | $455M | `trust` bare trust pointer, unlinked |
+  | 8 | 10,746 | $2.1B | `noregion` heading fired, nothing scored |
 
   ~1,900 live plans total. Priorities: `band-hi` by dollars and participants
   (Compass Group USA 312,914 participants; UPS $14.2B), `few`/`nohead` by

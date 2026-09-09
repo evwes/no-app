@@ -6560,3 +6560,33 @@ one hour — the trust-name regex captured "llective trust" and its token
 match "linked" every plan to the same wrong trust, and the initial sample
 skipped mtiaAck-linked plans it should never have counted. The sampler's
 numbers were discarded, the trace's kept.
+
+## 2026-09-09 — v112 RE-SIZE: the projection was 12x too high, and why
+
+**Shipped result (run #231, zero losses):** confident **+10**, generic-named
+171 → 163, dominant-row 0, HIGHs = the 4 known baselines. Gains by their OLD
+bucket: `few` 3, `stmt` 4, `nohead` 2, one previously uncategorised. Erlanger's
+two plans are the type case (2 → 14 and 2 → 13 rows).
+
+**The projection was wrong: ~125 predicted, 10 delivered.** The mechanism is
+sampling bias, not a parser defect. I sampled the **top 8 by participants** of
+the in-band `few` subset and found 2 with hidden menus (25%), then extrapolated
+across 501 plans. Large plans in that bucket are systematically different —
+they file big audited attachments where a fair-value note and a real menu can
+both exist. The small plans that make up the bulk are genuine 2-row trust
+pointers with no menu to swap to. Actual in-bucket rate: ~0.6%.
+
+**This is the SECOND time this exact failure mode has been recorded** (v101 was
+projected at 65% and delivered 2.5%). The existing rule — SIZE before fixing,
+RE-SIZE after — held and caught it. What the rule was missing is the corollary
+now added: **a sample drawn from the TOP of a size-ranked list is not a random
+sample, and must never be extrapolated bucket-wide.** Rank to choose what to
+READ; draw randomly to estimate what a fix will WIN.
+
+**The fix still earned its place, for a reason that was not the headline.**
+`few` 667 → 615 and `stmt` 317 → 374: ~52 plans did not gain a lineup but
+moved to a cause that is TRUE of them — their region really is an aggregate,
+not a sub-3-row fragment. Those plans now render the filed-in-aggregate
+explanation (bit 4096) instead of a bare gap. A more honest label for 52
+plans and 10 real menus, at zero loss, is a good trade; it is simply a
+different trade from the one projected.
