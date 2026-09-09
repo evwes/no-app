@@ -112,6 +112,14 @@ const DATE_LINE = /(january|february|march|april|may|june|july|august|september|
  */
 export const GENERIC_TYPE_NAME = /^(?:total )?(?:registered investment compan(?:y|ies)|(?:common[\/ ]?)?collective (?:investment )?trust(?: fund| portfolio)?|collective trust fund|mutual funds?|common (?:and preferred )?stocks?|corporate stocks?|pooled separate accounts?|separate accounts?|guaranteed (?:investment|interest) contracts?|group annuity contracts?)$/i;
 export const NOT_FUND_SHAPED = /^(?:at (?:fair|contract) value|investments?(?:,? at .*)?|total\b.*|various\b.*|master trust.*|investments? held in the trust.*|participants?[- ]directed.*|fully benefit[- ]responsive.*|cusip:?.*|net assets.*|assets\b.*|cash(?: and cash equivalents)?|other\b.*|[a-z]\s+total\b.*|see (?:note|attach).*|interest[- ]bearing cash|value of interest in .*)$/i;
+/* UNAMBIGUOUS accounting-disclosure phrasing, for tests that ask "are these
+ * rows JOINTLY an aggregate?" — deliberately narrower than NOT_FUND_SHAPED,
+ * whose `total\b.*` arm is safe only for a single 90%-dominant row: reused
+ * whole for a joint test it read "Total Stock Market Index" menus as
+ * aggregates (v110's regression, and nearly the merge triage's on the same
+ * day). Vocabularies are per-question; this one is exported so every
+ * joint-aggregate question uses the same list. */
+export const AGG_DISCLOSURE = /^(?:participants?[- ]directed.*|fully benefit[- ]responsive.*|investments?(?:,? at .*)?|at (?:fair|contract) value|net assets.*|value of interest in .*|master trust.*|investments? held in the trust.*)$/i;
 
 const TRACE = process.env.WAMPO_TRACE || "";
 const TRACE_ROWS = TRACE === "rows" || TRACE === "all";
@@ -1768,7 +1776,6 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
    * Index", "Total International Stock Index", "Total Bond Market Index"
    * are real funds whose names START with "Total". Only unambiguous
    * accounting-disclosure phrasing counts toward a split. */
-  const AGG_DISCLOSURE = /^(?:participants?[- ]directed.*|fully benefit[- ]responsive.*|investments?(?:,? at .*)?|at (?:fair|contract) value|net assets.*|value of interest in .*|master trust.*|investments? held in the trust.*)$/i;
   const aggRows = funds.filter((f) => AGG_DISCLOSURE.test(String(f.name || "").trim()));
   const aggSum = aggRows.reduce((a, f) => a + f.value, 0);
   const aggSplit = allSum > 0 && aggRows.length >= 2 && aggRows.length <= 3 && aggSum / allSum >= 0.9;

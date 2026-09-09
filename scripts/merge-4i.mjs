@@ -2,7 +2,7 @@
 /* Merge matrix parse deltas (results-*.json) into the lineup stores:
  * lineups-status.json, data/lineups/ shards, lineups-index.json. */
 import { readFileSync, writeFileSync, mkdirSync, readdirSync } from "node:fs";
-import { indexFlags, JUNK_NAME_RE } from "./lib-4i.mjs";
+import { indexFlags, JUNK_NAME_RE, AGG_DISCLOSURE, GENERIC_TYPE_NAME } from "./lib-4i.mjs";
 
 const SHARDS = 64;
 const shardOf = (ack) => {
@@ -28,7 +28,24 @@ const prevConfident = new Set(Object.entries(status.plans).filter(([, m]) => m.c
 const prevShape = {};
 for (let i = 0; i < SHARDS; i++) {
   for (const [a, e] of Object.entries(buckets[i])) {
-    if (e.confident && e.funds) prevShape[a] = { n: e.funds.length, r: e.coverageRatio || 0 };
+    if (e.confident && e.funds) {
+      // agg: the OLD lineup was dominated (>=90% of its sum) by rows named
+      // like accounting categories — losing it is a cleanup, not a broken
+      // menu, and the triage below skips it. Added after v111's withdrawal
+      // of five REAL 3-4 row Vanguard menus sailed under the old n>=5
+      // floor: the floor can only drop to n>=3 with this discriminator,
+      // or every justified 3-row aggregate cleanup floods the audit.
+      const sum = e.funds.reduce((x, f) => x + (f.value || 0), 0);
+      // AGG_DISCLOSURE, never NOT_FUND_SHAPED: the broad list's total-prefix
+      // arm reads "Total Stock Market Index" menus as aggregates — the exact
+      // v110 regression this floor-lowering exists to catch (the unit check
+      // caught the same reuse HERE before it shipped)
+      const aggSum = e.funds.reduce((x, f) => {
+        const nm = String(f.name || "").trim();
+        return x + (AGG_DISCLOSURE.test(nm) || GENERIC_TYPE_NAME.test(nm) ? (f.value || 0) : 0);
+      }, 0);
+      prevShape[a] = { n: e.funds.length, r: e.coverageRatio || 0, agg: sum > 0 && aggSum / sum >= 0.9 };
+    }
   }
 }
 
@@ -205,7 +222,10 @@ console.log(`merged ${applied} entries; totals: ${vals.length} parsed, ${vals.fi
     if (demotedAcks.has(ack)) return false;
     if (currentAcks && !currentAcks.has(ack)) { superseded++; return false; }
     const s = prevShape[ack];
-    return s && (s.n >= 7 || (s.n >= 5 && s.r >= 0.7 && s.r <= 1.3));
+    // floor lowered n>=5 -> n>=3 in-band, gated on !agg (see the capture
+    // comment above): a lost 3-fund Vanguard menu at ratio 1.0 is exactly
+    // as much a regression as a lost 20-fund one
+    return s && !s.agg && (s.n >= 7 || (s.n >= 3 && s.r >= 0.7 && s.r <= 1.3));
   });
   if (superseded) console.log(`  of those losses, ${superseded} are superseded filings (the plan moved to a newer ack) — not regressions, not triaged`);
   else if (!currentAcks) console.log("  supersession filter SKIPPED (plans-all unavailable) — losses may include superseded filings");

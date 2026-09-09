@@ -6513,3 +6513,21 @@ every one the aggregate shape. Net effect: **audit-generic-names fell
 was defined (baseline was 208 with threshold 230); dominant-row held 0;
 confident 59,600. The withdrawn plans surface as honest gaps pending the
 queued filed-aggregate frontend line.
+
+## 2026-09-09 — triage floor lowered to n≥3 in-band, gated on aggregate shape
+
+**The gap.** The five real menus v110 withdrew were n=3-4 and sailed under
+the loss triage's n≥5 floor — only reading the raw CONFIDENCE DIFF caught
+them. The floor is now n≥3 in-band, made possible by a discriminator the
+triage previously lacked: the OLD lineup's aggregate-dominance (≥90% of its
+sum in category-named rows) is captured into prevShape, and aggregate-
+dominated losses — always justified cleanups — are skipped instead of
+flooding the audit.
+
+**The near-miss worth recording:** the first draft computed that dominance
+with NOT_FUND_SHAPED — the exact per-question-vocabulary mistake v111 fixed
+that same morning, reintroduced in a different file within hours ("Total
+Stock Market Index" read as aggregate again). The four-case unit check
+caught it before commit. AGG_DISCLOSURE is now EXPORTED from lib-4i so
+every joint-aggregate question shares the one narrow list; the regex moved
+out of parse4i unchanged (gate green, corpus diff vs HEAD: zero).
