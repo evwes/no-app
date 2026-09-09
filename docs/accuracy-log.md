@@ -6400,3 +6400,27 @@ row REMOVED, nothing else moved. The class this closes is
 is preserved in it deliberately — "region scoring" was believed for six
 days because nobody traced; the trace took one command). Gate specimen
 pins n and sum forever.
+
+## 2026-09-09 — the map features shipped dead: synthetic-event tests certify nothing
+
+**Wrong.** The owner asked for map zoom, state selection, and clickable dots;
+they shipped "tested" and every click was dead in a real browser.
+`setPointerCapture` on pointerdown retargeted the derived click event to the
+svg element, so `e.target` was never a dot or a state and the handlers fell
+through silently. The map test passed because it dispatched synthetic
+`MouseEvent`s, which skip pointer capture — the test exercised a code path no
+user can reach. The owner was the detector.
+
+**The change.** Capture the pointer only on the first pointermove beyond the
+drag threshold (drag still pans, clicks keep their targets). The map test now
+drives REAL input — `page.mouse.click` at element coordinates, `mouse.wheel`
+over the svg, a full press-move-release drag — and the original defect was
+reproduced under it, fixed, and re-proven by negative control (restoring
+capture-on-pointerdown fails five checks).
+
+**Prevention, the durable rule:** a UI test must use the input path users
+use. A synthetic event that "clicks" an element asserts only that the handler
+exists, not that a human can reach it. This is the same lesson as the getBBox
+serialization trap wearing a new coat: the check that cannot fail on the
+broken thing is worse than no check, because it converts a defect into a
+certified feature.
