@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 111;
+export const PARSER_VERSION = 112;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -1368,6 +1368,11 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
   }
 
   let best = null;
+  // v112: the best candidate that LOOKS LIKE A REAL MENU (>=7 rows, wide
+  // band, largest row not a category/aggregate name, no statement/code/
+  // provider flags) — kept alongside `best` so the post-selection swap
+  // below can prefer it over a tiny note-aggregate that wins on ratio
+  let bestMenu = null;
   for (const [s, end] of candidates) {
     const region = lines.slice(s, end);
     const regionText = region.join("\n");
@@ -1608,10 +1613,32 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
         if (!best || score > best.score) {
           best = { score, ratio, scale, stmt: isStatement, ...parsed, funds: pFunds, totalValue: pTotal };
         }
+        if (pFunds.length >= 7 && ratio > 0.45 && ratio < 1.6 &&
+            !isStatement && !isCodePage && !isProvPage) {
+          const tv = pFunds.reduce((a, f) => (f.value > a.value ? f : a), pFunds[0]);
+          const tn = String((tv || {}).name || "").trim();
+          if (!GENERIC_TYPE_NAME.test(tn) && !AGG_DISCLOSURE.test(tn) && !NOT_FUND_SHAPED.test(tn)) {
+            if (!bestMenu || score > bestMenu.score) bestMenu = { score, ratio, scale, stmt: isStatement, ...parsed, funds: pFunds, totalValue: pTotal };
+          }
+        }
       }
     }
   }
   if (!best) return { found: false, why: "noregion" };
+  /* v112: a tiny NOTE AGGREGATE can out-score the real menu on ratio alone.
+   * Two of eight sampled `few` in-band plans hid full 13-14 row menus behind
+   * a 3-row "Mutual funds / GIC / ..." fair-value note at ratio ~1.0 — the
+   * note wins the closeness term and the menu (summing 0.86 because a
+   * section is unreadable) loses by a hair. POST-selection, like v107: when
+   * the WINNER is <=4 rows whose LARGEST row is a category or aggregate
+   * name, and a >=7-row candidate with a product-named largest row sits in
+   * the wide band, the menu is the honest reading. The swap target already
+   * excluded statement/code/provider pages, so junk cannot swap for junk. */
+  if (bestMenu && bestMenu !== best && best.funds.length <= 4) {
+    const wt = best.funds.reduce((a, f) => (f.value > a.value ? f : a), best.funds[0]);
+    const wn = String((wt || {}).name || "").trim();
+    if (GENERIC_TYPE_NAME.test(wn) || AGG_DISCLOSURE.test(wn)) best = bestMenu;
+  }
   let funds = best.scale > 1 ? best.funds.map((f) => ({ ...f, value: f.value * best.scale })) : best.funds;
 
   /* v107: drop the winner's own total row — POST-selection, deliberately.

@@ -254,6 +254,14 @@ const SPECIMENS = [
    * path judges ratio. */
   ["Premier Care 2023 fallback ('Mutual Funds' at 99% is a category, stmt)", "20241007155035NAL0016364977001", 54677749,
     { found: true, stmt: true }],
+  /* v112: a tiny fair-value NOTE ("Mutual funds / GIC" 3 rows, ratio ~0.99)
+   * out-scored Erlanger's real 14-row menu (ratio 0.859) on the closeness
+   * term alone; the post-selection swap prefers a >=7-row product-named
+   * candidate in the wide band when the winner is <=4 category-named rows.
+   * Controls held: Master-PSA pointers and trust-participation two-liners
+   * stay non-confident (no menu candidate exists to swap to). */
+  ["Erlanger (14-row menu beats the 3-row fair-value note)", "20251002152713NAL0000650817001", 236963285,
+    { found: true, n: 14, sum: 203516321 }],
   /* v68: the filler-column class. Before the fix, all 28 of this plan's
    * holdings were stored as "VARIABLE 1,056,601 sh" — the (c) sub-columns
    * ("N/A  VARIABLE  N/A  ... sh  #") beat the real name in column (b).

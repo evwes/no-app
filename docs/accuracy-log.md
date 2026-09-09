@@ -6531,3 +6531,32 @@ Stock Market Index" read as aggregate again). The four-case unit check
 caught it before commit. AGG_DISCLOSURE is now EXPORTED from lib-4i so
 every joint-aggregate question shares the one narrow list; the regex moved
 out of parse4i unchanged (gate green, corpus diff vs HEAD: zero).
+
+## 2026-09-09 — v112: the note aggregate that wins on ratio — `few` was hiding menus
+
+**Wrong.** The `few` bucket's dominant subclass (501 of 667 live plans:
+1-2 stored rows summing to ~plan assets) was assumed to be master-trust
+two-liners. Sampling eight with WAMPO_TRACE=cands broke the assumption
+twice over: (1) several ARE honest pointers (Master PSA, trust
+participation) — but (2) two of eight hid FULL 13-14 row menus (Erlanger's
+Vanguard/MetWest/Fidelity menu; an American Funds menu) that LOST region
+scoring to a 3-row fair-value note ("Mutual funds / GIC / …") sitting at
+ratio ~1.0 while the real menu summed 0.86. The closeness term alone
+decided it. Extrapolated: ~125 recoverable plans.
+
+**The change (v112).** The selection loop now also tracks the best
+MENU-SHAPED candidate (>=7 rows, wide band, largest row not a
+category/aggregate name, no statement/code/provider flags). Post-selection
+— v107's lesson, never per-candidate — the winner is swapped for it when
+the winner has <=4 rows and its largest row is a category or aggregate
+name. Junk cannot swap for junk: the target already excluded every junk
+page class.
+
+**Verified.** Erlanger 2→14 rows confident (gate specimen, exact sum);
+the second menu 2→13 confident; three pointer/junk controls unchanged
+(Master PSA pinned as a specimen control); corpus diff vs HEAD: zero
+changes across 192 filings. Also recorded: two measuring-script traps in
+one hour — the trust-name regex captured "llective trust" and its token
+match "linked" every plan to the same wrong trust, and the initial sample
+skipped mtiaAck-linked plans it should never have counted. The sampler's
+numbers were discarded, the trace's kept.

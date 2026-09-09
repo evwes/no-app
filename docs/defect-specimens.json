@@ -121,6 +121,20 @@
    "fixed": "v111",
    "sponsor": "Premier Care Dental",
    "was": "2023 fallback published 'Mutual Funds' at 99.4% of a $55M plan as a confident lineup after v110's letterhead cleanup promoted the region into band; aggOnly now also condemns GENERIC_TYPE_NAME dominant rows (fallback ack 20241007155035NAL0016364977001 is the gate specimen)"
+  },
+  {
+   "ack": "20251002152713NAL0000650817001",
+   "class": "note-aggregate-outscores-menu",
+   "fixed": "v112",
+   "sponsor": "Erlanger Health System",
+   "was": "a 3-row fair-value note ('Mutual funds'/GIC, ratio 0.991) out-scored the real 14-row menu (0.859) on ratio closeness; the few bucket's in-band 1-2 row subclass hid ~2/8 such menus. Post-selection swap to a >=7-row product-named wide-band candidate when the winner is <=4 category-named rows"
+  },
+  {
+   "ack": "20251009140957NAL0007115377001",
+   "class": "psa-pointer-control",
+   "fixed": null,
+   "sponsor": "(Master PSA plan)",
+   "was": "CONTROL: 'Master Pooled Separate Account' 2-row pointer must stay non-confident — no menu candidate exists, the v112 swap must not invent one"
   }
  ]
 }
