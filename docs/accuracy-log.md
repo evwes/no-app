@@ -6369,3 +6369,34 @@ OCR'd empty cost-column dash) is stripped from fund names.
 diff-lineups — the census band-hi count and the refuse-cases are the guard.
 Gate green; `diff-lineups.mjs` vs shipped v107: zero changes of any kind
 over the corpus.
+
+## 2026-09-09 — v109: "Portfolio" is a type word — State Farm's menu unmerged
+
+**Wrong.** State Farm ($19.0B, ~128k participants) — pinned as an OPEN
+specimen since 2026-09-03 with the note "real 55-fund menu loses region
+scoring to a Statement page". The note itself was wrong twice: the menu is
+20 funds, and the region was never losing — WAMPO_TRACE showed the schedule
+FOUND, with every row deciding "name from DESCRIPTION" because the
+description column reads "Common Collective Trust Portfolio" on all 18 CCT
+rows and typeOnly() left residue "Portfolio" (9 chars ≥ 6 → not a type).
+Eighteen real Vanguard trusts merged into one $18.0B row; the stmt guard
+withheld the merge — the guards held, the cost was the hidden menu, not a
+fabrication.
+
+**The change (v109).** "portfolios?" joins typeOnly's strip vocabulary. It
+plays the same grammatical role as "fund"/"account", which are already
+stripped: no real holding is named just "Portfolio", and identity words
+survive ("Fidelity Managed Income Portfolio" → "Fidelity Managed Income",
+still a name). With the description reading as type-only, the identity
+column wins and the menu parses: 20 rows, ratio 0.990, confident.
+
+**Measured before shipping.** Gate green incl. a new State Farm specimen
+(n=20, exact sum). `diff-lineups` vs shipped v108 over 190 filings: exactly
+one change in the whole corpus — State Farm 3→20 confident, one generic
+row REMOVED, nothing else moved. The class this closes is
+`shared-description-column`, the eighth face of the v100 merge defect.
+
+**Prevention.** State Farm's specimen entry corrected (the wrong diagnosis
+is preserved in it deliberately — "region scoring" was believed for six
+days because nobody traced; the trace took one command). Gate specimen
+pins n and sum forever.

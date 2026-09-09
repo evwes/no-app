@@ -68,10 +68,10 @@
   },
   {
    "ack": "20251010104106NAL0007965633001",
-   "class": "region-scoring-OPEN",
-   "fixed": null,
+   "class": "shared-description-column",
+   "fixed": "v109",
    "sponsor": "State Farm",
-   "was": "OPEN: real 55-fund Vanguard menu on page 3 loses region scoring to a Statement of Net Assets page"
+   "was": "description column 'Common Collective Trust Portfolio' outranked 18 real Vanguard names ('Portfolio' residue defeated typeOnly); menu merged to 3 rows and withheld as stmt. NOTE the original entry blamed region scoring against a 55-fund menu — tracing showed the region was FOUND and the column-role choice was the defect: 20 funds, confident at 0.99 after the fix"
   },
   {
    "ack": "20251007154215NAL0002583779001",

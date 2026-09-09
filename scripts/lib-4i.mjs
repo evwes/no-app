@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 108;
+export const PARSER_VERSION = 109;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -240,7 +240,15 @@ function typeOnly(desc) {
    * "value", "income" — each is load-bearing in real names ("Retirement 2040
    * Fund I", "MFS Value Fund"), and stripping them would make a genuine fund
    * read as type-only and hand the row back to the issuer column. */
-  r = r.replace(/\b(value of|interest in|the|a|an|of|in|at|held|funds?|accounts?|companies|company|end of year|publicly[- ]traded|common|trusts?|securit(y|ies)|contracts?|investments?|guaranteed|registered|pooled|separate|collective|commingled|insurance|mutual|stable|interest)\b/gi, " ");
+  /* "portfolio" joined v109: it plays the same grammatical role as "fund"/
+   * "account" — State Farm's description column reads "Common Collective
+   * Trust Portfolio" on all 18 CCT rows, the residue "Portfolio" (9 chars)
+   * kept it from reading as type-only, the description won the name, and 18
+   * real Vanguard trusts merged into one $18.0B row (the stmt guard caught
+   * the merge, so the cost was the withheld menu, not a fabrication). A fund
+   * named ONLY "Portfolio" does not exist; identity words survive the strip
+   * ("Fidelity Managed Income Portfolio" -> "Fidelity Managed Income"). */
+  r = r.replace(/\b(value of|interest in|the|a|an|of|in|at|held|funds?|accounts?|companies|company|end of year|publicly[- ]traded|common|trusts?|securit(y|ies)|contracts?|investments?|guaranteed|registered|pooled|separate|collective|commingled|insurance|mutual|stable|interest|portfolios?)\b/gi, " ");
   return r.replace(/[^a-z0-9]/gi, "").length < 6;
 }
 

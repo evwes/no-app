@@ -221,6 +221,14 @@ const SPECIMENS = [
    * live as pinned specimens in docs/defect-specimens.json. */
   ["Marriott Vacations (mangled total row dropped post-selection)", "20241015175511NAL0015204099001", 903033467,
     { found: true, n: 30, sum: 837352887 }],
+  /* v109: "Portfolio" joined typeOnly's strip vocabulary. State Farm's
+   * description column reads "Common Collective Trust Portfolio" on all 18
+   * CCT rows; the residue "Portfolio" kept it from reading as type-only, the
+   * description won the name, and 18 real Vanguard trusts merged into one
+   * $18.0B row — the stmt guard withheld the merge, so the cost was the
+   * hidden 20-fund menu, not a fabrication. 19.0B plan, 128k participants. */
+  ["State Farm (description 'CCT Portfolio' outranked 18 Vanguard names)", "20251010104106NAL0007965633001", 19010164147,
+    { found: true, n: 20, sum: 18810732199 }],
   /* v68: the filler-column class. Before the fix, all 28 of this plan's
    * holdings were stored as "VARIABLE 1,056,601 sh" — the (c) sub-columns
    * ("N/A  VARIABLE  N/A  ... sh  #") beat the real name in column (b).
