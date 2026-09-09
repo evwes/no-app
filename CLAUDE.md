@@ -452,7 +452,7 @@ don't confuse them). Frontend: python http.server + Playwright at
 
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
-  full-form** filers; 68,767 parse-status entries. **Parser v112, OCR v8.**
+  full-form** filers; 68,767 parse-status entries. **Parser v114, OCR v8.**
   **59,610 confident lineups, 62,660 with features.** Numbers move every run —
   `docs/coverage-history.jsonl` is the source of truth, and the merge job
   appends to it.
@@ -504,7 +504,7 @@ don't confuse them). Frontend: python http.server + Playwright at
   | plans | participants | assets | cause |
   |---|---|---|---|
   | 615 | 460,830 | $52.5B | `few` fewer than 3 rows (v112: -52, mostly RECLASSIFIED to stmt — a truer cause, not a loss) |
-  | 527 | 397,007 | $24.1B | `nohead` no heading seeded a region |
+  | 527 | 397,007 | $24.1B | `nohead` no heading seeded a region. SPLIT by `ds` (v113): 484 permanently unreachable, 43 ours. The `readfail` half of "ours" is CLOSED by v114 — the statutory column caption now seeds a region, and 28 of those 32 plans publish a real menu; the residue is 2 unlinked-trust pointers (Genentech $14.3B), 1 truncated attachment, 1 CONSOLIDATED filing. What remains ours here is the 11 `nohead/unread` plans ($178M): table-shaped pages under a heading we do not know |
   | 374 | 211,809 | $19.0B | `stmt` statement/aggregate won, not a menu (+57 from few/band-hi; these now render the filed-in-aggregate line, bit 4096) |
   | 212 | 200,850 | $15.1B | `band-hi` holdings sum ABOVE plan assets. DIAGNOSED 2026-09-09: NOT trust opacity (those giants are already linked and excluded) — these are mid-size plans whose real menu is read correctly but SECTION SUBTOTALS from the fair-value note are counted as holdings beside it (Vandalia 2.71x, Nuvance 3.27x). 95 of 212 carry 20+ rows. CORRECTED same day: the winning region is the FAIR VALUE HIERARCHY NOTE (Level 1/2/3 columns, two plan years, its own totals, ASC 820-10 practical-expedient text) being read as the schedule — Vandalia's NAV row is $1.14B against $853M of plan assets, so it cannot be a subtotal of this plan. Both filings also carry a statutory 4i header and show only ONE candidate, so the region boundary swallows the note. Fix = keep fair-value-note regions out of candidacy / seed from the statutory header. NOT subtotal arithmetic, NOT vocabulary |
   | 52 | 261,344 | $35.7B | `band-lo` far below |
@@ -515,8 +515,14 @@ don't confuse them). Frontend: python http.server + Playwright at
   (Compass Group USA 312,914 participants; UPS $14.2B), `few`/`nohead` by
   count, `stmt` includes State Farm 20251010104106NAL0007965633001. The
   nohead 50-sample measurement (56% no attachment / ~0 fixable) was taken on
-  the PRE-split bucket dominated by final-year plans — the 529 live-plan
-  nohead remainder is unmeasured and needs its own gap-verify pass.
+  the PRE-split bucket dominated by final-year plans; the live remainder was
+  then split exactly by `ds` and its `readfail` half closed in v114.
+  UNLINKED TRUSTS are now a named target of their own: Genentech's Schedule D
+  names ROCHE US DC PLANS MASTER TRUST at EIN 94-2347624 PN 002 and no MTIA
+  filing under that EIN exists in the datasets, so $14.3B sits behind a
+  pointer we cannot follow. Schedule D gives us the trust's NAME even when
+  the link fails — carrying it into plans-all would let the page say which
+  trust holds the money instead of "we could not read it".
 - **The fabricated-lineup class is CLOSED and must stay closed.**
   `audit-dominant-row.mjs`: 50 plans / $83.9B -> **0** at v105, while all 319
   honest single-holding plans were preserved. `audit-generic-names.mjs` sits at

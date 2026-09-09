@@ -395,6 +395,7 @@ function record(plan, entry, features) {
  * the whole population is bucketed by cause, exactly, for free.
  *
  *   dx  one of: nohead noregion stmt trust few band-lo band-hi narrow
+ *           consolidated (the attachment covers more than this plan)
  *   rw  rows the winning region produced
  *   rt  ratio x100 (holdings sum against plan assets)
  *

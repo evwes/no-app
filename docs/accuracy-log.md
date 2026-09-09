@@ -6822,3 +6822,75 @@ negative result cheap. Second: **revert beats tune.** A guard whose threshold
 has to be fitted to two filings is a guard that has no cause behind it yet;
 `band-hi` stays open with the note that the next attempt needs a signal
 validated against the honest menus, not only against Vandalia.
+
+## 2026-09-09 — v114: the statutory COLUMN CAPTION seeds a region
+
+**What was wrong.** `parse4i` seeded regions only from a page TITLE
+("Schedule H, line 4i…", "Schedule of Assets (Held at End of Year)"). A large
+share of small filings never print a title: their schedule page carries only
+the statutory COLUMN CAPTION the Form 5500 instructions prescribe — "(b)
+Identity of issue, borrower, lessor, or similar party" / "(c) Description of
+investment including maturity date…" — directly above the funds. The parser
+saw no heading, returned `nohead`, and published nothing.
+
+**The bucket was already named and waiting.** `dx=nohead` + `ds=readfail` is
+that population by construction: `ds` said the classifier could see the
+statutory header while `dx` said the parser found nothing. 51 acks
+universe-wide, 32 of them live plans. **All 32 were opened** — not sampled —
+and 30 carry a real fund menu under the caption.
+
+**The change.** `parse4i` is now two passes. `parse4iPass` is v113 exactly,
+plus one optional extra seed; the wrapper runs it WITHOUT that seed first and
+only retries when the first pass returned `found:false` — `nohead` or
+`noregion`, the two diagnoses that publish nothing by definition. A filing
+that already yields a region (confident, `stmt`, `band-hi`, anything) parses
+byte-identically to v113. That is the v81 scoping rule applied to the whole
+parse rather than to one gate clause: strictly additive by CODE PATH, not by
+hoping the new seed agrees with the old one where the old one already had an
+answer. Corpus diff over 194 filings: 0 gained, 0 lost, 0 rows moved.
+
+**Measured, exhaustively, on the whole bucket:** 28 of 32 become confident —
+$339M, 16,673 participants, ratios almost all 0.9–1.0 — with **zero**
+generic-named rows and **zero** dominant non-fund rows, the two fabricated
+shapes the audits count. Every remaining filing has a diagnosed cause:
+
+| | cause |
+|---|---|
+| Genentech ($14.3B), Roche Diagnostics | the entire 4i schedule is one line, "Plan Interest in Roche U.S. Retirement Plans Master Trust". The caption seed reaches it and correctly publishes nothing. The real gap is the UNLINKED TRUST: Schedule D names EIN 94-2347624 PN 002, and no MTIA filing under that EIN exists in the datasets, so neither the Sch D link nor the EIN fallback can fire — the Elevance class |
+| Northwest Portland Area Indian Health Board | the published attachment contains 2 of its holdings and stops |
+| Lucas, Horsfall, Murphy & Pindroh | CONSOLIDATED attachment — see below |
+
+**The false positive the bucket contained, and why it is now a guard.** Lucas
+Horsfall recovered as an 11-row menu at ratio 1.32 and was WRONG. Its
+attachment heads itself "CONSOLIDATED" and closes "TOTAL NET ASSETS
+30,643,999.64" against a Schedule H of $14.2M; the parser had won page 2 of a
+~60-holding schedule that covers more than this plan. So a second pass now
+refuses outright when the document's OWN declared total exceeds the plan's
+assets — the document contradicting the form, not vocabulary. It reuses the
+confidence band's existing 1.6 ceiling rather than a number fitted to this
+filing, it is ONE-SIDED (a schedule printed in thousands can never trip it),
+and it is confined to the retry pass so nothing v113 publishes can be
+withdrawn by it. Over the whole 32-filing population it rejects Lucas alone at
+2.16x; the next highest is 1.46x and that plan's lineup reconciles to
+Schedule H at 1.00. Negative control: without the guard, Lucas returns as a
+confident 11-row lineup. New `dx` code `consolidated`, labelled NOT OURS in
+the census, and pinned as a defect specimen so it can never come back.
+
+**Also v114, same family as v76's FEIN and street-address rows:** a schedule
+that heads every page "Tax Number: 954659692" had that identifier parsed as a
+holding worth nine hundred million, putting the full-schedule candidate at 68x
+plan assets. `tax number:` / `tax id:` joined JUNK_RE.
+
+**Measured and deliberately NOT fixed:** a leading footnote marker on fund
+names — "(1) AMCAP Fund", the numbered sibling of the party-in-interest "*"
+that is already stripped. 190 of 1,704,232 stored holdings, 0.011%. Sized
+before opening anything; not worth a rule, and some of the matches are junk
+rows that should not survive anyway.
+
+**The prevention.** Two rules earn a restatement here. First, **when a bucket
+is small enough, do not sample it — open all of it.** 32 filings is one
+script; the 1-in-32 false positive would have survived any sample that missed
+Lucas, and it is the reason this version ships with a guard instead of a
+defect. Second, **a recovery is not measured by how many lineups appear but by
+whether each one is TRUE**: the count went 29 → 28 on inspection, and the row
+that left was the only one worth arguing about.

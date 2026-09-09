@@ -135,6 +135,27 @@
    "fixed": null,
    "sponsor": "(Master PSA plan)",
    "was": "CONTROL: 'Master Pooled Separate Account' 2-row pointer must stay non-confident — no menu candidate exists, the v112 swap must not invent one"
+  },
+  {
+   "ack": "20251015130631NAL0006348128001",
+   "class": "caption-only-schedule",
+   "fixed": "v114",
+   "sponsor": "AGC Biologics",
+   "was": "a 31-fund Great Gray flexPATH menu under the statutory COLUMN CAPTION with no page title anywhere; the parser seeds only from titles, so the whole filing read as 'nohead' and published nothing"
+  },
+  {
+   "ack": "20250718164408NAL0000988931001",
+   "class": "consolidated-schedule-control",
+   "fixed": "v114",
+   "sponsor": "Lucas, Horsfall, Murphy & Pindroh",
+   "was": "CONTROL: a CONSOLIDATED attachment declaring 'TOTAL NET ASSETS 30,643,999.64' against a $14.2M Schedule H. Page 2 of it sums to 1.32x and would publish 11 of ~60 holdings as the menu. Must stay non-confident: no fragment of a schedule bigger than the plan is that plan's lineup"
+  },
+  {
+   "ack": "20251007154215NAL0002583779001",
+   "class": "trust-pointer-caption-control",
+   "fixed": null,
+   "sponsor": "Genentech",
+   "was": "CONTROL: $14.3B plan whose entire 4i schedule is one line, 'Plan Interest in Roche U.S. Retirement Plans Master Trust'. The caption seed must reach it and still publish nothing — the honest gap is the unlinked trust (Sch D names EIN 94-2347624 PN 002; no MTIA filing for it exists in the datasets), not the schedule"
   }
  ]
 }

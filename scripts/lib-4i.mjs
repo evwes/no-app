@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 113;
+export const PARSER_VERSION = 114;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -68,7 +68,11 @@ const SKIP_ROW = new RegExp("^(total|subtotal|grand total|schedule|page \\d|form
   // form-page boilerplate: a filing with NO 4i attachment can still seed a
   // region from the Schedule H checkbox line, and the parser then reads phone
   // numbers and zip codes off address/signature pages as \"values\" (Aramark)
-  "(mailing address|include room|city or town|telephone|preparer|acknowledg|benefit payments?\\b|,\\s*[A-Za-z]{2}\\s+\\d{5}(-\\d{4})?\\s*$)", "i");
+  // v114: the same family as the FEIN and street-address rows fixed in v76 —
+  // a nine-digit identifier printed in a schedule's own page header parses as
+  // a holding worth nine hundred million. Lucas Horsfall's attachment heads
+  // every page "Tax Number: 954659692" and the region came to 68x plan assets.
+  "(mailing address|include room|city or town|telephone|preparer|acknowledg|benefit payments?\\b|tax (?:number|id(?:entification)?(?: number)?)\\s*:|,\\s*[A-Za-z]{2}\\s+\\d{5}(-\\d{4})?\\s*$)", "i");
 
 // "December 31, 2024" style heading lines — the year parses as a value otherwise
 const DATE_LINE = /(january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,2},?(\s+(19|20)\d\d)?(\s+and)?\s*$/i;
@@ -1349,7 +1353,16 @@ const isProviderAgg = (rows) => {
   return all > 0 && prov.reduce((a, f) => a + f.value, 0) / all >= 0.5;
 };
 
-export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
+/* v114: two passes, and the SECOND one may only run when the first published
+ * nothing at all. `parse4iPass` is the whole v113 parser plus one optional
+ * extra region seed; the wrapper below runs it without that seed first, so a
+ * filing that already yields a region — confident, stmt, band-hi, anything —
+ * parses byte-identically to v113. Only `found:false` (the `nohead` and
+ * `noregion` diagnoses, which publish nothing by definition) gets a retry.
+ * That is the v81 scoping rule applied at the level of the whole parse: the
+ * widening is strictly additive by code path, not by hoping the new seed
+ * agrees with the old one on documents the old one already answered. */
+function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed = false) {
   const lines = text.split("\n");
   const headRe = /(schedule\s+h.{0,40}line\s*4i|schedule\s+of\s+assets\s*\(held|schedule\s+of\s+assets\s+held)/i;
   const endRe = /(line\s*4j|acquired\s+and\s+disposed|signature of)/i;
@@ -1381,8 +1394,48 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
      * table", which are different defects with different fixes — and until now
      * both reached the status store as the same silence. Diagnosing them meant
      * re-downloading and re-parsing filings the pipeline had already read. */
+    if (starts.length) trusteeMode = true;
+    else if (!captionSeed) return { found: false, why: "nohead" };
+  }
+  /* v114: the statutory COLUMN CAPTION, seeded on the retry pass only. The
+   * Form 5500 instructions prescribe the 4i column headings — "(b) Identity
+   * of issue, borrower, lessor, or similar party" / "(c) Description of
+   * investment…" — and many filings print those and no page TITLE at all, or
+   * print the title once in a table of contents while the table itself sits
+   * under the caption. Seeding from the caption reaches both shapes. The
+   * caption lines are already JUNK_RE vocabulary ("similar party",
+   * "description of investment"), so they cannot become rows themselves. */
+  if (captionSeed) {
+    /* A CONSOLIDATED attachment covers more than this plan, and no fragment
+     * of it is this plan's lineup. Lucas Horsfall's schedule heads itself
+     * "CONSOLIDATED" and closes "TOTAL NET ASSETS 30,643,999.64" against a
+     * Schedule H of $14.2M; page 2 of it happens to sum to 1.32x, lands in
+     * the confidence band on its own, and would publish 11 of ~60 holdings
+     * as the menu. The test is the schedule's OWN declared total against the
+     * form's assets — the document contradicting the form, not vocabulary —
+     * and it reuses the confidence band's existing 1.6 ceiling rather than a
+     * threshold fitted to this filing. It is ONE-SIDED (only an
+     * over-declaration rejects), so a schedule printed in thousands can never
+     * trip it, and it is confined to this second pass, so nothing v113
+     * publishes can be withdrawn by it. Measured over the whole 32-filing
+     * caption population: rejects Lucas alone, at 2.16x; the next highest is
+     * 1.46x and its lineup reconciles to Schedule H at 1.00. */
+    if (assetsEOY > 0) {
+      const declRe = /^\s*total\s+(?:net\s+)?assets\b/i;
+      for (const line of lines) {
+        if (!declRe.test(line)) continue;
+        const nums = line.match(/[\d,]+\.\d{2}|[\d,]{5,}/g) || [];
+        const v = nums.map((s) => Number(s.replace(/,/g, ""))).filter((x) => x > 1000).pop();
+        if (v && v > assetsEOY * 1.6) return { found: false, why: "consolidated" };
+      }
+    }
+    const capHead = /identity of (?:issue|issuer)\b|description of investment/i;
+    const seen = new Set(starts);
+    for (let i = 0; i < lines.length; i++) {
+      if (capHead.test(lines[i]) && !seen.has(i)) { starts.push(i); seen.add(i); }
+    }
     if (!starts.length) return { found: false, why: "nohead" };
-    trusteeMode = true;
+    starts.sort((a, b) => a - b);
   }
 
   // single-heading regions
@@ -1863,6 +1916,22 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
   // candidate (the real schedule is scanned or absent) — surface the flag
   // so it can never be marked confident
   return { found: true, thousands: best.scale > 1, sdba: sdbaOut, funds, ratio: best.ratio, ...(best.stmt || provAgg || aggOnly || aggSplit ? { stmt: 1 } : {}), ...(trustPtr ? { trustPtr: 1 } : {}), ...(sma ? { sma, smaKind } : {}) };
+}
+
+/* The public entry point. Pass 1 is v113 exactly. Pass 2 runs only when pass 1
+ * returned found:false — nohead (no title anywhere) or noregion (a title fired,
+ * commonly in a table of contents, but nothing under it scored as a table) —
+ * and adds the statutory column caption as a region seed. When the retry also
+ * finds nothing, pass 1's diagnosis is what gets recorded, so `dx` keeps
+ * describing the first pass and the census stays comparable across versions. */
+export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
+  const first = parse4iPass(text, assetsEOY, sponsorName, codes, false);
+  if (first.found) return first;
+  const retry = parse4iPass(text, assetsEOY, sponsorName, codes, true);
+  if (retry.found) return retry;
+  // "consolidated" is a fact about the DOCUMENT, not about which seed fired,
+  // so it outranks pass 1's nohead/noregion as the recorded cause.
+  return retry.why === "consolidated" ? retry : first;
 }
 
 /* ---- plan-feature extraction from the filing's audit notes ---------------- */
