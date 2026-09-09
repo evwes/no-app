@@ -386,13 +386,15 @@ costs a night.
   API/MCP). A dropped webhook once went unnoticed for two days because
   monitoring only watched for the data commit. Never tell the owner
   "lands tonight" until the run is observed in_progress.
-  **IT HAPPENED AGAIN, 2026-09-09 19:12Z, and the unblock is recorded:** the
-  v116 kick commit (`scripts/.kick`, dev branch, no `[skip ci]`) pushed
-  successfully and GitHub created **no run at all** — path filter and branch
-  both matched, and two listings a minute apart showed nothing. This is the
-  second observed drop. `workflow_dispatch` on the DEV branch started run #238
-  within seconds, so that is the fallback: if the run is not visible one minute
-  after a kick push, dispatch it rather than waiting.
+  **THE PUSH TRIGGER IS NO LONGER RELIABLE — DISPATCH IS NOW THE PRIMARY PATH
+  (2026-09-09).** Three kick pushes in a row (v116 at 19:12Z, v117 at 20:42Z,
+  and one earlier) landed on the dev branch touching `scripts/.kick`, matching
+  the path filter and the branch, with no `[skip ci]` — and GitHub created **no
+  run at all** for any of them. `workflow_dispatch` with `ref` = the dev branch
+  started runs #238 and #239 within seconds each time. So: **push the kick
+  commit for the record, then dispatch immediately rather than waiting to see
+  whether the push fires.** Do not assume the run exists because the push
+  succeeded; the listing is the only evidence that counts.
 - **Read the data stores through `scripts/lib-schema.mjs`** — `loadPlans()`,
   `loadStatus()`, `loadTrusts()`. A guessed field name throws and names the
   real fields instead of returning `undefined`. Three wrong published numbers

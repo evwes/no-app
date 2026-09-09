@@ -7082,3 +7082,13 @@ the second printed the row names and turned a shippable-looking win into a
 fabrication risk in one screen. A yield number is not a verdict on a change —
 it is a prompt to look at what the change publishes. Every bucket measurement
 from here prints rows, not just counts.
+
+## 2026-09-09 — run #238 verdict (v116): predicted 1, delivered 1
+
+confident 59,733 → **59,734**; lineups 59,432 → 59,433; every other metric
+byte-identical; HIGH unchanged at 4. **Lost: 0.** The single gain is
+**Paychex — $2.3B, 19,991 participants** — exactly the one filing the local
+sweep over 325 cached texts predicted the scale-marker widening would move,
+and nothing else moved in either direction. A one-plan fix is not a big fix,
+but a projection of "1, and no losses" that lands as "1, and no losses" is the
+strongest evidence the local sweep is measuring what production does.
