@@ -64,7 +64,7 @@
    "class": "filed-aggregate-control",
    "fixed": "v105",
    "sponsor": "MetLife Group",
-   "was": "NOT a defect \u2014 the filing genuinely reports participant-directed investments in aggregate. Control: must stay non-confident without being called a merge"
+   "was": "NOT a defect \u2014 the filing genuinely reports participant-directed investments in aggregate. Control: must stay non-confident without being called a merge. BREACHED ONCE (run #223, v109 data): the prior-year FALLBACK ladder rescued its 2023 filing (ack 20241008081623NAL0017271841001) whose two aggregates split dominance 58/41 under the single-row >=90% test, padded by auditor letterhead rows (Tel:/Fax:/Suite as $8.3M/$7.7M/$3.6M holdings) \u2014 shipped confident, caught in the mirror-gate review before reaching main. v110 closed it (aggSplit + letterhead condemnation); the 2023 ack is a gate specimen with expect stmt"
   },
   {
    "ack": "20251010104106NAL0007965633001",

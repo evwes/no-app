@@ -229,6 +229,16 @@ const SPECIMENS = [
    * hidden 20-fund menu, not a fabrication. 19.0B plan, 128k participants. */
   ["State Farm (description 'CCT Portfolio' outranked 18 Vanguard names)", "20251010104106NAL0007965633001", 19010164147,
     { found: true, n: 20, sum: 18810732199 }],
+  /* v110: dominance split between aggregates + auditor letterhead as rows.
+   * This is MetLife Group's PRIOR-YEAR (2023) filing — the one the fallback
+   * ladder rescues when the newest copy has no readable schedule — reporting
+   * two disclosure-in-aggregate lines (58% + 41%, together 99.7%) padded to
+   * five rows by "Tel:", "Fax:" and a Deloitte address fragment ($8.3M/
+   * $7.7M/$3.6M "holdings"). Shipped once as a confident $8.3B lineup on
+   * run #223 and caught in the mirror-gate review. The assets given are the
+   * CURRENT plan year's, exactly as the fallback path judges its ratio. */
+  ["MetLife 2023 fallback (split-aggregate dominance + letterhead rows must stay stmt)", "20241008081623NAL0017271841001", 8316000000,
+    { found: true, stmt: true }],
   /* v68: the filler-column class. Before the fix, all 28 of this plan's
    * holdings were stored as "VARIABLE 1,056,601 sh" — the (c) sub-columns
    * ("N/A  VARIABLE  N/A  ... sh  #") beat the real name in column (b).

@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 109;
+export const PARSER_VERSION = 110;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -111,7 +111,7 @@ const DATE_LINE = /(january|february|march|april|may|june|july|august|september|
  *                      published lineup.
  */
 export const GENERIC_TYPE_NAME = /^(?:total )?(?:registered investment compan(?:y|ies)|(?:common[\/ ]?)?collective (?:investment )?trust(?: fund| portfolio)?|collective trust fund|mutual funds?|common (?:and preferred )?stocks?|corporate stocks?|pooled separate accounts?|separate accounts?|guaranteed (?:investment|interest) contracts?|group annuity contracts?)$/i;
-export const NOT_FUND_SHAPED = /^(?:at (?:fair|contract) value|investments?(?:,? at .*)?|total\b.*|various\b.*|master trust.*|investments? held in the trust.*|participants?[- ]directed.*|cusip:?.*|net assets.*|assets\b.*|cash(?: and cash equivalents)?|other\b.*|[a-z]\s+total\b.*|see (?:note|attach).*|interest[- ]bearing cash|value of interest in .*)$/i;
+export const NOT_FUND_SHAPED = /^(?:at (?:fair|contract) value|investments?(?:,? at .*)?|total\b.*|various\b.*|master trust.*|investments? held in the trust.*|participants?[- ]directed.*|fully benefit[- ]responsive.*|cusip:?.*|net assets.*|assets\b.*|cash(?: and cash equivalents)?|other\b.*|[a-z]\s+total\b.*|see (?:note|attach).*|interest[- ]bearing cash|value of interest in .*)$/i;
 
 const TRACE = process.env.WAMPO_TRACE || "";
 const TRACE_ROWS = TRACE === "rows" || TRACE === "all";
@@ -284,6 +284,11 @@ export function parseRows(section, opts = {}) {
     let t = raw.trim().replace(/^\*+\s*/, "").replace(/\s*\*{1,3}\s*$/, "")
       .replace(/([0-9]{1,3}(?:,[0-9]{3})+)(?:\s*[,.]?\s*\(\s*[a-z]\s*\)){1,4}\s*$/i, "$1");
     if (!t) { nameBuf = []; continue; }
+    // an auditor's letterhead is not a holding: "Tel: 813 273-8300" parsed
+    // as an $8.3M fund on MetLife's fallback filing (the phone's last four
+    // digits read as a thousands-scaled value). The separator is required —
+    // "TELUS Corp" and "Tel Aviv Stock Exchange" are real issuers (v110).
+    if (/^(?:tel|fax|telephone)\s*[:.]/i.test(t)) { nameBuf = []; continue; }
     // "Current Value | Shares Par" layouts put the share count LAST — strip
     // the shares column and the currency code so the dollar value is trailing
     if (opts.sharesLast) {
@@ -1744,11 +1749,23 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
   const topRow = funds.reduce((a, f) => (f.value > (a ? a.value : -1) ? f : a), null);
   const aggOnly = !!topRow && allSum > 0 && topRow.value / allSum >= 0.9 &&
     NOT_FUND_SHAPED.test(String(topRow.name || "").trim());
+  /* v110: dominance SPLIT between aggregates evades the single-row test.
+   * MetLife's fallback filing reports "Participant directed investments"
+   * ($4.12B, 58%) plus "Fully benefit responsive investment contract"
+   * ($2.89B, 41%) — together 99.7% of the region, neither alone >=90% —
+   * padded to five rows by the auditor's letterhead, and shipped as a
+   * confident lineup of an $8.3B plan. Two or three non-fund-shaped rows
+   * jointly carrying >=90% of the sum are the same disclosure-in-aggregate,
+   * just typeset in two lines. A real menu cannot trip this: no menu puts
+   * 90% of its assets in rows named like accounting categories. */
+  const aggRows = funds.filter((f) => NOT_FUND_SHAPED.test(String(f.name || "").trim()));
+  const aggSum = aggRows.reduce((a, f) => a + f.value, 0);
+  const aggSplit = allSum > 0 && aggRows.length >= 2 && aggRows.length <= 3 && aggSum / allSum >= 0.9;
 
   // a statement-vocabulary fragment can still WIN when it's the only
   // candidate (the real schedule is scanned or absent) — surface the flag
   // so it can never be marked confident
-  return { found: true, thousands: best.scale > 1, sdba: sdbaOut, funds, ratio: best.ratio, ...(best.stmt || provAgg || aggOnly ? { stmt: 1 } : {}), ...(trustPtr ? { trustPtr: 1 } : {}), ...(sma ? { sma, smaKind } : {}) };
+  return { found: true, thousands: best.scale > 1, sdba: sdbaOut, funds, ratio: best.ratio, ...(best.stmt || provAgg || aggOnly || aggSplit ? { stmt: 1 } : {}), ...(trustPtr ? { trustPtr: 1 } : {}), ...(sma ? { sma, smaKind } : {}) };
 }
 
 /* ---- plan-feature extraction from the filing's audit notes ---------------- */

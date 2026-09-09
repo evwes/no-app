@@ -6424,3 +6424,43 @@ exists, not that a human can reach it. This is the same lesson as the getBBox
 serialization trap wearing a new coat: the check that cannot fail on the
 broken thing is worse than no check, because it converts a defect into a
 certified feature.
+
+## 2026-09-09 — v110: split-aggregate dominance — the MetLife control breached once
+
+**Wrong, and published to the dev branch for ~40 minutes.** Run #223's
+CONFIDENCE DIFF listed two gains: State Farm (intended) and **MetLife Group
+— a pinned control that must stay non-confident.** The mirror-gate review
+caught it before main. The stored "confident" lineup of the $8.3B plan was
+five rows from its 2023 prior-year FALLBACK filing: "Participant directed
+investments" ($4.12B) + "Fully benefit responsive investment contract"
+($2.89B) — disclosure in aggregate — padded by the auditor's letterhead:
+"Tel: 813 273" as an $8.3M holding, "Fax: 813 229" at $7.7M, a Deloitte
+address fragment at $3.6M (the phone's last four digits parsed as a
+thousands-scaled value).
+
+**Why every guard passed:** the two aggregates SPLIT dominance 58%/41%, so
+the v105 single-row ≥90% test never fired; neither name is in the
+STMT_ROW vocabulary ("Participant directed…" and "Fully benefit
+responsive…" both start off-pattern); the letterhead rows padded the count
+past n≥5. The v105 arc predicted this: "the sixth will look like the
+others." It also was NOT a v108/v109 regression — both versions parse the
+2023 filing identically; the entry appeared at #223 because the fallback
+download evidently succeeded that run after failing before. A latent
+defect, surfaced by nondeterminism, caught only because the CONFIDENCE
+DIFF is read against the pinned controls before every mirror.
+
+**The change (v110).** (1) Letterhead rows condemned in parseRows:
+`/^(?:tel|fax|telephone)\s*[:.]/i` — the separator is required, so TELUS
+Corp and Tel Aviv-named issuers survive. (2) `aggSplit`: 2–3 rows matching
+NOT_FUND_SHAPED that jointly carry ≥90% of the region sum mark it stmt —
+a real menu cannot put 90% of assets in accounting-category names.
+(3) "fully benefit[- ]responsive.*" joined NOT_FUND_SHAPED (ASC 962
+vocabulary, never a fund name). MetLife's 2023 parse: 5→3 rows,
+stmt=true, refused.
+
+**Prevention.** The 2023 fallback ack is a gate specimen (expect stmt) with
+the CURRENT-year assets, exactly as the fallback path judges ratio; the
+control's specimen entry records the breach permanently. Corpus diff vs
+the v109 tip: zero changes of any kind. The process rule this reaffirms:
+**the CONFIDENCE DIFF's gains are checked against the pinned controls
+before every mirror — a gain on a control is a stop, not a win.**
