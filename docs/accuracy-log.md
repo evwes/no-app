@@ -7133,3 +7133,25 @@ the row the assertion rests on.* This rule and v117's OCR gate were measured on
 the same day and both turned on the same discipline: the count said one thing,
 the rows said another, and only the rows could tell a filer's aggregate from
 our own garbage.
+
+## 2026-09-09 — a near-miss worth more than the fix that caused it
+
+Three kick pushes in a row created no run, so the procedure was rewritten:
+"the push trigger is no longer reliable — dispatch is the primary path."
+Forty minutes later the merge-4i labelling commit went out **without
+`[skip ci]`**, on the reasoning that the trigger was dead — and it fired
+immediately as run #240, while run #239 was thirty minutes into the v117 parse
+that carries the Meta fix. GitHub's concurrency rule would have cancelled #239.
+
+#240 was cancelled within a minute and #239 survived, because the run list was
+checked straight after the push rather than assumed. But the belief that caused
+it was mine and it was one hour old: **three observations of "did not fire" were
+generalised into "cannot fire", and a safety rule was relaxed on the strength of
+it.** An intermittent trigger is worse than a broken one precisely because it
+supports that generalisation right up until it doesn't.
+
+Both halves of the rule now stand explicitly: `[skip ci]` on every `scripts/**`
+commit made while a run is in flight, AND dispatch after a kick push rather than
+waiting. The general form: **a rule that exists to prevent a rare, expensive
+event must not be relaxed because the event has not happened lately.** That is
+the same reasoning that makes a seatbelt look unnecessary.

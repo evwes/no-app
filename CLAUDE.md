@@ -386,15 +386,22 @@ costs a night.
   API/MCP). A dropped webhook once went unnoticed for two days because
   monitoring only watched for the data commit. Never tell the owner
   "lands tonight" until the run is observed in_progress.
-  **THE PUSH TRIGGER IS NO LONGER RELIABLE — DISPATCH IS NOW THE PRIMARY PATH
-  (2026-09-09).** Three kick pushes in a row (v116 at 19:12Z, v117 at 20:42Z,
-  and one earlier) landed on the dev branch touching `scripts/.kick`, matching
-  the path filter and the branch, with no `[skip ci]` — and GitHub created **no
-  run at all** for any of them. `workflow_dispatch` with `ref` = the dev branch
-  started runs #238 and #239 within seconds each time. So: **push the kick
-  commit for the record, then dispatch immediately rather than waiting to see
-  whether the push fires.** Do not assume the run exists because the push
-  succeeded; the listing is the only evidence that counts.
+  **THE PUSH TRIGGER IS INTERMITTENT — WHICH IS WORSE THAN BROKEN
+  (2026-09-09, corrected the same hour it was first written).** Three kick
+  pushes in a row (v116 19:12Z, v117 20:42Z, one earlier) matched the path
+  filter and the branch, carried no `[skip ci]`, and produced **no run at
+  all**; `workflow_dispatch` with `ref` = the dev branch started #238 and #239
+  within seconds each time. That looked like a dead trigger, and it was written
+  up as one. **Forty minutes later a merge-4i commit pushed WITHOUT `[skip ci]`
+  fired instantly** — run #240 — while #239 was 30 minutes into the v117 parse,
+  and concurrency would have cancelled it. #240 was cancelled in time and #239
+  survived, but only because the run list was checked straight after the push.
+  So both halves of the rule stand and neither may be relaxed:
+  **(1)** `[skip ci]` on EVERY `scripts/**` commit made while a run is in
+  flight — a trigger that fires only sometimes still fires; **(2)** after a
+  kick push, dispatch rather than waiting, because it also sometimes does not.
+  The run listing immediately after any push is the only evidence that counts,
+  in both directions.
 - **Read the data stores through `scripts/lib-schema.mjs`** — `loadPlans()`,
   `loadStatus()`, `loadTrusts()`. A guessed field name throws and names the
   real fields instead of returning `undefined`. Three wrong published numbers
