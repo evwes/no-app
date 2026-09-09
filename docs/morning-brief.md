@@ -1,58 +1,45 @@
-# Morning brief — 2026-09-09 (written 00:35Z / 8:35 PM ET Sep 8; a later wake appends run #222's verdict)
+# Morning brief — 2026-09-09 (updated 02:15Z / 10:15 PM ET)
 
-## Shipped and LIVE on main (mirrored 21:50Z after full verdict)
+## Overnight, in order
 
-- **Parser v107** — drops a winner's mangled total row post-selection.
-  Production verdict on run #219: **confident +48 (59,587), 0 lost, 0
-  fabricated introduced**, generic-named fell 208→203, dominant-row held 0.
-  Band-hi bucket: **270→230 plans, $33.1B→$16.6B — half the bucket's dollars
-  recovered**, including UPS's $14.2B and Marriott Vacations.
-- **Wind-down explanation line** — the ~6,500 final-year filings ($0 EOY:
-  Red Lobster, Neiman Marcus, Jo-Ann, Steward Health) now say the plan ended
-  and point at the successor, instead of implying an unread schedule.
-  Verified on Red Lobster with Microsoft as negative control; smoke + map
-  tests green.
-
-## IN FLIGHT — v108, run #222 (dispatched 00:30Z, ~75 min)
-
-**The 4i table filed as an IMAGE under a native-text title page.** Compass
-Group USA — 312,914 participants, the single largest live-plan lineup gap —
-filed its whole 40-fund menu as one JPEG; every unreadable-page test passed
-and OCR never fired. v108 detects such pages (statutory title + almost no
-text + embedded image ≥900×500 via `pdfimages -list`) and lets a CONFIDENT
-combined parse replace a non-confident text parse. Verified: Compass adopts
-(25 rows, ratio 0.95); HCA, J&J, Home Depot (master-trust-opaque decoys) all
-refuse. Three wrong drafts were caught by measuring before shipping — the
-log entry has them. **Next wake: verdict → loss triage → mirror.**
-
-## Found wrong and FIXED (structural, not parser)
-
-**The hourly scheduler's ~40 firings had silently discarded all their
-work.** Fresh-session Routines carry `sources: []` — no repo, no push
-credential, no `add_repo`. "SUCCEEDED" recorded delivery, not outcome. The
-connectors fix is refused for this org, so the Routine now **self-binds into
-the main web session** (trig_017vdX5dSSYh5v68Cwe6EUBu, hourly at :07),
-which holds the repo and demonstrably pushes. Every wake since (22:10,
-23:12, 00:09) landed real work in this session.
+- **v108 (run #222) LANDED AND VERDICTED: Compass Group recovered.** The
+  312,914-participant plan — the largest live-plan lineup gap on the board —
+  now has its confident 25-row menu, extracted by OCR-ing the JPEG its 4i
+  table was filed as. Verdict: confident +27 (59,614), generic-named fell to
+  202, dominant-row held 0, HIGHs = the 4 known baselines. J&J and Home
+  Depot (master-trust-opaque decoys the detector touches) correctly refused.
+- **v109 (run #223) IN FLIGHT, dispatched 02:10Z.** "Portfolio" joined the
+  type vocabulary: State Farm's $19.0B / ~128k-participant menu was merging
+  18 Vanguard trusts into one row because the description column "Common
+  Collective Trust Portfolio" outranked the names. Gate has a State Farm
+  specimen (n=20, exact sum); corpus diff showed State Farm as the ONLY
+  change in 190 filings. Verdict + mirror when it lands (~03:30Z).
+- **Map upgrades shipped (owner request, built while runs cooked):** typing
+  a state name or code ("florida"/"fl") is an exclusive state filter that
+  zooms and highlights the state; clicking a state types its code; clicking
+  a dot pulls its plans into the table behind a clearable banner (single-
+  plan dots open the report); wheel zoom toward the cursor; state borders
+  now visible in every theme. Map test extended and its zoom checks proven
+  to fire via negative control. Ajax Building's "wrong" dot was verified
+  CORRECT (inside Florida's projected outline) — the invisible borders were
+  the real bug.
 
 ## HELD and why
 
-- Nothing held tonight. v108 dispatched the moment the gate was green and
-  no run was in flight.
+- **The mirror is HELD until run #223 lands** (~03:30Z): mirroring v109's
+  scripts to main before the dev run finishes would let main's :23 cron
+  start a duplicate full re-parse racing it. When #223 passes verdict, ONE
+  mirror takes everything live together: v108+v109 data, the State Farm and
+  Compass recoveries, and the map features.
 
 ## Waiting on the owner (unchanged)
 
-- GitHub Pages must serve `main` (Settings → Pages).
-- Custom domain DNS.
+- GitHub Pages must serve `main`; custom domain DNS.
 
 ## Continues next
 
-- Run #222 verdict + mirror (wakes at 01:07/02:07Z handle it).
-- Band-hi remainder after v108: the top is master-trust-opaque giants
-  (HCA/AT&T/J&J class) — the honest fix direction is trust LINKING or a
-  frontend "held in unlinked master trust" label, not parser row work.
-- `stmt` bucket (324, State Farm pinned), `few` (660), live-`nohead` (528,
-  needs its own gap-verify pass — the old ~0-fixable measurement was on the
-  ghost-dominated pre-split bucket).
-- Frontend: filed-aggregate explanation line (Comcast/MetLife class) needs a
-  pipeline bit; queued.
+- #223 verdict → mirror → gap census re-read (stmt should shrink by the
+  State Farm class; band-hi by the Compass class).
+- Band-hi remainder is master-trust-opaque giants (HCA/AT&T/J&J) — fix
+  direction is trust linking or an honest frontend label, not parser work.
+- `few` (660) and live-`nohead` (528) need their own sizing passes.
