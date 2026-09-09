@@ -47,4 +47,11 @@ and corrected BEFORE it ever reached the site.
   the 15 newly withdrawn) — "the filing reports investments in aggregate".
 - Consider lowering the loss-triage floor below n=5.
 - Band-hi remainder = master-trust-opaque giants: trust linking or a label.
-- `few` (~649) and live-`nohead` (528) sizing passes.
+- `few` SIZED (10:20Z, from dx alone): 667 live plans / 799k participants;
+  **501 are 1-2 rows summing to ~plan assets** — Nestle, General Mills,
+  State Street class: master-trust two-liners reaching the store via the
+  FALLBACK/OCR paths (Nestle's own newest filing has no 4i header; the
+  stored rw=2 came from a prior-year rescue). Next step is a fetch-4i-aware
+  sampler over ~10 of the 501, not parse4i traces; likely verdict is trust
+  linking / honest trust label, same direction as band-hi's giants.
+- live-`nohead` (528) sizing pass still queued.
