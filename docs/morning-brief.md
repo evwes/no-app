@@ -1,36 +1,53 @@
-# Morning brief — 2026-09-09 (updated 02:15Z / 10:15 PM ET)
+# Morning brief — 2026-09-09 (updated 05:30Z / 1:30 AM ET)
 
-## Overnight, in order
+## The headline
 
-- **v108 (run #222) LANDED AND VERDICTED: Compass Group recovered.** The
-  312,914-participant plan — the largest live-plan lineup gap on the board —
-  now has its confident 25-row menu, extracted by OCR-ing the JPEG its 4i
-  table was filed as. Verdict: confident +27 (59,614), generic-named fell to
-  202, dominant-row held 0, HIGHs = the 4 known baselines. J&J and Home
-  Depot (master-trust-opaque decoys the detector touches) correctly refused.
-- **v109 (run #223) IN FLIGHT, dispatched 02:10Z.** "Portfolio" joined the
-  type vocabulary: State Farm's $19.0B / ~128k-participant menu was merging
-  18 Vanguard trusts into one row because the description column "Common
-  Collective Trust Portfolio" outranked the names. Gate has a State Farm
-  specimen (n=20, exact sum); corpus diff showed State Farm as the ONLY
-  change in 190 filings. Verdict + mirror when it lands (~03:30Z).
-- **Map upgrades shipped (owner request, built while runs cooked):** typing
-  a state name or code ("florida"/"fl") is an exclusive state filter that
-  zooms and highlights the state; clicking a state types its code; clicking
-  a dot pulls its plans into the table behind a clearable banner (single-
-  plan dots open the report); wheel zoom toward the cursor; state borders
-  now visible in every theme. Map test extended and its zoom checks proven
-  to fire via negative control. Ajax Building's "wrong" dot was verified
-  CORRECT (inside Florida's projected outline) — the invisible borders were
-  the real bug.
+A dense night: three parser versions shipped (v109/v110/v111), one
+regression was caught by the mirror gate BEFORE it reached the live site,
+and the owner's map features are built, fixed against real input, and
+waiting on the final verdict to go live. **Nothing wrong has been
+published.** The mirror has been held all night for exactly the reasons the
+protocol exists.
 
-## HELD and why
+## Shipped and verdicted
 
-- **The mirror is HELD until run #223 lands** (~03:30Z): mirroring v109's
-  scripts to main before the dev run finishes would let main's :23 cron
-  start a duplicate full re-parse racing it. When #223 passes verdict, ONE
-  mirror takes everything live together: v108+v109 data, the State Farm and
-  Compass recoveries, and the map features.
+- **v108 — Compass Group recovered** (312,914 participants; its 4i table
+  was a JPEG under a text title page; targeted OCR). Confident +27.
+- **v109 — State Farm recovered** ($19.0B, ~128k participants; the
+  description column "Common Collective Trust Portfolio" outranked 18 real
+  Vanguard names; "Portfolio" joined the type vocabulary). Plus MetLife's
+  aggregate-filed plan appeared as a second "gain" — see below.
+- **Map features (owner request): state selection by typing ("fl" /
+  "florida") or clicking, wheel zoom, clickable dots that pull plans into
+  the table.** First version shipped with every click DEAD in a real
+  browser — setPointerCapture retargeted clicks to the svg; the synthetic-
+  event test couldn't see it; the owner was the detector. Fixed, and the
+  map test now drives real mouse input (proven by negative control).
+
+## The catch of the night — reading gains against the pinned controls
+
+Run #223's diff showed MetLife Group gaining confidence. MetLife is a
+pinned control that must NEVER be confident (it files investments in
+aggregate). The stored "lineup" was its 2023 fallback filing: two
+aggregates + the auditor's PHONE, FAX and Suite number as $8.3M/$7.7M/$3.6M
+holdings. **v110** fixed that (split-aggregate test + letterhead
+condemnation) — and run #224 then revealed v110's own over-reach: five
+honest three-fund Vanguard menus ("Total Stock Market Index" etc.)
+withdrawn because the split test borrowed a vocabulary whose `total…` arm
+reads those names as subtotals, and one NEW junk gain ("Mutual Funds" at
+99.4% promoted into band by the very cleanup). **v111** narrows the split
+vocabulary to unambiguous accounting phrasing and condemns generic-type
+dominant rows. Gate green with four new pinned specimens; corpus diff:
+zero changes across 192 filings. All in docs/accuracy-log.md.
+
+## IN FLIGHT / HELD
+
+- **Run #226 (v111) dispatched 05:22Z, lands ~06:45Z.** Expected diff vs
+  #224 data: the five three-fund menus REGAINED, Premier Care's junk gain
+  reversed, MetLife stays honest.
+- **The mirror is HELD until #226 passes verdict** — it then takes
+  everything live at once: v108–v111 data, Compass + State Farm
+  recoveries, the wind-down line, and the map features.
 
 ## Waiting on the owner (unchanged)
 
@@ -38,8 +55,11 @@
 
 ## Continues next
 
-- #223 verdict → mirror → gap census re-read (stmt should shrink by the
-  State Farm class; band-hi by the Compass class).
-- Band-hi remainder is master-trust-opaque giants (HCA/AT&T/J&J) — fix
-  direction is trust linking or an honest frontend label, not parser work.
-- `few` (660) and live-`nohead` (528) need their own sizing passes.
+- #226 verdict → mirror → census re-read (stmt fell 324→~317, band-hi
+  230→227 so far).
+- Loss auto-triage misses n≤4 menus (the five withdrawn ones sailed under
+  its n≥5 threshold) — reading the raw CONFIDENCE DIFF every run is the
+  actual check; consider lowering the triage floor.
+- Band-hi remainder = master-trust-opaque giants (HCA/AT&T/J&J): trust
+  linking or an honest frontend label, not parser work.
+- `few` (649) and live-`nohead` (528) need their own sizing passes.
