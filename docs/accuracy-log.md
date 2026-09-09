@@ -6503,3 +6503,13 @@ vs the v109 ref: zero changes across 192 filings.
   dominant row junk?"); reusing it verbatim for a different question
   ("are these 2-3 rows jointly junk?") imported `total\b.*` into a
   context where it is wrong. Vocabularies are per-question.
+
+**v111 RE-SIZE (run #226, mirrored 07:20Z).** The five three-fund menus all
+regained (+5, exactly the withdrawn set). Losses −16: Premier Care
+(intended) plus 15 more where a generic category row ("Pooled separate
+accounts", "Mutual funds") carries 90–98% of the region — sampled five,
+every one the aggregate shape. Net effect: **audit-generic-names fell
+202 → 171**, the largest single cleanup of that residual since the class
+was defined (baseline was 208 with threshold 230); dominant-row held 0;
+confident 59,600. The withdrawn plans surface as honest gaps pending the
+queued filed-aggregate frontend line.

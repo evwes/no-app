@@ -442,8 +442,8 @@ don't confuse them). Frontend: python http.server + Playwright at
 
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
-  full-form** filers; 68,767 parse-status entries. **Parser v105, OCR v8.**
-  **59,574 confident lineups, 62,651 with features.** Numbers move every run —
+  full-form** filers; 68,767 parse-status entries. **Parser v111, OCR v8.**
+  **59,600 confident lineups, 62,658 with features.** Numbers move every run —
   `docs/coverage-history.jsonl` is the source of truth, and the merge job
   appends to it.
 - **Parser history lives in `docs/accuracy-log.md`, not here.** Every version
