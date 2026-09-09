@@ -260,6 +260,9 @@
       plan.bits = b;
       if (b) {
         plan.hasLineup = !!(b & 1) || !!(b & 2048); // own confident 4i, or linked trust's
+        // 4096: the schedule was found but reports investments in AGGREGATE
+        // (dx=stmt) — say so instead of implying an unread schedule
+        plan.filedAggregate = !!(b & 4096);
         if (plan.brokerage == null && (b & 2)) plan.brokerage = "Self-directed brokerage";
         if (plan.megaBackdoor == null && (b & 8)) plan.megaBackdoor = true;
         if (!plan.vesting && (b & 16)) plan.vesting = "Immediate";
@@ -1394,6 +1397,17 @@
       // no parsed lineup, but the audited notes NAME the options (common for
       // master-trust plans whose per-fund schedule isn't public)
       const menu = plan.filedFeatures && plan.filedFeatures.menu;
+      if (plan.filedAggregate && !(menu && menu.length)) {
+        // the honest cause, not a generic gap: the filing itself reports
+        // investments in aggregate (MetLife/Comcast/Albertsons class), so no
+        // per-fund menu exists in the public copy to read
+        return `
+      <div class="section-label">FUND HOLDINGS</div>
+      <p class="max-benefit">This plan's filing reports its investments <strong>in aggregate</strong> — lines like
+      "participant-directed investments at fair value" — rather than fund by fund, so no per-fund menu is
+      published in the public copy. That's how the plan filed, not a gap in our reading of it. Plan features
+      from the audited notes still appear below where the filing states them.</p>`;
+      }
       if (menu && menu.length) {
         return `
       <div class="section-label">INVESTMENT OPTIONS</div>

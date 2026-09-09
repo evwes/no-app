@@ -140,17 +140,23 @@ writeFileSync("lineups-index.json", JSON.stringify({ generated: new Date().toISO
 // plans-all order): the browser no longer knows acks at boot, so the flags
 // are positional. Extra bits beyond indexFlags: 2048 = this plan's linked
 // master trust has a confident lineup (the trust ack itself arrives with
-// the detail shard on expand).
+// the detail shard on expand); 4096 = the parser found the filing's
+// schedule but it reports investments in AGGREGATE (dx=stmt: MetLife,
+// Comcast, Albertsons class, plus the generic-dominant lineups v111
+// withdrew) — the frontend explains that instead of implying an unread
+// schedule.
 try {
   const pa = JSON.parse(readFileSync("plans-all.json", "utf8"));
   const ai = pa.fields.indexOf("ack"), mi = pa.fields.indexOf("mtiaAck");
   const bits = pa.plans.map((r) => {
     let b = index[r[ai]] || 0;
     if (r[mi] && (index[r[mi]] || 0) & 1) b |= 2048;
+    const st = status.plans[r[ai]];
+    if (st && !st.c && st.dx === "stmt" && !(b & (1 | 2048))) b |= 4096;
     return b;
   });
   writeFileSync("plans-index.json", JSON.stringify({ generated: new Date().toISOString(), count: bits.length, bits }));
-  console.log(`wrote plans-index.json: ${bits.length} rows, ${bits.filter((b) => b & 2048).length} trust-lineup plans`);
+  console.log(`wrote plans-index.json: ${bits.length} rows, ${bits.filter((b) => b & 2048).length} trust-lineup plans, ${bits.filter((b) => b & 4096).length} filed-in-aggregate`);
 } catch (e) { console.warn("plans-index skipped (plans-all absent?): " + e.message); }
 
 const vals = Object.values(status.plans);
