@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 115;
+export const PARSER_VERSION = 116;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -1505,7 +1505,15 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
     // GM/Comcast; a millions-overrides-thousands ternary broke Exxon, whose
     // merged region carries "(millions of dollars)" statements alongside
     // the "($000's)" 4i schedule.)
-    const marked = /thousands? of dollars|\(in thousands|\(thousands|\(\$000|000s? omitted|(?:amounts?|dollars?|\$|\b[3sS]) ?in thousands|in 0{3}['’]?s?\)/i.test(regionText);
+    // v116: a UNIT LIST between the noun and "in thousands". Every arm above
+    // requires the noun to sit IMMEDIATELY before the phrase, so Paychex —
+    // whose schedule is headed "(Dollars, Units, and Shares in Thousands)" —
+    // was read unscaled and its real 39-fund menu summed to 0.23% of a
+    // $2.26B plan, losing to the fair-value note. The new arm still requires
+    // a unit noun, which is what makes it a units-of-measure declaration
+    // rather than prose; measured over 325 cached filings it moves exactly
+    // one, and moves nothing in the other direction.
+    const marked = /thousands? of dollars|\(in thousands|\(thousands|\(\$000|000s? omitted|(?:amounts?|dollars?|\$|\b[3sS]) ?in thousands|(?:amounts?|dollars?|units?|shares?)[^.\n]{0,30}in thousands|in 0{3}['’]?s?\)/i.test(regionText);
     const markedM = /millions? of dollars|\(in millions|\(millions|(?:amounts?|dollars?|\$|\b[3sS]) ?in millions/i.test(regionText);
     // a millions-stated header ADDS a small-value candidate scored at 1e6
     // only — it must never replace the normal parse: statement pages and

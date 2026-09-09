@@ -170,6 +170,13 @@
    "fixed": "v115",
    "sponsor": "SRI International",
    "was": "$787M plan, 40 rows at ratio 0.999 after the band-hi retry, sum reconciling to Schedule H within 0.1%; pinned as the value case for the class"
+  },
+  {
+   "ack": "20250729115442NAL0007362866001",
+   "class": "unit-list-before-in-thousands",
+   "fixed": "v116",
+   "sponsor": "Paychex",
+   "was": "schedule headed '(Dollars, Units, and Shares in Thousands)'; every scale-marker arm required the unit noun immediately before the phrase, so the real 39-fund menu was read unscaled at 0.23% of a $2.26B plan and lost to the fair-value note. 30 rows at ratio 0.987 once scaled"
   }
  ]
 }

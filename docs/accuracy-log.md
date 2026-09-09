@@ -6945,3 +6945,44 @@ without a line of new parsing logic, because both buckets have the same
 underlying cause: the parser was told where the SECTION starts and never where
 the TABLE starts. Before writing a new mechanism for a bucket, check whether an
 existing one, gated differently, already reaches it.
+
+## 2026-09-09 — band-lo opened whole: one fix, one cancelled change, four causes
+
+**The bucket.** `band-lo` — holdings summing below 0.45x the plan's Schedule H
+assets — is 53 live plans but **260,057 participants and $35.8B**, the highest
+participants-per-plan of any gap bucket. Small enough to open ALL of it, which
+is what was done.
+
+**What was NOT shipped, and the measurement that cancelled it.** The obvious
+move was to extend v115's caption retry to `band-lo` — same additive argument,
+since a band-lo parse publishes nothing either. Built behind a flag and run
+over the whole bucket: **1 recovery of 52** ($9M, 150 participants). The
+extension was reverted unshipped. A ten-minute measurement over a complete
+bucket is what stands between that idea and a PARSER_VERSION bump that would
+have moved almost nothing.
+
+**v116, the one real fix in the bucket.** Paychex (19,991 participants,
+$2.26B) heads its schedule **"(Dollars, Units, and Shares in Thousands)"**.
+Every arm of the scale-marker pattern required the unit noun to sit
+IMMEDIATELY before "in thousands", so the schedule was read unscaled: its real
+39-fund menu summed to **0.23%** of the plan and lost the region to the
+fair-value note. One arm now allows a unit list between the noun and the
+phrase, still requiring one of amounts/dollars/units/shares — which is what
+keeps it a units-of-measure declaration rather than prose. Paychex becomes 30
+rows at ratio **0.987**, values matching the filing exactly (Fidelity 500 Index
+$342,832 thousand). Gate green; corpus diff zero; and because the RISK
+direction here is loss rather than gain, all **325 cached filings** were run
+through both versions in both directions: 1 gained, **0 lost**.
+
+**The other three causes in the bucket, recorded so nobody re-opens them:**
+
+| plan | cause |
+|---|---|
+| YMCA Retirement Fund (94,903 participants, $3.9B) | the winning region is the Fund's own asset-class statement in thousands — "Private equity", "Hedge funds", "Fixed maturities". Not a menu at any scale; the truer label is `stmt` |
+| Aramark Salaried ($1.4B) | a TABLE-OF-CONTENTS line ("Schedule H, Line 4(i) … 17") seeded a region on the Form 5500 cover pages, and the parser read the year 2026 and a signature block as holdings. The caption retry does not rescue it |
+| Cisco ($26.4B, 72,556 participants) | parses as `noregion` under BOTH v113 and v116 — its stored `band-lo` diagnosis came from the PRIOR-YEAR FALLBACK parse, not from this filing. **A `dx` on a plan with `fb` set describes the fallback ack, not the newest filing**, and any bucket list that ignores that is measuring two populations at once |
+
+**The prevention.** The last line above is the one that generalises: `dx` and
+`ds` are stored per ACK, and the fallback ladder means the ack a plan is judged
+by is not always the ack of its newest filing. Bucket work that pulls acks from
+`dx` must either exclude `fb` entries or say which filing it is talking about.

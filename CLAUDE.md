@@ -256,6 +256,16 @@ that changing visibility also unpublishes GitHub Pages.
 - **Never push to `scripts/build-data.mjs`, `fetch-4i.mjs`, `lib-4i.mjs`,
   `merge-4i.mjs`, `scripts/.kick` or the workflow file while a run is in
   flight.** Concurrency cancels it and 4.5 hours evaporate.
+- **Cancelling a run does NOT stop it committing.** MEASURED 2026-09-09: run
+  #235 was cancelled deliberately (v115 superseded it) and its **merge job ran
+  anyway** — `if: always()` is what lets crashed shards hand their progress to
+  the merge — committing a PARTIAL re-parse to the branch at 17:03Z: 6,500 acks
+  at pv=114 beside 62,205 at pv=113. Harmless here (every coverage metric came
+  out byte-identical, and the superseding run re-parses everything because the
+  work list is "pv ≠ current"), but it means the branch can carry mixed-version
+  data at any moment after a cancel. **Check the pv distribution before
+  mirroring, always** — one dominant pv plus the ~190-row old-version tail is
+  the completeness test, and a second large pv cohort means partial.
 - **`[skip ci]` on every parser commit made outside the 1–7 AM window**, so
   work batches into one nightly re-parse instead of firing several.
 - **One re-parse in flight at a time**, and every scheduled cycle
