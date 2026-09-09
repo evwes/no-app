@@ -6590,3 +6590,41 @@ not a sub-3-row fragment. Those plans now render the filed-in-aggregate
 explanation (bit 4096) instead of a bare gap. A more honest label for 52
 plans and 10 real menus, at zero loss, is a good trade; it is simply a
 different trade from the one projected.
+
+## 2026-09-09 — live-`nohead` measured RANDOMLY: 93% is not ours, and now it says so
+
+**The measurement, done right this time.** 30 filings drawn at RANDOM (seeded
+20260909) from the 543 live-plan `nohead` bucket — not the top by
+participants, per the corollary written an hour earlier. The sample's
+participant range is 0–4,102 against a pool median of 206, i.e. it looks like
+the pool rather than like its head. `gap-verify` verdicts:
+
+| share | verdict |
+|---|---|
+| 77% | no audited attachment at all — form pages only |
+| 13% | attachment present, carries no schedule table |
+| 3% | filing states the schedule is omitted as not applicable |
+| 3% | statutory header present, we cannot read it — OURS |
+| 3% | table-shaped pages under an unknown heading — OURS |
+
+**93% can never be closed by parser work**, and the two fixable filings are
+224- and 373-participant plans. So `nohead` is not a parser project. That
+conclusion matches the pre-split estimate (56% no-attachment then) and
+sharpens it on the live-plan remainder.
+
+**What IS worth doing, and shipped as v113.** The bucket's real problem is
+that the site hedges every one of those plans identically: "the attachment is
+scanned/absent, or the plan holds assets through a trust". For 77% the truth
+is simply *no attachment was published*. `classifyDocument()` — gap-verify's
+ladder, MOVED into lib-4i rather than copied, with gap-verify now importing it
+and reproducing all 30 verdicts byte-identically — runs at parse time over
+text already in memory and records a `ds` code per non-confident ack
+(noattach / notable / omitted / absent / scanned / readfail / unread). Same
+pattern as `dx` in v106: two small fields, zero downloads, the whole
+population bucketed exactly.
+
+`dx` says what the PARSER did; `ds` says what the FILING contains. They are
+different claims and the site has been conflating them. The census now splits
+`nohead` by `ds` with the not-ours rows labelled NOT OURS, and the frontend
+line that states the honest cause follows once the re-parse populates the
+field.

@@ -66,6 +66,18 @@ for (const r of P.rows) {
     "band-hi": "A-band-hi   holdings sum ABOVE plan assets",
     narrow:   "A-narrow    3-4 rows, plausible but too thin to trust",
   };
+  /* nohead, split by what the DOCUMENT contains. The A-nohead-* rows that
+   * begin "NOT OURS" cannot be closed by any parser change: nothing to read.
+   * Only readfail/unread are ours. */
+  const DS = {
+    noattach: "A-nohead-noattach  NOT OURS: no audited attachment in the public copy",
+    notable:  "A-nohead-notable   NOT OURS: attachment present, carries no schedule",
+    omitted:  "A-nohead-omitted   NOT OURS: filing states the schedule is omitted",
+    absent:   "A-nohead-absent    NOT OURS: schedule referenced, pages not published",
+    scanned:  "A-nohead-scanned   image-only text — OCR territory, not heading work",
+    readfail: "A-nohead-readfail  OURS: statutory header present, we cannot read it",
+    unread:   "A-nohead-unread    OURS: table-shaped pages under an unknown heading",
+  };
   /* FINAL/TRANSITION-YEAR FILINGS ARE NOT LINEUP GAPS (found 2026-09-08).
    * 6,525 of the remaining "gap" plans filed Schedule H with $0 year-end
    * assets — plans that terminated, merged, or transferred mid-year. 99% of
@@ -85,6 +97,13 @@ for (const r of P.rows) {
   else if (!s.c) {
     const e = s.e || "";
     if (e === "download") add("A3. lineup — public copy withdrawn from the bucket (403)", r, assets, parts);
+    /* v113: a `nohead` plan is not one thing. A RANDOM 30-filing sample of
+     * this bucket (2026-09-09) measured 77% with no attachment published at
+     * all, 13% an attachment carrying no schedule, 3% explicitly omitted —
+     * 93% permanently outside our reach — against ~7% real parser gaps. The
+     * `ds` code, recorded at parse time by classifyDocument(), splits them so
+     * the actionable remainder is visible instead of buried. */
+    else if (s.dx === "nohead" && s.ds && DS[s.ds]) add(DS[s.ds], r, assets, parts);
     else if (s.dx && DX[s.dx]) add(DX[s.dx], r, assets, parts);
     else if (e === "no-section") add("A2. lineup — no readable 4i section (pre-v106, cause not recorded)", r, assets, parts);
     else if (s.tp) add("A4. lineup — bare 'interest in master trust' line, no trust linked", r, assets, parts);

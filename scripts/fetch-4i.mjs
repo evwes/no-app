@@ -14,7 +14,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync, createWriteStream, 
 import { execFileSync, execFile } from "node:child_process";
 import { pipeline } from "node:stream/promises";
 import path from "node:path";
-import { parse4i, extractPlanFeatures, indexFlags, PARSER_VERSION } from "./lib-4i.mjs";
+import { parse4i, extractPlanFeatures, indexFlags, classifyDocument, PARSER_VERSION } from "./lib-4i.mjs";
 
 /* OCR fallback: ~half the "no 4i section" filings have a SCANNED auditor
  * attachment (zero extractable text) and many others have broken font
@@ -374,7 +374,7 @@ let fbRescued = 0; // filings whose newest public copy is gone, read from the pr
 const delta = { status: {}, entries: {} };
 function record(plan, entry, features) {
   if (features) entry.features = features;
-  const meta = { pv: PARSER_VERSION, ov: OCR_VERSION, c: entry.confident ? 1 : 0, s: entry.sdba ? 1 : 0, ...(entry.dx ? { dx: entry.dx } : {}), ...(entry.rw !== undefined ? { rw: entry.rw } : {}), ...(entry.rt !== undefined ? { rt: entry.rt } : {}), ...(features ? { f: 1 } : {}), ...(entry.error ? { e: entry.error } : {}), ...(entry.fb ? { fb: entry.fb } : {}), ...(entry.featFb ? { ffb: entry.featFb } : {}), ...(entry.trustPtr ? { tp: 1 } : {}) };
+  const meta = { pv: PARSER_VERSION, ov: OCR_VERSION, c: entry.confident ? 1 : 0, s: entry.sdba ? 1 : 0, ...(entry.dx ? { dx: entry.dx } : {}), ...(entry.rw !== undefined ? { rw: entry.rw } : {}), ...(entry.rt !== undefined ? { rt: entry.rt } : {}), ...(entry.ds ? { ds: entry.ds } : {}), ...(features ? { f: 1 } : {}), ...(entry.error ? { e: entry.error } : {}), ...(entry.fb ? { fb: entry.fb } : {}), ...(entry.featFb ? { ffb: entry.featFb } : {}), ...(entry.trustPtr ? { tp: 1 } : {}) };
   status.plans[plan.ack] = meta;
   delta.status[plan.ack] = meta;
   const keep = (entry.confident && entry.funds.length) || features;
@@ -553,7 +553,11 @@ async function analyzePdf(ack, plan, tag) {
     }
   }
   try { unlinkSync(dest); } catch { /* keep disk bounded */ }
-  return { parsed, features, usedOcr };
+  /* v113: the document's OWN shape, computed from the text we already have.
+   * Costs one regex pass over text already in memory; answers "does the
+   * FILING contain a schedule?" which `dx` (what the PARSER did) never can. */
+  const docShape = classifyDocument(text).code;
+  return { parsed, features, usedOcr, docShape };
 }
 
 // feature groups: a value and its quote are ONE unit — mixing a base-text
@@ -667,7 +671,7 @@ for (const plan of work) {
     record(plan, { confident: false, error: "pdftotext", funds: [] });
     continue;
   }
-  let { parsed, features, usedOcr } = a;
+  let { parsed, features, usedOcr, docShape } = a;
   // notes read from a prior-year filing get labelled with their year, because
   // a match formula can change between plan years. keptFeatures are the stored
   // ones from this plan's own newest filing — newer than the fallback's, so
@@ -698,13 +702,14 @@ for (const plan of work) {
     // features rescued from a prior-year filing must say so: a match formula
     // can change between plan years, and the reader is entitled to know which
     // year's notes they are reading
-    record(plan, { confident: false, error: "no-section", funds: [], ...diagnose(parsed, false), ...(featFb ? { featFb, fbAck: fbUsed.a } : {}) }, features);
+    record(plan, { confident: false, error: "no-section", funds: [], ...diagnose(parsed, false), ...(docShape ? { ds: docShape } : {}), ...(featFb ? { featFb, fbAck: fbUsed.a } : {}) }, features);
     continue;
   }
   const ratio = parsed.ratio || 0;
   const confident = isConfident(parsed);
   record(plan, {
     ...diagnose(parsed, confident),
+    ...(!confident && docShape ? { ds: docShape } : {}),
     ack: plan.ack,
     ticker: plan.ticker,
     planYear: fbUsed ? fbUsed.y : plan.planYear,

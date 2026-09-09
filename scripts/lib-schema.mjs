@@ -82,7 +82,10 @@ export function loadPlans(path = "plans-all.json") {
  * level as if it were the map is its own recurring mistake. */
 /* dx/rw/rt added v106: the parser's own diagnosis, written at parse time so the
  * whole gap population carries a cause without re-downloading anything. */
-export const STATUS_FIELDS = ["pv", "ov", "c", "s", "f", "e", "fb", "ffb", "tp", "ocr", "dx", "rw", "rt"];
+/* ds (v113) = the DOCUMENT's shape, from classifyDocument(): why the FILING
+ * yields no schedule (noattach / notable / omitted / scanned / absent /
+ * readfail / unread). Distinct from dx, which says what the PARSER did. */
+export const STATUS_FIELDS = ["pv", "ov", "c", "s", "f", "e", "fb", "ffb", "tp", "ocr", "dx", "rw", "rt", "ds"];
 export function loadStatus(path = "lineups-status.json") {
   const raw = JSON.parse(readFileSync(path, "utf8"));
   if (!raw.plans) throw new Error(`${path}: expected a .plans map; got keys ${Object.keys(raw).join(",")}`);

@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 112;
+export const PARSER_VERSION = 113;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -111,6 +111,58 @@ const DATE_LINE = /(january|february|march|april|may|june|july|august|september|
  *                      published lineup.
  */
 export const GENERIC_TYPE_NAME = /^(?:total )?(?:registered investment compan(?:y|ies)|(?:common[\/ ]?)?collective (?:investment )?trust(?: fund| portfolio)?|collective trust fund|mutual funds?|common (?:and preferred )?stocks?|corporate stocks?|pooled separate accounts?|separate accounts?|guaranteed (?:investment|interest) contracts?|group annuity contracts?)$/i;
+/* DOCUMENT SHAPE (v113) — why a filing yields no schedule, judged from the
+ * document rather than from our parse. `dx` already says what the PARSER did;
+ * this says what the FILING contains, and they are different claims. A random
+ * 30-filing sample of the live `nohead` bucket (2026-09-09) measured 77% with
+ * no attachment published at all, 13% an attachment carrying no schedule, 3%
+ * a schedule explicitly omitted — 93% permanently not ours — against ~7% real
+ * parser gaps. The site currently hedges all of them as "scanned/absent, or
+ * a trust that doesn't itemize"; with this recorded at parse time the common
+ * case can state the truth plainly.
+ *
+ * The ladder is MOVED verbatim from scripts/gap-verify.mjs, which now imports
+ * it: two copies of a classifier drift, and this project has already paid for
+ * a duplicated vocabulary twice (v110's split test, the merge triage). */
+export function classifyDocument(text) {
+  const HEADER = /identity of issue|description of investment/i;
+  const TITLE = /schedule of assets|schedule h.{0,40}line\s*4i|sch\.? h.{0,10}4i/i;
+  const pageList = String(text || "").split("\f");
+  const pages = pageList.length;
+  const perPage = Math.round(String(text || "").length / Math.max(pages, 1));
+  const headers = (String(text || "").match(new RegExp(HEADER, "gi")) || []).length;
+  const titles = (String(text || "").match(new RegExp(TITLE, "gi")) || []).length;
+  const isFormPage = (p) => /form 5500|schedule [a-z] \(form 5500\)|omb no\.? 1210/i.test(p.slice(0, 400));
+  const hasAudit = /report of independent|independent (?:certified public )?(?:accountants?|auditors?)/i.test(text || "");
+  const omitted = /schedules?[^.]{0,200}?omitted[^.]{0,120}?(?:not applicable|no such|none)/is.test(text || "") ||
+    /omitted because they are not applicable/i.test(text || "");
+  const MONEY_ROW = /[A-Za-z]{4,}.{0,90}[\d,]{4,}(?:\.\d{2})?\s*$/;
+  const FUNDISH = /\b(?:fund|trust|portfolio|index|target|instl?|admiral|shares|cl(?:ass)? [a-z0-9]|r[1-6]\b|equity|growth fund|value fund|bond fund|retirement 20\d\d)\b/i;
+  let tableLikePages = 0;
+  for (const p of pageList) {
+    if (isFormPage(p)) continue;
+    const rows = p.split("\n").map((l) => l.trim()).filter((l) => MONEY_ROW.test(l));
+    if (rows.length < 12) continue;
+    if (rows.filter((l) => FUNDISH.test(l)).length >= 6) tableLikePages++;
+  }
+  /* Short codes, because this is stored per non-confident ack:
+   *   readfail  the table IS there under the statutory header — OUR gap
+   *   unread    table-shaped pages under a heading we don't know — our gap
+   *   absent    the schedule is referenced but its pages are not published
+   *   omitted   the filing states the schedule is omitted as not applicable
+   *   noattach  no audited attachment at all; form pages only
+   *   notable   an audit attachment that simply carries no schedule
+   *   scanned   too little extractable text — image-only */
+  const code = headers > 0 ? "readfail"
+    : titles > 0 ? "absent"
+    : tableLikePages > 0 ? "unread"
+    : omitted ? "omitted"
+    : hasAudit ? "notable"
+    : perPage < 800 ? "scanned"
+    : "noattach";
+  return { code, pages, perPage, headers, titles, hasAudit, omitted, tableLikePages };
+}
+
 export const NOT_FUND_SHAPED = /^(?:at (?:fair|contract) value|investments?(?:,? at .*)?|total\b.*|various\b.*|master trust.*|investments? held in the trust.*|participants?[- ]directed.*|fully benefit[- ]responsive.*|cusip:?.*|net assets.*|assets\b.*|cash(?: and cash equivalents)?|other\b.*|[a-z]\s+total\b.*|see (?:note|attach).*|interest[- ]bearing cash|value of interest in .*)$/i;
 /* UNAMBIGUOUS accounting-disclosure phrasing, for tests that ask "are these
  * rows JOINTLY an aggregate?" — deliberately narrower than NOT_FUND_SHAPED,
