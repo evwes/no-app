@@ -1,2 +1,6 @@
 node_modules/
 audit-high.txt
+
+# local artifact of running scripts/merge-4i.mjs by hand (the pipeline
+# consumes it in-job and never commits it)
+losses-triage.txt
