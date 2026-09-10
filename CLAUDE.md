@@ -266,6 +266,25 @@ that changing visibility also unpublishes GitHub Pages.
   data at any moment after a cancel. **Check the pv distribution before
   mirroring, always** — one dominant pv plus the ~190-row old-version tail is
   the completeness test, and a second large pv cohort means partial.
+  **AUTOMATED 2026-09-10 — stop doing this by eye.** `audit-data.mjs` now
+  raises `partial-store` when the dominant pv covers <97% of acks. The eye is
+  what missed it on #239 AND on #244, so the rule stays but the enforcement
+  is no longer human.
+- **A run can FINISH and still not have READ the universe, and that is a
+  separate failure from a partial store (2026-09-10).** Run #244's thirteen
+  shards all completed normally in ~84 minutes against a 320-minute budget —
+  and **11,495 of its downloads failed, 16.72%**, against 63 (0.09%) in the
+  run an hour earlier. Failed downloads correctly keep the stored entry and an
+  old pv (the v37 protection), so nothing is lost; but nothing is refreshed
+  either, and **the coverage line rose while a sixth of the universe went
+  unread and every check passed.** `audit-data.mjs` now raises
+  `download-failures` above 1%. Whether v118's heavier load CAUSED it is still
+  open — the 0.09% baseline was measured an hour earlier, so an S3 incident
+  fits equally well; #246 is the discriminating run. Note also how the
+  diagnosis went: "hit the time budget" and "disk exhaustion from OCR" were
+  both confidently wrong, and the store answered it exactly once asked
+  (`e: "download"` on every one of them). The log tail and the job list each
+  refuted a theory in one call.
 - **`[skip ci]` on every parser commit made outside the 1–7 AM window**, so
   work batches into one nightly re-parse instead of firing several.
 - **One re-parse in flight at a time**, and every scheduled cycle
@@ -481,16 +500,23 @@ don't confuse them). Frontend: python http.server + Playwright at
 /opt/pw-browsers/chromium; verify TK page, tabs, filters, deep links
 (#plan=EIN|PN|TICKER).
 
-## Current state (2026-09-03)
+## Current state (2026-09-10)
 
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
-  full-form** filers; 68,767 parse-status entries. **Parser v117, OCR v8.**
-  **59,764 confident lineups** as of run #239's PARTIAL merge (44,466 acks at
-  pv=116 beside 24,237 at pv=117 — run #242 is completing it; DO NOT MIRROR
-  until the pv distribution is single-dominant). Numbers move every run —
-  `docs/coverage-history.jsonl` is the source of truth, and the merge job
-  appends to it.
+  full-form** filers; 68,767 parse-status entries. **Parser v120, OCR v8.**
+- **LIVE on main: `c130d250`, the COMPLETE v117 store, 59,894 confident,
+  HIGH at the baseline of 4** (pv 117 covers 99.9%, 63 download failures).
+  v114+v115 (+123), v116 (+1), v117 (+160) all mirrored with zero losses.
+- **The dev branch currently holds run #244's v118 store and MUST NOT be
+  mirrored.** Two independent reasons, both now machine-checked: it lost 31
+  real menus ($18.1B, 361,761 participants, Lowe's among them — v120 fixes
+  the cause), and only 83.3% of its acks are at pv 118 because **11,495
+  downloads failed (16.7%)**. Run #246 carries v119+v120 and is the run that
+  replaces it.
+- Numbers move every run — `docs/coverage-history.jsonl` is the source of
+  truth, and the merge job appends to it. Its lines now carry `dl` and
+  `pvTopShare` so a partial store is distinguishable from a complete one.
 - **Parser history lives in `docs/accuracy-log.md`, not here.** Every version
   is recorded there with what was wrong, the change, and the prevention. This
   section previously carried a wall of v34-v46 detail that read as current
