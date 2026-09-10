@@ -131,12 +131,46 @@ for (const r of d.plans.slice(0, TOP_N)) {
    * boilerplate. The rule already existed in app.js and only there. */
   const matchQuote = matchQuoteOk(ff.matchText, !!ff.match) ? ff.matchText : null;
 
+  /* QUALIFIERS THE REPORT APPLIES AND THIS PAGE DID NOT. Enumerated on
+   * 2026-09-10 by diffing every field name app.js renders against the ones
+   * this generator does, after three separate divergences were found by
+   * accident in one day. Most asymmetry is legitimate — a summary omits
+   * detail — so only the qualifiers that change what a claim already on the
+   * page MEANS are ported:
+   *
+   *  - `nec`: 116 pages / 961,064 participants said "Employer match: not
+   *    stated in the public filings" while the filing plainly states a
+   *    NONELECTIVE contribution instead. Boeing's page read as though we did
+   *    not know, against $1.42 BILLION a year of employer money; Duke $300M,
+   *    Washington University $161M. Universities and 403(b) plans commonly
+   *    give a flat percentage rather than a match, so "no match" is true and
+   *    leaves precisely the wrong impression.
+   *  - discretionary with no employer money: 13 pages / 136,377 participants
+   *    printed "Discretionary" for a year in which nothing was contributed.
+   *  - `nonPartDirected`: 44 pages / 303,660 participants showed a holdings
+   *    table as the participant menu when the filing says part of it is
+   *    employer-directed.
+   *
+   * NOT ported: `frozen`. 51 pages carry it, but Honeywell is flagged frozen
+   * — "contributions have been discontinued" — beside $235.7M of employer
+   * contributions in the same filing. The flag and the cash flow contradict
+   * each other, so it is either over-triggering or means "closed to new
+   * entrants". Propagating a warning that cannot be verified would be the
+   * same error as publishing a formula we had not read. Left for a session
+   * that can open the filings. */
+  const employerMoney = g(r, "contribEmployer") || 0;
+  const matchNoneThisYear = ff.match && /discretionary/i.test(ff.match) && employerMoney === 0;
+
   const facts = [
     ["Plan year filed", planYear],
     ["Participants", participants.toLocaleString("en-US")],
     ["Plan assets", usdB(assets)],
     ["Recordkeeper", g(r, "recordkeeper") ? esc(g(r, "recordkeeper")) : nStat()],
-    ["Employer match", ff.match ? esc(ff.match) : matchQuote ? "See the filed formula below" : (g(r, "shr") || "").includes("D") ? "Safe-harbor design (Schedule R)" : nStat()],
+    ["Employer match", ff.match ? esc(ff.match) + (matchNoneThisYear ? " — <strong>none made this plan year</strong>" : "")
+      : matchQuote ? "See the filed formula below"
+      : ff.nec ? `No match stated — this plan makes a <strong>nonelective contribution</strong> instead (below)`
+      : (g(r, "shr") || "").includes("D") ? "Safe-harbor design (Schedule R)" : nStat()],
+    ...(ff.nec ? [["Employer nonelective contribution", esc(ff.nec)]] : []),
     ["Vesting", ff.vesting ? esc(ff.vesting) : nStat()],
     ["Roth option", ff.roth ? "Yes (per the filing)" : nStat()],
     ["After-tax contributions", ff.afterTax ? "Yes (per the filing)" : nStat()],
@@ -189,8 +223,12 @@ Participants, assets and fees are from the ${planYear} filing.</p>` : ""}
 <table class="facts">${facts.map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join("")}</table>
 ${matchQuote ? `<h2>Match formula, as filed</h2><blockquote>${esc(matchQuote)}</blockquote>`
   : ff.match ? "" : `<h2>Match formula, as filed</h2><p class="muted">The audited notes attached to this filing state no match formula. Check the plan's summary plan description.</p>`}
+${ff.nec ? `<h2>Employer nonelective contribution, as filed</h2>
+<p>This plan contributes <strong>${esc(ff.nec)}</strong> regardless of what a participant puts in — separate from any matching contribution.</p>
+${ff.necText ? `<blockquote>${esc(ff.necText)}</blockquote>` : ""}` : ""}
 ${ff.vestingText ? `<h2>Vesting, as filed</h2><blockquote>${esc(ff.vestingText)}</blockquote>` : ""}
 ${funds ? `<h2>Fund lineup${lineupVia ? ` (via ${esc(lineupVia)})` : ""} — top holdings</h2>
+${!lineupVia && ff.nonPartDirected ? `<p class="muted"><strong>Part of these holdings is employer-directed.</strong> The filing states some of this plan's assets are not participant-directed, and those holdings are listed here alongside the menu — so a holding's share of the table is not a share of what participants chose.</p>${ff.nonPartDirectedText ? `<blockquote>${esc(ff.nonPartDirectedText)}</blockquote>` : ""}` : ""}
 ${cov ? `<p class="muted">${cov.kind === "under"
   ? `<strong>This lineup is not all of the plan.</strong> Its schedule of assets itemises ${usdB(lineupTotal)} across ${entry.funds.length} holdings, about ${cov.pct.toFixed(0)}% of the ${usdB(assets)} the plan reports on its Schedule H. The rest is money the filing accounts for that the schedule does not itemise.`
   : `<strong>These holdings exceed the plan's reported assets.</strong> They total ${usdB(lineupTotal)} against ${usdB(assets)} reported on Schedule H — about ${cov.pct.toFixed(0)}%. Treat the table as unreconciled.`}</p>` : ""}

@@ -8168,3 +8168,50 @@ until every surface that renders the same field has it — `app.js` and
 `build-seo-pages.mjs` are the standing pair, and this is now three for three.
 (2) A rule that must exist twice gets a canonical module plus a cross-surface
 test; inline arithmetic in two places is how the first three happened.
+
+---
+
+## 2026-09-10 — the qualifiers app.js applies and the static pages did not (enumerated, not stumbled on)
+
+**Why this entry exists.** Three divergences between `app.js` and
+`scripts/build-seo-pages.mjs` were found *by accident* in a single day, each
+while chasing something else. So the fourth was found on purpose: every field
+name either file renders was enumerated and diffed — 18 feature fields and 8
+plan fields appear in `app.js` and not in the generator.
+
+**Most of that asymmetry is correct.** A summary page omits tabs, filters, the
+map, and plenty of detail. The defect class is narrower and worth stating
+precisely: **a qualifier that changes what a claim already on the page MEANS**,
+as opposed to a fact merely absent. Four candidates were measured against the
+real 5,000-page population; three were ported and one deliberately was not.
+
+| | pages | participants | what the page said |
+|---|---|---|---|
+| nonelective contribution | **116** | **961,064** | "Employer match: not stated in the public filings" |
+| employer-directed holdings | 44 | 303,660 | a holdings table presented as the participant menu |
+| discretionary, nothing paid | 13 | 136,377 | "Discretionary", as though it were live |
+
+**The nonelective case is the serious one.** Boeing's page said we did not know
+what its employer contributes — against **$1.42 billion a year** that the
+filing states plainly as a 2%-of-pay nonelective contribution. Duke ($300M) and
+Washington University ($161M) the same. Universities and 403(b) plans commonly
+give a flat percentage rather than a match, so "no match stated" is *true* and
+leaves exactly the wrong impression. Boeing's page now reads "No match stated —
+this plan makes a nonelective contribution instead" with "2% of pay" and the
+filed quote. **A true sentence that creates a false impression is an accuracy
+defect**, and this class does not show up in any count-based check because
+nothing is wrong with the number.
+
+**NOT ported, on purpose: `frozen`.** 51 pages (691,870 participants) carry the
+flag, and app.js warns "contributions have been discontinued" — but Honeywell
+is flagged frozen beside **$235.7M of employer contributions in the same
+filing**. The flag and the cash flow contradict each other, so it is either
+over-triggering or means "closed to new entrants". Propagating a warning that
+cannot be verified is the same error as publishing a formula we had not read.
+Left for a session that can open the filings, and recorded here so it is not
+re-discovered as new.
+
+**Prevention.** The standing pair is `app.js` + `build-seo-pages.mjs`, and the
+diff that produced this table is a ten-line script — run it after adding any
+display rule rather than waiting to trip over the divergence. The distinction
+to apply when reading its output: **port qualifiers, not detail.**
