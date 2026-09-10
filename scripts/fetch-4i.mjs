@@ -370,6 +370,9 @@ console.log(`work list: ${work.length} filings to (re)parse at parser v${PARSER_
 console.log(`ocr candidates: ${ocrCandidates}`);
 let fetched = 0;
 let fbRescued = 0; // filings whose newest public copy is gone, read from the prior year instead
+// failure accounting, printed by every job including matrix shards
+let failLogged = 0;
+const failCounts = {};
 
 const delta = { status: {}, entries: {} };
 function record(plan, entry, features) {
@@ -647,7 +650,14 @@ for (const plan of work) {
     // no match/vesting features at all. The prior-year filing is a real
     // public copy of the same plan and is the only remaining source.
     let b = null;
-    if (fb) { try { b = await analyzePdf(fb.a, plan, `${tag} fb${fb.y}`); } catch { /* prior year gone too */ } }
+    if (fb) {
+      try { b = await analyzePdf(fb.a, plan, `${tag} fb${fb.y}`); }
+      catch (err2) {
+        // the prior year may genuinely be gone too — but say so, don't guess
+        if (failLogged < 60) { console.log(`${tag}: fb${fb.y} (after primary failed) THREW — ${err2 && err2.message}`); failLogged++; }
+        failCounts["fb-threw-after-primary"] = (failCounts["fb-threw-after-primary"] || 0) + 1;
+      }
+    }
     // The rescue FILLS GAPS ONLY. A stored entry was parsed from this plan's
     // OWN newest filing back when its public copy still existed, so a
     // prior-year read must never replace it — the first cut of this rescue
@@ -669,7 +679,31 @@ for (const plan of work) {
     const addsLineup = !!(ok && b.parsed.found && isConfident(b.parsed)) && !prevLineup;
     const addsFeatures = !!(ok && b.features) && !prevFeatures;
     if (!ok || (!addsLineup && !addsFeatures)) {
-      summary.push(`${tag}: download failed ${e.message}${fb ? " (prior-year filing adds nothing)" : ""}`);
+      /* SAY WHICH FAILURE THIS WAS (2026-09-10). Every exception out of
+       * analyzePdf landed here as `e: "download"` — the HTTP failures it was
+       * named for, but equally a throw from pdfimages, the parser, or any
+       * other step. That label is then published: gap-census and gap-list
+       * turn it into "the public copy has been withdrawn from the EFAST2
+       * bucket (403)", a claim about the FILING. A random 20-ack sample of
+       * the acks carrying it answered HTTP **200, twenty times out of
+       * twenty** — the filings are there, and we were telling readers they
+       * had been withdrawn. That is the exact failure mode this project
+       * exists to avoid: a label that describes US, shipped as though it
+       * described the filing.
+       *
+       * `download()` throws only `HTTP <status>`, so the message separates
+       * the two cleanly. Genuine fetch failures keep `download` and keep the
+       * withdrawn-copy wording; anything else becomes `analyze`, which no
+       * user-facing string claims to understand. */
+      const httpFail = /^HTTP \d+$/.test(String(e && e.message));
+      const code = httpFail ? "download" : "analyze";
+      summary.push(`${tag}: ${code} failed — ${e && e.message}${fb ? " (prior-year filing adds nothing)" : ""}`);
+      // and PRINT the first of them: in matrix mode this job exits before the
+      // summary is ever flushed (see the PARSE_SHARD block), so these messages
+      // have never once appeared in a production log. 11,358 acks failed this
+      // way in two consecutive runs and the reason was unknowable from outside.
+      if (failLogged < 60) { console.log(`${tag}: ${code} failed — ${e && e.message}`); failLogged++; }
+      failCounts[code] = (failCounts[code] || 0) + 1;
       // a failed download must never clobber a previous parse of the same
       // ack (transient S3 errors and withdrawn-from-bucket filings both
       // surface here — v37 dropped 6 good lineups this way). Keep the old
@@ -677,7 +711,7 @@ for (const plan of work) {
       // NOT touch the shard entry; only acks never parsed before get a
       // status record, with pv:0 so they too retry next run.
       const prev = status.plans[plan.ack];
-      const meta = prev ? { ...prev, e: "download" } : { pv: 0, ov: 0, c: 0, s: 0, e: "download" };
+      const meta = prev ? { ...prev, e: code } : { pv: 0, ov: 0, c: 0, s: 0, e: code };
       status.plans[plan.ack] = meta;
       delta.status[plan.ack] = meta;
       continue;
@@ -750,7 +784,7 @@ for (const plan of work) {
   if (fb && !fbUsed && (!(parsed.found && isConfident(parsed)) || !features)) {
     try {
       const b = await analyzePdf(fb.a, plan, `${tag} fb${fb.y}`);
-      if (b.err) fbFailed = true;
+      if (b.err) { fbFailed = true; if (failLogged < 60) { console.log(`${tag}: fb${fb.y} unusable — ${b.err}`); failLogged++; } }
       else {
         if (b.parsed.found && isConfident(b.parsed) && !(parsed.found && isConfident(parsed))) {
           parsed = b.parsed;
@@ -759,7 +793,25 @@ for (const plan of work) {
         }
         if (!features && b.features) { features = b.features; featFb = fb.y; }
       }
-    } catch { fbFailed = true; }
+    } catch (err) {
+      /* THE 31. Run #244 and #246 each lost the same 31 stored lineups —
+       * $18.1B, 340,447 participants, Lowe's (295,951 people) and Trane among
+       * them — and every one was a plan whose menu came from the PRIOR-YEAR
+       * filing via OCR. Re-run by hand under this same tree, Lowe's 2023
+       * fallback OCRs in 10 seconds and parses to its real 31-fund menu at
+       * ratio 0.945, confident; Trane's likewise. So nothing about the filing,
+       * the OCR or the gates rejected them — the rescue did not happen, and
+       * `catch {}` destroyed the only evidence of why. Twice.
+       *
+       * v120 added a guard that keeps the stored lineup when a fallback
+       * cannot be read, which is right and stays; but it can only fire when a
+       * stored entry still exists, and by then #244 had already deleted
+       * these. A silent catch is how a fixable fault becomes an unfixable
+       * one. */
+      fbFailed = true;
+      if (failLogged < 60) { console.log(`${tag}: fb${fb.y} THREW — ${err && err.message}`); failLogged++; }
+      failCounts["fb-threw"] = (failCounts["fb-threw"] || 0) + 1;
+    }
   }
 
   /* v120: a fallback that FAILS TO LOAD must not silently downgrade a plan.
@@ -842,6 +894,12 @@ if (PARSE_SHARD != null) {
   writeFileSync(`results-${PARSE_SHARD}.json`, JSON.stringify(delta));
   console.log(`wrote results-${PARSE_SHARD}.json: ${Object.keys(delta.status).length} entries` +
     (fbRescued ? `; ${fbRescued} withdrawn filings read from the prior year instead` : ""));
+  // FAILURE TOTALS BELONG IN EVERY LOG, INCLUDING THIS ONE. Production runs
+  // only ever take this branch, and it used to exit before the summary below
+  // was printed — so the per-filing failure reasons existed, were formatted,
+  // and were then thrown away on every single production run. Two runs lost
+  // 11,358 acks apiece with no line anywhere saying why.
+  console.log(`failures this shard: ${Object.entries(failCounts).map(([k, v]) => `${k}=${v}`).join(" ") || "none"}`);
   process.exit(0);
 }
 

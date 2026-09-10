@@ -7528,3 +7528,81 @@ not ours" (it is the largest recovery here, 29 Fidelity funds) and it called
 Avis a recovery (it fabricates). Reading a filing by eye and running the parser
 over it are different measurements, and only the second one is the one that
 ships.
+
+---
+
+## 2026-09-10 — CORRECTION: the 11,495 "download failures" were never download failures, and we were publishing that guess to readers
+
+The entry above ("a run can publish a rising coverage line without reading a
+sixth of the universe") got the *measurement* right and the *cause* wrong, and
+left the cause open with two candidates: v118's heavier load, or a transient S3
+incident. **Both are refuted.** Recording this in full because the wrong cause
+was already written into `CLAUDE.md`, into v120's commit message, and — worse —
+into a string shown to users.
+
+**What settled it.** Run #246 produced **exactly 11,495** download failures and
+**exactly 4,029** confident-but-stale acks — digit-for-digit identical to #244.
+An ack-set comparison put the overlap at **100.00%: the same 11,495 acks, zero
+differences either way.** Transient failures do not repeat to the digit, and a
+one-hour S3 incident cannot recur identically two hours later. The failures are
+deterministic.
+
+**And the filings are not withdrawn.** A random 20-ack probe of that population
+answered **HTTP 200, twenty times out of twenty.** Re-running `download()` —
+the production function, byte for byte — on eight of them succeeded, alongside
+five controls. Every step of `analyzePdf` (pdftotext, `extractPlanFeatures`,
+`parse4i`, `pdfimages`, `classifyDocument`) then ran clean on six bottom-band
+samples. Nothing in the path throws locally.
+
+**The baseline comparison was also wrong.** "16.72% against 0.09%, 182x" set a
+full re-parse (68,259 downloads attempted) against main's INCREMENTAL runs,
+which attempt only their stale acks — a couple of hundred. Different
+denominators. The 16.7% is still anomalous, but against main's own last full
+re-parse at v117, not against that number.
+
+**What the population actually is.** Sorted by the work list's own order
+(assets descending), failures run 5-13% through the first 90% and then
+**95-100% across the last 10%** — and that last decile is 93-100% *$0
+year-end assets*: the terminated/merged/transferred filings. Whatever the
+mechanism is, it is concentrated there.
+
+**THE SHIPPED DEFECT, which is the part that matters.** `gap-census.mjs` and
+`gap-list.mjs` both key on `e === "download"` and render it as *"the public
+copy has been withdrawn from the EFAST2 bucket (403)"*. That is a claim about
+the FILING. It was false for 20 of 20 sampled acks. This is precisely the
+failure the project's own directive names — *"that label describes US, not the
+filing, and shipping it as though it described the filing"* — and it reached
+readers because a single error code carried two meanings.
+
+**The change.** `download()` throws only `HTTP <status>`, so the two are
+separable at the point of failure. HTTP failures keep `e: "download"` and keep
+the withdrawn-copy wording, which is true of them. Everything else becomes
+`e: "analyze"`, and says so: *"our reader failed on this filing; the public
+copy is there and this is our gap, not the filing's."*
+
+**Why it was unknowable, which is its own defect.** Three things had to be
+wrong at once. (1) The outer `catch` around `analyzePdf` labelled *every*
+exception `download`. (2) The real message went only into `summary`. (3) In
+`PARSE_SHARD` mode — the only mode production ever runs — the job
+`process.exit(0)`s **before the summary is printed**. So the reasons were
+computed, formatted, and discarded on every production run ever made. Both
+fallback `catch` blocks were silent in the same way, and one of those is what
+cost the 31 lineups. All four now log, with a per-shard failure tally.
+
+**On the 31.** They are not download failures either. Main holds Lowe's with
+`ocr: 1`, `fb: 2023` and the source line *"digitized from scanned pages via
+OCR"* — its menu comes from OCR of the prior-year filing. Re-run by hand under
+the current tree, Lowe's 2023 fallback OCRs in **10 seconds** and parses to 31
+rows at ratio 0.945, confident; Trane's to 3 rows at 1.159. Nothing rejected
+them; the rescue simply never ran, and the catch destroyed the evidence. Note
+also that v120's commit message repeats the "transient S3 under v118's heavier
+load" story — it is wrong there too, and the guard it added is still correct
+and still worth having.
+
+**The prevention, stated as a rule.** *An error code is a published claim.*
+Before a code can be rendered as a sentence about a filing, it must be provably
+about the filing — which means one code per cause, and a `catch` that records
+what it caught. And: **a diagnosis that cannot be reproduced is not a
+diagnosis.** "Transient S3" survived two runs and two documents because nobody
+asked whether the same acks failed twice; that question took one script and
+ended it.

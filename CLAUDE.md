@@ -278,13 +278,33 @@ that changing visibility also unpublishes GitHub Pages.
   old pv (the v37 protection), so nothing is lost; but nothing is refreshed
   either, and **the coverage line rose while a sixth of the universe went
   unread and every check passed.** `audit-data.mjs` now raises
-  `download-failures` above 1%. Whether v118's heavier load CAUSED it is still
-  open — the 0.09% baseline was measured an hour earlier, so an S3 incident
-  fits equally well; #246 is the discriminating run. Note also how the
-  diagnosis went: "hit the time budget" and "disk exhaustion from OCR" were
-  both confidently wrong, and the store answered it exactly once asked
-  (`e: "download"` on every one of them). The log tail and the job list each
-  refuted a theory in one call.
+  `download-failures` above 1%.
+  **CAUSE SETTLED 2026-09-10, and it is NOT a download failure.** #246 produced
+  exactly 11,495 failures and exactly 4,029 stale-confident acks — identical to
+  #244 to the digit, **100.00% the same ack set**. Deterministic, so neither
+  "v118's load" nor "an S3 incident" survives. The filings are fine: a random
+  20-ack probe answered **HTTP 200 twenty times of twenty**, the production
+  `download()` succeeded on 8 of them, and every `analyzePdf` step ran clean on
+  6 samples. The failures sit 5-13% through the first 90% of the assets-sorted
+  work list and **95-100% across the last decile**, which is 93-100% $0
+  year-end assets. Mechanism still unidentified — four hypotheses (time budget,
+  disk, S3/load, missing shard) are each refuted by evidence.
+  **The shipped defect this exposed:** `gap-census`/`gap-list` rendered
+  `e:"download"` to readers as *"the public copy has been withdrawn from the
+  EFAST2 bucket (403)"* — false for 20 of 20 probed. One code carried two
+  meanings. HTTP failures keep `download`; anything else is now `analyze` and
+  says the gap is ours. **An error code is a published claim.**
+  **Why it was unknowable:** the outer `catch` labelled every exception
+  `download`, the message went only to `summary`, and in `PARSE_SHARD` mode —
+  the only mode production runs — the job `process.exit(0)`s *before* the
+  summary prints. Reasons were computed and discarded on every run ever made.
+  Both fallback catches were silent too, and one of those cost the 31 lineups.
+  All four now log, with a per-shard failure tally.
+  Note also how the diagnosis went: "hit the time budget" and "disk exhaustion
+  from OCR" were both confidently wrong before those two. **A diagnosis that
+  cannot be reproduced is not a diagnosis** — "do the same acks fail twice?"
+  took one script and ended a story that had survived two runs and two
+  documents.
 - **`[skip ci]` on every parser commit made outside the 1–7 AM window**, so
   work batches into one nightly re-parse instead of firing several.
 - **One re-parse in flight at a time**, and every scheduled cycle

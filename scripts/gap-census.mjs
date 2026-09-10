@@ -98,6 +98,11 @@ for (const r of P.rows) {
   else if (!s.c) {
     const e = s.e || "";
     if (e === "download") add("A3. lineup — public copy withdrawn from the bucket (403)", r, assets, parts);
+    /* "analyze" (2026-09-10) is NOT the same claim. It means a step after the
+     * fetch threw, so we know nothing about the filing — and until this split
+     * existed both landed in A3, telling readers a filing had been withdrawn
+     * when a 20-of-20 random probe answered HTTP 200 every time. */
+    else if (e === "analyze") add("A2. lineup — OUR read of the filing threw; the copy is fetchable", r, assets, parts);
     /* v113: a `nohead` plan is not one thing. A RANDOM 30-filing sample of
      * this bucket (2026-09-09) measured 77% with no attachment published at
      * all, 13% an attachment carrying no schedule, 3% explicitly omitted —

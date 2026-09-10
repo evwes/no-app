@@ -55,6 +55,7 @@ for (const r of all.rows) {
     } else if (mt) gaps.push("**Fund lineup** — names a master trust that has no filing in EFAST2");
     else if (s && s.e === "no-section") gaps.push("**Fund lineup** — no readable Schedule H 4i section in the public PDF (form-only, scanned, or the attachment pages are absent)");
     else if (s && s.e === "download") gaps.push("**Fund lineup** — the public copy has been withdrawn from the EFAST2 bucket (403)");
+    else if (s && s.e === "analyze") gaps.push("**Fund lineup** — our reader failed on this filing; the public copy is there and this is our gap, not the filing's");
     else if (s && s.tp) gaps.push("**Fund lineup** — the schedule is a single 'interest in master trust' line, with no trust linked");
     else if (s && s.s) gaps.push("**Fund lineup** — a schedule was found but the holdings do not reconcile to plan assets, so it is withheld rather than shown wrong");
     else gaps.push("**Fund lineup** — no schedule found");
