@@ -563,12 +563,21 @@ don't confuse them). Frontend: python http.server + Playwright at
   honest single-holding plans were preserved. `audit-generic-names.mjs` sits at
   208 plans / $48.2B on the shared definition (baseline, threshold 230).
   Both run inside `audit-data.mjs` every merge.
-- **NOT worth parser work (measured 2026-09-03):** features missing though the
-  lineup parsed. 1,887 plans and 1.86M participants looks like the biggest
-  bucket on the board and is not ours — ~67% have no attachment prose in the
-  public copy, 27% have notes that never discuss contributions, only ~7% is a
-  real parser gap. Dollar General (201,691 participants) is the type case: its
-  public copy holds the auditors' report and the 4i table and then stops.
+- **REOPENED 2026-09-10 — the "NOT worth parser work" verdict on missing
+  features answered the wrong question.** The 2026-09-03 measurement stands as
+  far as it goes: of the plans whose lineup parses but whose features are
+  missing (now 2,193 acks / 1,943 live plans / **1,876,769 participants** /
+  $81.0B), ~67% have no attachment prose IN THE NEWEST PUBLIC COPY, 27% have
+  notes that never discuss contributions, ~7% is a real parser gap. Dollar
+  General (201,691 participants) is the type case. **But "does the newest copy
+  have notes?" is not "does the PRIOR YEAR's copy have notes?"** — and the
+  prior-year fallback was never asked, because it only ever fired when the
+  newest filing yielded no confident LINEUP. Where that fallback PDF has
+  actually been read and the newest filing had no features, the prior year
+  supplied them **462 of 502 times (92%)**. That population is biased (those
+  filings failed entirely), so 92% is an UPPER BOUND, not a forecast. v119
+  widens the trigger; the run measures the real rate. Cost: up to ~2,193 extra
+  PDF reads per run, ~3% more work.
   GitHub cron note: Monday 06:00 runs fire HOURS late (Jul 27 fired
   10:02) — don't diagnose a dropped schedule before ~noon UTC. Trust links
   898 (193 via EIN fallback); Elevance has NO MTIA filing in EFAST2 at all

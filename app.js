@@ -1509,7 +1509,7 @@
       `${plan.assetsYoY >= 0 ? "+" : "−"}${Math.abs(plan.assetsYoY)}% YoY`;
     const sourceNote = plan.dataStatus === "filed"
       ? `Financial figures from ${esc(plan.source)}. ${plan.filedFeatures ? (plan.featuresFb
-          ? `Match, vesting, and feature details are quoted from the plan's ${plan.featuresFb} audited statements: the newest filing's public copy has been withdrawn from the EFAST2 bucket, so its notes cannot be read. Verify with your plan documents.`
+          ? `Match, vesting, and feature details are quoted from the plan's ${plan.featuresFb} audited statements — the newest filing's public copy carries no readable audit notes of its own. A formula can change between plan years, so verify with your plan documents.`
           : "Match, vesting, and feature details quoted from the filing's audited statements — verify with your plan documents.") :"Plan features from the filing's characteristic codes where shown — verify details with your plan documents."}`
       : `Sample data for demonstration — figures are plausible, not filed values.`;
     return `

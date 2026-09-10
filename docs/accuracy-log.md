@@ -7295,3 +7295,48 @@ exactly this population: a random 30-filing draw from the 1,169 live
 non-confident plans whose text parse found rows adopted **1** under the ≥7-row
 menu-shape floor, so ~39 plans, plus Meta's $22.4B / 84,993 participants.
 Gate green, corpus diff zero.
+
+## 2026-09-10 — v119: the prior year was never asked about FEATURES
+
+**What was wrong.** The prior-year fallback fires only when the newest filing
+yields no confident LINEUP:
+
+    if (fb && !fbUsed && !(parsed.found && isConfident(parsed)))
+
+and features were a passenger inside it. So a plan whose schedule reads
+perfectly and whose audit notes are simply absent never had its prior year
+opened at all — **2,193 acks, 1,943 live plans, 1,876,769 participants,
+$81.0B** sit in exactly that state. It is the largest single population on the
+board, and the project's own notes had it filed under "NOT worth parser work".
+
+**Why that verdict was wrong without being incorrect.** The September
+measurement asked *does the newest public copy contain prose?* and answered
+honestly: ~67% do not. The fallback asks a different question — *does the
+PRIOR year's copy contain prose?* — and nobody had put it. Where the fallback
+PDF has actually been read and the newest filing had no features, the prior
+year supplied them **462 of 502 times, 92%**.
+
+**That 92% is an upper bound and is labelled as one.** Those filings reached
+the fallback because the newest copy failed ENTIRELY — usually withdrawn from
+the bucket, which says nothing about the filer's habits. The new population is
+filings that read fine and simply carry no notes, where a filer who omits
+notes this year plausibly omitted them last year too. The run measures the
+real rate; the claim here is only that the question was never asked.
+
+**The change.** The trigger now also fires when features are missing. The
+lineup is untouched — it may still only be REPLACED under the original
+condition — and features are only ever FILLED when absent.
+
+**The disclosure had to be fixed in the same commit, and this is the part
+worth remembering.** `featFb` already made the page name the plan year, and
+the source note already explained it — with a reason that would have become
+FALSE: *"the newest filing's public copy has been withdrawn from the EFAST2
+bucket, so its notes cannot be read."* True of every case that could reach the
+fallback before; untrue of every case v119 adds, where the copy is present and
+readable and merely silent. Widening a mechanism silently inherits the
+narrower mechanism's explanation, and an explanation that was accurate for one
+population becomes a false statement about another. **When a trigger widens,
+re-read every sentence the old trigger caused the site to print.**
+
+Gate green, corpus diff zero, smoke green. Cost: up to ~2,193 extra PDF reads
+per run, roughly 3% more work.

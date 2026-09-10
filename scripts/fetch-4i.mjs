@@ -726,13 +726,35 @@ for (const plan of work) {
   // AVI-SPL's 2024 public copy omits the schedule its 2023 filing includes.
   // Ratio is judged against the CURRENT year's assets; the confidence band
   // absorbs a year of drift. The entry discloses the fallback year.
-  if (fb && !fbUsed && !(parsed.found && isConfident(parsed))) {
+  /* v119: FEATURES are a second reason to look at the prior year, and until
+   * now they were only ever a passenger. The trigger fired solely when the
+   * newest filing yielded no confident LINEUP, so a plan whose schedule reads
+   * perfectly and whose notes are simply absent never had its prior year
+   * opened — and 2,193 acks (1,943 live plans, 1,876,769 participants,
+   * $81.0B) are in exactly that state.
+   *
+   * This also corrects a conclusion in the project's own notes. The class was
+   * measured in September as "NOT worth parser work: ~67% have no attachment
+   * prose in the public copy". True, and about the NEWEST filing only — which
+   * is a different question from whether the PRIOR year's copy has notes.
+   * Where the fallback PDF has actually been read and the newest filing had
+   * no features, the prior year supplied them **462 of 502 times (92%)**.
+   * That population is biased (those filings failed entirely, often because
+   * the newest copy is withdrawn), so 92% is an upper bound rather than a
+   * forecast — the run measures the real rate.
+   *
+   * The lineup is untouched: it may still only be REPLACED under the original
+   * condition. Features are only ever FILLED when absent, and `featFb` makes
+   * the page disclose which plan year the notes came from. */
+  if (fb && !fbUsed && (!(parsed.found && isConfident(parsed)) || !features)) {
     try {
       const b = await analyzePdf(fb.a, plan, `${tag} fb${fb.y}`);
-      if (!b.err && b.parsed.found && isConfident(b.parsed)) {
-        parsed = b.parsed;
-        usedOcr = b.usedOcr;
-        fbUsed = fb;
+      if (!b.err) {
+        if (b.parsed.found && isConfident(b.parsed) && !(parsed.found && isConfident(parsed))) {
+          parsed = b.parsed;
+          usedOcr = b.usedOcr;
+          fbUsed = fb;
+        }
         if (!features && b.features) { features = b.features; featFb = fb.y; }
       }
     } catch { /* fallback download failed — keep the primary outcome */ }
