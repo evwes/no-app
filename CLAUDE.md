@@ -578,7 +578,14 @@ don't confuse them). Frontend: python http.server + Playwright at
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
   full-form** filers; 68,767 parse-status entries. **Parser v120, OCR v8.**
-- **LIVE on main: `5b4aa3d0`, the COMPLETE v122 store — MIRRORED 2026-09-10
+- **LIVE on main: `9bb4ba05`, the COMPLETE v123 store — MIRRORED 2026-09-10
+  23:1xZ.** Same numbers as the v122 mirror below (v123 changes only the
+  `frozen` flag, which no coverage metric counts): 60,089 confident, HIGH 4,
+  pv 123 covers 99.9%, gate **+0 gained / −0 lost**. One master trust
+  (`20251203145826NAL0000493523001`) carries `e=analyze` at pv 122 — it is a
+  TRUST, not a plan, nothing was lost by it, and being stale means the next
+  incremental run retries it automatically.
+- **Previously: `5b4aa3d0`, the COMPLETE v122 store — MIRRORED 2026-09-10
   20:4xZ after five days of held runs.** 60,089 confident (+195 over the v117
   store it replaced), lineups 59,755, match 43,027, vesting 52,825, **HIGH at
   the baseline of 4**, pv 122 covers 99.9%, 68 fetch failures (0.10%), reader
@@ -593,8 +600,14 @@ don't confuse them). Frontend: python http.server + Playwright at
   produced first, and `--force` covers the GIT check only, never the data gate.
   History: v114+v115 (+123), v116 (+1), v117 (+160) all mirrored with zero
   losses.
-- **NEXT PARSER CHANGE, WRITTEN UP AND NOT YET BUILT: the `frozen` extractor
-  (v123).** `frozen` claims "the filing states contributions have been
+- **SHIPPED AND LIVE: the `frozen` extractor (v123, run #259, mirrored
+  2026-09-10 23:1xZ).** Flags went **1,378 → 1,318, exactly the 60 predicted**
+  (482,259 participants no longer shown a false freeze warning), and the
+  dropped set is precisely the specimens: Comcast, Honeywell, GE Healthcare,
+  Johns Hopkins, MMS, Teledyne, Stantec, Paychex. The coverage line came back
+  BYTE-IDENTICAL to #256's, which is the correct outcome — `frozen` appears
+  nowhere in it, so lineups/match/vesting must not move. History and the
+  reasoning that got here: `frozen` claims "the filing states contributions have been
   discontinued". **1,378 plans carry it; the demonstrable false positives are
   60 (482,259 participants), not 830.**
   **CORRECTED THE SAME EVENING — read `docs/accuracy-log.md` before reusing
@@ -630,8 +643,15 @@ don't confuse them). Frontend: python http.server + Playwright at
   **22 of 22** right. Rejects 60, keeps 1,318. Eleven verbatim fixtures include
   the decisive pair: Hanes Companies' own filing is KEPT while Leggett &
   Platt's filing quoting *"the Hanes Retirement Plan was frozen"* is REJECTED.
-  The extractor fix is still owed — the stored flag also drives index bit 512
-  and the match-type filter, so 60 plans are mis-bucketed there until it lands.
+  **THE PREDICATE NOW EXISTS THREE TIMES** — `lib-4i` (parser), `lib-disclose`
+  (static pages), `app.js` (browser) — and every copy is tethered: the smoke
+  test ties app.js to lib-disclose, and **`parser-gate.mjs` ties lib-4i to
+  lib-disclose** on the same seven pinned filings and REFUSES TO PARSE THE
+  UNIVERSE on drift (negative-controlled). Three untethered copies of one rule
+  is how the match-quote guard published a false heading on 615 pages.
+  `extractPlanFeatures(text, sponsorName)` — the sponsor name is what lets
+  "the Hanes Retirement Plan" in Leggett & Platt's filing be told from "the
+  Plan" in Hanes' own.
 - **The dev branch holds run #254's v121 store (`64ddac5d`) — the first
   HEALTHY full re-parse since #243, and still NOT mirrored.** #244-#253 were
   the two null-deref runs (isConfident, then featFb/fbUsed); #254 is the first
