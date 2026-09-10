@@ -8047,3 +8047,66 @@ pair. (3) A guard that suppresses output must be measured for what it
 suppresses *correctly* AND what it suppresses *wrongly*; a suppression rule
 tested only on the cases that motivated it is untested in the direction that
 costs coverage.
+
+---
+
+## 2026-09-10 — one fallback was offered where several existed; 31 published fund menus were dropped (v122)
+
+**What was wrong.** `build-data.mjs` built `fallbacks.json` by choosing, for
+each plan, the single next-newest full-form filing (`runnerUp`). `fetch-4i`
+tried that one filing and, if it did not yield a publishable lineup, gave up —
+even when the plan had two or three older filings sitting in the same dataset,
+one of which parses perfectly.
+
+The visible cost: run #254 finished healthy on every machine check — pv 121 at
+99.9%, 64 fetch failures, 0 reader failures, HIGH at the baseline of 4,
+confident 60,009 against main's 59,894 — and still came back missing **31
+prior-year fund menus that main publishes**, led by **Lowe's: 295,951
+participants, $8.6B, 44 rows read from its 2024 filing via OCR**.
+
+**The proof it was the map and not the parser.** Handed the ack main uses, all
+31 re-parse **confidently under the same v121 code on the real production
+path** — `PARSE_SHARD=0 PARSE_SHARDS=1`, the pipeline's own loop, writing only
+a delta: **31 of 31 confident, all 31 from the prior year, zero failures.** No
+component rejected these filings. They were never offered.
+
+**Two hypotheses died first, both to counts rather than to argument.**
+1. *"v119 widened the fallback trigger and broke it."* False. Of main's 1,249
+   prior-year lineups, **1,061 still serve from the prior year and 157 were
+   UPGRADED** — their own newest filing now parses confidently. Only 31 lost
+   anything, so the path is healthy and this is a specific population.
+2. *"The dataset year window rolled past 2023."* False — `Y0` is 2026 and
+   `YEARS` spans 2026–2023. Attractive because the held set is dominated by
+   2023 fallbacks, and wrong.
+
+**Why the cause could not be read off the store — the part worth keeping.**
+Two entirely different failures leave an **identical trace**: a fallback that
+is *never attempted* (`FALLBACKS[ack]` absent) and one that *loads but parses
+to nothing publishable*. Both produce no `fb`, a `dx` from the plan's own
+newest filing, and **no error code anywhere**. Every field agreed and none of
+them discriminated. This morning's work taught the `fbFailed` paths to speak;
+these two were still mute, so the store could say *that* a lineup vanished but
+never *why*.
+
+**The change.** `fallbacks.json` now carries up to three candidates
+(`{a, y, alt:[…]}`), newest-first, and `fetch-4i` walks them and stops at the
+first that publishes. A plan that already works costs exactly one read as
+before — only a failing plan pays for the extra attempts. Both silent paths now
+log and count: `fb-vanished` when a plan we were already serving from its prior
+year is offered none, `fb-rejected` when a candidate reads but is not
+publishable, each naming the rows and ratio against what is about to be
+dropped, and both landing in the per-shard tally.
+
+**Verified by a control pair, not by inspection.** Given a first candidate that
+403s and no alternate, the specimen is dropped (`dx=few`, `fb9999 THREW — HTTP
+403`). Given the *same* dead candidate with the real ack as `alt`, it publishes
+7 rows at `fb=2023`. The difference is the loop and nothing else.
+
+**Prevention.** (1) A rescue path must exhaust the alternatives it has, not
+sample one of them — "the newest prior filing" is a heuristic, and a heuristic
+with no fallback of its own is a single point of failure. (2) **An absent error
+code is a published claim too.** When two distinct outcomes are indistinguishable
+in the record, that is a defect in the record, and it must be fixed before the
+next diagnosis, not after. (3) `mirror-gate.mjs` is what caught this: it refused
+three separate times while every count-based check said the store was better
+than main. A net improvement is not a licence to drop a menu for 295,951 people.
