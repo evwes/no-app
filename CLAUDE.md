@@ -561,12 +561,38 @@ don't confuse them). Frontend: python http.server + Playwright at
 - **LIVE on main: `c130d250`, the COMPLETE v117 store, 59,894 confident,
   HIGH at the baseline of 4** (pv 117 covers 99.9%, 63 download failures).
   v114+v115 (+123), v116 (+1), v117 (+160) all mirrored with zero losses.
-- **The dev branch currently holds run #244's v118 store and MUST NOT be
-  mirrored.** Two independent reasons, both now machine-checked: it lost 31
-  real menus ($18.1B, 361,761 participants, Lowe's among them — v120 fixes
-  the cause), and only 83.3% of its acks are at pv 118 because **11,495
-  downloads failed (16.7%)**. Run #246 carries v119+v120 and is the run that
-  replaces it.
+- **The dev branch holds run #254's v121 store (`64ddac5d`) — the first
+  HEALTHY full re-parse since #243, and still NOT mirrored.** #244-#253 were
+  the two null-deref runs (isConfident, then featFb/fbUsed); #254 is the first
+  with both fixes. It is complete and clean on every machine check:
+  **pv 121 covers 68,703 of 68,767 (99.9%)**, fetch failures **64 (0.09%)**
+  — down from 11,495 — reader failures **0**, **HIGH back at the baseline of
+  4**, confident **60,009** (main: 59,894, so **+146 gained / −31 lost**).
+  **v119 delivered its measured win**: lineups whose NOTES come from the prior
+  year went **487 → 1,610 (+1,123)**, which is the 1.9M-participant class
+  reopened on 2026-09-10.
+- **The one blocker is the SAME 31 lineups, and `mirror-gate.mjs` refuses on
+  them.** They are prior-year-fallback lineups main serves and the branch does
+  not — Lowe's (295,951 participants, $8.6B, 44 rows from its 2024 filing via
+  OCR) plus 30 much smaller plans; the printed 25 total 310,883 participants
+  and $10.5B, of which Lowe's is 95%.
+  **The fallback path itself is NOT broken — measured, and it refuted the
+  obvious hypothesis.** Of main's 1,249 prior-year lineups, **1,061 still
+  serve from the prior year**, **157 were UPGRADED** (their own newest filing
+  now parses confidently), and only **31 lost confidence at all**. So "v119
+  broke the fallback" is false; this is a specific population.
+  On the branch all 31 carry **no `fb` at all** and a `dx` from their newest
+  filing (band-hi 6, few 9, stmt 6, band-lo 2, trust 1, narrow 1), and the
+  store records **no `fb-threw` and no `fb-unreadable`** for any of them.
+  A fallback that is never ATTEMPTED — because `FALLBACKS[ack]` is absent —
+  logs nothing at all, which is the one shape consistent with every field.
+  **That invisibility is itself the defect to fix**: `fetch-4i` must say when
+  it skips the fallback for a non-confident plan, exactly as the morning's
+  four silent catches now do.
+  Note these entries were already deleted from the branch store by #244, so
+  v120's "keep the stored lineup when the fallback cannot be read" guard had
+  nothing left to protect — the guard is right and stays, but it cannot
+  resurrect what an earlier run removed.
 - Numbers move every run — `docs/coverage-history.jsonl` is the source of
   truth, and the merge job appends to it. Its lines now carry `dl` and
   `pvTopShare` so a partial store is distinguishable from a complete one.
