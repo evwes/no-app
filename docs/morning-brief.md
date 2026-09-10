@@ -257,16 +257,32 @@ Live now, all in one go:
 - **116 pages** stopped saying we didn't know what the employer contributes
   when the filing plainly states it. Boeing's said "not stated" against **$1.42
   billion a year**.
-- **830 plans** stopped being labelled frozen while they were still paying.
+- **60 plans** stopped being wrongly labelled frozen.
 
-That last one is worth a moment. We were warning **63,466 Honeywell employees
-that their plan had stopped contributing**, on the strength of a sentence that
-actually reads *"a participant will become 100% vested in the event the Company
-terminates or permanently discontinues contributions"* — the boilerplate clause
-in nearly every plan document, describing something that has not happened.
-Sixty percent of every plan we flagged this way was still paying. The page now
-refuses the claim whenever the filing reports employer money, because a filed
-dollar figure beats a sentence we matched with a pattern.
+**That last number was 830 in the first version of this brief, and I was
+wrong.** Worth explaining, because the mistake is more instructive than the
+fix.
+
+We warn people when a filing says their plan has stopped contributing. I found
+that 830 of the 1,378 plans carrying that warning had *also* reported employer
+contributions that year, decided the warning must therefore be false, and
+suppressed it for all of them. But **a plan that closes in June still pays from
+January to June** — the two facts sit side by side in every final-year filing.
+Measured properly, that change hid **750 genuine plan terminations** to catch
+80 false ones. I had read eight filings, found eight false alarms, and
+generalised to 830 cases on a correlation I never checked.
+
+The honest fix reads the sentence instead of the money, and asks *which plan*
+the sentence is about. Comcast's filing mentions "The Solar Energy World 401k
+plan was frozen" — a company they acquired. Leggett & Platt's mentions "the
+Hanes Retirement Plan was frozen" — and **Hanes' own filing says "the Plan was
+frozen", which we keep.** Honeywell's sentence turns out to be the standard
+legal clause *"in the event the Company... discontinues contributions"*,
+describing something that has not happened, and 63,466 people were being warned
+on the strength of it.
+
+That now removes **60 false warnings and leaves all 1,318 real ones standing.**
+I checked 22 at random, twelve removals and ten kept, and all 22 were right.
 
 **What is still owed:** the underlying reader still mislabels those filings; the
 site just no longer repeats it. That fix is written up and queued.

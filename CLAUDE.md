@@ -595,10 +595,21 @@ don't confuse them). Frontend: python http.server + Playwright at
   losses.
 - **NEXT PARSER CHANGE, WRITTEN UP AND NOT YET BUILT: the `frozen` extractor
   (v123).** `frozen` claims "the filing states contributions have been
-  discontinued". Measured 2026-09-10 across the full-form universe: **1,378
-  plans carry it and 830 (60%) reported employer contributions that same
-  year** — 1,101,268 participants, $2.46B. Every one of the eight largest is a
-  false positive in one of two shapes:
+  discontinued". **1,378 plans carry it; the demonstrable false positives are
+  60 (482,259 participants), not 830.**
+  **CORRECTED THE SAME EVENING — read `docs/accuracy-log.md` before reusing
+  any number here.** The first version of this bullet said "830 (60%) reported
+  employer contributions that same year" and treated that as proof the flag was
+  false. **It is not.** A plan terminated in June contributes January to June
+  and files a final-year return showing both; paying and terminating are the
+  ordinary shape of a final-year filing. The display guard built on that
+  inference hid 830 plans of which **750 were GENUINE terminations** (637,268
+  participants) to catch 80 false ones, and has been replaced. Eight readings
+  did not license a claim about 830 cases — **draw randomly to estimate a RATE,
+  a rule already on the books for fix yields and not applied here to a defect
+  rate.**
+  The two false shapes are real and are readable from the TEXT: the specimens
+  below all hold.
   **(a) a DIFFERENT NAMED PLAN** — Comcast quotes *"The Solar Energy World
   401k plan was frozen"*, Johns Hopkins *"The Bayview Plan was frozen in
   2002"*, GE Healthcare *"the GE Pension Plan was frozen"*, plus Stantec,
@@ -608,11 +619,19 @@ don't confuse them). Frontend: python http.server + Playwright at
   nearly every plan document. The trigger regex at `lib-4i.mjs` ~3642 tests
   only that the words appear, never whose plan the sentence is about or
   whether it is hypothetical — the same defect family as the match-quote guard.
-  **A display-side contradiction guard is already SHIPPED and needs no
-  re-parse** (`frozenClaimOk` in `lib-disclose.mjs`: a filing cannot both
-  report employer contributions and say they have ceased; the filed dollar
-  figure beats a regex; suppresses only, never asserts). The extractor fix is
-  still owed, and the specimen acks are in the commit for `15d63e48`.
+  **The display guard is SHIPPED and needs no re-parse** — `frozenClaimOk` in
+  `lib-disclose.mjs`, and the extractor fix should reuse its predicate
+  verbatim rather than inventing a second one. It judges **which plan is the
+  SUBJECT of the freeze verb**, which is what tying the name to the verb rather
+  than to the sentence buys: *"the Plan was frozen, and the Organization's
+  employees became eligible to participate in the Cayuga Health 401(k)"* names
+  another plan as the DESTINATION while this plan is what froze, and judging
+  the sentence got **3 of 6 sampled wrong** there. Judging the subject got
+  **22 of 22** right. Rejects 60, keeps 1,318. Eleven verbatim fixtures include
+  the decisive pair: Hanes Companies' own filing is KEPT while Leggett &
+  Platt's filing quoting *"the Hanes Retirement Plan was frozen"* is REJECTED.
+  The extractor fix is still owed — the stored flag also drives index bit 512
+  and the match-type filter, so 60 plans are mis-bucketed there until it lands.
 - **The dev branch holds run #254's v121 store (`64ddac5d`) — the first
   HEALTHY full re-parse since #243, and still NOT mirrored.** #244-#253 were
   the two null-deref runs (isConfident, then featFb/fbUsed); #254 is the first
