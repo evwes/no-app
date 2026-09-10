@@ -7188,3 +7188,56 @@ Two things to keep:
    because it leaves the impression the guard worked. The guard did not work;
    attention after the fact did not either. What actually protects the run is
    the `[skip ci]` that was omitted.
+
+## 2026-09-10 — `nohead/unread` opened whole: 6 of 11 are ours, and the
+## biggest plan in the bucket is not
+
+The last OURS slice of `nohead` after v113's split and v114's fix: 11 live
+plans, $178M, 8,121 participants, labelled "table-shaped pages under a heading
+we don't recognise". Small enough to open all eleven rather than sample, which
+is what was done.
+
+**OURS — a real fund table under a RECORDKEEPER heading (6 plans, $69M,
+~2,600 participants):**
+
+| plan | the heading the table sits under |
+|---|---|
+| Medical Device Components ($25M) | `STATEMENT OF NET ASSETS` (a recordkeeper template — "PAGE 01", a job number, then ASSETS and the funds) |
+| MPB Hotel ($11M) | the same template, same recordkeeper |
+| Sunshine Developmental School ($17M) | `SUMMARY OF NET TRUST ASSETS`, columns Fund Name / Share Balance / Historical Cost / Price / Total Market Value |
+| Atrium Consulting ($8M, 1,326p) | `Plan Investment Vehicle Summary` (Lincoln Financial), per-vehicle beginning/end assets |
+| Innovative Cosmetic Concepts ($5M) | `Overview - Summary By Fund`, columns Fund Name / Ending Balance |
+| Avis Mobility / Flexcar ($3M) | `Current Plan Assets`, columns Asset Class/Investment / **Ticker** / Total Assets |
+
+**NOT OURS — the table-shaped page is a financial statement or a roster
+(5 plans, $109M, ~5,500 participants):**
+
+| plan | what the page actually is |
+|---|---|
+| Commercial Vehicle Group ($67M, 2,933p) | `SUMMARY OF PLAN OPERATIONS (TOTALS)` — receipts and contributions, a cash-flow statement |
+| BWS Leasing ($26M) | `Statements of Changes in Net Assets` |
+| Austin 3(16) Fiduciary ($8M, 746p) | a POOLED EMPLOYER PLAN's `Participating Employer Contribution and Balance Information` — balances per participating EMPLOYER, not per fund |
+| CDA Inc. ($7M, 1,074p) | `Statement of Changes in Net Assets` |
+| Shield T3 ($1M) | same |
+
+**The trap worth recording, because it is the third instance of one pattern.**
+Sunshine's heading — `SUMMARY OF NET TRUST ASSETS` — is already in the
+parser's `stopRe`, where it exists to TERMINATE a region: a recordkeeper
+statement page appended after a real 4i table once doubled Sierra Space's
+menu. Here the same phrase heads the ONLY schedule in the filing. That is
+exactly the shape the `trusteeHead` fallback was built for ("Schedule of
+Investments" is stopRe vocabulary too, and may seed a region only when the
+document has zero real 4i headings), and exactly the shape v114's caption seed
+handles for the statutory captions. **A phrase that ends a region in a filing
+that has a better one can be the only way in to a filing that does not.**
+
+**The fix, when it is bundled** (not worth a PARSER_VERSION bump for six small
+plans on its own): add these recordkeeper titles to the retry pass's seed list
+alongside the caption, gated identically — only when the title and trustee
+seeds found nothing. The scoring and the ratio band still judge the result, so
+a filing whose only `STATEMENT OF NET ASSETS` is a balance sheet produces
+statement rows and publishes nothing, as now.
+
+**What the split is worth on its own:** the bucket's largest plan by both
+dollars and participants is NOT ours, and would have been the first one a
+size-ranked reading opened. Opening all eleven cost one download loop.
