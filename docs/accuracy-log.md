@@ -7856,3 +7856,48 @@ when written and silently became decorative three versions later, and nothing
 failed loudly — the matrix just quietly got too small. When a trigger condition
 is rewritten, grep for every count and threshold that was calibrated against
 the old one.
+
+---
+
+## 2026-09-10 — run #252 also failed, OOM refuted by measurement, and the real blocker named
+
+The re-sized repair run failed too. The sizing fix itself worked — 21 jobs,
+19 parse shards instead of 3 — but shard 0 died after **13 minutes** and shard
+5 after 44, their artifact uploads took **0 seconds** (no results file at all,
+so nothing reached the merge), and the store did not move: the coverage line is
+byte-identical to #249's. 13 minutes at ~15s a filing is roughly 50 filings —
+they are dying *before* the first 250-filing flush.
+
+**OOM is refuted, by measurement rather than argument.** The previous entry
+floated a kernel OOM-kill as fitting the signature (12GB heap on a 16GB runner
+beside four tesseract subprocesses) while explicitly declining to assert it.
+Good, because it is wrong: running the identical shard partition locally
+(`PARSE_SHARD=0 PARSE_SHARDS=19`), node's RSS sat **flat at ~645 MB across 55
+filings** — no growth at all — and the WORK directory stayed at **17 MB**, one
+PDF and one live OCR dir, so the temp-dir cleanup is working and disk is not
+leaking either. The local run sailed past the point where the runner's shard
+died.
+
+That makes **six** refuted hypotheses for this family of failures: time budget,
+disk exhaustion, S3 load, a missing matrix shard, node heap OOM, temp-dir leak.
+Every one was a guess about infrastructure.
+
+**So stop guessing and name the actual blocker: I cannot read the error.** A
+parse-shard log is ~430,000 lines. The log tooling available here returns only
+a bounded tail, and that tail is always artifact-upload chatter — the failure
+message sits in the middle, permanently out of reach. Six hypotheses were
+generated to fill a gap that better instrumentation closes outright.
+
+**The change** is this morning's lesson applied one level up. This morning the
+program did not say what happened; today it does, but it says it somewhere
+nothing can see. So the parse step now runs node through `tee`, captures the
+exit code under `set -o pipefail`, and **on failure re-prints the last 40 lines
+at the very end of the step**, which is exactly where a tail-only reader lands.
+It also emits a `::error::` annotation carrying the exit code, which surfaces
+without reading the log at all.
+
+**The prevention, and it generalises past this project:** when a diagnosis
+stalls, ask whether the obstacle is the defect or the *observability* of the
+defect. Six wrong theories is not bad luck; it is the predictable output of
+reasoning about a system whose testimony you cannot hear. Fix the hearing
+first — it is nearly always cheaper than the next theory.

@@ -139,7 +139,28 @@ jobs:
           OCR_CACHE_DIR: ocr-cache
         run: |
           sudo apt-get install -y -q poppler-utils tesseract-ocr >/dev/null 2>&1 || true
-          TIME_BUDGET_MIN=320 PARSE_SHARD=${{ matrix.shard }} PARSE_SHARDS=${{ needs.prep.outputs.count }} BATCH_4I=999999 node scripts/fetch-4i.mjs
+          # PUT THE FAILURE WHERE IT CAN BE READ. Runs #249 and #252 both died
+          # with their parse shards exiting non-zero, and the reason was
+          # unreachable: a shard log is ~430,000 lines and the tooling that
+          # reads it returns only the tail, which is artifact-upload chatter.
+          # Five hypotheses were raised and refuted against that blindness
+          # (time budget, disk, S3 load, missing shard, OOM — the last two
+          # measured directly: RSS flat at ~645 MB across 55 filings, WORK dir
+          # steady at 17 MB). The blocker was never the bug; it was that the
+          # program's own account of itself sat where nothing could see it.
+          # So: stream as before, and on failure re-print the tail AT THE END,
+          # which is exactly where a tail-only reader lands.
+          set -o pipefail
+          TIME_BUDGET_MIN=320 PARSE_SHARD=${{ matrix.shard }} PARSE_SHARDS=${{ needs.prep.outputs.count }} BATCH_4I=999999 \
+            node scripts/fetch-4i.mjs 2>&1 | tee /tmp/parse-${{ matrix.shard }}.log
+          ec=$?
+          if [ "$ec" -ne 0 ]; then
+            echo "::error::parse shard ${{ matrix.shard }} exited $ec"
+            echo "===== SHARD ${{ matrix.shard }} FAILED (exit $ec) — last 40 lines ====="
+            tail -40 /tmp/parse-${{ matrix.shard }}.log
+            echo "===== end shard ${{ matrix.shard }} failure tail ====="
+          fi
+          exit $ec
       - uses: actions/upload-artifact@v4
         # always upload: fetch-4i flushes results-N.json every 250 filings, so
         # even a crashed shard hands its progress to the merge job
