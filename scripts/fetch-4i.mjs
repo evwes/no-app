@@ -402,6 +402,7 @@ let fetched = 0;
 let fbRescued = 0; // filings whose newest public copy is gone, read from the prior year instead
 // failure accounting, printed by every job including matrix shards
 let failLogged = 0;
+let fbAbsentLogged = 0;  // plans we served from a prior year for which the map now offers none
 const failCounts = {};
 
 const delta = { status: {}, entries: {} };
@@ -851,6 +852,31 @@ for (const plan of work) {
    * condition. Features are only ever FILLED when absent, and `featFb` makes
    * the page disclose which plan year the notes came from. */
   let fbFailed = false;
+  /* A FALLBACK THAT IS NEVER ATTEMPTED LOOKS EXACTLY LIKE ONE THAT WAS NEVER
+   * NEEDED, and that ambiguity cost a whole cycle. Run #254 came back healthy
+   * on every check yet still lacked the same 31 prior-year lineups main
+   * serves — Lowe's among them. Every field agreed and none of them said why:
+   * the acks carried no `fb`, a `dx` from their own newest filing, and
+   * neither `fb-threw` nor `fb-unreadable`. That combination has exactly one
+   * cause — `FALLBACKS[ack]` was absent, so the block below never ran — and
+   * because a skip logs nothing, it could not be told apart from a plan that
+   * simply parsed fine. The `fbFailed` paths were taught to speak this
+   * morning; the SKIP was still mute. It is not any more. */
+  if (!fb && !(parsed.found && isConfident(parsed))) {
+    /* Narrow deliberately. Thousands of plans have no prior-year filing and
+     * never did — counting those says nothing. The anomaly is a plan we were
+     * ALREADY serving from its prior year for which the map now offers
+     * nothing: that lineup is about to disappear from the site, and it is the
+     * exact shape of all 31. */
+    const prevEntry = buckets[shardOf(plan.ack)][plan.ack];
+    if (prevEntry && prevEntry.confident && prevEntry.fb) {
+      failCounts["fb-vanished"] = (failCounts["fb-vanished"] || 0) + 1;
+      if (fbAbsentLogged < 25) {
+        console.log(`${tag}: was served from its ${prevEntry.fb} filing (${prevEntry.funds ? prevEntry.funds.length : 0} rows) and fallbacks.json now offers NO prior-year filing — the lineup will be dropped`);
+        fbAbsentLogged++;
+      }
+    }
+  }
   if (fb && !fbUsed && (!(parsed.found && isConfident(parsed)) || !features)) {
     try {
       const b = await analyzePdf(fb.a, plan, `${tag} fb${fb.y}`);
