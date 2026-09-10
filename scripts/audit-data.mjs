@@ -14,6 +14,9 @@ const g = (r, f) => r[ix[f]];
 
 const findings = { high: [], warn: [] };
 const flag = (sev, rule, msg) => findings[sev].push(`[${rule}] ${msg}`);
+// extra fields for the accuracy trail, filled in by later blocks. Kept
+// separate so a skipped block simply omits its fields instead of throwing.
+const auditCoverage = {};
 
 let statTotal = 0;
 for (const r of d.plans) {
@@ -275,6 +278,62 @@ try {
   if (dominantPlans > 60) flag("high", "fabricated-name", `${dominantPlans} published lineups are one non-fund row carrying >=90% of the sum (baseline 50 on v104 data) — that is not a menu: ${worstDominant.join(" ")}`);
 } catch (e) { console.warn("fabricated-holding audit skipped: " + e.message); }
 
+/* RUN COMPLETENESS — did this run actually READ the universe?
+ *
+ * Every other check here asks whether the data we published is right. None of
+ * them asks how much of the data we published this run even looked at, and
+ * that gap has now cost two runs. Run #239 was cancelled mid-parse, its merge
+ * job committed anyway under `if: always()`, and the branch took a store with
+ * 44,466 acks at pv 116 beside 24,237 at pv 117. Run #244 read every ack but
+ * 11,495 of their DOWNLOADS failed (16.7%, against 63 = 0.09% in the run an
+ * hour earlier) — so a sixth of the universe kept its previous parse while
+ * the coverage line went UP and every check below passed. Both stores looked
+ * healthy by every metric that existed.
+ *
+ * CLAUDE.md already names the right test — "check the pv distribution before
+ * mirroring, always" — but leaves it to the eye, and the eye is what missed
+ * both. The two failure shapes are distinguishable and both are cheap:
+ *
+ *   pv spread     the run did not FINISH (cancel, crash, time budget). One
+ *                 dominant pv plus the chronic ~190-ack old-version tail is
+ *                 complete; a second large cohort is partial.
+ *   e:"download"  the run finished but could not FETCH. Failures keep the
+ *                 stored entry and an old pv (correctly — that is the v37
+ *                 protection), so nothing is lost and nothing is refreshed.
+ *
+ * Neither is automatically a defect: withdrawn-from-bucket filings answer 403
+ * permanently and a handful always fail. Both are reasons not to MIRROR, which
+ * is why they are HIGH rather than fatal. */
+try {
+  const S = JSON.parse(readFileSync("lineups-status.json", "utf8")).plans;
+  const acks = Object.entries(S);
+  const pvCount = new Map();
+  let dlFail = 0;
+  for (const [, st] of acks) {
+    pvCount.set(st.pv || 0, (pvCount.get(st.pv || 0) || 0) + 1);
+    if (st.e === "download") dlFail++;
+  }
+  const [topPv, topN] = [...pvCount].sort((a, b) => b[1] - a[1])[0] || [0, 0];
+  const topShare = acks.length ? topN / acks.length : 1;
+  const dlShare = acks.length ? dlFail / acks.length : 0;
+  console.log(`\n== RUN COMPLETENESS: ${acks.length} status entries; ` +
+    `dominant pv ${topPv} covers ${topN} (${(topShare * 100).toFixed(1)}%); ` +
+    `${dlFail} download failures (${(dlShare * 100).toFixed(2)}%)`);
+  if (topShare < 0.97) {
+    const others = [...pvCount].sort((a, b) => b[1] - a[1]).slice(1, 4)
+      .map(([v, n]) => `pv ${v}: ${n}`).join(", ");
+    flag("high", "partial-store", `only ${(topShare * 100).toFixed(1)}% of acks are at pv ${topPv} (${others}) — ` +
+      `this is a PARTIAL re-parse, not a finished one. Do not mirror; re-dispatch and let it complete`);
+  }
+  if (dlShare > 0.01) {
+    flag("high", "download-failures", `${dlFail} filings (${(dlShare * 100).toFixed(1)}%) could not be downloaded this run — ` +
+      `they kept their stored parse, so the coverage line below describes the PREVIOUS read of them, not this one. ` +
+      `Baseline is under 0.1%; investigate before mirroring`);
+  }
+  auditCoverage.dl = dlFail;
+  auditCoverage.pvTopShare = +(topShare * 100).toFixed(1);
+} catch (e) { console.warn("run-completeness audit skipped: " + e.message); }
+
 console.log(`\naudit: ${statTotal} plans, ${entries} lineup entries (${confident} confident)`);
 for (const sev of ["high", "warn"]) {
   console.log(`\n== ${sev.toUpperCase()} (${findings[sev].length})`);
@@ -339,6 +398,11 @@ try {
     matchQuote: covTot.matchQuote, vestQuote: covTot.vestQuote,
     lineups: covTot.lineup, feeCodesPct: feeCodesShare,
     high: findings.high.length, warn: findings.warn.length,
+    // dl / pvTopShare: how much of the universe this run actually read.
+    // Without them a partial store is indistinguishable from a complete one
+    // in the trail, which is how #244's 16.7% download failures read as a
+    // clean +160 improvement.
+    ...auditCoverage,
   }) + "\n");
   // cap the issue feed — GitHub bodies max out at 65k chars, and a mass
   // finding (like the 500+ lineup-junk sweep) must not break the step

@@ -7397,3 +7397,69 @@ is what lets a fabricated lineup be removed.
    net was positive and the mean was meaningless. The loss auto-triage is what
    turned that into 21 HIGH findings, and it is the reason this was caught in
    an hourly cycle rather than by a user on the Lowe's page.
+
+---
+
+## 2026-09-10 — a run can publish a rising coverage line without reading a sixth of the universe (run completeness audit)
+
+**What was wrong.** Nothing in the pipeline measured how much of the universe a
+run actually READ. Every check asks whether the published data is right; none
+asked whether this run looked at it. Two runs had already been damaged by that
+gap before anyone went looking for it:
+
+- **#239** was cancelled mid-parse. Its merge job committed anyway under
+  `if: always()`, and the branch took a store with 44,466 acks at pv 116 beside
+  24,237 at pv 117.
+- **#244** finished every shard normally — and **11,495 of its downloads
+  failed (16.72%)**. Those acks correctly kept their stored entries and an old
+  pv (the v37 protection), so nothing was lost. But a sixth of the universe was
+  never re-read, while the coverage line went UP and every audit check passed.
+
+Both stores looked healthy by every metric that existed. `CLAUDE.md` already
+names the right test — *"check the pv distribution before mirroring, always"* —
+but leaves it to the eye, and the eye is exactly what missed both.
+
+**How the cause was found, and a correction worth keeping.** The first
+diagnosis was wrong twice. The inherited note said #244 "hit its shard time
+budget, leaving 11,432 acks unparsed"; the job list shows all 13 shards
+finishing in ~84 minutes against a **320-minute** budget with
+`conclusion: success`, so the budget was never reached. The second guess was
+disk exhaustion from rasterized OCR pages — plausible, and it even explained
+the short runtime. The log tail refuted it: OCR was still succeeding at 02:32
+and the shard wrote all 5,290 of its entries normally. Only then did the store
+itself give the answer, and it gave it exactly: every one of the 11,495 tail
+acks carries `e: "download"`.
+
+**The confound, stated because it is not resolved.** main's completed v117
+store shows 63 download failures (0.09%) against #244's 16.72% — 182x. That is
+suggestive, not conclusive: main's run finished at 00:25Z, an hour BEFORE #244
+ran, so "v118 caused it" and "S3 was unwell for an hour" both fit. The
+discriminating measurement is run #246, already in flight under the same code.
+**Not diagnosed is not the same as diagnosed** — the `download-failures` HIGH
+below reports the fact and asks for investigation rather than asserting a cause.
+
+**The change.** `audit-data.mjs` gains a RUN COMPLETENESS block reading
+`lineups-status.json`, which the audit had never opened. It distinguishes the
+two failure shapes, because they are different events:
+
+- `partial-store` HIGH when the dominant pv covers < 97% of acks — the run did
+  not FINISH (cancel, crash, time budget).
+- `download-failures` HIGH when `e: "download"` exceeds 1% of acks — the run
+  finished but could not FETCH, so the coverage line describes the previous
+  read of those plans, not this one.
+
+Both are HIGH rather than fatal: withdrawn-from-bucket filings answer 403
+permanently and a handful always fail, so neither is automatically a defect.
+Both are reasons not to MIRROR. `dl` and `pvTopShare` join the
+`coverage-history.jsonl` line, so a partial store stops being indistinguishable
+from a complete one in the trail.
+
+Controls, both required and both run: on #244's store it raises both findings
+(83.3%, 16.7%); on main's completed v117 store it raises neither (99.9%,
+0.09%). A check that fires on everything would have been worthless.
+
+**The prevention.** The mandatory pre-mirror pv check is no longer a manual
+eyeball — it is a HIGH finding that reaches the auto-managed issue on the run
+that causes it. More generally: **when a store is committed by a job that runs
+`if: always()`, completeness is not implied by the absence of errors and has to
+be measured on its own.**
