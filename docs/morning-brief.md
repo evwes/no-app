@@ -1,15 +1,17 @@
-# Morning brief — 2026-09-10 (rewritten 07:30Z / 3:30 AM ET)
+# Morning brief — 2026-09-10 (updated 13:25Z / 9:25 AM ET)
 
 ## The headline
 
 **Found it: one missing line of code has been silently skipping 11,366
 filings — $548 billion and 9.7 million people — on every run since Tuesday.**
-JPMorgan, CVS, Cisco, Eli Lilly, Broadcom and Stanford are all in it. Fixed,
-verified, and the repair run is going now.
+JPMorgan, CVS, Cisco, Eli Lilly, Broadcom and Stanford are all in it. The bug
+is understood and the fix is verified.
 
-It is also the same bug that took Lowe's fund menu away, which is why nothing
-has been mirrored: the live site is untouched and still shows the good data
-from earlier in the week.
+**It has not landed yet.** Three attempts to re-read those filings have now
+failed for a *different* reason — one that only happens on GitHub's machines,
+not on mine. Details below. Nothing is broken for visitors: the live site is
+untouched and still shows the good data from earlier in the week, and the
+mirror script now physically refuses to publish anything worse.
 
 ## What is live on main
 
@@ -124,6 +126,33 @@ test. That same read-through had also written off Commercial Vehicle Group, the
 biggest win in the group. Reading a filing and running the parser over it are
 two different measurements; only the second one ships.
 
+## The repair keeps failing, and I have stopped guessing why
+
+Three runs (#249, #252, #253-in-progress) have tried to re-read the 11,400
+skipped filings. The first two both died — not cleanly, and not with any
+message I can reach.
+
+I have now proposed and **refuted six explanations**: a time limit, disk space,
+the government's file host, a missing worker, running out of memory, and a
+temp-file leak. The last two I refuted by measuring rather than arguing —
+memory sat flat at 645 MB and the scratch directory at 17 MB, neither growing.
+
+Then I ran the *exact* same work on my own machine: **199 filings, 50 minutes,
+no trouble**, where GitHub's machine gave up after about 50. Same code, same
+filings, same ordering. So this is something about their environment, and six
+theories were me filling a gap that better instrumentation closes outright.
+
+**The real obstacle was that I could not read the error.** These logs are
+430,000 lines and the tool I have returns only the last few dozen — which are
+always upload chatter, never the failure. So the run now re-prints its own
+failure at the *end*, where I can actually see it, and flags the exit code
+separately. #253 is carrying that change.
+
+Worth saying plainly: this has cost most of the morning and produced no visible
+improvement to the site. What it has produced is a fixed bug, six eliminated
+explanations, and a pipeline that will tell us the answer on its next failure
+instead of a seventh guess.
+
 ## Waiting on you
 
 1. **GitHub Pages must serve `main`** (Settings → Pages) — still the blocker
@@ -134,8 +163,8 @@ two different measurements; only the second one ships.
 
 ## Continuing
 
-Run **#249** is going now with the fix. It re-reads only the ~11,400 filings
-that were damaged, so it is a short run, not a full rebuild. When it lands:
+**#253** is running with the fix plus the new failure reporting. When it lands:
 confirm the 31 menus come back, check that JPMorgan and CVS publish, and mirror
 only if the store is at least as complete as what is live. **Nothing is
-mirrored until Lowe's has its fund menu again.**
+mirrored until Lowe's has its fund menu again** — and as of this morning that
+is enforced by a script, not by me remembering.
