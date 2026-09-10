@@ -424,6 +424,27 @@ function diagnose(parsed, confident) {
 
 /* lineup confidence: shared by the primary and fallback attempts */
 function isConfident(parsed) {
+  /* A PARSE THAT FOUND NOTHING HAS NO `funds` ARRAY. parse4i's early exits
+   * return bare `{ found: false, why }` — nohead, noregion, consolidated — so
+   * `parsed.funds.length` throws a TypeError on precisely the filings we most
+   * need to reason about.
+   *
+   * This was harmless while the only caller guarded with `parsed.found`
+   * first. v118 changed the OCR trigger from `!parsed.found` to
+   * `!isConfident(parsed)` and made this function the FIRST thing that
+   * touches a not-found parse — so from run #244 onward every filing whose
+   * schedule could not be located threw out of analyzePdf, was caught by the
+   * outer handler, and was filed as a download failure.
+   *
+   * It cost 11,366 filings a re-read on each of three runs — $548B and
+   * 9,677,332 participants, JPMorgan, CVS, Cisco, Eli Lilly, Broadcom and
+   * Stanford among them — and, because the prior-year rescue calls
+   * analyzePdf too, it is also what killed the 31 stored lineups behind
+   * Lowe's and Trane. One missing guard, three symptoms that looked like
+   * three different infrastructure problems.
+   *
+   * Guard the shape, not the caller: every future caller is then safe too. */
+  if (!parsed || !parsed.found || !Array.isArray(parsed.funds)) return false;
   const ratio = parsed.ratio || 0;
   // tiny parses get a tighter band: every junk fair-value-table parse the
   // audit caught (MP Materials, Ruhlin, Food Express — 3 rows summing both

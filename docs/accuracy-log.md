@@ -7643,3 +7643,69 @@ wording rather than the file you were looking at.
 **The prevention:** when reporting that a defect reached users, name the file
 that renders it and the count of pages, before saying so. "Reached readers" is
 a claim like any other and gets checked like one.
+
+---
+
+## 2026-09-10 — the whole thing was one missing guard: `isConfident` on a parse that found nothing
+
+Three runs, three "infrastructure" stories, one line of JavaScript.
+
+**The bug.** `parse4i`'s early exits return a bare `{ found: false, why }` —
+`nohead`, `noregion`, `consolidated` — with **no `funds` array**. `isConfident`
+opens with `parsed.funds.length >= 3`. On any filing whose schedule could not
+be located, that is a `TypeError: Cannot read properties of undefined (reading
+'length')`.
+
+Harmless for as long as the only caller checked `parsed.found` first. **v118
+changed the OCR trigger from `!parsed.found` to `!isConfident(parsed)`** and
+made this function the first thing to touch a not-found parse. From run #244
+onward, every such filing threw out of `analyzePdf`, was caught by the outer
+handler, and was recorded as a **download failure**.
+
+**What it cost.** 11,366 filings unread on each of three runs — **$548.0B and
+9,677,332 participants** — JPMorgan, CVS, Cisco, Eli Lilly, Broadcom, Stanford
+and Genentech among them. And because the prior-year rescue also calls
+`analyzePdf`, it is the same bug that killed the **31 stored lineups** behind
+Lowe's (295,951 participants) and Trane: the rescue threw, `catch {}` set
+`fbFailed`, and the entries were already gone.
+
+**The fix** is `if (!parsed || !parsed.found || !Array.isArray(parsed.funds))
+return false;`, guarding the SHAPE rather than the caller, so every future
+caller is safe too.
+
+**Verified on the eight filings that were failing**, re-run through the real
+`fetch-4i`: `failures this shard: none`, and five now publish — JPMorgan **80
+rows**, CVS **80**, Stanford **65**, Broadcom **33**, Anthem 6. Cisco and Lilly
+correctly stay `band-lo`; Genentech correctly stays the known unlinked-trust
+pointer. The OCR that v118 was written to enable now actually runs for this
+population, which is why the recoveries are large.
+
+**How three wrong diagnoses happened, because that is the lesson.** I proposed
+and discarded, in order: the shard time budget (refuted — 84 minutes against a
+320-minute limit); disk exhaustion (refuted by the log tail); transient S3 load
+(refuted by 100.00% identical failure sets across two runs); and a missing
+matrix shard (refuted by prep's own `shards=13`). Every one of those was a
+theory about infrastructure, and the evidence for each was an absence.
+
+What finally worked was not a better theory. It was **making the program say
+what happened**: splitting the error code, and printing the reason in the mode
+production actually runs in. The answer arrived in the first eight lines of the
+first run afterwards, naming the function and the line.
+
+The reproduction that mattered was also the cheap one — and it only became
+possible *because* the store was fresh: with 57k acks at pv 121, the work list
+WAS the failing set, so `PARSE_SHARD=0 PARSE_SHARDS=1 BATCH_4I=8` ran the real
+production path over exactly the broken population, wrote a delta, and touched
+no store. Earlier I had tested the same filings by calling `parse4i`,
+`extractPlanFeatures` and `classifyDocument` individually and concluded
+"nothing throws" — every one of those calls does succeed. **The defect was in
+the glue, and testing the parts is not testing the path.**
+
+**Preventions.**
+1. **A predicate that reads a field must accept the shape that omits it.**
+   `isConfident` now checks `found` and `Array.isArray(funds)` before touching
+   `length`.
+2. **Never let a catch-all handler name the cause.** The outer `catch` said
+   "download" for three runs about an error that was never a download.
+3. **Run the real entry point over the real failing population** before
+   theorising. Shard mode makes that a one-liner that writes nothing.

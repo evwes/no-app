@@ -287,8 +287,29 @@ that changing visibility also unpublishes GitHub Pages.
   `download()` succeeded on 8 of them, and every `analyzePdf` step ran clean on
   6 samples. The failures sit 5-13% through the first 90% of the assets-sorted
   work list and **95-100% across the last decile**, which is 93-100% $0
-  year-end assets. Mechanism still unidentified — four hypotheses (time budget,
-  disk, S3/load, missing shard) are each refuted by evidence.
+  year-end assets.
+  **MECHANISM FOUND 2026-09-10 and FIXED — one missing guard.** `parse4i`'s
+  early exits return a bare `{found:false, why}` with **no `funds` array**;
+  `isConfident` opens with `parsed.funds.length`. Harmless while callers
+  checked `parsed.found` first — but **v118 changed the OCR trigger from
+  `!parsed.found` to `!isConfident(parsed)`**, so every filing whose schedule
+  could not be located threw a TypeError out of `analyzePdf`, was caught by the
+  outer handler and filed as a download failure. Same bug killed the 31 stored
+  lineups: the prior-year rescue calls `analyzePdf` too. Fix guards the SHAPE
+  (`!parsed.found || !Array.isArray(parsed.funds)`), so future callers are safe.
+  Verified: the 8 failing specimens re-run clean and FIVE publish — JPMorgan 80
+  rows, CVS 80, Stanford 65, Broadcom 33, Anthem 6.
+  Four hypotheses (time budget, disk, S3/load, missing shard) were each refuted
+  by evidence before this; none was ever a code theory. **What worked was not a
+  better theory but making the program SAY what happened** — the answer came in
+  the first eight lines of the next run, naming the function and the line.
+  And the cheap reproduction only existed because the store was fresh: with 57k
+  acks at the current pv, the work list IS the failing set, so
+  `PARSE_SHARD=0 PARSE_SHARDS=1 BATCH_4I=8 node scripts/fetch-4i.mjs` runs the
+  real production path over exactly the broken population and writes only a
+  delta. **Testing the parts is not testing the path** — `parse4i`,
+  `extractPlanFeatures` and `classifyDocument` each succeed on these filings;
+  the defect was in the glue.
   **The shipped defect this exposed:** `gap-census`/`gap-list` rendered
   `e:"download"` to readers as *"the public copy has been withdrawn from the
   EFAST2 bucket (403)"* — false for 20 of 20 probed. One code carried two
