@@ -7746,3 +7746,56 @@ by running them.
 whether the PRODUCER can make it unrepresentable. Fixing `isConfident` protects
 one call site; guaranteeing the shape protects every call site that does not
 exist yet.
+
+---
+
+## 2026-09-10 — the mirror gate now checks the DATA, not just the git history
+
+`scripts/mirror.sh` already refused the two git hazards — main carrying commits
+the branch lacks, and local disagreeing with origin. Neither looks at the data,
+and the data is what the site serves. Twice this week a store sat ready to
+mirror that would have made the live site worse, and both times the only thing
+between it and main was me reading numbers by hand:
+
+- **#244** would have removed **31 real fund menus** — $18.1B, 340,447
+  participants, Lowe's at 295,951 people — while its coverage line went *up*.
+  The net was positive. A net is the wrong test when one loss is a plan with
+  nearly 300,000 people in it.
+- **#239** was a half-finished store (44,466 acks at one parser version beside
+  24,237 at another) and looked entirely healthy in every aggregate.
+
+"Check before mirroring" was already the documented rule in both cases. The
+rule was not the problem; enforcement by human attention was — the same control
+that failed on 2026-09-02 and force-pushed over a data commit.
+
+**`scripts/mirror-gate.mjs`** runs inside `mirror.sh`, before the push, and
+refuses on either of:
+
+1. **Partial store** — the dominant parser version covers < 97% of acks.
+2. **Lineup loss** — main holds a confident lineup the branch does not. It
+   names each one with the row count main holds, because a lost 30-fund menu
+   and a lost 3-row fragment are different events and the operator has to see
+   which it is.
+
+It prints the numbers even when it allows, so a permitted mirror still leaves a
+record of what it was permitted on.
+
+**Both controls run, in both directions.** Against the current branch store it
+refuses twice over (83.4% pv share; 31 lineups lost, top entries at 44, 41, 40
+and 38 rows, every one from a prior-year filing). Against main's own store it
+allows: 99.9%, 0 lost, exit 0.
+
+**A design flaw found while testing it, worth more than the feature.** The
+first wiring passed `mirror.sh`'s existing `--force` straight through to the
+gate. That would mean forcing past a routine scheduled-run commit — the common,
+almost-clerical case, done to clear a data-bot commit — would *silently* switch
+off the check that exists to stop a 295,951-participant menu disappearing. The
+flags now override different judgements and are separate: `--force` for "I have
+reconciled the git history", `--force-data` for "I have read the filings and
+these menus deserve to disappear". Verified end-to-end: `mirror.sh --force`
+clears the git check, is still refused by the data gate, and `origin/main` is
+byte-identical before and after.
+
+**The prevention:** when adding a second safety check behind an existing
+override, ask what that override was actually granting. One flag guarding two
+unrelated judgements is a bypass wearing the costume of a control.

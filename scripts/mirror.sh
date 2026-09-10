@@ -17,10 +17,32 @@
 # So the check is no longer advisory. This script exits non-zero and refuses
 # to push when main is ahead, and it prints what would be destroyed.
 #
-# Usage: scripts/mirror.sh [--force]
-#   --force  proceed even when main is ahead. Use ONLY after rebasing those
-#            commits into the branch or confirming they carry nothing.
+# Usage: scripts/mirror.sh [--force] [--force-data]
+#   --force       proceed even when main is ahead. Use ONLY after rebasing
+#                 those commits into the branch or confirming they carry
+#                 nothing.
+#   --force-data  proceed even when scripts/mirror-gate.mjs refuses the DATA
+#                 (partial store, or a confident lineup that main has and the
+#                 branch does not). Use ONLY after sampling the losses against
+#                 their filings and finding the withdrawal correct.
+#
+# THE TWO FLAGS ARE DELIBERATELY SEPARATE. They override different judgements:
+# one is "I have reconciled the git history", the other is "I have read the
+# filings and these menus deserve to disappear". A single flag covering both
+# would mean that forcing past a routine scheduled-run commit — the common,
+# almost-clerical case — would silently switch off the check that exists to
+# stop a 295,951-participant fund menu vanishing from the live site.
 set -uo pipefail
+
+FORCE_GIT=""
+FORCE_DATA=""
+for a in "$@"; do
+  case "$a" in
+    --force) FORCE_GIT=1 ;;
+    --force-data) FORCE_DATA=1 ;;
+    *) echo "mirror.sh: unknown option '$a'"; exit 2 ;;
+  esac
+done
 
 BRANCH="claude/wampo-401k-live-nx1t4o"
 cd "$(git rev-parse --show-toplevel)" || exit 1
@@ -57,9 +79,21 @@ if [ -n "$AHEAD" ]; then
   echo "    git fetch origin main && git rebase origin/main"
   echo "  then re-run this script. Use --force only after confirming those"
   echo "  commits carry nothing the branch lacks (compare plans-all acks)."
-  [ "${1:-}" = "--force" ] || exit 1
+  [ -n "$FORCE_GIT" ] || exit 1
   echo "  --force given: proceeding anyway."
 fi
+
+# The two checks above are about GIT. Neither looks at the data, and the data
+# is what the site serves. #244 was ready to mirror having lost 31 real fund
+# menus (Lowe's, 295,951 participants) while its coverage line rose; #239 was
+# ready to mirror as a half-finished store. Both were caught by reading numbers
+# by hand, which is the control that failed on 2026-09-02. So the data check is
+# a script too, and it runs here, before the push.
+node scripts/mirror-gate.mjs ${FORCE_DATA:+--force} || {
+  echo
+  echo "  Refused by scripts/mirror-gate.mjs (above). Nothing was pushed."
+  exit 1
+}
 
 BEFORE=$(git rev-parse --short origin/main)
 git push --force-with-lease=main origin "$BRANCH:main" || { echo "push failed"; exit 1; }
