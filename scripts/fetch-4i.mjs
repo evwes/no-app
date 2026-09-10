@@ -465,7 +465,26 @@ async function analyzePdf(ack, plan, tag) {
   // stored entries qualify; only the scanned subset actually OCRs)
   const notesMissing = (f) => !f || !["match", "matchText", "vesting", "vestingText"].some((k) => k in f);
   const imgPages = hasOcrTools && !(parsed.found && isConfident(parsed)) ? findImageTablePages(text, dest) : [];
-  if ((!parsed.found || notesMissing(features) || imgPages.length) && hasOcrTools) {
+  /* v118: the trigger, not just the adoption. v117 widened which combined
+   * parses may be ADOPTED, and Meta Platforms still published nothing —
+   * because this outer condition never let OCR run for it at all. Its text
+   * parse "found" a junk cipher row (so `!parsed.found` is false), its
+   * readable pages yielded features (so `notesMissing` is false), and it has
+   * no image-table pages. All three false, block skipped, $22.4B and 84,993
+   * participants left blank.
+   *
+   * NOTE the inference that hid this: the stored status showed `ov: 8` and
+   * that was read as "OCR ran". It is not — `ov` is written unconditionally
+   * as the CURRENT OCR_VERSION, whether or not a page was ever rasterised.
+   * The rule the project already has ("instrument before believing a cause")
+   * would have caught it; reading the gate would have taken one minute.
+   *
+   * A NON-CONFIDENT text parse is now enough to try OCR. The expensive work
+   * is still gated on `bad.length >= 3` below, and `findBadPages` is a regex
+   * pass over text already in memory, so the added cost falls only on filings
+   * that genuinely have unreadable pages — and the OCR text is cached, so it
+   * is a one-run cost. */
+  if ((!isConfident(parsed) || notesMissing(features) || imgPages.length) && hasOcrTools) {
     const bad = [...new Set([...findBadPages(text), ...imgPages])].sort((a, b) => a - b);
     // image-table pages relax the >=3 minimum: Compass has exactly two such
     // pages (duplicate copies of the audit) and zero conventionally-bad ones

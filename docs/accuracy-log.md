@@ -7241,3 +7241,57 @@ statement rows and publishes nothing, as now.
 **What the split is worth on its own:** the bucket's largest plan by both
 dollars and participants is NOT ours, and would have been the first one a
 size-ranked reading opened. Opening all eleven cost one download loop.
+
+## 2026-09-10 — run #242's verdict, and the v117 fix that did NOT reach Meta
+
+**The verdict first: v117 delivered +160 confident, 0 lost** — $4.9B and
+66,108 participants — against a projection of ~39. `lineups` 59,433 → 59,584,
+HIGH unchanged at 4, match/vesting flat. The gains come from every diagnosis
+bucket at once (band-hi, stmt, few, trust, band-lo, narrow), which is what a
+fix to the OCR ADOPTION gate should look like: it is not a bucket fix, it is a
+fix to what happens after any bucket's text parse comes back weak.
+
+**Two process facts that mattered more than the number.**
+
+1. **Main finished the parse before the branch did, and the branch would have
+   regressed it.** Main was mirrored at the v117 commit, so its scheduled
+   hourly runs parse at v117 too — and they completed the store (68,704 acks
+   at pv=117, confident 59,894) while run #242 was still grinding through the
+   44,466 stale acks on the dev branch (confident 59,764). Mirroring the
+   branch over main at that moment would have **thrown away 130 lineups**.
+   Comparing the pv distributions of BOTH refs before mirroring is what caught
+   it; the fix was to merge main's complete data into the branch (`-X theirs`
+   on data, branch keeps its newer code and docs), verify, then mirror.
+   **New standing check: read the pv distribution on `origin/main` as well as
+   on the branch before every mirror. "Is the branch complete?" is the wrong
+   question; "is the branch at least as complete as main?" is the right one.**
+2. **Run #242 was cancelled deliberately once it was redundant**, and this
+   time `conclusion` and the pv distribution were checked afterwards rather
+   than a status field read seconds later.
+
+**Meta Platforms did NOT recover, and the reason is an inference I made
+instead of a measurement.** Its status at pv=117 is unchanged: `c:0, dx:few,
+rw:1, rt:0`. v117 widened which combined text+OCR parses may be ADOPTED — but
+for Meta the OCR block never runs at all. The outer trigger is
+
+    if ((!parsed.found || notesMissing(features) || imgPages.length) && hasOcrTools)
+
+and Meta fails all three: its cipher text "found" a junk row, its readable
+pages yield features, and it has no image-table pages.
+
+**I asserted OCR had run because the stored status showed `ov: 8`.** It does
+not mean that. `ov` is written unconditionally as the current OCR_VERSION,
+next to `pv`, whether or not a single page was ever rasterised. Reading the
+gate would have taken a minute; I read a field and inferred. That is exactly
+the failure the standing rule names — *instrument before believing a cause* —
+and it cost a version.
+
+**v118** makes a NON-CONFIDENT text parse enough to try OCR, not merely a
+failed one. The expensive work stays gated on `bad.length >= 3`, and
+`findBadPages` is a regex pass over text already in memory, so the added cost
+falls only on filings with genuinely unreadable pages — and the OCR text is
+cached, so it is a one-run cost. The yield measurement already exists and is
+exactly this population: a random 30-filing draw from the 1,169 live
+non-confident plans whose text parse found rows adopted **1** under the ≥7-row
+menu-shape floor, so ~39 plans, plus Meta's $22.4B / 84,993 participants.
+Gate green, corpus diff zero.
