@@ -10,6 +10,7 @@
  * EIN-PN (stable forever, no orphans when a sponsor renames). */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { matchQuoteOk } from "./lib-quote.mjs";
+import { coverageBand } from "./lib-disclose.mjs";
 
 const BASE = "https://evwes.github.io/no-app"; // becomes the custom domain when DNS lands
 const TOP_N = 5000;
@@ -114,6 +115,11 @@ for (const r of d.plans.slice(0, TOP_N)) {
   const adminRaw = g(r, "adminExpenses") || 0;
   const planYear = g(r, "planYear");
   const funds = entry && entry.confident && entry.funds ? entry.funds.slice(0, 12) : null;
+  /* Coverage is judged on the FILED lineup, not the twelve rows shown — the
+   * claim being qualified is what the plan's schedule itemises, and the
+   * twelve-row cap is disclosed separately below the table. */
+  const lineupTotal = funds ? entry.funds.reduce((s, f) => s + (f.value || 0), 0) : 0;
+  const cov = funds ? coverageBand(lineupTotal, assets, !!lineupVia) : null;
   const planType = /2L|2M/.test(g(r, "codes") || "") ? "403(b)" : "401(k)";
 
   /* Only a sentence that actually states the match may appear under the match
@@ -185,6 +191,9 @@ ${matchQuote ? `<h2>Match formula, as filed</h2><blockquote>${esc(matchQuote)}</
   : ff.match ? "" : `<h2>Match formula, as filed</h2><p class="muted">The audited notes attached to this filing state no match formula. Check the plan's summary plan description.</p>`}
 ${ff.vestingText ? `<h2>Vesting, as filed</h2><blockquote>${esc(ff.vestingText)}</blockquote>` : ""}
 ${funds ? `<h2>Fund lineup${lineupVia ? ` (via ${esc(lineupVia)})` : ""} — top holdings</h2>
+${cov ? `<p class="muted">${cov.kind === "under"
+  ? `<strong>This lineup is not all of the plan.</strong> Its schedule of assets itemises ${usdB(lineupTotal)} across ${entry.funds.length} holdings, about ${cov.pct.toFixed(0)}% of the ${usdB(assets)} the plan reports on its Schedule H. The rest is money the filing accounts for that the schedule does not itemise.`
+  : `<strong>These holdings exceed the plan's reported assets.</strong> They total ${usdB(lineupTotal)} against ${usdB(assets)} reported on Schedule H — about ${cov.pct.toFixed(0)}%. Treat the table as unreconciled.`}</p>` : ""}
 <table><tr><th>Fund</th><th class="num">Value</th></tr>${fundRows}</table>
 ${entry.funds.length > 12 ? `<p class="muted">${entry.funds.length - 12} more holdings in the interactive report.</p>` : ""}` : ""}
 ${adminRaw > 0 || peers ? `<h2>Plan fees</h2>

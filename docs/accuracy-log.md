@@ -8110,3 +8110,61 @@ in the record, that is a defect in the record, and it must be fixed before the
 next diagnosis, not after. (3) `mirror-gate.mjs` is what caught this: it refused
 three separate times while every count-based check said the store was better
 than main. A net improvement is not a licence to drop a menu for 295,951 people.
+
+---
+
+## 2026-09-10 — 533 static pages showed a fund table that was not the plan, with nothing saying so
+
+**What was wrong.** A plan's schedule of assets frequently itemises less than
+the plan holds — the rest sits in a master trust, a pooled account, a general
+account, or simply is not broken out. `app.js` has disclosed this since
+2026-08-24: a table covering under 95% (or over 105%) of Schedule H assets gets
+a band note — *"This table is not all of the plan."* `build-seo-pages.mjs`
+printed `<h2>Fund lineup — top holdings</h2>` and said nothing at all.
+
+Measured across the 5,000 published static pages: **533 of them showed a table
+the interactive report would have caveated**, covering **12,736,363
+participants** — and they are the largest employers in the country.
+
+| plan | itemised | of Schedule H | |
+|---|---|---|---|
+| Walmart | $47.1B | $50.8B | 93% |
+| Amazon | $31.5B | $34.6B | 91% |
+| Boeing | $57.7B | $73.9B | **78%** |
+| JPMorgan Chase | $34.9B | $52.9B | **66%** |
+
+JPMorgan's page listed $34.91B of holdings for a $52.91B plan with nothing to
+say that $18 billion was missing from it.
+
+**THIS IS THE THIRD TIME IN ONE DAY**, in the same file, that a rule was found
+living in `app.js` and absent from `build-seo-pages.mjs`: the "withdrawn from
+the EFAST2 bucket" wording, the match-quote guard, and now this. The pattern is
+the finding. **The static pages are not a lesser surface** — they are the
+crawlable ones, the growth engine, and the copy a search engine shows. A caveat
+the interactive report considers necessary is necessary there too.
+
+**The change.** `scripts/lib-disclose.mjs` holds `coverageBand()` as the
+canonical rule with a boundary self-test; the generator imports it; `app.js`'s
+inline arithmetic was replaced by a named twin that the smoke test runs against
+the module's own cases and fails on divergence. Negative control confirmed:
+moving the app.js threshold from 95 to 90 fails the smoke test.
+
+Two details that matter and were easy to get wrong:
+- **Coverage is judged on the FILED lineup, not the twelve rows the page
+  shows.** The claim being qualified is what the plan's schedule itemises; the
+  twelve-row cap is a separate disclosure already present below the table.
+  Wording says "itemises … across N holdings" rather than app.js's "the
+  holdings below", because on a truncated page "below" would be false.
+- **Master-trust lineups are excluded**, exactly as `app.js` excludes them. A
+  trust's holdings are a different pool from one member plan's assets, so the
+  ratio is meaningless and a note built on it would be false. Verified: 0 of
+  the `via <trust>` pages carry the caveat.
+
+Regenerated against real data: exactly **533** pages now carry it, matching the
+measurement.
+
+**Prevention.** (1) When a display rule is added to one surface, it is not done
+until every surface that renders the same field has it — `app.js` and
+`build-seo-pages.mjs` are the standing pair, and this is now three for three.
+(2) A rule that must exist twice gets a canonical module plus a cross-surface
+test; inline arithmetic in two places is how the first three happened.

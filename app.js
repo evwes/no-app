@@ -35,6 +35,20 @@
   }
   window.__wampoMatchQuoteOk = matchQuoteOk;   // read by the smoke test only
 
+  /* Coverage band — canonical copy in scripts/lib-disclose.mjs, which carries
+   * the measurements. Same drift risk as the quote guard, same protection:
+   * the smoke test runs this copy against the module's own boundary cases.
+   * The static pages went without this note on 533 of 5,000 pages until
+   * 2026-09-10, JPMorgan Chase's among them at 66% of the plan. */
+  function coverageBand(total, planAssets, fromTrust = false) {
+    if (fromTrust) return null;
+    if (!total || !planAssets || total <= 0 || planAssets <= 0) return null;
+    const pct = (total / planAssets) * 100;
+    if (pct >= 95 && pct <= 105) return null;
+    return { kind: pct < 95 ? "under" : "over", pct, severe: pct < 50 };
+  }
+  window.__wampoCoverageBand = coverageBand;   // read by the smoke test only
+
   const state = {
     deepLinkMiss: null,   // a #plan= link that matched nothing, surfaced instead of ignored
     query: "",
@@ -1375,9 +1389,9 @@
     ${Math.round(classShare * 100)}% of the value below sits in rows like
     ${classRows.slice(0, 2).map((f) => `\u201c${esc(f.name)}\u201d`).join(" and ")} \u2014 categories, not choices a participant can pick.
     The plan's actual fund lineup is not public in this filing; the schedule of assets its auditor attached goes no deeper.</p>` : "";
-    const covPct = tab === "menu" && !lu.fromTrust && planAssets && total
-      ? (total / planAssets) * 100 : null;
-    const coverage = covPct == null || (covPct >= 95 && covPct <= 105) ? "" : `
+    const covBand = tab === "menu" ? coverageBand(total, planAssets, lu.fromTrust) : null;
+    const covPct = covBand ? covBand.pct : null;
+    const coverage = covBand == null ? "" : `
     <p class="max-benefit">${covPct < 95
       ? `<strong>This table is ${covPct < 50 ? "a small part of" : "not all of"} the plan.</strong> The holdings below total ${money(total / 1e6)}, about ${covPct.toFixed(0)}% of the ${money(planAssets / 1e6)} this plan reports on its Schedule H. The rest is money the filing accounts for that its schedule of assets does not itemise here.`
       : `<strong>These holdings exceed the plan's reported assets.</strong> They total ${money(total / 1e6)} against ${money(planAssets / 1e6)} reported on Schedule H — about ${covPct.toFixed(0)}%. Treat the table as unreconciled.`}</p>`;

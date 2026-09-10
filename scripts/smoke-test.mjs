@@ -82,6 +82,24 @@ try {
     fail(`match-quote guard in app.js disagrees with docs/quote-guard-cases.json on ${drift.length} of ${cases.length} filings`);
   }
 
+  /* Same drift protection for the coverage band: scripts/lib-disclose.mjs is
+   * canonical, app.js carries a twin because it is a plain browser script.
+   * Run the BROWSER copy against the module's own boundary cases. */
+  const { coverageBand } = await import("./lib-disclose.mjs");
+  const covCases = [[95, 100, false], [100, 100, false], [949, 1000, false], [950, 1000, false],
+    [1050, 1000, false], [1051, 1000, false], [3491, 5291, false], [400, 1000, false],
+    [1000, 1000, true], [0, 1000, false], [1000, 0, false]];
+  const covGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoCoverageBand !== "function") return null;
+    return cs.map(([t, a, tr]) => { const r = window.__wampoCoverageBand(t, a, tr); return r ? `${r.kind}:${r.severe}` : null; });
+  }, covCases);
+  if (!covGot) fail("app.js no longer exposes __wampoCoverageBand — the coverage band cannot be cross-checked");
+  const covDrift = covCases.filter(([t, a, tr], i) => {
+    const r = coverageBand(t, a, tr);
+    return (r ? `${r.kind}:${r.severe}` : null) !== covGot[i];
+  });
+  if (covDrift.length) fail(`coverage band in app.js disagrees with scripts/lib-disclose.mjs on ${covDrift.length} of ${covCases.length} cases`);
+
   await browser.close();
   console.log("SMOKE OK — full-form, master-trust, and short-form pages all render honestly");
 } finally {
