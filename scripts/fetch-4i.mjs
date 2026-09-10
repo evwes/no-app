@@ -802,8 +802,27 @@ for (const plan of work) {
   // a match formula can change between plan years. keptFeatures are the stored
   // ones from this plan's own newest filing — newer than the fallback's, so
   // they win and carry no prior-year label.
+  /* featFb (the prior-year PLAN YEAR the notes came from) and featFbAck (the
+   * prior-year ACK they came from) travel together and are set together.
+   *
+   * They did not always. Before v119 the only way to get `featFb` was the
+   * catch-path rescue, which also set `fbUsed`, so the record call downstream
+   * could read `fbUsed.a` for the ack. v119 added a SECOND way — the prior
+   * year supplying NOTES while the lineup still comes from the newest filing —
+   * and set `featFb` without `fbUsed`. Everything downstream that reached for
+   * `fbUsed.a` under an `if (featFb)` guard then dereferenced null.
+   *
+   * That is what killed runs #249, #252 and #253: all 19 shards of #253 died
+   * on `TypeError: Cannot read properties of null (reading 'a')`. It stayed
+   * hidden behind the isConfident TypeError — that one threw earlier in the
+   * same filings, so this line was never reached until it was fixed. Fixing
+   * one latent null-deref exposed the next.
+   *
+   * Same lesson as v121's shape contract, now applied to a PAIR of variables:
+   * if two fields must be set together, set them together at every site. */
   let featFb = fbNoCopy && features ? fbUsed.y : null;
-  if (keptFeatures) { features = keptFeatures; featFb = null; }
+  let featFbAck = fbNoCopy && features ? fbUsed.a : null;
+  if (keptFeatures) { features = keptFeatures; featFb = null; featFbAck = null; }
 
   // prior-year fallback: when the newest filing yields no confident lineup
   // (schedule missing from the public copy, or unreadable even via OCR),
@@ -842,7 +861,7 @@ for (const plan of work) {
           usedOcr = b.usedOcr;
           fbUsed = fb;
         }
-        if (!features && b.features) { features = b.features; featFb = fb.y; }
+        if (!features && b.features) { features = b.features; featFb = fb.y; featFbAck = fb.a; }
       }
     } catch (err) {
       /* THE 31. Run #244 and #246 each lost the same 31 stored lineups —
@@ -903,7 +922,7 @@ for (const plan of work) {
     // features rescued from a prior-year filing must say so: a match formula
     // can change between plan years, and the reader is entitled to know which
     // year's notes they are reading
-    record(plan, { confident: false, error: "no-section", funds: [], ...diagnose(parsed, false), ...(docShape ? { ds: docShape } : {}), ...(featFb ? { featFb, fbAck: fbUsed.a } : {}) }, features);
+    record(plan, { confident: false, error: "no-section", funds: [], ...diagnose(parsed, false), ...(docShape ? { ds: docShape } : {}), ...(featFb ? { featFb, ...(featFbAck ? { fbAck: featFbAck } : {}) } : {}) }, features);
     continue;
   }
   const ratio = parsed.ratio || 0;

@@ -7914,3 +7914,52 @@ the only remaining way to see it.
 One useful number falls out: 199 filings in 50 minutes is ~15s each, so 536 per
 shard is ~134 minutes — comfortably inside the 320-minute budget. **The matrix
 sizing is sound; it is not what is killing the shards.**
+
+---
+
+## 2026-09-10 — the instrumentation paid for itself in one run: `featFb` without `fbUsed`
+
+Run #253 failed with **all 19 parse shards dead**. The failure-tail change
+shipped that morning is what made the next sentence possible:
+
+```
+TypeError: Cannot read properties of null (reading 'a')
+    at scripts/fetch-4i.mjs:906
+    record(plan, { ..., ...(featFb ? { featFb, fbAck: fbUsed.a } : {}) }, features);
+```
+
+**The defect is mine, introduced in v119.** `featFb` (the prior-year plan year
+the NOTES came from) and `fbUsed` (the fallback record, holding the ack) had
+always been set together, because the only path that set `featFb` was the
+catch-path rescue which also set `fbUsed`. v119 added a second path — the prior
+year supplying notes while the lineup still comes from the newest filing — and
+set `featFb` **without** `fbUsed`. The record call downstream reads `fbUsed.a`
+under an `if (featFb)` guard, so it dereferenced null.
+
+**Why it only surfaced now.** It was hiding behind the isConfident TypeError.
+That one threw earlier in the same filings, so line 906 was never reached.
+Fixing the first latent null-deref exposed the second. Runs #249, #252 and #253
+were all this, in sequence; #244 and #246 never got far enough to hit it.
+
+**The fix** introduces `featFbAck`, set at every site that sets `featFb`, and
+the record call spreads `fbAck` only when it exists. Same lesson as v121's
+shape contract, applied to a PAIR: **if two fields must be set together, set
+them together at every site** — do not let one path establish half an
+invariant.
+
+**What actually broke the deadlock, and it was not cleverness.** Six
+hypotheses had been raised and refuted against an unreadable log. The
+instrumentation that ended it was five lines of shell: pipe node through `tee`,
+capture the exit code under `set -o pipefail`, re-print the tail on failure.
+The answer was in the log the whole time — 430,000 lines deep, where nothing
+could reach it.
+
+**One correction to my own reasoning, worth recording.** When my failure
+markers did not appear in the first log pull, I concluded "the shell never ran
+its failure handler, so the process group was killed." That was wrong, and it
+was the seventh hypothesis. The truth was duller: the tail window I could
+retrieve was ~30 lines and landed entirely inside artifact-upload chatter,
+which sits *after* the markers. Pulling one job with a 3,000-line tail spilled
+238 KB to a file, and a grep found the stack trace immediately. **Absence of
+evidence in a truncated view is not evidence of absence** — check the window
+before drawing conclusions from what is missing in it.
