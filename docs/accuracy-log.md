@@ -7963,3 +7963,87 @@ which sits *after* the markers. Pulling one job with a 3,000-line tail spilled
 238 KB to a file, and a grep found the stack trace immediately. **Absence of
 evidence in a truncated view is not evidence of absence** — check the window
 before drawing conclusions from what is missing in it.
+
+---
+
+## 2026-09-10 — "Match formula, as filed" published over sentences that were not formulas (615 of 5,000 static pages)
+
+**What was wrong.** `app.js` refuses to show a match quote that contains no
+digit, on the reasoning that a formula cannot be stated without a number. That
+rule lived inline in `app.js` and **only** there. `scripts/build-seo-pages.mjs`
+rendered `ff.matchText ? "<h2>Match formula, as filed</h2>" + quote : ""` with
+no test at all, so the static pages — the crawlable ones, the growth engine —
+published the heading over whatever sentence the extractor had stored.
+
+Measured on the live v117 store: **615 of the 5,000 generated pages** printed
+that heading with no parsed formula behind it. **269 of them (3,749,288
+participants)** carried a sentence with no number in it whatsoever:
+
+- *"They may select from among several funds in which to invest their
+  contributions, employer matching contributions and profit-sharing
+  contributions."* (Dollar Tree)
+- *"For the ARSP, some matching contributions are made in the form of cash and
+  are participant directed immediately upon allocation."* (AT&T)
+
+A further 43 pages carried vesting schedules, accounting boilerplate
+(*"Each participant's account is credited with…"*) or eligibility rules
+(*"…are not eligible for the company matching contribution."* — Bank of
+America) — all of which **also passed app.js's guard**, because they contain a
+number. So the interactive report was publishing those too.
+
+**This is the second instance of one rule living in two places in a single
+day.** The first was the "withdrawn from the EFAST2 document bucket" sentence:
+the interactive report was corrected weeks ago and the page generator kept the
+stale copy. Same file, same failure, same morning. The pattern is now the
+finding: **a rule that exists in two implementations will drift, and the
+drift is invisible because each copy looks correct on its own.**
+
+**The change.** `scripts/lib-quote.mjs` holds the canonical `matchQuoteOk`.
+`build-seo-pages.mjs` imports it; `app.js` carries a browser twin (it is a
+plain script, not a module); `docs/quote-guard-cases.json` pins sixteen
+verbatim filings with the verdict a human review gives; `lib-quote.mjs
+--selftest` checks the module and **`smoke-test.mjs` evaluates the browser
+copy in the real page against the same fixtures** and fails on disagreement.
+Negative controls both ways: the OLD rule fails 7 of the 16 fixtures, and
+deliberately corrupting one fixture makes the smoke test fail as designed.
+
+**The measurement changed the fix, and this is the part worth keeping.** The
+first version simply ported app.js's rule. Run over the whole corpus before
+shipping, it would have **deleted the evidence quote from 8,120 plans that
+have a parsed formula** — because *"The Company may elect to make discretionary
+matching contributions to the Plan"* has no number, and a discretionary match
+has no number to state. That sentence is the correct and complete evidence for
+the formula displayed above it. **The quote does two different jobs and the
+test is not the same for both**: when a formula is displayed the quote need
+only be *about the match*; when no formula is displayed the quote *is* the
+claim and must state a rate. app.js applied the strict test in both positions,
+which is why those plans render a formula with its evidence missing today.
+
+Net effect on the live store: **6,989 plans (8,337,756 participants) regain an
+evidence quote**, 403 off-subject quotes are removed from beneath a formula,
+and **1,396 plans (3,380,701 participants) stop publishing a non-formula as
+the formula**. Pages with no usable quote now say so outright rather than
+falling silent.
+
+**Calibrating the rate test took four rounds, all driven by RANDOM draws from
+the sentences the rule dropped** — never from the top of a ranked list, per the
+2026-09-09 rule. Each round found real formulas being discarded:
+- `(50%) of` — the rate and its connector are not adjacent, so an adjacency
+  test loses it. 3 of 10 sampled drops were this.
+- `equal to a 100% match on` — the connector comes *before* the rate.
+- *"up to four percent of eligible compensation"* — the percentage is spelled
+  out. This was the single largest cause of lost formulas.
+- `"$29,342 and $23,639 of employer matching contributions"` — a dollar amount
+  followed by "of" is a year's TOTAL, not a rate, and was being published as a
+  formula. Percentages take that connector; dollars need a period ("$500 per
+  year"). El Valor was the specimen.
+The final sample of ten drops contained no formula at all.
+
+**Prevention.** (1) The rule has one home and a cross-surface test that fails
+on drift. (2) When correcting a display rule, **grep for every surface that
+renders the same field** before calling it fixed — `app.js` and
+`build-seo-pages.mjs` render the same eight filed fields and are the standing
+pair. (3) A guard that suppresses output must be measured for what it
+suppresses *correctly* AND what it suppresses *wrongly*; a suppression rule
+tested only on the cases that motivated it is untested in the direction that
+costs coverage.

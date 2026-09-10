@@ -1,0 +1,49 @@
+{
+  "_": [
+    "Fixtures for the match-quote guard. Every sentence below is VERBATIM from a",
+    "real Form 5500 audit attachment in the live store; `expect` is the verdict a",
+    "human review of that filing gives. Two implementations must agree on all of",
+    "them: scripts/lib-quote.mjs (canonical) and the browser twin in app.js.",
+    "scripts/lib-quote.mjs --selftest checks the first; scripts/smoke-test.mjs",
+    "evaluates the second in the real page. The rule drifted between its two homes",
+    "once already, which is the whole reason this file exists.",
+    "hasFormula = whether an extracted formula is displayed above the quote, which",
+    "changes the question from 'is this the formula?' to 'is this about the match?'"
+  ],
+  "cases": [
+    { "why": "plain tiered formula", "hasFormula": false, "expect": true,
+      "text": "The Company makes safe-harbor matching contributions equal to 100% of deferrals of the first 3% of eligible compensation, then 50% of deferrals on the next 2% of eligible compensation." },
+    { "why": "rate and connector NOT adjacent: '(50%) of'", "hasFormula": false, "expect": true,
+      "text": "The Company makes matching contributions equal to fifty percent (50%) of eligible compensation that a participant contributes, with a maximum matching contribution of $2,400 per year." },
+    { "why": "lead-in phrasing, 'equal to a 100% match on'", "hasFormula": false, "expect": true,
+      "text": "The Company provides a safe harbor matching contribution equal to a 100% match on the participant's contributions with an elective deferral percentage less than or equal to 1%." },
+    { "why": "percentage spelled out", "hasFormula": false, "expect": true,
+      "text": "During the year ended December 31, 2024, the Plan Documents required Company safe harbor matching contributions up to four percent of eligible compensation for non-highly compensated employees." },
+    { "why": "dollar cap made a rate by a period", "hasFormula": false, "expect": true,
+      "text": "The Company makes a dollar-per-dollar matching contribution of up to a maximum of $500 per year for each participant." },
+
+    { "why": "no number at all — cannot be a formula", "hasFormula": false, "expect": false,
+      "text": "They may select from among several funds in which to invest their contributions, employer matching contributions and profit-sharing contributions." },
+    { "why": "the number belongs to 'vested', not to the match", "hasFormula": false, "expect": false,
+      "text": "The Company matching contributions vest 20% annually until the participant is 100% vested at the end of five years." },
+    { "why": "bare 'each' must not turn a vesting rate into a match rate", "hasFormula": false, "expect": false,
+      "text": "Employer matching contributions and employer profit sharing contributions, plus any earnings they generate, vest at 20% each year starting year one and are fully vested after five years." },
+    { "why": "account mechanics boilerplate", "hasFormula": false, "expect": false,
+      "text": "Each participant's account is credited with the participant's contributions, the Company's matching contributions, and the allocation of Plan earnings." },
+    { "why": "eligibility, not amount", "hasFormula": false, "expect": false,
+      "text": "Any pre-tax and/or Roth (after-tax) contributions made prior to completing 12 months of service are not eligible for the company matching contribution." },
+    { "why": "a YEAR'S TOTAL in dollars is not a rate — El Valor published this as a formula", "hasFormula": false, "expect": false,
+      "text": "There were $29,342 and $23,639 of employer matching contributions for the years ended December 31, 2024 and 2023, respectively." },
+    { "why": "one sentence used as evidence for both; leading word settles it", "hasFormula": false, "expect": false,
+      "text": "Vesting - At any time, participants are 100% vested in their contributions, the Company's matching contributions and any amounts rolled over to the Plan." },
+
+    { "why": "discretionary match states no number; it is still the right evidence", "hasFormula": true, "expect": true,
+      "text": "The Company may make a discretionary matching contribution." },
+    { "why": "same sentence cannot STAND ALONE as the formula", "hasFormula": false, "expect": false,
+      "text": "The Company may make a discretionary matching contribution." },
+    { "why": "supports a parsed discretionary formula", "hasFormula": true, "expect": true,
+      "text": "Company contributions are discretionary." },
+    { "why": "off-subject even beneath a parsed formula", "hasFormula": true, "expect": false,
+      "text": "Participants become 100% vested in employer matching contributions after six years and employer discretionary contributions after three years of service." }
+  ]
+}

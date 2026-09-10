@@ -9,6 +9,7 @@
  * "not stated in the public filings" — never a guess. Filenames are
  * EIN-PN (stable forever, no orphans when a sponsor renames). */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { matchQuoteOk } from "./lib-quote.mjs";
 
 const BASE = "https://evwes.github.io/no-app"; // becomes the custom domain when DNS lands
 const TOP_N = 5000;
@@ -115,12 +116,21 @@ for (const r of d.plans.slice(0, TOP_N)) {
   const funds = entry && entry.confident && entry.funds ? entry.funds.slice(0, 12) : null;
   const planType = /2L|2M/.test(g(r, "codes") || "") ? "403(b)" : "401(k)";
 
+  /* Only a sentence that actually states the match may appear under the match
+   * heading. Before this guard reached the generator, 615 of the 5,000 pages
+   * printed "Match formula, as filed" over whatever the extractor had stored —
+   * 269 of them over a sentence containing no number at all ("They may select
+   * from among several funds in which to invest their ... matching
+   * contributions"), and others over vesting schedules and accounting
+   * boilerplate. The rule already existed in app.js and only there. */
+  const matchQuote = matchQuoteOk(ff.matchText, !!ff.match) ? ff.matchText : null;
+
   const facts = [
     ["Plan year filed", planYear],
     ["Participants", participants.toLocaleString("en-US")],
     ["Plan assets", usdB(assets)],
     ["Recordkeeper", g(r, "recordkeeper") ? esc(g(r, "recordkeeper")) : nStat()],
-    ["Employer match", ff.match ? esc(ff.match) : ff.matchText ? "See the filed formula below" : (g(r, "shr") || "").includes("D") ? "Safe-harbor design (Schedule R)" : nStat()],
+    ["Employer match", ff.match ? esc(ff.match) : matchQuote ? "See the filed formula below" : (g(r, "shr") || "").includes("D") ? "Safe-harbor design (Schedule R)" : nStat()],
     ["Vesting", ff.vesting ? esc(ff.vesting) : nStat()],
     ["Roth option", ff.roth ? "Yes (per the filing)" : nStat()],
     ["After-tax contributions", ff.afterTax ? "Yes (per the filing)" : nStat()],
@@ -171,7 +181,8 @@ plan's ${entry.featFb} filing. A formula can change between plan years, so verif
 Participants, assets and fees are from the ${planYear} filing.</p>` : ""}
 <h2>Plan facts</h2>
 <table class="facts">${facts.map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join("")}</table>
-${ff.matchText ? `<h2>Match formula, as filed</h2><blockquote>${esc(ff.matchText)}</blockquote>` : ""}
+${matchQuote ? `<h2>Match formula, as filed</h2><blockquote>${esc(matchQuote)}</blockquote>`
+  : ff.match ? "" : `<h2>Match formula, as filed</h2><p class="muted">The audited notes attached to this filing state no match formula. Check the plan's summary plan description.</p>`}
 ${ff.vestingText ? `<h2>Vesting, as filed</h2><blockquote>${esc(ff.vestingText)}</blockquote>` : ""}
 ${funds ? `<h2>Fund lineup${lineupVia ? ` (via ${esc(lineupVia)})` : ""} — top holdings</h2>
 <table><tr><th>Fund</th><th class="num">Value</th></tr>${fundRows}</table>

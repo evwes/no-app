@@ -64,6 +64,24 @@ try {
   const t3 = await openPlan(sfPlan, "short-form");
   if (!/short[- ]form|SHORT-FORM|doesn't collect|DOL/i.test(t3)) fail("short-form: page does not explain the SF gap");
 
+  /* The match-quote guard exists twice — scripts/lib-quote.mjs for the static
+   * pages, a twin inside app.js for the interactive report — because one is a
+   * module and the other is a plain browser script. It has already drifted
+   * between two homes once, and the static pages published a false heading on
+   * 615 pages for as long as it did. Run the BROWSER copy, in the real page,
+   * against the same pinned filings the module's --selftest uses. */
+  const cases = JSON.parse(readFileSync("docs/quote-guard-cases.json", "utf8")).cases;
+  const verdicts = await page.evaluate((cs) => {
+    if (typeof window.__wampoMatchQuoteOk !== "function") return null;
+    return cs.map((c) => window.__wampoMatchQuoteOk(c.text, c.hasFormula));
+  }, cases);
+  if (!verdicts) fail("app.js no longer exposes __wampoMatchQuoteOk — the guard cannot be cross-checked");
+  const drift = cases.map((c, i) => [c, verdicts[i]]).filter(([c, got]) => got !== c.expect);
+  if (drift.length) {
+    for (const [c, got] of drift) console.error(`  app.js guard: expected ${c.expect}, got ${got} — ${c.why}`);
+    fail(`match-quote guard in app.js disagrees with docs/quote-guard-cases.json on ${drift.length} of ${cases.length} filings`);
+  }
+
   await browser.close();
   console.log("SMOKE OK — full-form, master-trust, and short-form pages all render honestly");
 } finally {
