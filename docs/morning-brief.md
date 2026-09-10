@@ -8,9 +8,11 @@ and that is still what is live. Tonight's run is **not** being mirrored: it
 would have handed back 31 real fund menus, one of them Lowe's, covering 295,951
 people.
 
-Chasing why turned up something worse and more useful: **we have been telling
-readers that thousands of filings were withdrawn from the government's system
-when they are sitting there, downloadable, right now.** That is fixed.
+Chasing why turned up something more useful: **for thousands of filings we
+recorded "the government withdrew this copy" when the copy is sitting there,
+downloadable, right now.** That wrong label drove our own triage — it is how I
+came to write a wrong cause into two documents — and a hedged version of it was
+on 31 plan pages. Both fixed.
 
 ## What is live on main
 
