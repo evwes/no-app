@@ -7901,3 +7901,16 @@ stalls, ask whether the obstacle is the defect or the *observability* of the
 defect. Six wrong theories is not bad luck; it is the predictable output of
 reasoning about a system whose testimony you cannot hear. Fix the hearing
 first — it is nearly always cheaper than the next theory.
+
+**Addendum, same day — the local non-reproduction completed.** The entry above
+cited 55 filings; the run was left going and reached **199 filings in 50
+minutes** on shard 0's exact partition (`PARSE_SHARD=0 PARSE_SHARDS=19`) before
+*my own* `timeout 3000` stopped it — `EXIT=124`, not a crash. The runner's
+shard 0 died at roughly 50. So the failure is **not reproducible outside the
+runner**, on the same code, the same partition and the same filings, for four
+times as long. Environmental, and the shipped failure-tail instrumentation is
+the only remaining way to see it.
+
+One useful number falls out: 199 filings in 50 minutes is ~15s each, so 536 per
+shard is ~134 minutes — comfortably inside the 320-minute budget. **The matrix
+sizing is sound; it is not what is killing the shards.**
