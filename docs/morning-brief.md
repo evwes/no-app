@@ -63,8 +63,8 @@ attachment is entirely a substituted-font cipher; OCR reads it perfectly and
 the schedule parses to a **21-fund menu at ratio 1.000**. v117 widened which
 OCR results may be adopted and Meta still did not move, because the OCR block
 never ran for it at all — I had asserted it did, from a status field that does
-not mean what I took it to mean. v118 fixes the trigger and v119 is queued
-behind it. Meta lands when those run clean.
+not mean what I took it to mean. v118 fixes the trigger, and it is in the run
+going now. Meta lands when that run comes back clean.
 
 ## The largest thing on the board is now open again
 
@@ -74,15 +74,8 @@ measurement of whether the NEWEST filing has notes. The prior year is a
 different question and had never been asked — the fallback only ever fired when
 the newest filing had no LINEUP. Where it has been asked, the prior year
 supplied the notes **92% of the time** (an upper bound, from a biased
-population). **v119** widens it; the run measures the real rate.
-
-## Waiting on you
-
-1. **GitHub Pages must serve `main`** (Settings → Pages) — still the blocker
-   for "live".
-2. **Custom domain DNS.**
-3. Approval for the daily accuracy Routine. The hourly self-bind cycle is
-   running and is what caught the #244 regression.
+population). **v119 widens it, and it is running now** — bundled into tonight's
+run rather than held for a later one, so the real rate gets measured tonight.
 
 ## A second thing #244 did, found overnight and now measured
 
@@ -111,10 +104,19 @@ to publish rather than errors, since some filings are withdrawn from the
 government bucket permanently and always fail. Verified both ways — it fires on
 #244's store, stays silent on the good one.
 
+## Waiting on you
+
+1. **GitHub Pages must serve `main`** (Settings → Pages) — still the blocker
+   for "live".
+2. **Custom domain DNS.**
+3. Approval for the daily accuracy Routine. The hourly self-bind cycle is
+   running and is what caught the #244 regression.
+
 ## Continuing overnight
 
 Run #246 (v120) → verdict → loss triage → **download-failure rate**, which is
 now the first question asked of it → mirror only if the store is at least as
-complete as main's, then v119 dispatches. (#246 started before the new check
+complete as main's. v119 and v120 are both already IN that run, so its verdict
+covers the features work too. (#246 started before the new check
 existed, so I run it against its output by hand.) Queued and measured but
 unbuilt: six `nohead/unread` plans under recordkeeper headings.
