@@ -2,10 +2,12 @@
 
 ## The headline
 
-**Three mirrors, +284 confident lineups, and one regression caught before it
+**Three mirrors, +284 confident lineups, and two problems caught before they
 reached the site.** Confident went 59,610 → **59,894** on main, all of it with
 **zero losses in every mirrored run**. Then run #244 lost 31 stored lineups and
-was NOT mirrored; the fix is running now.
+was NOT mirrored; the fix is running now. Looking into that turned up a second,
+quieter problem in the same run — it never read a sixth of the filings, and no
+check we had could see that.
 
 *(This replaces the 23:15Z version, which said v117 was running and Meta would
 land. v117 landed and was mirrored; Meta did not — see below.)*
@@ -82,10 +84,37 @@ population). **v119** widens it; the run measures the real rate.
 3. Approval for the daily accuracy Routine. The hourly self-bind cycle is
    running and is what caught the #244 regression.
 
+## A second thing #244 did, found overnight and now measured
+
+**Run #244 never read a sixth of the universe, and nothing noticed.** 11,495 of
+its downloads failed — 16.72% — against 63 (0.09%) in the run an hour earlier.
+Those plans correctly kept their stored lineups, so **nothing was lost**; but
+they were not re-read either, while the coverage line went up and every audit
+check passed.
+
+I had this filed as "the shards hit their time budget". They did not: all
+thirteen finished in ~84 minutes against a 320-minute budget. A second theory —
+disk exhaustion from OCR — was also wrong. The store answered it exactly once
+asked: every one of those acks carries `e: "download"`.
+
+**Whether v118 caused it is still open**, and I am not going to claim it did.
+main's 0.09% was measured an hour before #244 ran, so "an S3 incident" fits the
+evidence just as well as "the new code". Run #246 is the measurement that
+separates them.
+
+What is not open is that this was invisible. The pipeline measured whether
+published data is right and never whether a run had actually read it — the same
+blind spot that let cancelled run #239 commit a half-finished store. Both now
+raise a HIGH: `partial-store` when the dominant parser version covers under 97%
+of plans, `download-failures` when fetch failures pass 1%. Both are reasons not
+to publish rather than errors, since some filings are withdrawn from the
+government bucket permanently and always fail. Verified both ways — it fires on
+#244's store, stays silent on the good one.
+
 ## Continuing overnight
 
-Run #246 (v120) → verdict → loss triage → mirror only if the pv distribution on
-the branch is at least as complete as main's, then v119 dispatches. Queued and
-measured but unbuilt: six `nohead/unread` plans under recordkeeper headings, and
-the OCR cost of v118 — #244 hit its shard time budget and left 11,432 acks
-unparsed, so the widening needs its waste trimmed.
+Run #246 (v120) → verdict → loss triage → **download-failure rate**, which is
+now the first question asked of it → mirror only if the store is at least as
+complete as main's, then v119 dispatches. (#246 started before the new check
+existed, so I run it against its output by hand.) Queued and measured but
+unbuilt: six `nohead/unread` plans under recordkeeper headings.
