@@ -56,19 +56,29 @@ was only ever written into an end-of-run summary; and in the mode the pipeline
 actually runs in, the job exits *before* that summary prints. The reasons were
 computed and discarded on every run we have ever done.
 
-## The part that reached readers
+## Where that wrong label went — checked, and narrower than I first said
 
-That single "download" label is not just internal. Two of our tools turn it
-into a sentence for the reader: *"the public copy has been withdrawn from the
-EFAST2 bucket."* For twenty filings out of twenty I checked, that sentence was
-false — the filing is published and downloadable.
+My first version of this brief said the label "reached readers". Checking
+properly: the sentence *"the public copy has been withdrawn from the EFAST2
+bucket"* lives in two **internal** review tools, not on the plan pages anyone
+browses. They are committed to the public repo and they steered our own triage
+— which is exactly how the wrong cause got written down and repeated — but no
+visitor saw them.
 
-This is the exact mistake this project has a standing rule against: a label
-that describes **us** being shipped as though it described the **filing**.
-Genuine fetch failures keep that wording, because for them it is true.
-Everything else now says what is actually the case — *our reader failed on this
-filing; the public copy is there and this is our gap, not the filing's* — and
-all four places that were swallowing errors now record them.
+What visitors do see is a weaker cousin of it, on **31 of our 5,062 plan
+pages**: *"the filing's public copy could not be read (withdrawn from the
+EFAST2 document bucket, or filed without readable notes)"*. It hedges, so it
+was never flatly false — but it leads with the half we cannot support, and the
+evidence points the other way. It now says only what is known: the copy carries
+no readable audit notes.
+
+Worth flagging how that one survived: the same sentence exists in two places,
+the interactive report was corrected weeks ago, and the page generator kept a
+stale copy and went on publishing it.
+
+Genuine fetch failures keep the "withdrawn" wording, because for them it is
+true. Everything else now says the gap is ours, and all four places that were
+swallowing errors record them.
 
 I have not yet found the underlying mechanism, and I am not going to guess at
 it in this brief: four theories (a time limit, disk space, the file host,

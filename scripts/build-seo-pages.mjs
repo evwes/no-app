@@ -157,10 +157,18 @@ for (const r of d.plans.slice(0, TOP_N)) {
 <p class="muted">Everything below comes from the plan's own Form 5500 filing (plan year ${planYear},
 DOL EFAST2 public data). Fields the filing doesn't state are shown as not stated — never guessed.
 <a href="${deepLink}">Open the interactive report</a>.</p>
-${entry && entry.featFb ? `<p class="muted"><strong>Note:</strong> the ${planYear} filing's public copy could not be read
-(withdrawn from the EFAST2 document bucket, or filed without readable notes), so the plan-feature details below —
-match, vesting, Roth — are quoted from this plan's ${entry.featFb} filing. Participants, assets and fees are from the
-${planYear} filing.</p>` : ""}
+${/* Say only what we know. This sentence used to offer "withdrawn from the
+    EFAST2 document bucket" as the leading explanation. We do not know that,
+    and for the population where the pipeline made the same presumption a
+    random 20-ack probe fetched the filings successfully 20 times out of 20 —
+    they were published and downloadable the whole time. What IS true, and all
+    that is true, is that the newest copy yielded no readable audit notes. The
+    interactive report was corrected to this wording already; this generator
+    kept the old copy. A hedged disjunction is not a licence to lead with the
+    half we cannot support. */""}${entry && entry.featFb ? `<p class="muted"><strong>Note:</strong> the ${planYear} filing's public copy
+carries no readable audit notes, so the plan-feature details below — match, vesting, Roth — are quoted from this
+plan's ${entry.featFb} filing. A formula can change between plan years, so verify against your plan documents.
+Participants, assets and fees are from the ${planYear} filing.</p>` : ""}
 <h2>Plan facts</h2>
 <table class="facts">${facts.map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join("")}</table>
 ${ff.matchText ? `<h2>Match formula, as filed</h2><blockquote>${esc(ff.matchText)}</blockquote>` : ""}

@@ -7606,3 +7606,40 @@ what it caught. And: **a diagnosis that cannot be reproduced is not a
 diagnosis.** "Transient S3" survived two runs and two documents because nobody
 asked whether the same acks failed twice; that question took one script and
 ended it.
+
+---
+
+## 2026-09-10 — narrowing my own claim: where the false "withdrawn" wording actually appears
+
+The entry above says the `e:"download"` label "reached readers". Checked
+properly, that is **not accurate as written**, and the correction matters
+because overstating where a defect landed is the same species of error as the
+defect itself.
+
+**Where the `e:"download"` → *"the public copy has been withdrawn from the
+EFAST2 bucket (403)"* string actually lives:** `scripts/gap-list.mjs` (which
+writes `docs/review-list.md`) and `scripts/gap-census.mjs`. Both are internal
+review artefacts. They are committed to a public repo, and they drove our own
+triage — which is precisely how a wrong cause got written into `CLAUDE.md` and
+repeated across two runs — but they are **not** the plan pages anyone browses.
+`app.js` never renders that string; its one mention is a code comment.
+
+**What DOES reach readers is a different and weaker sentence.** The static SEO
+pages carry, on **31 of 5,062** pages: *"the YYYY filing's public copy could
+not be read (withdrawn from the EFAST2 document bucket, or filed without
+readable notes)"*. That is driven by `featFb` — features quoted from a prior
+year — not by `e:"download"`, and it is a hedged disjunction rather than a flat
+claim. It is still wrong to lead with the half we cannot support, and for this
+population the evidence points the other way: 20 of 20 probed filings were
+published and downloadable. Rewritten to say only what is known — *"carries no
+readable audit notes"* — plus the formula-may-change caveat.
+
+Note the shape of this one: `app.js` had **already** been corrected to that
+wording; `scripts/build-seo-pages.mjs` held a stale copy of the same sentence
+and kept publishing it. **A sentence that appears in two generators gets fixed
+in one of them.** When a disclosure is corrected, grep the repo for the old
+wording rather than the file you were looking at.
+
+**The prevention:** when reporting that a defect reached users, name the file
+that renders it and the count of pages, before saying so. "Reached readers" is
+a claim like any other and gets checked like one.
