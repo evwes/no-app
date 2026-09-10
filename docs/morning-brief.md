@@ -77,6 +77,35 @@ supplied the notes **92% of the time** (an upper bound, from a biased
 population). **v119 widens it, and it is running now** — bundled into tonight's
 run rather than held for a later one, so the real rate gets measured tonight.
 
+## v121, built tonight: five small plans that had been publishing nothing
+
+Small employers often attach the recordkeeper's own statement instead of a
+statutory schedule, and the menu sits under a house title the parser had never
+been taught. Five now publish — **$115.5M and 4,436 participants**, every value
+verbatim in its filing:
+
+| plan | people | assets | rows |
+|---|---|---|---|
+| Commercial Vehicle Group | 2,483 | $67.3M | 29 |
+| Medical Device Components | 373 | $24.9M | 26 |
+| MPB Hotel | 477 | $10.8M | 19 |
+| Atrium Consulting | 937 | $7.7M | 16 |
+| Innovative Cosmetic | 166 | $4.8M | 27 |
+
+**The interesting part is the one I did not ship.** A sixth title, "Current
+Plan Assets", was on the list because an earlier hand review of these filings
+said it belonged there. Running it showed it is not a recordkeeper title at all
+— it is a heading inside an *adviser's* pitch deck, printed in two columns with
+a chart beside the holdings. The parser read the chart: it published **"0.0
+Median Market Cap" as a $1,097,571 holding**, 46% of that plan's money, and the
+totals still came out plausible. Only the nonsense *names* gave it away. It is
+dropped, and pinned as a permanent test so it can never come back.
+
+That same hand review was also wrong the other way — it had written off
+Commercial Vehicle Group, the largest recovery in the group, as "not ours".
+Reading a filing and running the parser over it are two different measurements,
+and only the second one ships.
+
 ## A second thing #244 did, found overnight and now measured
 
 **Run #244 never read a sixth of the universe, and nothing noticed.** 11,495 of
@@ -117,6 +146,6 @@ government bucket permanently and always fail. Verified both ways — it fires o
 Run #246 (v120) → verdict → loss triage → **download-failure rate**, which is
 now the first question asked of it → mirror only if the store is at least as
 complete as main's. v119 and v120 are both already IN that run, so its verdict
-covers the features work too. (#246 started before the new check
-existed, so I run it against its output by hand.) Queued and measured but
-unbuilt: six `nohead/unread` plans under recordkeeper headings.
+covers the features work too. (#246 started before the new check existed, so I
+run it against its output by hand.) **v121 is built, gated and waiting to
+dispatch the moment #246 lands.**
