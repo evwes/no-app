@@ -363,7 +363,37 @@ let work = buildWorkList().filter((p) => {
   if (!st || (st.pv || 1) !== PARSER_VERSION || needsSma.has(p.ack)) return true;
   return st.e === "no-section" && (st.ov || 0) !== OCR_VERSION;
 });
-const ocrCandidates = work.filter((p) => (status.plans[p.ack] || {}).e === "no-section").length;
+/* MATRIX SIZING DEPENDS ON THIS NUMBER, so it has to describe what actually
+ * runs OCR today. It counted `e === "no-section"` — the v12 trigger, when OCR
+ * fired only for filings with no readable 4i section at all. v118 replaced that
+ * with "any non-confident parse, or missing notes, or an image-table page", and
+ * this line was never updated. It has been reporting ~19 while the true OCR
+ * population was in the thousands.
+ *
+ * That is what broke run #249. Its work list was the 11,435 acks the
+ * isConfident TypeError had skipped — essentially ALL of them OCR-heavy — but
+ * `ocr` came back 19, so `N2` was 1 and the matrix was sized on `work/5500`
+ * alone: THREE shards, ~3,800 OCR filings each, 10-30s apiece. That is
+ * 10-30 hours per shard against a 320-minute budget. All three ran until they
+ * died; the merge committed their partial deltas under `if: always()` and the
+ * store moved 83.4% -> 85.2%. Converging, but nine runs from done.
+ *
+ * The honest proxy from stored status is "would this ack enter the OCR block":
+ * no confident lineup, or no features (notesMissing fires OCR even on a
+ * confident parse). On a healthy full re-parse that is ~11k of 68k, giving 19
+ * shards instead of 13 — more parallelism on the thing that actually costs
+ * wall clock, which is the scarce resource here. Actions minutes are free.
+ *
+ * NOTE the second-order effect, unfixed: the OCR text cache is keyed per shard
+ * (`ocr-cache-shard{N}`), so changing the shard COUNT scatters cache locality —
+ * a filing cached by shard 5 is looked up by shard 12 next time. `restore-keys`
+ * falls back to any shard's cache, which softens it but does not solve it.
+ * #249 went from 13 shards to 3 and had no warm cache at all, which is part of
+ * why its OCR was so slow. A stable shard count would fix that properly. */
+const ocrCandidates = work.filter((p) => {
+  const st = status.plans[p.ack];
+  return !st || !st.c || !st.f;
+}).length;
 if (PARSE_SHARD != null) work = work.filter((_, i) => i % PARSE_SHARDS === PARSE_SHARD);
 console.log(`work list: ${work.length} filings to (re)parse at parser v${PARSER_VERSION}` +
   (PARSE_SHARD != null ? ` (matrix shard ${PARSE_SHARD}/${PARSE_SHARDS})` : "") + `; fetching up to ${BATCH} this run`);

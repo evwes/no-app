@@ -7799,3 +7799,60 @@ byte-identical before and after.
 **The prevention:** when adding a second safety check behind an existing
 override, ask what that override was actually granting. One flag guarding two
 unrelated judgements is a bypass wearing the costume of a control.
+
+---
+
+## 2026-09-10 — run #249 failed: the number that sizes the matrix was measuring the wrong thing
+
+The repair run for the isConfident TypeError **failed**. Three of its three
+parse shards died (77, 160 and 181 minutes in), the merge job committed their
+partial deltas under `if: always()`, and the store moved 83.4% -> 85.2% at the
+dominant parser version. Converging, but nine runs from done.
+
+**The measured defect.** `fetch-4i` prints `ocr candidates: N`, and the
+workflow's sizing step turns that into the matrix width. It counted
+`e === "no-section"` — the v12 OCR trigger, back when OCR fired only for
+filings with no readable 4i section at all. **v118 replaced that trigger with
+"any non-confident parse, or missing notes, or an image-table page" and this
+line was never updated.** So it reported 19 while the true OCR population was
+thousands.
+
+Run #249's work list was the 11,435 acks the TypeError had skipped — nearly all
+of them OCR-heavy — and `ocr` came back 19, so `N2` was 1 and the matrix was
+sized on `work/5500` alone: **three shards, ~3,800 OCR filings each, 10-30s
+apiece.** That is 10-30 hours per shard against a 320-minute budget. They were
+never going to finish.
+
+Verified against the real work list: the count goes **19 -> 7,410**, and the
+matrix from **3 shards to 13**. Lowering the OCR divisor 600 -> 400 takes it to
+**19 shards, 536 filings each**. The old divisor only ever looked adequate
+because the numerator was wrong: 600 OCR items at the 45s end is 7.5 hours,
+already past the budget.
+
+**What is NOT established, and I am not going to assert it.** Why the shards
+*failed* rather than stopping cleanly at the time budget. A clean budget stop
+prints a message and exits 0; these exited non-zero with no reachable error
+text (the MCP log tool caps its window and the runner log is 430k lines).
+A kernel OOM-kill fits the signature — `NODE_OPTIONS=--max-old-space-size=12288`
+on a 16GB runner, beside four tesseract subprocesses, with different shards
+dying at different times and partial artifacts uploaded — but *fits the
+signature* is exactly the standard that produced four wrong diagnoses this
+week. Smaller shards reduce both wall time and accumulated memory, so the
+sizing fix pushes on both, and the next run's per-shard failure tally will say
+more.
+
+**A second-order cost, recorded and unfixed.** The OCR text cache is keyed per
+shard (`ocr-cache-shard{N}`), so changing the shard COUNT scatters cache
+locality: a filing cached by shard 5 is looked up by shard 12 next time.
+`restore-keys` falls back to any shard's cache, which softens it without
+solving it. #249 went 13 shards -> 3 and had no warm cache at all, which is
+part of why its OCR was so slow — and this fix moves it to 19, scattering it
+again. A stable shard count, or a cache key that is not per-shard, is the real
+answer. Queued, not done.
+
+**The prevention:** a derived number that steers infrastructure must be
+re-derived when the thing it describes changes. `ocr candidates` was correct
+when written and silently became decorative three versions later, and nothing
+failed loudly — the matrix just quietly got too small. When a trigger condition
+is rewritten, grep for every count and threshold that was calibrated against
+the old one.

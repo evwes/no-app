@@ -70,8 +70,18 @@ jobs:
           OUT=$(BATCH_4I=0 node scripts/fetch-4i.mjs)
           WORK=$(echo "$OUT" | grep -oP 'work list: \K\d+' || echo 0)
           OCR=$(echo "$OUT" | grep -oP 'ocr candidates: \K\d+' || echo 0)
-          # OCR items cost ~20-45s vs ~0.6s for text parses — shard for both
-          N1=$(( (WORK + 5499) / 5500 )); N2=$(( (OCR + 599) / 600 ))
+          # OCR items cost ~20-45s vs ~0.6s for text parses — shard for both.
+          # Divisor lowered 600 -> 400 on 2026-09-10. At 600 an OCR-heavy shard
+          # carries 600 items; at the 45s end of that range it needs 7.5 hours
+          # against a 320-minute budget, so the old figure only ever worked
+          # because `ocr candidates` was under-reporting (it counted the v12
+          # trigger, ~19, while the real OCR population was thousands — that is
+          # what sized run #249's matrix at THREE shards for 11,435 OCR-heavy
+          # filings). With the count honest, 400 keeps a shard inside budget at
+          # the slow end. Actions minutes are free and wall clock is not, so
+          # bias toward more shards: the cost of over-sharding is nothing, the
+          # cost of under-sharding is a run that dies after three hours.
+          N1=$(( (WORK + 5499) / 5500 )); N2=$(( (OCR + 399) / 400 ))
           N=$N1; [ "$N2" -gt "$N" ] && N=$N2
           [ "$N" -lt 1 ] && N=1; [ "$N" -gt 20 ] && N=20
           echo "work=$WORK ocr=$OCR shards=$N"
