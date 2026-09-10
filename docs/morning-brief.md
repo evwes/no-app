@@ -1,18 +1,15 @@
-# Morning brief — 2026-09-10 (rewritten 05:30Z / 1:30 AM ET)
+# Morning brief — 2026-09-10 (rewritten 07:30Z / 3:30 AM ET)
 
 ## The headline
 
-**The live site gained nothing tonight, on purpose.** Three earlier mirrors
-this week took confident lineups from 59,610 to **59,894** with zero losses,
-and that is still what is live. Tonight's run is **not** being mirrored: it
-would have handed back 31 real fund menus, one of them Lowe's, covering 295,951
-people.
+**Found it: one missing line of code has been silently skipping 11,366
+filings — $548 billion and 9.7 million people — on every run since Tuesday.**
+JPMorgan, CVS, Cisco, Eli Lilly, Broadcom and Stanford are all in it. Fixed,
+verified, and the repair run is going now.
 
-Chasing why turned up something more useful: **for thousands of filings we
-recorded "the government withdrew this copy" when the copy is sitting there,
-downloadable, right now.** That wrong label drove our own triage — it is how I
-came to write a wrong cause into two documents — and a hedged version of it was
-on 31 plan pages. Both fixed.
+It is also the same bug that took Lowe's fund menu away, which is why nothing
+has been mirrored: the live site is untouched and still shows the good data
+from earlier in the week.
 
 ## What is live on main
 
@@ -20,7 +17,41 @@ on 31 plan pages. Both fixed.
 known baseline of 4. v114+v115 (+123), v116 (+1) and v117 (+160) all mirrored
 with zero losses. Nothing tonight has changed what a visitor sees.
 
-## Tonight's run: one clear win, one blocker
+## The bug, in plain terms
+
+When our reader cannot find a fund schedule in a filing, it returns "nothing
+here" — and, reasonably, no list of funds. A check we run immediately
+afterwards asks *how many funds are in that list*. Asking for the length of a
+list that was never made crashes.
+
+That was harmless for as long as we asked "did it find anything?" first. On
+Tuesday a change reordered those two questions. Since then, **every filing
+whose schedule we could not locate has crashed the reader**, been caught by a
+catch-all handler, and been filed under the one label that handler knew:
+"download failed". The filings downloaded perfectly. We just never looked at
+them again.
+
+**What it cost:** 11,366 filings skipped on each of three runs — $548.0B,
+9,677,332 participants. And because the prior-year rescue path runs through the
+same reader, it is also exactly what killed the 31 stored menus behind Lowe's
+and Trane.
+
+**The fix is one line**, and it guards the shape of the data rather than
+trusting the caller, so the next person to use that check is safe too. Verified
+by re-running the eight filings that were failing: no failures, and **five of
+the eight now publish a full menu** — JPMorgan 80 funds, CVS 80, Stanford 65,
+Broadcom 33, Anthem 6. Cisco and Lilly correctly stay withheld; Genentech
+correctly stays "held in a master trust we cannot follow".
+
+Worth saying how it was found, because it was not cleverness. I proposed four
+explanations — a time limit, disk space, the government's file host, a missing
+worker — and every one was refuted by evidence. All four were guesses about
+infrastructure. What actually worked was making the program **say** what
+happened: I split the error label and printed the reason in the mode the
+pipeline really runs in. The answer arrived in the first eight lines of the
+next run, naming the function and the line number.
+
+## Tonight's earlier run: one clear win, one blocker
 
 **The win — v119 worked.** Plans showing a match or vesting formula went
 **62,637 → 63,509 (+872)**, and prior-year rescues nearly tripled (487 →
@@ -34,29 +65,21 @@ that main still has: **$18.1B and 340,447 participants**, led by Lowe's
 confident), but a net is the wrong test when one of the losses is a plan with
 nearly 300,000 people in it. Held.
 
-## What actually happened to those 31 — and to 11,358 others
+## Two things I got wrong first, on the record
 
-I reported last night that ~11,500 filings "failed to download" and that the
-cause was open between v118's heavier load and a passing outage at the
-government's file host. **Both are wrong**, and I want to be plain that this
-was my error, repeated in two documents before it was caught.
+I reported earlier that those filings "failed to download", and that the cause
+was open between a load problem and an outage at the government's file host.
+**Both were wrong**, and the wrong version went into two documents before it
+was caught. What settled it: the failures repeated on *exactly* the same 11,495
+filings, not one difference either way — nothing transient does that — and when
+I fetched a sample, twenty of twenty came back fine.
 
-Tonight's run failed on **exactly** the same 11,495 filings as the previous
-one — the identical list, 100% overlap, not one difference either way. Nothing
-transient repeats to the digit. So I went and fetched them: **twenty out of
-twenty came back fine.** The files are there. Every stage of our reader then
-ran cleanly over them on my machine.
-
-Same story for the 31. Main gets Lowe's menu by running OCR over the plan's
-prior-year filing; re-run by hand tonight, that took **ten seconds** and
-produced the correct 31 funds. Nothing rejected it. The rescue simply never
-ran, and the code caught the error and threw it away without recording it.
-
-**Why nobody could have known.** Three things had to be wrong together: every
+**Why it stayed hidden so long.** Three things had to be wrong at once: every
 kind of failure was filed under the single label "download"; the real reason
 was only ever written into an end-of-run summary; and in the mode the pipeline
 actually runs in, the job exits *before* that summary prints. The reasons were
-computed and discarded on every run we have ever done.
+computed and thrown away on every run we have ever done. All of that now
+records and prints — which is how the real cause surfaced within minutes.
 
 ## Where that wrong label went — checked, and narrower than I first said
 
@@ -81,11 +104,6 @@ stale copy and went on publishing it.
 Genuine fetch failures keep the "withdrawn" wording, because for them it is
 true. Everything else now says the gap is ours, and all four places that were
 swallowing errors record them.
-
-I have not yet found the underlying mechanism, and I am not going to guess at
-it in this brief: four theories (a time limit, disk space, the file host,
-a missing worker) are each ruled out by evidence. The run going now is
-instrumented to say the answer outright.
 
 ## v121, also shipped tonight: five small plans that showed nothing
 
@@ -116,7 +134,8 @@ two different measurements; only the second one ships.
 
 ## Continuing
 
-Run **#248** is going now with v121 and the new instrumentation. When it lands:
-read the failure tallies it now prints, confirm the 31 come back, and mirror
-only if the store is at least as complete as main's. Nothing is mirrored until
-Lowe's has its fund menu again.
+Run **#249** is going now with the fix. It re-reads only the ~11,400 filings
+that were damaged, so it is a short run, not a full rebuild. When it lands:
+confirm the 31 menus come back, check that JPMorgan and CVS publish, and mirror
+only if the store is at least as complete as what is live. **Nothing is
+mirrored until Lowe's has its fund menu again.**
