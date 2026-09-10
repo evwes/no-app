@@ -86,13 +86,22 @@ try {
    * canonical, app.js carries a twin because it is a plain browser script.
    * Run the BROWSER copy against the module's own boundary cases. */
   const { coverageBand, frozenClaimOk } = await import("./lib-disclose.mjs");
-  const frozCases = [[true, 235700000], [true, 0], [true, undefined], [false, 0], [true, 1]];
+  const frozCases = [
+    [true, "The Plan was terminated effective December 31, 2023.", "Capital Region Medical"],
+    [true, "As amended on December 31, 2024, the Plan was frozen and all participants of the Plan became fully vested.", "Hanes Companies, Inc."],
+    [true, "As of December 31, 2024, the Hanes Retirement Plan was frozen.", "Leggett & Platt, Incorporated"],
+    [true, "The Solar Energy World 401k plan was frozen to new contributions as of January 31, 2025.", "Comcast Corporation"],
+    [true, "A participant will become 100 percent vested in the event the Company permanently discontinues contributions to the Plan.", "Honeywell International Inc"],
+    [true, "As of January 1, 2025, the Plan was frozen, and employees became eligible to participate in the Cayuga Health 401(k).", "Cayuga Medical Associates"],
+    [true, "", "Anyone"],
+    [false, "The Plan was terminated effective July 31, 2024.", "Macatawa Bank"],
+  ];
   const frozGot = await page.evaluate((cs) => {
     if (typeof window.__wampoFrozenClaimOk !== "function") return null;
-    return cs.map(([f, er]) => window.__wampoFrozenClaimOk(f, er));
+    return cs.map(([f, t, sp]) => window.__wampoFrozenClaimOk(f, t, sp));
   }, frozCases);
   if (!frozGot) fail("app.js no longer exposes __wampoFrozenClaimOk — the frozen guard cannot be cross-checked");
-  const frozDrift = frozCases.filter(([f, er], i) => frozenClaimOk(f, er) !== frozGot[i]);
+  const frozDrift = frozCases.filter(([f, t, sp], i) => frozenClaimOk(f, t, sp) !== frozGot[i]);
   if (frozDrift.length) fail(`frozen guard in app.js disagrees with scripts/lib-disclose.mjs on ${frozDrift.length} of ${frozCases.length} cases`);
 
   const covCases = [[95, 100, false], [100, 100, false], [949, 1000, false], [950, 1000, false],

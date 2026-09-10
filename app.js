@@ -49,16 +49,45 @@
   }
   window.__wampoCoverageBand = coverageBand;   // read by the smoke test only
 
-  /* Frozen contradiction — canonical copy and the measurements are in
-   * scripts/lib-disclose.mjs. 830 of the 1,378 plans carrying this flag
-   * reported employer contributions the same year; this page warned 63,466
-   * Honeywell participants that contributions had stopped, beside $235.7M of
-   * employer money in the filing the warning came from. A filed dollar figure
-   * beats a sentence matched by a regex. Suppresses only, never asserts. */
-  function frozenClaimOk(frozen, employerContributions) {
+  /* Frozen claim — canonical copy, reasoning and measurements in
+   * scripts/lib-disclose.mjs. Judge WHICH PLAN is the subject of the freeze
+   * verb: Comcast's notes say "The Solar Energy World 401k plan was frozen",
+   * Leggett & Platt's say "the Hanes Retirement Plan was frozen", while Hanes'
+   * OWN filing says "the Plan was frozen" and is kept. Conditional clauses —
+   * Honeywell's "in the event the Company ... permanently discontinues
+   * contributions" — are the ERISA boilerplate and never a statement of fact.
+   * An earlier version of this guard keyed on employer contributions instead
+   * and hid 750 genuine terminations to catch 80 false ones; a plan that
+   * terminates in June pays January to June. Suppresses only, never asserts. */
+  const FROZEN_CONDITIONAL = /\b(?:in the event|if the (?:plan|company|employer|sponsor)\b|should the (?:plan|company|employer)\b|were the plan\b|reserves the right|although it has not expressed|may (?:be |elect to )?(?:freeze|terminate))/i;
+  const FROZEN_ARTICLES = new Set(["the", "this", "a", "an", "its", "such", "and", "that", "said"]);
+  function frozenSubjectName(text, sponsorName = "") {
+    const t = String(text || "").replace(/\s+/g, " ");
+    const sponsorWords = new Set(String(sponsorName || "").toUpperCase().replace(/[^A-Z0-9 ]/g, " ")
+      .split(/\s+/).filter((w) => w.length > 3));
+    const re = /((?:[A-Za-z0-9&.'’()-]+\s+){0,5})((?:401\(?k\)?|403\(?b\)?|Retirement|Savings|Pension|Thrift)?\s*[Pp]lan)\s+(?:was|were|has been|have been|is|are)\s+(?:frozen|terminated)/g;
+    let m, best = null;
+    while ((m = re.exec(t))) {
+      const pre = m[1].trim().split(/\s+/).filter(Boolean);
+      const names = [];
+      for (let i = pre.length - 1; i >= 0; i--) {
+        const w = pre[i];
+        if (FROZEN_ARTICLES.has(w.toLowerCase())) break;
+        if (!/^[A-Z0-9]/.test(w)) break;
+        names.unshift(w);
+      }
+      const proper = names.filter((w) => /^[A-Z][a-z]|^[A-Z]{2,}/.test(w) && !sponsorWords.has(w.toUpperCase()));
+      if (proper.length) best = proper.join(" ");
+      else return null;
+    }
+    return best;
+  }
+  function frozenClaimOk(frozen, frozenText, sponsorName = "") {
     if (!frozen) return false;
-    if (typeof employerContributions === "number" && employerContributions > 0) return false;
-    return true;
+    const t = String(frozenText || "");
+    if (!t.trim()) return true;
+    if (FROZEN_CONDITIONAL.test(t)) return false;
+    return frozenSubjectName(t, sponsorName) === null;
   }
   window.__wampoFrozenClaimOk = frozenClaimOk;  // read by the smoke test only
 
@@ -930,7 +959,7 @@
         <span class="contrib-total">${total}</span>
       </div>
       ${pooledPlan ? `<p class="max-benefit"><strong>This is a multiple-employer plan.</strong> Each participating employer adopts its own terms, so any formula below is what the audited notes describe — it may not be the arrangement that applies to a particular employer's staff.</p>` : ""}
-      ${frozenClaimOk(ff.frozen, plan.flows.employerM) ? `<p class="max-benefit"><strong>⚠ Plan frozen or terminated</strong> — the filing states contributions have been discontinued; details below describe the plan as it operated.</p>${ff.frozenText ? `<blockquote class="quote">“${esc(ff.frozenText)}”</blockquote>` : ""}` : ""}
+      ${frozenClaimOk(ff.frozen, ff.frozenText, plan.sponsorName) ? `<p class="max-benefit"><strong>⚠ Plan frozen or terminated</strong> — the filing states contributions have been discontinued; details below describe the plan as it operated.</p>${ff.frozenText ? `<blockquote class="quote">“${esc(ff.frozenText)}”</blockquote>` : ""}` : ""}
       ${ff.match ? `<p class="max-benefit">Formula: <strong>${esc(ff.match)}</strong>${ff.safeHarbor === "match" ? " · safe harbor" : ""}${ff.trueUp ? " · with annual true-up" : ""}${/discretionary/i.test(ff.match) && plan.flows.employerM === 0 ? " · <strong>none made this plan year</strong>" : ""}</p>` : ""}
       ${matchQuote ? `<blockquote class="quote">“${esc(matchQuote)}”</blockquote>` : ""}
       ${!ff.match && !matchQuote ? `<p class="max-benefit">Employer match: <span class="feat-unknown">no formula stated in the audited notes</span> — check the plan's SPD.</p>` : ""}

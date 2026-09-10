@@ -8215,3 +8215,63 @@ re-discovered as new.
 diff that produced this table is a ten-line script — run it after adding any
 display rule rather than waiting to trip over the divergence. The distinction
 to apply when reading its output: **port qualifiers, not detail.**
+
+---
+
+## 2026-09-10 (later the same evening) — CORRECTION: "60% of frozen plans are false positives" was my own bad inference
+
+**What I published and why it was wrong.** Earlier this evening I measured that
+1,378 plans carry the `frozen` flag and **830 of them (60%) reported employer
+contributions in the same year**, and I treated that as proof the flag was
+false — writing it into `docs/morning-brief.md`, `CLAUDE.md` and a commit
+message, and shipping a display guard that suppressed the frozen warning
+whenever a plan reported employer money.
+
+**The inference does not hold.** A plan terminated in June contributes January
+to June and files a final-year return showing both the contributions and the
+termination. Paying and terminating are not contradictory — **that is the
+ordinary shape of a final-year filing.** The eight specimens I read really were
+false positives, but their falseness is visible in the TEXT, not in the money,
+and I generalised from eight readings to 830 plans on a correlation I never
+tested.
+
+**What the guard actually did.** Measured properly: of the 830 it hid, **750
+were genuine terminations** (637,268 participants) and 80 were false. It traded
+one wrong statement for nine suppressed true ones — a worse page, not a better
+one, for people whose plan really had ended.
+
+**What separates them is which plan is the SUBJECT of the verb.** Two shapes
+are false, both readable from the sentence:
+- **Conditional** — *"in the event the Company terminates or permanently
+  discontinues contributions"* is the boilerplate ERISA vesting clause in
+  nearly every plan document, describing nothing that happened.
+- **A different plan is the subject** — Comcast's notes say *"The Solar Energy
+  World 401k plan was frozen"*; Leggett & Platt's say *"the Hanes Retirement
+  Plan was frozen"* — while **Hanes Companies' own filing says "the Plan was
+  frozen" and is correctly kept.** That pair is the distinction working.
+
+**Tying the name to the VERB and not to the sentence is what made it accurate.**
+An intermediate version asked "does this sentence mention a named plan?" and got
+**3 of 6 sampled wrong**: *"the Plan was frozen, and the Organization's
+employees became eligible to participate in the Cayuga Health 401(k)"* names
+another plan as the DESTINATION while this plan is the thing that froze.
+Judging the subject instead: **22 of 22 sampled correct** — 12 random
+rejections all genuine false positives (ESOP, "The TDA Plan", Rieck
+Construction, MOSO, Solar Energy World, conditionals, OCR garbage) and 10
+random keeps all real freezes of the plan itself.
+
+**Result: rejects 60 (482,259 participants), keeps 1,318** — against the
+discarded guard's 830 hidden, 750 of them wrongly. Canonical in
+`lib-disclose.mjs` with eleven verbatim fixtures including the Hanes pair,
+twinned in `app.js`, cross-checked by the smoke test with a negative control.
+
+**Prevention, and it is the real lesson.** *(1)* **A correlation is not a
+cause, and eight readings do not license a claim about 830 cases.** The rule
+already on the books — RANK to choose what to read, draw RANDOMLY to estimate
+a rate — applies to defect rates, not only to fix yields, and I did not apply
+it. *(2)* When a guard SUPPRESSES output, measure what it suppresses
+**correctly and wrongly**, separately, before shipping; the count of things it
+catches says nothing about the count of things it breaks. *(3)* The same-day
+correction is cheap only because the numbers were written down; had I recorded
+"most frozen flags are wrong" with no denominator, nothing would have exposed
+it.

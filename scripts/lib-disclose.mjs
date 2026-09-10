@@ -42,28 +42,71 @@ export function coverageBand(total, planAssets, fromTrust = false) {
   return { kind: pct < 95 ? "under" : "over", pct, severe: pct < 50 };
 }
 
-/* THE FROZEN CONTRADICTION. `frozen` means "the filing states contributions
- * have been discontinued", and the report renders it as a warning banner.
- * Measured 2026-09-10 over the whole full-form universe: 1,378 plans carry the
- * flag and **830 of them (60%) reported employer contributions that same year**
- * — 1,101,268 participants and $2.46B. Honeywell's page warned 63,466 people
- * that contributions had stopped, beside $235.7M of employer money in the very
- * filing the warning was read from.
+/* THE FROZEN CLAIM. `frozen` means "the filing states contributions have been
+ * discontinued", and the report renders it as a warning banner. 1,378 plans
+ * carry it and some of those warnings are false.
  *
- * The extractor defect is real and fixed separately, but a store already
- * carries the bad flags and a re-parse takes hours. This is the cross-check
- * that does not need one: **a filing cannot both report employer contributions
- * and say they have ceased.** Where the two disagree, the money is the harder
- * fact — it is a filed dollar figure on Schedule H, not a sentence matched by
- * a regex — so the warning is withheld.
+ * A CORRECTION TO MY OWN FIRST ATTEMPT, ON THE RECORD. The first version of
+ * this guard suppressed the warning whenever the plan reported employer
+ * contributions, reasoning that a filing cannot both pay and say it has
+ * stopped. **That reasoning was wrong.** A plan terminated in June contributes
+ * January to June and files a final-year return showing both — paying and
+ * terminating are not contradictory, they are the ordinary shape of a
+ * final-year filing. Measured: that guard hid 830 plans of which **750 were
+ * genuine terminations** (637,268 participants) to catch 80 false ones. It
+ * traded one wrong statement for nine suppressed true ones.
  *
- * Deliberately NOT symmetric: $0 employer money does not confirm a freeze
- * (a plan can simply have made no discretionary contribution that year), so
- * this only ever suppresses, never asserts. */
-export function frozenClaimOk(frozen, employerContributions) {
+ * WHAT ACTUALLY SEPARATES THEM IS THE TEXT, and specifically WHICH PLAN IS THE
+ * SUBJECT of the verb. Two shapes are false:
+ *   - CONDITIONAL. "in the event the Company terminates or permanently
+ *     discontinues contributions" is the boilerplate ERISA vesting clause in
+ *     nearly every plan document, describing nothing that happened.
+ *   - A DIFFERENT PLAN IS THE SUBJECT. Comcast's notes say "The Solar Energy
+ *     World 401k plan was frozen"; Leggett & Platt's say "the Hanes Retirement
+ *     Plan was frozen" — while Hanes Companies' OWN filing says "the Plan was
+ *     frozen" and is kept, which is the distinction working.
+ *
+ * Tying the name to the VERB rather than to the sentence matters: "the Plan
+ * was frozen, and employees became eligible to participate in the Cayuga
+ * Health 401(k)" mentions another plan as the DESTINATION while this plan is
+ * what froze. Judging the sentence got 3 of 6 sampled wrong; judging the
+ * subject got 22 of 22 right.
+ *
+ * Measured: rejects 60 (482,259 participants), keeps 1,318. Sampled 12
+ * rejections and 10 keeps at random — all 22 correct. */
+const FROZEN_CONDITIONAL = /\b(?:in the event|if the (?:plan|company|employer|sponsor)\b|should the (?:plan|company|employer)\b|were the plan\b|reserves the right|although it has not expressed|may (?:be |elect to )?(?:freeze|terminate))/i;
+const FROZEN_ARTICLES = new Set(["the", "this", "a", "an", "its", "such", "and", "that", "said"]);
+
+/** The proper name qualifying the plan that froze, or null when it is "the Plan". */
+export function frozenSubjectName(text, sponsorName = "") {
+  const t = String(text || "").replace(/\s+/g, " ");
+  const sponsorWords = new Set(String(sponsorName || "").toUpperCase().replace(/[^A-Z0-9 ]/g, " ")
+    .split(/\s+/).filter((w) => w.length > 3));
+  const re = /((?:[A-Za-z0-9&.'’()-]+\s+){0,5})((?:401\(?k\)?|403\(?b\)?|Retirement|Savings|Pension|Thrift)?\s*[Pp]lan)\s+(?:was|were|has been|have been|is|are)\s+(?:frozen|terminated)/g;
+  let m, best = null;
+  while ((m = re.exec(t))) {
+    const pre = m[1].trim().split(/\s+/).filter(Boolean);
+    const names = [];
+    for (let i = pre.length - 1; i >= 0; i--) {
+      const w = pre[i];
+      if (FROZEN_ARTICLES.has(w.toLowerCase())) break;
+      if (!/^[A-Z0-9]/.test(w)) break;              // a lowercase word ends the name
+      names.unshift(w);
+    }
+    const proper = names.filter((w) => /^[A-Z][a-z]|^[A-Z]{2,}/.test(w) && !sponsorWords.has(w.toUpperCase()));
+    if (proper.length) best = proper.join(" ");
+    else return null;   // an unqualified "the Plan" anywhere: THIS plan froze
+  }
+  return best;
+}
+
+/** True when the frozen warning may be shown to a reader. Suppresses only. */
+export function frozenClaimOk(frozen, frozenText, sponsorName = "") {
   if (!frozen) return false;
-  if (typeof employerContributions === "number" && employerContributions > 0) return false;
-  return true;
+  const t = String(frozenText || "");
+  if (!t.trim()) return true;              // flag with no quote: nothing to disqualify it
+  if (FROZEN_CONDITIONAL.test(t)) return false;
+  return frozenSubjectName(t, sponsorName) === null;
 }
 
 if (process.argv[1] && process.argv[1].endsWith("lib-disclose.mjs") && process.argv.includes("--selftest")) {
@@ -94,18 +137,32 @@ if (process.argv[1] && process.argv[1].endsWith("lib-disclose.mjs") && process.a
   const mild = coverageBand(900, 1000, false);
   if (!mild || mild.severe) { bad++; console.log("FAIL 90% should NOT be flagged severe"); }
 
+  /* Every sentence below is verbatim from a real filing in the live store. */
   const froz = [
-    [true, 235700000, false, "Honeywell: flag set, $235.7M contributed — withhold"],
-    [true, 0, true, "flag set, no employer money — the claim stands"],
-    [true, undefined, true, "flag set, contributions unknown — nothing contradicts it"],
-    [true, null, true, "flag set, contributions null — nothing contradicts it"],
-    [false, 0, false, "no flag, nothing to say"],
-    [false, 100, false, "no flag, nothing to say"],
-    [true, 1, false, "even a dollar contradicts 'contributions have ceased'"],
+    [true, "The Plan was terminated effective December 31, 2023, and all assets of the Plan were fully distributed as of April 30, 2024.", "Capital Region Medical", true,
+      "unqualified 'the Plan' — this plan really was terminated"],
+    [true, "As amended on December 31, 2024, the Plan was frozen and all participants of the Plan became fully vested in their Plan accounts.", "Hanes Companies, Inc.", true,
+      "Hanes' OWN filing: kept"],
+    [true, "As of December 31, 2024, the Hanes Retirement Plan was frozen and all participants of the Hanes Retirement Plan became fully vested.", "Leggett & Platt, Incorporated", false,
+      "the SAME freeze quoted in another sponsor's filing: rejected"],
+    [true, "The Solar Energy World 401k plan was frozen to new contributions as of January 31, 2025.", "Comcast Corporation", false,
+      "a different named plan is the subject"],
+    [true, "The TDA Plan was frozen December 31, 2008 and no further contributions were made subsequent to that date.", "St. Ambrose University", false,
+      "the sponsor's OTHER plan (a tax-deferred annuity)"],
+    [true, "A participant will also become 100 percent vested in any Company contributions in the event the Company terminates or permanently discontinues contributions to the Plan.", "Honeywell International Inc", false,
+      "the boilerplate ERISA vesting clause — hypothetical"],
+    [true, "If the Plan is frozen, the assets will be retained by the Plan for distribution.", "Mms Usa Holdings, Inc.", false,
+      "explicit conditional"],
+    [true, "As of January 1, 2025, the Plan was frozen, and the Organization's employees became eligible to participate in the Cayuga Health 401(k).", "Cayuga Medical Associates", true,
+      "another plan is the DESTINATION, not the subject — judging the sentence got this wrong"],
+    [true, "Rieck Construction 401(k) Profit Sharing Plan was frozen on January 1, 2025 prior to the merger.", "Bcts Intermediate, Llc", false,
+      "acquired plan named as the subject"],
+    [true, "", "Anyone", true, "flag with no stored quote: nothing to disqualify it"],
+    [false, "The Plan was terminated effective July 31, 2024.", "Macatawa Bank", false, "no flag, nothing to say"],
   ];
-  for (const [f, er, want, why] of froz) {
-    const got = frozenClaimOk(f, er);
-    if (got !== want) { bad++; console.log(`FAIL frozen: want ${want} got ${got} — ${why}`); }
+  for (const [f, t, sp, want, why] of froz) {
+    const got = frozenClaimOk(f, t, sp);
+    if (got !== want) { bad++; console.log(`FAIL frozen: want ${want} got ${got} — ${why}\n     "${String(t).slice(0, 110)}"`); }
   }
   console.log(bad ? `\n${bad} disclosure cases FAILED` : `all ${cases.length + 2 + froz.length} disclosure cases pass`);
   process.exit(bad ? 1 : 0);
