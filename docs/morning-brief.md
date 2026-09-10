@@ -153,6 +153,47 @@ improvement to the site. What it has produced is a fixed bug, six eliminated
 explanations, and a pipeline that will tell us the answer on its next failure
 instead of a seventh guess.
 
+## Since the brief was written (11:30 AM ET)
+
+**The repair run is finally holding.** #254 carries both fixes and has been
+running 73 minutes with all nineteen workers alive. Every previous attempt lost
+workers between 13 and 44 minutes in, so it is well past the point where the
+last four died. No verdict yet, and I am not watching it — the next cycle picks
+it up.
+
+**A second false claim found and fixed, this one on the public pages.** Our
+plan pages print a heading "Match formula, as filed" above a sentence quoted
+from the audit. **615 of the 5,000 pages printed that heading with no formula
+behind it** — 269 of them (3.7 million participants) over a sentence containing
+no number at all. Dollar Tree's page quoted *"They may select from among
+several funds in which to invest their contributions, employer matching
+contributions and profit-sharing contributions."* That is not a match formula.
+Others quoted vesting schedules, accounting boilerplate, or eligibility rules.
+
+The interactive report already refused those. **The rule existed in one file
+and the page generator never got it** — which is the same failure as the
+"withdrawn from the EFAST2 bucket" wording earlier today, in the same file, on
+the same morning. So the rule now lives in one place, with sixteen real filings
+pinned as tests and a check that runs *both* copies against them and fails if
+they ever disagree.
+
+**Measuring it first changed the fix, and that is the part worth your
+attention.** Simply copying the existing rule across would have **deleted the
+supporting quote from 8,120 plans that do have a formula** — because *"The
+Company may elect to make discretionary matching contributions"* contains no
+number, for the good reason that a discretionary match has none. The quote is
+doing two different jobs and needs two different tests. Fixing that too:
+
+- **6,989 plans (8.3M participants) get their evidence quote back.**
+- **1,396 plans (3.4M participants) stop publishing a non-formula as the formula.**
+- Pages with nothing usable now say so, instead of going quiet.
+
+Calibrating it took four rounds, each one a random sample of what the rule was
+throwing away, and each one caught real formulas being lost — a percentage
+spelled out in words, a rate separated from its connector by a bracket, and a
+dollar *total* being read as a rate. Not shipped until a sample of ten drops
+contained no formula at all.
+
 ## Waiting on you
 
 1. **GitHub Pages must serve `main`** (Settings → Pages) — still the blocker
@@ -163,8 +204,11 @@ instead of a seventh guess.
 
 ## Continuing
 
-**#253** is running with the fix plus the new failure reporting. When it lands:
-confirm the 31 menus come back, check that JPMorgan and CVS publish, and mirror
-only if the store is at least as complete as what is live. **Nothing is
+**#254** is the run carrying both fixes (#253 died to the second one). When it
+lands: confirm the 31 menus come back, check that JPMorgan and CVS publish, and
+mirror only if the store is at least as complete as what is live. **Nothing is
 mirrored until Lowe's has its fund menu again** — and as of this morning that
 is enforced by a script, not by me remembering.
+
+The quote-guard fix above is committed but **not live**: it reaches visitors
+only when the next mirror happens, which is gated on that same run.
