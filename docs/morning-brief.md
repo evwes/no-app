@@ -194,6 +194,52 @@ spelled out in words, a rate separated from its connector by a bracket, and a
 dollar *total* being read as a rate. Not shipped until a sample of ten drops
 contained no formula at all.
 
+## Afternoon (1:10 PM ET) — the repair worked, and the last blocker is diagnosed
+
+**#254 was the first clean full re-parse in three days.** Everything that had
+been broken since Tuesday is fixed: the store is complete (99.9%), downloads
+failed **64 times instead of 11,495**, no reader failures at all, and the audit
+is back to its known baseline. Confident fund menus stand at 60,009 against
+59,894 live.
+
+**v119 paid off.** Plans whose contribution details had to be read from last
+year's filing went **487 → 1,610**. That is the class I reopened yesterday:
+people whose plan page could not say what their employer puts in.
+
+**Still not published, for one reason: 31 fund menus.** Lowe's is the one that
+matters — 295,951 people, $8.6 billion. The mirror script refuses, correctly.
+
+**That is now diagnosed and fixed, and the diagnosis is worth one paragraph.**
+Handed the filing the live site uses, **all 31 parse perfectly** under the same
+code. So nothing was wrong with the filings or the reader. The cause: when a
+plan's newest filing can't be read, we look up its previous one — and we were
+only ever offering **one** previous filing. If that particular one is
+unreadable, the plan gets nothing, even when an older filing sitting right
+there works fine. We now offer up to three and stop at the first that works.
+**Run #256 is carrying that fix.**
+
+Two confident explanations died on the way, both to counts rather than
+argument: that yesterday's change had broken the fallback (it hadn't — 1,061
+plans still use it and 157 were *upgraded*), and that the data window had
+rolled past 2023 (it hasn't).
+
+**Two silent paths now speak.** A rescue that never runs and one that runs but
+finds nothing usable left *identical* traces in our records — which is exactly
+why this took a cycle to find. Both now say which happened.
+
+**Also found and fixed, on the public pages:** 615 of our 5,000 plan pages
+printed the heading *"Match formula, as filed"* over a sentence that wasn't a
+match formula — 269 of them over a sentence with no number in it at all. Fixed,
+with the rule now in one place and a test that fails if the two copies ever
+disagree. Measuring before shipping mattered: the obvious fix would have
+stripped the supporting quote from **8,120 plans that do have a formula**.
+
+**One thing found and deliberately left:** two small plans (1,005 people) now
+show a fund menu covering only about half their money. Nothing false — the
+funds are real — but our checks can't currently see that kind of quiet
+degradation. Written down with both examples and queued, not patched today,
+because the file it belongs in is the one deciding whether #256 lands safely.
+
 ## Waiting on you
 
 1. **GitHub Pages must serve `main`** (Settings → Pages) — still the blocker

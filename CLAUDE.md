@@ -442,6 +442,26 @@ costs a night.
   ("wampo daily accuracy cycle" Routine) reviews runs, checks the trail,
   does one hands-on filing review from the worst class, ships clear-cut
   fixes, and mirrors main. Known-baseline HIGHs: 4 contrib-limit outliers.
+- **GAP IN THE MACHINERY, MEASURED 2026-09-10 — the triage sees LOSSES, not
+  SWAPS, and a swap can halve a plan's coverage silently.** #254 moved 157
+  plans off a prior-year lineup onto their own newest filing. Every count-based
+  check calls that an upgrade and none of them looks at what the new parse is
+  worth: `confident` stays 1, the total does not move, so the loss triage never
+  sees it. Measured across all 157: **94 held or grew their row count**, 10
+  dropped below 60% of it — and those 10 are FINE, because their ratio moved
+  TOWARD 1.0 (Extron 55 rows @ 0.81 → 7 @ 0.97, Northeast Georgia 19 @ 1.19 →
+  7 @ 1.00), which is the signature of the prior year having carried extra
+  rows rather than of lost detail. **The real warning sign is the ratio moving
+  AWAY from 1.0, and exactly 2 did**: Prevost Car 15 rows @ 0.90 → 15 @ **0.46**
+  (`20251010094229NAL0017569266001`) and Pediatrics West 33 @ 0.95 → 37 @
+  **0.51** (`20251008185545NAL0003501731001`). Nothing is fabricated — the rows
+  are real — but each now publishes a menu accounting for about half the plan's
+  money, and both clear `isConfident` only because the floor is 0.45.
+  Small (1,005 participants between them) and NOT yet fixed. **Queued: a
+  `source-swap-degraded` check in `merge-4i.mjs`** beside the loss triage,
+  firing when a plan leaves a prior-year lineup and its ratio moves >0.25
+  further from 1.0. Deliberately not written while #256 was in flight —
+  `merge-4i.mjs` is what decides whether a running re-parse lands.
 - **Every re-parse must be a provably better version (owner directive
   2026-08-12)**: (4) merge auto-triages confidence LOSSES — any lost
   lineup whose old parse was real-menu-shaped (n≥7, or n≥5 at ratio
