@@ -485,6 +485,27 @@ for (const [label, ack, expect] of FEATURE_SPECIMENS) {
   if (!ok) failed++;
 }
 
+/* SHAPE CONTRACT (2026-09-10). parse4i must always return a `funds` ARRAY,
+ * including from its not-found exits. This is not decoration: fetch-4i's OCR
+ * trigger calls isConfident(parsed) before checking .found, and when `funds`
+ * was absent that threw a TypeError on every filing whose schedule could not
+ * be located — 11,366 per run, $548B, 9.68M participants, misfiled as
+ * download failures for three runs, and the same throw destroyed the
+ * prior-year rescue behind Lowe's 31-fund menu.
+ *
+ * No filing needed: text that cannot contain a 4i schedule exercises exactly
+ * the exits that used to omit the field. */
+for (const [label, text] of [
+  ["empty input", ""],
+  ["prose with no schedule", "This page is ordinary prose and carries no schedule of assets at all."],
+  ["4i heading but no table", "Schedule H, line 4i — Schedule of Assets (Held at End of Year)\n\n(none reported)"],
+]) {
+  const p = parse4i(text, 1e6, "Test Sponsor", "");
+  const ok = p && Array.isArray(p.funds);
+  console.log(`GATE ${ok ? "OK  " : "FAIL"} shape contract — ${label}: found=${p && p.found} funds=${ok ? `array(${p.funds.length})` : typeof (p && p.funds)}`);
+  if (!ok) failed++;
+}
+
 if (failed) {
   console.error(`\nparser gate: ${failed} specimen(s) regressed — refusing to parse the universe.`);
   console.error("If the change is intentional, update the expectation in scripts/parser-gate.mjs in the same commit.");

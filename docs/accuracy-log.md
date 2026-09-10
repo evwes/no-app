@@ -7709,3 +7709,40 @@ the glue, and testing the parts is not testing the path.**
    "download" for three runs about an error that was never a download.
 3. **Run the real entry point over the real failing population** before
    theorising. Shard mode makes that a one-liner that writes nothing.
+
+---
+
+## 2026-09-10 — closing the class: parse4i's public return shape is now a contract, and the gate enforces it
+
+The entry above fixes the CALLER (`isConfident` now checks `found` and
+`Array.isArray(funds)` before touching `length`). That is correct and it stays.
+It also only fixes the caller that happened to break.
+
+**The class.** `parse4iPass`'s early exits return `{ found: false, why }` with
+no `funds` at all. Any future code that reaches for `.funds` before `.found` —
+a new audit, a new diagnostic, a second OCR path — gets a TypeError, not a
+falsy value. That is exactly how this defect arrived: a one-line reordering in
+v118 put `isConfident(parsed)` ahead of `parsed.found`, and it cost 11,366
+filings per run across three runs plus the 31 prior-year rescues.
+
+**The change.** `parse4i` is now a thin wrapper that normalises its own return:
+every exit carries a `funds` array, empty when nothing was found. The internal
+passes are untouched, so no parsing behaviour changes and no version bump is
+warranted — `found` still decides everything, and an empty array fails every
+length test the same way an absent one was *supposed* to.
+
+**The gate.** `parser-gate.mjs` gained three shape-contract assertions that
+need no filing at all — empty input, prose with no schedule, and a 4i heading
+over an empty table — covering both the `nohead` and `noregion` exits. They run
+before the matrix, so a regression here refuses the universe parse rather than
+shipping.
+
+**Negative control, because a check that cannot fail is decoration.** With the
+normaliser deleted, `parse4i("no schedule here at all", …).funds` is
+`undefined` and the assertion fails. With it, `array(0)`. Both states verified
+by running them.
+
+**The prevention, generalised:** when a defect is found in a consumer, ask
+whether the PRODUCER can make it unrepresentable. Fixing `isConfident` protects
+one call site; guaranteeing the shape protects every call site that does not
+exist yet.

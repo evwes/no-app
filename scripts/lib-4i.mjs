@@ -1970,7 +1970,29 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
  * and adds the statutory column caption as a region seed. When the retry also
  * finds nothing, pass 1's diagnosis is what gets recorded, so `dx` keeps
  * describing the first pass and the census stays comparable across versions. */
+/* PUBLIC RETURN SHAPE IS A CONTRACT. Every exit of this function carries a
+ * `funds` ARRAY, empty when nothing was found.
+ *
+ * The internal passes take shortcuts — `{ found: false, why: "nohead" }` with
+ * no `funds` at all — and for a long time that was fine, because every caller
+ * checked `.found` first. Then fetch-4i's OCR trigger was rewritten to call
+ * `isConfident(parsed)` before `.found`, and `parsed.funds.length` threw a
+ * TypeError on precisely the filings whose schedule could not be located:
+ * 11,366 of them per run, $548B and 9.68M participants, silently misfiled as
+ * download failures for three runs, and the same throw killed the prior-year
+ * rescue behind Lowe's 31-fund menu.
+ *
+ * Guarding the consumer (done) fixes that caller. Guarding the SHAPE here
+ * closes the class, so the next caller that reaches for `.funds` before
+ * `.found` gets an empty array instead of an exception. Cheap, and it changes
+ * nothing observable: `found` still decides, and an empty array fails every
+ * length test the same way a missing one was supposed to. */
 export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
+  const out = parse4iInner(text, assetsEOY, sponsorName, codes);
+  return Array.isArray(out.funds) ? out : { ...out, funds: [] };
+}
+
+function parse4iInner(text, assetsEOY, sponsorName = "", codes = "") {
   const first = parse4iPass(text, assetsEOY, sponsorName, codes, false);
   if (first.found) {
     /* v115: BAND-HI also gets the retry. A region whose holdings sum at or
