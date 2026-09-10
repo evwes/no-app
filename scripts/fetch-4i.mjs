@@ -877,17 +877,43 @@ for (const plan of work) {
       }
     }
   }
-  if (fb && !fbUsed && (!(parsed.found && isConfident(parsed)) || !features)) {
+  /* Try each prior filing newest-first and STOP at the first that publishes.
+   * prep now offers up to three (`alt`); older prep output has none, and a
+   * one-element list is the previous behaviour exactly. The loop breaks as
+   * soon as a candidate is confident, so a plan that already works costs one
+   * read as before and only a failing plan pays for the extra attempts. */
+  const fbCandidates = fb ? [fb, ...(Array.isArray(fb.alt) ? fb.alt : [])] : [];
+  for (const cand of fbCandidates) {
+    if (fbUsed) break;
+    if (!(!(parsed.found && isConfident(parsed)) || !features)) break;
     try {
-      const b = await analyzePdf(fb.a, plan, `${tag} fb${fb.y}`);
-      if (b.err) { fbFailed = true; if (failLogged < 60) { console.log(`${tag}: fb${fb.y} unusable — ${b.err}`); failLogged++; } }
+      const b = await analyzePdf(cand.a, plan, `${tag} fb${cand.y}`);
+      if (b.err) { fbFailed = true; if (failLogged < 60) { console.log(`${tag}: fb${cand.y} unusable — ${b.err}`); failLogged++; } }
       else {
         if (b.parsed.found && isConfident(b.parsed) && !(parsed.found && isConfident(parsed))) {
           parsed = b.parsed;
           usedOcr = b.usedOcr;
-          fbUsed = fb;
+          fbUsed = cand;
+          fbFailed = false;   // an earlier candidate's failure is moot once one works
+        } else if (!(parsed.found && isConfident(parsed))) {
+          /* THE SECOND SILENT PATH. A fallback that LOADS but parses to
+           * nothing publishable leaves exactly the same trace as one that was
+           * never attempted: no `fb`, a `dx` from the primary, and no error
+           * code anywhere. Both shapes fit all 31 of the held lineups, which
+           * is why the cause could not be named from the store alone. Say
+           * which one happened, with the numbers that decide it. */
+          const prevEntry = buckets[shardOf(plan.ack)][plan.ack];
+          if (prevEntry && prevEntry.confident && prevEntry.fb) {
+            failCounts["fb-rejected"] = (failCounts["fb-rejected"] || 0) + 1;
+            if (fbAbsentLogged < 25) {
+              console.log(`${tag}: prior-year ${cand.y} filing ${cand.a} READ but not publishable ` +
+                `(${b.parsed.funds ? b.parsed.funds.length : 0} rows, ratio ${((b.parsed.ratio || 0) * 100).toFixed(0)}%) — ` +
+                `was serving ${prevEntry.funds ? prevEntry.funds.length : 0} rows from its ${prevEntry.fb} filing`);
+              fbAbsentLogged++;
+            }
+          }
         }
-        if (!features && b.features) { features = b.features; featFb = fb.y; featFbAck = fb.a; }
+        if (!features && b.features) { features = b.features; featFb = cand.y; featFbAck = cand.a; }
       }
     } catch (err) {
       /* THE 31. Run #244 and #246 each lost the same 31 stored lineups —
@@ -905,7 +931,7 @@ for (const plan of work) {
        * these. A silent catch is how a fixable fault becomes an unfixable
        * one. */
       fbFailed = true;
-      if (failLogged < 60) { console.log(`${tag}: fb${fb.y} THREW — ${err && err.message}`); failLogged++; }
+      if (failLogged < 60) { console.log(`${tag}: fb${cand.y} THREW — ${err && err.message}`); failLogged++; }
       failCounts["fb-threw"] = (failCounts["fb-threw"] || 0) + 1;
     }
   }

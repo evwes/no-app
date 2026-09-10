@@ -712,25 +712,50 @@ console.log(`\nuniverse: ${universe.length} unique 401(k) plans with ≥${MIN_UN
 // fetch-4i tries it when the primary parse yields no confident lineup, and
 // labels the result with the fallback plan year. Artifact-only — the
 // frontend never sees this file.
+/* A LIST, newest-first — not a single pick. Run #254 came back healthy on
+ * every check and still dropped 31 prior-year lineups main was serving,
+ * Lowe's (295,951 participants, $8.6B) among them. Handed the ack main uses,
+ * ALL 31 re-parse confidently under the same v121 code on the production
+ * path: 31 of 31, zero failures. So neither the parser, the OCR nor the
+ * filings rejected them — the map simply did not offer the filing that works.
+ *
+ * This picked ONE runner-up, the next-newest full-form filing. That is fine
+ * until that particular filing is unreadable, form-only, or parses to
+ * something unpublishable — and then the plan gets nothing, even though an
+ * older filing sitting right there would have parsed. Both of those failure
+ * modes leave an identical trace in the store (no `fb`, a `dx` from the
+ * primary, no error code), which is why the cause could not be named from the
+ * data alone; fetch-4i now logs each of them separately.
+ *
+ * Capped at 3: fetch-4i stops at the first candidate that yields a confident
+ * lineup, so the cost is paid only by plans that are failing anyway. */
+const FALLBACK_DEPTH = 3;
 const fallback = {};
 {
-  const runnerUp = new Map();
+  const priors = new Map();
   for (const m of collected) {
     if (m.sf) continue; // SF filings carry no schedule — useless as fallback
     const key = `${m.ein}|${m.pn}`;
     const primary = byPlan.get(key);
     if (!primary || m.ack === primary.ack) continue;
-    const cur = runnerUp.get(key);
-    if (!cur || m.year > cur.year ||
-        (m.year === cur.year && String(m.received || "") > String(cur.received || ""))) runnerUp.set(key, m);
+    if (!priors.has(key)) priors.set(key, []);
+    priors.get(key).push(m);
   }
-  for (const [key, m] of runnerUp) {
+  let multi = 0;
+  for (const [key, list] of priors) {
     const primary = byPlan.get(key);
     if (primary.sf) continue; // primary SF filers are excluded from PDF parsing
-    fallback[primary.ack] = { a: m.ack, y: m.planYearBegin ? +String(m.planYearBegin).slice(0, 4) : m.year };
+    list.sort((a, b) => (b.year - a.year) || String(b.received || "").localeCompare(String(a.received || "")));
+    const cands = list.slice(0, FALLBACK_DEPTH)
+      .map((m) => ({ a: m.ack, y: m.planYearBegin ? +String(m.planYearBegin).slice(0, 4) : m.year }));
+    if (cands.length > 1) multi++;
+    // `a`/`y` stay at the top level so an older fetch-4i still reads the first
+    // candidate; `alt` carries the rest.
+    fallback[primary.ack] = cands.length > 1 ? { ...cands[0], alt: cands.slice(1) } : cands[0];
   }
   writeFileSync("fallbacks.json", JSON.stringify({ generated: new Date().toISOString(), count: Object.keys(fallback).length, acks: fallback }));
-  console.log(`wrote fallbacks.json: ${Object.keys(fallback).length} plans with a prior-year full-form filing`);
+  console.log(`wrote fallbacks.json: ${Object.keys(fallback).length} plans with a prior-year full-form filing` +
+    ` (${multi} have more than one to try)`);
 }
 
 // master-trust registry: newest filing per trust EIN|PN
