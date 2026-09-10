@@ -39,8 +39,12 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   with a reset+retry loop — measured necessity: a plain rebase transplant
   conflicted on the single-line JSON stores and killed a finished v9 run).
   Full universe re-parse ≈ 1.5h wall (12-way matrix, ~50 min parse jobs,
-  ~600ms/filing incl. politeness delay). Weekly cron Mondays 06:00 UTC +
-  push trigger on scripts/** (touch `scripts/.kick` to force a run).
+  ~600ms/filing incl. politeness delay) — but an OCR-heavy work list is far
+  slower: run #249's 11,400 scanned/cipher filings ran 3h+ because OCR is
+  ~10-30s each where a text parse is ~0.6s. **THREE crons, all on main:**
+  `12 5 * * *` daily, **`23 * * * *` HOURLY** (backstop, owner directive
+  2026-09-06 — a no-op hour exits without committing), and `0 6 * * 1` weekly.
+  Plus a push trigger on scripts/** (touch `scripts/.kick` to force a run).
   workflow_dispatch works from main.
 - **Scripts**: `scripts/build-data.mjs` (dataset ingest), `scripts/lib-4i.mjs`
   (parser + feature extractor, exports PARSER_VERSION), `scripts/fetch-4i.mjs`
@@ -180,13 +184,21 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
 
 ## Automation: two layers, one of them fragile
 
-- **DURABLE — the pipeline.** `build-data.yml` runs on a schedule (daily 05:12
-  UTC = 1:12 AM ET, plus the weekly Monday cron). This survives everything:
-  new filings are ingested, the audit runs, HIGH findings reach the
-  auto-managed issue, whether or not any session exists. A scheduled run
-  executes on the DEFAULT branch and commits its data to **main**, which is why
-  checking `git log origin/main --not origin/<dev branch>` before every
-  force-mirror is now a **daily** necessity rather than a weekly one.
+- **DURABLE — the pipeline.** `build-data.yml` runs on THREE schedules: daily
+  05:12 UTC (1:12 AM ET), **hourly at :23**, and weekly Monday 06:00. This
+  survives everything: new filings are ingested, the audit runs, HIGH findings
+  reach the auto-managed issue, whether or not any session exists. A scheduled
+  run executes on the DEFAULT branch and commits its data to **main**.
+  **CORRECTED 2026-09-10: that makes main's data move HOURLY, not daily.**
+  This section and the Architecture block both used to name only the daily and
+  weekly crons, so "check `git log origin/main --not origin/<dev branch>`
+  before every force-mirror" read as a once-a-day chore. Observed this morning:
+  runs #250 and #251 fired twelve minutes apart and each committed to main, and
+  three data commits accumulated there while one dev-branch run was in flight.
+  A long dev run will ALWAYS come back to a main that has moved. That is no
+  longer something to remember — `scripts/mirror-gate.mjs` compares the two
+  stores and refuses automatically — but the hourly cadence is why the branch
+  can never assume main is where it left it.
 - **FRAGILE — the hourly agent cycle.** Runs as a `CronCreate` job, which is
   session-scoped: held in memory, never written to disk, and **killed by any
   container restart.** One was created at 06:30 ET on 2026-09-01 and was gone
