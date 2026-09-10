@@ -13,7 +13,7 @@ import { execFileSync } from "node:child_process";
 import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { parse4i, extractPlanFeatures } from "./lib-4i.mjs";
+import { parse4i, extractPlanFeatures, frozenClaimIsAboutThisPlan } from "./lib-4i.mjs";
 
 /* FEATURE specimens (added 2026-08-25). Until now the gate protected only
  * lineup parsing: a vesting or match regression could not be seen until the
@@ -504,6 +504,35 @@ for (const [label, text] of [
   const ok = p && Array.isArray(p.funds);
   console.log(`GATE ${ok ? "OK  " : "FAIL"} shape contract — ${label}: found=${p && p.found} funds=${ok ? `array(${p.funds.length})` : typeof (p && p.funds)}`);
   if (!ok) failed++;
+}
+
+/* THE FROZEN PREDICATE NOW EXISTS THREE TIMES: lib-4i (the parser),
+ * lib-disclose (the static pages) and app.js (the browser). The smoke test
+ * ties the last two together; this ties the parser to them. Three copies of a
+ * rule is how the match-quote guard came to publish a false heading on 615
+ * pages, so every copy gets a tether. */
+{
+  const { frozenClaimOk } = await import("./lib-disclose.mjs");
+  const pairs = [
+    ["As amended on December 31, 2024, the Plan was frozen and all participants of the Plan became fully vested.", "Hanes Companies, Inc."],
+    ["As of December 31, 2024, the Hanes Retirement Plan was frozen.", "Leggett & Platt, Incorporated"],
+    ["The Solar Energy World 401k plan was frozen to new contributions as of January 31, 2025.", "Comcast Corporation"],
+    ["A participant will become 100 percent vested in the event the Company permanently discontinues contributions to the Plan.", "Honeywell International Inc"],
+    ["As of January 1, 2025, the Plan was frozen, and employees became eligible to participate in the Cayuga Health 401(k).", "Cayuga Medical Associates"],
+    ["The Plan was terminated effective December 31, 2023.", "Capital Region Medical"],
+    ["The TDA Plan was frozen December 31, 2008 and no further contributions were made.", "St. Ambrose University"],
+  ];
+  let drift = 0;
+  for (const [t, sp] of pairs) {
+    const parserSide = frozenClaimIsAboutThisPlan(t, sp);
+    const displaySide = frozenClaimOk(true, t, sp);
+    if (parserSide !== displaySide) {
+      drift++;
+      console.log(`GATE FAIL frozen predicate drift — parser ${parserSide} vs display ${displaySide}: "${t.slice(0, 80)}"`);
+    }
+  }
+  console.log(`GATE ${drift ? "FAIL" : "OK  "} frozen predicate: lib-4i and lib-disclose agree on ${pairs.length - drift}/${pairs.length} pinned filings`);
+  if (drift) failed++;
 }
 
 if (failed) {

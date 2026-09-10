@@ -504,7 +504,7 @@ async function analyzePdf(ack, plan, tag) {
   }
   // plan features (match formula, vesting, Roth, auto-enroll) live in the
   // audit notes and exist even when the 4i table can't be parsed
-  let features = extractPlanFeatures(text);
+  let features = extractPlanFeatures(text, plan.sponsorName || plan.label || "");
   let parsed = parse4i(text, plan.assetsEOY, plan.label || "", plan.codes || "");
   let usedOcr = false;
 
@@ -597,7 +597,7 @@ async function analyzePdf(ack, plan, tag) {
         }
         if (otext && otext.replace(/\s+/g, "").length > 500) {
           const combined = text + "\f" + otext;
-          const f2 = extractPlanFeatures(combined);
+          const f2 = extractPlanFeatures(combined, plan.sponsorName || plan.label || "");
           // v58: field-GROUP-wise merge — base-text groups always win (the
           // value+quote pair stays from ONE source so the audit's
           // formula-in-quote invariant holds); OCR fills whole groups the

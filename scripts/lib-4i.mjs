@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 122;
+export const PARSER_VERSION = 123;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -2122,7 +2122,38 @@ function supersededSchedule(t) {
   return { effective: +rm[1], text: repSentence.trim() };
 }
 
-export function extractPlanFeatures(text) {
+const FROZEN_CONDITIONAL = /\b(?:in the event|if the (?:plan|company|employer|sponsor)\b|should the (?:plan|company|employer)\b|were the plan\b|reserves the right|although it has not expressed|may (?:be |elect to )?(?:freeze|terminate))/i;
+const FROZEN_ARTICLES = new Set(["the", "this", "a", "an", "its", "such", "and", "that", "said"]);
+/** The proper name qualifying the plan that froze, or null when it is "the Plan". */
+export function frozenSubjectName(text, sponsorName = "") {
+  const t = String(text || "").replace(/\s+/g, " ");
+  const sponsorWords = new Set(String(sponsorName || "").toUpperCase().replace(/[^A-Z0-9 ]/g, " ")
+    .split(/\s+/).filter((w) => w.length > 3));
+  const re = /((?:[A-Za-z0-9&.'\u2019()-]+\s+){0,5})((?:401\(?k\)?|403\(?b\)?|Retirement|Savings|Pension|Thrift)?\s*[Pp]lan)\s+(?:was|were|has been|have been|is|are)\s+(?:frozen|terminated)/g;
+  let m, best = null;
+  while ((m = re.exec(t))) {
+    const pre = m[1].trim().split(/\s+/).filter(Boolean);
+    const names = [];
+    for (let i = pre.length - 1; i >= 0; i--) {
+      const w = pre[i];
+      if (FROZEN_ARTICLES.has(w.toLowerCase())) break;
+      if (!/^[A-Z0-9]/.test(w)) break;
+      names.unshift(w);
+    }
+    const proper = names.filter((w) => /^[A-Z][a-z]|^[A-Z]{2,}/.test(w) && !sponsorWords.has(w.toUpperCase()));
+    if (proper.length) best = proper.join(" ");
+    else return null;
+  }
+  return best;
+}
+export function frozenClaimIsAboutThisPlan(text, sponsorName = "") {
+  const t = String(text || "");
+  if (!t.trim()) return true;
+  if (FROZEN_CONDITIONAL.test(t)) return false;
+  return frozenSubjectName(t, sponsorName) === null;
+}
+
+export function extractPlanFeatures(text, sponsorName = "") {
   // zero-width characters survive \s normalization and shipped inside quotes
   // (R.H. White's eligibility quote began with U+200B); strip them first so
   // every offset below is computed on the same clean text
@@ -3640,7 +3671,36 @@ export function extractPlanFeatures(text) {
 
   // ---- frozen plans: contributions permanently discontinued ----
   const froz = t.match(/(?:plan (?:was|has been|is) (?:amended to )?(?:frozen|freeze)|amended to freeze the plan|permanently discontinu\w+[^.]{0,60}?contributions|(?:board|company|sponsor)[^.]{0,60}?(?:resolved|elected|adopted a resolution|approved a resolution)[^.]{0,40}? to terminate the plan|plan was terminated effective|prior to the plan[’']?s termination)/i);
-  if (froz) { out.frozen = true; out.frozenText = sentence(froz.index); }
+  /* v123: the words appearing is not the claim being made.
+   *
+   * `frozen` renders as "the filing states contributions have been
+   * discontinued". Measured over the whole full-form universe on 2026-09-10:
+   * of 1,378 plans carrying it, 60 are demonstrably false in one of two
+   * shapes, and both are visible in the sentence:
+   *
+   *   CONDITIONAL - Honeywell's "a participant will become 100 percent vested
+   *   in the event the Company terminates or permanently discontinues
+   *   contributions" is the boilerplate ERISA vesting clause present in
+   *   nearly every plan document. It describes nothing that happened.
+   *
+   *   A DIFFERENT PLAN IS THE SUBJECT - Comcast's notes say "The Solar Energy
+   *   World 401k plan was frozen" (a company it acquired); Leggett & Platt's
+   *   say "the Hanes Retirement Plan was frozen", while HANES' OWN filing says
+   *   "the Plan was frozen" and must be kept. That pair is the whole test.
+   *
+   * Tie the name to the VERB, not to the sentence. "the Plan was frozen, and
+   * the Organization's employees became eligible to participate in the Cayuga
+   * Health 401(k)" names another plan as the DESTINATION while this plan is
+   * what froze; judging the sentence got 3 of 6 sampled wrong there, judging
+   * the subject got 22 of 22 right.
+   *
+   * The predicate is shared with the display guard in scripts/lib-disclose.mjs
+   * (frozenClaimOk), which shipped first because it needed no re-parse. Keep
+   * them identical - do not evolve a second copy here. */
+  if (froz && frozenClaimIsAboutThisPlan(sentence(froz.index), sponsorName)) {
+    out.frozen = true;
+    out.frozenText = sentence(froz.index);
+  }
 
   // ---- safe harbor & true-up ----
   if (/safe harbor match/i.test(t)) out.safeHarbor = "match";
