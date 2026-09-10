@@ -7340,3 +7340,60 @@ re-read every sentence the old trigger caused the site to print.**
 
 Gate green, corpus diff zero, smoke green. Cost: up to ~2,193 extra PDF reads
 per run, roughly 3% more work.
+
+## 2026-09-10 — run #244 (v118) LOST 31 stored lineups; NOT mirrored
+
+**The audit caught it before anything reached the site.** HIGH went 4 → 25 —
+21 `reparse-loss` findings on top of the known contribution-limit baseline —
+and the coverage line's gains (+62 confident, +76 match, +98 vesting) would
+have looked like a good run without them. Nothing was mirrored; main still
+serves the v117 store.
+
+**What was lost: 31 lineups, $18.1B, 361,761 participants.**
+
+| plan | before | after |
+|---|---|---|
+| Lowe's Companies ($8.6B, **318,750 participants**) | confident, 31 rows, `ocr:1`, `fb:2023` | `band-hi` 30 rows at 2.91x |
+| Trane Technologies ($7.5B, 26,064p) | confident, `fb:2023` | `band-hi` 13 rows at 4.83x |
+| Industrial Technologies & Services ($1.4B) | confident, `fb` | `few` |
+| …28 more across every dx bucket | all with `fb` | various |
+
+**Every one had `fb` set.** Their lineup came from the plan's PRIOR-YEAR
+filing, and at v118 the rescue did not happen.
+
+**It is not the parser and not the gates.** Lowe's 2023 fallback was
+re-downloaded and re-run by hand under the same code: text parse `noregion`,
+15 bad pages, OCR, **31 rows at ratio 0.945, confident** — its real menu
+(Lowe's stock, the Vanguard Target Retirement Trust Select series), identical
+to the v117 entry. What replaced it is the 2024 filing's own text parse, whose
+top rows are the fair-value note's categories — "Collective trusts" $8.93B,
+"Common stock" $6.96B — summed beside the real menu.
+
+**Nor was it systemic.** 975 acks at pv=118 still carry `fb` (and `ffb` rose
+488 → 561), so `fallbacks.json` reached the parse jobs. 31 failures out of
+~1,000 fallback attempts is ~3% — the shape of transient S3 failures under
+v118's much heavier request load, not of a broken gate.
+
+**And the code threw the reason away:** `catch { /* fallback download failed
+— keep the primary outcome */ }`. "Keep the primary outcome" is the wrong
+policy when the primary outcome is worse than what is already stored.
+
+**v120.** The primary-download path has protected against exactly this since
+v37 — *a failed download must never clobber a previous parse*. The fallback
+path never did. It does now, on the same terms: when the fallback cannot be
+READ and the stored entry is a confident lineup, keep the stored entry and set
+`pv: 0` so the next run retries. A fallback that loads and is merely judged
+worse is untouched — withdrawal on the merits must stay possible, because that
+is what lets a fabricated lineup be removed.
+
+**Two things to carry forward.**
+
+1. **An operational failure and a judgement are different events and must not
+   share a code path.** Both end as "no confident lineup", and only one of
+   them is a fact about the filing. Every `catch {}` around a network read in
+   this pipeline is a place where the two can be confused.
+2. **A coverage line can rise while the run is a regression.** #244 gained 62
+   confident and lost 31 real menus including a 318,750-participant plan; the
+   net was positive and the mean was meaningless. The loss auto-triage is what
+   turned that into 21 HIGH findings, and it is the reason this was caught in
+   an hourly cycle rather than by a user on the Lowe's page.

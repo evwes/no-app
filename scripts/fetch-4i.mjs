@@ -746,10 +746,12 @@ for (const plan of work) {
    * The lineup is untouched: it may still only be REPLACED under the original
    * condition. Features are only ever FILLED when absent, and `featFb` makes
    * the page disclose which plan year the notes came from. */
+  let fbFailed = false;
   if (fb && !fbUsed && (!(parsed.found && isConfident(parsed)) || !features)) {
     try {
       const b = await analyzePdf(fb.a, plan, `${tag} fb${fb.y}`);
-      if (!b.err) {
+      if (b.err) fbFailed = true;
+      else {
         if (b.parsed.found && isConfident(b.parsed) && !(parsed.found && isConfident(parsed))) {
           parsed = b.parsed;
           usedOcr = b.usedOcr;
@@ -757,7 +759,40 @@ for (const plan of work) {
         }
         if (!features && b.features) { features = b.features; featFb = fb.y; }
       }
-    } catch { /* fallback download failed — keep the primary outcome */ }
+    } catch { fbFailed = true; }
+  }
+
+  /* v120: a fallback that FAILS TO LOAD must not silently downgrade a plan.
+   *
+   * Run #244 lost 31 stored lineups worth $18.1B and 361,761 participants —
+   * Lowe's ($8.6B, 318,750 participants) and Trane ($7.5B) among them — and
+   * every single one had `fb` set beforehand: their lineup came from the
+   * prior-year filing. Re-running Lowe's 2023 fallback by hand under the same
+   * code still yields its real 31-fund menu at ratio 0.945, so neither the
+   * parser nor the gates rejected it; the rescue simply did not happen that
+   * run, and `catch {}` threw the reason away. 975 acks kept their `fb`, so
+   * `fallbacks.json` was present — this was per-filing, not systemic, which
+   * is what a transient S3 failure under v118's much heavier request load
+   * looks like.
+   *
+   * The primary-download path has protected against exactly this since v37
+   * ("a failed download must never clobber a previous parse"). The fallback
+   * path never did. It does now, on the same terms: when the fallback could
+   * not be READ and the stored entry is a confident lineup, keep the stored
+   * entry and mark the ack stale (pv 0) so the next run retries it. A parse
+   * that succeeds and is merely judged worse is untouched — withdrawal on
+   * the merits stays possible, which is what lets a fabricated lineup be
+   * removed. */
+  if (fbFailed && !(parsed.found && isConfident(parsed))) {
+    const prevEntry = buckets[shardOf(plan.ack)][plan.ack];
+    if (prevEntry && prevEntry.confident && prevEntry.funds && prevEntry.funds.length) {
+      const prev = status.plans[plan.ack];
+      const meta = { ...(prev || { ov: 0, c: 1, s: 0 }), pv: 0, e: "fb-unreadable" };
+      status.plans[plan.ack] = meta;
+      delta.status[plan.ack] = meta;
+      summary.push(`${tag}: prior-year filing unreadable this run — kept the stored lineup, will retry`);
+      continue;
+    }
   }
 
   if (!parsed.found) {
