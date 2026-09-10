@@ -578,9 +578,41 @@ don't confuse them). Frontend: python http.server + Playwright at
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
   full-form** filers; 68,767 parse-status entries. **Parser v120, OCR v8.**
-- **LIVE on main: `c130d250`, the COMPLETE v117 store, 59,894 confident,
-  HIGH at the baseline of 4** (pv 117 covers 99.9%, 63 download failures).
-  v114+v115 (+123), v116 (+1), v117 (+160) all mirrored with zero losses.
+- **LIVE on main: `5b4aa3d0`, the COMPLETE v122 store — MIRRORED 2026-09-10
+  20:4xZ after five days of held runs.** 60,089 confident (+195 over the v117
+  store it replaced), lineups 59,755, match 43,027, vesting 52,825, **HIGH at
+  the baseline of 4**, pv 122 covers 99.9%, 68 fetch failures (0.10%), reader
+  failures 0. `mirror-gate.mjs` passed unforced: **+195 gained, −0 lost.**
+  The 31 prior-year lineups are back, Lowe's among them.
+  The git check was force-overridden and the justification is on the record:
+  main's five scheduled commits appended **five byte-identical coverage lines**
+  at confident 59,894 (no-op hourly runs), and the test `mirror.sh` itself
+  names — compare plans-all acks — returned **0 acks and 0 plans on main that
+  the branch lacked**. Only four duplicate "nothing changed" history lines were
+  discarded. Do not read this as licence to skip the rebase: the evidence was
+  produced first, and `--force` covers the GIT check only, never the data gate.
+  History: v114+v115 (+123), v116 (+1), v117 (+160) all mirrored with zero
+  losses.
+- **NEXT PARSER CHANGE, WRITTEN UP AND NOT YET BUILT: the `frozen` extractor
+  (v123).** `frozen` claims "the filing states contributions have been
+  discontinued". Measured 2026-09-10 across the full-form universe: **1,378
+  plans carry it and 830 (60%) reported employer contributions that same
+  year** — 1,101,268 participants, $2.46B. Every one of the eight largest is a
+  false positive in one of two shapes:
+  **(a) a DIFFERENT NAMED PLAN** — Comcast quotes *"The Solar Energy World
+  401k plan was frozen"*, Johns Hopkins *"The Bayview Plan was frozen in
+  2002"*, GE Healthcare *"the GE Pension Plan was frozen"*, plus Stantec,
+  WellSpan, LSC; **(b) a CONDITIONAL** — Honeywell's *"a participant will
+  become 100 percent vested in the event the Company terminates or permanently
+  discontinues contributions"* is the boilerplate ERISA vesting provision in
+  nearly every plan document. The trigger regex at `lib-4i.mjs` ~3642 tests
+  only that the words appear, never whose plan the sentence is about or
+  whether it is hypothetical — the same defect family as the match-quote guard.
+  **A display-side contradiction guard is already SHIPPED and needs no
+  re-parse** (`frozenClaimOk` in `lib-disclose.mjs`: a filing cannot both
+  report employer contributions and say they have ceased; the filed dollar
+  figure beats a regex; suppresses only, never asserts). The extractor fix is
+  still owed, and the specimen acks are in the commit for `15d63e48`.
 - **The dev branch holds run #254's v121 store (`64ddac5d`) — the first
   HEALTHY full re-parse since #243, and still NOT mirrored.** #244-#253 were
   the two null-deref runs (isConfident, then featFb/fbUsed); #254 is the first

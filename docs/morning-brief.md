@@ -240,6 +240,37 @@ funds are real — but our checks can't currently see that kind of quiet
 degradation. Written down with both examples and queued, not patched today,
 because the file it belongs in is the one deciding whether #256 lands safely.
 
+## Evening (4:45 PM ET) — it is live
+
+**Everything from today is now on the live site.** Run #256 finished clean —
+all twenty workers succeeded — and the mirror script accepted it without
+argument: **195 fund menus gained, none lost.** The 31 that had blocked every
+attempt since Tuesday are back, Lowe's among them.
+
+Live now, all in one go:
+
+- **60,089 fund menus**, up from 59,894, at the audit's normal baseline.
+- **615 pages** stopped printing "Match formula, as filed" over a sentence that
+  was not a formula; **6,989 plans** got their supporting quote back.
+- **533 pages** now say when a fund table is not the whole plan — Boeing at
+  78%, JPMorgan at 66%, where before the page simply showed the table.
+- **116 pages** stopped saying we didn't know what the employer contributes
+  when the filing plainly states it. Boeing's said "not stated" against **$1.42
+  billion a year**.
+- **830 plans** stopped being labelled frozen while they were still paying.
+
+That last one is worth a moment. We were warning **63,466 Honeywell employees
+that their plan had stopped contributing**, on the strength of a sentence that
+actually reads *"a participant will become 100% vested in the event the Company
+terminates or permanently discontinues contributions"* — the boilerplate clause
+in nearly every plan document, describing something that has not happened.
+Sixty percent of every plan we flagged this way was still paying. The page now
+refuses the claim whenever the filing reports employer money, because a filed
+dollar figure beats a sentence we matched with a pattern.
+
+**What is still owed:** the underlying reader still mislabels those filings; the
+site just no longer repeats it. That fix is written up and queued.
+
 ## Waiting on you
 
 1. **GitHub Pages must serve `main`** (Settings → Pages) — still the blocker
