@@ -559,7 +559,9 @@ don't confuse them). Frontend: python http.server + Playwright at
   ingest is faithful. **Do not "fix" the parser to accept self-totaled
   schedules for these** — a lineup for a plan nobody is in anymore is
   fabrication risk for zero user value; the right treatment is the census
-  category (done) and a frontend wind-down explanation line (queued).
+  category (done) and a frontend wind-down explanation line (SHIPPED, a77a070d,
+  app.js fundTable's first rung — it names the $0 year-end filing, the prior
+  year's opening balance, and where a participant's money went).
   The LIVE-plan lineup gaps, whole-universe counts from dx:
 
   | plans | participants | assets | cause |
