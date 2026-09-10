@@ -639,6 +639,65 @@ don't confuse them). Frontend: python http.server + Playwright at
   pointer we cannot follow. Schedule D gives us the trust's NAME even when
   the link fails — carrying it into plans-all would let the page say which
   trust holds the money instead of "we could not read it".
+- **FIELD COVERAGE, MEASURED 2026-09-10 against the LIVE v117 store.** The
+  residuals table above covers lineups only, which made lineups look like the
+  project's gap. Measured across every field, they are not — and this is
+  recorded as MEASUREMENT, not as a re-prioritisation; that call is the
+  owner's and has not been made.
+
+  The universe is two populations with different data availability:
+  **68,259 full-form** (106.20M participants, audited attachment exists) and
+  **43,523 short-form 5500-SF** (7.35M participants, **no attachment is ever
+  filed, by law**). Everything below except the 8a form codes exists only for
+  the full-form half.
+
+  | field | covered (of 68,259 full-form) | real gap after removing wind-down ghosts |
+  |---|---|---|
+  | recordkeeper | 63,682 (93.3%) | 4,577 |
+  | investment options | 60,298 (88.3%) | **1,407 live plans / 2.32M ppl / $262B** |
+  | any audit notes | 62,555 (91.6%) | 2,548 live / 2.19M ppl |
+  | **match formula** | 42,338 (62.0%) + 5,308 quote-only | **8,672 live / 13.53M ppl** |
+  | vesting | 51,826 (75.9%) + 5,081 quote-only | 5,648 |
+  | Roth stated | 36,470 (53.4%) | mostly genuine silence, not absence |
+  | after-tax stated | 4,119 (6.0%) | genuinely rare |
+
+  **The headline: match is ~6x the lineup gap by people affected, and it is
+  OURS.** The 11.7% with no investment options is 7,961 plans — but **6,554 of
+  those are wind-down ghosts** ($0 year-end assets, plan already terminated or
+  merged), leaving only 1,407 live plans. Meanwhile 8,672 live plans covering
+  13.53M people have employer money flowing and no formula shown.
+
+  It is not a document gap. **6,123 of those 8,672 have >=5 other features
+  extracted from the same notes** (vesting 86%, loans 67%, Roth 52%,
+  eligibility 47%), median employer money **$2,626 per active participant**.
+  The notes are readable; the match sentence is not being caught. Two
+  hands-on confirmations, deliberately the two largest:
+  - **Costco (279,798 participants)**: *"The Company matches the lesser of 50%
+    of each employee's deferral contribution or $500 per year."* — a CAP form
+    (`lesser of N% ... or $X`), not the "N% of the first M% of pay" shape the
+    extractor is built around.
+  - **Tyson (128,426)**: *"100% Sponsor matching contributions on participant
+    deferrals up to 3% of compensation ... and 50% for participant deferrals
+    in excess of 3% but not more than 5%"* — a standard two-tier, phrased with
+    "on ... up to" rather than "of the first".
+
+  Two samples, two DIFFERENT missing shapes, which argues a long tail of
+  phrasings rather than one absent pattern. **Do not attack this by adding
+  regexes one at a time.** The filings are already local: extract the
+  match-bearing sentence from all 8,672, cluster them, work the clusters by
+  frequency. No downloads required.
+
+  **Short-form filers are the other structural gap: 7.35M people with
+  essentially nothing.** But the 8a characteristic codes are on the FORM, so
+  they exist for all 111,782 plans — **2K (401(m), match and/or after-tax) is
+  present on 83.1% of SF filers**, 2S (auto-enrolment) 27.0%, 2R (brokerage
+  window) 3.5%. An SF page could truthfully report those as filed facts
+  without claiming a formula. Today it shows headline numbers and nothing else.
+
+  Also unresolved and worth a decision: **Roth at 53.4% "stated" cannot be
+  distinguished by a reader from "no Roth"**, and with 46.6% unstated that is a
+  large honesty gap given how near-universal Roth now is.
+
 - **The fabricated-lineup class is CLOSED and must stay closed.**
   `audit-dominant-row.mjs`: 50 plans / $83.9B -> **0** at v105, while all 319
   honest single-holding plans were preserved. `audit-generic-names.mjs` sits at
