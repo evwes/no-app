@@ -184,6 +184,27 @@
    "fixed": "v117",
    "sponsor": "Meta Platforms",
    "was": "214-page filing whose entire attachment is a substituted-font cipher. The cipher text yielded ONE junk row, so parsed.found was true and the combined text+OCR parse was never attempted (that branch was gated on imgPages). The OCR text holds the real 21-fund menu at ratio 1.000 of a $22.4B / 84,993-participant plan. NOTE: diff-lineups runs the TEXT parse only, so this specimen stays non-confident there by design - the guard is the census and the >=7-row menu-shape floor"
+  },
+  {
+   "ack": "20251028143720NAL0007009761001",
+   "class": "recordkeeper-statement-title",
+   "fixed": "v121",
+   "sponsor": "Commercial Vehicle Group",
+   "was": "$67.3M / 2,483 participants publishing nothing. Its 29-fund Fidelity table sits under 'SUMMARY OF NET TRUST ASSETS' - a phrase already in stopRe, where it TERMINATES regions (Sierra Space appended that page as a duplicate of its 4i table and the region summed both copies). Same phrase, two jobs, exactly the trusteeHead trap. Safe to seed from because this branch runs only when the document has ZERO 4i and zero trustee headings, so there is no real table for the stop to protect. 29 rows at ratio 0.987, and the parser picks Total Market Value over the adjacent Historical Cost and Share Balance columns. NOTE the earlier hand review filed this plan as 'not ours, a cash-flow statement' - that described a different page of the same filing"
+  },
+  {
+   "ack": "20250903155630NAL0015538593001",
+   "class": "recordkeeper-statement-title",
+   "fixed": "v121",
+   "sponsor": "Medical Device Components",
+   "was": "the bare template title 'STATEMENT OF NET ASSETS' over a 27-fund table totalling $24,938,574.35 against a Schedule H of $24,938,574 - to the cent. The `$` anchor on this title is load-bearing: 'Statement of Net Assets AVAILABLE FOR BENEFITS' is the audited balance sheet, three rows and no menu, and three other filings in this same bucket lead with it. Do not relax the anchor to a \\b"
+  },
+  {
+   "ack": "20241015094447NAL0029166113001",
+   "class": "adviser-deck-control",
+   "fixed": null,
+   "sponsor": "Avis Mobility Ventures / Flexcar",
+   "was": "CONTROL: must stay NON-CONFIDENT. 'Current Plan Assets' looks like a recordkeeper title and is not one - it is a heading inside an adviser's 'Plan Investment Review' deck, laid out in two columns with an asset-allocation table beside the holdings. Seeding from it published '0.0 Median Market Cap' at $1,097,571 (46% of the sum), '0.95 Median Market Cap', and asset classes glued into names ('Large Growth JPMorgan Large Cap Growth R6') at ratio 0.936 - inside the band, so only the NAMES give it away. The title was measured, found to do this, and left out of v121. Blank is correct for this $2.6M / 166-participant plan until the two-column layout can be read"
   }
  ]
 }

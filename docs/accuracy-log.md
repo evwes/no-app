@@ -7463,3 +7463,68 @@ eyeball — it is a HIGH finding that reaches the auto-managed issue on the run
 that causes it. More generally: **when a store is committed by a job that runs
 `if: always()`, completeness is not implied by the absence of errors and has to
 be measured on its own.**
+
+---
+
+## 2026-09-10 — v121: recordkeeper statement titles, and one title that had to be measured before it could be rejected
+
+**What was wrong.** Eleven live plans sat in the `nohead/unread` bucket —
+their filings ARE readable, and nothing in them seeded a region, so they
+published nothing. Small plans frequently attach the recordkeeper's own
+statement instead of a statutory 4i page, and the whole menu sits under a house
+title the parser had never been taught.
+
+**The bucket was opened whole**, all ten non-trust members downloaded and run
+through the production parser rather than sampled. Five carry a real menu under
+a house title and now publish:
+
+| plan | participants | assets | title | rows / ratio |
+|---|---|---|---|---|
+| Commercial Vehicle Group | 2,483 | $67.3M | `SUMMARY OF NET TRUST ASSETS` | 29 / 0.987 |
+| Medical Device Components | 373 | $24.9M | `STATEMENT OF NET ASSETS` | 26 / 0.980 |
+| MPB Hotel | 477 | $10.8M | `STATEMENT OF NET ASSETS` | 19 / 0.969 |
+| Atrium Consulting | 937 | $7.7M | `Plan Investment Vehicle Summary` | 16 / 1.000 |
+| Innovative Cosmetic | 166 | $4.8M | `Overview - Summary By Fund` | 27 / 0.975 |
+
+**$115.5M and 4,436 participants**, every value verbatim in its filing. Four
+others correctly stay blank, and the fifth is the interesting one.
+
+**The title that had to be measured.** `Current Plan Assets` was in the seed
+list on the strength of a hand review. Running it proved that review wrong: it
+is not a recordkeeper title but a heading inside an ADVISER'S "Plan Investment
+Review" deck, set in two columns with an asset-allocation table beside the
+holdings. Seeding from it published **"0.0 Median Market Cap" at $1,097,571 —
+46% of the sum** — plus "0.95 Median Market Cap", "0.01 Median Market Cap", and
+asset classes glued into the surviving names ("Large Growth JPMorgan Large Cap
+Growth R6"). Ratio 0.936, comfortably inside the confidence band. **Only the
+NAMES gave it away**, which is precisely the fabricated-lineup signature this
+codebase has closed twice. The title was dropped; Avis/Flexcar ($2.6M, 166
+participants) stays blank and is pinned as a control.
+
+**Two traps decided the implementation, and both are phrase-does-both-jobs.**
+
+1. `Statement of Net Assets AVAILABLE FOR BENEFITS` is the audited balance
+   sheet — three rows, no menu — and three filings in this same bucket lead
+   with it. The `$` anchor is what separates it from the bare template title.
+   Relaxing that anchor to a `\b` would publish balance sheets as menus.
+2. `SUMMARY OF NET TRUST ASSETS` is already in `stopRe`, where it ENDS regions:
+   Sierra Space appends that page as a duplicate of its 4i table and the region
+   summed both copies (ratio 1.0 → 1.89). Same phrase, opposite job — the
+   `trusteeHead` trap exactly. It is safe to seed from for the same reason it
+   is safe there: **this branch runs only when the document has zero 4i and
+   zero trustee headings**, so there is no real table for the stop to protect.
+
+**Gates.** Parser gate green on all ten live specimens. Corpus diff against
+v120 over 199 filings: 0 confidence gained, 0 lost, 0 fabricated rows
+introduced or removed — the seed cannot fire on a document that already has a
+heading. Three specimens pinned: the two recoveries and the adviser-deck
+control.
+
+**The prevention, and it is the project's own rule earning its keep again.**
+*A cause that is merely plausible is not a cause — instrument before believing
+one.* The hand review of this bucket got two of eleven filings wrong in
+OPPOSITE directions: it called Commercial Vehicle Group "a cash-flow statement,
+not ours" (it is the largest recovery here, 29 Fidelity funds) and it called
+Avis a recovery (it fabricates). Reading a filing by eye and running the parser
+over it are different measurements, and only the second one is the one that
+ships.

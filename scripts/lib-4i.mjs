@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 120;
+export const PARSER_VERSION = 121;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -1389,6 +1389,44 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
   if (!starts.length) {
     const trusteeHead = /^(?:schedule|statement)\s+of\s+(?:portfolio\s+)?investments\b/i;
     for (let i = 0; i < lines.length; i++) if (trusteeHead.test(lines[i].trim())) starts.push(i);
+    /* v121: RECORDKEEPER TEMPLATE TITLES, retry pass only. Small plans often
+     * attach the recordkeeper's own statement instead of a statutory 4i page,
+     * and it carries the whole menu under a house title. Each of these was
+     * read off a filing in the nohead/unread bucket rather than guessed:
+     * Medical Device Components and MPB Hotel ("STATEMENT OF NET ASSETS",
+     * a 27-fund table totalling to Schedule H to the cent), Atrium ("Plan
+     * Investment Vehicle Summary"), Innovative Cosmetic ("Overview - Summary
+     * By Fund"), Commercial Vehicle Group ("SUMMARY OF NET TRUST ASSETS",
+     * 29 Fidelity funds at 0.987 of Schedule H).
+     *
+     * "Current Plan Assets" was in this list and was REMOVED after measuring
+     * it. It is not a recordkeeper statement title at all — it is a heading
+     * inside an ADVISER'S "Plan Investment Review" deck, laid out in two
+     * columns with an asset-allocation table beside the holdings. The parser
+     * read the side column as holdings and published "0.0 Median Market Cap"
+     * at $1,097,571 — 46% of the sum — with asset classes glued into the
+     * remaining names ("Large Growth JPMorgan Large Cap Growth R6"). That is
+     * the fabricated-lineup shape this codebase has closed twice. The whole
+     * plan is $2.6M and 166 participants; blank is the correct answer for it
+     * until the layout itself can be read.
+     *
+     * TWO TRAPS, both of which decide the anchoring:
+     *   1. "Statement of Net Assets AVAILABLE FOR BENEFITS" is the audited
+     *      balance sheet — three rows, no menu — and three filings in this
+     *      same bucket lead with it. The `$` anchor is what separates it from
+     *      the bare template title; do not relax it to a \b.
+     *   2. "summary of net trust assets" is ALSO in `stopRe`, where it ENDS
+     *      regions (Sierra Space appended that page as a duplicate of its 4i
+     *      table and the region summed both copies). Same phrase, two jobs —
+     *      the trusteeHead trap exactly. It is safe here for the same reason
+     *      it is safe there: this branch runs ONLY when the document has zero
+     *      4i and zero trustee headings, so there is no real table for the
+     *      stop to protect, and `trusteeMode` below disables the stop only in
+     *      that case. */
+    if (!starts.length && captionSeed) {
+      const rkHead = /^statements? of net assets$|^summar(?:y|ies) of (?:net )?(?:trust|plan) assets$|^plan investment vehicle summary$|^overview\s*[-–—]\s*summary by fund$/i;
+      for (let i = 0; i < lines.length; i++) if (rkHead.test(lines[i].trim())) starts.push(i);
+    }
     /* v106: say WHY. These two returns are the difference between "no heading
      * anywhere seeded a region" and "headings fired but nothing scored as a
      * table", which are different defects with different fixes — and until now
