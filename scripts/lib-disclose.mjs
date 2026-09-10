@@ -42,6 +42,30 @@ export function coverageBand(total, planAssets, fromTrust = false) {
   return { kind: pct < 95 ? "under" : "over", pct, severe: pct < 50 };
 }
 
+/* THE FROZEN CONTRADICTION. `frozen` means "the filing states contributions
+ * have been discontinued", and the report renders it as a warning banner.
+ * Measured 2026-09-10 over the whole full-form universe: 1,378 plans carry the
+ * flag and **830 of them (60%) reported employer contributions that same year**
+ * — 1,101,268 participants and $2.46B. Honeywell's page warned 63,466 people
+ * that contributions had stopped, beside $235.7M of employer money in the very
+ * filing the warning was read from.
+ *
+ * The extractor defect is real and fixed separately, but a store already
+ * carries the bad flags and a re-parse takes hours. This is the cross-check
+ * that does not need one: **a filing cannot both report employer contributions
+ * and say they have ceased.** Where the two disagree, the money is the harder
+ * fact — it is a filed dollar figure on Schedule H, not a sentence matched by
+ * a regex — so the warning is withheld.
+ *
+ * Deliberately NOT symmetric: $0 employer money does not confirm a freeze
+ * (a plan can simply have made no discretionary contribution that year), so
+ * this only ever suppresses, never asserts. */
+export function frozenClaimOk(frozen, employerContributions) {
+  if (!frozen) return false;
+  if (typeof employerContributions === "number" && employerContributions > 0) return false;
+  return true;
+}
+
 if (process.argv[1] && process.argv[1].endsWith("lib-disclose.mjs") && process.argv.includes("--selftest")) {
   const cases = [
     // [total, assets, fromTrust, expected kind or null, why]
@@ -69,6 +93,20 @@ if (process.argv[1] && process.argv[1].endsWith("lib-disclose.mjs") && process.a
   if (!sev || !sev.severe) { bad++; console.log("FAIL 40% should be flagged severe"); }
   const mild = coverageBand(900, 1000, false);
   if (!mild || mild.severe) { bad++; console.log("FAIL 90% should NOT be flagged severe"); }
-  console.log(bad ? `\n${bad} coverage-band cases FAILED` : `all ${cases.length + 2} coverage-band cases pass`);
+
+  const froz = [
+    [true, 235700000, false, "Honeywell: flag set, $235.7M contributed — withhold"],
+    [true, 0, true, "flag set, no employer money — the claim stands"],
+    [true, undefined, true, "flag set, contributions unknown — nothing contradicts it"],
+    [true, null, true, "flag set, contributions null — nothing contradicts it"],
+    [false, 0, false, "no flag, nothing to say"],
+    [false, 100, false, "no flag, nothing to say"],
+    [true, 1, false, "even a dollar contradicts 'contributions have ceased'"],
+  ];
+  for (const [f, er, want, why] of froz) {
+    const got = frozenClaimOk(f, er);
+    if (got !== want) { bad++; console.log(`FAIL frozen: want ${want} got ${got} — ${why}`); }
+  }
+  console.log(bad ? `\n${bad} disclosure cases FAILED` : `all ${cases.length + 2 + froz.length} disclosure cases pass`);
   process.exit(bad ? 1 : 0);
 }

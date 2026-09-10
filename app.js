@@ -49,6 +49,19 @@
   }
   window.__wampoCoverageBand = coverageBand;   // read by the smoke test only
 
+  /* Frozen contradiction — canonical copy and the measurements are in
+   * scripts/lib-disclose.mjs. 830 of the 1,378 plans carrying this flag
+   * reported employer contributions the same year; this page warned 63,466
+   * Honeywell participants that contributions had stopped, beside $235.7M of
+   * employer money in the filing the warning came from. A filed dollar figure
+   * beats a sentence matched by a regex. Suppresses only, never asserts. */
+  function frozenClaimOk(frozen, employerContributions) {
+    if (!frozen) return false;
+    if (typeof employerContributions === "number" && employerContributions > 0) return false;
+    return true;
+  }
+  window.__wampoFrozenClaimOk = frozenClaimOk;  // read by the smoke test only
+
   const state = {
     deepLinkMiss: null,   // a #plan= link that matched nothing, surfaced instead of ignored
     query: "",
@@ -917,7 +930,7 @@
         <span class="contrib-total">${total}</span>
       </div>
       ${pooledPlan ? `<p class="max-benefit"><strong>This is a multiple-employer plan.</strong> Each participating employer adopts its own terms, so any formula below is what the audited notes describe — it may not be the arrangement that applies to a particular employer's staff.</p>` : ""}
-      ${ff.frozen ? `<p class="max-benefit"><strong>⚠ Plan frozen or terminated</strong> — the filing states contributions have been discontinued; details below describe the plan as it operated.</p>${ff.frozenText ? `<blockquote class="quote">“${esc(ff.frozenText)}”</blockquote>` : ""}` : ""}
+      ${frozenClaimOk(ff.frozen, plan.flows.employerM) ? `<p class="max-benefit"><strong>⚠ Plan frozen or terminated</strong> — the filing states contributions have been discontinued; details below describe the plan as it operated.</p>${ff.frozenText ? `<blockquote class="quote">“${esc(ff.frozenText)}”</blockquote>` : ""}` : ""}
       ${ff.match ? `<p class="max-benefit">Formula: <strong>${esc(ff.match)}</strong>${ff.safeHarbor === "match" ? " · safe harbor" : ""}${ff.trueUp ? " · with annual true-up" : ""}${/discretionary/i.test(ff.match) && plan.flows.employerM === 0 ? " · <strong>none made this plan year</strong>" : ""}</p>` : ""}
       ${matchQuote ? `<blockquote class="quote">“${esc(matchQuote)}”</blockquote>` : ""}
       ${!ff.match && !matchQuote ? `<p class="max-benefit">Employer match: <span class="feat-unknown">no formula stated in the audited notes</span> — check the plan's SPD.</p>` : ""}

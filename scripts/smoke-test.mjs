@@ -85,7 +85,16 @@ try {
   /* Same drift protection for the coverage band: scripts/lib-disclose.mjs is
    * canonical, app.js carries a twin because it is a plain browser script.
    * Run the BROWSER copy against the module's own boundary cases. */
-  const { coverageBand } = await import("./lib-disclose.mjs");
+  const { coverageBand, frozenClaimOk } = await import("./lib-disclose.mjs");
+  const frozCases = [[true, 235700000], [true, 0], [true, undefined], [false, 0], [true, 1]];
+  const frozGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoFrozenClaimOk !== "function") return null;
+    return cs.map(([f, er]) => window.__wampoFrozenClaimOk(f, er));
+  }, frozCases);
+  if (!frozGot) fail("app.js no longer exposes __wampoFrozenClaimOk — the frozen guard cannot be cross-checked");
+  const frozDrift = frozCases.filter(([f, er], i) => frozenClaimOk(f, er) !== frozGot[i]);
+  if (frozDrift.length) fail(`frozen guard in app.js disagrees with scripts/lib-disclose.mjs on ${frozDrift.length} of ${frozCases.length} cases`);
+
   const covCases = [[95, 100, false], [100, 100, false], [949, 1000, false], [950, 1000, false],
     [1050, 1000, false], [1051, 1000, false], [3491, 5291, false], [400, 1000, false],
     [1000, 1000, true], [0, 1000, false], [1000, 0, false]];
