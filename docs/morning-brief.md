@@ -100,6 +100,43 @@ of them are not match language at all** — 60 are nonelective contributions
 contributions … at a rate of 5%"), 6 describe the employee's own deferral, 1
 never says "match". A rate being present does not make a sentence a match.
 
+## The other half of that decision: fund menus are nearly finished
+
+When I put the menus-vs-match choice to you last night, I was comparing a
+well-worked area against a big number. Overnight I measured the menus side
+properly for the first time, and **it is smaller than it looks — most of what
+remains is not ours to fix.**
+
+The whole live fund-menu gap is now **1,461 plans, 1.11 million people**, down
+from about 1,900. Opening the three largest groups:
+
+- **The biggest group is 532 plans, and ~87% of it has nothing we could
+  publish.** I read the extracted rows for a random 30: 43% is parse wreckage
+  (`"@ Total non"`, a sponsor's own name where a fund should be), 30% are
+  filings that genuinely report one asset-class total and no menu, 13% caught
+  only the provider's name. **About 13% could yield a real short menu** — call
+  it 70 plans, with wide error. The 3-row minimum we publish behind is the only
+  thing keeping the wreckage off the site.
+- **The two largest plans in the next group are correctly withheld.** MetLife
+  (32,414 people, $8.3B) reports its participant money in a single line,
+  "Participant-directed investments" — 99.5% of the plan — which the DOL
+  permits. Alight's winning row is a bare `"CUSIP:"` at 92.6%. Publishing
+  either would put a non-fund at the top of the page as if it were the fund.
+- **Of the third group's 417 plans, 4 are ours.** The other 413 have no
+  audited attachment in the public filing, or an attachment with no schedule.
+
+**So the menus option is roughly a hundred plans; the match option is
+millions of people.** That is not me deciding — it is the comparison you were
+missing when I asked.
+
+## Where I was wrong again, smaller this time
+
+The gap table told me State Farm was still missing its menu. **It isn't** —
+it publishes 20 Vanguard funds, 101,896 people, $19.0B. I had copied that line
+forward one cycle earlier, in the same paragraph that warns to check whether
+the example is still current, and it cost this morning a wasted investigation.
+Copying a line forward is asserting it again.
+
 ## What continues today
 
 - Two plans publishing a menu that covers half their money, and one master
@@ -114,8 +151,10 @@ never says "match". A rate being present does not make a sentence a match.
 2. **Custom domain DNS.**
 3. **A decision I have deliberately not made for you:** whether to redirect
    effort from fund menus toward the match gap. Menus have had most of the
-   parser work; match affects six times as many people. Concretely, three
-   things you could say yes to independently:
+   parser work, and as of this morning I can tell you what is left of them:
+   **~100 plans reachable, against ~1,360 that are correctly blank** (section
+   above). Match affects six times as many people as the whole menu gap did.
+   Concretely, three things you could say yes to independently:
    - **~1,634 plans / ~2.9M people, no downloads** — write patterns for the
      qualifier families above. Smallest, cheapest, entirely local.
    - **8.4M people, one re-parse** — store the match-bearing sentence even when
