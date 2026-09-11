@@ -213,8 +213,21 @@ function filedAggregate(st, ack) {
  * Fund" contain the word and are ordinary holdings, and this bit makes a claim
  * on the page. Measured over the live store: 6 plans, 75,808 participants,
  * $16.8B — 4 band-hi, 1 trust, 1 few, so it is deliberately NOT keyed to dx. */
+/* WIDENED 2026-09-11, same day, after auditing what the first version missed.
+ * Three narrownesses, each costing real plans:
+ *   - singular verb only: "InvestmentS in master trust" (Fluor, 16,213p)
+ *   - a 40-char window that a long trust NAME overruns: "Participation
+ *     interest in HCA Inc. Master Retirement Savings Trust" (HCA, 379,101p)
+ *   - "master trust" required verbatim, so a trust called something else was
+ *     missed: "Investment in Nestle in the USA Savings Trust" (Nestle, 50,509p)
+ * Still demands the row express an INTEREST IN a trust: a bare "... Trust"
+ * would sweep in ordinary holdings named "Collective Trust Fund", and this
+ * bit makes a claim on the page. Measured before shipping: +25 plans,
+ * ~600,000 participants, and the CONTROL is that 2 plans matching the text
+ * publish a confident lineup - they never receive the bit because it is gated
+ * on there being no lineup from any source. That gate is load-bearing. */
 const TRUST_INTEREST_ROW =
-  /\b(?:interest in|participation in|investment in)\b[^|]{0,40}\bmaster trust\b|\bmaster trust\b[^|]{0,30}\bat (?:fair|contract) value\b|^plan(?:'s)? interest\b/i;
+  /\b(?:interests?|participations?|investments?)\b[^|]{0,20}\bin\b[^|]{0,60}\b(?:master|savings|retirement|benefit)\s+trust\b|\bmaster trust\b[^|]{0,30}\bat (?:fair|contract) value\b|^plan(?:'s)? interest\b/i;
 function trustHeldUnlinked(ack) {
   const e = buckets[shardOf(ack)][ack];
   const funds = (e && e.funds) || [];
