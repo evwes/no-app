@@ -343,6 +343,11 @@
         // 4096: the schedule was found but reports investments in AGGREGATE
         // (dx=stmt) — say so instead of implying an unread schedule
         plan.filedAggregate = !!(b & 4096);
+        // 65536: the plan's OWN rows say its assets are an interest in a
+        // master trust we could not link. Outranks docShape, which would
+        // otherwise blame the filing for a gap that belongs to the missing
+        // trust return.
+        plan.trustUnlinked = !!(b & 65536);
         // bits 13-15: why the FILING yields no schedule (v113 `ds`). Set only
         // for plans with no lineup, so it always describes a gap the reader
         // is actually looking at. Enum order is frozen in merge-4i's DS_ENUM.
@@ -1480,6 +1485,18 @@
       // no parsed lineup, but the audited notes NAME the options (common for
       // master-trust plans whose per-fund schedule isn't public)
       const menu = plan.filedFeatures && plan.filedFeatures.menu;
+      if (plan.trustUnlinked && !(menu && menu.length)) {
+        // the filing is fine and we read it; the fund detail lives in a
+        // SEPARATE return that we could not follow. Saying "we could not read
+        // this filing" here was false for all six of these plans.
+        return `
+      <div class="section-label">FUND HOLDINGS</div>
+      <p class="max-benefit">This plan's filing reports its assets as <strong>an interest in a master trust</strong> —
+      a pooled fund shared with other plans of the same employer. The fund-by-fund detail is filed by that trust in its
+      own separate return, and we could not match this plan to that return, so no fund list can be shown here. The
+      plan's own filing was read without trouble; what's missing is the trust's. Plan features from the audited notes
+      still appear below where the filing states them.</p>`;
+      }
       if (plan.filedAggregate && !(menu && menu.length)) {
         // the honest cause, not a generic gap: the filing itself reports
         // investments in aggregate (MetLife/Comcast/Albertsons class), so no

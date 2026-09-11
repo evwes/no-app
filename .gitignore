@@ -4,6 +4,7 @@ audit-high.txt
 # local artifact of running scripts/merge-4i.mjs by hand (the pipeline
 # consumes it in-job and never commits it)
 losses-triage.txt
+swaps-degraded.txt
 
 # artifact-only: prep writes it, the parse jobs read it, it never belongs in git
 fallbacks.json

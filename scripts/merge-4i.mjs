@@ -197,6 +197,30 @@ function filedAggregate(st, ack) {
   return AGG_DISCLOSURE.test(n) || GENERIC_TYPE_NAME.test(n) || AGG_VEHICLE.test(n);
 }
 
+/* TRUST-HELD BUT UNLINKED (bit 65536, v-index 2026-09-11).
+ *
+ * A plan whose Schedule D names a master trust we could not follow still tells
+ * us so in its own 4i rows: "Plan Interest in Master Trust at Fair Value".
+ * Without this, such a plan falls through to the document-shape sentence and
+ * is told something FALSE about its filing — Conagra (28,863 participants) was
+ * shown "those pages are not present in the public copy" while we had read six
+ * rows from exactly those pages, and Genentech ($14.35B) was shown "we could
+ * not read it" when the real cause is that no MTIA filing exists under the EIN
+ * its Schedule D names.
+ *
+ * The pattern demands the row say the PLAN HOLDS AN INTEREST in a trust. A
+ * bare mention of "trust" is not enough: fund names like "Collective Trust
+ * Fund" contain the word and are ordinary holdings, and this bit makes a claim
+ * on the page. Measured over the live store: 6 plans, 75,808 participants,
+ * $16.8B — 4 band-hi, 1 trust, 1 few, so it is deliberately NOT keyed to dx. */
+const TRUST_INTEREST_ROW =
+  /\b(?:interest in|participation in|investment in)\b[^|]{0,40}\bmaster trust\b|\bmaster trust\b[^|]{0,30}\bat (?:fair|contract) value\b|^plan(?:'s)? interest\b/i;
+function trustHeldUnlinked(ack) {
+  const e = buckets[shardOf(ack)][ack];
+  const funds = (e && e.funds) || [];
+  return funds.some((f) => TRUST_INTEREST_ROW.test(String(f.name || "").trim()));
+}
+
 /* Document-shape enum for plans-index bits 13-15. Order is FROZEN: the
  * frontend decodes by number, so appending is safe and reordering is not. */
 const DS_ENUM = { noattach: 1, notable: 2, omitted: 3, absent: 4, scanned: 5, readfail: 6, unread: 7 };
@@ -213,11 +237,16 @@ try {
      * "scanned/absent, or held through a trust". Read ONLY when there is no
      * lineup to show — `ds` describes the FILING, not our success, and must
      * be conditioned (a band-hi plan legitimately carries ds=readfail). */
-    if (st && !st.c && !(b & (1 | 2048 | 4096)) && DS_ENUM[st.ds]) b |= DS_ENUM[st.ds] << 13;
+    /* Trust-held-but-unlinked outranks the document-shape sentence, because
+     * that sentence would describe the FILING when the filing is fine and the
+     * gap is the missing trust return. Gated on having no lineup from any
+     * source and no trust link of its own. */
+    if (st && !st.c && !(b & (1 | 2048 | 4096)) && !r[mi] && trustHeldUnlinked(r[ai])) b |= 65536;
+    if (st && !st.c && !(b & (1 | 2048 | 4096 | 65536)) && DS_ENUM[st.ds]) b |= DS_ENUM[st.ds] << 13;
     return b;
   });
   writeFileSync("plans-index.json", JSON.stringify({ generated: new Date().toISOString(), count: bits.length, bits }));
-  console.log(`wrote plans-index.json: ${bits.length} rows, ${bits.filter((b) => b & 2048).length} trust-lineup plans, ${bits.filter((b) => b & 4096).length} filed-in-aggregate, ${bits.filter((b) => (b >> 13) & 7).length} with a document-shape reason`);
+  console.log(`wrote plans-index.json: ${bits.length} rows, ${bits.filter((b) => b & 2048).length} trust-lineup plans, ${bits.filter((b) => b & 4096).length} filed-in-aggregate, ${bits.filter((b) => (b >> 13) & 7).length} with a document-shape reason, ${bits.filter((b) => b & 65536).length} trust-held-but-unlinked`);
 } catch (e) { console.warn("plans-index skipped (plans-all absent?): " + e.message); }
 
 const vals = Object.values(status.plans);

@@ -38,6 +38,13 @@ const aggPlan = byAssets.find((r) =>
   !g(r, "sf") && ((bootBits[rowOf.get(r)] || 0) & 4096) && (g(r, "assetsEOY") || 0) > 0);
 if (!fullPlan || !trustPlan || !sfPlan) fail("could not pick specimen plans from data");
 if (!aggPlan) fail("could not pick a filed-in-aggregate specimen — no live plan carries bit 4096");
+/* bit 65536: the plan's own rows say its money is an interest in a master
+ * trust we could not link. Six plans, 75,808 participants - small, but they
+ * were being told something false about their filing, so the page they get
+ * instead has to be checked. */
+const trustUnlinkedPlan = byAssets.find((r) =>
+  !g(r, "sf") && ((bootBits[rowOf.get(r)] || 0) & 65536));
+if (!trustUnlinkedPlan) fail("could not pick a trust-held-but-unlinked specimen — no live plan carries bit 65536");
 
 const server = spawn("python3", ["-m", "http.server", String(PORT)], { stdio: "ignore" });
 try {
@@ -83,6 +90,17 @@ try {
    * v105 dominant-row shape — but suppressing it SILENTLY would read as "no
    * schedule was filed", which is false and is the exact confusion the
    * standing rule forbids. */
+  /* TRUST-HELD BUT UNLINKED. The filing is fine and we read it; the fund
+   * detail is in the trust's separate return. The page must not blame this
+   * filing, which is exactly what the document-shape sentence used to do. */
+  const t5 = await openPlan(trustUnlinkedPlan, "trust-held-unlinked");
+  if (!/interest in a master trust/i.test(t5))
+    fail("trust-held-unlinked: page does not say the assets are an interest in a master trust");
+  if (!/plan's own filing was read without trouble/i.test(t5.replace(/\s+/g, " ")))
+    fail("trust-held-unlinked: page no longer clears the plan's own filing of the gap");
+  if (/could not read it — that's our gap|pages are not present in the public copy/i.test(t5))
+    fail("trust-held-unlinked: the false document-shape sentence is still being rendered");
+
   const t4 = await openPlan(aggPlan, "filed-in-aggregate");
   if (!/in aggregate/i.test(t4))
     fail("filed-in-aggregate: page does not explain that the FILING reports investments in aggregate");
@@ -144,7 +162,7 @@ try {
   if (covDrift.length) fail(`coverage band in app.js disagrees with scripts/lib-disclose.mjs on ${covDrift.length} of ${covCases.length} cases`);
 
   await browser.close();
-  console.log("SMOKE OK — full-form, master-trust, short-form and filed-in-aggregate pages all render honestly");
+  console.log("SMOKE OK — full-form, master-trust, short-form, filed-in-aggregate and trust-held-unlinked pages all render honestly");
 } finally {
   server.kill();
 }
