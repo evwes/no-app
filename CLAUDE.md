@@ -826,11 +826,36 @@ don't confuse them). Frontend: python http.server + Playwright at
   contributions, limited to 6 percent"*, Collins Engineers). The classic
   `first/next` tier is only 29 plans, because that shape already parses.
 
-  **So the honest scoping is:** ~1,710 plans / 3.2M participants are reachable
+  **BUG OR UNIMPLEMENTED? Settled, and it decides who may start this.** Each
+  stored sentence was fed to the PRODUCTION extractor on its own: if the
+  sentence alone yields a formula, the pattern covers the phrasing and
+  something in the surrounding filing stopped it — a path defect, fixable under
+  the standing accuracy directive. Random sample of 120 from the pool:
+  **0 path defects, 120 uncovered (100%).** This is NEW COVERAGE, not a bug,
+  so it remains the owner's call and no session should start it unasked.
+
+  **And the reachable figure is ~1,634, not 1,710.** 76 of the pool are not
+  match language at all: **60 are NONELECTIVE contributions** stored as
+  matchText (PepsiCo *"Company non-matching contributions"*, NYU *"nonelective
+  employer contributions … at a rate of 5%"*), 6 describe the EMPLOYEE's own
+  deferral (*"Participants may elect to contribute … up to 6%"*, Entergy), 1
+  never says "match". A rate being present does not make a sentence a match —
+  worth remembering before any of these counts is reused.
+  (Two hits in the contamination screen were my own classifier's error, not the
+  data: Apex Systems' *"Safe Harbor matching contributions equal to 100% of the
+  participant's first 1%"* is a real formula. The screen over-counts slightly;
+  the solid contamination is the ~67 NEC/deferral/no-match cases.)
+  One specimen names a cause of its own: MMI Services stores
+  *"TheCompany provides asafeharbormatching contribution equalto100%of…"* —
+  **pdftotext emitted it with no word spacing**, so no pattern can match at any
+  phrasing. A de-spacing repair would be a separate, general fix.
+
+  **So the honest scoping is:** ~1,634 plans / ~2.9M participants are reachable
   with no downloads and look like a handful of qualifier families, not a tail;
   the remaining 8.4M participants need a pipeline pass that captures the
   match-bearing sentence even when no formula parses — the `dx` idea applied to
-  features. **Still not a re-prioritisation: that call is the owner's.**
+  features. **Still not a re-prioritisation: that call is the owner's, and the
+  0/120 result above confirms it is new work rather than a repair.**
 
   **Short-form filers are the other structural gap: 7.35M people with
   essentially nothing.** But the 8a characteristic codes are on the FORM, so
