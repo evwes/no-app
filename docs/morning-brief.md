@@ -137,12 +137,49 @@ forward one cycle earlier, in the same paragraph that warns to check whether
 the example is still current, and it cost this morning a wasted investigation.
 Copying a line forward is asserting it again.
 
+## Shipped since this brief was written
+
+Three things reached the live site during the day. All are on `main`.
+
+**780,296 people stopped being told their filing was unreadable.** 52 plans —
+Albertsons (236,172), Mars, Nestlé, Johnson Controls, Siemens, Schlumberger,
+Genentech, Conagra, $89.3B between them — hold their money in a *master trust*,
+a pooled fund shared across an employer's plans. Their own filings read
+perfectly; the fund detail is in the trust's separate return. The page was
+blaming the wrong document. It now says what is actually true, and says it
+two different ways because there are two different truths: for 8 plans we
+never matched the trust's return at all, and for 44 we found it and **it** is
+the one with no readable fund list. Telling Albertsons we couldn't find its
+trust would have replaced one false sentence with another.
+
+No re-parse was needed — the evidence was already in the stored data.
+
+**The smoke test was red for ten runs and nobody noticed**, from 2026-09-08.
+Several of my own commits in that window say "tests green" — true locally,
+never checked in CI. Both causes were my defects in the test itself, one of
+them a hardcoded sandbox path that makes Node report a missing Python
+interpreter, which sent the first reading of the failure at the wrong thing
+entirely. Fixed; the first green run since the 8th. A red guard is worse than
+no guard, because its name in the workflow implies coverage that isn't there.
+
+**A state file that said `DO NOT MIRROR` was retired.** It had gone unmaintained
+since August, described a cancelled run from three weeks ago, and a session
+obeying it would have refused every mirror made today. Rewritten to ten keys
+that can be verified. Stale documents here don't merely go unread — this one
+was pointed at the mirror.
+
 ## What continues today
 
 - Two plans publishing a menu that covers half their money, and one master
   trust that failed to read and will retry itself.
 - The swap check that catches those two is now on `main`, so it runs on every
   scheduled build rather than only on mine.
+- The fund-menu gap table has no undiagnosed entries left. The last one —
+  31 plans whose holdings summed to more than the plan is worth — came back as
+  OCR wreckage, asset-class labels and bare tickers, 12,688 people across 29
+  plans. **Recorded, not fixed**: naming the cause is what the standing
+  directive asks for; spending parser effort there against a 13.5-million-person
+  match gap is not.
 
 ## Waiting on you
 
