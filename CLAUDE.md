@@ -255,8 +255,12 @@ that changing visibility also unpublishes GitHub Pages.
    not the minutes.
 2. **Assistant session usage.** The genuine monthly limit that has actually
    been hit is the assistant's, not GitHub's. Long polling loops, re-reading
-   large tool outputs, and re-deriving facts already written in
-   `docs/cadence-state.json` burn it for nothing.
+   large tool outputs, and re-deriving facts already written down burn it for
+   nothing — but **verify a state file before trusting it**, because
+   `docs/cadence-state.json` sat for two weeks saying
+   `partialDataWarning: "ACTIVE ... DO NOT MIRROR"` about a run cancelled in
+   August while the branch held a complete store. A stale state file does not
+   merely go unread; it blocks correct action.
 3. **Concurrency**, not consumption: 20 concurrent jobs on the free tier. The
    matrix uses 13 shards plus prep and merge, so there is headroom but not
    unlimited headroom for widening the matrix.
@@ -381,8 +385,12 @@ costs a night.
   re-parse, the nightly sweep happens there so results are ready for the 7–9 AM
   review. It never means "hold work until 1 AM."
 - **Hourly cycles run around the clock.** Each takes the next item from the
-  queue in `docs/cadence-state.json` and finishes it, recording which item it
-  took so the next hour does not collide.
+  **residuals table's `reachable` column** (parser work) or leaves it alone if
+  the only remaining items are the owner decisions. **There is no separate task
+  queue** — this line used to name `docs/cadence-state.json` as one and that was
+  never true. That file is STATE, not a queue, and as of 2026-09-11 it holds
+  only what a session needs before acting; the 135 keys of August parser notes
+  it had accumulated are in git history and `docs/accuracy-log.md`.
 - **`docs/morning-brief.md`** is current and committed before 7:00 AM ET,
   overwritten nightly — decision-shaped, not a log: what shipped and what it
   changed in numbers, what was found wrong and whether it is fixed or queued,
