@@ -752,13 +752,54 @@ don't confuse them). Frontend: python http.server + Playwright at
   plans that have left the bucket.** It read "`band-hi` by dollars and
   participants (Compass Group USA 312,914 participants; UPS $14.2B)" — both are
   gone from band-hi entirely, and band-hi is no longer the largest bucket on
-  any axis. Current order, all three axes agreeing for once:
-  **`few` leads** (532 plans / 307,594 participants / $21.3B), then `stmt`
+  any axis. By raw size the order is `few` (532 / 307,594 / $21.3B), `stmt`
   (253 / 142,545 / $15.6B — still includes State Farm
-  20251010104106NAL0007965633001), then `band-hi` (128 / 110,568 / $7.2B, top
-  plan Conagra Brands 28,863p / $1.7B). Of `nohead`'s 417 only **4 are ours**;
-  the other 413 are documented absences. Before opening any of these, check the
-  example is still in the bucket — this row has now gone stale twice. The
+  20251010104106NAL0007965633001), `band-hi` (128 / 110,568 / $7.2B, top plan
+  Conagra Brands 28,863p / $1.7B). Of `nohead`'s 417 only **4 are ours**; the
+  other 413 are documented absences. Before opening any of these, check the
+  example is still in the bucket — this row has now gone stale twice.
+
+  **BUT `few` IS NOT THE PLACE TO SPEND PARSER EFFORT, DIAGNOSED 2026-09-11 —
+  and that corrects the ordering written one cycle earlier in this same
+  paragraph.** `few` had no recorded cause breakdown; "fewer than 3 rows"
+  names the OUTCOME, not the cause, so under the standing directive it was an
+  undiagnosed unknown sitting at the top of the list. Diagnosed from the store
+  (`rw`/`rt`, no downloads): 60 plans got rw=0, 218 rw=1, 254 rw=2, and **328
+  of 532 sit at ratio 0.90-1.10** — the rows found already account for the
+  whole plan. That looks like correct parses of one-vehicle plans being
+  suppressed by the 3-row floor. **It is not.** Reading the stored row names
+  on a RANDOM 30 (ranked views are how two yield projections went wrong here):
+
+  | class | n of 30 | example |
+  |---|---|---|
+  | parse garbage / OCR / sponsor name as a holding | **13 (43%)** | `"@ Total non"`, `"e Py ge 6"`, `"DUNHAM'S ATHLEISURE CORPORATION"` |
+  | the FILING reports only an asset-class total | 9 (30%) | `"403(b) annuity contracts and custodial accounts"` |
+  | provider house name only, no fund | 4 (13%) | `"VOYA"`, `"T. Rowe Price"` beside a loan row |
+  | plausibly publishable short menu | **4 (13%)** | `"TFLIC Fixed Fund"`, `"Govt Fixed Fund"` |
+
+  So **~87% has nothing publishable and the 3-row floor is doing real work** —
+  the 43% garbage class is exactly what would become fabricated rows if the
+  floor were lowered, which is the v100-v105 family. The reachable slice is
+  ~13%, 95% CI roughly 4-31%, so ~70 plans of 532 with wide error. Ranked by
+  what is OURS rather than by raw count, `few` drops below `stmt` and
+  `band-hi`. **Do not lower `funds.length >= 3`.**
+
+  Two small real defects fell out and are recorded, not fixed: a **loan
+  interest-rate range parsed as a row NAME** (`"from 4.25% to 9.50%"`, 13
+  plans, all Massachusetts savings banks on the same Association Common
+  Collective Trust filing template), and the **sponsor's own name parsed as a
+  holding** (Sanctuary For Families, Dunham's Athleisure, Reliabank Dakota).
+  Both are invisible today because the floor suppresses the whole lineup.
+
+  METHOD NOTE, because it nearly published a wrong number: classifying these
+  rows with the shipped `GENERIC_TYPE_NAME` / `NOT_FUND_SHAPED` predicates
+  returned **"99% have at least one real fund name"**, which is false. Those
+  predicates are anchored exact matches built to audit PUBLISHED lineups, and
+  this population is fragments, OCR noise and generic types carrying a
+  modifier — `"Master Pooled Separate Account"` fails
+  `/^pooled separate accounts?$/`. They matched 3 of 393. **Reusing a shipped
+  predicate is right; assuming it transfers to a different population is
+  not.** The
   nohead 50-sample measurement (56% no attachment / ~0 fixable) was taken on
   the PRE-split bucket dominated by final-year plans; the live remainder was
   then split exactly by `ds` and its `readfail` half closed in v114.
