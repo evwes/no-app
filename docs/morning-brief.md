@@ -6,7 +6,9 @@
 and five accuracy fixes all reached the site, and the pipeline is healthy
 again after a week in which three consecutive runs failed.
 
-Nothing is waiting on a decision from me. Two things are waiting on you.
+Nothing is waiting on a decision from me. Three things are waiting on you, and
+the third one — where to point the parser next — I can now put real numbers
+behind rather than an impression.
 
 ## What is live
 
@@ -60,16 +62,50 @@ opposite verdicts.
 I had read eight filings, found eight false alarms, and generalised to 830.
 The rule that would have caught it was already written down.
 
+## The match gap, now measured instead of estimated
+
+I wrote above that match is the largest open item. It still is. But two things
+I said about it last night were guesses, and overnight I replaced both with
+counts. **The shape of the work is different from what I told you.**
+
+**It is not "one pattern away", and it is not a bug.** I fed every stored match
+sentence to the parser on its own. If a sentence yields a formula in isolation,
+the pattern already handles that phrasing and something in the filing defeated
+it — that would be a defect, and I would fix it without asking. Random sample
+of 120: **0 defects, 120 genuinely not covered.** So this is new capability,
+not a repair, which is why it stays your call.
+
+**It is also not "a long tail of phrasings".** Clustered by rate shape, **one
+family is 59% of the workable set** — the ordinary "N% of" formula carrying an
+awkward qualifier: a range ("100% of the first 4–5% of base compensation"), an
+alternatives list ("5.5%, 7.5%, or 9.5% … depending on"), a bare cap with no
+rate pair, a doubled unit ("25% percent … limited to 6 percent"). The classic
+tiered "first/next" shape is only 29 plans, because that one already parses.
+
+**And the honest split of the 13.5 million:**
+
+| | plans | people | what it needs |
+|---|---|---|---|
+| we already hold a sentence stating a rate | **~1,634** | **~2.9M** | pattern work only, no downloads |
+| we hold a sentence with no rate in it | 3,491 | 8.4M | a pipeline pass over the PDFs |
+| we hold no match sentence at all | ~8,800 | — | the same pipeline pass |
+
+The first row is a weekend's work with the evidence already on disk. The rest
+needs a re-parse that captures the match-bearing sentence even when no formula
+comes out of it.
+
+One correction inside the correction: I first said 1,710 for that top row. **76
+of them are not match language at all** — 60 are nonelective contributions
+(PepsiCo's "Company non-matching contributions", NYU's "nonelective employer
+contributions … at a rate of 5%"), 6 describe the employee's own deferral, 1
+never says "match". A rate being present does not make a sentence a match.
+
 ## What continues today
 
-- **The match gap is the largest open item and it is ours, not the filings'.**
-  8,672 live plans covering **13.5 million people** have employer money flowing
-  and no formula shown — roughly six times the fund-menu gap. Their audit notes
-  are readable; we're just not catching the sentence. Costco and Tyson were
-  checked by hand and each uses a phrasing we don't recognise, which argues a
-  long tail rather than one missing pattern.
-- Smaller: two plans publishing a menu that covers half their money, and one
-  master trust that failed to read and will retry itself.
+- Two plans publishing a menu that covers half their money, and one master
+  trust that failed to read and will retry itself.
+- The swap check that catches those two is now on `main`, so it runs on every
+  scheduled build rather than only on mine.
 
 ## Waiting on you
 
@@ -78,7 +114,13 @@ The rule that would have caught it was already written down.
 2. **Custom domain DNS.**
 3. **A decision I have deliberately not made for you:** whether to redirect
    effort from fund menus toward the match gap. Menus have had most of the
-   parser work; match affects six times as many people. I can also surface the
-   form-level codes we already hold for the 43,523 short-form filers — 7.35
-   million people whose pages currently show almost nothing, where **83% of
-   filings state a match/after-tax code** we simply don't display.
+   parser work; match affects six times as many people. Concretely, three
+   things you could say yes to independently:
+   - **~1,634 plans / ~2.9M people, no downloads** — write patterns for the
+     qualifier families above. Smallest, cheapest, entirely local.
+   - **8.4M people, one re-parse** — store the match-bearing sentence even when
+     no formula parses, the way we already store a reason when a fund menu
+     fails to read. Costs a full re-parse (~1.5h of wall clock, no money).
+   - **7.35M people on short-form filings**, whose pages show almost nothing
+     today. Their audit attachment does not exist by law, but the form codes
+     do: **83% state a match/after-tax code** we simply don't display.
