@@ -44,7 +44,7 @@ for (let i = 0; i < SHARDS; i++) {
         const nm = String(f.name || "").trim();
         return x + (AGG_DISCLOSURE.test(nm) || GENERIC_TYPE_NAME.test(nm) ? (f.value || 0) : 0);
       }, 0);
-      prevShape[a] = { n: e.funds.length, r: e.coverageRatio || 0, agg: sum > 0 && aggSum / sum >= 0.9 };
+      prevShape[a] = { n: e.funds.length, r: e.coverageRatio || 0, agg: sum > 0 && aggSum / sum >= 0.9, fb: e.fb || null };
     }
   }
 }
@@ -275,4 +275,45 @@ console.log(`merged ${applied} entries; totals: ${vals.length} parsed, ${vals.fi
   else if (!currentAcks) console.log("  supersession filter SKIPPED (plans-all unavailable) — losses may include superseded filings");
   console.log(`  real-menu-shaped losses (auto-triage → audit HIGH): ${realish.length}`);
   writeFileSync("losses-triage.txt", realish.join("\n") + (realish.length ? "\n" : ""));
+
+  /* SOURCE SWAPS — the blind spot the loss triage cannot see.
+   *
+   * Everything above compares CONFIDENT to NOT-CONFIDENT. A plan that stays
+   * confident while its lineup SOURCE changes — served from its prior-year
+   * filing one run, from its own newest filing the next — moves no count at
+   * all: `c` stays 1, the totals do not budge, the triage never looks.
+   *
+   * Measured on run #254 (2026-09-10), which swapped 157 plans that way:
+   * 94 held or grew their row count, and the 10 that shrank were FINE because
+   * their ratio moved TOWARD 1.0 (Extron 55 rows @ 0.81 -> 7 @ 0.97) — the
+   * signature of the prior year having carried extra rows, not of lost
+   * detail. Row count alone would have flagged all ten and been wrong ten
+   * times. What actually discriminates is the ratio moving AWAY from 1.0, and
+   * exactly 2 did: Prevost Car 15 rows @ 0.90 -> 15 @ 0.46 and Pediatrics
+   * West 33 @ 0.95 -> 37 @ 0.51. Nothing fabricated — the rows are real — but
+   * each now publishes a menu accounting for about half the plan's money,
+   * clearing isConfident only because the floor is 0.45.
+   *
+   * WARN, not HIGH: a swap is usually an upgrade and the population is tiny,
+   * so this must not drown the four known-baseline HIGHs. It exists so the
+   * next one is seen at all. */
+  {
+    const swaps = [];
+    for (const [a, m] of Object.entries(status.plans)) {
+      if (!m.c) continue;
+      const before = prevShape[a];
+      if (!before || !before.fb) continue;       // was NOT served from a prior year
+      if (m.fb) continue;                         // still is: not a swap
+      const e = buckets[shardOf(a)][a];
+      if (!e || !e.funds) continue;
+      const r = e.coverageRatio || 0;
+      const drift = Math.abs(1 - r) - Math.abs(1 - before.r);
+      if (drift > 0.25) {
+        swaps.push(`${a} ${before.n} rows @ ${before.r.toFixed(2)} (from ${before.fb}) -> ${e.funds.length} rows @ ${r.toFixed(2)}`);
+      }
+    }
+    console.log(`  source swaps that DEGRADED coverage (prior-year -> own filing, ratio >0.25 further from 1.0): ${swaps.length}`);
+    for (const line of swaps.slice(0, 15)) console.log(`    ${line}`);
+    writeFileSync("swaps-degraded.txt", swaps.join("\n") + (swaps.length ? "\n" : ""));
+  }
 }
