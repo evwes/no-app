@@ -457,11 +457,14 @@ costs a night.
   **0.51** (`20251008185545NAL0003501731001`). Nothing is fabricated — the rows
   are real — but each now publishes a menu accounting for about half the plan's
   money, and both clear `isConfident` only because the floor is 0.45.
-  Small (1,005 participants between them) and NOT yet fixed. **Queued: a
-  `source-swap-degraded` check in `merge-4i.mjs`** beside the loss triage,
-  firing when a plan leaves a prior-year lineup and its ratio moves >0.25
-  further from 1.0. Deliberately not written while #256 was in flight —
-  `merge-4i.mjs` is what decides whether a running re-parse lands.
+  Small (1,005 participants between them). **SHIPPED 2026-09-11**: merge-4i
+  emits `swaps-degraded.txt` beside `losses-triage.txt` and audit-data raises
+  them as **WARN** — 2 of 157 is too small a population to be allowed to drown
+  the four baseline HIGHs. Verified with a positive control end-to-end through
+  the real merge, both directions: a crafted delta swapped two plans off their
+  prior-year lineups at once, one landing at 0.46 (flagged) and one landing at
+  1.00 with rows cut 15→5 (NOT flagged — the Extron shape). **A check that
+  prints 0 on a quiet store has not been tested.**
 - **Every re-parse must be a provably better version (owner directive
   2026-08-12)**: (4) merge auto-triages confidence LOSSES — any lost
   lineup whose old parse was real-menu-shaped (n≥7, or n≥5 at ratio
@@ -573,11 +576,11 @@ don't confuse them). Frontend: python http.server + Playwright at
 /opt/pw-browsers/chromium; verify TK page, tabs, filters, deep links
 (#plan=EIN|PN|TICKER).
 
-## Current state (2026-09-10)
+## Current state (2026-09-11)
 
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
-  full-form** filers; 68,767 parse-status entries. **Parser v120, OCR v8.**
+  full-form** filers; 68,767 parse-status entries. **Parser v123, OCR v8.**
 - **LIVE on main: `9bb4ba05`, the COMPLETE v123 store — MIRRORED 2026-09-10
   23:1xZ.** Same numbers as the v122 mirror below (v123 changes only the
   `frozen` flag, which no coverage metric counts): 60,089 confident, HIGH 4,
@@ -652,34 +655,22 @@ don't confuse them). Frontend: python http.server + Playwright at
   `extractPlanFeatures(text, sponsorName)` — the sponsor name is what lets
   "the Hanes Retirement Plan" in Leggett & Platt's filing be told from "the
   Plan" in Hanes' own.
-- **The dev branch holds run #254's v121 store (`64ddac5d`) — the first
-  HEALTHY full re-parse since #243, and still NOT mirrored.** #244-#253 were
-  the two null-deref runs (isConfident, then featFb/fbUsed); #254 is the first
-  with both fixes. It is complete and clean on every machine check:
-  **pv 121 covers 68,703 of 68,767 (99.9%)**, fetch failures **64 (0.09%)**
-  — down from 11,495 — reader failures **0**, **HIGH back at the baseline of
-  4**, confident **60,009** (main: 59,894, so **+146 gained / −31 lost**).
-  **v119 delivered its measured win**: lineups whose NOTES come from the prior
-  year went **487 → 1,610 (+1,123)**, which is the 1.9M-participant class
-  reopened on 2026-09-10.
-- **The one blocker is the SAME 31 lineups, and `mirror-gate.mjs` refuses on
-  them.** They are prior-year-fallback lineups main serves and the branch does
-  not — Lowe's (295,951 participants, $8.6B, 44 rows from its 2024 filing via
-  OCR) plus 30 much smaller plans; the printed 25 total 310,883 participants
-  and $10.5B, of which Lowe's is 95%.
-  **The fallback path itself is NOT broken — measured, and it refuted the
-  obvious hypothesis.** Of main's 1,249 prior-year lineups, **1,061 still
-  serve from the prior year**, **157 were UPGRADED** (their own newest filing
-  now parses confidently), and only **31 lost confidence at all**. So "v119
-  broke the fallback" is false; this is a specific population.
-  On the branch all 31 carry **no `fb` at all** and a `dx` from their newest
-  filing (band-hi 6, few 9, stmt 6, band-lo 2, trust 1, narrow 1), and the
-  store records **no `fb-threw` and no `fb-unreadable`** for any of them.
-  A fallback that is never ATTEMPTED — because `FALLBACKS[ack]` is absent —
-  logs nothing at all, which is the one shape consistent with every field.
-  **That invisibility is itself the defect to fix**: `fetch-4i` must say when
-  it skips the fallback for a non-confident plan, exactly as the morning's
-  four silent catches now do.
+- **RESOLVED 2026-09-10, kept only as history — do not read the numbers below
+  as current.** #244-#253 were the two null-deref runs (isConfident, then
+  featFb/fbUsed). #254 was the first healthy re-parse but `mirror-gate.mjs`
+  refused it over **31 prior-year lineups**, Lowe's (295,951 participants,
+  $8.6B) among them. The obvious hypothesis — "v119 broke the fallback" — was
+  FALSE and measurement said so: of main's 1,249 prior-year lineups 1,061 were
+  still served from the prior year and 157 were UPGRADED, so only 31 lost
+  anything. **The real cause was that prep offered exactly ONE prior filing**;
+  when that one was unreadable the plan got nothing even though an older
+  filing parsed. v122 made `fallbacks.json` carry up to three candidates,
+  newest-first, and all 31 returned (#256, gate +195/−0).
+  The lasting lesson is about the RECORD, not the rescue: a fallback never
+  attempted and one that read but was unpublishable left an **identical**
+  trace — no `fb`, a `dx` from the primary, no error code — so the cause could
+  not be named from the store at all. Both now log (`fb-vanished`,
+  `fb-rejected`). **An absent error code is a published claim too.**
   Note these entries were already deleted from the branch store by #244, so
   v120's "keep the stored lineup when the fallback cannot be read" guard had
   nothing left to protect — the guard is right and stays, but it cannot
