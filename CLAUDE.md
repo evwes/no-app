@@ -504,6 +504,26 @@ costs a night.
   kick push, dispatch rather than waiting, because it also sometimes does not.
   The run listing immediately after any push is the only evidence that counts,
   in both directions.
+- **AND VERIFY THE CONCLUSION, NOT JUST THAT A RUN EXISTS (2026-09-11).** The
+  rule above covers a run that never started. Its mirror image cost three days:
+  **site-test was RED for ten consecutive runs, #47 to #56, from 2026-09-08**,
+  and several commits in that window say "smoke and map tests green" in their
+  own messages. Those were true LOCALLY. Nobody opened the CI conclusion. A red
+  guard is worse than no guard, because its name sits in the workflow implying
+  coverage that has not existed — and once it is habitually red, a REAL failure
+  is invisible among the noise. **After any push that triggers site-test or
+  build-data, read `conclusion` on the resulting run before believing the
+  change is verified.**
+  The cause was two of my own defects in `map-test.mjs` (`e142b123`), and one
+  of them is a trap worth naming: `cwd: "/home/user/no-app"` — a hardcoded
+  SANDBOX path — makes Node report **`spawn python3 ENOENT`**, which is
+  indistinguishable from python3 being absent from the runner and sent the
+  first reading of the failure at the runner image. The disproof was in the
+  same log: `smoke-test.mjs` spawns the same binary in the same job and
+  succeeds; it simply omits `cwd`. **Never hardcode the sandbox path in
+  anything CI runs** — and when a spawn reports ENOENT, suspect the cwd before
+  the binary. Fixed, and #57/#58 are the first green site-test since
+  2026-09-08.
 - **Read the data stores through `scripts/lib-schema.mjs`** — `loadPlans()`,
   `loadStatus()`, `loadTrusts()`. A guessed field name throws and names the
   real fields instead of returning `undefined`. Three wrong published numbers
