@@ -789,11 +789,48 @@ don't confuse them). Frontend: python http.server + Playwright at
     in excess of 3% but not more than 5%"* — a standard two-tier, phrased with
     "on ... up to" rather than "of the first".
 
-  Two samples, two DIFFERENT missing shapes, which argues a long tail of
-  phrasings rather than one absent pattern. **Do not attack this by adding
-  regexes one at a time.** The filings are already local: extract the
-  match-bearing sentence from all 8,672, cluster them, work the clusters by
-  frequency. No downloads required.
+  **MEASURED AND PARTLY CORRECTED 2026-09-11.** Two claims in the paragraph
+  above were wrong and the numbers now exist.
+
+  *"The filings are already local, no downloads required"* — **only partly.**
+  Of the 14,019 live plans with employer money and no parsed match, **5,201
+  already carry a stored match SENTENCE** (the extractor found the language and
+  failed on the number); the other ~8,800 store no match sentence at all and
+  need the PDF. Split the 5,201 with `matchQuoteOk` — which decides whether a
+  sentence states a RATE — and the workable half is exact:
+
+  - **RATE PRESENT: 1,710 plans / 3,205,799 participants.** The sentence states
+    a rate, we store it, we show it to readers as the filed quote, and we still
+    publish no formula. A pure formula-parser gap with the evidence in hand.
+  - no rate in the stored sentence: 3,491 plans / 8,441,677 participants — the
+    formula is elsewhere in the filing if anywhere, and that needs the PDF.
+
+  *"A long tail of phrasings"* — **not mainly.** Clustered by rate shape
+  (disjoint, first match wins), **one family is 59% of the workable set**:
+
+  | shape | plans | participants |
+  |---|---|---|
+  | plain `N% of` | **1,011** | 1,464,750 |
+  | lesser-of / cap | 326 | 1,150,033 |
+  | other | 182 | 326,780 |
+  | tiered first/next | 29 | 75,492 |
+  | per-dollar | 25 | 71,063 |
+  | spelled-out % | 77 | 52,800 |
+  | tiered on/up-to | 45 | 46,332 |
+
+  And the largest family is not exotic — it is the canonical shape carrying an
+  unusual QUALIFIER: a range (*"100% of the first 4-5% of base compensation"*,
+  S.C. Johnson), an alternative list (*"5.5%, 7.5%, or 9.5% ... depending on"*,
+  King School), a bare cap with no rate pair (*"up to 6% of a participant's
+  compensation"*), or a doubled unit (*"25% percent of participant
+  contributions, limited to 6 percent"*, Collins Engineers). The classic
+  `first/next` tier is only 29 plans, because that shape already parses.
+
+  **So the honest scoping is:** ~1,710 plans / 3.2M participants are reachable
+  with no downloads and look like a handful of qualifier families, not a tail;
+  the remaining 8.4M participants need a pipeline pass that captures the
+  match-bearing sentence even when no formula parses — the `dx` idea applied to
+  features. **Still not a re-prioritisation: that call is the owner's.**
 
   **Short-form filers are the other structural gap: 7.35M people with
   essentially nothing.** But the 8a characteristic codes are on the FORM, so
