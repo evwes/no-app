@@ -356,6 +356,21 @@ try {
   }
 } catch { /* no triage file — merge didn't run in this invocation */ }
 
+/* SOURCE SWAPS that degraded coverage. The loss triage above compares
+ * confident to not-confident; this is the case where a plan stays confident
+ * while its lineup source changes and the new parse accounts for materially
+ * less of the plan. WARN rather than HIGH deliberately: measured on run #254,
+ * 157 plans swapped and only 2 degraded, so the population is tiny and a HIGH
+ * would drown the four known-baseline findings. It exists so the next one is
+ * seen at all — nothing looked at this class before 2026-09-11. */
+try {
+  const swaps = readFileSync("swaps-degraded.txt", "utf8").trim().split("\n").filter(Boolean);
+  for (const line of swaps.slice(0, 20))
+    flag("warn", "source-swap-degraded", `lineup moved off its prior-year filing and now covers materially less of the plan: ${line}`);
+  if (swaps.length > 20)
+    flag("warn", "source-swap-degraded", `… and ${swaps.length - 20} more (swaps-degraded.txt in the merge log)`);
+} catch { /* no swaps file — merge didn't run in this invocation */ }
+
 // REPARSE VERDICT: compare this run's coverage line to the previous one.
 // Improvement is the contract; a regression beyond tolerance is a HIGH
 // that demands diff-sampling before the data is mirrored to main.

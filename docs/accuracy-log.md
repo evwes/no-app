@@ -8275,3 +8275,49 @@ catches says nothing about the count of things it breaks. *(3)* The same-day
 correction is cheap only because the numbers were written down; had I recorded
 "most frozen flags are wrong" with no denominator, nothing would have exposed
 it.
+
+---
+
+## 2026-09-11 — the blind spot between "lost" and "kept": source swaps
+
+**What nothing was watching.** Every automated check compares CONFIDENT to
+NOT-CONFIDENT. A plan that stays confident while its lineup SOURCE changes —
+served from its prior-year filing one run, from its own newest filing the next
+— moves no count at all: `c` stays 1, the coverage line does not budge, the
+loss triage never looks at it. Run #254 swapped **157 plans** that way and
+every check called it an upgrade without inspecting what the new parse was
+worth.
+
+**Row count is the wrong discriminator, and measuring proved it.** Of the 157,
+94 held or grew their row count and **10 shrank below 60% of it** — and all ten
+were FINE, because their ratio moved TOWARD 1.0 (Extron 55 rows @ 0.81 → 7 @
+0.97; Northeast Georgia 19 @ 1.19 → 7 @ 1.00). That is the signature of the
+prior year having carried extra rows, not of lost detail. **A row-count check
+would have flagged all ten and been wrong ten times.**
+
+What discriminates is the ratio moving AWAY from 1.0, and exactly **2** did:
+Prevost Car 15 rows @ 0.90 → 15 @ **0.46**, Pediatrics West 33 @ 0.95 → 37 @
+**0.51**. Nothing fabricated — the rows are real — but each now publishes a
+menu accounting for about half the plan's money, clearing `isConfident` only
+because the floor is 0.45.
+
+**The change.** `merge-4i.mjs` emits `swaps-degraded.txt` beside
+`losses-triage.txt` and prints the swaps in the merge log; `audit-data.mjs`
+raises them as **WARN**, not HIGH — the population is tiny and a HIGH would
+drown the four known-baseline findings. `prevShape` now carries `fb` so the
+comparison can tell a swap from a plain re-parse.
+
+**Verified with a positive control, both directions, end-to-end through the
+real merge** rather than by reading the code. A crafted delta swapped two
+plans off their prior-year lineups at once: one landing at ratio 0.46 (flagged,
+correctly) and one landing at 1.00 with its rows cut from 15 to 5 (NOT flagged,
+correctly — the Extron shape). The second case is the one that matters: it is
+exactly where the naive check fails.
+
+**Prevention.** *(1)* When a value can change SOURCE as well as presence,
+"present → absent" checks have a blind spot the size of the swap population;
+ask what else about the value could change while its presence does not.
+*(2)* **A check that prints 0 on a quiet store has not been tested.** This one
+reported 0 correctly on a no-op merge and that proved nothing; the positive
+control is what showed it works, and the negative half is what showed it does
+not over-fire.
