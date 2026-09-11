@@ -20,10 +20,19 @@ async function until(page, fn, label, tries = 40) {
 // a failure that names its own cause, before the browser work starts
 async function die(msg) { console.log("\nMAP TEST FAILED:\n  " + msg); process.exit(1); }
 
-const srv = spawn("python3", ["-m", "http.server", "8899"], { cwd: "/home/user/no-app", stdio: "ignore" });
+/* No cwd: it must be the repo root, which is where this is run from, and a
+ * hardcoded absolute path cannot exist on a CI runner. Worse, a missing cwd
+ * makes Node report "spawn python3 ENOENT" — indistinguishable from python3
+ * being absent, which is what sent the first reading of this failure looking
+ * at the runner image instead of at this line. smoke-test.mjs omits cwd and
+ * has always worked on the same runners. */
+const srv = spawn("python3", ["-m", "http.server", "8899"], { stdio: "ignore" });
 await new Promise((r) => setTimeout(r, 2500));
 
-const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH });
+/* CHROMIUM_PATH is set in the sandbox and unset in CI, where Playwright's own
+ * download is used — same guard smoke-test.mjs uses. */
+const browser = await chromium.launch(
+  process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
 const page = await browser.newPage({ viewport: { width: 1400, height: 1000 } });
 page.setDefaultTimeout(90000);
 const errors = [];
