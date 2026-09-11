@@ -8321,3 +8321,63 @@ ask what else about the value could change while its presence does not.
 reported 0 correctly on a no-op merge and that proved nothing; the positive
 control is what showed it works, and the negative half is what showed it does
 not over-fire.
+
+## 2026-09-11 — the page blamed the FILING for a gap that belonged to a missing trust return (6 plans, 75,808 participants, $16.8B)
+
+**What was wrong.** A plan with no publishable lineup falls through to the
+document-shape sentence, which explains what is wrong with the FILING. For six
+plans the filing was fine and we had read it; what was missing was the separate
+return of the master trust holding their money. So the page asserted something
+false about a document we had successfully parsed.
+
+**Conagra, 28,863 participants**, was shown *"This filing references a schedule
+of assets, but those pages are not present in the public copy."* We had parsed
+**six rows** out of exactly those pages, the largest being `Plan Interest in
+Master Trust at Fair Value` at **97% of plan assets**.
+
+**Genentech, 36,458 participants, $14.35B**, was shown *"we could not read it —
+that's our gap, not the filing's."* We read it without trouble. Its rows say
+`Plan Interest in Roche U.S. Retirement Plans`, and the actual cause was
+already written down elsewhere in the project memory: **no MTIA filing exists
+in EFAST2 under the EIN its Schedule D names.** The right answer was on file and
+the page still said the wrong thing.
+
+Also A.O. Smith (6,080), Hallmark (4,164), Roche Diagnostics (127), American
+Bank & Trust (116).
+
+**The change.** `merge-4i` sets bit 65536 when a plan's own parsed rows say it
+holds an interest in a master trust and it has no link to one, and that bit
+**suppresses** the document-shape sentence rather than sitting beside it —
+suppressing the false claim is the repair, not decorating it. `app.js` renders
+the true line: the assets are an interest in a master trust, the fund detail is
+filed in that trust's own return, we could not match the plan to it, and **the
+plan's own filing was read without trouble**. No re-parse: the evidence was
+already in the stored entries, so this is an index regeneration, the same path
+bit 4096 shipped on.
+
+The pattern demands the row say the plan HOLDS AN INTEREST in a trust. A bare
+mention of "trust" would sweep in ordinary holdings named "Collective Trust
+Fund" — and this bit makes a claim on a page, so a loose match is the same
+class of defect it is fixing.
+
+**The prevention.** A fifth smoke archetype, picked from live data by the bit
+so it cannot go stale, asserting the page says "interest in a master trust",
+that it still clears the plan's own filing, and — the load-bearing one — that
+**neither false sentence is still being rendered**. Negative-controlled:
+disabling the branch fails the suite.
+
+**Two things worth carrying forward.**
+
+*(1)* **A fallback explanation is a claim, and it inherits the confidence of
+the thing it replaced.** The document-shape enum is careful and well-sourced
+for the plans it was built for; the defect was that it ran as the DEFAULT for
+anything with no lineup, including plans whose gap it does not describe. When a
+sentence is chosen by falling through, ask what populations arrive there by
+accident.
+
+*(2)* **Verify the fix with the instrument that found the defect.** The script
+that sized this population at 6 plans / 75,808 participants now returns **0**,
+and the pipeline's own merge — not my local one — independently regenerated the
+index and produced the same 6. Two different checks, one of them run by CI on a
+clean checkout, because "my local run said so" is what hid a red site-test for
+three days that same week.
