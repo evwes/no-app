@@ -8381,3 +8381,50 @@ and the pipeline's own merge — not my local one — independently regenerated 
 index and produced the same 6. Two different checks, one of them run by CI on a
 clean checkout, because "my local run said so" is what hid a red site-test for
 three days that same week.
+
+### ADDENDUM, same day — the fix was scoped by how I found the cases, and left 631,022 participants behind
+
+The entry above is accurate and **understated**. It records 6 plans because the
+gate was `!mtiaAck`, and `!mtiaAck` is how I had *found* them — so the gate
+encoded my sampling boundary as though it were a property of the world.
+
+Auditing the document-shape sentences **by size** rather than by the condition
+I had used found the rest: **41 plans / 631,022 participants** that ARE linked
+to a master trust whose own return did not parse confidently. Bit 2048 requires
+the TRUST to be confident, so they fell through to the same false sentence —
+Albertsons **236,172**, Mars 66,642, Johnson Controls 49,004, Siemens 43,376,
+Schlumberger 38,251, S&P Global, XPO, Baptist Health.
+
+They get a DIFFERENT sentence, not the same one: saying *"we could not match
+this plan to that return"* about Albertsons would be a **second false claim
+replacing the first** — we matched its trust; the trust's return is what lacks
+a readable fund list. Bit 131072 carries that distinction.
+
+A further audit of the 31 the widening deliberately left alone found three
+narrownesses in my own regex, each costing real plans: a singular-only verb
+(`"InvestmentS in master trust"`, Fluor), a 40-character window that a long
+trust NAME overruns (`"Participation interest in HCA Inc. Master Retirement
+Savings Trust"`), and `"master trust"` required verbatim so a trust named
+otherwise was missed (`"Investment in Nestlé in the USA Savings Trust"`).
+Final: **52 plans, 44 of them linked-but-opaque.**
+
+**Three lessons, and the third is the one that keeps recurring.**
+
+*(1)* **When a fix is gated on the same condition used to FIND the cases, ask
+what that condition excludes before calling the class closed.**
+
+*(2)* **Replacing a false claim with a different false claim is not a fix.**
+The two populations needed two sentences because they have two different
+truths; one vague line covering both would have traded a false statement for
+an uninformative one.
+
+*(3)* **Measure the OUTCOME a change produces, not the CONDITION it tests.** I
+projected the last widening at +25 plans / ~600,000 participants and it was
+**5 plans**. The projection counted rows the pattern matched; the bit fires
+only on a match AND no lineup existing from any source. HCA — the
+379,101-participant plan that made the change look valuable — carries bit 2048:
+its trust HAS a confident lineup, so those readers already saw real holdings.
+**Most of what the wider pattern reached was already correct.** The same error
+appeared twice more the same day: a master-trust shape that looked dominant in
+six ranked plans and was 4 of 128, and a hand-rolled predicate whose three-way
+split dissolved on re-count. A predicate's hit count is not a change's effect.
