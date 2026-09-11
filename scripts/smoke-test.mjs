@@ -1,7 +1,10 @@
 /* wampo — deploy smoke test. Boots the site exactly as a visitor would and
- * asserts the three plan archetypes render: a big full-form plan with filed
- * features, a master-trust plan whose lineup comes from the trust, and a
- * short-form filer (which must EXPLAIN its gaps, not just show dashes).
+ * asserts the four plan archetypes render: a big full-form plan with filed
+ * features, a master-trust plan whose lineup comes from the trust, a
+ * short-form filer (which must EXPLAIN its gaps, not just show dashes), and a
+ * FILED-IN-AGGREGATE plan whose own filing reports investments in one line
+ * (MetLife's class) — that page must say so rather than leave a blank a
+ * reader would take for "nothing was filed".
  * Specimen plans are picked from the shipped data at runtime so the test
  * never goes stale as filings roll over. Run: node scripts/smoke-test.mjs
  * (requires playwright; serves the repo root on :8901). */
@@ -24,7 +27,17 @@ const byAssets = [...d.plans].sort((a, b) => (g(b, "assetsEOY") || 0) - (g(a, "a
 const fullPlan = byAssets.find((r) => !g(r, "sf") && ((idx[g(r, "ack")] || 0) & 5) === 5);
 const trustPlan = byAssets.find((r) => !g(r, "sf") && g(r, "mtiaAck") && ((idx[g(r, "mtiaAck")] || 0) & 1) && !((idx[g(r, "ack")] || 0) & 1));
 const sfPlan = byAssets.find((r) => g(r, "sf"));
+/* plans-index.json is ROW-aligned to plans-all, unlike the ack-keyed
+ * lineups-index the three picks above use. Bit 4096 = the filing reports
+ * investments in aggregate (dx=stmt). */
+const bootBits = JSON.parse(readFileSync("plans-index.json", "utf8")).bits;
+if (bootBits.length !== d.plans.length)
+  fail(`plans-index.json is not row-aligned to plans-all (${bootBits.length} vs ${d.plans.length})`);
+const rowOf = new Map(d.plans.map((r, i) => [r, i]));
+const aggPlan = byAssets.find((r) =>
+  !g(r, "sf") && ((bootBits[rowOf.get(r)] || 0) & 4096) && (g(r, "assetsEOY") || 0) > 0);
 if (!fullPlan || !trustPlan || !sfPlan) fail("could not pick specimen plans from data");
+if (!aggPlan) fail("could not pick a filed-in-aggregate specimen — no live plan carries bit 4096");
 
 const server = spawn("python3", ["-m", "http.server", String(PORT)], { stdio: "ignore" });
 try {
@@ -63,6 +76,18 @@ try {
 
   const t3 = await openPlan(sfPlan, "short-form");
   if (!/short[- ]form|SHORT-FORM|doesn't collect|DOL/i.test(t3)) fail("short-form: page does not explain the SF gap");
+
+  /* FILED IN AGGREGATE. The plan filed a schedule; it just reports one line
+   * instead of a fund list. Suppressing the menu is right — publishing a
+   * "participant-directed investments" row at 99.5% of the plan would be the
+   * v105 dominant-row shape — but suppressing it SILENTLY would read as "no
+   * schedule was filed", which is false and is the exact confusion the
+   * standing rule forbids. */
+  const t4 = await openPlan(aggPlan, "filed-in-aggregate");
+  if (!/in aggregate/i.test(t4))
+    fail("filed-in-aggregate: page does not explain that the FILING reports investments in aggregate");
+  if (!/That's how\s+the plan filed, not a gap in our reading of it/i.test(t4.replace(/\s+/g, " ")))
+    fail("filed-in-aggregate: the explanation no longer distinguishes the filing's choice from our gap");
 
   /* The match-quote guard exists twice — scripts/lib-quote.mjs for the static
    * pages, a twin inside app.js for the interactive report — because one is a
@@ -119,7 +144,7 @@ try {
   if (covDrift.length) fail(`coverage band in app.js disagrees with scripts/lib-disclose.mjs on ${covDrift.length} of ${covCases.length} cases`);
 
   await browser.close();
-  console.log("SMOKE OK — full-form, master-trust, and short-form pages all render honestly");
+  console.log("SMOKE OK — full-form, master-trust, short-form and filed-in-aggregate pages all render honestly");
 } finally {
   server.kill();
 }
