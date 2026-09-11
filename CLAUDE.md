@@ -734,7 +734,7 @@ don't confuse them). Frontend: python http.server + Playwright at
   | 532 (was 615) | 307,594 | $21.3B | `few` fewer than 3 rows (v112: -52, mostly RECLASSIFIED to stmt — a truer cause, not a loss) |
   | 417 (was 527) | 303,175 | $8.5B | `nohead` no heading seeded a region. The census now splits it four ways: 357 no audited attachment in the public copy, 47 attachment present but carrying no schedule, 9 schedule referenced but pages not published, **4 OURS** (table-shaped pages under an unknown heading). SPLIT by `ds` (v113): 484 permanently unreachable, 43 ours. The `readfail` half of "ours" is CLOSED by v114 — the statutory column caption now seeds a region, and 28 of those 32 plans publish a real menu; the residue is 2 unlinked-trust pointers (Genentech $14.3B), 1 truncated attachment, 1 CONSOLIDATED filing. The 11 `nohead/unread` plans are **CLOSED by v121** — all ten non-trust members were run through the production parser (not sampled, not read by eye), and **5 now publish**: Commercial Vehicle Group 2,483p/$67.3M (29 rows, 0.987), Medical Device Components 373p/$24.9M (26, 0.980), MPB Hotel 477p/$10.8M (19, 0.969), Atrium 937p/$7.7M (16, 1.000), Innovative Cosmetic 166p/$4.8M (27, 0.975) = $115.5M, 4,436 participants. **The hand review that produced the previous version of this row was wrong in BOTH directions** and the parser corrected it: Commercial Vehicle Group was filed here as "a cash-flow statement, not ours" and is the largest recovery in the bucket; `Current Plan Assets` was filed as a recordkeeper title and is an ADVISER DECK whose two-column layout publishes "0.0 Median Market Cap" at 46% of the sum — dropped, and pinned as a control. The remaining 5 stay blank correctly (3 lead with `Statement of Net Assets AVAILABLE FOR BENEFITS`, the audited balance sheet — the `$` anchor on the template title is load-bearing; Austin 3(16) is a POOLED EMPLOYER roster with no candidate title at all) |
   | 253 (was 374) | 142,545 | $15.6B | `stmt` statement/aggregate won, not a menu (+57 from few/band-hi; these now render the filed-in-aggregate line, bit 4096). **Top of the bucket CHECKED 2026-09-11 and both are correctly suppressed** — MetLife (32,414p, $8.32B, 80 rows @ 1.00) wins on `Participant-directed investments` at **99.5% of the plan**, the single aggregate line DOL permits for participant-directed money, with the remaining 79 rows the itemized non-participant-directed bonds; Alight (11,234p, $2.61B, 21 rows @ 0.98) wins on a bare `CUSIP:` row at **92.6%** amid a brokerage flood. Publishing either would recreate the v105 dominant-row shape exactly. This is a RANKED look at the two largest, so it justifies not opening the bucket next — it is NOT a bucket-wide rate, and no random draw has been taken |
-  | 128 (was 212) | 110,568 | $7.2B | `band-hi` holdings sum ABOVE plan assets. **RE-SIZED 2026-09-11: the bucket fell by 84 plans / 90,282 participants / $7.9B, at least the ~48 projected.** Attribution is NOT clean and must not be claimed: eight parser versions shipped between the projection and this measurement, and the census carries no version attribution, so v115 cannot be credited with 84 on this evidence. What is established is direction, which is what the method asks for — a bucket that shrinks is proof. **ADDRESSED IN v115** — the caption-seeded retry (built for nohead/readfail in v114) also runs for band-hi, giving the TABLE its own candidate so the fair-value note is no longer summed beside the menu; a random 40-plan draw recovered 9 (22.5%, ~48 projected), Vandalia and Nuvance among them, with all 315 published values verbatim in their filings. Re-size after the run. History: DIAGNOSED 2026-09-09: NOT trust opacity (those giants are already linked and excluded) — these are mid-size plans whose real menu is read correctly but SECTION SUBTOTALS from the fair-value note are counted as holdings beside it (Vandalia 2.71x, Nuvance 3.27x). 95 of 212 carry 20+ rows. CORRECTED same day: the winning region is the FAIR VALUE HIERARCHY NOTE (Level 1/2/3 columns, two plan years, its own totals, ASC 820-10 practical-expedient text) being read as the schedule — Vandalia's NAV row is $1.14B against $853M of plan assets, so it cannot be a subtotal of this plan. Both filings also carry a statutory 4i header and show only ONE candidate, so the region boundary swallows the note. Fix = keep fair-value-note regions out of candidacy / seed from the statutory header. NOT subtotal arithmetic, NOT vocabulary. **RESIDUE CLASSIFIED 2026-09-11 — the recorded diagnosis describes part of what is left, not all of it.** Classifying all 128 by stored row names (whole bucket, disjoint, no sampling): fair-value note **28 plans / 35,225 ppl**; bare asset-class label 35 / 10,590; statement-of-changes row 6 / 2,185; **none of the above 43 / 17,842 — still undiagnosed and the largest by count**; 12 have no stored rows. Ratios: 31 plans at 1.6-2.5x, 40 at 2.5-4x, 23 at 4-20x, 33 **over 20x** (a scaling defect, not a summing one — Hallmark is 91x). So this is at least four causes and the table recorded one. **NEW AND DIFFERENTLY FIXED: 4 plans are UNLINKED MASTER-TRUST members whose trust note parsed as a plan menu** — Conagra (`Plan Interest in Master Trust at Fair Value` at 97% of plan), A.O. Smith (91%), Hallmark, American Bank & Trust. Tiny by count, **39,223 participants — 35% of the bucket's people** — and the right treatment is the `trust` label plus the Schedule D trust NAME, not a parser change to the note. METHOD: I formed the master-trust hypothesis from the six LARGEST plans, where it looked dominant, and the whole-bucket count put it at 4 of 128. The ranked view chose what to open correctly and would have been wrong about prevalence by an order of magnitude. **CORRECTED ONE CYCLE LATER — the 28/35/43 split above is an artifact of MY regex, not a property of the data.** I hand-wrote a narrow generic-name list (mutual funds / collective trusts / common stocks) that omitted `registered investment companies`, which is IN the shipped `GENERIC_TYPE_NAME`, so SLM (93%), LIUNA (89%), Art Center (174%) and College of the Ozarks (169%) fell through to "none of the above". Re-counting with `GENERIC_TYPE_NAME || NOT_FUND_SHAPED` first: **generic/aggregate 62 plans / 80,158 ppl (72% of the bucket's people)**, still unexplained 31 / 18,929 (11 of which store no rows at all), Form 5500 page content as a holding 5 / 2,068, statement-of-changes 2 / 2,529. The fair-value-note-vs-bare-label sub-split is not a stable fact — the two predicates overlap in intent — so treat it as ONE family: a non-fund label winning the region. **This is the second time in two cycles that a hand-rolled copy of a shipped predicate produced a wrong number; the shipped one is the one to reach for.** **GENUINELY NEW AND CLEAN: 28 plans / 6,884 ppl have year-end assets under $1M, so `rt` divides by almost nothing and band-hi is NOISE, not a finding** — Insite Digestive at rt=1,680,043,000, Phoenix Tower at 1,128,621,800, Morphe at 206,013,531. That is a defect in the DIAGNOSIS rather than the parse: `diagnose()` should not assign a ratio-based `dx` against a negligible denominator. Recorded, not fixed — `dx` is written at parse time so it needs a re-parse, and it moves the census rather than the site, so it should ride along with the next version bump rather than justify one |
+  | 128 (was 212) | 110,568 | $7.2B | `band-hi` holdings sum ABOVE plan assets. **CLASSIFIED WHOLE-BUCKET 2026-09-11** (disjoint, shipped predicates first, no sampling): **generic/aggregate 62 plans / 80,158 ppl — 72% of the bucket's people**, a non-fund label winning the region; **still unexplained 31 / 18,929**, of which 11 store no rows at all; **ratio meaningless 28 / 6,884** — year-end assets under $1M, so `rt` divides by almost nothing (Insite Digestive rt=1,680,043,000; Morphe 206,013,531). That last one is a defect in the DIAGNOSIS, not the parse: `diagnose()` should not assign a ratio-based `dx` against a negligible denominator. Recorded not fixed — it needs a re-parse and moves the census rather than the site, so it rides along with the next version bump. Form 5500 page content as a holding 5 / 2,068; statement-of-changes 2 / 2,529. **4 of the 128 are UNLINKED MASTER-TRUST members** whose trust note parsed as a plan menu — Conagra (`Plan Interest in Master Trust at Fair Value` at 97% of plan), A.O. Smith (91%), Hallmark, American Bank & Trust — tiny by count but **39,223 participants, 35% of the bucket's people**, and fixed by the `trust` label plus the Schedule D trust NAME, not by parser work on the note. The bucket fell 212 → 128 across v115–v123 (−84 plans / −90,282 ppl / −$7.9B, at least the ~48 projected); **attribution is not clean and is not claimed** — eight versions shipped in between and the census records none of them. v115's mechanism, still the largest single shape: the FAIR VALUE HIERARCHY NOTE (Level 1/2/3 columns, two plan years, its own totals, ASC 820-10 text) read as the schedule, so its subtotals are summed beside the real menu (Vandalia's NAV row is $1.14B against $853M of plan assets, so it cannot be a subtotal of this plan); the fix seeds from the statutory header. NOT subtotal arithmetic, NOT vocabulary. **TWO METHOD LESSONS, both earned here and both costly:** (1) the master-trust shape looked DOMINANT in the six largest plans and is 4 of 128 — ranking picks what to open, never what a bucket contains; (2) a hand-written generic-name list that omitted `registered investment companies` (which is IN the shipped `GENERIC_TYPE_NAME`) produced a three-way split that dissolved on re-count — **the second time in two cycles a hand-rolled copy of a shipped predicate produced a wrong number. Reach for the shipped one.** |
   | 34 (was 52) | 155,970 | $6.5B | `band-lo` far below. OPENED WHOLE 2026-09-09 (53 live plans by the local count) — four causes, only one ours: Paychex's unscaled "(Dollars, Units, and Shares in Thousands)" schedule, fixed in v116; YMCA is the Fund's own asset-class statement (truer label `stmt`); Aramark seeds its region off a TABLE-OF-CONTENTS line onto the Form 5500 cover pages; Cisco parses as `noregion` under every version and its stored band-lo diagnosis comes from the PRIOR-YEAR FALLBACK ack. Extending v115's caption retry to band-lo was built, measured at 1 recovery of 52, and reverted unshipped |
   | 44 (was 43) | 56,335 | $14.8B | `trust` bare trust pointer, unlinked. **The $455M -> $14.8B jump is NOT degradation** — it is Genentech ($14.35B, 36,458 participants) arriving from `nohead`'s residue, which the nohead row above had already named as an unlinked-trust pointer. Verified by subtraction: without Genentech the bucket is 43 plans / $455M, matching the prior figure exactly. A reclassification to a truer cause reads as a regression in any dollar-ranked view; check before believing one |
   | 6 (was 8) | 10,033 | $2.0B | `noregion` heading fired, nothing scored |
@@ -748,37 +748,23 @@ don't confuse them). Frontend: python http.server + Playwright at
   between buckets: reclassification moves a plan sideways and leaves the sum
   alone.
 
-  **Priorities RE-ORDERED by the same re-size, because the old ordering named
-  plans that have left the bucket.** It read "`band-hi` by dollars and
-  participants (Compass Group USA 312,914 participants; UPS $14.2B)" — both are
-  gone from band-hi entirely, and band-hi is no longer the largest bucket on
-  any axis. By raw size the order is `few` (532 / 307,594 / $21.3B), `stmt`
-  (253 / 142,545 / $15.6B), `band-hi` (128 / 110,568 / $7.2B, top plan
-  Conagra Brands 28,863p / $1.7B). Of `nohead`'s 417 only **4 are ours**; the
-  other 413 are documented absences. Before opening any of these, check the
-  example is still in the bucket — this row has now gone stale twice.
+  **PRIORITIES, current — and read the `ours` column, not the size column.**
+  By raw size: `few` 532 / 307,594 / $21.3B, `stmt` 253 / 142,545 / $15.6B,
+  `band-hi` 128 / 110,568 / $7.2B. By what is actually OURS the order inverts,
+  and that is the number that should drive work:
 
-  **AND IT WENT STALE A THIRD TIME IN THE SENTENCE THAT SAID SO.** The cycle
-  that wrote the warning above also carried forward "`stmt` ... still includes
-  State Farm 20251010104106NAL0007965633001" without checking it. **State Farm
-  publishes**: c=1, no `dx`, 20 Vanguard rows, 101,896 participants, $19.0B,
-  and **zero** State Farm plans remain in `stmt`. The reference has been
-  removed. State Farm survives in this document only as the cautionary tale in
-  the operating protocol, where it is history and correctly labelled as such —
-  but a fixed plan named in a LIVE gap table reads as an open defect, and it
-  sent this cycle to trace a filing that has been correct for some time.
-  Copying a line forward is asserting it again.
+  | bucket | raw | reachable | basis |
+  |---|---|---|---|
+  | `few` | 532 | **~70 (13%, CI 4-31%)** | random 30 read by row name |
+  | `nohead` | 417 | **4** | census `ds` split; 413 documented absences |
+  | `stmt` | 253 | unmeasured | the two largest are correctly suppressed |
+  | `band-hi` | 128 | unmeasured | 62 are a non-fund label winning the region |
 
-  **BUT `few` IS NOT THE PLACE TO SPEND PARSER EFFORT, DIAGNOSED 2026-09-11 —
-  and that corrects the ordering written one cycle earlier in this same
-  paragraph.** `few` had no recorded cause breakdown; "fewer than 3 rows"
-  names the OUTCOME, not the cause, so under the standing directive it was an
-  undiagnosed unknown sitting at the top of the list. Diagnosed from the store
-  (`rw`/`rt`, no downloads): 60 plans got rw=0, 218 rw=1, 254 rw=2, and **328
-  of 532 sit at ratio 0.90-1.10** — the rows found already account for the
-  whole plan. That looks like correct parses of one-vehicle plans being
-  suppressed by the 3-row floor. **It is not.** Reading the stored row names
-  on a RANDOM 30 (ranked views are how two yield projections went wrong here):
+  **`few` is NOT the place to spend parser effort**, though it leads on every
+  raw axis. Diagnosed from the store (`rw`/`rt`, no downloads): 60 plans got
+  rw=0, 218 rw=1, 254 rw=2, and 328 of 532 sit at ratio 0.90-1.10 — which looks
+  like correct parses of one-vehicle plans held back by the 3-row floor. **It
+  is not.** Reading the stored row names on a RANDOM 30:
 
   | class | n of 30 | example |
   |---|---|---|
@@ -787,29 +773,44 @@ don't confuse them). Frontend: python http.server + Playwright at
   | provider house name only, no fund | 4 (13%) | `"VOYA"`, `"T. Rowe Price"` beside a loan row |
   | plausibly publishable short menu | **4 (13%)** | `"TFLIC Fixed Fund"`, `"Govt Fixed Fund"` |
 
-  So **~87% has nothing publishable and the 3-row floor is doing real work** —
-  the 43% garbage class is exactly what would become fabricated rows if the
-  floor were lowered, which is the v100-v105 family. The reachable slice is
-  ~13%, 95% CI roughly 4-31%, so ~70 plans of 532 with wide error. Ranked by
-  what is OURS rather than by raw count, `few` drops below `stmt` and
-  `band-hi`. **Do not lower `funds.length >= 3`.**
+  So ~87% has nothing publishable and **the 3-row floor is doing real work** —
+  that 43% garbage class is what would become fabricated rows if it were
+  lowered, which is the v100-v105 family. **Do not lower `funds.length >= 3`.**
+  Two small real defects fell out, recorded not fixed because the floor hides
+  them anyway: a **loan interest-rate range parsed as a row NAME**
+  (`"from 4.25% to 9.50%"`, 13 plans, all Massachusetts savings banks on one
+  shared filing template), and the **sponsor's own name parsed as a holding**
+  (Sanctuary For Families, Dunham's Athleisure, Reliabank Dakota).
 
-  Two small real defects fell out and are recorded, not fixed: a **loan
-  interest-rate range parsed as a row NAME** (`"from 4.25% to 9.50%"`, 13
-  plans, all Massachusetts savings banks on the same Association Common
-  Collective Trust filing template), and the **sponsor's own name parsed as a
-  holding** (Sanctuary For Families, Dunham's Athleisure, Reliabank Dakota).
-  Both are invisible today because the floor suppresses the whole lineup.
+  **BEFORE OPENING ANY BUCKET, CHECK THE EXAMPLE IS STILL IN IT.** This
+  paragraph has now gone stale three times, and the third was inside the
+  sentence that said so: it carried "`stmt` still includes State Farm
+  20251010104106NAL0007965633001" forward without checking. **State Farm
+  publishes** — c=1, no `dx`, 20 Vanguard rows, 101,896 participants, $19.0B —
+  and zero State Farm plans remain in `stmt`. It survives in this document only
+  as the cautionary tale in the operating protocol, where it is history and
+  labelled as such. A fixed plan named in a LIVE gap table reads as an open
+  defect and sent one cycle to trace a filing that has been correct for some
+  time. **Copying a line forward is asserting it again.**
 
-  METHOD NOTE, because it nearly published a wrong number: classifying these
-  rows with the shipped `GENERIC_TYPE_NAME` / `NOT_FUND_SHAPED` predicates
-  returned **"99% have at least one real fund name"**, which is false. Those
-  predicates are anchored exact matches built to audit PUBLISHED lineups, and
-  this population is fragments, OCR noise and generic types carrying a
-  modifier — `"Master Pooled Separate Account"` fails
-  `/^pooled separate accounts?$/`. They matched 3 of 393. **Reusing a shipped
-  predicate is right; assuming it transfers to a different population is
-  not.** The
+  **METHOD NOTE ON THE SHIPPED PREDICATES — read both halves or you will take
+  the wrong lesson.** Two cycles produced results that sound opposite:
+
+  - On `few`, the shipped `GENERIC_TYPE_NAME` / `NOT_FUND_SHAPED` returned
+    **"99% have at least one real fund name"**, which is false. They are
+    anchored exact matches built to audit PUBLISHED lineups, and that
+    population is fragments, OCR noise and generic types carrying a modifier —
+    `"Master Pooled Separate Account"` fails `/^pooled separate accounts?$/`.
+    They matched **3 of 393**.
+  - On `band-hi`, a hand-written list produced a three-way split that dissolved
+    on re-count, because it omitted `registered investment companies` — which
+    the shipped predicate has.
+
+  **The reconciliation, which is the actual rule: the shipped predicate is
+  strictly better than one written from memory, AND it under-matches on
+  fragmentary populations.** So use it, and measure what it MISSES on the new
+  population before trusting a count in either direction. Neither "the shipped
+  one is authoritative" nor "it doesn't transfer" is safe alone. The
   nohead 50-sample measurement (56% no attachment / ~0 fixable) was taken on
   the PRE-split bucket dominated by final-year plans; the live remainder was
   then split exactly by `ds` and its `readfail` half closed in v114.
