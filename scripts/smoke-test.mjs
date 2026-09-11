@@ -42,9 +42,16 @@ if (!aggPlan) fail("could not pick a filed-in-aggregate specimen — no live pla
  * trust we could not link. Six plans, 75,808 participants - small, but they
  * were being told something false about their filing, so the page they get
  * instead has to be checked. */
+/* TWO populations carry 65536 and they get DIFFERENT endings, so pick one of
+ * each. Testing only the larger would leave the other wording unexercised -
+ * and the larger one flipped from unlinked to linked the moment bit 131072
+ * shipped, which is exactly how a specimen silently stops covering a case. */
 const trustUnlinkedPlan = byAssets.find((r) =>
-  !g(r, "sf") && ((bootBits[rowOf.get(r)] || 0) & 65536));
-if (!trustUnlinkedPlan) fail("could not pick a trust-held-but-unlinked specimen — no live plan carries bit 65536");
+  !g(r, "sf") && ((bootBits[rowOf.get(r)] || 0) & 65536) && !((bootBits[rowOf.get(r)] || 0) & 131072));
+const trustOpaquePlan = byAssets.find((r) =>
+  !g(r, "sf") && ((bootBits[rowOf.get(r)] || 0) & 131072));
+if (!trustUnlinkedPlan) fail("could not pick a trust-held-but-UNLINKED specimen — no live plan carries 65536 without 131072");
+if (!trustOpaquePlan) fail("could not pick a trust-linked-but-OPAQUE specimen — no live plan carries bit 131072");
 
 const server = spawn("python3", ["-m", "http.server", String(PORT)], { stdio: "ignore" });
 try {
@@ -100,6 +107,19 @@ try {
     fail("trust-held-unlinked: page no longer clears the plan's own filing of the gap");
   if (/could not read it — that's our gap|pages are not present in the public copy/i.test(t5))
     fail("trust-held-unlinked: the false document-shape sentence is still being rendered");
+  if (!/we could not match this plan to that return/i.test(t5.replace(/\s+/g, " ")))
+    fail("trust-held-unlinked: page does not say we failed to MATCH the plan to a trust return");
+
+  /* LINKED but the trust's own return is opaque. The page must NOT say we
+   * failed to match a trust we did match - that would be a second false
+   * claim replacing the first. */
+  const t6 = await openPlan(trustOpaquePlan, "trust-linked-opaque");
+  if (!/interest in a master trust/i.test(t6))
+    fail("trust-linked-opaque: page does not say the assets are an interest in a master trust");
+  if (!/that return does not publish a fund-by-fund list we can read either/i.test(t6.replace(/\s+/g, " ")))
+    fail("trust-linked-opaque: page does not say it is the TRUST's return that lacks a readable fund list");
+  if (/we could not match this plan to that return/i.test(t6.replace(/\s+/g, " ")))
+    fail("trust-linked-opaque: page claims we could not match a trust we DID match");
 
   const t4 = await openPlan(aggPlan, "filed-in-aggregate");
   if (!/in aggregate/i.test(t4))
@@ -162,7 +182,7 @@ try {
   if (covDrift.length) fail(`coverage band in app.js disagrees with scripts/lib-disclose.mjs on ${covDrift.length} of ${covCases.length} cases`);
 
   await browser.close();
-  console.log("SMOKE OK — full-form, master-trust, short-form, filed-in-aggregate and trust-held-unlinked pages all render honestly");
+  console.log("SMOKE OK — full-form, master-trust, short-form, filed-in-aggregate and both trust-held pages all render honestly");
 } finally {
   server.kill();
 }

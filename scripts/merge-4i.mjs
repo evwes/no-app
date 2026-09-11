@@ -241,12 +241,26 @@ try {
      * that sentence would describe the FILING when the filing is fine and the
      * gap is the missing trust return. Gated on having no lineup from any
      * source and no trust link of its own. */
-    if (st && !st.c && !(b & (1 | 2048 | 4096)) && !r[mi] && trustHeldUnlinked(r[ai])) b |= 65536;
+    /* 65536 = the plan's own rows say the money is in a master trust, and no
+     * fund list is available. TWO populations reach here and the page must
+     * not conflate them, so 131072 marks the second:
+     *   no mtiaAck            -> we never matched the plan to a trust return
+     *   mtiaAck, trust opaque -> we found it; the TRUST's return is the one
+     *                            without a readable fund list (bit 2048 needs
+     *                            the trust itself to have parsed confidently)
+     * Measured 2026-09-11: 6 unlinked, 41 linked-but-opaque (631,022
+     * participants, Albertsons 236,172). The first pass gated on !mtiaAck and
+     * left the larger half saying "we could not read it - that's our gap"
+     * about a filing that had been read without trouble. */
+    if (st && !st.c && !(b & (1 | 2048 | 4096)) && trustHeldUnlinked(r[ai])) {
+      b |= 65536;
+      if (r[mi]) b |= 131072;
+    }
     if (st && !st.c && !(b & (1 | 2048 | 4096 | 65536)) && DS_ENUM[st.ds]) b |= DS_ENUM[st.ds] << 13;
     return b;
   });
   writeFileSync("plans-index.json", JSON.stringify({ generated: new Date().toISOString(), count: bits.length, bits }));
-  console.log(`wrote plans-index.json: ${bits.length} rows, ${bits.filter((b) => b & 2048).length} trust-lineup plans, ${bits.filter((b) => b & 4096).length} filed-in-aggregate, ${bits.filter((b) => (b >> 13) & 7).length} with a document-shape reason, ${bits.filter((b) => b & 65536).length} trust-held-but-unlinked`);
+  console.log(`wrote plans-index.json: ${bits.length} rows, ${bits.filter((b) => b & 2048).length} trust-lineup plans, ${bits.filter((b) => b & 4096).length} filed-in-aggregate, ${bits.filter((b) => (b >> 13) & 7).length} with a document-shape reason, ${bits.filter((b) => b & 65536).length} trust-held without a fund list (${bits.filter((b) => b & 131072).length} of them linked to a trust that is itself opaque)`);
 } catch (e) { console.warn("plans-index skipped (plans-all absent?): " + e.message); }
 
 const vals = Object.values(status.plans);

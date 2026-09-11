@@ -348,6 +348,10 @@
         // otherwise blame the filing for a gap that belongs to the missing
         // trust return.
         plan.trustUnlinked = !!(b & 65536);
+        // 131072: we DID identify the trust; its own return is the one with no
+        // readable fund list. Without this the page would claim we failed to
+        // match a trust we actually matched.
+        plan.trustLinkedOpaque = !!(b & 131072);
         // bits 13-15: why the FILING yields no schedule (v113 `ds`). Set only
         // for plans with no lineup, so it always describes a gap the reader
         // is actually looking at. Enum order is frozen in merge-4i's DS_ENUM.
@@ -1493,7 +1497,9 @@
       <div class="section-label">FUND HOLDINGS</div>
       <p class="max-benefit">This plan's filing reports its assets as <strong>an interest in a master trust</strong> —
       a pooled fund shared with other plans of the same employer. The fund-by-fund detail is filed by that trust in its
-      own separate return, and we could not match this plan to that return, so no fund list can be shown here. The
+      own separate return${plan.trustLinkedOpaque
+        ? ", and that return does not publish a fund-by-fund list we can read either"
+        : ", and we could not match this plan to that return"}, so no fund list can be shown here. The
       plan's own filing was read without trouble; what's missing is the trust's. Plan features from the audited notes
       still appear below where the filing states them.</p>`;
       }
