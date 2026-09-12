@@ -866,7 +866,7 @@ don't confuse them). Frontend: python http.server + Playwright at
   |---|---|---|
   | recordkeeper | 63,682 (93.3%) | **1,419 live / 564k ppl** (was 4,577 — see below) |
   | investment options | 60,298 (88.3%) | **1,407 live plans / 2.32M ppl / $262B** |
-  | any audit notes | 62,555 (91.6%) | 2,548 live / 2.19M ppl |
+  | any audit notes | 63,793 (93.5%) | **1,564 live / 1.43M ppl** (re-measured 2026-09-12) |
   | **match formula** | 42,338 (62.0%) + 5,308 quote-only | **8,672 live / 13.53M ppl** |
   | vesting | 51,826 (75.9%) + 5,081 quote-only | 5,648 |
   | Roth stated | 36,470 (53.4%) | mostly genuine silence, not absence |
@@ -908,6 +908,17 @@ don't confuse them). Frontend: python http.server + Playwright at
   readings carry information. The first classifier also called Icon NAMED off
   the `(b) (c) (d)` column-header row, after I had read it blank by eye — a
   measuring script is code and earns the same suspicion.
+
+  **AUDIT NOTES BUCKETED 2026-09-12** (predicate: full-form, `assetsEOY > 0`,
+  `!st.f`). 4,466 full-form plans have no features; **2,902 are wind-down
+  ghosts**, leaving 1,564 live / 1,434,030 ppl. Three causes, and one dominates:
+  **1,030 plans / 1,195,391 ppl (83% of the people) parsed their schedule
+  confidently and still yielded no features** — the "REOPENED" class below, and
+  the only one that could be ours; **369 / 174,210** never got a readable
+  filing at all (`e=no-section` 364, `e=download` 5); **165 / 64,429** failed
+  on both lineup and notes, already carrying a `ds`/`dx` cause each. No new
+  unknown here — the gap is the class the REOPENED bullet already tracks, and
+  it is now sized against the same predicate as that bullet.
 
   **The headline: match is ~6x the lineup gap by people affected, and it is
   OURS.** The 11.7% with no investment options is 7,961 plans — but **6,554 of
@@ -1028,6 +1039,27 @@ don't confuse them). Frontend: python http.server + Playwright at
   filings failed entirely), so 92% is an UPPER BOUND, not a forecast. v119
   widens the trigger; the run measures the real rate. Cost: up to ~2,193 extra
   PDF reads per run, ~3% more work.
+  **RE-MEASURED 2026-09-12, and two things in the paragraph above need
+  correcting.** *(a) The gap number does not reproduce.* Predicate stated so it
+  can be re-run: full-form, `assetsEOY > 0`, `st.c && !st.f`. Against the live
+  store that is **1,030 plans / 1,195,391 participants / $51.8B** — and against
+  the pre-v122 store (`80ff5702`, the one "1,943 live plans / 1,876,769" names)
+  the SAME predicate gives **1,091 / 1,232,594 / $53.6B**. So the 1,943 figure
+  was never true of the store it cites; do not carry it forward, and prefer a
+  stated predicate over a remembered total. *(b) "The run measures the real
+  rate" — IT DID NOT, for three weeks.* `ffb` records every SUCCESS in the
+  store and nothing anywhere recorded an ATTEMPT, so the rate had no
+  denominator on any run ever made. The success side, read off the store:
+  **1,467 live plans / 1,221,804 participants / $50.1B are served from a prior
+  year's notes today** (1,398 at `80ff5702`), which is larger than the gap that
+  remains. The denominator is now instrumented — `feat-fb-needed / -supplied /
+  -silent / -none` in `fetch-4i.mjs`, disjoint, printed in the per-shard
+  failure tally that production actually reaches. Positive-controlled end to
+  end through the real `PARSE_SHARD` path on a crafted tree: needed=3,
+  supplied=1, silent=1, none=1. **This is the same shape as the four silent
+  catches that cost run #244 — a value computed and discarded — found this
+  time before it cost anything, because the promise to measure was written
+  down next to the code that did not.**
   GitHub cron note: Monday 06:00 runs fire HOURS late (Jul 27 fired
   10:02) — don't diagnose a dropped schedule before ~noon UTC. Trust links
   898 (193 via EIN fallback); Elevance has NO MTIA filing in EFAST2 at all

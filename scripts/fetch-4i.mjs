@@ -846,12 +846,24 @@ for (const plan of work) {
    * no features, the prior year supplied them **462 of 502 times (92%)**.
    * That population is biased (those filings failed entirely, often because
    * the newest copy is withdrawn), so 92% is an upper bound rather than a
-   * forecast — the run measures the real rate.
+   * forecast — the run measures the real rate. IT DID NOT, until the
+   * `feat-fb-*` counters below were added (2026-09-12): `ffb` recorded every
+   * SUCCESS in the store and nothing anywhere recorded an ATTEMPT, so the
+   * rate this sentence promised had no denominator on any run ever made. The
+   * store's success side, for the record at the time of that fix: 1,467 live
+   * plans, 1,221,804 participants, $50.1B served from a prior year's notes.
    *
    * The lineup is untouched: it may still only be REPLACED under the original
    * condition. Features are only ever FILLED when absent, and `featFb` makes
    * the page disclose which plan year the notes came from. */
   let fbFailed = false;
+  /* Snapshot BEFORE the loop: whether this filing's own notes yielded
+   * features. Reading it afterwards would report the fallback's result, not
+   * the need for one - the condition-versus-outcome error that has produced
+   * three wrong numbers in this project already. */
+  const featWanted = !features;
+  if (featWanted) failCounts["feat-fb-needed"] = (failCounts["feat-fb-needed"] || 0) + 1;
+  let featFbRead = false;
   /* A FALLBACK THAT IS NEVER ATTEMPTED LOOKS EXACTLY LIKE ONE THAT WAS NEVER
    * NEEDED, and that ambiguity cost a whole cycle. Run #254 came back healthy
    * on every check yet still lacked the same 31 prior-year lineups main
@@ -913,6 +925,7 @@ for (const plan of work) {
             }
           }
         }
+        featFbRead = true;
         if (!features && b.features) { features = b.features; featFb = cand.y; featFbAck = cand.a; }
       }
     } catch (err) {
@@ -934,6 +947,17 @@ for (const plan of work) {
       if (failLogged < 60) { console.log(`${tag}: fb${cand.y} THREW — ${err && err.message}`); failLogged++; }
       failCounts["fb-threw"] = (failCounts["fb-threw"] || 0) + 1;
     }
+  }
+
+  /* Close the feature-fallback ledger for this filing. Disjoint by
+   * construction: supplied wins, then "a prior year was read and had nothing
+   * either", then "none was offered". Unreadable candidates are already
+   * counted as fb-threw / fb-unusable and are deliberately not double-counted
+   * here, so the four buckets plus those account for every needed case. */
+  if (featWanted) {
+    if (featFb) failCounts["feat-fb-supplied"] = (failCounts["feat-fb-supplied"] || 0) + 1;
+    else if (featFbRead) failCounts["feat-fb-silent"] = (failCounts["feat-fb-silent"] || 0) + 1;
+    else if (!fbCandidates.length) failCounts["feat-fb-none"] = (failCounts["feat-fb-none"] || 0) + 1;
   }
 
   /* v120: a fallback that FAILS TO LOAD must not silently downgrade a plan.
