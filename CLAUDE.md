@@ -796,33 +796,43 @@ don't confuse them). Frontend: python http.server + Playwright at
   | `few` | 532 | **~70 (13%, CI 4-31%)** | random 30 read by row name |
   | `nohead` | 417 | **4** | census `ds` split; 413 documented absences |
   | `stmt` | 253 | **<10 plans / ~1k ppl** | whole-bucket classification 2026-09-12 |
-  | `band-hi` | 128 | **17 plans / 6,476 ppl** | `fundTickerInfo` over every stored row, 2026-09-12 |
+  | `band-hi` | 128 | **2 plans / 266 ppl** (was 17 — corrected same day) | outcome test, not the name count |
 
-  **EVERY CELL IS NOW MEASURED (2026-09-12), and the total is what the owner
-  was already told: the whole fund-menu option is about a hundred plans.**
-  `few` ~70 + `nohead` 4 + `stmt` <10 + `band-hi` 17 ≈ 101 plans against
-  1,461 in the table — the rest is documented absence, correct suppression, or
-  a filing too thin to publish from. That figure was an estimate when it went
-  into the brief; it is now four measurements that happen to agree with it.
+  **EVERY CELL IS NOW MEASURED (2026-09-12): the whole fund-menu option is
+  about 86 plans.** `few` ~70 + `nohead` 4 + `stmt` <10 + `band-hi` 2 — against
+  1,461 in the table. The rest is documented absence, correct suppression, or
+  a filing too thin to publish from.
 
-  **`band-hi`'s cell came from the SHIPPED fund predicate after a hand-rolled
-  one over-counted it 3x.** My own "is this a real fund name" test returned 48
-  plans and was letting through `"D. Total Income"`, `"Ending Balance"`,
-  `"Thereafter"`, `"YEAR"`, `"PERIOD"` and `"z f <SSSS5S5SS55"`.
-  `fundTickerInfo` in `fund-er.js` already answers exactly this question —
-  it attaches a ticker ONLY when the filed name identifies a specific
-  registered fund — and it returns **17 plans / 6,476 participants with three
-  or more identifiable funds**, 2 more with one or two, 97 with none, 12 with
-  no stored rows. Load it the way `build-ticker-reference.mjs` does (from git
-  HEAD through `vm`), not by re-implementing it.
-  **Its error direction is stated rather than assumed:** it cannot match
-  collective trusts, separate accounts or annuity contracts, which have no
-  public ticker by design, so a CIT-only menu is UNDER-counted. A hit is
-  strong evidence and a miss is weak evidence — the right way round for "is
-  anything reachable here". The reachable set is small plans: SLM Corp 2,324
-  participants (46 rows, 8 identifiable, ratio 261% so something is doubled),
-  then Vacation Rental Pros 682, Western Cabinets 677, MPI Engineered 638,
-  and down to 62.
+  **`band-hi`'s cell was published as 17 and CORRECTED TO 2 THE SAME DAY, and
+  the correction is the fourth instance of one error.** The route there is
+  worth keeping whole because each step looked like progress:
+
+  1. A hand-rolled "is this a real fund name" test said **48 plans** — it was
+     counting `"D. Total Income"`, `"Ending Balance"`, `"Thereafter"`,
+     `"YEAR"` and `"z f <SSSS5S5SS55"` as funds.
+  2. The SHIPPED predicate `fundTickerInfo` (in `fund-er.js`; attaches a ticker
+     only when the filed name identifies a specific registered fund — load it
+     the way `build-ticker-reference.mjs` does, from git HEAD through `vm`)
+     said **17 plans / 6,476 participants** with three or more identifiable
+     funds. Better, and published.
+  3. **17 is a COUNT OF A CONDITION, not of an outcome.** Three identifiable
+     names does not mean a publishable lineup: ask instead what those funds are
+     WORTH against plan assets, and the bucket collapses. Of the 17, **7 clear
+     the confidence floor on identifiable funds alone (1,979 ppl), and only 2 —
+     The Butcher Block 117p at 1.24, Upe Resources 149p at 0.82 — would publish
+     a menu covering most of the plan.** Five more clear the floor at 0.49-0.78,
+     which publishes half a plan as if it were the menu: precisely the
+     degraded-swap shape `swaps-degraded.txt` exists to flag. Two are broken
+     outright (Jefferson Hospital and Compassionate Cancer both compute 15x).
+     The remaining eight have identifiable funds as a small slice — SLM 0.38,
+     Pennian Bank 0.03 — because the plan's money is in CITs, annuities and
+     stable value that `fundTickerInfo` cannot name BY DESIGN.
+
+  That last point is the stated under-match direction doing exactly what it was
+  supposed to do, and it is why the miss side of that predicate must never be
+  read as "nothing here" — but it also means the HIT side cannot be read as
+  "something publishable here" either. **Both directions needed the money test,
+  and only one of them got it before publishing.**
 
   **`few` is NOT the place to spend parser effort**, though it leads on every
   raw axis. Diagnosed from the store (`rw`/`rt`, no downloads): 60 plans got

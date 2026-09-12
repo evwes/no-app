@@ -16,7 +16,7 @@ wrong in a way that matters to you.
 | **vesting** | **23.2M** | new pattern work — 11,838 live plans |
 | match | 13.5M | new pattern work + one re-parse |
 | short-form form codes | 7.35M | display only, data already in hand |
-| fund menus | ~100 plans | parser work, and it's nearly exhausted |
+| fund menus | ~86 plans | parser work, and it's nearly exhausted |
 
 Last night I told you the choice was menus versus match. **Vesting is larger
 than both and I had it recorded at less than a quarter of its true size.**
@@ -57,12 +57,21 @@ Every bucket has a measured reachable number for the first time:
 | fewer than 3 rows | 532 | ~70 |
 | no heading found | 417 | 4 |
 | statement, not a menu | 253 | **under 10** |
-| holdings exceed plan assets | 128 | **17** |
+| holdings exceed plan assets | 128 | **2** |
 
-**~101 plans out of 1,461.** The rest is documented absence, correct
-suppression, or a filing too thin to publish from. I gave you "roughly a
-hundred" last night as an estimate; it is now four measurements that happen to
-agree with it. The two new cells are the ones that were guesses before.
+**~86 plans out of 1,461.** The rest is documented absence, correct
+suppression, or a filing too thin to publish from.
+
+**The last cell I published this morning said 17 and I corrected it to 2 an
+hour later**, which is worth telling you because the mistake is subtle and I
+made it twice this week. Seventeen plans have three or more recognisable fund
+names among their rows — that is true. But having the names is not the same as
+having a menu: for most of those seventeen the recognisable funds account for a
+*fraction* of the plan (SLM 38%, Pennian Bank 3%), because the rest of the
+money sits in collective trusts and annuities that carry no public identifier.
+Publishing what we can name would show a reader half a plan as though it were
+the whole one. **Two plans — 266 people — would genuinely publish.** I counted a
+condition and reported it as an outcome.
 
 ## One thing I fixed in the machinery
 
@@ -79,14 +88,17 @@ success side, which nobody had ever read off the store: **1,467 live plans,
 1.22M people, served from a prior year's notes today** — larger than the gap
 that remains.
 
-## Three times a shortcut produced a wrong number, and the controls caught it
+## Three times a shortcut produced a wrong number — two caught, one published
 
 Worth recording because the pattern is the same each time and it is mine, not
 the data's:
 
 - I wrote my own "is this a real fund name" test and it returned **48 plans**;
   the project's own shipped version returns **17**. Mine was counting
-  `"Ending Balance"`, `"Thereafter"` and `"YEAR"` as funds.
+  `"Ending Balance"`, `"Thereafter"` and `"YEAR"` as funds. **And 17 was still
+  wrong** — see the menus section above; the real answer is 2, and getting from
+  17 to 2 meant asking what the funds were worth rather than how many there
+  were.
 - I built a plan list by hand and got **327 plans / 1.4M people** where the
   real tool gives **253 / 142,545** — I'd swept in Kroger, Disney and
   Caterpillar. The implausible size was the tell.
@@ -95,9 +107,12 @@ the data's:
   killed it: the "defect" signal is **eight times more common in the healthy
   control** than in the gap.
 
-All three were caught before anything was published. The rule earning its keep
-is boring: reproduce the known count before classifying anything, and reach for
-the shipped predicate instead of writing a new one.
+Two were caught before anything left my hands. **The third was not** — 17 went
+into this brief and into the project notes and stood for about an hour before I
+checked what those funds were worth. The rules earning their keep are boring:
+reproduce the known count before classifying anything, reach for the shipped
+predicate instead of writing a new one, and — the one I keep relearning —
+measure the outcome a change would produce, not the condition it tests.
 
 ## What continues
 
