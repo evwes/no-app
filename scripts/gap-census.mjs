@@ -65,6 +65,7 @@ for (const r of P.rows) {
     "band-lo": "A-band-lo   holdings sum FAR BELOW plan assets",
     "band-hi": "A-band-hi   holdings sum ABOVE plan assets",
     narrow:   "A-narrow    3-4 rows, plausible but too thin to trust",
+    tiny:     "A-tiny      year-end assets under $1M — no denominator to judge the parse against, so no ratio was recorded",
     consolidated: "A-consolid  NOT OURS: the attachment is CONSOLIDATED — its own declared total exceeds the plan's Schedule H assets, so no part of it is this plan's lineup",
   };
   /* nohead, split by what the DOCUMENT contains. The A-nohead-* rows that

@@ -436,7 +436,7 @@ function record(plan, entry, features) {
  * Confident parses carry no dx — the absence IS the good case, and writing a
  * code for it would double the store for nothing.
  */
-function diagnose(parsed, confident) {
+function diagnose(parsed, confident, assets) {
   if (confident) return {};
   if (!parsed.found) return { dx: parsed.why || "noregion" };
   const rows = parsed.funds.length;
@@ -445,6 +445,16 @@ function diagnose(parsed, confident) {
   if (parsed.stmt) return { dx: "stmt", ...out };
   if (parsed.trustPtr) return { dx: "trust", ...out };
   if (rows < 3) return { dx: "few", ...out };
+  /* A RATIO NEEDS A DENOMINATOR. Below ~$1M of year-end assets the ratio is
+   * dividing by almost nothing and reports on the denominator rather than the
+   * parse: Insite Digestive came out at rt=1,680,043,000 and sat in `band-hi`
+   * as though the schedule had over-counted by seven orders of magnitude. It
+   * had not. 28 plans / 6,884 participants are in this state.
+   *
+   * `rt` is dropped rather than recorded, because a stored number that cannot
+   * be interpreted is worse than an absent one - every reader of the census
+   * has to re-derive that it is meaningless. Rows are kept; they are real. */
+  if (!(assets > 1e6)) return { dx: "tiny", rw: rows };
   if (ratio <= 0.45) return { dx: "band-lo", ...out };
   if (ratio >= 1.6) return { dx: "band-hi", ...out };
   /* 3-4 rows inside the wide band but outside the tight one: the parse is
@@ -998,13 +1008,13 @@ for (const plan of work) {
     // features rescued from a prior-year filing must say so: a match formula
     // can change between plan years, and the reader is entitled to know which
     // year's notes they are reading
-    record(plan, { confident: false, error: "no-section", funds: [], ...diagnose(parsed, false), ...(docShape ? { ds: docShape } : {}), ...(featFb ? { featFb, ...(featFbAck ? { fbAck: featFbAck } : {}) } : {}) }, features);
+    record(plan, { confident: false, error: "no-section", funds: [], ...diagnose(parsed, false, plan.assetsEOY), ...(docShape ? { ds: docShape } : {}), ...(featFb ? { featFb, ...(featFbAck ? { fbAck: featFbAck } : {}) } : {}) }, features);
     continue;
   }
   const ratio = parsed.ratio || 0;
   const confident = isConfident(parsed);
   record(plan, {
-    ...diagnose(parsed, confident),
+    ...diagnose(parsed, confident, plan.assetsEOY),
     ...(!confident && docShape ? { ds: docShape } : {}),
     ack: plan.ack,
     ticker: plan.ticker,
