@@ -864,13 +864,50 @@ don't confuse them). Frontend: python http.server + Playwright at
 
   | field | covered (of 68,259 full-form) | real gap after removing wind-down ghosts |
   |---|---|---|
-  | recordkeeper | 63,682 (93.3%) | 4,577 |
+  | recordkeeper | 63,682 (93.3%) | **1,419 live / 564k ppl** (was 4,577 — see below) |
   | investment options | 60,298 (88.3%) | **1,407 live plans / 2.32M ppl / $262B** |
   | any audit notes | 62,555 (91.6%) | 2,548 live / 2.19M ppl |
   | **match formula** | 42,338 (62.0%) + 5,308 quote-only | **8,672 live / 13.53M ppl** |
   | vesting | 51,826 (75.9%) + 5,081 quote-only | 5,648 |
   | Roth stated | 36,470 (53.4%) | mostly genuine silence, not absence |
   | after-tax stated | 4,119 (6.0%) | genuinely rare |
+
+  **RECORDKEEPER DIAGNOSED WHOLE-POPULATION 2026-09-12, and the answer is that
+  it is not ours.** The row carried 4,577 with no cause, in a column whose own
+  header says ghosts are already removed — they were not. **3,158 (69%) are
+  wind-down ghosts**, leaving **1,419 live plans / 563,716 participants /
+  $20.0B**. Recordkeeper has exactly one source (build-data pass 3: Sch C Part I
+  item 2, falling back to item 1), and the fee shards are built from the SAME
+  rows in the same loop, which makes them a free discriminator: **0 plans of the
+  1,419 have a Schedule C provider row and no recordkeeper.** The pass never
+  drops a row it has; every gap is an absent row. Split by what Schedule H says
+  the plan PAID — an independent witness, since Sch C reporting turns on a
+  $5,000-per-provider threshold:
+
+  | plans | ppl | |
+  |---|---|---|
+  | 303 | 216,918 | paid nothing from plan assets — the sponsor pays the fees |
+  | 785 | 194,754 | paid under $5,000 total, below the reporting threshold |
+  | 316 | 126,102 | $5k–$100k |
+  | 15 | 25,942 | over $100k |
+
+  Only the last two bands (331 plans / 152,044 ppl) could hide a defect, and the
+  $5k–$100k band is weak evidence because the threshold is PER PROVIDER — $50k
+  split across fifteen $3k providers is correctly silent. Eleven filings opened
+  (8 drawn RANDOMLY from the 331, 3 ranked by spend): **0 name a provider we
+  failed to ingest.** Icon Clinical Research is the type case — 16,374
+  participants, $982,836 of plan-paid expense, Schedule C filed, line 1a
+  answered Yes (the eligible-indirect-compensation exclusion, i.e. fees netted
+  from fund expense ratios), and every name field a blank form placeholder.
+  Lawful silence. **The page already says the true thing** — *"No recordkeeping
+  provider identified in this filing's Schedule C"* — so nothing shipped.
+  **The trap worth keeping: the composite public PDF is NOT a witness for
+  whether Schedule C data exists.** A positive control with `recordkeeper =
+  Fidelity` in our own store renders NO Schedule C pages at all, so "no pages"
+  proves nothing in either direction and only the pages-present-but-blank
+  readings carry information. The first classifier also called Icon NAMED off
+  the `(b) (c) (d)` column-header row, after I had read it blank by eye — a
+  measuring script is code and earns the same suspicion.
 
   **The headline: match is ~6x the lineup gap by people affected, and it is
   OURS.** The 11.7% with no investment options is 7,961 plans — but **6,554 of
