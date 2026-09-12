@@ -2,12 +2,13 @@
 
 ## The headline
 
-**Nothing on the site changed overnight. What changed is that the decision
-you've been sitting on now has a third option, and it's the biggest one.**
+**One page-level fix went live and the decision you've been sitting on now has
+a third option, which is the biggest one.**
 
-I spent the night measuring rather than building, because four numbers in my
-own notes turned out not to survive being re-derived. Two of them were badly
-wrong in a way that matters to you.
+I spent most of the night measuring rather than building, because four numbers
+in my own notes turned out not to survive being re-derived — two of them badly
+wrong in a way that matters to you. The one thing that did ship was undoing
+damage I caused yesterday; it is written up below rather than buried.
 
 ## The decision, restated with every number now measured
 
