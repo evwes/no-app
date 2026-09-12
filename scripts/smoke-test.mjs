@@ -101,14 +101,30 @@ try {
    * detail is in the trust's separate return. The page must not blame this
    * filing, which is exactly what the document-shape sentence used to do. */
   const t5 = await openPlan(trustUnlinkedPlan, "trust-held-unlinked");
-  if (!/interest in a master trust/i.test(t5))
-    fail("trust-held-unlinked: page does not say the assets are an interest in a master trust");
-  if (!/plan's own filing was read without trouble/i.test(t5.replace(/\s+/g, " ")))
-    fail("trust-held-unlinked: page no longer clears the plan's own filing of the gap");
+  /* Every plan in this population carries a Schedule D trust NAME, so the page
+   * must print that name rather than the generic "we could not match this plan
+   * to that return". Asserting the generic sentence is what let a regression
+   * that removed the name pass unnoticed: the weaker claim was still true. */
+  const t5Name = g(trustUnlinkedPlan, "mtiaName");
+  const t5flat = t5.replace(/\s+/g, " ");
+  if (t5Name) {
+    /* Schedule D gives the trust's name, so the page must NAME it. */
+    if (!t5.includes(t5Name))
+      fail(`trust-held-unlinked: page does not name the trust (${t5Name}) — the generic sentence is shadowing the specific one`);
+    if (!/not a gap in our reading of the filing/i.test(t5flat))
+      fail("trust-held-unlinked (named): page does not clear our reading of the plan's own filing");
+  } else {
+    if (!/interest in a master trust/i.test(t5))
+      fail("trust-held-unlinked: page does not say the assets are an interest in a master trust");
+    if (!/plan's own filing was read without trouble/i.test(t5flat))
+      fail("trust-held-unlinked: page no longer clears the plan's own filing of the gap");
+    if (!/we could not match this plan to that return/i.test(t5flat))
+      fail("trust-held-unlinked: page does not say we failed to MATCH the plan to a trust return");
+  }
+  /* Applies to BOTH shapes: the document-shape sentence blames the filing and
+   * is false for every plan in this population. */
   if (/could not read it — that's our gap|pages are not present in the public copy/i.test(t5))
     fail("trust-held-unlinked: the false document-shape sentence is still being rendered");
-  if (!/we could not match this plan to that return/i.test(t5.replace(/\s+/g, " ")))
-    fail("trust-held-unlinked: page does not say we failed to MATCH the plan to a trust return");
 
   /* LINKED but the trust's own return is opaque. The page must NOT say we
    * failed to match a trust we did match - that would be a second false

@@ -1489,7 +1489,13 @@
       // no parsed lineup, but the audited notes NAME the options (common for
       // master-trust plans whose per-fund schedule isn't public)
       const menu = plan.filedFeatures && plan.filedFeatures.menu;
-      if (plan.trustUnlinked && !(menu && menu.length)) {
+      /* YIELD TO THE MORE SPECIFIC SENTENCE. When Schedule D gives us the
+       * trust's NAME, the branch further down says which trust holds the
+       * money, which is strictly more useful than saying we could not follow
+       * the link. Shipping this bit without the guard silently downgraded
+       * Genentech, Conagra and six others from the named sentence to the
+       * generic one. */
+      if (plan.trustUnlinked && !(menu && menu.length) && !(plan.mtiaName && plan.detailLoaded)) {
         // the filing is fine and we read it; the fund detail lives in a
         // SEPARATE return that we could not follow. Saying "we could not read
         // this filing" here was false for all six of these plans.

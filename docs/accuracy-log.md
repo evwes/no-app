@@ -8428,3 +8428,54 @@ its trust HAS a confident lineup, so those readers already saw real holdings.
 appeared twice more the same day: a master-trust shape that looked dominant in
 six ranked plans and was 4 of 128, and a hand-rolled predicate whose three-way
 split dissolved on re-count. A predicate's hit count is not a change's effect.
+
+---
+
+## 2026-09-12 — the trust-disclosure fix shadowed a better sentence it did not know about
+
+**What was wrong.** Yesterday's bit-65536 work replaced a false claim on 52
+plans ("this filing contains a schedule we could not read") with a true one
+("the fund detail is in the trust's separate return"). The new branch returns
+early in `fundTable`. An OLDER branch, written for Genentech and sitting
+further down the same function, names the trust outright: *"This plan holds its
+investments through **Roche Us Dc Plans Master Trust**, a master trust it
+reports on Schedule D … That's how the money is held, not a gap in our reading
+of the filing."*
+
+For the **8 plans that carry a Schedule D trust name** — Genentech 36,458
+participants, Conagra 28,863, A.O. Smith 6,080, TRS Staffing 1,655,
+Cleveland-Cliffs Tubular, Roche Diagnostics, Hallmark, American Bank & Trust —
+the new branch intercepted the old one and the page went from NAMING the trust
+to saying *"we could not match this plan to that return"*.
+
+Both sentences are true. The named one is strictly better, and I replaced it
+while fixing a different false claim on the same paragraph. **Roughly 74,000
+readers lost a specific fact and gained a vague one.** The 44 linked-opaque
+plans were unaffected — none of them carries an `mtiaName`.
+
+**The change.** The generic branch now yields when the specific one can run:
+`plan.trustUnlinked && !(menu && menu.length) && !(plan.mtiaName && plan.detailLoaded)`.
+Frontend only, no re-parse; `mtiaName` was already in `plans-all`, already in
+the `data/plans` shards the browser fetches, and already read into the plan
+object at app.js:580. Nothing needed carrying anywhere — CLAUDE.md's note that
+"what remains unshipped is carrying the Schedule D trust NAME into plans-all"
+was stale in both directions and is corrected.
+
+**The prevention, and it is the part worth reading.** The smoke test COVERED
+this archetype and PASSED throughout, because its assertions pinned the generic
+branch's exact words — `"interest in a master trust"`, `"plan's own filing was
+read without trouble"`, `"we could not match this plan to that return"`. Every
+one of those was still true after the regression. **A test that asserts a
+weaker claim than the page used to make cannot see a downgrade.** The
+assertions now split by branch: where Schedule D gives a name, the test demands
+that NAME appear; where it does not, the generic wording still applies. Both
+paths keep the shared check that the false document-shape sentence is gone.
+Negative-controlled: removing the guard produces
+`SMOKE FAIL: page does not name the trust (Roche Us Dc Plans Master Trust) —
+the generic sentence is shadowing the specific one`.
+
+**How it was found.** Not by a test and not by a report — by asking, during an
+unrelated cycle, whether a to-do item ("carry the trust name") was still
+outstanding. It was already done, which is what exposed that something newer
+had buried it. **When a note says work remains, check whether it was already
+finished before doing it again; the answer sometimes names a regression.**
