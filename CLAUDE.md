@@ -331,6 +331,16 @@ that changing visibility also unpublishes GitHub Pages.
   EFAST2 bucket (403)"* — false for 20 of 20 probed. One code carried two
   meanings. HTTP failures keep `download`; anything else is now `analyze` and
   says the gap is ours. **An error code is a published claim.**
+  **RE-PROBED WHOLE-POPULATION 2026-09-12 and this time the claim HOLDS.** The
+  residue is **68 acks**, and `gap-census` still renders their `e=download` to
+  readers as "withdrawn from the EFAST2 bucket (403)". All 68 were HEAD-probed
+  — the entire population, not a sample — and **68 of 68 answered 403.** The
+  split did its job: what survives under `download` really is gone. These 68
+  are also the whole of the `pvTopShare` tail and the whole work list of an
+  incremental run (#271 processed exactly them and nothing else), which is why
+  a quiet hour costs 68 doomed downloads and no more. Re-probe rather than
+  inherit the label: a claim that was false once is not thereby false forever,
+  and it is 68 requests to find out.
   **Why it was unknowable:** the outer `catch` labelled every exception
   `download`, the message went only to `summary`, and in `PARSE_SHARD` mode —
   the only mode production runs — the job `process.exit(0)`s *before* the
@@ -1060,6 +1070,12 @@ don't confuse them). Frontend: python http.server + Playwright at
   catches that cost run #244 — a value computed and discarded — found this
   time before it cost anything, because the promise to measure was written
   down next to the code that did not.**
+  **The first production run carrying them (#271) printed NONE of the four**,
+  and that is correct rather than a failure: its whole work list was the 68
+  permanently-403 acks, every one of which bails out before the fallback block
+  is reached. So the counters are locally controlled and production-untested;
+  the first run that will actually exercise them is the next full re-parse.
+  Do not read their absence in an incremental run's tally as a defect.
   GitHub cron note: Monday 06:00 runs fire HOURS late (Jul 27 fired
   10:02) — don't diagnose a dropped schedule before ~noon UTC. Trust links
   898 (193 via EIN fallback); Elevance has NO MTIA filing in EFAST2 at all
