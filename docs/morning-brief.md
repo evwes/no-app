@@ -73,6 +73,33 @@ Publishing what we can name would show a reader half a plan as though it were
 the whole one. **Two plans — 266 people — would genuinely publish.** I counted a
 condition and reported it as an outcome.
 
+## One thing I broke, found, and fixed — now live
+
+**Genentech's page named its master trust, and yesterday I stopped it.** The fix
+I shipped yesterday for 52 plans returns early in the same block of code as an
+older, better sentence, so eight plans lost the specific fact and got the vague
+one instead:
+
+> before: "This plan holds its investments through **Roche Us Dc Plans Master
+> Trust**, a master trust it reports on Schedule D … That's how the money is
+> held, not a gap in our reading of the filing."
+>
+> after my change: "…we could not match this plan to that return."
+
+Both are true. The first is better, and I replaced it while fixing a different
+false claim on the same paragraph. Genentech 36,458 people, Conagra 28,863,
+A.O. Smith 6,080 and five smaller plans — **about 74,000 readers**. Restored,
+CI green, mirrored.
+
+**The smoke test covered this page and passed the whole time**, because its
+checks were pinned to the *old* sentence's words, and those words were still
+true after the downgrade. A test that asserts something weaker than the page
+used to say cannot see the page get worse. It now demands the trust's name
+where Schedule D gives one.
+
+I found it by going to do a to-do item and discovering it was already done —
+which is what exposed that something newer had buried it.
+
 ## One thing I fixed in the machinery
 
 Three weeks ago I widened a rescue that fills in a plan's features from its
