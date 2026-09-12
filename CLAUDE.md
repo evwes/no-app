@@ -878,7 +878,7 @@ don't confuse them). Frontend: python http.server + Playwright at
   | investment options | 60,298 (88.3%) | **1,407 live plans / 2.32M ppl / $262B** |
   | any audit notes | 63,793 (93.5%) | **1,564 live / 1.43M ppl** (re-measured 2026-09-12) |
   | **match formula** | 42,338 (62.0%) + 5,308 quote-only | **8,672 live / 13.53M ppl** |
-  | vesting | 51,826 (75.9%) + 5,081 quote-only | 5,648 |
+  | vesting | 52,825 (77.4%) + 4,834 quote-only | **11,838 live / 23.2M ppl** (was 5,648 — see below) |
   | Roth stated | 36,470 (53.4%) | mostly genuine silence, not absence |
   | after-tax stated | 4,119 (6.0%) | genuinely rare |
 
@@ -929,6 +929,39 @@ don't confuse them). Frontend: python http.server + Playwright at
   on both lineup and notes, already carrying a `ds`/`dx` cause each. No new
   unknown here — the gap is the class the REOPENED bullet already tracks, and
   it is now sized against the same predicate as that bullet.
+
+  **VESTING RE-SIZED 2026-09-12 AND IT IS THE LARGEST GAP IN THE TABLE.** The
+  row said 5,648. Published vesting is **52,825**, which agrees exactly with the
+  pipeline's own `vesting` coverage metric, so 68,259 − 52,825 = 15,434 missing,
+  3,596 wind-down ghosts, **11,838 live plans / 23,213,865 participants** — more
+  people than the match gap. Three disjoint causes:
+
+  | plans | ppl | |
+  |---|---|---|
+  | 5,440 | 11,361,379 | **B** notes were read and never mention vesting (Microsoft, Boeing, IBM, Costco) |
+  | 4,834 | 10,418,456 | **C** a vesting SENTENCE is stored and nothing is published |
+  | 1,564 | 1,434,030 | **A** no features at all — already counted in the audit-notes row |
+
+  **C got the same discriminating test that settled match**, each stored
+  sentence fed to the production extractor alone: **1 path defect in a random
+  120 (0.8%)**. So this is NEW COVERAGE, not a repair — the owner's call, and
+  no session should start it unasked, exactly as with match. Shapes across the
+  whole 4,834 (disjoint, first match wins): 833 name a percentage with no period
+  (usually about DEFERRALS, which are 100% vested by law — the employer piece is
+  elsewhere), 546 point at a table or the plan document, 220 cliff, 215 graded,
+  42 immediate, **2** conditional plan-termination boilerplate, and 2,976 /
+  6.36M match no shape.
+  **A HYPOTHESIS WAS RAISED AND KILLED BY ITS CONTROL, which is the part worth
+  keeping.** Five examples looked like truncation defects — Verizon's sentence
+  begins mid-word (`"ant shall be fully vested"`), Eli Lilly's stops at
+  `"after c"`, Goldman's has a section heading welded in — and truncation would
+  make this OURS rather than new coverage, since the match-quote windowing fix
+  is already on the books. Running the same tests over the sentences that DID
+  parse says no: **starts-mid-word 3.2% in the gap vs 1.0% in the control, and
+  ends-without-terminal-punctuation 8x MORE COMMON in the control (23.7%) than
+  in the gap (7.2%)**. Truncation explains at most ~155 plans, not 2,976. The
+  five examples were real and the generalisation from them was wrong — which is
+  why the control is run before the write-up, not after.
 
   **The headline: match is ~6x the lineup gap by people affected, and it is
   OURS.** The 11.7% with no investment options is 7,961 plans — but **6,554 of
