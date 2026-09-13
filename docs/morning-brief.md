@@ -1,162 +1,53 @@
-# Morning brief — 2026-09-12
+# Morning brief — 2026-09-13
 
 ## The headline
 
-**One page-level fix went live and the decision you've been sitting on now has
-a third option, which is the biggest one.**
+**Nothing changed yesterday after mid-morning, and that is the correct
+outcome rather than a stall.** Everything I could measure or repair without a
+decision from you is done. What is left needs you to pick a direction, and
+picking it for you would be the wrong call.
 
-I spent most of the night measuring rather than building, because four numbers
-in my own notes turned out not to survive being re-derived — two of them badly
-wrong in a way that matters to you. The one thing that did ship was undoing
-damage I caused yesterday; it is written up below rather than buried.
+The pipeline ran every hour overnight, ingested no new filings, and committed
+nothing but timestamps. Coverage is flat on purpose: **60,089 fund menus, four
+audit findings at the long-standing baseline, 99.9% of filings read.**
 
-## The decision, restated with every number now measured
+## Waiting on you — unchanged, and now the whole queue
+
+1. **GitHub Pages must serve `main`** (Settings → Pages). Still the last
+   blocker on "live".
+2. **Custom domain DNS.**
+3. **Where to point parser effort.** All four options are measured now, which
+   they were not two days ago:
 
 | option | people affected | what it needs |
 |---|---|---|
 | **vesting** | **23.2M** | new pattern work — 11,838 live plans |
 | match | 13.5M | new pattern work + one re-parse |
-| short-form form codes | 7.35M | display only, data already in hand |
-| fund menus | ~86 plans | parser work, and it's nearly exhausted |
+| short-form form codes | 7.35M | **display only** — the data is already in hand |
+| fund menus | ~86 plans | parser work, and it is nearly exhausted |
 
-Last night I told you the choice was menus versus match. **Vesting is larger
-than both and I had it recorded at less than a quarter of its true size.**
+If you want the cheapest thing that helps the most people, it is the third row:
+7.35 million people on short-form filings currently see headline numbers and
+nothing else, while the form codes they filed — 83% of them report a
+match-or-after-tax code — are already sitting in our data. That is a page, not
+a pipeline.
 
-## Where I was wrong, on the record
+## What shipped the previous morning, now settled and live
 
-**The vesting gap was written down as 5,648. It is 11,838 live plans and
-23,213,865 people.** The published figure — 52,825 plans with vesting shown —
-agrees exactly with the pipeline's own metric, so the arithmetic was never in
-doubt; the gap number had simply never been derived from it. Of those:
+- **A regression of mine, found and undone.** Eight plans — Genentech 36,458
+  people, Conagra 28,863, A.O. Smith and five smaller — had been downgraded
+  from naming their master trust to a vaguer sentence. They name it again.
+  CI green, mirrored.
+- **A diagnosis that divided by almost nothing.** 28 plans with under $1M in
+  assets were being labelled "holdings exceed plan assets" on ratios as absurd
+  as 1.68 billion percent. They now get an honest label and no ratio at all.
+  Positive- and negative-controlled. It takes effect on the next full re-parse,
+  which is noted where someone would otherwise read the flat census as failure.
 
-- **5,440 plans / 11.4M people**: the audited notes were read and never mention
-  vesting at all (Microsoft, Boeing, IBM, Costco). Not ours.
-- **4,834 plans / 10.4M people**: we hold a vesting sentence from the filing and
-  publish nothing from it. This is the workable half.
+## What continues without you
 
-I tested whether that 4,834 is a *bug* or *missing capability*, the same way I
-tested match: feed each stored sentence to the parser on its own. **1 defect in
-a random 120.** So it is new capability, which is why it stays your call rather
-than something I start.
+The hourly pipeline, the audit, and the auto-managed findings issue all run
+whether or not anyone is watching. Two small plans publish menus covering about
+half their money, flagged and visible; one master trust will retry itself.
 
-**And the recordkeeper gap was recorded as 4,577 — it's 1,419, and none of it
-is ours.** 69% of that number was wind-down ghosts: plans already terminated,
-counted in a column whose own heading says ghosts were removed. Of the live
-remainder, **zero** have a Schedule C provider row we failed to read. I opened
-eleven filings to check — eight drawn at random — and none named a provider we
-missed. Icon Clinical Research is the type case: 16,374 people, $982,836 of
-plan-paid expense, Schedule C filed, and every name field deliberately blank
-under the exemption that covers fees netted from fund expense ratios. Lawful
-silence. **Nothing shipped, because the page already says the true thing.**
-
-## The fund-menu question is now closed
-
-Every bucket has a measured reachable number for the first time:
-
-| bucket | plans in it | actually reachable |
-|---|---|---|
-| fewer than 3 rows | 532 | ~70 |
-| no heading found | 417 | 4 |
-| statement, not a menu | 253 | **under 10** |
-| holdings exceed plan assets | 128 | **2** |
-
-**~86 plans out of 1,461.** The rest is documented absence, correct
-suppression, or a filing too thin to publish from.
-
-**The last cell I published this morning said 17 and I corrected it to 2 an
-hour later**, which is worth telling you because the mistake is subtle and I
-made it twice this week. Seventeen plans have three or more recognisable fund
-names among their rows — that is true. But having the names is not the same as
-having a menu: for most of those seventeen the recognisable funds account for a
-*fraction* of the plan (SLM 38%, Pennian Bank 3%), because the rest of the
-money sits in collective trusts and annuities that carry no public identifier.
-Publishing what we can name would show a reader half a plan as though it were
-the whole one. **Two plans — 266 people — would genuinely publish.** I counted a
-condition and reported it as an outcome.
-
-## One thing I broke, found, and fixed — now live
-
-**Genentech's page named its master trust, and yesterday I stopped it.** The fix
-I shipped yesterday for 52 plans returns early in the same block of code as an
-older, better sentence, so eight plans lost the specific fact and got the vague
-one instead:
-
-> before: "This plan holds its investments through **Roche Us Dc Plans Master
-> Trust**, a master trust it reports on Schedule D … That's how the money is
-> held, not a gap in our reading of the filing."
->
-> after my change: "…we could not match this plan to that return."
-
-Both are true. The first is better, and I replaced it while fixing a different
-false claim on the same paragraph. Genentech 36,458 people, Conagra 28,863,
-A.O. Smith 6,080 and five smaller plans — **about 74,000 readers**. Restored,
-CI green, mirrored.
-
-**The smoke test covered this page and passed the whole time**, because its
-checks were pinned to the *old* sentence's words, and those words were still
-true after the downgrade. A test that asserts something weaker than the page
-used to say cannot see the page get worse. It now demands the trust's name
-where Schedule D gives one.
-
-I found it by going to do a to-do item and discovering it was already done —
-which is what exposed that something newer had buried it.
-
-## One thing I fixed in the machinery
-
-Three weeks ago I widened a rescue that fills in a plan's features from its
-prior-year filing, and wrote next to the code that "the run measures the real
-rate." **It never did.** Every success was recorded; no attempt ever was, so
-the rate had no denominator on any run ever made. That is the same shape as the
-silent failures that cost eleven thousand filings in a single run last week —
-found this time before it cost anything, because the promise to measure was
-written down beside the code that didn't.
-
-It's instrumented now and tested end-to-end on a crafted case. The rescue's
-success side, which nobody had ever read off the store: **1,467 live plans,
-1.22M people, served from a prior year's notes today** — larger than the gap
-that remains.
-
-## Three times a shortcut produced a wrong number — two caught, one published
-
-Worth recording because the pattern is the same each time and it is mine, not
-the data's:
-
-- I wrote my own "is this a real fund name" test and it returned **48 plans**;
-  the project's own shipped version returns **17**. Mine was counting
-  `"Ending Balance"`, `"Thereafter"` and `"YEAR"` as funds. **And 17 was still
-  wrong** — see the menus section above; the real answer is 2, and getting from
-  17 to 2 meant asking what the funds were worth rather than how many there
-  were.
-- I built a plan list by hand and got **327 plans / 1.4M people** where the
-  real tool gives **253 / 142,545** — I'd swept in Kroger, Disney and
-  Caterpillar. The implausible size was the tell.
-- Five vesting sentences looked truncated, which would have made the gap *ours*
-  and mine to fix. Running the same test on the sentences that parse fine
-  killed it: the "defect" signal is **eight times more common in the healthy
-  control** than in the gap.
-
-Two were caught before anything left my hands. **The third was not** — 17 went
-into this brief and into the project notes and stood for about an hour before I
-checked what those funds were worth. The rules earning their keep are boring:
-reproduce the known count before classifying anything, reach for the shipped
-predicate instead of writing a new one, and — the one I keep relearning —
-measure the outcome a change would produce, not the condition it tests.
-
-## What continues
-
-- Two plans publishing a menu covering half their money, and one master trust
-  that will retry itself.
-- The feature-fallback counters produce their first real numbers on the next
-  full re-parse; they printed nothing on the incremental run, which is correct
-  and is now written down so nobody reads it as a fault.
-
-## Waiting on you
-
-1. **GitHub Pages must serve `main`** (Settings → Pages) — still the last
-   blocker on "live".
-2. **Custom domain DNS.**
-3. **Where to point parser effort**, now that all four options are measured
-   rather than three measured and one guessed. Vesting is the largest by
-   people; the short-form option is the cheapest by far, since the form codes
-   are already in hand and only the page is missing. Menus are nearly done and
-   what's left of them is small. I have deliberately not started any of these.
+Nothing here is blocked on anything except the three items above.
