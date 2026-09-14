@@ -8613,3 +8613,94 @@ before and after; the audit, the coverage line and the mirror gate all agree
 with each other and all miss it. **Reading one real filing end to end remains
 the only thing that has ever caught this class**, which is why the standing
 directive requires it every cycle.
+
+---
+
+## 2026-09-14 — R.J. Kielty Plumbing: a page that said "not stated" about a sentence the filing states, and 7 holdings lost after the region was already won
+
+Second filing sent by the owner the same day (EIN 59-1785733 PN 002, 204
+participants, $2.6M, ack `20251014215017NAL0004971296001`). Four findings; the
+first is the serious one because it is a false claim rather than an absence.
+
+**1. ROTH — FALSE NEGATIVE.** Note A, Contributions, attachment page 7:
+*"…participants may contribute up to 100% of their plan compensation on a
+pre-tax or **after-tax Roth basis**, subject to Internal Revenue Code ("IRC")
+limitations."* The stored features carry **no `roth` key at all** (only match,
+vesting, loans, autoEnroll), so the page prints *"Roth (After-Tax Designated) —
+Not stated in the audited notes."* The filing states it, in the word.
+**UNSIZED, and the reason is structural:** when the extractor misses a feature
+it stores no sentence either, so the miss leaves no trace in the store. The
+only free measurement is a FLOOR — plans with `roth` unset where the word
+survives inside some OTHER feature's kept quote: **22 live plans / 38,686
+participants** (Atos Syntel's *"amended to allow 'In-Plan Roth Conversions'"*
+is the clearest). **Kielty is not in that 22.** A floor is not an estimate and
+must not be quoted as one; the real rate needs PDFs.
+
+**2. SEVEN OF EIGHTEEN HOLDINGS LOST — AFTER THE REGION WAS WON.** The
+schedule lists 18 investment rows; `WAMPO_TRACE=cands` shows the winning
+candidate at **17 rows, ratio 0.925**; we publish **11**. Missing: Fidelity
+International Index ($72), JPMorgan Large Cap Growth R6 ($216), Schwab S&P 500
+($215), Schwab Total Stock Market ($145), Schwab 1000 ($3,664), Vanguard
+Mid-Cap Admiral ($162), Vanguard Target Retirement 2070 ($503) — **$4,977, 0.2%
+of the plan**, which is why the page's own "92% of Schedule H" disclosure stays
+honest. Separately, `American Funds American Mutual Fund Class R-6` is stored
+and displayed truncated to **"American Funds American"** although the trace
+shows the parser reading the full name.
+**THE MECHANISM IS NOT IDENTIFIED AND IS NOT GUESSED AT.** What is established:
+the loss is DOWNSTREAM of region selection (17 → 11), and it is at least two
+distinct defects — `value=72` is **never emitted as a row at all** (0
+occurrences across every candidate) while `value=503` IS emitted and still does
+not survive. **My first hypothesis was wrong and the instrument said so in one
+run:** I reasoned that the long name `American Funds American Mutual Fund Class
+R-6` wrapped and swallowed the rows beneath it; `pdftotext -layout` shows 18
+clean single-line rows and no wrap anywhere on the page. Reasoning from the
+rendered layout was wrong for the fifth time; the trace was right immediately.
+**Also unsized, and the store cannot size it:** the winning region's row count
+is not persisted, and `rw` is written only for NON-confident acks, so "region
+had N, we published M" is invisible for every confident plan. Sizing needs a
+re-parse pass that records both.
+
+**3. NON-ELECTIVE CONTRIBUTION NOT EXTRACTED, AND IT MISLEADS BY OMISSION.**
+*"The Company made a non-elective contribution of $52,511 for the 2024 plan
+year."* No `nec` is stored. The card prints "2024 employer contributions:
+$135K" directly above "Formula: 50% of the first 3% of pay", so a reader
+attributes the whole $135,259 to the match when **$52,511 of it is not match
+money.** This is the shape the project already knows from the match-quote
+guard: nothing on the page is false in isolation, and the arrangement of two
+true things creates a third claim that is not.
+
+**4. ELIGIBILITY NOT EXTRACTED.** *"…employees…who have attained age 18 and
+completed two months of service."* Stated; no eligibility row renders.
+
+Also a SECOND instance of the discretionary-match finding logged earlier today:
+*"Participant contributions may be matched by the Company at a percentage of
+the participants' contributions, **as determined by the Company**"* while we
+publish a bare "Formula: 50% of the first 3% of pay".
+
+**What was RIGHT, recorded because a review that only lists faults is not a
+review:** 204 participants / 183 active, $2.6M assets +24.4%, all four Sch H
+contribution lines, the match rate, the full six-rung vesting table, auto-enroll
+3%, loans, and ADP-tested from Schedule R 21b all verify exactly.
+
+**A NON-DEFECT WORTH RECORDING, because the reasoning nearly made it one.** The
+owner asked whether Schwab is the provider, since the Schwab rows carry `*`.
+The filing's own legend says **"\* Denotes party-in-interest to the Plan"**, and
+Note D gives the ERISA §3(14) breadth — *"any person who provides services to
+the Plan"*. Note F names the roles: *"Mid Atlantic Trust Company, the custodian
+through June 30, 2024, and **Charles Schwab Trust Bank, the trustee of the Plan
+effective June 30, 2024**."* So Schwab is the TRUSTEE and its proprietary funds
+and bank sweep are party-in-interest for that reason; the RECORDKEEPER is named
+explicitly on Schedule C Part I item 2, column (c): **RPG CONSULTANTS**, EIN
+13-4077182, $19,927. Our page is correct. **A party-in-interest asterisk is
+evidence of a service relationship, never of which service** — worth stating,
+because reading it as "provider" would have produced a wrong "correction" to a
+right answer.
+What it DOES expose: the trustee/custodian is a filed fact we show nowhere, and
+this plan changed trustee mid-year.
+
+**Prevention.** None shipped yet — all four are queued for the owner, and two
+are honestly unsized with the reason each cannot be sized from the store
+recorded above. The rule this filing earns: **"not stated in the audited notes"
+is a claim about the document, and every miss of an extractable feature turns
+it into a false one.** Absence of an extraction is not evidence of absence in
+the filing, and the page currently speaks as though it were.
