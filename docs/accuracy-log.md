@@ -8539,3 +8539,77 @@ agree on **all 43,523 SF filings, 0 disagreements**. And the first attempt to
 read `cf` from `plans-all` threw out of `lib-schema.mjs` naming the 37 real
 fields — `cf` is computed into `plans-list.json`, which is the better witness
 anyway, because it is the byte the browser actually reads.
+
+---
+
+## 2026-09-14 — a verdict of "not ours" that my own sampling frame guaranteed
+
+**What was wrong.** On 2026-09-12 I diagnosed the recordkeeper gap
+whole-population and published: *"RECORDKEEPER DIAGNOSED WHOLE-POPULATION, and
+the answer is that it is not ours."* The owner sent one filing — David Nelson
+Construction Co. 401(k) Profit Sharing Plan (EIN 59-1616643 PN 001, 180
+participants) — and it falsifies three claims in that analysis at once. It is
+inside the 1,419 (verified by reproducing the pool exactly), its page shows
+recordkeeper "—", and its filing names **Lincoln National Life Insurance Co.
+four times**: Schedule A carrier, Schedule D separate-account sponsor, Note C
+("certified to … by Lincoln"), Note H ("Lincoln, the trustee of the Plan").
+
+1. **"Recordkeeper has exactly one source."** False. `build-data.mjs:624`
+   already resolves `INS_CARRIER_NAME` from the Schedule A extract and **never
+   reads it** — a value computed and discarded, the same shape as run #244's
+   silent catches and the feature-fallback denominator. And `if (!comm &&
+   !fees) continue;` drops a Schedule A reporting **0 commissions and 0 fees**,
+   which is this plan exactly.
+2. **"0 name a provider we failed to ingest."** False, and the sampling is why
+   — see below.
+3. **"The page already says the true thing."** False here: it cites *"this
+   filing's Schedule C"* and **no Schedule C was attached** (line 10b(4)
+   unchecked).
+
+**The method error, which is the only part worth carrying forward.** I
+stratified the 1,419 by **Schedule H plan-paid spend** and drew all 11 samples
+from the two highest bands, reasoning that low spend meant lawful silence under
+the $5,000 threshold. But an insurance-platform plan pays its cost **inside the
+product**, reported on Schedule A and invisible in Schedule H — so it presents
+as a low-spend plan while having a perfectly identifiable provider. David
+Nelson sits at $3,902, in the "under $5,000" band I drew **zero** samples from.
+**The stratification variable was correlated with the failure mode I was trying
+to detect, so the sampling frame excluded the shape by construction.** Random
+sampling *within a frame* does not protect against a frame chosen with the
+wrong variable. This is a new failure mode for this project: the previous
+sampling lessons were about ranked-versus-random (v101, v112, band-hi's 17→2),
+and all of them assumed the frame was sound.
+
+I also **over-applied a true lesson**. "The composite public PDF is NOT a
+witness for whether Schedule C data exists" is correct, and I used it to
+dismiss evidence the PDF can actually give: it **is** a witness for whether a
+Schedule C was ATTACHED (line 10b) and for whether a Schedule A names a
+carrier.
+
+**The change.** Documentation only so far: CLAUDE.md's verdict is reversed in
+place, the field-coverage row is marked **CAUSE OPEN**, and the analysis is
+kept rather than deleted so the reasoning that failed stays legible. The code
+fix (Schedule A carrier as a fallback source, plus wording that does not cite
+an unfiled schedule) is a pipeline change and is queued for the owner, not
+shipped. **The gap is UNSIZED and said to be so**: the EFAST2 extracts come
+from the DOL site, unreachable from the sandbox, so "how many of the 1,419 have
+a Schedule A carrier" is one line in the next prep run and cannot be answered
+here. The band split also does not reproduce from `adminExpenses` alone
+(109/844/446/20 against the same 1,419), so the spend variable behind the
+published four numbers needs restating.
+
+**Prevention.** Two rules, both earned:
+- **When sizing a gap by sampling, state the stratification variable and ask
+  what shape it would hide.** A frame is a claim about the population and gets
+  the same suspicion as a measuring script.
+- **A whole-population verdict of "not ours" must name the sources it
+  checked.** Had the 09-12 note written "checked Schedule C only", the missing
+  Schedule A would have been visible on the page as a limit rather than
+  presented as a conclusion.
+
+**How it was found.** Not by any check we run — by the owner sending one
+filing and asking what it shows. Every count-based guard passed on this plan
+before and after; the audit, the coverage line and the mirror gate all agree
+with each other and all miss it. **Reading one real filing end to end remains
+the only thing that has ever caught this class**, which is why the standing
+directive requires it every cycle.

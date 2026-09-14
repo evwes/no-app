@@ -922,7 +922,7 @@ don't confuse them). Frontend: python http.server + Playwright at
 
   | field | covered (of 68,259 full-form) | real gap after removing wind-down ghosts |
   |---|---|---|
-  | recordkeeper | 63,682 (93.3%) | **1,419 live / 564k ppl** (was 4,577 — see below) |
+  | recordkeeper | 63,682 (93.3%) | **1,419 live / 564k ppl** (was 4,577). **CAUSE OPEN** — the "not ours" verdict was falsified 2026-09-14, see below |
   | investment options | 60,298 (88.3%) | **1,407 live plans / 2.32M ppl / $262B** |
   | any audit notes | 63,793 (93.5%) | **1,564 live / 1.43M ppl** (re-measured 2026-09-12) |
   | **match formula** | 42,338 (62.0%) + 5,308 quote-only | **8,672 live / 13.53M ppl** |
@@ -930,12 +930,18 @@ don't confuse them). Frontend: python http.server + Playwright at
   | Roth stated | 36,470 (53.4%) | mostly genuine silence, not absence |
   | after-tax stated | 4,119 (6.0%) | genuinely rare |
 
-  **RECORDKEEPER DIAGNOSED WHOLE-POPULATION 2026-09-12, and the answer is that
-  it is not ours.** The row carried 4,577 with no cause, in a column whose own
+  **RECORDKEEPER — the 2026-09-12 verdict "it is not ours" was FALSIFIED
+  2026-09-14 by a single filing the owner sent. Read the correction at the end
+  of this block before reusing anything in it.** The population arithmetic
+  below is still exact and still reproduces (1,419 / 563,716); what was wrong
+  was the CONCLUSION drawn from it, and the sampling that produced it.
+  The row carried 4,577 with no cause, in a column whose own
   header says ghosts are already removed — they were not. **3,158 (69%) are
   wind-down ghosts**, leaving **1,419 live plans / 563,716 participants /
-  $20.0B**. Recordkeeper has exactly one source (build-data pass 3: Sch C Part I
-  item 2, falling back to item 1), and the fee shards are built from the SAME
+  $20.0B**. Recordkeeper was believed to have exactly one source (build-data
+  pass 3: Sch C Part I
+  item 2, falling back to item 1) — **it does not; see the correction** — and
+  the fee shards are built from the SAME
   rows in the same loop, which makes them a free discriminator: **0 plans of the
   1,419 have a Schedule C provider row and no recordkeeper.** The pass never
   drops a row it has; every gap is an absent row. Split by what Schedule H says
@@ -966,6 +972,46 @@ don't confuse them). Frontend: python http.server + Playwright at
   readings carry information. The first classifier also called Icon NAMED off
   the `(b) (c) (d)` column-header row, after I had read it blank by eye — a
   measuring script is code and earns the same suspicion.
+
+  **THE CORRECTION (2026-09-14), from ONE filing: David Nelson Construction Co.
+  401(k) Profit Sharing Plan, EIN 59-1616643 PN 001, 180 participants.** It is
+  IN the 1,419 (verified by reproducing the pool), it shows recordkeeper "—",
+  and its filing names **Lincoln National Life Insurance Co. four times**:
+  Schedule A carrier, Schedule D separate-account sponsor, Note C ("certified
+  to … by Lincoln"), Note H ("Lincoln, the trustee of the Plan"). Three claims
+  above are wrong:
+  - **"exactly one source" is false.** `scripts/build-data.mjs:624` already
+    resolves `INS_CARRIER_NAME` from the Schedule A extract — and **never reads
+    it**. A value computed and discarded, the same shape as run #244's silent
+    catches and the feature-fallback denominator. Worse, line ~638 is
+    `if (!comm && !fees) continue;`, so a Schedule A with **0 commissions and 0
+    fees** — this plan exactly — is dropped before the carrier could be used.
+  - **"0 name a provider we failed to ingest" is false**, and the sampling is
+    why. All 11 filings were drawn from the two HIGHEST Schedule-H spend bands
+    (331 plans). An insurance-platform plan pays its cost INSIDE the product,
+    reported on Schedule A and invisible in Schedule H, so it presents as a
+    low-spend plan while having a perfectly identifiable provider. David Nelson
+    is at $3,902 — the "under $5,000, below the reporting threshold" band, from
+    which **zero** samples were drawn. **The stratification variable was
+    correlated with the failure mode being looked for, so the frame excluded
+    the shape by construction.** That is the lasting lesson here, above any
+    number.
+  - **"The page already says the true thing" is false for this plan.** It says
+    *"No recordkeeping provider identified in this filing's Schedule C"* and
+    **this filing attached no Schedule C at all** (Form 5500 line 10b(4)
+    unchecked). The sentence names a schedule that does not exist.
+  The PDF trap above was also OVER-APPLIED: a composite PDF is not a witness
+  for whether Schedule C DATA exists, but it IS a witness for whether a
+  Schedule C was ATTACHED (line 10b) and for whether a Schedule A names a
+  carrier. The trap was used to dismiss evidence the PDF can actually give.
+  **UNSIZED AND HONESTLY SO:** how many of the 1,419 have a Schedule A carrier
+  cannot be measured in-sandbox — the EFAST2 extracts come from the DOL site,
+  which is unreachable from here. It is one line in the next prep run. Also
+  note the band split above does not reproduce from `adminExpenses` alone
+  (that gives 109 / 844 / 446 / 20 against the same 1,419), so the spend
+  variable behind those four numbers needs restating when this is picked up.
+  **The row in the field-coverage table stays OPEN: cause unknown for an
+  unknown share, NOT "not ours."**
 
   **AUDIT NOTES BUCKETED 2026-09-12** (predicate: full-form, `assetsEOY > 0`,
   `!st.f`). 4,466 full-form plans have no features; **2,902 are wind-down
