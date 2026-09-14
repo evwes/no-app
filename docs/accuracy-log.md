@@ -8788,3 +8788,91 @@ more misses and they are a different kind:
   logic carries a measured regression (an earlier import of the vetoes "dropped
   87 values in the 822-filing corpus, most of them correct"). Not an area to
   change casually alongside an unrelated fix.
+
+---
+
+## 2026-09-14 — the published "recordkeeper" is an auditor, a lawyer or an investment manager on 1,509 plans (1.48M participants)
+
+Third owner-sent filing of the day, and the one that turns a documented gap
+into a documented WRONG ANSWER. Shoreline Carpet Supplies of Gulf Coast
+(EIN 65-0665155 PN 001, 218 participants) publishes
+**RECORDKEEPER: "Advisory Services Network Llc"**. Its only Schedule C service
+code is **99 = "Other fees"** — by our own decoder, built from the official
+instructions.
+
+**The plan's actual platform is Voya, named FOUR times in the filing**, three
+of them in machine-readable dataset columns:
+1. **Schedule A** carrier — VOYA RETIREMENT INSURANCE AND ANNUITY COMPANY, EIN
+   71-0294708 (the `INS_CARRIER_NAME` column `build-data.mjs:624` resolves and
+   never reads — the David Nelson defect, hit a second time).
+2. **Schedule C line 1b** — line 1a is answered **Yes**, and 1b names
+   "VOYA RETIREMENT INS. AND ANNUITY CO". Voya received only *eligible indirect
+   compensation*, so the instructions EXCLUDE it from item 2. That is exactly
+   why the platform is invisible to a pass that reads item 2.
+3. **Schedule C item 3** — the source of the indirect compensation for BOTH
+   item-2 providers is Voya.
+4. The 4i footer: *"The above information has been certified by Voya Retirement
+   Insurance and Annuity Company, **the investment fiduciary**."*
+
+**CLAUDE.md already states the intended rule** — *"Recordkeeper = platform-brand
+priority over top-fee line (NG shows Fidelity not Strategic Advisors)"* — so
+this is a rule that exists and did not fire. The pass takes the top-fee item-2
+row, and here that is an advisory firm paid by the platform.
+
+**SIZED FROM THE STORE, because the fee shards carry each provider's service
+codes.** Live full-form plans whose published recordkeeper IS the top-fee
+item-2 row and whose row carries **no recordkeeping code (15 or 64)**:
+**2,241 plans / 2,015,771 participants.** Split by what the codes say the
+provider actually is — the difference between "possibly wrong" and
+"demonstrably wrong", and only the second is claimed:
+
+| plans | participants | the published "recordkeeper" is coded as |
+|---|---|---|
+| 912 | 713,226 | investment advisory (plan) — code 27 |
+| 356 | 297,406 | investment advisory (participants) — code 26 |
+| 128 | 271,934 | investment management — code 28 |
+| 103 | 162,677 | **auditor / accountant — code 10** |
+| 10 | 37,415 | legal — code 29 |
+| **1,509** | **1,482,658** | **DIFFERENT PROFESSION — demonstrably wrong** |
+| 732 | 533,113 | uninformative or other codes — possibly wrong, not demonstrable |
+
+Named cases, each checkable: **Apple** (147,655p) → "Russell Investments
+Capital, Llc", code 28. **AstraZeneca** (27,192p) → **"Pricewaterhousecoopers
+Llp", code 10** — the AUDITOR published as the recordkeeper. **Nike** (48,256p)
+→ "Blackrock Institutional Trust", code 27. **McDonald's** (32,254p) →
+"Advised Assets Group, Llc", code 26. **HP Inc.** (33,749p) → **"Strategic
+Advisors"** — the very name CLAUDE.md cites as already solved for Northrop
+Grumman ("NG shows Fidelity not Strategic Advisors"), still wrong here, which
+means that fix was specimen-shaped rather than general.
+
+**Why this outranks the David Nelson case.** There we showed "—", an honest
+blank. Here we publish a NAME, and a name reads as knowledge. Telling 27,192
+AstraZeneca participants that PwC keeps their records is worse than telling
+them we do not know.
+
+**The discriminator already exists in our data and is unused:** codes 15
+("Recordkeeping") and 64 ("Recordkeeping fees"). Kielty's RPG Consultants
+carries 15/17/37/64 AND the relationship string "RECORDKEEPER", and our answer
+there is right. Shoreline's two item-2 rows carry only 99 and 49 — "other fees"
+and "other services" — so nothing in item 2 is a recordkeeper at all, and the
+correct answer is the platform on line 1b.
+
+**Not fixed.** The change belongs in `build-data.mjs` pass 3, needs a prep run,
+and would move the published name on up to 2,241 plans — far past the scope of
+reviewing one filing. Queued for the owner with the sizing above. The shape of
+the fix is clear: prefer a provider carrying 15/64; failing that the platform
+named on Schedule C line 1b or the Schedule A carrier; only then the top-fee
+row — and never publish a provider coded 10/29 as a recordkeeper.
+
+**A tempting hypothesis, killed by its control.** The owner noted the `*` on
+Voya's rows in the 4i schedule, and in Kielty all three Schwab funds had been
+among the dropped rows — so "asterisked rows are being dropped" looked strong.
+**It is false: all three Voya rows survive here.** What is true is that the six
+lost rows (30 filed, 24 published — American Funds EuroPacific $454, VTR 2070
+$735, DFA US Targeted $2,661, DFA Real Estate $3,652, Columbia High Yield
+$6,061, Vanguard Mid-Cap $6,719, totalling **$20,282 = 0.33% of the plan**) are
+exactly the six SMALLEST values. Kielty's losses were also the small end but
+did **not** separate cleanly at a threshold (164 and 192 were kept while 215
+and 216 were dropped), so a simple floor does not explain both.
+**Mechanism still not identified, still not guessed** — but there are now two
+instances, both with the money loss trivial and the row loss real.

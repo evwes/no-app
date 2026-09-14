@@ -922,7 +922,7 @@ don't confuse them). Frontend: python http.server + Playwright at
 
   | field | covered (of 68,259 full-form) | real gap after removing wind-down ghosts |
   |---|---|---|
-  | recordkeeper | 63,682 (93.3%) | **1,419 live / 564k ppl** (was 4,577). **CAUSE OPEN** — the "not ours" verdict was falsified 2026-09-14, see below |
+  | recordkeeper | 63,682 (93.3%) | **1,419 live / 564k ppl** blank (was 4,577), **CAUSE OPEN**; and separately **1,509 live plans / 1.48M ppl publish a WRONG NAME** — an auditor, lawyer, investment manager or advisor. Both falsified the "not ours" verdict 2026-09-14, see below |
   | investment options | 60,298 (88.3%) | **1,407 live plans / 2.32M ppl / $262B** |
   | any audit notes | 63,793 (93.5%) | **1,564 live / 1.43M ppl** (re-measured 2026-09-12) |
   | **match formula** | 42,338 (62.0%) + 5,308 quote-only | **8,672 live / 13.53M ppl** |
@@ -1012,6 +1012,37 @@ don't confuse them). Frontend: python http.server + Playwright at
   variable behind those four numbers needs restating when this is picked up.
   **The row in the field-coverage table stays OPEN: cause unknown for an
   unknown share, NOT "not ours."**
+
+  **SECOND MECHANISM, FOUND THE SAME DAY AND WORSE — WE PUBLISH A WRONG NAME,
+  not a blank (Shoreline Carpet Supplies, EIN 65-0665155 PN 001).** Pass 3
+  takes the TOP-FEE Schedule C item-2 row. When the platform received only
+  *eligible indirect compensation* it is EXCLUDED from item 2 by the
+  instructions and named on **line 1b** instead — so the top-fee row is
+  whatever advisor or auditor the plan paid directly. Shoreline publishes
+  "Advisory Services Network Llc" (sole service code **99 = other fees**) while
+  Voya is named four times: Schedule A carrier, Schedule C line 1b, Schedule C
+  item 3 as the source of BOTH providers' indirect comp, and the 4i
+  certification footer as "the investment fiduciary".
+  **SIZED FROM THE STORE** (fee shards carry the codes): **2,241 live plans /
+  2,015,771 ppl** publish a top-fee row with **no recordkeeping code (15/64)**,
+  of which **1,509 / 1,482,658 are coded as a DIFFERENT PROFESSION** — 912
+  investment advisory (plan), 356 investment advisory (participants), 128
+  investment management, **103 auditor/accountant**, 10 legal. Apple ->
+  "Russell Investments Capital" (28), **AstraZeneca -> "Pricewaterhousecoopers
+  Llp" (10)**, Nike -> "Blackrock Institutional Trust" (27), McDonald's ->
+  "Advised Assets Group" (26), and **HP Inc. -> "Strategic Advisors"** — the
+  exact name this file cites as SOLVED for Northrop Grumman, which means that
+  fix was specimen-shaped, not general.
+  **The discriminator is already in our data and unused:** codes 15
+  ("Recordkeeping") and 64 ("Recordkeeping fees"). Kielty's RPG carries
+  15/17/37/64 plus the relationship string "RECORDKEEPER" and is correct;
+  Shoreline's rows carry only 99 and 49, so NOTHING in item 2 is a recordkeeper
+  and the right answer is the platform on line 1b. Fix shape: prefer 15/64,
+  then the line-1b platform or Schedule A carrier, then top-fee — and never
+  publish a provider coded 10 or 29. Pipeline change, needs a prep run, moves
+  up to 2,241 published names. **Queued for the owner, not shipped.**
+  **A blank is honest; a name reads as knowledge.** This outranks the blank
+  above.
 
   **AUDIT NOTES BUCKETED 2026-09-12** (predicate: full-form, `assetsEOY > 0`,
   `!st.f`). 4,466 full-form plans have no features; **2,902 are wind-down
