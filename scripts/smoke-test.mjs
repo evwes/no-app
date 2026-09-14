@@ -26,7 +26,13 @@ const id = (r) => `${dash(g(r, "ein"))}|${g(r, "pn")}|${g(r, "ticker") || ""}`;
 const byAssets = [...d.plans].sort((a, b) => (g(b, "assetsEOY") || 0) - (g(a, "assetsEOY") || 0));
 const fullPlan = byAssets.find((r) => !g(r, "sf") && ((idx[g(r, "ack")] || 0) & 5) === 5);
 const trustPlan = byAssets.find((r) => !g(r, "sf") && g(r, "mtiaAck") && ((idx[g(r, "mtiaAck")] || 0) & 1) && !((idx[g(r, "ack")] || 0) & 1));
-const sfPlan = byAssets.find((r) => g(r, "sf"));
+/* Prefer a short-form specimen that CARRIES 2K and reports employer money, so
+ * the 401(m) assertion below is actually exercised: a $0-employer plan returns
+ * from the earlier "NONE FILED" branch and never renders the SF card. Falls
+ * back to any SF filer so the test still runs on a store without one. */
+const sf2k = byAssets.find((r) => g(r, "sf") && /2K/.test(String(g(r, "codes") || "")) &&
+  (g(r, "contribEmployer") || 0) > 0);
+const sfPlan = sf2k || byAssets.find((r) => g(r, "sf"));
 /* plans-index.json is ROW-aligned to plans-all, unlike the ack-keyed
  * lineups-index the three picks above use. Bit 4096 = the filing reports
  * investments in aggregate (dx=stmt). */
@@ -90,6 +96,11 @@ try {
 
   const t3 = await openPlan(sfPlan, "short-form");
   if (!/short[- ]form|SHORT-FORM|doesn't collect|DOL/i.test(t3)) fail("short-form: page does not explain the SF gap");
+  /* The filed fact, not just the list of things the DOL does not collect.
+   * Code 2K is on line 8a of the form itself, so it exists for short-form
+   * filers by law and there is no excuse for withholding it. */
+  if (sf2k && !/401\(m\) arrangement \(code 2K\)/.test(t3))
+    fail("short-form: page does not report the filing's own 401(m) code — the generic SF sentence is shadowing it");
 
   /* FILED IN AGGREGATE. The plan filed a schedule; it just reports one line
    * instead of a fund list. Suppressing the menu is right — publishing a

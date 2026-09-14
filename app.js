@@ -1005,6 +1005,11 @@
       ? `The employer contributed <strong>${money(plan.flows.employerM)}</strong> in plan year ${plan.planYear} (Form 5500).`
       : "";
     if (plan.isSF) {
+      /* The 401(m) card below is unreachable from here, so state the filed
+       * fact in place rather than leaving 5.5M participants with only the
+       * list of things the DOL does not collect. Code 2K is on the FORM
+       * (line 8a), not in the attachment, so it exists for short-form filers
+       * by law — 36,183 of the 43,523 SF filings carry it. */
       return `
       <div class="contrib-card">
         <div class="contrib-head">
@@ -1012,6 +1017,11 @@
           <span class="badge badge-gray">SHORT-FORM FILING</span>
         </div>
         <p class="max-benefit">${filedLine}
+        ${plan.matchCode
+          ? `The filing reports a <strong>401(m) arrangement (code 2K)</strong> — employer matching
+             contributions and/or after-tax employee contributions. That much is stated on the form itself.`
+          : `This filing's characteristic codes don't report a 401(m) arrangement (code 2K), which covers
+             employer matching and after-tax employee contributions.`}
         This plan files the short Form 5500-SF, which carries no audited attachment — the DOL
         doesn't collect the match formula, vesting schedule, or fund lineup for it.
         Know this plan? <a href="https://github.com/evwes/no-app/issues">Add it</a>.</p>

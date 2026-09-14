@@ -8479,3 +8479,63 @@ unrelated cycle, whether a to-do item ("carry the trust name") was still
 outstanding. It was already done, which is what exposed that something newer
 had buried it. **When a note says work remains, check whether it was already
 finished before doing it again; the answer sometimes names a regression.**
+
+---
+
+## 2026-09-14 — the short-form page withheld a filed fact it already knew how to state (34,601 plans, 5.54M participants)
+
+**What was wrong.** `renderContrib()` in `app.js` tests `plan.isSF` and returns
+before it tests `plan.matchCode`. The 401(m) card below it — written, shipped
+and correct for full-form plans — was therefore unreachable for every
+short-form filer. **36,183 of the 43,523 SF filings carry characteristic code
+2K; 34,601 of those are live plans covering 5,543,636 participants and
+$150.7B.** Each one was shown only:
+
+> This plan files the short Form 5500-SF, which carries no audited attachment —
+> the DOL doesn't collect the match formula, vesting schedule, or fund lineup
+> for it.
+
+Every word of that is true, and it is the wrong emphasis. **Code 2K is on line
+8a of the form itself, not in the attachment**, so it exists for short-form
+filers by law — the DOL *did* collect it, and the page had it in hand. Under a
+heading that reads "Employer Contributions", listing what is missing while
+omitting what was filed reads as a stronger absence than the filing supports.
+
+**This is the third instance of one shape** — a GENERIC branch returning ahead
+of a SPECIFIC one, both true, the specific one strictly better: the bit-65536
+trust regression (2026-09-12), the `frozen` display guard before it, and now
+this. The first two were defects I had introduced days earlier. This one had
+been there far longer and was never noticed, because nothing was *wrong* on the
+page — something was merely absent.
+
+**The change.** Frontend only, no re-parse and no pipeline change. The SF card
+now states the filed fact in place: with 2K, *"The filing reports a 401(m)
+arrangement (code 2K) — employer matching contributions and/or after-tax
+employee contributions. That much is stated on the form itself."*; without it,
+the wording copies the full-form card's existing hedge — *"This filing's
+characteristic codes don't report a 401(m) arrangement (code 2K)"* — which
+describes the CODES, not the plan. **An absent code is weaker evidence than a
+present one and the sentence must not overclaim.** The short-form caveat about
+the formula, vesting and lineup is kept verbatim; it is still true and still
+the honest limit of what can be said.
+
+Both shapes were rendered and READ, not just regex-matched — Intex Solutions
+(2K present, $1.3M employer money) and East River Medical (no 2K, $6.2M, which
+its 2E profit-sharing code explains).
+
+**Prevention.** The smoke test's short-form assertion accepted any of
+`/short-form|doesn't collect|DOL/`, all of which were true throughout the
+defect — the same blind spot the 2026-09-12 entry ends on, hit again in the
+same week. The specimen picker now prefers an SF plan that actually carries 2K
+*and* reports employer money (a $0-employer plan returns from an earlier branch
+and never renders this card), and the test demands the 401(m) sentence itself.
+Negative-controlled by reverting `app.js` alone:
+`SMOKE FAIL: short-form: page does not report the filing's own 401(m) code —
+the generic SF sentence is shadowing it`.
+
+**The method note worth keeping.** The bit and the string were checked against
+each other before either was trusted: `cf & 4` and the stored `codes` text
+agree on **all 43,523 SF filings, 0 disagreements**. And the first attempt to
+read `cf` from `plans-all` threw out of `lib-schema.mjs` naming the 37 real
+fields — `cf` is computed into `plans-list.json`, which is the better witness
+anyway, because it is the byte the browser actually reads.
