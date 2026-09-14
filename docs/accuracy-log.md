@@ -8704,3 +8704,87 @@ recorded above. The rule this filing earns: **"not stated in the audited notes"
 is a claim about the document, and every miss of an extractable feature turns
 it into a false one.** Absence of an extraction is not evidence of absence in
 the filing, and the page currently speaks as though it were.
+
+---
+
+## 2026-09-14 — v124: "pre-tax or after-tax Roth" scored as no Roth at all
+
+**What was wrong.** R.J. Kielty Plumbing (EIN 59-1785733 PN 002, owner-sent)
+states it in the ordinary way, Note A, Contributions:
+
+> "…participants may contribute up to 100% of their plan compensation on a
+> **pre-tax or after-tax Roth basis**, subject to Internal Revenue Code ("IRC")
+> limitations."
+
+and the page told its 204 participants *"Roth (After-Tax Designated) — Not
+stated in the audited notes."* **That is not a coverage gap, it is a false
+claim about the document.** The distinction is the point: silence about an
+unstated fact is honest, but "not stated in the audited notes" is an assertion
+ABOUT THE FILING, and every miss of an extractable feature converts it into a
+false one.
+
+**The cause**, established by running the production extractor rather than
+reading the regex — the previous hypothesis of that same day had been reasoned
+off a page layout and was wrong. `lib-4i.mjs` ~3580's pre-tax-first alternative
+requires `roth` IMMEDIATELY after the separator:
+`(pre-tax|before-tax) \s* (,|or|and|/) \s* \broth\b`. This filing puts a
+qualifier in between. The roth-FIRST alternative on the next line needed no
+change: its leading `[^.]{0,140}?` already absorbs a qualifier.
+
+**The change (v124).** A closed qualifier set — `designated` / `after-tax` /
+`post-tax` — each of which must sit directly on the word. Verified through the
+production extractor on both crafted cases and Kielty's real 142,913-character
+text:
+
+| case | before | after |
+|---|---|---|
+| Kielty "pre-tax or after-tax Roth" | false | **true**, verbatim quote |
+| "pre-tax or Roth" (control) | true | true |
+| "Roth or pre-tax" (control) | true | true |
+| "designated Roth contributions" (control) | true | true |
+| "pre-tax basis", no Roth (negative) | false | **false** |
+| "after-tax basis", no Roth (negative) | false | **false** |
+
+That last negative control is the load-bearing one: **a voluntary after-tax
+contribution is not a Roth contribution.** Confirmed on the real text that
+`afterTax` stays unset — the existing voluntary-after-tax logic already
+declines an after-tax phrase that "roth" modifies, and this change does not
+disturb it.
+
+**YIELD UNKNOWN AND DELIBERATELY NOT GUESSED.** It cannot be measured from the
+store: a missed feature stores no sentence, so the misses are invisible until
+the filings are re-read. The only free number is a FLOOR — 22 live plans /
+38,686 participants where `roth` is unset while the word survives in some other
+feature's kept quote, and **Kielty is not even in that 22.** Baseline recorded
+here so the re-parse can be measured against it: **37,068 of 63,875 entries
+with features carry `roth` today.**
+
+**Prevention, and it is the more general finding.** The gate's
+`FEATURE_SPECIMENS` table **could not express this assertion at all** — its
+checker special-cased `match` and fell through to `vesting`, so no Roth, loans,
+autoEnroll or eligibility class was pinnable. The suite's vocabulary was two
+words wide, and **the test that would have caught this was unwriteable.**
+Worse, four of its seven existing pins are `null` expectations ("must not claim
+a schedule"): a suite that only forbids OVER-claiming is structurally blind to
+an UNDER-claim, which is the shape that produces a false "not stated". The
+checker is now generic over any feature key and demands the QUOTE as well as
+the value, since a flag with no filed sentence behind it is exactly what this
+project must never publish. Kielty is pinned as the first POSITIVE feature
+specimen. Negative-controlled: reverting `lib-4i.mjs` alone gives
+`GATE FAIL R.J. Kielty ('pre-tax or after-tax Roth basis'): roth=(none)
+(expected true, quote missing)`.
+
+**Deliberately NOT fixed in this version**, because the same filing shows two
+more misses and they are a different kind:
+- **NEC is an unimplemented SHAPE, not a broken pattern.** *"The Company made a
+  non-elective contribution of $52,511 for the 2024 plan year"* — every `nec`
+  pattern requires a PERCENTAGE rate, and this one is a dollar amount. New
+  coverage, owner's call, same standard applied to match and vesting.
+- **Eligibility is blocked by the sponsor's own name.** *"…covering
+  substantially all employees of R.J. Kielty Plumbing, Inc. (the "Company")
+  who have attained age 18 and completed two months of service"* — `eligRe`
+  spans `[^.%]{0,140}`, and "R.J." plus "Inc." puts three periods in the way.
+  That hazard is described in the code's own comments, and the surrounding
+  logic carries a measured regression (an earlier import of the vetoes "dropped
+  87 values in the 822-filing corpus, most of them correct"). Not an area to
+  change casually alongside an unrelated fix.

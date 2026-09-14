@@ -27,6 +27,18 @@ import { parse4i, extractPlanFeatures, frozenClaimIsAboutThisPlan } from "./lib-
  * in a sentence that does not cover the employer money, and reading them as
  * Immediate tells the user the opposite of the truth. */
 const FEATURE_SPECIMENS = [
+  /* v124: the QUALIFIED-ROTH class, and the first POSITIVE feature specimen
+   * here. R.J. Kielty Plumbing (owner-sent) writes the ordinary sentence
+   * "…may contribute up to 100% of their plan compensation on a pre-tax or
+   * AFTER-TAX ROTH basis", and it scored as no Roth at all because the
+   * pre-tax-first alternative demanded `roth` immediately after the
+   * separator. The page then told 204 participants "Roth — Not stated in the
+   * audited notes" about a filing that states it in the word.
+   * The rest of this table forbids over-claiming; nothing in it could catch an
+   * under-claim, which is how a false "not stated" survives. Keep the positive
+   * assertion. */
+  ["R.J. Kielty ('pre-tax or after-tax Roth basis')", "20251014215017NAL0004971296001",
+    { roth: true }],
   ["Novus (universal 'all contributions')", "20260722074735NAL0014440048001",
     { vesting: "Immediate" }],
   ["Safe-harbor possessive ('the Company's safe harbor contributions')",
@@ -471,6 +483,22 @@ for (const [label, ack, expect] of FEATURE_SPECIMENS) {
     console.log(`GATE ${okM ? "OK  " : "FAIL"} ${label}: match=${gotM === null ? "(none)" : gotM}` +
       (okM ? "" : ` (expected ${expect.match === null ? "(none)" : expect.match}${ff.matchText ? "" : ", quote missing"})`));
     if (!okM) failed++;
+    continue;
+  }
+  /* v124: any OTHER feature — roth, loans, autoEnroll, eligibility. Before
+   * this the table spoke only "match" and "vesting", so the assertion that
+   * would have caught the qualified-Roth miss could not be written down.
+   * Demands the quote too: a flag with no filed sentence behind it is the one
+   * thing this project must never publish. */
+  const otherKey = Object.keys(expect).find((k) => k !== "match" && k !== "vesting");
+  if (otherKey) {
+    const got = ff[otherKey] === undefined ? null : ff[otherKey];
+    const want = expect[otherKey];
+    const quoteKey = otherKey + "Text";
+    const okO = got === want && (want === null || !!ff[quoteKey]);
+    console.log(`GATE ${okO ? "OK  " : "FAIL"} ${label}: ${otherKey}=${got === null ? "(none)" : got}` +
+      (okO ? "" : ` (expected ${want === null ? "(none)" : want}${ff[quoteKey] ? "" : ", quote missing"})`));
+    if (!okO) failed++;
     continue;
   }
   const got = ff.vesting || null;

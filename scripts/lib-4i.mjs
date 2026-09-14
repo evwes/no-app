@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 123;
+export const PARSER_VERSION = 124;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -3577,7 +3577,12 @@ export function extractPlanFeatures(text, sponsorName = "") {
    * Owner-reported 2026-09-01 from the filing itself. */
   const roth = t.match(/\broth\b[^.]{0,120}(contribut|deferral|option|401)/i) || t.match(/(designated|make) \broth\b/i) ||
     t.match(/(?:contribut|deferral)\w*[^.]{0,80}?(?:into|to|as) an? \broth\b/i) ||
-    t.match(/(?:contribut|defer)\w*[^.]{0,140}?(?:pre-?tax|before-?tax)\s*(?:,|\bor\b|\band\b|\/)\s*\broth\b/i) ||
+    /* v124: allow a QUALIFIER between the separator and the word. "pre-tax or
+     * after-tax Roth basis" (R.J. Kielty) is the ordinary way to write it and
+     * was scoring as no Roth at all, so the page said "not stated" about a
+     * filing that states it. Closed set, each glued directly to "roth", so
+     * "pre-tax or after-tax" with no Roth still does not match. */
+    t.match(/(?:contribut|defer)\w*[^.]{0,140}?(?:pre-?tax|before-?tax)\s*(?:,|\bor\b|\band\b|\/)\s*(?:designated\s+|after-?tax\s+|post-?tax\s+)?\broth\b/i) ||
     t.match(/(?:contribut|defer)\w*[^.]{0,140}?\broth\b\s*(?:,|\bor\b|\band\b|\/)\s*(?:pre-?tax|before-?tax)/i);
   if (roth) { out.roth = true; out.rothText = sentence(roth.index); }
   if (/in.?plan.{0,40}(roth )?(conversion|rollover)|convert.{0,40}(to )?(a )?roth/i.test(t)) out.inPlanRoth = true;
