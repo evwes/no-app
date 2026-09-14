@@ -8876,3 +8876,60 @@ did **not** separate cleanly at a threshold (164 and 192 were kept while 215
 and 216 were dropped), so a simple floor does not explain both.
 **Mechanism still not identified, still not guessed** — but there are now two
 instances, both with the money loss trivial and the row loss real.
+
+---
+
+## 2026-09-14 (later) — sizing the post-selection row loss, and a 72% headline I killed before publishing it
+
+The Kielty/Shoreline row loss was recorded twice as "unsized, because the
+winning region's row count is not persisted". The store cannot answer it, but
+the PARSER can and S3 is reachable, so: 25 **randomly** drawn confident
+lineups, re-run through `trace-filing.mjs`, best-scoring candidate region's row
+count compared against the rows we publish.
+
+**First result: 18 of 25, "72% of confident lineups lose rows after region
+selection."** That number is wrong and was never published. It counts a
+CONDITION — region rows > published rows — which is true almost always and
+benign almost always. Naming the rows settled it in one run; the
+parsed-but-not-published set is overwhelmingly material the parser is RIGHT to
+drop:
+
+> `Beginning balance` · `Ending balance` · `Net income per Schedule H of Form
+> 5500` · `Rollovers` · `Employer` · `Participants` · `1c(13)` · `EIN(s):` ·
+> `+1 (630) 566-` · `v.` · `(a) Enter name and EIN or address (see
+> instructions) IRONSHORE FINANCIAL, LLC` · `AT FAIR VALUE` · `Pooled separate
+> accounts`
+
+Form boilerplate, statement-of-changes lines, phone numbers, and the aggregate
+labels whose publication is precisely the v100–v105 fabrication family. **A
+row-count delta is not a loss.** Fifth instance of condition-vs-outcome in this
+project, and the first one caught inside the same cycle that produced it.
+
+**The outcome test.** Ask instead whether a dropped row is a REAL FUND, using
+the SHIPPED `fundTickerInfo` (from `fund-er.js` at git HEAD through `vm`, the
+`build-ticker-reference.mjs` loader) — a ticker attaches only when the filed
+name identifies a specific registered fund. Same 25 plans:
+
+**2 of 25 lose a row the predicate calls a real registered fund; 13 rows in
+total.** USAA (53,564p — `State Street Target Retirement 2025/2030/2035`) and
+Rubies II (555p — `TROWEPRICE RETIRE 2020 INV`, `T. ROWE PRICE GROWTH STOCK`).
+
+**Stated as a FLOOR with its contamination named, not as a rate.** Two things
+push it in opposite directions and neither is resolved: (a) `fundTickerInfo`
+under-matches by design on CITs, annuities and stable value, so real losses of
+those are invisible here; (b) my "missing" set is rows from ANY candidate
+region, so a row belonging to a DIFFERENT table in the same PDF — a master
+trust's own schedule, say — counts as missing though it was never a candidate
+for this plan's lineup. USAA's $219M/$822M/$387M rows against a plan of that
+size look more like (b) than a loss.
+
+**What this is worth.** (e) moves from "unsized, possibly systemic" to
+**single-digit percent and small money** — Kielty $4,977 (0.2%), Shoreline
+$20,282 (0.33%). It stays below the recordkeeper wrong-name defect (1,509
+plans / 1.48M participants) and below the discretionary-match disclosure in the
+queue. **Mechanism still unidentified and still not guessed** — but it is no
+longer a candidate for urgent work, and that is what the sizing was for.
+
+**Method note worth more than the number:** the cheap proxy was tried, produced
+a dramatic figure, and was discarded within the same cycle because naming its
+members took one script. **Run the members before the headline.**
