@@ -58,17 +58,52 @@ SERIALISATION: pushing scripts/build-data.mjs, fetch-4i.mjs, lib-4i.mjs, merge-4
 
 Order of business:
 1. RUN IN FLIGHT? (Without MCP tools, infer from git: an "Update filed plan data" commit or a .kick push on either ref in the last 90 minutes means assume one is.) Non-pipeline work only; pipeline commits [skip ci]. When you cannot rule a run out, EVERY commit is [skip ci] and kicks are limited to one per cycle.
-2. NO RUN AND A GATED CHANGE UNSHIPPED? Dispatch build-data.yml on the DEV branch (via mcp__github__actions_run_trigger when available; WITHOUT MCP tools, push a commit whose only change is `date > scripts/.kick` — the documented kick, and the push event is the dispatch). Verify it started when you can query runs; without MCP, the data commit arriving on the branch within ~2h is the observable.
-3. RUN JUST FINISHED? Verdict: pv distribution (one dominant pv, small tail); coverage line in docs/coverage-history.jsonl; `node scripts/diff-lineups.mjs <prev-ref>` (every CONFIDENCE LOST must be a justified fabrication, FABRICATED INTRODUCED must be 0); `node scripts/audit-generic-names.mjs` (baseline 208/threshold 230) and `node scripts/audit-dominant-row.mjs` (fabricated class is CLOSED at 0 — any nonzero is a regression, stop and diagnose); then mirror via scripts/mirror.sh.
-4. OTHERWISE take the next queue item and FINISH it. Queue, from the EXACT census (`node scripts/gap-census.mjs`, powered by dx since v106 — pull acks straight from dx, no sampling):
-   - A-noregion: 1,099 plans, 678,195 participants. Headings fire, nothing scores as a table. UNDIAGNOSED at document level — size it first with scripts/gap-verify.mjs (upgraded ladder) before any parser work.
-   - A-band-hi: 270 plans, 684,737 participants, $33.1B. Largest: Compass Group USA (312,914 participants, $2.5B), then UPS ($14.2B). Ratios ~1.9-3.9 = something counted twice; trace with WAMPO_TRACE=cands via scripts/trace-filing.mjs.
-   - A-stmt: 326 plans incl. State Farm 20251010104106NAL0007965633001 (real 55-fund menu loses region scoring to a Statement of Net Assets page).
-   - A-few (660) and A-band-lo (57): size before fixing.
-   - The 319 dominated-but-fund-shaped lineups ($34.6B): confirm honest single-holding plans, not a sixth merge cause.
-   - Frontend: plans whose lineup was withdrawn as a filed AGGREGATE (Comcast, MetLife, Albertsons class) now show no lineup — the page should say the filing reports investments in aggregate rather than showing a bare gap. Same for "schedule explicitly omitted" (STS class).
-   - Recordkeeper missing: 4,568 plans, 2.19M participants.
-   NOT worth parser work, all MEASURED: A-nohead (5,966 plans — 50/50 sample: 56% no attachment, 36% attachment without schedule, 6% explicitly omitted, ~0 fixable); features-missing-though-lineup-parsed (~7% ours); the fabricated-lineup class (v100-v105, CLOSED at 0, audits hold it).
+2. NO RUN IN FLIGHT? **DISPATCH build-data.yml ON THE DEV BRANCH — EVERY HOUR, whether or not a gated change is waiting.** This step used to fire only when "a gated change is unshipped", and that is why the pipeline was not actually running hourly (owner, 2026-09-15): the GitHub cron `23 * * * *` is the ONLY thing that dispatched on a quiet hour, and GitHub de-prioritises cron on free public runners. Measured 2026-09-15: scheduled runs fired at 10:00, 13:38 and 18:16Z — gaps of 3.5 and 4.5 hours, not one. The Routine at `:07`, by contrast, has fired on the minute every hour. **So the reliable clock was waking a cycle that then declined to dispatch, while the unreliable clock was the only one parsing new filings.** Dispatching costs effectively nothing — Actions minutes are free (measured at zero), a no-op hour exits without committing, and the whole work list on a quiet hour is the ~78 permanently-403 acks. The purpose of the hourly run is to FIND new gaps, holes and incorrect filings as they are filed; a 4-hour gap is 4 hours of filings unexamined. Use `mcp__github__actions_run_trigger` (method `run_workflow`, ref = the dev branch); WITHOUT MCP tools, push a commit whose only change is `date > scripts/.kick` — the documented kick, and the push event is the dispatch. **Verify it started in the run listing before believing it** — the push trigger is intermittent and the dispatch is not. Keep the GitHub cron as the backstop for hours when no session exists; do not remove it.
+3. RUN JUST FINISHED? Verdict: pv distribution (one dominant pv, small tail); coverage line in docs/coverage-history.jsonl; `node scripts/diff-lineups.mjs <prev-ref>` (every CONFIDENCE LOST must be a justified fabrication, FABRICATED INTRODUCED must be 0); `node scripts/audit-generic-names.mjs` (baseline 208/threshold 230) and `node scripts/audit-dominant-row.mjs` (holds at 0 — any nonzero is a regression, stop and diagnose; NOTE this audit covers ONE shape and the fabricated class as a whole is NOT closed, see docs/accuracy-log.md 2026-09-15); then mirror via scripts/mirror.sh.
+4. OTHERWISE take the next queue item and FINISH it.
+
+   **DO NOT READ A QUEUE OUT OF THIS FILE. The list that used to sit here was
+   from 2026-09-03 and every number in it had been superseded** — it said
+   `noregion` 1,099 plans (now 6), `band-hi` 270 (now 128), recordkeeper
+   missing 4,568 (now 1,419 blank + 1,509 publishing a WRONG NAME), State Farm
+   still broken (it publishes 20 Vanguard rows), and — worst — **"the
+   fabricated-lineup class is CLOSED at 0", which was corrected on 2026-09-15
+   when an owner-sent filing showed it publishing merged holdings.** A stale
+   queue in the file that drives every cycle is the "copying a line forward is
+   asserting it again" hazard aimed at the work itself. Removed 2026-09-15.
+
+   **The live sources, in order:**
+   - `CLAUDE.md` → "Known residuals" table, and read its `reachable` column,
+     not the raw size column. Regenerate with `node scripts/gap-census.mjs`
+     and reproduce the shipped count before classifying anything.
+   - `CLAUDE.md` → "FIELD COVERAGE" (lineups are NOT the largest gap; match
+     and vesting are, by people).
+   - `docs/accuracy-log.md` → the newest entries are the open defects.
+   - `docs/coverage-history.jsonl` → `overshoot` must FALL from 471.
+
+   **Open queue as of 2026-09-15, all owner-gated except where noted:**
+   1. Fabricated/unusable published holdings, one `PARSER_VERSION` bump:
+      wrapped continuation fragments (Owens Corning `Fund, Class S`),
+      loan-rate text as a name (283 plans), the 471 overshoots (PepsiCo
+      `Trust` at 50% of its menu), Form 5500 ID fields as holdings (174
+      plans — `JUNK_NAME_RE` matches 0 of them), duplicate rows (160),
+      and the CODE-COLUMN class (720 plans / 687,851 ppl publishing
+      `1VTTHX` where the same PDF prints a legend giving the fund name).
+   2. Recordkeeper wrong name: 1,509 plans / 1.48M ppl. Prefer service
+      codes 15/64, then the line-1b platform or Schedule A carrier, then
+      top-fee; never publish a provider coded 10 or 29.
+   3. Discretionary match shown as a standing "Formula" (~4,469 pages) —
+      display only, no re-parse.
+   4. Schedule A carrier as a recordkeeper source (`build-data.mjs:624`
+      resolves it and never reads it).
+   5. NEC + eligibility extraction — NEW COVERAGE, owner's call.
+
+   **EVERY CYCLE, alongside the queue item: draw randomly from PUBLISHED
+   lineups and read the rows.** Not from the worst bucket — that draw answers
+   "what are we missing" and only this one answers "what are we getting
+   wrong". Its first run (2026-09-15, 40 plans) found three unnamed classes
+   totalling ~1.1M participants; 36 of 40 were clean, so expect a low rate and
+   look anyway.
 
 Accuracy protocol: SIZE before fixing, RE-SIZE after (v101 was projected at 65%, delivered 2.5% in-bucket). INSTRUMENT before believing a cause — `WAMPO_TRACE=rows|cands node scripts/trace-filing.mjs <ack>` prints the parser's working. A measuring script is code and earns the same suspicion (size-features.mjs reported 30% where the truth was 7%; gap-verify's table detector fired on Statements of Changes until it required rows that NAME PRODUCTS). Prove a new guard FIRES with a negative control. Read stores through scripts/lib-schema.mjs. Parser changes: parser-gate green + a specimen + a decoy + an entry in docs/defect-specimens.json. Frontend changes: smoke-test.mjs AND map-test.mjs, bump ?v= stamps together. Log every accuracy defect permanently in docs/accuracy-log.md.
 
