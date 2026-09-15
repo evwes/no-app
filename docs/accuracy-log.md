@@ -9487,3 +9487,51 @@ And the standing rule paid again: the VGD/TRGT family — 3,785 rows, an entire
 Vanguard target-date menu spelled `Vgd Trgt Rtmt 2030 Trust II` — came out of a
 RANDOM draw of published lineups, not from the ranked gap list, which is the
 same place the last three defect classes came from.
+
+### Verification addendum, same evening — the FTBFX count was understated
+
+The entry above was produced by the `wam` agent and its headline numbers were
+re-measured independently before anything was mirrored, because an agent's
+report is not evidence; the store is.
+
+**Confirmed, within the difference the filters explain** (the independent
+harness applies a `assetsEOY >= $1M` filter and ran against a slightly later
+store):
+
+| | as reported | independently measured |
+|---|---|---|
+| identified rows before | 328,596 (19.27%) | 330,962 (19.67%) |
+| after | 340,869 (19.99%) | 343,406 (20.41%) |
+| gained | +12,498 | +12,716 |
+| **changed assignments** | **13** | **13** |
+| plans gaining ≥1 row | 7,144 / 11.78M ppl | 7,103 / 11.66M ppl |
+
+All 13 changed assignments are `OTCFX -> TRSSX`, and all 13 filed names
+contain `Instl` — read individually, not counted, because a changed assignment
+is the shape most likely to be a NEW wrong answer.
+
+**The FTBFX finding is real and was UNDERSTATED: 270 rows across 270 plans,
+201,088 participants**, not 224/265. The decisive check is that **270 of 270
+(100.0%)** of the dropped names contain `Adv`:
+
+```
+  63x  Fidelity Adv Total Bond Z Fd
+  35x  Fidelity Adv Total Bond I
+  26x  FIDELITY ADV TOTAL BOND Z MUTUAL FUND SHARES
+  21x  FIDELITY ADV TOTAL BOND Z FD
+  11x  Fidelity Adv Total Bd Z          … 13 more spellings
+```
+
+Every one is Fidelity **Advisor** Total Bond — a different fund from FTBFX,
+with a higher expense ratio — and every one was publishing FTBFX's number to
+readers. 201,088 participants were shown the wrong fund's fee.
+
+**A METHOD NOTE, because the first attempt at this check tested nothing.**
+The initial spot check used `Fid Adv Ttl Bd Inst`, which the OLD table could
+not match *at all* (null before and after), and a null-to-null result was
+briefly read as failing to reproduce the claim. It was not evidence either
+way: that string was never in the affected population. The claim concerns
+names like `Fidelity Adv Total Bond Z Fd`, which the old guard's spelled-out
+`advisor` test let through. **A negative result only carries information if the
+case tested is in the population the claim is about** — the same error shape as
+the recordkeeper sampling frame, at one-case scale.
