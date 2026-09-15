@@ -401,7 +401,52 @@ const ABBREV = [
   [/\bGLBL\b|\bGLB\b/gi, "Global"],
   [/\bOPPTY\b|\bOPP\b/gi, "Opportunity"],
   [/\bSTRAT\b/gi, "Strategic"],
+  /* Added 2026-09-15 after the whole-store measurement that found 80% of
+   * published holding rows carrying no fund identity. Every contraction below
+   * was taken from filed names that matched nothing and that reach a fund the
+   * table ALREADY carries once the word is written out — the REPAIR half of
+   * that gap. Funds the table does not carry at all (RNWGX, VIGAX, VGSLX …)
+   * are a different problem and nothing here invents one.
+   * Each row was checked against the flip list it produces, not just added:
+   * a rewrite that reached a DIFFERENT fund was dropped rather than kept. */
+  [/\bINDX\b/gi, "Index"],
+  [/\bTTL\b|\bTOTL\b/gi, "Total"],
+  [/\bINSTL\b|\bINSTI\b|\bINSTIT\b|\bINSTITL\b/gi, "Institutional"],
+  [/\bMRKT\b/gi, "Market"],
+  [/\bMRKTS\b/gi, "Markets"],
+  [/\bSML\b/gi, "Small"],
+  [/\bCHP\b/gi, "Chip"],
+  [/\bEQTY\b|\bEQUTY\b/gi, "Equity"],
+  [/\bINTNL\b|\bINTERNATL\b/gi, "International"],
+  [/\bAGGR\b/gi, "Aggregate"],
+  [/\bPRTCT\b|\bPRTCTD\b/gi, "Protected"],
+  [/\bRTRN\b/gi, "Return"],
+  // found in a random draw of PUBLISHED lineups rather than in the gap list:
+  // "Vgd Trgt Rtmt 2030 Trust II" is a whole target-date menu the table
+  // already carries, spelled in a way no rule reached
+  [/\bVGD\b|\bVGRD\b|\bVNGRD\b/gi, "Vanguard"],
+  [/\bTRGT\b/gi, "Target"],
+  [/\bRTRMT\b/gi, "Retirement"],
+  [/\bINTERNTL\b/gi, "International"],
+  // the Income vintage of a target-date series: "Vanguard Tgt Rmt Inc Inv"
+  // expands to "… Retirement Inc", which no pattern spells that way
+  [/\bRetirement Inc\b(?!ome)/gi, "Retirement Income"],
 ];
+/* Contractions that stand for TWO different words, which is why they cannot
+ * live in the list above: "Mid Cp Index" is Cap and "Blue Cp Growth" is Chip.
+ * Rather than guess from context, expandFundVariants tries both and the fund
+ * table decides — a spelling that names no fund matches nothing, and a
+ * spelling that names one is the fund the filing meant. */
+const ABBREV_ALT = [[/\bCP\b/gi, ["Cap", "Chip"]]];
+/* Nouns that carry no identity: a filed name may have them where a pattern
+ * does not ("PIMCO Income FUND Institutional CLASS" vs /pimco income inst/),
+ * so one variant drops them. Dropping cannot invent a fund — it can only let
+ * a pattern that already names this manager and strategy see them adjacent. */
+const FILLER_NOUN = /\b(?:fund|fd|shares|shs|class|cl)\b/gi;
+/* …and the mirror case: a registered fund is "<Strategy> Fund Class R6", so a
+ * filed "MFS Value R6" has the noun dropped instead. Only a name ENDING in a
+ * bare share class gets it back, and only when it says "fund" nowhere. */
+const CLASS_TAIL = /\s(?:class\s+)?(?:r[1-6]|k6?|y|z|adm|admiral|investor)\s*$/i;
 // eslint-disable-next-line no-unused-vars
 function expandFundName(name) {
   // (R)/(TM)/(SM) marks sit mid-name in recordkeeper feeds and broke every
@@ -412,13 +457,53 @@ function expandFundName(name) {
   return s.replace(/\s{2,}/g, " ").trim();
 }
 
+/* Every spelling of one filed name that is worth looking up, base first.
+ *
+ * WHY A LIST AND NOT ONE STRING. Expansion used to be a single deterministic
+ * rewrite, which forces a guess whenever a contraction is ambiguous and makes
+ * a pattern's word order law. Trying a handful of spellings instead lets the
+ * fund table adjudicate: a variant that names no fund matches nothing and
+ * costs a regex test, and a variant that names one is what the recordkeeper
+ * abbreviated. Nothing here can invent a fund \u2014 every variant is the same
+ * words, respelled \u2014 and the caller still tests the RAW filed name too.
+ *
+ * PARTIAL EXPANSION IS THE HAZARD, measured: rewriting "INTL"->International
+ * and leaving "SM" alone turns "OAKMARK INTL SM CAP INST" into a string that
+ * satisfies /oakmark international(?!\s+small)/ and claims OAKIX, which is
+ * Oakmark International \u2014 a DIFFERENT fund from the Small Cap one the filing
+ * names. So every variant here is fully expanded through ABBREV before any
+ * further rewrite, and the negative-control list in the tests pins that case. */
+// eslint-disable-next-line no-unused-vars
+function expandFundVariants(name) {
+  const base = expandFundName(name);
+  const seeds = [base];
+  for (const [re, words] of ABBREV_ALT) {
+    if (!re.test(base)) continue;
+    const next = [];
+    for (const s of seeds) for (const w of words) next.push(s.replace(re, w));
+    seeds.length = 0;
+    for (const s of next.slice(0, 4)) seeds.push(s);
+  }
+  const out = [];
+  for (const s of seeds) {
+    if (!out.includes(s)) out.push(s);
+    const stripped = s.replace(FILLER_NOUN, " ").replace(/\s{2,}/g, " ").trim();
+    if (stripped.length > 6 && !out.includes(stripped)) out.push(stripped);
+    if (!/\bfunds?\b/i.test(s) && CLASS_TAIL.test(s)) {
+      const withNoun = s.replace(CLASS_TAIL, (m) => " Fund" + m);
+      if (!out.includes(withNoun)) out.push(withNoun);
+    }
+  }
+  return out;
+}
+
 // eslint-disable-next-line no-unused-vars
 function fundER(name) {
   if (!name) return null;
   if (/self-directed|brokerage|individually listed|participant loan/i.test(name)) return null;
   if (/common stock|company stock|employer stock/i.test(name)) return null;
-  const n = expandFundName(name);
-  for (const [re, er] of FUND_ER) if (re.test(name) || re.test(n)) return er;
+  const vs = expandFundVariants(name);
+  for (const [re, er] of FUND_ER) if (re.test(name) || vs.some((v) => re.test(v))) return er;
   return null;
 }
 
@@ -475,8 +560,15 @@ const FUND_TICKER = [
   // "Fidelity Advisor" is a separate product line with its own tickers and
   // fees — "Fidelity Advisor Total Bond Z" is not FTBFX — so the exact ticker
   // excludes it while the ER row below still estimates the strategy
-  [/^(?!.*advisor).*fidelity.*total bond/i, "FTBFX"],
-  [/^(?!.*advisor).*fidelity.*government money market/i, "SPAXX"],
+  /* The exclusion is "\badv\b" as well as the spelled word: recordkeepers file
+   * the Advisor line as "Fid Adv Ttl Bd Inst", and the 2026-09-15 variant work
+   * made that string reach /fidelity.*total bond/ for the first time — a guard
+   * written against the spelled-out word is not a guard against the filed
+   * spelling of it. Fidelity Advisor Total Bond is not FTBFX and its fee is
+   * higher; blocking is the conservative direction, so an unrelated "Adv"
+   * costs a blank rather than a wrong number. */
+  [/^(?!.*\badv(?:isor|isors)?\b).*fidelity.*total bond/i, "FTBFX"],
+  [/^(?!.*\badv(?:isor|isors)?\b).*fidelity.*government money market/i, "SPAXX"],
   // "Vanguard Federal" is filed truncated by 1,972 plans; Federal Money Market
   // is the only Vanguard fund that name can mean
   [/vanguard federal(?! reserve)/i, "VMFXX"],
@@ -849,7 +941,10 @@ const FUND_COMPARABLE = [
 function fundTickerInfo(name, type) {
   if (!name) return null;
   if (/brokerage|self-directed|common stock|company stock|employer (security|stock)|participant loan|maturing through/i.test(name)) return null;
-  const n = expandFundName(name);
+  /* Every spelling worth looking up, base expansion first. The RAW filed name
+   * is still tested separately below — a variant only ever ADDS a spelling. */
+  const vs = expandFundVariants(name);
+  const hit = (re) => re.test(name) || vs.some((v) => re.test(v));
   // "Tr" (never "TRP", which is the T. Rowe Price manager abbreviation) is a
   // recordkeeper-shortened "Trust" when it carries a trailing trust-class
   // letter at the END of the name ("... 2035 TR B", "... Structured Research
@@ -867,7 +962,7 @@ function fundTickerInfo(name, type) {
    * Trust)" kept resolving to Northern's own fund. */
   const wrapped = WRAPPER.test(name);
   if (!pooled) {
-    for (const [re, tk] of FUND_TICKER) if (re.test(name) || re.test(n)) return { tk, comparable: false };
+    for (const [re, tk] of FUND_TICKER) if (hit(re)) return { tk, comparable: false };
     if (wrapped) return null;
     // The comparable table lists retail funds. When the holding is NOT a
     // pooled vehicle, a match there is the fund itself, not an analogue --
@@ -880,15 +975,18 @@ function fundTickerInfo(name, type) {
      * were being returned as the iShares/State Street MUTUAL fund with no
      * asterisk. That is a false claim about what the plan holds. */
     for (const [re, pair] of FUND_COMPARABLE) {
-      if (!re.test(name) && !re.test(n)) continue;
+      if (!hit(re)) continue;
       return pair[2] ? { tk: pair[0], comparable: true, er: pair[1] } : { tk: pair[0], comparable: false };
     }
     return null;
   }
-  // a stable value / guaranteed vehicle has no registered analogue at all
-  if (/stable value|guaranteed|\bgic\b|annuity|tiaa traditional|retirement savings trust/i.test(n)) return null;
+  // a stable value / guaranteed vehicle has no registered analogue at all.
+  // Tested against EVERY variant, not just the base: a rejection is the
+  // conservative direction, so a spelling that reveals "stable value" must be
+  // able to veto even when another spelling would have matched a fund.
+  if (hit(/stable value|guaranteed|\bgic\b|annuity|tiaa traditional|retirement savings trust/i)) return null;
   if (wrapped) return null;
-  for (const [re, pair] of FUND_COMPARABLE) if (re.test(name) || re.test(n)) return { tk: pair[0], comparable: true, er: pair[1] };
+  for (const [re, pair] of FUND_COMPARABLE) if (hit(re)) return { tk: pair[0], comparable: true, er: pair[1] };
   return null;
 }
 

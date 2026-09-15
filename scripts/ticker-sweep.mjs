@@ -33,6 +33,26 @@ const mode = process.argv.includes("--comparable") ? "comparable"
 const skip = (f) => /brokerage|self-directed|participant loan|company stock|employer (security|stock)/i
   .test((f.type || "") + " " + f.name);
 
+/* PARTICIPANT WEIGHT. Rows are not the unit a reader experiences — a blank fee
+ * cell in a 300,000-participant plan is not one blank. The identified-row share
+ * had never been printed in either unit before 2026-09-15, which is how it sat
+ * at 19% for the life of the project with no audit able to see it: an
+ * unidentified row still renders and every arithmetic check passes.
+ * ack -> participants of the plans that DISPLAY that lineup (own confident ack,
+ * else the linked trust's), read through lib-schema so a wrong field name
+ * throws instead of silently weighting everything zero. */
+import { loadPlans } from "./lib-schema.mjs";
+const ackPpl = new Map();
+try {
+  const P = loadPlans(path.join(root, "plans-all.json"));
+  const st = JSON.parse(fs.readFileSync(path.join(root, "lineups-status.json"), "utf8")).plans;
+  for (const r of P.rows) {
+    const own = P.get(r, "ack"), mt = P.get(r, "mtiaAck");
+    const a = own && st[own] && st[own].c ? own : (mt && st[mt] && st[mt].c ? mt : null);
+    if (a) ackPpl.set(a, (ackPpl.get(a) || 0) + (P.get(r, "participants") || 0));
+  }
+} catch (e) { console.log("(participant weighting unavailable: " + e.message + ")"); }
+
 // group an unmatched holding by manager + strategy, for the gap ranking
 const family = (n) => String(n)
   .replace(/\b(class|cl|cls)\s*[a-z0-9]{1,3}\b/gi, "")
@@ -44,7 +64,7 @@ const family = (n) => String(n)
 const counts = { exact: 0, comparable: 0, none: 0 };
 const byTicker = {};
 const gaps = {};
-let rows = 0;
+let rows = 0, pplRows = 0, pplHit = 0;
 
 for (let i = 0; i < 64; i++) {
   const p = path.join(root, "data/lineups", String(i).padStart(2, "0") + ".json");
@@ -53,9 +73,12 @@ for (let i = 0; i < 64; i++) {
   for (const ack of Object.keys(shard)) {
     const e = shard[ack];
     if (!e.confident || !e.funds) continue;
+    const ppl = ackPpl.get(ack) || 0;
     for (const f of e.funds) {
       rows++;
+      pplRows += ppl;
       const r = tk(f.name, f.type);
+      if (r) pplHit += ppl;
       if (!r) {
         counts.none++;
         if (skip(f)) continue;
@@ -73,8 +96,11 @@ for (let i = 0; i < 64; i++) {
   }
 }
 
+const pc = (a, b) => b ? (100 * a / b).toFixed(2) + "%" : "n/a";
 console.log(`holdings scanned: ${rows}`);
-console.log(`  exact ticker: ${counts.exact}   comparable(*): ${counts.comparable}   none: ${counts.none}\n`);
+console.log(`  exact ticker: ${counts.exact}   comparable(*): ${counts.comparable}   none: ${counts.none}`);
+console.log(`  IDENTIFIED-ROW SHARE: ${counts.exact + counts.comparable} of ${rows} = ${pc(counts.exact + counts.comparable, rows)}`);
+console.log(`  weighted by participants: ${pc(pplHit, pplRows)} of ${pplRows} participant-rows\n`);
 
 if (mode === "gaps") {
   console.log("Unmatched holdings, ranked by total dollars:\n");

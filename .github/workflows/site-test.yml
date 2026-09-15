@@ -8,6 +8,7 @@ on:
     # how a broken map reached the live site unnoticed.
     paths: ["app.js", "index.html", "styles.css", "data.js", "fund-er.js",
             "scripts/smoke-test.mjs", "scripts/map-test.mjs",
+            "scripts/fund-er-test.mjs",
             "plans-list.json", "plans-index.json", "map-points.json"]
   workflow_dispatch:
 
@@ -20,6 +21,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      # Runs BEFORE Playwright is installed: it needs no browser, and a name
+      # that resolves to the wrong fund should fail the run in ten seconds
+      # rather than after a five-minute install. A wrong ticker is a wrong
+      # expense ratio on a live page, so this gate is about accuracy, not
+      # coverage — half its fixtures are names that must stay blank.
+      - name: Fund-name matcher — resolves what it should, blanks what it must
+        run: node scripts/fund-er-test.mjs
       - name: Install Playwright
         run: |
           npm init -y >/dev/null

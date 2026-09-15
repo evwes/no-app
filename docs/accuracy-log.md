@@ -9363,3 +9363,127 @@ never been computed.
   the discriminator was run, and was half wrong.** The one-token TRBCX result
   made "abbreviation" feel settled. One confirmed instance is not a cause for a
   population — the same error as reading a bucket off its largest members.
+
+---
+
+## 2026-09-15 (later) — the REPAIR half of the fund-identity gap: 12,498 rows, and 224 rows that named the wrong fund
+
+The entry above split the 80%-blank expense-ratio column into two problems:
+funds the table does not carry (COVERAGE, an owner call) and funds it carries
+under a spelling the matcher cannot reach (REPAIR). This is the repair half.
+It renders client-side, so **no re-parse and no `PARSER_VERSION` bump.**
+
+### What was wrong
+
+`expandFundName` performed ONE deterministic rewrite of a filed name and every
+pattern was then matched against that single string. Three consequences, each
+measured on the whole store rather than on the examples:
+
+- an ambiguous contraction had to be guessed or left alone, so `CP` was neither
+  Cap nor Chip and `FIDELITY MID CP INDEX FUND` (FSMDX) and `T ROWE PRICE BLUE
+  CP GR INV GM` (TRBCX) both stayed blank;
+- word order was law, so a filler noun the filing carries and the pattern does
+  not (`PIMCO Income FUND Institutional CLASS` vs `/pimco income inst/`) blocked
+  a match, and so did the mirror case, a registered name with the noun dropped
+  (`MFS Value R6` vs `/mfs value fund/`);
+- a dozen ordinary contractions had no rule at all — `INDX`, `TTL`, `INSTL`,
+  `MRKT(S)`, `SML`, `CHP`, `EQTY`, `AGGR`, `VGD`/`VNGRD`, `TRGT`, `RTRMT`.
+
+### The change
+
+`expandFundVariants(name)` returns a short, bounded list of spellings — base
+expansion, the ambiguity branches, a filler-noun-stripped form, and a form with
+`Fund` restored before a bare trailing share class — and `fundTickerInfo` /
+`fundER` test the RAW filed name plus every variant. Nothing invents a fund:
+each variant is the same words respelled, and the fund table adjudicates.
+
+The rejection guard was moved onto the variants too, in the conservative
+direction: a spelling that reveals `stable value` can now veto a match another
+spelling would have made.
+
+### What moved, whole store (60,089 published lineups, 1,705,524 holding rows)
+
+| | before | after |
+|---|---|---|
+| rows with a fund identified | 328,596 (19.27%) | **340,869 (19.99%)** |
+| the same weighted by participants | 21.52% | **22.28%** |
+
+**7,144 plans / 11,784,037 participants gained at least one identified row.**
+Pratt Industries U.S.A. — the owner-sent case — goes 8 of 31 to 10 of 31, both
+`T ROWE PRICE BLUE CHP GRTH INV` and `T ROWE PRICE BLUE CP GR INV GM` resolving
+to TRBCX ($44.6M, 8.1% of the plan), while `LOAN FUND`, `PUTNAM STABLE VALUE
+FUND 25`, `BLF FEDFUND` and `PENDING SETTLEMENT FUND` on the same page stay
+blank.
+
+### The defect it exposed on the way: 224 rows publishing the wrong fund
+
+Widening made `Fid Adv Ttl Bd Inst` reach `/^(?!.*advisor).*fidelity.*total
+bond/` for the first time. **Fidelity ADVISOR Total Bond is not FTBFX** and its
+fee is higher. The guard was written against the spelled-out word; the filing
+spells it `Adv`. Tightening it to `\badv(?:isor|isors)?\b` did not just stop the
+new case — it removed **224 rows across 265 plans / ~180k participant-weighted
+rows that were ALREADY publishing FTBFX for the Advisor fund.** A guard written
+against one spelling is not a guard.
+
+Also corrected: 13 rows move `OTCFX` -> `TRSSX`, the institutional T. Rowe Price
+small-cap fund now told from the retail one, and 1 row drops to blank.
+
+### Wrong-assignment risk, screened rather than assumed
+
+Every changed assignment was listed and read, not sampled. Three pre-existing
+shapes take on a few more rows and none is introduced here; sizes are the
+whole-store counts, gained vs already published:
+
+| shape | gained | already live |
+|---|---|---|
+| filed name states class A/C/R1-R5, ticker is the R6/institutional one | 255 rows | **4,321 rows / 14.45M participant-weighted** |
+| `Institutional Target Retirement` -> the Investor ticker | 86 | 2,544 |
+| `Target Retirement Income & Growth` -> the Income fund | 12 | 95 |
+
+`MFS VALUE FUND CL A -> MEIKX` is visible on Pratt's own page. **This is a real
+defect class and it is NOT fixed here** — the fix is class-aware table rows
+(MEIJX, PTTAX, the VITxX institutional target-date series), which is coverage
+work, and a blunt "refuse any name stating a retail class" rule would also
+delete correct CIT `Trust A` comparables. Sized and queued, not shipped.
+
+### Prevention
+
+- **`scripts/fund-er-test.mjs`**, wired into `site-test.yml` and run before
+  Playwright installs: 17 names that must resolve to an exact named ticker and
+  16 that must stay blank. Half the fixtures are the negative half, because
+  every loosening that fills a blank can attach a wrong ticker, and **a wrong
+  expense ratio is a fabricated number on a live page while a blank is honest.**
+- **Both directions were controlled, not just asserted.** Against `HEAD` the 17
+  positives fail. Against two deliberately broken copies the negatives fail:
+  one restoring the `advisor`-only guard (catches `Fid Adv Ttl Bd Inst` ->
+  FTBFX), one adding a PARTIALLY expanded variant (catches `OAKMARK INTL SM CAP
+  INST` -> OAKIX, a different fund). A check that has only been seen passing has
+  not been tested.
+- **Partial expansion is the specific hazard** and is now documented in the code
+  where the variants are built: rewriting `INTL` while leaving `SM` alone
+  satisfies `/oakmark international(?!\s+small)/`. Negative lookaheads in the
+  fund table are written against fully expanded English; anything handed to them
+  must be fully expanded first.
+- **The number is now printed.** `ticker-sweep.mjs` prints the identified-row
+  share in rows AND weighted by participants. The share had never been printed
+  in either unit, which is how it sat at 19% for the life of the project: an
+  unidentified row still renders, every arithmetic check passes, and no audit
+  can see a blank. A number nobody prints is a number nobody reads.
+- **The page stopped claiming something false.** The fund table's note said
+  "Holdings with no ticker are pooled vehicles whose filed name doesn't identify
+  a specific registered fund". Measured, that is untrue of a large share of them
+  — `AMERICAN CENTURY SML CP GR R6` on Pratt's page is a registered mutual fund
+  our reference table does not carry. The note now says both things.
+
+### Method note
+
+The measurement harness reproduces `ticker-sweep.mjs` to the row, and the
+baseline it started from (328,596 / 19.27%) differs from the 330,962 / 19.7% in
+the entry above because the store gained 1,304 lineups in between — the earlier
+figure was true of the store it measured. **Reproduce the count before
+classifying anything**, in time as well as in population.
+
+And the standing rule paid again: the VGD/TRGT family — 3,785 rows, an entire
+Vanguard target-date menu spelled `Vgd Trgt Rtmt 2030 Trust II` — came out of a
+RANDOM draw of published lineups, not from the ranked gap list, which is the
+same place the last three defect classes came from.
