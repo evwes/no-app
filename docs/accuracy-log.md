@@ -9134,3 +9134,37 @@ re-parse, and it is the same job as the wrapped-fragment fix above):**
   filings in two days produced four defects, all in *published, confident*
   plans — the population no review samples. A random draw from published
   lineups belongs in every parser cycle alongside the worst-class draw.
+
+### Addendum the same day — the guard that could not fire
+
+`audit-overshoot` was built as the fix above, and building it found that **the
+audit already had an overshoot check, and it had never been able to fire.**
+
+```
+if (schH > 1e7 && (sum > schH * 1.6 || sum < schH * 0.25))
+  flag("warn", "lineup-sum", …)
+```
+
+`isConfident` in `fetch-4i.mjs` accepts only `ratio < 1.6`, and this line runs
+only on entries that already passed it. **The high side is unreachable by
+construction.** The bound was copied from the parser's own guard, which turns
+the check into a restatement of the acceptance rule rather than an independent
+witness of it — it can only ever agree.
+
+That is a distinct defect from the 471 plans, and a worse one in kind: a
+finding that cannot occur looks exactly like a finding that keeps not
+occurring. The low side still fires (floor 0.45 in the parser, 0.25 here) and
+stays.
+
+**Prevention: a check must not reuse the threshold of the rule it is checking.**
+An audit copied from the code it audits inherits that code's blind spot along
+with its number. The new check's floor is 1.15, chosen from the data (below it
+sit ordinary timing and loan-treatment differences), not from `isConfident`.
+
+Both branches of the new check were controlled end to end: at baseline 471 the
+WARN fires and HIGH holds at the known 4; with the baseline moved to 400 the
+HIGH fires and the WARN clears — the expected swap, not a new finding. And the
+count goes into `docs/coverage-history.jsonl` as `overshoot`, because the run
+log prints 40 of ~540 WARNs and this one lands near position 500: **as a WARN
+alone it would have been computed and discarded, which is the exact shape this
+entry is about.**
