@@ -628,7 +628,26 @@ don't confuse them). Frontend: python http.server + Playwright at
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
   full-form** filers; 68,767 parse-status entries. **Parser v123, OCR v8.**
-- **LIVE on main: `c3c873d9`, the COMPLETE v124 store — MIRRORED 2026-09-15
+- **LIVE on main: `8785bfed`, the COMPLETE v124 store plus the fund-name
+  matching repair — MIRRORED 2026-09-15 23:1xZ.** Gate **+0 gained / -0 lost**,
+  pv 124 at 99.9%, 78 fetch failures, reader failures 0. Carries wam's first
+  item: identified holding rows 19.67% -> 20.41% (+12,716 rows, 7,103 plans /
+  11.66M participants gain at least one), and **270 rows across 270 plans /
+  201,088 participants STOP publishing FTBFX for Fidelity ADVISOR Total Bond**
+  — a different and more expensive fund. All 13 changed assignments are
+  OTCFX -> TRSSX and every filed name says `Instl`. Numbers re-measured
+  independently before the mirror, not taken from the agent's report; the FTBFX
+  count was UNDERSTATED by the agent (224 reported, 270 actual, 100.0% of the
+  dropped names containing `Adv`). The git check was force-overridden on the
+  same evidence as the two mirrors below: main's `47a7f437` had a
+  byte-identical `plans` array, differing only in `generated`, with 0 acks and
+  0 plans the branch lacked and pv differing on zero of 68,767.
+  **STILL OPEN and larger than what was fixed:** ~80% of published rows carry
+  no fund identity at all, and **4,321 rows / 14.45M participant-weighted
+  publish an R6/institutional ticker for a name stating class A/C/R1-R5**
+  (`MFS VALUE FUND CL A -> MEIKX`, on Pratt's page). Both need table work, not
+  matcher work. `docs/accuracy-log.md` 2026-09-15.
+- **Previously: `c3c873d9`, the COMPLETE v124 store — MIRRORED 2026-09-15
   19:1xZ.** 60,089 confident, lineups 59,755, match 43,027, vesting 52,825,
   Roth 37,742, HIGH at the baseline of 4, **pv 124 covers 99.9%**, 78 fetch
   failures (0.11%, the whole permanently-403 set), reader failures 0. Gate
