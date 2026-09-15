@@ -628,7 +628,23 @@ don't confuse them). Frontend: python http.server + Playwright at
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
   full-form** filers; 68,767 parse-status entries. **Parser v123, OCR v8.**
-- **LIVE on main: `9bb4ba05`, the COMPLETE v123 store — MIRRORED 2026-09-10
+- **LIVE on main: `c3c873d9`, the COMPLETE v124 store — MIRRORED 2026-09-15
+  19:1xZ.** 60,089 confident, lineups 59,755, match 43,027, vesting 52,825,
+  Roth 37,742, HIGH at the baseline of 4, **pv 124 covers 99.9%**, 78 fetch
+  failures (0.11%, the whole permanently-403 set), reader failures 0. Gate
+  **+0 gained / −0 lost**, unforced. Carries v124's Roth qualifier fix, the
+  short-form 401(m) card, and `audit-overshoot` — so main's own hourly runs now
+  write `overshoot` / `overshootPpl` into `coverage-history.jsonl` and the
+  471-plan number stays continuous instead of only existing on the dev branch.
+  The git check was force-overridden, with the evidence produced FIRST and
+  stronger than the v122 precedent below: main's one scheduled commit
+  (`bbc716d4`) had a plans-all of identical byte length whose **`plans` array
+  is byte-identical** — the sole difference is the `generated` timestamp — and
+  `lineups-status` matched on all 68,767 acks with **pv differing on zero**.
+  0 acks and 0 plans on main that the branch lacked. Only a timestamp and a
+  duplicate coverage line were discarded. As always, `--force` covered the GIT
+  check alone; the data gate passed on its own.
+- **Previously: `9bb4ba05`, the COMPLETE v123 store — MIRRORED 2026-09-10
   23:1xZ.** Same numbers as the v122 mirror below (v123 changes only the
   `frozen` flag, which no coverage metric counts): 60,089 confident, HIGH 4,
   pv 123 covers 99.9%, gate **+0 gained / −0 lost**. One master trust

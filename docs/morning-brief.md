@@ -16,6 +16,15 @@ Every guard passed them, and the number that proves it was already in our store:
 reads it again.** This merges into queue item #1 — one version bump fixes the
 fragments, the loan rows and this.
 
+**Shipped and mirrored since:** `audit-overshoot` — an audit keyed to the
+arithmetic rather than to a list of bad names, so this class can't be outrun by
+a new vocabulary the way it has been three times. Building it found a second
+defect: **the audit's existing overshoot check had never been able to fire**,
+because its bound (1.6x) was copied from the parser guard that admits entries
+in the first place. A check that can only agree with the rule it checks.
+Live on main as `c3c873d9`, gate +0/−0, and the 471 now lands in
+`coverage-history.jsonl` every run so it is diffable rather than remembered.
+
 ## The headline
 
 **You sent three filings yesterday and they broke open the biggest accuracy
