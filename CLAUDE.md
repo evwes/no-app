@@ -334,7 +334,16 @@ that changing visibility also unpublishes GitHub Pages.
   **RE-PROBED WHOLE-POPULATION 2026-09-12 and this time the claim HOLDS.** The
   residue is **68 acks**, and `gap-census` still renders their `e=download` to
   readers as "withdrawn from the EFAST2 bucket (403)". All 68 were HEAD-probed
-  — the entire population, not a sample — and **68 of 68 answered 403.** The
+  — the entire population, not a sample — and **68 of 68 answered 403.**
+  **RE-PROBED AGAIN 2026-09-15 at 78 acks: 78 of 78 answered 403.** v124's run
+  reported `dl` 68 -> 78 and the next incremental run reported 78 again — the
+  #244/#246 test, where an identical count across runs kills "transient S3" and
+  points at code. It did not this time: the bucket genuinely grew by ten
+  withdrawn filings, and `e=download` still means exactly what it publishes.
+  Store-wide error codes at that point: `no-section` 7,128, `download` 78, and
+  **zero `analyze`** — the v118 null-deref class is fully gone.
+  The habit is the point: predict the discriminating test, run it, and let it
+  exonerate the code as readily as convict it. The
   split did its job: what survives under `download` really is gone. These 68
   are also the whole of the `pvTopShare` tail and the whole work list of an
   incremental run (#271 processed exactly them and nothing else), which is why
