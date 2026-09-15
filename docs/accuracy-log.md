@@ -9168,3 +9168,102 @@ count goes into `docs/coverage-history.jsonl` as `overshoot`, because the run
 log prints 40 of ~540 WARNs and this one lands near position 500: **as a WARN
 alone it would have been computed and discarded, which is the exact shape this
 entry is about.**
+
+---
+
+## 2026-09-15 (evening) — the first random draw from PUBLISHED lineups, and what it found
+
+The entry above ends with a method change: **draw randomly from published
+lineups, not only from the worst bucket.** This is that draw's first run — 40
+plans, uniform over the 58,785 published confident lineups with ≥$1M of
+assets, seed recorded so the same sample can be argued with later. Every row
+printed and read, no predicate, because the whole premise is that the shipped
+predicates pass on the known defects.
+
+**36 of 40 were clean** — real fund names, ratios 0.93–1.00. That is the
+reassuring half and it should be said first. **Four were not**, and all four
+are classes nobody had named. Sized store-wide below.
+
+### C. The largest, and it is not what it looked like: 720 plans / 687,851 participants
+
+WellSpan Health (27,878 participants) publishes 38 rows named `1VTTHX`,
+`1FXAIX`, `1VFIAX` — **95.1% of the menu**. Select Rehabilitation 17,263p at
+97.7%, Children's Hospital Colorado 14,457p at 94.3%. **11,933 rows across 720
+plans.**
+
+My reading was OCR corruption: real tickers with a spurious leading digit. Two
+things then happened, in the right order.
+
+**The control killed my test.** I fed both the bare and the stripped name to
+the shipped `fundTickerInfo` — it resolved **neither** (0.0% / 0.0%), because
+that predicate maps fund NAMES to tickers and cannot take a ticker as input. A
+test that returns nothing for the right answer and the wrong answer alike is
+not evidence; choosing it was my error, and the both-ways design is what
+exposed it rather than letting a one-sided result look like a finding.
+
+**The filing settled it.** One fact did survive the bad test: **11,933 of
+11,933 rows carry the digit `1` and no other digit** — uniformity that is a
+template's signature, not a scanner's. So I opened the PDF, and the answer is
+in it twice over:
+
+```
+    1VTTHX                                      215,255,412.04    231,341,257.38
+    …
+    1VTTHX   Vanguard Target Retirement 2035 Inv        1VFORX  Vanguard Target Retirement 2040 Inv
+    1VTIVX   Vanguard Target Retirement 2045 Inv        1VFIFX  Vanguard Target Retirement 2050 Inv
+```
+
+**The filing's 4i table carries a CODE column, and the same document prints a
+two-column LEGEND mapping every code to the real fund name.** The `1` is the
+preparer's own prefix (it is on `1SDBSCH` = Schwab SDB and `1GWSGF1` too), so
+this is one recordkeeper's template, not damage.
+
+**Nothing is fabricated** — the values are real and correctly attached, which
+is why every arithmetic check passes (ratios sit at 0.99–1.00). But 687,851
+participants are shown `1VTTHX` where their filing says *Vanguard Target
+Retirement 2035 Inv*, and `fund-er.js` cannot attach a ticker or an expense
+ratio to a code, so those plans silently lose that column too.
+
+**Recoverable with no new downloads: the legend is on a page we already read.**
+
+### A. Form 5500 identification fields as holdings: 174 plans / 257,980 participants
+
+PPG Industries publishes **$384,000,000 named `Plan No:`** — 8.8% of a
+23,059-participant plan. Dow Chemical `PLAN NO.`, Sterling Jewelers
+`EMPLOYER NO. 27-`, Case Western `EMPLOYER NO. 34-`. Same family as Kraft
+Heinz's `le 0 0 1f`.
+
+Two facts make this its own finding rather than a footnote to that one:
+- **The shipped `JUNK_NAME_RE` matches 0 of the 174.** It is the predicate
+  `audit-data` already imports for exactly this family, and it misses the whole
+  class — the under-match direction, measured rather than assumed.
+- **154 of 174 sit below 1.15x**, so `audit-overshoot`, shipped this morning,
+  cannot see them either.
+
+### B. The same holding published twice: 160 plans / 189,265 participants
+
+Two different names carrying the identical dollar value where one name is a
+suffix of the other: Panasonic (13,075p) `Supplementary Information Panasonic
+Retirement Savings…`, Wynn Resorts (10,917p) `Principal Global Investors Trust
+Co Principal Stable Value Z Fund` at $34,823,279, WVU Health `PGIM High Yield
+R6 N/R` beside `PGIM PGIM High Yield R6 N/R`.
+
+### What this says about the machinery
+
+**`audit-overshoot` catches 1 of the 4.** Three have ratios of 1.01, 0.92 and
+0.99, and it fires at 1.15. That is not an argument against it — it caught
+PepsiCo's class and 471 plans — but it must not be read as closing the
+published-lineup question. **An arithmetic check sees rows that add up wrong;
+it is blind to a row that is correctly valued and wrongly named**, which is
+what all three of these are.
+
+**The method change paid for itself on its first run.** Four owner-sent
+filings found four defects; one random draw of forty found three more classes
+totalling ~1.1M participants. Both facts point the same way: **the population
+we publish has never been sampled, and it is where the remaining defects are.**
+The worst-bucket draw answers "what are we missing"; only this draw answers
+"what are we getting wrong".
+
+**Queued, not shipped** — C is a parser change (resolve the legend) needing a
+`PARSER_VERSION` bump, and A and B are guard changes that belong in the same
+bump as the wrapped-fragment work already at the top of the queue.
