@@ -60,7 +60,22 @@ Order of business:
 1. RUN IN FLIGHT? (Without MCP tools, infer from git: an "Update filed plan data" commit or a .kick push on either ref in the last 90 minutes means assume one is.) Non-pipeline work only; pipeline commits [skip ci]. When you cannot rule a run out, EVERY commit is [skip ci] and kicks are limited to one per cycle.
 2. NO RUN IN FLIGHT? **DISPATCH build-data.yml ON THE DEV BRANCH — EVERY HOUR, whether or not a gated change is waiting.** This step used to fire only when "a gated change is unshipped", and that is why the pipeline was not actually running hourly (owner, 2026-09-15): the GitHub cron `23 * * * *` is the ONLY thing that dispatched on a quiet hour, and GitHub de-prioritises cron on free public runners. Measured 2026-09-15: scheduled runs fired at 10:00, 13:38 and 18:16Z — gaps of 3.5 and 4.5 hours, not one. The Routine at `:07`, by contrast, has fired on the minute every hour. **So the reliable clock was waking a cycle that then declined to dispatch, while the unreliable clock was the only one parsing new filings.** Dispatching costs effectively nothing — Actions minutes are free (measured at zero), a no-op hour exits without committing, and the whole work list on a quiet hour is the ~78 permanently-403 acks. The purpose of the hourly run is to FIND new gaps, holes and incorrect filings as they are filed; a 4-hour gap is 4 hours of filings unexamined. Use `mcp__github__actions_run_trigger` (method `run_workflow`, ref = the dev branch); WITHOUT MCP tools, push a commit whose only change is `date > scripts/.kick` — the documented kick, and the push event is the dispatch. **Verify it started in the run listing before believing it** — the push trigger is intermittent and the dispatch is not. Keep the GitHub cron as the backstop for hours when no session exists; do not remove it.
 3. RUN JUST FINISHED? Verdict: pv distribution (one dominant pv, small tail); coverage line in docs/coverage-history.jsonl; `node scripts/diff-lineups.mjs <prev-ref>` (every CONFIDENCE LOST must be a justified fabrication, FABRICATED INTRODUCED must be 0); `node scripts/audit-generic-names.mjs` (baseline 208/threshold 230) and `node scripts/audit-dominant-row.mjs` (holds at 0 — any nonzero is a regression, stop and diagnose; NOTE this audit covers ONE shape and the fabricated class as a whole is NOT closed, see docs/accuracy-log.md 2026-09-15); then mirror via scripts/mirror.sh.
-4. OTHERWISE take the next queue item and FINISH it.
+4. OTHERWISE take the next queue item and FINISH it — **and the agent that
+   finishes it is `wam`** (`.claude/agents/wam.md`, owner directive
+   2026-09-15). Spawn it with the item, its current size in participants, and
+   where the evidence is. wam works DEFECTS first and COVERAGE second, ranks
+   within each by people affected, and must return an item in one of exactly
+   two states: FIXED (shipped, gated, measured, logged) or DOCUMENTED AS
+   UNREACHABLE (cause named from evidence, and the PAGE says the true thing).
+   "Unknown" is not a state it may leave an item in. Anything needing a
+   `PARSER_VERSION` bump plus a full re-parse, or that is NEW COVERAGE rather
+   than a repair, comes back as a proposal with its size — it is the owner's
+   call, not wam's.
+
+   **Every finding from this cycle goes INTO that queue rather than into prose
+   alone.** A defect described in `docs/accuracy-log.md` and nowhere else is
+   how three classes sat unworked; the log is the permanent record, not the
+   worklist.
 
    **DO NOT READ A QUEUE OUT OF THIS FILE. The list that used to sit here was
    from 2026-09-03 and every number in it had been superseded** — it said
