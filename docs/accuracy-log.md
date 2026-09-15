@@ -8933,3 +8933,85 @@ longer a candidate for urgent work, and that is what the sizing was for.
 **Method note worth more than the number:** the cheap proxy was tried, produced
 a dramatic figure, and was discarded within the same cycle because naming its
 members took one script. **Run the members before the headline.**
+
+---
+
+## 2026-09-15 — THE FABRICATED-HOLDING CLASS IS NOT CLOSED: wrapped continuation fragments published as holdings (149+ plans, 753,693+ participants)
+
+Owner sent Owens Corning. **Both of its plans publish a holding that does not
+exist**, and the arithmetic is exact against the filing:
+
+| plan | fabricated row | value | share |
+|---|---|---|---|
+| PN 004 ($1.31B, 5,661p) | `Fund, Class S` | **$481,573,572** | **36.9%** |
+| PN 014 ($629M, 7,583p) | `Fund, Class S` | **$354,848,184** | **56.4%** |
+
+Each is the SUM of **twelve real Fidelity Freedom Blend vintages** (2010, 2015,
+2020, 2025, 2030, 2035, 2040, 2045, 2050, 2055, 2060, 2065). Verified to the
+dollar: PN 014's twelve values add to 354,848,184 exactly.
+
+**Mechanism.** The filing wraps every name across two lines and the VALUE sits
+on the second:
+
+```
+*   Fidelity Freedom Blend 2035
+    Fund, Class S        1,786,561 units   (a)   $ 51,828,144
+```
+
+so the row is named from the continuation fragment — and all twelve vintages
+share the identical fragment `Fund, Class S`, so they merge and sum. **This is
+v100's Amgen case exactly** ("Lending*" → a $3.59B "Collective Trust Fund"), in
+a different vocabulary. The v100 fix did not generalise.
+
+**WHY BOTH AUDITS MISS IT — the part worth more than the count.**
+- `audit-generic-names.mjs` keys on `GENERIC_TYPE_NAME` — "collective trust",
+  "pooled separate account", "registered investment companies". **"Fund, Class
+  S" is not generic in that vocabulary**, it is a FRAGMENT, which is a
+  different thing.
+- `audit-dominant-row.mjs` needs a single non-fund row at **>=90%** of the
+  plan. 36.9% and 56.4% both pass beneath it.
+
+Two guards built for this exact family, and the shape walks between them. The
+project memory's claim — *"The fabricated-lineup class is CLOSED and must stay
+closed"* — **is false and is corrected in the same commit.**
+
+**SIZED WHOLE-STORE, and the count is a FLOOR because my own predicate
+under-matched.** Anchored on a name that is only a trailing piece
+(`^(fund|trust|portfolio|account|shares|pool)[, ]*(class X)?$`):
+**149 plans / 753,693 participants / $21.89B in those rows.**
+Then the largest case showed the predicate missing its own siblings —
+**Intermountain Health Care** ($6.83B, 86,655 participants) publishes FOUR
+fragments, and my regex caught two:
+
+| row | value |
+|---|---|
+| `Trust` | $531,767,000 |
+| `Class` | $306,992,000 |
+| `Trust Class D` | $287,111,000 |
+| `Institutional Class` | $221,769,000 |
+
+**$1.35B of one plan named by fragments.** `Class` and `Institutional Class`
+do not start with the generic noun, so the anchor missed them. The true
+population is larger than 149 and the true dollars larger than $21.89B; both
+are stated as floors and neither should be quoted as a total.
+
+**A SECOND defect on the same two filings, also published:**
+`rates ranged from 3.25 percent to 8.50 percent during 2024` appears as a
+HOLDING NAME carrying the participant-loan value ($20,399,156 on PN 014 —
+exactly the loans line). Whole-store: **283 plans / 534,790 participants /
+$0.44B.** CLAUDE.md records this shape from the `few` bucket as real but
+**"recorded not fixed because the floor hides them anyway"**. The 3-row floor
+hides it only in plans with fewer than three rows; in a 15-row lineup it
+publishes. **A defect dismissed as hidden by a floor was only hidden in the
+population where it was found.**
+
+**Not fixed.** This is `lib-4i` wrapped-identity work plus two audit
+predicates, needs a `PARSER_VERSION` bump and a full re-parse, and it is large
+enough that the shape of the fix should be decided rather than improvised at
+the end of a filing review. Queued at the TOP of the queue — above the
+recordkeeper wrong-name defect — because a fabricated holding is the one thing
+this project has repeatedly said it must never publish.
+
+**How it was found:** the owner sent a filing. Not by any audit, not by the
+coverage line, which has been byte-identical through every run this class has
+been live.

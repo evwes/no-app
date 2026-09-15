@@ -1196,10 +1196,34 @@ don't confuse them). Frontend: python http.server + Playwright at
   distinguished by a reader from "no Roth"**, and with 46.6% unstated that is a
   large honesty gap given how near-universal Roth now is.
 
-- **The fabricated-lineup class is CLOSED and must stay closed.**
-  `audit-dominant-row.mjs`: 50 plans / $83.9B -> **0** at v105, while all 319
-  honest single-holding plans were preserved. `audit-generic-names.mjs` sits at
-  208 plans / $48.2B on the shared definition (baseline, threshold 230).
+- **THE FABRICATED-LINEUP CLASS IS NOT CLOSED — corrected 2026-09-15, and the
+  previous text of this bullet claimed the opposite.** The two audits below are
+  real and still hold on the shapes they cover, but a THIRD shape walks between
+  them: a WRAPPED CONTINUATION FRAGMENT as the row name. Owens Corning PN 004
+  publishes `Fund, Class S` at **$481,573,572 = 36.9%** of a $1.31B plan and
+  PN 014 the same fragment at **$354,848,184 = 56.4%**; each is the exact sum of
+  TWELVE real Fidelity Freedom Blend vintages, verified to the dollar. The
+  filing wraps each name over two lines with the value on the second, so every
+  vintage is named `Fund, Class S` and they merge — v100's Amgen case in a new
+  vocabulary. **`audit-generic-names` misses it** because "Fund, Class S" is not
+  in `GENERIC_TYPE_NAME` (a fragment is not a generic type); **`audit-dominant-row`
+  misses it** because it needs >=90% and these are 36.9% / 56.4%.
+  **FLOOR, because my own sizing predicate under-matched: 149 plans / 753,693
+  participants / $21.89B.** Intermountain Health Care ($6.83B, 86,655p)
+  publishes FOUR fragments — `Trust` $531.8M, `Class` $307.0M, `Trust Class D`
+  $287.1M, `Institutional Class` $221.8M, **$1.35B of one plan** — and the
+  anchored regex caught only the two beginning with a generic noun. Do not
+  quote 149 or $21.89B as a total.
+  **Second shape, also live: the participant-LOAN description column as a
+  holding name** — `rates ranged from 3.25 percent to 8.50 percent during 2024`
+  carrying the loans' value, **283 plans / 534,790 participants / $0.44B**. This
+  file recorded that shape as "hidden by the 3-row floor"; it is hidden only
+  where the plan has under three rows, and publishes in a 15-row lineup.
+  Found because the owner sent a filing — no audit, no coverage metric, and the
+  coverage line has been byte-identical throughout. **TOP OF THE QUEUE.**
+  The two guards that DO hold: `audit-dominant-row.mjs` 50 plans / $83.9B ->
+  **0** at v105, all 319 honest single-holding plans preserved;
+  `audit-generic-names.mjs` at 208 plans / $48.2B (baseline, threshold 230).
   Both run inside `audit-data.mjs` every merge.
 - **REOPENED 2026-09-10 — the "NOT worth parser work" verdict on missing
   features answered the wrong question.** The 2026-09-03 measurement stands as
