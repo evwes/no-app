@@ -9267,3 +9267,99 @@ The worst-bucket draw answers "what are we missing"; only this draw answers
 **Queued, not shipped** — C is a parser change (resolve the legend) needing a
 `PARSER_VERSION` bump, and A and B are guard changes that belong in the same
 bump as the wrapped-fragment work already at the top of the queue.
+
+---
+
+## 2026-09-15 (late) — 80% of published holding rows show no expense ratio, and nobody had counted
+
+Owner sent a screenshot: Pratt Industries publishes `T ROWE PRICE BLUE CP GR
+INV GM`, $10.6M, 1.9% of the plan, with no fund identified. Google's first
+result is TRBCX.
+
+### The immediate cause is one token, and that was the misleading part
+
+`T ROWE PRICE BLUE CP GR INV` misses; `T ROWE PRICE BLUE CHIP GR` returns
+**TRBCX**. `GR`→Growth already works and the trailing `INV GM` is ignored. So
+the first reading was "the matcher needs `CP` → `Chip`", which is true and
+almost irrelevant.
+
+### Pratt's page identifies 8 of 31 rows
+
+11,108 participants; 23 rows carry no fund and therefore no ER. Two details on
+that one page do more work than any argument:
+
+- **The same fund appears twice and we miss it both times.** `T ROWE PRICE
+  BLUE CHP GRTH INV` ($33,983,818) and `T ROWE PRICE BLUE CP GR INV GM`
+  ($10,609,714) are both TRBCX — **$44.6M, 8.1% of the plan**, under two
+  different abbreviations.
+- **The control is one line away.** `AMERICAN EUROPACIFIC GROWTH R6` resolves
+  to RERGX; `AMERICAN EUROPACIFIC R6 GM` does not. Same fund, same page.
+
+### Whole-store outcome, all 58,785 published lineups
+
+| published holding rows | 1,682,949 | |
+|---|---|---|
+| ticker identified | **330,962** | **19.7%** |
+| no ticker, a fund HOUSE named | 696,422 | 41.4% |
+| no ticker, no house named | 655,565 | 39.0% (SDBA securities, CITs, separate accounts) |
+
+**52,434 plans / 82,159,420 participants have at least one house-named row we
+cannot identify.** `fund-er.js` is the ONLY ER source, so an unidentified row
+is a blank fee cell.
+
+### The discriminator, run because "abbreviation" was a guess
+
+Does the table HAVE these funds and fail to match the filed spelling, or not
+carry them at all? Different problems, different fixes. Tested both ways:
+
+| filed name | canonical rewrite | in table? |
+|---|---|---|
+| `MFS VALUE R6` MISS | `MFS Value Fund Class R6` **HIT MEIKX** | yes — MATCHING defect |
+| `FIDELITY MID CP INDEX FUND` MISS | `Fidelity Mid Cap Index Fund` **HIT FSMDX** | yes — MATCHING defect (`CP`→`Cap`, same token as TRBCX) |
+| `AMERICAN FUNDS NEW WORLD R6` MISS | canonical also MISS | **RNWGX absent** |
+| `VANGUARD GROWTH INDEX FUND` MISS | canonical also MISS | **VIGAX absent** |
+| `VANGUARD VALUE INDEX ADM` MISS | canonical also MISS | **VVIAX absent** |
+| `VANGUARD REAL ESTATE INDEX ADMIRAL` MISS | canonical also MISS | **VGSLX absent** |
+
+**It is BOTH, and table coverage dominates.** `fund-er.js` is 51 KB of
+hand-built patterns and does not carry RNWGX, RNPGX, RLBGX, VIGAX, VVIAX or
+VGSLX — several of the most widely held funds in American retirement plans.
+Vanguard Growth Index Admiral misses even when spelled perfectly.
+
+Top recurring house-named misses: `AMERICAN FUNDS NEW WORLD R6` 3,029 rows,
+`AMERICAN FUNDS NEW PERSPECTIVE R6` 1,439, `AMERICAN FUNDS AMERICAN BALANCED
+R6` 1,368, `VANGUARD GROWTH INDEX FUND` 1,005, `VANGUARD VALUE INDEX ADM` 964,
+`MFS VALUE R6` 937.
+
+### What was wrong, the change, the prevention
+
+**Wrong:** four fifths of the holding rows this site publishes carry no fund
+identity and no expense ratio, across 82.2M participants, and the number had
+never been computed.
+
+**The change (queued, and it SPLITS — that is the finding):**
+1. **Table coverage** — extend `fund-er.js` with the missing mainstream funds.
+   This is what the `funds-and-tickers` agent exists for. NEW COVERAGE.
+2. **Matching** — abbreviation normalisation (`CP`→Chip/Cap, `CHP`, `GRTH`,
+   `MRKTS`, `SML`, `INTL`, optional `FUND`/`CLASS`/`FD` tokens, trailing
+   source markers like `GM`). This is a REPAIR: the fund is in the table and we
+   fail to find it. Renders client-side, so **no re-parse is needed for either.**
+
+**Prevention, and it is the part that generalises:**
+
+- **A silent blank is a defect that no audit will ever raise.** An unidentified
+  row still renders; the values are right, so every arithmetic check passes.
+  The ER column has been ~80% empty for the life of the project and nothing
+  counted it. **Add the identified-row share to the coverage trail** so it is
+  diffable like `overshoot` — a number nobody prints is a number nobody reads.
+- **I reached for the documented caveat instead of testing.** Project memory
+  says `fundTickerInfo` "under-matches by design" on CITs and annuities, and
+  that its miss side must never be read as "nothing here". **That is true of
+  `PUTNAM STABLE VALUE FUND 25` and became cover for missing TRBCX.** I had
+  applied exactly that caveat earlier the same day, sizing `band-hi`, without
+  ever asking how the predicate performs on ordinary retail funds. A true
+  limitation, quoted in place of a measurement, hid a defect ten times its size.
+- **"The data is in hand, so this is a repair not coverage" was asserted before
+  the discriminator was run, and was half wrong.** The one-token TRBCX result
+  made "abbreviation" feel settled. One confirmed instance is not a cause for a
+  population — the same error as reading a bucket off its largest members.
