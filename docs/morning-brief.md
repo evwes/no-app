@@ -1,5 +1,21 @@
 # Morning brief — 2026-09-15
 
+## Added midday — the Owens Corning filing generalized, and it is the largest thing in the queue
+
+Asking the Owens Corning shape of the whole store rather than re-reading the
+one filing: **471 live plans / 1,193,879 participants publish a fund menu that
+sums to 1.15x or more of the money the plan itself reports.** The money is not
+there, so those rows contain a total, a merge, a second year, or a page that is
+not the schedule. **PepsiCo** (161,067 participants) publishes nine rows summing
+to 1.60x, led by one named `Trust` at **$13.34B — half the menu**; the whole
+thing is a fair-value hierarchy note. **Kraft Heinz and Deutsche Bank both
+publish `le 0 0 1f`** — Form 5500 checkbox coordinates — at 70% of their menus.
+
+Every guard passed them, and the number that proves it was already in our store:
+`isConfident` accepts anything under 1.6x, records the ratio, and **nothing ever
+reads it again.** This merges into queue item #1 — one version bump fixes the
+fragments, the loan rows and this.
+
 ## The headline
 
 **You sent three filings yesterday and they broke open the biggest accuracy

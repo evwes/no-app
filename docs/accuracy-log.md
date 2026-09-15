@@ -9015,3 +9015,122 @@ this project has repeatedly said it must never publish.
 **How it was found:** the owner sent a filing. Not by any audit, not by the
 coverage line, which has been byte-identical through every run this class has
 been live.
+
+---
+
+## 2026-09-15 — Generalizing Owens Corning: 471 published menus contain money the plan does not have
+
+The entry above ends with *"how it was found: the owner sent a filing."* This
+entry is what happened when that single filing's shape was asked of the whole
+store instead of just re-read. It is the same defect family, it is much larger
+than the fragment count, and **every case below is LIVE on the site today.**
+
+### The question that generalized
+
+Owens Corning's fragment was verified as a MERGE: twelve Fidelity Freedom Blend
+vintages collapsed onto one continuation fragment and summed. A merge has an
+arithmetic consequence that has nothing to do with vocabulary — **the published
+menu stops adding up to the plan.** That is checkable for every plan we
+publish, with no downloads, no sampling and no regex.
+
+Sum every published row, divide by the plan's own `assetsEOY`:
+
+| published menu sums to | plans | participants |
+|---|---|---|
+| 1.30x – 1.60x | 183 | 472,585 |
+| 1.15x – 1.30x | 288 | 721,294 |
+| 1.05x – 1.15x | 577 | 1,011,180 |
+
+**471 plans / 1,193,879 participants publish a fund menu summing to 1.15x or
+more of the money the plan says it has.** The 1.05–1.15 band is not claimed as
+defective — ordinary timing and loan-treatment differences live there — but
+above 1.15 the money is not there, so the row set contains a total, a merge, a
+second comparative year, or a page that is not the schedule.
+
+### What the largest ones are, by name
+
+They diagnose themselves; no filing had to be opened to see it:
+
+| participants | ratio | sponsor | top row | share |
+|---|---|---|---|---|
+| 161,067 | 1.60x | PepsiCo | `Trust` | $13.34B, 50% |
+| 120,688 | 1.36x | Charter Communications | `At fair value` | $5.87B, 48% |
+| 70,957 | 1.22x | Cisco Systems | `Collective Trusts(1) at NAV` | $25.14B, 78% |
+| 62,142 | 1.22x | ProHealth Physicians | `Plan's interest in Master Trust` | $2.88B, 39% |
+| 55,692 | 1.25x | Medtronic | `Various (includes` | $12.61B, 73% |
+| 23,069 | 1.26x | Kraft Heinz | `le 0 0 1f` | $3.47B, 70% |
+| 17,607 | 1.33x | Deutsche Bank Americas | `le 0 0 1f` | $4.14B, 70% |
+| 23,864 | 1.20x | International Paper | `1d(2) 0 0 le 0 0 1f` | $1.69B, 80% |
+| 22,250 | 1.53x | Marmon Holdings | `Retirement year (3)` | $1.19B, 46% |
+| 20,371 | 1.29x | The Coca-Cola Company | `Investments in Master Trust, at fa` | $3.11B, 64% |
+
+`le 0 0 1f` is Form 5500 **form-field junk** — checkbox coordinates — published
+as a holding at 70% of two large plans' menus. CLAUDE.md already lists "Form
+5500 page content as a holding" as a diagnosed `dx` cause for five plans that
+are **correctly blank**; the same shape publishes here. PepsiCo's whole
+nine-row menu is a fair-value hierarchy note: `Trust`, `Commingled trust
+funds(d)`, `fully benefit-responsive`, `(in thousands) Assets Cash and cash
+equivalents(a)`, `Fair Value Hierarchy Level`. 161,067 people are shown that as
+their fund lineup.
+
+### Why every existing guard passed it
+
+- **`isConfident`'s band is `0.45 < ratio < 1.6`.** PepsiCo sits at 1.595. The
+  band was set to reject three-row fair-value parses that landed at 1.5–1.6,
+  and the tighter `0.7–1.3` window applies **only below five rows**. So a nine-
+  row junk parse has a 0.45–1.6 licence, and the ratio is computed, stored in
+  `rt`, and then **never looked at again once the parse is accepted.**
+- **`audit-generic-names`** keys on the `GENERIC_TYPE_NAME` vocabulary.
+  `le 0 0 1f`, `Retirement year (3)` and `Various (includes` are in no
+  vocabulary anyone would write down.
+- **`audit-dominant-row`** needs one non-fund row at **>=90%**. These are
+  39–80%. That 90% threshold was fitted to the single specimen that produced it
+  (Comcast, 91%).
+- **No coverage metric moves.** `confident` is 1 for every one of these; the
+  coverage line has been byte-identical throughout.
+
+Three guards, all keyed to *vocabulary* or to a *threshold fitted to one
+specimen*, and none of them asks the arithmetic question the filing answers for
+free.
+
+### What was wrong, the change, the prevention
+
+**Wrong:** 471 published fund menus, seen by 1.19M participants, contain
+holdings that do not exist — totals, merges, second-year columns and form-field
+junk — and the store already held the number that proves it.
+
+**The change (queued, not shipped — it needs a `PARSER_VERSION` bump and a full
+re-parse, and it is the same job as the wrapped-fragment fix above):**
+1. **A structural audit, not a vocabulary one.** `audit-overshoot`: any
+   published lineup summing to >=1.15x `assetsEOY` is a finding, weighted by
+   participants. It requires no list of bad names, so it cannot be outrun by a
+   new vocabulary — which is precisely how this class has escaped four times.
+2. **Narrow `isConfident`'s upper bound.** 1.6 admits a 60% overshoot. Nothing
+   real sits there; the band exists to catch double-counted comparative years
+   and it is set wide enough to pass them.
+3. **Verify against the filing's own printed subtotals where present.** Owens
+   Corning prints $123,315,385 / $448,610,725 / $629,053,603 on the schedule.
+   A parse that disagrees with a total the filing itself declares is wrong, and
+   the filing said so in the same table we read.
+
+**The prevention, which is the part that generalizes past this defect:**
+
+- **Audit the OUTCOME arithmetic, not the row vocabulary.** Every member of the
+  v100–v105 arc was diagnosed by *what the bad row was called*, and each fix
+  added names to a list. The list approach has now been beaten by a fragment
+  (`Fund, Class S`), by form junk (`le 0 0 1f`), and by a bare noun (`Trust`).
+  The sum test catches all three without knowing any of their names.
+- **A threshold fitted to one specimen is a specimen, not a threshold.** 90%
+  came from Comcast; 1.6 came from three-row fair-value parses. Both were then
+  treated as general. When a bound is set from a case, record the case next to
+  it and re-derive the bound the next time the class reappears.
+- **A number computed and then discarded is the recurring shape of every large
+  defect in this project.** `rt` here; the failure reason in run #244; the
+  Schedule A carrier in `build-data.mjs:624`; the feature-fallback denominator.
+  The ratio was in the store for months. **When the pipeline computes a
+  quantity that would falsify its own output, something must READ it.**
+- **Sample what we believe is RIGHT, not only what we know is wrong.** Every
+  hands-on review this project runs draws from the worst bucket. Four owner-sent
+  filings in two days produced four defects, all in *published, confident*
+  plans — the population no review samples. A random draw from published
+  lineups belongs in every parser cycle alongside the worst-class draw.

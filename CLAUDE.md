@@ -1221,6 +1221,34 @@ don't confuse them). Frontend: python http.server + Playwright at
   where the plan has under three rows, and publishes in a 15-row lineup.
   Found because the owner sent a filing — no audit, no coverage metric, and the
   coverage line has been byte-identical throughout. **TOP OF THE QUEUE.**
+  **GENERALIZED 2026-09-15, AND THE GENERAL FORM IS BIGGER THAN THE FRAGMENT
+  COUNT.** A merge has an arithmetic consequence that owes nothing to
+  vocabulary: the published menu stops adding up to the plan. Summing every
+  published row against the plan's own `assetsEOY` — no downloads, no sampling,
+  no regex — gives **471 live plans / 1,193,879 participants publishing a menu
+  at >=1.15x the money the plan has** (183 plans / 472,585 ppl at 1.30-1.60x;
+  288 / 721,294 at 1.15-1.30x; the 577 / 1.01M at 1.05-1.15x are NOT claimed —
+  ordinary timing and loan treatment live there). They diagnose themselves by
+  name: **PepsiCo 1.60x, `Trust` $13.34B = 50% of a nine-row menu that is
+  actually a fair-value note** (161,067 participants); Charter `At fair value`
+  48%; Cisco `Collective Trusts(1) at NAV` 78%; Medtronic `Various (includes`
+  73%; **Kraft Heinz and Deutsche Bank both publish `le 0 0 1f`** — Form 5500
+  checkbox coordinates — at 70%. Every existing guard passes them:
+  `isConfident`'s band is `0.45 < ratio < 1.6` (PepsiCo sits at 1.595, and the
+  tight 0.7-1.3 window applies only below five rows), and **`rt` is computed,
+  stored, and never read again after the parse is accepted** — the same
+  computed-and-discarded shape as run #244's failure reason and the Schedule A
+  carrier. The fix belongs with this bullet's fix, in one version bump: an
+  `audit-overshoot` keyed to ARITHMETIC rather than to a name list (a list has
+  now been beaten by a fragment, by form junk and by a bare noun), a narrower
+  `isConfident` upper bound, and verification against the subtotals the filing
+  prints itself (Owens Corning declares $123,315,385 / $448,610,725 /
+  $629,053,603 in the same table we read). `docs/accuracy-log.md` 2026-09-15.
+  **And the method change that outlives this defect: every hands-on review this
+  project runs draws from the WORST bucket. Four owner-sent filings in two days
+  produced four defects, all in published, confident plans — the population no
+  review samples. Draw randomly from PUBLISHED lineups in every parser cycle,
+  alongside the worst-class draw.**
   The two guards that DO hold: `audit-dominant-row.mjs` 50 plans / $83.9B ->
   **0** at v105, all 319 honest single-holding plans preserved;
   `audit-generic-names.mjs` at 208 plans / $48.2B (baseline, threshold 230).
