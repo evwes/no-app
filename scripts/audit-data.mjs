@@ -71,6 +71,16 @@ for (let i = 0; i < 64; i++) {
     const label = row ? `${g(row, "sponsorName")} ${ack}` : ack;
     // a confident lineup whose sum strays far from Schedule H usually means a
     // wrong value column, a doubled summary page, or (thousands) mis-scaling
+    //
+    // DEAD ON THE HIGH SIDE, AND THAT IS WHY 471 PLANS GOT PAST IT (2026-09-15).
+    // `isConfident` in fetch-4i accepts only `ratio < 1.6`, so no entry that
+    // reaches this line can ever satisfy `sum > schH * 1.6`. The bound was
+    // copied from the parser's own guard, which makes the check a restatement
+    // of the acceptance rule rather than an independent witness of it. The low
+    // side still fires (the parser floor is 0.45, this trips at 0.25 — also
+    // narrower than the guard, but not identically so).
+    // The aggregate OVERSHOOT check below is the real one; this stays only for
+    // the low side and for any future entry written by a different path.
     if (schH > 1e7 && (sum > schH * 1.6 || sum < schH * 0.25))
       flag("warn", "lineup-sum", `${label}: funds sum $${(sum / 1e6).toFixed(0)}M vs Sch H $${(schH / 1e6).toFixed(0)}M`);
     if (schH > 1e7 && e.funds[0] && e.funds[0].value > schH * 1.5)
@@ -273,6 +283,63 @@ try {
       }
     }
   }
+  /* OVERSHOOT — the arithmetic witness the two shapes above lack.
+   *
+   * Both checks in this block ask what a row is CALLED. That is how the
+   * v100-v105 arc was diagnosed each time, and the vocabulary has now been
+   * beaten three separate ways: by a wrapped continuation fragment (Owens
+   * Corning's "Fund, Class S" = twelve merged Freedom Blend vintages), by
+   * Form 5500 checkbox coordinates ("le 0 0 1f", published at 70% of Kraft
+   * Heinz's and Deutsche Bank's menus), and by a bare noun ("Trust", $13.34B
+   * = half of PepsiCo's nine-row "menu", which is really a fair-value note).
+   * No list written in advance contains those.
+   *
+   * A merge has a consequence that owes nothing to vocabulary: the published
+   * menu stops adding up to the plan. That is checkable for every plan we
+   * publish, needs no names, and cannot be outrun by a new one.
+   *
+   * MEASURED 2026-09-15 on the live v124 store: 183 plans / 472,585 ppl at
+   * 1.30-1.60x, 288 / 721,294 at 1.15-1.30x — 471 / 1,193,879 at >=1.15x.
+   * Below 1.15 lives ordinary timing and loan treatment, so that is the floor.
+   * The population is a KNOWN OPEN DEFECT, not a clean baseline, so this
+   * reports every run (a check whose number is never printed is a check nobody
+   * reads) and escalates on a RISE. It must FALL, and the number it has to
+   * fall from is written here rather than remembered. */
+  let over = 0, overPpl = 0;
+  const worstOver = [];
+  for (const [ack, e] of Object.entries(entriesByAckCov)) {
+    if (!e || !e.confident || !Array.isArray(e.funds) || !e.funds.length) continue;
+    const row = byAck.get(ack);
+    if (!row) continue;
+    const schH = g(row, "assetsEOY") || 0;
+    if (schH < 1e6) continue;            // below $1M the ratio is meaningless (dx "tiny")
+    const sum = e.funds.reduce((a, x) => a + (+x.value || 0), 0);
+    if (sum < schH * 1.15) continue;
+    const ppl = g(row, "partEOY") || g(row, "participants") || 0;
+    over++;
+    overPpl += ppl;
+    // rank the named examples by PEOPLE, not by shard iteration order — the
+    // first six encountered are a random six, and a finding that names random
+    // members reads as small when its largest member is PepsiCo
+    const top = e.funds.reduce((a, x) => ((+x.value || 0) > (a ? +a.value : -1) ? x : a), null);
+    worstOver.push([ppl, `${g(row, "sponsorName")} ${ppl.toLocaleString()}p ${(sum / schH).toFixed(2)}x ("${String(top && top.name).slice(0, 28)}")`]);
+  }
+  worstOver.sort((a, b) => b[0] - a[0]);
+  worstOver.splice(6);
+  const OVER_BASELINE = 471;
+  /* Into the accuracy trail beside `dl` and `pvTopShare`, because the log is
+   * not a record: WARN prints only its first 40 of ~540 and this one is pushed
+   * around position 500, so as a WARN alone it is written and never read — the
+   * failure this whole check exists to end. In coverage-history.jsonl it is
+   * diffable run to run, which is what "must fall" actually requires. */
+  auditCoverage.overshoot = over;
+  auditCoverage.overshootPpl = overPpl;
+  console.log(`== LINEUP OVERSHOOT: ${over} published menus sum to >=1.15x plan assets (${overPpl.toLocaleString()} participants; open-defect baseline ${OVER_BASELINE}, must fall)`);
+  if (over > OVER_BASELINE)
+    flag("high", "lineup-overshoot", `${over} published lineups sum to >=1.15x the plan's own Schedule H assets, up from the ${OVER_BASELINE} measured 2026-09-15 — rows that do not exist have been added: ${worstOver.map((x) => x[1]).join("; ")}`);
+  else if (over > 0)
+    flag("warn", "lineup-overshoot", `${over} published lineups (${overPpl.toLocaleString()} participants) sum to >=1.15x plan assets — known open defect, see docs/accuracy-log.md 2026-09-15: ${worstOver.slice(0, 3).map((x) => x[1]).join("; ")}`);
+
   console.log(`\n== FABRICATED-HOLDING SHAPES: ${genericPlans} generic-named, ${dominantPlans} dominant non-fund`);
   if (genericPlans > 230) flag("high", "fabricated-name", `${genericPlans} published lineups carry a bare investment-type name holding >=25% of the shown sum (baseline 206 on v104 data) — several real funds have merged onto one name: ${worstGeneric.join(" ")}`);
   if (dominantPlans > 60) flag("high", "fabricated-name", `${dominantPlans} published lineups are one non-fund row carrying >=90% of the sum (baseline 50 on v104 data) — that is not a menu: ${worstDominant.join(" ")}`);
