@@ -1,52 +1,74 @@
-# Morning brief — 2026-09-14
+# Morning brief — 2026-09-15
 
 ## The headline
 
-**Second quiet day in a row, and it means the same thing it meant yesterday:
-the work queue is empty except for the three things only you can decide.**
-Nothing shipped, nothing broke, nothing regressed.
+**You sent three filings yesterday and they broke open the biggest accuracy
+defect this project has found.** Two fixes shipped and are live; the third
+finding is too large to ship off a filing review and is waiting on you.
 
-The pipeline ran through the weekend. Five data commits since midday Saturday,
-every one of them timestamps only — no new filings arrived, so **coverage is
-byte-identical across all of them: 60,089 fund menus, four audit findings at
-the long-standing baseline, 99.9% of filings read.** Today's coverage line is a
-single distinct value, which is the correct shape for a weekend.
+**On 1,509 live plans covering 1,482,658 participants, the name we publish as
+"RECORDKEEPER" is an auditor, a lawyer, an investment manager or an advisor.**
+AstraZeneca's page names **PricewaterhouseCoopers** — service code 10,
+accounting/audit. Apple names Russell Investments (investment management). Nike
+names BlackRock. HP names "Strategic Advisors", the exact name our own project
+memory cites as *already solved*.
 
-## Waiting on you — the entire queue
+This outranks everything else in the queue, and the reason is worth one line:
+**a blank is honest, a name reads as knowledge.** Telling 27,192 AstraZeneca
+participants that PwC keeps their records is worse than telling them we
+don't know.
 
-1. **GitHub Pages must serve `main`** (Settings → Pages). Still the last
-   blocker on "live", and it has been the last blocker for a while now.
-2. **Custom domain DNS.**
-3. **Where to point parser effort.** Measured, unchanged from yesterday:
+## Shipped and live overnight
 
-| option | people affected | what it needs |
-|---|---|---|
-| **vesting** | **23.2M** | new pattern work — 11,838 live plans |
-| match | 13.5M | new pattern work + one re-parse |
-| short-form form codes | 7.35M | **display only** — data already in hand |
-| fund menus | ~86 plans | parser work, and it is nearly exhausted |
+- **v124 — a false "not stated" removed.** R.J. Kielty's notes say
+  *"on a pre-tax or after-tax Roth basis"* and the page told its participants
+  *"Roth — Not stated in the audited notes."* That is not a gap but a false
+  claim about the document. Re-parse landed clean: **Roth 37,068 → 37,742,
+  +674 plans / 651,733 participants, 0 lost**, and **100% of all 37,742 carry
+  a filed quote**. Tesla (95,640 people) is the largest gainer. Store complete
+  at 99.89%, HIGH at the baseline of 4, gate +0/−0.
+- **Short-form pages now report their own 401(m) code** — 34,601 live plans,
+  **5,543,636 participants** who previously saw only a list of things the DOL
+  doesn't collect, while the fact it *did* collect sat unused in the payload.
 
-My recommendation is unchanged and I'll keep making it until you rule on it:
-**the third row is the cheapest thing that helps the most people.** 7.35 million
-people on short-form filings see headline numbers and nothing else today, while
-the characteristic codes they actually filed — 83% of them report a
-match-or-after-tax code — are already in our data. That is a page, not a
-pipeline, and it needs no re-parse.
+## Waiting on you — now five, ranked
 
-## Why I have not just started one of these
+| # | item | reach | cost |
+|---|---|---|---|
+| 1 | **Recordkeeper wrong name** | **1,509 plans / 1.48M ppl** | pipeline + one prep run |
+| 2 | Discretionary match shown as a standing "Formula" | ~4,469 pages | **display only, no re-parse** |
+| 3 | Schedule A carrier as a recordkeeper source | unsized | pipeline + prep run |
+| 4 | Row loss after region selection | small — see below | parser, mechanism unknown |
+| 5 | NEC + eligibility extraction | new coverage | parser |
 
-The first two are settings I cannot reach. The third I deliberately have not
-picked for you: the tests say vesting and match are **new coverage, not
-repairs** — 0 of 120 sampled match sentences and 1 of 120 vesting sentences
-were defects in our parsing. Under the standing accuracy directive I fix
-defects without asking. Building new coverage is a direction, and directions
-are yours.
+Plus the two unchanged settings: **GitHub Pages must serve `main`**, and the
+**custom domain DNS**.
 
-## What runs today without you
+**My recommendation: 1, then 2.** The fix for #1 is already clear — the
+discriminator sits unused in our own data (Schedule C service codes 15 and 64,
+"Recordkeeping" and "Recordkeeping fees"). Prefer a provider carrying those;
+failing that the platform named on Schedule C line 1b or the Schedule A
+carrier; only then the top-fee row — and never publish a provider coded as an
+auditor or a lawyer. #2 needs no re-parse at all.
 
-Monday, so the weekly sweep fires on top of the hourly cron. GitHub's scheduled
-start times drift by hours on free runners, so a late weekly run is not a
-dropped one — don't read one before about noon UTC as a failure. The audit and
-the auto-managed findings issue run with it.
+## What I got wrong yesterday, and corrected
 
-Nothing is blocked on anything except the three items above.
+- **A whole-population verdict of "not ours" on the recordkeeper gap was
+  falsified by one filing.** I had stratified by Schedule H spend and drawn
+  every sample from the two highest bands — but an insurance-platform plan pays
+  its cost *inside the product*, so it looks low-spend while having a perfectly
+  identifiable provider. **My sampling frame excluded the shape by
+  construction.** Reversed in project memory, kept rather than deleted so the
+  reasoning that failed stays readable.
+- **I nearly published "72% of lineups lose rows."** Naming the rows killed it
+  in one script — they are `Beginning balance`, `Net income per Schedule H`,
+  phone numbers and Schedule C form text, all correctly dropped. The real
+  figure by outcome is **2 of 25**, and item #4 is small.
+
+## What continues without you
+
+The hourly pipeline, the audit, and the findings issue. One thing I flagged and
+closed: fetch failures rose 68 → 78 and repeated, which is the signature that
+means *code*, not weather — so I HEAD-probed all 78 and **every one is a
+genuinely withdrawn filing**. The code was exonerated rather than convicted,
+which is the right outcome of running the test either way.
