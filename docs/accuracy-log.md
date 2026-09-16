@@ -9667,3 +9667,64 @@ regex separates those; only the value share and the filing do.
 **Not fixed, not sized.** Macy's is one plan with a large readership and it is
 queued with the fabricated-holding family it belongs to. The honest state is:
 two confirmed cases named, zero population estimates survived.
+
+---
+
+## 2026-09-16 — prior-year fallback lineups are ~15-20x likelier to be defective, and nothing could tell
+
+Macy's (163,125 participants, a match-formula sentence published as a $1.177B
+holding) is served from a **2023 prior-year fallback**. That prompted a question
+nobody had asked: **are fallback-served lineups worse than own-filing ones?**
+
+They cannot be distinguished by anything shipped — `confident` is 1 either way,
+the coverage line counts them identically, and the loss triage only sees losses.
+This file treats the fallback as pure upside throughout (v41 introduced it, v122
+restored 31 of them, and the REOPENED bullet celebrates 1,467 plans served from
+prior-year notes).
+
+Measured across every published lineup with >=$1M of assets:
+
+| | plans | participants | overshoot >=1.15x | generic-named >=25% |
+|---|---|---|---|---|
+| **prior-year fallback** | 1,160 | 4,336,230 | **108 (9.31%)** | **43 (3.71%)** |
+| own newest filing | 57,625 | 89,150,898 | 363 (0.63%) | 107 (0.19%) |
+
+**14.8x on overshoot, 19.5x on generic names.**
+
+### The two caveats, because only one of those numbers is clean
+
+**The overshoot figure is partly confounded BY CONSTRUCTION.** A fallback
+lineup's rows come from a prior year while the ratio is judged against
+CURRENT-year assets — so a plan that shrank overshoots and one that grew
+undershoots, with no parse defect involved. Some unknown share of the 9.31% is
+that, not a defect. **The generic-name figure has no such confound** — a row
+named `collective trust` is generic regardless of which year it came from — so
+**19.5x is the solid number and 14.8x is an upper bound.**
+
+**And neither establishes CAUSATION, which matters for what to do about it.**
+The fallback fires precisely when the newest filing has no readable schedule, so
+this population is a *selected* one: plans whose documents are hard to parse in
+general. The fallback may not be making anything worse; it may simply be the
+only mechanism that ever runs on the hardest filings. This measurement cannot
+separate those, and should not be quoted as though it could.
+
+**What it does establish is the OUTCOME, which is what a reader experiences:**
+a page served from a prior-year fallback is ~20x likelier to show a generic
+non-fund row holding a quarter of the plan. 4.34M participants read pages in
+that population.
+
+### The prevention
+
+**A mechanism justified entirely by coverage gained should be measured on
+quality too, and this one never was.** Every number this file records about the
+prior-year fallback is a count of lineups RECOVERED. Not one is a measure of
+what was recovered. The same is true of any future rescue path — the prior-year
+FEATURE fallback (v119) has exactly the same shape and exactly the same absence
+of a quality measure.
+
+Concretely: **`mirror-gate` and the coverage line should report fallback-served
+lineups separately from own-filing ones.** They are two populations with
+materially different defect rates being summed into one number that moves for
+either reason. That is a change to shipped code and is **queued, not made** —
+it belongs with the fabricated-holding version bump, and the confound above
+means the threshold needs thought rather than a quick guard.
