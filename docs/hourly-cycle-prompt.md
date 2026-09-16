@@ -152,11 +152,18 @@ Order of business:
    4. Schedule A carrier as a recordkeeper source (`build-data.mjs:624`
       resolves it and never reads it).
    5. NEC + eligibility extraction — NEW COVERAGE, owner's call.
-   6. Prior sponsor / plan name as a search alias (Form 5500 line 4,
-      `LAST_RPT_SPONS_NAME` / `LAST_RPT_PLAN_NAME`, never read). Shiel Sexton
-      -> Structure Man Holding is unfindable by its old name. Prep + sparse
-      boot column + `matchesQuery`; confirm the headers and COUNT the renames
-      in the first prep run. `docs/accuracy-log.md` 2026-09-16 (Shiel Sexton).
+   6. **SHIPPED 2026-09-16 21:xxZ, code only — DATA ARRIVES WITH THE NEXT
+      PREP RUN after #334.** Prior sponsor / plan name as a search alias
+      (Form 5500 line 4 `LAST_RPT_SPONS_NAME` / `LAST_RPT_PLAN_NAME` on both
+      forms, PLUS the older filings' sponsor names per EIN|PN). Prep writes
+      `alias` / `plans-list.al` / detail-shard `alias`; app.js searches it
+      and prints "Previously filed as". **The cycle that sees the first prep
+      run with it must read the prep log line `former names: N plans carry
+      an alias` — if it prints NONE, the EFAST2 column headers did not
+      resolve (they were written from the layout, unverified in-sandbox) and
+      the fix is the column name, printed right above it.** Then confirm
+      "shiel sexton" finds Structure Man on the mirrored site.
+      `docs/accuracy-log.md` 2026-09-16 (former names).
       SIZED 2026-09-16 from 60 random filings: line 4 filled ~7% (4/60), one
       true sponsor rename (Beyond New Horizons <- National Aerospace
       Solutions). Distinct from the 301-plan / 307,583-ppl holding-entity

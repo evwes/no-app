@@ -211,6 +211,9 @@
       provider: filed.recordkeeper || c.provider || null,
       providerFiled: !!filed.recordkeeper,
       planName: titlePlanName(filed.planName),
+      // "Shiel Sexton Company Inc" on a plan now filed by Structure Man Holding:
+      // searchable, and shown on the report so the reader knows why it matched
+      alias: filed.alias || "",
       city: filed.city, state: filed.state, zip: filed.zip,
       planTypes: planTypesFromCode(filed.pensionCode || ""),
       industry: industryOf(filed.businessCode),
@@ -286,6 +289,9 @@
             avgBalPre: c.ab[i] ? c.ab[i] * 100 : null,
             avgContribPre: c.ac[i] ? c.ac[i] * 100 : null,
             recordkeeper: c.rk[i], ticker: c.tk[i] || "",
+            // former names from Form 5500 line 4 / older filings (prep 2026-09-16);
+            // absent from list files built before then, so guard the column
+            alias: (c.al && c.al[i]) || "",
             cf, isSF: !!(cf & 8), sf: cf & 8 ? 1 : 0,
             shr: c.shr[i] || "",
             pensionCode: cf & 32 ? "2L" : "2J", // refined from full 8a codes on expand
@@ -578,6 +584,7 @@
         // Naming it beats claiming we failed to read the schedule: the
         // schedule is one line and that line is the trust.
         plan.mtiaName = d.mtiaName || null;
+        if (d.alias) plan.alias = d.alias;
         const b = plan.bits || 0;
         if ((b & 1) && d.ack) plan.lineupKey = d.ack;
         if ((b & 2048) && d.mtiaAck) plan.trustKey = d.mtiaAck;
@@ -784,6 +791,7 @@
     if (sc) return (plan.state || "").toLowerCase() === sc;
     if (!plan.hay) {
       plan.hay = (plan.company + " " + (publicName(plan) || "") + " " + plan.ticker + " " + (plan.provider || "") + " " + plan.planName +
+        " " + (plan.alias || "") + // former sponsor / plan names (line 4, older filings)
         " " + plan.planTypes.join(" ") + " " + (plan.city || "") + " " + (plan.state || "") + " " + (plan.ein || "")).toLowerCase();
       plan.hayNorm = plan.hay.replace(/[^a-z0-9]/g, "");
     }
@@ -1646,6 +1654,7 @@
               ? `<mark>${esc(plan.planName.slice(0, first.length))}</mark>${esc(plan.planName.slice(first.length))}`
               : esc(plan.planName);
           })()}</h3>
+          ${plan.alias ? `<p class="report-meta">Previously filed as <strong>${esc(plan.alias)}</strong> <span class="muted">(Form 5500 line 4 or an earlier year's filing for this EIN and plan number)</span></p>` : ""}
           <p class="report-meta">EIN ${esc(plan.ein || "—")} · ${esc(plan.city || "—")}, ${esc(plan.state || "")} ${esc(plan.zip || "")}
             ${plan.planTypes.map((t) => `<span class="badge badge-blue">${esc(t)}</span>`).join(" ")}
             <span class="badge badge-gray">${(() => {

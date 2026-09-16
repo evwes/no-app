@@ -10904,3 +10904,53 @@ master-trust plans. Sized from the store, no sampling.
   diff-lineups cannot see a fetch-4i change; and the count of confident
   fallback entries on trust-linked plans is now a number to re-derive after
   every re-parse — it must not regrow past the 5 named above.
+
+## 2026-09-16 (former names) — a renamed sponsor is now findable by its old name, from two filed sources
+
+The owner searched "Shiel Sexton" and got nothing; the plan is filed by
+Structure Man Holding Company, Inc. (EIN 35-1268249 PN 002) since its 2024
+return and the old name survived nowhere in the store.
+
+- **What was wrong:** prep read `LAST_RPT_PLAN_NUM` from Form 5500 line 4
+  (as a plan-number fallback) and never the two NAME columns beside it,
+  `LAST_RPT_SPONS_NAME` / `LAST_RPT_PLAN_NAME` — "the plan sponsor's name
+  ... and the plan name from the last return" when either changed. And the
+  newest-filing-wins dedupe discarded the older filings' sponsor names
+  entirely, though Shiel Sexton's own 2023 return is in the same datasets
+  under the old name.
+- **The change (prep + boot column + search + report):** `build-data.mjs`
+  reads both line-4 name columns on the full form and the short form
+  (`SF_LAST_RPT_*`), and after dedupe collects, per EIN|PN, every older
+  filing's sponsor name that differs from the newest. Compared on a
+  punctuation/space/case-insensitive key, so `401K PLAN` vs `401(K) PLAN` is
+  not a rename; deduped; never equal to the current sponsor or plan name;
+  capped at three; joined with " / ". Stored as `alias` in plans-all (field
+  38), as the sparse `al` column of `plans-list.json`, and in the
+  `data/plans` detail shards. `app.js` adds it to the search haystack and
+  prints "Previously filed as X" under the report title, with the source
+  named (line 4 or an earlier year's filing for this EIN and plan number).
+  Older list files have no `al` column and the reader guards for it.
+- **Not yet in the data.** Prep runs at the START of a pipeline run and #334
+  (v128) was already in flight on the old prep; the first store carrying
+  `alias` is the next run dispatched after it. The prep log prints the
+  count — `former names: N plans carry an alias (line-4 sponsor / line-4
+  plan name / older-filing sponsor)` — with the first fifteen members, and
+  prints NONE with a pointer at the column dump if the headers did not
+  resolve. **The header names are from the EFAST2 layout, unverified in
+  this sandbox (DOL is unreachable); the regex fallback covers a prefix
+  variant, and the count line is the verification.** Expected order of
+  magnitude from the 60-filing random sample recorded earlier today: line 4
+  filled on ~7% of full-form filings, a true sponsor rename ~1 in 60; the
+  older-filing lens should add more, since it reaches back two years.
+- **Verified end to end on the real site files:** a copy of the repo with
+  `al` injected for Structure Man's row only. Negative control against the
+  unpatched list: "shiel sexton" returns zero rows. Patched: one row,
+  Structure Man Holding Company, and the opened report reads "Previously
+  filed as Shiel Sexton Company Inc" with no undefined/NaN. Smoke test
+  green locally; site-test dispatched on the pushed commit (a frontend push
+  during run #334 has to carry `[skip ci]`, which also silences site-test,
+  so it is dispatched by hand).
+- **Prevention:** the prep count line is the check; if a future prep prints
+  NONE the columns moved and the alias silently vanished — treat that like
+  a coverage dip. The e2e control script is in the session scratchpad and
+  is ten lines to recreate from this entry.

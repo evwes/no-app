@@ -167,6 +167,18 @@ async function scanMainForm(csv, year) {
     planYearBegin: colIndex(H, ["FORM_PLAN_YEAR_BEGIN_DATE"], /PLAN_YEAR_BEGIN/),
     planYearEnd: colIndex(H, ["FORM_TAX_PRD", "FORM_PLAN_YEAR_END_DATE"], /TAX_PRD|PLAN_YEAR_END/),
     dfeType: colIndex(H, ["TYPE_DFE_PLAN_ENTITY_CD"], /DFE_PLAN_ENTITY/),
+    /* Form 5500 line 4: "If the name and/or EIN of the plan sponsor or the
+     * plan name has changed since the last return/report, enter the plan
+     * sponsor's name, EIN, the plan name and the plan number from the last
+     * return." LAST_RPT_PLAN_NUM has been read since the start (as a PN
+     * fallback, above); the two NAME columns beside it never were, so a
+     * renamed sponsor was unfindable by its old name — Shiel Sexton became
+     * Structure Man Holding Company in its 2024 filing and "shiel sexton"
+     * returned nothing (2026-09-16). Header names are from the EFAST2 layout;
+     * the regex fallback and the count printed after dedupe are how the first
+     * prep run confirms them. */
+    priorSponsor: colIndex(H, ["LAST_RPT_SPONS_NAME", "LAST_RPT_SPONSOR_NAME"], /LAST_RPT.*SPONS.*NAME/),
+    priorPlanName: colIndex(H, ["LAST_RPT_PLAN_NAME"], /LAST_RPT.*PLAN_NAME/),
   };
   console.log("columns:", JSON.stringify(col));
 
@@ -217,6 +229,8 @@ async function scanMainForm(csv, year) {
       received: r[col.received],
       planYearBegin: col.planYearBegin !== -1 ? r[col.planYearBegin] : "",
       planYearEnd: col.planYearEnd !== -1 ? r[col.planYearEnd] : "",
+      priorSponsor: col.priorSponsor !== -1 ? String(r[col.priorSponsor] || "").trim() : "",
+      priorPlanName: col.priorPlanName !== -1 ? String(r[col.priorPlanName] || "").trim() : "",
     });
   }
   console.log(`rows: ${n}, 401(k) ≥${MIN_UNIVERSE} participants: ${out.length}`);
@@ -304,6 +318,9 @@ async function scanSF(csv, year) {
     received: colIndex(H, ["DATE_RECEIVED"], /DATE_RECEIVED/),
     planYearBegin: colIndex(H, ["SF_PLAN_YEAR_BEGIN_DATE"], /PLAN_YEAR_BEGIN/),
     planYearEnd: colIndex(H, ["SF_TAX_PRD", "SF_PLAN_YEAR_END_DATE"], /TAX_PRD|PLAN_YEAR_END/),
+    // line 4 on the short form, same meaning as the full form's (see scanMainForm)
+    priorSponsor: colIndex(H, ["SF_LAST_RPT_SPONS_NAME", "SF_LAST_RPT_SPONSOR_NAME"], /LAST_RPT.*SPONS.*NAME/),
+    priorPlanName: colIndex(H, ["SF_LAST_RPT_PLAN_NAME"], /LAST_RPT.*PLAN_NAME/),
   };
   console.log("SF columns:", JSON.stringify(col));
   const out = [];
@@ -337,6 +354,8 @@ async function scanSF(csv, year) {
       received: r[col.received],
       planYearBegin: col.planYearBegin !== -1 ? r[col.planYearBegin] : "",
       planYearEnd: col.planYearEnd !== -1 ? r[col.planYearEnd] : "",
+      priorSponsor: col.priorSponsor !== -1 ? String(r[col.priorSponsor] || "").trim() : "",
+      priorPlanName: col.priorPlanName !== -1 ? String(r[col.priorPlanName] || "").trim() : "",
       sfH: {
         assetsBOY: col.assetsBOY !== -1 ? +r[col.assetsBOY] || 0 : 0,
         assetsEOY: col.assetsEOY !== -1 ? +r[col.assetsEOY] || 0 : 0,
@@ -707,6 +726,47 @@ for (const m of collected) {
 const universe = [...byPlan.values()];
 console.log(`\nuniverse: ${universe.length} unique 401(k) plans with ≥${MIN_UNIVERSE} participants`);
 
+/* --- former names, so a renamed sponsor stays findable ---------------------
+ * Two filed sources, both facts on the form and neither guessed:
+ *  1. line 4 of the NEWEST filing (LAST_RPT_SPONS_NAME / LAST_RPT_PLAN_NAME):
+ *     the name "from the last return" when it changed this year;
+ *  2. the sponsor name on this plan's OLDER filings in the datasets, when it
+ *     differs from the newest — a rename two years ago has a blank line 4 by
+ *     now, but the 2023 filing still says who the sponsor was.
+ * Compared on a punctuation/space/case-insensitive key so "401K PLAN" vs
+ * "401(K) PLAN" is not a rename. Deduped, capped at three, and never equal to
+ * the current sponsor or plan name. The count and the first members print so
+ * the first prep run confirms the column headers actually resolved. */
+const nameKey = (s) => String(s || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+const olderNames = new Map(); // key -> Set of older-filing sponsor names
+for (const m of collected) {
+  const key = `${m.ein}|${m.pn}`, cur = byPlan.get(key);
+  if (!cur || m === cur) continue;
+  if (!olderNames.has(key)) olderNames.set(key, new Set());
+  olderNames.get(key).add(String(m.sponsorName || "").trim());
+}
+let aliasLine4Sponsor = 0, aliasLine4Plan = 0, aliasOlder = 0, aliasPlans = 0;
+const aliasSample = [];
+for (const p of universe) {
+  const curKeys = new Set([nameKey(p.sponsorName), nameKey(p.planName)]);
+  const seen = new Set(), out = [];
+  const add = (name, why) => {
+    const k = nameKey(name);
+    if (!k || k.length < 3 || curKeys.has(k) || seen.has(k)) return;
+    seen.add(k); out.push(titleCase(name)); why();
+  };
+  if (p.priorSponsor) add(p.priorSponsor, () => aliasLine4Sponsor++);
+  if (p.priorPlanName) add(p.priorPlanName, () => aliasLine4Plan++);
+  for (const n of olderNames.get(`${p.ein}|${p.pn}`) || []) add(n, () => aliasOlder++);
+  if (out.length) {
+    p.alias = out.slice(0, 3).join(" / ");
+    aliasPlans++;
+    if (aliasSample.length < 15) aliasSample.push(`${titleCase(p.sponsorName)} <- ${p.alias}`);
+  }
+}
+console.log(`former names: ${aliasPlans} plans carry an alias (line-4 sponsor ${aliasLine4Sponsor}, line-4 plan name ${aliasLine4Plan}, older-filing sponsor ${aliasOlder})` +
+  (aliasPlans ? "\n  " + aliasSample.join("\n  ") : "\n  NONE — check that the LAST_RPT_* columns resolved (printed with the columns above)"));
+
 // prior-year fallback map: for each plan whose NEWEST filing may lack a
 // readable schedule, the next-newest FULL-FORM filing of the same EIN|PN.
 // fetch-4i tries it when the primary parse yields no confident lineup, and
@@ -931,7 +991,7 @@ function titleCase(s) {
 const FIELDS = ["ein", "pn", "sponsorName", "planName", "city", "state", "zip", "businessCode",
   "planYear", "participants", "activeParticipants", "assetsBOY", "assetsEOY",
   "contribEmployer", "contribParticipant", "rollovers", "adminExpenses",
-  "filedDate", "recordkeeper", "ticker", "ack", "codes", "pyb", "partBalances", "feeProf", "feeAdmin", "feeInvMgmt", "feeOther", "benefitsPaid", "mtiaAck", "sf", "shr", "pye", "feeSal", "cctVals", "partEOY", "mtiaName"];
+  "filedDate", "recordkeeper", "ticker", "ack", "codes", "pyb", "partBalances", "feeProf", "feeAdmin", "feeInvMgmt", "feeOther", "benefitsPaid", "mtiaAck", "sf", "shr", "pye", "feeSal", "cctVals", "partEOY", "mtiaName", "alias"];
 
 // pye is stored only for IRREGULAR plan years (short first/final years) —
 // blank means the year ends at the natural 12-month boundary, which keeps
@@ -959,7 +1019,7 @@ for (const p of universe) {
     p.planYearBegin ? String(p.planYearBegin).slice(0, 7) : "",
     p.partBalances || 0, h.feeProf || 0, h.feeAdmin || 0, h.feeInvMgmt || 0, h.feeOther || 0, h.benefitsPaid || 0,
     p.mtiaAck || "", p.sf || 0, schR.get(p.ack) || "", irregularYearEnd(p),
-    h.feeSalaries || 0, p.cctVals || "", p.partEOY || 0, p.mtiaName || "",
+    h.feeSalaries || 0, p.cctVals || "", p.partEOY || 0, p.mtiaName || "", p.alias || "",
   ]);
 }
 rowsOut.sort((a, b) => b[12] - a[12]); // by assets desc
@@ -1017,14 +1077,15 @@ console.log(`wrote plans-all.json: ${rowsOut.length} plans, ${(Buffer.byteLength
   const g = (r, f) => r[ix[f]];
   const einCount = new Map();
   for (const r of rowsOut) einCount.set(g(r, "ein"), (einCount.get(g(r, "ein")) || 0) + 1);
-  const cols = { ein: [], pn: [], name: [], plan: [], st: [], bc: [], parts: [], am: [], ab: [], ac: [], rk: [], tk: [], cf: [], shr: [] };
+  // al = former names ("Shiel Sexton Company Inc"), sparse; searched at boot
+  const cols = { ein: [], pn: [], name: [], plan: [], st: [], bc: [], parts: [], am: [], ab: [], ac: [], rk: [], tk: [], cf: [], shr: [], al: [] };
   const DETAIL_SHARDS = 64;
   const shardOfKey = (k) => { let h = 0; for (const c of k) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h % DETAIL_SHARDS; };
   const buckets = Array.from({ length: DETAIL_SHARDS }, () => ({}));
   const DETAIL_FIELDS = ["ack", "planName", "city", "zip", "planYear", "pyb", "pye", "filedDate", "codes",
     "mtiaAck", "mtiaName", "assetsBOY", "assetsEOY", "contribEmployer", "contribParticipant", "rollovers",
     "adminExpenses", "feeProf", "feeAdmin", "feeInvMgmt", "feeOther", "feeSal", "benefitsPaid",
-    "partBalances", "activeParticipants"];
+    "partBalances", "activeParticipants", "alias"];
   for (const r of rowsOut) {
     const codes = g(r, "codes") || "";
     const cf = (/2R/.test(codes) ? 1 : 0) | (/2S/.test(codes) ? 2 : 0) | (/2K/.test(codes) ? 4 : 0) |
@@ -1044,6 +1105,7 @@ console.log(`wrote plans-all.json: ${rowsOut.length} plans, ${(Buffer.byteLength
     cols.ab.push(avgBal); cols.ac.push(avgC);
     cols.rk.push(g(r, "recordkeeper") || ""); cols.tk.push(g(r, "ticker") || "");
     cols.cf.push(cf); cols.shr.push(g(r, "shr") || "");
+    cols.al.push(g(r, "alias") || "");
     const entry = {};
     for (const f of DETAIL_FIELDS) { const v = g(r, f); if (v) entry[f] = v; }
     const key = g(r, "ein") + "|" + g(r, "pn");
