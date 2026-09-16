@@ -113,7 +113,12 @@ Order of business:
       loan-rate text as a name (283 plans), the 471 overshoots (PepsiCo
       `Trust` at 50% of its menu), Form 5500 ID fields as holdings (174
       plans — `JUNK_NAME_RE` matches 0 of them), duplicate rows (160),
-      **DocuSign watermarks as holdings (27 plans / 51,497 ppl)**,
+      **DocuSign watermarks as holdings (27 plans / 51,497 ppl)**, **the bare
+      house-name merge — `Vanguard` at 95% because the fund name sits on a
+      description line separated by BLANK lines and `nameBuf` resets: 49
+      plans / 27,970 ppl at >=90%, 81 / 55,353 at 50-90%, 6 of 6 specimens
+      OURS (`docs/accuracy-log.md` 2026-09-16 cycle 19:0xZ; specimen Bell
+      Nursery 20251006135118NAL0006541792001)**,
       and the CODE-COLUMN class (**720 plans / 687,851 ppl** at >=1 such row,
       **670 / 621,794** at >=3 — both correct, the threshold is part of the
       number; `docs/accuracy-log.md` 2026-09-16, publishing
