@@ -334,6 +334,47 @@ try {
    * diffable run to run, which is what "must fall" actually requires. */
   auditCoverage.overshoot = over;
   auditCoverage.overshootPpl = overPpl;
+
+  /* IDENTIFIED-ROW SHARE — the fee column's coverage, which had never been
+   * printed in any unit until 2026-09-15.
+   *
+   * `fund-er.js` is the ONLY expense-ratio source, so a holding row whose name
+   * does not resolve to a fund shows a BLANK fee cell. That was true of ~80% of
+   * published rows and nobody had counted it, because an unidentified row still
+   * renders, its value is right, and every arithmetic check here passes. A
+   * silent blank is a defect no audit can raise — unless one counts it.
+   *
+   * SAMPLED, and deliberately so. A full pass is ~1.7M regex-heavy calls and
+   * minutes of wall clock on a job that now runs every hour. Every 20th row is
+   * DETERMINISTIC rather than random, which matters more than the sample size:
+   * run-to-run comparison is the whole point, and a fresh random draw each run
+   * would add noise to exactly the signal being watched. Treat it as a TREND,
+   * not as the exact figure — `node scripts/ticker-sweep.mjs` computes that. */
+  let tkSeen = 0, tkHit = 0;
+  try {
+    const { default: vm } = await import("node:vm");
+    const ctx2 = { console };
+    vm.createContext(ctx2);
+    vm.runInContext(readFileSync("fund-er.js", "utf8") + "\nglobalThis.__t = fundTickerInfo;", ctx2);
+    const tickerOf = ctx2.__t;
+    let i = 0;
+    for (const e of Object.values(entriesByAckCov)) {
+      if (!e || !e.confident || !Array.isArray(e.funds)) continue;
+      for (const x of e.funds) {
+        if (i++ % 20) continue;
+        const nm = String(x.name || "").trim();
+        if (!nm) continue;
+        tkSeen++;
+        try { if (tickerOf(nm)) tkHit++; } catch { /* a throw is a miss */ }
+      }
+    }
+    if (tkSeen) {
+      const pct = +(100 * tkHit / tkSeen).toFixed(2);
+      auditCoverage.tkShare = pct;
+      auditCoverage.tkSampled = tkSeen;
+      console.log(`== TICKER COVERAGE: ${pct}% of published holding rows resolve to a fund (1-in-20 sample of ${tkSeen.toLocaleString()} rows; blank fee cell otherwise)`);
+    }
+  } catch (e) { console.warn("ticker-coverage sample skipped: " + e.message); }
   console.log(`== LINEUP OVERSHOOT: ${over} published menus sum to >=1.15x plan assets (${overPpl.toLocaleString()} participants; open-defect baseline ${OVER_BASELINE}, must fall)`);
   if (over > OVER_BASELINE)
     flag("high", "lineup-overshoot", `${over} published lineups sum to >=1.15x the plan's own Schedule H assets, up from the ${OVER_BASELINE} measured 2026-09-15 — rows that do not exist have been added: ${worstOver.map((x) => x[1]).join("; ")}`);
