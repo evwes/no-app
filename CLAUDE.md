@@ -631,17 +631,37 @@ don't confuse them). Frontend: python http.server + Playwright at
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
   full-form** filers and 43,523 short-form; 68,767 parse-status entries.
-  **Parser v124, OCR v8.**
-  **Every figure on this line was re-verified from the store 2026-09-16** —
-  `PARSER_VERSION` exported by `lib-4i` is 124 and `pv124` covers 68,689 acks
-  (99.9%), the tail being pv106 18, pv123 10, pv98 10; `ov8` covers 68,764.
+  **Store at v127 (branch and main); `PARSER_VERSION` in the tree is 128 and
+  run #334 is parsing it. OCR v8.**
+  **Re-derived from the local store 2026-09-16 20:3xZ** — `pv127` covers
+  68,678 of 68,767 acks (99.87%), tail pv106 18, pv124 10, pv123 10, pv98 10,
+  pv91 9; `lib-4i` exports 128. (Earlier today this line said v124 for four
+  mirrors while every gate printed 126 —
   The line had said **v123 for at least four mirrors while every mirror gate in
   that window printed "dominant pv 124"** — the version number in the first
   bullet a new session reads, wrong, next to a date that made it look fresh.
   Nothing downstream was affected (no session acted on it), but it is exactly
   the copying-a-line-forward hazard this file warns about elsewhere, aimed at
   the file's own header. **Re-derive this line rather than editing the date.**
-- **LIVE on main: `8bae38c2` — MIRRORED 2026-09-16 18:3xZ.** Gate +0/-0
+- **LIVE on main: `39381d6e` — MIRRORED 2026-09-16 20:1xZ** (v127 store,
+  gate +0/-0, HIGH at the baseline 4); main has since taken hourly data
+  commits (`b1438c14` at 20:2xZ), which `mirror.sh` will refuse over until
+  they are rebased in — the ordinary case, not a hazard. **IN FLIGHT: run
+  #334 (id 35146450361), the v128 full re-parse, dispatched 20:25Z on
+  `63b3fd2f`.** v128 is a fetch-4i guard, not a parser change: the prior-year
+  fallback no longer publishes a plan-level lineup for a master-trust plan
+  (87 plans / 2.38M participants were showing `le 0 0 1f`, `Collective funds`,
+  `Trust`, an employer roster — Walgreen, Macy's, PepsiCo, Comcast, Northrop,
+  Medtronic, UPMC). **Verdict test for #334: shard tallies must show
+  `fb-skipped-trust-served` summing to ~82** (predicted from the whole class,
+  every member traced) and the 67 trust-confident plans render the trust
+  menu; Delta and Mars PN 003 keep junk fallbacks by design (other classes).
+  `docs/accuracy-log.md` 2026-09-16 (v128). **Also pushed `[skip ci]` on
+  `a1c588bf`: former-name aliases** (line 4 + older filings) — code only,
+  the DATA arrives with the first prep run after #334, whose log must print
+  `former names: N plans carry an alias`; NONE means the EFAST2 column names
+  did not resolve. site-test #68 dispatched on it; read its conclusion.
+- **Previously: `8bae38c2` — MIRRORED 2026-09-16 18:3xZ.** Gate +0/-0
   unforced, **pv 126 at 99.9%**, HIGH at the baseline 4, `pages-build-deployment`
   #448 building it. **What reached readers today, in order of size:**
   (1) **the `app.js` issuer-prefix FALLBACK — +10,040 fee cells / 2,596 plans /
