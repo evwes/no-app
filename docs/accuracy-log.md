@@ -10774,3 +10774,39 @@ my change had done without measuring the pre-v126 store for the same thing.
   from BEFORE the change for the same shape. The v125 impact measurement did
   exactly that an hour earlier and found "one plan"; this one skipped it and
   found "3,224" for a change responsible for 224.
+
+## 2026-09-16 (owner: cross-reference 401k.live) — competitors show the OLD name because they are stale, and nobody has the new one
+
+Owner asked for 401k.live as a cross-reference on the Shiel Sexton alias
+question. **401k.live is unreachable from this environment** — the egress
+proxy blocks it (`EGRESS_BLOCKED`), as it does web.archive.org and
+hicapitalize.com; the proxy exposes no per-domain allowlist, so this is the
+environment's network policy, not something a session can route around. What
+follows is from search-engine snippets only, and is labelled as such.
+
+- **401k.live's plan pages are keyed by SPONSOR SLUG from the filing** —
+  `/plans/<sponsor-slug>/`, e.g. `/plans/fisher-holdings-inc/`, with a numeric
+  suffix on collisions (`/plans/infosys-limited-1/`) — the same model as
+  wampo. The search index of the site is shallow: it returned neither
+  `shiel-sexton` nor `structure-man` for any query, which is silence, not
+  evidence.
+- **Capitalize and QDRODesk both list "Shiel Sexton Company Inc 401K Plan —
+  250 participants, $15,145,028."** That is neither filing wampo has seen: the
+  2023 ESOP-and-401(k) plan (PN 002) had 487 participants. It is an OLDER and
+  SMALLER plan, almost certainly the pre-restatement 401(k). The 2023 filing's
+  Note 1 says the plan was organized in 2012 and **restated October 1, 2022
+  into ESOP and 401(k) components** — consistent with that older plan having
+  been folded in, though the notes do not say "merged" and this is recorded as
+  consistent-with, not confirmed.
+- **No site on the open web carries "Structure Man Holding Company" at all.**
+  So the cross-reference cuts the other way from what "they list it and we
+  don't" suggests: the aggregators are findable by the old name because they
+  are STALE — an older, smaller filing that was never refreshed — and wampo is
+  currently the only place the plan appears under its actual current name.
+  Being current is what made it unfindable. The line-4 alias (queued, item 6)
+  is what lets a source be both.
+- **To read 401k.live directly:** the environment's network policy is the
+  only unblock (https://code.claude.com/docs/en/claude-code-on-the-web), or
+  open `https://www.401k.live/plans/shiel-sexton-company-inc/` and
+  `.../structure-man-holding-company-inc/` in a browser — a 30-second check
+  that answers whether they dedupe by EIN or keep both slugs.
