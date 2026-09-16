@@ -1397,7 +1397,23 @@ don't confuse them). Frontend: python http.server + Playwright at
   affirmatively-none/frozen, 1024 notes-safe-harbor → match-type filter
   select in toolbar. Brokerage is three-state: 2R/SDBA yes; own confident
   lineup + no SDBA + no 2R → "None indicated" (trust lineups never infer).
-- Owner to-dos: point GitHub Pages at `main`; custom domain.
+- **Owner to-dos: the custom domain. "Point GitHub Pages at `main`" IS ALREADY
+  DONE and was stale — VERIFIED 2026-09-16.** The `pages-build-deployment`
+  workflow (id 308294295, 439 runs) builds from `head_branch: main`, and its
+  runs correspond exactly to this session's mirrors: #439 built `021bbbe1`
+  (the 10:1xZ mirror) and concluded **success** at 10:11Z, #436 built
+  `ab4058d8` (the 07:1xZ mirror). So every mirror has reached readers within
+  ~2 minutes, including the fund-name matching repair.
+  **Scope of the claim, stated because it is narrower than "the site works":**
+  this proves Pages BUILDS AND DEPLOYS from main. It does not prove the page
+  renders correctly for a visitor — `evwes.github.io` is **unreachable from the
+  CCR sandbox** (the egress proxy returns `connect_rejected`), and that
+  rejection is a sandbox fact, not evidence about the site. Do not read a
+  failed curl from here as Pages being down; check the deployment workflow
+  instead, which is reachable.
+  **Also correct the LAUNCH WEEK block**, which still lists "GitHub Pages must
+  serve main (Settings->Pages)" as an owner blocker for going live. It is not a
+  blocker and has not been one.
 - **LAUNCH WEEK (owner directive 2026-08-09: fully live by 2026-08-14)**:
   shipped so far — fee schedule w/ service codes, fee percentiles vs peers,
   About/methodology page, boot payload split (12→2.8 MB gz). Remaining, in
@@ -1405,9 +1421,10 @@ don't confuse them). Frontend: python http.server + Playwright at
   generator in the merge job; real crawlable URLs are the growth engine),
   v36 dotted-leader lineup recovery (Costco/JPM class, biggest coverage
   win), OCR page-targeting for >40-page scanned attachments, glossary/
-  accessibility pass. Owner blockers for "live": GitHub Pages must serve
-  main (Settings→Pages), custom domain DNS, approve the daily accuracy
-  Routine. Daily cycle sessions pick up any of this that isn't done.
+  accessibility pass. Owner blockers for "live": **NOT Pages — verified
+  2026-09-16 that `pages-build-deployment` builds from main and succeeds on
+  every mirror**; the remaining ones are custom domain DNS and approving the
+  daily accuracy Routine. Daily cycle sessions pick up any of this that isn't done.
 - **EDGAR 11-K research (2026-08-03, specimens in hand)**: SEC blocks
   requests whose User-Agent contains parens/URLs — the plain documented
   "name email" UA works from GitHub Actions (all four hosts 200; do NOT
