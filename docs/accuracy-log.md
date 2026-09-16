@@ -10608,3 +10608,47 @@ cells that v126's re-parse did (335), because it repairs a lookup that had been
 silently failing since v67. **The re-examination found it by measuring the
 shipped change's LOSSES on the same store as its gains** — which is the rule
 the previous entry wrote and this one confirms.
+
+## 2026-09-16 (owner: Shiel Sexton) — a renamed sponsor is unfindable by its former name, and the prior name is filed data we already ingest past
+
+Owner searched "Shiel sexton" and got 0 of 111,782, with the plan's 2023
+filing in hand (EIN 35-1268249 PN 002, 465 participants, codes 2I 2P 2Q 2J 2K
+— a leveraged S-corp KSOP, full-form).
+
+**It is in the store, under a different name.** The same EIN|PN is published
+as **Structure Man Holding Company, Inc.**, *"TEAMMATE STOCK OWNERSHIP AND
+401(K) PLAN"*, plan year 2024 (fiscal Oct-Sep), filed July 2026, 623
+participants, $127.9M, the identical code set. "Newest filing per EIN|PN wins"
+did what it should. The newer filing's own **line 4a declares the prior
+sponsor name, `SHIEL SEXTON COMPANY, INC.`**, and 4c the prior plan name —
+Form 5500 requires this on every renamed plan, so the alias is filed data.
+
+**The pipeline ingests past it.** `build-data.mjs:155` uses `LAST_RPT_PLAN_NUM`
+as a PN fallback, so the line-4 column family is present in the F_5500 extract
+and already read; the sibling `LAST_RPT_SPONS_NAME` / `LAST_RPT_PLAN_NAME` are
+never read. Same computed-and-discarded shape as the Schedule A carrier.
+
+**Fix shape, proposed not shipped:** read the two line-4 columns in prep, carry
+non-empty ones as a sparse `alias` on the plan row and into `plans-list.json`
+(renamed plans only, so the boot payload barely moves), and have `matchesQuery`
+search it. **Exact header names must be confirmed against the dataset header in
+the next prep run** — DOL is unreachable from the sandbox, and a guessed column
+returns -1 from `colIndex` silently. Make prep LOG how many prior names it found
+so the first run proves the column, per the run-#244 rule.
+
+**UNSIZED, honestly:** the store keeps only the newest filing's name, so the
+number of renamed plans cannot be measured here. It is one count in the same
+prep run.
+
+**A second thing the screenshot shows, and it is not a site bug:** the footer
+reads *"Data refreshed September 9, 2026"* while main's `plans-index.json`
+(which that line reads) was generated **2026-09-16T18:16Z**. The tab is showing
+week-old boot files — the map-dot banner beside a 0-result search is a state the
+current `render()` cannot produce (typing clears `dotPick` before re-render;
+`more` goes negative at 0 matches), consistent with an older `app.js` in that
+same tab. A reload resolves both; nothing to fix.
+
+- **Change:** none. Queued for the owner as a prep + boot-file + search change.
+- **Prevention:** when a filed field exists specifically to bridge a
+  discontinuity (line 4 exists so a renamed plan can be traced), its absence
+  from the store is a findability defect, not a data gap.

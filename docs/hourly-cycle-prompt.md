@@ -134,6 +134,11 @@ Order of business:
    4. Schedule A carrier as a recordkeeper source (`build-data.mjs:624`
       resolves it and never reads it).
    5. NEC + eligibility extraction — NEW COVERAGE, owner's call.
+   6. Prior sponsor / plan name as a search alias (Form 5500 line 4,
+      `LAST_RPT_SPONS_NAME` / `LAST_RPT_PLAN_NAME`, never read). Shiel Sexton
+      -> Structure Man Holding is unfindable by its old name. Prep + sparse
+      boot column + `matchesQuery`; confirm the headers and COUNT the renames
+      in the first prep run. `docs/accuracy-log.md` 2026-09-16 (Shiel Sexton).
 
    **EVERY CYCLE, alongside the queue item: draw randomly from PUBLISHED
    lineups and read the rows.** Not from the worst bucket — that draw answers
