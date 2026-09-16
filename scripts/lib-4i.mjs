@@ -1213,7 +1213,14 @@ export function parseRows(section, opts = {}) {
     // ownType = the row carried its OWN investment-type column, so it is a
     // proven 4i data row rather than a plausible-looking text line; the
     // sub-$10k residue filter trusts that proof (see parse4i)
-    rows.push({ name: name.slice(0, 90), type: rowType, value, sec: curSection, ...(type ? { ownType: 1 } : {}), ...(iss ? { iss: iss.slice(0, 60) } : curIss ? { iss: curIss.slice(0, 60) } : {}), ...(leadStripped ? { _sl: 1 } : {}) });
+    // the identity column carries the >5%-of-plan marker mid-line ("Fidelity**
+    // 500 Index Fund ... 1,234"), which the end-of-line strip never reaches:
+    // 3,000 published issuers still read "Fidelity**" after v127 stripped the
+    // header path alone. Strip at the push so both paths are clean. Not a
+    // version bump on its own — app.js already strips it for display and
+    // lookup, so readers see clean names now; the store catches up on the
+    // next real re-parse.
+    rows.push({ name: name.slice(0, 90), type: rowType, value, sec: curSection, ...(type ? { ownType: 1 } : {}), ...(iss ? { iss: iss.replace(/\*+/g, "").trim().slice(0, 60) } : curIss ? { iss: curIss.slice(0, 60) } : {}), ...(leadStripped ? { _sl: 1 } : {}) });
   }
 
   // ARITHMETIC subtotal removal (owner directive after Sempra: takeaways

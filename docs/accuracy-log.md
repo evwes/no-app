@@ -10747,3 +10747,30 @@ the sponsor is a shell — and is findable today; recorded, not queued, because
 
 - **Prevention:** a rate from a 60-filing sample is stated with its n and its
   width, and a 1-of-60 is reported as "one", not extrapolated.
+
+## 2026-09-16 (v127 verdict) — the strip fixed 224 of 3,224, and the other 3,000 were never v126's
+
+Run #330 (v127) succeeded: pv 127 at 99.87%, HIGH 4, coverage byte-identical
+(v127 changes only `iss`), mirrored `ba172fd1`. But the measurement that
+matters says the fix was aimed at the wrong path: **starred issuers went
+3,224 -> 3,000.** v127 stripped the marker on the HEADER path I added in v126,
+which accounts for ~224. The remaining 3,000 come from the IN-ROW identity
+column (`iss = cand`, lib-4i ~755) — `Fidelity**` with the >5%-of-plan marker
+mid-line, where the end-of-line strip never reaches — and that path predates
+v126 by sixty versions.
+
+**So the earlier entry ("my v126 header path leaks the party-in-interest
+marker: 3,224 rows / 446 plans / 1,015,514 participants") over-attributed by
+about 13x.** v126 contributed ~224; the rest has been in the store since v67.
+The 3,224 was a true count of the CONDITION, and I read it as a count of what
+my change had done without measuring the pre-v126 store for the same thing.
+
+- **Change:** the strip moves to the row PUSH site, covering both paths.
+  Gate green. **Deliberately no version bump**: `app.js` already strips the
+  marker for display and for the ticker lookup, so readers see clean names
+  today and a re-parse would buy the store hygiene only. It rides the next real
+  bump. Committed `[skip ci]` behind #331.
+- **Prevention:** before attributing a defect to a change, measure the store
+  from BEFORE the change for the same shape. The v125 impact measurement did
+  exactly that an hour earlier and found "one plan"; this one skipped it and
+  found "3,224" for a change responsible for 224.
