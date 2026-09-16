@@ -9535,3 +9535,52 @@ names like `Fidelity Adv Total Bond Z Fd`, which the old guard's spelled-out
 `advisor` test let through. **A negative result only carries information if the
 case tested is in the population the claim is about** — the same error shape as
 the recordkeeper sampling frame, at one-case scale.
+
+---
+
+## 2026-09-16 — the per-cycle random draw, run 2: value-in-name (small), and a 400x over-count caught by its control
+
+Second run of the standing per-cycle draw from PUBLISHED lineups (seed
+20260916, 25 plans). Three shapes worth naming; only one is new and it is
+small, which is itself the useful result — the first draw's three classes were
+not a sign that every draw finds ~1M participants.
+
+**THE NEW ONE: the row's own value glued onto its name.** Powers Of Arkansas
+publishes 33 rows named `MYCOMPASS AMERICAN FUNDS 2030 FUND R 2459953`, where
+`2459953` is the row's value, unformatted. David Peyser Sportswear does the
+same across its whole menu — `FIDELITY 500 INDEX FUND 1976786`,
+`VANGRD MID-CAP INDEX FUND ADM 1427647`. The fund name underneath is perfectly
+good; a column has bled into it.
+
+Invisible to every shipped check, for a reason worth stating: **the value is
+RIGHT, so every arithmetic test passes** (`audit-overshoot` included — these
+plans sit at ratio 0.97-1.00), and the name is in no vocabulary. It also
+silently blocks ticker and expense-ratio resolution for every affected row,
+which is the gap measured yesterday compounding itself.
+
+**SIZE: 217 rows / 13 plans / 3,029 participants / $0.21B.** Recorded, not
+fixed — too small to justify a `PARSER_VERSION` bump on its own; it belongs in
+the next bump alongside the wrapped-fragment work.
+
+**AND THE METHOD RESULT, which is worth more than the defect.** My first
+predicate — "the name ends in a run of 4+ digits" — returned **87,382 rows
+across 13,348 plans and 26,974,880 participants**. That is 400x the truth. The
+control was one line: *are those trailing digits actually equal to the row's
+own value?* **217 of 87,382, or 0.2%.** The other 99.8% are legitimate — target
+date vintages (`T. Rowe Price Retirement 2035`), maturity dates
+(`and maturity dates ranging from 1/14/2025-12/16/2039`), annuity contract
+numbers (`Group Annuity Contract #GA-31515`).
+
+This is the **sixth** instance of counting a condition instead of an outcome in
+this project, and the **second caught inside the cycle that produced it** rather
+than in a later correction. The rule earns its keep: 26.9M participants is a
+number that would have been believed, quoted, and prioritised against.
+
+**Two shapes seen in the same draw that are NOT new**, noted so the next draw
+does not rediscover them: `John Hancock Life Insurance Company` at 10.6% of
+Fidelity Ban Corporation (the provider-house-name-as-holding shape this file
+already names as spanning three buckets), and `Exchange-Traded Funds` at 33.6%
+of Better Health Group — an asset-class label winning a region, the shape
+recorded on 2026-09-11 as `GENERIC_TYPE_NAME` covering vehicles but not
+classes. Both under the 1.15x overshoot floor and under the 90% dominant-row
+floor, as expected.
