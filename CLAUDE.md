@@ -623,11 +623,21 @@ don't confuse them). Frontend: python http.server + Playwright at
 /opt/pw-browsers/chromium; verify TK page, tabs, filters, deep links
 (#plan=EIN|PN|TICKER).
 
-## Current state (2026-09-11)
+## Current state (2026-09-16)
 
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
-  full-form** filers; 68,767 parse-status entries. **Parser v123, OCR v8.**
+  full-form** filers and 43,523 short-form; 68,767 parse-status entries.
+  **Parser v124, OCR v8.**
+  **Every figure on this line was re-verified from the store 2026-09-16** —
+  `PARSER_VERSION` exported by `lib-4i` is 124 and `pv124` covers 68,689 acks
+  (99.9%), the tail being pv106 18, pv123 10, pv98 10; `ov8` covers 68,764.
+  The line had said **v123 for at least four mirrors while every mirror gate in
+  that window printed "dominant pv 124"** — the version number in the first
+  bullet a new session reads, wrong, next to a date that made it look fresh.
+  Nothing downstream was affected (no session acted on it), but it is exactly
+  the copying-a-line-forward hazard this file warns about elsewhere, aimed at
+  the file's own header. **Re-derive this line rather than editing the date.**
 - **LIVE on main: `b377afb6` — MIRRORED 2026-09-16 02:1xZ.** Gate +0/-0, pv 124
   at 99.9%, HIGH at the baseline of 4. Adds `tkShare` to the accuracy trail:
   **20.38% of published holding rows resolve to a fund**, so the other ~80%
