@@ -9584,3 +9584,86 @@ of Better Health Group — an asset-class label winning a region, the shape
 recorded on 2026-09-11 as `GENERIC_TYPE_NAME` covering vehicles but not
 classes. Both under the 1.15x overshoot floor and under the 90% dominant-row
 floor, as expected.
+
+---
+
+## 2026-09-16 — Macy's publishes a match-formula sentence as a $1.177B holding; and three over-matching predicates in one night
+
+### The confirmed defect
+
+**Macy's, Inc. PN 013 — 163,125 participants, $4.64B.** Its published ten-row
+"menu":
+
+| share | value | row name |
+|---|---|---|
+| 34.5% | $1,643,729,000 | `Target date funds` |
+| **24.7%** | **$1,177,000,000** | **`savings and 50% on the next 5% of basic savings. Forfeited nonvested accounts of participa`** |
+| 21.2% | $1,010,434,000 | `Domestic equities` |
+| 12.6% | $598,941,000 | `Insurance contracts at contract value` |
+| 0.0% | $2,022,000 | `category` |
+
+The 24.7% row is **narrative prose from the audit notes — a match-formula
+sentence, beginning mid-clause and ending mid-word** — carrying $1.177 billion.
+The page is an asset-class aggregation table read as the schedule, served from
+a **2023 prior-year fallback** because the newest copy has no readable
+schedule.
+
+Nothing catches it. Ratio is **1.03**, so `audit-overshoot` is silent and every
+identity check passes; `category` and a truncated sentence are in no
+vocabulary, so `audit-generic-names` and `audit-dominant-row` are silent too.
+This is the fourth distinct way the name-list approach has been beaten, and the
+second where the arithmetic is innocent.
+
+**A second, different shape found beside it: UnitedHealth Group (262,812
+participants) publishes fund names with METADATA GLUED ON** —
+`AMERICAN INVESTMENT CO. OF AMERICA F2 0.15% USADDRESS 3500 WISEMAN BLVD`,
+`GREEN CENTURY BALANCED 0.40% USADDRESS 114 STATE ST., STE. 200 BOSTON MA`.
+The fund underneath is right; an address column and the filing's own expense
+ratio have bled into the name. Also blocks ticker resolution.
+
+Both are recorded, neither is sized — see below for why.
+
+### THE METHOD RESULT, which is the larger finding: three predicates, three over-matches, one night
+
+Every sizing attempt this cycle over-matched, and **the members list caught all
+three before any number was published**:
+
+1. **value-in-name** (previous cycle): "name ends in 4+ digits" said 87,382
+   rows / 26.9M participants. The control — *are those digits the row's own
+   value?* — gave **217 / 3,029**. 400x.
+2. **asset-class labels**: an anchored asset-class regex said 8,172 rows, of
+   which 7,333 were "missed by the shipped predicate". Reading the top labels
+   killed it: `Mid Cap Index Fund` (2,185x), `Small Cap Index Fund` (1,919x),
+   `International Index Fund` (879x) are **legitimate white-label CIT options**
+   that recordkeepers name exactly that way. Real menu entries, not defects.
+3. **narrative prose**: a length + lowercase + punctuation test said 3,651 rows
+   / 2,690 plans / **8,103,987 participants**. Reading them: UnitedHealth's are
+   real funds with address metadata appended, and Tenet's
+   (`MFB Coltv Daily 1-5 Yr Cr Bd ; 2.385%; CUSIP: 786993972`) are legitimate
+   collective-trust holdings carrying a rate and a CUSIP. **Macy's is the only
+   confirmed prose case in the top sixteen by participants.**
+
+So **8.1M participants must not be quoted**, nor 7,333, nor 87,382. What is
+confirmed is Macy's, UnitedHealth, and the earlier 217.
+
+**The prevention, and it is a sharpening of a rule already on the books.** This
+file says "count the OUTCOME, never the condition" and lists five prior
+instances. Three more in one night says the rule needs an operational form,
+because the error is not carelessness — each predicate looked reasonable when
+written:
+
+> **Print the members before the count, every time, and make the printing part
+> of the script rather than a follow-up.** All three of tonight's scripts
+> printed their top members in the same run that produced the total. That is
+> the only reason none of the three numbers reached a commit message. A sizing
+> script that emits a total without a readable sample of what it counted is not
+> finished.
+
+And the corollary, visible in #2: **a predicate built to find a defect will
+also match the correct case that resembles it.** `Mid Cap Index Fund` is what a
+real white-label option is called AND what a lazy aggregation is called. No
+regex separates those; only the value share and the filing do.
+
+**Not fixed, not sized.** Macy's is one plan with a large readership and it is
+queued with the fabricated-holding family it belongs to. The honest state is:
+two confirmed cases named, zero population estimates survived.
