@@ -10702,3 +10702,48 @@ proven thin either — it was read from stored row names, never from filings.
 - **Prevention:** a claim that a filing "is that thin" is a claim about the
   PDF and must be made from the PDF. This one was made from stored row names
   and held for a week.
+
+## 2026-09-16 (owner: "find other companies with this alias issue") — two shapes, sized two ways, and GE Vernova is the second one
+
+The store cannot size renames — line 4 was never ingested — so this went to the
+filings and to a store-side lens, and separated two shapes the question mixes.
+
+**Shape 1 — SPONSOR RENAME, old name survives nowhere (Shiel Sexton).** Random
+sample of **60 full-form filings**, pages 1-2, line 4 read from the PDF (my
+first capture over-matched blank fields to template text — `4d PN`, `012` —
+and was re-filtered; every count below is from the corrected read):
+
+| | n of 60 |
+|---|---|
+| line 4 filled at all | **4 (6.7%)** |
+| true SPONSOR rename | **1** — Beyond New Horizons, LLC, formerly *National Aerospace Solutions, LLC* (1,471p) |
+| plan-name change only | 2 — Primary Care Partners, Form-A-Feed |
+| cosmetic ("Inc." added) | 1 — Intermountain Centers |
+
+**One hit in sixty licenses no universe number.** ~7% filled line 4 (rough CI
+2-16%) is the only rate worth stating; the rename share within it is the thing
+the next prep run must COUNT, and the ingestion is already queued (item 6).
+
+**Shape 2 — SPONSOR IS A LEGAL SHELL, brand lives in the plan name (GE
+Vernova).** GEV's plan is sponsored by **Ropcor, Inc.** (EIN 61-1399608 PN 004,
+33,134p). Its line 4 is blank and it is a first-year plan, so it is NOT a
+rename — it is a new plan whose legal sponsor is an entity nobody would type.
+"GE Vernova" already finds it because `matchesQuery` indexes `planName`; what
+the reader then SEES as the sponsor is "Ropcor, Inc." Sized from the store
+(plan name shares no token with the sponsor name AND the sponsor is a
+holding/bidco/intermediate entity): **301 plans / 307,583 participants** —
+National Mentor Holdings -> *Sevita* (41,694p), WP CityMD Bidco -> *Summit
+CityMD* (13,944), Atlas Copco USA Holdings -> *ACNA*, DK Crown Holdings ->
+*DraftKings*, Ambulnz Holdings -> *DocGo*. Outside the holding filter the same
+shape appears at TWDC Enterprises 18 Corp -> *Disney* (117,208p) and The
+Crawford Group -> *Enterprise Holdings* (98,663p). The unfiltered lens
+(6,146 plans) over-matches on my tokenizer — `Lowe'S` vs `LOWES`, `Walgreen`
+vs `WALGREENS` — and is not quoted.
+
+**So the two are different fixes.** Shape 1 needs the line-4 alias (queued).
+Shape 2 is a DISPLAY choice — the page could lead with the plan's brand when
+the sponsor is a shell — and is findable today; recorded, not queued, because
+"which name to show" is the owner's call.
+
+- **Prevention:** a rate from a 60-filing sample is stated with its n and its
+  width, and a 1-of-60 is reported as "one", not extrapolated.

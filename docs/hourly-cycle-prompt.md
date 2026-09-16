@@ -144,6 +144,11 @@ Order of business:
       -> Structure Man Holding is unfindable by its old name. Prep + sparse
       boot column + `matchesQuery`; confirm the headers and COUNT the renames
       in the first prep run. `docs/accuracy-log.md` 2026-09-16 (Shiel Sexton).
+      SIZED 2026-09-16 from 60 random filings: line 4 filled ~7% (4/60), one
+      true sponsor rename (Beyond New Horizons <- National Aerospace
+      Solutions). Distinct from the 301-plan / 307,583-ppl holding-entity
+      shape (Sevita, DraftKings, Disney, GE Vernova/Ropcor), which is
+      findable today and is a display question, not this item.
 
    **EVERY CYCLE, alongside the queue item: draw randomly from PUBLISHED
    lineups and read the rows.** Not from the worst bucket — that draw answers
