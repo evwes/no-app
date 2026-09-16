@@ -10048,3 +10048,69 @@ Fund` is not in the guard's vocabulary even spelled cleanly.
   truncation hypothesis passed on 2026-09-12. **Add the control in the same
   run that produces the number, exactly as printing the members is now
   standard for a non-zero.**
+
+## 2026-09-16 (cycle 14:1xZ) — a store-only detector for the wrapped-merge class DOES NOT EXIST by name structure. Recorded so nobody builds an audit on it.
+
+Follow-through on the Walmart finding rather than a fresh draw. The recorded
+floor for the wrapped-continuation class (149 plans / 753,693 ppl) comes from an
+anchored regex requiring the row name to BEGIN with a generic noun, which is why
+it missed Walmart's `Lendable Fund` ($3.55B, 1.97M participants). A vocabulary
+list has now been beaten by a fragment, by form junk, by a bare noun and by
+Walmart, so the attempt here was to replace the list with STRUCTURE.
+
+**The hypothesis:** when a filing wraps a long name and the parser keeps the
+continuation line, the orphaned tail is a word-aligned SUFFIX of its siblings,
+because the wrap splits a family whose tail is shared. Walmart fits exactly —
+`Lendable Fund` is a suffix of `Russell 1000 Index Non-Lendable Fund` and two
+others. So does Intermountain (`Trust`, `Class`, `Institutional Class`).
+
+**It returned 536 rows / 493 plans / 3,104,349 participants / $20.4B, and the
+largest new case killed it.** Board of Trustees (478,185 participants) publishes
+`Equity Index Fund F` at **39.9% of its menu, $7,654,627,039** — flagged because
+`Mid Capitalization Equity Index Fund F` and `EAFE Equity Index Fund F` sit
+beside it. Opening the filing: it is **one BlackRock row at exactly
+$7,654,627,039**, correct as filed. BlackRock names its S&P 500 CIT that way.
+
+**So the premise is false: FUND FAMILIES ARE NAMED HIERARCHICALLY, and
+suffix-sharing is the normal shape of a family rather than a defect signature.**
+`Equity Index Fund F` / `Mid Capitalization Equity Index Fund F` is what a
+correct menu looks like. Do not quote 536 / 3.1M / $20.4B as anything.
+
+**A narrower discriminator survives the controls but is still not deployable.**
+Walmart's fragment splits a HYPHENATED COMPOUND — the filing prints
+`MSCI ACWI ex-U.S. IMI Index Non-` / `Lendable Fund`, so in the sibling's raw
+text the character before the fragment is a hyphen, which is not a name
+boundary at all, whereas ` Equity Index Fund F` begins at a true word boundary.
+Requiring the sibling to end `-<fragment>` gives **52 rows / 52 plans /
+2,079,362 participants / $4.31B**, and both controls pass: it DROPS the
+Teamsters false positive and KEEPS Walmart.
+
+But reading every member — which is now standard and caught this too — shows a
+second false-positive family the controls did not cover: **`Benefit Responsive`
+beside `Non-Benefit Responsive`** is a genuine PAIR of accounting categories in
+a stable-value disclosure, not a split name, and it accounts for Yale (24,635p,
+45.0%, $393M), Skidmore, Siena, Brooklyn Hospital, Research Foundation and
+Philadelphia Museum. `Mar-Jac`'s `Income Fund` beside `Vanguard Equity-Income
+Fund` is the same error — a hyphen inside a legitimate compound. Precision is
+roughly half by row count; Walmart is 1.97M of the 2.08M participants.
+
+Genuine fragments it does find beyond Walmart: Great Outdoors `Class II`
+(State Street `... SL Series Fund – Class II`), Samuel Son `Class IV`, Irvine
+`Lending Tier 3`, Markel `Institutional Class`, H&M `Admiral Shares`, Titan
+`Titan International, Inc.` — all small.
+
+- **Change:** none, and deliberately none. **A ~50%-precision predicate must not
+  become an audit**; `audit-generic-names` and `audit-dominant-row` are trusted
+  because they are near-exact, and a noisy third guard would drown the four
+  baseline HIGHs exactly as the swaps-degraded work warned.
+- **What this is worth:** the 52-row list is a CANDIDATE list for the parser
+  bump already queued, not a measurement. And the negative result is the real
+  output — the next person to reach for "find the merges by name structure"
+  now has the disproof and a $7.65B worked example instead of spending a cycle
+  rediscovering it.
+- **Prevention:** the hypothesis was tested against the largest case it found
+  rather than the cases it was built from. Walmart and Intermountain were
+  already known true, so they could only confirm; the Teamsters row was the
+  only member that could falsify, and it did. **Verify a new detector on its
+  biggest NOVEL hit, not on the specimens that inspired it** — a detector built
+  from two examples will always retrieve those two.
