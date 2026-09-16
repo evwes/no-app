@@ -9828,3 +9828,145 @@ And the sharper form: **a threshold is part of a number.** `720` and `670` are
 the same measurement at `>=1` and `>=3`. Quoting either without its threshold
 makes two documents disagree about one fact — which is indistinguishable, later,
 from one of them being wrong.
+
+## 2026-09-16 (cycle 12:2xZ) — the draw that reads what READERS see: Walmart's menu merges $3.55B of three funds, UPMC publishes a list of hospitals
+
+**Frame first, because it is the reason this cycle found anything.** The
+per-cycle random draw from published lineups had been run three times, always
+UNIFORM OVER PLANS. 52k of the 59k published lineups belong to small plans, so
+a uniform draw mostly reads plans almost nobody is in. This draw was
+**PARTICIPANT-WEIGHTED** — selection probability proportional to participant
+count, answering "what does a randomly chosen READER see on their own plan's
+page". 24 plans drawn, deterministic seed.
+
+The rate it produces is a rate **per participant** and must never be quoted as
+a rate per plan. It deliberately oversamples large plans; that is the design,
+not a flaw. Uniform draws found 3 classes in 40 plans, 1 in 40, and Macy's in
+40. This one found **two verified defects in the first four plans it drew**,
+which is what happens when the frame stops excluding the population of
+interest — the same lesson the recordkeeper block records, arrived at from the
+opposite direction.
+
+### 1. Walmart — 1,970,230 participants, $50.79B. Three funds merged into one row.
+
+The largest plan in the country publishes a holding named **`Lendable Fund` at
+$3,547,236,088, 7.5% of the menu.** No such fund exists. The filing wraps three
+BlackRock names over two lines each and the parser takes the second line:
+
+```
+Intermediate Government Bond Index Non-
+Lendable Fund                              **     423,138,593
+Long Term Government Bond Index Non-
+Lendable Fund                              **     267,132,531
+MSCI ACWI ex-U.S. IMI Index Non-
+Lendable Fund                              **   2,856,964,964
+```
+
+`423,138,593 + 267,132,531 + 2,856,964,964 = 3,547,236,088` — **the published
+row, to the dollar.** A $2.86B international equity index fund is the bulk of
+it, and it is invisible: a reader looking for their international allocation
+finds a row that names no asset class at all.
+
+Same filing, same mechanism, a second row: **`US) Value Equity Fund` at
+$1,825,210,352** is `The Collective LSV International (ACWI EX US) Value Equity
+Fund` truncated to its continuation line. Not a merge — one real fund wearing a
+name that begins with a closing parenthesis.
+
+Ratio 0.93, 39 rows, every guard silent. This is the v100 Amgen class and the
+Owens Corning `Fund, Class S` class in a third vocabulary.
+
+**AND IT IS NOT IN THE RECORDED FLOOR.** Project memory sizes the wrapped-
+fragment class at "149 plans / 753,693 participants / $21.89B" and labels it a
+FLOOR because the anchored predicate only matched names BEGINNING with a
+generic noun (`fund`, `trust`, `portfolio`...). `Lendable Fund` begins with
+"Lendable". So the floor understates by **at least 1.97M participants — more
+than twice the whole recorded figure — in a single plan.** The predicate was
+already labelled a floor; what is new is knowing how far below the truth it
+sits.
+
+### 2. UPMC — 112,002 participants, $4.90B. The menu is a roster of hospitals.
+
+The published lineup's top row is **`University of Pittsburgh Physicians` at
+34.7% / $1,471,167,864**, followed by `UPMC Presbyterian Shadyside`, `UPMC
+Health Plan, Inc.`, `Children's Hospital of Pittsburgh` — 41 of 80 rows are
+UPMC subsidiaries carrying 66% of the money. 112,002 people are shown a list of
+their employer's affiliates presented as the funds they can invest in.
+
+The filing names the table itself:
+
+```
+            Multiple-Employer Plan Participating Employer Information
+                 UPMC 401(a) Retirement Savings Plan EIN 25-1423657
+                                    Plan Number: 335
+                                        REGISTRATION
+NAME                                        _NUMBER     PERCENT    TOTAL BALANCE
+```
+
+The column the parser read as a share count is an **EIN** (`232919472` =
+23-2919472). The column it read as a value is each employer's allocated
+balance.
+
+**CAUSE NAMED, and it is not a missing heading — the ratio guard PREFERRED the
+wrong table.** The same PDF contains a real Schedule H 4i schedule under the
+statutory header (`Identity of Issue | Description | Cost | Value`), 10 TIAA/
+CREF rows, **`Total investments $54,532,701`**. Against $4.90B of plan assets
+that is a ratio of **0.011** — rejected out of hand. The employer roster sums
+to 0.87 of plan assets and was accepted. The guard that exists to reject
+fabrications selected one, because the honest schedule covers a legacy annuity
+slice and the fabricated one covers the whole plan by construction: a
+percentage-allocation table ALWAYS sums to ~100% of the plan.
+
+That generalises past this filing: **a ratio near 1.0 is evidence for a menu
+only among tables that are candidate menus.** Anything that apportions the
+plan — an employer roster, a fair-value hierarchy note, a statement of net
+assets — scores 1.0 for free, which is why three of the five biggest
+fabrication classes on record are apportionment tables.
+
+Class size, measured two ways and honestly small: a predicate requiring >=10
+entity-suffix rows carrying >=50% of the money returns 18 plans, and **reading
+all 18 leaves 2 genuine rosters** — UPMC and Unique Staff Leasing I (906p). The
+other 16 are the description-column class below. 112,002 of the ~113k
+participants are UPMC alone.
+
+### 3. DocuSign watermark as a holding — 27 plans / 51,497 participants / $3.24B
+
+`Docusign Envelope ID: 6EE93268-59E9-4A93-AD0F-DE811E` published as a fund on
+Mount Olivet Cemetery's page at 4.0% / $590k. The e-signature watermark runs
+down the page margin and lands in the description column. Largest by readers:
+Plan Fiduciary Services 12,711p, NBCUniversal 11,502p, Southeastern Freight
+10,084p. Most carry $0 or negligible value, so the harm is a junk row rather
+than misstated money — but it is document furniture presented as an investment,
+the same family as Kraft Heinz's `le 0 0 1f` checkbox coordinates. The
+predicate is clean: every one of the 27 is a real watermark, no members read
+false.
+
+### 4. The 4i description column welded onto the name — and why the big number is worthless
+
+Column (c) of the 4i schedule legitimately reads "Registered investment
+company", "Pooled separate account", "Common/collective trust". Where the
+columns do not separate it lands on the end of the name: `Fidelity 500 Index
+Fund Registered Investment Company`, `Vanguard Target Retirement 2045,
+Registered Investment Company`.
+
+**Condition: 7,843 rows across 2,019 plans.** That is the number this entry
+would have led with a week ago.
+
+**Outcome: 26 rows / 13 plans / 6,943 participants.** Those are the rows that
+show a blank fee cell today and resolve to a ticker once the suffix is
+stripped — the only thing a fix would actually change. `fund-er.js` already
+tolerates the suffix in nearly every case, and where it does not, the fund is
+usually absent from the table anyway, which is the ~80% gap the Pratt
+screenshot opened and not this defect at all.
+
+So this class is **cosmetic, and recorded as such.** 7,843 must never be quoted.
+
+- **Change:** none shipped. Items 1-3 need a `PARSER_VERSION` bump plus a full
+  re-parse, so they are the owner's call under the standing rule; queued in
+  `docs/hourly-cycle-prompt.md` with these sizes. Item 4 is recorded and not
+  worth a fix.
+- **Prevention:** the per-cycle draw alternates frames from here — uniform over
+  plans answers "what are we getting wrong", participant-weighted answers "what
+  are readers being shown". Three uniform draws never surfaced Walmart or UPMC,
+  and neither is subtle; they were simply never in the frame. **A sampling
+  frame is a claim about which population matters, and running only one of them
+  for three cycles asserted that claim without stating it.**

@@ -1294,6 +1294,37 @@ don't confuse them). Frontend: python http.server + Playwright at
   $287.1M, `Institutional Class` $221.8M, **$1.35B of one plan** — and the
   anchored regex caught only the two beginning with a generic noun. Do not
   quote 149 or $21.89B as a total.
+  **HOW FAR BELOW, MEASURED 2026-09-16: at least 1.97M participants in ONE
+  PLAN — more than twice the whole recorded figure.** WALMART, the largest
+  plan in the country (1,970,230 participants, $50.79B), publishes
+  **`Lendable Fund` at $3,547,236,088**, which is the exact sum of three
+  wrapped BlackRock names — `Intermediate Government Bond Index Non-` +
+  `Long Term Government Bond Index Non-` + `MSCI ACWI ex-U.S. IMI Index Non-`
+  ($423,138,593 / $267,132,531 / **$2,856,964,964**), verified to the dollar
+  against the filing. A $2.86B international equity index fund is invisible to
+  every Walmart participant looking for their international allocation. The
+  same filing publishes `US) Value Equity Fund` at $1.83B — `The Collective
+  LSV International (ACWI EX US) Value Equity Fund` truncated to its
+  continuation line. Ratio 0.93, 39 rows, every guard silent. Neither is in
+  the 149 because the predicate requires the name to BEGIN with a generic
+  noun and these begin with "Lendable" and "US)". `docs/accuracy-log.md`
+  2026-09-16 cycle 12:2xZ.
+  **THIRD SHAPE, and it inverts what the ratio guard is for: THE FILING'S
+  PARTICIPATING-EMPLOYER ROSTER AS THE MENU.** UPMC (112,002 participants,
+  $4.90B) publishes `University of Pittsburgh Physicians` at 34.7% /
+  $1,471,167,864 and 41 of 80 rows are UPMC subsidiaries — the table is
+  headed `Multiple-Employer Plan Participating Employer Information` and its
+  columns are NAME / REGISTRATION NUMBER / PERCENT / TOTAL BALANCE, so the
+  "share count" is an EIN. **The cause is not a missing heading: the real 4i
+  schedule sits in the same PDF under the statutory header and totals
+  $54,532,701 — ratio 0.011 against plan assets, rejected — while the roster
+  sums to 0.87 and was accepted.** Generalise it: **a ratio near 1.0 is
+  evidence for a menu only among tables that are CANDIDATE menus.** Anything
+  that apportions the plan — an employer roster, a fair-value hierarchy note,
+  a statement of net assets — scores 1.0 by construction, which is why three
+  of the five largest fabrication classes on record are apportionment tables.
+  Class size is genuinely small (2 plans; the other 16 candidates were the
+  description-column class), but 112,002 readers sit in one of them.
   **Second shape, also live: the participant-LOAN description column as a
   holding name** — `rates ranged from 3.25 percent to 8.50 percent during 2024`
   carrying the loans' value, **283 plans / 534,790 participants / $0.44B**. This

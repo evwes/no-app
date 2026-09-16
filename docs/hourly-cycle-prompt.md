@@ -96,16 +96,36 @@ Order of business:
    - `docs/accuracy-log.md` → the newest entries are the open defects.
    - `docs/coverage-history.jsonl` → `overshoot` must FALL from 471.
 
-   **Open queue as of 2026-09-15, all owner-gated except where noted:**
+   **Open queue as of 2026-09-16, all owner-gated except where noted:**
    1. Fabricated/unusable published holdings, one `PARSER_VERSION` bump:
-      wrapped continuation fragments (Owens Corning `Fund, Class S`),
+      **WALMART — 1,970,230 participants, the largest plan in the country,
+      publishes `Lendable Fund` at $3,547,236,088 = the exact sum of three
+      wrapped BlackRock names, one of them a $2.86B international index fund;
+      plus `US) Value Equity Fund` at $1.83B** (`docs/accuracy-log.md`
+      2026-09-16 cycle 12:2xZ). Wrapped continuation fragments generally
+      (Owens Corning `Fund, Class S`; the recorded floor of 149 plans /
+      753,693 ppl understates by >1.97M in Walmart alone, because the
+      anchored predicate only matches names BEGINNING with a generic noun).
+      **UPMC — 112,002 participants: the whole menu is the filing's
+      `Multiple-Employer Plan Participating Employer Information` roster,
+      hospitals and EINs, because the real 4i in the same PDF is a $54.5M
+      legacy TIAA slice at ratio 0.011 and the roster scores 0.87.** Plus
       loan-rate text as a name (283 plans), the 471 overshoots (PepsiCo
       `Trust` at 50% of its menu), Form 5500 ID fields as holdings (174
       plans — `JUNK_NAME_RE` matches 0 of them), duplicate rows (160),
+      **DocuSign watermarks as holdings (27 plans / 51,497 ppl)**,
       and the CODE-COLUMN class (**720 plans / 687,851 ppl** at >=1 such row,
       **670 / 621,794** at >=3 — both correct, the threshold is part of the
       number; `docs/accuracy-log.md` 2026-09-16, publishing
       `1VTTHX` where the same PDF prints a legend giving the fund name).
+
+      **The design note this bump should carry, from UPMC:** a ratio near 1.0
+      is evidence for a menu only among tables that are CANDIDATE menus. Any
+      table that apportions the plan — an employer roster, a fair-value
+      hierarchy note, a statement of net assets — scores 1.0 for free, and
+      three of the five largest fabrication classes on record are
+      apportionment tables. The guard meant to reject fabrications SELECTED
+      one here.
    2. Recordkeeper wrong name: 1,509 plans / 1.48M ppl. Prefer service
       codes 15/64, then the line-1b platform or Schedule A carrier, then
       top-fee; never publish a provider coded 10 or 29.
@@ -121,6 +141,18 @@ Order of business:
    wrong". Its first run (2026-09-15, 40 plans) found three unnamed classes
    totalling ~1.1M participants; 36 of 40 were clean, so expect a low rate and
    look anyway.
+
+   **ALTERNATE THE FRAME, and say which one you used (2026-09-16).** The first
+   three draws were all UNIFORM OVER PLANS. 52k of the 59k published lineups
+   are small plans, so a uniform draw mostly reads plans almost nobody is in.
+   A PARTICIPANT-WEIGHTED draw — selection proportional to participant count —
+   answers "what does a randomly chosen READER see", and its first run found
+   two verified defects in its first four plans: Walmart's $3.55B merged row
+   and UPMC's roster-as-a-menu. Neither is subtle; they were simply never in
+   the frame. A rate from a weighted draw is a rate PER PARTICIPANT and must
+   never be quoted as a rate per plan. **A sampling frame is a claim about
+   which population matters; running one frame three times asserts that claim
+   without stating it.**
 
 Accuracy protocol: SIZE before fixing, RE-SIZE after (v101 was projected at 65%, delivered 2.5% in-bucket). INSTRUMENT before believing a cause — `WAMPO_TRACE=rows|cands node scripts/trace-filing.mjs <ack>` prints the parser's working. A measuring script is code and earns the same suspicion (size-features.mjs reported 30% where the truth was 7%; gap-verify's table detector fired on Statements of Changes until it required rows that NAME PRODUCTS). Prove a new guard FIRES with a negative control. Read stores through scripts/lib-schema.mjs. Parser changes: parser-gate green + a specimen + a decoy + an entry in docs/defect-specimens.json. Frontend changes: smoke-test.mjs AND map-test.mjs, bump ?v= stamps together. Log every accuracy defect permanently in docs/accuracy-log.md.
 
