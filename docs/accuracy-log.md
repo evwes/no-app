@@ -9728,3 +9728,47 @@ materially different defect rates being summed into one number that moves for
 either reason. That is a change to shipped code and is **queued, not made** —
 it belongs with the fabricated-holding version bump, and the confound above
 means the threshold needs thought rather than a quick guard.
+
+---
+
+## 2026-09-16 (cycle 08:0xZ) — two questions asked and CLOSED IN THE NEGATIVE
+
+Both are recorded because a question answered "no" is as worth writing down as
+a defect, and is far likelier to be re-asked. Neither produced a change.
+
+### 1. Is the prior-year fallback DISCLOSED to readers? Yes.
+
+The previous cycle found fallback-served lineups are ~20x likelier to be
+generic-named, which raises the obvious follow-up: does a reader of Macy's page
+know the menu is from 2023? **It does.** `app.js` renders `lu.source` verbatim
+as the fund table's sub-line, and Macy's stored source reads *"Schedule H line
+4i attachment from the plan's 2023 filing — the newest filing's public copy has
+no readable schedule."*
+
+One boundary noted rather than tested: the `lu.fromTrust` branch REPLACES that
+sub-line with the trust sentence, so a trust-served lineup shows no fallback
+disclosure. That is probably correct — trust holdings come from the trust's own
+filing, so the plan's `fb` would not apply — but it is reasoning, not a
+measurement, and is left as such.
+
+### 2. Filings that STATE the ticker — worth harvesting? No: 1,305 participants.
+
+Abarca Health FL publishes rows named
+`in Vanguard Target Retirement 2050 Inv Ticker: Vfifx` — the filing names the
+ticker outright and we glue it into the row name instead of using it. With ~80%
+of published rows carrying no fund identity, "harvest the tickers the filings
+already state" is an appealing idea.
+
+**Sized before building: 41 rows across 4 plans; 31 unresolved; 1,305
+participants.** The control mattered — requiring the filing to LABEL it
+(`Ticker:`, `Symbol:`) rather than accepting any 4-5 letter uppercase token,
+because `INDEX`, `TRUST` and `CLASS` all pass a bare shape test.
+
+**Not pursued**, and recorded so it is not rediscovered: the appeal of this idea
+is out of all proportion to its size, which is exactly the shape "size the class
+before doing the work" exists to catch.
+
+One thing the members did show: Para La Naturaleza's names are TRUNCATED —
+`Fund Class R2 - Ticker: RWIBX`, `- Ticker: FDRXX` — the fund name itself cut
+off with only the class and ticker surviving. A name-truncation defect, 216
+participants. Recorded, not sized further.
