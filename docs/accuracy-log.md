@@ -11066,3 +11066,46 @@ the store or the run's own output:
   Main-vs-branch evidence for that mirror is already in hand: 0 acks and 0
   plans on main the branch lacks, `plans` array byte-identical, main newer
   on 0 acks, and the 82 confident-on-main-not-branch are the refusals.
+
+## 2026-09-16 (run #335 verdict) — v129 + former names landed: TJX confident from its own filing, 5,851 plans carry an alias, HIGH back to 4
+
+Run #335 (id 35156383497, `85ceb6ee`, dispatched 22:11Z) concluded success
+at 23:06Z, 55 minutes, committed `0af9c8f2`.
+
+- **pv 129 covers 68,675 of 68,767 (99.87%)**, same tail as before.
+- **Coverage: confident 60,007 → 60,008 (+1), lineups 59,673 → 59,674 (+1)
+  — TJX, exactly.** Its status is now `{pv:129, c:1, f:1}` with no `fb`:
+  311,623 participants see the 2024 menu instead of the 2023 one. `high`
+  25 → **4**, the baseline, because this run's own confidence diff has no
+  losses — the `reparse-loss` HIGHs of #334 cleared as predicted.
+  `overshoot` 446 / 575,994 unchanged. Fallback-served plans 1,097, of
+  which trust-linked **6** — the residue did not regrow.
+- **The former-name aliases are in the data.** `plans-all` has the `alias`
+  field, `plans-list.json` has the `al` column, and **5,851 plans carry an
+  alias** — Structure Man Holding's row reads *"Shiel Sexton Company, Inc.
+  / Shiel Sexton Company, Inc. Employee Stock Ownership And 401(K) Plan"*.
+  Read off the store, which is stronger evidence than the prep log line
+  the entry above said to read (the line exists for the case where the
+  store cannot be read). First members printed by the sizing script are
+  the two shapes the design expected: line-4 plan names (Kaiser Foundation
+  Health Plan <- *Kaiser Permanente Tax Sheltered Annuity Plan III*, GE <-
+  *GE Retirement Savings Plan*) and older-filing sponsor names (Baxter
+  International <- *Baxter Healthcare Inc.*, CRH <- *CRH Americas, Inc.*).
+  Both are "previously filed as" facts, which is what the page says.
+  **Not measured yet: how many of the 5,851 are the trivial plan-name shape
+  versus a true sponsor rename** — the line-4 sponsor / line-4 plan /
+  older-filing split is in the prep log and should be read before quoting
+  5,851 as "renamed sponsors". It is a count of aliases, not of renames.
+- **Verified on the real store, no patching:** smoke test green; the
+  alias control's "unpatched" case now FINDS Structure Man for "shiel
+  sexton" — the negative control is no longer negative, which is the
+  outcome, and the report line failed only on the comma in *"Shiel Sexton
+  Company, Inc."* versus the control's `Shiel Sexton Company Inc`.
+- **Mirror:** waits only for main's scheduled run #336 (in flight at
+  23:0xZ) to finish, since a force-mirror during a run about to commit to
+  main is the unsafe case this file already names. Evidence for the git
+  override: 0 acks / 0 plans on main the branch lacks, main newer on 0
+  acks; the `plans` array is no longer byte-identical only because the
+  branch's carries the 38th field, `alias`. The data gate will refuse over
+  the 82 v128 losses; `--force-data` is justified by the #334
+  reconciliation above.
