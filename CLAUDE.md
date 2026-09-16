@@ -628,7 +628,21 @@ don't confuse them). Frontend: python http.server + Playwright at
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
   full-form** filers; 68,767 parse-status entries. **Parser v123, OCR v8.**
-- **LIVE on main: `8785bfed`, the COMPLETE v124 store plus the fund-name
+- **LIVE on main: `b377afb6` — MIRRORED 2026-09-16 02:1xZ.** Gate +0/-0, pv 124
+  at 99.9%, HIGH at the baseline of 4. Adds `tkShare` to the accuracy trail:
+  **20.38% of published holding rows resolve to a fund**, so the other ~80%
+  show a BLANK fee cell (`fund-er.js` is the only ER source). Sampled 1-in-20
+  and DETERMINISTIC, not random — run-to-run comparison is the point, and a
+  fresh random draw each run would add noise to the signal being watched;
+  validated at 20.38% of 85,277 against 20.41% over all 1,705,524, and it adds
+  ~3s to a 23s audit. `ticker-sweep.mjs` computes the exact figure.
+  **MECHANISM WORTH KNOWING, learned here:** the change was pushed with
+  `[skip ci]` DURING run #309 and that run's own merge job executed it anyway —
+  because merge-4i checks out the LATEST branch state before running. So a
+  `[skip ci]` commit made mid-run is not deferred to the next run; it takes
+  effect in the current one's merge. Verified by reading run #309's own data
+  commit, which carries `tkShare: 20.38, tkSampled: 85277`.
+- **Previously: `8785bfed`, the COMPLETE v124 store plus the fund-name
   matching repair — MIRRORED 2026-09-15 23:1xZ.** Gate **+0 gained / -0 lost**,
   pv 124 at 99.9%, 78 fetch failures, reader failures 0. Carries wam's first
   item: identified holding rows 19.67% -> 20.41% (+12,716 rows, 7,103 plans /
