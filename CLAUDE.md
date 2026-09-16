@@ -638,7 +638,18 @@ don't confuse them). Frontend: python http.server + Playwright at
   Nothing downstream was affected (no session acted on it), but it is exactly
   the copying-a-line-forward hazard this file warns about elsewhere, aimed at
   the file's own header. **Re-derive this line rather than editing the date.**
-- **LIVE on main: `021bbbe1` — MIRRORED 2026-09-16 10:1xZ.** Gate +0/-0, pv 124
+- **LIVE on main: `a0bcf247` — MIRRORED 2026-09-16 12:3xZ.** Gate +0/-0
+  UNFORCED (main carried nothing the branch lacked), pv 124 at 99.9%, 78 fetch
+  failures, HIGH at the baseline of 4. Carries run #322's data plus the
+  Walmart/UPMC findings. Documentation only for readers — the two defects it
+  names need a `PARSER_VERSION` bump and are the owner's call.
+  **Earlier this hour, `5f1f3bbe` at 12:2xZ**, git check force-overridden on
+  evidence produced first: main's `11bc82c9` had a **byte-identical `plans`
+  array** (sole difference the `generated` timestamp), 0 acks and 0 plans the
+  branch lacked, pv differing on zero of 68,767, and its coverage line was a
+  duplicate of one the branch already had. As always `--force` covered the GIT
+  check alone; the data gate passed on its own.
+- **Previously: `021bbbe1` — MIRRORED 2026-09-16 10:1xZ.** Gate +0/-0, pv 124
   at 99.9%, HIGH at the baseline of 4. Documentation only again — no code or
   data change reached readers in this or the previous mirror.
   **The overnight record, so a later session can weigh it:** five cycles of
