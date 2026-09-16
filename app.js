@@ -1345,7 +1345,17 @@
        * "Western Asset"). Ticker matching sees issuer + name together, which
        * is what makes "Core Bond IS" resolvable at all; entries parsed
        * before v67 simply lack the field and behave as before. */
-      const info = tab === "menu" && !gicRow ? fundTickerInfo((f.iss ? f.iss + " " : "") + f.name, f.type) : null;
+      /* 2026-09-16: the issuer prefix cuts BOTH ways. It is what makes
+       * "Core Bond IS" resolvable — and it is what makes "Vanguard Total
+       * Stock Market Index Trust" UNresolvable when the identity column
+       * holds the trustee ("Empower Trust Company, LLC") rather than the
+       * house. Measured against the live store: 9,835 rows / 2,567 plans /
+       * 3.10M participants resolve on the bare name and fail with the
+       * prefix — blank fee cells since v67. Try issuer+name first (keeps
+       * every existing win), then the bare name. Strict superset. */
+      const info = tab === "menu" && !gicRow
+        ? (f.iss ? fundTickerInfo(f.iss.replace(/\*+/g, "").trim() + " " + f.name, f.type) : null) || fundTickerInfo(f.name, f.type)
+        : null;
       // employer stock IS a listed security: the plan's own ticker names it
       const stockRow = /company stock|employer (security|stock)/i.test((f.type || "") + " " + f.name);
       const tk = stockRow ? (plan.ticker || null) : (info ? info.tk : null);
@@ -1360,7 +1370,7 @@
       const shownType = f.type || (brokRow ? "Brokerage window" : "—");
       return `
       <tr${brokRow ? ` class="row-brokerage"` : ""}>
-        <td class="fund-name-col"><div class="fund-name">${f.iss ? `<span class="fund-issuer">${esc(f.iss)} · </span>` : ""}${esc(f.name)}</div>${tk ? `<div class="fund-ticker">${esc(tk)}${star ? "*" : ""}</div>` : ""}</td>
+        <td class="fund-name-col"><div class="fund-name">${f.iss ? `<span class="fund-issuer">${esc(f.iss.replace(/\*+/g, "").trim())} · </span>` : ""}${esc(f.name)}</div>${tk ? `<div class="fund-ticker">${esc(tk)}${star ? "*" : ""}</div>` : ""}</td>
         <td class="fund-type">${esc(shownType)}</td>
         <td class="num">${er != null ? er.toFixed(er < 0.1 ? 3 : 2) + "%" + (star ? "*" : "") : "—"}</td>
         <td class="num">${money(f.value / 1e6)}</td>

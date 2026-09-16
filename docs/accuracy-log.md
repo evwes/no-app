@@ -10527,3 +10527,52 @@ been evidence against the 335, not evidence the change did nothing.
   that fills **117,904** readers' fee cells. Six sizing predicates over-matched
   earlier today; this is the seventh case where the condition and the outcome
   differ by more than an order of magnitude.
+
+## 2026-09-16 (verification pass, v127 + frontend) — the issuer prefix has been blanking fee cells since v67, and v126 added a defect of its own
+
+A re-examination of today's work rather than a re-run — deterministic scripts
+give the same numbers whoever reads them; judgement is what a second reader can
+check. Four findings.
+
+**1. v125 changed exactly one plan.** Measured against the last complete v124
+store (`622c3540`): **1 plan left a prior-year fallback (US Foods), 0
+confidence gained, 0 lost, 0 ratios moved away from 1.0.** The "safe by
+construction" argument held, and the "units marker above the region head"
+framing implied a class that turned out to be one filing. Genentech's
+`thousands` flag also flipped (ratio 0.000 -> 1.15) and it stays suppressed by
+`trustPtr`, correctly — it is the unlinked Roche master-trust pointer.
+
+**2. My v126 header path leaks the party-in-interest marker.** The row parser
+strips a trailing `*` at end of line, but the header ends in `:`, so
+`Fidelity Management Trust Company*:` reached `iss` as `...Company*`. **3,224
+rows / 446 plans / 1,015,514 participants** carry `Fidelity**`, `Vanguard*` as
+the issuer. Not cosmetic: `Fidelity** 500 Index Fund` resolves nothing where
+`Fidelity 500 Index Fund` resolves FXAIX. Fixed in v127 (strip at the header
+branch; `curSection` keeps the raw text for the brokerage classifier).
+
+**3. The larger finding, and it predates v126: `app.js:1348` has prepended the
+issuer to the ticker lookup since v67, and on 9,835 rows / 2,567 plans /
+3,096,740 participants that prefix BREAKS a lookup the bare name would win.**
+Advocate Aurora (103,145 people): `Vanguard Total Stock Market Index Trust`
+resolves alone; prefixed with its TRUSTEE `Empower Trust Company, LLC` it does
+not. The prefix is also what makes `Core Bond IS` resolvable, so it cannot be
+removed — the fix is a FALLBACK: issuer+name first, then the bare name. Strict
+superset, one line, no re-parse. v126 added 71 rows / 74,969 participants to
+this set; the other ~9,760 have been blank fee cells for months. The display
+also strips the marker so `Fidelity**` never renders.
+
+**4. Verification state, honestly.** Parser gate green. Smoke test green.
+`map-test` failed in the sandbox on `ERR_CERT_AUTHORITY_INVALID` — the only
+external resources the page loads are Google Fonts, fetched through the
+sandbox's egress proxy whose CA Chromium does not trust; a control run on an
+untouched HEAD worktree was in flight at commit time, and CI (real CA) is the
+verdict that counts. The exact-expression measurement of the fallback's win was
+also still running; the 9,835 figure above is from an equivalent expression
+and the confirmation is recorded in the next entry when it lands.
+
+- **Change:** `app.js` fallback + display strip, cache stamp bumped, v127.
+- **Prevention:** a second reader measuring the SHIPPED change against the
+  store found what the first reader's aggregate win (335 rows) concealed — a
+  71-row regression inside it and a 9,835-row defect beside it. **Measure a
+  change's losses as carefully as its gains, on the same store, before calling
+  the number.**

@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 126;
+export const PARSER_VERSION = 127;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -438,7 +438,13 @@ export function parseRows(section, opts = {}) {
       /* v126: promote to an issuer header only when it names a FIRM. A colon
        * line is also how "Investments at fair value:" is written, so require a
        * corporate token AND that the phrase is not a type/category label. */
-      const cs = curSection.trim();
+      /* v127: the header keeps its party-in-interest marker because it ends
+       * in ":" and the trailing-"*" strip above only fires at end of line —
+       * "Fidelity Management Trust Company*:" reached iss as "...Company*".
+       * 3,224 rows / 446 plans / 1.02M participants rendered "Fidelity**"
+       * as the issuer. Strip it here; curSection itself keeps the raw text
+       * for the brokerage classifier, which does not care. */
+      const cs = curSection.replace(/\s*\*+\s*/g, " ").replace(/\s+/g, " ").trim();
       curIss = (!typeOnly(cs) && !CATEGORY_PHRASE.test(cs) && cs.split(/\s+/).length <= 8 &&
                 (isHouseName(cs) || /\b(?:inc|llc|l\.l\.c|corp(?:oration)?|compan(?:y|ies)|co|associates|advisors?|advisers?|management|investments?|group|partners|bank|trust|n\.a)\b\.?/i.test(cs)))
         ? cs : "";
