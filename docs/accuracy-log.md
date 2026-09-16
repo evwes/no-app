@@ -10486,3 +10486,44 @@ match.
   a coverage gap converts into a wrong answer automatically. **Ask what a field
   does when extraction fails before classifying its gap as coverage** — "0 path
   defects in 120" measured the parser and not the page.
+
+## 2026-09-16 (v125 + v126 LIVE) — the measurement I refused to guess, and it is 22x smaller than the condition
+
+Run #328 succeeded and the store is whole: **pv 126 covers 99.87%**,
+`pvTopShare` back to 99.9, **HIGH back to the baseline 4** — the
+`partial-store` finding from #326 cleared itself, and shard 10 did not fail
+twice, so that failure was transient. Coverage byte-identical (confident
+60,089, lineups 59,755, match 43,027, vesting 52,825), which is the correct
+outcome: v126 only adds `iss` and no coverage metric counts it. Mirrored
+`61ff7a4b`.
+
+**v126's win, measured against the pre-v126 store (`ed635159`) rather than
+estimated:**
+
+| | rows | plans | participants |
+|---|---|---|---|
+| gained an issuer (the CONDITION) | **7,366** | 615 | **2,045,246** |
+| **resolve a ticker now, did not before (the OUTCOME)** | **335** | 46 | **117,904** |
+
+**22x apart, and both are real but they mean different things.** The 335 are
+blank fee cells that now show an expense ratio — US Foods' `T. Rowe Price
+Associates, Inc` + `Retirement 2030 Fund`, and the same shape at Ben Bridge,
+Sirius Technical, Hawai'i Pacific Health, Loews. The other ~7,000 gained rows
+do not unlock a ticker because the underlying fund is absent from `fund-er.js`
+— the ~80% gap the Pratt screenshot opened, which no issuer can fix. But they
+are not worthless: `app.js` renders the issuer before the name, so 615 plans /
+2.05M participants now read `Vanguard · Target Retirement 2025 Fund` instead of
+a bare `Target Retirement 2025 Fund`. **Two honest numbers for two different
+claims, rather than one number doing both jobs.**
+
+**The trail agrees, which is the check.** 335 of 1,705,524 published rows is
+0.02%, so `tkShare` should not move at two decimal places — and it did not
+(20.36 before and after). A coverage metric that failed to move here would have
+been evidence against the 335, not evidence the change did nothing.
+
+- **Prevention, and it is the day's theme arriving at my own work:** I declined
+  to size this before the re-parse and said the run would report it. Had I
+  guessed from the condition, I would have published **2,045,246** for a change
+  that fills **117,904** readers' fee cells. Six sizing predicates over-matched
+  earlier today; this is the seventh case where the condition and the outcome
+  differ by more than an order of magnitude.
