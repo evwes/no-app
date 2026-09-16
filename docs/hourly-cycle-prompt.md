@@ -102,7 +102,9 @@ Order of business:
       loan-rate text as a name (283 plans), the 471 overshoots (PepsiCo
       `Trust` at 50% of its menu), Form 5500 ID fields as holdings (174
       plans — `JUNK_NAME_RE` matches 0 of them), duplicate rows (160),
-      and the CODE-COLUMN class (720 plans / 687,851 ppl publishing
+      and the CODE-COLUMN class (**720 plans / 687,851 ppl** at >=1 such row,
+      **670 / 621,794** at >=3 — both correct, the threshold is part of the
+      number; `docs/accuracy-log.md` 2026-09-16, publishing
       `1VTTHX` where the same PDF prints a legend giving the fund name).
    2. Recordkeeper wrong name: 1,509 plans / 1.48M ppl. Prefer service
       codes 15/64, then the line-1b platform or Schedule A carrier, then
