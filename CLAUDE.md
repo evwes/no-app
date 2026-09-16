@@ -638,7 +638,17 @@ don't confuse them). Frontend: python http.server + Playwright at
   Nothing downstream was affected (no session acted on it), but it is exactly
   the copying-a-line-forward hazard this file warns about elsewhere, aimed at
   the file's own header. **Re-derive this line rather than editing the date.**
-- **LIVE on main: `b377afb6` — MIRRORED 2026-09-16 02:1xZ.** Gate +0/-0, pv 124
+- **LIVE on main: `ab4058d8` — MIRRORED 2026-09-16 07:1xZ.** Gate +0/-0, pv 124
+  at 99.9%, HIGH at the baseline of 4. Documentation only over the mirror below
+  (the overnight findings); no code or data change reached readers.
+  **HELD ONE HOUR AND THAT WAS CORRECT:** at 06:1xZ run #314 — the daily cron,
+  firing late at 06:07 as this file predicts — was IN FLIGHT ON MAIN. Mirroring
+  force-pushes the branch onto main while such a run is about to commit there,
+  so the cycle dispatched nothing and mirrored nothing and said so. The two
+  rules compose: "dispatch every hour" yields to "not while a run is in
+  flight", and the in-flight run being on MAIN rather than the dev branch is
+  the case that makes the mirror unsafe rather than merely the dispatch.
+- **Previously: `b377afb6` — MIRRORED 2026-09-16 02:1xZ.** Gate +0/-0, pv 124
   at 99.9%, HIGH at the baseline of 4. Adds `tkShare` to the accuracy trail:
   **20.38% of published holding rows resolve to a fund**, so the other ~80%
   show a BLANK fee cell (`fund-er.js` is the only ER source). Sampled 1-in-20
