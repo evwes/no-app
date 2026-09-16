@@ -212,6 +212,13 @@
       "fixed": "v125",
       "sponsor": "US Foods",
       "was": "'(In thousands)' sits 3 lines ABOVE the 'Identity of Issuer' caption that seeds the region, so `marked` never saw it; the 23-row menu parsed with every value correct but summed to 0.001 of plan assets, isConfident rejected it, and the plan fell back to its 2023 filing - publishing a 1.26x overshoot AND the false sentence 'the newest filing's public copy has no readable schedule'"
+    },
+    {
+      "ack": "20251014134355NAL0003059329001",
+      "class": "issuer-header-orphans-children",
+      "fixed": "v126",
+      "sponsor": "US Foods",
+      "was": "'T. Rowe Price Associates, Inc:' heads an INDENTED block whose children are named only 'Retirement 2030 Fund'; the header was captured as curSection, used for brokerage classification, then DELETED (lib-4i `delete f.sec`), so 0 of 23 rows carried an issuer and no ticker resolved. Scoped by indentation: the first draft leaked the issuer past the block and attributed Fidelity's 'Spartan 500 Index Fund Class C' to T. Rowe Price"
     }
   ]
 }

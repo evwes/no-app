@@ -10298,3 +10298,63 @@ number is a ceiling for a different question, not this one.
   `units-marker-above-region-head`. And the rule the 0-of-202 nearly hid:
   **when a diff tool reports no change, prove it can see the case before
   reading that as safety.**
+
+## 2026-09-16 (v126) — the issuer header was captured, used, and then deleted
+
+Owner's original point on the US Foods filing: the target-date funds sit under a
+`T. Rowe Price Associates, Inc:` header and our page shows them bare. v125 fixed
+the values on that plan; this fixes the names.
+
+**Everything needed was already built and one line threw it away.**
+`app.js:1348` already prepends the issuer to the ticker lookup —
+`fundTickerInfo((f.iss ? f.iss + " " : "") + f.name, f.type)` — and
+`app.js:1363` already renders it before the fund name. **559,125 of 1,705,524
+published rows (32.8%) across 32,691 plans already carry `iss`.** The header is
+already captured: a `:`-terminated line becomes `curSection` at lib-4i ~415 and
+rides on every row as `sec`. Then lib-4i ~1897 says `delete f.sec` — after
+using it for brokerage/SMA classification. **0 of 1,705,524 published rows
+carry `sec`.** Computed and discarded, the same shape as run #244's failure
+reason, the Schedule A carrier, and the feature-fallback denominator.
+
+v126 promotes it to `iss` instead, and never into `name` — v103 fixed a defect
+caused by gluing a group header into names and that must not be re-created.
+
+**Gated three ways, because a colon line is not automatically an issuer:**
+(1) not `typeOnly` and not `CATEGORY_PHRASE`, so `Common collective trusts:`
+and `Investments at fair value:` are excluded; (2) `isHouseName` OR a corporate
+token — `isHouseName` alone was NOT enough, since `HOUSE_ONLY` allows
+`t. rowe price` followed by `funds|trust|group|inc|llc|company|co` and
+**"Associates" is not in that list**, so the very specimen fails it; (3) scoped
+by INDENTATION.
+
+**(3) exists because the first draft fabricated an attribution and the raw-row
+dump caught it before it shipped.** US Foods lists T. Rowe Price's vintages
+indented, then returns to column 0 for `Spartan 500 Index Fund Class C` — a
+FIDELITY fund, which inherited `T. Rowe Price Associates, Inc`. Publishing a
+holding under a house that does not run it is the v103 defect in a new place.
+Now the issuer clears when a row returns to the header's own column: 15 of 23
+rows carry an issuer (the two indented blocks exactly, Fidelity 2 + T. Rowe
+Price 13) and the top-level rows carry none.
+
+**Outcome, measured not assumed:** `Retirement 2030 Fund` resolves no ticker;
+`T. Rowe Price Associates, Inc Retirement 2030 Fund` resolves **TRRCX, ER
+0.55%**, and 2045 resolves **TRRKX**. Blank fee cells become named funds.
+
+**`diff-lineups` returned 0/0/0 and that is NOT clearance here — it cannot see
+this change.** It compares confidence, row counts and fabricated rows; `iss` is
+invisible to it. So it establishes no regression in what it measures (the real
+risk, and it is zero) and says nothing about the win. The win is established by
+the direct row dump and ticker test above. This is the same lesson as the v125
+entry one hour earlier, arriving from the other direction: there, a diff tool
+that could not see the fix nearly passed as safety; here, the same 0 is
+correctly read as silence rather than approval.
+
+**NOT SIZED, deliberately.** How many plans gain an issuer is unknowable
+without the re-parse, and six sizing predicates over-matched in three cycles
+today. The re-parse will report it.
+
+- **Change:** v126, `docs/defect-specimens.json` gains
+  `issuer-header-orphans-children`. Committed `[skip ci]` behind in-flight run
+  #326 (v125); dispatched when that finishes.
+- **Prevention:** the specimen pins the indentation scope, so a future widening
+  that re-leaks the issuer past the block fails the corpus check.

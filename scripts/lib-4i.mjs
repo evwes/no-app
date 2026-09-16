@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 125;
+export const PARSER_VERSION = 126;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -321,6 +321,24 @@ export function parseRows(section, opts = {}) {
   let sdba = false;
   let nameBuf = [];
   let curSection = "";
+  /* v126: the ISSUER-HEADER form of a section. A 4i schedule may name the firm
+   * once on its own line and then indent the products under it:
+   *     T. Rowe Price Associates, Inc:
+   *           Retirement 2030 Fund      Common collective trust    321,301
+   * The children then carry no identity of their own, so "Retirement 2030
+   * Fund" names no specific fund and resolves no ticker. Tracked separately
+   * from curSection because the other curSection branches are TYPE headers
+   * ("Common collective trusts", "Corporate stocks"), which must never be
+   * published as an issuer. */
+  let curIss = "";
+  /* the header's own indentation. Its children are INDENTED under it; the
+   * schedule returns to the header's column when the block ends. Without this
+   * the issuer leaks: US Foods lists T. Rowe Price's vintages indented, then
+   * returns to column 0 for "Spartan 500 Index Fund Class C" - a FIDELITY
+   * fund, which inherited "T. Rowe Price Associates, Inc" and would have been
+   * published under the wrong firm. Attributing a holding to a house that does
+   * not run it is the v103 glued-header defect in a new place. */
+  let curIssIndent = -1;
   // a valueless "Total ..." line means the subtotal WRAPPED: its value arrives
   // on the next short line ("Total Registered Investment" ↵ "Companies  613,913,288")
   let totalWrap = false;
@@ -345,6 +363,9 @@ export function parseRows(section, opts = {}) {
     // "…401", whose bare digits parsed as a value — that let a wrapped
     // "Total … Matching Program $1.1B" subtotal through as a holding and
     // let form-page "401(k)" lines fake rows that suppressed OCR.
+    const rawIndent = (/^[ \t]*/.exec(raw) || [""])[0].replace(/\t/g, "    ").length;
+    /* block ended: this row sits at or left of the header that opened it */
+    if (curIss && raw.trim() && rawIndent <= curIssIndent) { curIss = ""; curIssIndent = -1; }
     let t = raw.trim().replace(/^\*+\s*/, "").replace(/\s*\*{1,3}\s*$/, "")
       .replace(/([0-9]{1,3}(?:,[0-9]{3})+)(?:\s*[,.]?\s*\(\s*[a-z]\s*\)){1,4}\s*$/i, "$1");
     if (!t) { nameBuf = []; continue; }
@@ -412,7 +433,18 @@ export function parseRows(section, opts = {}) {
       totalWrap = /^(sub|grand )?total\b/i.test(t) && !valueRe.test(t);
       continue;
     }
-    if (/:\s*$/.test(t)) { curSection = t.replace(/:\s*$/, ""); nameBuf = []; totalWrap = false; continue; } // section subheading
+    if (/:\s*$/.test(t)) {
+      curSection = t.replace(/:\s*$/, "");
+      /* v126: promote to an issuer header only when it names a FIRM. A colon
+       * line is also how "Investments at fair value:" is written, so require a
+       * corporate token AND that the phrase is not a type/category label. */
+      const cs = curSection.trim();
+      curIss = (!typeOnly(cs) && !CATEGORY_PHRASE.test(cs) && cs.split(/\s+/).length <= 8 &&
+                (isHouseName(cs) || /\b(?:inc|llc|l\.l\.c|corp(?:oration)?|compan(?:y|ies)|co|associates|advisors?|advisers?|management|investments?|group|partners|bank|trust|n\.a)\b\.?/i.test(cs)))
+        ? cs : "";
+      curIssIndent = curIss ? rawIndent : -1;
+      nameBuf = []; totalWrap = false; continue;
+    } // section subheading
 
     // a genuine holding can be worth $81 (R.H. White's T. Rowe Price 2010
     // fund, the last dollars of a wound-down vintage). The 3-digit floor
@@ -435,13 +467,13 @@ export function parseRows(section, opts = {}) {
       // short ALL-CAPS lines and bare type phrases ("MUTUAL FUNDS",
       // "Publicly-traded Common Stock") are section headers, not wrapped
       // fund names — don't glue them onto the next row
-      if (/^[A-Z][A-Z\s/&,-]*$/.test(t) && t.split(/\s+/).length <= 4) { curSection = t; nameBuf = []; continue; }
-      if (t.split(/\s+/).length <= 5 && classify(t) && typeOnly(t)) { curSection = t; nameBuf = []; continue; }
+      if (/^[A-Z][A-Z\s/&,-]*$/.test(t) && t.split(/\s+/).length <= 4) { curSection = t; curIss = ""; nameBuf = []; continue; }
+      if (t.split(/\s+/).length <= 5 && classify(t) && typeOnly(t)) { curSection = t; curIss = ""; nameBuf = []; continue; }
       // mixed-case class headers that AREN'T in the type vocabulary — adding
       // them to TYPE_PATTERNS re-typed Verizon's trustee class SUMMARY rows
       // ("CORPORATE STOCK - COMMON" $9.7B) into the managed-account bucket,
       // so the vocabulary lives only here, on valueless lines
-      if (/^(corporate stocks?|collective funds?|common stocks?|preferred stocks?|registered investment companies)(\s*[-–]\s*(common|preferred))?$/i.test(t)) { curSection = t; nameBuf = []; continue; }
+      if (/^(corporate stocks?|collective funds?|common stocks?|preferred stocks?|registered investment companies)(\s*[-–]\s*(common|preferred))?$/i.test(t)) { curSection = t; curIss = ""; nameBuf = []; continue; }
       /* v103: A GROUP HEADER, not the first line of a wrapped name. Filings
        * that group a menu by manager print a valueless header row carrying the
        * house in the identity column and the type in the description column,
@@ -462,7 +494,7 @@ export function parseRows(section, opts = {}) {
       {
         const gh = splitNameDesc(t.trim());
         if (gh.descCol && typeOnly(cleanDesc(gh.descCol)) && isHouseName(gh.nameCol)) {
-          curSection = gh.nameCol.trim(); nameBuf = []; continue;
+          curSection = gh.nameCol.trim(); curIss = ""; nameBuf = []; continue;
         }
       }
       if (t.length < 90 && !/^\d+$/.test(t)) nameBuf.push(t);
@@ -1175,7 +1207,7 @@ export function parseRows(section, opts = {}) {
     // ownType = the row carried its OWN investment-type column, so it is a
     // proven 4i data row rather than a plausible-looking text line; the
     // sub-$10k residue filter trusts that proof (see parse4i)
-    rows.push({ name: name.slice(0, 90), type: rowType, value, sec: curSection, ...(type ? { ownType: 1 } : {}), ...(iss ? { iss: iss.slice(0, 60) } : {}), ...(leadStripped ? { _sl: 1 } : {}) });
+    rows.push({ name: name.slice(0, 90), type: rowType, value, sec: curSection, ...(type ? { ownType: 1 } : {}), ...(iss ? { iss: iss.slice(0, 60) } : curIss ? { iss: curIss.slice(0, 60) } : {}), ...(leadStripped ? { _sl: 1 } : {}) });
   }
 
   // ARITHMETIC subtotal removal (owner directive after Sempra: takeaways
