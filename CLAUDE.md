@@ -638,7 +638,18 @@ don't confuse them). Frontend: python http.server + Playwright at
   Nothing downstream was affected (no session acted on it), but it is exactly
   the copying-a-line-forward hazard this file warns about elsewhere, aimed at
   the file's own header. **Re-derive this line rather than editing the date.**
-- **LIVE on main: `ab4058d8` — MIRRORED 2026-09-16 07:1xZ.** Gate +0/-0, pv 124
+- **LIVE on main: `021bbbe1` — MIRRORED 2026-09-16 10:1xZ.** Gate +0/-0, pv 124
+  at 99.9%, HIGH at the baseline of 4. Documentation only again — no code or
+  data change reached readers in this or the previous mirror.
+  **The overnight record, so a later session can weigh it:** five cycles of
+  measurement produced four findings that are RECORDED AND UNFIXED (Macy's
+  prose-as-holding, UnitedHealth metadata glue, value-in-name 217 rows, the
+  fallback quality split), two questions CLOSED IN THE NEGATIVE (fallback
+  disclosure is present; filed tickers size to 1,305 participants), and one
+  re-derivation pass. **Nothing was shipped to readers overnight and that is
+  the correct outcome** — every remaining queue item is either owner-gated or
+  needs a `PARSER_VERSION` bump, and the alternative was starting one unasked.
+- **Previously: `ab4058d8` — MIRRORED 2026-09-16 07:1xZ.** Gate +0/-0, pv 124
   at 99.9%, HIGH at the baseline of 4. Documentation only over the mirror below
   (the overnight findings); no code or data change reached readers.
   **HELD ONE HOUR AND THAT WAS CORRECT:** at 06:1xZ run #314 — the daily cron,
