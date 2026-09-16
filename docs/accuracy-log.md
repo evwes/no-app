@@ -9772,3 +9772,59 @@ One thing the members did show: Para La Naturaleza's names are TRUNCATED —
 `Fund Class R2 - Ticker: RWIBX`, `- Ticker: FDRXX` — the fund name itself cut
 off with only the class and ticker surviving. A name-truncation defect, 216
 participants. Recorded, not sized further.
+
+---
+
+## 2026-09-16 (cycle 09:0xZ) — re-derived every number this session published; 5 of 6 exact, 1 was two thresholds wearing one label
+
+The "Current state" header carried **Parser v123 for four mirrors** while every
+mirror gate printed pv 124. That figure was wrong for days because nobody re-ran
+it. This session has since published a dozen more figures, several measured
+against stores that have been replaced eleven times since. **"Copying a line
+forward is asserting it again" applies to my own output**, so every headline
+number was re-derived in one pass against the current store, using the predicate
+that produced it.
+
+| published | now | |
+|---|---|---|
+| overshoot >=1.15x — 471 / 1,193,879 | **471 / 1,193,879** | exact |
+| loan text as a holding name — 283 / 534,790 | **283 / 534,790** | exact |
+| value glued into the name — 13 / 3,029 | **13 / 3,029** | exact |
+| prior-year fallback served — 1,160 / 4,336,230 | **1,160 / 4,336,230** | exact |
+| fallback generic-named >=25% — 43 | **43** | exact |
+| wrapped fragment FLOOR — 149 / 753,693 | 147 / 753,409 | −2, store drift |
+| code column — 720 / 687,851 | 670 / 621,794 | **−50 — NOT drift** |
+
+### The one that moved was my own inconsistency, not the data
+
+The code-column class (`1VTTHX`, `1FXAIX` — a filing's code column published as
+the fund name) appears in `CLAUDE.md` as **720 plans / 687,851 participants**
+and in this log as **670 / 621,794**. Tested against one store:
+
+```
+>=1 code row:  720 plans   687,851 participants   11,933 rows
+>=3 code rows: 670 plans   621,794 participants   11,860 rows
+```
+
+**Both numbers are correct. They answer different questions, and I published
+them as if they were one finding** — the larger in project memory, the smaller
+in the log, with no note that the threshold differed. Anyone reconciling the two
+later would have found a 50-plan discrepancy with no explanation and spent a
+cycle on it.
+
+**The reader-facing question is ">=1", so 720 / 687,851 stands** — a plan showing
+even one unreadable code is showing it to every reader of that page. Both
+figures are now stated together wherever the class is named.
+
+### The prevention
+
+**Re-derive published figures periodically, not just when something looks
+wrong.** Five of six reproducing exactly is the useful outcome here: it means
+the store is stable enough that these numbers can be trusted between runs, which
+was not known before. The sixth was caught only because the re-derivation used a
+stated predicate rather than a remembered total.
+
+And the sharper form: **a threshold is part of a number.** `720` and `670` are
+the same measurement at `>=1` and `>=3`. Quoting either without its threshold
+makes two documents disagree about one fact — which is indistinguishable, later,
+from one of them being wrong.
