@@ -644,11 +644,21 @@ don't confuse them). Frontend: python http.server + Playwright at
   the copying-a-line-forward hazard this file warns about elsewhere, aimed at
   the file's own header. **Re-derive this line rather than editing the date.**
 - **LIVE on main: `39381d6e` — MIRRORED 2026-09-16 20:1xZ** (v127 store,
-  gate +0/-0, HIGH at the baseline 4); main has since taken hourly data
-  commits (`b1438c14` at 20:2xZ), which `mirror.sh` will refuse over until
-  they are rebased in — the ordinary case, not a hazard. **IN FLIGHT: run
-  #334 (id 35146450361), the v128 full re-parse, dispatched 20:25Z on
-  `63b3fd2f`.** v128 is a fetch-4i guard, not a parser change: the prior-year
+  gate +0/-0, HIGH at the baseline 4); main has since taken one hourly data
+  commit (`b1438c14` at 20:2xZ — measured: 0 acks / 0 plans the branch
+  lacks, `plans` array byte-identical, newer on 0 acks). **#334 PASSED
+  (21:19Z, 54 min, `3f12be42`): pv 128 at 99.87%, confident −82 = exactly the
+  82 refusals predicted, 0 gained, every loss reconciled to the refusal set,
+  overshootPpl 1.16M → 0.58M, HIGH 25 = 4 baseline + `reparse-loss` on the
+  refused set (self-clearing).** `docs/accuracy-log.md` 2026-09-16 (run #334
+  verdict). **MIRROR HELD ON PURPOSE:** the branch head carries v129 code
+  over the v128 store; mirroring that would make main's :23 cron run a
+  duplicate full re-parse ON MAIN. **IN FLIGHT: the v129 + alias-prep run,
+  dispatched 22:1xZ on `85ceb6ee`** — mirror when its store is complete
+  (TJX confident with no `fb`; prep log `former names: N plans carry an
+  alias`; HIGH back to 4). The previous run, #334 (id 35146450361), was the
+  v128 full re-parse, dispatched 20:25Z on
+  `63b3fd2f`. v128 is a fetch-4i guard, not a parser change: the prior-year
   fallback no longer publishes a plan-level lineup for a master-trust plan
   (87 plans / 2.38M participants were showing `le 0 0 1f`, `Collective funds`,
   `Trust`, an employer roster — Walgreen, Macy's, PepsiCo, Comcast, Northrop,

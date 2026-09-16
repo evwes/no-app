@@ -135,7 +135,10 @@ Order of business:
       that belong to OTHER classes here: **Delta Air Lines 112,027 ppl is the
       UPMC roster shape** and Mars 003 is the fair-value note. Check
       `fb-skipped-trust` in the run's tally against 82 before mirroring.
-      `docs/accuracy-log.md` 2026-09-16 (v128).
+      `docs/accuracy-log.md` 2026-09-16 (v128). **VERIFIED on run #334
+      (21:19Z): confident −82 exactly, 0 gained, all 82 losses are the
+      refusal set, 6 remain (the 5 named + one whose newest filing is a
+      403).** Mirror held for the v129 store (see CLAUDE.md state bullet).
 
       **The design note this bump should carry, from UPMC:** a ratio near 1.0
       is evidence for a menu only among tables that are CANDIDATE menus. Any

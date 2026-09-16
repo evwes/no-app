@@ -11007,3 +11007,62 @@ filing failed.
 - **Prevention:** TJX pinned as `bare-in-thousands-line` in
   `docs/defect-specimens.json`; parser gate green; diff-lineups run over the
   corpus before the commit.
+
+## 2026-09-16 (run #334 verdict) — v128 landed exactly as predicted: 82 fallback lineups refused, 0 gained, 0 unexplained
+
+Run #334 (id 35146450361, `63b3fd2f`, dispatched 20:25Z) concluded success
+at 21:19Z, 54 minutes, and committed `3f12be42`. Verdict, each number from
+the store or the run's own output:
+
+- **pv 128 covers 68,675 of 68,767 acks (99.87%)** — complete, tail
+  pv106 18 / pv124 10 / pv123 10 / pv98 10.
+- **Coverage line: confident 60,089 → 60,007 (−82), lineups 59,755 →
+  59,673 (−82)** — the prediction was 82 refusals from a whole-class trace,
+  and the store moved by 82. `overshoot` 470 → 446 and `overshootPpl`
+  1,160,217 → 575,994: the trust junk was half the overshoot's people.
+  `dl` 89 → 91 (two more permanently-403 filings), `high` 4 → 25.
+- **Every confidence loss reconciled against the refusal set** (pre-run
+  status at `37ad8756` vs now): **82 lost, 0 gained.** 81 match "had a
+  prior-year fallback AND trust-linked or trust pointer" directly; the 82nd,
+  Morgridge Institute for Research (238p), is the guard's UNLINKED-pointer
+  arm — its newest parse is `dx=trust tp=1`, which my reconciliation missed
+  only because it read `tp` from the OLD status, where a confident entry
+  never carries one. Not a defect in the guard; a predicate reading the
+  wrong side of the diff, caught by printing the member.
+- **Remaining confident fallbacks on trust-linked plans: 6 / 130,558** —
+  the five named in advance (Delta 112,027, Norfolk Southern 14,235, Mars
+  PN 003 1,877, Mars PN 001 1,739, Xcel 511 = 130,389 exactly) plus
+  Cardiothoracic & Vascular Surgeons (169p), whose newest filing answers
+  HTTP 403 (it was one of the two 403s in this evening's random sample), so
+  the v37 protection kept its stored entry untouched. Correct behaviour.
+- **The HIGH count is 4 baseline + `reparse-loss` on the refused set.** The
+  triage calls any lost lineup with >=7 rows "real-menu-shaped" and UPMC's
+  80-row employer roster, Robert Bosch's 28 rows of `Various (includes
+  Registered Investment Companies`, and the rest of the refusals qualify by
+  row count alone. All 82 are justified above; the HIGHs clear on the next
+  run's own diff. This is the triage doing its job — every loss WAS pulled
+  and read before the run, which is what the message asks for.
+- **Shard 0's tally, the first production print of the feature-fallback
+  counters promised on 2026-09-12:** `fb-skipped-trust=21
+  fb-skipped-trust-served=1` (UPMC) and **`feat-fb-needed=309
+  feat-fb-supplied=78 feat-fb-silent=126 feat-fb-none=105`**. So where a
+  prior year was actually read for features it supplied them **78 of 204
+  times (38%)** on this shard — not the 92% upper bound the REOPENED bullet
+  carried, which was measured on a population that had failed entirely.
+  One shard of twenty, stated as one shard; the whole-run rate needs all
+  twenty tallies or the store.
+- **Audits:** `audit-generic-names` 157 plans / $33.7B (baseline 208,
+  threshold 230 — fell, because the refused junk carried generic names);
+  `audit-dominant-row` 0. `losses-triage.txt` and `swaps-degraded.txt` are
+  merge artifacts, not committed; the reconciliation above replaces them.
+- **Mirror deliberately HELD until the v129 store lands, and why:** the
+  branch head `85ceb6ee` carries v129 code over the v128 store. Mirroring it
+  now would give main a tree at `PARSER_VERSION` 129 with `pv` 128 data, and
+  main's own hourly cron at :23 would then start a duplicate full re-parse
+  ON MAIN and commit it there — the exact hazard the "dispatch on the dev
+  branch, never main" rule exists for. So the order is: dispatch v129 on
+  the dev branch (done 22:1xZ), mirror when its store is complete. Readers
+  get v128 and v129 together, about an hour later than v128 alone.
+  Main-vs-branch evidence for that mirror is already in hand: 0 acks and 0
+  plans on main the branch lacks, `plans` array byte-identical, main newer
+  on 0 acks, and the 82 confident-on-main-not-branch are the refusals.
