@@ -10114,3 +10114,95 @@ Genuine fragments it does find beyond Walmart: Great Outdoors `Class II`
   only member that could falsify, and it did. **Verify a new detector on its
   biggest NOVEL hit, not on the specimens that inspired it** — a detector built
   from two examples will always retrieve those two.
+
+## 2026-09-16 (cycle 15:0xZ) — Hartford: a $4.38B holding vanishes onto a $92k clearing account; and a number I published last night measured only the harmless half of its own class
+
+Participant-weighted draw, fresh seed, alternating with last cycle. Three
+findings, one correction to my own published figure, and two more predicates
+that over-matched.
+
+### 1. Hartford Fire Insurance — 31,062 participants, $7.18B. VERIFIED IN THE FILING.
+
+The published menu's top row is **`Clearing Account 92` at 59.4% /
+$4,383,081k**, with `Master Expense Account 4` at 13.0% / $961,793k. 72% of the
+plan in two rows that read like internal plumbing. The filing's own subtotal
+table (in THOUSANDS) says what actually happened:
+
+```
+   Chartwell Equity Securities          $    86,956
+   Clearing Account                              92
+   Collective Investment Trusts           4,383,081
+   Loomis Sayles Growth Fund                452,670
+   Lee Munder Equity Securities             128,342
+```
+
+**The Clearing Account really holds $92 thousand.** Its own value was glued
+onto its NAME, and the value of the NEXT row was assigned to it — so
+**`Collective Investment Trusts`, the plan's largest holding at $4.38B,
+disappears from the published menu entirely** and its money is attributed to a
+$92-thousand account. `Loomis Sayles Growth Fund` and `Lee Munder` match the
+filing to the dollar, so the slip is local to the glued row, not a whole-table
+shift. Ratio 1.03, 13 rows: `isConfident` passes, `audit-dominant-row` needs
+>=90% and sees 59%, `audit-generic-names` has no entry for "clearing account".
+A third shape walking between the two guards, exactly as with Owens Corning.
+
+### 2. THE CORRECTION — "value-in-name: 217 rows / 13 plans / 3,029 participants" (published 2026-09-16, overnight) measured only the harmless half of its class, BY CONSTRUCTION.
+
+That predicate required the digits glued onto a name to EQUAL the row's stored
+value. Hartford shows why that is the wrong test: **where the glue causes a
+slip, the glued digits are precisely NOT the stored value.** The equality test
+could therefore only ever find rows where the value happened to survive — the
+cosmetic cases — and was structurally blind to the cases where a number is
+WRONG and a holding has VANISHED. Those are different defects and were being
+counted as one.
+
+Re-measured, splitting them:
+- **A, digits equal the stored value (cosmetic): 239 rows / 32 plans / 38,958
+  participants.** Even this half moved from the published 217 / 13 / 3,029,
+  because the earlier run also required 4+ digits and exact-unit equality.
+- **B, digits differ: 3,479 rows / 2,438 plans / 5,110,383 participants.**
+
+**B MUST NOT BE QUOTED AS A DEFECT COUNT.** Reading the members, most trailing
+numbers are legitimate identifiers — `Metlife Stable Value Fund Series 25157`,
+`Voya Fixed Account 4669`, `Morley Stable Value Fund Fee Class 125`, and
+`State Street Equity 500` where the number is the fund's own name. That is the
+sixth over-matching predicate in three cycles.
+
+### 3. What ranking B by SHARE OF THE MENU does find — a new class: DOCUMENT FURNITURE AS A WHOLE HOLDING.
+
+Not value-in-name at all. These rows are pieces of the PDF's apparatus,
+published as the plan's investments and carrying most of its money:
+
+| share | plan | row |
+|---|---|---|
+| **92%** | H & P Technologies, 205p, $19.4M | `Continued from page 10` |
+| **88%** | Price Brothers, 265p, $16.7M | `Per Forms 5500` |
+| **65%** | Powell Electronics, 253p, $19.9M | `Balance carried forward from page 15` |
+| 42% | Children's Home Society, 407p | `US Charleston WV 25330` |
+| 31% | Hughson Samaritan Village, 229p | `US Hughson CA 95326` |
+| 29% | Tony's Express, 135p | `instructions) US FONTANA CA 92337` |
+
+The last three are ADDRESSES — the trailing "number" is a ZIP code. That is the
+UnitedHealth address-glue shape recorded last night, here standing alone as an
+entire row rather than as a suffix. Small plans, but a page-continuation notice
+holding 92% of a menu is the same family as Kraft Heinz's `le 0 0 1f`.
+
+### 4. The UPMC roster class is 2 plans, not 1 — correcting last cycle.
+
+The 14:1xZ entry said "2 genuine rosters" (UPMC + Unique Staff Leasing) from a
+predicate requiring a corporate suffix at the END of the name. This draw hit a
+**second UPMC plan** — ack `20251012110739NAL0000289329001`, **93,730
+participants, $4.73B**, 37 of 80 rows UPMC subsidiaries, top row `UPMC
+Presbyterian Shadyside` at 32.3% / $1.34B. No suffix, so the earlier predicate
+could not have found it. **UPMC's roster defect covers 205,732 participants
+across two plans.**
+
+- **Change:** none. All of this belongs to the queued `PARSER_VERSION` bump.
+- **Prevention, and it is the sharp one here: A PREDICATE THAT DEFINES A CLASS
+  BY AN EXACT MATCH WILL MEASURE ONLY THE INSTANCES WHERE NOTHING ELSE WENT
+  WRONG.** The equality test found the glue cases whose value survived and
+  missed every case where the glue also cost a holding — that is, it was
+  blindest exactly where the defect was worst, and reported a reassuring 3,029
+  participants for a class whose worst single member has 31,062 and $4.38B.
+  When defining a class by a coincidence (name digits == value), ask what the
+  defect does when the coincidence FAILS, and measure that arm too.
