@@ -14,10 +14,12 @@ check passes.** A silent blank is a defect no audit can raise.
 
 ## Shipped and LIVE on main
 
-**Now `622c3540`, mirrored 15:0xZ** — this brief was written at `b377afb6` and
-the sections below describe that state. Every mirror since has been gate +0/−0
-at pv 124, and all of them documentation only: nothing in "Waiting on you" has
-moved, because every item there needs either your decision or a re-parse.
+**Now `8bae38c2`, mirrored 18:3xZ** — this brief was written at `b377afb6` and
+the bullets below describe that morning state. Since then: pv 124 → 126 across
+two verified re-parses, one failed run caught and held (never mirrored), and
+three shipped changes from your US Foods filing — listed under "Shipped since"
+further down. Nothing in "Waiting on you" has moved; every item there still
+needs your decision.
 
 Gate +0 / −0 on every mirror, pv 124 at 99.9%, HIGH at the baseline of 4.
 
