@@ -10401,3 +10401,88 @@ reading survives. Either way the next run answers it, at no extra cost.
   machinery caught this with no help. The pv distribution, the `pvTopShare`
   field and the HIGH count all moved together and all pointed the same way, and
   the only judgement required was to read them before mirroring.
+
+## 2026-09-16 (owner: Devon Energy) — the match parse gap does not just LOSE an answer, it PROMOTES a wrong one. This reclassifies part of the match gap from coverage to accuracy.
+
+Owner asked why Devon Energy's "Employer Match" card quotes a student-loan
+provision. It does, and the reason matters more than the one plan.
+
+**What the page shows.** Devon Energy Corporation Incentive Savings Plan
+(EIN 73-1567067 PN 002, 3,592 participants, $1.07B), badged **Plan Year 2024**,
+under a heading **Employer Match** with a **FORM 5500 AUDIT NOTES** badge:
+
+> *"The student debt matching provision allows matching contributions of
+> employees' 401(k) plan, earned from the combination of deferrals and student
+> loan payments."*
+
+No formula beside it.
+
+**What the filing says.** The real match is ~280 lines earlier in the same
+document:
+
+> *"During 2024, for all participants with at least five years of service,
+> Devon contributed amounts equal to 100% of each participant's contributions
+> to the Plan, with the matching contribution being limited to the lesser of
+> 6% of the participant's compensation or $20,700. For participants with less
+> than five years of service, Devon's matching contributions in 2024 were
+> limited to the lesser of 3% of the participant's compensation or $10,350."*
+
+The sentence we published sits in a **SECURE 2.0 subsequent-events note** and
+its paragraph opens *"In 2025, the Plan adopted…"* — a provision from AFTER the
+plan year the page is badged with.
+
+**MECHANISM, instrumented rather than inferred, and it is not what it looks
+like.** Feeding the REAL paragraph to the production extractor **alone** yields
+`match: null` and `matchText: ""`. So this is not a selection bug — the
+extractor does not recognise Devon's phrasing as match language at all. It is
+the **lesser-of / cap** family this file already sizes at 326 plans /
+1,150,033 participants as the second-largest unparsed match shape, compounded
+by *"contributed amounts equal to 100% of each participant's contributions"*
+rather than *"100% of the first N%"*. With nothing recognised in the real
+paragraph, the only sentence in the whole filing carrying match vocabulary is
+the student-loan one, and it wins by default.
+
+**THE CORRECTION THIS FORCES.** This file classifies the match gap as **NEW
+COVERAGE**, owner-gated, on the strength of a 120-sample test that found
+**0 path defects**. That test asked *"does the stored sentence yield a
+formula?"* — it never asked *"is the stored sentence even ABOUT the match?"*
+**A parse gap in a field whose fallback is 'quote something else that matched
+the vocabulary' produces WRONG ANSWERS, not absences.** Part of the match gap
+is therefore an accuracy defect and not a coverage question.
+
+**SIZED, with the over-match named first.** My initial predicate (a
+subsequent-events / "Effective January 1, 20XX" marker) returned **218 plans /
+536,068 participants** and **most of those are NOT defects** — UnitedHealth's
+*"Effective January 1, 2026, the Plan was amended to revise the safe harbor
+matching contribution"* is a newer and arguably better statement of the match,
+which a reader today probably wants. Do not quote 218.
+
+The defensible measurement is the quote that states **no match RATE at all**,
+where no formula parsed, so the card's only content says nothing about the
+match: **3,415 plans / 7,454,321 participants.** Identifiable ancillary-
+provision quotes inside that set, first match wins:
+
+| shape | plans | ppl | worst example |
+|---|---|---|---|
+| true-up / contributions receivable | 49 | 169,985 | Cox Enterprises 62,062p — *"Contributions Receivable Participant contributions and any related employer matching"*, a balance-sheet caption |
+| rollover / participant accounts | 78 | 137,198 | Ecolab 25,397p, Texas Instruments 20,641p |
+| nondiscrimination testing | 10 | 5,386 | Consumer Cellular 3,297p |
+| **student loan** | **4** | **4,828** | **Devon 3,592p** |
+
+So Devon's exact shape is 4 plans; the general shape is 3,415 plans and 7.45M
+participants being shown a sentence under "Employer Match" that contains no
+match.
+
+- **Change:** none yet, and deliberately. The obvious display fix — suppress or
+  relabel a no-rate quote — is a judgement call about wording, and **the
+  `frozen` precedent is the reason to be careful**: a display guard built on an
+  inference hid 750 genuine terminations to catch 80 false ones. Some no-rate
+  quotes are genuinely informative (*"Although the Plan does not provide for
+  employer matching contributions…"*). Proposed, for the owner: where no
+  formula parsed AND the quote states no rate, stop presenting it under
+  **Employer Match** as though it were the match, and say the formula was not
+  extracted. Display-only, no re-parse.
+- **Prevention:** when a field has a FALLBACK (quote the best vocabulary match),
+  a coverage gap converts into a wrong answer automatically. **Ask what a field
+  does when extraction fails before classifying its gap as coverage** — "0 path
+  defects in 120" measured the parser and not the page.
