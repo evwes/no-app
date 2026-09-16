@@ -219,6 +219,13 @@
       "fixed": "v126",
       "sponsor": "US Foods",
       "was": "'T. Rowe Price Associates, Inc:' heads an INDENTED block whose children are named only 'Retirement 2030 Fund'; the header was captured as curSection, used for brokerage classification, then DELETED (lib-4i `delete f.sec`), so 0 of 23 rows carried an issuer and no ticker resolved. Scoped by indentation: the first draft leaked the issuer past the block and attributed Fidelity's 'Spartan 500 Index Fund Class C' to T. Rowe Price"
+    },
+    {
+      "ack": "20260212120237NAL0000146496001",
+      "class": "trust-held-plan-prior-year-fallback",
+      "fixed": "v128",
+      "sponsor": "Medtronic",
+      "was": "newest 4i is one line, 'Interest Held in Master Trust' (stmt, correctly rejected); the prior-year fallback then published the 2023 filing's 'Various (includes' at 73% of $13.7B as a confident plan-level menu for 55,692 people. 87 plans / 2,379,942 participants were in this shape - Walgreen 'Collective funds' 73%, Northrop 'le 0 0 1f' 89%, PepsiCo 'Trust' 50%, UPMC's employer roster - and for 67 of them the linked TRUST's confident lineup was being displaced. NOTE: the fix is in fetch-4i's fallback loop (refuse the fallback LINEUP when the trust has a confident lineup, or the newest parse is trustPtr/stmt/one line >=85%); the text-only parse diff-lineups runs stays non-confident here by design. The guard is the fb-skipped-trust tally and the count of confident fallback entries on trust-linked plans, which must not regrow past the 5 named in the accuracy log"
     }
   ]
 }

@@ -10810,3 +10810,97 @@ follows is from search-engine snippets only, and is labelled as such.
   open `https://www.401k.live/plans/shiel-sexton-company-inc/` and
   `.../structure-man-holding-company-inc/` in a browser — a 30-second check
   that answers whether they dedupe by EIN or keep both slugs.
+
+## 2026-09-16 (v128) — the prior-year fallback published plan-level junk for money the newest filing says is in a master trust: 87 plans / 2,379,942 participants
+
+**Found by the participant-weighted random draw from PUBLISHED lineups** (the
+method change recorded 2026-09-15): Medtronic, ProHealth and 3M came up in
+one draw, all three defective, all three prior-year fallbacks on
+master-trust plans. Sized from the store, no sampling.
+
+- **What was wrong:** the fallback loop in `fetch-4i.mjs` replaces the lineup
+  whenever the newest filing yields no confident menu and a prior-year
+  filing does. It never asked WHY the newest filing had none. For a plan in
+  a master trust the answer is that the schedule is one line — Medtronic
+  `Interest Held in Master Trust` (stmt), Northrop `Contribution Plans
+  Master Trust` 89% (trustPtr), First American `Master Trust – at fair
+  value` 98% — and the rejection is CORRECT. The loop then opened the 2023
+  filing, where the same shape happened to clear the band, and published
+  whatever it found as a confident plan-level menu: `le 0 0 1f` (Form 5500
+  checkbox coordinates) at 89% of Northrop Grumman's $44.4B / 151,108
+  people, `Collective funds` 73% of Walgreen (254,452), `Trust` 50% of
+  PepsiCo (161,067), `At fair value` 77% of Comcast, `Various (includes`
+  73% of Medtronic (55,692), UPMC's participating-employer roster (112,002
+  and 93,730), `Target date funds` 35% of Macy's (163,125).
+  **87 plans / 2,379,942 participants.** For **67 of them (1,923,080)** the
+  linked TRUST has its own confident lineup — the real menu — which the
+  plan-level junk was displacing on the page. The frontend's shape guard
+  (`app.js` ~651: trust-interest row >50%, or <=8 rows with a >=60% top)
+  caught 43 / 1,106,903 and **missed 44 / 1,273,039**: Macy's, PepsiCo,
+  Charter, American Airlines, Delta, UPMC twice, ProHealth, 3M,
+  International Paper, Kraft Heinz, MassMutual. Every guard was silent
+  because each is keyed to a shape and these are nine different shapes with
+  one cause.
+- **The change (fetch-4i, v128):** `plan` objects now carry `mtiaAck`, and the
+  fallback loop refuses to accept a prior-year LINEUP — features are
+  untouched — when the plan is trust-linked and any of: (a) the linked trust
+  has a confident lineup in the status the run started with; (b) the newest
+  parse is `trustPtr` or `stmt`; (c) the newest parse is one line carrying
+  >=85% of its sum — Koch's own schedule reads `Trust` at 92.7%, the wrapped
+  tail of `...Defined Contribution Master / Trust`, which `trustPtr` names on
+  Georgia-Pacific, Molex and Guardian only because their copies broke the
+  line one word later. An unlinked `trustPtr` refuses too. New tally
+  `fb-skipped-trust`, counted per plan (an OUTCOME: the fallback would have
+  published), with a log line naming which condition fired and what was
+  being served.
+- **Deliberately narrower than "linked to a trust", and the members say why.**
+  All 20 opaque-trust members were traced (population, not sample). Norfolk
+  Southern's trust holds only its stock fund and its newest filing has no
+  schedule at all (`NOT FOUND`); Mars PN 001 the same; Xcel's newest is the
+  fair-value note at 2.92x. Their prior-year menus (24 / 45 / 25 real rows)
+  are plausibly still true and nothing better exists — they STAY, 16,485
+  participants. The 67 confident-trust members were all printed: the eight
+  whose fallback looks like a real menu (3M, Vontier x2, Allison x2,
+  Kilpatrick x2, Cardiothoracic; 51,364 people) each have a trust lineup
+  with at least as many rows — the same menu, current year — so nothing is
+  lost there either.
+- **Predicted outcome, to be checked against the run's tally:**
+  `fb-skipped-trust` = 67 + 12 opaque (Northrop, Medtronic, Georgia-Pacific
+  x2, Coca-Cola, First American x2, Molex, Guardian, Husch Blackwell,
+  Viterra, Vons) + 3 by arithmetic (Koch, Blank Rome, Hexcel) = **82 plans /
+  2,249,553 participants**; confident fallback entries on trust-linked plans
+  fall 87 -> 5. **Two junk fallbacks survive and are named:** Delta Air Lines
+  (112,027; newest is 27 rows at 0.44 headed `OPERATIONS COMPANY,` — the
+  UPMC roster class, queued) and Mars PN 003 (1,877; newest is the
+  fair-value note `CCTs` 58% at 3.07x, band-hi). Neither is a trust pointer
+  and the guard must not pretend to know they are junk; their own classes
+  own them.
+- **What the reader sees after:** 67 plans get the trust's real menu (bit
+  2048 already renders it); 15 get the opaque-trust sentence (bit 131072)
+  instead of `le 0 0 1f`. Entries keep their features (`keep` is
+  `confident || features`), so nothing else on those pages moves.
+- **Two zero-instruments in the sizing script, both caught by the printout:**
+  `loadStatus()` returns `{plans, generated, at}` and indexing the wrapper
+  gave 0 / 0 / 0; and CLAUDE.md's gloss of the shard hash (`sum(c*31) % 64`)
+  is not the hash (`h*31 + c >>> 0`), which read 0 rows for every plan. Both
+  printed a number that was impossible for the population — a confident
+  lineup with 0 rows — and the impossibility, not the code, is what said
+  so. CLAUDE.md corrected.
+- **Positive AND negative control through the real `PARSE_SHARD` path** (new
+  `ONLY_ACKS_4I=<acks>` restricts the production work list to named filings;
+  `fallbacks.json` is artifact-only, so a local one was built from the
+  stored `fbAck`s): Walgreen refused by (a), Medtronic by (b), Koch by (c),
+  each landing `c=0` with no `fb`; Norfolk Southern and Mars PN 001 kept
+  their 24- and 45-row fallbacks. **The first version of the tally printed
+  NOTHING on this same control** — the counter sat on the fallback's parse,
+  and when the newest filing already supplies features the loop never opens
+  the prior year at all. Moved to the decision point: `fb-skipped-trust`
+  (trust-held, prior-year candidate, no confident newest lineup) and
+  `fb-skipped-trust-served` (the subset whose stored entry was a confident
+  fallback — the reader-facing count, predicted 82). Control tally:
+  `fb-skipped-trust=3 fb-skipped-trust-served=3`.
+- **Prevention:** `fb-skipped-trust` in every shard tally; the specimen
+  `trust-held-plan-prior-year-fallback` (Medtronic) pinned with the note that
+  diff-lineups cannot see a fetch-4i change; and the count of confident
+  fallback entries on trust-linked plans is now a number to re-derive after
+  every re-parse — it must not regrow past the 5 named above.

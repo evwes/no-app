@@ -124,6 +124,19 @@ Order of business:
       number; `docs/accuracy-log.md` 2026-09-16, publishing
       `1VTTHX` where the same PDF prints a legend giving the fund name).
 
+      **SHIPPED FROM THIS ITEM, v128 (2026-09-16 21:xxZ, not owner-gated —
+      it is a fabrication guard, not new coverage): the prior-year fallback
+      no longer publishes a plan-level lineup for a master-trust plan whose
+      newest schedule is a trust pointer / statement / one >=85% line, or
+      whose linked trust has its own confident lineup.** 87 plans /
+      2,379,942 ppl were in that shape (Walgreen, Macy's, PepsiCo, Comcast,
+      Charter, Northrop, Medtronic, UPMC x2); predicted 82 refused, 5 kept —
+      three real menus (Norfolk Southern, Mars 001, Xcel) and two junk ones
+      that belong to OTHER classes here: **Delta Air Lines 112,027 ppl is the
+      UPMC roster shape** and Mars 003 is the fair-value note. Check
+      `fb-skipped-trust` in the run's tally against 82 before mirroring.
+      `docs/accuracy-log.md` 2026-09-16 (v128).
+
       **The design note this bump should carry, from UPMC:** a ratio near 1.0
       is evidence for a menu only among tables that are CANDIDATE menus. Any
       table that apportions the plan — an employer roster, a fair-value

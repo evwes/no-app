@@ -287,6 +287,11 @@ function buildWorkList() {
         assetsEOY: row[i.assetsEOY] || 0,
         label: row[i.sponsorName],
         codes: i.codes != null ? row[i.codes] || "" : "",
+        /* v128: the master-trust link, so the prior-year fallback can refuse
+         * to publish a plan-level menu for money the newest filing says is
+         * held in a trust. Absent from the object until now, so the fallback
+         * had no way to know. */
+        mtiaAck: i.mtiaAck != null ? row[i.mtiaAck] || "" : "",
       });
     }
   } catch (e) {
@@ -395,6 +400,16 @@ const ocrCandidates = work.filter((p) => {
   return !st || !st.c || !st.f;
 }).length;
 if (PARSE_SHARD != null) work = work.filter((_, i) => i % PARSE_SHARDS === PARSE_SHARD);
+/* ONLY_ACKS_4I=<ack,ack,...>: restrict the work list to named filings so a
+ * change can be positive-controlled through the REAL production path (shard
+ * mode, delta output) on a handful of plans instead of the universe. Testing
+ * the parts is not testing the path — v118's null-deref lived in the glue
+ * between parts that each passed. Never set in the workflow. */
+if (process.env.ONLY_ACKS_4I) {
+  const only = new Set(process.env.ONLY_ACKS_4I.split(",").map((s) => s.trim()).filter(Boolean));
+  work = work.filter((p) => only.has(p.ack));
+  console.log(`ONLY_ACKS_4I: work list restricted to ${work.length} of ${only.size} named acks`);
+}
 console.log(`work list: ${work.length} filings to (re)parse at parser v${PARSER_VERSION}` +
   (PARSE_SHARD != null ? ` (matrix shard ${PARSE_SHARD}/${PARSE_SHARDS})` : "") + `; fetching up to ${BATCH} this run`);
 console.log(`ocr candidates: ${ocrCandidates}`);
@@ -905,19 +920,88 @@ for (const plan of work) {
    * soon as a candidate is confident, so a plan that already works costs one
    * read as before and only a failing plan pays for the extra attempts. */
   const fbCandidates = fb ? [fb, ...(Array.isArray(fb.alt) ? fb.alt : [])] : [];
+  /* v128: THE FALLBACK MUST NOT PUBLISH A PLAN-LEVEL MENU FOR MONEY THE NEWEST
+   * FILING SAYS IS IN A MASTER TRUST.
+   *
+   * Measured 2026-09-16 on the v127 store: 87 plans / 2,379,942 participants
+   * were served a prior-year fallback LINEUP while linked to a master trust.
+   * The newest filing was REJECTED CORRECTLY every time it was traced —
+   * Medtronic's 4i is one line, "Interest Held in Master Trust" (stmt); 3M's
+   * is the fair-value note at 2.33x; First American's is "Master Trust – at
+   * fair value" at 98% — and the fallback then went to the 2023 filing and
+   * accepted whatever cleared the band there: "le 0 0 1f" (Form 5500 checkbox
+   * coordinates) at 89% of Northrop Grumman's $44B, "Various (includes" at 73%
+   * of Medtronic, "Collective funds" at 73% of Walgreen (254,452 people),
+   * "Trust" at 50% of PepsiCo, UPMC's participating-employer roster. For 67 of
+   * the 87 (1,923,080 participants) the linked TRUST has a confident lineup
+   * that the plan-level junk was DISPLACING on the page; the frontend's shape
+   * guard caught 43 and missed 44 (1,273,039 people: Macy's, PepsiCo, Charter,
+   * American Airlines, Delta, UPMC twice, ProHealth, 3M, International Paper).
+   *
+   * The refusal is deliberately NARROWER than "linked to a trust". Norfolk
+   * Southern's trust holds only its stock fund and its newest filing has no
+   * readable schedule at all; Mars PN 001 and Xcel likewise. Their prior-year
+   * menus are plausibly still the truth and nothing better exists, so they
+   * stay. The lineup is refused only when (a) the linked trust ITSELF has a
+   * confident lineup — the reader then sees the real menu — or (b) the newest
+   * parse says the money is in a trust (`trustPtr`) or produced only
+   * statement vocabulary (`stmt`), because a plan whose current schedule is
+   * "interest in master trust" does not have a plan-level menu, last year or
+   * this. Trust confidence is read from the status the run STARTED with; a
+   * trust parsed in the same run is at most one run stale, which is fine.
+   *
+   * FEATURES are untouched: the prior year's notes are still read and still
+   * fill absent features (v119), and the loop below keeps running for them. */
+  const trustLineupC = !!(plan.mtiaAck && status.plans[plan.mtiaAck] && status.plans[plan.mtiaAck].c);
+  /* (c) the same pointer by ARITHMETIC rather than vocabulary: a trust-linked
+   * plan whose newest schedule is ONE line carrying >=85% of the sum. Koch's
+   * own schedule reads "Trust" at 92.7% — the wrapped continuation of "Plan
+   * interest in Koch Companies Defined Contribution Master / Trust", which
+   * `trustPtr` recognises on Georgia-Pacific, Molex and Guardian only because
+   * their copies wrapped one word later. A name test was beaten by a line
+   * break; the share test is not. Blank Rome 99.8%, Hexcel 97.5% likewise. */
+  const newestTop = parsed.found && Array.isArray(parsed.funds) && parsed.funds.length
+    ? Math.max(...parsed.funds.map((f) => f.value || 0)) / (parsed.funds.reduce((s, f) => s + (f.value || 0), 0) || 1) : 0;
+  const trustHeld = !!(plan.mtiaAck && (trustLineupC || parsed.trustPtr || parsed.stmt || newestTop >= 0.85)) || !!parsed.trustPtr;
+  /* Count the refusal HERE, at the decision, not inside the loop: when the
+   * newest filing already supplied features the loop below never opens the
+   * prior year at all (there is nothing left to read it for), and a counter
+   * placed on the fallback's parse printed NOTHING in the positive control —
+   * three plans correctly refused, tally silent. `fb-skipped-trust` is every
+   * trust-held plan that had a prior-year candidate and no confident newest
+   * lineup, i.e. every plan the old code would have opened the prior year
+   * FOR A LINEUP; `fb-skipped-trust-served` is the subset whose stored entry
+   * IS a confident fallback — the reader-facing change, predicted 82 of 87
+   * on the v127 store. The second is zero on every run after the first. */
+  if (trustHeld && fbCandidates.length && !(parsed.found && isConfident(parsed))) {
+    failCounts["fb-skipped-trust"] = (failCounts["fb-skipped-trust"] || 0) + 1;
+    const prevEntry = buckets[shardOf(plan.ack)][plan.ack];
+    const served = prevEntry && prevEntry.confident && prevEntry.fb;
+    if (served) failCounts["fb-skipped-trust-served"] = (failCounts["fb-skipped-trust-served"] || 0) + 1;
+    if (fbAbsentLogged < 40) {
+      console.log(`${tag}: prior-year lineup REFUSED — ` +
+        `${trustLineupC ? "linked trust has its own confident lineup" : parsed.trustPtr ? "newest schedule points at the master trust" : parsed.stmt ? "newest schedule is statement vocabulary" : `newest schedule is one line at ${(newestTop * 100).toFixed(0)}%`}` +
+        (served ? `; was serving ${prevEntry.funds ? prevEntry.funds.length : 0} rows from its ${prevEntry.fb} filing` : "") +
+        (features ? "" : "; prior year still read for features"));
+      fbAbsentLogged++;
+    }
+  }
   for (const cand of fbCandidates) {
     if (fbUsed) break;
-    if (!(!(parsed.found && isConfident(parsed)) || !features)) break;
+    const lineupWanted = !(parsed.found && isConfident(parsed)) && !trustHeld;
+    if (!lineupWanted && features) break;
     try {
       const b = await analyzePdf(cand.a, plan, `${tag} fb${cand.y}`);
       if (b.err) { fbFailed = true; if (failLogged < 60) { console.log(`${tag}: fb${cand.y} unusable — ${b.err}`); failLogged++; } }
       else {
-        if (b.parsed.found && isConfident(b.parsed) && !(parsed.found && isConfident(parsed))) {
+        if (b.parsed.found && isConfident(b.parsed) && !(parsed.found && isConfident(parsed)) && trustHeld) {
+          /* refused for the lineup (counted above); read for features only */
+        } else if (b.parsed.found && isConfident(b.parsed) && !(parsed.found && isConfident(parsed))) {
           parsed = b.parsed;
           usedOcr = b.usedOcr;
           fbUsed = cand;
           fbFailed = false;   // an earlier candidate's failure is moot once one works
-        } else if (!(parsed.found && isConfident(parsed))) {
+        } else if (!(parsed.found && isConfident(parsed)) && !trustHeld) {
           /* THE SECOND SILENT PATH. A fallback that LOADS but parses to
            * nothing publishable leaves exactly the same trace as one that was
            * never attempted: no `fb`, a `dx` from the primary, and no error

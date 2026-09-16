@@ -87,7 +87,10 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   still come from the newest filing when present). Merge prints a
   CONFIDENCE DIFF (gained/lost acks) every run — sample LOSSES before the
   next parser change.
-- `data/lineups/NN.json` (64 shards, hash = sum(c*31) % 64) — full entries
+- `data/lineups/NN.json` (64 shards, Java-style hash `h = (h*31 + c) >>> 0`,
+  `% 64` — fetch-4i's `shardOf`; this line used to say `sum(c*31) % 64`,
+  which files 20251010111855NAL0012423024001 in shard 34 when it lives in
+  00 and read 0 rows for every plan in a sizing script 2026-09-16) — full entries
   (funds, sma detail, features with source quotes). Fetched per-plan on demand.
 - `data/fees/NN.json` (64 shards, same ack hash) — per-plan fee schedule
   from prep: Sch C Part I item 2 provider rows {n,c,d,i,e,t,fm} (≤12, filed
