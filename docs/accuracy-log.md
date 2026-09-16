@@ -9970,3 +9970,81 @@ So this class is **cosmetic, and recorded as such.** 7,843 must never be quoted.
   and neither is subtle; they were simply never in the frame. **A sampling
   frame is a claim about which population matters, and running only one of them
   for three cycles asserted that claim without stating it.**
+
+## 2026-09-16 (cycle 13:1xZ) — a low-yield draw, and two zeros that meant opposite things
+
+Frame: **UNIFORM OVER PLANS**, alternating with last cycle's participant-
+weighted draw as that entry's prevention requires. 26 plans, fresh seed. This
+is the frame that answers "what is the project getting wrong" rather than "what
+do readers see", and it found much less — which is the expected result and is
+recorded rather than padded.
+
+**Two candidate classes came out of the read, both were measured by OUTCOME,
+and both returned 0. The two zeros were not the same kind of zero**, and
+telling them apart is the whole content of this entry.
+
+### B — a leading `of ` welded onto every row name. THE ZERO IS REAL.
+
+Markel Group (5,102p) publishes `of Fidelity Contrafund Commingled Pool -
+Class A`; Progressive (77,919p) publishes `of Vanguard Institutional 500 Index
+Trust`. The filing's description column reads "<N> shares of <fund>", the share
+count lands elsewhere, and the preposition stays. **17 plans / 131,707
+participants / 365 rows.**
+
+The obvious harm would be a blocked ticker, so that was the test: rows blank now
+that resolve once `of ` is stripped. **0.** Checked directly rather than
+inferred — `fundTickerInfo("of Vanguard 500 Index Adm, mutual fund")` returns a
+ticker **as filed**, prefix and trailing description and all, and so do the
+Contrafund and Norfolk Southern spellings. The rows that fail (`of 500 Index`,
+`of Contrafund Commingled Pool`) fail for the ordinary table-absence reason the
+Pratt work already named, with or without the prefix.
+
+**So this class is cosmetic: an ugly displayed name for 131,707 readers, zero
+effect on the fee cell.** Recorded, not queued.
+
+### A — letter-spaced OCR defeats the shipped generic-name guard. THE ZERO WAS MY BUG.
+
+Omaha Track (318p) publishes a four-row lineup reading `M u tu al F u n d` at
+63.6%, `C o m m o n C o ll e ctiv e Tru s t` at 32.4%, `N o te s R e ce iv ab
+le fro m P arti cip an ts` at 3.6%. Those are generic TYPE names — the exact
+thing `audit-generic-names.mjs` exists to catch, a standing guard with a
+baseline of 208 and a threshold of 230 — and it matches none of them, because
+its predicates are anchored exact matches and the OCR has inserted spaces
+inside the words.
+
+**My first measurement said 0 rows guard-missed, and that 0 was my de-spacer.**
+It turned `M u tu al F u n d` into `Mu tu al Fund`, which the shipped regex
+fails for a second, unrelated reason — so the instrument could not have
+returned non-zero for the thing being asked about. The control that settled it:
+squashing ALL whitespace makes the spaced and clean forms byte-identical
+(`mutualfund` both ways), and the shipped guard **CATCHES** `Mutual Fund`,
+`Common Collective Trust` and `Registered Investment Company` while **MISSING**
+every spaced form. So the guard is genuinely blind here.
+
+**Size, after discounting my own predicate a third time:** the re-measurement
+reported 11 rows / 8 plans / 59,090 ppl, but reading the members shows my
+substring match swept in `AB Sma l l Ca p Growth Portfol i o Cl a s s Z` and a
+Toyota row, both REAL FUNDS, and two `Notes Receivable from Participants` rows,
+which are a legitimate holding line rather than a fabrication. **The genuine
+count is ~6 rows across 5 plans / ~6,400 participants** — Omaha Track (32% of
+its menu), HCW Management (11%), 10 Roads Express, Omaha Truck Center, Great
+Plains Communications. Do not quote 11 / 59,090.
+
+**The finding worth keeping is not the size — it is that a guard's baseline is
+a claim about the whole store, and this one silently excludes the OCR'd
+population**, which is precisely where junk names are most likely. Only 53
+letter-spaced rows exist in the published store at all, so the blind spot is
+real and small. A secondary observation from the same control: `Money Market
+Fund` is not in the guard's vocabulary even spelled cleanly.
+
+- **Change:** none. Both are too small to justify a `PARSER_VERSION` bump on
+  their own; class A rides along if the fabrication bump happens.
+- **Prevention, and it is the third instance in two cycles: A ZERO IS A RESULT
+  ONLY IF THE INSTRUMENT COULD HAVE RETURNED NON-ZERO.** Both zeros here looked
+  identical in the output. One meant "the class is harmless", the other meant
+  "my measuring code is broken", and the only thing that separated them was
+  running a positive control on the instrument before believing its answer —
+  the same rule the FTBFX verification failed on 2026-09-15 and the vesting
+  truncation hypothesis passed on 2026-09-12. **Add the control in the same
+  run that produces the number, exactly as printing the members is now
+  standard for a non-zero.**

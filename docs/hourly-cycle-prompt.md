@@ -154,6 +154,13 @@ Order of business:
    which population matters; running one frame three times asserts that claim
    without stating it.**
 
+**A ZERO IS A RESULT ONLY IF THE INSTRUMENT COULD HAVE RETURNED NON-ZERO
+(2026-09-16).** Two outcome measures returned 0 in one cycle and the zeros meant
+opposite things: one class really was harmless, the other's 0 came from a broken
+de-spacer that could not have matched anything. They were indistinguishable in
+the output. **Run a positive control on the instrument in the SAME run that
+produces the number** — the mirror of "print the members" for a non-zero.
+
 Accuracy protocol: SIZE before fixing, RE-SIZE after (v101 was projected at 65%, delivered 2.5% in-bucket). INSTRUMENT before believing a cause — `WAMPO_TRACE=rows|cands node scripts/trace-filing.mjs <ack>` prints the parser's working. A measuring script is code and earns the same suspicion (size-features.mjs reported 30% where the truth was 7%; gap-verify's table detector fired on Statements of Changes until it required rows that NAME PRODUCTS). Prove a new guard FIRES with a negative control. Read stores through scripts/lib-schema.mjs. Parser changes: parser-gate green + a specimen + a decoy + an entry in docs/defect-specimens.json. Frontend changes: smoke-test.mjs AND map-test.mjs, bump ?v= stamps together. Log every accuracy defect permanently in docs/accuracy-log.md.
 
 Before 7:00 AM Eastern, docs/morning-brief.md current and committed — decision-shaped, HELD-and-why first.
