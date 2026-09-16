@@ -10358,3 +10358,46 @@ today. The re-parse will report it.
   #326 (v125); dispatched when that finishes.
 - **Prevention:** the specimen pins the indentation scope, so a future widening
   that re-leaks the issuer past the block fails the corpus check.
+
+## 2026-09-16 (cycle 17:0xZ) — run #326 FAILED, committed anyway, and the partial-store guard caught it unaided
+
+First time the automated `partial-store` check has fired on a real failure
+since it was added on 2026-09-10 — it exists precisely because "the eye is what
+missed it on #239 AND on #244".
+
+**What happened.** #326 (the v125 full re-parse) concluded **failure** and still
+committed `ed635159`, which is the documented `if: always()` merge behaviour and
+not a bug. One of twenty parse jobs, `parse (10)`, was killed mid-step at ~56
+minutes — its "Parse filings (shard 10)" step reports `in_progress` with no
+conclusion, and its **`upload-artifact` step is `pending`, not skipped**, so the
+shard's delta never reached the merge. The merge ran without it.
+
+**The store said so before any human reading of the run.** pv 125 covers
+**94.88%**; **3,442 acks (5.01%) remain at pv 124** — shard 10's population,
+unrefreshed. `pvTopShare` fell 99.9 -> **94.9**, under the 97% threshold, and
+**HIGH went 4 -> 5**. Every other coverage figure is byte-identical (confident
+60,089, lineups 59,755, match 43,027, vesting 52,825), so nothing regressed;
+5% of the universe simply was not re-read. `dl` moved 78 -> 87.
+
+**NOT MIRRORED.** A partial store is exactly the thing the mirror gate exists to
+stop, and the numbers were checked before the decision rather than after.
+
+**Cause NOT claimed.** The job logs return HTTP 404, so the reason is
+unavailable. What is established: ~56 minutes against 42-50 for every other
+shard, a step with no conclusion, and no artifact upload — the shape of a
+runner-level kill, which is the documented OOM mode for parse jobs (Jul 24).
+That is a shape, not a diagnosis, and it is recorded as one. **A diagnosis that
+cannot be reproduced is not a diagnosis.**
+
+**The re-dispatch IS the discriminating test.** v126 was already committed, and
+it re-parses everything (pv 125 != 126), so #328 both ships the issuer-header
+fix and re-reads shard 10's 3,442 stale acks. If shard 10 fails again with the
+same signature, that is the #244/#246 determinism test and points at code or at
+a specific filing rather than at a transient; if it passes, the transient
+reading survives. Either way the next run answers it, at no extra cost.
+
+- **Change:** none needed. The guard worked.
+- **Worth stating plainly because the opposite is the usual entry here:** the
+  machinery caught this with no help. The pv distribution, the `pvTopShare`
+  field and the HIGH count all moved together and all pointed the same way, and
+  the only judgement required was to read them before mirroring.
