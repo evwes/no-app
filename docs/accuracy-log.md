@@ -10576,3 +10576,35 @@ and the confirmation is recorded in the next entry when it lands.
   71-row regression inside it and a 9,835-row defect beside it. **Measure a
   change's losses as carefully as its gains, on the same store, before calling
   the number.**
+
+## 2026-09-16 (addendum) — the fallback's win confirmed with the exact shipped expression; CI green
+
+Closes the two items the previous entry left pending.
+
+**site-test #67 concluded `success` in CI** on `b864be8c`. The sandbox
+`map-test` failure was `ERR_CERT_AUTHORITY_INVALID` on Google Fonts, and the
+control settled it before CI did: an **untouched HEAD worktree fails
+identically** in the sandbox, so the failure is the egress proxy's CA, not the
+change. Recorded so the next sandbox red on that test is read as environmental
+first and checked second, not the other way round.
+
+**The exact `app.js` expression, OLD vs NEW, over 1,694,737 published rows:**
+
+| | rows | plans | participants |
+|---|---|---|---|
+| GAIN a ticker | **10,040** | 2,596 | **3,180,229** |
+| LOSE a ticker | **0** | 0 | 0 |
+
+Zero losses is the strict-superset claim, now measured rather than argued. The
+figure is above the 9,835 estimated with an equivalent expression because the
+shipped one also strips the leaked `*`, which recovers the 205 rows v126's
+defect had blocked. (Row denominator differs from the 1,705,524 quoted
+elsewhere: this count is rows in confident lineups whose plan is in
+`plans-all`; the other includes entries without a plan row. Not a discrepancy,
+a different frame.)
+
+**Scale, so it lands correctly:** this single frontend line adds ~30x the fee
+cells that v126's re-parse did (335), because it repairs a lookup that had been
+silently failing since v67. **The re-examination found it by measuring the
+shipped change's LOSSES on the same store as its gains** — which is the rule
+the previous entry wrote and this one confirms.
