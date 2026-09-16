@@ -10652,3 +10652,53 @@ same tab. A reload resolves both; nothing to fix.
 - **Prevention:** when a filed field exists specifically to bridge a
   discontinuity (line 4 exists so a renamed plan can be traced), its absence
   from the store is a findability defect, not a data gap.
+
+## 2026-09-16 (cycle 19:0xZ) — "the provider house name as the whole holding row" is NOT a thin filing: 6 of 6 opened have the fund names, and we drop them
+
+Uniform draw, 26 plans. Kona Brewery (253p) publishes a CONFIDENT 3-row menu —
+`Vanguard` **97.3%**, `Participant's Loan Account`, `Macquarie`. Project memory
+names this shape and says *"nothing is wrong with our parse; the FILING is that
+thin."* That claim was sized here and then tested, and it fails the test.
+
+**Size, shipped predicate (`HOUSE_ONLY` / `INSTITUTION_SUFFIX` lifted from
+lib-4i's source, not retyped):** confident lineups whose LARGEST row is a bare
+house name — **49 plans / 27,970 participants at >=90% of the menu**, and
+**81 plans / 55,353 at 50-90%.** `audit-dominant-row` (held at 0 since v105)
+tests generic TYPE names and cannot see a house name, so the ≥90% band walks
+past it — the same guard-blindness as OCR letter-spacing, in a second
+vocabulary.
+
+**Cause, discriminated on the filings rather than assumed.** Six opened:
+
+| plan | filing layout | ours? |
+|---|---|---|
+| Bell Nursery (1,991p) | `Vanguard Target Retirement 2035 Fund` in the DESCRIPTION column on its own line, blank lines, then `Vanguard  0  2,775,373` | **yes** |
+| Hufriedy (1,131p) | identical template | **yes** |
+| Northeast Security (2,141p) | identical | **yes** |
+| Mountville Mills (1,144p) | identical, `BlackRock LifePath Index 2050 K` above `BlackRock` | **yes** |
+| Metropolitan Family (1,911p) | identical, `Dodge & Cox Income X` above `Dodge & Cox` | **yes** |
+| Wood Smith Henning (737p) | one-line rows `John Hancock separate account- American Balance Fund`, published as `John Hancock` | **yes, different mechanism, unread** |
+
+**Mechanism, from `WAMPO_TRACE=rows`:** every row prints `nameBuf = []`,
+`descCol = "0"` (the COST column), `house=true` → name from IDENTITY. The
+description line sits 3-4 BLANK lines above the identity+value line, and
+`parseRows` resets `nameBuf` on every blank line, so the fund name never
+reaches the row. Every vintage becomes `Vanguard`, and they MERGE into one row
+at 95% — v100's wrapped-identity merge in a third layout, this time with
+whitespace as the separator. One recordkeeper template accounts for 5 of 6.
+
+**What this corrects:** the `few`-bucket note ("4 of 30 are the house name,
+nothing publishable, nothing wrong with our parse") and the "FILING SHAPE THAT
+SPANS THREE BUCKETS" paragraph in project memory both treat the shape as a
+filing limitation. **For the PUBLISHED, confident population it is a parser
+defect on every specimen read**, and the `few` population is not thereby
+proven thin either — it was read from stored row names, never from filings.
+
+- **Change:** none tonight. A parser change (carry a value-less description
+  line across blank lines when the next value-bearing line is a bare house
+  name) needs a `PARSER_VERSION` bump, a Bell Nursery specimen, and a
+  negative control against v103's glued-header defect. Queued at the top of
+  the parser bump: **130 plans / 83,323 participants, all 6 specimens ours.**
+- **Prevention:** a claim that a filing "is that thin" is a claim about the
+  PDF and must be made from the PDF. This one was made from stored row names
+  and held for a week.
