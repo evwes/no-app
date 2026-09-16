@@ -1,210 +1,217 @@
 {
- "why": [
-  "One filing per KNOWN defect class, pinned. The local corpus is sampled by",
-  "assets and therefore contains whatever is common, not what is broken:",
-  "diff-lineups.mjs reported 'no changes' for v101, v103 and v104 because not",
-  "one of those classes was in it. Three fixes shipped on a single-filing check",
-  "because the tool that should have measured them was looking elsewhere.",
-  "diff-lineups ensures every ack here is present before it compares, so a",
-  "regression in any solved class fails loudly instead of silently.",
-  "Add an entry whenever a parser version fixes a new class. Never remove one."
- ],
- "specimens": [
-  {
-   "ack": "20251009163950NAL0007320609001",
-   "class": "wrapped-identity",
-   "fixed": "v100",
-   "sponsor": "Amgen",
-   "was": "six wrapped CIT rows merged onto 'Collective Trust Fund' = $3.59B, 47% of the plan"
-  },
-  {
-   "ack": "20251008110159NAL0002941891001",
-   "class": "grand-total-row",
-   "fixed": "v101",
-   "sponsor": "Fremont Motor",
-   "was": "the schedule's own unlabelled total parsed as a holding; ratio 1.974, menu lost scoring to a 'for benefits' fragment"
-  },
-  {
-   "ack": "20251014195156NAL0003665937004",
-   "class": "placeholder-row",
-   "fixed": "v101",
-   "sponsor": "Emory",
-   "was": "published 'See attachment' at $5.53B, 99.7% of the plan, while confident"
-  },
-  {
-   "ack": "20260618172339NAL0002209875001",
-   "class": "short-fund-name",
-   "fixed": "v102",
-   "sponsor": "SAP America",
-   "was": "'Explorer', 'Wellington', 'Windsor II' renamed to the category and merged, 26% of $9.2B"
-  },
-  {
-   "ack": "20251010104425NAL0012869808001",
-   "class": "group-header-and-cost-column",
-   "fixed": "v103",
-   "sponsor": "Physician's Computer",
-   "was": "header glued into names + 'Participant Directed' read as a description; one 'Vanguard' row = 75% of the plan"
-  },
-  {
-   "ack": "20250730154304NAL0002504883001",
-   "class": "vintage-residue",
-   "fixed": "v104",
-   "sponsor": "W. L. Gore",
-   "was": "'American Funds 2010 R6' minus the house leaves '2010 r6'; twelve vintages merged into $852M, 43%"
-  },
-  {
-   "ack": "20251007174512NAL0008660608001",
-   "class": "dominant-non-fund-row",
-   "fixed": "v105",
-   "sponsor": "Comcast",
-   "was": "no 4i table in the filing at all; published 'At fair value' at 91% of a $19.69B plan"
-  },
-  {
-   "ack": "20251007065040NAL0007624240001",
-   "class": "filed-aggregate-control",
-   "fixed": "v105",
-   "sponsor": "MetLife Group",
-   "was": "NOT a defect — the filing genuinely reports participant-directed investments in aggregate. Control: must stay non-confident without being called a merge. BREACHED ONCE (run #223, v109 data): the prior-year FALLBACK ladder rescued its 2023 filing (ack 20241008081623NAL0017271841001) whose two aggregates split dominance 58/41 under the single-row >=90% test, padded by auditor letterhead rows (Tel:/Fax:/Suite as $8.3M/$7.7M/$3.6M holdings) — shipped confident, caught in the mirror-gate review before reaching main. v110 closed it (aggSplit + letterhead condemnation); the 2023 ack is a gate specimen with expect stmt"
-  },
-  {
-   "ack": "20251010104106NAL0007965633001",
-   "class": "shared-description-column",
-   "fixed": "v109",
-   "sponsor": "State Farm",
-   "was": "description column 'Common Collective Trust Portfolio' outranked 18 real Vanguard names ('Portfolio' residue defeated typeOnly); menu merged to 3 rows and withheld as stmt. NOTE the original entry blamed region scoring against a 55-fund menu — tracing showed the region was FOUND and the column-role choice was the defect: 20 funds, confident at 0.99 after the fix"
-  },
-  {
-   "ack": "20251007154215NAL0002583779001",
-   "class": "unlinked-master-trust-OPEN",
-   "fixed": null,
-   "sponsor": "Genentech",
-   "was": "OPEN: whole schedule is one line, 'Plan Interest in Roche U.S. Retirement Plans Master Trust'; trust not linked"
-  },
-  {
-   "ack": "20241015175511NAL0015204099001",
-   "class": "winner-total-row",
-   "fixed": "v107",
-   "sponsor": "Marriott Vacations",
-   "was": "mangled total 'Participants $' at 95.4% of plan assets pushed a real 31-fund menu to ratio 1.88; dropped post-selection, menu confident at 0.93"
-  },
-  {
-   "ack": "20251010135413NAL0013242288001",
-   "class": "trust-note-aggregates-control",
-   "fixed": null,
-   "sponsor": "HCA",
-   "was": "CONTROL: must stay non-confident — trust-note aggregates ('Corporate bonds', 63.7% participation-in-master-trust row); the first v107 draft shipped it as a confident $19B lineup"
-  },
-  {
-   "ack": "20260407122345NAL0004976899001",
-   "class": "winner-flip-control",
-   "fixed": null,
-   "sponsor": "Capital Group",
-   "was": "CONTROL: 73 rows at ratio 1.000 exactly — a per-candidate version of the total-drop flipped its winner to a junk sibling with a $511M 'American Funds' house-merge row"
-  },
-  {
-   "ack": "20251008095017NAL0005364081001",
-   "class": "image-table-page",
-   "fixed": "v108",
-   "sponsor": "Compass Group USA",
-   "was": "the whole 40-fund menu embedded as a JPEG under a native-text 4i title page; every unreadable-page test passed, OCR never fired, note aggregates published band-hi at 2.49x (312,914 participants). NOTE: the fix lives in fetch-4i's OCR path — the text-only parse diff-lineups runs stays non-confident by design; the census (band-hi count) and the pinned J&J/Home Depot refuse-cases are the guard"
-  },
-  {
-   "ack": "20260228103447NAL0002165200001",
-   "class": "aggsplit-three-fund-control",
-   "fixed": "v111",
-   "sponsor": "Hari Donuts Batavia",
-   "was": "CONTROL: genuine three-fund Vanguard menu ('Total Stock Market Index' + Intl + Bond) — v110's split-aggregate test read all three 'Total ...' names as aggregates and withdrew five such menus; must stay CONFIDENT"
-  },
-  {
-   "ack": "20250930150209NAL0012438417001",
-   "class": "generic-dominant-row",
-   "fixed": "v111",
-   "sponsor": "Premier Care Dental",
-   "was": "2023 fallback published 'Mutual Funds' at 99.4% of a $55M plan as a confident lineup after v110's letterhead cleanup promoted the region into band; aggOnly now also condemns GENERIC_TYPE_NAME dominant rows (fallback ack 20241007155035NAL0016364977001 is the gate specimen)"
-  },
-  {
-   "ack": "20251002152713NAL0000650817001",
-   "class": "note-aggregate-outscores-menu",
-   "fixed": "v112",
-   "sponsor": "Erlanger Health System",
-   "was": "a 3-row fair-value note ('Mutual funds'/GIC, ratio 0.991) out-scored the real 14-row menu (0.859) on ratio closeness; the few bucket's in-band 1-2 row subclass hid ~2/8 such menus. Post-selection swap to a >=7-row product-named wide-band candidate when the winner is <=4 category-named rows"
-  },
-  {
-   "ack": "20251009140957NAL0007115377001",
-   "class": "psa-pointer-control",
-   "fixed": null,
-   "sponsor": "(Master PSA plan)",
-   "was": "CONTROL: 'Master Pooled Separate Account' 2-row pointer must stay non-confident — no menu candidate exists, the v112 swap must not invent one"
-  },
-  {
-   "ack": "20251015130631NAL0006348128001",
-   "class": "caption-only-schedule",
-   "fixed": "v114",
-   "sponsor": "AGC Biologics",
-   "was": "a 31-fund Great Gray flexPATH menu under the statutory COLUMN CAPTION with no page title anywhere; the parser seeds only from titles, so the whole filing read as 'nohead' and published nothing"
-  },
-  {
-   "ack": "20250718164408NAL0000988931001",
-   "class": "consolidated-schedule-control",
-   "fixed": "v114",
-   "sponsor": "Lucas, Horsfall, Murphy & Pindroh",
-   "was": "CONTROL: a CONSOLIDATED attachment declaring 'TOTAL NET ASSETS 30,643,999.64' against a $14.2M Schedule H. Page 2 of it sums to 1.32x and would publish 11 of ~60 holdings as the menu. Must stay non-confident: no fragment of a schedule bigger than the plan is that plan's lineup"
-  },
-  {
-   "ack": "20251007154215NAL0002583779001",
-   "class": "trust-pointer-caption-control",
-   "fixed": null,
-   "sponsor": "Genentech",
-   "was": "CONTROL: $14.3B plan whose entire 4i schedule is one line, 'Plan Interest in Roche U.S. Retirement Plans Master Trust'. The caption seed must reach it and still publish nothing — the honest gap is the unlinked trust (Sch D names EIN 94-2347624 PN 002; no MTIA filing for it exists in the datasets), not the schedule"
-  },
-  {
-   "ack": "20251015113118NAL0002329043004",
-   "class": "fair-value-note-swallowed-by-title",
-   "fixed": "v115",
-   "sponsor": "Vandalia Health",
-   "was": "the region seeded from the statutory TITLE spanned the fair-value hierarchy note as well as the table, so the note's own totals summed beside the real menu and the plan sat at 2.71x plan assets. Caption-seeded retry on band-hi gives the table its own candidate: 33 rows at ratio 0.97, every value verbatim in the filing (the one apparent exception is the deliberate SDBA aggregation of the two disclosed BrokerageLink lines)"
-  },
-  {
-   "ack": "20251013200651NAL0002687120001",
-   "class": "band-hi-retry",
-   "fixed": "v115",
-   "sponsor": "SRI International",
-   "was": "$787M plan, 40 rows at ratio 0.999 after the band-hi retry, sum reconciling to Schedule H within 0.1%; pinned as the value case for the class"
-  },
-  {
-   "ack": "20250729115442NAL0007362866001",
-   "class": "unit-list-before-in-thousands",
-   "fixed": "v116",
-   "sponsor": "Paychex",
-   "was": "schedule headed '(Dollars, Units, and Shares in Thousands)'; every scale-marker arm required the unit noun immediately before the phrase, so the real 39-fund menu was read unscaled at 0.23% of a $2.26B plan and lost to the fair-value note. 30 rows at ratio 0.987 once scaled"
-  },
-  {
-   "ack": "20260618145652NAL0004417570001",
-   "class": "ocr-lineup-blocked-by-junk-text-parse",
-   "fixed": "v117",
-   "sponsor": "Meta Platforms",
-   "was": "214-page filing whose entire attachment is a substituted-font cipher. The cipher text yielded ONE junk row, so parsed.found was true and the combined text+OCR parse was never attempted (that branch was gated on imgPages). The OCR text holds the real 21-fund menu at ratio 1.000 of a $22.4B / 84,993-participant plan. NOTE: diff-lineups runs the TEXT parse only, so this specimen stays non-confident there by design - the guard is the census and the >=7-row menu-shape floor"
-  },
-  {
-   "ack": "20251028143720NAL0007009761001",
-   "class": "recordkeeper-statement-title",
-   "fixed": "v121",
-   "sponsor": "Commercial Vehicle Group",
-   "was": "$67.3M / 2,483 participants publishing nothing. Its 29-fund Fidelity table sits under 'SUMMARY OF NET TRUST ASSETS' - a phrase already in stopRe, where it TERMINATES regions (Sierra Space appended that page as a duplicate of its 4i table and the region summed both copies). Same phrase, two jobs, exactly the trusteeHead trap. Safe to seed from because this branch runs only when the document has ZERO 4i and zero trustee headings, so there is no real table for the stop to protect. 29 rows at ratio 0.987, and the parser picks Total Market Value over the adjacent Historical Cost and Share Balance columns. NOTE the earlier hand review filed this plan as 'not ours, a cash-flow statement' - that described a different page of the same filing"
-  },
-  {
-   "ack": "20250903155630NAL0015538593001",
-   "class": "recordkeeper-statement-title",
-   "fixed": "v121",
-   "sponsor": "Medical Device Components",
-   "was": "the bare template title 'STATEMENT OF NET ASSETS' over a 27-fund table totalling $24,938,574.35 against a Schedule H of $24,938,574 - to the cent. The `$` anchor on this title is load-bearing: 'Statement of Net Assets AVAILABLE FOR BENEFITS' is the audited balance sheet, three rows and no menu, and three other filings in this same bucket lead with it. Do not relax the anchor to a \\b"
-  },
-  {
-   "ack": "20241015094447NAL0029166113001",
-   "class": "adviser-deck-control",
-   "fixed": null,
-   "sponsor": "Avis Mobility Ventures / Flexcar",
-   "was": "CONTROL: must stay NON-CONFIDENT. 'Current Plan Assets' looks like a recordkeeper title and is not one - it is a heading inside an adviser's 'Plan Investment Review' deck, laid out in two columns with an asset-allocation table beside the holdings. Seeding from it published '0.0 Median Market Cap' at $1,097,571 (46% of the sum), '0.95 Median Market Cap', and asset classes glued into names ('Large Growth JPMorgan Large Cap Growth R6') at ratio 0.936 - inside the band, so only the NAMES give it away. The title was measured, found to do this, and left out of v121. Blank is correct for this $2.6M / 166-participant plan until the two-column layout can be read"
-  }
- ]
+  "why": [
+    "One filing per KNOWN defect class, pinned. The local corpus is sampled by",
+    "assets and therefore contains whatever is common, not what is broken:",
+    "diff-lineups.mjs reported 'no changes' for v101, v103 and v104 because not",
+    "one of those classes was in it. Three fixes shipped on a single-filing check",
+    "because the tool that should have measured them was looking elsewhere.",
+    "diff-lineups ensures every ack here is present before it compares, so a",
+    "regression in any solved class fails loudly instead of silently.",
+    "Add an entry whenever a parser version fixes a new class. Never remove one."
+  ],
+  "specimens": [
+    {
+      "ack": "20251009163950NAL0007320609001",
+      "class": "wrapped-identity",
+      "fixed": "v100",
+      "sponsor": "Amgen",
+      "was": "six wrapped CIT rows merged onto 'Collective Trust Fund' = $3.59B, 47% of the plan"
+    },
+    {
+      "ack": "20251008110159NAL0002941891001",
+      "class": "grand-total-row",
+      "fixed": "v101",
+      "sponsor": "Fremont Motor",
+      "was": "the schedule's own unlabelled total parsed as a holding; ratio 1.974, menu lost scoring to a 'for benefits' fragment"
+    },
+    {
+      "ack": "20251014195156NAL0003665937004",
+      "class": "placeholder-row",
+      "fixed": "v101",
+      "sponsor": "Emory",
+      "was": "published 'See attachment' at $5.53B, 99.7% of the plan, while confident"
+    },
+    {
+      "ack": "20260618172339NAL0002209875001",
+      "class": "short-fund-name",
+      "fixed": "v102",
+      "sponsor": "SAP America",
+      "was": "'Explorer', 'Wellington', 'Windsor II' renamed to the category and merged, 26% of $9.2B"
+    },
+    {
+      "ack": "20251010104425NAL0012869808001",
+      "class": "group-header-and-cost-column",
+      "fixed": "v103",
+      "sponsor": "Physician's Computer",
+      "was": "header glued into names + 'Participant Directed' read as a description; one 'Vanguard' row = 75% of the plan"
+    },
+    {
+      "ack": "20250730154304NAL0002504883001",
+      "class": "vintage-residue",
+      "fixed": "v104",
+      "sponsor": "W. L. Gore",
+      "was": "'American Funds 2010 R6' minus the house leaves '2010 r6'; twelve vintages merged into $852M, 43%"
+    },
+    {
+      "ack": "20251007174512NAL0008660608001",
+      "class": "dominant-non-fund-row",
+      "fixed": "v105",
+      "sponsor": "Comcast",
+      "was": "no 4i table in the filing at all; published 'At fair value' at 91% of a $19.69B plan"
+    },
+    {
+      "ack": "20251007065040NAL0007624240001",
+      "class": "filed-aggregate-control",
+      "fixed": "v105",
+      "sponsor": "MetLife Group",
+      "was": "NOT a defect — the filing genuinely reports participant-directed investments in aggregate. Control: must stay non-confident without being called a merge. BREACHED ONCE (run #223, v109 data): the prior-year FALLBACK ladder rescued its 2023 filing (ack 20241008081623NAL0017271841001) whose two aggregates split dominance 58/41 under the single-row >=90% test, padded by auditor letterhead rows (Tel:/Fax:/Suite as $8.3M/$7.7M/$3.6M holdings) — shipped confident, caught in the mirror-gate review before reaching main. v110 closed it (aggSplit + letterhead condemnation); the 2023 ack is a gate specimen with expect stmt"
+    },
+    {
+      "ack": "20251010104106NAL0007965633001",
+      "class": "shared-description-column",
+      "fixed": "v109",
+      "sponsor": "State Farm",
+      "was": "description column 'Common Collective Trust Portfolio' outranked 18 real Vanguard names ('Portfolio' residue defeated typeOnly); menu merged to 3 rows and withheld as stmt. NOTE the original entry blamed region scoring against a 55-fund menu — tracing showed the region was FOUND and the column-role choice was the defect: 20 funds, confident at 0.99 after the fix"
+    },
+    {
+      "ack": "20251007154215NAL0002583779001",
+      "class": "unlinked-master-trust-OPEN",
+      "fixed": null,
+      "sponsor": "Genentech",
+      "was": "OPEN: whole schedule is one line, 'Plan Interest in Roche U.S. Retirement Plans Master Trust'; trust not linked"
+    },
+    {
+      "ack": "20241015175511NAL0015204099001",
+      "class": "winner-total-row",
+      "fixed": "v107",
+      "sponsor": "Marriott Vacations",
+      "was": "mangled total 'Participants $' at 95.4% of plan assets pushed a real 31-fund menu to ratio 1.88; dropped post-selection, menu confident at 0.93"
+    },
+    {
+      "ack": "20251010135413NAL0013242288001",
+      "class": "trust-note-aggregates-control",
+      "fixed": null,
+      "sponsor": "HCA",
+      "was": "CONTROL: must stay non-confident — trust-note aggregates ('Corporate bonds', 63.7% participation-in-master-trust row); the first v107 draft shipped it as a confident $19B lineup"
+    },
+    {
+      "ack": "20260407122345NAL0004976899001",
+      "class": "winner-flip-control",
+      "fixed": null,
+      "sponsor": "Capital Group",
+      "was": "CONTROL: 73 rows at ratio 1.000 exactly — a per-candidate version of the total-drop flipped its winner to a junk sibling with a $511M 'American Funds' house-merge row"
+    },
+    {
+      "ack": "20251008095017NAL0005364081001",
+      "class": "image-table-page",
+      "fixed": "v108",
+      "sponsor": "Compass Group USA",
+      "was": "the whole 40-fund menu embedded as a JPEG under a native-text 4i title page; every unreadable-page test passed, OCR never fired, note aggregates published band-hi at 2.49x (312,914 participants). NOTE: the fix lives in fetch-4i's OCR path — the text-only parse diff-lineups runs stays non-confident by design; the census (band-hi count) and the pinned J&J/Home Depot refuse-cases are the guard"
+    },
+    {
+      "ack": "20260228103447NAL0002165200001",
+      "class": "aggsplit-three-fund-control",
+      "fixed": "v111",
+      "sponsor": "Hari Donuts Batavia",
+      "was": "CONTROL: genuine three-fund Vanguard menu ('Total Stock Market Index' + Intl + Bond) — v110's split-aggregate test read all three 'Total ...' names as aggregates and withdrew five such menus; must stay CONFIDENT"
+    },
+    {
+      "ack": "20250930150209NAL0012438417001",
+      "class": "generic-dominant-row",
+      "fixed": "v111",
+      "sponsor": "Premier Care Dental",
+      "was": "2023 fallback published 'Mutual Funds' at 99.4% of a $55M plan as a confident lineup after v110's letterhead cleanup promoted the region into band; aggOnly now also condemns GENERIC_TYPE_NAME dominant rows (fallback ack 20241007155035NAL0016364977001 is the gate specimen)"
+    },
+    {
+      "ack": "20251002152713NAL0000650817001",
+      "class": "note-aggregate-outscores-menu",
+      "fixed": "v112",
+      "sponsor": "Erlanger Health System",
+      "was": "a 3-row fair-value note ('Mutual funds'/GIC, ratio 0.991) out-scored the real 14-row menu (0.859) on ratio closeness; the few bucket's in-band 1-2 row subclass hid ~2/8 such menus. Post-selection swap to a >=7-row product-named wide-band candidate when the winner is <=4 category-named rows"
+    },
+    {
+      "ack": "20251009140957NAL0007115377001",
+      "class": "psa-pointer-control",
+      "fixed": null,
+      "sponsor": "(Master PSA plan)",
+      "was": "CONTROL: 'Master Pooled Separate Account' 2-row pointer must stay non-confident — no menu candidate exists, the v112 swap must not invent one"
+    },
+    {
+      "ack": "20251015130631NAL0006348128001",
+      "class": "caption-only-schedule",
+      "fixed": "v114",
+      "sponsor": "AGC Biologics",
+      "was": "a 31-fund Great Gray flexPATH menu under the statutory COLUMN CAPTION with no page title anywhere; the parser seeds only from titles, so the whole filing read as 'nohead' and published nothing"
+    },
+    {
+      "ack": "20250718164408NAL0000988931001",
+      "class": "consolidated-schedule-control",
+      "fixed": "v114",
+      "sponsor": "Lucas, Horsfall, Murphy & Pindroh",
+      "was": "CONTROL: a CONSOLIDATED attachment declaring 'TOTAL NET ASSETS 30,643,999.64' against a $14.2M Schedule H. Page 2 of it sums to 1.32x and would publish 11 of ~60 holdings as the menu. Must stay non-confident: no fragment of a schedule bigger than the plan is that plan's lineup"
+    },
+    {
+      "ack": "20251007154215NAL0002583779001",
+      "class": "trust-pointer-caption-control",
+      "fixed": null,
+      "sponsor": "Genentech",
+      "was": "CONTROL: $14.3B plan whose entire 4i schedule is one line, 'Plan Interest in Roche U.S. Retirement Plans Master Trust'. The caption seed must reach it and still publish nothing — the honest gap is the unlinked trust (Sch D names EIN 94-2347624 PN 002; no MTIA filing for it exists in the datasets), not the schedule"
+    },
+    {
+      "ack": "20251015113118NAL0002329043004",
+      "class": "fair-value-note-swallowed-by-title",
+      "fixed": "v115",
+      "sponsor": "Vandalia Health",
+      "was": "the region seeded from the statutory TITLE spanned the fair-value hierarchy note as well as the table, so the note's own totals summed beside the real menu and the plan sat at 2.71x plan assets. Caption-seeded retry on band-hi gives the table its own candidate: 33 rows at ratio 0.97, every value verbatim in the filing (the one apparent exception is the deliberate SDBA aggregation of the two disclosed BrokerageLink lines)"
+    },
+    {
+      "ack": "20251013200651NAL0002687120001",
+      "class": "band-hi-retry",
+      "fixed": "v115",
+      "sponsor": "SRI International",
+      "was": "$787M plan, 40 rows at ratio 0.999 after the band-hi retry, sum reconciling to Schedule H within 0.1%; pinned as the value case for the class"
+    },
+    {
+      "ack": "20250729115442NAL0007362866001",
+      "class": "unit-list-before-in-thousands",
+      "fixed": "v116",
+      "sponsor": "Paychex",
+      "was": "schedule headed '(Dollars, Units, and Shares in Thousands)'; every scale-marker arm required the unit noun immediately before the phrase, so the real 39-fund menu was read unscaled at 0.23% of a $2.26B plan and lost to the fair-value note. 30 rows at ratio 0.987 once scaled"
+    },
+    {
+      "ack": "20260618145652NAL0004417570001",
+      "class": "ocr-lineup-blocked-by-junk-text-parse",
+      "fixed": "v117",
+      "sponsor": "Meta Platforms",
+      "was": "214-page filing whose entire attachment is a substituted-font cipher. The cipher text yielded ONE junk row, so parsed.found was true and the combined text+OCR parse was never attempted (that branch was gated on imgPages). The OCR text holds the real 21-fund menu at ratio 1.000 of a $22.4B / 84,993-participant plan. NOTE: diff-lineups runs the TEXT parse only, so this specimen stays non-confident there by design - the guard is the census and the >=7-row menu-shape floor"
+    },
+    {
+      "ack": "20251028143720NAL0007009761001",
+      "class": "recordkeeper-statement-title",
+      "fixed": "v121",
+      "sponsor": "Commercial Vehicle Group",
+      "was": "$67.3M / 2,483 participants publishing nothing. Its 29-fund Fidelity table sits under 'SUMMARY OF NET TRUST ASSETS' - a phrase already in stopRe, where it TERMINATES regions (Sierra Space appended that page as a duplicate of its 4i table and the region summed both copies). Same phrase, two jobs, exactly the trusteeHead trap. Safe to seed from because this branch runs only when the document has ZERO 4i and zero trustee headings, so there is no real table for the stop to protect. 29 rows at ratio 0.987, and the parser picks Total Market Value over the adjacent Historical Cost and Share Balance columns. NOTE the earlier hand review filed this plan as 'not ours, a cash-flow statement' - that described a different page of the same filing"
+    },
+    {
+      "ack": "20250903155630NAL0015538593001",
+      "class": "recordkeeper-statement-title",
+      "fixed": "v121",
+      "sponsor": "Medical Device Components",
+      "was": "the bare template title 'STATEMENT OF NET ASSETS' over a 27-fund table totalling $24,938,574.35 against a Schedule H of $24,938,574 - to the cent. The `$` anchor on this title is load-bearing: 'Statement of Net Assets AVAILABLE FOR BENEFITS' is the audited balance sheet, three rows and no menu, and three other filings in this same bucket lead with it. Do not relax the anchor to a \\b"
+    },
+    {
+      "ack": "20241015094447NAL0029166113001",
+      "class": "adviser-deck-control",
+      "fixed": null,
+      "sponsor": "Avis Mobility Ventures / Flexcar",
+      "was": "CONTROL: must stay NON-CONFIDENT. 'Current Plan Assets' looks like a recordkeeper title and is not one - it is a heading inside an adviser's 'Plan Investment Review' deck, laid out in two columns with an asset-allocation table beside the holdings. Seeding from it published '0.0 Median Market Cap' at $1,097,571 (46% of the sum), '0.95 Median Market Cap', and asset classes glued into names ('Large Growth JPMorgan Large Cap Growth R6') at ratio 0.936 - inside the band, so only the NAMES give it away. The title was measured, found to do this, and left out of v121. Blank is correct for this $2.6M / 166-participant plan until the two-column layout can be read"
+    },
+    {
+      "ack": "20251014134355NAL0003059329001",
+      "class": "units-marker-above-region-head",
+      "fixed": "v125",
+      "sponsor": "US Foods",
+      "was": "'(In thousands)' sits 3 lines ABOVE the 'Identity of Issuer' caption that seeds the region, so `marked` never saw it; the 23-row menu parsed with every value correct but summed to 0.001 of plan assets, isConfident rejected it, and the plan fell back to its 2023 filing - publishing a 1.26x overshoot AND the false sentence 'the newest filing's public copy has no readable schedule'"
+    }
+  ]
 }

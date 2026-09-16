@@ -10206,3 +10206,95 @@ across two plans.**
   participants for a class whose worst single member has 31,062 and $4.38B.
   When defining a class by a coincidence (name digits == value), ask what the
   defect does when the coincidence FAILS, and measure that arm too.
+
+## 2026-09-16 (v125) — US Foods: the units marker sits ABOVE the region head, so a correct 23-row menu was thrown away and a FALSE sentence published in its place
+
+**Owner sent the filing**, pointing out that the target-date funds are listed
+under a `T. Rowe Price Associates, Inc:` issuer header above the fund list while
+our page shows them bare. That is real and is defect (2) below. Chasing it found
+a larger one first.
+
+### The chain, instrumented rather than inferred
+
+US Foods 401(k), 33,662 participants, $2.48B. The published menu is served from
+the **2023** filing at ratio **1.26**, and the page tells readers:
+
+> *"Schedule H line 4i attachment from the plan's 2023 filing — the newest
+> filing's public copy has no readable schedule"*
+
+**That sentence is false.** The 2024 filing downloads HTTP 200 and its 4i
+schedule is right there, ending `Total Investment Balance $2,486,068`.
+
+`trace-filing.mjs` on the newest ack prints the cause in one line:
+
+```
+working tree (v124): 23 rows, ratio 0.001, CONFIDENT=false
+[cand] rows=23 ratio=0.001 scale=1 ...      <- the ONLY candidate
+```
+
+Twenty-three rows, **every value correct**, summing to 0.001 of plan assets — a
+clean factor of 1000. The schedule is headed `(In thousands)`, and that marker
+sits **three lines ABOVE** the `Identity of Issuer` caption that seeds the
+region. `marked` tested `lines.slice(regionStart, end)`, so it never saw it, the
+scaled candidate was never created, `isConfident` rejected the parse on ratio,
+and the prior-year fallback took over.
+
+So one out-of-scope regex cost: a correct current menu, replaced by a stale one
+that overshoots by 26%, plus a published claim about the filing that is untrue.
+
+### The fix, and why it is safe by construction rather than by luck
+
+Scan a short window ABOVE the region head for the unit markers only; rows still
+come from the region. **A marker only ADDS a scaled candidate beside the
+unscaled one, and selection is by ratio-closeness** — so over-scaling a genuine
+full-dollar table by 1000 would require the scaled ratio to be CLOSER to 1,
+which means the table really was in thousands. The change cannot force scaling,
+only offer it.
+
+Verified: `[cand] rows=23 ratio=1.003 scale=1000` now appears, CONFIDENT=true,
+`Retirement 2030 Fund` = $321,301,000 against the filing's `321,301`.
+Parser gate green. `diff-lineups` **+1 confidence gained, 0 lost, 0 fabricated
+rows introduced** across 203 filings.
+
+**The 0-of-202 result before pinning the specimen was worthless and is recorded
+as such.** The corpus is sampled by assets, so it holds what is common rather
+than what is broken — the same reason it reported "no changes" for v101, v103
+and v104. Only after adding US Foods to `docs/defect-specimens.json` did the
+tool show the change doing anything at all. **A regression tool that cannot
+detect your fix cannot clear it either.**
+
+### (2) STILL OPEN — the issuer header, which is what the owner actually asked about
+
+The filing is HIERARCHICAL: `T. Rowe Price Associates, Inc:` heads a block of
+indented children named only `Retirement 2005 Fund`, `Retirement 2030 Fund`, …
+We publish the child rows bare, so a reader cannot tell whose Retirement 2030
+fund it is and **no ticker resolves** — which feeds straight into the ~80%
+blank-fee-cell gap. v125 does NOT fix this; the values become right, the names
+stay ambiguous.
+
+The parser already does this correctly elsewhere — Louisiana-Pacific's lineup in
+the same store publishes `T. Rowe Price Retirement 2030 Fund` — so this is a
+layout the header-attachment path does not cover, not a missing capability.
+**Queued, not fixed.**
+
+### (3) A THIRD BLIND SPOT, found while sizing and worth more than the size
+
+I tried to size the class from the store: ratio <= 0.02 with >=$1M of assets is
+the ~1000x fingerprint, giving 95 acks / 2.2M participants, of which 34 are
+menu-shaped. **But US Foods is not among them** — and cannot be. Its status is
+`{c:1, f:1, fb:2023}` with **no `rt` and no `dx` at all**: when a prior-year
+fallback SUCCEEDS, the primary filing's failure diagnosis is discarded entirely.
+So my "0 plans currently served a fallback" line is not evidence of absence, it
+is evidence the store cannot see them, and **the true size of this class is
+unmeasured**. This is a third variant of the `fb-vanished` / `fb-rejected`
+blind spot already on the books: the fallback machinery erases exactly the
+diagnosis that would explain why it was needed. The 34 menu-shaped acks
+overlap the known `band-lo` bucket and several are master trusts, so that
+number is a ceiling for a different question, not this one.
+
+- **Change:** v125, shipped with the specimen pinned. Held for dispatch behind
+  in-flight run #325 and committed `[skip ci]`.
+- **Prevention:** `docs/defect-specimens.json` gains
+  `units-marker-above-region-head`. And the rule the 0-of-202 nearly hid:
+  **when a diff tool reports no change, prove it can see the case before
+  reading that as safety.**

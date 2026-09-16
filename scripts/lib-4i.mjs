@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 124;
+export const PARSER_VERSION = 125;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -1519,6 +1519,20 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
   for (const [s, end] of candidates) {
     const region = lines.slice(s, end);
     const regionText = region.join("\n");
+    // v125: the units-of-measure declaration lives in the schedule's TITLE
+    // BLOCK, which sits ABOVE the column caption that seeds the region, so a
+    // region-only scan cannot see it. US Foods prints "(In thousands)" three
+    // lines above "Identity of Issuer": its 23-row menu parsed with every
+    // value correct, summed to 0.001 of plan assets, was rejected by
+    // isConfident, and the plan fell back to its 2023 filing - publishing a
+    // 1.26x overshoot and telling readers the newest filing "has no readable
+    // schedule", which was false. Scan a short window ABOVE the head for the
+    // unit markers only; rows still come from the region itself.
+    // Safe by construction rather than by luck: a marker only ADDS a scaled
+    // candidate beside the unscaled one, and selection is by ratio-closeness,
+    // so over-scaling a genuine full-dollar table would require the scaled
+    // ratio to be CLOSER to 1 - i.e. the table really was in thousands.
+    const unitText = lines.slice(Math.max(0, s - 8), end).join("\n");
     const sharesLast = /current\s+value\s+shares(\s*\/?\s*par)?|shares\s+par\s*$/im.test(regionText);
     // header ends with an unrealized gain/loss column AFTER the value column
     // — without this the parser reads each row's GAIN as its value
@@ -1551,8 +1565,8 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
     // a unit noun, which is what makes it a units-of-measure declaration
     // rather than prose; measured over 325 cached filings it moves exactly
     // one, and moves nothing in the other direction.
-    const marked = /thousands? of dollars|\(in thousands|\(thousands|\(\$000|000s? omitted|(?:amounts?|dollars?|\$|\b[3sS]) ?in thousands|(?:amounts?|dollars?|units?|shares?)[^.\n]{0,30}in thousands|in 0{3}['’]?s?\)/i.test(regionText);
-    const markedM = /millions? of dollars|\(in millions|\(millions|(?:amounts?|dollars?|\$|\b[3sS]) ?in millions/i.test(regionText);
+    const marked = /thousands? of dollars|\(in thousands|\(thousands|\(\$000|000s? omitted|(?:amounts?|dollars?|\$|\b[3sS]) ?in thousands|(?:amounts?|dollars?|units?|shares?)[^.\n]{0,30}in thousands|in 0{3}['’]?s?\)/i.test(unitText);
+    const markedM = /millions? of dollars|\(in millions|\(millions|(?:amounts?|dollars?|\$|\b[3sS]) ?in millions/i.test(unitText);
     // a millions-stated header ADDS a small-value candidate scored at 1e6
     // only — it must never replace the normal parse: statement pages and
     // merged clusters mention millions in prose, and small-value mode on a
