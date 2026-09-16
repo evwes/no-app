@@ -63,6 +63,12 @@ see" — hit two verified defects in its first four plans.
 
 Both need the re-parse in row 3 below. Neither was started.
 
+**Shipped since (18:3xZ), from your US Foods filing:** v125 (US Foods off its 2023
+fallback — one plan, measured), v126 (issuer headers: 615 plans now name the
+firm), and — found while re-checking v126 — **a one-line frontend fix that
+fills 10,040 blank fee cells for 3.18M participants**, a lookup that had been
+silently failing since v67. All live on `8bae38c2`.
+
 ## Found overnight, NOT fixed — and one is large
 
 - **Macy's, 163,125 participants, $4.64B.** Its published menu carries, at

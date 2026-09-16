@@ -638,17 +638,28 @@ don't confuse them). Frontend: python http.server + Playwright at
   Nothing downstream was affected (no session acted on it), but it is exactly
   the copying-a-line-forward hazard this file warns about elsewhere, aimed at
   the file's own header. **Re-derive this line rather than editing the date.**
-- **LIVE on main: `a0bcf247` — MIRRORED 2026-09-16 12:3xZ.** Gate +0/-0
-  UNFORCED (main carried nothing the branch lacked), pv 124 at 99.9%, 78 fetch
-  failures, HIGH at the baseline of 4. Carries run #322's data plus the
-  Walmart/UPMC findings. Documentation only for readers — the two defects it
-  names need a `PARSER_VERSION` bump and are the owner's call.
-  **Earlier this hour, `5f1f3bbe` at 12:2xZ**, git check force-overridden on
-  evidence produced first: main's `11bc82c9` had a **byte-identical `plans`
-  array** (sole difference the `generated` timestamp), 0 acks and 0 plans the
-  branch lacked, pv differing on zero of 68,767, and its coverage line was a
-  duplicate of one the branch already had. As always `--force` covered the GIT
-  check alone; the data gate passed on its own.
+- **LIVE on main: `8bae38c2` — MIRRORED 2026-09-16 18:3xZ.** Gate +0/-0
+  unforced, **pv 126 at 99.9%**, HIGH at the baseline 4, `pages-build-deployment`
+  #448 building it. **What reached readers today, in order of size:**
+  (1) **the `app.js` issuer-prefix FALLBACK — +10,040 fee cells / 2,596 plans /
+  3,180,229 participants, 0 lost**, measured with the exact shipped expression;
+  the lookup had prepended the issuer since v67 and on those rows the prefix
+  (usually a TRUSTEE, "Empower Trust Company, LLC") broke a match the bare name
+  wins. Frontend only, no re-parse, site-test #67 green. (2) **v126** issuer
+  headers promoted to `iss`: 7,366 rows / 615 plans / 2.05M participants now
+  show the firm before the fund; 335 of those gained a ticker on their own.
+  (3) **v125** units marker above the region head: **exactly one plan** (US
+  Foods, off its 2023 fallback onto a correct 2024 menu) — measured, not a
+  class. **v127 is in flight (#330)**: strips the party-in-interest `*` my v126
+  header path leaked into 3,224 issuers (`Fidelity**`); the frontend already
+  strips it for display and lookup, so v127 is hygiene for the store.
+  **The verification pass that found (1) and the `*` defect measured the
+  shipped change's LOSSES on the same store as its gains.** `docs/accuracy-log.md`
+  2026-09-16, last four entries.
+  Intermediate mirrors 12:3x-18:1xZ (`904fc7a8`, `6539ec89`, `622c3540`,
+  `61ff7a4b`) were gate +0/-0 data-and-docs mirrors; run #326 (v125) FAILED on
+  a killed shard, committed a 94.88% partial store, was caught by the
+  automated `partial-store` HIGH and NOT mirrored; #328 (v126) re-read it whole.
 - **Previously: `021bbbe1` — MIRRORED 2026-09-16 10:1xZ.** Gate +0/-0, pv 124
   at 99.9%, HIGH at the baseline of 4. Documentation only again — no code or
   data change reached readers in this or the previous mirror.
