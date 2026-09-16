@@ -226,6 +226,13 @@
       "fixed": "v128",
       "sponsor": "Medtronic",
       "was": "newest 4i is one line, 'Interest Held in Master Trust' (stmt, correctly rejected); the prior-year fallback then published the 2023 filing's 'Various (includes' at 73% of $13.7B as a confident plan-level menu for 55,692 people. 87 plans / 2,379,942 participants were in this shape - Walgreen 'Collective funds' 73%, Northrop 'le 0 0 1f' 89%, PepsiCo 'Trust' 50%, UPMC's employer roster - and for 67 of them the linked TRUST's confident lineup was being displaced. NOTE: the fix is in fetch-4i's fallback loop (refuse the fallback LINEUP when the trust has a confident lineup, or the newest parse is trustPtr/stmt/one line >=85%); the text-only parse diff-lineups runs stays non-confident here by design. The guard is the fb-skipped-trust tally and the count of confident fallback entries on trust-linked plans, which must not regrow past the 5 named in the accuracy log"
+    },
+    {
+      "ack": "20251001101810NAL0013054545001",
+      "class": "bare-in-thousands-line",
+      "fixed": "v129",
+      "sponsor": "TJX Companies",
+      "was": "the 2024 schedule prints IN THOUSANDS as a line of its own between the title and the 'Identity of issuer' caption; every `marked` arm wanted parentheses or a preceding noun, so the real 31-row menu parsed unscaled at ratio 0.001 and 311,623 participants were served the 2023 fallback (ratio 0.84) with the false sentence that the newest copy has no readable schedule. v129 accepts a line that is ONLY the phrase: 31 rows at ratio 0.975 from the 2024 filing. Found by the participant-weighted random draw from PUBLISHED lineups"
     }
   ]
 }

@@ -10954,3 +10954,56 @@ return and the old name survived nowhere in the store.
   NONE the columns moved and the alias silently vanished — treat that like
   a coverage dip. The e2e control script is in the session scratchpad and
   is ten lines to recreate from this entry.
+
+## 2026-09-16 (v129) — a bare `IN THOUSANDS` line is not a units marker to the parser: TJX (311,623 participants) served from 2023 while its 2024 menu parsed at ratio 0.001
+
+**Found by the 21:07Z hands-on draw** — participant-weighted random draw from
+PUBLISHED lineups (Amazon, TJX, Tenet, a Fidelity Freedom Index plan,
+Callan). Four read as real menus. TJX was flagged `[PRIOR-YEAR FALLBACK]`
+at ratio 0.84, and the question a fallback always raises is why the newest
+filing failed.
+
+- **What was wrong:** TJX's 2024 schedule prints the units as a line of its
+  own — title, `AS OF DECEMBER 31, 2024`, `IN THOUSANDS`, then the
+  `Identity of issuer` caption. v125 already widened the window `marked`
+  reads to eight lines above the region head, so the line was IN the
+  window; but every arm of the regex wants parentheses (`(in thousands`)
+  or a preceding noun (`Dollars in thousands`, `amounts ... in thousands`),
+  and a bare `IN THOUSANDS` matched none. No candidate was scaled; the real
+  31-row menu scored ratio 0.001, a 34-row variant that also swallowed the
+  fair-value note's `Investments measured at net asset value` row scored
+  0.002, and the plan fell back to its 2023 filing at 0.84 — publishing a
+  year-old menu under the sentence that the newest copy has no readable
+  schedule. Untrue: the schedule is there and clean.
+- **The change (lib-4i, v129):** one alternative on `marked` and its millions
+  twin: a line that is ONLY the phrase, `^[ \t]*\(?in thousands\)?[ \t]*$`
+  with the `m` flag. A line consisting of nothing but the phrase cannot be
+  prose, which is the property the parenthesised forms were trusted for;
+  scaling only ever adds a candidate and ratio closeness picks, so a false
+  positive costs nothing (US Foods v125, same reasoning). TJX traces to
+  **31 rows at ratio 0.975, confident, from the 2024 filing.**
+- **Size:** measured in the background over the whole `band-lo` bucket and a
+  random 50 of the 1,180 fallback-served plans (newest PDF, text, the 12
+  lines above every `Identity of issue` caption tested for a bare line the
+  shipped regex would not have matched) — **result: 0 of 99 band-lo plans
+  (13 have a units line above the caption and the shipped regex matched all
+  13, i.e. parenthesised forms) and 0 of 48 fallback-served plans (2 of the
+  50 drawn are permanently-403).** So the measured class is TJX and nobody
+  else found: the fallback-served rate is 0/48, which bounds it at roughly
+  6% of the 1,180 (≈70 plans) at 95% and is probably far lower. **This is a
+  one-plan fix, like v125's US Foods, and it is stated as one** — 311,623
+  participants on a single page, not a class. It ships because it is
+  correct, costs nothing at parse time, and the re-parse is happening anyway
+  (the alias prep needs a run after #334). The census predicate here
+  (`dx=band-lo`, assets > 0, any trust link) gives 100 plans where the
+  CLAUDE.md table says 34 live; the table's predicate excludes trust-linked
+  plans, and the 100 is the right pool for a units-marker question because
+  a trust-linked plan's own schedule can still be unscaled.
+- **Also seen, recorded not fixed:** TJX's largest row is named
+  `JPMorgan Investment Management, Inc. JPMCB U.S. Active Core Equity
+  Fund - CF -` — the issuer column glued to the name on a row whose
+  description wraps. Real holding, real value, an ugly name; the v126
+  issuer split handles the header form of this, not the in-row form.
+- **Prevention:** TJX pinned as `bare-in-thousands-line` in
+  `docs/defect-specimens.json`; parser gate green; diff-lineups run over the
+  corpus before the commit.

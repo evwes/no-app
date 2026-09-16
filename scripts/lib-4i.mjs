@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 128;
+export const PARSER_VERSION = 129;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -1610,8 +1610,16 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
     // a unit noun, which is what makes it a units-of-measure declaration
     // rather than prose; measured over 325 cached filings it moves exactly
     // one, and moves nothing in the other direction.
-    const marked = /thousands? of dollars|\(in thousands|\(thousands|\(\$000|000s? omitted|(?:amounts?|dollars?|\$|\b[3sS]) ?in thousands|(?:amounts?|dollars?|units?|shares?)[^.\n]{0,30}in thousands|in 0{3}['’]?s?\)/i.test(unitText);
-    const markedM = /millions? of dollars|\(in millions|\(millions|(?:amounts?|dollars?|\$|\b[3sS]) ?in millions/i.test(unitText);
+    /* v129: a BARE `IN THOUSANDS` line — nothing else on it — between the
+     * schedule title and the column caption. TJX (311,623 participants,
+     * $3.67B) prints exactly that and matched no arm: every alternative wants
+     * parentheses or a preceding noun (`Dollars in thousands`, `(in
+     * thousands)`), so the 31-row menu parsed unscaled at ratio 0.001 and the
+     * plan was served from its 2023 filing instead. A line that is ONLY the
+     * phrase cannot be prose, so it is as safe as the parenthesised forms:
+     * scaling only ever ADDS a candidate and ratio closeness picks. */
+    const marked = /thousands? of dollars|\(in thousands|\(thousands|\(\$000|000s? omitted|(?:amounts?|dollars?|\$|\b[3sS]) ?in thousands|(?:amounts?|dollars?|units?|shares?)[^.\n]{0,30}in thousands|in 0{3}['’]?s?\)|^[ \t]*\(?in thousands\)?[ \t]*$/im.test(unitText);
+    const markedM = /millions? of dollars|\(in millions|\(millions|(?:amounts?|dollars?|\$|\b[3sS]) ?in millions|^[ \t]*\(?in millions\)?[ \t]*$/im.test(unitText);
     // a millions-stated header ADDS a small-value candidate scored at 1e6
     // only — it must never replace the normal parse: statement pages and
     // merged clusters mention millions in prose, and small-value mode on a

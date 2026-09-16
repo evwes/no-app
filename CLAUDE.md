@@ -661,6 +661,12 @@ don't confuse them). Frontend: python http.server + Playwright at
   the DATA arrives with the first prep run after #334, whose log must print
   `former names: N plans carry an alias`; NONE means the EFAST2 column names
   did not resolve. site-test #68 dispatched on it; read its conclusion.
+  **And `[skip ci]` v129 (21:3xZ): a bare `IN THOUSANDS` line is now a units
+  marker** — TJX (311,623 participants) moves off its 2023 fallback onto its
+  2024 menu, 31 rows at 0.975; sized at 0/99 band-lo and 0/48 fallback-served,
+  so it is a one-plan fix stated as one. Gate green, diff-lineups 0/0/0 over
+  203 corpus filings. The run dispatched after #334 carries v128 + v129 + the
+  alias prep together; its verdict must show TJX confident with no `fb`.
 - **Previously: `8bae38c2` — MIRRORED 2026-09-16 18:3xZ.** Gate +0/-0
   unforced, **pv 126 at 99.9%**, HIGH at the baseline 4, `pages-build-deployment`
   #448 building it. **What reached readers today, in order of size:**
