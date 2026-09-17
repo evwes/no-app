@@ -1,0 +1,22 @@
+# Seed list for scripts/fetch-fund-facts.mjs — one ticker per line, # comments.
+# First set (2026-09-17): the Ocala Breeders page's Vanguard Target Retirement
+# vintages, plus the two funds on the most plan pages. Extend by adding lines;
+# every ticker already in data/fund-facts.json is refreshed automatically.
+VTINX
+VTWNX
+VTTVX
+VTHRX
+VTTHX
+VFORX
+VTIVX
+VFIFX
+VFFVX
+VTTSX
+VLXVX
+VFIAX
+FXAIX
+VTSAX
+VBTLX
+VTIAX
+FCNTX
+FDGRX

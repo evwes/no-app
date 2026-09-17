@@ -1,0 +1,52 @@
+name: Fetch fund facts (ticker, expense ratio, YTD return)
+
+# The CCR sandbox cannot reach any fund-data host (egress policy, measured
+# 2026-09-17), so the retrieval runs here, where egress is open — the same
+# route the EDGAR 11-K fetch uses. The fund-facts agent's rules and the
+# checker still govern what gets written: nothing undated, nothing unsourced.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tickers:
+        description: "space-separated tickers (blank = refresh the file + seed list)"
+        required: false
+        default: ""
+  schedule:
+    - cron: "41 22 * * 1-5"   # weekdays 22:41Z, after the US close
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fund-facts
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/wampo-401k-live-nx1t4o
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Fetch
+        run: node scripts/fetch-fund-facts.mjs ${{ github.event.inputs.tickers }}
+      - name: Validate
+        run: node scripts/fund-facts-check.mjs
+      - name: Commit to the dev branch
+        run: |
+          git config user.name "wampo-data-bot"
+          git config user.email "noreply@anthropic.com"
+          git add data/fund-facts.json
+          if git diff --cached --quiet; then echo "no change"; exit 0; fi
+          git commit -qm "Update fund facts (expense ratio + YTD return with as-of dates) [skip ci]"
+          for i in 1 2 3 4; do
+            git pull -q --rebase origin claude/wampo-401k-live-nx1t4o && git push -q origin HEAD:claude/wampo-401k-live-nx1t4o && exit 0
+            sleep $((i * 5))
+          done
+          exit 1
