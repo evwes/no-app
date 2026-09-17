@@ -64,6 +64,33 @@ all defective, all this shape.
 - **8 small plans (6,910 people) regressed** from a good 2023 fallback to a
   half-plan 2024 parse. Queued, top of wam's brief.
 
+## Update 16:5xZ — v133 LIVE, and your Ocala page's blanks are filled on main
+
+- **Mirrored `38b5df36` to main at 16:4xZ.** v133 store (pv 133 at
+  99.87%): CUSIP-as-value phantoms gone from 34 trust lineups (HCA's $7.93B
+  `CUSIP:` row; 2.1M people across the class), Duke Energy's 16 funds and
+  H&R Block's 29 unfolded from a managed-account row (band ≥30%: 56 → 48
+  plans), the eight degraded swaps repaired (Saad 28 → 47 rows). Confident
+  +14. HIGH 9 = 4 baseline + 5 self-clearing.
+- **Your Ocala page:** the "Van" contraction AND 22 Vanguard funds the table
+  never carried (Equity Income, High-Yield Corporate, Inflation-Protected,
+  Real Estate Index, Value/Growth/Mid/Small-Cap Index, Developed Markets,
+  LifeStrategy x4, Federal and Treasury money markets …), every ticker and
+  ER verified against Vanguard's pages. **+43,962 rows / ~15,900 plans /
+  18.5M participants gain a ticker; 0 lose one; 0 flip.** Live on main.
+- **One real regression accepted on the record:** First American Financial
+  (17,155 people) lost its 29-row 2023 fallback menu — the 2024 filing's
+  region now reads `band-lo` and blocks the fallback. Top of the queue.
+- **v134 dispatched 16:4xZ** — a version bump only, because the agent's
+  fifth v133 part (fair-value category totals, 25 lineups) landed after the
+  v133 run was dispatched at the same number and would never have been
+  parsed in. Verdict ~17:45Z; overshoot must fall from 390.
+- **Two new fabrication classes queued** from the hourly draws: a
+  statement-of-changes line as a holding (Fidelity's own plan, `Employer,
+  net of forfeitures` $1.29B; ~40 plans) and a fund DESCRIPTION's wrapped
+  last line as the holding (National Medical Care 33% junk, BJC Health
+  System 100%; 171 plans / 315,474 people at ≥10% of the menu).
+
 ## Update 15:5xZ — your Ocala Breeders page: "Van Target Retire" tickers
 
 - The fund table expanded `VANG`, `VG`, `VGD` to Vanguard and never plain

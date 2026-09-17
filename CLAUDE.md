@@ -642,11 +642,12 @@ don't confuse them). Frontend: python http.server + Playwright at
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
   full-form** filers and 43,523 short-form; 68,767 parse-status entries.
-  **Store at v132 (branch AND main, `b13e5640`); `PARSER_VERSION` in the
-  tree is 132 — no unparsed parser change is waiting. OCR v8.**
-  **Re-derived from the local store 2026-09-17 14:0xZ** — `pv132` covers
-  68,675 of 68,767 acks (99.87%), tail pv106 18, pv98 10, pv123 10;
-  `lib-4i` exports 132. (On 2026-09-16 this line said v124 for four
+  **Store at v133 (branch AND main, `38b5df36`); `PARSER_VERSION` in the
+  tree is 134 — v133 part 5 (`e489915d`) is waiting on the v134 run
+  dispatched 16:4xZ. OCR v8.**
+  **Re-derived from the local store 2026-09-17 16:4xZ** — `pv133` covers
+  68,675 of 68,767 acks (99.87%), tail pv106 18, pv98 10, pv123 10, pv124
+  10; `lib-4i` exports 134. (On 2026-09-16 this line said v124 for four
   mirrors while every gate printed 126 —
   The line had said **v123 for at least four mirrors while every mirror gate in
   that window printed "dominant pv 124"** — the version number in the first
@@ -654,7 +655,26 @@ don't confuse them). Frontend: python http.server + Playwright at
   Nothing downstream was affected (no session acted on it), but it is exactly
   the copying-a-line-forward hazard this file warns about elsewhere, aimed at
   the file's own header. **Re-derive this line rather than editing the date.**
-- **LIVE on main: `b13e5640` — MIRRORED 2026-09-17 14:0xZ.** The v132 store
+- **LIVE on main: `38b5df36` — MIRRORED 2026-09-17 16:4xZ.** The v133 store
+  (pv 133 at 99.87%, confident 60,112 (+14: 19 master trusts gained, 5
+  lost), HIGH 9 = 4 + 5 self-clearing `reparse-loss`, overshoot 390
+  unchanged (part 5 not in this store), **`overshootTrust` 13 → 9**,
+  **`aggRow` 60 → 50 / 290,822 ppl**, managed-account fold ≥30% **56 → 48
+  plans**, generic-names 121, dominant-row 0, `tkShare` 20.43 → 20.98).
+  `--force-data` over five losses read by row name: four junk removals /
+  the fix working (New York Life's `(in thousands)` row, TE Connectivity,
+  Caterpillar PN 002, Solar Turbines' phone-number row) and **one real
+  regression — First American Financial (17,155 ppl) lost its 29-row 2023
+  fallback to a `band-lo` 2024 region; TOP OF THE QUEUE.** **What reached
+  readers:** the CUSIP-as-value phantom gone from 34 trust lineups (HCA's
+  $7.93B `CUSIP:` row, 2.1M ppl across the class); Duke Energy's 16 funds
+  and H&R Block's 29 unfolded from a managed-account row; the eight degraded
+  swaps (Saad 28 → 47 rows, Unex 7 → 32, Yale Club 7 → 31); **and the fund
+  table: "Van" + 22 Vanguard rows, +43,962 rows / ~15,900 plans / 18.5M
+  participants gain a ticker, 0 lost, 0 flipped** (owner-sent Ocala page).
+  `pages-build-deployment` #466 built it. `docs/accuracy-log.md` 2026-09-17
+  (run #347 verdict).
+- **Previously: `b13e5640` — MIRRORED 2026-09-17 14:0xZ.** The v132 store
   (pv 132 at 99.87%, confident 60,098 (+108), HIGH 4 + 5 self-clearing
   `reparse-loss`, **overshoot 451 → 390** / 524,860 ppl, generic-names 121,
   dominant-row 0, house sizer ≥90% set **48 → 5 plans**). Gate +113 / −5;

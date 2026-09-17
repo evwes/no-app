@@ -12653,3 +12653,65 @@ a documented gap, now a verified fund; the comment marks the move so a
 future reader does not read the old MUST_NOT line as still true. Frontend
 only, no re-parse. `node scripts/fund-er-test.mjs` and
 `node scripts/smoke-test.mjs` both green locally before push.
+
+## 2026-09-17 (run #347 verdict, 16:4xZ) — v133 landed and MIRRORED with the fund-table work: CUSIP phantoms gone from 34 trust lineups, managed-account band 56 → 48 plans, five losses read by name and one of them is a REAL regression (First American, 17,155 ppl), queued at the top
+
+**Run #347** (id 35239648209), dispatched 15:21Z on `96077123` (v133 parts
+1-4), concluded success 16:18Z, 57 min. Re-derived from the pulled store,
+not from any report:
+
+| check | v132 (`b13e5640`) | v133 (`2926b8a8`) |
+|---|---|---|
+| dominant pv | 132 at 99.87% | **133 at 99.87%** (68,675 of 68,767; tail pv106 18, pv98 10, pv123 10, pv124 10) |
+| confident | 60,098 | **60,112** (+14 net: +19 gained, all master trusts; −5) |
+| lineups | 59,761 | 59,757 |
+| HIGH | 4 + 5 self-clearing | **9** = 4 contrib baseline + 5 `reparse-loss` on the losses below |
+| overshoot (≥1.15x) | 390 / 524,860 ppl | 390 / 524,860 — UNCHANGED, as predicted: part 5 is not in this store |
+| `overshootTrust` (new, wam's trust-side check) | 13 / 803,266 baseline | **9 / 141,366** |
+| `aggRow` / `aggRowPpl` (new) | 60 / 462,394 | **50 / 290,822** (predicted ~52 / ~330,600) |
+| managed-account fold ≥30% (`sma-agg.mjs`) | 56 plans / 158,541 ppl | **48 / 48,116** — Duke and H&R Block out, Old Republic (14,343) now the top, queued |
+| generic-names audit | 121 | 121 (threshold 230) |
+| dominant-row audit | 0 | 0 |
+| `tkShare` | 20.43% | **20.98%** (the "Van" fix alone; the 22 Vanguard rows landed after this run's audit) |
+| `dl` | 91 | 91 |
+
+**The 19 gains are all master trusts** — the CUSIP fix (Marriott, Lincoln
+National, Eastman among them): a nine-digit CUSIP printed under its holding
+had been read as a dollar value, and HCA's trust (377,504 ppl) published
+`CUSIP:` at $7.93B = 26.7% of its menu. HCA's sum 1.30x → 0.93x.
+
+**The 5 losses, each read against its stored rows:**
+
+| plan | ppl | was | now | verdict |
+|---|---|---|---|---|
+| New York Life PN 006 | 15,340 | 5 rows led by `(in thousands)` $464M (40%) | `stmt` | **the fix working** — the units marker was the holding; the trust's real menu serves the page |
+| TE Connectivity | 15,295 | 28 rows, `Managed account holdings (3 positions)` at 66% | `band-hi` | **junk removal** (wam's item 3) |
+| Caterpillar PN 002 | 9,341 | 9 rows: `Investments Interest in the Master`, `accounts` | `stmt` | **junk removal** — the store-vs-local divergence wam recorded, settled by the re-parse |
+| Solar Turbines | 2,519 | 9 rows including `number 619-544-` (a phone number) | `stmt` | **junk removal**, same filing family |
+| **First American Financial** | **17,155** | **29 real rows** from the 2023 fallback (`Fidelity 500 Index Fund – Institutional`, `Vanguard Target 2030 Trust I` …) at ratio ~0.9 | **`band-lo`, no lineup at all** | **A REAL REGRESSION.** The newest filing's region now scores `band-lo` (readable but rejected), which blocks the prior-year fallback that had been serving a correct menu. wam's part 3 declined to tighten the trust guard on measurement (5 of 6 escapees publish genuine prior-year menus) and this is the sixth shape: not an escapee, a fallback LOST to a half-read 2024 region. Top of the next brief. |
+
+Caterpillar PN 001 and PN 003 (59,937 + more) and Printpack stay confident
+at pv 133 — the four "cannot reproduce locally" cases split 2 cleared, 3
+kept, and none survives as an unexplained divergence.
+
+**Mirrored `3f0a092f` → `38b5df36`** with `--force-data` on the five
+losses above (four justified, one regression accepted on the record because
+rolling back v133 would re-publish HCA's $7.93B `CUSIP:` row and the 2.1M
+participants of the CUSIP class). `--force` was not needed: main had taken
+no commit since the previous mirror. The mirror also takes live: the "Van"
+contraction (+5,452 rows / 626 plans / 366,439 ppl), and the
+funds-and-tickers agent's **22 Vanguard rows** (`38b5df36`: +38,510 rows /
+15,312 plans / 18,096,101 participants gain a ticker, 0 lost, 0 flipped —
+re-measured here with the flip list, exact to the row; ERs spot-checked
+against Vanguard's pages for VSMGX 0.10, VTMGX 0.05, VWILX 0.26). site-test
+#69 and #70 both green.
+
+**What was NOT in this store and follows immediately: v133 part 5**
+(`e489915d`, the fair-value category total published beside the menu it
+totals, 25 lineups / 26,732 ppl, Lam Research 10 rows @1.275 → 9 @1.050).
+It landed after #347 was dispatched at the SAME version number, so the work
+list ("pv ≠ current") would never re-parse it in. `PARSER_VERSION` → 134,
+one-line commit, dispatched right after this mirror. Its verdict must show
+overshoot falling from 390. **Standing rule from this:** a parser commit
+made after a dispatch at the running version is invisible to the pipeline;
+bump again or hold it.

@@ -198,6 +198,20 @@ Order of business:
       share-class tokens and `(continued)` from the promoted issuer.
       (` N/R` on 1,431 plans / 2.57M ppl is NOT queued — `app.js` ~404
       already strips it for display and lookup.)
+      **STATUS 16:4xZ (run #347 verdict):** wam's five v133 items are DONE
+      and live (a-d in the queue above: CUSIP-as-value, managed-account
+      fold, degraded swaps, units marker; part 5 fair-value totals runs in
+      v134). **NEW TOP ITEM — First American Financial (17,155 ppl,
+      `20260701092321NAL0013498049001`) REGRESSED under v133:** its 29-row
+      2023 fallback (`Fidelity 500 Index Fund – Institutional`, `Vanguard
+      Target 2030 Trust I` …, ratio ~0.9) is gone and the plan publishes
+      nothing (`dx=band-lo`, no `fb`). The newest filing's region now scores
+      band-lo, which is "readable" enough to block the prior-year fallback
+      that served a correct menu. Trace with `--vs b13e5640`; the fix is
+      either the fallback firing when the primary's best region is band-lo
+      (with the ratio test deciding), or the region not being seeded at all
+      there. Control: Producers Rice Mill and the five escapees wam measured
+      in part 3 must not move.
       **(g) FROM THE 16:0xZ DRAW — a LOWERCASE-FIRST-WORD row name (a fund
       description's wrapped tail, or a sentence fragment) published as the
       holding: 2,054 plans / 3,249,572 ppl / 2,238 rows; 171 plans /
