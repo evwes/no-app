@@ -13019,3 +13019,60 @@ tree left intact and told to re-stage, main never touched. **Rule: in a
 shared tree, commit with an explicit pathspec (`git commit -- <files>`),
 never the index.** The fund-facts agent definition and the worktree docs
 script both say so now.
+
+## 2026-09-17 (21:0xZ per-cycle draw) — Morgan Stanley's 81,090 participants see six asset classes and no fund; a holding published twice under two spellings (R&L Carriers, 7% double-counted); three small cosmetic classes sized
+
+Participant-weighted, seed 20260917210, 15 published lineups read by name,
+on the v134 store.
+
+**Clean, 10 of 15:** TriNet HR III (249,207 ppl), TD Synnex, Intergraph,
+MultiCare, PeaceHealth, Bose, BCBS Arizona, Sunstates Security, Sterilite,
+Express Services (464,345 participants against a $2.3M menu — a PEO's
+worksite headcount on a small plan; the lineup itself is right, the
+participant count is the filing's).
+
+**Fabricated as a whole — the (h) class's clearest specimen: Morgan Stanley
+Domestic Holdings (81,090 participants, $22.18B, 10 rows, ratio 0.975)
+publishes `Collective Trust Funds` 62.1% / $13.43B, `Corporate equities`
+28.4% / $6.13B, `Government and agency securities` 5.3%, `Repurchase
+agreements` 2.6%, `Corporate debt instruments` 0.8%, `Registered
+Investment Companies` 0.4%.** Every row is an asset class; the page shows a
+$22B plan's participants nothing they could recognise as their fund. It is
+in `audit-generic-names`' >= 25% band (which sits at 107 plans under a 230
+threshold and therefore never fires) and is exactly the "filed-in-aggregate
+with real rows beside" shape — except here nothing is beside. Added to (h)
+as the headline.
+
+**Double-counted: R&L Carriers (21,438 ppl) publishes `Morley Stable Value
+Fund` AND `Morley Stable Value`, both $33,954,030 (7.0% each) — one
+holding, two spellings, ratio 1.029.** Sized (scratchpad `dup-rows.mjs`,
+predicate: two rows with the same non-zero value whose names are identical
+once filler words and share-class letters are dropped): **262 plans /
+450,981 ppl / 467 rows / $0.53B duplicated.** A first, looser predicate
+(shared 12-character prefix) said 1,125 plans and was wrong — it paired
+Regions' `Retirement 2035 Trust` with `2045`, Goldman's repos at different
+rates and AT&T's FNMA pools, distinct holdings that happen to share a
+value. Even the tight one keeps some pairs that may be two lots of one
+security (Goldman `BNP PARIBAS REV REPO 5.290%` twice) and some that are
+junk either way (Northside `- 13 - NORTHSIDE HOSPITAL` / `- 14 -`, page
+numbers; Eurofins `Employer I.D. #:`). The reader-visible shape is R&L's:
+Kwik Trip `Eaton Vance Small Cap Fund` = `… Small Cap I Fund`, Penske
+`Dodge & Cox Stock Fund` = `Dodge & Cox Stock X Fund`, Boston Consulting
+`Vanguard Emerging Markets St…` twice. Queued as (i); the fix is a
+same-value/same-stem merge in `parseRows`, controlled by Goldman's repo
+lots.
+
+**Cosmetic, sized:** names ending in `,` `;` or `:` — **268 plans /
+1,004,405 ppl / 308 rows** (CSC Holdings `Vanguard S&P 500 Index Trust,`,
+McKesson `BNY MELLON STABLE VALUE PORTFOLIO:`, Wawa `Bond Fund
+Investments:`), and inside it two junk rows that are FORM FIELDS — PPG
+`Plan No:`, Eurofins `Employer I.D.#:`; a share count glued into the name —
+**84 plans / 191,052 ppl / 797 rows** (CSC `Dodge & Cox Dodge & Cox Stock
+Fund X, 416,228 shares`, Comerica `Vanguard Small-Cap Index Fund - 522,008
+shares`, Honda `244,704,430 Shares of interest`). Both are one strip each in
+`parseRows`; queued together as (j). Also seen: Copart `2045 G Great Gray
+Trust Company, LLC Putnam Large Cap Value` (a wrapped prefix), Banterra
+`American Funds` at 9.7% (the bare-house-row class, known).
+
+Rate, per participant: 1 whole-lineup fabrication in 15 (Morgan Stanley,
+class labels as the menu), 1 double-count, 1 house row, cosmetic on 3.

@@ -212,7 +212,24 @@ Order of business:
       type beneath it, is a subtotal, not a holding; strip spaces before
       any generic-name test (parser and audit); give the audit a dollar
       floor beside the share floor. Sizer: scratchpad `spaced-type.mjs`.
-      `docs/accuracy-log.md` 2026-09-17 (20:0xZ draw).
+      `docs/accuracy-log.md` 2026-09-17 (20:0xZ draw). **Headline
+      specimen from the 21:0xZ draw: Morgan Stanley Domestic Holdings
+      (81,090 ppl, $22.18B, `20251010150034NAL0004732579001`) — ALL ten
+      rows are asset classes (`Collective Trust Funds` 62%, `Corporate
+      equities` 28% …), published confident.**
+      **(i) FROM THE 21:0xZ DRAW — a holding published TWICE under two
+      spellings, both carrying the full value: R&L Carriers (21,438 ppl)
+      `Morley Stable Value Fund` = `Morley Stable Value` $33,954,030 each
+      (7% double-counted, ratio 1.029). Sized tight (same value, same name
+      stem after filler words): 262 plans / 450,981 ppl / 467 rows / $0.53B**
+      (Kwik Trip, Penske, Boston Consulting). Fix: same-value/same-stem merge
+      in `parseRows`; control: Goldman's repo lots at equal rate and value
+      may be two genuine lots. Sizer: scratchpad `dup-rows.mjs`.
+      **(j) cosmetic strips, sized:** names ending in `,;:` 268 plans /
+      1,004,405 ppl (two of them FORM FIELDS as rows: PPG `Plan No:`,
+      Eurofins `Employer I.D.#:`); a share count glued in (`, 416,228
+      shares`) 84 plans / 191,052 ppl / 797 rows. `docs/accuracy-log.md`
+      2026-09-17 (21:0xZ draw).
       **STATUS 20:1xZ:** v134 (part 5) is LIVE, overshoot 390 → 364. A
       wam agent restarted at 20:0xZ on First American + (e) + (g) toward
       v135 after the first attempt was killed by the session usage limit
