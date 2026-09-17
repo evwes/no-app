@@ -12344,3 +12344,57 @@ Nyle Maxwell, Griffin Hospital.
 Rate, per participant because of the frame: **0 fabricated rows in 15**,
 0 wrong values, 3 naming defects of which one is display-handled. Sizers:
 scratchpad `nr-suffix.mjs`, `draw-read2.mjs`.
+
+## 2026-09-17 (v133, part 5) — the fair-value note's own category total, summed beside the menu it totals: 25 published lineups above their own plan assets
+
+**WHAT WAS WRONG.** v130's column attribution put nine small plans INTO the
+overshoot population with a generic winner, and the queue named them. Sizing
+the shape instead of the nine found the class: **25 published lineups / 26,732
+participants** publish a menu at >=1.15x the plan's own Schedule H assets with
+a row named `Mutual funds`, `Pooled separate accounts`, `Registered investment
+companies`, `Common Collective Trust`, `At Contract Value` or `Investments at
+fair value` — the fair-value note's CATEGORY TOTAL, listed beside the very rows
+it totals. Lam Research (11,591 participants) is the largest: ten rows at ratio
+1.275 including `Mutual funds` at $805,158,000.
+
+v107's repair already removes a winner's own total row, but it is gated at
+`ratio > 1.5` with the row worth **half the plan** and the remainder landing
+0.7-1.3 — a subtotal merely large enough to push a menu 20% over its assets
+falls straight through it.
+
+**THE CHANGE.** Same post-selection place, one more branch, and the test is
+ARITHMETIC — the vocabulary only decides what may be removed, never what a row
+is worth. Fire only when the menu overshoots (>=1.15x, >=5 rows), only on a row
+the shipped `GENERIC_TYPE_NAME` / `AGG_DISCLOSURE` name, only when dropping it
+lands the remainder in 0.45-1.15, and only when the remainder's own top row is
+under half of it. **A row whose removal does not fix the arithmetic is left
+alone**: Idex Corporation (1.24x, `Mutual Funds` at 70%, remainder 0.37) is
+untouched, correctly — there the MENU is the part we failed to read.
+
+**MEASURED OVER THE WHOLE STORE, by simulation on the stored rows — which are
+exactly this rule's input, since it is post-processing on the final row list:**
+it fires on **25 of 60,098 published lineups / 26,732 participants**; 59,684
+sit below 1.15x and are untouchable by construction; every removed row is
+printed and every one is an anchored generic type or aggregate-disclosure
+phrase. End-to-end positive control through the production parser: Lam
+Research 10 rows at 1.275 -> **9 at 1.050**, pinned as the specimen, and
+`diff-lineups` now reports it as a fabricated generic row REMOVED.
+
+**`NOT_FUND_SHAPED` WAS IN THIS TEST AND CAME OUT ON EVIDENCE.** In the first
+whole-store simulation the rule fired on 34 lineups, and two of the rows it
+dropped were **`Total Bond Market Index`** (Fairplay) and **`Total
+International Stock Index Admiral`** (The Roxbury Latin School) — real Vanguard
+funds, caught by that predicate's `total\b.*` arm. That arm is documented as
+safe only for a single 90%-dominant row, and v130's first draft had already
+paid for it by deleting IBM's $9,827,773,829 `Total Stock Market Index`. The
+cost of dropping it is that `See attached schedule` (Westinghouse, $287.8M) and
+`Other Investments` (NFL Players, $612.3M) are no longer removable here; that
+is the right trade, because **a fabricated row left in place is recoverable and
+a real fund deleted from a menu is not.** The two-directional simulation is
+what made the choice visible — the first run's list contained both the fix and
+the damage, in the same output.
+
+**Note on the arithmetic of the headline:** the first simulation reported
+570,508 participants, and most of that was HCA, Marsh & McLennan and Bechtel —
+the `CUSIP:` trusts that v133 part 1 already fixes. They are not counted here.
+The 26,732 figure is this rule's own population after that.

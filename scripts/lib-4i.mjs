@@ -2412,6 +2412,55 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
     }
   }
 
+  /* v133: THE FAIR-VALUE NOTE'S OWN CATEGORY TOTAL, SUMMED BESIDE THE MENU IT
+   * TOTALS. The v107 repair above is deliberately narrow — ratio > 1.5, the
+   * row worth half the PLAN, the remainder landing 0.7-1.3 — and a category
+   * subtotal that is merely large enough to push a menu over its own assets
+   * falls straight through it. 32 published plans / 25,456 participants sit at
+   * >=1.15x with a top row named `Mutual funds`, `Pooled separate accounts`,
+   * `Registered investment companies` or `Total assets at fair value`
+   * (Metrolina Greenhouses 34 real rows + `Mutual funds` at 42%, ratio 1.34;
+   * Ferrell Hospital 31 + `Pooled separate accounts`, 1.38; Editas Medicine 27
+   * + `Mutual funds`, 1.29). Nine of them ENTERED overshoot at v130.
+   *
+   * The test is ARITHMETIC and the vocabulary only decides what may be
+   * removed, never what a row is worth: fire only when the menu OVERSHOOTS,
+   * only on a row the shipped aggregate vocabularies name, and only when
+   * dropping it brings the remainder INTO the publishable band. A row whose
+   * removal does not fix the arithmetic is left alone — it is not a subtotal
+   * of what we are showing, and Idex (1.24x, `Mutual Funds` at 70%, remainder
+   * 0.37) stays exactly as it is, correctly, because there the MENU is the
+   * part we failed to read. */
+  if (assetsEOY && funds.length >= 5 && (best.ratio || 0) >= 1.15) {
+    const wTotal = funds.reduce((a, f) => a + f.value, 0);
+    const wi = funds.findIndex((f) => {
+      /* GENERIC_TYPE_NAME and AGG_DISCLOSURE ONLY. `NOT_FUND_SHAPED` was in
+       * this test and was taken out on evidence: simulating the rule over all
+       * 60,098 published lineups, its `total\b.*` arm dropped **"Total Bond
+       * Market Index"** from Fairplay and **"Total International Stock Index
+       * Admiral"** from The Roxbury Latin School — two real Vanguard funds.
+       * That arm is documented as safe only for a single 90%-dominant row
+       * (see AGG_DISCLOSURE's own comment, and v130's first draft deleting
+       * IBM's $9.8B "Total Stock Market Index"), and this test is nowhere near
+       * that narrow. The cost is that `See attached schedule` and `Other
+       * Investments` are no longer removable here; a fabricated row left in
+       * place is recoverable, a real fund deleted from a menu is not. */
+      const n = String(f.name || "").trim();
+      if (!(GENERIC_TYPE_NAME.test(n) || AGG_DISCLOSURE.test(n))) return false;
+      const rest = (wTotal - f.value) / assetsEOY;
+      return rest >= 0.45 && rest <= 1.15;
+    });
+    if (wi >= 0) {
+      const rest = wTotal - funds[wi].value;
+      const maxRest = funds.reduce((a, f, i) => (i === wi ? a : Math.max(a, f.value)), 0);
+      // the remainder must look like a MENU, not like one more aggregate
+      if (maxRest <= rest * 0.5) {
+        funds = funds.filter((_, i) => i !== wi);
+        best.ratio = rest / assetsEOY;
+      }
+    }
+  }
+
   // sub-$10k rows are residue (leaked years, currency cents), not menu
   // options — UNLESS the row proved itself by carrying its own investment-type
   // column, which residue never does. A wound-down vintage really can hold $81
