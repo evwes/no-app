@@ -1,0 +1,4 @@
+{
+  "_schema": "one entry per ticker (upper-case key); every figure carries its as-of date and its source URL; er and ytd are percents as numbers (0.04 = 0.04%, -3.2 = -3.2%); written only by the fund-facts agent, validated by node scripts/fund-facts-check.mjs; nothing from memory, nothing undated",
+  "funds": {}
+}

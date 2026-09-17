@@ -27,6 +27,15 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   exact values re-derive on expand. Plan names ship at boot only for
   multi-plan sponsors; search-by-city no longer works (city is detail-only).
   `about.html` = static About/methodology page.
+  **`data/fund-facts.json` (2026-09-17, owner directive): the ONLY place a
+  fund's verified ticker + expense ratio + year-to-date RETURN may live**,
+  one entry per ticker, every figure with its as-of date and source URL.
+  Written solely by the `fund-facts` agent (`.claude/agents/fund-facts.md`,
+  `/fund-facts <tickers|names|ack|refresh>`), validated by
+  `scripts/fund-facts-check.mjs` (refuses undated, unsourced, future-dated
+  or implausible figures). `fund-er.js` stays the pattern-level "est." ER
+  table (the `funds-and-tickers` agent's). Not yet wired into the report;
+  when it is, every return renders with "as of <date>".
 - **Data pipeline** (`.github/workflows/build-data.yml`): 3-stage matrix —
   `prep` (FIRST runs scripts/parser-gate.mjs: ten live specimens, fails the
   run before the matrix if any regresses — update expectations in the same
