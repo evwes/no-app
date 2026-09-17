@@ -53,6 +53,20 @@ const fabricated = (p) => {
 const P = loadPlans();
 const byAck = P.byAck();
 
+/* MASTER TRUSTS ARE FILINGS TOO (2026-09-17). Every lookup here keyed on
+ * plans-all, so a trust ack fell out of the comparison at `if (!row) continue`
+ * — and the v133 identifier-as-value class lives almost entirely in trusts
+ * (HCA, Home Depot, Kroger, Caterpillar, Marriott), whose menus are rendered
+ * on their member plans' pages. The tool that exists so a fix is not shipped
+ * on a single filing was structurally blind to the population the fix was
+ * for. Assets come from mtias.json, which is what fetch-4i judges a trust
+ * parse against, so the ratio matches production. */
+let trustByAck = new Map();
+try {
+  const mt = JSON.parse(readFileSync("mtias.json", "utf8"));
+  trustByAck = new Map((mt.trusts || mt).map((t) => [t.ack, t]));
+} catch { /* no trusts locally: plans-only diff, as before */ }
+
 /* ENSURE THE SOLVED CLASSES ARE IN THE COMPARISON. The corpus is sampled by
  * assets, so it contains whatever is common rather than whatever is broken:
  * this tool reported "no changes" for v101, v103 and v104 because not one of
@@ -65,7 +79,7 @@ try {
   for (const sp of spec) {
     const dest = path.join(DIR, `${sp.ack}.txt`);
     if (existsSync(dest)) continue;
-    if (!byAck.get(sp.ack)) continue;                 // not in this plans-all
+    if (!byAck.get(sp.ack) && !trustByAck.get(sp.ack)) continue;   // not in this store
     const url = `https://efast2-filings-public.s3.amazonaws.com/prd/${sp.ack.slice(0, 4)}/${sp.ack.slice(4, 6)}/${sp.ack.slice(6, 8)}/${sp.ack}.pdf`;
     const pdf = path.join(DIR, `${sp.ack}.pdf`);
     try {
@@ -78,18 +92,20 @@ try {
   if (fetched) console.log(`(fetched ${fetched} pinned defect specimen(s) into the corpus)\n`);
 } catch (e) { console.warn("defect-specimen top-up skipped: " + e.message); }
 
-const gained = [], lost = [], rowMoved = [], fabFixed = [], fabNew = [];
-let n = 0;
+const gained = [], lost = [], rowMoved = [], fabFixed = [], fabNew = [], sumMoved = [];
+let n = 0, nTrust = 0;
 for (const f of readdirSync(DIR)) {
   if (!f.endsWith(".txt")) continue;
   const ack = f.replace(/\.txt$/, "");
   const row = byAck.get(ack);
-  if (!row) continue;
-  const assets = +P.get(row, "assetsEOY") || 0;
+  const tr = row ? null : trustByAck.get(ack);
+  if (!row && !tr) continue;
+  const assets = row ? (+P.get(row, "assetsEOY") || 0) : (+tr.assetsEOY || 0);
   if (!assets) continue;
+  if (tr) nTrust++;
   const text = readFileSync(path.join(DIR, f), "utf8");
-  const sponsor = String(P.get(row, "sponsorName") || "");
-  const codes = String(P.get(row, "codes") || "");
+  const sponsor = row ? String(P.get(row, "sponsorName") || "") : String(tr.name || "");
+  const codes = row ? String(P.get(row, "codes") || "") : "";
   let a, b;
   try { a = base.parse4i(text, assets, sponsor, codes); } catch { continue; }
   try { b = work.parse4i(text, assets, sponsor, codes); } catch { continue; }
@@ -103,6 +119,19 @@ for (const f of readdirSync(DIR)) {
   if (ca === cb && na !== nb) rowMoved.push(`${label}  ${na}->${nb} rows`);
   if (fa > fb) fabFixed.push(`${label}  generic rows ${fa}->${fb}`);
   if (fb > fa) fabNew.push(`${label}  generic rows ${fa}->${fb}   <-- REGRESSION`);
+  /* THE MONEY MOVED AND NOTHING ABOVE COULD SAY SO (2026-09-17). All four
+   * buckets key on the row COUNT or on confidence, and v133 removed
+   * $8.54 BILLION of fabricated value from UBS AG's menu — 76.7% of what it
+   * published — with the count unchanged at 80 and confidence unchanged at
+   * true. This tool printed four zeros for the one filing pinned to prove the
+   * fix worked. A lineup is a set of VALUES; a diff that never compares them
+   * cannot see the largest class of defect this project has, where several
+   * real holdings merge into one that does not exist. */
+  const sa = a.found ? a.funds.reduce((s, x) => s + (+x.value || 0), 0) : 0;
+  const sb = b.found ? b.funds.reduce((s, x) => s + (+x.value || 0), 0) : 0;
+  if (Math.max(sa, sb) > 0 && Math.abs(sb - sa) / Math.max(sa, sb) >= 0.05 && ca === cb && na === nb) {
+    sumMoved.push(`${label}  sum $${(sa / 1e6).toFixed(0)}M -> $${(sb / 1e6).toFixed(0)}M, ratio ${(a.ratio || 0).toFixed(2)}->${(b.ratio || 0).toFixed(2)} (${nb} rows${cb ? ", published" : ""})`);
+  }
 }
 
 const show = (title, arr, cap = 25) => {
@@ -111,10 +140,11 @@ const show = (title, arr, cap = 25) => {
   if (arr.length > cap) console.log(`    … ${arr.length - cap} more`);
   console.log("");
 };
-console.log(`${n} filings compared\n`);
+console.log(`${n} filings compared (${nTrust} of them master trusts)\n`);
 show("CONFIDENCE GAINED", gained);
 show("CONFIDENCE LOST  (must be justified or the change is rolled back)", lost);
 show("FABRICATED GENERIC ROWS REMOVED", fabFixed);
 show("FABRICATED GENERIC ROWS INTRODUCED", fabNew);
 show("row count moved, confidence unchanged", rowMoved, 15);
+show("MENU SUM moved >=5% with the same rows and the same confidence", sumMoved, 15);
 process.exit(fabNew.length ? 1 : 0);

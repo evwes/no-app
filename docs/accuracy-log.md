@@ -11889,3 +11889,144 @@ the SDBA label would serve readers better. Recorded, not sized.
 Rate, stated per PARTICIPANT because of the frame: 1 fabricated row in 15
 (FMR, 3.8% of its menu), 3 naming defects, 2 known-open. Sizer:
 scratchpad `draw-size-14z.mjs`.
+
+## 2026-09-17 (v133) — a nine-digit CUSIP read as $658,991,294: 34 published lineups, 2,095,708 participants, and the check that could not see master trusts
+
+**WHAT WAS WRONG.** The Northern Trust "5500 Supplemental Schedules" template
+— filed by HCA, Home Depot, Kroger, Caterpillar, Marriott, Honeywell, Marsh &
+McLennan, ITW, Bechtel, Baker Hughes, Eastman and more — prints the asset
+identifier on the line BELOW the holding it identifies:
+
+```
+MFB NT COLLECTIVE S&P 500 INDEX FUND - LENDING   177,225.140  2,120,810,763.56  4,024,764,675.21
+CUSIP: 658991294
+```
+
+`valueRe` matches a line-terminal number, and a nine-digit CUSIP is one. Every
+such line became a ROW worth its own identifier; they all carried the same
+name, `CUSIP:`, and the same-name dedup summed them into a holding that does
+not exist. **HCA's master trust published `CUSIP:` at $7,934,229,851 = 26.7%
+of the menu its 377,504 participants read**; Home Depot's $3,564,247,770 for
+457,275; Kroger's $1,511,981,961 for 423,152; Marsh & McLennan's $3,144M at
+56.2% of its shown menu. Where the identifier shared its line with the tail of
+a wrapped name the fabricated row took THAT as its name instead — HCA's
+`LENDING $658,991,351` is CUSIP 658991351 of the Russell 1000 Growth fund — so
+**the class is not findable by name alone**, and the same line also glued into
+the NEXT row's name (`CUSIP: 0039999K7 MFB NT COLLECTIVE LONG-TERM GOVERNMENT
+BOND INDEX`).
+
+**SIZE, whole store, no sampling** (rows whose name carries a `cusip|sedol|
+isin|cins` label, over every published lineup entry including trusts):
+**34 published lineups / 453 rows / 47 plans / 2,095,708 participants.**
+
+**WHY NO GUARD FIRED, and this is the part worth keeping.** The arithmetic
+witness for merged rows already exists — `audit-overshoot`, shipped 2026-09-15
+precisely because no name list survives contact with a new vocabulary. HCA sat
+at **1.30x its own trust assets** and would have been named on day one. It was
+not, because the overshoot loop ends at `if (!row) continue` and `byAck` is
+built from **plans-all, where a master trust has no row**. Every trust lineup
+was exempt from the only check that needs no vocabulary — and a member plan
+RENDERS THE TRUST's holdings, so those participants read the fabricated row on
+their own page. Same blindness in `diff-lineups.mjs`, the tool whose whole
+purpose is that a parser fix is not shipped on a single filing: it skipped
+trust acks too, so the population this fix was for could not appear in it.
+
+**THE CHANGE (v133).**
+1. `parseRows` strips a trailing security identifier (`CUSIP`/`SEDOL`/`ISIN`/
+   `CINS`/`asset id`/`security id` + a 6-12 char alphanumeric containing a
+   digit) before any value matching. A line that is NOTHING but an identifier
+   ends the name buffer, because it belongs to the row above and is not part
+   of the next row's name either. The identifier is STRIPPED rather than the
+   line dropped: a real brokerage row may carry its ISIN at the end of its
+   NAME line with the value wrapping below (`IRON MTN INC NEW COM ISIN
+   #US46284V1017`), and dropping the line would cost that row its name.
+2. `audit-data.mjs` runs the overshoot arithmetic over MASTER TRUSTS, against
+   the trust's own `assetsEOY` from mtias.json, counted separately from
+   `overshoot` so the plan-side trend stays continuous. Baseline on the v132
+   store: **13 trusts / 17 member plans / 803,266 participants** at >=1.15x.
+   New fields in `coverage-history.jsonl`: `overshootTrust`,
+   `overshootTrustPpl`.
+3. `diff-lineups.mjs` compares trust acks (assets from mtias, matching what
+   fetch-4i judges a trust parse against) and reports **MENU SUM moved >=5%
+   with the same rows and the same confidence** — the blind spot that made the
+   first run of this fix print four zeros for the filing pinned to prove it.
+   v133 removes $8.62B from HCA's menu with the row count unchanged at 80 and
+   confidence unchanged at true; no existing bucket could say so.
+
+**OUTCOME, measured by re-parsing all 34 flagged acks through the production
+parser, baseline v132 vs working tree** (participants = the plans-all
+`participants` field; a trust is credited with its member plans'):
+
+| | acks | participants |
+|---|---|---|
+| stay published, identifier rows gone | 28 | 1,464,847 |
+| GAIN confidence | 3 | 170,947 |
+| LOSE confidence (both justified below) | 2 | 439,289 |
+| unparsed under both versions (Con Ed, OCR path) | 1 | 20,625 |
+
+Ratios move toward 1.0 where the phantom was inflating them and toward 1.0
+where a better region now wins: HCA 1.297 -> **0.933**, UBS AG 1.171 ->
+**0.978**, Home Depot 0.941 -> 0.868, Marsh & McLennan 1.381 -> 0.627,
+Bechtel 11 rows @1.199 -> **80 @0.959**, Caterpillar 14 @0.483 -> **80
+@0.987**, Coca-Cola 22 @0.488 -> **80 @0.966**, Honeywell 18 @0.576 -> 80
+@0.896, ITW 14 @0.485 -> 34 @1.032, Kellanova 15 @0.512 -> 63 @1.003, Timken 9
+@0.473 -> 20 @1.263. The three gains: **Marriott 152,118 participants**
+(20 rows @0.672 -> 80 @0.993), Lincoln National 17,050 (19 @0.752 -> 80
+@1.014), Eastman Chemical 15,343 (12 @0.835 -> 69 @0.944).
+
+**THE TWO LOSSES, read row by row, and both are junk removals:**
+
+- **TE Connectivity, 15,295 participants** (28 rows @0.921 -> 4 @1.885,
+  unpublished). What it was publishing: `Managed account holdings (3
+  positions)` at **66.4% / $1.89B** — a parser-made aggregate — plus one
+  Vanguard fund and 26 corporate bonds and bank loans. That is not a menu, and
+  it is a member of the aggregate-row class already queued separately. The new
+  reading is four asset-class labels at 1.885 and is correctly suppressed.
+- **Kroger's master trust, 423,152 participants** (12 rows @0.697 -> 80
+  @1.821, unpublished). Its old menu reached 0.697 only because $1.51B of it
+  was a fabricated identifier row; the real rows sum to **0.547**. With the
+  fiction removed the highest-scoring region becomes an 80-row span covering
+  TWO Northern Trust ACCOUNTS — `V231 KROGER OPTION LEVEL` (the participant
+  menu, `MFO KROGER US LARGE CAP UNIT S` $2.76B) and the accounts holding
+  those units' underlying assets (`MFO JOHN HANCOCK CORE PLUS FIXED INCOME
+  TRUST` $446,173,584 against `MFO KROGER CORE BOND UNIT AB` $446,173,581, the
+  same money twice) — so it sums to 1.82x and `isConfident` rejects it. **This
+  is the honest outcome and the loss is recorded rather than worked around**:
+  423,152 people stop seeing a $1.5B holding that does not exist, at the cost
+  of a menu that covered just over half the trust.
+
+**PROPOSAL LEFT FOR THE OWNER, sized by the case that produced it: THE
+SELECTOR DOES NOT KNOW THE PUBLISHING RULE.** Kroger's in-band candidate (12
+rows, ratio 0.547, a product-named top row) exists and is rejected in favour of
+a candidate at 1.821 that `isConfident` then throws away, so the plan publishes
+nothing. `bestMenu` already computes exactly the set of publishable candidates
+(>=7 rows, 0.45 < ratio < 1.6, not statement/code/provider/source-split,
+product-named top row) and is consulted only when the winner has <=4 rows. One
+line — prefer `bestMenu` when the winner's ratio is outside the publishable
+band — would give Kroger a real 12-fund menu. **It is NOT shipped here**: its
+blast radius is the whole `band-hi` (128 plans) and `band-lo` (34) census, it
+cannot be measured without a full re-parse, and half a plan published as the
+menu is the degraded-swap shape `swaps-degraded.txt` exists to catch. Sized,
+named, and left.
+
+**PREVENTION.** (a) The trust-side overshoot check, with its baseline written
+into the code and both directions controlled — it prints 13 at threshold 13 and
+raises a HIGH at threshold 12 naming HCA, Marriott, GE Insurance and Kohl's, so
+it is not a check that has only ever printed zero. (b) `diff-lineups` sees
+trusts and sees value moves. (c) Three pinned specimens: **UBS AG**
+(20251002123048NAL0000334179001, the plan half), **HCA's trust**
+(20251010135749NAL0004680979001, the trust half, and the reason trust support
+had to exist), and the CONTROL **Safety Insurance**
+(20251014150134NAL0006542930001) whose ISIN-bearing NAME lines must keep their
+names — with Obermayer Rebmann, Luxium, Republic Refrigeration and Monmouth
+Cardiology byte-identical across v132 and v133 beside it.
+
+**Verified locally; only the re-parse can show the store-wide figure.** Parser
+gate green with no skips, `diff-lineups 1642c7f1` over 942 corpus filings: 0
+confidence gained, 0 lost, 0 fabricated rows introduced, 3 menu sums moved
+(UBS -$1.96B, HCA -$8.62B, Home Depot -$1.67B). **The run's verdict must show**
+`overshootTrust` falling from 13 to about **9** (HCA, Marriott, Marsh &
+McLennan and Bechtel leave; the other nine are different shapes — Kohl's, GE
+Insurance, Novartis, MassMutual, NFL Players, Enviri, Nordson, Hocker, Lennox),
+zero published rows whose name carries a CUSIP/SEDOL/ISIN label, and the two
+losses above as the only `reparse-loss` entries from this class.

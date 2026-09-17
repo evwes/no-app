@@ -289,6 +289,27 @@
       "fixed": "v132",
       "sponsor": "Producers Rice Mill",
       "was": "CONTROL, found by the gate when v132's gap repair flipped it. The filing carries TWO 4i attachments: the auditor's 21-fund schedule (our parse 10 rows, 0.918) and the recordkeeper's rendition of the same money split by contribution source, where every fund appears twice ('GM Fidelity 500 Index Fund' beside 'Fidelity 500 Index Fund'). Once the repair gave the split page real fund names it covered the whole plan by construction and won on closeness at 0.997. isSourceSplit demotes it POST-selection, only when a genuine menu candidate exists - the first draft used a flat -0.35 score penalty and cost Hospice of Muskegon County (20250918111719NAL0001343777001) its whole 38-fund menu to a 2-row fair-value note, because there the split page IS the only schedule. Both must hold: Producers Rice stays at 10 rows, Hospice stays at 38"
+    },
+    {
+      "ack": "20251002123048NAL0000334179001",
+      "class": "security-identifier-as-value",
+      "fixed": "v133",
+      "sponsor": "UBS AG",
+      "was": "the Northern Trust '5500 Supplemental Schedules' template prints the asset ID on the line BELOW the holding it identifies ('CUSIP: 658991294'), and valueRe read the nine-digit identifier as a line-terminal dollar value. Every such line became a row, they shared the name 'CUSIP:', and the same-name dedup SUMMED them into a holding that does not exist. UBS published 75 identifier rows worth $8.54B = 76.7% of its shown menu at ratio 1.171; HCA's master trust published 'CUSIP:' at $7,934,229,851 = 26.7% of what its 377,504 participants read, Home Depot $3,564,236,088 for 439,390, Kroger $1,511,981,961 for 423,152. Where the identifier shared a line with the tail of a wrapped name the fabricated row took THAT as its name instead ('LENDING $658,991,351' is CUSIP 658991351 of the Russell 1000 Growth fund), so the class is not findable by name alone. Store-wide before the fix: 34 published lineups / 453 rows / 47 plans / 2,095,708 participants. v133 STRIPS a trailing security identifier and drops the line only when nothing else is on it. UBS 80 rows at 1.171 -> 80 at 0.978; HCA 1.297 -> 0.933; Caterpillar 14 rows at 0.483 -> 80 at 0.987; Coca-Cola 22 at 0.488 -> 80 at 0.966; Marriott, Lincoln National and Eastman Chemical GAIN confidence"
+    },
+    {
+      "ack": "20251014150134NAL0006542930001",
+      "class": "security-identifier-as-value",
+      "fixed": "v133",
+      "sponsor": "Safety Insurance",
+      "was": "CONTROL for the entry above, and the reason v133 strips the identifier instead of dropping the line. This plan's brokerage rows carry the ISIN at the END of the NAME line with the value wrapping below - 'IRON MTN INC NEW COM ISIN #US46284V1017'. Dropping identifier-bearing lines outright costs those rows their names. Safety Insurance must stay at 62 rows / ratio 0.976, and Obermayer Rebmann (80 rows, 0.969), Luxium (39, 0.977), Republic Refrigeration (51, 0.975) and Monmouth Cardiology (80, 0.979) with it - all five are byte-identical across v132 and v133"
+    },
+    {
+      "ack": "20251010135749NAL0004680979001",
+      "class": "security-identifier-as-value",
+      "fixed": "v133",
+      "sponsor": "HCA Inc. Master Retirement Trust",
+      "was": "the TRUST half of the class, pinned because diff-lineups keyed every lookup on plans-all and a master trust has no row there - the tool that exists so a fix is not shipped on one filing was blind to the population this fix was for (fixed the same day: trusts are now compared against mtias assets). HCA's 377,504 participants read this trust's menu on their plan page. Before v133 its largest row was 'CUSIP:' at $7,934,229,851 = 26.7% of the shown sum, and 'LENDING' at $658,991,351 is CUSIP 658991351 of the Russell 1000 Growth fund; ratio 1.297. After: 80 rows at 0.933, no identifier rows, every Northern Trust collective fund named. Must stay confident with no row whose name begins 'CUSIP'"
     }
   ]
 }

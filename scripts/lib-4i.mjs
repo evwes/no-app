@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 132;
+export const PARSER_VERSION = 133;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -558,6 +558,45 @@ export function parseRows(section, opts = {}) {
       curIssIndent = curIss ? rawIndent : -1;
       nameBuf = []; totalWrap = false; continue;
     } // section subheading
+
+    /* v133: A SECURITY IDENTIFIER IS NOT A DOLLAR VALUE.
+     *
+     * The Northern Trust "5500 Supplemental Schedules" template — filed by
+     * HCA, Home Depot, Kroger, Marriott, Caterpillar, Honeywell, Marsh &
+     * McLennan, ITW, Bechtel and a dozen more master trusts — prints the asset
+     * ID on the line BELOW the holding it identifies:
+     *
+     *   MFB NT COLLECTIVE S&P 500 INDEX FUND - LENDING   177,225.140 ... 4,024,764,675.21
+     *   CUSIP: 658991294
+     *
+     * `valueRe` read that nine-digit CUSIP as a line-terminal $658,991,294.
+     * Every such line became a row; they all carried the same name, "CUSIP:",
+     * so the same-name dedup SUMMED them into one holding that does not exist
+     * — HCA published $7,934,229,851 at 26.7% of the menu its 377,504
+     * participants see, Home Depot $3,564,236,088 for 439,390. Where the
+     * identifier shares its line with the tail of a wrapped name the fabricated
+     * row took THAT as its name instead, so the class is not findable by name:
+     * HCA's "LENDING  $658,991,351" is CUSIP 658991351 of the Russell 1000
+     * Growth fund. The same line also glued into the NEXT row's name
+     * ("CUSIP: 0039999K7 MFB NT COLLECTIVE LONG-TERM GOVERNMENT BOND INDEX").
+     *
+     * Store-wide before the fix: 34 published lineups / 453 rows / 47 plans /
+     * 2,095,708 participants.
+     *
+     * The identifier is STRIPPED rather than the line dropped, because a real
+     * holding may carry its ISIN at the end of its NAME line with the value
+     * wrapping below ("IRON MTN INC NEW COM ISIN #US46284V1017"); dropping the
+     * line would cost that row its name. A line that is NOTHING but an
+     * identifier ends the name buffer, since it belongs to the row above and
+     * is not part of the next row's name either. */
+    {
+      const idm = t.match(/(?:^|\s)(?:cusip|sedol|isin|cins|asset id|security id)\s*[:#]{0,2}\s*([0-9a-z]{6,12})\s*$/i);
+      if (idm && /\d/.test(idm[1])) {
+        const rest = t.slice(0, t.length - idm[0].length).trim();
+        if (!rest) { nameBuf = []; continue; }
+        t = rest;
+      }
+    }
 
     // a genuine holding can be worth $81 (R.H. White's T. Rowe Price 2010
     // fund, the last dollars of a wound-down vintage). The 3-digit floor

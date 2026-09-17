@@ -327,6 +327,53 @@ try {
   worstOver.sort((a, b) => b[0] - a[0]);
   worstOver.splice(6);
   const OVER_BASELINE = 471;
+
+  /* THE SAME ARITHMETIC, ON THE POPULATION IT COULD NOT SEE: MASTER TRUSTS.
+   *
+   * The loop above ends at `if (!row) continue` — `byAck` is built from
+   * plans-all, and a master trust has no row there. Every trust lineup was
+   * therefore exempt from the one check that needs no vocabulary, and a member
+   * plan renders the TRUST's holdings: its participants read those rows on
+   * their own page. Measured on the v132 store, that exemption was hiding
+   * **13 trusts / 17 member plans / 803,266 participants** at >=1.15x, led by
+   * HCA at 1.27x (379,101 participants) whose largest row was named "CUSIP:"
+   * and was a nine-digit security identifier read as $7.9B — the v133 class.
+   * The plan-side check would have caught that shape on day one; there simply
+   * was no trust-side check. Counted SEPARATELY from `overshoot` so the
+   * plan-side trend stays continuous run to run rather than jumping the day
+   * the denominator changed. */
+  let overT = 0, overTPpl = 0, overTPlans = 0;
+  const worstOverT = [];
+  try {
+    const mt = JSON.parse(readFileSync("mtias.json", "utf8"));
+    const trusts = new Map((mt.trusts || mt).map((t) => [t.ack, t]));
+    const memb = new Map();
+    for (const r of d.plans) {
+      const m = g(r, "mtiaAck");
+      if (!m) continue;
+      const e2 = memb.get(m) || { n: 0, ppl: 0 };
+      e2.n++; e2.ppl += g(r, "partEOY") || g(r, "participants") || 0;
+      memb.set(m, e2);
+    }
+    for (const [ack, e] of Object.entries(entriesByAckCov)) {
+      if (!e || !e.confident || !Array.isArray(e.funds) || !e.funds.length) continue;
+      const t = trusts.get(ack);
+      if (!t) continue;
+      const assets = +t.assetsEOY || 0;
+      if (assets < 1e6) continue;
+      const sum = e.funds.reduce((a, x) => a + (+x.value || 0), 0);
+      if (sum < assets * 1.15) continue;
+      const m = memb.get(ack) || { n: 0, ppl: 0 };
+      overT++; overTPpl += m.ppl; overTPlans += m.n;
+      const top = e.funds.reduce((a, x) => ((+x.value || 0) > (a ? +a.value : -1) ? x : a), null);
+      worstOverT.push([m.ppl, `${t.name} ${m.ppl.toLocaleString()}p ${(sum / assets).toFixed(2)}x ("${String(top && top.name).slice(0, 28)}")`]);
+    }
+    worstOverT.sort((a, b) => b[0] - a[0]);
+    worstOverT.splice(4);
+    auditCoverage.overshootTrust = overT;
+    auditCoverage.overshootTrustPpl = overTPpl;
+  } catch (e) { console.warn("trust-overshoot check skipped: " + e.message); }
+  const OVER_TRUST_BASELINE = 13;
   /* Into the accuracy trail beside `dl` and `pvTopShare`, because the log is
    * not a record: WARN prints only its first 40 of ~540 and this one is pushed
    * around position 500, so as a WARN alone it is written and never read — the
@@ -380,6 +427,11 @@ try {
     flag("high", "lineup-overshoot", `${over} published lineups sum to >=1.15x the plan's own Schedule H assets, up from the ${OVER_BASELINE} measured 2026-09-15 — rows that do not exist have been added: ${worstOver.map((x) => x[1]).join("; ")}`);
   else if (over > 0)
     flag("warn", "lineup-overshoot", `${over} published lineups (${overPpl.toLocaleString()} participants) sum to >=1.15x plan assets — known open defect, see docs/accuracy-log.md 2026-09-15: ${worstOver.slice(0, 3).map((x) => x[1]).join("; ")}`);
+  console.log(`== TRUST LINEUP OVERSHOOT: ${overT} confident master-trust menus sum to >=1.15x the TRUST's own assets (${overTPlans} member plans / ${overTPpl.toLocaleString()} participants read them; baseline ${OVER_TRUST_BASELINE} on the v132 store, must fall)`);
+  if (overT > OVER_TRUST_BASELINE)
+    flag("high", "trust-overshoot", `${overT} master-trust lineups sum to >=1.15x the trust's own assets, up from the ${OVER_TRUST_BASELINE} measured on the v132 store — rows that do not exist are being shown to member plans: ${worstOverT.map((x) => x[1]).join("; ")}`);
+  else if (overT > 0)
+    flag("warn", "trust-overshoot", `${overT} master-trust lineups (${overTPlans} plans / ${overTPpl.toLocaleString()} participants) sum to >=1.15x trust assets: ${worstOverT.slice(0, 3).map((x) => x[1]).join("; ")}`);
 
   console.log(`\n== FABRICATED-HOLDING SHAPES: ${genericPlans} generic-named, ${dominantPlans} dominant non-fund`);
   if (genericPlans > 230) flag("high", "fabricated-name", `${genericPlans} published lineups carry a bare investment-type name holding >=25% of the shown sum (baseline 206 on v104 data) — several real funds have merged onto one name: ${worstGeneric.join(" ")}`);
