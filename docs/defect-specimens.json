@@ -359,6 +359,20 @@
       "fixed": "v135",
       "sponsor": "First American Financial",
       "was": "the plan's Schedule H line 4i is ONE row — `Plan's interest in Master Trust | Master Trust – at fair value | $2,760,495,322`, 97% of a $2.86B plan — plus a loan row the row parser drops. parse4i's candidate loop skips any region parsing to fewer than 2 funds, so that region produced no candidate at all and the winner became the audited Statement of Net Assets printed in thousands: 7 rows summing to 0.2% of the plan, dx=band-lo, ds=readfail, and the page told 17,090 participants their FILING could not be read while it states plainly where the money is. Diagnosed by instrument, not by reading: parseRows over lines 1760-1800 returns exactly one fund typed `Master trust interest`. v135 keeps such a region as a LAST RESORT candidate (one row, trust-pointer-shaped, 0.5-1.6x plan assets) promoted only when nothing publishable won, so it can never outscore a real menu; the caption retry still runs behind it. Corpus of 949 filings: 0 confidence gained, 0 lost, 0 fabricated rows, 9 filings move to the pointer row (978,337 participants: Target 475,573, PepsiCo 167,015, L3Harris, J&J, Medtronic, Siemens, BMS, Genentech, First American), every one of them non-confident before and after. CONTROL: the promotion must never fire where a publishable menu exists — a 1-row region at ratio ~1.0 would win on closeness against every real menu summing below 1.0"
+    },
+    {
+      "ack": "20251012112215NAL0000656306001",
+      "class": "prose-fragment-as-holding-name",
+      "fixed": "v135",
+      "sponsor": "BJC Health System",
+      "was": "the whole published menu was two sentence fragments — `for benefits` $2,034,486,825 (84.4%) and `assets available for benefits` $362,631,226 (15.0%) — for 42,830 participants. Store-wide the shape is 557 rows across 517 published lineups / 961,757 participants, 72 plans / 210,505 ppl with the junk at >=10% of the menu (Board of Trustees of the Deferred Salary Plan `investment contracts, at fair value` 82% of 35,520 people). v135's isProseRowName drops two shapes: a DESCRIPTION VERB PHRASE (`by investing`, `seeks to`, `invests in`), and text that is lowercase prose END TO END — no capital and no digit anywhere. The second condition was narrowed on evidence: the first draft (any lowercase first word) also dropped real holdings with damaged prefixes (`maturity date AmCen Mid Cap Value Fund R6`, `required for Blackrock Lifepath 2060`), read in a RANDOM 40 of its own hits, and the shipped HOUSE_ONLY vocabulary keeps `fidelity international index fund`, a real fund in a filing whose text layer lost its capitals. CONTROLS that must not move: Publix `Common stock of Publix Super Markets, Inc.` (72% of the plan, real), `VITSX - Vanguard Total Stock Market Index In`, `iShares Core S&P 500`, `abrdn Emerging Markets`"
+    },
+    {
+      "ack": "20251007125615NAL0004795969001",
+      "class": "option-description-note-beating-the-filed-4i",
+      "fixed": "v135",
+      "sponsor": "National Medical Care (Fresenius)",
+      "was": "29 rows at ratio 1.092 read off the NOTES' participant-option table — `the S&P 500® Index by investing in stocks that make up the index.` $755,422,355 carrying the value of the option it describes, `NET ADDITIONS` $402M, `Salary deferrals` $273M, and `Target Retirement 20XX Fund Option` rows whose values are the note's PRIOR-YEAR column ($363,732,055 where 2024 reads $429,670,822). The filing's statutory 4i schedule sits at line 5,336 of the same PDF and reads 12 rows at 0.951: BlackRock CITs with their issuer, MassMutual Stable Value, the SDBA and Fresenius stock. Once the prose rows stop paying for the note's ratio, the filed schedule wins. NOTE FOR ANYONE RE-READING THE QUEUE: this item was queued with `Target Retirement YYYY Fund Option rows must survive` as a CONTROL. They do not survive and should not — they are a note's prior-year column, and 72,950 participants now see the schedule the plan actually filed"
     }
   ]
 }

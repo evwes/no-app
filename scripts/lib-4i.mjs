@@ -390,6 +390,53 @@ const LOAN_TEXT = /\b(?:interest rates?|rate range|maturit(?:y|ies)|maturing|mat
 const RATE_RANGE = /\d+(?:\.\d+)?\s*(?:%|percent)\s*(?:[-–—]|to|through|and)\s*\d+(?:\.\d+)?\s*(?:%|percent)/i;
 const LOAN_SECURITY = /\b(?:funds?|trusts?|index|idx|portfolios?|equit(?:y|ies)|stocks?|shares?|class|series|etf|annuity|contracts?|gic|guaranteed|insurance|treasur\w*|strips?|notes?|bonds?|debentures?|mortgages?|cusip|corp\w*|inc|incorporated|llc|ltd|compan(?:y|ies)|municipal|agency|reit|certificates?|deposits?|market|separate|stable|collective)\b/i;
 const LOAN_VOCAB = /\b(?:interest|interests|rate|rates|ranging|range|ranges|from|to|through|thru|various|varying|varied|maturity|maturities|maturing|matures|mature|date|dates|due|at|and|or|with|per|annum|collateral|collateraliz\w+|secured|by|participant\w*|account|accounts|balance|balances|loan|loans|promissory|repaid|repayment|payable|payments?|vested|plan|plans|the|of|a|an|over|up|between|years?|months?|approximately|monthly|quarterly|weekly|bi-?weekly|payroll|deduction|deductions|january|february|march|april|may|june|july|august|september|october|november|december)\b/gi;
+/* v135: IS THIS NAME PROSE RATHER THAN A HOLDING?
+ *
+ * Two shapes, both measured on published lineups before shipping:
+ *
+ *  A. a DESCRIPTION VERB PHRASE. National Medical Care (72,950 participants)
+ *     publishes `the S&P 500® Index by investing in stocks that make up the
+ *     index.` at $755M — the LAST LINE of an option's description, carrying
+ *     the value that belongs to the option. A fund's NAME never explains what
+ *     the fund does; a description column often does.
+ *  B. a LOWERCASE FIRST WORD followed by another lowercase word. That is the
+ *     tail of a wrapped sentence, never the head of a filed fund name: BJC
+ *     Health System (43,409 participants) publishes `for benefits` at 84.4%
+ *     and `assets available for benefits` at 15.0% — the entire menu — and
+ *     the Board of Trustees of the Deferred Comp plan (33,824) publishes
+ *     `investment contracts, at fair value` at 82%.
+ *
+ * The SECOND word carries the test on purpose, because that is what keeps the
+ * house styles that legitimately start lowercase: `iShares Core S&P 500`,
+ * `abrdn Emerging Markets`, `eBay Inc` all have a capitalised second word.
+ * Exported so audits and sizing scripts ask the shipped question.
+ */
+export function isProseRowName(n) {
+  const s = String(n || "").trim();
+  if (!s) return false;
+  if (/\b(?:by investing|seeks to|invests? (?:in|primarily)|is designed to|designed to provide|(?:whose|its) objective is)\b/i.test(s)) return true;
+  /* Arm B is narrower than "starts lowercase", and the narrowing was measured
+   * rather than guessed. A random 40 of what the first draft dropped contained
+   * real holdings whose names merely carry damaged prefixes — `maturity date
+   * AmCen Mid Cap Value Fund R6`, `required for Blackrock Lifepath 2060`,
+   * `average rate is 1.25% American Century One Choice 2055` — the same rows
+   * v131's loan predicate was written to KEEP. A capital letter or a digit
+   * anywhere in the name means a product may still be named in it, so arm B
+   * fires only on text that is lowercase prose end to end. `for benefits`,
+   * `assets available for benefits`, `investment contracts, at fair value`,
+   * `mutual fund shares`, `at net asset value` all qualify; `fidelity freedom
+   * index 2020 fund` (a genuine lowercase-extracted fund) does not. */
+  if (!/^[a-z][a-z'’.,()]*\s+[a-z(]/.test(s)) return false;
+  if (/[A-Z0-9]/.test(s)) return false;
+  /* …and a lowercase-extracted FUND still begins with its house. Reuses the
+   * shipped HOUSE_ONLY vocabulary rather than a remembered list, applied to
+   * the first token only: `fidelity international index fund` is a real
+   * holding in a filing whose text layer lost its capitals (found in a random
+   * 40 of what this predicate drops), while `for benefits` and `investment
+   * contracts, at fair value` begin with no house at all. */
+  return !HOUSE_ONLY.test(s.split(/\s+/)[0]);
+}
+
 export function isLoanNoteName(n) {
   const s = String(n || "");
   if (!LOAN_TEXT.test(s) && !RATE_RANGE.test(s)) return false;
@@ -1278,6 +1325,11 @@ export function parseRows(section, opts = {}) {
      * Maturity 2025", "or maturity value AB DISCOVERY GROWTH Z" — all of which
      * the first draft of this predicate dropped. */
     if (isLoanNoteName(name)) { nameBuf = []; continue; }
+    /* v135: prose, not a holding — see isProseRowName. Dropped at the same
+     * site and for the same reason as the loan-description rows: the value
+     * belongs to something the filing names elsewhere, and publishing the
+     * sentence fragment attaches money to a holding that does not exist. */
+    if (isProseRowName(name)) { nameBuf = []; continue; }
     /* v70: SUBTOTALS HIDDEN BY SPACED-LETTER DAMAGE. Some PDFs extract with
      * letters scattered — "Tota l mutua l funds", "Tot al cont r i but i ons",
      * "To tal In ve stm e n t A sse ts" — and the damage carries the row

@@ -12887,3 +12887,69 @@ wrong, and the note is kept because the reasoning is the point.**
   disappeared; reading the 4i schedule showed that the money moved into a
   trust. A cause that explains the DIFF is not yet a cause that explains the
   FILING.
+
+## 2026-09-17 — v135 part 2: PROSE published as a holding (557 rows / 517 plans / 961,757 participants)
+
+- **Wrong:** a sentence fragment or a fund DESCRIPTION's last line was published
+  as a holding, carrying the money that belongs to whatever the filing names
+  elsewhere. BJC Health System's entire menu was two of them — `for benefits`
+  $2,034,486,825 (84.4%) and `assets available for benefits` $362,631,226
+  (15.0%), 42,830 participants. The Board of Trustees of the Deferred Salary
+  Plan of the Electrical Industry (35,520) published `investment contracts, at
+  fair value` at 82% while its real 27-fund Vanguard/IBEW menu sat in the same
+  filing. National Medical Care (72,950) published `the S&P 500® Index by
+  investing in stocks that make up the index.` at $755,422,355.
+- **Change (v135):** `isProseRowName`, exported so audits and sizers ask the
+  shipped question, dropping a row at the same site as v131's loan-description
+  rule. Two arms: a description VERB PHRASE (`by investing`, `seeks to`,
+  `invests in`, `is designed to`); and text that is lowercase prose END TO END
+  — lowercase first word, lowercase second word, and no capital or digit
+  anywhere in the name.
+- **The second arm was narrowed by reading a RANDOM 40 of what the first draft
+  dropped**, which is the only reason it is safe: "starts with a lowercase
+  word" also hit real holdings whose names carry a damaged prefix — `maturity
+  date AmCen Mid Cap Value Fund R6`, `required for Blackrock Lifepath 2060`,
+  `average rate is 1.25% American Century One Choice 2055` — the same rows
+  v131's loan predicate was explicitly written to KEEP. A capital or a digit
+  anywhere now vetoes the arm, and the shipped `HOUSE_ONLY` vocabulary keeps
+  `fidelity international index fund`, a genuine fund in a filing whose text
+  layer lost its capitals. The draw was random, not ranked, because the
+  question was "what does this hit" and not "what are the biggest".
+- **Measured:**
+  - store-wide, the shipped predicate over all 59,759 published lineups:
+    **557 rows / 517 plans / 961,757 participants**, of which **72 plans /
+    210,505 ppl** carry the junk at >=10% of the menu. (The first draft's
+    2,251 rows / 3.1M ppl is the number the queue carried; it is an
+    over-count of what may safely be dropped.)
+  - corpus of 953 filings: **23 change, 0 participants gain a lineup, 42,830
+    lose one** — BJC PN 003, whose menu was 100% prose. Every other dropped
+    row read by name and all are fragments (`rates of`, `and with`,
+    `responsive investment contract`, `reported at contract value`,
+    `including accrued interest`, `residence) and`, `at various`,
+    `independent third party`).
+  - two filings move to a different and better region once the prose stops
+    paying for the wrong one's ratio: the Board of Trustees' 78 rows go from
+    0.914 to 0.980 with its real Vanguard/IBEW menu in place of the $3.73B
+    aggregate, and **National Medical Care moves off the NOTES onto the
+    statutory 4i schedule** (12 rows at 0.951, BlackRock CITs with issuers,
+    MassMutual Stable Value, the SDBA, Fresenius stock).
+- **A CONTROL IN THE QUEUE WAS WRONG AND IS CORRECTED HERE.** The item said
+  National Medical Care's `Target Retirement YYYY Fund Option` rows must
+  survive. They do not, and they must not: those rows come from the notes'
+  participant-option table and carry its **PRIOR-YEAR column** — `Target
+  Retirement 2035 Fund Option 429,670,822 | 363,732,055` was published at
+  363,732,055, the 2023 figure. The same comparative-column defect hit
+  Bloomberg L.P. (20,114 participants), which published its 2023 values
+  (`State Street S&P 500 Index Fund Class K` $899,108,682) where the filed
+  schedule says $1,218,353,170. A control read off the store is a control
+  read off the defect.
+- **What the v135 run must show:** `audit-generic-names` and
+  `audit-dominant-row` no higher than their baselines; confident down by
+  roughly the BJC-shaped plans only (the 72 heavy plans are where a loss is
+  possible, ~210k participants at risk, most of them keeping a menu because
+  the junk is a minority of it); no `reparse-loss` HIGH naming a plan whose
+  lost rows are anything but fragments.
+- **Prevention:** two specimens pinned (`prose-fragment-as-holding-name`,
+  `option-description-note-beating-the-filed-4i`) so `diff-lineups` carries
+  the class forward, and the predicate is exported so the next sizing script
+  cannot invent its own.
