@@ -12757,3 +12757,57 @@ parser is worse than none: the edits were saved to scratchpad
 v134 before anything else ran. The agent restarts from the queue, not from
 the patch. **Rule from this: an interrupted agent's uncommitted parser edits
 are never adopted — reset, then restart the item.**
+
+## 2026-09-17 (20:0xZ per-cycle draw, first on the v134 store) — Toyota publishes `M ut ual fund` at $811M: a generic type label the vocabulary audit cannot see because pdftotext spaced its letters; and the audited generic-row class split by menu share
+
+Participant-weighted, seed 20260917200, 15 published lineups read by name.
+
+**Clean, 12 of 15:** ADP TotalSource (346,164 ppl), Best Buy, Tesla,
+Vanderbilt UMC, Humana, Cracker Barrel, Tufts Medicine, Wipro, Smithfield,
+Great Lakes Wine & Spirits, Freres Lumber, Home Bancshares (its
+`[Employer stock Home BancShares, Inc.]` bracket is the type-header-as-
+issuer class already queued as (f)).
+
+**Cosmetic:** Chubb (21,847) carries `(1)` footnote markers on every row.
+**Known class:** Packaging Coordinators (4,014) publishes `Fidelity
+Investments` at 7.6% — a bare house name as a holding.
+
+**Fabricated: Toyota Motor North America (52,368 participants, $13.35B,
+56 rows, ratio 0.943) publishes `M ut ual fund` at $811,428,481 (6.4%).**
+It is the schedule's type header "Mutual fund" with letters spaced by the
+text layer, carrying the class subtotal beside real Vanguard rows. The
+shipped `GENERIC_TYPE_NAME` cannot match it as spelled, so
+`audit-generic-names` does not count it — and would not anyway, because
+that audit only counts a plan when generic rows carry **>= 25% of the
+menu** (its own comment: "a stray loans row is fine"). An $811M row is not
+a stray loans row.
+
+**Sized two ways** (scratchpad `spaced-type.mjs`; predicate = strip spaces
+and non-letters, then test the type vocabulary):
+
+- **Letter-spaced generic type names, Toyota's shape: 68 rows / 42 plans /
+  123,497 ppl.** Invisible to every vocabulary check in the repo.
+- **The audited class, split by share** (the shipped `GENERIC_TYPE_NAME` on
+  the raw name, which is exactly what `audit-generic-names` tests): any
+  such row **461 plans / 2,081,160 ppl / 525 rows**; carrying >= 10% of the
+  menu **152 plans / 509,967 ppl**; >= 30% **98 / 336,152**; >= 50% **71 /
+  240,388**; >= 90% 4 / 3,868. The audit's 107 is its >= 25% band, and it
+  reads "107 < 230, fine" while Marriott (152,118 ppl) publishes `COMMON
+  STOCKS` at 49.2% of the plan, both General Motors plans (71,495 + 65,343)
+  `Common collective trusts` at 64-66%, Cisco `Common stock` + `Mutual
+  funds` 12%, UPS 9%. These are the filing's own CLASS SUBTOTALS kept
+  beside (or instead of) the rows they total — the v101 grand-total shape
+  one level down. A reader of Marriott's page sees half the plan labelled
+  with an asset class and no fund.
+
+**Recorded and queued, not fixed:** (h) class subtotals published as
+holdings, 98 plans / 336,152 ppl at >= 30% — the fix is arithmetic, not
+vocabulary: a row whose value equals the sum of a run of following rows,
+or whose name is a type label with itemized rows of that type beneath it,
+is a subtotal; and the letter-spaced subclass needs `audit-generic-names`
+(and the parser's own generic test) to compare with spaces stripped. The
+audit's 25% floor should become a floor on dollars OR share, because a
+$811M row at 6% is exactly what a share floor was never meant to excuse.
+
+Rate, per participant: 1 fabricated row in 15 (Toyota, 6.4% of its menu),
+1 known-class house row, 1 cosmetic.

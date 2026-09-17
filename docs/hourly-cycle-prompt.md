@@ -198,6 +198,21 @@ Order of business:
       share-class tokens and `(continued)` from the promoted issuer.
       (` N/R` on 1,431 plans / 2.57M ppl is NOT queued — `app.js` ~404
       already strips it for display and lookup.)
+      **(h) FROM THE 20:0xZ DRAW — the filing's CLASS SUBTOTAL published as
+      a holding, and the vocabulary audit's blind spots.** Toyota (52,368
+      ppl) publishes `M ut ual fund` at $811M (6.4%): letter-spaced by the
+      text layer, so no vocabulary test matches it — **68 rows / 42 plans /
+      123,497 ppl** in that shape. The audited class (`GENERIC_TYPE_NAME`
+      rows) split by menu share: **>= 30%: 98 plans / 336,152 ppl** —
+      Marriott (152,118) `COMMON STOCKS` 49%, both GM plans `Common
+      collective trusts` 64-66%, Cisco 12%; `audit-generic-names` counts
+      only the >= 25% band (107) against a 230 threshold and so never
+      fires. Fix shape: arithmetic — a row whose value equals the sum of a
+      run of following rows, or a type label with itemized rows of that
+      type beneath it, is a subtotal, not a holding; strip spaces before
+      any generic-name test (parser and audit); give the audit a dollar
+      floor beside the share floor. Sizer: scratchpad `spaced-type.mjs`.
+      `docs/accuracy-log.md` 2026-09-17 (20:0xZ draw).
       **STATUS 20:1xZ:** v134 (part 5) is LIVE, overshoot 390 → 364. A
       wam agent restarted at 20:0xZ on First American + (e) + (g) toward
       v135 after the first attempt was killed by the session usage limit
