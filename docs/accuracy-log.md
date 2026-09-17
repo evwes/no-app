@@ -11830,3 +11830,62 @@ Prevention: the aggregate-row share is one more arithmetic guard that
 belongs beside `audit-overshoot` — a parser-made row carrying >=30% of a
 menu is a claim about the filing's structure, not a holding, and the audit
 should count it every merge.
+
+## 2026-09-17 (v132 cycle, 14:2xZ per-cycle draw) — participant-weighted read of 15 published lineups on the LIVE v132 store: one fabricated row (Fidelity's own plan), two naming classes sized
+
+Frame: participant-weighted over the 59,761 published lineups (89.66M
+participants), fresh seed, rows read by name against the sponsor. This is
+the first draw on the v132 store, so it also checks what v130-v132 left.
+
+**Clean, 9 of 15:** Walmart (1.92M — the $2.86B MSCI ACWI ex-U.S. fund and
+the whole LSV name are on the page; `Investments Walmart Inc. Equity
+Securities` carries a glued `Investments` header word, cosmetic), Lowe's
+(2023 fallback by design), Salesforce, National Mentor, Apache Industrial,
+Andersen, IBEW Local 292, Core Campus, Scheurer Hospital, North Bay.
+
+**Already queued, seen again:** JPMorgan Chase (299,277 ppl) at ratio 0.660
+with 80 rows and `JPMCINTERMEDT AGGREGATE SEP ACCT — SEPARATE ACCT
+2,271,585,2` (a value in the name); Nordstrom (108,781) `Vanguard Fiduciary
+Trust Company` at 27% — the trustee as a bare house row, which v132's merge
+did not touch because nothing under it is a fund name.
+
+**New, fabricated: FMR LLC — Fidelity's own 401(k), 90,445 participants,
+$34.2B — publishes `Employer, net of forfeitures` at $1,291,449,407 (3.8%)
+as a holding.** That is the contributions line of the Statement of Changes
+in Net Assets, not a security; the 4i region ran into the statement. Sized
+store-wide by vocabulary (contributions / net of forfeitures / rollovers /
+net appreciation / benefits paid / transfers): **110 plans / 429,853 ppl /
+111 rows**, of which the certain shapes are `Employer, net of forfeitures`
+(17 plans: FMR, AutoNation 28,688, Bloomberg 20,110), `Net appreciation in
+fair value of plan investments` (Marsh & McLennan x2, 50,559 ppl, at 6.6%
+and 7.6% of the menu) and `Rollovers` / `Rollover receipts` (~17: IRB
+Holding 43,661, Exelon 26,632, Universal City 24,228). The predicate
+OVER-matches `Forfeiture Account` / `Forfeiture cash account` (~30 plans) —
+those are real cash positions the filing lists on 4i and must stay. So the
+reachable class is ~40 plans / ~250k ppl, and the fix is the v132 region
+stop extended to the statement captions (`Statement of Changes in Net
+Assets`, `Contributions:`), with the forfeiture-account rows as the named
+control. Same family as Delta's Schedule C run-on, one caption further.
+
+**New, naming: a TYPE HEADER promoted to the issuer bracket — 375 plans /
+716,341 ppl / 810 rows.** Ulta (70,205) shows `[Registered investment
+company shares Fidelity Investments] 500 Index Fund`; Vanderbilt (82,148)
+`[Registered investment company shares Boston …]`; TD Bank (49,123) `[Common
+Collective Trust (continued)]` on three rows; Marsh & McLennan
+`[Participant-directed investments]`. v126 promoted section headers to
+`iss`, and a header whose first words are a GENERIC type — `Registered
+investment company shares` (222 rows), `Participant directed investments`
+(109), `Mutual funds (continued)` (30) — is not an issuer. Value and fund
+name are right; only the bracket is wrong. Fix: strip `GENERIC_TYPE_NAME`
+vocabulary and `(continued)` from the promoted issuer, and drop it when
+nothing remains. Parser change, needs a bump; the frontend could strip it
+for display meanwhile.
+
+Also seen: Oracle (101,985) publishes its brokerage window as `Various
+investments, including registered market funds and c…` at $3.4B (9.8%) —
+the filing's own description of the window, value right, name unreadable;
+the SDBA label would serve readers better. Recorded, not sized.
+
+Rate, stated per PARTICIPANT because of the frame: 1 fabricated row in 15
+(FMR, 3.8% of its menu), 3 naming defects, 2 known-open. Sizer:
+scratchpad `draw-size-14z.mjs`.

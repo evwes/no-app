@@ -176,6 +176,21 @@ Order of business:
       audit beside `audit-overshoot`. Sizer:
       scratchpad `sma-agg.mjs` (store-only). `docs/accuracy-log.md`
       2026-09-17 (run #344 verdict).
+      **FROM THE 14:2xZ DRAW (first on the v132 store):** (e) **a
+      STATEMENT-OF-CHANGES line as a holding — FMR LLC (Fidelity's own
+      plan, 90,445 ppl) publishes `Employer, net of forfeitures` $1.29B
+      (3.8%)**; predicate hits 110 plans / 429,853 ppl, reachable ~40 /
+      ~250k once `Forfeiture Account` rows (real cash positions, ~30 plans)
+      are excluded — AutoNation, Bloomberg, Marsh & McLennan `Net
+      appreciation…` at 7%, IRB `Rollover, participants`. Fix = the v132
+      caption stop extended to the statement captions; forfeiture accounts
+      are the control. (f) **TYPE HEADER as issuer — 375 plans / 716,341 ppl
+      / 810 rows**, `[Registered investment company shares Fidelity
+      Investments] 500 Index Fund` (Ulta 70k, Vanderbilt 82k, TD Bank
+      `[Common Collective Trust (continued)]`): strip `GENERIC_TYPE_NAME`
+      vocabulary and `(continued)` from the v126-promoted issuer. Sizer:
+      scratchpad `draw-size-14z.mjs`. `docs/accuracy-log.md` 2026-09-17
+      (14:2xZ draw).
 
       **SHIPPED FROM THIS ITEM, v130 (2026-09-17, committed `[skip ci]`, NOT
       yet parsed — it is a fabrication repair, not new coverage): a wrapped
