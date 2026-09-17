@@ -344,10 +344,13 @@ try {
    * the denominator changed. */
   let overT = 0, overTPpl = 0, overTPlans = 0;
   const worstOverT = [];
+  /* hoisted: the folded-aggregate check below needs the same two maps, and a
+   * trust counted with zero participants is how a 60-vs-56 discrepancy gets
+   * published without either number being wrong */
+  let trusts = new Map(); const memb = new Map();
   try {
     const mt = JSON.parse(readFileSync("mtias.json", "utf8"));
-    const trusts = new Map((mt.trusts || mt).map((t) => [t.ack, t]));
-    const memb = new Map();
+    trusts = new Map((mt.trusts || mt).map((t) => [t.ack, t]));
     for (const r of d.plans) {
       const m = g(r, "mtiaAck");
       if (!m) continue;
@@ -381,6 +384,49 @@ try {
    * diffable run to run, which is what "must fall" actually requires. */
   auditCoverage.overshoot = over;
   auditCoverage.overshootPpl = overPpl;
+
+  /* A PARSER-MADE ROW CARRYING MOST OF A MENU IS A CLAIM ABOUT THE FILING'S
+   * STRUCTURE, NOT A HOLDING (2026-09-17).
+   *
+   * `Managed account holdings (N positions)` and its brokerage twin are the
+   * one row type this parser INVENTS: several itemised securities rolled into
+   * a single line, because the innards of a managed account or a stock window
+   * are not investment choices. The fold is right, and it is right by a
+   * judgement — which rows are innards — that no check ever tested. When the
+   * judgement is wrong it is spectacularly wrong and completely silent: the
+   * sum is correct, the ratio is correct, confidence holds, and every
+   * arithmetic guard here passes while the reader is shown NOTHING. H&R
+   * Block's 27,766 participants saw five rows, one of which was 96.8% of the
+   * plan and was their whole menu; Duke Energy's 35,031 could not see a
+   * single target-date fund.
+   * Baseline on the v132/v133 store: 56 plans / 158,541 participants at >=30%.
+   * The <10% band (104 plans / 3.77M participants) is the DESIGNED case — a
+   * small sleeve beside a full menu — and is deliberately not counted. */
+  const AGG_ROW = /^(?:managed account|brokerage(?: account)?|self-directed brokerage) holdings \(\d+ positions?\)/i;
+  let aggBig = 0, aggBigPpl = 0;
+  const worstAgg = [];
+  for (const [ack, e] of Object.entries(entriesByAckCov)) {
+    if (!e || !e.confident || !Array.isArray(e.funds) || !e.funds.length) continue;
+    const sum = e.funds.reduce((a, x) => a + (+x.value || 0), 0) || 1;
+    const agg = e.funds.find((x) => AGG_ROW.test(String(x.name || "")));
+    if (!agg || (+agg.value || 0) / sum < 0.3) continue;
+    const row = byAck.get(ack);
+    // a master trust's readers are its member plans' participants
+    const ppl = row ? (g(row, "partEOY") || g(row, "participants") || 0) : (memb.get(ack) || { ppl: 0 }).ppl;
+    const who = row ? g(row, "sponsorName") : ((trusts.get(ack) || {}).name || ack);
+    aggBig++; aggBigPpl += ppl;
+    worstAgg.push([ppl, `${who} ${ppl.toLocaleString()}p ${(100 * (+agg.value || 0) / sum).toFixed(0)}% ("${String(agg.name).slice(0, 34)}")`]);
+  }
+  worstAgg.sort((a, b) => b[0] - a[0]);
+  worstAgg.splice(4);
+  auditCoverage.aggRow = aggBig;
+  auditCoverage.aggRowPpl = aggBigPpl;
+  const AGG_BASELINE = 60;
+  console.log(`== FOLDED-AGGREGATE SHARE: ${aggBig} published menus whose parser-made aggregate row carries >=30% of the shown sum (${aggBigPpl.toLocaleString()} participants; baseline ${AGG_BASELINE}, must fall)`);
+  if (aggBig > AGG_BASELINE)
+    flag("high", "folded-aggregate", `${aggBig} published menus hide >=30% of themselves inside a parser-made aggregate row, up from the ${AGG_BASELINE} baseline — a menu may have been folded as if it were a managed account: ${worstAgg.map((x) => x[1]).join("; ")}`);
+  else if (aggBig > 0)
+    flag("warn", "folded-aggregate", `${aggBig} published menus (${aggBigPpl.toLocaleString()} participants) hide >=30% of themselves inside a parser-made aggregate row: ${worstAgg.slice(0, 3).map((x) => x[1]).join("; ")}`);
 
   /* IDENTIFIED-ROW SHARE — the fee column's coverage, which had never been
    * printed in any unit until 2026-09-15.

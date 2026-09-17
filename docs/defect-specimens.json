@@ -310,6 +310,20 @@
       "fixed": "v133",
       "sponsor": "HCA Inc. Master Retirement Trust",
       "was": "the TRUST half of the class, pinned because diff-lineups keyed every lookup on plans-all and a master trust has no row there - the tool that exists so a fix is not shipped on one filing was blind to the population this fix was for (fixed the same day: trusts are now compared against mtias assets). HCA's 377,504 participants read this trust's menu on their plan page. Before v133 its largest row was 'CUSIP:' at $7,934,229,851 = 26.7% of the shown sum, and 'LENDING' at $658,991,351 is CUSIP 658991351 of the Russell 1000 Growth fund; ratio 1.297. After: 80 rows at 0.933, no identifier rows, every Northern Trust collective fund named. Must stay confident with no row whose name begins 'CUSIP'"
+    },
+    {
+      "ack": "20251010135251NAL0018754754001",
+      "class": "menu-folded-as-a-managed-account",
+      "fixed": "v133",
+      "sponsor": "Duke Energy",
+      "was": "a row with no investment-type column of its own inherits the type of the last SECTION HEADER, and the header 'Common Stock Funds' ran on over the sixteen 'Institutional Funds' that follow it - so the SMA fold rolled the whole middle of the menu into one parser-made row, 'Managed account holdings (16 positions)' = $5,575,809,000 = 49.5% of an $11.27B plan, and 35,031 participants could not see a single target-date fund. H&R Block was the same shape at 96.8% (27,766 participants shown five rows, none of them their funds); Estee Lauder at 56% with twelve JPMorgan vintages and an S&P 500 index fund inside a row that ALSO held a genuine 62-security sleeve. v133 reconsiders only rows that INHERITED their type, and only when the name states a pooled product with no sign of a single issuer. Duke 9 rows -> 24 at an UNCHANGED ratio 0.987 - the arithmetic cannot move, one row becomes N summing to the same value. H&R Block 5 -> 29, Estee Lauder 6 -> 18 with its real sleeve still folded at 63 positions, Bristol-Myers Squibb's trust 37 -> 41, Lubrizol 20 -> 28"
+    },
+    {
+      "ack": "20251010101149NAL0007491633001",
+      "class": "menu-folded-as-a-managed-account",
+      "fixed": "v133",
+      "sponsor": "Danaher",
+      "was": "CONTROL: a GENUINE itemized managed-account sleeve that must stay folded - 48 positions (Nvidia, Microsoft, Apple) at 13.9% of the menu, plus 'Freddie Mac Pool' and 'Fannie Mae Pool', which carry a pooled-product word and are single securities in a bond sleeve. Unfolding a real sleeve is the v100-v105 fabrication family in reverse: individual securities published as menu options. Danaher must stay at 33 rows / 0.973, and with it Walmart (41), Costco (31), Parker Hannifin (36), Capital One (28, whose folded row is literally named 'Various RIC, CIT, and common stocks'), National Rural Electric (31, REIT trusts), Nordstrom (21), Old Republic (30), RTX's trust (15, a real 66-security sleeve at 46% of the menu and the largest member of the class by participants - 214,241) and CSX's trust (45)"
     }
   ]
 }

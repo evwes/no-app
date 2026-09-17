@@ -2397,14 +2397,60 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
   const GENERIC = new Set(["inc", "incorporated", "corp", "corporation", "company", "companies", "llc", "llp", "ltd", "group", "holdings", "holding", "the", "and", "trust", "master", "savings", "plan", "plans", "usa"]);
   const spTokens = sponsorName.toLowerCase().split(/[^a-z0-9]+/).filter((w) => w.length > 2 && !GENERIC.has(w)).slice(0, 3);
   const isEmployer = (n) => spTokens.some((tok) => n.toLowerCase().includes(tok));
-  const itemized = funds.filter((f) => (f.type === "Stock" || f.type === "Company stock") && !isEmployer(f.name));
+  /* v133: A MENU IS NOT A MANAGED ACCOUNT, and a section header does not
+   * govern the rows below it forever.
+   *
+   * A row with no investment-type column of its own inherits the type of the
+   * last section header seen. Where that header is "Common Stock Funds"
+   * (Duke), "H&R Block, Inc. Common Stock Fund:" (H&R Block) or the employer
+   * stock block, the inheritance runs on over the sections that FOLLOW it —
+   * Duke's sixteen "Institutional Funds", H&R Block's twenty-five Vanguard,
+   * T. Rowe Price and PIMCO options — and the fold below then rolls the whole
+   * MENU into one line: "Managed account holdings (25 positions)" at 96.8% of
+   * H&R Block's plan, so its 27,766 participants were shown five rows and not
+   * one of their funds. Duke's 35,031 could not see a single target-date fund;
+   * Estee Lauder's 18,363 lost twelve JPMorgan vintages and an S&P 500 index
+   * fund inside a row that also holds a genuine 62-security sleeve.
+   *
+   * The fold is right and must stay — itemised securities inside a managed
+   * account or a stock window are not investment choices, and unfolding them
+   * is the v100-v105 fabrication family in reverse. So the test is two-sided
+   * and structural first:
+   *   - `ownType` means the FILING typed this row as stock ON THE ROW. Trust
+   *     it: Walmart's, Costco's, Danaher's and Parker Hannifin's sleeves stay
+   *     folded whatever they are called.
+   *   - only a row that INHERITED its type may be reconsidered, and only when
+   *     its own name states a pooled product and carries no sign of being a
+   *     single issuer (REITs are the trap: "Digital Realty Trust Inc",
+   *     "Camden Property Trust", "Kite Realty Group Trust" are stocks).
+   *   - the shipped aggregate vocabularies still veto it, so an inherited row
+   *     called "Various RIC, CIT, and common stocks" (Capital One, 14% of the
+   *     menu) cannot be promoted into a holding.
+   * The arithmetic is untouched by construction: one aggregate row becomes N
+   * rows summing to the same value, so no ratio and no confidence can move on
+   * this alone. */
+  const FUND_PRODUCT = /\b(?:funds?|trusts?|index|idx|portfolios?|pool|collective|cit|lifecycle|lifepath|target (?:date|retirement)|money market|stable value)\b/i;
+  /* the REIT trap is why `trust` alone cannot decide: "Digital Realty Trust
+   * Inc", "Kite Realty Group Trust" and "Camden Property Trust" are single
+   * stocks inside real sleeves. The agency names are the same trap for
+   * `pool` ("Fannie Mae Pool", "Freddie Mac Pool" in Danaher's bond sleeve). */
+  const SINGLE_ISSUER = /\b(?:inc|incorporated|corp|corporation|plc|ltd|llc|l\.l\.c|lp|co\.|compan(?:y|ies)|holdings?|hldgs?|reit|realty|propert(?:y|ies)|bancorp|bancshares|fannie mae|freddie mac|fnma|fhlmc|gnma|ginnie mae|adr|npv|ord)\b/i;
+  // Are these the innards of a managed account (a single menu option) or
+  // participants' own brokerage picks? Section headers say; failing that,
+  // a plan with the 2R brokerage code and NO aggregate brokerage line is
+  // reporting brokerage assets individually (allowed by the instructions).
+  const brokRe = /brokerage|self.?directed|sdba|pcra/i;
+  /* a row sitting under a BROKERAGE heading is never reconsidered: a
+   * participant's own window really does hold ETFs and mutual funds, and
+   * those are not menu options either. The rule is for the managed-account
+   * bucket, which is where a whole menu can be swallowed. */
+  const inheritedMenuRow = (f) => !f.ownType && !brokRe.test(f.sec || "") &&
+    FUND_PRODUCT.test(f.name) && !SINGLE_ISSUER.test(f.name) &&
+    !NOT_FUND_SHAPED.test(String(f.name).trim()) && !GENERIC_TYPE_NAME.test(String(f.name).trim());
+  const itemized = funds.filter((f) => (f.type === "Stock" || f.type === "Company stock") &&
+    !isEmployer(f.name) && !inheritedMenuRow(f));
   let sma = null, smaKind = null, sdbaOut = best.sdba;
   if (itemized.length >= 3) {
-    // Are these the innards of a managed account (a single menu option) or
-    // participants' own brokerage picks? Section headers say; failing that,
-    // a plan with the 2R brokerage code and NO aggregate brokerage line is
-    // reporting brokerage assets individually (allowed by the instructions).
-    const brokRe = /brokerage|self.?directed|sdba|pcra/i;
     const brokRows = itemized.filter((f) => brokRe.test(f.sec || ""));
     const mgdRows = itemized.filter((f) => !brokRe.test(f.sec || ""));
     const hasAggSdba = funds.some((f) => f.type === "Brokerage window");

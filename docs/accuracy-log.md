@@ -12030,3 +12030,118 @@ McLennan and Bechtel leave; the other nine are different shapes — Kohl's, GE
 Insurance, Novartis, MassMutual, NFL Players, Enviri, Nordson, Hocker, Lennox),
 zero published rows whose name carries a CUSIP/SEDOL/ISIN label, and the two
 losses above as the only `reparse-loss` entries from this class.
+
+## 2026-09-17 (v133, part 2) — H&R Block's 27,766 participants were shown five rows, one of which was their whole menu: a section header that governs the rows it does not own
+
+**WHAT WAS WRONG.** A 4i row that carries no investment-type column of its own
+inherits the type of the last SECTION HEADER seen (`lib-4i.mjs` ~1567, and
+that inheritance is right — most schedules type a whole block once). When the
+header is a STOCK header the inheritance runs on over the sections that follow
+it, and everything below is typed `Company stock`. The SMA fold then does what
+it is built to do — roll itemised securities inside a managed account or a
+stock window into one line, because they are not investment choices — and
+swallows a MENU:
+
+| | published | what the aggregate row really was |
+|---|---|---|
+| **H&R Block**, 27,766 ppl | 5 rows, one of them **96.8%** | 25 Vanguard Target Retirement, T. Rowe Price, PIMCO, Jennison and Morley options — the entire menu |
+| **Duke Energy**, 35,031 ppl | 9 rows, one of them **49.5%** ($5,575,809,000) | the 16 `Institutional Funds`, including every Target Retirement Date vintage |
+| **Estee Lauder**, 18,363 ppl | 6 rows, one of them **56%** | 12 JPMorgan vintages + an S&P 500 index fund, mixed IN with a genuine 62-security sleeve |
+| **Bristol-Myers Squibb** trust, 36,628 ppl | 37 rows, one of them **45%** | `SP 500 INDEX PL CL E`, `FID US BOND IDX` and two more |
+
+Every arithmetic guard passes on these: the aggregate's value is correct, the
+ratio is correct (Duke 0.987), confidence holds. **The row this parser INVENTS
+is the one thing no check looked at**, and when its judgement is wrong the
+reader is shown nothing at all rather than something wrong — which is why it
+survived every audit this project has.
+
+**SIZE, whole store, plans AND master trusts** (a parser-made aggregate row at
+>=30% of the published sum): **60 published lineups / 462,394 participants.**
+The <10% band — 104 lineups / 3.77M participants — is the DESIGNED case, a
+small sleeve beside a full menu, and is not claimed. Note the largest member of
+the >=30% band is NOT a defect: RTX's master trust (214,241 participants) folds
+a genuine 66-security sleeve (Apple, Nvidia, Microsoft) at 46%, and it must
+stay folded.
+
+**THE CHANGE (v133).** The fold is reconsidered for a row only when
+**`ownType` is absent** — i.e. the filing did not type this row on the row, the
+type was inherited — and the row is not under a brokerage heading, and its own
+name states a pooled product (`fund`, `trust`, `index`, `portfolio`, `pool`,
+`collective`, `CIT`, `lifecycle`, `lifepath`, `target date/retirement`, `money
+market`, `stable value`) with no sign of a single issuer (`inc`, `corp`, `plc`,
+`holdings`, **`reit`, `realty`, `property`** — REITs are the trap: *Digital
+Realty Trust Inc*, *Kite Realty Group Trust*, *Camden Property Trust* are
+stocks — and the agency names, because *Fannie Mae Pool* and *Freddie Mac Pool*
+sit in Danaher's bond sleeve). The shipped `NOT_FUND_SHAPED` and
+`GENERIC_TYPE_NAME` still veto, which is what keeps Capital One's folded row —
+literally named *"Various RIC, CIT, and common stocks"*, 14% of its menu — from
+being promoted into a holding.
+
+**The arithmetic cannot move, by construction:** one aggregate row becomes N
+rows summing to the same value. Every ratio in the measurement below is
+unchanged to three decimals, and no lineup can gain or lose confidence on this
+alone.
+
+**OUTCOME, re-parsed over the WHOLE >=30% population (60 of 60, not a sample),
+working tree against the committed v133:**
+
+| | entries | participants |
+|---|---|---|
+| row count MOVED (menu rows recovered) | 12 | 132,683 |
+| of which LEAVE the >=30% band | **8** | **131,758** |
+| unchanged — genuine sleeves, correctly folded | 37 | ~184,000 |
+| not measurable locally (pdftotext yields no schedule; production reads these through OCR) | 11 | ~14,000 |
+
+Row by row, every one of the twelve, ratio unchanged in all twelve:
+
+```
+T  36,628p rows 37->41  agg 45%-> 5%  Bristol-Myers Squibb trust
+P  35,031p rows  9->24  agg 50%-> 0%  Duke Energy
+P  27,766p rows  5->29  agg 97%-> 0%  H&R Block
+P  18,363p rows  6->18  agg 56%->14%  Estee Lauder   (its real 63-security sleeve stays folded)
+P   5,706p rows 20->28  agg 35%-> 0%  Lubrizol
+P   3,320p rows 57->78  agg 78%->19%  IBEW Local 481
+P   3,305p rows  4->16  agg 81%->29%  Advanced Technology Services
+P   1,639p rows  8->19  agg 52%->14%  CNX Resources
+P     434p rows 25->26  agg 36%->36%  NWL
+P     233p rows  6-> 7  agg 58%->39%  Sullivan & Cromwell
+P     135p rows 23->26  agg 55%->43%  Bank of Labor
+P     123p rows  6-> 7  agg 73%->72%  Childrens Clinic of SWLA
+```
+
+So the re-parse's verdict test is exact: **`aggRow` must fall from 60 to about
+52 and `aggRowPpl` from 462,394 to about 330,600**, the remainder being
+dominated by RTX's genuine sleeve (214,241) and Corteva's form junk (24,519),
+neither of which this change touches.
+
+**CONTROLS, and they are the point** — a genuine sleeve unfolded would publish
+individual securities as menu options, which is the v100-v105 fabrication
+family in reverse. Unchanged to the row: **RTX's trust** (15 rows, the 66-
+security sleeve at 46%), **CSX's trust** (45), **Walmart** (41), **Costco**
+(31), **Danaher** (33, including its two agency pools), **Parker Hannifin**
+(36), **Capital One** (28), **National Rural Electric** (31, REIT trusts),
+**Nordstrom** (21), **Old Republic** (30).
+
+**PREVENTION.** `audit-data.mjs` now counts the folded-aggregate share every
+merge — published menus whose parser-made aggregate row carries >=30% of the
+shown sum, with master trusts credited with their member plans' participants,
+baseline **60 / 462,394 participants**, `aggRow` / `aggRowPpl` in
+`coverage-history.jsonl`. Negative-controlled: at threshold 60 it prints and
+does not fire; at 59 it raises a HIGH naming RTX, Bristol-Myers Squibb, Duke
+and CSX. **It is also how the class got bigger than the queue said**: the
+plan-keyed sizer that opened this item saw 56 plans / 158,541 participants, and
+the check — which counts trusts too — found RTX, Bristol-Myers Squibb, CSX and
+Corteva behind it, 304k more readers.
+
+**FOUND AND NOT FIXED, recorded rather than left implicit:**
+- **Corteva's master trust, 24,519 participants**, folds 5 rows at 81% whose
+  names are Form 5500 checkbox fragments — `(B) Common...`, `(14) vents) held
+  in insurance company general account (unallocated`, `(7) Loans (other than to
+  participants)`. Not this class: the rows are form junk, and the right fix is
+  region selection, not the fold. Unchanged by v133.
+- **Old Republic, 14,343 participants**, publishes `Managed account holdings (3
+  positions)` at 31% where the three rows are `PARTICIPANT DIRECTED`,
+  `NON-PARTICIPANT DIRECTED` and `UNALLOCATED` — the EMPLOYER STOCK block split
+  by direction under a header that names the issuer. Folding is arguably right
+  (one menu option); the LABEL is wrong, and `isEmployer` cannot see it because
+  the sponsor's name is on the header line, not on the rows. Unchanged.
