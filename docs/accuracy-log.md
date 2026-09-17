@@ -12233,3 +12233,67 @@ rows at 0.987, so its 71,797 participants gain the trust's real menu). If they
 do NOT, the divergence is real and needs its own investigation — a stored entry
 that the current parser cannot reproduce at the version that wrote it is a
 separate defect from anything in this entry.
+
+## 2026-09-17 (v133, part 4) — the eight degraded swaps: a source-split page was being traded for a FRAGMENT OF ITSELF
+
+**WHAT WAS WRONG.** Run #344's `swaps-degraded.txt` flagged 8 plans (6,910
+participants) that moved off a 2023 fallback onto their own 2024 filing at
+ratio 0.48-0.63. The queue asked which of three causes it was: v132's caption
+stop cutting a schedule short, the house-name merge promoting a half-menu, or
+an honest 2024 parse that really is half the plan. **It is none of them.**
+
+Every one of the eight was traced against v131 (`0ce549a0`) and against the
+working tree, and the v131 parse was **`stmt`-flagged in all eight** — never
+`band-hi`, so the caption stop is not implicated; it only removed the
+competitor that was masking the real defect. `WAMPO_TRACE=cands` on Saad
+Enterprises names it in one line:
+
+```
+rows= 48 ratio=0.996 split=1   <- the winner, demoted for being a source-split page
+rows= 29 ratio=0.565 split=0   <- what it was demoted TO
+```
+
+v132's rule *"a source-split page loses to a real menu"* swaps whenever any
+menu-shaped candidate exists. On these filings the alternative is **not a
+different schedule**: it is one contribution source's worth of rows from the
+SAME table. Robert Walters' filing shows the shape plainly — `GM Vanguard
+Short Term Corp Bd Index Adm` $348,694 sits beside `Vanguard Short Term Corp
+Bd Index Adm` $152,044, the same fund under two sources — so taking the
+non-split sibling takes about half the plan.
+
+**THE CHANGE.** The replacement must be no further from ratio 1.0 than the
+candidate it replaces, by more than **0.25 in |log| terms** (~28% of the
+plan). Producers Rice Mill — the pinned control for this exact swap — still
+swaps, because its auditor's 21-fund schedule reads 0.918 against the split
+page's 0.997; and a split page that DOUBLE-COUNTS at 1.9 still loses to a 0.95
+menu, because that replacement is *closer* to 1.0 rather than further.
+
+**OUTCOME, all eight re-parsed** (rows at ratio, v133 before this change ->
+after):
+
+| plan | before | after |
+|---|---|---|
+| Saad Enterprises | 28 @ 0.565 | **47 @ 0.996** |
+| Unex Corp | 7 @ 0.482 | **32 @ 1.000** |
+| Yale Club of New York | 7 @ 0.540 | **31 @ 1.000** |
+| Fam LLC | 16 @ 0.482 (top rows `Lord Abbett`, `Oakmark`) | **24 @ 1.000** |
+| Robert Walters | 5 @ 0.484 | **33 @ 0.978** |
+| Putnam Investments | 41 @ 0.632 | 41 @ 0.632 — unchanged, and CORRECT |
+| Flexitallic | 16 @ 0.476 | 16 @ 0.476 — unchanged |
+| Printpack | not reproducible locally | — |
+
+**The three that did not move are the honest half of the answer.** Putnam's 41
+rows are forty-one real Putnam funds (`Putnam Large Cap Growth R6`, `Putnam
+Sustainable Leaders R6` …) and its winner is not split-flagged: its 2024
+schedule genuinely accounts for 63% of the plan, so the swap-degraded flag was
+reading a real change in the FILING, not a parser defect. Flexitallic is the
+same shape with 16 Fidelity funds. **Printpack parses identically under v131
+and v133 here (5 rows, `stmt`, not confident) while the store says it swapped
+to 11 rows of bare tickers** — the same store-versus-local divergence recorded
+for Caterpillar in part 3, and it needs the re-parse to settle.
+
+**PREVENTION.** Saad is pinned as the specimen; Producers Rice Mill was
+already pinned as the control and the gate covers both. The `diff-lineups`
+run that measured this returned four zeros until Saad was pinned into the
+corpus, and then showed `28->47` — recorded because a zero from an instrument
+that could not have answered otherwise is not a result.

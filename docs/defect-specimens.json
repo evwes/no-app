@@ -338,6 +338,13 @@
       "fixed": "v133",
       "sponsor": "Ecolab",
       "was": "CONTROL for the entry above: a REAL menu carrying one units-marker row. 26 rows at ratio 0.938 including '(in thousands)' at $4.0M (0.2% of the plan). v133 must drop that one row and nothing else - 25 rows, ratio unchanged at 0.938, confidence kept. Domino's Pizza (29 -> 28, 0.993 -> 0.985), Arcosa (26 -> 25), Cleveland-Cliffs (15 -> 13) and Continental Casualty (4 -> 3) behave the same way; Caterpillar's two and Solar Turbines were already non-confident and stay so"
+    },
+    {
+      "ack": "20251001132056NAL0013282129001",
+      "class": "split-page-swapped-for-a-fragment-of-itself",
+      "fixed": "v133",
+      "sponsor": "Saad Enterprises",
+      "was": "v132 demotes a SOURCE-SPLIT page whenever any menu-shaped candidate exists, and on eight filings that candidate was not a different schedule at all - it was one contribution source's worth of rows from the SAME table. Saad read 48 rows at ratio 0.996 and published 29 of the same funds at 0.565; run #344's swaps-degraded.txt caught all eight moving off a 2023 fallback onto a 2024 filing at 0.48-0.63 (Putnam, Printpack, Flexitallic, Unex, Saad, Yale Club, Fam LLC, Robert Walters). In every one the v131 parse had been stmt-flagged, so v132's caption stop only removed the competitor that was masking this. v133 requires the replacement to be no further from ratio 1.0 than the candidate it replaces, by more than 0.25 in |log| terms. Saad 28 rows at 0.565 -> 47 at 0.996, Unex 7 at 0.482 -> 32 at 1.000, Yale Club 7 at 0.540 -> 31 at 1.000, Fam LLC 16 at 0.482 -> 24 at 1.000, Robert Walters 5 at 0.484 -> 33 at 0.978. Producers Rice Mill MUST still swap (auditor schedule 0.918 against the split page's 0.997) and Hospice of Muskegon must still keep its only schedule"
     }
   ]
 }

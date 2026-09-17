@@ -2336,7 +2336,27 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
    * provider and split pages, so junk can never swap for junk. Producers Rice
    * Mill files both and keeps its auditor's 21-fund schedule; Hospice files
    * only the split page and keeps it. */
-  if (bestMenu && bestMenu !== best && best.split) best = bestMenu;
+  /* v133: ...AND ONLY WHEN THE REAL MENU IS ACTUALLY A BETTER READING OF THE
+   * PLAN. The swap above was unconditional on any `bestMenu` existing, and on
+   * eight filings the alternative was not a different schedule at all — it was
+   * a FRAGMENT OF THE SAME TABLE, one contribution source's worth of rows.
+   * Saad Enterprises: the split page reads 48 rows at ratio 0.996, the
+   * "menu" it swapped to reads 29 of the same funds at 0.565. Run #344's
+   * `swaps-degraded.txt` caught all eight moving off a 2023 fallback onto a
+   * 2024 filing at 0.48-0.63 — Putnam Investments, Printpack, Flexitallic,
+   * Unex, Saad, Yale Club, Fam LLC, Robert Walters — and in every one of them
+   * the v131 parse had been `stmt`-flagged, so v132's caption stop merely
+   * removed the competitor that was masking this.
+   * So compare coverage: a replacement may be no further from 1.0 than the
+   * candidate it replaces, by more than 0.25 in |log| terms (~28% of the
+   * plan). Producers Rice Mill still swaps — its auditor's schedule is 0.918
+   * against the split page's 0.997 — and a split page that DOUBLE-COUNTS
+   * (ratio ~1.9) still loses to a 0.95 menu, because that replacement is
+   * closer to 1.0, not further. Half a plan published as the whole menu is
+   * the degraded-swap shape `swaps-degraded.txt` exists to catch; it should
+   * not be something the parser does on purpose. */
+  if (bestMenu && bestMenu !== best && best.split &&
+      Math.abs(Math.log(bestMenu.ratio || 1e-9)) <= Math.abs(Math.log(best.ratio || 1e-9)) + 0.25) best = bestMenu;
   /* v132: the v112 swap above is capped at four rows, and the house-share term
    * can promote a LONGER winner whose largest row is a bare type name. Northeast
    * Georgia Health System (14,317 participants) went to a 12-row reading topped
