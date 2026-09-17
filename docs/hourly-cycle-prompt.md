@@ -198,6 +198,10 @@ Order of business:
       share-class tokens and `(continued)` from the promoted issuer.
       (` N/R` on 1,431 plans / 2.57M ppl is NOT queued — `app.js` ~404
       already strips it for display and lookup.)
+      **STATUS 20:1xZ:** v134 (part 5) is LIVE, overshoot 390 → 364. A
+      wam agent restarted at 20:0xZ on First American + (e) + (g) toward
+      v135 after the first attempt was killed by the session usage limit
+      mid-edit (edits reset, not adopted — see the #348 verdict entry).
       **STATUS 16:4xZ (run #347 verdict):** wam's five v133 items are DONE
       and live (a-d in the queue above: CUSIP-as-value, managed-account
       fold, degraded swaps, units marker; part 5 fair-value totals runs in

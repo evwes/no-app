@@ -64,6 +64,20 @@ all defective, all this shape.
 - **8 small plans (6,910 people) regressed** from a good 2023 fallback to a
   half-plan 2024 parse. Queued, top of wam's brief.
 
+## Update 20:1xZ — v134 LIVE; a three-hour gap from the usage limit
+
+- **Mirrored `789f589e` at 20:0xZ.** v134 (the fifth v133 part parsed in):
+  overshoot 390 → 364, HIGH back to the baseline 4, 0 losses, generic-names
+  121 → 107. Main is the matched pair again.
+- **The loop stopped 17:08–20:02Z** when the session's usage limit hit
+  ("resets 8pm UTC"). The pipeline layer carried on (main's cron ran a
+  no-op at 18:19Z); the judgement layer did not — the v134 verdict waited
+  2.5 hours, and the agent working the parser queue was killed mid-edit.
+  Its half-applied edits were reset, not adopted; a fresh agent restarted
+  the same three items (First American's regression, statement lines as
+  holdings, description tails as holdings) toward v135.
+- Nothing is waiting on you from this window.
+
 ## Update 16:5xZ — v133 LIVE, and your Ocala page's blanks are filled on main
 
 - **Mirrored `38b5df36` to main at 16:4xZ.** v133 store (pv 133 at

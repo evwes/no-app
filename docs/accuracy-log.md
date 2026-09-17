@@ -12715,3 +12715,45 @@ one-line commit, dispatched right after this mirror. Its verdict must show
 overshoot falling from 390. **Standing rule from this:** a parser commit
 made after a dispatch at the running version is invisible to the pipeline;
 bump again or hold it.
+
+## 2026-09-17 (run #348 verdict, 20:0xZ) — v134 landed: overshoot 390 → 364 as predicted, HIGH back to the baseline 4, 0 losses; and a THREE-HOUR LOOP GAP (17:08–20:02Z) from the session usage limit, which also killed a wam agent mid-edit
+
+**Run #348** (id 35248112078), the version-bump-only re-parse dispatched
+16:41Z on `b2a570dd` to parse in v133 part 5, concluded success 17:36Z
+(55 min). Its data commit is `789f589e`. Re-derived from the pulled store:
+
+| check | v133 (`2926b8a8`) | v134 (`789f589e`) |
+|---|---|---|
+| dominant pv | 133 at 99.87% | **134 at 99.86%** (68,674 of 68,767; same 48-ack tail) |
+| confident | 60,112 | **60,114** (+2 gained, **0 lost**) |
+| HIGH | 9 (4 + 5 self-clearing) | **4** — the baseline, the five `reparse-loss` cleared |
+| overshoot (≥1.15x) | 390 / 524,860 ppl | **364 / 497,920** — the prediction was "must fall"; −26 plans / −26,927 ppl is part 5's fair-value category totals leaving 25 lineups |
+| generic-names audit | 121 | **107** |
+| dominant-row audit | 0 | 0 |
+| `overshootTrust` / `aggRow` | 9 / 50 | 9 / 50 (held) |
+| managed-account fold ≥30% | 48 plans | 48 |
+| `tkShare` | 20.98% | **23.35%** — the 22 Vanguard rows, now in the audit's sample |
+| `dl` | 91 | 92 (one more withdrawn filing) |
+
+**Mirrored `38b5df36` → `789f589e`** with `--force` on the git check only:
+main had taken one hourly cron commit (`2b90509e`, run #349 at 18:19Z on
+v133 code) and `mainvsbr2` measured it — 0 plans and 0 acks on main the
+branch lacks, `plans` array byte-identical, main newer on exactly 1 ack (the
+cron's one re-tried download). The data gate passed unforced: 0 losses.
+This mirror also carries the #347 verdict docs held since 16:5xZ.
+
+**The loop gap, recorded because the record must show it.** The session's
+usage limit was hit at ~17:0xZ ("resets 8pm UTC"). Three hourly wakes
+(17:08, 18:09, 19:08) and the 17:59 verdict check-in queued unanswered;
+the #348 verdict waited 2h26m after the run finished; main's own cron
+(#349) ran once in the meantime and committed a no-op. Nothing was lost —
+the pipeline layer is what carried the hours, exactly as the two-layer
+design intends — but the judgement layer was absent, and **the wam agent
+working First American + items (e)/(g) was terminated mid-edit** with 122
+uncommitted lines in `scripts/lib-4i.mjs` ("Now the substitution after the
+candidate loop"). The file still parsed, but half-applied logic in the
+parser is worse than none: the edits were saved to scratchpad
+`wam4-partial.patch` for reference and the tree reset to the committed
+v134 before anything else ran. The agent restarts from the queue, not from
+the patch. **Rule from this: an interrupted agent's uncommitted parser edits
+are never adopted — reset, then restart the item.**
