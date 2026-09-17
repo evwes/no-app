@@ -12297,3 +12297,50 @@ already pinned as the control and the gate covers both. The `diff-lineups`
 run that measured this returned four zeros until Saad was pinned into the
 corpus, and then showed `28->47` — recorded because a zero from an instrument
 that could not have answered otherwise is not a result.
+
+## 2026-09-17 (15:2xZ per-cycle draw) — fresh seed, 15 published lineups: zero fabricated rows; two cosmetic classes sized, one of them already handled at display time
+
+**First, a defect in the instrument.** `draw-read.mjs` said "fresh seed" in
+its comment and hard-coded the seed in its body, so the 15:1xZ cycle
+re-read the 14:2xZ fifteen verbatim (Walmart, Lowe's, JPMorgan, Nordstrom,
+Oracle, FMR …) before the repeated names gave it away. `draw-read2.mjs`
+takes the seed from argv and prints it in its header; this draw is seed
+20260917151. A draw that cannot be shown to be fresh is not a draw.
+
+Frame unchanged: participant-weighted over 59,761 published lineups
+(89.66M participants), rows read by name.
+
+**Clean, 12 of 15:** Walmart (1.92M, drawn again because the frame weights
+by people — same rows as 14:2xZ), Amazon (1.34M, 27 rows at 0.910, Vanguard
+target-date and index trusts), Kelly Services, EssilorLuxottica, Henry Ford
+Health, Sunrun, Commercial Metals, Indeed, Baptist Health Care, Greenway,
+Nyle Maxwell, Griffin Hospital.
+
+**Cosmetic, 3 of 15, sized store-wide:**
+
+- **` N/R` glued to the fund name** (Cava, Griffin Hospital, Burlington Coat
+  Factory: `American Funds 2055 Target Date N/R`). Store: **1,431 plans /
+  2,570,638 ppl / 35,833 rows**. **Already handled**: `app.js` ~404 strips
+  the cost-column marker for display and for the ticker lookup (its own
+  comment sized it at 1,286 lineups / $150.7B when written). Readers do not
+  see it; the store carries it. Recorded so the next draw does not re-find
+  it; a store-side strip in `parseRows` is hygiene, not a fix.
+- **A share-class fragment promoted to the issuer bracket** — Cava shows
+  `[Retirement Fund Class R-6 American Funds] American Funds 2050 Target
+  Date N/R`: a wrapped tail of the PREVIOUS row (`Retirement Fund Class
+  R-6`) prepended to the issuer. Store: **357 plans / 757,319 ppl / 1,117
+  rows** (`[Class R6 Fidelity Investments]` Consolidated Electrical
+  Distributors 15,402 ppl, `[Admiral Vanguard]`, `[Fund Class R-6 J.P.
+  Morgan]`). Same family as the type-header-as-issuer class from the 14:2xZ
+  draw (375 plans / 716,341): the v126 issuer promotion takes a header
+  line's leading words without asking whether they are an issuer. One fix
+  covers both — strip `GENERIC_TYPE_NAME` vocabulary, share-class tokens and
+  `(continued)` from the promoted issuer, drop it when nothing remains.
+- Stillwater Mining (1,626 ppl): `Empower Annuity Insurance Guaranteed
+  Income Fund Company` — the wrapped issuer's last word (`Company`) landed
+  at the end of the fund name. Value right, order wrong. Unsized; it is the
+  v130 column-attribution shape in the issuer column.
+
+Rate, per participant because of the frame: **0 fabricated rows in 15**,
+0 wrong values, 3 naming defects of which one is display-handled. Sizers:
+scratchpad `nr-suffix.mjs`, `draw-read2.mjs`.

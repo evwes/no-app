@@ -190,7 +190,14 @@ Order of business:
       `[Common Collective Trust (continued)]`): strip `GENERIC_TYPE_NAME`
       vocabulary and `(continued)` from the v126-promoted issuer. Sizer:
       scratchpad `draw-size-14z.mjs`. `docs/accuracy-log.md` 2026-09-17
-      (14:2xZ draw).
+      (14:2xZ draw). **Same family, 15:2xZ draw: a SHARE-CLASS fragment of
+      the previous row promoted to the issuer — `[Retirement Fund Class R-6
+      American Funds]` (Cava), `[Class R6 Fidelity Investments]`
+      (Consolidated Electrical 15,402 ppl), `[Admiral Vanguard]`: 357 plans
+      / 757,319 ppl / 1,117 rows.** One fix for both: strip type vocabulary,
+      share-class tokens and `(continued)` from the promoted issuer.
+      (` N/R` on 1,431 plans / 2.57M ppl is NOT queued — `app.js` ~404
+      already strips it for display and lookup.)
 
       **SHIPPED FROM THIS ITEM, v130 (2026-09-17, committed `[skip ci]`, NOT
       yet parsed — it is a fabrication repair, not new coverage): a wrapped
