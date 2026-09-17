@@ -642,11 +642,11 @@ don't confuse them). Frontend: python http.server + Playwright at
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
   full-form** filers and 43,523 short-form; 68,767 parse-status entries.
-  **Store at v127 (branch and main); `PARSER_VERSION` in the tree is 128 and
-  run #334 is parsing it. OCR v8.**
-  **Re-derived from the local store 2026-09-16 20:3xZ** — `pv127` covers
-  68,678 of 68,767 acks (99.87%), tail pv106 18, pv124 10, pv123 10, pv98 10,
-  pv91 9; `lib-4i` exports 128. (Earlier today this line said v124 for four
+  **Store at v132 (branch AND main, `b13e5640`); `PARSER_VERSION` in the
+  tree is 132 — no unparsed parser change is waiting. OCR v8.**
+  **Re-derived from the local store 2026-09-17 14:0xZ** — `pv132` covers
+  68,675 of 68,767 acks (99.87%), tail pv106 18, pv98 10, pv123 10;
+  `lib-4i` exports 132. (On 2026-09-16 this line said v124 for four
   mirrors while every gate printed 126 —
   The line had said **v123 for at least four mirrors while every mirror gate in
   that window printed "dominant pv 124"** — the version number in the first
@@ -654,7 +654,26 @@ don't confuse them). Frontend: python http.server + Playwright at
   Nothing downstream was affected (no session acted on it), but it is exactly
   the copying-a-line-forward hazard this file warns about elsewhere, aimed at
   the file's own header. **Re-derive this line rather than editing the date.**
-- **LIVE on main: `0ce549a0` — MIRRORED 2026-09-17 02:5xZ.** The v131 store
+- **LIVE on main: `b13e5640` — MIRRORED 2026-09-17 14:0xZ.** The v132 store
+  (pv 132 at 99.87%, confident 60,098 (+108), HIGH 4 + 5 self-clearing
+  `reparse-loss`, **overshoot 451 → 390** / 524,860 ppl, generic-names 121,
+  dominant-row 0, house sizer ≥90% set **48 → 5 plans**). Gate +113 / −5;
+  `--force` over main's three no-op hourly commits (0 acks / 0 plans the
+  branch lacked, plans array byte-identical), `--force-data` over five losses
+  each read by row name — two are DELTA itself (112,027 + 17,776 ppl, the
+  ZIP+4 `782,514,321` fallback rows, now correctly `band-lo`/`band-hi`), three
+  are junk (sponsor name as a holding, asset-class labels, OCR noise). **What
+  reached readers:** Delta's phantom gone; Allina Health (37,565 ppl) shows its
+  22 real funds; Duke Energy loses a $2.90B phantom; Bell Nursery 3 → 21 rows;
+  the house-name merge across 133 plans; refined former names (2,617 plans).
+  `pages-build-deployment` #463 built it. **Queued from the verdict:** 8
+  degraded swaps (6,910 ppl, own 2024 filing now wins at 0.48–0.63 where a
+  2023 fallback stood at 0.80–1.06 — mechanism untraced) and a NEW class:
+  core menu funds folded into the parser-made `Managed account holdings (N
+  positions)` row — Duke's 16 target-date/index funds as one $5.58B row at
+  49.5%; **56 plans / 158,541 ppl at ≥30% of the menu** (H&R Block 97%).
+  `docs/accuracy-log.md` 2026-09-17 (run #344 verdict).
+- **Previously: `0ce549a0` — MIRRORED 2026-09-17 02:5xZ.** The v131 store
   (pv 131 at 99.87%, confident 59,990, HIGH 25 = 4 + self-clearing
   `reparse-loss` on 25 junk 3-row lineups, overshoot 451). **What reached
   readers:** v130 — wrapped continuation fragments attributed to the column

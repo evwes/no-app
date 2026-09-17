@@ -47,6 +47,23 @@ all defective, all this shape.
   no cycle ran 03:07Z–12:13Z while GitHub's own cron kept parsing. Recorded;
   cause not established from inside the session.
 
+## Update 14:1xZ — v132 is LIVE (`b13e5640`)
+
+- **Delta's $782M ZIP+4 phantom is gone** for all 129,803 Delta
+  participants; Allina Health's 37,565 see their real 22-fund menu; Duke
+  Energy loses a $2.90B phantom; the bare-house-name class fell 48 → 5 plans
+  at ≥90%. Overshoot 451 → 390, generic-named 208 → 121, dominant-row 0,
+  HIGH at the baseline 4. Five lineups withdrawn, each read by name: two are
+  Delta itself, three are junk (a sponsor's own name as a holding, asset-class
+  labels, OCR noise).
+- **Found reading Duke's filing at the verdict, not fixed:** its 16 core
+  white-label funds (nine target-date vintages, the index funds) are
+  published as ONE parser-made row, `Managed account holdings (16 positions)`,
+  at 49.5% of the plan. Sized from the store: **56 plans / 158,541 people**
+  have that aggregate at ≥30% of their menu (H&R Block 97%). Queued for wam.
+- **8 small plans (6,910 people) regressed** from a good 2023 fallback to a
+  half-plan 2024 parse. Queued, top of wam's brief.
+
 ## Shipped and LIVE on main — `413c905f`, mirrored 00:1xZ
 
 Two full re-parses overnight, both verified before mirroring; HIGH at the

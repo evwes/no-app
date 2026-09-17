@@ -153,6 +153,29 @@ Order of business:
       most of the plan (mtias assets vs plan assets — arithmetic) or when
       ANY candidate region was a trust pointer; and a units marker must never
       be a row name. `docs/accuracy-log.md` 2026-09-17 (run #340 verdict).
+      **v132 LANDED AND IS LIVE (run #344, mirrored 14:0xZ):** Delta's
+      ZIP+4 phantom gone (both Delta plans now correctly non-confident),
+      Allina 22 real rows, house sizer ≥90% 48 → 5, overshoot 451 → 390,
+      generic-names 121. **TWO MORE ITEMS FROM THE #344 VERDICT, queued
+      2026-09-17 14:1xZ, both for wam:** (c) **8 DEGRADED SWAPS / 6,910
+      ppl** — plans whose own 2024 filing now clears the floor at 0.48–0.63
+      where a 2023 fallback stood at 0.80–1.06 (Printpack 3,249 ppl 26 → 11
+      rows of bare tickers; Robert Walters 37 → 5; Fam LLC 39 → 16 with
+      `Lord Abbett`/`Oakmark` house rows; Putnam 41 @ 0.95 → 41 @ 0.63;
+      acks in the run #344 merge log and the accuracy-log entry). Trace two:
+      is the v132 caption stop cutting a real schedule short, or is the
+      house merge promoting a half-menu? (d) **MENU FUNDS FOLDED INTO
+      `Managed account holdings (N positions)` — 56 plans / 158,541 ppl at
+      ≥30% of the menu** (Duke Energy 35,031 ppl: 16 white-label
+      target-date/index funds under an `Institutional Funds` header
+      published as one $5.58B row = 49.5%; H&R Block 27,766 ppl at 97% under
+      25 positions; TE Connectivity 66% under 3). The `smaKind` classifier
+      is taking a section of core menu funds as itemized SMA innards. Read
+      the top filings before touching it — a real 75-security sleeve (Estee
+      Lauder?) must stay folded — and add the aggregate-row share to the
+      audit beside `audit-overshoot`. Sizer:
+      scratchpad `sma-agg.mjs` (store-only). `docs/accuracy-log.md`
+      2026-09-17 (run #344 verdict).
 
       **SHIPPED FROM THIS ITEM, v130 (2026-09-17, committed `[skip ci]`, NOT
       yet parsed — it is a fabrication repair, not new coverage): a wrapped

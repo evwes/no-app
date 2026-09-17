@@ -11730,3 +11730,103 @@ exactly what it meant on 2026-09-08 — fired and delivered — and says
 nothing about whether the session was awake to act. A fresh-session
 Routine would not have this failure but cannot push; that trade is the
 open question, recorded not solved.
+
+## 2026-09-17 (run #344 verdict) — v132 landed and is LIVE: Delta's ZIP+4 phantom gone, Allina's real menu published, house-name merge 48 -> 5 at >=90%; 8 degraded swaps and one new aggregate-row class queued
+
+Run #344 (id 35223774864, `workflow_dispatch` on `a9c4aa1f`, 12:54Z to
+13:48Z, all 22 jobs green) re-parsed the universe at **PARSER_VERSION 132**
+and committed `b13e5640`. Verdict against the live v131 store (`0ce549a0`),
+every number re-derived from the pulled store, not taken from the run:
+
+| check | v131 (live) | v132 (#344) | expectation |
+|---|---|---|---|
+| dominant pv | 131 at 99.87% | **132 at 99.87%** (68,675 / 68,767; tail pv106 18, pv98 10, pv123 10) | one dominant pv |
+| confident | 59,990 | **60,098 (+108)** | — |
+| lineups | 59,656 | 59,761 (+105) | — |
+| overshoot (>=1.15x) | 451 / 578,383 ppl | **390 / 524,860 ppl** | MUST FALL — it did |
+| audit-generic-names | ~208 (threshold 230) | **121** | < 230 |
+| audit-dominant-row | 0 | **0** | 0 |
+| house sizer, top row a bare house name at >=90% | 48 plans | **5 plans / 1,798 ppl** (50-90%: 32 / 31,078) | near zero |
+| HIGH | 4 | 4 + 5 self-clearing `reparse-loss` | baseline 4 |
+| download failures | 91 | 91 (0.13%) | the permanent-403 set |
+
+**The five confidence losses, each read by row name** (mirror-gate refused
+them, `--force-data` used on this evidence):
+
+- **Delta Air Lines PN 001, 112,027 ppl, $18.99B** — was a 36-row 2023
+  fallback whose rows were `OPERATIONS COMPANY,` $3.37B, `INC.` $3.22B and
+  the ZIP+4 `782,514,321` twice. Now `c=0 dx=band-lo` (11 rows, top
+  `Common Collective Trusts` $24.4M): the plan is master-trust-held and the
+  newest schedule is correctly a trust pointer. **This loss is the fix.**
+- **Delta Air Lines PN 002, 17,776 ppl** — same shape (`LLC.` $3.05B, ZIP+4
+  twice); now `band-hi` on a statement-shaped region. Correct suppression.
+- Jervey Eye Group, 138 ppl — 4-row fallback of `Mutual Fund Participant
+  Directed` + the SPONSOR'S OWN NAME as a holding; now `stmt`.
+- McIntosh Box & Pallet, 304 ppl — 6 asset-class labels (`Mutual Funds -
+  Balanced`, `- Domestic Equity`); now `few`, `ds=noattach`.
+- Guam Pacific, 265 ppl — 15 rows of OCR noise (`(671) 646-91 '11
+  instruclions}`, `Name:ERNST & YOUNG, LLP`); now `band-lo`.
+
+Zero ZIP+4 rows remain across all five Delta plans. **Specimens in the
+store:** Allina Health System (37,565 ppl, $4.11B) publishes 22 real rows
+(`Total Market Index Pool Class D` $663.5M …) where it had `OPERATIONS
+COMPANY,` $1.36B; Duke Energy (35,031 ppl) lost `OPERATIONS COMPANY,` $2.90B
+and `RETIREMENT US` $782.5M; Bell Nursery 3 rows -> 21.
+
+Mirror: `mirror.sh --force --force-data`. `--force` covered main's three
+no-op hourly commits (`a1b48ded`, `1fbdb520`, `94cec8c3`): measured 0 acks
+and 0 plans on main the branch lacked, `plans` array byte-identical, main
+newer on 0 acks. Main `94cec8c3` -> `b13e5640`; `pages-build-deployment`
+#463 building it at 14:05Z.
+
+### Regression from v132, sized and queued: 8 degraded swaps (6,910 ppl)
+
+`swaps-degraded.txt` flagged 8 plans that moved OFF a 2023 fallback (26-41
+rows at 0.80-1.06) ONTO their own 2024 filing at **0.48-0.63** — Putnam
+Investments 1,528 ppl (41 rows 0.95 -> 41 rows 0.63), Printpack 3,249 ppl
+(26 -> 11 rows of bare tickers `IVIGIX`, `IVIVIX` at 0.54), Robert Walters
+(37 -> 5 rows at 0.48), Fam LLC (39 -> 16, top rows `Lord Abbett`,
+`Oakmark` — house names), Yale Club (36 -> 7), Unex (36 -> 7), Flexitallic
+(27 -> 16), Saad (29 -> 28). Mechanism not yet traced: the region that
+now clears the 0.45 floor was presumably a band-hi (>1.6, region ran into
+Schedule C) or an unpublishable region under v131. The v132 caption stop
+may be cutting a real schedule SHORT (Robert Walters 37 real rows -> 5),
+or the house-name merge may be promoting a half-menu. Small, but each
+publishes half a plan as the menu — exactly the shape `swaps-degraded`
+exists to catch. Top of the wam brief.
+
+### New class, found reading Duke's filing at the verdict: menu funds folded into a parser-made `Managed account holdings (N positions)` row
+
+Duke Energy's 4i (in thousands) lists 16 white-label **Institutional
+Funds** — `US Equity All Cap Blend Fund` $928M, nine `Target Retirement
+Date Fund` vintages, index funds — and the parser publishes them as ONE row,
+`Managed account holdings (16 positions)` **$5,575,809,000 = 49.5% of an
+$11.27B plan** (the filing's own `Total Institutional Funds` line). The
+sum is right and the row is honest arithmetic, but 35,031 participants
+cannot see a single target-date fund. The `smaKind` classifier (itemized
+securities -> managed-account innards) took a section of core menu funds
+as itemized holdings. Store-only sizing of the aggregate row's share of the
+published menu, all published lineups:
+
+| share of menu | plans | ppl | assets |
+|---|---|---|---|
+| >=50% | 36 | 120,159 | $21.36B |
+| 30-50% | 20 | 38,382 | $5.09B |
+| 10-30% | 62 | 455,729 | $91.98B |
+| <10% | 104 | 3,768,411 | $335.94B |
+
+The >=30% band (56 plans / 158,541 ppl) is the population where the
+aggregate is plausibly the MENU rather than a real managed-account sleeve:
+H&R Block 27,766 ppl at **97% under 25 positions with 5 rows**, Estee
+Lauder 18,363 at 56% / 75 positions, TE Connectivity 15,295 at 66% under
+just **3** positions, Old Republic 14,343 at 31%. The <10% band is the
+designed case (a small SMA sleeve beside a full menu) and is not claimed.
+Each of the top ones needs the filing read before the classifier is
+touched — a real SMA of 75 securities (Estee Lauder?) must stay folded.
+Also on Duke's page: `DUKE ENERGY RETIREMENT SAVINGS PLAN Run Date: 05/02/`
+$2.0M as a row — a page header captured as a holding, 0.02% of the plan.
+
+Prevention: the aggregate-row share is one more arithmetic guard that
+belongs beside `audit-overshoot` — a parser-made row carrying >=30% of a
+menu is a claim about the filing's structure, not a holding, and the audit
+should count it every merge.
