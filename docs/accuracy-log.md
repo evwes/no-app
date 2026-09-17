@@ -11110,6 +11110,42 @@ at 23:06Z, 55 minutes, committed `0af9c8f2`.
   the 82 v128 losses; `--force-data` is justified by the #334
   reconciliation above.
 
+## 2026-09-17 (former names, refined) — half of the first 5,851 aliases were the same name in a different coat
+
+**Read a random 30 of the shipped aliases before quoting the count** (the
+rule that a shipped change's losses are measured on the same store as its
+gains, applied to a gain). Prep log #335 gives the split: line-4 sponsor
+2,585, line-4 plan name 2,622, older-filing sponsor 2,303. The random 30:
+roughly half are not former names at all — a sponsor field truncated in one
+year's extract (*"Community Action Planning Council Of J"* vs the full
+name), `Co.` vs `Company`, `Inc` vs `Incorporated`, a leading `The`,
+"Operating As GE Aerospace" appended — and one is a bare number: **`Nbi,
+Inc. <- 931173`**. Structural counts over all 5,851: 2,187 have one name as
+a prefix of the other; 722 are the plan's own name with plan words.
+
+- **What was wrong:** the alias filter compared names on a punctuation
+  key only, so any truncation, suffix change or article counted as a
+  rename and was shown to readers as "Previously filed as", which is a
+  claim that the company was called something else.
+- **The change (prep, data with the next run):** an alias must contain
+  three letters; sponsor-type aliases are compared on a CORE key (leading
+  THE and corporate suffixes stripped) and dropped when one core is a
+  prefix of the other; a prior PLAN name counts only when its first
+  company token is absent from the sponsor's name. The prep log now prints
+  how many each rule dropped.
+- **Predicted from the store, applying the rules verbatim to the stored
+  aliases:** 5,851 -> **2,606 plans keep an alias**; dropped parts: cosmetic
+  2,443, plan-name-of-the-same-company 1,609, no letters 2. A random 30 of
+  the survivors read as genuine renames or reorganisations (Rpi Print <-
+  Reischling Press; Scale Bank <- Fidelity Bank; Lithion Battery <- Aved
+  Electronics; Zp Group <- Piper Companies; Leeco Support Services <-
+  Lakeland Management Services) plus a few spelling corrections
+  (*Penascola* <- *Pensacola*), which are harmless to search and true as
+  "previously filed as". Shiel Sexton survives on Structure Man.
+- **Prevention:** the drop counts are on the prep log line beside the keep
+  count, so a future change to either name field shows up as a shift in
+  the split rather than a silent change in what readers are told.
+
 ## 2026-09-17 (v130) — a wrapped line was attributed to the wrong column, so several real holdings merged into a fund that does not exist: Walmart's $3.55B `Lendable Fund` and three more shapes
 
 **Wrong.** Four separate mechanisms, one symptom — a published, confident

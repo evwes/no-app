@@ -738,6 +738,29 @@ console.log(`\nuniverse: ${universe.length} unique 401(k) plans with ≥${MIN_UN
  * the current sponsor or plan name. The count and the first members print so
  * the first prep run confirms the column headers actually resolved. */
 const nameKey = (s) => String(s || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+/* Refined 2026-09-17 after reading a random 30 of the first 5,851 aliases:
+ * about half were the SAME name in a different coat — a field truncated in
+ * one year's extract ("Community Action Planning Council Of J"), `Co.` vs
+ * `Company`, `Inc` vs `Incorporated`, a leading `The`, "Operating As ..."
+ * appended — and one was a bare number (`Nbi, Inc. <- 931173`). Those are
+ * not former names and read as noise under "Previously filed as". So:
+ *  - an alias must contain three letters;
+ *  - names are compared on a CORE key (leading THE and corporate suffixes
+ *    stripped) and dropped when one core is a prefix of the other;
+ *  - a prior PLAN name counts only when it carries a company token the
+ *    sponsor's name lacks ("Interim Healthcare Of Topeka 401(K) Plan" under
+ *    Flint Hills stays; "Brown Distributing Company Employee Thrift Plan"
+ *    under Brown Distributing goes).
+ * The prep log prints how many each rule dropped, so the next run states the
+ * yield rather than a hope. */
+const CORP_SUFFIX = /\b(?:INCORPORATED|INC|LLC|L\.?L\.?C|LLP|LP|LTD|LIMITED|CO|COMPANY|CORP|CORPORATION|PC|P\.?C|PBC|PLC|PLLC|SC|SA|NA|N\.?A|DBA)\b\.?/g;
+const coreKey = (s) => nameKey(String(s || "").toUpperCase().replace(/^\s*THE\s+/, "").replace(CORP_SUFFIX, " "));
+const PLAN_WORDS = new Set(["PLAN", "PLANS", "401K", "401(K)", "403B", "403(B)", "SAVINGS", "RETIREMENT", "PROFIT", "SHARING", "TRUST", "EMPLOYEE", "EMPLOYEES", "THRIFT", "INVESTMENT", "PENSION", "ANNUITY", "TAX", "SHELTERED", "AND", "OF", "THE", "FOR", "ESOP", "STOCK", "OWNERSHIP", "INCENTIVE", "DEFERRED", "COMPENSATION", "PS", "K", "RSP", "TSA", "INC", "LLC", "CO", "COMPANY", "CORP", "CORPORATION", "LTD", "LLP"]);
+const planCarriesNewCompany = (planName, sponsorName) => {
+  const sk = nameKey(sponsorName);
+  const toks = String(planName || "").toUpperCase().replace(/[^A-Z0-9() ]+/g, " ").split(/\s+/).filter((t) => t.length >= 3 && !PLAN_WORDS.has(t) && !/^\d+$/.test(t));
+  return toks.length > 0 && !sk.includes(nameKey(toks[0]));
+};
 const olderNames = new Map(); // key -> Set of older-filing sponsor names
 for (const m of collected) {
   const key = `${m.ein}|${m.pn}`, cur = byPlan.get(key);
@@ -746,25 +769,34 @@ for (const m of collected) {
   olderNames.get(key).add(String(m.sponsorName || "").trim());
 }
 let aliasLine4Sponsor = 0, aliasLine4Plan = 0, aliasOlder = 0, aliasPlans = 0;
+let dropNoLetters = 0, dropCosmetic = 0, dropPlanSameCompany = 0;
 const aliasSample = [];
 for (const p of universe) {
   const curKeys = new Set([nameKey(p.sponsorName), nameKey(p.planName)]);
+  const sponsorCore = coreKey(p.sponsorName);
   const seen = new Set(), out = [];
-  const add = (name, why) => {
+  const add = (name, why, isPlanName) => {
     const k = nameKey(name);
     if (!k || k.length < 3 || curKeys.has(k) || seen.has(k)) return;
+    if ((String(name).match(/[A-Za-z]/g) || []).length < 3) { dropNoLetters++; return; }
+    if (isPlanName) {
+      if (!planCarriesNewCompany(name, p.sponsorName)) { dropPlanSameCompany++; return; }
+    } else {
+      const c = coreKey(name);
+      if (!c || c === sponsorCore || c.startsWith(sponsorCore) || sponsorCore.startsWith(c)) { dropCosmetic++; return; }
+    }
     seen.add(k); out.push(titleCase(name)); why();
   };
-  if (p.priorSponsor) add(p.priorSponsor, () => aliasLine4Sponsor++);
-  if (p.priorPlanName) add(p.priorPlanName, () => aliasLine4Plan++);
-  for (const n of olderNames.get(`${p.ein}|${p.pn}`) || []) add(n, () => aliasOlder++);
+  if (p.priorSponsor) add(p.priorSponsor, () => aliasLine4Sponsor++, false);
+  if (p.priorPlanName) add(p.priorPlanName, () => aliasLine4Plan++, true);
+  for (const n of olderNames.get(`${p.ein}|${p.pn}`) || []) add(n, () => aliasOlder++, false);
   if (out.length) {
     p.alias = out.slice(0, 3).join(" / ");
     aliasPlans++;
     if (aliasSample.length < 15) aliasSample.push(`${titleCase(p.sponsorName)} <- ${p.alias}`);
   }
 }
-console.log(`former names: ${aliasPlans} plans carry an alias (line-4 sponsor ${aliasLine4Sponsor}, line-4 plan name ${aliasLine4Plan}, older-filing sponsor ${aliasOlder})` +
+console.log(`former names: ${aliasPlans} plans carry an alias (line-4 sponsor ${aliasLine4Sponsor}, line-4 plan name ${aliasLine4Plan}, older-filing sponsor ${aliasOlder}; dropped as cosmetic ${dropCosmetic}, plan name of the same company ${dropPlanSameCompany}, no letters ${dropNoLetters})` +
   (aliasPlans ? "\n  " + aliasSample.join("\n  ") : "\n  NONE — check that the LAST_RPT_* columns resolved (printed with the columns above)"));
 
 // prior-year fallback map: for each plan whose NEWEST filing may lack a
