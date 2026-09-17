@@ -198,6 +198,24 @@ Order of business:
       share-class tokens and `(continued)` from the promoted issuer.
       (` N/R` on 1,431 plans / 2.57M ppl is NOT queued — `app.js` ~404
       already strips it for display and lookup.)
+      **(g) FROM THE 16:0xZ DRAW — a LOWERCASE-FIRST-WORD row name (a fund
+      description's wrapped tail, or a sentence fragment) published as the
+      holding: 2,054 plans / 3,249,572 ppl / 2,238 rows; 171 plans /
+      315,474 ppl where the junk carries >= 10% of the menu.** Headline
+      specimens: **BJC Health System (43,409 ppl) is 100% junk** — `for
+      benefits` 84.4% + `assets available for benefits` 15.0%, confident,
+      published, under the 90% dominant-row bar; Board of Trustees of the
+      Deferred Comp plan (33,824) 82% `investment contracts, at fair value`;
+      **National Medical Care (72,950, traced)** 33% — `the S&P 500® Index
+      by investing in stocks that make up the index.` $755M is the LAST LINE
+      of the option's description carrying the value, and the region runs
+      on into `NET ADDITIONS` $402M. Fix: reattach a lowercase-start row to
+      the nearest preceding capitalized name line in the block (the v130
+      rule extended from names to descriptions) or drop it and re-judge the
+      ratio; ship with (e). Controls: Publix `Common stock of Publix Super
+      Markets, Inc.` (72%, real) and G&A `VITSX - Vanguard Total Stock
+      Market Index In` must not move. Sizer: scratchpad `prose-name.mjs`.
+      `docs/accuracy-log.md` 2026-09-17 (16:0xZ draw).
 
       **SHIPPED FROM THIS ITEM, v130 (2026-09-17, committed `[skip ci]`, NOT
       yet parsed — it is a fabrication repair, not new coverage): a wrapped

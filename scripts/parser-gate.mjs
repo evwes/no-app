@@ -10,7 +10,7 @@
  * expectation in the same commit — that is the review moment the gate
  * exists to force. Run locally: node scripts/parser-gate.mjs */
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { parse4i, extractPlanFeatures, frozenClaimIsAboutThisPlan } from "./lib-4i.mjs";
@@ -450,6 +450,11 @@ const SPECIMENS = [
 ];
 
 const work = mkdtempSync(path.join(tmpdir(), "gate-"));
+/* Remove the specimen PDFs on exit. The gate never did, and 100 local runs
+ * in one day left 100 `gate-*` directories of 233 MB each — 23 GB — which
+ * filled the sandbox disk twice on 2026-09-17. On a CI runner the leak is
+ * invisible; locally every gate run must leave nothing behind. */
+process.on("exit", () => { try { rmSync(work, { recursive: true, force: true }); } catch { /* nothing to clean */ } });
 let failed = 0;
 
 for (const [label, ack, assets, expect] of SPECIMENS) {

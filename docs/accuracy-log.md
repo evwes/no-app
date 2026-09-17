@@ -12450,3 +12450,77 @@ fund-table change: measure the population before, run the flip list after,
 and keep a negative control that the new expansion could plausibly break.
 The morning brief's row 1 (fund table coverage) is where the remaining
 blanks above go.
+
+## 2026-09-17 (16:0xZ per-cycle draw) — a fund DESCRIPTION's last line published as the holding: National Medical Care (72,950 ppl) at 33% junk, BJC Health System (43,409) at 100%; 171 plans / 315,474 ppl at >=10% of the menu. And the parser gate's temp-dir leak that filled the disk
+
+Participant-weighted, seed 20260917160, 15 published lineups read by name.
+
+**Clean, 12 of 15:** Allegis (193,721 — 43 rows, Northern Trust and Vanguard
+trusts), Select Medical, Carlisle, Kirby, Plumbers' Local trustees, Chevron
+Phillips, Hovnanian, Sturdy Memorial, Berkeley Research, Duke Manufacturing,
+Gardner Family Health, Kotaco Fuels.
+
+**Cosmetic, 2:** Phoenix Senior Living (3,343 ppl) files bare tickers with a
+leading `1` (`1WFSPX`, `1RFITX`) — the bare-ticker class already recorded
+under `band-hi`, unresolvable by the fund table as spelled; Standard Plumbing
+Supply carries OCR noise in one issuer (`Principle Life Insurance Corn pany`).
+
+**Fabricated: National Medical Care, Inc. (Fresenius; 72,950 participants,
+$4.37B, ratio 1.092, 29 rows).** Three of its six largest rows are not fund
+names: `the S&P 500® Index by investing in stocks that make up the i` at
+$755,422,355 (15.8%), `market. The fixed rate of return resets quarterly.`
+at $481,663,282 (10.1%), and `NET ADDITIONS` at $402,061,084 (8.4%). Traced
+(`WAMPO_TRACE=rows`): the region is the notes' investment-option narrative,
+each option a name line followed by a wrapped description whose LAST line
+carries the year-end value — so the parser takes the description's tail as
+the name (`performance of the S&P 400® Index by investing…`, `the
+performance of the MSCI Emerging Markets Index by investing…`), and the
+same region runs on into the statement of changes (`Dividend and interest
+income`, `NET ADDITIONS`, `Forfeitures and Uncashed Account Checks - At
+December 31…`, a row named `2024` with value `2023`). The `Target Retirement
+YYYY Fund Option` rows in the same lineup are right, which is why the ratio
+guard (1.09) let it through. The money is real; the names are the wrong
+line.
+
+**Sized store-wide on a predicate a fund name never satisfies — a LOWERCASE
+first word (a wrapped continuation or sentence fragment) or a description
+verb phrase (`by investing`, `seeks to`, `invests in`):** **2,054 plans /
+3,249,572 ppl / 2,238 rows**, and **171 plans / 315,474 ppl where those rows
+carry >= 10% of the menu.** The first pass of this predicate also matched
+legitimate long names (`Common stock of Publix Super Markets, Inc.` at 72%
+of Publix, `VITSX - Vanguard Total Stock Market Index In`) and was narrowed
+before any number was kept. Largest members by people:
+
+| plan | ppl | junk share | rows |
+|---|---|---|---|
+| **BJC Health System** | 43,409 | **100%** | `for benefits` 84.4%, `assets available for benefits` 15.0% — a whole fabricated lineup, below `audit-dominant-row`'s 90% bar |
+| Board of Trustees of the Deferred Comp… | 33,824 | 82% | `investment contracts, at fair value` |
+| National Medical Care | 71,611 | 33% | above |
+| Circle K | 75,362 | 7% | `insurance contract (direct)` |
+| Marsh & McLennan | 32,965 | 7% | `Net appreciation in fair value…` (the 14:2xZ statement class) |
+| Jones Lang LaSalle | 47,898 | 3% | `corporate bonds, government bonds and` |
+
+Plus a tail at <2%: Ulta `at various dates through November 2034`,
+Aimbridge x2 `with varying maturity dates through August 2…`, Texas Health
+`fixed interest rates ranging from 4.25% - 9…` (the loan-description class
+v131 removed for `rates ranged…`, in a different phrasing), Casey's,
+McLane (`may borrow from their accounts a minimum of…`).
+
+**Fix shape, queued for wam (item g):** a row whose name begins with a
+lowercase word is never a holding — either reattach it to the nearest
+preceding capitalized name line in the same block (the v130 wrapped-name
+rule, extended from names to descriptions) or drop it and let the ratio
+guard re-judge the region. Same version as item (e), the statement-caption
+stop, because National Medical Care needs both. BJC Health System is the
+headline specimen (100% junk, confident, published); Publix and G&A
+Outsourcing are the controls the predicate first over-matched.
+
+**Also fixed this cycle, not a data defect: `scripts/parser-gate.mjs` never
+removed its `mkdtemp` directory.** One hundred `/tmp/gate-*` directories of
+233 MB each — 23 GB — from today's gate runs (wam's and mine) filled the
+sandbox disk to 419 MB free, the second fill of the day (the first was
+scratchpad PDFs). Cleanup on `exit` added. Invisible on a CI runner, which
+is why it was never noticed.
+
+Rate, per participant: **1 fabricated lineup in 15** (National Medical Care,
+33% of its menu), 2 cosmetic. Sizer: scratchpad `prose-name.mjs`.
