@@ -11718,3 +11718,15 @@ is compared against this one rather than treated as new. Mitigation that
 exists: the skill and agent shipped at 02:15Z let any fresh session take
 the loop over in one command; a second, independent clock was not added
 because a second self-bind fails the same way.
+**CORRECTED 12:5xZ, from the notification queue itself:** all ten wakes
+were FIRED on schedule — 03:07, 04:08, 05:07, 06:10, 07:07, 08:07, 09:07,
+10:07, 11:10, 12:13Z — and were delivered to this session as one batch of
+ten at 12:5xZ, after the 12:13Z wake had resumed it. So the clock never
+missed; the session was not consuming its queue for nine hours (the
+previous night's wakes, 21:07Z onward, were each acted on within a minute,
+including one while a `wam` agent ran in the background; the only
+difference this time is unknown). "The Routine says SUCCEEDED" now means
+exactly what it meant on 2026-09-08 — fired and delivered — and says
+nothing about whether the session was awake to act. A fresh-session
+Routine would not have this failure but cannot push; that trade is the
+open question, recorded not solved.
