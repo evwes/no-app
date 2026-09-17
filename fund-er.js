@@ -431,6 +431,19 @@ const ABBREV = [
   // the Income vintage of a target-date series: "Vanguard Tgt Rmt Inc Inv"
   // expands to "… Retirement Inc", which no pattern spells that way
   [/\bRetirement Inc\b(?!ome)/gi, "Retirement Income"],
+  /* Added 2026-09-17 from an owner-sent page (Ocala Breeders Sales Co.,
+   * 123 participants, ADP): "Van Target Retire 2030" and seven sibling
+   * vintages with no ticker. "VANG" and "VGD" were listed; the plainest
+   * Vanguard contraction of all, "VAN", was not. Measured on the live store
+   * BEFORE adding it: 11,580 published rows / 1,941 plans / 4,213,740
+   * participants begin "Van " or "Vang ", and 8,624 of those rows resolved
+   * to nothing — "Van Target Retire YYYY" 3,734 rows, "Van Targ Retire YYYY"
+   * 781, "Van Target Retire Inc" 391, "Van Target Retire YYYY - Inv" 221.
+   * Negative control kept in the sizer: VanEck / Van Eck rows (commodity
+   * index, gold) resolve to nothing before and after, because "Vanguard Eck"
+   * names no fund in the table. */
+  [/\bVAN\b/gi, "Vanguard"],
+  [/\bTARG\b/gi, "Target"],
 ];
 /* Contractions that stand for TWO different words, which is why they cannot
  * live in the list above: "Mid Cp Index" is Cap and "Blue Cp Growth" is Chip.

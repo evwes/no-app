@@ -64,6 +64,24 @@ all defective, all this shape.
 - **8 small plans (6,910 people) regressed** from a good 2023 fallback to a
   half-plan 2024 parse. Queued, top of wam's brief.
 
+## Update 15:5xZ — your Ocala Breeders page: "Van Target Retire" tickers
+
+- The fund table expanded `VANG`, `VG`, `VGD` to Vanguard and never plain
+  `VAN`. Added `VAN` and `TARG`. Measured over every published row:
+  **+5,452 rows / 626 plans / 366,439 participants gain a ticker, 0 lose,
+  0 flip to a different fund**; VanEck rows stay unresolved (control).
+  Frontend only, no re-parse; on the branch, **reaches the live site with the
+  next mirror** (held until the v133 run's verdict, ~16:40Z, because the
+  branch also carries v133 parser code ahead of main's store).
+- Still blank on the same page family, not a spelling: Vanguard funds the
+  table lacks entirely (Equity Income, High-Yield Corporate, Inflation-
+  Protected, Real Estate Index, Value/Growth Index, Emerging Markets Index,
+  LifeStrategy) — that is row 1 of the table below, `funds-and-tickers`.
+- v133 (five parts from the agent: CUSIPs read as values in 34 lineups /
+  2.1M people, menus folded as managed accounts, the eight degraded swaps,
+  units markers as row names, fair-value category totals) is parsing in
+  run #347.
+
 ## Shipped and LIVE on main — `413c905f`, mirrored 00:1xZ
 
 Two full re-parses overnight, both verified before mirroring; HIGH at the

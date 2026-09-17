@@ -12398,3 +12398,55 @@ the damage, in the same output.
 570,508 participants, and most of that was HCA, Marsh & McLennan and Bechtel —
 the `CUSIP:` trusts that v133 part 1 already fixes. They are not counted here.
 The 26,732 figure is this rule's own population after that.
+
+## 2026-09-17 (owner-sent page, 15:4xZ) — "Van Target Retire 2030" had no ticker: the plainest Vanguard contraction was missing from the fund table; +5,452 rows / 626 plans / 366,439 participants, 0 flips, 0 losses, no re-parse
+
+**What was wrong.** The owner sent Ocala Breeders Sales Co. 401(k) Profit
+Sharing Plan (EIN 59-1566113 PN 001, 123 participants, ADP, $5.3M): eight
+Vanguard Target Retirement vintages filed as `Van Target Retire 2020` …
+`2055`, every ticker and expense-ratio cell blank. `fund-er.js` expands
+contractions before matching and listed `VANG`, `VG`, `VGD`, `VGRD`,
+`VNGRD` for Vanguard — and not `VAN`. `RETIRE` was already expanded, so the
+one missing word was the first one. `TARG` (as in `Van Targ Retire 2040`)
+was missing too.
+
+**Sized on the live store before changing anything** (scratchpad
+`van-abbrev.mjs`, loading `fundTickerInfo` from the file the way
+`build-ticker-reference.mjs` does): **11,580 published rows / 1,941 plans /
+4,213,740 participants begin `Van ` or `Vang `**; with the table as shipped,
+**2,956 rows / 585 plans resolved** and 8,624 did not — `Van Target Retire
+YYYY` 3,734 rows, `Van Targ Retire YYYY` 781, `Van Target Retire Inc` 391,
+`Van Target Retire YYYY - Inv` 221, all of them funds the table already
+carries under the written-out name. The sizer's first run printed 0 resolved
+for every row because it read `.ticker` from a function that returns `.tk`
+— a zero reporting on the query, caught before anything was concluded from
+it.
+
+**The change.** Two rows in `ABBREV`: `\bVAN\b` → Vanguard, `\bTARG\b` →
+Target. Frontend only; the lookup expands for matching and the filed name is
+what the table still displays.
+
+**Measured after, over every published holding row (`flip.mjs`, HEAD table
+vs working copy, 1,692,133 rows): GAINED a ticker 5,452 rows / 626 plans /
+366,439 participants; LOST 0; FLIPPED to a different fund 0.** On the `Van`
+population specifically: resolved 2,956 → 8,360 rows, 585 → 1,116 plans,
+2.72M → 3.01M participants. Negative control unchanged: the VanEck / Van Eck
+rows (commodity index, gold — 77 rows) resolve to nothing before and after,
+because `Vanguard Eck` names no fund. Smoke test and `fund-er-test.mjs`
+green locally; site-test on the push is the CI record.
+
+**Still blank in the same population, recorded not fixed:** Vanguard funds
+the table does not carry at all — `Vang Equity Inc Adm` (VEIRX, 304 rows),
+`Vang Hi Yld Corp Adm` (90), `Van Infl Protected Sec` (161 across two
+spellings), `Vang Tot Bd Mkt Adm` (102, which should reach VBTLX and does
+not because `Bd Mkt` expands to `Bond Market` while the pattern wants `Total
+Bond Market Index`), `Van Real Est Idx Adm` (68), `Vang Value Idx Adm` (56),
+`Vang Growth Idx Adm` (58), `Vang Em Stk Idx Adm` (54), `Van LifeStrat
+Conserv Gr` (50). Those are table rows, not spellings — the `funds-and-
+tickers` item the morning brief ranks first.
+
+**Prevention.** The sizer and the flip list are the pattern for every
+fund-table change: measure the population before, run the flip list after,
+and keep a negative control that the new expansion could plausibly break.
+The morning brief's row 1 (fund table coverage) is where the remaining
+blanks above go.

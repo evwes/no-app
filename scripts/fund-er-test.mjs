@@ -64,10 +64,16 @@ const MUST = [
   ["Fidelity Sm Cp Index Fund", "FSSNX"],
   // the institutional TRP small-cap fund is TRSSX, not the retail OTCFX
   ["T. Rowe Price Instl Small Cap Stock", "TRSSX"],
+  // 2026-09-17, owner-sent Ocala Breeders page: plain "Van" was never expanded
+  ["Van Target Retire 2030", "VTHRX"],
+  ["Van Targ Retire 2040", "VFORX"],
+  ["Van Target Retire Inc", "VTINX"],
 ];
 
 /* MUST NOT RESOLVE. A blank is the honest answer for all of these. */
 const MUST_NOT = [
+  "VanEck CM Commodity Index I",                   // "Van" -> Vanguard must not reach a Vanguard fund
+  "Van Eck International Investors Gold",
   "PUTNAM STABLE VALUE FUND 25",
   "LOAN FUND",
   "PENDING SETTLEMENT FUND",
