@@ -202,10 +202,21 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   longer something to remember — `scripts/mirror-gate.mjs` compares the two
   stores and refuses automatically — but the hourly cadence is why the branch
   can never assume main is where it left it.
+- **THE CYCLE IS A SKILL AND AN AGENT (2026-09-17, owner directive: the
+  improvement loop must never stop).** `/wampo-cycle`
+  (`.claude/skills/wampo-cycle/SKILL.md`) is the whole hourly procedure —
+  bootstrap, scheduler health, dispatch-or-verdict, mirror, queue item via
+  `wam`, participant-weighted draw, docs, re-arm — and `/wampo-cycle install`
+  recreates the self-bound Routine from whatever session owns the repo.
+  `.claude/agents/wampo-cycle.md` is the same loop as a spawnable agent
+  (`tools: *`, so it can dispatch and manage Routines). The Routine's wake
+  prompt invokes the skill. A fresh session takes the loop over with one
+  command; the queue stays in `docs/hourly-cycle-prompt.md` and this file.
 - **FRAGILE — the hourly agent cycle.** Runs as a `CronCreate` job, which is
   session-scoped: held in memory, never written to disk, and **killed by any
   container restart.** One was created at 06:30 ET on 2026-09-01 and was gone
-  by 08:40 the same morning.
+  by 08:40 the same morning. (Superseded by the self-bound Routine since
+  2026-09-08 and by the skill/agent above; kept as history.)
   **Every session must run `CronList` early. If it returns "No scheduled jobs",
   re-create the hourly job from `docs/hourly-cycle-prompt.md`** — that file
   holds the prompt verbatim so it cannot drift with re-typing. Cron is
