@@ -11629,3 +11629,92 @@ than described:
    SEP ACCT — SEPARATE ACCT 2,271,585,2`** — a value truncated into a name, the
    recorded value-in-name class — and its menu sums to **ratio 0.660**, so a
    third of a $52.9B plan is unaccounted for on the page.
+## 2026-09-17 (run #340 verdict) — v130 + v131 landed: Walmart whole, loan rows 7,052 -> 9, 25 junk lineups fell under the floor, two small regressions named
+
+Run #340 (id 35172181029, `63a44b59`, dispatched 01:51Z) concluded success
+at 02:49Z, 58 minutes, committed `0ce549a0`. Verdict read from a git
+WORKTREE at that commit (a `wam` agent had uncommitted parser edits in the
+main tree; the tree was not touched until the pull).
+
+- **pv 131 covers 68,675 of 68,767 (99.87%).** NOTE: the scratch pv script
+  reads `lineups-status.json` by absolute path and printed the MAIN tree's
+  pv 129 while `cd`'d into the worktree — a second instrument read the
+  named file and settled it. A tool that names its input is worth the line.
+- **Coverage: confident 60,008 → 59,990 (−18 net: 25 lost, 7 gained),
+  lineups −18, `high` 25 (4 baseline + `reparse-loss` on the 25, self-
+  clearing), `overshoot` 446 → 451 (+9 entered, −4 left), `tkShare`
+  20.23, `dl` 91.** `audit-generic-names` 159 plans (threshold 230),
+  `audit-dominant-row` 0.
+- **Walmart (1,970,230 ppl) in the store:** 41 rows, confident, NO
+  `Lendable Fund`, `MSCI ACWI ex-U.S. IMI Index Non-Lendable Fund` present,
+  `The Collective LSV International (ACWI EX US) Value Equity Fund` whole.
+- **Loan-description rows across all published lineups: 7,052 → 9** (9 plans
+  / 24,827 ppl; residue is OCR-mangled rate text such as `3.257/i to 9.25%`
+  and a `9.5% per annum. Maturities ranging...` continuation — a tail, not
+  a class).
+- **All 25 confidence losses reconciled by reading their previous rows:**
+  every one was a 3–4-row "lineup" made of a loan-rate row plus note labels
+  or an ADDRESS (`Atlanta, Georgia`, `UB Columbus o8 43220`, `Shares of
+  Registered Investm`); v131 removed the loan row and the plan fell under
+  the 3-row floor. Largest: First Tech FCU 2,394p, Mueller Group 2,090p +
+  1,855p. Junk cleanup, not lost menus. The agent's random draw of 229
+  predicted 0 losses — it could not see a 3-row tail this thin; the
+  whole-store reconciliation is the check that could.
+- **Regression 1, small and OURS: 9 plans / ~5,600 ppl ENTERED overshoot**
+  with a generic winner (`Mutual fund, due on demand` 1.16, `See attachment`
+  1.17, `Shares of Registered Investment Companies` 1.27, `companies` 1.21,
+  Bank of Bridger 1.48, Sames 1.59). v130's column attribution changed which
+  region wins on these small filings. 4 left (Gds Associates 1.24 → 0.96 is a
+  real repair). Net +5 is the number the trail shows. **Queued for wam.**
+- **Regression 2, one plan: First American Financial (17,155 ppl) regained
+  its 2023 fallback that v128 refused.** Under v129 its newest filing
+  parsed as `Master Trust – at fair value` 98% + two loan rows → stmt +
+  trustPtr → refused. Under v131 the loan rows are gone and a DIFFERENT
+  region wins: the fair-value note at ratio 0.003 (`CCT funds measured at
+  NAV (1)` 60%, **`(in thousands)` as a row name** 32%), neither stmt nor
+  trustPtr, so the guard did not fire and the fallback loop accepted 2023.
+  The v128 guard is region-dependent; it should also hold when the plan's
+  linked TRUST holds most of the plan's money (mtias assets vs plan assets,
+  an arithmetic condition) or when any candidate region was a trust
+  pointer. Readers see a real 30-row 2023 menu with the year disclosed —
+  the pre-v128 state for this plan, not a fabrication. **Queued for wam**
+  with the `(in thousands)`-as-name shape.
+- **Mirror:** `--force` over main's no-op hourly commit (`a068d2c5`: 0 acks
+  / 0 plans the branch lacks, `plans` array byte-identical, main newer on
+  0) and `--force-data` over the 25 losses above. Both on the record here.
+- **Main-vs-branch "confident on main, not branch: 25"** matches the 25
+  reconciled losses exactly.
+
+## 2026-09-17 (run #341) — refined former names in the data: 2,617 plans keep an alias (predicted 2,606)
+
+Run #341 (id 35176118790, `0ce549a0`, 02:53Z, 8 minutes: no-op parse at
+pv 131 + the refined prep) committed `8a0b9664`. The store carries **2,617
+plans with an alias**, against the 2,606 predicted by applying the rules to
+the previous store's aliases — the 11 extra are line-4 values the earlier
+store never held because they had been deduped against names it no longer
+compares on. Structure Man's row still reads *Shiel Sexton Company, Inc. /
+Shiel Sexton Company, Inc. Employee Stock Ownership And 401(K) Plan* (the
+plan-name alias survives the same-company rule because "Shiel" is absent
+from the sponsor's name — which is the rule working). Pages #459 built
+`0ce549a0` (the v131 store) successfully at 02:55Z.
+
+## 2026-09-17 (loop gap) — no agent cycle ran between 03:07Z and 12:13Z; the pipeline's own cron kept parsing
+
+The hourly Routine (`trig_017vdX5dSSYh5v68Cwe6EUBu`) reports its last fire
+at **12:13:11Z**, SUCCEEDED, with the prompt updated at 02:15Z to invoke
+the `wampo-cycle` skill. Between the 02:07Z wake and 12:13Z this session
+received no wake it acted on: the second `wam` agent finished at ~03:23Z
+and its completion notification was delivered at 12:4xZ together with the
+wake. GitHub's cron on main ran #342 (07:46Z) and #343 (09:56Z), both
+no-op hours committing coverage lines to main — the durable layer did its
+job; the judgement layer was absent for nine hours, and the morning brief
+was not refreshed before 7 AM ET. **Cause not established from inside the
+session**: the Routine's `last_run` records delivery, not whether the
+session was awake to act (the 2026-09-08 diagnosis, again). What is known:
+a self-bound Routine cannot wake a session whose container is reclaimed
+until the platform resumes it, and resumption here coincided with the
+12:13Z fire, six minutes after the scheduled :07. Recorded so the next gap
+is compared against this one rather than treated as new. Mitigation that
+exists: the skill and agent shipped at 02:15Z let any fresh session take
+the loop over in one command; a second, independent clock was not added
+because a second self-bind fails the same way.

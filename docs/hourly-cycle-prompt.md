@@ -139,6 +139,20 @@ Order of business:
       (21:19Z): confident −82 exactly, 0 gained, all 82 losses are the
       refusal set, 6 remain (the 5 named + one whose newest filing is a
       403).** Mirror held for the v129 store (see CLAUDE.md state bullet).
+      **TWO REGRESSIONS FROM #340 (v130+v131), sized, queued 2026-09-17
+      12:5xZ:** (a) **9 small plans / ~5,600 ppl ENTERED overshoot** with a
+      generic winner (`Mutual fund, due on demand` 1.16, `See attachment`
+      1.17, `companies` 1.21, Bank of Bridger 1.48, Sames 1.59) after v130's
+      column attribution changed which region wins; 4 left. (b) **First
+      American Financial (17,155 ppl) regained its 2023 fallback that v128
+      refused**: with the loan rows gone its newest filing's winning region
+      is the fair-value note at ratio 0.003 (`CCT funds measured at NAV (1)`
+      60%, **`(in thousands)` as a row NAME** 32%), neither stmt nor
+      trustPtr, so the v128 guard did not fire. The guard is
+      region-dependent; make it hold when the linked trust's assets cover
+      most of the plan (mtias assets vs plan assets — arithmetic) or when
+      ANY candidate region was a trust pointer; and a units marker must never
+      be a row name. `docs/accuracy-log.md` 2026-09-17 (run #340 verdict).
 
       **SHIPPED FROM THIS ITEM, v130 (2026-09-17, committed `[skip ci]`, NOT
       yet parsed — it is a fabrication repair, not new coverage): a wrapped

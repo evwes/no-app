@@ -19,6 +19,34 @@ Found by the participant-weighted random draw from PUBLISHED lineups — the
 same draw that found Walmart and UPMC the day before. Three plans in one draw,
 all defective, all this shape.
 
+## Update 12:5xZ — three more parser versions overnight, two live, one in flight
+
+- **LIVE (`0ce549a0`, mirrored 02:5xZ): v130 + v131.** **Walmart's $3.55B
+  `Lendable Fund` is gone**; the $2.86B MSCI ACWI ex-U.S. index fund and the
+  whole LSV name are published. The cause was not the one in the queue: the
+  wrapped line was captured and then discarded when the description column
+  won the name, four mechanisms sharing one symptom. Floor 37 plans / 4.9M
+  participants. **Loan-description rows published as funds: 7,052 rows across
+  6,970 plans / 12.75M participants → 9** (the recorded 283 plans was a 24x
+  undercount; the old guard was anchored to the start of the name). 25 junk
+  3-row lineups fell under the floor, each read before mirroring.
+- **In flight (v132, dispatched 12:5xZ):** the UPMC "roster" was already
+  fixed by v128, and **Delta was never a roster — its 4i region ran into
+  Schedule C and published Fidelity's ZIP+4, `782,514,321`, as a holding four
+  times**. A region now ends at another schedule's caption: Allina Health's
+  real 22-fund menu replaces a $1.35B phantom, Duke Energy loses a $2.90B one.
+  Plus the bare house-name merge: 133 plans / 83,051 participants, Bell
+  Nursery 3 rows → 21.
+- **Former names refined:** 5,851 → 2,617 aliases; the cosmetic half is gone.
+- **Two small regressions from v130, queued:** 9 small plans (~5,600 people)
+  entered the overshoot set on a generic winner; First American (17,155)
+  regained a 2023 fallback because its newest filing now parses to a
+  different region. Both named in the queue with the fix shape.
+- **The loop itself:** it is now a skill (`/wampo-cycle`) and an agent, and
+  the hourly Routine invokes the skill. **It still skipped nine hours** —
+  no cycle ran 03:07Z–12:13Z while GitHub's own cron kept parsing. Recorded;
+  cause not established from inside the session.
+
 ## Shipped and LIVE on main — `413c905f`, mirrored 00:1xZ
 
 Two full re-parses overnight, both verified before mirroring; HIGH at the

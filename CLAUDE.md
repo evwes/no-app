@@ -654,7 +654,28 @@ don't confuse them). Frontend: python http.server + Playwright at
   Nothing downstream was affected (no session acted on it), but it is exactly
   the copying-a-line-forward hazard this file warns about elsewhere, aimed at
   the file's own header. **Re-derive this line rather than editing the date.**
-- **LIVE on main: `e9470dc8` — MIRRORED 2026-09-17 00:1xZ.** The v129
+- **LIVE on main: `0ce549a0` — MIRRORED 2026-09-17 02:5xZ.** The v131 store
+  (pv 131 at 99.87%, confident 59,990, HIGH 25 = 4 + self-clearing
+  `reparse-loss` on 25 junk 3-row lineups, overshoot 451). **What reached
+  readers:** v130 — wrapped continuation fragments attributed to the column
+  they sit under (Walmart 1.97M: `Lendable Fund` gone, the $2.86B MSCI ACWI
+  ex-U.S. fund and the whole LSV name published; Owens Corning, Intermountain,
+  IBM; floor 37 plans / 4.9M ppl); v131 — loan-description rows removed
+  (7,052 rows / 6,970 plans / 12.75M ppl → 9 rows). Both overrides used with
+  the evidence on the record (`docs/accuracy-log.md` 2026-09-17 run #340
+  verdict). Main has since taken no-op hourly commits. **On the branch, not
+  yet live:** `8a0b9664` (#341: refined former names, 2,617 plans) and
+  `e83fa790`/`a9c4aa1f` (**v132**: a 4i region now ends at another
+  statutory schedule's caption — Delta was publishing Fidelity's ZIP+4 as a
+  $782M holding; Allina Health's real 22-fund menu replaces a $1.35B
+  phantom; and the bare house-name merge, 133 plans / 83,051 ppl, Bell
+  Nursery 3 rows → 21). **v132 dispatched 12:5xZ**; its verdict must show
+  overshoot FALLING (this version changes sums), dominant-row 0,
+  generic-names < 230, the house sizer's ≥90% set near zero. Two #340
+  regressions are queued (9 small overshoot entrants; First American's
+  fallback regained through a different winning region) — see the queue.
+  **LOOP GAP: no agent cycle 03:07Z–12:13Z**, recorded in the log.
+- **Previously: `e9470dc8` — MIRRORED 2026-09-17 00:1xZ.** The v129
   store (pv 129 at 99.87%, HIGH at the baseline 4, confident 60,008) plus
   v128, v129 and the former-name aliases, all together. Gate **+1 gained /
   −82 lost**, both overrides used and both justified on the record: `--force`
