@@ -165,6 +165,33 @@ const FUND_ER = [
    * surviving fund's 0.08% is the right answer for both spellings. */
   [/vanguard (?:instl?|institutional)? ?target (?:retire(?:ment)? )?(?:20\d\d|income)/i, 0.08],
   [/vanguard target retire(ment)?/i, 0.08],
+  /* Added 2026-09-17, second Ocala Breeders pass (see the ABBREV note above):
+   * one verified rate per specific fund, placed ABOVE the general
+   * index/value/cap-alternation rows further down so an exact figure wins
+   * over a blanket estimate for the same holding — several of these names,
+   * once expanded, would otherwise fall through to that blanket guess (e.g.
+   * "Small Cap Value Index" already matches the 0.06% generic row below at
+   * line ~187, but the verified Admiral rate is 0.07%). "Inc"/"Em"/"Est"/
+   * "Yld"/"Corp" are matched directly here rather than expanded in ABBREV —
+   * see the note there. Sources: Vanguard advisor/investor fund profile
+   * pages, verified 2026-09-17. */
+  [/vanguard equity inc(?:ome)?\b/i, 0.17],
+  [/vanguard real est(?:ate)? index/i, 0.13],
+  [/vanguard hi(?:gh)?[\s-]*(?:yld|yield)\s*corp(?:orate)?/i, 0.12],
+  [/vanguard inflation protected(?: securities)?/i, 0.10],
+  [/vanguard em(?:erging)?(?:\s+mkts?|\s+markets?)? stock index/i, 0.13],
+  [/vanguard small[- ]?cap value index.*\badmiral\b/i, 0.07],
+  [/vanguard mid[- ]?cap value index/i, 0.07],
+  [/vanguard mid[- ]?cap growth index/i, 0.07],
+  [/vanguard small[- ]?cap growth index/i, 0.07],
+  [/vanguard intermediate[- ]?(?:term)? bond index/i, 0.06],
+  [/vanguard total world stock index/i, 0.09],
+  [/vanguard international growth\b/i, 0.26],
+  [/vanguard treasury money market/i, 0.07],
+  [/vanguard\s*life\s*strat(?:egy)?\b.*conserv(?:ative)?\b.*growth/i, 0.12],
+  [/vanguard\s*life\s*strat(?:egy)?\b.*moderate\b.*growth/i, 0.10],
+  [/vanguard\s*life\s*strat(?:egy)?\b.*income/i, 0.10],
+  [/vanguard\s*life\s*strat(?:egy)?\b(?!.*conserv)(?!.*moderate).*growth/i, 0.10],
   [/metwest total return/i, 0.45],
   [/vanguard (500|institutional) index/i, 0.02],
   [/vanguard russell \d+ .*(index|trust)/i, 0.05],
@@ -444,6 +471,35 @@ const ABBREV = [
    * names no fund in the table. */
   [/\bVAN\b/gi, "Vanguard"],
   [/\bTARG\b/gi, "Target"],
+  /* Added 2026-09-17, second pass over the same Ocala Breeders Sales Co.
+   * population: "Van Target Retire YYYY" is fixed, and what remains blank in
+   * that plan's lineup is Vanguard funds the table never carried at all —
+   * "Vang Equity Inc Adm", "Vang Hi Yld Corp Adm", "Van Infl Protected Sec -
+   * Admr" and a dozen more "... Idx Adm" spellings. Each contraction below is
+   * a single glued token with no internal word boundary for the existing
+   * per-word rules to catch ("Smcpvl" has no boundary between CP and VL for
+   * the standalone SM/CP/VAL rules to reach), or a share-class-tail spelling
+   * ("Admr", "Admir") the plain "\bADM\b" rule does not cover. Ambiguous
+   * tokens ("Inc", "Em", "Est", "Yld", "Corp") are deliberately NOT expanded
+   * here — same rule as "INC" above — and are instead matched directly by
+   * the new FUND_ER/FUND_TICKER regexes, which can afford to be narrow
+   * because they already require "vanguard" and the rest of the fund's own
+   * words. */
+  [/\bSMCPVL\b/gi, "Small Cap Value"],
+  [/\bMDCPVAL\b/gi, "Mid Cap Value"],
+  [/\bMDCPGR\b/gi, "Mid Cap Growth"],
+  [/\bINTM\b/gi, "Intermediate"],
+  [/\bWLD\b/gi, "World"],
+  [/\bDev Market\b/gi, "Developed Market"],
+  [/\bADMR\b|\bADMIR\b/gi, "Admiral"],
+  [/\bFED\b/gi, "Federal"],
+  // "Vmmr-" is a recordkeeper feed prefix in front of "Fed Mmkt" ("Vang
+  // Vmmr-Fed Mmkt", 105 rows) that names no fund on its own; stripping it
+  // (with its trailing hyphen, so no orphan "-" is left behind) lets the
+  // existing "vanguard federal money market" rule reach the fund it is
+  // actually naming. Nothing else in the filed universe uses this token —
+  // it stands for nothing else a stripped-empty rule could misname.
+  [/\bVMMR-?\b/gi, ""],
 ];
 /* Contractions that stand for TWO different words, which is why they cannot
  * live in the list above: "Mid Cp Index" is Cap and "Blue Cp Growth" is Chip.
@@ -563,6 +619,43 @@ const FUND_TICKER = [
   [/vanguard explorer.{0,12}(adm|admiral)/i, "VEXRX"],
   [/vanguard ftse social index.{0,24}institutional/i, "VFTNX"],
   [/vanguard small[- ]?(cap )?value index.{0,16}institutional/i, "VSIIX"],
+  /* Added 2026-09-17, second Ocala Breeders pass (see the ABBREV note near
+   * the top of the file): funds the table never carried, verified against
+   * Vanguard's own advisor/investor fund profile pages 2026-09-17. Two rows
+   * (total bond market, total international stock) are ADDED beside the
+   * existing index-worded rows above rather than replacing them — those two
+   * filed names ("Vang Tot Bd Mkt Adm", "Vang Tot Intl Stk Ad") drop "Index"
+   * entirely, so the admiral-tail check below is the only way to reach them;
+   * the original index-worded row still stands for filings that keep the
+   * word. A stray "-ii" guard on both stops a hypothetical "... II ..."
+   * share class of a DIFFERENT fund (Total Bond Market II, Total
+   * International Stock II) from being claimed by the tolerant match. */
+  [/vanguard total bond market(?!.*\bii\b).*\b(?:adm|admiral)\b/i, "VBTLX"],
+  [/vanguard total international stock(?!.*\bii\b).*\b(?:adm(?:iral)?|ad)\b\s*$/i, "VTIAX"],
+  [/vanguard hi(?:gh)?[\s-]*(?:yld|yield)\s*corp(?:orate)?.*\b(?:adm|admiral)\b/i, "VWEAX"],
+  [/vanguard inflation protected(?: securities)?.*\badmiral\b/i, "VAIPX"],
+  [/vanguard real est(?:ate)? index.*\b(?:adm|admiral)\b/i, "VGSLX"],
+  [/vanguard value index.*\b(?:adm|admiral)\b/i, "VVIAX"],
+  [/vanguard growth index.*\b(?:adm|admiral)\b/i, "VIGAX"],
+  [/vanguard em(?:erging)?(?:\s+mkts?|\s+markets?)? stock index.*\b(?:adm|admiral)\b/i, "VEMAX"],
+  [/vanguard mid[- ]?cap value index.*\b(?:adm|admiral)\b/i, "VMVAX"],
+  [/vanguard mid[- ]?cap growth index.*\b(?:adm|admiral)\b/i, "VMGMX"],
+  [/vanguard small[- ]?cap growth index.*\b(?:adm|admiral)\b/i, "VSGAX"],
+  [/vanguard small[- ]?cap value index.*\badmiral\b/i, "VSIAX"],
+  [/vanguard developed market.*\b(?:adm|admiral)\b/i, "VTMGX"],
+  [/vanguard intermediate[- ]?(?:term)? bond index.*\b(?:adm|admiral)\b/i, "VBILX"],
+  [/vanguard ftse social index.*\b(?:adm|admiral)\b/i, "VFTAX"],
+  [/vanguard total world stock index.*\b(?:adm|admiral)\b/i, "VTWAX"],
+  [/vanguard international growth.*\b(?:adm|admiral)\b/i, "VWILX"],
+  [/vanguard treasury money market/i, "VUSXX"],
+  // LifeStrategy has only ever had one share class (Investor); a filed
+  // "- Inv" tail states that class explicitly, and the table's own
+  // convention (T. Rowe Price Investor rows above) is to give the ticker
+  // when the filing states the class the ticker actually is
+  [/vanguard\s*life\s*strat(?:egy)?\b.*conserv(?:ative)?\b.*growth/i, "VSCGX"],
+  [/vanguard\s*life\s*strat(?:egy)?\b.*moderate\b.*growth/i, "VSMGX"],
+  [/vanguard\s*life\s*strat(?:egy)?\b.*income/i, "VASIX"],
+  [/vanguard\s*life\s*strat(?:egy)?\b(?!.*conserv)(?!.*moderate).*growth/i, "VASGX"],
   // other managers with distinctive single-strategy names
   [/dodge & cox stock/i, "DODGX"],
   [/dodge & cox income/i, "DODIX"],
@@ -585,7 +678,11 @@ const FUND_TICKER = [
   // "Vanguard Federal" is filed truncated by 1,972 plans; Federal Money Market
   // is the only Vanguard fund that name can mean
   [/vanguard federal(?! reserve)/i, "VMFXX"],
-  [/vanguard equity income.*admiral/i, "VEIRX"],
+  // widened 2026-09-17: "Vang Equity Inc Adm" (304 rows) files the bare
+  // contraction "Inc" rather than "Income" — deliberately not expanded in
+  // ABBREV (same "INC is ambiguous" rule as elsewhere), so the pattern
+  // itself accepts either spelling instead
+  [/vanguard equity inc(?:ome)?.*admiral/i, "VEIRX"],
   [/blackrock mid cap growth equity.*\bk\b/i, "BMGKX"],
   /* --- J.P. Morgan, R6 class only (see JPM_MGR above) --- */
   [new RegExp(JPM_MGR + ".*" + JPM_LCG + ".*" + JPM_R6, "i"), "JLGMX"],

@@ -12524,3 +12524,132 @@ is why it was never noticed.
 
 Rate, per participant: **1 fabricated lineup in 15** (National Medical Care,
 33% of its menu), 2 cosmetic. Sizer: scratchpad `prose-name.mjs`.
+
+## 2026-09-17 (owner-sent page, second pass) — the same Ocala Breeders page's remaining blanks: 22 Vanguard funds the table never carried; +38,510 rows / 15,312 plans / 18,096,101 ppl, 0 lost, 0 flipped
+
+**What was wrong.** `8b6730d5` fixed "Van Target Retire YYYY" on Ocala
+Breeders Sales Co.'s page by expanding the "VAN" contraction. What remained
+blank in that same lineup — and, once measured store-wide, in 15,312 other
+plans — was not a spelling gap: it was Vanguard funds `fund-er.js` never
+carried at all (Equity Income Admiral, High-Yield Corporate Admiral,
+Inflation-Protected Securities Admiral, Real Estate Index Admiral, the
+Value/Growth/Mid-Cap/Small-Cap Index Admiral family, Developed Markets
+Index Admiral, Intermediate-Term Bond Index Admiral, FTSE Social Index
+Admiral, Total World Stock Index Admiral, International Growth Admiral,
+Treasury Money Market, and all four LifeStrategy funds), plus two funds the
+table already priced but could not REACH under the filed spelling
+("Vang Tot Bd Mkt Adm" drops "Index" entirely; "Vang Tot Intl Stk Ad" drops
+"Index" and abbreviates Admiral to a bare "Ad").
+
+**The change.** `fund-er.js`:
+- ABBREV: seven new glued-token/tail contractions (`SMCPVL`->"Small Cap
+  Value", `MDCPVAL`->"Mid Cap Value", `MDCPGR`->"Mid Cap Growth", `INTM`->
+  "Intermediate", `WLD`->"World", the bigram `Dev Market`->"Developed
+  Market", `ADMR`/`ADMIR`->"Admiral") plus `FED`->"Federal" and a targeted
+  strip of the recordkeeper-feed prefix `VMMR-` (used only in front of "Fed
+  Mmkt" in this population; stripping it with its hyphen lets the existing
+  "vanguard federal money market" rule reach VMFXX). Deliberately NOT
+  touched: "Inc" (Income vs Incorporated), "Em" (Emerging), "Est" (Estate),
+  "Yld"/"Corp" (Yield/Corporate) — same ambiguity rule as the standing "INC"
+  note; each is matched directly inside the new regexes instead, which can
+  afford to be narrow because they already require "vanguard" plus the rest
+  of the fund's own words.
+- FUND_ER: 20 new dedicated rows (one per verified fund/class), positioned
+  ABOVE the general index/value/cap alternation and the `\bindex\b`/`stock
+  index` fallbacks — several of the new names, once expanded, would
+  otherwise have fallen through to a blanket estimate that happened to be
+  close but not the verified figure (e.g. Small-Cap Value Index Admiral
+  would hit the existing generic "vanguard small ... value index" row at
+  0.06% instead of VSIAX's verified 0.07%).
+- FUND_TICKER: 22 new dedicated rows, plus two ADDED beside (not replacing)
+  the existing index-worded Total Bond Market / Total International Stock
+  rows, each requiring an explicit Admiral tail and guarding against the
+  unrelated "... II ..." share class of a different fund.
+- Widened one existing rule in place (`vanguard equity inc(?:ome)?.*admiral`
+  in both FUND_ER and FUND_TICKER) to accept the bare "Inc" spelling
+  alongside "Income" — a superset, so every name it matched before still
+  matches.
+
+Every ticker/ER pair was verified against Vanguard's own advisor/investor
+fund profile pages (WebSearch, since `investor.vanguard.com`,
+`advisors.vanguard.com`, `stockanalysis.com`, `www.sec.gov` and
+`fundresearch.fidelity.com` are all blocked by the sandbox egress proxy —
+the WebSearch tool's own fetch is not routed through it and returned
+sourced figures, cross-checked with a second query for VEMAX where sources
+disagreed 0.13%/0.14%):
+
+| fund | ticker | ER (Admiral unless noted) |
+|---|---|---|
+| Equity Income | VEIRX | 0.17% (existing row, widened reach) |
+| Total Bond Market | VBTLX | 0.04% (existing generic row, unchanged) |
+| High-Yield Corporate | VWEAX | 0.12% |
+| Inflation-Protected Securities | VAIPX | 0.10% |
+| Total International Stock | VTIAX | 0.04% (existing generic row, unchanged) |
+| Real Estate Index | VGSLX | 0.13% |
+| Value Index | VVIAX | 0.05% |
+| Growth Index | VIGAX | 0.05% |
+| Emerging Markets Stock Index | VEMAX | 0.13% |
+| Small-Cap Value Index | VSIAX | 0.07% |
+| Mid-Cap Value Index | VMVAX | 0.07% |
+| Mid-Cap Growth Index | VMGMX | 0.07% |
+| Small-Cap Growth Index | VSGAX | 0.07% |
+| Developed Markets Index | VTMGX | 0.05% |
+| Intermediate-Term Bond Index | VBILX | 0.06% |
+| FTSE Social Index | VFTAX | 0.12% (existing generic row, unchanged) |
+| Total World Stock Index | VTWAX | 0.09% |
+| International Growth (active) | VWILX | 0.26% |
+| Treasury Money Market | VUSXX | 0.07% |
+| Federal Money Market | VMFXX | 0.11% (existing row, now reachable) |
+| LifeStrategy Conservative Growth (Inv, only class) | VSCGX | 0.12% |
+| LifeStrategy Moderate Growth (Inv, only class) | VSMGX | 0.10% |
+| LifeStrategy Income (Inv, only class) | VASIX | 0.10% |
+| LifeStrategy Growth (Inv, only class) | VASGX | 0.10% |
+
+**Verification, not a guess.** Every regex was checked against the ACTUAL
+expansion the filed spelling produces (`expandFundName`), not the fund's
+official name — e.g. "Vang Em Stk Idx Adm" expands only as far as "Vanguard
+Em Stock Index Admiral" (no ABBREV entry turns "Em" into "Emerging"), so the
+ticker/ER regexes accept `em(?:erging)?` directly rather than requiring a
+spelling the string never reaches. A LifeStrategy sign bug was caught this
+way before the sweep: the first draft used `strateg?y?`, which requires the
+letter "e" the filed abbreviation "LifeStrat" does not have, and returned
+null for the whole family until corrected to `strat(?:egy)?`.
+
+**Flip-list, whole published universe (git HEAD vs working copy, 1,693,036
+rows, `fundTickerInfo`):** GAINED 38,510 rows / 15,312 plans / 18,096,101
+participants; **LOST 0; FLIPPED 0.** Breakdown by ticker (largest five):
+VIGAX 3,861, VSIAX 3,777, VVIAX 3,417, VGSLX 3,332, VMVAX 2,831 — every one
+of the 24 gaining tickers is a fund from the table above, confirmed by
+listing five sample filed names per ticker; nothing unrelated moved.
+Negative controls checked by hand and pinned as MUST_NOT fixtures: "Vanguard
+Total Bond Market II Index Fund" (a different fund, guarded by an `ii`
+lookahead), "Vanguard Mid-Cap Growth Fund" (the ACTIVE fund VMGRX, kept out
+by requiring "index"), "Vanguard High-Yield Tax-Exempt Fund Admiral Shares"
+(no "corp"), "Vanguard Emerging Markets Bond Fund Admiral Shares" (no
+"stock index"), Investor-class spellings of Equity Income/Value
+Index/Inflation-Protected Securities (no Admiral tail, so no ticker — the
+table does not carry those classes' tickers and does not invent one).
+
+**Left blank, deliberately:**
+- Investor-class share tickers for any of the funds above (VEIPX, VIPSX,
+  the LifeStrategy funds' own Investor tickers already ARE what's used since
+  LifeStrategy has only one class) — "never invent a share class the filed
+  name does not state" holds; only the class actually named gets a ticker.
+- "Vanguard LifeStrategy 60/40" (the numeric ratio form) — not seen in this
+  population, not requested, and a fresh pattern for it is unverified.
+- Institutional-class tickers for Real Estate Index / Developed Markets /
+  etc. — not verified here, so not claimed.
+- `VBTLX`'s and `VTIAX`'s FUND_ER stayed at the pre-existing generic 0.04%
+  estimate rather than being corrected to the verified 0.05%/0.09% — out of
+  this task's scope (a ticket, not a spelling gap), flagged here rather than
+  silently changed.
+
+**Prevention.** `scripts/fund-er-test.mjs` gained 27 MUST-resolve and 11
+MUST-NOT fixtures for this family, including the glued-token spellings
+("Smcpvl", "Mdcpval", "Mdcpgr") and the two "no Index word" spellings that
+motivated widening the existing Total Bond Market / Total International
+Stock rules. "Vanguard Value Index Adm" moves from MUST_NOT to MUST — it was
+a documented gap, now a verified fund; the comment marks the move so a
+future reader does not read the old MUST_NOT line as still true. Frontend
+only, no re-parse. `node scripts/fund-er-test.mjs` and
+`node scripts/smoke-test.mjs` both green locally before push.

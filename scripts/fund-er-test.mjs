@@ -68,6 +68,35 @@ const MUST = [
   ["Van Target Retire 2030", "VTHRX"],
   ["Van Targ Retire 2040", "VFORX"],
   ["Van Target Retire Inc", "VTINX"],
+  // 2026-09-17, second pass over the same page: funds the table never
+  // carried at all. "Vanguard Value Index Adm" moves here from MUST_NOT
+  // below — it was a documented gap, now a verified fund.
+  ["Vang Equity Inc Adm", "VEIRX"],
+  ["Vanguard Equity Income Fund Admiral Shares", "VEIRX"],
+  ["Vang Tot Bd Mkt Adm", "VBTLX"],                // no "Index" in the filed name
+  ["Vang Hi Yld Corp Adm", "VWEAX"],
+  ["Van Infl Protected Sec - Admr", "VAIPX"],      // "Admr" tail, not "Adm"
+  ["Vang Infl Prot Adm", "VAIPX"],                 // no "Securities" at all
+  ["Vang Tot Intl Stk Ad", "VTIAX"],               // bare "Ad" tail, no Index
+  ["Van Real Est Idx Adm", "VGSLX"],
+  ["Vanguard Value Index Adm", "VVIAX"],
+  ["Vang Growth Idx Adm", "VIGAX"],
+  ["Vang Em Stk Idx Adm", "VEMAX"],
+  ["Van LifeStrat Conserv Gr - Inv", "VSCGX"],
+  ["Vang LifeStrategy Income Inv", "VASIX"],
+  ["Van LifeStrat Mod Growth - Inv", "VSMGX"],
+  ["Vang LifeStrategy Growth Inv", "VASGX"],
+  ["Vang Smcpvl Idx Adm", "VSIAX"],                 // glued token, no word boundary
+  ["Vang Mdcpval Idx Adm", "VMVAX"],
+  ["Vang Mdcpgr Idx Adm", "VMGMX"],
+  ["Vang Smcp Gr Idx Adm", "VSGAX"],
+  ["Vang Dev Mkt Idx Adm", "VTMGX"],
+  ["Vang Intm Bd Idx Adm", "VBILX"],
+  ["Van Ftse Soc Idx Adm", "VFTAX"],
+  ["Van Total Wld Stock Idx- Admir", "VTWAX"],      // "Admir" tail, not "Adm"
+  ["Vang Intl Growth Adm", "VWILX"],
+  ["Vang Treasury Mm", "VUSXX"],
+  ["Vang Vmmr-Fed Mmkt", "VMFXX"],                  // recordkeeper-feed prefix stripped
 ];
 
 /* MUST NOT RESOLVE. A blank is the honest answer for all of these. */
@@ -89,9 +118,18 @@ const MUST_NOT = [
   // funds the table does not carry: a blank says "not yet verified", and a
   // guess here would be an invented ticker
   "AMERICAN FUNDS NEW WORLD R6",
-  "Vanguard Growth Index Fund",
-  "Vanguard Value Index Adm",
+  "Vanguard Growth Index Fund",             // no class stated: never invent one
   "Interest Bearing Cash",
+  // 2026-09-17 second pass: class-explicit guards on the new rows above
+  "Vanguard Equity Income Fund Investor Shares",   // Investor, not Admiral: VEIPX, unverified here
+  "Vanguard Value Index Fund",                     // no class stated
+  "Vanguard Inflation-Protected Securities Fund Investor Shares", // Investor: VIPSX, unverified
+  "Vanguard Total Bond Market II Index Fund",      // a DIFFERENT fund, guarded by the "ii" lookahead
+  "Vanguard Mid-Cap Growth Fund",                  // ACTIVE fund (VMGRX), not the Index one
+  "Vanguard High-Yield Tax-Exempt Fund Admiral Shares", // different bond fund, no "corp"
+  "Vanguard Emerging Markets Bond Fund Admiral Shares", // different fund, no "stock index"
+  "Vanguard Real Estate Index Institutional",      // Institutional class not verified here
+  "Vanguard LifeStrategy 60/40",                   // numeric form, not filed in this population
 ];
 
 /* Variant generation must stay a RESPELLING: bounded, and never dropping the
