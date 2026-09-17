@@ -140,6 +140,30 @@ Order of business:
       refusal set, 6 remain (the 5 named + one whose newest filing is a
       403).** Mirror held for the v129 store (see CLAUDE.md state bullet).
 
+      **SHIPPED FROM THIS ITEM, v130 (2026-09-17, committed `[skip ci]`, NOT
+      yet parsed — it is a fabrication repair, not new coverage): a wrapped
+      line is now attributed to the COLUMN IT SITS UNDER.** WALMART's
+      `Lendable Fund` $3,547,236,088 is gone and its three BlackRock funds are
+      named (39 -> 41 rows, ratio unchanged 0.954); Owens Corning's twelve
+      Fidelity Freedom Blend vintages come out of `Fund, Class S` (15 -> 25
+      rows on both plans); Intermountain's `Trust` / `Class` / `Trust Class D`
+      / `Institutional Class` ($1.35B of $6.83B) resolve to real funds; and the
+      LOAN-ROW class partly goes with it (Ramos, Google `to August 2035`
+      $120.9M, Amazon, Lumentum, Beyond Finance) because `classify()` now sees
+      the row reunited. Uniform random draw of PUBLISHED lineups: **21 of 229
+      change (9.2%), 0 lose confidence**; counted floor **37 plans / 4,900,191
+      participants**; projection ~5,500 plans, stated as a projection. Gate
+      green (Ramos expectation moved 27 -> 26 on purpose, reason beside it),
+      `diff-lineups` FABRICATED INTRODUCED 0, one justified CONFIDENCE LOST
+      (Pacific Maritime, a fair-value note published as four asset-class
+      labels; its real 4i pages are blank in the public copy).
+      **`overshoot` will NOT fall from this — a merge never changed the sum**,
+      which is exactly why no arithmetic guard ever saw the class; it must not
+      RISE either. `docs/accuracy-log.md` 2026-09-17 (v130).
+      Still open in this item and verified UNCHANGED by v130: the bare
+      house-name merge (Bell Nursery), the employer ROSTER (UPMC, Delta), the
+      code-column class, DocuSign watermarks, and the 446 overshoots.
+
       **The design note this bump should carry, from UPMC:** a ratio near 1.0
       is evidence for a menu only among tables that are CANDIDATE menus. Any
       table that apportions the plan — an employer roster, a fair-value

@@ -233,6 +233,34 @@
       "fixed": "v129",
       "sponsor": "TJX Companies",
       "was": "the 2024 schedule prints IN THOUSANDS as a line of its own between the title and the 'Identity of issuer' caption; every `marked` arm wanted parentheses or a preceding noun, so the real 31-row menu parsed unscaled at ratio 0.001 and 311,623 participants were served the 2023 fallback (ratio 0.84) with the false sentence that the newest copy has no readable schedule. v129 accepts a line that is ONLY the phrase: 31 rows at ratio 0.975 from the 2024 filing. Found by the participant-weighted random draw from PUBLISHED lineups"
+    },
+    {
+      "ack": "20250814105617NAL0005370979001",
+      "class": "wrapped-description-up",
+      "fixed": "v130",
+      "sponsor": "Walmart",
+      "was": "the DESCRIPTION column wraps and the value rides on the second line, so the parser kept only the tail: three BlackRock index funds all became 'Lendable Fund' and the same-name dedup summed them into one $3,547,236,088 holding that does not exist, on the largest plan in the country (1,970,230 participants). The $2,856,964,964 MSCI ACWI ex-U.S. IMI fund was invisible. Same filing: 'US) Value Equity Fund' $1.83B is the continuation of 'The Collective LSV International (ACWI EX US) Value Equity Fund', and 'Fiera Asset Management USA Collective SEI Trust Company' is a wrap glued onto the issuer. v130 attributes a buffered line to the COLUMN it sits under: 39 rows -> 41, ratio unchanged at 0.954 (a merge never changes the sum, which is why `overshoot` cannot see this class)"
+    },
+    {
+      "ack": "20251014161053NAL0001665395001",
+      "class": "vintage-year-read-as-value",
+      "fixed": "v130",
+      "sponsor": "Owens Corning",
+      "was": "'Fidelity Freedom Blend 2010' wraps, and the vintage at the end of the first line matched valueRe as a $2,010 holding - so the name buffer was cleared and twelve vintages published as one row called 'Fund, Class S', $481,573,572 = 36.9% of PN 004 and 56.4% of PN 014. v130 treats a bare 1900-2100 number on a line with NO column structure as part of the name: 15 rows -> 25, ratio unchanged at 1.000, every vintage named"
+    },
+    {
+      "ack": "20251011122629NAL0004755411001",
+      "class": "wrapped-description-down",
+      "fixed": "v130",
+      "sponsor": "Intermountain Health Care",
+      "was": "the other direction of the same layout - the line ABOVE carries issuer AND the head of the fund name, the value rides on an indented continuation. The head line was dropped by a 90-char cap that counted the inter-column PADDING (52 characters of text measured 93), so four holdings published as 'Trust' $531.8M, 'Class' $307.0M, 'Trust Class D' $287.1M and 'Institutional Class' $221.8M - $1.35B of an $6.83B plan, 86,655 participants. v130 collapses the runs before measuring and reunites the continuation with its row by column offset. NOTE the two controls that came with it: a line v129 never buffered may be REUNITED but must never be glued in front of a name as free text (it fabricated a $1.82B 'Plan 13' row for Colgate-Palmolive from an EIN, and address soup for Delta), and a head must pass wrapHeadOk or a column caption ('or m aturity value', Inotiv) and a type header ('Insurance Company General', Principal Life) become part of the fund name"
+    },
+    {
+      "ack": "20260105123510NAL0007177842001",
+      "class": "loan-continuation-as-holding",
+      "fixed": "v130",
+      "sponsor": "Ramos Oil",
+      "was": "'* PARTICIPANT LOANS | Interest rates range from 3.25% to 8.50%,' wraps onto ' maturing through March 2043  -$0-  205,746'; v129 saw only the orphan, so the loan classifier never fired and 'maturing through March 2043' was published as a $205,746 fund. Reuniting the row lets classify() see the words PARTICIPANT LOANS and the row is skipped. The gate expectation for this specimen moved 27 -> 26 rows in the same commit FOR THIS REASON - the twelve Great Gray rows it exists to protect are untouched"
     }
   ]
 }

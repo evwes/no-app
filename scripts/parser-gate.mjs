@@ -369,8 +369,17 @@ const SPECIMENS = [
    * found by reading the v69->v71 confidence losses one by one. */
   // wide laid-out rows read as prose: twelve "GREAT GRAY CAP GROUP 20XX
   // TARGET DATE TR CL CT" rows are 16 words with no $ (Ramos Oil)
+  /* v130 moved this expectation 27 -> 26 rows, ON PURPOSE, and the row it lost
+   * was never a holding: Ramos files
+   *   * PARTICIPANT LOANS   Interest rates range from 3.25% to 8.50%,
+   *                           maturing through March 2043    -$0-   205,746
+   * and the continuation line used to arrive orphaned, so "maturing through
+   * March 2043" was published as a $205,746 fund. v130 reunites the wrapped
+   * description with its row, the loan classifier then recognises it, and the
+   * row is skipped as a loan. The twelve Great Gray rows this specimen exists
+   * to protect are all still here. */
   ["Ramos Oil (wide rows read as prose)", "20260105123510NAL0007177842001", 17544597,
-    { found: true, n: 27, sum: 17537726 }],
+    { found: true, n: 26, sum: 17331980 }],
   // "Vanguard | Total Intl Bd Idx Admiral" died on the spaced-letter subtotal
   // guard's "Bd"; losing that $5,394 row broke arithmetic subtotal detection
   // downstream and doubled the region (Reliance One)

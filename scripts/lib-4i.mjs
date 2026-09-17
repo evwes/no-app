@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 129;
+export const PARSER_VERSION = 130;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -312,8 +312,40 @@ function typeOnly(desc) {
    * the merge, so the cost was the withheld menu, not a fabrication). A fund
    * named ONLY "Portfolio" does not exist; identity words survive the strip
    * ("Fidelity Managed Income Portfolio" -> "Fidelity Managed Income"). */
-  r = r.replace(/\b(value of|interest in|the|a|an|of|in|at|held|funds?|accounts?|companies|company|end of year|publicly[- ]traded|common|trusts?|securit(y|ies)|contracts?|investments?|guaranteed|registered|pooled|separate|collective|commingled|insurance|mutual|stable|interest|portfolios?)\b/gi, " ");
+  r = r.replace(TYPE_WORDS, " ");
   return r.replace(/[^a-z0-9]/gi, "").length < 6;
+}
+/* the same vocabulary, named, because v130's wrap repair needs to ask a
+ * slightly different question of it: not "is this phrase ONLY type words" but
+ * "what is left when they are gone" */
+const TYPE_WORDS = /\b(value of|interest in|the|a|an|of|in|at|held|funds?|accounts?|companies|company|end of year|publicly[- ]traded|common|trusts?|securit(y|ies)|contracts?|investments?|guaranteed|registered|pooled|separate|collective|commingled|insurance|mutual|stable|interest|portfolios?)\b/gi;
+
+/* v130: MAY THIS LINE BE THE HEAD OF THE NAME BELOW IT?
+ *
+ * A valueless line sitting in the description column is usually a wrapped fund
+ * name — that is the defect this version repairs — but it can also be a column
+ * CAPTION or a TYPE header, and gluing either one onto a fund produces a name
+ * no ticker will ever match. Three tests, all cheap, all measured against the
+ * fragments this version has to keep:
+ *   1. a name's first line starts with a capital, a digit or a bracket. Inotiv
+ *      files its caption across three lines and the third is "or m aturity
+ *      value" (OCR spacing and all), which sat directly above the first
+ *      holding and would have renamed it.
+ *   2. the shipped GENERIC_TYPE_NAME / typeOnly, which catch "Registered
+ *      Investment Company" and "Pooled Separate Accounts".
+ *   3. what survives the type vocabulary must still be two words or carry a
+ *      digit. Principal Life's schedule prints "Insurance Company General"
+ *      over every general-account row; the residue is "General", one word, so
+ *      it is a header. "Fiera Asset Management USA Collective" keeps four,
+ *      "Interest rates range from 3.25% to 8.50%," carries digits, and
+ *      "Intermediate Government Bond Index Non-" is untouched.
+ */
+function wrapHeadOk(s) {
+  const t = String(s || "").trim();
+  if (t.length < 4 || !/^[A-Z0-9("'*]/.test(t)) return false;
+  if (GENERIC_TYPE_NAME.test(t) || typeOnly(t)) return false;
+  const residue = t.replace(TYPE_WORDS, " ").replace(/\s+/g, " ").trim();
+  return residue.split(" ").filter(Boolean).length >= 2 || /\d/.test(residue);
 }
 
 export function parseRows(section, opts = {}) {
@@ -342,6 +374,23 @@ export function parseRows(section, opts = {}) {
   // a valueless "Total ..." line means the subtotal WRAPPED: its value arrives
   // on the next short line ("Total Registered Investment" ↵ "Companies  613,913,288")
   let totalWrap = false;
+  /* v130: a buffered line remembers WHERE its cells sit, because that is what
+   * says whether a wrap belongs to the identity column or the description
+   * column. `col` is the line's first character, `dcol` its description cell. */
+  const mkBuf = (txt, col, rn) => {
+    const bs = splitNameDesc(txt);
+    const dcol = bs.descCol ? rn.indexOf(bs.descCol, col + bs.nameCol.length) : -1;
+    /* `wide` = the line v129 refused to buffer at all, because its 90-char cap
+     * counted the inter-column padding. Such a line may be REUNITED with the
+     * value line it wrapped onto (the down-wrap branch, which takes one cell of
+     * it), but it may never be glued in front of a name as free text: letting
+     * it do that fabricated a $1.82B "Plan 13" row for Colgate-Palmolive and
+     * turned twelve of Delta's brokerage rows into address-and-fee soup, both
+     * of which then cleared the confidence band. Measured on the corpus before
+     * the restriction: 2 plans / 121,336 participants would have been published
+     * that way. A wider buffer is not a free improvement. */
+    return { t: txt, col, name: bs.nameCol, desc: bs.descCol || "", dcol, wide: txt.length >= 90 };
+  };
   // values may carry cents ("$175,869,410.45" — Eaton Savings Trust files its
   // whole menu that way); capture the dollars, tolerate the cents. Rates like
   // "10.50" stay out: the capture needs 3+ digit/comma chars before the dot.
@@ -364,6 +413,12 @@ export function parseRows(section, opts = {}) {
     // "Total … Matching Program $1.1B" subtotal through as a holding and
     // let form-page "401(k)" lines fake rows that suppressed OCR.
     const rawIndent = (/^[ \t]*/.exec(raw) || [""])[0].replace(/\t/g, "    ").length;
+    /* v130: the COLUMN a line's text starts in, past the party-in-interest
+     * marker. A wrapped line has to be attributed to the column it sits
+     * under — see the descPre block below — and that needs a real character
+     * offset, not just an indent depth. */
+    const rawNorm = raw.replace(/\t/g, "    ");
+    const lead = (/^\s*\*?\s*/.exec(rawNorm) || [""])[0].length;
     /* block ended: this row sits at or left of the header that opened it */
     if (curIss && raw.trim() && rawIndent <= curIssIndent) { curIss = ""; curIssIndent = -1; }
     let t = raw.trim().replace(/^\*+\s*/, "").replace(/\s*\*{1,3}\s*$/, "")
@@ -503,7 +558,19 @@ export function parseRows(section, opts = {}) {
           curSection = gh.nameCol.trim(); curIss = ""; nameBuf = []; continue;
         }
       }
-      if (t.length < 90 && !/^\d+$/.test(t)) nameBuf.push(t);
+      /* v130: MEASURE THE TEXT, NOT THE COLUMN PADDING. The 90-char cap is a
+       * prose guard, but `t` keeps the filing's inter-column whitespace, so a
+       * two-column line whose cells total 52 characters measured 93 and was
+       * dropped. Intermountain Health Care (86,655 participants, $6.83B) files
+       *
+       *   * T. Rowe Price            T. Rowe Price U.S. Small-Cap Value Equity
+       *                                  Trust Class D                  23,614
+       *
+       * and the first line — the one carrying the fund's identity — was
+       * discarded on padding alone, so four holdings published as "Trust",
+       * "Class", "Trust Class D" and "Institutional Class", $1.35B of one
+       * plan. Collapse the runs before measuring; prose is still caught. */
+      if (t.replace(/\s+/g, " ").length < 90 && !/^\d+$/.test(t)) nameBuf.push(mkBuf(t, lead, rawNorm));
       if (nameBuf.length > 3) nameBuf = nameBuf.slice(-3);
       continue;
     }
@@ -514,6 +581,28 @@ export function parseRows(section, opts = {}) {
     // rows print with a thousands separator ("2,045")
     if (opts.smallValues && value >= 1900 && value <= 2100 &&
         !vm[0].includes(",") && !/\$/.test(vm[0])) { nameBuf = []; continue; }
+    /* v130: THE SAME YEAR, ON A WRAPPED NAME LINE, IN FULL-DOLLAR MODE.
+     * Owens Corning wraps every target-date fund across two lines and the
+     * vintage lands at the end of the FIRST one:
+     *
+     *   *   Fidelity Freedom Blend 2010
+     *        Fund, Class S            77,282 units   (a)    1,619,822
+     *
+     * "2010" matched valueRe, so the wrapped line was consumed as a $2,010
+     * holding, the name buffer was cleared, and twelve vintages were published
+     * as one row called "Fund, Class S" — $481,573,572, 36.9% of the plan
+     * (PN 004) and 56.4% of its sister (PN 014). The name that identifies the
+     * holding was thrown away by the line that was supposed to carry it.
+     * Scoped to a line with NO column structure: a laid-out row keeps its
+     * trailing number, so a genuine value can never be read as a vintage. */
+    if (!opts.smallValues && value >= 1900 && value <= 2100 &&
+        !vm[0].includes(",") && !/\$/.test(vm[0]) &&
+        t.split(/\s{3,}/).filter(Boolean).length === 1 &&
+        /[a-z]{3}/i.test(t.slice(0, t.length - vm[0].length))) {
+      if (t.replace(/\s+/g, " ").length < 90) nameBuf.push(mkBuf(t, lead, rawNorm));
+      if (nameBuf.length > 3) nameBuf = nameBuf.slice(-3);
+      continue;
+    }
     // no real holding reaches $100B (the largest master-trust interests are
     // ~$50B) — bigger "values" are pre-printed form watermark digits
     // ("123456789012" under the EIN boxes) or OCR garbage, and one such row
@@ -564,13 +653,123 @@ export function parseRows(section, opts = {}) {
     // a bare number with no name on the same line is a leaked year/page/column
     if (!body) { nameBuf = []; continue; }
 
-    const { nameCol, descCol } = splitNameDesc(body);
-    const full = (nameBuf.join(" ") + " " + nameCol).trim();
+    let { nameCol, descCol } = splitNameDesc(body);
+    /* every buffered line plus the identity column, exactly as v129 assembled
+     * it — kept so the branch where the description does NOT win reads the
+     * row the way it always did, and no row can lose text the split moved */
+    const fullAll = (nameBuf.filter((b) => !b.wide).map((b) => b.t).join(" ") + " " + nameCol).trim();
+    /* v130: A WRAPPED LINE BELONGS TO THE COLUMN IT SITS UNDER.
+     *
+     * Every buffered line used to be treated as a wrapped IDENTITY, glued in
+     * front of nameCol. That is right for Amgen's layout (v100) and wrong
+     * whenever the DESCRIPTION column is the one that wrapped, because the
+     * description then wins the name and the prefix is thrown away:
+     *
+     *                                    Intermediate Government Bond Index Non-
+     *   BlackRock Institutional Trust    Lendable Fund            **   423,138,593
+     *                                    Long Term Government Bond Index Non-
+     *   BlackRock Institutional Trust    Lendable Fund            **   267,132,531
+     *                                    MSCI ACWI ex-U.S. IMI Index Non-
+     *   BlackRock Institutional Trust    Lendable Fund            **  2,856,964,964
+     *
+     * All three were published as "Lendable Fund" and the same-name dedup SUMMED
+     * them: Walmart's 1,970,230 participants saw one $3,547,236,088 holding that
+     * does not exist, and a $2.86B international index fund vanished from the
+     * menu. Same shape, same filing: "US) Value Equity Fund" $1.83B is the
+     * continuation line of "The Collective LSV International (ACWI EX US) Value
+     * Equity Fund"; and where the wrap takes the WHOLE description, the leftover
+     * glues onto the issuer instead — "Fiera Asset Management USA Collective SEI
+     * Trust Company".
+     *
+     * The column offset tells the two apart with no vocabulary at all: a
+     * description continuation starts at the description column, an identity
+     * continuation at the identity column. Only single-cell lines qualify, so a
+     * line that carries both columns is untouched. */
+    let descPre = "";
+    let idPre = "";
+    {
+      // a continuation after a hyphenated word rejoins without a space
+      // ("...Index Non-" + "Lendable Fund" -> "...Index Non-Lendable Fund")
+      const join = (a, b2) => !a ? b2 : !b2 ? a : (/\S-$/.test(a) ? a + b2 : a + " " + b2);
+      const idParts = [];
+      const preParts = [];
+      const nameStart = lead;
+      let buf = nameBuf;
+      /* THE OTHER HALF OF THE SAME LAYOUT: the description wraps DOWNWARD and
+       * the value rides on the continuation, so it is the VALUE line that is a
+       * fragment and the line above that holds both columns:
+       *
+       *   * T. Rowe Price        T. Rowe Price U.S. Small-Cap Value Equity
+       *                              Trust Class D                    23,614
+       *
+       * The value line's only cell sits under the description column of the
+       * line above, never under the identity column, so the same offset test
+       * settles it — and the identity comes back from the buffered line. */
+      const last = buf.length ? buf[buf.length - 1] : null;
+      if (nameCol && last && last.desc && last.name &&
+          last.dcol >= 0 && lead >= last.dcol - 3 && lead <= last.dcol + 10 &&
+          /[a-z]{3}/i.test(last.desc) && wrapHeadOk(last.desc)) {
+        /* anything still to the right of the continuation is a cost/units
+         * column ("-$0-", "(a)", "242,648 units"); keep it only if it carries
+         * words, since cleanDesc can then strip it as a type phrase */
+        const tail = descCol && /[a-z]{3}/i.test(descCol) ? descCol : "";
+        descPre = last.desc;
+        descCol = join(join(last.desc, nameCol), tail);
+        nameCol = last.name;
+        buf = buf.slice(0, -1);
+        for (const b of buf) if (!b.wide) idParts.push(b.t);
+      } else {
+        const dStart = descCol ? rawNorm.indexOf(descCol, nameStart + nameCol.length) : -1;
+        for (const b of buf) {
+          if (b.wide) continue;             // v129 never saw this line; only the
+                                            // down-wrap branch above may use it
+          const single = !/\s{3,}/.test(b.t);
+          const aligned = single && (dStart > nameStart + 3
+            ? Math.abs(b.col - dStart) <= 3
+            // no description on the value line: the wrap took all of it, so the
+            // buffered line only has to sit clear to the RIGHT of the identity
+            : !descCol && b.col >= nameStart + nameCol.length + 3);
+          /* only the HEAD of a wrap has to prove itself: once a line is
+           * accepted, the lines under it are its continuation. Walmart wraps
+           * "Cohen & Steers Global Listed Infrastructure" / "Fund" over two
+           * lines, and judging the second one alone throws away the word that
+           * finishes the name. */
+          if (aligned && b.t.length <= 70 && (preParts.length || wrapHeadOk(b.t))) preParts.push(b.t);
+          else if (!aligned) idParts.push(b.t);
+        }
+        descPre = preParts.reduce((a, b2) => join(a, b2), "");
+        if (descPre) descCol = join(descPre, descCol);
+      }
+      idPre = idParts.join(" ").trim();
+    }
+    /* what the identity column alone says, which is what decides WHICH column
+     * names the fund (v100 judges the whole identity, not its last line) */
+    const full = ((idPre ? idPre + " " : "") + nameCol).trim();
     nameBuf = [];
     // wrapped subtotals ("Total Registered Investment" ↵ "Companies  613,913,288")
     // defeat the line-level ^total filter — catch them once assembled
-    if (/^(sub|grand )?total\b/i.test(full)) continue;
-    const type = classify(descCol ? descCol + " " + full : full);
+    if (/^(sub|grand )?total\b/i.test(fullAll)) continue;
+    /* NO second ^total test on the reunited description, and that is
+     * deliberate: the first draft of v130 added one, and it deleted IBM's
+     * $9,827,773,829 "Total Stock Market Index (refer to Exhibit P)" and RW
+     * Baird's $564,229,235 "Total Bond Market (Refer to Exhibit J)" — 17.8% of
+     * a $64B plan — because both real funds begin with the word Total. v70
+     * measured this exact hazard on the identity column ("Total Return Bond
+     * Fund Class I") and the lesson transfers. */
+    /* v130: classify the row as REUNITED. Ramos Oil files
+     *   * PARTICIPANT LOANS   Interest rates range from 3.25% to 8.50%,
+     *                           maturing through March 2043   -$0-   205,746
+     * and v129 saw only the orphaned second line, so the loan classifier never
+     * fired and "maturing through March 2043" was published as a $205,746
+     * holding. The words that identify the row are in the identity column of
+     * the line above; feed them in. */
+    /* Appended only when it says something fullAll does not: REPEATING a cell
+     * breaks anchored patterns, and the first draft duplicated "Brokerage
+     * accounts" into "Brokerage accounts Brokerage accounts", which stopped
+     * USAA's $323.9M row classifying as a self-directed brokerage account at
+     * all — 52,789 participants would have lost the brokerage-window flag. */
+    const type = classify([descCol, fullAll, fullAll.includes(full) ? "" : full]
+      .filter(Boolean).join(" "));
     if (type === "SDBA") { sdba = true; rows.push({ name: "Self-Directed Brokerage Account", type: "Brokerage window", value }); continue; }
     if (type === "Participant loans") continue;
 
@@ -724,7 +923,7 @@ export function parseRows(section, opts = {}) {
       console.error(`[row] value=${value}
    nameBuf = ${JSON.stringify(nameBuf)}
    nameCol = ${JSON.stringify(nameCol)}
-   descCol = ${JSON.stringify(descCol)}
+   descCol = ${JSON.stringify(descCol)}${descPre ? `   (descPre ${JSON.stringify(descPre)})` : ""}
    full    = ${JSON.stringify(full)}
    dClean  = ${JSON.stringify(dClean)}  typeOnly=${dClean ? typeOnly(dClean) : "-"} catDesc=${!!catDesc} house=${isHouseName(nc)}
    -> name from ${dUsable ? "DESCRIPTION" : "IDENTITY"}`);
@@ -755,11 +954,16 @@ export function parseRows(section, opts = {}) {
         iss = cand;
       }
     } else {
-      name = full;
+      /* the description did NOT win, so the row is named from the identity
+       * column — and there a wrapped description line is still the only extra
+       * text the row has. Keep v129's reading verbatim (fullAll) so this
+       * branch cannot lose anything the column split moved. */
+      const base = fullAll;
+      name = base;
       for (const [re] of TYPE_PATTERNS) {
-        const m = full.match(re);
+        const m = base.match(re);
         if (m && m.index > 3) {
-          const cut = full.slice(0, m.index).replace(/[-–—,\s]+$/, "");
+          const cut = base.slice(0, m.index).replace(/[-–—,\s]+$/, "");
           // only strip a type phrase when a real name remains — "BlackRock
           // Short-Term Investment Fund" must not shrink to "BlackRock".
           // "U. S. GOVERNMENT SECURITIES" splits into two "words" but its
@@ -777,7 +981,7 @@ export function parseRows(section, opts = {}) {
           }
         }
       }
-      if (name.length < 3) name = full;
+      if (name.length < 3) name = base;
     }
     // Drop non-name residue like "9.50 percent" (wrapped loan-rate lines)
     if (name.replace(/\bpercent\b|\bto\b/gi, "").replace(/[^a-z]/gi, "").length < 3) continue;
@@ -1008,7 +1212,7 @@ export function parseRows(section, opts = {}) {
     // ("2d Business code (see instructions) 75 CHESTNUT RIDGE ROAD" ->
     // "CHESTNUT RIDGE ROAD"), which is no more a holding than the whole line
     if (/\(see instructions?\)|\benter total\b|\badd all\b.{0,24}\bamounts?\b|\benter name and ein\b|\benter the (?:number|amount) of\b/i
-        .test(name + " " + full)) { nameBuf = []; continue; }
+        .test(name + " " + fullAll)) { nameBuf = []; continue; }
     /* v75: "c/o" is an ADDRESS, and the third variant of the same defect. The
      * ABCDEFGHI guard catches the sponsor address block when EFAST2 left its
      * placeholder text in; where the filer's address is real text there is
@@ -1080,7 +1284,17 @@ export function parseRows(section, opts = {}) {
      * 252 entries, 236 of them CONFIDENT, values to $4.7M. Filers write it
      * "FEIN 36-", "FEIN: 94-", "FEIN #75-", "PLAN FEIN 98-".
      * A guard is only as wide as the spellings it was shown. */
-    if (/\b(?:f?ein|employer identification(?: number)?)\b[\s:;#.,\/–—-]*\d{0,3}(?:[\/–—-]\d{0,3})?[\s–—-]*$/i.test(name.trim())) { nameBuf = []; continue; }
+    /* v130: tested against the ROW as assembled, not only against the chosen
+     * name. Colgate-Palmolive's form page prints "Plan Sponsor EIN  13-1815595"
+     * under a wrapped "Plan"; once the column split handed the description the
+     * name, the row was called "Plan 13" and sailed past a guard that was
+     * looking for a name ENDING in "EIN". It published $1,815,595,000 — an EIN
+     * read as dollars — at 36% of the plan, and carried Colgate over the
+     * confidence band. A guard keyed to one rendering of a row is not a guard. */
+    if (/\b(?:f?ein|employer identification(?: number)?)\b[\s:;#.,\/–—-]*\d{0,3}(?:[\/–—-]\d{0,3})?[\s–—-]*$/i
+        .test(name.trim()) ||
+        /\b(?:f?ein|employer identification(?: number)?)\b[\s:;#.,\/–—-]*\d{0,3}(?:[\/–—-]\d{0,3})?[\s–—-]*$/i
+        .test(fullAll.trim())) { nameBuf = []; continue; }
     /* Income phrases that name no fund. Deliberately only these three: the
      * measurement over 6,890 income-shaped stored rows is overwhelmingly REAL
      * fund vocabulary ("Vanguard Target Retirement Income" 1,223, "Dodge & Cox
@@ -1314,8 +1528,17 @@ export function parseRows(section, opts = {}) {
       continue;
     }
     totalValue += r.value;
-    if (e) { e.row.value += r.value; e.vals.add(r.value); }
-    else seen.set(k, { row: r, vals: new Set([r.value]) });
+    if (e) {
+      e.row.value += r.value; e.vals.add(r.value);
+      /* v130: A MERGED ROW MAY NOT KEEP ONE CONTRIBUTOR'S ISSUER. Intermountain
+       * holds the same Invesco fund through four insurance contracts — Pacific
+       * Life, Transamerica, RGA, Nationwide. Once v130 stopped gluing the
+       * carrier into the fund name they merge on the name, which is right for
+       * the money and wrong for the attribution: whichever row landed first
+       * would publish its carrier over all $127.9M. The sum is real; the single
+       * issuer is not, so the claim is dropped rather than picked. */
+      if (e.row.iss && r.iss && String(e.row.iss).toLowerCase() !== String(r.iss).toLowerCase()) delete e.row.iss;
+    } else seen.set(k, { row: r, vals: new Set([r.value]) });
   }
   /* v74: a SINGLE-RENDER view of the same region, offered alongside the normal
    * one so scoring can choose. Some filings print the schedule twice with no

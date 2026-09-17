@@ -11109,3 +11109,134 @@ at 23:06Z, 55 minutes, committed `0af9c8f2`.
   branch's carries the 38th field, `alias`. The data gate will refuse over
   the 82 v128 losses; `--force-data` is justified by the #334
   reconciliation above.
+
+## 2026-09-17 (v130) — a wrapped line was attributed to the wrong column, so several real holdings merged into a fund that does not exist: Walmart's $3.55B `Lendable Fund` and three more shapes
+
+**Wrong.** Four separate mechanisms, one symptom — a published, confident
+lineup naming a holding that is not a holding, with real money behind it.
+Every one was found in a PUBLISHED lineup, none by any coverage metric, and
+none of them moves the plan's ratio, because **a merge preserves the sum**.
+That is why `overshoot` cannot see this class and why no arithmetic guard ever
+fired on it.
+
+1. **The description column wraps UPWARD and only its tail is kept.**
+   `parseRows` buffered the wrapped line and glued it in front of the IDENTITY
+   column; when the DESCRIPTION won the name, the buffer was discarded.
+   WALMART (1,970,230 participants, $50.79B — the largest plan in the country)
+   published `Lendable Fund` at **$3,547,236,088**, the same-name sum of
+   `Intermediate Government Bond Index Non-` ($423,138,593), `Long Term
+   Government Bond Index Non-` ($267,132,531) and `MSCI ACWI ex-U.S. IMI Index
+   Non-` (**$2,856,964,964** — a $2.9B international index fund invisible to
+   every participant looking for their international allocation). Same filing:
+   `US) Value Equity Fund` $1.83B is the continuation line of `The Collective
+   LSV International (ACWI EX US) Value Equity Fund`, and where the wrap took
+   the whole description the leftover glued onto the issuer instead — `Fiera
+   Asset Management USA Collective SEI Trust Company`.
+2. **A TARGET-DATE VINTAGE at the end of a wrapped line parsed as a VALUE.**
+   `valueRe` matched the bare `2010` in `* Fidelity Freedom Blend 2010`, so the
+   line was consumed as a $2,010 holding and the name buffer cleared. OWENS
+   CORNING published twelve vintages as one `Fund, Class S` row —
+   **$481,573,572 = 36.9%** of PN 004 and **$354,848,184 = 56.4%** of PN 014.
+   The guard for this already existed but was scoped to millions-stated mode.
+3. **The description wraps DOWNWARD and the head line was never buffered at
+   all**, because the 90-character prose cap measured the filing's
+   inter-column PADDING: 52 characters of text measured 93. INTERMOUNTAIN
+   HEALTH CARE (86,655 participants, $6.83B) published `Trust` $531.8M,
+   `Class` $307.0M, `Trust Class D` $287.1M and `Institutional Class` $221.8M —
+   **$1.35B of one plan**, four fragments where four real funds were filed.
+4. **The participant-LOAN row split the same way**, so the loan classifier
+   never saw the words that identify it: Ramos Oil published `maturing through
+   March 2043` as a $205,746 fund, Google `to August 2035` at $120,942,045,
+   Amazon `10.5%, MATURING THROUGH` at $2,050,000.
+
+**The change (v130).** A buffered line is attributed to the COLUMN IT SITS
+UNDER, by character offset, with no vocabulary at all: aligned with the
+description column it is a description continuation (reunited with the
+description, hyphen-joined where the wrap broke a word); aligned with the
+identity column it stays an identity prefix, which is v100's Amgen case and is
+untouched. The down-wrap is the same test read the other way: the value line's
+only cell sits under the description column of the line above, and the identity
+comes back from that line. A bare 1900-2100 number on a line with no column
+structure is a vintage, not a value. The prose cap now collapses whitespace
+before measuring. `classify()` sees the row REUNITED, which is what lets the
+loan rows go. A merged row that had two different issuers publishes NEITHER.
+
+**Measured, before and after, on the same store.** Specimens: Walmart 39 -> 41
+rows, ratio unchanged 0.954, `Lendable Fund` gone and the three funds named;
+Owens Corning PN 004 15 -> 25 and PN 014 15 -> 25, ratio unchanged 1.000;
+Intermountain 77 -> 67 (fragments split into real funds, then two renderings of
+one fund correctly merged), ratio unchanged 0.992; IBM 32 rows unchanged but
+every name whole and the manager moved to `iss` (149,818 participants).
+**Yield, from a UNIFORM RANDOM draw of published lineups rather than a
+top-of-list sample: 21 of 229 plans change (9.2%, 95% CI 5.8-13.7%), 0 lose
+confidence.** Against 59,674 published plan lineups that projects to roughly
+5,500 plans (CI 3,500-8,200) — a projection, not a count. What is COUNTED is
+the floor actually parsed both ways: **37 published plans / 4,900,191
+participants / $427.7B**, Walmart 1.97M, Amazon 1.34M, TJX 303,498, Google
+152,774, IBM 149,818, Accenture 115,910, Intermountain 84,616 among them.
+
+**What the next run's verdict must show.** `confident` roughly flat (the random
+draw says 0 losses in 229; the one loss in the asset-ranked corpus is correct —
+see below); `audit-generic-names` must NOT grow past its 230 threshold and
+`audit-dominant-row` must stay 0; `overshoot` will NOT fall from 446 on account
+of this change and must not RISE — a merge never changed the sum, so the ratio
+of every specimen is identical before and after. If `confident` falls by more
+than ~50, sample the losses before mirroring.
+
+**The one justified loss: Pacific Maritime Association (19,026 participants,
+$3.44B) stops publishing.** Its "lineup" was four asset-class labels —
+`Commingled pooled funds` 67.9%, `Mutual funds`, `Common stocks`,
+`Interest-bearing cash` — read off the FAIR VALUE HIERARCHY note (Level 1 /
+NAV / Total columns). Its real Schedule H 4i pages are in the PDF and are
+BLANK: caption, party-in-interest footnote, no rows. v130 marks the note as a
+statement and the plan now says nothing rather than four categories. That is
+the correct answer, and it is the v115 shape.
+
+**Prevention.**
+- Four specimens pinned in `docs/defect-specimens.json` — `wrapped-description-up`
+  (Walmart), `vintage-year-read-as-value` (Owens Corning),
+  `wrapped-description-down` (Intermountain), `loan-continuation-as-holding`
+  (Ramos Oil) — so `diff-lineups` fails loudly if any regresses.
+- The Ramos gate expectation moved 27 -> 26 rows IN THE SAME COMMIT and the
+  reason is written beside it: the row it lost was the loan continuation, never
+  a holding.
+- **Three regressions were caught by measuring the change's LOSSES on the same
+  population as its gains, and each one is now a control in the code:**
+  (a) widening the buffer let junk lines glue into names — Colgate-Palmolive
+  gained a **$1,815,595,000 "Plan 13"** row (its EIN, `13-1815595`, read as
+  dollars) at 36% of the plan and CLEARED the confidence band at 1.549, and
+  twelve of Delta's brokerage rows became address-and-fee soup at ratio 0.997;
+  a line v129 never buffered may now be REUNITED with the row it wrapped onto
+  but may never be glued in front of a name as free text. (b) An `^total` test
+  on the reunited description deleted IBM's $9,827,773,829 `Total Stock Market
+  Index (refer to Exhibit P)` and RW Baird's $564,229,235 `Total Bond Market` —
+  17.8% of a $64B plan — because both real funds begin with the word Total;
+  v70 had already measured that exact hazard on the identity column and the
+  lesson transfers. (c) Feeding the identity to `classify()` by APPENDING it
+  duplicated the cell, and a repeated cell breaks an anchored pattern: USAA's
+  $323.9M row stopped classifying as a self-directed brokerage account, which
+  would have cost 52,789 participants their brokerage-window flag. It is
+  appended only when it says something the row does not already say.
+- **The EIN guard now tests the row as ASSEMBLED, not only the chosen name.**
+  Colgate's row walked past it because the guard looked for a name ENDING in
+  "EIN" and the description had won the name. A guard keyed to one rendering
+  of a row is not a guard.
+- **A fragment must prove it is the head of a name before it becomes one**
+  (`wrapHeadOk`): starts with a capital, a digit or a bracket; is not
+  `GENERIC_TYPE_NAME` or `typeOnly`; and what survives the type vocabulary is
+  two words or carries a digit. Without it, Inotiv's OCR'd column caption
+  (`or m aturity value`) and Principal Life's type header (`Insurance Company
+  General`) became part of fund names. Only the HEAD is judged — Walmart wraps
+  `Cohen & Steers Global Listed Infrastructure` / `Fund` and judging the second
+  line alone throws away the word that finishes the name.
+- **The method that found all four: draw randomly from PUBLISHED lineups.**
+  Three of the four shapes above sit in lineups that every coverage metric
+  calls complete and every audit passes. The worst-bucket draw this project ran
+  for months cannot see them.
+
+**Still open in this class, unchanged by v130 and sized:** the bare house-name
+merge (Bell Nursery `Vanguard` at 95%, 130 plans / ~83k participants — verified
+byte-identical under v130), the participating-employer ROSTER accepted as a
+menu (UPMC, Delta — verified unchanged), and the general overshoot population
+(446 plans / 575,994 participants), which is the fair-value-note and form-junk
+family, not this one.
