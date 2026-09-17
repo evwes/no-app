@@ -155,8 +155,10 @@ Order of business:
    4. Schedule A carrier as a recordkeeper source (`build-data.mjs:624`
       resolves it and never reads it).
    5. NEC + eligibility extraction — NEW COVERAGE, owner's call.
-   6. **SHIPPED 2026-09-16 21:xxZ, code only — DATA ARRIVES WITH THE NEXT
-      PREP RUN after #334.** Prior sponsor / plan name as a search alias
+   6. **LIVE 2026-09-17 00:1xZ (data from run #335: 5,851 plans carry an
+      alias; the split line-4 sponsor / line-4 plan / older-filing is in
+      #335's prep log and has not been read — 5,851 is aliases, not renames).**
+      Prior sponsor / plan name as a search alias
       (Form 5500 line 4 `LAST_RPT_SPONS_NAME` / `LAST_RPT_PLAN_NAME` on both
       forms, PLUS the older filings' sponsor names per EIN|PN). Prep writes
       `alias` / `plans-list.al` / detail-shard `alias`; app.js searches it

@@ -643,10 +643,22 @@ don't confuse them). Frontend: python http.server + Playwright at
   Nothing downstream was affected (no session acted on it), but it is exactly
   the copying-a-line-forward hazard this file warns about elsewhere, aimed at
   the file's own header. **Re-derive this line rather than editing the date.**
-- **LIVE on main: `39381d6e` — MIRRORED 2026-09-16 20:1xZ** (v127 store,
-  gate +0/-0, HIGH at the baseline 4); main has since taken one hourly data
-  commit (`b1438c14` at 20:2xZ — measured: 0 acks / 0 plans the branch
-  lacks, `plans` array byte-identical, newer on 0 acks). **#334 PASSED
+- **LIVE on main: `e9470dc8` — MIRRORED 2026-09-17 00:1xZ.** The v129
+  store (pv 129 at 99.87%, HIGH at the baseline 4, confident 60,008) plus
+  v128, v129 and the former-name aliases, all together. Gate **+1 gained /
+  −82 lost**, both overrides used and both justified on the record: `--force`
+  over main's two no-op hourly commits (0 acks / 0 plans the branch lacked,
+  main newer on 0), `--force-data` over the 82 refused trust-plan fallbacks
+  reconciled ack by ack in the #334 verdict. **What reached readers:** 87
+  plans / 2.38M participants stop seeing a plan-level junk menu (67 of them
+  now show their trust's real menu); TJX's 311,623 see the 2024 menu; 5,851
+  plans are searchable by a former name and say "Previously filed as" on
+  the report. `docs/accuracy-log.md` 2026-09-16 (run #334 verdict, run #335
+  verdict). Check `pages-build-deployment` for the build of `e9470dc8`.
+- **Previously: `39381d6e` — MIRRORED 2026-09-16 20:1xZ** (v127 store,
+  gate +0/-0, HIGH at the baseline 4); main then took two hourly data
+  commits (`b1438c14`, `f9e68e74` — measured: 0 acks / 0 plans the branch
+  lacked, newer on 0 acks). **#334 PASSED
   (21:19Z, 54 min, `3f12be42`): pv 128 at 99.87%, confident −82 = exactly the
   82 refusals predicted, 0 gained, every loss reconciled to the refusal set,
   overshootPpl 1.16M → 0.58M, HIGH 25 = 4 baseline + `reparse-loss` on the
