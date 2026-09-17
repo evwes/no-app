@@ -167,6 +167,11 @@ export function classifyDocument(text) {
   return { code, pages, perPage, headers, titles, hasAudit, omitted, tableLikePages };
 }
 
+/* A UNITS DECLARATION, wherever it appears. The parser already reads these as
+ * scaling markers; this is the same vocabulary asked as "is this a fund NAME?",
+ * exported so an audit can count the answer rather than re-inventing the list.
+ * Deliberately anchored whole-string: "Thousand Oaks Fund" must survive. */
+export const UNITS_MARKER_NAME = /^\(?\s*(?:\$\s*)?(?:amounts?|dollars?|figures?|values?)?\s*(?:are\s+)?(?:expressed\s+)?(?:in\s+|stated\s+in\s+)?(?:\(?\s*000'?s?\s*\)?|thousands?|millions?|billions?)(?:\s+of\s+dollars)?(?:\s+omitted)?\s*\)?\s*[.:]?$/i;
 export const NOT_FUND_SHAPED = /^(?:at (?:fair|contract) value|investments?(?:,? at .*)?|total\b.*|various\b.*|master trust.*|investments? held in the trust.*|participants?[- ]directed.*|fully benefit[- ]responsive.*|cusip:?.*|net assets.*|assets\b.*|cash(?: and cash equivalents)?|other\b.*|[a-z]\s+total\b.*|see (?:note|attach).*|interest[- ]bearing cash|value of interest in .*)$/i;
 /* UNAMBIGUOUS accounting-disclosure phrasing, for tests that ask "are these
  * rows JOINTLY an aggregate?" — deliberately narrower than NOT_FUND_SHAPED,
@@ -1324,6 +1329,18 @@ export function parseRows(section, opts = {}) {
      * the minimum-length check and made of nothing but function words. A name
      * that is only prepositions plus a generic time/scope noun names nothing. */
     if (/^(?:of|at|in|for|to|from|the|and|as)(?:\s+(?:of|at|in|the|a))?\s+(?:years?|periods?|dates?|plans?|end|beginning|december|june)$/i.test(name.trim())) { nameBuf = []; continue; }
+    /* v133: A UNITS MARKER IS NOT A HOLDING. "(in thousands)" is read
+     * elsewhere as the scaling declaration it is (v125, v129); when it sits in
+     * the identity column of a table whose values are alongside, it also
+     * parsed as a NAME, and the number beside it became its value. Published
+     * examples: New York Life Insurance (15,340 participants) shows
+     * "(in thousands)" at $464,500,000 = 40% of a five-row menu; Caterpillar,
+     * Ecolab, Domino's, Continental Casualty, Cleveland-Cliffs, Arcosa and
+     * Solar Turbines carry smaller ones — 9 published lineups / 10 rows /
+     * 143,083 participants. It also decides a whole plan elsewhere: First
+     * American Financial's 2024 filing wins its region on a fair-value note
+     * where this row is 32%, and with the row gone the note cannot win. */
+    if (UNITS_MARKER_NAME.test(name.trim())) { nameBuf = []; continue; }
     // financial-statement rows ("Participants 41,200,000", "Company",
     // "Rollover", "From participants") leak in when a candidate region
     // sweeps a contributions schedule — bare finance nouns are never funds

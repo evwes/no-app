@@ -12145,3 +12145,91 @@ Corteva behind it, 304k more readers.
   by direction under a header that names the issuer. Folding is arguably right
   (one menu option); the LABEL is wrong, and `isEmployer` cannot see it because
   the sponsor's name is on the header line, not on the rows. Unchanged.
+
+## 2026-09-17 (v133, part 3) — "(in thousands)" published as a $464,462,000 holding; and the trust-fallback guard the queue asked for, measured and NOT tightened
+
+**WHAT WAS WRONG.** A units declaration is read as a scaling marker (v125,
+v129). When it sits in the IDENTITY column of a table whose values are printed
+alongside, it was also read as a holding NAME and the number beside it became
+its value. **New York Life Insurance PN 006 (15,340 participants) published
+`(in thousands)` at $464,462,000 = 40% of a five-row menu.** Store-wide:
+**9 published lineups / 10 rows / 143,083 participants** — Caterpillar x2,
+Ecolab, Domino's Pizza, Continental Casualty, Cleveland-Cliffs, Arcosa, Solar
+Turbines, New York Life.
+
+**THE CHANGE.** `UNITS_MARKER_NAME`, anchored whole-string and exported so an
+audit can ask the same question without re-inventing the list, rejects a row
+whose entire name is a units declaration. Controlled both ways in one script
+(14 marker spellings matched — `(in thousands)`, `(In Thousands)`, `$ in
+millions`, `(000's)`, `000s omitted`, `(dollars in thousands)`, `thousands`;
+9 real fund names untouched — `Thousand Oaks Fund`, `Money Market Fund`,
+`Target Retirement Date Fund 2025`).
+
+**OUTCOME, all nine re-parsed:** five keep confidence and simply lose the
+phantom — Ecolab 26 rows -> 25 at an unchanged 0.938, Domino's 29 -> 28,
+Arcosa 26 -> 25, Cleveland-Cliffs 15 -> 13, Continental Casualty 4 -> 3.
+
+**ONE CONFIDENCE LOSS, and it is the fix working: New York Life PN 006.**
+With the $464M phantom gone the parse reads `stmt` + `trustPtr` and stops
+publishing — which is right, because the other four rows were
+`Investment in IPG Contract, held by the Master Trust`, `Investments in`,
+`Trust` and `Dividend and interest income received from the Master Trust`: a
+STATEMENT page published whole, 100% of it fabricated or aggregate. Its money
+is in the NEW YORK LIFE PROGRESS-SHARING INVESTMENT PROGRAM TRUST, whose own
+parse IS confident, so those 15,340 participants go from a five-row fiction to
+the trust's real menu. Its sibling PN 002 (19,407 participants) already sits at
+`dx=stmt` for the same shape. **The merge triage will raise this as a
+`reparse-loss` HIGH (5 rows at ratio 1.00 is "real-menu-shaped"); it is
+pre-justified here and the rows are quoted above so the next verdict does not
+have to re-derive it.**
+
+### The queue's second half, measured and DECLINED: do not tighten the v128 trust guard
+
+The queue asked for the v128 guard — a master-trust plan must not publish a
+plan-level lineup from a prior-year fallback — to also fire when the linked
+trust's assets cover most of the plan, or when ANY candidate region was a trust
+pointer, because First American Financial (17,155 participants) escaped it.
+**The whole escapee population is 6 plans / 35,686 participants, and reading
+all six says the tightening would do net harm:**
+
+```
+REAL  17,155p fb=2023 29 rows trustCover=1.00  First American Financial   Fidelity 500 Index Fund - Institutional Premium ...
+REAL  14,235p fb=2023 24 rows trustCover=0.46  Norfolk Southern           Vanguard Institutional Index / Wellington / Growth ...
+JUNK   1,877p fb=2023  8 rows trustCover=10.89 Mars, Incorporated         "le 0 0 1f"   <- Form 5500 checkbox coordinates
+REAL   1,739p fb=2023 44 rows trustCover=102.6 Mars, Incorporated         Vanguard Target Retirement 2055 ...
+REAL     511p fb=2024 25 rows trustCover=1.24  Xcel Energy                Vanguard Institutional 500 Index Trust ...
+REAL     169p fb=2024 22 rows trustCover=1719  Cardiothoracic & Vascular  John Hancock 500 Index Fund ...
+```
+
+First American's fallback is a genuine 29-row menu — Fidelity index funds,
+seven Vanguard Target trusts, employer stock, a brokerage window — filed by
+this plan, with the year disclosed on the page. Norfolk Southern's is a real
+Vanguard menu. **Tightening the guard would delete about 33,800 participants'
+real menus to remove one junk one** (Mars' `le 0 0 1f`, 1,877 participants,
+which is the Form-page-content class the census already tracks, not a guard
+failure). v128 exists to stop a trust-held plan publishing JUNK from a prior
+year; the escapees are not junk, so the guard is left alone and this is
+recorded as a decision rather than an omission.
+**My classifier called Mars' `le 0 0 1f` REAL**, because neither
+`GENERIC_TYPE_NAME` nor `NOT_FUND_SHAPED` nor `isHouseName` contains form
+coordinates — the shipped predicates under-matching again, exactly as the
+method note says. The six were read by eye afterwards, which is why the count
+above is 5 real / 1 junk and not 6 / 0.
+
+**FOUND ON THE WAY, NOT FIXED, and it is larger than what was fixed: three
+plans whose STORED lineup cannot be reproduced locally, all junk.**
+Caterpillar Inc. `20260717103214NAL0005924065001` (59,937 participants)
+publishes eight rows including **`| instructions SUITE 100` at $333,100,000**
+and `number 972-891-` — the Schedule-C-page leak v132 was built to end. Its
+sibling `20260717102249NAL0007529360001` (9,341) and Solar Turbines
+`20260717101926NAL0005756769001` (2,519) carry the same shape. **Under BOTH
+v132 and v133 the local parse returns 3-5 rows, `stmt` + `trustPtr`, NOT
+confident** — the correct answer, since all three are Caterpillar Investment
+Trust members. So the store disagrees with the parser on its own recorded
+version, the entries carry no `ocr`, no `fb` and no `s`, and nothing here
+explains it. **Prediction to check in the v133 verdict: all three lose
+confidence and the junk disappears** (and Caterpillar's trust now parses 80
+rows at 0.987, so its 71,797 participants gain the trust's real menu). If they
+do NOT, the divergence is real and needs its own investigation — a stored entry
+that the current parser cannot reproduce at the version that wrote it is a
+separate defect from anything in this entry.

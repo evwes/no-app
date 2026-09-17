@@ -324,6 +324,20 @@
       "fixed": "v133",
       "sponsor": "Danaher",
       "was": "CONTROL: a GENUINE itemized managed-account sleeve that must stay folded - 48 positions (Nvidia, Microsoft, Apple) at 13.9% of the menu, plus 'Freddie Mac Pool' and 'Fannie Mae Pool', which carry a pooled-product word and are single securities in a bond sleeve. Unfolding a real sleeve is the v100-v105 fabrication family in reverse: individual securities published as menu options. Danaher must stay at 33 rows / 0.973, and with it Walmart (41), Costco (31), Parker Hannifin (36), Capital One (28, whose folded row is literally named 'Various RIC, CIT, and common stocks'), National Rural Electric (31, REIT trusts), Nordstrom (21), Old Republic (30), RTX's trust (15, a real 66-security sleeve at 46% of the menu and the largest member of the class by participants - 214,241) and CSX's trust (45)"
+    },
+    {
+      "ack": "20251009111342NAL0003847731001",
+      "class": "units-marker-as-a-holding-name",
+      "fixed": "v133",
+      "sponsor": "New York Life Insurance (PN 006)",
+      "was": "'(in thousands)' sat in the identity column with a value beside it, so the units DECLARATION parsed as a holding NAME: $464,462,000 = 40% of a five-row menu shown to 15,340 participants, whose other four rows are 'Investment in IPG Contract, held by the Master Trust', 'Investments in', 'Trust' and 'Dividend and interest income received from the Master Trust' - a statement page published whole. v133 rejects a whole-string units marker as a name (UNITS_MARKER_NAME, exported so audits share it; 'Thousand Oaks Fund' and 'Money Market Fund' must survive it). With the phantom gone this plan reads stmt + trustPtr and correctly stops publishing: its money is in the NEW YORK LIFE PROGRESS-SHARING INVESTMENT PROGRAM TRUST, whose own parse IS confident, so those 15,340 participants get the trust's real menu instead. Store-wide before the fix: 9 published lineups / 10 rows / 143,083 participants"
+    },
+    {
+      "ack": "20251014150106NAL0001547955001",
+      "class": "units-marker-as-a-holding-name",
+      "fixed": "v133",
+      "sponsor": "Ecolab",
+      "was": "CONTROL for the entry above: a REAL menu carrying one units-marker row. 26 rows at ratio 0.938 including '(in thousands)' at $4.0M (0.2% of the plan). v133 must drop that one row and nothing else - 25 rows, ratio unchanged at 0.938, confidence kept. Domino's Pizza (29 -> 28, 0.993 -> 0.985), Arcosa (26 -> 25), Cleveland-Cliffs (15 -> 13) and Continental Casualty (4 -> 3) behave the same way; Caterpillar's two and Solar Turbines were already non-confident and stay so"
     }
   ]
 }
