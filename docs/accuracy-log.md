@@ -11341,3 +11341,252 @@ residue is a word).
   built from a WORD LIST gets beaten by real names that contain the same words.
   Ask what the string is made of, then check both directions — the rows it
   drops AND the rows it must not.
+
+
+## 2026-09-17 (v132, part 1) — a SCHEDULE C page read as the menu: Delta publishes a ZIP+4 as $782,514,321, four times over
+
+**Wrong.** The queue carried this as "the participating-employer ROSTER
+accepted as the menu (UPMC, Delta)". Instrumenting before believing the cause —
+the standing rule — says that is two different things and one of them is
+already closed:
+
+- **UPMC is CLOSED, and was closed by v128.** Both UPMC plans
+  (`20251012111018NAL0000677424001` 112,002 ppl and
+  `20251012110739NAL0000289329001` 93,730) publish **no plan-level lineup
+  today**: the hospital roster came from the PRIOR-YEAR fallback, which v128
+  refuses for a master-trust plan. Their index bits are `lineup=false`,
+  `trustLineup=true` (2048), and the trust
+  (`20251013185008NAL0000908387001`) has a confident 27-row menu — Vanguard
+  Institutional Index $1.47B, JP Morgan Large Cap Growth R6, Vanguard Target
+  2030/2040/2045. **205,732 readers already see their real trust menu, not a
+  list of hospitals.** Read from the store, not inferred. The genuine roster
+  residue is ~2 plans / ~1,500 participants (Unique Staff Leasing I 906,
+  Triple J Enterprises 558) and is deliberately NOT guarded: a roster test
+  collides with employer stock and with brokerage-window rows, and 16 of the
+  18 candidates a roster predicate returns are other classes entirely.
+- **Delta is NOT a roster.** `WAMPO_TRACE=cands` over both Delta plans shows
+  the winning region is the **SCHEDULE C SUPPLEMENTAL REPORT** —
+  `PART I, LINE 3 - INFORMATION ON SERVICE PROVIDERS RECEIVING INDIRECT FEES`
+  — swallowed whole. Delta's real 4i schedule is **one row** (`Notes receivable
+  from participants $367,921,515`), because the money is in a master trust;
+  with no end marker the region ran to its 4,000-line cap across page after
+  page of service-provider pages. The PROVIDER NAME column parsed as holdings
+  and the **EIN/ADDRESS OF SOURCE column parsed as dollars**: `782,514,321` is
+  Fidelity Institutional Operations Company's ZIP+4 (San Antonio TX
+  78251-4321), published **four times over** on PN 004 and four more on PN 014,
+  beside `OPERATIONS COMPANY,` $3,370,854,915 and `INC.` $3,221,810,657.
+  112,027 + 17,776 participants, ratio 0.512 / 0.573, every guard silent.
+
+**The same leak with the opposite sign, which is what makes it a class rather
+than a Delta story:** where the plan HAS a real menu, the Schedule C pages are
+appended to it. **Allina Health (37,565 ppl, $4.12B)** published 7 rows topped
+by `OPERATIONS COMPANY,` **$1,354,958,146 = 50.3%**, with its real 22-fund menu
+sitting in the same PDF, losing on score. **Duke Energy (35,031 ppl, $11.27B)**
+published `OPERATIONS COMPANY,` **$2,898,833,186 = 78.5%**. **HP Inc.
+(36,268)** published `instructions) BUILDING #2, SUITE 100` at $334,110;
+**Carroll Hospital (2,537)** `TRANSAMERICA RETIREMENT SOLUTIONS` $3,689,044 and
+`NATIONAL FINANCIAL SERVICES` $3,523,567; **The Children's Hospital Corporation
+(1,960)** `OPERATIONS COMPANY,` $21,997,632 plus `04-2647786 64 RECORDKEEPER`
+and `26-0058143 49 CONSULTANT` — Schedule C's own columns, published as
+investments.
+
+**The change.** A 4i region now ENDS at another statutory schedule's caption
+(`SCHEDULE C …`, `INFORMATION ON SERVICE PROVIDERS`). No vocabulary judgement
+and none wanted: a Schedule C page is not part of Schedule H line 4i. The
+`assets` lookahead keeps a filing that titles its own attachment "Schedule C —
+Schedule of Assets" from stopping its own region.
+
+**Measured in both directions on the same corpus. 735 cached filings carry a
+line the new stop matches; exactly 7 parse differently** — measured with the
+region stop ALONE (a build with the part-2 repair disabled), so the number is
+this change's and not the version's. 728 byte-identical is the control that
+says this ends overrun regions rather than truncating real ones:
+
+| plan | ppl | before | after |
+|---|---|---|---|
+| Delta PN 004 | 112,713 | 28 rows @0.441 (its fallback: 35 @0.512) | 11 @0.003, **stops publishing** |
+| Delta PN 014 | 17,203 | 21 @0.573 | 13 @2.95, **stops publishing** |
+| Allina Health | 37,552 | 7 @1.034, a $1.35B phantom at 50.3% | **22 real funds @0.975** |
+| Duke Energy | 35,803 | 13 @1.022, a $2.90B phantom at 78.5% | 9 @0.987 |
+| HP Inc. | 36,268 | 31 | 30 (the building address gone) |
+| Children's Hospital | 1,960 | 48 @1.073 | 43 @0.992 |
+| Carroll Hospital | 2,537 | 56 @1.038 | 54 @0.992 |
+
+**243,036 participants across 7 plans, counted rather than projected**
+(`participants` field of plans-all). A store-side floor over the whole universe
+— published rows naming `…OPERATIONS COMPANY`, the provider column of this
+template — gives **20 published plans / 228,813 participants**; a uniform random
+draw of 200 published lineups contains **2** (1.0%), which is a projection and
+is labelled one.
+
+**What the two Delta plans say instead, because a blank is a claim too.**
+PN 014 falls back to its linked trust's lineup (bit 2048 is already set).
+PN 004's Schedule D link points at the **DELTA PILOTS MEDICAL TRUST**
+(`20250415150233NAL0003417361001`, not confident, `e=download`) while its own
+notes name the *Delta Air Lines, Inc. Defined Contribution Plans Master Trust* —
+whose MTIA filing we hold and which IS confident. So PN 004 will show no menu
+although the right one is in our store. **That mis-link is a separate, unfixed
+defect worth 112,713 participants; it lives in the Schedule D trust selection,
+not in the parser, and is recorded here rather than fixed.**
+
+**Prevention.**
+- Specimen pinned: `schedule-c-page-as-the-menu` (Delta PN 014).
+- The control is the 735/7 measurement, not the specimen: a stop line that
+  appears in 735 filings and moves 7 is a boundary rule, not a vocabulary one.
+- **The queue item's cause was wrong and one trace said so.** "Delta publishes
+  the same roster shape" had been carried forward twice. The rows are not
+  employers, they are service providers, and the column read as a share count
+  is a ZIP code. Had the fix been aimed at the recorded cause it would have
+  built a roster detector and moved nothing.
+
+## 2026-09-17 (v132, part 2) — the bare house-name merge: 100 published plans get their fund names back, 12 start publishing
+
+**Wrong.** One recordkeeper template prints the fund name in the DESCRIPTION
+column, then three or four BLANK lines, then the identity+value line carrying
+only the fund family:
+
+```
+                                  Vanguard Target Retirement 2035 Fund
+
+
+       Vanguard                              0            2,775,373
+```
+
+`parseRows` clears the name buffer on a blank line, so the name never reached
+the row, every row fell back to the IDENTITY column, and the vintages merged on
+that shared name. **Bell Nursery (1,991 ppl) published `Vanguard` at
+$13,206,249 = 95.2% of the plan** — three rows at ratio 0.711 where twenty-one
+funds were filed. `WAMPO_TRACE=rows` prints `nameBuf = []` on every row, which
+is the confirmation that the recorded cause (2026-09-16 cycle 19:0xZ) was right
+this time. It was checked rather than inherited: the same inherited cause for
+the wrapped-fragment class turned out at v130 to be column attribution, not the
+buffer.
+
+**Size, with the SHIPPED predicate** (`isHouseName`, exported at v132 so no
+sizing script retypes it), against the complete v131 store from run #340:
+published lineups whose LARGEST row is a bare house name — **48 plans / 27,865
+ppl at >=90% of the menu, 85 / 55,885 at 50-90%**; 133 plans / 83,051
+participants in total. (336 more sit under 50% and are not claimed.)
+
+**The change.** A blank line still ends the name buffer, but the last buffered
+line is remembered across the gap for exactly ONE consumer: a row whose own name
+would be a bare HOUSE NAME and whose own description says nothing. The orphan
+must be a single cell sitting clear to the right of the identity column, must
+pass `wrapHeadOk`, and must survive `SKIP_ROW` / `JUNK_NAME_RE` / `DATE_LINE` —
+page furniture sits in the same column band. Any non-blank line consumes it, so
+it can reach at most one row.
+
+**Measured as an OUTCOME, not a condition: all 133 re-parsed both ways.
+100 change (75.2%), 65,218 participants, 12 GAIN confidence, 0 lose it.**
+Bell 3 rows -> 21 at ratio 1.000; **Northeast Georgia Health System (14,317
+ppl)** `Vanguard` $301.8M and `Dodge & Cox` $39.1M resolve into eleven named
+funds; Gunderlin 7 houses -> 24 funds; Kona Brewery 3 -> 22; Ataraxis Peo 2
+aggregate rows -> 30 named John Hancock/Nuveen funds. Two plans lose rows and
+both are repairs: JMB-III 15 -> 11 with ratio **1.315 -> 1.001** and
+Presbyterian Seniorcare 35 -> 32 at 1.043 -> 0.990 — the house rows had been
+double-counting the same money.
+
+### Three self-inflicted defects, each found by a measurement, each now a control
+
+This is the part worth keeping. The repair itself was twenty lines; everything
+below came from measuring its LOSSES on the same populations as its gains.
+
+1. **The gate caught a region FLIP.** Producers Rice Mill files TWO 4i
+   attachments: the auditor's 21-fund schedule (our parse 10 rows, 0.918) and
+   the recordkeeper's rendition of the same money **split by contribution
+   source**, where every fund appears twice — `GM Fidelity 500 Index Fund`
+   beside `Fidelity 500 Index Fund`. Once the repair gave that page real fund
+   names it stopped looking like a page of house totals and, covering the whole
+   plan by construction (0.997), outranked the cleaner source. That is this
+   project's own recorded lesson about apportionment tables — an employer
+   roster, a fair-value note, a statement of net assets all score ~1.0 for free
+   — in a fourth vocabulary. `isSourceSplit` demotes it.
+2. **My first draft of THAT demotion destroyed a real menu.** A flat −0.35
+   score penalty — the constant the other not-a-menu shapes carry — cost
+   **Hospice of Muskegon County its whole 38-fund menu to a 2-row fair-value
+   note** (`Fair value` $4,518,380, `Contract value` $492,073), because there
+   the split page IS the only schedule and its rows are the plan's real funds.
+   It is now a POST-SELECTION swap (the v107 pattern, which cannot flip a
+   winner by construction) that fires only when a genuine menu candidate
+   exists. Both specimens are pinned: Producers Rice must stay at 10 rows,
+   Hospice at 38.
+3. **The random draw caught my repair creating the very defect it removes.**
+   Hoosier Motor Club: the repaired template page gained the loan row, edged
+   ahead on ratio, and published `Pioneer Fundamental Growth Fund A` $3,304,222
+   and `Victory S&P 500 Index Fund A` $804,408 **merged into one `Victory` row
+   of $4,108,630**. `isProviderAgg` missed it by two points — 48% of the money
+   against its 50% bar — which is what a fixed threshold does. The fix is a
+   share, not a bar: the same 0.35 the other shapes carry, scaled by the
+   fraction of the reading published under a bare house name, so the parser
+   prefers **the reading that names more of the plan's money** and no new
+   threshold is invented. A region that is the only one in a filing still wins;
+   the term orders candidates, it never rejects one.
+   - **And that term's first draft cost a menu too**, which the corpus diff
+     named: counting `isHouseName` rather than `PROVIDER_TOTAL_RE` made
+     `Blended investments` and `Bond income investments` into fund houses and
+     took **RCB Bank** from a 10-row menu to a 2-row fragment.
+     `isHouseName`'s institution-suffix arm exists to decide which COLUMN names
+     a fund; it is not a list of firms. `PROVIDER_TOTAL_RE` is.
+   - **And the term then promoted a fabrication elsewhere**, which the same
+     diff named: Northeast Georgia Health System went to a 12-row reading
+     topped by `Registered investment companies` at **$672,138,048 = 79%** —
+     the schedule's section header carrying the fair-value note's total, the
+     v100-v105 shape. v112's swap exists for exactly this and was capped at
+     four rows; it now also fires at any row count when a generic/aggregate
+     name owns half the reading, and NEGA lands on its 15 real rows at 0.996.
+
+**Gate and diffs, final state.** `parser-gate.mjs` all green with **no
+expectation moved**. `diff-lineups HEAD` over 939 cached filings: CONFIDENCE
+GAINED **16**, CONFIDENCE LOST **1** (Delta PN 014, justified in part 1),
+FABRICATED GENERIC ROWS REMOVED 2, **INTRODUCED 1 — Progressive Tractor &
+Implement, and it reaches no reader**: that filing parses to 2 rows before and
+after, below the 3-row floor, and the plan publishes from its 2023 fallback ack,
+whose parse under v132 is byte-identical (verified by parsing the fallback ack
+directly). That corpus is biased — it now holds the 133 acks downloaded to
+measure this class — so the unbiased yield is the **uniform random draw of 200
+published lineups from the shipped v131 store: 5 change (2.5%), 0 lose
+confidence, 1 gains.**
+
+**What the next run's verdict must show.** `confident` flat to slightly UP
+(+12 measured in the class population, +16 in the corpus, −2 for the two Delta
+plans); `audit-dominant-row` still 0; `audit-generic-names` below its 230
+threshold. **`overshoot` should FALL a little — unlike v130 and v131 this
+version does change sums** (Duke 1.022 -> 0.987, Children's 1.073 -> 0.992,
+Carroll 1.038 -> 0.992, JMB-III 1.315 -> 1.001). Re-run the house-name sizer
+afterwards: the 48 plans at >=90% must be near zero, and whatever remains is a
+firm the shipped `HOUSE_ONLY` list does not name — `NYLI` is one, seen in
+Producers Rice's losing region.
+
+**Prevention.**
+- Specimens pinned: `house-name-merge-across-blank-lines` (Bell Nursery) and
+  `source-split-page-must-not-beat-the-auditor-schedule` (Producers Rice, with
+  Hospice of Muskegon named in it as the opposite control).
+- `isHouseName` is exported, for the reason `isLoanNoteName` was exported at
+  v131: nobody should retype a shipped predicate.
+- **Every one of the three near-misses above was found by re-running the same
+  measurement after each change, never by reading the code.** The gate found
+  one, the 939-filing corpus diff found two, the 200-plan random draw found
+  one. A fix whose losses you never measured is a fix you cannot defend — and
+  here the losses were, in order: a better schedule displaced, a real menu
+  destroyed, a fabricated merge created, and a fabricated generic row promoted.
+
+### Also found while working this item, sized and NOT fixed
+
+- **20 confident master-trust lineups are published to member plans with a
+  NON-FUND largest row — 35 plans / 934,060 participants.** HCA's trust
+  (379,101 ppl) leads with `CUSIP:` at 27%; Verizon Master Savings Trust
+  (146,572) with `COMMON/COLLECTIVE TRUST` at 42%; Caterpillar, Kohl's, Marsh &
+  McLennan, ITW, Eastman Chemical the same. **And that is a floor**, because
+  the Delta DC master trust — the one PN 014 now falls back to — publishes
+  `------------------- VALUE OF INTEREST IN` at **$21,060,727,340 = 72.3%** and
+  matches NEITHER `NOT_FUND_SHAPED` nor `AGG_DISCLOSURE`: the leading dashes
+  defeat the anchor and the missing tail defeats the pattern. **Every sizing
+  script in this project joins lineups to plans-all by ack, and a trust ack is
+  not a plan, so trust lineups have been invisible to all of them** — mine
+  included, twice in this session, until the scan was written.
+- **Duke Energy's 16 institutional funds collapse into one row named `Managed
+  account holdings (16 positions)` ($5,575,809 thousand, 50.1%)** because their
+  description column is `14,728,193 shares`, so `classify()` types them as
+  Stock and the itemized-securities bucket takes them. Not fabrication — the
+  names survive in the entry's `sma` detail — but 35,803 participants see a
+  managed-account label over the core of their menu.

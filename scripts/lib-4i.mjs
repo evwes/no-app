@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 131;
+export const PARSER_VERSION = 132;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -269,7 +269,11 @@ function cleanDesc(desc) {
  * product and must not match. */
 const HOUSE_ONLY = /^(?:the\s+)?(?:vanguard|fidelity(?:\s+investments)?|american funds?|t\.?\s*rowe\s*price|blackrock|state street(?:\s+global(?:\s+advisors)?)?|schwab|charles schwab|jp\s?morgan|j\.?p\.?\s*morgan|goldman sachs|pimco|invesco|franklin(?:\s+templeton)?|templeton|dodge\s*&\s*cox|nuveen|janus(?:\s+henderson)?|wellington management|northern trust|principal|prudential|metlife|voya|empower|transamerica|john hancock|nationwide|lincoln|great gray|great-west|columbia|putnam|dimensional(?:\s+fund\s+advisors)?|dfa|allspring|abrdn|aberdeen|mfs|neuberger berman|pgim|tiaa|cref|galliard|reliance trust|matrix trust|alight|ascensus|milliman)\s*(?:funds?|trusts?|group|inc\.?|llc|company|co\.?)?[.,]?$/i;
 const INSTITUTION_SUFFIX = /\b(?:trust (?:company|co)|bank|advisors?|asset management|investments?|capital management|fund management)\.?$/i;
-function isHouseName(nc) {
+/* exported v132 so sizing scripts and audits ask the SHIPPED question rather
+ * than a retyped copy of it — the failure mode this project has hit twice
+ * (a hand-rolled generic-name list, a hand-rolled fund-shape test), and the
+ * reason `isLoanNoteName` was exported at v131. */
+export function isHouseName(nc) {
   const s = String(nc || "").trim().replace(/\s+/g, " ").replace(/^[*(]+\s*|\s*[*)]+$/g, "");
   if (!s) return true;                 // no identity at all — the description is all there is
   if (HOUSE_ONLY.test(s)) return true;
@@ -377,6 +381,9 @@ export function parseRows(section, opts = {}) {
   const rows = [];
   let sdba = false;
   let nameBuf = [];
+  /* v132: the last buffered line before a BLANK gap, kept for exactly one
+   * consumer — the bare-house-name row below. Cleared by any non-blank line. */
+  let gapBuf = null;
   let curSection = "";
   /* v126: the ISSUER-HEADER form of a section. A 4i schedule may name the firm
    * once on its own line and then indent the products under it:
@@ -448,7 +455,27 @@ export function parseRows(section, opts = {}) {
     if (curIss && raw.trim() && rawIndent <= curIssIndent) { curIss = ""; curIssIndent = -1; }
     let t = raw.trim().replace(/^\*+\s*/, "").replace(/\s*\*{1,3}\s*$/, "")
       .replace(/([0-9]{1,3}(?:,[0-9]{3})+)(?:\s*[,.]?\s*\(\s*[a-z]\s*\)){1,4}\s*$/i, "$1");
-    if (!t) { nameBuf = []; continue; }
+    /* v132: A BLANK LINE STILL ENDS THE NAME BUFFER — but remember the last
+     * line across the gap, for the one case that needs it (see `gapIn` below).
+     * One recordkeeper template prints the fund in the DESCRIPTION column, then
+     * three or four blank lines, then the identity+value line carrying only the
+     * fund family:
+     *
+     *                                   Vanguard Target Retirement 2035 Fund
+     *
+     *
+     *        Vanguard                          0            2,775,373
+     *
+     * The blank clears the buffer, every row falls back to the identity, and
+     * each vintage is published as "Vanguard" — which then MERGE into one
+     * holding at 95% of the plan (Bell Nursery, 1,991 participants). */
+    if (!t) {
+      if (nameBuf.length) { const lb = nameBuf[nameBuf.length - 1]; if (!lb.wide) gapBuf = lb; }
+      nameBuf = []; continue;
+    }
+    /* every NON-blank line consumes the carried-over orphan, so it can only
+     * ever reach the next value row and only when nothing else intervened */
+    const gapIn = gapBuf; gapBuf = null;
     // an auditor's letterhead is not a holding: "Tel: 813 273-8300" parsed
     // as an $8.3M fund on MetLife's fallback filing (the phone's last four
     // digits read as a thousands-scaled value). The separator is required —
@@ -766,6 +793,44 @@ export function parseRows(section, opts = {}) {
         if (descPre) descCol = join(descPre, descCol);
       }
       idPre = idParts.join(" ").trim();
+      /* v132: THE DESCRIPTION SITS ABOVE, SEPARATED BY BLANK LINES.
+       *
+       * Everything above reunites a wrap that is ADJACENT to the value line.
+       * One recordkeeper template (5 of the 6 filings read for this class)
+       * leaves three or four blank lines between the fund name in column (c)
+       * and the identity+value line, and a blank line clears the buffer — so
+       * the name never reaches the row and every row falls back to the
+       * IDENTITY column, which holds only the fund family. The vintages then
+       * merge on that shared name: Bell Nursery published `Vanguard` at
+       * $13,206,249 = 95.2% of the plan, Hufriedy, Northeast Security,
+       * Mountville Mills and Metropolitan Family the same way.
+       *
+       * Deliberately the narrowest rule that covers it, because carrying text
+       * across a blank line is what v103's glued group header did wrong:
+       *   - it fires ONLY when the row's own name would be a bare HOUSE NAME
+       *     and the row's own description says nothing (absent or type-only),
+       *     so a row that names its own fund can never be touched;
+       *   - the orphan must be a single cell sitting clear to the RIGHT of the
+       *     identity column — i.e. in the description column — and must pass
+       *     `wrapHeadOk`, the same head test the adjacent wrap uses;
+       *   - a non-blank line consumes it, so it reaches at most one row.
+       * The house then lands in `iss` exactly as in the adjacent-wrap case,
+       * so nothing is lost: the row reads "Vanguard · Target Retirement 2035". */
+      const ncGap = ((idPre ? idPre + " " : "") + nameCol).trim();
+      if (!descPre && gapIn && nameCol && isHouseName(ncGap) &&
+          (!descCol || typeOnly(cleanDesc(descCol))) &&
+          !/\s{3,}/.test(gapIn.t) && gapIn.t.length <= 70 &&
+          gapIn.col >= lead + nameCol.length + 3 &&
+          /[a-z]{3}/i.test(gapIn.t) && wrapHeadOk(gapIn.t) &&
+          /* page furniture sits in the same column band as the description and
+           * would otherwise pass wrapHeadOk ("Page 3 of 12", "Tax Number:
+           * 954659692", "December 31, 2024"). The row-level filters already
+           * exist; the orphan has to face them too. */
+          !SKIP_ROW.test(gapIn.t.trim()) && !JUNK_NAME_RE.test(gapIn.t) &&
+          !DATE_LINE.test(gapIn.t.trim())) {
+        descPre = gapIn.t;
+        descCol = gapIn.t;
+      }
     }
     /* what the identity column alone says, which is what decides WHICH column
      * names the fund (v100 judges the whole identity, not its last line) */
@@ -1662,6 +1727,67 @@ const isProviderAgg = (rows) => {
   return all > 0 && prov.reduce((a, f) => a + f.value, 0) / all >= 0.5;
 };
 
+/* v132: A SOURCE-SPLIT STATEMENT IS AN APPORTIONMENT TABLE, NOT A MENU.
+ *
+ * Found by the v132 gap-name repair, which is the same recordkeeper template:
+ * Producers Rice Mill files TWO 4i attachments — the auditor's 21-fund
+ * schedule, and the recordkeeper's rendition of the SAME money split by
+ * contribution source, where every fund appears twice, once with a leading
+ * source token ("GM Fidelity 500 Index Fund" beside "Fidelity 500 Index
+ * Fund"). Once the repair gives that page its filed fund names it stops
+ * looking like a page of house totals, and it covers the whole plan by
+ * construction (0.997 against the auditor schedule's 0.918), so it outranks
+ * the cleaner source. That is this project's recorded lesson about
+ * apportionment tables — an employer roster, a fair-value note, a statement of
+ * net assets all score ~1.0 for free — in a fourth vocabulary, and it gets the
+ * same treatment as the other not-a-menu shapes: the existing 0.35 penalty,
+ * not a new constant fitted to this filing. A penalty and not a rejection,
+ * because where this page is the ONLY schedule its rows are still the plan's
+ * real funds.
+ * The extra token must be SHORT (<=4 chars) and LEADING, so a genuine
+ * share-class pair ("...Index Fund" / "...Index Fund Admiral") never matches:
+ * those differ at the tail. */
+/* v132: HOW MUCH OF THE MONEY IS PUBLISHED UNDER A BARE HOUSE NAME.
+ * `isProviderAgg` answers the same question as a yes/no with two fixed bars
+ * (<=16 rows, >=3 provider rows, >=50% of the money) and Hoosier Motor Club
+ * missed it by two points: 48%. That candidate merged `Pioneer Fundamental
+ * Growth Fund A` $3,304,222 and `Victory S&P 500 Index Fund A` $804,408 into
+ * one `Victory` row of $4,108,630 — a holding that does not exist — and beat
+ * the filing's other schedule, which names every fund, by 0.02 of score.
+ * A share is the honest form of this signal: scale the same 0.35 the other
+ * not-a-menu shapes carry by the fraction of the plan a reading leaves
+ * unnamed, so the parser prefers the reading that NAMES MORE OF THE MONEY and
+ * no new threshold is invented. A region that is the only one in the filing
+ * still wins: the penalty orders candidates, it never rejects one.
+ * It counts ONLY `PROVIDER_TOTAL_RE`, the anchored list of actual fund houses,
+ * and NOT `isHouseName` — whose institution-suffix arm exists to decide which
+ * COLUMN names a fund and matches asset-class labels ending in the word
+ * "investments". Using it cost RCB Bank its 10-row menu to a 2-row repair
+ * candidate, because `Blended investments` and `Bond income investments`
+ * counted as fund houses. Measured, not reasoned: the loss appeared in the
+ * corpus diff and named itself. */
+const houseShare = (rows) => {
+  const tot = rows.reduce((a, f) => a + (+f.value || 0), 0);
+  if (!tot) return 0;
+  return rows.reduce((a, f) => {
+    const n = String(f.name || "").trim();
+    return a + (n && PROVIDER_TOTAL_RE.test(n) ? (+f.value || 0) : 0);
+  }, 0) / tot;
+};
+
+const isSourceSplit = (rows) => {
+  if (rows.length < 6) return false;
+  const norm = (n) => String(n || "").toLowerCase().replace(/\s+/g, " ").trim();
+  const names = rows.map((f) => norm(f.name));
+  const set = new Set(names);
+  let pairs = 0;
+  for (const n of names) {
+    const i = n.indexOf(" ");
+    if (i > 0 && i <= 4 && set.has(n.slice(i + 1))) pairs++;
+  }
+  return pairs >= 3;
+};
+
 /* v114: two passes, and the SECOND one may only run when the first published
  * nothing at all. `parse4iPass` is the whole v113 parser plus one optional
  * extra region seed; the wrapper below runs it without that seed first, so a
@@ -1684,7 +1810,27 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
   // cents tolerance made it readable and the region summed both copies
   // (Sierra Space, ratio 1.0 → 1.89, real 29-fund menu lost)
   const stopRe = /^portfolio (valuation|statement)s?$|^(schedule|statement) of (portfolio )?investments?$|^summary of (net )?(trust|plan) assets$/i;
-  const atStop = (line) => !trusteeMode && stopRe.test(line.trim());
+  /* v132: ANOTHER STATUTORY SCHEDULE'S PAGES END THE 4i REGION.
+   * A region runs from its heading to the next heading, an end marker or a
+   * statement stop — and where the 4i table is short and the composite PDF
+   * keeps going, that is up to 4,000 lines of whatever comes next. The
+   * Fidelity/CLA audit template prints page after page of
+   *   SCHEDULE C SUPPLEMENTAL REPORT
+   *   PART I, LINE 3 - INFORMATION ON SERVICE PROVIDERS RECEIVING INDIRECT FEES
+   * whose PROVIDER NAME column parses as holdings and whose EIN/ADDRESS column
+   * parses as dollars. 782,514,321 is Fidelity Institutional Operations
+   * Company's ZIP+4 (San Antonio TX 78251-4321) and was published as
+   * $782,514,321 — four times over on DELTA AIR LINES PN 004 (112,027
+   * participants), where the real 4i schedule is ONE loan row because the
+   * money is in a master trust. Same leak: Delta PN 014 (17,776), Allina
+   * Health (37,565, a $1.35B `OPERATIONS COMPANY,` at 50.3% of the published
+   * menu), Duke Energy (35,031, 78.5%).
+   * No vocabulary judgement is involved and none is wanted: a Schedule C
+   * caption is not part of Schedule H line 4i. The `assets` lookahead keeps a
+   * page that titles the 4i attachment itself "Schedule C — Schedule of
+   * Assets" from stopping its own region. */
+  const otherSchedRe = /^(?:form\s*5500[,:\s]*)?schedule\s+c\b(?!.{0,80}\bassets\b)|\binformation on service providers\b/i;
+  const atStop = (line) => (!trusteeMode && stopRe.test(line.trim())) || otherSchedRe.test(line.trim());
 
   const starts = [];
   for (let i = 0; i < lines.length; i++) if (headRe.test(lines[i])) starts.push(i);
@@ -2066,6 +2212,7 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
        * menu carrying one legitimate provider-aggregate row is untouched —
        * that row-level version cost ~1,300 menus at v49. */
       const isProvPage = isProviderAgg(judged);
+      const isSplitPage = isSourceSplit(judged);
       const maxV = pFunds.reduce((a, f) => Math.max(a, f.value), 0);
       for (const scale of va.scales) {
         const ratio = assetsEOY ? (raw * scale) / assetsEOY : 0;
@@ -2081,6 +2228,7 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
           - (isStatement ? 0.35 : 0)
           - (isCodePage ? 0.35 : 0)
           - (isProvPage ? 0.35 : 0)
+          - houseShare(judged) * 0.35
           /* a reconstructed view is a repair, not a reading of the filing, so
            * it must win clearly rather than by a hair. Without this Black
            * Hills' honest 22-row region lost by 0.003 to a repaired sibling
@@ -2089,14 +2237,14 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
           - (gainLast && parsed.funds.length >= 60 ? 0.2 : 0);
         if (TRACE_CANDS) {
           console.error(`[cand] rows=${String(pFunds.length).padStart(3)} ratio=${ratio.toFixed(3).padStart(7)} scale=${scale} score=${score.toFixed(4).padStart(9)}` +
-            ` stmt=${isStatement ? 1 : 0} prov=${isProvPage ? 1 : 0} code=${isCodePage ? 1 : 0} summary=${isSummary ? 1 : 0} repair=${va.repair ? 1 : 0}` +
+            ` stmt=${isStatement ? 1 : 0} prov=${isProvPage ? 1 : 0} split=${isSplitPage ? 1 : 0} code=${isCodePage ? 1 : 0} summary=${isSummary ? 1 : 0} repair=${va.repair ? 1 : 0}` +
             `  top=${JSON.stringify((pFunds[0] || {}).name || "").slice(0, 46)}`);
         }
         if (!best || score > best.score) {
-          best = { score, ratio, scale, stmt: isStatement, ...parsed, funds: pFunds, totalValue: pTotal };
+          best = { score, ratio, scale, stmt: isStatement, ...parsed, funds: pFunds, totalValue: pTotal, split: isSplitPage };
         }
         if (pFunds.length >= 7 && ratio > 0.45 && ratio < 1.6 &&
-            !isStatement && !isCodePage && !isProvPage) {
+            !isStatement && !isCodePage && !isProvPage && !isSplitPage) {
           const tv = pFunds.reduce((a, f) => (f.value > a.value ? f : a), pFunds[0]);
           const tn = String((tv || {}).name || "").trim();
           if (!GENERIC_TYPE_NAME.test(tn) && !AGG_DISCLOSURE.test(tn) && !NOT_FUND_SHAPED.test(tn)) {
@@ -2120,6 +2268,34 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
     const wt = best.funds.reduce((a, f) => (f.value > a.value ? f : a), best.funds[0]);
     const wn = String((wt || {}).name || "").trim();
     if (GENERIC_TYPE_NAME.test(wn) || AGG_DISCLOSURE.test(wn)) best = bestMenu;
+  }
+  /* v132: A SOURCE-SPLIT PAGE LOSES TO A REAL MENU — but only when the filing
+   * actually contains one. POST-selection for the reason v107 records: a score
+   * penalty changes which region wins everywhere, and the first version of this
+   * (a flat -0.35, the constant the other not-a-menu shapes use) cost Hospice
+   * of Muskegon County its whole 38-fund menu to a 2-row fair-value note
+   * ("Fair value" $4,518,380, "Contract value" $492,073) — because there the
+   * split page IS the only schedule and its rows are the plan's real funds.
+   * The swap target is `bestMenu`, which already excludes statement, code,
+   * provider and split pages, so junk can never swap for junk. Producers Rice
+   * Mill files both and keeps its auditor's 21-fund schedule; Hospice files
+   * only the split page and keeps it. */
+  if (bestMenu && bestMenu !== best && best.split) best = bestMenu;
+  /* v132: the v112 swap above is capped at four rows, and the house-share term
+   * can promote a LONGER winner whose largest row is a bare type name. Northeast
+   * Georgia Health System (14,317 participants) went to a 12-row reading topped
+   * by `Registered investment companies` at $672,138,048 = 79% — the schedule's
+   * own section header carrying the fair-value note's total, which is the
+   * v100-v105 fabrication shape. Same swap, same target (`bestMenu` already
+   * excludes statement/code/provider/split pages), but at any row count when the
+   * generic row owns HALF the reading. Nothing may swap INTO this shape: the
+   * target is menu-shaped by construction. */
+  if (bestMenu && bestMenu !== best) {
+    const wt = best.funds.reduce((a, f) => (f.value > a.value ? f : a), best.funds[0]);
+    const wn = String((wt || {}).name || "").trim();
+    const wsum = best.funds.reduce((a, f) => a + (+f.value || 0), 0);
+    if (wsum && (+wt.value || 0) / wsum >= 0.5 &&
+        (GENERIC_TYPE_NAME.test(wn) || AGG_DISCLOSURE.test(wn) || NOT_FUND_SHAPED.test(wn))) best = bestMenu;
   }
   let funds = best.scale > 1 ? best.funds.map((f) => ({ ...f, value: f.value * best.scale })) : best.funds;
 

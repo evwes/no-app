@@ -268,6 +268,27 @@
       "fixed": "v131",
       "sponsor": "The Haddad Organization",
       "was": "'October 2029 at interest rates ranging from 4.25% to 9.50% $' published as a $56,203,279 holding = 96.5% of a $58.2M plan, sitting above the plan's ten real Vanguard funds. v70's guard for this class is ANCHORED at the start of the name and the population is not: 7,052 such rows across 6,970 PUBLISHED plans / 12,750,205 participants / $9.60B, read from the store with the shipped `isLoanNoteName`. v131 asks what the name is MADE of - loan language, no security identity, and nothing left once rates, dates and repayment vocabulary are removed. Haddad 11 rows -> 21 at ratio 0.961, every row a real fund, because removing the phantom lets the real region win. Controls that must keep publishing: 'Putnam Retirement Advantage Select Maturity R', 'FNR 2017-11 KA, FANN, Expected Maturity 2025', 'U.S. TREASURY STRIPS (maturing 2042-2055)', 'Interest Fund, 2.59% interest rate' - the first draft of the predicate dropped all four. Four gate expectations moved by ONE ROW each in the same commit (Erlanger, Plexsys, Sierra Space, Reliance One) and every one of those rows is a loan description"
+    },
+    {
+      "ack": "20251014143617NAL0003173265001",
+      "class": "schedule-c-page-as-the-menu",
+      "fixed": "v132",
+      "sponsor": "Delta Air Lines PN 014",
+      "was": "the 4i region ran past a one-row 4i table and swallowed ~4,000 lines of SCHEDULE C SUPPLEMENTAL REPORT pages ('PART I, LINE 3 - INFORMATION ON SERVICE PROVIDERS RECEIVING INDIRECT FEES'). The PROVIDER NAME column parsed as holdings and the EIN/ADDRESS column as dollars: 782,514,321 is Fidelity Institutional Operations Company's ZIP+4 (San Antonio TX 78251-4321), published four times over. PN 014 showed 20 rows / $9.12B at ratio 0.573 topped by 'LLC.' and 'OPERATIONS COMPANY,'; PN 004 (112,027 participants) the same from its 2023 fallback. v132 ends a 4i region at another statutory schedule's caption. Both Delta plans stop publishing, which is correct - the money is in a master trust. Same leak, opposite outcome: Allina Health 7 rows/0.654 -> its REAL 22-fund menu at 0.975, Duke Energy 13 -> 9 with a $2.90B phantom gone, HP Inc. loses 'instructions) BUILDING #2, SUITE 100' at $334,110"
+    },
+    {
+      "ack": "20251006135118NAL0006541792001",
+      "class": "house-name-merge-across-blank-lines",
+      "fixed": "v132",
+      "sponsor": "Bell Nursery",
+      "was": "the recordkeeper template prints the fund in column (c), then three or four BLANK lines, then the identity+value line carrying only the fund family. A blank line clears the name buffer, so every row fell back to the identity and the vintages merged: 'Vanguard' $13,206,249 = 95.2% of the plan, 3 rows at ratio 0.711. v132 carries the orphan description across a blank gap for exactly one consumer - a row whose own name would be a bare HOUSE NAME and whose own description says nothing. Bell 3 rows -> 21 at ratio 1.000, every fund named. Measured over the whole class (133 published plans / 83,585 participants whose largest row is a bare house name): 96 change, 0 lose confidence, 12 GAIN it"
+    },
+    {
+      "ack": "20251009155148NAL0006843793001",
+      "class": "source-split-page-must-not-beat-the-auditor-schedule",
+      "fixed": "v132",
+      "sponsor": "Producers Rice Mill",
+      "was": "CONTROL, found by the gate when v132's gap repair flipped it. The filing carries TWO 4i attachments: the auditor's 21-fund schedule (our parse 10 rows, 0.918) and the recordkeeper's rendition of the same money split by contribution source, where every fund appears twice ('GM Fidelity 500 Index Fund' beside 'Fidelity 500 Index Fund'). Once the repair gave the split page real fund names it covered the whole plan by construction and won on closeness at 0.997. isSourceSplit demotes it POST-selection, only when a genuine menu candidate exists - the first draft used a flat -0.35 score penalty and cost Hospice of Muskegon County (20250918111719NAL0001343777001) its whole 38-fund menu to a 2-row fair-value note, because there the split page IS the only schedule. Both must hold: Producers Rice stays at 10 rows, Hospice stays at 38"
     }
   ]
 }

@@ -173,9 +173,71 @@ Order of business:
       (v131). **Verdict test: re-run `isLoanNoteName` over the new store — the
       7,052 must be near zero.**
 
-      Still open in this item and verified UNCHANGED by v130/v131: the bare
-      house-name merge (Bell Nursery), the employer ROSTER (UPMC, Delta), the
+      **AND v132 (2026-09-17, `[skip ci]`, not yet parsed): the two sub-classes
+      above, both closed, and the "roster" half was NOT what the queue said.**
+      (a) **A SCHEDULE C page read as the menu.** Delta is not a roster:
+      `WAMPO_TRACE=cands` shows the 4i region running past a ONE-ROW 4i table
+      into page after page of `SCHEDULE C SUPPLEMENTAL REPORT / PART I, LINE 3
+      - INFORMATION ON SERVICE PROVIDERS`, whose provider column parsed as
+      holdings and whose EIN/ADDRESS column parsed as dollars — `782,514,321`
+      is Fidelity Institutional Operations Company's ZIP+4, published four
+      times over on each Delta plan. A 4i region now ends at another statutory
+      schedule's caption. **Counted: 7 plans / 243,036 participants** (store-side floor over the
+      whole universe: 20 published plans / 228,813 ppl), both
+      Delta plans stop publishing (correct — master trust), **Allina Health
+      37,552 gains its real 22-fund menu** (a $1.35B phantom at 50.3% gone),
+      Duke Energy 35,803 loses a $2.90B phantom at 78.5%, HP/Carroll/Children's
+      lose address and provider rows. Control: **735 corpus filings carry a
+      line the stop matches and exactly 7 parse differently.**
+      (b) **The bare house-name merge.** 133 published plans / 83,051 ppl whose
+      largest row is a bare house name (shipped `isHouseName`, now exported;
+      48 plans at >=90% of the menu, 85 at 50-90%); **all 133 re-parsed both
+      ways: 100 change, 65,218 participants, 12 GAIN confidence, 0 lose.**
+      Bell Nursery 3 rows -> 21 at ratio 1.000, Northeast Georgia Health System
+      (14,317) resolves `Vanguard` $301.8M and `Dodge & Cox` $39.1M into eleven
+      named funds, Ataraxis Peo 2 aggregate rows -> 30. Gate green with NO
+      expectation moved. **Three self-inflicted defects were caught by
+      re-measuring after each change and each is now a control**: Producers
+      Rice's source-split page beating its auditor schedule (`isSourceSplit`),
+      a -0.35 draft of that demotion destroying Hospice of Muskegon's 38-fund
+      menu (now a POST-selection swap), and the repair itself MERGING
+      `Pioneer Fundamental Growth A` + `Victory S&P 500 A` into one `Victory`
+      row at Hoosier Motor Club (now a house-share score term counting
+      `PROVIDER_TOTAL_RE` only, after an `isHouseName` draft cost RCB Bank its
+      menu; plus v112's generic-top-row swap extended past its 4-row cap after
+      that term promoted `Registered investment companies` at 79% on Northeast
+      Georgia). Uniform draw of 200 published lineups from the shipped v131
+      store: **5 change (2.5%), 0 lose confidence, 1 gains.** Corpus (939
+      filings): 16 gained, 1 lost (Delta PN 014), FABRICATED INTRODUCED 1 —
+      Progressive Tractor, 2 rows before and after, below the 3-row floor, and
+      its published lineup comes from a fallback ack that parses identically.
+      `docs/accuracy-log.md` 2026-09-17 (v132 parts 1 and 2).
+      **Verdict tests:** `confident` flat to slightly up; `overshoot` should
+      FALL a little (unlike v130/v131 this one does change sums); re-run the
+      house-name sizer — the 49 plans at >=90% must be near zero.
+      **UPMC is CLOSED and was already closed by v128** — both plans publish no
+      plan-level lineup, `trustLineup` bit 2048 is set, and their trust has a
+      confident 27-row Vanguard/JPM menu: 205,732 readers already see it. The
+      genuine roster residue is ~2 plans / ~1,500 ppl (Unique Staff Leasing
+      906, Triple J Enterprises 558) and is NOT worth a guard — a roster test
+      collides with employer stock and brokerage rows.
+
+      Still open in this item and verified UNCHANGED by v130/v131/v132: the
       code-column class, DocuSign watermarks, and the 446 overshoots.
+      **NEW, found while working v132 and sized, not fixed: 20 confident
+      MASTER-TRUST lineups are published to 35 member plans / 934,060
+      participants with a non-fund largest row** — HCA's trust (379,101 ppl)
+      leads with `CUSIP:` at 27%, Verizon's (146,572) with `COMMON/COLLECTIVE
+      TRUST` at 42% — and that is a FLOOR, because the Delta DC master trust
+      publishes `------------------- VALUE OF INTEREST IN` at $21.06B = 72.3%
+      and matches neither `NOT_FUND_SHAPED` nor `AGG_DISCLOSURE` (leading
+      dashes defeat the anchor). **Every sizing script here joins lineups to
+      plans-all by ack, and a trust ack is not a plan, so trust lineups have
+      been invisible to all of them.** Also: Delta PN 004's Schedule D link
+      points at the DELTA PILOTS MEDICAL TRUST while its notes name the DC
+      master trust we already hold confidently — 112,713 participants will see
+      no menu although the right one is in the store (trust-selection defect,
+      not a parser one).
 
       **The design note this bump should carry, from UPMC:** a ratio near 1.0
       is evidence for a menu only among tables that are CANDIDATE menus. Any
