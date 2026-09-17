@@ -11590,3 +11590,42 @@ Producers Rice's losing region.
   Stock and the itemized-securities bucket takes them. Not fabrication — the
   names survive in the entry's `sma` detail — but 35,803 participants see a
   managed-account label over the core of their menu.
+
+## 2026-09-17 (v132 cycle, the per-cycle draw) — participant-weighted read of 15 published lineups
+
+Frame stated because it decides what can be found: **PARTICIPANT-WEIGHTED**,
+answering "what does a randomly chosen reader see on their own plan's page".
+Fresh seed, 15 plans out of 59,656 published lineups / 89.67M participants.
+
+v130 is visible and correct in the store: **Walmart's `Lendable Fund` is gone**
+and the three BlackRock names are published with their issuer, `MSCI ACWI
+ex-U.S. IMI Index Non-Lendable Fund` $2,856,964,964 among them.
+
+Three things this draw found, none of them this cycle's item, all sized rather
+than described:
+
+1. **`Vanguard Fiduciary Trust Company` is 27.0% / $1,062,358,000 of
+   NORDSTROM's published menu (108,781 participants)** — the bare house-name
+   class at a share BELOW the 50% band v132 was sized on. The `<50%` band is
+   **336 plans / 866,923 participants** and this entry had declined to claim
+   it; Nordstrom says it is not all benign. A band chosen for a fix's sizing is
+   not a statement about what lies outside it.
+2. **A row that the SHIPPED not-a-fund predicates already match, published
+   inside a confident menu at >=5% of it: 796 plans / 2,284,403 participants.**
+   Microsoft `Participant-directed` $6,602,388,247 (9%), Apple `Various
+   Accounts` $2,153,504,672, UPS `investments` $1,470,493,000, Oracle `Various
+   investments, including registered market funds and c…` $3,405,120,000,
+   Marriott `COMMON STOCKS` at 49%, BJC `assets available for benefits`.
+   `NOT_FUND_SHAPED` and `AGG_DISCLOSURE` decide which CANDIDATE wins; nothing
+   drops such a row from the winner. **This is a CONDITION, not a defect count,
+   and two corrections belong with it**: the raw figure is 1,961 plans /
+   3,752,073 participants and includes real funds whose names begin with
+   "Total" (IBM's $9.83B `Total Stock Market Index`, exactly the hazard v130
+   records), removed above; and some survivors — `PARTICIPANT-DIRECTED
+   BROKERAGE ACCOUNTS`, `FULLY BENEFIT-RESPONSIVE INVESTMENT CONTRACT` — are
+   aggregate disclosures the Form 5500 instructions permit. The outcome count
+   needs a read of the members before anyone quotes it.
+3. **JPMorgan Chase (299,277 participants) publishes `JPMCINTERMEDT AGGREGATE
+   SEP ACCT — SEPARATE ACCT 2,271,585,2`** — a value truncated into a name, the
+   recorded value-in-name class — and its menu sums to **ratio 0.660**, so a
+   third of a $52.9B plan is unaccounted for on the page.
