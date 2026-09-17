@@ -272,8 +272,12 @@ const SPECIMENS = [
    * candidate in the wide band when the winner is <=4 category-named rows.
    * Controls held: Master-PSA pointers and trust-participation two-liners
    * stay non-confident (no menu candidate exists to swap to). */
+  /* v131 moved this expectation by ONE ROW on purpose: the row it lost is a
+   * participant-LOAN description published as a holding — "from 4.25% to 11.5% maturing through June 2029". The
+   * unanchored loan guard removes 7,052 such rows from 6,970 published
+   * plans (12,750,205 participants); nothing else about this specimen moved. */
   ["Erlanger (14-row menu beats the 3-row fair-value note)", "20251002152713NAL0000650817001", 236963285,
-    { found: true, n: 14, sum: 203516321 }],
+    { found: true, n: 13, sum: 201345581 }],
   /* v68: the filler-column class. Before the fix, all 28 of this plan's
    * holdings were stored as "VARIABLE 1,056,601 sh" — the (c) sub-columns
    * ("N/A  VARIABLE  N/A  ... sh  #") beat the real name in column (b).
@@ -324,8 +328,12 @@ const SPECIMENS = [
   // v44: double-rendered schedule whose second rendition glues a "0" cost
   // column onto names — same-name dedup missed it and the region summed
   // both copies (ratio 2.02, lost the lineup)
+  /* v131 moved this expectation by ONE ROW on purpose: the row it lost is a
+   * participant-LOAN description published as a holding — "Participant's Loan Various Rates and Maturities". The
+   * unanchored loan guard removes 7,052 such rows from 6,970 published
+   * plans (12,750,205 participants); nothing else about this specimen moved. */
   ["Plexsys (glued-0 dedup)", "20260706150053NAL0023514192001", 36432027,
-    { found: true, n: 32, sum: 37829365 }],
+    { found: true, n: 31, sum: 37630660 }],
   // v44: page carry-forward subtotals ("Forward $21,786,094 ...") summed
   // across pages into a fake $197M top "fund" on a statement-page win.
   // v46: brokerage vocabulary demoted its statement region. v51's suffix
@@ -336,8 +344,12 @@ const SPECIMENS = [
   // v45: recordkeeper "SUMMARY OF NET TRUST ASSETS" page appended after
   // the real 4i table — same menu in ALL CAPS with cents; v43's cents fix
   // made it readable and the doubled region lost a real 29-fund menu
+  /* v131 moved this expectation by ONE ROW on purpose: the row it lost is a
+   * participant-LOAN description published as a holding — "interest rates of 5.25% to". The
+   * unanchored loan guard removes 7,052 such rows from 6,970 published
+   * plans (12,750,205 participants); nothing else about this specimen moved. */
   ["Sierra Space (rk summary after 4i)", "20251015115746NAL0005999248001", 293042847,
-    { found: true, n: 29, sum: 291893410 }],
+    { found: true, n: 28, sum: 290220425 }],
   // v46: Galliano — raw text has no readable schedule (all-scanned); its
   // OCR'd statement page ("Mutual funds" $584M > plan assets) got
   // confident when v44 removed the OTHER junk rows. Text parse must stay
@@ -383,8 +395,12 @@ const SPECIMENS = [
   // "Vanguard | Total Intl Bd Idx Admiral" died on the spaced-letter subtotal
   // guard's "Bd"; losing that $5,394 row broke arithmetic subtotal detection
   // downstream and doubled the region (Reliance One)
+  /* v131 moved this expectation by ONE ROW on purpose: the row it lost is a
+   * participant-LOAN description published as a holding — "from 4.50% to 9.50% with various maturities". The
+   * unanchored loan guard removes 7,052 such rows from 6,970 published
+   * plans (12,750,205 participants); nothing else about this specimen moved. */
   ["Reliance One (Total-prefixed fund name)", "20250926115624NAL0003997507001", 4979584,
-    { found: true, n: 26, sum: 4873717 }],
+    { found: true, n: 25, sum: 4741012 }],
   // a recordkeeper page of bare house totals ("Fidelity $8,971,947") beat the
   // filed 21-fund schedule on closeness (Producers Rice Mill)
   ["Producers Rice (house-total page)", "20251009155148NAL0006843793001", 23935999,

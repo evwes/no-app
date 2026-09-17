@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 130;
+export const PARSER_VERSION = 131;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -340,6 +340,31 @@ const TYPE_WORDS = /\b(value of|interest in|the|a|an|of|in|at|held|funds?|accoun
  *      "Interest rates range from 3.25% to 8.50%," carries digits, and
  *      "Intermediate Government Bond Index Non-" is untouched.
  */
+/* v131: is this name nothing but a participant-LOAN description? Exported so
+ * the audit and any sizing script can ask the SHIPPED question instead of a
+ * remembered one. Three parts, and all three are load-bearing:
+ *   LOAN_TEXT / RATE_RANGE  the row talks about rates, maturities, collateral
+ *   LOAN_SECURITY           a real security identity vetoes it (fund, trust,
+ *                           contract, treasury, note, CUSIP, a company suffix)
+ *   residue                 what survives the rate/date/repayment vocabulary
+ *                           must be under four letters, i.e. no brand is left
+ */
+const LOAN_TEXT = /\b(?:interest rates?|rate range|maturit(?:y|ies)|maturing|matures|collateraliz\w+|bearing interest|per annum|due at various|participant loans?|loans? to participants)\b/i;
+const RATE_RANGE = /\d+(?:\.\d+)?\s*(?:%|percent)\s*(?:[-–—]|to|through|and)\s*\d+(?:\.\d+)?\s*(?:%|percent)/i;
+const LOAN_SECURITY = /\b(?:funds?|trusts?|index|idx|portfolios?|equit(?:y|ies)|stocks?|shares?|class|series|etf|annuity|contracts?|gic|guaranteed|insurance|treasur\w*|strips?|notes?|bonds?|debentures?|mortgages?|cusip|corp\w*|inc|incorporated|llc|ltd|compan(?:y|ies)|municipal|agency|reit|certificates?|deposits?|market|separate|stable|collective)\b/i;
+const LOAN_VOCAB = /\b(?:interest|interests|rate|rates|ranging|range|ranges|from|to|through|thru|various|varying|varied|maturity|maturities|maturing|matures|mature|date|dates|due|at|and|or|with|per|annum|collateral|collateraliz\w+|secured|by|participant\w*|account|accounts|balance|balances|loan|loans|promissory|repaid|repayment|payable|payments?|vested|plan|plans|the|of|a|an|over|up|between|years?|months?|approximately|monthly|quarterly|weekly|bi-?weekly|payroll|deduction|deductions|january|february|march|april|may|june|july|august|september|october|november|december)\b/gi;
+export function isLoanNoteName(n) {
+  const s = String(n || "");
+  if (!LOAN_TEXT.test(s) && !RATE_RANGE.test(s)) return false;
+  if (LOAN_SECURITY.test(s)) return false;
+  const residue = s.replace(/\d+(?:\.\d+)?\s*(?:%|percent)/gi, " ")
+    .replace(/\b(?:19|20)\d{2}\b/g, " ")
+    .replace(/\d+[-\/]\d+(?:[-\/]\d+)?/g, " ")
+    .replace(LOAN_VOCAB, " ")
+    .replace(/[^a-z]/gi, "");
+  return residue.length < 4;
+}
+
 function wrapHeadOk(s) {
   const t = String(s || "").trim();
   if (t.length < 4 || !/^[A-Z0-9("'*]/.test(t)) return false;
@@ -1100,6 +1125,22 @@ export function parseRows(section, opts = {}) {
      * ranging from..."). The loan row itself is excluded by type; these are
      * its runaway continuation lines, and they name nothing. */
     if (/^(?:from participants|maturing at various|various maturity|interest rates? ranging|bearing interest at|range from \d{4}|collateralized by|secured by participants|with various maturity)/i.test(name)) { nameBuf = []; continue; }
+    /* v131: THE SAME CLASS, UNANCHORED — and it is 6,937 published plans /
+     * 12.7M participants, not the 758 rows v70 could see. The guard above is
+     * anchored at the start of the name, and a loan row's description arrives
+     * with anything at the front: "October 2029 at interest rates ranging from
+     * 4.25% to 9.50% $" is 96.5% of The Haddad Organization's $58.2M plan and
+     * sits above its ten real Vanguard funds; Adient publishes THREE of them
+     * ("3.25% - 8.50% maturing through 2032.") and one real row. Read from the
+     * store, 25 random members of this population were 25 loan rows.
+     * The test is what the name is MADE of rather than where it starts: loan
+     * language present, no security identity, and nothing left once rates,
+     * dates and repayment vocabulary are removed. That residue rule is what
+     * keeps the real holdings whose names contain the same words — "Putnam
+     * Retirement Advantage Select Maturity R", "FNR 2017-11 KA, FANN, Expected
+     * Maturity 2025", "or maturity value AB DISCOVERY GROWTH Z" — all of which
+     * the first draft of this predicate dropped. */
+    if (isLoanNoteName(name)) { nameBuf = []; continue; }
     /* v70: SUBTOTALS HIDDEN BY SPACED-LETTER DAMAGE. Some PDFs extract with
      * letters scattered — "Tota l mutua l funds", "Tot al cont r i but i ons",
      * "To tal In ve stm e n t A sse ts" — and the damage carries the row

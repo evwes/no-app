@@ -160,7 +160,20 @@ Order of business:
       **`overshoot` will NOT fall from this — a merge never changed the sum**,
       which is exactly why no arithmetic guard ever saw the class; it must not
       RISE either. `docs/accuracy-log.md` 2026-09-17 (v130).
-      Still open in this item and verified UNCHANGED by v130: the bare
+      **AND v131 (2026-09-17, `[skip ci]`, not yet parsed): the LOAN-ROW class,
+      which is the largest half of this item by people.** The v70 guard is
+      anchored at the start of the name and the population is not — **7,052
+      rows / 6,970 PUBLISHED plans / 12,750,205 participants / $9.60B**, read
+      whole from the store with the exported `isLoanNoteName` (the recorded
+      283 plans / 534,790 ppl was an undercount by a factor of 24). Haddad
+      published a rate sentence at 96.5% of its plan and now shows its ten real
+      Vanguard funds (11 rows -> 21 at 0.961). Random draw: 21 of 229 published
+      plans change, 0 lose confidence. Four gate expectations moved one row
+      each, all loan rows, quoted in place. `docs/accuracy-log.md` 2026-09-17
+      (v131). **Verdict test: re-run `isLoanNoteName` over the new store — the
+      7,052 must be near zero.**
+
+      Still open in this item and verified UNCHANGED by v130/v131: the bare
       house-name merge (Bell Nursery), the employer ROSTER (UPMC, Delta), the
       code-column class, DocuSign watermarks, and the 446 overshoots.
 

@@ -11240,3 +11240,68 @@ byte-identical under v130), the participating-employer ROSTER accepted as a
 menu (UPMC, Delta — verified unchanged), and the general overshoot population
 (446 plans / 575,994 participants), which is the fair-value-note and form-junk
 family, not this one.
+
+## 2026-09-17 (v131) — the participant-LOAN description published as a fund: 7,052 rows, 6,970 published plans, 12,750,205 participants
+
+**Wrong.** A 4i loan row reads `* PARTICIPANT LOANS | interest rates ranging
+from 4.25% to 9.50%, maturing through 2034 | 205,746`. When the description
+column lands in the name, what gets published is the rate sentence — with the
+loans' money behind it. v70 saw this class and guarded it, but **the guard is
+ANCHORED at the start of the name and the population is not**: it caught 758
+rows; the real figure, read from the store with no downloads and no sampling,
+is **7,052 rows across 6,970 PUBLISHED plans / 12,750,205 participants /
+$9.60B**. Twenty-five random members were twenty-five loan rows.
+Most are 0.2-4% of their lineup, which is why nothing flagged them — but four
+carry a quarter or more, and two are the v105 dominant-row shape in a
+vocabulary `audit-dominant-row` cannot see: **The Haddad Organization** (860
+participants) published `October 2029 at interest rates ranging from 4.25% to
+9.50% $` at **$56,203,279 = 96.5%** of its $58.2M plan, above its ten real
+Vanguard funds; **Adient** (1,265 participants) published three of them
+(`3.25% - 8.50% maturing through 2032.`) beside one real row.
+
+**The change (v131).** `isLoanNoteName`, exported from lib-4i so the audit and
+any sizing script ask the SHIPPED question: loan language present (rates,
+maturities, collateral, per annum) **AND** no security identity (fund, trust,
+contract, treasury, note, CUSIP, a company suffix) **AND** nothing over three
+letters left once rates, dates and repayment vocabulary are removed. All three
+parts are load-bearing — **the first draft had only the first two and dropped
+four real holdings**: `Putnam Retirement Advantage Select Maturity R`,
+`FNR 2017-11 KA, FANN, Expected Maturity 2025`, `U.S. TREASURY STRIPS (maturing
+2042-2055) at aggregate par`, and `or maturity value AB DISCOVERY GROWTH Z`
+(a caption glued to a real fund). The residue rule keeps all four, and they are
+pinned in the specimen entry as controls.
+
+**Measured.** Whole-store: 7,052 rows / 6,970 plans / 12,750,205 participants.
+Uniform random draw of 229 published lineups re-parsed both ways: **21 change
+(9.2%), 0 lose confidence**, every removal a loan row. Corpus (206 filings,
+asset-ranked): 17 change, 0 lose confidence — PwC $69.5M (74,670 ppl),
+ADP $94.8M (52,481), Intermountain $84.9M, GE Healthcare $54.7M (54,636),
+Vanguard $58.8M, Gallagher $39.0M, Wellstar $40.3M, Dillard's $7.6M,
+Bloomberg $25.6M, NYU $4.4M.
+**A store-side estimate said 32 plans / 19,236 participants would stop
+publishing, and that is an UPPER BOUND that the parser beat**: it models the
+region as fixed, while the real parse re-scores every candidate. Haddad was
+predicted to fall from 1.04 to 0.08 and instead went **11 rows -> 21 at ratio
+0.961, all real funds** — removing the phantom let the real menu win. Adient
+does stop publishing, which is correct: what it had was three rate strings.
+
+**What the next run's verdict must show.** `confident` down by at most ~30 (and
+possibly UP, per Haddad); `lineups` roughly flat; `audit-dominant-row` still 0
+and `audit-generic-names` below 230. Re-run `isLoanNoteName` over the new store
+afterwards: the 7,052 must be near zero, and anything left is a phrasing the
+predicate misses (`Loans bearing`, Dell — deliberately not caught, because its
+residue is a word).
+
+**Prevention.**
+- The predicate is EXPORTED and the sizing scripts import it, so nobody
+  re-derives it from memory — the failure mode this project has hit twice.
+- Specimen pinned (`loan-description-as-holding`, Haddad) with its four
+  must-keep controls named in the entry.
+- **Four gate expectations moved by exactly one row each in the same commit** —
+  Erlanger 14->13, Plexsys 32->31, Sierra Space 29->28, Reliance One 26->25 —
+  and each lost row is quoted beside it. A specimen whose expectation encodes a
+  defect has to be corrected in the open, never left to drift.
+- The lesson from the first draft is the standing one in a new place: a guard
+  built from a WORD LIST gets beaten by real names that contain the same words.
+  Ask what the string is made of, then check both directions — the rows it
+  drops AND the rows it must not.

@@ -261,6 +261,13 @@
       "fixed": "v130",
       "sponsor": "Ramos Oil",
       "was": "'* PARTICIPANT LOANS | Interest rates range from 3.25% to 8.50%,' wraps onto ' maturing through March 2043  -$0-  205,746'; v129 saw only the orphan, so the loan classifier never fired and 'maturing through March 2043' was published as a $205,746 fund. Reuniting the row lets classify() see the words PARTICIPANT LOANS and the row is skipped. The gate expectation for this specimen moved 27 -> 26 rows in the same commit FOR THIS REASON - the twelve Great Gray rows it exists to protect are untouched"
+    },
+    {
+      "ack": "20251015143904NAL0005156497001",
+      "class": "loan-description-as-holding",
+      "fixed": "v131",
+      "sponsor": "The Haddad Organization",
+      "was": "'October 2029 at interest rates ranging from 4.25% to 9.50% $' published as a $56,203,279 holding = 96.5% of a $58.2M plan, sitting above the plan's ten real Vanguard funds. v70's guard for this class is ANCHORED at the start of the name and the population is not: 7,052 such rows across 6,970 PUBLISHED plans / 12,750,205 participants / $9.60B, read from the store with the shipped `isLoanNoteName`. v131 asks what the name is MADE of - loan language, no security identity, and nothing left once rates, dates and repayment vocabulary are removed. Haddad 11 rows -> 21 at ratio 0.961, every row a real fund, because removing the phantom lets the real region win. Controls that must keep publishing: 'Putnam Retirement Advantage Select Maturity R', 'FNR 2017-11 KA, FANN, Expected Maturity 2025', 'U.S. TREASURY STRIPS (maturing 2042-2055)', 'Interest Fund, 2.59% interest rate' - the first draft of the predicate dropped all four. Four gate expectations moved by ONE ROW each in the same commit (Erlanger, Plexsys, Sierra Space, Reliance One) and every one of those rows is a loan description"
     }
   ]
 }
