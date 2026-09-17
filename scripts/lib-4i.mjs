@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 134;
+export const PARSER_VERSION = 135;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -181,6 +181,34 @@ export const NOT_FUND_SHAPED = /^(?:at (?:fair|contract) value|investments?(?:,?
  * day). Vocabularies are per-question; this one is exported so every
  * joint-aggregate question uses the same list. */
 export const AGG_DISCLOSURE = /^(?:participants?[- ]directed.*|fully benefit[- ]responsive.*|investments?(?:,? at .*)?|at (?:fair|contract) value|net assets.*|value of interest in .*|master trust.*|investments? held in the trust.*)$/i;
+
+/* A ROW THAT POINTS AT A MASTER TRUST rather than naming a holding. One copy,
+ * used by the `trustPtr` flag on a finished parse AND (v135) by the last-resort
+ * promotion of a one-row trust-pointer region — the two questions are the same
+ * question and were one regex apart from being two vocabularies. */
+export function isTrustPointerRow(f) {
+  const n = String((f && f.name) || "");
+  return (f && f.type === "Master trust interest") ||
+    /^(?:the )?(?:plan(?:['’]s)? )?(?:value of )?interest in .{0,50}\btrust\b/i.test(n) ||
+    /^master trust\b/i.test(n) ||
+    // "Participation in … Defined Contribution Plans Master Trust"
+    // (Northrop) — the name can END with the trust rather than start with
+    // "interest in"
+    /^participation in\b[^.]{0,60}?\bmaster trust\b/i.test(n) ||
+    /\bmaster trust\s*$/i.test(n);
+}
+
+/* The production confidence SHAPE, in one place inside this library. fetch-4i's
+ * isConfident is the gate production runs; this mirrors it for the parser's own
+ * internal choices (the band-hi retry accept, and v135's trust-pointer
+ * promotion), which previously carried the expression inline twice. */
+function publishableShape(r) {
+  const ratio = (r && r.ratio) || 0;
+  return !!(r && r.found && Array.isArray(r.funds) && r.funds.length >= 3 &&
+    ratio > 0.45 && ratio < 1.6 &&
+    (r.funds.length >= 5 || (ratio > 0.7 && ratio < 1.3)) &&
+    !r.stmt && !r.trustPtr);
+}
 
 const TRACE = process.env.WAMPO_TRACE || "";
 const TRACE_ROWS = TRACE === "rows" || TRACE === "all";
@@ -2027,6 +2055,9 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
   // provider flags) — kept alongside `best` so the post-selection swap
   // below can prefer it over a tiny note-aggregate that wins on ratio
   let bestMenu = null;
+  // v135: the best one-row master-trust POINTER region, used only if nothing
+  // publishable won (see the promotion after this loop)
+  let bestTrust = null;
   for (const [s, end] of candidates) {
     const region = lines.slice(s, end);
     const regionText = region.join("\n");
@@ -2169,6 +2200,39 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
     }
     for (const va of variants) {
     const parsed = va.parsed;
+      /* v135: A ONE-ROW 4i SCHEDULE THAT SAYS "THE MONEY IS IN THE MASTER
+       * TRUST" IS A READING OF THE FILING, NOT A FAILURE TO READ IT.
+       *
+       * First American Financial (17,090 participants, $2.86B) files exactly
+       * that: its Schedule H line 4i is one row, `Plan's interest in Master
+       * Trust | Master Trust – at fair value | $2,760,495,322` (97% of plan
+       * assets) plus a participant-loan row the row parser drops. One fund
+       * left, so the `< 2` skip below discarded the region entirely, no
+       * candidate existed for it, and the winner became the audited Statement
+       * of Net Assets printed in thousands — seven rows summing to 0.2% of
+       * the plan, `dx=band-lo`, and the page told 17,090 readers the FILING
+       * could not be read (`ds=readfail`) about a filing that states plainly
+       * where their money is.
+       *
+       * Traced, not reasoned: `parseRows` over lines 1760-1800 of the filing
+       * returns exactly one fund, typed `Master trust interest`.
+       *
+       * Kept as a LAST RESORT rather than a competitor, because a region that
+       * scores at ratio ~1.0 on one row would otherwise outscore real menus
+       * that sum to 0.9: it is consulted only when nothing publishable won.
+       * The value must also be a majority of the plan, so a stray trust row
+       * in a filing whose real schedule was not found cannot speak for the
+       * whole plan. */
+      if (parsed.funds.length === 1 && assetsEOY > 0 && isTrustPointerRow(parsed.funds[0])) {
+        for (const scale of va.scales) {
+          const r = (parsed.totalValue * scale) / assetsEOY;
+          if (r < 0.5 || r > 1.6) continue;
+          const d = Math.abs(Math.log(r));
+          if (!bestTrust || d < bestTrust.d) {
+            bestTrust = { d, score: -d, ratio: r, scale, ...parsed, funds: parsed.funds, totalValue: parsed.totalValue };
+          }
+        }
+      }
       if (parsed.funds.length < 2) continue;
       /* v77: a repair is a VIEW of its parent region, so the region's character
        * still condemns it. Judged on its own trimmed rows a repair can dilute
@@ -2310,6 +2374,14 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
       }
     }
   }
+  /* v135 promotion, POST-selection for the reason v107 and v112 are: a
+   * candidate that can change WHICH region wins changes every filing, and this
+   * one would win on closeness wherever a real menu sums to less than 1.0.
+   * It replaces the winner only when the winner is not publishable anyway, so
+   * no reader can lose a lineup to it — the outcome is a truer CAUSE
+   * (`trustPtr` -> dx `trust` -> the page names the master trust) in place of
+   * a false one. */
+  if (bestTrust && !publishableShape({ found: true, funds: best ? best.funds : [], ratio: best ? best.ratio : 0, stmt: best ? best.stmt : 0 })) best = bestTrust;
   if (!best) return { found: false, why: "noregion" };
   /* v112: a tiny NOTE AGGREGATE can out-score the real menu on ratio alone.
    * Two of eight sampled `few` in-band plans hid full 13-14 row menus behind
@@ -2566,12 +2638,7 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
   // and displayed as a "lineup" — the real menu lives in the trust's own
   // filing. When trust-interest rows dominate a small parse, flag it so it
   // can never be marked confident.
-  const trustish = funds.filter((f) => f.type === "Master trust interest" ||
-    /^(?:the )?(?:plan(?:['’]s)? )?(?:value of )?interest in .{0,50}\btrust\b/i.test(f.name) || /^master trust\b/i.test(f.name) ||
-    // "Participation in … Defined Contribution Plans Master Trust"
-    // (Northrop) — the name can END with the trust rather than start with
-    // "interest in"
-    /^participation in\b[^.]{0,60}?\bmaster trust\b/i.test(f.name) || /\bmaster trust\s*$/i.test(f.name));
+  const trustish = funds.filter(isTrustPointerRow);
   const tSum = trustish.reduce((a, f) => a + f.value, 0);
   const allSum = funds.reduce((a, f) => a + f.value, 0);
   const trustPtr = funds.length <= 8 && allSum > 0 && tSum / allSum >= 0.6;
@@ -2691,9 +2758,17 @@ function parse4iInner(text, assetsEOY, sponsorName = "", codes = "") {
      * present verbatim in its own filing, zero generic-named rows. */
     if ((first.ratio || 0) >= 1.6 && !first.stmt && !first.trustPtr) {
       const r = parse4iPass(text, assetsEOY, sponsorName, codes, true);
-      const ok = r.found && r.funds.length >= 3 && (r.ratio || 0) > 0.45 && (r.ratio || 0) < 1.6 &&
-        (r.funds.length >= 5 || ((r.ratio || 0) > 0.7 && (r.ratio || 0) < 1.3)) && !r.stmt && !r.trustPtr;
-      if (ok) return r;
+      if (publishableShape(r)) return r;
+    }
+    /* v135: a promoted ONE-ROW trust pointer must not cost the caption pass.
+     * Before v135 a filing whose only region was that single row returned
+     * `found:false` and the caption pass ran; now pass 1 finds something, and
+     * without this the retry would be skipped and a real menu sitting under a
+     * bare column caption would be lost. Accepted only if it is publishable by
+     * the production shape, exactly like the band-hi retry above. */
+    if (first.trustPtr && first.funds.length === 1) {
+      const r = parse4iPass(text, assetsEOY, sponsorName, codes, true);
+      if (publishableShape(r)) return r;
     }
     return first;
   }

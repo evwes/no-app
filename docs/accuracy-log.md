@@ -12811,3 +12811,79 @@ $811M row at 6% is exactly what a share floor was never meant to excuse.
 
 Rate, per participant: 1 fabricated row in 15 (Toyota, 6.4% of its menu),
 1 known-class house row, 1 cosmetic.
+
+## 2026-09-17 — v135 part 1: a one-row master-trust POINTER discarded, and the page then blamed the filing (9 plans / 978,337 participants)
+
+**Queued as "First American Financial REGRESSED under v133 — restore its
+29-row 2023 fallback". The instrument says the queue item's remedy was
+wrong, and the note is kept because the reasoning is the point.**
+
+- **Wrong:** First American Financial PN 003 (17,090 participants, $2.86B)
+  showed `dx=band-lo`, `ds=readfail` — the page's document-shape sentence
+  tells the reader the filing could not be read. The filing reads fine. Its
+  Schedule H line 4i is ONE row, `Plan's interest in Master Trust | Master
+  Trust – at fair value | $2,760,495,322` (96.7% of plan assets), plus a
+  participant-loan row the row parser drops. `parse4i`'s candidate loop skips
+  any region parsing to fewer than two funds, so the real schedule produced
+  **no candidate at all** and the winner became the audited Statement of Net
+  Assets printed in thousands: seven rows summing to 0.2% of the plan
+  (`CCT funds measured at NAV`, `Participants`, `Employer`, `Rollovers`).
+- **Not a regression, and the evidence is in the filing.** v132 published a
+  2023 fallback menu here only because its parse of the same junk region
+  carried an extra `(in thousands)` row, which held the top row's share at
+  0.60 and kept `fetch-4i`'s v128 arithmetic trust test (`newestTop >= 0.85`)
+  from firing. v133 removed that junk row, the share rose to 0.885, the test
+  fired, and the fallback was refused. So the suppression arrived by accident —
+  but it is CORRECT: the filing states that effective 1 October 2024 all
+  investment assets moved into a master trust, and v128's own rule (b) says a
+  plan whose current schedule is "interest in master trust" has no plan-level
+  menu, last year or this. **Restoring the 2023 menu would have republished
+  holdings the plan no longer holds directly, for 17,090 people.**
+- **Change (v135):** a region that parses to exactly one row, where that row
+  is trust-pointer-shaped and worth 0.5–1.6x plan assets, is kept as a LAST
+  RESORT candidate and promoted only when nothing publishable won — never as a
+  competitor, because a one-row region at ratio ~1.0 would outscore every real
+  menu that sums below 1.0. The parse then carries `trustPtr`, `dx` becomes
+  `trust`, merge's `trustHeldUnlinked` bit fires, and the page names the master
+  trust instead of blaming the filing. The `trustish` row test and the
+  production confidence SHAPE each became one function (`isTrustPointerRow`,
+  `publishableShape`) rather than two inline copies. The caption retry still
+  runs behind a promoted pointer, so a real menu under a bare column caption
+  cannot be lost to it.
+- **Measured, whole populations, no sampling:**
+  - The v128 arithmetic test over the whole store: it fires on **17** trust-linked
+    non-confident plans; **8 / 31,577 ppl** of them have a region summing to
+    under 0.45x plan assets (0.002–0.116 — a denominator that cannot support
+    the claim), and **9 / 88,335 ppl** are the shape it was built for (Koch
+    0.884, Medtronic 0.977, Blank Rome 0.955, Hexcel, Nestle). The two groups
+    are separated by a gap from 0.116 to 0.884, so no threshold in between
+    changes the partition. **Six of the eight published nothing under v127
+    either** (before v128 existed, when their prior year WAS opened), so the
+    refusal is not what is costing them a lineup.
+  - Corpus of 949 cached filings, working tree vs `789f589e`: **0 confidence
+    gained, 0 lost, 0 fabricated generic rows introduced or removed**, and
+    **9 filings move to the pointer row — 978,337 participants** (Target
+    475,573, PepsiCo 167,015, L3Harris 74,165, J&J 72,991, Medtronic 56,318,
+    Siemens 42,932, Genentech 37,353, BMS 34,900, First American 17,090). Every
+    one was non-confident before AND after: no reader loses a lineup, 7 of the
+    9 already showed a trust sentence, and what changes is the recorded CAUSE
+    (`band-lo` 0.00, `band-hi` 3.84, `few`, `stmt` -> `trust`).
+  - Risk measured in the other direction: of the **1,009 plans / 1,563,063
+    ppl currently served a prior-year fallback lineup**, 17 have their newest
+    filing cached locally and **0 of 17** flip to a one-row trust pointer.
+    That is a small frame and is stated as one — the v135 run's
+    `fb-skipped-trust-served` tally and merge's CONFIDENCE DIFF are what
+    settle it.
+- **What the v135 run must show:** confident within ±50 of 60,112 with every
+  loss reconciled by row name; `tp`-flagged acks up by roughly the order of
+  9-per-949 scaled to the universe (tens, not thousands); First American PN 003
+  at `dx=trust`, `tp=1`, no `fb`, and plans-index bits 65536+131072 for it;
+  zero new `reparse-loss` HIGHs naming a plan that was publishing a menu.
+- **Prevention:** specimen pinned (`one-row-master-trust-pointer-discarded`),
+  so `diff-lineups` will see this class in future comparisons. And the method
+  note, which is the durable part: **the queue item named a remedy ("restore
+  the fallback") and the remedy was wrong while the defect was real.** The
+  filing decided it, not the diff — `--vs` showed only that a junk row had
+  disappeared; reading the 4i schedule showed that the money moved into a
+  trust. A cause that explains the DIFF is not yet a cause that explains the
+  FILING.
