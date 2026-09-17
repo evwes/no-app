@@ -76,7 +76,19 @@ all defective, all this shape.
   Its half-applied edits were reset, not adopted; a fresh agent restarted
   the same three items (First American's regression, statement lines as
   holdings, description tails as holdings) toward v135.
-- Nothing is waiting on you from this window.
+- **Your ask at 20:2xZ — a fund-facts agent (ticker + expense ratio + YTD
+  return): built.** Agent, `/fund-facts` skill, `data/fund-facts.json` and a
+  checker that refuses anything undated or unsourced. **Its first run wrote
+  nothing, correctly:** every fund-data host (Vanguard, Morningstar, Yahoo,
+  SEC, the archive) is blocked by this sandbox's network policy, and search
+  summaries contradicted each other for the same fund on the same day. The
+  retrieval now runs on a GitHub runner (open egress, the EDGAR pattern) on
+  a weekday 22:41Z schedule; it dispatches for the first time with the v135
+  mirror. **Decision for you:** allowlist `investor.vanguard.com` and
+  `finance.yahoo.com` in the environment's network policy if you want the
+  agent to read sources directly; otherwise the runner route stands.
+- v135 is being built by the parser agent (two parts committed: master-trust
+  pointer rows, prose-as-holding 557 rows / 517 plans / 961,757 people).
 
 ## Update 16:5xZ — v133 LIVE, and your Ocala page's blanks are filled on main
 
