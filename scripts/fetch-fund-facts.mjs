@@ -56,10 +56,47 @@ async function session() {
 const fmtDate = (d) => (d && d.fmt) ? d.fmt : (d && typeof d.raw === "number" ? new Date(d.raw * 1000).toISOString().slice(0, 10) : null);
 const pct = (x) => (x && typeof x.raw === "number") ? Math.round(x.raw * 100 * 1000) / 1000 : null;
 
+/* FALLBACK (added after run #1, 2026-09-18): quoteSummary answered HTTP 429
+ * to every call from the runner. The v8 chart endpoint needs no crumb and
+ * returns the fund's daily ADJUSTED closes (distributions reinvested), so the
+ * year-to-date TOTAL return is computable and dated: last adjusted close over
+ * the last adjusted close of the prior calendar year, minus one. The as-of
+ * date is the last bar's date, which the response states. No expense ratio
+ * comes this way; that field stays absent until a source for it answers. */
+async function chartYtd(t) {
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(t)}?range=1y&interval=1d&events=div`;
+  const r = await fetch(url, { headers: { "User-Agent": UA, Accept: "application/json" } });
+  if (!r.ok) throw new Error(`chart HTTP ${r.status}`);
+  const j = await r.json();
+  const res = j && j.chart && j.chart.result && j.chart.result[0];
+  if (!res) throw new Error(`chart empty (${JSON.stringify(j && j.chart && j.chart.error).slice(0, 120)})`);
+  const meta = res.meta || {}, ts = res.timestamp || [];
+  const adj = (res.indicators && res.indicators.adjclose && res.indicators.adjclose[0] && res.indicators.adjclose[0].adjclose) || [];
+  const close = (res.indicators && res.indicators.quote && res.indicators.quote[0] && res.indicators.quote[0].close) || [];
+  const series = adj.length ? adj : close;
+  const year = new Date().getUTCFullYear();
+  let base = null, baseDate = null, last = null, lastDate = null;
+  for (let i = 0; i < ts.length; i++) {
+    const v = series[i]; if (typeof v !== "number") continue;
+    const d = new Date(ts[i] * 1000).toISOString().slice(0, 10);
+    if (d < `${year}-01-01`) { base = v; baseDate = d; } else { last = v; lastDate = d; }
+  }
+  if (base === null || last === null) throw new Error("chart lacks a prior-year-end bar or a current-year bar");
+  return { name: meta.longName || meta.shortName || null, ytd: Math.round((last / base - 1) * 100 * 1000) / 1000, ytdAsOf: lastDate, baseDate, kind: adj.length ? "adjusted close (distributions reinvested)" : "close (NOT total return)" , url };
+}
+
 async function fetchOne(t, s) {
   const url = `https://query2.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(t)}?modules=fundProfile,fundPerformance,price&crumb=${encodeURIComponent(s.crumb)}`;
-  const r = await fetch(url, { headers: { "User-Agent": UA, Cookie: s.cookie } });
-  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  const r = await fetch(url, { headers: { "User-Agent": UA, Cookie: s.cookie, Accept: "application/json" } });
+  if (!r.ok) {
+    const body = (await r.text().catch(() => "")).slice(0, 160).replace(/\s+/g, " ");
+    console.log(`${t.padEnd(7)} quoteSummary HTTP ${r.status} (crumb ${s.crumb.length} chars, cookie ${s.cookie.slice(0, 3)}…): ${body}`);
+    const c = await chartYtd(t);
+    if (c.kind.startsWith("close")) throw new Error("only unadjusted closes available; a price return is not a YTD return");
+    const entry = { name: c.name, updated: today, ytd: c.ytd, ytdAsOf: c.ytdAsOf, ytdSource: c.url, note: `YTD computed from Yahoo adjusted closes: ${c.baseDate} -> ${c.ytdAsOf}` };
+    if (!entry.name) throw new Error("chart carries no fund name");
+    return entry;
+  }
   const j = await r.json();
   const res = j && j.quoteSummary && j.quoteSummary.result && j.quoteSummary.result[0];
   if (!res) throw new Error(`empty result (${JSON.stringify(j && j.quoteSummary && j.quoteSummary.error).slice(0, 120)})`);
