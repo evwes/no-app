@@ -13474,3 +13474,39 @@ Filed under (j) with the trailing-punctuation and share-count strips: one
 version waits.
 
 Rate, per participant: 0 fabricated, 0 wrong values, 1 cosmetic class.
+
+## 2026-09-18 (run #353 verdict, 06:0xZ) — v136 landed and MIRRORED: Dominion Energy's menu back, First American's page can say "held in the master trust", statement-of-changes lines gone; HIGH 5, one loss and it is the design; a third loop gap (03:2x–06:0xZ, session limit)
+
+**Run #353** (id 35300667190), dispatched 02:46Z on `c6596ba0` (wam #6's
+three items), concluded success; data commit `8bc58c1a`. The verdict
+waited on a third usage-limit gap (the 04:05 check-in and the 04:08 and
+05:09 wakes queued; main's cron made no commit). Re-derived from the store:
+
+| check | v135 (`647a32a3`) | v136 (`8bc58c1a`) | predicted |
+|---|---|---|---|
+| dominant pv | 135 at 99.85% | **136 at 99.85%** | |
+| confident | 60,103 | **60,105** (+3 / −1) | −1 Citgo, ≥+1 Dominion ✓ |
+| HIGH | 21 | **5** = 4 + Citgo's `reparse-loss` | toward 4 ✓ |
+| overshoot (≥1.15x) | 360 / 517,317 | 361 / 517,504 | flat or falling ✓ (flat) |
+| generic-names audit | 109 | **108** | ≤109 ✓ |
+| dominant-row audit | 0 | 0 | ✓ |
+| prose-as-holding ≥10% | 100 plans | 100 | unchanged, as expected |
+| First American PN 003 | `dx=stmt`, bits 4460 | `dx=stmt`, `tp=1`, **bits 196972 = 65536+131072 set** | ✓ the page now names the trust |
+| `dl` | 99 | 99 | ✓ |
+
+**Gains 3:** Dominion Energy (18,747 ppl) back at its real menu; Aero Gear
+and Perfect Air (187 each). **Loss 1, by design:** Citgo (3,341 ppl) — its
+three rows were `Mutual funds`, `Money market fund`, `Rollovers from other
+qualified plans`; the statement-line rule removed the third and the 3-row
+floor did the rest. Correct. `--force-data` on that one loss; the git check
+passed unforced (main had taken no cron commit since the 02:2xZ mirror).
+Mirrored `9896216a` → `8bc58c1a`.
+
+**Queue after this:** (h) class subtotals as holdings (98 plans / 336,152
+ppl at ≥30%; Morgan Stanley 81,090 the headline; the letter-spaced
+subclass 42 / 123,497), (i) a holding published twice (262 / 450,981),
+(j) cosmetic strips incl. the type suffix (1,237 / 4.42M), (f) issuer glue
+(375 + 357 plans), the remaining 100 plans of (g), and Lehigh Valley's
+OCR-path answer (its fresh `dx` is in this store; unread, 198 ppl). No new
+agent until the owner's usage picture is clearer: three agents were killed
+by limits in 24 hours, and every kill costs the uncommitted item.

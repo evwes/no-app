@@ -235,6 +235,16 @@ Order of business:
       Compass Group, Intermountain, Hy-Vee); a display/lookup strip in
       `app.js` covers readers before the next parser version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 06:0xZ 2026-09-18 (run #353 verdict): v136 is LIVE** —
+      Dominion Energy back (16 rows), First American's page names the
+      trust (bits 65536+131072), statement lines gone (47 plans / 340,403
+      ppl); Citgo the one designed loss. Next parser work goes in at
+      **137**. Open, by people: (h) class subtotals 98 plans / 336,152 ppl
+      (Morgan Stanley); (i) duplicate rows 262 / 450,981; (j) cosmetic
+      strips 1,237 / 4.42M (a display strip in app.js needs no re-parse);
+      (f) issuer glue; the remaining 100 plans of (g); Lehigh Valley's
+      OCR-path answer (198 ppl, unread). **No agent spawn until the owner's
+      usage picture is clearer** — three agents were killed by limits in 24h.
       **STATUS 02:2xZ 2026-09-18 (run #352 verdict): v135 parts 1-2 are
       LIVE** (trust-pointer reading; prose is not a holding — item (g)
       halved: 171 → 100 plans at ≥10%). **NEW TOP ITEM — Dominion Energy

@@ -651,11 +651,11 @@ don't confuse them). Frontend: python http.server + Playwright at
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
   full-form** filers and 43,523 short-form; 68,767 parse-status entries.
-  **Store at v135 (branch AND main, `647a32a3`); `PARSER_VERSION` in the
-  tree is 135 — no unparsed parser change is waiting. OCR v8.**
-  **Re-derived from the local store 2026-09-18 02:2xZ** — `pv135` covers
+  **Store at v136 (branch AND main, `8bc58c1a`); `PARSER_VERSION` in the
+  tree is 136 — no unparsed parser change is waiting. OCR v8.**
+  **Re-derived from the local store 2026-09-18 06:0xZ** — `pv136` covers
   68,667 of 68,767 acks (99.85%), tail pv106 18, pv98 10, pv123 10, pv124
-  10; `lib-4i` exports 135. (On 2026-09-16 this line said v124 for four
+  10; `lib-4i` exports 136. (On 2026-09-16 this line said v124 for four
   mirrors while every gate printed 126 —
   The line had said **v123 for at least four mirrors while every mirror gate in
   that window printed "dominant pv 124"** — the version number in the first
@@ -663,7 +663,18 @@ don't confuse them). Frontend: python http.server + Playwright at
   Nothing downstream was affected (no session acted on it), but it is exactly
   the copying-a-line-forward hazard this file warns about elsewhere, aimed at
   the file's own header. **Re-derive this line rather than editing the date.**
-- **LIVE on main: `647a32a3` — MIRRORED 2026-09-18 02:2xZ.** The v135 store
+- **LIVE on main: `8bc58c1a` — MIRRORED 2026-09-18 06:0xZ.** The v136 store
+  (an unpublishable winner may not bury a publishable menu; the trust-pointer
+  bits reach the page; statement-of-changes lines are not holdings). pv 136
+  at 99.85%, confident 60,105 (+3 / −1), **HIGH 5 = 4 + Citgo's designed
+  loss**, overshoot 361, generic-names 108, dominant-row 0. **Dominion
+  Energy (18,747 ppl) has its 16-row menu back; First American (17,155)
+  carries bits 65536+131072 and its page names the master trust; 47 plans /
+  340,403 ppl lose a statement line published as a holding ($2.12B of
+  phantom value).** `--force-data` on the one loss (Citgo, 3 rows → 2, the
+  rule working); git check unforced. **Third loop gap 03:2x–06:0xZ**
+  (session limit). `docs/accuracy-log.md` 2026-09-18 (run #353 verdict).
+- **Previously: `647a32a3` — MIRRORED 2026-09-18 02:2xZ.** The v135 store
   (parts 1-2: a one-row master-trust pointer is a reading, not a failure;
   prose is not a holding). pv 135 at 99.85%, confident 60,103 (+7 / −18),
   HIGH 21 = 4 + 17 self-clearing `reparse-loss`, overshoot 360,
