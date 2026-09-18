@@ -13398,3 +13398,48 @@ the site's expense ratios stay the pattern-level "est." figures in
   exactly 1 (Citgo) from this half and up by at least 1 (Dominion) from the
   other; `losses-triage.txt` naming Citgo and nothing else from this change;
   `overshoot` falling or flat — every row this removes shrinks a published sum.
+
+## 2026-09-18 — Lehigh Valley Imaging (198 participants): NOT REPRODUCED IN-SESSION, and the reason is the OCR path
+
+Queued beside Dominion as a v135 regression: 12 rows at v134 (11 Vanguard
+vintages plus a `net asset value (a)` fragment) → `dx=few rw=1 rt=100` at v135,
+ack `20260806083440NAL0004256851001`.
+
+**What was established.** `node scripts/trace-filing.mjs <ack> --vs 789f589e`
+returns **NOT FOUND under v134, v135 and v136 alike** — the pdftotext text
+layer contains no readable schedule, which matches the store's own
+`ds=noattach`. So neither the v134 lineup nor the v135 one-row reading came
+from the text layer: both came from the OCR path, which `fetch-4i` takes
+whenever the text parse is not confident (v118). `trace-filing` does not
+rasterise, so **the production input for this filing cannot be reproduced by
+the trace tool at all** — a limitation of the instrument worth knowing before
+the next session spends time on it.
+
+**What is therefore NOT claimed.** The shape of the store entry (`rw=1`,
+`rt=100`, exactly 1.00x plan assets) is the signature of v135 part 1's
+one-row trust-pointer promotion firing after part 2's prose predicate emptied
+the real region — but that chain was not instrumented and **a cause that is
+merely plausible is not a cause.** An in-sandbox OCR of all 41 pages was
+started and had produced 4 pages of text after ~45 minutes, which is past what
+this item is worth at 198 participants.
+
+**Left for the v136 run to answer, at no extra cost:** the run re-parses this
+ack and writes its own `dx`/`rw`/`rt`. If v136 restores it, the cause was
+region selection and item 1's guard covers it. If it still reads one row, the
+cause is the prose predicate operating on OCR text and the next step is to
+read the OCR text, not the PDF.
+
+**The general question this raises, recorded because it is bigger than this
+plan.** wampo now has three row-level name guards — `isLoanNoteName` (v131),
+`isProseRowName` (v135) and `isStatementOfChangesRowName` (v136) — and **each
+of the first two has produced at least one region-selection regression**
+(Dominion, 18,365 participants; Bloomberg, 20,110, caught pre-commit). v136 is
+deliberately POST-SELECTION for that reason. Moving the other two
+post-selection would have prevented both regressions — **and would also have
+given back v135's real gains**, because BJC's suppression survives either way
+but the Board of Trustees' and National Medical Care's moves onto better
+regions depended on the junk region losing rows during scoring. So it is a
+genuine trade-off per class, not a blanket rule, and the honest statement is:
+**a row-level name guard must be assumed to be a region-selection change until
+`diff-lineups` says otherwise**, and the placement (row-level vs
+post-selection) is a decision each class needs on evidence.
