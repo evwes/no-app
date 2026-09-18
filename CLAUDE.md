@@ -651,12 +651,11 @@ don't confuse them). Frontend: python http.server + Playwright at
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
   full-form** filers and 43,523 short-form; 68,767 parse-status entries.
-  **Store at v138 (branch AND main, `6d5411d8`); `PARSER_VERSION` in the
-  tree is 139 (caption-tail glue, 478 plans) — its run was dispatched
-  2026-09-18 18:2xZ; mirror only once the v139 store lands. OCR v8.**
-  **Re-derived from the local store 2026-09-18 06:0xZ** — `pv136` covers
-  68,667 of 68,767 acks (99.85%), tail pv106 18, pv98 10, pv123 10, pv124
-  10; `lib-4i` exports 136. (On 2026-09-16 this line said v124 for four
+  **Store at v139 (branch AND main, `eb25b24f`); `PARSER_VERSION` in the
+  tree is 139 — no unparsed parser change is waiting. OCR v8.**
+  **Re-derived from the local store 2026-09-18 19:5xZ** — `pv139` covers
+  68,665 of 68,767 acks (99.85%), tail pv106 18, pv98 10, pv123 10, pv124
+  10; `lib-4i` exports 139. (On 2026-09-16 this line said v124 for four
   mirrors while every gate printed 126 —
   The line had said **v123 for at least four mirrors while every mirror gate in
   that window printed "dominant pv 124"** — the version number in the first
@@ -664,7 +663,29 @@ don't confuse them). Frontend: python http.server + Playwright at
   Nothing downstream was affected (no session acted on it), but it is exactly
   the copying-a-line-forward hazard this file warns about elsewhere, aimed at
   the file's own header. **Re-derive this line rather than editing the date.**
-- **LIVE on main: `05a9d93a` — MIRRORED 2026-09-18 12:2xZ.** The v138 store
+- **LIVE on main: `eb25b24f` — MIRRORED 2026-09-18 19:5xZ.** The v139 store
+  (a valueless line made only of 4i column-caption words no longer glues
+  onto a page's first holding; the v70 row strip names the four leaked
+  shapes). pv 139 at 99.85%, confident 60,106 (+3 / −0), HIGH 4, overshoot
+  360, aggRow 56, dominant-row 0, generic-names 128, dl 101 (both new
+  ones re-probed 403). **Measured whole-store with a multiset row diff
+  (`rename-ms.mjs`), not the corpus:** 820 rows / 756 plans / 1.13M ppl
+  lose a caption prefix (the 480 predicted PLUS the Empower "ISSUER NO. OF
+  SHARES COST ** VALUE" family the line-stage rule caught for free); 300
+  junk/duplicate rows removed across 77 plans; 190 added across 57 (one
+  small plan gained a whole menu; one $27,863 cover-page row is new junk).
+  **One regression, 1 plan / 22 rows (Lulus Fashion Lounge, `20251010124253
+  NAL0004611859001`): its full-name region and its 10-char-code region now
+  score an exact tie at 0.1047 and the code region wins** — queue item (m).
+  `tkShare` 23.21 → 22.77 is SAMPLING-PHASE NOISE, not a loss: the audit
+  samples every 20th row by position, one removed row re-phases the whole
+  sample, and the exact whole-store count is 456,060 → 456,065 rows with a
+  ticker. `--force` on the git check over main's `82f3ec0f` (a v138 no-op
+  cron commit: 0 acks / 0 plans the branch lacked, main newer on 0); data
+  gate unforced. GitHub MCP was down for this verdict, so the Pages build
+  of `eb25b24f` was NOT confirmed. `docs/accuracy-log.md` 2026-09-18 (run
+  #369 verdict).
+- **Previously: `05a9d93a` — MIRRORED 2026-09-18 12:2xZ.** The v138 store
   (the 80-row DISPLAY CAP: `parseRows` kept the largest 80 rows while
   `totalValue` counted every row, so confidence judged whole schedules and
   readers saw a prefix — 12 plans / 481,363 ppl / $27.6B hidden at ≥15%,

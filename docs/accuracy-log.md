@@ -14237,3 +14237,89 @@ shape twice, both store-side:
 at 19:08Z (45 min). Branch and main clean; main carries nothing the
 branch lacks. **Mirror HELD** — the branch head carries v139 code over
 the v138 store. The 19:32Z check-in reads the verdict.
+
+## 2026-09-18 (19:5xZ) — run #369 verdict: v139 PASSED and mirrored; 820 caption-prefix rows across 756 plans fixed, 300 junk rows gone, one plan regressed on a score tie; the tkShare dip is the audit's own sampling phase
+
+**Run #369** (v139 full re-parse, dispatched 18:23Z on `55b64420`):
+success, data commit `eb25b24f`, 55 min. **pv 139 covers 68,665 of
+68,767 (99.85%)**, tail unchanged (pv106 18, pv98 10, pv123 10, pv124 10).
+Coverage line: confident **60,106 (+3 / −0)** — Sherman & Howard (145
+ppl), College of the Ozarks (431), one master trust; HIGH 4, overshoot
+360 / 513,462 ppl, aggRow 56, `dl` 99 → 101, `pvTopShare` 99.9.
+`audit-generic-names` 128 (unchanged), `audit-dominant-row` 0. The two
+new `dl` acks (`20251015142211NAL0002561811001`, `20251023150414NAL0002266867001`)
+were both confident at v138 and both answer **403** on a HEAD probe — the
+bucket grew by two, the stored entries are kept (the v37 protection).
+`header-glue.mjs` on the new store: **480 → 2 rows** (predicted ~0; the
+two residues carry a value on the caption line, so the whole-line rule
+correctly leaves them). Nebraska Medicine's top row is now the two-line
+issuer with the fund name cut by the store's name length — the caption is
+gone, the colon-less issuer glue (f) remains, as recorded at 18:1xZ. Mix
+Talent 14 rows, as predicted.
+
+**The corpus diff said 0/0/0; the STORE says more, and the store is the
+measurement.** `diff-lineups` covers 957 filings; a full re-parse touches
+68,665. So the verdict was re-measured as a whole-store multiset row diff
+between the v138 shards (`git show 4b85dd0d:data/lineups/*`) and the new
+ones, pairing a removed and an added row only when they share a value and
+each is unique at that value (`rename-ms.mjs` — the first draft paired by
+value alone and reported 5,168 "other" renames that were all same-value
+DUPLICATE rows mis-paired; Baird / First Bankers Trustshares was
+byte-identical old and new. **A diff is a measuring script and earns the
+same suspicion as any other.**)
+
+| class | rows | plans | ppl |
+|---|---|---|---|
+| caption prefix stripped (`maturity date …`, `ISSUER NO. OF SHARES COST ** VALUE …`, `party collateral, par, or maturity value ($) …`) | **820** | **756** | 1,132,463 |
+| rows removed | 300 | 77 | 375,860 |
+| rows added | 190 | 57 | 146,018 |
+| rename, other | 129 | 96 | 349,760 |
+| rename, shortened | 57 | 19 | 10,044 |
+| rename, to a short code | **22** | **5** | 8,350 |
+
+- The 820 is the 480 predicted **plus the Empower/Great-West template's
+  "ISSUER … COST ** VALUE" caption family**, which the whole-line rule
+  catches for free (`issuer`, `units`, `shares`, `cost`, `value` are all
+  caption vocabulary). NYC District Council of Carpenters (35,000 ppl):
+  two caption-glued fragments of ONE vehicle — the Stable Value Fixed
+  Income Fund's securities ($1.561B) and its interest-bearing cash
+  ($25.4M, a separate section) — now merge under the fund's own name at
+  $1.586B, which is the plan's total interest in that fund.
+- Removed 300: same-value duplicates now merging under one name (Black
+  Box: `GALLIARD RET INCOME FD CL 35` + `Galliard Retirement Income
+  Fund`), cover-page address rows (`instructions) US Boston MA
+  02131-3638` $813,000), `Investments measured (a) at net asset value`.
+  Added 190: `20260609084150NAL0011060770001` gained a real Vanguard/Voya
+  menu; one NEW junk row, `2002-51 included: X $27,863` (Principal plan,
+  $27,863, cover page) — recorded, tiny.
+- **The one regression: Lulus Fashion Lounge (`20251010124253NAL0004611859001`,
+  $18M, 22 rows).** The filing carries the same menu twice: the statutory
+  schedule with full names (`T. Rowe Price Retirement 2055 | Mutual fund`)
+  and a trustee statement with a 10-character code column (`T ROWE PRICE
+  | RBF2055I`). At v138 the full-name region scored 0.1095 (27 rows,
+  one of them the glued caption row) against the code region's 0.1047;
+  v139 drops the caption row, the region falls to 26 rows and **0.1047
+  exactly**, and the tie goes to the code region. Readers now see
+  `RBF2055I`, `ISHARES TO`, `AM FD NEW`. **Queue item (m): tie-break on
+  name quality** — at equal score prefer the candidate with fewer
+  code-shaped / ≤10-char names. One plan today, but the mechanism (a
+  junk row's removal producing an exact tie) is general.
+- "Registered investment companies" → "companies" in one plan
+  (`20251008075114NAL0012824226001`): a type label, not a holding, no
+  worse. `SAM Balanced R3 Portfolio Fund s` (trailing fragment) in one
+  Principal plan.
+
+**`tkShare` 23.21 → 22.77 is NOT a ticker loss.** `audit-data` samples
+every 20th published row BY POSITION across the whole store; removing one
+row re-phases every row after it, so the sample is a different 85,987
+rows. The exact whole-store count with the same lookup: **456,060 →
+456,065 rows resolve a ticker (+5)**. Prevention: the trail line should
+carry the EXACT share (the count takes ~3 s over 1.7M rows) or sample by
+a hash of the ack, not by position — queued as a small audit change.
+
+**Mirror:** main carried `82f3ec0f`, the :23 cron's v138 no-op (plans
+array byte-identical, 0 acks / 0 plans the branch lacked, main newer on
+0), so `--force` on the git check; data gate **+3 / −0 unforced**.
+`eb25b24f` is live. **GitHub MCP was disconnected for this whole verdict**
+(run status read from the branch's data commit instead), so the Pages
+build of `eb25b24f` is unconfirmed — the 20:07Z cycle checks it.

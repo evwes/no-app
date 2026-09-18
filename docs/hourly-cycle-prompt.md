@@ -237,6 +237,17 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 19:5xZ 2026-09-18: v139 run #369 PASSED and is LIVE
+      (`eb25b24f`, pv 139 at 99.85%, +3/−0, HIGH 4, overshoot 360, aggRow
+      56). Whole-store multiset diff: 820 caption-prefix rows / 756 plans
+      fixed (480 predicted + the Empower "ISSUER … VALUE" family), 300 junk
+      or duplicate rows removed, ONE regression — Lulus Fashion Lounge (22
+      rows, full names → 10-char codes on an exact score tie at 0.1047),
+      NEW queue item (m). `tkShare` dip is sampling-phase noise (exact
+      count +5). `--force` git check over main's no-op `82f3ec0f`. Pages
+      build unconfirmed (GitHub MCP down). **Owner asked for specific
+      questions; four posed in chat 19:1xZ; hold stands.**
+      `docs/accuracy-log.md` 2026-09-18 (run #369 verdict).
       **STATUS 19:1xZ 2026-09-18: v139 run #369 in flight (45 min at the
       wake); mirror HELD (code ahead of store); draw 15/15 real, only the
       (f) issuer-glue shape (Duke University `Fidelity Vanguard Inst Index
