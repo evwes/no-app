@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 139;
+export const PARSER_VERSION = 140;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -2969,7 +2969,58 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
  * length test the same way a missing one was supposed to. */
 export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
   const out = parse4iInner(text, assetsEOY, sponsorName, codes);
-  return Array.isArray(out.funds) ? out : { ...out, funds: [] };
+  if (!Array.isArray(out.funds)) return { ...out, funds: [] };
+  applyLegend(out, text);
+  return out;
+}
+
+/* v140: THE SCHEDULE NAMES ITS HOLDINGS BY CODE AND DEFINES THE CODES IN A
+ * LEGEND. Empower's (Great-West's) 4i template prints one column headed
+ * "INVESTMENT OPTION" holding an internal code — `1VTIVX`, `1JPB40C`,
+ * `1P0139A`: a leading "1" and, usually, the fund's ticker — beside the
+ * cost and value columns, and then a LEGEND block after the table:
+ *
+ *   LEGEND
+ *     INVESTMENT OPTION:
+ *        1VTIVX   Vanguard Target Retirement 2045 Inv     1VFIFX   Vanguard Target Retirement 2050 Inv
+ *
+ * The rows parsed, the codes were published as the holding names, and the
+ * ticker lookup resolved none of them: 742 plans / 709,129 participants /
+ * 14,802 rows on the v139 store (619 of the plans Empower's), every fee cell
+ * blank, every reader shown "1VFIAX" for the Vanguard 500 fund. The legend is
+ * the filing's own statement of what each code means, so a row whose name IS
+ * a legend code takes the legend's name; the code is kept on the row for
+ * provenance. Codes read by OCR as "I…" (2,958 rows) match only when the
+ * legend was read the same way, which is the honest outcome — no guessing at
+ * a code the filing did not define. Two-column legends are split on a run of
+ * three or more spaces before the next code. */
+const LEGEND_CODE = /^[1I][A-Z0-9]{4,7}$/;
+function legendMap(text) {
+  const at = text.search(/^[ \t]*LEGEND[ \t]*$/m);
+  if (at < 0) return null;
+  const map = new Map();
+  const pair = /(?:^|\s{2,})([1I][A-Z0-9]{4,7})\s{2,}(\S(?:.*?\S)?)(?=\s{3,}[1I][A-Z0-9]{4,7}\s{2,}|\s*$)/g;
+  for (const line of text.slice(at).split("\n")) {
+    if (!/^\s*(?:[1I][A-Z0-9]{4,7})\s{2,}\S/.test(line)) continue;
+    let m;
+    pair.lastIndex = 0;
+    while ((m = pair.exec(line))) {
+      const name = m[2].replace(/\s+/g, " ").trim();
+      if (name.length >= 4 && /[a-z]/i.test(name) && !map.has(m[1])) map.set(m[1], name);
+    }
+  }
+  return map.size ? map : null;
+}
+function applyLegend(out, text) {
+  if (!out.found || !out.funds.length) return;
+  if (!out.funds.some((f) => LEGEND_CODE.test(String(f.name || "").trim()))) return;
+  const map = legendMap(text);
+  if (!map) return;
+  for (const f of out.funds) {
+    const k = String(f.name || "").trim();
+    const nm = map.get(k);
+    if (nm) { f.code = k; f.name = nm; }
+  }
 }
 
 function parse4iInner(text, assetsEOY, sponsorName = "", codes = "") {

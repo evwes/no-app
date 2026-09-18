@@ -237,6 +237,16 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 21:3xZ 2026-09-18: #372 no-op mirrored (`a18d4ad9`,
+      tkShare 24.03 = the hash-sample step). **v140 shipped**: Empower's
+      coded 4i schedule (`1VFIAX`) takes its names from the filing's own
+      LEGEND — 742 plans / 709,129 ppl / 14,802 rows published codes and
+      resolved 0 tickers; found by the sizer meant to bound (m). Gate
+      green, diff 0/0/0, Berger Rental pinned. Dispatched after this
+      commit; verdict must show LEAD rows 14,802 → ~2,900 and the exact
+      ticker count rising. (m) Lulus stays open (1 plan). **Owner's four
+      questions still open; hold stands.** `docs/accuracy-log.md`
+      2026-09-18 (21:3xZ).
       **STATUS 21:1xZ 2026-09-18: #371 no-op mirrored (`cbfea546`), #372
       dispatched 21:08Z; site-test #78 success; draw 15/15 real, only
       known shapes plus one new small one — the ® glyph read as "b"

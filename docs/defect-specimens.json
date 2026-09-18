@@ -415,6 +415,13 @@
       "fixed": "v139",
       "sponsor": "Nebraska Medicine",
       "was": "the caption's wrapped second line 'of Investment Cost Value' and a two-line issuer glued onto the largest holding (Vanguard Institutional Index Fund, 19.6%); store-wide 478 plans / 409,634 ppl, 440 of them 'maturity date <fund>'"
+    },
+    {
+      "ack": "20251008142625NAL0005990049001",
+      "class": "coded-schedule-with-legend",
+      "fixed": "v140",
+      "sponsor": "Berger Rental Communities",
+      "was": "Empower's template names each holding by an internal code (1VTIVX) and defines the codes in a LEGEND after the table; 742 plans / 709,129 ppl / 14,802 rows published the codes as names and resolved no ticker"
     }
   ]
 }

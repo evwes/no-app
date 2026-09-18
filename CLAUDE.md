@@ -651,8 +651,10 @@ don't confuse them). Frontend: python http.server + Playwright at
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
   full-form** filers and 43,523 short-form; 68,767 parse-status entries.
-  **Store at v139 (branch AND main, `eb25b24f`); `PARSER_VERSION` in the
-  tree is 139 — no unparsed parser change is waiting. OCR v8.**
+  **Store at v139 (branch AND main, `a18d4ad9`); `PARSER_VERSION` in the
+  tree is 140 (coded-schedule LEGEND names, 742 plans / 709k ppl) — its
+  run was dispatched 2026-09-18 21:3xZ; mirror only once the v140 store
+  lands. OCR v8.**
   **Re-derived from the local store 2026-09-18 19:5xZ** — `pv139` covers
   68,665 of 68,767 acks (99.85%), tail pv106 18, pv98 10, pv123 10, pv124
   10; `lib-4i` exports 139. (On 2026-09-16 this line said v124 for four

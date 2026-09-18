@@ -14409,3 +14409,57 @@ fixed.
 **Runs:** #371 (20:08Z) success, no-op, mirrored `cbfea546`; main's :23
 cron did NOT fire at 20:23. **#372 dispatched 21:08:43Z** via REST on
 `fe95fdcf`, observed in_progress. GitHub MCP reconnected at 21:07Z.
+
+## 2026-09-18 (21:3xZ) — v140: a coded schedule takes its names from the filing's own LEGEND — 742 plans / 709,129 participants / 14,802 rows published Empower's internal codes ("1VFIAX") as holding names; run #372 no-op, mirrored
+
+**Found while sizing queue item (m).** A sizer for "fixed-width short-name
+columns" (`short-col.mjs`: ≥7 rows, ≥60% of names ≤10 characters) meant
+to bound the Lulus tie-break returned **736 plans / 650,928 ppl** — and
+the examples were not Lulus's shape at all: `1VTIVX`, `1VFIFX`, `1MEIKX`,
+`1JPB40C`, `1P0139A`. Opening Berger Rental Communities
+(`20251008142625NAL0005990049001`, 385 ppl) shows Empower's (Great-West's)
+4i template: an `INVESTMENT OPTION` column carrying an internal code (a
+leading "1" plus, usually, the ticker) beside cost and value, and after
+the table a **LEGEND** block — `1VTIVX   Vanguard Target Retirement 2045
+Inv`, two pairs per line. The parser read the rows correctly (ratio 0.974,
+31 rows, confident) and published the codes as names.
+
+**Sized exactly (`lead-ticker.mjs`): 14,802 rows / 742 plans / 709,129
+participants** carry a `[1I]` + 4-7 alphanumerics name; lead "1" 11,830,
+"I" 2,958 (the same glyph read by OCR), "l" 14. **fund-er resolves 0 of
+them, raw or with the lead stripped** — a bare ticker is not in the table
+by design — so every one of those 14,802 fee cells is blank and every
+reader sees a code. 619 of the 742 plans name Empower as recordkeeper;
+Capital Group 30, JPMorgan 12, Bank of America 10. A further 74 rows / 38
+plans publish a bare ticker with no lead (also unresolved; separate).
+
+**Change (v140, `lib-4i.mjs` `applyLegend`):** after `parse4iInner`, if
+any row's name is a legend-shaped code, find the `LEGEND` line, read every
+`code  name` pair after it (two-column lines split on a run of ≥3 spaces
+before the next code), and give each matching row the legend's name,
+keeping the code on the row as `code`. Only an exact code match renames —
+a code the filing never defined stays a code, which is the honest outcome
+for the OCR "I…" rows whose legend read differently. Berger: 31 rows →
+`Vanguard Target Retirement 2045 Inv`, `Fidelity 500 Index`, `Fidelity
+Advisor Technology Z`; Faurecia (3,836 ppl): `MFS Value R6`, `Oakmark
+International Institutional`, `T. Rowe Price Mid-Cap Growth I`. Gate
+green; `diff-lineups HEAD` 959 filings: 0 gained / 0 lost / 0 fabricated /
+0 row-count or sum moves (a rename moves nothing it measures). Pinned
+Berger in `docs/defect-specimens.json` (`coded-schedule-with-legend`).
+
+**Prediction for the v140 run:** `lead-ticker.mjs` LEAD rows 14,802 →
+about 2,900 (the OCR "I…" residue, plus any filing whose legend is on an
+unread page); confident +0 / −0; coverage line otherwise unchanged except
+`tkShare`, which should RISE (the exact name-only figure 23.01% is the
+baseline; ~11,800 rows gaining a real name over 1.73M is up to +0.7 points
+if they all resolve — they will not all resolve, so read the exact count
+with `tk-share-cmp.mjs`, not the sample). Every renamed row must carry
+`code`, so `rename-ms.mjs` can pair old code → new name exactly.
+
+**Queue (m) itself stays open** — the Lulus tie is one plan; the sizer
+that was meant to bound it found this instead. That is the second time
+this week a bounding measurement was worth more than the item it bounded.
+
+**Run #372** (dispatched 21:08Z) success 21:14Z, no-op; `tkShare` 24.03 is
+the hash-keyed sample's first line (the predicted one-time step; exact
+name-only figure unchanged at 23.01%). Mirrored `a18d4ad9` unforced.
