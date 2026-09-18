@@ -986,6 +986,17 @@ for (const plan of work) {
       fbAbsentLogged++;
     }
   }
+  /* v137: WHY the newest filing is being passed over, captured before the
+   * fallback overwrites `parsed`. The source string used to say "has no
+   * readable schedule" for every non-withdrawn primary — false for ATH
+   * Holding (94,427 participants), whose 2024 schedule was READ, in full,
+   * and refused because it reports `Collective investment trusts` at 92%:
+   * an asset-class statement, not a menu. A disclosure that names the wrong
+   * cause is a published claim like any other. */
+  const fbPrimaryWhy = !parsed.found ? "none"
+    : isConfident(parsed) ? "ok"
+    : (parsed.stmt || parsed.trustPtr) ? "aggregate"
+    : "band";
   for (const cand of fbCandidates) {
     if (fbUsed) break;
     const lineupWanted = !(parsed.found && isConfident(parsed)) && !trustHeld;
@@ -1116,7 +1127,7 @@ for (const plan of work) {
     ...(fbUsed ? { fbAck: fbUsed.a } : {}),
     ...(parsed.trustPtr ? { trustPtr: 1 } : {}),
     source: fbUsed
-      ? `Schedule H line 4i attachment from the plan's ${fbUsed.y} filing — the newest filing's public copy ${fbNoCopy ? "has been withdrawn from the EFAST2 public bucket" : "has no readable schedule"}${usedOcr ? "; digitized from scanned pages via OCR" : ""}`
+      ? `Schedule H line 4i attachment from the plan's ${fbUsed.y} filing — the newest filing's public copy ${fbNoCopy ? "has been withdrawn from the EFAST2 public bucket" : fbPrimaryWhy === "aggregate" ? "reports its investments only by asset class or as a trust interest, not as holdings" : fbPrimaryWhy === "band" ? "carries a schedule that could not be reconciled to the plan's reported assets" : "has no readable schedule"}${usedOcr ? "; digitized from scanned pages via OCR" : ""}`
       : `Schedule H line 4i attachment, plan year ${plan.planYear} filing${usedOcr ? " (digitized from scanned pages via OCR)" : ""}`,
   }, features);
   summary.push(`${tag}: ${parsed.funds.length} rows, cov ${(ratio * 100).toFixed(0)}%, sdba=${parsed.sdba}, ok=${confident}${fbUsed ? ` [prior-year ${fbUsed.y} filing]` : ""}`);
