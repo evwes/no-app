@@ -401,6 +401,13 @@
       "fixed": "v137",
       "sponsor": "Docomo Pacific Inc.",
       "was": "Published confident with `Common/collective trust funds` at 99.3% of a 3-row lineup: the v105/v111 dominant-row guard tests GENERIC_TYPE_NAME, whose trust arms were SINGULAR only (`collective (investment )?trust( fund| portfolio)?`), so every plural type label walked past it. Found by the 07:12Z 2026-09-18 participant-weighted draw on ATH Holding (Elevance, 94,427 ppl, $12.11B, `Collective investment trusts` 91.7%) — that filing is OCR-path and trace-filing cannot reproduce it, so this text-layer twin is the pin. v137 adds GENERIC_TYPE_ANY (the plural-aware form) to the dominant-row guard ONLY — widening GENERIC_TYPE_NAME itself let the v133 category-total removal delete 3M's $18.4B row and publish its fair-value note at 0.59; under it this parse is stmt=true and NOT confident. Control: `Vanguard Target Retirement 2030 Trust` and `Total Stock Market Index` must stay non-generic."
+    },
+    {
+      "ack": "20250725165111NAL0006865489001",
+      "class": "display-cap-hides-menu-tail",
+      "fixed": "v138",
+      "sponsor": "The Boeing Co.",
+      "was": "Published 80 rows at a displayed sum of 78% of plan assets while the stored coverageRatio was 0.99: parseRows capped `funds` at 80 rows and `totalValue` counted every row, so $15.5B (21% of the plan, 217,061 participants) sat in rows the page never showed, and the page's coverage sentence said the schedule 'does not itemise' them. v138 widens the cap to ROW_CAP=120 and records `cut: {n, v}` for whatever is still dropped; the page discloses it. EXPECT: more than 80 rows, and `cut` present with n>0 if the schedule exceeds 120."
     }
   ]
 }

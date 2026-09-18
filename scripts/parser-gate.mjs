@@ -309,7 +309,9 @@ const SPECIMENS = [
   // columns — counted as "words", they tripped the prose filter and emptied
   // the whole menu (1 junk row from a $41.5B plan)
   ["Costco (spaced leaders)", "20260723165543NAL0014354289001", 41523678630,
-    { found: true, n: 30, sum: 38997301000 }],
+    // v138: ROW_CAP 80 -> 120 lets the managed-account fold see 39 more
+    // positions (50 -> 89, $930M -> $1.29B); the menu rows are unchanged
+    { found: true, n: 31, sum: 39367530000 }],
   // v56: the REAL "$ in thousands" schedule ($39.3B master-trust
   // participation + $4.6B BrokerageLink) replaced a fair-value-note
   // fragment — trust-pointer flagged, so it can never display as a lineup
@@ -340,7 +342,10 @@ const SPECIMENS = [
   // candidates reach the honest result: managed-account rollup (74
   // positions) + real rows (Vanguard 500, Pershing cash)
   ["Carry-forward subtotals", "20251008154534NAL0005779537001", 295570079,
-    { found: true, n: 7, sum: 192739241 }],
+    // v138: the fold sees 108 positions instead of 74, and six itemized
+    // bonds that sat past the old cap now surface beside the one that
+    // already did; no subtotal re-enters (the carry-forward guard's point)
+    { found: true, n: 13, sum: 231079600 }],
   // v45: recordkeeper "SUMMARY OF NET TRUST ASSETS" page appended after
   // the real 4i table — same menu in ALL CAPS with cents; v43's cents fix
   // made it readable and the doubled region lost a real 29-fund menu

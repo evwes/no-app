@@ -1126,6 +1126,7 @@ for (const plan of work) {
     ...(featFb ? { featFb } : {}),
     ...(fbUsed ? { fbAck: fbUsed.a } : {}),
     ...(parsed.trustPtr ? { trustPtr: 1 } : {}),
+    ...(parsed.cut ? { cut: parsed.cut } : {}),
     source: fbUsed
       ? `Schedule H line 4i attachment from the plan's ${fbUsed.y} filing — the newest filing's public copy ${fbNoCopy ? "has been withdrawn from the EFAST2 public bucket" : fbPrimaryWhy === "aggregate" ? "reports its investments only by asset class or as a trust interest, not as holdings" : fbPrimaryWhy === "band" ? "carries a schedule that could not be reconciled to the plan's reported assets" : "has no readable schedule"}${usedOcr ? "; digitized from scanned pages via OCR" : ""}`
       : `Schedule H line 4i attachment, plan year ${plan.planYear} filing${usedOcr ? " (digitized from scanned pages via OCR)" : ""}`,

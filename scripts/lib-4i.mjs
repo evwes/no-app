@@ -3,7 +3,25 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 137;
+export const PARSER_VERSION = 138;
+/* v138: the displayed row cap, and what it cuts. parseRows kept the largest
+ * 80 rows and totalValue kept every row, so confidence judged the whole
+ * schedule while the page showed a prefix of it — with no trace that
+ * anything was missing. Measured on the v137 store: 386 published lineups
+ * sit exactly at 80 rows; 12 plans / 481,363 participants / $27.6B have
+ * >=15% of the plan in rows the site never showed (Boeing 217,061 ppl: 21%
+ * = $15.5B; Goldman Sachs 61% = $7.75B; Marriott 17%; NXP 39%), and the
+ * page's own coverage sentence told those readers the schedule "does not
+ * itemise" the rest — it does. The cap stays (trustee statements run to
+ * thousands of per-security rows) but is wider, and the cut is RECORDED:
+ * `cut: {n, v}` = rows dropped and their value, so the page can say so. */
+export const ROW_CAP = 120;
+function cutTail(rows) {
+  if (!rows || rows.length <= ROW_CAP) return null;
+  let v = 0;
+  for (let i = ROW_CAP; i < rows.length; i++) v += rows[i].value || 0;
+  return { n: rows.length - ROW_CAP, v };
+}
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -1883,7 +1901,7 @@ export function parseRows(section, opts = {}) {
   for (const r of leaves) if (r.value) (byVal.get(r.value) || byVal.set(r.value, []).get(r.value)).push(r);
   let pairedSum = 0, total = 0;
   for (const [v, rs] of byVal) { total += v * rs.length; if (rs.length === 2) pairedSum += v * 2; }
-  let pairFunds = null, pairTotal = 0;
+  let pairFunds = null, pairTotal = 0, pairCut = null;
   if (total > 0 && pairedSum / total >= 0.6) {
     pairFunds = [];
     for (const [v, rs] of byVal) {
@@ -1891,13 +1909,17 @@ export function parseRows(section, opts = {}) {
       for (const r of keep) { pairFunds.push(r); pairTotal += r.value; }
     }
     pairFunds.sort((a, b) => b.value - a.value);
-    pairFunds = pairFunds.slice(0, 80);
+    pairCut = cutTail(pairFunds);
+    pairFunds = pairFunds.slice(0, ROW_CAP);
   }
+  const allRows = [...seen.values()].map((e) => e.row).sort((a, b) => b.value - a.value);
+  const hardAll = [...hard.values()].sort((a, b) => b.value - a.value);
+  const allCut = cutTail(allRows);
   // totalValue covers every row, not just the displayed top 80 — huge filings
   // list thousands of individual securities and the ratio must reflect all.
-  return { funds: [...seen.values()].map((e) => e.row).sort((a, b) => b.value - a.value).slice(0, 80), sdba, totalValue,
-    hardFunds: [...hard.values()].sort((a, b) => b.value - a.value).slice(0, 80), hardTotal,
-    ...(pairFunds ? { pairFunds, pairTotal } : {}),
+  return { funds: allRows.slice(0, ROW_CAP), sdba, totalValue, ...(allCut ? { cut: allCut } : {}),
+    hardFunds: hardAll.slice(0, ROW_CAP), hardTotal, hardCut: cutTail(hardAll),
+    ...(pairFunds ? { pairFunds, pairTotal, pairCut } : {}),
     /* v77: the rows in FILED ORDER, so parse4i can look for the point where one
      * rendering of the schedule ends and the next begins. Only the caller knows
      * the plan's assets, which is the only thing that identifies that point. */
@@ -2260,10 +2282,10 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
       // vouch for this one
       if (!(assetsEOY > 0 && va.scales.some((sc) => (p.totalValue * sc) / assetsEOY >= 1.5))) continue;
       if (p.hardFunds && p.hardTotal && p.hardTotal !== p.totalValue) {
-        variants.push({ parsed: { ...p, funds: p.hardFunds, totalValue: p.hardTotal }, scales: va.scales, repair: 1, parentFunds: p.funds });
+        variants.push({ parsed: { ...p, funds: p.hardFunds, totalValue: p.hardTotal, cut: p.hardCut }, scales: va.scales, repair: 1, parentFunds: p.funds });
       }
       if (p.pairFunds && p.pairTotal && p.pairTotal !== p.totalValue) {
-        variants.push({ parsed: { ...p, funds: p.pairFunds, totalValue: p.pairTotal }, scales: va.scales, repair: 1, parentFunds: p.funds });
+        variants.push({ parsed: { ...p, funds: p.pairFunds, totalValue: p.pairTotal, cut: p.pairCut }, scales: va.scales, repair: 1, parentFunds: p.funds });
       }
       /* v77: PREFIX SPLIT. Some filings print the schedule twice with no 4i
        * heading between the copies, so no candidate region covers just one and
@@ -2311,8 +2333,9 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
             const k = r.name.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
             if (!keep.has(k)) keep.set(k, r);
           }
+          const keptAll = [...keep.values()].sort((a, b) => b.value - a.value);
           variants.push({ parsed: { ...p,
-            funds: [...keep.values()].sort((a, b) => b.value - a.value).slice(0, 80),
+            funds: keptAll.slice(0, ROW_CAP), cut: cutTail(keptAll),
             totalValue: cut.sum }, scales: va.scales, repair: 1, parentFunds: p.funds });
         }
       }
@@ -2892,7 +2915,7 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
   // a statement-vocabulary fragment can still WIN when it's the only
   // candidate (the real schedule is scanned or absent) — surface the flag
   // so it can never be marked confident
-  return { found: true, thousands: best.scale > 1, sdba: sdbaOut, funds, ratio: best.ratio, ...(best.stmt || provAgg || aggOnly || aggSplit ? { stmt: 1 } : {}), ...(trustPtr ? { trustPtr: 1 } : {}), ...(sma ? { sma, smaKind } : {}) };
+  return { found: true, thousands: best.scale > 1, sdba: sdbaOut, funds, ratio: best.ratio, ...(best.stmt || provAgg || aggOnly || aggSplit ? { stmt: 1 } : {}), ...(trustPtr ? { trustPtr: 1 } : {}), ...(sma ? { sma, smaKind } : {}), ...(best.cut && best.cut.n ? { cut: { n: best.cut.n, v: Math.round(best.cut.v * (best.scale > 1 ? best.scale : 1)) } } : {}) };
 }
 
 /* The public entry point. Pass 1 is v113 exactly. Pass 2 runs only when pass 1
