@@ -651,12 +651,8 @@ don't confuse them). Frontend: python http.server + Playwright at
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
   full-form** filers and 43,523 short-form; 68,767 parse-status entries.
-  **Store at v137 (branch `ecb8ba40`, main `8ef3e049`, same data);
-  `PARSER_VERSION` in the tree is 138 — DISPATCHED 10:4xZ 2026-09-18 (the
-  80-row display cap hid $27.6B from 481,363 readers in 12 plans; cap
-  120 + `cut` recorded + page disclosure). Verdict test: confident and
-  overshoot unchanged, Boeing >80 rows with `cut`, then open Boeing's
-  live page. OCR v8.**
+  **Store at v138 (branch AND main, `05a9d93a`); `PARSER_VERSION` in the
+  tree is 138 — no unparsed parser change is waiting. OCR v8.**
   **Re-derived from the local store 2026-09-18 06:0xZ** — `pv136` covers
   68,667 of 68,767 acks (99.85%), tail pv106 18, pv98 10, pv123 10, pv124
   10; `lib-4i` exports 136. (On 2026-09-16 this line said v124 for four
@@ -667,7 +663,23 @@ don't confuse them). Frontend: python http.server + Playwright at
   Nothing downstream was affected (no session acted on it), but it is exactly
   the copying-a-line-forward hazard this file warns about elsewhere, aimed at
   the file's own header. **Re-derive this line rather than editing the date.**
-- **LIVE on main: `78ff7aad` — MIRRORED 2026-09-18 09:2xZ.** The v137 store
+- **LIVE on main: `05a9d93a` — MIRRORED 2026-09-18 12:2xZ.** The v138 store
+  (the 80-row DISPLAY CAP: `parseRows` kept the largest 80 rows while
+  `totalValue` counted every row, so confidence judged whole schedules and
+  readers saw a prefix — 12 plans / 481,363 ppl / $27.6B hidden at ≥15%,
+  Boeing 21% = $15.5B, Goldman 61% — and the page called the rest "not
+  itemised"). `ROW_CAP` 120, `cut: {n, v}` recorded at every slice point,
+  the page says "N smaller holdings are not shown … about P% of the plan".
+  pv 138 at 99.85%, confident 60,103 (+0 / −0, as predicted), HIGH 4,
+  overshoot 360, dominant-row 0, generic-names 128, aggRow 56 (six small
+  plans crossed 30% because the fold now sees 120 rows — mechanism). 191
+  lineups at the new cap, 414 entries carry `cut`. **Boeing's page
+  positive control passed on a local render.** `--force` on the git check
+  over main's byte-identical cron commit; data gate unforced. Queue (l):
+  fold the per-security flood BEFORE the cap (Boeing's tail is 7,551
+  securities the fold never saw). `docs/accuracy-log.md` 2026-09-18 (run
+  #359 verdict).
+- **Previously: `78ff7aad` — MIRRORED 2026-09-18 09:2xZ.** The v137 store
   (a PLURAL type label at ≥90% of a lineup is a statement: `GENERIC_TYPE_ANY`
   feeds the dominant-row guard and the audits only — widening the shared
   regex had made 3M's fair-value note publishable, caught by the corpus

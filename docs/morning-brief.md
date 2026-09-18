@@ -1,7 +1,7 @@
-# Morning brief — 2026-09-18 (written 06:1xZ, refreshed 10:4xZ / 6:4x AM ET)
+# Morning brief — 2026-09-18 (written 06:1xZ, refreshed 12:3xZ / 8:3x AM ET)
 
-Live on main: **`78ff7aad`, the v137 store**, Pages deploying it. Six parser
-versions shipped in 27 hours (v132 → v137), every one verified against its
+Live on main: **`05a9d93a`, the v138 store**, Pages deploying it. Seven parser
+versions shipped in 30 hours (v132 → v138), every one verified against its
 own prediction and every loss read by row name before the mirror.
 
 ## What shipped and what it changed (numbers, not adjectives)
@@ -14,10 +14,10 @@ own prediction and every loss read by row name before the mirror.
 | v135 | prose (a description's wrapped tail) as a holding; a one-row trust pointer read as a pointer | prose ≥10% of menu **171 → 100 plans, 315k → 104k ppl**; BJC's all-junk lineup gone |
 | v136 | Dominion Energy's real menu back; First American's page names its master trust; statement-of-changes lines as holdings | 47 plans / 340,403 ppl / $2.12B phantom value; HIGH back to 5 (= 4 baseline + 1 designed) |
 | v137 | a PLURAL type label (`Collective investment trusts`) at ≥90% of a lineup is a statement, not a menu — ATH Holding / Elevance (94,427 ppl) was publishing the v105 shape; the guard knew the singular only. Its refusal triggered the prior-year fallback, so those 94,427 readers now see the 2023 filing's REAL 29-row menu, disclosed as 2023. A first draft that widened the shared regex made 3M's derivatives ledger publishable and was caught by the corpus diff before shipping | confident −2 (two master trusts, designed); HIGH 4; dominant-row 0; the generic-names audit gains 24 plans it could not see (108 → 128) |
-| v138 (in flight) | **the parser showed only the largest 80 rows of a schedule and the page called the rest "not itemised"** — Boeing's 217,061 participants were missing $15.5B (21% of their plan) that the filing lists; 12 plans / 481,363 ppl / $27.6B hidden at ≥15%, Goldman Sachs 61%. Cap 120, what is cut is now recorded and the page says "N smaller holdings are not shown … about P% of the plan" | dispatched 10:4xZ; nothing lost, nothing fabricated (diff 0/0/0) |
+| v138 | **the parser showed only the largest 80 rows of a schedule and the page called the rest "not itemised"** — Boeing's 217,061 participants were missing $15.5B (21% of their plan) that the filing lists; 12 plans / 481,363 ppl / $27.6B hidden at ≥15%, Goldman Sachs 61%. Cap 120, what is cut is now recorded and the page says "N smaller holdings are not shown … about P% of the plan" | LIVE 12:2xZ; confident +0/−0 as predicted; Boeing's page checked and renders the sentence |
 | fund table | "Van" contraction + 22 Vanguard funds the table never carried (your Ocala page) | **+43,962 rows / ~15,900 plans / 18.5M ppl gain a ticker; 0 lost; 0 flipped** |
 
-Store: confident lineups 60,103; pv 137 at 99.85%; generic-names audit 128
+Store: confident lineups 60,103; pv 138 at 99.85%; generic-names audit 128
 (threshold 230); dominant-row 0; download failures 99, all 99 re-probed 403.
 
 ## Fully complete pages (your question at 03:2xZ)

@@ -237,6 +237,18 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 12:3xZ 2026-09-18 (run #359 verdict): v138 is LIVE on main
+      (`05a9d93a`).** Confident +0/−0 exactly as predicted; HIGH 4;
+      dominant-row 0; 191 lineups at the new 120 cap, 414 entries carry
+      `cut`; aggRow 50 → 56 = six small plans whose fold now sees more
+      positions (mechanism, under the 60 baseline). **Boeing's page
+      positive control PASSED** (local render: "7,551 smaller holdings
+      are not shown … about 19% of the plan"); thousands separators added
+      to the counts. Main's cron commit byte-identical (`--force` git
+      check). #361 dispatched 12:23Z (incremental). Draw 14/15 clean; GM
+      is (h). Next parser work goes in at **139**: (l) fold before the
+      cap (Boeing's 7,551-row tail) is the largest by people among the
+      reachable items. `docs/accuracy-log.md` 2026-09-18 (12:3xZ).
       **STATUS 11:2xZ 2026-09-18: #359 (v138) still in flight, mirror
       held; site-test #72 success; draw 15/15 clean.** Into (i): a filed
       brokerage AGGREGATE beside the parser's brokerage FOLD under one

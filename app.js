@@ -1525,14 +1525,14 @@
     const covPct = covBand ? covBand.pct : null;
     const coverage = covBand == null ? "" : `
     <p class="max-benefit">${covPct < 95
-      ? `<strong>This table is ${covPct < 50 ? "a small part of" : "not all of"} the plan.</strong> The holdings below total ${money(total / 1e6)}, about ${covPct.toFixed(0)}% of the ${money(planAssets / 1e6)} this plan reports on its Schedule H. ${lu.cut && lu.cut.n ? `Part of the rest is the ${lu.cut.n} smaller holdings this table leaves out (see below).` : `The rest is money the filing accounts for that its schedule of assets does not itemise here.`}`
+      ? `<strong>This table is ${covPct < 50 ? "a small part of" : "not all of"} the plan.</strong> The holdings below total ${money(total / 1e6)}, about ${covPct.toFixed(0)}% of the ${money(planAssets / 1e6)} this plan reports on its Schedule H. ${lu.cut && lu.cut.n ? `Part of the rest is the ${lu.cut.n.toLocaleString()} smaller holdings this table leaves out (see below).` : `The rest is money the filing accounts for that its schedule of assets does not itemise here.`}`
       : `<strong>These holdings exceed the plan's reported assets.</strong> They total ${money(total / 1e6)} against ${money(planAssets / 1e6)} reported on Schedule H — about ${covPct.toFixed(0)}%. Treat the table as unreconciled.`}</p>`;
     /* v138: the parser keeps the largest rows of a long schedule and records
      * what it cut. Say so — before this, Boeing's 217,061 participants read
      * "the schedule does not itemise the rest" about $15.5B their filing
      * itemises on the pages the table stopped short of. */
     const cutNote = tab === "menu" && lu.cut && lu.cut.n ? `
-    <p class="max-benefit"><strong>${lu.cut.n} smaller holdings are not shown.</strong> The filing itemises ${lu.funds.length + lu.cut.n} holdings; this table shows the largest ${lu.funds.length}, and the ${lu.cut.n} it leaves out total ${money(lu.cut.v / 1e6)}${planAssets && !lu.fromTrust ? ` — about ${(100 * lu.cut.v / planAssets).toFixed(0)}% of the plan` : ""}.</p>` : "";
+    <p class="max-benefit"><strong>${lu.cut.n.toLocaleString()} smaller holdings are not shown.</strong> The filing itemises ${(lu.funds.length + lu.cut.n).toLocaleString()} holdings; this table shows the largest ${lu.funds.length}, and the ${lu.cut.n.toLocaleString()} it leaves out total ${money(lu.cut.v / 1e6)}${planAssets && !lu.fromTrust ? ` — about ${(100 * lu.cut.v / planAssets).toFixed(0)}% of the plan` : ""}.</p>` : "";
     const npd = tab === "menu" && !lu.fromTrust && ffl && ffl.nonPartDirected ? `
     <p class="max-benefit"><strong>Part of these holdings is employer-directed.</strong> The filing states some of this plan's assets are not participant-directed — those holdings are listed here with the menu, so their share of the table is not a share of what participants chose.</p>
     <blockquote class="quote">“${esc(ffl.nonPartDirectedText)}”</blockquote>

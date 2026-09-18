@@ -13922,3 +13922,50 @@ Staffing. No statement, no subtotal, no fragment, no prose row.
 Run #359 (v138) was in flight throughout (dispatched 10:24Z); site-test
 #72 on the v138 `app.js` concluded success. Mirror held until the v138
 store lands.
+
+## 2026-09-18 (12:3xZ) — run #359 verdict: v138 LIVE (`05a9d93a`); every prediction held, and the page's first positive control passed — Boeing's 217,061 readers now see "7,551 smaller holdings are not shown … about 19% of the plan" where they read "does not itemise"
+
+**The run.** #359, dispatched 10:24Z on `fe86458a`, success 11:20Z (56
+min), data commit `05a9d93a`. pv138 covers 68,667 of 68,767 (99.85%),
+tail unchanged. **Confident 60,103 (+0 / −0)** — exactly as predicted: the
+cap changes no ratio and no confidence decision. Lineups 59,750, HIGH 4,
+overshoot 361 → 360 (one plan, ordinary), `dl` 99, `tkShare` 23.21,
+dominant-row 0, generic-names 128. **191 lineups now sit at the new 120
+cap (13 remain at exactly 80 by coincidence) and 414 entries carry
+`cut`.** Boeing: 120 rows, `cut {n: 7551, v: $13,949,112,484}`, stored
+ratio 0.99; Goldman: 120 rows, `cut {n: 875, v: $5.69B}`.
+
+**`aggRow` 50 → 56, named and explained.** All six entrants are small
+plans (143–665 ppl, 2,104 together) whose managed-account fold now sees
+56–96 positions instead of the ≤80-row prefix and crosses the 30% band:
+York Building Products, CTL/Thompson, Wholesale Equipment of Fresno,
+Cherokee Distributing, Six Robblees', Summitt Enterprises. The mechanism,
+not a regression; the audit's baseline is 60 and it did not fire.
+
+**Main's cron commit** (`e048da69`, 11:31Z, v137 code): 0 acks / 0 plans
+the branch lacked, plans array byte-identical, main newer on 0 of 68,767.
+Mirrored `--force` on the git check, data gate unforced +0/−0. Pages will
+build `05a9d93a`.
+
+**The positive control the entry above said was owed.** Boeing's page
+rendered locally against the v138 store (scratchpad `boeing-page.mjs`,
+the smoke test's launch pattern, deep link `91-0425694|002|BA`):
+heading *FUND HOLDINGS — 120 FILED*; the new sentence *"7551 smaller
+holdings are not shown. The filing itemises 7671 holdings; this table
+shows the largest 120, and the 7551 it leaves out total $13.9B — about
+19% of the plan."*; the coverage sentence *"This table is not all of the
+plan … about 80% … Part of the rest is the 7551 smaller holdings this
+table leaves out (see below)."* No page errors. One cosmetic defect found
+by reading it — the counts print without thousands separators — fixed
+in `app.js` (`toLocaleString`) and re-checked the same way.
+
+**The 12:2xZ draw** (seed 20260918121): Amazon 1.34M, ABM 89,480, Duke
+University 69,741 (**96 rows** — a menu the old cap would have cut at
+80), General Motors 67,246, Tata America 61,392, Fiserv 39,782 (100
+rows), Children's Healthcare of Atlanta, HonorHealth, IATSE Local 33,
+Fox Rehabilitation, Paul Weiss, Kahn Ventures, Indicor, Plote. Fourteen
+real menus; GM is the known (h) class-subtotal shape (`Common collective
+trusts` 66% under an `Investments at net asset value` issuer). Two (f)
+issuer-glue spellings: Duke's `Fidelity Vanguard Inst Index Plus`
+(platform name prefixed to every fund) and Children's Healthcare's
+`Fidelity - Vanguard Total Stock Market Index Fund`.
