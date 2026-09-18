@@ -380,6 +380,20 @@
       "fixed": "v136",
       "sponsor": "Dominion Energy",
       "was": "v135's prose predicate correctly removed a $2.25B sentence fragment from a twelve-row master-trust NOTE. The note's ratio fell 2.474 -> 2.016, its closeness score rose -0.8406 -> -0.6413, and it passed the real 16-row Schedule H line 4i menu at -0.7125. 18,365 participants lost `Dominion Energy Common Stock` and the Vanguard Target Retirement Trust Plus vintages to `Plan's interest in the Master Trust` / `funds(2)` / `value` / `respectively, and Plan's`. Removing junk can promote a still-junky region -- the hazard this file has carried since Galliano -- so the remedy is not another penalty on this vocabulary but the rule that a winner OUTSIDE the publishable band (0.45-1.6) may not bury an in-band menu-shaped candidate. EXPECT: 16 rows, ratio 0.453, confident, top row `Dominion Energy Common Stock`"
+    },
+    {
+      "ack": "20251010153157NAL0004375043001",
+      "class": "statement-of-changes-line-as-a-holding",
+      "fixed": "v136",
+      "sponsor": "FMR LLC",
+      "was": "the audited Statement of Changes in Net Assets is printed beside the Schedule H line 4i table and its caption column leaks into the region. FMR LLC (93,003 participants) published `Employer, net of forfeitures` at $1,294,616,286 = 3.8% of an 80-row menu. The money is real -- it is a CONTRIBUTION -- but no such holding exists. Whole-population simulation over all 59,748 published lineups: 48 rows / 47 plans / 340,403 participants / $2.12B of phantom value, every row read by name. EXPECT: 79 rows, no `Employer, net of forfeitures`"
+    },
+    {
+      "ack": "20251009115215NAL0003540883001",
+      "class": "statement-of-changes-line-as-a-holding",
+      "fixed": "v136",
+      "sponsor": "Navicent Health",
+      "was": "CONTROL for the entry above. 62 published rows are named `Forfeiture Account` / `Forfeiture cash account` / `Forfeiture/Asset Holding Account` / `Forfeiture suspense account` and every one is a REAL unallocated cash position the plan holds. None may be dropped: the v136 predicate contains no arm beginning with `forfeiture`, only `net of forfeitures` as the tail of a contributions caption. EXPECT: 35 rows including `Forfeiture Account`"
     }
   ]
 }

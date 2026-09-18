@@ -13301,3 +13301,100 @@ the site's expense ratios stay the pattern-level "est." figures in
   its absence makes the specific one unreachable. This is the second time that
   exact shape has shipped here (bit 65536's own branch returning before the
   branch that names the trust, 2026-09-12).
+
+## 2026-09-18 — v136: a line of the STATEMENT OF CHANGES published as a holding (47 plans, 340,403 participants, $2.12B)
+
+- **Wrong.** The audited financial statements print a Statement of Changes in
+  Net Assets Available for Benefits beside the Schedule H line 4i table, and
+  its caption column leaks into the region the parser reads. The result is a
+  contribution, a rollover receipt, an investment gain or a benefit payment
+  published as a fund a participant could choose:
+  - **FMR LLC** (93,003 participants) — `Employer, net of forfeitures`
+    $1,294,616,286, **3.8%** of an 80-row menu
+  - **Marsh & McLennan** PN 003 (32,965) and PN 001 (17,594) — `Net
+    appreciation in fair value of plan identified investments held by master
+    trust` at **6.6%** and **7.6%**
+  - **IRB Holding** (43,661) `Rollover, participants`; **AutoNation** (28,688)
+    and **Bloomberg** (20,110) the FMR row; **Exelon** (26,632) `Rollover
+    receipts`; **Universal City Development** (24,228) `Rollovers`
+  The money is real and it moved. The holding does not exist.
+
+- **Change (v136, `lib-4i.mjs`).** `isStatementOfChangesRowName`, anchored on
+  the FIRST token always, because a fund name may carry any of these words in
+  the middle (`Total Return`, `Strategic Income`). Three arms, which are the
+  sections of the statement itself: contributions filed with their source
+  (`Employer, net of forfeitures`, `Participant, rollovers`), rollover receipts
+  however phrased, and investment income / benefit payments. The `net
+  gain|loss|income` arm requires a following preposition, so a fund named `Net
+  Income Fund` cannot match while `Net gain on investments` does; the rollover
+  arm refuses any row that goes on to name a product.
+
+- **AND THE PLACEMENT IS THE POINT — the first draft shipped a 20,110-person
+  regression and `diff-lineups` caught it before the commit.** The rows were
+  first dropped inside `parseRows`, beside the v131 loan guard and the v135
+  prose guard. That removed exactly the 48 rows intended, and it also moved
+  **Bloomberg L.P.** onto a different region entirely: taking `Employer, net of
+  forfeitures` ($92.1M) out of Bloomberg's real 30-row menu lowered that
+  region's sum, and a 26-row sibling whose names are bare house fragments
+  (`BlackRock` $238M, `Dodge & Cox` $215M, `S&P 500 Index Fund Class K` with no
+  issuer) won on closeness instead. **That is the Dominion mechanism in the
+  same version, in the opposite direction** — a row-level guard changes region
+  SUMS, and region sums decide which region wins. So the drop was moved
+  POST-SELECTION, onto the already-chosen winner only, where it cannot flip a
+  winner by construction (the reason v107's total-row repair sits there), with
+  the ratio recomputed from what remains rather than left stale. Bloomberg then
+  goes 30 -> 29 rows on the same region, which is the whole of the intended
+  effect. **Two versions in a row have now been bitten by this; a row-level
+  name guard should be assumed to be a region-selection change until measured
+  otherwise.**
+
+- **THE CONTROL IS THE FORFEITURE ACCOUNT, and it is the reason no arm begins
+  with `forfeiture`.** 62 published rows are named `Forfeiture Account`,
+  `Forfeiture cash account`, `Forfeiture/Asset Holding Account`, `Forfeiture
+  suspense account`, `Forfeitures / Asset Holding Account` — real unallocated
+  cash the plan genuinely holds. Only `net of forfeitures` appears in the
+  predicate, and only as the tail of a contributions caption. Simulated with
+  the SHIPPED predicate over all 59,748 published lineups (1,692,698 rows):
+  **62 forfeiture-named rows seen, 0 matched.**
+
+- **Measured whole-population, not sampled, and as an OUTCOME.** 48 rows
+  across 47 plans / 340,403 participants / **$2.12B of phantom value**; every
+  one of the 48 names was printed and read. **Exactly one plan loses
+  confidence — Citgo Petroleum (3,341 participants), 3 rows to 2 — and that
+  loss is the fix working:** its whole published "menu" is `Mutual funds`
+  $868.1M, `Money market fund` $170.6M and `Rollovers from other qualified
+  plans` $4.3M. Two category totals and a contributions line is not a fund
+  menu, and those 3,341 readers are better served by the filed-in-aggregate
+  sentence than by three rows that name nothing they can choose.
+
+- **Prevention.** FMR LLC is pinned in `docs/defect-specimens.json` as class
+  `statement-of-changes-line-as-a-holding` and **Navicent Health is pinned
+  beside it as the forfeiture-account control**, so `diff-lineups.mjs` carries
+  both into every future comparison — the shape this predicate must catch and
+  the shape it must never touch, in the corpus together.
+
+- **FOUND WHILE SIZING THIS, NOT FIXED, AND LARGER THAN WHAT WAS FIXED: a
+  published "menu" that is entirely category totals.** Reading the full rows of
+  the plans this item touched turned up two whose lineups are fabricated in a
+  way this predicate does not address and no audit currently flags:
+  - **IRB Holding, 43,661 participants** — `(a) Investments using NAV (CCT
+    funds)` $288.3M, `Mutual funds` $263.4M, `Rollover, participants`,
+    `Change in deemed loans`. After v136 it publishes three rows, none of
+    which names a fund, and stays confident.
+  - **Marsh & McLennan, 50,559 participants across two plans** — `Plan
+    interest in` (a wrapped fragment), `Plan identified investments held by
+    master trust at fair value`, `Short-term investment fund at fair value`.
+    This is a MASTER-TRUST NOTE, and `isTrustPointerRow` misses both trust rows
+    because one has no `trust` token at all and the other ends `at fair value`
+    rather than with the word.
+  Both are the `audit-generic-names` / `audit-dominant-row` blind spot the
+  wrapped-fragment class already occupies: a whole menu of category labels,
+  each below the 90% dominant-row bar, none of them in `GENERIC_TYPE_NAME` in
+  the exact form filed. **Sized here only as these three plans / 94,220
+  participants; the class is not sized and should not be quoted as three.**
+
+- **What the v136 run must show, for both halves of this version.** 48 fewer
+  published rows in the named plans and FMR LLC at 79 rows; `confident` down by
+  exactly 1 (Citgo) from this half and up by at least 1 (Dominion) from the
+  other; `losses-triage.txt` naming Citgo and nothing else from this change;
+  `overshoot` falling or flat — every row this removes shrinks a published sum.

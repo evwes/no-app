@@ -437,6 +437,54 @@ export function isProseRowName(n) {
   return !HOUSE_ONLY.test(s.split(/\s+/)[0]);
 }
 
+/* v136: IS THIS NAME A LINE OF THE STATEMENT OF CHANGES?
+ *
+ * The audited financial statements print a Statement of Changes in Net Assets
+ * beside the Schedule H line 4i table, and its caption column leaks into the
+ * region: FMR LLC (93,003 participants) published `Employer, net of
+ * forfeitures` at $1.29B = 3.8% of its 80-row menu; Marsh & McLennan (32,965
+ * and 17,594) published `Net appreciation in fair value of plan identified
+ * investments held by master trust` at 6.6% and 7.6%; Exelon `Rollover
+ * receipts`; AutoNation and Bloomberg the FMR row; IRB Holding `Rollover,
+ * participants`. The money is real and it moved — it is a contribution, a
+ * rollover receipt, an investment gain or a benefit payment — but no such
+ * holding exists, and every one of them is published as a fund.
+ *
+ * ANCHORED ON THE FIRST TOKEN, always, because a fund name may contain any of
+ * these words in the middle ("Total Return", "Strategic Income"). The three
+ * families are the sections of the statement itself:
+ *   - contributions, filed with their source: `Employer, net of forfeitures`,
+ *     `Participant, rollovers`, `Employer, net of forfeitures of $521`
+ *   - rollover receipts, however phrased — but NEVER a row that goes on to
+ *     name a product, so a hypothetical `Rollover Balanced Fund` is untouched
+ *   - investment income and benefit payments: `Net appreciation in ...`,
+ *     `Net Gain on Sale of Investments`, `Benefit paid to participants`
+ * The `net gain/loss/income` arm requires a following preposition, so a fund
+ * called `Net Income Fund` cannot match while `Net gain on investments` does.
+ *
+ * THE CONTROL IS THE FORFEITURE ACCOUNT, and it is why no arm here starts with
+ * `forfeiture`. About 62 published rows are named `Forfeiture Account`,
+ * `Forfeiture cash account`, `Forfeiture/Asset Holding Account`,
+ * `Forfeiture suspense account` — those are REAL unallocated cash positions
+ * that the plan genuinely holds, and they stay. Only `net of forfeitures`
+ * appears here, and only as the tail of a contributions caption.
+ *
+ * MEASURED WHOLE-POPULATION BEFORE SHIPPING, not sampled: simulated over all
+ * 59,748 published lineups it matches 48 rows across 47 plans / 340,403
+ * participants, every one of which was read by name, and not one forfeiture
+ * account. */
+const STMT_OF_CHANGES_ROW = new RegExp([
+  "^(?:employer|employee|participant|company|sponsor)s?['’]?,\\s*(?:net of forfeitures|contributions?|rollovers?)\\b",
+  "^rollovers?\\b(?![^|]*\\b(?:fund|index|portfolio|etf|class|trust)\\b)",
+  "^net\\s+(?:appreciation|depreciation|realized|unrealized)\\b",
+  "^net\\s+(?:investment\\s+)?(?:gain|loss|income)\\s+(?:on|in|from|of)\\b",
+  "^benefits?\\s+paid\\b",
+  "^distributions?\\s+to\\s+participants\\b",
+].join("|"), "i");
+export function isStatementOfChangesRowName(n) {
+  return STMT_OF_CHANGES_ROW.test(String(n || "").trim());
+}
+
 export function isLoanNoteName(n) {
   const s = String(n || "");
   if (!LOAN_TEXT.test(s) && !RATE_RANGE.test(s)) return false;
@@ -2498,6 +2546,33 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
         (GENERIC_TYPE_NAME.test(wn) || AGG_DISCLOSURE.test(wn) || NOT_FUND_SHAPED.test(wn))) best = bestMenu;
   }
   let funds = best.scale > 1 ? best.funds.map((f) => ({ ...f, value: f.value * best.scale })) : best.funds;
+
+  /* v136: A LINE OF THE STATEMENT OF CHANGES IS NOT A HOLDING — dropped from
+   * the WINNER, POST-SELECTION, and the placement is the whole lesson of the
+   * Dominion regression fixed in the same version.
+   *
+   * The first draft of this dropped the rows inside `parseRows`, beside the
+   * loan and prose guards. It removed exactly the 48 rows it was written for —
+   * and it also moved BLOOMBERG (20,110 participants) onto a different region
+   * entirely: taking `Employer, net of forfeitures` ($92.1M) out of its real
+   * 30-row menu lowered that region's sum, and a 26-row sibling whose names
+   * are bare house fragments (`BlackRock` $238M, `Dodge & Cox` $215M, `S&P 500
+   * Index Fund Class K` with no issuer) won instead. Same mechanism as the
+   * note that buried Dominion's menu, in the opposite direction: a row-level
+   * guard changes region SUMS, and region sums decide which region wins.
+   *
+   * Repairing only the already-chosen winner cannot flip a winner by
+   * construction — the reason v107's total-row repair sits here too. The
+   * removed value is real money that moved (a contribution, a rollover
+   * receipt, an investment gain, a benefit payment), so the ratio is
+   * recomputed from what remains rather than left stale. */
+  {
+    const keep = funds.filter((f) => !isStatementOfChangesRowName(f.name));
+    if (keep.length !== funds.length && assetsEOY) {
+      funds = keep;
+      best.ratio = funds.reduce((a, f) => a + (+f.value || 0), 0) / assetsEOY;
+    }
+  }
 
   /* v107: drop the winner's own total row — POST-selection, deliberately.
    * Marriott Vacations filed a clean 31-fund menu plus one mangled total row
