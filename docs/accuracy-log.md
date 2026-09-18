@@ -14367,7 +14367,11 @@ that the smoke test caught before CI did).
 removed anywhere no longer re-phases the sample. Local run: **24.03% of
 85,680 rows**; the trail's next line will step from 22.77 to about 24.0
 and that step is the sampling change, not a gain — the code comment says
-so. The exact iss-inclusive figure stays 456,065 / 1,726,192 rows.
+so. The exact iss-inclusive figure stays 456,065 / 1,726,192 rows, and the
+exact NAME-ONLY figure (the audit's own lookup, whole store) is **23.00% →
+23.01%** across v138 → v139 — flat, which is what the positional sample
+could not say. **site-test #78** on `cbfea546` (doubled-house strip):
+success.
 
 **Runs:** #370 was main's :23 cron at 19:41Z (v138 code on main at the
 time, no-op). **The GitHub MCP server disconnected at 19:32Z and stayed
