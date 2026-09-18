@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 138;
+export const PARSER_VERSION = 139;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -56,6 +56,13 @@ export function classify(text) {
 // onto each page's first fund via nameBuf, and dropping the assembled row
 // (v49) lost one REAL fund per page — 754 small-plan menus fell out of
 // confidence. Skipping the heading LINE keeps the funds clean instead.
+/* v139: a VALUELESS line built entirely from the 4i column caption's words —
+ * "(a) (b) Identity of issue, borrower, lessor, or similar party (c)
+ * Description of investment including maturity date, rate of interest,
+ * collateral, par, or maturity value (d) Cost (e) Current value" — however
+ * it wrapped and wherever it starts. Anchored both ends: a holding named
+ * "Value Fund" is not all caption words. */
+const HEADER_FRAG_LINE = /^(?:\(?[a-e]\)|description|of investment|investment|identity|of issue|issuer?|borrower|lessor|or|similar|party|including|maturity|date|rate|of|interest|collateral|par|value|cost|current|fair|shares|units|number|no\.|[\s,()$*:\-–—/])+$/i;
 const SKIP_ROW = new RegExp("^(total|subtotal|grand total|schedule|page \\d|form 5500|ein[: ]|employer id|sponsor name|plan name\\b|plan sponsor'?s name\\b|plan number|as of|see accompanying|\\(thousands|identity of issue|description of investment|rate of|maturity|cost\\b|current value|sales\\b|purchases\\b|dividends\\b|assets in.transit|investments? at fair value|dividend income|other income|administrative fees|" +
   // the 4i column heading wraps across up to four lines; only its first line
   // ("(c) Description of investment") was covered, so the continuation
@@ -705,6 +712,18 @@ export function parseRows(section, opts = {}) {
       totalWrap = /^(sub|grand )?total\b/i.test(t) && !valueRe.test(t);
       continue;
     }
+    /* v139: A LINE MADE ONLY OF COLUMN-CAPTION WORDS IS THE HEADER, wherever
+     * it starts. SKIP_ROW anchors on the caption's FIRST word, so a wrapped
+     * caption line that starts mid-phrase and carries no value ("of
+     * Investment      Cost        Value", "maturity date", "Par or Maturity
+     * Value") entered the name buffer and glued onto the page's first holding.
+     * Nebraska Medicine (12,081 participants) published its largest holding,
+     * Vanguard Institutional Index Fund at 19.6%, as "of Investment Cost
+     * Value EMPOWER ANNUITY INSURANCE COMPANY O…"; store-wide 478 plans /
+     * 409,634 participants carry one such row, 440 of them "maturity date
+     * <fund>". Whole-line test: every word must be caption vocabulary, so a
+     * fund name that merely contains "value" is untouched. */
+    if (HEADER_FRAG_LINE.test(t.replace(/\s+/g, " ").trim())) { nameBuf = []; continue; }
     if (/:\s*$/.test(t)) {
       curSection = t.replace(/:\s*$/, "");
       /* v126: promote to an issuer header only when it names a FIRM. A colon
@@ -1376,9 +1395,16 @@ export function parseRows(section, opts = {}) {
      * Core Equity Fund" and a full header line eroded to "maturity". The gate
      * caught both. Requiring the phrase before touching anything makes the
      * strip safe: a fund whose name merely starts with "Par" is not a header. */
-    if (/^[^a-z]*(?:(?:similar\s+)?party\s+date|rate of interest|maturity value|par\s*,\s*(?:or\s+)?maturity|identity of issue|description of investment)/i.test(name)) {
+    /* v139: three shapes leaked past the v70 trigger, measured on the v138
+     * store — "maturity date <fund>" (440 rows: the caption's "including
+     * maturity date" wrapped with the last two words alone), "Par or Maturity
+     * Value <fund>" (20: no comma, which `par\s*,` required), and "of
+     * Investment Cost Value <fund>" (10: the caption's SECOND line, which
+     * "description of investment" never matched). A "(b) "/"(c) " column
+     * letter also defeated `^[^a-z]*` because "b" is a letter (9 rows). */
+    if (/^(?:\(?[a-e]\)\s*)?[^a-z]*(?:(?:similar\s+)?party\s+date|rate of interest|(?:including\s+)?maturity (?:value|date)|par\s*,?\s*(?:or\s+)?maturity|identity of issuer?|(?:description\s+)?of investment|cost\s+value|current\s+value)/i.test(name)) {
       const stripped = name
-        .replace(/^(?:(?:similar\s+)?party\b|\bdate\b|\brate of interest\b|\bcollateral\b|\bpar\b|\bor\b|\bmaturity value\b|\bidentity of issue\b|\bdescription of investment\b|\(\$\)|[\s,()])+/i, "")
+        .replace(/^(?:\(?[a-e]\)|(?:similar\s+)?party\b|\bdate\b|\bincluding\b|\brate of interest\b|\bcollateral\b|\bpar\b|\bor\b|\bmaturity (?:value|date)\b|\bidentity of issuer?\b|\bborrower\b|\blessor\b|\bdescription of investment\b|\bof investment\b|\bcost value\b|\bcurrent value\b|\bcost\b(?=\s+value\b)|\(\$\)|[\s,()])+/i, "")
         .trim();
       /* And the REMAINDER must not itself be header vocabulary: a truncated
        * header ("...par, or maturity") erodes to the bare word "maturity",

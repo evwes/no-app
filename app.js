@@ -498,6 +498,15 @@
     // rather than deleted so the class survives. 15:1xZ draw 2026-09-18.
     s = s.replace(/\s*\(\s*\d{1,2}\s*\)\s*$/, "").trim();
     s = s.replace(/\s+\|+\s*$/, " I");
+    // the 4i column caption's wrapped tail glued to the FRONT of a page's
+    // first holding ("maturity date American Funds EuroPacific R6", "Par or
+    // Maturity Value Vanguard Total Stock Mkt Idx Adm", "of Investment Cost
+    // Value EMPOWER …") — 478 plans / 409,634 ppl / 480 rows on the v138
+    // store, 440 of them "maturity date". 18:1xZ draw 2026-09-18 (Nebraska
+    // Medicine). The parser drops the caption line from v139; this covers
+    // the store until that re-parse lands.
+    const hm = s.match(/^(?:\(?[a-e]\)\s*)?(?:(?:including\s+)?maturity date|par,?\s+or\s+maturity value|(?:description\s+)?of investment(?:\s+cost)?(?:\s+value)?|identity of issuer?,?|rate of interest|collateral,?\s+par)[\s,]*/i);
+    if (hm) { const rest = s.slice(hm[0].length).trim(); if (rest.split(/\s+/).length >= 2 && /[A-Za-z]{3}/.test(rest)) s = rest; }
     const pm = s.match(TYPE_PREFIX);
     if (pm) { const rest = s.slice(pm[0].length).trim(); if (rest.split(/\s+/).length >= 2 && /[A-Za-z]{3}/.test(rest)) s = rest; }
     s = s.replace(/[,;:]+$/, "").trim();

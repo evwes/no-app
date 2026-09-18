@@ -14144,3 +14144,75 @@ hour (#366, 16:31–16:38Z, `7c198bcd`)** — measured with `mainvsbr2.mjs`:
 on 0, so the mirror uses `--force` on the git check only. **#367
 dispatched 17:10Z** on `780cbf4b` and observed queued at 17:10:54Z.
 Nothing shipped this hour; the wam hold stands pending the owner's answer.
+
+## 2026-09-18 (18:1xZ) — v139: the 4i column caption's wrapped tail glued to a page's first holding — 478 plans / 409,634 ppl; display strip shipped for the v138 store; runs #367/#368 no-ops, mirrored
+
+**Found by the draw** (seed 20260918181, participant-weighted, 15 of
+59,750): Nebraska Medicine (12,081 ppl, $751M, 26 rows, ratio 0.993)
+publishes its LARGEST holding — Vanguard Institutional Index Fund,
+$146,105,114, 19.6% — as `of Investment Cost Value EMPOWER ANNUITY
+INSURANCE COMPANY OF AMERICA AND EMPOWER TRUST COMPANY, LLC Vanguard
+Institutional Index Fund`. The filing's schedule (page 41) prints the
+caption over two lines, `Description … Current` / `of Investment   Cost
+   Value`, then the issuer over two lines with no colon, then the indented
+rows. `SKIP_ROW` anchors on the caption's FIRST word, so the second line
+entered the name buffer with the two issuer lines and all three glued
+onto the first row (buffer cap 3).
+
+**Sized whole-store (`header-glue.mjs`, `header-glue-tally.mjs`): 478
+plans / 409,634 ppl / 480 rows** open with caption vocabulary — one row
+per plan, the first holding under a wrapped caption. By fragment:
+`maturity date` 440, `par or maturity value` 20, `of investment cost` 10,
+`(b) including maturity date` 4, `(b) identity of issue,` 4, one each
+`collateral par` / `(b) identity of issuer,`. 51 of the rows are ≥10% of
+their lineup (47,157 ppl); Ivy Hospitality's `Par or Maturity Value
+Vanguard Total Stock Mkt Idx Adm` is 42.7% of its plan. The v70 strip at
+the row stage already handles `party date`, `rate of interest`, `maturity
+value`, `par, or maturity`, `identity of issue`, `description of
+investment` — every one of these 480 is a phrasing it did not name: bare
+`maturity date`, `Par or` without the comma, the caption's second line,
+and a `(b) `/`(c) ` column letter, which `^[^a-z]*` cannot skip because
+"b" is a letter.
+
+**Change (v139, `lib-4i.mjs`):** (1) `HEADER_FRAG_LINE` — a valueless line
+made ENTIRELY of caption words, anchored at both ends, clears the name
+buffer at the line stage (digits are not in the vocabulary, so any line
+carrying a value is untouched; a holding named `Value Line Fund` is not
+all caption words). (2) The v70 row-stage trigger and strip name the four
+leaked shapes. Nebraska's row now reads `EMPOWER ANNUITY INSURANCE COMPANY
+OF AMERICA AND EMPOWER TRUST COMPANY, LLC Vanguard Institutional Index
+Fund` — the caption gone, the colon-less two-line issuer still glued,
+which is queue item (f) and is recorded as such, not claimed fixed.
+
+**Gate:** all specimens green. **`diff-lineups HEAD`** over 957 corpus
+filings: confidence +0 / −0, fabricated introduced 0, one row-count move —
+Mix Talent 15 → 14 rows, the dropped row `US Columbus OH 43221` $541,990
+is the sponsor's street address from the Form 5500 cover page with the
+NAICS business code 541990 read as its value (page 44 of the filing);
+ratio 1.057 → 0.989. Pinned Nebraska Medicine in
+`docs/defect-specimens.json` (`caption-tail-glued-to-first-row`).
+
+**Display half, shipped now (`app.js` `cleanFiledName`):** a leading
+caption fragment is stripped when ≥2 words with letters remain. Fixtures
+27/27 (`test-clean.mjs`, four new cases and three controls: `Target
+Maturity Date 2030 Fund`, `Value Line Fund`, `Par Value Bond Fund
+Institutional` unchanged). `flip-clean.mjs` over all 1,704,579 published
+rows with the shipped raw-first lookup: **GAINED 73 / LOST 0 / FLIPPED 0 —
+identical to before this strip, so it gains NO tickers**; the 480 rows
+read correctly and resolve exactly as they did (the raw-first lookup
+already found the fund inside the glued string where it could). 46,960
+rows / 6,270 lineups now change at display (+480). `smoke-test.mjs`:
+SMOKE OK.
+
+**Prediction for the v139 run:** rows opening with caption vocabulary
+480 → ~0 (`header-glue.mjs` on the new store); confident +0 / −0;
+coverage line otherwise byte-identical; Nebraska Medicine's top row
+renamed as above; Mix Talent 14 rows. Anything else moving is
+unexplained and must be read.
+
+**Runs:** #367 (dispatched 17:10Z) success 17:18Z, `07c187fb`, coverage
+byte-identical, mirrored unforced. Main's :23 cron did NOT fire at 17:23.
+#368 (dispatched 18:08Z, observed in_progress 18:08:34Z) success 18:15Z,
+`6d5411d8`, byte-identical, **mirrored unforced BEFORE the v139 commit**
+so main never carries code ahead of its store. v139 commit follows this
+entry `[skip ci]`; dispatched on the dev branch immediately after.

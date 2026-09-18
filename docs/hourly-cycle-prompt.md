@@ -237,6 +237,19 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 18:2xZ 2026-09-18: #367 and #368 no-ops (mirrored `07c187fb`,
+      `6d5411d8`); main's :23 cron missed 17:23; draw 15/15 real, ONE NEW
+      CLASS: the 4i caption's wrapped tail glued to a page's first holding
+      (Nebraska Medicine's largest fund published as `of Investment Cost
+      Value EMPOWER…`) — 478 plans / 409,634 ppl / 480 rows, 440 of them
+      `maturity date <fund>`. **v139 shipped** (line-stage caption-only
+      lines cleared; v70 row strip names the four leaked shapes), gate
+      green, diff 0/0/0 (Mix Talent loses a cover-page address row), pinned;
+      display strip for the v138 store shipped (27/27 fixtures, 73/0/0
+      tickers — unchanged, the strip is cosmetic for lookup). Dispatched
+      after this commit. (f) issuer glue seen again on the same row.
+      **Owner's wam question still open; hold stands.**
+      `docs/accuracy-log.md` 2026-09-18 (18:1xZ).
       **STATUS 17:1xZ 2026-09-18: #365 no-op (branch `780cbf4b`), main's
       :23 cron #366 committed `7c198bcd` (measured 0/0, byte-identical —
       `--force` git check only), #367 dispatched 17:10Z; draw 15/15 real,

@@ -408,6 +408,13 @@
       "fixed": "v138",
       "sponsor": "The Boeing Co.",
       "was": "Published 80 rows at a displayed sum of 78% of plan assets while the stored coverageRatio was 0.99: parseRows capped `funds` at 80 rows and `totalValue` counted every row, so $15.5B (21% of the plan, 217,061 participants) sat in rows the page never showed, and the page's coverage sentence said the schedule 'does not itemise' them. v138 widens the cap to ROW_CAP=120 and records `cut: {n, v}` for whatever is still dropped; the page discloses it. EXPECT: more than 80 rows, and `cut` present with n>0 if the schedule exceeds 120."
+    },
+    {
+      "ack": "20251014174632NAL0001721331001",
+      "class": "caption-tail-glued-to-first-row",
+      "fixed": "v139",
+      "sponsor": "Nebraska Medicine",
+      "was": "the caption's wrapped second line 'of Investment Cost Value' and a two-line issuer glued onto the largest holding (Vanguard Institutional Index Fund, 19.6%); store-wide 478 plans / 409,634 ppl, 440 of them 'maturity date <fund>'"
     }
   ]
 }
