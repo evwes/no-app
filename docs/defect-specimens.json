@@ -373,6 +373,13 @@
       "fixed": "v135",
       "sponsor": "National Medical Care (Fresenius)",
       "was": "29 rows at ratio 1.092 read off the NOTES' participant-option table — `the S&P 500® Index by investing in stocks that make up the index.` $755,422,355 carrying the value of the option it describes, `NET ADDITIONS` $402M, `Salary deferrals` $273M, and `Target Retirement 20XX Fund Option` rows whose values are the note's PRIOR-YEAR column ($363,732,055 where 2024 reads $429,670,822). The filing's statutory 4i schedule sits at line 5,336 of the same PDF and reads 12 rows at 0.951: BlackRock CITs with their issuer, MassMutual Stable Value, the SDBA and Fresenius stock. Once the prose rows stop paying for the note's ratio, the filed schedule wins. NOTE FOR ANYONE RE-READING THE QUEUE: this item was queued with `Target Retirement YYYY Fund Option rows must survive` as a CONTROL. They do not survive and should not — they are a note's prior-year column, and 72,950 participants now see the schedule the plan actually filed"
+    },
+    {
+      "ack": "20260702105125NAL0012952931001",
+      "class": "unpublishable-winner-burying-a-publishable-menu",
+      "fixed": "v136",
+      "sponsor": "Dominion Energy",
+      "was": "v135's prose predicate correctly removed a $2.25B sentence fragment from a twelve-row master-trust NOTE. The note's ratio fell 2.474 -> 2.016, its closeness score rose -0.8406 -> -0.6413, and it passed the real 16-row Schedule H line 4i menu at -0.7125. 18,365 participants lost `Dominion Energy Common Stock` and the Vanguard Target Retirement Trust Plus vintages to `Plan's interest in the Master Trust` / `funds(2)` / `value` / `respectively, and Plan's`. Removing junk can promote a still-junky region -- the hazard this file has carried since Galliano -- so the remedy is not another penalty on this vocabulary but the rule that a winner OUTSIDE the publishable band (0.45-1.6) may not bury an in-band menu-shaped candidate. EXPECT: 16 rows, ratio 0.453, confident, top row `Dominion Energy Common Stock`"
     }
   ]
 }

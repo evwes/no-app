@@ -244,7 +244,32 @@ try {
     let b = index[r[ai]] || 0;
     if (r[mi] && (index[r[mi]] || 0) & 1) b |= 2048;
     const st = status.plans[r[ai]];
-    if (st && !st.c && (st.dx === "stmt" || filedAggregate(st, r[ai])) && !(b & (1 | 2048))) b |= 4096;
+    /* ORDER CORRECTED 2026-09-18, and the order is the whole defect. Bit 4096
+     * ("filed in aggregate") was assigned BEFORE the trust test below and the
+     * trust test is gated on `!(b & 4096)`, so a plan whose single 4i row says
+     * `Plan's interest in Master Trust` — which is BOTH an aggregate and a
+     * trust pointer — could never reach 65536/131072.
+     *
+     * First American Financial (17,090 participants, $2.86B) is the type case
+     * and was queued as a defect: v135 part 1 made its one-row trust pointer
+     * readable and predicted the page would name the trust, but the store came
+     * back `dx=stmt` (diagnose() tests `parsed.stmt` before `parsed.trustPtr`,
+     * and a lone `master trust` row is aggregate-only) and the index came back
+     * 4460 — bit 4096, neither trust bit. So the page said the plan files its
+     * investments in aggregate and never said WHERE the money is, which the
+     * filing states plainly.
+     *
+     * Both sentences are true of such a plan; the trust one is strictly more
+     * informative, because it names the trust (`mtiaName`) and tells the
+     * reader which return to look at. So the more specific claim is made
+     * first and 4096 becomes the fallback. Nothing else moves: a plan with an
+     * aggregate top row that is NOT a trust interest still gets 4096, and a
+     * plan with any lineup (bit 1 or 2048) still gets neither. */
+    if (st && !st.c && !(b & (1 | 2048)) && trustHeldUnlinked(r[ai])) {
+      b |= 65536;
+      if (r[mi]) b |= 131072;
+    }
+    if (st && !st.c && (st.dx === "stmt" || filedAggregate(st, r[ai])) && !(b & (1 | 2048 | 65536))) b |= 4096;
     /* v113 data: bits 13-15 carry the DOCUMENT SHAPE as a 3-bit enum so a
      * plan with no lineup can state the real reason instead of the hedge
      * "scanned/absent, or held through a trust". Read ONLY when there is no
@@ -265,10 +290,6 @@ try {
      * participants, Albertsons 236,172). The first pass gated on !mtiaAck and
      * left the larger half saying "we could not read it - that's our gap"
      * about a filing that had been read without trouble. */
-    if (st && !st.c && !(b & (1 | 2048 | 4096)) && trustHeldUnlinked(r[ai])) {
-      b |= 65536;
-      if (r[mi]) b |= 131072;
-    }
     if (st && !st.c && !(b & (1 | 2048 | 4096 | 65536)) && DS_ENUM[st.ds]) b |= DS_ENUM[st.ds] << 13;
     return b;
   });

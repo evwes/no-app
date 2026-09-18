@@ -13184,3 +13184,120 @@ expense ratios) — and the fetcher is rewritten against it in one commit;
 agent reads the fund company's own dated page; (3) both. Until one lands,
 the site's expense ratios stay the pattern-level "est." figures in
 `fund-er.js` and no YTD return is shown anywhere — correct, and stated.
+
+## 2026-09-18 — v136: an UNPUBLISHABLE winner buried a publishable menu (Dominion Energy, 18,365 participants)
+
+- **Wrong.** Dominion Energy (EIN 54-1229715 PN 001, $4.92B) published a
+  correct sixteen-row menu at v134 — `Dominion Energy Common Stock` $592.0M
+  plus the Vanguard Target Retirement Trust Plus vintages, `EuroPacific Growth
+  Trust`, the Schwab PCRA window — and at v135 published nothing at all
+  (`dx=band-hi rw=12 rt=202`). What its 18,365 readers were shown instead of a
+  menu was the no-lineup explanation, while twelve rows of a master-trust note
+  sat behind it: `Plan's interest in the Master Trust`, `Investments held by
+  the Plan`, `funds(2)`, `value`, `Plan's Interest in Plan's`, `respectively,
+  and Plan's`.
+
+- **Cause, from the parser's own working and not from reading the filing.**
+  `WAMPO_TRACE=cands node scripts/trace-filing.mjs 20260702105125NAL0012952931001 --vs 789f589e`
+  prints both versions' candidate tables side by side:
+
+  | version | the note | the real 4i menu |
+  |---|---|---|
+  | v134 | 13 rows, ratio 2.474, score **-0.8406** | 16 rows, ratio 0.453, score **-0.7125** |
+  | v135 | 12 rows, ratio 2.016, score **-0.6413** | 16 rows, ratio 0.453, score -0.7125 |
+
+  Nothing about the menu changed. v135 part 2's prose predicate CORRECTLY
+  removed a $2.25B sentence fragment — from the NOTE. The note's sum fell, its
+  ratio moved toward 1.0, its closeness score rose past the menu's, and it took
+  the region. **A row-level guard aimed at junk shrinks junk regions faster
+  than real ones, so every one of them can promote a still-junky region.** That
+  hazard is already written into `lib-4i.mjs` beside the `STMT_ROW` vocabulary
+  ("removing junk can promote a still-junky region" — the Galliano case at
+  v44); it had never been given a general remedy, so it was rediscovered as a
+  regression instead of caught by a guard.
+
+- **Change (v136, `lib-4i.mjs`, post-selection).** A winner whose ratio lies
+  OUTSIDE the production band (0.45–1.6) after both existing repairs have had
+  their chance may not bury an in-band menu-shaped candidate: `best` is
+  replaced by `bestMenu`. The remedy is deliberately NOT another penalty aimed
+  at this vocabulary, because a vocabulary list has now been beaten by a
+  fragment, by form junk, by a bare noun and by a wrapped continuation. The
+  swap target is the same `bestMenu` object v112/v132/v133 already swap to — at
+  least 7 rows, in band, not a statement / code / provider / split page, and a
+  largest row that is not generic, aggregate or unfund-shaped — so junk cannot
+  swap for junk, and because the reading it replaces was unpublishable by
+  construction **no reader can trade a lineup for a different lineup; only a
+  blank for a menu.**
+
+- **Measured.** Dominion returns to 16 rows at ratio 0.453, confident, top row
+  `Dominion Energy Common Stock` — identical to the v134 lineup, row for row.
+  Controls held: BJC Health System (`20251012112215NAL0000656306001`) still
+  parses NOT FOUND — its three rows are all prose and it must stay unpublished;
+  National Medical Care still reads its statutory 4i schedule, 12 rows at
+  0.951; Mars PN 001 (`20251014140510NAL0004172832001`, the `le 0 0 1f` form
+  junk) still parses NOT FOUND under both versions. `parser-gate.mjs` green on
+  all specimens including the frozen-predicate tether.
+
+- **Prevention.** Dominion is pinned in `docs/defect-specimens.json` as class
+  `unpublishable-winner-burying-a-publishable-menu`, so `diff-lineups.mjs` tops
+  the corpus up with it before every future comparison — the corpus is sampled
+  by assets and did not contain this filing, which is why the first
+  `diff-lineups 647a32a3` run reported 0/0/0 over 955 filings while an 18,365
+  participant regression sat in the store. **A clean diff over a corpus that
+  does not contain the class is not evidence.**
+
+- **What the v136 run must show.** Dominion Energy confident with 16 rows, no
+  `dx`; `confident` up, not down; `reparse-loss` entries only from filings whose
+  losses are readable as junk by row name; `overshoot` not rising (this version
+  only ever moves a reading from out-of-band to in-band).
+
+## 2026-09-18 — First American Financial: the trust pointer was read and the page still did not say it (17,552 participants)
+
+- **Wrong.** v135 part 1 made a one-row Schedule H line 4i (`Master Trust – at
+  fair value`, $2,760,495,322 = 97% of plan assets) a readable candidate, and
+  predicted First American Financial's page would name the master trust. The
+  store came back `tp=1` but `dx=stmt`, and `plans-index.json` came back
+  **4460 — bit 4096 ("filed in aggregate"), neither trust bit.** So 17,552
+  readers across PN 003 and PN 001 were told the plan reports its investments in
+  aggregate and never told WHERE the money is, which the filing states plainly.
+
+- **Cause.** Two independent orderings, both of which had to be right:
+  `diagnose()` in `fetch-4i.mjs` tests `parsed.stmt` before `parsed.trustPtr`,
+  and a lone `master trust` row is aggregate-only, so `dx` is `stmt`; then
+  `merge-4i.mjs` assigned bit 4096 on `st.dx === "stmt"` **before** the
+  trust-held test, which is itself gated on `!(b & 4096)`. A row that is both
+  an aggregate and a trust pointer could therefore never reach 65536/131072.
+
+- **Change (`merge-4i.mjs`, index only — no re-parse).** The trust-held test
+  runs FIRST and bit 4096 becomes the fallback (`!(b & (1 | 2048 | 65536))`).
+  Both sentences are true of such a plan; the trust one is strictly more
+  informative, because it tells the reader the fund detail lives in a separate
+  return and (via bit 131072) that the trust's own return has no readable fund
+  list either. The `dx` ordering in `diagnose()` was deliberately left alone:
+  flipping it would need a re-parse and would reclassify 42 acks / 625,224
+  participants out of the census's `stmt` bucket into `trust`, whose stated
+  meaning is "bare trust pointer, UNLINKED" — a wider change than the defect.
+
+- **Measured, as an OUTCOME and not as a condition.** `node scripts/merge-4i.mjs`
+  regenerates the index with no deltas; diffing bit-for-bit against the shipped
+  file: **exactly 5 plans / 26,982 participants change**, all from 4096 to
+  65536+131072 — First American PN 003 (17,090), Amsted Industries PN 002
+  (7,293), Amsted PN 080 (1,822), First American PN 001 (462), Hexcel PN 049
+  (315). Counts: 4096 267 → 262, 65536 62 → 67, 131072 54 → 59; bit 1 (59,748),
+  bit 2048 (676) and the document-shape enum (7,682) all unchanged, which is the
+  negative control — no plan with a lineup of its own or its trust's moved.
+  Every one of the five was then read BY ROW NAME and by arithmetic: First
+  American 97%/98% of plan assets in `Master Trust – at fair value`; Amsted
+  `Investment in Master Trust, at fair value` at 90% and 94% of plan assets;
+  Hexcel's two `Interest in Master Trust Investments` rows at 91% of plan
+  assets (its parse reads 66.9x plan assets because the filing is combined).
+  All five link to a trust whose own return is NOT confident, which is what
+  bit 131072 asserts.
+
+- **Prevention.** The ordering is now documented in the code at the point of
+  assignment, with the general rule: **when two true sentences are available,
+  the more specific one is assigned first and the general one becomes the
+  fallback** — assigning the general one first and gating the specific one on
+  its absence makes the specific one unreachable. This is the second time that
+  exact shape has shipped here (bit 65536's own branch returning before the
+  branch that names the trust, 2026-09-12).

@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 135;
+export const PARSER_VERSION = 136;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -2582,6 +2582,46 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
         funds = funds.filter((_, i) => i !== wi);
         best.ratio = rest / assetsEOY;
       }
+    }
+  }
+
+  /* v136: A READING THAT CANNOT BE PUBLISHED MUST NOT DISPLACE ONE THAT CAN.
+   *
+   * Dominion Energy (18,365 participants, $4.92B) published a correct 16-row
+   * menu at v134 — its own common stock plus the Vanguard Target Retirement
+   * Trust Plus vintages — and lost it at v135 to a twelve-row master-trust
+   * note (`Plan's interest in the Master Trust`, `Investments held by the
+   * Plan`, `funds(2)`, `value`, `respectively, and Plan's`) sitting at ratio
+   * 2.016. Nothing about the menu changed. What changed is that v135's prose
+   * predicate correctly removed a $2.25B sentence fragment FROM THE NOTE, and
+   * the note's ratio fell 2.474 -> 2.016, which moved its closeness score
+   * -0.8406 -> -0.6413 and past the menu's -0.7125.
+   *
+   * That hazard is already written into this file three hundred lines above —
+   * "removing junk can promote a still-junky region" (the Galliano case) — and
+   * it will recur with every future row-level guard, because every one of them
+   * shrinks junk regions faster than real ones. So the remedy is not another
+   * penalty aimed at this vocabulary: it is to stop letting an UNPUBLISHABLE
+   * winner bury a publishable alternative. The note at 2.016 could never be
+   * shown to a reader under any confidence rule; the menu at 0.453 is what the
+   * filing's Schedule H line 4i actually lists.
+   *
+   * Narrow in both directions, and nothing can be LOST to it:
+   *  - it fires only when the winner's ratio is outside the production band
+   *    (0.45-1.6), i.e. after both repairs above have had their chance and the
+   *    winner still cannot be published;
+   *  - the replacement is `bestMenu`, the same object v112/v132/v133 swap to,
+   *    which is menu-shaped by construction (>=7 rows, in band, not a
+   *    statement / code / provider / split page, largest row not generic, not
+   *    an aggregate, not unfund-shaped). Junk cannot swap for junk;
+   *  - a plan that had no publishable reading before still has this one, so no
+   *    reader trades a lineup for a different lineup — only a blank for a menu.
+   */
+  if (bestMenu && bestMenu !== best && assetsEOY) {
+    const r = best.ratio || 0;
+    if (!(r > 0.45 && r < 1.6)) {
+      best = bestMenu;
+      funds = best.scale > 1 ? best.funds.map((f) => ({ ...f, value: f.value * best.scale })) : best.funds;
     }
   }
 
