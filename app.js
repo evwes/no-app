@@ -491,6 +491,13 @@
     // real name's last word is never taken.
     s = s.replace(/[\s\-–]*[”“"'’‘™®©]+\s*$/, "").trim();
     s = s.replace(/\b(R\d|[A-Z]|I{1,3}|CIT|Adm|Inv|Instl?|Fund|Trust|Class)\s+[a-z]{1,3}$/, "$1");
+    // a trailing footnote marker "(1)" (FMR's whole 119-row menu, 560 plans /
+    // 1.95M ppl / 7,503 rows) and a trailing column bar, which is OCR's
+    // reading of a share-class "I" ("PGI CIT US REIT Tier |", "TRP BLUE CIP
+    // GRTH |" — 743 plans / 683k ppl / 1,723 rows), repaired to the letter
+    // rather than deleted so the class survives. 15:1xZ draw 2026-09-18.
+    s = s.replace(/\s*\(\s*\d{1,2}\s*\)\s*$/, "").trim();
+    s = s.replace(/\s+\|+\s*$/, " I");
     const pm = s.match(TYPE_PREFIX);
     if (pm) { const rest = s.slice(pm[0].length).trim(); if (rest.split(/\s+/).length >= 2 && /[A-Za-z]{3}/.test(rest)) s = rest; }
     s = s.replace(/[,;:]+$/, "").trim();

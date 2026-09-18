@@ -237,6 +237,17 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 15:2xZ 2026-09-18: #363 no-op (mirrored `a7380710`), #364
+      dispatched 15:12Z, site-test #75 green; draw 15/15 real.** (j)
+      display half widened a third time: trailing footnote markers `(1)`
+      (560 plans / 1.95M ppl / 7,503 rows — FMR's whole 119-row menu) and
+      an OCR column bar repaired to a class `I` (743 / 683k / 1,723 rows);
+      flip list GAINED 73 / LOST 0 / FLIPPED 0; 46,480 rows / 5,799
+      lineups now cleaned at display. Abbott's section-header glue
+      (`Common stock - employer securities ABBOTT …`) into (f). Main's
+      hourly cron missed 14:23Z as well as 12:23Z today. **Owner's
+      question on wam still unanswered; hold stands.**
+      `docs/accuracy-log.md` 2026-09-18 (15:2xZ).
       **STATUS 14:2xZ 2026-09-18: #362 no-op (mirrored `8a31285d`), #363
       dispatched 14:14Z; draw 15/15 real.** (j) display half widened
       again: trailing OCR glyphs (674 plans / 1.08M ppl / 4,454 rows) and

@@ -14043,3 +14043,43 @@ Findings, all cosmetic:
 **Run #362** (dispatched 13:16Z, incremental) success 13:24Z, coverage
 byte-identical (confident 60,103, HIGH 4, overshoot 360, aggRow 56, dl
 99); mirrored `8a31285d` unforced. **#363 dispatched 14:14Z.**
+
+## 2026-09-18 (15:2xZ) — per-cycle draw: footnote markers on every row of Fidelity's own plan and an OCR column bar standing in for a class "I", sized at 560 and 743 plans and repaired at display; run #363 a no-op, mirrored
+
+**Draw** (seed 20260918151, participant-weighted, 15 of 59,750): Walmart
+1.92M ppl, Building Service 32BJ 123,030, **FMR (Fidelity's own plan)
+90,445 ppl / $34.2B / 119 rows**, Abbott 60,382 (100 rows), Methodist
+Hospital 44,390, Apex Systems 20,901, Bally's, Vitamin Cottage, WeDriveU,
+MAU, Shasta Community Health, Pacific Steel, Illegal Pete's, Hughes
+General Contractors. Every menu real; two of them (FMR, Abbott) are menus
+the old 80-row cap would have cut. Findings, all cosmetic:
+
+- **FMR:** every one of 119 names ends in `(1)` — the filing's footnote
+  marker, carried into the row name. **Sized on the v138 store
+  (scratchpad `foot-tail.mjs`): 560 plans / 1,954,482 ppl / 7,503 rows**
+  (`Fidelity 500 Index (1)`, `H&R Block, Inc.(1)`, BlackRock LifePath
+  vintages). Stripped at display.
+- **Hughes General Contractors** `Indexselect Moderate 2045 Fund Cl |`,
+  and across the store `PGI CIT US REIT Tier |`, `Janus Henderson
+  Enterprise |`, `TRP BLUE CIP GRTH |` — **743 plans / 683,341 ppl /
+  1,723 rows** whose name ends in a column bar. Read beside the fund
+  names, the bar is OCR's reading of a share-class **I**, so it is
+  repaired to the letter rather than deleted: the class survives and the
+  ticker lookup sees the name the filer wrote.
+- **Abbott** `Futures contracts FUT MAR 26 IMMEMINI MDCP` $998M at 5.4%
+  and `Common stock - employer securities ABBOTT LABORATORIES, comm` — the
+  section header glued ahead of the row (f); the futures row is a real
+  filed position, not a menu option, and is left as filed.
+- **MAU** `Voya Financial` $995k at 6.8% — the bare house name as a
+  holding, again.
+
+Both repairs in `cleanFiledName`. Flip list over all 1,704,579 published
+rows with the shipped lookup order: **GAINED 73 rows / 55 plans / 38,673
+ppl (was 58), LOST 0, FLIPPED 0**; fixtures 20/20; **46,480 rows in 5,799
+lineups now cleaned** at display (was 37,203 / 4,675 this morning).
+
+**Run #363** (dispatched 14:14Z, incremental) success 14:21Z, coverage
+byte-identical (confident 60,103, HIGH 4, overshoot 360, aggRow 56, dl
+99); mirrored `a7380710` unforced. **site-test #75** on the previous
+display change: success. **#364 dispatched 15:12Z.** GitHub's own 14:23Z
+cron on main did not fire this hour either (second miss today).
