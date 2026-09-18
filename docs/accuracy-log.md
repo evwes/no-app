@@ -13510,3 +13510,51 @@ subclass 42 / 123,497), (i) a holding published twice (262 / 450,981),
 OCR-path answer (its fresh `dx` is in this store; unread, 198 ppl). No new
 agent until the owner's usage picture is clearer: three agents were killed
 by limits in 24 hours, and every kill costs the uncommitted item.
+
+## 2026-09-18 (06:4xZ) — queue item (j) at the display layer: type suffixes, trailing punctuation and glued share counts stripped from fund names in `app.js` (21,502 rows / 2,106 lineups), with the ticker lookup made raw-first so the strip can only add; two drafts were wrong and the measurements caught both before anything shipped
+
+**What was wrong.** Three shapes the hourly draws sized on the v135 store:
+the schedule's TYPE column glued to the end of a fund name (`VANGUARD 500
+INDEX ADM MUTUAL FUND SHARES`, `… Pooled Separate Account` — 1,237 plans /
+4,418,181 ppl / 17,033 rows), a trailing comma/semicolon/colon from a
+wrapped cell (`Vanguard S&P 500 Index Trust,` — 268 plans / 1,004,405 ppl),
+and a share count glued on either end (`132,545,334 Vanguard Mid Cap Index
+Fund`, `… - 522,008 shares` — 84 plans / 191,052 ppl / 797 rows). Values
+right, names noisy, and the name is the ticker-lookup key.
+
+**The change (frontend only, no re-parse; the parser-side strip stays
+queued).** `cleanFiledName` in `app.js`, applied in `cleanCostMarkers`
+beside the N/R strip; the filed name is kept as `nameRaw`. Guards: a type
+phrase is removed only when two or more words remain (a row that IS
+`Mutual funds` stays, and stays visible to the generic-name audit); every
+strip falls back to the original if fewer than three letters would remain.
+Fixtures (20, scratchpad `test-clean.mjs`, run against the shipped source
+through `vm`) include the controls that must not move: `Mutual funds`,
+`Collective investment trusts`, `Vanguard Target Retirement 2030 Trust`,
+`Dillard's, Inc. Common Stock`, `S&P 500 Index Fund Class K`, `T. Rowe
+Price Retirement 2040 Trust C`, and a vintage-led name.
+
+**Two drafts were wrong, and the store-wide measurements are what caught
+them:**
+
+1. The share-count strip matched `Class R6 Shares` and cut it to `Class R`,
+   and removing `MUTUAL FUND SHARES` from `TROWEPRICE RET 2025 TR-F …` left
+   a trailing `TR-F` that reads as a trust class — exact `TRRHX` became a
+   comparable. The ticker flip list over all 1,692,686 published rows said
+   **GAINED 37 / LOST 26 / FLIPPED 26.** Fix: a share count is comma-grouped
+   or ≥4 digits with a boundary before it, and `lookupTicker` tries the
+   FILED name (with and without the issuer) before the cleaned one, so the
+   strip can only add. Re-measured: **GAINED 37 rows / 35 plans / 21,904 ppl,
+   LOST 0, FLIPPED 0.**
+2. Widening the leading-number strip to four digits took every
+   target-date VINTAGE with it (`2045 Fund` → `Fund`): the store-wide count
+   jumped 21,943 → 35,054 rows and the vintage fixture failed. Fix: a
+   leading count is comma-grouped or ≥5 digits. Final count **21,502 rows /
+   2,106 lineups changed** (all entries), smoke test green.
+
+**Prevention.** The two instruments — a fixture file run against the shipped
+source, and a whole-store flip list with the shipped lookup order — are the
+pattern for any name-normalisation change; both are scratchpad scripts named
+here. The lesson is the one already on the books for `fund-er.js`: measure a
+normaliser's LOSSES on the same store as its gains before shipping, because
+every loosening that fills a blank can also empty or move one.

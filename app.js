@@ -453,11 +453,64 @@
    * identifier labels and codes, so a real security whose name happens to carry
    * a CUSIP keeps its row. */
   const ID_ONLY = /^(?:\s*(?:CUSIP|SEDOL|ISIN)\s*[:#]?\s*[A-Z0-9]{0,12}\s*)+$/i;
+  /* THREE MORE THINGS THAT ARE NOT PART OF A FUND'S NAME (2026-09-18, sized
+   * on the v135 store by the hourly draws, queue item (j)):
+   *   1. the schedule's TYPE column glued to the end — "VANGUARD 500 INDEX ADM
+   *      MUTUAL FUND SHARES", "… Pooled Separate Account": 1,237 plans /
+   *      4,418,181 participants / 17,033 rows;
+   *   2. a trailing comma, semicolon or colon from a wrapped cell — "Vanguard
+   *      S&P 500 Index Trust,": 268 plans / 1,004,405 participants;
+   *   3. a share count glued on either end — "132,545,334 Vanguard Mid Cap
+   *      Index Fund" (CVS), "Vanguard Small-Cap Index Fund - 522,008 shares"
+   *      (Comerica), "Galliard Stable Return Fund (3,684,067 shares)": 84
+   *      plans / 191,052 participants / 797 rows.
+   * Values are right; the name is noise, and — as with N/R — the name is the
+   * key for the ticker index, so an end-anchored pattern can miss it. Each strip
+   * is guarded so a real name is never emptied: a type phrase is removed only
+   * when at least two words remain (a row that IS just "Mutual funds" stays,
+   * and stays visible to the generic-name audit), and every strip falls back to
+   * the original when it would leave fewer than three letters. Display and
+   * lookup only; the store is unchanged, and the parser-side strip is queued.
+   * Leading dashes from a wrapped bullet ("— Vanguard U.S. Growth Fund") go too. */
+  const TYPE_SUFFIX = /\s+(?:mutual funds?(?: shares?)?|common\/?collective trusts?(?: funds?)?|collective (?:investment )?trusts?|registered investment compan(?:y|ies)(?: shares?)?|pooled separate accounts?|units? of participation)\s*$/i;
+  function cleanFiledName(name) {
+    let s = String(name).trim();
+    s = s.replace(/^[—–-]+\s*/, "");
+    s = s.replace(/[,;:]+$/, "").trim();
+    // a share COUNT is thousands or more (1,234 / 12345…); "Class R6 Shares"
+    // is a share CLASS and must survive — the first draft of this cut it to
+    // "Class R", measured as 26 lost tickers before it shipped
+    s = s.replace(/(?:^|[\s,(-])[\s,(-]*(?:\d{1,3}(?:,\d{3})+|\d{4,})\s+shares?\)?\s*$/i, "").trim();
+    // a leading count is comma-grouped or five-plus digits; a four-digit lead
+    // is a target-date VINTAGE ("2045 Fund") and stays — the first draft took
+    // 13,000 vintage-led rows with it, caught by the store-wide count
+    const lead = s.replace(/^(?:\d{1,3}(?:,\d{3})+|\d{5,})\s+(?=[A-Za-z].*\s\S)/, "").trim();
+    if (lead !== s && /[A-Za-z]{3}/.test(lead)) s = lead;
+    const m = s.match(TYPE_SUFFIX);
+    if (m) { const rest = s.slice(0, m.index).trim(); if (rest.split(/\s+/).length >= 2 && /[A-Za-z]{3}/.test(rest)) s = rest; }
+    return /[A-Za-z]{3}/.test(s) ? s : String(name).trim();
+  }
+  /* Ticker lookup order: the FILED name first (with and without the issuer),
+   * the cleaned display name only as a fallback. Measured 2026-09-18 before
+   * this order existed: looking up the cleaned name alone gained 37 tickers
+   * but LOST 26 and FLIPPED 26 — "TROWEPRICE RET 2025 TR-F MUTUAL FUND SHARES"
+   * is exact TRRHX as filed, and without its suffix the trailing "TR-F" reads
+   * as a trust class and demotes it to a comparable. Raw-first means the strip
+   * can only add. */
+  function lookupTicker(f) {
+    const raw = typeof f.nameRaw === "string" ? f.nameRaw : f.name;
+    const iss = f.iss ? f.iss.replace(/\*+/g, "").trim() + " " : "";
+    return (iss ? fundTickerInfo(iss + raw, f.type) : null) || fundTickerInfo(raw, f.type)
+      || (raw !== f.name ? ((iss ? fundTickerInfo(iss + f.name, f.type) : null) || fundTickerInfo(f.name, f.type)) : null);
+  }
   function cleanCostMarkers(e) {
     if (!e || !e.funds || e._nameClean) return e;
     e._nameClean = true;
     for (const f of e.funds) {
-      if (typeof f.name === "string") f.name = f.name.replace(/\s+(?:N\/R|\$?0\.00)$/i, "").trim();
+      if (typeof f.name === "string") {
+        f.nameRaw = f.name.replace(/\s+(?:N\/R|\$?0\.00)$/i, "").trim();
+        f.name = cleanFiledName(f.nameRaw);
+      }
     }
     const keep = e.funds.filter((f) => !ID_ONLY.test(f.name || ""));
     if (keep.length !== e.funds.length) e.funds = keep;
@@ -1362,7 +1415,7 @@
        * prefix — blank fee cells since v67. Try issuer+name first (keeps
        * every existing win), then the bare name. Strict superset. */
       const info = tab === "menu" && !gicRow
-        ? (f.iss ? fundTickerInfo(f.iss.replace(/\*+/g, "").trim() + " " + f.name, f.type) : null) || fundTickerInfo(f.name, f.type)
+        ? lookupTicker(f)
         : null;
       // employer stock IS a listed security: the plan's own ticker names it
       const stockRow = /company stock|employer (security|stock)/i.test((f.type || "") + " " + f.name);
@@ -1493,7 +1546,7 @@
     ${starred ? `<p class="fund-note"><strong>*Comparable fund.</strong> That holding is a collective trust or separate account — it has no ticker and no published expense ratio, because its fee is negotiated by the plan. The fund shown is its registered equivalent, so you can look up what it holds; the plan's trust class is normally <em>cheaper</em> than the retail fee shown, so read it as a ceiling, not the plan's price.</p>` : ""}
     ${classNote}
     ${tab === "menu" && list.filter((f) => /stable value|\bgic\b/i.test(f.type || "")).length >= 5 ? `<p class="fund-note">The many <strong>Stable value / GIC</strong> rows are one menu option, itemized: plans file each piece of the stable value fund — the insurance-company contracts that wrap it and the individual securities inside its synthetic GICs (agency pools, corporate notes, asset-backed trusts). Participants choose the stable value fund as a single option; these securities are not separate choices, which is why they carry no expense ratio or ticker.</p>` : ""}
-    ${tab === "menu" && list.some((f) => !fundTickerInfo(f.name, f.type) && !/company stock|employer (security|stock)|brokerage|stable value|\bgic\b/i.test((f.type || "") + " " + f.name)) ? `<p class="fund-note">Holdings with no ticker are ones we can't identify from the filed name alone: many are pooled vehicles — collective trusts, separate accounts — that have no ticker at all, and others are registered funds our reference table doesn't yet carry. Naming one on a guess would be worse than leaving it blank.</p>` : ""}`;
+    ${tab === "menu" && list.some((f) => !lookupTicker(f) && !/company stock|employer (security|stock)|brokerage|stable value|\bgic\b/i.test((f.type || "") + " " + f.name)) ? `<p class="fund-note">Holdings with no ticker are ones we can't identify from the filed name alone: many are pooled vehicles — collective trusts, separate accounts — that have no ticker at all, and others are registered funds our reference table doesn't yet carry. Naming one on a guess would be worse than leaving it blank.</p>` : ""}`;
   }
 
   function fundTable(plan) {
