@@ -13892,3 +13892,33 @@ be printed over a truncation. And the draw's `ratio` column is computed
 from the DISPLAYED rows on purpose — it is what found this, where the
 stored ratio (whole schedule) would have read 0.99 for Boeing and said
 nothing.
+
+## 2026-09-18 (11:1xZ) — per-cycle draw: 15 of 15 real menus; Apple's brokerage window appears twice (a filed aggregate beside the parser's fold), sized at 6 plans / ~169k ppl
+
+**Draw** (seed 20260918111, participant-weighted, 15 of 59,750): Amazon
+1.34M ppl, Paychex Retirement 645,304 (PEO headcount), Tenet 149,730,
+Apple 145,428, Caesars, Cognizant, Panera, IUJAT 401k, Grand Canyon
+University, Gobrands, Wolfspeed, Eliassen, VNA Health, Critical Nurse
+Staffing. No statement, no subtotal, no fragment, no prose row.
+
+- **Apple (145,428 ppl, $30.75B, ratio 0.928)** publishes `[BROKERGE
+  ACCOUNT] Various Accounts` $2.15B (7.5%) AND `Participant brokerage
+  holdings (55 positions)` $1.92B (6.7%). The first is the filing's own
+  aggregate line under the brokerage header (the header's misspelling is
+  the filing's), the second is the parser's fold of the itemized rows
+  under that same header — so unless the filing reports both an aggregate
+  and its contents, the window is counted twice. Sized store-wide
+  (scratchpad `brok-double.mjs`: a fold row beside a filed row whose
+  issuer or name says brokerage/PCRA/self-directed): **5 plans / 23,458
+  ppl** — State Street 21,533 (filed 5.6% + fold 2.5%), Rochester
+  Electronics, Mitchell Williams — **plus Apple, which the sizer missed
+  because its header reads `BROKERGE`**: 6 plans / ~169k ppl. Whether the
+  two rows are the same money needs the filing; folded into (i) duplicate
+  rows as its own shape (filed aggregate + parser fold under one header).
+- Wolfspeed carries ` Mutual Fund` glued to names (j, stripped at
+  display); Gobrands `Large Cap Growth` is a bare white-label name; Tenet
+  70 rows at 0.946 with a clean CIT menu.
+
+Run #359 (v138) was in flight throughout (dispatched 10:24Z); site-test
+#72 on the v138 `app.js` concluded success. Mirror held until the v138
+store lands.

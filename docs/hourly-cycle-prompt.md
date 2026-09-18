@@ -237,6 +237,14 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 11:2xZ 2026-09-18: #359 (v138) still in flight, mirror
+      held; site-test #72 success; draw 15/15 clean.** Into (i): a filed
+      brokerage AGGREGATE beside the parser's brokerage FOLD under one
+      header — Apple (145,428 ppl) `[BROKERGE ACCOUNT] Various Accounts`
+      7.5% + `Participant brokerage holdings (55 positions)` 6.7%; 6 plans
+      / ~169k ppl (State Street 21,533). Sizer: scratchpad
+      `brok-double.mjs` (add `BROKERGE` to its regex).
+      `docs/accuracy-log.md` 2026-09-18 (11:1xZ).
       **STATUS 10:4xZ 2026-09-18: v138 DISPATCHED — the 80-row DISPLAY CAP.**
       The 10:1xZ draw (JPMorgan at exactly 80 rows) exposed that `parseRows`
       sliced `funds` at 80 while `totalValue` counted every row: confidence
