@@ -237,6 +237,17 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 20:2xZ 2026-09-18: #371 dispatched 20:08Z via REST (GitHub
+      MCP down since 19:32Z; `GITHUB_TOKEN` + curl work); Pages #500/#501
+      built `eb25b24f`/`caa5ac7a` success. Draw 15/15 real. **(f) SIZED:**
+      A1 doubled house 239 plans / 486k ppl (display strip SHIPPED, 34/34
+      fixtures, 73/0/0 tickers), A2 trustee-before-house 789 / 1.34M
+      (parser), B trustee suffix or bare trustee row 1,252 / 3.48M (two
+      populations, separate first), C 4 plans. Audit ticker sample now
+      keyed on the ack hash (trail steps ~22.8 → ~24.0 once, by design).
+      Next parser work at **140**: (m) Lulus tie-break, (f) A2, (l) fold
+      before cap. **Owner's four questions still open; hold stands.**
+      `docs/accuracy-log.md` 2026-09-18 (20:2xZ).
       **STATUS 19:5xZ 2026-09-18: v139 run #369 PASSED and is LIVE
       (`eb25b24f`, pv 139 at 99.85%, +3/−0, HIGH 4, overshoot 360, aggRow
       56). Whole-store multiset diff: 820 caption-prefix rows / 756 plans

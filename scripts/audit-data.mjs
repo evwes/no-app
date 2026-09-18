@@ -450,11 +450,19 @@ try {
     vm.createContext(ctx2);
     vm.runInContext(readFileSync("fund-er.js", "utf8") + "\nglobalThis.__t = fundTickerInfo;", ctx2);
     const tickerOf = ctx2.__t;
-    let i = 0;
-    for (const e of Object.values(entriesByAckCov)) {
+    /* Sample by ACK HASH, not by row position (2026-09-18, run #369): the
+     * positional 1-in-20 re-phased on every row removed anywhere before it,
+     * so v139's 300 junk-row deletions produced a DIFFERENT 85,987-row sample
+     * and the trail read 23.21 -> 22.77 while the exact store-wide count
+     * went 456,060 -> 456,065. A row's inclusion now depends only on which
+     * entry it belongs to, so the number moves only when names or entries
+     * actually change. The first line carrying this is not comparable to
+     * the ones before it — note the discontinuity in the trail. */
+    const ackHash = (a) => { let h = 0; for (const c of a) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h; };
+    for (const [ack, e] of Object.entries(entriesByAckCov)) {
       if (!e || !e.confident || !Array.isArray(e.funds)) continue;
+      if (ackHash(ack) % 20) continue;
       for (const x of e.funds) {
-        if (i++ % 20) continue;
         const nm = String(x.name || "").trim();
         if (!nm) continue;
         tkSeen++;

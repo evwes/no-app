@@ -507,6 +507,14 @@
     // the store until that re-parse lands.
     const hm = s.match(/^(?:\(?[a-e]\)\s*)?(?:(?:including\s+)?maturity date|par,?\s+or\s+maturity value|(?:description\s+)?of investment(?:\s+cost)?(?:\s+value)?|identity of issuer?,?|rate of interest|collateral,?\s+par)[\s,]*/i);
     if (hm) { const rest = s.slice(hm[0].length).trim(); if (rest.split(/\s+/).length >= 2 && /[A-Za-z]{3}/.test(rest)) s = rest; }
+    // the identity column's house glued in front of a description that
+    // already names it — "JP Morgan JP Morgan Mid Cap Growth Fund", "Dodge &
+    // Cox Dodge & Cox Global Bond Fund": the first 1-3 words repeated
+    // verbatim. 239 plans / 486,173 ppl / 1,183 rows on the v139 store
+    // (queue item f, the doubled-house half). 20:1xZ 2026-09-18. A trustee
+    // before a DIFFERENT house ("Empower T. Rowe Price …") is left alone —
+    // "BlackRock iShares …" is a real name.
+    s = s.replace(/^((?:\S+\s+){0,2}\S+)\s+\1(?=\s+\S)/i, "$1");
     const pm = s.match(TYPE_PREFIX);
     if (pm) { const rest = s.slice(pm[0].length).trim(); if (rest.split(/\s+/).length >= 2 && /[A-Za-z]{3}/.test(rest)) s = rest; }
     s = s.replace(/[,;:]+$/, "").trim();

@@ -14323,3 +14323,57 @@ array byte-identical, 0 acks / 0 plans the branch lacked, main newer on
 `eb25b24f` is live. **GitHub MCP was disconnected for this whole verdict**
 (run status read from the branch's data commit instead), so the Pages
 build of `eb25b24f` is unconfirmed — the 20:07Z cycle checks it.
+
+## 2026-09-18 (20:2xZ) — per-cycle draw clean; queue item (f) SIZED at 995 + 1,252 plans and its doubled-house half stripped at display (239 plans / 486,173 ppl); the ticker-share sample now keys on the ack hash; GitHub MCP down, REST used
+
+**Draw** (seed 20260918201, participant-weighted, 15 of 59,752): Walmart,
+ADP TotalSource 346,164 ppl (`Target Solution 2045`, a white-label as
+filed), Intermountain 84,616 (66 rows — the v130 fragments are gone),
+Panera, DPWN, Pike, Deployed Services, Savage, AIDS Healthcare, BSH,
+Detroit Diesel, World Wildlife Fund, Community Action Council, Speed
+Motor Express, Byron Health. 15 of 15 real menus. Known shapes: Speed
+Motor's leading share counts (`34,499 American Funds Growth Fnd R6`,
+display strips them), BSH's ` N/R` suffix (display strips it), Detroit
+Diesel's `Vanguard Federal` truncation ((j) store-side), Community Action
+Council's issuer header carrying a `. GROUP ANNUITY CONTRACT` fragment.
+
+**Queue item (f), issuer glue, SIZED whole-store** (`issuer-glue.mjs`,
+`issuer-glue-split.mjs`) — it was "unsized" since the Duke/Compass draw:
+
+| shape | plans | ppl | rows |
+|---|---|---|---|
+| A1 the SAME house twice — `JP Morgan JP Morgan Mid Cap Growth Fund`, `Dodge & Cox Dodge & Cox Global Bond Fund` | **239** | **486,173** | 1,183 |
+| A2 a trustee before a DIFFERENT house — `Empower T. Rowe Price Mid Cap Growth Fund`, `VOYA JPMorgan Small Cap Equity Portfolio`, `Wells Fargo MFS VAL CIT N FD` | 789 | 1,339,789 | 2,271 |
+| B a trustee suffix after the fund, or the bare trustee as the whole row — `Small Cap Value Ret Fund Great Gray Trust Company`, `T. Rowe Price Trust Company`, `Ascensus Trust Company` | 1,252 | 3,484,624 | 1,399 |
+| C a two-line colon-less issuer as the whole name (Nebraska Medicine) | 4 | 24,779 | 4 |
+
+A2 needs the parser (the trustee belongs in `iss`, and `BlackRock iShares
+…` is a real name, so it is not a display strip). B is two populations
+that need separating before either is touched: a fund with the trustee's
+name appended is fixable; a bare `T. Rowe Price Trust Company` row is the
+provider-house-name-only shape this file names elsewhere, where the
+FILING carries no fund. A1 is mechanical and is **stripped at display
+now** (`app.js` `cleanFiledName`: the first 1–3 words repeated verbatim
+collapse to one copy). Fixtures 34/34 after correcting one old fixture
+that had encoded the doubled house as a keep; controls `Empower T. Rowe
+Price …`, `BlackRock iShares …`, `Vanguard Target Retirement 2030 Trust
+II` unchanged. `flip-clean.mjs` over 1,704,532 published rows: GAINED 73
+/ LOST 0 / FLIPPED 0 — unchanged, the raw-first lookup already resolved
+these. `smoke-test.mjs` OK (after one self-inflicted duplicate `const`
+that the smoke test caught before CI did).
+
+**`audit-data.mjs` ticker sample now keys on the ACK HASH** (`h*31+c`
+`% 20` over entries) instead of every 20th row by position, so a junk row
+removed anywhere no longer re-phases the sample. Local run: **24.03% of
+85,680 rows**; the trail's next line will step from 22.77 to about 24.0
+and that step is the sampling change, not a gain — the code comment says
+so. The exact iss-inclusive figure stays 456,065 / 1,726,192 rows.
+
+**Runs:** #370 was main's :23 cron at 19:41Z (v138 code on main at the
+time, no-op). **The GitHub MCP server disconnected at 19:32Z and stayed
+down through this cycle**; `GITHUB_TOKEN` is in the environment and the
+REST API answers, so `gh-runs.sh` (scratchpad) lists runs and a `curl
+-X POST …/dispatches` with `Content-Type: application/json` (415 without
+it) dispatched **#371 at 20:08:44Z on `caa5ac7a`**, observed in_progress.
+Pages builds #500 (`eb25b24f`) and #501 (`caa5ac7a`) both **success** —
+the v139 store reached readers at 20:01Z.
