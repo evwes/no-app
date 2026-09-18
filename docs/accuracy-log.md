@@ -14381,3 +14381,31 @@ REST API answers, so `gh-runs.sh` (scratchpad) lists runs and a `curl
 it) dispatched **#371 at 20:08:44Z on `caa5ac7a`**, observed in_progress.
 Pages builds #500 (`eb25b24f`) and #501 (`caa5ac7a`) both **success** —
 the v139 store reached readers at 20:01Z.
+
+## 2026-09-18 (21:1xZ) — per-cycle draw: 15 of 15 real menus; one new small shape sized (a registered-mark glyph read as the letter "b", 94 plans / 174,831 ppl); #372 dispatched
+
+**Draw** (seed 20260918211, participant-weighted, 15 of 59,752): Walmart,
+Wells Fargo 288,416 ppl (120 rows — at the v138 cap, `cut` recorded),
+Principal Life 124,666, H-E-B 114,181, MedStar 41,662, Anheuser-Busch
+22,287, TPUSA, Fanatics, Rich Products, World Kinect, Aptive, Eastern
+Warehouse, Quality Structures, Amherst Services, Castilleja School. 15 of
+15 real menus. Known shapes: Anheuser-Busch `Vanguard Treasury` and
+H-E-B `SSGA (H-E-B` (the (j) store-side truncation), Eastern Warehouse
+`Transamerica Life Insurance Co.` as a whole row at 13.5% (the (f) B bare
+trustee row), Amherst `Loomis Sayles Loomis Sayles Growth Fund` (the
+doubled house — the display strip shipped at 20:1xZ covers it).
+
+**One new shape, sized and recorded:** Amherst Services publishes
+`Fidelity FreedombIndex 2055 Fund` and an issuer `Institutional Premium
+Class b` — the filing's ® glyph rendered by pdftotext as the letter "b".
+Store-wide (`glyph-b.mjs`): **94 plans / 174,831 ppl / 540 rows**, most of
+them a trailing ` b b b` or ` b` on T. Rowe Price / Vanguard rows (452 of
+the 540) and 13 `IndexbFund` / 10 `FreedombIndex` mid-word cases. Small;
+the trailing form could join the display OCR-tail strip (which already
+takes a 1–3 letter fragment after a class token, so `Fund b` is the gap);
+the mid-word form needs a table of known marks. Queued under (j), not
+fixed.
+
+**Runs:** #371 (20:08Z) success, no-op, mirrored `cbfea546`; main's :23
+cron did NOT fire at 20:23. **#372 dispatched 21:08:43Z** via REST on
+`fe95fdcf`, observed in_progress. GitHub MCP reconnected at 21:07Z.

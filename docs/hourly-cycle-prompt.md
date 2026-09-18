@@ -237,6 +237,13 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 21:1xZ 2026-09-18: #371 no-op mirrored (`cbfea546`), #372
+      dispatched 21:08Z; site-test #78 success; draw 15/15 real, only
+      known shapes plus one new small one — the ® glyph read as "b"
+      (`FreedombIndex`, `Fund b b b`), 94 plans / 174,831 ppl / 540 rows,
+      recorded under (j). Owner's usage limit reset mid-cycle; loop
+      continuous. **Owner's four questions still open; hold stands.**
+      `docs/accuracy-log.md` 2026-09-18 (21:1xZ).
       **STATUS 20:2xZ 2026-09-18: #371 dispatched 20:08Z via REST (GitHub
       MCP down since 19:32Z; `GITHUB_TOKEN` + curl work); Pages #500/#501
       built `eb25b24f`/`caa5ac7a` success. Draw 15/15 real. **(f) SIZED:**
