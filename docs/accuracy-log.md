@@ -13660,3 +13660,34 @@ caught — and now imports `NOT_FUND_SHAPED` + `GENERIC_TYPE_ANY`; it reads
 4 plans / $12.1B on the v136 store where it read 0. (3) The draw found
 this; no count-based check did, because every count-based check ran the
 same regex. The random published-lineup draw stays in every cycle.
+
+## 2026-09-18 (08:1xZ) — per-cycle draw: 15 of 15 real menus; two issuer-glue specimens for (f), one truncated name, one disclosed 2023 fallback
+
+**Draw** (seed 20260918081, participant-weighted, 15 of 59,750 published
+lineups): Express Services (PEO headcount, second draw in a row), Advance
+Stores 67,469 ppl, Orlando Health 43,041, Ochsner 41,661, Anheuser-Busch
+22,287, Ricoh 17,376, UC Health 14,109, Rithm Capital 13,578, Central
+Arkansas Nursing 5,864, Elliot Health 5,742, Morley, Planned Parenthood LA,
+Peak Technical, Hathaway Brown, G3 Technologies. **No fabricated shape, no
+statement line, no prose row, no class subtotal.** Ratios 0.85–1.00.
+
+**Recorded, not defects in the parse:**
+- **(f) issuer glue, two more shapes.** Orlando Health promotes the section
+  header `Unallocated Contracts ^` (with its footnote caret) to the issuer
+  of its MetLife stable-value row; Hathaway Brown carries `College
+  Retirement Equities Fund variable annuities` as the issuer on all 57
+  rows — the TIAA/CREF product-class caption, not a firm. Both are the
+  "strip type vocabulary and footnote markers from the promoted issuer"
+  fix already queued as (f).
+- **Anheuser-Busch** publishes `Vanguard Treasury` ($216.8M, 6.0%) — a
+  name cut before `Money Market Fund`; value right, ticker lookup blank.
+  The (j) parser-side strip should look at truncation on the OTHER side
+  too when it is picked up.
+- **Central Arkansas Nursing Centers** serves a 77-row 2023 fallback at
+  0.845 with `fb2023` disclosed on the page — the fallback working as
+  designed.
+
+Run #355 (v137) was in flight throughout this cycle (dispatched 07:29Z);
+the mirror is held until its store lands, because the branch carries v137
+code over the v136 store and mirroring that would make main's :23 cron run
+the full re-parse a second time on main.

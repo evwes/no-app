@@ -237,6 +237,13 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 08:1xZ 2026-09-18: #355 (v137) still in flight, mirror
+      held; draw 15/15 clean.** Two more (f) issuer-glue specimens: Orlando
+      Health `[Unallocated Contracts ^]` (section header + footnote caret
+      as issuer), Hathaway Brown `[College Retirement Equities Fund
+      variable annuities]` on all 57 rows; Anheuser-Busch `Vanguard
+      Treasury` truncated before `Money Market Fund` (a (j) note).
+      `docs/accuracy-log.md` 2026-09-18 (08:1xZ).
       **STATUS 07:3xZ 2026-09-18: v137 DISPATCHED** — the 07:12Z draw found
       ATH Holding / Elevance (94,427 ppl, $12.11B) publishing `Collective
       investment trusts` at 91.7%: the v105 dominant-row shape, live,
