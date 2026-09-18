@@ -237,6 +237,14 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 17:1xZ 2026-09-18: #365 no-op (branch `780cbf4b`), main's
+      :23 cron #366 committed `7c198bcd` (measured 0/0, byte-identical —
+      `--force` git check only), #367 dispatched 17:10Z; draw 15/15 real,
+      only known shapes (Old Republic's 31% managed-account fold, a
+      value-column caption glued into a GIC name at Teamsters — sized 4
+      plans / 170,867 ppl, recorded under (j)). Nothing shipped this hour.
+      **Owner's wam question still open; hold stands.**
+      `docs/accuracy-log.md` 2026-09-18 (17:1xZ).
       **STATUS 16:1xZ 2026-09-18: #364 no-op (mirrored `ff55a6d1`), #365
       dispatched 16:09Z, site-test #76 green; draw 15/15 real, only known
       shapes (NRECA (h), Apple (i), a same-value `Fixed annuities`

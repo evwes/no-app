@@ -14108,3 +14108,39 @@ three known shapes seen again:
 byte-identical (confident 60,103, HIGH 4, overshoot 360, aggRow 56, dl
 99); mirrored `ff55a6d1` unforced. **site-test #76** (footnote / column
 bar repairs): success. **#365 dispatched 16:09Z.**
+
+## 2026-09-18 (17:1xZ) — per-cycle draw: 15 of 15 real menus, only known shapes; run #365 a no-op, mirrored; main's #366 cron commit measured byte-identical
+
+**Draw** (seed 20260918171, participant-weighted, 15 of 59,750): Walmart
+1,921,006 ppl (42 rows, ratio 0.93 — the v130 repair is visible in the
+draw: `MSCI ACWI ex-U.S. IMI Index Non-Lendable Fund` at $2.86B and the
+LSV international fund published under their own names), Teamsters
+National 401(k) 167,196, William Beaumont 49,582 (104 rows), FirstGroup
+America 46,872, Republic Services 42,055, Harvard 39,385, BMO Financial
+30,897, Ricoh 17,376, Old Republic 14,044, Marvin Lumber, Swire Pacific,
+Positive Behavior Supports, Keystone Rural Health, All Star Electric,
+Lohmiller. Nothing new; known shapes seen again:
+
+- **Old Republic (14,044 ppl):** `Managed account holdings (3 positions)`
+  at 31.3% — the ≥30% managed-account fold class (56 plans, queued).
+- **Teamsters:** `Guaranteed Investment Contract - At Contract Value
+  Prudential Stable V…` — a VALUE-COLUMN caption glued between the type
+  and the issuer. The display `TYPE_PREFIX` strip leaves `At Contract
+  Value Prudential …`, which is no worse than the filed string but is not
+  a fund name either. Sized whole-store: **4 plans / 170,867 ppl / 4 rows**
+  (`prefix-value.mjs`) — recorded under (j) store-side, not worth a strip.
+- **BMO:** `Commingled Pension Trust Fund (U.S. Analyst) of JPMorgan Cha` —
+  the store-side name truncation already in (j).
+- **Marvin Lumber:** `Dodge and Cox` as the whole row (house name, as
+  filed), `Growth Equity Fund` (the sponsor's own white-label name).
+- Harvard's `Vanguard Total St Mk Ix In Pl` and Ricoh's `SS TARGET RET
+  2030` are the recordkeeper's abbreviations, as filed.
+
+**Run #365** (dispatched 16:09Z, incremental) success 16:16Z, coverage
+byte-identical (confident 60,103, HIGH 4, overshoot 360, aggRow 56, dl
+99, pvTopShare 99.9); branch `780cbf4b`. **Main's :23 cron fired this
+hour (#366, 16:31–16:38Z, `7c198bcd`)** — measured with `mainvsbr2.mjs`:
+0 acks / 0 plans the branch lacks, plans array byte-identical, pv differs
+on 0, so the mirror uses `--force` on the git check only. **#367
+dispatched 17:10Z** on `780cbf4b` and observed queued at 17:10:54Z.
+Nothing shipped this hour; the wam hold stands pending the owner's answer.
