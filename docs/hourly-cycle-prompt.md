@@ -232,8 +232,10 @@ Order of business:
       to the END of the name (`… MUTUAL FUND SHARES`, `… Pooled Separate
       Account`) 1,237 plans / 4,418,181 ppl / 17,033 rows** (03:1xZ draw;
       Walmart, CVS — which also carries a share count at the FRONT —
-      Compass Group, Intermountain, Hy-Vee); a display/lookup strip in
-      `app.js` covers readers before the next parser version. `docs/accuracy-log.md`
+      Compass Group, Intermountain, Hy-Vee). **DISPLAY HALF SHIPPED
+      06:4xZ 2026-09-18** (`app.js` `cleanFiledName`, raw-first lookup:
+      21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
+      the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
       **STATUS 06:0xZ 2026-09-18 (run #353 verdict): v136 is LIVE** —
       Dominion Energy back (16 rows), First American's page names the
