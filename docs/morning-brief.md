@@ -1,7 +1,7 @@
-# Morning brief — 2026-09-18 (written 06:1xZ / 2:1x AM ET)
+# Morning brief — 2026-09-18 (written 06:1xZ, refreshed 09:3xZ / 5:3x AM ET)
 
-Live on main: **`8bc58c1a`, the v136 store**, Pages deploying it. Five parser
-versions shipped in 24 hours (v132 → v136), every one verified against its
+Live on main: **`78ff7aad`, the v137 store**, Pages deploying it. Six parser
+versions shipped in 27 hours (v132 → v137), every one verified against its
 own prediction and every loss read by row name before the mirror.
 
 ## What shipped and what it changed (numbers, not adjectives)
@@ -13,10 +13,11 @@ own prediction and every loss read by row name before the mirror.
 | v134 | fair-value category totals beside the menu they total | overshoot 390 → 364 |
 | v135 | prose (a description's wrapped tail) as a holding; a one-row trust pointer read as a pointer | prose ≥10% of menu **171 → 100 plans, 315k → 104k ppl**; BJC's all-junk lineup gone |
 | v136 | Dominion Energy's real menu back; First American's page names its master trust; statement-of-changes lines as holdings | 47 plans / 340,403 ppl / $2.12B phantom value; HIGH back to 5 (= 4 baseline + 1 designed) |
+| v137 | a PLURAL type label (`Collective investment trusts`) at ≥90% of a lineup is a statement, not a menu — ATH Holding / Elevance (94,427 ppl) was publishing the v105 shape; the guard knew the singular only. Its refusal triggered the prior-year fallback, so those 94,427 readers now see the 2023 filing's REAL 29-row menu, disclosed as 2023. A first draft that widened the shared regex made 3M's derivatives ledger publishable and was caught by the corpus diff before shipping | confident −2 (two master trusts, designed); HIGH 4; dominant-row 0; the generic-names audit gains 24 plans it could not see (108 → 128) |
 | fund table | "Van" contraction + 22 Vanguard funds the table never carried (your Ocala page) | **+43,962 rows / ~15,900 plans / 18.5M ppl gain a ticker; 0 lost; 0 flipped** |
 
-Store: confident lineups 60,105; pv 136 at 99.85%; generic-names audit 108
-(threshold 230); dominant-row 0.
+Store: confident lineups 60,103; pv 137 at 99.85%; generic-names audit 128
+(threshold 230); dominant-row 0; download failures 99, all 99 re-probed 403.
 
 ## Fully complete pages (your question at 03:2xZ)
 
@@ -38,6 +39,8 @@ Those two are NEW extraction coverage, measured earlier as 0 path defects in
 | (f) a type header or share-class fragment promoted to the issuer bracket | 375 + 357 plans / ~1.47M ppl | queued |
 | (i) a holding published twice under two spellings, both full value | 262 / 450,981 | queued |
 | (g) remaining description tails as holdings | 100 / 104,478 | queued |
+| (k) a LEADING share-class / vehicle fragment as the whole row name (Rush Copley `Fund Institutional Shares` 35%; Energy Transfer `Trust` 78%) | 18 plans / 29,785 ppl at ≥30%; 46 / 80,877 at ≥10% | found 09:2xZ, sized, queued |
+| Docomo Pacific: the prior-year fallback published broken-font noise names | 1 plan / 476 ppl | recorded; a fallback-quality note |
 | Lehigh Valley Imaging (OCR-path regression) | 198 ppl | its fresh dx is in the store, unread |
 
 ## HELD, and why

@@ -237,6 +237,26 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 09:3xZ 2026-09-18 (run #355 verdict): v137 is LIVE on main
+      (`78ff7aad`, Pages #480).** Confident −2 = two master trusts with a
+      92–94% `COMMON/COLLECTIVE TRUSTS` row (designed); HIGH 4; dominant-row
+      0; generic-names 128; overshoot 361 unchanged; dl 78 → 99, all 99
+      re-probed 403. ATH Holding's refused statement was replaced by its
+      2023 filing's REAL 29-row menu via the fallback (94,427 ppl gain);
+      Docomo Pacific's fallback published broken-font noise names (476
+      ppl, one plan, recorded). `fc67076c` [skip ci]: the fallback
+      disclosure now names the true reason the newest filing was passed
+      over (text only, next bump). #356 dispatched 09:21Z (incremental).
+      **NEW (k) FROM THE 09:2xZ DRAW — a LEADING share-class / vehicle
+      fragment as the whole row name: Rush Copley `Fund Institutional
+      Shares` $109M at 35%; Energy Transfer LP (16,426 ppl) `Trust` at
+      78%, Sunoco GP `Trust` 76% — a wrapped master-trust name as a
+      holding, the v105 shape below the 90% floor. Sized: ≥30% of menu 18
+      plans / 29,785 ppl / $2.82B; 10–30% 28 / 51,092; <10% 237 / 483,887
+      ppl / 278 rows.** Sizer: scratchpad `frag-lead.mjs`. Also: ADP's
+      names doubled with a caps twin (27 rows), Walmart `Investments`
+      caption glued to its stock row, `Vanguard Fed` truncated (second
+      sighting of the shape). `docs/accuracy-log.md` 2026-09-18 (09:2xZ).
       **STATUS 08:1xZ 2026-09-18: #355 (v137) still in flight, mirror
       held; draw 15/15 clean.** Two more (f) issuer-glue specimens: Orlando
       Health `[Unallocated Contracts ^]` (section header + footnote caret

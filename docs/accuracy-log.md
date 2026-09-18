@@ -13691,3 +13691,110 @@ Run #355 (v137) was in flight throughout this cycle (dispatched 07:29Z);
 the mirror is held until its store lands, because the branch carries v137
 code over the v136 store and mirroring that would make main's :23 cron run
 the full re-parse a second time on main.
+
+## 2026-09-18 (09:2xZ) — run #355 verdict: v137 LIVE (`78ff7aad`); the guard refused ATH and Docomo as predicted, and then the prior-year fallback did something the prediction did not say — a real 29-row 2023 menu for ATH's 94,427 readers, OCR-garbage names for Docomo's 476; two master trusts are the only losses; 99 of 99 download failures answer 403; the fallback disclosure named a false cause and now names the true one
+
+**The run.** #355, dispatched 07:29Z on `bb7f5ed3`, success 08:25Z (56
+min), data commit `78ff7aad`. pv137 covers 68,666 of 68,767 (99.85%),
+tail unchanged (pv106 18, pv98 10, pv123 10, pv124 10). Confident 60,105 →
+**60,103 (+0 / −2)**, lineups 59,750, match 43,027, vesting 52,825,
+overshoot **361 unchanged** (predicted: this version changes no sums),
+`overshootTrust` 9, `aggRow` 50, `tkShare` 23.17, `dl` 78 → **99**,
+`pvTopShare` 99.9. Local audit on the landed store: **HIGH 4 = the
+baseline** (the run's own line says 6 = 4 + the two `reparse-loss` on the
+trusts below, self-clearing), generic-names **128** ($94.4B; predicted
+~132 on the v136 store — the four fewer are the run's own changes),
+**dominant-row 0** under the now plural-aware audit, folded-aggregate 50.
+
+**The two losses are master trusts and are the rule working:** Tucson
+Electric Power Company Master Trust ($474.1M, 4 rows: `COMMON/COLLECTIVE
+TRUSTS` 94%, `LONG DUR INC FD`, `INTEREST BEARING CASH`) and SC
+International Services Master Retirement Trust ($145.0M, 5 rows, 92%).
+Both now `dx=stmt`. Mirrored with `--force-data` over exactly those two,
+git check unforced (main had nothing the branch lacked).
+
+**What the prediction got wrong, in both directions.** "ATH and Docomo
+non-confident with `dx=stmt`, confident −4" assumed a refused primary ends
+in a blank. It does not: a refused primary is exactly what TRIGGERS the
+prior-year fallback (`fetch-4i.mjs` ~990), and both plans have a 2023
+full-form filing.
+- **ATH Holding / Elevance (94,427 ppl, $12.11B): better than predicted.**
+  The 2024 OCR statement (`Collective investment trusts` 91.7%) is refused
+  and the 2023 filing supplies **29 rows, `fb: 2023`** — Vanguard Target
+  Retirement trusts, Institutional Total Bond / Extended Market index
+  trusts, Retirement Savings Trust II, T. Rowe Price Large-Cap Growth
+  Trust, Elevance Health stock. A real menu, a year old, disclosed as such.
+  Two blemishes in it, recorded: the top row is `The Vanguard Group`
+  $1.79B / 16.3% (the bare house name as a holding — the residuals table's
+  named shape) and `Other Collective Investment Trusts T. Rowe Price
+  Large-Cap Growth Trust` carries a section header glued to a name.
+- **Docomo Pacific (476 ppl, $16M): worse than predicted.** Its 2023
+  filing's text layer is broken-font noise and the fallback published it:
+  `Commodcollective Trusr; El,?`, `Conunodcollective Trusc El,E47 shaEs`,
+  `Commory'Collective Trust; 70,674 shaes` — 20 rows, every one a mangled
+  `Common/Collective Trust; N shares`, ratio 0.85, confident. A blank was
+  more honest than this. Sized with a noise test (letter-punctuation-letter
+  glue): the test's own false-positive floor is too high to trust — it
+  matches share-class tokens like `R5E` and `INST'L` in 198 ordinary
+  lineups — so the class is stated as what was READ: **one plan, 476
+  participants.** Recorded as a fallback-quality note (a fallback whose
+  rows are mostly unreadable names should not publish), not queued as
+  parser work at this size.
+
+**A false disclosure, found because ATH was read.** ATH's new source string
+said *"the newest filing's public copy has no readable schedule."* The
+newest copy was read, in full, by OCR, and refused because it reports asset
+classes. `fetch-4i.mjs` ~1119 used one sentence for every non-withdrawn
+primary. **Shipped `fc67076c` (`[skip ci]`, text only):** the reason is
+captured before the fallback overwrites `parsed` — `aggregate` (stmt or
+trust pointer) → *"reports its investments only by asset class or as a
+trust interest, not as holdings"*; `band` → *"carries a schedule that could
+not be reconciled to the plan's reported assets"*; `none` → the old
+sentence. Takes effect on fallback-served acks at the next
+`PARSER_VERSION` bump. An error code is a published claim; so is the
+sentence beside a fallback.
+
+**Download failures 78 → 99 — re-probed, not inherited.** All 99 `e=download`
+acks HEAD-probed against the EFAST2 bucket: **99 of 99 answer 403.** The
+bucket grew by 21 withdrawn filings; `e=download` still means exactly what
+`gap-census` publishes. (Third whole-population probe: 68/68, 78/78,
+99/99.)
+
+**Housekeeping defect in the sandbox, worth one line:** `audit-high.txt`
+is untracked and a local audit run had left a stale "folded-aggregate 60,
+up from the 59 baseline" HIGH in it, which read as the run's finding for
+ten minutes. The coverage line (`aggRow: 50`) and a before/after diff of
+the folded set (50 → 50, no entrant) settled it; the local audit also
+appended a duplicate coverage line that was reverted before commit.
+**Read the coverage line and `git log` before reading an untracked file.**
+
+**The 09:2xZ draw** (seed 20260918091): Walmart 1.92M ppl, Lowe's 318,750
+(`fb2023`, disclosed — the 31 prior-year lineups' type case, still served),
+CommonSpirit 130,882, Building Service 32BJ 123,030, Sutter 74,381, ADP
+52,481, Charles Schwab 44,441, SP Plus, Martinrea, Rush Copley, Trumpf,
+Sunroad, Diesel Direct, Knox College. No statement, no subtotal, no
+dominant non-fund row. Found:
+- **Rush Copley Medical Center (3,442 ppl, $0.31B): `Fund Institutional
+  Shares` $109,445,632 at 35.2% and `Investor Shares` $16M at 5.2%** —
+  wrapped continuation lines (the share-class suffix line) published as
+  the row name with the value, the Owens Corning shape in a leading
+  position that v130's column attribution does not cover. **Sized
+  store-wide (scratchpad `frag-lead.mjs`, names that BEGIN with a
+  share-class/vehicle word and carry nothing else): ≥30% of the menu — 18
+  plans / 29,785 ppl / $2.82B**, led by Energy Transfer LP (16,426 ppl)
+  publishing `Trust` at **78%** and Sunoco GP (1,279) `Trust` at 76% — a
+  wrapped master-trust name read as a holding, the v105 shape at 78% that
+  no ≥90% guard sees; 10–30%: 28 plans / 51,092 ppl; under 10%: 237 plans
+  / 483,887 ppl / 278 rows. **Queued as (k).**
+- ADP (52,481): every name doubled with its own caps twin (`Northern Trust
+  S&P 500 Index Fund NORTHERN TRUST S&P 500 IND`), a second description
+  column glued on — 27 rows, ticker lookup blind to all of them; (j)/(f).
+- Walmart: `Investments Walmart Inc. Equity Securities` — the statement
+  caption `Investments` glued ahead of the employer-stock row.
+- Building Service 32BJ: Wellesley Income at 69% is plausibly the union
+  plan's default and is left alone; `Vanguard Fed` is truncated before
+  `Federal Money Market` (Anheuser-Busch's `Vanguard Treasury` shape, second
+  sighting).
+- Sunroad: `T. Rowe Price Retirement | 2030 Fund` — a column bar glued
+  into the name; Knox College: the CREF annuity-class caption as issuer on
+  every row (f).
