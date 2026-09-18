@@ -228,7 +228,12 @@ Order of business:
       **(j) cosmetic strips, sized:** names ending in `,;:` 268 plans /
       1,004,405 ppl (two of them FORM FIELDS as rows: PPG `Plan No:`,
       Eurofins `Employer I.D.#:`); a share count glued in (`, 416,228
-      shares`) 84 plans / 191,052 ppl / 797 rows. `docs/accuracy-log.md`
+      shares`) 84 plans / 191,052 ppl / 797 rows; **the TYPE column glued
+      to the END of the name (`… MUTUAL FUND SHARES`, `… Pooled Separate
+      Account`) 1,237 plans / 4,418,181 ppl / 17,033 rows** (03:1xZ draw;
+      Walmart, CVS — which also carries a share count at the FRONT —
+      Compass Group, Intermountain, Hy-Vee); a display/lookup strip in
+      `app.js` covers readers before the next parser version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
       **STATUS 02:2xZ 2026-09-18 (run #352 verdict): v135 parts 1-2 are
       LIVE** (trust-pointer reading; prose is not a holding — item (g)

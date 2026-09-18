@@ -13443,3 +13443,34 @@ genuine trade-off per class, not a blanket rule, and the honest statement is:
 **a row-level name guard must be assumed to be a region-selection change until
 `diff-lineups` says otherwise**, and the placement (row-level vs
 post-selection) is a decision each class needs on evidence.
+
+## 2026-09-18 (03:1xZ per-cycle draw) — 0 fabricated rows in 15; the schedule's TYPE column glued onto fund names sized at 1,237 plans / 4.42M ppl / 17,033 rows (cosmetic, and a ticker-lookup hazard)
+
+Participant-weighted, seed 20260918030, 15 published lineups on the v135
+store, read by name. **All 15 carry real menus with right values:** Walmart
+(1.92M), ADP TotalSource (346,164), Starbucks (307,988), Cleveland Clinic
+(81,999 — trustee `[Fidelity Management Trust Company]` as issuer on every
+row, the class `app.js` already strips for lookup), Dillard's (47,826 —
+employer stock at 75.3%, real), Stanford Health Care, AMSI, Indeed Flex (an
+$83k plan against 21,443 filed participants — a PEO headcount, the filing's
+number), Flexcare, Primark, Edge Home Finance, Newport Group, Pixelle,
+Clarity Media, Intelliswift.
+
+**Cosmetic, sized:** Edge Home Finance publishes `RETIREMENTTRACK MOD 2045
+R1 MUTUAL FUND SHARES` and `VANGUARD 500 INDEX ADM MUTUAL FUND SHARES` —
+the schedule's TYPE column glued to the end of the name. Store-wide
+(scratchpad `type-suffix.mjs`; predicate: a generic vehicle phrase at the
+END of a multi-word name, employer-stock `… Common Stock` endings excluded
+because those are real names): **1,237 plans / 4,418,181 ppl / 17,033
+rows** — `mutual fund shares` 9,757, `mutual fund(s)` 4,866, `pooled
+separate account(s)` 1,026, `registered investment company` 569,
+`collective (investment) trust` 599. Walmart (`Fiera Asset Management USA
+Collective Trust`), CVS (385,927 — and with a SHARE COUNT glued at the
+front too: `132,545,334 Vanguard Mid Cap Index Fund Mutual Fund`), Compass
+Group (312,914), Intermountain, Hy-Vee. Values are right; the suffix is
+noise on the page and can defeat an end-anchored pattern in `fund-er.js`.
+Filed under (j) with the trailing-punctuation and share-count strips: one
+`parseRows` strip, or a display/lookup strip in `app.js` while a parser
+version waits.
+
+Rate, per participant: 0 fabricated, 0 wrong values, 1 cosmetic class.
