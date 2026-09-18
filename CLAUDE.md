@@ -651,10 +651,10 @@ don't confuse them). Frontend: python http.server + Playwright at
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
   full-form** filers and 43,523 short-form; 68,767 parse-status entries.
-  **Store at v139 (branch AND main, `a18d4ad9`); `PARSER_VERSION` in the
-  tree is 140 (coded-schedule LEGEND names, 742 plans / 709k ppl) — its
-  run was dispatched 2026-09-18 21:3xZ; mirror only once the v140 store
-  lands. OCR v8.**
+  **Store at v140 (branch AND main, `118e7a24`); `PARSER_VERSION` in the
+  tree is 141 (kerned-font type labels + fbo rows) — its run was
+  dispatched 2026-09-18 22:3xZ; mirror only once the v141 store lands.
+  OCR v8.**
   **Re-derived from the local store 2026-09-18 19:5xZ** — `pv139` covers
   68,665 of 68,767 acks (99.85%), tail pv106 18, pv98 10, pv123 10, pv124
   10; `lib-4i` exports 139. (On 2026-09-16 this line said v124 for four
@@ -665,7 +665,17 @@ don't confuse them). Frontend: python http.server + Playwright at
   Nothing downstream was affected (no session acted on it), but it is exactly
   the copying-a-line-forward hazard this file warns about elsewhere, aimed at
   the file's own header. **Re-derive this line rather than editing the date.**
-- **LIVE on main: `eb25b24f` — MIRRORED 2026-09-18 19:5xZ.** The v139 store
+- **LIVE on main: `118e7a24` — MIRRORED 2026-09-18 22:2xZ.** The v140 store
+  (a coded 4i schedule takes its holding names from the filing's own
+  LEGEND — Empower's template, `1VFIAX`). pv 140 at 99.85%, confident
+  60,106 (+0 / −0), HIGH 4, overshoot 360, aggRow 56, dominant-row 0,
+  generic-names 128, dl 103 (both new ones 403). **14,946 rows / 680
+  plans / 603,114 ppl renamed code → fund name** (whole-store multiset
+  diff); coded residue 2,466 rows / 267 plans (OCR "I" mismatches and
+  226 Empower plans whose legend was not found — open). `tkShare` (hash
+  sample) 24.03 → 24.29. Unforced both checks. `docs/accuracy-log.md`
+  2026-09-18 (run #373 verdict).
+- **Previously: `eb25b24f` — MIRRORED 2026-09-18 19:5xZ.** The v139 store
   (a valueless line made only of 4i column-caption words no longer glues
   onto a page's first holding; the v70 row strip names the four leaked
   shapes). pv 139 at 99.85%, confident 60,106 (+3 / −0), HIGH 4, overshoot

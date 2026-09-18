@@ -237,6 +237,16 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 22:3xZ 2026-09-18 (run #373 verdict): v140 is LIVE on main
+      (`118e7a24`, Pages #505).** 14,946 coded rows / 680 plans / 603,114
+      ppl renamed code → legend name; LEAD residue 2,466 rows (OCR "I"
+      mismatches + 226 Empower plans whose legend was not found — next in
+      this class); confident +0/−0, HIGH 4, dl 103 (both 403). **v141
+      shipped + dispatched:** kerned-font type labels (Nelnet 6 → 30 rows;
+      20 lineups mostly letter-spaced) and `fbo <person>` rows folded into
+      the brokerage aggregate. Follow-ups: display de-spacer for kerned
+      names; (m) Lulus; (f) A2. **Owner's four questions still open; hold
+      stands.** `docs/accuracy-log.md` 2026-09-18 (22:2xZ).
       **STATUS 21:3xZ 2026-09-18: #372 no-op mirrored (`a18d4ad9`,
       tkShare 24.03 = the hash-sample step). **v140 shipped**: Empower's
       coded 4i schedule (`1VFIAX`) takes its names from the filing's own

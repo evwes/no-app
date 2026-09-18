@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 140;
+export const PARSER_VERSION = 141;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -369,6 +369,7 @@ const CATEGORY_PHRASE = /^(?:target[- ]date(?: retirement)?(?: funds?)?|retireme
  * (no product identity behind it) keeps "Variable Annuity Contract" as its
  * holding — the v68 regression this must never repeat. */
 
+const DESPACED_TYPE = /^(?:mutualfunds?|commoncollectivetrusts?(?:funds?)?|collectivetrusts?(?:funds?)?|collectiveinvestmenttrusts?|commingled(?:trust|fund)s?|pooledseparateaccounts?|separateaccounts?|registeredinvestmentcompan(?:y|ies)|guaranteed(?:investment|interest)contracts?|stablevalue(?:funds?)?|moneymarket(?:funds?)?|commonstocks?|corporatestocks?|employersecurities|interestbearingcash|cash|participantloans?|notesreceivablefromparticipants|unitizedfunds?|insurancecompanygeneralaccounts?)$/;
 function typeOnly(desc) {
   /* v72: a trailing VALUE or footnote marker defeats the type test. Filings
    * print "Mutual funds   291,224 (1)" in the description column, and those
@@ -378,6 +379,19 @@ function typeOnly(desc) {
    * type in the name. */
   let r = String(desc).replace(/\s+[\d,]{3,}(?:\.\d+)?\s*(?:\(\d+\))?\s*$/, "").trim();
   if (CATEGORY_PHRASE.test(r)) return true;
+  /* v141: A KERNED FONT SPLITS EVERY WORD INTO FRAGMENTS. Nelnet (11,248
+   * participants, $760M) files its schedule in a font pdftotext renders as
+   * "V an gu ard Targe t Re tire m e nt 2045 Tru st II | Com m o n Co lle ctive
+   * Tru st". The description is a type label, but no pattern matched the
+   * fragments, so the DESCRIPTION won the name and twelve target-date trusts
+   * merged into one row called "Com m o n Co lle ctive Tru st" at 52.6% of
+   * the plan beside "Mu tu al Fu nd" at 45.6% — a six-row fabricated lineup
+   * that every guard passed (two labels, neither above 90%). 167 plans /
+   * 558,665 ppl carry a letter-spaced row; 20 lineups are mostly such rows.
+   * When the phrase is fragmented (two or more 1–2 letter tokens in a row),
+   * compare it with every space removed against the type vocabulary. Only a
+   * whole-phrase match counts, so no real fund name can trip it. */
+  if (/(?:\b[A-Za-z]{1,2} ){2,}/.test(r) && DESPACED_TYPE.test(r.toLowerCase().replace(/[^a-z]/g, ""))) return true;
   for (const [re] of TYPE_PATTERNS) r = r.replace(re, " ");
   /* "guaranteed", "registered", "pooled", "separate", "collective",
    * "commingled", "insurance", "mutual", "stable" are TYPE words, never a
@@ -2866,6 +2880,27 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
       : brokRows.length ? "mixed" : "managed";
   }
   for (const f of funds) { delete f.sec; delete f._sl; }
+
+  /* v141: "fbo <person>" IS ONE PARTICIPANT'S ACCOUNT, NOT A MENU OPTION.
+   * A self-directed brokerage account is sometimes itemised "fbo Jane Doe
+   * (Roth)" — for the benefit of one named participant. Nelnet published two
+   * such rows. They are the brokerage window's contents, folded into the
+   * same aggregate row the itemised-securities fold produces, and a person's
+   * name never becomes a holding. Anchored on a leading "fbo": an insurer's
+   * contract "Allianz Life … FBO the Plan" is a plan asset and stays. */
+  {
+    const fbo = funds.filter((f) => /^f\/?b\/?o\s/i.test(String(f.name || "")));
+    if (fbo.length) {
+      const sum = fbo.reduce((a, f) => a + (f.value || 0), 0);
+      funds = funds.filter((f) => !fbo.includes(f));
+      const label = "Participant brokerage holdings";
+      const agg = funds.find((f) => f.type === "Brokerage window" && /^Participant brokerage holdings \(\d+ positions\)$/.test(f.name));
+      if (agg) { agg.name = `${label} (${+agg.name.match(/\((\d+)/)[1] + fbo.length} positions)`; agg.value += sum; }
+      else funds.push({ name: `${label} (${fbo.length} positions)`, type: "Brokerage window", value: sum });
+      funds.sort((a, b) => b.value - a.value);
+      sdbaOut = true;
+    }
+  }
 
   // trust-POINTER pages: a member plan's own 4i is often just "Interest in
   // <X> Master Trust $8B" plus a stray row or two (Eaton: + stable value +

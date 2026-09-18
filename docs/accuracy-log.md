@@ -14463,3 +14463,67 @@ this week a bounding measurement was worth more than the item it bounded.
 **Run #372** (dispatched 21:08Z) success 21:14Z, no-op; `tkShare` 24.03 is
 the hash-keyed sample's first line (the predicted one-time step; exact
 name-only figure unchanged at 23.01%). Mirrored `a18d4ad9` unforced.
+
+## 2026-09-18 (22:2xZ) — run #373 verdict: v140 PASSED and is live — 14,946 coded rows across 680 plans / 603,114 participants now carry the legend's fund name; v141 ships the kerned-font type-label fix (Nelnet 6 → 30 rows) and folds "fbo <person>" rows
+
+**Run #373** (v140 full re-parse, dispatched 21:22Z on `daa21d23`):
+success 22:15Z, 53 min, data commit `118e7a24`. **pv 140 covers 68,663 of
+68,767 (99.85%)**, tail unchanged. Coverage line: confident **60,106 (+0 /
+−0, as predicted)**, HIGH 4, overshoot 360, aggRow 56, `dl` 101 → 103
+(both new acks answer **403** on a HEAD probe — bucket grew by two, stored
+entries kept), `pvTopShare` 99.8. `audit-generic-names` 128, `audit-
+dominant-row` 0. `tkShare` (hash sample) 24.03 → **24.29**.
+
+**The prediction, checked:** `lead-ticker.mjs` LEAD rows **14,802 → 2,466
+/ 267 plans / 272,076 ppl** (predicted ~2,900). The residue: 1,104 "I…"
+rows (OCR read the code with an I and the legend with a 1, or vice versa —
+no exact match, so no rename, as designed) and 1,348 "1…" rows in 226
+Empower plans whose legend the parser did not find — the next thing to
+open in this class. Whole-store multiset diff (`rename-ms.mjs` against the
+v139 shards): **14,946 rows / 680 plans / 603,114 ppl renamed code →
+legend name** (`1RWMEX` → `American Funds Washington Mutual R4`, `1EBM75`
+→ `EB MaGIC 75 Stable Value Fund`); 0 rows removed, 0 added, 0 caption
+renames (v139's work holds). Berger Rental's rows carry the legend names
+and `code`. Two plans had two codes at one value (Printpack `1VBTLX` +
+`IVBTLX` both → `Vanguard Total Bond Market Index Admiral` at $8,070,681)
+— a pre-existing same-value duplicate pair, now visibly one fund twice;
+queue (i). **Mirrored `118e7a24` unforced**; Pages #505 built it at 22:21Z.
+
+**v141, shipped `[skip ci]` and dispatched after this entry.** Two fixes
+from the 22:1xZ draw (seed 20260918221: Thermo Fisher 72,605 ppl, Duke,
+Whirlpool, Shaw, **Nelnet**, Latham & Watkins, Strategic Education, CMFG
+(ratio 1.369 — the overshoot class), Connect Holding, Sonova, NOW Health,
+Marymount, Allen Institute, Election Systems, Nuss Truck — 14 of 15 real):
+
+1. **Nelnet (11,248 ppl, $760M) published a SIX-ROW FABRICATED LINEUP:**
+   `Com m o n Co lle ctive Tru st` 52.6%, `Mu tu al Fu nd` 45.6%. The
+   filing's font is kerned so pdftotext splits every word — `V an gu ard
+   Targe t Re tire m e nt 2045 Tru st II | Com m o n Co lle ctive Tru st`.
+   `typeOnly` never matched the fragments, the DESCRIPTION won the name,
+   and twelve target-date trusts merged into one row. Both fabrication
+   guards passed it: two labels, neither ≥ 90%. **Sized (`spaced-fbo.mjs`):
+   167 plans / 558,665 ppl / 439 letter-spaced rows (the regex over-counts
+   prose, so read this as a ceiling); 20 lineups are ≥ 50% such rows** —
+   OIS Management 1,997 ppl 100%, Jennings Road 2,535 ppl 80%, Omaha Truck
+   1,132 ppl 100%. Fix: when a description is fragmented (two or more 1–2
+   letter tokens in a row), compare it with every space removed against
+   the type vocabulary (`DESPACED_TYPE`, whole-phrase match only). Nelnet
+   → **30 rows, ratio 1.000**, the identity column's (still letter-spaced)
+   names published with the right values. Toyota (61 → 62 rows) is the same
+   rule: a `M ut ual fund` row stops being a holding name. Names stay
+   letter-spaced for now — a display de-spacer against a fund-word list is
+   the follow-up, and it is what would make these rows resolve tickers.
+2. **`fbo <person>` rows.** Nelnet also published two rows named for
+   individual participants' brokerage accounts ("fbo <name> (Roth)"). A
+   person's name is never a holding: rows opening with `fbo` fold into the
+   `Participant brokerage holdings (N positions)` aggregate. Store-wide 4
+   plans / 8 rows matched `fbo`; only the leading-`fbo` form (Nelnet's) is
+   folded — an insurer's "… FBO the Plan" contract is a plan asset.
+
+Gate green; `diff-lineups HEAD` 960 filings: 0 gained / 0 lost / 0
+fabricated, row moves Nelnet 6 → 30 and Toyota 61 → 62 only. Pinned Nelnet
+(`kerned-font-type-label-merge`). **Prediction for the v141 run:** the 20
+mostly-letter-spaced lineups change shape (rows up, the type-label rows
+gone); confident +0 / −0 or a handful of small gains where a 2-row
+statement becomes a menu; `spaced-fbo.mjs` ≥50% count 20 → ~0; no fbo row
+published; coverage otherwise unchanged.
