@@ -13969,3 +13969,44 @@ trusts` 66% under an `Investments at net asset value` issuer). Two (f)
 issuer-glue spellings: Duke's `Fidelity Vanguard Inst Index Plus`
 (platform name prefixed to every fund) and Children's Healthcare's
 `Fidelity - Vanguard Total Stock Market Index Fund`.
+
+## 2026-09-18 (13:2xZ) — per-cycle draw: the schedule's type column glued to the FRONT of the name ("Mutual Fund - Fidelity® 500 Index Fund"), sized at 733 plans / 1,464,661 ppl / 3,191 rows and stripped at display; run #361 a no-op; site-test #73 green
+
+**Draw** (seed 20260918131, participant-weighted, 15 of 59,750): Walmart
+1.92M ppl (42 rows — one more than under v137, a row the old cap had
+dropped), Universal Services 258,360, KPMG 55,389, GE HealthCare 54,636,
+Texas Health Resources 34,090, Central Laborers 23,293, Workday, Red Hat,
+IUOE Local 4, Central Florida Investments, Alternative Behavior
+Strategies, GIA, Shell Retail, Sapphire Estates. Every menu real.
+Findings, all cosmetic:
+
+- **Texas Health Resources (34,090 ppl):** `Mutual Fund - Fidelity® 500
+  Index Fund`, `[JPMorgan] Common Collective Fund - SmartRetirement
+  Passive Blend 2035` — the schedule's TYPE column glued to the START of
+  the name with a separator, the mirror image of (j)'s suffix shape. The
+  v138 display strip handles suffixes only. **Sized on the v138 store
+  (scratchpad `type-prefix.mjs`): 733 plans / 1,464,661 ppl / 3,191
+  rows** — `mutual fund` 1,460, `pooled separate account` 422, `money
+  market fund` 211, `separate account` 153, `registered investment
+  company` 149 — of which only 16 rows would gain a ticker (the lookup
+  already finds most fund names inside the prefixed string). **Shipped at
+  display:** `TYPE_PREFIX` in `app.js` `cleanFiledName`, separator
+  required (a bare `Stable Value Fund` row is never touched), ≥2 words
+  must remain. Measured with the shipped lookup order over all 1,704,579
+  published rows: **GAINED 53 rows / 40 plans / 23,335 ppl (was 37 —
+  +16, exactly the sizer's count), LOST 0, FLIPPED 0**; fixtures 20/20;
+  24,969 rows in 2,759 lineups now cleaned (was 21,502 / 2,106).
+- **IUOE Local 4 (8,612 ppl):** `ISSUER INTEREST RATE COST ** VALUE
+  MASSMUTUAL STABLE VALUE C` at 14.7% — the column-HEADER words of the
+  stable-value sub-table welded to the fund name. Value right, name
+  wrong; a header-glue variant for (f)/(j), one plan seen.
+- Universal Services `Mass Mutual` $52.9M at 8.2% — the bare house name
+  as a holding (the named residual shape).
+
+**Run #361** (dispatched 12:23Z, incremental) success 12:30Z, coverage
+line byte-identical (confident 60,103, HIGH 4, overshoot 360, aggRow 56,
+dl 99). Mirrored `06dde2c9` unforced (main had nothing the branch
+lacked). **site-test #73 on the v138 `app.js` (thousands separators):
+success.** #362 dispatched 13:16Z. The 12:23Z hourly cron on main did not
+fire at all this hour — the documented unreliability, and why the cycle
+dispatches itself.

@@ -473,9 +473,17 @@
    * lookup only; the store is unchanged, and the parser-side strip is queued.
    * Leading dashes from a wrapped bullet ("— Vanguard U.S. Growth Fund") go too. */
   const TYPE_SUFFIX = /\s+(?:mutual funds?(?: shares?)?|common\/?collective trusts?(?: funds?)?|collective (?:investment )?trusts?|registered investment compan(?:y|ies)(?: shares?)?|pooled separate accounts?|units? of participation)\s*$/i;
+  /* The same column glued to the FRONT with a separator — "Mutual Fund -
+   * Fidelity 500 Index Fund", "Separate Account - JPMorgan Equity Income
+   * Fund R6" (Texas Health Resources, 13:1xZ draw 2026-09-18). Sized on the
+   * v138 store: 733 plans / 1,464,661 ppl / 3,191 rows; the separator is
+   * required so "Stable Value Fund" alone is never touched. */
+  const TYPE_PREFIX = /^(?:mutual funds?|common[\/ ]?collective (?:trust )?funds?|collective (?:investment )?trusts?(?: funds?)?|common[\/ ]?collective trusts?|pooled separate accounts?|separate accounts?|registered investment compan(?:y|ies)|stable value(?: funds?)?|money market(?: funds?)?|guaranteed (?:investment|interest) contracts?|target date funds?|index funds?)\s*[-–:]\s+(?=\S)/i;
   function cleanFiledName(name) {
     let s = String(name).trim();
     s = s.replace(/^[—–-]+\s*/, "");
+    const pm = s.match(TYPE_PREFIX);
+    if (pm) { const rest = s.slice(pm[0].length).trim(); if (rest.split(/\s+/).length >= 2 && /[A-Za-z]{3}/.test(rest)) s = rest; }
     s = s.replace(/[,;:]+$/, "").trim();
     // a share COUNT is thousands or more (1,234 / 12345…); "Class R6 Shares"
     // is a share CLASS and must survive — the first draft of this cut it to

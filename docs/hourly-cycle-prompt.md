@@ -237,6 +237,16 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 13:2xZ 2026-09-18: #361 no-op (mirrored `06dde2c9`), #362
+      dispatched 13:16Z, site-test #73 green; draw 15/15 real.** (j) gains
+      its FRONT variant, shipped at display: the type column glued before
+      the name with a separator (`Mutual Fund - Fidelity 500 Index Fund`,
+      Texas Health 34,090 ppl) — 733 plans / 1,464,661 ppl / 3,191 rows;
+      `TYPE_PREFIX` in `cleanFiledName`, flip list GAINED 53 / LOST 0 /
+      FLIPPED 0. New (f)/(j) spelling: a sub-table's column-header words
+      welded to a name (IUOE Local 4 `ISSUER INTEREST RATE COST ** VALUE
+      MASSMUTUAL STABLE VALUE C`). `docs/accuracy-log.md` 2026-09-18
+      (13:2xZ).
       **STATUS 12:3xZ 2026-09-18 (run #359 verdict): v138 is LIVE on main
       (`05a9d93a`).** Confident +0/−0 exactly as predicted; HIGH 4;
       dominant-row 0; 191 lineups at the new 120 cap, 414 entries carry
