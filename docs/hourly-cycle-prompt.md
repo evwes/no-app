@@ -230,6 +230,22 @@ Order of business:
       Eurofins `Employer I.D.#:`); a share count glued in (`, 416,228
       shares`) 84 plans / 191,052 ppl / 797 rows. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 02:2xZ 2026-09-18 (run #352 verdict): v135 parts 1-2 are
+      LIVE** (trust-pointer reading; prose is not a holding — item (g)
+      halved: 171 → 100 plans at ≥10%). **NEW TOP ITEM — Dominion Energy
+      (18,747 ppl, `20260702105125NAL0012952931001`) REGRESSED under v135:
+      16 real rows (`Dominion Energy Common Stock`, `Target Retirement 2030
+      Trust Plus` …) → `band-hi`, no lineup**; Lehigh Valley Imaging (212
+      ppl, `20260806083440NAL0004256851001`) 12 rows → `few`. Trace both
+      with `--vs 789f589e` to find which of parts 1-2 moved them; a rule
+      aimed at junk took a real menu, the same shape as First American under
+      v133. **First American (17,155)** is now `tp=1` but `dx=stmt`, and the
+      plans-index bits 65536/131072 are NOT set (4460), so the page still
+      does not say "held in the master trust" — finish part 1's prediction
+      (`dx=trust` + bits; check merge-4i's bit logic keys on `dx` or `tp`).
+      Item 2 (statement lines, e) and the rest of (g)'s 100 plans remain;
+      the killed agent's part-3 draft is in scratchpad `wam5-partial.patch`
+      for reference only. Next parser work goes in at **136**.
       **STATUS 20:1xZ:** v134 (part 5) is LIVE, overshoot 390 → 364. A
       wam agent restarted at 20:0xZ on First American + (e) + (g) toward
       v135 after the first attempt was killed by the session usage limit

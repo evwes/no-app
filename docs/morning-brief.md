@@ -64,6 +64,26 @@ all defective, all this shape.
 - **8 small plans (6,910 people) regressed** from a good 2023 fallback to a
   half-plan 2024 parse. Queued, top of wam's brief.
 
+## Update 02:3xZ 2026-09-18 — v135 LIVE; a second gap from the WEEKLY limit
+
+- **Mirrored `647a32a3` at 02:2xZ.** v135 parts 1-2: prose (a description's
+  wrapped tail, a sentence fragment) is no longer published as a holding —
+  the class at ≥10% of a menu fell **171 → 100 plans, 315,474 → 104,478
+  people**; BJC Health System's all-junk lineup is gone; a one-row master-
+  trust pointer is read as a pointer, not a failure. Confident −11 net.
+- **Two real regressions accepted on the record and queued first:**
+  Dominion Energy (18,747 people) lost a correct 16-row menu, Lehigh Valley
+  Imaging (212) a 12-row one. Same shape as First American under v133, whose
+  page still cannot say "held in trust" (flagged, not yet described).
+- **The loop stopped again 21:3x–01:0xZ**, this time on the weekly usage
+  limit. Main's cron carried the hours; a second parser agent was killed
+  mid-edit and its half-work discarded, not adopted. Both gaps are in the
+  log. **If the weekly limit is the binding constraint, the agent spawns are
+  the cost to cut** — each v135 agent ran 60-80 minutes of Opus.
+- **fund-facts:** the runner workflow reached main with this mirror and was
+  dispatched for the first time at 02:3xZ; its result (dated ER + YTD for 18
+  tickers, or a clean failure) is the next cycle's item.
+
 ## Update 20:1xZ — v134 LIVE; a three-hour gap from the usage limit
 
 - **Mirrored `789f589e` at 20:0xZ.** v134 (the fifth v133 part parsed in):

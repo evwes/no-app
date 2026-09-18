@@ -13076,3 +13076,76 @@ Trust Company, LLC Putnam Large Cap Value` (a wrapped prefix), Banterra
 
 Rate, per participant: 1 whole-lineup fabrication in 15 (Morgan Stanley,
 class labels as the menu), 1 double-count, 1 house row, cosmetic on 3.
+
+## 2026-09-18 (run #352 verdict, 02:2xZ) — v135 parts 1-2 landed and MIRRORED: prose-as-holding halved (171 → 100 plans at ≥10%), BJC's all-junk lineup gone, 18 losses of which 16 are junk and TWO are real regressions (Dominion Energy 18,747 ppl; Lehigh Valley Imaging); First American is flagged but not yet described; and a second loop gap (21:3x–01:0xZ, the weekly limit)
+
+**The gap first.** The session's weekly usage limit hit at ~21:3xZ
+("resets 11pm UTC") and the wake that could act came at 01:08Z. Four
+wakes queued. Main's cron ran twice (#350, #351, no-ops at v134). The
+**second wam agent of the day was killed mid-edit** with 101 uncommitted
+lines of part 3 in `scripts/lib-4i.mjs`; saved to scratchpad
+`wam5-partial.patch`, tree reset, not adopted — the rule from the first
+kill, applied. Its parts 1 and 2 were already committed and pushed
+(`d801f0a7`, `14683364`), so the dispatch went ahead on those.
+
+**Run #352** (id 35294429240), dispatched 01:13Z on `407d417b` after the
+gate (green) and `diff-lineups 789f589e` (0 fabricated introduced, 1 loss =
+BJC Health System 3 → 0 rows, the fix working), concluded success 02:06Z
+(53 min). Data commit `647a32a3`. Re-derived from the pulled store:
+
+| check | v134 (`789f589e`) | v135 (`647a32a3`) |
+|---|---|---|
+| dominant pv | 134 at 99.86% | **135 at 99.85%** |
+| confident | 60,114 | **60,103** (+7 / −18) |
+| HIGH | 4 | **21** = 4 + 17 `reparse-loss` (self-clearing) |
+| overshoot (≥1.15x) | 364 / 497,920 | 360 / 517,317 |
+| generic-names audit | 107 | 109 (+2; threshold 230) |
+| dominant-row audit | 0 | 0 |
+| **prose-as-holding (item g), any row** | 2,054 plans / 3.25M ppl | **1,569 / 2.31M** |
+| **prose-as-holding at ≥10% of the menu** | 171 plans / 315,474 ppl | **100 / 104,478** |
+| managed-account fold ≥30% | 48 | 48 |
+| `tp` (trust-pointer) flagged acks | — | 241 (part 1 predicted "tens") |
+| `dl` | 92 | 99 |
+
+**The 18 losses, every one read by row name.** Sixteen are junk lineups
+the prose rule correctly stops publishing — Mars PN 001 (`le 0 0 1f`, the
+Form 5500 checkbox coordinates), Martco (`fair value of investments`),
+Service Employees (`of investments`), Allied Aviation (`shares a`), ATM
+Holdings (`Inputs Inputs Inputs Value`), Quantum Mechanical (`at the
+beginning of the year`, an auditor's name), Seiren (asset-class labels),
+National Jewish Health (4,474 ppl — `fair value hierarchy`, `Investment
+contracts`), Hannahville, Ministry Centered, and six more of the same
+shape. **Two are real:**
+
+- **Dominion Energy (18,747 ppl, `20260702105125NAL0012952931001`): was
+  16 real rows** (`Dominion Energy Common Stock`, `Target Retirement 2030
+  Trust Plus` …), **now `band-hi`, no lineup.** A regression of the same
+  kind as First American's under v133 — a good menu lost to a rule aimed at
+  junk. TOP OF THE QUEUE, with the trace to find which of parts 1-2 moved it.
+- Lehigh Valley Imaging (212 ppl): was 12 rows, 11 real Vanguard vintages
+  beside one `net asset value (a)` fragment, now `few`. Same mechanism,
+  small.
+
+**Gains, 7:** State Street Corporation (21,533 ppl) and six small plans.
+
+**First American (17,155 ppl), the item part 1 was aimed at:** the store
+now says `dx=stmt`, `tp=1`, no `fb` — flagged as a trust pointer, but NOT
+`dx=trust` and the plans-index bits 65536/131072 are NOT set (bits 4460), so
+the page still cannot say "held in the master trust". Part 1's prediction
+was `dx=trust` + both bits; half landed. Queued with Dominion.
+
+**Mirrored `dcaab85d` → `647a32a3`** with `--force` (main's two cron
+commits: `mainvsbr2` measured 0 plans / 0 acks the branch lacked, plans
+array byte-identical, main newer on 1 ack) and `--force-data` (the 18 above:
+16 justified, 2 regressions accepted on the record because holding v135
+would keep prose rows on 517 plans / 961,757 people's pages to protect two
+plans' menus that are queued for repair). The mirror also carries the
+`fund-facts` workflow to main, which is what lets it be dispatched.
+
+**Draw this cycle** (seed 20260918020, 15 published lineups): 0 fabricated
+rows; All Ways Safe (250 ppl) publishes `AMCAP Fund R-5E` and `AMCAP
+FUND‐R5E` at the same $329,958 — the (i) duplicate class again; Starbucks
+`[Target Date Funds Vanguard]`, Vertiv `— Vanguard …`, Community Foundation
+`[— Lincoln Financial Group]` — leading-dash and type-header glue in the
+issuer, the (f) class. Amazon, Bank of America, Starbucks, Fiserv, Hess and
+nine others clean.

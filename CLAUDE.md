@@ -651,12 +651,11 @@ don't confuse them). Frontend: python http.server + Playwright at
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
   full-form** filers and 43,523 short-form; 68,767 parse-status entries.
-  **Store at v134 (branch AND main, `789f589e`); `PARSER_VERSION` in the
-  tree is 134 — no unparsed parser change is waiting (a wam agent is
-  building v135 in the tree, uncommitted). OCR v8.**
-  **Re-derived from the local store 2026-09-17 20:0xZ** — `pv134` covers
-  68,674 of 68,767 acks (99.86%), tail pv106 18, pv98 10, pv123 10, pv124
-  10; `lib-4i` exports 134. (On 2026-09-16 this line said v124 for four
+  **Store at v135 (branch AND main, `647a32a3`); `PARSER_VERSION` in the
+  tree is 135 — no unparsed parser change is waiting. OCR v8.**
+  **Re-derived from the local store 2026-09-18 02:2xZ** — `pv135` covers
+  68,667 of 68,767 acks (99.85%), tail pv106 18, pv98 10, pv123 10, pv124
+  10; `lib-4i` exports 135. (On 2026-09-16 this line said v124 for four
   mirrors while every gate printed 126 —
   The line had said **v123 for at least four mirrors while every mirror gate in
   that window printed "dominant pv 124"** — the version number in the first
@@ -664,7 +663,22 @@ don't confuse them). Frontend: python http.server + Playwright at
   Nothing downstream was affected (no session acted on it), but it is exactly
   the copying-a-line-forward hazard this file warns about elsewhere, aimed at
   the file's own header. **Re-derive this line rather than editing the date.**
-- **LIVE on main: `789f589e` — MIRRORED 2026-09-17 20:0xZ.** The v134 store
+- **LIVE on main: `647a32a3` — MIRRORED 2026-09-18 02:2xZ.** The v135 store
+  (parts 1-2: a one-row master-trust pointer is a reading, not a failure;
+  prose is not a holding). pv 135 at 99.85%, confident 60,103 (+7 / −18),
+  HIGH 21 = 4 + 17 self-clearing `reparse-loss`, overshoot 360,
+  generic-names 109, dominant-row 0. **Prose-as-holding at ≥10% of the menu
+  171 → 100 plans / 315,474 → 104,478 ppl; BJC Health System's all-junk
+  lineup gone.** `--force` (main's two cron commits, 0 acks / 0 plans the
+  branch lacked) and `--force-data` over 18 losses read by name: 16 junk,
+  **2 real regressions — Dominion Energy (18,747 ppl, 16 real rows →
+  `band-hi`) and Lehigh Valley Imaging (212) — TOP OF THE QUEUE**; First
+  American is `tp=1` but still `dx=stmt` with no trust bits, so its page
+  still cannot say "held in trust". **LOOP GAP 21:3x–01:0xZ** (weekly usage
+  limit; a second wam agent killed mid-edit, edits reset). The mirror
+  carried the `fund-facts` workflow to main; its first dispatch followed.
+  `docs/accuracy-log.md` 2026-09-18 (run #352 verdict).
+- **Previously: `789f589e` — MIRRORED 2026-09-17 20:0xZ.** The v134 store
   (pv 134 at 99.86%, confident 60,114 (+2 / −0), **HIGH 4 = the baseline**,
   **overshoot 390 → 364 / 497,920 ppl** — v133 part 5's fair-value category
   totals, exactly the predicted direction — generic-names 121 → 107,
