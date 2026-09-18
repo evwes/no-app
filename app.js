@@ -482,6 +482,15 @@
   function cleanFiledName(name) {
     let s = String(name).trim();
     s = s.replace(/^[—–-]+\s*/, "");
+    // OCR noise glued to the END: stray quote / trademark glyphs ("Trust II
+    // CIT ”", "R6 ™", "…Fund®" — 674 plans / 1.08M ppl / 4,454 rows on the
+    // v138 store) and a footnote letter or fragment after a share-class or
+    // vintage token ("CREF Stock R1 a", "Trust Il CIT ial" — 881 plans /
+    // 839k ppl / 6,383 rows). 14:1xZ draw 2026-09-18 (Weis Markets, Mutual
+    // Trading). The fragment strip needs the class token before it, so a
+    // real name's last word is never taken.
+    s = s.replace(/[\s\-–]*[”“"'’‘™®©]+\s*$/, "").trim();
+    s = s.replace(/\b(R\d|[A-Z]|I{1,3}|CIT|Adm|Inv|Instl?|Fund|Trust|Class)\s+[a-z]{1,3}$/, "$1");
     const pm = s.match(TYPE_PREFIX);
     if (pm) { const rest = s.slice(pm[0].length).trim(); if (rest.split(/\s+/).length >= 2 && /[A-Za-z]{3}/.test(rest)) s = rest; }
     s = s.replace(/[,;:]+$/, "").trim();
@@ -496,6 +505,7 @@
     if (lead !== s && /[A-Za-z]{3}/.test(lead)) s = lead;
     const m = s.match(TYPE_SUFFIX);
     if (m) { const rest = s.slice(0, m.index).trim(); if (rest.split(/\s+/).length >= 2 && /[A-Za-z]{3}/.test(rest)) s = rest; }
+    s = s.replace(/[\s\-–,;:]+$/, "").trim();
     return /[A-Za-z]{3}/.test(s) ? s : String(name).trim();
   }
   /* Ticker lookup order: the FILED name first (with and without the issuer),

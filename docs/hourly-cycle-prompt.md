@@ -237,6 +237,18 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 14:2xZ 2026-09-18: #362 no-op (mirrored `8a31285d`), #363
+      dispatched 14:14Z; draw 15/15 real.** (j) display half widened
+      again: trailing OCR glyphs (674 plans / 1.08M ppl / 4,454 rows) and
+      footnote fragments after a class token (881 / 839k / 6,383 rows)
+      stripped in `cleanFiledName`; flip list GAINED 58 / LOST 0 /
+      FLIPPED 0. `Vanguard Treasury` truncation seen a third time
+      (Mercedes-Benz) — store-side, stays queued. **Owner asked 13:5xZ why
+      wam is not running continuously; answered: my usage hold after three
+      kills, plus the owner-gated items (match/vesting coverage,
+      recordkeeper source, fund-facts source). Awaiting the owner's word;
+      the hold stands until then.** `docs/accuracy-log.md` 2026-09-18
+      (14:2xZ).
       **STATUS 13:2xZ 2026-09-18: #361 no-op (mirrored `06dde2c9`), #362
       dispatched 13:16Z, site-test #73 green; draw 15/15 real.** (j) gains
       its FRONT variant, shipped at display: the type column glued before

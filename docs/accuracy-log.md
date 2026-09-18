@@ -14010,3 +14010,36 @@ lacked). **site-test #73 on the v138 `app.js` (thousands separators):
 success.** #362 dispatched 13:16Z. The 12:23Z hourly cron on main did not
 fire at all this hour — the documented unreliability, and why the cycle
 dispatches itself.
+
+## 2026-09-18 (14:2xZ) — per-cycle draw: OCR noise glued to the END of fund names (stray quote/trademark glyphs, footnote letters) sized at 674 + 881 plans and stripped at display; run #362 a no-op, mirrored
+
+**Draw** (seed 20260918141, participant-weighted, 15 of 59,750): Paychex
+Retirement 645,304 ppl (PEO), TriNet HR III 249,207, DaVita 78,487,
+Caesars 56,148, Weis Markets 23,710, CoreCivic 14,295, Hanford 6,033,
+Mercedes-Benz USA 5,164, Macmillan, Open Society Institute (71 rows),
+Pinnacle Fit, Mutual Trading, Jellyvision, Atec. Every menu real.
+Findings, all cosmetic:
+
+- **Weis Markets** `Vanguard Target Retirement 2030 Trust II CIT ”`,
+  `… Trust Il CIT ial`; **Mutual Trading** `American Funds Target Date
+  Retirement 2030 R6 -”`, `… R6 ™`, `… R6 al` — OCR glyphs and footnote
+  fragments welded to the END of the name. **Sized on the v138 store
+  (scratchpad `ocr-tail.mjs`): stray quote/trademark glyphs 674 plans /
+  1,080,682 ppl / 4,454 rows** (includes honest `®` marks, which carry no
+  information either); **a 1–3 letter lowercase fragment after a
+  share-class or vintage token 881 plans / 839,103 ppl / 6,383 rows**
+  (`CREF Stock R1 a` — TIAA's footnote letter — is most of it). **Shipped
+  at display** in `cleanFiledName`: glyph tail stripped first, then the
+  fragment (only when a class token precedes it, so a real name's last
+  word is never taken), and a final trailing-separator tidy so `500 Index
+  Admiral - Mutual Funds ”` ends as `500 Index Admiral`. Flip list over
+  all 1,704,579 published rows with the shipped lookup order: **GAINED 58
+  rows / 45 plans / 34,426 ppl (was 53), LOST 0, FLIPPED 0**; fixtures
+  20/20; 37,203 rows in 4,675 lineups now cleaned (was 24,969 / 2,759).
+- **Mercedes-Benz USA** `Vanguard Treasury` — the truncated money-market
+  name, third sighting today (Anheuser-Busch, Building Service 32BJ).
+  Still a (j) parser note: the name is cut in the STORE, not at display.
+
+**Run #362** (dispatched 13:16Z, incremental) success 13:24Z, coverage
+byte-identical (confident 60,103, HIGH 4, overshoot 360, aggRow 56, dl
+99); mirrored `8a31285d` unforced. **#363 dispatched 14:14Z.**
