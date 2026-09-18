@@ -394,6 +394,13 @@
       "fixed": "v136",
       "sponsor": "Navicent Health",
       "was": "CONTROL for the entry above. 62 published rows are named `Forfeiture Account` / `Forfeiture cash account` / `Forfeiture/Asset Holding Account` / `Forfeiture suspense account` and every one is a REAL unallocated cash position the plan holds. None may be dropped: the v136 predicate contains no arm beginning with `forfeiture`, only `net of forfeitures` as the tail of a contributions caption. EXPECT: 35 rows including `Forfeiture Account`"
+    },
+    {
+      "ack": "20251014172705NAL0004657344001",
+      "class": "plural-generic-type-dominant-row",
+      "fixed": "v137",
+      "sponsor": "Docomo Pacific Inc.",
+      "was": "Published confident with `Common/collective trust funds` at 99.3% of a 3-row lineup: the v105/v111 dominant-row guard tests GENERIC_TYPE_NAME, whose trust arms were SINGULAR only (`collective (investment )?trust( fund| portfolio)?`), so every plural type label walked past it. Found by the 07:12Z 2026-09-18 participant-weighted draw on ATH Holding (Elevance, 94,427 ppl, $12.11B, `Collective investment trusts` 91.7%) — that filing is OCR-path and trace-filing cannot reproduce it, so this text-layer twin is the pin. v137 adds GENERIC_TYPE_ANY (the plural-aware form) to the dominant-row guard ONLY — widening GENERIC_TYPE_NAME itself let the v133 category-total removal delete 3M's $18.4B row and publish its fair-value note at 0.59; under it this parse is stmt=true and NOT confident. Control: `Vanguard Target Retirement 2030 Trust` and `Total Stock Market Index` must stay non-generic."
     }
   ]
 }

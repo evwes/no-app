@@ -237,6 +237,23 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 07:3xZ 2026-09-18: v137 DISPATCHED** — the 07:12Z draw found
+      ATH Holding / Elevance (94,427 ppl, $12.11B) publishing `Collective
+      investment trusts` at 91.7%: the v105 dominant-row shape, live,
+      because `GENERIC_TYPE_NAME`'s trust arms were singular only. v137
+      pluralizes them (2 plans / 94,903 ppl become `stmt` by design — ATH
+      is OCR-path, Docomo Pacific is the text-layer pin). **Verdict test:
+      ATH `20251010144903NAL0008344193001` non-confident `dx=stmt`,
+      confident −2 exactly, `audit-generic-names` 108 → ~132 (measurement:
+      24 plans it could not see before, under the 230 threshold),
+      overshoot unchanged.** Also from the draw, into (h): NRECA (80,880
+      ppl, ratio 1.134) `Common collective trusts (pages 165-166)` 48.6% +
+      `Corporate stocks (pages 56-155)` 25.9% — class subtotals carrying
+      PAGE REFERENCES, plus bare codes `NJ7B`/`NJ8B`; Nucor `Fidelity
+      Investments` $403M bare house row at 4.4%. Queued small:
+      `audit-dominant-row.mjs` hand-rolls its own `NOT_FUND` regex instead
+      of importing the shipped pair. `docs/accuracy-log.md` 2026-09-18
+      (07:1xZ).
       **STATUS 06:0xZ 2026-09-18 (run #353 verdict): v136 is LIVE** —
       Dominion Energy back (16 rows), First American's page names the
       trust (bits 65536+131072), statement lines gone (47 plans / 340,403

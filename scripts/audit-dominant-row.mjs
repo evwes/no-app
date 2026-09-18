@@ -3,9 +3,12 @@ import { loadPlans, loadStatus } from "/home/user/no-app/scripts/lib-schema.mjs"
 const P = loadPlans("/home/user/no-app/plans-all.json");
 const S = loadStatus("/home/user/no-app/lineups-status.json");
 const byAck = P.byAck();
-/* Not fund-shaped: statement line items, aggregates, and parse shrapnel. A
- * real fund name carries a product word or a manager plus something more. */
-const NOT_FUND = /^(?:at (?:fair|contract) value|investments?(?:,? at .*)?|total .*|various\b.*|master trust.*|investments? held in the trust.*|participant[- ]directed.*|cusip:?.*|net assets.*|assets\b.*|cash( and cash equivalents)?|other\b.*|[a-z]\s+total\b.*|b\s+total.*|see (?:note|attach).*|interest[- ]bearing cash|value of interest in .*)$/i;
+/* v137: the SHIPPED predicates, not a private copy. This file carried its own
+ * NOT_FUND regex with no generic-type arm at all, so ATH Holding's
+ * `Collective investment trusts` at 91.7% was invisible to it — the third
+ * hand-rolled copy of a shipped predicate this project has caught. */
+import { NOT_FUND_SHAPED, GENERIC_TYPE_ANY } from "/home/user/no-app/scripts/lib-4i.mjs";
+const NOT_FUND = { test: (n) => NOT_FUND_SHAPED.test(n) || GENERIC_TYPE_ANY.test(n) };
 let junk = 0, junkD = 0, fundish = 0, fundishD = 0;
 const list = [];
 for (const f of readdirSync("/home/user/no-app/data/lineups")) {

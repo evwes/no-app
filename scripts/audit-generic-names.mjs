@@ -6,7 +6,7 @@
  * Any lineup we already publish containing such a name is showing wrong data. */
 import { readFileSync, readdirSync } from "node:fs";
 import { loadPlans, loadStatus } from "./lib-schema.mjs";
-import { GENERIC_TYPE_NAME } from "./lib-4i.mjs";
+import { GENERIC_TYPE_ANY } from "./lib-4i.mjs";
 
 
 const P = loadPlans();
@@ -26,7 +26,7 @@ for (const f of readdirSync(dir)) {
     scanned++;
     const st = S.at(ack);
     if (!st || !st.c) continue;               // only lineups we actually PUBLISH
-    const bad = funds.filter((x) => GENERIC_TYPE_NAME.test(String(x.name || "").trim()));
+    const bad = funds.filter((x) => GENERIC_TYPE_ANY.test(String(x.name || "").trim()));
     if (!bad.length) continue;
     const sum = funds.reduce((s, x) => s + (+x.value || 0), 0);
     const badSum = bad.reduce((s, x) => s + (+x.value || 0), 0);

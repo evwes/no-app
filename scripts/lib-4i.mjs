@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 136;
+export const PARSER_VERSION = 137;
 
 // form/statement vocabulary that must never appear as a fund NAME in a
 // confident lineup. Shared by the audit (flags HIGH) and the merge (demotes
@@ -115,6 +115,25 @@ const DATE_LINE = /(january|february|march|april|may|june|july|august|september|
  *                      published lineup.
  */
 export const GENERIC_TYPE_NAME = /^(?:total )?(?:registered investment compan(?:y|ies)|(?:common[\/ ]?)?collective (?:investment )?trust(?: fund| portfolio)?|collective trust fund|mutual funds?|common (?:and preferred )?stocks?|corporate stocks?|pooled separate accounts?|separate accounts?|guaranteed (?:investment|interest) contracts?|group annuity contracts?)$/i;
+/* v137: the same vocabulary with its nouns in the PLURAL. `Collective
+ * investment trusts`, `Common/collective trust funds`, `Common collective
+ * trusts` are type labels exactly as their singulars are — but they walked
+ * past every consumer of GENERIC_TYPE_NAME, and ATH Holding / Elevance
+ * (94,427 participants, $12.11B) published `Collective investment trusts`
+ * at 91.7% of a six-row lineup: the v105 shape, live, with the guard built
+ * for it silent. Found by the 2026-09-18 participant-weighted draw.
+ *
+ * Used by the dominant-row guard below and by the audits — NOT by the v133
+ * category-total removal or the v107/v132 menu swaps. Widening those was
+ * tried first and measured: it made 3M's fair-value note (ratio 2.33, 19
+ * rows of `Corporate obligations`, `Interest rate swaps`, `Credit default
+ * swaps`) CONFIDENT at 0.59 by deleting its $18.4B `Common/collective
+ * trusts` row, and moved Lam Research's sum by $453M. Removing a subtotal
+ * only makes the remainder publishable when the remainder is a menu, and
+ * for the plural forms it usually is not. Under this guard a plural label
+ * at >=90% is refused (stmt), and nothing is ever deleted.
+ */
+export const GENERIC_TYPE_ANY = new RegExp(GENERIC_TYPE_NAME.source.replace("trust(?: fund| portfolio)?|collective trust fund|", "trusts?(?: funds?| portfolios?)?|collective trust funds?|"), "i");
 /* DOCUMENT SHAPE (v113) — why a filing yields no schedule, judged from the
  * document rather than from our parse. `dx` already says what the PARSER did;
  * this says what the FILING contains, and they are different claims. A random
@@ -2852,7 +2871,7 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
    * holdings (the 319 honest ones v105 preserved) match neither list. */
   const aggOnly = !!topRow && allSum > 0 && topRow.value / allSum >= 0.9 &&
     (NOT_FUND_SHAPED.test(String(topRow.name || "").trim()) ||
-     GENERIC_TYPE_NAME.test(String(topRow.name || "").trim()));
+     GENERIC_TYPE_ANY.test(String(topRow.name || "").trim()));
   /* v110/v111: dominance SPLIT between aggregates evades the single-row
    * test. MetLife's fallback filing reports "Participant directed
    * investments" ($4.12B, 58%) plus "Fully benefit responsive investment

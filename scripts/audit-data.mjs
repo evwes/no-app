@@ -6,7 +6,7 @@
  * human noticed it on the site. This prints violations after each merge so
  * the run log surfaces them. Informational: it never fails the build. */
 import { readFileSync, writeFileSync, appendFileSync, readdirSync } from "fs";
-import { JUNK_NAME_RE, GENERIC_TYPE_NAME, NOT_FUND_SHAPED } from "./lib-4i.mjs";
+import { JUNK_NAME_RE, GENERIC_TYPE_ANY, NOT_FUND_SHAPED } from "./lib-4i.mjs";
 
 const d = JSON.parse(readFileSync("plans-all.json", "utf8"));
 const F = d.fields; const ix = Object.fromEntries(F.map((f, i) => [f, i]));
@@ -275,7 +275,7 @@ try {
       if (!e || !e.confident || !Array.isArray(e.funds) || !e.funds.length) continue;
       const sum = e.funds.reduce((a, x) => a + (+x.value || 0), 0) || 1;
       const top = e.funds.reduce((a, x) => ((+x.value || 0) > (a ? +a.value : -1) ? x : a), null);
-      const genericShare = e.funds.filter((x) => GENERIC_TYPE_NAME.test(String(x.name).trim()))
+      const genericShare = e.funds.filter((x) => GENERIC_TYPE_ANY.test(String(x.name).trim()))
         .reduce((a, x) => a + (+x.value || 0), 0) / sum;
       if (genericShare >= 0.25) { genericPlans++; if (worstGeneric.length < 6) worstGeneric.push(ack); }
       if (top && (+top.value || 0) / sum >= 0.9 && NOT_FUND_SHAPED.test(String(top.name).trim())) {

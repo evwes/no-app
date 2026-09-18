@@ -13558,3 +13558,105 @@ pattern for any name-normalisation change; both are scratchpad scripts named
 here. The lesson is the one already on the books for `fund-er.js`: measure a
 normaliser's LOSSES on the same store as its gains before shipping, because
 every loosening that fills a blank can also empty or move one.
+
+## 2026-09-18 (07:1xZ) — per-cycle draw: ATH Holding / Elevance (94,427 ppl, $12.11B) publishes `Collective investment trusts` at 91.7% — the v105 dominant-row shape, live, because the shipped `GENERIC_TYPE_NAME` knew the trust vocabulary only in the SINGULAR; v137 pluralizes it (2 plans / 94,903 ppl unpublished on purpose, the generic-names audit gains 24 plans it could not see; a first draft that widened the shared regex made 3M's fair-value note publishable and was caught by the corpus diff)
+
+**The draw (seed 20260918071, participant-weighted, 15 of 59,750 published
+lineups).** Eleven clean (Amazon 1.34M ppl, National Veterinary, Baptist
+Healthcare, Netjets, Lewis Tree, Pla-Fit, Goodwill South Florida, Populus,
+American Hospital Association, Delta Dental Arkansas, Rain Technologies).
+Four findings:
+
+- **ATH Holding Company (Elevance Health, 94,427 ppl, $12.11B, 6 rows,
+  ratio 0.979, OCR path).** `Collective investment trusts` $10.87B =
+  **91.7%**, then `Elevance Health` (employer stock), `Mutual funds`,
+  `Self-Directed Brokerage Account`, and two prose rows — `Participants
+  may request a loan not in excess of the lesser` carrying the $50,000
+  loan cap as its value, and `Investments measured at fair value` $34,041.
+  A single non-fund row above 90% is EXACTLY what the v105/v111 guard
+  (`lib-4i.mjs` ~2853) exists to refuse, and it did not fire.
+- **NRECA (80,880 ppl, $16.84B, 31 rows, ratio 1.134).** `Common
+  collective trusts (pages 165-166)` 48.6% and `Corporate stocks (pages
+  56-155)` 25.9% — class subtotals carrying the filing's own PAGE
+  REFERENCES as part of the name, so no anchored vocabulary test can
+  match them — beside bare codes `NJ7B` $682M / `NJ8B` $332M. Class (h),
+  in a new spelling; the ratio above 1.0 is the subtotals double-counting
+  the itemized rows beneath them.
+- **Nucor (32,745 ppl)** `Fidelity Investments` $403M at 4.4% — the bare
+  house name as a holding row (the shape named in `CLAUDE.md`'s residuals
+  table), here inside an otherwise clean 27-row menu.
+- **Express Services (464,345 ppl, $0.7M)** — a PEO whose participant
+  count is the client-employer headcount; ratio 0.945 and the menu is
+  real. Recorded, not a defect.
+
+**Why the guard missed ATH — measured, not read.** The dominant-row guard
+tests `NOT_FUND_SHAPED || GENERIC_TYPE_NAME`. The trust arms of
+`GENERIC_TYPE_NAME` were `(?:common[\/ ]?)?collective (?:investment )?trust(?: fund| portfolio)?`
+and `collective trust fund` — singular only — while `mutual funds?` and
+`corporate stocks?` had always taken a plural. `Collective investment
+trusts`, `Common/collective trust funds`, `Common collective trusts`,
+`Collective Trust Funds` all fail it. And because the SAME export feeds
+`audit-generic-names.mjs`, `merge-4i`'s aggregate bits and the run-time
+audit, the blind spot was shared by every instrument built to catch it.
+Sized store-wide (scratchpad `size-plural.mjs`, top row of every confident
+lineup, the shipped predicates run first as the control — they catch 0 at
+≥90%, as the parser guarantees):
+
+| top-row share | plans | ppl | assets | named |
+|---|---|---|---|---|
+| ≥90% | **2** | **94,903** | $12.13B | ATH Holding 91.7%; Docomo Pacific 99.3% `Common/collective trust funds` |
+| 25–90% | 28 | 301,381 | $70.64B | Morgan Stanley 62%, GM ×2 64–66%, Cummins 61%, Lam 33%, SECU 62% — class (h) itself |
+| <25% | 14 | 6,785 | $0.26B | mostly a bare `Money Market Fund` row — left alone |
+
+**The change (v137) — and the first draft was wrong, which is the part
+worth keeping.** Draft one pluralized the trust arms INSIDE
+`GENERIC_TYPE_NAME` itself. Gate green, corpus diff 0 lost / 0 introduced —
+and two side effects that the diff's softer lines carried: **3M
+(`20251015112126NAL0009307266001`, $10.6B) GAINED confidence at ratio
+0.589**, and Lam Research's sum moved by $453M with the same nine rows.
+Traced: 3M's filing yields a 19-row FAIR-VALUE NOTE at ratio 2.327 —
+`Common/collective trusts` $18.4B, `Corporate obligations`, `Interest rate
+swaps`, `Futures contracts`, `Credit default swaps` — correctly refused
+under v136. Once the plural row counted as generic, the v133
+category-total removal (`lib-4i.mjs` ~2634) deleted it, the remainder
+landed at 0.59 inside the publishable band, its largest row was under
+50% of the rest, and a derivatives ledger became 3M's published menu.
+**Removing a subtotal only helps when the remainder is a menu, and for
+the plural labels it usually is not** — they head statements. So the
+shipped change is narrower: `GENERIC_TYPE_NAME` is unchanged, a new
+`GENERIC_TYPE_ANY` (the same source with `trusts?(?: funds?|
+portfolios?)?` and `collective trust funds?`) feeds ONLY the dominant-row
+guard at ~2853 and the three audits; the v133 removal and the v107/v132
+menu swaps keep the singular. Under this a plural label at ≥90% is refused
+(`stmt`) and nothing is ever deleted. Controls that must stay non-generic
+and do: `Vanguard Target Retirement 2030 Trust`, `Total Stock Market
+Index`, `Money Market Fund`.
+
+Traced with `--vs HEAD` on the shipped form: **Docomo Pacific flips to
+stmt=true / NOT confident** (pinned in `docs/defect-specimens.json`, class
+`plural-generic-type-dominant-row`); **3M and Lam Research are
+byte-identical to v136**; Morgan Stanley and GM unchanged (62–66% is below
+the 90% floor — their fix is (h)'s arithmetic, still queued). ATH is
+OCR-path, which `trace-filing` cannot reproduce, so its flip is a
+PREDICTION for the run: **the v137 verdict must show ATH
+`20251010144903NAL0008344193001` non-confident with `dx=stmt`**, and
+confident −4 as the only designed losses — the plural-aware
+`audit-dominant-row` on the v136 store names exactly four: ATH, Docomo,
+and two sub-$5M plans publishing `COMMON/COLLECTIVE TRUSTS` at 92–94%.
+Parser gate green on every specimen. `diff-lineups HEAD` over 957 corpus filings: CONFIDENCE LOST 1 (Docomo, the pin), GAINED 0, FABRICATED INTRODUCED 0, no row-count or sum movement — where draft one had shown 3M gained and Lam moved.
+
+**What the audit will do, so the next verdict is not misread:**
+`audit-generic-names` on the SAME v136 store reads **108 → 132 plans /
+$106.6B** under the widened regex — 24 plans ($58B, GM's two plans, Morgan
+Stanley, Cummins) were invisible to it. That rise is MEASUREMENT, not a
+regression, and it stays under the 230 threshold. `overshoot` should not
+move (this changes no sums).
+
+**Prevention.** (1) The specimen pin, so a future edit that drops the
+plural fails `diff-lineups`. (2) `audit-dominant-row.mjs`
+carried its OWN hand-rolled `NOT_FUND` regex with no generic-type arm at
+all — the third hand-rolled copy of a shipped predicate this project has
+caught — and now imports `NOT_FUND_SHAPED` + `GENERIC_TYPE_ANY`; it reads
+4 plans / $12.1B on the v136 store where it read 0. (3) The draw found
+this; no count-based check did, because every count-based check ran the
+same regex. The random published-lineup draw stays in every cycle.
