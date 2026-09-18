@@ -237,6 +237,15 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 16:1xZ 2026-09-18: #364 no-op (mirrored `ff55a6d1`), #365
+      dispatched 16:09Z, site-test #76 green; draw 15/15 real, only known
+      shapes (NRECA (h), Apple (i), a same-value `Fixed annuities`
+      duplicate at Hospital Español (i)). Nothing shipped this hour. The
+      (j) display half is now four strips deep; the remaining (j) work is
+      store-side (`Vanguard Treasury` truncation, value fragments in
+      names) and goes with the next PARSER_VERSION bump. **Owner's wam
+      question still open; hold stands.** `docs/accuracy-log.md`
+      2026-09-18 (16:1xZ).
       **STATUS 15:2xZ 2026-09-18: #363 no-op (mirrored `a7380710`), #364
       dispatched 15:12Z, site-test #75 green; draw 15/15 real.** (j)
       display half widened a third time: trailing footnote markers `(1)`

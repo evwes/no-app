@@ -14083,3 +14083,28 @@ byte-identical (confident 60,103, HIGH 4, overshoot 360, aggRow 56, dl
 99); mirrored `a7380710` unforced. **site-test #75** on the previous
 display change: success. **#364 dispatched 15:12Z.** GitHub's own 14:23Z
 cron on main did not fire this hour either (second miss today).
+
+## 2026-09-18 (16:1xZ) — per-cycle draw: 15 of 15 real menus, only known shapes; run #364 a no-op, mirrored; site-test #76 green
+
+**Draw** (seed 20260918161, participant-weighted, 15 of 59,750): Apple
+145,428 ppl, Whole Foods 122,881, O'Reilly Automotive 91,899, NRECA
+80,880, Travelers 41,712, Advantage Sales 41,701, Johns Hopkins 36,309
+(53 rows, ratio 0.86), TTEC, Infosys, Wood Group, Henry Mayo Newhall,
+AI-Cares, Hospital Español Auxilio Mutuo, Wilton Rancheria. Nothing new;
+three known shapes seen again:
+
+- **NRECA** — the (h) class subtotals with page references, unchanged.
+- **Apple** — the (i) brokerage double (`[BROKERGE ACCOUNT] Various
+  Accounts` 7.5% beside `Participant brokerage holdings (95 positions)`
+  7.8%; the fold count rose 55 → 95 under v138's wider cap).
+- **Hospital Español Auxilio Mutuo (1,742 ppl):** `Fixed Annuity - ”` and
+  `Fixed annuities` at the same $4,457,892 — the (i) same-value duplicate,
+  which is why its ratio reads 0.67 against a 52% stable-value row.
+- Henry Mayo `[Institutional Bond Vanguard] MFS GROWTH FUND CLASS R6 BA`
+  — issuer glue (f). Infosys carries ` N/R` on every row (display strips
+  it).
+
+**Run #364** (dispatched 15:12Z, incremental) success 15:20Z, coverage
+byte-identical (confident 60,103, HIGH 4, overshoot 360, aggRow 56, dl
+99); mirrored `ff55a6d1` unforced. **site-test #76** (footnote / column
+bar repairs): success. **#365 dispatched 16:09Z.**
