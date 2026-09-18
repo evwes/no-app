@@ -651,10 +651,12 @@ don't confuse them). Frontend: python http.server + Playwright at
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
   full-form** filers and 43,523 short-form; 68,767 parse-status entries.
-  **Store at v137 (branch AND main, `78ff7aad`); `PARSER_VERSION` in the
-  tree is 137 — no unparsed parser change is waiting (`fc67076c` is a
-  text-only fetch-4i disclosure fix that takes effect at the next bump).
-  OCR v8.**
+  **Store at v137 (branch `ecb8ba40`, main `8ef3e049`, same data);
+  `PARSER_VERSION` in the tree is 138 — DISPATCHED 10:4xZ 2026-09-18 (the
+  80-row display cap hid $27.6B from 481,363 readers in 12 plans; cap
+  120 + `cut` recorded + page disclosure). Verdict test: confident and
+  overshoot unchanged, Boeing >80 rows with `cut`, then open Boeing's
+  live page. OCR v8.**
   **Re-derived from the local store 2026-09-18 06:0xZ** — `pv136` covers
   68,667 of 68,767 acks (99.85%), tail pv106 18, pv98 10, pv123 10, pv124
   10; `lib-4i` exports 136. (On 2026-09-16 this line said v124 for four

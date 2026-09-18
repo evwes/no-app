@@ -13798,3 +13798,97 @@ dominant non-fund row. Found:
 - Sunroad: `T. Rowe Price Retirement | 2030 Fund` — a column bar glued
   into the name; Knox College: the CREF annuity-class caption as issuer on
   every row (f).
+
+## 2026-09-18 (10:2xZ) — per-cycle draw and v138: the parser kept the largest 80 rows of a schedule and the page called the rest "not itemised" — Boeing's 217,061 participants were missing $15.5B (21% of the plan) their filing lists; 12 plans / 481,363 ppl / $27.6B at ≥15%. Cap widened to 120 and the cut is now recorded and disclosed
+
+**The draw** (seed 20260918101, participant-weighted, 15 of 59,750):
+Teamsters–UPS 478,400 ppl, JPMorgan Chase 299,277, Caesars 56,148,
+Aimbridge 55,551, Southern Company 35,497, CHOP 30,922, Steris, Auto
+Club, NetApp, Convergeone, Verkada, Knapheide, US Default, Dynamed. Two
+findings and one class that turned out to be ours:
+
+- **JPMorgan Chase (299,277 ppl, $52.9B): 80 rows at a displayed sum of
+  66% of plan assets**, one row named `JPMCINTERMEDT AGGREGATE SEP ACCT —
+  SEPARATE ACCT 2,271,585,2` (a value fragment glued into the name). The
+  80 was the tell: `lib-4i.mjs` `parseRows` returns `funds.slice(0, 80)`
+  (three places) while `totalValue` counts every row, and the comment
+  beside it says so — "the ratio must reflect all". So CONFIDENCE saw the
+  whole schedule and READERS saw a prefix, with nothing on the page or in
+  the entry recording that rows were dropped.
+- **Convergeone (2,680 ppl, 3 rows, ratio 1.03):** `Collective trust
+  funds` 63% + `Shares of` 36% + brokerage — two non-fund rows carrying
+  99%, the v110 split shape outside `AGG_DISCLOSURE`'s vocabulary. Sized:
+  ≤5 rows with ≥2 generic/fragment rows at ≥90% is **30 plans / 24,706
+  ppl**, of which about seven are real (Cape Cod Healthcare 6,814, Globus,
+  Wisconsin NECA, Springs Window, Convergeone, Fiber Instrument, New
+  Century) and the rest are the Vanguard three-fund `Total …` menus that
+  `NOT_FUND_SHAPED`'s `total\b` arm mislabels — the documented trap,
+  reproduced by my own sizer. Recorded under (h); ~7 plans.
+- Southern Company `[SELF-DIRECT ACCT] OTHER ASSETS` — the brokerage
+  window's section header promoted to the issuer (f). CHOP carries ` N/R`
+  on every row (stripped at display). Knapheide `Outside Asset` 9% is a
+  filed label, left alone.
+
+**The cap, measured before touching it.** For every published lineup at
+exactly 80 rows, stored `coverageRatio` (what confidence saw) minus the
+displayed sum over plan assets (what the reader saw) is the share of the
+plan in rows the site never showed:
+
+| hidden share | plans | ppl | value hidden |
+|---|---|---|---|
+| ≥15% | **12** | **481,363** | **$27.6B** |
+| 5–15% | 26 | 379,865 | $10.0B |
+| 1–5% | 114 | 1,192,254 | $5.6B |
+| <1% | 234 | 2,940,276 | $0.8B |
+
+Named: **Boeing 217,061 ppl, stored 0.99 / shown 0.78, $15.5B hidden**;
+Microsoft 184,329 (8%, $6.2B); Marriott 152,118 (17%); **Goldman Sachs
+49,526 (61%, $7.75B)**; Pentegra 25%; Nationwide 15%; NXP 39%. JPMorgan
+and CVS are NOT in this class — their stored ratio equals the shown one,
+so 0.66 and 0.80 are what the schedule itself covers (the rest sits in a
+separate-account or trust note). Three sizers in the scratchpad:
+`cap-and-split.mjs` (the n=80 spike: 26 of 386 under 0.85 vs 0 of 38 at
+n=79 and 16 of 646 at n=60–77), `cap-hidden.mjs` (the table above).
+
+**And the page said the wrong thing to exactly these readers.** The
+coverage sentence in `app.js` reads *"The rest is money the filing accounts
+for that its schedule of assets does not itemise here."* For Boeing the
+schedule itemises it on the pages the table stopped short of. A sentence
+written for genuine non-itemisation was published over a truncation.
+
+**The change (v138).** `ROW_CAP = 120` (the cap stays — trustee statements
+run to thousands of per-security rows — but 120 clears most real menus);
+every slice point computes `cut: {n, v}` for the rows it drops (main list,
+the single-render `hardFunds` view, the value-paired view, the v106
+restated-copy repair), the winning variant carries its own cut, `parse4i`
+returns it scaled, `fetch-4i` records it on the entry, and `app.js` says
+*"N smaller holdings are not shown. The filing itemises M holdings; this
+table shows the largest K, and the N it leaves out total $X — about P% of
+the plan"*, with the coverage sentence pointing at it instead of claiming
+non-itemisation. Boeing pinned in `docs/defect-specimens.json`
+(`display-cap-hides-menu-tail`). Parser gate: two specimens moved and both are the mechanism itself, read before the expectation was updated — Costco's managed-account fold sees 89 positions instead of 50 ($930M → $1.29B, menu rows unchanged) and Peterson Holding's 108 instead of 74 with six itemized bonds surfacing beside the one already shown; no subtotal re-enters. `diff-lineups HEAD` over 957 filings: **0 lost / 0 gained / 0 fabricated introduced / 0 sum moves**, row count moved on 59 (Boeing, Wells Fargo, UBS, Marriott 80 → 120; Walmart 41 → 42, Pfizer 40 → 42 — menus whose raw row list exceeded 80 before the fold, so a real row had been cut). Traced: Boeing 80 → 120 rows, ratio 0.986 and confidence unchanged, `cut: {n: 7551, v: $13.95B}` = 18.9% of the plan — so Boeing's tail is a 7,551-row per-security flood the fold never saw, which is the follow-up named below; Goldman 80 → 120, `cut: {n: 875, v: $5.69B}` = 44%.
+Smoke test green on the frontend; the new sentence has no positive control until a store carries `cut`.
+
+**Follow-up named, not fixed here (queued as (l)):** Boeing's 7,551 cut
+rows and Goldman's 875 are per-security floods — brokerage-window or
+managed-account innards — that the `smaKind` fold at `lib-4i.mjs` ~2774
+would roll into ONE aggregate row, except that the fold runs on the
+capped list and never saw them. Folding BEFORE capping is the real fix
+for that class; v138's disclosure is honest either way ("7,551 smaller
+holdings are not shown … $13.95B — about 19% of the plan").
+
+**What the verdict must show:** confident unchanged (the cap changes no
+ratio and no confidence decision — `totalValue` was already whole);
+`overshoot` unchanged for the same reason; row counts moving on ~386
+lineups only (the ones at the old cap); Boeing's entry with >80 rows and
+`cut` present; and the live Boeing page rendering the sentence — the
+frontend half has no positive control until the store carries a `cut`, so
+the first page check after the run IS the control, and it is on the next
+cycle's list.
+
+**Prevention.** A cap is a claim about what is shown; the number cut is
+now stored beside it, so the "does not itemise" sentence can never again
+be printed over a truncation. And the draw's `ratio` column is computed
+from the DISPLAYED rows on purpose — it is what found this, where the
+stored ratio (whole schedule) would have read 0.99 for Boeing and said
+nothing.

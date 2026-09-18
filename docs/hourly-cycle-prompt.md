@@ -237,6 +237,31 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 10:4xZ 2026-09-18: v138 DISPATCHED — the 80-row DISPLAY CAP.**
+      The 10:1xZ draw (JPMorgan at exactly 80 rows) exposed that `parseRows`
+      sliced `funds` at 80 while `totalValue` counted every row: confidence
+      judged the whole schedule, readers saw a prefix, and the page's
+      coverage sentence called the rest "not itemised". Measured on v137:
+      386 lineups at the cap; hidden ≥15% of the plan in **12 plans /
+      481,363 ppl / $27.6B** (Boeing 217,061 ppl 21% = $15.5B, Goldman
+      61%, Marriott 17%, NXP 39%), 5–15% in 26 more / 379,865. v138:
+      `ROW_CAP` 120, `cut: {n, v}` recorded at every slice point and on the
+      entry, `app.js` discloses "N smaller holdings are not shown … $X —
+      about P% of the plan". Gate: Costco/Peterson expectations updated
+      (the fold sees 120 rows now); diff 0/0/0, rows up on 59; Boeing
+      pinned. **Verdict test: confident and overshoot UNCHANGED; Boeing's
+      entry >80 rows with `cut` n=7,551 ≈ $13.95B; then open Boeing's live
+      page — the sentence's first positive control is that page.**
+      **NEW (l): fold BEFORE capping.** Boeing's 7,551 cut rows and
+      Goldman's 875 are per-security floods the `smaKind` fold (~2774)
+      would roll into one aggregate row, except the fold runs on the
+      capped list. Real fix for the class; v138's disclosure is honest
+      meanwhile. Also from the draw: Convergeone-shape split aggregates in
+      ≤5-row lineups, ~7 real plans / ~19k ppl (Cape Cod Healthcare 6,814)
+      — folded into (h); JPMorgan's `SEP ACCT 2,271,585,2` value fragment
+      in a name (j). Main's 09:23 cron commit was byte-identical (mirrored
+      `--force` on the git check, data gate +0/−0). #358 (incremental)
+      success 10:18Z. `docs/accuracy-log.md` 2026-09-18 (10:2xZ).
       **STATUS 09:3xZ 2026-09-18 (run #355 verdict): v137 is LIVE on main
       (`78ff7aad`, Pages #480).** Confident −2 = two master trusts with a
       92–94% `COMMON/COLLECTIVE TRUSTS` row (designed); HIGH 4; dominant-row
