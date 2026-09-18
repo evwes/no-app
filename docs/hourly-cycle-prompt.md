@@ -237,6 +237,14 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 19:1xZ 2026-09-18: v139 run #369 in flight (45 min at the
+      wake); mirror HELD (code ahead of store); draw 15/15 real, only the
+      (f) issuer-glue shape (Duke University `Fidelity Vanguard Inst Index
+      Plus`, Compass `Fidelity TRIM 2030 Trust Company`). Verdict check-in
+      armed 19:32Z. **Owner asked for specific questions; four posed in
+      chat 19:1xZ (recordkeeper fix, match/vesting coverage, wam spawning,
+      fund-facts source); hold stands until answered.**
+      `docs/accuracy-log.md` 2026-09-18 (19:1xZ).
       **STATUS 18:2xZ 2026-09-18: #367 and #368 no-ops (mirrored `07c187fb`,
       `6d5411d8`); main's :23 cron missed 17:23; draw 15/15 real, ONE NEW
       CLASS: the 4i caption's wrapped tail glued to a page's first holding

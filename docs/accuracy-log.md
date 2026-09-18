@@ -14216,3 +14216,24 @@ byte-identical, mirrored unforced. Main's :23 cron did NOT fire at 17:23.
 `6d5411d8`, byte-identical, **mirrored unforced BEFORE the v139 commit**
 so main never carries code ahead of its store. v139 commit follows this
 entry `[skip ci]`; dispatched on the dev branch immediately after.
+
+## 2026-09-18 (19:1xZ) — per-cycle draw: 15 of 15 real menus, only known shapes; v139 run #369 in flight, mirror held
+
+**Draw** (seed 20260918191, participant-weighted, 15 of 59,750): Walmart
+1,921,006 ppl, Amazon 1,336,478 (27 rows, ratio 0.91, thousands-scaled
+correctly), Compass Group 263,796, Duke University 69,741 (96 rows),
+Advantage Sales 41,701, Fertitta, Transdev, Eastport, United Church of
+Christ Homes, Foley, El Centro Del Barrio, Air Hydro Power, THK Rhythm,
+Pella Mid-Atlantic, Starting Point. Nothing new; the (f) issuer-glue
+shape twice, both store-side:
+
+- **Duke University:** the trustee's name glued in front of every row —
+  `Fidelity Vanguard Inst Index Plus`, `Fidelity Fidelity Contrafund K6`.
+- **Compass Group:** the issuer's suffix glued after the fund — `Fidelity
+  TRIM 2030 Trust Company` (Fidelity Management Trust Company's target
+  retirement trusts).
+
+**Run #369** (v139 full re-parse, dispatched 18:23Z): still `in_progress`
+at 19:08Z (45 min). Branch and main clean; main carries nothing the
+branch lacks. **Mirror HELD** — the branch head carries v139 code over
+the v138 store. The 19:32Z check-in reads the verdict.
