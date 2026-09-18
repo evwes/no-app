@@ -12,8 +12,14 @@ on:
         description: "space-separated tickers (blank = refresh the file + seed list)"
         required: false
         default: ""
-  schedule:
-    - cron: "41 22 * * 1-5"   # weekdays 22:41Z, after the US close
+  # SCHEDULE DISABLED 2026-09-18: runs #1 and #2 both got HTTP 429 from
+  # Yahoo on every call (quoteSummary AND the crumb-free chart endpoint) —
+  # Yahoo rate-limits GitHub's runner IP range outright. A daily red run is
+  # noise, not coverage. Re-enable when a source answers from here: an API
+  # key (Alpha Vantage / FMP / Polygon) as a repo secret, or the sandbox
+  # network allowlist for the fund company pages.
+  # schedule:
+  #   - cron: "41 22 * * 1-5"   # weekdays 22:41Z, after the US close
 
 permissions:
   contents: write
