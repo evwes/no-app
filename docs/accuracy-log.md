@@ -13149,3 +13149,38 @@ FUND‐R5E` at the same $329,958 — the (i) duplicate class again; Starbucks
 `[— Lincoln Financial Group]` — leading-dash and type-header glue in the
 issuer, the (f) class. Amazon, Bank of America, Starbucks, Fiserv, Hess and
 nine others clean.
+
+## 2026-09-18 (02:2xZ) — fund-facts runner route: Yahoo answers HTTP 429 to a GitHub runner on every endpoint; both routes to a fund's fee and return are now closed and the source is the owner's call
+
+**What happened.** The `fund-facts` workflow was dispatched twice from the
+runner after the v135 mirror put it on main. Run #1 (id 35298513100):
+quoteSummary → `HTTP 429` on all 18 tickers, 0 written, exit 1 — the
+checker never ran and nothing was committed, as designed. The fetcher was
+given diagnostics (log the response body, crumb length, cookie prefix) and
+a fallback to the crumb-free v8 chart endpoint, from whose dated ADJUSTED
+closes a YTD total return is computable. Run #2 (id 35298834223): the crumb
+was valid (17 chars, `A3=` cookie) and the body said `Too Many Requests` on
+the FIRST call; the chart endpoint answered 429 as well. **Yahoo
+rate-limits GitHub's runner IP range outright**; it is not a crumb or
+pacing problem.
+
+**So both routes are closed:** the sandbox cannot reach any fund-data host
+(egress policy, measured yesterday), and the runner reaches Yahoo only to
+be refused. The schedule is disabled (a daily red run is noise); dispatch
+stays. `data/fund-facts.json` remains empty, which is the honest state.
+
+**What was NOT done, deliberately:** no scraping of HTML quote pages
+(MarketWatch, stockanalysis, FT) — undated figures parsed out of markup are
+below this file's bar; no price-only YTD from unadjusted closes (a bond
+fund's NAV drops on every distribution, so a price return is not a return).
+
+**The owner's decision, ranked:** (1) an API key with a documented,
+dated fund endpoint stored as a repo secret — Alpha Vantage (free tier,
+`TIME_SERIES_DAILY_ADJUSTED` gives adjusted closes; no ER),
+Financial Modeling Prep or Polygon (paid tiers carry fund profiles with
+expense ratios) — and the fetcher is rewritten against it in one commit;
+(2) allowlist `investor.vanguard.com` / `advisors.vanguard.com` and
+`www.morningstar.com` in the sandbox's network policy, so the `fund-facts`
+agent reads the fund company's own dated page; (3) both. Until one lands,
+the site's expense ratios stay the pattern-level "est." figures in
+`fund-er.js` and no YTD return is shown anywhere — correct, and stated.

@@ -80,9 +80,17 @@ all defective, all this shape.
   mid-edit and its half-work discarded, not adopted. Both gaps are in the
   log. **If the weekly limit is the binding constraint, the agent spawns are
   the cost to cut** — each v135 agent ran 60-80 minutes of Opus.
-- **fund-facts:** the runner workflow reached main with this mirror and was
-  dispatched for the first time at 02:3xZ; its result (dated ER + YTD for 18
-  tickers, or a clean failure) is the next cycle's item.
+- **fund-facts — DECISION NEEDED FROM YOU.** The runner route was dispatched
+  twice: Yahoo answers HTTP 429 to GitHub's runner IPs on every endpoint,
+  crumb or no crumb. With the sandbox unable to reach any fund-data host,
+  BOTH routes to a fund's fee and YTD return are closed, and
+  `data/fund-facts.json` is empty (honestly). Options, ranked: (1) add an
+  API key as a repo secret — Alpha Vantage (free; adjusted closes → dated
+  YTD, no ER) or Financial Modeling Prep / Polygon (fund profiles with
+  expense ratios) — and I rewrite the fetcher against it in one commit;
+  (2) allowlist `investor.vanguard.com` and `www.morningstar.com` in the
+  environment's network policy so the agent reads dated pages directly;
+  (3) both. The daily schedule is off until then; nothing false is shown.
 
 ## Update 20:1xZ — v134 LIVE; a three-hour gap from the usage limit
 
