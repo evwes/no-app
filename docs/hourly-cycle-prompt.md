@@ -237,6 +237,19 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 23:3xZ 2026-09-18 (run #374 verdict): v141 is LIVE on main
+      (`218641f0`).** Kerned type-label merges gone (Hill Brothers 86% row →
+      37 real rows; Nelnet 30 rows + one brokerage fold); +1/−0, HIGH 4.
+      Costs recorded: Hill Brothers lost 23 tiny brokerage rows (~2%) and
+      gained a KERNED caption row at 17% (v142: despaced `HEADER_FRAG_LINE`);
+      Fusion Medical (4,182 ppl) swapped to its kerned region — (m) now 2
+      plans. Prediction mis-specified (letter-spaced NAMES rose 20 → 28
+      lineups by construction; the merge shape fell to 0). **Display
+      de-spacer shipped** (336 rows / 88 lineups, +184 tickers / 0 lost /
+      0 flipped, 45/45 fixtures). Draw 23:1xZ 15/15 real (Cargill trustee
+      glue (f) A2, Kaleida doubled house, Oshkosh bare `Putnam`). **Owner's
+      four questions still open; hold stands.** `docs/accuracy-log.md`
+      2026-09-18 (23:3xZ).
       **STATUS 22:3xZ 2026-09-18 (run #373 verdict): v140 is LIVE on main
       (`118e7a24`, Pages #505).** 14,946 coded rows / 680 plans / 603,114
       ppl renamed code → legend name; LEAD residue 2,466 rows (OCR "I"

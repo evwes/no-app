@@ -14527,3 +14527,83 @@ mostly-letter-spaced lineups change shape (rows up, the type-label rows
 gone); confident +0 / −0 or a handful of small gains where a 2-row
 statement becomes a menu; `spaced-fbo.mjs` ≥50% count 20 → ~0; no fbo row
 published; coverage otherwise unchanged.
+
+## 2026-09-18 (23:3xZ) — run #374 verdict: v141 PASSED and is live — the kerned-font merges are gone (795 real rows across 32 plans replace 146 merged or lost ones), one plan's names went from clean to kerned on a region swap, one new kerned caption row; the display de-spacer ships for the kerned names
+
+**Run #374** (v141 full re-parse, dispatched 22:27Z on `c1217136`):
+success 23:20Z, 53 min, data commit `218641f0`. **pv 141 covers 68,663 of
+68,767 (99.85%)**, tail unchanged. Coverage line: confident **60,107 (+1 /
+−0)** — J.J. Nichting (a 0-participant final-year plan, in-band by the
+rule, not a reader gain), HIGH 4, overshoot 360, aggRow 56, `dl` 103
+(unchanged), `tkShare` 24.28. `audit-generic-names` 128, `audit-dominant-row`
+0. Nelnet: **30 rows** and one `Participant brokerage holdings (2
+positions)` row; no `fbo` row anywhere in the store.
+
+**Whole-store multiset diff against the v140 shards (`rename-ms.mjs`):**
+795 rows added / 146 removed across 32 plans / 86,514 ppl; 90 renames in
+14 plans; 6 lengthened. Read by name:
+
+- **The fix, as designed:** Hill Brothers Transportation (`20251015092215…`,
+  $9.7M) published `Poole d Se parate A ccount` at **86%** of the plan — one
+  merged row over the whole John Hancock menu — and now publishes 37 real
+  rows (`JH Multim anage r 2055 Life tim e Portfolio`, `John Hancock 500
+  Inde x Fund`); the type-label rows `Pool ed Sepa ra te Account`, `M o n e y
+  M ark e t` are replaced by the identity column's names (`TIAA Rea l Es ta
+  te`, `F id e lity Go v e rn m e n t M o n e y M ark…`). Ratio 1.058 →
+  1.037.
+- **Two costs, both recorded, neither a fabrication:** (a) Hill Brothers
+  also LOST 23 tiny rows ($1k–$17k each, ~2% of the plan — its brokerage
+  window's holdings, `American Funds The Growth Fund of America` $15,548)
+  because the winning region's boundary moved with the un-merge; and it
+  GAINED one junk row, `De scription Curre nt of Inve stm e nt Cost Value
+  JOHN HAN…` at 17% — the KERNED caption line, which the v139 whole-line
+  caption rule cannot see because the words are fragmented. **v142
+  candidate: apply the same despaced comparison to `HEADER_FRAG_LINE`.**
+  (b) **Fusion Medical Staffing (4,182 ppl, 28 rows): a region swap the
+  wrong way.** The filing carries the menu twice — a kerned region
+  (`Re tire P ilo t M o d e rate 2035 Fu n d R1 | C o lle ctiv e Tru st`)
+  and a clean trustee statement (`GREAT GRAY TRUST COMPANY | RETIREPILOT
+  MOD 2035 FUND R1`). Under v140 the kerned region's rows all merged into
+  one type label and lost; under v141 they are 28 distinct rows and that
+  region now WINS on score, so readers see the kerned names instead of the
+  clean ones. Same values, same ratio. **This is queue item (m) — the
+  Lulus tie-break — with a second member: at near-equal score, prefer the
+  candidate whose names are readable (fewer kerned / code-shaped names).
+  2 plans / 4,200 ppl now.**
+
+**The prediction was mis-specified and the record says so:** it said the
+`spaced-fbo.mjs` "≥50% letter-spaced lineups" count would fall 20 → ~0.
+It ROSE, 20 → 28 (855 letter-spaced rows, from 439), because that sizer
+counts letter-spaced NAMES, and un-merging a type label publishes the
+kerned identity names that were previously swallowed. The shape the fix
+targets — a type label carrying most of a lineup — is what fell: Hill
+Brothers 86% → 0, Nelnet 52.6%+45.6% → 0. A sizer for the target shape
+(despaced type label at ≥50%) is what should have been written; the
+letter-spaced-name count is the DISPLAY problem's size, not the parser's.
+
+**Mirror:** main carried `b475cd56` (its :23 cron, #375: plans array
+byte-identical, 0 acks / 0 plans the branch lacked, pv newer on 1 ack that
+v141 has since re-parsed), so `--force` on the git check; data gate **+1 /
+−0 unforced**. `218641f0` is live.
+
+**Display de-spacer, shipped in the same commit as this entry** (`app.js`
+`despaceKerned`, called from `cleanFiledName`): a name whose tokens include
+a lowercase-initial fragment that is not a whole word (`V an gu ard`,
+`Targe t`) is rejoined and re-segmented against a fund-vocabulary word
+list (~230 words, plus years, roman numerals and single letters for share
+classes); the repair is used ONLY when every character segments, no more
+than a quarter of the segments are single letters, and no two single
+letters are adjacent. Fixtures 45/45: `V an gu ard Targe t Re tire m e nt
+2045 Tru st II` → `Vanguard Target Retirement 2045 Trust II`, `Poole d Se
+parate A ccount` → `Pooled Separate Account`; controls `AB US Lg Cp Grw
+CIT W Sr P1`, `Lifecycle fund ll`, `Real estate interests ae`, `Fidelity
+mid cap index`, the all-caps `W HIT E LA B EL …` all unchanged. Three
+drafts were needed: the first repaired `JP Morgan Mid Cap Value` (short
+real tokens) and split `Lifecycle fund ll` into `L L`; the second missed
+`Poole d Se parate` (fragments up to 7 letters); the third read `Real
+estate interests ae` as `Interest Sa E` (a two-letter dictionary entry).
+`kern-effect.mjs`: **336 rows / 88 lineups change**; `flip-clean.mjs`
+over 1,704,532 published rows: **GAINED 184 tickers / 74 plans / 147,929
+ppl, LOST 0, FLIPPED 0**; `smoke-test.mjs` OK. Fusion's `Re tire P ilo t`
+does NOT repair (`pilot` is not in the list) — the tie-break is the real
+fix there.

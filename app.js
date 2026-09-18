@@ -479,6 +479,43 @@
    * v138 store: 733 plans / 1,464,661 ppl / 3,191 rows; the separator is
    * required so "Stable Value Fund" alone is never touched. */
   const TYPE_PREFIX = /^(?:mutual funds?|common[\/ ]?collective (?:trust )?funds?|collective (?:investment )?trusts?(?: funds?)?|common[\/ ]?collective trusts?|pooled separate accounts?|separate accounts?|registered investment compan(?:y|ies)|stable value(?: funds?)?|money market(?: funds?)?|guaranteed (?:investment|interest) contracts?|target date funds?|index funds?)\s*[-–:]\s+(?=\S)/i;
+  const KERN_WORDS = new Set(("vanguard fidelity blackrock schwab invesco pimco putnam principal prudential nuveen tiaa cref dodge cox american funds franklin templeton mfs jpmorgan jp morgan jpmcb wellington wells fargo allspring columbia janus henderson federated hermes goldman sachs galliard artisan harbor oakmark loomis sayles neuberger berman dimensional dfa ishares spdr state street ssga northern trust voya empower lincoln transamerica john hancock massmutual nationwide metlife great west securian tiaa-cref " +
+    "target retirement trust trusts fund funds index institutional instl inst admiral adm investor inv shares share class cl plus select premium growth value blend core total stock market mkt intl international global emerging markets developed world equity equities bond bonds fixed income high yield short term intermediate long treasury government govt inflation protected securities tips real estate reit mid cap small large extended balanced moderate conservative aggressive money mutual common collective commingled pooled separate account accounts stable capital preservation guaranteed interest contract contracts insurance company general portfolio portfolios lifepath lifecycle freedom smartretirement retire strategic allocation dividend appreciation opportunities opportunity health sciences technology sector explorer windsor primecap wellesley star " +
+    "interests option options unit units series contributions participant participants loans notes receivable " +
+    "us u.s. ii iii iv r6 r5 r4 r3 r2 r1 k6 k a b c d e f g h i j l m n o p q r s t u v w x y z z6 z3 cit cits ret rtmt idx fd tr blnd").split(/\s+/));
+  function despaceKerned(name) {
+    const toks = name.trim().split(/\s+/);
+    // the kerning signature is a word broken INSIDE: a lowercase-initial
+    // fragment after the first token ("V an", "Targe t", "Fu nd"). Real names
+    // start their words with capitals, apart from a few connectives.
+    const STOP = /^(?:of|and|the|ex|at|in|for|to|on|by|de|du|la|le|von|van|di|del|der|et|a|an)$/;
+    const fragList = toks.slice(1).filter((t) => /^[a-z]{1,7}$/.test(t) && !STOP.test(t));
+    const frags = fragList.length;
+    // a lowercase-initial token that is itself a whole word ("Fidelity mid cap
+    // index") is a lowercase filing, not a kerned one; at least one fragment
+    // must be a piece of nothing
+    const broken = fragList.filter((t) => !KERN_WORDS.has(t)).length;
+    const short = toks.filter((t) => /^[A-Za-z]{1,2}$/.test(t)).length;
+    if (toks.length < 3 || broken < 1 || frags < 2 && short < 3) return name;
+    const flat = name.replace(/\s+/g, "");
+    const lower = flat.toLowerCase();
+    const out = []; let i = 0; let shortSegs = 0;
+    while (i < lower.length) {
+      let best = 0;
+      for (let len = Math.min(18, lower.length - i); len >= 1; len--) {
+        const w = lower.slice(i, i + len);
+        if (KERN_WORDS.has(w) || /^(?:19|20)\d\d$/.test(w) || (len >= 2 && /^\d+$/.test(w) && !/^\d/.test(lower[i + len] || ""))) { best = len; break; }
+      }
+      if (!best) return name;
+      if (best <= 2 && !/^\d+$/.test(lower.slice(i, i + best))) shortSegs++;
+      out.push(flat.slice(i, i + best)); i += best;
+    }
+    if (shortSegs > Math.max(2, out.length * 0.25)) return name;
+    // two single letters in a row ("L L", "A L") is a share-class fragment
+    // the word list could not read, never a repaired word
+    for (let k = 1; k < out.length; k++) if (out[k].length === 1 && out[k - 1].length === 1 && !/\d/.test(out[k] + out[k - 1])) return name;
+    return out.map((w) => /^[a-z]/.test(w) ? w[0].toUpperCase() + w.slice(1) : w).join(" ");
+  }
   function cleanFiledName(name) {
     let s = String(name).trim();
     s = s.replace(/^[—–-]+\s*/, "");
@@ -507,6 +544,15 @@
     // the store until that re-parse lands.
     const hm = s.match(/^(?:\(?[a-e]\)\s*)?(?:(?:including\s+)?maturity date|par,?\s+or\s+maturity value|(?:description\s+)?of investment(?:\s+cost)?(?:\s+value)?|identity of issuer?,?|rate of interest|collateral,?\s+par)[\s,]*/i);
     if (hm) { const rest = s.slice(hm[0].length).trim(); if (rest.split(/\s+/).length >= 2 && /[A-Za-z]{3}/.test(rest)) s = rest; }
+    // a KERNED font that pdftotext split into fragments — "V an gu ard Targe t
+    // Re tire m e nt 2045 Tru st II" (Nelnet, 11,248 ppl; 167 plans / 559k
+    // ppl carry such a row, 20 lineups are mostly such rows). Rejoin the
+    // fragments and re-segment against a fund-vocabulary word list; the
+    // repair is used only when EVERY character segments into a known word
+    // (numbers and roman numerals pass), so a name that merely has short
+    // tokens ("AB US Lg Cp Grw CIT W Sr P1") is left exactly as filed.
+    // 23:1xZ 2026-09-18, the display half of v141.
+    s = despaceKerned(s);
     // the identity column's house glued in front of a description that
     // already names it — "JP Morgan JP Morgan Mid Cap Growth Fund", "Dodge &
     // Cox Dodge & Cox Global Bond Fund": the first 1-3 words repeated

@@ -651,10 +651,8 @@ don't confuse them). Frontend: python http.server + Playwright at
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
   full-form** filers and 43,523 short-form; 68,767 parse-status entries.
-  **Store at v140 (branch AND main, `118e7a24`); `PARSER_VERSION` in the
-  tree is 141 (kerned-font type labels + fbo rows) — its run was
-  dispatched 2026-09-18 22:3xZ; mirror only once the v141 store lands.
-  OCR v8.**
+  **Store at v141 (branch AND main, `218641f0`); `PARSER_VERSION` in the
+  tree is 141 — no unparsed parser change is waiting. OCR v8.**
   **Re-derived from the local store 2026-09-18 19:5xZ** — `pv139` covers
   68,665 of 68,767 acks (99.85%), tail pv106 18, pv98 10, pv123 10, pv124
   10; `lib-4i` exports 139. (On 2026-09-16 this line said v124 for four
@@ -665,7 +663,22 @@ don't confuse them). Frontend: python http.server + Playwright at
   Nothing downstream was affected (no session acted on it), but it is exactly
   the copying-a-line-forward hazard this file warns about elsewhere, aimed at
   the file's own header. **Re-derive this line rather than editing the date.**
-- **LIVE on main: `118e7a24` — MIRRORED 2026-09-18 22:2xZ.** The v140 store
+- **LIVE on main: `218641f0` — MIRRORED 2026-09-18 23:3xZ.** The v141 store
+  (a kerned font's fragmented type label is compared with its spaces
+  removed, so `Com m o n Co lle ctive Tru st` no longer wins the name and
+  swallows a menu; `fbo <person>` rows fold into the brokerage aggregate).
+  pv 141 at 99.85%, confident 60,107 (+1 / −0), HIGH 4, overshoot 360,
+  aggRow 56, dominant-row 0, generic-names 128, dl 103. Whole-store: 795
+  rows added / 146 removed across 32 plans (Nelnet 6 → 30, Hill Brothers'
+  86% merged row → 37 real rows). **Two recorded costs:** a kerned CAPTION
+  row now publishes at 17% of Hill Brothers (v142: despaced
+  `HEADER_FRAG_LINE`), and Fusion Medical Staffing (4,182 ppl) swapped to
+  its kerned region on score — queue (m), now 2 plans. `--force` on the
+  git check over main's `b475cd56` (0 acks / 0 plans lacked); data gate
+  unforced. The display de-spacer (`despaceKerned`) renders 336 kerned
+  rows readably, +184 tickers / 0 lost. `docs/accuracy-log.md` 2026-09-18
+  (run #374 verdict).
+- **Previously: `118e7a24` — MIRRORED 2026-09-18 22:2xZ.** The v140 store
   (a coded 4i schedule takes its holding names from the filing's own
   LEGEND — Empower's template, `1VFIAX`). pv 140 at 99.85%, confident
   60,106 (+0 / −0), HIGH 4, overshoot 360, aggRow 56, dominant-row 0,
