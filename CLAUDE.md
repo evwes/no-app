@@ -651,25 +651,24 @@ don't confuse them). Frontend: python http.server + Playwright at
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
   full-form** filers and 43,523 short-form; 68,767 parse-status entries.
-  **Store at v147 (branch AND main, `c07b9f47`, run #382); `PARSER_VERSION`
-  in the tree is 152 (v150: the `^` party-in-interest marker stripped
-  like `*`; v151: the employer-stock sponsor-token test matches whole
-  words, not substrings; v152: a coupon with a maturity date is a bond
-  whatever noun it carries, so `TRANSCANADA TRUST 5.3% 03/15/2077` joins
-  the fold — all three committed `[skip ci]` behind #383) — v148 (the doubled house stripped in the store) and
-  v149 (class subtotals beside their itemisation removed at the leaves
-  stage, before the restatement cut — Marriott 31 → 49 rows, its real
-  menu) are IN FLIGHT TOGETHER as run #383 (dispatched 2026-09-19 04:51Z
-  on `c07b9f47`); mirror once its verdict is read (doubled house 203 →
-  under 20; Marriott's trusts in the store; each loss by name). The v147
-  store carries v144 (fold before the cap), v145 (stem dedup; the
-  sponsor-name `transfer` trap), v146 (two-column wraps; footnote letter;
-  `N/R`) and v147 (ETF is a type phrase; the strip needs two data cells;
-  house + product phrase compose). OCR v8.** v144 (fold before the cap, untyped securities by name), v145 (stem
-  dedup; sponsor-name `transfer` trap) and v146 (two-column wraps;
-  footnote letter, `N/R`) are otherwise verified in the #381 store —
-  cut-tail class 337 → 236 plans, duplicates 522 → 109 rows, (k) ≥30%
-  17 → 13; the doubled house stays queued (238 → 202). OCR v8.**
+  **Store at v149 on the BRANCH (`54c7f32a`, run #383, PASSED 05:46Z:
+  doubled house 203 → 10 plans, Marriott's real menu, +2 / −2); main is
+  still at v147 (`c07b9f47`) because run #384 — main's own `:23` cron —
+  is IN FLIGHT ON MAIN since 05:58Z re-parsing v149 there; mirror and the
+  next dispatch wait for it. `PARSER_VERSION` in the tree is 153, all
+  committed `[skip ci]` and undispatched: v150 (the `^` party-in-interest
+  marker stripped like `*`), v151 (the employer-stock sponsor-token test
+  matches whole words), v152 (a coupon with a maturity date is a bond
+  whatever noun it carries — 280 dated `Trust`/`Fund` notes join the
+  fold), v153 (RECEIVABLES securitizations no longer dropped as statement
+  lines; the class-label test sees past `U.S.` and `&`; a cover-page
+  identifier line — `Sponsor ID #: 20-5146075`, 446 rows / 362 plans — is
+  not a holding, which returns Barton & Gray, #383's one regression).
+  The v149 store carries v144 (fold before the cap), v145 (stem dedup;
+  the sponsor-name `transfer` trap), v146 (two-column wraps; footnote
+  letter; `N/R`), v147 (ETF is a type phrase; house + product phrase
+  compose), v148 (doubled house stripped) and v149 (class subtotals
+  beside their itemisation removed at the leaves stage). OCR v8.**
   **Re-derived from the local store 2026-09-18 19:5xZ** — `pv139` covers
   68,665 of 68,767 acks (99.85%), tail pv106 18, pv98 10, pv123 10, pv124
   10; `lib-4i` exports 139. (On 2026-09-16 this line said v124 for four

@@ -15700,3 +15700,81 @@ the v44 subtotal test can see once the junk row above it is gone.
 **Prediction for the run:** the 446 identifier rows → ~0; Barton & Gray
 confident; small ratio moves on 362 plans (each loses an EIN-sized
 value); confident +1 / −0 from this part.
+
+## 2026-09-19 (06:1xZ) — run #383 verdict (v148 + v149): PASSED — the doubled house 203 → 10 plans, Marriott's real menu in the store; two losses read by name, one honest and one a regression already fixed in the tree; MIRROR HELD because main's own hourly cron is re-parsing on main
+
+**Numbers.** Run 55 min (04:51–05:46Z). pv 149 covers 68,662 of 68,767
+(99.85%); confident 60,122 → **60,122 (+2 / −2 vs `c07b9f47`)**; lineups
+59,769; HIGH 7 on the run's coverage line — the local audit on the pulled
+store prints 5: the 4 baseline `contrib` outliers and `folded-aggregate`
+109 against its 60 baseline (the v144 fold's class, standing since #381;
+the audit's baseline needs re-basing, queued) — the other 2 are the run's
+`reparse-loss` on the two losses below, self-clearing; overshoot 364;
+aggRow 109 / **1,155,580 ppl (from 1,307,698 — Marriott's fold no longer
+carries its class lines)**; `tkShare` 24.34; dl 104.
+
+**Predictions held.** Doubled house (`issuer-glue-split.mjs`) **203 → 10
+plans / 19,091 ppl / 10 rows** (predicted under 20). Marriott's store
+entry: 49 rows, 21 collective trusts, `Managed account holdings (1,411
+positions)` 3.17B, its own stock, the Vanguard Retirement trusts — the
+first store to carry its real menu. The one-member trust
+`20251218170324NAL0002684051001` did NOT return (still `band-hi` at 2.00,
+55 rows; its class subtotals are not adjacent runs). `class-subtotal.mjs`
+73 → 74 plans / 76,410 ppl: v149's leaves-stage rule reaches only a
+label whose itemisation is an adjacent run summing to 97–100.5%, and
+that sizer's population is mostly other shapes.
+
+**Whole-store multiset diff v147 → v149 (`rename-ms.mjs old10`):**
+shortened **987 rows / 309 plans / 674,414 ppl** (v148's doubled-house
+strip — 760 predicted, the rest the same expression on rows the sizer's
+anchoring missed), removed 82 rows / 20 plans / 169,804 ppl (v149's
+subtotals — Marriott's five, each printed twice), added 153 / 37 /
+208,490 (the rows those cuts unhid), other 25 / 18, TO-SHORT 2.
+
+**The two losses, read by name:**
+- **Goodwill Keystone Area (1,929 ppl) — honest.** A scanned filing
+  (OCR); its newest copy has no attachment the parser can read (`ds:
+  noattach`) and the stored lineup was 20 rows at 0.49 whose first row
+  was the class line `Mutual funds` $4,951,454 — 64% of the "menu", a
+  v105 shape — above 16 Mutual of America rows summing to $2.76M. v149
+  reads the label at $2,184,729 (the other column) and the ratio falls to
+  0.31, `band-lo`. The real rows cover a sixth of the plan's $15.9M; the
+  old confidence was bought by a double-counted class line. The rule
+  working.
+- **Barton & Gray Mariners Club (198 ppl) — a REGRESSION, fixed in v153
+  part 2 before anything reached readers.** Traced version by version:
+  v148 keeps its 17-row menu, v149 loses it. v149 never touched the
+  schedule; the filing has no statutory 4i header, both competing regions
+  begin with the page header `Sponsor ID #: 20-5146075`, and the row
+  parser publishes that as a $5,146,075 holding (96% of the plan). Once
+  v149 removed the fair-value note's class subtotal the note's ratio fell
+  toward 1.0 and it outscored the schedule region, which was paying for
+  the same junk row. The defect is the identifier row — 446 rows / 362
+  plans / 1.17M ppl store-wide — and `SKIP_ROW` now skips it (entry
+  above). The next run returns the plan.
+- Gains: Azura Logistics (145 ppl), Rocky Mountain Laboratories (162 ppl).
+
+**Mirror HELD — not for the verdict, for main.** `mainvsbr2`: main has 0
+acks / 0 plans the branch lacks, main newer on 0, confident-on-main-only =
+the two losses — mirror-ready with `--force-data` over two named losses.
+But **run #384, main's `:23` hourly cron, has been IN FLIGHT ON MAIN since
+05:58Z on `c07b9f47`**, whose code is v149 over a v147 store — a full
+re-parse committing to main in ~55 min. Force-pushing main under it is
+the case CLAUDE.md names as unsafe (2026-09-16 07:1xZ), and dispatching
+v150–v153 on the branch would put two re-parses in flight. Both wait for
+#384's conclusion; its store should equal #383's (same code, same
+universe) and the mirror then needs `--force` on the git check with the
+usual 0 / 0 evidence.
+
+## 2026-09-19 (06:1xZ) — per-cycle draw (seed 20260922, v149 store): 15 of 15 real menus
+
+Insperity (229,666p, 26 rows @ 0.983, SSgA index and target-date trusts
+under `[State Street Global Advisors Trust]`), Allegis (193,721p),
+University of Pennsylvania (45,173p), Orlando Health (43,041p), RSM
+(21,555p, `Self-Directed Brokerage Account` filed as one line), Travel +
+Leisure, Shake Shack, Sumitomo Mitsui, IBEW Local 124, Home Bancshares
+(employer stock 17.4%), Berkeley Research, Viaflex, Saint David's School
+(62 CREF/TIAA rows), HTA, Riester. Nothing new: Orlando Health's
+`[Unallocated Contracts ^]` issuer is item (p), fixed in v150; Saint
+David's issuer bracket carries a type phrase (`College Retirement
+Equities Fund variable annuities`), cosmetic and recorded.

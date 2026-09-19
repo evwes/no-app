@@ -237,6 +237,23 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 06:2xZ 2026-09-19: #383 (v148 + v149) PASSED — confident
+      60,122 (+2 / −2 vs `c07b9f47`), doubled house 203 → 10 plans,
+      Marriott's real menu in the store (49 rows, 21 trusts). Losses read:
+      Goodwill Keystone honest (a class line bought its old confidence);
+      Barton & Gray a REGRESSION — `Sponsor ID #: 20-5146075` publishes as
+      a $5.1M row (446 rows / 362 plans / 1.17M ppl store-wide) and v149
+      made the junk decisive; fixed in v153 part 2 (`SKIP_ROW` identifier
+      arm), corpus +1 / −0. Also built and committed `[skip ci]`: v153
+      part 1 (RECEIVABLES securitizations no longer dropped as statement
+      lines; the class-label test sees past `U.S.` and `&` — Marriott's last
+      two class rows gone, ratio 0.980). **MIRROR HELD: #384, main's :23
+      cron, is IN FLIGHT ON MAIN since 05:58Z (v149 code over the v147
+      store = a full re-parse on main); dispatch of v150–v153 waits with
+      it.** Watcher armed. Draw 15/15 real menus. Next wake: #384 verdict
+      (expect a store equal to #383's) → mirror `--force` (0/0 evidence)
+      + `--force-data` (the two named losses) → dispatch v150–v153 →
+      morning brief → the coded residue, the folded-aggregate baseline.
       **STATUS 05:3xZ 2026-09-19: v152 committed `[skip ci]` behind #383 —
       a coupon with a maturity date is a bond whatever noun it carries
       (`TRANSCANADA TRUST 5.3% 03/15/2077`, `GUARDIAN LIFE GLOBAL FUND
