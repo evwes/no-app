@@ -16639,3 +16639,39 @@ gain, and **any loss read by name before the mirror**. A large rename
 count is not by itself a failure here — it is what adding a major house
 to the list means — but a large count of rows LOSING their fund name to
 a bare house would be, and that is the thing to look for.
+
+## 2026-09-19 (16:2xZ) — per-cycle draw (seed 20260927, v158 store): 15 of 15 real menus, and one of them merges thirteen funds — v162
+
+IBM, Northwestern Memorial, Johns Hopkins, BMO, Insight Global, Fifth
+Third, Baylor, Infosys, Ascension, Toyoda Gosei, PennyMac, Reeds,
+Valley Oaks, Aware Recovery, Infinity Management — all real menus.
+
+**Private National Mortgage Acceptance (PennyMac, 4,998 ppl) publishes
+`Asset Allocation Mutual Fund` at 47.5% / $157,047,874.** Read in the
+filing: the identity column holds the REAL fund — `Fidelity Freedom 2010
+Fund`, `… 2015`, `… 2020` through `… 2065` — and the description column
+repeats `Asset Allocation Mutual Fund` on every one of them. No existing
+pattern read that as type-only, so the description won the name and
+**thirteen vintages merged**. This is the v104 W. L. Gore shape in a new
+vocabulary, and like MGB this morning it is invisible to both guards:
+not a generic TYPE name, and 47.5% is under the dominant-row threshold.
+
+**Sized (`cat-vehicle.mjs`): 323 confident lineups / 376,590 ppl carry a
+`<category> <vehicle>` row; 117 / 123,923 have it at ≥20% of the menu** —
+Super Center Concepts 78%, Red Bull North America 68%, The Wendy's
+Company 57% (three such rows), Lowe Enterprises 50%, 99 Cents Only,
+AIG. Not every one is a merge; the ≥20% band is where they will be.
+
+**v162.** `CAT_VEHICLE` — a category word (asset allocation, balanced,
+lifecycle, target-date, index, growth, income, equity, money market,
+stable value…) followed by at most two words and a VEHICLE (mutual fund,
+collective trust, separate account, registered investment company,
+variable annuity) — feeds BOTH `typeOnly` and `catDesc`, and that pairing
+is what makes it safe in both directions: a real fund name in the
+identity now wins, while a bare HOUSE identity still loses to the
+category, so nothing gains a bare house name from it. (Routing it
+through `typeOnly` alone would have done exactly that, and the first
+version did — caught before commit by reading the predicate, not the
+output.) Gate green; corpus 0 / 0 / 0 / 0 with **three plans moving and
+all three un-merging**: PennyMac 16 → 28 rows, Los Angeles FCU 23 → 31,
+Mitsubishi Materials 17 → 29. Dispatches after #394's verdict.

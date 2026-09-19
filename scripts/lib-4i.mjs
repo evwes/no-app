@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 161;
+export const PARSER_VERSION = 162;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -390,6 +390,21 @@ export function isHouseName(nc) {
   return INSTITUTION_SUFFIX.test(s) && s.split(/\s+/).length <= 5;
 }
 
+/* v162: A CATEGORY plus a VEHICLE is a type phrase, not a fund. PennyMac
+ * (4,998 ppl) files the real fund in column (a) — `Fidelity Freedom 2045 Fund`
+ * — and repeats `Asset Allocation Mutual Fund` in the description of every
+ * row; the description was not type-only under any existing pattern, so it won
+ * the name and THIRTEEN Freedom vintages merged into one $157,047,874 holding
+ * at 47.5% of the plan. The v104 W. L. Gore shape with a different vocabulary.
+ * Sized: 323 confident lineups / 376,590 ppl carry such a row, 117 / 123,923
+ * at >=20% of the menu (Super Center Concepts 78%, Red Bull 68%, Wendy's 57%,
+ * Lowe Enterprises 50%).
+ * Deliberately routed through typeOnly AND catDesc, which is what makes it
+ * safe in both directions: a real fund name in the identity now WINS, while a
+ * bare HOUSE identity still loses to the category (the v70/v102 behaviour), so
+ * nothing gains a bare house name from this. */
+const CAT_VEHICLE = /^(?:asset allocation|balanced|lifecycle|life ?style|target(?:ed)?[- ]date|target retirement|risk[- ]based|managed allocation|multi[- ]asset|diversified|blended?|index|growth|income|equity|fixed income|money market|stable value|international|domestic|global|bond|large cap|mid cap|small cap|real asset)(?:\s+[A-Za-z][\w&.-]*){0,2}\s+(?:mutual funds?|collective (?:investment )?trusts?|common\/?collective trusts?|separate accounts?|pooled separate accounts?|registered investment compan(?:y|ies)|variable annuit(?:y|ies)|commingled funds?)\s*$/i;
+
 const CATEGORY_PHRASE = /^(?:target[- ]date(?: retirement)?(?: funds?)?|retirement (?:date )?funds?|registered inves\w{0,2}ments? compan(?:y|ies)|(?:common[\/ ]?)?collective trust funds?|separate accounts?|group annuity contracts?|guaranteed (?:interest|investment) contracts?|insurance company (?:general|pooled separate) accounts?|(?:group|variable|fixed) annuity(?: contracts?| accounts?)?|guaranteed (?:interest )?accounts?|insurance (?:general )?accounts?|general accounts?|insurance contracts?|guaranteed insurance contracts?|blended funds?|balanced funds?)$/i;
 /* Harvested by measuring 3,928 rows where a PRODUCT-shaped identity sits
  * behind a short generic name. The list is deliberately PARTIAL: the same
@@ -412,6 +427,7 @@ function typeOnly(desc) {
    * type in the name. */
   let r = String(desc).replace(/\s+[\d,]{3,}(?:\.\d+)?\s*(?:\(\d+\))?\s*$/, "").trim();
   if (CATEGORY_PHRASE.test(r)) return true;
+  if (CAT_VEHICLE.test(r)) return true;
   /* v141: A KERNED FONT SPLITS EVERY WORD INTO FRAGMENTS. Nelnet (11,248
    * participants, $760M) files its schedule in a font pdftotext renders as
    * "V an gu ard Targe t Re tire m e nt 2045 Tru st II | Com m o n Co lle ctive
@@ -1419,8 +1435,9 @@ export function parseRows(section, opts = {}) {
      * existing rendering already says exactly that. */
     const identityIsProduct = nc && (/\d/.test(nc) || nc.split(/\s+/).length >= 3 ||
       /\b(?:r[1-6]|k\d?|adm|inv|instl?|idx|index|fund|trust|pool)\b/i.test(nc));
-    const catDesc = dClean && CATEGORY_PHRASE.test(
-      String(dClean).replace(/\s+[\d,]{3,}(?:\.\d+)?\s*(?:\(\d+\))?\s*$/, "").trim());
+    const catDesc = dClean && (CATEGORY_PHRASE.test(
+      String(dClean).replace(/\s+[\d,]{3,}(?:\.\d+)?\s*(?:\(\d+\))?\s*$/, "").trim()) || CAT_VEHICLE.test(
+      String(dClean).replace(/\s+[\d,]{3,}(?:\.\d+)?\s*(?:\(\d+\))?\s*$/, "").trim()));
     /* v102: A CATEGORY DESCRIPTION MAY ONLY BEAT A HOUSE, NOT A SHORT FUND.
      *
      * `!identityIsProduct` was standing in for "the identity is only a house
