@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 148;
+export const PARSER_VERSION = 149;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -584,6 +584,47 @@ function wrapHeadOk(s) {
   if (GENERIC_TYPE_NAME.test(t) || typeOnly(t)) return false;
   const residue = t.replace(TYPE_WORDS, " ").replace(/\s+/g, " ").trim();
   return residue.split(" ").filter(Boolean).length >= 2 || /\d/.test(residue);
+}
+
+/* v149 (queue item n): A CLASS SUBTOTAL BESIDE ITS OWN ITEMISATION, judged in
+ * FILED ORDER at the leaves stage, before any view of the region is built.
+ * Marriott (152,118 participants) files `COMMON STOCKS … 4,408,382,764` and
+ * then the 443 stocks it totals; keeping both did two things: the published
+ * sum double-counted, and the v77 restatement cut — which walks the filed
+ * order until the cumulative sum reaches plan assets — reached it EARLY and
+ * chopped off the 21 collective trusts that followed ($5.7B, the real menu).
+ * No post-selection repair can recover a block the cut removed, so the
+ * subtotal goes before the cut sees it.
+ * A label is a name made only of class words; its run is the non-label rows
+ * immediately after it (or before it, for totals printed under their items),
+ * at least three rows, summing to 97–100.5% of the label (the parser loses a
+ * few rows of any long itemisation). The Verizon trust's summary page — a
+ * dozen class rows and nothing itemised in the region — is untouched, because
+ * its neighbours are labels too and no run forms. */
+const CLASS_ONLY_NAME = /^(?:(?:corporate|common|preferred|government|governmental|u\.?s\.?|treasury|agency|municipal|foreign|domestic|international|global|interest[- ]bearing|cash|equivalents?|securities|stocks?|bonds?|debt|equit(?:y|ies)|debentures?|notes?|obligations?|loans?|participants?|receivables?|other|total|investments?|at|fair|value|contracts?|collective|common\/collective|pooled|separate|accounts?|registered|investment|compan(?:y|ies)|mutual|funds?|trusts?|guaranteed|insurance|synthetic|short[- ]term|fixed[- ]income|real\s+estate|exchange[- ]traded|and|&)\b[\s,\-–—/()]*)+$/i;
+const CLASS_NOUN = /(?:stocks?|bonds?|debt|securities|equit(?:y|ies)|loans?|cash|trusts?|accounts?|funds?|compan(?:y|ies)|contracts?|notes?|obligations?|debentures?)\b/i;
+export function isClassLabel(name) {
+  const n = String(name || "").trim();
+  return !!n && (GENERIC_TYPE_ANY.test(n) || GENERIC_TYPE_NAME.test(n) || (CLASS_ONLY_NAME.test(n) && CLASS_NOUN.test(n)));
+}
+export function subtotalIndices(rows) {
+  const out = new Set();
+  if (!Array.isArray(rows) || rows.length < 6) return out;
+  const lab = rows.map((r) => isClassLabel(r && r.name));
+  const runOk = (from, step, target) => {
+    let s = 0, n = 0;
+    for (let j = from; j >= 0 && j < rows.length && !lab[j]; j += step) {
+      s += +rows[j].value || 0; n++;
+      if (s > target * 1.005) return false;
+    }
+    return n >= 3 && s >= target * 0.97 && s <= target * 1.005;
+  };
+  for (let i = 0; i < rows.length; i++) {
+    const v = +(rows[i] && rows[i].value) || 0;
+    if (!v || !lab[i]) continue;
+    if (runOk(i + 1, 1, v) || runOk(i - 1, -1, v)) out.add(i);
+  }
+  return out;
 }
 
 export function parseRows(section, opts = {}) {
@@ -1945,6 +1986,21 @@ export function parseRows(section, opts = {}) {
     leaves.push(r); group += r.value; groupN++; leafSum += r.value;
   }
 
+  /* v149: drop class subtotals beside their own itemisation before any view
+   * (dedup, single-render, pair, restatement cut) is built — see
+   * `subtotalIndices` above. `leafSum` and the group tallies are adjusted so
+   * the region's own arithmetic stays consistent. */
+  {
+    const sub = subtotalIndices(leaves);
+    if (sub.size) {
+      let removed = 0;
+      for (const i of sub) removed += +leaves[i].value || 0;
+      if (TRACE_ROWS) console.error(`[subtotal] ${sub.size} class subtotal(s) removed at the leaves stage, worth ${removed}: ${[...sub].map((i) => `${String(leaves[i].name).slice(0, 30)}=${leaves[i].value}`).join(" | ")}`);
+      const kept = leaves.filter((_, i) => !sub.has(i));
+      leaves.length = 0; for (const r of kept) leaves.push(r);
+      leafSum -= removed;
+    }
+  }
   const seen = new Map();
   const seenStem = new Map();
   let totalValue = 0;
@@ -1961,6 +2017,10 @@ export function parseRows(section, opts = {}) {
      * eaten. */
     const k = r.name.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
     const e = seen.get(k);
+    if (TRACE_ROWS && TRACE_MATCH && !/^\d+$/.test(TRACE_MATCH) && r.name.includes(TRACE_MATCH)) {
+      const ks0 = k.replace(/\b(?:fund|funds|inc|class|cl|portfolio|shares?|the|trust|[a-z]|\d{1,2})\b/g, " ").replace(/\s+/g, " ").trim();
+      console.error(`[dedup] ${JSON.stringify(r.name.slice(0, 50))} ${r.value} exact-dup=${e && e.vals.has(r.value) ? 1 : 0} stem=${JSON.stringify(ks0)} stem-dup=${seenStem.get(ks0) && seenStem.get(ks0).has(r.value) ? 1 : 0}`);
+    }
     // filings usually render the schedule TWICE (once in the auditor's
     // statements, once as the form-page attachment copy) — the same name at
     // the same dollar value inside one region is that duplicate, not a
@@ -2794,6 +2854,8 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
   const topN = best.funds.length;
   let funds = best.scale > 1 ? srcFunds.map((f, i) => ({ ...f, value: f.value * best.scale, ...(uncapped && i >= topN ? { _deep: 1 } : {}) }))
     : srcFunds.map((f, i) => { if (uncapped && i >= topN) f._deep = 1; return f; });
+  const tracePost = (tag) => { if (TRACE_ROWS && TRACE_MATCH && !/^\d+$/.test(TRACE_MATCH)) console.error(`[post ${tag}] ${funds.filter((f) => String(f.name).includes(TRACE_MATCH)).length} matching rows of ${funds.length} (uncapped=${uncapped ? 1 : 0}, all=${Array.isArray(best.all) ? best.all.length : "-"}, ordered=${Array.isArray(best.ordered) ? best.ordered.length : "-"})`); };
+  tracePost("start");
 
   /* v136: A LINE OF THE STATEMENT OF CHANGES IS NOT A HOLDING — dropped from
    * the WINNER, POST-SELECTION, and the placement is the whole lesson of the
@@ -3067,10 +3129,97 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
     if (TYPE_LABEL_ROW.test(nm)) return true;
     return SECURITY_SHAPE.test(nm) && !pooled && !NOT_FUND_SHAPED.test(nm) && !GENERIC_TYPE_NAME.test(nm);
   };
+  tracePost("before-subtotal");
+  /* v149 (queue item n): A CLASS SUBTOTAL BESIDE ITS OWN ITEMISATION.
+   * Marriott (152,118 participants) files `COMMON STOCKS … 4,408,382,764`
+   * as a class line and then the stocks it totals, one per row; the parser
+   * kept both, so the published sum double counts and the region's ratio
+   * (0.79) is an accident of how much of the plan the schedule covers. The
+   * test is ARITHMETIC in FILED ORDER (`ordered`, the pre-dedup leaves):
+   * a class-label row whose value equals — within 0.5% — the sum of the
+   * run of non-label rows immediately AFTER it (or immediately BEFORE it,
+   * for filings that print the total under the items), at least three
+   * rows long, is the subtotal of those rows and is dropped; the ratio is
+   * corrected by what was dropped. Post-selection, like v107 and v133, so
+   * it cannot change which region wins; unlike them it needs no overshoot,
+   * because a subtotal beside its items is a double count at any ratio —
+   * Marriott's honest ratio is nearer 0.4 than 0.79, and that may put the
+   * region below the band. 75 confident lineups / 225,667 participants
+   * publish a class row at >=10% beside an itemisation (a floor). */
+  {
+    /* the rule now lives in `subtotalIndices`, applied at the leaves stage in
+     * parseRows (a subtotal that reaches the restatement cut has already done
+     * its damage); this post-selection copy is kept inert so the mechanism is
+     * documented once — `ord` is empty, nothing below fires */
+    const ord = [];
+    /* a label is any name made ONLY of class words — the Verizon trust's
+     * summary siblings (`CORPORATE STOCK - COMMON`, `PARTICIPANT LOANS`,
+     * `INTEREST-BEARING CASH`) are labels too, and six of them summed within
+     * 2% of the `COMMON/COLLECTIVE TRUST` total, which the first draft read
+     * as that label's itemisation (parser gate) */
+    const CLASS_ONLY = /^(?:(?:corporate|common|preferred|government|governmental|u\.?s\.?|treasury|agency|municipal|foreign|domestic|international|global|interest[- ]bearing|cash|equivalents?|securities|stocks?|bonds?|debt|equit(?:y|ies)|debentures?|notes?|obligations?|loans?|participants?|receivables?|other|total|investments?|at|fair|value|contracts?|collective|common\/collective|pooled|separate|accounts?|registered|investment|compan(?:y|ies)|mutual|funds?|trusts?|guaranteed|insurance|synthetic|short[- ]term|fixed[- ]income|real\s+estate|and|&)\b[\s,\-–—/()]*)+$/i;
+    const isLabel = (r) => {
+      const n = String((r && r.name) || "").trim();
+      return !!n && (GENERIC_TYPE_ANY.test(n) || GENERIC_TYPE_NAME.test(n) || TYPE_LABEL_ROW.test(n) ||
+        (CLASS_ONLY.test(n) && /(?:stocks?|bonds?|debt|securities|equit(?:y|ies)|loans?|cash|trusts?|accounts?|funds?|compan(?:y|ies)|contracts?|notes?|obligations?|debentures?)\b/i.test(n)));
+    };
+    const near = (a, b) => Math.abs(a - b) <= Math.max(1, b * 0.005);
+    /* the run may UNDERSHOOT the label by the rows the parser could not read
+     * (wrapped names, marker lines): Marriott's `COMMON STOCKS` 4,408,382,764
+     * is followed by 443 stocks summing to 4,332,267,516 (98.3%), its
+     * `CORPORATE BONDS` by 673 bonds at 97.2%, its `COMMON/COLLECTIVE TRUST`
+     * and `MUTUAL FUNDS` by exact sums. A run within 97–100.5% of the label,
+     * three rows or more, is the label's own itemisation. */
+    const keyOf0 = (n) => String(n || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+    /* the label may only go when its ITEMS are in the published set: the
+     * Verizon Master Savings Trust's summary page (12 class rows, the honest
+     * lineup) is followed by thousands of per-security detail rows that
+     * sum to each class and are NOT in the winner — dropping `COMMON STOCK`
+     * there removed $16.3B and left the summary with nothing (parser gate).
+     * Items present in `funds` must carry at least half the label's value. */
+    const inFunds = new Map(); for (const f of funds) inFunds.set(keyOf0(f.name), (inFunds.get(keyOf0(f.name)) || 0) + (+f.value || 0));
+    const scale0 = best.scale > 1 ? best.scale : 1;
+    const runSum = (from, step, target) => {
+      let s = 0, n = 0, present = 0;
+      for (let j = from; j >= 0 && j < ord.length && !isLabel(ord[j]); j += step) {
+        const v = +ord[j].value || 0; s += v; n++;
+        if (inFunds.has(keyOf0(ord[j].name))) present += v;
+        if (s > target * 1.005) return false;
+      }
+      return n >= 3 && s >= target * 0.97 && s <= target * 1.005 && present * scale0 >= target * scale0 * 0.5;
+    };
+    const drop = [];
+    for (let i = 0; i < ord.length; i++) {
+      const L = ord[i];
+      if (!L || !(+L.value) || !isLabel(L)) continue;
+      if (TRACE_ROWS) {
+        let sa = 0, na = 0, pa = 0; for (let j = i + 1; j < ord.length && !isLabel(ord[j]); j++) { sa += +ord[j].value || 0; na++; if (inFunds.has(keyOf0(ord[j].name))) pa += +ord[j].value || 0; }
+        let sb = 0, nb = 0; for (let j = i - 1; j >= 0 && !isLabel(ord[j]); j--) { sb += +ord[j].value || 0; nb++; }
+        console.error(`[label] ${JSON.stringify(String(L.name).slice(0, 40))} ${L.value}  after: ${na} rows ${sa} (present in funds ${pa})  before: ${nb} rows ${sb}`);
+      }
+      if (runSum(i + 1, 1, +L.value) || runSum(i - 1, -1, +L.value)) drop.push(L);
+    }
+    if (drop.length && ord.length >= 6) {
+      const keyOf = (n) => String(n || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+      const scale = best.scale > 1 ? best.scale : 1;
+      const dropKeys = new Map(); for (const r of drop) dropKeys.set(keyOf(r.name), (+r.value) * scale);
+      let removed = 0;
+      funds = funds.filter((f) => {
+        const v = dropKeys.get(keyOf(f.name));
+        if (v === undefined || !near(+f.value, v)) return true;
+        removed += +f.value; return false;
+      });
+      if (removed && assetsEOY) best.ratio = Math.max(0, (best.ratio || 0) - removed / assetsEOY);
+      if (TRACE_ROWS && removed) console.error(`[subtotal] dropped ${drop.length} class subtotal(s) worth ${removed}; ratio now ${(best.ratio || 0).toFixed(3)}: ${drop.map((r) => `${String(r.name).slice(0, 30)}=${r.value}`).join(" | ")}`);
+    }
+  }
   const untypedFlood = funds.filter(untypedSecurity);
   const itemized = funds.filter((f) => (f.type === "Stock" || f.type === "Company stock") &&
     !isEmployer(f.name) && !inheritedMenuRow(f));
   if (untypedFlood.length >= 30) for (const f of untypedFlood) if (!itemized.includes(f)) itemized.push(f);
+  if (TRACE_ROWS && TRACE_MATCH && !/^\d+$/.test(TRACE_MATCH)) {
+    for (const f of itemized) if (String(f.name).includes(TRACE_MATCH)) console.error(`[fold] itemized ${JSON.stringify(String(f.name).slice(0, 60))} type=${f.type || "-"} own=${f.ownType ? 1 : 0} sec=${JSON.stringify(f.sec || "")} untyped=${untypedSecurity(f) ? 1 : 0}`);
+  }
   /* v144 TRIED AND WITHDREW a rule folding every row under a brokerage
    * heading whatever its type. U.S. Bancorp's schedule lists `Self-Directed
    * Brokerage Account $214M` as a HOLDING LINE, the section tracker took it
@@ -3148,6 +3297,7 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
     funds = shown.slice(0, ROW_CAP);
   }
   for (const f of funds) delete f._deep;
+  tracePost("after-fold-and-cap");
 
   // trust-POINTER pages: a member plan's own 4i is often just "Interest in
   // <X> Master Trust $8B" plus a stray row or two (Eaton: + stable value +

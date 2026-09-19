@@ -520,6 +520,13 @@
       "fixed": "v147",
       "sponsor": "(Invesco stable value specimen)",
       "was": "'Invesco | Stable Value Fund N/R': with N/R stripped the description read as type-only, the identity won, and the row published as the bare house 'Invesco' — 121 rows / 102 plans / 267,852 ppl in the v146 store; house and product phrase now compose ('Invesco Stable Value Fund')"
+    },
+    {
+      "ack": "20251009101330NAL0003488915001",
+      "class": "class-subtotal-triggers-early-restatement-cut",
+      "fixed": "v149",
+      "sponsor": "Marriott International",
+      "was": "the schedule files class subtotals ('COMMON STOCKS' $4.41B) beside the rows they total; counted, the cumulative sum reached plan assets early and v77's restatement cut chopped off the 21 collective trusts that followed ($5.7B, the actual menu) — 152,118 participants saw a 120-row securities list with the class lines at 47.5% and never their Vanguard target-date trusts (31 -> 49 rows once subtotals are removed at the leaves stage)"
     }
   ]
 }

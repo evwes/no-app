@@ -15342,6 +15342,62 @@ construction; `issuer-glue-split.mjs` after the run is the measurement.
 residue: doublings with a fourth word, or across a bracketed issuer);
 confident +0 / −0; the raw-first ticker lookup gains a little. Committed
 `[skip ci]` behind #382 (v147); dispatches after its verdict.
+
+## 2026-09-19 (04:2xZ) — v149 (queue item n): a class subtotal beside its own itemisation is removed at the LEAVES stage, before the restatement cut — Marriott's real menu (Vanguard target-date trusts, Northern Trust S&P 500, $5.7B of collective trusts) is visible for the first time, 31 → 49 rows
+
+**What was wrong, and it was not what (n) assumed.** (n) was queued as
+"the published sum double counts" (Marriott `COMMON STOCKS` $4.41B beside
+the 443 stocks it totals). Tracing the fix as a post-selection repair
+found the real damage elsewhere: **`ordered` held 2,802 leaves and the
+winner's `all` only 1,589, and none of the 21 `NORTHERN TRUST COLLECTIVE…`
+rows survived** — because the winner is v77's RESTATEMENT-CUT view. That
+view walks the filed order until the cumulative sum reaches plan assets
+and treats what follows as the second render. With the class subtotals
+counted, the sum reached assets EARLY, and the cut chopped off the
+collective-trust block ($5,717,533,349 — the plan's actual menu) as if it
+were a re-statement. No post-selection repair can bring back rows a view
+discarded, so the rule had to move to where the rows are born.
+
+**The change (`lib-4i.mjs`, PARSER_VERSION 149).** `subtotalIndices(rows)`
+and `isClassLabel(name)` at module level; `parseRows` removes the
+subtotals from `leaves` before dedup, the single-render and pair views, the
+cut, and `ordered`. A label is a name made only of class words (`COMMON
+STOCKS`, `COMMON/COLLECTIVE TRUST`, `CORPORATE STOCK - COMMON`,
+`PARTICIPANT LOANS`); its run is the non-label rows immediately after it
+(or before it), at least three, summing to 97–100.5% of the label — the
+parser loses a few rows of any long itemisation (Marriott's 443 stocks
+reach 98.3%). The post-selection copy is left inert with a pointer, so the
+rule exists once.
+
+**Two drafts fell to the gate and the trace.** (1) Post-selection, ±0.5%:
+dropped seven small subtotals and missed `COMMON STOCKS` (98.3%). (2)
+Widened to 97%, still post-selection: the Verizon Master Savings Trust's
+summary page lost its `COMMON/COLLECTIVE TRUST` $16.3B row — six SIBLING
+class rows (`CORPORATE STOCK - COMMON`, `PARTICIPANT LOANS`…) evaded the
+label test and happened to sum within 2% of it. Labels are now any
+all-class-word name, so no run forms between siblings; Verizon holds its
+12 rows / $38.9B.
+
+**Verified.** Parser gate all specimens green (Verizon, Sempra, HCA trusts
+untouched); `diff-lineups HEAD` (v148 → v149) over the corpus: **0 gained
+/ 0 lost / 0 fabricated / exactly one move — Marriott 31 → 49 rows**, sum
+moves 0. Marriott under v149: ratio 0.935 → 1.073, `Managed account
+holdings (1,411 positions)` 25.5%, employer stock 16.0%, `VANGUARD
+RETIREMENT 2035` 7.4%, `NORTHERN TRUST COLLECTIVE S&P 500 INDEX FUND - DC`
+6.2%, `FID CONTRA POOL CL F` 6.0%, `FIDELITY BLUE CHIP GROWTH`,
+`ARROWSTREET INTERNATIONAL EQUITY EAFE CIT` — the menu 152,118 people
+actually choose from. Residue: `CORPORATE BONDS` $578M and `U.S.
+GOVERNMENT DEBT SECURITIES` $521M remain as rows (~9%, the winner's runs
+for those two fall outside the window); recorded. Pinned Marriott as
+`class-subtotal-triggers-early-restatement-cut`.
+
+**Prediction for the v149 run:** `class-subtotal.mjs` 75 plans → well
+under 40; Marriott 49 rows at ~1.07; confident +0 / −small (a region
+whose ratio was held in band BY its subtotals drops out — read each);
+the one-member trust `20251218170324…` (refused at 2.0 in #381) may
+return; overshoot FALLS (subtotals gone); HIGH 4 + designed residue.
+Committed `[skip ci]` behind #382 (v147) and v148; dispatches after
+#382's verdict, with v148.
 - **Retail Services Wis** — `[Company Vanguard Fiduciary Trust]`: the
   issuer's second line (`Company`) leads the issuer field, queue (f) C's
   wrapped-issuer shape, now 6 plans.

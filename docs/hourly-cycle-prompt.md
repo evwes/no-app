@@ -237,6 +237,16 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 04:2xZ 2026-09-19: v149 (queue item n) committed `[skip
+      ci]` behind #382 — class subtotals beside their itemisation removed
+      at the LEAVES stage, because Marriott's real defect was v77's
+      restatement cut firing early on the inflated sum and chopping off
+      $5.7B of collective trusts; Marriott 31 → 49 rows, its actual menu
+      visible for the first time. Two drafts fell to the gate (Verizon's
+      sibling class rows). Gate green, corpus diff = Marriott only.
+      #382 (v147) in flight; mirror HELD. Next wake: verdict #382 →
+      mirror → dispatch v148 + v149 together → (o) NRECA, the two
+      residual Marriott class rows, the coded residue.
       **STATUS 04:0xZ 2026-09-19: v148 committed `[skip ci]` behind #382
       — the doubled house stripped in the store (the display's expression;
       202 plans / 760 rows still doubled after v146, several via
