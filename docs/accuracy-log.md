@@ -16264,3 +16264,54 @@ joins the identifier arm. Gate green; corpus 0 / 0 / 0 / 0.
 **Prediction for #390:** `mt-share` 5 → 0 (confident −5, each read:
 Caterpillar, Cleveland-Cliffs, IBEW 25, Pantexas, one trust);
 `caret-iss` names 255 → ~0; +0 otherwise.
+
+## 2026-09-19 (12:0xZ) — the OCR path reproduced locally through fetch-4i's real PARSE_SHARD code, and Frx's loss traced to its cause: which junk region wins a dead heat was deciding whether the caption-seeded retry ran at all — v158 runs it for any unpublishable first pass
+
+**Method, because it is reusable.** `trace-filing` parses the pdftotext
+text only, so three losses on the OCR path (Frx 12 rows → 1, Central City
+32 → 2, Terra Dotta 15 → `stmt`) could not be traced. A crafted tree —
+`plans-all.json` trimmed to the acks in question (`trim-plans.mjs`), a
+status file with their `pv` forced stale, empty `mtias.json` /
+`fallbacks.json`, `scripts/` symlinked — runs fetch-4i's own
+`PARSE_SHARD=0 PARSE_SHARDS=1 BATCH_4I=8` path with fresh tesseract OCR
+in **20 seconds for three filings**, writing `results-0.json`. Swapping
+the symlink to a copy of `scripts/` with `lib-4i.mjs` from any commit
+bisects the parser against the identical OCR text; `OCR_CACHE_DIR` set on
+one run captures the exact combined text (`#bad:` header line first) for
+`combined-parse2.mjs`, which reparses it in-process under any lib with
+`WAMPO_TRACE`. Scripts in the scratchpad; the crafted tree is
+disposable.
+
+**What it found.** Central City and Terra Dotta parse to `few` / `stmt`
+under v154, v155 AND v157 with fresh OCR: their stored confident
+lineups came from OCR text in the production cache that fresh tesseract
+does not reproduce (page selection or a cache from an older
+OCR_VERSION), so they are not v155/v156 regressions and the current
+store is the local truth. **Frx reproduces exactly:** v155 → 12 LifePath
+rows at 0.894, `8cd51309` (v156 part 2) → one row. Of that commit's three
+changes, only the tie-break metric flips it (variants built one change
+at a time). The candidates: a 4-row `FRX MANAGEMENT HOLDINGS` junk region
+at ratio 2.196 scores −0.8734 and a 2-row `Mutual funds` statement at
+1.708 scores −0.8737 — a dead heat the readability term decides. When the
+junk region wins, `parse4iInner`'s v115 band-hi retry (`ratio >= 1.6 &&
+!stmt`) runs the caption-seeded second pass, which finds the 30-row
+region that post-selection reduces to the 12 real funds. When the
+statement wins, `!first.stmt` skips the retry and the plan publishes
+nothing. **The retry's precondition was the defect, not the tie-break:
+which junk wins must not decide whether the real menu is looked for.**
+
+**v158.** The caption-seeded retry runs for ANY first pass that is not a
+publishable shape (statements included; a multi-row trust pointer still
+excluded), accepted only when its result is publishable — the same
+acceptance rule as before, so nothing can be withdrawn by it. Frx: 12
+rows at 0.894 from plain text now too (its first pass was a 1-row `John
+Hancock` at 0.986, in band, so neither old arm fired). Gate green;
+corpus +1 (Frx) / −0 / 0 fabricated. **Random control, because this
+touches the whole unpublishable population:** 30 live plans drawn from
+the 937 with `few/stmt/band-lo/band-hi/narrow` on their own text-parsed
+filing, traced under HEAD and the tree — **0 of 30 change** (Lennox,
+Adient, Bosch, Corteva, Thrivent, PG&E … all identical). Fabrication-
+neutral on the population it reaches; its one measured gain is Frx.
+Pinned. `PARSER_VERSION` 158 (v157 is in flight at its own number).
+Prediction: confident +1 (Frx) / −0 beyond v157's −5; OCR-path
+recoveries elsewhere possible and each to be read.

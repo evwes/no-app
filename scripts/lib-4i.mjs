@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 157;
+export const PARSER_VERSION = 158;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -3655,7 +3655,16 @@ function parse4iInner(text, assetsEOY, sponsorName = "", codes = "") {
      * stays comparable. Measured on a RANDOM 40-plan draw from the 212 live
      * band-hi plans: 9 recovered, every one of their 315 published values
      * present verbatim in its own filing, zero generic-named rows. */
-    if ((first.ratio || 0) >= 1.6 && !first.stmt && !first.trustPtr) {
+    /* v157 part 3: ...and so does ANY unpublishable first pass, statements
+     * included. Frx Management (201 ppl, OCR text): a 4-row junk region at
+     * 2.196 and a 2-row `Mutual funds` statement at 1.708 tie to the fourth
+     * decimal; when the junk region won, this retry ran and the caption pass
+     * found the 12-row LifePath menu at 0.894; when v156's tie-break let the
+     * statement win, `!first.stmt` skipped the retry and the plan published
+     * nothing. Which junk wins a dead heat must not decide whether the real
+     * menu is looked for. Same acceptance rule: only a publishable shape
+     * replaces the first pass, so nothing can be withdrawn by it. */
+    if (!publishableShape(first) && !first.trustPtr) {
       const r = parse4iPass(text, assetsEOY, sponsorName, codes, true);
       if (publishableShape(r)) return r;
     }
