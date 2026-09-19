@@ -16675,3 +16675,37 @@ version did — caught before commit by reading the predicate, not the
 output.) Gate green; corpus 0 / 0 / 0 / 0 with **three plans moving and
 all three un-merging**: PennyMac 16 → 28 rows, Los Angeles FCU 23 → 31,
 Mitsubishi Materials 17 → 29. Dispatches after #394's verdict.
+
+## 2026-09-19 (16:3xZ) — run #394 verdict (v161): MIRRORED — Hozhoni's 34-row menu is back and Mass General Brigham's $1.57B merge is gone; the pre-registered failure signal DID appear, at 2 rows, and is recorded rather than waved past
+
+**Numbers.** pv 161 at 99.85%. **Against the LIVE v158 store: 0 gained /
+2 lost**, and both losses are v159 working — Crestview Management (5,185
+ppl: `M utual Fund | M oney M arket Fund | through 2030`) and Buffalo
+Bills (536 ppl: `the NFL Reciprocal Trust | … | through 2034`), 3-row
+lineups that fall under the floor once the loan-maturity phrase stops
+being a holding. HIGH 7 on the run's line = 4 baseline + 3 self-clearing;
+the local audit prints no non-baseline HIGH. Against the HELD v160 store
+it is +3 / −4: Hozhoni Foundation returns (34 rows, `c:1`) and the four
+plans v160 had gained go back to where v159 left them, which is the
+confinement working as designed.
+
+**Mass General Brigham, in the store:** `TIAA-CREF Funds STOCK`
+$1,209,911k, `… GROWTH` $275,837k, `… MONEY MARKET` $79,901k — the
+$1,565,649k phantom is gone for 131,090 readers.
+
+**The failure signal I pre-registered appeared, and it is small but
+real.** I said a large count of rows LOSING a fund name to a bare house
+would be the thing to look for after TIAA-CREF entered `HOUSE_ONLY`.
+Whole-store multiset diff against the v160 store: `rename:TO-SHORT` **13
+rows / 10 plans / 8,573 ppl**, and two of them are exactly that shape —
+**`TIAA-CREF High-Yield-Rtmt` → `TIAA-CREF` and `TIAA-CREF Traditional`
+→ `TIAA-CREF`**. Two readers' rows, against 131,090 whose phantom is
+gone, so the mirror goes ahead — but it is a cost, not a rounding error,
+and it is queued: the same predicate that makes a house name usable for
+the split must not let a house+product name collapse to the house.
+
+**Mirror:** `--force-data` over the two named losses; `--force` on the
+git check over main's one newer ack, the analyze-stuck master trust
+`20251203145826NAL0000493523001` that main's incremental cron re-read at
+pv 160 and the next dispatch retries anyway — the same ack and the same
+justification as the 11:4xZ mirror.
