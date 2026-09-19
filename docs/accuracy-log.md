@@ -16215,3 +16215,52 @@ same test applies). Pinned. Committed `[skip ci]` behind #388.
 **Prediction:** `mt-share` 5 → 0; confident −5 (each read: Caterpillar,
 Cleveland-Cliffs, IBEW 25, Pantexas, one trust) / +0; their pages fall
 to the trust-pointer sentence.
+
+## 2026-09-19 (11:4xZ) — run #388 verdict (v156): PASSED — the tie-break now moves renders toward readable names (298 up / 9 down), Progressive's class closed, Conditioned Air and State Street publish real menus; one OCR-path loss read; mirrored; v157 (+ daggers, `Employer I.D. #`) dispatched
+
+**Numbers.** Run 10:32–11:3xZ. pv 156 covers 68,660 of 68,767 (99.84%);
+confident 60,102 → **60,104 (+3 / −1 vs `2548498d`)**; lineups 59,751;
+HIGH 5 = 4 baseline + 1 self-clearing `reparse-loss`; overshoot 350;
+`tkShare` 24.42; dl 104.
+
+**Predictions, re-measured:** `lead-prep` 627 → **57 rows / 0 whole
+lineups** (Progressive traces clean); render swaps vs the v155 store
+**432 lineups / 599,332 ppl, vowel-token share UP on 298 (375,527 ppl) /
+DOWN on 9 (5,359), mean length down on 353** — the abbreviated renders
+v155's length term had chosen flipped back, and the metric now points
+one way; `caret-iss` name rows 255 unchanged — read: the residue is a
+`†` dagger (`Target Retirement 2040 Fund †`, Transamerica's template)
+and `Employer I.D. # 58-`, two spellings v156 did not cover, added to
+v157 below; `form-line` 0; `mt-share` 5 (v157's target, not yet run).
+
+**Gains read:** Conditioned Air of Naples (267 ppl, 34 rows, `JPMorgan
+US Equity R6 [iss Empower]`) — the over-reach undone; **State Street
+Corporation (21,533 ppl): with its twelve Form 5500 rows gone the 2023
+fallback's real menu publishes — SSGA S&P 500 Flagship $2.18B, Russell
+Small/Mid, Target Retirement series, `Self Managed Brokerage Accounts`,
+Vanguard Prime**; one master trust. **Central City Concern did NOT
+return** (`few`, `rw=2`, `readfail`): its 32-row lineup was an OCR-path
+read the text parse cannot reproduce (2 rows under every version), and
+the OCR text under v156 no longer yields it. **The one loss, Frx
+Management Holdings (201 ppl): twelve real LifePath rows → one row `John
+Hancock`** — also OCR (`ocr:1` on the old entry), and the text parse
+gives the same one row under v155 and v156, so the change is inside the
+OCR'd text's handling. With Terra Dotta (94 ppl) that is three OCR-path
+readings that moved between v154 and v156 and cannot be traced with
+`trace-filing`; tesseract is installed in the sandbox, so the next queue
+item is a local OCR reproduction of exactly these three.
+
+**Mirror.** `mainvsbr2`: main's #389 commit (`dab491ff`, the first
+incremental cron — one shard, two minutes) is newer on exactly one ack,
+the master trust `20251203145826NAL0000493523001` stuck at pv141
+`e=analyze` on the branch and now parsed at pv156 on main; the v157
+dispatch retries every stale-error ack, so forcing over it loses
+nothing that the next run does not restore. `--force` on the git check
+with that evidence; `--force-data` over the one loss read above.
+
+**v157 part 2, before dispatch:** `†`/`‡` join the marker strips at the
+line stage, description, identity and issuer cell; `Employer I.D. #`
+joins the identifier arm. Gate green; corpus 0 / 0 / 0 / 0.
+**Prediction for #390:** `mt-share` 5 → 0 (confident −5, each read:
+Caterpillar, Cleveland-Cliffs, IBEW 25, Pantexas, one trust);
+`caret-iss` names 255 → ~0; +0 otherwise.

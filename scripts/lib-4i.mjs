@@ -83,7 +83,7 @@ const HEADER_FRAG_LINE = /^(?:\(?[a-e]\)|description|of investment|investment|id
  * letter tokens in a row), compare it with every space removed. */
 const HEADER_FRAG_DESPACED = /^(?:[a-e]|description|ofinvestment|investment|identity|ofissue|issuer?|borrower|lessor|or|similar|party|including|maturity|date|rate|of|interest|collateral|par|value|cost|current|fair|shares|units|number|no)+$/;
 const KERNED = /(?:\b[A-Za-z]{1,2} ){2,}/;
-const SKIP_ROW = new RegExp("^(total|subtotal|grand total|schedule|page \\d|form 5500|ein[: ]|employer id|(?:plan )?sponsor id\\b|employer no\\.?\\b|plan ?id\\b|plan ?#|plan no\\.?\\b|sponsor name|name of plan sponsor|plan name\\b|plan sponsor'?s name\\b|plan number|as of|see accompanying|\\(thousands|identity of issue|description of investment|rate of|maturity|cost\\b|current value|sales\\b|purchases\\b|dividends\\b|assets in.transit|investments? at fair value|dividend income|other income|administrative fees|" +
+const SKIP_ROW = new RegExp("^(total|subtotal|grand total|schedule|page \\d|form 5500|ein[: ]|employer id|employer i\\.?d\\.?\\s*#|(?:plan )?sponsor id\\b|employer no\\.?\\b|plan ?id\\b|plan ?#|plan no\\.?\\b|sponsor name|name of plan sponsor|plan name\\b|plan sponsor'?s name\\b|plan number|as of|see accompanying|\\(thousands|identity of issue|description of investment|rate of|maturity|cost\\b|current value|sales\\b|purchases\\b|dividends\\b|assets in.transit|investments? at fair value|dividend income|other income|administrative fees|" +
   // the 4i column heading wraps across up to four lines; only its first line
   // ("(c) Description of investment") was covered, so the continuation
   // "including maturity date, rate of" had no value, survived as a name
@@ -313,7 +313,7 @@ function splitNameDesc(body) {
 /* Remove share counts, rates, and cost markers from a description column so
  * only the investment's name remains. */
 function cleanDesc(desc) {
-  let d = desc.replace(/[*^]+/g, " ");
+  let d = desc.replace(/[*^†‡]+/g, " ");
   d = d.replace(/\b[\d,]+(\.\d+)?\s*(shares?|units?|interests?)\b/gi, " ");
   /* v156: the preposition the share count carried — "7,699,900.87 shares of
    * Vanguard Institutional 500 Index Trust" left "of Vanguard …" as the name
@@ -379,7 +379,7 @@ const INSTITUTION_SUFFIX = /\b(?:trust (?:company|co)|bank|advisors?|asset manag
  * (a hand-rolled generic-name list, a hand-rolled fund-shape test), and the
  * reason `isLoanNoteName` was exported at v131. */
 export function isHouseName(nc) {
-  const s = String(nc || "").trim().replace(/\s+/g, " ").replace(/^[*^(#]+\s*|\s*[*^)#]+$/g, "");
+  const s = String(nc || "").trim().replace(/\s+/g, " ").replace(/^[*^†‡(#]+\s*|\s*[*^†‡)#]+$/g, "");
   if (!s) return true;                 // no identity at all — the description is all there is
   if (HOUSE_ONLY.test(s)) return true;
   return INSTITUTION_SUFFIX.test(s) && s.split(/\s+/).length <= 5;
@@ -746,7 +746,7 @@ export function parseRows(section, opts = {}) {
      * template — BAE `[^ The Vanguard Group]`, `Fidelity 500 Index Fund ^`,
      * `^ Empower Guaranteed Interest Fund`; 2,038 name rows + 38 issuers /
      * 164 plans / 476,133 ppl carried it. Same treatment as `*`. */
-    let t = raw.trim().replace(/^[*^]+\s*/, "").replace(/\s*[*^]{1,3}\s*$/, "")
+    let t = raw.trim().replace(/^[*^†‡]+\s*/, "").replace(/\s*[*^†‡]{1,3}\s*$/, "")
       .replace(/([0-9]{1,3}(?:,[0-9]{3})+)(?:\s*[,.]?\s*\(\s*[a-z]\s*\)){1,4}\s*$/i, "$1")
       /* v146: a lone FOOTNOTE LETTER in column (a) — "b        JP Morgan
        * JP Morgan Mid Cap Growth Fund   N/R   22,050,627" in a filing's second
@@ -2018,7 +2018,7 @@ export function parseRows(section, opts = {}) {
      * The head is the issuer; the tail is the row's type when the row carries
      * none of its own (a classified phrase only — a tail `classify` cannot
      * name stays on the cell). */
-    let issCell = iss ? iss.replace(/[*^]+/g, "").replace(/^#\s*|\s*#$/g, "").trim() : "";
+    let issCell = iss ? iss.replace(/[*^†‡]+/g, "").replace(/^#\s*|\s*#$/g, "").trim() : "";
     let issTail = false;
     if (issCell) {
       const tail = issCell.match(ISS_TYPE_TAIL);

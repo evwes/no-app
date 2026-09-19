@@ -1,8 +1,8 @@
 # Morning brief — 2026-09-19 (written 10:3xZ / 6:3x AM ET; refreshed at the next verdict)
 
-Live on main: **`8cd51309`, the v155 store** (Pages #518 deployed it at
-10:33Z). Since the last brief: v148–v155 shipped and are live; **v156 is
-running as #388** (dispatched 10:32Z). Fifteen parser versions since
+Live on main: **the v156 store** (mirrored 11:4xZ; v155 had gone live at
+10:33Z). Since the last brief: v148–v156 shipped and are live; **v157 is
+running** (the master-trust pointer gate, Caterpillar's 60,484 readers). Fifteen parser versions since
 23:3xZ last night, each gated, corpus-diffed, verified against its own
 prediction, every lost lineup read by name. One structural change to the
 pipeline this morning (below), and one cancelled cron run.

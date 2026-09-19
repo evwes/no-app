@@ -651,17 +651,18 @@ don't confuse them). Frontend: python http.server + Playwright at
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
   full-form** filers and 43,523 short-form; 68,767 parse-status entries.
-  **Store at v155 on the branch (`2548498d`, run #386) — being MIRRORED
-  10:3xZ over main's PARTIAL store (cancelled cron #387's merge committed
-  pv154 on 40,636 acks beside pv149 on 28,026). `PARSER_VERSION` in the
-  tree is 156, dispatched 10:3xZ: v156 = the `(N)` footnote arm narrowed
-  to Schedule H vocabulary (Conditioned Air, Central City back), the
-  render tie-break on vowel-token share instead of length (775 swaps in
-  #386, half toward abbreviation), `#` marker stripped, Progressive's
-  `of ` prefix gone. **Scheduled runs are now INCREMENTAL by construction
-  (`SCHEDULE_INCREMENTAL`, 2026-09-19): main's hourly cron no longer
-  re-parses the universe after a mirror — #384 took 3.5 h on twenty
-  runners and #387 starved a finished branch run of its merge.**
+  **Store at v156 (branch AND main, run #388, PASSED 11:3xZ: +3 / −1,
+  render swaps readable-ward 298 up / 9 down, State Street's real SSGA
+  menu, Conditioned Air back) — MIRRORED 11:4xZ. `PARSER_VERSION` in the
+  tree is 157, DISPATCHED 11:4xZ: a master-trust pointer ≥75% of the
+  page is a pointer at any row count (Caterpillar 60,484 ppl, Cleveland-
+  Cliffs, 5 lineups), `†`/`‡` markers, `Employer I.D. #`. **Scheduled
+  runs are INCREMENTAL by construction (`SCHEDULE_INCREMENTAL`,
+  2026-09-19, confirmed live on #389: one shard, two minutes) — main's
+  hourly cron no longer re-parses the universe after a mirror.** Three
+  OCR-path readings moved between v154 and v156 and cannot be traced with
+  `trace-filing` (Frx 12 rows → 1, Central City 32 → 2, Terra Dotta 15 →
+  stmt): the next queue item is a local tesseract reproduction.
   The v155 store carries v150–v155 (see `docs/accuracy-log.md`
   2026-09-19 08:5xZ and 10:3xZ) over
   The v149 store carries v144 (fold before the cap), v145 (stem dedup;
@@ -679,7 +680,16 @@ don't confuse them). Frontend: python http.server + Playwright at
   Nothing downstream was affected (no session acted on it), but it is exactly
   the copying-a-line-forward hazard this file warns about elsewhere, aimed at
   the file's own header. **Re-derive this line rather than editing the date.**
-- **LIVE on main: `8cd51309` — MIRRORED 2026-09-19 10:3xZ (`--force` over
+- **LIVE on main: the v156 store — MIRRORED 2026-09-19 11:4xZ (`--force`
+  over #389's one newer ack, an analyze-stuck trust the dispatch re-reads;
+  `--force-data` over Frx, read).** pv 156 at 99.84%, confident 60,104,
+  HIGH 4 + 1 self-clearing, overshoot 350, dl 104. What reached readers:
+  432 lineups' names move toward the readable render (vowel-token share
+  up on 298 / down on 9); Progressive's 33 rows lose their `of `; State
+  Street's 21,533 see an SSGA menu instead of Form 5500 coordinates.
+  **#390 (v157) in flight.** `docs/accuracy-log.md` 2026-09-19 (run #388
+  verdict).
+- **Previously: `8cd51309` — MIRRORED 2026-09-19 10:3xZ (`--force` over
   the git check with 0 acks / 0 plans lacked; `--force-data` over 35
   losses read by name).** The v155 store, mirrored over the PARTIAL store
   that cancelled cron #387's merge had left on main (pv154 40,636 / pv149

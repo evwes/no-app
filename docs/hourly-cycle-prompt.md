@@ -237,6 +237,18 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 11:4xZ 2026-09-19: #388 (v156) PASSED — +3 / −1; render
+      swaps now readable-ward (298 up / 9 down); Progressive's class 627 →
+      57 rows; Conditioned Air and State Street (21,533 ppl, its real SSGA
+      menu) publish; the one loss (Frx, 201 ppl) and Central City's
+      non-return are OCR-path readings the text trace cannot reproduce —
+      next item: local tesseract reproduction of those three (Frx, Central
+      City, Terra Dotta). MIRRORED the v156 store (`--force`: main's
+      incremental #389 newer on one analyze-stuck trust the dispatch
+      re-reads; `--force-data` one read). #389 confirmed SCHEDULE_INCREMENTAL
+      live: one shard, two minutes. v157 (trust pointer ≥75% at any row
+      count — Caterpillar 60,484 ppl; daggers; Employer I.D. #) DISPATCHED.
+      Next wake: v157 verdict → mirror → OCR reproduction.
       **STATUS 10:3xZ 2026-09-19: #386 (v155) verdict — junk classes
       closed (form-line 75 → 0, iss-type 1,695 → 197), 35 losses read: 33
       honest withdrawals, 2 the `(N)` arm over-reaching (Conditioned Air,
