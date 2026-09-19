@@ -651,19 +651,20 @@ don't confuse them). Frontend: python http.server + Playwright at
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
   full-form** filers and 43,523 short-form; 68,767 parse-status entries.
-  **Store at v163 (branch AND main, run #396, PASSED 18:2xZ: +0 / −0, pv 163
-  at 99.85%, HIGH 4) — MIRRORED 18:2xZ (`--force` on the GIT check only, over
-  main's one incremental cron commit: 0 acks / 0 plans the branch lacked; the
-  data gate passed unforced). `PARSER_VERSION` in the tree is 166, DISPATCHED
-  18:23Z as #398** carrying three versions: v164 (a fragment identity may not
-  win merely because the description was refused — `First Eagle` was the whole
-  name of a row whose filing said `First Eagle Global Fund`), v165 (the SEC
-  Form 11-K cover page is not a schedule of assets — 20 rows / 13 plans /
-  302,810 ppl, `Washington, D.C.` as a $20,549 holding), and **v166 (the ASC
-  820 reconciliation line marks the fair-value NOTE — 104 plans / 274,765 ppl,
-  Meta Platforms' 84,993 participants shown one "fund" of $18,809,051,400 at
-  82% of the plan, and Meta gains its real 20-fund menu)**. The previous
-  dispatch was #395 (v162: a category plus a vehicle is a type phrase).
+  **Store at v166 (branch AND main, run #398, MIRRORED 19:2xZ: +3 / −16, pv
+  166 at 99.85%, HIGH 18 = 4 + 14 self-clearing; `--force-data` over the
+  sixteen losses read by name, git check unforced). `PARSER_VERSION` in the
+  tree is 167, IN FLIGHT as #399** (started by the push at 19:24Z and observed
+  in_progress). v167 has two parts: a description that is only a house name
+  may not beat a real fund name in the identity (fixes the #396 Illinois
+  regression and reaches its class — five more plans un-merge, Rcb Bank 10 →
+  28 rows), and the ASC 820 line condemns a region only at **≥25% of its sum**
+  (Ford Gum's 29-row Fidelity menu back; Meta's gain kept). The #398 store
+  carried v164 (a fragment identity may not win merely because the description
+  was refused), v165 (the SEC Form 11-K cover page is not a schedule of assets
+  — 20 rows / 13 plans / 302,810 ppl) and **v166 (the ASC 820 reconciliation
+  line marks the fair-value NOTE — 104 plans / 274,765 ppl)**. The dispatch
+  before that was #395 (v162: a category plus a vehicle is a type phrase).
   Before that, #394 (v161
   confines the merge-split to HOUSE identities after v160 cost Hozhoni a
   real 34-row menu, and adds TIAA-CREF to `HOUSE_ONLY`, which did not
@@ -698,7 +699,24 @@ don't confuse them). Frontend: python http.server + Playwright at
   Nothing downstream was affected (no session acted on it), but it is exactly
   the copying-a-line-forward hazard this file warns about elsewhere, aimed at
   the file's own header. **Re-derive this line rather than editing the date.**
-- **LIVE on main: the v163 store — MIRRORED 2026-09-19 18:2xZ** (`--force` on
+- **LIVE on main: the v166 store — MIRRORED 2026-09-19 19:2xZ** (`--force-data`
+  over sixteen losses each opened and named; the git check passed unforced,
+  main had 0 acks and 0 plans the branch lacked). pv 166 at 99.85%, confident
+  60,107 (+3 / −16), HIGH 18 = 4 baseline + 14 self-clearing `reparse-loss`,
+  overshoot 347 → 342, dl 104. **What reached readers: Meta Platforms' 84,993
+  participants stop seeing one "fund" of $18,809,051,400 at 82% of their plan
+  and get the real 20-fund State Street and Vanguard menu**; 104 plans stop
+  publishing the ASC 820 reconciliation line as a holding; 13 plans / 302,810
+  ppl lose SEC Form 11-K cover-page rows, Publix (225,961) among them; v164's
+  fragment identities read as firm-then-fund.
+  **TWO REGRESSIONS ARE LIVE AND BOTH ARE v166's NAV ARM**: Ford Gum &
+  Machine (114 ppl) and ZF Chassis Modules (362) lost real 29-row menus,
+  because the same words are the note's SUBTOTAL in one document and a small
+  ASC 820 FOOTNOTE beneath a real menu in another. **v166's own entry names
+  that risk and does not guard against it — writing a risk down is not
+  guarding against it.** Both are fixed by v167's materiality bar, in flight
+  as **#399**. `docs/accuracy-log.md` 2026-09-19 (run #398 verdict).
+- **Previously: the v163 store — MIRRORED 2026-09-19 18:2xZ** (`--force` on
   the GIT check only, over main's one incremental cron commit `10f169d1`: 0
   acks / 0 plans the branch lacked, plans array byte-identical, main newer on
   2 acks that #398 re-parses; the data gate passed unforced at +0 / −0). pv

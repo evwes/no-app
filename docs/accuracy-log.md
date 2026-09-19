@@ -17024,3 +17024,72 @@ stop seeing one, and #398 re-parses the whole universe within the hour.
 
 **Queued at the top, with its mechanism named:** rows sharing a bare-house
 name must not merge. 28 plans / 29,656 ppl today.
+
+## 2026-09-19 (19:2xZ) — run #398 verdict (v164 + v165 + v166): MIRRORED with `--force-data` over sixteen losses read by name, and the verdict found the cost v166 had written down as a risk
+
+**Numbers.** pv 166 at 99.85%; confident **60,107, +3 / −16** against the v163
+store; HIGH 18 = the baseline 4 plus 14 self-clearing `reparse-loss`;
+**overshoot 347 → 342**; dl 104. A fall in `confident` was the pre-registered
+prediction for v166, so the verdict is the loss list, not the total.
+
+**The sixteen, every one opened.** Fourteen are the rule working: Brunswick
+(15,564 ppl) loses a menu that was `Investments measured at net asset value`
+at 64%; Akzo Nobel, Bechtel, Eagle Transport, Shapiro and San Diego Family
+Care lose all-generic three-to-six-row tables; SEIU and WEC Energy lose the
+NAV note itself; Pangborn loses `Actuarial present value of accumulated
+benefits`; both Bunge plans lose a "menu" that was a master-trust pointer plus
+the two SEC cover rows v165 removed; one master trust loses `Investment in
+Master Trust`. Idex (6,007 ppl) is the marginal one — its top row was `Mutual
+Funds` at 70% with two real Vanguard rows beneath, and withdrawing a statement
+table that carries two real names is defensible but not free.
+
+**TWO ARE REAL REGRESSIONS AND BOTH ARE v166's NAV ARM.** Ford Gum & Machine
+(114 ppl) lost a **29-row Fidelity menu at ratio 0.997** — Blue Chip Growth,
+OTC Portfolio, eleven Freedom vintages, Magellan, the lot. ZF Chassis Modules
+(362 ppl) the same shape. Bisected against each version in turn: v163 `stmt=false
+CONFIDENT=true`, v164 same, v165 same, **v166 `stmt=true CONFIDENT=false`**.
+
+**The cause is exactly the risk v166's own entry names and does not guard.**
+That entry says: *"a genuine 4i schedule carrying a trailing NAV
+reconciliation line would be lost"*. It is not a trailing line here — Ford Gum
+files `Investments measured at NAV*` **twice**, at $610,592 and $691,699, as
+the ASC 820 FOOTNOTE marking which holdings are NAV-measured. The same words
+in two different documents: in the note the line is the subtotal and owns the
+table (Meta 82%, Treehouse 99.8%, Brunswick 64%, Lam 33%); beneath a menu it
+is a marker and it is small (6.7% and 7.5% here). **Writing the risk down is
+not guarding against it** — the bar was the missing half, and the verdict, not
+the write-down, is what produced it.
+
+**v167 (both parts, dispatched as #399 on the push, observed in_progress).**
+Part 2 is the materiality bar: a NAV row condemns its region only at **≥25% of
+the region's sum**. Ford Gum is confident again with its 29 rows; Treehouse
+and Lumen stay suppressed; **Meta keeps the real 20-fund menu v166 won it**.
+
+**Part 1 fixes the #396 regression and reaches its class.** A description that
+is only a house name may not beat a real fund name in the identity — the
+symmetric half of what v70 and v102 say from the other side. Illinois goes
+30 → 43 rows with the ratio unchanged, and the corpus diff finds five more
+plans un-merging: **Rcb Bank 10 → 28** (a 68.4% `Blended investments` phantom
+becomes the real T. Rowe Price Retirement menu), Carter Duncan 5 → 17, Domino
+Realty 5 → 14, Dow Chemical 39 → 40, Louis Padnos 70 → 71. Three of those are
+from the 28-plan bare-house class the #396 verdict sized, so the rule reaches
+the class and not only the regression. Worth naming because it is not obvious:
+`isHouseName` caught `Blended investments` through its `INSTITUTION_SUFFIX`
+arm, which matches any ≤5-word name ending in `investments`. That is looser
+than "house" suggests, and it is what makes this rule reach past the named
+firms.
+
+Corpus diff for the final v167 over 989 filings: 0 confidence gained, 0 lost,
+0 fabricated rows either way, 0 menu-sum moves, six row-count moves all
+un-merges.
+
+**Mirror.** Mirrored at 19:2xZ. `--force-data` over the sixteen, with the two
+regressions named above rather than waved through, and the git check passed
+unforced (main had 0 acks and 0 plans the branch lacked). **What reached
+readers: Meta Platforms' 84,993 participants stop seeing one "fund" of
+$18,809,051,400 at 82% of their plan and get the real State Street and
+Vanguard menu**; 104 plans stop publishing the ASC 820 line as a holding; 13
+plans / 302,810 ppl lose SEC cover-page rows, Publix among them; the fragment
+identities of v164 read as firm-then-fund. **476 participants across Ford Gum
+and ZF Chassis are live without a menu for as long as #399 takes**, which is
+the price of shipping Meta's fix an hour earlier and is stated as such.

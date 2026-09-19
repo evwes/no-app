@@ -237,6 +237,30 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 19:2xZ 2026-09-19: #398 (v164+v165+v166) MIRRORED — pv 166 at
+      99.85%, confident 60,107 (+3 / −16), HIGH 18 = 4 + 14 self-clearing,
+      overshoot 347 → 342. `--force-data` over the sixteen losses, all opened:
+      fourteen are the rule working (Brunswick's 64% NAV note, both Bunge
+      pointer menus, all-generic tables); **two are real regressions and both
+      are v166's NAV arm** — Ford Gum & Machine (114 ppl) lost a 29-row
+      Fidelity menu at ratio 0.997, ZF Chassis (362) the same, bisected to
+      v166 exactly. **Cause is the risk v166's own entry names and does not
+      guard**: the same words are the note's SUBTOTAL in one document (Meta
+      82%, Treehouse 99.8%) and a small ASC 820 FOOTNOTE beneath a real menu
+      in another (Ford Gum 6.7% and 7.5%). Writing a risk down is not guarding
+      against it. **What reached readers: Meta Platforms' 84,993 stop seeing
+      one "fund" of $18,809,051,400 at 82% of their plan** and get the real
+      20-fund State Street and Vanguard menu; 104 plans lose the ASC 820 line
+      as a holding; 13 plans / 302,810 ppl lose SEC cover-page rows (Publix).
+      **#399 (v167) IN FLIGHT, started by the push at 19:24Z and observed.**
+      Part 1: a description that is only a house name may not beat a real fund
+      name in the identity — fixes the #396 Illinois regression (30 → 43 rows)
+      and reaches its class, five more plans un-merging (Rcb Bank 10 → 28, a
+      68.4% `Blended investments` phantom becoming a real T. Rowe Price menu).
+      Part 2: the NAV row condemns a region only at ≥25% of its sum — Ford Gum
+      back, Treehouse and Lumen still suppressed, Meta's gain kept. Next wake:
+      #399 verdict → mirror → Brunswick's OCR'd 64% note (now withdrawn, check
+      it publishes nothing false) → the rest of the 28-plan bare-house class.
       **STATUS 18:2xZ 2026-09-19: #396 (v163) MIRRORED — pv 163 at 99.85%,
       confident 60,120 (+0 / −0), HIGH 4, overshoot 347. `--force` on the GIT
       check only, over main's one incremental cron commit (0 acks / 0 plans
