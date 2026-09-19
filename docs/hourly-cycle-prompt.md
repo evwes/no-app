@@ -237,6 +237,18 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 12:0xZ 2026-09-19: the OCR path now reproduces LOCALLY through
+      fetch-4i's own PARSE_SHARD code on a crafted three-plan tree (20 s,
+      fresh tesseract; `octree`, `trim-plans.mjs`, `combined-parse2.mjs`).
+      Frx's loss bisected to v156's tie-break flipping a dead heat to a
+      2-row statement, whose `stmt` flag skipped the band-hi caption retry —
+      v158 runs that retry for ANY unpublishable first pass (accepted only
+      if publishable): Frx 12 rows back, corpus +1/−0, random 30 of the
+      unpublishable population 0 of 30 change. Central City and Terra Dotta
+      are cache-drift, not regressions (few/stmt under every version with
+      fresh OCR). v158 committed `[skip ci]` behind #390 (v157). Next wake:
+      #390 verdict (mt-share 5 → 0; caret names → ~0) → mirror → dispatch
+      v158 → morning brief refresh.
       **STATUS 11:4xZ 2026-09-19: #388 (v156) PASSED — +3 / −1; render
       swaps now readable-ward (298 up / 9 down); Progressive's class 627 →
       57 rows; Conditioned Air and State Street (21,533 ppl, its real SSGA

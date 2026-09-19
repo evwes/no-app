@@ -654,7 +654,10 @@ don't confuse them). Frontend: python http.server + Playwright at
   **Store at v156 (branch AND main, run #388, PASSED 11:3xZ: +3 / −1,
   render swaps readable-ward 298 up / 9 down, State Street's real SSGA
   menu, Conditioned Air back) — MIRRORED 11:4xZ. `PARSER_VERSION` in the
-  tree is 157, DISPATCHED 11:4xZ: a master-trust pointer ≥75% of the
+  tree is 158 (v158, committed `[skip ci]`: the caption-seeded retry runs
+  for any unpublishable first pass — Frx's OCR-path loss; the OCR path
+  reproduces locally via a crafted tree, see the log 12:0xZ). v157 is
+  IN FLIGHT as #390, DISPATCHED 11:4xZ: a master-trust pointer ≥75% of the
   page is a pointer at any row count (Caterpillar 60,484 ppl, Cleveland-
   Cliffs, 5 lineups), `†`/`‡` markers, `Employer I.D. #`. **Scheduled
   runs are INCREMENTAL by construction (`SCHEDULE_INCREMENTAL`,
