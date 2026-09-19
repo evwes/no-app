@@ -83,7 +83,7 @@ const HEADER_FRAG_LINE = /^(?:\(?[a-e]\)|description|of investment|investment|id
  * letter tokens in a row), compare it with every space removed. */
 const HEADER_FRAG_DESPACED = /^(?:[a-e]|description|ofinvestment|investment|identity|ofissue|issuer?|borrower|lessor|or|similar|party|including|maturity|date|rate|of|interest|collateral|par|value|cost|current|fair|shares|units|number|no)+$/;
 const KERNED = /(?:\b[A-Za-z]{1,2} ){2,}/;
-const SKIP_ROW = new RegExp("^(total|subtotal|grand total|schedule|page \\d|form 5500|ein[: ]|employer id|sponsor name|name of plan sponsor|plan name\\b|plan sponsor'?s name\\b|plan number|as of|see accompanying|\\(thousands|identity of issue|description of investment|rate of|maturity|cost\\b|current value|sales\\b|purchases\\b|dividends\\b|assets in.transit|investments? at fair value|dividend income|other income|administrative fees|" +
+const SKIP_ROW = new RegExp("^(total|subtotal|grand total|schedule|page \\d|form 5500|ein[: ]|employer id|(?:plan )?sponsor id\\b|employer no\\.?\\b|plan ?id\\b|plan ?#|plan no\\.?\\b|sponsor name|name of plan sponsor|plan name\\b|plan sponsor'?s name\\b|plan number|as of|see accompanying|\\(thousands|identity of issue|description of investment|rate of|maturity|cost\\b|current value|sales\\b|purchases\\b|dividends\\b|assets in.transit|investments? at fair value|dividend income|other income|administrative fees|" +
   // the 4i column heading wraps across up to four lines; only its first line
   // ("(c) Description of investment") was covered, so the continuation
   // "including maturity date, rate of" had no value, survived as a name

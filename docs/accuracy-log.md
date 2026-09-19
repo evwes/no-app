@@ -15657,3 +15657,46 @@ with `RECEIVABLES` securitizations gain rows inside their folds
 (position counts rise, sums unchanged); confident +0 / −0. Recorded but
 unsized: any OTHER statement word in a bond name (`DISTRIBUTION`,
 `PAYABLE`) is now exempt only when the row carries a coupon and date.
+
+## 2026-09-19 (06:2xZ) — v153 part 2: a cover-page identifier line is not a holding — `Sponsor ID #: 20-5146075` published as a $5.1M row and, once v149 cleaned the fair-value note beside it, cost Barton & Gray its real 17-fund menu; 446 rows / 362 plans / 1.17M ppl carry the shape
+
+**Found by the #383 verdict, read by name.** Barton & Gray Mariners
+Club (198 ppl) was confident at 0.991 under v147 and `band-hi` 1.65 under
+v149. Traced version by version (`--vs be96d2d1` v148 kept it, `--vs
+3659a42b` v149 lost it). **v149 did not touch the schedule.** The filing
+has no statutory 4i header, so two regions compete: the fair-value note
+(whose 2023 column's `Pooled separate accounts 3,733,810` is a class
+subtotal of the five items after it) and the schedule page — and BOTH
+begin with the page header `Sponsor ID #: 20-5146075`, which the row
+parser reads as a holding named `Sponsor ID #: 20-` worth $5,146,075, 96%
+of the plan. Under v148 the schedule region scored 1.949 (junk row + real
+menu) against the note's 2.349 and won; post-selection dropped the junk
+and 17 rows at 0.991 published. v149 removed the note's subtotal, the
+note's ratio fell to 1.654, its score rose above the schedule's, and a
+six-row fair-value summary with `Sponsor ID #: 20-` at 58% won. **The
+defect was the junk row all along; v149 only changed which region paid
+for it.**
+
+**Sized from the store (`sponsor-id.mjs`): 446 published rows / 362
+plans / 1,171,238 ppl** are cover-page identifiers — `Plan#` 43, `PlanID:`
+33, `EMPLOYER NO. 34-` 32 (+ 31-, 46-…), `Plan Sponsor ID #01-`, `Plan
+No:`, `PLAN NO. 001, FEDERAL ID NO. 39-`, `Sponsor ID #: 01-` — each
+carrying the EIN's seven trailing digits as its value. The sizer's
+`contract no.` arm also catches REAL rows (`MetLife Group Annuity
+Contract No.`, `GIC PRINCIPAL LIFE CONTRACT #5-221`), which is why the
+guard is anchored to sponsor/employer/plan identifiers only.
+
+**The change.** `SKIP_ROW`'s anchored form-page arm gains `(?:plan
+)?sponsor id`, `employer no.`, `plan id`, `plan #`, `plan no.` — the
+same family as `ein[: ]`, `employer id`, `plan number`, which never
+covered these spellings. Gate green; corpus **+1 gained (Barton & Gray,
+6 → 17 rows at 0.991) / 0 lost / 0 fabricated either way**; five plans
+lose one line each and every one was read in its text: Green Courte
+`Plan# 001`, TD Bank `Plan No. 003 EIN 01-0437984`, Dow `PLAN NO. 002`,
+PPG `Plan No: 384`, American Airlines `PLAN`; Coordinated Care loses
+`Balance from previous page` — a carry-forward line whose arithmetic
+the v44 subtotal test can see once the junk row above it is gone.
+
+**Prediction for the run:** the 446 identifier rows → ~0; Barton & Gray
+confident; small ratio moves on 362 plans (each loses an EIN-sized
+value); confident +1 / −0 from this part.
