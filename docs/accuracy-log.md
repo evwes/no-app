@@ -15856,3 +15856,14 @@ and the census prints it as "are the PAGES present"; the rows-parsed
 count in the same record contradicts the sentence for 84 plans. An error
 code is a published claim; queue: gate `absent`/`noattach` on `rw < 3`,
 and route trust members to their own label.
+
+**CORRECTION, same hour.** `gap-census` renders a `ds` label ONLY when
+`dx === "nohead"` (line 113), and a nohead plan has no region and no rows
+— nohead with ds: 429; of them rw>=3: 0. Barton & Gray (dx `band-hi`) and the 31 `absent` / 50
+`noattach` plans with parsed rows are bucketed by their `dx`, so the
+census never printed "pages not published" about them. The overstated
+claim above is withdrawn; what stands is narrower: `ds` is STORED beside
+a contradicting `rw` on 84 live plans, and any reader of
+`lineups-status.json` (or a future census change) would inherit the
+wrong reading. Queue item downgraded to hygiene: fetch-4i should not
+record `absent`/`noattach` when the parse produced ≥3 rows.
