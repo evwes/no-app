@@ -16082,3 +16082,41 @@ traces to `The Progressive Corporation Common Shares`, `Vanguard
 Institutional 500 Index Trust [iss The Vanguard Group]`. Pinned.
 Committed `[skip ci]` behind #386; dispatches with its verdict.
 **Prediction:** `lead-prep` 628 → ~0; confident +0 / −0.
+
+## 2026-09-19 (10:2xZ) — a SCHEDULED run is incremental by construction: main's hourly cron no longer answers a parser-version gap with a full re-parse of its own (#384 held all twenty runners for 3.5 h; #387 starved #386's merge and was cancelled)
+
+**What happened.** Every mirror puts the branch's code on main ahead of
+the store it is about to produce; main's `:23` cron then sees `pv ≠
+PARSER_VERSION` on every ack and re-parses the universe on main — with
+main's own (colder) OCR cache, so prep sizes twenty shards. #384 ran
+05:58–09:2xZ. #387 started at 09:25Z on `6172a056` (v154 code over the
+v149 store) and took all twenty slots of the free tier's concurrency
+ceiling; #386 (v155, the run whose verdict gates the mirror) finished
+its twenty shards at 08:50Z and its merge job sat `queued` for over an
+hour behind them. **Cancelled #387 at 10:09Z** — its only product would
+have been a v154 store that v155 supersedes; its merge still runs under
+`if: always()` and may commit a partial v154 store to main, which the
+mirror overwrites minutes later (the `--force` evidence is measured
+before it). #386's merge started within a minute.
+
+**The fix (workflow + fetch-4i, committed `[skip ci]`).** The workflow
+sets `SCHEDULE_INCREMENTAL=1` for `schedule` events only; fetch-4i's
+work-list filter then treats a version gap as not-work: a scheduled run
+ingests new filings, retries `needsSma`, OCR-version moves and the CHEAP
+error retries (`download`/`analyze`/`pdftotext`, one request each) — not
+`no-section`, which means OCR (20–45 s × ~7k acks, the 3-hour shape)
+and waits for the dispatch that carries the verdict. `workflow_dispatch`
+and push runs are untouched.
+**Control, run locally against the pulled v154 store with the v156 tree
+(a maximal version gap):** without the flag `work list: 68767 … ocr
+candidates: 10004`; with it `work list: 106 … ocr candidates: 46` — the
+104 permanently-403 acks plus two. A first draft retried every stale
+error and sized at 7,233 / 7,173 OCR, which is the run it was meant to
+prevent; narrowed to cheap errors before commit.
+**What it costs:** main's store stays at the last DISPATCHED version
+until a session mirrors the next one, which is the state readers were
+already served during every held-mirror hour; if every session died,
+main would keep ingesting new filings hourly at the old version, and
+the weekly/daily crons would too. The sizing pass writes
+`lineups-index.json`/`lineups-status.json` even at `BATCH_4I=0` — both
+reverted before this commit.

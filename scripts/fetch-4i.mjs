@@ -363,11 +363,26 @@ for (const b of buckets) {
 }
 // reparse anything from an older parser version (or never parsed at all);
 // no-section filings additionally re-enter the queue when OCR_VERSION moves
+/* 2026-09-19: a SCHEDULED run never re-parses the universe. Every mirror puts
+ * the dev branch's code on main ahead of the store it will produce, and main's
+ * hourly cron then answers the version gap with a full re-parse OF ITS OWN —
+ * #384 held all twenty runner slots for 3.5 hours, and #387 starved #386's
+ * merge job (twenty shards done, merge `queued` for over an hour) until it
+ * was cancelled. Under SCHEDULE_INCREMENTAL (set by the workflow for
+ * `schedule` events only) a version gap is not work: the cron ingests new
+ * filings, retries stale errors and OCR-version moves, and leaves the pv bump
+ * to the dispatch that carries the verdict. */
+const INCREMENTAL = !!process.env.SCHEDULE_INCREMENTAL;
 let work = buildWorkList().filter((p) => {
   const st = status.plans[p.ack];
-  if (!st || (st.pv || 1) !== PARSER_VERSION || needsSma.has(p.ack)) return true;
+  if (!st || needsSma.has(p.ack)) return true;
+  // on a scheduled run only the CHEAP retries ride the version gap: an HTTP or
+  // analysis failure is one request; `no-section` means OCR (20-45s each, ~7k
+  // acks) and waits for the dispatch, exactly as it does for an OCR_VERSION move
+  if ((st.pv || 1) !== PARSER_VERSION && (!INCREMENTAL || (st.e && st.e !== "no-section"))) return true;
   return st.e === "no-section" && (st.ov || 0) !== OCR_VERSION;
 });
+if (INCREMENTAL) console.log(`SCHEDULE_INCREMENTAL: a parser-version gap is not work on a scheduled run (store pv stays where the last dispatch left it)`);
 /* MATRIX SIZING DEPENDS ON THIS NUMBER, so it has to describe what actually
  * runs OCR today. It counted `e === "no-section"` — the v12 trigger, when OCR
  * fired only for filings with no readable 4i section at all. v118 replaced that

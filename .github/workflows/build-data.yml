@@ -46,6 +46,17 @@ permissions:
   # issues: write powers the auto-managed "Data audit: HIGH findings" issue
   issues: write
 
+# 2026-09-19: a SCHEDULED run is incremental by construction. Every mirror puts
+# the dev branch's code on main ahead of the store it is about to produce, and
+# the hourly cron answered that version gap with a full re-parse of its own on
+# main — #384 held all twenty runner slots for 3.5 hours and #387 starved the
+# dev branch's finished run of its merge job. fetch-4i reads this in both the
+# prep sizing pass and the parse shards: on a schedule event a parser-version
+# gap is not work; new filings, stale errors and OCR-version moves still are.
+# workflow_dispatch and push runs are untouched — they carry the re-parses.
+env:
+  SCHEDULE_INCREMENTAL: ${{ github.event_name == 'schedule' && '1' || '' }}
+
 jobs:
   prep:
     runs-on: ubuntu-latest
