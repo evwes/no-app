@@ -237,6 +237,24 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 17:2xZ 2026-09-19: #395 (v162) MIRRORED UNFORCED — pv 162 at
+      99.85%, confident 60,120 (+0 / −0 vs the live v161 store), HIGH 4 at
+      the baseline, overshoot 347. The class it was aimed at fell with it:
+      `<category> <vehicle>` rows 323 → 137 lineups (376,590 → 210,409 ppl)
+      and at ≥20% of the menu **117 → 11 lineups / 12,636 ppl**. PennyMac
+      publishes thirteen Fidelity Freedom vintages where one $157,047,874
+      `Asset Allocation Mutual Fund` stood. Whole-store multiset diff:
+      **1,717 rows added / 170 plans / 166,144 ppl**, 531 removed. **Cost
+      read one by one: TO-SHORT 21 rows / 16 plans / 14,820 ppl** — mixed
+      (`Growth Fund Pooled Separate Accounts (1` → `EuroPacific` is better;
+      `Large Cap Equity Collective Investment Trust` → `Trust` is worse).
+      That is now the top queue item, and it is narrower than "type
+      phrases": **a fragment identity should not win merely because the
+      description was refused.** **v163 DISPATCHED as #396** (17:23Z,
+      observed in_progress): `dUsable`'s two-word bar splits on hyphens, so
+      `TIAA-CREF High-Yield-Rtmt` stops collapsing to the bare house — the
+      cost v161 recorded, paid back. Next wake: #396 verdict → mirror → the
+      TO-SHORT fragment-identity class → the 11 remaining ≥20% band.
       **STATUS 16:3xZ 2026-09-19: #394 (v161) MIRRORED — vs the live v158
       store 0 gained / 2 lost (Crestview, Buffalo Bills: junk 3-row lineups
       losing a `through YYYY` row), Hozhoni's 34-row menu back, Mass General

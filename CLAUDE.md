@@ -651,13 +651,18 @@ don't confuse them). Frontend: python http.server + Playwright at
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
   full-form** filers and 43,523 short-form; 68,767 parse-status entries.
-  **Store at v157 (branch AND main, run #390, PASSED 12:3xZ: +4 / −5, the
-  five pointer-dominated lineups withdrawn, `mt-share` 5 → 0) — MIRRORED
-  12:4xZ. `PARSER_VERSION` in the tree is 161, DISPATCHED 15:2xZ as #394 (v161
+  **Store at v162 (branch AND main, run #395, PASSED 17:2xZ: +0 / −0, the
+  category-vehicle merge class 323 → 137 lineups and its ≥20% band 117 →
+  11) — MIRRORED 17:2xZ, unforced on both checks. `PARSER_VERSION` in the
+  tree is 163, DISPATCHED 17:23Z as #396** (v163: `dUsable`'s two-word bar
+  splits on hyphens, so `TIAA-CREF High-Yield-Rtmt` stops collapsing to the
+  bare house — the cost v161 recorded). The previous dispatch was #395
+  (v162: a category plus a vehicle is a type phrase, not a fund).
+  Before that, #394 (v161
   confines the merge-split to HOUSE identities after v160 cost Hozhoni a
   real 34-row menu, and adds TIAA-CREF to `HOUSE_ONLY`, which did not
-  contain it). **The v160 store from #392 is HELD, not mirrored.**
-  The previous dispatch was #392 (v159:
+  contain it).
+  The dispatch before that was #392 (v159:
   the `# ` party-in-interest marker, the participant-loan maturity phrase;
   v160: a name may not merge rows the filing distinguished — Mass General
   Brigham's $1,565,649k `TIAA-CREF Funds` was three real rows summed).
@@ -687,7 +692,22 @@ don't confuse them). Frontend: python http.server + Playwright at
   Nothing downstream was affected (no session acted on it), but it is exactly
   the copying-a-line-forward hazard this file warns about elsewhere, aimed at
   the file's own header. **Re-derive this line rather than editing the date.**
-- **LIVE on main: the v161 store — MIRRORED 2026-09-19 16:3xZ
+- **LIVE on main: the v162 store — MIRRORED 2026-09-19 17:2xZ, UNFORCED on
+  both checks** (main had 0 acks and 0 plans the branch lacked). pv 162 at
+  99.85%, confident 60,120 (+0 / −0), HIGH 4 at the baseline, overshoot
+  347, dl 104. What reached readers: the `<category> <vehicle>` merge is
+  gone from 186 lineups — **PennyMac publishes thirteen Fidelity Freedom
+  vintages** where one $157,047,874 `Asset Allocation Mutual Fund` stood,
+  and the class at ≥20% of a menu falls 117 → 11 lineups / 12,636 ppl.
+  Whole-store multiset diff: 1,717 rows added across 170 plans / 166,144
+  ppl, 531 removed. **Cost on the record, read one by one: 21 TO-SHORT
+  rows / 16 plans / 14,820 ppl**, mixed — `Growth Fund Pooled Separate
+  Accounts (1` → `EuroPacific` is better, `Large Cap Equity Collective
+  Investment Trust` → `Trust` is worse. **That is the top queue item: a
+  fragment identity should not win merely because the description was
+  refused.** **#396 (v163) in flight.** `docs/accuracy-log.md` 2026-09-19
+  (run #395 verdict).
+- **Previously: the v161 store — MIRRORED 2026-09-19 16:3xZ
   (`--force-data` over two named junk losses; `--force` over main's one
   analyze-stuck trust ack).** pv 161 at 99.85%, confident 60,120, HIGH 4
   baseline + 3 self-clearing. What reached readers: Mass General Brigham
