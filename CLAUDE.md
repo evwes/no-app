@@ -653,7 +653,11 @@ don't confuse them). Frontend: python http.server + Playwright at
   full-form** filers and 43,523 short-form; 68,767 parse-status entries.
   **Store at v157 (branch AND main, run #390, PASSED 12:3xZ: +4 / −5, the
   five pointer-dominated lineups withdrawn, `mt-share` 5 → 0) — MIRRORED
-  12:4xZ. `PARSER_VERSION` in the tree is 160, DISPATCHED 14:0xZ as #392 (v159:
+  12:4xZ. `PARSER_VERSION` in the tree is 161, DISPATCHED 15:2xZ as #394 (v161
+  confines the merge-split to HOUSE identities after v160 cost Hozhoni a
+  real 34-row menu, and adds TIAA-CREF to `HOUSE_ONLY`, which did not
+  contain it). **The v160 store from #392 is HELD, not mirrored.**
+  The previous dispatch was #392 (v159:
   the `# ` party-in-interest marker, the participant-loan maturity phrase;
   v160: a name may not merge rows the filing distinguished — Mass General
   Brigham's $1,565,649k `TIAA-CREF Funds` was three real rows summed).

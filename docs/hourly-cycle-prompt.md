@@ -237,6 +237,23 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 15:2xZ 2026-09-19: #392 (v159+v160) verdict — +4 / −5, and
+      the v160 STORE IS HELD OFF MAIN. Four losses are v159 working (junk
+      3-6-row lineups losing a `through YYYY` row and falling under the
+      floor); the fifth is mine: Hozhoni Foundation (161 ppl) lost a real
+      34-row T. Rowe Price menu because v160's split ran inside the MENU
+      candidate, disqualified it as `bestMenu`, and the post-selection swap
+      that had been rescuing the plan stopped firing — candidate scores were
+      IDENTICAL either way. **v161 DISPATCHED as #394**: the split now
+      requires the winning identity to be a HOUSE, and TIAA-CREF is added to
+      `HOUSE_ONLY`, which did not contain it at all. Against v159: gate
+      green, 0/0/0/0, 6 plans move and all six GAIN; MGB keeps its three
+      TIAA-CREF rows, Hozhoni its 34. Main stays on the v158 store.
+      Also measured: my published verdict test for v160 was wrong (0 of 19
+      house-row lineups move); the population it reaches is the two-column
+      template, 2,583 lineups, 7 of 47 corpus-held.
+      Next wake: #394 verdict → mirror (two stores' worth of gains) → the
+      2,583-lineup template population.
       **STATUS 14:0xZ 2026-09-19: v160 RESOLVED AND DISPATCHED as #392
       (with v159). The 45 unread moves were two defects of mine, both found
       by reading rows not counts: a par amount appended to Wells Fargo's
