@@ -16840,3 +16840,61 @@ cannot reach it: there is no description carrying the dropped text, so the
 "nothing can be lost" condition is false and the swap is refused by design.
 This is the Walmart `Lendable Fund` / `US) Value Equity Fund` family already
 on the books, now with a small specimen that reproduces in one trace.
+
+## 2026-09-19 (17:5xZ) — v165: the SEC Form 11-K cover page is not a schedule of assets; and a hypothesis about the dominant-row audit that its own control killed
+
+**The finding.** A plan that also files an SEC Form 11-K attaches the whole
+annual report to its 5500, cover page included, and the cover's own numbers
+parse as values. `Washington, D.C.` takes the SEC's ZIP as a **$20,549
+holding**; `Commission file number 000-` takes the file number. Across
+published lineups: **20 rows / 13 plans / 302,810 participants**, Publix
+(225,961) among them, and for **both** Bunge North America plans the cover
+rows are two of the three rows shown. Same family as the ZIP+4 rows v132
+removed from Delta's menu — a different page of the same filing.
+
+**Why nothing caught it.** The values are a ZIP code and a file number. No
+coverage metric moves by $20,549, no ratio shifts, no generic-name or
+dominant-row audit fires on `Washington, D.C.`, and the rows sort to the
+bottom of every menu. It was found by sweeping published lineups for names
+with an unmatched closing parenthesis — a fragment marker — and reading what
+came back, which is the standing habit of drawing from the PUBLISHED
+population rather than the worst bucket.
+
+**Verification.** Parser gate green. Corpus diff over 985 filings: 0
+confidence gained, 0 lost, 0 fabricated rows either way, 0 menu-sum moves, and
+exactly **2 row-count moves, both read** — SAP loses precisely its two cover
+rows, and Advanced Ear Nose & Throat loses a Department of Labor address line
+whose value was the ZIP **20210**. Positive control: Publix 16 → 15 rows, ratio
+unchanged at 0.974.
+
+**The cost, on the record, and the trace found it where the diff could not.**
+Removing rows also changes which REGION wins — the v161 lesson restated.
+**Masco goes 28 → 26 rows and a duplicate $58.8M brokerage line leaves with
+the junk**, moving the ratio 0.897 → 0.866, which is *away* from 1.0. The menu
+sum moved 3.4%, under the diff's 5% threshold, so only the hand trace caught
+it. Bunge loses its lineup entirely and that one is correct: its whole
+published menu was a master-trust pointer (`Brokerage, Collective Trust, etc.)`
+with `iss` `Interest Held in`) at 100%. Both are pinned as specimens, the
+Bunge one deliberately as the negative control.
+
+**A hypothesis raised and killed by its own control, recorded because the
+killing is the useful part.** The same sweep turned up `Common collective
+trusts` at 66% of General Motors' nine-row menu and similar labels at 60–90%
+elsewhere, and `audit-dominant-row` prints **0**. The obvious reading was a
+blind spot: that audit only counts a top row at **≥90%** of the shown sum.
+Measuring the bands with the audit's own shipped predicates gave 27 plans at
+80–90%, 31 at 70–80% and 25 at 60–70% — **83 plans / 381,235 ppl / $75.1B**,
+which looked like a large unwatched population.
+
+**It is watched.** `audit-generic-names` asks the same question at **≥25%** of
+the sum and reports **122 plans / $81.3B**, with General Motors at the top of
+its list. The class is tracked, has a documented baseline of 128 against a
+threshold of 230, and what to do about it is open owner question 5 (whether a
+class SUMMARY should ever publish as a lineup) — so no session may start it
+unasked. Running the second audit before writing the finding up cost one
+command and would have cost a cycle to retract.
+
+**Still open from the same sweep, not started:** Brunswick Corporation (16,147
+ppl) publishes an OCR'd fair-value note, `Investments measured at net asset
+value ") ®)"`, at **64%** of a $2.37B menu, beside a `Change in` row at
+$31.9M — neither is a generic type label, so neither audit sees them.
