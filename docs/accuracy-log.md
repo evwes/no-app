@@ -16534,3 +16534,37 @@ re-grouping. Mass General Brigham keeps its three TIAA-CREF rows.
 377,586 ppl carry a bare house-name row at ≥10% of the menu**; this fix
 reaches the subset where that row is a merge, and the store measures it.
 Dispatched with v159.
+
+## 2026-09-19 (14:2xZ) — the verdict test I published for v160 was wrong, and direct re-parsing says so BEFORE the run lands: the bare house-name class will NOT fall
+
+I wrote at 13:5xZ that #392's verdict should show "321 confident
+lineups / 377,586 ppl with a bare house-name row at ≥10% of the menu"
+falling. **Measured instead of assumed: 0 of the 19 such lineups the
+local corpus holds change at all under v160** (Northeast Georgia 1 row
+at 57%, Irisndt 65%, CCS Medical 71%, Folsom Lake Ford 91% — every one
+identical before and after). Two reasons, and both were knowable:
+
+- **That class is mostly NOT a merge.** It is the shape this file already
+  names — *the provider house name as the whole holding row*, where the
+  filing's description column carries only the family and there is
+  nothing else to read. v160 splits rows that COLLIDE; a lineup with one
+  house row has no collision.
+- **Mass General Brigham is not even in it.** Its `TIAA-CREF Funds` row
+  is 9.4% of the menu, under the 10% cut I chose. I sized a class, then
+  predicted a fix against it, and the case that motivated the fix was
+  outside the class.
+
+**The population v160 actually reaches** is the two-column template's
+signature: a row NAMED after a house that is also the ISSUER of other
+rows in the same lineup. **2,583 confident lineups / 4,966,244 ppl**
+carry it (878 with that row at ≥5% of the menu); the corpus holds 47,
+and **re-parsing all 47 under v159 and under v160 moves 7** — MGB (its
+two house rows become one at 0%), Mitre 94 → 96, Radiology Consultants
+52 → 54, Bank of Stockton 3 → 4, Bill Luke 31 → 32, Ascensus 29 → 30,
+Boys Latin 61 → 62. **So the honest verdict test for #392 is: a small
+number of lineups gain rows, MGB's `TIAA-CREF Funds` phantom is gone,
+confident +0 / −0, and the ≥10% house class stays where it is.**
+7 of 47 is 15%, but the corpus is sampled by ASSETS and topped up with
+pinned specimens, so it is a direct measurement of those 47 and not a
+random estimate of the 2,583 — the rule this project already has about
+top-N samples applies to it.
