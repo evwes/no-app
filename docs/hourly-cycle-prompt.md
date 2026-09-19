@@ -237,6 +237,16 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 06:4xZ 2026-09-19: v154 committed `[skip ci]` — an issuer
+      cell ending in a TYPE phrase names firm + vehicle: TIAA's statement
+      label `College Retirement Equities Fund variable annuities` (13,731
+      rows / ~1,000 403(b) plans / 1.45M ppl with the rest of the class)
+      cleared when ≥90% of rows share it; `Vanguard Group Registered
+      investment company` → `[Vanguard Group]` with the row typed. Gate
+      green, corpus 0/0/0/0. Audit `folded-aggregate` HIGH baseline
+      re-based 60 → 120 (the v144 mechanism; local HIGH back to 4). #384
+      (main's cron) still in flight on main; watcher armed. Next wake: #384
+      verdict → mirror → dispatch v150–v154 → morning brief → coded residue.
       **STATUS 06:2xZ 2026-09-19: #383 (v148 + v149) PASSED — confident
       60,122 (+2 / −2 vs `c07b9f47`), doubled house 203 → 10 plans,
       Marriott's real menu in the store (49 rows, 21 trusts). Losses read:

@@ -15778,3 +15778,52 @@ Leisure, Shake Shack, Sumitomo Mitsui, IBEW Local 124, Home Bancshares
 `[Unallocated Contracts ^]` issuer is item (p), fixed in v150; Saint
 David's issuer bracket carries a type phrase (`College Retirement
 Equities Fund variable annuities`), cosmetic and recorded.
+
+## 2026-09-19 (06:4xZ) — v154: an issuer cell that ends in a TYPE phrase names the firm and the vehicle — TIAA's statement-level `College Retirement Equities Fund variable annuities` (13,731 rows / ~1,000 403(b) plans) is cleared, and `Vanguard Group Registered investment company` becomes `[Vanguard Group]` with the row typed
+
+**Found by the draw** (Saint David's School, 364 ppl: every one of 62
+rows rendered `[College Retirement Equities Fund variable annuities]`,
+Vanguard and Schwab index funds included). **Sized from the store
+(`iss-type.mjs`): 16,915 rows / 1,171 plans / 1,454,740 ppl** carry an
+issuer bracket ending in a type phrase — `College Retirement Equities
+Fund variable annuities` 13,731 (+ 232 in other casings), `Hartford
+Mutual Funds` 439, `Shares of registered investment companies` 376,
+`Great Gray Collective Investment Trust` 132, `Standard Insurance Company
+Pooled Separate Accounts` 74, `TIAA-CREF Mutual Funds` 72.
+
+**Two shapes, read in the filings.** (1) TIAA's certified schedule prints
+that phrase in the ISSUER COLUMN OF EVERY ROW — the auditor's own
+schedule two pages earlier says `CREF | CREF Stock R2` and `Nuveen |
+Nuveen LfCycle Ix 2030 R6` under `Mutual Funds` / `Variable Annuities`
+sections, but it breaks across a page (`Variable Annuities (continued)`)
+into three regions (39 rows at 0.36, 23 at 0.64, 4) while TIAA's copy
+wins whole (66 rows at 0.998, cents truncated, so every value is a dollar
+under the auditor's rounding). The winner is faithful; its issuer cell is
+the statement's label, not the firm behind a Vanguard index fund. (2)
+IBEW Local 124's template writes the header `Vanguard Group Registered
+investment company:` and `Principal Life Insurance Company Pooled separate
+account:` — firm plus vehicle in one line — and the rows under it
+published the whole string as their issuer.
+
+**The change.** Module-level `ISS_TYPE_TAIL` (variable annuities,
+registered investment company, mutual funds, pooled/separate accounts,
+collective trusts, general accounts, master trust, at the END of the
+cell). Three uses: (a) post-selection, an issuer cell shared by ≥90% of
+a lineup's rows that ends in a type phrase is cleared from all of them
+(the TIAA shape; a house that really runs a whole menu carries no type
+word and is untouched); (b) the v126 issuer HEADER keeps only the firm
+(rows already take their type from the section); (c) a per-row identity
+cell keeps the firm and, when the row has no type of its own, takes the
+tail's `classify()` as its type. `PARSER_VERSION` 154.
+
+**Gate green; corpus 0 / 0 / 0 / 0 rows moved** (the diff compares
+names). Traces: Saint David's `[iss] statement-level issuer cell cleared
+from 62 of 62 rows`; IBEW 124 `[iss Vanguard Group]`, `[iss Principal
+Life Insurance Company]`; Orlando Health (mixed houses) keeps `[JP
+Morgan]`, `[T. Rowe Price]`, `[Management Trust Company]` — and its
+`[Unallocated Contracts ^]` marker is gone, v150 working.
+
+**Prediction for the run:** `iss-type.mjs` 16,915 rows → near 0 (a cell
+whose head is shorter than 3 characters, or a tail `classify` cannot
+name, stays); confident +0 / −0; `tkShare` may rise a little where the
+issuer prefix had blocked a fund-table match.

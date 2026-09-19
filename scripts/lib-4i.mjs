@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 153;
+export const PARSER_VERSION = 154;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -627,6 +627,9 @@ export function subtotalIndices(rows) {
   return out;
 }
 
+/* v154: a TYPE phrase closing an issuer cell — see the two uses in parseRows and parse4i. */
+const ISS_TYPE_TAIL = /\b(?:variable annuit(?:y|ies)|registered investment compan(?:y|ies)|mutual funds?|pooled separate accounts?|separate accounts?|common\/?collective trusts?|collective (?:investment )?trusts?|insurance company general accounts?|master trust)\s*$/i;
+
 export function parseRows(section, opts = {}) {
   const rows = [];
   let sdba = false;
@@ -852,6 +855,14 @@ export function parseRows(section, opts = {}) {
       curIss = (!typeOnly(cs) && !CATEGORY_PHRASE.test(cs) && cs.split(/\s+/).length <= 8 &&
                 (isHouseName(cs) || /\b(?:inc|llc|l\.l\.c|corp(?:oration)?|compan(?:y|ies)|co|associates|advisors?|advisers?|management|investments?|group|partners|bank|trust|n\.a)\b\.?/i.test(cs)))
         ? cs : "";
+      /* v154: a header that names the firm AND the vehicle — `Vanguard Group
+       * Registered investment company:`, `Principal Life Insurance Company
+       * Pooled separate account:` (IBEW 124) — keeps only the firm as the
+       * issuer; the rows already take their type from curSection. */
+      if (curIss) {
+        const m = curIss.match(ISS_TYPE_TAIL);
+        if (m && m.index >= 3) { const head = curIss.slice(0, m.index).replace(/[\s,\-–—/]+$/, ""); if (head.length >= 3) curIss = head; }
+      }
       curIssIndent = curIss ? rawIndent : -1;
       nameBuf = []; totalWrap = false; continue;
     } // section subheading
@@ -1955,7 +1966,25 @@ export function parseRows(section, opts = {}) {
     // version bump on its own — app.js already strips it for display and
     // lookup, so readers see clean names now; the store catches up on the
     // next real re-parse.
-    rows.push({ name: name.slice(0, 90), type: rowType, value, sec: curSection, ...(type ? { ownType: 1 } : {}), ...(iss ? { iss: iss.replace(/[*^]+/g, "").trim().slice(0, 60) } : curIss ? { iss: curIss.slice(0, 60) } : {}), ...(leadStripped ? { _sl: 1 } : {}) });
+    /* v154: an identity cell that ends in a TYPE phrase names the firm AND the
+     * vehicle — `Vanguard Group Registered investment company`, `Principal
+     * Life Insurance Company Pooled separate account` (IBEW 124's template).
+     * The head is the issuer; the tail is the row's type when the row carries
+     * none of its own (a classified phrase only — a tail `classify` cannot
+     * name stays on the cell). */
+    let issCell = iss ? iss.replace(/[*^]+/g, "").trim() : "";
+    if (issCell) {
+      const tail = issCell.match(ISS_TYPE_TAIL);
+      if (tail && tail.index >= 3) {
+        const head = issCell.slice(0, tail.index).replace(/[\s,\-–—/]+$/, "");
+        const tType = classify(tail[0]);
+        if (head.length >= 3 && tType && tType !== "SDBA" && tType !== "Participant loans") {
+          issCell = head;
+          if (!rowType) rowType = tType;
+        }
+      }
+    }
+    rows.push({ name: name.slice(0, 90), type: rowType, value, sec: curSection, ...(type ? { ownType: 1 } : {}), ...(issCell ? { iss: issCell.slice(0, 60) } : curIss ? { iss: curIss.slice(0, 60) } : {}), ...(leadStripped ? { _sl: 1 } : {}) });
   }
 
   // ARITHMETIC subtotal removal (owner directive after Sempra: takeaways
@@ -3330,6 +3359,25 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
     funds = shown.slice(0, ROW_CAP);
   }
   for (const f of funds) delete f._deep;
+  /* v154: an issuer cell repeated on (nearly) every row and ending in a TYPE
+   * phrase is the statement's own label, not the firm behind each fund.
+   * TIAA's certified schedule prints `College Retirement Equities Fund
+   * variable annuities` in the issuer column of EVERY row — Vanguard index
+   * funds and Schwab S&P 500 included — and 13,731 rows / ~1,000 403(b)
+   * plans / 1.45M ppl rendered `[College Retirement Equities Fund variable
+   * annuities] Vanguard Small-Cap Idx Adm`. A house that really runs a whole
+   * menu (`[T. Rowe Price] Retirement 2050 Fund`) carries no type word and
+   * is untouched; the threshold is 90% of rows sharing one cell. */
+  if (funds.length >= 5) {
+    const tally = new Map();
+    for (const f of funds) if (f.iss) tally.set(f.iss, (tally.get(f.iss) || 0) + 1);
+    for (const [cell, n] of tally) {
+      if (n / funds.length >= 0.9 && ISS_TYPE_TAIL.test(cell)) {
+        if (TRACE_ROWS) console.error(`[iss] statement-level issuer cell cleared from ${n} of ${funds.length} rows: ${JSON.stringify(cell)}`);
+        for (const f of funds) if (f.iss === cell) delete f.iss;
+      }
+    }
+  }
   tracePost("after-fold-and-cap");
 
   // trust-POINTER pages: a member plan's own 4i is often just "Interest in

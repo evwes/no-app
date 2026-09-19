@@ -655,7 +655,7 @@ don't confuse them). Frontend: python http.server + Playwright at
   doubled house 203 → 10 plans, Marriott's real menu, +2 / −2); main is
   still at v147 (`c07b9f47`) because run #384 — main's own `:23` cron —
   is IN FLIGHT ON MAIN since 05:58Z re-parsing v149 there; mirror and the
-  next dispatch wait for it. `PARSER_VERSION` in the tree is 153, all
+  next dispatch wait for it. `PARSER_VERSION` in the tree is 154, all
   committed `[skip ci]` and undispatched: v150 (the `^` party-in-interest
   marker stripped like `*`), v151 (the employer-stock sponsor-token test
   matches whole words), v152 (a coupon with a maturity date is a bond
@@ -663,7 +663,9 @@ don't confuse them). Frontend: python http.server + Playwright at
   fold), v153 (RECEIVABLES securitizations no longer dropped as statement
   lines; the class-label test sees past `U.S.` and `&`; a cover-page
   identifier line — `Sponsor ID #: 20-5146075`, 446 rows / 362 plans — is
-  not a holding, which returns Barton & Gray, #383's one regression).
+  not a holding, which returns Barton & Gray, #383's one regression),
+  v154 (an issuer cell ending in a type phrase names firm + vehicle —
+  TIAA's statement label cleared, `[Vanguard Group]` typed).
   The v149 store carries v144 (fold before the cap), v145 (stem dedup;
   the sponsor-name `transfer` trap), v146 (two-column wraps; footnote
   letter; `N/R`), v147 (ETF is a type phrase; house + product phrase
