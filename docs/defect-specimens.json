@@ -7,14 +7,7 @@
     "because the tool that should have measured them was looking elsewhere.",
     "diff-lineups ensures every ack here is present before it compares, so a",
     "regression in any solved class fails loudly instead of silently.",
-    "Add an entry whenever a parser version fixes a new class. Never remove one.",
-    {
-      "ack": "20260513074811NAL0006610787001",
-      "class": "share-count-preposition-left-in-name",
-      "fixed": "v156",
-      "sponsor": "The Progressive Corporation",
-      "was": "the description '7,699,900.87 shares of Vanguard Institutional 500 Index Trust' lost its share count and kept the preposition, so 25 of 33 rows were named 'of Vanguard ...' / 'of The Progressive Corporation Common Shares' — 628 rows / 108 plans / 317k ppl, 21 whole lineups (Norfolk Southern, Brink's, Owens & Minor); cleanDesc now drops a leading of/in"
-    }
+    "Add an entry whenever a parser version fixes a new class. Never remove one."
   ],
   "specimens": [
     {
@@ -562,6 +555,13 @@
       "fixed": "v155",
       "sponsor": "The Tatitlek Corporation",
       "was": "two renderings of one schedule tied exactly (27 rows, ratio 0.994) and the winner was whichever came first, so any junk row coming or going flipped the names readers saw ('Vanguard Total International Stock Index' vs 'Vanguard International Stock') — 187 lineups / 189k ppl swapped renders in one version; a dead heat now goes to mixed case and fuller names"
+    },
+    {
+      "ack": "20260513074811NAL0006610787001",
+      "class": "share-count-preposition-left-in-name",
+      "fixed": "v156",
+      "sponsor": "The Progressive Corporation",
+      "was": "the description '7,699,900.87 shares of Vanguard Institutional 500 Index Trust' lost its share count and kept the preposition, so 25 of 33 rows were named 'of Vanguard ...' / 'of The Progressive Corporation Common Shares' — 628 rows / 108 plans / 317k ppl, 21 whole lineups (Norfolk Southern, Brink's, Owens & Minor); cleanDesc now drops a leading of/in"
     }
   ]
 }
