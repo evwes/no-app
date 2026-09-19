@@ -583,6 +583,20 @@
       "fixed": "v158",
       "sponsor": "Ath Holding Company (Elevance)",
       "was": "the served 2023 fallback (20240912091727NAL0004306339001) heads each block with a valueless one-cell line 'The Vanguard Group Mutual Funds' / '... Collective Investment Trusts' / 'Other Collective Investment Trusts'; read as a wrapped name it glued onto each block's first member, two first rows were both named 'The Vanguard Group' and merged into a $1,793,711,087 phantom (= Explorer Fund + Institutional 500 Index Trust) while the $1.57B index trust vanished — 94,689 readers. NOTE the shape lives in the fallback filing, which the corpus diff does not parse; trace it with --assets 12109864062"
+    },
+    {
+      "ack": "20251014081322NAL0001104227001",
+      "class": "fragment-identity-wins-when-description-refused",
+      "fixed": "v164",
+      "sponsor": "Lincoln Financial platform plan (First Eagle row)",
+      "was": "v162 refused the category-plus-vehicle description 'Global Mutual fund' as a type phrase, which is right, but the row then published as the BRAND FRAGMENT left in the identity column: 'First Eagle'. The two cells hold halves of one name, and 29 of this plan's 30 rows publish the description with the identity in iss, so the fragment was the only row in the menu named after a firm. v164 composes them: 'First Eagle Global Mutual fund'. Whole-store shape at v162: 21 rows / 16 plans / 14,820 ppl."
+    },
+    {
+      "ack": "20260712115200NAL0002239507001",
+      "class": "value-line-carries-the-descriptions-wrapped-tail",
+      "fixed": "v164",
+      "sponsor": "21-row CIT and Vanguard menu (Fidelity Blue Chip row)",
+      "was": "the value line's own text is the LAST WORD of a wrapped description ('Trust'), so v129's verbatim reading (fullAll) was 'Trust' while v130's column split had already assembled the real identity in full ('Fidelity Blue Chip Growth Commingled Pool Class A'). The row published as 'Trust' at 8.3% of the plan with the fund's own name in hand. v164 prefers full when the description already contains the fragment, so nothing can be lost by the swap."
     }
   ]
 }

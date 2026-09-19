@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 163;
+export const PARSER_VERSION = 164;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -1528,7 +1528,28 @@ export function parseRows(section, opts = {}) {
        * column — and there a wrapped description line is still the only extra
        * text the row has. Keep v129's reading verbatim (fullAll) so this
        * branch cannot lose anything the column split moved. */
-      const base = fullAll;
+      /* v164b: ...EXCEPT where v129's verbatim reading is the DESCRIPTION's
+       * wrapped tail rather than the identity. When a value line carries only
+       * the last word of a wrapped description, `fullAll` is that word and the
+       * real identity sits in `full`, which v130's column split assembled from
+       * the buffered line:
+       *
+       *     Fidelity Blue Chip Growth Commingled Pool Class A   Large Cap Equity Collective Investment
+       *     Trust                                          $          1,210
+       *
+       * `full` = "Fidelity Blue Chip Growth Commingled Pool Class A",
+       * `fullAll` = "Trust" — and the row published as **Trust** at 8.3% of the
+       * plan while the fund's own name was in hand. Nothing is lost by
+       * preferring `full` here, because the clause only fires when the
+       * description ALREADY contains the fragment being dropped. Confined to a
+       * fragment (type-only, or under eight letters) so an ordinary wrapped
+       * identity keeps v129's reading. */
+      let base = fullAll;
+      const faTrim = fullAll.trim();
+      if (full && full !== fullAll && !fullAll.includes(full) && faTrim &&
+          full.replace(/[^a-z]/gi, "").length > fullAll.replace(/[^a-z]/gi, "").length &&
+          (typeOnly(faTrim) || fullAll.replace(/[^a-z]/gi, "").length < 8) &&
+          dClean && dClean.toLowerCase().includes(faTrim.toLowerCase())) base = full;
       name = base;
       for (const [re] of TYPE_PATTERNS) {
         const m = base.match(re);
@@ -1566,6 +1587,47 @@ export function parseRows(section, opts = {}) {
           dClean.replace(/[^a-z]/gi, "").length >= 8 && !/\d{3,}/.test(dClean) &&
           !new RegExp("^" + nc.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b", "i").test(dClean)) {
         name = `${nc} ${dClean}`.replace(/\s+/g, " ").trim();
+      }
+      /* v164: A FRAGMENT IDENTITY MAY NOT WIN MERELY BECAUSE THE DESCRIPTION
+       * WAS REFUSED. v162 taught the parser that a category plus a vehicle
+       * ("Asset Allocation Mutual Fund") is a type phrase, which was right and
+       * un-merged 1,717 rows — but a refusal is not an endorsement of whatever
+       * sits in the other column. Where the identity is a BRAND FRAGMENT the
+       * row fell back to it and got worse, not better: measured on the store,
+       * 21 rows / 16 plans / 14,820 ppl, and they read
+       *
+       *   "Global Mutual fund"                       -> "First Eagle"
+       *   "Small Cap Growth Equity Collective Trust" -> "MassMutual"
+       *   "Balanced Fund Pooled Separate Accounts"   -> "American"
+       *   "Large Cap Equity Collective Investment Trust" -> "Trust"
+       *
+       * In each the two columns hold HALVES OF ONE NAME — the filing writes
+       * "First Eagle | Global Fund", the house in (a) and the rest in (c) —
+       * and the rest of the same lineup proves it: 29 of First Eagle's 30 rows
+       * publish the description with the identity in `iss`. So compose them
+       * rather than choosing. Composition cannot merge rows (the identity is
+       * what distinguishes them), which is the property v162 was protecting.
+       *
+       * Confined so it cannot reach either shape this rule sits between: a
+       * FUND-SHAPED identity keeps winning alone (PennyMac's "Fidelity Freedom
+       * 2045 Fund", the whole point of v162), and a BARE CLASS LABEL in the
+       * description is not composed at all (SAP's "Explorer | Registered
+       * investment company" — CATEGORY_PHRASE, not CAT_VEHICLE — which is the
+       * v102 fabrication). Only a category that carries real investment
+       * vocabulary adds anything to a brand. Where the identity is ITSELF a
+       * type word ("Trust"), there is no brand to keep and the description
+       * stands alone. */
+      const dCat = dClean ? String(dClean).replace(/\s+[\d,]{3,}(?:\.\d+)?\s*(?:\(\d+\))?\s*$/, "").trim() : "";
+      if (dCat && nc && CAT_VEHICLE.test(dCat) && !CATEGORY_PHRASE.test(dCat) &&
+          name.trim().toLowerCase() === nc.trim().toLowerCase() && nc.length <= 34 &&
+          /^[A-Za-z][A-Za-z0-9 .,&'()\/-]{2,33}$/.test(nc) && nc.split(/\s+/).length <= 4 &&
+          !/\d{3,}/.test(nc) &&
+          !new RegExp("^" + nc.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b", "i").test(dCat)) {
+        const ncType = typeOnly(nc);
+        if (ncType || !identityIsProduct) {
+          const composed = ncType ? dCat : `${nc} ${dCat}`.replace(/\s+/g, " ").trim();
+          if (composed.length <= 70) name = composed;
+        }
       }
     }
     // Drop non-name residue like "9.50 percent" (wrapped loan-rate lines)
