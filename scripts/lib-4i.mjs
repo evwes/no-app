@@ -3051,7 +3051,19 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
        * junk can promote a still-junky region"). Marking the REGION instead
        * fixes both ends: Meta's real 20-fund menu wins because the note is
        * demoted, and Lumen's note cannot publish at all. */
-      const navNote = judged.some((f) => NAV_NOTE_ROW.test(String(f.name || "").trim()));
+      /* v167: ...but only when the line is MATERIAL, because the same words
+       * appear in two different places. In the fair-value NOTE the line is the
+       * subtotal and owns most of the table (Meta 82%, Treehouse 99.8%,
+       * Brunswick 64%, Lam 33%). Beneath a REAL menu the same words are a
+       * footnote marking which holdings are NAV-measured, and there they are
+       * small: Ford Gum & Machine files `Investments measured at NAV*` twice,
+       * at $610,592 and $691,699 — 6.7% and 7.5% of a 29-row Fidelity menu
+       * that v166 condemned whole, costing the plan its lineup. Run #398's
+       * verdict found it; the risk had been written down when v166 shipped and
+       * the bar is what the write-down was missing. */
+      const navSum = judged.reduce((s, f) => s + (NAV_NOTE_ROW.test(String(f.name || "").trim()) ? (+f.value || 0) : 0), 0);
+      const judgedSum = judged.reduce((s, f) => s + (+f.value || 0), 0);
+      const navNote = navSum > 0 && judgedSum > 0 && navSum / judgedSum >= 0.25;
       const isStatement = (judged.length <= 8 && stmty / judged.length >= 0.5)
         || (judged.length <= 3 && (stmty + classy) / judged.length >= 0.5)
         || (judged.length >= 3 && labely / judged.length >= 0.6)
