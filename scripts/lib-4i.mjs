@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 150;
+export const PARSER_VERSION = 151;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -3035,7 +3035,18 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
   // line. The sponsor's own stock IS a menu option and stays separate.
   const GENERIC = new Set(["inc", "incorporated", "corp", "corporation", "company", "companies", "llc", "llp", "ltd", "group", "holdings", "holding", "the", "and", "trust", "master", "savings", "plan", "plans", "usa"]);
   const spTokens = sponsorName.toLowerCase().split(/[^a-z0-9]+/).filter((w) => w.length > 2 && !GENERIC.has(w)).slice(0, 3);
-  const isEmployer = (n) => spTokens.some((tok) => n.toLowerCase().includes(tok));
+  /* v151: a sponsor token matches a WORD, not a substring. `national` (First
+   * National Bank) was matching Honeywell INTERnational and `red` (American
+   * National Red Cross) was matching REDdit, so 24 brokerage picks across 21
+   * plans stayed itemized beside the fold as "employer stock". Word bounds
+   * lose nothing real: every substring-only match in the store was read. A
+   * stricter rule — two tokens, or one uncommon one — was built and REJECTED
+   * on the same read: it would have dropped U.S. Bancorp's own $782M row
+   * (`bancorp` is the only token left after `u`/`s`), Southern Co's $3.06B,
+   * Northern Trust's $271M and Caci's $165M. Costco's one BJ's WHOLESALE row
+   * stays, and stays recorded. */
+  const spRes = spTokens.map((tok) => new RegExp("\\b" + tok + "\\b"));
+  const isEmployer = (n) => { const l = String(n || "").toLowerCase(); return spRes.some((re) => re.test(l)); };
   /* v133: A MENU IS NOT A MANAGED ACCOUNT, and a section header does not
    * govern the rows below it forever.
    *

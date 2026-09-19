@@ -527,6 +527,13 @@
       "fixed": "v149",
       "sponsor": "Marriott International",
       "was": "the schedule files class subtotals ('COMMON STOCKS' $4.41B) beside the rows they total; counted, the cumulative sum reached plan assets early and v77's restatement cut chopped off the 21 collective trusts that followed ($5.7B, the actual menu) — 152,118 participants saw a 120-row securities list with the class lines at 47.5% and never their Vanguard target-date trusts (31 -> 49 rows once subtotals are removed at the leaves stage)"
+    },
+    {
+      "ack": "20250924132044NAL0017172210001",
+      "class": "employer-stock-token-substring-match",
+      "fixed": "v151",
+      "sponsor": "The Prudential Insurance Company Of America",
+      "was": "the employer-stock test matched a sponsor token as a SUBSTRING, so 'america' matched American Express and 'national' (First National Bank) matched Honeywell INTERnational — 24 brokerage picks / 21 plans stayed itemized beside the managed-account fold as employer stock (HCA's trust kept every healthCAre security out of its fold); tokens now match whole words"
     }
   ]
 }

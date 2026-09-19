@@ -15496,3 +15496,56 @@ v149); dispatches after its verdict.
   State (TIAA contract names `Traditional Non Benefit Responsive`, `Stock
   R2`), Transport Equipment (`MUTUAL FUND SHARES` suffix, display-stripped)
   — filed as is, known shapes.
+
+## 2026-09-19 (05:2xZ) — v151: the employer-stock test matches a sponsor token as a WORD, not a substring — 24 brokerage picks / 21 plans stop posing as employer stock beside the fold; a stricter rule was built, measured and rejected
+
+**What was wrong.** `isEmployer` (lib-4i ~3038) keeps a security out of
+the managed-account fold when the row name CONTAINS a sponsor token:
+`n.includes(tok)`. A substring test. So `national` (First National Bank
+of Eastern Arkansas, National Telecommunications Cooperative, NRECA)
+matched Honeywell INTERnational, Baxter INTERnational and CRA
+INTERnational; `america` (Prudential Insurance Company of America, Nokia
+of America) matched AMERICAn Express; `red` (American National Red Cross)
+matched REDdit; `for` (The Institute For Human Resources) matched
+Meta PlatFORms; `hca` (HCA's master trust) matched every healthCAre
+security in a 706-position sleeve. Each stayed itemized as a menu row
+while its neighbours folded.
+
+**Sized from the store, every row read (`employer-tok3.mjs`): 24 rows /
+21 plans** whose only sponsor-token match is a substring — 20 of them
+beside a fold (the visible defect), 4 in plans with no fold (ONEOK in One
+Gas's plan, ConocoPhillips in Chevron Phillips', two bank holding
+companies), where the flip changes nothing because one row cannot fold
+alone. Nothing in the 24 is the sponsor's own stock.
+
+**The rule I built first and REJECTED.** The recorded Costco cost (BJ's
+WHOLESALE Club kept as employer stock on the token `wholesale`) is a
+COMMON-WORD match, not a substring one, and a common-word rule was the
+obvious fix: require two sponsor tokens, or one that is not an industry
+word. Built, run over the store (`employer-tok2.mjs`): **86 rows / 66
+plans flip, and the list is full of the sponsor's own stock** — U.S.
+Bancorp's $782M row (`u` and `s` are dropped as short tokens, leaving
+only `bancorp`), Southern Co's $3.06B (`southern`, `services`), Northern
+Trust's $271M, Caci's $165M (OCR'd `CACTI International`, held only by
+`international`), City National Bank's $137M of Royal Bank of Canada
+(its parent), Eastern Bankshares, Northwest Bancshares, G & T Industries.
+The common-word rule would have folded real employer stock into
+"Managed account holdings" in a dozen plans to clean up one Costco row.
+Not shipped; the Costco row stays and stays recorded. **The measurement
+that killed it took one script; the rule looked right until every
+flipped row was read.**
+
+**The change.** Sponsor tokens compile to `\b<tok>\b` regexes; the test
+is otherwise unchanged. `PARSER_VERSION` 151. Gate green (all specimens);
+`diff-lineups HEAD` 0 gained / 0 lost / 0 fabricated either way; **six
+corpus plans move 1–2 rows, each a brokerage pick joining the fold**:
+Prudential 19 → 18 (American Express), National Telecommunications 48 →
+47 (Honeywell), NRECA 34 → 33 (CRA International), Nokia 67 → 66, Ben
+Lewis Plumbing 29 → 28 (Mercedes-BENz via `ben`), HCA's master trust 37 →
+35 with its fold growing 706 → 718 positions. Prudential pinned as
+`employer-stock-token-substring-match`.
+
+**Prediction for the run:** confident +0 / −0; the 20 rows fold; no
+plan loses a row that names its own sponsor (checked by construction —
+a whole-word match is a subset of the substring match, and the 24
+substring-only rows were read).

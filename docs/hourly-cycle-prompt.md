@@ -237,6 +237,17 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 05:2xZ 2026-09-19: v151 committed `[skip ci]` behind #383 —
+      the employer-stock sponsor-token test matches whole words (`america`
+      no longer matches American Express, `national` no longer matches
+      Honeywell INTERnational, HCA's trust folds its healthCAre securities):
+      24 rows / 21 plans measured by listing every substring-only match;
+      a stricter two-token rule was built and REJECTED on the record (it
+      would drop U.S. Bancorp's $782M, Southern Co's $3.06B). Gate green,
+      corpus 0/0/0/0, six plans lose 1–2 itemized picks into their fold.
+      Morning brief refreshed (v147 live). #383 in flight. Next wake:
+      verdict #383 → mirror → dispatch v150 + v151 → Marriott's residual
+      class rows, the coded residue.
       **STATUS 05:0xZ 2026-09-19: v150 (item p, the `^` marker) committed
       `[skip ci]` behind #383 — gate green, corpus 0/0/0, BAE's issuer
       clean. #383 (v148 + v149) in flight since 04:51Z. Next wake:
