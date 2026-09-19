@@ -17300,3 +17300,33 @@ thing that found it was following ONE plan's wrong name to its cause and
 refusing to stop at "the filing is thin". **A defect that removes a row from a
 menu is invisible to every count this project keeps**, and the only instrument
 that sees it is a whole-store row diff or a reader's eye.
+
+### The obvious follow-up question, asked and closed in one query
+
+v168 found ONE arm of the unanchored alternation deleting a fund family. The
+same alternation has about thirty more arms, each a substring test, so the
+question is whether any of the others does the same. Counting published rows
+containing each arm across all **1,726,882** rows:
+
+| arm | published rows |
+|---|---|
+| `benefits paid`, `realized`, `unrealized`, `contributions`, `expenses`, `distribution`, `adjustment`, `liabilit`, `payable`, `level 1/2/3`, `due to`, `due from`, `beginning of year`, `end of year`, `financial statements`, `indirect compensation`, `reconcil`, `similar party`, `administrative expense`, `interest and dividends`, `net increase`, `net decrease` | **0** |
+| `deemed distribut`, `current value` | 1 each |
+| `net change` | 6 |
+| `receivable` | 9 |
+| `transfers` | 12 |
+| `net assets` | 14 |
+
+**Zero is the CORRECT answer for statement vocabulary**, and it is what
+distinguishes those arms from `appreciat`: none of those words appears in fund
+names, so an unanchored test costs nothing. `appreciat` was the only arm whose
+word is also common fund vocabulary — which is why it alone deleted a family.
+
+**One narrow exception worth watching rather than fixing: `receivable`.** The
+nine survivors are real asset-backed securities held in trust portfolios —
+`TOYOTA AUTO RECEIVABLES 2 B A3`, `Drive Auto Receivables Trust 2024-2 D` —
+which live only because v153's `securityRow` exempts coupon and securitization
+lines. That exemption keys on a hyphenated series (`… 2024-2`), so a
+securitization named without one is still exposed. Nine rows is not evidence of
+a large loss and no fix is proposed on it; it is recorded so the next person
+who sees a trust missing its bond sleeve has the mechanism to hand.
