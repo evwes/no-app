@@ -679,7 +679,18 @@ don't confuse them). Frontend: python http.server + Playwright at
   Nothing downstream was affected (no session acted on it), but it is exactly
   the copying-a-line-forward hazard this file warns about elsewhere, aimed at
   the file's own header. **Re-derive this line rather than editing the date.**
-- **LIVE on main: `6172a056` — MIRRORED 2026-09-19 07:1xZ (`--force` over
+- **LIVE on main: `8cd51309` — MIRRORED 2026-09-19 10:3xZ (`--force` over
+  the git check with 0 acks / 0 plans lacked; `--force-data` over 35
+  losses read by name).** The v155 store, mirrored over the PARTIAL store
+  that cancelled cron #387's merge had left on main (pv154 40,636 / pv149
+  28,026 for ~20 min). pv 155 at 99.85%, confident 60,102 (−35 / +9 vs
+  v154: 33 junk lineups withdrawn — form-line junk such as State Street's
+  and Deutsche Bank's `le 0 0 1f` rows, label-only statements such as
+  Seattle University — and 2 over-reaches, Conditioned Air and Central
+  City, fixed in v156), HIGH 4 + self-clearing, overshoot 353, dl 104.
+  Pages #518 built it. **#388 (v156) in flight.** `docs/accuracy-log.md`
+  2026-09-19 (run #386 verdict).
+- **Previously: `6172a056` — MIRRORED 2026-09-19 07:1xZ (`--force` over
   the git check with 0 acks / 0 plans lacked; `--force-data` over two
   losses read by name).** The v149 store: pv 149 at 99.85%, confident
   60,122 (+2 / −2 vs v147: Goodwill Keystone honest, Barton & Gray a
