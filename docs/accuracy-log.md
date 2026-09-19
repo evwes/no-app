@@ -15906,3 +15906,19 @@ tests: confident +1 (Barton & Gray) / −0 beyond small reads;
 42 rows; the one-member trust 28-of-30 Transcanada rows may drop below
 the floor. Both runs share the 20-job concurrency ceiling, so #385's
 shards queue behind #384's; expect it late.
+
+## 2026-09-19 (07:2xZ) — `ds` hygiene: a document-shape code that denies the schedule exists is no longer recorded on a record that stores the schedule's rows
+
+`fetch-4i.mjs`'s found-but-unconfident path recorded `ds: docShape`
+unconditionally, so `absent` ("schedule referenced, pages not
+published") and `noattach` ("no audited attachment") sat beside `rw ≥ 5`
+on 84 live plans (measured 06:4xZ, `ds-rows.mjs`). A region was found on
+that path by definition; the four codes that claim the document holds no
+schedule (`noattach`, `notable`, `omitted`, `absent`) are now recorded
+only on the no-section path, where they are true. The readability codes
+(`readfail`, `unread`, `scanned`) still apply on both. One-line
+conditional; `node --check` clean; committed `[skip ci]` (fetch-4i is a
+pipeline file and #385 is in flight). **Control: `ds-rows.mjs` on the
+first store parsed after this commit must print 0 for
+`absent/rw>=5` and `noattach/rw>=5`** — #385 does not carry it (dispatched
+on `6172a056`), so the test is the run after.

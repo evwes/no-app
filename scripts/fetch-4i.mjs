@@ -1110,7 +1110,14 @@ for (const plan of work) {
   const confident = isConfident(parsed);
   record(plan, {
     ...diagnose(parsed, confident, plan.assetsEOY),
-    ...(!confident && docShape ? { ds: docShape } : {}),
+    /* 2026-09-19: a region WAS found here, so a document-shape code that says
+     * the schedule is not in the document (`noattach`, `notable`, `omitted`,
+     * `absent`) contradicts the rows this same record stores — 84 live plans
+     * carried `ds:absent`/`noattach` beside `rw >= 5` (Eli Lilly rw=7, Nestle
+     * rw=21), and Barton & Gray's `absent` sat beside a 17-row schedule under
+     * a non-statutory caption. Those codes are recorded only on the
+     * no-section path above; the readability codes still apply here. */
+    ...(!confident && docShape && !/^(?:noattach|notable|omitted|absent)$/.test(docShape) ? { ds: docShape } : {}),
     ack: plan.ack,
     ticker: plan.ticker,
     planYear: fbUsed ? fbUsed.y : plan.planYear,
