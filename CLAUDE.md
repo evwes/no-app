@@ -652,7 +652,8 @@ don't confuse them). Frontend: python http.server + Playwright at
   participants at either end of the plan year), of which **68,259 are
   full-form** filers and 43,523 short-form; 68,767 parse-status entries.
   **Store at v147 (branch AND main, `c07b9f47`, run #382); `PARSER_VERSION`
-  in the tree is 149 — v148 (the doubled house stripped in the store) and
+  in the tree is 150 (v150: the `^` party-in-interest marker stripped
+  like `*`, committed `[skip ci]` behind #383) — v148 (the doubled house stripped in the store) and
   v149 (class subtotals beside their itemisation removed at the leaves
   stage, before the restatement cut — Marriott 31 → 49 rows, its real
   menu) are IN FLIGHT TOGETHER as run #383 (dispatched 2026-09-19 04:51Z

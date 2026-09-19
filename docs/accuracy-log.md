@@ -15466,6 +15466,24 @@ catches `Plan Sponsor ID # 81-` cover-page junk, a different, known
 class). The `*` party-in-interest strip exists at the line stage; `^` is
 the same convention in another template and wants the same treatment.
 Queued as (p), one-line fix for the next version that bumps.
+
+## 2026-09-19 (05:0xZ) — v150 (queue item p): the `^` party-in-interest marker is stripped like `*` — leading and trailing at the line stage, in issuer headers and issuer cells, and in the column-offset lead
+
+**The change (`lib-4i.mjs`, PARSER_VERSION 150).** Four one-token edits:
+the line-stage strips `^[*^]+\s*` / `\s*[*^]{1,3}\s*$`, the issuer cell
+and issuer header strips `[*^]+`, and the `lead` offset regex `[*^]?` so a
+`^`-prefixed row keeps the same column arithmetic as a `*`-prefixed one.
+**Verified.** Parser gate all specimens green; `diff-lineups HEAD` (v149 →
+v150): 0 / 0 / 0 / 0 moves (rename-only). BAE Systems: `[iss ^ The
+Vanguard Group]` → `[iss The Vanguard Group]`; `[iss ^ Blackrock]` on
+`Blackrock Russell 1000 Growth Fund` → no issuer (the house is already in
+the name, v67's rule); ratio 0.990 → 0.991 (a marked row's value now
+counted the same as its neighbours).
+
+**Prediction for the v150 run:** `caret-iss.mjs` name rows 2,038 → ~0
+and issuer rows 38 → 0 (the residue is `#` cover-page junk, a different
+class); confident +0 / −0. Committed `[skip ci]` behind #383 (v148 +
+v149); dispatches after its verdict.
 - **Retail Services Wis** — `[Company Vanguard Fiduciary Trust]`: the
   issuer's second line (`Company`) leads the issuer field, queue (f) C's
   wrapped-issuer shape, now 6 plans.

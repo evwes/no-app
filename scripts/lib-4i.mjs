@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 149;
+export const PARSER_VERSION = 150;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -700,10 +700,14 @@ export function parseRows(section, opts = {}) {
      * under — see the descPre block below — and that needs a real character
      * offset, not just an indent depth. */
     const rawNorm = raw.replace(/\t/g, "    ");
-    const lead = (/^\s*\*?\s*/.exec(rawNorm) || [""])[0].length;
+    const lead = (/^\s*[*^]?\s*/.exec(rawNorm) || [""])[0].length;
     /* block ended: this row sits at or left of the header that opened it */
     if (curIss && raw.trim() && rawIndent <= curIssIndent) { curIss = ""; curIssIndent = -1; }
-    let t = raw.trim().replace(/^\*+\s*/, "").replace(/\s*\*{1,3}\s*$/, "")
+    /* v150 (queue item p): `^` is the party-in-interest mark in another
+     * template — BAE `[^ The Vanguard Group]`, `Fidelity 500 Index Fund ^`,
+     * `^ Empower Guaranteed Interest Fund`; 2,038 name rows + 38 issuers /
+     * 164 plans / 476,133 ppl carried it. Same treatment as `*`. */
+    let t = raw.trim().replace(/^[*^]+\s*/, "").replace(/\s*[*^]{1,3}\s*$/, "")
       .replace(/([0-9]{1,3}(?:,[0-9]{3})+)(?:\s*[,.]?\s*\(\s*[a-z]\s*\)){1,4}\s*$/i, "$1")
       /* v146: a lone FOOTNOTE LETTER in column (a) — "b        JP Morgan
        * JP Morgan Mid Cap Growth Fund   N/R   22,050,627" in a filing's second
@@ -834,7 +838,7 @@ export function parseRows(section, opts = {}) {
        * 3,224 rows / 446 plans / 1.02M participants rendered "Fidelity**"
        * as the issuer. Strip it here; curSection itself keeps the raw text
        * for the brokerage classifier, which does not care. */
-      const cs = curSection.replace(/\s*\*+\s*/g, " ").replace(/\s+/g, " ").trim();
+      const cs = curSection.replace(/\s*[*^]+\s*/g, " ").replace(/\s+/g, " ").trim();
       curIss = (!typeOnly(cs) && !CATEGORY_PHRASE.test(cs) && cs.split(/\s+/).length <= 8 &&
                 (isHouseName(cs) || /\b(?:inc|llc|l\.l\.c|corp(?:oration)?|compan(?:y|ies)|co|associates|advisors?|advisers?|management|investments?|group|partners|bank|trust|n\.a)\b\.?/i.test(cs)))
         ? cs : "";
@@ -1941,7 +1945,7 @@ export function parseRows(section, opts = {}) {
     // version bump on its own — app.js already strips it for display and
     // lookup, so readers see clean names now; the store catches up on the
     // next real re-parse.
-    rows.push({ name: name.slice(0, 90), type: rowType, value, sec: curSection, ...(type ? { ownType: 1 } : {}), ...(iss ? { iss: iss.replace(/\*+/g, "").trim().slice(0, 60) } : curIss ? { iss: curIss.slice(0, 60) } : {}), ...(leadStripped ? { _sl: 1 } : {}) });
+    rows.push({ name: name.slice(0, 90), type: rowType, value, sec: curSection, ...(type ? { ownType: 1 } : {}), ...(iss ? { iss: iss.replace(/[*^]+/g, "").trim().slice(0, 60) } : curIss ? { iss: curIss.slice(0, 60) } : {}), ...(leadStripped ? { _sl: 1 } : {}) });
   }
 
   // ARITHMETIC subtotal removal (owner directive after Sempra: takeaways

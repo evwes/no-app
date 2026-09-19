@@ -237,6 +237,11 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 05:0xZ 2026-09-19: v150 (item p, the `^` marker) committed
+      `[skip ci]` behind #383 — gate green, corpus 0/0/0, BAE's issuer
+      clean. #383 (v148 + v149) in flight since 04:51Z. Next wake:
+      verdict #383 → mirror → dispatch v150 → (o) NRECA, Marriott's two
+      residual class rows, the coded residue.
       **STATUS 04:5xZ 2026-09-19 (b): draw (seed 20260921, v147 store)
       15/15 real menus; new cosmetic item (p): a `^` party-in-interest
       marker in issuers/names (38 + 2,038 rows / 164 plans / 476k ppl) —
