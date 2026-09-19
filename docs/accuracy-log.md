@@ -17093,3 +17093,73 @@ plans / 302,810 ppl lose SEC cover-page rows, Publix among them; the fragment
 identities of v164 read as firm-then-fund. **476 participants across Ford Gum
 and ZF Chassis are live without a menu for as long as #399 takes**, which is
 the price of shipping Meta's fix an hour earlier and is stated as such.
+
+## 2026-09-19 (21:2xZ) — run #399 verdict (v167): PASSED +9 / −1 and MIRRORED; both pre-registered regressions came back, and the largest remaining member of the bare-house class now has a diagnosed cause
+
+**Numbers.** pv 167 at 99.85%; confident **60,115, +9 / −1** against the v166
+store; HIGH 5 = the baseline 4 plus one self-clearing; overshoot 342 → 344;
+`lineups` 59,755 → 59,764; dl 104.
+
+**The nine gains include both plans v166 broke, exactly as pre-registered:**
+Ford Gum & Machine (114 ppl) has its 29-row Fidelity menu back and ZF Chassis
+Modules (362) its own. The other seven are plans v166's NAV arm had swept up
+incidentally — Shapiro, Eagle Transport, Pangborn, San Diego Family Care, RWS
+Life Sciences (4,375 ppl), E.I. Associates, Martin Oil. **Four of those seven
+were called CORRECT withdrawals in the #398 verdict and that reading stands:
+their menus are all-generic class-label tables.** They are junk again now, and
+that is honest rather than good — v166 removed them for the wrong reason, so
+v167 returns them to the status quo. What should remove them is the
+generic-label question, which is owner question 5 and not a session's to start.
+
+**The one loss, and it is the ratio guard doing its job.** A master trust (0
+direct participants) published `NORTHERN TRUST` at 30.4% of a 17-row reading.
+v167 refuses that house description, the name falls to the IDENTITY — and on
+this filing the identity is `Commingled Fund`, a generic type, onto which MORE
+rows merge: **$2.58B at 30.4% became $9.44B at 61.6%, ratio 1.086 → 1.965**,
+out of band, withdrawn. **The honest generalisation: v167 does not make the
+identity good, it only stops a bare house description being published as a
+holding.** Where both columns are unusable the row gets worse first, and here
+the arithmetic guard caught it before a reader did.
+
+**Mirror.** Mirrored at 21:2xZ with both overrides: `--force` over main's cron
+commit `7d9f401c` (0 acks and 0 plans the branch lacked, plans array
+byte-identical, main newer on 1 ack) and `--force-data` over the single loss
+above, read by name.
+
+**THE CLASS MOVED, MEASURED ON THE NEW STORE: bare-house-dominant lineups
+28 → 23 plans (29,656 → 28,113 ppl).** The five v167 fixed are the ones where
+the house sat in the DESCRIPTION column. The 23 that remain have it in the
+IDENTITY, which v167 deliberately does not touch — refusing it there is the
+v70 defect.
+
+**AND THE LARGEST REMAINING MEMBER NOW HAS A CAUSE, which is what the standing
+directive asks for.** Northeast Georgia Health System (14,038 ppl) publishes
+`T. Rowe Price` at **$479,484,734 = 57%** of its menu. The filing is not thin:
+**page 15 carries a textbook-clean 4i schedule** under the statutory caption,
+fourteen real fund names in two clean columns, and the row reads
+
+```
+T. Rowe Price Capital Appreciation        Mutual Fund        479,484,734
+```
+
+A LATER render of the same schedule wins instead, and its layout puts the
+description on its OWN LINE ABOVE the value line while the value line's own
+description cell holds only the cost:
+
+```
+                          T. Rowe Price Capital Appreciation I
+       T. Rowe Price                                    0      479,484,734
+```
+
+The column split takes `0` as the description and the buffered line is not
+attributed, so the row is named after the firm. Region scores: the winning
+render is ratio 0.996, and the clean page-15 render scores **0.416** — which
+is $832M minus the $479M row, i.e. **the clean region loses precisely because
+the same row is dropped from it**. So one defect costs twice, and the second
+cost is what decides the contest.
+
+**Queued as the next parser item, with the shape stated:** when a buffered
+line sits in the DESCRIPTION column and the value line's description cell is
+only a cost figure, the buffered line is the description. Size the class
+before building it — this is one filing so far, and the 23 remaining
+bare-house plans are the population to measure it against.

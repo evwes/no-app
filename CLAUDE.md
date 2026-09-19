@@ -651,11 +651,12 @@ don't confuse them). Frontend: python http.server + Playwright at
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
   full-form** filers and 43,523 short-form; 68,767 parse-status entries.
-  **Store at v166 (branch AND main, run #398, MIRRORED 19:2xZ: +3 / −16, pv
-  166 at 99.85%, HIGH 18 = 4 + 14 self-clearing; `--force-data` over the
-  sixteen losses read by name, git check unforced). `PARSER_VERSION` in the
-  tree is 167, IN FLIGHT as #399** (started by the push at 19:24Z and observed
-  in_progress). v167 has two parts: a description that is only a house name
+  **Store at v167 (branch AND main, run #399, PASSED 21:2xZ: +9 / −1, pv 167
+  at 99.85%, HIGH 5 = 4 + 1 self-clearing) — MIRRORED 21:2xZ (`--force` over
+  main's cron commit `7d9f401c`: 0 acks / 0 plans the branch lacked;
+  `--force-data` over the single loss, read by name). `PARSER_VERSION` in the
+  tree is 167 and NOTHING IS IN FLIGHT** — the next parser item is diagnosed
+  and unbuilt (see the LIVE bullet). v167 has two parts: a description that is only a house name
   may not beat a real fund name in the identity (fixes the #396 Illinois
   regression and reaches its class — five more plans un-merge, Rcb Bank 10 →
   28 rows), and the ASC 820 line condemns a region only at **≥25% of its sum**
@@ -699,7 +700,35 @@ don't confuse them). Frontend: python http.server + Playwright at
   Nothing downstream was affected (no session acted on it), but it is exactly
   the copying-a-line-forward hazard this file warns about elsewhere, aimed at
   the file's own header. **Re-derive this line rather than editing the date.**
-- **LIVE on main: the v166 store — MIRRORED 2026-09-19 19:2xZ** (`--force-data`
+- **LIVE on main: the v167 store — MIRRORED 2026-09-19 21:2xZ** (`--force` over
+  main's cron commit `7d9f401c` — 0 acks and 0 plans the branch lacked, plans
+  array byte-identical, main newer on 1 ack — and `--force-data` over the
+  single loss, read by name). pv 167 at 99.85%, confident 60,115 (+9 / −1),
+  HIGH 5 = 4 baseline + 1 self-clearing, overshoot 344, lineups 59,764, dl 104.
+  **What reached readers:** Ford Gum & Machine (114 ppl) and ZF Chassis (362)
+  have the 29-row menus v166 cost them; a description that is only a house
+  name no longer beats a real fund name in the identity, so **Rcb Bank's 968
+  see a real T. Rowe Price Retirement menu where a 68.4% `Blended investments`
+  phantom stood**, and Illinois' eight TIAA and CREF holdings are separate
+  again. Four all-generic junk menus returned with them — the status quo
+  restored, not an improvement; removing those is owner question 5.
+  **The one loss is the ratio guard working:** a trust's `NORTHERN TRUST` row
+  at 30.4% became `Commingled Fund` at 61.6% once the house description was
+  refused (ratio 1.086 → 1.965, out of band, withdrawn). **v167 does not make
+  the identity good; it only stops a bare house being published as a holding.**
+  **Class measured on the new store: bare-house-dominant lineups 28 → 23 plans
+  / 28,113 ppl.** The 23 that remain hold the house in the IDENTITY column,
+  which v167 deliberately does not touch.
+  **NEXT PARSER ITEM, cause diagnosed and nothing built yet:** Northeast
+  Georgia Health System (14,038 ppl) publishes `T. Rowe Price` at $479,484,734
+  = 57%, and its filing is NOT thin — page 15 carries a clean 4i schedule
+  reading `T. Rowe Price Capital Appreciation | Mutual Fund | 479,484,734`.
+  A later render wins whose description sits on its own line ABOVE the value
+  line while the value line's description cell holds only the cost `0`. The
+  clean region scores 0.416, which is $832M minus that same $479M row — **one
+  defect costs twice, and the second cost is what decides the contest.**
+  `docs/accuracy-log.md` 2026-09-19 (run #399 verdict).
+- **Previously: the v166 store — MIRRORED 2026-09-19 19:2xZ** (`--force-data`
   over sixteen losses each opened and named; the git check passed unforced,
   main had 0 acks and 0 plans the branch lacked). pv 166 at 99.85%, confident
   60,107 (+3 / −16), HIGH 18 = 4 baseline + 14 self-clearing `reparse-loss`,

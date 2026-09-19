@@ -237,6 +237,33 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 21:2xZ 2026-09-19: #399 (v167) PASSED AND MIRRORED — pv 167 at
+      99.85%, confident 60,115 (+9 / −1), HIGH 5 = 4 + 1 self-clearing,
+      overshoot 344. **Both pre-registered regressions came back**: Ford Gum
+      (114 ppl) and ZF Chassis (362) have their 29-row menus. Seven other
+      gains are plans v166's NAV arm had swept up incidentally; four of them
+      are all-generic junk menus again, which is the status quo restored, not
+      an improvement — what should remove them is owner question 5. **The one
+      loss is the ratio guard working**: a trust's `NORTHERN TRUST` row at
+      30.4% became `Commingled Fund` at 61.6% once the house description was
+      refused, ratio 1.086 → 1.965, withdrawn. v167 does not make the identity
+      good; it stops a bare house being published as a holding. Mirrored with
+      `--force` (main's cron commit, 0 acks / 0 plans lacked) and
+      `--force-data` (the one loss, read). **Class measured on the new store:
+      bare-house-dominant 28 → 23 plans / 28,113 ppl** — the five fixed are
+      the DESCRIPTION-column half; the 23 left have the house in the IDENTITY,
+      which v167 deliberately does not touch.
+      **NEXT ITEM, cause diagnosed this cycle:** Northeast Georgia Health
+      System (14,038 ppl, `T. Rowe Price` $479,484,734 at 57%) is NOT a thin
+      filing — page 15 carries a clean 4i schedule reading `T. Rowe Price
+      Capital Appreciation | Mutual Fund | 479,484,734`. A later render wins
+      whose description sits on its OWN LINE ABOVE the value line while the
+      value line's description cell holds only the cost `0`, so the split
+      takes `0` and the buffered line is unattributed. The clean region scores
+      0.416 = $832M minus that same $479M row, so **one defect costs twice and
+      the second cost decides the contest**. Shape for the fix: a buffered
+      line in the DESCRIPTION column beats a description cell that is only a
+      cost figure. **Size it against the 23 before building.**
       **STATUS 19:2xZ 2026-09-19: #398 (v164+v165+v166) MIRRORED — pv 166 at
       99.85%, confident 60,107 (+3 / −16), HIGH 18 = 4 + 14 self-clearing,
       overshoot 347 → 342. `--force-data` over the sixteen losses, all opened:
