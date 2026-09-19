@@ -15549,3 +15549,52 @@ Lewis Plumbing 29 → 28 (Mercedes-BENz via `ben`), HCA's master trust 37 →
 plan loses a row that names its own sponsor (checked by construction —
 a whole-word match is a subset of the substring match, and the 24
 substring-only rows were read).
+
+## 2026-09-19 (05:3xZ) — v152: a coupon with a maturity date is a BOND whatever noun it carries — 280 rows / 42 plans / 1.07M ppl of dated notes named `Trust` or `Fund` stop standing beside the fold as menu options; the recorded Peterson cost is closed
+
+**What was wrong.** `untypedSecurity` calls a row pooled when its name
+carries a fund-product word (`trust`, `fund`, `index`…) and no single-
+issuer or securitization marker — and a pooled row never folds. So
+`TRANSCANADA TRUST 5.3%/VAR 03/15/2077` (Marriott, ten rows), `GUARDIAN
+LIFE GLOBAL FUND 144A 1.625% 09/16/2028` (a funding-agreement-backed
+note), `VERIZON MASTER TRUST 4.62% 11/20/2030` (Ryder, Qualcomm), `CMO
+BENCHMARK MORTGAGE TRUST SER 20-B21` (Boeing, 33 of its 75 published
+rows) and `VOLKSWAGEN AUTO LOAN ENHANCED TRUST 4.63 07/2…` (Citigroup,
+BAE) were published as menu options beside the managed-account fold
+that held their siblings. Recorded on 2026-09-19 as v144 cost (b), "the
+REIT trap", on Peterson's two rows; it was 280 rows.
+
+**Sized from the store (`coupon-trust.mjs`, `coupon-trust2.mjs`): 298
+rows / 47 confident lineups carry a coupon-and-maturity (or a dated
+floating-rate) shape together with a fund-product word and no other
+security marker; 280 of them / 42 plans / 1,065,210 ppl sit beside a
+fold.** By word: `trust` 209, `fund` 36, `index` 30, `idx` 18. Largest
+by people: JPMorgan Chase (1 row), Boeing (33 / 75), Marriott (10 / 31),
+Citigroup, Abbott, BAE, USAA (7), Ryder, Aon (7), Qualcomm (3); and
+eleven master trusts, one of them 28 of 30 rows Transcanada Trust.
+
+**The change.** `DATED_SEC` — a coupon followed by a `MM/DD/YY(YY)`
+date, a bare `MM/DD/YYYY`, or `VAR RT` / `FLTG RT` with a date — and
+`pooled` is false when it matches. A pooled vehicle has no coupon and no
+maturity; a fund whose NAME carried a slash-date would be a caption glue,
+which is a different, known class. `PARSER_VERSION` 152.
+
+**Gate:** one expectation moved, and it is the recorded cost closing —
+Carry-forward subtotals (Peterson) 9 → 7 rows at the same sum, the two
+Transcanada bonds joining the fold. **Corpus (`diff-lineups HEAD`): 0
+gained / 0 lost / 0 fabricated either way; six plans move and they are
+the six predicted:** Boeing 75 → 42 (fold 6,940 → 6,973 positions),
+Marriott 49 → 39, USAA 60 → 54, Qualcomm 35 → 32, BAE 38 → 37, Peterson
+9 → 7. Marriott's page after v149 + v152: `Managed account holdings
+(1,421 positions)` 25.6%, its own stock 16.0%, then the Vanguard
+Retirement trusts, Northern Trust S&P 500, Fidelity Contra pool — and
+**two class rows still standing, `CORPORATE BONDS` 4.7% and `U.S.
+GOVERNMENT DEBT SECURITIES` 4.2%**, which v149's subtotal test does not
+catch (their itemisation is not a run of ≥3 rows summing to 97–100.5%
+adjacent to the label). Next item.
+
+**Prediction for the run:** confident +0 / −0; the sizer's 280 rows go
+to ~0 beside a fold; Boeing's page shows 42 rows; no lineup's sum moves
+(a fold is a re-grouping). A plan whose whole schedule is dated trusts
+(the 28-of-30 master trust) folds to one row and may lose confidence on
+the 3-row floor — read it by name in the verdict.

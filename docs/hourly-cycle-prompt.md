@@ -237,6 +237,19 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 05:3xZ 2026-09-19: v152 committed `[skip ci]` behind #383 —
+      a coupon with a maturity date is a bond whatever noun it carries
+      (`TRANSCANADA TRUST 5.3% 03/15/2077`, `GUARDIAN LIFE GLOBAL FUND
+      144A 1.625% 09/16/2028`, `VERIZON MASTER TRUST 4.62% 11/20/2030`
+      read as pooled on `trust`/`fund` and stayed itemized beside the
+      fold): 280 rows / 42 plans / 1.07M ppl sized from the store; corpus
+      moves exactly the predicted six (Boeing 75 → 42, Marriott 49 → 39,
+      USAA 60 → 54, Qualcomm 35 → 32, BAE 38 → 37, Peterson 9 → 7 — the
+      recorded REIT-trap cost closed); gate expectation updated, 0/0/0/0.
+      Marriott's two residual class rows (`CORPORATE BONDS` 4.7%, `U.S.
+      GOVERNMENT DEBT SECURITIES` 4.2%) survive v149 and v152 — next.
+      #383 in flight. Next wake: verdict #383 → mirror → dispatch v150 +
+      v151 + v152 → Marriott's residual class rows, the coded residue.
       **STATUS 05:2xZ 2026-09-19: v151 committed `[skip ci]` behind #383 —
       the employer-stock sponsor-token test matches whole words (`america`
       no longer matches American Express, `national` no longer matches

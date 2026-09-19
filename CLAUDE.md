@@ -652,9 +652,11 @@ don't confuse them). Frontend: python http.server + Playwright at
   participants at either end of the plan year), of which **68,259 are
   full-form** filers and 43,523 short-form; 68,767 parse-status entries.
   **Store at v147 (branch AND main, `c07b9f47`, run #382); `PARSER_VERSION`
-  in the tree is 151 (v150: the `^` party-in-interest marker stripped
+  in the tree is 152 (v150: the `^` party-in-interest marker stripped
   like `*`; v151: the employer-stock sponsor-token test matches whole
-  words, not substrings — both committed `[skip ci]` behind #383) — v148 (the doubled house stripped in the store) and
+  words, not substrings; v152: a coupon with a maturity date is a bond
+  whatever noun it carries, so `TRANSCANADA TRUST 5.3% 03/15/2077` joins
+  the fold — all three committed `[skip ci]` behind #383) — v148 (the doubled house stripped in the store) and
   v149 (class subtotals beside their itemisation removed at the leaves
   stage, before the restatement cut — Marriott 31 → 49 rows, its real
   menu) are IN FLIGHT TOGETHER as run #383 (dispatched 2026-09-19 04:51Z

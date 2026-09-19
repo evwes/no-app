@@ -359,7 +359,10 @@ const SPECIMENS = [
     // v145 part 2: two bonds whose names carry `transfer` mid-line (the
     // Energy Transfer trap — SKIP_ROW's unanchored `transfers?` arm) are no
     // longer skipped and join the fold — 225 -> 227 positions, +$655,835
-    { found: true, n: 9, sum: 289159027 }],
+    // v152: a coupon with a maturity date is a bond whatever noun it
+    // carries — the two `Transcanada Trust 5.300% Due 03-15-77` rows join
+    // the fold (9 -> 7 rows, same sum); the REIT-trap cost above is closed
+    { found: true, n: 7, sum: 289159027 }],
   // v45: recordkeeper "SUMMARY OF NET TRUST ASSETS" page appended after
   // the real 4i table — same menu in ALL CAPS with cents; v43's cents fix
   // made it readable and the doubled region lost a real 29-fund menu

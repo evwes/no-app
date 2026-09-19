@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 151;
+export const PARSER_VERSION = 152;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -3114,6 +3114,7 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
    * pool, a Treasury issue, a repo, a currency par — and hold whatever
    * column typed the row; SUFFIX shapes (`INC`, `PLC`, `COM`) are read only
    * on a row with no type of its own, because a section can type a fund. */
+  const DATED_SEC = /\d+(?:\.\d+)?\s*%.*\b\d{1,2}[-\/]\d{1,2}[-\/]\d{2,4}\b|\b\d{2}[-\/]\d{2}[-\/]\d{4}\b|\b(?:VAR|FLTG?|FLOAT(?:ING)?)\s*(?:RT|RATE)\b.*\b\d{1,2}[-\/]\d{1,2}[-\/]\d{2,4}\b/i;
   const STRONG_SEC = /\d+(?:\.\d+)?\s*%.*\b\d{1,2}[-\/]\d{1,2}[-\/]\d{2,4}\b|\b\d{2}[-\/]\d{2}[-\/]\d{4}\b|\bDD\s+\d{2}\/\d{2}\/\d{2}\b|\bPOOL\s*(?:#|F[NR]\s)|\bTREAS(?:URY)?\s+(?:BONDS?|NOTES?|BILLS?|BDS?|NTS?|N\/B|ZERO)\b|\bT-?BONDS?\b|\bZERO\s+CPN\b|\bREV(?:ERSE)?\s+REPO\b|\b(?:USD|EUR|GBP|JPY|CHF|THB|HKD|AUD|CAD|SEK|DKK|NOK|KRW|TWD|INR|BRL|ZAR|MXN|SGD|ILS|NZD)\s*\d|\d+(?:\.\d+)?\s*%\s*(?:due\b.*)?$/i;
   const SUFFIX_SEC = /\b(?:COM|COM\s*STK|COMSTK|NPV|ADRS?|PLC|ORD|SHS|(?:ORD|REG)\s+SH|INC|CORP|CORPORATION|COMPANY|LTD|LLC|LP|CO|SA|SE|AG|NV|BEO|MTN|DEBS?|NTS?|BDS?|PFD|WTS?|DUE|DTD|TREAS|BANCORP|REG|TAXABLE|(?:FLTG|VAR)(?:\s+RT)?|CLS?\s+[A-Z]|CLASS\s+[A-Z]|COM\s+NEW|SPON(?:SORED)?\s+ADR|ADR\s+NEW)\.?\s*$/i;
   /* securitisations and structured notes — Dell's sleeves: `NAVIENT STUDENT
@@ -3139,7 +3140,14 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
     if (isEmployer(f.name)) return false;
     if (f.type && !SEC_TYPE.test(f.type)) return false;
     const nm = String(f.name || "").trim();
-    const pooled = FUND_PRODUCT.test(nm) && !SINGLE_ISSUER.test(nm) && !SECURITIZATION.test(nm);
+    /* v152: a coupon with a maturity date is a BOND whatever noun it carries.
+     * `TRANSCANADA TRUST 5.3%/VAR 03/15/2077` (Marriott, ten rows), `GUARDIAN
+     * LIFE GLOBAL FUND 144A 1.625% 09/16/2028` (a funding-agreement note),
+     * `VERIZON MASTER TRUST 4.62% 11/20/2030` read as pooled on `trust` /
+     * `fund` and stayed itemized beside the fold — 280 rows / 42 plans /
+     * 1.07M ppl on the v147 store (Boeing 33 of 75 rows). A pooled vehicle
+     * has no coupon and no maturity. */
+    const pooled = FUND_PRODUCT.test(nm) && !SINGLE_ISSUER.test(nm) && !SECURITIZATION.test(nm) && !DATED_SEC.test(nm);
     if (f.type && f.ownType) return (STRONG_SEC.test(nm) || SECURITIZATION.test(nm)) && !pooled;
     if (TYPE_LABEL_ROW.test(nm)) return true;
     return SECURITY_SHAPE.test(nm) && !pooled && !NOT_FUND_SHAPED.test(nm) && !GENERIC_TYPE_NAME.test(nm);
