@@ -16761,3 +16761,82 @@ investment), `Large Cap Equity Collective Investment Trust` → `Trust`
 the open item is narrower than "type phrases", and it is the one this
 project keeps meeting: **a fragment identity should not win merely
 because the description was refused.**
+
+## 2026-09-19 (17:3xZ) — v164: a fragment identity may not win merely because the description was refused (the cost v162 recorded, paid back), plus the value line that carries the description's wrapped tail
+
+**Where this came from.** The v162 verdict recorded its own cost instead of
+waving it past: `rename:TO-SHORT` 21 rows / 16 plans / 14,820 ppl. Reading
+them one by one is what turned a number into two causes.
+
+**Part 1 — composition, not choice.** v162 made `<category> <vehicle>`
+("Asset Allocation Mutual Fund") read as a type phrase. That was right and
+un-merged 1,717 rows. But **a refusal is not an endorsement of the other
+column**, and where the identity held only a brand fragment the row fell back
+to it and got worse:
+
+| filing's description | v162 published |
+|---|---|
+| `Global Mutual fund` | `First Eagle` |
+| `Small Cap Growth Equity Collective Trust` | `MassMutual` |
+| `Balanced Fund Pooled Separate Accounts` | `American` |
+| `Growth Fund Pooled Separate Accounts` | `EuroPacific` |
+| `Small Cap Growth Institutional Mutual Fund` | `Congress` |
+| `Index Conservative Retirement Collective Investment Trust` | `MyCompass` |
+
+In every one the two cells hold **halves of one name** — the filing writes
+`First Eagle | Global Fund`, the house in column (a) and the rest in (c) — and
+the rest of the same lineup proves it: **29 of First Eagle's 30 rows publish
+the description with the identity in `iss`**, so the fragment was the only row
+in that menu named after a firm. So compose them rather than choosing.
+Composition cannot merge rows, because the identity is what distinguishes
+them, which is the property v162 was protecting in the first place.
+
+Confined so it cannot reach either shape it sits between, and both are
+regressions this project has already paid for:
+
+- a **fund-shaped identity** still wins alone — PennyMac's `Fidelity Freedom
+  2045 Fund`, the entire point of v162;
+- a **bare class label** in the description is not composed at all — SAP's
+  `Explorer | Registered investment company` is `CATEGORY_PHRASE`, not
+  `CAT_VEHICLE`, and composing it would rebuild the v102 fabrication. Only a
+  category carrying real investment vocabulary adds anything to a brand.
+
+Where the identity is itself a type word there is no brand to keep and the
+description stands alone.
+
+**Part 2 — found while verifying part 1, and larger per plan.** The worst of
+the 21 was `Large Cap Equity Collective Investment Trust` → **`Trust`**, and
+tracing it said the cause was not part 1 at all. The filing wraps:
+
+```
+Fidelity Blue Chip Growth Commingled Pool Class A   Large Cap Equity Collective Investment
+Trust                                          $          1,210
+```
+
+The value line's own text is the **last word of the description**. v129's
+verbatim reading (`fullAll`) is therefore `Trust`, while v130's column split
+had already assembled the real identity in `full`. The row published as
+`Trust` at **8.3% of the plan with the fund's own name in hand**. v164 prefers
+`full` when the description already contains the fragment being dropped, so
+nothing can be lost by the swap; it is confined to a fragment (type-only, or
+under eight letters) so an ordinary wrapped identity keeps v129's reading.
+
+**Verification, and what each piece of it is worth.** Parser gate green. Both
+filings traced against v163: `First Eagle` → `First Eagle Global Mutual fund`
+and `Trust` → `Fidelity Blue Chip Growth`, with **row count, menu sum and
+ratio unchanged in both** and only the name moving. Corpus diff over 985
+filings, both specimens pinned and fetched: 0 confidence gained, 0 lost, 0
+fabricated rows either way, 0 row-count moves, 0 menu-sum moves. **Those zeros
+are not evidence the fix works** — a names-only change is invisible to every
+category that tool counts, which is exactly why it is the right tool for the
+collateral question and the wrong one for the fix itself. The traces are the
+evidence for the fix; the diff is the evidence that nothing else moved.
+
+**Recorded, not fixed, from the same trace:** the same filing publishes
+`Index Fund)` at **17.7%** — the tail of `Vanguard Institutional Index Fund
+Institutional "Plus" Shares (S&P 500` wrapping onto the value line, where the
+buffered line is marked wide and so excluded from `fullAll`. v164's part 2
+cannot reach it: there is no description carrying the dropped text, so the
+"nothing can be lost" condition is false and the swap is refused by design.
+This is the Walmart `Lendable Fund` / `US) Value Equity Fund` family already
+on the books, now with a small specimen that reproduces in one trace.
