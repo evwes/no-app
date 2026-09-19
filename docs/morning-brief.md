@@ -1,38 +1,39 @@
-# Morning brief — 2026-09-19 (written 10:3xZ / 6:3x AM ET; refreshed at the next verdict)
+# Morning brief — 2026-09-19 (refreshed 12:4xZ / 8:4x AM ET; first written 05:0xZ)
 
-Live on main: **the v156 store** (mirrored 11:4xZ; v155 had gone live at
-10:33Z). Since the last brief: v148–v156 shipped and are live; **v157 is
-running** (the master-trust pointer gate, Caterpillar's 60,484 readers). Fifteen parser versions since
-23:3xZ last night, each gated, corpus-diffed, verified against its own
-prediction, every lost lineup read by name. One structural change to the
-pipeline this morning (below), and one cancelled cron run.
+Live on main: **the v157 store** (mirrored 12:4xZ, Pages #521). Since
+last night's brief: **v148 through v157 shipped and are live; v158 is
+running** (dispatched 12:38Z). Seventeen parser versions since 23:3xZ,
+each gated, corpus-diffed, verified against its own prediction, every
+lost lineup read by name. One structural pipeline change, one cancelled
+cron run, and a new reproduction method for the OCR path.
 
 ## What shipped and what it changed (numbers, not adjectives)
 
 | version | what readers stopped seeing / started seeing | size |
 |---|---|---|
-| v144–v147 (live) | the securities fold before the row cap (Boeing's 6,950 positions as one row); duplicate renders once; wraps reassembled; ETF as a type phrase | hidden-tail class 337 → 240 plans; duplicates 522 → 110 rows |
-| v148–v149 (live) | the doubled house stripped (`Vanguard Vanguard 500 Index`); class subtotals beside their itemisation removed — Marriott's real menu visible for the first time | 203 → 10 plans; Marriott 152,118 ppl, 31 → 49 rows |
-| v150–v152 (live) | `^` marker stripped at line ends; employer-stock test on whole words; a dated coupon is a bond whatever noun it carries | 280 dated `Trust`/`Fund` notes leave menus for the fold (1.07M ppl) |
-| v153 (live) | RECEIVABLES securitizations kept; class labels seen past `U.S.`/`&`; cover-page identifiers (`Sponsor ID #: 20-…`) are not $5M holdings | Marriott 37 rows at 0.980, no class line; 446 identifier rows / 362 plans gone |
-| v154 (live) | an issuer cell ending in a type phrase names firm + vehicle; TIAA's statement label cleared | 16,915 → 197 rows |
-| v155 (live) | a region that is mostly class labels is a statement; Form 5500 line references (`le 1f`, `2b(1)(D)`) are not holdings; render ties decided by readability, not document order | form-line lineups **75 → 0** (State Street, Deutsche Bank, Endeavor withdrawn); 35 junk lineups withdrawn; 775 lineups changed render |
-| v156 (running) | the `(N)` footnote arm narrowed to Schedule H vocabulary (two real menus return); the tie-break measures abbreviation by vowel-bearing tokens, not length; `#` marker; Progressive's `of ` prefix | 627 rows / 108 plans / 317k ppl; ~272 renders flip back toward readable |
+| v144–v147 | the securities fold before the row cap (Boeing's 6,950 positions as one row); duplicate renders once; wraps reassembled; ETF as a type phrase | hidden-tail class 337 → 240 plans; duplicates 522 → 110 rows |
+| v148–v149 | the doubled house stripped; class subtotals beside their itemisation removed — Marriott's real menu visible for the first time | 203 → 10 plans; Marriott 152,118 ppl, 31 → 49 rows |
+| v150–v152 | `^` marker; employer-stock test on whole words; a dated coupon is a bond whatever noun it carries | 280 dated `Trust`/`Fund` notes leave menus for the fold (1.07M ppl) |
+| v153 | RECEIVABLES securitizations kept; class labels seen past `U.S.`/`&`; cover-page identifiers are not $5M holdings | Marriott 37 rows at 0.980; 446 identifier rows / 362 plans gone |
+| v154 | an issuer cell ending in a type phrase names firm + vehicle; TIAA's statement label cleared | 16,915 → 197 rows |
+| v155 | a region that is mostly class labels is a statement; Form 5500 line references are not holdings; render ties decided by readability | form-line lineups **75 → 0** (State Street, Deutsche Bank, Endeavor); 35 junk lineups withdrawn |
+| v156 | the `(N)` footnote arm narrowed; the tie-break measures abbreviation by vowel-bearing tokens (its length term had chosen the abbreviated render half the time); `#` marker; Progressive's `of ` prefix | 432 renders moved, **298 toward readable / 9 away**; 627 rows / 108 plans; State Street's real SSGA menu (21,533 ppl) |
+| v157 | a master-trust pointer that is three quarters of the page is a pointer at any row count; `†` markers; `Employer I.D. #` | **Caterpillar (59,937 ppl)** and four more stop showing a "menu" that was one pointer row |
+| v158 (running) | the caption-seeded retry runs for any unpublishable first pass (a dead heat between two junk regions no longer decides whether the real menu is looked for); a colon-less house+type group header is a header | Frx's 12 LifePath rows back; **ATH Holding / Elevance (94,689 ppl)** loses a $1.79B `The Vanguard Group` phantom that was two funds merged |
 
-Live store (v155): confident **60,102** (−26 net vs v154: 33 junk
-withdrawals, 9 gains, 2 over-reaches fixed in v156), lineups 59,750,
-HIGH 4 + self-clearing `reparse-loss`, overshoot 353, `tkShare` 24.46,
-download failures 104.
+Live store (v157): confident **60,103**, lineups 59,751, HIGH 4 + 5
+self-clearing, overshoot 346, `tkShare` 24.42, download failures 104.
+Net since v143 last night: −19 confident, and every one of the losses
+is a junk or pointer lineup read by name; the gains are real menus.
 
-## What was found wrong today and where it stands
+## Found today and where it stands
 
 | item | size | status |
 |---|---|---|
-| render ties fell to document order, so junk rows coming or going flipped names | 187 lineups in #385, then 775 in #386 with a length-based tie-break choosing the abbreviated render half the time | v156: vowel-token share, no length |
-| `(N) ` footnote read as a Schedule H line | Conditioned Air (267 ppl), Central City Concern (2,039), both 30+ real rows withdrawn in #386 | v156 |
-| Terra Dotta (94 ppl, 15 real rows → `stmt`) on the OCR path | 1 plan | read with the v156 store |
-| Cleveland-Cliffs: a 97% `Investments in Master Trust` row survives as a confident 13-row lineup | 5,188 ppl (+ class of 74 such rows) | queued: `isTrustPointerRow` vocabulary |
-| `ds` stored as `absent`/`noattach` beside parsed rows | 84 plans (stored, not published) | fixed in fetch-4i, control on the next store |
+| ATH Holding's `The Vanguard Group` phantom (Explorer + Institutional 500 Index Trust merged under a colon-less header) | 94,689 ppl; bare house rows at ≥10% of a menu: 322 lineups / 472k ppl, share of this shape unknown until the run | v158 |
+| OCR-path readings that moved between versions (Frx, Central City, Terra Dotta) | 3 plans / 2,334 ppl | reproduced locally through fetch-4i's real shard code in 20 s; Frx fixed in v158, the other two are OCR-cache drift, not regressions |
+| `†`/`#` marker residue | 146 rows / 37 plans / 73,603 ppl | to read |
+| Walmart `Investments Walmart Inc. Equity Securities`; Weyerhaeuser `through November 2039 …` glued onto a fund; Starbucks `[Target Date Funds Vanguard]` | 1 plan each (1.92M, 13,967, 307,988 ppl) | recorded, cosmetic |
 | coded rows no legend names (`1ISM35I`) | 152 plans / 655 rows / 170k ppl | needs Empower's code list, outside EFAST2 |
 | (o) NRECA's table of contents as holdings | 1 plan / 80,475 ppl | design question (yours, #5) |
 
@@ -42,14 +43,13 @@ Every mirror puts new code on main ahead of the store it will produce,
 and main's hourly cron answered that with a full re-parse of its own:
 #384 held all twenty runner slots for 3.5 hours; #387 then starved the
 finished v155 run of its merge job for 77 minutes. **I cancelled #387 at
-10:09Z.** Its merge still ran (by design, `if: always()`) and left main a
-partial store (pv154 on 40,636 acks beside pv149 on 28,026) for about 20
-minutes, until the complete v155 store mirrored over it at 10:32Z.
-**Shipped:** scheduled runs are now incremental by construction
-(`SCHEDULE_INCREMENTAL`): the cron ingests new filings and retries cheap
-errors, and leaves version bumps to the dispatch that carries the
-verdict. Control: the same store sizes 68,767 filings of work without
-the flag and 106 with it. The 11:23Z cron is the first live test.
+10:09Z**; its merge still committed a partial store to main for about 20
+minutes until the complete v155 store mirrored over it. **Shipped:**
+scheduled runs are incremental by construction (`SCHEDULE_INCREMENTAL`)
+— the cron ingests new filings and retries cheap errors; version bumps
+belong to the dispatch that carries the verdict. Control: 68,767
+filings of work without the flag, 106 with it; **confirmed live on the
+next cron (#389): one shard, two minutes.**
 
 ## HELD, and why
 
@@ -74,8 +74,8 @@ the flag and 106 with it. The 11:23Z cron is the first live test.
 ## What continues alone
 
 Hourly: reconcile, verdict any run, mirror only when the verdict is clean
-(or, as today, when main holds something worse), dispatch the next gated
-version, the participant-weighted draw (five draws since last night, 73
-of 75 real menus; every parser item today came from a draw or a verdict
-read), the record. Next: #388's verdict → mirror → Cleveland-Cliffs'
-pointer row → Terra Dotta.
+(or when main holds something worse), dispatch the next gated version,
+the participant-weighted draw (six draws since last night, 88 of 90 real
+menus; ATH, Progressive, Marriott, the TIAA label and the `^` marker all
+came from draws), the record. Next: #391's verdict → mirror → the marker
+residue → Walmart's and Weyerhaeuser's fragments.
