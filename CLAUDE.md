@@ -651,17 +651,21 @@ don't confuse them). Frontend: python http.server + Playwright at
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
   full-form** filers and 43,523 short-form; 68,767 parse-status entries.
-  **Store at v167 (branch AND main, run #399, PASSED 21:2xZ: +9 / −1, pv 167
-  at 99.85%, HIGH 5 = 4 + 1 self-clearing) — MIRRORED 21:2xZ (`--force` over
-  main's cron commit `7d9f401c`: 0 acks / 0 plans the branch lacked;
+  **Store at v168 (branch AND main, run #401, PASSED 23:3xZ: +5 / −1, pv 168
+  at 99.85%, HIGH 6, overshoot 344 → 334) — MIRRORED 23:3xZ (`--force` over
+  main's cron commit `8952b3bf`: 0 acks / 0 plans the branch lacked;
   `--force-data` over the single loss, read by name). `PARSER_VERSION` in the
-  tree is 168, DISPATCHED 22:38Z as #401** (observed in_progress). v168 is a
-  one-word fix with a store-wide reach: an **UNANCHORED `appreciat` arm** in
-  `SKIP_ROW` was deleting every row naming a fund with "Appreciation" in it —
-  as a holding and as a buffered name — because that alternation sits after
-  the group `^(` opened has closed, making each arm a substring test.
-  Footprint: **55 rows of 1,721,905** in the published store contain
-  `appreciat`. Corpus diff: 0 lost, **63 of 989 filings gain rows**. v167 has two parts: a description that is only a house name
+  tree is 168 and NOTHING IS IN FLIGHT.** v168 was a one-word fix with the
+  largest reach recorded in this session: an **UNANCHORED `appreciat` arm** in
+  `SKIP_ROW` had been deleting every row naming a fund with "Appreciation" in
+  it — as a holding and as a buffered name — because that alternation sits
+  after the group `^(` opened has closed, making each arm a substring test.
+  **Rows containing `appreciat` went 55 → 5,766; 5,349 plans / 7,048,088
+  participants now see a holding that was invisible** (Mayo Clinic 114,636,
+  O'Reilly 91,899, Tesla 89,700, Southwest 85,764 at 15% of its menu).
+  **No coverage metric could see this defect** — the plans were publishing,
+  each just missing a fund, so `confident` never moved and the loss triage
+  only ever sees lineups that vanish, never rows. v167 has two parts: a description that is only a house name
   may not beat a real fund name in the identity (fixes the #396 Illinois
   regression and reaches its class — five more plans un-merge, Rcb Bank 10 →
   28 rows), and the ASC 820 line condemns a region only at **≥25% of its sum**
@@ -705,7 +709,28 @@ don't confuse them). Frontend: python http.server + Playwright at
   Nothing downstream was affected (no session acted on it), but it is exactly
   the copying-a-line-forward hazard this file warns about elsewhere, aimed at
   the file's own header. **Re-derive this line rather than editing the date.**
-- **LIVE on main: the v167 store — MIRRORED 2026-09-19 21:2xZ** (`--force` over
+- **LIVE on main: the v168 store — MIRRORED 2026-09-19 23:3xZ** (`--force`
+  over main's cron commit `8952b3bf` — 0 acks and 0 plans the branch lacked,
+  plans array byte-identical, main newer on 2 acks the next run re-reads — and
+  `--force-data` over the single loss, read by name). pv 168 at 99.85%,
+  confident 60,119 (+5 / −1), HIGH 6, overshoot 334, lineups 59,768, dl 104.
+  **What reached readers: 5,349 plans / 7,048,088 participants gain an
+  "Appreciation" holding** that an unanchored skip arm had been deleting from
+  every menu — Mayo Clinic (114,636), O'Reilly Automotive (91,899), Tesla
+  (89,700), **Southwest Airlines (85,764) at 15% of its menu**, Universal
+  Health Services, Vanderbilt, Duke, NY-Presbyterian. **BNSF Railway (33,118)
+  publishes for the first time**, and Northeast Georgia's 14,038 stop seeing
+  `T. Rowe Price` as a $479,484,734 holding.
+  **Both pre-registered tests passed**: `appreciat` rows 55 → 5,766 across
+  5,369 lineups, and the bare-house class lost its largest member (23 → 20
+  plans, 28,113 → 12,762 ppl). The one loss is Shannon & Wilson's junk 5-row
+  lineup (sponsor name, `Class B Common Stock`, a prose fragment) falling
+  under the three-row floor.
+  **NEXT: the same unanchored alternation has other arms** — `distribution`,
+  `receivable`, `expenses`, `contributions` — and whether they are deleting
+  rows the same way is a ten-minute store query, not a theory.
+  `docs/accuracy-log.md` 2026-09-19 (run #401 verdict).
+- **Previously: the v167 store — MIRRORED 2026-09-19 21:2xZ** (`--force` over
   main's cron commit `7d9f401c` — 0 acks and 0 plans the branch lacked, plans
   array byte-identical, main newer on 1 ack — and `--force-data` over the
   single loss, read by name). pv 167 at 99.85%, confident 60,115 (+9 / −1),

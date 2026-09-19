@@ -237,6 +237,26 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 23:3xZ 2026-09-19: #401 (v168) PASSED AND MIRRORED — +5 / −1,
+      pv 168 at 99.85%, confident 60,119, HIGH 6, overshoot 344 → 334. BOTH
+      pre-registered tests passed: rows containing `appreciat` went **55 →
+      5,766** across 5,369 lineups, and the bare-house class lost its largest
+      member exactly as predicted (23 → 20 plans, 28,113 → 12,762 ppl;
+      Northeast Georgia gone). **REACH: 5,349 plans / 7,048,088 participants**
+      now see an "Appreciation" holding that one unanchored word had been
+      deleting — Mayo Clinic 114,636, O'Reilly 91,899, Tesla 89,700, Southwest
+      85,764 at 15% of its menu, Vanderbilt, Duke, NY-Presbyterian. The five
+      gains are LARGE plans (BNSF 33,118 publishes for the first time); the one
+      loss is Shannon & Wilson's junk 5-row lineup falling under the 3-row
+      floor. Mirrored with `--force` (main's cron commit, 0 acks / 0 plans
+      lacked) and `--force-data` (the one loss, read). **Nothing is in flight.**
+      **The lesson to carry: no count in this project can see a fix like this.**
+      `confident` did not move — the plans were already publishing, each just
+      missing a fund — and the loss triage only sees lineups that vanish, never
+      rows. Next wake: the remaining 20 bare-house plans (Calpine `Investments`
+      80%, Irisndt `JOHN HANCOCK` 53%), and whether other arms of that same
+      unanchored alternation (`distribution`, `receivable`, `expenses`) are
+      deleting rows the same way — that is a ten-minute store query.
       **STATUS 22:3xZ 2026-09-19: v168 BUILT AND DISPATCHED as #401 (observed
       in_progress 22:38Z) — an UNANCHORED `appreciat` arm in SKIP_ROW was
       deleting a whole fund family from every menu in the store.** That

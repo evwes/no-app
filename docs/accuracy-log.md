@@ -17254,3 +17254,49 @@ simply named now.
 containing `appreciat` should go from 55 to several thousand, `confident`
 should not fall, and the bare-house-dominant class should lose Northeast
 Georgia — its largest member by participants.
+
+## 2026-09-19 (23:3xZ) — run #401 verdict (v168): PASSED and MIRRORED. Both pre-registered tests passed, and the reach is 7.05 MILLION participants
+
+**Numbers.** pv 168 at 99.85%; confident **60,119, +5 / −1** against the v167
+store; HIGH 6; **overshoot 344 → 334**, which is the right direction for a
+version that adds real rows to menus; lineups 59,768; dl 104.
+
+**The pre-registered tests, both stated in the v168 entry before the run:**
+
+| test | prediction | result |
+|---|---|---|
+| rows containing `appreciat` | "55 → several thousand" | **55 → 5,766** across 5,369 lineups |
+| `confident` | "should not fall" | +5 / −1 |
+| bare-house class loses its largest member | Northeast Georgia | **gone**; class 23 → 20 plans, 28,113 → 12,762 ppl |
+
+**Reach, measured on the new store: 5,349 published plans / 7,048,088
+participants / 5,746 rows** now show an "Appreciation" holding that the
+unanchored skip arm had been deleting. By participants: Mayo Clinic 114,636
+(`Ariel Appreciation Fund`), O'Reilly Automotive 91,899, Tesla 89,700,
+**Southwest Airlines 85,764 — at 15% of its menu**, Universal Health Services
+80,651 at 5%, Vanderbilt University Medical 74,386, Duke University 69,741,
+NY-Presbyterian 66,650. This is the largest single-fix reach recorded in this
+session, and it came from one word.
+
+**The five gains are large plans, not small ones**: BNSF Railway **33,118
+ppl** and Burlington Northern Santa Fe 8,550 publish for the first time, plus
+Advanced Roofing, Commit Enterprises and the Lucas Museum of Narrative Art.
+
+**The one loss is correct.** Shannon & Wilson (336 ppl) falls to `dx=few`: its
+five rows were `Shannon & Wilson, Inc.` (the sponsor's own name), `Class B
+Common Stock` and `From other qualified plan sponsore` — junk, and with the
+count under the three-row floor the lineup is withdrawn rather than published.
+
+**Mirror.** Mirrored at 23:3xZ with both overrides: `--force` over main's cron
+commit `8952b3bf` (0 acks and 0 plans the branch lacked, plans array
+byte-identical, main newer on 2 acks the next run re-reads) and `--force-data`
+over the single loss, read by name above.
+
+**What this says about the method, and it is not flattering to the audits.**
+No coverage metric, no audit and no gate ever pointed at this. `confident` was
+unaffected — the plans were publishing, just with a fund missing from each
+menu — and the loss triage only ever sees lineups that vanish, never rows. The
+thing that found it was following ONE plan's wrong name to its cause and
+refusing to stop at "the filing is thin". **A defect that removes a row from a
+menu is invisible to every count this project keeps**, and the only instrument
+that sees it is a whole-store row diff or a reader's eye.
