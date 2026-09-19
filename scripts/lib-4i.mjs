@@ -2,8 +2,12 @@
  * extracted from Form 5500 filing PDFs (pdftotext -layout output).
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
+import { readFileSync, existsSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 142;
+export const PARSER_VERSION = 143;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -3068,12 +3072,41 @@ function applyLegend(out, text) {
   if (!out.found || !out.funds.length) return;
   if (!out.funds.some((f) => LEGEND_CODE.test(String(f.name || "").trim()))) return;
   const map = legendMap(text);
-  if (!map) return;
   for (const f of out.funds) {
     const k = String(f.name || "").trim();
-    const nm = map.get(k);
-    if (nm) { f.code = k; f.name = nm; }
+    const nm = map && map.get(k);
+    if (nm) { f.code = k; f.name = nm; continue; }
+    /* v143: NO LEGEND IN THE PUBLIC COPY, BUT THE CODE IS A TICKER. On the
+     * v140 store 249 plans still published Empower codes: their filings carry
+     * the coded table and no LEGEND page at all (or OCR read the "1" as "I"
+     * and the legend the other way). Empower's code is the fund's ticker with
+     * a leading "1", and the SEC's class index (sec-funds.json, generated
+     * from the Commission's own series/class file) names 29k tickers. A
+     * five-letter mutual-fund ticker the index knows is an identification,
+     * not a guess: 2,166 rows / 261 plans / 270,296 participants measured
+     * (IRAFEX -> AMCAP Fund Class R-4). Anything else stays a code. */
+    const t = k.match(/^[1I]([A-Z]{4}X)$/);
+    const hit = t && secTickerName(t[1]);
+    if (hit) { f.code = k; f.name = hit; f.tk = t[1]; }
   }
+}
+let SEC_BY_TICKER = null;
+function secTickerName(tk) {
+  if (SEC_BY_TICKER === null) {
+    SEC_BY_TICKER = new Map();
+    try {
+      const p = join(dirname(fileURLToPath(import.meta.url)), "..", "sec-funds.json");
+      if (existsSync(p)) {
+        for (const [name, ticker, , cls] of JSON.parse(readFileSync(p, "utf8")).funds) {
+          if (!ticker || SEC_BY_TICKER.has(ticker)) continue;
+          const series = String(name).split(" :: ").pop().trim();
+          const c = String(cls || "").trim();
+          SEC_BY_TICKER.set(ticker, c && !new RegExp(c.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i").test(series) ? `${series} ${c}` : series);
+        }
+      }
+    } catch { /* an unreadable index names nothing; codes stay codes */ }
+  }
+  return SEC_BY_TICKER.get(tk) || null;
 }
 
 function parse4iInner(text, assetsEOY, sponsorName = "", codes = "") {

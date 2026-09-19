@@ -14697,3 +14697,56 @@ DEFECT before any member was read. Queue (f) now holds A1 (doubled house,
 display strip shipped, parser half open), B (trustee suffix / bare
 trustee row, two populations, unseparated) and C (two-line colon-less
 issuer, 5 plans).
+
+## 2026-09-19 (00:4xZ) — v143: a coded 4i row whose filing carries no LEGEND is named from the SEC class index when its code is a mutual-fund ticker (2,166 rows / 261 plans / 270,296 ppl; Children's Hospital Colorado 25 of 29 rows named)
+
+**What was wrong.** v140 named Empower-template rows (`1FXAIX`, `IRAFEX`)
+from the filing's own LEGEND block. The 22:2xZ verdict recorded a coded
+residue of 2,466 rows / 267 plans, and the 00:3xZ STATUS queued "the 226
+Empower plans whose LEGEND was not found". Read this cycle
+(`legend-miss.mjs`): **their public copies carry no LEGEND page at all** —
+the legend is on the recordkeeper's statement, not in the attachment DOL
+publishes — so v140's mechanism can never reach them. But the code IS the
+identity: strip the leading `1`/`I` and the remainder is the fund's
+five-letter ticker (`FXAIX` Fidelity 500 Index, `SWORX` Schwab Target
+2055, `PTTRX` PIMCO Total Return Instl). A reader saw `1FXAIX` as the
+name of 16.2% of Children's Hospital Colorado's $1.03B plan.
+
+**The change (`lib-4i.mjs`, PARSER_VERSION 143).** `applyLegend` keeps
+the LEGEND lookup first; when no legend names a row and the code is
+`^[1I]([A-Z]{4}X)$`, `secTickerName` resolves the ticker against
+`sec-funds.json` (the SEC's registered-fund class index, 29,324 rows,
+already in the tree for `match-sec-tickers.mjs`) and publishes the
+series name plus class (`AMCAP FUND Class R-4`), recording `code` and
+`tk` on the row. Rows whose code is not a five-letter `X` ticker
+(`1KGPF`, `1AF-EPG`) keep the code — no guess. `app.js` shows the row's
+`tk` when `fund-er.js` has no entry, so the ticker the filing itself
+stated reaches the fee column.
+
+**Sized from the store, no sampling** (`code-ticker-yield.mjs`): of the
+coded residue, **2,166 rows / 261 plans / 270,296 ppl resolve** (hit),
+967 rows / 236 plans / 242,029 ppl do not (OCR-mangled codes, non-fund
+codes, separate-account codes). Confidence cannot move: the change
+renames rows after the region and ratio are settled.
+
+**Verified.** `node --check` ok; parser gate all specimens green;
+`diff-lineups HEAD` 0 gained / 0 lost / 0 fabricated / 0 moves (the
+corpus holds no legend-less coded filing, which is why one is now
+pinned); smoke test OK. **Positive control on a primary parse:**
+`trace-filing 20251006114856NAL0001830787001 --vs HEAD` (Children's
+Hospital Colorado, 14,457 ppl, no OCR, no fallback) — v142 publishes
+`1FXAIX 16.2%, 1SWORX 6.5%, 1FLCNX 6.5% …`; v143 publishes `Fidelity 500
+Index Fund, Schwab Target 2055 Fund, Fidelity Contrafund K6, … PIMCO
+Total Return Fund Institutional`, **25 of 29 rows named**, the 4
+non-ticker codes kept, 29 rows / ratio 0.981 / confident unchanged.
+(J & S Kidswear, the first specimen tried, parses to a 2-row
+non-confident region locally — its stored lineup came by another path —
+so it exercised nothing; the Children's Hospital trace is the control
+that counts.) Pinned J & S Kidswear `20251015083327NAL0002110403001` as
+`coded-schedule-no-legend-ticker` in `docs/defect-specimens.json`.
+
+**Prediction for the v143 run:** rows matching `^[1I][A-Z0-9]{4,7}$` in
+confident lineups 2,466 → ~300 (the 967 misses minus any the legend path
+already covers); ~2,166 rows gain `tk`; confident +0 / −0; HIGH 4;
+generic-names 128; dominant-row 0. Committed `[skip ci]` while #378
+(v142) is in flight; dispatched after its verdict.

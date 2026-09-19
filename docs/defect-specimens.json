@@ -436,6 +436,13 @@
       "fixed": "v142",
       "sponsor": "Hill Brothers Transportation",
       "was": "the 4i caption printed in a kerned font ('De scription Curre nt / of Inve stm e nt Cost Value') was not recognised as a caption line and glued onto the first holding at 17% of the plan"
+    },
+    {
+      "ack": "20251015083327NAL0002110403001",
+      "class": "coded-schedule-no-legend-ticker",
+      "fixed": "v143",
+      "sponsor": "J & S Kidswear",
+      "was": "an Empower coded schedule whose public copy carries no LEGEND (or whose OCR read the leading 1 as I); the codes are tickers the SEC class index names — 2,166 rows / 261 plans / 270,296 ppl published codes"
     }
   ]
 }

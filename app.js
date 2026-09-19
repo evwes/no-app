@@ -1507,7 +1507,9 @@
         : null;
       // employer stock IS a listed security: the plan's own ticker names it
       const stockRow = /company stock|employer (security|stock)/i.test((f.type || "") + " " + f.name);
-      const tk = stockRow ? (plan.ticker || null) : (info ? info.tk : null);
+      // v143: a row named from the SEC class index carries the ticker the
+      // filing's own code stated; show it even when fund-er has no entry
+      const tk = stockRow ? (plan.ticker || null) : (info ? info.tk : (f.tk || null));
       const star = !stockRow && info && info.comparable;
       if (star) starred = true;
       const er = tab !== "menu" || stockRow || gicRow ? null

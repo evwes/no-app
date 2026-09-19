@@ -237,6 +237,14 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 00:4xZ 2026-09-19: v143 gated and committed `[skip ci]`
+      — a legend-less coded row (`1FXAIX`) is named from the SEC class
+      index when its code is a mutual-fund ticker; 2,166 rows / 261
+      plans / 270,296 ppl resolve, Children's Hospital Colorado 25 of 29
+      rows named on a primary-parse trace; gate green, diff 0/0/0,
+      smoke OK, J & S Kidswear pinned. #378 (v142) still in flight —
+      verdict, mirror, THEN dispatch v143. Next: (f) C, (m), (l), (k).
+      `docs/accuracy-log.md` 2026-09-19 (00:4xZ).
       **STATUS 00:3xZ 2026-09-19: v142 dispatched as #378 (00:20Z, in
       flight; mirror HELD — code ahead of store). (f) A2 CLOSED: 11 of 12
       random names are filed verbatim (platform-branded sub-advised
