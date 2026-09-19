@@ -652,14 +652,17 @@ don't confuse them). Frontend: python http.server + Playwright at
   participants at either end of the plan year), of which **68,259 are
   full-form** filers and 43,523 short-form; 68,767 parse-status entries.
   **Store at v142 (branch AND main, `3dde8717`); `PARSER_VERSION` in the
-  tree is 144 — v143 (part 1: legend-less coded rows named from the SEC
+  tree is 145 — v143 (part 1: legend-less coded rows named from the SEC
   ticker index, 2,166 rows / 261 plans; part 2: a readability term
   decides near-equal region contests — Lulus, Fusion Medical) is in
   flight as run #380 (dispatched 2026-09-19 01:40Z); v144 (the
   itemized-securities fold runs before the display cap, and untyped
   securities are recognised by name — Boeing's 6,937 sleeve positions
-  fold into one row) is committed `[skip ci]` and dispatches after
-  #380's verdict; mirror only once the v143 store lands. OCR v8.**
+  fold into one row) and v145 (a stem dedup collapses a schedule's two
+  renders with wording drift — R&L Carriers, 277 lineups / 488k ppl)
+  are committed `[skip ci]` and dispatch after #380's verdict, in one
+  run if the hour is tight (their predictions are disjoint); mirror only
+  once the v143 store lands. OCR v8.**
   **Re-derived from the local store 2026-09-18 19:5xZ** — `pv139` covers
   68,665 of 68,767 acks (99.85%), tail pv106 18, pv98 10, pv123 10, pv124
   10; `lib-4i` exports 139. (On 2026-09-16 this line said v124 for four

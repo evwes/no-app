@@ -237,6 +237,18 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 01:5xZ 2026-09-19: v145 (queue item i) gated and committed
+      `[skip ci]` behind v144 — a stem dedup collapses a schedule's two
+      renders with wording drift (R&L Carriers 32 → 31 rows, ratio 1.029
+      → 0.957; Pamar's ten duplicate target-date rows); 277 lineups /
+      488k ppl / $0.68B counted twice store-wide; gate green with Plexsys
+      moved on purpose (31 → 30, a glued-digit twin); corpus diff 0/0/0,
+      7 row moves read. #380 (v143) still in flight. Dispatch order after
+      its verdict: v144, then v145 (or both in one run if the hour is
+      tight — their predictions are disjoint: fold/tail vs duplicates).
+      Next: (n) class subtotal beside its itemisation (parse-time
+      arithmetic, post-selection), (k), (f) C.
+      `docs/accuracy-log.md` 2026-09-19 (01:5xZ v145).
       **STATUS 01:4xZ 2026-09-19: draw (seed 20260919) 15/15 real menus;
       Waupaca Foundry's 100-row bond sleeve is v144's class (predict 120
       → ~20); NEW queue item (n): a class subtotal beside its own

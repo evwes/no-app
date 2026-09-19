@@ -14963,6 +14963,57 @@ Insurance Managers, Harding Loevner. Every one is a real menu. Shapes:
   Only the arithmetic at parse time — filed order is in `ordered` — can
   tell the two apart, and the fix belongs post-selection (v136's rule:
   never change region sums before the winner is chosen).
+
+## 2026-09-19 (01:5xZ) — v145 (queue item i): a schedule's two renders with WORDING drift collapse to one row — R&L Carriers' Morley Stable Value counted once (ratio 1.029 → 0.957); 277 lineups / 488,443 ppl / $0.68B counted twice store-wide
+
+**What was wrong.** v74's dedup keys a row on its punctuation-insensitive
+name and drops a same-name same-value repeat (the schedule rendered twice
+in one filing). The two renders also drift in WORDING: R&L Carriers
+(22,449 ppl) files `Morley Stable Value Fund` and `Morley Stable Value` at
+the same $33,954,030, so 7% of the plan was counted twice and the region
+sat at ratio 1.029; Pamar Enterprises publishes every Vanguard target-date
+fund twice (`… 2045` and `… 2045 Fund`); Boston Consulting `Vanguard
+Emerging Markets St…` twice. Re-sized on the v142 store (`dup-rows.mjs`,
+predicate: same non-zero value, names identical once filler words and
+share-class letters are dropped): **277 confident lineups / 488,443 ppl /
+522 rows / $0.68B duplicated.**
+
+**The change (`lib-4i.mjs`, PARSER_VERSION 145).** Beside the v74 key in
+`parseRows`, a STEM key — the name with `fund|funds|inc|class|cl|portfolio|
+shares?|the|trust`, single letters and 1–2 digit tokens removed — and an
+equal value under an equal stem is dropped as the second render. In
+`parseRows`, not post-selection, because it is v74's mechanism (a double
+render inflates a region's sum and lets it outscore or be outscored
+wrongly) and the corpus diff measures the winner flips.
+
+**Verified.** Parser gate all specimens green — **Plexsys moved on
+purpose, 31 → 30 rows**: `Standard Stable Asset Fund` and `Standard Stable
+Asset Fund 1` at $1,260,327 each are one holding with a glued digit, the
+very shape that specimen was pinned for and the v74 key could not see.
+`diff-lineups HEAD` (v144 → v145) over 965 corpus filings: **0 gained / 0
+lost / 0 fabricated / 7 row moves / 1 sum move on a 7-row non-confident
+region (Willis Towers Watson 4.44 → 3.69)**. Row moves read: Pamar 36 → 26
+(ten exact `… 2045` / `… 2045 Fund` pairs), Everlast Roofing 33 → 39 and
+Meaningful Day 17 → 19 (the fuller render of the same menu now wins the
+region), Cigna +1, Lumen −1, Seeds of Health −1, Rising Phoenix −2 — all
+same-value stem pairs. **R&L Carriers 32 → 31 rows, ratio 1.029 → 0.957**,
+pinned as `double-render-with-wording-drift`. Kwik Trip's stored pair
+(`Eaton Vance Small Cap Fund` / `… Small Cap I Fund`) does not reproduce
+on a fresh parse — its stored lineup came by another path; one plan.
+
+**Cost, accepted and recorded:** two genuine lots of one security at one
+value (Goldman's `BNP PARIBAS REV REPO 5.290%` twice) collapse to one —
+under v144 those rows sit inside the managed-account aggregate, so the
+aggregate understates by one lot; 0.5% of that plan.
+
+**Prediction for the v145 run:** duplicated rows 522 → under 60 (the
+residue: pairs the stem still tells apart, and same-lot securities);
+overshoot FALLS by the plans whose ratio was pushed over 1.15 by a
+duplicate; confident +0 / −small (a region whose ratio drops below 0.45
+after dedup was double-counting its way to confidence — read each);
+`rename-ms` shows rows REMOVED in the hundreds across ~270 plans and rows
+ADDED only where a fuller render now wins; HIGH 4; generic-names ≤ 128.
+Committed `[skip ci]` behind v144; dispatches after v144's verdict.
 - **Retail Services Wis** — `[Company Vanguard Fiduciary Trust]`: the
   issuer's second line (`Company`) leads the issuer field, queue (f) C's
   wrapped-issuer shape, now 6 plans.

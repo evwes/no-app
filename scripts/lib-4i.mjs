@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 144;
+export const PARSER_VERSION = 145;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -1869,6 +1869,7 @@ export function parseRows(section, opts = {}) {
   }
 
   const seen = new Map();
+  const seenStem = new Map();
   let totalValue = 0;
   for (const r of leaves) {
     if (!r.value) continue;
@@ -1915,6 +1916,23 @@ export function parseRows(section, opts = {}) {
       if (ea) { ea.row.value += r.value; ea.vals.add(r.value); }
       else seen.set(alt, { row: r, vals: new Set([r.value]) });
       continue;
+    }
+    /* v145 (queue item i): the two renders of a schedule drift in WORDING as
+     * well as typography — R&L Carriers files `Morley Stable Value Fund` and
+     * `Morley Stable Value`, Kwik Trip `Eaton Vance Small Cap Fund` and
+     * `… Small Cap I Fund`, Boston Consulting `Vanguard Emerging Markets St…`
+     * twice — same dollar value, one holding, and the v74 key saw two: 277
+     * confident lineups / 488,443 ppl / $0.68B counted twice. A second key
+     * drops the filler a recordkeeper varies (fund, class, shares, a
+     * share-class letter, a 1-2 digit token); an equal value under an equal
+     * stem is the same row again. Cost, accepted and recorded: two genuine
+     * lots of one security at one value (Goldman's repos) collapse to one. */
+    const ks = k.replace(/\b(?:fund|funds|inc|class|cl|portfolio|shares?|the|trust|[a-z]|\d{1,2})\b/g, " ").replace(/\s+/g, " ").trim();
+    if (ks) {
+      let es = seenStem.get(ks);
+      if (es && es.has(r.value)) continue;
+      if (!es) { es = new Set(); seenStem.set(ks, es); }
+      es.add(r.value);
     }
     totalValue += r.value;
     if (e) {

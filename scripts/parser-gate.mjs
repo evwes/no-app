@@ -338,7 +338,10 @@ const SPECIMENS = [
    * unanchored loan guard removes 7,052 such rows from 6,970 published
    * plans (12,750,205 participants); nothing else about this specimen moved. */
   ["Plexsys (glued-0 dedup)", "20260706150053NAL0023514192001", 36432027,
-    { found: true, n: 31, sum: 37630660 }],
+    // v145: `Standard Stable Asset Fund` and `Standard Stable Asset Fund 1`
+    // at the same $1,260,327 are one holding rendered twice (a glued digit
+    // the v74 key could not see); the stem key drops the second render
+    { found: true, n: 30, sum: 36370333 }],
   // v44: page carry-forward subtotals ("Forward $21,786,094 ...") summed
   // across pages into a fake $197M top "fund" on a statement-page win.
   // v46: brokerage vocabulary demoted its statement region. v51's suffix
