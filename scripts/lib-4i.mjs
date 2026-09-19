@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 152;
+export const PARSER_VERSION = 153;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -601,7 +601,7 @@ function wrapHeadOk(s) {
  * few rows of any long itemisation). The Verizon trust's summary page — a
  * dozen class rows and nothing itemised in the region — is untouched, because
  * its neighbours are labels too and no run forms. */
-const CLASS_ONLY_NAME = /^(?:(?:corporate|common|preferred|government|governmental|u\.?s\.?|treasury|agency|municipal|foreign|domestic|international|global|interest[- ]bearing|cash|equivalents?|securities|stocks?|bonds?|debt|equit(?:y|ies)|debentures?|notes?|obligations?|loans?|participants?|receivables?|other|total|investments?|at|fair|value|contracts?|collective|common\/collective|pooled|separate|accounts?|registered|investment|compan(?:y|ies)|mutual|funds?|trusts?|guaranteed|insurance|synthetic|short[- ]term|fixed[- ]income|real\s+estate|exchange[- ]traded|and|&)\b[\s,\-–—/()]*)+$/i;
+const CLASS_ONLY_NAME = /^(?:(?:corporate|common|preferred|government|governmental|u\.?s\.?|treasury|agency|municipal|foreign|domestic|international|global|interest[- ]bearing|cash|equi[a-z]{4,9}|securities|stocks?|bonds?|debt|equit(?:y|ies)|debentures?|notes?|obligations?|loans?|participants?|receivables?|other|total|investments?|at|fair|value|contracts?|collective|common\/collective|pooled|separate|accounts?|registered|investment|compan(?:y|ies)|mutual|funds?|trusts?|guaranteed|insurance|synthetic|short[- ]term|fixed[- ]income|real\s+estate|exchange[- ]traded|and|&)(?![a-z0-9])[\s,.\-–—/()]*)+$/i;
 const CLASS_NOUN = /(?:stocks?|bonds?|debt|securities|equit(?:y|ies)|loans?|cash|trusts?|accounts?|funds?|compan(?:y|ies)|contracts?|notes?|obligations?|debentures?)\b/i;
 export function isClassLabel(name) {
   const n = String(name || "").trim();
@@ -801,7 +801,17 @@ export function parseRows(section, opts = {}) {
       // "NET INVESTMENT GAIN FROM MASTER TRUST $105,798,097" (Kohler) is a
       // statement line, not a holding
       !/\b(?:gain|loss|income|transfers?|expenses?|contributions? (?:to|from))\b/i.test(t);
-    if ((SKIP_ROW.test(t) && !trustRow) || DATE_LINE.test(t)) {
+    /* v153: a BOND is not a statement line whatever word it carries. The
+     * unanchored statement arm's `receivable` dropped every auto-loan
+     * securitization in Marriott's corporate-bond sleeve — `ALLY AUTO
+     * RECEIVABLES TR 2023-A B 6.01% 01/17/2034`, 43 rows — so the class
+     * subtotal's run summed to 96.3% and `CORPORATE BONDS` published as a
+     * $578M holding (the Energy Transfer `transfer` trap, next word). A
+     * coupon followed by a maturity date, or a securitization series
+     * (`TRUST 2021-2`), with a trailing value, is a security row. */
+    const securityRow = valueRe.test(t) &&
+      /\d+(?:\.\d+)?\s*%(?:\s*\/\s*var)?\s+(?:due\s+)?\d{1,2}[\/-]\d{1,2}[\/-]\d{2,4}\b|\b(?:tr|trust|funding|receivables|llc)\s+(?:20)?\d\d-[a-z0-9]{1,6}\b/i.test(t);
+    if ((SKIP_ROW.test(t) && !trustRow && !securityRow) || DATE_LINE.test(t)) {
       nameBuf = [];
       totalWrap = /^(sub|grand )?total\b/i.test(t) && !valueRe.test(t);
       continue;
@@ -3180,7 +3190,7 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
      * `INTEREST-BEARING CASH`) are labels too, and six of them summed within
      * 2% of the `COMMON/COLLECTIVE TRUST` total, which the first draft read
      * as that label's itemisation (parser gate) */
-    const CLASS_ONLY = /^(?:(?:corporate|common|preferred|government|governmental|u\.?s\.?|treasury|agency|municipal|foreign|domestic|international|global|interest[- ]bearing|cash|equivalents?|securities|stocks?|bonds?|debt|equit(?:y|ies)|debentures?|notes?|obligations?|loans?|participants?|receivables?|other|total|investments?|at|fair|value|contracts?|collective|common\/collective|pooled|separate|accounts?|registered|investment|compan(?:y|ies)|mutual|funds?|trusts?|guaranteed|insurance|synthetic|short[- ]term|fixed[- ]income|real\s+estate|and|&)\b[\s,\-–—/()]*)+$/i;
+    const CLASS_ONLY = /^(?:(?:corporate|common|preferred|government|governmental|u\.?s\.?|treasury|agency|municipal|foreign|domestic|international|global|interest[- ]bearing|cash|equi[a-z]{4,9}|securities|stocks?|bonds?|debt|equit(?:y|ies)|debentures?|notes?|obligations?|loans?|participants?|receivables?|other|total|investments?|at|fair|value|contracts?|collective|common\/collective|pooled|separate|accounts?|registered|investment|compan(?:y|ies)|mutual|funds?|trusts?|guaranteed|insurance|synthetic|short[- ]term|fixed[- ]income|real\s+estate|and|&)(?![a-z0-9])[\s,.\-–—/()]*)+$/i;
     const isLabel = (r) => {
       const n = String((r && r.name) || "").trim();
       return !!n && (GENERIC_TYPE_ANY.test(n) || GENERIC_TYPE_NAME.test(n) || TYPE_LABEL_ROW.test(n) ||

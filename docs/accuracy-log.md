@@ -15598,3 +15598,62 @@ to ~0 beside a fold; Boeing's page shows 42 rows; no lineup's sum moves
 (a fold is a re-grouping). A plan whose whole schedule is dated trusts
 (the 28-of-30 master trust) folds to one row and may lose confidence on
 the 3-row floor — read it by name in the verdict.
+
+## 2026-09-19 (05:5xZ) — v153: Marriott's two residual class rows, two causes — a bond is not a statement line whatever word it carries (`RECEIVABLES`), and v149's class-label test could not see past a period or an ampersand (`U.S.`, `CASH & CASH`)
+
+**Sized first, from the trace, not the eye.** After v149 + v152 Marriott
+(152,118 ppl) still published `CORPORATE BONDS` $578,350,781 at 4.7% and
+`U.S. GOVERNMENT DEBT SECURITIES` $520,647,825 at 4.2% — class lines
+whose itemisation follows them. `walk-run.mjs` replays the row trace from
+each label the way `subtotalIndices` does and prints where the run stops:
+
+- **`CORPORATE BONDS`: the run reached the next label at 96.28% of the
+  label — 668 rows where the filing prints 739.** Diffing the text's
+  names against the trace's: **43 of the lost rows carry `RECEIVABLES`**
+  (`ALLY AUTO RECEIVABLES TR 2023-A B 6.01% 01/17/2034`, `AMERICREDIT
+  AUTOMOBILE RECEIVABLES TRUST 2021-2 D`, `CARMAX SELECT RECEIVABLES
+  TRUST 2024-A 5.35%`, `SIERRA TIMESHARE 2021-2 RECEIVABLES FUNDING
+  LLC`); the rest are page furniture (`DECEMBER 31, 2024`, `EIN:`). The
+  line-level `SKIP_ROW`'s unanchored statement arm has a bare
+  `receivable` — the Energy Transfer `transfer` trap, next word over. So
+  every auto-loan securitization in a bond sleeve was dropped as a
+  statement line, and the subtotal test, which wants 97%, could not see
+  the run add up.
+- **`U.S. GOVERNMENT DEBT SECURITIES`: the run passed the 100.5% ceiling
+  on `CASH & CASH EQUILVALENTS` (sic) — at 99.99999% of the label the row
+  before it.** The next class line did not read as a label. Not the
+  misspelling: `isClassLabel` returned false for **`U.S. GOVERNMENT DEBT
+  SECURITIES` itself, and for every `&`-joined label.** `CLASS_ONLY_NAME`
+  ends each word with `\b`, and after `U.S.` or `&` the next character is
+  a space — non-word to non-word, no boundary — so any label containing a
+  period-terminated abbreviation or an ampersand failed the test since
+  v149 shipped. Marriott's `COMMON STOCKS` was caught only because its
+  words are plain.
+
+**The change.** (1) In `parseRows`, a line with a trailing value that
+carries a coupon followed by a maturity date (`5.9% 03/09/2026`,
+`5.3%/VAR 03/15/2077`, `5.300% Due 03-15-77`) or a securitization series
+(`TRUST 2021-2`, `TR 2023-A`, `FUNDING LLC 2021-2`) is a `securityRow`
+and `SKIP_ROW`'s statement vocabulary does not apply to it. Narrow on
+purpose: a loan-description sentence (`4.25%-9.50%, maturing …`) has no
+date directly after its coupon. (2) `CLASS_ONLY_NAME`'s word terminator is
+`(?![a-z0-9])` and its separator class admits a period, in both copies;
+`equivalents?` widened to `equi[a-z]{4,9}` so the filing's own typo
+reads as the class word it is. Positive/negative controls: `CASH & CASH
+EQUILVALENTS`, `U.S. GOVERNMENT DEBT SECURITIES`, `U.S. TREASURY NOTES`,
+`COMMON/COLLECTIVE TRUST` → labels; `S&P 500 INDEX FUND`, `AT&T INC`,
+`Vanguard U.S. Growth Fund` → not. `PARSER_VERSION` 153.
+
+**Gate green; corpus 0 / 0 / 0 / 0; one plan moves and it is the one
+targeted:** Marriott 39 → 37 rows, ratio 1.073 → **0.980**, the trace
+now removing ten class subtotals worth $22.0B at the leaves stage (five
+labels, each printed twice in the two renders). Its page: the fold 28.2%,
+its own stock 17.5%, the Vanguard Retirement trusts, Northern Trust S&P
+500, Fidelity Contra — and no class line.
+
+**Prediction for the run:** class-subtotal sizer (`class-subtotal.mjs`)
+73 plans → fewer, by however many carry `U.S.`/`&` labels; bond sleeves
+with `RECEIVABLES` securitizations gain rows inside their folds
+(position counts rise, sums unchanged); confident +0 / −0. Recorded but
+unsized: any OTHER statement word in a bond name (`DISTRIBUTION`,
+`PAYABLE`) is now exempt only when the row carries a coupon and date.
