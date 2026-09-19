@@ -7,8 +7,14 @@ const byAck = P.byAck();
  * NOT_FUND regex with no generic-type arm at all, so ATH Holding's
  * `Collective investment trusts` at 91.7% was invisible to it — the third
  * hand-rolled copy of a shipped predicate this project has caught. */
-import { NOT_FUND_SHAPED, GENERIC_TYPE_ANY } from "/home/user/no-app/scripts/lib-4i.mjs";
-const NOT_FUND = { test: (n) => NOT_FUND_SHAPED.test(n) || GENERIC_TYPE_ANY.test(n) };
+/* v166: and the ASC 820 reconciliation line, which neither of the other two
+ * holds. Treehouse Foods published `Investments measured at NAV` at 99.8% of a
+ * three-row menu and this audit printed 0 — a dominant non-fund row well above
+ * the 90% floor, invisible because the vocabulary did not contain it. The
+ * parser no longer publishes the shape; the audit carries it so the class
+ * cannot grow back silently. */
+import { NOT_FUND_SHAPED, GENERIC_TYPE_ANY, NAV_NOTE_ROW } from "/home/user/no-app/scripts/lib-4i.mjs";
+const NOT_FUND = { test: (n) => NOT_FUND_SHAPED.test(n) || GENERIC_TYPE_ANY.test(n) || NAV_NOTE_ROW.test(n) };
 let junk = 0, junkD = 0, fundish = 0, fundishD = 0;
 const list = [];
 for (const f of readdirSync("/home/user/no-app/data/lineups")) {

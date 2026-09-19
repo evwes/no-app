@@ -611,6 +611,27 @@
       "fixed": "v165",
       "sponsor": "Bunge North America",
       "was": "the OTHER direction of the same fix, pinned on purpose. This plan's whole published menu was one master-trust pointer ('Brokerage, Collective Trust, etc.)' with iss 'Interest Held in') at 100% plus the two cover rows. Removing the cover rows changes the region scores and the plan loses confidence entirely (9 rows at ratio 3.93). That is the CORRECT outcome -- the lineup was a pointer, not a menu -- but it is the reminder that a row-removal rule also decides which region wins. Masco is the measured cost of that: 28 -> 26 rows, a duplicate $58.8M brokerage line dropped with the junk, ratio 0.897 -> 0.866."
+    },
+    {
+      "ack": "20240627151945NAL0021931778001",
+      "class": "asc820-nav-reconciliation-line-as-a-holding",
+      "fixed": "v166",
+      "sponsor": "Meta Platforms (84,993 ppl)",
+      "was": "the fair-value note's ASC 820 line 'Investments measured at NAV' published as a $18,809,051,400 holding at 82.4% of the plan, beside 'Participants'' and 'Employer's' fragments — the plan's real 20-fund State Street and Vanguard menu was in the same filing. 108 rows / 104 plans / 274,765 ppl store-wide. NOTE this is the plan's 2023 FALLBACK filing (the live plan ack is 20260618145652NAL0004417570001); trace it with --assets 22398435836 --sponsor 'Meta Platforms, Inc.'"
+    },
+    {
+      "ack": "20260721092645NAL0010922049001",
+      "class": "nav-note-cleanup-must-not-promote-the-rest-of-the-note",
+      "fixed": "v166",
+      "sponsor": "Lumen Technologies",
+      "was": "THE NEGATIVE CONTROL, and it is why v166 marks the REGION rather than deleting the row. The first version of v166 dropped the NAV line as a junk row; Lumen then went from unconfident to CONFIDENT on sixteen rows that are asset-class labels and statement lines — '(exclusive of the Master Trust)' 16%, 'Net investment (loss) income' 13%, 'Net (decrease) increase' 11% — a fabricated lineup created by a cleanup. Marking the region a statement leaves it unpublishable at any row count. Must stay CONFIDENT=false."
+    },
+    {
+      "ack": "20251008144211NAL0005706785001",
+      "class": "nav-note-as-the-whole-menu",
+      "fixed": "v166",
+      "sponsor": "Treehouse Foods",
+      "was": "a three-row published menu that was 99.8% 'Investments measured at NAV'. Above audit-dominant-row's 90% floor and invisible to it, because neither NOT_FUND_SHAPED nor GENERIC_TYPE_ANY contains the phrase — the audit printed 0 while this sat in the store. v166 exports NAV_NOTE_ROW and the audit carries it, so the class cannot grow back silently."
     }
   ]
 }

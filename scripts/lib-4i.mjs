@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 165;
+export const PARSER_VERSION = 166;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -667,6 +667,11 @@ export function subtotalIndices(rows) {
 const ISS_TYPE_TAIL = /\b(?:variable annuit(?:y|ies)|registered investment compan(?:y|ies)|mutual funds?|pooled separate accounts?|separate accounts?|common\/?collective trusts?|collective (?:investment )?trusts?|insurance company general accounts?|master trust)\s*$/i;
 
 const FORM_LINE = /^(?:\d[a-z]\(\d\)(?:\([A-Za-z]\))?|\([a-z]\)\s+(?:amount|total|common|preferred|all other|other)\b\.{0,3}|le\s+\d?\s*1f\b)/i;
+/* v166: the ASC 820 reconciliation line. It belongs to the fair-value NOTE and
+ * never to a line 4i schedule, so one such row is enough to say what a region
+ * is. Kept deliberately narrow: the phrase must LEAD the name, and the
+ * qualifier ("(practical expedient)", "(a)", an OCR smudge) may trail it. */
+export const NAV_NOTE_ROW = /^(?:total\s+)?investments?,?\s+(?:measured|valued|carried|reported|stated)\s+at\s+(?:net asset value|nav|n\.a\.v\.)\b/i;
 /* v155 part 2: a `(N)` prefix is a Schedule H LINE only when what follows is
  * that line's own text — `(3) Other`, `(8) Participant loans`, `(14) … held in
  * insurance company general account`, `(2) From this plan`. Filings also
@@ -3001,9 +3006,33 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
        * kept a competing 2-row region alive. 34 lineups / 26,652 ppl on the
        * v154 store, every one read as a statement. */
       const labely = judged.filter((f) => isClassLabel(f.name)).length;
+      /* v166: ONE LINE IDENTIFIES THE FAIR-VALUE NOTE, SO IT IS ENOUGH ON ITS
+       * OWN. ASC 820 requires the assets valued using NAV as a practical
+       * expedient to be reconciled to the statement of net assets on a line of
+       * their own — "Investments measured at net asset value" — and that line
+       * appears in the NOTE, never in a Schedule H line 4i table. Published as
+       * a holding it carries a number as large as the plan: 108 rows / 104
+       * plans / 274,765 participants, 25 of them at >=10% of the menu, the
+       * largest being META PLATFORMS, whose 84,993 participants are shown one
+       * "fund" of $18,809,051,400 at 82% of the plan. Neither audit could see
+       * it — it is not a generic TYPE label, so `audit-generic-names` passes
+       * it, and at 82% it sits under `audit-dominant-row`'s 90% floor.
+       *
+       * REMOVING THE ROW WAS TRIED FIRST AND WAS WRONG, which is the part
+       * worth keeping. Deleting it let the REST of the note publish: Lumen
+       * Technologies went from unconfident to CONFIDENT on sixteen rows that
+       * are asset-class labels and statement lines — `(exclusive of the Master
+       * Trust)` at 16%, `Net investment (loss) income` at 13%, `Net (decrease)
+       * increase` at 11% — a fabricated lineup created by a cleanup, which is
+       * exactly the hazard the STMT_ROW comment above already records ("removing
+       * junk can promote a still-junky region"). Marking the REGION instead
+       * fixes both ends: Meta's real 20-fund menu wins because the note is
+       * demoted, and Lumen's note cannot publish at all. */
+      const navNote = judged.some((f) => NAV_NOTE_ROW.test(String(f.name || "").trim()));
       const isStatement = (judged.length <= 8 && stmty / judged.length >= 0.5)
         || (judged.length <= 3 && (stmty + classy) / judged.length >= 0.5)
-        || (judged.length >= 3 && labely / judged.length >= 0.6);
+        || (judged.length >= 3 && labely / judged.length >= 0.6)
+        || navNote;
       // recordkeeper CODE pages (Empower group-annuity renditions): the same
       // menu re-filed as fund codes ("1GGCG50", "1NTSPI4") under its OWN
       // "SCHEDULE OF ASSETS" heading, with cents columns the v43 fix made
@@ -3142,8 +3171,17 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
     const wt = best.funds.reduce((a, f) => (f.value > a.value ? f : a), best.funds[0]);
     const wn = String((wt || {}).name || "").trim();
     const wsum = best.funds.reduce((a, f) => a + (+f.value || 0), 0);
+    /* v166: ...and the ASC 820 reconciliation line is the same shape under a
+     * name none of those three patterns holds. Meta Platforms' winner is the
+     * fair-value note, topped by `Investments measured at NAV` at 82.4% of its
+     * own reading, while the plan's real 20-fund State Street and Vanguard
+     * menu sits in the same filing as `bestMenu`. Marking the note a statement
+     * (above) stops it PUBLISHING but does not stop it WINNING — its ratio is
+     * 1.019 by construction, since it reconciles to the plan — so without this
+     * arm the plan simply loses its lineup instead of gaining the menu. */
     if (wsum && (+wt.value || 0) / wsum >= 0.5 &&
-        (GENERIC_TYPE_NAME.test(wn) || AGG_DISCLOSURE.test(wn) || NOT_FUND_SHAPED.test(wn))) best = bestMenu;
+        (GENERIC_TYPE_NAME.test(wn) || AGG_DISCLOSURE.test(wn) || NOT_FUND_SHAPED.test(wn) ||
+         NAV_NOTE_ROW.test(wn))) best = bestMenu;
   }
   /* v144: post-selection works on the UNCAPPED winner so the itemized fold
    * sees every row; the display cap is re-applied after the folds (below)
