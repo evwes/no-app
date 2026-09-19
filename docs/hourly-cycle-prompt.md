@@ -237,6 +237,17 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 02:4xZ 2026-09-19: #380 (v143) PASSED — pv 143 99.85%,
+      +0/−0, HIGH 4, overshoot 354, 2,224 rows / 271 plans / 286k ppl
+      renamed code → fund, Lulus/Fusion on readable regions; MIRRORED
+      `7d2349b1` unforced. **#381 dispatched 02:36Z = v144 + v145 + v146
+      in one run** (in flight; mirror HELD until it lands). Coded residue
+      1,103 rows / 238 plans (930 non-ticker codes; 10 plans on a path
+      without the legend step). Next wake: verdict #381 against `old8`
+      (v143 shards) — fold/tail (Boeing 6,937 positions), duplicates
+      (R&L), trust pointers (Energy Transfer, Sunoco), two-column wraps
+      (Rush Copley), doubled house (238 plans) — then mirror, draw, (n).
+      `docs/accuracy-log.md` 2026-09-19 (02:4xZ).
       **STATUS 02:3xZ 2026-09-19 (b): v146 PART 2 committed `[skip ci]` —
       (f) A1's parser half: a lone footnote letter in column (a) pushed
       the house into the description and the double-render dedup kept

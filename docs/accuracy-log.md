@@ -15162,6 +15162,42 @@ house and a trailing `N/R`). Pinned as
 doubled 238 plans → near 0; names ending in `N/R` → 0; the raw-first
 ticker lookup gains on those rows (the display strip already matched them,
 so `tkShare` moves little); confident +0 / −0.
+
+## 2026-09-19 (02:4xZ) — run #380 verdict: v143 PASSED and is live (`7d2349b1`, unforced) — 2,224 rows / 271 plans / 286,418 ppl renamed code → fund, Lulus and Fusion Medical on their readable regions; v144 + v145 + v146 dispatched as #381
+
+**Numbers.** Run 54 min. pv 143 covers 68,662 of 68,767 (99.85%);
+confident 60,107 (**+0 / −0**, as predicted for both parts); HIGH 4;
+overshoot 356 → 354 / 511,205 ppl; aggRow 56; generic-names 128;
+dominant-row 0; `tkShare` 24.28 → 24.33; dl 104; reader failures 1.
+
+**Whole-store multiset diff against the v142 shards (`3dde8717`):**
+**rename:other 2,224 rows / 271 plans / 286,418 ppl** (prediction 2,166 /
+261 / 270,296 — the SEC-index naming, plus part 2's readable-region
+swaps); removed 479 rows / 33 plans and added 338 / 31 plans (the region
+swaps: Lulus 19 → 23 rows, Fusion 28 kerned → 28 clean); lengthened 42 /
+9 plans; caption-stripped 9 / 2. Positive controls in the store: Lulus
+`T. Rowe Price Retirement 2055` (23 rows), Fusion Medical `RETIREPILOT MOD
+2055 FUND R1 [iss GREAT GRAY TRUST COMPANY]` (28), Children's Hospital
+Colorado `Fidelity 500 Index Fund`, `Schwab Target 2055 Fund` (29 rows,
+25 named).
+
+**Where the prediction was wrong, stated:** it said the coded residue
+would fall "2,466 → ~300". Actual: tickers the index names **2,166 → 173
+rows** (10 small plans, 6,244 ppl, whose lineups reach the store by a path
+that does not run the legend step — Trans-West 28 of 33 rows still coded;
+open), and the non-ticker codes **967 → 930** — those were never going to
+resolve, and the ~300 figure wrongly netted them out. Residue 1,103 rows /
+238 plans, of which 930 need a different source than the SEC index.
+Readability class (`unread-size.mjs`, ≥20% unreadable names) **295 → 215
+plans / 365,537 ppl**.
+
+**Mirror.** `mainvsbr2`: 0 acks / 0 plans on main the branch lacked; main
+had taken no commit since the last mirror, so `mirror.sh` passed
+**unforced** (fast-forward `3dde8717 → 7d2349b1`); data gate +0 / −0.
+`pages-build-deployment` #513 building it. **v144 + v145 + v146 dispatched
+as #381 at 02:36Z on `7d2349b1`** — one run, four disjoint predictions
+(fold/tail, duplicates, trust pointers, two-column wraps + doubled house);
+the verdict reads each against the v143 shards (`old8`).
 - **Retail Services Wis** — `[Company Vanguard Fiduciary Trust]`: the
   issuer's second line (`Company`) leads the issuer field, queue (f) C's
   wrapped-issuer shape, now 6 plans.
