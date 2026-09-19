@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 154;
+export const PARSER_VERSION = 155;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -313,7 +313,7 @@ function splitNameDesc(body) {
 /* Remove share counts, rates, and cost markers from a description column so
  * only the investment's name remains. */
 function cleanDesc(desc) {
-  let d = desc.replace(/\*+/g, " ");
+  let d = desc.replace(/[*^]+/g, " ");
   d = d.replace(/\b[\d,]+(\.\d+)?\s*(shares?|units?|interests?)\b/gi, " ");
   d = d.replace(/\b(interest )?rates? (of|from|ranging).*$/i, " ");
   d = d.replace(/\bmaturit(y|ies).*$/i, " ");
@@ -374,7 +374,7 @@ const INSTITUTION_SUFFIX = /\b(?:trust (?:company|co)|bank|advisors?|asset manag
  * (a hand-rolled generic-name list, a hand-rolled fund-shape test), and the
  * reason `isLoanNoteName` was exported at v131. */
 export function isHouseName(nc) {
-  const s = String(nc || "").trim().replace(/\s+/g, " ").replace(/^[*(]+\s*|\s*[*)]+$/g, "");
+  const s = String(nc || "").trim().replace(/\s+/g, " ").replace(/^[*^(]+\s*|\s*[*^)]+$/g, "");
   if (!s) return true;                 // no identity at all — the description is all there is
   if (HOUSE_ONLY.test(s)) return true;
   return INSTITUTION_SUFFIX.test(s) && s.split(/\s+/).length <= 5;
@@ -601,8 +601,8 @@ function wrapHeadOk(s) {
  * few rows of any long itemisation). The Verizon trust's summary page — a
  * dozen class rows and nothing itemised in the region — is untouched, because
  * its neighbours are labels too and no run forms. */
-const CLASS_ONLY_NAME = /^(?:(?:corporate|common|preferred|government|governmental|u\.?s\.?|treasury|agency|municipal|foreign|domestic|international|global|interest[- ]bearing|cash|equi[a-z]{4,9}|securities|stocks?|bonds?|debt|equit(?:y|ies)|debentures?|notes?|obligations?|loans?|participants?|receivables?|other|total|investments?|at|fair|value|contracts?|collective|common\/collective|pooled|separate|accounts?|registered|investment|compan(?:y|ies)|mutual|funds?|trusts?|guaranteed|insurance|synthetic|short[- ]term|fixed[- ]income|real\s+estate|exchange[- ]traded|and|&)(?![a-z0-9])[\s,.\-–—/()]*)+$/i;
-const CLASS_NOUN = /(?:stocks?|bonds?|debt|securities|equit(?:y|ies)|loans?|cash|trusts?|accounts?|funds?|compan(?:y|ies)|contracts?|notes?|obligations?|debentures?)\b/i;
+const CLASS_ONLY_NAME = /^(?:(?:corporate|common|preferred|government|governmental|u\.?s\.?|treasury|agency|municipal|foreign|domestic|international|global|interest[- ]bearing|cash|equi[a-z]{4,9}|securities|stocks?|bonds?|debt|equit(?:y|ies)|debentures?|notes?|obligations?|loans?|participants?|receivables?|other|total|investments?|at|fair|value|contracts?|collective|common\/collective|pooled|separate|accounts?|registered|investment|compan(?:y|ies)|mutual|funds?|trusts?|guaranteed|insurance|synthetic|short[- ]term|fixed[- ]income|real\s+estate|exchange[- ]traded|variable|fixed|annuit(?:y|ies)|(?:non)?benefit[- ]responsive|custodial|general|and|&)(?![a-z0-9])[\s,.\-–—/()]*)+$/i;
+const CLASS_NOUN = /(?:stocks?|bonds?|debt|securities|equit(?:y|ies)|loans?|cash|trusts?|accounts?|funds?|compan(?:y|ies)|contracts?|notes?|obligations?|debentures?|annuit(?:y|ies))\b/i;
 export function isClassLabel(name) {
   const n = String(name || "").trim();
   return !!n && (GENERIC_TYPE_ANY.test(n) || GENERIC_TYPE_NAME.test(n) || (CLASS_ONLY_NAME.test(n) && CLASS_NOUN.test(n)));
@@ -629,6 +629,19 @@ export function subtotalIndices(rows) {
 
 /* v154: a TYPE phrase closing an issuer cell — see the two uses in parseRows and parse4i. */
 const ISS_TYPE_TAIL = /\b(?:variable annuit(?:y|ies)|registered investment compan(?:y|ies)|mutual funds?|pooled separate accounts?|separate accounts?|common\/?collective trusts?|collective (?:investment )?trusts?|insurance company general accounts?|master trust)\s*$/i;
+
+const FORM_LINE = /^(?:\(\d{1,2}\)\s|\d[a-z]\(\d\)(?:\([A-Za-z]\))?|\([a-z]\)\s+(?:amount|total|common|preferred|all other|other)\b\.{0,3}|le\s+\d?\s*1f\b)/i;
+
+/* v155: a dead-heat tie-break between two renderings of one schedule — the
+ * share of rows with a lowercase letter (mixed case beats ALL-CAPS
+ * abbreviation) and the mean name length against 40 (fuller beats clipped),
+ * each half; 0..1, scaled by 0.002 at the score so it never outweighs a row. */
+function nameQuality(rows) {
+  if (!Array.isArray(rows) || !rows.length) return 0;
+  let lower = 0, len = 0;
+  for (const r of rows) { const n = String(r.name || ""); if (/[a-z]/.test(n)) lower++; len += n.length; }
+  return 0.5 * (lower / rows.length) + 0.5 * Math.min(1, len / rows.length / 40);
+}
 
 export function parseRows(section, opts = {}) {
   const rows = [];
@@ -1049,7 +1062,7 @@ export function parseRows(section, opts = {}) {
     const cells = t.split(/\s{3,}/).filter(Boolean);
     const laidOut = cells.length >= 3;
     if (!laidOut && wordsIn(t) > 14 && !/\$/.test(t)) { nameBuf = []; continue; }
-    let body = t.slice(0, t.length - vm[0].length).trim().replace(/^\*+\s*/, "");
+    let body = t.slice(0, t.length - vm[0].length).trim().replace(/^[*^]+\s*/, "");
     body = stripTrailingColumns(body);
     // a bare number with no name on the same line is a leaked year/page/column
     if (!body) { nameBuf = []; continue; }
@@ -1948,6 +1961,12 @@ export function parseRows(section, opts = {}) {
     // Schedule H part-II item lines ("(c) Value of interest in ...") leak
     // when a type-cut removes their dotted leaders before the leader check
     if (/^\(?[a-z0-9]{1,3}\)\s*value of\b|^value of interest\b/i.test(name.trim())) continue;
+    /* v155: a Schedule H / Form 5500 LINE REFERENCE is not a holding — `le 1f`,
+     * `1d(2) 0 0 le 0 0 1f`, `(a) Amount (b) Total 2b(6)`, `2e(2) 0 2e(3)`,
+     * `(3) Other`, `6a(2), 6b, 6c` — form pages parsed as a region published
+     * these on 75 confident lineups / 298k ppl (State Street and Deutsche
+     * Bank 12 of 17 rows; Endeavor Health's 2023 fallback `le 1f` at 88%). */
+    if (FORM_LINE.test(name.trim())) continue;
     // rows often carry no type of their own — it lives in the section header
     // ("Common/Collective Trusts"). SDBA/loans must not inherit: those section
     // types would wrongly collapse itemized rows.
@@ -1973,18 +1992,19 @@ export function parseRows(section, opts = {}) {
      * none of its own (a classified phrase only — a tail `classify` cannot
      * name stays on the cell). */
     let issCell = iss ? iss.replace(/[*^]+/g, "").trim() : "";
+    let issTail = false;
     if (issCell) {
       const tail = issCell.match(ISS_TYPE_TAIL);
       if (tail && tail.index >= 3) {
         const head = issCell.slice(0, tail.index).replace(/[\s,\-–—/]+$/, "");
         const tType = classify(tail[0]);
-        if (head.length >= 3 && tType && tType !== "SDBA" && tType !== "Participant loans") {
-          issCell = head;
-          if (!rowType) rowType = tType;
+        if (head.length >= 3 && tType !== "SDBA" && tType !== "Participant loans") {
+          issCell = head; issTail = true;
+          if (!rowType && tType) rowType = tType;
         }
       }
     }
-    rows.push({ name: name.slice(0, 90), type: rowType, value, sec: curSection, ...(type ? { ownType: 1 } : {}), ...(issCell ? { iss: issCell.slice(0, 60) } : curIss ? { iss: curIss.slice(0, 60) } : {}), ...(leadStripped ? { _sl: 1 } : {}) });
+    rows.push({ name: name.slice(0, 90), type: rowType, value, sec: curSection, ...(type ? { ownType: 1 } : {}), ...(issCell ? { iss: issCell.slice(0, 60), ...(issTail ? { _it: 1 } : {}) } : curIss ? { iss: curIss.slice(0, 60) } : {}), ...(leadStripped ? { _sl: 1 } : {}) });
   }
 
   // ARITHMETIC subtotal removal (owner directive after Sempra: takeaways
@@ -2745,8 +2765,16 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
       // ≤3-row regions of class aggregates ("Registered investment companies")
       // are statement fragments too — v34's dedup fixed THEIR double-rendered
       // ratios as well, and 22 of them displaced real 15-35 row menus
+      /* v155: a region whose rows are MOSTLY class labels is a statement at
+       * any length — Seattle University's `Variable annuity accounts / Fixed
+       * annuity contracts / Pooled separate account` (5 of 5) published as a
+       * confident menu at 0.52 once v153 part 2 removed the junk row that had
+       * kept a competing 2-row region alive. 34 lineups / 26,652 ppl on the
+       * v154 store, every one read as a statement. */
+      const labely = judged.filter((f) => isClassLabel(f.name)).length;
       const isStatement = (judged.length <= 8 && stmty / judged.length >= 0.5)
-        || (judged.length <= 3 && (stmty + classy) / judged.length >= 0.5);
+        || (judged.length <= 3 && (stmty + classy) / judged.length >= 0.5)
+        || (judged.length >= 3 && labely / judged.length >= 0.6);
       // recordkeeper CODE pages (Empower group-annuity renditions): the same
       // menu re-filed as fund codes ("1GGCG50", "1NTSPI4") under its OWN
       // "SCHEDULE OF ASSETS" heading, with cents columns the v43 fix made
@@ -2786,6 +2814,12 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
           - (isProvPage ? 0.35 : 0)
           - houseShare(judged) * 0.35
           - unreadableShare(judged) * 0.04
+          /* v155: exact ties between two renderings of one schedule (same rows,
+           * same ratio) used to fall to document order, and any junk row that
+           * came or went flipped 187 lineups / 189k ppl between renders in one
+           * version. Below every other term's step: mixed case and fuller names
+           * decide only a dead heat. */
+          + nameQuality(judged) * 0.002
           /* a reconstructed view is a repair, not a reading of the filing, so
            * it must win clearly rather than by a hair. Without this Black
            * Hills' honest 22-row region lost by 0.003 to a repaired sibling
@@ -3350,7 +3384,7 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
      * room. The fold reveals real funds and buries securities; it never
      * trades one hidden tail for a visible one. */
     const fundish = (f) => !f._deep || /holdings \(\d+ positions\)$/.test(f.name) ||
-      (f.type && !SEC_TYPE.test(f.type)) || (FUND_PRODUCT.test(f.name) && !SINGLE_ISSUER.test(f.name));
+      (f.type && !SEC_TYPE.test(f.type)) || (FUND_PRODUCT.test(f.name) && !SINGLE_ISSUER.test(f.name) && !DATED_SEC.test(f.name));
     const shown = funds.filter(fundish).sort((a, b) => b.value - a.value);
     const buried = funds.filter((f) => !fundish(f));
     const c1 = cutTail(shown);
@@ -3369,15 +3403,19 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
    * menu (`[T. Rowe Price] Retirement 2050 Fund`) carries no type word and
    * is untouched; the threshold is 90% of rows sharing one cell. */
   if (funds.length >= 5) {
-    const tally = new Map();
-    for (const f of funds) if (f.iss) tally.set(f.iss, (tally.get(f.iss) || 0) + 1);
+    const tally = new Map(), tailed = new Map();
+    for (const f of funds) if (f.iss) { tally.set(f.iss, (tally.get(f.iss) || 0) + 1); if (f._it) tailed.set(f.iss, (tailed.get(f.iss) || 0) + 1); }
     for (const [cell, n] of tally) {
-      if (n / funds.length >= 0.9 && ISS_TYPE_TAIL.test(cell)) {
+      /* the cell's type tail was stripped at row creation (`_it`), so judge
+       * the tail there: a headless `College Retirement Equities Fund` on 90%
+       * of rows is still the statement's label */
+      if (n / funds.length >= 0.9 && (ISS_TYPE_TAIL.test(cell) || (tailed.get(cell) || 0) === n)) {
         if (TRACE_ROWS) console.error(`[iss] statement-level issuer cell cleared from ${n} of ${funds.length} rows: ${JSON.stringify(cell)}`);
         for (const f of funds) if (f.iss === cell) delete f.iss;
       }
     }
   }
+  for (const f of funds) delete f._it;
   tracePost("after-fold-and-cap");
 
   // trust-POINTER pages: a member plan's own 4i is often just "Interest in

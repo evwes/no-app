@@ -534,6 +534,27 @@
       "fixed": "v151",
       "sponsor": "The Prudential Insurance Company Of America",
       "was": "the employer-stock test matched a sponsor token as a SUBSTRING, so 'america' matched American Express and 'national' (First National Bank) matched Honeywell INTERnational — 24 brokerage picks / 21 plans stayed itemized beside the managed-account fold as employer stock (HCA's trust kept every healthCAre security out of its fold); tokens now match whole words"
+    },
+    {
+      "ack": "20251015125721NAL0009346626001",
+      "class": "cover-page-identifier-as-holding",
+      "fixed": "v153",
+      "sponsor": "Barton & Gray Mariners Club",
+      "was": "the page header 'Sponsor ID #: 20-5146075' parsed as a $5,146,075 holding (96% of the plan) in both competing regions; once v149 cleaned the fair-value note's subtotal that region outscored the schedule and a 6-row summary won — 446 identifier rows / 362 plans store-wide; SKIP_ROW now skips sponsor/employer/plan identifier lines and the 17-fund menu publishes at 0.991"
+    },
+    {
+      "ack": "20250930144920NAL0005550099001",
+      "class": "label-majority-region-published-as-menu",
+      "fixed": "v155",
+      "sponsor": "Seattle University",
+      "was": "a 5-row region of class labels ('Variable annuity accounts', 'Fixed annuity contracts- Nonbenefit-responsive', 'Pooled separate account') published as a confident menu at 0.52 once v153 part 2 removed the junk row that had kept a competing 2-row region alive; a region whose rows are >=60% class labels is now a statement, and 'variable/fixed/annuity/benefit-responsive/custodial' are class words"
+    },
+    {
+      "ack": "20250905111843NAL0028791248001",
+      "class": "render-tie-falls-to-document-order",
+      "fixed": "v155",
+      "sponsor": "The Tatitlek Corporation",
+      "was": "two renderings of one schedule tied exactly (27 rows, ratio 0.994) and the winner was whichever came first, so any junk row coming or going flipped the names readers saw ('Vanguard Total International Stock Index' vs 'Vanguard International Stock') — 187 lineups / 189k ppl swapped renders in one version; a dead heat now goes to mixed case and fuller names"
     }
   ]
 }

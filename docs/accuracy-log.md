@@ -15922,3 +15922,135 @@ pipeline file and #385 is in flight). **Control: `ds-rows.mjs` on the
 first store parsed after this commit must print 0 for
 `absent/rw>=5` and `noattach/rw>=5`** — #385 does not carry it (dispatched
 on `6172a056`), so the test is the run after.
+
+## 2026-09-19 (08:4xZ) — run #385 verdict (v150–v154): four of five predictions held and the store is HELD OFF MAIN — two regressions and a 187-lineup render churn, all three traced to one line (v153 part 2) and all three fixed in v155 before anything reached readers
+
+**Numbers.** Run 56 min (07:09–08:05Z, queued behind main's #384 for
+runner slots). pv 154 covers 68,661 of 68,767 (99.85%); confident 60,122
+→ **60,128 (+9 / −3 vs `6172a056`)**; lineups 59,775; HIGH 7 on the run's
+line = 4 baseline + 3 self-clearing `reparse-loss` (`audit-high.txt`
+prints the 4); overshoot 361; aggRow 109; `tkShare` 24.39; dl 104.
+
+**Predictions, each re-measured with the sizer that made it:**
+
+| class | v154 store | prediction | held |
+|---|---|---|---|
+| `employer-tok3` substring-only employer matches | 24 → **6** rows (5 in plans with no fold) | 0 | yes |
+| `coupon-trust` dated notes beside a fold | 280 → **11** rows / 3 plans | ~0 | yes; the 11 are `GUARDIAN LIFE GLOBAL FUND 144A 4.179% 09/26/2029` — `fundish` re-surfaced them as fund-shaped after the cap (v155) |
+| `sponsor-id` identifier rows | 446 → **230**, and every survivor is a CONTRACT row the sizer's own arm catches (`MetLife Group Annuity Contract No.`, `SYNTHETIC GIC … CONTRACT #`) | ~0 junk | yes — the junk shapes (`Plan#` 43, `PlanID:` 33, `EMPLOYER NO.` 32) are gone |
+| `iss-type` issuer cells ending in a type phrase | 16,915 → **1,695** | near 0 | mostly; 1,318 are the CREF cell on 56 plans where it covers 10–90% of rows (mixed with TIAA cells) — the 90% rule's blind spot, closed in v155 by stripping the tail per row |
+| `caret-iss` `^` markers in names | 2,038 → **2,055** | ~0 | **NO.** v150 stripped `^` at the line's ends and in issuer cells; the marker sits inside the identity/description CELL (`^ Empower Guaranteed Interest Fund`, `Guaranteed Annuity Contract ^`), where `*` is stripped at three other sites (desc, identity, body) that v150 did not touch |
+
+Marriott 37 rows at 0.980 with no class line; Boeing 42 rows (fold
+6,973 positions). The one-member Transcanada trust stays refused.
+
+**The three losses, read:** Wood Smith Henning (737 ppl, 3 rows one of
+them `Plan ID:` → `few`), Giir America (224, `Mass Mutual | AMERICA INC.
+| Supplemental Schedule I`), Adec (339, three class labels → `stmt`) —
+junk lineups withdrawn, the rules working. Gains 9, Barton & Gray back.
+
+**What the count-based checks could not see, found by the whole-store
+diff (`rename-ms.mjs old11`: removed 2,366 rows / 561 plans, added 2,336
+/ 380, `rename:other` 2,578 / 190) and read plan by plan
+(`swap-size.mjs`): 187 lineups / 189,336 ppl swapped to the OTHER
+rendering of their schedule with the same row count and ratio.** Some
+are better (Qhccs `Fi del i ty Freedom Bl end` → `Fidelity Freedom
+Blend`, H&E `Vangrd Trgt Retire 2035 Fd` → `Vanguard Target Retirement
+2035`), some worse (Tatitlek `Vanguard Total International Stock Index` →
+`Vanguard International Stock`, Jewish Board `American Funds 2030 Target
+Date` → `Am Fds 2030 Trgt Dte Rtm R4 Fd`, St Francis mixed case → `TROWE-
+PRICE BLUECHIP GRTH I MUT`). Bisected on Tatitlek across the six
+commits: **v153 part 2 (`d4ab2ce8`) is the line.** Both renders had
+scored 0.1294; one region also carried a `Plan#` junk row, which the
+row-count term valued at +0.005, and removing it left an exact tie that
+falls to document order. The score has no tie-break, so a render flip
+was one junk row away in every version.
+
+**Two regressions, both bisected to the same commit:**
+- **Seattle University (4,026 ppl): a five-row region of class labels
+  published as a confident menu at 0.52** — `Variable annuity accounts`
+  47%, `Fixed annuity contracts- Nonbenefit-responsive`, `Fixed annuity
+  contracts`, `Pooled separate account`. Under v149 a 2-row region (the
+  `403(b) Annuity Contracts and Custodial Accounts` total + a junk line)
+  won at 0.998 and was correctly unconfident; v153 part 2 removed its
+  junk line, one row is below the `< 2` floor, the region vanished, and
+  the fair-value note's single-render variant won. `isClassLabel` said
+  false for four of the five because `variable`, `fixed`, `annuity`,
+  `benefit-responsive` were not class words. **Sized before fixing:
+  34 confident lineups / 26,652 ppl are ≥60% class labels on the v154
+  store, every one read as a statement** (Cleveland-Cliffs 8/13 master-
+  trust pointers, Wisconsin trustees, Springs Window, Russell Sage).
+- **Endeavor Health (33,523 ppl): its 2023 fallback publishes `le 1f`
+  at 88% of a 44-row lineup** — Form 5500 checkbox coordinates, the
+  Kraft Heinz / Deutsche Bank class this file has carried as open — with
+  `(3) Other`, `(a) Amount (b) Total 2a(1)(A)`, `2b(1)(D) 2b(1)(E)`
+  beside it. The plain-text parse of that filing is a six-row statement
+  under both versions (`trace-filing --assets`, added today for exactly
+  this: a fallback ack is in neither store); the published rows come
+  from the OCR path. **Sized: 75 confident lineups / 298,072 ppl carry a
+  Form 5500 line reference as a row name** — Fiserv, Philips, Gallagher
+  (`6a(2), 6b, 6c`, one row of 38), **State Street and Deutsche Bank 12
+  of 17 rows** (`1d(2) 0 0 le 0 0 1f`), Pacific Maritime 9 of 15.
+
+**HELD.** `mainvsbr2`: main has 0 acks / 0 plans the branch lacks and the
+three losses are honest — the gate would pass with `--force-data` — but a
+store that swaps 187 lineups' names by document order and publishes two
+junk menus is not a provably better version. v155 below repairs all
+three; the next mirror carries both.
+
+## 2026-09-19 (08:5xZ) — v155: a dead heat between two renderings goes to readability; a region that is mostly class labels is a statement at any length; a Form 5500 line reference is not a holding; `^` stripped where `*` is; dated notes stay folded; TIAA's issuer label cleared even where mixed
+
+Seven changes, each with the measurement that sized it:
+
+1. **Render tie-break.** `nameQuality(rows)` — half the share of rows
+   with a lowercase letter, half the mean name length against 40 — enters
+   the score at `× 0.002`, below the row-count step (0.005) and every
+   other term, so it decides only an exact tie. Tatitlek's
+   `Vanguard Total International Stock Index` wins its tie again; Qhccs's
+   kerned render still loses on `unreadableShare`, not on this.
+2. **Label-majority statement.** `isStatement` gains a third arm: ≥3
+   rows and ≥60% `isClassLabel`. `CLASS_ONLY_NAME` gains `variable`,
+   `fixed`, `annuit(y|ies)`, `(non)benefit-responsive`, `custodial`,
+   `general`; `CLASS_NOUN` gains annuities. Positive: Seattle's five
+   → labels, `stmt=true`, unconfident. Negative: `Vanguard Target
+   Retirement 2040`, `Growth Fund` → not labels. (`Fixed Income Fund`
+   was already a label; a real menu of such names needs ≥60% of them.)
+3. **`FORM_LINE`** at the row stage: `(3) Other`, `2b(1)(D)`, `1d(2) 0 0
+   le 0 0 1f`, `(a) Amount (b) Total 2b(6)`, `(B) Common...`, `le 1f`
+   are skipped. Gallagher 44 → 43 on the corpus (its `6a(2), 6b, 6c`
+   row). State Street's and Endeavor's fallbacks lose their form rows on
+   the run; Endeavor's OCR path cannot be traced locally — the store is
+   the test.
+4. **`^` in names**: the description (`desc.replace(/[*^]+/g)`),
+   identity (`/^[*^(]+|[*^)]+$/`) and body (`/^[*^]+/`) strips all take
+   `^` — the three sites v150 missed.
+5. **`fundish`** excludes `DATED_SEC`, so the 11 Guardian/New York Life
+   funding-agreement notes stay in the fold instead of resurfacing as
+   fund-shaped after the cap. Chevron 64 → 58 rows on the corpus (six
+   dated `…FUND 144A` notes buried).
+6. **Issuer tail per row without a type**: the head is kept even when
+   `classify` cannot name the tail (`College Retirement Equities Fund`),
+   the row is marked `_it`, and the ≥90% statement-label clearing counts
+   marked rows, so the cell is cleared whether or not the tail survived
+   to post-selection. Saint David's: `cleared from 62 of 62 rows`.
+   **A `variable annuity` TYPE_PATTERN was added, measured and REVERTED:**
+   it typed every TIAA identity cell, which set `ownType`, which let
+   sub-$10k rows through the floor and turned the loan row's identity
+   (`College Retirement Equities Fund variable annuities | Participant
+   Loan Fund`) into a $143,704 holding named after the issuer — four
+   TIAA plans gained 1–4 rows on the corpus, one of them junk.
+7. `trace-filing.mjs` gains `--assets <n> --sponsor <s>` (a fallback ack
+   is in neither store) and `--rows <n>`.
+
+Gate green; corpus 0 / 0 / 0 / 0, two plans move (Chevron −6, Gallagher
+−1). `PARSER_VERSION` 155. Specimens pinned: Barton & Gray (v153),
+Seattle University, Tatitlek.
+
+**Prediction for the run:** `caret-iss` 2,055 → ~0; `coupon-trust`
+beside a fold 11 → 0; `iss-type` 1,695 → ~300 (the `VANGUARD FED MONEY
+MARKET FUND`-style real headers stay); `label-major` 34 → 0 confident;
+form-line names 75 → 0; the 187 swaps: Tatitlek-shaped ties return to
+the fuller render, kerned ones stay clean; Seattle and the 34 → `stmt`;
+State Street / Deutsche / Pacific Maritime / Endeavor lose their form
+rows and probably confidence (each read in the verdict); confident
+roughly −40 / +0.

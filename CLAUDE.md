@@ -654,8 +654,15 @@ don't confuse them). Frontend: python http.server + Playwright at
   **Store at v149 (branch AND main, `6172a056`, run #383, PASSED 05:46Z:
   doubled house 203 → 10 plans, Marriott's real menu, +2 / −2; mirrored
   07:1xZ under main's own 20-shard cron run #384, which rebases onto it).
-  `PARSER_VERSION` in the tree is 154 — v150–v154 are IN FLIGHT as run
-  #385 (dispatched 2026-09-19 07:09Z on `6172a056`): v150 (the `^`
+  `PARSER_VERSION` in the tree is 155. **#385 (v150–v154) PASSED its
+  counts and is HELD OFF MAIN** — 187 lineups swapped renders on a
+  document-order tie and two junk menus published (Seattle University,
+  Endeavor Health's fallback), all bisected to v153 part 2 and fixed in
+  **v155 (tie-break on readability; a region ≥60% class labels is a
+  statement; Form 5500 line references skipped; `^` stripped in names;
+  dated notes stay folded; TIAA's issuer label cleared when mixed) —
+  IN FLIGHT as the run dispatched 2026-09-19 08:5xZ.** The versions it
+  carries: v150 (the `^`
   party-in-interest marker stripped like `*`), v151 (the employer-stock
   sponsor-token test matches whole words), v152 (a coupon with a maturity
   date is a bond whatever noun it carries — 280 dated `Trust`/`Fund` notes

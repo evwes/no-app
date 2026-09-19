@@ -43,7 +43,15 @@ const row = P.byAck().get(ack);
  * member plan's — that mistake made parse4i return found=false and wasted an
  * afternoon on three invalid experiments */
 let assets = 0, sponsor = "", codes = "", what = "";
-if (row) {
+/* 2026-09-19: a prior-year FALLBACK filing is in neither store, yet its parse is
+ * what a plan publishes (Endeavor Health's 2023 filing served `le 1f` at 88%).
+ * `--assets <n>` and `--sponsor <name>` judge such an ack the way fetch-4i
+ * does — against the CURRENT year's assets; `--rows <n>` widens the print. */
+const argOf = (flag) => { const i = process.argv.indexOf(flag); return i > 0 ? process.argv[i + 1] : null; };
+const ROWS = +(argOf("--rows") || 12);
+if (argOf("--assets")) {
+  assets = +argOf("--assets") || 0; sponsor = argOf("--sponsor") || ""; what = `override  ${sponsor || "(no sponsor)"} assets ${assets}`;
+} else if (row) {
   assets = +P.get(row, "assetsEOY") || 0;
   sponsor = String(P.get(row, "sponsorName") || "").trim();
   codes = String(P.get(row, "codes") || "");
@@ -80,10 +88,10 @@ const report = (tag, mod) => {
     : "NOT FOUND"}`);
   if (p.found) {
     const sum = p.funds.reduce((s, f) => s + (+f.value || 0), 0);
-    for (const f of p.funds.slice(0, 12)) {
+    for (const f of p.funds.slice(0, ROWS)) {
       console.log(`   ${String(f.value).padStart(14)}  ${(100 * f.value / (sum || 1)).toFixed(1).padStart(5)}%  ${String(f.name).slice(0, 56)}${f.iss ? `   [iss ${f.iss}]` : ""}`);
     }
-    if (p.funds.length > 12) console.log(`   … ${p.funds.length - 12} more`);
+    if (p.funds.length > ROWS) console.log(`   … ${p.funds.length - ROWS} more`);
   }
   return p;
 };

@@ -237,6 +237,19 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 08:5xZ 2026-09-19: #385 (v150–v154) PASSED its counts
+      (+9 / −3, all three losses junk) but is HELD OFF MAIN: the whole-store
+      diff found 187 lineups / 189k ppl swapping renders (ties fall to
+      document order; v153 part 2's junk-row removal flipped them) and two
+      regressions bisected to the same commit — Seattle University (4,026
+      ppl, a 5-row class-label region confident at 0.52) and Endeavor
+      Health (33,523, its 2023 fallback's OCR path publishing `le 1f` at
+      88%). v155 fixes all three (tie-break on readability; label-majority
+      = statement; FORM_LINE junk; `^` in names; dated notes stay folded;
+      TIAA issuer cleared when mixed) — gate green, corpus 0/0/0/0,
+      committed and DISPATCHED. Predictions in the log. Main stays at the
+      v149 store (`6172a056`) until v155's verdict. #384 (main's cron)
+      still running. Next wake: v155 verdict → mirror → coded residue.
       **STATUS 07:1xZ 2026-09-19: MIRRORED `c07b9f47 → 6172a056` (v149
       store; `--force` 0/0, `--force-data` over Goodwill + Barton & Gray,
       both read) under main's #384 — held 69 min, then measured: #384 is a
