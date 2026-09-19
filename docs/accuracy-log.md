@@ -16568,3 +16568,42 @@ confident +0 / −0, and the ≥10% house class stays where it is.**
 pinned specimens, so it is a direct measurement of those 47 and not a
 random estimate of the 2,583 — the rule this project already has about
 top-N samples applies to it.
+
+## 2026-09-19 (15:2xZ) — run #392 verdict (v159 + v160): the v160 store is HELD — it cost Hozhoni Foundation a real 34-row menu by changing which REGION wins, which is not what a dedup rule may do; v161 confines it to the template it was built for and adds TIAA-CREF to the house list
+
+**Numbers.** pv 160 covers 68,662 of 68,767 (99.85%); confident 60,122 →
+**60,121 (+4 / −5)**; HIGH 9 = 4 baseline + 5 self-clearing; overshoot
+345.
+
+**Four of the five losses are v159 working**: Crestview (5,185 ppl),
+Buffalo Bills, Standard Enterprises, one trust — each a 3–6-row junk
+lineup (`M utual Fund`, `M oney M arket Fund`, `through 2030`,
+`J Other Wiabilities eee eee teeeee`) that fell below the 3-row floor
+once the loan-maturity phrase stopped being a holding.
+
+**The fifth is a real regression and it is mine.** Hozhoni Foundation
+(161 ppl) had a 34-row T. Rowe Price Retirement menu at ratio 0.719 and
+now shows `few` — a 2-row Ameritas region at 0.970. **The candidate
+scores are IDENTICAL under v159 and v160** (`-0.0187` for the 2-row
+Ameritas region, `-0.1536` for the 35-row menu), so the 2-row region was
+always the scoring winner and a POST-SELECTION swap had been rescuing
+the plan. v160's split ran inside the MENU candidate, which disqualified
+it as `bestMenu`, the swap stopped firing, and the junk region stood.
+**A dedup rule that changes which region wins is doing something other
+than what its description says**, however good its own result looks.
+
+**v161.** The split and rename now require the IDENTITY THAT WON to be a
+house name — the two-column template the rule was built for — so it
+cannot reach inside an ordinary menu candidate. Hozhoni is back at 34
+rows; Mass General Brigham keeps its three TIAA-CREF rows.
+**And the guard exposed a gap of its own: `isHouseName('TIAA-CREF
+Funds')` answered FALSE.** TIAA-CREF was absent from `HOUSE_ONLY`
+entirely — one of the two largest 403(b) providers in the country — so
+every rule keyed on "the identity is only a firm" had been skipping its
+filings. Added (`tiaa`, `tiaa-cref`, `cref`).
+
+**Measured against v159:** gate green, **0 gained / 0 lost / 0 fabricated
+/ 0 sums moved, 6 plans move and all six GAIN** (Intermountain 66 → 67,
+Radiology Consultants 52 → 54, Ascensus, Bank of Stockton, Rocky
+Mountain Public Media, Boys Latin). **The v160 store is not mirrored**;
+main stays on the v158 store until v161's verdict.

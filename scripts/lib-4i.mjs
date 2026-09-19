@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 160;
+export const PARSER_VERSION = 161;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -372,7 +372,12 @@ function cleanDesc(desc) {
  * "Wellington", "Windsor II") keeps its own name. Anchored whole-string: a
  * fund whose name merely CONTAINS a house ("Vanguard Wellington Fund") is a
  * product and must not match. */
-const HOUSE_ONLY = /^(?:the\s+)?(?:vanguard|fidelity(?:\s+investments)?|american funds?|t\.?\s*rowe\s*price|blackrock|state street(?:\s+global(?:\s+advisors)?)?|schwab|charles schwab|jp\s?morgan|j\.?p\.?\s*morgan|goldman sachs|pimco|invesco|franklin(?:\s+templeton)?|templeton|dodge\s*&\s*cox|nuveen|janus(?:\s+henderson)?|wellington management|northern trust|principal|prudential|metlife|voya|empower|transamerica|john hancock|nationwide|lincoln|great gray|great-west|columbia|putnam|dimensional(?:\s+fund\s+advisors)?|dfa|allspring|abrdn|aberdeen|mfs|neuberger berman|pgim|tiaa|cref|galliard|reliance trust|matrix trust|alight|ascensus|milliman)\s*(?:funds?|trusts?|group|inc\.?|llc|company|co\.?)?[.,]?$/i;
+/* v161: TIAA-CREF was absent from the house list entirely — one of the two
+ * largest 403(b) providers in the country, and `isHouseName('TIAA-CREF Funds')`
+ * answered false, so every rule keyed on "the identity is only a firm" skipped
+ * its filings. Found because the house-identity guard below then left Mass
+ * General Brigham's merge unfixed. */
+const HOUSE_ONLY = /^(?:the\s+)?(?:tiaa(?:[-\s]?cref)?|cref|vanguard|fidelity(?:\s+investments)?|american funds?|t\.?\s*rowe\s*price|blackrock|state street(?:\s+global(?:\s+advisors)?)?|schwab|charles schwab|jp\s?morgan|j\.?p\.?\s*morgan|goldman sachs|pimco|invesco|franklin(?:\s+templeton)?|templeton|dodge\s*&\s*cox|nuveen|janus(?:\s+henderson)?|wellington management|northern trust|principal|prudential|metlife|voya|empower|transamerica|john hancock|nationwide|lincoln|great gray|great-west|columbia|putnam|dimensional(?:\s+fund\s+advisors)?|dfa|allspring|abrdn|aberdeen|mfs|neuberger berman|pgim|tiaa|cref|galliard|reliance trust|matrix trust|alight|ascensus|milliman)\s*(?:funds?|trusts?|group|inc\.?|llc|company|co\.?)?[.,]?$/i;
 const INSTITUTION_SUFFIX = /\b(?:trust (?:company|co)|bank|advisors?|asset management|investments?|capital management|fund management)\.?$/i;
 /* exported v132 so sizing scripts and audits ask the SHIPPED question rather
  * than a retyped copy of it — the failure mode this project has hit twice
@@ -1459,7 +1464,17 @@ export function parseRows(section, opts = {}) {
      * appending that to a name publishes a par amount as part of a holding —
      * the value-in-name shape. Letters, ordinary punctuation, no money, no
      * rate, nothing longer than a fund name. */
-    if (!dUsable && dClean && /^[A-Za-z][A-Za-z0-9 .,&'()\/-]{1,40}$/.test(dClean) &&
+    /* v161: ...and only where the IDENTITY that beat it is a HOUSE. That is
+     * the template this rule was built for (Mass General Brigham: house in
+     * column (a), fund in column (c)), and confining it there is what keeps it
+     * from touching anything else. v160 applied it to every row and cost
+     * Hozhoni Foundation a real 34-row T. Rowe Price menu: the region still
+     * scored the same, but a split inside the MENU candidate disqualified it
+     * as `bestMenu`, the post-selection swap that had been rescuing the plan
+     * stopped firing, and a 2-row Ameritas region won on closeness. A rule
+     * that changes which REGION wins is doing something other than what its
+     * description says. */
+    if (!dUsable && dClean && isHouseName(nc) && /^[A-Za-z][A-Za-z0-9 .,&'()\/-]{1,40}$/.test(dClean) &&
         !/[$%]|\bpar\b|\d{4,}/i.test(dClean)) rejDesc = dClean;
     if (dUsable) {
       name = dClean;
