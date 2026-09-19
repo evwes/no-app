@@ -277,7 +277,13 @@ const SPECIMENS = [
    * unanchored loan guard removes 7,052 such rows from 6,970 published
    * plans (12,750,205 participants); nothing else about this specimen moved. */
   ["Erlanger (14-row menu beats the 3-row fair-value note)", "20251002152713NAL0000650817001", 236963285,
-    { found: true, n: 13, sum: 201345581 }],
+    /* v168: 13 -> 14 rows, sum 201,345,581 -> 234,792,545, ratio 0.850 ->
+     * 0.991. The recovered row is `Harbor Capital Advisors, Inc. Harbor
+     * Capital Appreciation` at $33,446,964 = 14.2% of this plan, deleted
+     * until now by an UNANCHORED `appreciat` arm in SKIP_ROW. The ratio
+     * moving to 0.991 is the evidence the row belongs; note the specimen's
+     * own label has said "14-row menu" the whole time. */
+    { found: true, n: 14, sum: 234792545 }],
   /* v68: the filler-column class. Before the fix, all 28 of this plan's
    * holdings were stored as "VARIABLE 1,056,601 sh" — the (c) sub-columns
    * ("N/A  VARIABLE  N/A  ... sh  #") beat the real name in column (b).

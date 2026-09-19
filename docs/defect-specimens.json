@@ -646,6 +646,20 @@
       "fixed": "v167",
       "sponsor": "Rcb Bank (968 ppl)",
       "was": "the same shape with a different vocabulary and a much better outcome: every target-date row shared the description 'Blended investments', which merged them into one $24,715,543 holding at 68.4% of the menu. v167 publishes the real T. Rowe Price Retirement menu instead -- 10 rows -> 28, ratio unchanged at 0.977. Note WHY the shipped isHouseName caught 'Blended investments': its INSTITUTION_SUFFIX arm matches any <=5-word name ending in 'investments'. That is looser than 'house' suggests and it is what makes this rule reach beyond the named firms."
+    },
+    {
+      "ack": "20251015151840NAL0002535955001",
+      "class": "unanchored-appreciat-arm-deletes-a-fund-family",
+      "fixed": "v168",
+      "sponsor": "Northeast Georgia Health System (14,038 ppl)",
+      "was": "published `T. Rowe Price` at $479,484,734 = 57% of its menu. The filing is not thin: the orphan description line `T. Rowe Price Capital Appreciation I` sits directly above the value line, exactly like this plan's seven Vanguard rows that DO get their names. Bisected with a probe on the real statement: SKIP_ROW matched the substring `Appreciat`, because that alternation sits after the group `^(` opened and closes, so every arm in it is an unanchored substring test. Every row naming a fund with 'Appreciation' in it was deleted, as a holding AND as a buffered name. 55 rows of 1,721,905 in the published store contain 'appreciat' -- the filter's footprint, not the market's. v168 requires 'net' before the word."
+    },
+    {
+      "ack": "20251002152713NAL0000650817001",
+      "class": "unanchored-appreciat-arm-deletes-a-fund-family-value-side",
+      "fixed": "v168",
+      "sponsor": "Erlanger Health System",
+      "was": "the same defect on the VALUE side rather than the name side: `Harbor Capital Advisors, Inc. Harbor Capital Appreciation` at $33,446,964 = 14.2% of the plan was dropped outright. 13 rows -> 14 and ratio 0.850 -> 0.991, which is the evidence the row belongs. This filing was already a pinned specimen whose own label said '14-row menu' while its pinned expectation said 13 -- the gate caught the change and the expectation was corrected in the same commit."
     }
   ]
 }

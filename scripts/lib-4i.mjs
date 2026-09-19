@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 167;
+export const PARSER_VERSION = 168;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -115,11 +115,28 @@ const SKIP_ROW = new RegExp("^(total|subtotal|grand total|schedule|page \\d|form
    * date never matches either arm. */
   "notes?\\s*:|notes?\\s+\\d{1,2}\\s*[:.]\\s*[a-z]|" +
   // financial-statement lines that are not 4i holdings
+  /* v168: `appreciat|depreciat` WAS UNANCHORED AND DELETED A REAL FUND FAMILY.
+   * This alternation sits AFTER the group that `^(` opened closes (at
+   * `collateral, par)`), so every arm here is a SUBSTRING test on the whole
+   * line. That is right for `benefits paid` and `level 1`, and catastrophic
+   * for `appreciat`: every row naming a fund with "Appreciation" in it was
+   * dropped — as a holding AND as a buffered name — and T. ROWE PRICE CAPITAL
+   * APPRECIATION is one of the largest funds in the country. Measured on the
+   * published store: **55 rows out of 1,721,905 contain "appreciat"**, which
+   * is the filter's footprint, not the market's.
+   * Found by bisecting why Northeast Georgia Health System (14,038 ppl)
+   * publishes `T. Rowe Price` at $479,484,734 = 57% of its menu: the orphan
+   * description line `T. Rowe Price Capital Appreciation I` never reached the
+   * name buffer, so the v132 gap rule had nothing to attach and the row fell
+   * back to the firm. The statement lines this arm exists for all say "net"
+   * first ("Net appreciation in fair value of investments", "Net
+   * (depreciation) appreciation"), so requiring that word keeps them and
+   * frees the fund names. `realized|unrealized` already cover the rest. */
   // "investments?,? at (fair|contract) value" must tolerate the comma/dash
   // spellings — 631 confident lineups carried "Investments, at fair value"
   // statement rows (up to 97% of the shown sum) because only the bare
   // space-separated form was covered
-  "(net assets|benefits paid|investment (income|gain|loss)|(participation|interest) in (the )?net (income|loss)|net income \\(?loss\\)?|net income (of|from)\\b|interest and dividends|realized|unrealized|appreciat|depreciat|(?:^|net )transfers?\\b|transfers? (?:in|out|to|from|of|between)\\b|contributions?\\b|deemed distribut|administrative expense|beginning of year|end of year|financial statements|indirect compensation|reconcil|adjustment|level [123]\\b|liabilit|receivable|payable|expenses\\b|distribution|net (increase|decrease|change)|due (to|from)|notes? (to|receivable)|similar party|description of investment|current value|investments?,?\\s*[—–-]?\\s*at (fair|contract) value)|" +
+  "(net assets|benefits paid|investment (income|gain|loss)|(participation|interest) in (the )?net (income|loss)|net income \\(?loss\\)?|net income (of|from)\\b|interest and dividends|realized|unrealized|net\\s*\\(?\\s*(?:appreciation|depreciation)|(?:^|net )transfers?\\b|transfers? (?:in|out|to|from|of|between)\\b|contributions?\\b|deemed distribut|administrative expense|beginning of year|end of year|financial statements|indirect compensation|reconcil|adjustment|level [123]\\b|liabilit|receivable|payable|expenses\\b|distribution|net (increase|decrease|change)|due (to|from)|notes? (to|receivable)|similar party|description of investment|current value|investments?,?\\s*[—–-]?\\s*at (fair|contract) value)|" +
   // form-page boilerplate: a filing with NO 4i attachment can still seed a
   // region from the Schedule H checkbox line, and the parser then reads phone
   // numbers and zip codes off address/signature pages as \"values\" (Aramark)
