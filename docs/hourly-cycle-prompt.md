@@ -237,6 +237,31 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 18:2xZ 2026-09-19: #396 (v163) MIRRORED — pv 163 at 99.85%,
+      confident 60,120 (+0 / −0), HIGH 4, overshoot 347. `--force` on the GIT
+      check only, over main's one incremental cron commit (0 acks / 0 plans
+      the branch lacked, plans array byte-identical, main newer on 2 acks the
+      next run re-parses); the data gate passed unforced. v163 did its job —
+      `TIAA-CREF High-Yield-Rtmt` reads as firm-then-fund, Jones loses a 74%
+      `John Hancock` row — **and broke one plan that no count could see**: The
+      Illinois Center For Autism (190 ppl) merged EIGHT real TIAA and CREF
+      holdings into one `TIAA-CREF` row at 58.3%, found by the whole-store row
+      diff. Sizing it found the class: **28 published lineups / 29,656 ppl
+      show a bare house as their largest row at 50–99%** (Northeast Georgia
+      `T. Rowe Price` $479M at 57%). **A fix was written and REVERTED
+      unshipped** — adding `isHouseName` to the post-selection swap is inert,
+      because the winning region IS `bestMenu`; the merge happens inside the
+      winner, so it belongs in the dedup. **#398 DISPATCHED 18:23Z carrying
+      v164 + v165 + v166**: (164) a fragment identity may not win merely
+      because the description was refused — `First Eagle` was the whole name
+      of a row whose filing said `First Eagle Global Fund`, 21 rows / 16
+      plans; (165) the SEC Form 11-K cover page is not a schedule — 20 rows /
+      13 plans / 302,810 ppl, `Washington, D.C.` published as a $20,549
+      holding; (166) the ASC 820 line marks the fair-value NOTE — **104 plans
+      / 274,765 ppl, Meta Platforms' 84,993 shown one "fund" of $18.8B at
+      82%**, and Meta gains its real 20-fund menu. Verdict tests for #398 are
+      pre-registered in the log. Next wake: #398 verdict → mirror → the
+      bare-house merge in the dedup → Brunswick's 64% OCR'd NAV note.
       **STATUS 17:2xZ 2026-09-19: #395 (v162) MIRRORED UNFORCED — pv 162 at
       99.85%, confident 60,120 (+0 / −0 vs the live v161 store), HIGH 4 at
       the baseline, overshoot 347. The class it was aimed at fell with it:

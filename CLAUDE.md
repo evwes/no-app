@@ -651,13 +651,19 @@ don't confuse them). Frontend: python http.server + Playwright at
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
   full-form** filers and 43,523 short-form; 68,767 parse-status entries.
-  **Store at v162 (branch AND main, run #395, PASSED 17:2xZ: +0 / −0, the
-  category-vehicle merge class 323 → 137 lineups and its ≥20% band 117 →
-  11) — MIRRORED 17:2xZ, unforced on both checks. `PARSER_VERSION` in the
-  tree is 163, DISPATCHED 17:23Z as #396** (v163: `dUsable`'s two-word bar
-  splits on hyphens, so `TIAA-CREF High-Yield-Rtmt` stops collapsing to the
-  bare house — the cost v161 recorded). The previous dispatch was #395
-  (v162: a category plus a vehicle is a type phrase, not a fund).
+  **Store at v163 (branch AND main, run #396, PASSED 18:2xZ: +0 / −0, pv 163
+  at 99.85%, HIGH 4) — MIRRORED 18:2xZ (`--force` on the GIT check only, over
+  main's one incremental cron commit: 0 acks / 0 plans the branch lacked; the
+  data gate passed unforced). `PARSER_VERSION` in the tree is 166, DISPATCHED
+  18:23Z as #398** carrying three versions: v164 (a fragment identity may not
+  win merely because the description was refused — `First Eagle` was the whole
+  name of a row whose filing said `First Eagle Global Fund`), v165 (the SEC
+  Form 11-K cover page is not a schedule of assets — 20 rows / 13 plans /
+  302,810 ppl, `Washington, D.C.` as a $20,549 holding), and **v166 (the ASC
+  820 reconciliation line marks the fair-value NOTE — 104 plans / 274,765 ppl,
+  Meta Platforms' 84,993 participants shown one "fund" of $18,809,051,400 at
+  82% of the plan, and Meta gains its real 20-fund menu)**. The previous
+  dispatch was #395 (v162: a category plus a vehicle is a type phrase).
   Before that, #394 (v161
   confines the merge-split to HOUSE identities after v160 cost Hozhoni a
   real 34-row menu, and adds TIAA-CREF to `HOUSE_ONLY`, which did not
@@ -692,7 +698,26 @@ don't confuse them). Frontend: python http.server + Playwright at
   Nothing downstream was affected (no session acted on it), but it is exactly
   the copying-a-line-forward hazard this file warns about elsewhere, aimed at
   the file's own header. **Re-derive this line rather than editing the date.**
-- **LIVE on main: the v162 store — MIRRORED 2026-09-19 17:2xZ, UNFORCED on
+- **LIVE on main: the v163 store — MIRRORED 2026-09-19 18:2xZ** (`--force` on
+  the GIT check only, over main's one incremental cron commit `10f169d1`: 0
+  acks / 0 plans the branch lacked, plans array byte-identical, main newer on
+  2 acks that #398 re-parses; the data gate passed unforced at +0 / −0). pv
+  163 at 99.85%, confident 60,120, HIGH 4, overshoot 347, dl 104. What reached
+  readers: a hyphenated product name stops collapsing to its house, so
+  `TIAA-CREF High-Yield-Rtmt` and `Prudential High-Yield` read as firm-then-
+  fund, and The Jones Company (246 ppl) loses a 74% `John Hancock` row.
+  **ONE REGRESSION IS LIVE AND ON THE RECORD:** The Illinois Center For Autism
+  (190 ppl) merged eight real TIAA and CREF holdings into one `TIAA-CREF` row
+  at 58.3% — found by the whole-store row diff, invisible to every count.
+  **The class it belongs to is the top queue item: 28 published lineups /
+  29,656 ppl show a bare house as their largest row at 50–99%** (Northeast
+  Georgia `T. Rowe Price` $479,484,734 at 57%, Calpine `Investments` 80%, Cape
+  Cod Express `Great Gray Trust` 98%). A region-level fix was written and
+  **reverted unshipped because it is inert** — the winning region IS
+  `bestMenu`, so the merge happens inside the winner and the fix belongs in
+  the dedup. **#398 (v164 + v165 + v166) in flight.**
+  `docs/accuracy-log.md` 2026-09-19 (run #396 verdict).
+- **Previously: the v162 store — MIRRORED 2026-09-19 17:2xZ, UNFORCED on
   both checks** (main had 0 acks and 0 plans the branch lacked). pv 162 at
   99.85%, confident 60,120 (+0 / −0), HIGH 4 at the baseline, overshoot
   347, dl 104. What reached readers: the `<category> <vehicle>` merge is

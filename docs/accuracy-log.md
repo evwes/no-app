@@ -16965,3 +16965,62 @@ should fall (Lam is in its top twenty today); `audit-dominant-row` should be
 A fall in `confident` is the intended direction here, which is exactly the
 case where the loss triage must be read plan by plan rather than waved through
 on the sign of a number.
+
+## 2026-09-19 (18:2xZ) — run #396 verdict (v163): PASSED and MIRRORED, and the whole-store diff found a fabrication regression the coverage numbers could not
+
+**Numbers.** pv 163 at 99.85% (68,661 of 68,767); confident **60,120, +0 / −0**
+against the live v162 store; HIGH 4 — the baseline; overshoot 347; `tkShare`
+24.43; dl 104. Every count-based check says "nothing happened", and on a
+version whose whole purpose was five rows, that is the expected reading.
+
+**What v163 was for, and it worked.** `dUsable`'s two-word bar now splits on
+hyphens, so a hyphenated description is no longer a one-word junk fragment.
+`TIAA-CREF | High-Yield-Rtmt` stops collapsing to the bare house: the rows now
+read `High-Yield-Rtmt` with `iss` `TIAA-CREF`, which the page renders as the
+firm before the fund. Same for `Prudential | High-Yield` and `Fidelity |
+Equity-Income`. **The Jones Company (246 ppl) loses its 74% `John Hancock`
+row** — the second target named in the commit.
+
+**AND IT BROKE ONE PLAN, which only the whole-store row diff could see.**
+`rename-ms` against the v162 shards: 83 rows removed / 20 plans, 55 added / 26
+plans, 63 renamed. Reading the removals by name found **The Illinois Center
+For Autism (190 ppl): eight real TIAA and CREF holdings — `CREF Stock R1`
+$1,694,358, `TIAA Traditional Non Benefit Responsive` $966,895, `CREF Growth
+R1`, `TIAA Real Estate` and four more — merged into ONE row named `TIAA-CREF`
+at $4,403,864 = 58.3% of the plan.** That is the v100–v105 fabrication shape,
+reintroduced. The mechanism is the one this file keeps recording: a row-level
+change alters region SUMS, region sums decide which region wins, and a
+different region won — 30 rows at ratio 0.990 where v162 read 38.
+
+**Sized rather than patched, which changed what it turned out to be.** Asking
+the same question of the whole store with the shipped `isHouseName`: **28
+published lineups / 29,656 participants show a bare house (or a bare
+`Investments`) as their LARGEST row at 50–99%** — Northeast Georgia Health
+System 14,038 ppl / `T. Rowe Price` **$479,484,734 at 57%**, Calpine
+`Investments` 80%, Irisndt `JOHN HANCOCK` 53%, Cape Cod Express `Great Gray
+Trust` 98%, Pulmonary Associates `Charles Schwab Bank` 99%. **Before v163: 28.
+After: 28** — Illinois in, Jones out. So v163 did not create the class, it
+moved one plan through it, and the class is the real finding.
+
+**A fix was written, tested, and REVERTED unshipped.** The obvious move was to
+add `isHouseName` to the post-selection swap that already replaces a winner
+topped by a generic or non-fund row at ≥50% with `bestMenu`. It is **inert**:
+on both Illinois and Northeast Georgia the winning region IS `bestMenu`, so
+`bestMenu !== best` is false and the swap never fires. **The merge happens
+INSIDE the winning region, not between regions**, so no region-level rule can
+reach it — the fix belongs in the dedup, where rows sharing a bare-house name
+must not be summed (the v160 `_dd` machinery is the nearest tool). Committing
+the inert version would have shipped a no-op under a comment claiming 28
+plans. **Run the fix against the case before writing what it does.**
+
+**Mirror.** Mirrored at 18:2xZ. The data gate passed **unforced, +0 / −0**;
+`--force` covered the GIT check alone, over main's one incremental cron commit
+(`10f169d1`): 0 acks and 0 plans the branch lacked, plans array byte-identical,
+main newer on **2** acks which the next run re-parses. Main was already
+carrying v163 CODE over a v162 store from the previous mirror, so this makes
+it consistent. **The Illinois regression is on the record and is live**: 190
+participants see a $4.4M holding that does not exist, against Jones' 246 who
+stop seeing one, and #398 re-parses the whole universe within the hour.
+
+**Queued at the top, with its mechanism named:** rows sharing a bare-house
+name must not merge. 28 plans / 29,656 ppl today.
