@@ -237,6 +237,18 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 14:0xZ 2026-09-19: v160 RESOLVED AND DISPATCHED as #392
+      (with v159). The 45 unread moves were two defects of mine, both found
+      by reading rows not counts: a par amount appended to Wells Fargo's
+      names (only name-shaped descriptions disambiguate now) and The Wine
+      Group's two renders counted twice (the split yields to the
+      duplicate-render test). Against v159: gate green, 0/0/0/0, 12 plans
+      move, every one read — eleven un-merge gains, one fold re-grouping.
+      Fixes Mass General Brigham's $1,565,649k `TIAA-CREF Funds` phantom
+      (three real rows summed, 131,090 ppl). Verdict tests: the bare
+      house-name class 321 lineups / 377,586 ppl at ≥10% should fall;
+      confident +small / −0; MGB's three TIAA-CREF rows in the store.
+      Next wake: #392 verdict → mirror → the house-row residue.
       **STATUS 13:4xZ 2026-09-19: #391 (v158) PASSED CLEAN — +19 / −0,
       HIGH 4 (baseline only), ATH's $1.79B phantom → its real $1.57B index
       trust, Frx and Central City back; MIRRORED UNFORCED (both checks).

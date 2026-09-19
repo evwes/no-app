@@ -653,7 +653,11 @@ don't confuse them). Frontend: python http.server + Playwright at
   full-form** filers and 43,523 short-form; 68,767 parse-status entries.
   **Store at v157 (branch AND main, run #390, PASSED 12:3xZ: +4 / −5, the
   five pointer-dominated lineups withdrawn, `mt-share` 5 → 0) — MIRRORED
-  12:4xZ. `PARSER_VERSION` in the tree is 158, DISPATCHED 12:4xZ: the
+  12:4xZ. `PARSER_VERSION` in the tree is 160, DISPATCHED 14:0xZ as #392 (v159:
+  the `# ` party-in-interest marker, the participant-loan maturity phrase;
+  v160: a name may not merge rows the filing distinguished — Mass General
+  Brigham's $1,565,649k `TIAA-CREF Funds` was three real rows summed).
+  The previous dispatch was v158: the
   caption-seeded retry runs for any unpublishable first pass (Frx's
   OCR-path loss — the OCR path now reproduces locally through fetch-4i's
   own PARSE_SHARD code on a crafted tree, log 12:0xZ) and a colon-less
