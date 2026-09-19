@@ -17163,3 +17163,32 @@ line sits in the DESCRIPTION column and the value line's description cell is
 only a cost figure, the buffered line is the description. Size the class
 before building it — this is one filing so far, and the 23 remaining
 bare-house plans are the population to measure it against.
+
+### Sizing the next item, and a predicate that OVER-matched for the first time
+
+The bare-house class was re-sized whole-store rather than by its top row, and
+the first answer was **81 plans / 331,365 ppl**, led by **Compass Group with
+263,796 participants** at 64%. Reading it killed it: Compass Group's menu is a
+real OCR'd Fidelity lineup, and `isHouseName` matched `Fidelity TRIM 2030
+Trust Company` through its `INSTITUTION_SUFFIX` arm, which accepts any
+<=5-word name ending in "Trust Company". Six real funds counted as bare
+houses, and one plan carried 80% of the headline.
+
+This file records twice that the shipped predicates UNDER-match on fragmentary
+populations. **This is the first time one OVER-matched**, and the mechanism is
+the same: `isHouseName` answers "is this column cell only a firm" for an
+IDENTITY cell, and it was asked "is this published row name a bare house",
+which is a different population. Tightened with what a bare house lacks — no
+digits, at most three words — the honest figure is:
+
+**48 plans / 39,896 participants** publish bare-house rows carrying >=30% of
+their menu. Northeast Georgia is 14,038 of those people, 35% of the class.
+
+**And the class is NOT one shape.** Calpine (3,014 ppl, `Investments` at 80%)
+was traced next and is a dotted-leader line from a financial statement —
+`Investments (Note 3) .........` — with no description cell at all, nothing
+like Northeast Georgia's cost-only cell. So the Northeast Georgia fix may not
+reach the other 47, and **no yield is projected from one filing**, which is the
+rule this project already has for fix yields. The build needs the count of
+filings that actually show a cost-only description cell beneath a buffered
+description line, and that count needs parsing rather than the store.
