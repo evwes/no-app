@@ -237,6 +237,15 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 00:1xZ 2026-09-19: #376 no-op mirrored (`f25b41c8`), #377
+      dispatched 00:09Z; draw 15/15 real, only known shapes (Apple (i),
+      PwC doubled house, Parker `( )`, Outrigger plural type prefix (j),
+      Amalgamated Transit OCR generic row). Nothing shipped this hour.
+      Next parser work at **142**: despaced `HEADER_FRAG_LINE` (Hill
+      Brothers' kerned caption row), (m) readable-name tie-break (Lulus,
+      Fusion Medical), (f) A2 trustee-before-house. **Owner's four
+      questions still open; hold stands.** `docs/accuracy-log.md`
+      2026-09-19 (00:1xZ).
       **STATUS 23:3xZ 2026-09-18 (run #374 verdict): v141 is LIVE on main
       (`218641f0`).** Kerned type-label merges gone (Hill Brothers 86% row →
       37 real rows; Nelnet 30 rows + one brokerage fold); +1/−0, HIGH 4.

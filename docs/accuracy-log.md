@@ -14607,3 +14607,26 @@ over 1,704,532 published rows: **GAINED 184 tickers / 74 plans / 147,929
 ppl, LOST 0, FLIPPED 0**; `smoke-test.mjs` OK. Fusion's `Re tire P ilo t`
 does NOT repair (`pilot` is not in the list) — the tie-break is the real
 fix there.
+
+## 2026-09-19 (00:1xZ) — per-cycle draw: 15 of 15 real menus, only known shapes; run #376 a no-op, mirrored; #377 dispatched
+
+**Draw** (seed 20260919001, participant-weighted, 15 of 59,753): Apple
+145,428 ppl, PwC 74,670 (18 rows, ratio 0.86), Plan Professionals 65,882
+(46 rows), MedStar 41,662, Parker Hannifin 38,313 (45 rows), Iowa Health
+35,545, Vail 32,694, Plan Professionals PN 2 18,146, Tulane 5,829, Spar,
+Outrigger Hotels, Taos Ski Valley, CVB, Rose Villa, Amalgamated Transit
+Union. 15 of 15 real menus. Known shapes: Apple's brokerage double
+(`[BROKERGE ACCOUNT] Various Accounts` 7.5% beside the 95-position fold
+7.8% — (i)); PwC `Neuberger Berman Neuberger Berman Genesis Fund` (the
+doubled house, display strip covers it); Parker's `Parker Stock Match
+Fund ( )` empty footnote parens; Outrigger `Common trust funds T Rowe
+Price Retirement 2030 TR-K` (a plural type prefix `TYPE_PREFIX` does not
+list — (j), 1 row); Amalgamated Transit (226 ppl, OCR) `Registered
+invesimenl companies 7.705.631` at 29% — an OCR-mangled generic type
+label as a row, the `few`-class garbage shape in a 35-row lineup, too
+small and too noisy to act on beyond the record.
+
+**Run #376** (dispatched 23:26Z, incremental) success 23:33Z, `f25b41c8`,
+coverage unchanged (confident 60,107, HIGH 4, tkShare 24.28, dl 103,
+pvTopShare 99.9); mirrored unforced (main had nothing the branch lacked).
+**#377 dispatched 00:09Z**, observed in_progress.
