@@ -16360,3 +16360,34 @@ fallback filing the corpus never parses — pinned on the plan's ack with
 that note). **Prediction for the v158 run:** ATH's page loses the
 phantom; `house-row` ≥10% 322 → fewer, each drop a header of this shape;
 confident +0 / −0 from this part.
+
+## 2026-09-19 (12:4xZ) — run #390 verdict (v157): PASSED exactly as predicted — the five master-trust pointer lineups withdrawn by name (Caterpillar's 60,484 readers no longer see a nine-row "menu" that is 90% one pointer), pointer-dominated confident lineups 5 → 0; mirrored; v158 dispatched
+
+**Numbers.** Run 11:44–12:3xZ. pv 157 covers 68,661 of 68,767 (99.85%);
+confident 60,104 → **60,103 (+4 / −5 vs `6b913d2d`)**; lineups 59,751;
+HIGH 9 = 4 baseline + 5 self-clearing `reparse-loss`; overshoot 346;
+`tkShare` 24.42; dl 104. `mt-share` **5 → 0**. Render swaps vs v156: 9
+lineups / 4,269 ppl (the tie-break has settled). `caret-iss` name rows
+255 → 146 / 37 plans / 73,603 ppl — the `†` strip took half; the
+residue is a further spelling, queued to read.
+
+**The five losses, each the rule working:** Caterpillar (59,937 ppl, 9
+rows: `Investments Interest in the Master Trust` 90% beside `instructions
+SUITE 100` and `Other investments — participant di…`), Cleveland-Cliffs
+(5,029, `Investments in Master Trust` 97%), Pantexas Deterrence (2,255,
+`Master Trust Investment Units` 79%), IBEW Local 25 (2,881, the fund's
+own name at 99% beside `Transferred Late to the Plan Prohi…` and `ON
+DEMAND`), one master trust (82%). All now `dx=trust` / `stmt`, and their
+pages fall to the master-trust sentence. Gains: Whetstone, Metro Atlanta
+Recovery, Ardens Garden, Little Otter (small, each the `†`/`Employer
+I.D.` strips unblocking a region).
+
+**Mirror.** `mainvsbr2`: 0 acks / 0 plans on main the branch lacks, main
+newer on 0 (the 12:23 cron has not committed); the five confident-on-
+main-only are the reads above — `--force-data`; git check unforced.
+**v158 dispatched** (the caption-seeded retry for any unpublishable
+first pass — Frx; the colon-less house+type group header — ATH's $1.79B
+phantom). Verdict tests: Frx confident with 12 LifePath rows; ATH's page
+shows `Institutional 500 Index Trust` $1.57B and no `The Vanguard Group`
+row; `house-row` ≥10% 322 → fewer; confident +1 / −0 beyond OCR-path
+recoveries, each read.

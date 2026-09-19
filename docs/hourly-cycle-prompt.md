@@ -237,6 +237,14 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 12:4xZ 2026-09-19: #390 (v157) PASSED as predicted (+4 / −5,
+      the five pointer lineups by name, mt-share 5 → 0, swaps 9); MIRRORED
+      (`--force-data`, git unforced). v158 DISPATCHED: the caption retry for
+      any unpublishable first pass (Frx) + the colon-less house+type group
+      header (ATH's $1.79B phantom, 94,689 ppl, found by this cycle's draw).
+      Caret residue 146 rows / 37 plans to read. Next wake: v158 verdict →
+      mirror → morning brief → caret residue, Walmart's `Investments`
+      prefix, Weyerhaeuser's loan-line fragment.
       **STATUS 12:0xZ 2026-09-19: the OCR path now reproduces LOCALLY through
       fetch-4i's own PARSE_SHARD code on a crafted three-plan tree (20 s,
       fresh tesseract; `octree`, `trim-plans.mjs`, `combined-parse2.mjs`).

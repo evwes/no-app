@@ -651,21 +651,17 @@ don't confuse them). Frontend: python http.server + Playwright at
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
   full-form** filers and 43,523 short-form; 68,767 parse-status entries.
-  **Store at v156 (branch AND main, run #388, PASSED 11:3xZ: +3 / −1,
-  render swaps readable-ward 298 up / 9 down, State Street's real SSGA
-  menu, Conditioned Air back) — MIRRORED 11:4xZ. `PARSER_VERSION` in the
-  tree is 158 (v158, committed `[skip ci]`: the caption-seeded retry runs
-  for any unpublishable first pass — Frx's OCR-path loss; the OCR path
-  reproduces locally via a crafted tree, see the log 12:0xZ). v157 is
-  IN FLIGHT as #390, DISPATCHED 11:4xZ: a master-trust pointer ≥75% of the
-  page is a pointer at any row count (Caterpillar 60,484 ppl, Cleveland-
-  Cliffs, 5 lineups), `†`/`‡` markers, `Employer I.D. #`. **Scheduled
-  runs are INCREMENTAL by construction (`SCHEDULE_INCREMENTAL`,
-  2026-09-19, confirmed live on #389: one shard, two minutes) — main's
-  hourly cron no longer re-parses the universe after a mirror.** Three
-  OCR-path readings moved between v154 and v156 and cannot be traced with
-  `trace-filing` (Frx 12 rows → 1, Central City 32 → 2, Terra Dotta 15 →
-  stmt): the next queue item is a local tesseract reproduction.
+  **Store at v157 (branch AND main, run #390, PASSED 12:3xZ: +4 / −5, the
+  five pointer-dominated lineups withdrawn, `mt-share` 5 → 0) — MIRRORED
+  12:4xZ. `PARSER_VERSION` in the tree is 158, DISPATCHED 12:4xZ: the
+  caption-seeded retry runs for any unpublishable first pass (Frx's
+  OCR-path loss — the OCR path now reproduces locally through fetch-4i's
+  own PARSE_SHARD code on a crafted tree, log 12:0xZ) and a colon-less
+  one-cell group header (`The Vanguard Group Mutual Funds`) is a header,
+  not a name (ATH / Elevance's $1.79B `The Vanguard Group` phantom, 94,689
+  ppl). **Scheduled runs are INCREMENTAL by construction
+  (`SCHEDULE_INCREMENTAL`, 2026-09-19, confirmed live on #389: one shard,
+  two minutes).**
   The v155 store carries v150–v155 (see `docs/accuracy-log.md`
   2026-09-19 08:5xZ and 10:3xZ) over
   The v149 store carries v144 (fold before the cap), v145 (stem dedup;
@@ -683,7 +679,15 @@ don't confuse them). Frontend: python http.server + Playwright at
   Nothing downstream was affected (no session acted on it), but it is exactly
   the copying-a-line-forward hazard this file warns about elsewhere, aimed at
   the file's own header. **Re-derive this line rather than editing the date.**
-- **LIVE on main: the v156 store — MIRRORED 2026-09-19 11:4xZ (`--force`
+- **LIVE on main: the v157 store — MIRRORED 2026-09-19 12:4xZ
+  (`--force-data` over five pointer lineups read by name; git check
+  unforced).** pv 157 at 99.85%, confident 60,103, HIGH 4 + 5
+  self-clearing, overshoot 346, dl 104. What reached readers: Caterpillar
+  (59,937), Cleveland-Cliffs, Pantexas, IBEW 25 and one trust show the
+  master-trust sentence instead of a "menu" that was one pointer row;
+  `†` markers gone from half their rows. **v158 in flight.**
+  `docs/accuracy-log.md` 2026-09-19 (run #390 verdict).
+- **Previously: the v156 store — MIRRORED 2026-09-19 11:4xZ (`--force`
   over #389's one newer ack, an analyze-stuck trust the dispatch re-reads;
   `--force-data` over Frx, read).** pv 156 at 99.84%, confident 60,104,
   HIGH 4 + 1 self-clearing, overshoot 350, dl 104. What reached readers:
