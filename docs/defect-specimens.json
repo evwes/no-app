@@ -492,6 +492,13 @@
       "fixed": "v146",
       "sponsor": "Rush Copley Medical Center",
       "was": "identity ('Vanguard Target / Retirement Income') and description ('Vanguard Total International Stock Index / Fund Institutional Shares') both wrap with the value on the second line; the description column won the name as 'Fund Institutional Shares' three times and the same-name merge summed them into one $109M row at 35% of the plan (11 rows -> 19)"
+    },
+    {
+      "ack": "20250903130608NAL0031602098001",
+      "class": "footnote-letter-identity-cell-doubled-house",
+      "fixed": "v146",
+      "sponsor": "Consolidated Electrical Distributors",
+      "was": "the filing's second render prefixes each row with a footnote letter ('b        JP Morgan   JP Morgan Mid Cap Growth Fund   N/R   22,050,627'); the letter became the identity cell, the house was pushed into the description, and the double-render dedup kept the longer name — 'JP Morgan JP Morgan Mid Cap Growth Fund N/R' on 238 plans / 486k ppl, with the N/R cost cell glued on"
     }
   ]
 }

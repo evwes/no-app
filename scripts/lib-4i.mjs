@@ -284,7 +284,10 @@ function stripTrailingColumns(body) {
   // trim token-by-token from the end WITHOUT re-joining — internal column
   // gaps (3+ spaces) must survive for splitNameDesc
   let b = body;
-  const tail = /\s+(?:[*$\u2013\u2014-]+|\$?\d{1,3}(?:,\d{3})+(?:\.\d+)?%?|\d+\.\d+%?|\d+%)\s*$/;  // \u2013/\u2014: the empty cost column renders as an en/em dash and glued onto names (BWXT, report #18)
+  // v146: `N/R` / `N/A` is how a participant-directed filing writes the empty
+  // cost column ("JP Morgan Mid Cap Growth Fund   N/R   22,050,627"); it is a
+  // column cell, not the end of a name \u2014 238 plans / 486k ppl published it
+  const tail = /\s+(?:[*$\u2013\u2014-]+|N\/[RA]|\$?\d{1,3}(?:,\d{3})+(?:\.\d+)?%?|\d+\.\d+%?|\d+%)\s*$/i;  // \u2013/\u2014: the empty cost column renders as an en/em dash and glued onto names (BWXT, report #18)
   for (let m = b.match(tail); m; m = b.match(tail)) b = b.slice(0, b.length - m[0].length);
   return b.trim();
 }
@@ -653,7 +656,14 @@ export function parseRows(section, opts = {}) {
     /* block ended: this row sits at or left of the header that opened it */
     if (curIss && raw.trim() && rawIndent <= curIssIndent) { curIss = ""; curIssIndent = -1; }
     let t = raw.trim().replace(/^\*+\s*/, "").replace(/\s*\*{1,3}\s*$/, "")
-      .replace(/([0-9]{1,3}(?:,[0-9]{3})+)(?:\s*[,.]?\s*\(\s*[a-z]\s*\)){1,4}\s*$/i, "$1");
+      .replace(/([0-9]{1,3}(?:,[0-9]{3})+)(?:\s*[,.]?\s*\(\s*[a-z]\s*\)){1,4}\s*$/i, "$1")
+      /* v146: a lone FOOTNOTE LETTER in column (a) — "b        JP Morgan
+       * JP Morgan Mid Cap Growth Fund   N/R   22,050,627" in a filing's second
+       * render — became the identity cell, pushed the house into the
+       * description, and the double-render dedup then kept the LONGER name:
+       * "JP Morgan JP Morgan Mid Cap Growth Fund" on 238 plans / 486k ppl.
+       * Same treatment as the party-in-interest `*` above. */
+      .replace(/^[a-z]\s{3,}(?=\S)/, "");
     /* v132: A BLANK LINE STILL ENDS THE NAME BUFFER — but remember the last
      * line across the gap, for the one case that needs it (see `gapIn` below).
      * One recordkeeper template prints the fund in the DESCRIPTION column, then

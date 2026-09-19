@@ -15126,6 +15126,42 @@ fall with it — the v146 verdict measures how far.
 whole population (283 plans / 620k ppl) FALLS by the two-column-wrap
 share; confident +0 / −0 (the join preserves sums); rows ADDED across the
 affected plans as merged fragments unfold; HIGH 4; generic-names ≤ 128.
+
+## 2026-09-19 (02:3xZ) — v146 part 2 (queue item (f) A1, the parser half): a lone FOOTNOTE LETTER in column (a) made the house a description prefix, and the double-render dedup kept the doubled name — "JP Morgan JP Morgan Mid Cap Growth Fund N/R" on 238 plans / 486k ppl
+
+**What was wrong.** (f) A1 — the doubled house — was sized at 238 plans /
+485,782 ppl / 1,178 rows and the DISPLAY strip shipped 2026-09-18; the
+parser half stayed open. Traced on Consolidated Electrical Distributors
+(`20250903130608NAL0031602098001`): the filing renders its schedule twice.
+The first render is clean — `JP Morgan | JP Morgan Mid Cap Growth Fund |
+N/R | 22,050,627`, named from the description. The second render prefixes
+each row with a footnote letter: `b        JP Morgan   JP Morgan Mid Cap
+Growth Fund   N/R   22,050,627`. The letter becomes the identity cell, the
+house is pushed into the description (`JP Morgan JP Morgan Mid Cap Growth
+Fund N/R`), and v74's pair dedup keeps the LONGER name of the pair — the
+doubled one — on every row. `N/R` (the empty cost column) rode along
+because the trailing-column stripper knew `-`, `$`, dashes and numbers,
+not `N/R`.
+
+**The change (`lib-4i.mjs`, PARSER_VERSION 146, part 2).** A lone
+lowercase letter followed by a column gap at the start of a line is
+stripped exactly as the party-in-interest `*` is; `N/R` / `N/A` joined
+the trailing-column stripper. The specimen now parses as `JP Morgan Mid
+Cap Growth Fund`, `American Funds New World R6`, `Dodge & Cox Global Bond
+Fund` (33 rows, ratio 1.000, unchanged).
+
+**Verified.** Parser gate all specimens green; `diff-lineups HEAD` (v146
+part 1 → part 2) over 970 corpus filings: **0 / 0 / 0 / 0 moves** — as
+expected for a RENAME-only change, which the count-and-sum diff cannot
+see; the whole-store multiset diff after the run is the measurement
+(`rename-ms`: expect ~1,178 rows across ~238 plans to lose a doubled
+house and a trailing `N/R`). Pinned as
+`footnote-letter-identity-cell-doubled-house`.
+
+**Prediction for the v146 run, part 2's share:** `issuer-glue-split.mjs`
+doubled 238 plans → near 0; names ending in `N/R` → 0; the raw-first
+ticker lookup gains on those rows (the display strip already matched them,
+so `tkShare` moves little); confident +0 / −0.
 - **Retail Services Wis** — `[Company Vanguard Fiduciary Trust]`: the
   issuer's second line (`Company`) leads the issuer field, queue (f) C's
   wrapped-issuer shape, now 6 plans.

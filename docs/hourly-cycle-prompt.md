@@ -237,6 +237,15 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 02:3xZ 2026-09-19 (b): v146 PART 2 committed `[skip ci]` —
+      (f) A1's parser half: a lone footnote letter in column (a) pushed
+      the house into the description and the double-render dedup kept
+      the doubled name (`JP Morgan JP Morgan Mid Cap Growth Fund N/R`,
+      238 plans / 486k ppl); the letter is stripped like `*`, and `N/R`
+      joins the trailing-column stripper. Gate green; corpus diff 0/0/0
+      (rename-only; `rename-ms` after the run measures it). #380 (v143)
+      still in flight. Next wake: verdict #380, mirror, dispatch v144 +
+      v145 + v146 in ONE run.
       **STATUS 02:3xZ 2026-09-19: v146 (queue item k, second member)
       gated and committed `[skip ci]` — when both 4i columns wrap with
       the value on the second line, each cell continues the cell above;
