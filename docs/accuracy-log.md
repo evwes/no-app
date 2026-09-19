@@ -15071,6 +15071,61 @@ Sunoco GP move from confident to `trustPtr` (confident −2, both reconciled
 by name — the loss triage will raise `reparse-loss` on Energy Transfer's
 6-row "menu" and it is the rule working); a handful of plans gain one row
 whose name carries `transfer`; the (k) ≥30% set 17 → 15.
+
+## 2026-09-19 (02:2xZ) — v146 (queue item k, second member): when BOTH columns wrap and the value rides on the second line of each, the two cells continue the two cells above — Rush Copley's $109M "Fund Institutional Shares" is three Vanguard index funds again (11 → 19 rows)
+
+**What was wrong.** Rush Copley Medical Center (3,426 ppl) files every
+Vanguard row over two lines in BOTH columns:
+
+    Vanguard Target                Vanguard Total International Stock Index
+     Retirement Income              Fund Institutional Shares        52,582,061
+
+The value line carries two cells, so v130's single-cell down-wrap branch
+(value line = one cell under the description column) never fires; the
+buffered line has two cells, so the generic branch reads it as identity
+text; the description column wins the name — `Fund Institutional Shares`,
+three times — and the same-name merge sums them into one $109,445,632 row
+at 35.2% of the plan. The v100 shape (real holdings collapsed onto a
+shared fragment) in a new layout. Read from the filing, traced with the
+row trace (`nameCol = "Retirement Income"`, `descCol = "Fund
+Institutional Shares"`, `full` = the glued buffered line).
+
+**The change (`lib-4i.mjs`, PARSER_VERSION 146).** A new branch ahead of
+the single-cell down-wrap: when the line above holds both cells at the
+same two column offsets (±3), its description is a wrap HEAD
+(`wrapHeadOk`) and the value line's description is a continuation —
+fails `wrapHeadOk`, or OPENS with a vehicle / share-class word (`Fund`,
+`Shares`, `Class`, `Institutional`, `Investor`, `Admiral`, `Trust`, `R6`,
+a single letter) — each cell joins the cell above. The first draft
+required only `!wrapHeadOk(descCol)` and fixed one of the three rows
+(`Shares` alone); `Fund Institutional Shares` leaves two residue words and
+passed as a head, hence the explicit fragment-head test.
+
+**Verified.** Parser gate all specimens green; `diff-lineups HEAD` (v145 →
+v146) over 969 corpus filings: **0 gained / 0 lost / 0 fabricated / 2 row
+moves — Rush Copley 11 → 19 (the three funds unfolded, plus five more
+two-line rows), ADP TotalSource 25 → 26 (one row, below the trace's
+print depth, unread)**; 0 sum moves. Rush Copley's ratio is unchanged at
+0.994 and every unfolded row carries `iss Vanguard Target Retirement
+Income`, which is what the filing's identity column says. Pinned as
+`both-columns-wrap-value-on-second-line`.
+
+**(k) residue after this, read:** Avi Systems (2,048 ppl, `shares` 69.4%)
+is an ESOP whose employer-stock row wraps a SHARE COUNT — `AVI System,
+Inc.  Common Stock: 1,885,00` / `shares  $63,725,507  $303,975,100` — the
+split number is read as a value on the first line and the second line is
+named `shares`; the money is right (69% of an ESOP in employer stock) and
+the name is wrong; one plan, recorded. H&M (`Investor Shares` 35%) does
+not reproduce on a fresh parse (not confident, 0.404 — its stored lineup
+came by another path). The (k) ≥30% set: 17 → ~13 after v145 part 2 and
+v146; the <30% tail (266 plans, `shares` ×37, `fund` ×29, `institutional
+class` ×19, `admiral shares` ×18) is the same layout family and should
+fall with it — the v146 verdict measures how far.
+
+**Prediction for the v146 run:** `frag-lead.mjs` ≥30% set 17 → ≤13, the
+whole population (283 plans / 620k ppl) FALLS by the two-column-wrap
+share; confident +0 / −0 (the join preserves sums); rows ADDED across the
+affected plans as merged fragments unfold; HIGH 4; generic-names ≤ 128.
 - **Retail Services Wis** — `[Company Vanguard Fiduciary Trust]`: the
   issuer's second line (`Company`) leads the issuer field, queue (f) C's
   wrapped-issuer shape, now 6 plans.

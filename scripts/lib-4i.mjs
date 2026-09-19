@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 145;
+export const PARSER_VERSION = 146;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -1019,7 +1019,35 @@ export function parseRows(section, opts = {}) {
        * line above, never under the identity column, so the same offset test
        * settles it — and the identity comes back from the buffered line. */
       const last = buf.length ? buf[buf.length - 1] : null;
-      if (nameCol && last && last.desc && last.name &&
+      /* v146 (queue item k): BOTH COLUMNS WRAP, AND THE VALUE RIDES ON THE
+       * SECOND LINE OF EACH. Rush Copley (3,426 participants) files:
+       *
+       *     Vanguard Target                Vanguard Total International Stock Index
+       *      Retirement Income              Fund Institutional Shares        52,582,061
+       *
+       * The value line carries two cells, so the single-cell down-wrap branch
+       * below never fires; the buffered line has two cells, so the generic
+       * branch calls it identity text; and the description column wins the
+       * name — `Fund Institutional Shares`, three times, summed by the
+       * same-name merge into one $109M row at 35% of the plan (the v100
+       * shape; 17 plans / 29,009 ppl publish such a fragment at >=30%). When
+       * the line above holds both cells at the same two column offsets, its
+       * description is a wrap HEAD and the value line's description is NOT
+       * (a class / vehicle fragment), each cell continues the cell above. */
+      const dStart0 = descCol ? rawNorm.indexOf(descCol, nameStart + nameCol.length) : -1;
+      // a description that OPENS with a vehicle / share-class word is a
+      // continuation, whatever follows it: `Fund Institutional Shares`,
+      // `Shares`, `Admiral Shares`, `Class R6`, `Trust II`
+      const FRAG_HEAD = /^(?:fund|funds|shares?|class|cl|institutional|investor|admiral|inst|premium|select|series|portfolio|trust|units?|r\d|[a-z])\b/i;
+      if (nameCol && descCol && last && last.desc && last.name && last.dcol >= 0 && dStart0 >= 0 &&
+          Math.abs(dStart0 - last.dcol) <= 3 && Math.abs(lead - last.col) <= 3 &&
+          /[a-z]{3}/i.test(last.desc) && wrapHeadOk(last.desc) && (!wrapHeadOk(descCol) || FRAG_HEAD.test(descCol))) {
+        descPre = last.desc;
+        descCol = join(last.desc, descCol);
+        nameCol = join(last.name, nameCol);
+        buf = buf.slice(0, -1);
+        for (const b of buf) if (!b.wide) idParts.push(b.t);
+      } else if (nameCol && last && last.desc && last.name &&
           last.dcol >= 0 && lead >= last.dcol - 3 && lead <= last.dcol + 10 &&
           /[a-z]{3}/i.test(last.desc) && wrapHeadOk(last.desc)) {
         /* anything still to the right of the continuation is a cost/units

@@ -652,7 +652,9 @@ don't confuse them). Frontend: python http.server + Playwright at
   participants at either end of the plan year), of which **68,259 are
   full-form** filers and 43,523 short-form; 68,767 parse-status entries.
   **Store at v142 (branch AND main, `3dde8717`); `PARSER_VERSION` in the
-  tree is 145 — v143 (part 1: legend-less coded rows named from the SEC
+  tree is 146 (v146: when both 4i columns wrap with the value on the
+  second line, each cell continues the cell above — Rush Copley 11 → 19
+  rows) — v143 (part 1: legend-less coded rows named from the SEC
   ticker index, 2,166 rows / 261 plans; part 2: a readability term
   decides near-equal region contests — Lulus, Fusion Medical) is in
   flight as run #380 (dispatched 2026-09-19 01:40Z); v144 (the

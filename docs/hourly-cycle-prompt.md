@@ -237,6 +237,16 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 02:3xZ 2026-09-19: v146 (queue item k, second member)
+      gated and committed `[skip ci]` — when both 4i columns wrap with
+      the value on the second line, each cell continues the cell above;
+      Rush Copley's $109M `Fund Institutional Shares` unfolds into three
+      Vanguard funds (11 → 19 rows). Gate green, corpus diff 0/0/0 with 2
+      row moves. (k) residue: Avi Systems (ESOP share-count wrap, 1
+      plan). #380 (v143) still in flight. Next wake: verdict #380, mirror,
+      dispatch v144 + v145 + v146 in ONE run (predictions disjoint:
+      fold/tail, duplicates, trust pointers, two-column wraps).
+      `docs/accuracy-log.md` 2026-09-19 (02:2xZ v146).
       **STATUS 02:2xZ 2026-09-19: v145 PART 2 committed `[skip ci]` — (k)'s
       largest member: SKIP_ROW's unanchored `transfers?` matched the
       sponsor's own name, so Energy Transfer (16,426 ppl) published its
