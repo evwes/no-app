@@ -17192,3 +17192,65 @@ reach the other 47, and **no yield is projected from one filing**, which is the
 rule this project already has for fix yields. The build needs the count of
 filings that actually show a cost-only description cell beneath a buffered
 description line, and that count needs parsing rather than the store.
+
+## 2026-09-19 (22:3xZ) — v168: an UNANCHORED `appreciat` arm was deleting a whole fund family from every menu in the store
+
+**The defect, and it is the largest single-word one on record.** `SKIP_ROW` is
+built by string concatenation, and its financial-statement alternation sits
+**after the group that `^(` opened has already closed** (at `collateral, par)`).
+Every arm from there on is therefore a SUBSTRING test on the whole line. That
+is right for `benefits paid` and `level 1`. For **`appreciat`** it is
+catastrophic: every row naming a fund with "Appreciation" in it was dropped —
+**as a holding AND as a buffered name** — and *T. Rowe Price Capital
+Appreciation* is one of the largest funds in the country.
+
+**The filter's footprint, measured on the published store: 55 rows out of
+1,721,905 contain `appreciat`.** That is not what the market looks like; it is
+what a deletion looks like.
+
+**How it was found, because the route is the method working.** Northeast
+Georgia Health System (14,038 ppl) publishes `T. Rowe Price` at $479,484,734 =
+57% of its menu, and the #399 verdict had already established that its filing
+is not thin — page 15 carries a clean schedule naming the fund. This cycle
+bisected the parser with probes on real statements, which mattered twice: the
+first bisect put a probe inside a block comment and returned a false "reached
+here", and the corrected run walked the line to `SKIP_ROW.exec(t)`, which
+printed the match: **`"Appreciat"`**. Seven Vanguard rows on the same page get
+their orphan description; only the T. Rowe row did not, and the difference was
+one word in its name.
+
+**The fix.** The statement lines this arm exists for all say "net" first —
+"Net appreciation in fair value of investments", "Net (depreciation)
+appreciation" — so the arm now requires that word. `realized|unrealized`
+already cover the rest, and a separate anchored `^net\s+(appreciation|…)`
+pattern exists elsewhere for the same family.
+
+**Verified, and the gate earned its keep.** It refused the parse over ONE
+pinned specimen: **Erlanger Health System 13 → 14 rows, sum 201,345,581 →
+234,792,545, ratio 0.850 → 0.991**, the recovered row being `Harbor Capital
+Advisors, Inc. Harbor Capital Appreciation` at **14.2% of that plan**. The
+ratio moving to 0.991 is the evidence the row belongs — and **that specimen's
+own label has read "14-row menu" the whole time** while its pinned number said
+13. The expectation was corrected in the same commit, as the gate instructs.
+
+**Corpus diff over 989 filings: 0 confidence gained, 0 LOST, 0 fabricated rows
+either way, 0 menu-sum moves, and 63 filings gain rows — 6.4% of the corpus.**
+Duke University 96 → 98, Emory 81 → 82, Sherwin-Williams, Southwest Airlines,
+Ecolab, Dillard's, American University, Stonehill College.
+
+**Three gain several rows, and the mechanism is the #399 verdict's own
+sentence running in reverse.** That verdict said "one defect costs twice, and
+the second cost is what decides the contest" — a deleted row also lowers its
+region's sum, so the fuller render loses. With the row restored, the fuller
+render wins: **Panorama Mortgage 17 → 28 rows at the same 0.956 ratio**, with
+`TIAA-CREF Large-Cap Growth Index Fund` where it published `Nuveen Large Cap
+Gr Indx R6`, and `Fixed Income Guaranteed Option` for `Prin Inc Guar Option`.
+Community Choice Credit Union 29 → 34, Utah Del 5 → 12.
+
+Northeast Georgia itself keeps its 15 rows and its 0.996 ratio; the 57% row is
+simply named now.
+
+**Dispatched as #401, observed in_progress at 22:38Z.** The verdict test: rows
+containing `appreciat` should go from 55 to several thousand, `confident`
+should not fall, and the bare-house-dominant class should lose Northeast
+Georgia — its largest member by participants.

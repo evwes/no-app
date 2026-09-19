@@ -237,6 +237,29 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 22:3xZ 2026-09-19: v168 BUILT AND DISPATCHED as #401 (observed
+      in_progress 22:38Z) — an UNANCHORED `appreciat` arm in SKIP_ROW was
+      deleting a whole fund family from every menu in the store.** That
+      alternation sits after the group `^(` opened has closed, so every arm in
+      it is a SUBSTRING test; `appreciat` therefore dropped every row naming a
+      fund with "Appreciation" in it, as a holding AND as a buffered name.
+      **Footprint: 55 rows of 1,721,905 in the published store contain
+      `appreciat`** — a deletion, not a market. Found by bisecting why
+      Northeast Georgia (14,038 ppl) publishes `T. Rowe Price` at 57% while
+      seven Vanguard rows on the same page get their names; `SKIP_ROW.exec`
+      printed the match `"Appreciat"`. **The first bisect put a probe inside a
+      block comment and returned a false "reached here"** — probes go on real
+      statements. Fix requires "net" before the word, which is how every
+      statement line spells it. **The gate refused the parse over one pinned
+      specimen and was right**: Erlanger 13 → 14 rows, ratio 0.850 → 0.991,
+      the recovered row Harbor Capital Appreciation at 14.2% of the plan — and
+      that specimen's label has said "14-row menu" the whole time. Corpus diff
+      989 filings: 0 gained, **0 lost**, 0 fabricated, **63 filings gain rows
+      (6.4%)** — Duke 96 → 98, Emory 81 → 82, Sherwin-Williams, Southwest,
+      Ecolab, Dillard's. Three gain several because a fuller render now wins
+      the contest it lost on the deleted row (Panorama 17 → 28 at the same
+      ratio, real TIAA-CREF names replacing abbreviations). Next wake: #401
+      verdict → mirror → whether the bare-house class lost its largest member.
       **STATUS 21:2xZ 2026-09-19: #399 (v167) PASSED AND MIRRORED — pv 167 at
       99.85%, confident 60,115 (+9 / −1), HIGH 5 = 4 + 1 self-clearing,
       overshoot 344. **Both pre-registered regressions came back**: Ford Gum

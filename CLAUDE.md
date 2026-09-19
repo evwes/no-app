@@ -655,8 +655,13 @@ don't confuse them). Frontend: python http.server + Playwright at
   at 99.85%, HIGH 5 = 4 + 1 self-clearing) — MIRRORED 21:2xZ (`--force` over
   main's cron commit `7d9f401c`: 0 acks / 0 plans the branch lacked;
   `--force-data` over the single loss, read by name). `PARSER_VERSION` in the
-  tree is 167 and NOTHING IS IN FLIGHT** — the next parser item is diagnosed
-  and unbuilt (see the LIVE bullet). v167 has two parts: a description that is only a house name
+  tree is 168, DISPATCHED 22:38Z as #401** (observed in_progress). v168 is a
+  one-word fix with a store-wide reach: an **UNANCHORED `appreciat` arm** in
+  `SKIP_ROW` was deleting every row naming a fund with "Appreciation" in it —
+  as a holding and as a buffered name — because that alternation sits after
+  the group `^(` opened has closed, making each arm a substring test.
+  Footprint: **55 rows of 1,721,905** in the published store contain
+  `appreciat`. Corpus diff: 0 lost, **63 of 989 filings gain rows**. v167 has two parts: a description that is only a house name
   may not beat a real fund name in the identity (fixes the #396 Illinois
   regression and reaches its class — five more plans un-merge, Rcb Bank 10 →
   28 rows), and the ASC 820 line condemns a region only at **≥25% of its sum**
