@@ -237,6 +237,12 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 00:3xZ 2026-09-19: v142 dispatched as #378 (00:20Z, in
+      flight; mirror HELD — code ahead of store). (f) A2 CLOSED: 11 of 12
+      random names are filed verbatim (platform-branded sub-advised
+      products), not a parser defect. Next: the 226 Empower plans whose
+      LEGEND was not found (1,348 coded rows), (f) C, (m), (l).
+      `docs/accuracy-log.md` 2026-09-19 (00:3xZ).
       **STATUS 00:2xZ 2026-09-19: v142 gated and committed `[skip ci]`
       (despaced caption + cover-page captions; Hill Brothers 38 → 60
       rows, gate green, diff 0/0/0, pinned) — dispatched when #377 lands.

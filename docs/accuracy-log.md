@@ -14667,3 +14667,33 @@ caption fragment (`De scription`, `of Inve stm e nt`, `Em ploye r`) → 0;
 confident +0 / −0 (a handful of small gains possible where a kerned
 cover-page row had pushed a plan out of band); coverage otherwise
 unchanged. Dispatched after #377 lands.
+
+## 2026-09-19 (00:3xZ) — queue item (f) A2 CLOSED as filed-as-is: 11 of 12 randomly drawn "trustee before a different house" names appear verbatim in their filings
+
+The 20:2xZ sizing gave (f) A2 — a trustee's name in front of a different
+fund house, `Empower T. Rowe Price Mid Cap Growth Fund`, `VOYA JPMorgan
+Small Cap Equity Portfolio` — 789 plans / 1,339,789 ppl / 2,271 rows and
+filed it as parser work. Tracing the two headline rows first: **both are
+the filing's own name for the product** — Empower lists `*Empower |
+Empower T. Rowe Price Mid Cap Growth Fund` (a sub-advised Empower fund,
+named that way in the notes too) and Voya's separate accounts are `VOYA
+JPMorgan Small Cap Equity Portfolio` on one line. Two traces license
+nothing about 789 plans, so a RANDOM 12 were drawn (`a2-verbatim.mjs`,
+seed 20260919, population 2,313 rows) and each name tested verbatim
+against its own filing's text: **11 of 12 appear exactly as published**
+(`Nuveen TIAA Lifecycle Index 2025 R`, `Great-West Loomis Sayles Bond
+Fund I`, `Nationwide BNY Mellon Dynamic US Core Fund R6`, `Blackrock
+Ishares Russell 2000 SM Cap IX K`). The one miss, `Principal Vanguard
+Value Index Adml`, may be a whitespace difference or a real glue — one
+plan either way.
+
+**A2 is not ours.** These are platform-branded sub-advised products, and
+stripping the platform would publish a name the plan does not hold (the
+Empower fund is not the T. Rowe Price fund; it carries its own fee). The
+correct treatment is already in place: the raw-first ticker lookup leaves
+them unresolved rather than mapping them to the sub-adviser's ticker. The
+sizing's error was the usual one — a naming PATTERN was counted as a
+DEFECT before any member was read. Queue (f) now holds A1 (doubled house,
+display strip shipped, parser half open), B (trustee suffix / bare
+trustee row, two populations, unseparated) and C (two-line colon-less
+issuer, 5 plans).
