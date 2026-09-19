@@ -1,49 +1,50 @@
-# Morning brief — 2026-09-19 (written 05:0xZ / 1:0x AM ET; refreshed at the next verdict)
+# Morning brief — 2026-09-19 (written 07:1xZ / 3:1x AM ET; refreshed at the next verdict)
 
-Live on main: **`c07b9f47`, the v147 store** (Pages #514 deployed it).
-Since the last brief: v144–v147 are LIVE together — #381 (v144–v146) was
-held off main over 15 small losses, v147 repaired the seven that were
-mine, and #382 mirrored with every remaining loss read by name. **v148 +
-v149 are running (#383, lands ~05:45Z)**; v150 is gated and committed
-behind it. Every version was verified against its own prediction.
+Live on main: **`6172a056`, the v149 store** (Pages #515 deployed it at
+07:09Z). Since the last brief: v144–v149 are all LIVE; **v150–v154 are
+running together as #385** (dispatched 07:09Z, queued behind main's own
+cron run, so it lands late morning ET rather than in an hour). Twelve
+parser versions shipped since 23:3xZ, each gated, corpus-diffed, and
+verified against its own prediction; every lost lineup was read by name.
 
 ## What shipped and what it changed (numbers, not adjectives)
 
 | version | what readers stopped seeing / started seeing | size |
 |---|---|---|
-| v139–v143 (live) | caption fragments and kerned type labels; legend-less Empower codes (`1FXAIX`) named from the SEC class index; the readable region wins a near-tie | 820 + 46 rows; **2,224 rows / 271 plans / 286,418 ppl** renamed code → fund |
-| v144 (live) | the securities fold runs BEFORE the row cap, untyped securities recognised by name — Boeing's 6,950 sleeve positions are one row instead of 7,551 "not shown" | hidden-tail class **337 plans / $46.7B → 240 / $7.2B**; untyped-security floods 65 plans → 2 |
-| v145 (live) | a schedule's two renders with wording drift count once; a statement word inside the SPONSOR's name no longer discards its rows (Energy Transfer's 78% "Trust" row) | duplicates **522 → 110 rows**; Energy Transfer + Sunoco now trust pointers |
-| v146 (live) | both 4i columns wrapping with the value on the second line (Rush Copley's $109M "Fund Institutional Shares" is three Vanguard funds again); footnote letters and `N/R` cells out of names | (k) ≥30% fragments 17 → 13 |
-| v147 (live) | repairs two defects v146 introduced ("Exchange Traded Fund" is a type phrase; the footnote strip stays off Form 5500 cover pages); a house plus a product phrase composes ("Invesco Stable Value Fund", not "Invesco") | 7 lineups back + 23 Vanguard-ETF plans publish for the first time; 121 bare-house rows fixed; **2,147 rows / 1,995 plans / 3.94M ppl** lengthened |
-| v148 (running) | the doubled house stripped in the store, the display's own expression | 203 plans / 760 rows |
-| v149 (running) | a class SUBTOTAL beside its own itemisation is removed before the restatement cut — Marriott's real menu (Vanguard target-date trusts, $5.7B of collective trusts) visible for the first time | Marriott 152,118 ppl, 31 → 49 rows; class 73 plans / 73,363 ppl |
-| v150 (queued) | the `^` party-in-interest marker stripped like `*` (BAE `[^ The Vanguard Group]`) | 2,038 rows / 164 plans / 476,133 ppl |
+| v139–v143 (live) | caption fragments and kerned type labels; legend-less Empower codes (`1FXAIX`) named from the SEC class index | 820 + 46 rows; **2,224 rows / 271 plans / 286,418 ppl** renamed code → fund |
+| v144 (live) | the securities fold runs BEFORE the row cap — Boeing's 6,950 sleeve positions are one row instead of 7,551 "not shown" | hidden-tail class **337 plans / $46.7B → 240 / $7.2B** |
+| v145–v147 (live) | a schedule's two renders count once; two-column wraps reassembled; "Exchange Traded Fund" is a type phrase; house + product phrase compose | duplicates **522 → 110 rows**; 7 lineups back + 23 Vanguard-ETF plans publish for the first time; 2,147 rows / 3.94M ppl lengthened |
+| v148 (live) | the doubled house stripped in the store (`Vanguard Vanguard 500 Index`) | **203 → 10 plans**; 987 rows / 309 plans / 674k ppl |
+| v149 (live) | a class SUBTOTAL beside its own itemisation removed before the restatement cut — Marriott's real menu (Vanguard Retirement trusts, $5.7B of collective trusts) visible for the first time | Marriott 152,118 ppl, 31 → 49 rows |
+| v150 (running) | the `^` party-in-interest marker stripped like `*` | 2,038 rows / 164 plans / 476k ppl |
+| v151 (running) | employer-stock test matches whole words (`america` no longer matches American Express; HCA's trust folds its healthCAre securities); a stricter rule built and REJECTED because it dropped U.S. Bancorp's and Southern Co's own stock | 24 rows / 21 plans |
+| v152 (running) | a coupon with a maturity date is a bond whatever noun it carries (`TRANSCANADA TRUST 5.3% 03/15/2077` leaves the menu for the fold) | 280 rows / 42 plans / 1.07M ppl |
+| v153 (running) | RECEIVABLES securitizations no longer skipped as statement lines; the class-label test sees past `U.S.` and `&`; a cover-page identifier (`Sponsor ID #: 20-5146075`) is not a $5.1M holding | Marriott 37 rows at 0.980, no class line; 446 identifier rows / 362 plans / 1.17M ppl; Barton & Gray's 17-fund menu back |
+| v154 (running) | an issuer cell ending in a type phrase names firm + vehicle: TIAA's statement label `College Retirement Equities Fund variable annuities` cleared from every row; `Vanguard Group Registered investment company` → `[Vanguard Group]` with the row typed | 16,915 rows / 1,171 plans / 1.45M ppl |
 
-Live store (v147): confident **60,122** (+15 over v143), lineups 59,769,
-HIGH 5 (4 baseline + 1 self-clearing), overshoot 363, aggRow 110 (the
-fold's class), generic-names 128, dominant-row 0, `tkShare` 24.34,
-download failures 104 (all re-probed 403).
+Live store (v149): confident **60,122**, lineups 59,769, HIGH 4 (the
+folded-aggregate baseline was re-based 60 → 120 with the v144 mechanism
+recorded, so a standing mechanism no longer reads as a defect), overshoot
+364, aggRow 109 / 1.16M ppl, `tkShare` 24.34, download failures 104.
 
-## Losses accepted on the record (v143 → v147, eight plans)
+## Losses accepted on the record since the last brief
 
-Energy Transfer and Sunoco GP (designed: master-trust pointers, not
-menus); Century Companies, Riverside Contracting, Jackson Contractor
-(bond sleeves that fold to one row and fail the 3-row floor — the old
-50-row "menu" was a sleeve); Midland Holding (junk names refused);
-Fullington (an untraceable fallback); one one-member trust refused at
-2.0x, which v149 may bring back. ~4,500 ppl together, each read by name.
+v143 → v147: Energy Transfer and Sunoco (designed trust pointers), three
+bond-sleeve plans folding to one row, Midland's junk names, an untraceable
+fallback, one double-counting trust (~4,500 ppl). v147 → v149: Goodwill
+Keystone (1,929 ppl — its old confidence was bought by a double-counted
+class line over a scanned fragment) and Barton & Gray (198 ppl — a real
+regression, fixed in v153 before the next mirror).
 
 ## Found and not yet fixed, by people affected
 
 | item | size | status |
 |---|---|---|
 | (o) the schedule's table of contents as holdings (NRECA `Common collective trusts (pages 165-166)` 49%) | 1 plan / 80,475 ppl | recorded; the honest page is a class summary, a design question (yours, #5 below) |
-| Marriott's two residual class rows (`CORPORATE BONDS`, `GOVT`) after v149 | 1 plan / 152,118 ppl | measured after #383 |
-| coded rows the SEC index cannot name (non-ticker codes) | 930 rows / 228 plans / 224k ppl; 10 plans served from a 2023 fallback keep their codes | open, needs another source |
-| (k) leading share-class fragments | 13 plans / ~4,700 ppl at ≥30% | Avi Systems (ESOP share-count wrap) and small residue |
-| (f) C two-line issuer | 4 plans | queued |
-| `isEmployer` matching the token "Wholesale"; window-fund ambiguity (AmEx, Jones Walker); Transcanada Trust bonds typed pooled | small, each recorded | queued |
+| coded rows no legend names (`1ISM35I`) | 152 plans / 655 rows / 170k ppl from the plan's own filing | the filing publishes the code alone; needs Empower's own code list, outside EFAST2 |
+| `ds` stored as `absent`/`noattach` beside ≥5 parsed rows | 84 plans | hygiene: not published (the census prints it only for nohead plans), but the status file contradicts itself |
+| the one-member master trust refused at 2.0x (55 rows of class subtotals not adjacent to their runs) | 1 trust | open |
+| (k) leading share-class fragments; (f) C two-line issuer; window-fund ambiguity (AmEx, Jones Walker) | small, each recorded | queued |
 
 ## HELD, and why
 
@@ -52,9 +53,12 @@ Fullington (an untraceable fallback); one one-member trust refused at
   runner). `data/fund-facts.json` is empty, honestly. Waiting on a source
   decision: (a) an API key as a repo secret, (b) allowlist
   `investor.vanguard.com` / `www.morningstar.com`, (c) both.
-- **No parser agent is spawned** until you say so; tonight's twelve parser
-  changes (v139–v150) were built inside the hourly loop, each gated and
-  corpus-diffed, and the loop has not stopped since 23:3xZ.
+- **The mirror was held 69 minutes under main's cron run #384 and then
+  made anyway**, once measured: #384 is a 20-shard OCR run (~3h, main's
+  cache is not the branch's), the workflow's concurrency is per-ref, and
+  its merge rebases onto whatever main is when it lands. The reasoning is
+  in the accuracy log; it is not a new rule.
+- **No parser agent is spawned** until you say so.
 
 ## Waiting on you, ranked by people affected
 
@@ -70,7 +74,7 @@ Fullington (an untraceable fallback); one one-member trust refused at
 ## What continues alone
 
 Hourly: reconcile, verdict any run, mirror only when the verdict is clean,
-dispatch the next gated version, the participant-weighted draw (three
-draws tonight, 43 of 45 real menus; items (n), (o), (p) named), the
-record. Next: #383's verdict → mirror → v150 → Marriott's residual class
-rows, the coded residue.
+dispatch the next gated version, the participant-weighted draw (four
+draws tonight, 58 of 60 real menus; items (n), (o), (p) and the TIAA
+issuer label came from them), the record. Next: #385's verdict → mirror
+→ the `ds` hygiene item.

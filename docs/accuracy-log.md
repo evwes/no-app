@@ -15867,3 +15867,42 @@ a contradicting `rw` on 84 live plans, and any reader of
 `lineups-status.json` (or a future census change) would inherit the
 wrong reading. Queue item downgraded to hygiene: fetch-4i should not
 record `absent`/`noattach` when the parse produced ≥3 rows.
+
+## 2026-09-19 (07:1xZ) — MIRRORED `c07b9f47 → 6172a056` (the v149 store, `--force` + `--force-data`) while main's cron #384 still runs; v150–v154 dispatched as #385
+
+**Why the hold ended before #384 did.** At 07:07Z #384 was 69 minutes in
+with all TWENTY parse shards still running — main's OCR cache is not the
+branch's, so prep sized the matrix for OCR and this is a 3-hour run, not
+a 55-minute one. Holding the doubled-house fix (375,590 ppl) and
+Marriott's menu (152,118) for that is a cost with no matching benefit,
+because the two things the hold protects are both safe here: (1) the
+workflow's concurrency group is `build-data-${{ github.ref }}`, so a
+branch dispatch cannot cancel a main run; (2) #384's merge job checks
+out the LATEST main and re-applies its deltas with reset+retry, so a
+mirror that lands before its merge is exactly the state it expects, and
+its v149 deltas onto a v149 store change nothing. The 2026-09-16 hold
+was one hour against a run about to commit; this is one mirror under a
+run two hours from committing. Recorded as the reasoning, not a new rule.
+
+**Mirror.** `mirror.sh --force --force-data`: gate printed dominant pv
+149 at 99.8%, fetch failures 104, +2 gained / −2 lost vs main — the two
+losses (Goodwill Keystone, Barton & Gray) read by name in the #383
+verdict; git check: main had no commit the branch lacked (`mainvsbr2`: 0
+acks / 0 plans, main newer on 0). `pages-build-deployment` #515 building
+`6172a056`. **What reached readers:** 203 → 10 plans lose the doubled
+house prefix (v148, 987 rows / 309 plans / 674k ppl shortened);
+Marriott's 152,118 participants see their Vanguard Retirement trusts,
+Northern Trust S&P 500 and Fidelity Contra pool for the first time
+(v149); the audit's folded-aggregate baseline re-based so main's own
+runs stop raising a mechanism as HIGH.
+
+**Dispatched #385 at 07:09Z on `6172a056`** (v150 `^` marker; v151
+whole-word employer tokens; v152 dated bonds fold; v153 RECEIVABLES,
+`U.S.`/`&` labels, identifier lines; v154 issuer type tails). Verdict
+tests: confident +1 (Barton & Gray) / −0 beyond small reads;
+`caret-iss.mjs` 2,038 → ~0; `employer-tok3.mjs` 24 → 0; `coupon-trust.mjs`
+280 beside a fold → ~0; `sponsor-id.mjs` 446 → ~0; `iss-type.mjs`
+16,915 → near 0; Marriott 37 rows at 0.980 with no class line; Boeing
+42 rows; the one-member trust 28-of-30 Transcanada rows may drop below
+the floor. Both runs share the 20-job concurrency ceiling, so #385's
+shards queue behind #384's; expect it late.

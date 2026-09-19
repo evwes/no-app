@@ -237,6 +237,16 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 07:1xZ 2026-09-19: MIRRORED `c07b9f47 → 6172a056` (v149
+      store; `--force` 0/0, `--force-data` over Goodwill + Barton & Gray,
+      both read) under main's #384 — held 69 min, then measured: #384 is a
+      20-shard OCR run (~3h, main's cache), concurrency is per-ref, its merge
+      rebases onto latest main; Pages #515. **#385 (v150–v154) dispatched
+      07:09Z on `6172a056`**, watcher armed (shards queue behind #384's).
+      Next wake: #385 verdict (sizers to ~0: caret 2,038, employer 24,
+      coupon-trust 280, sponsor-id 446, iss-type 16,915; Barton & Gray back)
+      → mirror → morning brief already refreshed → the `ds` hygiene item,
+      the coded residue (needs Empower's code list).
       **STATUS 06:4xZ 2026-09-19: v154 committed `[skip ci]` — an issuer
       cell ending in a TYPE phrase names firm + vehicle: TIAA's statement
       label `College Retirement Equities Fund variable annuities` (13,731

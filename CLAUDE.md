@@ -651,21 +651,20 @@ don't confuse them). Frontend: python http.server + Playwright at
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
   full-form** filers and 43,523 short-form; 68,767 parse-status entries.
-  **Store at v149 on the BRANCH (`54c7f32a`, run #383, PASSED 05:46Z:
-  doubled house 203 → 10 plans, Marriott's real menu, +2 / −2); main is
-  still at v147 (`c07b9f47`) because run #384 — main's own `:23` cron —
-  is IN FLIGHT ON MAIN since 05:58Z re-parsing v149 there; mirror and the
-  next dispatch wait for it. `PARSER_VERSION` in the tree is 154, all
-  committed `[skip ci]` and undispatched: v150 (the `^` party-in-interest
-  marker stripped like `*`), v151 (the employer-stock sponsor-token test
-  matches whole words), v152 (a coupon with a maturity date is a bond
-  whatever noun it carries — 280 dated `Trust`/`Fund` notes join the
-  fold), v153 (RECEIVABLES securitizations no longer dropped as statement
-  lines; the class-label test sees past `U.S.` and `&`; a cover-page
-  identifier line — `Sponsor ID #: 20-5146075`, 446 rows / 362 plans — is
-  not a holding, which returns Barton & Gray, #383's one regression),
-  v154 (an issuer cell ending in a type phrase names firm + vehicle —
-  TIAA's statement label cleared, `[Vanguard Group]` typed).
+  **Store at v149 (branch AND main, `6172a056`, run #383, PASSED 05:46Z:
+  doubled house 203 → 10 plans, Marriott's real menu, +2 / −2; mirrored
+  07:1xZ under main's own 20-shard cron run #384, which rebases onto it).
+  `PARSER_VERSION` in the tree is 154 — v150–v154 are IN FLIGHT as run
+  #385 (dispatched 2026-09-19 07:09Z on `6172a056`): v150 (the `^`
+  party-in-interest marker stripped like `*`), v151 (the employer-stock
+  sponsor-token test matches whole words), v152 (a coupon with a maturity
+  date is a bond whatever noun it carries — 280 dated `Trust`/`Fund` notes
+  join the fold), v153 (RECEIVABLES securitizations no longer dropped as
+  statement lines; the class-label test sees past `U.S.` and `&`; a
+  cover-page identifier line — `Sponsor ID #: 20-5146075`, 446 rows / 362
+  plans — is not a holding, which returns Barton & Gray, #383's one
+  regression), v154 (an issuer cell ending in a type phrase names firm +
+  vehicle — TIAA's statement label cleared, `[Vanguard Group]` typed).
   The v149 store carries v144 (fold before the cap), v145 (stem dedup;
   the sponsor-name `transfer` trap), v146 (two-column wraps; footnote
   letter; `N/R`), v147 (ETF is a type phrase; house + product phrase
@@ -681,7 +680,19 @@ don't confuse them). Frontend: python http.server + Playwright at
   Nothing downstream was affected (no session acted on it), but it is exactly
   the copying-a-line-forward hazard this file warns about elsewhere, aimed at
   the file's own header. **Re-derive this line rather than editing the date.**
-- **LIVE on main: `c07b9f47` — MIRRORED 2026-09-19 04:5xZ (`--force-data`
+- **LIVE on main: `6172a056` — MIRRORED 2026-09-19 07:1xZ (`--force` over
+  the git check with 0 acks / 0 plans lacked; `--force-data` over two
+  losses read by name).** The v149 store: pv 149 at 99.85%, confident
+  60,122 (+2 / −2 vs v147: Goodwill Keystone honest, Barton & Gray a
+  regression fixed in v153), HIGH 4 after the folded-aggregate re-base,
+  overshoot 364, aggRow 109 / 1.16M ppl, dl 104. What reached readers:
+  the doubled house prefix gone from 203 → 10 plans (987 rows / 309 plans
+  / 674k ppl); Marriott's 152,118 see their real menu (49 rows, 21 trusts).
+  Mirrored while main's cron #384 (20 OCR shards, ~3h) was mid-run —
+  concurrency is per-ref and its merge rebases onto latest main; the
+  reasoning is in `docs/accuracy-log.md` 2026-09-19 07:1xZ. **#385
+  (v150–v154) in flight.**
+- **Previously: `c07b9f47` — MIRRORED 2026-09-19 04:5xZ (`--force-data`
   over 8 reconciled losses; git check unforced).** The v147 store — v144
   through v147 together. pv 147 at 99.85%, confident 60,122 (**+23 / −8**
   vs the v143 store: the eight are Energy Transfer + Sunoco (designed
