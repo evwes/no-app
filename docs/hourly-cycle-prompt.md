@@ -237,6 +237,19 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 10:3xZ 2026-09-19: #386 (v155) verdict — junk classes
+      closed (form-line 75 → 0, iss-type 1,695 → 197), 35 losses read: 33
+      honest withdrawals, 2 the `(N)` arm over-reaching (Conditioned Air,
+      Central City — real rows footnoted `(1) …`); the render tie-break
+      moved 775 lineups and its LENGTH term chose the abbreviated render
+      half the time. v156 fixes both (+ `#` marker, + Progressive's `of `)
+      — gate green, corpus clean. Main's cron #387 was CANCELLED at 10:09Z
+      (it starved #386's merge for 77 min) and its merge left main PARTIAL
+      (pv154 40,636 / pv149 28,026), so the complete v155 store MIRRORS now
+      (`--force` 0/0, `--force-data` 35 reads) and v156 dispatches on top.
+      Structural fix shipped: SCHEDULE_INCREMENTAL — scheduled runs never
+      re-parse the universe (control 68,767 → 106). Next wake: v156 verdict
+      → mirror → Cleveland-Cliffs' pointer row, Terra Dotta's OCR path.
       **STATUS 08:5xZ 2026-09-19: #385 (v150–v154) PASSED its counts
       (+9 / −3, all three losses junk) but is HELD OFF MAIN: the whole-store
       diff found 187 lineups / 189k ppl swapping renders (ties fall to

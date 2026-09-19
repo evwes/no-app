@@ -651,27 +651,19 @@ don't confuse them). Frontend: python http.server + Playwright at
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
   full-form** filers and 43,523 short-form; 68,767 parse-status entries.
-  **Store at v149 (branch AND main, `6172a056`, run #383, PASSED 05:46Z:
-  doubled house 203 → 10 plans, Marriott's real menu, +2 / −2; mirrored
-  07:1xZ under main's own 20-shard cron run #384, which rebases onto it).
-  `PARSER_VERSION` in the tree is 155. **#385 (v150–v154) PASSED its
-  counts and is HELD OFF MAIN** — 187 lineups swapped renders on a
-  document-order tie and two junk menus published (Seattle University,
-  Endeavor Health's fallback), all bisected to v153 part 2 and fixed in
-  **v155 (tie-break on readability; a region ≥60% class labels is a
-  statement; Form 5500 line references skipped; `^` stripped in names;
-  dated notes stay folded; TIAA's issuer label cleared when mixed) —
-  IN FLIGHT as the run dispatched 2026-09-19 08:5xZ.** The versions it
-  carries: v150 (the `^`
-  party-in-interest marker stripped like `*`), v151 (the employer-stock
-  sponsor-token test matches whole words), v152 (a coupon with a maturity
-  date is a bond whatever noun it carries — 280 dated `Trust`/`Fund` notes
-  join the fold), v153 (RECEIVABLES securitizations no longer dropped as
-  statement lines; the class-label test sees past `U.S.` and `&`; a
-  cover-page identifier line — `Sponsor ID #: 20-5146075`, 446 rows / 362
-  plans — is not a holding, which returns Barton & Gray, #383's one
-  regression), v154 (an issuer cell ending in a type phrase names firm +
-  vehicle — TIAA's statement label cleared, `[Vanguard Group]` typed).
+  **Store at v155 on the branch (`2548498d`, run #386) — being MIRRORED
+  10:3xZ over main's PARTIAL store (cancelled cron #387's merge committed
+  pv154 on 40,636 acks beside pv149 on 28,026). `PARSER_VERSION` in the
+  tree is 156, dispatched 10:3xZ: v156 = the `(N)` footnote arm narrowed
+  to Schedule H vocabulary (Conditioned Air, Central City back), the
+  render tie-break on vowel-token share instead of length (775 swaps in
+  #386, half toward abbreviation), `#` marker stripped, Progressive's
+  `of ` prefix gone. **Scheduled runs are now INCREMENTAL by construction
+  (`SCHEDULE_INCREMENTAL`, 2026-09-19): main's hourly cron no longer
+  re-parses the universe after a mirror — #384 took 3.5 h on twenty
+  runners and #387 starved a finished branch run of its merge.**
+  The v155 store carries v150–v155 (see `docs/accuracy-log.md`
+  2026-09-19 08:5xZ and 10:3xZ) over
   The v149 store carries v144 (fold before the cap), v145 (stem dedup;
   the sponsor-name `transfer` trap), v146 (two-column wraps; footnote
   letter; `N/R`), v147 (ETF is a type phrase; house + product phrase

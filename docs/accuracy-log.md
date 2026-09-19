@@ -16120,3 +16120,76 @@ main would keep ingesting new filings hourly at the old version, and
 the weekly/daily crons would too. The sizing pass writes
 `lineups-index.json`/`lineups-status.json` even at `BATCH_4I=0` — both
 reverted before this commit.
+
+## 2026-09-19 (10:3xZ) — run #386 verdict (v155): the junk classes closed as predicted, 35 losses read (33 honest, 2 a rule over-reaching), the render tie-break moved 775 lineups and chose LENGTH half the time — v156 repairs both; the v155 store MIRRORS because main was left holding a partial store by the cancelled cron
+
+**Numbers.** Run 08:47–10:1xZ (twenty shards done by 08:50, merge starved
+77 minutes behind main's #387 until that was cancelled). pv 155 covers
+68,661 of 68,767 (99.85%); confident 60,128 → **60,102 (+9 / −35 vs
+`11d14617`, the v154 store)**; lineups 59,750; HIGH 25 on the run's line
+(4 baseline + 21 self-clearing `reparse-loss`); overshoot 361 → 353;
+`tkShare` 24.46; dl 104.
+
+**Predictions, re-measured:** form-line names **75 → 0 lineups**;
+`coupon-trust` beside a fold 11 → 2; `iss-type` 1,695 → 197 (the
+`VANGUARD FED MONEY MARKET FUND`-style real headers, as predicted);
+`caret-iss` 2,055 → 255 rows / 60 plans — the residue is the `#` marker
+(`# Black Rock`, `Voya Retirement Insurance #`), a fourth party-in-
+interest convention, stripped in v156; `label-major` 34 → 17 confident
+lineups (the region judged is wider than the published rows — Cleveland-
+Cliffs is 8 labels of 16 region rows; its 97% `Investments in Master
+Trust` row is a pointer `isTrustPointerRow` does not name, queued).
+
+**The 35 losses, read by name.** Form-line lineups withdrawn: State
+Street (21,533 ppl), Deutsche Bank (17,607), Pacific Maritime (19,810),
+Endeavor Health (33,877, the `le 1f` fallback), Harley-Davidson, Battery
+Management, Utility Contractors, Washburn, R&R Transportation, Greenwich
+Hospitality, Apria, Scope Education ×2, four master trusts whose rows
+were `(2) From this plan` OCR lines — every one published Form 5500
+coordinates as holdings. Label-majority statements withdrawn: Seattle
+University, Seattle Academy, Seattle Aquarium, Society of Photo-Optical,
+Metro-West Anesthesia, Frontier Electronic, Dakota Boys and Girls Ranch,
+Solano/Napa trustees. Junk 3–8-row lineups withdrawn: Hp Pelzer, United
+Way of King County, Community Resource CU (`Docusign Envelope ID`),
+First Community Bank, Cabot Hosiery, Mitchell Williams (`companies`).
+**Two are the rule over-reaching:** Conditioned Air of Naples (267 ppl,
+34 rows) and Central City Concern (2,039 ppl, 32 rows) — their filings
+footnote every real row `(1) JPMorgan US Equity R6`, and `FORM_LINE`'s
+`(N) ` arm read the footnote as a Schedule H line. Terra Dotta (94 ppl,
+15 real rows → `stmt`) is on the OCR path and cannot be traced locally;
+read with the next store.
+
+**The tie-break, measured whole-store (`swap-size.mjs old12`,
+`swap-quality.mjs`): 775 lineups / 764,787 ppl changed render.** Vowel-
+bearing tokens (the abbreviation test) rose on 288 and FELL on 272 —
+length decided, and the longer render is as often the recordkeeper's
+abbreviated one with a house prefix and class suffix: `Blue Chip Growth`
+→ `FIDELITY BLUE CHIP GRTH K6 FD`, `Principal Fixed Income Account` →
+`Prin Fixed Income 401(a)/(k)`, `Target Retirement 2030 Fund` →
+`Vanguard Target Retrmnt 2030`. Mixed case went the right way (222 up /
+35 down). A tie-break was right; its second term was wrong.
+
+**v156 (with the Progressive `of ` fix already committed):** (1) the
+`(N) ` prefix is a Schedule H line only when its remainder is Schedule H
+vocabulary (`Other`, `From this plan`, `… held in insurance company
+general account`, `Participant loans`, `U.S. Government securities`…) or
+a class label; otherwise the marker is stripped and the row kept —
+Conditioned Air traces to 34 rows at 0.995, `JPMorgan US Equity R6 [iss
+Empower]`; (2) `nameQuality` = half mixed-case share, half vowel-token
+share, no length; (3) `#` stripped at the identity, issuer-cell and
+issuer-header sites. Gate green; corpus 0 / 0 / 0 / 0, one row moved
+(HPE's `g(1) complete this item) 6g(1)`). **Prediction:** swaps vs the
+v155 store ≈ the 272 vowel-down set flipping back plus part of the 775;
+`caret-iss` 255 → ~0; Conditioned Air and Central City confident again;
+`lead-prep` 627 → ~0; confident +2 / −0 otherwise.
+
+**Why the v155 store mirrors now rather than after v156.** Main is
+holding a PARTIAL store: cancelled #387's merge ran under `if: always()`
+and committed `01baa0ad` — pv154 on 40,636 acks beside pv149 on 28,026,
+`pvTopShare` 59.1 — exactly the mixed-version state CLAUDE.md predicts
+for any cancel, live for readers since 10:1xZ. A complete v155 store
+with two small regressions (2,306 ppl, fixed in the tree) and a cosmetic
+render churn is better than that in every measured respect; v156's
+verdict follows in ~1.5 h. `mainvsbr2`: 0 acks / 0 plans on main the
+branch lacks, main newer on 0 — `--force` on the git check;
+`--force-data` over the 35 reads above.

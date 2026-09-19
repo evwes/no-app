@@ -379,7 +379,7 @@ const INSTITUTION_SUFFIX = /\b(?:trust (?:company|co)|bank|advisors?|asset manag
  * (a hand-rolled generic-name list, a hand-rolled fund-shape test), and the
  * reason `isLoanNoteName` was exported at v131. */
 export function isHouseName(nc) {
-  const s = String(nc || "").trim().replace(/\s+/g, " ").replace(/^[*^(]+\s*|\s*[*^)]+$/g, "");
+  const s = String(nc || "").trim().replace(/\s+/g, " ").replace(/^[*^(#]+\s*|\s*[*^)#]+$/g, "");
   if (!s) return true;                 // no identity at all — the description is all there is
   if (HOUSE_ONLY.test(s)) return true;
   return INSTITUTION_SUFFIX.test(s) && s.split(/\s+/).length <= 5;
@@ -635,7 +635,15 @@ export function subtotalIndices(rows) {
 /* v154: a TYPE phrase closing an issuer cell — see the two uses in parseRows and parse4i. */
 const ISS_TYPE_TAIL = /\b(?:variable annuit(?:y|ies)|registered investment compan(?:y|ies)|mutual funds?|pooled separate accounts?|separate accounts?|common\/?collective trusts?|collective (?:investment )?trusts?|insurance company general accounts?|master trust)\s*$/i;
 
-const FORM_LINE = /^(?:\(\d{1,2}\)\s|\d[a-z]\(\d\)(?:\([A-Za-z]\))?|\([a-z]\)\s+(?:amount|total|common|preferred|all other|other)\b\.{0,3}|le\s+\d?\s*1f\b)/i;
+const FORM_LINE = /^(?:\d[a-z]\(\d\)(?:\([A-Za-z]\))?|\([a-z]\)\s+(?:amount|total|common|preferred|all other|other)\b\.{0,3}|le\s+\d?\s*1f\b)/i;
+/* v155 part 2: a `(N)` prefix is a Schedule H LINE only when what follows is
+ * that line's own text — `(3) Other`, `(8) Participant loans`, `(14) … held in
+ * insurance company general account`, `(2) From this plan`. Filings also
+ * footnote real rows that way (`(1) JPMorgan US Equity R6`, Conditioned Air's
+ * 34 rows; Central City Concern's 32), and the first draft of this rule
+ * withdrew both menus in run #386. The marker is stripped and the row kept
+ * unless the remainder is Schedule H vocabulary or a class label. */
+const SCHED_H_ITEM = /^(?:other\b|from this plan|to this plan|[a-z]*\)?\s*held in insurance|participant loans?\b|loans? \(other|u\.?s\.? government|employer(?:-related)? securit|value of|interest[- ]bearing cash|corporate (?:debt|stocks?)|partnership|real estate|registered investment|common\/?collective|pooled separate|master trust|103-12|net (?:income|assets)|total\b|specify|x\s+d\b)/i;
 
 /* v155: a dead-heat tie-break between two renderings of one schedule — the
  * share of rows with a lowercase letter (mixed case beats ALL-CAPS
@@ -643,9 +651,19 @@ const FORM_LINE = /^(?:\(\d{1,2}\)\s|\d[a-z]\(\d\)(?:\([A-Za-z]\))?|\([a-z]\)\s+
  * each half; 0..1, scaled by 0.002 at the score so it never outweighs a row. */
 function nameQuality(rows) {
   if (!Array.isArray(rows) || !rows.length) return 0;
-  let lower = 0, len = 0;
-  for (const r of rows) { const n = String(r.name || ""); if (/[a-z]/.test(n)) lower++; len += n.length; }
-  return 0.5 * (lower / rows.length) + 0.5 * Math.min(1, len / rows.length / 40);
+  /* v156: LENGTH was the wrong second signal — run #386 measured 775 render
+   * swaps and length picked the abbreviated recordkeeper render as often as
+   * not (`Blue Chip Growth` → `FIDELITY BLUE CHIP GRTH K6 FD`, `Principal
+   * Fixed Income Account` → `Prin Fixed Income 401(a)/(k)`): the longer
+   * string carried more house prefix and class suffix, not more words. The
+   * share of tokens that contain a vowel measures abbreviation directly
+   * (`Vgd Trgt Rtmt` has none) and is what a reader means by readable. */
+  let lower = 0, toks = 0, vowel = 0;
+  for (const r of rows) {
+    const n = String(r.name || ""); if (/[a-z]/.test(n)) lower++;
+    for (const t of n.split(/[^A-Za-z]+/)) { if (t.length < 2) continue; toks++; if (/[aeiouy]/i.test(t)) vowel++; }
+  }
+  return 0.5 * (lower / rows.length) + 0.5 * (toks ? vowel / toks : 0);
 }
 
 export function parseRows(section, opts = {}) {
@@ -869,7 +887,7 @@ export function parseRows(section, opts = {}) {
        * 3,224 rows / 446 plans / 1.02M participants rendered "Fidelity**"
        * as the issuer. Strip it here; curSection itself keeps the raw text
        * for the brokerage classifier, which does not care. */
-      const cs = curSection.replace(/\s*[*^]+\s*/g, " ").replace(/\s+/g, " ").trim();
+      const cs = curSection.replace(/\s*[*^]+\s*/g, " ").replace(/^#\s*|\s*#$/g, "").replace(/\s+/g, " ").trim();
       curIss = (!typeOnly(cs) && !CATEGORY_PHRASE.test(cs) && cs.split(/\s+/).length <= 8 &&
                 (isHouseName(cs) || /\b(?:inc|llc|l\.l\.c|corp(?:oration)?|compan(?:y|ies)|co|associates|advisors?|advisers?|management|investments?|group|partners|bank|trust|n\.a)\b\.?/i.test(cs)))
         ? cs : "";
@@ -1971,6 +1989,10 @@ export function parseRows(section, opts = {}) {
      * `(3) Other`, `6a(2), 6b, 6c` — form pages parsed as a region published
      * these on 75 confident lineups / 298k ppl (State Street and Deutsche
      * Bank 12 of 17 rows; Endeavor Health's 2023 fallback `le 1f` at 88%). */
+    {
+      const fm = name.trim().match(/^\((\d{1,2})\)\s+(.*)$/);
+      if (fm) { if (SCHED_H_ITEM.test(fm[2]) || isClassLabel(fm[2])) continue; name = fm[2]; }
+    }
     if (FORM_LINE.test(name.trim())) continue;
     // rows often carry no type of their own — it lives in the section header
     // ("Common/Collective Trusts"). SDBA/loans must not inherit: those section
@@ -1996,7 +2018,7 @@ export function parseRows(section, opts = {}) {
      * The head is the issuer; the tail is the row's type when the row carries
      * none of its own (a classified phrase only — a tail `classify` cannot
      * name stays on the cell). */
-    let issCell = iss ? iss.replace(/[*^]+/g, "").trim() : "";
+    let issCell = iss ? iss.replace(/[*^]+/g, "").replace(/^#\s*|\s*#$/g, "").trim() : "";
     let issTail = false;
     if (issCell) {
       const tail = issCell.match(ISS_TYPE_TAIL);
