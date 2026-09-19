@@ -16391,3 +16391,15 @@ phantom). Verdict tests: Frx confident with 12 LifePath rows; ATH's page
 shows `Institutional 500 Index Trust` $1.57B and no `The Vanguard Group`
 row; `house-row` ≥10% 322 → fewer; confident +1 / −0 beyond OCR-path
 recoveries, each read.
+
+## 2026-09-19 (12:5xZ) — v158 part 3: a leading `# ` on the identity column is the party-in-interest marker in one more template — 146 rows / 37 plans / 73,603 ppl (FMBCNC: `# Vanguard Target Retirement 2030 Fund`)
+
+The v156 `#` strips covered the issuer cell and the identity-clean
+helper, but a name taken straight from the IDENTITY column (`-> name
+from IDENTITY`) never passes through that helper, so `# Vanguard Target
+Retirement 2030 Fund` published as written. The line-stage marker strip
+(where `*`, `^`, `†`, `‡` already go) now also drops a `#` that is
+followed by whitespace, and the column-offset `lead` counts it. FMBCNC
+traces to clean names; gate green; corpus 0 / 0 / 0 / 0. Committed
+`[skip ci]` behind #391 — dispatches with the next bump (v159).
+Prediction: `caret-iss` name rows 146 → ~0.

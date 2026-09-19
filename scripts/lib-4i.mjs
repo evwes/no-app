@@ -739,14 +739,14 @@ export function parseRows(section, opts = {}) {
      * under — see the descPre block below — and that needs a real character
      * offset, not just an indent depth. */
     const rawNorm = raw.replace(/\t/g, "    ");
-    const lead = (/^\s*[*^]?\s*/.exec(rawNorm) || [""])[0].length;
+    const lead = (/^\s*(?:[*^]|#(?=\s))?\s*/.exec(rawNorm) || [""])[0].length;
     /* block ended: this row sits at or left of the header that opened it */
     if (curIss && raw.trim() && rawIndent <= curIssIndent) { curIss = ""; curIssIndent = -1; }
     /* v150 (queue item p): `^` is the party-in-interest mark in another
      * template — BAE `[^ The Vanguard Group]`, `Fidelity 500 Index Fund ^`,
      * `^ Empower Guaranteed Interest Fund`; 2,038 name rows + 38 issuers /
      * 164 plans / 476,133 ppl carried it. Same treatment as `*`. */
-    let t = raw.trim().replace(/^[*^†‡]+\s*/, "").replace(/\s*[*^†‡]{1,3}\s*$/, "")
+    let t = raw.trim().replace(/^(?:[*^†‡]+|#(?=\s))\s*/, "").replace(/\s*[*^†‡]{1,3}\s*$/, "")
       .replace(/([0-9]{1,3}(?:,[0-9]{3})+)(?:\s*[,.]?\s*\(\s*[a-z]\s*\)){1,4}\s*$/i, "$1")
       /* v146: a lone FOOTNOTE LETTER in column (a) — "b        JP Morgan
        * JP Morgan Mid Cap Growth Fund   N/R   22,050,627" in a filing's second
