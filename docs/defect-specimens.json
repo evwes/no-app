@@ -576,6 +576,13 @@
       "fixed": "v158",
       "sponsor": "Frx Management Holdings",
       "was": "a 4-row junk region at 2.196 and a 2-row 'Mutual funds' statement at 1.708 tied to the fourth decimal; when the junk won, the band-hi retry ran the caption pass and found the 12-row LifePath menu at 0.894, when v156's tie-break let the statement win, !first.stmt skipped the retry and the plan published nothing — the retry now runs for ANY unpublishable first pass (accepted only when publishable)"
+    },
+    {
+      "ack": "20251010144903NAL0008344193001",
+      "class": "colon-less-house-type-group-header",
+      "fixed": "v158",
+      "sponsor": "Ath Holding Company (Elevance)",
+      "was": "the served 2023 fallback (20240912091727NAL0004306339001) heads each block with a valueless one-cell line 'The Vanguard Group Mutual Funds' / '... Collective Investment Trusts' / 'Other Collective Investment Trusts'; read as a wrapped name it glued onto each block's first member, two first rows were both named 'The Vanguard Group' and merged into a $1,793,711,087 phantom (= Explorer Fund + Institutional 500 Index Trust) while the $1.57B index trust vanished — 94,689 readers. NOTE the shape lives in the fallback filing, which the corpus diff does not parse; trace it with --assets 12109864062"
     }
   ]
 }

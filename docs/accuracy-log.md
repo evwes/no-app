@@ -16315,3 +16315,48 @@ neutral on the population it reaches; its one measured gain is Frx.
 Pinned. `PARSER_VERSION` 158 (v157 is in flight at its own number).
 Prediction: confident +1 (Frx) / −0 beyond v157's −5; OCR-path
 recoveries elsewhere possible and each to be read.
+
+## 2026-09-19 (12:2xZ) — per-cycle draw (seed 20260925, v156 store): 15 of 15 real menus, and ATH Holding / Elevance (94,689 ppl) publishes a $1.79B holding named `The Vanguard Group` that is two funds merged under a colon-less group header — v158 part 2
+
+Walmart (1.92M, the $2.86B MSCI ACWI ex-U.S. fund published in full),
+Starbucks, TriNet, ATH Holding, Aimbridge, William Beaumont (104 rows),
+Flynn, Weyerhaeuser, Visionworks, MSG Entertainment, Kimball, Lenoir,
+Bitsight, Kings Plush, Health Intelligence — every one a real menu.
+Three cosmetic shapes recorded: Walmart's `Investments Walmart Inc.
+Equity Securities` (a glued caption word, 1 row, 12%), Weyerhaeuser's
+`through November 2039 Vanguard Institutional 500 Index Trust` (a
+loan-line fragment joined by the v146 wrap rule onto the first fund, 30%),
+Starbucks's `[Target Date Funds Vanguard]` issuer. A sizer with a `total`
+arm counted 6,791 lineups for the caption-word shape and was wrong
+(`Total Bond Market Index` is a name); not used.
+
+**ATH Holding, read in the filing.** The 2023 fallback that serves the
+plan (`20240912091727NAL0004306339001`) heads each block with a
+valueless one-cell line — `The Vanguard Group Mutual Funds`, `The
+Vanguard Group Collective Investment Trusts`, `Other Mutual Funds`,
+`Other Collective Investment Trusts` — and indents the members beneath.
+v103's group-header rule wants the house in the identity column and the
+type in the description column; here both sit in one cell with no colon,
+so the line was read as a wrapped name and glued onto each block's first
+member. Two first rows were then both named `The Vanguard Group` and
+merged: **$1,793,711,087 = Explorer Fund $225,595,027 + Institutional
+500 Index Trust $1,568,116,060, to the dollar** — the v100-v105 shape —
+and the $1.57B index trust vanished from the page, while `Other
+Collective Investment Trusts T. Rowe Price Large-Cap Growth Trust`
+carried its header. Bare house-name rows at ≥10% of a confident menu:
+322 lineups / 472,275 ppl on the v156 store (`house-row.mjs`); how many
+are this header shape rather than a thin filing is not knowable from the
+store — the next run measures it.
+
+**v158 part 2.** After v103's two-column header test: a valueless line of
+≤8 words that ends in `ISS_TYPE_TAIL` and whose head is a house name (or
+`Other`) is a group header — the tail becomes the section type, the
+house the block's issuer (none for `Other`), and the name buffer
+resets. ATH's fallback traces (`--assets 12109864062`) to 30 rows at
+0.911 with `Institutional 500 Index Trust [iss The Vanguard Group]`
+$1.57B, `Explorer Fund` its own row, `T. Rowe Price Large-Cap Growth
+Trust` clean. Gate green; corpus 0 / 0 / 0 / 0 (the shape lives in a
+fallback filing the corpus never parses — pinned on the plan's ack with
+that note). **Prediction for the v158 run:** ATH's page loses the
+phantom; `house-row` ≥10% 322 → fewer, each drop a header of this shape;
+confident +0 / −0 from this part.

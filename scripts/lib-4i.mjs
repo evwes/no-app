@@ -992,6 +992,25 @@ export function parseRows(section, opts = {}) {
         if (gh.descCol && typeOnly(cleanDesc(gh.descCol)) && isHouseName(gh.nameCol)) {
           curSection = gh.nameCol.trim(); curIss = ""; nameBuf = []; continue;
         }
+        /* v158 part 2: the same group header in ONE cell and no colon —
+         * `The Vanguard Group Mutual Funds`, `The Vanguard Group Collective
+         * Investment Trusts`, `Other Collective Investment Trusts` — with the
+         * members indented beneath it (ATH Holding / Elevance's 2023 filing,
+         * 94,689 ppl). Read as a wrapped name it glued onto the first member
+         * of each block, both blocks' first rows were named `The Vanguard
+         * Group`, and they MERGED: a $1,793,711,087 holding that is exactly
+         * Explorer Fund + Institutional 500 Index Trust, while `Institutional
+         * 500 Index Trust` ($1.57B) vanished from the page. The house is the
+         * issuer of the block, the tail is its type; `Other …` names no
+         * issuer. */
+        const one = t.trim().replace(/\s+/g, " ");
+        const tail = one.match(ISS_TYPE_TAIL);
+        if (tail && tail.index >= 3 && one.split(/\s+/).length <= 8) {
+          const head = one.slice(0, tail.index).replace(/[\s,\-–—/:]+$/, "");
+          if (/^other$/i.test(head) || isHouseName(head)) {
+            curSection = tail[0].trim(); curIss = /^other$/i.test(head) ? "" : head; curIssIndent = curIss ? rawIndent : -1; nameBuf = []; continue;
+          }
+        }
       }
       /* v130: MEASURE THE TEXT, NOT THE COLUMN PADDING. The 90-char cap is a
        * prose guard, but `t` keeps the filing's inter-column whitespace, so a
