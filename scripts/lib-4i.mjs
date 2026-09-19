@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 159;
+export const PARSER_VERSION = 160;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -1298,6 +1298,10 @@ export function parseRows(section, opts = {}) {
     // Prefer the description column when it names the fund; many filings put
     // the manager in the issuer column and the actual fund in the description.
     let dClean = cleanDesc(descCol);
+    /* v160: the description this row's IDENTITY beat, kept so the dedup can
+     * tell two holdings apart that the filing distinguished — see the key
+     * below. Cleared per row. */
+    let rejDesc = "";
     /* v69: DUPLICATED IDENTITY COLUMN. Trustee-generated schedules often print
      * (b) and (c) as the SAME text, and when the security's own name contains a
      * wide gap the row splits mid-name:
@@ -1450,6 +1454,7 @@ export function parseRows(section, opts = {}) {
    dClean  = ${JSON.stringify(dClean)}  typeOnly=${dClean ? typeOnly(dClean) : "-"} catDesc=${!!catDesc} house=${isHouseName(nc)}
    -> name from ${dUsable ? "DESCRIPTION" : "IDENTITY"}`);
     }
+    if (!dUsable && dClean) rejDesc = dClean;
     if (dUsable) {
       name = dClean;
       /* v67: KEEP the identity column instead of discarding it. This branch
@@ -2066,7 +2071,7 @@ export function parseRows(section, opts = {}) {
         }
       }
     }
-    rows.push({ name: name.slice(0, 90), type: rowType, value, sec: curSection, ...(type ? { ownType: 1 } : {}), ...(issCell ? { iss: issCell.slice(0, 60), ...(issTail ? { _it: 1 } : {}) } : curIss ? { iss: curIss.slice(0, 60) } : {}), ...(leadStripped ? { _sl: 1 } : {}) });
+    rows.push({ name: name.slice(0, 90), type: rowType, value, sec: curSection, ...(rejDesc && rejDesc !== name ? { _dd: rejDesc.slice(0, 60) } : {}), ...(type ? { ownType: 1 } : {}), ...(issCell ? { iss: issCell.slice(0, 60), ...(issTail ? { _it: 1 } : {}) } : curIss ? { iss: curIss.slice(0, 60) } : {}), ...(leadStripped ? { _sl: 1 } : {}) });
   }
 
   // ARITHMETIC subtotal removal (owner directive after Sempra: takeaways
@@ -2140,8 +2145,30 @@ export function parseRows(section, opts = {}) {
      * ratio 1.86-2.20 this way once v73's prose fix let the second render
      * parse at all — the rows were always there, only half of them used to be
      * eaten. */
-    const k = r.name.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
-    const e = seen.get(k);
+    /* v160: A NAME MAY NOT MERGE ROWS THE FILING DISTINGUISHED. Mass General
+     * Brigham (131,090 ppl) files a two-column schedule whose identity is the
+     * HOUSE and whose description is the fund — and for six of its rows that
+     * description is a bare type word (`STOCK`, `GROWTH`, `MONEY MARKET`),
+     * which `dUsable` rejects, so each was named `TIAA-CREF Funds` and three
+     * of them SUMMED: $1,209,911k + $275,837k + $79,901k = **$1,565,649k**
+     * exactly, published as one holding at 9.4% of a $16.75B plan. The
+     * v100-v105 fabrication family in a new vocabulary, and invisible to both
+     * guards — a house name is not a generic TYPE name, and 9.4% is far under
+     * the dominant-row threshold.
+     * The rejected description goes in the KEY, so rows the filing separated
+     * stay separate; the post-pass below then puts it back in the NAME, but
+     * only where two survivors would otherwise read identically. */
+    const kBase = r.name.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+    /* The key stays the BASE name, so the duplicate-render suppression below
+     * (`same name, same value`) still fires: keying on the description as well
+     * un-merged the two renders of a schedule whose wording drifts, and the
+     * corpus measured it — Bonner General 43 -> 79 rows, one menu sum moved.
+     * The split happens only where a merge would otherwise SUM two rows the
+     * filing gave different descriptions. */
+    const kDd = r._dd ? `${kBase}\u0000${String(r._dd).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim()}` : null;
+    let k = kDd && seen.has(kDd) ? kDd : kBase;
+    let e = seen.get(k);
+    if (e && k === kBase && r._dd && e.row._dd && String(e.row._dd) !== String(r._dd)) { k = kDd; e = seen.get(k); }
     if (TRACE_ROWS && TRACE_MATCH && !/^\d+$/.test(TRACE_MATCH) && r.name.includes(TRACE_MATCH)) {
       const ks0 = k.replace(/\b(?:fund|funds|inc|class|cl|portfolio|shares?|the|trust|[a-z]|\d{1,2})\b/g, " ").replace(/\s+/g, " ").trim();
       console.error(`[dedup] ${JSON.stringify(r.name.slice(0, 50))} ${r.value} exact-dup=${e && e.vals.has(r.value) ? 1 : 0} stem=${JSON.stringify(ks0)} stem-dup=${seenStem.get(ks0) && seenStem.get(ks0).has(r.value) ? 1 : 0}`);
@@ -2208,6 +2235,24 @@ export function parseRows(section, opts = {}) {
        * issuer is not, so the claim is dropped rather than picked. */
       if (e.row.iss && r.iss && String(e.row.iss).toLowerCase() !== String(r.iss).toLowerCase()) delete e.row.iss;
     } else seen.set(k, { row: r, vals: new Set([r.value]) });
+  }
+  /* v160 part 2: two SURVIVORS that would read identically get their filed
+   * description back ("TIAA-CREF Funds STOCK" / "... GROWTH" / "... MONEY
+   * MARKET"); a house row that is alone in its region keeps the plain name,
+   * so nothing gains a type suffix it does not need. */
+  {
+    const byBase = new Map();
+    for (const e of seen.values()) {
+      if (!e.row._dd) continue;
+      const b = String(e.row.name).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+      if (!byBase.has(b)) byBase.set(b, []);
+      byBase.get(b).push(e.row);
+    }
+    for (const group of byBase.values()) {
+      if (group.length < 2) continue;
+      for (const rr of group) rr.name = `${rr.name} ${rr._dd}`.slice(0, 90);
+    }
+    for (const r of leaves) delete r._dd;
   }
   /* v74: a SINGLE-RENDER view of the same region, offered alongside the normal
    * one so scoring can choose. Some filings print the schedule twice with no

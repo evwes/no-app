@@ -16437,3 +16437,42 @@ measured …` are mostly real text, not a glued caption. Walmart's
 rule keyed on the word alone would touch a thousand lineups to fix one.
 Needs a narrower predicate (the sponsor's own name after `Investments`);
 recorded, not shipped.
+
+## 2026-09-19 (13:3xZ) — v160 (BUILT, GATED, AND NOT YET SHIPPABLE): a name may not merge rows the filing distinguished — Mass General Brigham publishes a $1,565,649k `TIAA-CREF Funds` holding that is three real rows summed
+
+**The defect, from the 13:1xZ draw.** Mass General Brigham (131,090 ppl,
+$16.75B) files a two-column schedule: identity = the HOUSE, description =
+the fund. `TIAA-CREF Funds | STOCK | 1,209,911`. For six of its rows the
+description is a bare type word (`STOCK`, `GROWTH`, `MONEY MARKET`,
+`GLOBAL EQUITIES`, `EQUITY INDEX`, `SOCIAL CHOICE`), and `dUsable` — the
+v102 rule that stops a category description beating a short fund name —
+rejects a type-only description, so the name falls back to the identity.
+Three of them then carried the identical name `TIAA-CREF Funds` and the
+dedup SUMMED them: **1,209,911 + 275,837 + 79,901 = 1,565,649 exactly**,
+published at 9.4% of the plan. Verified against the filing line by line.
+**The v100–v105 fabrication family in a new vocabulary**, and both guards
+are blind to it: a house name is not in `GENERIC_TYPE_NAME`, and 9.4% is
+nowhere near `audit-dominant-row`'s 90%.
+
+**The rule.** The row records the description its identity beat (`_dd`);
+the dedup key stays the base name — so the duplicate-render suppression
+(same name, same value) is untouched — and the split happens only where a
+merge would otherwise SUM two rows the filing described differently. A
+post-pass puts the description back in the NAME, but only where two
+survivors would read identically, so a house row alone in its region
+keeps its plain name. MGB now publishes `TIAA-CREF Funds STOCK`
+$1,209,911k, `… GROWTH` $275,837k, `… MONEY MARKET` $79,901k.
+
+**A blunter first version was built and measured and thrown away:**
+putting the description in the KEY itself un-merged the two RENDERS of a
+schedule whose wording drifts — Bonner General 43 → 79 rows and one menu
+sum moved ≥5%, i.e. double counting, the very shape this fix is against.
+The corpus caught it in one run.
+
+**NOT SHIPPABLE YET, and that is why it is recorded here rather than
+dispatched.** Gate green; corpus 0 gained / 0 lost / 0 fabricated / 0
+sums moved — but **45 plans move rows and they are unread**: Walmart
+42 → 52, Wells Fargo 68 → **55**, Boeing 42 → 41, Dell 34 → 33. A split
+rule that REMOVES thirteen rows from a plan is not doing what its
+description says, and no version ships on a count I cannot explain. Next
+cycle reads Wells Fargo and Walmart row by row before this dispatches.
