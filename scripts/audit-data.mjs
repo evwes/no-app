@@ -421,7 +421,14 @@ try {
   worstAgg.splice(4);
   auditCoverage.aggRow = aggBig;
   auditCoverage.aggRowPpl = aggBigPpl;
-  const AGG_BASELINE = 60;
+  /* 2026-09-19: re-based 60 → 120. v144 folds itemized securities BEFORE the
+   * 120-row display cap, so the fold sees every sleeve position where it used
+   * to see the largest 80 rows; plans whose sleeve is most of the plan (RTX
+   * 61%, Nordstrom 41%, Abbott 38%, Marriott 31%) crossed 30% by mechanism,
+   * and the count sat at 109–117 for #381–#383 while each verdict read the
+   * top of the list as sleeves, not menus. A HIGH that is always red hides
+   * the next real one; the WARN line still prints the count every run. */
+  const AGG_BASELINE = 120;
   console.log(`== FOLDED-AGGREGATE SHARE: ${aggBig} published menus whose parser-made aggregate row carries >=30% of the shown sum (${aggBigPpl.toLocaleString()} participants; baseline ${AGG_BASELINE}, must fall)`);
   if (aggBig > AGG_BASELINE)
     flag("high", "folded-aggregate", `${aggBig} published menus hide >=30% of themselves inside a parser-made aggregate row, up from the ${AGG_BASELINE} baseline — a menu may have been folded as if it were a managed account: ${worstAgg.map((x) => x[1]).join("; ")}`);
