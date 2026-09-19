@@ -16732,3 +16732,32 @@ after all**: it was a hyphenated description being refused. The morning's
 0-of-19 measurement was correct about v160's split and wrong as a verdict
 on the class, which is the difference between measuring a fix and
 measuring a population.
+
+## 2026-09-19 (17:2xZ) — run #395 verdict (v162): PASSED and MIRRORED UNFORCED — the category-vehicle merge class falls 323 → 137 lineups and its ≥20% band 117 → 11; PennyMac's thirteen vintages are back
+
+**Numbers.** pv 162 at 99.85%; confident **60,120, +0 / −0** against the
+live v161 store; HIGH 4 — the baseline and nothing else; overshoot 347.
+`mirror.sh` unforced on both checks (main: 0 acks / 0 plans the branch
+lacked, main newer on 0).
+
+**The class it was aimed at, re-measured with the sizer that found it:**
+`<category> <vehicle>` rows **323 → 137 lineups** (376,590 → 210,409
+ppl), and **at ≥20% of the menu 117 → 11 lineups / 12,636 ppl**. PennyMac
+publishes `Fidelity Freedom 2045 Fund` $28,753,925, `… 2040`
+$27,656,792 and eleven more where one $157,047,874 `Asset Allocation
+Mutual Fund` stood. Whole-store multiset diff against the v161 store:
+**1,717 rows added across 170 plans / 166,144 ppl** — the un-merges —
+against 531 removed.
+
+**The cost, read rather than summarised: `rename:TO-SHORT` 21 rows / 16
+plans / 14,820 ppl, and it is a genuinely mixed bag.** Where the
+description is now refused, the IDENTITY wins, and some identities are
+fragments: `Growth Fund Pooled Separate Accounts (1` → **`EuroPacific`**
+(better — that is the fund), `Global Mutual fund` → `First Eagle` (a
+house, a wash), `Small Cap Growth Equity Collective Trust` →
+`MassMutual` (a house, arguably worse — the category said more about the
+investment), `Large Cap Equity Collective Investment Trust` → `Trust`
+(worse). Twenty-one rows against 1,717 gained, so the mirror goes ahead;
+the open item is narrower than "type phrases", and it is the one this
+project keeps meeting: **a fragment identity should not win merely
+because the description was refused.**
