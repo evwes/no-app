@@ -562,6 +562,13 @@
       "fixed": "v156",
       "sponsor": "The Progressive Corporation",
       "was": "the description '7,699,900.87 shares of Vanguard Institutional 500 Index Trust' lost its share count and kept the preposition, so 25 of 33 rows were named 'of Vanguard ...' / 'of The Progressive Corporation Common Shares' — 628 rows / 108 plans / 317k ppl, 21 whole lineups (Norfolk Southern, Brink's, Owens & Minor); cleanDesc now drops a leading of/in"
+    },
+    {
+      "ack": "20251013172543NAL0001667249001",
+      "class": "trust-pointer-above-the-row-gate",
+      "fixed": "v157",
+      "sponsor": "Cleveland-Cliffs Steel",
+      "was": "'Investments in Master Trust' at 97% of a 13-row lineup published as confident because the pointer test stopped at 8 rows — Caterpillar (60,484 ppl) the same at 90% of 9 rows; 5 confident lineups / 70,874 ppl; a pointer that is >=75% of the page is a pointer at any length"
     }
   ]
 }

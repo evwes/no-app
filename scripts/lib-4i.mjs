@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 156;
+export const PARSER_VERSION = 157;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -3454,7 +3454,13 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
   const trustish = funds.filter(isTrustPointerRow);
   const tSum = trustish.reduce((a, f) => a + f.value, 0);
   const allSum = funds.reduce((a, f) => a + f.value, 0);
-  const trustPtr = funds.length <= 8 && allSum > 0 && tSum / allSum >= 0.6;
+  /* v157: the ≤8-row gate let a pointer through whenever a few real rows sat
+   * beside it — Caterpillar (60,484 ppl) published `Investments Interest in
+   * the Master Trust` at 90% of a nine-row "menu", Cleveland-Cliffs at 97% of
+   * thirteen, IBEW Local 25 at 99% of eleven: 5 confident lineups / 70,874
+   * ppl on the v155 store. A pointer that is three quarters of the page is a
+   * pointer at any length; the real menu is in the trust's own filing. */
+  const trustPtr = allSum > 0 && tSum / allSum >= 0.6 && (funds.length <= 8 || tSum / allSum >= 0.75);
 
   // provider-TOTAL statement pages: "T. Rowe Price $479M / Vanguard $271M /
   // Ariel $12M" is assets-at-custodian, not a menu. Judged at PARSE level,

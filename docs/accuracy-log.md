@@ -16193,3 +16193,25 @@ render churn is better than that in every measured respect; v156's
 verdict follows in ~1.5 h. `mainvsbr2`: 0 acks / 0 plans on main the
 branch lacks, main newer on 0 — `--force` on the git check;
 `--force-data` over the 35 reads above.
+
+## 2026-09-19 (11:1xZ) — v157: a master-trust pointer that is three quarters of the page is a pointer at any row count — Caterpillar (60,484 ppl) published `Investments Interest in the Master Trust` at 90% of a nine-row "menu"
+
+**Sized before fixing (`mt-share.mjs`): 5 confident lineups / 70,874
+ppl** where `isTrustPointerRow` rows carry ≥60% of the value — all above
+the `trustPtr` test's `funds.length <= 8` gate: Caterpillar 9 rows / 90%,
+Cleveland-Cliffs 13 / 97%, IBEW Local 25 11 / 99%, Pantexas 12 / 79%,
+one master trust 9 / 82%. The predicate already NAMED every one of these
+rows (the queue item said its vocabulary was short; `mt-rows.mjs` found
+only 2 lineups / 766 ppl it misses); the gate was the defect. Their
+pages showed a "menu" whose first row is the whole plan's interest in a
+trust, with the trust's real menu one link away.
+
+**The change.** `trustPtr = share >= 0.6 && (rows <= 8 || share >=
+0.75)`. `PARSER_VERSION` 157. Gate green; corpus 0 / 0 / 0 / 0 (none of
+the five is in the corpus; Cleveland-Cliffs traces `trustPtr=true,
+CONFIDENT=false`; Caterpillar's newest filing is already `stmt` in the
+text parse — its confident entry came from the fallback path, where the
+same test applies). Pinned. Committed `[skip ci]` behind #388.
+**Prediction:** `mt-share` 5 → 0; confident −5 (each read: Caterpillar,
+Cleveland-Cliffs, IBEW 25, Pantexas, one trust) / +0; their pages fall
+to the trust-pointer sentence.
