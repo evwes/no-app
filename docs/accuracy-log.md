@@ -14630,3 +14630,40 @@ small and too noisy to act on beyond the record.
 coverage unchanged (confident 60,107, HIGH 4, tkShare 24.28, dl 103,
 pvTopShare 99.9); mirrored unforced (main had nothing the branch lacked).
 **#377 dispatched 00:09Z**, observed in_progress.
+
+## 2026-09-19 (00:2xZ) — v142: the kerned 4i caption and kerned cover-page captions are recognised with their spaces removed (Hill Brothers 38 → 60 rows, the 17% caption row and the 7.3% "Employer Identification Number" row gone)
+
+The v141 verdict's one new junk row: Hill Brothers Transportation
+(`20251015092215NAL0002076435001`, $9.7M) published `De scription Curre nt
+of Inve stm e nt Cost Value JOHN HANCOCK …` at 17% of the plan. The
+caption is printed in the same kerned font as the rows, so the v139
+whole-line caption rule (every WORD must be caption vocabulary) could not
+see `De scription   Curre nt` or `of Inve stm e nt   Cost   Value`, and
+both lines entered the name buffer. Reading the trace also showed a
+second kerned row, `Em ploye r Ide ntification N um be r` at 7.3% — the
+Form 5500 cover page's EIN caption, carrying a neighbouring figure as its
+value; `SKIP_ROW` anchors on `employer id` and the fragments defeated it.
+
+**Change (v142, `lib-4i.mjs`):** when a valueless line is fragmented (two
+or more 1–2 letter tokens in a row, the same `KERNED` test v141 uses),
+compare it with every space removed against (a) the caption vocabulary
+(`HEADER_FRAG_DESPACED`) and (b) the cover-page captions `SKIP_ROW` opens
+with (`employeridentification…`, `plansponsor…`, `planname`, `plannumber`,
+`sponsorname`, `totalinvestment…`, `total…`). A line carrying a value has
+digits and matches neither, so no holding can be dropped by this.
+
+Hill Brothers: **38 → 60 rows, ratio 1.037 → 0.982** — the caption row and
+the EIN row are gone, and the 23 tiny brokerage-window rows the v141
+region boundary had cut off ($1k–$17k each) are back. The top row is now
+`JOHN HAN COCK LIFE IN SU RAN CE COM PAN Y V anguard Grow…` — the
+colon-less two-line issuer glued onto the first fund, which is queue (f)
+shape C (Nebraska Medicine's), unchanged in size (4 → 5 plans) and still
+open. Gate green; `diff-lineups HEAD` 960 filings: 0 gained / 0 lost / 0
+fabricated, the one row-count move is Hill Brothers. Pinned as
+`kerned-caption-glued-to-first-row`.
+
+**Prediction for the v142 run:** rows whose name opens with a kerned
+caption fragment (`De scription`, `of Inve stm e nt`, `Em ploye r`) → 0;
+confident +0 / −0 (a handful of small gains possible where a kerned
+cover-page row had pushed a plan out of band); coverage otherwise
+unchanged. Dispatched after #377 lands.

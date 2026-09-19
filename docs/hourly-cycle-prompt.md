@@ -237,6 +237,11 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 00:2xZ 2026-09-19: v142 gated and committed `[skip ci]`
+      (despaced caption + cover-page captions; Hill Brothers 38 → 60
+      rows, gate green, diff 0/0/0, pinned) — dispatched when #377 lands.
+      (f) C two-line colon-less issuer now 5 plans and the next kerned
+      item. `docs/accuracy-log.md` 2026-09-19 (00:2xZ).
       **STATUS 00:1xZ 2026-09-19: #376 no-op mirrored (`f25b41c8`), #377
       dispatched 00:09Z; draw 15/15 real, only known shapes (Apple (i),
       PwC doubled house, Parker `( )`, Outrigger plural type prefix (j),

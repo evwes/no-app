@@ -3,7 +3,7 @@
  * Shared by fetch-4i.mjs (production) and local test harnesses. */
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 141;
+export const PARSER_VERSION = 142;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -63,6 +63,15 @@ export function classify(text) {
  * it wrapped and wherever it starts. Anchored both ends: a holding named
  * "Value Fund" is not all caption words. */
 const HEADER_FRAG_LINE = /^(?:\(?[a-e]\)|description|of investment|investment|identity|of issue|issuer?|borrower|lessor|or|similar|party|including|maturity|date|rate|of|interest|collateral|par|value|cost|current|fair|shares|units|number|no\.|[\s,()$*:\-–—/])+$/i;
+/* v142: the same caption, KERNED. Hill Brothers' filing prints the caption as
+ * "De scription   Curre nt" / "of Inve stm e nt   Cost   Value"; neither line
+ * is all caption WORDS, so v139's whole-line rule let them into the name
+ * buffer and the first holding published as "De scription Curre nt of Inve
+ * stm e nt Cost Value JOHN HANCOCK …" at 17% of the plan — the v141 verdict's
+ * one new junk row. When a valueless line is fragmented (two or more 1-2
+ * letter tokens in a row), compare it with every space removed. */
+const HEADER_FRAG_DESPACED = /^(?:[a-e]|description|ofinvestment|investment|identity|ofissue|issuer?|borrower|lessor|or|similar|party|including|maturity|date|rate|of|interest|collateral|par|value|cost|current|fair|shares|units|number|no)+$/;
+const KERNED = /(?:\b[A-Za-z]{1,2} ){2,}/;
 const SKIP_ROW = new RegExp("^(total|subtotal|grand total|schedule|page \\d|form 5500|ein[: ]|employer id|sponsor name|plan name\\b|plan sponsor'?s name\\b|plan number|as of|see accompanying|\\(thousands|identity of issue|description of investment|rate of|maturity|cost\\b|current value|sales\\b|purchases\\b|dividends\\b|assets in.transit|investments? at fair value|dividend income|other income|administrative fees|" +
   // the 4i column heading wraps across up to four lines; only its first line
   // ("(c) Description of investment") was covered, so the continuation
@@ -737,7 +746,16 @@ export function parseRows(section, opts = {}) {
      * 409,634 participants carry one such row, 440 of them "maturity date
      * <fund>". Whole-line test: every word must be caption vocabulary, so a
      * fund name that merely contains "value" is untouched. */
-    if (HEADER_FRAG_LINE.test(t.replace(/\s+/g, " ").trim())) { nameBuf = []; continue; }
+    {
+      const tn = t.replace(/\s+/g, " ").trim();
+      if (HEADER_FRAG_LINE.test(tn) ||
+          (KERNED.test(tn) && HEADER_FRAG_DESPACED.test(tn.toLowerCase().replace(/[^a-z]/g, "")))) { nameBuf = []; continue; }
+      /* and the Form 5500 cover-page captions the same font fragments: Hill
+       * Brothers published "Em ploye r Ide ntification N um be r" at 7.3% of
+       * the plan, with the EIN box's neighbouring figure as its value. These
+       * are SKIP_ROW's first words, compared with the spaces removed. */
+      if (KERNED.test(tn) && /^(?:employeridentification|plansponsor|planname|plannumber|sponsorname|totalinvestment|total)/.test(tn.toLowerCase().replace(/[^a-z]/g, ""))) { nameBuf = []; continue; }
+    }
     if (/:\s*$/.test(t)) {
       curSection = t.replace(/:\s*$/, "");
       /* v126: promote to an issuer header only when it names a FIRM. A colon

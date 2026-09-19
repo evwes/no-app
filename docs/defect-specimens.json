@@ -429,6 +429,13 @@
       "fixed": "v141",
       "sponsor": "Nelnet",
       "was": "a kerned font split every word ('Com m o n Co lle ctive Tru st'); the type label was not recognised, won the name, and 12 target-date trusts merged into one 52.6% row beside 'Mu tu al Fu nd' at 45.6% — a 6-row fabricated lineup; 20 lineups store-wide are mostly such rows"
+    },
+    {
+      "ack": "20251015092215NAL0002076435001",
+      "class": "kerned-caption-glued-to-first-row",
+      "fixed": "v142",
+      "sponsor": "Hill Brothers Transportation",
+      "was": "the 4i caption printed in a kerned font ('De scription Curre nt / of Inve stm e nt Cost Value') was not recognised as a caption line and glued onto the first holding at 17% of the plan"
     }
   ]
 }
