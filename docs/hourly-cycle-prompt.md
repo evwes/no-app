@@ -237,6 +237,11 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 02:4xZ 2026-09-19 (b): draw (seed 20260920, v143 store)
+      13/15 real menus; NRECA (80,475 ppl) publishes its table of contents
+      (`Common collective trusts (pages 165-166)` 49%) — the only
+      page-reference name in the store, queue (o), one plan; Paramount's
+      category labels are (h). #381 in flight.
       **STATUS 02:4xZ 2026-09-19: #380 (v143) PASSED — pv 143 99.85%,
       +0/−0, HIGH 4, overshoot 354, 2,224 rows / 271 plans / 286k ppl
       renamed code → fund, Lulus/Fusion on readable regions; MIRRORED

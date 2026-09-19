@@ -15198,6 +15198,35 @@ had taken no commit since the last mirror, so `mirror.sh` passed
 as #381 at 02:36Z on `7d2349b1`** — one run, four disjoint predictions
 (fold/tail, duplicates, trust pointers, two-column wraps + doubled house);
 the verdict reads each against the v143 shards (`old8`).
+
+## 2026-09-19 (02:4xZ) — per-cycle draw (seed 20260920, v143 store): 13 of 15 real menus; two are the class-summary shape, one of them 80,475 people
+
+Participant-weighted draw of 15 published lineups: Walmart, Dollar
+General, National Rural Electric Cooperative Association, Capital One,
+Casey's, Paramount Global, Adams Keegan, National Health Corporation,
+Boston University, White Plains Hospital, IUOE Local 478, California
+Pizza Kitchen, Inovalon, Stark Tech, Houston Engineering.
+
+- **National Rural Electric Cooperative Association (80,475 ppl, $16.84B,
+  ratio 1.135)** publishes `Common collective trusts (pages 165-166)` at
+  48.6% and `Corporate stocks (pages 56-155)` at 25.9% — the schedule's
+  own TABLE OF CONTENTS, with page references, beside the coded rows
+  (`NJ7B`) it also carries. Sized (`page-ref.mjs`): **exactly one plan in
+  the store publishes a page-reference name** — 10 rows, 80% of this
+  menu. The filing itemises 100 pages of corporate stocks; the honest
+  page is the class summary WITHOUT the page references, which is the
+  `stmt` shape the generic-names audit already counts (it is one of the
+  128). Recorded as (o), one plan; a page-reference strip alone would be
+  cosmetic, and the real question is whether a class summary of an
+  itemised trust-style plan should publish as a lineup at all.
+- **Paramount Global (36,431 ppl, ratio 1.179)** — `Passively Managed
+  Fund` 34.8%, `Target Retirement Date Fund` 25.5%, `Evergreen &` 9.1%:
+  the filing's category labels as holdings, queue (h)'s class, in the
+  overshoot set.
+- Boston University: `[Guaranteed Annuity Contract TIAA]` — a contract
+  TYPE in the issuer bracket, (f) B's family. Walmart's `Investments
+  Walmart Inc. Equity Securities` prefix, known.
+- The other eleven are real menus with no new shape.
 - **Retail Services Wis** — `[Company Vanguard Fiduciary Trust]`: the
   issuer's second line (`Company`) leads the issuer field, queue (f) C's
   wrapped-issuer shape, now 6 plans.
