@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 164;
+export const PARSER_VERSION = 165;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -90,6 +90,16 @@ const SKIP_ROW = new RegExp("^(total|subtotal|grand total|schedule|page \\d|form
   // fragment, and glued onto the FIRST holding row (R.H. White shipped
   // "including maturity date, rate of American Funds Europacific GR R6")
   "including maturity date|interest, collateral|collateral, par)|" +
+  /* v165: THE SEC FORM 11-K COVER PAGE IS NOT A SCHEDULE OF ASSETS. A plan
+   * that also files an 11-K attaches the whole annual report, cover included,
+   * and the cover's own numbers become values: "Washington, D.C." takes the
+   * SEC's ZIP as a $20,549 holding and "Commission file number 000-" takes the
+   * file number. Measured across published lineups: 20 rows / 13 plans /
+   * 302,810 participants, Publix (225,961) among them, and for BOTH Bunge
+   * North America plans they are two of the three rows shown. Same family as
+   * the ZIP+4 rows v132 removed from Delta's menu, a different page of the
+   * same filing. Values are small, so no coverage metric ever moved. */
+  "washington,? ?d\\.? ?c\\.?|commission file (?:number|no)|securities and exchange commission|annual report pursuant to section|pursuant to section 15\\(d\\)|" +
   /* FOOTNOTE REFERENCES, not holdings. L3Harris's master trust carries the
    * line "NOTE: TRANSACTIONS ARE BASED ON THE 2023-12-31 VALUE …" alongside a
    * figure, and it parsed as a $14.19 BILLION holding — which pushed the

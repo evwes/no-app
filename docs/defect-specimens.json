@@ -597,6 +597,20 @@
       "fixed": "v164",
       "sponsor": "21-row CIT and Vanguard menu (Fidelity Blue Chip row)",
       "was": "the value line's own text is the LAST WORD of a wrapped description ('Trust'), so v129's verbatim reading (fullAll) was 'Trust' while v130's column split had already assembled the real identity in full ('Fidelity Blue Chip Growth Commingled Pool Class A'). The row published as 'Trust' at 8.3% of the plan with the fund's own name in hand. v164 prefers full when the description already contains the fragment, so nothing can be lost by the swap."
+    },
+    {
+      "ack": "20251003152925NAL0001566353001",
+      "class": "sec-11k-cover-page-as-holdings",
+      "fixed": "v165",
+      "sponsor": "Publix Super Markets (225,961 ppl)",
+      "was": "a plan that also files an SEC Form 11-K attaches the whole annual report, cover included, and the cover's own numbers become values: 'Washington, D.C.' takes the SEC's ZIP as a $20,549 holding. 20 rows / 13 plans / 302,810 ppl store-wide; for BOTH Bunge North America plans the cover rows are two of the three rows shown. Values are tiny, so no coverage metric ever moved. Positive control: Publix goes 16 -> 15 rows with the ratio unchanged at 0.974."
+    },
+    {
+      "ack": "20251104151930NAL0012574096001",
+      "class": "sec-11k-cover-page-as-holdings-negative-control",
+      "fixed": "v165",
+      "sponsor": "Bunge North America",
+      "was": "the OTHER direction of the same fix, pinned on purpose. This plan's whole published menu was one master-trust pointer ('Brokerage, Collective Trust, etc.)' with iss 'Interest Held in') at 100% plus the two cover rows. Removing the cover rows changes the region scores and the plan loses confidence entirely (9 rows at ratio 3.93). That is the CORRECT outcome -- the lineup was a pointer, not a menu -- but it is the reminder that a row-removal rule also decides which region wins. Masco is the measured cost of that: 28 -> 26 rows, a duplicate $58.8M brokerage line dropped with the junk, ratio 0.897 -> 0.866."
     }
   ]
 }
