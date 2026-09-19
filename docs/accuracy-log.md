@@ -15827,3 +15827,32 @@ Morgan]`, `[T. Rowe Price]`, `[Management Trust Company]` — and its
 whose head is shorter than 3 characters, or a tail `classify` cannot
 name, stays); confident +0 / −0; `tkShare` may rise a little where the
 issuer prefix had blocked a fund-table match.
+
+## 2026-09-19 (06:4xZ) — two measurements while #384 runs on main, recorded and not fixed
+
+**The coded residue splits 152 / 8.** Confident lineups still carrying
+Empower-style `1XXXXX` codes as names (`coded-fb.mjs`): **152 plans / 655
+rows / 169,869 ppl from the plan's own newest filing** and 8 plans / 37
+rows / 11,819 ppl served from a prior-year fallback. The `ffb:2023`
+hypothesis (codes stay because the legend sits in the other year's
+filing) covers 8 plans, not the class. A seeded read of five of the 152
+(`legend-miss.mjs`) finds NO legend line and no line naming the code with
+words in any of them — the filing publishes the code alone. Needs a
+source outside the filing (Empower's own fund-code list); nothing in
+EFAST2 names these rows. Recorded, open.
+
+**`ds` mislabels a table as "pages not published".** Among non-confident
+live plans (`ds-rows.mjs`): **`absent` — rendered by `gap-census` as "NOT
+OURS: schedule referenced, pages not published" — is carried by 31 plans /
+283,099 ppl whose entry stores ≥5 parsed rows** (Eli Lilly rw=7, Charter
+rw=8, Entergy rw=10), and Barton & Gray's `ds:absent` sat beside a
+42-page attachment with a 17-row schedule under a non-statutory caption.
+`noattach` ("no audited attachment in the public copy") likewise on 50
+plans / 276,237 ppl with rows (Nestle rw=21, Macy's rw=18). `readfail`
+("OURS") on 1,112 plans / 8.2M ppl, most of them master-trust members
+whose own 4i is a one-row pointer — the queue's "readfail label on trust
+pointers". The `ds` classifier answers "is the STATUTORY caption present"
+and the census prints it as "are the PAGES present"; the rows-parsed
+count in the same record contradicts the sentence for 84 plans. An error
+code is a published claim; queue: gate `absent`/`noattach` on `rw < 3`,
+and route trust members to their own label.
