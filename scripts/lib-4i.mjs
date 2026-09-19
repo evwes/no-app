@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 155;
+export const PARSER_VERSION = 156;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -315,6 +315,11 @@ function splitNameDesc(body) {
 function cleanDesc(desc) {
   let d = desc.replace(/[*^]+/g, " ");
   d = d.replace(/\b[\d,]+(\.\d+)?\s*(shares?|units?|interests?)\b/gi, " ");
+  /* v156: the preposition the share count carried — "7,699,900.87 shares of
+   * Vanguard Institutional 500 Index Trust" left "of Vanguard …" as the name
+   * on every row of Progressive (74,118 ppl), Norfolk Southern, Brink's,
+   * Owens & Minor: 628 rows / 108 plans / 317k ppl, 21 whole lineups. */
+  d = d.replace(/^\s*(?:of|in)\s+(?=\S)/i, " ");
   d = d.replace(/\b(interest )?rates? (of|from|ranging).*$/i, " ");
   d = d.replace(/\bmaturit(y|ies).*$/i, " ");
   /* v68: FILLER columns. Many filings print the (c) sub-columns literally —

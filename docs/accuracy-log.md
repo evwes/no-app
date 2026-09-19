@@ -16054,3 +16054,31 @@ the fuller render, kerned ones stay clean; Seattle and the 34 → `stmt`;
 State Street / Deutsche / Pacific Maritime / Endeavor lose their form
 rows and probably confidence (each read in the verdict); confident
 roughly −40 / +0.
+
+## 2026-09-19 (09:0xZ) — per-cycle draw (seed 20260923, v154 store): 15 of 15 real menus; one cosmetic class from Progressive → v156
+
+Express Services (464,345 ppl, a staffing-company plan with $2.4M —
+the filing's own figures), Progressive (74,118), Fiserv (39,782),
+Southeastern Grocers, Option Care, Pipeline Industry, Brenntag,
+Advisortrust (109 rows), MLK-LA, Freshfields, Techserv, Mountainlands,
+BGM, Murrieta, Synergy Health — every one a real menu, issuers clean,
+no `^`, no class lines. **Progressive's rows all begin `of `:** `of The
+Progressive Corporation Common Shares` 28%, `[The Vanguard Group] of
+Vanguard Institutional 500 Index Trust`. The filing's description column
+is `7,699,900.87 shares of Vanguard Institutional 500 Index Trust`;
+`cleanDesc` strips the share count and leaves the preposition.
+
+**Sized (`lead-prep.mjs`, names beginning `of `/`in `): 628 rows / 108
+plans / 317,094 ppl; 21 whole lineups (≥50% of rows) / 140,729 ppl** —
+Progressive 0.76, Norfolk Southern 0.96 (two plans), Brink's 0.93, Owens
+& Minor 1.00, Ryan Specialty 1.00, Markel 0.96. (A first sizer with a
+`the` arm counted 4,137 rows and was wrong — `The Growth Fund of America`
+is a name; the arm was dropped before the number was used.)
+
+**v156:** `cleanDesc` drops a leading `of `/`in ` right after the
+share-count strip. Gate green; corpus 0 / 0 / 0 / 0 rows moved (the
+diff compares names, and no corpus plan carries the shape); Progressive
+traces to `The Progressive Corporation Common Shares`, `Vanguard
+Institutional 500 Index Trust [iss The Vanguard Group]`. Pinned.
+Committed `[skip ci]` behind #386; dispatches with its verdict.
+**Prediction:** `lead-prep` 628 → ~0; confident +0 / −0.
