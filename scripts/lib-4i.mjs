@@ -2013,6 +2013,22 @@ export function parseRows(section, opts = {}) {
       if (fm) { if (SCHED_H_ITEM.test(fm[2]) || isClassLabel(fm[2])) continue; name = fm[2]; }
     }
     if (FORM_LINE.test(name.trim())) continue;
+    /* v159: a participant-loan MATURITY phrase is not a holding and not the
+     * start of one. `due 2025 to 2029`, `maturing though 2032 with interest at
+     * 4.25%-9.50%`, `through January 2031 -0` published as rows on 22 lineups;
+     * Weyerhaeuser (13,967 ppl) had `through November 2039` — the loan line's
+     * tail — joined by the two-column wrap onto its first real fund, so its
+     * largest holding (30%) read `through November 2039 Vanguard Institutional
+     * 500 Index Trust`. The phrase alone is dropped; a phrase followed by a
+     * name is stripped from it. */
+    {
+      const mat = name.trim().match(/^(?:through|thru|due|maturing(?:\s+th(?:r)?ough)?)\s+(?:[A-Za-z]+\s+)?\d{4}(?:\s*(?:to|-|–|and)\s*\d{4})?\s*/i);
+      if (mat) {
+        const rest = name.trim().slice(mat[0].length).replace(/^(?:with|bearing|at)\b.*$/i, "").trim();
+        if (rest.split(/\s+/).filter(Boolean).length < 2 || /^-?\d/.test(rest)) continue;
+        name = rest;
+      }
+    }
     // rows often carry no type of their own — it lives in the section header
     // ("Common/Collective Trusts"). SDBA/loans must not inherit: those section
     // types would wrongly collapse itemized rows.

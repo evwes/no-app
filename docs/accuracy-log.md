@@ -16403,3 +16403,37 @@ followed by whitespace, and the column-offset `lead` counts it. FMBCNC
 traces to clean names; gate green; corpus 0 / 0 / 0 / 0. Committed
 `[skip ci]` behind #391 — dispatches with the next bump (v159).
 Prediction: `caret-iss` name rows 146 → ~0.
+
+## 2026-09-19 (13:1xZ) — v159: a participant-loan MATURITY phrase is not a holding, and not the start of one — Weyerhaeuser's largest row (30%) read `through November 2039 Vanguard Institutional 500 Index Trust`
+
+Found by the 12:2xZ draw. The loan line's tail (`through November 2039`)
+is a valueless fragment that the v146 two-column wrap joined onto the
+next real fund, so Weyerhaeuser (13,967 ppl) published its $721M
+Vanguard Institutional 500 Index Trust under that prefix. Sized
+(`glued-lead.mjs`): **22 lineups / 28,460 ppl / 30 rows** carry a
+leading `through|thru|due|maturing <Month> <year>` — Transportation
+Insight (`through March 2030 bearing interest rates of 3.25%`), Hi-Lex
+(`due 2025 to 2029`), Monmouth (`maturing though 2032 with interest at
+4.25%-9.50%`), Aspire (`through January 2031 -0`).
+
+**The change.** At the row stage, after `FORM_LINE`: the phrase is
+matched at the start of a name; what follows has any `with|bearing|at …`
+tail removed; if fewer than two words remain, or it starts with a digit,
+the row is dropped, otherwise the phrase is stripped and the name kept.
+`PARSER_VERSION` 159 (the version was bumped for the `# ` strip already;
+both parts ride the same run). Gate green; corpus 0 / 0 / 0 / 0 with
+**five plans losing exactly one row each, every one read: `through
+2027`, `through 2044`, `through 2031`, `through August 2026`, `through
+December 2030`** — American Thermal, Waters, Tudor, Holwell Shuster,
+Hometown Waiver. Weyerhaeuser traces to `Vanguard Institutional 500
+Index Trust`.
+
+**Also measured and NOT fixed:** a leading `Investments ` on a row name
+is **1,158 lineups / 3,298,934 ppl / 1,204 rows**, and the word after it
+is `company` 361, `grade` 194, `contract` 165, `measured` 112 — i.e.
+`Investments Company`, `Investments grade`, `Investments at fair value
+measured …` are mostly real text, not a glued caption. Walmart's
+`Investments Walmart Inc. Equity Securities` is the glued shape, but a
+rule keyed on the word alone would touch a thousand lineups to fix one.
+Needs a narrower predicate (the sponsor's own name after `Investments`);
+recorded, not shipped.
