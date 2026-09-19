@@ -237,6 +237,13 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 02:0xZ 2026-09-19: draw (seed 20260919) 15/15 real menus;
+      Waupaca Foundry's 100-row bond sleeve is v144's class (predict 120
+      → ~20); NEW queue item (n): a class subtotal beside its own
+      itemisation (Marriott `COMMON STOCKS` $4.41B at 47.5% totals the
+      securities listed after it — published sum double counts, honest
+      ratio ~0.4); (f) C now 6 plans. #380 (v143) in flight.
+      `docs/accuracy-log.md` 2026-09-19 (02:0xZ).
       **STATUS 01:5xZ 2026-09-19: #378 (v142) PASSED — pv 142 99.85%,
       +0/−0, HIGH 4, overshoot 356, Hill Brothers 60 rows, caption rows
       gone from 17 plans, 18 EIN rows removed; MIRRORED `3dde8717`

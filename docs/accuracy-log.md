@@ -14929,3 +14929,40 @@ hidden FALLS by at least the 21 ≥15% plans' securities; `rename-ms` shows
 rows removed in the hundreds per flood plan and added rows ≤ a few dozen
 (revealed trusts); HIGH 4; generic-names ≤ 128; dominant-row 0. Committed
 `[skip ci]` while #380 (v143) is in flight; dispatched after its verdict.
+
+## 2026-09-19 (02:0xZ) — per-cycle draw (seed 20260919, v142 store): 15 of 15 real menus; two are v144's own class, one names a new queue item
+
+Participant-weighted draw of 15 published lineups (pool 59,753 / 89.6M
+ppl): Walmart, Starbucks, Wells Fargo, Marriott, Dollar Tree, Aon,
+Grifols, Retail Services Wis, San Diego State Foundation, SwedishAmerican,
+Waupaca Foundry, Transport Equipment, Human Development Center, Universal
+Insurance Managers, Harding Loevner. Every one is a real menu. Shapes:
+
+- **Waupaca Foundry (4,101 ppl, 120 rows)** — 17 mutual funds and a
+  bond sleeve of 100+ `TEXTRON INC, 3.65%, 3/15/27` rows typed
+  `Corporate debt`, with 46 more behind the cap. **v144's strong shape
+  folds exactly this** (coupon + maturity under a security type); predict
+  120 → ~20 rows in the v144 verdict.
+- **Marriott (137,769 ppl, 120 rows, ratio 0.79)** — `COMMON STOCKS`
+  $4.41B (47.5%) typed `Company stock`, `U.S. GOVERNMENT DEBT SECURITIES`,
+  `MUTUAL FUNDS` as rows, then 1,585 individual securities. The class
+  lines are TOTALS of the securities listed beside them — the v101
+  grand-total family in class form — so the published sum double counts
+  and the honest ratio is nearer 0.4 than 0.79. v144 folds the class
+  line into the managed-account aggregate beside the rows it totals
+  (recorded there as cost (c), Peterson's `Preferred stock`); the double
+  count is older than v144 and is **NEW QUEUE ITEM (n): a class subtotal
+  beside its own itemisation** — detectable by arithmetic (a typed class
+  row equal to the sum of the security rows that follow it).
+- **Retail Services Wis** — `[Company Vanguard Fiduciary Trust]`: the
+  issuer's second line (`Company`) leads the issuer field, queue (f) C's
+  wrapped-issuer shape, now 6 plans.
+- **Walmart** — `Investments Walmart Inc. Equity Securities`: a section
+  word (`Investments`) glued onto the employer-stock row; one row.
+- **Universal Insurance Managers (283 ppl)** — `Fully-benefit contract
+  with an average` (prose fragment, 5.8%) and `1MSPZX` (a legend-less
+  code; **v143 names it** — MSPZX is in the SEC index).
+- Grifols (96.5% employer stock beside three statement lines), San Diego
+  State (TIAA contract names `Traditional Non Benefit Responsive`, `Stock
+  R2`), Transport Equipment (`MUTUAL FUND SHARES` suffix, display-stripped)
+  — filed as is, known shapes.
