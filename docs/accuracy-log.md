@@ -16499,3 +16499,38 @@ Williamsburg 1,340, TransAlta, Catalyst Exhibits, Reliant, Therm…).
 the branch lacked, main newer on 0, 0 confident-on-main-only — the first
 mirror in nine hours needing no override, which is what an incremental
 cron buys.
+
+## 2026-09-19 (13:5xZ) — v160 is shippable: the 45 unread moves were two defects of my own, both found by reading the rows rather than the counts
+
+**Wells Fargo 68 → 55 was not thirteen lost rows.** Its bond sleeve
+rejects `4.337%, $16,135,030 par (1` as a description, my post-pass
+appended that to the holding's name, the renamed rows stopped looking
+like securities to the v144 fold, and the managed-account aggregate went
+983 → 1,459 positions. A par amount inside a holding name is the
+value-in-name shape this project already has on the books. **Only a
+name-shaped description may disambiguate now** — letters and ordinary
+punctuation, no `$`, no `%`, no `par`, no 4-digit run, at most 40
+characters. Wells Fargo is back to 68 rows.
+
+**The Wine Group 20 → 25 was double counting, and it is the same hazard
+the blunt version died of.** Its menu is filed twice — ALL-CAPS against
+`Registered Investment Company`, mixed-case against `Mutual Fund` — and
+my split ran BEFORE the `same name, same value` duplicate-render test, so
+each fund survived twice. The split now yields to that test: equal value
+under one base name is the second render, whatever the two copies call
+the description. Carr Auto and Hunterdon were the same shape and are also
+gone from the diff.
+
+**Measured against v159, the true baseline** (the first corpus diff I ran
+compared the guarded rule against the blunt one already committed, which
+is why Exxon and Jordan Timberlands appeared to collapse — they were
+returning to normal): gate green, **0 gained / 0 lost / 0 fabricated / 0
+sums moved, 12 plans move rows**, and every one is read: eleven GAIN
+1–6 rows (Toyota +6 separate brokerage lots, Mitre +2, Radiology
+Consultants +2, eight at +1) — that is the un-merge working — and Louis
+Padnos loses one to the brokerage fold (110 → 112 positions), a
+re-grouping. Mass General Brigham keeps its three TIAA-CREF rows.
+**Population at risk, for the run's verdict: 321 confident lineups /
+377,586 ppl carry a bare house-name row at ≥10% of the menu**; this fix
+reaches the subset where that row is a merge, and the store measures it.
+Dispatched with v159.

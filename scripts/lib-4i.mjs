@@ -1454,7 +1454,13 @@ export function parseRows(section, opts = {}) {
    dClean  = ${JSON.stringify(dClean)}  typeOnly=${dClean ? typeOnly(dClean) : "-"} catDesc=${!!catDesc} house=${isHouseName(nc)}
    -> name from ${dUsable ? "DESCRIPTION" : "IDENTITY"}`);
     }
-    if (!dUsable && dClean) rejDesc = dClean;
+    /* Only a NAME-SHAPED rejected description may disambiguate. Wells Fargo's
+     * bond sleeve rejects `4.337%, $16,135,030 par (1` as its description, and
+     * appending that to a name publishes a par amount as part of a holding —
+     * the value-in-name shape. Letters, ordinary punctuation, no money, no
+     * rate, nothing longer than a fund name. */
+    if (!dUsable && dClean && /^[A-Za-z][A-Za-z0-9 .,&'()\/-]{1,40}$/.test(dClean) &&
+        !/[$%]|\bpar\b|\d{4,}/i.test(dClean)) rejDesc = dClean;
     if (dUsable) {
       name = dClean;
       /* v67: KEEP the identity column instead of discarding it. This branch
@@ -2168,7 +2174,14 @@ export function parseRows(section, opts = {}) {
     const kDd = r._dd ? `${kBase}\u0000${String(r._dd).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim()}` : null;
     let k = kDd && seen.has(kDd) ? kDd : kBase;
     let e = seen.get(k);
-    if (e && k === kBase && r._dd && e.row._dd && String(e.row._dd) !== String(r._dd)) { k = kDd; e = seen.get(k); }
+    /* ...and SAME NAME + SAME VALUE is the duplicate render, whatever the two
+     * copies call the description. The Wine Group files its menu twice — once
+     * ALL-CAPS against `Registered Investment Company`, once mixed-case
+     * against `Mutual Fund` — and splitting on the description let both
+     * survive: 20 rows -> 25, every fund counted twice. The equal-value test
+     * below must get the first look. */
+    if (e && k === kBase && r._dd && e.row._dd && String(e.row._dd) !== String(r._dd) &&
+        !e.vals.has(r.value)) { k = kDd; e = seen.get(k); }
     if (TRACE_ROWS && TRACE_MATCH && !/^\d+$/.test(TRACE_MATCH) && r.name.includes(TRACE_MATCH)) {
       const ks0 = k.replace(/\b(?:fund|funds|inc|class|cl|portfolio|shares?|the|trust|[a-z]|\d{1,2})\b/g, " ").replace(/\s+/g, " ").trim();
       console.error(`[dedup] ${JSON.stringify(r.name.slice(0, 50))} ${r.value} exact-dup=${e && e.vals.has(r.value) ? 1 : 0} stem=${JSON.stringify(ks0)} stem-dup=${seenStem.get(ks0) && seenStem.get(ks0).has(r.value) ? 1 : 0}`);
