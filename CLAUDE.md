@@ -679,7 +679,16 @@ don't confuse them). Frontend: python http.server + Playwright at
   Nothing downstream was affected (no session acted on it), but it is exactly
   the copying-a-line-forward hazard this file warns about elsewhere, aimed at
   the file's own header. **Re-derive this line rather than editing the date.**
-- **LIVE on main: the v157 store — MIRRORED 2026-09-19 12:4xZ
+- **LIVE on main: the v158 store — MIRRORED 2026-09-19 13:4xZ, UNFORCED
+  (both checks; main had nothing the branch lacked).** pv 158 at 99.85%,
+  confident **60,122 (+19 / −0)**, HIGH 4 = the baseline and nothing else,
+  overshoot 347, dl 104. What reached readers: ATH Holding / Elevance
+  (94,689 ppl) loses the merged $1,793,711,087 `The Vanguard Group`
+  phantom and shows `Institutional 500 Index Trust` $1.57B; Frx and
+  Central City Concern publish their real menus again; 17 small plans
+  publish for the first time. **v159 ready, v160 held unread — see the
+  STATUS block.** `docs/accuracy-log.md` 2026-09-19 (run #391 verdict).
+- **Previously: the v157 store — MIRRORED 2026-09-19 12:4xZ
   (`--force-data` over five pointer lineups read by name; git check
   unforced).** pv 157 at 99.85%, confident 60,103, HIGH 4 + 5
   self-clearing, overshoot 346, dl 104. What reached readers: Caterpillar

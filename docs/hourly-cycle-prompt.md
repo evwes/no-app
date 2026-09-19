@@ -237,6 +237,19 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 13:4xZ 2026-09-19: #391 (v158) PASSED CLEAN — +19 / −0,
+      HIGH 4 (baseline only), ATH's $1.79B phantom → its real $1.57B index
+      trust, Frx and Central City back; MIRRORED UNFORCED (both checks).
+      Container restarted 13:0xZ; scratchpad and corpus survived.
+      **v159 is committed and ready (the `# ` marker, the loan-maturity
+      phrase) but the branch HEAD also carries v160, which is NOT shippable**:
+      it fixes a real $1.57B merge at Mass General Brigham (131,090 ppl,
+      three TIAA-CREF rows summed) but moves rows on 45 corpus plans
+      UNREAD — Wells Fargo 68 → 55 is a split rule REMOVING thirteen rows
+      and must be explained before any dispatch. Next wake: read Wells
+      Fargo and Walmart row by row → fix or revert v160 → dispatch v159(+160)
+      → verdict. Mirroring is safe meanwhile: SCHEDULE_INCREMENTAL keeps
+      main's cron from acting on unshipped code.
       **STATUS 12:4xZ 2026-09-19: #390 (v157) PASSED as predicted (+4 / −5,
       the five pointer lineups by name, mt-share 5 → 0, swaps 9); MIRRORED
       (`--force-data`, git unforced). v158 DISPATCHED: the caption retry for

@@ -16476,3 +16476,26 @@ sums moved — but **45 plans move rows and they are unread**: Walmart
 rule that REMOVES thirteen rows from a plan is not doing what its
 description says, and no version ships on a count I cannot explain. Next
 cycle reads Wells Fargo and Walmart row by row before this dispatches.
+
+## 2026-09-19 (13:4xZ) — run #391 verdict (v158): PASSED with no losses at all — +19 / −0, HIGH back to the baseline 4, ATH / Elevance's $1.79B `The Vanguard Group` phantom replaced by the real $1.57B index trust; MIRRORED unforced
+
+**Numbers.** pv 158 covers 68,661 of 68,767 (99.85%); confident 60,103 →
+**60,122 (+19 gained / −0 lost)**; lineups 59,769; **HIGH 4 — the four
+baseline contribution outliers and nothing else**; overshoot 347;
+`tkShare` 24.4; dl 104.
+
+**Both predictions held.** ATH Holding (94,689 ppl) publishes
+`Institutional 500 Index Trust [iss The Vanguard Group]` $1,568,116,060
+with `Explorer Fund` and `T. Rowe Price Large-Cap Growth Trust` as their
+own rows — the merged $1,793,711,087 phantom is gone, and the bare
+house-name class fell **472,275 → 377,586 ppl at ≥10% of a menu**, which
+is ATH leaving it. Frx Management is confident again (12 LifePath rows),
+and **Central City Concern (2,039 ppl) came back too** — the widened
+caption retry reached it on the OCR path after all, which the local
+reproduction could not show. The other 17 gains are small plans (Colonial
+Williamsburg 1,340, TransAlta, Catalyst Exhibits, Reliant, Therm…).
+
+**Mirror: `mirror.sh` unforced, both checks.** main had 0 acks / 0 plans
+the branch lacked, main newer on 0, 0 confident-on-main-only — the first
+mirror in nine hours needing no override, which is what an incremental
+cron buys.
