@@ -15398,6 +15398,54 @@ the one-member trust `20251218170324…` (refused at 2.0 in #381) may
 return; overshoot FALLS (subtotals gone); HIGH 4 + designed residue.
 Committed `[skip ci]` behind #382 (v147) and v148; dispatches after
 #382's verdict, with v148.
+
+## 2026-09-19 (04:5xZ) — run #382 verdict: v147 PASSED and is live (`c07b9f47`) — the seven lineups v146 lost are back and 23 more small plans publish for the first time; the eight remaining losses are the designed and accepted set; v148 + v149 dispatched as #383
+
+**Numbers.** Run 55 min. pv 147 covers 68,662 of 68,767 (99.85%);
+confident 60,092 (#381) → **60,122**, which is **+15 over the live v143
+store**; lineups 59,769; HIGH 5 (4 baseline + 1 self-clearing
+`reparse-loss` on Energy Transfer's designed loss); overshoot 363; aggRow
+110; `tkShare` 24.34; dl 104.
+
+**Against the live store (`7d2349b1`, v143): +23 gained / −8 lost.** The
+eight losses are, one for one, the set read in the #381 verdict — Energy
+Transfer and Sunoco GP (designed: trust pointers), Century Companies /
+Riverside Contracting / Jackson Contractor (bond sleeves folding to one
+row, accepted), Midland Holding (junk names refused), Fullington (an
+untraceable fallback), and the one-member trust refused at 2.0. **Every
+loss v146 caused is gone**: Ouraring (47 rows, all typed
+`Exchange-traded fund`), Bird Rides, Blue Jay, JS Operating, Casters,
+Fraenkische and Qvale (22 rows) are confident again. The 23 gains are
+small plans on the same Vanguard-ETF template (Bitly, Sticker Mule,
+Skillshare, Dashlane…) that had NEVER published — under v143 their ETF
+rows merged onto `Exchange traded funds` and the statement guard held
+them back; ChowNow now shows 59 rows where the #381 store had `Exchange
+Traded Fund` at 99.7%.
+
+**Whole-store multiset diff v146 → v147:** lengthened **2,147 rows /
+1,995 plans / 3.94M ppl** (the house + product-phrase composition and the
+`N/R`-free names), added 5,666 / 937 plans and removed 2,253 / 745 (the
+ETF menus unfolding; render swaps), rename:other 2,651 / 243. TO-SHORT
+91 rows / 64 plans — read: NOT the bare-house shape; they are render
+swaps (`MFS Growth R6 Fund` → `Growth Fund` with `iss` carrying the
+house, `VANGUARD 500 INDEX FUND - ADM` → `500 Index` under `[iss
+Vanguard]`), the tie between two renders breaking the other way once
+`N/R` no longer distinguishes them. The `Invesco`-style bare-house rows
+are gone.
+
+**Class sizers on the v147 store:** readability 212 plans; duplicates 110
+rows / 58 plans; (k) ≥30% 13 plans; cut-tail 240 plans / $7.2B hidden;
+doubled house 203 (v148's target); class-subtotal 73 plans / 73,363 ppl
+(v149's target; Marriott's class rows sit inside its aggregate under
+v144, so this sizer no longer sees it — the measurement for v149 is
+Marriott's own rows after #383).
+
+**Mirror.** `mirror.sh --force-data` over the eight reconciled losses;
+git check unforced (main had nothing the branch lacked). Mirrored
+`7d2349b1 → c07b9f47`; `pages-build-deployment` #514 building it. **v148 +
+v149 dispatched as #383 at 04:51Z on `c07b9f47`.** Verdict tests: doubled
+house 203 → under 20; Marriott 49 rows at ~1.07 with its trusts; the
+one-member trust may return; confident +0 / −small, each read.
 - **Retail Services Wis** — `[Company Vanguard Fiduciary Trust]`: the
   issuer's second line (`Company`) leads the issuer field, queue (f) C's
   wrapped-issuer shape, now 6 plans.

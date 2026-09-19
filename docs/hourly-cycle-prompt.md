@@ -237,6 +237,16 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 04:5xZ 2026-09-19: #382 (v147) PASSED — confident 60,122
+      (+15 over the live v143 store: +23 gained / −8, the eight being the
+      designed and accepted set, every v146-caused loss back, 23 small
+      ETF-template plans publishing for the first time), HIGH 4 + 1
+      self-clearing, bare-house rows gone; MIRRORED `c07b9f47`
+      (`--force-data` over the 8 named losses). **#383 = v148 + v149
+      dispatched 04:51Z, in flight.** Next wake: verdict #383 (doubled
+      house 203 → <20; Marriott 49 rows with its trusts) → mirror → (o)
+      NRECA, Marriott's two residual class rows, the coded residue, the
+      draw. `docs/accuracy-log.md` 2026-09-19 (04:5xZ).
       **STATUS 04:2xZ 2026-09-19: v149 (queue item n) committed `[skip
       ci]` behind #382 — class subtotals beside their itemisation removed
       at the LEAVES stage, because Marriott's real defect was v77's

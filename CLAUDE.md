@@ -651,18 +651,17 @@ don't confuse them). Frontend: python http.server + Playwright at
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
   full-form** filers and 43,523 short-form; 68,767 parse-status entries.
-  **Store at v146 on the BRANCH (`87d6fac5`, run #381) and v143 on MAIN
-  (`7d2349b1`) — MIRROR HELD: #381 lost 15 lineups (confident 60,092,
-  HIGH 20), 7 of them to v146's footnote-letter strip (the ETF template
-  and the Form 5500 cover page). `PARSER_VERSION` in the tree is 149
-  (v147: ETF is a type phrase; the strip needs two data cells; a house
-  plus a type-only product phrase composes — dispatched as #382
-  2026-09-19 03:5xZ; v148: the doubled house stripped in the store;
-  v149: class subtotals beside their itemisation removed at the leaves
+  **Store at v147 (branch AND main, `c07b9f47`, run #382); `PARSER_VERSION`
+  in the tree is 149 — v148 (the doubled house stripped in the store) and
+  v149 (class subtotals beside their itemisation removed at the leaves
   stage, before the restatement cut — Marriott 31 → 49 rows, its real
-  menu; both committed `[skip ci]` behind #382); mirror when #382's
-  verdict shows confident ≥60,100 and TO-SHORT ~0, then dispatch v148 +
-  v149 together. v144 (fold before the cap, untyped securities by name), v145 (stem
+  menu) are IN FLIGHT TOGETHER as run #383 (dispatched 2026-09-19 04:51Z
+  on `c07b9f47`); mirror once its verdict is read (doubled house 203 →
+  under 20; Marriott's trusts in the store; each loss by name). The v147
+  store carries v144 (fold before the cap), v145 (stem dedup; the
+  sponsor-name `transfer` trap), v146 (two-column wraps; footnote letter;
+  `N/R`) and v147 (ETF is a type phrase; the strip needs two data cells;
+  house + product phrase compose). OCR v8.** v144 (fold before the cap, untyped securities by name), v145 (stem
   dedup; sponsor-name `transfer` trap) and v146 (two-column wraps;
   footnote letter, `N/R`) are otherwise verified in the #381 store —
   cut-tail class 337 → 236 plans, duplicates 522 → 109 rows, (k) ≥30%
@@ -677,7 +676,22 @@ don't confuse them). Frontend: python http.server + Playwright at
   Nothing downstream was affected (no session acted on it), but it is exactly
   the copying-a-line-forward hazard this file warns about elsewhere, aimed at
   the file's own header. **Re-derive this line rather than editing the date.**
-- **LIVE on main: `7d2349b1` — MIRRORED 2026-09-19 02:3xZ, unforced
+- **LIVE on main: `c07b9f47` — MIRRORED 2026-09-19 04:5xZ (`--force-data`
+  over 8 reconciled losses; git check unforced).** The v147 store — v144
+  through v147 together. pv 147 at 99.85%, confident 60,122 (**+23 / −8**
+  vs the v143 store: the eight are Energy Transfer + Sunoco (designed
+  trust pointers), three bond-sleeve plans folding to one row, Midland's
+  junk names, an untraceable fallback, one double-counting trust; the 23
+  are small Vanguard-ETF-template plans publishing for the first time),
+  HIGH 4 + 1 self-clearing, overshoot 363, aggRow 110, dl 104. What
+  reached readers: Boeing's 6,950 sleeve positions as one row (hidden-tail
+  class 337 → 236 plans, $46.7B → $7.2B); duplicates 522 → 109 rows;
+  Rush Copley's $109M fragment unfolded; Energy Transfer's page says
+  "master trust" instead of a 78% holding named `Trust`; "Invesco Stable
+  Value Fund" instead of `Invesco`; ETF menus (Ouraring 47 rows, ChowNow
+  59). **#383 (v148 + v149) in flight.** `docs/accuracy-log.md` 2026-09-19
+  (run #381 verdict; v147; run #382 verdict).
+- **Previously: `7d2349b1` — MIRRORED 2026-09-19 02:3xZ, unforced
   (fast-forward).** The v143 store (legend-less coded rows named from
   the SEC class index; a readability term decides near-equal region
   contests). pv 143 at 99.85%, confident 60,107 (+0 / −0), HIGH 4,
