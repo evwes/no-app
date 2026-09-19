@@ -237,6 +237,10 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 04:5xZ 2026-09-19 (b): draw (seed 20260921, v147 store)
+      15/15 real menus; new cosmetic item (p): a `^` party-in-interest
+      marker in issuers/names (38 + 2,038 rows / 164 plans / 476k ppl) —
+      strip it like `*` in the next bump. #383 in flight.
       **STATUS 04:5xZ 2026-09-19: #382 (v147) PASSED — confident 60,122
       (+15 over the live v143 store: +23 gained / −8, the eight being the
       designed and accepted set, every v146-caused loss back, 23 small

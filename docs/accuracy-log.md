@@ -15446,6 +15446,26 @@ git check unforced (main had nothing the branch lacked). Mirrored
 v149 dispatched as #383 at 04:51Z on `c07b9f47`.** Verdict tests: doubled
 house 203 → under 20; Marriott 49 rows at ~1.07 with its trusts; the
 one-member trust may return; confident +0 / −small, each read.
+
+## 2026-09-19 (04:5xZ) — per-cycle draw (seed 20260921, v147 store): 15 of 15 real menus; one new cosmetic class, the `^` marker
+
+Participant-weighted draw of 15: Walmart, FedEx, IBM, Wegmans, 7-Eleven,
+BAE Systems, Techtronic, Laborers District Council, Gila River Gaming, JJE
+Capital, bswift, Lynn Community Health, Tempus Unlimited, Deleet
+Merchandising, Redseal. Every one a real menu; BAE now shows `Managed
+account holdings (1,316 positions)` at 9.7% beside its Vanguard and
+BlackRock funds (v144 working). IBM's `[Administered by Fidelity]
+Expanded Choice - Select Funds (refer to Exhibit A…)` is the filing's own
+aggregate for its brokerage tier, filed as such.
+
+**New cosmetic class (p): a `^` footnote marker in the issuer or name** —
+BAE `[^ The Vanguard Group]`, `Fidelity 500 Index Fund ^`, `^ Empower
+Guaranteed Interest Fund`. Sized (`caret-iss.mjs`): **38 issuer rows +
+2,038 name rows / 164 plans / 476,133 ppl** (the sizer's `#` arm also
+catches `Plan Sponsor ID # 81-` cover-page junk, a different, known
+class). The `*` party-in-interest strip exists at the line stage; `^` is
+the same convention in another template and wants the same treatment.
+Queued as (p), one-line fix for the next version that bumps.
 - **Retail Services Wis** — `[Company Vanguard Fiduciary Trust]`: the
   issuer's second line (`Company`) leads the issuer field, queue (f) C's
   wrapped-issuer shape, now 6 plans.
