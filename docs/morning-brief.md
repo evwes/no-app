@@ -1,4 +1,4 @@
-# Morning brief — 2026-09-19 (written 02:0xZ / 10:0x PM ET; refreshed at the next verdict)
+# Morning brief — 2026-09-19 (written 01:4xZ / 9:4x PM ET; refreshed at the next verdict)
 
 Live on main: **`3dde8717`, the v142 store**, Pages build #512 deployed it.
 Since yesterday's brief: v139, v140, v141 and v142 shipped and are live;

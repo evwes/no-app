@@ -14930,7 +14930,7 @@ rows removed in the hundreds per flood plan and added rows ≤ a few dozen
 (revealed trusts); HIGH 4; generic-names ≤ 128; dominant-row 0. Committed
 `[skip ci]` while #380 (v143) is in flight; dispatched after its verdict.
 
-## 2026-09-19 (02:0xZ) — per-cycle draw (seed 20260919, v142 store): 15 of 15 real menus; two are v144's own class, one names a new queue item
+## 2026-09-19 (01:4xZ) — per-cycle draw (seed 20260919, v142 store): 15 of 15 real menus; two are v144's own class, one names a new queue item
 
 Participant-weighted draw of 15 published lineups (pool 59,753 / 89.6M
 ppl): Walmart, Starbucks, Wells Fargo, Marriott, Dollar Tree, Aon,
@@ -14953,7 +14953,16 @@ Insurance Managers, Harding Loevner. Every one is a real menu. Shapes:
   (recorded there as cost (c), Peterson's `Preferred stock`); the double
   count is older than v144 and is **NEW QUEUE ITEM (n): a class subtotal
   beside its own itemisation** — detectable by arithmetic (a typed class
-  row equal to the sum of the security rows that follow it).
+  row equal to the sum of the security rows that follow it). **Sized from
+  the store the same hour (`class-subtotal.mjs`, a floor: only the kept
+  120 rows are visible): 75 confident lineups / 225,667 ppl publish a
+  bare class row at ≥10% beside ≥20 other rows or a cut tail** — Marriott
+  152,118 of them; the rest are small (`Mutual funds 15%` beside a menu at
+  Bloomberg, ICE, Avangrid; `Money market fund 18%`), and for those the
+  class line may be an honest unitemised bucket rather than a subtotal.
+  Only the arithmetic at parse time — filed order is in `ordered` — can
+  tell the two apart, and the fix belongs post-selection (v136's rule:
+  never change region sums before the winner is chosen).
 - **Retail Services Wis** — `[Company Vanguard Fiduciary Trust]`: the
   issuer's second line (`Company`) leads the issuer field, queue (f) C's
   wrapped-issuer shape, now 6 plans.
