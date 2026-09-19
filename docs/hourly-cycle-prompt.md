@@ -237,6 +237,13 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 04:0xZ 2026-09-19: v148 committed `[skip ci]` behind #382
+      — the doubled house stripped in the store (the display's expression;
+      202 plans / 760 rows still doubled after v146, several via
+      prior-year fallbacks); fixtures 10/10, gate green, corpus 0/0/0
+      (rename-only). #382 (v147) in flight since 03:54Z; mirror HELD.
+      Next wake: verdict #382 (confident ≥60,100, TO-SHORT ~0) → mirror
+      → dispatch v148 → (n) Marriott class subtotals, (o) NRECA.
       **STATUS 03:5xZ 2026-09-19: #381 (v144+v145+v146) verdict — the
       four predictions hold (cut-tail class 337 → 236 plans, $46.7B →
       $7.2B hidden; duplicates 522 → 109 rows; (k) ≥30% 17 → 13; Energy

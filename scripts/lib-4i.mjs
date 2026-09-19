@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 147;
+export const PARSER_VERSION = 148;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -1451,6 +1451,16 @@ export function parseRows(section, opts = {}) {
     name = name.replace(/[\s=]+$/, "");
     // wrapped lines carry their column gaps into the assembled name
     name = name.replace(/\s{2,}/g, " ");
+    /* v148 (queue item (f) A1, the rest of the parser half): a house that
+     * opens the name TWICE is the identity glued in front of a description
+     * that already carries it — "Fidelity Fidelity 500 Index", "American
+     * Funds American Funds 2040 Target Date Fund", "VOYA Voya Fixed Account".
+     * v146's footnote-letter fix covered one template; 202 plans / 375,590
+     * ppl / 760 rows still publish the doubling by other routes (several via
+     * prior-year fallbacks that cannot be traced in-sandbox). The display
+     * strip has shipped this exact expression since 2026-09-18; the store
+     * now says the same. Up to three words, and a real word must follow. */
+    name = name.replace(/^((?:\S+\s+){0,2}\S+)\s+\1(?=\s+\S)/i, "$1");
     /* v74: the EFAST2 placeholder guard, applied to the ASSEMBLED NAME.
      * The line-level test above only sees the line carrying the VALUE, and on
      * a rendered form page the placeholder text and the number are on

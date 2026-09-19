@@ -15311,6 +15311,37 @@ Ouraring, Qvale and the Invesco specimen.
 confident back to ≥60,100 (the six ETF plans + Qvale return; Century-class
 and Midland stay lost by design), HIGH 4 + the designed `reparse-loss`
 residue, TO-SHORT ~0, and the four v144–v146 measurements holding.
+
+## 2026-09-19 (04:0xZ) — v148 (queue item (f) A1, the rest of the parser half): a house that opens the name twice is stripped in the store, as the display has done since 2026-09-18 — 202 plans / 375,590 ppl / 760 rows still doubled after v146
+
+**What was wrong.** v146's footnote-letter fix predicted the doubled
+house would fall "238 plans → near 0" and the #381 store measured 202
+(`issuer-glue-split.mjs`): `Fidelity Fidelity 500 Index`, `American Funds
+American Funds 2040 Target Date Fund`, `VOYA Voya Fixed Account (4450)`.
+The routes differ from the footnote template — Firstup's example comes
+from a PRIOR-YEAR FALLBACK (its newest filing has no schedule), which
+cannot be traced in-sandbox — so the fix is applied where every route
+ends: the finished name.
+
+**The change (`lib-4i.mjs`, PARSER_VERSION 148).** After whitespace
+normalisation, `name.replace(/^((?:\S+\s+){0,2}\S+)\s+\1(?=\s+\S)/i,
+"$1")` — up to three words repeated at the start with a real word after
+them. This is the exact expression `app.js`'s `cleanFiledName` has
+shipped since 2026-09-18, so readers already saw the clean name; the
+store, the ticker lookup's raw-first pass and the audits now agree with
+the page. Fixtures (`test-double.mjs`, 10 cases): the five doubled shapes
+strip; `Empower T. Rowe Price…` (trustee before a different house),
+`Vanguard Target Retirement 2030 Trust II`, `BlackRock iShares…` and a
+bare `Fidelity Fidelity` (no word after) are untouched.
+
+**Verified.** Parser gate all specimens green; `diff-lineups HEAD` (v147 →
+v148): 0 / 0 / 0 / 0 moves — rename-only, invisible to the count diff by
+construction; `issuer-glue-split.mjs` after the run is the measurement.
+
+**Prediction for the v148 run:** doubled 202 plans → under 20 (the
+residue: doublings with a fourth word, or across a bracketed issuer);
+confident +0 / −0; the raw-first ticker lookup gains a little. Committed
+`[skip ci]` behind #382 (v147); dispatches after its verdict.
 - **Retail Services Wis** — `[Company Vanguard Fiduciary Trust]`: the
   issuer's second line (`Company`) leads the issuer field, queue (f) C's
   wrapped-issuer shape, now 6 plans.
