@@ -237,6 +237,20 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 16:3xZ 2026-09-19: #394 (v161) MIRRORED — vs the live v158
+      store 0 gained / 2 lost (Crestview, Buffalo Bills: junk 3-row lineups
+      losing a `through YYYY` row), Hozhoni's 34-row menu back, Mass General
+      Brigham's $1,565,649k phantom gone for 131,090 readers. `--force-data`
+      2 reads + `--force` over main's analyze-stuck trust. **The
+      pre-registered failure signal DID appear**: TO-SHORT 13 rows / 10
+      plans, two of them `TIAA-CREF High-Yield-Rtmt` → `TIAA-CREF` — a
+      house+product name collapsing to the house now that TIAA-CREF is in
+      HOUSE_ONLY. Queued, not waved past. **v162 DISPATCHED as #395**: a
+      category plus a vehicle is a type phrase (PennyMac's `Asset Allocation
+      Mutual Fund` at 47.5% was 13 Fidelity Freedom vintages merged; 323
+      lineups / 376,590 ppl carry the shape, 117 at ≥20%). Corpus 3 plans,
+      all un-merging. Next wake: #395 verdict → mirror → the TO-SHORT
+      house+product collapse → the 117 ≥20% band read by name.
       **STATUS 15:2xZ 2026-09-19: #392 (v159+v160) verdict — +4 / −5, and
       the v160 STORE IS HELD OFF MAIN. Four losses are v159 working (junk
       3-6-row lineups losing a `through YYYY` row and falling under the

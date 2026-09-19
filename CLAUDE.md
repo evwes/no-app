@@ -687,7 +687,17 @@ don't confuse them). Frontend: python http.server + Playwright at
   Nothing downstream was affected (no session acted on it), but it is exactly
   the copying-a-line-forward hazard this file warns about elsewhere, aimed at
   the file's own header. **Re-derive this line rather than editing the date.**
-- **LIVE on main: the v158 store — MIRRORED 2026-09-19 13:4xZ, UNFORCED
+- **LIVE on main: the v161 store — MIRRORED 2026-09-19 16:3xZ
+  (`--force-data` over two named junk losses; `--force` over main's one
+  analyze-stuck trust ack).** pv 161 at 99.85%, confident 60,120, HIGH 4
+  baseline + 3 self-clearing. What reached readers: Mass General Brigham
+  (131,090 ppl) loses a $1,565,649k `TIAA-CREF Funds` holding that was
+  three real rows summed and gains them back; Hozhoni keeps its 34-row
+  menu; junk `through YYYY` rows and `# ` markers are gone. **Cost on the
+  record: 2 rows collapse a house+product name to the bare house
+  (`TIAA-CREF High-Yield-Rtmt` → `TIAA-CREF`), queued.** **#395 (v162) in
+  flight.** `docs/accuracy-log.md` 2026-09-19 (run #394 verdict).
+- **Previously: the v158 store — MIRRORED 2026-09-19 13:4xZ, UNFORCED
   (both checks; main had nothing the branch lacked).** pv 158 at 99.85%,
   confident **60,122 (+19 / −0)**, HIGH 4 = the baseline and nothing else,
   overshoot 347, dl 104. What reached readers: ATH Holding / Elevance
