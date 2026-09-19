@@ -499,6 +499,27 @@
       "fixed": "v146",
       "sponsor": "Consolidated Electrical Distributors",
       "was": "the filing's second render prefixes each row with a footnote letter ('b        JP Morgan   JP Morgan Mid Cap Growth Fund   N/R   22,050,627'); the letter became the identity cell, the house was pushed into the description, and the double-render dedup kept the longer name — 'JP Morgan JP Morgan Mid Cap Growth Fund N/R' on 238 plans / 486k ppl, with the N/R cost cell glued on"
+    },
+    {
+      "ack": "20251015163300NAL0005430833001",
+      "class": "etf-menu-type-phrase-missing",
+      "fixed": "v147",
+      "sponsor": "Ouraring Inc.",
+      "was": "'b | Vanguard Total Stock Market ETF | Exchange Traded Fund | 3,715,032': once v146 stripped the footnote letter, 'Exchange Traded Fund' was the description, not a type phrase, won every row's name, and 28 ETFs merged into one statement row — six confident menus lost in run #381 (ChowNow published 'Exchange Traded Fund' at 99.7% as confident)"
+    },
+    {
+      "ack": "20251013194043NAL0000922275001",
+      "class": "footnote-strip-on-cover-page-line",
+      "fixed": "v147",
+      "sponsor": "Qvale Auto Group",
+      "was": "the v146 footnote-letter strip fired on Form 5500 cover-page lines ('a   Name of Plan Sponsor…', 'b   Qvale Auto Group, Inc.   94-…'), made a cover line a $6.4M holding and pushed the 22-row Vanguard menu to ratio 1.8; the strip now requires two data cells after the letter and the caption is in SKIP_ROW"
+    },
+    {
+      "ack": "20250730181524NAL0002131843001",
+      "class": "house-plus-type-phrase-published-as-bare-house",
+      "fixed": "v147",
+      "sponsor": "(Invesco stable value specimen)",
+      "was": "'Invesco | Stable Value Fund N/R': with N/R stripped the description read as type-only, the identity won, and the row published as the bare house 'Invesco' — 121 rows / 102 plans / 267,852 ppl in the v146 store; house and product phrase now compose ('Invesco Stable Value Fund')"
     }
   ]
 }

@@ -651,20 +651,18 @@ don't confuse them). Frontend: python http.server + Playwright at
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
   full-form** filers and 43,523 short-form; 68,767 parse-status entries.
-  **Store at v143 (branch AND main, `7d2349b1`); `PARSER_VERSION` in the
-  tree is 146 — v144 (the itemized-securities fold runs before the
-  display cap, and untyped securities are recognised by name — Boeing's
-  6,937 sleeve positions fold into one row), v145 (part 1: a stem dedup
-  collapses a schedule's two renders with wording drift — R&L Carriers,
-  277 lineups / 488k ppl; part 2: SKIP_ROW's `transfers?` arm no longer
-  matches a sponsor's own name — Energy Transfer and Sunoco GP read as
-  master-trust pointers) and v146 (part 1: when both 4i columns wrap
-  with the value on the second line, each cell continues the cell above
-  — Rush Copley 11 → 19 rows; part 2: a lone footnote letter in column
-  (a) is stripped like `*`, `N/R` is a column cell — the doubled house on
-  238 plans) are IN FLIGHT TOGETHER as run #381 (dispatched 2026-09-19
-  02:36Z on `7d2349b1`); mirror only once that store lands and each of
-  the four predictions is read against the v143 shards. OCR v8.**
+  **Store at v146 on the BRANCH (`87d6fac5`, run #381) and v143 on MAIN
+  (`7d2349b1`) — MIRROR HELD: #381 lost 15 lineups (confident 60,092,
+  HIGH 20), 7 of them to v146's footnote-letter strip (the ETF template
+  and the Form 5500 cover page). `PARSER_VERSION` in the tree is 147
+  (ETF is a type phrase; the strip needs two data cells; a house plus a
+  type-only product phrase composes) — dispatched as #382 2026-09-19
+  03:5xZ; mirror when its verdict shows confident ≥60,100 and TO-SHORT
+  ~0. v144 (fold before the cap, untyped securities by name), v145 (stem
+  dedup; sponsor-name `transfer` trap) and v146 (two-column wraps;
+  footnote letter, `N/R`) are otherwise verified in the #381 store —
+  cut-tail class 337 → 236 plans, duplicates 522 → 109 rows, (k) ≥30%
+  17 → 13; the doubled house stays queued (238 → 202). OCR v8.**
   **Re-derived from the local store 2026-09-18 19:5xZ** — `pv139` covers
   68,665 of 68,767 acks (99.85%), tail pv106 18, pv98 10, pv123 10, pv124
   10; `lib-4i` exports 139. (On 2026-09-16 this line said v124 for four

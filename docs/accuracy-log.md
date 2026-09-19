@@ -15227,6 +15227,90 @@ Pizza Kitchen, Inovalon, Stark Tech, Houston Engineering.
   TYPE in the issuer bracket, (f) B's family. Walmart's `Investments
   Walmart Inc. Equity Securities` prefix, known.
 - The other eleven are real menus with no new shape.
+
+## 2026-09-19 (03:5xZ) — run #381 verdict (v144 + v145 + v146): the four predictions hold, and the store is HELD OFF MAIN — 13 undesigned losses on small plans, two mechanisms mine, both fixed in v147 before anything reached readers
+
+**Numbers.** Run 57 min. pv 146 covers 68,662 of 68,767 (99.85%);
+confident 60,107 → **60,092 (−15)**; lineups 59,753 → 59,739; **HIGH 4 →
+20** (16 `reparse-loss`, self-clearing); overshoot 354 → 365 (mechanism:
+published sums are now the WHOLE schedule, no longer a capped prefix, so
+plans near the line cross it — the arithmetic got truer, not worse);
+**aggRow 56 → 117** (predicted to rise: Boeing, Peterson, Dell and their
+class now carry a managed-account row); `tkShare` 24.33 → 24.46; dl 104.
+
+**The four predictions, each measured against the v143 shards (`old8`):**
+
+| version | prediction | measured |
+|---|---|---|
+| v144 fold before cap | cut-tail class 337 plans / $46.7B hidden FALLS; ≥15% tails 21 → fewer; aggRow rises | **236 plans / $7.2B hidden; ≥15% tails 21 → 1** (a deferred-salary board, 33,824 ppl, $1.9B — residue); untyped-flood class **65 → 2 plans**; Boeing in the store: 75 rows, `Managed account holdings (6,950 positions)` $19.8B, tail 415 rows / $521M |
+| v145 stem dedup | duplicated rows 522 → under 60 | **522 → 109 rows / 57 plans / $0.13B** — half the residue predicted; R&L Carriers 31 rows, one Morley |
+| v145 part 2 | Energy Transfer + Sunoco → trust pointers (−2) | both `dx=trust tp=1` (their `ds` still says `readfail` — a disclosure label to fix) |
+| v146 two-column wrap | (k) ≥30% 17 → ≤13 | **17 → 13**; Rush Copley 19 rows in the store |
+| v146 footnote letter | doubled house 238 plans → near 0 | **238 → 202 plans / 760 rows — WRONG.** The footnote template was one of several; 202 plans double the house by other routes. Consolidated Electrical is clean (`Fidelity Blue Chip Growth [iss Fidelity Management Trust]`); the class stays queued as (f) A1 |
+
+Whole-store multiset diff v143 → v146: shortened 36,448 rows / 1,883 plans
+/ 3.48M ppl (`N/R` gone, doubled houses, trustee prefixes moved to `iss`);
+removed 14,283 rows / 785 plans / 7.13M ppl and added 4,194 / 730 (the
+folds, the duplicates, and RENDER SWAPS — one plan's 17 rows moved from
+`Growth Fund N/R` to `MFS Growth R6 Fund` at the same sum, the fuller
+render); rename:other 2,917 / 702; **TO-SHORT 121 rows / 102 plans /
+267,852 ppl — a regression, see below**.
+
+**The 15 lost lineups, every one read.** Two designed (Energy Transfer,
+Sunoco GP). Thirteen not, all small (95–837 ppl; ~4,500 together), in
+four mechanisms:
+1. **SIX on one template — Ouraring, Bird Rides, Blue Jay Transit, JS
+   Operating, Casters, Fraenkische — MINE (v146).** `b | Vanguard Total
+   Stock Market ETF | Exchange Traded Fund | 3,715,032`: once the footnote
+   letter was stripped, `Exchange Traded Fund` became the description, was
+   NOT a type phrase, won every row's name, and 28 ETFs merged into one
+   statement row. Worse than the losses: **ChowNow published `Exchange
+   Traded Fund` at 99.7% as a CONFIDENT lineup** (in the corpus, caught by
+   the v147 diff, 4 → 59 rows).
+2. **Qvale Auto Group — MINE (v146).** The footnote strip fired on the
+   Form 5500 COVER PAGE (`a   Name of Plan Sponsor…`, `b   Qvale Auto
+   Group, Inc.   94-…`), a cover line became a $6.4M holding and the
+   22-row menu sat at ratio 1.8.
+3. **Century Companies, Riverside Contracting, Jackson Contractor
+   (one template) — v144 working as designed, cost accepted.** The whole
+   schedule is 50 individual bonds; the fold collapses it to one
+   `Managed account holdings (50 positions)` row, which fails the 3-row
+   floor → `few`. The old 50-row "menu" was a bond sleeve shown as options;
+   the honest state is no menu. The floor is NOT loosened for a
+   parser-made row (~1,000 ppl, recorded).
+4. **Midland Holding** — v143 published junk-glued names (`reinvested
+   Mutual fund, dividends and interest Vanguard…`); under v146 the rows
+   merge on the shared type phrase and the statement guard withholds the
+   region. Correct refusal of a junk menu. **The Fullington Auto Bus
+   Company** (502 ppl) — served from a prior-year fallback that cannot be
+   traced in-sandbox (`ds=noattach`); recorded. **One master trust**
+   (`20251218170324…`, one member plan / 11,630 ppl): its 119-row region
+   double-counts class summaries beside items; v143 published it at 1.283
+   only because the v133 category-total repair worked on the CAPPED sum,
+   and with post-selection on the full list the true 2.0 shows and it is
+   refused. Honest; (n) would recover it.
+
+**v147 (`lib-4i.mjs`, PARSER_VERSION 147), gated and corpus-diffed.**
+(a) `exchange[- ]traded funds?` is a type phrase (`Exchange-traded fund`);
+`ETF` and `REIT` leave the securities suffix list (an ETF is a menu
+option). (b) The footnote-letter strip requires TWO data cells after the
+letter; `name of plan sponsor` joins SKIP_ROW. (c) **A house plus a
+type-only product phrase composes**: `Invesco | Stable Value Fund` →
+`Invesco Stable Value Fund`, `TIAA | Money Market-Rtmt` → `TIAA Money
+Market-Rtmt` — v146's `N/R` strip had exposed 121 rows / 102 plans that
+published as the bare house (the v104 shape). Parser gate green;
+`diff-lineups HEAD` (v146 → v147) over the corpus: 0 gained / 0 lost / 1
+generic removed / 17 row moves read (ChowNow 4 → 59; +1–6 rows where
+composed names un-merge; ADP −1, Ground Transport −1) / 1 sum move on a
+2-row non-confident region. Traces: Ouraring 28 → 47 rows, Bird Rides
+23 → 51, Qvale 22 rows back, Consolidated Electrical still clean. Pinned
+Ouraring, Qvale and the Invesco specimen.
+
+**MIRROR HELD.** The v146 store is on the branch, not main; main stays at
+`7d2349b1` (v143). v147 dispatches now as #382; its verdict must show
+confident back to ≥60,100 (the six ETF plans + Qvale return; Century-class
+and Midland stay lost by design), HIGH 4 + the designed `reparse-loss`
+residue, TO-SHORT ~0, and the four v144–v146 measurements holding.
 - **Retail Services Wis** — `[Company Vanguard Fiduciary Trust]`: the
   issuer's second line (`Company`) leads the issuer field, queue (f) C's
   wrapped-issuer shape, now 6 plans.

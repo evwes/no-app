@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 146;
+export const PARSER_VERSION = 147;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -40,6 +40,13 @@ const TYPE_PATTERNS = [
   [/interest in .{0,40}\bmaster trust\b/i, "Master trust interest"],
   [/collective trust|common\/collective|common collective|collective investment trust|commingled/i, "Collective trust"],
   [/mutual fund|registered investment/i, "Mutual fund"],
+  /* v147: "Exchange Traded Fund" was not a type phrase. Ouraring and five
+   * more small plans on one template file "b | Vanguard Total Stock Market
+   * ETF | Exchange Traded Fund | 3,715,032"; once v146 stripped the footnote
+   * letter the phrase became the DESCRIPTION, read as a fund name, won every
+   * row, and 28 ETFs merged into one statement row — six confident menus
+   * lost in run #381. */
+  [/exchange[- ]traded funds?/i, "Exchange-traded fund"],
   [/pooled separate/i, "Pooled separate account"],
   [/common stock|company stock|employer securit/i, "Company stock"],
   [/interest[- ]bearing cash|short[- ]term investment|money market/i, "Cash / short-term"],
@@ -76,7 +83,7 @@ const HEADER_FRAG_LINE = /^(?:\(?[a-e]\)|description|of investment|investment|id
  * letter tokens in a row), compare it with every space removed. */
 const HEADER_FRAG_DESPACED = /^(?:[a-e]|description|ofinvestment|investment|identity|ofissue|issuer?|borrower|lessor|or|similar|party|including|maturity|date|rate|of|interest|collateral|par|value|cost|current|fair|shares|units|number|no)+$/;
 const KERNED = /(?:\b[A-Za-z]{1,2} ){2,}/;
-const SKIP_ROW = new RegExp("^(total|subtotal|grand total|schedule|page \\d|form 5500|ein[: ]|employer id|sponsor name|plan name\\b|plan sponsor'?s name\\b|plan number|as of|see accompanying|\\(thousands|identity of issue|description of investment|rate of|maturity|cost\\b|current value|sales\\b|purchases\\b|dividends\\b|assets in.transit|investments? at fair value|dividend income|other income|administrative fees|" +
+const SKIP_ROW = new RegExp("^(total|subtotal|grand total|schedule|page \\d|form 5500|ein[: ]|employer id|sponsor name|name of plan sponsor|plan name\\b|plan sponsor'?s name\\b|plan number|as of|see accompanying|\\(thousands|identity of issue|description of investment|rate of|maturity|cost\\b|current value|sales\\b|purchases\\b|dividends\\b|assets in.transit|investments? at fair value|dividend income|other income|administrative fees|" +
   // the 4i column heading wraps across up to four lines; only its first line
   // ("(c) Description of investment") was covered, so the continuation
   // "including maturity date, rate of" had no value, survived as a name
@@ -663,7 +670,12 @@ export function parseRows(section, opts = {}) {
        * description, and the double-render dedup then kept the LONGER name:
        * "JP Morgan JP Morgan Mid Cap Growth Fund" on 238 plans / 486k ppl.
        * Same treatment as the party-in-interest `*` above. */
-      .replace(/^[a-z]\s{3,}(?=\S)/, "");
+      /* …but only on a row with TWO cells after the letter: the Form 5500
+       * cover page also starts lines with a letter ("a   Name of Plan
+       * Sponsor…", "b   Qvale Auto Group, Inc.   94-…"), and stripping those
+       * made a cover line a $6.4M holding and cost Qvale its 22-row menu
+       * (run #381). A 4i data row carries identity AND description. */
+      .replace(/^[a-z]\s{3,}(?=\S[^\n]*\S\s{3,}\S)/, "");
     /* v132: A BLANK LINE STILL ENDS THE NAME BUFFER — but remember the last
      * line across the gap, for the one case that needs it (see `gapIn` below).
      * One recordkeeper template prints the fund in the DESCRIPTION column, then
@@ -1371,6 +1383,21 @@ export function parseRows(section, opts = {}) {
         }
       }
       if (name.length < 3) name = base;
+      /* v147: A HOUSE PLUS A TYPE-ONLY PRODUCT PHRASE IS THE FUND'S NAME.
+       * "Invesco | Stable Value Fund" and "TIAA | Money Market-Rtmt" name a
+       * product; the description reads as type-only ("stable", "fund" are
+       * type words), the identity wins, and the row publishes as the bare
+       * house — the v104 family. v146's `N/R` strip exposed 121 such rows /
+       * 102 plans / 267,852 ppl that the trailing marker had kept from
+       * reading as type-only. Compose the two when the identity is a house
+       * and the phrase is a product, not a class label ("Mutual funds"). */
+      if (dClean && nc && isHouseName(nc) && !identityIsProduct && typeOnly(dClean) &&
+          !GENERIC_TYPE_NAME.test(dClean) && !CATEGORY_PHRASE.test(dClean) &&
+          !GENERIC_TYPE_ANY.test(dClean) && dClean.split(/\s+/).length >= 2 &&
+          dClean.replace(/[^a-z]/gi, "").length >= 8 && !/\d{3,}/.test(dClean) &&
+          !new RegExp("^" + nc.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b", "i").test(dClean)) {
+        name = `${nc} ${dClean}`.replace(/\s+/g, " ").trim();
+      }
     }
     // Drop non-name residue like "9.50 percent" (wrapped loan-rate lines)
     if (name.replace(/\bpercent\b|\bto\b/gi, "").replace(/[^a-z]/gi, "").length < 3) continue;
@@ -3001,7 +3028,7 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
    * column typed the row; SUFFIX shapes (`INC`, `PLC`, `COM`) are read only
    * on a row with no type of its own, because a section can type a fund. */
   const STRONG_SEC = /\d+(?:\.\d+)?\s*%.*\b\d{1,2}[-\/]\d{1,2}[-\/]\d{2,4}\b|\b\d{2}[-\/]\d{2}[-\/]\d{4}\b|\bDD\s+\d{2}\/\d{2}\/\d{2}\b|\bPOOL\s*(?:#|F[NR]\s)|\bTREAS(?:URY)?\s+(?:BONDS?|NOTES?|BILLS?|BDS?|NTS?|N\/B|ZERO)\b|\bT-?BONDS?\b|\bZERO\s+CPN\b|\bREV(?:ERSE)?\s+REPO\b|\b(?:USD|EUR|GBP|JPY|CHF|THB|HKD|AUD|CAD|SEK|DKK|NOK|KRW|TWD|INR|BRL|ZAR|MXN|SGD|ILS|NZD)\s*\d|\d+(?:\.\d+)?\s*%\s*(?:due\b.*)?$/i;
-  const SUFFIX_SEC = /\b(?:COM|COM\s*STK|COMSTK|NPV|ADRS?|PLC|ORD|SHS|(?:ORD|REG)\s+SH|INC|CORP|CORPORATION|COMPANY|LTD|LLC|LP|CO|SA|SE|AG|NV|BEO|MTN|DEBS?|NTS?|BDS?|PFD|WTS?|DUE|DTD|TREAS|BANCORP|REG|TAXABLE|(?:FLTG|VAR)(?:\s+RT)?|CLS?\s+[A-Z]|CLASS\s+[A-Z]|COM\s+NEW|SPON(?:SORED)?\s+ADR|ADR\s+NEW|REIT|ETF)\.?\s*$/i;
+  const SUFFIX_SEC = /\b(?:COM|COM\s*STK|COMSTK|NPV|ADRS?|PLC|ORD|SHS|(?:ORD|REG)\s+SH|INC|CORP|CORPORATION|COMPANY|LTD|LLC|LP|CO|SA|SE|AG|NV|BEO|MTN|DEBS?|NTS?|BDS?|PFD|WTS?|DUE|DTD|TREAS|BANCORP|REG|TAXABLE|(?:FLTG|VAR)(?:\s+RT)?|CLS?\s+[A-Z]|CLASS\s+[A-Z]|COM\s+NEW|SPON(?:SORED)?\s+ADR|ADR\s+NEW)\.?\s*$/i;
   /* securitisations and structured notes — Dell's sleeves: `NAVIENT STUDENT
    * LOAN TRUST 2023`, `CARMAX AUTO OWNER TRUST 2022-1 A2`, `GALAXY XXII CLO
    * LTD TSFR3M+124`, `FNMA GTD MTG PASS THRU CTF SOFR30A+145`. Named with a

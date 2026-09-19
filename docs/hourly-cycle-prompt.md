@@ -237,6 +237,21 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 03:5xZ 2026-09-19: #381 (v144+v145+v146) verdict — the
+      four predictions hold (cut-tail class 337 → 236 plans, $46.7B →
+      $7.2B hidden; duplicates 522 → 109 rows; (k) ≥30% 17 → 13; Energy
+      Transfer/Sunoco trust pointers) EXCEPT the doubled house (238 →
+      202, other routes, still queued). **MIRROR HELD: confident −15,
+      HIGH 20.** 13 undesigned losses read: 7 are MINE (v146's footnote
+      strip — the ETF template on six plans, and the Form 5500 cover page
+      on Qvale; ChowNow published `Exchange Traded Fund` at 99.7%
+      confident), fixed in v147 (ETF type phrase; strip needs two cells;
+      house + product phrase compose — also fixes the 121-row TO-SHORT
+      regression); 3 accepted (bond sleeves fold to one row, `few`); 3
+      honest refusals (Midland junk, a double-counting trust, Fullington
+      fallback). v147 gated, corpus 0/0, dispatching as #382 now. Next
+      wake: verdict #382 → confident ≥60,100, TO-SHORT ~0 → mirror.
+      `docs/accuracy-log.md` 2026-09-19 (03:5xZ).
       **STATUS 02:4xZ 2026-09-19 (b): draw (seed 20260920, v143 store)
       13/15 real menus; NRECA (80,475 ppl) publishes its table of contents
       (`Common collective trusts (pages 165-166)` 49%) — the only
