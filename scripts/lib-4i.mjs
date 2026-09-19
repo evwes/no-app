@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 166;
+export const PARSER_VERSION = 167;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -1479,7 +1479,30 @@ export function parseRows(section, opts = {}) {
      * that caused it are named explicitly and keep their v70 behaviour:
      * "Vanguard | Target Date Retirement" still yields the category, because
      * there the identity really is just the firm. */
-    const dUsable = dClean && (!typeOnly(dClean) || (catDesc && isHouseName(nc))) &&
+    /* v167: A DESCRIPTION THAT IS ONLY A HOUSE NAME MAY NOT BEAT A REAL FUND
+     * NAME IN THE IDENTITY — the symmetric half of the rule above, and v163
+     * is what made it necessary. One filing lays the columns out the other way
+     * round, the fund in (a) and the firm in (c):
+     *
+     *     CREF Stock R1                            TIAA-CREF          1,694,357
+     *     TIAA Traditional Non Benefit Responsive  TIAA-CREF            966,895
+     *     CREF Growth R1                           TIAA-CREF            594,526
+     *
+     * `TIAA-CREF` is one word by the space test, so it failed the two-word bar
+     * and the identity won — until v163 taught that bar to split on hyphens.
+     * Then every row was named `TIAA-CREF` and EIGHT real holdings merged into
+     * one $4,403,864 row at 58.3% of The Illinois Center For Autism's plan:
+     * the v100-v105 fabrication shape, created by a fix for the opposite
+     * fragment. Caught by the #396 whole-store row diff, not by any count.
+     *
+     * The rule this states is the one v70 and v102 already state from the
+     * other side: a bare FIRM is not the name of a holding, wherever it sits.
+     * So it is refused only when the identity is NOT itself just a firm —
+     * `Vanguard | Fidelity` keeps whatever behaviour it had, and the category
+     * cases (`Vanguard | Target Date Retirement`) never reach this clause
+     * because a category is not a house name. */
+    const dHouseOnly = dClean && isHouseName(dClean) && nc && !isHouseName(nc);
+    const dUsable = dClean && !dHouseOnly && (!typeOnly(dClean) || (catDesc && isHouseName(nc))) &&
       /* v163: a HYPHEN joins words too. `High-Yield-Rtmt` is one token by the
        * space test and so failed the two-word bar, and the name fell back to
        * the bare identity — which is how `TIAA-CREF High-Yield-Rtmt` became

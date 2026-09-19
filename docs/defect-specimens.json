@@ -632,6 +632,20 @@
       "fixed": "v166",
       "sponsor": "Treehouse Foods",
       "was": "a three-row published menu that was 99.8% 'Investments measured at NAV'. Above audit-dominant-row's 90% floor and invisible to it, because neither NOT_FUND_SHAPED nor GENERIC_TYPE_ANY contains the phrase — the audit printed 0 while this sat in the store. v166 exports NAV_NOTE_ROW and the audit carries it, so the class cannot grow back silently."
+    },
+    {
+      "ack": "20260610151301NAL0004627715001",
+      "class": "house-only-description-beats-the-real-fund-name",
+      "fixed": "v167",
+      "sponsor": "The Illinois Center For Autism (190 ppl)",
+      "was": "the filing lays the columns out the other way round -- the fund in (a) and the firm in (c): 'CREF Stock R1 | TIAA-CREF', 'TIAA Traditional Non Benefit Responsive | TIAA-CREF'. 'TIAA-CREF' is one word by the space test, so it failed dUsable's two-word bar and the identity won, until v163 taught that bar to split on hyphens. Then EIGHT real holdings were all named 'TIAA-CREF' and merged into one $4,403,864 row at 58.3% of the plan -- the v100-v105 fabrication shape, created by a fix for the opposite fragment, and caught by the run #396 whole-store row diff rather than by any count. v167 refuses a description that is only a house name when the identity is not. 30 rows -> 43, ratio unchanged at 0.990."
+    },
+    {
+      "ack": "20251010162933NAL0008018257001",
+      "class": "house-only-description-beats-the-real-fund-name-positive-control",
+      "fixed": "v167",
+      "sponsor": "Rcb Bank (968 ppl)",
+      "was": "the same shape with a different vocabulary and a much better outcome: every target-date row shared the description 'Blended investments', which merged them into one $24,715,543 holding at 68.4% of the menu. v167 publishes the real T. Rowe Price Retirement menu instead -- 10 rows -> 28, ratio unchanged at 0.977. Note WHY the shipped isHouseName caught 'Blended investments': its INSTITUTION_SUFFIX arm matches any <=5-word name ending in 'investments'. That is looser than 'house' suggests and it is what makes this rule reach beyond the named firms."
     }
   ]
 }
