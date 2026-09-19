@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 162;
+export const PARSER_VERSION = 163;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -1465,7 +1465,12 @@ export function parseRows(section, opts = {}) {
      * "Vanguard | Target Date Retirement" still yields the category, because
      * there the identity really is just the firm. */
     const dUsable = dClean && (!typeOnly(dClean) || (catDesc && isHouseName(nc))) &&
-      (dLetters >= 8 ? dClean.split(/\s+/).length >= 2
+      /* v163: a HYPHEN joins words too. `High-Yield-Rtmt` is one token by the
+       * space test and so failed the two-word bar, and the name fell back to
+       * the bare identity — which is how `TIAA-CREF High-Yield-Rtmt` became
+       * `TIAA-CREF` once that identity counted as a house (5 such rows in the
+       * store). A hyphenated description is not a one-word junk fragment. */
+      (dLetters >= 8 ? dClean.split(/[\s-]+/).filter(Boolean).length >= 2
         : shortIdentity && dLetters >= 4 && (/\d/.test(dClean) || dClean.split(/\s+/).length >= 2));
     if (TRACE_ROWS && traceHit(value, nameCol, descCol, dClean, full)) {
       console.error(`[row] value=${value}

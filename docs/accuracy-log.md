@@ -16709,3 +16709,26 @@ git check over main's one newer ack, the analyze-stuck master trust
 `20251203145826NAL0000493523001` that main's incremental cron re-read at
 pv 160 and the next dispatch retries anyway — the same ack and the same
 justification as the 11:4xZ mirror.
+
+## 2026-09-19 (17:1xZ) — v163: a hyphen joins words too — the TO-SHORT cost v161 put on the record is closed, and two of the bare-house lineups publish their menus
+
+**Diagnosed rather than assumed.** `TIAA-CREF High-Yield-Rtmt` →
+`TIAA-CREF` looked like a consequence of adding TIAA-CREF to
+`HOUSE_ONLY`; it is not. The filing is `TIAA-CREF | High-Yield-Rtmt |
+582,778`, and `dUsable`'s two-word bar splits on WHITESPACE only, so
+`High-Yield-Rtmt` counted as one word, the description was refused, and
+the name fell back to the identity. Adding TIAA-CREF to the house list
+did not cause that — it only made the fallback a house name instead of
+an ordinary one, which is what made it visible. **5 bare `TIAA-CREF`
+rows exist store-wide**, so the cost was exactly the size recorded.
+
+**The change:** the two-word test splits on whitespace OR hyphen. Gate
+green; corpus 0 / 0 / 0 / 0 with **two plans moving, both gaining**:
+Irisndt 23 → 27 rows and The Jones Company 24 → 28 — and those two are
+from the nineteen bare-house-row lineups I measured this morning as
+"0 of 19 move", where the published row was `JOHN HANCOCK` at 65% and
+74% of the menu. **So part of that class was never the thin-filing shape
+after all**: it was a hyphenated description being refused. The morning's
+0-of-19 measurement was correct about v160's split and wrong as a verdict
+on the class, which is the difference between measuring a fix and
+measuring a population.
