@@ -14803,3 +14803,129 @@ Medical swap to their readable regions; swaps elsewhere ≤ a few dozen
 plans, every one from a region whose sibling scored within 0.04; `rename-ms`
 against the v142 shards must show swapped plans' names getting LONGER or
 losing the code/kerned shape, never the reverse; confident +0 / −0.
+
+## 2026-09-19 (01:4xZ) — run #378 verdict: v142 PASSED and is live (`3dde8717`); the kerned caption row is gone from 17 plans, Hill Brothers 38 → 60 rows; v143 dispatched as #380
+
+**Numbers.** pv 142 covers 68,662 of 68,767 (99.85%); confident 60,107
+(**+0 / −0**, as predicted); HIGH 4; overshoot 360 → 356 / 511,921 ppl;
+aggRow 56; generic-names 128; dominant-row 0; `tkShare` 24.28; dl 103 →
+104 (the new one, `20250814075935NAL0005296995001`, HEAD-probed **403**);
+reader failures 1. Run 59 minutes.
+
+**Whole-store multiset diff against the v141 shards (`f25b41c8`):** 46
+rows / 17 plans / 23,838 ppl lose the kerned caption prefix (`De scription
+Curre nt of Inve stm e nt Cost V…` → the holding's own name); **41 rows
+added across 4 plans — Hill Brothers gains its 22 real rows** (American
+Funds Growth Fund of America, T. Rowe Price New Era, Vanguard Mid-Cap
+ETFs) and stands at 60 rows with no caption row; 18 `Em ploye r Ide
+ntification N um be r` rows / 16 plans / 12,971 ppl removed; 21 rows / 3
+plans lose a glued issuer line (`Capital Group American Funds …` →
+`American Funds …`). Letter-spaced names: 179 plans / 571,564 ppl / 868
+rows (29 lineups ≥50%) — the display de-spacer renders them.
+
+**One shape survives, recorded:** in 8 of the 46 renamed rows the caption
+is replaced by a KERNED ISSUER LINE glued to the first holding (`JOHN HAN
+COCK LIFE IN SU RAN CE COM PAN Y V anguard Grow th`, `P RIN C IP A L TRU ST
+C O M P A N Y Re tire P…`) — the two-line issuer of queue item (f) C in a
+kerned font. Fusion Medical's copy of it resolves in v143 part 2 (its
+clean sibling wins); Hill Brothers' does not (single rendition).
+
+**Mirror.** `mainvsbr2` over main's `32672eaf` (#379, the hourly no-op):
+0 acks / 0 plans the branch lacked, main newer on 0; `--force` on the git
+check, data gate unforced (+0 / −0). Mirrored `32672eaf → 3dde8717`;
+`pages-build-deployment` #512 building it. **v143 dispatched as #380 at
+01:40Z on `3dde8717`** (v143 parts 1 and 2 over the v142 store).
+
+## 2026-09-19 (01:5xZ) — v144 (queue item l, both halves): the itemized-securities fold runs BEFORE the display cap, and a security with no type of its own is recognised by its name — Boeing's 6,937 sleeve positions ($19.8B, 27% of the plan) fold into one row instead of filling the menu with 7,551 more "not shown"
+
+**What was wrong.** The v138 verdict queued "(l) fold the per-security
+flood BEFORE the cap (Boeing's tail is 7,551 securities the fold never
+saw)". Sized from the store this cycle (`cut-fold.mjs`): **337 confident
+lineups / 8.44M ppl carry a cut tail, $46.7B hidden; 21 plans / 313k ppl
+hide ≥15% of the plan** (Boeing 19% / $13.9B, Goldman 44%, Marriott 14%).
+Reading Boeing's filing named a SECOND defect under the first: its 4i is
+a flat alphabetical trustee list of 7,671 rows — **no section headers, no
+type column** — so `AON PLC`, `WALMART INC COM`, `FNMA POOL #FM3004 4%
+01-01-2046 BEO` carried no type at all, and the fold (typed `Stock` only)
+would not have folded them even with the cap moved. Sized from the store
+(`untyped-flood.mjs`, kept rows only, so a floor): **65 plans / 1.51M ppl
+publish ≥30 untyped security-shaped rows** — JPMorgan Chase 300,272 ppl,
+Boeing, Microsoft, Marriott, Citigroup, Cigna.
+
+**The change (`lib-4i.mjs`, PARSER_VERSION 144).**
+1. `parseRows` returns `all` (the uncapped list) beside the capped
+   `funds`, on every view (base, hard, pair, repair); post-selection works
+   on `all` when its head is identical row-for-row to the winner's `funds`
+   (identity-checked — a view built as `{...p, funds: X}` inherits the
+   base's `all`, and the gate caught Costco's 31-row spaced-leader view
+   being replaced by the base's 66). The display cap is re-applied AFTER
+   the folds and `cut` recomputed. Selection is untouched: it scored the
+   same capped views it always did.
+2. An untyped row is a security when its name says so: STRONG shapes
+   (coupon + maturity, pool number, Treasury issue, repo, currency par,
+   securitisation vintage / CLO / floating index / pass-through) hold
+   under any security type including the row's own; SUFFIX shapes
+   (`INC`, `PLC`, `COM STK`, `NPV`, `(THE)`…) only on a row with no type
+   of its own; TYPE-LABEL rows (`Foreign Stock`, `Preferred Stock`,
+   `… Convertible Equity` — Costco's sleeves) count inside a flood.
+   Pooled-product names (`FUND_PRODUCT` without a single-issuer marker)
+   and the employer's stock never fold. **Gated as a flood: ≥30 such
+   rows**, so three untyped stocks in a small plan stay as filed. Agency
+   abbreviations (`FEDL NATL MTGE ASSN`, `GOVT NATL MTGE`) and `POOL #`
+   join `SINGLE_ISSUER`, so `pool` no longer reads as a pooled product
+   (American Express's 90 FNMA pools were typed `Company stock` and
+   shown as menu options).
+3. **A deep row the shapes did not recognise is BURIED, not shown.** The
+   first draft folded Boeing and then surfaced Dell's 90 securitisations
+   (`NAVIENT STUDENT LOAN TRUST 2023`, `GALAXY XXII CLO LTD TSFR3M+124`)
+   as menu rows 32–120 because the fold had made room — trading a hidden
+   tail for a visible one. A row from beyond the old cap is shown only if
+   it is a pooled-product type or reads as one; the rest stay in the
+   "not shown" tail they were in before.
+
+**TRIED AND WITHDRAWN, with a negative control pinned.** A rule folding
+every row under a BROKERAGE heading whatever its type swallowed **U.S.
+Bancorp's whole menu**: the schedule lists `Self-Directed Brokerage
+Account $214M` as a HOLDING LINE, the section tracker took it for a
+heading, and the seventeen Vanguard trusts after it — **$11.07B, 88% of
+the plan** — folded into one "Participant brokerage holdings" row with
+the ratio untouched and every guard silent. The v100 shape exactly, found
+by reading the 43 corpus moves one by one (U.S. Bancorp 26 → 10 rows was
+the tell). A section label is not evidence about the rows that follow a
+holding. `parser-gate` now pins U.S. Bancorp at 26 rows / $12.58B.
+
+**Verified.** Parser gate all specimens green (Costco 31 → 35 rows / sum
+now the whole $40.2B schedule; Peterson Holding 13 → 9 with 225 positions
+folded; both expectations moved on purpose and say why). `diff-lineups
+HEAD` over 965 corpus filings: **0 gained / 0 lost / 0 fabricated
+introduced / 1 fabricated removed (Marriott) / 0 sum moves ≥5%**, 43
+row-count moves read one by one — Marriott 120 → 30, Cigna 120 → 27,
+Truist 120 → 38, Home Depot trust 120 → 33, Microsoft 120 → 50, Chevron
+120 → 64, Qualcomm 120 → 35, HCA trust 120 → 37 (securities folded);
+Costco 32 → 36 and Dell 32 → 33 (real trusts revealed); AmEx 49 → 66 and
+Jones Walker 101 → 120 (deep fund-typed rows that may be window funds —
+recorded, not fixable without section evidence). **Boeing: 120 → 75 rows,
+`Managed account holdings (6,937 positions)` $19.79B at 27.3%, tail 415
+rows / $521M (0.7%)**, ratio and confidence unchanged. Dell 785 positions
+/ $2.31B / 15.9%, tail 67 / $29.7M. Pinned Boeing
+(`untyped-securities-flood-behind-cap`) and Dell
+(`securitizations-and-typed-bonds-behind-cap`). `diff-lineups` gained
+`WAMPO_DIFF_CAP=0` to print every move — 43 could not be judged from 15.
+
+**Costs recorded.** (a) `isEmployer` matches `BJ's Wholesale Club Holdings
+Inc` for sponsor Costco Wholesale on the token `Wholesale` — one row, the
+generic-token rule needs `wholesale`. (b) `Transcanada Trust 5.300%` bonds
+stay itemized (`trust` reads as pooled, the REIT trap). (c) A category
+subtotal (`Preferred stock` $20.6M at Peterson) folds into the aggregate
+beside the rows it totals — the double count existed before; the fold
+does not add to it. (d) Goldman's 116 `BNP PARIBAS REV REPO` rows carry
+the section type `Separate account` with their own type column, so only
+the strong shape folds them — 120 → 83, not fewer.
+
+**Prediction for the v144 run:** confident +0 / −0 (the fold never moves
+a sum); `aggRow` (≥30% managed fold) RISES — Boeing, Peterson, Dell join
+it, and that is the honest reading; the cut-tail class 337 plans / $46.7B
+hidden FALLS by at least the 21 ≥15% plans' securities; `rename-ms` shows
+rows removed in the hundreds per flood plan and added rows ≤ a few dozen
+(revealed trusts); HIGH 4; generic-names ≤ 128; dominant-row 0. Committed
+`[skip ci]` while #380 (v143) is in flight; dispatched after its verdict.

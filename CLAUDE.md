@@ -651,14 +651,15 @@ don't confuse them). Frontend: python http.server + Playwright at
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
   participants at either end of the plan year), of which **68,259 are
   full-form** filers and 43,523 short-form; 68,767 parse-status entries.
-  **Store at v141 (branch AND main, `f25b41c8`); `PARSER_VERSION` in the
-  tree is 143 — v142 (kerned caption + cover-page captions despaced) is
-  in flight as run #378 (dispatched 2026-09-19 00:2xZ); v143 (part 1:
-  legend-less coded rows named from the SEC ticker index, 2,166 rows /
-  261 plans; part 2: a readability term decides near-equal region
-  contests — Lulus, Fusion Medical) is committed `[skip ci]` and
-  dispatches after #378's verdict; mirror only once the v142 store
-  lands. OCR v8.**
+  **Store at v142 (branch AND main, `3dde8717`); `PARSER_VERSION` in the
+  tree is 144 — v143 (part 1: legend-less coded rows named from the SEC
+  ticker index, 2,166 rows / 261 plans; part 2: a readability term
+  decides near-equal region contests — Lulus, Fusion Medical) is in
+  flight as run #380 (dispatched 2026-09-19 01:40Z); v144 (the
+  itemized-securities fold runs before the display cap, and untyped
+  securities are recognised by name — Boeing's 6,937 sleeve positions
+  fold into one row) is committed `[skip ci]` and dispatches after
+  #380's verdict; mirror only once the v143 store lands. OCR v8.**
   **Re-derived from the local store 2026-09-18 19:5xZ** — `pv139` covers
   68,665 of 68,767 acks (99.85%), tail pv106 18, pv98 10, pv123 10, pv124
   10; `lib-4i` exports 139. (On 2026-09-16 this line said v124 for four
@@ -669,7 +670,17 @@ don't confuse them). Frontend: python http.server + Playwright at
   Nothing downstream was affected (no session acted on it), but it is exactly
   the copying-a-line-forward hazard this file warns about elsewhere, aimed at
   the file's own header. **Re-derive this line rather than editing the date.**
-- **LIVE on main: `218641f0` — MIRRORED 2026-09-18 23:3xZ.** The v141 store
+- **LIVE on main: `3dde8717` — MIRRORED 2026-09-19 01:4xZ.** The v142 store
+  (a kerned 4i caption or cover-page caption is recognised with its
+  spaces removed). pv 142 at 99.85%, confident 60,107 (+0 / −0), HIGH 4,
+  overshoot 356, aggRow 56, generic-names 128, dominant-row 0, dl 104
+  (the new one 403). Whole-store: 46 rows / 17 plans lose the kerned
+  caption prefix, Hill Brothers 38 → 60 rows, 18 kerned EIN rows / 16
+  plans removed. `--force` on the git check over main's no-op `32672eaf`
+  (0 acks / 0 plans lacked); data gate unforced. **v143 in flight as
+  #380; v144 committed `[skip ci]` behind it.** `docs/accuracy-log.md`
+  2026-09-19 (run #378 verdict; v144).
+- **Previously: `218641f0` — MIRRORED 2026-09-18 23:3xZ.** The v141 store
   (a kerned font's fragmented type label is compared with its spaces
   removed, so `Com m o n Co lle ctive Tru st` no longer wins the name and
   swallows a menu; `fbo <person>` rows fold into the brokerage aggregate).

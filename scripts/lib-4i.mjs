@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 143;
+export const PARSER_VERSION = 144;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -66,7 +66,7 @@ export function classify(text) {
  * collateral, par, or maturity value (d) Cost (e) Current value" — however
  * it wrapped and wherever it starts. Anchored both ends: a holding named
  * "Value Fund" is not all caption words. */
-const HEADER_FRAG_LINE = /^(?:\(?[a-e]\)|description|of investment|investment|identity|of issue|issuer?|borrower|lessor|or|similar|party|including|maturity|date|rate|of|interest|collateral|par|value|cost|current|fair|shares|units|number|no\.|[\s,()$*:\-–—/])+$/i;
+const HEADER_FRAG_LINE = /^(?:\(?[a-e]\)|description|of investment|investment|identity|of issue|issuer?|borrower|lessor|or|similar|party|including|maturity|date|rate|of|interest|collateral|par|value|cost|current|fair|shares|units|number|no\.|security|name|and|in|dollars|[\s,()$*:\-–—/])+$/i;
 /* v142: the same caption, KERNED. Hill Brothers' filing prints the caption as
  * "De scription   Curre nt" / "of Inve stm e nt   Cost   Value"; neither line
  * is all caption WORDS, so v139's whole-line rule let them into the name
@@ -1972,16 +1972,20 @@ export function parseRows(section, opts = {}) {
     }
     pairFunds.sort((a, b) => b.value - a.value);
     pairCut = cutTail(pairFunds);
-    pairFunds = pairFunds.slice(0, ROW_CAP);
   }
+  const pairAll = pairFunds;
+  if (pairFunds) pairFunds = pairFunds.slice(0, ROW_CAP);
   const allRows = [...seen.values()].map((e) => e.row).sort((a, b) => b.value - a.value);
   const hardAll = [...hard.values()].sort((a, b) => b.value - a.value);
   const allCut = cutTail(allRows);
   // totalValue covers every row, not just the displayed top 80 — huge filings
   // list thousands of individual securities and the ratio must reflect all.
-  return { funds: allRows.slice(0, ROW_CAP), sdba, totalValue, ...(allCut ? { cut: allCut } : {}),
-    hardFunds: hardAll.slice(0, ROW_CAP), hardTotal, hardCut: cutTail(hardAll),
-    ...(pairFunds ? { pairFunds, pairTotal, pairCut } : {}),
+  /* v144: `all` is the UNCAPPED list, so the winner's itemized-securities
+   * fold can see every row before the display cap is applied (Boeing: 7,551
+   * securities behind a 120-row cap, never folded, 19% of the plan hidden). */
+  return { funds: allRows.slice(0, ROW_CAP), all: allRows, sdba, totalValue, ...(allCut ? { cut: allCut } : {}),
+    hardFunds: hardAll.slice(0, ROW_CAP), hardAll, hardTotal, hardCut: cutTail(hardAll),
+    ...(pairFunds ? { pairFunds, pairAll, pairTotal, pairCut } : {}),
     /* v77: the rows in FILED ORDER, so parse4i can look for the point where one
      * rendering of the schedule ends and the next begins. Only the caller knows
      * the plan's assets, which is the only thing that identifies that point. */
@@ -2374,10 +2378,10 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
       // vouch for this one
       if (!(assetsEOY > 0 && va.scales.some((sc) => (p.totalValue * sc) / assetsEOY >= 1.5))) continue;
       if (p.hardFunds && p.hardTotal && p.hardTotal !== p.totalValue) {
-        variants.push({ parsed: { ...p, funds: p.hardFunds, totalValue: p.hardTotal, cut: p.hardCut }, scales: va.scales, repair: 1, parentFunds: p.funds });
+        variants.push({ parsed: { ...p, funds: p.hardFunds, all: p.hardAll, totalValue: p.hardTotal, cut: p.hardCut }, scales: va.scales, repair: 1, parentFunds: p.funds });
       }
       if (p.pairFunds && p.pairTotal && p.pairTotal !== p.totalValue) {
-        variants.push({ parsed: { ...p, funds: p.pairFunds, totalValue: p.pairTotal, cut: p.pairCut }, scales: va.scales, repair: 1, parentFunds: p.funds });
+        variants.push({ parsed: { ...p, funds: p.pairFunds, all: p.pairAll, totalValue: p.pairTotal, cut: p.pairCut }, scales: va.scales, repair: 1, parentFunds: p.funds });
       }
       /* v77: PREFIX SPLIT. Some filings print the schedule twice with no 4i
        * heading between the copies, so no candidate region covers just one and
@@ -2427,7 +2431,7 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
           }
           const keptAll = [...keep.values()].sort((a, b) => b.value - a.value);
           variants.push({ parsed: { ...p,
-            funds: keptAll.slice(0, ROW_CAP), cut: cutTail(keptAll),
+            funds: keptAll.slice(0, ROW_CAP), all: keptAll, cut: cutTail(keptAll),
             totalValue: cut.sum }, scales: va.scales, repair: 1, parentFunds: p.funds });
         }
       }
@@ -2680,7 +2684,21 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
     if (wsum && (+wt.value || 0) / wsum >= 0.5 &&
         (GENERIC_TYPE_NAME.test(wn) || AGG_DISCLOSURE.test(wn) || NOT_FUND_SHAPED.test(wn))) best = bestMenu;
   }
-  let funds = best.scale > 1 ? best.funds.map((f) => ({ ...f, value: f.value * best.scale })) : best.funds;
+  /* v144: post-selection works on the UNCAPPED winner so the itemized fold
+   * sees every row; the display cap is re-applied after the folds (below)
+   * and the cut recomputed from what remains. Selection itself is untouched
+   * — it scored the same capped views it always did. */
+  /* only when `all` really is the uncapped form of THIS winner: a view built
+   * as `{...p, funds: X}` inherits the base region's `all` while its own rows
+   * are a different list (the gate caught Costco's 31-row spaced-leader view
+   * being replaced by the base's 66 rows). Identity of the head rows is the
+   * test, so no variant can be silently un-repaired. */
+  const uncapped = Array.isArray(best.all) && best.all.length > best.funds.length &&
+    best.funds.every((f, i) => best.all[i] === f);
+  const srcFunds = uncapped ? best.all : best.funds;
+  const topN = best.funds.length;
+  let funds = best.scale > 1 ? srcFunds.map((f, i) => ({ ...f, value: f.value * best.scale, ...(uncapped && i >= topN ? { _deep: 1 } : {}) }))
+    : srcFunds.map((f, i) => { if (uncapped && i >= topN) f._deep = 1; return f; });
 
   /* v136: A LINE OF THE STATEMENT OF CHANGES IS NOT A HOLDING — dropped from
    * the WINNER, POST-SELECTION, and the placement is the whole lesson of the
@@ -2894,7 +2912,7 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
    * Inc", "Kite Realty Group Trust" and "Camden Property Trust" are single
    * stocks inside real sleeves. The agency names are the same trap for
    * `pool` ("Fannie Mae Pool", "Freddie Mac Pool" in Danaher's bond sleeve). */
-  const SINGLE_ISSUER = /\b(?:inc|incorporated|corp|corporation|plc|ltd|llc|l\.l\.c|lp|co\.|compan(?:y|ies)|holdings?|hldgs?|reit|realty|propert(?:y|ies)|bancorp|bancshares|fannie mae|freddie mac|fnma|fhlmc|gnma|ginnie mae|adr|npv|ord)\b/i;
+  const SINGLE_ISSUER = /\b(?:inc|incorporated|corp|corporation|plc|ltd|llc|l\.l\.c|lp|co\.|compan(?:y|ies)|holdings?|hldgs?|reit|realty|propert(?:y|ies)|bancorp|bancshares|fannie mae|freddie mac|fnma|fhlmc|gnma|ginnie mae|adr|npv|ord)\b|\b(?:fedl?|federal|govt|government)\s+(?:natl?|national|home)\s+(?:mtge?|mortgage|l(?:oa)?n)\b|\bpool\s*#/i;
   // Are these the innards of a managed account (a single menu option) or
   // participants' own brokerage picks? Section headers say; failing that,
   // a plan with the 2R brokerage code and NO aggregate brokerage line is
@@ -2907,8 +2925,65 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
   const inheritedMenuRow = (f) => !f.ownType && !brokRe.test(f.sec || "") &&
     FUND_PRODUCT.test(f.name) && !SINGLE_ISSUER.test(f.name) &&
     !NOT_FUND_SHAPED.test(String(f.name).trim()) && !GENERIC_TYPE_NAME.test(String(f.name).trim());
+  /* v144: A FLAT TRUSTEE STATEMENT TYPES NOTHING, AND ITS SECURITIES ARE
+   * STILL SECURITIES. Boeing's 4i is 7,671 rows in one alphabetical list —
+   * no section headers, no type column — so `AON PLC`, `WALMART INC COM`
+   * and `FNMA POOL #FM3004 4% 01-01-2046 BEO` carried no type, the fold
+   * above (typed `Stock` only) never saw them, and readers were shown the
+   * sleeves' innards as menu options beside the NT collective tier funds,
+   * with 7,551 more "smaller holdings not shown" at 19% of the plan. A row
+   * with no type of its own is a security when its NAME says so — a coupon
+   * and maturity, a pool number, a Treasury issue, a repo, a share-class or
+   * currency-par suffix, or a corporate suffix (`INC`, `PLC`, `CORP`) — and
+   * it is not a pooled product (`FUND_PRODUCT` without a single-issuer
+   * marker) and not the employer's own stock. Gated as a FLOOD (≥30 such
+   * rows): three untyped stocks in a small plan are left as filed. */
+  /* STRONG shapes name an instrument outright — a coupon and maturity, a
+   * pool, a Treasury issue, a repo, a currency par — and hold whatever
+   * column typed the row; SUFFIX shapes (`INC`, `PLC`, `COM`) are read only
+   * on a row with no type of its own, because a section can type a fund. */
+  const STRONG_SEC = /\d+(?:\.\d+)?\s*%.*\b\d{1,2}[-\/]\d{1,2}[-\/]\d{2,4}\b|\b\d{2}[-\/]\d{2}[-\/]\d{4}\b|\bDD\s+\d{2}\/\d{2}\/\d{2}\b|\bPOOL\s*(?:#|F[NR]\s)|\bTREAS(?:URY)?\s+(?:BONDS?|NOTES?|BILLS?|BDS?|NTS?|N\/B|ZERO)\b|\bT-?BONDS?\b|\bZERO\s+CPN\b|\bREV(?:ERSE)?\s+REPO\b|\b(?:USD|EUR|GBP|JPY|CHF|THB|HKD|AUD|CAD|SEK|DKK|NOK|KRW|TWD|INR|BRL|ZAR|MXN|SGD|ILS|NZD)\s*\d|\d+(?:\.\d+)?\s*%\s*(?:due\b.*)?$/i;
+  const SUFFIX_SEC = /\b(?:COM|COM\s*STK|COMSTK|NPV|ADRS?|PLC|ORD|SHS|(?:ORD|REG)\s+SH|INC|CORP|CORPORATION|COMPANY|LTD|LLC|LP|CO|SA|SE|AG|NV|BEO|MTN|DEBS?|NTS?|BDS?|PFD|WTS?|DUE|DTD|TREAS|BANCORP|REG|TAXABLE|(?:FLTG|VAR)(?:\s+RT)?|CLS?\s+[A-Z]|CLASS\s+[A-Z]|COM\s+NEW|SPON(?:SORED)?\s+ADR|ADR\s+NEW|REIT|ETF)\.?\s*$/i;
+  /* securitisations and structured notes — Dell's sleeves: `NAVIENT STUDENT
+   * LOAN TRUST 2023`, `CARMAX AUTO OWNER TRUST 2022-1 A2`, `GALAXY XXII CLO
+   * LTD TSFR3M+124`, `FNMA GTD MTG PASS THRU CTF SOFR30A+145`. Named with a
+   * vintage, a floating-rate index, or a pass-through; `trust` here is an
+   * issuing vehicle, not a pooled product, so the pooled veto stands aside. */
+  const SECURITIZATION = /\b(?:TRUST|TR)\s+20\d\d(?:-[A-Z0-9]+)?\b|\b20\d\d-[A-Z0-9]{1,6}\b|\bCLO\b|\b(?:TSFR|SOFR|LIBOR|BSBY)\s*\d*[A-Z]*\s*\+\s*\d+|\bPASS[- ]?THRU\b|\bCTFS?\b|\b(?:OWNER|LEASE|LOAN|RECEIVABLES|CARD|ISSUANCE|FUNDING|EQUIPMENT|STUDENT)\s+(?:LOAN\s+)?TR(?:UST)?\b|\bMTG\s+(?:TR|TRUST|SECS?|PASS)\b/i;
+  const SECURITY_SHAPE = new RegExp(`${STRONG_SEC.source}|${SUFFIX_SEC.source}|${SECURITIZATION.source}`, "i");
+  /* a type a SECTION can hand a security: under `Corporate bonds` or
+   * `Government securities` the rows are instruments, and Peterson Holding's
+   * 76 `Wells Fargo & Company 5.875% Due 12-31-49` rows sat behind the cap
+   * typed by their section. Pooled-product types (mutual fund, collective
+   * trust, stable value) never fold. */
+  const SEC_TYPE = /^(?:Stock|Company stock|Government securities|Corporate debt|Separate account|Cash \/ short-term)$/;
+  /* Costco's sleeves name the SECURITY TYPE in the description column —
+   * `Foreign Stock`, `Preferred Stock`, `… Tangible Equity Units Convertible
+   * Equity` — twenty bare `Foreign Stock` rows in one region. Inside a flood
+   * those are securities too; a lone category line in a real menu cannot
+   * reach the ≥30 gate on its own. */
+  const TYPE_LABEL_ROW = /^(?:foreign|preferred|common|domestic|international|convertible|corporate|government|municipal|agency|mortgage[- ]backed|asset[- ]backed)\s+(?:stocks?|equit(?:y|ies)|bonds?|notes?|securities|debt|obligations?)\s*$|\b(?:foreign|preferred|common)\s+stock\s*$|\bconvertible\s+(?:equity|bonds?|notes?|debt|preferred)\s*$|\bequity\s+units?\s*$/i;
+  const untypedSecurity = (f) => {
+    if (isEmployer(f.name)) return false;
+    if (f.type && !SEC_TYPE.test(f.type)) return false;
+    const nm = String(f.name || "").trim();
+    const pooled = FUND_PRODUCT.test(nm) && !SINGLE_ISSUER.test(nm) && !SECURITIZATION.test(nm);
+    if (f.type && f.ownType) return (STRONG_SEC.test(nm) || SECURITIZATION.test(nm)) && !pooled;
+    if (TYPE_LABEL_ROW.test(nm)) return true;
+    return SECURITY_SHAPE.test(nm) && !pooled && !NOT_FUND_SHAPED.test(nm) && !GENERIC_TYPE_NAME.test(nm);
+  };
+  const untypedFlood = funds.filter(untypedSecurity);
   const itemized = funds.filter((f) => (f.type === "Stock" || f.type === "Company stock") &&
     !isEmployer(f.name) && !inheritedMenuRow(f));
+  if (untypedFlood.length >= 30) for (const f of untypedFlood) if (!itemized.includes(f)) itemized.push(f);
+  /* v144 TRIED AND WITHDREW a rule folding every row under a brokerage
+   * heading whatever its type. U.S. Bancorp's schedule lists `Self-Directed
+   * Brokerage Account $214M` as a HOLDING LINE, the section tracker took it
+   * for a heading, and the seventeen Vanguard trusts that follow it —
+   * $11.07B, 88% of the plan — folded into one "Participant brokerage
+   * holdings" row with the ratio untouched and every guard silent. The v100
+   * shape exactly. A section label is not evidence about the rows that
+   * follow a holding; only a row's own name and type may classify it. */
   let sma = null, smaKind = null, sdbaOut = best.sdba;
   if (itemized.length >= 3) {
     const brokRows = itemized.filter((f) => brokRe.test(f.sec || ""));
@@ -2916,7 +2991,8 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
     const hasAggSdba = funds.some((f) => f.type === "Brokerage window");
     const noSectionInfo = brokRows.length === 0 && !itemized.some((f) => brokRe.test(f.sec || ""));
     const treatAllAsBrok = noSectionInfo && !hasAggSdba && /2R/.test(codes);
-    const keep = funds.filter((f) => !itemized.includes(f));
+    const itemSet = new Set(itemized);
+    const keep = funds.filter((f) => !itemSet.has(f));
     const buckets = [];
     if (treatAllAsBrok) buckets.push(["Participant brokerage holdings", "Brokerage window", itemized]);
     else {
@@ -2954,6 +3030,29 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
       sdbaOut = true;
     }
   }
+
+  /* v144: the display cap, applied AFTER the folds so a flood of securities
+   * collapses into its aggregate row before the largest 120 are chosen. The
+   * cut is what remains beyond the cap once the folds have run. */
+  let foldCut = null;
+  if (uncapped) {
+    /* A row from BEYOND the old cap is shown only when it is a pooled
+     * product or reads as one; a deep row the shapes did not recognise —
+     * Dell's `NAVIENT STUDENT LOAN TRUST 2023`, `GALAXY XXII CLO LTD
+     * TSFR3M+124`, ninety of them — stays in the "not shown" tail it was in
+     * before, rather than surfacing as a menu option because the fold made
+     * room. The fold reveals real funds and buries securities; it never
+     * trades one hidden tail for a visible one. */
+    const fundish = (f) => !f._deep || /holdings \(\d+ positions\)$/.test(f.name) ||
+      (f.type && !SEC_TYPE.test(f.type)) || (FUND_PRODUCT.test(f.name) && !SINGLE_ISSUER.test(f.name));
+    const shown = funds.filter(fundish).sort((a, b) => b.value - a.value);
+    const buried = funds.filter((f) => !fundish(f));
+    const c1 = cutTail(shown);
+    const n = (c1 ? c1.n : 0) + buried.length, v = (c1 ? c1.v : 0) + buried.reduce((a, f) => a + (f.value || 0), 0);
+    foldCut = n ? { n, v } : null;
+    funds = shown.slice(0, ROW_CAP);
+  }
+  for (const f of funds) delete f._deep;
 
   // trust-POINTER pages: a member plan's own 4i is often just "Interest in
   // <X> Master Trust $8B" plus a stray row or two (Eaton: + stable value +
@@ -3029,7 +3128,7 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
   // a statement-vocabulary fragment can still WIN when it's the only
   // candidate (the real schedule is scanned or absent) — surface the flag
   // so it can never be marked confident
-  return { found: true, thousands: best.scale > 1, sdba: sdbaOut, funds, ratio: best.ratio, ...(best.stmt || provAgg || aggOnly || aggSplit ? { stmt: 1 } : {}), ...(trustPtr ? { trustPtr: 1 } : {}), ...(sma ? { sma, smaKind } : {}), ...(best.cut && best.cut.n ? { cut: { n: best.cut.n, v: Math.round(best.cut.v * (best.scale > 1 ? best.scale : 1)) } } : {}) };
+  return { found: true, thousands: best.scale > 1, sdba: sdbaOut, funds, ratio: best.ratio, ...(best.stmt || provAgg || aggOnly || aggSplit ? { stmt: 1 } : {}), ...(trustPtr ? { trustPtr: 1 } : {}), ...(sma ? { sma, smaKind } : {}), ...(uncapped ? (foldCut && foldCut.n ? { cut: { n: foldCut.n, v: Math.round(foldCut.v) } } : {}) : best.cut && best.cut.n ? { cut: { n: best.cut.n, v: Math.round(best.cut.v * (best.scale > 1 ? best.scale : 1)) } } : {}) };
 }
 
 /* The public entry point. Pass 1 is v113 exactly. Pass 2 runs only when pass 1

@@ -311,7 +311,10 @@ const SPECIMENS = [
   ["Costco (spaced leaders)", "20260723165543NAL0014354289001", 41523678630,
     // v138: ROW_CAP 80 -> 120 lets the managed-account fold see 39 more
     // positions (50 -> 89, $930M -> $1.29B); the menu rows are unchanged
-    { found: true, n: 31, sum: 39367530000 }],
+    // v144: the fold runs BEFORE the display cap, so it sees all 389
+    // positions ($2.10B) and the sum is the whole schedule, not the capped
+    // prefix; four real T. Rowe Price trusts that sat past the cap surface
+    { found: true, n: 35, sum: 40217428000 }],
   // v56: the REAL "$ in thousands" schedule ($39.3B master-trust
   // participation + $4.6B BrokerageLink) replaced a fair-value-note
   // fragment — trust-pointer flagged, so it can never display as a lineup
@@ -345,7 +348,12 @@ const SPECIMENS = [
     // v138: the fold sees 108 positions instead of 74, and six itemized
     // bonds that sat past the old cap now surface beside the one that
     // already did; no subtotal re-enters (the carry-forward guard's point)
-    { found: true, n: 13, sum: 231079600 }],
+    // v144: fold before the cap sees 148 positions and the section-typed
+    // bonds (`Wells Fargo & Company 5.875% Due 12-31-49`) fold as securities;
+    // the sum is the whole schedule less two deep `Accrued interest` /
+    // `Accrued dividend` rows the cap keeps in the tail; two Transcanada
+    // Trust bonds stay itemized because `trust` reads as pooled (REIT trap)
+    { found: true, n: 9, sum: 288503192 }],
   // v45: recordkeeper "SUMMARY OF NET TRUST ASSETS" page appended after
   // the real 4i table — same menu in ALL CAPS with cents; v43's cents fix
   // made it readable and the doubled region lost a real 29-fund menu
@@ -371,6 +379,13 @@ const SPECIMENS = [
   // was eating it. Verified in the filing at line 2155; ratio 0.93 -> 0.95.
   ["Power Design (Empower code page)", "20251015163402NAL0010660226001", 79416197,
     { found: true, n: 28, sum: 75516844 }],
+  // v144 NEGATIVE CONTROL: `Self-Directed Brokerage Account $214M` is a
+  // HOLDING LINE that the section tracker takes for a heading; a rule that
+  // folded every row under a brokerage heading swallowed the seventeen
+  // Vanguard trusts after it ($11.07B, 88% of the plan) into one row with
+  // the ratio untouched. The menu must stay 26 rows.
+  ["U.S. Bancorp (menu after an SDBA holding line)", "20260724143732NAL0023494754001", 12980765724,
+    { found: true, n: 26, sum: 12581841596 }],
   // v53: section subtotals spelled as class descriptions ("Interest in
   // common/collective trusts $4.47B", "Assets Held for Investment")
   // double-counted the whole schedule to ratio 3.0 — a clean $5.95B

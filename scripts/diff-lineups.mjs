@@ -135,6 +135,9 @@ for (const f of readdirSync(DIR)) {
 }
 
 const show = (title, arr, cap = 25) => {
+  // WAMPO_DIFF_CAP=0 prints every line: a version that moves 31 lineups
+  // cannot be judged from the first 15
+  if (process.env.WAMPO_DIFF_CAP !== undefined) cap = +process.env.WAMPO_DIFF_CAP || Infinity;
   console.log(`${title}: ${arr.length}`);
   for (const l of arr.slice(0, cap)) console.log("   ", l);
   if (arr.length > cap) console.log(`    … ${arr.length - cap} more`);

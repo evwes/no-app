@@ -237,6 +237,19 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 01:5xZ 2026-09-19: #378 (v142) PASSED — pv 142 99.85%,
+      +0/−0, HIGH 4, overshoot 356, Hill Brothers 60 rows, caption rows
+      gone from 17 plans, 18 EIN rows removed; MIRRORED `3dde8717`
+      (`--force` over main's no-op #379, 0/0 measured). **v143 dispatched
+      as #380 (01:40Z, in flight).** v144 (queue item l, both halves:
+      fold before the cap + untyped securities by name) gated and
+      committed `[skip ci]` — Boeing 6,937 positions fold ($19.8B, 27%),
+      corpus diff 0/0/0 with 43 row moves read one by one, U.S. Bancorp
+      pinned as a NEGATIVE control after a brokerage-heading rule
+      swallowed its $11B menu and was withdrawn. Next wake: verdict #380,
+      mirror, dispatch v144; morning brief before 11:00Z; then (f) C,
+      (k), (i), the AmEx/Jones Walker window-fund ambiguity.
+      `docs/accuracy-log.md` 2026-09-19 (01:4xZ, 01:5xZ).
       **STATUS 00:5xZ 2026-09-19: v143 PART 2 (queue item m) folded in
       and committed `[skip ci]` — a readability term decides near-equal
       region contests (Lulus 19 code rows → 23 names; Fusion Medical's

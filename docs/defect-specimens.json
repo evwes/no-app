@@ -457,6 +457,20 @@
       "fixed": "v143",
       "sponsor": "Fusion Medical Staffing",
       "was": "the same 28-row menu appears in a kerned font ('Re tire P ilo t M o d e rate 2035 Fu n d R1') and as a clean trustee statement ('RETIREPILOT MOD 2035 FUND R1'); the kerned region won by 0.014 of ratio closeness and readers saw the letter-spaced names"
+    },
+    {
+      "ack": "20250725165111NAL0006865489001",
+      "class": "untyped-securities-flood-behind-cap",
+      "fixed": "v144",
+      "sponsor": "The Boeing Co.",
+      "was": "a flat alphabetical trustee list of 7,671 rows with no section headers and no type column; the sleeves' 6,900 securities ('AON PLC', 'FNMA POOL #FM3004 4% 01-01-2046 BEO') carried no type, the fold saw only the top 120, and 7,551 rows / $13.9B (19% of the plan) were 'not shown' while securities filled the menu"
+    },
+    {
+      "ack": "20250815060829NAL0029518226001",
+      "class": "securitizations-and-typed-bonds-behind-cap",
+      "fixed": "v144",
+      "sponsor": "Dell Inc.",
+      "was": "785 sleeve securities — securitisations ('NAVIENT STUDENT LOAN TRUST 2023', 'GALAXY XXII CLO LTD TSFR3M+124') and section-typed corporate debt — sat behind the 120-row cap; folding before the cap must bury what the shapes miss in the tail, not surface it as a menu"
     }
   ]
 }
