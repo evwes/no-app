@@ -16898,3 +16898,70 @@ command and would have cost a cycle to retract.
 ppl) publishes an OCR'd fair-value note, `Investments measured at net asset
 value ") ®)"`, at **64%** of a $2.37B menu, beside a `Change in` row at
 $31.9M — neither is a generic type label, so neither audit sees them.
+
+## 2026-09-19 (18:1xZ) — v166: the ASC 820 reconciliation line marks the fair-value NOTE, and the first version of this fix CREATED a fabricated lineup
+
+**The line.** ASC 820 requires the assets valued at net asset value as a
+practical expedient to be reconciled back to the statement of net assets on a
+line of their own: *Investments measured at net asset value*. It belongs to
+the note and never to a Schedule H line 4i table, and it carries a number as
+large as the plan. Published as a holding it is the v105 shape in vocabulary
+no guard held — `at fair value` was caught in v105, `measured at NAV` never
+was.
+
+**Size, from the store, no downloads:** **108 rows / 104 plans / 274,765
+participants**, 25 of them at ≥10% of the menu. The largest is **META
+PLATFORMS: 84,993 participants shown one "fund" of $18,809,051,400 at 82.4% of
+the plan**, beside `Participants'` and `Employer's` fragments — while the
+plan's real 20-fund State Street and Vanguard menu sits in the same filing.
+Also Treehouse Foods at 99.8% of a three-row menu, Axalta at 89%, Brunswick at
+64% of $2.37B, Lam Research at 33%.
+
+**Why no audit saw it.** It is not a generic TYPE label, so
+`audit-generic-names` passes it; Meta at 82% is under `audit-dominant-row`'s
+90% floor; and Treehouse at 99.8% is ABOVE that floor and was still invisible,
+because neither `NOT_FUND_SHAPED` nor `GENERIC_TYPE_ANY` contains the phrase.
+That audit printed **0** with three Treehouse plans in the store. `NAV_NOTE_ROW`
+is now exported and the audit carries it: 0 → 3 on the live store, all three
+cleared by this version. **A guard that cannot name a shape reports zero, and
+zero reads like safety.**
+
+**THE FIRST VERSION OF THE FIX WAS WRONG AND THE CORPUS DIFF CAUGHT IT.**
+Dropping the NAV line as a junk row let the REST of the note publish:
+**Lumen Technologies went from unconfident to CONFIDENT on sixteen rows that
+are asset-class labels and statement lines** — `(exclusive of the Master
+Trust)` at 16.1%, `Net investment (loss) income` at 13.3%, `Net (decrease)
+increase` at 11.4%, `(Dollars in thousands) Exchange-traded Treasury…` — a
+fabricated lineup *created by a cleanup*. The hazard was already written in
+this file, in the comment above `STMT_ROW`: *"removing junk can promote a still
+junky region"*. It was written about Galliano in v44 and it happened again
+here, which is the argument for reading the comments beside the code you are
+changing.
+
+Marking the REGION instead fixes both ends. But demoting it is not enough on
+its own: **the note wins on score by construction**, because it reconciles to
+the plan and so scores near-perfect closeness (Meta's note 1.019 against its
+real menu's 0.543). Marking it a statement stops it PUBLISHING and the plan
+then simply loses its lineup. The gain needs the second arm — `NAV_NOTE_ROW`
+added to the post-selection swap that already replaces a winner topped by a
+generic or non-fund row at ≥50% with `bestMenu`. That swap's target excludes
+statement, code, provider and split pages by construction, so nothing
+fabricated can be swapped in.
+
+**Verified.** Parser gate green. Corpus diff over 987 filings: 0 gained, 0
+fabricated rows either way, 0 row-count moves, 0 sum moves, **exactly one
+confidence loss and it is read by name** — Lam Research (11,412 ppl), whose
+nine-row lineup *was* the note table (`Common/collective trusts` 33%,
+`Managed account holdings`, `Participants'`, `Employer's`, `SAVINGS PLUS
+PLAN,`). Traced end to end: Meta 7 junk rows → its real 20-fund menu at 0.543;
+Lumen stays unconfident with `stmt=1`; Treehouse withdrawn.
+
+**Pre-registered for the run that carries it**, so the verdict tests a
+prediction rather than describes an outcome: `confident` should fall by up to
+roughly 100 — the plans whose whole menu was the note, withdrawn — with a
+handful of gains where a real menu existed behind it; `audit-generic-names`
+should fall (Lam is in its top twenty today); `audit-dominant-row` should be
+**0** with the widened predicate, not 3; and `overshoot` should not rise.
+A fall in `confident` is the intended direction here, which is exactly the
+case where the loss triage must be read plan by plan rather than waved through
+on the sign of a number.
