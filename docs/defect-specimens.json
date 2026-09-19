@@ -443,6 +443,20 @@
       "fixed": "v143",
       "sponsor": "J & S Kidswear",
       "was": "an Empower coded schedule whose public copy carries no LEGEND (or whose OCR read the leading 1 as I); the codes are tickers the SEC class index names — 2,166 rows / 261 plans / 270,296 ppl published codes"
+    },
+    {
+      "ack": "20251010124253NAL0004611859001",
+      "class": "readable-vs-code-column-tie",
+      "fixed": "v143",
+      "sponsor": "Lulus Fashion Lounge",
+      "was": "the menu is filed twice — full names (26 rows, ratio 1.014) and a 10-character code column ('RBF2055I', 'ISHARES TO', 'AM FD NEW'; 23 rows, ratio 0.997) — and the two tied to four decimals on score, so the code column won on order"
+    },
+    {
+      "ack": "20251013095403NAL0000459699001",
+      "class": "kerned-rendition-beats-clean-sibling",
+      "fixed": "v143",
+      "sponsor": "Fusion Medical Staffing",
+      "was": "the same 28-row menu appears in a kerned font ('Re tire P ilo t M o d e rate 2035 Fu n d R1') and as a clean trustee statement ('RETIREPILOT MOD 2035 FUND R1'); the kerned region won by 0.014 of ratio closeness and readers saw the letter-spaced names"
     }
   ]
 }

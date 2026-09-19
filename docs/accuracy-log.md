@@ -14750,3 +14750,56 @@ confident lineups 2,466 → ~300 (the 967 misses minus any the legend path
 already covers); ~2,166 rows gain `tk`; confident +0 / −0; HIGH 4;
 generic-names 128; dominant-row 0. Committed `[skip ci]` while #378
 (v142) is in flight; dispatched after its verdict.
+
+## 2026-09-19 (00:5xZ) — v143 part 2, queue item (m): at near-equal score the region whose names a reader can use wins (Lulus 19 code rows → 23 full names; Fusion Medical's kerned rendition → its clean trustee statement)
+
+**What was wrong.** Two recorded costs of earlier versions, both a
+region contest decided by nothing readable: Lulus Fashion Lounge
+(`20251010124253NAL0004611859001`) files its menu twice — full names (26
+rows, ratio 1.014) and a 10-character code column (`RBF2055I`, `ISHARES
+TO`, `AM FD NEW`; 23 rows, ratio 0.997) — and the two scored **0.1047 and
+0.1047**, so the code column won on candidate order. Fusion Medical
+Staffing (`20251013095403NAL0000459699001`, 4,182 ppl) carries the same
+28-row menu in a kerned font (`Re tire P ilo t M o d e rate 2035 Fu n d
+R1`, ratio 0.996, score 0.1464) and as a clean trustee statement
+(`RETIREPILOT MOD 2035 FUND R1`, ratio 0.983, score 0.1326); v141
+un-merged the kerned rows and the kerned region won by 0.014 of ratio
+closeness.
+
+**The change (`lib-4i.mjs`, still PARSER_VERSION 143 — folded into the
+undispatched version rather than costing a second re-parse).** A new
+score term `- unreadableShare(judged) * 0.04`: the share of a region's
+NAMES that are (a) three or more consecutive 1–2 letter tokens (a kerned
+font — `M o d e`, `F U N D S`), (b) a digit-bearing code token
+(`RBF2055I`, `1FXAIX`), or (c) a truncated all-caps column of ≤10
+characters with a space (`ISHARES TO`, `AM FD NEW`). Capped at 0.04 so
+it decides ties and cannot beat a clearly better ratio; **silent below a
+fifth of the names**; bare tickers (`VFIAX`) are identity and are not
+counted.
+
+**Two drafts were wrong and the corpus diff caught both.** (1) With no
+floor, the term moved Hewlett Packard Enterprise's winner between two
+same-score siblings of ONE region (104 rows at 0.02 unreadable vs 99 at
+0.01) and cost a row, and Ynap 27 → 29 — a term meant to decide between
+renditions was deciding within one. Floored at 0.2: both back to
+unchanged. (2) `KERNED`'s two-token test called **826 confident lineups
+kerned** on abbreviations a reader can use (`CL M 0.40%`, `EQ US IDX`,
+`A or Better`); the three-token test brings the class to **295 plans /
+488,091 ppl** (109 kerned, 140 code, 46 truncated) — an UPPER BOUND on
+swaps, since a swap needs a readable sibling region that only the PDF
+shows. Residual false positives are abbreviation-dense names (`Western
+Asset Cr Pl Bd CIT P1`, `SL CL V Fund`), harmless unless a near-tied
+sibling exists.
+
+**Verified.** Parser gate all specimens green; `diff-lineups HEAD` over
+962 corpus filings: 0 gained / 0 lost / 0 fabricated, **exactly one row
+move — Lulus 19 → 23** (Fusion keeps 28 rows and moves under 5% of sum,
+so the diff is silent on it; its trace shows the clean statement winning
+at ratio 0.983). Both pinned: `readable-vs-code-column-tie`,
+`kerned-rendition-beats-clean-sibling`.
+
+**Prediction for the v143 run (part 2's share):** Lulus and Fusion
+Medical swap to their readable regions; swaps elsewhere ≤ a few dozen
+plans, every one from a region whose sibling scored within 0.04; `rename-ms`
+against the v142 shards must show swapped plans' names getting LONGER or
+losing the code/kerned shape, never the reverse; confident +0 / −0.

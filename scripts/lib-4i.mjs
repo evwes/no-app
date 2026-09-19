@@ -2062,6 +2062,36 @@ const houseShare = (rows) => {
   }, 0) / tot;
 };
 
+/* v143 part 2 (queue item m): at near-equal score, prefer the candidate
+ * whose names a reader can use. Lulus filed its menu twice — full names
+ * (26 rows, ratio 1.014) and a 10-character code column (`RBF2055I`,
+ * `ISHARES TO`, `AM FD NEW`; 23 rows, ratio 0.997) — and the two tied to
+ * four decimals, so the code column won on order. Fusion Medical's kerned
+ * rendition (`Re tire P ilo t M o d e rate 2035 Fu n d R1`) beat its clean
+ * trustee statement (`RETIREPILOT MOD 2035 FUND R1`) by 0.014 on ratio
+ * alone. Share of NAMES that are kerned, digit-bearing code tokens, or a
+ * truncated all-caps column, scaled to at most 0.04 — enough to decide a
+ * tie, not enough to beat a clearly better ratio. Bare tickers (VFIAX) are
+ * identity, not noise, and are not counted. */
+const unreadableShare = (rows) => {
+  if (!rows.length) return 0;
+  let bad = 0;
+  for (const f of rows) {
+    const n = String(f.name || "").replace(/\s+/g, " ").trim();
+    /* three consecutive 1-2 letter tokens, not KERNED's two: `CL M 0.40%`,
+     * `EQ US IDX` and `A or Better` are abbreviations a reader can use, and
+     * the two-token test called 826 confident lineups kerned on them */
+    if (/(?:\b[A-Za-z]{1,2} ){3,}/.test(n) || (/^[A-Z0-9][A-Z0-9.&/-]{2,9}$/.test(n) && /\d/.test(n))
+      || (n.length <= 10 && /\s/.test(n) && !/[a-z]/.test(n))) bad++;
+  }
+  /* below a fifth of the names the term is silent: on Hewlett Packard
+   * Enterprise it moved the winner between two same-score siblings of one
+   * region (104 rows at 0.02 vs 99 at 0.01) and cost a row — a term meant
+   * to decide ties between renditions must not decide ties within one. */
+  const share = bad / rows.length;
+  return share >= 0.2 ? share : 0;
+};
+
 const isSourceSplit = (rows) => {
   if (rows.length < 6) return false;
   const norm = (n) => String(n || "").toLowerCase().replace(/\s+/g, " ").trim();
@@ -2553,6 +2583,7 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
           - (isCodePage ? 0.35 : 0)
           - (isProvPage ? 0.35 : 0)
           - houseShare(judged) * 0.35
+          - unreadableShare(judged) * 0.04
           /* a reconstructed view is a repair, not a reading of the filing, so
            * it must win clearly rather than by a hair. Without this Black
            * Hills' honest 22-row region lost by 0.003 to a repaired sibling
@@ -2561,7 +2592,7 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
           - (gainLast && parsed.funds.length >= 60 ? 0.2 : 0);
         if (TRACE_CANDS) {
           console.error(`[cand] rows=${String(pFunds.length).padStart(3)} ratio=${ratio.toFixed(3).padStart(7)} scale=${scale} score=${score.toFixed(4).padStart(9)}` +
-            ` stmt=${isStatement ? 1 : 0} prov=${isProvPage ? 1 : 0} split=${isSplitPage ? 1 : 0} code=${isCodePage ? 1 : 0} summary=${isSummary ? 1 : 0} repair=${va.repair ? 1 : 0}` +
+            ` stmt=${isStatement ? 1 : 0} prov=${isProvPage ? 1 : 0} split=${isSplitPage ? 1 : 0} code=${isCodePage ? 1 : 0} summary=${isSummary ? 1 : 0} repair=${va.repair ? 1 : 0} unread=${unreadableShare(judged).toFixed(2)}` +
             `  top=${JSON.stringify((pFunds[0] || {}).name || "").slice(0, 46)}`);
         }
         if (!best || score > best.score) {

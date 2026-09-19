@@ -237,6 +237,15 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 00:5xZ 2026-09-19: v143 PART 2 (queue item m) folded in
+      and committed `[skip ci]` — a readability term decides near-equal
+      region contests (Lulus 19 code rows → 23 names; Fusion Medical's
+      kerned rendition → clean statement); floored at a fifth of the
+      names after it moved HPE within one region; upper bound 295 plans
+      / 488k ppl; gate green, corpus diff exactly Lulus 19 → 23, both
+      pinned. #378 (v142) still in flight; site-test #80 queued behind
+      it. Next: verdict #378, mirror, dispatch v143; then (f) C, (l), (k).
+      `docs/accuracy-log.md` 2026-09-19 (00:5xZ).
       **STATUS 00:4xZ 2026-09-19: v143 gated and committed `[skip ci]`
       — a legend-less coded row (`1FXAIX`) is named from the SEC class
       index when its code is a mutual-fund ticker; 2,166 rows / 261
