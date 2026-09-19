@@ -16607,3 +16607,35 @@ filings. Added (`tiaa`, `tiaa-cref`, `cref`).
 Radiology Consultants 52 → 54, Ascensus, Bank of Stockton, Rocky
 Mountain Public Media, Boys Latin). **The v160 store is not mirrored**;
 main stays on the v158 store until v161's verdict.
+
+## 2026-09-19 (15:3xZ) — #394's verdict test, pre-registered: v161's split is small and predictable, but adding TIAA-CREF to the house list reaches 3,611 lineups and the CORPUS CANNOT MEASURE IT
+
+**The split itself, measured by re-parsing under v159 and v161:** 5 of
+the 47 corpus-held template lineups move (Mass General Brigham — its two
+bare `TIAA-CREF Funds` rows become composed names, house share 9% → 0% —
+plus Ascensus, Bank of Stockton, Radiology Consultants, Boys Latin), and
+**0 of the 19 bare-house-row lineups**, exactly as the corrected
+prediction said. Under v160 it was 7 of 47; Mitre and Bill Luke drop out
+because their identities are not houses, which is the confinement doing
+its job.
+
+**The other half of v161 is not small and must not be judged by the
+corpus.** `HOUSE_ONLY` gaining `tiaa|tiaa-cref|cref` changes every rule
+keyed on "the identity is only a firm" — the v70/v102 description-beats-
+house choice, the v103 group-header test, the v147 house+product
+composition, the `houseShare` score term. **The population it can reach
+is 3,611 confident lineups / 5,859,156 participants / 47,655 rows**, of
+which **91 lineups carry a BARE `TIAA-CREF` row** (Regis University,
+Stetson, Presbyterian Communities, Ideastream…) — the merge shape, or a
+filing that thin. The local corpus holds **51 of the 3,611**, so its
+six-plan diff is a weak sample of this change and I am not treating it
+as the measurement.
+
+**So the verdict test for #394 is the WHOLE-STORE multiset row diff
+(`rename-ms.mjs` against `67c7f496`, extracted now), not the corpus:**
+expect renames concentrated in TIAA/CREF filings, Hozhoni confident at
+34 rows, MGB's three composed rows, confident +0 / −0 or a small net
+gain, and **any loss read by name before the mirror**. A large rename
+count is not by itself a failure here — it is what adding a major house
+to the list means — but a large count of rows LOSING their fund name to
+a bare house would be, and that is the thing to look for.
