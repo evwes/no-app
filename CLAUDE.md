@@ -658,11 +658,14 @@ don't confuse them). Frontend: python http.server + Playwright at
   flight as run #380 (dispatched 2026-09-19 01:40Z); v144 (the
   itemized-securities fold runs before the display cap, and untyped
   securities are recognised by name — Boeing's 6,937 sleeve positions
-  fold into one row) and v145 (a stem dedup collapses a schedule's two
-  renders with wording drift — R&L Carriers, 277 lineups / 488k ppl)
-  are committed `[skip ci]` and dispatch after #380's verdict, in one
-  run if the hour is tight (their predictions are disjoint); mirror only
-  once the v143 store lands. OCR v8.**
+  fold into one row) and v145 (part 1: a stem dedup collapses a
+  schedule's two renders with wording drift — R&L Carriers, 277 lineups
+  / 488k ppl; part 2: SKIP_ROW's `transfers?` arm no longer matches a
+  sponsor's own name — Energy Transfer and Sunoco GP read as
+  master-trust pointers instead of a 77% holding named `Trust`) are
+  committed `[skip ci]` and dispatch after #380's verdict, in one run if
+  the hour is tight (their predictions are disjoint); mirror only once
+  the v143 store lands. OCR v8.**
   **Re-derived from the local store 2026-09-18 19:5xZ** — `pv139` covers
   68,665 of 68,767 acks (99.85%), tail pv106 18, pv98 10, pv123 10, pv124
   10; `lib-4i` exports 139. (On 2026-09-16 this line said v124 for four

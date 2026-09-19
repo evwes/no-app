@@ -102,7 +102,7 @@ const SKIP_ROW = new RegExp("^(total|subtotal|grand total|schedule|page \\d|form
   // spellings — 631 confident lineups carried "Investments, at fair value"
   // statement rows (up to 97% of the shown sum) because only the bare
   // space-separated form was covered
-  "(net assets|benefits paid|investment (income|gain|loss)|(participation|interest) in (the )?net (income|loss)|net income \\(?loss\\)?|net income (of|from)\\b|interest and dividends|realized|unrealized|appreciat|depreciat|transfers?\\b|contributions?\\b|deemed distribut|administrative expense|beginning of year|end of year|financial statements|indirect compensation|reconcil|adjustment|level [123]\\b|liabilit|receivable|payable|expenses\\b|distribution|net (increase|decrease|change)|due (to|from)|notes? (to|receivable)|similar party|description of investment|current value|investments?,?\\s*[—–-]?\\s*at (fair|contract) value)|" +
+  "(net assets|benefits paid|investment (income|gain|loss)|(participation|interest) in (the )?net (income|loss)|net income \\(?loss\\)?|net income (of|from)\\b|interest and dividends|realized|unrealized|appreciat|depreciat|(?:^|net )transfers?\\b|transfers? (?:in|out|to|from|of|between)\\b|contributions?\\b|deemed distribut|administrative expense|beginning of year|end of year|financial statements|indirect compensation|reconcil|adjustment|level [123]\\b|liabilit|receivable|payable|expenses\\b|distribution|net (increase|decrease|change)|due (to|from)|notes? (to|receivable)|similar party|description of investment|current value|investments?,?\\s*[—–-]?\\s*at (fair|contract) value)|" +
   // form-page boilerplate: a filing with NO 4i attachment can still seed a
   // region from the Schedule H checkbox line, and the parser then reads phone
   // numbers and zip codes off address/signature pages as \"values\" (Aramark)
@@ -882,9 +882,11 @@ export function parseRows(section, opts = {}) {
        * "Class", "Trust Class D" and "Institutional Class", $1.35B of one
        * plan. Collapse the runs before measuring; prose is still caught. */
       if (t.replace(/\s+/g, " ").length < 90 && !/^\d+$/.test(t)) nameBuf.push(mkBuf(t, lead, rawNorm));
+      if (TRACE_ROWS) console.error("[buf+]", lead, JSON.stringify(t.slice(0, 70)), "n=" + nameBuf.length);
       if (nameBuf.length > 3) nameBuf = nameBuf.slice(-3);
       continue;
     }
+    if (TRACE_ROWS) console.error("[val ]", lead, JSON.stringify(t.slice(0, 70)), "buf=" + nameBuf.length);
 
     const value = +vm[1].replace(/,/g, "");
     // in millions mode a bare 4-digit trailing number in 1900-2100 is a

@@ -478,6 +478,13 @@
       "fixed": "v145",
       "sponsor": "R&L Carriers",
       "was": "the schedule's two renders name one holding 'Morley Stable Value Fund' and 'Morley Stable Value' at the same $33,954,030; the punctuation-insensitive key saw two rows, 7% of the plan counted twice, ratio 1.029 — 277 confident lineups / 488,443 ppl / $0.68B store-wide"
+    },
+    {
+      "ack": "20251009115713NAL0006939713001",
+      "class": "sponsor-name-in-statement-vocabulary",
+      "fixed": "v145",
+      "sponsor": "Energy Transfer LP",
+      "was": "SKIP_ROW's unanchored `transfers?` arm matched the sponsor's own name, so the wrapped head line 'At fair value, Plan's interest in Energy Transfer LP Master' was discarded and the value line published as a holding named 'Trust' at 77.9% of a master-trust plan (16,426 ppl; Sunoco GP the same); the plan now reads as a master-trust pointer"
     }
   ]
 }

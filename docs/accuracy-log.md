@@ -15014,6 +15014,63 @@ after dedup was double-counting its way to confidence — read each);
 `rename-ms` shows rows REMOVED in the hundreds across ~270 plans and rows
 ADDED only where a fuller render now wins; HIGH 4; generic-names ≤ 128.
 Committed `[skip ci]` behind v144; dispatches after v144's verdict.
+
+## 2026-09-19 (02:2xZ) — v145 part 2 (queue item k's largest member): a statement word inside the SPONSOR'S NAME discarded every line carrying it — Energy Transfer's master-trust interest published as a 77.9% holding named "Trust"; two narrowings tried, one kept, the other measured and reverted
+
+**What was wrong.** Queue item (k) — a leading share-class / vehicle
+fragment as the whole row name — re-sized on the v142 store
+(`frag-lead.mjs`): **17 plans / 29,009 ppl at ≥30% of the menu, 283
+plans / 620k ppl in all**. Its largest member, Energy Transfer LP (16,426
+ppl, $2.79B), publishes `Trust` at 77.9%. The filing's statement of net
+assets wraps *"At fair value, Plan's interest in Energy Transfer LP
+Master / Trust $2,566,013,933 $2,161,223,277"* over two lines. Reproduced
+on a 25-line snippet and bisected by substitution (`snippet.mjs`): the
+head line survives when the sponsor's name is replaced by `Foo Bar LP` and
+dies with `Energy Transfer` — **SKIP_ROW's unanchored statement arm
+`transfers?\b` matches the word inside the sponsor's name**, so the head
+line is skipped as a statement-of-changes line, the buffer is cleared, and
+the value line's lone word `Trust` becomes the holding. (Also read: the
+value taken is the 2023 column, and the 4i's real schedule would be a
+trust pointer.) Sunoco GP (1,279 ppl, `Trust` 76%) is the same filing
+family. Sized (`sponsor-words.mjs`): sponsor names containing `transfer`
+29 full-form plans / 26,213 ppl; `distribution` 86 / 83,509; `contribution`
+20 / 159,560 — an upper bound on plans where a holding line carrying the
+sponsor's name can be lost (employer stock, a trust interest).
+
+**The change (`lib-4i.mjs`, PARSER_VERSION 145, part 2).** The arm is
+now statement phrasing only: `(?:^|net )transfers?\b|transfers?
+(?:in|out|to|from|of|between)\b`. Energy Transfer's head line joins the
+buffer, the row reads `Energy Transfer LP Master Trust`, `trustRow` fires,
+and the plan is a MASTER-TRUST POINTER — not confident, 2 rows at 93.6% /
+6.4%, the page says where the money is instead of naming `Trust`.
+
+**Tried and REVERTED on measurement:** the same narrowing for
+`contributions?` and `distribution`. The corpus diff showed the cost at
+once — Exelon gained `Fixed contributions` $16.0M and `Profit-sharing
+contributions` $17.4M as rows, Morgan Stanley `Fixed Contribution:
+Eligible employees…` (prose) — statement lines the anchored form no longer
+caught (`Fixed contributions` does not START with the word). The benefit
+side (Wesco Distribution's or Pentegra's employer lines) was never
+measured, so the arms went back exactly as they were. **A narrowing with a
+measured cost and an unmeasured benefit does not ship.**
+
+**Verified.** Parser gate all specimens green — Peterson Holding moved on
+purpose (+$655,835, 225 → 227 positions: two sleeve bonds whose names
+carry `transfer` mid-line join the fold). `diff-lineups HEAD` (v145 part 1
+→ part 2) over 968 corpus filings: **1 confidence lost = Energy Transfer,
+by design; 0 gained / 0 fabricated; 3 row moves (Dell +1, Wells Fargo +1,
+Cigna −1)**. Energy Transfer and Sunoco both trace to `trustPtr=true`.
+Pinned Energy Transfer as `sponsor-name-in-statement-vocabulary`.
+
+**(k) after this:** 15 plans / ~11k ppl at ≥30% remain (Rush Copley `Fund
+Institutional Shares` 35%, H&M `Investor Shares` 35%, Avi Systems
+`shares` 69%) — different mechanisms, unread; queued.
+
+**Prediction for the v145 run, part 2's share:** Energy Transfer and
+Sunoco GP move from confident to `trustPtr` (confident −2, both reconciled
+by name — the loss triage will raise `reparse-loss` on Energy Transfer's
+6-row "menu" and it is the rule working); a handful of plans gain one row
+whose name carries `transfer`; the (k) ≥30% set 17 → 15.
 - **Retail Services Wis** — `[Company Vanguard Fiduciary Trust]`: the
   issuer's second line (`Company`) leads the issuer field, queue (f) C's
   wrapped-issuer shape, now 6 plans.

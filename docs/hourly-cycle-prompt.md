@@ -237,6 +237,18 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 02:2xZ 2026-09-19: v145 PART 2 committed `[skip ci]` — (k)'s
+      largest member: SKIP_ROW's unanchored `transfers?` matched the
+      sponsor's own name, so Energy Transfer (16,426 ppl) published its
+      master-trust interest as a 77.9% holding named `Trust`; the arm is
+      statement phrasing only, Energy Transfer and Sunoco GP now read as
+      trust pointers. The same narrowing for `contribution` /
+      `distribution` was measured (Exelon, Morgan Stanley statement lines
+      leaked) and REVERTED. Gate green (Peterson +2 folded bonds), corpus
+      diff: 1 designed loss, 3 row moves. (k) residue 15 plans / ~11k ppl.
+      #380 (v143) in flight. Next wake: verdict #380, mirror, dispatch v144
+      + v145 (one run; predictions disjoint). `docs/accuracy-log.md`
+      2026-09-19 (02:2xZ).
       **STATUS 01:5xZ 2026-09-19: v145 (queue item i) gated and committed
       `[skip ci]` behind v144 — a stem dedup collapses a schedule's two
       renders with wording drift (R&L Carriers 32 → 31 rows, ratio 1.029

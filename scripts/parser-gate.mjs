@@ -356,7 +356,10 @@ const SPECIMENS = [
     // the sum is the whole schedule less two deep `Accrued interest` /
     // `Accrued dividend` rows the cap keeps in the tail; two Transcanada
     // Trust bonds stay itemized because `trust` reads as pooled (REIT trap)
-    { found: true, n: 9, sum: 288503192 }],
+    // v145 part 2: two bonds whose names carry `transfer` mid-line (the
+    // Energy Transfer trap — SKIP_ROW's unanchored `transfers?` arm) are no
+    // longer skipped and join the fold — 225 -> 227 positions, +$655,835
+    { found: true, n: 9, sum: 289159027 }],
   // v45: recordkeeper "SUMMARY OF NET TRUST ASSETS" page appended after
   // the real 4i table — same menu in ALL CAPS with cents; v43's cents fix
   // made it readable and the doubled region lost a real 29-fund menu
