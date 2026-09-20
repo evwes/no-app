@@ -744,6 +744,20 @@
       "fixed": "v173",
       "sponsor": "New York-Presbyterian Hospital",
       "was": "`Mutual funds (continued) Harbor Capital` as the issuer of Harbor Capital Appreciation Fund (66,650 participants). This is the SECOND path into the issuer: the continuation header sits in the ROW's own identity column, not on a colon section line, so the header-level fix could not see it. The row level and the header level are different places -- the same lesson v170 and v172 each paid for once. A name prefixed with the marker also matches nothing in the ticker table, so the fee cell was blank."
+    },
+    {
+      "ack": "20251010153157NAL0004375043001",
+      "class": "footnote-reference-in-the-holding-name",
+      "fixed": "v174",
+      "sponsor": "FMR LLC",
+      "was": "110 of 120 rows named `FID 500 INDEX (1)`, `FID CONTRAFUND K6 (1)` and so on -- a bare footnote reference no legend on the page explains, published as part of the fund's name to 90,445 participants. Store-wide the class was 7,429 rows / 506 plans / 1,172,804 ppl. Measured before building: this is a READABILITY repair, not a data one -- 1,313 of those rows already resolved to a ticker WITH the marker attached, stripping gains 7 tickers across 4,309 people, and 0 rows flip to a different ticker."
+    },
+    {
+      "ack": "20251014163918NAL0001658931001",
+      "class": "footnote-reference-CONTROL-stripping-would-MERGE-two-real-rows",
+      "fixed": "v174 (control, must not change)",
+      "sponsor": "Western Ecosystems Technology",
+      "was": "NOT a defect. It files `Putnam Stable Value Fund` at $14,679 AND `PUTNAM STABLE VALUE FUND (15)` at $14,678. The values are close but NOT equal, so the same-name-same-value duplicate-render suppression would not have collapsed them -- stripping the marker would key both to the same name and SUM them into a $29,357 holding that does not exist, which is the v160 / Mass General Brigham fabrication exactly. v174's guard refuses the strip when the bare name already belongs to an unmarked row, and both rows survive unchanged. Whole-store there are 5 such collisions across 4 plans; Chimes International files the same name under `(1)` and `(6)`, which the second refusal covers."
     }
   ]
 }

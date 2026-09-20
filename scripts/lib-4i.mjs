@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 173;
+export const PARSER_VERSION = 174;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -727,6 +727,8 @@ export function subtotalIndices(rows) {
  * predicate rather than adding a second predicate beside it. */
 /* No `g` flag: split does not need it, and a global regex is stateful under
  * .test(), which is a trap for the next caller. */
+/* v174: a trailing footnote reference, one or two digits in parentheses. */
+const FOOT_REF = /\s\(\d{1,2}\)$/;
 const CONT_MARKER = /\(\s*continued\s*\)|(?:^|\s)[-\u2013\u2014]\s*continued\b/i;
 function CONT_HEADER(cs) {
   if (!/continued/i.test(cs)) return cs;
@@ -2426,6 +2428,57 @@ export function parseRows(section, opts = {}) {
       const kept = leaves.filter((_, i) => !sub.has(i));
       leaves.length = 0; for (const r of kept) leaves.push(r);
       leafSum -= removed;
+    }
+  }
+  /* v174: A FOOTNOTE REFERENCE IS NOT PART OF THE HOLDING'S NAME.
+   *
+   * 7,429 rows / 506 plans / 1,172,804 participants publish a name ending in
+   * a bare `(1)`, `(2)` … that no legend on the page explains. FMR names 110
+   * of its 120 rows `FID 500 INDEX (1)`; Edustaff 17 of 17; Thermo Fisher
+   * (72,605 ppl) 24 of 28. At 50% or more of a menu it is 270 plans /
+   * 458,348 participants.
+   *
+   * WHAT THIS IS AND IS NOT WORTH, measured before building it. It looked
+   * like a lost fee cell on that scale and it is not: asking the shipped
+   * `fundTickerInfo` the same name with and without the marker over all 7,429
+   * rows, 1,313 ALREADY resolve with it, stripping gains 7 tickers across 7
+   * plans / 4,309 participants, and 0 rows resolve to a DIFFERENT ticker. The
+   * matcher is tolerant of the suffix. This is a readability repair for 1.17M
+   * readers, not a data repair, and it is recorded as one.
+   *
+   * WHY IT IS GUARDED, which is the whole of the work. A blanket strip MERGES
+   * rows the filing distinguishes — the v160 / Mass General Brigham
+   * fabrication exactly. Measured whole-store: 5 collisions across 4 plans.
+   * Chimes International (3,791 ppl) files `Pooled separate accounts NIA NIA
+   * (1)` AND `(6)`; Western Ecosystems (524 ppl) files `Putnam Stable Value
+   * Fund` both marked and unmarked; Urban School of San Francisco (220 ppl)
+   * does the same on two TIAA Traditional rows; American Financial Group
+   * (10,439 ppl) on its own sponsor name. Summing any of those pairs invents
+   * a holding.
+   *
+   * So the strip runs HERE, at the dedup stage, where the whole row set is in
+   * hand and a collision can be seen — not at the row level, where it cannot.
+   * Two refusals, both on the same key the dedup itself uses: the bare name
+   * must not already belong to an UNMARKED row, and the marked rows sharing a
+   * bare name must all carry the SAME marker. A plan that files (1) and (6)
+   * keeps both markers and stays two holdings. */
+  {
+    const dkey = (n) => String(n).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+    const unmarked = new Set();
+    for (const r of leaves)
+      if (r.value && !FOOT_REF.test(String(r.name))) unmarked.add(dkey(r.name));
+    const groups = new Map();
+    for (const r of leaves) {
+      if (!r.value || !FOOT_REF.test(String(r.name))) continue;
+      const bare = String(r.name).replace(FOOT_REF, "").trim();
+      if (bare.length < 3) continue;
+      if (!groups.has(bare)) groups.set(bare, []);
+      groups.get(bare).push(r);
+    }
+    for (const [bare, rs] of groups) {
+      if (unmarked.has(dkey(bare))) continue;                     // collides with a row the filing left unmarked
+      if (new Set(rs.map((r) => String(r.name))).size > 1) continue; // the filing distinguishes (1) from (6)
+      for (const r of rs) r.name = bare;
     }
   }
   const seen = new Map();
