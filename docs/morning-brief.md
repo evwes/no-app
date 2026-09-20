@@ -1,6 +1,6 @@
 # Morning brief — 2026-09-20 (written 06:4xZ / 2:4x AM ET)
 
-Live on main: **the v171 store**. Overnight, **v169 through v173** — five
+Live on main: **the v172 store**, mirrored 07:0xZ. Overnight, **v169 through v173** — five
 versions, each gated, corpus-diffed and checked against predictions written
 before the run finished. Two of those predictions failed and one published
 number was wrong; all three are below, because that is the more useful half of
@@ -18,19 +18,18 @@ the record.
 Live store: confident **60,117**, lineups 59,766, findings at **5**, overshoot
 332, download failures 104.
 
-## Landed on the branch but NOT yet live — the mirror is held on purpose
+## Mirrored this cycle, after a deliberate twenty-minute hold
 
-**v172 passed (#407) and is verified on the store, but main has its own hourly
-run in flight.** Mirroring force-pushes the branch onto main, and doing that
-while a run is about to commit there is the one case where it is unsafe. It
-mirrors on the next cycle; nothing is lost by waiting an hour.
+**v172 is live.** It was held briefly because main runs its own hourly job and
+force-pushing over it while it is about to write is the one unsafe moment; the
+mirror went through as soon as that job landed. The hold cost nothing.
 
-What it will carry: **Oracle's 101,985 participants stop seeing
-`Various investments, including registered market funds and c` at
-$3,405,120,000** — 9.6% of a $35B plan, published as if it were one fund.
-Capital One gains three rows and $1.14B of real funds. Progressive loses eight
-brokerage category summaries, which is a cost and is queued rather than
-glossed.
+**Oracle's 101,985 participants stop seeing `Various investments, including
+registered market funds and c` at $3,405,120,000** — 9.6% of a $35B plan,
+published as if it were a single fund. Capital One gains three rows and $1.14B
+of real funds. Progressive loses eight brokerage category summaries, which is a
+cost, and folding those into the brokerage total instead of dropping them is
+the next item.
 
 ## Running now
 
@@ -94,5 +93,5 @@ alone.** Td Bank US Holding publishes it on eleven of its twenty-three rows.
 
 Hourly: reconcile, verdict any finished run, mirror only when it is safe and
 the verdict is clean, dispatch the next gated version, draw randomly from
-published lineups and read the rows, record. Next: **mirror v172+v173 once
-main's own run lands, then #409's verdict.**
+published lineups and read the rows, record. Next: **#409's verdict**, then the
+brokerage fold.

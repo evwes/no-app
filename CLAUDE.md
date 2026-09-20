@@ -768,12 +768,25 @@ don't confuse them). Frontend: python http.server + Playwright at
   counts, values and ratios identical on both sides). **`lookupTicker` falls
   back to the bare name, so no fee cell was ever blanked by this — a draft of
   the log entry said otherwise and was corrected before publishing.**
-- **MIRROR HELD 06:4xZ ON PURPOSE: the v172 store is verified and NOT live.**
-  #408, main's own hourly cron, was in flight ON MAIN. Mirroring force-pushes
-  the branch onto main, and doing that while a run is about to commit there is
-  the unsafe case (precedent 2026-09-16 07:1xZ). Dispatching #409 on the DEV
-  branch was safe in the same moment — concurrency is per-ref. **Mirror the
-  v172 (or v172+v173) store as soon as #408 has landed.**
+- **MIRRORED 2026-09-20 07:0xZ: the v172 store is LIVE on main** (`aa004a2e →
+  1ed27db7`). `--force` on the GIT check only, over main's cron commit
+  `aa004a2e`: **0 acks and 0 plans the branch lacked, plans array
+  byte-identical**, main newer on 1 ack that the next run re-reads. The DATA
+  gate passed unforced — **+0 gained / −0 lost**, dominant pv 172 at 99.8%,
+  fetch failures 104, reader failures 2. **What reached readers: Oracle's
+  101,985 participants stop seeing `Various investments, including registered
+  market funds and c` at $3,405,120,000**; Capital One gains three rows and
+  $1,140,343,117 of real funds; Progressive loses eight brokerage category
+  summaries (the recorded cost). The mirror carries **v173 CODE over the v172
+  STORE**, which is safe by `SCHEDULE_INCREMENTAL` — a scheduled run treats a
+  parser-version gap as no work, so main's :23 cron cannot turn this into a
+  duplicate full re-parse.
+  **HELD for twenty minutes first and that was right:** at 06:4xZ #408, main's
+  own hourly cron, was in flight ON MAIN, and force-pushing the branch onto
+  main while a run is about to commit there is the unsafe case. Dispatching
+  #409 on the DEV branch in the same moment was safe — concurrency is per-ref.
+  The hold cost nothing and the mirror happened in the same cycle once #408
+  landed.
 - **#407 PASSED (06:17Z, 53 min, `1d7d321f`): pv 172 at 99.85%, confident
   60,117 (+0 / −0), HIGH 5, overshoot 332, lineups 59,766, dl 104.** Every
   metric in the coverage line is byte-identical to the previous run's except

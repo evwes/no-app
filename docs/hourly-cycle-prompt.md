@@ -237,9 +237,11 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
-      **STATUS 06:4xZ 2026-09-20: #407 (v172) PASSED and is VERIFIED but NOT
-      MIRRORED — held on purpose. v173 DISPATCHED as #409 (observed queued
-      06:28Z).**
+      **STATUS 07:0xZ 2026-09-20: #407 (v172) PASSED and is MIRRORED
+      (`aa004a2e → 1ed27db7`, `--force` on the GIT check only with 0 acks /
+      0 plans lacked and the plans array byte-identical; DATA gate unforced at
+      +0 / −0). v173 DISPATCHED as #409 (observed queued 06:28Z, now
+      in_progress).**
       #407 (`1d7d321f`, 53 min): pv 172 at 99.85%, confident 60,117 (+0 / −0),
       HIGH 5, overshoot 332, lineups 59,766, dl 104. **The coverage line is
       byte-identical to the previous run's except `tkSampled`, and that is
@@ -249,12 +251,15 @@ Order of business:
       (101,985 ppl stop seeing $3,405,120,000 as one holding); Capital One
       **31 rows**; Progressive **25**, the recorded cost. `aggRow` held at 112
       consistently — Capital One's fold was 17.6%, under the 30% threshold.
-      **THE MIRROR IS HELD because #408, main's own hourly cron, was in flight
-      ON MAIN.** Force-pushing the branch onto main while a run is about to
-      commit there is the unsafe case (precedent 2026-09-16 07:1xZ).
-      Dispatching on the DEV branch in the same moment was safe — concurrency
-      is per-ref. **FIRST ACTION NEXT CYCLE: check #408 has landed, then
-      mirror the v172 (or v172+v173) store.**
+      **THE MIRROR WAS HELD ~20 MINUTES AND THEN TAKEN IN THE SAME CYCLE.**
+      At 06:4xZ #408, main's own hourly cron, was in flight ON MAIN — force
+      pushing the branch onto main while a run is about to commit there is the
+      unsafe case (precedent 2026-09-16 07:1xZ). Dispatching #409 on the DEV
+      branch in that same moment was safe, because concurrency is per-ref. The
+      moment #408 landed the mirror went through. The mirror carries v173 CODE
+      over the v172 STORE, which `SCHEDULE_INCREMENTAL` makes safe: a
+      scheduled run treats a parser-version gap as no work, so main's :23 cron
+      cannot start a duplicate full re-parse.
       **v173** is the `(continued)` issuer class: 566 rows / 260 plans /
       **429,252 ppl**. A type label is promoted only because the marker
       defeats `typeOnly` — strip the type vocabulary from `Common Collective
