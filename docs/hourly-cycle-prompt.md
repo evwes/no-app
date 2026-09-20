@@ -271,10 +271,21 @@ Order of business:
       three is the same thing: diff the WHOLE STORE between runs and read the
       movers by name.** Treat the corpus diff as a regression guard on common
       shapes, never as a verdict.
-      **QUEUE:** (1) #416 verdict → mirror (main is on v174, do not mirror
-      v175); (2) SDBA fold, 269 plans / 630,032 ppl, owner question 5;
-      (3) Pechanga's `Net position available for benefits` at 63.7%, 1 plan,
-      `NOT_FUND_SHAPED` arm SHARED with `AGG_DISCLOSURE` (v137's trap).
+      **NEW AND NOW PART OF THE VERDICT BATTERY: `scripts/store-diff.mjs`.**
+      `node scripts/store-diff.mjs <prev-data-commit> --min 1000000` diffs the
+      WHOLE store and ranks what moved by value, with sponsor and
+      participants: rows added, rows removed, confidence gained/lost, and
+      **QUIET MOVERS** — row count barely moving while a large value does,
+      which is the Apple shape (27 → 26 rows carrying $2.15B). Controlled on
+      the real v174 → v175 data: it ranks Apple first, **Thrivent SECOND**, and
+      names Thrivent again under confidence-gained. **Run it after every run
+      and before every mirror.** The corpus diff is a regression guard on
+      common shapes; this is the one that sees readers.
+      **QUEUE:** (1) #416 verdict → **store-diff** → mirror (main is on v174,
+      do not mirror v175); (2) SDBA fold, 269 plans / 630,032 ppl, owner
+      question 5; (3) Pechanga's `Net position available for benefits` at
+      63.7%, 1 plan, `NOT_FUND_SHAPED` arm SHARED with `AGG_DISCLOSURE`
+      (v137's trap).
    2. Recordkeeper wrong name: 1,509 plans / 1.48M ppl. Prefer service
       codes 15/64, then the line-1b platform or Schedule A carrier, then
       top-fee; never publish a provider coded 10 or 29.
