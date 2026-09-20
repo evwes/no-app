@@ -237,6 +237,38 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 04:3xZ 2026-09-20: #406 (v171) still parsing at ~1h; no poll.
+      Cycle spent on the standing DRAW and the morning brief.** Draw seed
+      920420, participant-weighted, 10 plans, **1.95M participants sampled**
+      (Amazon 1,336,478; JPMorgan 299,277; Mayo 114,636; Oracle 101,985).
+      Seven read clean. **Four findings, all sized from the store:**
+      **(a) a page-continuation marker in the ISSUER — 553 rows / 249 plans /
+      424,152 ppl** (TD Bank: `[Common Collective Trust (continued)] Vanguard
+      Institutional 500 Index`). **NOT SHIPPED ON PURPOSE** — reading the 190
+      distinct strings first showed they are not one shape: most are pure
+      section headers, but 21 rows are `Voya Retirement Insurance and Annuity
+      Company (continued)` (a REAL firm) and ~40 more are a header GLUED to a
+      real firm (`Mutual funds (continued) Vanguard`). The obvious rule —
+      suppress any issuer containing `(continued)` — **would delete a real
+      firm on 60–70 rows.** The correct rule needs `typeOnly`/`isHouseName`,
+      which `app.js` does not have, and inventing a second copy of a shipped
+      predicate is the mistake this file names five times.
+      **(b) truncated prose as a holding — 285 rows / 274 plans / 790,790
+      ppl**: Oracle publishes `Various investments, including registered
+      market funds and c` at **$3,405,120,000 = 9.6%**; MSK Group at 59%.
+      Needs a corpus diff before any deletion — many are 1% residual lines and
+      removal can drop plans under the three-row floor.
+      **(c) a VALUE welded into a NAME**: JPMorgan Chase (299,277 ppl) shows
+      `JPMCINTERMEDT AGGREGATE SEP ACCT — SEPARATE ACCT 2,271,585,2`, and its
+      ratio is 0.660 — one plan seen, not sized.
+      **(d) known classes reconfirmed**: Cherokee's `Managed account holdings
+      (99 positions)` at 60.3% (aggRow), DFS Group's `Fidelity® Investments`
+      at 8.3% (bare house in the identity, which v167 deliberately leaves).
+      **`docs/morning-brief.md` rewritten** for 2026-09-20 — it was three
+      versions stale and is now decision-shaped, leading with the two FAILED
+      predictions rather than the wins.
+      **Next wake: #406's verdict**, then (b) with a corpus diff, then (a)
+      once the predicate question is settled.
       **STATUS 03:4xZ 2026-09-20: #405 (v170) PASSED ALL FOUR pre-registered
       tests, MIRRORED UNFORCED (`78f01008 → 988d2fd9`, a fast-forward), and
       v171 is DISPATCHED as #406 (observed queued 03:24Z).** pv 170 at 99.85%,

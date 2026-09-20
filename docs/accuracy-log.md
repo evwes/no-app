@@ -17747,3 +17747,58 @@ movement in either direction — overshoot, because a region swap can raise a su
 — **no direction was claimed at all**. A prediction that cannot fail is worth
 nothing, but a prediction whose premise was refuted by a diff sitting in the
 same document is worse.
+
+## 2026-09-20 (04:2xZ) — the participant-weighted draw on the v170 store: two classes, one of them with a trap in it
+
+Seed 920420, 10 plans, **1,951,000+ participants sampled** (Amazon 1,336,478;
+JPMorgan Chase 299,277; Mayo Clinic 114,636; Oracle 101,985). Amazon, Mayo,
+Apache Industrial, Grand Isle and DFS read clean. Four findings, sized from the
+store:
+
+**(a) A PAGE-CONTINUATION MARKER IN THE ISSUER — 553 rows / 249 plans /
+424,152 participants.** TD Bank US Holding (47,196 ppl) publishes
+`[Common Collective Trust (continued)] Vanguard Institutional 500 Index`: the
+issuer slot holds a section header carrying the marker a filing prints when a
+table spans pages. The fund names are right; the firm attribution is not.
+
+**The trap, found by looking at the strings before writing the rule.** 190
+distinct issuer values, and they are NOT one shape:
+
+| shape | example | count |
+|---|---|---|
+| pure section header | `Registered investment companies (continued)` | 84 |
+| pure section header | `Investments in Mutual Funds (Continued)` | 46 |
+| **a REAL FIRM plus the marker** | `Voya Retirement Insurance and Annuity Company (continued)` | 21 |
+| **header GLUED to a real firm** | `Mutual funds (continued) Vanguard` | 11 |
+| **header glued to a real firm** | `Mutual funds (continued) Fidelity Investments` | 9 |
+
+So the obvious rule — suppress any issuer containing `(continued)` — would
+**throw away a real firm on roughly 60–70 of the 553 rows**. The correct rule
+has three branches: strip the marker; suppress what remains if it is a bare
+type label; keep it if a real firm remains, including when the header is glued
+in front of one. **Recorded rather than shipped, because the display path in
+`app.js` does not have `typeOnly` / `isHouseName` available and inventing a
+second copy of a shipped predicate is the mistake this file names five times.**
+
+**(b) TRUNCATED PROSE AS A HOLDING — 285 rows / 274 plans / 790,790
+participants.** Oracle (101,985 ppl) publishes `Various investments, including
+registered market funds and c` at **$3,405,120,000 = 9.6%** of its menu — the
+`Various (includes` shape already on the record for Medtronic. MSK Group is
+the worst by share at **59%** of its menu, $54,091,088. Many are small (1%),
+which is a filing's own residual line rather than a parse defect, so this needs
+a corpus diff before any deletion — it can drop plans under the three-row floor.
+
+**(c) A VALUE WELDED INTO A NAME.** JPMorgan Chase Bank (299,277 ppl) publishes
+`JPMCINTERMEDT AGGREGATE SEP ACCT — SEPARATE ACCT 2,271,585,2` — a truncated
+dollar figure inside the holding name. Its ratio is also **0.660**, so this
+plan shows two thirds of its own money. One plan seen; not sized.
+
+**(d) Known classes reconfirmed**, not new: Cherokee Distributing publishes
+`Managed account holdings (99 positions)` at **60.3%** (the `aggRow` class this
+file tracks), and DFS Group shows `Fidelity® Investments` at 8.3% (the bare
+house class, which v167 deliberately does not touch in the identity column).
+
+**Nothing fabricated was found in the seven largest plans drawn**, which after
+v162–v171 is the result this draw exists to produce — but it is the third
+consecutive draw to surface a defect no audit and no coverage metric can see,
+which is why the draw is per-cycle and not occasional.

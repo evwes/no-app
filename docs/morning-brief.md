@@ -1,92 +1,76 @@
-# Morning brief — 2026-09-20 (written 23:1xZ / 7:1x PM ET Sept 19)
+# Morning brief — 2026-09-20 (written 04:3xZ / 12:3x AM ET)
 
-*Updated 00:4xZ.* Live on main: **the v168 store** (mirrored 23:3xZ) — the
-fix described under "running now" below landed and **7,048,088 participants
-across 5,349 plans gained a holding** one unanchored word had been deleting.
-**v169 is now running as #403**: a wrapped statement caption was leaking its
-value line, so UPS's 145,125 participants were shown $1,470,493,000 of net
-appreciation as if it were a fund, and 367,882 more were shown holding names
-ending in a stray `+`. Since yesterday's brief:
-**v158 through v168** — eleven versions, each gated, corpus-diffed and
-verified against a prediction made before the run. Three of them fixed
-regressions that the project's own verdicts had caught in the versions
-shipped hours earlier, which is the loop working rather than a wobble.
+Live on main: **the v170 store**. Overnight, **v169, v170 and v171** — three
+versions, each gated, corpus-diffed and verified against predictions written
+before the run finished. Two of those predictions failed and are written up
+below with their causes, because that is the more useful half of the record.
 
-## What reached readers today, largest first
+## What reached readers overnight, largest first
 
-| version | what changed for readers | size |
+| version | what changed | size |
 |---|---|---|
-| v166 | **Meta Platforms stops showing one "fund" of $18,809,051,400 at 82% of the plan** — the ASC 820 line that reconciles NAV-valued assets — and gets its real 20-fund State Street and Vanguard menu | **84,993 participants**; the line was published as a holding by 104 plans / 274,765 ppl |
-| v165 | SEC Form 11-K cover pages stop parsing as holdings: `Washington, D.C.` was a $20,549 fund, taking the SEC's own ZIP as its value | 20 rows / 13 plans / **302,810 ppl**, Publix (225,961) among them |
-| v162 | a category plus a vehicle is a type phrase, not a fund — PennyMac publishes thirteen Fidelity Freedom vintages where one $157,047,874 `Asset Allocation Mutual Fund` stood | class 323 → 137 lineups; at ≥20% of a menu 117 → 11 |
-| v167 | a description that is only a firm may not beat a real fund name — **Rcb Bank's 968 see a real T. Rowe Price Retirement menu** where a 68.4% `Blended investments` phantom stood | 5 plans un-merge; the class falls 28 → 23 |
-| v164 | a fragment identity no longer wins just because the description was refused (`First Eagle` was the whole name of a row whose filing says `First Eagle Global Fund`) | 21 rows / 16 plans |
+| v169 | **UPS stops showing $1,470,493,000 of net appreciation as a holding.** A statement caption wraps, its value lands on the next line, and the parser read the orphan as a fund — at the *prior year's* column | **145,125 participants**; the bare-`Investments` row falls 16 → 8 plans |
+| v169 | holding names lose a stray trailing `+` or `~` that no filing legend explains | 1,280 rows across 268 plans |
+| v170 | **Irisndt's 1,609 see forty-two holdings where one `JOHN HANCOCK` row of $21,512,753 stood at 53% of the plan** — eighteen filed holdings that had merged into one | six plans un-merge; the bare-firm class falls 20 → 14 |
+| v170 | 659 more names lose the trailing marker (a second layout) | — |
 
-Live store: confident **60,115**, lineups 59,764, findings at **5** (the
-four baseline plus one that clears itself), overshoot 344, download
-failures 104.
+Live store: confident **60,117**, lineups 59,766, findings at **5**, overshoot
+335, download failures 104. Mirrored three times; the last one was a clean
+fast-forward with no overrides.
 
-## Running now, and it is the biggest single defect found in weeks
+## Running now
 
-**v168 (#401): one unanchored word was deleting a whole fund family from
-every menu in the store.** The skip rule for financial-statement lines is
-built by string concatenation, and its alternation sits after the group
-that anchors it has already closed — so every arm is a substring test.
-For `appreciat` that means **every row naming a fund with "Appreciation"
-in it was dropped**, as a holding and as a buffered name. *T. Rowe Price
-Capital Appreciation* is one of the largest funds in the country.
+**v171 (#406): a line the parser has refused for years and still published.**
+`SKIP_ROW` has an arm for the Form 5500 employer-ID line — and it requires a
+`#`, while filings overwhelmingly write `EMPLOYER I.D. 94-` with none. So the
+arm never fired. **43 rows / 43 plans / 29,821 participants** publish it.
 
-| measure | value |
-|---|---|
-| published rows containing "appreciat" | 55 of 1,721,905 |
-| corpus filings gaining rows under the fix | 63 of 989 (6.4%) |
-| confidence lost in the corpus | 0 |
+The evidence it is not a holding is arithmetic rather than verbal: removing it
+moves Easter Seals Southern California from ratio 1.033 to **exactly 1.000**.
 
-Duke University 96 → 98 rows, Emory 81 → 82, plus Sherwin-Williams,
-Southwest Airlines, Ecolab, Dillard's, American University. Three plans
-gain several rows because a fuller render stops losing its region contest
-on the deleted row: Panorama Mortgage goes 17 → 28 at the same ratio,
-with `TIAA-CREF Large-Cap Growth Index Fund` replacing `Nuveen Large Cap
-Gr Indx R6`.
+## Found wrong, by us, in our own work
 
-## Found wrong, by us, in our own shipped work
-
-- **v163 merged eight real TIAA and CREF holdings** into one row at 58%
-  of a 190-participant plan. No count could see it; the whole-store row
-  diff found it. **Fixed in v167**, which also reached five more plans.
-- **v166's own entry named a risk and did not guard against it.** Its NAV
-  rule condemned any region containing the line, and beneath a real menu
-  that line is a small footnote rather than the note's subtotal. Ford Gum
-  and ZF Chassis lost real 29-row menus for about two hours. **Fixed in
-  v167** with a materiality bar at 25% of the region.
-- **A shipped predicate over-matched for the first time.** Sizing the
-  bare-house class returned 81 plans / 331,365 ppl, led by Compass Group
-  at 263,796 — whose menu is real, and whose `Fidelity TRIM 2030 Trust
-  Company` rows matched a "house name" test built for a different
-  population. The honest figure is **48 plans / 39,896 ppl**.
+- **Two of v169's four pre-registered tests failed.** The marker class was
+  predicted at ~0 and came in at 663 rows: the strip ran on the wrong part of
+  the row, and *my first correction was also wrong* — the trace said so before
+  it shipped. Fixed in v170. The lesson is the testing, not the regex: the fix
+  was tested on the filing that motivated it, not on one of the shape it would
+  miss.
+- **A prediction whose premise my own corpus diff had already refuted.** I
+  predicted `overshoot` could only fall; it rose by one. The diff had recorded
+  a plan *swapping regions* an hour earlier — so the change alters which table
+  wins, not only which rows survive. v170's predictions each had to name a
+  measurement already in hand, and where either direction was possible, no
+  direction was claimed. All four then passed.
+- **A sizing predicate over-matched for the fifth time**, and the implausible
+  leader was again the tell: a $3.39B row at 48% of a three-row menu is not an
+  employer-ID line. Honest figure 43 plans, not 45.
+- **One regression is live and small.** Shared Support South (195 ppl) shows an
+  OCR'd Form 5500 EIN line at 49% of its menu. v171 removes exactly that row.
 
 ## Waiting on you, ranked by people affected
 
 1. **Match and vesting extraction as new coverage** (~13.5M + ~10M ppl).
-2. **fund-facts source** — every plan page's fee and return cells sit
-   empty until a retrieval route is approved: an API key as a repo
-   secret, an allowlist for two fund-company domains, or both.
-3. **Recordkeeper source fix** — 2,241 plans / 2.0M ppl publish a wrong
-   or missing provider name.
+2. **fund-facts source** — fee and return cells stay empty until a retrieval
+   route is approved: an API key as a repo secret, an allowlist for two fund
+   company domains, or both.
+3. **Recordkeeper source fix** — 2,241 plans / 2.0M ppl publish a wrong or
+   missing provider name.
 4. Whether to spawn the parser agent each cycle at the current usage tier.
-5. Whether a class SUMMARY should ever publish as a lineup. Four
-   all-generic menus returned to the site in v167 because v166 had been
-   removing them for the wrong reason; this question decides them.
+5. Whether a class SUMMARY should ever publish as a lineup.
+
+## Open and queued, with sizes
+
+- **Truncated prose as a holding — 274 plans / 790,790 ppl.** Oracle publishes
+  `Various investments, including registered market funds and c` at $3.4B.
+- **A page-continuation marker in the issuer — 249 plans / 424,152 ppl.** Not
+  shipped on purpose: 60–70 of those rows carry a *real* firm alongside the
+  marker, so the obvious rule would delete good data.
+- Marsh & McLennan (35,907 ppl): a $3.39B prose row at 48% of a 3-row menu.
+- A third trailing-marker layout (952 ppl).
 
 ## What continues alone
 
-Hourly: reconcile, verdict any finished run, mirror only on a clean
-verdict, dispatch the next gated version, draw randomly from published
-lineups and read the rows, record. Next: **#403's verdict**.
-
-#401's verdict is in and both its predictions held — Northeast Georgia
-Health System's 14,038 participants now see *T. Rowe Price Capital
-Appreciation* where they were shown a bare `T. Rowe Price` worth
-$479,484,734, and the bare-firm class fell from 23 plans to 20. The
-20 that remain are small (12,762 people between them) and are the
-standing queue item behind the two shapes now in flight.
+Hourly: reconcile, verdict any finished run, mirror only on a clean verdict,
+dispatch the next gated version, draw randomly from published lineups and read
+the rows, record. Next: **#406's verdict**.
