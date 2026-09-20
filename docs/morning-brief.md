@@ -61,8 +61,12 @@ moves Easter Seals Southern California from ratio 1.033 to **exactly 1.000**.
 
 ## Open and queued, with sizes
 
-- **Truncated prose as a holding — 274 plans / 790,790 ppl.** Oracle publishes
-  `Various investments, including registered market funds and c` at $3.4B.
+- **Truncated prose as a holding — ~18 rows that distort a page, ~108,000
+  ppl.** Oracle publishes `Various investments, including registered market
+  funds and c` at **$3,405,120,000** and is 94% of the people in the class.
+  *(Corrected 05:2xZ: an earlier draft of this brief said "274 plans /
+  790,790 ppl". That counted every plan containing any such row, most of them
+  a ~1% loan-rate fragment — a count of a condition, not of an outcome.)*
 - **A page-continuation marker in the issuer — 249 plans / 424,152 ppl.** Not
   shipped on purpose: 60–70 of those rows carry a *real* firm alongside the
   marker, so the obvious rule would delete good data.

@@ -716,6 +716,20 @@
       "fixed": "v171",
       "sponsor": "Tri Pointe Homes Holdings",
       "was": "the same line at $3,201,111, 33 rows -> 32, ratio 1.003 -> 0.986. Pinned as a second member because the FIRST corpus diff for v171 came back all zeros across 997 filings -- not because the change does nothing, but because every member of this class is a small plan and the corpus is sampled by assets. A clean diff on a corpus that cannot contain the class is not evidence."
+    },
+    {
+      "ack": "20260427164405NAL0013754176001",
+      "class": "prose-as-a-holding-name",
+      "fixed": "v172",
+      "sponsor": "Oracle Corporation (101,985 ppl)",
+      "was": "published `Various investments, including registered market funds and c` at $3,405,120,000 = 9.6% of a $35B plan. The filing's own words say that money is various and not itemised; publishing it as one fund is the fabrication. 41 rows -> 40, ratio 1.008 -> 0.911, which is the honest figure. The class at >=10% of a menu is 17 rows / 6,054 ppl, and Oracle sits just UNDER that threshold while being 94% of the people and essentially all of the money -- a lesson about thresholds, recorded in the log."
+    },
+    {
+      "ack": "20260710080100NAL0000893043001",
+      "class": "prose-as-a-holding-name-CONTROL-Various-is-a-valid-IDENTITY",
+      "fixed": "v172 (control, must not change)",
+      "sponsor": "Sempra trust",
+      "was": "NOT a defect. It files `Various | Self-Directed Brokerage Acct | ** | $222,238,162` -- `Various` is the honest identity of a brokerage window holding many issuers, and the real name is in the description. The FIRST version of v172 added `various` to SKIP_ROW, which drops the whole LINE, and parser-gate.mjs refused the universe over exactly this row: 31 -> 30, sum down $222,238,162. The rule was moved to the RESOLVED name, after the description has had its chance. The row level and the name level are different places -- the same lesson v170 learned about the footnote marker."
     }
   ]
 }

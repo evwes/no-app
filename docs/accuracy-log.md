@@ -17802,3 +17802,118 @@ house class, which v167 deliberately does not touch in the identity column).
 v162–v171 is the result this draw exists to produce — but it is the third
 consecutive draw to surface a defect no audit and no coverage metric can see,
 which is why the draw is per-cycle and not occasional.
+
+## 2026-09-20 (05:2xZ) — CORRECTION to the 04:2xZ draw write-up: "274 plans / 790,790 ppl" is a count of a CONDITION, not of an outcome
+
+I published that figure in `docs/morning-brief.md` and in the entry above, for
+the prose-as-holding class. It is the number of plans that contain **any** row
+beginning `Various`, and it is not the size of the defect. The census:
+
+| string | rows | what it actually is |
+|---|---|---|
+| `Various Rates and` | 81 | a participant-LOAN rate column fragment, ~1% each |
+| `Various` | 39 | the real shape |
+| `Various participants` | 26 | loan/brokerage attribution |
+| `Various units` | 15 | the real shape |
+
+**At 10% or more of a menu — the threshold at which a reader's page is
+actually distorted — the class is 17 rows / 17 sponsors / 6,054 participants.**
+MSK Group at 59% ($54,091,088), Premier Imaging at 60% ($191,980,148),
+Spectrix at 48%.
+
+**This is the same error I recorded ONE HOUR AGO in this file** about
+`band-hi`'s reachable cell — "a COUNT OF A CONDITION, not of an outcome" — and
+I made it again in the next cycle, in a document the owner reads. Writing a
+rule down is not following it. The habit that would have caught it is the one
+already on the books: **ask what the rows are WORTH before publishing a
+population.**
+
+**Oracle is the exception that still justifies the work, and it sits just
+under the threshold.** `Various investments, including registered market funds
+and c` is **9.6%** of its menu and **$3,405,120,000** — by far the largest
+dollar figure in the class and 101,985 participants. A share threshold set at
+10% would have excluded the single most important member, which is its own
+lesson about thresholds.
+
+**Restated honestly: the class is ~18 rows that distort a page, covering about
+108,000 participants, of which Oracle is 94% of the people and essentially all
+of the money.** That is still worth a version — but it is not 790,790, and the
+brief has been corrected.
+
+## 2026-09-20 (05:3xZ) — run #406 verdict (v171): PASSED, 42 of 43 removed, mirrored UNFORCED — and v172, where the PARSER GATE caught the counter-case
+
+**#406 numbers.** pv 171 at 99.85%; confident **60,117, +0 / −0**; HIGH 5;
+**overshoot 335 → 332**; lineups 59,766; dl 104. Mirrored `988d2fd9 →
+9acd1781`, a fast-forward, **no overrides on either check**.
+
+**The class: 43 rows / 43 plans / 29,821 ppl → 1 row / 1 plan / 1,598 ppl.**
+Easter Seals' ratio landed where predicted. **And my own v169 regression is
+repaired:** Shared Support South (195 ppl) loses the `Employer |.D. #: 83-`
+row worth $2,134,543 and its ratio goes **1.43 → 1.009**. Two junk rows remain
+in its twelve (`Invested in mutual funds S`, `Registered investment companies,
+mutual funds`), recorded and not claimed as fixed.
+
+**The one survivor is a different shape and is diagnosed.** IBG Llc (1,598
+ppl) publishes `Employer ID Number: 13` at $3,832,398 — which is its **EIN**,
+`13-3832398`, read as a dollar value. The line is a PAGE HEADER,
+`IBG LLC 401(k) PLAN … Employer ID Number: 13-3832398`, so it does not START
+with the employer-ID words and the anchored arm cannot see it. Recorded.
+
+### v172 — and the gate earning its keep
+
+The queue item was prose-as-holding. First attempt: add `various\b` to
+`SKIP_ROW`'s anchored group, which drops the whole LINE. Oracle and MSK Group
+came out right. **`parser-gate.mjs` refused to parse the universe**, naming
+Sempra's trust: 31 rows → 30, sum down $222,238,162.
+
+The filing says why:
+
+```
+Various        Self-Directed Brokerage Acct        **    $   222,238,162
+```
+
+**`Various` is the honest IDENTITY of a brokerage window** — it holds many
+issuers, so column (b) says so — and the real name is in the description. A
+line-level rule killed a genuine $222M holding.
+
+**The row level and the name level are different places, which is the same
+lesson v170 learned about the footnote marker two hours ago.** The test now
+runs on the RESOLVED name, after the description has had its chance: Sempra's
+final name is `Self-Directed Brokerage Acct`, so its row is untouched; Oracle's
+final name IS the prose, so the row goes.
+
+Verified both ends: Oracle 41 → 40 rows, the **$3,405,120,000** phantom gone,
+ratio 1.008 → **0.911** — which is the honest figure, because the filing's own
+words are "various investments, including…", i.e. that money is in the plan and
+is not itemised. Publishing 91% and not claiming the rest is true; publishing a
+$3.4B fund called `Various investments, including registered market funds and
+c` is not. Sempra unchanged at 31 rows / 0.999.
+
+**The gate is the reason this cost ten minutes instead of a mirrored
+regression.** It is pinned on ten live specimens precisely so a rule that looks
+right on the filing that motivated it meets one that contradicts it before the
+universe does.
+
+**Corpus diff over 1,001 filings: 0 confidence gained, 0 LOST, 0 fabricated
+rows either way, 0 menu-sum moves, and eight row-count moves, each read.**
+
+- **Capital One (a GAIN, 28 → 31 rows).** Its `Managed account holdings (3
+  positions)` fold at $2,097,924,643 = 17.7% dissolves once one of the three
+  was refused, and the real constituents publish: `U.S. Small/Mid Cap Equity
+  Fund` $1,140,343,117 and `Self-Directed Brokerage Account` $613,665,484.
+  Ratio 0.992.
+- **Oracle** 41 → 40, the $3.4B phantom, as designed.
+- **Providence Health & Services** 10 → 6: `Various (includes Registered` at
+  **$9,659,350,978 = 100.0%** of its reading, issuer `Interest Held in` — the
+  Medtronic master-trust shape. The plan is NOT confident before or after, so
+  no reader sees the change.
+- **Progressive 33 → 25, and this one has a real cost.** The eight removed
+  rows are brokerage-window CATEGORY summaries — `Various Common Stocks`
+  $222,886,954, `Various Mutual Funds` $144,544,066, `Various Unitized
+  Investment Funds` $117,096,377 and five smaller — about **$499M**. They are
+  not holdings a participant can choose, so publishing them as funds was
+  wrong; but deleting them also removes the brokerage window's composition
+  from the page rather than folding it into the SDBA aggregate, which is what
+  that money deserves. Ratio 0.986 → 0.946. **Recorded as a cost, not as a
+  win**, and folding this shape into the aggregate is queued.
+- Four small plans lose one row each.

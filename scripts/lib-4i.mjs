@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 171;
+export const PARSER_VERSION = 172;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -2299,6 +2299,17 @@ export function parseRows(section, opts = {}) {
      * name, whichever column won. A leading space is still required, so a
      * rating or class suffix welded to a word (`AA+`) is untouched. */
     name = name.replace(/\s+[+~]+\s*$/, "");
+    /* v172: `Various` is never the NAME of a holding, and the row level is the
+     * wrong place to say so. Oracle publishes `Various investments, including
+     * registered market funds and c` at $3,405,120,000 (9.6% of a $35B plan);
+     * MSK Group publishes a bare `Various` at 59% of its menu. But Sempra's
+     * trust files `Various | Self-Directed Brokerage Acct | $222,238,162`,
+     * where `Various` is the honest IDENTITY of a brokerage window holding
+     * many issuers and the description carries the real name. A SKIP_ROW arm
+     * killed that whole line and the parser gate caught it — so the test
+     * belongs on the RESOLVED name, after the description has had its chance.
+     * Sempra keeps its row because its final name is the brokerage account. */
+    if (/^various\b/i.test(name.trim())) { nameBuf = []; continue; }
     rows.push({ name: name.slice(0, 90), type: rowType, value, sec: curSection, ...(rejDesc && rejDesc !== name ? { _dd: rejDesc.slice(0, 60) } : {}), ...(type ? { ownType: 1 } : {}), ...(issCell ? { iss: issCell.slice(0, 60), ...(issTail ? { _it: 1 } : {}) } : curIss ? { iss: curIss.slice(0, 60) } : {}), ...(leadStripped ? { _sl: 1 } : {}) });
   }
 
