@@ -2289,6 +2289,16 @@ export function parseRows(section, opts = {}) {
         }
       }
     }
+    /* v170: the footnote marker no legend explains, stripped from the FINAL
+     * name. v169 stripped it from `body` only, and its verdict measured what
+     * that misses: 1,943 rows -> 663 rather than ~0. The marker usually sits
+     * at the end of the row's NAME CELL, not at the end of the line —
+     * `* Blue Chip Sep Acct + | Pooled Separate Account | ** | 3,961,588`
+     * (Westmont Hospitality, 2,094 ppl) — so `body` still had two columns
+     * after it when the strip ran. Doing it here catches every path into the
+     * name, whichever column won. A leading space is still required, so a
+     * rating or class suffix welded to a word (`AA+`) is untouched. */
+    name = name.replace(/\s+[+~]+\s*$/, "");
     rows.push({ name: name.slice(0, 90), type: rowType, value, sec: curSection, ...(rejDesc && rejDesc !== name ? { _dd: rejDesc.slice(0, 60) } : {}), ...(type ? { ownType: 1 } : {}), ...(issCell ? { iss: issCell.slice(0, 60), ...(issTail ? { _it: 1 } : {}) } : curIss ? { iss: curIss.slice(0, 60) } : {}), ...(leadStripped ? { _sl: 1 } : {}) });
   }
 

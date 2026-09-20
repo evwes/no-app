@@ -17546,3 +17546,83 @@ roughly 14–16 / ~9,000** — the four corpus members plus any store members th
 corpus does not contain. It should NOT reach zero: Calpine's `Investments`
 (diagnosed 01:0xZ, an OCR statement line that does not wrap), Dupre's and CCS
 Medical's are different shapes and are untouched by this.
+
+## 2026-09-20 (02:3xZ) — run #403 verdict (v169): PASSED and MIRRORED, and TWO of my four pre-registered tests FAILED
+
+**Numbers.** pv 169 at 99.85% (68,661 of 68,767); confident **60,117, +0 / −2**;
+HIGH 7; overshoot **334 → 335**; lineups 59,766; dl 104. Mirrored
+`b23bc718 → 78f01008` with both overrides on the same evidence as every prior
+mirror: `--force` over main's cron commit (0 acks and 0 plans the branch
+lacked, plans array byte-identical) and `--force-data` over the two losses,
+read by name.
+
+**The two losses are both justified.**
+- **UPS (the pre-registered one).** Its eleven-row asset-class table is gone
+  and readers get the filed-in-aggregate sentence instead of a class summary
+  containing a $1,470,493,000 row that is not a holding. Accepted in advance
+  and accepted now.
+- **Nw Bend Boats (163 ppl).** Its three rows were `$ 3,389,417 go go`,
+  `Fair Value of Investments` and `Interest & Dividends` — a value-as-name, a
+  statement caption and an income line. v169 removed the caption and the rest
+  fell under the three-row floor. An entirely fabricated lineup withdrawn.
+
+### Test 1 — PASSED, including the part that was supposed to stay
+
+Rows whose whole name is the statement line `Investments`: **16 → 8**, and
+**not zero**, which is what the test asked for. Dupre's survives (the pinned
+control — a real Minnesota Life separate-account description), and Calpine's
+two survive because its statement line does not wrap. The rule did what it was
+scoped to do and nothing more.
+
+### Test 2 — FAILED. Predicted ~0, got 663
+
+Holding names ending in ` +` or ` ~`: **1,943 rows / 480 plans → 663 rows /
+212 plans / 143,586 ppl.** A 66% cut, and I predicted ~0.
+
+**The cause, found in one filing.** v169 stripped the marker from `body` — the
+line with its value removed — and the marker is usually not at the end of
+`body`. Westmont Hospitality (2,094 ppl) files:
+
+```
+*     Blue Chip Sep Acct +        Pooled Separate Account     **     3,961,588
+```
+
+The marker sits at the end of the row's **name cell**, with two more columns
+behind it, so the end-of-body strip never saw it. My first correction moved
+the strip to *after* `stripTrailingColumns` and **that was also wrong** — the
+trace still showed `Blue Chip Sep Acct +`, because the name comes from the
+identity cell via `splitNameDesc`, not from the tail of `body` at all. The
+strip now runs on the FINAL name, which catches every path into it whichever
+column won. Verified both ways: Westmont reads `Blue Chip Sep Acct` and
+Epcor's rows stay clean.
+
+**Worth naming: I tested the fix on the filing that motivated it and not on a
+filing of the shape it would miss.** Epcor's marker happens to sit at the end
+of the line; Westmont's does not. One specimen from one layout is not a test
+of a layout rule, and the store-wide count is what said so.
+
+### Test 4 — FAILED, and the reasoning was refuted by my own corpus diff
+
+I predicted `overshoot` could only fall, because "every row this version
+removes is a phantom added to a menu's sum". It went **334 → 335**. The
+premise is false and the evidence was already in hand: the same corpus diff
+recorded Standard Concrete **swapping to a different region entirely**. v169
+changes which region WINS, not only which rows survive, and a swap can raise a
+sum. I wrote the prediction from the rule's intent instead of from the
+behaviour I had just measured.
+
+**Whole-set diff — 2 entered, 1 left**, 463 participants in total:
+- **Shared Support South (195 ppl) — a real regression and it is mine.** It
+  had a 3-row junk lineup containing the `Investments` row; with that row gone
+  a DIFFERENT and larger region wins, and it now publishes **12 rows topped by
+  `Employer |.D. #: 83-` at $2,134,543, ratio 1.43** — an OCR'd Form 5500 EIN
+  line as a holding. Junk before, more junk now. Recorded, not yet fixed.
+- **Chestnut Hill South (268 ppl)** enters at ratio 1.27 with 31 rows topped
+  by a real `FID 500 Index` — a menu that now over-sums, most likely a
+  duplicate render. Recorded.
+- **R L Morgan (307 ppl)** left the set.
+
+**The habit this costs nothing to keep:** a pre-registered test is only worth
+what its premise is worth, and the premise here contradicted a measurement
+sitting in the same document. Check a prediction against the diff you already
+ran before writing it down.
