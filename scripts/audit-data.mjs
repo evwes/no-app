@@ -592,6 +592,21 @@ try {
     flag("warn", "source-swap-degraded", `… and ${swaps.length - 20} more (swaps-degraded.txt in the merge log)`);
 } catch { /* no swaps file — merge didn't run in this invocation */ }
 
+/* ROWS DROPPED FROM A CONFIDENT LINEUP (2026-09-20). The third blind spot:
+ * losses-triage sees lineups that vanish, swaps-degraded sees plans that
+ * change source, and NEITHER sees a plan that stays confident, keeps its
+ * source and publishes fewer rows. v172 deleted $2,153,504,672 from Apple's
+ * menu — 7% of the plan, 145,428 participants — as a 27 -> 26 row move, and
+ * every check passed. WARN, because a removed FABRICATION also drops the
+ * ratio honestly: this is a read-before-you-mirror list, not a verdict. */
+try {
+  const dropped = readFileSync("rows-dropped.txt", "utf8").trim().split("\n").filter(Boolean);
+  for (const line of dropped.slice(0, 20))
+    flag("warn", "rows-dropped", `confident lineup lost rows and now covers materially less of the plan: ${line}`);
+  if (dropped.length > 20)
+    flag("warn", "rows-dropped", `… and ${dropped.length - 20} more (rows-dropped.txt in the merge log)`);
+} catch { /* no file — merge didn't run in this invocation */ }
+
 // REPARSE VERDICT: compare this run's coverage line to the previous one.
 // Improvement is the contract; a regression beyond tolerance is a HIGH
 // that demands diff-sampling before the data is mirrored to main.

@@ -393,4 +393,52 @@ console.log(`merged ${applied} entries; totals: ${vals.length} parsed, ${vals.fi
     for (const line of swaps.slice(0, 15)) console.log(`    ${line}`);
     writeFileSync("swaps-degraded.txt", swaps.join("\n") + (swaps.length ? "\n" : ""));
   }
+
+  /* ROWS DROPPED FROM A LINEUP THAT STAYS CONFIDENT — the third blind spot,
+   * and the one that let v172 reach readers.
+   *
+   * The loss triage above compares CONFIDENT to NOT-CONFIDENT. The swap check
+   * compares SOURCES. Neither looks at a plan that stays confident, keeps its
+   * source, and simply publishes FEWER ROWS than it did — so a version that
+   * deletes one row from a 27-row menu moves nothing any check watches.
+   *
+   * MEASURED, 2026-09-20. v172 deleted the row where Apple files
+   * `BROKERGE ACCOUNT | Various Accounts | 2,153,504,672` — the identity is
+   * the brokerage window, the description is prose, the description won the
+   * name and the prose rule fired on it. **$2,153,504,672, 7% of a $30.8B
+   * plan, 145,428 participants**, and Apple's published menu fell from 98.7%
+   * of the plan to 91.7% with nothing on the page saying so. Its verdict read
+   * three plans by ROW COUNT, all three came out as predicted, and it passed:
+   * Apple went 27 -> 26, a one-row move indistinguishable from noise.
+   *
+   * What discriminates is what already discriminates for swaps — the RATIO
+   * moving AWAY from 1.0. A version that removes a fabricated row leaves a
+   * genuinely unaccounted gap and the ratio falls honestly, so this cannot be
+   * a HIGH and cannot be read as "the version is wrong"; it is a list of the
+   * plans a human must look at before mirroring. WARN, like the swaps, and
+   * for the same reason: the population must not drown the baseline HIGHs.
+   *
+   * The bar is 0.03 of drift because Apple's was 0.070 and the whole point is
+   * to catch the next one with margin. */
+  {
+    const dropped = [];
+    for (const [a, m] of Object.entries(status.plans)) {
+      if (!m.c) continue;
+      const before = prevShape[a];
+      if (!before) continue;
+      if (before.fb || m.fb) continue;           // a source change is the swap check's job
+      const e = buckets[shardOf(a)][a];
+      if (!e || !e.funds) continue;
+      if (e.funds.length >= before.n) continue;  // no rows lost
+      const r = e.coverageRatio || 0;
+      const drift = Math.abs(1 - r) - Math.abs(1 - before.r);
+      if (drift > 0.03) {
+        dropped.push(`${a} ${before.n} rows @ ${before.r.toFixed(3)} -> ${e.funds.length} rows @ ${r.toFixed(3)} (${drift.toFixed(3)} further from 1.0)`);
+      }
+    }
+    dropped.sort();
+    console.log(`  confident lineups that LOST rows and moved away from 1.0 (>0.03): ${dropped.length}`);
+    for (const line of dropped.slice(0, 15)) console.log(`    ${line}`);
+    writeFileSync("rows-dropped.txt", dropped.join("\n") + (dropped.length ? "\n" : ""));
+  }
 }

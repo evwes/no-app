@@ -18470,3 +18470,57 @@ Verified after the repair: gate green; Apple 26 → 27, ratio 0.918 → 0.988,
 unchanged by the tightening; Kirkland 30 → 30; Trustmark 29 → 32 with the three
 values intact. The corpus diff is being re-run because the rule changed after
 the first one, and **v175 is not dispatched until it comes back.**
+
+## 2026-09-20 (20:3xZ) — the third blind spot, closed: rows dropped from a lineup that stays confident
+
+v172 reached readers because **nothing in the pipeline looks at a plan that
+stays confident, keeps its source, and publishes fewer rows.**
+
+- `losses-triage.txt` compares CONFIDENT to NOT-CONFIDENT — it sees lineups
+  that vanish.
+- `swaps-degraded.txt` compares SOURCES — it sees plans that move between
+  their own filing and a prior year.
+- **Neither sees Apple going 27 rows → 26 while $2,153,504,672 leaves the
+  menu**, 7% of a $30.8B plan, 145,428 participants, the ratio falling from
+  0.987 to 0.917 with every count-based check passing.
+
+This is the same blind spot v168's `appreciat` defect used, where this file
+already recorded "no coverage metric could see this defect" — and then nothing
+was built. Writing a blind spot down is not closing it.
+
+### The check
+
+`merge-4i` now emits `rows-dropped.txt` beside the other two, and `audit-data`
+raises it as **WARN**. For every plan that is confident on both sides, keeps
+its source (`fb` unchanged, so swaps stay the swap check's business) and has
+FEWER rows than before, it reports the drift `|1 − r_new| − |1 − r_old|` and
+lists the plan when that exceeds **0.03**. Apple's drift was **0.070**, so the
+bar catches it with margin.
+
+**WARN and not HIGH, deliberately.** A version that removes a genuine
+fabrication also drops the ratio — the gap the fake row was filling is real
+and now correctly unclaimed. So this list cannot be read as "the version is
+wrong"; it is the set of plans a human must open before mirroring. Exactly the
+standing the swap check has, for exactly the same reason: it must not drown
+the four baseline HIGHs.
+
+### Controlled in both directions through the real merge
+
+A check that prints 0 on a quiet store has not been tested, so it was not
+shipped on a quiet store. A crafted delta was run through the REAL `merge-4i`
+on a copied tree, dropping one row from each of two live confident plans:
+
+| | before | after | flagged |
+|---|---|---|---|
+| **positive** — largest row removed | 31 rows @ 0.990 | 30 @ 0.845 (drift 0.145) | **yes** |
+| **negative** — smallest row removed | 16 rows @ 0.980 | 15 @ 0.978 (drift 0.002) | **no** |
+
+`rows-dropped.txt` came back holding exactly the one line.
+
+### What it does not do
+
+It cannot tell a fabrication removal from a real loss — nothing can, from
+counts alone; that took reading Apple's filing. What it does is guarantee the
+plan is *named* so someone looks. The v172 verdict read three plans chosen by
+hand and all three behaved; this would have put Apple on the list without being
+asked.
