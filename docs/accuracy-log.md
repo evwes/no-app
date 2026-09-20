@@ -18568,3 +18568,93 @@ to fire on — the documented reliable route was used instead of manufacturing a
 commit. Its pre-registered tests: the deleted-brokerage class goes **6 → 0**,
 Apple's ratio reads **~0.99 against 0.918 today**, and Trustmark publishes
 **three separate** Charles Schwab rows rather than one summed $13,916,207.
+
+## 2026-09-20 (22:4xZ) — run #415 verdict: v175 PASSED ITS OWN TESTS AND PUBLISHED A $1.7B PHANTOM. NOT MIRRORED. v176 narrows it.
+
+`8fffe922`, pv **175 at 99.85%**. Confident **60,118 (+1)**, lineups 59,767,
+HIGH 5, overshoot 332, dl 104.
+
+### The three pre-registered tests all passed
+
+| test | measured |
+|---|---|
+| Apple's ratio ~0.99 (0.918 before) | **0.987**, `BROKERGE ACCOUNT` $2,153,504,672 restored, 27 rows |
+| Trustmark: three separate Schwab rows, not one $13,916,207 | **three**, at $11,571,694 / $1,797,981 / $546,532 |
+| Kirkland's bare `Vanguard` must not return | **absent**, 30 rows |
+| rows still NAMED by the prose anywhere | **0** |
+
+**And the run is still not fit to mirror**, which is the whole point of this
+entry: passing the tests you thought to write is not the same as being right.
+
+### The +1 confident was the defect
+
+Only one metric moved in the entire coverage line — `confident` 60,117 →
+60,118 — and it moved the RIGHT way for the worst possible reason. The whole-
+store row diff (v174 store → v175 store: **175 rows added across 120 plans /
+213,197 ppl**, 72 removed) put it second by value, right under Apple:
+
+**Thrivent Financial for Lutherans, 9,282 participants: a single row named
+`Thrivent` at $1,700,835,259 — 99.2% of a six-row menu.**
+
+Traced through three stores, the history is unambiguous and it is not a
+restoration:
+
+| | rows | the big row | confident |
+|---|---|---|---|
+| v171 | 6 | `Various participant` $1,700,835,259 | **no** |
+| v174 | 11 | absent (v172 deleted it), ratio 0.010 | **no** |
+| v175 | 6 | **`Thrivent`** $1,700,835,259, ratio 1.000 | **YES** |
+
+So v175 did not give this plan back something it had lost. **It converted a
+correct silence into a $1.7B fabrication**, and no audit caught it: `Thrivent`
+is neither a generic type (`audit-generic-names`) nor a known house
+(`isHouseName` returns **false** — the list holds Vanguard and Fidelity).
+
+### The arithmetic guard was the obvious fix and it was wrong three times
+
+An `_alt` flag plus "drop a substituted row at ≥90% of the menu" — v105's
+threshold — looked right and silently did nothing, three placements running:
+
+1. **Before the dedup.** The winning region renders the schedule TWICE, so the
+   row was $1,700,835,259 of a $3,423,052,764 total — **49.7%, under the bar**
+   — and only reached 99.2% once the duplicate render collapsed. Two wrong
+   guesses preceded this; one instrumented run printed
+   `[ALTCHK] leaves=19 total=3423052764 alt=2` and ended the argument.
+2. **After the dedup, on `allRows`.** `parseRows` also returns the `hard` and
+   `pair` variants and the region contest may pick either; the phantom came
+   straight back in a 12-row region at 99.0%.
+3. **On all three row sets.** It returned again.
+
+**Chasing it down the pipeline was treating a symptom.** Each placement was a
+better guess than the last and all three were the same mistake.
+
+### v176: narrow the rule instead of guarding it
+
+The evidence was already in hand and said the rule should never have been
+broad. **All six genuine cases are brokerage windows** — Apple
+`BROKERGE ACCOUNT`, Beall's `Schwab Self-Managed Brokerage Investments`,
+Wieden & Kennedy and Rousselot `Participant-Directed Brokerage accounts`,
+Streamland `Individual Brokerage Accounts`, Snider `Schwab Brokerage Account`.
+**Not one is a bare firm.** So the identity must NAME AN ACCOUNT — a property
+of the string alone, with no set knowledge and therefore no placement problem
+at all.
+
+Verified: **Thrivent 11 rows @ 0.010, CONFIDENT=false** — back to publishing
+nothing, exactly as before v175; **Apple 27 rows @ 0.988 with its row kept**;
+Kirkland unchanged; **Trustmark 32 → 29, the recorded cost** — its three Schwab
+rows are given up, returning it to v174. A marginal gain traded for shutting a
+$1.7B hole.
+
+### What this run is worth as a lesson
+
+The corpus diff passed v175 cleanly (1,004 filings, all zeros bar three benign
++1-row moves) and **could not have caught this**: Thrivent is not in the
+corpus, exactly as Kirkland and Trustmark were not. Three separate defects in
+one day's work, none visible to the corpus. **The instrument that found all
+three is the same one: diff the WHOLE STORE between runs and read the movers by
+name.** The corpus diff is a regression guard on common shapes; it is not a
+verdict, and today it said "clean" three times over real fabrications.
+
+**MAIN STAYS ON v174.** The v175 store on the branch carries the Thrivent
+phantom and must not be mirrored. v176 dispatches next; the mirror waits for
+its store.

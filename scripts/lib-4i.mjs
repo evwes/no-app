@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 175;
+export const PARSER_VERSION = 176;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -2369,6 +2369,7 @@ export function parseRows(section, opts = {}) {
      * killed that whole line and the parser gate caught it — so the test
      * belongs on the RESOLVED name, after the description has had its chance.
      * Sempra keeps its row because its final name is the brokerage account. */
+    let altName = false;
     if (/^various\b/i.test(name.trim())) {
       /* v175: BEFORE DROPPING A PROSE NAME, ASK THE OTHER CELL.
        *
@@ -2418,8 +2419,42 @@ export function parseRows(section, opts = {}) {
        *
        * So the identity must also clear `isHouseName`. Neither plan is in the
        * corpus, so the diff could not have caught this -- the re-size did. */
+      /* v176: NARROWED, after v175 published a $1.7B phantom.
+       *
+       * v175 accepted any identity that was not prose, not type-only and not
+       * a known house. Thrivent Financial for Lutherans (9,282 ppl) files its
+       * whole balance under the bare identity `Thrivent`, and v175 published
+       * **$1,700,835,259 at 99.2% of a six-row menu** — turning a plan that
+       * had correctly published NOTHING (v171 carried the same row as
+       * `Various participant` and was not confident; v174 had no row at all
+       * at ratio 0.010) into a $1.7B fabrication. It was the `+1 confident`
+       * in #415's coverage line: a metric moving the right way for the worst
+       * possible reason. `isHouseName` does not refuse it — the house list
+       * holds Vanguard and Fidelity, not Thrivent — and extending that list
+       * is whack-a-mole against every insurer in the country.
+       *
+       * An arithmetic guard was tried FIRST and abandoned after three
+       * placements, each of which silently did nothing and each of which
+       * taught something: before the dedup the row was 49.7% of a
+       * double-rendered region; on `allRows` alone the `hard` and `pair`
+       * variants brought it straight back at 99.0%; on all three sets it
+       * returned again. Chasing it down the pipeline was treating a symptom.
+       *
+       * The evidence says the rule should be narrow, not guarded: ALL SIX
+       * genuine cases are brokerage windows — Apple `BROKERGE ACCOUNT`,
+       * Beall's `Schwab Self-Managed Brokerage Investments`, Wieden & Kennedy
+       * and Rousselot `Participant-Directed Brokerage accounts`, Streamland
+       * `Individual Brokerage Accounts`, Snider `Schwab Brokerage Account`.
+       * None is a bare firm. So the identity must NAME AN ACCOUNT, which is a
+       * property of the string alone and therefore has no placement problem
+       * at all.
+       *
+       * The cost is on the record: Trustmark's three `Charles Schwab & Co.,
+       * Inc.` rows are no longer restored, returning that plan to its v174
+       * state. A marginal gain given up to shut a $1.7B hole. */
       const alt = issCell ? String(issCell).trim() : "";
-      if (alt && !/^various\b/i.test(alt) && !typeOnly(alt) &&
+      const ACCOUNT_ID = /\b(?:brokerg?e?|brokerage|self[- ]?directed|sdba|account|accounts)\b/i;
+      if (alt && ACCOUNT_ID.test(alt) && !/^various\b/i.test(alt) && !typeOnly(alt) &&
           !isHouseName(alt) && alt.length >= 3) {
         /* AND THE PROSE IS KEPT AS THE REJECTED DESCRIPTION, which is what
          * stops the substitution merging rows. Trustmark files THREE rows
@@ -2435,10 +2470,10 @@ export function parseRows(section, opts = {}) {
          * them would have been the easy answer and would have thrown away
          * real money. */
         rejDesc = String(name).trim();
-        name = alt; issCell = "";
+        name = alt; issCell = ""; altName = true;
       } else { nameBuf = []; continue; }
     }
-    rows.push({ name: name.slice(0, 90), type: rowType, value, sec: curSection, ...(rejDesc && rejDesc !== name ? { _dd: rejDesc.slice(0, 60) } : {}), ...(type ? { ownType: 1 } : {}), ...(issCell ? { iss: issCell.slice(0, 60), ...(issTail ? { _it: 1 } : {}) } : curIss ? { iss: curIss.slice(0, 60) } : {}), ...(leadStripped ? { _sl: 1 } : {}) });
+    rows.push({ name: name.slice(0, 90), type: rowType, value, sec: curSection, ...(rejDesc && rejDesc !== name ? { _dd: rejDesc.slice(0, 60) } : {}), ...(type ? { ownType: 1 } : {}), ...(issCell ? { iss: issCell.slice(0, 60), ...(issTail ? { _it: 1 } : {}) } : curIss ? { iss: curIss.slice(0, 60) } : {}), ...(leadStripped ? { _sl: 1 } : {}), ...(altName ? { _alt: 1 } : {}) });
   }
 
   // ARITHMETIC subtotal removal (owner directive after Sempra: takeaways
@@ -2726,7 +2761,9 @@ export function parseRows(section, opts = {}) {
   const pairAll = pairFunds;
   if (pairFunds) pairFunds = pairFunds.slice(0, ROW_CAP);
   const allRows = [...seen.values()].map((e) => e.row).sort((a, b) => b.value - a.value);
+
   const hardAll = [...hard.values()].sort((a, b) => b.value - a.value);
+
   const allCut = cutTail(allRows);
   // totalValue covers every row, not just the displayed top 80 — huge filings
   // list thousands of individual securities and the ratio must reflect all.
