@@ -18419,3 +18419,54 @@ So the durable fix is not another specimen. It is that **a version which
 removes rows must report the ratio movement of the plans it touched**, the way
 the swap triage already does for swaps. That is a merge-side check and it is
 now the top queue item, ahead of the SDBA fold.
+
+### CORRECTION, same evening, before v175 was dispatched — the "6 rows / 6 plans" above is WRONG, and the first fix would have fabricated
+
+The entry above sizes the wrongly-deleted class at **6 rows / 6 plans /
+160,758 ppl**. That number came from a hand-written vocabulary list
+(`/brokerage|self-directed|mutual fund|collective|…/`) standing in for the
+condition v175 actually applies. **Re-sized against the real condition — the
+row simply HAS an identity cell — it is 129 rows / 127 plans / 239,283
+participants**, an upper bound before `typeOnly` and `isHouseName` refuse
+some. Twenty times the rows I published. **A hand-rolled proxy for a shipped
+predicate produced a wrong number, for at least the fifth time in this file.**
+
+And the size was the smaller half of the problem. The wider set contains two
+shapes this parser has already paid to exclude, and the first draft of v175
+admitted both:
+
+- **Kirkland & Ellis** (8,561 ppl) files a bare `Vanguard` as the identity.
+  Restoring it recreates the bare-house class v167 closed.
+- **Trustmark Corporation** (3,396 ppl) files **three** rows whose identity is
+  `Charles Schwab & Co., Inc.`, with descriptions `Various Unit Investment
+  Trusts`, `Various Mutual Funds`, `Various Stocks`. Naming all three from the
+  identity and discarding the description keys them identically and the dedup
+  **SUMS them: $11,571,694 + $1,797,981 + $546,532 = $13,916,207**, verified to
+  the dollar against the live trace. A holding that does not exist — the v160
+  shape, introduced by a fix for a fabrication.
+
+**Neither plan is in the corpus, so the corpus diff could not have caught
+either.** It returned 0/0/0 with three benign +1-row moves. What caught them
+was re-sizing the class with the real predicate and reading the members by
+name — the step I had skipped when I published "6".
+
+The repairs, in order, and the second one matters more than the first:
+
+1. `isHouseName` now refuses the identity. Kirkland's `Vanguard` is correctly
+   not restored. It does **not** refuse `Charles Schwab & Co., Inc.` — the full
+   corporate form is not a bare house — so Trustmark still merged, which the
+   trace showed rather than the regex predicting.
+2. **The prose is kept as the rejected description (`_dd`).** The dedup already
+   splits rows that share a base name but carry different descriptions, so all
+   three Trustmark rows survive separately and render as `Charles Schwab & Co.,
+   Inc. Various Mutual Funds` / `… Various Stocks` / `… Various Unit Investment
+   Trust`. 29 → 32 rows, ratio 0.952 → 0.987.
+
+**Dropping the colliding rows would have been the easy answer and would have
+thrown away $13.9M of real money to avoid inventing it.** Reusing the split the
+dedup already has keeps both properties.
+
+Verified after the repair: gate green; Apple 26 → 27, ratio 0.918 → 0.988,
+unchanged by the tightening; Kirkland 30 → 30; Trustmark 29 → 32 with the three
+values intact. The corpus diff is being re-run because the rule changed after
+the first one, and **v175 is not dispatched until it comes back.**

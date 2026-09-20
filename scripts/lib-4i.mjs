@@ -2404,8 +2404,37 @@ export function parseRows(section, opts = {}) {
        * type label — the same two shipped predicates the rest of the parser
        * asks. `NOT_FUND_SHAPED` will then class most of these as the aggregate
        * disclosures they are, which is the correct downstream treatment. */
+      /* CORRECTED before dispatch. The first draft accepted any identity that
+       * was not prose and not type-only, and a re-size against the ACTUAL
+       * condition (not the vocabulary list I first sized with -- 129 rows /
+       * 127 plans, not the 6 I published) showed that admits two shapes this
+       * parser has already paid to exclude:
+       *
+       *   Trustmark files THREE rows whose identity is `Charles Schwab & Co.,
+       *   Inc.` -- restoring all three under one name merges them in the dedup
+       *   into a single $13.9M holding that does not exist, the v160 shape;
+       *   Kirkland & Ellis files a bare `Vanguard`, which is the bare-house
+       *   class v167 closed.
+       *
+       * So the identity must also clear `isHouseName`. Neither plan is in the
+       * corpus, so the diff could not have caught this -- the re-size did. */
       const alt = issCell ? String(issCell).trim() : "";
-      if (alt && !/^various\b/i.test(alt) && !typeOnly(alt) && alt.length >= 3) {
+      if (alt && !/^various\b/i.test(alt) && !typeOnly(alt) &&
+          !isHouseName(alt) && alt.length >= 3) {
+        /* AND THE PROSE IS KEPT AS THE REJECTED DESCRIPTION, which is what
+         * stops the substitution merging rows. Trustmark files THREE rows
+         * whose identity is `Charles Schwab & Co., Inc.` and whose
+         * descriptions are `Various Unit Investment Trusts`, `Various Mutual
+         * Funds` and `Various Stocks`. Naming all three from the identity and
+         * throwing the description away keys them identically and the dedup
+         * SUMS them: $11,571,694 + $1,797,981 + $546,532 = $13,916,207, a
+         * holding that does not exist -- verified to the dollar on the real
+         * filing, and `isHouseName` does not refuse the full corporate form.
+         * Handing the prose to `_dd` lets the dedup's existing description
+         * split keep the three apart, so the rows survive as three. Dropping
+         * them would have been the easy answer and would have thrown away
+         * real money. */
+        rejDesc = String(name).trim();
         name = alt; issCell = "";
       } else { nameBuf = []; continue; }
     }
