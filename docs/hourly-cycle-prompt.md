@@ -237,6 +237,46 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 03:4xZ 2026-09-20: #405 (v170) PASSED ALL FOUR pre-registered
+      tests, MIRRORED UNFORCED (`78f01008 → 988d2fd9`, a fast-forward), and
+      v171 is DISPATCHED as #406 (observed queued 03:24Z).** pv 170 at 99.85%,
+      confident 60,117 (**+0 / −0**), HIGH 7 → 5, overshoot **335 → 335
+      exactly**, lineups 59,766, dl 104. Tests: bare-house class **20 → 14
+      plans / 8,457 ppl** (predicted 14–16 and NOT zero — Calpine, Dupre and
+      CCS Medical are other shapes and all three survive); marker names **663
+      rows → 4 rows / 3 plans / 952 ppl**; confidence +0/−0; overshoot flat,
+      where **no direction had been claimed on purpose**. What reached
+      readers: six plans stop publishing a merged bare-house row —
+      **Irisndt's 1,609 see forty-two holdings where one `JOHN HANCOCK` row
+      of $21,512,753 stood at 53% of the plan** — and 659 more names lose a
+      stray trailing `+`. **Test 2's four survivors are a THIRD layout and
+      are OPEN**: `Core Fixed Income R6 Fund +`, `Principal Lifetime Hybrid
+      2065 R6 +` (Herbert Rowland & Grubic, Zest Anchors, Seabrook Island
+      Club). **Why all four passed when two failed an hour earlier: every
+      premise had to name a measurement already in hand, and where the
+      mechanism permits either direction, no direction was claimed.**
+      **IN FLIGHT: #406 (v171)** — the Form 5500 employer-ID line, refused by
+      `SKIP_ROW` for years through an arm that REQUIRES a hash (`employer
+      i\.?d\.?\s*#`) while filings write `EMPLOYER I.D. 94-` without one.
+      43 rows / 43 plans / **29,821 ppl**. Evidence it is not a holding is
+      arithmetic: Easter Seals goes ratio 1.033 → **exactly 1.000**.
+      **Two method notes on the record with it:** the first corpus diff
+      returned all zeros over 997 filings and that was NOT evidence — every
+      member is a small plan and the corpus samples by assets; with two
+      specimens pinned it shows exactly the two intended removals over 999.
+      And my first sizing predicate said 45 rows / 79,605 ppl because an OCR
+      fold turned `Plan identified investments…` into `PIan identified…`,
+      which my own arm matched — **the implausible leader was the tell, for
+      the fifth time**. Marsh & McLennan (35,907 ppl, a $3.39B prose row at
+      48% of a 3-row menu) is queued as its own finding.
+      **Mirror safety checked, not assumed:** the mirror carried v171 CODE
+      over a v170 STORE, which is the "duplicate full re-parse on main"
+      hazard this file names — but `SCHEDULE_INCREMENTAL` (set for `schedule`
+      events) makes a parser-version gap not-work on a scheduled run, so
+      main's :23 cron cannot launch one. Verified in the workflow and in
+      `fetch-4i.mjs` before mirroring.
+      **Next wake: #406's verdict**, then the third marker layout (952 ppl)
+      and Marsh & McLennan.
       **STATUS 02:3xZ 2026-09-20: #403 (v169) PASSED, MIRRORED
       (`b23bc718 → 78f01008`), and TWO OF ITS FOUR PRE-REGISTERED TESTS
       FAILED — both recorded, both diagnosed, one already fixed. v170 (both

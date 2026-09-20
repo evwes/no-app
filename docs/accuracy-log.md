@@ -17705,3 +17705,45 @@ which is not what an employer-ID line looks like.
 **Marsh & McLennan is a real and separate finding**, recorded here rather than
 lost: 35,907 participants see `Plan identified investments held by ma…` at 48%
 of a 3-row menu, $3,391,393,571. Prose as a holding, queued.
+
+## 2026-09-20 (03:3xZ) — run #405 verdict (v170): ALL FOUR pre-registered tests PASSED, mirrored UNFORCED
+
+**Numbers.** pv 170 at 99.85% (68,662 of 68,767); confident **60,117, +0
+gained / −0 lost**; HIGH **7 → 5**; overshoot **335 → 335**; lineups 59,766;
+dl 104. Mirrored `78f01008 → 988d2fd9` **unforced on both checks** — a
+fast-forward, with main newer on zero acks and zero confident lineups the
+branch lacked.
+
+| test | predicted | result |
+|---|---|---|
+| 1 bare-house-dominant class | 20 → roughly 14–16, **not zero** | **14 plans / 8,457 ppl** |
+| 2 ` +` / ` ~` marker names | 663 rows → toward 0; a survivor's LAYOUT is the finding | **4 rows / 3 plans / 952 ppl** |
+| 3 net confidence | single digits, losses read by name | **+0 / −0** |
+| 4 overshoot | flat, **no direction claimed** | **335 → 335, exactly** |
+
+**What reached readers.** Six plans stop publishing a merged bare-house row and
+publish their real menus instead — Irisndt's 1,609 participants see forty-two
+holdings where one `JOHN HANCOCK` row of $21,512,753 stood for 53% of the plan,
+and The Jones Company, Intervala, Relatient, Firstkey Homes and Ubiquity Global
+Services the same. 659 more holding names lose a stray trailing `+`.
+
+**Test 1's negative half is the part worth noting.** The class did not go to
+zero and was not supposed to: Calpine (`Investments`, an OCR statement line
+that does not wrap), Dupre (the pinned control) and CCS Medical are different
+shapes, and all three survive. A rule that had swept them up would have been
+wrong in a way no count would show.
+
+**Test 2's survivors are the finding, exactly as the test was written to make
+them.** Four rows remain and they are a THIRD layout: `Core Fixed Income R6
+Fund +`, `Real Estate Securities R6 Fund +`, `Principal Lifetime Hybrid 2065
+R6 +`, `… 2070 R6 +` (Herbert Rowland & Grubic, Zest Anchors, Seabrook Island
+Club — 952 participants). Two layouts were known and fixed; this one is not yet
+diagnosed. **Recorded as open rather than claimed as done.**
+
+**Why all four passed this time, when two failed an hour ago.** The change was
+not to the parser but to how the predictions were written: every premise had to
+name a measurement already in hand, and where the mechanism genuinely permits
+movement in either direction — overshoot, because a region swap can raise a sum
+— **no direction was claimed at all**. A prediction that cannot fail is worth
+nothing, but a prediction whose premise was refuted by a diff sitting in the
+same document is worse.
