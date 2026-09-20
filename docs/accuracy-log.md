@@ -18056,3 +18056,57 @@ Nothing downstream compensated for the marker — it appears nowhere in
 raw and why no audit counted it.
 
 Both pinned in `docs/defect-specimens.json`.
+
+## 2026-09-20 (06:5xZ) — draw on the v172 store: two classes sized, and the outcome test inverted the bigger one
+
+Seed 920647, participant-weighted, 12 plans from 59,766 published lineups /
+89.3M participants. Sampled Amazon (1,336,478 ppl), Fmr, Gap, Plan
+Professionals, Vensure, Helpside, Choice, Pechanga, Fossil, Reliance, Caring,
+Fischbach. **No fabricated row found in ten of the twelve.**
+
+### A balance-sheet total as a holding — one plan, and stated as one
+
+Pechanga Development Corporation (4,520 ppl, served from a 2023 fallback)
+publishes **`Net position available for benefits` at $189,711,769 = 63.7%** of
+a 14-row menu, ratio 1.327. It is the audited statement's bottom line, not a
+holding. Both shipped predicates miss it: `NOT_FUND_SHAPED` carries
+`net assets.*` and the phrase is `net position`.
+
+**Whole-store: 1 row / 1 plan / 4,520 participants.** A one-token widening of
+a shipped predicate, worth taking as a freebie in a version that is bumping
+anyway, and not worth a version of its own. Recorded at its real size rather
+than promoted to a class.
+
+### The footnote reference in the name — 1.17M people, and NOT what it looked like
+
+7,429 rows / 506 plans / **1,172,804 participants** publish a holding whose
+name ends in a bare `(1)`, `(2)` … that no legend on the page explains. At 50%
+or more of the menu it is **270 plans / 458,348 ppl**: Fmr Llc names 110 of
+its 120 rows `FID 500 INDEX (1)`, Edustaff 17 of 17, Thermo Fisher 24 of 28
+(72,605 ppl).
+
+**It looked like a fee-cell loss on that scale and it is not.** Asking the
+shipped `fundTickerInfo` the same name with and without the marker, over all
+7,429 rows: **1,313 already resolve WITH the marker**, stripping it would gain
+**7 tickers across 7 plans / 4,309 participants**, and **0 rows resolve to a
+different ticker**. The matcher is tolerant of the suffix. So the finding is a
+readability blemish for 1.17M readers, not lost data — **the third time in
+this one cycle that counting the condition gave a different answer from
+counting the outcome**, after the `(continued)` fee-cell claim and v172's
+prose class an hour earlier.
+
+### Why it is queued and not shipped: the counter-case exists and was measured
+
+A blanket strip would MERGE rows the filing distinguishes. Checked whole-store:
+**5 collisions across 4 plans** — Chimes International (3,791 ppl) files
+`Pooled separate accounts NIA NIA (1)` **and** `(6)`; Western Ecosystems
+(524 ppl) files `Putnam Stable Value Fund` both marked and unmarked; Urban
+School of San Francisco (220 ppl) does the same on two TIAA Traditional rows;
+American Financial Group (10,439 ppl) on its own sponsor name. Merging them
+sums two real holdings into one that does not exist — **the v160 / Mass
+General Brigham shape exactly**.
+
+So the shippable rule is the strip GUARDED by a collision test against the
+same lineup, which puts it at the dedup stage rather than the row stage. Sized,
+counter-case measured, and left for the next version bump; #409 is in flight
+and nothing can dispatch behind it.
