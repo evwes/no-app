@@ -731,54 +731,47 @@ don't confuse them). Frontend: python http.server + Playwright at
   (`receivable` at 9, all real asset-backed securities protected by v153's
   `securityRow` exemption). Recorded, not fixed.
   `docs/accuracy-log.md` 2026-09-19 (run #401 verdict).
-- **LIVE on main: the v170 store — MIRRORED 2026-09-20 03:3xZ, UNFORCED on
-  both checks** (a fast-forward, `78f01008 → 988d2fd9`; main newer on 0 acks,
-  0 confident lineups the branch lacked). pv 170 at 99.85%, confident **60,117
-  (+0 / −0)**, HIGH 7 → 5, overshoot **335 → 335 exactly**, lineups 59,766,
-  dl 104. **ALL FOUR pre-registered tests passed**: bare-house-dominant class
-  **20 → 14 plans / 8,457 ppl** (predicted 14–16 and NOT zero; Calpine, Dupre
-  and CCS Medical are other shapes and all survive), marker names **663 rows →
-  4 rows / 3 plans / 952 ppl**, confidence +0/−0, overshoot flat where **no
-  direction was claimed on purpose**. **What reached readers:** six plans stop
-  publishing a merged bare-house row — **Irisndt's 1,609 participants see
-  forty-two holdings where one `JOHN HANCOCK` row of $21,512,753 stood at 53%
-  of the plan** — plus The Jones Company, Intervala, Relatient, Firstkey Homes
-  and Ubiquity Global Services; and 659 more names lose a stray trailing `+`.
-  **Test 2's four survivors are a THIRD layout and are OPEN** (`Core Fixed
-  Income R6 Fund +`, `Principal Lifetime Hybrid 2065 R6 +`). **Why all four
-  passed when two had failed an hour earlier: every premise had to name a
-  measurement already in hand, and where the mechanism permits either
-  direction, no direction was claimed.**
-  `docs/accuracy-log.md` 2026-09-20 (run #405 verdict).
-- **IN FLIGHT: #406 (v171), dispatched 2026-09-20 03:24Z on the dev branch.**
-  **The Form 5500 employer-ID line, refused by `SKIP_ROW` for years and still
-  publishing.** The arm is `employer i\.?d\.?\s*#` and REQUIRES the hash;
-  filings overwhelmingly write `EMPLOYER I.D. 94-` with none, so it never
-  fired. **43 rows / 43 plans / 29,821 participants.** v171 makes the hash
-  optional, tolerates an OCR pipe in the `I`, and covers one filing's
-  misspelling. **The evidence that the row is not a holding is arithmetic:**
-  Easter Seals Southern California goes ratio 1.033 → **exactly 1.000**; Tri
-  Pointe Homes 1.003 → 0.986. Gate green; corpus diff with two pinned
-  specimens over 999 filings shows **0 gained, 0 lost, 0 fabricated either
-  way, 0 sum moves, and exactly the two intended removals**.
-  **TWO METHOD NOTES, both earned here.** (1) The FIRST corpus diff returned
-  all zeros over 997 filings and **that was not evidence of anything** — every
-  member of this class is a small plan and the corpus is sampled by assets, so
-  it could not contain one. A clean diff over a corpus that cannot hold the
-  class says only that nothing else broke. (2) My first sizing predicate said
-  45 rows / 79,605 ppl, led by two Marsh & McLennan plans — **false**, because
-  the OCR fold turned `Plan identified investments held by ma…` into
-  `PIan identified…` and my own `pIan\s*id` arm matched it. The honest figure
-  is 43 / 29,821, and **the implausible leader was the tell for the fifth
-  time**. **Marsh & McLennan is a real separate finding and is queued:**
-  35,907 participants see `Plan identified investments held by ma…` at
-  **$3,391,393,571 = 48%** of a three-row menu.
-  **Mirror safety was checked rather than assumed:** the 03:3xZ mirror carried
-  v171 CODE over a v170 STORE, which is the "duplicate full re-parse on main"
-  hazard this file names elsewhere — but `SCHEDULE_INCREMENTAL` (set by the
-  workflow for `schedule` events, read by `fetch-4i.mjs`) makes a
-  parser-version gap not-work on a scheduled run, so main's :23 cron cannot
-  launch one. Verified in both files before mirroring.
+- **LIVE on main: the v171 store — MIRRORED 2026-09-20 05:2xZ, UNFORCED**
+  (fast-forward `988d2fd9 → 9acd1781`). pv 171 at 99.85%, confident **60,117
+  (+0 / −0)**, HIGH 5, **overshoot 335 → 332**, lineups 59,766, dl 104.
+  **The Form 5500 employer-ID class went 43 rows / 43 plans / 29,821 ppl → 1 /
+  1 / 1,598**, and **the v169 regression is repaired**: Shared Support South
+  (195 ppl) loses the $2,134,543 EIN row, ratio **1.43 → 1.009**. The one
+  survivor is diagnosed and is a different shape — IBG Llc's line is a PAGE
+  HEADER carrying the plan name and `Employer ID Number: 13-3832398`, with the
+  EIN read as a dollar value, so it does not START with the employer-ID words
+  and the anchored arm cannot reach it.
+  `docs/accuracy-log.md` 2026-09-20 (run #406 verdict).
+- **IN FLIGHT: #407 (v172), dispatched 2026-09-20 05:24Z. PROSE IS NOT A
+  HOLDING NAME — and the PARSER GATE caught the counter-case before the
+  universe did.** Oracle (101,985 ppl) published `Various investments,
+  including registered market funds and c` at **$3,405,120,000** = 9.6% of a
+  $35B plan. **The first attempt added `various` to `SKIP_ROW`, which drops
+  the whole LINE, and the gate refused the universe** over Sempra's trust —
+  31 rows → 30, sum down $222,238,162 — because its filing reads
+  `Various | Self-Directed Brokerage Acct | $222,238,162`, where **`Various`
+  is the honest IDENTITY of a brokerage window holding many issuers** and the
+  real name is in the description. The rule now runs on the **RESOLVED name**,
+  after the description has had its chance. **The row level and the name level
+  are different places — the same lesson v170 learned about the footnote
+  marker two hours earlier, and the gate is why it cost ten minutes instead of
+  a mirrored regression.**
+  Corpus diff over 1,001 filings: 0 gained, 0 lost, 0 fabricated either way,
+  0 sum moves, **eight row-count moves all read by name**. **Capital One is a
+  GAIN** (28 → 31: its `Managed account holdings (3 positions)` fold at
+  $2,097,924,643 dissolves and $1.14B of real funds publish). Providence loses
+  a **$9,659,350,978** master-trust phantom from a lineup that was not
+  published either way. **Progressive 33 → 25 is a recorded COST:** eight
+  brokerage-window CATEGORY summaries (~$499M) are correctly not funds, but
+  deleting them loses the window's composition instead of folding it into the
+  SDBA aggregate — **that fold is the next queue item.**
+  **A NUMBER PUBLISHED AN HOUR EARLIER WAS CORRECTED IN THE SAME CYCLE:** the
+  prose class is not "274 plans / 790,790 ppl" — that counts every plan
+  containing any such row, mostly ~1% loan-rate fragments. At ≥10% of a menu
+  it is **17 rows / 6,054 ppl**, and Oracle sits just UNDER that threshold
+  while being 94% of the people and nearly all of the money. **A count of a
+  condition is not a count of an outcome — recorded in this very log one hour
+  before I did it again.**
 - **Previously: the v167 store — MIRRORED 2026-09-19 21:2xZ** (`--force` over
   main's cron commit `7d9f401c` — 0 acks and 0 plans the branch lacked, plans
   array byte-identical, main newer on 1 ack — and `--force-data` over the

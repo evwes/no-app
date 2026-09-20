@@ -237,6 +237,44 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 05:3xZ 2026-09-20: #406 (v171) PASSED and MIRRORED UNFORCED
+      (`988d2fd9 → 9acd1781`, fast-forward); v172 DISPATCHED as #407
+      (observed queued 05:24Z).** #406: pv 171 at 99.85%, confident 60,117
+      (+0 / −0), HIGH 5, **overshoot 335 → 332**. **Class 43 rows / 43 plans
+      / 29,821 ppl → 1 / 1 / 1,598**, and **my own v169 regression is
+      repaired** — Shared Support South loses the $2,134,543 EIN row and its
+      ratio goes **1.43 → 1.009**. The survivor is diagnosed: IBG Llc's line
+      is a PAGE HEADER (`IBG LLC 401(k) PLAN … Employer ID Number:
+      13-3832398`) with the EIN read as the value, so it does not start with
+      the employer-ID words and the anchored arm cannot see it.
+      **v172 is where the PARSER GATE earned its keep.** The queue item was
+      prose-as-holding (Oracle: `Various investments, including registered
+      market funds and c` at **$3,405,120,000**). First attempt added
+      `various` to `SKIP_ROW`, which drops the whole LINE — and the gate
+      **refused the universe** over Sempra's trust, 31 rows → 30, sum down
+      $222,238,162, because its filing reads `Various | Self-Directed
+      Brokerage Acct | $222,238,162` where **`Various` is the honest IDENTITY
+      of a brokerage window** and the real name is in the description. Moved
+      to the RESOLVED name, after the description has had its chance.
+      **The row level and the name level are different places — the same
+      lesson v170 learned about the footnote marker two hours earlier.**
+      Gate green; corpus diff over 1,001 filings 0 gained / 0 lost / 0
+      fabricated / 0 sum moves, **eight row-count moves all read**: Capital
+      One is a GAIN (28 → 31, its `Managed account holdings (3 positions)`
+      fold dissolves and $1.14B of real funds publish); Providence loses a
+      **$9,659,350,978** master-trust phantom from a non-published lineup;
+      **Progressive 33 → 25 is a recorded COST** — eight brokerage CATEGORY
+      summaries (~$499M) are correctly not funds, but deleting them loses the
+      window's composition instead of folding it into the SDBA aggregate.
+      **That fold is the next queue item.**
+      **ALSO CORRECTED A NUMBER I PUBLISHED AN HOUR AGO** in the morning
+      brief: the prose class is NOT 274 plans / 790,790 ppl (that counts every
+      plan containing any such row, mostly ~1% loan-rate fragments). At ≥10%
+      of a menu it is **17 rows / 6,054 ppl**, with Oracle just under the
+      threshold at 94% of the people. **A count of a condition is not a count
+      of an outcome — which this log recorded ONE HOUR before I did it again.**
+      **Next wake: #407's verdict**, then the SDBA fold, then the issuer
+      `(continued)` class once the predicate question is settled.
       **STATUS 04:3xZ 2026-09-20: #406 (v171) still parsing at ~1h; no poll.
       Cycle spent on the standing DRAW and the morning brief.** Draw seed
       920420, participant-weighted, 10 plans, **1.95M participants sampled**
