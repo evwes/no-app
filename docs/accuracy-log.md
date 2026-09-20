@@ -18298,3 +18298,124 @@ looked purely cosmetic was also blinding a classifier. That is worth keeping:
 a string the parser carries around is an input to everything downstream of it,
 and "harmless noise in a name" is a claim about every consumer of that name,
 not just the renderer.
+
+## 2026-09-20 (19:5xZ) — v175: v172 DELETED $2.15B OF APPLE'S BROKERAGE WINDOW, and I reported it as a win
+
+### The defect, which is mine and twelve hours old
+
+v172 shipped this morning with the rule *"`Various …` is never the NAME of a
+holding"*, run on the resolved name. Apple Inc. files:
+
+```
+BROKERGE ACCOUNT        Various Accounts        2,153,504,672
+```
+
+Identity `BROKERGE ACCOUNT` — the filing's own typo — and description
+`Various Accounts`. The description won the name, the rule fired on it, and the
+**whole row was deleted: $2,153,504,672, 7% of a $30.8B plan, for 145,428
+participants.** Apple's published menu fell from **98.7% of the plan to 91.7%**
+and nothing on the page said a dollar had gone missing.
+
+**This is the SEMPRA CASE WITH THE COLUMNS SWAPPED.** Sempra files
+`Various | Self-Directed Brokerage Acct | $222,238,162`, prose in the identity
+and the real name in the description; the parser gate refused the universe over
+it while v172 was being written, which is recorded in v172's own entry as the
+gate earning its keep. It did — for that orientation. **A gate specimen proves
+the orientation it pins, not the axis it lies on**, and I read the save as
+general when it was particular.
+
+### How it was found, and the test that should have found it sooner
+
+Not by an audit; no audit can see this. It came out of sizing the SDBA fold —
+v172's *other* recorded cost — by diffing the pre-v172 store against the live
+one. **275 plans / 790,790 participants lost a `Various…` row to v172.**
+
+Then the decisive measurement, which is one this project already requires of
+every swap and which I did not run on my own change before shipping it: **did
+the ratio move toward 1.0 or away from it?**
+
+| | plans | participants |
+|---|---|---|
+| ratio moved TOWARD 1.0 | 39 | 87,517 |
+| ratio moved AWAY from 1.0 | **168** | **593,171** |
+
+Apple 0.987 → 0.917. Intuit 0.993 → 0.919. AMD 0.993 → 0.897. Progressive
+0.986 → 0.946.
+
+**But a ratio moving away does NOT by itself prove the removal was wrong** —
+if the row really is fabricated, the gap it was filling is genuinely
+unaccounted for, and the honest ratio is the lower one. So the ratio selected
+what to open; the FILING decided. That distinction is the whole reason this
+entry can state a size instead of a suspicion.
+
+### The split, measured whole-store and unanimous
+
+Of the 286 deleted rows, the ones whose row carries a real name in its OTHER
+cell:
+
+| | rows | plans | participants |
+|---|---|---|---|
+| **other cell names something real — WRONGLY DELETED** | **6** | **6** | **160,758** |
+| no real other cell — a separate question | 280 | 269 | 630,032 |
+
+The six are unanimous and every one is a brokerage window: Apple
+(`BROKERGE ACCOUNT`, $2,153,504,672), Beall's
+(`Schwab Self-Managed Brokerage Investments`), Wieden & Kennedy
+(`Participant - directed brokerage accounts`), Streamland
+(`Individual Brokerage Accounts`), Snider Motors (`— Schwab Brokerage
+Account`), Rousselot (`Participant-Directed Brokerage accounts`).
+
+### What v175 does, and what it deliberately does not
+
+Before dropping a prose name, ask the other cell. Use the identity when it is
+not itself prose and not a bare type label — the same two shipped predicates
+the rest of the parser asks, no third copy invented. `NOT_FUND_SHAPED` then
+classes most of these as the aggregate disclosures they are, which is the
+correct downstream treatment.
+
+**The other 280 rows are NOT touched.** Oracle's `Various investments,
+including registered market funds and c`, Intuit's `Various units`,
+Progressive's three category summaries have no other cell naming anything.
+Whether an unitemised remainder should publish under an honest aggregate label
+rather than silently vanish is a real question — it is the SDBA fold, it now
+has a measured size of **269 plans / 630,032 participants**, and it touches
+owner question 5. It is not something to decide inside a regression fix.
+
+### Verification
+
+Parser gate green, Sempra's control row untouched.
+
+- **Apple** `20260731154304NAL0024144561001`: 26 → **27 rows**, ratio
+  **0.918 → 0.988**, the $2,153,504,672 row back as `BROKERGE ACCOUNT`.
+- Pinned as a specimen with the orientation spelled out.
+
+Note the row publishes the filing's misspelling verbatim. That is the project's
+rule — report what is filed — but it is worth a display-level decision later,
+and it is recorded here rather than silently normalised.
+
+**Scope stated honestly: only Apple is demonstrable through the local trace.**
+The other five reach the store through fallback or OCR paths that do not
+reproduce in-sandbox, so their recovery is a prediction, not a measurement, and
+the #414 verdict is where it gets checked. The pre-registered test is that the
+deleted-brokerage class goes 6 → 0 and Apple's ratio reads ~0.99.
+
+### The lesson, which is not "add a specimen"
+
+Two rules this project already had would each have caught it:
+
+1. **"Measure the shipped change's LOSSES on the same store as its gains"**
+   (2026-09-16). v172's verdict read three plans by ROW COUNT — Oracle,
+   Capital One, Progressive — and every one came out as predicted, so it passed.
+   Row count was the wrong instrument: Apple went 27 → 26, a one-row move
+   indistinguishable from noise, carrying $2.15B.
+2. **The ratio test the swap triage runs automatically on swaps** is not run on
+   rows a version DELETES. `losses-triage.txt` sees lineups that vanish;
+   `swaps-degraded.txt` sees plans that change source. **A version that deletes
+   one row from a confident lineup is invisible to both**, which is the same
+   blind spot v168's `appreciat` defect exploited — recorded in this file as
+   "no coverage metric could see this defect" and then not acted on.
+
+So the durable fix is not another specimen. It is that **a version which
+removes rows must report the ratio movement of the plans it touched**, the way
+the swap triage already does for swaps. That is a merge-side check and it is
+now the top queue item, ahead of the SDBA fold.

@@ -758,6 +758,13 @@
       "fixed": "v174 (control, must not change)",
       "sponsor": "Western Ecosystems Technology",
       "was": "NOT a defect. It files `Putnam Stable Value Fund` at $14,679 AND `PUTNAM STABLE VALUE FUND (15)` at $14,678. The values are close but NOT equal, so the same-name-same-value duplicate-render suppression would not have collapsed them -- stripping the marker would key both to the same name and SUM them into a $29,357 holding that does not exist, which is the v160 / Mass General Brigham fabrication exactly. v174's guard refuses the strip when the bare name already belongs to an unmarked row, and both rows survive unchanged. Whole-store there are 5 such collisions across 4 plans; Chimes International files the same name under `(1)` and `(6)`, which the second refusal covers."
+    },
+    {
+      "ack": "20260731154304NAL0024144561001",
+      "class": "prose-name-DELETED-a-row-the-filing-named-in-its-other-cell",
+      "fixed": "v175",
+      "sponsor": "Apple Inc.",
+      "was": "v172's prose rule deleted the whole row where the filing reads `BROKERGE ACCOUNT | Various Accounts | 2,153,504,672` -- identity is the brokerage account (with the filing's own typo), description is the prose. The description won the name, the rule fired on it, and $2,153,504,672 of Apple's brokerage window vanished from the menu 145,428 participants read; the lineup fell from 98.7% of the plan to 91.7% with nothing saying so. THIS IS THE SEMPRA CASE WITH THE COLUMNS SWAPPED -- Sempra files `Various | Self-Directed Brokerage Acct` and the parser gate caught that orientation while v172 was being written, which is exactly why this one went unnoticed: a gate specimen proves the orientation it pins, not the axis it lies on. v175 asks the other cell before dropping. Class: 6 rows / 6 plans / 160,758 ppl, every one a brokerage window."
     }
   ]
 }

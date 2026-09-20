@@ -773,6 +773,40 @@ don't confuse them). Frontend: python http.server + Playwright at
   at 63.7% (1 plan / 4,520 ppl). One token on `NOT_FUND_SHAPED` — but that arm
   is SHARED with `AGG_DISCLOSURE`, and v137 records a shared-predicate widening
   making 3M's note publishable. Two risks in one bump, for one plan. Queued.
+- **CORRECTION, 2026-09-20 19:5xZ — v172 IS A LIVE REGRESSION FOR 145,428
+  APPLE PARTICIPANTS AND THIS FILE REPORTED IT AS A CLEAN WIN.** v172's prose
+  rule deleted the WHOLE ROW where Apple files
+  `BROKERGE ACCOUNT | Various Accounts | 2,153,504,672` — identity is the
+  brokerage account (the filing's own typo), description is the prose, the
+  description won the name, and **$2,153,504,672 = 7% of a $30.8B plan
+  vanished from the published menu**, which fell from 98.7% of the plan to
+  91.7% with nothing on the page saying so. **It is the SEMPRA case with the
+  columns swapped** — the gate caught `Various | Self-Directed Brokerage Acct`
+  while v172 was being written, and that save was read as general when it was
+  particular. **A gate specimen proves the orientation it pins, not the axis
+  it lies on.**
+  **Found by sizing the SDBA fold, not by any audit.** Diffing the pre-v172
+  store against the live one: **275 plans / 790,790 ppl lost a `Various…` row**,
+  and the ratio moved AWAY from 1.0 on **168 plans / 593,171 ppl** (Apple
+  0.987→0.917, Intuit 0.993→0.919, AMD 0.993→0.897). **A ratio moving away does
+  not by itself prove the removal was wrong** — if the row is fake the gap is
+  genuinely unaccounted — so the ratio chose what to OPEN and the FILING
+  decided. Split, whole-store and unanimous: **6 rows / 6 plans / 160,758 ppl
+  have a real name in the row's OTHER cell and were wrongly deleted** (Apple,
+  Beall's, Wieden & Kennedy, Streamland, Snider Motors, Rousselot — every one a
+  brokerage window); **280 rows / 269 plans / 630,032 ppl have no other cell**
+  (Oracle, Intuit, Progressive) and are the SDBA-fold question, now sized.
+  **v175 fixes the six and deliberately does not touch the 280.**
+  **THE DURABLE LESSON IS NOT "ADD A SPECIMEN".** Two existing rules would each
+  have caught it: (1) *measure the shipped change's LOSSES on the same store as
+  its gains* — v172's verdict read three plans by ROW COUNT and Apple's 27 → 26
+  is a one-row move indistinguishable from noise carrying $2.15B; (2) the ratio
+  test the swap triage runs automatically is **never run on rows a version
+  DELETES**. `losses-triage.txt` sees lineups that vanish, `swaps-degraded.txt`
+  sees plans that change source, and **a version that deletes one row from a
+  confident lineup is invisible to both** — the same blind spot v168's
+  `appreciat` defect exploited. **TOP QUEUE ITEM, ahead of the SDBA fold: a
+  merge-side check that reports ratio movement for plans whose row COUNT fell.**
 - **MIRRORED 2026-09-20 18:1xZ: the v173 store is LIVE on main** (`285bf55e →
   23ea1499`). `--force` on the GIT check only over main's three incremental
   cron commits — **0 acks and 0 plans the branch lacked, plans array

@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 174;
+export const PARSER_VERSION = 175;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -2369,7 +2369,46 @@ export function parseRows(section, opts = {}) {
      * killed that whole line and the parser gate caught it — so the test
      * belongs on the RESOLVED name, after the description has had its chance.
      * Sempra keeps its row because its final name is the brokerage account. */
-    if (/^various\b/i.test(name.trim())) { nameBuf = []; continue; }
+    if (/^various\b/i.test(name.trim())) {
+      /* v175: BEFORE DROPPING A PROSE NAME, ASK THE OTHER CELL.
+       *
+       * v172 was right that `Various …` is not the name of a holding and
+       * WRONG to delete the whole row when the filing names the thing in its
+       * other column. Apple files
+       *
+       *   BROKERGE ACCOUNT        Various Accounts        2,153,504,672
+       *
+       * — identity `BROKERGE ACCOUNT` (the filing's own typo), description
+       * `Various Accounts`. The description won the name, the prose rule fired
+       * on it, and **$2,153,504,672 of Apple's brokerage window vanished from
+       * the menu its 145,428 participants read**; the published lineup fell
+       * from 98.7% of the plan to 91.7% with nothing saying so.
+       *
+       * This is the SEMPRA CASE WITH THE COLUMNS SWAPPED. Sempra files
+       * `Various | Self-Directed Brokerage Acct`, prose in the identity and
+       * the real name in the description, and the parser gate caught that
+       * orientation while v172 was being written — which is exactly why this
+       * one went unnoticed: a gate specimen proves the orientation it pins,
+       * not the axis it lies on.
+       *
+       * The class is small, exact and unanimous: 6 rows / 6 plans / 160,758
+       * participants, and every one is a brokerage window — Apple, Beall's
+       * (`Schwab Self-Managed Brokerage Investments`), Wieden & Kennedy,
+       * Streamland, Snider Motors, Rousselot. The remaining 280 deleted rows
+       * across 269 plans have no real other cell (Oracle, Intuit,
+       * Progressive's category summaries) and are NOT touched here: whether an
+       * unitemised remainder should publish under an honest aggregate label is
+       * a separate question, and it is the owner's.
+       *
+       * The identity is used only when it is not itself prose and not a bare
+       * type label — the same two shipped predicates the rest of the parser
+       * asks. `NOT_FUND_SHAPED` will then class most of these as the aggregate
+       * disclosures they are, which is the correct downstream treatment. */
+      const alt = issCell ? String(issCell).trim() : "";
+      if (alt && !/^various\b/i.test(alt) && !typeOnly(alt) && alt.length >= 3) {
+        name = alt; issCell = "";
+      } else { nameBuf = []; continue; }
+    }
     rows.push({ name: name.slice(0, 90), type: rowType, value, sec: curSection, ...(rejDesc && rejDesc !== name ? { _dd: rejDesc.slice(0, 60) } : {}), ...(type ? { ownType: 1 } : {}), ...(issCell ? { iss: issCell.slice(0, 60), ...(issTail ? { _it: 1 } : {}) } : curIss ? { iss: curIss.slice(0, 60) } : {}), ...(leadStripped ? { _sl: 1 } : {}) });
   }
 

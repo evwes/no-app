@@ -27,9 +27,17 @@ mirror went through as soon as that job landed. The hold cost nothing.
 **Oracle's 101,985 participants stop seeing `Various investments, including
 registered market funds and c` at $3,405,120,000** — 9.6% of a $35B plan,
 published as if it were a single fund. Capital One gains three rows and $1.14B
-of real funds. Progressive loses eight brokerage category summaries, which is a
-cost, and folding those into the brokerage total instead of dropping them is
-the next item.
+of real funds.
+
+**CORRECTED 19:5xZ — the same change also took $2.15B off Apple's page, and I
+reported it as a clean win this morning.** Apple's filing names its brokerage
+window in one column and describes it as "Various Accounts" in the other; the
+description won, the rule fired, and the whole row went. **145,428 Apple
+participants now see a menu accounting for 91.7% of their plan instead of
+98.7%, with nothing saying where the rest is.** Six plans are affected this way
+(160,758 people), all brokerage windows, and the fix is written and waiting on
+the current run. The write-up of what went wrong is in the accuracy log — in
+short, I checked three plans by row count and Apple's loss was a single row.
 
 ## Running now
 
