@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 169;
+export const PARSER_VERSION = 170;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -1591,8 +1591,26 @@ export function parseRows(section, opts = {}) {
      * stopped firing, and a 2-row Ameritas region won on closeness. A rule
      * that changes which REGION wins is doing something other than what its
      * description says. */
+    /* v170: A TARGET-DATE YEAR IS NOT A PAR VALUE. The `\d{4,}` guard above
+     * exists to keep `4.337%, $16,135,030 par (1` out of a holding name, and
+     * it also refuses every retirement vintage — `RL 2035`, `LifePath 2050`.
+     * IRISNDT (1,609 participants) files a clean coded John Hancock schedule
+     * whose ten `RL 20xx` rows are therefore unlabelled, and they merge with
+     * the house into one `JOHN HANCOCK` row of $21,512,753 = 53% of the plan.
+     * THE COST IS NOT THE TEN ROWS. The split below fires only when the row
+     * ALREADY STORED also carries `_dd`, and the first John Hancock row this
+     * schedule presents is `RL 2020` — so one unlabelled row at the head of a
+     * group silently disables the protection for every row behind it, and
+     * `MONEY`, `IDX 500`, `AC EM`, `GLOBAL`, `AB HIF`, `OAK IF` and
+     * `WELLS FGSF` merged too despite each having a perfectly good `_dd`.
+     * Eighteen filed holdings in one row, verified against the filing to
+     * within $11,731 of 0.05%. So: every 4+ digit run must be a plausible
+     * vintage year for the description to survive; one par amount anywhere
+     * still refuses the whole cell. */
+    const dDigits = dClean ? (String(dClean).match(/\d{4,}/g) || []) : [];
+    const dYearsOnly = dDigits.every((d) => d.length === 4 && +d >= 1950 && +d <= 2075);
     if (!dUsable && dClean && isHouseName(nc) && /^[A-Za-z][A-Za-z0-9 .,&'()\/-]{1,40}$/.test(dClean) &&
-        !/[$%]|\bpar\b|\d{4,}/i.test(dClean)) rejDesc = dClean;
+        !/[$%]|\bpar\b/i.test(dClean) && dYearsOnly) rejDesc = dClean;
     if (dUsable) {
       name = dClean;
       /* v67: KEEP the identity column instead of discarding it. This branch

@@ -688,6 +688,20 @@
       "fixed": "v169",
       "sponsor": "Epcor USA",
       "was": "published `SmallCap S&P 600 Index SA +`, `MidCap S&P 400 Index Sep Acct +`, `MidCap Value Separate Acct +`. The schedule prints a legend for `*` and `**` and never mentions `+`; the marker sits at the end of the DESCRIPTION CELL, mid-line, so the v159 line-terminal strip never saw it. 1,943 rows / 480 plans / 367,882 participants carry one, and a name ending in `+` matches nothing in the ticker table either. Found by the participant-weighted random draw from PUBLISHED lineups, not by any audit."
+    },
+    {
+      "ack": "20251013213524NAL0000949187001",
+      "class": "target-date-year-refused-as-a-par-value-disables-the-merge-split",
+      "fixed": "v170",
+      "sponsor": "IRISNDT Inc. (1,609 ppl)",
+      "was": "published a bare `JOHN HANCOCK` row of $21,512,753 = 53% of the plan, which is EIGHTEEN filed holdings summed (verified against the filing to within $11,731, 0.05%). The schedule is clean and coded: identity `JOHN HANCOCK` on every row, a short code in the description. The v160 split that exists to stop exactly this merge was disabled by ONE row: the `\\d{4,}` guard on the rejected description -- there to keep par amounts out of holding names -- also refuses every target-date vintage, so `RL 2020` carried no `_dd`, and the split fires only when the row ALREADY STORED also carries one. One unlabelled row at the head of a group silently disabled the protection for every row behind it, so MONEY, IDX 500, AC EM, GLOBAL, AB HIF, OAK IF and WELLS FGSF merged too despite each having a perfectly good `_dd`. 27 rows -> 42 at the same 0.958 ratio."
+    },
+    {
+      "ack": "20251015095846NAL0008960866001",
+      "class": "target-date-year-refused-as-a-par-value-disables-the-merge-split",
+      "fixed": "v170",
+      "sponsor": "Ubiquity Global Services",
+      "was": "the same shape under a different house: a bare `BlackRock` row at 84% of a 9-row menu. 9 rows -> 17. Kept because the class reaches several houses and a one-house specimen would not prove that."
     }
   ]
 }
