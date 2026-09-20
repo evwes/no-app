@@ -726,10 +726,33 @@ don't confuse them). Frontend: python http.server + Playwright at
   plans, 28,113 → 12,762 ppl). The one loss is Shannon & Wilson's junk 5-row
   lineup (sponsor name, `Class B Common Stock`, a prose fragment) falling
   under the three-row floor.
-  **NEXT: the same unanchored alternation has other arms** — `distribution`,
-  `receivable`, `expenses`, `contributions` — and whether they are deleting
-  rows the same way is a ten-minute store query, not a theory.
+  That follow-up is CLOSED: the other 22 arms of the same alternation match
+  **0** published rows across 1,726,882, with one narrow exception
+  (`receivable` at 9, all real asset-backed securities protected by v153's
+  `securityRow` exemption). Recorded, not fixed.
   `docs/accuracy-log.md` 2026-09-19 (run #401 verdict).
+- **IN FLIGHT: #403 (v169), dispatched 2026-09-20 00:39Z by push trigger.**
+  Two shapes. (1) **A wrapped STATEMENT CAPTION leaks its value onto the next
+  line.** The wrapped-subtotal rule (`totalWrap`) had no counterpart for
+  statement captions, so UPS (145,125 ppl) published `investments` at
+  **$1,470,493,000** — the year's net appreciation, at its PRIOR-year column.
+  Christian Retirement files the same caption cut one word earlier, which a
+  phrase-anchored first draft missed: **the break point is a property of the
+  column width, not of the phrase**, so `STMT_WRAP_TAIL` tests the dangling
+  preposition. Sized first at 16 rows / 16 plans / 186,722 ppl; scope set by a
+  CONTROL (Dupre's `Investments` is the wrapped tail of a real Minnesota Life
+  separate account, pinned so it can never be deleted). (2) **A footnote
+  marker no legend explains**, found by the participant-weighted random draw:
+  **1,943 rows / 480 plans / 367,882 ppl** publish a name ending in ` +` or
+  ` ~`, each with a blank fee cell because such a name matches nothing in the
+  ticker table. Gate green; corpus diff run twice, identical both times —
+  0 gained, **1 LOST**, 0 fabricated either way. **The loss is UPS and it is
+  accepted:** without the phantom its ten remaining rows are an asset-class
+  table and `isStatement` correctly flips, so readers get the
+  filed-in-aggregate sentence instead of a class table holding a $1.47B fake
+  row. **Calpine (3,014 ppl) is diagnosed and NOT fixed** — its statement line
+  does not wrap and its lineup comes from the OCR path.
+  Pre-registered verdict tests in `docs/accuracy-log.md` 2026-09-20.
 - **Previously: the v167 store — MIRRORED 2026-09-19 21:2xZ** (`--force` over
   main's cron commit `7d9f401c` — 0 acks and 0 plans the branch lacked, plans
   array byte-identical, main newer on 1 ack — and `--force-data` over the

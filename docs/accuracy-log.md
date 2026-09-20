@@ -17330,3 +17330,138 @@ lines. That exemption keys on a hyphenated series (`… 2024-2`), so a
 securitization named without one is still exposed. Nine rows is not evidence of
 a large loss and no fix is proposed on it; it is recorded so the next person
 who sees a trust missing its bond sleeve has the mechanism to hand.
+
+## 2026-09-20 (01:0xZ) — v169: the statement caption that wraps, and the footnote marker nobody explained
+
+Two independent shapes, one version bump, both found the way the standing
+directive asks: one by diagnosing a named plan in the bare-house queue, one by
+the participant-weighted random draw from PUBLISHED lineups.
+
+### Part 1 — a refused caption leaks its value onto the next line
+
+The wrapped-subtotal rule has been in the parser for a long time: a valueless
+`Total ...` line means the subtotal wrapped, so the short line after it is its
+value and not a holding (`totalWrap`). **The statement captions wrap exactly
+the same way and nothing was watching them.**
+
+```
+OTHER CHANGES IN NET ASSETS — Net appreciation in fair value of
+investments                                          1,183,858      1,470,493
+```
+
+That is the UPS 401(k) Savings Plan, **145,125 participants**. The caption
+line is refused by `SKIP_ROW` — it has been refused for as long as the arm has
+existed — and the VALUE LINE, which reads only `investments`, was published as
+a holding worth **$1,470,493,000**. It is not a holding, it is the year's net
+appreciation, and it is the **PRIOR YEAR's** column at that.
+
+Christian Retirement Services files the same caption cut at a different point:
+
+```
+          Net Appreciation (Depreciation) in
+              Fair Value of Investments                        $     821,363
+```
+
+So the first version of this rule, which anchored on `…in fair value of`,
+caught UPS and missed Christian by one line break. **The break point is not a
+property of the phrase, it is a property of the column width**, and the only
+thing the two shapes share is that the caption ends on a dangling preposition.
+`STMT_WRAP_TAIL` therefore tests the preposition (`in`, `of`, `from`, `on`,
+with an optional article and colon) after the statement keyword, and the
+value line's residual name must be at most four NON-NUMERIC words — the
+numeric filter matters, because a statement line carries a second year's
+column and `investments 1,183,858` would otherwise count as two words of name.
+
+**Sized on the published store before building it: 16 rows / 16 plans /
+186,722 participants** publish a row whose whole name is the statement line
+`Investments`, seven of them at 15% or more of the menu.
+
+**The counter-case that set the scope.** Dupre Investments publishes
+`Investments` at 76% of a three-row menu, and there the word is the wrapped
+TAIL of a real Minnesota Life separate-account description. Deleting it would
+have dropped the plan under the three-row floor and cost a real holding. It is
+untouched, because the line above it is not a refused caption. **Refusing a
+bad name is not the same as making it good** — the v167 lesson, applied
+before the cost rather than after it.
+
+### Part 2 — the footnote marker the legend never mentions
+
+From the 01:0xZ random draw (seed 920169, participant-weighted, 12 plans, no
+fabrication found): M. E. Fields' menu reads `500 Index Fund ila`,
+`Freedom Index 2045 Fund iia`, `Freedom Index 2030 Fund +`. Epcor USA's reads
+`SmallCap S&P 600 Index SA +`, and its schedule prints a legend that explains
+`*` and `**` **and never mentions `+`**. The v159 strip knows `*`, `^`, `†`
+and `‡` and strips them at the line ends; this marker sits at the end of the
+DESCRIPTION CELL, mid-line, so nothing saw it.
+
+**1,943 rows / 480 plans / 367,882 participants** ship a holding name ending
+in ` +` or ` ~`. A name ending in `+` also matches nothing in the ticker
+table, so the fee cell is blank on every one of them. The strip requires a
+leading space, so a rating or class suffix welded to a word (`AA+`) is
+untouched. The `iia`/`ila` variants are left alone deliberately: they are OCR
+renderings of a superscript and a three-letter token is not safe to delete on
+the evidence of one filing.
+
+### Verification
+
+Parser gate green. Corpus diff run twice — 993 filings for part 1 alone, then
+996 for both parts together — and the two results are **identical**:
+**0 confidence gained, 1 LOST, 0 fabricated rows introduced, 0 removed.**
+That identity is itself the check on part 2: a marker strip should move no
+counts and no sums, only names, and the corpus diff reports exactly that by
+reporting nothing. The rename is measured whole-store after the run instead.
+
+**The one loss is UPS and it is accepted on the record.** With the
+$1.47B phantom gone the remaining ten rows are `Lifestyle funds`,
+`UPS stock fund`, `Fixed-income funds`, `Common stock`,
+`U.S. government securities`, `Interest-bearing cash`, `Multi-asset funds`,
+`Mutual funds`, `Corporate debt securities` — an asset-class table, not a
+fund menu — and `isStatement` flips to true. **That is the detector telling
+the truth once the phantom stops diluting the generic share.** UPS's readers
+get the filed-in-aggregate sentence (bit 4096) instead of a class table with a
+$1.47B fabricated holding in it. Whether a class SUMMARY should ever publish
+as a lineup is owner question 5 and this does not pre-empt it; it only stops
+this one from publishing a number that is not a holding.
+
+The three other moves, each read by name:
+
+- **Christian Retirement Services 33 → 34 rows.** The $821,363 phantom out,
+  and `T. ROWE PRICE DIVIDEND GROWTH ADV` ($119,962) and `T. ROWE PRICE 2055 R`
+  ($283,513) in. Strictly better.
+- **Entergy 10 → 9 rows**, the same `investments` row at $676,211,096 removed.
+  Not confident either way (ratio 3.7), so no reader sees the change; it is
+  the third independent confirmation of the shape.
+- **Standard Concrete Products, sum $8M → $7M, ratio 1.01 → 0.93.** The whole
+  region swaps to an all-caps render of the same schedule, same funds and same
+  values, gaining `NUVEEN LC INDEX 2040 R6` ($111,406) and correcting
+  `DFA US Vector EO Fund` to `DFA US VECTOR EQ FD INST`. **The ratio moves
+  away from 1.0 and that is the phantom's removal, not a degradation** —
+  $722,526 of net appreciation out of an $8M menu is 9%, which is exactly the
+  move. The cost is real and recorded: the new render loses the
+  `Reliance Trust Company` issuer attribution and its names are all-caps.
+
+### What this does NOT fix, stated so it is not rediscovered
+
+**Calpine Corporation (3,014 participants) stays wrong.** It is the plan that
+started this: it publishes `Investments` at $671,765,798 = 80% of a 13-row
+menu. Its statement line does NOT wrap —
+`Investments (Note 3) ..... $ 748,431,313  $ 671,765,798` is one line carrying
+both year columns, and the published value is again the prior year. Its stored
+lineup comes from the OCR path, whose text I cannot cheaply reproduce, so a
+rule aimed at it would be aimed at a guess. **Diagnosed, not fixed**, and the
+next re-parse will say whether v169 reaches it by accident.
+
+### Pre-registered verdict tests for run #403
+
+Written before the run finishes so the result cannot be read to fit.
+
+1. **Rows whose whole name is the statement line `Investments`: 16 → a
+   handful.** Not zero. Dupre's stays by design (the control), and Calpine's
+   two come from a statement line that does not wrap, so they stay too. A
+   result of 0 would mean the rule is wider than it was built to be.
+2. **Holding names ending in ` +` or ` ~`: 1,943 rows / 480 plans → ~0.**
+3. **UPS stops publishing a lineup**, which is one `reparse-loss` HIGH and
+   self-clearing. Net confidence should move by single digits.
+4. **`overshoot` should FALL.** Every row this version removes is a phantom
+   added to a menu's sum, so the count of plans publishing more money than the
+   plan holds can only go down or stay put. It was 334 on the v168 store.

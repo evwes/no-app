@@ -237,6 +237,41 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 00:4xZ 2026-09-20: v169 BUILT AND DISPATCHED as #403 (push
+      trigger, observed queued 00:39Z). Two shapes, one bump, found two
+      different ways.** (1) **The wrapped STATEMENT CAPTION leaks its value
+      line.** The wrapped-subtotal rule (`totalWrap`) has been in the parser
+      for years and had no counterpart for statement captions, so UPS
+      (**145,125 ppl**) published `investments` at **$1,470,493,000** — the
+      caption `…Net appreciation in fair value of` is refused and the noun it
+      was reaching for arrives on the next line with both year columns, and
+      the PRIOR year's was taken. Christian Retirement files the same caption
+      cut one word earlier, which a phrase-anchored rule missed by one line
+      break: **the break point is a property of the column width, not of the
+      phrase**, so the test is the dangling preposition. Sized first: 16 rows /
+      16 plans / 186,722 ppl. Scope set by the CONTROL — Dupre's `Investments`
+      is the wrapped tail of a real Minnesota Life separate account and is
+      pinned so it can never be deleted. (2) **A footnote marker no legend
+      explains**, from the participant-weighted random draw (seed 920169, 12
+      plans, no fabrication found): Epcor USA files `SmallCap S&P 600 Index
+      SA +` beside a legend covering `*` and `**` only, and the marker sits
+      mid-line at the end of the description CELL where the v159 strip cannot
+      see it — **1,943 rows / 480 plans / 367,882 ppl**, every one with a
+      blank fee cell because the name matches nothing in the ticker table.
+      Gate green; corpus diff run twice (993 filings for part 1, 996 for both)
+      with **identical** results: 0 gained, 1 LOST, 0 fabricated either way.
+      **The one loss is UPS and it is accepted on the record** — without the
+      phantom its ten remaining rows are an asset-class table and `isStatement`
+      correctly flips, so readers get the filed-in-aggregate sentence instead
+      of a class table containing a $1.47B fake holding. **Pre-registered
+      verdict tests are in `docs/accuracy-log.md`** (bare-`Investments` rows
+      16 → a handful and NOT zero; ` +`/` ~` names 1,943 → ~0; UPS one
+      self-clearing `reparse-loss`; overshoot must FALL from 334).
+      **Diagnosed and NOT fixed: Calpine** (3,014 ppl, `Investments` at 80%) —
+      its statement line does not wrap and its lineup comes from the OCR path,
+      so a rule aimed at it would be aimed at a guess.
+      **Next wake: the #403 verdict**, then the 19 remaining bare-house plans
+      (Irisndt `JOHN HANCOCK` 53%, Dupre, CCS Medical `AMERICAN FUNDS` 71%).
       **STATUS 23:3xZ 2026-09-19: #401 (v168) PASSED AND MIRRORED — +5 / −1,
       pv 168 at 99.85%, confident 60,119, HIGH 6, overshoot 344 → 334. BOTH
       pre-registered tests passed: rows containing `appreciat` went **55 →
