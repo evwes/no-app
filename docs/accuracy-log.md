@@ -17465,3 +17465,84 @@ Written before the run finishes so the result cannot be read to fit.
 4. **`overshoot` should FALL.** Every row this version removes is a phantom
    added to a menu's sum, so the count of plans publishing more money than the
    plan holds can only go down or stay put. It was 334 on the v168 store.
+
+## 2026-09-20 (02:1xZ) — v170: a target-date year is not a par value, and ONE unlabelled row disabled a whole protection
+
+Built while #403 was parsing, committed `[skip ci]`, and held for dispatch —
+the run in flight is the only thing worth serialising on.
+
+**The plan.** IRISNDT Inc. (1,609 participants) publishes a bare
+`JOHN HANCOCK` row of **$21,512,753 = 53% of the plan**. It is **eighteen
+filed holdings summed**, checked against the filing's own rows and agreeing to
+**within $11,731 — 0.05%**. The residue comes from the schedule being rendered
+twice in the PDF and I did not isolate it further; it is recorded as 0.05%
+rather than claimed as "to the dollar", which is the standard this project
+otherwise holds itself to.
+
+**The filing is ordinary.** A clean coded John Hancock schedule under the
+statutory caption: identity `JOHN HANCOCK` on every row, a short code in the
+description (`RL 2035`, `LS-GROWTH`, `IDX 500`). 26 of its rows parse
+perfectly, with the house as the issuer and the code as the name.
+
+**The rule that should have caught this already exists.** v160 keeps the
+rejected description (`_dd`) precisely so the dedup can tell apart two
+holdings the filing distinguished; v161 confined it to HOUSE identities, and
+John Hancock is one. It should have fired.
+
+**Why it did not, which is the part worth keeping.** The rejected description
+is only kept when it is name-shaped, and that test refuses any cell with four
+or more consecutive digits — there so that Wells Fargo's
+`4.337%, $16,135,030 par (1` cannot reach a holding name. **A retirement
+vintage has four consecutive digits.** So `RL 2020` carried no `_dd`.
+
+And the split fires only when the row **already stored** also carries one:
+
+```js
+if (e && k === kBase && r._dd && e.row._dd && ... ) { k = kDd; ... }
+```
+
+`RL 2020` is the first John Hancock row this schedule presents. **One
+unlabelled row at the head of a group silently disabled the protection for
+every row behind it** — `MONEY` ($2,718,577), `IDX 500` ($5,245,556),
+`AC EM`, `GLOBAL`, `AB HIF`, `OAK IF` and `WELLS FGSF` each had a perfectly
+good `_dd` and merged anyway. **A guard that requires both sides to be
+labelled fails completely when the first member is not**, and it fails
+silently, because a merge leaves no error code and no coverage metric moves.
+
+Found by probing the actual predicate rather than reading it: the first
+reading of this filing said "the codes are too short to be names", which is
+false — 26 of them are published as names right now.
+
+**What shipped, and what deliberately did not.** Shipped: every 4+ digit run
+in the description must be a plausible vintage year (1950–2075) for the cell
+to survive, so one par amount anywhere still refuses the whole cell.
+**Not shipped: the structural half** — that the split should also fire when
+only the INCOMING row is labelled. It is the more general repair and it
+changes behaviour for every filing where a house row has no description, so
+it needs its own measurement rather than a ride on this one.
+
+**Verification.** Parser gate green. Corpus diff over 996 filings:
+**0 confidence gained, 0 LOST, 0 fabricated rows introduced, 0 removed, 0
+menu-sum moves**, and **six plans un-merge**:
+
+| plan | rows | note |
+|---|---|---|
+| The Jones Company | 28 → 42 | the plan the v163 entry recorded as losing a 74% `John Hancock` row |
+| Irisndt | 27 → 42 | ratio unchanged at 0.958 |
+| Intervala | 28 → 35 | |
+| Relatient | 16 → 26 | bare-house class member |
+| Firstkey Homes | 15 → 25 | bare-house class member |
+| Ubiquity Global Services | 9 → 17 | bare-house class member, house is BlackRock |
+
+**Four of the six are members of the 20-plan bare-house-dominant class this
+cycle set out to diagnose**, so the fix reaches the class and not just the
+filing that exposed it. Two specimens are pinned under two different houses,
+because a one-house specimen would not show that.
+
+### Pre-registered test for v170's run
+
+**The bare-house-dominant class should fall from 20 plans / 12,762 ppl to
+roughly 14–16 / ~9,000** — the four corpus members plus any store members the
+corpus does not contain. It should NOT reach zero: Calpine's `Investments`
+(diagnosed 01:0xZ, an OCR statement line that does not wrap), Dupre's and CCS
+Medical's are different shapes and are untouched by this.

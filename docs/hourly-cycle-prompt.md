@@ -237,6 +237,40 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 02:1xZ 2026-09-20: #403 (v169) STILL PARSING at ~1h35m (20
+      shards, OCR-heavy), so this cycle did NOT poll it — it took the queue
+      item instead and built v170, committed `[skip ci]`, READY TO DISPATCH
+      the moment #403's verdict is closed.** The queue item was the 20
+      bare-house-dominant plans, and the largest two now have diagnosed
+      causes. **Calpine (3,014 ppl, `Investments` 80%): the statement-of-net-
+      assets line item, at its PRIOR-year column, via the OCR path — recorded,
+      NOT fixed, because its line does not wrap and a rule aimed at it would
+      be aimed at a guess.** **Irisndt (1,609 ppl, `JOHN HANCOCK` 53%): a bare
+      house row that is EIGHTEEN filed holdings summed**, verified against the
+      filing to within $11,731 (0.05%; the residue is the schedule being
+      rendered twice and is not isolated). **The rule that should have caught
+      it already existed** — v160's `_dd` split, confined by v161 to house
+      identities, which John Hancock is. It was disabled by one row: the
+      `\d{4,}` guard that keeps par amounts out of names also refuses every
+      target-date vintage, so `RL 2020` carried no label — and **the split
+      fires only when the row ALREADY STORED also carries one.** `RL 2020` is
+      the first row the schedule presents, so `MONEY`, `IDX 500`, `AC EM`,
+      `GLOBAL`, `AB HIF`, `OAK IF` and `WELLS FGSF` merged too despite each
+      having a perfectly good label. **A guard that needs both sides labelled
+      fails completely when the first member is not, and it fails silently.**
+      v170 ships the narrow half (every 4+ digit run must be a plausible
+      vintage year, 1950–2075); **the structural half — the split should also
+      fire when only the INCOMING row is labelled — is recorded and NOT
+      shipped**, because it changes behaviour wherever a house row has no
+      description and needs its own measurement. Gate green; corpus diff over
+      996 filings **0 gained / 0 LOST / 0 fabricated either way / 0 sum
+      moves**, and **six plans un-merge** (Jones 28→42, Irisndt 27→42,
+      Intervala 28→35, Relatient 16→26, Firstkey 15→25, Ubiquity 9→17) — four
+      of them members of the bare-house class, so it reaches the class.
+      **Next wake: close #403's verdict, mirror on a clean one, then dispatch
+      v170.** Its pre-registered test is in `docs/accuracy-log.md`: the
+      bare-house class should fall 20 → roughly 14–16 plans and must NOT reach
+      zero, since Calpine, Dupre and CCS Medical are other shapes.
       **STATUS 00:4xZ 2026-09-20: v169 BUILT AND DISPATCHED as #403 (push
       trigger, observed queued 00:39Z). Two shapes, one bump, found two
       different ways.** (1) **The wrapped STATEMENT CAPTION leaks its value

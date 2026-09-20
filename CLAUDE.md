@@ -753,6 +753,38 @@ don't confuse them). Frontend: python http.server + Playwright at
   row. **Calpine (3,014 ppl) is diagnosed and NOT fixed** — its statement line
   does not wrap and its lineup comes from the OCR path.
   Pre-registered verdict tests in `docs/accuracy-log.md` 2026-09-20.
+- **READY AND HELD: v170 (`b3ed0af1`, committed `[skip ci]` while #403 parses;
+  dispatch after its verdict).** IRISNDT (1,609 ppl) publishes a bare
+  `JOHN HANCOCK` row of **$21,512,753 = 53%** that is **eighteen filed
+  holdings summed** (agrees with the filing to within $11,731, 0.05% — the
+  residue is the schedule rendered twice and is not isolated; recorded as
+  0.05%, not claimed as "to the dollar"). **The rule that should have caught
+  it already existed**: v160's `_dd` split, confined by v161 to HOUSE
+  identities, which John Hancock is. It was disabled by ONE row — the
+  `\d{4,}` guard that keeps par amounts out of holding names also refuses
+  every target-date vintage, so `RL 2020` carried no label, and **the split
+  fires only when the row ALREADY STORED also carries one.** `RL 2020` is the
+  first row the schedule presents, so `MONEY`, `IDX 500`, `AC EM`, `GLOBAL`,
+  `AB HIF`, `OAK IF` and `WELLS FGSF` merged too **despite each having a
+  perfectly good label**. **A guard that requires both sides to be labelled
+  fails completely when the first member is not — and silently, because a
+  merge leaves no error code and moves no coverage metric.** v170 ships only
+  the narrow half (every 4+ digit run must be a plausible vintage year,
+  1950–2075; one par amount anywhere still refuses the cell). **The structural
+  half — the split should fire when only the INCOMING row is labelled — is
+  recorded and deliberately NOT shipped**: it changes behaviour wherever a
+  house row has no description and needs its own measurement. Gate green;
+  corpus diff over 996 filings **0 gained / 0 LOST / 0 fabricated either way /
+  0 menu-sum moves**, and **six plans un-merge** — The Jones Company 28 → 42
+  (the plan the v163 entry recorded losing a 74% `John Hancock` row), Irisndt
+  27 → 42 at an unchanged ratio, Intervala 28 → 35, Relatient 16 → 26,
+  Firstkey Homes 15 → 25, Ubiquity Global Services 9 → 17. **Four of the six
+  are members of the 20-plan bare-house class**, so it reaches the class.
+  Pre-registered test: that class should fall 20 → roughly 14–16 plans and
+  **must not reach zero** — Calpine, Dupre and CCS Medical are other shapes.
+  **Calpine (3,014 ppl) is diagnosed this cycle and NOT fixed:** its
+  `Investments` row at 80% is the statement-of-net-assets line item at its
+  PRIOR-year column, reached via the OCR path, and its line does not wrap.
 - **Previously: the v167 store — MIRRORED 2026-09-19 21:2xZ** (`--force` over
   main's cron commit `7d9f401c` — 0 acks and 0 plans the branch lacked, plans
   array byte-identical, main newer on 1 ack — and `--force-data` over the
