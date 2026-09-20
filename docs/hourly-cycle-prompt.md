@@ -237,55 +237,34 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
-      **STATUS 20:4xZ 2026-09-20. IN FLIGHT: #413 (v174), dispatched 19:21Z,
-      ~70 min and still running. HELD AND READY: v175. SHIPPED THIS CYCLE: the
-      rows-dropped check.** Live on main is the v173 store (mirrored 18:1xZ).
-      **FIRST ACTION NEXT CYCLE: #413's verdict, then mirror, then dispatch
-      v175 — it is gated, corpus-diffed and committed, nothing else is needed.**
-      **#409 (v173) PASSED and is MIRRORED.** Its pre-registered test passed
-      decisively: `(continued)` in the issuer 566 rows / 260 plans / 429,252
-      ppl → 1 / 1 / 157, and the survivor is `pv 91, e=download` with its S3
-      object HEAD-probing 403 — withdrawn from the bucket, unreachable by any
-      bump. Closed for every readable filing.
-      **v174 (#413):** the guarded footnote strip. Its corpus diff found an
-      undesigned GAIN — Chubb 120 → 45 rows, all 76 vanished names individual
-      STOCKS, one `Managed account holdings (125 positions)` row added at
-      $469,921,014, LARGER than the $431,668,119 it replaced because the
-      120-row cap had hidden the tail. The `(1)` was blinding the
-      managed-account fold.
-      **v175 (HELD): I SHIPPED A REGRESSION IN v172 THIS MORNING AND REPORTED
-      IT AS A WIN.** Apple files `BROKERGE ACCOUNT | Various Accounts |
-      2,153,504,672`; the description won the name, v172's prose rule fired on
-      it, and **$2,153,504,672 — 7% of a $30.8B plan, 145,428 ppl — left the
-      menu**, ratio 0.987 → 0.917 with nothing saying so. The Sempra case with
-      the columns swapped: **a gate specimen proves the orientation it pins,
-      not the axis it lies on.**
-      **v175 was then WRONG TWICE before it was right, and both are on the
-      record.** (1) I published the class at 6 rows / 6 plans from a
-      hand-written vocabulary list; the real condition gives **129 rows / 127
-      plans / 239,283 ppl** — a hand-rolled proxy for a shipped predicate, 5th
-      time. (2) The first fix would have FABRICATED: Trustmark files three rows
-      whose identity is `Charles Schwab & Co., Inc.`, and naming all three from
-      it merges them — $11,571,694 + $1,797,981 + $546,532 = **$13,916,207**,
-      verified to the dollar. Fixed by `isHouseName` (kills Kirkland's bare
-      `Vanguard`) plus keeping the prose as `_dd` so the dedup's existing
-      description split keeps Trustmark's three rows apart (29 → 32 @ 0.987).
-      **Neither plan is in the corpus, so the diff could not have caught them;
-      re-sizing with the real predicate and reading members by name did.**
-      **SHIPPED: `rows-dropped.txt`, the third blind spot.** losses-triage sees
-      lineups that vanish, swaps-degraded sees source changes, and neither saw
-      Apple's 27 → 26. merge-4i now lists any confident lineup that keeps its
-      source, loses rows, and drifts >0.03 further from 1.0; audit raises WARN.
-      Apple's drift was 0.070. **Controlled both ways through the REAL merge on
-      a crafted tree** (positive 31 @ 0.990 → 30 @ 0.845 flagged; negative 16 @
-      0.980 → 15 @ 0.978 not) — because a check that prints 0 on a quiet store
-      has not been tested.
-      **QUEUE:** (1) #413 verdict → mirror → dispatch v175; (2) the SDBA fold,
-      now sized for the first time at **269 plans / 630,032 ppl** whose
-      unitemised remainder v172 deleted with no other cell (Oracle, Intuit,
-      Progressive) — touches owner question 5; (3) Pechanga's `Net position
-      available for benefits` at 63.7%, 1 plan, one token on `NOT_FUND_SHAPED`
-      but that arm is SHARED with `AGG_DISCLOSURE` (v137's trap).
+      **STATUS 21:2xZ 2026-09-20. IN FLIGHT: #415 (v175), dispatched 21:09Z
+      by workflow_dispatch, observed in_progress. LIVE ON MAIN: the v174 store
+      (mirrored 21:1xZ).**
+      **FIRST ACTION NEXT CYCLE: #415's verdict.** Its pre-registered tests are
+      the deleted-brokerage class 6 → 0, Apple's ratio ~0.99 (0.918 today), and
+      Trustmark publishing THREE separate Charles Schwab rows rather than one
+      summed $13,916,207.
+      **#413 (v174) PASSED all three tests and is mirrored.** Footnote class
+      7,429 rows / 506 plans / 1,172,804 ppl → 27 / 12 / 116,932; at ≥50% of a
+      menu 270 plans → 0; Western Ecosystems' two Putnam rows both survive with
+      the marker ($14,679 and $14,678); Chubb 45 rows with the 125-position
+      fold at 10.0%. The 27 survivors are the guard refusing real collisions.
+      **THE DAY'S LESSON, in one line: I shipped v172 this morning, reported it
+      as a win, and it had deleted $2,153,504,672 from Apple's menu.** v175
+      fixes it. Along the way the fix was wrong twice — a hand-rolled proxy
+      sized the class at 6 rows when it is 129, and the first version would
+      have merged Trustmark's three Schwab rows into a phantom $13,916,207.
+      **Neither was catchable by the corpus diff** (neither plan is in the
+      corpus); both came from re-sizing with the real predicate and reading
+      members by name.
+      **`rows-dropped.txt` now closes the blind spot that let it happen** —
+      confident lineups that keep their source, lose rows, and drift >0.03
+      further from 1.0, as WARN, controlled both ways through the real merge.
+      **QUEUE:** (1) #415 verdict → mirror; (2) the SDBA fold, sized at **269
+      plans / 630,032 ppl** (Oracle, Intuit, Progressive — unitemised remainder
+      deleted with no other cell), touches owner question 5; (3) Pechanga's
+      `Net position available for benefits` at 63.7%, 1 plan, one token on
+      `NOT_FUND_SHAPED` but that arm is SHARED with `AGG_DISCLOSURE` (v137).
    2. Recordkeeper wrong name: 1,509 plans / 1.48M ppl. Prefer service
       codes 15/64, then the line-1b platform or Schedule A carrier, then
       top-fee; never publish a provider coded 10 or 29.

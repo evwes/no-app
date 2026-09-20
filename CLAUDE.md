@@ -742,37 +742,44 @@ don't confuse them). Frontend: python http.server + Playwright at
   EIN read as a dollar value, so it does not START with the employer-ID words
   and the anchored arm cannot reach it.
   `docs/accuracy-log.md` 2026-09-20 (run #406 verdict).
-- **IN FLIGHT: #413 (v174), dispatched 2026-09-20 19:21Z (push trigger fired;
-  start verified queued). A FOOTNOTE REFERENCE IS NOT PART OF THE NAME** —
-  7,429 rows / 506 plans / **1,172,804 ppl** end in a bare `(1)` no legend
-  explains (FMR 110 of 120 rows; at ≥50% of a menu, 270 plans / 458,348 ppl).
-  **Measured before building: a READABILITY repair, not a fee-cell one** —
-  1,313 rows already resolve to a ticker WITH the marker, stripping gains 7
-  across 4,309 ppl, 0 flip. **THE GUARD IS THE WORK:** a blanket strip merges
-  rows the filing distinguishes (the v160 shape) — 5 collisions / 4 plans
-  whole-store, and Western Ecosystems files `Putnam Stable Value Fund` $14,679
-  AND `PUTNAM STABLE VALUE FUND (15)` $14,678, close but NOT equal, so the
-  duplicate-render suppression would not catch them and stripping would invent
-  a $29,357 holding. So the strip runs at the **DEDUP stage** with two
-  refusals: the bare name must not belong to an unmarked row, and marked rows
-  sharing a bare name must carry the SAME marker. **Fourth version running to
-  turn on WHICH LEVEL a rule belongs at** — a rule about one string goes at the
-  row; a rule whose correctness depends on what else the filing says goes where
-  the whole set is visible.
-  **THE CORPUS DIFF FOUND AN UNDESIGNED GAIN.** 1,003 filings, all zeros except
-  Chubb Ina Holdings **120 → 45 rows** — read by name because a 75-row drop at
-  an unmoved sum is the merge signature. It is the opposite: all 76 vanished
-  names are individual STOCKS (Alphabet, Apple, Broadcom), one name is added —
-  `Managed account holdings (125 positions)` — and the fold at **$469,921,014
-  is LARGER** than the $431,668,119 it replaced, because the 120-row cap had
-  hidden the tail. **The `(1)` was blinding the managed-account fold**, so 125
-  securities published as a capped list inside what reads as a fund menu. Every
-  named fund survives, ratio 0.951 both sides, fold at 10% (under `aggRow`'s
-  30%). A string the parser carries is an input to every consumer of it.
-  **HELD OUT DELIBERATELY:** Pechanga's `Net position available for benefits`
-  at 63.7% (1 plan / 4,520 ppl). One token on `NOT_FUND_SHAPED` — but that arm
-  is SHARED with `AGG_DISCLOSURE`, and v137 records a shared-predicate widening
-  making 3M's note publishable. Two risks in one bump, for one plan. Queued.
+- **IN FLIGHT: #415 (v175), dispatched 2026-09-20 21:09Z by `workflow_dispatch`
+  (observed in_progress; `.kick` was already at the content it needed so the
+  push trigger had nothing to fire on).** v175 restores the brokerage row v172
+  deleted from Apple's menu — see the CORRECTION below, which is the important
+  part of this whole block. Pre-registered tests: the deleted-brokerage class
+  goes **6 → 0**, Apple's ratio reads **~0.99 against 0.918 today**, and
+  Trustmark publishes **three separate** Charles Schwab rows rather than one
+  summed $13,916,207.
+- **MIRRORED 2026-09-20 21:1xZ: the v174 store is LIVE on main**
+  (`bc1b0384 → 75ed1fa3`). `--force` on the GIT check only over main's one
+  cron commit — 0 acks / 0 plans the branch lacked, plans array byte-identical.
+  Data gate unforced: **+0 / −0**, pv 174 at 99.8%, dl 104.
+- **#413 PASSED (~100 min, `75ed1fa3`): pv 174 at 99.85%, confident 60,117
+  (+0 / −0), HIGH 5, overshoot 332, aggRow 112, dl 104.** Coverage line
+  byte-identical for the THIRD version running — v174 renames and folds rows
+  INSIDE already-confident plans and the line counts PLANS. **All three
+  pre-registered tests passed:** the footnote class 7,429 rows / 506 plans /
+  1,172,804 ppl → **27 / 12 / 116,932**, and at ≥50% of a menu **270 plans →
+  0**; the negative control holds on the live store (Western Ecosystems still
+  publishes `Putnam Stable Value Fund` $14,679 AND `PUTNAM STABLE VALUE FUND
+  (15)` $14,678 — no $29,357 phantom); Chubb is **45 rows** with `Managed
+  account holdings (125 positions)` $469,921,014 = 10.0%. **The 27 survivors
+  are the guard working**, every one a collision it correctly refused.
+  **What reached readers:** FMR (90,445), Edustaff (41,089), Thermo Fisher
+  (72,605) — 506 plans / 1.17M ppl — lose the bare `(1)` welded to their fund
+  names; Chubb's 21,847 stop seeing 125 individual stocks listed as a fund
+  menu, with $38,252,895 previously hidden behind the row cap now counted.
+- **SHIPPED 2026-09-20 20:3xZ: `rows-dropped.txt`, the THIRD BLIND SPOT.**
+  `losses-triage` sees lineups that vanish; `swaps-degraded` sees source
+  changes; **neither sees a plan that stays confident, keeps its source and
+  publishes fewer rows** — which is how v172 took $2.15B off Apple's page as a
+  27 → 26 row move with every check passing. merge-4i now lists any such plan
+  whose ratio drifts **>0.03** further from 1.0 (Apple's was 0.070); audit
+  raises **WARN**, not HIGH, because removing a genuine fabrication also drops
+  the ratio — it is a read-before-you-mirror list, not a verdict.
+  **Controlled BOTH WAYS through the real merge on a crafted tree**: positive
+  31 rows @ 0.990 → 30 @ 0.845 flagged, negative 16 @ 0.980 → 15 @ 0.978 not.
+  A check that prints 0 on a quiet store has not been tested.
 - **CORRECTION, 2026-09-20 19:5xZ — v172 IS A LIVE REGRESSION FOR 145,428
   APPLE PARTICIPANTS AND THIS FILE REPORTED IT AS A CLEAN WIN.** v172's prose
   rule deleted the WHOLE ROW where Apple files
