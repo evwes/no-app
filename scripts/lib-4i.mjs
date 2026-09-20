@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 168;
+export const PARSER_VERSION = 169;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -148,6 +148,16 @@ const SKIP_ROW = new RegExp("^(total|subtotal|grand total|schedule|page \\d|form
 
 // "December 31, 2024" style heading lines — the year parses as a value otherwise
 const DATE_LINE = /(january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,2},?(\s+(19|20)\d\d)?(\s+and)?\s*$/i;
+/* v169: a refused statement caption that STOPS MID-PHRASE. The caption breaks
+ * at whatever point the column is wide enough for, and the observed break
+ * points are all dangling prepositions: "…Net appreciation in fair value of"
+ * ↵ "investments 1,183,858 1,470,493" (UPS) and "Net Appreciation
+ * (Depreciation) in" ↵ "Fair Value of Investments $ 821,363" (Christian
+ * Retirement Services) are the SAME caption cut in two different places. So
+ * the test is the dangling preposition, not the phrase before it. A caption
+ * that carries its own noun is untouched here — that line is already refused
+ * whole by SKIP_ROW, and it is the valueless ones that leak. */
+const STMT_WRAP_TAIL = /\b(?:net\s*\(?\s*(?:appreciation|depreciation)|realized|unrealized)\b[^\n]{0,60}\b(?:in|of|from|on)(?:\s+the)?\s*:?\s*$/i;
 
 /* ---------------------------------------------------------------------------
  * TRACE — why this is in the library and not in a throwaway script.
@@ -748,6 +758,14 @@ export function parseRows(section, opts = {}) {
   // a valueless "Total ..." line means the subtotal WRAPPED: its value arrives
   // on the next short line ("Total Registered Investment" ↵ "Companies  613,913,288")
   let totalWrap = false;
+  /* v169: the same wrap, for the statement caption rather than the subtotal.
+   * "OTHER CHANGES IN NET ASSETS — Net appreciation in fair value of" ↵
+   * "investments   1,183,858   1,470,493" (UPS, 145,125 participants): the
+   * caption is refused by SKIP_ROW and its VALUE LINE reads only the noun the
+   * caption was reaching for, so a $1,470,493,000 statement figure published
+   * as a holding. Set only when the caption ENDS mid-phrase, which is what
+   * makes the next line its continuation and not a row of its own. */
+  let stmtWrap = false;
   /* v130: a buffered line remembers WHERE its cells sit, because that is what
    * says whether a wrap belongs to the identity column or the description
    * column. `col` is the line's first character, `dcol` its description cell. */
@@ -906,6 +924,7 @@ export function parseRows(section, opts = {}) {
     if ((SKIP_ROW.test(t) && !trustRow && !securityRow) || DATE_LINE.test(t)) {
       nameBuf = [];
       totalWrap = /^(sub|grand )?total\b/i.test(t) && !valueRe.test(t);
+      stmtWrap = !valueRe.test(t) && STMT_WRAP_TAIL.test(t);
       continue;
     }
     /* v139: A LINE MADE ONLY OF COLUMN-CAPTION WORDS IS THE HEADER, wherever
@@ -1011,6 +1030,18 @@ export function parseRows(section, opts = {}) {
       totalWrap = false;
       continue; // the wrapped subtotal's value line — not a holding
     }
+    /* v169: same shape, statement caption. The residual name must be short —
+     * the caption was reaching for a noun, not for a fund name — so a real
+     * holding that happens to follow such a caption keeps its row. Count only
+     * the WORDS: a statement line carries a second year's column, and
+     * "investments 1,183,858" would otherwise read as two words of name. */
+    if (vm && stmtWrap &&
+        t.slice(0, t.length - vm[0].length).replace(/[$(),.\d-]+/g, " ").trim()
+          .split(/\s+/).filter(Boolean).length <= 4) {
+      stmtWrap = false;
+      continue; // the wrapped statement caption's value line — not a holding
+    }
+    stmtWrap = false;
     totalWrap = false;
     if (!vm) {
       // short ALL-CAPS lines and bare type phrases ("MUTUAL FUNDS",
@@ -1158,6 +1189,15 @@ export function parseRows(section, opts = {}) {
     const laidOut = cells.length >= 3;
     if (!laidOut && wordsIn(t) > 14 && !/\$/.test(t)) { nameBuf = []; continue; }
     let body = t.slice(0, t.length - vm[0].length).trim().replace(/^[*^]+\s*/, "");
+    /* v169 part 2: a filing's OWN footnote marker, when it is not one of the
+     * four the v159 strip knows. Epcor USA files `SmallCap S&P 600 Index SA +`
+     * beside a legend that explains `*` and `**` and never mentions `+`; the
+     * marker sits at the END of the description cell, so the line-terminal
+     * strip above never sees it and `+` ships as part of the fund name. 1,943
+     * rows / 480 plans / 367,882 participants carry one, and a name ending in
+     * `+` matches nothing in the ticker table either. Required leading space,
+     * so a rating or a class suffix welded to a word (`AA+`) is untouched. */
+    body = body.replace(/\s+[+~]+\s*$/, "");
     body = stripTrailingColumns(body);
     // a bare number with no name on the same line is a leaked year/page/column
     if (!body) { nameBuf = []; continue; }

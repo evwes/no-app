@@ -660,6 +660,34 @@
       "fixed": "v168",
       "sponsor": "Erlanger Health System",
       "was": "the same defect on the VALUE side rather than the name side: `Harbor Capital Advisors, Inc. Harbor Capital Appreciation` at $33,446,964 = 14.2% of the plan was dropped outright. 13 rows -> 14 and ratio 0.850 -> 0.991, which is the evidence the row belongs. This filing was already a pinned specimen whose own label said '14-row menu' while its pinned expectation said 13 -- the gate caught the change and the expectation was corrected in the same commit."
+    },
+    {
+      "ack": "20251015115659NAL0004465985003",
+      "class": "wrapped-statement-caption-leaks-its-value-line",
+      "fixed": "v169",
+      "sponsor": "United Parcel Service Of America (145,125 ppl)",
+      "was": "published `investments` at $1,470,493,000 as a holding. The caption `OTHER CHANGES IN NET ASSETS - Net appreciation in fair value of` is refused by SKIP_ROW and carries no value; the next line holds only the noun the caption was reaching for, plus both year columns, and the parser took the PRIOR year. Same mechanism as the long-standing wrapped-subtotal rule (totalWrap), which had no counterpart for statement captions. With the phantom gone the remaining ten rows are an asset-class table and isStatement correctly flips to true, so this plan is EXPECTED to stop publishing a lineup -- the detector telling the truth once the phantom stops diluting the generic share."
+    },
+    {
+      "ack": "20260126144507NAL0000746867001",
+      "class": "wrapped-statement-caption-leaks-its-value-line-other-break-point",
+      "fixed": "v169",
+      "sponsor": "Christian Retirement Services",
+      "was": "the SAME caption cut one word earlier -- `Net Appreciation (Depreciation) in` then `Fair Value of Investments $ 821,363` -- which a rule anchored on the phrase `in fair value of` missed by one line break. The break point is a property of the column width, not of the phrase, so v169 tests the dangling preposition instead. 33 rows -> 34: the phantom out, T. ROWE PRICE DIVIDEND GROWTH ADV and T. ROWE PRICE 2055 R in."
+    },
+    {
+      "ack": "20251013155745NAL0000804051001",
+      "class": "wrapped-statement-caption-CONTROL-a-real-description-tail",
+      "fixed": "v169 (control, must not change)",
+      "sponsor": "Dupre Investments",
+      "was": "NOT a defect and must stay. It publishes a row whose name is the bare word `Investments` at 76% of a three-row menu, but there the word is the wrapped TAIL of a real Minnesota Life separate-account description, not a statement caption. A name-only rule would have dropped the plan under the three-row floor and cost a real holding. The line above it is what tells them apart."
+    },
+    {
+      "ack": "20251011140534NAL0020600514001",
+      "class": "footnote-marker-the-legend-never-explains",
+      "fixed": "v169",
+      "sponsor": "Epcor USA",
+      "was": "published `SmallCap S&P 600 Index SA +`, `MidCap S&P 400 Index Sep Acct +`, `MidCap Value Separate Acct +`. The schedule prints a legend for `*` and `**` and never mentions `+`; the marker sits at the end of the DESCRIPTION CELL, mid-line, so the v159 line-terminal strip never saw it. 1,943 rows / 480 plans / 367,882 participants carry one, and a name ending in `+` matches nothing in the ticker table either. Found by the participant-weighted random draw from PUBLISHED lineups, not by any audit."
     }
   ]
 }
