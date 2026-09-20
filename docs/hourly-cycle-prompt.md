@@ -237,56 +237,55 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
-      **STATUS 18:3xZ 2026-09-20: #409 (v173) PASSED and is MIRRORED
-      (`285bf55e → 23ea1499`, `--force` on the GIT check only over main's
-      three incremental cron commits — 0 acks / 0 plans lacked, plans array
-      byte-identical; DATA gate unforced at +0 / −0, pv 173 at 99.8%).
-      v174 is gated and verified, awaiting its corpus diff before dispatch.
-      NOTHING IS IN FLIGHT.**
-      **ELEVEN-HOUR LOOP GAP 07:10Z–18:07Z:** the container restarted and the
-      session did not resume; twelve hourly wakes queued and arrived together
-      at 18:07Z. Nothing was lost — the pipeline is the durable layer and took
-      three incremental cron commits on main without a session — but the
-      verified v173 store sat unmirrored for eleven hours. Recorded in
-      `docs/accuracy-log.md`.
-      **#409's pre-registered test was the class itself and it passed
+      **STATUS 20:4xZ 2026-09-20. IN FLIGHT: #413 (v174), dispatched 19:21Z,
+      ~70 min and still running. HELD AND READY: v175. SHIPPED THIS CYCLE: the
+      rows-dropped check.** Live on main is the v173 store (mirrored 18:1xZ).
+      **FIRST ACTION NEXT CYCLE: #413's verdict, then mirror, then dispatch
+      v175 — it is gated, corpus-diffed and committed, nothing else is needed.**
+      **#409 (v173) PASSED and is MIRRORED.** Its pre-registered test passed
       decisively: `(continued)` in the issuer 566 rows / 260 plans / 429,252
-      ppl → 1 / 1 / 157.** The single survivor is DIAGNOSED and is not a miss:
-      Onyx Creative's status is `pv 91, e=download` and its S3 object
-      HEAD-probes **403** — the filing is withdrawn from the EFAST2 bucket, so
-      the v37 protection keeps its v91 parse and no version bump can reach it.
-      **The class is closed for every filing that can still be read.** Pattern
-      worth keeping: a survivor after a bump is either a missed rule or an ack
-      never re-parsed, and the second is one status read away — the failed
-      trace download WAS the answer, not a tooling problem.
-      **v174 (ready, not yet dispatched): a footnote reference is not part of
-      the name.** 7,429 rows / 506 plans / **1,172,804 ppl** end in a bare
-      `(1)` no legend explains (FMR 110 of 120 rows; at ≥50% of a menu, 270
-      plans / 458,348 ppl). **Measured first: it is a READABILITY repair, not
-      a fee-cell one** — 1,313 rows already resolve to a ticker WITH the
-      marker, stripping gains 7 tickers across 4,309 ppl, 0 flip.
-      **The guard is the work.** A blanket strip merges rows the filing
-      distinguishes (the v160 shape): 5 collisions / 4 plans whole-store.
-      Western Ecosystems files `Putnam Stable Value Fund` $14,679 AND
-      `PUTNAM STABLE VALUE FUND (15)` $14,678 — close but NOT equal, so the
-      duplicate-render suppression would not have caught them, and stripping
-      would invent a $29,357 holding. So the strip runs at the DEDUP stage
-      with two refusals: the bare name must not belong to an unmarked row, and
-      marked rows sharing a bare name must carry the SAME marker. **Fourth
-      version running to turn on WHICH LEVEL a rule belongs at** — a rule about
-      one string goes at the row; a rule whose correctness depends on what else
-      the filing says goes where the whole set is visible.
-      Controls both pinned and both pass: FMR 120 rows / ratio 0.970 unchanged
-      with clean names; Western Ecosystems 55 rows / ratio 1.110 unchanged with
-      both Putnam rows intact.
-      **HELD OUT OF v174 deliberately:** Pechanga's `Net position available for
-      benefits` at 63.7% (1 plan / 4,520 ppl). The fix is one token on
-      `NOT_FUND_SHAPED`, but that arm is SHARED with `AGG_DISCLOSURE` and
-      v137 records a shared-predicate widening making 3M's note publishable.
-      Two risks in one bump, for one plan. Queued.
-      **Next: dispatch v174 on a clean corpus diff, then the SDBA fold**
-      (v172's own cost: Progressive's eight brokerage CATEGORY rows, ~$499M,
-      deleted rather than folded into the aggregate).
+      ppl → 1 / 1 / 157, and the survivor is `pv 91, e=download` with its S3
+      object HEAD-probing 403 — withdrawn from the bucket, unreachable by any
+      bump. Closed for every readable filing.
+      **v174 (#413):** the guarded footnote strip. Its corpus diff found an
+      undesigned GAIN — Chubb 120 → 45 rows, all 76 vanished names individual
+      STOCKS, one `Managed account holdings (125 positions)` row added at
+      $469,921,014, LARGER than the $431,668,119 it replaced because the
+      120-row cap had hidden the tail. The `(1)` was blinding the
+      managed-account fold.
+      **v175 (HELD): I SHIPPED A REGRESSION IN v172 THIS MORNING AND REPORTED
+      IT AS A WIN.** Apple files `BROKERGE ACCOUNT | Various Accounts |
+      2,153,504,672`; the description won the name, v172's prose rule fired on
+      it, and **$2,153,504,672 — 7% of a $30.8B plan, 145,428 ppl — left the
+      menu**, ratio 0.987 → 0.917 with nothing saying so. The Sempra case with
+      the columns swapped: **a gate specimen proves the orientation it pins,
+      not the axis it lies on.**
+      **v175 was then WRONG TWICE before it was right, and both are on the
+      record.** (1) I published the class at 6 rows / 6 plans from a
+      hand-written vocabulary list; the real condition gives **129 rows / 127
+      plans / 239,283 ppl** — a hand-rolled proxy for a shipped predicate, 5th
+      time. (2) The first fix would have FABRICATED: Trustmark files three rows
+      whose identity is `Charles Schwab & Co., Inc.`, and naming all three from
+      it merges them — $11,571,694 + $1,797,981 + $546,532 = **$13,916,207**,
+      verified to the dollar. Fixed by `isHouseName` (kills Kirkland's bare
+      `Vanguard`) plus keeping the prose as `_dd` so the dedup's existing
+      description split keeps Trustmark's three rows apart (29 → 32 @ 0.987).
+      **Neither plan is in the corpus, so the diff could not have caught them;
+      re-sizing with the real predicate and reading members by name did.**
+      **SHIPPED: `rows-dropped.txt`, the third blind spot.** losses-triage sees
+      lineups that vanish, swaps-degraded sees source changes, and neither saw
+      Apple's 27 → 26. merge-4i now lists any confident lineup that keeps its
+      source, loses rows, and drifts >0.03 further from 1.0; audit raises WARN.
+      Apple's drift was 0.070. **Controlled both ways through the REAL merge on
+      a crafted tree** (positive 31 @ 0.990 → 30 @ 0.845 flagged; negative 16 @
+      0.980 → 15 @ 0.978 not) — because a check that prints 0 on a quiet store
+      has not been tested.
+      **QUEUE:** (1) #413 verdict → mirror → dispatch v175; (2) the SDBA fold,
+      now sized for the first time at **269 plans / 630,032 ppl** whose
+      unitemised remainder v172 deleted with no other cell (Oracle, Intuit,
+      Progressive) — touches owner question 5; (3) Pechanga's `Net position
+      available for benefits` at 63.7%, 1 plan, one token on `NOT_FUND_SHAPED`
+      but that arm is SHARED with `AGG_DISCLOSURE` (v137's trap).
    2. Recordkeeper wrong name: 1,509 plans / 1.48M ppl. Prefer service
       codes 15/64, then the line-1b platform or Schedule A carrier, then
       top-fee; never publish a provider coded 10 or 29.
