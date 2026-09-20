@@ -18174,3 +18174,127 @@ Bank US Holding on eleven of twenty-three rows, Fleetpride on twenty of
 sixty-three, Illinois Institute of Technology on thirteen of seventy-one, and
 New York-Presbyterian's Harbor Capital Appreciation Fund now attributed to
 `Harbor Capital` rather than to `Mutual funds (continued) Harbor Capital`.
+
+## 2026-09-20 (18:3xZ) — v174: a footnote reference is not part of the name, and the guard is the work
+
+### The class
+
+**7,429 rows / 506 plans / 1,172,804 participants** publish a holding whose
+name ends in a bare `(1)`, `(2)` … that no legend on the page explains. FMR
+names 110 of its 120 rows `FID 500 INDEX (1)`; Edustaff 17 of 17; Thermo
+Fisher (72,605 ppl) 24 of 28. At 50% or more of a menu: **270 plans / 458,348
+participants**. Found in the 06:5xZ participant-weighted draw, not by any
+audit — no coverage metric can see a name that is merely wrong.
+
+### What it is worth, measured BEFORE building anything
+
+It looked like a blanked fee cell on that scale. **It is not.** Asking the
+shipped `fundTickerInfo` the same name with and without the marker over all
+7,429 rows:
+
+| | rows |
+|---|---|
+| already resolve to a ticker WITH the marker | **1,313** |
+| would gain a ticker if stripped | **7** (7 plans / 4,309 ppl) |
+| resolve to a DIFFERENT ticker | **0** |
+| no ticker either way | 6,109 |
+
+The matcher is tolerant of the suffix. So this is a readability repair for
+1.17M readers and not a data repair, and it ships described that way. **That
+was the third time in one cycle that counting the condition gave a different
+answer from counting the outcome** — after the `(continued)` fee-cell claim and
+v172's prose class.
+
+### The guard is the actual work
+
+A blanket strip MERGES rows the filing distinguishes — the v160 / Mass General
+Brigham fabrication exactly. Measured whole-store before writing a line of the
+fix: **5 collisions across 4 plans.**
+
+**Western Ecosystems Technology (524 ppl) is the type case and it is sharper
+than expected.** It files:
+
+```
+Putnam Stable Value Fund            14,679
+PUTNAM STABLE VALUE FUND (15)       14,678
+```
+
+The values are close but **not equal**, so the existing same-name-same-value
+duplicate-render suppression would NOT have caught them. Stripping the marker
+keys both rows to `putnam stable value fund` and **sums them into a $29,357
+holding that does not exist**. Chimes International (3,791 ppl) files one name
+under `(1)` and under `(6)`; Urban School of San Francisco (220 ppl) does the
+same on two TIAA Traditional rows; American Financial Group (10,439 ppl) on its
+own sponsor name.
+
+So the strip runs at the **dedup stage**, where the whole row set is in hand
+and a collision can be seen — not at the row level, where it cannot. Two
+refusals, both keyed exactly as the dedup keys:
+
+1. the bare name must not already belong to an **unmarked** row;
+2. the marked rows sharing a bare name must all carry the **same** marker.
+
+A plan filing `(1)` and `(6)` keeps both markers and stays two holdings.
+
+**This is the fourth version running to turn on WHICH LEVEL a rule belongs at**
+— v170's marker (row, not `body`), v172's prose (resolved name, not row),
+v173's continuation marker (both header and row), and now this one (dedup, not
+row). The pattern is worth naming: a rule about a single string belongs at the
+row level; a rule whose correctness depends on what ELSE the filing says
+belongs where the whole set is visible.
+
+### Held back deliberately
+
+The draw also found Pechanga Development Corporation (4,520 ppl) publishing
+`Net position available for benefits` at **63.7%** of its menu — the audited
+statement's bottom line as a holding. `NOT_FUND_SHAPED` carries `net assets.*`
+and the phrase is `net position`, one token away. **It is not in this version.**
+The arm is shared with `AGG_DISCLOSURE`, and v137's entry records that widening
+a shared predicate made 3M's fair-value note publishable. Bundling a shared
+predicate widening with a merge-behaviour change, for one plan, is two risks in
+one bump. Queued, still one plan / 4,520 participants.
+
+### Verification
+
+Parser gate green.
+
+- **Positive control — FMR LLC** `20251010153157NAL0004375043001` (90,445 ppl):
+  `FID 500 INDEX (1)` → `FID 500 INDEX`, **120 rows both sides, ratio 0.970
+  unchanged**, nothing merged.
+- **Negative control — Western Ecosystems** `20251014163918NAL0001658931001`:
+  **55 rows both sides, ratio 1.110 unchanged**, and both Putnam rows survive
+  at $14,679 and $14,678 with the marker intact. The guard fired.
+
+Both pinned in `docs/defect-specimens.json`.
+
+### The corpus diff found a GAIN nobody predicted
+
+1,003 filings: 0 confidence gained, 0 lost, 0 fabricated either way, 0 menu
+sums moved ≥5%, and **one row-count move — Chubb Ina Holdings 120 → 45.**
+
+A 75-row drop with an unmoved sum is the signature of a MERGE, which is the
+fabrication this version exists to prevent, so it was read by name before
+anything shipped. It is the opposite:
+
+| | |
+|---|---|
+| names only in v173 | **76, every one an individual STOCK** — Alphabet, Apple, Broadcom, Cisco, Bank of America, Chipotle … |
+| names only in v174 | **1** — `Managed account holdings (125 positions)` |
+| value of the vanished rows | $431,668,119 |
+| value of the fold row | **$469,921,014** |
+
+Chubb's T. Rowe Price managed account holds 125 individual securities, and the
+`(1)` on each one was keeping the managed-account fold from recognising them —
+so they published as ~100 separate stock rows in what readers see as a fund
+menu, **and hit the 120-row cap**, which is why the fold is $38,252,895 LARGER
+than the rows it replaced: the cap had been hiding the tail. Every named fund
+survives untouched (Vanguard Institutional Index, all eleven T. Rowe Price
+vintages, the brokerage account, the bond and TIPS funds), the ratio is 0.951
+on both sides, and the fold sits at 10% of the menu — well under the 30% the
+`aggRow` audit watches.
+
+**So v174 does two things, and the second was not designed.** A marker that
+looked purely cosmetic was also blinding a classifier. That is worth keeping:
+a string the parser carries around is an input to everything downstream of it,
+and "harmless noise in a name" is a claim about every consumer of that name,
+not just the renderer.

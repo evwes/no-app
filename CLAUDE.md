@@ -742,32 +742,66 @@ don't confuse them). Frontend: python http.server + Playwright at
   EIN read as a dollar value, so it does not START with the employer-ID words
   and the anchored arm cannot reach it.
   `docs/accuracy-log.md` 2026-09-20 (run #406 verdict).
-- **IN FLIGHT: #409 (v173), dispatched 2026-09-20 06:28Z (push trigger fired;
-  start verified queued). A PAGE-CONTINUATION MARKER IS NOT PART OF THE
-  ISSUER** — 566 rows / 260 plans / **429,252 participants** publish an issuer
-  carrying a page break's `(continued)`. The interesting half is why a TYPE
-  LABEL gets promoted at all: `typeOnly("Common Collective Trust")` is true and
-  the phrase is refused everywhere, but `typeOnly("Common Collective Trust
-  (continued)")` strips the same vocabulary and is left with `continued` —
-  **nine characters, over the six-character floor** — so it returns FALSE, and
-  the word `Trust` then satisfies the corporate-token clause on the next line.
-  **A phrase refused on every other page is promoted on the continuation page
-  alone.** Td Bank US Holding publishes it on ELEVEN of twenty-three rows
-  (47,196 ppl), Fleetpride on twenty of sixty-three, Illinois Tech on thirteen
-  of seventy-one. The rule SPLITS at the marker and keeps the last non-empty
-  segment — the firm follows the marker when there is one and precedes it when
-  there is not — then hands the result to the UNCHANGED gate; deleting the
-  marker alone would leave `Mutual funds Vanguard`. **Two paths, because the
-  row level and the header level are different places:** New York-Presbyterian
-  (66,650 ppl) files `Mutual funds (continued) Harbor Capital` in the ROW's own
-  identity cell, so the same split runs on `issCell`, confined to cells that
-  carry a marker. Third version running to pay for that distinction (v170's
-  marker, v172's prose); this time it cost one trace, not a run. Gate green;
-  corpus diff over 1,002 filings all zeros — correct for a change that renames
-  a field the diff does not compare, so the evidence is the two traces (row
-  counts, values and ratios identical on both sides). **`lookupTicker` falls
-  back to the bare name, so no fee cell was ever blanked by this — a draft of
-  the log entry said otherwise and was corrected before publishing.**
+- **IN FLIGHT: #413 (v174), dispatched 2026-09-20 19:21Z (push trigger fired;
+  start verified queued). A FOOTNOTE REFERENCE IS NOT PART OF THE NAME** —
+  7,429 rows / 506 plans / **1,172,804 ppl** end in a bare `(1)` no legend
+  explains (FMR 110 of 120 rows; at ≥50% of a menu, 270 plans / 458,348 ppl).
+  **Measured before building: a READABILITY repair, not a fee-cell one** —
+  1,313 rows already resolve to a ticker WITH the marker, stripping gains 7
+  across 4,309 ppl, 0 flip. **THE GUARD IS THE WORK:** a blanket strip merges
+  rows the filing distinguishes (the v160 shape) — 5 collisions / 4 plans
+  whole-store, and Western Ecosystems files `Putnam Stable Value Fund` $14,679
+  AND `PUTNAM STABLE VALUE FUND (15)` $14,678, close but NOT equal, so the
+  duplicate-render suppression would not catch them and stripping would invent
+  a $29,357 holding. So the strip runs at the **DEDUP stage** with two
+  refusals: the bare name must not belong to an unmarked row, and marked rows
+  sharing a bare name must carry the SAME marker. **Fourth version running to
+  turn on WHICH LEVEL a rule belongs at** — a rule about one string goes at the
+  row; a rule whose correctness depends on what else the filing says goes where
+  the whole set is visible.
+  **THE CORPUS DIFF FOUND AN UNDESIGNED GAIN.** 1,003 filings, all zeros except
+  Chubb Ina Holdings **120 → 45 rows** — read by name because a 75-row drop at
+  an unmoved sum is the merge signature. It is the opposite: all 76 vanished
+  names are individual STOCKS (Alphabet, Apple, Broadcom), one name is added —
+  `Managed account holdings (125 positions)` — and the fold at **$469,921,014
+  is LARGER** than the $431,668,119 it replaced, because the 120-row cap had
+  hidden the tail. **The `(1)` was blinding the managed-account fold**, so 125
+  securities published as a capped list inside what reads as a fund menu. Every
+  named fund survives, ratio 0.951 both sides, fold at 10% (under `aggRow`'s
+  30%). A string the parser carries is an input to every consumer of it.
+  **HELD OUT DELIBERATELY:** Pechanga's `Net position available for benefits`
+  at 63.7% (1 plan / 4,520 ppl). One token on `NOT_FUND_SHAPED` — but that arm
+  is SHARED with `AGG_DISCLOSURE`, and v137 records a shared-predicate widening
+  making 3M's note publishable. Two risks in one bump, for one plan. Queued.
+- **MIRRORED 2026-09-20 18:1xZ: the v173 store is LIVE on main** (`285bf55e →
+  23ea1499`). `--force` on the GIT check only over main's three incremental
+  cron commits — **0 acks and 0 plans the branch lacked, plans array
+  byte-identical**, main newer on 1 ack. DATA gate unforced: **+0 / −0**, pv
+  173 at 99.8%, dl 104, reader failures 1. **What reached readers: 260 plans /
+  429,252 participants stop seeing a page break's `(continued)` printed as the
+  name of the firm behind their fund** — Td Bank on eleven of twenty-three
+  rows, Fleetpride on twenty of sixty-three, Illinois Tech on thirteen of
+  seventy-one, and New York-Presbyterian's Harbor Capital Appreciation Fund
+  attributed to `Harbor Capital`.
+- **#409 PASSED (07:23Z, 55 min, `23ea1499`): pv 173 at 99.85%, confident
+  60,117 (+0 / −0), HIGH 5, overshoot 332, lineups 59,766, dl 104.** The
+  coverage line is byte-identical for the SECOND version running and for the
+  same reason — v173 renames a FIELD and the line counts PLANS.
+  **The pre-registered test was the class and it passed decisively: 566 rows /
+  260 plans / 429,252 ppl → 1 / 1 / 157.** The single survivor is DIAGNOSED and
+  is not a miss: Onyx Creative's status is `pv 91, e=download` and its S3
+  object HEAD-probes **403** — withdrawn from the EFAST2 bucket, so the v37
+  protection keeps its v91 parse and no bump can reach it. **The class is
+  closed for every filing that can still be read.** Pattern worth keeping: a
+  survivor after a bump is either a missed rule or an ack never re-parsed, and
+  the second is one status read away — here the failed trace download WAS the
+  answer, not a tooling problem.
+- **ELEVEN-HOUR LOOP GAP 2026-09-20 07:10Z–18:07Z.** The container restarted
+  and the session did not resume; twelve hourly wakes queued and arrived
+  together at 18:07Z. Nothing was lost — the pipeline is the durable layer and
+  took three incremental cron commits on main without a session — but the
+  verified v173 store sat unmirrored for eleven hours. Recorded because a gap
+  that is not written down reads later as a quiet hour.
 - **MIRRORED 2026-09-20 07:0xZ: the v172 store is LIVE on main** (`aa004a2e →
   1ed27db7`). `--force` on the GIT check only, over main's cron commit
   `aa004a2e`: **0 acks and 0 plans the branch lacked, plans array

@@ -237,46 +237,56 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
-      **STATUS 07:0xZ 2026-09-20: #407 (v172) PASSED and is MIRRORED
-      (`aa004a2e → 1ed27db7`, `--force` on the GIT check only with 0 acks /
-      0 plans lacked and the plans array byte-identical; DATA gate unforced at
-      +0 / −0). v173 DISPATCHED as #409 (observed queued 06:28Z, now
-      in_progress).**
-      #407 (`1d7d321f`, 53 min): pv 172 at 99.85%, confident 60,117 (+0 / −0),
-      HIGH 5, overshoot 332, lineups 59,766, dl 104. **The coverage line is
-      byte-identical to the previous run's except `tkSampled`, and that is
-      correct** — v172 moves ROWS inside already-confident plans and the line
-      counts PLANS. Settled by reading the named plans out of the store:
-      Oracle **40 rows**, no `Various…` row, sum/assets **0.911** as predicted
-      (101,985 ppl stop seeing $3,405,120,000 as one holding); Capital One
-      **31 rows**; Progressive **25**, the recorded cost. `aggRow` held at 112
-      consistently — Capital One's fold was 17.6%, under the 30% threshold.
-      **THE MIRROR WAS HELD ~20 MINUTES AND THEN TAKEN IN THE SAME CYCLE.**
-      At 06:4xZ #408, main's own hourly cron, was in flight ON MAIN — force
-      pushing the branch onto main while a run is about to commit there is the
-      unsafe case (precedent 2026-09-16 07:1xZ). Dispatching #409 on the DEV
-      branch in that same moment was safe, because concurrency is per-ref. The
-      moment #408 landed the mirror went through. The mirror carries v173 CODE
-      over the v172 STORE, which `SCHEDULE_INCREMENTAL` makes safe: a
-      scheduled run treats a parser-version gap as no work, so main's :23 cron
-      cannot start a duplicate full re-parse.
-      **v173** is the `(continued)` issuer class: 566 rows / 260 plans /
-      **429,252 ppl**. A type label is promoted only because the marker
-      defeats `typeOnly` — strip the type vocabulary from `Common Collective
-      Trust (continued)` and `continued` survives at nine characters, over the
-      six-character floor — after which the word `Trust` pays the corporate
-      token test. The rule SPLITS at the marker and hands the surviving
-      segment to the UNCHANGED gate. Two paths (colon header AND the row's own
-      identity cell), because the row level and the header level are different
-      places — the third version running to pay for that.
-      **Two self-corrections on the record this cycle:** a sizing harness
-      reported a clean 0-of-201 that was entirely false (it read an object as
-      an array; a control with known-good input returned zero too, which is
-      what exposed it), and a draft of the v173 log entry claimed the marker
-      blanked the fee cell when `lookupTicker` falls back to the bare name.
-      **Next: mirror, then #409's verdict, then the SDBA fold** (v172's own
-      cost: Progressive's eight brokerage CATEGORY rows, ~$499M, deleted
-      rather than folded into the aggregate).
+      **STATUS 18:3xZ 2026-09-20: #409 (v173) PASSED and is MIRRORED
+      (`285bf55e → 23ea1499`, `--force` on the GIT check only over main's
+      three incremental cron commits — 0 acks / 0 plans lacked, plans array
+      byte-identical; DATA gate unforced at +0 / −0, pv 173 at 99.8%).
+      v174 is gated and verified, awaiting its corpus diff before dispatch.
+      NOTHING IS IN FLIGHT.**
+      **ELEVEN-HOUR LOOP GAP 07:10Z–18:07Z:** the container restarted and the
+      session did not resume; twelve hourly wakes queued and arrived together
+      at 18:07Z. Nothing was lost — the pipeline is the durable layer and took
+      three incremental cron commits on main without a session — but the
+      verified v173 store sat unmirrored for eleven hours. Recorded in
+      `docs/accuracy-log.md`.
+      **#409's pre-registered test was the class itself and it passed
+      decisively: `(continued)` in the issuer 566 rows / 260 plans / 429,252
+      ppl → 1 / 1 / 157.** The single survivor is DIAGNOSED and is not a miss:
+      Onyx Creative's status is `pv 91, e=download` and its S3 object
+      HEAD-probes **403** — the filing is withdrawn from the EFAST2 bucket, so
+      the v37 protection keeps its v91 parse and no version bump can reach it.
+      **The class is closed for every filing that can still be read.** Pattern
+      worth keeping: a survivor after a bump is either a missed rule or an ack
+      never re-parsed, and the second is one status read away — the failed
+      trace download WAS the answer, not a tooling problem.
+      **v174 (ready, not yet dispatched): a footnote reference is not part of
+      the name.** 7,429 rows / 506 plans / **1,172,804 ppl** end in a bare
+      `(1)` no legend explains (FMR 110 of 120 rows; at ≥50% of a menu, 270
+      plans / 458,348 ppl). **Measured first: it is a READABILITY repair, not
+      a fee-cell one** — 1,313 rows already resolve to a ticker WITH the
+      marker, stripping gains 7 tickers across 4,309 ppl, 0 flip.
+      **The guard is the work.** A blanket strip merges rows the filing
+      distinguishes (the v160 shape): 5 collisions / 4 plans whole-store.
+      Western Ecosystems files `Putnam Stable Value Fund` $14,679 AND
+      `PUTNAM STABLE VALUE FUND (15)` $14,678 — close but NOT equal, so the
+      duplicate-render suppression would not have caught them, and stripping
+      would invent a $29,357 holding. So the strip runs at the DEDUP stage
+      with two refusals: the bare name must not belong to an unmarked row, and
+      marked rows sharing a bare name must carry the SAME marker. **Fourth
+      version running to turn on WHICH LEVEL a rule belongs at** — a rule about
+      one string goes at the row; a rule whose correctness depends on what else
+      the filing says goes where the whole set is visible.
+      Controls both pinned and both pass: FMR 120 rows / ratio 0.970 unchanged
+      with clean names; Western Ecosystems 55 rows / ratio 1.110 unchanged with
+      both Putnam rows intact.
+      **HELD OUT OF v174 deliberately:** Pechanga's `Net position available for
+      benefits` at 63.7% (1 plan / 4,520 ppl). The fix is one token on
+      `NOT_FUND_SHAPED`, but that arm is SHARED with `AGG_DISCLOSURE` and
+      v137 records a shared-predicate widening making 3M's note publishable.
+      Two risks in one bump, for one plan. Queued.
+      **Next: dispatch v174 on a clean corpus diff, then the SDBA fold**
+      (v172's own cost: Progressive's eight brokerage CATEGORY rows, ~$499M,
+      deleted rather than folded into the aggregate).
    2. Recordkeeper wrong name: 1,509 plans / 1.48M ppl. Prefer service
       codes 15/64, then the line-1b platform or Schedule A carrier, then
       top-fee; never publish a provider coded 10 or 29.
