@@ -18524,3 +18524,47 @@ counts alone; that took reading Apple's filing. What it does is guarantee the
 plan is *named* so someone looks. The v172 verdict read three plans chosen by
 hand and all three behaved; this would have put Apple on the list without being
 asked.
+
+## 2026-09-20 (21:1xZ) — run #413 verdict: v174 PASSED on all three pre-registered tests
+
+`75ed1fa3`, ~100 minutes. pv **174 at 99.85%** (68,661 of 68,767). Confident
+**60,117 (+0 / −0)**, lineups 59,766, HIGH 5, overshoot 332, aggRow 112, dl 104.
+**The coverage line is byte-identical for the THIRD version running**, and for
+the third time that is the right answer rather than a stall: v174 renames and
+folds rows INSIDE plans that were already confident, and every metric on that
+line counts PLANS.
+
+The tests were written before the run finished and all three pass.
+
+| test | predicted | measured |
+|---|---|---|
+| footnote-reference class | 7,429 rows / 506 plans / 1,172,804 ppl → near zero | **27 rows / 12 plans / 116,932 ppl** |
+| …at ≥50% of a menu | 270 plans / 458,348 ppl → 0 | **0 plans** |
+| Western Ecosystems (negative control) | both Putnam rows survive, marker intact | **$14,679 `Putnam Stable Value Fund` and $14,678 `PUTNAM STABLE VALUE FUND (15)`, both present** |
+| Chubb Ina Holdings | 120 → 45 rows, one fold row | **45 rows, `Managed account holdings (125 positions)` $469,921,014 = 10.0%** |
+
+**The 27 survivors are the guard working, not a shortfall**, and they read as
+the shapes it was built for: American Financial Group's sponsor-name row filed
+both marked and unmarked; Chimes International's `Pooled separate accounts NIA
+NIA NIA (1)`, which it also files under `(6)`; Exelon's `Corporate stock -
+Exelon Corporation (1)`; two of Thermo Fisher's twenty-eight. Every one is a
+collision the strip correctly refused.
+
+**What reached readers:** FMR LLC's 90,445 participants, Edustaff's 41,089 and
+Thermo Fisher's 72,605 — with 506 plans and 1.17M people in total — stop seeing
+a bare `(1)` welded to their fund names; and Chubb's 21,847 stop seeing 125
+individual stock positions listed as though they were the plan's fund menu,
+with $38,252,895 of that managed account previously hidden behind the 120-row
+cap now counted.
+
+**MIRRORED `bc1b0384 → 75ed1fa3`**, 21:1xZ. `--force` on the GIT check only
+over main's one cron commit, evidence first: **0 acks and 0 plans the branch
+lacked, plans array byte-identical**, main newer on 1 ack. Data gate unforced:
+**+0 gained / −0 lost**, dominant pv 174 at 99.8%, dl 104, reader failures 2.
+
+**v175 DISPATCHED as #415** (workflow_dispatch, 21:09Z, observed in_progress).
+`.kick` was already at the content it needed, so the push trigger had nothing
+to fire on — the documented reliable route was used instead of manufacturing a
+commit. Its pre-registered tests: the deleted-brokerage class goes **6 → 0**,
+Apple's ratio reads **~0.99 against 0.918 today**, and Trustmark publishes
+**three separate** Charles Schwab rows rather than one summed $13,916,207.
