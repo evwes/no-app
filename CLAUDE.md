@@ -731,60 +731,55 @@ don't confuse them). Frontend: python http.server + Playwright at
   (`receivable` at 9, all real asset-backed securities protected by v153's
   `securityRow` exemption). Recorded, not fixed.
   `docs/accuracy-log.md` 2026-09-19 (run #401 verdict).
-- **IN FLIGHT: #403 (v169), dispatched 2026-09-20 00:39Z by push trigger.**
-  Two shapes. (1) **A wrapped STATEMENT CAPTION leaks its value onto the next
-  line.** The wrapped-subtotal rule (`totalWrap`) had no counterpart for
-  statement captions, so UPS (145,125 ppl) published `investments` at
-  **$1,470,493,000** — the year's net appreciation, at its PRIOR-year column.
-  Christian Retirement files the same caption cut one word earlier, which a
-  phrase-anchored first draft missed: **the break point is a property of the
-  column width, not of the phrase**, so `STMT_WRAP_TAIL` tests the dangling
-  preposition. Sized first at 16 rows / 16 plans / 186,722 ppl; scope set by a
-  CONTROL (Dupre's `Investments` is the wrapped tail of a real Minnesota Life
-  separate account, pinned so it can never be deleted). (2) **A footnote
-  marker no legend explains**, found by the participant-weighted random draw:
-  **1,943 rows / 480 plans / 367,882 ppl** publish a name ending in ` +` or
-  ` ~`, each with a blank fee cell because such a name matches nothing in the
-  ticker table. Gate green; corpus diff run twice, identical both times —
-  0 gained, **1 LOST**, 0 fabricated either way. **The loss is UPS and it is
-  accepted:** without the phantom its ten remaining rows are an asset-class
-  table and `isStatement` correctly flips, so readers get the
-  filed-in-aggregate sentence instead of a class table holding a $1.47B fake
-  row. **Calpine (3,014 ppl) is diagnosed and NOT fixed** — its statement line
-  does not wrap and its lineup comes from the OCR path.
-  Pre-registered verdict tests in `docs/accuracy-log.md` 2026-09-20.
-- **READY AND HELD: v170 (`b3ed0af1`, committed `[skip ci]` while #403 parses;
-  dispatch after its verdict).** IRISNDT (1,609 ppl) publishes a bare
-  `JOHN HANCOCK` row of **$21,512,753 = 53%** that is **eighteen filed
-  holdings summed** (agrees with the filing to within $11,731, 0.05% — the
-  residue is the schedule rendered twice and is not isolated; recorded as
-  0.05%, not claimed as "to the dollar"). **The rule that should have caught
-  it already existed**: v160's `_dd` split, confined by v161 to HOUSE
-  identities, which John Hancock is. It was disabled by ONE row — the
-  `\d{4,}` guard that keeps par amounts out of holding names also refuses
-  every target-date vintage, so `RL 2020` carried no label, and **the split
-  fires only when the row ALREADY STORED also carries one.** `RL 2020` is the
-  first row the schedule presents, so `MONEY`, `IDX 500`, `AC EM`, `GLOBAL`,
-  `AB HIF`, `OAK IF` and `WELLS FGSF` merged too **despite each having a
+- **LIVE on main: the v169 store — MIRRORED 2026-09-20 02:3xZ** (`--force`
+  over main's cron commit `b23bc718`: 0 acks / 0 plans the branch lacked,
+  plans array byte-identical; `--force-data` over the two losses, read by
+  name). pv 169 at 99.85%, confident **60,117 (+0 / −2)**, HIGH 7, overshoot
+  **334 → 335**, lineups 59,766, dl 104. **What reached readers:** UPS's
+  145,125 participants stop being shown **$1,470,493,000 of net appreciation
+  as a holding** and get the filed-in-aggregate sentence instead; the
+  bare-`Investments` statement row falls 16 → 8 plans; **1,280 holding names
+  lose a stray trailing `+` or `~`** across 268 plans. The second loss is Nw
+  Bend Boats (163 ppl), whose three rows were `$ 3,389,417 go go`,
+  `Fair Value of Investments` and `Interest & Dividends` — an entirely
+  fabricated lineup correctly withdrawn.
+  **TWO OF THE FOUR PRE-REGISTERED TESTS FAILED, and both are on the record.**
+  (2) The marker class was predicted at ~0 and came in at **663 rows / 212
+  plans / 143,586 ppl** — v169 stripped the marker from `body`, and it usually
+  sits at the end of the row's NAME CELL with two columns behind it. **A first
+  correction (strip after `stripTrailingColumns`) was ALSO wrong**, because the
+  name comes from the identity cell via `splitNameDesc`. Fixed in v170 part 2
+  by stripping the FINAL name. **The lesson is the testing, not the regex: the
+  v169 fix was tested on the filing that motivated it and not on one of the
+  shape it would miss.** (4) `overshoot` was predicted to fall and rose by one,
+  **and the premise was refuted by my own corpus diff** — Standard Concrete had
+  already been observed swapping regions, so v169 changes which region WINS,
+  not only which rows survive. 2 entered / 1 left, 463 ppl. **Shared Support
+  South (195 ppl) is a real regression: losing its `Investments` row lets a
+  larger region win and it now publishes 12 rows topped by an OCR'd Form 5500
+  EIN line at ratio 1.43** — recorded, not fixed.
+  `docs/accuracy-log.md` 2026-09-20 (run #403 verdict).
+- **IN FLIGHT: #405 (v170, both parts), dispatched 2026-09-20 02:28Z.**
+  Part 1: **a target-date year is not a par value.** IRISNDT (1,609 ppl)
+  published a bare `JOHN HANCOCK` row of **$21,512,753 = 53%** that is
+  **eighteen filed holdings summed** (agrees with the filing to within
+  $11,731, 0.05% — the residue is the schedule rendered twice, not isolated).
+  **The rule that should have caught it already existed** (v160's `_dd` split,
+  confined by v161 to HOUSE identities), and was disabled by ONE row: the
+  `\d{4,}` guard that keeps par amounts out of names also refuses every
+  vintage, so `RL 2020` carried no label — and **the split fires only when the
+  row ALREADY STORED also carries one.** `RL 2020` is the first row the
+  schedule presents, so seven more rows merged **despite each having a
   perfectly good label**. **A guard that requires both sides to be labelled
-  fails completely when the first member is not — and silently, because a
-  merge leaves no error code and moves no coverage metric.** v170 ships only
-  the narrow half (every 4+ digit run must be a plausible vintage year,
-  1950–2075; one par amount anywhere still refuses the cell). **The structural
-  half — the split should fire when only the INCOMING row is labelled — is
-  recorded and deliberately NOT shipped**: it changes behaviour wherever a
-  house row has no description and needs its own measurement. Gate green;
-  corpus diff over 996 filings **0 gained / 0 LOST / 0 fabricated either way /
-  0 menu-sum moves**, and **six plans un-merge** — The Jones Company 28 → 42
-  (the plan the v163 entry recorded losing a 74% `John Hancock` row), Irisndt
-  27 → 42 at an unchanged ratio, Intervala 28 → 35, Relatient 16 → 26,
-  Firstkey Homes 15 → 25, Ubiquity Global Services 9 → 17. **Four of the six
-  are members of the 20-plan bare-house class**, so it reaches the class.
-  Pre-registered test: that class should fall 20 → roughly 14–16 plans and
-  **must not reach zero** — Calpine, Dupre and CCS Medical are other shapes.
-  **Calpine (3,014 ppl) is diagnosed this cycle and NOT fixed:** its
-  `Investments` row at 80% is the statement-of-net-assets line item at its
-  PRIOR-year column, reached via the OCR path, and its line does not wrap.
+  fails completely when the first member is not, and silently.** Only the
+  narrow half shipped (every 4+ digit run must be a plausible vintage year);
+  **the structural half is recorded and deliberately NOT shipped.**
+  Part 2 is the marker correction above. Gate green; corpus diffs 0 gained /
+  0 lost / 0 fabricated / 0 sum moves, with **six plans un-merging** (Jones
+  28 → 42, Irisndt 27 → 42, Intervala 28 → 35, Relatient 16 → 26, Firstkey
+  15 → 25, Ubiquity 9 → 17) — four of them bare-house class members.
+  Pre-registered tests in `docs/accuracy-log.md` 2026-09-20; **test 4 claims
+  no direction for overshoot this time, on purpose.**
 - **Previously: the v167 store — MIRRORED 2026-09-19 21:2xZ** (`--force` over
   main's cron commit `7d9f401c` — 0 acks and 0 plans the branch lacked, plans
   array byte-identical, main newer on 1 ack — and `--force-data` over the

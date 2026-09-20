@@ -17626,3 +17626,24 @@ behaviour I had just measured.
 what its premise is worth, and the premise here contradicted a measurement
 sitting in the same document. Check a prediction against the diff you already
 ran before writing it down.
+
+### Pre-registered tests for run #405 (v170, dispatched 02:28Z)
+
+Each premise is tied to a measurement already in hand, because that is exactly
+what #403's failed test 4 did not do.
+
+1. **The bare-house-dominant class falls from 20 plans / 12,762 ppl to roughly
+   14–16, and NOT to zero.** Premise: the v170 corpus diff un-merged six plans
+   and four are class members. Calpine, Dupre and CCS Medical are other shapes
+   and must survive.
+2. **The ` +` / ` ~` marker class falls from 663 rows / 212 plans toward 0 —
+   and if any survive, the surviving LAYOUT is the finding, not the count.**
+   The strip now runs on the final name and is verified on the two layouts I
+   have seen (end-of-line, Epcor; end-of-name-cell, Westmont). A third layout
+   is exactly what the last prediction missed.
+3. **Net confidence moves in single digits**, and any loss is read by name.
+   Premise: the corpus diff was 0 gained / 0 lost over 997 filings.
+4. **`overshoot` stays roughly flat — no direction is claimed.** Premise: v170
+   splits merged rows without changing any sum, and the corpus diff recorded
+   **0 menu-sum moves**. A region swap could still move it either way, which is
+   precisely why the direction is not predicted this time.

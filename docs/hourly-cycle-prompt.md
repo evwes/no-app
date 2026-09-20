@@ -237,7 +237,41 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
-      **STATUS 02:1xZ 2026-09-20: #403 (v169) STILL PARSING at ~1h35m (20
+      **STATUS 02:3xZ 2026-09-20: #403 (v169) PASSED, MIRRORED
+      (`b23bc718 → 78f01008`), and TWO OF ITS FOUR PRE-REGISTERED TESTS
+      FAILED — both recorded, both diagnosed, one already fixed. v170 (both
+      parts) DISPATCHED as #405, observed queued 02:28Z.** pv 169 at 99.85%,
+      confident 60,117 (**+0 / −2**), HIGH 7, overshoot 334 → **335**,
+      lineups 59,766, dl 104. Both losses justified: **UPS**, pre-registered
+      and accepted (145k readers get the filed-in-aggregate sentence instead
+      of a class table holding a $1.47B non-holding), and **Nw Bend Boats**
+      (163 ppl) whose three rows were `$ 3,389,417 go go` /
+      `Fair Value of Investments` / `Interest & Dividends` — an entirely
+      fabricated lineup falling under the floor. **Test 1 PASSED including its
+      negative half:** bare-`Investments` rows 16 → **8, not zero**, with
+      Dupre's control and Calpine's two surviving exactly as scoped.
+      **TEST 2 FAILED — predicted ~0, got 663 rows / 212 plans / 143,586
+      ppl** (a 66% cut). Cause found in one filing: v169 stripped the marker
+      from `body`, and it usually sits at the end of the row's NAME CELL with
+      two columns behind it (Westmont Hospitality,
+      `Blue Chip Sep Acct + | Pooled Separate Account | ** | 3,961,588`). **My
+      first correction — strip after `stripTrailingColumns` — was ALSO wrong**,
+      because the name comes from the identity cell via `splitNameDesc`, not
+      from the tail of `body`. Now stripped from the FINAL name; verified on
+      both layouts. **The lesson is the testing: I tested v169's fix on the
+      filing that motivated it and not on one of the shape it would miss.**
+      **TEST 4 FAILED — predicted overshoot could only fall, got 334 → 335**,
+      and the premise was refuted by my own corpus diff, which had already
+      recorded Standard Concrete swapping regions. **v169 changes which region
+      WINS, not only which rows survive.** Whole-set diff: 2 in / 1 out, 463
+      ppl. **Shared Support South (195 ppl) is a real regression of mine** —
+      losing its `Investments` row lets a larger region win and it now
+      publishes 12 rows topped by an OCR'd Form 5500 EIN line at ratio 1.43;
+      recorded, not fixed. **Next wake: #405's verdict.** Its four
+      pre-registered tests are in `docs/accuracy-log.md` and each premise is
+      tied to a measurement already in hand — including test 4, which this
+      time claims NO direction for overshoot.
+      **STATUS 02:1xZ 2026-09-20: #403 (v169) was parsing at ~1h35m (20
       shards, OCR-heavy), so this cycle did NOT poll it — it took the queue
       item instead and built v170, committed `[skip ci]`, READY TO DISPATCH
       the moment #403's verdict is closed.** The queue item was the 20
