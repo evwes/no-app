@@ -64,14 +64,14 @@
       "class": "filed-aggregate-control",
       "fixed": "v105",
       "sponsor": "MetLife Group",
-      "was": "NOT a defect — the filing genuinely reports participant-directed investments in aggregate. Control: must stay non-confident without being called a merge. BREACHED ONCE (run #223, v109 data): the prior-year FALLBACK ladder rescued its 2023 filing (ack 20241008081623NAL0017271841001) whose two aggregates split dominance 58/41 under the single-row >=90% test, padded by auditor letterhead rows (Tel:/Fax:/Suite as $8.3M/$7.7M/$3.6M holdings) — shipped confident, caught in the mirror-gate review before reaching main. v110 closed it (aggSplit + letterhead condemnation); the 2023 ack is a gate specimen with expect stmt"
+      "was": "NOT a defect \u2014 the filing genuinely reports participant-directed investments in aggregate. Control: must stay non-confident without being called a merge. BREACHED ONCE (run #223, v109 data): the prior-year FALLBACK ladder rescued its 2023 filing (ack 20241008081623NAL0017271841001) whose two aggregates split dominance 58/41 under the single-row >=90% test, padded by auditor letterhead rows (Tel:/Fax:/Suite as $8.3M/$7.7M/$3.6M holdings) \u2014 shipped confident, caught in the mirror-gate review before reaching main. v110 closed it (aggSplit + letterhead condemnation); the 2023 ack is a gate specimen with expect stmt"
     },
     {
       "ack": "20251010104106NAL0007965633001",
       "class": "shared-description-column",
       "fixed": "v109",
       "sponsor": "State Farm",
-      "was": "description column 'Common Collective Trust Portfolio' outranked 18 real Vanguard names ('Portfolio' residue defeated typeOnly); menu merged to 3 rows and withheld as stmt. NOTE the original entry blamed region scoring against a 55-fund menu — tracing showed the region was FOUND and the column-role choice was the defect: 20 funds, confident at 0.99 after the fix"
+      "was": "description column 'Common Collective Trust Portfolio' outranked 18 real Vanguard names ('Portfolio' residue defeated typeOnly); menu merged to 3 rows and withheld as stmt. NOTE the original entry blamed region scoring against a 55-fund menu \u2014 tracing showed the region was FOUND and the column-role choice was the defect: 20 funds, confident at 0.99 after the fix"
     },
     {
       "ack": "20251007154215NAL0002583779001",
@@ -92,28 +92,28 @@
       "class": "trust-note-aggregates-control",
       "fixed": null,
       "sponsor": "HCA",
-      "was": "CONTROL: must stay non-confident — trust-note aggregates ('Corporate bonds', 63.7% participation-in-master-trust row); the first v107 draft shipped it as a confident $19B lineup"
+      "was": "CONTROL: must stay non-confident \u2014 trust-note aggregates ('Corporate bonds', 63.7% participation-in-master-trust row); the first v107 draft shipped it as a confident $19B lineup"
     },
     {
       "ack": "20260407122345NAL0004976899001",
       "class": "winner-flip-control",
       "fixed": null,
       "sponsor": "Capital Group",
-      "was": "CONTROL: 73 rows at ratio 1.000 exactly — a per-candidate version of the total-drop flipped its winner to a junk sibling with a $511M 'American Funds' house-merge row"
+      "was": "CONTROL: 73 rows at ratio 1.000 exactly \u2014 a per-candidate version of the total-drop flipped its winner to a junk sibling with a $511M 'American Funds' house-merge row"
     },
     {
       "ack": "20251008095017NAL0005364081001",
       "class": "image-table-page",
       "fixed": "v108",
       "sponsor": "Compass Group USA",
-      "was": "the whole 40-fund menu embedded as a JPEG under a native-text 4i title page; every unreadable-page test passed, OCR never fired, note aggregates published band-hi at 2.49x (312,914 participants). NOTE: the fix lives in fetch-4i's OCR path — the text-only parse diff-lineups runs stays non-confident by design; the census (band-hi count) and the pinned J&J/Home Depot refuse-cases are the guard"
+      "was": "the whole 40-fund menu embedded as a JPEG under a native-text 4i title page; every unreadable-page test passed, OCR never fired, note aggregates published band-hi at 2.49x (312,914 participants). NOTE: the fix lives in fetch-4i's OCR path \u2014 the text-only parse diff-lineups runs stays non-confident by design; the census (band-hi count) and the pinned J&J/Home Depot refuse-cases are the guard"
     },
     {
       "ack": "20260228103447NAL0002165200001",
       "class": "aggsplit-three-fund-control",
       "fixed": "v111",
       "sponsor": "Hari Donuts Batavia",
-      "was": "CONTROL: genuine three-fund Vanguard menu ('Total Stock Market Index' + Intl + Bond) — v110's split-aggregate test read all three 'Total ...' names as aggregates and withdrew five such menus; must stay CONFIDENT"
+      "was": "CONTROL: genuine three-fund Vanguard menu ('Total Stock Market Index' + Intl + Bond) \u2014 v110's split-aggregate test read all three 'Total ...' names as aggregates and withdrew five such menus; must stay CONFIDENT"
     },
     {
       "ack": "20250930150209NAL0012438417001",
@@ -134,7 +134,7 @@
       "class": "psa-pointer-control",
       "fixed": null,
       "sponsor": "(Master PSA plan)",
-      "was": "CONTROL: 'Master Pooled Separate Account' 2-row pointer must stay non-confident — no menu candidate exists, the v112 swap must not invent one"
+      "was": "CONTROL: 'Master Pooled Separate Account' 2-row pointer must stay non-confident \u2014 no menu candidate exists, the v112 swap must not invent one"
     },
     {
       "ack": "20251015130631NAL0006348128001",
@@ -155,7 +155,7 @@
       "class": "trust-pointer-caption-control",
       "fixed": null,
       "sponsor": "Genentech",
-      "was": "CONTROL: $14.3B plan whose entire 4i schedule is one line, 'Plan Interest in Roche U.S. Retirement Plans Master Trust'. The caption seed must reach it and still publish nothing — the honest gap is the unlinked trust (Sch D names EIN 94-2347624 PN 002; no MTIA filing for it exists in the datasets), not the schedule"
+      "was": "CONTROL: $14.3B plan whose entire 4i schedule is one line, 'Plan Interest in Roche U.S. Retirement Plans Master Trust'. The caption seed must reach it and still publish nothing \u2014 the honest gap is the unlinked trust (Sch D names EIN 94-2347624 PN 002; no MTIA filing for it exists in the datasets), not the schedule"
     },
     {
       "ack": "20251015113118NAL0002329043004",
@@ -358,21 +358,21 @@
       "class": "one-row-master-trust-pointer-discarded",
       "fixed": "v135",
       "sponsor": "First American Financial",
-      "was": "the plan's Schedule H line 4i is ONE row — `Plan's interest in Master Trust | Master Trust – at fair value | $2,760,495,322`, 97% of a $2.86B plan — plus a loan row the row parser drops. parse4i's candidate loop skips any region parsing to fewer than 2 funds, so that region produced no candidate at all and the winner became the audited Statement of Net Assets printed in thousands: 7 rows summing to 0.2% of the plan, dx=band-lo, ds=readfail, and the page told 17,090 participants their FILING could not be read while it states plainly where the money is. Diagnosed by instrument, not by reading: parseRows over lines 1760-1800 returns exactly one fund typed `Master trust interest`. v135 keeps such a region as a LAST RESORT candidate (one row, trust-pointer-shaped, 0.5-1.6x plan assets) promoted only when nothing publishable won, so it can never outscore a real menu; the caption retry still runs behind it. Corpus of 949 filings: 0 confidence gained, 0 lost, 0 fabricated rows, 9 filings move to the pointer row (978,337 participants: Target 475,573, PepsiCo 167,015, L3Harris, J&J, Medtronic, Siemens, BMS, Genentech, First American), every one of them non-confident before and after. CONTROL: the promotion must never fire where a publishable menu exists — a 1-row region at ratio ~1.0 would win on closeness against every real menu summing below 1.0"
+      "was": "the plan's Schedule H line 4i is ONE row \u2014 `Plan's interest in Master Trust | Master Trust \u2013 at fair value | $2,760,495,322`, 97% of a $2.86B plan \u2014 plus a loan row the row parser drops. parse4i's candidate loop skips any region parsing to fewer than 2 funds, so that region produced no candidate at all and the winner became the audited Statement of Net Assets printed in thousands: 7 rows summing to 0.2% of the plan, dx=band-lo, ds=readfail, and the page told 17,090 participants their FILING could not be read while it states plainly where the money is. Diagnosed by instrument, not by reading: parseRows over lines 1760-1800 returns exactly one fund typed `Master trust interest`. v135 keeps such a region as a LAST RESORT candidate (one row, trust-pointer-shaped, 0.5-1.6x plan assets) promoted only when nothing publishable won, so it can never outscore a real menu; the caption retry still runs behind it. Corpus of 949 filings: 0 confidence gained, 0 lost, 0 fabricated rows, 9 filings move to the pointer row (978,337 participants: Target 475,573, PepsiCo 167,015, L3Harris, J&J, Medtronic, Siemens, BMS, Genentech, First American), every one of them non-confident before and after. CONTROL: the promotion must never fire where a publishable menu exists \u2014 a 1-row region at ratio ~1.0 would win on closeness against every real menu summing below 1.0"
     },
     {
       "ack": "20251012112215NAL0000656306001",
       "class": "prose-fragment-as-holding-name",
       "fixed": "v135",
       "sponsor": "BJC Health System",
-      "was": "the whole published menu was two sentence fragments — `for benefits` $2,034,486,825 (84.4%) and `assets available for benefits` $362,631,226 (15.0%) — for 42,830 participants. Store-wide the shape is 557 rows across 517 published lineups / 961,757 participants, 72 plans / 210,505 ppl with the junk at >=10% of the menu (Board of Trustees of the Deferred Salary Plan `investment contracts, at fair value` 82% of 35,520 people). v135's isProseRowName drops two shapes: a DESCRIPTION VERB PHRASE (`by investing`, `seeks to`, `invests in`), and text that is lowercase prose END TO END — no capital and no digit anywhere. The second condition was narrowed on evidence: the first draft (any lowercase first word) also dropped real holdings with damaged prefixes (`maturity date AmCen Mid Cap Value Fund R6`, `required for Blackrock Lifepath 2060`), read in a RANDOM 40 of its own hits, and the shipped HOUSE_ONLY vocabulary keeps `fidelity international index fund`, a real fund in a filing whose text layer lost its capitals. CONTROLS that must not move: Publix `Common stock of Publix Super Markets, Inc.` (72% of the plan, real), `VITSX - Vanguard Total Stock Market Index In`, `iShares Core S&P 500`, `abrdn Emerging Markets`"
+      "was": "the whole published menu was two sentence fragments \u2014 `for benefits` $2,034,486,825 (84.4%) and `assets available for benefits` $362,631,226 (15.0%) \u2014 for 42,830 participants. Store-wide the shape is 557 rows across 517 published lineups / 961,757 participants, 72 plans / 210,505 ppl with the junk at >=10% of the menu (Board of Trustees of the Deferred Salary Plan `investment contracts, at fair value` 82% of 35,520 people). v135's isProseRowName drops two shapes: a DESCRIPTION VERB PHRASE (`by investing`, `seeks to`, `invests in`), and text that is lowercase prose END TO END \u2014 no capital and no digit anywhere. The second condition was narrowed on evidence: the first draft (any lowercase first word) also dropped real holdings with damaged prefixes (`maturity date AmCen Mid Cap Value Fund R6`, `required for Blackrock Lifepath 2060`), read in a RANDOM 40 of its own hits, and the shipped HOUSE_ONLY vocabulary keeps `fidelity international index fund`, a real fund in a filing whose text layer lost its capitals. CONTROLS that must not move: Publix `Common stock of Publix Super Markets, Inc.` (72% of the plan, real), `VITSX - Vanguard Total Stock Market Index In`, `iShares Core S&P 500`, `abrdn Emerging Markets`"
     },
     {
       "ack": "20251007125615NAL0004795969001",
       "class": "option-description-note-beating-the-filed-4i",
       "fixed": "v135",
       "sponsor": "National Medical Care (Fresenius)",
-      "was": "29 rows at ratio 1.092 read off the NOTES' participant-option table — `the S&P 500® Index by investing in stocks that make up the index.` $755,422,355 carrying the value of the option it describes, `NET ADDITIONS` $402M, `Salary deferrals` $273M, and `Target Retirement 20XX Fund Option` rows whose values are the note's PRIOR-YEAR column ($363,732,055 where 2024 reads $429,670,822). The filing's statutory 4i schedule sits at line 5,336 of the same PDF and reads 12 rows at 0.951: BlackRock CITs with their issuer, MassMutual Stable Value, the SDBA and Fresenius stock. Once the prose rows stop paying for the note's ratio, the filed schedule wins. NOTE FOR ANYONE RE-READING THE QUEUE: this item was queued with `Target Retirement YYYY Fund Option rows must survive` as a CONTROL. They do not survive and should not — they are a note's prior-year column, and 72,950 participants now see the schedule the plan actually filed"
+      "was": "29 rows at ratio 1.092 read off the NOTES' participant-option table \u2014 `the S&P 500\u00ae Index by investing in stocks that make up the index.` $755,422,355 carrying the value of the option it describes, `NET ADDITIONS` $402M, `Salary deferrals` $273M, and `Target Retirement 20XX Fund Option` rows whose values are the note's PRIOR-YEAR column ($363,732,055 where 2024 reads $429,670,822). The filing's statutory 4i schedule sits at line 5,336 of the same PDF and reads 12 rows at 0.951: BlackRock CITs with their issuer, MassMutual Stable Value, the SDBA and Fresenius stock. Once the prose rows stop paying for the note's ratio, the filed schedule wins. NOTE FOR ANYONE RE-READING THE QUEUE: this item was queued with `Target Retirement YYYY Fund Option rows must survive` as a CONTROL. They do not survive and should not \u2014 they are a note's prior-year column, and 72,950 participants now see the schedule the plan actually filed"
     },
     {
       "ack": "20260702105125NAL0012952931001",
@@ -400,7 +400,7 @@
       "class": "plural-generic-type-dominant-row",
       "fixed": "v137",
       "sponsor": "Docomo Pacific Inc.",
-      "was": "Published confident with `Common/collective trust funds` at 99.3% of a 3-row lineup: the v105/v111 dominant-row guard tests GENERIC_TYPE_NAME, whose trust arms were SINGULAR only (`collective (investment )?trust( fund| portfolio)?`), so every plural type label walked past it. Found by the 07:12Z 2026-09-18 participant-weighted draw on ATH Holding (Elevance, 94,427 ppl, $12.11B, `Collective investment trusts` 91.7%) — that filing is OCR-path and trace-filing cannot reproduce it, so this text-layer twin is the pin. v137 adds GENERIC_TYPE_ANY (the plural-aware form) to the dominant-row guard ONLY — widening GENERIC_TYPE_NAME itself let the v133 category-total removal delete 3M's $18.4B row and publish its fair-value note at 0.59; under it this parse is stmt=true and NOT confident. Control: `Vanguard Target Retirement 2030 Trust` and `Total Stock Market Index` must stay non-generic."
+      "was": "Published confident with `Common/collective trust funds` at 99.3% of a 3-row lineup: the v105/v111 dominant-row guard tests GENERIC_TYPE_NAME, whose trust arms were SINGULAR only (`collective (investment )?trust( fund| portfolio)?`), so every plural type label walked past it. Found by the 07:12Z 2026-09-18 participant-weighted draw on ATH Holding (Elevance, 94,427 ppl, $12.11B, `Collective investment trusts` 91.7%) \u2014 that filing is OCR-path and trace-filing cannot reproduce it, so this text-layer twin is the pin. v137 adds GENERIC_TYPE_ANY (the plural-aware form) to the dominant-row guard ONLY \u2014 widening GENERIC_TYPE_NAME itself let the v133 category-total removal delete 3M's $18.4B row and publish its fair-value note at 0.59; under it this parse is stmt=true and NOT confident. Control: `Vanguard Target Retirement 2030 Trust` and `Total Stock Market Index` must stay non-generic."
     },
     {
       "ack": "20250725165111NAL0006865489001",
@@ -428,7 +428,7 @@
       "class": "kerned-font-type-label-merge",
       "fixed": "v141",
       "sponsor": "Nelnet",
-      "was": "a kerned font split every word ('Com m o n Co lle ctive Tru st'); the type label was not recognised, won the name, and 12 target-date trusts merged into one 52.6% row beside 'Mu tu al Fu nd' at 45.6% — a 6-row fabricated lineup; 20 lineups store-wide are mostly such rows"
+      "was": "a kerned font split every word ('Com m o n Co lle ctive Tru st'); the type label was not recognised, won the name, and 12 target-date trusts merged into one 52.6% row beside 'Mu tu al Fu nd' at 45.6% \u2014 a 6-row fabricated lineup; 20 lineups store-wide are mostly such rows"
     },
     {
       "ack": "20251015092215NAL0002076435001",
@@ -442,14 +442,14 @@
       "class": "coded-schedule-no-legend-ticker",
       "fixed": "v143",
       "sponsor": "J & S Kidswear",
-      "was": "an Empower coded schedule whose public copy carries no LEGEND (or whose OCR read the leading 1 as I); the codes are tickers the SEC class index names — 2,166 rows / 261 plans / 270,296 ppl published codes"
+      "was": "an Empower coded schedule whose public copy carries no LEGEND (or whose OCR read the leading 1 as I); the codes are tickers the SEC class index names \u2014 2,166 rows / 261 plans / 270,296 ppl published codes"
     },
     {
       "ack": "20251010124253NAL0004611859001",
       "class": "readable-vs-code-column-tie",
       "fixed": "v143",
       "sponsor": "Lulus Fashion Lounge",
-      "was": "the menu is filed twice — full names (26 rows, ratio 1.014) and a 10-character code column ('RBF2055I', 'ISHARES TO', 'AM FD NEW'; 23 rows, ratio 0.997) — and the two tied to four decimals on score, so the code column won on order"
+      "was": "the menu is filed twice \u2014 full names (26 rows, ratio 1.014) and a 10-character code column ('RBF2055I', 'ISHARES TO', 'AM FD NEW'; 23 rows, ratio 0.997) \u2014 and the two tied to four decimals on score, so the code column won on order"
     },
     {
       "ack": "20251013095403NAL0000459699001",
@@ -470,14 +470,14 @@
       "class": "securitizations-and-typed-bonds-behind-cap",
       "fixed": "v144",
       "sponsor": "Dell Inc.",
-      "was": "785 sleeve securities — securitisations ('NAVIENT STUDENT LOAN TRUST 2023', 'GALAXY XXII CLO LTD TSFR3M+124') and section-typed corporate debt — sat behind the 120-row cap; folding before the cap must bury what the shapes miss in the tail, not surface it as a menu"
+      "was": "785 sleeve securities \u2014 securitisations ('NAVIENT STUDENT LOAN TRUST 2023', 'GALAXY XXII CLO LTD TSFR3M+124') and section-typed corporate debt \u2014 sat behind the 120-row cap; folding before the cap must bury what the shapes miss in the tail, not surface it as a menu"
     },
     {
       "ack": "20251003140745NAL0001494577001",
       "class": "double-render-with-wording-drift",
       "fixed": "v145",
       "sponsor": "R&L Carriers",
-      "was": "the schedule's two renders name one holding 'Morley Stable Value Fund' and 'Morley Stable Value' at the same $33,954,030; the punctuation-insensitive key saw two rows, 7% of the plan counted twice, ratio 1.029 — 277 confident lineups / 488,443 ppl / $0.68B store-wide"
+      "was": "the schedule's two renders name one holding 'Morley Stable Value Fund' and 'Morley Stable Value' at the same $33,954,030; the punctuation-insensitive key saw two rows, 7% of the plan counted twice, ratio 1.029 \u2014 277 confident lineups / 488,443 ppl / $0.68B store-wide"
     },
     {
       "ack": "20251009115713NAL0006939713001",
@@ -498,49 +498,49 @@
       "class": "footnote-letter-identity-cell-doubled-house",
       "fixed": "v146",
       "sponsor": "Consolidated Electrical Distributors",
-      "was": "the filing's second render prefixes each row with a footnote letter ('b        JP Morgan   JP Morgan Mid Cap Growth Fund   N/R   22,050,627'); the letter became the identity cell, the house was pushed into the description, and the double-render dedup kept the longer name — 'JP Morgan JP Morgan Mid Cap Growth Fund N/R' on 238 plans / 486k ppl, with the N/R cost cell glued on"
+      "was": "the filing's second render prefixes each row with a footnote letter ('b        JP Morgan   JP Morgan Mid Cap Growth Fund   N/R   22,050,627'); the letter became the identity cell, the house was pushed into the description, and the double-render dedup kept the longer name \u2014 'JP Morgan JP Morgan Mid Cap Growth Fund N/R' on 238 plans / 486k ppl, with the N/R cost cell glued on"
     },
     {
       "ack": "20251015163300NAL0005430833001",
       "class": "etf-menu-type-phrase-missing",
       "fixed": "v147",
       "sponsor": "Ouraring Inc.",
-      "was": "'b | Vanguard Total Stock Market ETF | Exchange Traded Fund | 3,715,032': once v146 stripped the footnote letter, 'Exchange Traded Fund' was the description, not a type phrase, won every row's name, and 28 ETFs merged into one statement row — six confident menus lost in run #381 (ChowNow published 'Exchange Traded Fund' at 99.7% as confident)"
+      "was": "'b | Vanguard Total Stock Market ETF | Exchange Traded Fund | 3,715,032': once v146 stripped the footnote letter, 'Exchange Traded Fund' was the description, not a type phrase, won every row's name, and 28 ETFs merged into one statement row \u2014 six confident menus lost in run #381 (ChowNow published 'Exchange Traded Fund' at 99.7% as confident)"
     },
     {
       "ack": "20251013194043NAL0000922275001",
       "class": "footnote-strip-on-cover-page-line",
       "fixed": "v147",
       "sponsor": "Qvale Auto Group",
-      "was": "the v146 footnote-letter strip fired on Form 5500 cover-page lines ('a   Name of Plan Sponsor…', 'b   Qvale Auto Group, Inc.   94-…'), made a cover line a $6.4M holding and pushed the 22-row Vanguard menu to ratio 1.8; the strip now requires two data cells after the letter and the caption is in SKIP_ROW"
+      "was": "the v146 footnote-letter strip fired on Form 5500 cover-page lines ('a   Name of Plan Sponsor\u2026', 'b   Qvale Auto Group, Inc.   94-\u2026'), made a cover line a $6.4M holding and pushed the 22-row Vanguard menu to ratio 1.8; the strip now requires two data cells after the letter and the caption is in SKIP_ROW"
     },
     {
       "ack": "20250730181524NAL0002131843001",
       "class": "house-plus-type-phrase-published-as-bare-house",
       "fixed": "v147",
       "sponsor": "(Invesco stable value specimen)",
-      "was": "'Invesco | Stable Value Fund N/R': with N/R stripped the description read as type-only, the identity won, and the row published as the bare house 'Invesco' — 121 rows / 102 plans / 267,852 ppl in the v146 store; house and product phrase now compose ('Invesco Stable Value Fund')"
+      "was": "'Invesco | Stable Value Fund N/R': with N/R stripped the description read as type-only, the identity won, and the row published as the bare house 'Invesco' \u2014 121 rows / 102 plans / 267,852 ppl in the v146 store; house and product phrase now compose ('Invesco Stable Value Fund')"
     },
     {
       "ack": "20251009101330NAL0003488915001",
       "class": "class-subtotal-triggers-early-restatement-cut",
       "fixed": "v149",
       "sponsor": "Marriott International",
-      "was": "the schedule files class subtotals ('COMMON STOCKS' $4.41B) beside the rows they total; counted, the cumulative sum reached plan assets early and v77's restatement cut chopped off the 21 collective trusts that followed ($5.7B, the actual menu) — 152,118 participants saw a 120-row securities list with the class lines at 47.5% and never their Vanguard target-date trusts (31 -> 49 rows once subtotals are removed at the leaves stage)"
+      "was": "the schedule files class subtotals ('COMMON STOCKS' $4.41B) beside the rows they total; counted, the cumulative sum reached plan assets early and v77's restatement cut chopped off the 21 collective trusts that followed ($5.7B, the actual menu) \u2014 152,118 participants saw a 120-row securities list with the class lines at 47.5% and never their Vanguard target-date trusts (31 -> 49 rows once subtotals are removed at the leaves stage)"
     },
     {
       "ack": "20250924132044NAL0017172210001",
       "class": "employer-stock-token-substring-match",
       "fixed": "v151",
       "sponsor": "The Prudential Insurance Company Of America",
-      "was": "the employer-stock test matched a sponsor token as a SUBSTRING, so 'america' matched American Express and 'national' (First National Bank) matched Honeywell INTERnational — 24 brokerage picks / 21 plans stayed itemized beside the managed-account fold as employer stock (HCA's trust kept every healthCAre security out of its fold); tokens now match whole words"
+      "was": "the employer-stock test matched a sponsor token as a SUBSTRING, so 'america' matched American Express and 'national' (First National Bank) matched Honeywell INTERnational \u2014 24 brokerage picks / 21 plans stayed itemized beside the managed-account fold as employer stock (HCA's trust kept every healthCAre security out of its fold); tokens now match whole words"
     },
     {
       "ack": "20251015125721NAL0009346626001",
       "class": "cover-page-identifier-as-holding",
       "fixed": "v153",
       "sponsor": "Barton & Gray Mariners Club",
-      "was": "the page header 'Sponsor ID #: 20-5146075' parsed as a $5,146,075 holding (96% of the plan) in both competing regions; once v149 cleaned the fair-value note's subtotal that region outscored the schedule and a 6-row summary won — 446 identifier rows / 362 plans store-wide; SKIP_ROW now skips sponsor/employer/plan identifier lines and the 17-fund menu publishes at 0.991"
+      "was": "the page header 'Sponsor ID #: 20-5146075' parsed as a $5,146,075 holding (96% of the plan) in both competing regions; once v149 cleaned the fair-value note's subtotal that region outscored the schedule and a 6-row summary won \u2014 446 identifier rows / 362 plans store-wide; SKIP_ROW now skips sponsor/employer/plan identifier lines and the 17-fund menu publishes at 0.991"
     },
     {
       "ack": "20250930144920NAL0005550099001",
@@ -554,35 +554,35 @@
       "class": "render-tie-falls-to-document-order",
       "fixed": "v155",
       "sponsor": "The Tatitlek Corporation",
-      "was": "two renderings of one schedule tied exactly (27 rows, ratio 0.994) and the winner was whichever came first, so any junk row coming or going flipped the names readers saw ('Vanguard Total International Stock Index' vs 'Vanguard International Stock') — 187 lineups / 189k ppl swapped renders in one version; a dead heat now goes to mixed case and fuller names"
+      "was": "two renderings of one schedule tied exactly (27 rows, ratio 0.994) and the winner was whichever came first, so any junk row coming or going flipped the names readers saw ('Vanguard Total International Stock Index' vs 'Vanguard International Stock') \u2014 187 lineups / 189k ppl swapped renders in one version; a dead heat now goes to mixed case and fuller names"
     },
     {
       "ack": "20260513074811NAL0006610787001",
       "class": "share-count-preposition-left-in-name",
       "fixed": "v156",
       "sponsor": "The Progressive Corporation",
-      "was": "the description '7,699,900.87 shares of Vanguard Institutional 500 Index Trust' lost its share count and kept the preposition, so 25 of 33 rows were named 'of Vanguard ...' / 'of The Progressive Corporation Common Shares' — 628 rows / 108 plans / 317k ppl, 21 whole lineups (Norfolk Southern, Brink's, Owens & Minor); cleanDesc now drops a leading of/in"
+      "was": "the description '7,699,900.87 shares of Vanguard Institutional 500 Index Trust' lost its share count and kept the preposition, so 25 of 33 rows were named 'of Vanguard ...' / 'of The Progressive Corporation Common Shares' \u2014 628 rows / 108 plans / 317k ppl, 21 whole lineups (Norfolk Southern, Brink's, Owens & Minor); cleanDesc now drops a leading of/in"
     },
     {
       "ack": "20251013172543NAL0001667249001",
       "class": "trust-pointer-above-the-row-gate",
       "fixed": "v157",
       "sponsor": "Cleveland-Cliffs Steel",
-      "was": "'Investments in Master Trust' at 97% of a 13-row lineup published as confident because the pointer test stopped at 8 rows — Caterpillar (60,484 ppl) the same at 90% of 9 rows; 5 confident lineups / 70,874 ppl; a pointer that is >=75% of the page is a pointer at any length"
+      "was": "'Investments in Master Trust' at 97% of a 13-row lineup published as confident because the pointer test stopped at 8 rows \u2014 Caterpillar (60,484 ppl) the same at 90% of 9 rows; 5 confident lineups / 70,874 ppl; a pointer that is >=75% of the page is a pointer at any length"
     },
     {
       "ack": "20251211054628NAL0006905520001",
       "class": "dead-heat-decides-whether-the-retry-runs",
       "fixed": "v158",
       "sponsor": "Frx Management Holdings",
-      "was": "a 4-row junk region at 2.196 and a 2-row 'Mutual funds' statement at 1.708 tied to the fourth decimal; when the junk won, the band-hi retry ran the caption pass and found the 12-row LifePath menu at 0.894, when v156's tie-break let the statement win, !first.stmt skipped the retry and the plan published nothing — the retry now runs for ANY unpublishable first pass (accepted only when publishable)"
+      "was": "a 4-row junk region at 2.196 and a 2-row 'Mutual funds' statement at 1.708 tied to the fourth decimal; when the junk won, the band-hi retry ran the caption pass and found the 12-row LifePath menu at 0.894, when v156's tie-break let the statement win, !first.stmt skipped the retry and the plan published nothing \u2014 the retry now runs for ANY unpublishable first pass (accepted only when publishable)"
     },
     {
       "ack": "20251010144903NAL0008344193001",
       "class": "colon-less-house-type-group-header",
       "fixed": "v158",
       "sponsor": "Ath Holding Company (Elevance)",
-      "was": "the served 2023 fallback (20240912091727NAL0004306339001) heads each block with a valueless one-cell line 'The Vanguard Group Mutual Funds' / '... Collective Investment Trusts' / 'Other Collective Investment Trusts'; read as a wrapped name it glued onto each block's first member, two first rows were both named 'The Vanguard Group' and merged into a $1,793,711,087 phantom (= Explorer Fund + Institutional 500 Index Trust) while the $1.57B index trust vanished — 94,689 readers. NOTE the shape lives in the fallback filing, which the corpus diff does not parse; trace it with --assets 12109864062"
+      "was": "the served 2023 fallback (20240912091727NAL0004306339001) heads each block with a valueless one-cell line 'The Vanguard Group Mutual Funds' / '... Collective Investment Trusts' / 'Other Collective Investment Trusts'; read as a wrapped name it glued onto each block's first member, two first rows were both named 'The Vanguard Group' and merged into a $1,793,711,087 phantom (= Explorer Fund + Institutional 500 Index Trust) while the $1.57B index trust vanished \u2014 94,689 readers. NOTE the shape lives in the fallback filing, which the corpus diff does not parse; trace it with --assets 12109864062"
     },
     {
       "ack": "20251014081322NAL0001104227001",
@@ -617,21 +617,21 @@
       "class": "asc820-nav-reconciliation-line-as-a-holding",
       "fixed": "v166",
       "sponsor": "Meta Platforms (84,993 ppl)",
-      "was": "the fair-value note's ASC 820 line 'Investments measured at NAV' published as a $18,809,051,400 holding at 82.4% of the plan, beside 'Participants'' and 'Employer's' fragments — the plan's real 20-fund State Street and Vanguard menu was in the same filing. 108 rows / 104 plans / 274,765 ppl store-wide. NOTE this is the plan's 2023 FALLBACK filing (the live plan ack is 20260618145652NAL0004417570001); trace it with --assets 22398435836 --sponsor 'Meta Platforms, Inc.'"
+      "was": "the fair-value note's ASC 820 line 'Investments measured at NAV' published as a $18,809,051,400 holding at 82.4% of the plan, beside 'Participants'' and 'Employer's' fragments \u2014 the plan's real 20-fund State Street and Vanguard menu was in the same filing. 108 rows / 104 plans / 274,765 ppl store-wide. NOTE this is the plan's 2023 FALLBACK filing (the live plan ack is 20260618145652NAL0004417570001); trace it with --assets 22398435836 --sponsor 'Meta Platforms, Inc.'"
     },
     {
       "ack": "20260721092645NAL0010922049001",
       "class": "nav-note-cleanup-must-not-promote-the-rest-of-the-note",
       "fixed": "v166",
       "sponsor": "Lumen Technologies",
-      "was": "THE NEGATIVE CONTROL, and it is why v166 marks the REGION rather than deleting the row. The first version of v166 dropped the NAV line as a junk row; Lumen then went from unconfident to CONFIDENT on sixteen rows that are asset-class labels and statement lines — '(exclusive of the Master Trust)' 16%, 'Net investment (loss) income' 13%, 'Net (decrease) increase' 11% — a fabricated lineup created by a cleanup. Marking the region a statement leaves it unpublishable at any row count. Must stay CONFIDENT=false."
+      "was": "THE NEGATIVE CONTROL, and it is why v166 marks the REGION rather than deleting the row. The first version of v166 dropped the NAV line as a junk row; Lumen then went from unconfident to CONFIDENT on sixteen rows that are asset-class labels and statement lines \u2014 '(exclusive of the Master Trust)' 16%, 'Net investment (loss) income' 13%, 'Net (decrease) increase' 11% \u2014 a fabricated lineup created by a cleanup. Marking the region a statement leaves it unpublishable at any row count. Must stay CONFIDENT=false."
     },
     {
       "ack": "20251008144211NAL0005706785001",
       "class": "nav-note-as-the-whole-menu",
       "fixed": "v166",
       "sponsor": "Treehouse Foods",
-      "was": "a three-row published menu that was 99.8% 'Investments measured at NAV'. Above audit-dominant-row's 90% floor and invisible to it, because neither NOT_FUND_SHAPED nor GENERIC_TYPE_ANY contains the phrase — the audit printed 0 while this sat in the store. v166 exports NAV_NOTE_ROW and the audit carries it, so the class cannot grow back silently."
+      "was": "a three-row published menu that was 99.8% 'Investments measured at NAV'. Above audit-dominant-row's 90% floor and invisible to it, because neither NOT_FUND_SHAPED nor GENERIC_TYPE_ANY contains the phrase \u2014 the audit printed 0 while this sat in the store. v166 exports NAV_NOTE_ROW and the audit carries it, so the class cannot grow back silently."
     },
     {
       "ack": "20260610151301NAL0004627715001",
@@ -730,6 +730,20 @@
       "fixed": "v172 (control, must not change)",
       "sponsor": "Sempra trust",
       "was": "NOT a defect. It files `Various | Self-Directed Brokerage Acct | ** | $222,238,162` -- `Various` is the honest identity of a brokerage window holding many issuers, and the real name is in the description. The FIRST version of v172 added `various` to SKIP_ROW, which drops the whole LINE, and parser-gate.mjs refused the universe over exactly this row: 31 -> 30, sum down $222,238,162. The rule was moved to the RESOLVED name, after the description has had its chance. The row level and the name level are different places -- the same lesson v170 learned about the footnote marker."
+    },
+    {
+      "ack": "20251010121541NAL0004227267001",
+      "class": "page-continuation-marker-in-the-issuer-TYPE-LABEL",
+      "fixed": "v173",
+      "sponsor": "Td Bank US Holding Company",
+      "was": "Eleven of twenty-three rows (47,196 participants) carried the issuer `Common Collective Trust (continued)`. The marker is what smuggled it past typeOnly: strip the type vocabulary from the phrase WITH the marker and the residue is `continued`, nine characters, over the six-character floor -- so typeOnly returns false, and the word `Trust` then satisfies the corporate-token test on the next line. A phrase the parser refuses on every other page was promoted to issuer on the continuation page alone. v173 splits the header at the marker and hands the surviving segment to the same unchanged gate."
+    },
+    {
+      "ack": "20251015120240NAL0002370227001",
+      "class": "page-continuation-marker-in-the-issuer-ROW-IDENTITY-CELL",
+      "fixed": "v173",
+      "sponsor": "New York-Presbyterian Hospital",
+      "was": "`Mutual funds (continued) Harbor Capital` as the issuer of Harbor Capital Appreciation Fund (66,650 participants). This is the SECOND path into the issuer: the continuation header sits in the ROW's own identity column, not on a colon section line, so the header-level fix could not see it. The row level and the header level are different places -- the same lesson v170 and v172 each paid for once. A name prefixed with the marker also matches nothing in the ticker table, so the fee cell was blank."
     }
   ]
 }

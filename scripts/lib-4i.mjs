@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 172;
+export const PARSER_VERSION = 173;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -691,6 +691,49 @@ export function subtotalIndices(rows) {
 }
 
 /* v154: a TYPE phrase closing an issuer cell — see the two uses in parseRows and parse4i. */
+/* v173: A PAGE-CONTINUATION MARKER IS NOT PART OF THE ISSUER.
+ *
+ * A schedule that runs past a page break repeats its group header with
+ * "(continued)" on it, and the header-promotion gate below reads the whole
+ * line. Two things then go wrong, and the second is the expensive one:
+ *
+ *   Common Collective Trust (continued):     -> iss "Common Collective Trust (continued)"
+ *   Mutual funds (continued) Vanguard:       -> iss "Mutual funds (continued) Vanguard"
+ *
+ * The first is a TYPE LABEL that the marker smuggles past `typeOnly` — strip
+ * the type vocabulary from "Common Collective Trust (continued)" and the
+ * residue is "continued", nine characters, over the six-character floor — and
+ * the word "Trust" then satisfies the corporate-token test on the next line.
+ * So a phrase the parser refuses on every other page is promoted to issuer on
+ * the continuation page alone. Td Bank US Holding publishes it on ELEVEN of
+ * its twenty-three rows (47,196 participants); Fleetpride on twenty of
+ * sixty-three; Illinois Institute of Technology on thirteen of seventy-one.
+ *
+ * Store-wide: 566 rows / 260 plans / 429,252 participants carry a marker in
+ * the issuer, and a name prefixed with one matches nothing in the ticker
+ * table, so the fee cell is blank on every one of them.
+ *
+ * The rule is to split at the marker and keep the LAST non-empty segment,
+ * because the firm follows the marker when there is one ("Mutual funds
+ * (continued) Vanguard" -> "Vanguard") and precedes it when there is not
+ * ("Voya Retirement Insurance and Annuity Company (continued)" -> the firm).
+ * Splitting rather than deleting is what makes both shapes come out right
+ * with one rule; deleting the marker alone would leave "Mutual funds
+ * Vanguard", which is a type label wearing a firm as a suffix.
+ *
+ * Nothing here decides whether the result is an issuer — the existing
+ * typeOnly / CATEGORY_PHRASE / firm gate does that, now on a phrase it can
+ * actually read. That is the point: this normalises the input to a shipped
+ * predicate rather than adding a second predicate beside it. */
+/* No `g` flag: split does not need it, and a global regex is stateful under
+ * .test(), which is a trap for the next caller. */
+const CONT_MARKER = /\(\s*continued\s*\)|(?:^|\s)[-\u2013\u2014]\s*continued\b/i;
+function CONT_HEADER(cs) {
+  if (!/continued/i.test(cs)) return cs;
+  const parts = cs.split(CONT_MARKER).map((p) => p.replace(/^[\s:,.()\u2013\u2014-]+|[\s:,.()\u2013\u2014-]+$/g, "").trim());
+  for (let i = parts.length - 1; i >= 0; i--) if (parts[i].length >= 3) return parts[i];
+  return "";
+}
 const ISS_TYPE_TAIL = /\b(?:variable annuit(?:y|ies)|registered investment compan(?:y|ies)|mutual funds?|pooled separate accounts?|separate accounts?|common\/?collective trusts?|collective (?:investment )?trusts?|insurance company general accounts?|master trust)\s*$/i;
 
 const FORM_LINE = /^(?:\d[a-z]\(\d\)(?:\([A-Za-z]\))?|\([a-z]\)\s+(?:amount|total|common|preferred|all other|other)\b\.{0,3}|le\s+\d?\s*1f\b)/i;
@@ -959,7 +1002,7 @@ export function parseRows(section, opts = {}) {
        * 3,224 rows / 446 plans / 1.02M participants rendered "Fidelity**"
        * as the issuer. Strip it here; curSection itself keeps the raw text
        * for the brokerage classifier, which does not care. */
-      const cs = curSection.replace(/\s*[*^]+\s*/g, " ").replace(/^#\s*|\s*#$/g, "").replace(/\s+/g, " ").trim();
+      const cs = CONT_HEADER(curSection.replace(/\s*[*^]+\s*/g, " ").replace(/^#\s*|\s*#$/g, "").replace(/\s+/g, " ").trim());
       curIss = (!typeOnly(cs) && !CATEGORY_PHRASE.test(cs) && cs.split(/\s+/).length <= 8 &&
                 (isHouseName(cs) || /\b(?:inc|llc|l\.l\.c|corp(?:oration)?|compan(?:y|ies)|co|associates|advisors?|advisers?|management|investments?|group|partners|bank|trust|n\.a)\b\.?/i.test(cs)))
         ? cs : "";
@@ -2277,6 +2320,21 @@ export function parseRows(section, opts = {}) {
      * none of its own (a classified phrase only — a tail `classify` cannot
      * name stays on the cell). */
     let issCell = iss ? iss.replace(/[*^†‡]+/g, "").replace(/^#\s*|\s*#$/g, "").trim() : "";
+    /* v173, second path: the continuation header reaches the issuer through
+     * the ROW's own identity column as well as through a colon section line.
+     * New York-Presbyterian (66,650 ppl) files `Mutual funds (continued)
+     * Harbor Capital` in the identity cell of the first row after the page
+     * break; the section-header fix above cannot see it, and the row level and
+     * the header level are different places — the lesson v170 and v172 each
+     * paid for once. Same split, and here the type test has to be made
+     * explicitly, because nothing downstream asks it of an issuer CELL. It is
+     * confined to cells that actually carry a marker, so no row without one
+     * changes: a type-only identity cell is load-bearing elsewhere (it can
+     * supply the row's type) and this version does not touch it. */
+    if (issCell && /continued/i.test(issCell)) {
+      const c = CONT_HEADER(issCell);
+      issCell = c && !typeOnly(c) && !CATEGORY_PHRASE.test(c) ? c : "";
+    }
     let issTail = false;
     if (issCell) {
       const tail = issCell.match(ISS_TYPE_TAIL);
