@@ -1,7 +1,12 @@
 # Morning brief — 2026-09-20 (written 23:1xZ / 7:1x PM ET Sept 19)
 
-Live on main: **the v167 store** (mirrored 21:2xZ). **v168 is running as
-#401** and is the largest-reach fix of the day. Since yesterday's brief:
+*Updated 00:4xZ.* Live on main: **the v168 store** (mirrored 23:3xZ) — the
+fix described under "running now" below landed and **7,048,088 participants
+across 5,349 plans gained a holding** one unanchored word had been deleting.
+**v169 is now running as #403**: a wrapped statement caption was leaking its
+value line, so UPS's 145,125 participants were shown $1,470,493,000 of net
+appreciation as if it were a fund, and 367,882 more were shown holding names
+ending in a stray `+`. Since yesterday's brief:
 **v158 through v168** — eleven versions, each gated, corpus-diffed and
 verified against a prediction made before the run. Three of them fixed
 regressions that the project's own verdicts had caught in the versions
@@ -77,8 +82,11 @@ Gr Indx R6`.
 
 Hourly: reconcile, verdict any finished run, mirror only on a clean
 verdict, dispatch the next gated version, draw randomly from published
-lineups and read the rows, record. Next: **#401's verdict**, then whether
-the bare-house class loses its largest member, Northeast Georgia Health
-System — 14,038 participants who have been shown `T. Rowe Price` as a
-$479,484,734 holding while the fund's real name sat one line above it in
-the same filing.
+lineups and read the rows, record. Next: **#403's verdict**.
+
+#401's verdict is in and both its predictions held — Northeast Georgia
+Health System's 14,038 participants now see *T. Rowe Price Capital
+Appreciation* where they were shown a bare `T. Rowe Price` worth
+$479,484,734, and the bare-firm class fell from 23 plans to 20. The
+20 that remain are small (12,762 people between them) and are the
+standing queue item behind the two shapes now in flight.
