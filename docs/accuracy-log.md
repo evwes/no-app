@@ -17917,3 +17917,142 @@ rows either way, 0 menu-sum moves, and eight row-count moves, each read.**
   that money deserves. Ratio 0.986 → 0.946. **Recorded as a cost, not as a
   win**, and folding this shape into the aggregate is queued.
 - Four small plans lose one row each.
+
+## 2026-09-20 (06:2xZ) — run #407 verdict: v172 PASSED, and a coverage line that did not move is the right answer
+
+`1d7d321f`, 53 minutes, 20 parse shards all green, merge green. pv **172 at
+99.85%** (68,661 of 68,767), tail pv106 18 / pv124 10 / pv123 10 / pv98 10 —
+the ordinary old-version residue, not a partial store. Confident **60,117
+(+0 / −0)**, lineups 59,766, HIGH **5**, overshoot 332, dl 104.
+
+**Every metric in the coverage line is byte-identical to the previous run's
+except `tkSampled` (85,940 → 85,936), and that is correct rather than a
+stall.** v172 removes and adds ROWS inside plans that were already confident;
+`confident`, `lineups`, `match` and `vesting` count PLANS. A version that
+changes what a page says without changing whether it says anything is
+invisible to the whole coverage line by construction. The check that settles
+it is reading the named plans out of the store, which is what was done:
+
+| plan | predicted | on the store |
+|---|---|---|
+| Oracle Corporation (101,985 ppl) | 41 → 40 rows, ratio 1.008 → 0.911 | **40 rows**, no `Various…` row, sum $31,927,544,000 / assets $35,045,838,319 = **0.911** |
+| Capital One Financial (66,717 ppl) | 28 → 31, the fold dissolves | **31 rows**, `U.S. Small/Mid Cap Equity Fund` $1,140,343,117 publishing |
+| The Progressive Corporation (74,118 ppl) | 33 → 25, a recorded cost | **25 rows** |
+
+`aggRow` stayed at 112 and that is consistent, not a miss: Capital One's
+`Managed account holdings (3 positions)` fold was $2,097,924,643 of an $11.9B
+menu — **17.6%, under the audit's 30% threshold** — so it was never counted.
+
+**What reached readers:** Oracle's 101,985 participants stop seeing
+`Various investments, including registered market funds and c` at
+**$3,405,120,000**, 9.6% of a $35B plan, presented as a single holding.
+
+**The cost stands and is still queued:** Progressive's eight brokerage-window
+CATEGORY summaries (~$499M) are correctly not funds, but deleting them loses
+the window's composition instead of folding it into the SDBA aggregate. That
+fold is the next queue item after this one.
+
+## 2026-09-20 (06:3xZ) — v173: a page-continuation marker is not part of the issuer
+
+### The defect
+
+A schedule that runs past a page break repeats its group header with
+`(continued)` on it. Two paths carry that header into the issuer field and
+both publish it to readers:
+
+```
+Common Collective Trust (continued):        -> iss "Common Collective Trust (continued)"
+Mutual funds (continued) Harbor Capital     -> iss "Mutual funds (continued) Harbor Capital"
+```
+
+**Store-wide: 566 rows / 260 plans / 429,252 participants** (v171 store;
+re-measured on the v172 store below).
+
+**The fee cell is NOT affected, and the draft of this entry said it was.**
+`lookupTicker` tries the issuer-prefixed name first and then falls back to the
+bare name — the fallback shipped 2026-09-16 — so a marker in the issuer has
+never blanked a fee cell. What this version fixes is what the page SAYS, and
+that is the whole of it. Checked before publishing rather than after.
+
+### Why the first shape gets published at all, which is the interesting half
+
+`Common Collective Trust` is a type label the parser refuses everywhere. With
+the marker on it, it is promoted to an issuer — and the mechanism is exact:
+
+- `typeOnly("Common Collective Trust")` strips the type vocabulary and leaves
+  nothing, so it returns **true** and the phrase is refused.
+- `typeOnly("Common Collective Trust (continued)")` strips the same vocabulary
+  and leaves `continued` — **nine characters, over the six-character floor** —
+  so it returns **false**.
+- The promotion gate's next clause requires a corporate token, and the word
+  **`Trust`** in the phrase supplies it.
+
+So the marker defeats the type test and the type label then pays the firm
+test. **A phrase refused on every other page is promoted on the continuation
+page alone.** Td Bank US Holding publishes it on ELEVEN of its twenty-three
+rows (47,196 participants); Fleetpride on twenty of sixty-three; Illinois
+Institute of Technology on thirteen of seventy-one.
+
+### The rule, and why it splits rather than deletes
+
+Split the phrase at the marker and keep the **last non-empty segment**. The
+firm follows the marker when there is one and precedes it when there is not,
+so one rule covers both:
+
+| filed header | result |
+|---|---|
+| `Mutual funds (continued) Vanguard` | `Vanguard` |
+| `Voya Retirement Insurance and Annuity Company (continued)` | the firm |
+| `Common Collective Trust (continued)` | `Common Collective Trust` → refused by `typeOnly` |
+| `Company (continued) Common collective trust - continued` | `Common collective trust` → refused |
+
+Deleting the marker alone would leave `Mutual funds Vanguard`, a type label
+wearing a firm as a suffix. **Nothing in this version decides whether the
+result is an issuer** — the existing `typeOnly` / `CATEGORY_PHRASE` / firm
+gate does that, now on a phrase it can actually read. That is deliberate: this
+normalises the INPUT to a shipped predicate instead of adding a second
+predicate beside it, which is the mistake this log names five times.
+
+### Two paths, because the row level and the header level are different places
+
+The header fix alone left New York-Presbyterian (66,650 ppl) unchanged: it
+files `Mutual funds (continued) Harbor Capital` in the **row's own identity
+column**, not on a colon section line. The same split therefore runs on
+`issCell` too, confined to cells that actually carry a marker so that no row
+without one changes — a type-only identity cell is load-bearing elsewhere (it
+can supply the row's type) and this version does not touch it.
+
+**This is the third version in a row to pay for the same lesson**: v170's
+footnote marker was stripped from `body` when it lives in the name cell, and
+v172's prose rule was written at the row level when it belonged on the
+resolved name. Here it cost one trace instead of a run, because the first
+specimen was checked before the second was assumed.
+
+### A measurement that was thrown away
+
+The first attempt to size this fed each of the 201 distinct issuer strings to
+`parseRows` inside a synthetic section and read back `funds[0].iss`. It
+reported **0 of 201 promoted, 566 rows suppressed** — a clean, plausible,
+entirely false result. `parseRows` returns an object, not an array, so
+`rows[0]` was `undefined` on every string, and a control with a known-good
+header (`Fidelity Management Trust Company:`) returned **zero funds**, which is
+what exposed it. The uniformity was the tell, exactly as this file says it is.
+The synthetic section never reached the row parser at all; the measurement was
+redone on real filings.
+
+### Verification
+
+Parser gate green. Traced on real filings, before and after:
+
+- **Td Bank** `20251010121541NAL0004227267001` — 23 rows both sides, every
+  value identical, ratio 0.870 unchanged, still confident; eleven
+  `Common Collective Trust (continued)` issuers gone.
+- **New York-Presbyterian** `20251015120240NAL0002370227001` — 120 rows both
+  sides, ratio 0.997 unchanged; `Mutual funds (continued) Harbor Capital`
+  becomes `Harbor Capital`.
+
+Nothing downstream compensated for the marker — it appears nowhere in
+`app.js`, `merge-4i.mjs` or `audit-data.mjs` — which is why readers saw it
+raw and why no audit counted it.
+
+Both pinned in `docs/defect-specimens.json`.

@@ -742,36 +742,52 @@ don't confuse them). Frontend: python http.server + Playwright at
   EIN read as a dollar value, so it does not START with the employer-ID words
   and the anchored arm cannot reach it.
   `docs/accuracy-log.md` 2026-09-20 (run #406 verdict).
-- **IN FLIGHT: #407 (v172), dispatched 2026-09-20 05:24Z. PROSE IS NOT A
-  HOLDING NAME — and the PARSER GATE caught the counter-case before the
-  universe did.** Oracle (101,985 ppl) published `Various investments,
-  including registered market funds and c` at **$3,405,120,000** = 9.6% of a
-  $35B plan. **The first attempt added `various` to `SKIP_ROW`, which drops
-  the whole LINE, and the gate refused the universe** over Sempra's trust —
-  31 rows → 30, sum down $222,238,162 — because its filing reads
-  `Various | Self-Directed Brokerage Acct | $222,238,162`, where **`Various`
-  is the honest IDENTITY of a brokerage window holding many issuers** and the
-  real name is in the description. The rule now runs on the **RESOLVED name**,
-  after the description has had its chance. **The row level and the name level
-  are different places — the same lesson v170 learned about the footnote
-  marker two hours earlier, and the gate is why it cost ten minutes instead of
-  a mirrored regression.**
-  Corpus diff over 1,001 filings: 0 gained, 0 lost, 0 fabricated either way,
-  0 sum moves, **eight row-count moves all read by name**. **Capital One is a
-  GAIN** (28 → 31: its `Managed account holdings (3 positions)` fold at
-  $2,097,924,643 dissolves and $1.14B of real funds publish). Providence loses
-  a **$9,659,350,978** master-trust phantom from a lineup that was not
-  published either way. **Progressive 33 → 25 is a recorded COST:** eight
-  brokerage-window CATEGORY summaries (~$499M) are correctly not funds, but
-  deleting them loses the window's composition instead of folding it into the
-  SDBA aggregate — **that fold is the next queue item.**
-  **A NUMBER PUBLISHED AN HOUR EARLIER WAS CORRECTED IN THE SAME CYCLE:** the
-  prose class is not "274 plans / 790,790 ppl" — that counts every plan
-  containing any such row, mostly ~1% loan-rate fragments. At ≥10% of a menu
-  it is **17 rows / 6,054 ppl**, and Oracle sits just UNDER that threshold
-  while being 94% of the people and nearly all of the money. **A count of a
-  condition is not a count of an outcome — recorded in this very log one hour
-  before I did it again.**
+- **IN FLIGHT: #409 (v173), dispatched 2026-09-20 06:28Z (push trigger fired;
+  start verified queued). A PAGE-CONTINUATION MARKER IS NOT PART OF THE
+  ISSUER** — 566 rows / 260 plans / **429,252 participants** publish an issuer
+  carrying a page break's `(continued)`. The interesting half is why a TYPE
+  LABEL gets promoted at all: `typeOnly("Common Collective Trust")` is true and
+  the phrase is refused everywhere, but `typeOnly("Common Collective Trust
+  (continued)")` strips the same vocabulary and is left with `continued` —
+  **nine characters, over the six-character floor** — so it returns FALSE, and
+  the word `Trust` then satisfies the corporate-token clause on the next line.
+  **A phrase refused on every other page is promoted on the continuation page
+  alone.** Td Bank US Holding publishes it on ELEVEN of twenty-three rows
+  (47,196 ppl), Fleetpride on twenty of sixty-three, Illinois Tech on thirteen
+  of seventy-one. The rule SPLITS at the marker and keeps the last non-empty
+  segment — the firm follows the marker when there is one and precedes it when
+  there is not — then hands the result to the UNCHANGED gate; deleting the
+  marker alone would leave `Mutual funds Vanguard`. **Two paths, because the
+  row level and the header level are different places:** New York-Presbyterian
+  (66,650 ppl) files `Mutual funds (continued) Harbor Capital` in the ROW's own
+  identity cell, so the same split runs on `issCell`, confined to cells that
+  carry a marker. Third version running to pay for that distinction (v170's
+  marker, v172's prose); this time it cost one trace, not a run. Gate green;
+  corpus diff over 1,002 filings all zeros — correct for a change that renames
+  a field the diff does not compare, so the evidence is the two traces (row
+  counts, values and ratios identical on both sides). **`lookupTicker` falls
+  back to the bare name, so no fee cell was ever blanked by this — a draft of
+  the log entry said otherwise and was corrected before publishing.**
+- **MIRROR HELD 06:4xZ ON PURPOSE: the v172 store is verified and NOT live.**
+  #408, main's own hourly cron, was in flight ON MAIN. Mirroring force-pushes
+  the branch onto main, and doing that while a run is about to commit there is
+  the unsafe case (precedent 2026-09-16 07:1xZ). Dispatching #409 on the DEV
+  branch was safe in the same moment — concurrency is per-ref. **Mirror the
+  v172 (or v172+v173) store as soon as #408 has landed.**
+- **#407 PASSED (06:17Z, 53 min, `1d7d321f`): pv 172 at 99.85%, confident
+  60,117 (+0 / −0), HIGH 5, overshoot 332, lineups 59,766, dl 104.** Every
+  metric in the coverage line is byte-identical to the previous run's except
+  `tkSampled`, and **that is the right answer, not a stall** — v172 moves ROWS
+  inside plans that were already confident, and the coverage line counts
+  PLANS. The check that settles it is reading the named plans out of the
+  store: Oracle **40 rows**, no `Various…` row, sum/assets **0.911** exactly as
+  predicted (101,985 ppl stop seeing $3,405,120,000 as one holding); Capital
+  One **31 rows** with $1,140,343,117 of real funds publishing; Progressive
+  **25 rows**, the recorded cost. `aggRow` held at 112 consistently: Capital
+  One's fold was 17.6% of its menu, under the audit's 30% threshold, so it was
+  never counted. **Next queue item is v172's own cost — fold brokerage-window
+  CATEGORY rows into the SDBA aggregate instead of deleting them** (Progressive's
+  eight rows, ~$499M).
 - **Previously: the v167 store — MIRRORED 2026-09-19 21:2xZ** (`--force` over
   main's cron commit `7d9f401c` — 0 acks and 0 plans the branch lacked, plans
   array byte-identical, main newer on 1 ack — and `--force-data` over the

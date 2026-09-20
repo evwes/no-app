@@ -1,52 +1,73 @@
-# Morning brief — 2026-09-20 (written 04:3xZ / 12:3x AM ET)
+# Morning brief — 2026-09-20 (written 06:4xZ / 2:4x AM ET)
 
-Live on main: **the v170 store**. Overnight, **v169, v170 and v171** — three
-versions, each gated, corpus-diffed and verified against predictions written
-before the run finished. Two of those predictions failed and are written up
-below with their causes, because that is the more useful half of the record.
+Live on main: **the v171 store**. Overnight, **v169 through v173** — five
+versions, each gated, corpus-diffed and checked against predictions written
+before the run finished. Two of those predictions failed and one published
+number was wrong; all three are below, because that is the more useful half of
+the record.
 
 ## What reached readers overnight, largest first
 
 | version | what changed | size |
 |---|---|---|
-| v169 | **UPS stops showing $1,470,493,000 of net appreciation as a holding.** A statement caption wraps, its value lands on the next line, and the parser read the orphan as a fund — at the *prior year's* column | **145,125 participants**; the bare-`Investments` row falls 16 → 8 plans |
-| v169 | holding names lose a stray trailing `+` or `~` that no filing legend explains | 1,280 rows across 268 plans |
+| v169 | **UPS stops showing $1,470,493,000 of net appreciation as a holding.** A statement caption wraps, its value lands on the next line, and the parser read the orphan as a fund — at the *prior year's* column | **145,125 participants** |
 | v170 | **Irisndt's 1,609 see forty-two holdings where one `JOHN HANCOCK` row of $21,512,753 stood at 53% of the plan** — eighteen filed holdings that had merged into one | six plans un-merge; the bare-firm class falls 20 → 14 |
-| v170 | 659 more names lose the trailing marker (a second layout) | — |
+| v169+v170 | holding names lose a stray trailing `+` or `~` that no filing legend explains | 1,939 rows across 268 plans |
+| v171 | **the Form 5500 employer-ID line, refused by the parser for years and published anyway** — its skip rule required a `#` that filings do not write | 43 rows → 1 |
 
 Live store: confident **60,117**, lineups 59,766, findings at **5**, overshoot
-335, download failures 104. Mirrored three times; the last one was a clean
-fast-forward with no overrides.
+332, download failures 104.
+
+## Landed on the branch but NOT yet live — the mirror is held on purpose
+
+**v172 passed (#407) and is verified on the store, but main has its own hourly
+run in flight.** Mirroring force-pushes the branch onto main, and doing that
+while a run is about to commit there is the one case where it is unsafe. It
+mirrors on the next cycle; nothing is lost by waiting an hour.
+
+What it will carry: **Oracle's 101,985 participants stop seeing
+`Various investments, including registered market funds and c` at
+$3,405,120,000** — 9.6% of a $35B plan, published as if it were one fund.
+Capital One gains three rows and $1.14B of real funds. Progressive loses eight
+brokerage category summaries, which is a cost and is queued rather than
+glossed.
 
 ## Running now
 
-**v171 (#406): a line the parser has refused for years and still published.**
-`SKIP_ROW` has an arm for the Form 5500 employer-ID line — and it requires a
-`#`, while filings overwhelmingly write `EMPLOYER I.D. 94-` with none. So the
-arm never fired. **43 rows / 43 plans / 29,821 participants** publish it.
+**v173 (#409): a page break's `(continued)` marker published as the issuer** —
+566 rows / 260 plans / **429,252 participants**.
 
-The evidence it is not a holding is arithmetic rather than verbal: removing it
-moves Easter Seals Southern California from ratio 1.033 to **exactly 1.000**.
+The interesting half is why a *type label* gets promoted at all. `Common
+Collective Trust` is refused everywhere. With the marker on it, the type test
+strips the vocabulary and is left with the word `continued` — nine characters,
+over its six-character floor — so the test returns false, and the word `Trust`
+then satisfies the "is this a firm" test on the very next line. **A phrase the
+parser refuses on every other page is promoted on the continuation page
+alone.** Td Bank US Holding publishes it on eleven of its twenty-three rows.
 
 ## Found wrong, by us, in our own work
 
-- **Two of v169's four pre-registered tests failed.** The marker class was
-  predicted at ~0 and came in at 663 rows: the strip ran on the wrong part of
-  the row, and *my first correction was also wrong* — the trace said so before
-  it shipped. Fixed in v170. The lesson is the testing, not the regex: the fix
-  was tested on the filing that motivated it, not on one of the shape it would
-  miss.
-- **A prediction whose premise my own corpus diff had already refuted.** I
-  predicted `overshoot` could only fall; it rose by one. The diff had recorded
-  a plan *swapping regions* an hour earlier — so the change alters which table
-  wins, not only which rows survive. v170's predictions each had to name a
-  measurement already in hand, and where either direction was possible, no
-  direction was claimed. All four then passed.
-- **A sizing predicate over-matched for the fifth time**, and the implausible
-  leader was again the tell: a $3.39B row at 48% of a three-row menu is not an
-  employer-ID line. Honest figure 43 plans, not 45.
-- **One regression is live and small.** Shared Support South (195 ppl) shows an
-  OCR'd Form 5500 EIN line at 49% of its menu. v171 removes exactly that row.
+- **Two of v169's four pre-registered tests failed.** A marker class predicted
+  at ~0 came in at 663 rows (the strip ran on the wrong part of the row, and
+  *my first correction was also wrong*); and I predicted a metric could only
+  fall when my own corpus diff had already recorded the counter-case. v170's
+  predictions each had to name a measurement already in hand, and all four
+  then passed.
+- **A class size published in yesterday's brief was wrong and was corrected
+  within the hour.** I wrote "274 plans / 790,790 people" for the prose class.
+  That counts every plan containing any such row, most of them a ~1% loan-rate
+  fragment. At a size that distorts a page it is 17 rows / 6,054 people — with
+  Oracle just under the threshold while being 94% of the people and nearly all
+  of the money. A count of a condition is not a count of an outcome.
+- **A sizing script reported a clean, plausible, entirely false result today.**
+  It fed 201 strings to the parser and reported 0 of 201 — because it read the
+  result as a list when the function returns a record, so every answer was
+  "nothing". A control with a known-good input returned zero too, which is what
+  exposed it. The uniformity was the tell, and it was caught before the number
+  was published rather than after.
+- **A draft of today's parser note claimed the defect blanked the fee cell.**
+  It does not: the lookup falls back to the bare fund name. Corrected before
+  publishing. What v173 fixes is what the page *says*, and that is all.
 
 ## Waiting on you, ranked by people affected
 
@@ -61,20 +82,17 @@ moves Easter Seals Southern California from ratio 1.033 to **exactly 1.000**.
 
 ## Open and queued, with sizes
 
-- **Truncated prose as a holding — ~18 rows that distort a page, ~108,000
-  ppl.** Oracle publishes `Various investments, including registered market
-  funds and c` at **$3,405,120,000** and is 94% of the people in the class.
-  *(Corrected 05:2xZ: an earlier draft of this brief said "274 plans /
-  790,790 ppl". That counted every plan containing any such row, most of them
-  a ~1% loan-rate fragment — a count of a condition, not of an outcome.)*
-- **A page-continuation marker in the issuer — 249 plans / 424,152 ppl.** Not
-  shipped on purpose: 60–70 of those rows carry a *real* firm alongside the
-  marker, so the obvious rule would delete good data.
+- **Fold brokerage-window category rows into the SDBA aggregate** rather than
+  deleting them — Progressive's eight rows, ~$499M. This is v172's own
+  recorded cost and is next.
 - Marsh & McLennan (35,907 ppl): a $3.39B prose row at 48% of a 3-row menu.
-- A third trailing-marker layout (952 ppl).
+- JPMorgan Chase (299,277 ppl): a dollar value welded into a holding's name.
+  One plan seen, not yet sized.
+- A third trailing-marker layout (952 ppl); IBG Llc's page-header EIN (1,598).
 
 ## What continues alone
 
-Hourly: reconcile, verdict any finished run, mirror only on a clean verdict,
-dispatch the next gated version, draw randomly from published lineups and read
-the rows, record. Next: **#406's verdict**.
+Hourly: reconcile, verdict any finished run, mirror only when it is safe and
+the verdict is clean, dispatch the next gated version, draw randomly from
+published lineups and read the rows, record. Next: **mirror v172+v173 once
+main's own run lands, then #409's verdict.**
