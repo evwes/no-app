@@ -18110,3 +18110,67 @@ So the shippable rule is the strip GUARDED by a collision test against the
 same lineup, which puts it at the dedup stage rather than the row stage. Sized,
 counter-case measured, and left for the next version bump; #409 is in flight
 and nothing can dispatch behind it.
+
+## 2026-09-20 (18:1xZ) — run #409 verdict: v173 PASSED, the class is closed, and an ELEVEN-HOUR LOOP GAP
+
+### The gap first, because it is the larger fact about this day
+
+**No agent cycle ran between 07:10Z and 18:07Z.** The container was restarted
+and the session did not resume; twelve hourly wakes queued and were delivered
+together at 18:07Z. Nothing was lost — the pipeline is the durable layer and
+ran without a session, taking three incremental cron commits on main (#410,
+#411, #412) — but eleven hours of judgement work did not happen, and the v173
+store sat verified-but-unmirrored on the branch that whole time. Recorded here
+because a gap that is not written down reads later as a quiet hour.
+
+### The verdict
+
+`23ea1499`, 55 minutes, completed 07:23Z. pv **173 at 99.85%** (68,662 of
+68,767), the usual old-version tail. Confident **60,117 (+0 / −0)**, lineups
+59,766, HIGH 5, overshoot 332, dl 104. The coverage line is byte-identical to
+the previous run's for the second version running, and for the same reason:
+v173 renames a FIELD, and every metric on that line counts PLANS.
+
+**The pre-registered test was the class itself, and it passes decisively:**
+
+| | before | after |
+|---|---|---|
+| rows with a `(continued)` marker in the issuer | 566 | **1** |
+| plans | 260 | **1** |
+| participants | 429,252 | **157** |
+
+### The one survivor is diagnosed and is not a v173 miss
+
+Onyx Creative (157 ppl, `20251015153550NAL0002679267001`) still publishes
+`Stock (Continued) Costco Wholesale Company`. Its status entry reads
+**`pv: 91, e: "download"`**, and a HEAD probe of its S3 object answers **403**.
+The filing has been WITHDRAWN from the EFAST2 bucket, so the v37 protection
+keeps its last good parse — from parser v91 — and no version bump can ever
+reach it. It is one of the 104 permanently-403 acks.
+
+So the honest statement is narrower than "one plan remains" and stronger:
+**the class is closed for every filing that can still be read.** The residue is
+a frozen artefact of a filing that no longer exists publicly, and it will carry
+a v91 issuer string for as long as the store does.
+
+This is worth keeping as a pattern. A survivor after a version bump has exactly
+two explanations — the rule missed it, or the ack was never re-parsed — and the
+second is one status read away. Checking `pv` before tracing cost nothing here
+and would have saved a download that could not succeed. **The trace attempt
+failed with a curl error, which looked like a tooling problem and was actually
+the answer.**
+
+### Mirrored
+
+`285bf55e → 23ea1499`, 18:1xZ. `--force` on the GIT check only, over main's
+three incremental cron commits, with the evidence first: **0 acks and 0 plans
+on main that the branch lacked, plans array byte-identical**, main newer on 1
+ack. Data gate unforced: **+0 gained / −0 lost**, dominant pv 173 at 99.8%,
+fetch failures 104, reader failures 1.
+
+**What reached readers:** 260 plans / 429,252 participants stop seeing a page
+break's `(continued)` printed as the name of the firm behind their fund — Td
+Bank US Holding on eleven of twenty-three rows, Fleetpride on twenty of
+sixty-three, Illinois Institute of Technology on thirteen of seventy-one, and
+New York-Presbyterian's Harbor Capital Appreciation Fund now attributed to
+`Harbor Capital` rather than to `Mutual funds (continued) Harbor Capital`.
