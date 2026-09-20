@@ -18658,3 +18658,37 @@ verdict, and today it said "clean" three times over real fabrications.
 **MAIN STAYS ON v174.** The v175 store on the branch carries the Thrivent
 phantom and must not be mirrored. v176 dispatches next; the mirror waits for
 its store.
+
+## 2026-09-20 (23:2xZ) — `scripts/store-diff.mjs`: make the instrument that worked into a tool
+
+Three fabrications in one day, none visible to `diff-lineups.mjs`, all three
+found the same way: diff the store that shipped against the store before it and
+read the movers by name. That was hand-rolled three times. It is now a script.
+
+**The two diffs ask different questions and only one of them is about readers.**
+`diff-lineups` re-parses a ~1,000-filing corpus sampled BY ASSETS and asks
+"what does this code do to these filings" — a regression guard on common
+shapes, and a good one. `store-diff` asks "what changed for real readers",
+across all 68,767 acks, and catches a defect in a plan nobody thought to
+sample. On 2026-09-20 the corpus diff returned 0/0/0 over Apple's deleted
+$2,153,504,672, over a draft that would have merged Trustmark's three Schwab
+rows into a $13,916,207 phantom, and over Thrivent's $1,700,835,259 at 99.2%
+of a menu.
+
+`node scripts/store-diff.mjs <ref> [--min <dollars>] [--top <n>]` reports rows
+ADDED and REMOVED ranked by value with the sponsor and participants, plans that
+gained or lost confidence, and a **QUIET MOVERS** section for the shape that
+hides best — row count barely moving while a large value does. Apple was
+27 → 26 rows carrying $2.15B; every row-count view called that noise.
+
+**Controlled on the case it was built from** (v174 store → v175 store, the real
+shipped data): rows added ranks Apple's $2,153,504,672 first and **Thrivent's
+$1,700,835,259 second**; confidence gained names **Thrivent, 9,282 ppl**, which
+is the entire `+1` in that run's coverage line; quiet movers leads with
+**Apple, ratio 0.917 → 0.987, 26 → 27 rows**. It would have put the phantom on
+screen twice within seconds of #415 landing.
+
+**It belongs in the verdict battery, not in a scratch directory** — run it after
+every run, before every mirror, alongside reading the merge log. The habit this
+day earned is not "write more specimens"; it is **look at what actually changed
+for readers, ranked by money and people, every single time.**
