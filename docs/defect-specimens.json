@@ -702,6 +702,20 @@
       "fixed": "v170",
       "sponsor": "Ubiquity Global Services",
       "was": "the same shape under a different house: a bare `BlackRock` row at 84% of a 9-row menu. 9 rows -> 17. Kept because the class reaches several houses and a one-house specimen would not prove that."
+    },
+    {
+      "ack": "20250909125208NAL0034126912001",
+      "class": "form-5500-employer-id-line-as-a-holding",
+      "fixed": "v171",
+      "sponsor": "Easter Seals Southern California (3,327 ppl)",
+      "was": "published `EMPLOYER I.D. 94-` at $3,068,149 as a holding. SKIP_ROW has refused this line for a long time, but its arm is `employer i\\.?d\\.?\\s*#` and REQUIRES the hash -- most filings write `EMPLOYER I.D. 94-` with no hash at all, and an OCR pass turns the letter I into a pipe (`Employer |.D. #: 83-`, Shared Support South). 43 rows / 43 plans / 29,821 participants store one. The strongest single piece of evidence that the row is not a holding: removing it moves this plan's ratio from 1.033 to EXACTLY 1.000."
+    },
+    {
+      "ack": "20251009184812NAL0011551216001",
+      "class": "form-5500-employer-id-line-as-a-holding",
+      "fixed": "v171",
+      "sponsor": "Tri Pointe Homes Holdings",
+      "was": "the same line at $3,201,111, 33 rows -> 32, ratio 1.003 -> 0.986. Pinned as a second member because the FIRST corpus diff for v171 came back all zeros across 997 filings -- not because the change does nothing, but because every member of this class is a small plan and the corpus is sampled by assets. A clean diff on a corpus that cannot contain the class is not evidence."
     }
   ]
 }

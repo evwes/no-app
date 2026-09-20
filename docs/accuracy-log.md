@@ -17617,6 +17617,16 @@ behaviour I had just measured.
   a DIFFERENT and larger region wins, and it now publishes **12 rows topped by
   `Employer |.D. #: 83-` at $2,134,543, ratio 1.43** — an OCR'd Form 5500 EIN
   line as a holding. Junk before, more junk now. Recorded, not yet fixed.
+  **CORRECTED 03:2xZ, same session, after opening the entry rather than the
+  diff line.** "Junk before, more junk now" is wrong and I wrote it without
+  reading the rows. **Ten of the twelve are real T. Rowe Price target-date
+  funds** (`T Rowe Price Target 2050 |`, `… 2040 |`, … — the trailing pipe is
+  OCR noise on a `fb=2023` prior-year fallback), plus one prose fragment and
+  the EIN line. So this plan's readers went from a 3-row junk lineup to a
+  mostly-real 12-row menu carrying one large phantom: **a net improvement with
+  a defect in it, not a worse outcome.** The regression is real and the
+  overshoot entry is real; the characterisation was not. A one-line summary of
+  a plan is not a reading of it.
 - **Chestnut Hill South (268 ppl)** enters at ratio 1.27 with 31 rows topped
   by a real `FID 500 Index` — a menu that now over-sums, most likely a
   duplicate render. Recorded.
@@ -17647,3 +17657,51 @@ what #403's failed test 4 did not do.
    splits merged rows without changing any sum, and the corpus diff recorded
    **0 menu-sum moves**. A region swap could still move it either way, which is
    precisely why the direction is not predicted this time.
+
+## 2026-09-20 (03:3xZ) — v171: the Form 5500 employer-ID line, refused for years and still publishing
+
+Built while #405 (v170) was parsing, committed `[skip ci]`, held for dispatch.
+
+**Found by chasing my own regression.** #403's verdict recorded Shared Support
+South as an overshoot entrant with `Employer |.D. #: 83-` at $2,134,543. The
+obvious reading is OCR damage — the letter I rendered as a pipe — and that is
+true of that one plan. **Sizing the shape store-wide says the OCR is not the
+cause.** 43 rows / 43 plans / **29,821 participants** publish such a row, and
+almost all of them are clean text: `EMPLOYER I.D. 94-`, `EMPLOYER I.D. 27-`,
+`Employer ID Number: 13`.
+
+**`SKIP_ROW` has refused this line for a long time and its arm requires a hash:**
+`employer i\.?d\.?\s*#`. Filings overwhelmingly write `EMPLOYER I.D. 94-` with
+no hash at all, so the arm never fired. v171 makes the hash optional, tolerates
+the OCR pipe in the `I`, and adds the misspelling one filing uses
+(`employer indentification number`, Fifth Generation). Anchored, inside the
+group, so it only matches at the start of a row.
+
+**The strongest evidence that the row is not a holding is arithmetic, not
+vocabulary:** removing it moves Easter Seals Southern California (3,327 ppl)
+from ratio **1.033 to exactly 1.000**. Tri Pointe Homes goes 1.003 → 0.986.
+
+### A method note this cycle earned
+
+**The first corpus diff came back all zeros across 997 filings, and that was
+not evidence of anything.** Every member of this class is a small plan, the
+corpus is sampled by assets, and so it could not contain one. Pinning two
+specimens and re-running gives **999 filings: 0 gained, 0 lost, 0 fabricated
+either way, 0 sum moves, and exactly the two intended row removals.** A clean
+diff over a corpus that cannot contain the class says nothing about the class —
+it only says nothing else broke, which is worth having and is a different
+claim.
+
+### And a correction to my own sizing, made before publishing the number
+
+The first predicate returned **45 rows / 79,605 ppl**, led by two Marsh &
+McLennan plans (35,907 and 13,877 ppl). Both were false: my OCR fold maps
+`|!1l` to `I`, turning `Plan identified investments held by ma…` into
+`PIan identified…`, which my own `pIan\s*id` arm then matched. Removing that
+arm gives the honest **43 rows / 43 plans / 29,821 ppl**. This is the fifth
+time in this project's record that a hand-rolled predicate over-matched and the
+implausible leader was the tell — here a $3.39B row at 48% of a three-row menu,
+which is not what an employer-ID line looks like.
+**Marsh & McLennan is a real and separate finding**, recorded here rather than
+lost: 35,907 participants see `Plan identified investments held by ma…` at 48%
+of a 3-row menu, $3,391,393,571. Prose as a holding, queued.
