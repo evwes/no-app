@@ -20174,3 +20174,44 @@ rule. **The fix never changed. Only where it could see enough to be safe.**
   log:** a printed number and a persisted number are different claims, and this
   project has now confused them four times.
 
+
+## 2026-09-21 (weighted draw, seed 20260921180) — CVS Health: a SUBTOTAL published as a holding, and the obvious fix is wrong
+
+- **CVS Health (307,068 participants, $30.1B, 120 rows — exactly `ROW_CAP`)**
+  publishes **`Stable Value Fund Subtotal` at $2,690,925,949 = 11.2% of its
+  menu.** A subtotal is not a holding. Confirmed on the rendered page, not
+  inferred from the store.
+- **What is ALREADY right, checked before assuming otherwise:** 99 of the 120
+  stored names carry a par value welded on the front
+  (`283,824,100 Vanguard Institutional 500 Index Trust`) and **the display
+  strips every one** — readers see `Vanguard Institutional 500 Index Trust
+  Fund` with VFIAX\*. The v138 cut disclosure also reads exactly as designed:
+  *"The filing itemises 140 holdings; this table shows the largest 120, and the
+  20 it leaves out total $13.3M — about 0% of the plan."*
+- **Sized whole-store, and the discrimination is the point:**
+  - **`subtotal` in the name: 10 rows / 10 plans / 313,509 ppl / $2.85B**, of
+    which CVS is 98% of the people. At >=5% of a menu: 6 rows / 308,898 ppl.
+    Three are confirmed double-counts (the same-type rows sum to them).
+  - **`total` in the name: 8,487 rows / 5,510 plans / 8.55M ppl — AND THESE ARE
+    REAL FUND NAMES.** `Total Bond Market Index Institutional`, `Total
+    International Stock Index`, IBM's `Total Stock Market Index` at $9.83B.
+    "Total" is a fund-name word; "subtotal" is not. A rule keyed on the first
+    would wreck 8,487 real holdings to fix 10.
+- **AND THE OBVIOUS FIX — drop the subtotal row — IS WRONG FOR CVS, which is
+  why this is recorded rather than shipped.** The double-count test says
+  `dbl=n`: CVS's other stable-value rows are $302M and $262M, nowhere near
+  $2.69B, so the components are NOT in the published menu. The subtotal is the
+  only row representing that $2.69B. Deleting it would hide real money and drop
+  CVS's coverage from 80% of the plan to 71% — **removing a badly named row is
+  not the same as removing a fabricated one**, and this project has shipped
+  that confusion before (v172 deleted Apple's $2.15B brokerage row on exactly
+  this reasoning).
+- **The right treatment is the one already used for brokerage windows:** keep
+  the money, mark it as an AGGREGATE, and name it for what it is — the plan's
+  stable-value allocation reported in one line — rather than either publishing
+  "Subtotal" as a fund or deleting $2.69B. Queued with that shape stated.
+- Two smaller residues on the same page: a par value welded into the MIDDLE of
+  a name survives the leading-strip (`State Street 344,352,291 IGT Invesco
+  Short Term Bond Fund`), and a doubled type suffix (`CVS Health Common Stock
+  Stock`, `Vanguard Small Cap Index Fund Mutual Fund S`).
+
