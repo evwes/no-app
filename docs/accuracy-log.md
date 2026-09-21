@@ -18942,3 +18942,65 @@ goes.** What DID change is worth recording on its own — **the share carrying
 at least one real fund name went 13% → 33%**, which is fifty versions of naming
 work showing up exactly where no coverage metric can see it, in a bucket that
 does not publish.
+
+## 2026-09-21 (07:3xZ) — v177: the Pechanga fix I deferred for a reason that was not true
+
+### The deferral was wrong, and the wrongness is the point
+
+v174's entry held this fix back and said why: *"that arm is SHARED with
+`AGG_DISCLOSURE`, and v137 records a shared-predicate widening making 3M's
+fair-value note publishable. Two risks in one bump, for one plan."*
+
+**They are independent literals.** `NOT_FUND_SHAPED` and `AGG_DISCLOSURE` are
+two separate regexes that happen to contain a textually similar `net assets.*`
+arm; neither is derived from the other, and editing one cannot affect the
+other. Checked in one command. The caution was sound in shape — v137's lesson
+is real — and it was **applied to a relationship that does not exist**, which
+kept a live fabrication on a page for three days longer than it needed to be.
+
+**A cited precedent is not a finished argument.** v137 was about
+`GENERIC_TYPE_ANY`, which IS derived from `GENERIC_TYPE_NAME.source`; the
+derivation is what made that widening dangerous. I carried the danger across to
+a pair that has no derivation, on the strength of the phrase "shared arm",
+without checking.
+
+### The change, and the sizing that made it safe
+
+`NOT_FUND_SHAPED` gains `net position\b.*`, and `AGG_DISCLOSURE` is untouched
+(verified: the caption now tests true against the first and false against the
+second).
+
+Widening a REFUSAL list can only remove rows, so the risk is collateral rather
+than omission — and it was measured before the edit, across the whole store
+rather than a sample: **of 1,720,394 published rows the new arm matches exactly
+ONE**, Pechanga Development Corporation's `Net position available for benefits`
+at **$189,711,769 = 63.7%** of a 14-row menu, ratio 1.327, read by 4,520
+participants. Zero other rows. Zero already refused by the shipped predicate.
+
+### Local verification was IMPOSSIBLE, and that is stated rather than implied
+
+Pechanga's stored entry comes from a **2023 prior-year fallback** (`fb: 2023`),
+so `trace-filing` on its ack returns `NOT FOUND` — it parses the newest filing,
+which is not where this lineup came from. The corpus cannot help either; the
+plan is not in it.
+
+So the usual before/after demonstration does not exist for this change, and
+**the run is the verification.** Pre-registered, so the result cannot be read
+to fit:
+
+1. Pechanga's `Net position available for benefits` row is **gone**.
+2. Its menu goes **14 rows → 13**.
+3. Its ratio moves from **1.327 to roughly 0.48** — the remaining rows are
+   about $108M against $224M of assets. That is above the 0.45 floor, so it
+   should stay confident while publishing under half the plan. **If it instead
+   drops below the floor and stops publishing, that is the better outcome and
+   not a failure** — a menu covering 48% is honest-but-partial where the
+   current one is false.
+4. `generic-names` and `dominant-row` baselines must not move by more than one.
+
+**Secondary purpose, stated so it is not mistaken for the justification:** this
+is the first version bump since the audit-reporting fix, so it is also the
+first run that can verify it. The printed `== HIGH (n)` / `== WARN (n)` must
+equal the coverage line's `high` / `warn`, and `== READ BEFORE MIRRORING` must
+name any flagged plans. #418 could not test that — a quiet run has no triage
+findings and both orderings print the same numbers.

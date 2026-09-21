@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 176;
+export const PARSER_VERSION = 177;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -273,7 +273,7 @@ export function classifyDocument(text) {
  * exported so an audit can count the answer rather than re-inventing the list.
  * Deliberately anchored whole-string: "Thousand Oaks Fund" must survive. */
 export const UNITS_MARKER_NAME = /^\(?\s*(?:\$\s*)?(?:amounts?|dollars?|figures?|values?)?\s*(?:are\s+)?(?:expressed\s+)?(?:in\s+|stated\s+in\s+)?(?:\(?\s*000'?s?\s*\)?|thousands?|millions?|billions?)(?:\s+of\s+dollars)?(?:\s+omitted)?\s*\)?\s*[.:]?$/i;
-export const NOT_FUND_SHAPED = /^(?:at (?:fair|contract) value|investments?(?:,? at .*)?|total\b.*|various\b.*|master trust.*|investments? held in the trust.*|participants?[- ]directed.*|fully benefit[- ]responsive.*|cusip:?.*|net assets.*|assets\b.*|cash(?: and cash equivalents)?|other\b.*|[a-z]\s+total\b.*|see (?:note|attach).*|interest[- ]bearing cash|value of interest in .*)$/i;
+export const NOT_FUND_SHAPED = /^(?:at (?:fair|contract) value|investments?(?:,? at .*)?|total\b.*|various\b.*|master trust.*|investments? held in the trust.*|participants?[- ]directed.*|fully benefit[- ]responsive.*|cusip:?.*|net assets.*|net position\b.*|assets\b.*|cash(?: and cash equivalents)?|other\b.*|[a-z]\s+total\b.*|see (?:note|attach).*|interest[- ]bearing cash|value of interest in .*)$/i;
 /* UNAMBIGUOUS accounting-disclosure phrasing, for tests that ask "are these
  * rows JOINTLY an aggregate?" — deliberately narrower than NOT_FUND_SHAPED,
  * whose `total\b.*` arm is safe only for a single 90%-dominant row: reused

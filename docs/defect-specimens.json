@@ -765,6 +765,13 @@
       "fixed": "v175",
       "sponsor": "Apple Inc.",
       "was": "v172's prose rule deleted the whole row where the filing reads `BROKERGE ACCOUNT | Various Accounts | 2,153,504,672` -- identity is the brokerage account (with the filing's own typo), description is the prose. The description won the name, the rule fired on it, and $2,153,504,672 of Apple's brokerage window vanished from the menu 145,428 participants read; the lineup fell from 98.7% of the plan to 91.7% with nothing saying so. THIS IS THE SEMPRA CASE WITH THE COLUMNS SWAPPED -- Sempra files `Various | Self-Directed Brokerage Acct` and the parser gate caught that orientation while v172 was being written, which is exactly why this one went unnoticed: a gate specimen proves the orientation it pins, not the axis it lies on. v175 asks the other cell before dropping. Class: 6 rows / 6 plans / 160,758 ppl, every one a brokerage window."
+    },
+    {
+      "ack": "20250805103347NAL0004383314001",
+      "class": "balance-sheet-total-published-as-a-holding",
+      "fixed": "v177",
+      "sponsor": "Pechanga Development Corporation",
+      "was": "Published `Net position available for benefits` at $189,711,769 = 63.7% of a 14-row menu, ratio 1.327 -- the audited statement's bottom line presented as a holding to 4,520 participants. NOT_FUND_SHAPED carried `net assets.*` and the phrase is `net position`, one token away. Sized before building: across 1,720,394 published rows the new arm matches EXACTLY ONE -- this one -- so the collateral is nil. NOTE FOR WHOEVER RE-TESTS THIS: the stored entry comes from a 2023 PRIOR-YEAR FALLBACK (fb:2023), so `trace-filing` on this ack returns NOT FOUND because it parses the newest filing. Local verification was impossible for that reason and the run was the verification."
     }
   ]
 }
