@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 179;
+export const PARSER_VERSION = 180;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -388,18 +388,6 @@ function cleanDesc(desc) {
    * (`Common Stock, par value $0.01`, 19 rows) and is never stripped. A bare
    * integer stays out deliberately — `RETIREMENT 2045` is a name tail, and
    * the `$` is exactly what tells a column value from a vintage. */
-  {
-    const m = d.match(/\s*\$\s?[\d,]*(?:\.\d+)?\s*(?:\/\s*unit|per\s*unit)?\s*$/i);
-    if (m) {
-      const head = d.slice(0, d.length - m[0].length);
-      /* the same par test the whole-store sizing used, character for character:
-       * `Common Stock, par value $0.01` AND `Par Value of $5,000,000` (American
-       * Family, 9 rows). A guard narrower than the one that produced the
-       * measurement would make the measurement describe a different change. */
-      const PAR_CTX = /\bpar(?:\s+value)?\b[^$]{0,12}$|\bpar\b\s*$/i;
-      if (head.trim() && !PAR_CTX.test(head)) d = head + " ";
-    }
-  }
   d = d.replace(/\b(interest )?rates? (of|from|ranging).*$/i, " ");
   d = d.replace(/\bmaturit(y|ies).*$/i, " ");
   /* v68: FILLER columns. Many filings print the (c) sub-columns literally —
@@ -772,6 +760,19 @@ export function subtotalIndices(rows) {
  * .test(), which is a trap for the next caller. */
 /* v174: a trailing footnote reference, one or two digits in parentheses. */
 const FOOT_REF = /\s\(\d{1,2}\)$/;
+/* v179/v180: a COST or UNIT-PRICE column welded onto the holding name, and the
+ * one place a trailing amount genuinely belongs to the name. */
+const TRAIL_MONEY = /\s*\$\s?[\d,]*(?:\.\d+)?\s*(?:\/\s*unit|per\s*unit)?\s*$/i;
+const PAR_CTX = /\bpar(?:\s+value)?\b[^$]{0,12}$|\bpar\b\s*$/i;
+function stripCostTail(name) {
+  const s = String(name);
+  const m = s.match(TRAIL_MONEY);
+  if (!m || !m[0].trim()) return null;
+  const head = s.slice(0, s.length - m[0].length);
+  if (!head.trim() || PAR_CTX.test(head)) return null;
+  const out = head.replace(/[\s,;:.\-]+$/, "").trim();
+  return out.length < 3 ? null : out;
+}
 const CONT_MARKER = /\(\s*continued\s*\)|(?:^|\s)[-\u2013\u2014]\s*continued\b/i;
 function CONT_HEADER(cs) {
   if (!/continued/i.test(cs)) return cs;
@@ -2624,6 +2625,44 @@ export function parseRows(section, opts = {}) {
     for (const [bare, rs] of groups) {
       if (unmarked.has(dkey(bare))) continue;                     // collides with a row the filing left unmarked
       if (new Set(rs.map((r) => String(r.name))).size > 1) continue; // the filing distinguishes (1) from (6)
+      for (const r of rs) r.name = bare;
+    }
+  }
+  /* v180: THE COST COLUMN, STRIPPED WHERE A COLLISION CAN BE SEEN.
+   *
+   * v179 shipped this strip inside `cleanDesc`, which sees ONE STRING. Dove
+   * Schools (480 ppl) files 28 annuities distinguished ONLY by unit price —
+   * `Annuities, @ $34.504330`, `@ $34.921285`, twenty-six more — so stripping
+   * each in isolation produced 28 rows named `Annuities, @` and the dedup
+   * SUMMED them into a $5,561,543 holding that does not exist. That is the
+   * v100/Amgen shape rebuilt by a fix written to remove fabrications. It was
+   * contained only because the plan fell under the three-row floor and
+   * published nothing — luck, not design.
+   *
+   * The v174 block directly above states the rule this violated: the strip
+   * belongs at the dedup stage, where the whole row set is in hand and a
+   * collision CAN be seen. So the guard is v174's own line, not a second
+   * invention: rows sharing a stripped name whose ORIGINALS differ are rows
+   * the filing distinguishes, and they keep their names.
+   *
+   * Deliberately NOT copied from v174: its `unmarked` refusal. A footnote
+   * marker distinguishes a real holding, but a cost column colliding with an
+   * unstripped row is usually the SAME holding rendered twice — True Organic
+   * Products files `American Funds Balanced Fund R6` beside `American Funds
+   * Am Balanced R6 $0.00` at the identical $154,936, three such pairs,
+   * $300,645 of double-counted phantom that v179 correctly removed. Blocking
+   * that collision would give the double-count back. */
+  {
+    const groups = new Map();
+    for (const r of leaves) {
+      if (!r.value) continue;
+      const bare = stripCostTail(r.name);
+      if (bare === null) continue;
+      if (!groups.has(bare)) groups.set(bare, []);
+      groups.get(bare).push(r);
+    }
+    for (const [bare, rs] of groups) {
+      if (new Set(rs.map((r) => String(r.name))).size > 1) continue; // the filing distinguishes them by price
       for (const r of rs) r.name = bare;
     }
   }

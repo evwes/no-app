@@ -19385,3 +19385,133 @@ is a different and more interesting defect — issuer and fund in one row
 separated by pipes. A character map is precisely the kind of fix that eats
 real names, and 59,752 of the 95,501 participants sit behind a single row.
 Recorded for a later cycle with the distinct names on file.
+
+## 2026-09-21 (11:3xZ) — run #423 verdict (v179): MY PREDICTION WAS WRONG, the machinery caught it, and my own fix built the oldest fabrication shape on the record
+
+**#423 PASSED** (55 min, `ab115834`): pv 179 at 99.84%, confident **60,114
+(−1)**, lineups 59,763 (−1), HIGH 6, WARN **545 (+2)**, overshoot 332, dl 105.
+
+**I pre-registered "the coverage line byte-identical except `dl`/`tkSampled` —
+that is the right answer, not a stall." It was not byte-identical.** A
+name-only change moved confidence, and the whole of this entry is what was
+behind that one digit. **The pre-registered CHS test passed** — all fifteen
+rows read `Ret Target NNNN Sept Acct` with no `$0.00`, the top row has no
+trailing `$`, issuers unchanged — so the fix works; the prediction about its
+blast radius did not.
+
+**`== READ BEFORE MIRRORING (3)` named all three plans, and `rows-dropped.txt`
+fired on real findings for the first time since it shipped yesterday.** That
+check had only ever printed 0, which this project's own rule says is untested.
+It is tested now, and it earned its place immediately.
+
+**Read one by one, the three split three ways:**
+
+- **HS Government Partners (144 ppl), 21 → 20 rows @ 1.000 → 0.970.** The
+  dropped row is `all outstanding notes. $0` at $216,240 — a participant-LOAN
+  prose row published as a holding. **Correct removal.** The ratio moved AWAY
+  from 1.0 precisely because a fake row left, which is exactly why
+  `rows-dropped` is documented as a read-before-you-mirror list and not a
+  verdict.
+- **True Organic Products (238 ppl), 28 → 25 rows @ 0.990 → 0.960, AND THIS
+  ONE IS AN UNDESIGNED WIN.** The filing published three holdings **twice**,
+  once clean and once with the cost column attached: `American Funds Balanced
+  Fund R6` $154,936 beside `American Funds Am Balanced R6 $0.00` $154,936;
+  `American Funds New Perspective R6` $111,403 beside the same name `$0.00`;
+  `BlackRock LifePath Index 2030 Fd K` $33,306 beside `BlackRock LifePath Ind
+  2030 Fd K $0.00`. Stripping the cost made the names identical and the dedup
+  merged them — **$300,645 of double-counted phantom value removed.** The 0.990
+  was inflated by the double count; 0.960 is the honest number.
+- **Dove Schools (480 ppl) IS A REAL REGRESSION AND IT IS MINE.** The filing
+  lists 28 annuities distinguished **only by unit price** — `Annuities, @
+  $34.504330`, `Annuities, @ $34.921285`, twenty-six more. v179 stripped the
+  price from every one, leaving 28 rows named `Annuities, @`, and the dedup
+  **summed them into a single $5,561,543 holding that does not exist.** That is
+  the v100/Amgen shape — *several real holdings collapsed onto a shared name
+  and summed* — the oldest fabrication class in this file, rebuilt by a fix
+  written to remove fabrications.
+
+**WHY MY SIZING MISSED IT, which is the reusable part.** I sized the RENAMES —
+1,763 rows — and read all 1,595 distinct ones looking for a name that would
+lose meaning. Not one of them does, taken alone. **I never asked whether two
+renames inside the SAME PLAN produce the SAME STRING.** A rename is a
+condition; a collision is the outcome. This is the third form of that error in
+three cycles, and the previous two entries in this log both name it.
+
+**MEASURED WHOLE-STORE AFTER THE FACT, which is what settled the mirror:
+exactly ONE plan collided.** Diffing the v178 store against v179 for any
+AFTER-row that absorbed ≥2 BEFORE-rows differing only by a stripped amount:
+Dove Schools and nothing else. It publishes **nothing** — 2 rows, under the
+three-row floor, `c:0`, `dx:"few"` — so **no reader ever sees the phantom.**
+The floor caught it, which is luck rather than design, and is the whole reason
+the next version exists.
+
+**MIRRORED 11:3xZ: `58f30c52 → ab115834`**, both overrides with the evidence
+first. `--force` on the GIT check over main's cron commit: 0 acks and 0 plans
+the branch lacked, plans array byte-identical, and main newer on exactly one
+ack — `20251203145826NAL0000493523001`, **the analyze-stuck master TRUST this
+file already documents**, confident on both sides with only the pv and error
+marker differing, re-read by the next incremental run. `--force-data` over the
+single loss, which is Dove Schools, read by name above.
+
+**What reached readers:** CHS/Community Health Systems' **91,940 participants**
+see all fifteen holdings without `$0.00` welded on; both Emory plans lose
+`$917.217600` from 75 rows between them; ~1,760 rows across 295 plans /
+560,053 participants render a clean name; and True Organic's 238 stop being
+shown $300,645 that is not there. **Cost:** Dove Schools' 480 lose a 28-row
+list whose every name was `Annuities, @ $NN.NNNNNN` — junk either way, and now
+honestly blank.
+
+**QUEUED AS THE TOP ITEM, with the design already settled: v180, and it must
+reuse v174's guard rather than invent a second one.** v174 solved this exact
+problem for footnote markers and its dedup-stage test is the invariant in one
+line — *`if (new Set(rs.map((r) => String(r.name))).size > 1) continue;` — the
+filing distinguishes them, so do not merge.* The cost strip needs the same:
+record the pre-strip name, and refuse to merge rows whose originals differed.
+Doing it in `cleanDesc` is impossible by construction — that function sees one
+string and a collision is a property of the set — **which is itself the lesson
+about where a guard can live.**
+
+## 2026-09-21 (11:4xZ) — v180: the same strip, moved to where a collision can be seen — and a tooling fact that has now cost two doubts
+
+- **Wrong:** v179's cost-column strip lived in `cleanDesc`, **which sees one
+  string**. Dove Schools' 28 annuities, distinguished only by unit price,
+  each stripped correctly in isolation and collectively became 28 rows named
+  `Annuities, @` that the dedup summed into a $5,561,543 holding that does not
+  exist.
+- **Change:** the strip moves to the **dedup stage**, where the whole row set
+  is in hand. The guard is not a new invention — it is **v174's own line**,
+  and v174's comment, sitting directly above the new block, already states the
+  rule v179 broke: *"the strip runs HERE, at the dedup stage, where the whole
+  row set is in hand and a collision can be seen — not at the row level, where
+  it cannot."* Rows sharing a stripped name whose ORIGINALS differ are rows the
+  filing distinguishes, and they keep their names.
+- **Deliberately NOT copied from v174: its `unmarked` refusal.** A footnote
+  marker distinguishes a real holding, but a cost column colliding with an
+  unstripped row is usually the SAME holding rendered twice. True Organic
+  Products files `American Funds Balanced Fund R6` beside `American Funds Am
+  Balanced R6 $0.00` at an identical $154,936 — three such pairs, **$300,645 of
+  double-counted phantom** — and blocking that collision would hand the
+  double-count straight back. **Reusing a guard means reusing the parts that
+  apply, not the block.**
+- **Controls, both directions.** POSITIVE: Dove traced on both refs through
+  the production parser — v179 **2 rows, CONFIDENT=false**; v180 **28 rows,
+  ratio 0.987, CONFIDENT=true**. Its real fund identities were never lost, they
+  sit in the ISSUER column (`Empower Lifetime 2055 Fund SVC`, `JPMorgan US
+  Research Enhanced Equity A`), which is what the page renders beside the name.
+  NEGATIVE: CHS/Community Health (91,940 ppl) still publishes all fifteen rows
+  with no `$0.00` and no trailing `$`. Parser gate green; corpus diff
+  0/0/0/0 over 1,007 filings.
+- **A TOOLING FACT THAT HAS NOW COST TWO DOUBTS, so it goes on the record: a
+  newly pinned specimen is NOT compared until the NEXT run of
+  `diff-lineups`.** This run printed `(fetched 1 pinned defect specimen(s))`
+  and `CONFIDENCE GAINED: 0` while the specimen demonstrably gains confidence —
+  the filing is fetched, but the comparison set was enumerated before the
+  fetch. The identical thing happened with the Marsh specimen two cycles ago,
+  and both times the disagreement read for a moment as evidence against a
+  correct change. **The trace is the authoritative positive control on the run
+  where a specimen is first pinned; the corpus diff is the negative control on
+  that run and becomes a positive one from the next.**
+- **Prevention:** Dove Schools pinned as specimen #112, and its entry carries
+  the sizing lesson rather than only the fix — *a rename is a CONDITION, a
+  collision is the OUTCOME*, which is the third form of that same error in
+  three cycles and the reason the whole-store collision test now exists.
