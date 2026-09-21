@@ -659,29 +659,49 @@ read `lineups-status.json` and `lib-4i`'s export, do not copy the line.
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, ≥100
   participants at either end of the plan year): **68,259 full-form**, 43,523
   short-form, 68,767 parse-status entries.
-- **STORE: pv 176 covers 68,663 of 68,767 acks (99.85%)** — tail pv106 18,
+- **STORE: pv 177 covers 68,661 of 68,767 acks (99.85%)** — tail pv106 18,
   pv124 10, pv123 10, pv98 10, pv91 9. Confident **60,117**, lineups 59,766,
-  HIGH 5, WARN 543, overshoot 332, dl 104.
+  HIGH 5, WARN 543, overshoot 332, aggRow 112, generic-named 114,
+  dominant-row 0, dl 105.
 - **LIVE ON MAIN: the v176 store** (`60eac141 → 129095f5`, mirrored
-  2026-09-21 00:3xZ, data gate unforced +0/−0).
-- **`PARSER_VERSION` in the tree is 177. IN FLIGHT: #421**, dispatched
-  2026-09-21 07:25Z by `workflow_dispatch`, start verified.
-- **v177 is one arm on `NOT_FUND_SHAPED`** (`net position\b.*`), sized
-  whole-store before the edit at **exactly 1 of 1,720,394 published rows** —
-  Pechanga's `Net position available for benefits`, $189,711,769 = 63.7% of a
-  14-row menu, 4,520 ppl. Its entry is mostly about a REASONING error: the fix
-  was deferred three days citing a "shared arm" with `AGG_DISCLOSURE`, and the
-  two are **independent literals**. A cited precedent is not a finished
-  argument.
-- **Local verification of v177 was impossible** (Pechanga's lineup is a 2023
-  prior-year fallback, so `trace-filing` parses the wrong filing and returns
-  NOT FOUND; the plan is not in the corpus). **The run is the verification**
-  and #421's four pre-registered tests are in `docs/hourly-cycle-prompt.md`.
-- **#421 is also the first run that can verify the audit-reporting fix.** #418
-  could not: a quiet run has no triage findings, so the broken ordering and the
-  fixed one print identical numbers. Check that the printed `== HIGH (n)` /
-  `== WARN (n)` equal the coverage line's `high` / `warn`, and that
-  `== READ BEFORE MIRRORING` names any flagged plans.
+  2026-09-21 00:3xZ, data gate unforced +0/−0). Main has since taken cron
+  commits `dd2aa45d` and `3457deef`.
+- **`PARSER_VERSION` in the tree is 178. IN FLIGHT: #422**, dispatched
+  2026-09-21 08:28Z by `workflow_dispatch` on `c105a50e`, start verified.
+- **#421 PASSED AS A RUN AND v177 FAILED ITS OWN FIRST TEST. v177 IS INERT
+  and the defect it names is STILL LIVE.** Pechanga still publishes
+  `Net position available for benefits` at 63.7% of a 14-row menu at pv 177.
+  **`NOT_FUND_SHAPED` DOES NOT DROP ROWS** — it is a classifier for region
+  scoring, managed-account inheritance, security shape and the audits, and its
+  only suppressing consumer is the v105 `aggOnly` guard, which needs the top
+  row at **≥90%**. At 63.7% no path could reach it. The sizing counted *rows
+  the arm matches* (a CONDITION) and read it as *rows removed* (an OUTCOME) —
+  the error this file already records against the `band-hi` estimate.
+  **Before widening any refusal list: name the code path that will act on the
+  match and check it can reach the case, THEN count strings.**
+  `docs/accuracy-log.md` 2026-09-21 (run #421 verdict).
+- **v178 is one arm on `isTrustPointerRow`** — Marsh & McLennan's two plans
+  (**35,907 + 13,877 ppl, $8.9B**) publish the master-trust pointer AS their
+  menu, the same pointer printed twice under two captions. The predicate
+  reaches a trust named at the START or the END of a row and this filing names
+  it in the MIDDLE, so the pointer measured 51.8% against a 0.6 gate. **The
+  gate was fed half its evidence; it was not set too high.** Sized by OUTCOME
+  (flags that flip, not rows that match): 2 plans, zero collateral against a
+  52-plan / 2.92M-ppl negative control of plans carrying a pointer BESIDE a
+  real menu. Verified locally (`trustPtr=true, CONFIDENT=false`) and by corpus
+  diff with the specimen pinned: **CONFIDENCE LOST 1, nothing else moved over
+  1,006 filings.** Both plans link to a trust whose own filing is confident, so
+  the refusal serves a real 11-row menu.
+- **MIRROR HELD at 08:3xZ, deliberately and recorded as such:** the v177 store
+  is +0/−0, so mirroring it delivers readers **nothing** while force-pushing
+  over main's two cron commits. v178's store lands within the hour and is worth
+  a mirror. One force-push instead of two.
+- **#422 IS THE FIRST RUN THAT CAN VERIFY THE AUDIT-REPORTING FIX.** #418 and
+  #421 both could not — a quiet run prints identical numbers under the broken
+  ordering and the fixed one, and v177 being inert made #421 quiet. v178
+  REMOVES two confident lineups and so must produce `reparse-loss` findings.
+  Check: printed `== HIGH (n)` / `== WARN (n)` equal the coverage line's
+  `high` / `warn`, and **`== READ BEFORE MIRRORING` names both Marsh plans**.
 - **Residuals: every number re-derived against v176 on 2026-09-21 and both
   unknowns closed** — see the re-derived table below. 1,354 live plans.
 

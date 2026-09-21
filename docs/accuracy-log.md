@@ -19119,3 +19119,71 @@ comparator against undefined, because a bad comparator corrupts the whole
 ordering rather than the bad elements.** The same shape would have silently
 mis-ranked any of the dozens of "top by participants" tables this project
 prints, and several of them join lineups to plans-all exactly this way.
+
+## 2026-09-21 (08:3xZ) — run #421 verdict (v177): **TEST 1 FAILED. v177 IS INERT, AND THE SIZING THAT JUSTIFIED IT COUNTED A CONDITION**
+
+**#421 PASSED as a run** (58 min, `54f0083b`): pv 177 at 99.85% of 68,767 acks,
+confident **60,117 (+0 / −0)**, HIGH 5 = the four baseline contribution
+outliers plus the self-clearing `trust-overshoot`, WARN 543, overshoot 332,
+aggRow 112, generic-named 114, dominant non-fund 0, dl 105. Coverage line
+byte-identical to #418's but for `dl`.
+
+**And that byte-identity is the failure, not a quiet success.**
+
+- **Pre-registered test 1 — "the row is gone" — FAILED.** Pechanga
+  (`20250805103347NAL0004383314001`) is still `pv 177, c:1`, still **14 rows**,
+  and still publishes `Net position available for benefits` at **63.7%** of a
+  $297.6M menu to 4,520 participants. Tests 2 and 3 fail with it: the rows did
+  not go 14 → 13 and the ratio did not move off 1.327. Test 4 (generic-names
+  and dominant-row within one) passes vacuously — dominant non-fund is 0, as
+  before — because nothing moved at all.
+- **THE MECHANISM, and it is entirely my error. `NOT_FUND_SHAPED` DOES NOT
+  DROP ROWS.** The predicate matches the string — verified again just now,
+  `NOT_FUND_SHAPED.test("Net position available for benefits")` is `true`. But
+  every consumer of it was checked, one by one, and not one removes a row from
+  a menu: `lib-4i:3793` uses it to decide managed-account inheritance,
+  `:3847` to decide security shape, `:3453`/`:3537` in region scoring,
+  `audit-data` and `audit-dominant-row` to COUNT, and `:4100` — the only
+  suppression — is the v105 `aggOnly` guard, which requires the top row to be
+  **≥90% of the sum**. Pechanga's row is 63.7%. **The guard could not fire, and
+  no other code path was ever going to touch that row.**
+- **So the defect v177 was written to fix is STILL LIVE**, and this entry is
+  the correction of a claim already on the record: the v177 commit message and
+  the `CLAUDE.md` header both describe it as fixing Pechanga. It does not. It
+  is a no-op with one extra alternation arm, harmless (+0/−0 confident, HIGH
+  unchanged) and useless.
+- **THE ROOT CAUSE IS THE RULE THIS PROJECT HAS WRITTEN DOWN FOUR TIMES.**
+  v177's sizing script counted *published rows the new arm MATCHES* — exactly
+  one, Pechanga's — and I read that as "one row will be removed". **A regex
+  match is a CONDITION. A removed row is an OUTCOME.** The same error killed
+  the `band-hi` estimate (17 plans that met a condition, 2 that had an
+  outcome), and the file already says so in those words. The discriminating
+  test I did not run is one line: *does any code path that deletes a row
+  consult this predicate?*
+- **What makes it worse, and worth stating plainly: v178, written this same
+  cycle, got it right.** Its sizing recomputed the **shipped `trustPtr`
+  expression** under both predicates and reported *flags that flip*, not rows
+  that match — 2 plans, and the corpus diff then confirmed exactly one
+  confidence loss on the pinned specimen. The right method was in hand one
+  version later than it was needed.
+- **#421 ALSO COULD NOT VERIFY THE AUDIT-REPORTING FIX, for the second run
+  running, and I predicted that it could.** The printed `== HIGH (5)` and
+  `== WARN (543)` do equal the coverage line's `high 5` / `warn 543` — but a
+  run with zero triage findings prints identical numbers under the broken
+  ordering and the fixed one, which is precisely why #418 was not a test. I
+  expected v177 to move the store and it did not, so the run was quiet and the
+  check was again vacuous. `== READ BEFORE MIRRORING` did not print, correctly,
+  there being nothing to flag. **#422 (v178) removes two confident lineups and
+  will therefore produce `reparse-loss` findings — it is the first run that can
+  actually discriminate.** Re-registered there rather than claimed here.
+- **MIRROR HELD, deliberately.** The v177 store is complete and harmless, and
+  mirroring it would deliver **nothing** to readers (+0 / −0) while
+  force-pushing over main's two cron commits. v178's store lands within the
+  hour and gives 49,784 Marsh & McLennan participants a real menu. Holding one
+  cycle costs readers nothing and spends one force-push instead of two.
+- **Prevention:** Pechanga's specimen entry (#109) is amended in place — it
+  now records that `NOT_FUND_SHAPED` is a CLASSIFIER, not a row filter, and
+  that suppression via that list requires ≥90% dominance. The general form, to
+  be applied before any future refusal-list widening: **name the code path that
+  will act on the match, and check that it can reach this case, before
+  measuring how many strings match.**

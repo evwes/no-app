@@ -6,6 +6,43 @@ morning — v169 through v176 — and the honest headline is not the count.
 **I broke Apple's page yesterday morning, reported it as a win, and found it
 myself twelve hours later.** Most of what follows comes from that.
 
+## Update — 08:4xZ Monday
+
+**v177 shipped, ran the full universe, and did nothing.** It was one regex arm
+meant to stop Pechanga publishing its balance-sheet bottom line as a holding.
+Run #421 came back and the row is still there: `NOT_FUND_SHAPED`, the list I
+added it to, **does not remove rows** — it classifies them for region scoring
+and the audits, and the one place it can suppress requires the row to be 90% of
+the menu. Pechanga's is 63.7%. I sized the change by counting how many rows the
+new arm *matched* and read that as how many rows would be *removed*. Those are
+different questions, this file has recorded that exact confusion before, and I
+made it again. The defect is back in the queue, the specimen now says why, and
+nothing on the site got worse.
+
+**v178 is in flight and this one is sound.** Marsh & McLennan's two plans —
+**49,784 participants between them, $8.9B** — publish a pointer at their master
+trust *as if it were their fund menu*: the same pointer, printed twice under two
+captions, plus one small cash row. The real menu (eleven SSGA index funds,
+company stock, synthetic GICs) has been sitting in the trust's own filing all
+along. The guard that should have caught this was not missing and its threshold
+was not wrong — it only recognised one of the two pointer rows, so it measured
+52% where the truth was 99%. **It was fed half its evidence.** This time I
+counted the outcome, not the condition: two plans change, nothing else does, and
+52 plans / 2.9M participants that legitimately show a trust pointer beside a
+real menu are untouched.
+
+**The mirror is held on purpose.** v177's store is identical to what is already
+live, so pushing it would give readers nothing. v178's store lands within the
+hour and is worth the push.
+
+**One more thing found by the morning's random draw**, which reads real plan
+pages rather than the worst bucket: **1,336 fund names across 51 plans /
+207,238 participants have a price welded onto the end of them** — CHS/Community
+Health Systems shows `$0.00` on all fifteen of its rows, both Emory plans show
+`QCSTIX CREF Stock R3 $917.217600`. The values are right; the names carry a
+second number that does not belong, and a name like that also fails the ticker
+lookup, so those rows show a blank fee. Sized and queued, not started.
+
 ## What reached readers, largest first
 
 | | who | what |

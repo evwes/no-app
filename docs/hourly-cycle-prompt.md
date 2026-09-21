@@ -237,42 +237,99 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
-      **STATUS 07:3xZ 2026-09-21. IN FLIGHT: #421 (v177), dispatched 07:25Z,
-      start verified. LIVE ON MAIN: the v176 store.**
-      **FIRST ACTION NEXT CYCLE: #421's verdict against its FOUR
-      pre-registered tests**, then `store-diff`, then mirror.
-      **v177 is one arm on one regex and its entry is mostly about a reasoning
-      error.** I deferred this fix three days ago saying the `NOT_FUND_SHAPED`
-      arm is SHARED with `AGG_DISCLOSURE`, citing v137. **They are independent
-      literals** — neither derived from the other, editing one cannot affect
-      the other, checked in one command. v137's danger was real but specific to
-      `GENERIC_TYPE_ANY`, which IS derived from `GENERIC_TYPE_NAME.source`.
-      **A cited precedent is not a finished argument**, and a live fabrication
-      stayed on a page three days longer for it.
-      Sized whole-store before the edit: of **1,720,394 published rows the new
-      arm matches EXACTLY ONE** — Pechanga's `Net position available for
-      benefits`, $189,711,769 = 63.7% of a 14-row menu, 4,520 ppl. Gate green;
-      corpus diff 1,004 filings all zeros.
-      **LOCAL VERIFICATION WAS IMPOSSIBLE and the run is the verification.**
-      Pechanga's entry is a 2023 prior-year fallback, so `trace-filing` returns
-      NOT FOUND (it parses the newest filing) and the plan is not in the
-      corpus. Pre-registered: (1) the row is gone; (2) 14 rows → 13; (3) ratio
-      1.327 → ~0.48, and **if it instead drops below the 0.45 floor and stops
-      publishing that is the BETTER outcome, not a failure**; (4)
-      generic-names and dominant-row must not move by more than one.
-      **ALSO THE FIRST RUN THAT CAN VERIFY THE AUDIT-REPORTING FIX** — #418
-      could not, because a quiet run has no triage findings and both orderings
-      print identical numbers. Check: printed `== HIGH (n)` / `== WARN (n)`
-      must equal the coverage line's `high` / `warn`, and `== READ BEFORE
-      MIRRORING` must name any flagged plans.
+      **STATUS 08:4xZ 2026-09-21. IN FLIGHT: #422 (v178), dispatched 08:28Z
+      on `c105a50e`, start verified. LIVE ON MAIN: the v176 store — MIRROR
+      HELD ON PURPOSE, see below.**
+      **FIRST ACTION NEXT CYCLE: #422's verdict against its pre-registered
+      tests**, then `store-diff`, then mirror.
+      **#421 PASSED AS A RUN AND v177 FAILED ITS OWN FIRST TEST — READ THIS
+      BEFORE WIDENING ANY REFUSAL LIST.** pv 177 at 99.85%, confident 60,117
+      (+0 / −0), HIGH 5, WARN 543, overshoot 332, dl 105 — byte-identical, and
+      the byte-identity IS the failure. Pechanga still publishes `Net position
+      available for benefits` at 63.7% of a 14-row menu. **`NOT_FUND_SHAPED`
+      DOES NOT DROP ROWS.** It is a classifier — region scoring, managed-account
+      inheritance, security shape, the audits — and its only suppressing
+      consumer is v105's `aggOnly`, which needs the top row at **≥90%**. At
+      63.7% nothing could reach it. The sizing counted *rows the arm matches*
+      (a CONDITION) and I read it as *rows removed* (an OUTCOME), the error
+      this file already records against `band-hi`. **Name the code path that
+      will act on the match, and check it can reach the case, BEFORE counting
+      strings.** v177 is inert and harmless; the defect is still live and back
+      in the queue. Specimen #109 amended in place to say so.
+      **v178 (in flight) is one arm on `isTrustPointerRow`.** Marsh & McLennan's
+      two plans (**35,907 + 13,877 ppl, $8.9B**) publish the master-trust
+      pointer AS their menu — the same pointer printed twice under two
+      captions. The predicate reaches a trust named at the START or END of a
+      row; this filing names it in the MIDDLE, so the pointer measured 51.8%
+      against a 0.6 gate. **The gate was fed half its evidence; it is not set
+      too high** — lowering it would have reached the right outcome for the
+      wrong reason and cost the negative control. Sized by OUTCOME (flags that
+      flip, not rows that match): 2 plans / 49,784 ppl, zero collateral against
+      **52 plans / 2,921,909 ppl that carry a pointer BESIDE a real menu** and
+      must keep publishing. Verified locally (`trustPtr=true,
+      CONFIDENT=false`, ratios 0.964 / 0.917), gate green, and corpus diff
+      with the specimen pinned: **CONFIDENCE LOST 1, nothing else moved over
+      1,006 filings.** Both plans link to a confident trust, so the refusal
+      serves a real 11-row SSGA/GIC menu. Recorded cost: the sister plan also
+      gives up a real `Marsh & McLennan Companies Stock Fund` row, 8.5% /
+      $118,353,516.
+      **Pre-registered for #422:** (1) both Marsh acks
+      (`20251006144237NAL0003603617001`, `20251006144317NAL0003820225001`) come
+      back NOT confident; (2) confident falls by exactly 2 — **a −2 here is the
+      designed outcome, not a regression**; (3) both plans' pages serve the
+      TRUST menu (their `mtiaAck` `20251006164519NAL0006985280001` is
+      confident); (4) the 52-plan negative control still publishes — spot-check
+      FedEx `20251014165436NAL0006873746001` stays confident.
+      **#422 IS ALSO THE FIRST RUN THAT CAN VERIFY THE AUDIT-REPORTING FIX.**
+      #418 and #421 both could not: a run with zero triage findings prints
+      identical numbers under the broken ordering and the fixed one, and v177
+      being inert made #421 quiet too. v178 REMOVES two confident lineups, so
+      `reparse-loss` findings must appear. Check: printed `== HIGH (n)` /
+      `== WARN (n)` equal the coverage line's `high` / `warn`, and **`== READ
+      BEFORE MIRRORING` names both Marsh plans**.
+      **MIRROR HELD 08:3xZ and that is the right call, recorded as required:**
+      the v177 store is +0 / −0, so mirroring delivers readers **nothing**
+      while force-pushing over main's two cron commits (`dd2aa45d`,
+      `3457deef`). v178's store lands within the hour and is worth a mirror —
+      one force-push instead of two.
+      **DRAW (seed 921521, participant-weighted, 12 plans):** ten clean —
+      Amazon 1,343,800 @ 0.91, Intel, Whole Foods, Mayo, MSK, PNC, ODP,
+      Drexel, Red Lobster, Plan Professionals. **NEW CLASS SIZED: a PRICE or
+      UNIT-VALUE column welded into the holding NAME — 1,336 rows / 51 plans /
+      207,238 ppl.** CHS/Community Health (**91,940 ppl**) carries `$0.00` on
+      all 15 rows; Emory Healthcare (36,426) and Emory University (35,748)
+      `QCSTIX CREF Stock R3 $917.217600` on 37/80 and 38/82; Loyola Chicago
+      8,646; Harmon City `Collective Trust Fund, , $37.46/unit` on 29/31.
+      Disjoint from three neighbours a single "currency in the name" regex
+      would sweep up: prose-as-holding (57 rows / 55 plans / 137,148 ppl,
+      known), loan-rate rows (21/21/56,880, known), and **par value, which is
+      LEGITIMATE — `Common Stock, par value $0.01`, 86 rows / 22 plans — and
+      must never be touched.**
+      **AND A MEASUREMENT BUG WORTH THE SPACE: guard every comparator against
+      undefined.** The first cut of that sizing ranked by `(a,b) => b.ppl -
+      a.ppl`; a lineup ack that is a MASTER TRUST has no plans-all row, so
+      `ppl` is `undefined`, the comparator returns **NaN**, and V8's sort
+      scrambles the array rather than misplacing those rows. **Both largest
+      members were missing from the table** (UnitedHealth 274,906 and CHS
+      91,940) while the totals were correct. The tell was arithmetic: a bucket
+      summing to 102,280 ppl while no listed plan exceeded 36,426.
       **STATE OF THE RESIDUALS: every number re-derived against v176 and both
       unknowns closed.** 1,354 live plans. `trust` 44 → 48 is reclassification
       (Conagra, `rw:1`); the 403 residue re-probed WHOLE at **104/104**; `few`
       re-tested — name quality 13% → 33% but reachable-and-material is 2 of 30
       (~7%), all behind a three-row floor this file has twice declined to lower.
-      **QUEUE:** (1) #421 verdict → mirror; (2) SDBA fold, 269 plans / 630,032
-      ppl, owner question 5; (3) type-then-firm issuers, ~22 rows / ~11k ppl,
-      recorded and judged too small for a bump of its own.
+      **QUEUE:** (1) #422 verdict → mirror; (2) **the price/unit-value column
+      welded into fund names, 1,336 rows / 51 plans / 207,238 ppl** — the
+      largest tractable parser item in hand, and note the fee-cell cost: a
+      name ending `$917.217600` cannot match the ticker table, so those rows
+      render a blank fee cell; (3) **Pechanga re-queued — v177 did NOT fix it**
+      and any fix must suppress at 63.7%, which `NOT_FUND_SHAPED` cannot do;
+      (4) SDBA fold, 269 plans / 630,032 ppl, owner question 5; (5)
+      type-then-firm issuers, ~22 rows / ~11k ppl, too small for its own bump;
+      (6) Mack Trucks (4,484 ppl) publishes a 57% `Plan's Interest in Master
+      Trust` beside `Mutual Funds` and `Employee 401(k) Deferrals & Roth` —
+      below v178's 0.6 gate and junk by a different mechanism, left alone
+      deliberately.
    2. Recordkeeper wrong name: 1,509 plans / 1.48M ppl. Prefer service
       codes 15/64, then the line-1b platform or Schedule A carrier, then
       top-fee; never publish a provider coded 10 or 29.

@@ -768,10 +768,10 @@
     },
     {
       "ack": "20250805103347NAL0004383314001",
-      "class": "balance-sheet-total-published-as-a-holding",
-      "fixed": "v177",
+      "class": "balance-sheet-total-published-as-a-holding (STILL OPEN -- v177 did not fix it)",
+      "fixed": "NOT FIXED (v177 was inert; see docs/accuracy-log.md 2026-09-21 run #421 verdict)",
       "sponsor": "Pechanga Development Corporation",
-      "was": "Published `Net position available for benefits` at $189,711,769 = 63.7% of a 14-row menu, ratio 1.327 -- the audited statement's bottom line presented as a holding to 4,520 participants. NOT_FUND_SHAPED carried `net assets.*` and the phrase is `net position`, one token away. Sized before building: across 1,720,394 published rows the new arm matches EXACTLY ONE -- this one -- so the collateral is nil. NOTE FOR WHOEVER RE-TESTS THIS: the stored entry comes from a 2023 PRIOR-YEAR FALLBACK (fb:2023), so `trace-filing` on this ack returns NOT FOUND because it parses the newest filing. Local verification was impossible for that reason and the run was the verification."
+      "was": "Publishes `Net position available for benefits` at $189,711,769 = 63.7% of a 14-row menu, ratio 1.327 -- the audited statement's bottom line presented as a holding to 4,520 participants. v177 added a `net position` arm to NOT_FUND_SHAPED and CHANGED NOTHING: run #421 came back with the plan still confident, still 14 rows, still publishing the row. THE REASON IS THE POINT OF THIS SPECIMEN. **NOT_FUND_SHAPED DOES NOT DROP ROWS.** It is a CLASSIFIER, consulted by region scoring (lib-4i:3453, :3537), by managed-account inheritance (:3793), by security shape (:3847), and by the audits -- and its ONLY suppressing consumer is the v105 `aggOnly` guard at :4100, which requires the top row to be >=90% of the sum. This row is 63.7%, so no code path could ever have reached it. The sizing that justified v177 counted PUBLISHED ROWS THE ARM MATCHES (exactly one) and read that as one row removed: a count of a CONDITION read as a count of an OUTCOME, the same error the band-hi estimate made. BEFORE WIDENING ANY REFUSAL LIST: name the code path that will act on the match and check it can reach this case, THEN measure how many strings match. Also note for whoever re-tests: this entry comes from a 2023 PRIOR-YEAR FALLBACK (fb:2023), so `trace-filing` on this ack parses the newest filing and returns NOT FOUND."
     },
     {
       "ack": "20251006144237NAL0003603617001",
