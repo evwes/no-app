@@ -1,80 +1,72 @@
-# Morning brief — 2026-09-20 (written 06:4xZ / 2:4x AM ET)
+# Morning brief — 2026-09-21 (written 01:2xZ / 9:2x PM ET Sunday)
 
-Live on main: **the v172 store**, mirrored 07:0xZ. Overnight, **v169 through v173** — five
-versions, each gated, corpus-diffed and checked against predictions written
-before the run finished. Two of those predictions failed and one published
-number was wrong; all three are below, because that is the more useful half of
-the record.
+Live on main: **the v176 store**. Eight versions shipped since yesterday
+morning — v169 through v176 — and the honest headline is not the count.
 
-## What reached readers overnight, largest first
+**I broke Apple's page yesterday morning, reported it as a win, and found it
+myself twelve hours later.** Most of what follows comes from that.
 
-| version | what changed | size |
+## What reached readers, largest first
+
+| | who | what |
 |---|---|---|
-| v169 | **UPS stops showing $1,470,493,000 of net appreciation as a holding.** A statement caption wraps, its value lands on the next line, and the parser read the orphan as a fund — at the *prior year's* column | **145,125 participants** |
-| v170 | **Irisndt's 1,609 see forty-two holdings where one `JOHN HANCOCK` row of $21,512,753 stood at 53% of the plan** — eighteen filed holdings that had merged into one | six plans un-merge; the bare-firm class falls 20 → 14 |
-| v169+v170 | holding names lose a stray trailing `+` or `~` that no filing legend explains | 1,939 rows across 268 plans |
-| v171 | **the Form 5500 employer-ID line, refused by the parser for years and published anyway** — its skip rule required a `#` that filings do not write | 43 rows → 1 |
+| v174 | **1.17M participants across 506 plans** | fund names lose a bare `(1)` that no legend on the page explains — FMR on 110 of its 120 rows, Edustaff on 17 of 17, Thermo Fisher on 24 of 28 |
+| v173 | **429,252 participants across 260 plans** | a page break's `(continued)` stops being printed as the name of the firm behind a fund |
+| v176 | **145,428** | **Apple's $2,153,504,672 brokerage window is back**, after v172 deleted it |
+| v169 | 145,125 | UPS stops showing $1,470,493,000 of net appreciation as if it were a holding |
+| v174 | 21,847 | Chubb stops listing 125 individual stocks as though they were the fund menu — and $38M the row cap had hidden is now counted |
+| v176 | 9,282 | **Thrivent stops publishing a $1,700,835,259 "fund" that does not exist** |
 
-Live store: confident **60,117**, lineups 59,766, findings at **5**, overshoot
-332, download failures 104.
+Live store: confident 60,117, lineups 59,766, findings 5, overshoot 332.
 
-## Mirrored this cycle, after a deliberate twenty-minute hold
+## What I got wrong, in order
 
-**v172 is live.** It was held briefly because main runs its own hourly job and
-force-pushing over it while it is about to write is the one unsafe moment; the
-mirror went through as soon as that job landed. The hold cost nothing.
+This is the useful half, and today it is longer than the half above.
 
-**Oracle's 101,985 participants stop seeing `Various investments, including
-registered market funds and c` at $3,405,120,000** — 9.6% of a $35B plan,
-published as if it were a single fund. Capital One gains three rows and $1.14B
-of real funds.
+1. **v172 deleted $2,153,504,672 from Apple's menu** — 7% of a $30.8B plan —
+   and I wrote it up as a clean win. Apple's filing names its brokerage account
+   in one column and describes it as "Various Accounts" in the other; my rule
+   read the description, decided it was not a fund name, and dropped the whole
+   row. The page went from accounting for 98.7% of the plan to 91.7% with
+   nothing saying where the rest had gone.
+2. **My first fix for it would have invented a holding.** Trustmark files three
+   separate Schwab rows; naming all three from the same column merges them into
+   one $13,916,207 line that exists nowhere. Caught before shipping.
+3. **My second fix published a $1.7B phantom.** Thrivent's whole balance sits
+   under the bare word "Thrivent", and the fix turned a plan that had correctly
+   published *nothing* into one publishing a single 99.2% "fund". It passed all
+   three tests I had written for it. **Passing the tests you thought to write
+   is not the same as being right.**
+4. **I sized that class at 6 plans when it was 129**, by using a hand-written
+   word list in place of the actual rule.
 
-**CORRECTED 19:5xZ — the same change also took $2.15B off Apple's page, and I
-reported it as a clean win this morning.** Apple's filing names its brokerage
-window in one column and describes it as "Various Accounts" in the other; the
-description won, the rule fired, and the whole row went. **145,428 Apple
-participants now see a menu accounting for 91.7% of their plan instead of
-98.7%, with nothing saying where the rest is.** Six plans are affected this way
-(160,758 people), all brokerage windows, and the fix is written and waiting on
-the current run. The write-up of what went wrong is in the accuracy log — in
-short, I checked three plans by row count and Apple's loss was a single row.
+All four are fixed. Nothing from (2) or (3) ever reached the live site; (1) was
+live for about fifteen hours and is repaired.
 
-## Running now
+## Why it kept happening, and what now stops it
 
-**v173 (#409): a page break's `(continued)` marker published as the issuer** —
-566 rows / 260 plans / **429,252 participants**.
+Every one of those defects was **invisible to the standing check**. The corpus
+diff re-parses about a thousand filings chosen by size, and it reported "clean"
+over all three, because none of those plans is in the sample.
 
-The interesting half is why a *type label* gets promoted at all. `Common
-Collective Trust` is refused everywhere. With the marker on it, the type test
-strips the vocabulary and is left with the word `continued` — nine characters,
-over its six-character floor — so the test returns false, and the word `Trust`
-then satisfies the "is this a firm" test on the very next line. **A phrase the
-parser refuses on every other page is promoted on the continuation page
-alone.** Td Bank US Holding publishes it on eleven of its twenty-three rows.
+What caught them was the same thing each time, done by hand: compare the whole
+store before and after a run and read what moved, ranked by money and by
+people. **That is now a permanent tool and part of the routine before every
+publish.** Run against yesterday's data it puts Apple's $2.15B first and
+Thrivent's $1.7B second — both would have been on screen within seconds
+instead of surviving for hours.
 
-## Found wrong, by us, in our own work
+Two more gaps closed behind it:
 
-- **Two of v169's four pre-registered tests failed.** A marker class predicted
-  at ~0 came in at 663 rows (the strip ran on the wrong part of the row, and
-  *my first correction was also wrong*); and I predicted a metric could only
-  fall when my own corpus diff had already recorded the counter-case. v170's
-  predictions each had to name a measurement already in hand, and all four
-  then passed.
-- **A class size published in yesterday's brief was wrong and was corrected
-  within the hour.** I wrote "274 plans / 790,790 people" for the prose class.
-  That counts every plan containing any such row, most of them a ~1% loan-rate
-  fragment. At a size that distorts a page it is 17 rows / 6,054 people — with
-  Oracle just under the threshold while being 94% of the people and nearly all
-  of the money. A count of a condition is not a count of an outcome.
-- **A sizing script reported a clean, plausible, entirely false result today.**
-  It fed 201 strings to the parser and reported 0 of 201 — because it read the
-  result as a list when the function returns a record, so every answer was
-  "nothing". A control with a known-good input returned zero too, which is what
-  exposed it. The uniformity was the tell, and it was caught before the number
-  was published rather than after.
-- **A draft of today's parser note claimed the defect blanked the fee cell.**
-  It does not: the lookup falls back to the bare fund name. Corrected before
-  publishing. What v173 fixes is what the page *says*, and that is all.
+- **Nothing was watching plans that quietly lose a row.** A lineup that stays
+  published, keeps its source and simply shows less money moved no existing
+  check at all — Apple's was a 27 → 26 row change carrying $2.15B. There is now
+  a check for exactly that, tested in both directions.
+- **The audit has been under-counting its own warnings since 11 September.**
+  One report said "5 findings" while the record it wrote the same minute said
+  6, and a whole category of warning had never once been printed. Fixed twice:
+  the second time because fixing the count still left those findings buried
+  beneath 543 routine lines, and counting them is not reading them.
 
 ## Waiting on you, ranked by people affected
 
@@ -89,17 +81,19 @@ alone.** Td Bank US Holding publishes it on eleven of its twenty-three rows.
 
 ## Open and queued, with sizes
 
-- **Fold brokerage-window category rows into the SDBA aggregate** rather than
-  deleting them — Progressive's eight rows, ~$499M. This is v172's own
-  recorded cost and is next.
+- **The brokerage fold — 269 plans / 630,032 ppl.** Where a filing says part of
+  the plan is "various investments" and does not itemise it, we now drop that
+  line rather than show a total, which leaves the menu quietly incomplete.
+  Whether to publish it under an honest label is question 5 above.
+- Pechanga (4,520 ppl): a balance-sheet total published as a holding at 63.7%
+  of its menu. One plan, and the one-word fix touches a shared rule, so it
+  waits for a version that is not also changing something else.
 - Marsh & McLennan (35,907 ppl): a $3.39B prose row at 48% of a 3-row menu.
 - JPMorgan Chase (299,277 ppl): a dollar value welded into a holding's name.
   One plan seen, not yet sized.
-- A third trailing-marker layout (952 ppl); IBG Llc's page-header EIN (1,598).
 
 ## What continues alone
 
-Hourly: reconcile, verdict any finished run, mirror only when it is safe and
-the verdict is clean, dispatch the next gated version, draw randomly from
-published lineups and read the rows, record. Next: **#409's verdict**, then the
-brokerage fold.
+Hourly: reconcile, verdict any finished run, **whole-store diff**, mirror only
+on a clean verdict, dispatch the next gated version, draw randomly from
+published lineups and read the rows, record.
