@@ -19652,3 +19652,40 @@ rule. **The fix never changed. Only where it could see enough to be safe.**
   v179 store the prediction was made on. Stated because a prediction that
   lands one off should say WHY, or the next person reads agreement where there
   is only proximity.
+
+## 2026-09-21 — Run #427 verdict: the merge-side issuer section-caption strip
+- **Wrong:** 361 published rows across 112 plans / 617,829 participants stored
+  an issuer that opened with a statutory 4i SECTION CAPTION glued to the firm.
+  CHS/Community Health (91,940 ppl) published `Master Trust Principal Life
+  Insurance Company` where the filing's identity column reads only the firm —
+  against this project's own invariant that section headers must not glue into
+  names.
+- **Change:** a strip in `merge-4i.mjs`, NOT the parser and NOT a
+  `PARSER_VERSION` change. A blanket strip destroys real names — USC (44,948
+  ppl) stores `Real Estate Account (CREF)`, TIAA's actual fund — so the test is
+  empirical: *does the remainder appear as a COMPLETE issuer on other published
+  rows?* CHS's `Principal Life Insurance Company` stands alone 16,457 times;
+  `Account (CREF)` never does. **That evidence is STORE-WIDE, which is why the
+  strip cannot live in lib-4i (one filing) or the dedup stage (one row set).**
+  Third placement decision in this cycle-family settled by the same question:
+  *where can the evidence be seen?*
+- **Verdict, all four pre-registered tests PASSED:**
+  1. Residue 361 → 248 rows = **113 rows stripped, the prediction to the row**
+     (76 plans still carry a caption, all of them the deliberate keep set).
+  2. CHS splits exactly as designed: **13 rows now `Principal Life Insurance
+     Company`**, and the 2 rows reading `Master Trust CHS/Community Health
+     Systems, Inc.` are KEPT, because a sponsor name is not a standalone issuer
+     anywhere in the store.
+  3. All four negative controls untouched — USC `Real Estate Account (CREF)`,
+     Sony `Corporate Stock - Common` (6 rows), Textron, Vanderbilt.
+  4. **CONFIDENCE DIFF +0 / −0.** The coverage line is byte-identical and the
+     REPARSE VERDICT reads `confident +0, match +0, vesting +0, lineups +0`, as
+     an issuer-only change must. HIGH 5 at the baseline, overshoot 332,
+     aggRow 112, dl 105, pv 180 at 99.8%.
+- **Prevention:** one method note, because a control that cannot be found is
+  not a passing control. The USC check was first written against a REMEMBERED
+  ack, which returned "no entry" — indistinguishable from the control failing.
+  Re-run by VALUE (searching the store for `Real Estate Account`), it resolved
+  to USC's real ack with 44,948 participants and the name intact. **Address a
+  negative control by a property it has, not by an identifier you recall.**
+
