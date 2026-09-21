@@ -666,8 +666,39 @@ read `lineups-status.json` and `lib-4i`'s export, do not copy the line.
 - **LIVE ON MAIN: the v176 store** (`60eac141 → 129095f5`, mirrored
   2026-09-21 00:3xZ, data gate unforced +0/−0). Main has since taken cron
   commits `dd2aa45d` and `3457deef`.
-- **`PARSER_VERSION` in the tree is 178. IN FLIGHT: #422**, dispatched
+- **`PARSER_VERSION` in the tree is 179. IN FLIGHT: #422 (v178)**, dispatched
   2026-09-21 08:28Z by `workflow_dispatch` on `c105a50e`, start verified.
+  **v179 is committed `[skip ci]` behind it (`24584c9d`) and dispatches the
+  moment #422 lands** — verified that the push created no run.
+- **v179: the COST column welded into the fund name.** CHS/Community Health
+  (**91,940 ppl**) published all fifteen rows as `Ret Target 2035 Sept Acct
+  $0.00`; both Emory plans carry the unit price (`QCSTIX CREF Stock R3
+  $917.217600`) on 37 of 80 and 38 of 82 rows. `stripTrailingColumns` has
+  removed trailing cost columns since v70 and **none of its five arms can
+  match `$0.00`** — the comma-group arm needs a comma, the plain-number arms
+  have no `$`. Sized whole-store with all 1,595 distinct renames read:
+  **1,763 rows / 295 plans / 560,053 ppl**; par value protected.
+  **Fixed in the obvious place first and REVERTED:** `stripTrailingColumns`
+  runs before `splitNameDesc`, so it also moved the ISSUER column — probably
+  an improvement, definitely unmeasured, and v126 leaked a `*` into 3,224
+  issuers as exactly that kind of side effect. Shipped narrowly in `cleanDesc`
+  instead. **When a fix works in two places, prefer the one whose effect you
+  have measured.** Gate green; corpus diff 0/0/0/0 over 1,006 filings (a
+  negative control, stated as one); CHS traced with issuers byte-identical.
+  **TWO OF MY OWN MEASUREMENTS WERE WRONG BEFORE THE FIX WAS**, both recorded:
+  the queue entry's fee-cell claim (236 of these rows ALREADY resolve to a
+  ticker with the suffix attached; stripping gains 2 rows / 604 ppl — it is a
+  readability fix, not a fee fix), and the script that produced that number
+  (read `r.ticker`; the field is `r.tk`, exposed by a positive control after a
+  uniform all-zero sweep). `docs/accuracy-log.md` 2026-09-21 (v179).
+- **QUEUED, NOT FIXED — the issuer side effect v179 declined to ship blind:**
+  fixing the cost strip in `stripTrailingColumns` turns CHS's issuer from
+  `Master Trust Principal Life Insurance Company` into `Principal Life
+  Insurance Company`, i.e. a section header stops gluing into the issuer.
+  That is a named defect in this file's own invariants and looks like a win.
+  It needs its own sizing, which cannot come from the store — it is a
+  parse-time change, so the instrument is the corpus diff plus traced
+  specimens.
 - **#421 PASSED AS A RUN AND v177 FAILED ITS OWN FIRST TEST. v177 IS INERT
   and the defect it names is STILL LIVE.** Pechanga still publishes
   `Net position available for benefits` at 63.7% of a 14-row menu at pv 177.

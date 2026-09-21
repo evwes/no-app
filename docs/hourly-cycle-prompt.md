@@ -237,6 +237,52 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 09:3xZ 2026-09-21. IN FLIGHT: #422 (v178), dispatched 08:28Z,
+      start verified, ~65 min in at this writing. v179 committed `[skip ci]`
+      behind it on `24584c9d` — VERIFIED the push created no run — and
+      dispatches the moment #422 lands. LIVE ON MAIN: still the v176 store;
+      the mirror is held on purpose (see the previous STATUS).**
+      **v179: THE COST COLUMN WELDED INTO THE FUND NAME.** CHS/Community
+      Health (**91,940 ppl**) published all fifteen rows as `Ret Target 2035
+      Sept Acct $0.00`, top row `CHS Stable Value Fund Master Trust Inv estment
+      Account $`. The filing is a clean five-column layout and the VALUE is
+      read correctly — the description cell keeps the COST.
+      `stripTrailingColumns` has stripped trailing cost columns since v70 and
+      **none of its five arms can match `$0.00`**: the comma-group arm needs a
+      comma, the plain-number arms have no `$`, so the dollar sign sits between
+      the required space and the digits. Sized whole-store with all 1,595
+      distinct renames printed and read: **1,763 rows / 295 plans / 560,053
+      ppl**; par value protected by design (19 rows).
+      **PLACEMENT IS THE LESSON AND IT IS THE REUSABLE PART.** Fixed first in
+      `stripTrailingColumns`, where that function's own docstring says it
+      belongs, and **reverted**: it runs BEFORE `splitNameDesc`, so it also
+      moved the ISSUER column (`Master Trust Principal Life Insurance Company`
+      -> `Principal Life Insurance Company`). Very likely an improvement,
+      definitely unmeasured, and v126 leaked a `*` into 3,224 issuers as
+      exactly that kind of side effect. Shipped narrowly in `cleanDesc`.
+      **When a fix works in two places, prefer the one whose effect you have
+      measured.** Gate green; corpus diff 0/0/0/0 over 1,006 filings — for a
+      name-only change that is a NEGATIVE control and is stated as one, the
+      positive control being the CHS trace with issuers byte-identical.
+      **TWO OF MY OWN MEASUREMENTS WERE WRONG BEFORE THE FIX WAS.** (1) The
+      queue entry proposing this said these names "cannot match the ticker
+      table, so those rows render a blank fee cell" — **false**: 236 of the
+      1,763 ALREADY resolve with the suffix attached and stripping gains
+      **2 rows / 604 ppl**. It is a readability fix for 560,053 people, not a
+      fee fix. (2) The script that produced that correction first returned
+      **0 gained / 0 kept / 0 lost / 1,763 unidentified** — a uniform sweep,
+      which this project's corollary rule says is a report on the QUERY. It
+      was: `fundTickerInfo` returns `{tk, comparable}` and I read `r.ticker`.
+      A positive control on six known names (`Fidelity 500 Index Fund` ->
+      FXAIX) exposed it in one command. **Two measurement defects in two
+      cycles — this and the NaN comparator — one caught by arithmetic that
+      disagreed with a list, one by a control, neither by eye.**
+      **NEXT QUEUE ITEM, opened by v179 and deliberately not shipped with it:**
+      the issuer side effect above. A section header gluing into the issuer is
+      a named defect in CLAUDE.md's own invariants, so the wide placement is
+      probably right — it just has to be sized on its own, and a parse-time
+      issuer change cannot be sized from the store. Instrument is the corpus
+      diff plus traced specimens.
       **STATUS 08:4xZ 2026-09-21. IN FLIGHT: #422 (v178), dispatched 08:28Z
       on `c105a50e`, start verified. LIVE ON MAIN: the v176 store — MIRROR
       HELD ON PURPOSE, see below.**
