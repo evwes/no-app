@@ -1065,7 +1065,18 @@ function fundTickerInfo(name, type) {
   // "TRP RETIRE 2030 F" (a bare class letter, no "Tr" marker at all).
   const pooled = /trust|commingled|collective|pool\b|unitized|separate account|\bcit\b|annuity|tiaa traditional|guaranteed|\bgic\b|stable value|separately managed/i.test(name)
     || new RegExp(TRUST_CLASS, "i").test(name)
-    || /collective trust|pooled separate/i.test(type || "");
+    /* The TYPE column is the filing's own statement of the vehicle, and it is
+     * a controlled vocabulary of 13 values -- so it can be matched exactly
+     * rather than guessed at. This arm listed only two of the five that name
+     * a NON-REGISTERED vehicle, and the gap was not cosmetic: the plain
+     * `Separate account` value (12,061 rows) matched neither this arm nor the
+     * name arm above, so an insurance separate account filed as `VALIC
+     * Vanguard Windsor II Fund` resolved to VWNAX with comparable:false --
+     * the claim that the plan holds the Vanguard fund itself. It does not; it
+     * holds a separate account that invests in it, at the separate account's
+     * higher cost. Measured through app.js's own lookupTicker on the v180
+     * store: 878 rows / 207 plans / 311,893 participants made that claim. */
+    || /collective trust|separate account|managed account|master trust/i.test(type || "");
   /* Tested against the RAW name, never the expanded one: expandFundName
    * rewrites "MM" (to "Money Market"), which silently defeated this guard when
    * it lived inside the individual patterns, and "MM S&P 500 Index Fd(Northern
