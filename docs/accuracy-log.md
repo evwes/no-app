@@ -19689,3 +19689,86 @@ rule. **The fix never changed. Only where it could see enough to be safe.**
   to USC's real ack with 44,948 participants and the name intact. **Address a
   negative control by a property it has, not by an identifier you recall.**
 
+
+## 2026-09-21 — The OCR-substitution queue item, re-derived: two of four "shapes" do not exist
+
+- **Wrong (in the QUEUE, not in the data):** this project recorded an OCR
+  character-substitution class at **165 rows / 68 plans / 95,501 ppl, "four
+  shapes not one"**. Re-derived against the shipped v180 store, that figure
+  does not survive and neither does the shape count:
+  - **`0` inside a word: 0 rows.** The shape does not exist on this store.
+  - **`1` inside a word: 429 rows — but they are EMPOWER LEGEND CODES**
+    (`1PIO191`, `1TRSV-A`), the already-recorded "legend not found" class.
+    A different defect swept in by a regex that matched its shape.
+  - **`5`/`8` inside a word: 2 rows** of unreadable OCR mush, not correctable
+    by substitution — the row is garbage end to end.
+  - The one real shape was **two defects wearing one regex**: a mark standing
+    where a letter belongs, and a `|` that is a COLUMN EDGE.
+- **What is real, and confirmed against the filing:** a trailing `|` in a
+  share-class slot is the letter **I**. `Class |` → `Class I` is
+  **298 rows / 181 plans / 157,849 participants**. This was not inferred —
+  Cradlepoint's filing (`20241219154849NAL0007738912001`) was downloaded,
+  rasterised at 240dpi and **read by eye**: the page plainly reads
+  `T.Rowe Price Retirement 2035 Class I`, nine rows of it, description column
+  `Common Collective Trust`. The `!`-for-`I` shape that the queue item led
+  with (Aya's `NUVEEN LIFECYCLE !NDEX 2060 INST`) is **7 rows / 7 plans**, and
+  a naive `!`→`I` rewrite is WRONG on 4 of those 7 — `Metrop!tn` and
+  `Smal!Cap` want a lowercase `l`, not an `I`.
+- **The method error that produced the bad number, stated plainly because it
+  is the fourth instance of one rule:** the sizing regex counted strings that
+  MATCHED a shape, and a match is a condition. The outcome — a row whose
+  published name is wrong in a way a rewrite would fix — is a different and
+  much smaller set. Naming the classes separately before counting is what
+  dissolved it.
+- **A SECOND error, caught inside the same cycle and worth more than the
+  finding:** I then sized "a collective-trust row published with a mutual-fund
+  ticker" at **28,339 rows / 4,753 plans / 14,018,680 participants / $381.5B**
+  and was within a step of recording it. It is **an artifact of my harness.**
+  `fundTickerInfo(name, type)` takes a SECOND argument, and `fund-er.js:1068`
+  already demotes a holding to a labelled comparable when the filing's own
+  vehicle column says `collective trust` or `pooled separate` — app.js passes
+  `f.type` on every call (`app.js:591-592`) and tries the issuer-prefixed and
+  raw filed names first. **I called it with one argument, so that arm never
+  fired and I measured my own omission.** The shipped predicate was reached
+  for, exactly as the standing rule says — and then called wrongly. *Reaching
+  for the shipped predicate is not enough; it has to be called the way the
+  site calls it.*
+- **Prevention:** the positive control that caught it exists and should be
+  standard for any measurement over `fund-er.js` — transcribe `lookupTicker`
+  from `app.js` rather than calling `fundTickerInfo` directly. A harness that
+  reproduces the site's call order is the only one whose miss rate means
+  anything.
+
+## 2026-09-21 — Walmart's wrapped-continuation fabrication is CLOSED, and this file still called it live
+
+- **Wrong (in the RECORD):** the "THE FABRICATED-LINEUP CLASS IS NOT CLOSED"
+  bullet in project memory presents Walmart as a live instance — publishing
+  `Lendable Fund` at $3,547,236,088 (three wrapped BlackRock names summed) and
+  `US) Value Equity Fund` at $1.83B, with "a $2.86B international equity index
+  fund invisible to every Walmart participant". v130 fixed it and the mirror
+  bullet for v131 says so, so **two parts of the same file disagreed and the
+  live-defect list was the stale one.**
+- **Verified by drawing Walmart in this cycle's participant-weighted review**
+  (seed 20260921142) and checking every claim by name: `Lendable Fund` **0
+  rows**, `US) Value Equity Fund` **0 rows**, and all three BlackRock names
+  whole at **exactly** the dollar figures the record predicted —
+  `Intermediate Government Bond Index Non-Lendable Fund` $423,138,593,
+  `Long Term Government Bond Index Non-Lendable Fund` $267,132,531,
+  `MSCI ACWI ex-U.S. IMI Index Non-Lendable Fund` $2,856,964,964 — plus
+  `The Collective LSV International (ACWI EX US) Value Equity`. 42 rows,
+  ratio 0.95, **zero names ending mid-phrase**.
+- **The class re-sized store-wide on the same shape** (a bare class/vehicle
+  fragment as a row name): **97 rows / 97 plans / 331,737 ppl / $2.63B**, and
+  only **14 rows at >=15% of a menu / 13,936 ppl**. The recorded floor was
+  "149 plans / 753,693 participants / $21.89B". Neither Owens Corning nor
+  Intermountain leads it now; the largest remaining dominant cases are Alliant
+  Energy `shares` 20.0% / $279,927,053 (4,517 ppl) and Tift Regional `shares`
+  20.8% / $85,210,254 (4,514 ppl).
+- **Prevention:** this file already carries the rule — *"BEFORE OPENING ANY
+  BUCKET, CHECK THE EXAMPLE IS STILL IN IT"*, written after State Farm went
+  stale three times. It applies to defect lists, not only gap tables, and it
+  was the random draw rather than any audit that enforced it. **Drawing
+  randomly from PUBLISHED lineups keeps catching things the worst-class draw
+  structurally cannot** — including the record being wrong in the project's
+  own favour.
+
