@@ -666,10 +666,32 @@ read `lineups-status.json` and `lib-4i`'s export, do not copy the line.
 - **LIVE ON MAIN: the v176 store** (`60eac141 → 129095f5`, mirrored
   2026-09-21 00:3xZ, data gate unforced +0/−0). Main has since taken cron
   commits `dd2aa45d` and `3457deef`.
-- **`PARSER_VERSION` in the tree is 180. IN FLIGHT: #427**, dispatched
-  2026-09-21 13:27Z on `ec712661`, start verified. **It is an INCREMENTAL run,
-  not a re-parse** — no version bump, so the work list is only the stale acks;
-  its job is to let the MERGE apply the new issuer strip.
+- **`PARSER_VERSION` in the tree is 180. NOTHING IS IN FLIGHT** as of
+  2026-09-21 14:3xZ — #427 (incremental, dev branch) finished `success` in 9
+  minutes at 13:36Z and #428 (main's :23 cron) at 14:24Z.
+- **#427 PASSED ALL FOUR PRE-REGISTERED TESTS and the issuer strip is LIVE.**
+  (1) Residue 361 → 248 = **113 rows stripped, the prediction to the row**;
+  (2) CHS/Community Health (91,940 ppl) publishes `Principal Life Insurance
+  Company` on 13 rows and KEEPS `Master Trust CHS/Community Health Systems,
+  Inc.` on 2, because a sponsor name stands alone nowhere in the store;
+  (3) all four negative controls untouched — USC `Real Estate Account (CREF)`
+  (44,948 ppl), Sony `Corporate Stock - Common`, Textron, Vanderbilt;
+  (4) **CONFIDENCE DIFF +0 / −0**, coverage line byte-identical, REPARSE
+  VERDICT `confident +0, match +0, vesting +0, lineups +0`. **A control
+  addressed by a REMEMBERED ack returned "no entry", which reads exactly like
+  a control failing — re-addressed by VALUE it resolved instantly. Address a
+  negative control by a property it has, not an identifier you recall.**
+- **MIRRORED 2026-09-21 14:3xZ: `b6271274 → 8196414b`, and the DATA GATE
+  PASSED UNFORCED at +0 / −0** (second consecutive unforced data gate).
+  `--force` covered the GIT check alone over main's one cron commit, evidence
+  first: **0 acks and 0 plans the branch lacked, plans array byte-identical,
+  pv differing on 0 of 68,767, 0 confident on main the branch lacks** — only
+  the `generated` timestamp differed. pv 180 at 99.8%, confident 60,115,
+  HIGH 5 at the baseline, WARN 543, overshoot 332, aggRow 112, dl 105.
+  **HELD ~10 minutes first and that was right:** #428 was in flight ON MAIN,
+  and force-pushing the branch onto main while a run is about to commit there
+  is the unsafe case. The hold cost nothing and the mirror happened in the
+  same cycle.
 - **LIVE ON MAIN: the v180 store — MIRRORED 2026-09-21 13:2xZ**
   (`4035b383 → b4c9e6d8`), and the **DATA GATE PASSED UNFORCED at +1 gained /
   −0 lost** — the first unforced data gate in four mirrors. `--force` covered
@@ -710,9 +732,30 @@ read `lineups-status.json` and `lib-4i`'s export, do not copy the line.
   and four negative controls named in advance all untouched (USC, Sony's
   `Corporate Stock - Common`, Textron, Vanderbilt). CONFIDENCE DIFF +0 / −0.
   Needs no re-parse; **#427 exists to let a merge apply it.**
-- **RECORDED, NOT STARTED — OCR character substitution in published fund
-  names, 165 rows / 68 plans / 95,501 ppl**, four shapes not one, 59,752 of
-  those people behind a single row (Aya's `NUVEEN LIFECYCLE !NDEX 2060 INST`).
+- **RE-DERIVED 2026-09-21 AND THE RECORDED NUMBER WAS WRONG — do not reuse
+  "165 rows / 68 plans / 95,501 ppl, four shapes".** Against the v180 store:
+  the `0`-in-word shape is **0 rows**; the `1`-in-word shape is **429 rows of
+  EMPOWER LEGEND CODES** (`1PIO191`), a different and already-recorded class
+  swept in by shape; the `5/8` shape is **2 rows** of unreadable mush. The
+  survivor was **two defects sharing one regex**. What is real: **a trailing
+  `|` in a share-class slot is the letter `I` — 298 rows / 181 plans /
+  157,849 ppl**, confirmed by rasterising Cradlepoint's filing
+  (`20241219154849NAL0007738912001`) at 240dpi and READING it: the page says
+  `T.Rowe Price Retirement 2035 Class I`, nine rows, vehicle column
+  `Common Collective Trust`. The `!`-for-`I` shape the item led with is
+  **7 rows / 7 plans**, and a naive `!`→`I` rewrite is WRONG on 4 of them
+  (`Metrop!tn`, `Smal!Cap` want lowercase `l`). Unfixed; the `Class |` half is
+  the shippable part and needs a `PARSER_VERSION` bump.
+  **AND THE TRAP UNDERNEATH IT, which cost more than the item is worth:** I
+  then sized "a collective-trust row published with a mutual-fund ticker" at
+  **28,339 rows / 14,018,680 ppl / $381.5B** and it is **an artifact of my own
+  harness**. `fundTickerInfo(name, type)` takes a SECOND argument;
+  `fund-er.js:1068` already demotes such a holding to a labelled comparable
+  from the filing's own vehicle column, and `app.js:591-592` passes `f.type`
+  on every call plus the issuer-prefixed and raw names first. Calling it with
+  one argument measures the omission. **Transcribe `lookupTicker` from app.js
+  for any measurement over `fund-er.js`** — reaching for the shipped predicate
+  is not enough, it has to be called the way the site calls it.
 - **TOOLING FACT: a newly pinned specimen is NOT compared until the NEXT run
   of `diff-lineups`.** It prints `(fetched 1 pinned defect specimen(s))` and
   still reports 0 for it. On the pinning run the TRACE is the positive control
@@ -2014,9 +2057,26 @@ read `lineups-status.json` and `lib-4i`'s export, do not copy the line.
   $287.1M, `Institutional Class` $221.8M, **$1.35B of one plan** — and the
   anchored regex caught only the two beginning with a generic noun. Do not
   quote 149 or $21.89B as a total.
-  **HOW FAR BELOW, MEASURED 2026-09-16: at least 1.97M participants in ONE
-  PLAN — more than twice the whole recorded figure.** WALMART, the largest
-  plan in the country (1,970,230 participants, $50.79B), publishes
+  **THE WALMART INSTANCE BELOW IS CLOSED — FIXED BY v130, VERIFIED ON THE
+  LIVE STORE 2026-09-21, AND THIS BULLET WENT ON CALLING IT LIVE.** Drawn in
+  the weighted review (seed 20260921142) and checked claim by claim:
+  `Lendable Fund` **0 rows**, `US) Value Equity Fund` **0 rows**, and all
+  three wrapped BlackRock names whole at **exactly** the dollar figures
+  predicted below — $423,138,593 / $267,132,531 / **$2,856,964,964** — plus
+  `The Collective LSV International (ACWI EX US) Value Equity`. 42 rows,
+  ratio 0.95, **zero names ending mid-phrase**. The v131 mirror bullet already
+  said v130 fixed it, so two parts of this file disagreed and the live-defect
+  list was the stale one. **The class itself re-sizes to 97 rows / 97 plans /
+  331,737 ppl / $2.63B** (bare class/vehicle fragment as a row name), of which
+  only **14 rows / 13,936 ppl sit at ≥15% of a menu** — largest now Alliant
+  Energy `shares` 20.0% / $279,927,053 and Tift Regional `shares` 20.8%. The
+  rule this file already carries — *check the example is still in the bucket*
+  — applies to DEFECT LISTS, not only gap tables. The text below is kept as
+  the historical record of the defect, not as a description of the store.
+  **HOW FAR BELOW, MEASURED 2026-09-16 (HISTORICAL): at least 1.97M
+  participants in ONE PLAN — more than twice the whole recorded figure.**
+  WALMART, the largest
+  plan in the country (1,970,230 participants, $50.79B), published
   **`Lendable Fund` at $3,547,236,088**, which is the exact sum of three
   wrapped BlackRock names — `Intermediate Government Bond Index Non-` +
   `Long Term Government Bond Index Non-` + `MSCI ACWI ex-U.S. IMI Index Non-`

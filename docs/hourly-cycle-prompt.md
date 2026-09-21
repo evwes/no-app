@@ -237,21 +237,51 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
-      **STATUS 13:3xZ 2026-09-21. IN FLIGHT: #427, dispatched 13:27Z on
-      `ec712661` — an INCREMENTAL run, not a re-parse (no version bump, work
-      list is the stale acks); its job is to let the MERGE apply the new
-      issuer strip. LIVE ON MAIN: the v180 store, MIRRORED 13:2xZ
-      (`4035b383 -> b4c9e6d8`) with the DATA GATE UNFORCED at +1 / -0, the
-      first unforced data gate in four mirrors.**
-      **FIRST ACTION NEXT CYCLE: #427's verdict.** Pre-registered: (1) the
-      merge log prints `issuer section-caption strip: ~113 rows across ~42
-      plans`; (2) CHS `20250926144818NAL0013938530001` shows `iss =
-      "Principal Life Insurance Company"` on its Principal rows and KEEPS
-      `Master Trust CHS/Community Health Systems, Inc.` on the others;
-      (3) the four negative controls are untouched — USC `Real Estate Account
-      (CREF)`, Sony `Corporate Stock - Common`, Textron, Vanderbilt;
-      (4) **CONFIDENCE DIFF +0 / -0** — an issuer-only change must not move a
-      single lineup.
+      **STATUS 14:4xZ 2026-09-21. NOTHING IN FLIGHT** (#427 success 13:36Z on
+      the dev branch, #428 — main's cron — success 14:24Z).
+      **#427 PASSED ALL FOUR PRE-REGISTERED TESTS.** Residue 361 -> 248 =
+      **113 rows stripped, the prediction to the row**; CHS publishes
+      `Principal Life Insurance Company` on 13 rows and KEEPS `Master Trust
+      CHS/Community Health Systems, Inc.` on 2; all four negative controls
+      untouched; **CONFIDENCE DIFF +0 / -0** with the coverage line
+      byte-identical. **MIRRORED 14:3xZ `b6271274 -> 8196414b`, DATA GATE
+      UNFORCED at +0 / -0** (second consecutive); `--force` on the GIT check
+      alone over main's one cron commit, measured first at 0 acks / 0 plans
+      lacked, plans array byte-identical, 0 confident on main the branch
+      lacks. Held ~10 min because #428 was in flight ON MAIN — dispatching on
+      the dev branch would have been safe (concurrency is per-ref), mirroring
+      onto main was not.
+      **METHOD, from the USC control:** addressed by a REMEMBERED ack it
+      returned "no entry", indistinguishable from the control failing.
+      Addressed by VALUE it resolved at once. **Address a negative control by
+      a property it has, not an identifier you recall.**
+      **FIRST ACTION NEXT CYCLE: there is no verdict owed — take queue work.**
+      The `Class |` -> `Class I` fix below is gated and needs only a
+      `PARSER_VERSION` bump plus the usual corpus diff; nothing is in flight,
+      so it can be dispatched immediately.
+      **(2) RE-DERIVED AND CORRECTED — the OCR-substitution item was
+      OVERSTATED.** Do not reuse "165 rows / 68 plans / 95,501 ppl, four
+      shapes": the `0`-in-word shape is **0 rows**, the `1`-in-word shape is
+      **429 rows of EMPOWER LEGEND CODES** (a different class swept in by
+      shape), the `5/8` shape is **2 rows** of mush, and the survivor was two
+      defects sharing a regex. REAL AND CONFIRMED BY READING THE FILING: a
+      trailing `|` in a share-class slot is the letter `I` — **298 rows / 181
+      plans / 157,849 ppl**; Cradlepoint `20241219154849NAL0007738912001`
+      rasterised at 240dpi plainly reads `T.Rowe Price Retirement 2035 Class
+      I`, nine rows, vehicle column `Common Collective Trust`. The `!`-for-`I`
+      shape is **7 rows / 7 plans** and a naive rewrite is WRONG on 4 of them
+      (`Metrop!tn`, `Smal!Cap` want lowercase `l`) — so fix the `Class |` half
+      and leave the bang alone. Pin Cradlepoint as the specimen.
+      **AND THE TRAP UNDERNEATH, which cost more than the item is worth:** a
+      follow-on sizing of "a collective-trust row published with a mutual-fund
+      ticker" came out at **28,339 rows / 14,018,680 ppl / $381.5B** and is
+      **an artifact of the harness**. `fundTickerInfo(name, type)` takes a
+      SECOND argument; `fund-er.js:1068` already demotes such a row to a
+      labelled comparable from the filing's own vehicle column, and
+      `app.js:591-592` passes `f.type` on every call. **Transcribe
+      `lookupTicker` from app.js for any measurement over `fund-er.js`** —
+      reaching for the shipped predicate is not enough, it has to be called
+      the way the site calls it.
       **#425 PASSED, ALL FOUR TESTS PASSED, MIRRORED.** Dove Schools back at
       `c:1` with 28 rows and every unit price intact; confident +1, the
       designed direction; True Organic holds 25 rows so the $300,645
