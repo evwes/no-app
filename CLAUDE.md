@@ -646,69 +646,45 @@ don't confuse them). Frontend: python http.server + Playwright at
 /opt/pw-browsers/chromium; verify TK page, tabs, filters, deep links
 (#plan=EIN|PN|TICKER).
 
-## Current state (2026-09-16)
+## Current state — RE-DERIVED FROM THE STORE 2026-09-21 08:3xZ
 
-- **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, >=100
-  participants at either end of the plan year), of which **68,259 are
-  full-form** filers and 43,523 short-form; 68,767 parse-status entries.
-  **Store at v168 (branch AND main, run #401, PASSED 23:3xZ: +5 / −1, pv 168
-  at 99.85%, HIGH 6, overshoot 344 → 334) — MIRRORED 23:3xZ (`--force` over
-  main's cron commit `8952b3bf`: 0 acks / 0 plans the branch lacked;
-  `--force-data` over the single loss, read by name). `PARSER_VERSION` in the
-  tree is 168 and NOTHING IS IN FLIGHT.** v168 was a one-word fix with the
-  largest reach recorded in this session: an **UNANCHORED `appreciat` arm** in
-  `SKIP_ROW` had been deleting every row naming a fund with "Appreciation" in
-  it — as a holding and as a buffered name — because that alternation sits
-  after the group `^(` opened has closed, making each arm a substring test.
-  **Rows containing `appreciat` went 55 → 5,766; 5,349 plans / 7,048,088
-  participants now see a holding that was invisible** (Mayo Clinic 114,636,
-  O'Reilly 91,899, Tesla 89,700, Southwest 85,764 at 15% of its menu).
-  **No coverage metric could see this defect** — the plans were publishing,
-  each just missing a fund, so `confident` never moved and the loss triage
-  only ever sees lineups that vanish, never rows. v167 has two parts: a description that is only a house name
-  may not beat a real fund name in the identity (fixes the #396 Illinois
-  regression and reaches its class — five more plans un-merge, Rcb Bank 10 →
-  28 rows), and the ASC 820 line condemns a region only at **≥25% of its sum**
-  (Ford Gum's 29-row Fidelity menu back; Meta's gain kept). The #398 store
-  carried v164 (a fragment identity may not win merely because the description
-  was refused), v165 (the SEC Form 11-K cover page is not a schedule of assets
-  — 20 rows / 13 plans / 302,810 ppl) and **v166 (the ASC 820 reconciliation
-  line marks the fair-value NOTE — 104 plans / 274,765 ppl)**. The dispatch
-  before that was #395 (v162: a category plus a vehicle is a type phrase).
-  Before that, #394 (v161
-  confines the merge-split to HOUSE identities after v160 cost Hozhoni a
-  real 34-row menu, and adds TIAA-CREF to `HOUSE_ONLY`, which did not
-  contain it).
-  The dispatch before that was #392 (v159:
-  the `# ` party-in-interest marker, the participant-loan maturity phrase;
-  v160: a name may not merge rows the filing distinguished — Mass General
-  Brigham's $1,565,649k `TIAA-CREF Funds` was three real rows summed).
-  The previous dispatch was v158: the
-  caption-seeded retry runs for any unpublishable first pass (Frx's
-  OCR-path loss — the OCR path now reproduces locally through fetch-4i's
-  own PARSE_SHARD code on a crafted tree, log 12:0xZ) and a colon-less
-  one-cell group header (`The Vanguard Group Mutual Funds`) is a header,
-  not a name (ATH / Elevance's $1.79B `The Vanguard Group` phantom, 94,689
-  ppl). **Scheduled runs are INCREMENTAL by construction
-  (`SCHEDULE_INCREMENTAL`, 2026-09-19, confirmed live on #389: one shard,
-  two minutes).**
-  The v155 store carries v150–v155 (see `docs/accuracy-log.md`
-  2026-09-19 08:5xZ and 10:3xZ) over
-  The v149 store carries v144 (fold before the cap), v145 (stem dedup;
-  the sponsor-name `transfer` trap), v146 (two-column wraps; footnote
-  letter; `N/R`), v147 (ETF is a type phrase; house + product phrase
-  compose), v148 (doubled house stripped) and v149 (class subtotals
-  beside their itemisation removed at the leaves stage). OCR v8.**
-  **Re-derived from the local store 2026-09-18 19:5xZ** — `pv139` covers
-  68,665 of 68,767 acks (99.85%), tail pv106 18, pv98 10, pv123 10, pv124
-  10; `lib-4i` exports 139. (On 2026-09-16 this line said v124 for four
-  mirrors while every gate printed 126 —
-  The line had said **v123 for at least four mirrors while every mirror gate in
-  that window printed "dominant pv 124"** — the version number in the first
-  bullet a new session reads, wrong, next to a date that made it look fresh.
-  Nothing downstream was affected (no session acted on it), but it is exactly
-  the copying-a-line-forward hazard this file warns about elsewhere, aimed at
-  the file's own header. **Re-derive this line rather than editing the date.**
+**Re-derive this block from the store; never edit its date.** The previous
+version of this header said "Store at v168 … `PARSER_VERSION` in the tree is
+168 and NOTHING IS IN FLIGHT" while the tree was at 177 and a run was in
+flight — the first bullet a new session reads, wrong, exactly the hazard this
+file warns about elsewhere and aimed at itself. It has now gone stale twice
+(v123-for-v124 in September, v168-for-v177 today), so the fix is the habit:
+read `lineups-status.json` and `lib-4i`'s export, do not copy the line.
+
+- **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, ≥100
+  participants at either end of the plan year): **68,259 full-form**, 43,523
+  short-form, 68,767 parse-status entries.
+- **STORE: pv 176 covers 68,663 of 68,767 acks (99.85%)** — tail pv106 18,
+  pv124 10, pv123 10, pv98 10, pv91 9. Confident **60,117**, lineups 59,766,
+  HIGH 5, WARN 543, overshoot 332, dl 104.
+- **LIVE ON MAIN: the v176 store** (`60eac141 → 129095f5`, mirrored
+  2026-09-21 00:3xZ, data gate unforced +0/−0).
+- **`PARSER_VERSION` in the tree is 177. IN FLIGHT: #421**, dispatched
+  2026-09-21 07:25Z by `workflow_dispatch`, start verified.
+- **v177 is one arm on `NOT_FUND_SHAPED`** (`net position\b.*`), sized
+  whole-store before the edit at **exactly 1 of 1,720,394 published rows** —
+  Pechanga's `Net position available for benefits`, $189,711,769 = 63.7% of a
+  14-row menu, 4,520 ppl. Its entry is mostly about a REASONING error: the fix
+  was deferred three days citing a "shared arm" with `AGG_DISCLOSURE`, and the
+  two are **independent literals**. A cited precedent is not a finished
+  argument.
+- **Local verification of v177 was impossible** (Pechanga's lineup is a 2023
+  prior-year fallback, so `trace-filing` parses the wrong filing and returns
+  NOT FOUND; the plan is not in the corpus). **The run is the verification**
+  and #421's four pre-registered tests are in `docs/hourly-cycle-prompt.md`.
+- **#421 is also the first run that can verify the audit-reporting fix.** #418
+  could not: a quiet run has no triage findings, so the broken ordering and the
+  fixed one print identical numbers. Check that the printed `== HIGH (n)` /
+  `== WARN (n)` equal the coverage line's `high` / `warn`, and that
+  `== READ BEFORE MIRRORING` names any flagged plans.
+- **Residuals: every number re-derived against v176 on 2026-09-21 and both
+  unknowns closed** — see the re-derived table below. 1,354 live plans.
+
 - **LIVE on main: the v168 store — MIRRORED 2026-09-19 23:3xZ** (`--force`
   over main's cron commit `8952b3bf` — 0 acks and 0 plans the branch lacked,
   plans array byte-identical, main newer on 2 acks the next run re-reads — and
