@@ -20109,3 +20109,68 @@ rule. **The fix never changed. Only where it could see enough to be safe.**
   answered a different question than the one asked. Whoever picks the Compass
   item up needs an OCR-aware trace, not the command this log named an hour ago.
 
+
+## 2026-09-21 (owner request) — improvement indicators for the six fields a reader actually asks about
+
+- **Asked for:** trackable indicators for custodian, company match, vesting
+  schedule, contribution accounts (pre-tax / Roth / after-tax), the investment
+  list, and the share of funds carrying a label (or a comparable).
+- **Three were already being computed and discarded every run.**
+  `audit-data.mjs` tallied `roth`, `afterTax` and `menu`, printed them to the
+  run log, and never wrote them to `coverage-history.jsonl` — so the trail
+  could not diff them and no one could see whether they moved. This is the
+  same shape as run #244's discarded failure reason, the Schedule A carrier
+  resolved and never read, and the feature-fallback denominator.
+- **Baseline on the live v180 store:**
+
+  | indicator | value | of full-form |
+  |---|---|---|
+  | custodian/trustee named | **11,103 plans / 23,282,964 ppl** | 16.3% |
+  | match formula (plans that paid) | 43,027 | 63.0% |
+  | match formula (any plan) | **45,985** | 67.4% |
+  | vesting schedule | 52,825 | 77.4% |
+  | Roth stated | **37,736** | 55.3% |
+  | after-tax stated | **4,172** | 6.1% |
+  | confident investment list | 59,764 | 87.6% |
+  | notes-named menu only | **136** | — |
+  | fund rows, EXACT ticker | **24.56%** | of published rows |
+  | fund rows, COMPARABLE | **3.29%** | of published rows |
+  | fund rows, unlabelled | **72.15%** | of published rows |
+
+- **CUSTODIAN needed no new extraction and that is the finding.** We publish a
+  RECORDKEEPER; who actually HOLDS the assets is a different role and was never
+  surfaced, yet the Schedule C service codes have been in the fee shards since
+  the codes fix. Codes 18/19 (custodial) and 21/24/25 (trustee bank, trust co.,
+  discretionary, directed). **Code 20, trustee INDIVIDUAL, is excluded on
+  purpose** — a named person is not a custodian institution, and counting one
+  would publish a claim the filing does not make.
+- **PRE-TAX is deliberately NOT a metric.** Elective deferrals to a 401(k) or
+  403(b) are pre-tax by law, so the indicator would sit at 100% and report
+  nothing. Saying so is more useful than a column of 100s.
+- **`matchAny` exists because `match` answers a different question.** `match`
+  counts only plans where employer money flowed — right for "what can we tell
+  a reader", wrong for "is the extractor improving", since a version that
+  parses 200 more formulas in $0-employer plans moves nothing. The gap between
+  them is **2,958 plans**.
+- **The labelling split measures something `tkShare` does not.** `tkShare`
+  calls `fundTickerInfo` with ONE argument and the bare stored name — no
+  issuer prefix, no cleaned name, no type — so it does not reproduce what a
+  reader sees, and it counts an EXACT ticker and a labelled COMPARABLE as the
+  same thing when they are different claims: *this is the fund you hold* versus
+  *this is what your holding tracks*. The new keys run the SAME 1-in-20
+  ack-hash sample through `app.js`'s own `lookupTicker`. **`tkShare` is left
+  untouched so its history stays unbroken** — a third discontinuity in that
+  series would cost more than it is worth.
+- **Validation:** every figure was reproduced by a measurement written
+  independently of the audit, over the live store — custodian 11,103 /
+  23,282,964, Roth 37,736, after-tax 4,172, `matchAny` 45,985 all match to the
+  digit; the sampled labelling split (24.56 / 3.29) sits beside the whole-store
+  figure (23.92 / 3.08) as expected for a 1-in-20 sample.
+- **Prevention, earned the hard way inside this very change:** `cust` and
+  `custPpl` were computed, printed, and **left out of the written object on the
+  first pass** — the exact defect these keys were added to end, committed
+  inside the fix for it. It was caught only because the verification read the
+  WRITTEN LINE rather than the console output. **Check the artefact, not the
+  log:** a printed number and a persisted number are different claims, and this
+  project has now confused them four times.
+
