@@ -692,6 +692,12 @@ read `lineups-status.json` and `lib-4i`'s export, do not copy the line.
   and force-pushing the branch onto main while a run is about to commit there
   is the unsafe case. The hold cost nothing and the mirror happened in the
   same cycle.
+- **MIRRORED 2026-09-21 15:0xZ: `8196414b → fb4031a5`, UNFORCED ON BOTH
+  CHECKS** (fast-forward; main had nothing the branch lacked; data gate
+  +0 / −0 — the third consecutive unforced data gate). Carries the
+  `fund-er.js` separate-account demotion to readers: **878 rows / 207 plans /
+  311,893 participants** stop publishing a mutual-fund ticker as though the
+  plan held it, where the filing's own type column says `Separate account`.
 - **LIVE ON MAIN: the v180 store — MIRRORED 2026-09-21 13:2xZ**
   (`4035b383 → b4c9e6d8`), and the **DATA GATE PASSED UNFORCED at +1 gained /
   −0 lost** — the first unforced data gate in four mirrors. `--force` covered
