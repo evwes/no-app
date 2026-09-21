@@ -144,6 +144,67 @@ for (let i = 0; i < SHARDS; i++) {
 }
 if (demoted) console.log(`demoted ${demoted} junk-named confident entries (stored, unfetchable)`);
 
+/* A 4i SECTION CAPTION GLUED ONTO THE ISSUER COLUMN.
+ *
+ * CHS/Community Health (91,940 ppl) stores `iss = "Master Trust Principal
+ * Life Insurance Company"` where the filing's identity column reads only
+ * `Principal Life Insurance Company` and `Master Trust` is a caption above
+ * the rows. CLAUDE.md's 4i invariants already say section headers must not
+ * glue into names.
+ *
+ * WHY THIS LIVES IN THE MERGE AND NOT THE PARSER, which is the whole reason
+ * it took a separate change: the condition is 361 rows / 112 plans / 617,829
+ * ppl, and it is NOT one class. USC (44,948 ppl) stores `Real Estate Account
+ * (CREF)` -- TIAA's ACTUAL Real Estate Account -- and Sony's `Corporate Stock
+ * - Common` is a pure type label. A blanket strip destroys real names.
+ *
+ * The test that separates them is EMPIRICAL rather than vocabulary: does the
+ * REMAINDER appear as a COMPLETE issuer on other published rows? CHS's
+ * `Principal Life Insurance Company` stands alone 16,457 times across the
+ * store; `Account (CREF)` and `- Common` stand alone never. That evidence is
+ * STORE-WIDE, so lib-4i cannot run it -- it sees one filing -- and neither
+ * can the dedup stage, which sees one row set. The merge holds the whole
+ * store, so this is where it can be decided.
+ *
+ * Measured on the v179 store: GLUE 114 rows / 43 plans / 275,782 ppl;
+ * KEEP 247 / 75 / 445,935 left untouched. CHS lands on BOTH sides -- its
+ * `Master Trust Principal...` rows strip and its `Master Trust CHS/Community
+ * Health Systems, Inc.` rows do not, because a sponsor name is not a
+ * standalone issuer anywhere. A partial fix on strong evidence beats a whole
+ * one on weak evidence.
+ *
+ * Not a PARSER_VERSION change: it needs no re-parse and takes effect on the
+ * next merge. */
+{
+  const SECTION_HEAD = /^(?:master trust(?: investment account)?|common[\/ ]?collective trusts?|collective (?:investment )?trusts?|pooled separate accounts?|separate accounts?|registered investment compan(?:y|ies)(?: shares)?|mutual funds?|common stocks?|corporate (?:debt|stock)s?|government securities|interest[- ]bearing cash|real estate|103[- ]12 investments?)\s+(?=\S)/i;
+  const norm = (x) => String(x).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+  /* pass 1: how often does each issuer value stand ALONE across the store? */
+  const standalone = new Map();
+  for (let i = 0; i < SHARDS; i++)
+    for (const [, e] of Object.entries(buckets[i])) {
+      if (!e || !e.confident || !Array.isArray(e.funds)) continue;
+      for (const f of e.funds) {
+        const v = String(f.iss || "").trim();
+        if (v && !SECTION_HEAD.test(v)) standalone.set(norm(v), (standalone.get(norm(v)) || 0) + 1);
+      }
+    }
+  /* pass 2: strip the caption only where the remainder is itself a known issuer */
+  let fixed = 0; const fixedAcks = new Set();
+  for (let i = 0; i < SHARDS; i++)
+    for (const [ack, e] of Object.entries(buckets[i])) {
+      if (!e || !e.confident || !Array.isArray(e.funds)) continue;
+      for (const f of e.funds) {
+        const v = String(f.iss || "").trim();
+        const m = v.match(SECTION_HEAD);
+        if (!m) continue;
+        const rest = v.slice(m[0].length).trim();
+        if (rest.length < 3 || !standalone.get(norm(rest))) continue;
+        f.iss = rest; fixed++; fixedAcks.add(ack);
+      }
+    }
+  if (fixed) console.log(`issuer section-caption strip: ${fixed} rows across ${fixedAcks.size} plans`);
+}
+
 status.generated = new Date().toISOString();
 writeFileSync("lineups-status.json", JSON.stringify(status));
 const index = {};

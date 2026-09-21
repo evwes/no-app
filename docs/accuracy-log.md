@@ -19613,3 +19613,42 @@ rebuilt the v100/Amgen shape; the triage caught it on a run whose coverage
 line I had predicted would be byte-identical; v180 moved the same strip to the
 dedup stage and reused **v174's own guard**, whose comment already stated the
 rule. **The fix never changed. Only where it could see enough to be safe.**
+
+## 2026-09-21 (13:3xZ) — the section-caption issuer strip, SHIPPED in merge-4i, and it is not a parser version
+
+- **Wrong:** 361 rows / 112 plans / 617,829 ppl store an issuer that opens
+  with a statutory 4i section caption. CHS/Community Health (91,940 ppl)
+  publishes `Master Trust Principal Life Insurance Company` where the filing's
+  identity column reads only the firm and `Master Trust` is a caption above
+  the rows — against this project's own 4i invariant that section headers must
+  not glue into names.
+- **Change: in `merge-4i`, not the parser, and that is the point.** A blanket
+  strip destroys real names — USC (44,948 ppl) stores `Real Estate Account
+  (CREF)`, which is TIAA's ACTUAL Real Estate Account. The test that separates
+  glue from name is empirical: **does the remainder appear as a COMPLETE
+  issuer on other published rows?** CHS's `Principal Life Insurance Company`
+  stands alone 16,457 times across the store; `Account (CREF)` stands alone
+  never. **That evidence is store-wide, so `lib-4i` cannot run it — it sees
+  one filing — and neither can the dedup stage, which sees one row set.** The
+  merge holds the whole store. Third placement decision in this cycle-family
+  settled by the same question: *where can the evidence be seen?*
+- **Verified by running the real merge locally, both directions.** POSITIVE:
+  `issuer section-caption strip: 113 rows across 42 plans`, and CHS splits
+  exactly as designed — `Master Trust Principal Life Insurance Company` →
+  `Principal Life Insurance Company`, while `Master Trust CHS/Community Health
+  Systems, Inc.` is **kept**, because a sponsor name is not a standalone
+  issuer anywhere. NEGATIVE, all four named in advance and all untouched:
+  USC's `Real Estate Account (CREF)`, Sony's `Corporate Stock - Common`,
+  Textron's `Common Collective Trust Funds (in Managed Income Fund)`,
+  Vanderbilt's `Registered investment company shares Boston`. **CONFIDENCE
+  DIFF +0 / −0**, as an issuer-only change must be.
+- **It is NOT a `PARSER_VERSION` change.** No re-parse; it applies on the next
+  merge, including main's own hourly cron. The locally merged data was
+  discarded and only the code committed — a local merge is a test, not a
+  store.
+- **Prevention:** the predicted count was 114 rows / 43 plans and the run
+  produced 113 / 42. The one-row gap is not noise to wave through — it is the
+  `standalone` frequency table being built from the v180 store rather than the
+  v179 store the prediction was made on. Stated because a prediction that
+  lands one off should say WHY, or the next person reads agreement where there
+  is only proximity.
