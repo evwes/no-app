@@ -237,55 +237,43 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
-      **STATUS 22:3xZ 2026-09-20. IN FLIGHT: #416 (v176), dispatched 22:22Z,
-      start verified. LIVE ON MAIN: the v174 store.**
-      **DO NOT MIRROR THE v175 STORE. It carries a $1.7B phantom.** The branch
-      store is v175 until #416's data lands; main is correctly on v174. Mirror
-      only after #416 passes.
-      **#415 (v175) PASSED ALL THREE OF ITS PRE-REGISTERED TESTS AND WAS STILL
-      UNFIT TO SHIP** — Apple 0.987 with its $2,153,504,672 `BROKERGE ACCOUNT`
-      restored, Trustmark three separate Schwab rows, Kirkland's bare
-      `Vanguard` absent, zero prose-named rows anywhere. **Passing the tests
-      you thought to write is not the same as being right.**
-      **The `+1 confident` in its coverage line WAS the defect.** The only
-      metric that moved moved the right way for the worst reason: Thrivent
-      Financial for Lutherans (9,282 ppl) published one row named `Thrivent`
-      at **$1,700,835,259 = 99.2%** of a six-row menu. Across three stores:
-      v171 had the same row as `Various participant`, NOT confident; v174 had
-      no row at all at ratio 0.010, NOT confident; v175 named it and made it
-      confident. **It converted a correct silence into a fabrication.** No
-      audit saw it — `Thrivent` is neither a generic type nor a known house.
-      **THE ARITHMETIC GUARD WAS THE OBVIOUS FIX AND WAS WRONG THREE TIMES**
-      (before dedup: 49.7% of a double-rendered region; on `allRows`: the
-      `hard`/`pair` variants brought it back at 99.0%; on all three sets: back
-      again). Chasing it down the pipeline was treating a symptom. **v176
-      NARROWS instead: the identity must NAME AN ACCOUNT** — all six genuine
-      cases are brokerage windows and none is a bare firm — which is a property
-      of the string alone and has no placement problem. Verified: Thrivent 11
-      rows @ 0.010 CONFIDENT=false; Apple 27 @ 0.988 keeps its row; Trustmark
-      32 → 29, the recorded cost.
-      **THE INSTRUMENT LESSON OF THE DAY, worth more than any of the fixes:
-      the corpus diff passed v175 cleanly over 1,004 filings and could not have
-      caught this.** Thrivent, Kirkland and Trustmark are all outside the
-      corpus. Three defects in one day, none visible to it. **What found all
-      three is the same thing: diff the WHOLE STORE between runs and read the
-      movers by name.** Treat the corpus diff as a regression guard on common
-      shapes, never as a verdict.
-      **NEW AND NOW PART OF THE VERDICT BATTERY: `scripts/store-diff.mjs`.**
-      `node scripts/store-diff.mjs <prev-data-commit> --min 1000000` diffs the
-      WHOLE store and ranks what moved by value, with sponsor and
-      participants: rows added, rows removed, confidence gained/lost, and
-      **QUIET MOVERS** — row count barely moving while a large value does,
-      which is the Apple shape (27 → 26 rows carrying $2.15B). Controlled on
-      the real v174 → v175 data: it ranks Apple first, **Thrivent SECOND**, and
-      names Thrivent again under confidence-gained. **Run it after every run
-      and before every mirror.** The corpus diff is a regression guard on
-      common shapes; this is the one that sees readers.
-      **QUEUE:** (1) #416 verdict → **store-diff** → mirror (main is on v174,
-      do not mirror v175); (2) SDBA fold, 269 plans / 630,032 ppl, owner
-      question 5; (3) Pechanga's `Net position available for benefits` at
-      63.7%, 1 plan, `NOT_FUND_SHAPED` arm SHARED with `AGG_DISCLOSURE`
-      (v137's trap).
+      **STATUS 00:4xZ 2026-09-21. LIVE ON MAIN: the v176 store
+      (`60eac141 → 129095f5`, mirrored 00:3xZ, data gate unforced +0/-0).
+      NOTHING IS IN FLIGHT except whatever the audit-reporting push triggers.**
+      **#416 (v176) PASSED.** pv 176 at 99.85%, confident 60,117 (−1 = Thrivent
+      losing confidence, by design), overshoot 332, dl 104. Read with
+      `store-diff` for the first time and it was the fastest verdict yet:
+      **Thrivent's $1,700,835,259 phantom GONE**, confidence lost exactly 1
+      plan / 9,282 ppl, and **Apple absent from the diff entirely — unchanged,
+      its $2,153,504,672 row survives** for 145,428 readers. Cost: Trustmark
+      32 → 29, Arkansas Heart 0.998 → 0.952, Teach For America 1.000 → 0.995,
+      Gowan reverting to its v174 name.
+      **THE DAY'S ARC, because it is the useful part:** v172 deleted $2.15B
+      from Apple and I called it a win → v175 restored it and published a
+      $1.7B phantom at Thrivent and passed all three of its own tests → v176
+      narrows the rule to identities that NAME AN ACCOUNT and is clean. **Every
+      one of those three defects was invisible to the corpus diff.** What found
+      all three is `store-diff`: whole store, movers ranked by money and
+      people, read by name. It is now in the battery — **run it after every run
+      and before every mirror.**
+      **AND THE AUDIT HAS BEEN UNDER-REPORTING ITS OWN TRIAGE SINCE
+      2026-09-11.** #416's log printed `HIGH (5) / WARN (543)` while the
+      coverage line it wrote recorded `high 6, warn 546`: the summary loop ran
+      BEFORE the three triage blocks. **`swaps-degraded`'s WARNs have never
+      once been printed**, despite shipping with the stated purpose "it exists
+      so the next one is seen at all". Fixed twice, because the first fix was
+      not enough: the summary now prints after the blocks (count 543 → 546 on
+      a control), AND the triage findings get a dedicated `== READ BEFORE
+      MIRRORING` section in full, because they sat at positions 544–546 under
+      543 routine lines and counting them is not reading them.
+      **NEXT CYCLE: read the new `== READ BEFORE MIRRORING` section in the
+      first run's log** — it should name the plans `rows-dropped` flagged on
+      #416 (Trustmark and Arkansas Heart by my arithmetic; confirm, do not
+      assume).
+      **QUEUE:** (1) SDBA fold, 269 plans / 630,032 ppl, owner question 5;
+      (2) Pechanga's `Net position available for benefits` at 63.7%, 1 plan,
+      `NOT_FUND_SHAPED` arm SHARED with `AGG_DISCLOSURE` (v137's trap);
+      (3) morning brief is due before 11:00Z and is stale.
    2. Recordkeeper wrong name: 1,509 plans / 1.48M ppl. Prefer service
       codes 15/64, then the line-1b platform or Schedule A carrier, then
       top-fee; never publish a provider coded 10 or 29.
