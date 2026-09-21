@@ -1490,6 +1490,60 @@ don't confuse them). Frontend: python http.server + Playwright at
   working (`WAMPO_TRACE=rows|cands`, `WAMPO_TRACE_MATCH=<value|substring>`);
   `diff-lineups.mjs` diffs lineups against any git ref over the local corpus
   and exits non-zero if a change INTRODUCES a fabricated row.
+- **RESIDUALS RE-DERIVED 2026-09-21 AGAINST THE LIVE v176 STORE. The table
+  below this block was measured on v123 and is FIFTY VERSIONS STALE — read its
+  prose for the hard-won causes, never its numbers.** Regenerate with
+  `node scripts/gap-census.mjs`.
+
+  | plans | participants | assets | bucket | vs v123 |
+  |---|---|---|---|---|
+  | 461 | 245,715 | $11.8B | `few` fewer than 3 rows | was 532 / 307,594 |
+  | 351 | 149,448 | $4.8B | `nohead-noattach` NOT OURS: no audited attachment | (split) |
+  | 227 | 321,676 | $34.7B | `stmt` statement/aggregate won | was 253 / **142,545** |
+  | 88 | 99,688 | $9.8B | `band-hi` sums above plan assets | was 128 / 110,568 |
+  | 48 | 88,322 | $17.0B | `trust` unlinked pointer | was 44 / 56,335 |
+  | 47 | 145,872 | $3.5B | `nohead-notable` NOT OURS: attachment carries no schedule | (split) |
+  | 35 | 8,148 | $7M | `tiny` under $1M of assets, no denominator | — |
+  | 30 | 178,546 | $11.0B | `band-lo` far below | was 34 / 155,970 |
+  | 28 | 9,762 | $44M | `consolid` NOT OURS | was 29 |
+  | 15 | 11,823 | $278M | public copy withdrawn (403) | was 7 |
+  | 9 | 3,653 | $84M | `nohead-absent` NOT OURS: pages not published | (split) |
+  | 7 | 10,619 | $2.0B | `noregion` | was 6 |
+  | 4 | 2,113 | $20M | **`nohead-unread` OURS** | was 4 |
+  | 2 | 1,469 | $10M | `narrow` 3-4 rows | was 9 / 4,126 |
+
+  **1,354 live plans, ~1.28M participants** — down 107 plans from the 1,461
+  recorded at v123, and every bucket fell except three.
+
+  **`stmt` is the one that looks like a regression and is the opposite.** Its
+  PLAN count fell 253 → 227 while its PARTICIPANTS rose **142,545 → 321,676**,
+  so large plans moved in. All four of the largest are diagnosed and every one
+  is a CORRECT suppression:
+
+  - **UPS, 134,811 ppl, $14.2B — v169's designed outcome, already on the
+    record.** Once the $1,470,493,000 net-appreciation phantom was removed, the
+    ten remaining rows are `Lifestyle funds`, `UPS stock fund`,
+    `Fixed-income funds`, `Common stock` — an asset-class table, not a menu —
+    and `isStatement` correctly flipped. Readers get the filed-in-aggregate
+    sentence instead of a class table with a $1.47B fabrication in it.
+  - **Endeavor Health, 33,523 ppl**: 5 rows led by `Collective trust fund -
+    measured at NAV (a)` at 76.5%, and the stored sum is **$3,873,316 against
+    $2,318,358,681 of assets** — the fair-value note's column, not the plan.
+    (Its sister plan, Endeavor Health Clinical Operations, 20,113 ppl, IS
+    confident with 34 real rows.)
+  - **MetLife, 32,414 ppl** — already documented below: `Participant-directed
+    investments` at 99.5%, the one aggregate line DOL permits.
+  - **Pacific Maritime Association, 19,026 ppl, $3.44B**: `Commingled pooled
+    funds` 67.9%, `Mutual funds` 25.9%, `Common stocks` 6.1%. An asset-class
+    statement at ratio 0.90.
+
+  **So the bucket growing by participants is the guards holding, not coverage
+  lost** — and reading the raw bucket size as a regression would have been
+  exactly wrong. `band-hi` 128 → 88 and `narrow` 9 → 2 are the plainest wins.
+  The two rises that are NOT explained here are `trust` 44 → 48 and the 403
+  residue 7 → 15; the second is the bucket genuinely growing as filings are
+  withdrawn (re-probed three times on this record), the first is unexamined.
+
 - **Known residuals, EXACT — corrected 2026-09-08 after the final-year split.**
   The earlier version of this table named `nohead` (5,966 plans) the priority.
   That was ghosts: **6,530 of the apparent gap plans filed Schedule H with $0
