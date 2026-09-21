@@ -280,9 +280,21 @@ Order of business:
       `(fetched 1 pinned defect specimen(s))` and still reports 0 for it. Same
       with Marsh two cycles ago. **On the pinning run the TRACE is the positive
       control; the corpus diff is only the negative one.**
-      **QUEUE:** (1) #425 verdict -> mirror; (2) the issuer side effect
-      (`stripTrailingColumns` un-glues a section header from the issuer) --
-      needs its own sizing, corpus diff + traced specimens, not the store;
+      **QUEUE:** (1) #425 verdict -> mirror; (2) **SIZED AND SPLIT 12:3xZ,
+      READY TO BUILD AFTER #425** -- the section-header-in-issuer class.
+      Condition: 361 rows / 112 plans / 617,829 ppl. **Not one class**: USC's
+      `Real Estate Account (CREF)` is TIAA's REAL fund and Sony's `Corporate
+      Stock - Common` is a type label, so a blanket strip destroys names. The
+      discriminating test is empirical -- *does the REMAINDER stand alone as a
+      complete issuer elsewhere?* -- and splits it **GLUE 114 rows / 43 plans
+      / 275,782 ppl** (CHS's `Principal Life Insurance Company` stands alone
+      16,457x) from **KEEP 247 / 75 / 445,935** (`Account (CREF)` and
+      `- Common` never do). **The evidence is STORE-WIDE, so this is a
+      `merge-4i` normalisation, NOT a parser change -- no version bump, no
+      re-parse.** NOT committed while #425 was in flight: a merge-4i commit is
+      NOT deferred by `[skip ci]` (merge checks out the latest branch state,
+      measured on #309), so it would have altered the merge of the run whose
+      verdict comes next;
       (3) OCR character substitution, 165 rows / 68 plans / 95,501 ppl, FOUR
       shapes, 59,752 behind one row -- care, not speed; (4) Pechanga re-queued,
       v177 did NOT fix it and any fix must suppress at 63.7%, which
