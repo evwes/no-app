@@ -18861,3 +18861,40 @@ the datasets under the EIN its Schedule D names.
 88,322 participants, and **Genentech (36,458) plus Conagra (38,891) are 85% of
 its people and $16.0B of its $17.0B**. Both are documented unreachable. The
 bucket is overwhelmingly honest gap, not pending work.
+
+## 2026-09-21 (05:2xZ) — closing the census's second unknown: the 403 residue re-probed WHOLE, 104 of 104
+
+Last cycle named two unexplained rises and closed one. This closes the other,
+and it closes it by measurement rather than by the plausible sentence I had
+already written.
+
+**I had asserted, without probing, that the withdrawn-filing bucket growing
+7 → 15 was "the bucket genuinely growing as filings are withdrawn."** That
+sentence was probably true and was still an inherited label. This file's own
+rule is explicit: *re-probe rather than inherit the label; a claim that was
+false once is not thereby false forever, and it is N requests to find out.*
+`e=download` is rendered to readers by `gap-census` as "the public copy has
+been withdrawn from the EFAST2 bucket (403)" — **an error code is a published
+claim**, and this particular one was FALSE once already, on 2026-09-10, when
+20 of 20 answered 200 and the real cause was a null-deref filed under the wrong
+code.
+
+**HEAD-probed the whole population, not a sample: 104 acks, 104 answered 403.**
+No 200s, no errors, no other code. The fourth whole-population re-probe on this
+record and the fourth to hold — 68/68 (2026-09-12), 78/78 (2026-09-15), and now
+**104/104**. The claim `e=download` publishes is exactly what is true of every
+member.
+
+**Two numbers that will otherwise look contradictory later:** the census shows
+**15 plans / 11,823 participants** in this bucket and the store holds **104
+acks** with `e=download`. They count different things — the census counts LIVE
+plans (year-end assets above zero, master-trust-held excluded), the store
+counts every ack including trusts and wound-down filings. Neither is wrong;
+the smaller one is the reader-facing population.
+
+**Both unknowns the 2026-09-21 census left open are now closed** — `trust`
+44 → 48 as reclassification (Conagra's two plans, with the other +2 explicitly
+unidentified), and this. The remaining honest statement about the residuals is
+that the gap is 1,354 live plans, that its largest buckets are documented
+absences rather than pending work, and that the fund-menu option reachable by
+parser work was last sized at about 86 plans.
