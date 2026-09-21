@@ -255,7 +255,36 @@ Order of business:
       returned "no entry", indistinguishable from the control failing.
       Addressed by VALUE it resolved at once. **Address a negative control by
       a property it has, not an identifier you recall.**
-      **STATUS 15:3xZ 2026-09-21 — THE UPS GATE IS FIXED AND SMOKE IS GREEN.**
+      **STATUS 16:4xZ 2026-09-21. SHIPPED: the share-class flip.** 161 rows /
+      77 plans / **51,655 ppl** stop seeing the INVESTOR class's expense ratio
+      beside a name that already reads "Class I" -- `T. Rowe Price Overseas
+      Stock |` was TROSX where the answer is TROIX, Blue Chip Growth TRBCX ->
+      TBCIX, New Horizons PRNHX -> PRJIX. One narrow exception to
+      `lookupTicker`'s raw-first order, keyed to the single case where the raw
+      name is KNOWN corrupt (it ends in the OCR bar, which is in no pattern).
+      Controlled whole-store: **0 tickers lost, all 161 base -> I-class,
+      NEGATIVE CONTROL 0.** Both guards green. Mirrored `8fdffa39 -> 2bf29256`
+      UNFORCED; site-test dispatched, READ ITS CONCLUSION.
+      **BLOCKED WITH AN EXACT COST — the comparable-fallback variant** (the
+      largest open item, 9,835 rows / 5,864,346 ppl). Split by type AND
+      direction it falsely demotes **1,544 rows / 470 plans / 951,157 ppl**:
+      Sutter Health's `Fidelity 500 Index` would read FXAIX* "comparable fund"
+      when the plan holds exactly that fund. **The mechanism is ORDERING, not
+      scope** -- `lookupTicker` tries the ISSUER-PREFIXED name first, the
+      issuer carries a trust word, so the variant makes that attempt succeed as
+      a comparable and short-circuits the correct bare-name attempt. Any retry
+      must run the fallback only on the bare-name attempt, or refuse it when
+      the type column says `Mutual fund`.
+      **NEXT: Compass Group's welded names** (263,796 ppl, **64% of its menu**)
+      -- six rows reading `Fidelity TRIM 2030 Trust Company` where the TRUSTEE
+      is welded on, plus `... Common collective trust fund, at` with the type
+      column welded on and truncated. CONFIRMED by rendering the page.
+      **Do NOT size it by vocabulary:** all three candidate shapes dissolved --
+      Walmart's `Fiera Asset Management USA Collective Trust` is a REAL fund
+      name, CVS's `GOLDMAN SACHS GROUP INC/THE` is Bloomberg security naming.
+      Use the empirical test the issuer strip used this morning: does the
+      remainder appear as a complete value on other published rows?
+      **SUPERSEDED: THE UPS GATE IS FIXED AND SMOKE IS GREEN.**
       `app.js` `fundTable` had every honest explanation nested inside
       `if (!plan.funds)`, so a curated `data.js` entry suppressed all of them.
       UPS PN 004 (145,125 ppl) was shown a 22-fund SYNTHETIC menu with
