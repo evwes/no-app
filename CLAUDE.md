@@ -744,8 +744,18 @@ read `lineups-status.json` and `lib-4i`'s export, do not copy the line.
   `T.Rowe Price Retirement 2035 Class I`, nine rows, vehicle column
   `Common Collective Trust`. The `!`-for-`I` shape the item led with is
   **7 rows / 7 plans**, and a naive `!`→`I` rewrite is WRONG on 4 of them
-  (`Metrop!tn`, `Smal!Cap` want lowercase `l`). Unfixed; the `Class |` half is
-  the shippable part and needs a `PARSER_VERSION` bump.
+  (`Metrop!tn`, `Smal!Cap` want lowercase `l`).
+  **CORRECTED WITHIN THE SAME CYCLE — the `Class |` half ALREADY SHIPS AT
+  DISPLAY and calling it "the shippable part" was wrong.** `app.js` has carried
+  `s.replace(/\s+\|+\s*$/, " I")` since **2026-09-18** (sized there at 743
+  plans / 683k ppl), so every reader already sees `Class I`; only the STORE
+  still holds the pipe. What remains is narrower and real: `lookupTicker` tries
+  the RAW filed name first, so `T Rowe Price Blue Chip Growth - Class |`
+  matches the base fund and publishes **TRBCX, the investor class**, where the
+  repaired name resolves to **TBCIX, the I class** — the displayed NAME says
+  Class I while the fee cell is the more expensive share class. **7 rows**, all
+  typed `Mutual fund`. Small, and the exact FTBFX shape this project has
+  shipped a fix for once already.
   **AND THE TRAP UNDERNEATH IT, which cost more than the item is worth:** I
   then sized "a collective-trust row published with a mutual-fund ticker" at
   **28,339 rows / 14,018,680 ppl / $381.5B** and it is **an artifact of my own

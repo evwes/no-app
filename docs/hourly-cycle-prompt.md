@@ -255,12 +255,48 @@ Order of business:
       returned "no entry", indistinguishable from the control failing.
       Addressed by VALUE it resolved at once. **Address a negative control by
       a property it has, not an identifier you recall.**
-      **FIRST ACTION NEXT CYCLE: there is no verdict owed — take queue work.**
-      The `Class |` -> `Class I` fix below is gated and needs only a
-      `PARSER_VERSION` bump plus the usual corpus diff; nothing is in flight,
-      so it can be dispatched immediately.
-      **(2) RE-DERIVED AND CORRECTED — the OCR-substitution item was
-      OVERSTATED.** Do not reuse "165 rows / 68 plans / 95,501 ppl, four
+      **FIRST ACTION NEXT CYCLE: the UPS / filed-in-aggregate gate — it is
+      live for 145,125 people and the top item.** `scripts/smoke-test.mjs`
+      FAILS its `filed-in-aggregate` assertion (controlled: it fails
+      identically on a clean tree, so it is not from this cycle's changes).
+      UPS PN 004, deep link `#plan=95-1732075|004|UPS`, 145,125 ppl, bit 4096
+      set, publishes **"FUND HOLDINGS — 22 OPTIONS / Representative fund menu
+      (community-sourced fund names)"** with estimated ERs and NEVER says the
+      filing reports its investments in aggregate. 283 full-form plans /
+      507,331 ppl carry that bit. Mechanism: `app.js:1690` reads
+      `if (plan.filedAggregate && !(menu && menu.length))` — `menu` is the
+      NOTES-extracted investment menu, so a plan that filed in aggregate but
+      whose notes name funds silently gets the menu instead of the sentence.
+      The master-trust branch directly above carries no such gate.
+      **ESTABLISH FIRST, BEFORE TOUCHING THE BRANCH:** is the rendered menu the
+      NOTES menu or the curated `data.js` overlay? That decides whether the
+      "community-sourced" LABEL is also false, and therefore what the fix is.
+      v172 and v179 are both on the record as fixes shipped one step ahead of
+      the evidence.
+      **AND THE GUARD ITSELF: `site-test.yml` has 80 runs, the newest
+      2026-09-19 00:32Z, every one a manual dispatch.** It has not executed
+      across ~40 parser versions and several frontend changes. Give it a push
+      trigger on the frontend files — a guard that is never invoked fails more
+      quietly than a red one, because a red run at least exists to be read.
+      **SHIPPED THIS CYCLE (frontend, no re-parse):** `fund-er.js:1068` now
+      reads all five non-registered values of the filing's 13-value type
+      vocabulary, so **878 rows / 207 plans / 311,893 ppl** stop publishing a
+      mutual-fund ticker with `comparable:false` against a `Separate account`.
+      454 rows keep the ticker with the "comparable fund" asterisk, 424 go
+      blank. Negative control 0 of 976,564 `Mutual fund` rows; regressions 0.
+      **The wider variant is measured and NOT shipped** — FUND_TICKER fallback
+      inside the pooled branch would move **9,835 rows / 3,334 plans /
+      5,864,346 ppl** and touch 1,782 `Mutual fund` rows, breaking that
+      control. It needs its own cycle.
+      **(2) RE-DERIVED AND CORRECTED TWICE — the OCR-substitution item was
+      OVERSTATED, and its shippable half ALREADY SHIPPED.** `app.js` has
+      carried `s.replace(/\s+\|+\s*$/, " I")` since 2026-09-18 (743 plans /
+      683k ppl there), so readers already see `Class I`; only the STORE holds
+      the pipe. What remains is 7 rows where `lookupTicker` tries the RAW name
+      first, so `... Class |` matches the base fund and publishes **TRBCX (the
+      investor class)** while the displayed name says Class I and the correct
+      answer is **TBCIX** — the FTBFX shape again, small.
+      Do not reuse "165 rows / 68 plans / 95,501 ppl, four
       shapes": the `0`-in-word shape is **0 rows**, the `1`-in-word shape is
       **429 rows of EMPOWER LEGEND CODES** (a different class swept in by
       shape), the `5/8` shape is **2 rows** of mush, and the survivor was two
