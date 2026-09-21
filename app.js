@@ -588,8 +588,22 @@
   function lookupTicker(f) {
     const raw = typeof f.nameRaw === "string" ? f.nameRaw : f.name;
     const iss = f.iss ? f.iss.replace(/\*+/g, "").trim() + " " : "";
-    return (iss ? fundTickerInfo(iss + raw, f.type) : null) || fundTickerInfo(raw, f.type)
-      || (raw !== f.name ? ((iss ? fundTickerInfo(iss + f.name, f.type) : null) || fundTickerInfo(f.name, f.type)) : null);
+    /* ONE EXCEPTION TO RAW-FIRST, and it is narrow on purpose. A trailing
+     * column bar is OCR's reading of the share-class letter "I" (the strip
+     * above repairs it, 743 plans / 683k ppl). On those rows the RAW name is
+     * KNOWN CORRUPT: the bar is not part of any pattern, so the raw name
+     * matches the BASE fund and publishes the investor class — TRBCX for a
+     * row the filing calls Class I, whose answer is TBCIX, a cheaper share
+     * class. The page then shows "Class I" as the name beside the investor
+     * class's expense ratio. Raw-first still holds everywhere else, which is
+     * what keeps "TROWEPRICE RET 2025 TR-F MUTUAL FUND SHARES" exact. */
+    const order = /\s\|+\s*$/.test(raw) && raw !== f.name ? [f.name, raw] : [raw, f.name];
+    for (const n of order) {
+      const hit = (iss ? fundTickerInfo(iss + n, f.type) : null) || fundTickerInfo(n, f.type);
+      if (hit) return hit;
+      if (order[0] === order[1]) break;
+    }
+    return null;
   }
   function cleanCostMarkers(e) {
     if (!e || !e.funds || e._nameClean) return e;
