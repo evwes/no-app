@@ -20035,3 +20035,50 @@ rule. **The fix never changed. Only where it could see enough to be safe.**
   have to be printed FIRST, above any listing, so a truncated run cannot look
   like a clean one.
 
+
+## 2026-09-21 — Compass Group: the description column welded onto the identity, cause read off the filing
+
+- **Wrong, live, and confirmed by reading the filing image** (page 104 of
+  `20251008095017NAL0005364081001`, rasterised at 220dpi): Compass Group USA
+  (263,796 participants) publishes six rows as
+  `Fidelity TRIM 2030 Trust Company`, `… 2040 …`, `… 2050 …`, `… 2060 …`,
+  `… 2020 …`, `… 2065 …` — **64% of its entire menu** — plus
+  `Fidelity Manged Income Portfolio il CL 3 Common collective trust fund, at`.
+  All seven render with no ticker and no expense ratio.
+- **The filing is unambiguous and the cause is not what the strings suggest.**
+  Column (b), Identity of Issue, reads **`Fidelity TRIM 2020`**. Column (c),
+  Description of Investment, reads **`Trust Company`**. We are concatenating
+  (c) onto (b). "Manged" is the FILING's own typo and "TRIM" is the filing's
+  own abbreviation — neither is ours.
+- **Why only SOME rows glue, which is the whole diagnosis.** The row directly
+  below, `Boston Trust Walden Small-Mid Cap CIT Fund`, is CLEAN — and its
+  description reads `Common collective trust fund`, a phrase the parser
+  recognises as a TYPE and refuses. `Trust Company` is not in that vocabulary.
+  Neither is `Common collective trust fund, at contract value`, which the
+  filing WRAPS over two lines and which fails `GENERIC_TYPE_NAME`'s `$` anchor.
+  **So this is the anchored-exact-pattern under-match already on this record**
+  — the same shape as `Master Pooled Separate Account` failing
+  `/^pooled separate accounts?$/`.
+- **NOT FIXED THIS CYCLE, deliberately, and the next step is named.**
+  `GENERIC_TYPE_NAME`'s own comment says it feeds the dominant-row guard and
+  the audits and NOT the menu swaps, so the vocabulary gap is established but
+  the code path that performs the glue is not yet traced. Shipping a fix on a
+  half-traced mechanism is exactly what v172 and v179 did. Next step is one
+  command: `WAMPO_TRACE=rows node scripts/trace-filing.mjs
+  20251008095017NAL0005364081001` to see which stage joins the columns.
+  **The fix target has moved and that is the cycle's gain:** from "strip a
+  suffix off the NAME", which is dangerous, to "recognise two more TYPE
+  labels", which is narrow and testable.
+- **My sizing splitter was contaminated and its number must not be reused.**
+  It classified `SEI Trust Company` (Lowe's, 318,750 ppl) as GLUED because
+  "SEI" matched a class-letter heuristic, when SEI Trust Company is the
+  TRUSTEE as the whole stored name — the separate, already-documented
+  "house name as the whole row" class. So the "157 rows / 1,210,535 ppl"
+  that split produced is wrong. The confirmed glued cases are Compass's seven
+  plus a handful of the same shape (Carmax `QM US Enhanced Aggregate Bond
+  Index Fund T. Ro…`, United Rentals `ClearBridge Small Cap Growth CIT Class
+  Great G…`). **A discriminator that keys on the SUFFIX cannot work here,
+  because `Putnam Fiduciary Trust Company` and `Fidelity TRIM 2030 Trust
+  Company` share it** — one is a firm and one is a fund, and only the
+  REMAINDER tells them apart.
+
