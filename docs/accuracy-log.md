@@ -20082,3 +20082,30 @@ rule. **The fix never changed. Only where it could see enough to be safe.**
   Company` share it** — one is a firm and one is a fund, and only the
   REMAINDER tells them apart.
 
+
+## 2026-09-21 — Weighted draw (seed 20260921170): Lowe's is healthy, and a tooling fact worth more than the draw
+
+- **Lowe's Companies (295,951 participants, $8.6B, 31 rows, ratio 0.94)** leads
+  with `Lowe's Companies, Inc.` at **43.0% / $3,484,601,993**, which is the
+  sponsor-name-as-a-holding shape this file documents as a fabrication class —
+  **and it is not one here.** The row is typed **`Company stock`**, so the
+  filing itself describes it as the employer stock fund; 43% is high but it is
+  what Lowe's participants hold. The rest of the menu is clean and specific
+  (eleven Vanguard Target Retirement Trust Select vintages, five Galliard
+  sleeves, four State Street index series). **Checking the TYPE column is what
+  separated a real 43% holding from the fabrication it resembles** — the name
+  alone could not.
+- Two small residues, both already-named classes: `SEI Trust Company` at 0.2%
+  (the trustee as the whole stored name) and **`Mooresville` at $444,110** —
+  Lowe's headquarters city, a cover-page fragment published as a holding, in
+  the menu of a 295,951-participant plan. Recorded, not fixed.
+- **TOOLING FACT, and it invalidated this cycle's planned next step:**
+  `trace-filing.mjs` run on Compass Group returned `text 505,559 chars, 121
+  pages, statutory 4i header ABSENT` and **no TRIM rows at all** — because it
+  traced the TEXT LAYER, while the stored entry was produced by the OCR path
+  (`ocr: true`). **A trace of an OCR-dependent filing does not reproduce the
+  path that produced its entry**, so it cannot be used to find where the
+  description column is glued on. The trace looked like a clean run and
+  answered a different question than the one asked. Whoever picks the Compass
+  item up needs an OCR-aware trace, not the command this log named an hour ago.
+
