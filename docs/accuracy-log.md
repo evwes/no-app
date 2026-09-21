@@ -19515,3 +19515,59 @@ about where a guard can live.**
   the sizing lesson rather than only the fix — *a rename is a CONDITION, a
   collision is the OUTCOME*, which is the third form of that same error in
   three cycles and the reason the whole-store collision test now exists.
+
+## 2026-09-21 (12:3xZ) — the section-header-in-issuer class, sized and SPLIT: the evidence that decides it is store-wide, so the fix is not a parser change
+
+**Queue item 2, diagnosed on its own rather than inherited from v179's
+accident.** CLAUDE.md's 4i invariants already say *"section headers must not
+glue into names"*, and CHS publishes `iss = "Master Trust Principal Life
+Insurance Company"` where the filing's identity column reads only `Principal
+Life Insurance Company` and `Master Trust` is a caption above the rows.
+
+**THE CONDITION, sized from the store: 361 rows / 112 plans / 617,829 ppl**
+whose issuer OPENS with a statutory 4i section caption and continues with more
+words — `Pooled Separate Accounts` 61, `Mutual Fund` 50, `Registered
+investment companies` 39, `Master Trust` 34, `Collective Trust` 33.
+
+**And it is NOT one class — reading the examples killed the blanket fix
+before it was written.** University of Southern California (44,948 ppl)
+publishes `Real Estate Account (CREF)`, which is **TIAA's actual Real Estate
+Account**; stripping the leading `Real Estate` would destroy a real fund name.
+Sony's `Corporate Stock - Common` is a pure type label as the whole issuer, a
+different shape entirely.
+
+**THE DISCRIMINATING TEST IS EMPIRICAL, NOT VOCABULARY, and it separates them
+cleanly: does the REMAINDER appear as a COMPLETE issuer on other published
+rows?**
+
+- **GLUE, safe to strip — 114 rows / 43 plans / 275,782 ppl.** CHS's remainder
+  `Principal Life Insurance Company` stands alone **16,457 times** elsewhere in
+  the store. That is not a judgement call.
+- **KEEP, must not strip — 247 rows / 75 plans / 445,935 ppl.** `Account
+  (CREF)` never stands alone, so USC's TIAA fund is protected; `- Common`
+  never stands alone, so Sony's type label is left for its own class;
+  Vanderbilt's `Boston` is kept, which is the conservative error.
+
+CHS lands on **both sides** — its `Master Trust Principal…` rows are strippable
+and its `Master Trust CHS/Community Health Systems, Inc.` rows are not, because
+a sponsor name is not a standalone issuer anywhere. A partial fix with no risk
+is the right outcome; wanting the whole plan cleaned is not a reason to strip
+on weaker evidence.
+
+**AND THE PLACEMENT, which is the third time in this cycle-family that "where
+can the evidence be seen" decides where a fix lives.** The test above is
+STORE-WIDE. `lib-4i` sees one filing and cannot run it at all — the same
+structural limit that put v179's cost strip in `cleanDesc` (one string) when it
+belonged at the dedup stage (one row set). Here the row set is not enough
+either: the evidence is the whole store, which is what **`merge-4i` holds**.
+So this is a MERGE-side normalisation, **not a `PARSER_VERSION` change** — it
+needs no re-parse and takes effect on the next merge.
+
+**NOT BUILT THIS CYCLE, deliberately, and the reason is a documented hazard:**
+a `merge-4i.mjs` commit pushed while a run is in flight is **not** deferred by
+`[skip ci]` — merge-4i checks out the LATEST branch state, so the change takes
+effect in the CURRENT run's merge (measured 2026-09-16 on run #309). #425 is
+in flight, and committing this now would alter the merge behaviour of the very
+run whose verdict comes next, contaminating it. **A change that is safe to
+write is not automatically safe to land.** Queued to build after #425's
+verdict.
