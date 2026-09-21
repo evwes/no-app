@@ -19846,7 +19846,73 @@ rule. **The fix never changed. Only where it could see enough to be safe.**
   the loader failing to find the export — **a suspiciously clean zero reports
   on the query**, which is a rule already on the books and caught it here only
   because the rule was applied.
-- **Prevention, queued and named:** give `site-test.yml` a push trigger on the
-  frontend files, so the guard runs on the changes it guards rather than when
-  someone remembers to dispatch it.
+- **PREVENTION — and my first prescription here was WRONG, corrected the same
+  cycle.** I wrote "give `site-test.yml` a push trigger on the frontend files".
+  **It already has one**, on `app.js`, `index.html`, `styles.css`, `data.js`,
+  `fund-er.js`, the three test scripts, AND `plans-list.json`,
+  `plans-index.json`, `map-points.json`. Two separate mechanisms suppress it,
+  and neither is a missing trigger:
+  1. **The pipeline's data commits push with `github.token`** (`build-data.yml`
+     uses the checkout credentials), and GitHub by design does not start
+     workflow runs from a `GITHUB_TOKEN` push — the anti-recursion rule. So the
+     three DATA paths, which the workflow's own comment says are "here
+     deliberately" because "the pipeline could rewrite every data file and
+     nothing checked that the site still booted against it", **have never been
+     able to fire.** The intent is documented in the file and the mechanism
+     cannot deliver it.
+  2. **My own frontend commits carry `[skip ci]`** on the head commit, per the
+     standing mid-run batching rule, and `[skip ci]` on the head commit
+     suppresses the whole push. Verified on this cycle's own push: `fund-er.js`
+     changed, path matched, no run appeared.
+  So the honest prevention is the DISCIPLINE the record already names —
+  *dispatch it and read the `conclusion`* — plus a decision the owner should
+  make about whether the data-path intent is worth a deploy key or a PAT to
+  actually achieve. **Diagnosing before prescribing would have cost one
+  command; the wrong prescription was already written down.**
+
+
+## 2026-09-21 — A curated SAMPLE menu published in place of a filed fact
+
+- **Wrong, and live for 145,125 people.** UPS PN 004's page rendered
+  **"FUND HOLDINGS — 22 OPTIONS / Representative fund menu (community-sourced
+  fund names)"** with estimated expense ratios, while the plan's filing reports
+  its investments **in aggregate** (bit 4096) and its notes name no funds at
+  all. `data.js` describes itself in its own header as *"SAMPLE DATA to
+  demonstrate the product: figures are plausible, not verified"* — so the page
+  answered a question about a real filing with invented holdings.
+- **The cause is NESTING, not a missing string.** Every honest explanation in
+  `fundTable` — the $0 wind-down sentence, both master-trust sentences and the
+  filed-in-aggregate sentence — sat inside `if (!plan.funds)`, and a curated
+  `data.js` entry sets `plan.funds`. A curated plan therefore skipped all of
+  them and fell through to the sample menu.
+- **Change:** promote only the FILED-FACT branches above that gate
+  (`filedAggregate`, `zeroEOY`, `trustUnlinked`, `trustLinkedOpaque`,
+  `mtiaName`). The `docShape` and generic "no readable schedule" endings stay
+  gated on `!plan.funds` and are now explicitly guarded, because those describe
+  OUR gap — and for a curated plan a labelled sample menu is a better answer to
+  that than a shrug. This restores a rule already on the books: **the curated
+  overlay never beats filed data, and a filing that reports in aggregate is
+  filed data.**
+- **Sized before changing anything, whole-store: 2 plans / 145,246 ppl** were
+  masked. The other 21 curated entries have a confident filed lineup and return
+  further up, untouched. **UPS is the ONLY curated plan carrying bit 4096**,
+  which is exactly why the guard began failing only when UPS entered the `stmt`
+  bucket two days ago as v169's designed outcome — the specimen is picked by
+  assets from live data, so a data change re-aimed the test at a case no one
+  had exercised.
+- **Controlled both ways:** POSITIVE — UPS PN 004 now states the aggregate
+  sentence and no longer renders the sample menu; NEGATIVE — Lumen (bit 4096,
+  not curated) is byte-unchanged. **Full smoke test GREEN across all six page
+  shapes**, including the two trust-held pages this nesting also covered.
+- **Prevention, and it is the interesting part:** three of my own measurements
+  in this one investigation returned confident numbers that were artifacts of
+  the harness rather than facts about the data — a row-alignment check that
+  reported **111,035 mismatches** (comparing `"004"` to `4`; the true answer is
+  **0**), a curated-overlap count that printed a clean **`0 / 0 ppl`** (the
+  loader never found `PLANS`, a lexical `const` invisible to `vm` context), and
+  a deep-link probe that opened the wrong plan (the id is `EIN|PN|TICKER`).
+  Each was caught by the same habit and none by a different one: **read the
+  examples, not the count.** The alignment scare in particular would have been
+  published as a site-wide defect; four sample rows showed the EINs matching
+  perfectly and only the PN padding differing.
 
