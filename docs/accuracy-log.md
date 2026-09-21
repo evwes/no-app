@@ -18898,3 +18898,47 @@ unidentified), and this. The remaining honest statement about the residuals is
 that the gap is 1,354 live plans, that its largest buckets are documented
 absences rather than pending work, and that the fund-menu option reachable by
 parser work was last sized at about 86 plans.
+
+## 2026-09-21 (06:3xZ) — `few` re-tested on the v176 store: the name quality improved, the REACHABILITY did not, and the reason matters
+
+`few` is the largest bucket that could be ours — **461 plans in the census,
+498 live full-form acks by the store's own `dx`, 612,583 participants.** Its
+recorded reachable figure, "~70 of 532 (13%)", was measured on the v123 store
+and fifty parser versions have shipped since. Another inherited number, so it
+got a fresh random 30 (random because this estimates a RATE, per the standing
+rule).
+
+| class | n of 30 | example |
+|---|---|---|
+| **no rows stored at all** | **8 (27%)** | Variety Child Learning, Lanco, Bottega Louie, Lake Region Medical |
+| garbage, sponsor name, house-only, or an asset-class total | **12 (40%)** | `Sensia LLC`; `accounts` + `Oklahoma City`; `Value of Int in Regist Invest Co.`; `John Hancock Life Insurance Co.` + `American Funds` |
+| plausibly real fund names, ≤2 rows | **10 (33%)** | `Vanguard Target Retirement 2030 Fund` + `Morley Stable Value Cl 55-I` |
+
+**Read naively that says the reachable share went 13% → 33% and the bucket is
+worth working. It is the condition again, not the outcome** — the third time
+this distinction has changed an answer in two days.
+
+**Two things block every one of those ten, and neither is name quality.**
+
+1. **The three-row floor.** All ten store one or two rows. Publishing them
+   means lowering `funds.length >= 3`, and the 40% garbage class in the same
+   sample is exactly what would become fabricated rows if it fell. This file
+   already says *do not lower the floor*; the fresh sample says the same thing
+   with fresh numbers.
+2. **The money.** Of the ten, **only two have more than $1M of year-end
+   assets** — Ritchie Bros ($2.9M) and The Arc of Warren County ($4.8M). The
+   rest are **$2,644 / $8,420 / $9,264 / $28,809 / $38,896 / $43,006 /
+   $377,382 / $522,633** against 125–3,695 participants each. A two-fund menu
+   for a plan reporting $2,644 of assets tells a participant nothing true
+   about where their money is.
+
+**So reachable-and-material is 2 of 30, about 7%** — roughly 33 plans of the
+498, not 70 of 532, and every one blocked by a floor this file has twice
+decided not to lower.
+
+**The verdict on the bucket is unchanged and now rests on current evidence
+rather than a fifty-version-old sample: `few` is not where parser effort
+goes.** What DID change is worth recording on its own — **the share carrying
+at least one real fund name went 13% → 33%**, which is fifty versions of naming
+work showing up exactly where no coverage metric can see it, in a bucket that
+does not publish.
