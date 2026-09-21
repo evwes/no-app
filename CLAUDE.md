@@ -666,73 +666,57 @@ read `lineups-status.json` and `lib-4i`'s export, do not copy the line.
 - **LIVE ON MAIN: the v176 store** (`60eac141 → 129095f5`, mirrored
   2026-09-21 00:3xZ, data gate unforced +0/−0). Main has since taken cron
   commits `dd2aa45d` and `3457deef`.
-- **`PARSER_VERSION` in the tree is 180. IN FLIGHT: #425 (v180)**, dispatched
-  2026-09-21 11:42Z by `workflow_dispatch` on `2e67d180`, start verified.
-- **LIVE ON MAIN: the v179 store — MIRRORED 2026-09-21 11:3xZ**
-  (`58f30c52 → ab115834`). `--force` on the GIT check over main's cron commit
-  (0 acks / 0 plans the branch lacked, plans array byte-identical; main newer
-  on exactly one ack — `20251203145826NAL0000493523001`, **the analyze-stuck
-  master TRUST this file already documents**, confident on BOTH sides with only
-  the pv and error marker differing, re-read by the next incremental run) and
-  `--force-data` over the single loss, read by name. pv 179 at 99.84%,
-  confident 60,114 (−1), lineups 59,763, HIGH 6, WARN 545, overshoot 332,
-  dl 105.
-  **What reached readers: CHS/Community Health Systems' 91,940 participants
-  see all fifteen holdings without `$0.00` welded onto the name**; both Emory
-  plans lose `$917.217600` from 75 rows between them; ~1,760 rows across 295
-  plans / 560,053 ppl render a clean name; and **True Organic Products' 238
-  stop being shown $300,645 of double-counted phantom** — the filing published
-  three holdings twice, once clean and once with the cost column, and stripping
-  made the names identical so the dedup merged them. An undesigned win.
-- **#423's VERDICT IS THE IMPORTANT ONE: MY PRE-REGISTERED PREDICTION WAS
-  WRONG AND THE MACHINERY CAUGHT IT.** I registered "byte-identical except
-  `dl`/`tkSampled`" for a name-only change; confident moved −1. **`== READ
-  BEFORE MIRRORING (3)` named all three plans, and `rows-dropped.txt` fired on
-  real findings for the first time since it shipped** — a check that had only
-  ever printed 0, which this file's own rule calls untested. It earned its
-  place immediately. Two of the three flags were the fix working (HS Government
-  Partners losing a `all outstanding notes. $0` loan-prose row; True Organic's
-  double-count); the third was a real regression.
-- **AND THE REGRESSION WAS MINE, REBUILDING THE OLDEST FABRICATION SHAPE ON
-  THE RECORD.** Dove Schools (480 ppl) files 28 annuities distinguished ONLY
-  by unit price. v179's strip lived in `cleanDesc`, **which sees one string**,
-  so all 28 became `Annuities, @` and the dedup summed them into a $5,561,543
-  holding that does not exist — the v100/Amgen shape, produced by a fix written
-  to remove fabrications. **Contained only by the three-row floor** (2 rows,
-  `c:0`), so no reader saw it: luck, not design. **Whole-store collision test
-  after the fact: exactly ONE plan, non-confident** — which is what settled the
-  mirror as safe.
-  **Why the sizing missed it: I counted RENAMES (1,763) and read all 1,595
-  distinct ones for a name that loses meaning — none does, alone. I never
-  asked whether two renames in the SAME PLAN produce the SAME STRING. A rename
-  is a CONDITION; a collision is the OUTCOME.** Third form of that error in
-  three cycles.
-- **v180 (in flight) moves the strip to the DEDUP STAGE and reuses v174's
-  guard rather than inventing a second one.** v174's comment, sitting directly
-  above the new block, already states the rule v179 broke: *the strip belongs
-  where the whole row set is in hand and a collision can be seen, not at the
-  row level where it cannot.* Rows sharing a stripped name whose ORIGINALS
-  differ are rows the filing distinguishes and keep their names. **v174's
-  `unmarked` refusal is deliberately NOT copied** — a cost column colliding
-  with an unstripped row is usually the same holding rendered twice, and
-  blocking it would hand True Organic's $300,645 double-count back. Controls
-  both ways through the production parser: **Dove v179 2 rows `c:0` → v180 28
-  rows @ 0.987 `c:1`** (its real fund names were never lost — they sit in the
-  ISSUER column), CHS still clean. Gate green, corpus diff 0/0/0/0 over 1,007.
-- **TOOLING FACT, now cost two doubts: a newly pinned specimen is NOT compared
-  until the NEXT run of `diff-lineups`.** The run prints `(fetched 1 pinned
-  defect specimen(s))` and still reports 0 for it — the filing is fetched but
-  the comparison set was enumerated first. Same with the Marsh specimen two
-  cycles ago. **On the run where a specimen is first pinned the TRACE is the
-  positive control and the corpus diff is only the negative one.**
+- **`PARSER_VERSION` in the tree is 180. IN FLIGHT: #427**, dispatched
+  2026-09-21 13:27Z on `ec712661`, start verified. **It is an INCREMENTAL run,
+  not a re-parse** — no version bump, so the work list is only the stale acks;
+  its job is to let the MERGE apply the new issuer strip.
+- **LIVE ON MAIN: the v180 store — MIRRORED 2026-09-21 13:2xZ**
+  (`4035b383 → b4c9e6d8`), and the **DATA GATE PASSED UNFORCED at +1 gained /
+  −0 lost** — the first unforced data gate in four mirrors. `--force` covered
+  the GIT check alone over main's one cron commit, evidence first: 0 acks and
+  0 plans the branch lacked, plans array byte-identical, **0 confident on main
+  the branch lacks**, main newer on exactly two acks, both named and benign
+  (The Folsom Corporation, 203 ppl, **not confident on either side**, where
+  main's cron reached the cleaner `no-section` diagnosis the branch holds as
+  `analyze`; and the documented analyze-stuck master trust, confident on both).
+  pv 180 at 99.84%, confident 60,115, lineups 59,764, HIGH back to the
+  baseline 5, WARN 543, overshoot 332, dl 105.
+- **#425 PASSED AND ALL FOUR PRE-REGISTERED TESTS PASSED.** Dove Schools is
+  back at `c:1` with **28 rows**, sum $5,582,857, every row keeping its own
+  unit price; confident **+1**, the designed direction; True Organic holds at
+  25 rows so the **$300,645 double-count did not return**; and the whole-store
+  collision test returns **0** — Dove was the entire population and it is
+  closed.
+- **THE ARC ACROSS THREE VERSIONS IS ONE DEFECT AND ONE LESSON.** v179 put a
+  correct strip in the wrong place (`cleanDesc`, which sees ONE STRING) and
+  rebuilt the v100/Amgen shape; the triage caught it on a run whose coverage
+  line I had predicted would be byte-identical; v180 moved the same strip to
+  the dedup stage and reused **v174's own guard**, whose comment already
+  stated the rule. **The fix never changed — only where it could see enough to
+  be safe.**
+- **SHIPPED 13:3xZ, IN merge-4i AND NOT A PARSER VERSION: the 4i section
+  caption stripped from the ISSUER column.** CHS (91,940 ppl) stored
+  `Master Trust Principal Life Insurance Company` where the identity column
+  reads only the firm. **A blanket strip destroys real names** — USC (44,948)
+  stores `Real Estate Account (CREF)`, TIAA's ACTUAL fund — so the test is
+  empirical: *does the remainder appear as a COMPLETE issuer on other
+  published rows?* CHS's `Principal Life Insurance Company` stands alone
+  **16,457 times**; `Account (CREF)` never does. **That evidence is STORE-WIDE,
+  so lib-4i cannot run it (one filing) and neither can the dedup stage (one
+  row set) — the merge holds the whole store.** Third placement decision in
+  this cycle-family settled by the same question: *where can the evidence be
+  seen?* Verified on the real merge both ways — **113 rows / 42 plans**
+  stripped, CHS's Principal rows fixed while its sponsor-name rows are KEPT,
+  and four negative controls named in advance all untouched (USC, Sony's
+  `Corporate Stock - Common`, Textron, Vanderbilt). CONFIDENCE DIFF +0 / −0.
+  Needs no re-parse; **#427 exists to let a merge apply it.**
 - **RECORDED, NOT STARTED — OCR character substitution in published fund
   names, 165 rows / 68 plans / 95,501 ppl**, four shapes not one, 59,752 of
   those people behind a single row (Aya's `NUVEEN LIFECYCLE !NDEX 2060 INST`).
-- **QUEUED, NOT FIXED — the issuer side effect v179/v180 declined to ship
-  blind:** fixing the cost strip in `stripTrailingColumns` also un-glues a
-  section header from the issuer (`Master Trust Principal Life Insurance
-  Company` → `Principal Life Insurance Company`). Needs its own sizing via
-  corpus diff plus traced specimens, not the store.
+- **TOOLING FACT: a newly pinned specimen is NOT compared until the NEXT run
+  of `diff-lineups`.** It prints `(fetched 1 pinned defect specimen(s))` and
+  still reports 0 for it. On the pinning run the TRACE is the positive control
+  and the corpus diff is only the negative one.
 - **Residuals: every number re-derived against v176 on 2026-09-21 and both
   unknowns closed** — see the re-derived table below. 1,354 live plans.
 

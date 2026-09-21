@@ -237,6 +237,45 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 13:3xZ 2026-09-21. IN FLIGHT: #427, dispatched 13:27Z on
+      `ec712661` — an INCREMENTAL run, not a re-parse (no version bump, work
+      list is the stale acks); its job is to let the MERGE apply the new
+      issuer strip. LIVE ON MAIN: the v180 store, MIRRORED 13:2xZ
+      (`4035b383 -> b4c9e6d8`) with the DATA GATE UNFORCED at +1 / -0, the
+      first unforced data gate in four mirrors.**
+      **FIRST ACTION NEXT CYCLE: #427's verdict.** Pre-registered: (1) the
+      merge log prints `issuer section-caption strip: ~113 rows across ~42
+      plans`; (2) CHS `20250926144818NAL0013938530001` shows `iss =
+      "Principal Life Insurance Company"` on its Principal rows and KEEPS
+      `Master Trust CHS/Community Health Systems, Inc.` on the others;
+      (3) the four negative controls are untouched — USC `Real Estate Account
+      (CREF)`, Sony `Corporate Stock - Common`, Textron, Vanderbilt;
+      (4) **CONFIDENCE DIFF +0 / -0** — an issuer-only change must not move a
+      single lineup.
+      **#425 PASSED, ALL FOUR TESTS PASSED, MIRRORED.** Dove Schools back at
+      `c:1` with 28 rows and every unit price intact; confident +1, the
+      designed direction; True Organic holds 25 rows so the $300,645
+      double-count did not return; whole-store collision test **0**.
+      **THE THREE-VERSION ARC IS ONE DEFECT AND ONE LESSON:** v179 put a
+      correct strip in the wrong place (`cleanDesc`, one string) and rebuilt
+      the v100/Amgen shape; the triage caught it on a run I had predicted
+      would be byte-identical; v180 moved the same strip to the dedup stage
+      and reused v174's own guard. **The fix never changed — only where it
+      could see enough to be safe.**
+      **SHIPPED: the issuer section-caption strip, in `merge-4i`, NOT a parser
+      version.** The test is empirical — *does the remainder appear as a
+      COMPLETE issuer on other published rows?* CHS's `Principal Life
+      Insurance Company` stands alone 16,457x; USC's `Account (CREF)` never
+      does, so TIAA's real fund is protected. **Store-wide evidence, so
+      neither lib-4i (one filing) nor the dedup stage (one row set) can decide
+      it — the merge can.** Third placement call in this family settled by
+      *where can the evidence be seen?* 113 rows / 42 plans, verified on the
+      real merge both directions, CONFIDENCE DIFF +0 / -0.
+      **QUEUE:** (1) #427 verdict -> mirror; (2) OCR character substitution,
+      165 rows / 68 plans / 95,501 ppl, FOUR shapes, 59,752 behind ONE row --
+      care, not speed; (3) Pechanga re-queued, v177 did NOT fix it and any fix
+      must suppress at 63.7%, which `NOT_FUND_SHAPED` structurally cannot do;
+      (4) SDBA fold, 269 plans / 630,032 ppl, owner question 5.
       **STATUS 11:4xZ 2026-09-21. IN FLIGHT: #425 (v180), dispatched 11:42Z on
       `2e67d180`, start verified. LIVE ON MAIN: the v179 store, MIRRORED
       11:3xZ (`58f30c52 -> ab115834`).**
