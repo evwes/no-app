@@ -20003,3 +20003,35 @@ rule. **The fix never changed. Only where it could see enough to be safe.**
   times; `Account (CREF)` never does. The same test applies here and no
   vocabulary list does. **Recorded, not started.**
 
+
+## 2026-09-21 — The investor share class published for a holding filed as Class I
+
+- **Wrong:** **161 rows / 77 plans / 51,655 participants** published the
+  INVESTOR share class's ticker and expense ratio for a holding the filing
+  names Class I. `T. Rowe Price Overseas Stock |` → **TROSX** where the answer
+  is **TROIX**; `Blue Chip Growth |` → TRBCX where it is TBCIX; `New Horizons |`
+  → PRNHX where it is PRJIX; also Dividend Growth, Mid-Cap Growth, Small-Cap
+  Value, Value, Small Cap Stock and eight Retirement vintages. The investor
+  class is the **more expensive** one, so every affected page understated
+  nothing and overstated cost — and the page was internally inconsistent,
+  because the displayed NAME already read "Class I" (the display strip repairs
+  the OCR bar) beside the investor class's fee.
+- **Change:** one narrow exception to `lookupTicker`'s raw-first order. That
+  order is load-bearing — it is what keeps `TROWEPRICE RET 2025 TR-F MUTUAL
+  FUND SHARES` exact, since the cleaned name's trailing `TR-F` reads as a trust
+  class and demotes it to a comparable. So the exception is keyed to the single
+  case where the raw name is KNOWN CORRUPT: it ends in the OCR column bar,
+  which appears in no pattern, so the raw name can only ever match the BASE
+  fund. There, and only there, the repaired name is tried first.
+- **Controlled whole-store, both directions:** 161 rows change, **0 lose a
+  ticker**, all 161 move base-class → I-class, and the **NEGATIVE CONTROL is 0**
+  — not one row without a trailing bar changes. Smoke test green across all six
+  page shapes; `fund-er-test` 46 must-resolve / 26 must-not-resolve, 0 failures.
+- **Prevention, from my own harness this time:** the first run of this control
+  was piped through `head -30`, which **truncated the output before the
+  negative-control line ever printed**. The run looked complete and the file
+  ended cleanly with `[exited with code 0]`. A control whose result is cut off
+  by a pager reads exactly like a control that passed silently — the counts
+  have to be printed FIRST, above any listing, so a truncated run cannot look
+  like a clean one.
+
