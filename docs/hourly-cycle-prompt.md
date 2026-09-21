@@ -237,6 +237,56 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 11:4xZ 2026-09-21. IN FLIGHT: #425 (v180), dispatched 11:42Z on
+      `2e67d180`, start verified. LIVE ON MAIN: the v179 store, MIRRORED
+      11:3xZ (`58f30c52 -> ab115834`).**
+      **FIRST ACTION NEXT CYCLE: #425's verdict.** Pre-registered: (1) Dove
+      Schools `20250903142228NAL0015277825001` comes back **confident with 28
+      rows @ ~0.987** (it is `c:0` with 2 rows on the live store, so this is a
+      **+1** and the direction is the test); (2) CHS
+      `20250926144818NAL0013938530001` still publishes fifteen rows with no
+      `$0.00`; (3) True Organic `20260120092622NAL0003030065001` stays at 25
+      rows — the $300,645 double-count must NOT come back; (4) the whole-store
+      collision test returns **0 plans**.
+      **#423's VERDICT IS THE ONE TO READ. MY PREDICTION WAS WRONG AND THE
+      MACHINERY CAUGHT IT.** I registered "byte-identical except dl/tkSampled"
+      for a name-only change; confident moved -1. **`== READ BEFORE MIRRORING
+      (3)` named all three plans and `rows-dropped.txt` fired on real findings
+      for the first time since it shipped** -- a check that had only ever
+      printed 0. Two flags were the fix working (HS Government Partners losing
+      a `all outstanding notes. $0` loan row; **True Organic's $300,645
+      double-count removed**, an undesigned win); one was a real regression.
+      **THE REGRESSION WAS MINE AND IT REBUILT THE v100/AMGEN SHAPE.** Dove
+      Schools files 28 annuities distinguished ONLY by unit price. v179's strip
+      lived in `cleanDesc`, **which sees one string**, so all 28 became
+      `Annuities, @` and the dedup summed them into a $5,561,543 holding that
+      does not exist. Contained ONLY by the three-row floor -- luck, not
+      design. Whole-store collision test: exactly ONE plan, non-confident,
+      which is what made the mirror safe.
+      **WHY THE SIZING MISSED IT, and this is the third form of the same error
+      in three cycles: I counted RENAMES (1,763) and read all 1,595 distinct
+      ones for a name that loses meaning -- none does, ALONE. I never asked
+      whether two renames in the SAME PLAN produce the SAME STRING. A rename is
+      a CONDITION; a collision is the OUTCOME.**
+      **v180 moves the strip to the DEDUP STAGE and reuses v174's guard rather
+      than inventing a second one** -- v174's comment directly above the new
+      block already states the rule v179 broke. v174's `unmarked` refusal is
+      deliberately NOT copied, because blocking that collision hands True
+      Organic's double-count back: **reusing a guard means reusing the parts
+      that apply, not the block.** Controls both ways; gate green; corpus diff
+      0/0/0/0 over 1,007.
+      **TOOLING FACT WORTH KEEPING, it has now cost two doubts: a newly pinned
+      specimen is NOT compared until the NEXT `diff-lineups` run.** It prints
+      `(fetched 1 pinned defect specimen(s))` and still reports 0 for it. Same
+      with Marsh two cycles ago. **On the pinning run the TRACE is the positive
+      control; the corpus diff is only the negative one.**
+      **QUEUE:** (1) #425 verdict -> mirror; (2) the issuer side effect
+      (`stripTrailingColumns` un-glues a section header from the issuer) --
+      needs its own sizing, corpus diff + traced specimens, not the store;
+      (3) OCR character substitution, 165 rows / 68 plans / 95,501 ppl, FOUR
+      shapes, 59,752 behind one row -- care, not speed; (4) Pechanga re-queued,
+      v177 did NOT fix it and any fix must suppress at 63.7%, which
+      `NOT_FUND_SHAPED` structurally cannot do; (5) SDBA fold, owner question 5.
       **STATUS 10:3xZ 2026-09-21. IN FLIGHT: #423 (v179), dispatched 10:15Z on
       `9756661f`, start verified. LIVE ON MAIN: the v178 store, MIRRORED
       10:1xZ (`dd2aa45d -> 9756661f`).**

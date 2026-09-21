@@ -666,67 +666,73 @@ read `lineups-status.json` and `lib-4i`'s export, do not copy the line.
 - **LIVE ON MAIN: the v176 store** (`60eac141 → 129095f5`, mirrored
   2026-09-21 00:3xZ, data gate unforced +0/−0). Main has since taken cron
   commits `dd2aa45d` and `3457deef`.
-- **`PARSER_VERSION` in the tree is 179. IN FLIGHT: #423 (v179)**, dispatched
-  2026-09-21 10:15Z by `workflow_dispatch` on `9756661f`, start verified.
-- **LIVE ON MAIN: the v178 store — MIRRORED 2026-09-21 10:1xZ**
-  (`dd2aa45d → 9756661f`). `--force` on the GIT check over main's two cron
-  commits, measured first: **0 acks and 0 plans the branch lacked, plans array
-  byte-identical, main newer on 0** of 68,661 differing pv values.
-  `--force-data` over the two losses, which the gate named by ack and which
-  are the two plans v178 was written to withdraw. pv 178 at 99.85%, confident
-  **60,115 (−2, the designed outcome)**, lineups 59,764, HIGH 7 = 5 baseline +
-  2 self-clearing, WARN 543, overshoot 332, dl 105.
-  **What reached readers: Marsh & McLennan's 49,784 participants stop seeing
-  the master-trust pointer printed twice and presented as their fund menu** —
-  `Plan interest in` $3,695,159,225 beside `Plan identified investments held by
-  master trust at fair value` $3,391,393,571, two captions over one number —
-  and get the trust's real eleven holdings (SSGA index series, company stock,
-  four synthetic GICs). **Recorded cost:** the sister plan also gives up a
-  genuine `Marsh & McLennan Companies Stock Fund` row, 8.5% / $118,353,516.
-- **#422 PASSED and ALL FOUR pre-registered tests passed**, the second being
-  the one that matters: **a −2 in `confident` here is the design, not a
-  regression.** Both Marsh acks came back `c:0` carrying `dx:"trust"` — better
-  than registered, since the store now says WHY in the vocabulary the census
-  reads. The linked trust is confident at pv 178. The 52-plan negative control
-  still publishes (FedEx 26 rows, GM 9, Thomson Reuters 20).
-- **THE AUDIT-REPORTING FIX IS VERIFIED — third attempt, first run that could
-  test it.** #418 and #421 were both quiet runs, and #421 was quiet only
-  because v177 turned out inert, so predicting it would be the test was wrong.
-  #422 printed `== HIGH (7)` / `== WARN (543)` against a coverage line of
-  `high 7, warn 543` — **equal** — and **`== READ BEFORE MIRRORING (2)` named
-  both Marsh acks at the top** instead of burying them at positions 544–546
-  under 543 routine WARN lines. For contrast, #416 printed `HIGH (5) /
-  WARN (543)` against `high 6, warn 546`.
-- **THE RANDOM DRAW WAS NOT RANDOM AND THIS IS A DEFECT IN THE ACCURACY
-  MACHINERY ITSELF.** `draw-weighted.mjs` hardcoded `let s = 0x9e3779b9 ^
-  20260916200;` and **never read `argv[2]`**, so every invocation returned the
-  identical draw while each cycle labelled it with a different seed. Two cycles
-  of required hands-on review were the same twelve plans; the seed labels in
-  the log and the STATUS block were fiction. **Caught by arithmetic, not by
-  eye:** the second draw repeated nine of twelve plans when Amazon alone is
-  ~1.5% per pick. Fixed, the script now PRINTS the seed it used, and
-  controlled both ways. **The findings from those draws stand; the RATES do
-  not — they were never a sample of the population.** Third measurement defect
-  in two cycles (NaN comparator, `r.ticker` for `r.tk`, the dead seed) and all
-  three share a shape: the script ran, looked plausible, and was believed.
-  `docs/accuracy-log.md` 2026-09-21 (10:3xZ).
+- **`PARSER_VERSION` in the tree is 180. IN FLIGHT: #425 (v180)**, dispatched
+  2026-09-21 11:42Z by `workflow_dispatch` on `2e67d180`, start verified.
+- **LIVE ON MAIN: the v179 store — MIRRORED 2026-09-21 11:3xZ**
+  (`58f30c52 → ab115834`). `--force` on the GIT check over main's cron commit
+  (0 acks / 0 plans the branch lacked, plans array byte-identical; main newer
+  on exactly one ack — `20251203145826NAL0000493523001`, **the analyze-stuck
+  master TRUST this file already documents**, confident on BOTH sides with only
+  the pv and error marker differing, re-read by the next incremental run) and
+  `--force-data` over the single loss, read by name. pv 179 at 99.84%,
+  confident 60,114 (−1), lineups 59,763, HIGH 6, WARN 545, overshoot 332,
+  dl 105.
+  **What reached readers: CHS/Community Health Systems' 91,940 participants
+  see all fifteen holdings without `$0.00` welded onto the name**; both Emory
+  plans lose `$917.217600` from 75 rows between them; ~1,760 rows across 295
+  plans / 560,053 ppl render a clean name; and **True Organic Products' 238
+  stop being shown $300,645 of double-counted phantom** — the filing published
+  three holdings twice, once clean and once with the cost column, and stripping
+  made the names identical so the dedup merged them. An undesigned win.
+- **#423's VERDICT IS THE IMPORTANT ONE: MY PRE-REGISTERED PREDICTION WAS
+  WRONG AND THE MACHINERY CAUGHT IT.** I registered "byte-identical except
+  `dl`/`tkSampled`" for a name-only change; confident moved −1. **`== READ
+  BEFORE MIRRORING (3)` named all three plans, and `rows-dropped.txt` fired on
+  real findings for the first time since it shipped** — a check that had only
+  ever printed 0, which this file's own rule calls untested. It earned its
+  place immediately. Two of the three flags were the fix working (HS Government
+  Partners losing a `all outstanding notes. $0` loan-prose row; True Organic's
+  double-count); the third was a real regression.
+- **AND THE REGRESSION WAS MINE, REBUILDING THE OLDEST FABRICATION SHAPE ON
+  THE RECORD.** Dove Schools (480 ppl) files 28 annuities distinguished ONLY
+  by unit price. v179's strip lived in `cleanDesc`, **which sees one string**,
+  so all 28 became `Annuities, @` and the dedup summed them into a $5,561,543
+  holding that does not exist — the v100/Amgen shape, produced by a fix written
+  to remove fabrications. **Contained only by the three-row floor** (2 rows,
+  `c:0`), so no reader saw it: luck, not design. **Whole-store collision test
+  after the fact: exactly ONE plan, non-confident** — which is what settled the
+  mirror as safe.
+  **Why the sizing missed it: I counted RENAMES (1,763) and read all 1,595
+  distinct ones for a name that loses meaning — none does, alone. I never
+  asked whether two renames in the SAME PLAN produce the SAME STRING. A rename
+  is a CONDITION; a collision is the OUTCOME.** Third form of that error in
+  three cycles.
+- **v180 (in flight) moves the strip to the DEDUP STAGE and reuses v174's
+  guard rather than inventing a second one.** v174's comment, sitting directly
+  above the new block, already states the rule v179 broke: *the strip belongs
+  where the whole row set is in hand and a collision can be seen, not at the
+  row level where it cannot.* Rows sharing a stripped name whose ORIGINALS
+  differ are rows the filing distinguishes and keep their names. **v174's
+  `unmarked` refusal is deliberately NOT copied** — a cost column colliding
+  with an unstripped row is usually the same holding rendered twice, and
+  blocking it would hand True Organic's $300,645 double-count back. Controls
+  both ways through the production parser: **Dove v179 2 rows `c:0` → v180 28
+  rows @ 0.987 `c:1`** (its real fund names were never lost — they sit in the
+  ISSUER column), CHS still clean. Gate green, corpus diff 0/0/0/0 over 1,007.
+- **TOOLING FACT, now cost two doubts: a newly pinned specimen is NOT compared
+  until the NEXT run of `diff-lineups`.** The run prints `(fetched 1 pinned
+  defect specimen(s))` and still reports 0 for it — the filing is fetched but
+  the comparison set was enumerated first. Same with the Marsh specimen two
+  cycles ago. **On the run where a specimen is first pinned the TRACE is the
+  positive control and the corpus diff is only the negative one.**
 - **RECORDED, NOT STARTED — OCR character substitution in published fund
-  names, 165 rows / 68 plans / 95,501 ppl.** Aya Healthcare publishes
-  `NUVEEN LIFECYCLE !NDEX 2060 INST` at 13.2% of the plan to 59,752 people.
-  **Four shapes, not one**, which is why nothing shipped: single-character
-  substitution (`!NDEX`, `!shares`, `£ID S00 INDEX`), a leading pipe
-  (`|Galliard Stable Value C`), pure OCR garbage (Bankers Healthcare, 14 of 27
-  rows), and a **Voya family where OCR read the table BORDERS as content**
-  (`| Voya Retirement Insurance and Annuity Co. |JPMorgan Equity Income`). A
-  character map is the kind of fix that eats real names, and 59,752 of the
-  95,501 sit behind ONE row.
-- **QUEUED, NOT FIXED — the issuer side effect v179 declined to ship blind:**
-  fixing the cost strip in `stripTrailingColumns` turns CHS's issuer from
-  `Master Trust Principal Life Insurance Company` into `Principal Life
-  Insurance Company`, i.e. a section header stops gluing into the issuer.
-  A named defect in this file's own invariants, so it looks like a win — it
-  needs its own sizing, and being parse-time that means corpus diff plus
-  traced specimens, not the store.
+  names, 165 rows / 68 plans / 95,501 ppl**, four shapes not one, 59,752 of
+  those people behind a single row (Aya's `NUVEEN LIFECYCLE !NDEX 2060 INST`).
+- **QUEUED, NOT FIXED — the issuer side effect v179/v180 declined to ship
+  blind:** fixing the cost strip in `stripTrailingColumns` also un-glues a
+  section header from the issuer (`Master Trust Principal Life Insurance
+  Company` → `Principal Life Insurance Company`). Needs its own sizing via
+  corpus diff plus traced specimens, not the store.
 - **Residuals: every number re-derived against v176 on 2026-09-21 and both
   unknowns closed** — see the re-derived table below. 1,354 live plans.
 
