@@ -1653,7 +1653,24 @@
       <div class="section-label">FUND HOLDINGS</div>
       <p class="max-benefit">Loading fund holdings from the filing…</p>`;
     }
-    if (!plan.funds) {
+    /* A filed FACT about this plan outranks the community-sourced sample menu.
+     * Every honest explanation below used to be nested inside `!plan.funds`,
+     * so a curated data.js entry suppressed ALL of them — and data.js calls
+     * itself "SAMPLE DATA to demonstrate the product: figures are plausible,
+     * not verified". UPS PN 004 (145,125 participants) filed its investments
+     * IN AGGREGATE, carried bit 4096, had no notes menu, and was shown a
+     * 22-fund synthetic menu with estimated expense ratios instead of being
+     * told so. Measured whole-store: 2 plans / 145,246 ppl were masked this
+     * way (the other 21 curated entries have a confident filed lineup and
+     * return above). The standing rule this restores is already on the books —
+     * the curated overlay never beats filed data.
+     * Only the FILED-FACT branches are promoted. The docShape and generic
+     * "no readable schedule" endings stay gated on `!plan.funds`, because
+     * those describe OUR gap, and for a curated plan a labelled sample menu
+     * is the better answer to that. */
+    const filedFact = plan.filedAggregate || (plan.zeroEOY && plan.detailLoaded)
+      || plan.trustUnlinked || plan.trustLinkedOpaque || (plan.mtiaName && plan.detailLoaded);
+    if (!plan.funds || filedFact) {
       if (plan.zeroEOY && plan.detailLoaded) {
         // wound-down plan: explaining the wind-down beats implying a data gap
         // (a menu for a plan nobody is in anymore would be fabrication risk —
@@ -1740,14 +1757,19 @@
         "This filing does contain a schedule of assets, but we could not read it — that's our gap, not the filing's.",
         "This filing contains table pages that look like a schedule under a heading we don't yet recognise — our gap, not the filing's.",
       ];
-      const shapeText = !plan.isSF && DOC_SHAPE_TEXT[plan.docShape || 0];
+      /* Belt and braces for the promotion above: a plan that entered this
+       * block ONLY because of `filedFact` has a matching branch for every
+       * disjunct and returns before here. If a future condition ever breaks
+       * that, fall through to the curated menu rather than telling a curated
+       * plan we could not read its filing. */
+      const shapeText = !plan.funds && !plan.isSF && DOC_SHAPE_TEXT[plan.docShape || 0];
       if (shapeText) {
         return `
       <div class="section-label">FUND HOLDINGS</div>
       <p class="max-benefit">${shapeText}
       <a href="https://github.com/evwes/no-app/issues">Contribute it</a>.</p>`;
       }
-      return `
+      if (!plan.funds) return `
       <div class="section-label">FUND HOLDINGS</div>
       <p class="max-benefit">${plan.isSF
         ? "No fund schedule exists for this plan — short-form (5500-SF) filers don't attach audited statements, so the DOL never receives one."
