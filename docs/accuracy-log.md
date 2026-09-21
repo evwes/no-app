@@ -19772,3 +19772,81 @@ rule. **The fix never changed. Only where it could see enough to be safe.**
   structurally cannot** — including the record being wrong in the project's
   own favour.
 
+
+## 2026-09-21 — A separate account published as if the plan held the mutual fund
+
+- **Wrong:** **878 rows / 207 plans / 311,893 participants** published a
+  mutual-fund ticker with `comparable:false` — which is the claim that the
+  plan HOLDS that fund — for a row the filing's own type column calls a
+  `Separate account`. Cooper Health (40,321 ppl) showed RPMGX against a T. Rowe
+  Price Mid Cap Growth separate account; Northside Hospital (39,283) showed
+  VWNAX against `VANGUARD WINDSOR II` held the same way. An insurance separate
+  account is a different vehicle at a different and generally HIGHER cost, so
+  the estimated expense ratio shown understated what the participant pays.
+- **Change:** one alternation in `fund-er.js:1068`. The machinery was already
+  right and one word short — that arm tests the filing's own vehicle column,
+  which is a CONTROLLED VOCABULARY of thirteen values, and listed only two of
+  the five that name a non-registered vehicle. `Separate account` (12,061 rows)
+  matched neither it nor the name arm above it.
+- **Measured through `app.js`'s own `lookupTicker`**, not a bare
+  `fundTickerInfo` call: **454 rows / 167,653 ppl keep the ticker and gain the
+  asterisk and the "comparable fund" label; 424 rows / 198,640 ppl go blank**
+  because their fund has no `FUND_COMPARABLE` entry. A blank is honest where a
+  false ticker reads as knowledge — the same rule already on the record for
+  recordkeeper names. **Negative control: 0 of 976,564 rows typed `Mutual fund`
+  changed. Regressions: 0.**
+- **A wider variant was measured and deliberately NOT shipped.** Falling back
+  to `FUND_TICKER` inside the pooled branch would give those 424 a labelled
+  comparable instead of a blank — but whole-store it moves **9,835 rows / 3,334
+  plans / 5,864,346 ppl** and touches **1,782 rows typed `Mutual fund`**, which
+  breaks the negative control above. Recorded with its real numbers so the next
+  cycle can take it deliberately; a change whose population has not been read
+  is not a change to ship on the strength of the smaller one passing.
+- **Prevention:** the type column is a controlled vocabulary of 13 values and
+  can be ENUMERATED rather than guessed at. Doing that first is what turned a
+  vocabulary question into a closed one.
+
+## 2026-09-21 — The smoke test has not run in CI since 2026-09-19, and it is failing
+
+- **Wrong, and it is live for 145,125 people.** `scripts/smoke-test.mjs` fails
+  its `filed-in-aggregate` assertion. The specimen is chosen from live data as
+  the largest full-form plan carrying bit 4096, and that is now **UPS PN 004
+  (145,125 participants, $14.2B)** — which entered the `stmt` bucket only two
+  days ago as v169's designed outcome. Its page publishes
+  **"FUND HOLDINGS — 22 OPTIONS / Representative fund menu (community-sourced
+  fund names)"** with estimated expense ratios, and **never tells the reader
+  that the filing reports its investments in aggregate.** 283 full-form plans /
+  507,331 participants carry that bit.
+- **The mechanism is a gate, not a missing string.** `app.js:1690` reads
+  `if (plan.filedAggregate && !(menu && menu.length))`, where `menu` is the
+  investment menu extracted from the audited NOTES. So a plan that filed in
+  aggregate but whose notes name funds silently shows a menu instead of the
+  explanation. The master-trust branch directly above it carries no such gate.
+  **Not fixed in this cycle, deliberately:** whether the rendered menu is the
+  notes menu or the curated `data.js` overlay decides whether the LABEL
+  ("community-sourced") is also false, and that has to be established before
+  the branch is rewritten. v172 and v179 are both on this record as fixes
+  shipped one step ahead of the evidence.
+- **Why nobody saw it: the guard did not run.** `site-test.yml` has 80 runs and
+  **the most recent is 2026-09-19 00:32Z** — every one `workflow_dispatch`.
+  Across ~40 parser versions and several frontend changes since, it has not
+  executed once. This project's record already contains the mirror-image lesson
+  ("site-test was RED for ten consecutive runs and nobody opened the CI
+  conclusion"). **A guard that is never invoked fails more quietly than one
+  that is red**, because a red run at least exists to be read.
+- **Two method notes from the diagnosis, both of which cost a step:**
+  (1) The first probe opened `#plan=95-1732075|004|` and the deep-link id is
+  `EIN|PN|TICKER` — UPS PN 004 carries ticker `UPS`, so the page rendered was a
+  different plan. The conclusion happened to survive the correction, but it was
+  **luck**: the evidence and the claim were about different pages until the
+  link was fixed. Same family as the USC control addressed by a remembered ack
+  earlier in the same cycle.
+  (2) The sizing script for "how many aggregate plans have a curated menu"
+  printed `data.js entries: 0` and a clean `0 / 0 ppl` answer. That zero was
+  the loader failing to find the export — **a suspiciously clean zero reports
+  on the query**, which is a rule already on the books and caught it here only
+  because the rule was applied.
+- **Prevention, queued and named:** give `site-test.yml` a push trigger on the
+  frontend files, so the guard runs on the changes it guards rather than when
+  someone remembers to dispatch it.
+
