@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 177;
+export const PARSER_VERSION = 178;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -296,6 +296,13 @@ export function isTrustPointerRow(f) {
     // (Northrop) — the name can END with the trust rather than start with
     // "interest in"
     /^participation in\b[^.]{0,60}?\bmaster trust\b/i.test(n) ||
+    // v178: "Plan identified investments held by master trust at fair value"
+    // (Marsh & McLennan) — the trust is named in the MIDDLE, so neither the
+    // "interest in … trust" arm nor the trailing-"master trust" arm reaches
+    // it, and the plan's OTHER pointer row scored 52% against a 0.6 gate.
+    // Anchored on the first token like every arm here: a fund name may carry
+    // "held by" in the middle.
+    /^(?:the )?plan(?:['’]s)? (?:identified )?investments? held (?:by|in) (?:the )?(?:\S+ )?master trust\b/i.test(n) ||
     /\bmaster trust\s*$/i.test(n);
 }
 

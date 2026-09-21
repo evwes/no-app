@@ -19004,3 +19004,118 @@ first run that can verify it. The printed `== HIGH (n)` / `== WARN (n)` must
 equal the coverage line's `high` / `warn`, and `== READ BEFORE MIRRORING` must
 name any flagged plans. #418 could not test that — a quiet run has no triage
 findings and both orderings print the same numbers.
+
+## 2026-09-21 (08:2xZ) — v178: the master-trust pointer the filing printed TWICE, and a gate that counted only one of them
+
+- **Wrong:** Marsh & McLennan's two plans (**35,907 and 13,877 participants,
+  $8.9B between them**) published the master-trust pointer *as their fund
+  menu*. The larger plan's three rows are `Plan interest in` $3,695,159,225 at
+  51.8%, `Plan identified investments held by master trust at fair value`
+  $3,391,393,571 at 47.5%, and a $49.8M short-term fund — ratio 0.964, three
+  rows, confident. **Both large rows are the same pointer**, printed twice by
+  the filing under two captions; nothing on the page is a holding a participant
+  could own, and the plan's real menu — eleven rows of SSGA index series,
+  company stock and synthetic GICs — sits in the trust's own filing, parsed and
+  confident, unserved.
+- **Why the shipped guard missed it, which is the whole of this entry.**
+  `trustPtr` is not absent here and its threshold is not wrong. `isTrustPointerRow`
+  recognised the FIRST row (it carries `type: "Master trust interest"`) and
+  refused the second, because the predicate reaches a trust named at the
+  **start** of a row (`interest in … trust`) or at the **end** (trailing
+  `master trust`) and this filing names it in the **MIDDLE**. So the pointer
+  measured **51.8%** against a 0.6 gate and the plan published. **The gate was
+  never reached; it was fed half the evidence.** A threshold that is looking at
+  an undercount is not a threshold that is too loose, and lowering it — the
+  obvious move — would have been the wrong fix reaching the right outcome, at
+  the cost of the 52-plan negative-control population below.
+- **Change:** one arm on `isTrustPointerRow`, anchored on the first token like
+  every other arm there, matching `plan('s) (identified) investments held
+  by|in (the) (X) master trust`. `AGG_DISCLOSURE` and `NOT_FUND_SHAPED` are
+  untouched — and this time that independence was **checked, not cited**,
+  which is the correction v177's entry earned.
+- **Sized whole-store BEFORE the edit, and the outcome was counted, not the
+  condition:** across every published lineup the new arm newly matches
+  **2 rows in 2 plans**, and the `trustPtr` flag flips on **exactly those 2
+  plans / 49,784 ppl**. Zero collateral. The measurement recomputed the
+  *shipped* `trustPtr` expression under both predicates rather than counting
+  rows a regex hits — a row match is a condition, a flipped flag is the
+  outcome, and this project has published a count of the former as the latter
+  four times.
+- **Negative control, and it is large: 52 plans / 2,921,909 participants carry
+  a pointer row BESIDE a real menu** (FedEx at 3% of 26 rows, GM at 13% of 9,
+  Thomson Reuters at 15% of 20). Those rows are honest disclosure — they tell a
+  reader what share of the plan sits in a trust — and a rule that deleted them
+  would make a partial menu look complete. The arm is anchored narrowly enough
+  to leave every one of them alone, which is the reason it is an arm and not a
+  threshold change.
+- **Verified locally, which v177 could not be:** both filings traced under the
+  working tree return `trustPtr=true, CONFIDENT=false` at ratios 0.964 and
+  0.917. Parser gate green.
+- **Recorded cost, stated rather than netted:** the 13,877-participant sister
+  plan also gives up a real `Marsh & McLennan Companies Stock Fund` row at 8.5%
+  / $118,353,516. It is directly held and honest, and the plan-level view is
+  refused whole anyway — the same trade v135 and v157 took, taken again with
+  the number written down.
+- **Found in passing and NOT fixed, because it has no outcome today:**
+  `isTrustPointerRow`'s trailing-`master trust` arm matches **securitization
+  bonds** — Walmart publishes `Verizon Master Trust`, Wells Fargo publishes
+  `American Express Credit Account Master Trust`, and American Express publishes
+  `VERIZON MASTER TRUST`. These are credit-card and receivables ABS held in a
+  bond sleeve, not pointers at anyone's plan. Every one sits at ~0% of its
+  menu, so no flag moves and no reader is misled. **It is written down because
+  the next person to consider lowering the 0.6 gate needs to know the predicate
+  has a false-positive family waiting underneath it.**
+- **Prevention:** Marsh & McLennan pinned as specimen #110
+  (`master-trust-pointer-SPLIT-ACROSS-TWO-ROWS-clears-the-0.6-gate`). The
+  durable lesson is the diagnosis, not the arm: **when a thresholded guard lets
+  something through, check what the threshold was measuring before deciding it
+  is set too high.** Here the numerator was wrong and the threshold was right.
+
+## 2026-09-21 (08:4xZ) — the participant-weighted draw (seed 921521): a price column welded into 1,336 fund names, and a comparator that hid the two largest cases
+
+**Draw:** 12 plans, participant-weighted over 58,773 published lineups /
+90,902,765 participants. Ten read clean — Amazon (1,343,800, 27 rows @ 0.91),
+Intel, Whole Foods, Mayo Clinic, MSK, PNC, ODP, Drexel, Red Lobster, Plan
+Professionals. Two findings.
+
+- **NEW CLASS, SIZED: a PRICE or UNIT-VALUE column welded onto the holding's
+  name — 1,336 rows / 51 plans / 207,238 participants.**
+  CHS/Community Health Systems (**91,940 ppl**) publishes `$0.00` on **all
+  fifteen** of its rows — `Ret Target 2035 Sept Acct $0.00`, and a top row at
+  24.4% reading `CHS Stable Value Fund Master Trust Inv estment Account $0.00`
+  (which also carries a kerning break, `Inv estment`). Emory Healthcare
+  (36,426) and Emory University (35,748) publish `QCSTIX CREF Stock R3
+  $917.217600` — ticker, fund, and then the unit PRICE — on 37 of 80 and 38 of
+  82 rows; Loyola Chicago (8,646) the same at `$911.369300`; Harmon City
+  (5,024) `Collective Trust Fund, , $37.46/unit` on 29 of 31 rows, 98% of the
+  menu. The value column is correct in every case; it is the NAME that carries
+  a second number. **Queued, not started** — v178 is the version in hand and
+  #421 is unverdicted.
+- **The other three buckets are NOT this class** and the classification is
+  disjoint so they can be added up: prose leaked as a holding (57 rows / 55
+  plans / 137,148 ppl, already a known class), loan-rate rows (21 / 21 /
+  56,880, known), and **par value, which is LEGITIMATE and must never be
+  touched** (86 / 22 / 71,190 — `Common Stock, par value $0.01`, OGE, Caleres,
+  Tennant). A single regex for "currency in the name" spans all four, which is
+  exactly why the first cut of this measurement was not a class.
+
+**AND THE MEASUREMENT ERROR, which is the part worth keeping.** The first cut
+reported `352 plans / 894,074 ppl` and a top-20 table that began at 36,426
+participants. **Both of the two largest members were missing from it** —
+UnitedHealth at 274,906 and CHS at 91,940 — and the totals were right while
+the ranking was wrong, so nothing looked broken. The cause: the comparator was
+`(a, b) => b.ppl - a.ppl`, and a lineup ack that is a MASTER TRUST has no
+plans-all row, so `ppl` is `undefined` and the comparator returns **NaN**.
+A NaN-returning comparator does not merely misplace the offending rows —
+V8's sort is free to scramble the array, and it did. The tell was arithmetic,
+not visual: the "every row carries one" bucket summed to 102,280 participants
+while no plan in the printed table exceeded 36,426, and 102,280 − 91,940
+leaves a plausible remainder for the other nineteen. **The sum disagreed with
+the list, and the sum was right.**
+
+This is the standing rule — *a measuring script is code and earns the same
+suspicion* — meeting a failure mode worth naming on its own: **guard every
+comparator against undefined, because a bad comparator corrupts the whole
+ordering rather than the bad elements.** The same shape would have silently
+mis-ranked any of the dozens of "top by participants" tables this project
+prints, and several of them join lineups to plans-all exactly this way.
