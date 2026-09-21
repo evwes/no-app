@@ -19935,3 +19935,71 @@ rule. **The fix never changed. Only where it could see enough to be safe.**
   job wherever the filing states a vehicle. The defect was only ever the one
   value missing from that arm — `Separate account`.
 
+
+## 2026-09-21 — The comparable-fallback variant is BLOCKED, with the cost now exact
+
+- **The item:** falling back to `FUND_TICKER` inside `fund-er.js`'s pooled
+  branch, returning `comparable: true`, so a pooled vehicle that plainly tracks
+  a named registered fund publishes a labelled estimate instead of a blank.
+  Whole-store it reaches **9,835 rows / 3,334 plans / 5,864,346 participants**,
+  which made it the largest open item by people affected.
+- **Last cycle it was held because 1,782 rows typed `Mutual fund` moved, and
+  "moved" is not a direction.** Split by type AND direction, one cell is a
+  defect and it is large: **`Mutual fund :: ASSERTED → comparable`, 1,544 rows
+  / 470 plans / 951,157 participants.** Sutter Health (74,381) would see
+  `Fidelity 500 Index` go from **FXAIX** to **FXAIX\*** — the asterisk and the
+  words "comparable fund", telling 74,381 readers we are showing a stand-in
+  when we are showing the fund they actually hold. Same for Orlando Health's
+  `Vanguard Wellington Fund Investor Shares` and Lifepoint's
+  `Am Fnd Europacific Grth R6`.
+- **The mechanism, which is an ORDERING bug and not a scoping one.**
+  `lookupTicker` tries the ISSUER-PREFIXED name first. The issuer often carries
+  a trust word, so that first attempt goes down the pooled branch, returns null
+  today, and the lookup correctly falls through to the bare name and resolves
+  the mutual fund exactly. **The variant makes that first attempt SUCCEED** —
+  as a comparable — so it short-circuits the correct later attempt. The
+  fallback is not wrong in itself; putting it where the issuer prefix can reach
+  it is.
+- **NOT SHIPPED.** Any future attempt must either run the fallback only on the
+  bare-name attempt, or refuse it when the filing's type column says
+  `Mutual fund`. Recorded with the exact cost so the next cycle can take it
+  deliberately rather than rediscovering the block.
+- **Prevention:** a control that reports a population being "touched" has not
+  been run. **Split by direction before reading a count as a verdict** — the
+  same count was 1,782 "touched" last cycle and is 1,544 wrong plus 238 right
+  today, and only the split distinguishes them.
+
+## 2026-09-21 — Weighted draw (seed 20260921161): Compass Group, a live defect, and three shapes that dissolved
+
+- **CONFIRMED LIVE by rendering the page**, not inferred from the store:
+  **Compass Group USA (263,796 participants)** publishes six rows reading
+  `Fidelity TRIM 2030 Trust Company`, `… 2040 …`, `… 2050 …` and so on —
+  **64% of its entire menu** — where "Trust Company" is the TRUSTEE (Fidelity
+  Management Trust Company) welded onto the holding name, and a seventh reading
+  `Fidelity Manged Income Portfolio il CL 3 Common collective trust fund, at`,
+  where the TYPE column is welded on and truncated mid-phrase. All seven render
+  with no ticker and no expense ratio. CLAUDE.md records a display strip for
+  the welded-type class shipped 2026-09-18; **it does not cover these
+  phrasings.**
+- **THE SIZING IS THE LESSON, because all three candidate shapes dissolved.**
+  Measured against the store they look large — type-column weld 1,998 rows /
+  4,521,791 ppl, trustee weld 468 / 1,836,324, truncated-on-a-preposition
+  1,712 / 3,451,576 — and then the examples refute them:
+  - **`Fiera Asset Management USA Collective Trust` (Walmart, 1.92M ppl) is the
+    fund's REAL NAME**, as is `Victory Mid Cap Value Collective Investment
+    Trust Fund`. A vocabulary strip on "Collective Trust" would destroy them.
+  - **`GOLDMAN SACHS GROUP INC/THE` and `CHARLES SCHWAB CORP/THE` (CVS) are
+    Bloomberg-style security naming**, not truncation — the whole
+    "ends on a preposition" shape is mostly this.
+  - CVS's `283,824,100 Vanguard Institutional 500 Index Trust F` is a different
+    defect again: a VALUE welded on the FRONT, plus truncation.
+  So the honest population is far smaller than any of the three counts, and
+  **do not quote 4.5M, 1.8M or 3.4M for this class.**
+- **What the fix must look like, and it is already on this record.** The issuer
+  section-caption strip shipped this morning faced the identical trap — USC's
+  `Real Estate Account (CREF)` is TIAA's actual fund — and solved it
+  empirically: *does the remainder appear as a complete value on other
+  published rows?* `Principal Life Insurance Company` stands alone 16,457
+  times; `Account (CREF)` never does. The same test applies here and no
+  vocabulary list does. **Recorded, not started.**
+
