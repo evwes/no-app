@@ -255,7 +255,30 @@ Order of business:
       returned "no entry", indistinguishable from the control failing.
       Addressed by VALUE it resolved at once. **Address a negative control by
       a property it has, not an identifier you recall.**
-      **STATUS 16:4xZ 2026-09-21. SHIPPED: the share-class flip.** 161 rows /
+      **STATUS 17:3xZ 2026-09-21. IN FLIGHT: #429**, dispatched 17:08Z on
+      `bb8b2aaa`, dev branch, start verified — an INCREMENTAL run (no version
+      bump), dispatched because main's cron had not fired since 14:17Z.
+      **COMPASS GROUP DIAGNOSED FROM THE FILING, not fixed.** Page 104 read at
+      220dpi: column (b) is `Fidelity TRIM 2020`, column (c) is `Trust
+      Company`, and we publish the concatenation — six rows, **64% of a
+      263,796-participant menu**. The row below it is clean because its
+      description reads `Common collective trust fund`, which the parser
+      recognises as a TYPE and refuses; `Trust Company` is not in that
+      vocabulary, and `Common collective trust fund, at contract value` fails
+      `GENERIC_TYPE_NAME`'s `$` anchor because the filing wraps it over two
+      lines. **So the fix target is recognising two more TYPE labels, NOT
+      stripping a suffix off the name** — the suffix cannot discriminate,
+      since `Putnam Fiduciary Trust Company` (a firm) and `Fidelity TRIM 2030
+      Trust Company` (a fund) share it.
+      **BLOCKED NEXT STEP — do not repeat it:** `trace-filing.mjs` on this ack
+      traces the TEXT LAYER (`121 pages, statutory 4i header ABSENT`, zero TRIM
+      rows) while the stored entry came from the OCR path. It looks like a
+      clean run and answers a different question. An OCR-aware trace is needed
+      before the glue site can be named.
+      **My sizing splitter for this class is CONTAMINATED — do not reuse
+      "157 rows / 1,210,535 ppl".** It called `SEI Trust Company` glued because
+      "SEI" matched a class-letter heuristic.
+      **SUPERSEDED: SHIPPED: the share-class flip.** 161 rows /
       77 plans / **51,655 ppl** stop seeing the INVESTOR class's expense ratio
       beside a name that already reads "Class I" -- `T. Rowe Price Overseas
       Stock |` was TROSX where the answer is TROIX, Blue Chip Growth TRBCX ->
