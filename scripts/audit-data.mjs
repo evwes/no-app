@@ -555,12 +555,6 @@ try {
   auditCoverage.pvTopShare = +(topShare * 100).toFixed(1);
 } catch (e) { console.warn("run-completeness audit skipped: " + e.message); }
 
-console.log(`\naudit: ${statTotal} plans, ${entries} lineup entries (${confident} confident)`);
-for (const sev of ["high", "warn"]) {
-  console.log(`\n== ${sev.toUpperCase()} (${findings[sev].length})`);
-  for (const f of findings[sev].slice(0, 40)) console.log("  " + f);
-  if (findings[sev].length > 40) console.log(`  … and ${findings[sev].length - 40} more`);
-}
 
 // LOSS TRIAGE (from merge-4i): every confidence loss whose old parse was
 // real-menu-shaped is a HIGH — junk-cleanup losses are expected on guard
@@ -606,6 +600,49 @@ try {
   if (dropped.length > 20)
     flag("warn", "rows-dropped", `… and ${dropped.length - 20} more (rows-dropped.txt in the merge log)`);
 } catch { /* no file — merge didn't run in this invocation */ }
+
+/* THE SUMMARY PRINTS HERE, AFTER THE THREE TRIAGE BLOCKS — it used to print
+ * BEFORE them, and so never counted a single one of their findings.
+ *
+ * Measured on run #416 (2026-09-20): the log tail announced `== HIGH (5)` and
+ * `== WARN (543)` while the coverage line the SAME run wrote recorded
+ * `high: 6, warn: 546`. The three extra were Thrivent's `reparse-loss` HIGH
+ * and the `rows-dropped` WARNs — real findings, correctly computed, written
+ * to `audit-high.txt` and to the accuracy trail, and absent from the only
+ * output a human actually reads after a run.
+ *
+ * `swaps-degraded` has been in this file since 2026-09-11 with the stated
+ * purpose "it exists so the next one is seen at all". Its WARNs have never
+ * once been printed. The check worked; the reporting did not — which is the
+ * same computed-and-discarded shape as run #244's silent catches, the
+ * Schedule A carrier, and the feature-fallback denominator, and it is the
+ * third instance found in this repo by looking rather than by being bitten. */
+console.log(`\naudit: ${statTotal} plans, ${entries} lineup entries (${confident} confident)`);
+for (const sev of ["high", "warn"]) {
+  console.log(`\n== ${sev.toUpperCase()} (${findings[sev].length})`);
+  for (const f of findings[sev].slice(0, 40)) console.log("  " + f);
+  if (findings[sev].length > 40) console.log(`  … and ${findings[sev].length - 40} more`);
+}
+
+/* AND THE THREE TRIAGE CATEGORIES GET THEIR OWN SECTION, because counting
+ * them is not reading them. Moving the summary after the triage blocks fixed
+ * the COUNT — 543 -> 546 on the control — and changed nothing a human sees:
+ * the WARN list truncates at 40 and these findings are appended last, so they
+ * sat at positions 544-546 under 543 routine [yoy] and [counts] lines.
+ *
+ * These are the only findings that answer "did this version break something
+ * for a reader", which is the question asked immediately before a mirror. So
+ * they print in full, separately, under a heading that says what to do. */
+{
+  const CATS = ["reparse-loss", "source-swap-degraded", "rows-dropped"];
+  const must = [...findings.high, ...findings.warn]
+    .filter((f) => CATS.some((c) => f.includes(`[${c}]`) || f.startsWith(c)));
+  if (must.length) {
+    console.log(`\n== READ BEFORE MIRRORING (${must.length}) — plans this version changed for the worse, or may have`);
+    for (const f of must.slice(0, 60)) console.log("  " + f);
+    if (must.length > 60) console.log(`  … and ${must.length - 60} more (losses-triage.txt / swaps-degraded.txt / rows-dropped.txt)`);
+  }
+}
 
 // REPARSE VERDICT: compare this run's coverage line to the previous one.
 // Improvement is the contract; a regression beyond tolerance is a HIGH

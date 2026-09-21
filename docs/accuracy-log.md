@@ -18692,3 +18692,61 @@ screen twice within seconds of #415 landing.
 every run, before every mirror, alongside reading the merge log. The habit this
 day earned is not "write more specimens"; it is **look at what actually changed
 for readers, ranked by money and people, every single time.**
+
+## 2026-09-21 (00:3xZ) — run #416 verdict: v176 PASSED and is MIRRORED; and the audit has been under-reporting its own triage since 2026-09-11
+
+`129095f5`. pv **176 at 99.85%**. Confident **60,117 (−1)**, lineups 59,766,
+overshoot 332, aggRow 112, dl 104. **MIRRORED `60eac141 → 129095f5`** — git
+check `--force` over main's one cron commit with 0 acks / 0 plans lacked and
+the plans array byte-identical; data gate unforced at **+0 / −0**.
+
+### The verdict, read with `store-diff` for the first time
+
+The new tool made this the fastest verdict yet — one command, and every mover
+named and ranked:
+
+| | |
+|---|---|
+| **rows removed** | **Thrivent `Thrivent` $1,700,835,259 — GONE**, plus Trustmark's two Schwab rows, Gowan's `Multiple Issuers` $2,937,136, Arkansas Heart's `Multiple issuers` $2,748,264, Teach For America's `participants` $1,093,284 |
+| **confidence lost** | **1 plan / 9,282 ppl — Thrivent**, exactly as designed |
+| **Apple** | absent from the diff entirely, i.e. **unchanged**: its $2,153,504,672 row survives |
+
+So v176 does exactly what it was narrowed to do: the $1.7B phantom is gone for
+9,282 readers, Apple's brokerage window stays for 145,428, and the cost is the
+four small plans whose v175 substitutions are correctly refused (Trustmark
+32 → 29, Arkansas Heart ratio 0.998 → 0.952, Teach For America 1.000 → 0.995,
+Gowan reverting to its v174 name).
+
+### And the run exposed a reporting defect older than any of today's work
+
+The merge log's audit tail announced **`== HIGH (5)`** and **`== WARN (543)`**.
+The coverage line that the SAME run wrote records **`high: 6, warn: 546`**.
+
+Both are honest; the print is just computed too early. The summary loop sat at
+`audit-data.mjs:558` and the three triage blocks — `losses-triage` (~571),
+`swaps-degraded` (~588) and the `rows-dropped` check shipped hours earlier
+(~603) — all run AFTER it. So the printed counts have never included a single
+triage finding, while `audit-high.txt` and the accuracy trail always have.
+
+**`swaps-degraded` has been in this file since 2026-09-11 carrying the stated
+purpose "it exists so the next one is seen at all". Its WARNs have never once
+been printed.** The check worked; the reporting did not. That is the same
+computed-and-discarded shape as run #244's silent catches, the Schedule A
+carrier and the feature-fallback denominator — and the third instance in this
+repo found by looking rather than by being bitten.
+
+**Two fixes, because the first one was not enough and the control said so.**
+
+1. The summary now prints AFTER the triage blocks. Controlled with three
+   crafted findings: the count moves **543 → 546**.
+2. **That fixed the count and changed nothing a human sees.** The WARN list
+   truncates at 40 and triage findings are appended last, so they sat at
+   positions 544–546 beneath 543 routine `[yoy]` and `[counts]` lines.
+   **Counting them is not reading them.** So they also print in a dedicated
+   `== READ BEFORE MIRRORING` section, in full, under a heading that says what
+   to do with them — these are the only findings that answer "did this version
+   break something for a reader", which is the question asked immediately
+   before a mirror.
+
+Controlled both directions: with the three crafted findings the section prints
+all three by name; with none it does not print at all.
