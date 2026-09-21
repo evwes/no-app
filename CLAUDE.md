@@ -666,73 +666,67 @@ read `lineups-status.json` and `lib-4i`'s export, do not copy the line.
 - **LIVE ON MAIN: the v176 store** (`60eac141 → 129095f5`, mirrored
   2026-09-21 00:3xZ, data gate unforced +0/−0). Main has since taken cron
   commits `dd2aa45d` and `3457deef`.
-- **`PARSER_VERSION` in the tree is 179. IN FLIGHT: #422 (v178)**, dispatched
-  2026-09-21 08:28Z by `workflow_dispatch` on `c105a50e`, start verified.
-  **v179 is committed `[skip ci]` behind it (`24584c9d`) and dispatches the
-  moment #422 lands** — verified that the push created no run.
-- **v179: the COST column welded into the fund name.** CHS/Community Health
-  (**91,940 ppl**) published all fifteen rows as `Ret Target 2035 Sept Acct
-  $0.00`; both Emory plans carry the unit price (`QCSTIX CREF Stock R3
-  $917.217600`) on 37 of 80 and 38 of 82 rows. `stripTrailingColumns` has
-  removed trailing cost columns since v70 and **none of its five arms can
-  match `$0.00`** — the comma-group arm needs a comma, the plain-number arms
-  have no `$`. Sized whole-store with all 1,595 distinct renames read:
-  **1,763 rows / 295 plans / 560,053 ppl**; par value protected.
-  **Fixed in the obvious place first and REVERTED:** `stripTrailingColumns`
-  runs before `splitNameDesc`, so it also moved the ISSUER column — probably
-  an improvement, definitely unmeasured, and v126 leaked a `*` into 3,224
-  issuers as exactly that kind of side effect. Shipped narrowly in `cleanDesc`
-  instead. **When a fix works in two places, prefer the one whose effect you
-  have measured.** Gate green; corpus diff 0/0/0/0 over 1,006 filings (a
-  negative control, stated as one); CHS traced with issuers byte-identical.
-  **TWO OF MY OWN MEASUREMENTS WERE WRONG BEFORE THE FIX WAS**, both recorded:
-  the queue entry's fee-cell claim (236 of these rows ALREADY resolve to a
-  ticker with the suffix attached; stripping gains 2 rows / 604 ppl — it is a
-  readability fix, not a fee fix), and the script that produced that number
-  (read `r.ticker`; the field is `r.tk`, exposed by a positive control after a
-  uniform all-zero sweep). `docs/accuracy-log.md` 2026-09-21 (v179).
+- **`PARSER_VERSION` in the tree is 179. IN FLIGHT: #423 (v179)**, dispatched
+  2026-09-21 10:15Z by `workflow_dispatch` on `9756661f`, start verified.
+- **LIVE ON MAIN: the v178 store — MIRRORED 2026-09-21 10:1xZ**
+  (`dd2aa45d → 9756661f`). `--force` on the GIT check over main's two cron
+  commits, measured first: **0 acks and 0 plans the branch lacked, plans array
+  byte-identical, main newer on 0** of 68,661 differing pv values.
+  `--force-data` over the two losses, which the gate named by ack and which
+  are the two plans v178 was written to withdraw. pv 178 at 99.85%, confident
+  **60,115 (−2, the designed outcome)**, lineups 59,764, HIGH 7 = 5 baseline +
+  2 self-clearing, WARN 543, overshoot 332, dl 105.
+  **What reached readers: Marsh & McLennan's 49,784 participants stop seeing
+  the master-trust pointer printed twice and presented as their fund menu** —
+  `Plan interest in` $3,695,159,225 beside `Plan identified investments held by
+  master trust at fair value` $3,391,393,571, two captions over one number —
+  and get the trust's real eleven holdings (SSGA index series, company stock,
+  four synthetic GICs). **Recorded cost:** the sister plan also gives up a
+  genuine `Marsh & McLennan Companies Stock Fund` row, 8.5% / $118,353,516.
+- **#422 PASSED and ALL FOUR pre-registered tests passed**, the second being
+  the one that matters: **a −2 in `confident` here is the design, not a
+  regression.** Both Marsh acks came back `c:0` carrying `dx:"trust"` — better
+  than registered, since the store now says WHY in the vocabulary the census
+  reads. The linked trust is confident at pv 178. The 52-plan negative control
+  still publishes (FedEx 26 rows, GM 9, Thomson Reuters 20).
+- **THE AUDIT-REPORTING FIX IS VERIFIED — third attempt, first run that could
+  test it.** #418 and #421 were both quiet runs, and #421 was quiet only
+  because v177 turned out inert, so predicting it would be the test was wrong.
+  #422 printed `== HIGH (7)` / `== WARN (543)` against a coverage line of
+  `high 7, warn 543` — **equal** — and **`== READ BEFORE MIRRORING (2)` named
+  both Marsh acks at the top** instead of burying them at positions 544–546
+  under 543 routine WARN lines. For contrast, #416 printed `HIGH (5) /
+  WARN (543)` against `high 6, warn 546`.
+- **THE RANDOM DRAW WAS NOT RANDOM AND THIS IS A DEFECT IN THE ACCURACY
+  MACHINERY ITSELF.** `draw-weighted.mjs` hardcoded `let s = 0x9e3779b9 ^
+  20260916200;` and **never read `argv[2]`**, so every invocation returned the
+  identical draw while each cycle labelled it with a different seed. Two cycles
+  of required hands-on review were the same twelve plans; the seed labels in
+  the log and the STATUS block were fiction. **Caught by arithmetic, not by
+  eye:** the second draw repeated nine of twelve plans when Amazon alone is
+  ~1.5% per pick. Fixed, the script now PRINTS the seed it used, and
+  controlled both ways. **The findings from those draws stand; the RATES do
+  not — they were never a sample of the population.** Third measurement defect
+  in two cycles (NaN comparator, `r.ticker` for `r.tk`, the dead seed) and all
+  three share a shape: the script ran, looked plausible, and was believed.
+  `docs/accuracy-log.md` 2026-09-21 (10:3xZ).
+- **RECORDED, NOT STARTED — OCR character substitution in published fund
+  names, 165 rows / 68 plans / 95,501 ppl.** Aya Healthcare publishes
+  `NUVEEN LIFECYCLE !NDEX 2060 INST` at 13.2% of the plan to 59,752 people.
+  **Four shapes, not one**, which is why nothing shipped: single-character
+  substitution (`!NDEX`, `!shares`, `£ID S00 INDEX`), a leading pipe
+  (`|Galliard Stable Value C`), pure OCR garbage (Bankers Healthcare, 14 of 27
+  rows), and a **Voya family where OCR read the table BORDERS as content**
+  (`| Voya Retirement Insurance and Annuity Co. |JPMorgan Equity Income`). A
+  character map is the kind of fix that eats real names, and 59,752 of the
+  95,501 sit behind ONE row.
 - **QUEUED, NOT FIXED — the issuer side effect v179 declined to ship blind:**
   fixing the cost strip in `stripTrailingColumns` turns CHS's issuer from
   `Master Trust Principal Life Insurance Company` into `Principal Life
   Insurance Company`, i.e. a section header stops gluing into the issuer.
-  That is a named defect in this file's own invariants and looks like a win.
-  It needs its own sizing, which cannot come from the store — it is a
-  parse-time change, so the instrument is the corpus diff plus traced
-  specimens.
-- **#421 PASSED AS A RUN AND v177 FAILED ITS OWN FIRST TEST. v177 IS INERT
-  and the defect it names is STILL LIVE.** Pechanga still publishes
-  `Net position available for benefits` at 63.7% of a 14-row menu at pv 177.
-  **`NOT_FUND_SHAPED` DOES NOT DROP ROWS** — it is a classifier for region
-  scoring, managed-account inheritance, security shape and the audits, and its
-  only suppressing consumer is the v105 `aggOnly` guard, which needs the top
-  row at **≥90%**. At 63.7% no path could reach it. The sizing counted *rows
-  the arm matches* (a CONDITION) and read it as *rows removed* (an OUTCOME) —
-  the error this file already records against the `band-hi` estimate.
-  **Before widening any refusal list: name the code path that will act on the
-  match and check it can reach the case, THEN count strings.**
-  `docs/accuracy-log.md` 2026-09-21 (run #421 verdict).
-- **v178 is one arm on `isTrustPointerRow`** — Marsh & McLennan's two plans
-  (**35,907 + 13,877 ppl, $8.9B**) publish the master-trust pointer AS their
-  menu, the same pointer printed twice under two captions. The predicate
-  reaches a trust named at the START or the END of a row and this filing names
-  it in the MIDDLE, so the pointer measured 51.8% against a 0.6 gate. **The
-  gate was fed half its evidence; it was not set too high.** Sized by OUTCOME
-  (flags that flip, not rows that match): 2 plans, zero collateral against a
-  52-plan / 2.92M-ppl negative control of plans carrying a pointer BESIDE a
-  real menu. Verified locally (`trustPtr=true, CONFIDENT=false`) and by corpus
-  diff with the specimen pinned: **CONFIDENCE LOST 1, nothing else moved over
-  1,006 filings.** Both plans link to a trust whose own filing is confident, so
-  the refusal serves a real 11-row menu.
-- **MIRROR HELD at 08:3xZ, deliberately and recorded as such:** the v177 store
-  is +0/−0, so mirroring it delivers readers **nothing** while force-pushing
-  over main's two cron commits. v178's store lands within the hour and is worth
-  a mirror. One force-push instead of two.
-- **#422 IS THE FIRST RUN THAT CAN VERIFY THE AUDIT-REPORTING FIX.** #418 and
-  #421 both could not — a quiet run prints identical numbers under the broken
-  ordering and the fixed one, and v177 being inert made #421 quiet. v178
-  REMOVES two confident lineups and so must produce `reparse-loss` findings.
-  Check: printed `== HIGH (n)` / `== WARN (n)` equal the coverage line's
-  `high` / `warn`, and **`== READ BEFORE MIRRORING` names both Marsh plans**.
+  A named defect in this file's own invariants, so it looks like a win — it
+  needs its own sizing, and being parse-time that means corpus diff plus
+  traced specimens, not the store.
 - **Residuals: every number re-derived against v176 on 2026-09-21 and both
   unknowns closed** — see the re-derived table below. 1,354 live plans.
 

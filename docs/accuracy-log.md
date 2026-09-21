@@ -19074,7 +19074,12 @@ findings and both orderings print the same numbers.
 ## 2026-09-21 (08:4xZ) — the participant-weighted draw (seed 921521): a price column welded into 1,336 fund names, and a comparator that hid the two largest cases
 
 **Draw:** 12 plans, participant-weighted over 58,773 published lineups /
-90,902,765 participants. Ten read clean — Amazon (1,343,800, 27 rows @ 0.91),
+90,902,765 participants. **CORRECTION APPENDED 2026-09-21 10:3xZ — the
+"seed 921521" in this entry's heading did nothing.** `draw-weighted.mjs`
+hardcoded its seed and never read `argv[2]`, so this draw and the next one
+were the SAME twelve plans. The findings below are real; they are NOT a
+random sample of the published population and no rate may be quoted from
+them. Fixed and controlled the same day — see the 10:3xZ entry. Ten read clean — Amazon (1,343,800, 27 rows @ 0.91),
 Intel, Whole Foods, Mayo Clinic, MSK, PNC, ODP, Drexel, Red Lobster, Plan
 Professionals. Two findings.
 
@@ -19256,3 +19261,127 @@ byte-identical to #418's but for `dl`.
   rule: **when a fix works in two places, prefer the one whose effect you have
   measured — a correct change with an unmeasured side effect is not a measured
   change.**
+
+## 2026-09-21 (10:1xZ) — run #422 verdict (v178): ALL FOUR pre-registered tests PASSED, MIRRORED, and the audit-reporting fix is VERIFIED AT LAST
+
+**#422 PASSED** (59 min, `9756661f`): pv 178 at 99.85% of 68,767 acks,
+confident **60,115 (−2)**, lineups 59,764 (−2), HIGH **7** = the 5 baseline
+plus 2 self-clearing `reparse-loss`, WARN 543, overshoot 332, aggRow 112,
+generic-named 114, dominant-row 0, dl 105.
+
+**All four pre-registered tests passed, and the second one is the whole point:
+a −2 here is the designed outcome, not a regression.**
+
+1. **Both Marsh acks came back NOT confident** — and better than registered,
+   both carry `dx: "trust"`, the exactly correct diagnosis, with `rw` 3 / `rt`
+   96 and `rw` 4 / `rt` 92. The parse is not merely refused; the store now says
+   *why*, in the vocabulary the gap census reads.
+2. **Confident fell by exactly 2**, lineups by exactly 2. Nothing else moved.
+3. **The linked trust (`20251006164519NAL0006985280001`) is confident at pv
+   178 with its real 11-row menu** — SSGA Global Equity ex-USA Index, SSGA
+   Russell Small/Mid Cap Index, the Marsh & McLennan stock fund and four
+   synthetic GICs — so both plans' pages serve that instead of the pointer.
+4. **The 52-plan negative control still publishes:** FedEx 26 rows, GM 9,
+   Thomson Reuters 20. The arm left every plan that carries a pointer BESIDE a
+   real menu alone, as designed.
+
+**THE AUDIT-REPORTING FIX IS VERIFIED, on the third attempt and the first run
+that could actually test it.** #418 and #421 both printed numbers that agreed
+under either ordering because each was a quiet run with zero triage findings —
+and #421 was quiet only because v177 turned out inert, which is why predicting
+it would be the test was wrong. v178 removes two confident lineups, so this run
+had findings to order. Both halves check out:
+
+- Printed `== HIGH (7)` and `== WARN (543)`; the coverage line records
+  `high: 7, warn: 543`. **Equal.** For contrast, #416 printed `HIGH (5) /
+  WARN (543)` against a coverage line of `high 6, warn 546`.
+- **`== READ BEFORE MIRRORING (2)` printed and named both Marsh acks**, at the
+  top of the output rather than buried at positions 544–546 beneath 543
+  routine WARN lines. That section is the part that had never once run on real
+  findings.
+
+**MIRRORED 10:1xZ: `dd2aa45d → 9756661f`, both overrides used and both on the
+record.** `--force` on the GIT check over main's two cron commits, measured
+first: **0 acks and 0 plans the branch lacked, plans array byte-identical, main
+newer on 0 of 68,661 differing pv values.** `--force-data` over the two losses
+— which the gate named by ack and row count, and which are the two plans this
+version was written to withdraw, each already opened, traced and confirmed to
+have a confident trust standing behind it.
+
+**What reached readers: Marsh & McLennan's 49,784 participants stop seeing the
+master-trust pointer printed twice and presented as their fund menu** —
+`Plan interest in` $3,695,159,225 beside `Plan identified investments held by
+master trust at fair value` $3,391,393,571, two captions over one number — and
+get the trust's real eleven holdings instead. **Recorded cost, unnetted:** the
+13,877-participant sister plan also gives up a genuine directly-held
+`Marsh & McLennan Companies Stock Fund` row at 8.5% / $118,353,516, because the
+plan-level view is refused whole.
+
+The mirror carries **v179 CODE over the v178 STORE**, safe by
+`SCHEDULE_INCREMENTAL` — a scheduled run treats a parser-version gap as no
+work, so main's :23 cron cannot turn it into a duplicate full re-parse.
+**#423 (v179) was dispatched first, at 10:15Z on `9756661f`, start verified**,
+so the dev branch was busy and main was quiet at the moment of the force push.
+
+## 2026-09-21 (10:3xZ) — THE RANDOM DRAW WAS NOT RANDOM: the seed was hardcoded and two cycles of "hands-on review" re-read the same twelve plans
+
+**This is a defect in the accuracy machinery itself, not in the data, and it
+outranks anything the draw found.**
+
+`draw-weighted.mjs` — the participant-weighted draw the standing directive
+requires every parser cycle to run — contained:
+
+```js
+let s = 0x9e3779b9 ^ 20260916200;   // process.argv[2] never read
+```
+
+**The seed argument was accepted on the command line and thrown away.** Every
+invocation returned the identical draw. The previous cycle's entry is headed
+*"the participant-weighted draw (seed 921521)"* and this cycle began with
+*"seed 921640"*; **both ran the same twelve plans**, and the seed labels in
+`docs/accuracy-log.md` and in the cycle STATUS block are fiction.
+
+**How it was caught, which is the only reason it did not run for another
+week:** the second draw returned Amazon, Whole Foods, Universal Services, CHS,
+PNC, MSK, Red Lobster and Plan Professionals again — nine of twelve identical.
+Amazon is 1,343,800 of 90,852,206 participant-units, about 1.5% per pick, so
+two independent draws sharing nine plans is not a coincidence anyone should
+accept. **The tell was arithmetic disagreeing with the story, exactly as with
+the NaN comparator this morning: the result was too stable to be random.**
+
+**Fixed:** the script now reads `process.argv[2]` and **prints the seed it
+actually used**, so a label can never again outrun the value. Controlled both
+ways — seed 20260916200 and seed 921640 now return visibly different draws
+(the second opens Amazon, Teamsters National, O'Reilly, Aya Healthcare rather
+than Amazon, Universal Services, Whole Foods, CHS).
+
+**What this cost, stated plainly:** two cycles of hands-on review that were
+recorded as random samples of the published population were one fixed sample.
+The findings they produced are still real — CHS's `$0.00` cost column is a
+genuine defect and v179 fixes it — but **they are not evidence about the
+population**, and no rate may be quoted from them. This is the third
+measurement defect in two cycles (NaN comparator, `r.ticker` for `r.tk`, now
+the dead seed) and the pattern across all three is the same: **the script ran,
+produced plausible output, and was believed.**
+
+**THE FIRST GENUINELY SEEDED DRAW (seed 921640, participant-weighted, v178
+store).** Amazon (1,343,800, 27 rows @ 0.91), Teamsters National 401k
+(164,679), O'Reilly (93,644), Aya Healthcare (63,406), Acosta (54,936), Waste
+Management (47,129) and others read clean — O'Reilly's and Waste Management's
+top rows are the sponsor's own name and are the legitimate company stock fund,
+not the sponsor-name-as-holding defect.
+
+**One new class, sized and NOT started: OCR character substitution inside a
+published fund name — 165 rows / 68 plans / 95,501 ppl.** Aya Healthcare
+publishes **`NUVEEN LIFECYCLE !NDEX 2060 INST` at 13.2% of the plan** to 59,752
+participants: one `!` read for one `I`. But the class is **four shapes, not
+one**, and that is why nothing shipped: a single-character substitution
+(`!NDEX`, `!shares S&P 500 Index K`, `£ID S00 INDEX`); a leading pipe
+(`|Galliard Stable Value C`, `|American New Perspective`); pure OCR garbage
+(Bankers Healthcare Group, 14 of 27 rows, 32% of its menu, `e0q!CDEFGHIJK!…`);
+and a **Voya family where OCR read the table BORDERS as content**
+(`| Voya Retirement Insurance and Annuity Co. |JPMorgan Equity Income`), which
+is a different and more interesting defect — issuer and fund in one row
+separated by pipes. A character map is precisely the kind of fix that eats
+real names, and 59,752 of the 95,501 participants sit behind a single row.
+Recorded for a later cycle with the distinct names on file.

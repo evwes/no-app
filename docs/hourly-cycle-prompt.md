@@ -237,6 +237,61 @@ Order of business:
       21,502 rows / 2,106 lineups cleaned, +37 tickers, 0 lost, 0 flipped);
       the parser-side strip stays queued for the next version. `docs/accuracy-log.md`
       2026-09-17 (21:0xZ draw).
+      **STATUS 10:3xZ 2026-09-21. IN FLIGHT: #423 (v179), dispatched 10:15Z on
+      `9756661f`, start verified. LIVE ON MAIN: the v178 store, MIRRORED
+      10:1xZ (`dd2aa45d -> 9756661f`).**
+      **FIRST ACTION NEXT CYCLE: #423's verdict.** v179 is a NAME-ONLY change,
+      so expect the coverage line byte-identical except `dl`/`tkSampled` —
+      **that is the right answer, not a stall**, for the same reason v172-v174
+      were. The check that settles it is reading CHS
+      (`20250926144818NAL0013938530001`) out of the store: all fifteen rows
+      must read `Ret Target NNNN Sept Acct` with no `$0.00`, and the top row
+      `CHS Stable Value Fund Master Trust Inv estment Account` with no trailing
+      `$`. Both Emory plans lose `$917.217600`. **Issuers must be UNCHANGED**
+      (`Master Trust Principal Life Insurance Company` intact) — that is the
+      negative control for the placement v179 deliberately reverted.
+      **#422 PASSED, ALL FOUR TESTS PASSED, MIRRORED.** confident 60,115
+      (**−2, the design**), HIGH 7 = 5 + 2 self-clearing. Both Marsh acks came
+      back `c:0` with `dx:"trust"`; the linked trust is confident; the 52-plan
+      negative control still publishes. 49,784 participants stop seeing the
+      master-trust pointer printed twice as their menu and get the trust's real
+      eleven holdings. Recorded cost: the sister plan gives up a genuine
+      company-stock row, 8.5% / $118,353,516.
+      **THE AUDIT-REPORTING FIX IS VERIFIED at last** — third attempt, first
+      run with triage findings to order. `== HIGH (7)` / `== WARN (543)` equal
+      the coverage line, and **`== READ BEFORE MIRRORING (2)` named both Marsh
+      acks at the top** rather than at positions 544-546 under 543 routine
+      lines.
+      **AND THE BIG ONE, A DEFECT IN THE ACCURACY MACHINERY ITSELF: THE RANDOM
+      DRAW WAS NOT RANDOM.** `draw-weighted.mjs` hardcoded
+      `let s = 0x9e3779b9 ^ 20260916200;` and **never read `argv[2]`**. Every
+      invocation returned the same draw while each cycle labelled it with a
+      different seed — two cycles of the required hands-on review were the SAME
+      twelve plans, and the seed labels in this file and the accuracy log were
+      fiction. Caught by arithmetic, not by eye: nine of twelve repeated when
+      Amazon alone is ~1.5% per pick. **Fixed; it now prints the seed it used**,
+      controlled both ways. Findings from those draws stand; **RATES from them
+      do not.** Third measurement defect in two cycles and all three share a
+      shape — the script ran, looked plausible, was believed.
+      **FIRST GENUINELY SEEDED DRAW (921640):** Amazon, Teamsters National
+      (164,679), O'Reilly, Aya Healthcare, Acosta, Waste Management read clean
+      — O'Reilly's and Waste Management's sponsor-named top rows are the real
+      company stock fund, not the sponsor-as-holding defect.
+      **QUEUE:** (1) #423 verdict -> mirror; (2) **the issuer side effect v179
+      declined to ship blind** — `stripTrailingColumns` runs before
+      `splitNameDesc`, so fixing the cost strip there also un-glues a section
+      header from the issuer (`Master Trust Principal Life Insurance Company`
+      -> `Principal Life Insurance Company`). Probably right, needs its own
+      sizing via corpus diff + traced specimens, not the store; (3) **OCR
+      character substitution in published names, 165 rows / 68 plans / 95,501
+      ppl — RECORDED, four shapes not one**: `NUVEEN LIFECYCLE !NDEX 2060 INST`
+      (Aya, 13% of menu, 59,752 ppl), leading pipes, pure garbage (Bankers
+      Healthcare 14 of 27 rows), and a **Voya family where OCR read the table
+      BORDERS as content**. A character map eats real names and 59,752 of the
+      95,501 sit behind ONE row, so this needs care, not speed; (4) Pechanga
+      re-queued — v177 did NOT fix it, and any fix must suppress at 63.7%,
+      which `NOT_FUND_SHAPED` structurally cannot do; (5) SDBA fold, 269 plans
+      / 630,032 ppl, owner question 5.
       **STATUS 09:3xZ 2026-09-21. IN FLIGHT: #422 (v178), dispatched 08:28Z,
       start verified, ~65 min in at this writing. v179 committed `[skip ci]`
       behind it on `24584c9d` — VERIFIED the push created no run — and
