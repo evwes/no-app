@@ -182,7 +182,7 @@ for (const l of mmList) console.log("  " + l);
 // regression shows the night it happens. "unextracted match" = plans where
 // employer money demonstrably flowed but no formula came out — the
 // correctable backlog, distinct from plans that genuinely have no match.
-const covTot = { full: 0, rk: 0, match: 0, vesting: 0, matchQuote: 0, vestQuote: 0, roth: 0, afterTax: 0, lineup: 0, menu: 0, noMatchBacklog: 0, noEmployerMoney: 0 };
+const covTot = { full: 0, rk: 0, match: 0, vesting: 0, matchQuote: 0, vestQuote: 0, roth: 0, afterTax: 0, lineup: 0, menu: 0, noMatchBacklog: 0, noEmployerMoney: 0, matchInZeroEmp: 0, custody: 0, custodyPpl: 0 };
 for (const r of d.plans) {
   if (g(r, "sf")) continue;
   covTot.full++;
@@ -195,6 +195,9 @@ for (const r of d.plans) {
   // paid nothing — count $0-employer plans separately (their answer is
   // "none this year", which the site now states)
   const zeroEmp = (g(r, "contribEmployer") || 0) === 0;
+  // counted separately so `matchAny` can report extractor progress without
+  // disturbing `match`, whose definition the whole trail depends on
+  if (zeroEmp && f.match) covTot.matchInZeroEmp++;
   if (zeroEmp) covTot.noEmployerMoney++;
   // v57 metric redefinition: coverage counts EXTRACTED VALUES only.
   // Quote-only entries are tracked separately — 3,322 of the 12,465
@@ -211,11 +214,40 @@ for (const r of d.plans) {
   if (f.afterTax) covTot.afterTax++;
   if (f.menu) covTot.menu++;
 }
+/* CUSTODIAN / TRUSTEE (owner-requested 2026-09-21). We publish a
+ * RECORDKEEPER; who actually HOLDS the assets is a different role and was
+ * never surfaced. It needs no new extraction — the Schedule C service codes
+ * are already in the fee shards. Codes: 18 custodial (non-securities),
+ * 19 custodial (securities), 21 trustee (bank/trust co.), 24 trustee
+ * (discretionary), 25 trustee (directed).
+ * Code 20, trustee (INDIVIDUAL), is deliberately EXCLUDED: a named person is
+ * not a custodian institution, and counting one would publish a claim the
+ * filing does not make.
+ * `c` is a SPACE-SEPARATED STRING, not an array — verified by reading a shard
+ * rather than assuming, after a first pass built on the wrong shape. */
+try {
+  const CUSTODY = new Set([18, 19, 21, 24, 25]);
+  const pplByAck = new Map();
+  for (const r of d.plans) { if (!g(r, "sf")) pplByAck.set(g(r, "ack"), g(r, "participants") || 0); }
+  for (const shard of readdirSync("data/fees")) {
+    if (!shard.endsWith(".json")) continue;
+    const j = JSON.parse(readFileSync(`data/fees/${shard}`, "utf8"));
+    for (const [ack, entry] of Object.entries(j)) {
+      if (!pplByAck.has(ack)) continue;
+      const rows = entry && entry.p;
+      if (!Array.isArray(rows)) continue;
+      if (!rows.some((row) => String((row && row.c) || "").split(/\s+/).some((c) => c && CUSTODY.has(+c)))) continue;
+      covTot.custody++; covTot.custodyPpl += pplByAck.get(ack) || 0;
+    }
+  }
+} catch (e) { console.warn("custodian coverage skipped: " + e.message); }
+
 const pct = (n) => (100 * n / covTot.full).toFixed(1) + "%";
 console.log(`\n== COVERAGE (of ${covTot.full} full-form filers; SF filers carry none of this by law)`);
 console.log(`  recordkeeper ${covTot.rk} (${pct(covTot.rk)}) | match ${covTot.match} (${pct(covTot.match)}) | vesting ${covTot.vesting} (${pct(covTot.vesting)})`);
 console.log(`  quote-only (descriptive sentence shown, no value extracted): match ${covTot.matchQuote} | vesting ${covTot.vestQuote}`);
-console.log(`  roth ${covTot.roth} | after-tax ${covTot.afterTax} | lineups ${covTot.lineup} (${pct(covTot.lineup)}) | named menus ${covTot.menu}`);
+console.log(`  roth ${covTot.roth} (${pct(covTot.roth)}) | after-tax ${covTot.afterTax} (${pct(covTot.afterTax)}) | lineups ${covTot.lineup} (${pct(covTot.lineup)}) | named menus ${covTot.menu}`);
+console.log(`  custodian/trustee on Sch C ${covTot.custody} (${pct(covTot.custody)}, ${covTot.custodyPpl.toLocaleString()} ppl) | match formulas incl. $0-employer ${covTot.match + covTot.matchInZeroEmp}`);
 console.log(`  match backlog (employer money but no formula extracted): ${covTot.noMatchBacklog} | genuinely no employer money: ${covTot.noEmployerMoney}`);
 
 // Fee-shard sanity: a structurally-present-but-empty column (the Sch C
@@ -476,10 +508,46 @@ try {
         try { if (tickerOf(nm)) tkHit++; } catch { /* a throw is a miss */ }
       }
     }
+    /* THE SPLIT THE OWNER ASKED FOR (2026-09-21), and it measures something
+     * `tkShare` above does not. tkShare calls fundTickerInfo with ONE
+     * argument and the bare stored name — no issuer prefix, no cleaned name,
+     * no type — so it is not what a reader sees, and it lumps an EXACT
+     * ticker together with a labelled COMPARABLE, which are different claims:
+     * "this is the fund you hold" versus "this is what your holding tracks".
+     * These two keys run the SAME 1-in-20 ack-hash sample through app.js's
+     * own lookupTicker, so the trend is comparable run to run while tkShare
+     * keeps its history unbroken. Whole-store exact figures:
+     * `node scripts/ticker-sweep.mjs`. */
+    let tkEx = 0, tkCo = 0;
+    try {
+      const lookup = (f) => {
+        const raw = typeof f.nameRaw === "string" ? f.nameRaw : f.name;
+        const iss = f.iss ? String(f.iss).replace(/\*+/g, "").trim() + " " : "";
+        const order = /\s\|+\s*$/.test(raw) && raw !== f.name ? [f.name, raw] : [raw, f.name];
+        for (const n of order) {
+          const hit = (iss ? tickerOf(iss + n, f.type) : null) || tickerOf(n, f.type);
+          if (hit) return hit;
+          if (order[0] === order[1]) break;
+        }
+        return null;
+      };
+      for (const [ack, e] of Object.entries(entriesByAckCov)) {
+        if (!e || !e.confident || !Array.isArray(e.funds)) continue;
+        if (ackHash(ack) % 20) continue;
+        for (const x of e.funds) {
+          if (!String(x.name || "").trim()) continue;
+          let r = null; try { r = lookup(x); } catch { /* a throw is a miss */ }
+          if (r && r.tk) { if (r.comparable) tkCo++; else tkEx++; }
+        }
+      }
+    } catch (e) { console.warn("ticker split skipped: " + e.message); }
     if (tkSeen) {
       const pct = +(100 * tkHit / tkSeen).toFixed(2);
       auditCoverage.tkShare = pct;
       auditCoverage.tkSampled = tkSeen;
+      auditCoverage.tkExact = +(100 * tkEx / tkSeen).toFixed(2);
+      auditCoverage.tkComparable = +(100 * tkCo / tkSeen).toFixed(2);
+      console.log(`== FUND LABELLING (same sample, through app.js's lookup): exact ${auditCoverage.tkExact}% | comparable ${auditCoverage.tkComparable}% | unlabelled ${(100 - auditCoverage.tkExact - auditCoverage.tkComparable).toFixed(2)}%`);
       console.log(`== TICKER COVERAGE: ${pct}% of published holding rows resolve to a fund (1-in-20 sample of ${tkSeen.toLocaleString()} rows; blank fee cell otherwise)`);
     }
   } catch (e) { console.warn("ticker-coverage sample skipped: " + e.message); }
@@ -685,6 +753,32 @@ try {
     rk: covTot.rk, match: covTot.match, vesting: covTot.vesting,
     matchQuote: covTot.matchQuote, vestQuote: covTot.vestQuote,
     lineups: covTot.lineup, feeCodesPct: feeCodesShare,
+    /* OWNER-REQUESTED INDICATORS (2026-09-21). Three of these were already
+     * tallied above and PRINTED and then thrown away every run — the same
+     * computed-and-discarded shape as run #244's failure reason and the
+     * Schedule A carrier — so no one could diff them.
+     *   roth / aftertax : the contribution accounts a reader can be told
+     *                     about. PRE-TAX is deliberately absent: elective
+     *                     deferrals to a 401(k)/403(b) are pre-tax BY LAW,
+     *                     so it is not a coverage question and a metric
+     *                     claiming otherwise would be noise at 100%.
+     *   menu            : plans with no parsed lineup whose audited NOTES
+     *                     still name the options — the honest second-best
+     *                     for the investment list.
+     *   matchAny        : match formulas extracted REGARDLESS of whether
+     *                     employer money flowed. `match` above counts only
+     *                     plans that paid, which is the right number for
+     *                     "what can we tell a reader" and the wrong one for
+     *                     "is the extractor improving" — a version that
+     *                     parses 200 more formulas in $0-employer plans
+     *                     moves matchAny and leaves match flat. */
+    roth: covTot.roth, aftertax: covTot.afterTax, menu: covTot.menu,
+    matchAny: covTot.match + covTot.matchInZeroEmp,
+    /* cust/custPpl were computed and PRINTED and left out of this object on
+     * the first pass — the exact defect these keys were added to end, made
+     * once more inside the fix for it. Caught by reading the written line
+     * instead of the console output. */
+    cust: covTot.custody, custPpl: covTot.custodyPpl,
     high: findings.high.length, warn: findings.warn.length,
     // dl / pvTopShare: how much of the universe this run actually read.
     // Without them a partial store is indistinguishable from a complete one
