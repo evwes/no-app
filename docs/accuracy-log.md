@@ -18750,3 +18750,76 @@ repo found by looking rather than by being bitten.
 
 Controlled both directions: with the three crafted findings the section prints
 all three by name; with none it does not print at all.
+
+## 2026-09-21 (02:1xZ) — #418: the audit fix RAN but CANNOT BE VERIFIED by it; a clean draw; no mirror
+
+### The push that produced no run, caught by the rule that exists for it
+
+`4edcb0e1` (the audit-reporting fix) was pushed to `scripts/**` with no
+`[skip ci]` and **produced no run at all** — the newest branch run was still
+#416 from 22:22Z an hour later. That is the documented intermittent push
+trigger, and the standing rule ("after a kick push, dispatch rather than
+waiting") is the only reason it was noticed instead of assumed. Dispatched as
+**#418**, start verified.
+
+### And #418 cannot verify what it was dispatched to verify
+
+#418 ran clean — prep, one parse shard, merge, all green — so the new audit
+code **executes in production without error**. That is the whole of what it
+establishes.
+
+Its coverage line reads `high 5, warn 543`: **zero triage findings**, correct
+for an incremental run over the 104 dead acks where nothing moved. And with
+zero triage findings **the old ordering and the new one print identical
+numbers**, so the run is silent on whether the reorder works.
+
+**A quiet run proves nothing.** That is the rule this repo applies to every
+check it ships, and it applies to the fix for the reporting of those checks
+just as much. The fix stands on its local control (both directions, crafted
+findings) and is **production-unverified**.
+
+**Pre-registered for the next version bump**, which will have real triage
+findings: the printed `== HIGH (n)` / `== WARN (n)` must equal the `high` /
+`warn` in the coverage line that run writes, and the
+`== READ BEFORE MIRRORING` section must name the flagged plans. If those
+disagree again, the reorder did not take.
+
+### The draw: clean
+
+Seed 921021, participant-weighted, 12 plans, **924,000+ participants sampled
+— no fabricated row in any of them.** Teamsters-UPS (478,400 ppl, 23 rows @
+0.995), Starbucks (307,988 @ 0.978), Northwell (61,177), Sentara (42,199),
+Texas Children's, Juniper, Americo, Innospec, Seattle Roots, Edgewood,
+AMF Automation, Lakeside. Ratios 0.975–0.997 throughout, every menu reading as
+a real lineup.
+
+After a day spent finding three fabrications of my own making, a clean draw
+across 924k participants is worth recording as a result rather than skipping
+as a non-event.
+
+### One class sized and DELIBERATELY NOT FIXED
+
+Starbucks publishes the issuer `Target Date Funds Vanguard` on one row while
+its sibling vintages carry none — a type phrase with the firm glued after it,
+the reverse of the firm-then-type shape v154 strips.
+
+Sized: **425 rows / 216 plans / 903,282 ppl carry an issuer led by a type
+phrase — and that is the CONDITION, not the outcome.** Reading the strings,
+most are plain type labels with qualifiers promoted into the issuer slot
+(`Registered Investment Companies (at fair value)`, `Mutual Fund Through Group
+Annuity Contract`, `Common/collective trust funds (fair value)`): cosmetic
+noise before the fund name, not a wrong number and not a fabrication. The
+genuinely type-then-firm subset is **~22 rows / ~18 plans / ~11,000 ppl**
+(`Stable Value Fund Transamerica`, `Stable Value Fund Putnam`,
+`Collective Trust - Stable Value Fund Fidelity`).
+
+**Recorded, not built.** Eight versions shipped in a day, two of which were my
+own regressions and one of which took three attempts to guard; a cosmetic class
+of eleven thousand people is not what to spend the next bump on.
+
+### No mirror, and that is the correct outcome
+
+`pv differs: 0`, main newer on 0 acks, confident-on-main-not-branch 0, plans
+array byte-identical. Main already holds everything the branch does. A mirror
+here would force-push a timestamp over main's cron commit and change nothing
+for a single reader.
