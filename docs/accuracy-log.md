@@ -19571,3 +19571,45 @@ in flight, and committing this now would alter the merge behaviour of the very
 run whose verdict comes next, contaminating it. **A change that is safe to
 write is not automatically safe to land.** Queued to build after #425's
 verdict.
+
+## 2026-09-21 (13:2xZ) — run #425 verdict (v180): ALL FOUR pre-registered tests PASSED, mirrored with the DATA GATE UNFORCED
+
+**#425 PASSED** (59 min, `b4c9e6d8`): pv 180 at 99.84%, confident **60,115
+(+1)**, lineups 59,764 (+1), **HIGH back to the baseline 5**, WARN **543**
+(the two `rows-dropped` entries cleared), overshoot 332, dl 105.
+
+**All four tests, each registered before the run:**
+
+1. **Dove Schools is back** — `c:1`, **28 rows**, sum $5,582,857, every row
+   keeping its own unit price (`Annuities, @ $34.504330`, `@ $34.921285`, …).
+   The collision was refused exactly as designed.
+2. **Confident +1**, and the direction was the test. v179 had cost this plan
+   its lineup; v180 returns it.
+3. **True Organic Products holds at 25 rows**, sum $9,950,402 — the $300,645
+   double-count did **not** come back, which was the risk in not copying
+   v174's `unmarked` refusal.
+4. **The whole-store collision test returns 0.** Dove was the entire
+   population and it is closed.
+
+**MIRRORED 13:2xZ: `4035b383 → b4c9e6d8`, and the DATA GATE PASSED UNFORCED at
++1 gained / −0 lost** — the first unforced data gate in four mirrors.
+`--force` covered the GIT check alone, over main's one cron commit, with the
+evidence produced first: 0 acks and 0 plans the branch lacked, plans array
+byte-identical, **0 confident on main that the branch lacks**, and main newer
+on exactly two acks, both named and both benign — The Folsom Corporation
+(203 ppl, **not confident on either side**; main's cron had reached the
+cleaner `no-section` diagnosis where the branch holds `analyze`, and the next
+incremental run re-reads it) and `20251203145826NAL0000493523001`, the
+analyze-stuck master trust this file documents, confident on both sides.
+
+**What reached readers:** Dove Schools' 480 participants get their 28-row
+annuity schedule back, and the $5,561,543 phantom v179 briefly built — which
+never published, being held under the three-row floor — cannot recur. Nothing
+else moved, which for a placement fix is the correct result.
+
+**The arc worth keeping, because it is one defect across three versions:**
+v179 put a correct strip in the wrong place (`cleanDesc`, one string) and
+rebuilt the v100/Amgen shape; the triage caught it on a run whose coverage
+line I had predicted would be byte-identical; v180 moved the same strip to the
+dedup stage and reused **v174's own guard**, whose comment already stated the
+rule. **The fix never changed. Only where it could see enough to be safe.**
