@@ -692,6 +692,23 @@ read `lineups-status.json` and `lib-4i`'s export, do not copy the line.
   and force-pushing the branch onto main while a run is about to commit there
   is the unsafe case. The hold cost nothing and the mirror happened in the
   same cycle.
+- **MIRRORED 2026-09-21 15:4xZ: `bfc72e53 → 57b914fe`, UNFORCED.** Carries the
+  `fundTable` fix: **UPS PN 004's 145,125 participants** stop being shown a
+  22-fund SYNTHETIC `data.js` menu with estimated expense ratios and are told
+  their filing reports investments **in aggregate**. Every honest explanation
+  in `fundTable` had been nested inside `if (!plan.funds)`, so a curated entry
+  suppressed all of them; only the FILED-FACT branches are promoted, the
+  generic endings stay gated and are now explicitly guarded. Sized first:
+  **2 plans / 145,246 ppl masked**, the other 21 curated entries return above.
+  Controls both ways, **full smoke test GREEN across all six page shapes**, and
+  **site-test #82 `completed success` in CI** — read, not assumed.
+  **GUARD DIAGNOSIS CORRECTED:** site-test ALREADY has a push trigger including
+  the data paths. It is suppressed by the pipeline pushing with `GITHUB_TOKEN`
+  (GitHub's anti-recursion rule means those data paths have NEVER been able to
+  fire, though the workflow comment calls them deliberate) and by `[skip ci]`
+  on my own head commits. Confirmed live — the `app.js` push carried no
+  `[skip ci]` and DID fire it. **Owner decision: whether that data-path intent
+  is worth a deploy key or PAT.**
 - **MIRRORED 2026-09-21 15:0xZ: `8196414b → fb4031a5`, UNFORCED ON BOTH
   CHECKS** (fast-forward; main had nothing the branch lacked; data gate
   +0 / −0 — the third consecutive unforced data gate). Carries the

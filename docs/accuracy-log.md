@@ -19916,3 +19916,22 @@ rule. **The fix never changed. Only where it could see enough to be safe.**
   published as a site-wide defect; four sample rows showed the EINs matching
   perfectly and only the PN padding differing.
 
+
+## 2026-09-21 — Weighted draw (seed 20260921154): Amazon, clean, and a useful control
+
+- **Amazon.Com Services (1,343,800 participants, $34.6B, 27 rows, ratio 0.91)**
+  read row by row through `app.js`'s real `lookupTicker` against the shipped
+  `fund-er.js`: **17 rows labelled `*comparable`, 5 asserted, 5 blank.** Every
+  asserted row is typed `Mutual fund` (VFTNX, VEXRX, VSIIX, RERGX, VMRXX) —
+  registered funds the plan genuinely holds. Every `Collective trust` row,
+  including `VANG INST 500 IDX TR` at 14.7%, carries the comparable asterisk.
+  The blanks are SSGA collective trusts and the brokerage window, which have no
+  registered analogue. **Nothing to fix.**
+- **It doubles as the control this cycle needed.** Amazon was the LARGEST entry
+  in the false "28,339 rows publishing a CIT as a mutual fund" list produced
+  earlier today by calling `fundTickerInfo` with one argument. Read through the
+  real path it is correct, which is the independent confirmation that the
+  finding was an artifact of the harness and that the `type` column does its
+  job wherever the filing states a vehicle. The defect was only ever the one
+  value missing from that arm — `Separate account`.
+
