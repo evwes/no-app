@@ -255,8 +255,29 @@ Order of business:
       returned "no entry", indistinguishable from the control failing.
       Addressed by VALUE it resolved at once. **Address a negative control by
       a property it has, not an identifier you recall.**
-      **FIRST ACTION NEXT CYCLE: the UPS / filed-in-aggregate gate — it is
-      live for 145,125 people and the top item.** `scripts/smoke-test.mjs`
+      **STATUS 15:3xZ 2026-09-21 — THE UPS GATE IS FIXED AND SMOKE IS GREEN.**
+      `app.js` `fundTable` had every honest explanation nested inside
+      `if (!plan.funds)`, so a curated `data.js` entry suppressed all of them.
+      UPS PN 004 (145,125 ppl) was shown a 22-fund SYNTHETIC menu with
+      estimated ERs while its filing reports investments in aggregate.
+      Only the FILED-FACT branches were promoted above that gate; the docShape
+      and generic endings stay gated and are now explicitly guarded. Sized
+      whole-store first: **2 plans / 145,246 ppl masked**, the other 21 curated
+      entries return further up. Controls both ways (UPS gains the sentence and
+      loses the menu; Lumen unchanged), **full smoke test GREEN across all six
+      page shapes** — the first green run since the assertion began failing.
+      **AND THE GUARD DIAGNOSIS WAS CORRECTED:** site-test ALREADY has a push
+      trigger, including the data paths. It is suppressed by two other things —
+      the pipeline pushes with `GITHUB_TOKEN`, which by GitHub's anti-recursion
+      rule cannot start a run (so the data paths the workflow's own comment
+      calls deliberate have NEVER been able to fire), and my commits carry
+      `[skip ci]` on the head commit. Confirmed live: the `app.js` push here
+      carried no `[skip ci]` and DID fire it. **Owner decision worth naming:
+      whether the data-path intent is worth a deploy key or PAT.**
+      **NEXT CYCLE:** nothing is owed; take queue work. The 7-row raw-first
+      share-class flip and the SDBA fold (owner question 5) are the live items.
+      **SUPERSEDED — kept for the reasoning only: the UPS / filed-in-aggregate
+      gate.** `scripts/smoke-test.mjs`
       FAILS its `filed-in-aggregate` assertion (controlled: it fails
       identically on a clean tree, so it is not from this cycle's changes).
       UPS PN 004, deep link `#plan=95-1732075|004|UPS`, 145,125 ppl, bit 4096
