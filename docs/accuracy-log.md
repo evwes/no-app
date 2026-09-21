@@ -18823,3 +18823,41 @@ of eleven thousand people is not what to spend the next bump on.
 array byte-identical. Main already holds everything the branch does. A mirror
 here would force-push a timestamp over main's cron commit and change nothing
 for a single reader.
+
+## 2026-09-21 (04:2xZ) — closing the one unknown the census left: `trust` 44 → 48
+
+Last cycle's re-derivation said plainly that two rises were not explained and
+named them rather than smoothing them over. This closes the first.
+
+**It is reclassification to a truer cause, not coverage lost.** The v123 table
+names four unlinked master-trust members sitting in `band-hi` — Conagra,
+A.O. Smith, Hallmark, American Bank & Trust. Checked by name on the v176 store:
+
+| plan | v123 bucket | now | evidence |
+|---|---|---|---|
+| **Conagra Brands** (two plans, 29,623 + 9,268 ppl) | `band-hi` | **`trust`** | `rw: 1`, rt 99 and 96 — a single bare master-trust pointer, which is exactly what `trust` means |
+| A.O. Smith (6,118 ppl) | `band-hi` | **`stmt`** | 33 rows, rt 390 |
+| Hallmark Cards (two plans, 12,051 ppl) | `band-hi` | **still `band-hi`** | rt **708** and **1436** |
+
+So Conagra's two plans account for half the +4, moving from a bucket that
+described the SYMPTOM (the sum is too big) to one that describes the CAUSE (the
+filing hands us a pointer, not a menu). **The other +2 are not identified and
+that is stated rather than inferred.**
+
+This is the third time this file has had to record the same shape: **a
+reclassification to a truer cause reads as a regression in any size-ranked
+view.** `band-hi` fell 128 → 88 and part of that fall is these plans arriving
+somewhere more honest.
+
+**Hallmark is the interesting residue.** Both its plans store a parse summing
+to **7.1x and 14.4x plan assets** — the parser is reading the whole master
+trust's $14.2B against this plan's $2.0B share. Neither is confident, so no
+reader sees any of it, and `band-hi` is the correct bucket for a sum that is
+too big. Recorded, not fixed: the fix is the same unlinked-trust work that
+Genentech needs, and Genentech is unlinkable because no MTIA filing exists in
+the datasets under the EIN its Schedule D names.
+
+**Bucket completeness, which is the useful number:** `trust` is 48 plans /
+88,322 participants, and **Genentech (36,458) plus Conagra (38,891) are 85% of
+its people and $16.0B of its $17.0B**. Both are documented unreachable. The
+bucket is overwhelmingly honest gap, not pending work.
