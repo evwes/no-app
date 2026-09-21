@@ -19187,3 +19187,72 @@ byte-identical to #418's but for `dl`.
   be applied before any future refusal-list widening: **name the code path that
   will act on the match, and check that it can reach this case, before
   measuring how many strings match.**
+
+## 2026-09-21 (09:2xZ) — v179: the cost column welded into the fund name, and two of my own measurements that were wrong before the fix was
+
+- **Wrong:** CHS/Community Health Systems (**91,940 participants**) published
+  **all fifteen** of its holdings with a `$0.00` welded onto the name —
+  `Ret Target 2035 Sept Acct $0.00` — and its largest row, 24.4% of the plan,
+  as `CHS Stable Value Fund Master Trust Inv estment Account $`. The filing is
+  a clean five-column layout:
+  `* | Principal Life Insurance Company | Ret Target 2035 Sept Acct | $0.00 | $531,249,038.22`
+  — party-in-interest, issuer, description, **cost**, current value. The value
+  is read correctly from the last column; the DESCRIPTION cell keeps the cost.
+  Emory Healthcare (36,426) and Emory University (35,748) carry the unit PRICE
+  the same way (`QCSTIX CREF Stock R3 $917.217600`) on 37 of 80 and 38 of 82
+  rows; Loyola Chicago (8,646) at `$911.369300`; Harmon City (5,024)
+  `Collective Trust Fund, , $37.46/unit` on 29 of 31 rows.
+- **Why the existing stripper missed it, exactly.** `stripTrailingColumns` has
+  removed trailing cost/shares/rate columns since v70 and its tail regex has
+  five arms — and **not one of them can match `$0.00`**: the comma-group arm
+  (`\$?\d{1,3}(?:,\d{3})+`) requires a comma, and the plain-number arms
+  (`\d+\.\d+`, `\d+%`) have no `$`, so the dollar sign sits between the
+  required space and the digits and every alternative fails. A cost written
+  `$ 1,016,694` was stripped; the same column written `$0.00` was not.
+- **Change:** the strip is in `cleanDesc`, which touches the description cell
+  and nothing else. **Sized whole-store before the edit: 1,763 rows / 295
+  plans / 560,053 participants**, with every distinct rename printed and read
+  — 1,595 of them. Nothing legitimate loses meaning: the 89 renames carrying a
+  comma-sized amount are all already-junk rows (delinquent-contribution
+  schedule lines `2002-51 included: X $155,244`, prose fragments, statement
+  lines), and **par value is protected** (`Common Stock, par value $0.01`,
+  `Par Value of $5,000,000` — 19 rows, left alone by design).
+- **PLACEMENT: FIXED IN THE OBVIOUS PLACE FIRST, THEN REVERTED, AND THE REASON
+  IS THE POINT.** The natural home is `stripTrailingColumns` — its stated job
+  is exactly this — and one extra `\$?` there did work. It also **moved the
+  ISSUER column**: CHS's `Master Trust Principal Life Insurance Company` became
+  `Principal Life Insurance Company`, because that function runs BEFORE
+  `splitNameDesc` and changing the body changes the split. That is very likely
+  an improvement (a section header gluing into an issuer is a named defect in
+  this project's own invariants) — **and it is unmeasured, and I cannot size a
+  parse-time issuer change from the store.** v126 leaked a `*` into 3,224
+  issuers as exactly this kind of side effect. So the wide edit was reverted
+  and the narrow one kept: **the blast radius shipped is the blast radius
+  measured.** The issuer finding is queued on its own.
+- **CORRECTION TO MY OWN QUEUE ENTRY FROM THE PREVIOUS CYCLE.** I wrote, of
+  this class: *"note the fee-cell cost: a name ending `$917.217600` cannot
+  match the ticker table, so those rows render a blank fee cell."* **That is
+  false.** Measured with the shipped `fundTickerInfo`: of the 1,763 rows,
+  **236 already resolve to a ticker with the suffix still attached**, and
+  stripping gains **2 rows / 604 participants**. The matcher tolerates the
+  tail. So v179 is a READABILITY fix for 560,053 people and not a fee-coverage
+  fix at all, and it ships as that. An assumption stated in a queue entry is
+  still an assertion, and it sat there for a cycle reading as a measured fact.
+- **AND THE MEASUREMENT THAT PRODUCED THAT CORRECTION WAS ITSELF WRONG FIRST.**
+  The first run reported **0 rows gain a ticker, 0 keep, 0 lose, 1,763 still
+  unidentified** — a suspiciously clean sweep, and the corollary rule in this
+  project's memory is that a number coming out uniform or exactly zero is
+  reporting on the QUERY. It was: `fundTickerInfo` returns `{tk, comparable}`
+  and I read `r.ticker`, which is always `undefined`. A positive control on six
+  known names (`Fidelity 500 Index Fund` -> FXAIX) exposed it in one command.
+  **Two measurement defects in two cycles — this and the NaN comparator — and
+  neither was caught by reading the output. One was caught by arithmetic that
+  disagreed with a list, the other by a control. Neither was caught by eye.**
+- **Verified:** CHS traced under the working tree with `--vs HEAD` shows all
+  fifteen names cleaned and the trailing bare `$` gone, **issuers byte-identical
+  to v178** — which is the negative control for the reverted placement, not
+  just a passing note. Parser gate green.
+- **Prevention:** CHS pinned as a specimen. The durable line is the placement
+  rule: **when a fix works in two places, prefer the one whose effect you have
+  measured — a correct change with an unmeasured side effect is not a measured
+  change.**

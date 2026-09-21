@@ -318,11 +318,12 @@ Order of business:
       (Conagra, `rw:1`); the 403 residue re-probed WHOLE at **104/104**; `few`
       re-tested — name quality 13% → 33% but reachable-and-material is 2 of 30
       (~7%), all behind a three-row floor this file has twice declined to lower.
-      **QUEUE:** (1) #422 verdict → mirror; (2) **the price/unit-value column
-      welded into fund names, 1,336 rows / 51 plans / 207,238 ppl** — the
-      largest tractable parser item in hand, and note the fee-cell cost: a
-      name ending `$917.217600` cannot match the ticker table, so those rows
-      render a blank fee cell; (3) **Pechanga re-queued — v177 did NOT fix it**
+      **QUEUE:** (1) #422 verdict → mirror; (2) **DONE as v179** — the cost column
+      welded into fund names, re-sized at **1,763 rows / 295 plans / 560,053
+      ppl**. **The fee-cell claim in the previous version of this line was
+      FALSE**: measured with the shipped `fundTickerInfo`, 236 of those rows
+      already resolve to a ticker WITH the suffix attached and stripping gains
+      2 rows / 604 ppl. It is a readability fix, not a fee-coverage fix; (3) **Pechanga re-queued — v177 did NOT fix it**
       and any fix must suppress at 63.7%, which `NOT_FUND_SHAPED` cannot do;
       (4) SDBA fold, 269 plans / 630,032 ppl, owner question 5; (5)
       type-then-firm issuers, ~22 rows / ~11k ppl, too small for its own bump;

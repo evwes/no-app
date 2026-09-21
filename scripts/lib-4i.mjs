@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 178;
+export const PARSER_VERSION = 179;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -364,6 +364,42 @@ function cleanDesc(desc) {
    * on every row of Progressive (74,118 ppl), Norfolk Southern, Brink's,
    * Owens & Minor: 628 rows / 108 plans / 317k ppl, 21 whole lineups. */
   d = d.replace(/^\s*(?:of|in)\s+(?=\S)/i, " ");
+  /* v179: THE COST COLUMN, WRITTEN WITH A DOLLAR SIGN AND NO COMMA GROUP.
+   *
+   * CHS files `Principal Life Insurance Company | Ret Target 2035 Sept Acct |
+   * $0.00 | $531,249,038.22` — issuer, description, cost, current value. The
+   * value is read correctly; the DESCRIPTION cell keeps the cost, so all
+   * fifteen of its rows published as `Ret Target 2035 Sept Acct $0.00` to
+   * 91,940 participants. Emory Healthcare and Emory University carry the unit
+   * PRICE the same way (`QCSTIX CREF Stock R3 $917.217600`, 37 of 80 and 38 of
+   * 82 rows), Harmon City `$37.46/unit` on 29 of 31.
+   *
+   * `stripTrailingColumns` already removes a trailing cost, but every one of
+   * its arms misses this shape: the comma-group arm needs a comma and the
+   * plain-number arms have no `$`. It was fixed there first and REVERTED —
+   * that function runs BEFORE splitNameDesc, so changing it also moved the
+   * ISSUER column (CHS's `Master Trust Principal Life Insurance Company` ->
+   * `Principal Life Insurance Company`). That is very likely an improvement
+   * and it is UNMEASURED, which is the part that matters: it belongs in its
+   * own sized change, not as a side effect of this one. Here the edit reaches
+   * the description cell and nothing else.
+   *
+   * PAR VALUE is the one place a trailing amount belongs to the name
+   * (`Common Stock, par value $0.01`, 19 rows) and is never stripped. A bare
+   * integer stays out deliberately — `RETIREMENT 2045` is a name tail, and
+   * the `$` is exactly what tells a column value from a vintage. */
+  {
+    const m = d.match(/\s*\$\s?[\d,]*(?:\.\d+)?\s*(?:\/\s*unit|per\s*unit)?\s*$/i);
+    if (m) {
+      const head = d.slice(0, d.length - m[0].length);
+      /* the same par test the whole-store sizing used, character for character:
+       * `Common Stock, par value $0.01` AND `Par Value of $5,000,000` (American
+       * Family, 9 rows). A guard narrower than the one that produced the
+       * measurement would make the measurement describe a different change. */
+      const PAR_CTX = /\bpar(?:\s+value)?\b[^$]{0,12}$|\bpar\b\s*$/i;
+      if (head.trim() && !PAR_CTX.test(head)) d = head + " ";
+    }
+  }
   d = d.replace(/\b(interest )?rates? (of|from|ranging).*$/i, " ");
   d = d.replace(/\bmaturit(y|ies).*$/i, " ");
   /* v68: FILLER columns. Many filings print the (c) sub-columns literally —
