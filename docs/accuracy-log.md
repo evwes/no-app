@@ -20215,3 +20215,51 @@ rule. **The fix never changed. Only where it could see enough to be safe.**
   Short Term Bond Fund`), and a doubled type suffix (`CVS Health Common Stock
   Stock`, `Vanguard Small Cap Index Fund Mutual Fund S`).
 
+
+## 2026-09-24 — AEP: the match is genuinely not in the filing, and the metric that hides how often that matters
+- **The owner's case:** American Electric Power Service Corporation PN 002
+  (EIN 13-4922641, ack `20251013120611NAL0002786642001`, 22,387 participants,
+  $5.20B, **$81,284,557 of employer contributions**, recordkeeper Empower)
+  shows no employer-match formula, and the owner sent AEP's SEC 11-K alongside
+  the screenshot.
+- **NOT a parser miss, verified against the filing, not the store.** The
+  134-page public copy was downloaded and every one of the seven occurrences of
+  "match" read: ADP/ACP testing boilerplate, the vesting/withdrawals paragraph,
+  and `MATCH GROUP INC` — a brokerage holding. **No match formula exists
+  anywhere in the audited notes.** The stored `matchText` is the withdrawals
+  sentence (*"Excluding participants' pretax and Roth 401(k) contributions …
+  all participants may make an unlimited number of withdrawals …"*), and
+  `matchQuoteOk` correctly refuses it: the page says *"no formula stated in the
+  audited notes"*, shows the $81.3M, the safe-harbor line and vesting
+  Immediate. The honest answer was already on the page.
+- **The right source is the one the owner sent, and the earlier EDGAR research
+  scoped it wrongly.** The 2026-08-03 note concluded "the 11-K unlocks
+  master-trust menus" is FALSE and closed the question — but it only ever asked
+  about *fund schedules*. An 11-K's **Description of the Plan** states the match
+  formula in prose, which is a different and unexamined use. AEP is a public
+  filer, so its 11-K is reachable; SEC is **not reachable from this sandbox**
+  (`CONNECT tunnel failed, 403`), so this needs the documented
+  `edgar-11k.yml` → `edgar-scratch` dispatch route.
+- **THE FINDING THIS EXPOSED, and it is the larger one: `matchQuote` in the
+  coverage trail counts a CONDITION, not an OUTCOME.** The metric counts plans
+  where a match *sentence* was stored. Measured whole-store against what
+  `matchQuoteOk` actually lets through to a reader:
+
+  | | plans | |
+  |---|---|---|
+  | counted in the trail's `matchQuote` | 5,397 | |
+  | the quote IS shown to readers | 1,785 | 33.1% |
+  | **nothing is shown — the quote is refused** | **3,612** | **66.9%** |
+
+  Those 3,612 plans are **8,490,877 participants and $20,466,961,714 of
+  employer money** — Plan Professionals (65,882p), Smithfield Foods (15,938p),
+  Cruise LLC (4,667p) among them. They are credited in the metric while their
+  readers see exactly what AEP's readers see: nothing. **The refusal is right in
+  every case sampled** (AEP's is a withdrawals sentence); what is wrong is that
+  the trail reports coverage the site does not have.
+- **Prevention:** this is the fourth instance on this record of *a count of a
+  condition read as a count of an outcome* (`band-hi`'s 17-vs-2, the
+  identifiable-funds cell, the curated-menu sizing). The fix is a trail metric
+  keyed to what RENDERS — `matchQuoteShown` beside `matchQuote` — so the gap is
+  visible rather than absorbed. Queued, not shipped: operations are paused
+  until 2026-09-24 23:00Z and this is new instrumentation, not a repair.
