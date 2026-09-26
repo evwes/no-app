@@ -589,6 +589,28 @@
     [/\bamercian\b/gi, "American"],
     [/\binvescoo\b/gi, "Invesco"],
   ];
+  /* the repaired spelling, or null when no misspelling is present */
+  function repairHouse(name) {
+    const s = String(name || "");
+    for (const [wrong, right] of HOUSE_MISSPELLINGS) {
+      const rep = s.replace(wrong, right);
+      if (rep !== s) return rep;
+    }
+    return null;
+  }
+  /* fundER with the same last-resort repair, and it is NOT optional garnish.
+   * Repairing only the TICKER lookup published the fund's identity beside a
+   * blank fee cell: the render of UMMS PN 005 showed all twelve rows gaining
+   * VTWNX…VTINX while the expense-ratio column stayed "—", because the ER path
+   * calls fundER(f.name) on the misspelled name. Reading the rendered page is
+   * what caught it; the store-side measurement could not, because it only ever
+   * asked fundTickerInfo. */
+  function fundERFiled(name) {
+    const direct = fundER(name);
+    if (direct != null) return direct;
+    const rep = repairHouse(name);
+    return rep ? fundER(rep) : null;
+  }
   /* Ticker lookup order: the FILED name first (with and without the issuer),
    * the cleaned display name only as a fallback. Measured 2026-09-18 before
    * this order existed: looking up the cleaned name alone gained 37 tickers
@@ -638,9 +660,8 @@
      * Controlled on the same store, both directions: 0 flipped to a different
      * ticker, 0 lost a ticker they had, and all 1,719,837 rows the repair does
      * not touch came back unchanged. */
-    for (const [wrong, right] of HOUSE_MISSPELLINGS) {
-      const rep = raw.replace(wrong, right);
-      if (rep === raw) continue;
+    const rep = repairHouse(raw);
+    if (rep) {
       const hit = (iss ? fundTickerInfo(iss + rep, f.type) : null) || fundTickerInfo(rep, f.type);
       if (hit) return hit;
     }
@@ -1578,7 +1599,7 @@
       const star = !stockRow && info && info.comparable;
       if (star) starred = true;
       const er = tab !== "menu" || stockRow || gicRow || subtotalRow ? null
-        : star ? info.er : (noPublicPrice ? null : fundER(f.name));
+        : star ? info.er : (noPublicPrice ? null : fundERFiled(f.name));
       // the brokerage window is a menu choice with no holdings of its own —
       // tint it so it reads as a doorway, not a fund (owner request)
       const brokRow = /brokerage window/i.test(f.type || "")

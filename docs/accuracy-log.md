@@ -20546,6 +20546,29 @@ rule. **The fix never changed. Only where it could see enough to be safe.**
   287 exact, 39 comparable. The 220 rows that do NOT win are a table-coverage
   gap wearing a misspelling's clothes — `Vangard Total International Bond
   Index Fund Admiral Shares` resolves to nothing spelled correctly either.
+- **CORRECTED WITHIN THE HOUR, AND THE FIRST VERSION OF THIS ENTRY OVERSTATED
+  WHAT WAS WON.** The table above was published as "$975,210,852 of fee
+  cells". It is not: the measurement asked only `fundTickerInfo`, so it proved
+  the TICKER resolves and said nothing about the fee beside it. **Rendering the
+  real page is what caught it** — UMMS's twelve rows came back carrying
+  VTWNX…VTINX against twelve `—` expense ratios, because the ER path calls
+  `fundER(f.name)` on the MISSPELLED name. A store-side test of the ticker
+  lookup could not have seen this in principle; only the rendered row shows
+  identity and price side by side.
+  Fixed in the same commit: `repairHouse` is a shared helper and `fundERFiled`
+  applies the identical last resort to the expense-ratio path. Re-rendered and
+  the twelve cells read **0.080%**. So the honest split is:
+
+  | what is won | rows | plans | participants |
+  |---|---|---|---|
+  | ticker / fund identity | 326 | 158 | **150,335** |
+  | expense ratio | 211 | 81 | **85,306** ($749,399,699) |
+
+  **The lesson is not "check the ER too".** It is that an outcome test is only
+  an outcome test for the outcome it measures, and this fix had two. The rule
+  this project already carries — a count of a CONDITION is not a count of an
+  OUTCOME — was obeyed for the ticker and then the second outcome went
+  unasked.
 - **Controlled both directions on the same store, which is the rule v172/Apple
   cost us:** of the 546 rows the repair touches, **0 flipped to a different
   ticker** (the FTBFX shape that cost 270 rows once) and **0 lost a ticker
@@ -20555,6 +20578,24 @@ rule. **The fix never changed. Only where it could see enough to be safe.**
 - **Prevention:** the arm runs last, so it can only add — a later faithful
   match always wins. The list is data, not a pattern: adding a misspelling is
   a one-line change with its own measurement, and nothing fuzzy can creep in.
+
+### Queued from this fix's own measurement, NOT shipped
+The ER repair is deliberately **strictly additive**: `fundERFiled` returns the
+direct hit whenever one exists, so a row that already prices keeps its number.
+That leaves **158 rows publishing a LESS specific estimate than the repaired
+name would resolve** — `Vangaurd Total Bond Market Index` prices at a generic
+0.1% where the repaired name gives 0.04%, `Fidelty 500 Index` at 0.03% vs
+0.015%, and `Vangaurd Emerging Markets Stock IDX Adm` 0.06% vs 0.13% (VEMAX is
+~0.14%, so even the one that rises is the more accurate figure). Every one I
+read looks better repaired. Switching them rewrites 158 PUBLISHED numbers, so
+it needs each verified rather than assumed, and the standing rule is that a
+change must be provably better. Queued with the evidence.
+
+**A measurement artifact to name, because it is the fifth of its kind here.**
+The sizing script reported these 158 as FLIPS and flips were my stated
+must-be-zero bar. They are not flips: the script computed before/after
+unconditionally while the shipped function short-circuits on the direct hit.
+**Reading the implementation settled it, not re-running the script.**
 
 ### Two classes measured the same cycle and DELIBERATELY NOT FIXED
 Both looked substantial by row count and neither survives the outcome test.
