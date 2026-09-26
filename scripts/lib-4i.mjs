@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 180;
+export const PARSER_VERSION = 181;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -720,6 +720,89 @@ export function subtotalIndices(rows) {
   }
   return out;
 }
+
+/* v181: A ROW THE FILING CALLS A SUBTOTAL IS NEVER A HOLDING.
+ *
+ * CVS Health (307,068 participants) publishes `Stable Value Fund Subtotal` at
+ * $2,690,925,949 = 11.2% of its menu. v149 above cannot see it: that rule
+ * demands the name be made ONLY of class words, and "Stable Value Fund
+ * Subtotal" is not — nor is `FASB ASC 820 CATEGORY CODE 2 - SUBTOTAL`,
+ * `Sub-total forwarded` or `Investments Subtotal`. Ten rows across ten plans /
+ * 313,509 participants publish one today.
+ *
+ * THE WORD `total` IS REFUSED, AND THAT IS THE LOAD-BEARING GUARD. 8,487
+ * published rows carry it and they are overwhelmingly REAL FUND NAMES — IBM's
+ * `Total Stock Market Index` ($9.83B), Bank of America's `TOTAL RETURN
+ * COLLECTIVE TRUST IV CLASS`, Google's `Total International Bond Index Fund
+ * Institutional`, five Justworks Vanguard rows. Only an explicit `sub-total` /
+ * `subtotal` counts. No fund in the store is named that.
+ *
+ * TWO OUTCOMES, AND WHICH ONE IS A QUESTION ABOUT THE ROW SET, NOT THE ROW —
+ * which is why this runs at the leaves stage, in FILED ORDER, with the whole
+ * region in hand and before any view (dedup, pair, restatement cut) is built:
+ *
+ *  - DROP, when the rows the subtotal covers are ALSO in the set. Then it is a
+ *    double count and keeping it inflates the published menu. Read from the
+ *    filings: Cwpm LLC prints `EI Fixed Account Series Class VI $296,302` and
+ *    `FASB ASC 820 CATEGORY CODE 2 - SUBTOTAL $296,302` on consecutive lines;
+ *    Douglas County prints `John Hancock Guaranteed Account $26,609` then
+ *    `Sub-Total - Interest in Insurance Company General Account $26,609`. The
+ *    leaves loop above already catches such a row when its run is TWO or more
+ *    exact rows (`suffix === r.value`, j >= 2) or three or more (`leafSum`);
+ *    a section whose single member is its own subtotal falls through all three
+ *    tests. Run length 1 is allowed HERE and only here, because the name is
+ *    what licenses it.
+ *  - KEEP THE MONEY AND LET THE TYPE SAY WHAT THE ROW IS, when they are not.
+ *    Main Street Radiology's schedule is paginated with running carry-forwards
+ *    (`Sub-total forward 25,633,354` … `58,509,752` … `64,010,464` …
+ *    `67,765,791`) and only the LAST page is in the winning region, so its
+ *    $67,765,791 stands for holdings on pages that are not in the row set at
+ *    all: 88.2% of the published menu. Deleting it would take the plan from
+ *    99.2% of its assets to 11.7% with nothing on the page saying so — the
+ *    v172/Apple regression exactly. The row keeps its filed name and its
+ *    value and is RETYPED, so the page stops calling it a fund.
+ *
+ * Returns disjoint index sets so the caller cannot do both to one row.
+ */
+export const SUBTOTAL_NAME = /\bsub-?totals?\b/i;
+export function namedSubtotals(rows) {
+  const drop = new Set(), retype = new Set();
+  if (!Array.isArray(rows)) return { drop, retype };
+  const isSub = rows.map((r) => !!(r && r.name) && SUBTOTAL_NAME.test(String(r.name)));
+  /* a run stops at another subtotal — a section's items are what lie between
+   * two subtotal lines — and at the point the running sum passes the target,
+   * so a long tail cannot be trimmed to fit. */
+  /* EXACT, to the dollar, with only the leaves loop's own cents allowance
+   * (one dollar per row of the run). v149's sibling rule tolerates 3% because
+   * a long itemisation loses rows to wrapped names; here the tolerance is the
+   * whole risk. The two proven double counts match to the dollar — Cwpm's
+   * $296,302 and Douglas County's $26,609 — and the leaves loop above already
+   * records that "real subtotals matched to the dollar in every case
+   * examined, so exactness costs nothing". A loose bound is not local: it can
+   * delete a row worth 11% of CVS Health's $30.1B plan on a run that happens
+   * to land in a percentage window, which is the v172/Apple loss again. When
+   * the sum is merely CLOSE the row is retyped instead, so the money stays on
+   * the page either way and only the claim changes. */
+  const runOk = (from, step, target) => {
+    let s = 0, n = 0;
+    for (let j = from; j >= 0 && j < rows.length && !isSub[j]; j += step) {
+      s += +rows[j].value || 0; n++;
+      if (Math.abs(s - target) <= n) return true;
+      if (s > target + n) return false;
+    }
+    return false;
+  };
+  for (let i = 0; i < rows.length; i++) {
+    const v = +(rows[i] && rows[i].value) || 0;
+    if (!v || !isSub[i]) continue;
+    if (runOk(i - 1, -1, v) || runOk(i + 1, 1, v)) drop.add(i);
+    else retype.add(i);
+  }
+  return { drop, retype };
+}
+/* the type a retyped subtotal carries. It is not a vehicle, so the frontend
+ * must not price it or match it to a ticker — app.js gates on this string. */
+export const SUBTOTAL_TYPE = "Subtotal (not a holding)";
 
 /* v154: a TYPE phrase closing an issuer cell — see the two uses in parseRows and parse4i. */
 /* v173: A PAGE-CONTINUATION MARKER IS NOT PART OF THE ISSUER.
@@ -2574,6 +2657,27 @@ export function parseRows(section, opts = {}) {
       if (TRACE_ROWS) console.error(`[subtotal] ${sub.size} class subtotal(s) removed at the leaves stage, worth ${removed}: ${[...sub].map((i) => `${String(leaves[i].name).slice(0, 30)}=${leaves[i].value}`).join(" | ")}`);
       const kept = leaves.filter((_, i) => !sub.has(i));
       leaves.length = 0; for (const r of kept) leaves.push(r);
+      leafSum -= removed;
+    }
+  }
+  /* v181: a row the filing calls a SUBTOTAL — see `namedSubtotals` above.
+   * Dropped when the set holds the rows it covers, retyped when it does not;
+   * `leafSum` follows the drops so the region's own arithmetic stays
+   * consistent, exactly as v149 does. */
+  {
+    const { drop, retype } = namedSubtotals(leaves);
+    if (retype.size) {
+      for (const i of retype) {
+        if (TRACE_ROWS) console.error(`[subtotal181] retype ${JSON.stringify(String(leaves[i].name).slice(0, 44))}=${leaves[i].value} (its rows are not in this set)`);
+        leaves[i].type = SUBTOTAL_TYPE;
+      }
+    }
+    if (drop.size) {
+      let removed = 0;
+      for (const i of drop) removed += +leaves[i].value || 0;
+      if (TRACE_ROWS) console.error(`[subtotal181] dropped ${drop.size} named subtotal(s) worth ${removed}: ${[...drop].map((i) => `${String(leaves[i].name).slice(0, 34)}=${leaves[i].value}`).join(" | ")}`);
+      const kept2 = leaves.filter((_, i) => !drop.has(i));
+      leaves.length = 0; for (const r of kept2) leaves.push(r);
       leafSum -= removed;
     }
   }

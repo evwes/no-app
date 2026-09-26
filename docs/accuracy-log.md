@@ -20296,3 +20296,219 @@ rule. **The fix never changed. Only where it could see enough to be safe.**
   changed" and "nothing ran", and the discriminator is the number of committed
   lines per day, which is now stated here so the next reader does not have to
   re-derive it.
+
+## 2026-09-26 — v181: a row the filing calls a SUBTOTAL published as a holding
+
+- **Wrong:** ten rows across ten plans / **313,509 participants / $2,848,201,620**
+  published a schedule's own subtotal line as though it were an investment
+  option. **CVS Health (307,068 participants) showed `Stable Value Fund
+  Subtotal` at $2,690,925,949 = 11.2% of its published menu**, typed
+  `Stable value / GIC` — a $2.69B "fund" that is not a fund. The rest, by
+  participants: Chimes International `Sub-total (Balance Forward)` (3,791p),
+  Your Recruiting `Sub-total: Registered Investment Companies` at **92.7% of a
+  three-row menu** (514p), Lowenstein Sandler `Sub-Total Mutual Funds` 47.7%
+  (475p), Main Street Radiology `Sub-total forwarded` 88.2% (439p), Cwpm
+  `FASB ASC 820 CATEGORY CODE 2 - SUBTOTAL` (385p), Golden Krust
+  `Mutual funds $ 6,843 Subtotal (cfwd)` 23.9% (262p), First National Bank
+  `| [oo Subtotal of U.S.` (241p), Douglas County `Sub-Total - Interest in
+  Insurance Company General Account` (194p), Premier Properties
+  `Investments Subtotal` 81.6% (140p).
+
+- **Why v149 could not see any of them.** `subtotalIndices` (v149) demands the
+  name be made ONLY of class words *and* a run of at least THREE rows.
+  "Stable Value Fund Subtotal", "FASB ASC 820 CATEGORY CODE 2 - SUBTOTAL",
+  "Sub-total forwarded" and "Investments Subtotal" are none of those. The
+  leaves loop's own exact-suffix test needs `j >= 2`, its group test
+  `groupN >= 2`, and its `leafSum` test three leaves — so **a section whose
+  SINGLE member is its own subtotal falls through all three guards**, which is
+  exactly Cwpm's and Douglas County's shape.
+
+- **THE OBVIOUS FIX IS WRONG AND THIS IS THE CENTRE OF THE ITEM. Deleting the
+  row was ruled out before any code was written.** Read from the filings, the
+  class splits in two and the discriminator is *do the rows this subtotal
+  covers appear in this row set?*
+  - **Components ARE in the set → double count → drop.** Cwpm's filing prints
+    `EI Fixed Account Series Class VI $296,302` and
+    `FASB ASC 820 CATEGORY CODE 2 - SUBTOTAL $296,302` on consecutive lines;
+    Douglas County prints `John Hancock Guaranteed Account $26,609` then
+    `Sub-Total - Interest in Insurance Company General Account $26,609`. Both
+    components are published beside the subtotal, so the money is on the page
+    twice.
+  - **Components are NOT in the set → keep the money, retype the row.** Main
+    Street Radiology's schedule is paginated with running carry-forwards —
+    `Sub-total forward 25,633,354` … `58,509,752` … `64,010,464` …
+    `67,765,791`, then the filing's own `Total 76,817,644` — and only the LAST
+    page is in the winning region. Its $67,765,791 therefore stands for
+    holdings that are nowhere in the row set. **Deleting it takes the plan from
+    99.2% of its assets to 11.7% with nothing on the page saying so: the
+    v172/Apple regression, repeated.**
+
+- **CORRECTING THE 2026-09-21 ENTRY ABOVE, IN BOTH DIRECTIONS.** That entry
+  concluded *"the rows it subtotals are NOT also in the published menu"* and
+  separately that *"three are confirmed double-counts (the same-type rows sum to
+  them)"*. Both statements are wrong, and they are wrong in opposite ways
+  because both came from the same proxy — the sum of rows sharing the
+  subtotal's TYPE, at a 1% tolerance.
+  - **Not-in-the-menu is false for two plans.** Cwpm and Douglas County publish
+    the subtotal's single component right beside it, read from the filings, to
+    the dollar. Those are real double counts and they are what v181 drops.
+  - **Three-confirmed is an over-count.** The third, Lowenstein Sandler, is
+    99.42% — $376,000 short of reconciling — so under exact arithmetic it is
+    **not** confirmed and is retyped instead. A 1% window on a $64.4M row is
+    $644,000 of slack, which is how a near miss read as a proof.
+  The proxy also could not answer the question at all for the largest member:
+  **type is not section**, and CVS's stable-value section contains rows typed
+  `Government securities` and `Corporate debt` as well. **A same-type sum is a
+  guess at a section boundary; the filing is the section boundary.**
+
+- **Change (v181, `namedSubtotals` + `SUBTOTAL_TYPE` in `lib-4i.mjs`, applied at
+  the LEAVES stage in `parseRows`).** A row whose name matches
+  `/\bsub-?totals?\b/i` is never a holding. It is **dropped** when a contiguous
+  run of non-subtotal rows immediately before or after it sums **exactly** to
+  its value (run length 1 allowed, which is the new part), and otherwise keeps
+  its filed name and its value and is **retyped `Subtotal (not a holding)`**.
+  `app.js` refuses a ticker and an expense ratio for that type and tints the
+  row so it does not read as a menu option.
+
+- **WHERE IT LIVES, AND WHY — the same question this project has now settled
+  four times.** "Do the rows it covers appear here?" is a **ROW-SET** question:
+  it cannot be asked of one string (`cleanDesc`, the v179 mistake) and does not
+  need the whole store (merge-4i, the v180 placement). So it runs at the leaves
+  stage in FILED ORDER, beside v149, before any view — dedup, pair,
+  single-render, the v77 restatement cut — is built. Filed order is load-bearing
+  in both directions: it is what makes a *contiguous section run* meaningful,
+  and it is why the store's value-sorted `funds` array cannot be used to
+  simulate the rule.
+
+- **`total` IS REFUSED, and that is the load-bearing guard.** 8,487 published
+  rows contain the word and they are overwhelmingly **real fund names** — IBM's
+  `Total Stock Market Index` ($9.83B), Bank of America's `TOTAL RETURN
+  COLLECTIVE TRUST IV CLASS` ($766M), Google's `Total International Bond Index
+  Fund Institutional`, five Justworks Vanguard rows, `Total Bond Fund`,
+  `Total Return Bond Fund`. Only an explicit `sub-total` / `subtotal` counts. A
+  rule keyed on `total` would have been a catastrophe at 8,487 rows against a
+  10-row defect.
+
+- **EXACT ARITHMETIC, NOT A PERCENTAGE WINDOW — and the reason is the same
+  regression.** The first draft allowed ±0.5%. That is loose enough to delete a
+  row worth 11% of CVS's $30.1B plan if a walk-back happens to land in the
+  window, and a wrong deletion is not local. The leaves loop directly above
+  already records the finding: *"Real subtotals matched to the dollar in every
+  case examined, so exactness costs nothing."* Both proven double counts match
+  to the dollar. A near miss is **retyped, not dropped** — Lowenstein Sandler's
+  `Sub-Total Mutual Funds` $64,429,689 against fifteen mutual-fund rows summing
+  $64,053,689 is 99.42%, $376,000 short, and stays on the page at 98.8%
+  coverage rather than falling to 51.7% on a number that does not reconcile.
+  **When the evidence is merely close, change the CLAIM and not the money.**
+  **NOT READ, AND SAID SO RATHER THAN INFERRED:** Lowenstein's schedule pages
+  (43–44 of `20250909134042NAL0020293457001`) carry **no text layer at all**,
+  and `tesseract` in this sandbox produced **zero bytes** on them — 30+ minutes
+  at 200dpi, then a 500s timeout at 120dpi on a 1020×1320 page. That is a
+  tooling limit here, not a fact about the filing, and not the subset-font
+  cipher CVS turned out to be. The $376,000 gap is therefore unexplained by
+  evidence, which is exactly why the conservative branch ships. Worth reopening
+  when OCR works: if it reconciles to the dollar the row is a double count and
+  the plan's honest coverage is 51.7%, not 98.8%.
+
+- **Controls, both directions, at three levels.**
+  - *Unit* (9 cases, transcribed from the filings): the two proven double counts
+    drop; the two aggregates retype; the near miss retypes and the SAME set
+    plus the missing $376,000 row drops; and three negative controls fire on
+    nothing — the six largest real `Total`-named published rows **by value**,
+    a duplicate-value pair the filing distinguishes (Chimes files
+    `Guaranteed interest account` twice at $208,683; Western Ecosystems files
+    `Putnam Stable Value Fund` twice at $14,679), and bare `Total` / `Totals`
+    class lines, which remain v149's business. **The duplicate-value control is
+    the one that proves the NAME and not the arithmetic licenses a drop.**
+  - *Production parser, real filings*: Cwpm 36 → 35 rows, ratio 0.982 → 0.969,
+    `EI Fixed Account Series Class VI` KEPT; Douglas County 35 → 34, ratio
+    1.003 → **1.000** (toward 1.0), the John Hancock row KEPT; Main Street
+    Radiology 18 rows and ratio **0.992 unchanged** with one row typed
+    `Subtotal (not a holding)`.
+  - *Frontend, the real CVS page rendered three ways*: **before** — type
+    `Stable value / GIC`, ER `—`; **after** — type `Subtotal (not a holding)`,
+    ER `—`, row tinted; **retyped with the app.js gate removed** — ER
+    **`0.35%`**. `fundER("Stable Value Fund Subtotal")` returns 0.35% and was
+    suppressed today only because the old type said "stable value", so the
+    parser fix **would have created a new false claim on a $2.69B row** without
+    the gate. The gate is proven load-bearing rather than assumed so.
+    (`fundTickerInfo` returns nothing for all ten names with or without the
+    type — measured with the type passed as the second argument, the way
+    `app.js` calls it; the ticker half of the gate is for future callers.)
+  - `parser-gate.mjs` green (all specimens). `diff-lineups.mjs 242bda63` over
+    1,010 filings: **0 fabricated rows introduced, 0 removed, 0 confidence
+    gained, 0 lost**, one row-count move — Douglas County 35 → 34, the designed
+    drop. `smoke-test.mjs` green across all six page shapes.
+    **`map-test.mjs` FAILS, and it fails identically on the unmodified
+    baseline** — `ERR_CERT_AUTHORITY_INVALID` on an external resource from this
+    sandbox, every assertion before it passing (352 dots, 9,594 plans, legend,
+    note). Not caused by this change, and not fixed by it.
+
+- **PRE-REGISTERED PREDICTION for the v181 run** (the class as it stands on the
+  v180 store: 10 rows / 10 plans / 313,509 ppl / $2,848,201,620):
+  - **2 DROPS, named and already verified through the production parser** —
+    Cwpm, Llc `20251014154354NAL0006646050001` loses `FASB ASC 820 CATEGORY
+    CODE 2 - SUBTOTAL` $296,302, 36 → 35 rows, ratio 0.982 → 0.969; Douglas
+    County `20250724142212NAL0002585987001` loses `Sub-Total - Interest in
+    Insurance Company General Account` $26,609, 35 → 34 rows, ratio 1.003 →
+    1.000.
+  - **8 RETYPES with the value and the row count UNCHANGED**: CVS Health
+    (307,068p, $2,690,925,949, 120 rows, ratio 0.801), Chimes International,
+    Your Recruiting, Lowenstein Sandler, Main Street Radiology (18 rows, ratio
+    0.992), Golden Krust, First National Bank, Premier Properties.
+  - **Whole-store afterwards: 0 rows matching `/\bsub-?total\b/i` may carry a
+    fund vehicle type.** Any row still typed `Mutual fund`, `Collective trust`,
+    `Stable value / GIC` etc. with `subtotal` in its name is a miss.
+  - The coverage line should move by **at most 0 plans** — no member changes
+    confidence — so `confident`, `match`, `vesting` and `lineups` are expected
+    **byte-identical**, and `overshoot` should fall by at most one entry
+    (Premier Properties sits at 1.206 and is retyped, not dropped, so it should
+    NOT move; if it does, that is a miss to read).
+  - **The eight retypes are predicted from the store's value-sorted view, which
+    can only see an exact-value twin and NOT a contiguous filed-order run.** If
+    the run finds an additional DROP, it is not automatically wrong — it is a
+    row whose section reconciles to the dollar — but it must be opened and read
+    by name before mirroring, and `rows-dropped.txt` will list it.
+
+- **Prevention:**
+  1. Two specimens pinned in `docs/defect-specimens.json`, one per branch of
+     the rule, so a future version cannot silently collapse them into one
+     treatment: `named-subtotal-DOUBLE-COUNT` (Douglas County) and
+     `named-subtotal-AGGREGATE-must-not-be-deleted` (Main Street Radiology,
+     whose entry states the 0.992 → 0.117 cost of getting it wrong). Never
+     removed.
+  2. `SUBTOTAL_NAME` and `SUBTOTAL_TYPE` are **exported from `lib-4i.mjs`**, so
+     the sizing script, the frontend gate and any future audit read ONE copy of
+     the predicate. Three untethered copies of one rule is how the match-quote
+     guard published a false heading on 615 pages.
+  3. The `app.js` gate keys on the exported type string and was verified by
+     REMOVING it and watching 0.35% appear. A gate whose failure mode has never
+     been observed has not been tested.
+
+- **FOUND OUTSIDE THE ITEM AND NOT FIXED — recorded with its size.** CVS's
+  filing is not scanned: it is a **subset-font cipher**, and pages 45–78 decode
+  exactly under a fixed shift (0x1C–0x35 → A–Z, 0x36–0x4F → a–z, 0x10–0x19 →
+  0–9), which is how this filing was read here in seconds after `tesseract`
+  spent 30 minutes on four pages and produced zero bytes. The decode shows the
+  schedule is organised **fund by fund**: a heading naming the option and its
+  manager (`Stable Value Fund … Invesco Voya Core- Invesco Floating Portfolio
+  … Separately Managed Fund`), then that fund's underlying securities one per
+  row, then a second-font line `<fund> Subtotal`. So **the securities inside
+  CVS's Stable Value Fund ARE published as menu options** — `ING GROEP NV`,
+  `MCKINSEY + CO INC`, `BANK OF MONTREAL`, `MASTER CREDIT CARD T 1A A 144A`,
+  `US TREASURY NOTE` and ~93 more, $1,537,896,945 of them, verified line by
+  line against the filing — beside the subtotal that totals them. That is a
+  **partial double count of ~$1.54B affecting 307,068 participants**, and v181
+  does not fix it: the run does not reconcile (only ~57% of the section reached
+  the row set, because `fetch-4i` rasterises at most 40 pages and this filing
+  is 113), so the row is retyped rather than dropped. **The right fix is the
+  existing managed-account fold applied to a stable-value sleeve** — one
+  `Stable Value Fund` row at $2.69B with the 98 securities moved to the `sma`
+  tab, which is what `Managed account holdings (N positions)` already does for
+  `Stock`-typed sleeves. `untypedSecurity` refuses these rows because
+  `SEC_TYPE` does not include `Stable value / GIC`. Sized and queued, not
+  shipped. **A second finding in the same filing:** two more OCR-reachable
+  subtotal lines exist in CVS's schedule (`Diversified Bond Fund Subtotal`,
+  `Large Cap Core Fund Subtotal`, plus `International Equity Fund Subtotal` and
+  `Small Mid Cap Core Fund Subtotal`) and only one reached the store, so the
+  40-page OCR ceiling is dropping real rows from the largest plan in this class.

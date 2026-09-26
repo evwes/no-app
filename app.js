@@ -1504,6 +1504,16 @@
        * fund-family pattern was pricing it at 0.45% (Westinghouse, owner
        * report 2026-08-24). Bonds have no expense ratio and no fund ticker. */
       const gicRow = /stable value|\bgic\b/i.test(f.type || "");
+      /* v181: a row the FILING calls a subtotal is not a vehicle, so it has no
+       * ticker and no expense ratio. Measured before this gate existed:
+       * `fundER("Stable Value Fund Subtotal")` returns 0.35% and CVS Health's
+       * $2,690,925,949 row was suppressed only because its old type said
+       * "Stable value / GIC". Retyping it without this line would have started
+       * publishing an estimated expense ratio for a subtotal — a new false
+       * claim created by the fix. `fundTickerInfo` returns nothing for all ten
+       * names in the class, with or without the type, so the ticker half is
+       * belt-and-braces for future callers. */
+      const subtotalRow = /^subtotal \(not a holding\)$/i.test(f.type || "");
       /* v67 entries carry the 4i identity column as f.iss ("Vanguard",
        * "Western Asset"). Ticker matching sees issuer + name together, which
        * is what makes "Core Bond IS" resolvable at all; entries parsed
@@ -1516,7 +1526,7 @@
        * 3.10M participants resolve on the bare name and fail with the
        * prefix — blank fee cells since v67. Try issuer+name first (keeps
        * every existing win), then the bare name. Strict superset. */
-      const info = tab === "menu" && !gicRow
+      const info = tab === "menu" && !gicRow && !subtotalRow
         ? lookupTicker(f)
         : null;
       // employer stock IS a listed security: the plan's own ticker names it
@@ -1526,7 +1536,7 @@
       const tk = stockRow ? (plan.ticker || null) : (info ? info.tk : (f.tk || null));
       const star = !stockRow && info && info.comparable;
       if (star) starred = true;
-      const er = tab !== "menu" || stockRow || gicRow ? null
+      const er = tab !== "menu" || stockRow || gicRow || subtotalRow ? null
         : star ? info.er : (noPublicPrice ? null : fundER(f.name));
       // the brokerage window is a menu choice with no holdings of its own —
       // tint it so it reads as a doorway, not a fund (owner request)
@@ -1534,7 +1544,7 @@
         || /brokerage|self.?directed|self.?managed|brokeragelink|\bpcra\b/i.test(f.name);
       const shownType = f.type || (brokRow ? "Brokerage window" : "—");
       return `
-      <tr${brokRow ? ` class="row-brokerage"` : ""}>
+      <tr${brokRow || subtotalRow ? ` class="row-brokerage"` : ""}>
         <td class="fund-name-col"><div class="fund-name">${f.iss ? `<span class="fund-issuer">${esc(f.iss.replace(/\*+/g, "").trim())} · </span>` : ""}${esc(f.name)}</div>${tk ? `<div class="fund-ticker">${esc(tk)}${star ? "*" : ""}</div>` : ""}</td>
         <td class="fund-type">${esc(shownType)}</td>
         <td class="num">${er != null ? er.toFixed(er < 0.1 ? 3 : 2) + "%" + (star ? "*" : "") : "—"}</td>
