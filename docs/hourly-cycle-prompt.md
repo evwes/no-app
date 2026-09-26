@@ -1,27 +1,5 @@
 # Hourly cycle prompt
 
-> # ⏸ PAUSED — 2026-09-21 to 2026-09-24
->
-> **The owner paused all wampo AGENT operations until credits reset at
-> 7:00 PM ET on Thursday 2026-09-24 (23:00 UTC).**
->
-> - The hourly Routine `trig_017vdX5dSSYh5v68Cwe6EUBu` is **DISABLED**, not
->   deleted. A one-shot Routine `trig_01ULvEDusc1aPbiaShu17Wah` fires at
->   **2026-09-24T23:00:00Z** and re-enables it.
-> - **DO NOT RECREATE THE HOURLY ROUTINE.** The resurrection instructions
->   below are written for a Routine that has gone MISSING. This one is
->   deliberately switched off, and `list_triggers` filtered to `enabled: true`
->   will not show it — which looks exactly like "gone". Check with
->   `enabled: false` before concluding anything.
-> - **DO NOT run cycles, dispatch build-data, mirror, or spawn agents** until
->   the resume fires or the owner says otherwise.
-> - The GitHub Actions pipeline is deliberately STILL RUNNING: it costs no
->   credits (measured at zero on a public repo) and it is the durable layer.
->   It will keep committing data to `main` while the agent loop is paused, so
->   expect main to be ahead of the dev branch on resume — reconcile before
->   mirroring.
-> - **On resume, delete this banner.**
-
 
 **The durable scheduler EXISTS — self-bind since 2026-09-08.** MCP Routine
 `trig_017vdX5dSSYh5v68Cwe6EUBu` ("wampo hourly cycle (self-bind)", cron

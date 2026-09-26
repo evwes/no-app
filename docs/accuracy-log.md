@@ -20263,3 +20263,36 @@ rule. **The fix never changed. Only where it could see enough to be safe.**
   keyed to what RENDERS — `matchQuoteShown` beside `matchQuote` — so the gap is
   visible rather than absorbed. Queued, not shipped: operations are paused
   until 2026-09-24 23:00Z and this is new instrumentation, not a repair.
+
+## 2026-09-26 — RESUME, and a 44-hour loop gap between the resume firing and it being read
+- **The pause worked as designed.** The owner paused agent operations
+  2026-09-21 and the one-shot Routine `trig_01ULvEDusc1aPbiaShu17Wah` fired on
+  time at **2026-09-24T23:00:11Z**. The hourly Routine
+  `trig_017vdX5dSSYh5v68Cwe6EUBu` stayed DISABLED (not deleted) throughout and
+  is re-enabled now; next wake 2026-09-26T20:07Z.
+- **The gap: the resume wake sat unread for ~44 hours**, delivered only when
+  the session next came up at 2026-09-26 19:48Z. A Routine firing puts a
+  message in this session's queue; it does not itself wake a container that is
+  not running. Recorded because a gap that is not written down reads later as a
+  quiet period. This is the fifth such gap on the record (2026-09-17, -09-18 x2,
+  -09-20, and this one), and every one of them has the same shape: the DURABLE
+  layer kept running and the JUDGEMENT layer did not.
+- **What the durable layer did across the five paused days, measured rather
+  than assumed** — the first 2026-09-21 coverage line against the newest:
+  `confident` 60,117 → **60,115** (−2), `lineups` 59,766 → 59,764 (−2),
+  `dl` 104 → **105** (one more filing withdrawn from the EFAST2 bucket),
+  `HIGH` 5 at the baseline, `WARN` 543, `overshoot` 332, `aggRow` 112,
+  `pvTopShare` 99.8% — everything else byte-identical. **~6 committing runs a
+  day, not 24**: a no-op hour exits without committing, which is the intended
+  behaviour and is what a five-day flat trail looks like.
+- **The six indicators the owner asked for are live and have been recording
+  every run since the pause began** — `roth` 37,736, `aftertax` 4,172,
+  `menu` 136, `matchAny` 45,985, `cust` 11,103 / `custPpl` 23,282,964,
+  `tkExact` 24.56% / `tkComparable` 3.29%. They appear in the trail from the
+  first line after the last pre-pause mirror, so the wiring survived the pause
+  untouched and there is already a five-day baseline to diff against.
+- **Prevention:** nothing to fix in the pipeline. The lesson is about the
+  report, not the machine: a flat coverage trail is ambiguous between "nothing
+  changed" and "nothing ran", and the discriminator is the number of committed
+  lines per day, which is now stated here so the next reader does not have to
+  re-derive it.
