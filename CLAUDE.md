@@ -647,7 +647,7 @@ don't confuse them). Frontend: python http.server + Playwright at
 /opt/pw-browsers/chromium; verify TK page, tabs, filters, deep links
 (#plan=EIN|PN|TICKER).
 
-## Current state — RE-DERIVED FROM THE STORE 2026-09-21 08:3xZ
+## Current state — RE-DERIVED FROM THE STORE 2026-09-26 23:1xZ
 
 **Re-derive this block from the store; never edit its date.** The previous
 version of this header said "Store at v168 … `PARSER_VERSION` in the tree is
@@ -660,16 +660,57 @@ read `lineups-status.json` and `lib-4i`'s export, do not copy the line.
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, ≥100
   participants at either end of the plan year): **68,259 full-form**, 43,523
   short-form, 68,767 parse-status entries.
-- **STORE: pv 177 covers 68,661 of 68,767 acks (99.85%)** — tail pv106 18,
-  pv124 10, pv123 10, pv98 10, pv91 9. Confident **60,117**, lineups 59,766,
-  HIGH 5, WARN 543, overshoot 332, aggRow 112, generic-named 114,
-  dominant-row 0, dl 105.
-- **LIVE ON MAIN: the v176 store** (`60eac141 → 129095f5`, mirrored
-  2026-09-21 00:3xZ, data gate unforced +0/−0). Main has since taken cron
-  commits `dd2aa45d` and `3457deef`.
-- **`PARSER_VERSION` in the tree is 180. NOTHING IS IN FLIGHT** as of
-  2026-09-21 14:3xZ — #427 (incremental, dev branch) finished `success` in 9
-  minutes at 13:36Z and #428 (main's :23 cron) at 14:24Z.
+- **STORE: pv 181 covers 68,637 of 68,767 acks (99.81%)** — tail pv180 25,
+  pv106 18, pv124 10, pv123 10, pv98 10. Confident **60,115**, lineups 59,764,
+  HIGH 5, WARN 543, overshoot 331, aggRow 112, dl **128**, `analyze` 2.
+- **`PARSER_VERSION` in the tree is 181. NOTHING IS IN FLIGHT** as of
+  2026-09-26 23:1xZ — #465 (the v181 full re-parse, dev branch) finished
+  `success` in 54 minutes at 22:34Z.
+- **LIVE ON MAIN: the v181 store — MIRRORED 2026-09-26 23:1xZ**
+  (`f7b8a665 → 169458c8`), **data gate UNFORCED at +0 gained / −0 lost.**
+  `--force` covered the GIT check alone over main's one cron commit, evidence
+  produced first: **0 acks and 0 plans the branch lacked, plans array
+  byte-identical, main higher on 0 acks, 0 confident on main the branch
+  lacks** (the 68,637 pv differences are all the branch's v181 ahead of
+  main's v180).
+- **#465 PASSED EVERY PRE-REGISTERED TEST.** Cwpm 35 rows @ 0.969 and Douglas
+  County 34 @ **1.000** are the two designed drops; CVS Health (307,068 ppl)
+  is **120 rows @ ratio 0.801** with its `Stable Value Fund Subtotal` still
+  carrying **$2,690,925,949** and now typed `Subtotal (not a holding)`;
+  **8 subtotal-named rows store-wide and 0 still carry a fund vehicle type**;
+  the coverage line is byte-identical (confident +0 / −0) because v181 retypes
+  and drops rows INSIDE plans that were already confident.
+- **BOTH ANOMALIES IN #465's LINE WERE RESOLVED, NEITHER WAVED THROUGH.**
+  (1) `analyze` 0 → 2 is **not v181's doing**: both acks sit at **pv=180**, so
+  the run never touched them — The Folsom Corporation (203 ppl) and the
+  documented analyze-stuck master trust, both already on this record. One
+  status read settled it.
+  (2) `dl` 105 → **128** is the metric the verdict rules say must not jump.
+  **All 23 new failures were HEAD-probed — the whole population, not a
+  sample — and 23 of 23 answered 403.** The filings really are withdrawn from
+  the EFAST2 bucket, so `e=download` stays an honest published claim and the
+  rise is the bucket growing, not our code. Largest is Lakeland Regional
+  (8,952 ppl); the rest are small plans. This is the #244/#246 discriminator
+  run in the direction that EXONERATES the code, which is the point of
+  running it.
+- **ALSO LIVE, and the correction is the useful part: the filed misspelling of
+  a fund HOUSE is repaired in the LOOKUP, never in the displayed name.**
+  University of Maryland Medical System PN 005 (23,496 ppl) files `Vangaurd
+  Target Retirement <year> Inv` on **twelve rows, $470,113,950 = 65.2% of its
+  menu**; the filing's own text layer says `Vangaurd` 12 times and `Vanguard`
+  zero times, so the typo is the auditor's and our parse is faithful. Won:
+  **ticker 326 rows / 158 plans / 150,335 ppl**, **expense ratio 211 rows /
+  81 plans / 85,306 ppl / $749,399,699**, 0 flipped and 0 lost.
+  **The first version of this claimed "$975M of fee cells" and that was
+  wrong** — the measurement asked only `fundTickerInfo`, so it proved the
+  ticker resolves and said nothing about the fee beside it. **Rendering the
+  real page is what caught it** (twelve tickers against twelve `—`), and a
+  store-side test of the ticker lookup could not have. An outcome test covers
+  only the outcome it measures, and this fix had two.
+  Queued, not shipped: **158 rows publish a LESS specific ER than the repaired
+  name resolves** (generic 0.1% where Vanguard Total Bond is 0.04%); the fix is
+  strictly additive by design, so changing those rewrites 158 published numbers
+  and needs each verified.
 - **#427 PASSED ALL FOUR PRE-REGISTERED TESTS and the issuer strip is LIVE.**
   (1) Residue 361 → 248 = **113 rows stripped, the prediction to the row**;
   (2) CHS/Community Health (91,940 ppl) publishes `Principal Life Insurance
