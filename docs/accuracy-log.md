@@ -20512,3 +20512,87 @@ rule. **The fix never changed. Only where it could see enough to be safe.**
   `Large Cap Core Fund Subtotal`, plus `International Equity Fund Subtotal` and
   `Small Mid Cap Core Fund Subtotal`) and only one reached the store, so the
   40-page OCR ceiling is dropping real rows from the largest plan in this class.
+
+## 2026-09-26 — The filing's own misspelling of a fund house costs the reader a fee cell
+- **Wrong:** where a filed 4i schedule misspells a fund HOUSE, no faithful
+  lookup can match, so the row publishes a blank fee cell. **University of
+  Maryland Medical System PN 005** (`20251003171847NAL0001628577001`, 23,496
+  participants, $730,469,763) files `Vangaurd Target Retirement <year> Inv` on
+  **twelve rows — $470,113,950, 65.2% of its published menu** — and every one
+  showed no ticker and no expense ratio.
+- **The cause is the FILING's, and that is what decided where the fix goes.**
+  The entry is a plain text layer, not OCR, and the PDF's own text contains
+  **"Vangaurd" 12 times and "Vanguard" zero times**, with values matching the
+  store to the dollar. Our parse is faithful; had this been OCR damage the fix
+  would have belonged in the parser instead. Checking that was one `grep` and
+  it moved the fix across two files.
+- **Change:** a LAST-RESORT arm in `app.js`'s `lookupTicker`, after every
+  faithful attempt (raw, issuer-prefixed, cleaned) has failed. Each
+  misspelling is **spelled out** in `HOUSE_MISSPELLINGS` — a general
+  edit-distance fallback would be a licence to guess, and a guessed fund name
+  reads as knowledge, against the standing rule that a blank is honest. Only
+  house names are repaired, never fund names, where a near-miss could name the
+  wrong fund. **The DISPLAYED name stays exactly as filed; only the lookup is
+  repaired** — the page still shows what the auditor wrote.
+- **Sized as an OUTCOME, not a condition** (whole-store against the v180
+  store, through `app.js`'s real lookup order with the type passed as the
+  second argument to `fundTickerInfo`):
+
+  | | rows | plans | participants | value |
+  |---|---|---|---|---|
+  | condition — a filed misspelling | 546 | 281 | 261,276 | $1.23B |
+  | **outcome — wins a ticker the reader lacks today** | **326** | **158** | **150,335** | **$975,210,852** |
+
+  287 exact, 39 comparable. The 220 rows that do NOT win are a table-coverage
+  gap wearing a misspelling's clothes — `Vangard Total International Bond
+  Index Fund Admiral Shares` resolves to nothing spelled correctly either.
+- **Controlled both directions on the same store, which is the rule v172/Apple
+  cost us:** of the 546 rows the repair touches, **0 flipped to a different
+  ticker** (the FTBFX shape that cost 270 rows once) and **0 lost a ticker
+  they had**; 7 already resolved and kept the same one. Negative control:
+  **all 1,719,837 rows the repair does not touch came back unchanged.**
+  Full smoke test green across all six page shapes.
+- **Prevention:** the arm runs last, so it can only add — a later faithful
+  match always wins. The list is data, not a pattern: adding a misspelling is
+  a one-line change with its own measurement, and nothing fuzzy can creep in.
+
+### Two classes measured the same cycle and DELIBERATELY NOT FIXED
+Both looked substantial by row count and neither survives the outcome test.
+Recorded so a later cycle does not re-discover them as wins:
+- **A value welded into the row name — 420 rows / 74 plans / 823,268 ppl /
+  $10.31B, and repairing the name wins a ticker on exactly 0.** UnitedHealth
+  Group's 274,906 participants see an expense ratio and a STREET ADDRESS
+  inside a fund name (`AMERICAN NEW PERSPECTIVE CLASS F1 0.37% USADDRESS 3500
+  W`, $648,018,406). It is an HONESTY defect, not a coverage one:
+  `AMERICAN NEW PERSPECTIVE CLASS F1` resolves to nothing even spelled
+  cleanly, so no fee data is being lost.
+- **A leading em-dash before the name — 1,993 rows / 297 plans / 609,414 ppl,
+  also 0 ticker wins**, and here the reason is good news: `fund-er.js` already
+  tolerates leading punctuation, so `— T. Rowe Price Retirement 2035 Active
+  Trust E` resolves to TRRJX unaided. **Purely cosmetic.**
+
+Had either been published as a condition count they would have read as ~1.4M
+participants of lost fee coverage. They are not that.
+
+### A hand-rolled shape predicate that dissolved — the fourth on this record
+Walmart (1,921,006 ppl) publishes `Global Trust Company N L dInternational
+Altrinsic bl F d E` on **$912,780,772**. Read off the filing: a broken font has
+scattered the letters of "Non-Lendable" across two lines as `N`, `L d` and
+`bl F d`. **The wrap handling is NOT at fault** — the two other Global Trust
+Company rows in the same table also wrap over two lines and we read both
+correctly (`AQR Emerging Equities Collective Investment Fund`, `Victory Mid
+Cap Value Collective Investment Trust Fund`), so the FONT DAMAGE is what
+defeats it, and the v130 continuation-fragment diagnosis that the shape invites
+is wrong.
+I then sized "a run of two or more one-or-two-letter tokens" at **54,287 rows /
+17,983 plans / 32,657,600 ppl / $379B — and it is my predicate, not a class.**
+The printed matches say why: `State Street S&P 500 Index K NL` ($7.99B, Wells
+Fargo) is a real non-lendable class, `NL CL M` / `CL I` / `CL A` / `II CL 1`
+are real share classes, `TRAFIGURA FDG S A` is a company suffix, and
+`T Rowe Price Equity Income TR F` is the very name `lookupTicker`'s own comment
+cites as correctly resolving. **Do not carry 54,287 forward.** Walmart's row
+remains a confirmed single instance; the real tell is a lowercase fragment
+welded into a capitalised word (`dInternational`), not token length.
+**Prevention, since this is the fourth time:** print the matches, ranked, and
+judge the predicate on them before quoting any count — an implausible size is
+the tell, and it has been the tell every time.

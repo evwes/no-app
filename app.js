@@ -578,6 +578,17 @@
     s = s.replace(/[\s\-–,;:]+$/, "").trim();
     return /[A-Za-z]{3}/.test(s) ? s : String(name).trim();
   }
+  /* Misspellings of a fund HOUSE that appear in filed 4i schedules, each one
+   * observed in the store rather than imagined, and each a transposition or
+   * dropped letter in a house name — never a fund name, where a near-miss
+   * could name the wrong fund. Used only by lookupTicker's last resort. */
+  const HOUSE_MISSPELLINGS = [
+    [/\bvangaurd\b/gi, "Vanguard"],
+    [/\bvangard\b/gi, "Vanguard"],
+    [/\bfidelty\b/gi, "Fidelity"],
+    [/\bamercian\b/gi, "American"],
+    [/\binvescoo\b/gi, "Invesco"],
+  ];
   /* Ticker lookup order: the FILED name first (with and without the issuer),
    * the cleaned display name only as a fallback. Measured 2026-09-18 before
    * this order existed: looking up the cleaned name alone gained 37 tickers
@@ -602,6 +613,36 @@
       const hit = (iss ? fundTickerInfo(iss + n, f.type) : null) || fundTickerInfo(n, f.type);
       if (hit) return hit;
       if (order[0] === order[1]) break;
+    }
+    /* LAST RESORT: the FILING ITSELF misspells the fund house, so no faithful
+     * lookup can ever match. University of Maryland Medical System's PN 005
+     * (23,496 participants) files "Vangaurd Target Retirement <year> Inv" on
+     * TWELVE rows — $470,113,950, 65.2% of its menu — and every one shows a
+     * blank fee cell. Read off the filing's own text layer, not OCR: it
+     * contains "Vangaurd" 12 times and "Vanguard" zero times, so the typo is
+     * the auditor's and our parse is faithful. That is why the repair belongs
+     * HERE and not in the parser.
+     *
+     * Each misspelling is SPELLED OUT. A general edit-distance fallback would
+     * be a licence to guess, and a guessed fund name reads as knowledge — the
+     * standing rule that a blank is honest. This runs only after every
+     * faithful attempt has failed, so it can only add, and the DISPLAYED name
+     * stays exactly as filed; only the lookup is repaired.
+     *
+     * Measured whole-store 2026-09-26 against the v180 store: the condition is
+     * 546 rows / 281 plans / 261,276 ppl; the OUTCOME — a ticker the reader
+     * lacks today — is 326 rows / 158 plans / 150,335 ppl / $975,210,852 (287
+     * exact, 39 comparable). The 220 rows that do NOT win are a table-coverage
+     * gap wearing a misspelling's clothes: "Vangard Total International Bond
+     * Index Fund Admiral Shares" resolves to nothing spelled correctly either.
+     * Controlled on the same store, both directions: 0 flipped to a different
+     * ticker, 0 lost a ticker they had, and all 1,719,837 rows the repair does
+     * not touch came back unchanged. */
+    for (const [wrong, right] of HOUSE_MISSPELLINGS) {
+      const rep = raw.replace(wrong, right);
+      if (rep === raw) continue;
+      const hit = (iss ? fundTickerInfo(iss + rep, f.type) : null) || fundTickerInfo(rep, f.type);
+      if (hit) return hit;
     }
     return null;
   }
