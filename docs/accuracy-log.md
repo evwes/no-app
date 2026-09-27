@@ -21373,3 +21373,166 @@ ever run against work lists that bail out early. **Next cycle's target, and the
 first full re-parse since they shipped will finally exercise them.**
 C1's 4,568 is the RAW figure; the record's 1,419 live is after removing 3,158
 wind-down ghosts, and that row's cause remains OPEN after being falsified once.
+
+---
+
+## 2026-09-27 — B1 MEASURED: the prior-year FEATURE fallback runs at 49.2%, and the residue's prior years are silent too (0 of 70)
+
+The entry above set B1 — features missing although the lineup parsed fine,
+**1,084 plans / 1,196,101 participants / $47.3B** — as the next target, and said
+the four `feat-fb-*` counters "have only ever run against work lists that bail
+out early." **That last clause is wrong and is corrected here.** The counters
+have run on every full re-parse since they shipped; their output goes to the
+parse jobs' logs, and the Actions log blob host
+(`productionresultssa*.blob.core.windows.net`) is **policy-blocked from this
+sandbox**, as is `askebsa.dol.gov` and the `data-inputs` artifact that carries
+`fallbacks.json`. The number was not unmeasured because the instrument never
+fired; it was unmeasured because nobody could read where it printed.
+
+### The structural fact that answers it without a run
+
+`f:1` is written whenever features exist and `ffb` whenever they came from a
+prior year (`fetch-4i.mjs:441`), and B1's predicate is `s.c && !s.f`. **So a
+plan the fallback SUPPLIED is by construction not in B1: B1 is the residue after
+the fallback has already had its chance**, and 1,071 of the 1,084 sit at pv183,
+the version of the latest full re-parse (#469). The rate therefore comes off the
+OUTCOME side, whole population, no sampling:
+
+| shape | supplied | needed | rate |
+|---|---|---|---|
+| own newest schedule confident, own notes silent — **the v119 shape** | **1,016** | **2,066** | **49.2%** (39.9% by participants) |
+| lineup ALSO served from the prior year | 414 | 448 | 92.4% |
+| both together | 1,430 | 2,514 | 56.9% |
+
+**The 92% on this record was measuring the second row.** The 2026-09-10 entry
+called it an upper bound and it is: the population v119 was built for runs at
+**49.2%**, less than half the figure that has been quoted since.
+Mechanism is live in production and provable from the store alone: **1,722 acks
+carry `ffb` at pv=183**, written by #469 itself, and only 2 at an older pv.
+
+### The production-path run, because the store cannot say WHY the residue failed
+
+`fallbacks.json` is artifact-only and both routes to it are blocked, so the
+prior-year acks were reconstructed from sources the sandbox does have — the
+repo's own `plans-all.json` history (a plan that has since filed again carries
+its previous newest ack there, which is exactly prep's first candidate) and the
+`fbAck` stored on lineup entries. 83 acks, `ONLY_ACKS_4I` + `PARSE_SHARD=0
+PARSE_SHARDS=1`, unmodified `fetch-4i`/`lib-4i` (version bumped in a COPY so the
+work-list filter would admit them), delta discarded, store untouched. Seed
+20260927.
+
+```
+failures this shard: feat-fb-needed=81 feat-fb-silent=68 feat-fb-supplied=7
+                     feat-fb-none=0 download=1 fb-threw=5
+```
+
+The ledger closes exactly: 7 + 68 + 5 + 1 = 81. Per stratum:
+
+| stratum | n | supplied |
+|---|---|---|
+| A — B1, own confident newest schedule, prior ack from history | 41 | **0** |
+| B — B1, lineup already served from the prior year | 34 | **0** |
+| C — positive control, plans the store says were supplied | 8 | **8** (7 counted, see the defect below) |
+
+**0 of 75 B1 plans gained a feature. 70 prior-year filings were actually opened
+and read** (5 candidates and 1 primary answered 403); Wilson 95% interval on
+0/70 is **0–5.2%**. The positive control reproduced the stored `ffb` years to
+the plan (7 × 2023, 1 × 2024), so the counters are not silently dead.
+
+### Why the residue is silent — random 60, seed 20260927, of the 1,050
+
+| n | share | |
+|---|---|---|
+| 35 | 58% | form pages + the 4i schedule only, no audit report at all |
+| 12 | 20% | auditor's opinion letter only — the financial statements are withheld |
+| 12 | 20% | note prose IS published and never states the feature — the only candidates for OURS |
+| 1 | 2% | public copy withdrawn (403) |
+
+**47 of 59 readable (79.7%, Wilson 67.8–88.0%) publish no audit notes at all.**
+Of 5 note-prose members read by hand, 2 state vesting the extractor misses
+("shall be at all times 100% vested in his or her account"; "a non-forfeitable
+interest in his account after one hour of service") and 3 state nothing about
+match, vesting or Roth. That scales to roughly 85 plans — a vesting PHRASING
+gap, i.e. NEW COVERAGE, matching the 0.8% path-defect rate already measured for
+vesting. **Verdict: DOCUMENTED AS UNREACHABLE by the fallback route.** Not a
+repair; the fallback works, fires, and has already taken the half of the class
+that was reachable.
+
+- **Wrong (my own measurement, caught and corrected inside the cycle):** the
+  first classifier reported **22 of 60** filings as "NOTES PRESENT". It was
+  matching the auditor's OPINION LETTER, which says "…and the related notes to
+  the financial statements" in every filing whether or not the notes themselves
+  were published. Three of the 22 were read by hand and contain no note prose
+  at all — no "Vesting", no "Roth", no "borrow". Re-classified on note PROSE the
+  figure is **12**. A matched condition is not the outcome, for the sixth time
+  on this record.
+- **Prevention:** the classifier and its correction are both in the scratchpad
+  script `reclassify.mjs`, and the rule it breaks is already written down — this
+  entry exists so the next person sizing "does the filing have notes" does not
+  reach for the auditor's letter as the witness.
+
+### Two defects found while measuring
+
+**1. SHIPPED — a page that publishes 28 filed holdings must not also say the
+attachment could not be read.** `whyUnknown` in `app.js` names three kinds of
+missing and this population is a fourth: a plan whose 4i schedule we READ and
+PUBLISHED but whose filing yielded no features has no `filedFeatures`, so it
+fell through to *"Not stated — filing attachment absent or unreadable"*.
+**Verified by RENDERING the real pages, not by reading the source:** Dollar
+General (**201,691 participants**) and IBEW Local 60 (4,544) each printed that
+line three times directly above *"FUND HOLDINGS — 28 FILED · Schedule H line 4i
+attachment"*. Population = the whole B1 bucket, **1,084 plans / 1,196,101
+participants**, because `roth` and `afterTax` are null for every plan with no
+features and those rows carry the sentence.
+The new sentence — *"Not stated — this filing's audit notes are absent or silent
+on it"* — names both possibilities rather than asserting the one the store
+cannot tell apart (58%+20% absent vs 20% silent, above).
+Controls both ways, all four rendered: Dollar General takes the new wording;
+Providence Administrative Consulting (30,857, lineup served from its 2023
+filing) keeps the old one, which its own source line confirms; Ashland PN 020
+(trust-served) keeps it; Walmart, which has features, shows no such row.
+`smoke-test.mjs` GREEN. `map-test.mjs` fails in this sandbox on a Google Fonts
+`ERR_CERT_AUTHORITY_INVALID` — **identical on unmodified HEAD**, so
+environmental, not this change.
+**Prevention:** the branch keys off the evidence that contradicts the old
+sentence — the plan's own published lineup — and excludes a lineup served from a
+prior year (`fb`) or from the trust (`fromTrust`), for which the old sentence is
+the true one.
+
+**2. RECORDED, NOT FIXED — `feat-fb-supplied` undercounts the withdrawn-copy
+rescues.** In the `fbNoCopy` path `features` is assigned from the prior-year
+read *before* `const featWanted = !features` snapshots the need, so a filing
+whose newest copy is withdrawn and whose notes therefore come from the prior
+year is counted in **neither** `feat-fb-needed` nor `feat-fb-supplied` — while
+the code comment states the four buckets "account for every needed case."
+Named from evidence, not inference: the run's delta shows 8 supplied and the
+counter says 7, and a HEAD probe of all eight control primaries returns **403
+for exactly one — Cascade Drilling (1,202 participants)**. Ceiling on the
+store-wide undercount is the `dl` set, 128 acks. `fetch-4i` change, needs a run
+to validate, so it is proposed rather than shipped.
+
+### Queued for the owner, with sizes
+
+- **A parse-time "audit notes published" flag** (one boolean beside `ds`) would
+  let the page say WHICH of absent / silent, for **1,084 plans / 1,196,101
+  participants**. Needs a `PARSER_VERSION` bump. Until it exists the shipped
+  sentence deliberately refuses to choose.
+- **Vesting phrasings "at all times 100% vested in his or her account" and
+  "non-forfeitable interest … after one hour of service"** — ~85 plans of the
+  B1 class by the 60-draw, NEW COVERAGE.
+- **Case-insensitive duplicate rows in published lineups: 135 plans / 168,832
+  participants / 294 rows** (found in this cycle's participant-weighted
+  published draw, seed 20260927777 — Daniel Food Enterprises publishes
+  `Principal LifeTime Hybrid 2025 CIT Z` twice, title-cased and upper-cased,
+  3.7% each, at ratio 1.009; Allete 18 rows, McLane 2, Sony 1). **Not called a
+  defect:** v174's own negative control is two real rows differing by one
+  dollar, so distinguishing a filing that lists a holding twice from a parse
+  that duplicated it needs the filing. Sized so the next cycle need not
+  rediscover it.
+
+### The published-lineup draw this cycle
+Participant-weighted, seed 20260927777, 12 plans read row by row (Amazon
+1,343,800 · Wells Fargo 255,580 · Troon Golf 37,243 · NYU 16,836 · Apple
+Central · Daniel Food · Brewster Heights · Extrahop · Mountain View Hospital
+and three smaller). **No fabricated row found.** The one observation is the
+duplicate pair above.
