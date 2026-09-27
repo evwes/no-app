@@ -23280,3 +23280,80 @@ value and all newly SIZED here — recorded, not fixed:
   as 13 plans / 265,140 participants and is 1 plan / 560 — and the four biggest
   named members were already on the top four lines of an audit that runs on
   demand today.
+
+## 2026-09-27 (20:3xZ) — I SENT AN AGENT AFTER A DEFECT THAT DOES NOT EXIST, BY TESTING THE WRONG COPY OF A TWO-COPY PREDICATE
+
+I handed over an item claiming `audit-generic-names` and the dominance guard were
+blind to `Common/collective trust funds`, with Cummins PN020 (38,567 ppl)
+publishing it at 60.7% = $5,016,457,254 as the headline. **Four of the five
+claims are false**, and I verified each refutation myself rather than taking the
+report:
+
+| my claim | what one execution shows |
+|---|---|
+| the predicate misses those phrases | **`GENERIC_TYPE_ANY` matches all of them.** Only the narrow `GENERIC_TYPE_NAME` misses them — deliberately, and v137 is the entry that created the split |
+| two audits pass the four named plans | `audit-generic-names` reports them **as its top four rows by assets** |
+| the dominance guard is blind for vocabulary reasons | **Threshold.** It needs ≥90% and these are 60–66%; no word reaches them |
+| 38,567 Cummins readers see the 60.7% row | **False at the page.** `app.js:940` reads `if (mti / tot > 0.5 \|\| (lu.funds.length <= 8 && top / tot >= 0.6)) { ownUsable = false; trustPointer = true; }` — Cummins is trust-linked with ≤8 rows and a ≥60% top row, so its own lineup is refused and its master trust's confident 33-row menu is served instead |
+
+**And my "correction" of the agent's framing was the same error with more
+confidence.** It wrote "it is the plural and the `funds` tail"; I replied that
+plurality is not the axis because `Mutual funds` and `Pooled separate accounts`
+are caught. Both of us were reading `GENERIC_TYPE_NAME`. **Every consumer that
+matters reads `GENERIC_TYPE_ANY`**, where all of it matches. I corrected a wrong
+answer with a differently-wrong answer and presented mine as the settled one.
+
+**THE RULE THIS SHARPENS, because "reach for the shipped predicate" was obeyed
+in letter and broken in substance.** I did use a shipped regex. I picked it **by
+name**, from two copies with nearly identical names, without tracing which one
+the guard I was accusing actually calls. The rule has to be: **reach for the
+predicate the CONSUMER reads, and find it by following the consumer's code, not
+by matching a name.** v137 exists precisely because these two symbols have
+different jobs; its own entry says so, and I cited v137's hazard in the handoff
+while testing the symbol v137 was written to avoid.
+
+**I also presented two sizes as one class at two thresholds, and they are
+different sets.** "4 plans / 48,697 ppl at ≥50%" and "13 plans / 265,140 at
+≥15%" cannot be nested: Morgan Stanley 81,090 + GM 67,487 + GM 67,246 + Cummins
+38,567 alone is 254,390. The arithmetic was available and I did not do it.
+
+### THE SAME BUG WAS IN THE MANDATORY PRE-SHIP CHECK, AND THAT IS THE FIND
+`diff-lineups.mjs` — the tool every parser change must pass, whose whole purpose
+is to refuse a change that introduces a fabricated row — **read the NARROW
+`GENERIC_TYPE_NAME` while every rule it polices reads `GENERIC_TYPE_ANY`.** So
+for the entire plural family it printed `FABRICATED GENERIC ROWS INTRODUCED: 0`
+by construction. Measured on the corpus after repair: per-side generic rows
+**36 rows / 34 filings → 61 / 56**. **A guard that cannot see the shape it
+guards against is worse than no guard**, which is this record's own lesson about
+site-test being red for ten runs — and my error and the tool's bug are the same
+bug: two copies, the wrong one wired.
+
+### What shipped, and it is small
+**v187** adds `commingled (?:trust |investment )?funds?|pooled separate account
+funds?` to `GENERIC_TYPE_ANY` only — never to the narrow copy, which feeds
+row-deleting paths. Outcome, both numbers as asked: **1 plan / 560 participants
+stop publishing a statement as a menu, and the audits newly see the same 1
+plan** — the ≥25% value gate already caught the rest. Blue Cross and Blue Shield
+of Vermont PN003 publishes five rows with **no fund named in any of them**,
+`Commingled funds` at 97.5%. Its filing has no statutory 4i header and we were
+reading the **older column of a two-year comparative** ($78,057,589 where 2024
+is $91,126,870) — recorded, not fixed.
+
+### For the owner, and it is the real question my item was groping at
+**85 published lineups / 302,715 participants reach a reader with a bare
+asset-class label as their largest row at ≥60%** (104 / 321,113 at ≥50%) —
+Morgan Stanley PN003 81,090 at 62.1%, GM PN014 67,487 at 63.6%, GM PN002 67,246
+at 66.4%, Ralph Lauren 15,230 at 69.0%, Hub Group 8,042 at **89.6%**. **Not
+reachable by vocabulary and not a fabrication in our parse — the FILING
+aggregates.** Lowering the 90% floor withdraws all 85, and for GM that is a net
+loss because its trust's own lineup is itself two class labels. The alternative
+withdraws nobody: **state the aggregated share on the page**, frontend-only,
+computable from the entry. Also worth a decision: **`audit-data.mjs:584`
+escalates `fabricated-name` only above 230 against a live count of 109**, so that
+HIGH is dormant and cannot fire unless the number doubles.
+
+### From the agent's own draw, sized and not fixed
+- **The plan's own filed CITY published as a holding: 114 rows / 114 published
+  plans / 426,430 participants** — `Mooresville` on Lowe's PN003 (318,750 ppl).
+- An aggregate caption welded to a real fund name: 22 rows / 22 plans / 34,437
+  ppl (`Participant Directed Investments Fidelity® 500 Index Fund`).
