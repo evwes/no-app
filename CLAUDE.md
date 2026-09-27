@@ -668,10 +668,28 @@ export, do not copy the line.
   544, overshoot **325** / 400,840 ppl, aggRow 112, dl **128**, **`analyze` 0**,
   `no-section` ~7,123. **`matchQuote` 5,397 of which only 1,785 are SHOWN to
   readers** — the condition/outcome pair shipped 2026-09-27.
-- **`PARSER_VERSION` in the tree is 188; the store is at 186.** #480 (v186) ran
-  `success` 19:54–20:48Z on `a8f8fd24`, store commit `997ec6d6`, **+7 confident
-  / −0 lost**, every change reconciled by ack. v187 and v188 are committed and
-  gated behind it and need one dispatch between them.
+- **`PARSER_VERSION` in the tree is 188; the store is at 186. #481 IS IN FLIGHT**
+  — the v187 + v188 full re-parse, dispatched 2026-09-27 20:59Z on `5dd4369d`
+  and observed `queued`. #480 (v186) ran `success` 19:54–20:48Z on `a8f8fd24`,
+  store commit `997ec6d6`, **+7 confident / −0 lost**, every change reconciled by
+  ack.
+- **LIVE ON MAIN: the v186 store — MIRRORED 2026-09-27 20:5xZ, UNFORCED ON BOTH
+  CHECKS** (`a6bf022e → 5dd4369d`, a plain fast-forward: main held nothing the
+  branch lacked, so no `--force` was needed on the git check either). Data gate
+  **+7 gained / −0 lost**; dominant pv 186 at 99.8%, fetch failures 128 (0.19%),
+  reader failures 2. It carries v188 CODE over the v186 STORE, which is safe —
+  see the bullet above.
+  **What reached readers, and only one half of it was predicted.** Seven plans
+  gain a published menu (Bekaert 1,698 ppl, Zeta Associates 689, California
+  Online Public Schools 532, James R. Vannoy & Sons 439, La Tortilla Factory 412,
+  Indoff 371, Champlin/Haupt 164 — 4,305 participants), and **five plans stop
+  publishing holding values inflated a hundredfold**: `overshoot` 330 → 325,
+  −26,503 participant-weight, led by **Swbg, Llc at 17,751 participants whose
+  ratio went 1.395 → 0.910 while staying confident** (its rows are Empower legend
+  codes, the OCR-damaged family). All five remain published with corrected
+  numbers; **19,126 participants in total**. I had pre-registered ONE plan and
+  "`overshoot` must not move", because I verified the fix on the single specimen
+  that produced it and never sized the shape store-wide.
   **CODE AHEAD OF THE STORE IS SAFE TO MIRROR, and the line that used to sit
   here saying otherwise was wrong.** It read "THE MIRROR IS HELD ON PURPOSE …
   mirroring that makes main's own `:23` cron run a duplicate full re-parse ON

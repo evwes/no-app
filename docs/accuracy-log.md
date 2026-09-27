@@ -23506,3 +23506,26 @@ instead of over a run.
   it is the negative control here and the whole-store measurement plus the nine
   pinned specimens are the positive one** — the corpus is sampled by assets and
   these are small plans, which is exactly why the specimen file exists.
+
+### The other half of #480's win, measured after the fact rather than predicted
+The five lineups that LEFT the ≥1.15× overshoot set were named by diffing the set
+before and after, and all five **stay published with corrected numbers** — this is
+a correction, not a withdrawal:
+
+| ppl | plan | ratio |
+|---|---|---|
+| 17,751 | Swbg, Llc | 1.395 → **0.910** |
+| 497 | Fehr & Peers | 1.290 → 0.877 |
+| 471 | Idaho Pacific Holdings | 1.249 → below 1.15 |
+| 256 | Pottstown Medical Specialists | 1.226 → below 1.15 |
+| 151 | Polinger Company | 1.169 → below 1.15 |
+
+**0 joined.** Swbg's 24 rows are Empower legend codes (`ILIRKX`, `ILIKKX`,
+`ILUKX`), the OCR-damaged family v186 was written for, so the mechanism is the
+one the fix names. **19,126 participants stop seeing holding values inflated a
+hundredfold, and 4,305 gain a menu — 23,431 in all, against the 1,698 I predicted.**
+
+**MIRRORED 20:5xZ, `a6bf022e → 5dd4369d`, UNFORCED ON BOTH CHECKS** — a plain
+fast-forward, so `--force` was needed on neither the git check nor the data gate
+(+7 / −0). #481 dispatched 20:59Z on `5dd4369d` with v187 + v188 and observed
+`queued`.
