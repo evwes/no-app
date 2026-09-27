@@ -22437,3 +22437,22 @@ synthetic GICs — is invisible on these 62 pages for as long as they exist.
 Largest: SP Plus (15,333), Mavis Tire (13,035), Pep Boys (9,779), Confluent
 Health (8,280). Fix shape is a sweep that deletes or regenerates any `p/*.html`
 not in the current top-5,000 set. Not started — it changes what URLs exist.
+
+**ADDENDUM, same cycle — why the flag is the right gate and not merely the safe
+one.** Swept the opposite direction on the shipped HTML: pages that print five or
+more all-$1,000-multiple fund values and carry NO note. There are **two**, and
+neither is a miss. One is the Blst orphan above. The other is Mattel
+(`p/951567322-002.html`, `Blackrock S&P 500 Equity Index Fund $501,190,000`),
+and its page shows **no coverage caveat**, so its lineup reconciles to 95–105%
+of Schedule H *unscaled* — meaning the filing printed `501,190,000` itself and we
+reproduced it to the digit. Among plan-own lineups the whole class is **1 plan /
+3,782 participants** (Pacific Coast Building Products, 23 rows, ratio 0.954).
+**The distinction the flag draws is exactly the right one: where WE multiplied,
+we now say so; where the FILING printed the round number, we reproduce it and
+assert nothing.** An inference from round values cannot tell those apart, and it
+would have put a sentence about the filing's units on a page whose filing
+declared none.
+Verified end-to-end on all 160 noted pages: the unit each note STATES matches
+the granularity of the fund values printed on that same page, **0 mismatches**,
+153 thousands / 7 millions. Trust-served pages are covered too — `entry` becomes
+the trust's entry before `filedUnit` sees it, and 2 of the 160 are that shape.
