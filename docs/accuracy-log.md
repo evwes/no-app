@@ -22854,3 +22854,86 @@ publishable, and only the corpus diff caught it — and `GENERIC_TYPE_NAME` feed
 `isStatement`, the dominant-row guard and two audits at once, so a widening
 changes what is PUBLISHED as well as what is COUNTED. It needs its own version,
 its own corpus diff and its own audit re-baseline. Queued with the size above.
+
+## 2026-09-27 (20:0xZ) — MY DIAGNOSIS OF BEKAERT WAS WRONG, AND FOLLOWING IT WOULD HAVE BUILT A FABRICATION
+
+I handed the v186 item over with a stated cause: Bekaert's overshoot came from
+v184's legend-twin collapse failing to fire because OCR corrupts digits inside
+the code (`1FTD50Q` → `1FTDSOQ`) while v184 normalises only the leading
+character. **That diagnosis is refuted, and the refutation is the most useful
+thing in this cycle.**
+
+- **`collapseDoubleRender` could never have fired on Bekaert at any
+  normalisation: its 24 rows carry 24 DISTINCT values**, and every arm of that
+  stage requires two rows to share a value. The precondition of the predicate I
+  invoked was absent, and one line against the store says so.
+- **The rows I read as twins are THIRTEEN DIFFERENT FUNDS.** The filing's own
+  legend names `IFTD25Q / 1FTD35Q / 1FTDSOQ / IFTDSSQ / LFTD65Q / 1FTD10Q` as
+  the 2025, 2035, 2050, 2055, 2065 and 2010 vintages, while the named rows
+  beside them are Income, 2030, 2040, 2045, 2020, 2060 and 2015. **Collapsing
+  them would have been the v100/Amgen fabrication, built inside a fix written to
+  remove one** — the same trap v179 fell into and v184's own refusal test
+  (Local 360) exists to catch.
+- I reasoned from the SHAPE OF THE ROW NAMES. `1FTD35Q` beside
+  `Fidelity Freedom Blend 2030 Commingled Q` looks like a code beside its own
+  rendering, and it is a code beside a DIFFERENT fund's rendering. **A twin
+  hypothesis is a claim about VALUES; I tested it against names.**
+
+### The real cause, and the second witness that settles the direction
+**OCR read the cents decimal point as a comma, and the comma strip multiplied
+two holdings by a hundred.**
+
+    IFTDINQ   1,126,139.55   1,148,605,88  ->  published $114,860,588
+    IPRUBKT   1,016,669.96   1,032,004,21  ->  published $103,200,421
+
+$215,880,400 of money that does not exist, in a $177,569,529 plan. The filing
+prints its own schedule total, **$171,753,696.22**, against our $387,634,084 —
+2.26× the schedule we were reading, which is the arithmetic tell. Direction
+confirmed by **Schedule D**, structured EFAST2 data that OCR never touches,
+which reports $1,148,606 for that collective trust and no $114,860,588.
+
+**Verified independently through the production parser**, not on report:
+v185 gives **24 rows, ratio 2.183, CONFIDENT=false**; v186 gives **24 rows,
+ratio 0.967, CONFIDENT=true**, only those two values moved, the prediction was
+0.9672. The new predicate is two-conditioned — the malformed token
+`^\d{1,3}(?:,\d{3})+,\d{2}$` AND a real `\d\.\d{2}` elsewhere on the same line,
+so a filing that never writes cents with a point cannot trigger it.
+**Class size: ONE plan / 1,698 participants, 0 published** — the whole withheld
+population (42 entries / 290,444 ppl) was OCR'd through production settings with
+0 failures and exactly one carries the token.
+
+### A SIZING PREDICATE THAT LOOKS LIKE A DETECTOR AND IS NOT, recorded as a warning
+"Does dividing ≤3 rows by 100 land the sum inside the band" returns **416
+candidates / 304 published plans** and is almost entirely false: at ratio ~1.2
+any row worth ~17% of the menu "fixes" the arithmetic, so the population fills
+with HCA, AT&T and UPMC. Tightened with `GENERIC_TYPE_NAME` and a 7-row floor it
+still leaves 286. **Not a defect count**, and it would have been published as one.
+
+### AND A CORRECTION TO THE FOLLOW-UP FINDING'S FRAMING — it is not plurality
+The cycle also found that `audit-generic-names` misses a vehicle phrase, reported
+as "blind to the PLURAL vehicle phrase". **Tested against the shipped predicate,
+plurality is not the axis:**
+
+    catches   "Mutual funds"   "Pooled separate accounts"
+    catches   "Registered investment companies"   "Separate accounts"
+    MISSES    "Common/collective trust funds"   "Collective investment trust funds"
+    MISSES    "Pooled separate account funds"   "Collective investment trusts"
+
+So the gap is **`funds` appended to the collective-trust or separate-account
+phrase, plus the `Collective investment trusts` phrasing which is not in the
+pattern at all.** Sized with its threshold stated, because the threshold is part
+of the number: **as the top row at ≥50% of a confident menu, 4 plans / 48,697
+participants / $7,421,928,378** — Cummins Inc. (38,567 ppl) publishing
+`Common/collective trust funds` at **60.7% = $5,016,457,254**, State Employees'
+Credit Union (10,008) `Collective Investment Trusts` at 61.8% / $1.48B, Glazier
+Steel at 86.9%, and one master trust at 60.9% / $924M. **Not fixed**: that regex
+also feeds `isStatement`, which is the v137 hazard — widening it made 3M's
+fair-value note publishable — so it needs the same corpus diff v137 got.
+
+### CLAUDE.md corrections found in this cycle
+- `band-hi` is **87 plans / 101,031 ppl**, not the recorded 88 / 99,688.
+- **`overshoot` counts CONFIDENT lineups only** (`audit-data.mjs:361` skips the
+  rest). Nothing in the file said so, which is why "overshoot should fall when
+  Bekaert is fixed" was a plausible prediction and wrong — Bekaert was never in
+  the 329. For v186 the signal is that **overshoot must NOT move**, and a rise
+  of 1 is the failure.
