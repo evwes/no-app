@@ -21584,3 +21584,176 @@ gives three populations rather than one:
   because their values differ. The question that separated all three was **what
   is the RATIO between the two values** — neither the names nor the values alone.
   **Ask what relationship the numbers have, not just whether they match.**
+
+## 2026-09-27 — v184: three duplicate classes, one stage, and the stage was not the dedup they were filed under
+Three classes had each been recorded as "too small alone, fold in when the dedup
+is next opened" — identical value / same name (38 groups), ~1000x apart
+(18 pairs, Allete), and a twin carrying its own value (6 pairs). Opened
+together they justify the bump none of them did separately: **15 plans /
+15,083 participants / $55,349,733 of doubly counted money.**
+
+**ALL THREE SIZES REPRODUCED FIRST, AND THE PREDICATES ARE STATED.** Over
+60,115 confident lineups, grouping each plan's published rows by the dedup's
+own key `n.toLowerCase().replace(/[^a-z0-9]+/g," ").trim()`:
+
+| class | recorded | reproduced |
+|---|---|---|
+| identical value, same name | 38 groups / 11 plans / 11,908 ppl / $37,059,532 | **exact**, under a case-insensitive key |
+| ~1000x apart | 18 pairs / 1 plan / 2,230 ppl / $406,437 | **exact**, once the band admits `JHancock Bond R6` at 998.40 |
+| twin carrying its own value | 6 pairs / 2 plans / 732 ppl / $15,535,649 | **exact**, once the prefix test ignores spacing |
+
+Two of my own first predicates were wrong and the difference is recorded rather
+than smoothed over. (1) The punctuation-INSENSITIVE key finds **two more real
+members** than the recorded case-insensitive one — `Goldman Sachs Small Value
+Fund A` / `… Fund - A` at $1,587,012 and `Empower - International Value
+Instl` / `Empower International…` at $761,103 — which is why the shipped arm
+uses the dedup's key and the population is 40 groups / 12 plans / 12,121 ppl /
+$39,407,647. (2) My first arm-C test was `d.startsWith(rest)`, which called
+`Voya Intermediate Bond Fund Class R6` a twin of `Voya Intermediate Bond`
+because the value $626,959 starts with the `6` of `R6`: **14 pairs / 10
+plans / 14,218 ppl, of which 8 were false.** Requiring the remainder to EQUAL
+the value digit for digit gives the recorded 6. A loose test on a small
+population produces a number that is wrong by more than the population.
+
+**THE CAUSE IS NOT THE DEDUP, AND THE HINT THAT SAID SO WAS "BYTE-IDENTICAL
+NAMES SURVIVED IT".** `parseRows`' dedup already holds the rule these rows
+break — `if (e && e.vals.has(r.value)) continue`, same name + same value is
+one holding rendered twice — so two identical rows cannot both leave it. They
+do not come from it. Tracing Huron, Inc. (346 ppl) with `WAMPO_TRACE=rows`
+settled it in one run: `WAMPO_TRACE_MATCH=IDELITY` printed three `[dedup]`
+lines for the ALL-CAPS rows and `WAMPO_TRACE_MATCH=idelity` printed **none**
+for the mixed-case ones. The mixed-case rows never pass through the dedup —
+they are legend CODES at that point. `applyLegend` (lib-4i ~4581) runs in
+`parse4i`, after the region contest, and renames `1FXAIX` to the legend's
+own `Fidelity 500 Index`, which is the name the ALL-CAPS row already carries.
+**Whole-store confirmation before a line was written: 40 of 40 groups carry a
+legend code on exactly one member.** Not a contributing cause — the whole
+cause. Reading the rows had suggested "the dedup keys on issuer or type";
+printing the parser's loop state said the rows were never in the loop.
+
+**SO THE FIX IS ONE STAGE, `collapseDoubleRender`, immediately after
+`applyLegend`** — the fourth placement decision in this cycle-family settled
+by the same question v174, v180 and v183 ask: *where can the evidence be seen?*
+At the row level it is one string; at the region dedup the two names still
+differ; after the legend rename the whole winning row set is in hand with its
+FINAL names. It runs post-selection, so no candidate region can change places
+and no plan can gain a lineup from it; `ratio` loses exactly what was removed,
+because a plan that keeps the double count's arithmetic while losing its row
+has the worst of both readings.
+
+- **Arm A** — identical value under one key, *and the group is legend-made*.
+  Keeps the row the filing NAMED and drops its legend twins; where every member
+  is coded, the codes must be equal after normalising the leading `1`/`I`,
+  which is the parser's own reading (`LEGEND_CODE = /^[1I][A-Z0-9]{4,7}$/` and
+  the ticker arm both already treat them as one glyph). Printpack files
+  `1VBTLX` and `IVBTLX` for one $8,070,681 holding; Dg3 files `1VGSLX` and
+  `IVGSLX`. A dropped row's `tk` moves to the survivor when the survivor
+  lacks one (1 case, FXAIX), so removing a row never removes an identification.
+- **Arm B** — the thousands rendition, and **it is one plan, bounded by
+  measurement rather than by argument.** The whole store was scanned for two
+  rows under one key anywhere between 900x and 1100x apart: **18 members, all
+  of them Allete.** Shipped band 990–1010 with a >=3-pairs-per-plan gate on
+  top, so a single coincidental thousand-fold pair elsewhere can never fire it.
+  A thousands rendition is a SET, not a row.
+- **Arm C** — with punctuation and spacing removed, the longer name must be the
+  shorter one followed by THIS ROW'S OWN VALUE, digit for digit. Self-validating,
+  so two distinct funds cannot satisfy it by accident. Deliberately partial:
+  Radiology Consultants prints about twelve equal-value twins and this reaches
+  six; the rest differ in more than the glue and guessing at them is the v174
+  hazard.
+
+**THE REFUSAL WAS FOUND BY MEASURING THE ARM, NOT BY REASONING ABOUT IT, AND IT
+IS THE MOST USEFUL THING HERE.** Arm A written WITHOUT the legend restriction
+also fires on Local 360 401(K) And Severance Plan (2,418 ppl), whose filing
+prints a 40-character truncated column in which **four distinct BlackRock
+LifePath vintages all read `TA BACKROCK LIFEPATH MUTUAL FUND`** and three hold
+$54 each. `same key + same value` groups three DIFFERENT FUNDS and deletes
+two — the v100/Amgen fabrication rebuilt by a fix written to remove
+fabrications, which is v179's mistake one version family later, and it would
+have shipped as a $108 rounding move. The population was 41 groups and 1 of
+them was a fabrication waiting to happen, i.e. **2.4% of a class that had been
+sized three times and never had its members read one by one.** Printing the
+members is what caught it.
+
+**CONTROLS, NAMED BEFORE MEASURING AND ADDRESSED BY VALUE, all through the
+production parser under v184:**
+
+| control | before | after |
+|---|---|---|
+| Western Ecosystems — v174's pinned pair, $14,679 / $14,678 | 55 rows @ 1.110 | **55 rows @ 1.110** |
+| I. Rice & Co. — v183's specimen | 38 rows / $13,947,979 | **38 rows / $13,947,979** |
+| Local 360 — the truncated-vintage refusal | 39 rows @ 0.984 | **39 rows @ 0.984** |
+| the 141 same-name / DIFFERENT-value groups, 47 plans | — | **0 members dropped** |
+| Huron in-filing: `T. ROWE PRICE LARGE CAP GROWTH I` $33,068 / $33,067 | 2 rows | **2 rows** |
+| Huron in-filing: `EI FIXED ACCOUNT…` $210,970 / $206,077 | 2 rows | **2 rows** |
+| Dg3 in-filing: `IVFIFX` $771,799 / `1VFIFX` $771,199, one fund one code | 2 rows | **2 rows** |
+
+Huron is the specimen worth keeping because it is the positive AND the negative
+control in ONE filing: the $49,279 legend twin goes and the $1-apart T. Rowe
+pair stays. `parser-gate.mjs` all green. `diff-lineups.mjs` against
+`47967126` over **1,023 filings: confidence gained 0, lost 0, fabricated
+generic rows introduced 0**, and exactly the three diffable specimens moved —
+Allete 53→35, Huron 20→16, Radiology 54→49.
+
+**WHY NO AUDIT COULD HAVE FOUND ANY OF THIS, which is the transferable part.**
+Printpack's double count sits at ratio **0.537** and Allete's at **0.973**.
+Neither pushes the published sum above plan assets, so `audit-overshoot`
+(>=1.15), `audit-dominant-row` (>=90%) and the confidence band (0.45–1.6) pass
+them in both directions. **Every fabrication class on this record until now was
+found BECAUSE it moved a ratio toward overshoot; these hide by being small
+inside plans that publish too little.** So this version cannot be validated by
+watching `overshoot` — it has to be read per plan by name, and removing the
+double count makes an under-covered plan cover LESS: Printpack 0.537 → 0.520,
+Graham Group 0.756 → 0.616, both of which `rows-dropped.txt` will raise as
+WARN. That is the check working.
+
+**PRE-REGISTERED, EXACT, FOR THE v184 RUN'S VERDICT.** Fifteen plans change and
+no others; `confident` moves **+0 / −0** (every one of the fifteen stays
+confident, and the coverage line counts PLANS while v184 removes rows inside
+plans that were already confident):
+
+| plan | ppl | ack | rows | ratio |
+|---|---|---|---|---|
+| Printpack, Inc. | 3,422 | 20251009135900NAL0003629379001 | 11 → **10** | 0.54 → **0.52** |
+| Allete, Inc. | 2,230 | 20250729111547NAL0001546291001 | 53 → **35** | 0.97 → **0.97** |
+| Resource Label Group | 2,020 | 20251015131220NAL0006362944001 | 44 → **40** | 1.08 → **1.06** |
+| Adams Fairacre Farms | 1,732 | 20250908141226NAL0019538545001 | 51 → **50** | 1.09 → **1.06** |
+| Smr Automotive Systems | 1,557 | 20251015085852NAL0008737650001 | 46 → **40** | 1.07 → **0.97** |
+| American Enterprise Institute | 760 | 20250909094656NAL0012503363001 | 69 → **68** | 0.99 → **0.99** |
+| Cobre Valley Regional Medical | 578 | 20250930194615NAL0013631216001 | 5 → **4** | 1.44 → **0.73** |
+| Spencer Technologies | 527 | 20250207125144NAL0023078000001 | 5 → **4** | 1.12 → **1.01** |
+| Tgs-Nopec Geophysical | 514 | 20260608142057NAL0003064913001 | 36 → **34** | 1.21 → **1.19** |
+| Graham Group (Us) | 497 | 20250929182110NAL0011624017001 | 63 → **52** | 0.76 → **0.62** |
+| Alpha Source Llc | 413 | 20251015124238NAL0009640418001 | 44 → **37** | 1.08 → **0.88** |
+| Huron, Inc. | 346 | 20251013122907NAL0001303697001 | 20 → **16** | 1.00 → **0.99** |
+| Topline Financial Credit Union | 213 | 20251016122743NAL0003184739001 | 46 → **45** | 1.16 → **1.13** |
+| Radiology Consultants | 154 | 20251014112225NAL0002630321004 | 54 → **49** | 1.00 → **0.98** |
+| Dg3, Inc. dba Dallas Glass | 120 | 20260818104921NAL0019663587001 | 31 → **30** | 0.93 → **0.92** |
+
+Ratios are the stored `coverageRatio` and may land a cent either side of the
+rounding; the ROW COUNTS are exact and are the test. `rows-dropped.txt` must
+name Printpack, Graham Group, Alpha Source, Cobre Valley and Smr Automotive
+(ratio drifting >0.03 further from 1.0) and audit must raise them as **WARN,
+not HIGH** — reading that list is the acceptance step, not a failure.
+Five of the fifteen are OCR or prior-year-fallback entries that
+`trace-filing.mjs` cannot reproduce locally (Printpack, Dg3, Adams Fairacre,
+Topline, Cobre Valley's own ack) — their outcome is predicted from the store
+and must be read off the run's shards.
+
+**RECORDED AND NOT FIXED, so the next session does not rediscover them:**
+(a) Allete's thousands rendition also contributes rows whose NAMES differ from
+their dollar twin (`VANGUARD FEDERAL` $32,505 against `Vanguard Federal
+Money Market Inv` $32,345,753) and those stay; (b) Radiology keeps about six
+equal-value twins arm C cannot reach; (c) Local 360 still double-counts $162
+by design; (d) Cobre Valley's surviving 4-row lineup is junk — 96.6%
+`Registered investment companies` plus three rows of OCR'd auditor letterhead
+(`JWT & Associates, LLP Advisory Assurance Tax`) — a separate open defect.
+
+**PREVENTION.** Five specimens pinned, three of them decoys in their own right:
+Huron (arm A + two in-filing decoys), Printpack (the 1/I code case + Dg3's
+$600-apart decoy), Allete (arm B + its wide-band bound), Radiology (arm C + its
+deliberate residue), Local 360 (the refusal). And the rule that separated three
+classes a name-only test and a same-value test had each misfiled: **ask what
+RELATIONSHIP the two numbers have, not whether they match** — identical, ~1000x,
+or one appended to a name are three different defects, and a dollar apart is not
+a defect at all.

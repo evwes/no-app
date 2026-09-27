@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 183;
+export const PARSER_VERSION = 184;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -4538,6 +4538,7 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
   const out = parse4iInner(text, assetsEOY, sponsorName, codes);
   if (!Array.isArray(out.funds)) return { ...out, funds: [] };
   applyLegend(out, text);
+  collapseDoubleRender(out, assetsEOY);
   return out;
 }
 
@@ -4600,6 +4601,179 @@ function applyLegend(out, text) {
     if (hit) { f.code = k; f.name = hit; f.tk = t[1]; }
   }
 }
+
+/* v184: THE SECOND RENDERING, COLLAPSED WHERE ITS COLLISION CAN FINALLY BE
+ * SEEN — WHICH IS AFTER THE LEGEND HAS NAMED THE CODES.
+ *
+ * Three duplicate classes were each recorded separately as "too small alone,
+ * fold in when the dedup is next opened". They are one stage's work, and the
+ * stage is not the one they were filed under.
+ *
+ * WHY NOT parseRows' DEDUP, which already has this rule. Its key is the row's
+ * name and it runs on the region's rows, and it fires correctly there: same
+ * name + same value is one holding rendered twice (the comment on that line
+ * says so). It cannot see the collision that matters here, because the
+ * collision DOES NOT EXIST YET. Huron, Inc. (346 ppl) files its schedule
+ * twice — once ALL-CAPS as `FIDELITY 500 INDEX`, once as Empower's code
+ * `1FXAIX` — and at dedup time those are two different names. `applyLegend`
+ * then renames the code to the legend's own `Fidelity 500 Index`, and two
+ * byte-identical rows at $49,279 are published. Measured before writing a
+ * line of this: **40 of 40 same-name-same-value groups in the store carry a
+ * legend code on a member**, so the legend rename is not a contributing cause,
+ * it is the whole cause. That is why this runs in `parse4i`, immediately after
+ * `applyLegend` and on its output — the third placement decision in this
+ * cycle-family settled by the same question the v174 / v180 / v183 comments
+ * ask: WHERE CAN THE EVIDENCE BE SEEN?
+ *
+ * WHY IT DOES NOT RE-SCORE. The rows are removed from the winner after the
+ * region contest is over, so no candidate can change places and no plan can
+ * gain a lineup from this. `ratio` is reduced by exactly what was removed,
+ * which is the honest arithmetic and the reason the fix is visible at all:
+ * Printpack, Inc. (3,422 ppl) goes 0.537 -> 0.520 and Graham Group 0.756 ->
+ * 0.616. Removing a double count from an UNDER-covered plan makes it cover
+ * less, `rows-dropped.txt` will raise both as WARN, and that is the check
+ * working rather than a regression.
+ *
+ * WHY EVERY RATIO GUARD WE OWN IS BLIND TO THIS, which is the transferable
+ * part. Printpack's double count sits at ratio 0.54 and Allete's at 0.97.
+ * Neither pushes the published sum above the plan's assets, so
+ * `audit-overshoot` (>=1.15), `audit-dominant-row` (>=90%) and the confidence
+ * band (0.45-1.6) all pass them. Every fabrication class on this record until
+ * now was FOUND because it moved a ratio; these hide by being small inside
+ * plans that publish too little, so this fix cannot be validated by watching
+ * `overshoot` and has to be checked per plan by name.
+ *
+ * THE GOVERNING NEGATIVE CONTROL IS v174's OWN, AND IT IS ABSOLUTE. Western
+ * Ecosystems (524 ppl) publishes `Putnam Stable Value Fund` $14,679 beside
+ * `PUTNAM STABLE VALUE FUND (15)` $14,678 — two REAL rows a dollar apart, and
+ * collapsing them invents a $29,357 holding. A NAME MATCH IS NEVER SUFFICIENT;
+ * the relationship between the two VALUES is what separates a double count
+ * from a real pair. 141 groups / 47 plans across the store are that legitimate
+ * shape and none of them may move. Huron carries both shapes in ONE filing and
+ * is the control worth keeping: its `T. ROWE PRICE LARGE CAP GROWTH I` $33,068
+ * and `T. Rowe Price Large Cap Growth I` $33,067 are a dollar apart and stay,
+ * while the $49,279 pair goes.
+ *
+ * ARM A — same dedup key, IDENTICAL value, and the group is legend-made.
+ * The refusal is the measured part, not the rule. Applied WITHOUT the legend
+ * restriction the arm also fires on Local 360 (2,418 ppl), whose filing prints
+ * a 40-character truncated column in which FOUR distinct LifePath vintages all
+ * read `TA BACKROCK LIFEPATH MUTUAL FUND` and three of them hold $54 each.
+ * Collapsing those merges three different funds — the v100/Amgen fabrication
+ * built by a fix written to remove fabrications, exactly v179's mistake. So
+ * the arm keeps the row the filing NAMED and drops the legend twin, and where
+ * no legend code is present it does nothing: the region dedup already had its
+ * chance on those names, and re-running its rule on a population it was not
+ * written for is a new judgement that Local 360 shows to be wrong.
+ * The one extension is the parser's own: where EVERY member is coded, the
+ * codes may differ only by their leading character, because `LEGEND_CODE`
+ * and the ticker arm above both already read `1` and `I` as the same glyph.
+ * Printpack files `1VBTLX` and `IVBTLX` for one $8,070,681 Vanguard holding;
+ * Dg3 files `1VGSLX` and `IVGSLX`. Two codes differing anywhere else are two
+ * holdings and are refused — which is what keeps Dg3's `IVFIFX` $771,799 and
+ * `1VFIFX` $771,199 (one fund, one code, $600 apart) as two rows.
+ * The dropped row's `tk` moves to the survivor when the survivor lacks one, so
+ * removing a row never removes an identification the filing supplied.
+ *
+ * ARM B — the same holding at two SCALES, and it is ONE PLAN, treated as one.
+ * ALLETE, Inc. (2,230 ppl) prints its schedule once in dollars and once in
+ * thousands: `Fidelity 500 Index` $100,610,290 beside `FIDELITY 500 INDEX`
+ * $100,610, eighteen pairs, $406,437 of thousands-copies counted a second
+ * time. NO UNITS RULE IS BEING GENERALISED FROM IT. The whole store was
+ * scanned for same-key pairs anywhere between 900x and 1100x apart and the
+ * answer is EIGHTEEN MEMBERS, ALL OF THEM ALLETE — so the band is bounded by
+ * measurement, and the >=3-pairs gate on top means a single coincidental
+ * thousand-fold pair in some other plan can never fire this. A thousands
+ * rendition is a SET, not a row.
+ *
+ * ARM C — the twin that carries its own value in its name. Radiology
+ * Consultants of Little Rock (154 ppl) files the John Hancock schedule twice,
+ * the second copy gluing the value column onto the name: `CORE BOND FUND
+ * 443011` beside `Core Bond Fund`, both $443,011. Cobre Valley (578 ppl) has
+ * `Registered investment companies $ 14,630,544` beside `Registered investment
+ * companies`. The test is exact and self-validating — with punctuation and
+ * spacing removed the longer name must be the shorter one followed by THIS
+ * ROW'S OWN VALUE, digit for digit — so two distinct funds cannot satisfy it
+ * by accident the way a name-similarity test allows. It catches 6 of the ~12
+ * twins in Radiology's filing and deliberately leaves the rest: the others
+ * differ in more than the glue, and guessing at them is the v174 hazard.
+ *
+ * Whole-store outcome, named plan by plan before the bump: 15 plans / 15,083
+ * participants / $55,349,733 of doubly counted money. */
+const DR_KEY = (n) => String(n).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+const DR_TIGHT = (n) => String(n).toLowerCase().replace(/[^a-z0-9]/g, "");
+/* `1` and `I` are one glyph to this template's OCR — the same reading
+ * `LEGEND_CODE` and the ticker arm above are already built on. */
+const DR_CODE = (c) => String(c).replace(/^[1I]/, "#");
+
+function collapseDoubleRender(out, assetsEOY) {
+  if (!out.found || !Array.isArray(out.funds) || out.funds.length < 2) return;
+  const rows = out.funds.filter((f) => f && f.value);
+  const drop = new Set();
+
+  const byKey = new Map();
+  for (const r of rows) {
+    const k = DR_KEY(r.name);
+    if (!k) continue;
+    if (!byKey.has(k)) byKey.set(k, []);
+    byKey.get(k).push(r);
+  }
+
+  // ARM A — identical value under one key, the collision the legend created
+  for (const rs of byKey.values()) {
+    if (rs.length < 2) continue;
+    const byVal = new Map();
+    for (const r of rs) {
+      if (!byVal.has(r.value)) byVal.set(r.value, []);
+      byVal.get(r.value).push(r);
+    }
+    for (const g of byVal.values()) {
+      if (g.length < 2) continue;
+      const named = g.filter((r) => !r.code), coded = g.filter((r) => r.code);
+      let keep = null;
+      if (named.length === 1 && coded.length === g.length - 1) keep = named[0];
+      else if (!named.length && new Set(coded.map((r) => DR_CODE(r.code))).size === 1) keep = g[0];
+      if (!keep) continue;                       // no legend twin: not ours to merge
+      for (const r of g) {
+        if (r === keep) continue;
+        if (!keep.tk && r.tk) keep.tk = r.tk;    // the row goes, its identification stays
+        drop.add(r);
+      }
+    }
+  }
+
+  // ARM B — a whole rendition printed in thousands beside the dollar one
+  const scaled = [];
+  for (const rs of byKey.values()) {
+    if (rs.length !== 2) continue;
+    const [hi, lo] = rs[0].value >= rs[1].value ? [rs[0], rs[1]] : [rs[1], rs[0]];
+    if (!lo.value) continue;
+    const f = hi.value / lo.value;
+    if (f >= 990 && f <= 1010) scaled.push(lo);
+  }
+  if (scaled.length >= 3) for (const r of scaled) drop.add(r);
+
+  // ARM C — the twin whose name carries this row's own value
+  for (let i = 0; i < rows.length; i++) {
+    for (let j = i + 1; j < rows.length; j++) {
+      const a = rows[i], b = rows[j];
+      if (a.value !== b.value) continue;
+      const [s, l] = DR_TIGHT(a.name).length <= DR_TIGHT(b.name).length ? [a, b] : [b, a];
+      if (DR_TIGHT(l.name) !== DR_TIGHT(s.name) + String(Math.round(a.value))) continue;
+      drop.add(l);
+    }
+  }
+
+  if (!drop.size) return;
+  const removed = [...drop].reduce((t, r) => t + r.value, 0);
+  out.funds = out.funds.filter((f) => !drop.has(f));
+  /* the removed value was counted in `totalValue`, so the ratio the caller
+   * judges confidence on must lose it too — otherwise a plan keeps the
+   * double count's arithmetic while losing its row, which is the worst of
+   * both readings */
+  if (assetsEOY > 0 && out.ratio) out.ratio = Math.max(0, out.ratio - removed / assetsEOY);
+}
+
 let SEC_BY_TICKER = null;
 function secTickerName(tk) {
   if (SEC_BY_TICKER === null) {
