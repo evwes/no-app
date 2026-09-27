@@ -22323,3 +22323,117 @@ Helix Traffic Solutions (2,903 ppl, 29 rows @ 0.990), Forest County Potawatomi
 83 cut rows and $4,584,795 disclosed), Gypsum Management (6,696 @ 0.986),
 The Chrysalis Center (619 @ 0.973), ScribeAmerica (1,937 @ 0.993) — real fund
 names, issuers attached, ratios sane.
+
+## 2026-09-27 18:2xZ — FIXED: false dollar precision on 160 static pages, and the surface it was on was not the one the item named
+
+**WRONG.** The queue item above sized this class in the STORE and predicted the
+harm at the plan page. Measured through each display path, the harm sits on only
+one of the two surfaces, and it is not the interactive report:
+
+| surface | how a holding value is rendered | asserts precision the filing lacks? |
+|---|---|---|
+| `app.js` (interactive report) | `money(f.value / 1e6)` → `$671.0M`, `$4.6B` | **no** — 3–4 significant figures, never the trailing zeros |
+| `scripts/build-seo-pages.mjs:180` (the crawlable `p/*.html`) | `usd(f.value)` → **`$671,000,000`** | **yes** |
+
+So `money()` had been coarsening the figure for every report reader all along,
+and the defect lived entirely in the static pages — the surface this project has
+now caught omitting a report-side qualifier three separate times, here inverted:
+a claim the PAGE makes that the report does not. **Measured on the shipped
+`p/` HTML, not on the store: 157 published pages / 5,616,080 participants
+printed dollar-precise holdings for a schedule filed in rounded units.** Amazon
+(1,336,478) printed `$4,619,443,000`; PPG printed `$671,000,000`.
+
+**And the item's framing overstated the harm even there.** No digit is
+fabricated — the zeros are the filing's own declared scaling, and every nonzero
+digit is filed, so a reader ranking Amazon's funds ranks them correctly. What is
+false is the *implied resolution*: PPG's `$2,000,000` row means only "between
+$1.5M and $2.5M", and two rows a million apart on a millions-filed schedule are
+not distinguishable at all.
+
+**THE FILING'S OWN UNITS MARKER WAS ALREADY IN THE STORE AND READ BY NOTHING.**
+`parse4i` records `thousands: best.scale > 1` on every entry it scales
+(`lib-4i.mjs:4638` → `fetch-4i.mjs:1140`), and it is in every lineup shard the
+browser and the generator fetch. Grepped: **0 reads in `merge-4i.mjs`, 0 in
+`audit-data.mjs`, 0 in `app.js`, 0 in `build-seo-pages.mjs`.** Another value
+computed and discarded — the shape this file already records for run #244's
+failure reason, the Schedule A carrier at `build-data.mjs:624`, and the `rt`
+ratio behind the published overshoots. So the fix did not need a parser field,
+a `PARSER_VERSION` bump, or an inference: it needed something to READ the flag.
+
+**CONFIRMED FROM THE FILING, not from round numbers.** PPG
+(`20251013150331NAL0001578705001`), `pdftotext -layout`: the 4i page is headed
+`Form 5500, Schedule H, Part IV, Line 4i - Schedule of Assets` … `($ in
+millions)` and prints `BlackRock Equity Index Fund | Common-collective trust |
+671`. Our parse and our scaling are faithful.
+
+**CHANGE.** `filedUnit(entry)` in `scripts/lib-disclose.mjs` — the shared
+disclosure module, so there is exactly ONE copy — gated on the parser's flag,
+with the granularity read off the published values because the flag is a boolean
+and does not say which unit (scale is 1,000 or 1,000,000). `build-seo-pages.mjs`
+prints one line above the fund table: *"Values below are exact only to the
+nearest $1,000,000. This filing prints its schedule of assets in millions, so
+every figure here is scaled up from the filing's own — the trailing zeros are its
+rounding, not digits it reported."*
+
+**The flag is the gate and the inference is not**, which matters: inferring
+"filed in thousands" from "every value is a multiple of 1,000" fires on at least
+one confident plan in the store that carries no units caption. Granularity
+derived from the values is safe because it is a statement about OUR figures, and
+it was checked over the ENTIRE flagged population rather than a sample: **219
+entries carry the flag, all 219 are wholly $1,000 multiples, 10 are wholly
+$1,000,000 multiples, and ZERO are neither**, so the predicate never has to
+guess. All ten millions members were printed and read one by one (Dow, Regions,
+PPG, Comerica, Trinity, Louisiana-Pacific, one trust) and every one files
+two-to-four-digit figures under a millions caption.
+
+**MEASURED THROUGH THE DISPLAY PATH, same-store baseline.** The generator is
+deterministic (two consecutive builds byte-identical), so the whole 5,062-page
+corpus was built at HEAD and again with the change:
+
+- **4,902 pages byte-identical; 160 changed; all 160 changed ONLY by gaining the
+  note; 0 changed for any other reason.** 5,719,845 participants. 153 say
+  "nearest $1,000", 7 say "nearest $1,000,000".
+- Rendered and read: PPG says *millions / nearest $1,000,000* beside
+  `$671,000,000`; Amazon says *thousands / nearest $1,000* beside
+  `$4,619,443,000`. Both correct.
+
+**CONTROLS, named before measuring, and one of them caught a real defect in my
+own change.** Negative controls byte-identical: Fifth Third Bancorp (no row a
+$1,000 multiple), **Wells Fargo (one genuine $1,000-round row among 67 non-round
+— the mislabelling case)**, L.L.Bean. Ten unit tests on the predicate fire and
+refuse in both directions, including "flag absent but all values round → null"
+and "flag set but values not unit-consistent → null". The three tethered
+predicates (`coverageBand`, `frozenClaimOk`) still import and behave; the
+`lib-disclose` diff is purely additive (0 lines removed).
+**The defect the control caught:** the first version emitted the note's newline
+unconditionally, adding a blank line to **all 4,733 pages with a fund table** —
+invisible to a reader and it destroyed the very diff the change has to be judged
+by. It was only visible because a same-store baseline was built and the controls
+were expected to be byte-identical. *A diff you cannot read is a measurement you
+do not have.*
+
+**PREVENTION.** The rule lives in `lib-disclose.mjs` and nowhere else, and the
+comment states why it is NOT mirrored into `app.js`: the report has no false
+precision to correct, so a second untethered copy would buy a reader nothing and
+cost the drift this file has paid for twice. Should the report ever want the
+note, the predicate already exists for it to mirror under the smoke test's
+existing tether. And the durable lesson, which is the one this item almost got
+wrong: **size a precision claim on the surface that prints it.** The store said
+176 plans; `app.js` prints none of it; the static pages print all of it.
+
+### FOUND OUTSIDE THE ITEM, sized and not fixed: 62 ORPHANED STATIC PAGES
+`p/` holds **5,062** committed files and the generator writes **5,000** — the
+top 5,000 by assets. The other **62 pages / 169,447 participants** are never
+rewritten by any run, and they are committed, crawlable and served. Blst
+Operating Company (2,160 ppl, `p/851387944-001.html`) is one: it carries the
+units flag, `filedUnit` returns thousands for exactly the entry the generator
+would use, and its page did not gain the note **because the generator never
+touches it**. That is how the residue check found the class — a predicate that
+was right about a page nobody rewrites.
+The stale year is not the risk (all 62 agree with the store on plan year); the
+risk is that **no parser repair can ever reach them.** Every correctness fix
+this project ships — the `appreciat` rows, the `(continued)` issuer, CVS's
+synthetic GICs — is invisible on these 62 pages for as long as they exist.
+Largest: SP Plus (15,333), Mavis Tire (13,035), Pep Boys (9,779), Confluent
+Health (8,280). Fix shape is a sweep that deletes or regenerates any `p/*.html`
+not in the current top-5,000 set. Not started — it changes what URLs exist.

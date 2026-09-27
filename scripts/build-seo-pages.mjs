@@ -10,7 +10,7 @@
  * EIN-PN (stable forever, no orphans when a sponsor renames). */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { matchQuoteOk } from "./lib-quote.mjs";
-import { coverageBand } from "./lib-disclose.mjs";
+import { coverageBand, filedUnit } from "./lib-disclose.mjs";
 
 const BASE = "https://evwes.github.io/no-app"; // becomes the custom domain when DNS lands
 const TOP_N = 5000;
@@ -120,6 +120,11 @@ for (const r of d.plans.slice(0, TOP_N)) {
    * twelve-row cap is disclosed separately below the table. */
   const lineupTotal = funds ? entry.funds.reduce((s, f) => s + (f.value || 0), 0) : 0;
   const cov = funds ? coverageBand(lineupTotal, assets, !!lineupVia) : null;
+  /* The unit of account the filing declared. `usd()` below prints every value
+   * to the dollar; where the schedule was filed in thousands or millions those
+   * trailing zeros are scaling, not digits, and the reader is owed that. Judged
+   * on the FILED entry (the flag the parser set), not on the twelve rows shown. */
+  const unit = funds ? filedUnit(entry) : null;
   const planType = /2L|2M/.test(g(r, "codes") || "") ? "403(b)" : "401(k)";
 
   /* Only a sentence that actually states the match may appear under the match
@@ -232,7 +237,13 @@ ${!lineupVia && ff.nonPartDirected ? `<p class="muted"><strong>Part of these hol
 ${cov ? `<p class="muted">${cov.kind === "under"
   ? `<strong>This lineup is not all of the plan.</strong> Its schedule of assets itemises ${usdB(lineupTotal)} across ${entry.funds.length} holdings, about ${cov.pct.toFixed(0)}% of the ${usdB(assets)} the plan reports on its Schedule H. The rest is money the filing accounts for that the schedule does not itemise.`
   : `<strong>These holdings exceed the plan's reported assets.</strong> They total ${usdB(lineupTotal)} against ${usdB(assets)} reported on Schedule H — about ${cov.pct.toFixed(0)}%. Treat the table as unreconciled.`}</p>` : ""}
-<table><tr><th>Fund</th><th class="num">Value</th></tr>${fundRows}</table>
+${/* the note carries its OWN trailing newline: emitting one unconditionally added
+     a blank line to all 4,733 pages that have a fund table, which is harmless to
+     a reader and destroys the before/after diff this change has to be judged by */
+  unit ? `<p class="muted"><strong>Values below are exact only to the nearest ${unit.money}.</strong>
+This filing prints its schedule of assets in ${unit.word}, so every figure here is scaled up from the
+filing's own — the trailing zeros are its rounding, not digits it reported. Two holdings less than
+${unit.money} apart are not distinguishable in this filing.</p>\n` : ""}<table><tr><th>Fund</th><th class="num">Value</th></tr>${fundRows}</table>
 ${entry.funds.length > 12 ? `<p class="muted">${entry.funds.length - 12} more holdings in the interactive report.</p>` : ""}` : ""}
 ${adminRaw > 0 || peers ? `<h2>Plan fees</h2>
 ${adminRaw > 0 ? `<p>Administrative expenses paid from plan assets: <strong>${usd(adminRaw)}</strong>.</p>` : ""}

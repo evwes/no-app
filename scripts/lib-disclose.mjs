@@ -42,6 +42,65 @@ export function coverageBand(total, planAssets, fromTrust = false) {
   return { kind: pct < 95 ? "under" : "over", pct, severe: pct < 50 };
 }
 
+/* THE FILED UNIT OF ACCOUNT — a precision we assert and the filing never gave.
+ *
+ * Many audited schedules of assets are printed in thousands or millions under
+ * their own caption. PPG's 4i page is headed `($ in millions)` and prints
+ * `BlackRock Equity Index Fund ... 671`. `parse4i` detects that caption and
+ * multiplies up, which is correct and is why the parse reconciles (PPG's menu
+ * sums to 93.2% of its Schedule H assets). But the product carries trailing
+ * zeros that were never digits in the filing, and the STATIC PAGE printed the
+ * product to the dollar: `$671,000,000`.
+ *
+ * Measured 2026-09-27 against the v184 store: 157 published static pages /
+ * 5,616,080 participants print holding values to the dollar for a schedule
+ * filed in rounded units. Amazon (1,336,478 participants) shows
+ * `$4,619,443,000`; PPG shows `$671,000,000` for a figure filed as `671`, and
+ * a `$2,000,000` row on that page means only "between $1.5M and $2.5M".
+ * No digit is fabricated — the zeros are the filing's own declared scaling —
+ * but the page implies a figure known to the dollar, and two rows a million
+ * apart on a millions-filed schedule are not distinguishable at all.
+ *
+ * THE INTERACTIVE REPORT DOES NOT HAVE THIS DEFECT, which is why the note is
+ * added here and not mirrored into app.js: `money()` renders at most three or
+ * four significant figures (`$671.0M`, `$4.6B`), so it asserts nothing the
+ * filing did not state. The usual direction of travel in this file is a
+ * qualifier the report applies and the static page omits; this is the reverse —
+ * a claim the static page makes and the report does not — so the fix belongs
+ * where the claim is, and one copy of the rule is better than two.
+ *
+ * THE FILING'S OWN DECLARATION IS WHAT LICENCES THE SENTENCE, NOT AN INFERENCE
+ * FROM ROUND NUMBERS. `parse4i` records `thousands: best.scale > 1` on every
+ * entry it scales — a filed fact that has been written to every lineup shard
+ * and READ BY NOTHING: not merge-4i, not audit-data, not app.js, not this
+ * generator. That is the computed-and-discarded shape this project keeps
+ * paying for, so the flag is the gate here. Inferring "filed in thousands"
+ * from "every value is a multiple of 1,000" would be an inference, and it is
+ * wrong at least once: Fifth Third Bancorp's 31-row menu has no value that is
+ * a multiple of 1,000 yet one confident plan in the store is all-round without
+ * any units caption.
+ *
+ * The flag is a BOOLEAN and does not say WHICH unit (scale is 1,000 or
+ * 1,000,000 — see `variants` in lib-4i). The granularity is therefore read off
+ * the values, which is safe because it is a statement about OUR OWN published
+ * figures rather than about the filing, and because it was checked over the
+ * entire flagged population: 219 entries carry the flag, all 219 are wholly
+ * $1,000 multiples, 10 are wholly $1,000,000 multiples, and ZERO are neither —
+ * so this never returns null for a flagged entry and never has to guess. All
+ * ten millions members were read one by one (Dow, Regions, PPG, Comerica,
+ * Trinity, Louisiana-Pacific and one trust among the confident ones) and every
+ * one files two-to-four-digit figures under a millions caption. */
+export function filedUnit(entry) {
+  if (!entry || !entry.thousands) return null;
+  const vals = (entry.funds || []).map((f) => +(f && f.value) || 0).filter((v) => v > 0);
+  if (!vals.length) return null;
+  // largest declared unit the published figures are wholly consistent with;
+  // >= 3 rows before millions, so one row cannot carry the stronger claim
+  if (vals.length >= 3 && vals.every((v) => v % 1e6 === 0)) return { unit: 1e6, word: "millions", money: "$1,000,000" };
+  if (vals.every((v) => v % 1e3 === 0)) return { unit: 1e3, word: "thousands", money: "$1,000" };
+  return null;
+}
+
 /* THE FROZEN CLAIM. `frozen` means "the filing states contributions have been
  * discontinued", and the report renders it as a warning banner. 1,378 plans
  * carry it and some of those warnings are false.
