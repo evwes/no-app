@@ -942,6 +942,69 @@
       "fixed": "v187 (refusal)",
       "sponsor": "Nationwide Mutual Insurance Company",
       "was": "Nationwide Mutual PN334 (42,461 participants, $8,317,632,680) publishes a REAL 39-row State Street menu — `Managed account holdings (312 positions)` 34.8%, `SSGA S&P 500 FLAGSHIP SER` 27.6%, `STATE STREET INTL INDX SL` 9.2% — and it ALSO carries one row literally named `Commingled funds`, at $5,957,304 = 0.103% of a $5,801,502,699 published menu. It is the second of the two published rows in the whole store that v187's new words reach, and it is the control that proves the widening is bounded by the 90% dominance floor rather than by the vocabulary: adding a word to GENERIC_TYPE_ANY must not condemn a menu that merely mentions a vehicle. EXPECTED UNDER v187: 39 rows, ratio 0.743, CONFIDENT=true, byte-identical to v186. Verified through the real parser with --vs HEAD before shipping. The wider negative control is whole-store and was also run: of 2,790 distinct published row names containing `commingled` or `pooled separate account`, exactly ONE flips (this class's label), and `FIAM Core Plus Commingled Pool Class I` (33 rows), `Fidelity Contrafund Commingled Pool`, `Pooled separate account - TIAA Real Estate` (31 rows) and USC's `Real Estate Account (CREF)` are all untouched, because every arm of the vocabulary is anchored whole-string."
+    },
+    {
+      "ack": "20251013091046NAL0001012865001",
+      "class": "deco-generic-shares-of",
+      "fixed": "v188",
+      "sponsor": "Bhi Energy Services",
+      "was": "`Shares of Registered Investment Companies` $123,325,300 at 95.3% of a 3-row 'menu' whose other rows are a small CIT and a loan-rate fragment"
+    },
+    {
+      "ack": "20250929113007NAL0010823953001",
+      "class": "deco-generic-trailing-shares",
+      "fixed": "v188",
+      "sponsor": "Woodgrain",
+      "was": "`Mutual fund shares` $235,471,923 at 95.0%, beside the prose row `November 2028.`"
+    },
+    {
+      "ack": "20250930153948NAL0015129856001",
+      "class": "deco-generic-leading-master",
+      "fixed": "v188",
+      "sponsor": "Standard Retirement Services",
+      "was": "`Master Separate Account` $27,547,382 at 93.7% — the insurer's separate-account total, not a holding"
+    },
+    {
+      "ack": "20251006104928NAL0001796803001",
+      "class": "deco-generic-description-caption",
+      "fixed": "v188",
+      "sponsor": "Partners Senior Living Options",
+      "was": "`DESCRIPTION: POOLED SEPARATE ACCOUNT` $5,458,403 at 98.7%"
+    },
+    {
+      "ack": "20251010155738NAL0004768195001",
+      "class": "deco-generic-subtotal",
+      "fixed": "v188",
+      "sponsor": "Your Recruiting Company",
+      "was": "`Sub-total: Registered Investment Companies` $15,944,682 at 92.7%"
+    },
+    {
+      "ack": "20250918065416NAL0001492979001",
+      "class": "deco-generic-total-over-mangled-menu",
+      "fixed": "v188",
+      "sponsor": "Springbrook Ny",
+      "was": "`Individual Mutual Funds` $25,728,037 at 92.2% is the class TOTAL; the eight itemised Fidelity rows below it carry OCR-destroyed values ($8, $4), so the menu is unpublishable either way"
+    },
+    {
+      "ack": "20250918143739NAL0000715635001",
+      "class": "deco-generic-DECOY-real-fund-dominant",
+      "fixed": "v188",
+      "sponsor": "Fathom Manufacturing",
+      "was": "DECOY, must stay confident: `Fidelity Government Money Market Fund` is 95.7% of an 11-row menu. A real fund name at >=90% is not a statement, and the strip cannot reach it because nothing it removes is identifying"
+    },
+    {
+      "ack": "20260311122850NAL0005284976001",
+      "class": "deco-generic-DECOY-type-appended",
+      "fixed": "v188",
+      "sponsor": "Talgood Enterprises",
+      "was": "DECOY, must stay confident: `Vanguard tax-Managed Balanced Fund Admiral Shares Registered Investment Company` — a real fund with the vehicle type appended. An unanchored vocabulary test deletes it; the decoration strip does not"
+    },
+    {
+      "ack": "20260713104103NAL0000047075001",
+      "class": "deco-generic-DECOY-capital-designation",
+      "fixed": "v188",
+      "sponsor": "Affinity Plus Federal Credit Union",
+      "was": "DECOY and a deliberate MISS: `Separate Account A, at fair value` at 90.3% is NOT caught, because the footnote arm strips only a lower-case trailing letter and a capital `A` may be a real share-class or separate-account designation. Case is the only signal; pinned so a later widening to capitals has to argue with this filing"
     }
   ]
 }

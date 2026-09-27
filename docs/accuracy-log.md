@@ -23357,3 +23357,152 @@ HIGH is dormant and cannot fire unless the number doubles.
   plans / 426,430 participants** — `Mooresville` on Lowe's PN003 (318,750 ppl).
 - An aggregate caption welded to a real fund name: 22 rows / 22 plans / 34,437
   ppl (`Participant Directed Investments Fidelity® 500 Index Fund`).
+
+## 2026-09-27 — run #480 verdict: v186 passed +7 / −0, and my prediction was one plan when the class was seven
+
+`success` at 20:48Z, 54 minutes, store commit `997ec6d6`. pv **186 covers 68,637
+of 68,767 (99.8%)**, one dominant pv with the documented ~190-row tail — not a
+partial store. confident **60,120**, lineups 59,769, entries 65,241, **HIGH 4 =
+the baseline and nothing else**, WARN 544, aggRow 112, dl 128, `analyze` 0.
+
+**Every confidence change reconciled ack by ack: 7 GAINED, 0 LOST.**
+
+| ppl | plan | was |
+|---|---|---|
+| 1,698 | Bekaert Corporation | `band-hi` — the designed member |
+| 689 | Zeta Associates | `stmt` |
+| 532 | California Online Public Schools | `band-hi` |
+| 439 | James R. Vannoy & Sons Construction | `band-hi` |
+| 412 | La Tortilla Factory | `band-hi` |
+| 371 | Indoff, Llc | `band-hi` |
+| 164 | Champlin/Haupt Architects | `band-hi` |
+
+**MY PRE-REGISTRATION SAID ONE PLAN AND `overshoot` MUST NOT MOVE. It was seven
+plans and overshoot fell 330 → 325 (−5 lineups, −26,503 participants).** Both
+deviations are the fix working in the direction the mechanism predicts — reading
+a cents decimal point as a thousands comma multiplies a holding by 100, which is
+exactly what pushes a lineup above the 1.6 confidence ceiling or over the 1.15×
+overshoot line — so nothing here is a regression. **The error was in the
+prediction, not the code: I verified v186 on the one specimen that produced it
+and then pre-registered the specimen as though it were the class, when the class
+was never sized.** This project's own rule is to size a class before reading a
+filing; the same rule applies to predicting a run, and a one-specimen fix needs
+a whole-store count of the shape before its verdict is written.
+
+**Worth naming: James R. Vannoy & Sons was already on this record** — CLAUDE.md's
+`band-hi` diagnosis block lists it under "bare TICKERS (`ITLWIX`, `ITLQIX`,
+`ITLZIX`)" among the 18 members it called diagnosed and too small to fix. It was
+diagnosed wrongly and fixed accidentally: the tickers were never the reason the
+ratio was out of band.
+
+### AND A DOCUMENTATION DEFECT IN CLAUDE.md's OWN STATE BLOCK
+That block says **"THE MIRROR IS HELD ON PURPOSE: the branch head carries v185
+CODE over the v184 STORE, and mirroring that makes main's own `:23` cron run a
+duplicate full re-parse ON MAIN."** That is **false**, and the same file says so
+forty lines later in the v172 entry. `fetch-4i.mjs:375` reads
+`SCHEDULE_INCREMENTAL`, which the workflow sets for `schedule` events only, and
+under it **a parser-version gap is not work** — the cron ingests new filings and
+retries the cheap non-`no-section` errors and leaves the bump to the dispatch.
+So code ahead of the store is a safe thing to mirror, and it has been since
+2026-09-19. Corrected in place. Two parts of one file disagreed and the reader
+had no way to tell which; a hold that costs readers an hour needs its mechanism
+named, not asserted.
+
+## 2026-09-27 — v188: the vocabulary was right and the DECORATION was the hole
+
+The previous cycle's item ended by sizing a residue it did not fix: **published
+lineups whose top row is ≥90% of the menu and whose name CONTAINS a generic type
+but escapes the anchored predicates.** Re-derived on the v185 store it is **35
+plans / 32,664 participants**; the fix reaches 28 of them, and v187's single
+member makes **29 plans / 27,977 participants** withdrawn together.
+
+### The diagnosis, which is not the one the size suggested
+`GENERIC_TYPE_ANY` is anchored `^…$` deliberately, and an unanchored copy is the
+v168 `appreciat` defect — it deletes real holdings. So "unanchor the regex" was
+never available. But the source **already carried `(?:total )?`**: one decoration
+had been allowed for and the rest had not. Every member is the same asset-class
+label with a non-identifying wrapper round it — `Shares of …`, `… shares`,
+`Sub-total: …`, `DESCRIPTION: …`, `… at fair value`, `Individual …`, `Master …`,
+`… Not Required`, `Mutual fund, dividends/interest reinvested`, and a single
+lower-case OCR footnote letter.
+
+**So the fix widens what may sit AROUND the vocabulary, not the vocabulary.**
+`stripGenericDecoration` removes only wrappers that cannot identify a fund, and
+then the SAME predicate is asked again. It is exported as `isGenericTypeName` and
+every consumer reads it — the dominance guard, `audit-generic-names`,
+`audit-dominant-row`, `audit-data` and `diff-lineups` — so there is no second
+copy to drift. That is this session's own lesson applied: **reach for the
+predicate the CONSUMER reads, and make there be only one.**
+
+It is applied to the guard and the audits and **not** to the row-deleting paths.
+`lib-4i` ~2205 tests this regex NEGATIVELY to decide whether a description may
+become a name; widening that direction removes real names, which is v137's
+recorded reason for splitting the regex in the first place.
+
+### Measured whole-store before shipping, and every member read
+**157 published rows across 49 DISTINCT names** become visible. All 49 were read
+— the whole population, not a sample — and **every one is a decorated
+asset-class label; not one is a fund.** The largest are `Shares of Registered
+Investment Companies` (26 rows, $887M), `Mutual Fund Shares` (18, $1.91B),
+`Group annuity contract a` (15).
+
+**What it leaves alone is the evidence that it is safe**, and each was chosen
+before the strip was written:
+
+- Fathom Manufacturing — `Fidelity Government Money Market Fund`, **95.7% of an
+  11-row menu**. A real fund name at ≥90% is not a statement.
+- Talgood Enterprises — `Vanguard tax-Managed Balanced Fund Admiral Shares
+  Registered Investment Company`: a real fund with the type appended.
+- Local 360 — `AMERICAN FUNDS BLANC MUTUAL FUND`, this project's pinned
+  truncated-vintage control, 39 rows @ 0.984.
+- `Mutual of America MUTUAL FUND` (2 plans) and `Vanguard Fiduciary Trust
+  Company Mutual funds` — issuer-plus-type captions that merged real menus. A
+  different defect (the v100 family) and correctly out of scope here.
+
+### Reading the withdrawn rows is what settled that withdrawal is right
+Six of the 29 were opened in full. Bhi Energy: `Shares of Registered Investment
+Companies` $123,325,300 beside one small CIT and a loan-rate fragment. Woodgrain:
+`Mutual fund shares` $235,471,923 beside the prose row **`November 2028.`**
+Springbrook is the clearest — `Individual Mutual Funds` $25,728,037 is the class
+TOTAL and the eight itemised Fidelity rows beneath it carry OCR-destroyed values
+(`$8`, `$4`), so the menu is unpublishable whichever row you keep.
+
+**And the ratio guard is silent on all 29 by construction: their ratios run
+0.62–1.01.** An asset-class statement of the whole plan sums to the whole plan.
+That is the UPMC-roster insight again — *a ratio near 1.0 is evidence for a menu
+only among tables that are CANDIDATE menus* — and it is why the arithmetic
+witness could never have found this class.
+
+### THE CHECK WAS UNDER-REPORTING BY 97 PLANS
+`audit-generic-names` reads the same question, so it has been blind to the same
+wrappers: **109 → 206 plans on the identical store**, ~178 after the 29
+withdraw. **`audit-data.mjs:584` escalates `fabricated-name` only above 230**, so
+the HIGH stays dormant either way — but the true population is 206, not 109, and
+that margin is now thin enough that the threshold is the owner's call.
+`audit-dominant-row` goes **29 → 0**, the same shape as v185's Cobre Valley test.
+
+### An import assertion caught a silent narrowing, mid-edit
+The arms were first folded into one alternation `(?:A|B|C)$` and that **dropped
+`Not Required`**, because the footnote arm must stay case-SENSITIVE (a capital
+`A` may be a real share-class designation) while every other arm must be
+case-insensitive, and one regex cannot be both. The assertion that caught it was
+written before the code it checks. It is the same failure this file records four
+times — a computed value quietly discarded — reached this time in thirty seconds
+instead of over a run.
+
+### Pre-registered for the run that carries v187 + v188
+- confident **60,120 → at most 60,091**, and **every loss must be one of the 29
+  named acks and nothing else**; fewer is allowed, because a prior-year fallback
+  may rescue some and `fallbacks.json` is artifact-only so that cannot be
+  reproduced in-sandbox.
+- **`overshoot` must NOT move (325)** — 0 of the 29 are in that set today.
+- `audit-generic-names` ≈ **178**, `audit-dominant-row` **0**, HIGH = 4 baseline
+  plus self-clearing `reparse-loss` entries for whichever of the 29 were
+  real-menu-shaped (none is, so ideally 4).
+- Gate green; `diff-lineups` vs `a8f8fd24` over **1,111 filings**: confidence
+  **+0 / −1** (Blue Cross and Blue Shield of Vermont, v187's designed member and
+  the only one of the 29 the corpus contains), fabricated rows introduced **0**,
+  removed 0, row-count moves 0, menu-sum moves 0. **The corpus holds 1 of 29, so
+  it is the negative control here and the whole-store measurement plus the nine
+  pinned specimens are the positive one** — the corpus is sampled by assets and
+  these are small plans, which is exactly why the specimen file exists.

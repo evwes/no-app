@@ -13,8 +13,8 @@ const byAck = P.byAck();
  * the 90% floor, invisible because the vocabulary did not contain it. The
  * parser no longer publishes the shape; the audit carries it so the class
  * cannot grow back silently. */
-import { NOT_FUND_SHAPED, GENERIC_TYPE_ANY, NAV_NOTE_ROW } from "/home/user/no-app/scripts/lib-4i.mjs";
-const NOT_FUND = { test: (n) => NOT_FUND_SHAPED.test(n) || GENERIC_TYPE_ANY.test(n) || NAV_NOTE_ROW.test(n) };
+import { NOT_FUND_SHAPED, isGenericTypeName, NAV_NOTE_ROW } from "/home/user/no-app/scripts/lib-4i.mjs";
+const NOT_FUND = { test: (n) => NOT_FUND_SHAPED.test(n) || isGenericTypeName(n) || NAV_NOTE_ROW.test(n) };
 let junk = 0, junkD = 0, fundish = 0, fundishD = 0;
 const list = [];
 for (const f of readdirSync("/home/user/no-app/data/lineups")) {

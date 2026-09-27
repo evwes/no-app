@@ -661,19 +661,62 @@ export, do not copy the line.
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, ≥100
   participants at either end of the plan year): **68,259 full-form**, 43,523
   short-form, 68,767 parse-status entries.
-- **STORE: pv 184 covers 68,639 of 68,767 acks (99.81%)** — tail pv180 23,
-  pv106 18, pv124 10, pv123 10, pv98 10, pv91 9. Confident **60,115**, lineups
-  59,764, HIGH 5, WARN 543, overshoot 329 / 426,852 ppl, aggRow 112, dl **128**,
-  **`analyze` 0** (#475 re-read both stuck acks to the cleaner `no-section`),
-  `no-section` 7,123. **`matchQuote` 5,397 of which only 1,785 are SHOWN to
+- **STORE: pv 186 covers 68,637 of 68,767 acks (99.8%)** — one dominant pv plus
+  the documented ~190-row old-version tail (pv180 23, pv106 18, pv98/123/124 10
+  each), which is the completeness test, not a partial store. Confident
+  **60,120**, lineups 59,769, entries 65,241, HIGH **4 = the baseline**, WARN
+  544, overshoot **325** / 400,840 ppl, aggRow 112, dl **128**, **`analyze` 0**,
+  `no-section` ~7,123. **`matchQuote` 5,397 of which only 1,785 are SHOWN to
   readers** — the condition/outcome pair shipped 2026-09-27.
-- **`PARSER_VERSION` in the tree is 185. #477 IS IN FLIGHT** — the v185 full
-  re-parse, dispatched 2026-09-27 17:49Z on `ebbdfb8f` and observed queued.
-  #473 (v184) finished 13:45Z, #475 and #476 (incremental, no bump) at 16:18Z
-  and 17:4xZ, both byte-identical no-op hours.
-  **THE MIRROR IS HELD ON PURPOSE:** the branch head carries v185 CODE over the
-  v184 STORE, and mirroring that makes main's own `:23` cron run a duplicate
-  full re-parse ON MAIN. Mirror the matched pair once #477's store lands.
+- **`PARSER_VERSION` in the tree is 188; the store is at 186.** #480 (v186) ran
+  `success` 19:54–20:48Z on `a8f8fd24`, store commit `997ec6d6`, **+7 confident
+  / −0 lost**, every change reconciled by ack. v187 and v188 are committed and
+  gated behind it and need one dispatch between them.
+  **CODE AHEAD OF THE STORE IS SAFE TO MIRROR, and the line that used to sit
+  here saying otherwise was wrong.** It read "THE MIRROR IS HELD ON PURPOSE …
+  mirroring that makes main's own `:23` cron run a duplicate full re-parse ON
+  MAIN", while the v172 entry forty lines below said the opposite.
+  `fetch-4i.mjs:375` reads `SCHEDULE_INCREMENTAL`, set by the workflow for
+  `schedule` events only, and under it **a parser-version gap is not work**: the
+  cron ingests new filings and retries the cheap non-`no-section` errors and
+  leaves the bump to the dispatch that carries the verdict. The only mirror
+  hazard that is real is a run IN FLIGHT ON MAIN when the force push lands.
+- **v188, GATED AND READY: the vocabulary was right and the DECORATION was the
+  hole. 29 plans / 27,977 participants stop being shown an asset-class statement
+  as their fund menu.** `GENERIC_TYPE_ANY` is anchored `^…$` on purpose — an
+  unanchored copy deletes real funds (the v168 `appreciat` lesson) — and its
+  source already carried `(?:total )?`, so exactly one decoration had been
+  allowed for. A filer writing `Shares of Registered Investment Companies`,
+  `Mutual fund shares`, `Sub-total: Registered Investment Companies` or
+  `DESCRIPTION: POOLED SEPARATE ACCOUNT` has written the same label with a
+  wrapper round it and escaped every guard. **So the fix is not a wider
+  vocabulary but a wider set of things that may sit AROUND it**:
+  `stripGenericDecoration` removes only material that cannot identify a fund and
+  the SAME predicate is asked again, exported as `isGenericTypeName` and read by
+  the guard, both audits and `diff-lineups` so the copies cannot drift.
+  Measured whole-store, not sampled: **157 rows across 49 DISTINCT names become
+  visible and all 49 were read — every one a decorated asset-class label, not one
+  a fund.** Withdrawals are named ack by ack (Bhi Energy 5,868 ppl, Woodgrain
+  5,758, Standard Retirement 2,311, Eclinicalworks 1,874, Springbrook 1,777 …),
+  **0 of them sit in the overshoot set, so `overshoot` must NOT move (325)**, and
+  confident falls by AT MOST 29 — less if a prior-year fallback rescues any,
+  which cannot be reproduced in-sandbox because `fallbacks.json` is artifact-only.
+  **`audit-generic-names` was under-reporting by 97 plans: 109 → 206 on the same
+  store once it reads the same question, and ~178 after the withdrawal** —
+  `audit-data.mjs:584` escalates above 230, so it stays dormant, and that margin
+  is now thin enough to be the owner's call rather than mine.
+  **What it deliberately leaves alone is the evidence it is safe:** Fathom's
+  `Fidelity Government Money Market Fund` at 95.7%, Talgood's `Vanguard
+  tax-Managed Balanced Fund Admiral Shares Registered Investment Company`, Local
+  360's pinned `AMERICAN FUNDS BLANC MUTUAL FUND` control and `Mutual of America
+  MUTUAL FUND` all survive — a strip that removes only non-identifying wrappers
+  cannot reach a name that identifies something. Nine specimens pinned, three of
+  them DECOYS, including the deliberate MISS (Affinity Plus `Separate Account A,
+  at fair value`, where a capital `A` may be a real designation and case is the
+  only signal). **An import assertion caught a silent narrowing while this was
+  being written**: folding the arms into one alternation dropped `Not Required`,
+  because the footnote arm must stay case-SENSITIVE while every other arm must
+  not, and one regex cannot be both.
 - **`audit-dominant-row` WAS 1 AND v185 RETURNS IT TO 0 — the cause was a guard
   computed on rows that no longer exist.** Cobre Valley (578 ppl) publishes
   `Registered investment companies` at **96.6%** of a 4-row menu whose other

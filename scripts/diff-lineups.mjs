@@ -23,7 +23,7 @@ import { execFileSync } from "node:child_process";
 import os from "node:os";
 import path from "node:path";
 import { loadPlans } from "./lib-schema.mjs";
-import { GENERIC_TYPE_ANY } from "./lib-4i.mjs";
+import { isGenericTypeName } from "./lib-4i.mjs";
 
 const ref = process.argv[2];
 if (!ref) { console.error("usage: node scripts/diff-lineups.mjs <git-ref>"); process.exit(2); }
@@ -77,7 +77,7 @@ const isConfident = (p) => p.found && p.funds.length >= 3 && (p.ratio || 0) > 0.
 const fabricated = (p) => {
   if (!p.found || !p.funds.length) return 0;
   const sum = p.funds.reduce((s, f) => s + (+f.value || 0), 0) || 1;
-  return p.funds.filter((f) => GENERIC_TYPE_ANY.test(String(f.name).trim()) && f.value / sum >= 0.15).length;
+  return p.funds.filter((f) => isGenericTypeName(String(f.name).trim()) && f.value / sum >= 0.15).length;
 };
 
 const P = loadPlans();

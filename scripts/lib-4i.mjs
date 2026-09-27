@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 187;
+export const PARSER_VERSION = 188;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -264,6 +264,105 @@ if (GTA_SOURCE === GTA_PLURALISED) {
   throw new Error("lib-4i: GENERIC_TYPE_ANY's v187 append found no trailing ')$' — the derivation is a silent no-op, fix it rather than shipping a quiet guard");
 }
 export const GENERIC_TYPE_ANY = new RegExp(GTA_SOURCE, "i");
+/* v188 — THE VOCABULARY WAS RIGHT AND THE DECORATION WAS THE HOLE.
+ *
+ * `GENERIC_TYPE_ANY` is anchored `^…$`, deliberately: an unanchored version
+ * deletes real funds, which is the v168 `appreciat` lesson and the reason v137
+ * split this regex in two. But a filer who writes the statement line as
+ * `Shares of Registered Investment Companies`, `Mutual fund shares`,
+ * `Sub-total: Registered Investment Companies` or `DESCRIPTION: POOLED SEPARATE
+ * ACCOUNT` has written the same asset-class label with a wrapper round it, and
+ * the anchor misses every one of them. The source already carries `(?:total )?`
+ * for exactly this reason — one decoration was allowed for and the rest were
+ * not.
+ *
+ * So the fix is not a wider vocabulary: it is a wider set of things that may
+ * sit AROUND the vocabulary. `stripGenericDecoration` removes only material
+ * that cannot identify a fund — a `shares of` / `shares in` wrapper, a
+ * sub-total or `DESCRIPTION:` caption, an `at fair value` measurement basis, a
+ * `dividends/interest reinvested` note, a `Not Required` disclosure, and a
+ * single lower-case footnote letter — and then the SAME predicate is asked
+ * again. It is applied to the dominance guard and to the audits, not to the
+ * row-deleting paths (line ~2205 tests this regex NEGATIVELY to decide whether
+ * a description may become a name, and widening that direction removes real
+ * names).
+ *
+ * Measured whole-store on the v185 store before shipping, not sampled: 157
+ * published rows across 49 DISTINCT names become visible, and all 49 were read
+ * — every one is a decorated asset-class label and not one is a fund. The
+ * discrimination that matters is what it leaves alone: Fathom Manufacturing's
+ * `Fidelity Government Money Market Fund`, Talgood's `Vanguard tax-Managed
+ * Balanced Fund Admiral Shares Registered Investment Company` (a real fund with
+ * the type appended), Local 360's `AMERICAN FUNDS BLANC MUTUAL FUND` — this
+ * project's pinned truncated-vintage control — and `Mutual of America MUTUAL
+ * FUND` all survive, because a strip that only removes non-identifying wrappers
+ * cannot reach a name that identifies something.
+ *
+ * The lower-case restriction on the footnote arm is load-bearing and costs a
+ * known member: Affinity Plus Federal Credit Union (755 ppl) files `Separate
+ * Account A, at fair value` and is NOT caught, because `A` capitalised may be a
+ * real share-class or separate-account designation and case is the only signal
+ * that separates a designation from a footnote marker. Recorded rather than
+ * widened. */
+/* The arms are applied as a CHAIN and not as one alternation, and that is not a
+ * style choice. Folding them into `(?:A|B|C)$` silently dropped `Not Required`,
+ * because the single-letter footnote arm must stay case-SENSITIVE (see above)
+ * while every other arm must be case-insensitive, and one regex cannot be both.
+ * The import assertion below is what caught it; it was written first. */
+const GENERIC_DECO = [
+  [/^(?:sub[- ]?total|total)\s*[:.]?\s+/i, ""],
+  [/^description\s*:\s*/i, ""],
+  [/^shares\s+(?:of|in)\s+/i, ""],
+  [/^(?:individual|managed|master|annuity|variable annuity in)\s+/i, ""],
+  [/\s*[:;.]+$/, ""],
+  [/[,;]?\s*at fair value$/i, ""],
+  [/\s+shares$/i, ""],
+  [/[,;]?\s*dividends?\s*\/\s*interest reinvested$/i, ""],
+  [/\s+not required$/i, ""],
+  [/\s+[a-z]$/, ""],
+];
+export function stripGenericDecoration(name) {
+  let s = String(name || "").trim();
+  for (let i = 0; i < 8; i++) {
+    const before = s;
+    for (const [re, to] of GENERIC_DECO) s = s.replace(re, to);
+    s = s.trim();
+    if (s === before) break;
+  }
+  return s;
+}
+/* ONE predicate, asked of the filed name and of the same name with its
+ * non-identifying wrapper removed. Every consumer that wants "is this row an
+ * asset-class label rather than a holding" reads THIS, so the two asks can
+ * never drift apart — the failure this session paid for twice, once in
+ * `diff-lineups` (which policed rules reading ANY while testing NAME) and once
+ * in a handoff written off the wrong copy. */
+export function isGenericTypeName(n) {
+  const s = String(n || "").trim();
+  if (!s) return false;
+  return GENERIC_TYPE_ANY.test(s) || GENERIC_TYPE_ANY.test(stripGenericDecoration(s));
+}
+/* ASSERTED AT IMPORT, in this file's own style: a strip whose patterns stop
+ * matching returns its input unchanged and reports nothing, so the widening
+ * would go quiet while every count built on it kept printing a plausible
+ * number. Both directions are pinned — a decorated label must be caught, and
+ * the two real funds above must not be. */
+for (const s of ["Shares of Registered Investment Companies", "Mutual fund shares",
+  "Sub-total: Registered Investment Companies", "DESCRIPTION: POOLED SEPARATE ACCOUNT",
+  "Registered investment companies:", "Mutual fund, dividends/interest reinvested",
+  "Master Separate Account", "Mutual Funds Not Required", "Mutual fund shares a"]) {
+  if (!isGenericTypeName(s)) {
+    throw new Error(`lib-4i: v188's decoration strip no longer reaches ${JSON.stringify(s)} — the widening is silent, fix it rather than shipping a quiet guard`);
+  }
+}
+for (const s of ["Fidelity Government Money Market Fund", "AMERICAN FUNDS BLANC MUTUAL FUND",
+  "Vanguard tax-Managed Balanced Fund Admiral Shares Registered Investment Company",
+  "Mutual of America MUTUAL FUND", "Vanguard Fiduciary Trust Company Mutual funds",
+  "Shares of Berkshire Hathaway Inc Class B"]) {
+  if (isGenericTypeName(s)) {
+    throw new Error(`lib-4i: v188's decoration strip now swallows the real fund ${JSON.stringify(s)} — narrow it rather than deleting a holding`);
+  }
+}
 /* DOCUMENT SHAPE (v113) — why a filing yields no schedule, judged from the
  * document rather than from our parse. `dx` already says what the PARSER did;
  * this says what the FILING contains, and they are different claims. A random
@@ -832,7 +931,7 @@ function dominanceIsAggregate(funds) {
   const topRow = rows.reduce((a, f) => ((+f.value || 0) > (a ? +a.value || 0 : -1) ? f : a), null);
   const topName = String((topRow && topRow.name) || "").trim();
   const aggOnly = !!topRow && (+topRow.value || 0) / allSum >= 0.9 &&
-    (NOT_FUND_SHAPED.test(topName) || GENERIC_TYPE_ANY.test(topName));
+    (NOT_FUND_SHAPED.test(topName) || isGenericTypeName(topName));
   const aggRows = rows.filter((f) => AGG_DISCLOSURE.test(String(f.name || "").trim()));
   const aggSum = aggRows.reduce((a, f) => a + (+f.value || 0), 0);
   const aggSplit = aggRows.length >= 2 && aggRows.length <= 3 && aggSum / allSum >= 0.9;
