@@ -23529,3 +23529,62 @@ hundredfold, and 4,305 gain a menu — 23,431 in all, against the 1,698 I predic
 fast-forward, so `--force` was needed on neither the git check nor the data gate
 (+7 / −0). #481 dispatched 20:59Z on `5dd4369d` with v187 + v188 and observed
 `queued`.
+
+## 2026-09-27 — run #481 verdict: v187 + v188 passed, and the surprise is what the withdrawal UNBURIED
+
+`success` at 21:54Z, 55 minutes, store commit `42739932`. pv **188 covers 68,637
+of 68,767 (99.8%)**, one dominant pv with the documented tail. confident
+**60,104**, lineups 59,753, entries 65,241 unchanged, WARN 544, aggRow 112, dl
+128, HIGH **20 = the 4 baseline contribution outliers + 16 self-clearing
+`reparse-loss`**.
+
+**All four pre-registered tests passed.**
+
+| test | predicted | actual |
+|---|---|---|
+| confident | at most −29, **every loss one of the 29 named acks** | **−16, and 16 of 16 are in the set. 0 gained.** |
+| `overshoot` | must NOT move (325) | **325** |
+| `audit-dominant-row` | 0 | **0** (from 29) |
+| `audit-generic-names` | ≈178 | 182 |
+
+17,922 participants stop being shown an asset-class statement as their fund menu.
+
+### 13 of the 29 kept publishing, and the reason splits two ways
+**Nine were rescued by the prior-year fallback**, which is the mechanism the
+pre-registration named as unreproducible in-sandbox (`fallbacks.json` is
+artifact-only) and which is why the prediction was stated as a CEILING with a
+named set rather than a number. Standard Retirement Services (2,311 ppl),
+Springbrook (1,777), Stl Holding, Your Recruiting, Sovereign Distributors, Khan
+Academy, The Linux Foundation, Symmons and Sunny Glen all now carry `fb`.
+
+**Four kept publishing with no fallback, and reading them is where the real
+finding is — two are WINS bigger than the withdrawal would have been:**
+
+- **Management Sciences For Health (653 ppl) now publishes 32 real Vanguard
+  Target Retirement funds**, top row 13.7%, where it had published `Mutual Fund
+  Shares` at 93.6% = $95,537,700. Refusing the statement let a real menu win.
+- **Blue Cross and Blue Shield of Vermont (560 ppl) now publishes 28 rows** of
+  its Empower schedule (`FID GRCO POOL CLO`, `SS TRGT RET 2035 IV`), top 15.1%,
+  where it had published `Commingled funds` at 97.5% — v187's designed member,
+  and the outcome is better than the withdrawal it was designed for.
+
+**That is v136's rule operating by itself — an unpublishable winner may not bury
+a publishable menu — and it means a guard that withdraws is sometimes a guard
+that PROMOTES. Neither case was predicted, in either direction.** A prediction
+of "withdrawn" is a prediction about one region, not about the filing.
+
+### The two residuals, named, and they share one shape
+- **Flashparking (671 ppl)** still leads with `Mutual fund shares` — but at
+  **82.2%**, not 90.2%, because its OCR parse now also carries a
+  `FLASHPARKING INC.` row of $1,867,889 (its own sponsor name as a holding). The
+  junk row diluted the statement below the guard's floor.
+- **Fiber Instrument Sales (493 ppl)** leads with **`Shares in`** at 89.4% — the
+  decoration survived and the thing it decorated did not, so the strip has
+  nothing to remove and the remainder is not in the vocabulary.
+
+**So what limits this fix is the 90% threshold, not the vocabulary** — the
+opposite of the diagnosis that produced v188, and it puts both plans into the
+class already queued for the owner (85 published lineups / 302,715 ppl leading
+with a bare asset-class label at ≥60%). One of them escaped by acquiring a
+second defect, which is worth naming on its own: **a dominance guard can be
+defeated by adding junk.**
