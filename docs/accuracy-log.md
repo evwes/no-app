@@ -21873,3 +21873,112 @@ nothing was discarded but a duplicate. `pages-build-deployment` #611 built
   `audit-overshoot` (≥1.15), `audit-dominant-row` (≥90%) and the confidence
   band (0.45–1.6) were blind to every one. A fabrication that does not move the
   sum against plan assets still has no automated witness.
+
+---
+
+## 2026-09-27 — A street address and an expense ratio printed as the FUND'S NAME, and two recorded classes that were already fixed at display
+
+**Display-only repair in `app.js` (`cleanFiledName`). The store is unchanged
+and faithful to the filing; no `PARSER_VERSION` bump.**
+
+- **Wrong:** UnitedHealth Group Incorporated (EIN 41-1321939 PN 001,
+  **274,906 participants**, $30.3B) published the recordkeeper's whole
+  provider-directory line as the name of a holding, on **92 of its 95 rows** —
+  `AMERICAN NEW PERSPECTIVE CLASS F1 0.37% USADDRESS 3500 WISEMAN BLVD SAN
+  ANTONIO TX 7825143` against $648,018,406. The string printed to the reader is
+  not the fund's name. Recorded 2026-09-27 as "420 rows / 74 plans / 823,268
+  ppl" and deliberately not fixed because it wins a ticker on exactly 0 rows —
+  correct about coverage, and the honesty defect stood.
+- **THE RECORDED SIZE DOES NOT REPRODUCE, AND THAT IS THE FIRST FINDING.**
+  The same loader reproduces the sister figure in that entry EXACTLY — the
+  em-dash class is 1,993 rows / 297 plans / 609,414 ppl to the digit — so the
+  population and the ack→plan mapping are right. Against the v184 store the
+  address class is **92 rows / 1 plan / 274,906 participants**: it is
+  UnitedHealth and nothing else. Eight predicates were tried and printed:
+  `ADDRESS` 92/1, `USADDRESS` 92/1, a bare trailing percentage 75/61, a dollar
+  figure 794/135, any percentage 3,370/1,780, ≥5 digits 4,337/2,253, a
+  comma-grouped money figure 487/174, the row's own value inside its name
+  446/214. None is 420/74/823,268. **Do not carry 420 / 74 / 823,268 forward.**
+  The printed matches say why a larger count is not this class: `REPUBLIC OF
+  COLOMBIA 7.75%`, `GNMAII POOL MA5878 5.0%` and `PVTPL RITCHIE BROS
+  AUCTIONEERS 7.75% DUE03-15-2031` are real COUPONS, and `EQUINIX INC COM PAR
+  $0.001` is a real PAR VALUE. A number in a holding name is usually part of
+  the name.
+- **TWO OF THE THREE ITEMS TAKEN THIS CYCLE WERE ALREADY FIXED AT DISPLAY, AND
+  BOTH HAD BEEN SIZED ON THE STORE.** `cleanFiledName` has stripped a leading
+  dash (`s.replace(/^[—–-]+\s*/, "")`) and a trailing quote glyph
+  (`[”“"'’‘™®©]+\s*$`) for some time. Measured through the SHIPPED function
+  rather than over the store: the em-dash class is **1,993 rows in the store
+  and 1 row at display**, and the stray-double-quote class is **8,268 rows /
+  3,685 plans in the store and 231 rows / 144 plans / 220,004 ppl at display**
+  (a separate hand-measurement of it at 3,718 rows / 554 plans / 637,869 ppl
+  was also a store count). This is the `Class |` correction again: **a glyph in
+  the store is not a glyph on the page, and a class must be sized through the
+  function that renders it.**
+- **Change**, three arms, all in `cleanFiledName`, all evidence-led:
+  1. **Anchored on the ADDRESS LABEL, never on the number.** Cut from an
+     optional price-or-percentage plus a literal `ADDRESS` token to end of
+     string, keeping the repair only when ≥2 words and 3 letters remain. The
+     value is removed only because the label stands next to it.
+  2. **A stray double quote**, two sub-arms: a LEADING quote (56 rows), and a
+     quote near the end followed only by crumbs — at most three characters,
+     no capital, no four-letter word (`Vanguard Institutional Index Plus “x`,
+     `…2065 Trust IX ”`, `BNY Mellon Bond Market Index Shares ” i`). An
+     uppercase tail is left exactly as filed, because it can be a real share
+     class (`Hotchkis Wiley High yield "Z`).
+  3. The leading-dash strip **re-run after the type-prefix strip**, which is
+     why `Stable Value Fund- — John Hancock Life Insurance Company` (Empower
+     Electric, 216 ppl) still wore its dash. 1 row.
+- **Measured, whole store, before → after through both versions of the shipped
+  function:** **270 rows / 112 plans / 449,264 participants change.** Address
+  rows at display **92 → 0**, em-dash rows **1 → 0**, double-quote rows
+  **231 → 56** (the 56 are prose rows, balanced quotes and uppercase tails,
+  all deliberately refused). **Tickers: 0 gained, 0 lost, 0 flipped** across
+  every changed row, using `lookupTicker`'s own order — the recorded "wins a
+  ticker on 0" is confirmed, in both directions.
+- **The damage side, printed as a LIST and read row by row: 38 damaged
+  candidates, 0 real names damaged.** 35 are a single lowercase OCR crumb
+  after a name that already carries its class (`…R6 “t`, `…Class R-5 “e`,
+  `…Instl Prem “t`); 1 is a column bar the `|`→`I` rule would otherwise have
+  promoted on a row already reading `Class A`; 2 are the SHIPPED vehicle-type
+  suffix strip becoming reachable once the crumb is gone
+  (`…Pooled Separate Account “«` → `American Funds 2035 Target Date Retirement
+  Fund`), which is what that rule does on every other row.
+- **Negative controls, named before measuring and addressed by a property the
+  store has:** real vintages (`Fidelity Freedom 2035`, `American Funds 2010
+  R6`, `T. Rowe Price Retirement 2035 Active Trust E`), share classes
+  (`Class F1`, `CL I`, `NL CL M`, `II CL 1`, `State Street S&P 500 Index K
+  NL`), a company suffix (`TRAFIGURA FDG S A`), real coupons and par values,
+  and the quote controls — Vanguard's `Institutional "Plus" Shares` (FMC
+  Corporation), `"Brokerage" Account` (Fnbc Of Lagrange), Eight Eleven Group's
+  welded ETF pair, Roper's prose row, and apostrophes (`Lowe’s`, `Inst'l`,
+  `INT'L`). All 24 byte-identical to HEAD. Whole-store control shapes: coupon
+  percentages 1,988 rows with 86 changed and **all 86 UnitedHealth's address
+  rows**; par-value `$` 11 rows / 0 changed; balanced quotes 4 rows / 0
+  changed; apostrophes 4,318 rows / 3 changed, each read and correct.
+  `"Brokerage" Account` needed a guard added after the first draft stripped its
+  opening quote: a leading quote is refused when a closing quote with more name
+  after it follows.
+- **Verified by RENDERING THE REAL PAGE, both ways.** UnitedHealth
+  (`#plan=41-1321939|001|`) served locally, Playwright, one synthetic click
+  after load. At HEAD: 95 holdings, every one carrying its address. After: **0
+  rows mentioning an address or a welded value**, 95 holdings with clean names
+  — and the TICKER and EST. ER columns byte-identical between the two renders,
+  `MWTIX` and `0.45%` on the MetWest row in both, `0.60%` on four MFS rows in
+  both. The store-side test said 0 ticker movement; the render is what proves
+  the reader sees the same fee data.
+- Full `smoke-test.mjs` green across all six page shapes. `map-test.mjs` fails
+  in-sandbox on `ERR_CERT_AUTHORITY_INVALID` for an external resource and fails
+  **identically at HEAD**, so it is a sandbox fact, not this change; read
+  site-test's `conclusion` in CI.
+- **Prevention:** (1) the repair is anchored on the LABEL, so no count of
+  numbers-in-names can widen it — a percentage or a dollar figure alone is
+  never enough; (2) the crumb arm refuses any uppercase tail, so a real share
+  class cannot be guessed away; (3) the leading-quote arm refuses a balanced
+  pair; (4) **and the rule this cycle earns twice over: size a display class
+  through the shipped display function, not over the store.** Two of the three
+  items handed to this cycle were already fixed for readers and had been sized
+  on stored strings. The harness that settled it loads `cleanFiledName` out of
+  `app.js` by source slice and runs it in a `vm` — the same shape as
+  `build-ticker-reference.mjs` loading `fund-er.js` — rather than
+  transcribing it.

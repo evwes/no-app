@@ -527,6 +527,45 @@
     // Trading). The fragment strip needs the class token before it, so a
     // real name's last word is never taken.
     s = s.replace(/[\s\-–]*[”“"'’‘™®©]+\s*$/, "").trim();
+    // the recordkeeper's PROVIDER-DIRECTORY fields welded onto the fund name:
+    // an expense ratio or unit price, then a literal ADDRESS label and the
+    // firm's street address. UnitedHealth Group (274,906 participants) is the
+    // whole of it on the v184 store — 92 of its 95 rows read
+    // "AMERICAN NEW PERSPECTIVE CLASS F1 0.37% USADDRESS 3500 WISEMAN BLVD SAN
+    // ANTONIO TX 7825143". Anchored on the ADDRESS LABEL, never on the number:
+    // a bare percentage in a holding name is usually a real COUPON ("REPUBLIC
+    // OF COLOMBIA 7.75%", "GNMAII POOL MA5878 5.0%", 266 rows / 122 plans that
+    // must not be touched), and a bare dollar figure is usually a real par
+    // value ("EQUINIX INC COM PAR $0.001"). 2026-09-27.
+    const am = s.match(/\s*(?:\$\s?\d[\d,]*(?:\.\d+)?|\d{1,3}(?:\.\d+)?\s*%)?\s*\b[A-Z]{0,3}ADDRESS\b[\s\S]*$/);
+    if (am) { const rest = s.slice(0, am.index).trim(); if (rest.split(/\s+/).length >= 2 && /[A-Za-z]{3}/.test(rest)) s = rest; }
+    // a stray double-quote glyph the scan left in the name. Two arms, both
+    // anchored so a REAL quoted share class survives — Vanguard's
+    // "Institutional \"Plus\" Shares" (FMC Corporation) is the control, and it
+    // is untouched because the last quote there is followed by a whole word.
+    // (a) a LEADING quote: "“Vanguard Federal", "\"EQ/GAMCO Small Company
+    // Value" — 56 rows. (b) a quote near the END followed only by OCR crumbs
+    // that are not a word: "Fidelity 500 Index “«", "…2065 Trust IX ”",
+    // "…Index Plus “x", "BNY Mellon Bond Market Index Shares ” i" — the
+    // trailing strip above only reaches the ones with nothing after them.
+    const qlead = s.replace(/^[”“"]+\s*/, "").trim();
+    // …unless a CLOSING quote follows with more name after it — that is a
+    // balanced quoted term the filer meant ("\"Brokerage\" Account"), the same
+    // shape as the FMC control, and it is left exactly as filed.
+    if (qlead !== s && !/["”].*\S/.test(qlead) &&
+        qlead.split(/\s+/).length >= 2 && /[A-Za-z]{3}/.test(qlead)) s = qlead;
+    for (let pass = 0; pass < 2; pass++) {
+      const qi = Math.max(s.lastIndexOf("“"), s.lastIndexOf("”"), s.lastIndexOf('"'));
+      if (qi <= 0) break;
+      const tail = s.slice(qi + 1);
+      // crumbs only: at most three characters, and NO CAPITAL — an uppercase
+      // tail can be a real share class ("Hotchkis Wiley High yield \"Z") and
+      // those rows are left exactly as filed rather than guessed at.
+      if (tail.length > 3 || /[A-Z]/.test(tail) || /[a-z]{4}/.test(tail)) break;
+      const rest = s.slice(0, qi).replace(/[\s\-–]+$/, "").trim();
+      if (!(rest.split(/\s+/).length >= 2 && /[A-Za-z]{3}/.test(rest))) break;
+      s = rest;
+    }
     s = s.replace(/\b(R\d|[A-Z]|I{1,3}|CIT|Adm|Inv|Instl?|Fund|Trust|Class)\s+[a-z]{1,3}$/, "$1");
     // a trailing footnote marker "(1)" (FMR's whole 119-row menu, 560 plans /
     // 1.95M ppl / 7,503 rows) and a trailing column bar, which is OCR's
@@ -563,6 +602,13 @@
     s = s.replace(/^((?:\S+\s+){0,2}\S+)\s+\1(?=\s+\S)/i, "$1");
     const pm = s.match(TYPE_PREFIX);
     if (pm) { const rest = s.slice(pm[0].length).trim(); if (rest.split(/\s+/).length >= 2 && /[A-Za-z]{3}/.test(rest)) s = rest; }
+    // the leading-dash strip at the top of this function runs BEFORE the type
+    // prefix above, so "Stable Value Fund- — John Hancock Life Insurance
+    // Company" (Empower Electric) came out still wearing the dash. Re-run it
+    // once the prefix is gone. Exactly 1 row on the v184 store — the other
+    // 1,992 em-dash rows the census counts were already clean at display.
+    const dl = s.replace(/^[—–-]+\s*/, "").trim();
+    if (dl !== s && /[A-Za-z]{3}/.test(dl)) s = dl;
     s = s.replace(/[,;:]+$/, "").trim();
     // a share COUNT is thousands or more (1,234 / 12345…); "Class R6 Shares"
     // is a share CLASS and must survive — the first draft of this cut it to
