@@ -914,6 +914,20 @@
       "fixed": "v185 (refusal)",
       "sponsor": "Ultradent Products, Inc.",
       "was": "Ultradent Products (1,669 participants) holds `$22,000 certificate of deposit; matures during 2026` and `$10,000 certificate of deposit; matures during 2026` -- REAL holdings whose names contain both `matures` (LOAN_TEXT) and the newly added vocabulary word `during`. They survive because LOAN_SECURITY vetoes on `certificates?|deposits?` BEFORE the residue is computed, which is the structural reason v131's predicate can be widened at all: the security veto runs first and is independent of the vocabulary. EXPECTED UNDER v185: both rows PRESENT, isLoanNoteName false on each. Pinned because the four words added at v185 are the first widening of LOAN_VOCAB since it was written, and the next one must be able to prove it did not reach these."
+    },
+    {
+      "ack": "20260422162604NAL0003787313001",
+      "class": "ocr-read-the-cents-decimal-point-as-a-comma-and-the-comma-strip-multiplied-the-holding-by-100",
+      "fixed": "v186",
+      "sponsor": "Bekaert Corporation",
+      "was": "Bekaert (1,698 participants) files an Empower schedule with cents on every row. On TWO of twenty-four rows tesseract returned the decimal point as a comma -- `IFTDINQ ... 1,126,139.55  1,148,605,88` and `IPRUBKT ... 1,016,669.96  1,032,004,21` -- and `value = +vm[1].replace(/,/g, \"\")` turned $1,148,605.88 into $114,860,588 and $1,032,004.21 into $103,200,421. $215,880,400 of money that does not exist, in a $177,569,529 plan. The filing PRINTS ITS OWN TOTAL, $171,753,696.22, and our published sum was $387,634,084 -- 2.26x the schedule we were reading. The ratio guard refused the lineup at 2.18 so no reader saw it, and the plan published its 2023 fallback instead: a four-row asset-class statement (`Pooled separate accounts`, `Mutual funds`, and a prose fragment `value of the fully benefit-responsive investment contract was $48,380,143 and`). SECOND, INDEPENDENT WITNESS: Schedule D -- structured EFAST2 data, never touched by OCR -- reports $1,148,606 for that trust (its own rounding of $1,148,605.88) and does NOT report $114,860,588. EXPECTED UNDER v186: 24 rows, ratio 0.967, CONFIDENT, `Fidelity Freedom Blend Incm Commingled Q` = $1,148,605 and `IPRUBKT` = $1,032,004, sum $171,753,684 -- the filing's declared total to $12 of cents truncation over 24 rows. THIS WAS HANDED TO ME AS A DIFFERENT DEFECT and the handed diagnosis was wrong: it was read as v184's legend-twin collapse failing because OCR corrupted the codes past their leading character. Bekaert has NO two rows with equal values at all, so no arm of `collapseDoubleRender` could ever fire on it; `IFTD25Q`, `1FTD35Q`, `1FTDSOQ`, `IFTDSSQ`, `LFTD65Q` and `1FTD10Q` are the 2025, 2035, 2050, 2055, 2065 and 2010 vintages -- SIX DISTINCT FUNDS -- and collapsing them onto the named vintages would have been the v100/Amgen fabrication built by a fix written to remove one."
+    },
+    {
+      "ack": "20251008163730NAL0003435139001",
+      "class": "DECOY-two-digit-final-group-with-no-full-three-digit-group-is-unreadable-mush",
+      "fixed": "v186 (refusal)",
+      "sponsor": "(Schedule of Reportable Transactions, OCR mush)",
+      "was": "The only OTHER filing in the 1,057-filing corpus that produces a line-terminal two-digit-final-group token, and the reason v186's rule requires AT LEAST ONE full three-digit group before the tail. Its line is `Fund ETF | 191,20 | 291,20` on a Schedule of Reportable Transactions (Schedule H line 4j), surrounded by OCR mush -- `a ae Pe ee ee`, `of Ardenore (series of transactions)`, `[Micrasatt Corporation 3, 600shares`. No reading of `291,20` is defensible, so none is attempted: the repair is confined to values that were at least $1,000 before it, which is where a 100x error does harm. EXPECTED UNDER v186: unchanged, no value repaired. Pinned because the natural widening of this rule -- dropping the `+` to a `*` -- reaches exactly here, and the next person to consider it must be able to see what it costs."
     }
   ]
 }

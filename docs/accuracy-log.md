@@ -22616,3 +22616,180 @@ Main carried one cron commit (`3e83057a`, incremental at v184). Measured:
 branch — precisely Bekaert, Cobre Valley and Ashton Potter**, all three read
 above. So `--force` covers the GIT check and `--force-data` the three
 withdrawals, each justified by name and none of them a lost real menu.
+
+## 2026-09-27 (19:5xZ) — v186: OCR read the cents decimal point as a comma, and the comma strip multiplied two holdings by a hundred
+
+**THE PREVIOUS ENTRY'S DIAGNOSIS OF BEKAERT WAS WRONG AND IS CORRECTED HERE.
+The reasoning is left above, unedited, because the way it failed is the useful
+part.** The entry immediately preceding this one says Bekaert "publishes the
+same holdings twice under two spellings" and names v184's `collapseDoubleRender`
+as the gap — arm A normalising only the leading `1`/`I` while OCR had also
+corrupted digits inside the code. Every observation in it is real. The inference
+is not.
+
+- **Wrong (the handed diagnosis):** Bekaert has **no two rows with equal values
+  at all** — the 24 stored values are 24 distinct numbers — so **no arm of
+  `collapseDoubleRender` could ever have fired on it**, at any leading-character
+  normalisation. `IFTD25Q`, `1FTD35Q`, `1FTDSOQ`, `IFTDSSQ`, `LFTD65Q` and
+  `1FTD10Q` are not corrupted spellings of the named rows beside them; the
+  filing's own LEGEND names them the **2025, 2035, 2050, 2055, 2065 and 2010**
+  vintages, and the named rows are the **Income, 2030, 2040, 2045, 2020, 2060
+  and 2015** vintages. They are **thirteen different funds**. Collapsing them
+  would have merged distinct holdings into one — the v100/Amgen fabrication,
+  built by a fix written to remove fabrications, which is v179's mistake for the
+  third time. The diagnosis was made from the *shape of the row names*; the store
+  refutes it in one line (`are any two values equal? no`) and the filing refutes
+  it in one page.
+
+- **Wrong (the actual defect):** the schedule prints cents on every row, and on
+  **two of twenty-four rows tesseract returned the decimal point as a comma**:
+
+      IFTDINQ        1,126,139.55        1,148,605,88
+      IPRUBKT        1,016,669.96        1,032,004,21
+
+  `const value = +vm[1].replace(/,/g, "")` then read those as **$114,860,588**
+  and **$103,200,421** — **$215,880,400 of money that does not exist**, in a
+  $177,569,529 plan. **The filing prints its own total, $171,753,696.22, and our
+  published sum was $387,634,084: 2.26x the schedule we were reading.** Nobody
+  saw it, because the ratio guard refused the lineup at 2.18 — so Bekaert's 1,698
+  participants were served its 2023 fallback instead, a four-row asset-class
+  statement (`Pooled separate accounts` 40%, `Mutual funds`, and a prose fragment
+  `value of the fully benefit-responsive investment contract was $48,380,143 and`
+  carrying $52,323,885).
+
+- **SECOND WITNESS, and it settles the direction of the repair.** The one risk in
+  reading a trailing `,88` as cents is the opposite error — OCR *inserting* a
+  comma into a valid digit run, where the repair would be a 100x
+  UNDERSTATEMENT. Arithmetic cannot decide that in general. **Schedule D can:**
+  it is structured EFAST2 extract data, never touched by OCR, and merge-4i
+  already matches it against row values. Bekaert's Schedule D reports
+  **$1,148,606** for that collective trust — its own rounding of $1,148,605.88 —
+  and reports **no $114,860,588 at all**. The repaired value is confirmed to the
+  dollar by a second document and the published one is refuted by it.
+
+- **Change (v186, `centsCommaValue` in `lib-4i.mjs`):** a captured value token
+  matching `^\d{1,3}(?:,\d{3})+,\d{2}$` has its final comma read as a decimal
+  point. **The test is syntactic and self-validating, which is why it is not a
+  homoglyph guess:** US grouping makes every group after the first exactly three
+  digits, and the comma-decimal convention would have printed `1.148.605,88`, so
+  a two-digit final group is not a number in either convention and the only thing
+  it can be is a misread period. No legitimate value can match, so no real
+  holding can be shrunk. Two narrowings, both measured rather than assumed:
+  **(1)** at least one full three-digit group is required — allowing none also
+  matches `291,20`, whose only corpus instance is OCR mush on a Schedule of
+  Reportable Transactions where no reading is defensible; **(2)** the line must
+  carry a proper cents figure of its own (`\d\.\d{2}`), which is the document's
+  own evidence that this row prints cents. A cents row with no sibling figure
+  keeps its wrong value: **missing a repair is survivable, inventing one is not.**
+
+- **Measured before the bump.** Corpus: of **1,057 filings exactly ONE** carries
+  a line-terminal two-digit-final-group token, and it is Bekaert.
+  `diff-lineups a6bf022e` over 1,054 filings: **confidence gained 1, lost 0,
+  fabricated rows introduced 0, removed 0, row counts moved 0, menu sums moved
+  ≥5% 0.** Five synthetic controls through the shipped `parse4i` pass in both
+  directions (positive: the Bekaert shape repairs; negatives: a properly grouped
+  value, a two-digit tail with no cents sibling, the no-full-group mush, and a
+  cents value the parser always read right). **The two controls named in advance
+  hold, each addressed by a value it HAS rather than an ack recalled:** Local
+  360's six `$54` truncated BlackRock LifePath rows and Western Ecosystems'
+  `$14,679` / `$14,678` pair re-parse **byte-identical** to the store.
+
+- **Prevention:** specimen `20260422162604NAL0003787313001` pinned, and a
+  DECOY pinned beside it — `20251008163730NAL0003435139001`, the reportable-
+  transactions mush — because the natural widening of this rule (dropping the
+  `+` to a `*`) reaches exactly there, and the next person to consider it must be
+  able to see what it costs. `PARSER_VERSION` 185 → 186.
+
+- **THE CLASS SIZE, split as the two different questions it is.** A 100x row
+  almost always pushes the sum above plan assets, so the defect lands in
+  `dx=band-hi` and is invisible to readers; it can only reach a PUBLISHED lineup
+  if the true holding is under ~0.66% of the plan (else the band rejects it).
+  - **WITHHELD** — the population that can hold an instance is bounded exactly:
+    OCR-sourced, non-confident, `band-hi`, with stored rows = **42 entries /
+    290,444 participants**. Every one was downloaded and OCR'd through the
+    production settings (`pdftoppm -r 200 -gray`, one page per invocation;
+    `tesseract --psm 6 -c preserve_interword_spaces=1`) and scanned — the WHOLE
+    population, not a sample, with **0 download or OCR failures** — and
+    **exactly ONE carries the token: Bekaert.** The withheld half is **1 plan /
+    1,698 participants**, and on this population it is closed.
+  - **PUBLISHED** — 6,470 OCR-sourced confident plan lineups / 7,122,177
+    participants. A **random** draw of 40 (seed 20260927; random because the
+    question is a RATE and every projection this project made from a
+    top-of-list sample has been wrong) found **0 of 40**, so the 95% upper
+    bound is 7.2% — coarse, and stated as coarse rather than rounded to zero.
+  - **The store cannot answer this and the attempt is worth recording.** A
+    candidate generator that asks "does dividing ≤3 rows by 100 land the sum in
+    band" returns **416 candidates / 304 published plans** and is almost
+    entirely FALSE: at ratio ~1.2 any row worth ~17% of the sum "fixes" the
+    arithmetic, so the list fills with the documented aggregate classes (HCA
+    `statements`, AT&T `Common/collective trusts measured at net asset value`,
+    UPMC `Registered investment companies`). Tightening it with the shipped
+    `GENERIC_TYPE_NAME` / `NOT_FUND_SHAPED` and a 7-row menu floor still leaves
+    286. **Do not reuse those numbers as a defect count** — they are a count of
+    an arithmetic coincidence. The class is a TEXT fact and only text answers it.
+
+### TWO OTHER DEFECTS THIS FILING EXPOSED, SIZED AND NOT FIXED
+
+**(a) The legend lookup is an exact string match, so OCR defeats it.** Bekaert
+publishes **10 of its 24 rows as a bare Empower code** although the filing's own
+legend names every one of them — the table and the legend were OCR'd
+differently: table `1FTD35Q` / legend `IFTD3SQ`; table `1FTDSOQ` / legend
+`IFTDS0Q`; table `LFTD65Q` / legend `IFTD6SQ`; table `IASTLVI` / legend
+`IASTLV1`; table `1CPBFRI` / legend `1CPBERI`; table `10GLIX` / legend `1OGLIX`.
+`LEGEND_CODE` already reads `1` and `I` as one glyph; `legendMap.get(k)` does
+not. **Store-wide, PUBLISHED: 1,140 rows / 234 plans / 262,567 participants show
+a bare code as a holding name** (American Express 38,871, OhioHealth 35,162,
+SWBG 17,751, Republic National Distributing 15,199) — consistent with the v140
+residue already on this record, so this is the mechanism for a known class
+rather than a new one. A fix would match a row code to a legend code only when
+they differ solely within the confusion classes in evidence — `{1,I,L}`,
+`{5,S}`, `{0,O}` — **and only when exactly one legend entry is within that
+distance**, refusing on ambiguity. This is a MISSING NAME, not a wrong one, so
+it ranks below the defect above. Needs its own version.
+
+**(b) Schedule D already tells us a holding is a collective trust and an
+off-by-one penny throws it away.** merge-4i types a row `cit` when its value
+**exactly** equals a Schedule D figure. **Schedule D rounds the cents;
+`parse4i` floors them.** So on any cents-formatted schedule the match fails by
+$1 for every trust whose cents are ≥ .50 — Bekaert's Schedule D says
+`17,426,973` where we store `17,426,972`, and **8 of its 16 Schedule D trusts go
+untyped for that reason alone**. Store-wide the OUTCOME (rows that would GAIN a
+type, not rows that differ by one): **8,620 rows / 3,409 plans / 7,803,921
+participants**, against 129,322 already typed. It is a one-token merge-side
+change (`vals.has(f.value) || vals.has(f.value + 1)`) needing **no re-parse** —
+and it is NOT shipped here, for two reasons: it rewrites what 8,620 published
+rows are priced as, and **the reader-facing half is unmeasured** (how many of
+those rows currently resolve to a mutual-fund ticker through `lookupTicker`
+called the way `app.js` calls it, with `f.type`). This is the
+computed-and-discarded shape this file names as the project's most expensive
+recurring bug — Schedule D's answer is in our own store — but sizing the
+CONDITION is not sizing the HARM, and only the condition is measured.
+
+### WHAT THE RUN MUST SHOW, PRE-REGISTERED PER PLAN
+
+1. **Bekaert `20260422162604NAL0003787313001`: confident, 24 rows, ratio
+   0.967**, `Fidelity Freedom Blend Incm Commingled Q` = **$1,148,605** and
+   `IPRUBKT` = **$1,032,004**, sum **$171,753,684** — the filing's declared
+   $171,753,696.22 to $12 of cents truncation. `dx` gone, `rt` gone.
+   **confident +1** is the designed direction and the only designed change.
+2. **`overshoot` must NOT MOVE, and the first version of this prediction said it
+   must fall by 1 — which would have read as v186 failing.** `audit-data.mjs`
+   line 361 opens `if (!e || !e.confident …) continue`, so **`overshoot` counts
+   only PUBLISHED lineups** and Bekaert at 2.18 was never among the 329. After
+   v186 it publishes at 0.967, still below the 1.15 floor, so it never enters
+   either. A RISE of 1 here would mean Bekaert published above 1.15 and is the
+   failure signal. **The metric that must move is the census:**
+   `gap-census.mjs` **A-band-hi 87 plans / 101,031 participants → 86 / 99,333**,
+   with Bekaert absent from the bucket. Measured baseline, run today, not
+   remembered — the table in `CLAUDE.md` says 88 and is stale.
+3. **Controls: Local 360 `20251007134507NAL0008247216003` stays at 39 rows /
+   ratio 0.984 with SIX `$54` rows**, and **Western Ecosystems
+   `20251014163918NAL0001658931001` stays at 55 rows with `$14,679` beside
+   `$14,678`** — no $29,357 phantom.
+4. **`rows-dropped.txt` and `swaps-degraded.txt` must be EMPTY of v186's
+   doing**, and `losses-triage.txt` must show **0** lost lineups. v186 changes
+   two values in one plan; anything else in those files belongs to another
+   cause and must be read, not waved through.
+5. The coverage line otherwise byte-identical apart from `confident +1`,
+   `lineups +1` and the overshoot pair — v186 touches two row VALUES in one
+   plan, and every other metric counts plans.

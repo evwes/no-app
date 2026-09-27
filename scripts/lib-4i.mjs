@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 185;
+export const PARSER_VERSION = 186;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -1078,6 +1078,55 @@ export const SUBTOTAL_TYPE = "Subtotal (not a holding)";
  * predicate rather than adding a second predicate beside it. */
 /* No `g` flag: split does not need it, and a global regex is stateful under
  * .test(), which is a trap for the next caller. */
+/* v186: OCR READS THE CENTS DECIMAL POINT AS A COMMA, AND THE COMMA STRIP THEN
+ * MULTIPLIES THE HOLDING BY A HUNDRED.
+ *
+ * Bekaert Corporation (1,698 ppl) files an Empower schedule with cents on every
+ * row. On two of twenty-four rows the period came back from tesseract as a
+ * comma:
+ *
+ *   IFTDINQ        1,126,139.55        1,148,605,88      <- filed  $1,148,605.88
+ *   IPRUBKT        1,016,669.96        1,032,004,21      <- filed  $1,032,004.21
+ *
+ * `value = +vm[1].replace(/,/g, "")` turned those into $114,860,588 and
+ * $103,200,421 — $215,880,400 of money that does not exist in a $177,569,529
+ * plan. The filing PRINTS ITS OWN TOTAL, $171,753,696.22, and our published sum
+ * was $387,634,084: 2.26x the schedule we were reading. The ratio guard refused
+ * the lineup at 2.18, so nobody saw it; the plan lost its menu instead.
+ *
+ * THE TEST IS SYNTACTIC AND SELF-VALIDATING, WHICH IS WHY IT IS NOT A HOMOGLYPH
+ * GUESS. In US grouping every group after the first is exactly three digits, so
+ * a final group of exactly TWO cannot be a grouped number; the comma-decimal
+ * convention would have printed `1.148.605,88`. `1,148,605,88` is not a number
+ * in either convention, and the only thing it can be is a decimal point misread.
+ * A legitimate value can never match, so no real holding can be shrunk.
+ *
+ * TWO DELIBERATE NARROWINGS, both measured rather than assumed.
+ * (1) AT LEAST ONE FULL THREE-DIGIT GROUP is required. Allowing none also
+ *     matches `291,20` — and the one corpus filing that produced it is OCR mush
+ *     on a Schedule of Reportable Transactions (`Fund ETF | 191,20 | 291,20`),
+ *     where no reading is defensible. The repair is confined to values that
+ *     were at least $1,000 before it, which is where a 100x error does harm.
+ * (2) THE LINE MUST SHOW A PROPER CENTS FIGURE of its own. This is the
+ *     document's own evidence that the row prints cents, and it is what
+ *     separates "a period was read as a comma" from the opposite error — OCR
+ *     inserting a comma into a valid digit run, which would make the repair a
+ *     100x UNDERSTATEMENT. Bekaert's two rows both carry `.55` / `.96` in the
+ *     cost column. A cents row with no sibling figure keeps its wrong value:
+ *     missing a repair is survivable, inventing one is not.
+ *
+ * Blast radius, measured before the bump: of 1,057 corpus filings exactly ONE
+ * carries a line-terminal two-digit-final-group token, and it is Bekaert. */
+const CENTS_COMMA = /^\d{1,3}(?:,\d{3})+,\d{2}$/;
+const CENTS_PROPER = /\d\.\d{2}(?!\d)/;
+function centsCommaValue(tok, line) {
+  const s = String(tok).trim();
+  if (CENTS_COMMA.test(s) && CENTS_PROPER.test(String(line))) {
+    return +s.slice(0, s.lastIndexOf(",")).replace(/,/g, "");
+  }
+  return +s.replace(/,/g, "");
+}
+
 /* v174: a trailing footnote reference, one or two digits in parentheses. */
 const FOOT_REF = /\s\(\d{1,2}\)$/;
 /* v179/v180: a COST or UNIT-PRICE column welded onto the holding name, and the
@@ -1524,7 +1573,7 @@ export function parseRows(section, opts = {}) {
     }
     if (TRACE_ROWS) console.error("[val ]", lead, JSON.stringify(t.slice(0, 70)), "buf=" + nameBuf.length);
 
-    const value = +vm[1].replace(/,/g, "");
+    const value = centsCommaValue(vm[1], t);
     // in millions mode a bare 4-digit trailing number in 1900-2100 is a
     // target-date year at the end of a fund name, not a value — real $2B
     // rows print with a thousands separator ("2,045")
