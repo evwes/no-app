@@ -661,18 +661,53 @@ export, do not copy the line.
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, ≥100
   participants at either end of the plan year): **68,259 full-form**, 43,523
   short-form, 68,767 parse-status entries.
-- **STORE: pv 186 covers 68,637 of 68,767 acks (99.8%)** — one dominant pv plus
+- **STORE: pv 188 covers 68,637 of 68,767 acks (99.8%)** — one dominant pv plus
   the documented ~190-row old-version tail (pv180 23, pv106 18, pv98/123/124 10
   each), which is the completeness test, not a partial store. Confident
-  **60,120**, lineups 59,769, entries 65,241, HIGH **4 = the baseline**, WARN
-  544, overshoot **325** / 400,840 ppl, aggRow 112, dl **128**, **`analyze` 0**,
-  `no-section` ~7,123. **`matchQuote` 5,397 of which only 1,785 are SHOWN to
-  readers** — the condition/outcome pair shipped 2026-09-27.
-- **`PARSER_VERSION` in the tree is 188; the store is at 186. #481 IS IN FLIGHT**
-  — the v187 + v188 full re-parse, dispatched 2026-09-27 20:59Z on `5dd4369d`
-  and observed `queued`. #480 (v186) ran `success` 19:54–20:48Z on `a8f8fd24`,
-  store commit `997ec6d6`, **+7 confident / −0 lost**, every change reconciled by
-  ack.
+  **60,104**, lineups 59,753, entries 65,241, HIGH **20 = 4 baseline + 16
+  self-clearing `reparse-loss`**, WARN 544, overshoot **325** / 400,840 ppl,
+  aggRow 112, dl **128**, **`analyze` 0**, `no-section` ~7,123.
+  `audit-dominant-row` **0**, `audit-generic-names` **182**. **`matchQuote`
+  5,397 of which only 1,785 are SHOWN to readers** — the condition/outcome pair
+  shipped 2026-09-27.
+- **`PARSER_VERSION` in the tree is 188 and the store is at 188. NOTHING IS IN
+  FLIGHT.** #481 (v187 + v188) ran `success` 20:59–21:54Z on `5dd4369d`, store
+  commit `42739932`. #480 (v186) ran `success` 19:54–20:48Z, **+7 / −0**.
+- **LIVE ON MAIN: the v188 store — MIRRORED 2026-09-27 22:2xZ**
+  (`5dd4369d → b351f295`). The GIT check passed UNFORCED (fast-forward, main
+  held nothing the branch lacked); **`--force-data` covered the 16 withdrawals,
+  every one inside the pre-registered named set of 29 and every one read before
+  the run was dispatched.** pv 188 at 99.8%, fetch failures 128 (0.19%), reader
+  failures 2.
+- **#481 PASSED ALL FOUR PRE-REGISTERED TESTS, and the surprise is what the
+  withdrawal UNBURIED.** confident **−16** against a ceiling of 29, **16 of 16
+  losses inside the named set, 0 gained**; **`overshoot` held at 325** exactly as
+  predicted; **`audit-dominant-row` 29 → 0**; `audit-generic-names` 182 against
+  ~178 predicted. 17,922 participants stop being shown an asset-class statement
+  as their fund menu.
+  **13 of the 29 kept publishing: nine rescued by the prior-year fallback** (the
+  mechanism the pre-registration named as unreproducible in-sandbox, which is
+  exactly why the prediction was a CEILING plus a named set rather than a
+  number), and **four with no fallback — of which two are WINS larger than the
+  withdrawal would have been.** Management Sciences For Health (653 ppl) now
+  publishes **32 real Vanguard Target Retirement funds** where `Mutual Fund
+  Shares` held 93.6% / $95,537,700; Blue Cross and Blue Shield of Vermont (560)
+  publishes its **28-row Empower schedule** where `Commingled funds` held 97.5%.
+  **That is v136's rule working by itself — an unpublishable winner may not bury
+  a publishable menu — so a guard that withdraws is sometimes a guard that
+  PROMOTES.** Neither was predicted in either direction: a prediction of
+  "withdrawn" is a prediction about one REGION, not about the filing.
+  **Two residuals, both named, and they invert v188's own diagnosis.**
+  Flashparking (671 ppl) still leads with `Mutual fund shares` at **82.2%**,
+  because its OCR parse gained a `FLASHPARKING INC.` row of $1,867,889 — its own
+  sponsor name — which diluted the statement under the guard's floor. Fiber
+  Instrument Sales (493) leads with **`Shares in`** at 89.4%: the decoration
+  survived and the thing it decorated did not, so the strip has nothing to remove
+  and the remainder is not in the vocabulary. **So the limit on this fix is the
+  90% THRESHOLD, not the vocabulary** — the opposite of the diagnosis that
+  produced v188 — and both plans join the owner-queued class of 85 lineups
+  leading with a bare asset-class label at ≥60%. Worth naming on its own:
+  **a dominance guard can be defeated by adding junk.**
 - **LIVE ON MAIN: the v186 store — MIRRORED 2026-09-27 20:5xZ, UNFORCED ON BOTH
   CHECKS** (`a6bf022e → 5dd4369d`, a plain fast-forward: main held nothing the
   branch lacked, so no `--force` was needed on the git check either). Data gate
@@ -735,6 +770,32 @@ export, do not copy the line.
   being written**: folding the arms into one alternation dropped `Not Required`,
   because the footnote arm must stay case-SENSITIVE while every other arm must
   not, and one regex cannot be both.
+- **FROM THE 22:2xZ DRAW, SIZED AND DELIBERATELY REFUSED: 495 rows / 158
+  published plans / 170,917 participants / $827,869,631 publish an OCR'd Empower
+  LEGEND CODE as the holding name** (`IFXAIX`, `1JLGMX`) — re-derived at v188 as
+  its own shape rather than folded into v140's recorded "2,466 rows / 267 plans".
+  The obvious display-side repair — strip the OCR'd leader, resolve the remainder
+  as a ticker — **is refused on its own evidence**: only 67 of 495 remainders are
+  tickers this project knows, and the other 428 print as
+  `LIHKX`/`LINKX`/`LIPKX`/`LIRKX`/`LIJKX`, one family differing by a single middle
+  letter, which is an Empower **internal vintage series** and not a ticker family.
+  A five-character internal code colliding with a real ticker would publish a
+  wrong fund and a wrong expense ratio, so the 67 hits are a fabrication risk, not
+  a win. The correct route is v140's — the filing's own LEGEND — and for these 158
+  plans it was not found, which makes this a parser item about LOCATING the legend.
+  **The method note is the more useful half: the first outcome test returned 0 and
+  the 0 was my harness.** `fund-er.js` matches fund NAMES and RETURNS a ticker; it
+  does not take one (`fundTickerInfo("FXAIX")` is nothing,
+  `fundTickerInfo("Fidelity 500 Index")` is `{tk:"FXAIX"}`). Reaching for the
+  shipped predicate is not enough — **it has to be asked the question it
+  answers.** `docs/accuracy-log.md` 2026-09-27 (22:3xZ).
+- **OWNER-VISIBLE STATE FACT: `data/fund-facts.json` is EMPTY.** It holds
+  `"funds": {}` and has since it was created 2026-09-17 — ten days, zero funds —
+  while this file calls it "the ONLY place a fund's verified ticker + expense
+  ratio + year-to-date RETURN may live" and it has its own agent, slash command,
+  validator and workflow. Nothing is broken; it has never been populated. Recorded
+  because a file described as the sole home of a fact type should not be
+  discovered empty by a sizing script.
 - **`audit-dominant-row` WAS 1 AND v185 RETURNS IT TO 0 — the cause was a guard
   computed on rows that no longer exist.** Cobre Valley (578 ppl) publishes
   `Registered investment companies` at **96.6%** of a 4-row menu whose other

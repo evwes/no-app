@@ -23588,3 +23588,71 @@ class already queued for the owner (85 published lineups / 302,715 ppl leading
 with a bare asset-class label at ≥60%). One of them escaped by acquiring a
 second defect, which is worth naming on its own: **a dominance guard can be
 defeated by adding junk.**
+
+## 2026-09-27 22:3xZ — the draw: an OCR'd legend code class, and a fix I REFUSED on its own evidence
+
+Participant-weighted random draw from PUBLISHED lineups on the fresh v188 store
+(pool 59,753 plans / 89,259,095 participants, seed 20260927222). Six plans drawn.
+Five are clean and worth naming as controls, because a draw that only ever
+reports defects is not measuring anything: Wells Fargo PN002 (288,416 ppl, $57.9B,
+68 rows @ 0.985 — managed-account fold at 19.9%, company stock 17.9%, State Street
+CITs named), Claire's Stores (5,707, 24 rows @ 0.966, issuer-then-fund throughout),
+Frontier Airlines PN003 (8,137, 27 rows @ 0.989, SDBA 34.0% correctly typed),
+Gsw Sports (1,839, 31 rows @ 0.981), Marin Transystems (150, 7 Vanguard rows @
+0.994).
+
+**The one finding: Reliance Health PN001 (421 ppl) publishes 32 rows and every
+one is an OCR'd Empower legend code** — `IFXAIX`, `1JLGMX`, `1OIEJX`, `IRFGTX`.
+A reader sees a six-character string where a fund name belongs.
+
+### Re-derived at v188, because the recorded figure is a different shape
+CLAUDE.md records v140's residue as "2,466 rows / 267 plans (OCR `I` mismatches
+and 226 Empower plans whose legend was not found)". The narrower shape — a row
+named exactly `[1Il]` + five capitals — measures at **495 rows / 158 published
+plans / 170,917 participants / $827,869,631** on the v188 store. Stated as its
+own number rather than folded into the old one.
+
+### THE FIX THAT LOOKED OBVIOUS, AND THE TEST THAT KILLED IT
+The leading character is the only visible corruption (OCR reads Empower's `1` as
+`I`), so the obvious repair is display-side and needs no re-parse: strip the
+leader, treat the remainder as a ticker, publish the fund.
+
+**Outcome test, first attempt: 0 rows gain a fund identity, 0 lose one.** I was
+one sentence from filing the class as unreachable — and the 0 was MY HARNESS, not
+the data. `fund-er.js` matches fund NAMES and returns a ticker; it does not take
+one. Probed directly: `fundTickerInfo("FXAIX")` is nothing,
+`fundTickerInfo("Fidelity 500 Index")` is `{tk:"FXAIX"}`. **I asked the shipped
+predicate for the opposite of what it computes.** That is the recorded
+"measure through the shipped predicate" trap in a new direction: reaching for the
+right function is not enough — it has to be asked the question it answers.
+
+So ask the bridge that could exist. Inverting the `tk` values inside `fund-er.js`
+(210 distinct five-letter literals) plus `data/fund-facts.json` gives a
+ticker-keyed index, and against it: **67 of 495 rows resolve (16 plans / 24,217
+ppl / $229,688,674); 428 do not, across 241 distinct codes.**
+
+**And the 428 are why this must not ship.** Printed, they are obviously not
+tickers: `LIHKX` ×10, `LINKX` ×8, `LIPKX` ×7, `LIRKX` ×6, `LIJKX` ×5, `LIVKX` ×5,
+`LIKKX` ×4, `LIZKX` ×4, `LIWKX` ×4 — one family differing by a single middle
+letter, which is a **target-date vintage series in Empower's internal coding**,
+not a fund-ticker family. Same for `BRMKX`/`BDBKX`/`BTMKX`/`BKGPX`/`BRHYX`. A
+five-character internal code that happens to collide with a real ticker would
+publish a **wrong fund with a wrong expense ratio**, so the 67 "hits" are a
+fabrication risk and not a win — the same shape as the rejected general
+edit-distance fallback in `lookupTicker`, whose own comment says a guessed fund
+name reads as knowledge.
+
+**REFUSED, with the size on the record.** The only correct route for these 158
+plans is the one v140 already built — the filing's own LEGEND — and for them the
+legend was not found. That is a parser item about locating the legend, not a
+display item about guessing tickers. Printing the members is what turned an
+attractive 67-row win into a refusal.
+
+### AND A STATE FACT WORTH THE OWNER'S ATTENTION: fund-facts.json IS EMPTY
+`data/fund-facts.json` — which this project's memory calls *"the ONLY place a
+fund's verified ticker + expense ratio + year-to-date RETURN may live"*, with its
+own agent, slash command, validator and workflow — contains **`"funds": {}`** and
+has since it was created on 2026-09-17. Ten days, zero funds. The machinery is
+real and unused. Nothing here is broken; it simply has never been populated, and
+a file described as the sole home of a fact type should not be discovered empty by
+a sizing script.
