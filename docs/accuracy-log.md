@@ -21119,3 +21119,63 @@ The twelfth named a real class:
 - **NFP Corp** (7,595 ppl, 27 rows @ 0.826) is clean: real flexPATH, BlackRock
   and Great Gray names with issuers attached. Recorded because a draw that only
   reports defects hides how often the parse is right.
+
+## 2026-09-27 — v183 verdict, and `matchQuoteShown`: the metric now reports the outcome
+### Run #469 (v183) PASSED — the absorb symmetry is closed and LIVE on main
+`e29d21bc → f10c0af3`, data gate **UNFORCED at +0 gained / −0 lost**; `--force`
+covered the GIT check alone over main's one cron commit, evidence first — 0 acks
+and 0 plans the branch lacked, plans array byte-identical, 0 confident on main
+the branch lacks, main newer on exactly one ack (the documented analyze-stuck
+master trust, confident on both sides).
+
+- **I. Rice & Co. (131 ppl) restored EXACTLY**: 38 rows, sum **$13,947,979**,
+  `funds` array **byte-identical to the pre-v182 parse**, `sma` absent, `dx`
+  absent, `rw`/`rt` absent.
+- **CVS Health (307,068 ppl) unchanged on all eight** pre-registered values:
+  13 rows, ratio 0.7118, sum $21,415,578,814, subtotal $2,690,925,949 typed
+  `Subtotal (not a holding)`, `EB Temporary Investment Fund` exactly
+  $13,252,196, 132 `sma` rows, `smaKind` managed, no `cut`.
+- **Blast radius: exactly ONE lineup entry changed in 68,767 acks.** Store-wide
+  8 subtotal-named rows, 0 carrying a fund vehicle type. Confident **60,115
+  (+1 / −0)**, HIGH back to the baseline **5**, WARN 543, overshoot 331,
+  aggRow 112, dl 128, pv 183 at 99.81%. `analyze` 2 → 1 (Folsom reached the
+  cleaner `no-section`; `no-section` 7,122 → 7,123).
+- **THE ONE FAILING ASSERTION WAS MINE, NOT THE PREDICTION'S.** wam predicted
+  `coverageRatio 0.99` — the STORED FIELD — and the field reads 0.99 before and
+  after. My check compared that against my own `sum / assetsEOY` of 0.9314, a
+  different quantity, and printed `**FAIL**` on a correct number. Third variant
+  of one mistake in this session, after ruling out ABSORB from the AFTER-parse
+  (the gate reads the pre-dedup leaves) and trusting `smaKind` to identify which
+  code path ran (v182's own sma wiring sets the same string).
+  **Read what the name refers to before asserting against it.**
+
+### SHIPPED: `matchQuoteShown` — the AEP finding made permanent
+- **Wrong:** `matchQuote` counts a CONDITION — a match sentence is stored — and
+  the trail published it as though it were coverage. AEP (22,387 participants,
+  $81,284,557 of employer money) is counted in it while its stored sentence is
+  about WITHDRAWALS, `matchQuoteOk` correctly refuses to publish it, and the
+  page shows no formula and no quote. Found from a filing the owner sent.
+- **Measured whole-store: 5,397 counted, 1,785 shown (33.1%), 3,612 refused —
+  8,490,877 participants and $20,466,961,714 of employer money credited in the
+  metric while their readers see nothing.** Every refusal sampled is CORRECT;
+  what was wrong is the metric reporting coverage the site does not have.
+- **Change:** `audit-data.mjs` imports `matchQuoteOk` from `lib-quote.mjs` —
+  **imported, not reimplemented.** This rule living in two places is what
+  printed "Match formula, as filed" over 615 static pages, 269 of them over a
+  sentence with no number, so a trail metric asking a different question than
+  the page asks would describe nothing a reader sees. `matchQuoteShown` joins
+  the tally, the printed line and the written coverage line.
+- **Verified against the WRITTEN artefact, not the printed one:** the audit run
+  prints `match 5397 (shown to readers 1785, refused 3612)` AND
+  `tail -1 docs/coverage-history.jsonl` parses to `matchQuote 5397`,
+  `matchQuoteShown 1785`, key present. **That check exists because I shipped
+  `cust`/`custPpl` earlier in this session computed, printed, and MISSING from
+  the written JSON** — the precise defect these indicators exist to end, made
+  inside the fix, caught only by reading the written line.
+- The local audit run appended a line to `docs/coverage-history.jsonl` and it
+  was **removed before committing**: a hand run is not a pipeline observation
+  and would read later as a run that never happened.
+- **Prevention:** the metric is now a pair — condition beside outcome — so the
+  gap cannot be absorbed. Note it takes effect in the NEXT merge, because
+  `merge-4i` checks out the latest branch state, so a `[skip ci]` commit to
+  `audit-data.mjs` is not deferred.

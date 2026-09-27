@@ -7,6 +7,12 @@
  * the run log surfaces them. Informational: it never fails the build. */
 import { readFileSync, writeFileSync, appendFileSync, readdirSync } from "fs";
 import { JUNK_NAME_RE, GENERIC_TYPE_ANY, NOT_FUND_SHAPED } from "./lib-4i.mjs";
+/* the canonical "may this quote be published under a MATCH heading?" test.
+ * Imported rather than reimplemented: this rule living in two places is what
+ * printed "Match formula, as filed" over 615 static pages, 269 of them over a
+ * sentence with no number in it. The trail must ask the same question the page
+ * asks or its number describes nothing a reader sees. */
+import { matchQuoteOk } from "./lib-quote.mjs";
 
 const d = JSON.parse(readFileSync("plans-all.json", "utf8"));
 const F = d.fields; const ix = Object.fromEntries(F.map((f, i) => [f, i]));
@@ -182,7 +188,7 @@ for (const l of mmList) console.log("  " + l);
 // regression shows the night it happens. "unextracted match" = plans where
 // employer money demonstrably flowed but no formula came out — the
 // correctable backlog, distinct from plans that genuinely have no match.
-const covTot = { full: 0, rk: 0, match: 0, vesting: 0, matchQuote: 0, vestQuote: 0, roth: 0, afterTax: 0, lineup: 0, menu: 0, noMatchBacklog: 0, noEmployerMoney: 0, matchInZeroEmp: 0, custody: 0, custodyPpl: 0 };
+const covTot = { full: 0, rk: 0, match: 0, vesting: 0, matchQuote: 0, matchQuoteShown: 0, vestQuote: 0, roth: 0, afterTax: 0, lineup: 0, menu: 0, noMatchBacklog: 0, noEmployerMoney: 0, matchInZeroEmp: 0, custody: 0, custodyPpl: 0 };
 for (const r of d.plans) {
   if (g(r, "sf")) continue;
   covTot.full++;
@@ -206,7 +212,19 @@ for (const r of d.plans) {
   // removing them (a pure accuracy win) read as "vesting -2,529" under
   // the old quote-inclusive count and blocked two publishes
   else if (f.match) covTot.match++;
-  else if (f.matchText) { covTot.matchQuote++; }
+  /* matchQuote counts a CONDITION — a match sentence is stored — and that is
+   * not what a reader gets. Found via an owner-sent filing 2026-09-24: AEP
+   * (22,387 participants, $81,284,557 of employer money) is counted here while
+   * its stored sentence is about WITHDRAWALS and `matchQuoteOk` correctly
+   * refuses to publish it, so the page shows no formula and no quote. Measured
+   * whole-store at the time: 5,397 counted, 1,785 (33.1%) actually shown,
+   * 3,612 plans / 8,490,877 participants / $20.5B of employer money credited
+   * in the metric while their readers see nothing. `matchQuoteShown` is the
+   * OUTCOME beside the condition, so the gap is visible instead of absorbed. */
+  else if (f.matchText) {
+    covTot.matchQuote++;
+    if (matchQuoteOk(f.matchText, !!f.match)) covTot.matchQuoteShown++;
+  }
   else if (!f.nec && !f.safeHarbor) covTot.noMatchBacklog++;
   if (f.vesting) covTot.vesting++;
   else if (f.vestingText) covTot.vestQuote++;
@@ -245,7 +263,7 @@ try {
 const pct = (n) => (100 * n / covTot.full).toFixed(1) + "%";
 console.log(`\n== COVERAGE (of ${covTot.full} full-form filers; SF filers carry none of this by law)`);
 console.log(`  recordkeeper ${covTot.rk} (${pct(covTot.rk)}) | match ${covTot.match} (${pct(covTot.match)}) | vesting ${covTot.vesting} (${pct(covTot.vesting)})`);
-console.log(`  quote-only (descriptive sentence shown, no value extracted): match ${covTot.matchQuote} | vesting ${covTot.vestQuote}`);
+console.log(`  quote-only (descriptive sentence shown, no value extracted): match ${covTot.matchQuote} (shown to readers ${covTot.matchQuoteShown}, refused ${covTot.matchQuote - covTot.matchQuoteShown}) | vesting ${covTot.vestQuote}`);
 console.log(`  roth ${covTot.roth} (${pct(covTot.roth)}) | after-tax ${covTot.afterTax} (${pct(covTot.afterTax)}) | lineups ${covTot.lineup} (${pct(covTot.lineup)}) | named menus ${covTot.menu}`);
 console.log(`  custodian/trustee on Sch C ${covTot.custody} (${pct(covTot.custody)}, ${covTot.custodyPpl.toLocaleString()} ppl) | match formulas incl. $0-employer ${covTot.match + covTot.matchInZeroEmp}`);
 console.log(`  match backlog (employer money but no formula extracted): ${covTot.noMatchBacklog} | genuinely no employer money: ${covTot.noEmployerMoney}`);
@@ -751,7 +769,8 @@ try {
     d: new Date().toISOString().slice(0, 10),
     plans: statTotal, fullForm: covTot.full, entries, confident,
     rk: covTot.rk, match: covTot.match, vesting: covTot.vesting,
-    matchQuote: covTot.matchQuote, vestQuote: covTot.vestQuote,
+    matchQuote: covTot.matchQuote, matchQuoteShown: covTot.matchQuoteShown,
+    vestQuote: covTot.vestQuote,
     lineups: covTot.lineup, feeCodesPct: feeCodesShare,
     /* OWNER-REQUESTED INDICATORS (2026-09-21). Three of these were already
      * tallied above and PRINTED and then thrown away every run — the same
