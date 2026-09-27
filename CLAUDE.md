@@ -2234,7 +2234,9 @@ read `lineups-status.json` and `lib-4i`'s export, do not copy the line.
   missing (now 2,193 acks / 1,943 live plans / **1,876,769 participants** /
   $81.0B), ~67% have no attachment prose IN THE NEWEST PUBLIC COPY, 27% have
   notes that never discuss contributions, ~7% is a real parser gap. Dollar
-  General (201,691 participants) is the type case. **But "does the newest copy
+  General (**225,308 participants** — the store's figure re-read 2026-09-27;
+  this line carried 201,691 and a number in this file is asserted every time
+  it is copied forward) is the type case. **But "does the newest copy
   have notes?" is not "does the PRIOR YEAR's copy have notes?"** — and the
   prior-year fallback was never asked, because it only ever fired when the
   newest filing yielded no confident LINEUP. Where that fallback PDF has
