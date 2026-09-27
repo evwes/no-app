@@ -21057,3 +21057,65 @@ The twelfth named a real class:
      was not in the corpus.** That is the standing limit of `diff-lineups`, and
      it is why the pinned-specimen list exists — I. Rice is now in it, so this
      class is compared on every future parser change.
+
+## 2026-09-27 — A welded value defeats an anchored generic-name guard, and splitting junk in two defeats the ≥90% guard
+- **Found by the participant-weighted draw from PUBLISHED lineups (seed
+  20260927307)** — the frame that exists because every other review samples the
+  worst bucket.
+- **Wrong:** Cobre Valley Regional Medical Center (**578 participants**,
+  $20,693,436) publishes a confident five-row "menu" at **ratio 1.439**, served
+  from a 2023 fallback:
+
+  ```
+  Registered investment companies                $14,630,544   49.1%
+  Registered investment companies $ 14,630,544   $14,630,544   49.1%
+  December                                          $312,023
+  Ju",trg Fresno, California t LLf September         $112,024
+  JWT & Associates, LLP Advisory Assurance Tax…       $93,720
+  ```
+
+  The same generic line **twice**, the twin carrying its own figure, so those
+  two rows alone are **98.2% of the published sum** — a guaranteed double
+  count. The remainder is page furniture and **the audit firm's letterhead**
+  published as a holding.
+- **TWO EXISTING GUARDS SHOULD HAVE CAUGHT THIS AND NEITHER COULD, and the
+  reasons are general:**
+  1. **`GENERIC_TYPE_NAME` is ANCHORED** (`/^(?:total )?(?:registered
+     investment compan(?:y|ies)|…)$/i`, `lib-4i.mjs:199`), and it does match
+     `Registered investment companies`. It cannot match `Registered investment
+     companies $ 14,630,544`, because the welded value breaks the `$` anchor.
+     **A value spliced into a name is a new way past an anchored predicate** —
+     the same under-matching this record already documents for
+     `Master Pooled Separate Account` failing `/^pooled separate accounts?$/`.
+     Fifth recorded instance of anchored predicates under-matching.
+  2. **`audit-dominant-row.mjs` needs `share >= 0.90`** (line 29). Two rows at
+     49.1% each are invisible to it, while the single row they represent would
+     be **98.2%** and caught instantly. **Splitting one junk holding into two
+     halves defeats a share-threshold guard**, so the dedup has to run BEFORE
+     the dominant-row test, not after.
+- **Sized whole-store, and it is genuinely small: 6 pairs / 2 plans / 732
+  participants / $15,535,649 double-counted**, of which only **1 pair / 1 plan
+  / 578 ppl** has the twin at ≥10% of a menu. The other plan is Radiology
+  Consultants (154 ppl), five pairs at 0.2–0.9% each — `Core Bond Fund` beside
+  `CORE BOND FUND 443011` — which is why its ratio still reads 1.00.
+- **NOT FIXED, deliberately.** Two plans does not justify a `PARSER_VERSION`
+  bump on its own, and the twin-detection predicate is narrow enough that it
+  should ride along with the next dedup change rather than become one. What is
+  worth having is the MECHANISM, recorded here: the twin shape is decisive
+  (two rows, identical value, one name being the other plus that value) and
+  cannot match a legitimate fund, so it is safe to fold into the dedup whenever
+  that code is next opened.
+- **Prevention:** when a guard is a share threshold, ask what splitting the row
+  would do to it; when a guard is an anchored name match, ask what appending
+  something would do to it. Both questions have the same answer here and both
+  were answerable by reading the predicate rather than by running anything.
+
+### Also drawn, recorded, not fixed
+- **RHI Magnesita** (1,084 ppl, 32 rows @ ratio 1.003) publishes `E.I.N. 23-`
+  at $380,777 — a **survivor variant of the Form 5500 employer-ID class v171
+  closed**, which anchored on the spelled-out words and cannot reach the
+  abbreviated `E.I.N.` form — and a bare `T. Rowe Price` at $53,664 typed
+  `Cash / short-term` (the known bare-house class).
+- **NFP Corp** (7,595 ppl, 27 rows @ 0.826) is clean: real flexPATH, BlackRock
+  and Great Gray names with issuers attached. Recorded because a draw that only
+  reports defects hides how often the parse is right.
