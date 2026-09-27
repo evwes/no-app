@@ -21786,3 +21786,42 @@ recorded here so it is not rediscovered as new.
 inside the word, which `despaceKerned` renders readably at display but which
 sits in the store; and `Master Trust` appears in the NAME column here, where
 v183 stripped it from the ISSUER column. Neither merges anything.
+
+## 2026-09-27 — Verifying "nothing is fabricated" in the ESOP suspense class, and a sixth over-matching predicate (mine)
+wam sized an ESOP allocated/unallocated suspense split published as a fund menu
+at **5 plans / 1,647 ppl / $272,738,771** and concluded nothing is fabricated.
+That conclusion deserved a check, because the row it names is
+`Unallocated - 31,532,015 Shares` and **a share count in a value column** is the
+family this project has shipped two fixes for (HCA's $7.93B `CUSIP:` phantom,
+the par-value-welded-into-name class).
+
+- **CLAIM VERIFIED: 0 rows publish the number from their own name as their
+  value**, across every row in the store naming allocated / unallocated /
+  suspense. The dollar figures are real. The class is a presentation defect —
+  a suspense account listed as though it were a menu option — and not
+  fabrication.
+- **AND MY OWN PREDICATE OVER-MATCHED BY 87×.** Searching those three words
+  returns **497 rows / 435 plans / 848,648 participants / $10,597,496,463**
+  against wam's 5 plans, because **"unallocated" in a 403(b) names a REAL
+  PRODUCT TYPE, not a suspense account**: `Unallocated Annuity Contracts`
+  (Trustees of Columbia 40,558 ppl / $575,160,247; University 34,745 /
+  $1,104,178,204), `Unallocated Insurance Contract` (NYU 23,238 / $967,295,978;
+  George Washington 15,592 / $347,028,991), Bob Evans, Corewell, Stanley Black
+  & Decker. Every one is a genuine group annuity or insurance contract,
+  correctly published at 10–22% of its menu. **wam's narrow scoping was right
+  and my broad one was wrong.**
+- **Sixth over-matching predicate of this session** (after 54,287 real share
+  classes, 934,871 ppl including `BANK OF AMERICA CORP`, 492 plans of
+  coincident round values, 165 rows that were two defects sharing one regex,
+  and 1,437 issuer rows including `BANK OF MONTREAL`). Every one died the same
+  way: **printing the members disproved it and the count never would have.**
+  Recorded so the ESOP class is not later re-sized at 848,648 participants by
+  someone repeating my search.
+- **The blind spot these share, now three classes in one day:** Printpack's
+  duplicate sits at ratio **0.54**, Allete's thousands-copies at **0.97**, this
+  ESOP split at **1.00**. None moves the sum against plan assets, so
+  `audit-overshoot` (≥1.15), `audit-dominant-row` (≥90%) and the confidence
+  band (0.45–1.6) are blind to all three. **Every fabrication class on this
+  record until today was found BECAUSE it moved a ratio.** The guards assume a
+  defect shows up in the arithmetic against assets; these do not, and that is
+  now a documented gap in the machinery rather than three coincidences.
