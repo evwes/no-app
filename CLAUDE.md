@@ -835,8 +835,17 @@ read `lineups-status.json` and `lib-4i`'s export, do not copy the line.
   of `diff-lineups`.** It prints `(fetched 1 pinned defect specimen(s))` and
   still reports 0 for it. On the pinning run the TRACE is the positive control
   and the corpus diff is only the negative one.
-- **Residuals: every number re-derived against v176 on 2026-09-21 and both
-  unknowns closed** — see the re-derived table below. 1,354 live plans.
+- **Residuals RE-DERIVED AT v183 on 2026-09-27: 1,354 live plans / 1,277,064
+  participants — FLAT against v176's 1,352 / 1,276,854.** Every bucket moved
+  by ≤4 plans; the only real movement is the 403 residue 15 → 19. **That
+  flatness is correct and it names a limit of the instrument:** v177–v183 all
+  fixed ROWS INSIDE already-confident plans, which were never in a gap bucket,
+  so the census cannot see that work by construction. Use the whole-store row
+  diff and the pinned specimens for row-correctness work, not the census.
+  **And the largest OURS-shaped bucket is not a lineup bucket at all: B1,
+  features missing although the lineup parsed fine, 1,084 plans / 1,196,101
+  participants / $47.3B.** Full table and the census's own B/C/F/Z sections:
+  `docs/accuracy-log.md` 2026-09-27.
 
 - **LIVE on main: the v168 store — MIRRORED 2026-09-19 23:3xZ** (`--force`
   over main's cron commit `8952b3bf` — 0 acks and 0 plans the branch lacked,

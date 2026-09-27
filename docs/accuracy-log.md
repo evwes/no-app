@@ -21305,3 +21305,71 @@ $9.96B that equals its five blocks' read innards to the dollar — and that test
 needs no threshold and no vocabulary. UNSIZED, and honestly so: how many
 filings print a declared total inside the schedule cannot be measured without a
 parse pass. Proposed for the owner as NEW COVERAGE, not started.
+
+## 2026-09-27 — Census re-derived at v183: the lineup gap is FLAT across seven versions, and that is the right answer
+Regenerated with `node scripts/gap-census.mjs` against the live v183 store,
+because the table on record was measured at **v176** and seven versions have
+shipped since. A number copied forward is a number asserted again.
+
+**Total: 1,354 live plans / 1,277,064 participants — against 1,352 / 1,276,854
+at v176. Essentially unchanged.** Every bucket moved by ≤4 plans:
+
+| bucket | v176 | v183 | Δ |
+|---|---|---|---|
+| `few` fewer than 3 rows | 461 / 245,715 | **459 / 245,506** | −2 |
+| `nohead-noattach` NOT OURS | 351 / 149,448 | 349 / 149,144 | −2 |
+| `stmt` statement/aggregate won | 227 / 321,676 | **229 / 321,802** | +2 |
+| `band-hi` sums above assets | 88 / 99,688 | 87 / 99,563 | −1 |
+| `trust` unlinked pointer | 48 / 88,322 | 48 / 88,322 | 0 |
+| `nohead-notable` NOT OURS | 47 / 145,872 | 46 / 145,690 | −1 |
+| `tiny` under $1M | 35 / 8,148 | 35 / 8,148 | 0 |
+| `band-lo` far below | 30 / 178,546 | 30 / 178,546 | 0 |
+| `consolid` NOT OURS | 28 / 9,762 | 28 / 9,762 | 0 |
+| **public copy withdrawn (403)** | 15 / 11,823 | **19 / 12,517** | **+4** |
+| `nohead-absent` NOT OURS | 9 / 3,653 | 9 / 3,653 | 0 |
+| `noregion` | 7 / 10,619 | 7 / 10,619 | 0 |
+| **`nohead-unread` OURS** | 4 / 2,113 | **4 / 2,113** | 0 |
+| `narrow` 3-4 rows | 2 / 1,469 | 2 / 1,469 | 0 |
+| pre-v106, cause not recorded | — | 2 / 210 | — |
+
+- **THE FLATNESS IS THE FINDING, NOT A STALL — AND IT NAMES A LIMIT OF THIS
+  INSTRUMENT.** v177 through v183 fixed ROWS INSIDE ALREADY-CONFIDENT PLANS:
+  Walmart's wrapped BlackRock names, the issuer-caption strip, `fund-er`'s
+  separate-account demotion, CVS's $2.69B double count, the filed misspellings,
+  the subtotal labelling. **A plan that was already confident was never in a gap
+  bucket, so the census cannot see any of that work by construction.** Reading a
+  flat census as "seven versions achieved nothing" would be exactly wrong, and
+  reading it as "the buckets are closed" would be too.
+  **So the census is the wrong axis for row-correctness work.** The instruments
+  that DO see it are the whole-store multiset row diff and the pinned specimens
+  — which is why v182's regression, invisible to 1,018 corpus filings, is now
+  pinned as I. Rice.
+- **The only real movement is the 403 residue: 15 → 19 plans (+694 ppl)**, and
+  `dl` 105 → 128 acks over the same span. That is the EFAST2 bucket genuinely
+  growing as filings are withdrawn — re-probed whole-population three times on
+  this record, most recently all 23 new failures answering 403 twenty-three
+  times of twenty-three. Not our code.
+- **`stmt` +2 / `few` −2 is reclassification, not loss.** A plan moving sideways
+  to a truer cause leaves the total alone, which is precisely why the total is
+  the number that distinguishes recovery from shuffling.
+
+### The largest OURS-shaped bucket is not a lineup bucket
+The census's own sections, which the residuals table does not carry:
+
+| plans | participants | assets | |
+|---|---|---|---|
+| **1,084** | **1,196,101** | **$47.3B** | **B1. features MISSING although the lineup parsed fine — the notes are readable** |
+| 3,367 | 721,516 | $11.2B | B2. features missing AND the lineup missing |
+| 4,568 | 2,192,208 | $20.0B | C1. recordkeeper — no Schedule C row identifies one (RAW, ghosts included) |
+| 6,530 | 3,766,053 | $0 | F. final/transition-year filings — the wind-down ghosts, correctly excluded |
+| 904 | 14,577,146 | $2.12T | Z. master-trust held — the gap lives in the trust filing |
+
+**B1 at 1,196,101 participants is larger than every lineup bucket except
+`stmt`, and unlike `stmt` it is not a correct suppression** — these plans parsed
+their schedule fine and yielded no features at all. That is the class the
+2026-09-10 REOPENED entry tracks and the v119 feature-fallback widening was
+meant to reach; the four `feat-fb-*` counters exist to measure it and have only
+ever run against work lists that bail out early. **Next cycle's target, and the
+first full re-parse since they shipped will finally exercise them.**
+C1's 4,568 is the RAW figure; the record's 1,419 live is after removing 3,158
+wind-down ghosts, and that row's cause remains OPEN after being falsified once.
