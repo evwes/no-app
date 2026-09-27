@@ -175,7 +175,7 @@ try {
   /* Same drift protection for the coverage band: scripts/lib-disclose.mjs is
    * canonical, app.js carries a twin because it is a plain browser script.
    * Run the BROWSER copy against the module's own boundary cases. */
-  const { coverageBand, frozenClaimOk } = await import("./lib-disclose.mjs");
+  const { coverageBand, frozenClaimOk, cleanFiledName } = await import("./lib-disclose.mjs");
   const frozCases = [
     [true, "The Plan was terminated effective December 31, 2023.", "Capital Region Medical"],
     [true, "As amended on December 31, 2024, the Plan was frozen and all participants of the Plan became fully vested.", "Hanes Companies, Inc."],
@@ -207,6 +207,45 @@ try {
     return (r ? `${r.kind}:${r.severe}` : null) !== covGot[i];
   });
   if (covDrift.length) fail(`coverage band in app.js disagrees with scripts/lib-disclose.mjs on ${covDrift.length} of ${covCases.length} cases`);
+
+  /* THE FILED-NAME CLEANER, tethered 2026-09-27. The static pages rendered the
+   * RAW stored name for their whole existence — 2,790 rows on pages serving
+   * 9,689,129 participants showed what a report reader never saw — so
+   * build-seo-pages now calls scripts/lib-disclose.mjs's copy. app.js keeps its
+   * own because it is a plain browser script, and THIS is what stops the two
+   * drifting: every case below is a real filed name from the store, plus the
+   * three controls that must come back UNCHANGED. */
+  const nameCases = [
+    "MUTUAL FUNDS SHARES / UNITS Fidelity 500 Index",
+    "Mutual Funds, at Fair Value Schwab S&P 500 Index",
+    "MUTUAL FUNDS SHARES I UNITS Vanguard 500 Index Admiral Fund",
+    "Money market fund - Vanguard Federal Money Market Fund",
+    "POOLED SEPARATE ACCOUNT, AT FAIR VALUE TIAA Real Estate",
+    "922908371 VANGUARD EXT MKT INDX-INST+",
+    "AB Global Fixed Income Collective Trust",
+    "T Rowe Price Blue Chip Growth - Class |",
+    "JP Morgan JP Morgan Mid Cap Growth Fund",
+    "Fidelity 500 Index \u00ab",
+    "V an gu ard Targe t Re tire m e nt 2045 Tru st II",
+    /* controls: a real name whose vehicle word is part of it, a bare type that
+     * must stay visible to the generic-name audit, and a real quoted class */
+    "Index Fund invested in stocks included in the S&P 500",
+    "Mutual funds",
+    "Stable Value Fund",
+  ];
+  const nameGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoCleanFiledName !== "function") return null;
+    return cs.map((n) => window.__wampoCleanFiledName(n));
+  }, nameCases);
+  if (!nameGot) fail("app.js no longer exposes __wampoCleanFiledName — the filed-name cleaner cannot be cross-checked");
+  const nameDrift = nameCases.filter((n, i) => cleanFiledName(n) !== nameGot[i]);
+  if (nameDrift.length) {
+    for (const n of nameDrift) console.error(`  ${JSON.stringify(n)}\n    app.js: ${JSON.stringify(nameGot[nameCases.indexOf(n)])}\n    module: ${JSON.stringify(cleanFiledName(n))}`);
+    fail(`filed-name cleaner in app.js disagrees with scripts/lib-disclose.mjs on ${nameDrift.length} of ${nameCases.length} filed names`);
+  }
+  for (const [n, want] of [["Index Fund invested in stocks included in the S&P 500", "Index Fund invested in stocks included in the S&P 500"], ["Mutual funds", "Mutual funds"], ["Stable Value Fund", "Stable Value Fund"]]) {
+    if (cleanFiledName(n) !== want) fail(`the filed-name cleaner now damages a control: ${JSON.stringify(n)} -> ${JSON.stringify(cleanFiledName(n))}`);
+  }
 
   await browser.close();
   console.log("SMOKE OK — full-form, master-trust, short-form, filed-in-aggregate and both trust-held pages all render honestly");

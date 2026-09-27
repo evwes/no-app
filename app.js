@@ -477,8 +477,33 @@
    * Fidelity 500 Index Fund", "Separate Account - JPMorgan Equity Income
    * Fund R6" (Texas Health Resources, 13:1xZ draw 2026-09-18). Sized on the
    * v138 store: 733 plans / 1,464,661 ppl / 3,191 rows; the separator is
-   * required so "Stable Value Fund" alone is never touched. */
-  const TYPE_PREFIX = /^(?:mutual funds?|common[\/ ]?collective (?:trust )?funds?|collective (?:investment )?trusts?(?: funds?)?|common[\/ ]?collective trusts?|pooled separate accounts?|separate accounts?|registered investment compan(?:y|ies)|stable value(?: funds?)?|money market(?: funds?)?|guaranteed (?:investment|interest) contracts?|target date funds?|index funds?)\s*[-–:]\s+(?=\S)/i;
+   * required so "Stable Value Fund" alone is never touched.
+   *
+   * WIDENED 2026-09-27, and the diagnosis is v188's one level up: the
+   * VOCABULARY was right and the CONNECTIVE was the hole. Only `- – :` were
+   * allowed, so the three forms the store actually uses all escaped —
+   * "MUTUAL FUNDS SHARES / UNITS Fidelity 500 Index" (the column caption, no
+   * separator at all), "Mutual Funds, at Fair Value Schwab S&P 500 Index" (a
+   * measurement basis) and "Money Market SHARES Fidelity Government Money
+   * Market Fund". Measured through this function on the v188 store: 169 rows /
+   * 139 plans / 174,852 participants read better, 0 rows gain a ticker and
+   * 0 LOSE one, so it is an honesty fix and not a fee-coverage one.
+   *
+   * `invested in` was in the first draft and is DELIBERATELY ABSENT: it wins
+   * one row ("Pooled Separate Account invested in Amerfds 2030 Trgt Date")
+   * and DAMAGES three, where the filed name really is "Index Fund invested in
+   * stocks included in the S&P 500" and the vehicle word is part of it.
+   * Printing every distinct before/after is what showed that; a count would
+   * have shipped it.
+   *
+   * Named residue, measured not guessed: 1 row keeps a doubled caption
+   * ("MUTUAL FUNDS, AT FAIR VALUE SHARES / UNITS Vanguard Target Ret 2030
+   * Inst" → "SHARES / UNITS Vanguard …", because the remainder no longer
+   * STARTS with a type word) and 5 keep a leading accounting parenthetical
+   * ("(Net Asset Value Practical Expedient) MetLife Stabl"). Both are strictly
+   * better than before and neither is widened for without its own measurement.
+   * The `I` in the shares/units alternation is OCR's reading of the slash. */
+  const TYPE_PREFIX = /^(?:mutual funds?|common[\/ ]?collective (?:trust )?funds?|collective (?:investment )?trusts?(?: funds?)?|common[\/ ]?collective trusts?|pooled separate accounts?|separate accounts?|registered investment compan(?:y|ies)|stable value(?: funds?)?|money market(?: funds?)?|guaranteed (?:investment|interest) contracts?|target date funds?|index funds?)(?:\s*[-–:]\s+|[,;]?\s*(?:at\s+)?fair value[,;]?\s+|\s*(?:shares?|units?)(?:\s*[\/&I]\s*(?:shares?|units?))*\s*[-–:,]?\s+)(?=\S)/i;
   const KERN_WORDS = new Set(("vanguard fidelity blackrock schwab invesco pimco putnam principal prudential nuveen tiaa cref dodge cox american funds franklin templeton mfs jpmorgan jp morgan jpmcb wellington wells fargo allspring columbia janus henderson federated hermes goldman sachs galliard artisan harbor oakmark loomis sayles neuberger berman dimensional dfa ishares spdr state street ssga northern trust voya empower lincoln transamerica john hancock massmutual nationwide metlife great west securian tiaa-cref " +
     "target retirement trust trusts fund funds index institutional instl inst admiral adm investor inv shares share class cl plus select premium growth value blend core total stock market mkt intl international global emerging markets developed world equity equities bond bonds fixed income high yield short term intermediate long treasury government govt inflation protected securities tips real estate reit mid cap small large extended balanced moderate conservative aggressive money mutual common collective commingled pooled separate account accounts stable capital preservation guaranteed interest contract contracts insurance company general portfolio portfolios lifepath lifecycle freedom smartretirement retire strategic allocation dividend appreciation opportunities opportunity health sciences technology sector explorer windsor primecap wellesley star " +
     "interests option options unit units series contributions participant participants loans notes receivable " +
@@ -624,6 +649,7 @@
     s = s.replace(/[\s\-–,;:]+$/, "").trim();
     return /[A-Za-z]{3}/.test(s) ? s : String(name).trim();
   }
+  window.__wampoCleanFiledName = cleanFiledName;  // read by the smoke test only
   /* Misspellings of a fund HOUSE that appear in filed 4i schedules, each one
    * observed in the store rather than imagined, and each a transposition or
    * dropped letter in a house name — never a fund name, where a near-miss

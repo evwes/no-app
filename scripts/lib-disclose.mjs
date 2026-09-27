@@ -226,3 +226,209 @@ if (process.argv[1] && process.argv[1].endsWith("lib-disclose.mjs") && process.a
   console.log(bad ? `\n${bad} disclosure cases FAILED` : `all ${cases.length + 2 + froz.length} disclosure cases pass`);
   process.exit(bad ? 1 : 0);
 }
+
+/* ────────────────────────────────────────────────────────────────────────────
+ * THE FILED-NAME CLEANER, AND WHY IT IS HERE (2026-09-27).
+ *
+ * `build-seo-pages.mjs:185` rendered `titleCase(f.name)` — the RAW stored name
+ * — so NOT ONE arm of this function had ever reached a crawlable page. Measured
+ * on the v188 store across the 4,952 published pages that carry a lineup:
+ * **2,790 of 162,717 rows print a name the report reader never sees, on pages
+ * serving 9,689,129 participants.** Every repair this project has shipped at
+ * display time was invisible there — the leading CUSIP ("922908371 VANGUARD EXT
+ * MKT INDX-INST+"), the `(1)` footnote (1.95M ppl), the OCR bar read as a
+ * share-class I (683k), the kerned de-spacer, the UnitedHealth address strip
+ * (274,906), the doubled house prefix (486k), TYPE_PREFIX and TYPE_SUFFIX.
+ *
+ * This is the SECOND TIME in one day that two display paths diverged: the
+ * false-precision defect was recorded as affecting the report and was only ever
+ * on these same static pages. The rule earned twice: **there are TWO display
+ * paths and a claim about readers must name which.**
+ *
+ * app.js keeps its own copy because it is a plain browser script with no module
+ * system — the established shape for `frozenClaimOk` and `coverageBand` — and
+ * the copies are TETHERED: `smoke-test.mjs` runs the BROWSER copy against this
+ * module on filed names taken from the real store and fails on any drift. Three
+ * untethered copies of one rule is how the match-quote guard published a false
+ * heading on 615 pages.
+ *
+ * The body below is EXTRACTED VERBATIM from app.js rather than retyped, because
+ * a transcribed copy of a shipped rule has produced a wrong answer three times
+ * on this record. */
+const TYPE_SUFFIX = /\s+(?:mutual funds?(?: shares?)?|common\/?collective trusts?(?: funds?)?|collective (?:investment )?trusts?|registered investment compan(?:y|ies)(?: shares?)?|pooled separate accounts?|units? of participation)\s*$/i;
+/* The same column glued to the FRONT with a separator — "Mutual Fund -
+ * Fidelity 500 Index Fund", "Separate Account - JPMorgan Equity Income
+ * Fund R6" (Texas Health Resources, 13:1xZ draw 2026-09-18). Sized on the
+ * v138 store: 733 plans / 1,464,661 ppl / 3,191 rows; the separator is
+ * required so "Stable Value Fund" alone is never touched.
+ *
+ * WIDENED 2026-09-27, and the diagnosis is v188's one level up: the
+ * VOCABULARY was right and the CONNECTIVE was the hole. Only `- – :` were
+ * allowed, so the three forms the store actually uses all escaped —
+ * "MUTUAL FUNDS SHARES / UNITS Fidelity 500 Index" (the column caption, no
+ * separator at all), "Mutual Funds, at Fair Value Schwab S&P 500 Index" (a
+ * measurement basis) and "Money Market SHARES Fidelity Government Money
+ * Market Fund". Measured through this function on the v188 store: 169 rows /
+ * 139 plans / 174,852 participants read better, 0 rows gain a ticker and
+ * 0 LOSE one, so it is an honesty fix and not a fee-coverage one.
+ *
+ * `invested in` was in the first draft and is DELIBERATELY ABSENT: it wins
+ * one row ("Pooled Separate Account invested in Amerfds 2030 Trgt Date")
+ * and DAMAGES three, where the filed name really is "Index Fund invested in
+ * stocks included in the S&P 500" and the vehicle word is part of it.
+ * Printing every distinct before/after is what showed that; a count would
+ * have shipped it.
+ *
+ * Named residue, measured not guessed: 1 row keeps a doubled caption
+ * ("MUTUAL FUNDS, AT FAIR VALUE SHARES / UNITS Vanguard Target Ret 2030
+ * Inst" → "SHARES / UNITS Vanguard …", because the remainder no longer
+ * STARTS with a type word) and 5 keep a leading accounting parenthetical
+ * ("(Net Asset Value Practical Expedient) MetLife Stabl"). Both are strictly
+ * better than before and neither is widened for without its own measurement.
+ * The `I` in the shares/units alternation is OCR's reading of the slash. */
+const TYPE_PREFIX = /^(?:mutual funds?|common[\/ ]?collective (?:trust )?funds?|collective (?:investment )?trusts?(?: funds?)?|common[\/ ]?collective trusts?|pooled separate accounts?|separate accounts?|registered investment compan(?:y|ies)|stable value(?: funds?)?|money market(?: funds?)?|guaranteed (?:investment|interest) contracts?|target date funds?|index funds?)(?:\s*[-–:]\s+|[,;]?\s*(?:at\s+)?fair value[,;]?\s+|\s*(?:shares?|units?)(?:\s*[\/&I]\s*(?:shares?|units?))*\s*[-–:,]?\s+)(?=\S)/i;
+const KERN_WORDS = new Set(("vanguard fidelity blackrock schwab invesco pimco putnam principal prudential nuveen tiaa cref dodge cox american funds franklin templeton mfs jpmorgan jp morgan jpmcb wellington wells fargo allspring columbia janus henderson federated hermes goldman sachs galliard artisan harbor oakmark loomis sayles neuberger berman dimensional dfa ishares spdr state street ssga northern trust voya empower lincoln transamerica john hancock massmutual nationwide metlife great west securian tiaa-cref " +
+  "target retirement trust trusts fund funds index institutional instl inst admiral adm investor inv shares share class cl plus select premium growth value blend core total stock market mkt intl international global emerging markets developed world equity equities bond bonds fixed income high yield short term intermediate long treasury government govt inflation protected securities tips real estate reit mid cap small large extended balanced moderate conservative aggressive money mutual common collective commingled pooled separate account accounts stable capital preservation guaranteed interest contract contracts insurance company general portfolio portfolios lifepath lifecycle freedom smartretirement retire strategic allocation dividend appreciation opportunities opportunity health sciences technology sector explorer windsor primecap wellesley star " +
+  "interests option options unit units series contributions participant participants loans notes receivable " +
+  "us u.s. ii iii iv r6 r5 r4 r3 r2 r1 k6 k a b c d e f g h i j l m n o p q r s t u v w x y z z6 z3 cit cits ret rtmt idx fd tr blnd").split(/\s+/));
+function despaceKerned(name) {
+  const toks = name.trim().split(/\s+/);
+  // the kerning signature is a word broken INSIDE: a lowercase-initial
+  // fragment after the first token ("V an", "Targe t", "Fu nd"). Real names
+  // start their words with capitals, apart from a few connectives.
+  const STOP = /^(?:of|and|the|ex|at|in|for|to|on|by|de|du|la|le|von|van|di|del|der|et|a|an)$/;
+  const fragList = toks.slice(1).filter((t) => /^[a-z]{1,7}$/.test(t) && !STOP.test(t));
+  const frags = fragList.length;
+  // a lowercase-initial token that is itself a whole word ("Fidelity mid cap
+  // index") is a lowercase filing, not a kerned one; at least one fragment
+  // must be a piece of nothing
+  const broken = fragList.filter((t) => !KERN_WORDS.has(t)).length;
+  const short = toks.filter((t) => /^[A-Za-z]{1,2}$/.test(t)).length;
+  if (toks.length < 3 || broken < 1 || frags < 2 && short < 3) return name;
+  const flat = name.replace(/\s+/g, "");
+  const lower = flat.toLowerCase();
+  const out = []; let i = 0; let shortSegs = 0;
+  while (i < lower.length) {
+    let best = 0;
+    for (let len = Math.min(18, lower.length - i); len >= 1; len--) {
+      const w = lower.slice(i, i + len);
+      if (KERN_WORDS.has(w) || /^(?:19|20)\d\d$/.test(w) || (len >= 2 && /^\d+$/.test(w) && !/^\d/.test(lower[i + len] || ""))) { best = len; break; }
+    }
+    if (!best) return name;
+    if (best <= 2 && !/^\d+$/.test(lower.slice(i, i + best))) shortSegs++;
+    out.push(flat.slice(i, i + best)); i += best;
+  }
+  if (shortSegs > Math.max(2, out.length * 0.25)) return name;
+  // two single letters in a row ("L L", "A L") is a share-class fragment
+  // the word list could not read, never a repaired word
+  for (let k = 1; k < out.length; k++) if (out[k].length === 1 && out[k - 1].length === 1 && !/\d/.test(out[k] + out[k - 1])) return name;
+  return out.map((w) => /^[a-z]/.test(w) ? w[0].toUpperCase() + w.slice(1) : w).join(" ");
+}
+export function cleanFiledName(name) {
+  let s = String(name).trim();
+  s = s.replace(/^[—–-]+\s*/, "");
+  // OCR noise glued to the END: stray quote / trademark glyphs ("Trust II
+  // CIT ”", "R6 ™", "…Fund®" — 674 plans / 1.08M ppl / 4,454 rows on the
+  // v138 store) and a footnote letter or fragment after a share-class or
+  // vintage token ("CREF Stock R1 a", "Trust Il CIT ial" — 881 plans /
+  // 839k ppl / 6,383 rows). 14:1xZ draw 2026-09-18 (Weis Markets, Mutual
+  // Trading). The fragment strip needs the class token before it, so a
+  // real name's last word is never taken.
+  s = s.replace(/[\s\-–]*[”“"'’‘™®©]+\s*$/, "").trim();
+  // the recordkeeper's PROVIDER-DIRECTORY fields welded onto the fund name:
+  // an expense ratio or unit price, then a literal ADDRESS label and the
+  // firm's street address. UnitedHealth Group (274,906 participants) is the
+  // whole of it on the v184 store — 92 of its 95 rows read
+  // "AMERICAN NEW PERSPECTIVE CLASS F1 0.37% USADDRESS 3500 WISEMAN BLVD SAN
+  // ANTONIO TX 7825143". Anchored on the ADDRESS LABEL, never on the number:
+  // a bare percentage in a holding name is usually a real COUPON ("REPUBLIC
+  // OF COLOMBIA 7.75%", "GNMAII POOL MA5878 5.0%", 266 rows / 122 plans that
+  // must not be touched), and a bare dollar figure is usually a real par
+  // value ("EQUINIX INC COM PAR $0.001"). 2026-09-27.
+  const am = s.match(/\s*(?:\$\s?\d[\d,]*(?:\.\d+)?|\d{1,3}(?:\.\d+)?\s*%)?\s*\b[A-Z]{0,3}ADDRESS\b[\s\S]*$/);
+  if (am) { const rest = s.slice(0, am.index).trim(); if (rest.split(/\s+/).length >= 2 && /[A-Za-z]{3}/.test(rest)) s = rest; }
+  // a stray double-quote glyph the scan left in the name. Two arms, both
+  // anchored so a REAL quoted share class survives — Vanguard's
+  // "Institutional \"Plus\" Shares" (FMC Corporation) is the control, and it
+  // is untouched because the last quote there is followed by a whole word.
+  // (a) a LEADING quote: "“Vanguard Federal", "\"EQ/GAMCO Small Company
+  // Value" — 56 rows. (b) a quote near the END followed only by OCR crumbs
+  // that are not a word: "Fidelity 500 Index “«", "…2065 Trust IX ”",
+  // "…Index Plus “x", "BNY Mellon Bond Market Index Shares ” i" — the
+  // trailing strip above only reaches the ones with nothing after them.
+  const qlead = s.replace(/^[”“"]+\s*/, "").trim();
+  // …unless a CLOSING quote follows with more name after it — that is a
+  // balanced quoted term the filer meant ("\"Brokerage\" Account"), the same
+  // shape as the FMC control, and it is left exactly as filed.
+  if (qlead !== s && !/["”].*\S/.test(qlead) &&
+      qlead.split(/\s+/).length >= 2 && /[A-Za-z]{3}/.test(qlead)) s = qlead;
+  for (let pass = 0; pass < 2; pass++) {
+    const qi = Math.max(s.lastIndexOf("“"), s.lastIndexOf("”"), s.lastIndexOf('"'));
+    if (qi <= 0) break;
+    const tail = s.slice(qi + 1);
+    // crumbs only: at most three characters, and NO CAPITAL — an uppercase
+    // tail can be a real share class ("Hotchkis Wiley High yield \"Z") and
+    // those rows are left exactly as filed rather than guessed at.
+    if (tail.length > 3 || /[A-Z]/.test(tail) || /[a-z]{4}/.test(tail)) break;
+    const rest = s.slice(0, qi).replace(/[\s\-–]+$/, "").trim();
+    if (!(rest.split(/\s+/).length >= 2 && /[A-Za-z]{3}/.test(rest))) break;
+    s = rest;
+  }
+  s = s.replace(/\b(R\d|[A-Z]|I{1,3}|CIT|Adm|Inv|Instl?|Fund|Trust|Class)\s+[a-z]{1,3}$/, "$1");
+  // a trailing footnote marker "(1)" (FMR's whole 119-row menu, 560 plans /
+  // 1.95M ppl / 7,503 rows) and a trailing column bar, which is OCR's
+  // reading of a share-class "I" ("PGI CIT US REIT Tier |", "TRP BLUE CIP
+  // GRTH |" — 743 plans / 683k ppl / 1,723 rows), repaired to the letter
+  // rather than deleted so the class survives. 15:1xZ draw 2026-09-18.
+  s = s.replace(/\s*\(\s*\d{1,2}\s*\)\s*$/, "").trim();
+  s = s.replace(/\s+\|+\s*$/, " I");
+  // the 4i column caption's wrapped tail glued to the FRONT of a page's
+  // first holding ("maturity date American Funds EuroPacific R6", "Par or
+  // Maturity Value Vanguard Total Stock Mkt Idx Adm", "of Investment Cost
+  // Value EMPOWER …") — 478 plans / 409,634 ppl / 480 rows on the v138
+  // store, 440 of them "maturity date". 18:1xZ draw 2026-09-18 (Nebraska
+  // Medicine). The parser drops the caption line from v139; this covers
+  // the store until that re-parse lands.
+  const hm = s.match(/^(?:\(?[a-e]\)\s*)?(?:(?:including\s+)?maturity date|par,?\s+or\s+maturity value|(?:description\s+)?of investment(?:\s+cost)?(?:\s+value)?|identity of issuer?,?|rate of interest|collateral,?\s+par)[\s,]*/i);
+  if (hm) { const rest = s.slice(hm[0].length).trim(); if (rest.split(/\s+/).length >= 2 && /[A-Za-z]{3}/.test(rest)) s = rest; }
+  // a KERNED font that pdftotext split into fragments — "V an gu ard Targe t
+  // Re tire m e nt 2045 Tru st II" (Nelnet, 11,248 ppl; 167 plans / 559k
+  // ppl carry such a row, 20 lineups are mostly such rows). Rejoin the
+  // fragments and re-segment against a fund-vocabulary word list; the
+  // repair is used only when EVERY character segments into a known word
+  // (numbers and roman numerals pass), so a name that merely has short
+  // tokens ("AB US Lg Cp Grw CIT W Sr P1") is left exactly as filed.
+  // 23:1xZ 2026-09-18, the display half of v141.
+  s = despaceKerned(s);
+  // the identity column's house glued in front of a description that
+  // already names it — "JP Morgan JP Morgan Mid Cap Growth Fund", "Dodge &
+  // Cox Dodge & Cox Global Bond Fund": the first 1-3 words repeated
+  // verbatim. 239 plans / 486,173 ppl / 1,183 rows on the v139 store
+  // (queue item f, the doubled-house half). 20:1xZ 2026-09-18. A trustee
+  // before a DIFFERENT house ("Empower T. Rowe Price …") is left alone —
+  // "BlackRock iShares …" is a real name.
+  s = s.replace(/^((?:\S+\s+){0,2}\S+)\s+\1(?=\s+\S)/i, "$1");
+  const pm = s.match(TYPE_PREFIX);
+  if (pm) { const rest = s.slice(pm[0].length).trim(); if (rest.split(/\s+/).length >= 2 && /[A-Za-z]{3}/.test(rest)) s = rest; }
+  // the leading-dash strip at the top of this function runs BEFORE the type
+  // prefix above, so "Stable Value Fund- — John Hancock Life Insurance
+  // Company" (Empower Electric) came out still wearing the dash. Re-run it
+  // once the prefix is gone. Exactly 1 row on the v184 store — the other
+  // 1,992 em-dash rows the census counts were already clean at display.
+  const dl = s.replace(/^[—–-]+\s*/, "").trim();
+  if (dl !== s && /[A-Za-z]{3}/.test(dl)) s = dl;
+  s = s.replace(/[,;:]+$/, "").trim();
+  // a share COUNT is thousands or more (1,234 / 12345…); "Class R6 Shares"
+  // is a share CLASS and must survive — the first draft of this cut it to
+  // "Class R", measured as 26 lost tickers before it shipped
+  s = s.replace(/(?:^|[\s,(-])[\s,(-]*(?:\d{1,3}(?:,\d{3})+|\d{4,})\s+shares?\)?\s*$/i, "").trim();
+  // a leading count is comma-grouped or five-plus digits; a four-digit lead
+  // is a target-date VINTAGE ("2045 Fund") and stays — the first draft took
+  // 13,000 vintage-led rows with it, caught by the store-wide count
+  const lead = s.replace(/^(?:\d{1,3}(?:,\d{3})+|\d{5,})\s+(?=[A-Za-z].*\s\S)/, "").trim();
+  if (lead !== s && /[A-Za-z]{3}/.test(lead)) s = lead;
+  const m = s.match(TYPE_SUFFIX);
+  if (m) { const rest = s.slice(0, m.index).trim(); if (rest.split(/\s+/).length >= 2 && /[A-Za-z]{3}/.test(rest)) s = rest; }
+  s = s.replace(/[\s\-–,;:]+$/, "").trim();
+  return /[A-Za-z]{3}/.test(s) ? s : String(name).trim();
+}

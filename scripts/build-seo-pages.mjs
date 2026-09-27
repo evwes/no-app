@@ -10,7 +10,7 @@
  * EIN-PN (stable forever, no orphans when a sponsor renames). */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { matchQuoteOk } from "./lib-quote.mjs";
-import { coverageBand, filedUnit } from "./lib-disclose.mjs";
+import { coverageBand, filedUnit, cleanFiledName } from "./lib-disclose.mjs";
 
 const BASE = "https://evwes.github.io/no-app"; // becomes the custom domain when DNS lands
 const TOP_N = 5000;
@@ -182,7 +182,7 @@ for (const r of d.plans.slice(0, TOP_N)) {
     ["Auto-enrollment", ff.autoEnroll ? esc(String(ff.autoEnroll === true ? "Yes (per the filing)" : ff.autoEnroll)) : /2S/.test(g(r, "codes") || "") ? "Yes (Form 5500 code 2S)" : nStat()],
   ];
 
-  const fundRows = funds ? funds.map((f) => `<tr><td>${esc(titleCase(f.name))}</td><td class="num">${usd(f.value || 0)}</td></tr>`).join("") : "";
+  const fundRows = funds ? funds.map((f) => `<tr><td>${esc(titleCase(cleanFiledName(f.name)))}</td><td class="num">${usd(f.value || 0)}</td></tr>`).join("") : "";
   const provRows = fee && fee.p ? fee.p.slice(0, 6).map((p) =>
     `<tr><td>${esc(titleCase(p.n))}</td><td>${esc(decodeServices(p.c).slice(0, 3).join(", ") || "—")}</td><td class="num">${usd(p.d || 0)}</td></tr>`).join("") : "";
   const peers = peerNote(participants, adminRaw);
