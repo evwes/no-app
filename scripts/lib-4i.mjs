@@ -245,10 +245,25 @@ export const GENERIC_TYPE_NAME = /^(?:total )?(?:registered investment compan(?:
  * the narrow copy feeds row-DELETING paths, the broad copy feeds the guard and
  * the audits, and widening the deleting paths is what made 3M's fair-value
  * note publishable. */
+/* BOTH REPLACEMENTS ARE ASSERTED, because a `String.replace` whose pattern stops
+ * matching returns the input UNCHANGED and says nothing. Edit GENERIC_TYPE_NAME's
+ * tail or its collective-trust arm and this derivation would silently lose the
+ * plural forms AND these two phrases — the guard would go quiet and every count
+ * built on it would keep printing a plausible number. That is the
+ * computed-and-discarded shape this project has paid for four times (run #244's
+ * failure reason, the Schedule A carrier, the feature-fallback denominator, the
+ * `rt` ratio). Fail at import instead: it is the first line of every parse. */
 const GENERIC_TYPE_ANY_EXTRA = "commingled (?:trust |investment )?funds?|pooled separate account funds?";
-export const GENERIC_TYPE_ANY = new RegExp(GENERIC_TYPE_NAME.source
-  .replace("trust(?: fund| portfolio)?|collective trust fund|", "trusts?(?: funds?| portfolios?)?|collective trust funds?|")
-  .replace(/\)\$$/, `|${GENERIC_TYPE_ANY_EXTRA})$`), "i");
+const GTA_PLURALISED = GENERIC_TYPE_NAME.source
+  .replace("trust(?: fund| portfolio)?|collective trust fund|", "trusts?(?: funds?| portfolios?)?|collective trust funds?|");
+if (GTA_PLURALISED === GENERIC_TYPE_NAME.source) {
+  throw new Error("lib-4i: GENERIC_TYPE_ANY's v137 pluralisation no longer matches GENERIC_TYPE_NAME — the derivation is a silent no-op, fix it rather than shipping a quiet guard");
+}
+const GTA_SOURCE = GTA_PLURALISED.replace(/\)\$$/, `|${GENERIC_TYPE_ANY_EXTRA})$`);
+if (GTA_SOURCE === GTA_PLURALISED) {
+  throw new Error("lib-4i: GENERIC_TYPE_ANY's v187 append found no trailing ')$' — the derivation is a silent no-op, fix it rather than shipping a quiet guard");
+}
+export const GENERIC_TYPE_ANY = new RegExp(GTA_SOURCE, "i");
 /* DOCUMENT SHAPE (v113) — why a filing yields no schedule, judged from the
  * document rather than from our parse. `dx` already says what the PARSER did;
  * this says what the FILING contains, and they are different claims. A random
