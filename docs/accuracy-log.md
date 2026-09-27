@@ -20860,3 +20860,47 @@ The twelfth named a real class:
   `Stable value / GIC` to `SEC_TYPE` would fold them into
   `Managed account holdings (N positions)`, and it is safe there precisely
   because no subtotal exists to be double counted against.
+
+## 2026-09-27 — A wrapped issuer cell read front-first: measured, and DELIBERATELY not fixed
+- **Wrong:** a 4i identity cell wraps, and the trailing word of the firm name
+  lands at the FRONT of the next line, so the store publishes
+  `Company Empower Annuity Insurance` (Global Medical Response, 38,334 ppl),
+  `Company Fidelity Institutional Asset` (Amentum, 45,719), `Company State
+  Street Global Advisors` (Schneider Electric, 28,032), `Company LLC Pacific
+  Investment Management` (Discover, 27,661). Found by wam's participant-weighted
+  draw (seed 20260927182).
+- **Size, condition only — and the narrow predicate is the right one:**
+  **926 rows / 179 plans / 444,655 participants / $4,198,496,330**, plus a
+  separate messier 7 rows / 2 plans where the cell also carries a date or an
+  amount (`LLC 7/15/32 PG&E WILDFIRE RECOVERY`).
+- **NOT FIXED, and the reason is the outcome test, not the size.** Rotating the
+  leading word to the end **wins a ticker on 0 rows and LOSES one on 1**,
+  measured through `app.js`'s real `lookupTicker` with the type passed as the
+  second argument. `lookupTicker` tries issuer+name first *and then the bare
+  name*, so a corrupt issuer costs nothing it does not already recover. This is
+  a DISPLAY defect for 444,655 readers, not a fee-coverage one — the same
+  verdict as the value-in-name (823,268 ppl) and leading-em-dash (609,414 ppl)
+  classes recorded 2026-09-26.
+- **AND ROTATION WOULD BE THE WRONG REPAIR ANYWAY, which the printed output
+  showed and a count never would.** Two failure modes, both visible in the
+  rotations themselves:
+  - **My first predicate corrupted correct names.** It included `bank`, `trust`,
+    `group` and `corp` as tail words, and those LEGITIMATELY LEAD firm names:
+    `BANK OF AMERICA CORP` → `OF AMERICA CORP BANK`, `BANK OF MONTREAL` →
+    `OF MONTREAL BANK` (Booz Allen Hamilton, 54,520 ppl). That inflated the
+    condition to 1,437 rows / 934,871 ppl — **wam's 1,145 / 633,922 was the
+    better figure and mine was worse.** Fifth over-matching shape predicate on
+    this record.
+  - **Even on the narrow list, rotation is wrong for a real subset**: where the
+    name ALREADY ends in the word, the leading copy is a wrap from a different
+    row and the repair is to DELETE it, not move it —
+    `Company Vanguard Fiduciary Trust Company` → rotation gives
+    `Vanguard Fiduciary Trust Company Company` (Infosys, 24,220 ppl), and
+    `Company Great Gray Trust Company,` the same. Picking the wrong repair
+    replaces one mangled name with another.
+- **Prevention:** the durable rule is not "exclude bank" — it is **print the
+  proposed REPAIRS, ranked, and read them before quoting any count.** A tail
+  word must be one that never leads a firm name, and even then the repair is
+  ambiguous between rotate and delete, which is exactly the kind of choice that
+  needs the filing rather than a regex. Recorded here so a later cycle does not
+  rediscover it as a win.
