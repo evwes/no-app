@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 184;
+export const PARSER_VERSION = 185;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -564,7 +564,32 @@ const TYPE_WORDS = /\b(value of|interest in|the|a|an|of|in|at|held|funds?|accoun
 const LOAN_TEXT = /\b(?:interest rates?|rate range|maturit(?:y|ies)|maturing|matures|collateraliz\w+|bearing interest|per annum|due at various|participant loans?|loans? to participants)\b/i;
 const RATE_RANGE = /\d+(?:\.\d+)?\s*(?:%|percent)\s*(?:[-–—]|to|through|and)\s*\d+(?:\.\d+)?\s*(?:%|percent)/i;
 const LOAN_SECURITY = /\b(?:funds?|trusts?|index|idx|portfolios?|equit(?:y|ies)|stocks?|shares?|class|series|etf|annuity|contracts?|gic|guaranteed|insurance|treasur\w*|strips?|notes?|bonds?|debentures?|mortgages?|cusip|corp\w*|inc|incorporated|llc|ltd|compan(?:y|ies)|municipal|agency|reit|certificates?|deposits?|market|separate|stable|collective)\b/i;
-const LOAN_VOCAB = /\b(?:interest|interests|rate|rates|ranging|range|ranges|from|to|through|thru|various|varying|varied|maturity|maturities|maturing|matures|mature|date|dates|due|at|and|or|with|per|annum|collateral|collateraliz\w+|secured|by|participant\w*|account|accounts|balance|balances|loan|loans|promissory|repaid|repayment|payable|payments?|vested|plan|plans|the|of|a|an|over|up|between|years?|months?|approximately|monthly|quarterly|weekly|bi-?weekly|payroll|deduction|deductions|january|february|march|april|may|june|july|august|september|october|november|december)\b/gi;
+/* v185: FOUR WORDS, and they are the whole of why v131 did not reach two of
+ * the three survivors this item names.
+ *
+ * v131's residue rule is right — "what is left once rate, date and repayment
+ * vocabulary is removed must be under four letters" — and its vocabulary was
+ * built from the phrasings in front of it. It knows `ranging` and not the past
+ * tense `ranged`, so `rates ranged from 3.25 percent to 8.50 percent during
+ * 2024` leaves the residue `rangedduring` and PUBLISHES: Owens Corning
+ * (7,566 + 5,594 ppl) at 3.2% and 0.9%, American Axle, Auto Club Insurance
+ * ($23,532,457), Corecivic (14,295), Yanfeng, Grede, Hanon Systems.
+ * And it has no word for the filed loan-rate TEMPLATE `Highest interest rate -
+ * 9.75% Lowest interest rate - 4.25% through February 2051`, whose residue is
+ * `HighestLowest` — Berry Global's 20,663 participants plus 41 more plans on
+ * the identical template.
+ *
+ * ALL 58 ROWS THE FOUR WORDS ADD WERE READ BEFORE SHIPPING, not sampled, and
+ * every one is a participant-loan rate disclosure. The controls that keep them
+ * safe are v131's own and were checked by value, not by memory: Cruz
+ * Associates files `Superflex Guaranteed; 3% minimum interest rate` at 25.1%
+ * of its plan and Ultradent `$22,000 certificate of deposit; matures during
+ * 2026` — both talk rates, both are REAL holdings, and both are vetoed by
+ * LOAN_SECURITY (`guaranteed`, `certificates?|deposits?`) before the residue
+ * is ever computed. `minimum`/`annual` were deliberately NOT added for exactly
+ * that reason: they are the only words standing between Cruz's group annuity
+ * and deletion. A vocabulary rule is widened one inflection at a time. */
+const LOAN_VOCAB = /\b(?:interest|interests|rate|rates|ranging|ranged|range|ranges|from|to|through|thru|during|highest|lowest|various|varying|varied|maturity|maturities|maturing|matures|mature|date|dates|due|at|and|or|with|per|annum|collateral|collateraliz\w+|secured|by|participant\w*|account|accounts|balance|balances|loan|loans|promissory|repaid|repayment|payable|payments?|vested|plan|plans|the|of|a|an|over|up|between|years?|months?|approximately|monthly|quarterly|weekly|bi-?weekly|payroll|deduction|deductions|january|february|march|april|may|june|july|august|september|october|november|december)\b/gi;
 /* v135: IS THIS NAME PROSE RATHER THAN A HOLDING?
  *
  * Two shapes, both measured on published lineups before shipping:
@@ -586,10 +611,66 @@ const LOAN_VOCAB = /\b(?:interest|interests|rate|rates|ranging|range|ranges|from
  * `abrdn Emerging Markets`, `eBay Inc` all have a capitalised second word.
  * Exported so audits and sizing scripts ask the shipped question.
  */
+/* v185: the function words arm C counts. Deliberately a closed list of
+ * grammatical words only — no nouns, no verbs, nothing domain-specific — so
+ * that widening it can never be a way to reach a particular filing. */
+const PROSE_FUNCTION_WORD = /^(?:the|a|an|of|to|from|in|on|for|and|or|with|up|at|by|as|is|are|was|were|be|been|that|which|their|its|his|her|this|these|those|total|out|into|not|no|may|shall|will|during|equal|lesser|greater|than|such|any|all|each|per)$/i;
 export function isProseRowName(n) {
   const s = String(n || "").trim();
   if (!s) return false;
   if (/\b(?:by investing|seeks to|invests? (?:in|primarily)|is designed to|designed to provide|(?:whose|its) objective is)\b/i.test(s)) return true;
+  /* v185 ARM A2: A PLAN-MECHANICS VERB PHRASE — the loan-limit sentence.
+   *
+   * The parser already refuses `^participants may borrow` (v70, line ~2483)
+   * and that arm is ANCHORED, which is the recurring reason a survivor
+   * survives on this record. McLane Company (29,794 participants) publishes
+   * `may borrow from their accounts a minimum of $1,000 up to a maximum equal
+   * to the lesser of` because the wrap took the word `participants` onto the
+   * previous line; United Biosource's begins `Participants may generally
+   * borrow`, where one adverb breaks the adjacency the anchor requires.
+   *
+   * THE TELL IS ARITHMETIC AND IT IS UNANIMOUS: all seven rows in this class
+   * carry a value of EXACTLY $50,000 — the statutory §72(p) loan cap, read out
+   * of the sentence as though it were a holding's balance. Nothing in the plan
+   * holds $50,000 of anything. McLane, Arcosa, Team Car Care, United
+   * Biosource, Crc Services, Wincore Window, Ta Associates: 7 rows / 7 plans /
+   * 42,552 participants, every one read. */
+  if (/\b(?:may|can|could|shall|must|generally)\s+(?:\w+\s+){0,2}borrow\b/i.test(s) ||
+      /\bloans?\s+(?:may|shall|must|can)\s+be\s+(?:made|obtained|granted)\b/i.test(s) ||
+      /\bamount\s+of\s+(?:the|a|any)\s+loan\b/i.test(s) ||
+      /\bmaximum\s+(?:loan\s+)?amount\s+of\s+(?:a|the|any)\s+(?:participant|loan)/i.test(s)) return true;
+  /* v185 ARM C: FUNCTION-WORD DENSITY. A holding's name is a NOUN PHRASE; what
+   * these rows carry is a SENTENCE, and the difference is measurable without
+   * any vocabulary list at all — which is the point, because every list-shaped
+   * rule in this file has eventually been beaten by a phrasing it had not met.
+   *
+   * Nine or more words, at least 40% of them function words. Measured over all
+   * 1,710,364 published holding rows — the whole population, not a sample —
+   * it matches 120 rows, of which 3 were already refused by arms A and B.
+   * ALL 117 REMAINING WERE READ ONE BY ONE AND NOT ONE IS A FUND: audit-note
+   * prose (University Hospitals `were not remitted in a timely manner. The
+   * Plan Sponsor remitted lost earnings of approxima`, 35,908 ppl), fee notes
+   * (Chicago Mercantile `for professional services rendered by
+   * parties-in-interest during 2024 and 2023, were`), Form 5500 line captions
+   * (`5 Total number of participants at the beginning of the plan year`,
+   * published by three separate plans), the schedule's own footnote legend
+   * (The Santa Lucia Preserve, `1. Column (a) An asterisk denotes that the
+   * investment is with a party-in-interest. 2. Colu`, 15.0% of the menu), and
+   * fund DESCRIPTION tails (Unity Electric's four rows, `of
+   * mid-capitalization companies. At least 80% of net assets is invested in a
+   * broadly diver`). 111 plans / 264,405 participants.
+   *
+   * THE THRESHOLD WAS CHOSEN AGAINST THE LONGEST REAL FUND NAMES IN THE STORE,
+   * not against the defects: `Morgan Stanley Global Fixed Income
+   * Opportunities Fund Class A` is nine words and reaches 11%; `Vanguard
+   * Institutional Total Stock Market Index Trust` and `T. Rowe Price
+   * Associates, Inc. Retirement Blend 2030` are under nine. A filed fund name
+   * spends its words on the issuer, the asset class and the share class; it
+   * does not spend them on `of`, `the`, `to` and `was`. */
+  {
+    const w = s.split(/\s+/).filter(Boolean);
+    if (w.length >= 9 && w.filter((t) => PROSE_FUNCTION_WORD.test(t)).length / w.length >= 0.40) return true;
+  }
   /* Arm B is narrower than "starts lowercase", and the narrowing was measured
    * rather than guessed. A random 40 of what the first draft dropped contained
    * real holdings whose names merely carry damaged prefixes — `maturity date
@@ -655,9 +736,59 @@ const STMT_OF_CHANGES_ROW = new RegExp([
   "^net\\s+(?:investment\\s+)?(?:gain|loss|income)\\s+(?:on|in|from|of)\\b",
   "^benefits?\\s+paid\\b",
   "^distributions?\\s+to\\s+participants\\b",
+  /* v185: THE RECONCILIATION CAPTION, and it belongs HERE rather than at
+   * parseRows for the reason the comment at this predicate's call site already
+   * states: this stage runs AFTER the region has been chosen, so it cannot flip
+   * a winner, and it recomputes the ratio from what remains.
+   *
+   * Audited statements print a bridge between the financial-statement total and
+   * the Schedule H total, one line per difference, each captioned `Add:` or
+   * `Less:`. Those captions are being published as holdings. Cornerstone
+   * Building Brands (16,713 participants) shows `Add: Merged In Plans` at
+   * $162,147,583 = 19.2% of its plan — money that really did move in during the
+   * year and is ALREADY counted inside the twenty-nine real funds beside it, so
+   * the published menu overstates the plan by that much. 24 rows carry the two
+   * captions store-wide (`Add: 2024 accruals`, `Less: Interest income`, `Add:
+   * Deemed Loans`, `Add: Cash and cash equivalents, prior year`), and four more
+   * are the same bridge written as a sentence.
+   *
+   * ALL 28 WERE READ. Not one is a holding. Cornerstone's ratio falls 0.981 ->
+   * 0.789 and that is the honest number: its menu accounts for 79% of the plan
+   * and used to appear to account for 98% because a $162M line that is not an
+   * investment was counted. A gap the reader is told about beats a name. */
+  "^(?:add|less)\\s*:",
+  "^(?:assets|balances|investments|accounts)\\s+(?:were\\s+|was\\s+|are\\s+)?(?:transferred|merged)\\s+(?:in|out|into|to|from)\\b",
+  /* Roper Technologies (13,976 ppl) publishes `Savings 003 Plan (the "003
+   * Plan"). During 2024, total assets transferred out of the Plan w` — the tail
+   * of the note describing a spin-off, truncated at the 90-character name cap.
+   * Unanchored on purpose: the sentence arrives with whatever preceded it on
+   * the line, which is precisely how it got past every anchored arm above. */
+  "\\b(?:transferred|merged)\\s+(?:in|out\\s+of|into|to)\\s+the\\s+plan\\b",
 ].join("|"), "i");
 export function isStatementOfChangesRowName(n) {
   return STMT_OF_CHANGES_ROW.test(String(n || "").trim());
+}
+
+/* v185: THE v105/v110/v111 DOMINANCE FAMILY, LIFTED TO MODULE SCOPE SO IT CAN
+ * BE ASKED TWICE — once inside the pass where it always was, and once about the
+ * row set the READER actually gets, after v184's `collapseDoubleRender`. ONE
+ * function, never two copies: a remembered copy of a shipped rule has produced
+ * a wrong answer three times on this record, and the entire value of asking
+ * twice is that both asks are the same question.
+ *
+ * The bodies are v105's and v110/v111's verbatim; only the home moved. */
+function dominanceIsAggregate(funds) {
+  const rows = (Array.isArray(funds) ? funds : []).filter((f) => f);
+  const allSum = rows.reduce((a, f) => a + (+f.value || 0), 0);
+  if (!(allSum > 0)) return { aggOnly: false, aggSplit: false };
+  const topRow = rows.reduce((a, f) => ((+f.value || 0) > (a ? +a.value || 0 : -1) ? f : a), null);
+  const topName = String((topRow && topRow.name) || "").trim();
+  const aggOnly = !!topRow && (+topRow.value || 0) / allSum >= 0.9 &&
+    (NOT_FUND_SHAPED.test(topName) || GENERIC_TYPE_ANY.test(topName));
+  const aggRows = rows.filter((f) => AGG_DISCLOSURE.test(String(f.name || "").trim()));
+  const aggSum = aggRows.reduce((a, f) => a + (+f.value || 0), 0);
+  const aggSplit = aggRows.length >= 2 && aggRows.length <= 3 && aggSum / allSum >= 0.9;
+  return { aggOnly, aggSplit };
 }
 
 export function isLoanNoteName(n) {
@@ -4485,9 +4616,7 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
    * $55M plan — a category, not a holding — which NOT_FUND_SHAPED misses
    * ("mutual funds" lives in GENERIC_TYPE_NAME). Product-named single
    * holdings (the 319 honest ones v105 preserved) match neither list. */
-  const aggOnly = !!topRow && allSum > 0 && topRow.value / allSum >= 0.9 &&
-    (NOT_FUND_SHAPED.test(String(topRow.name || "").trim()) ||
-     GENERIC_TYPE_ANY.test(String(topRow.name || "").trim()));
+  const aggOnly = dominanceIsAggregate(funds).aggOnly;
   /* v110/v111: dominance SPLIT between aggregates evades the single-row
    * test. MetLife's fallback filing reports "Participant directed
    * investments" ($4.12B, 58%) plus "Fully benefit responsive investment
@@ -4501,9 +4630,7 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
    * Index", "Total International Stock Index", "Total Bond Market Index"
    * are real funds whose names START with "Total". Only unambiguous
    * accounting-disclosure phrasing counts toward a split. */
-  const aggRows = funds.filter((f) => AGG_DISCLOSURE.test(String(f.name || "").trim()));
-  const aggSum = aggRows.reduce((a, f) => a + f.value, 0);
-  const aggSplit = allSum > 0 && aggRows.length >= 2 && aggRows.length <= 3 && aggSum / allSum >= 0.9;
+  const aggSplit = dominanceIsAggregate(funds).aggSplit;
 
   // a statement-vocabulary fragment can still WIN when it's the only
   // candidate (the real schedule is scanned or absent) — surface the flag
@@ -4539,6 +4666,39 @@ export function parse4i(text, assetsEOY, sponsorName = "", codes = "") {
   if (!Array.isArray(out.funds)) return { ...out, funds: [] };
   applyLegend(out, text);
   collapseDoubleRender(out, assetsEOY);
+  /* v185: ASK THE DOMINANCE GUARD AGAIN, ABOUT THE ROWS THE READER GETS.
+   *
+   * `audit-dominant-row` read 1 for the first time since v105, and it is not a
+   * new defect and not a regression — it is v184 making an OLD one visible.
+   * Cobre Valley Regional Medical Center (578 participants) published
+   * `Registered investment companies` TWICE, $7,315,272 each, 49.1% apiece; the
+   * v105 guard needs a single row at 90% and neither half reached it, so the
+   * lineup was confident. v184's `collapseDoubleRender` then merged the twin
+   * into ONE row at 96.6% of a four-row "menu" whose other three rows are the
+   * auditor's letterhead — `December`, `Ju",trg Fresno, California t LLf
+   * September`, `JWT & Associates, LLP Advisory Assurance Tax … E. Hemdon
+   * Avenue, Suite 211, Fresno,`. The dedup moved in front of the AUDIT and the
+   * audit started working. It did not move in front of the GUARD, because
+   * v184 placed the collapse in this wrapper — deliberately post-selection, so
+   * no region could change places — while every arithmetic guard lives inside
+   * `parse4iPass`. So the guard is computed on rows that no longer exist.
+   *
+   * This is the fifth placement decision in this cycle-family settled by the
+   * same question: WHERE CAN THE EVIDENCE BE SEEN? A guard about the shape of
+   * the published row set can only be evaluated where the published row set is
+   * final, and after v184 that is here.
+   *
+   * STRICTLY ONE-DIRECTIONAL: it can only ADD `stmt`, never clear one, so no
+   * plan can be published by this line that was not published before it.
+   * Blast radius measured whole-store against the live v184 store, using these
+   * same shipped predicates on the stored (post-collapse) rows: **1 plan / 578
+   * participants**, and it is Cobre Valley. The `aggSplit` arm and the trust
+   * pointer fire on nothing today — a check that prints 0 on a quiet store has
+   * not been tested, so both are positive-controlled in the gate. */
+  if (out.found && Array.isArray(out.funds) && !out.stmt) {
+    const d = dominanceIsAggregate(out.funds);
+    if (d.aggOnly || d.aggSplit) out.stmt = 1;
+  }
   return out;
 }
 

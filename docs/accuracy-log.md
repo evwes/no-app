@@ -22068,3 +22068,190 @@ ours**: the filing was pulled and its schedule prints that exact string on one
 line against one value of $1,552,310. Faithful parse of an odd filed name.
 Walmart was drawn too and is **clean** — the wrapped BlackRock names publish
 whole with issuers attached, confirming v130's fix on the live store.
+
+## 2026-09-27 — v185 item 1: LOAN AND PLAN PROSE PUBLISHED AS A HOLDING NAME — four arms, and the reason each survivor escaped is a different one
+
+- **Wrong:** 203 rows across 195 published lineups / **435,595 participants**
+  carry a SENTENCE where a holding's name belongs. The three named at the top of
+  the item, each with its own escape route:
+  - **McLane Company, 29,794 ppl** — `may borrow from their accounts a minimum
+    of $1,000 up to a maximum equal to the lesser of`, value **exactly $50,000**.
+  - **Berry Global, 20,663 ppl** — `Highest interest rate - 9.75% Lowest
+    interest rate - 4.25% through February 2051`, $17,669,764 = 1.6% of the plan.
+  - **Roper Technologies PN 004, 13,976 ppl** — `Savings 003 Plan (the "003
+    Plan"). During 2024, total assets transferred out of the Plan w`, $641,618.
+- **WHY THE SHIPPED RULES DID NOT REACH THEM, which was the item's first
+  question and is the useful part.** Three survivors, three distinct causes, and
+  only one of them is the anchoring story this record keeps telling:
+  1. **McLane — ANCHORING, as predicted.** v70 already refuses
+     `^participants may borrow`. The wrap put `participants` on the previous
+     line, so the anchor had nothing to bite on. United Biosource files
+     `Participants may generally borrow`, where one adverb defeats adjacency.
+  2. **Berry — VOCABULARY, not anchoring.** `isLoanNoteName` (v131) fires
+     correctly on LOAN_TEXT and is then vetoed by its own residue rule:
+     `Highest` and `Lowest` are not in LOAN_VOCAB, so 13 letters survive against
+     a floor of 4. The same gap in the past tense — `ranged`, plus `during` for
+     the trailing year — is why **Owens Corning (7,566 + 5,594 ppl), Auto Club
+     Insurance ($23,532,457), Corecivic (14,295), American Axle, Yanfeng, Grede
+     and Hanon Systems all still published `rates ranged from 3.25 percent to
+     8.50 percent during 2024`** — the very class v131's own entry says it took
+     from 7,052 rows to 9. It took it to 9 *for the phrasings it had met*.
+  3. **Roper — NEITHER.** No loan vocabulary (v131 blind), a CAPITAL first
+     letter (v135 arm B blind by design, and that design is correct — it is what
+     protects `iShares`/`abrdn`/`eBay`), 31% function words (v185's own density
+     arm blind), and it begins with none of v136's captions.
+- **Change (v185), four arms, each measured on its own and every member read:**
+  - **A1** — four words into `LOAN_VOCAB`: `ranged`, `during`, `highest`,
+    `lowest`. **58 rows / 58 plans / 113,104 ppl**, all 58 read, all 58 loan-rate
+    disclosures.
+  - **A2** — a plan-mechanics verb phrase into `isProseRowName` arm A,
+    unanchored. **7 rows / 7 plans / 42,552 ppl**, all read, and the tell is
+    arithmetic: **every one of the seven has a value of exactly $50,000**, the
+    statutory §72(p) loan cap read out of the sentence.
+  - **A3** — the **reconciliation caption** into `isStatementOfChangesRowName`:
+    `^Add:` / `^Less:`, `assets transferred/merged in`, and an unanchored
+    `transferred/merged (in|out of|into|to) the plan`. **28 rows / 26 plans /
+    59,103 ppl**, all 28 read; 24 are literally `Add: 2024 accruals`,
+    `Less: Interest income`, `Add: Deemed Loans`.
+  - **A4** — **function-word density**, with no vocabulary at all: ≥9 words and
+    ≥40% grammatical function words. **117 rows / 111 plans / 264,405 ppl.**
+- **PLACEMENT, the question this cycle-family keeps asking.** A1/A2/A4 are
+  properties of one string and join the pre-selection row predicates where v131
+  and v135 already live. **A3 went POST-selection instead**, at v136's site,
+  because that call site's own comment already argues it: a row-level guard
+  changes region SUMS and region sums decide which region wins (the Bloomberg
+  mechanism). A3 removes the largest single row in its class — Cornerstone's
+  $162,147,583 — so it is exactly the arm that could have flipped a winner.
+- **Measured outcome, whole store, in the units of the claim.** 203 rows / 195
+  plans / 435,595 ppl. **Lineups WITHDRAWN: 0.** Ratio drifts >0.03 away from
+  1.0 on **15 plans / 45,979 ppl** and `rows-dropped.txt` must raise them:
+  Cornerstone 0.981 → **0.789** (+0.192), Unity Electric 0.708 → 0.535, and
+  thirteen at +0.03 to +0.06. **That drift is the fix working, not its cost** —
+  Cornerstone's menu covers 79% of its plan and only appeared to cover 98%
+  because a $162M line that is not an investment was counted.
+- **Controls, named before measuring and addressed by value.** 26 in both
+  directions, all correct. The two that shaped the rule:
+  - **Cruz Associates (400 ppl)** holds `Superflex Guaranteed; 3% minimum
+    interest rate` at **25.1% / $8,825,195** — a REAL group annuity whose name
+    states a rate. My first draft of A1 added `minimum` and `maximum` to
+    LOAN_VOCAB and **would have deleted it.** Printing the members caught it;
+    those two words were dropped and only four shipped.
+  - **Ultradent (1,669 ppl)** holds `$22,000 certificate of deposit; matures
+    during 2026` — `matures` + the newly added `during`, and it survives because
+    LOAN_SECURITY's `certificates?|deposits?` veto runs *before* the residue is
+    computed. That ordering is the structural reason v131's vocabulary can be
+    widened at all.
+- **A PREDICATE I WROTE AND THREW AWAY, recorded because it is the seventh
+  over-match on this session's record.** Roper's row contains a sentence
+  boundary, so my first Roper arm was "`.` followed by a space and a capital".
+  It matches **5,734 rows / 2,875 plans / 7,634,092 participants** and is
+  **overwhelmingly real fund names**: `Vanguard Total Int. Stock Index Fund`,
+  `T. Rowe Price Associates, Inc. Retirement Blend 2030`, `FIAM Int. Infl. PR
+  Bond Index CP, Class D`, Walmart's `Investments Walmart Inc. Equity
+  Securities` at $5.7B. Filed abbreviations (`Inc.`, `Int.`, `Inst.`, `Co.`,
+  `Sec.`) destroy it completely. **It died the way all seven died — by printing
+  the members.**
+- **Gate + diff:** `parser-gate.mjs` green. `diff-lineups.mjs 56867242` over
+  1,023 corpus filings: **confidence +0 / −0, fabricated generic rows introduced
+  0**, five plans lose exactly one row and every one was named and read — HCA
+  (377,504 ppl) `Add: Prior period deemed loans offset during 2024` $2,606,766,
+  Becton Dickinson (31,218) `common stock with a fair value of $298,435,503.
+  During the year, the Plan purchased and so`, Owens Corning, Org Chem Group,
+  H & K Group.
+- **Prevention:** five specimens pinned (McLane, Berry, Roper, Cornerstone,
+  Santa Lucia) plus **two DECOYS that must keep their rows** (Cruz Associates,
+  Ultradent) — the decoys exist so the next person who widens LOAN_VOCAB has to
+  prove they did not reach a real annuity or a real CD. And the durable lesson,
+  which is not "add an arm": **v131's entry recorded its class as closed at 9
+  rows, and it was closed only for the phrasings in front of it. A vocabulary
+  rule's residue is a measurement of the vocabulary, not of the class** — so a
+  class closed by a word list has to be RE-SIZED after every inflection, and the
+  re-size is what found 58 rows behind a number recorded as 9.
+
+## 2026-09-27 — v185 item 2: `audit-dominant-row` read 1, and the guard was being computed on rows that no longer exist
+
+- **Wrong:** Cobre Valley Regional Medical Center (**578 participants**,
+  $20,693,436) published a four-row "menu" that is **96.6% `Registered
+  investment companies`** plus three rows of the auditor's OCR'd letterhead —
+  `December`, `Ju",trg Fresno, California t LLf September`, `JWT & Associates,
+  LLP Advisory Assurance Tax … E. Hemdon Avenue, Suite 211, Fresno,`. Its 2023
+  fallback filing **contains no 4i menu at all**: read from the PDF, its only
+  `Registered investment companies` figures are the Statement of Net Assets
+  comparative columns ($17,345,367 / $14,630,544) and the fair-value hierarchy
+  note. This is the v105 shape, live.
+- **WHY v105's RULE DID NOT ALREADY REFUSE IT — diagnosed from the code, not
+  from reading the filing.** Until v184 the plan published that generic row
+  **TWICE, $7,315,272 each at 49.1% apiece**. `aggOnly` requires a SINGLE row at
+  ≥90%, so neither half reached it. v184's `collapseDoubleRender` then merged the
+  twin into one row at 96.6% — but **v184 placed the collapse in the `parse4i`
+  WRAPPER**, deliberately post-selection so no region could change places, while
+  **every arithmetic guard lives inside `parse4iPass`**. So the ordering is:
+  guard → collapse. The dedup moved in front of the AUDIT and the audit started
+  working; it never moved in front of the GUARD.
+  **So the audit reading 1 is not a new defect and not a regression — it is v184
+  making an old one visible, exactly as the 2026-09-27 draw entry predicted in
+  writing.** And it generalises: any arithmetic guard inside the pass is now
+  stale with respect to the collapse's output.
+- **Change:** the v105/v110/v111 dominance family is lifted to module scope as
+  `dominanceIsAggregate(funds)` — **one function, not a second copy**, because a
+  remembered copy of a shipped rule has produced a wrong answer three times on
+  this record and the whole value of asking twice is that both asks are the same
+  question. `parse4i` asks it again after `collapseDoubleRender`, which is where
+  the published row set is final. **The fifth placement decision in this family
+  settled by *where can the evidence be seen?*** (v174, v180, v183, v184).
+  **Strictly one-directional: it can only ADD `stmt`, never clear one**, so no
+  plan can be published by this line that was not published before it.
+- **Measured before shipping.** Blast radius over the whole live v184 store,
+  using the shipped predicates on the stored post-collapse rows: **1 plan / 578
+  participants**, and it is Cobre Valley. The bucket is the entire population,
+  not a sample.
+- **Controls, both directions.**
+  - **POSITIVE, end to end through the real `parse4i` on the real filing**
+    (`20240925125749NAL0008341107001`, downloaded and `pdftotext -layout`'d):
+    v184 → `4 rows, ratio 0.732, stmt=0, CONFIDENT=true`; v185 → `4 rows, ratio
+    0.732, stmt=1, CONFIDENT=false`. The designed outcome, exactly.
+  - **NEGATIVE:** all **8** corpus filings in the ≥90%-dominant population had
+    their confidence unchanged — including the honest single-holding plans v105
+    exists to preserve (Goldman Sachs 48,550 ppl `Managed account holdings (1253
+    positions)` 94.4%, Peterson Holding 2,518, Bank Of Stockton, Pulmonary
+    Associates `Charles Schwab Bank` 99.4%) — and Fremont Motor (31 rows) and
+    State Farm (20 rows) are byte-identical.
+  - **The `aggSplit` branch of the re-check fires on 0 plans today, and a check
+    that prints 0 on a quiet store has not been tested**, so both arms are
+    exercised directly on synthetic row sets: `aggOnly` fires on Cobre Valley's
+    shape, `aggSplit` fires on MetLife's 58%/41% shape, and both stay quiet on a
+    real Vanguard menu and on an honest single-holding plan. Stated honestly:
+    `aggOnly` is controlled end-to-end, `aggSplit` at the function only.
+- **What the page says instead:** 578 readers stop seeing a menu that is 96.6% a
+  category and 3.4% a Fresno street address, and get the filed-in-aggregate /
+  unreadable-copy sentence with a recorded `dx`. **A blank is honest; a name
+  reads as knowledge.**
+- **Prevention:** the fallback filing is pinned as a specimen, and the entry
+  above names the general hazard rather than the plan — **a guard about the
+  shape of the published row set must be evaluated where the published row set
+  is final.** `audit-dominant-row` returns to 0 and may not sit at 1 silently.
+
+### Found outside both items, SIZED AND NOT FIXED — the generic type with something glued to it
+Running item 2's negative controls surfaced a class the anchored predicates
+cannot see. **34 published lineups / 31,683 participants** have a top row at
+≥90% of the menu whose name CONTAINS a generic type but is not matched by
+`GENERIC_TYPE_NAME` / `GENERIC_TYPE_ANY` / `NOT_FUND_SHAPED` because those are
+anchored `^…$`:
+
+| ppl | share | value | row name |
+|---|---|---|---|
+| 5,868 | 95.3% of 3 | $123,325,300 | Bhi Energy Services `Shares of Registered Investment Companies` |
+| 5,758 | 95.0% of 4 | $235,471,923 | Woodgrain `Mutual fund shares` |
+| 2,311 | 93.7% of 3 | $27,547,382 | Standard Retirement Services `Master Separate Account` |
+| 1,874 | 97.2% of 4 | $232,958,684 | eClinicalWorks `Mutual fund shares a` |
+| 1,053 | 99.3% of 3 | $4,406,001 | Sunny Glen `Variable Annuity in Pooled Separate Accounts` |
+| 514 | 92.7% of 3 | $15,944,682 | Your Recruiting `Sub-total: Registered Investment Companies` |
+| 165 | 98.1% of 3 | $13,882,806 | Balboa Travel `Registered investment companies:` |
+
+**It is NOT simply "unanchor the regex", and that is why it is not fixed here.**
+Two of the 34 name a real fund with the type appended — Talgood's `Vanguard
+tax-Managed Balanced Fund Admiral Shares Registered Investment Company` (267
+ppl) and Local 360's `AMERICAN FUNDS BLANC MUTUAL FUND` (2,418, the
+truncated-vintage filing v184 deliberately refused to touch) — so an unanchored
+arm needs a real-fund-name exclusion, which is its own version and its own
+member read. Proposed with its size; not started.
