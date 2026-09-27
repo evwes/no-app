@@ -647,26 +647,61 @@ don't confuse them). Frontend: python http.server + Playwright at
 /opt/pw-browsers/chromium; verify TK page, tabs, filters, deep links
 (#plan=EIN|PN|TICKER).
 
-## Current state — RE-DERIVED FROM THE STORE 2026-09-26 23:1xZ
+## Current state — RE-DERIVED FROM THE STORE 2026-09-27 15:0xZ
 
-**Re-derive this block from the store; never edit its date.** The previous
+**Re-derive this block from the store; never edit its date.** An earlier
 version of this header said "Store at v168 … `PARSER_VERSION` in the tree is
 168 and NOTHING IS IN FLIGHT" while the tree was at 177 and a run was in
 flight — the first bullet a new session reads, wrong, exactly the hazard this
-file warns about elsewhere and aimed at itself. It has now gone stale twice
-(v123-for-v124 in September, v168-for-v177 today), so the fix is the habit:
-read `lineups-status.json` and `lib-4i`'s export, do not copy the line.
+file warns about elsewhere and aimed at itself. It has now gone stale three
+times (v123-for-v124, v168-for-v177, and v181-for-v184 across a container
+restart), so the fix is the habit: read `lineups-status.json` and `lib-4i`'s
+export, do not copy the line.
 
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, ≥100
   participants at either end of the plan year): **68,259 full-form**, 43,523
   short-form, 68,767 parse-status entries.
-- **STORE: pv 181 covers 68,637 of 68,767 acks (99.81%)** — tail pv180 25,
-  pv106 18, pv124 10, pv123 10, pv98 10. Confident **60,115**, lineups 59,764,
-  HIGH 5, WARN 543, overshoot 331, aggRow 112, dl **128**, `analyze` 2.
-- **`PARSER_VERSION` in the tree is 181. NOTHING IS IN FLIGHT** as of
-  2026-09-26 23:1xZ — #465 (the v181 full re-parse, dev branch) finished
-  `success` in 54 minutes at 22:34Z.
-- **LIVE ON MAIN: the v181 store — MIRRORED 2026-09-26 23:1xZ**
+- **STORE: pv 184 covers 68,637 of 68,767 acks (99.81%)** — tail pv180 23,
+  pv106 18, pv124 10, pv123 10, pv98 10, pv91 9. Confident **60,115**, lineups
+  59,764, HIGH 5, WARN 545, overshoot 329 / 426,852 ppl, aggRow 112, dl **128**,
+  `analyze` 2, `no-section` 7,122. **`matchQuote` 5,397 of which only 1,785 are
+  SHOWN to readers** — the condition/outcome pair shipped 2026-09-27.
+- **`PARSER_VERSION` in the tree is 184. NOTHING IS IN FLIGHT** as of
+  2026-09-27 15:0xZ — #473 (the v184 full re-parse, dev branch) finished
+  `success` in 57 minutes at 13:45Z, and main's hourly cron #474 finished
+  `success` at 14:10Z.
+- **LIVE ON MAIN: the v184 store — MIRRORED 2026-09-27 14:1xZ**
+  (`2bf641df → 13028d3c`), **data gate UNFORCED at +0 gained / −0 lost**;
+  `--force` covered the GIT check alone over main's one cron commit (#474,
+  whose coverage line was a byte-for-byte repeat of the pre-v184 numbers).
+  `pages-build-deployment` #611 built it `success` at 14:14Z.
+- **#473 PASSED EVERY PER-PLAN PREDICTION AND EVERY CONTROL.** The nine designed
+  collapses landed on their predicted row counts and ratios (Printpack 3,422
+  ppl 10 rows @ 0.520, Allete 2,230 ppl 35 @ 0.972, Smr Automotive 40 @ 0.966,
+  Graham Group 52 @ 0.616, Huron 16 @ 0.972, Radiology Consultants 49 @ 0.978,
+  Adams Fairacre 50, Resource Label 40, Cobre Valley 4), and all three controls
+  held — Western Ecosystems 55 rows @ 1.106, Local 360 (the truncated-vintage
+  REFUSAL) 39 @ 0.984, I. Rice 38 rows / **$13,947,979** to the dollar.
+  **The one `FAIL` printed was my own selector, not the fix**: Alpha Source was
+  addressed by the largest sponsor-name prefix match, which picks "Alpha Source
+  Holdco" (437 ppl) over "Alpha Source Llc" (413 ppl); re-addressed by value the
+  prediction was exact. Second time in two days that *address a plan by a
+  property it has, not a convenient selector* had to be re-learned.
+  **What reached readers: 15 plans / 15,083 participants / $55,349,733 of doubly
+  counted money**, across three classes one stage fixed — legend twins
+  (`1VBTLX` beside `IVBTLX`), Allete's whole schedule printed again in
+  thousands, and a twin carrying its own value welded on.
+- **ALSO LIVE, mirrored earlier the same day: v182 + v183 (`e29d21bc →
+  f10c0af3`, data gate UNFORCED).** CVS Health's **307,068 participants** stop
+  seeing ~98 synthetic-GIC securities (`ING GROEP NV`, `BANK OF MONTREAL`,
+  `CITIGROUP INC`) listed as menu options beside the $2,690,925,949 subtotal
+  that totals them; the sleeve now publishes as its own filed subtotal and the
+  innards move to the securities tab. **v182's absorb arm first took a real
+  38-row menu off I. Rice & Co.'s page and the mirror was HELD until v183
+  restored it byte-identically** — the absorb now requires the subtotal LINE to
+  be present on the page it stands for, not merely inferable. Blast radius of
+  v183: exactly ONE lineup entry changed in 68,767 acks.
+- **Previously: the v181 store — MIRRORED 2026-09-26 23:1xZ**
   (`f7b8a665 → 169458c8`), **data gate UNFORCED at +0 gained / −0 lost.**
   `--force` covered the GIT check alone over main's one cron commit, evidence
   produced first: **0 acks and 0 plans the branch lacked, plans array

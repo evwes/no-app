@@ -21825,3 +21825,51 @@ the par-value-welded-into-name class).
   record until today was found BECAUSE it moved a ratio.** The guards assume a
   defect shows up in the arithmetic against assets; these do not, and that is
   now a documented gap in the machinery rather than three coincidences.
+
+## 2026-09-27 — run #473 verdict (v184): PASSED, MIRRORED, and the one FAIL was my own selector
+Recorded late: the container restarted at ~15:0xZ between the mirror and this
+entry, so the verdict existed only in a scratchpad output file for an hour. A
+verdict that is not written down reads later as a run nobody checked.
+
+`success` in 57 minutes at 13:45Z on the dev branch. **MIRRORED 14:1xZ,
+`2bf641df → 13028d3c`, data gate UNFORCED at +0 gained / −0 lost**; `--force`
+covered the GIT check alone over main's one cron commit (#474, 14:04–14:10Z),
+whose coverage line was a byte-for-byte repeat of the pre-v184 numbers, so
+nothing was discarded but a duplicate. `pages-build-deployment` #611 built
+`13028d3c` `success` at 14:14Z — read, not assumed.
+
+- **Store after:** pv 184 on **68,637 of 68,767 acks (99.81%)**, confident
+  **60,115 (+0 / −0)**, lineups 59,764, HIGH back to the baseline **5**,
+  WARN 545, overshoot **329** (was 331), aggRow 112, dl 128, `analyze` 2,
+  `no-section` 7,122. The coverage line barely moves for the same reason it did
+  not for v172/v173/v174: **v184 removes ROWS INSIDE plans that were already
+  confident, and the line counts PLANS.**
+- **Every designed collapse landed on its predicted row count AND ratio**, nine
+  of them: Printpack (3,422 ppl) 10 rows @ 0.520, Allete (2,230) 35 @ 0.972,
+  Smr Automotive (1,557) 40 @ 0.966, Graham Group (497) 52 @ 0.616, Huron (346)
+  16 @ 0.972, Radiology Consultants (154) 49 @ 0.978, Adams Fairacre (1,732)
+  50, Resource Label (2,020) 40, Cobre Valley (578) 4. All still confident.
+- **All three controls untouched**: Western Ecosystems — v174's pinned
+  $14,679 / $14,678 pair — 55 rows @ 1.106; **Local 360, the truncated-vintage
+  REFUSAL, 39 rows @ 0.984** (four distinct BlackRock LifePath vintages that
+  read as one 40-character name, three at $54 — the fabrication this fix was
+  written to avoid becoming); I. Rice & Co. 38 rows summing **$13,947,979**,
+  the exact figure v183 restored.
+- **THE ONE `**FAIL**` WAS MY VERIFIER, NOT THE FIX.** Alpha Source printed
+  `rows 25/37 FAIL, ratio 0.985/0.88 FAIL`. My harness addressed the plan by
+  the largest sponsor-name prefix match, which resolves to **"Alpha Source
+  Holdco" (437 ppl)** rather than the predicted **"Alpha Source Llc" (413
+  ppl)**; re-addressed by value, the prediction was exact. This is the same
+  mistake as v178's negative control answering "no entry" when addressed by a
+  remembered ack — **address a plan by a property it has, not by a convenient
+  selector** — and it is now on the record twice in a week.
+- **What reached readers: 15 plans / 15,083 participants / $55,349,733 of
+  doubly counted money**, across the three classes `collapseDoubleRender`
+  closes — legend twins (`1VBTLX` beside `IVBTLX`), Allete's whole schedule
+  printed a second time in thousands, and a twin carrying its own value welded
+  onto the name.
+- **The standing gap this class leaves open, unchanged by shipping it:** all
+  three sat at ratios (0.54, 0.97, 1.00) that no ratio-keyed guard can see.
+  `audit-overshoot` (≥1.15), `audit-dominant-row` (≥90%) and the confidence
+  band (0.45–1.6) were blind to every one. A fabrication that does not move the
+  sum against plan assets still has no automated witness.
