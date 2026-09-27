@@ -689,16 +689,47 @@ export, do not copy the line.
   **Verified independently on the real 2023 filing with the real denominator:
   v184 `stmt=0`, v185 `stmt=1`, 4 rows @ 0.732, top row 96.6%.** Blast radius is
   1 plan / 578 ppl, the entire population.
-- **QUEUED, sized, display-side, needs no re-parse: WE PUBLISH DOLLAR PRECISION
-  THE FILINGS NEVER GAVE — 176 plans / 5,641,116 participants.** Every published
-  row is an exact multiple of $1,000 (169 plans / 5,533,112 ppl) or $1,000,000
-  (7 / 108,004), because those filings report in thousands or millions and our
-  own documented scaling multiplies up. Amazon (1,336,478), TJX, Costco, Tyson,
-  Mass General Brigham, Whole Foods, Nordstrom, Oracle; PPG prints `671` and we
-  print `$671,000,000`. **0 of the 176 fall outside the confidence band, which is
-  the check that exonerates the parser** — the magnitudes are right and only the
-  precision is asserted beyond the filing. `docs/accuracy-log.md` 2026-09-27
-  (17:xxZ).
+- **SHIPPED 2026-09-27 18:2xZ, and MY OWN SCOPE CLAIM WAS WRONG — the precision
+  defect was on the STATIC PAGES, never in the report.** I recorded it as "176
+  plans / 5,641,116 participants publish dollar precision the filings never
+  gave". The store population is exact, but **`app.js:1683` renders
+  `money(f.value / 1e6)`**, so a report reader has always seen `$671.0M`. The
+  zeros were printed only by the crawlable `p/*.html` pages — **160 pages /
+  5,719,845 ppl**, now each carrying *"Values below are exact only to the nearest
+  $1,000,000"* (PPG) or *$1,000* (Amazon), verified page by page. **I applied
+  "measure through the display path" to the row NAME and not to the row VALUE in
+  the same script; there are TWO display paths and a claim about readers must
+  name which.**
+  **The filing's unit was in the store the whole time and nothing read it:**
+  `parse4i` writes `thousands` into every entry and it had **0 reads** anywhere —
+  computed and discarded, the same shape as run #244's failure reason and the
+  Schedule A carrier. So the note states a FILED FACT and needed no re-parse.
+  **Also a documentation defect found here: the claim above that the list's
+  display precision "replicat[es] `derive()`'s distrust rule" is wrong** —
+  `derive()`'s rule is about filer-entered PARTICIPANT COUNTS, and neither it nor
+  the $100k list packing touches lineup row values.
+- **QUEUED, owner decision, and the largest thing found in this cycle: 62
+  CRAWLABLE PAGES NO RUN CAN EVER REPAIR.** `p/` holds **5,062 committed HTML
+  files against the generator's `TOP_N = 5000`**, so 62 pages / 169,447
+  participants are served and outside every regeneration — SP Plus (15,333),
+  Mavis Tire (13,035), Pep Boys (9,779), Confluent Health (8,280). Their plan
+  years agree with the store, so staleness is not the risk; **the risk is that
+  no parser fix reaches them** — v168's `appreciat` rows, v173's `(continued)`,
+  v182's CVS GICs, v185's loan prose and the unit note are all invisible there
+  and will stay so however many versions ship. A page that falls out of the top
+  5,000 stops being maintained without stopping being published. Fixing it
+  changes which URLs exist, so it is the owner's call.
+- **QUEUED from the 18:0xZ draw, split because ONE count was four defects:** a
+  vehicle type at the front of a fund name after `cleanFiledName` —
+  **A** the bare type as the whole name 472 rows / 353 plans / 1,291,668 ppl;
+  **B** a section heading welded onto a real fund name 4,692 / 712 / 1,218,124;
+  **D** type plus a value (OCR) 202 / 25 / 88,324; **C** type plus a page
+  reference 1 / 1 / 80,880. **B's outcome test: 846 rows already resolve to a
+  fund, 144 would GAIN one if the caption were stripped, 0 would LOSE one** — so
+  a strip is safe and B is an honesty defect for 1.22M readers, **not** a
+  fee-coverage fix, whatever its row count suggests. **A raises a question about
+  the machinery**: 353 plans publish a bare `Mutual Funds` while
+  `audit-generic-names` reports 114. `docs/accuracy-log.md` 2026-09-27 (18:4xZ).
 - **LIVE ON MAIN: the v184 store — MIRRORED 2026-09-27 14:1xZ**
   (`2bf641df → 13028d3c`), **data gate UNFORCED at +0 gained / −0 lost**;
   `--force` covered the GIT check alone over main's one cron commit (#474,

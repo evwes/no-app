@@ -22456,3 +22456,90 @@ Verified end-to-end on all 160 noted pages: the unit each note STATES matches
 the granularity of the fund values printed on that same page, **0 mismatches**,
 153 thousands / 7 millions. Trust-served pages are covered too — `entry` becomes
 the trust's entry before `filedUnit` sees it, and 2 of the 160 are that shape.
+
+## 2026-09-27 (18:4xZ) — CORRECTION to my own precision claim, and the draw's caption class split four ways
+
+### The precision defect was real but I named the wrong surface, and I had told the owner the wrong scope
+An hour ago I recorded — and reported — that **"we publish dollar precision the
+filings never gave, 176 plans / 5,641,116 participants."** The store-side
+population reproduces exactly and the defect is real, but **the interactive
+report never had it**: `app.js:1683` renders `money(f.value / 1e6)`, three or
+four significant figures, so a report reader has always seen `$671.0M` and never
+`$671,000,000`. The zeros were printed only by the **crawlable static pages**,
+where `build-seo-pages.mjs` used `usd(f.value)` — **160 shipped pages /
+5,719,845 participants**, now measured page by page rather than plan by plan.
+
+**The lesson is the one this record already carries and I applied it only
+halfway.** I checked "measure through the display path, not the store" for the
+row NAME (which is how the leading-dash finding died before publishing) and did
+not check it for the row VALUE, on the same rows, in the same script. There are
+**two** display paths — the report and the static pages — and a claim about
+readers has to name which one.
+
+### Two things this settles that were unknown, and one is a documentation defect
+- **The parser has recorded the filing's unit all along and nothing read it.**
+  `parse4i` writes `thousands: best.scale > 1` into every lineup entry
+  (`lib-4i.mjs` → `fetch-4i.mjs`), and it had **0 reads** in `merge-4i`,
+  `audit-data`, `app.js` and `build-seo-pages`. Computed and discarded — the
+  same shape as run #244's failure reason, the Schedule A carrier and the
+  feature-fallback denominator. So the page can now state the filing's own
+  declared unit as a FILED FACT rather than infer it from round numbers, and no
+  `PARSER_VERSION` bump was needed. Confirmed against PPG's filing, whose 4i page
+  is headed `($ in millions)` and prints `671`.
+- **`CLAUDE.md` is wrong where it says the list's display precision "replicat[es]
+  `derive()`'s distrust rule".** `derive()`'s rule is about filer-entered
+  PARTICIPANT COUNTS driving average balance and contribution; the list's $100k
+  packing is prep-side boot-payload precision. Neither touches lineup row values,
+  so there was no existing rule to reuse — I asserted there was one and sent the
+  work looking for it.
+- **SHIPPED, verified by me independently and not on report:** PPG's page
+  (`p/250730780-384.html`) reads *exact only to the nearest $1,000,000*,
+  Amazon's (`p/820544687-001.html`) *$1,000*, **exactly 160 pages carry the
+  note**, and the control holds — a filing that printed its own round numbers
+  unscaled (Mattel, `$501,190,000`) gets no note, because the flag marks where
+  WE multiplied, not where the filer rounded.
+
+### 62 CRAWLABLE PAGES THAT NO RUN CAN EVER REPAIR — the largest thing found this cycle
+`p/` holds **5,062 committed HTML files and the generator writes `TOP_N = 5000`**
+(verified: `ls p/*.html | wc -l` = 5,062, `build-seo-pages.mjs:16`). So **62
+pages / 169,447 participants are served, crawlable, and outside every
+regeneration** — SP Plus (15,333 ppl), Mavis Tire (13,035), Pep Boys (9,779),
+Confluent Health (8,280), Blst Operating (2,160). Their plan years agree with the
+store, so staleness is not the risk. **The risk is that no parser fix reaches
+them at all**: v168's `appreciat` rows, v173's `(continued)`, v182's CVS GICs,
+v185's loan prose and this cycle's unit note are all invisible on those 62 pages,
+and will stay invisible however many versions ship. A page that falls out of the
+top 5,000 stops being maintained without stopping being published.
+**Not fixed — it changes which URLs exist**, so the shape (sweep and delete, or
+regenerate beyond the top 5,000) is an owner decision. Queued with its size.
+
+### The draw's caption class: ONE count that was four defects
+`typepfx.mjs` said 5,161 rows / 1,032 plans / 2,550,567 ppl still show a vehicle
+type at the front of a fund name after `cleanFiledName`. **Printing the members
+showed that is four different defects**, and split disjointly (predicates stated
+in `typesplit.mjs`):
+
+| | rows | plans | participants |
+|---|---|---|---|
+| **A** the BARE type as the whole name | 472 | 353 | 1,291,668 |
+| **B** a section HEADING welded onto a real fund name | 4,692 | 712 | 1,218,124 |
+| **D** the type plus a VALUE welded on (OCR) | 202 | 25 | 88,324 |
+| **C** the type plus a PAGE reference | 1 | 1 | 80,880 |
+
+The two scripts reconcile to the row (4,692 + 202 + 1 = 4,895, the population the
+second predicate covered), which is why both are trusted rather than either.
+
+**B got the outcome test that decided the em-dash class, because a row count is
+not a reader benefit.** Over those 4,895 rows, with `lookupTicker`'s order
+transcribed from `app.js:667-684` and `f.type` passed: **846 already resolve to a
+fund, 144 would GAIN one if the caption were stripped, and 0 would LOSE one** —
+so the leading phrase is never part of a real fund name in this population, which
+is the control that makes a strip safe. The 144 wins are all small plans (Roth
+Capital 248 ppl, Tower Industries 211, Health Advocates 185). **So B is an
+honesty defect for 1.22M readers and not a fee-coverage fix**, and saying so is
+the point: the row count invites the opposite conclusion.
+
+**A is the one that raises a question about the machinery**: 353 plans publish a
+bare `Mutual Funds` / `Registered Investment Company` / `Collective Investment
+Trusts` as a holding name, while `audit-generic-names` reports 114 plans. The gap
+between the audit's count and the population is the next thing to examine.
