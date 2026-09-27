@@ -21982,3 +21982,89 @@ and faithful to the filing; no `PARSER_VERSION` bump.**
   `app.js` by source slice and runs it in a `vm` — the same shape as
   `build-ticker-reference.mjs` loading `fund-er.js` — rather than
   transcribing it.
+
+## 2026-09-27 (16:xxZ) — run #475 verdict, a guard that went from 0 to 1 BY DESIGN, and two sizing errors of mine
+
+### Run #475 (incremental, no version bump) PASSED
+Dispatched 16:10Z on the dev branch because main's `:23` cron had not fired
+since 14:04Z — the documented GitHub-cron unreliability, not a fault. `success`
+in 8 minutes, commit `1090cc6d`.
+
+- pv 184 now covers **68,639 of 68,767 (99.81%)**, up 2: the two `e=analyze`
+  acks were re-read and reached the cleaner `no-section`, so **`analyze` 2 → 0**
+  and `no-section` 7,122 → 7,123. That is the documented self-healing — a stale
+  pv means the next incremental run retries it — working without intervention.
+- confident **60,115 (+0 / −0)**, HIGH **5** at the baseline, WARN 545 → 543,
+  overshoot 329, aggRow 112, **dl 128 unchanged** (no jump, so no re-probe owed).
+- `audit-generic-names` **114 plans** against a 208 baseline and a 230 threshold.
+
+### `audit-dominant-row` is 1, not 0 — and it is v184's fix making a defect VISIBLE
+The rule on this record is that this audit holds at 0 and any nonzero is a
+regression to stop and diagnose. It is 1:
+
+    $0.02B   4 rows  97%   Cobre Valley Regional Medical Center | Registered investment companies
+
+**It is not a regression, and the prediction that it would happen is already
+written in this log, five entries above.** The 2026-09-27 draw entry said:
+*"Splitting one junk holding into two halves defeats a share-threshold guard,
+so the dedup has to run BEFORE the dominant-row test, not after."* Cobre Valley
+(578 ppl) is that entry's own type case — it published `Registered investment
+companies` **twice**, at 49.1% each, both below the audit's 0.90 threshold, so
+the audit was blind to a 98.2% junk holding. v184's arm C collapsed the twin,
+the ratio fell 1.439 → 0.732 exactly as designed, and the single surviving row
+is now 97% of the menu and **visible**. The guard did not break; the dedup moved
+in front of it and it started working.
+
+**So the defect is old, the detection is new, and the plan is still wrong for
+578 readers**: a 4-row "menu" that is 97% a generic type label, served from a
+2023 fallback. This is the v105 dominant-row shape, where the rule is that the
+lineup is withdrawn. **Queued as the next parser item** — small by people, but
+it is the audit's own baseline and it may not sit at 1.
+
+### TWO SIZING ERRORS OF MINE, both the same mistake in different clothes
+**(1) I sized a DISPLAY defect over the STORE.** I measured a stray quote glyph
+in row names at **3,718 rows / 554 plans / 637,869 participants** and handed
+that figure on as the size of what readers see. Measured through
+`cleanFiledName`, the function that actually renders the name, it is **231 rows
+/ 144 plans / 220,004 ppl** — the shipped function has stripped trailing quotes
+and leading dashes for some time. The recorded em-dash class collapses the same
+way: **1,993 rows in the store, 1 row at display.** This record already carries
+the rule — *transcribe `lookupTicker` from app.js for any measurement over
+`fund-er.js`; reaching for the shipped predicate is not enough, it has to be
+called the way the site calls it* — and I broke it by measuring the input to a
+repair rather than its output. **A store count is not a reader count whenever a
+display-time repair stands between them.**
+
+**(2) I wrote a service-code map from memory and inflated a class ninefold.**
+Re-deriving the recordkeeper decision's size, my first pass gave 19,852 plans /
+28.6M ppl against the recorded 2,241 / 2.0M. Two causes, both mine: I omitted
+the condition that the published name must actually BE the top-fee row's name
+(pass 3 has a platform-brand priority, so a correctly-named plan can sit above
+an advisor row), and my code map was wrong on nearly every entry — **29 is
+Legal, not advisory; 50 is "Direct payment from plan", a compensation code, not
+a profession at all.** The real table was in `scripts/build-seo-pages.mjs` the
+whole time. With both corrected it reproduces: **2,241 plans / 2,018,177 ppl**,
+profession split **1,512 / 1,491,936** against the recorded 1,509 / 1,482,658 —
+eleven days of new filings apart.
+
+### A refinement to that owner decision, which makes its number smaller and honest
+Of the 1,512 plans flagged as publishing a different profession's name,
+**437 (390,276 participants) publish a name that carries a recordkeeping code
+(15/64) on five or more OTHER filings in the store** — UPS → `Voya` (16 other
+filings), Grinnell → `TIAA` (1,004), Kidspeace → `Nationwide` (548). On those
+the published NAME is almost certainly right and only the service code on this
+particular filing describes what the plan paid that firm for. **So the
+genuinely-wrong-name figure is nearer 1,075 plans / ~1.10M participants than
+1,512 / 1.49M.** Stated as a bound, not a partition: the ≥5 threshold is
+arbitrary, and a handful of the 437 are audit firms mis-coded elsewhere
+(`Grant Thornton` at 5, `Baker Tilly` at 10), which are real wrong names.
+The store-wide "does this name stand alone as X elsewhere?" test is the same
+one that settled the CHS issuer strip.
+
+### Also from the draw, diagnosed rather than left unknown
+Werner Construction (341 ppl) publishes `Allspring Precious Metals
+International`, which reads like two funds welded into one row. **It is not
+ours**: the filing was pulled and its schedule prints that exact string on one
+line against one value of $1,552,310. Faithful parse of an odd filed name.
+Walmart was drawn too and is **clean** — the wrapped BlackRock names publish
+whole with issuers attached, confirming v130's fix on the live store.

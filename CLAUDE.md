@@ -661,15 +661,24 @@ export, do not copy the line.
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, ≥100
   participants at either end of the plan year): **68,259 full-form**, 43,523
   short-form, 68,767 parse-status entries.
-- **STORE: pv 184 covers 68,637 of 68,767 acks (99.81%)** — tail pv180 23,
+- **STORE: pv 184 covers 68,639 of 68,767 acks (99.81%)** — tail pv180 23,
   pv106 18, pv124 10, pv123 10, pv98 10, pv91 9. Confident **60,115**, lineups
-  59,764, HIGH 5, WARN 545, overshoot 329 / 426,852 ppl, aggRow 112, dl **128**,
-  `analyze` 2, `no-section` 7,122. **`matchQuote` 5,397 of which only 1,785 are
-  SHOWN to readers** — the condition/outcome pair shipped 2026-09-27.
+  59,764, HIGH 5, WARN 543, overshoot 329 / 426,852 ppl, aggRow 112, dl **128**,
+  **`analyze` 0** (#475 re-read both stuck acks to the cleaner `no-section`),
+  `no-section` 7,123. **`matchQuote` 5,397 of which only 1,785 are SHOWN to
+  readers** — the condition/outcome pair shipped 2026-09-27.
 - **`PARSER_VERSION` in the tree is 184. NOTHING IS IN FLIGHT** as of
-  2026-09-27 15:0xZ — #473 (the v184 full re-parse, dev branch) finished
-  `success` in 57 minutes at 13:45Z, and main's hourly cron #474 finished
-  `success` at 14:10Z.
+  2026-09-27 16:3xZ — #473 (the v184 full re-parse) finished `success` at
+  13:45Z and #475 (incremental, no bump) at 16:18Z.
+- **`audit-dominant-row` IS 1, NOT 0, AND THAT IS v184 WORKING.** Cobre Valley
+  Regional Medical Center (578 ppl) publishes `Registered investment companies`
+  at **97%** of a 4-row menu. It published the SAME row twice at 49.1% each
+  until v184 collapsed the twin — both halves sat under the audit's 0.90
+  threshold, so the guard was blind to a 98.2% junk holding. **The dedup moved
+  in front of the test and the test started working**, exactly as the
+  2026-09-27 draw entry predicted in writing. The defect is old, the detection
+  is new, and the lineup should be withdrawn (the v105 shape). **Next parser
+  item** — small by people, but this audit may not sit at 1.
 - **LIVE ON MAIN: the v184 store — MIRRORED 2026-09-27 14:1xZ**
   (`2bf641df → 13028d3c`), **data gate UNFORCED at +0 gained / −0 lost**;
   `--force` covered the GIT check alone over main's one cron commit (#474,
