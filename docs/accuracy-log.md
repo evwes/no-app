@@ -22543,3 +22543,76 @@ the point: the row count invites the opposite conclusion.
 bare `Mutual Funds` / `Registered Investment Company` / `Collective Investment
 Trusts` as a holding name, while `audit-generic-names` reports 114 plans. The gap
 between the audit's count and the population is the next thing to examine.
+
+## 2026-09-27 (19:xxZ) — run #477 verdict (v185): PASSED, and THREE of its numbers missed the prediction
+
+`success` in 58 minutes at 18:47Z, commit `d8d049b0`. pv 185 covers **68,637 of
+68,767 (99.81%)**, one dominant pv, so the store is complete. But three figures
+deviated from `wam`'s pre-registration and **all three had to be opened rather
+than waved through** — that is what the pre-registration is for.
+
+| | predicted | actual |
+|---|---|---|
+| confident | 60,115 → 60,114 (−1) | **60,113 (−2)** |
+| HIGH | 5 | **7** |
+| overshoot | should FALL | **329 → 330** |
+
+### THE PREDICTED TEST PASSED: `audit-dominant-row` 1 → 0
+Cobre Valley was the entire population and it is withdrawn (`dx=stmt`), exactly
+as designed. `audit-generic-names` also fell, 114 → **109 plans** / 164 → 154
+rows, against a threshold of 230.
+
+### The −2 is three losses and one gain, every one read row by row
+- **Cobre Valley (578 ppl)** — the designed withdrawal. As predicted.
+- **Bekaert Corporation (1,698 ppl) — NOT predicted, and it is the fix working.**
+  It had been publishing a **2023 fallback** of four rows, one of which was
+  `value of the fully benefit-responsive investment contract was $48,380,143 and`
+  — prose, at $52,323,885 — beside generic `Pooled separate accounts` and
+  `Mutual funds`. v185's A4 killed the prose row, the fallback stopped being
+  publishable, and the plan's OWN newest filing won with **24 real rows**
+  (Fidelity Freedom Blend vintages, Fidelity 500 Index, Gabelli Treasury MM).
+  **That parse double counts**, at ratio **2.18**, so `isConfident`'s upper bound
+  refused it and the plan now shows the honest "not readable" instead of four
+  junk rows. **The ratio guard did its job on a menu it had never seen.**
+- **Ashton Potter (252 ppl) — NOT predicted, also the fix working.** It was
+  publishing **its own sponsor name, `ASHTON POTTER (USA) LTD.`, as a
+  $3,725,219 holding**, plus a garbage row `@ Total non` at $214,772. v185
+  removed both; what remains is five asset-class labels (`Mutual Funds- Domestic
+  Equity`) and one real fund, correctly suppressed as `stmt`. It also **left the
+  overshoot population**, where it had been publishing at ratio 1.496.
+- **GAINED: Lehigh Valley Imaging (198 ppl)** — and this closes a regression
+  this file has carried as "TOP OF THE QUEUE" since the 2026-09-18 v135 entry.
+  **Stated with its cost, because it is not a clean win: it returns publishing
+  at ratio 1.412**, so its menu accounts for 141% of the plan's money.
+
+So HIGH 7 = the baseline 5 plus two self-clearing `reparse-loss` findings on
+Bekaert and Ashton Potter, both real-menu-shaped by row count and both justified
+above. They clear on the next run.
+
+### The overshoot +1 is two in and one out, and all three are named
+Measured by rebuilding the population from both stores rather than trusting the
+delta: **340 → 341**, Ashton Potter out at 1.496, Lehigh Valley Imaging in at
+1.412, and **African American Planning Commission (421 ppl) in at 1.290** — the
+one entrant with no account of itself yet. Recorded as open.
+
+### THE USEFUL FINDING IS INSIDE BEKAERT, AND IT NAMES A v184 GAP
+Bekaert's own-filing parse publishes the same holdings twice under two spellings:
+`IPRUBKT` $103,200,421 beside `Guaranteed Income Fund IPRUBKT —_—_ Guaranteed
+Income Fund` $33,913,242 and a bare `Guaranteed Income Fund`; `IFTD25Q`,
+`1FTD35Q`, `1FTDSOQ`, `IFTDSSQ`, `LFTD65Q` beside their named equivalents
+`Fidelity Freedom Blend 2030 / 2040 / 2045 Commingled Q`. **This is exactly the
+legend-twin class v184's `collapseDoubleRender` closed — and it does not fire
+here**, because the code and the name are not keyed alike once OCR has turned
+`1` into `I` and `5` into `S` inside the code (`1FTD50Q` → `1FTDSOQ`). v184's arm
+A normalises only the LEADING `1`/`I`. **Next parser item, with its evidence
+already in hand.** No reader is harmed today — the ratio guard withheld the whole
+lineup — which is why this surfaced as a confidence loss rather than as a
+fabricated menu.
+
+### Mirror evidence, produced BEFORE the mirror
+Main carried one cron commit (`3e83057a`, incremental at v184). Measured:
+**0 acks and 0 plans on main the branch lacks, `plans` array byte-identical,
+0 acks where main has a higher pv**, and **3 confident on main but not on the
+branch — precisely Bekaert, Cobre Valley and Ashton Potter**, all three read
+above. So `--force` covers the GIT check and `--force-data` the three
+withdrawals, each justified by name and none of them a lost real menu.
