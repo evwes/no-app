@@ -21179,3 +21179,129 @@ master trust, confident on both sides).
   gap cannot be absorbed. Note it takes effect in the NEXT merge, because
   `merge-4i` checks out the latest branch state, so a `[skip ci]` commit to
   `audit-data.mjs` is not deferred.
+
+## 2026-09-27 — CVS Health's four unreachable option subtotals: WITHDRAWN A SECOND TIME, and the blocker is PLACEMENT, not a threshold
+
+**The item.** CVS Health (307,068 participants, $30,087,909,242) publishes 13
+rows summing $21,415,578,814. Four of its five option subtotals are absent —
+Large Cap Core $4,427,425,757, International Equity $1,609,057,959,
+Diversified Bond $1,446,233,755, Small Mid Cap Core $715,395,365 =
+**$8,198,112,836 = 27.2% of the plan**, 27.7% of the filing's own declared
+`Total investments $29,611,826,736`. Target: 14 options, ratio ~0.979.
+
+**THE HYPOTHESIS TESTED — "let an EXACT arithmetic match substitute for the
+`>= 30` flood gate" — IS A PROVABLE NO-OP, and the reason is architectural.**
+`absorb` is applied POST-SELECTION in `parse4i`, over `best.ordered`, the
+WINNING region's rows. CVS's winner is a PREFIX that ends at the stable value
+block: the other four subtotals are not in it at all, so no change to
+`absorbRun`'s gate can reach them. Measured as an OUTCOME, not a condition,
+over every member of the reachable population:
+
+| variant | CVS | the other 7 |
+|---|---|---|
+| v183 (shipped) | 13 rows @ 0.7118 | — |
+| A: exact to the dollar substitutes for `>= 30` | **byte-identical** | byte-identical |
+| D: exact within 0.01% substitutes for `>= 30` | **byte-identical** | byte-identical |
+
+**THE POPULATION IS 8 PLANS / 312,930 PARTICIPANTS, measured whole from the
+store, and CVS is 98.1% of it.** v183 requires the subtotal LINE to be in the
+published `funds`, so the reachable class is a subset of plans publishing a
+subtotal-named row. Two independent scans agree exactly — 8 plans by NAME
+(`SUBTOTAL_NAME`) and 8 by TYPE (`SUBTOTAL_TYPE`), both, no divergence:
+CVS 307,068; Chimes International 3,791; Your Recruiting 514; Lowenstein
+Sandler 475; Main Street Radiology 439; Golden Krust 262; First National Bank
+and Trust 241; Premier Properties 140. Bound on the invisible tail, stated
+rather than claimed as zero: **311 entries / 6,490,484 ppl carry a display
+`cut`**, so a subtotal row could in principle be in `funds` at absorb time and
+hidden from a store scan by the 120-row cap.
+
+**WHY CVS'S TWO REMAINING BLOCKS FAIL THE ARITHMETIC — from the parser's own
+loop state, not from reading the page.** A new `[subtotal-run]` trace prints
+every retyped subtotal's run in BOTH directions, unbounded by the gates:
+
+- **International Equity $1,609,057,959**: back run **5 rows = $1,609,059,654 =
+  100.0001%**, off by **$1,695**. Not exact. The filing says why — the block is
+  five mutual funds plus `Cash | Cash | (1,695)`, a **NEGATIVE** row the parse
+  drops. The block's own arithmetic IS exact; our reading of it is one dropped
+  negative row short.
+- **Diversified Bond $1,446,233,755**: best runs are **4 rows = $1,255,797,011
+  = 86.83%** forward and **597 rows = $713,124,823 = 49.31%** back. Only about
+  half the block is in the row set at all, so **no arithmetic rule of any
+  tolerance can absorb it.**
+
+**AND EXACTNESS CANNOT DISTINGUISH INNARDS FROM A MENU — that is the general
+argument, with three cases at nearly the same number and opposite correct
+actions.** CVS `Stable Value Fund Subtotal` 100.00% over **132 synthetic-GIC
+securities** (absorb is right). I. Rice `Sub-total: Registered Investment
+Companies` 99.48% over **51 rows that ARE the menu** (absorb is wrong; it cost
+that plan its whole lineup on run #467). **Lowenstein Sandler Llp (475 ppl)
+`Sub-Total Mutual Funds` $64,429,689 at 99.4164% over a contiguous 15-row run
+of REAL funds** — Vanguard Institutional Index $23,889,205, Wellington
+$10,714,424, Total Bond, EuroPacific, Janus Henderson Enterprise (absorb is
+wrong). **Same arithmetic; the run length is the only signal in the row set
+that separates them**, which is why `>= 30` is not a weak proxy standing in for
+something better — it is the discriminator, and a tolerance that separates CVS's
+0.0001% from Lowenstein's 0.58% is a number read off one filing.
+
+**THE ONLY PLACEMENT THAT CAN REACH THE FOUR CANNOT CARRY v183'S GUARD.** Two
+further variants were built and measured:
+
+| variant | CVS | I. Rice (131 ppl) |
+|---|---|---|
+| E: absorb in the LEAVES + 0.01% tolerance | 34 rows @ **1.0074**; all 5 subtotals; **~20 garbled sovereign bonds published as menu rows** (`258,640,000 _ URUGUAY GOVERNMENT INTERNATION` $5,481,995, `MEXICAN BONOS`, `BRAZILIAN GOVERNMENT INTERNATI`); $699M of Diversified Bond still double counted | **38 rows @ 0.9856 → 14 @ 1.3061** |
+| F: E + the 90% evidence bound lowered to 45% | 19 rows @ **1.0000**; all 5 subtotals; but an OCR-garbage row `(A) Prefetted cence (WAA) \| (0) A el: nn LC) (=)` publishes at **$483,462,432 = 1.6% of the plan**, plus `J Other Wiabilities…` and `CVS HEALTH CORPORATION`; and `sma` **132 → 0**, so the securities-tab detail is lost | **38 rows @ 0.9856 → 14 @ 1.3061** |
+
+Both re-break I. Rice, and **the break is not fixable where the fix must live.**
+v183's guard asks *"is the subtotal LINE in the published set?"* — I. Rice's is
+in the winning region's LEAVES and is removed later by the restatement
+machinery. At the leaves stage that question has no answer: `funds` does not
+exist yet, and the leaves-stage equivalent ("is it in `leaves`?") is trivially
+true for every case. **The reason leaves-absorb reaches CVS is the reason it
+wrecks I. Rice: it changes which region wins.**
+
+**VERDICT: WITHDRAWN AGAIN.** Reaching the target needs (1) a tolerance chosen
+from CVS's $1,695, (2) an evidence bound lowered from 90% to ~45% on CVS's own
+49.31%, and (3) abandoning a guard that cannot be reimplemented at the only
+placement that works — in exchange for publishing a $483M OCR-garbage row and
+re-breaking a 131-participant plan. **Two numbers from one filing and an
+unguardable regression is not a rule.**
+
+**SHIPPED — instrumentation only, no behaviour change, NO `PARSER_VERSION`
+BUMP, NO RE-PARSE.** `[subtotal-run]` in `namedSubtotals` prints each retyped
+subtotal's run length, sum and percentage in both directions under
+`WAMPO_TRACE=rows`. It is what settled this in one cycle, where v183's own two
+wrong diagnoses both came from reading OUTPUT rows. Verified behaviour-neutral:
+parser gate green (73 specimens), `diff-lineups` vs HEAD over **1,019 filings:
+gained 0, lost 0, fabricated introduced 0, removed 0, row-count moves 0, menu
+sums moved 0**, and the 8-plan population plus I. Rice parse byte-identically.
+
+**All thirteen pre-registered v183 assertions HELD, plus twelve controls, 25 of
+25**, every row addressed BY VALUE: CVS 13 rows / 0.7118 / $21,415,578,814 /
+`Stable Value Fund Subtotal` $2,690,925,949 typed `Subtotal (not a holding)` /
+`EB Temporary Investment Fund` $13,252,196 / 132 `sma` / `managed` / no `cut`;
+I. Rice 38 rows / 0.986 / confident / `sma` absent / $13,947,979; Main Street
+Radiology 18 rows / 0.9920 / $76,817,644 with $67,765,791 still published and
+retyped; Lowenstein Sandler 17 rows / $135,188,735 with its 15-fund run intact.
+
+**MY OWN CONTROL FAILED FIRST AND THE PARSER WAS RIGHT.** C9 asserted
+Lowenstein's `Sub-Total Collective Trusts` $71,772,641 was a published retyped
+row. It is not — that line exists only in a candidate region's LEAVES, which is
+where I read it from, because `[subtotal-run]` prints every candidate and not
+the winner. The store says Lowenstein publishes exactly ONE subtotal row. **The
+instrument I built in this cycle produced the wrong assertion in this cycle:**
+a trace over candidates is not a description of the published set, and the rule
+about reading what a name refers to applies to one's own new tooling first.
+
+**RECORDED, NOT FIXED — one finding outside the item.** `SKIP_ROW` matches
+`^(total|subtotal|…)`, so CVS's `Total investments $29,611,826,736` — the
+filing's OWN declared total, printed inside the schedule immediately after the
+last subtotal — is READ and DISCARDED. No `declaredTotal` exists anywhere in
+`lib-4i`; v101's grand-total rule judges against `assetsEOY` instead. That is
+the computed-and-discarded shape this project keeps paying for. It is also the
+only principled successor visible for this item: **a region whose leaf sum
+exceeds the schedule's own declared total is provably double counting** — CVS's
+wide region is $39.57B against a declared $29,611,826,736, an excess of
+$9.96B that equals its five blocks' read innards to the dollar — and that test
+needs no threshold and no vocabulary. UNSIZED, and honestly so: how many
+filings print a declared total inside the schedule cannot be measured without a
+parse pass. Proposed for the owner as NEW COVERAGE, not started.

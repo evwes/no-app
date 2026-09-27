@@ -873,6 +873,24 @@ export function namedSubtotals(rows) {
     if (!v || !isSub[i]) continue;
     if (runOk(i - 1, -1, v) || runOk(i + 1, 1, v)) { drop.add(i); continue; }
     retype.add(i);
+    /* v183 follow-up instrumentation (2026-09-27), and it is the reason the CVS
+     * item could be settled in one cycle: print the arithmetic the absorb
+     * decision turns on for EVERY retyped subtotal, in BOTH directions,
+     * unbounded by the gates below — so a refusal names its own reason instead
+     * of being inferred from the output rows. Reading the output had already
+     * excluded the right answer twice on this defect family. Trace only; no
+     * behaviour changes, so no PARSER_VERSION bump. */
+    if (TRACE_ROWS) {
+      for (const step of [-1, 1]) {
+        let s = 0, n = 0, big = 0;
+        for (let j = i + step; j >= 0 && j < rows.length && !isSub[j]; j += step) {
+          const w = +rows[j].value || 0;
+          if (s + w > v * 1.005 + n + 1) break;
+          s += w; n++; if (w > v * 0.5) big++;
+        }
+        console.error(`[subtotal-run] ${JSON.stringify(String(rows[i].name).slice(0, 40))}=${v} dir=${step > 0 ? "fwd" : "back"} rows=${n} sum=${s} pct=${((s / (v || 1)) * 100).toFixed(4)} over50pct=${big}`);
+      }
+    }
     const run = absorbRun(i, -1, v) || absorbRun(i, 1, v);
     if (run) absorb.set(i, run);
   }
