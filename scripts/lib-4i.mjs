@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 181;
+export const PARSER_VERSION = 182;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -764,10 +764,13 @@ export function subtotalIndices(rows) {
  *
  * Returns disjoint index sets so the caller cannot do both to one row.
  */
+/* v182 adds a THIRD outcome to the two above — ABSORB. See the block comment
+ * on `absorbRun` below; `absorb` maps a retyped subtotal's index to the
+ * indices of the rows it swallows, and is disjoint from both sets above. */
 export const SUBTOTAL_NAME = /\bsub-?totals?\b/i;
 export function namedSubtotals(rows) {
-  const drop = new Set(), retype = new Set();
-  if (!Array.isArray(rows)) return { drop, retype };
+  const drop = new Set(), retype = new Set(), absorb = new Map();
+  if (!Array.isArray(rows)) return { drop, retype, absorb };
   const isSub = rows.map((r) => !!(r && r.name) && SUBTOTAL_NAME.test(String(r.name)));
   /* a run stops at another subtotal — a section's items are what lie between
    * two subtotal lines — and at the point the running sum passes the target,
@@ -792,13 +795,98 @@ export function namedSubtotals(rows) {
     }
     return false;
   };
+  /* v182 (the CVS Health item): A SLEEVE'S OWN SUBTOTAL IS THE AGGREGATE, AND
+   * ITS ITEMISATION IS NOT A MENU.
+   *
+   * v181 retyped CVS Health's `Stable Value Fund Subtotal` $2,690,925,949 and
+   * deliberately left in place the rows it totals, because they did not match
+   * it to the dollar. That was right and it left a PARTIAL DOUBLE COUNT:
+   * 307,068 participants were shown the subtotal AND 132 of the securities
+   * inside it — `ING GROEP NV`, `BANK OF MONTREAL`, `MASTER CREDIT CARD T 1A A
+   * 144A` — as though they were menu options, with $2.69B counted twice.
+   * Nobody picks BANK OF MONTREAL out of a 401(k) menu; it is an innard of the
+   * plan's synthetic-GIC stable value fund, and the filing says so — its first
+   * column is CVS's OPTION NAME and its Description column for that block
+   * reads `Separately Managed Fund`.
+   *
+   * THE DOUBLE COUNT COSTS TWICE, AND THE SECOND COST IS WHY THIS RULE LIVES
+   * HERE RATHER THAN POST-SELECTION. CVS files FIVE such option subtotals
+   * ($2.69B stable value, $4.43B large cap core, $1.61B international equity,
+   * $1.45B diversified bond, $0.72B small mid cap core) plus nine
+   * single-fund options. Its real menu is 14 rows summing to $29.47B against
+   * $30.09B of assets — ratio 0.979. The wide region that holds all of it
+   * scores 1.315, because every subtotal is counted beside its own items
+   * ($29.6B of investments read as $39.6B), so it falls out of the confidence
+   * band and loses to a 0.801 PREFIX that contains only the stable value
+   * block. Fixing the arithmetic post-selection leaves the winner at 13 rows /
+   * 0.712 with the plan's SECOND LARGEST option, $4.43B of large cap core,
+   * absent from the page. Correcting it in the leaves, where v181 and v149
+   * already correct theirs, lets the honest region compete on an honest ratio.
+   *
+   * THE TEST IS ARITHMETIC AND A ROW COUNT — NOT A NAME VOCABULARY. The
+   * shipped security shapes recognise only 29 of CVS's 98 synthetic-GIC rows,
+   * because OCR truncates the issuer suffix their anchors need (`SUMITOMO
+   * MITSUI FINANCIAL GROU`, `VOLKSWAGEN GROUP OF AMERI 144A,`) — the
+   * under-match this project has documented, measured here before the rule was
+   * written. What garbling cannot touch is that the run sums to the subtotal
+   * and that the run is 132 rows long. A MENU DOES NOT HAVE 132 OPTIONS IN ONE
+   * SUBTOTALLED BLOCK; an itemisation does. `>= 30` is the itemised-securities
+   * fold's OWN flood gate, reused rather than re-chosen, and it is what keeps
+   * every one of v181's cases untouched: Cwpm's 35-row menu and Douglas
+   * County's 34 are exact matches that DROP, and the seven other retained
+   * subtotals in the store have runs far shorter than 30.
+   *
+   * BOUNDS, each load-bearing and each aimed at a named failure on this
+   * record:
+   *   - the run is contiguous from the subtotal and stops at another subtotal,
+   *     so a paginated carry-forward cannot chain across pages;
+   *   - it stops the moment the running sum would pass the subtotal, so a long
+   *     tail cannot be trimmed to fit (v181's rule, kept verbatim in spirit);
+   *   - it must reach 90% of the subtotal, so a line standing for holdings
+   *     that are NOT in the row set absorbs nothing — that is Main Street
+   *     Radiology, whose `Sub-total forwarded $67,765,791` is 88.2% of its
+   *     published menu and stands for earlier pages entirely absent from the
+   *     region. Absorbing there would repeat the v172/Apple loss;
+   *   - NO ABSORBED ROW MAY EXCEED 50% OF THE SUBTOTAL. v181's own comment
+   *     warns a loose bound "can delete a row worth 11% of CVS Health's
+   *     $30.1B plan"; this is the guard, and CVS's largest innard is 11.3% of
+   *     its sleeve.
+   * The subtotal KEEPS `Subtotal (not a holding)`, so app.js still refuses it
+   * a ticker and an estimated expense ratio — retyping it would publish
+   * `fundER("Stable Value Fund Subtotal")` = 0.35%, which v181 measured and
+   * gated against. And the absorbed rows are not discarded: parseRows returns
+   * them and parse4i puts them on the securities tab, where the page says they
+   * are held inside separately managed accounts. */
+  const absorbRun = (i, step, target) => {
+    const run = [];
+    let s = 0;
+    for (let j = i + step; j >= 0 && j < rows.length && !isSub[j]; j += step) {
+      const v = +rows[j].value || 0;
+      if (v > target * 0.5) break;                    // a peer option, not an innard
+      if (s + v > target * 1.005 + run.length + 1) break;
+      s += v; run.push(j);
+    }
+    return run.length >= 30 && s >= target * 0.9 ? run : null;
+  };
   for (let i = 0; i < rows.length; i++) {
     const v = +(rows[i] && rows[i].value) || 0;
     if (!v || !isSub[i]) continue;
-    if (runOk(i - 1, -1, v) || runOk(i + 1, 1, v)) drop.add(i);
-    else retype.add(i);
+    if (runOk(i - 1, -1, v) || runOk(i + 1, 1, v)) { drop.add(i); continue; }
+    retype.add(i);
+    const run = absorbRun(i, -1, v) || absorbRun(i, 1, v);
+    if (run) absorb.set(i, run);
   }
-  return { drop, retype };
+  /* a row may be claimed by only ONE subtotal, and never by a subtotal that is
+   * itself being dropped or absorbed — otherwise two neighbouring sections
+   * could each delete the other's rows. */
+  {
+    const claimed = new Set();
+    for (const [i, run] of [...absorb]) {
+      if (run.some((j) => claimed.has(j) || isSub[j] || drop.has(j))) { absorb.delete(i); continue; }
+      for (const j of run) claimed.add(j);
+    }
+  }
+  return { drop, retype, absorb };
 }
 /* the type a retyped subtotal carries. It is not a vehicle, so the frontend
  * must not price it or match it to a ticker — app.js gates on this string. */
@@ -2665,13 +2753,29 @@ export function parseRows(section, opts = {}) {
    * `leafSum` follows the drops so the region's own arithmetic stays
    * consistent, exactly as v149 does. */
   {
-    const { drop, retype } = namedSubtotals(leaves);
+    const { drop, retype } = namedSubtotals(leaves);   // `absorb` is applied in parse4i — see below
     if (retype.size) {
       for (const i of retype) {
         if (TRACE_ROWS) console.error(`[subtotal181] retype ${JSON.stringify(String(leaves[i].name).slice(0, 44))}=${leaves[i].value} (its rows are not in this set)`);
         leaves[i].type = SUBTOTAL_TYPE;
       }
     }
+    /* v182's `absorb` is DELIBERATELY NOT APPLIED HERE, and the measurement
+     * that decided it is worth keeping. Applying it in the leaves — where
+     * `leafSum` feeds region selection — does get CVS Health the four option
+     * subtotals its winning region never reaches ($4.43B large cap core,
+     * $1.61B international equity, $1.45B diversified bond, $0.72B small mid
+     * cap core; the wide region loses at 1.315 precisely because each of the
+     * five subtotals is counted beside its own items). Measured on the real
+     * filing: the wide region then wins with 39 rows at ratio **1.061** —
+     * because CVS's international-equity block is FIVE rows and its
+     * diversified-bond block SIX, far under the >=30 flood gate, so those
+     * sections stay double counted while the two big ones fold. That trades a
+     * double count for an OVERSHOOT, which is this project's fabrication
+     * signature, and reaching those blocks needs a threshold chosen on one
+     * filing rather than one reused from the fold. So the rule runs
+     * POST-SELECTION (parse4i, below), where it cannot change which region
+     * wins, and the four missing options stay a sized, recorded gap. */
     if (drop.size) {
       let removed = 0;
       for (const i of drop) removed += +leaves[i].value || 0;
@@ -4109,6 +4213,53 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
       if (TRACE_ROWS && removed) console.error(`[subtotal] dropped ${drop.length} class subtotal(s) worth ${removed}; ratio now ${(best.ratio || 0).toFixed(3)}: ${drop.map((r) => `${String(r.name).slice(0, 30)}=${r.value}`).join(" | ")}`);
     }
   }
+  /* v182: APPLY THE ABSORB ARM — see `namedSubtotals` for the rule, its bounds
+   * and the measurements behind them. Post-selection, so it cannot change
+   * which region wins; `best.ordered` is the winner's rows in FILED ORDER with
+   * v181's drops already removed and its retypes already applied, so the same
+   * exported function recomputes `absorb` over exactly the published section
+   * rather than a second copy of the walk being written here.
+   *
+   * THE DEDUP IS WHY THIS IS A SUBTRACTION AND NOT A DELETE. `funds` merges
+   * same-named rows: CVS Health's `EB Temporary Investment Fund` is
+   * $67,221,540 across four filed lines, THREE of them inside the stable value
+   * block and one belonging to the company-stock fund. Deleting the merged row
+   * would take $13,252,196 of real money off the page; subtracting the absorbed
+   * part leaves exactly that, to the dollar. A row is only removed when its
+   * merged value matches the absorbed one, and a value is never driven
+   * negative. */
+  {
+    const ord = Array.isArray(best.ordered) ? best.ordered : [];
+    const { absorb } = namedSubtotals(ord);
+    if (absorb.size) {
+      const scale182 = best.scale > 1 ? best.scale : 1;
+      const keyOf182 = (n) => String(n || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+      const absorbedRows = [];
+      let absorbed = 0;
+      for (const [i, run] of absorb) {
+        for (const j of run) {
+          const r = ord[j], k = keyOf182(r.name), want = (+r.value || 0) * scale182;
+          const f = funds.find((g) => keyOf182(g.name) === k && (+g.value || 0) >= want - 1);
+          if (!f) continue;
+          absorbedRows.push({ name: r.name, type: r.type, value: want });
+          absorbed += want;
+          if (Math.abs((+f.value || 0) - want) <= Math.max(1, want * 0.005)) f._absorb182 = 1;
+          else f.value = (+f.value || 0) - want;
+        }
+        if (TRACE_ROWS) {
+          const s = run.reduce((a, j) => a + (+ord[j].value || 0), 0) * scale182;
+          console.error(`[subtotal182] ${JSON.stringify(String(ord[i].name).slice(0, 44))}=${(+ord[i].value || 0) * scale182} absorbs ${run.length} filed rows summing ${s} (${((s / ((+ord[i].value || 1) * scale182)) * 100).toFixed(2)}% of the line)`);
+        }
+      }
+      if (absorbed) {
+        funds = funds.filter((f) => !f._absorb182);
+        for (const f of funds) delete f._absorb182;
+        if (assetsEOY) best.ratio = Math.max(0, (best.ratio || 0) - absorbed / assetsEOY);
+        best.absorbed = absorbedRows;
+        if (TRACE_ROWS) console.error(`[subtotal182] absorbed ${absorbedRows.length} rows worth ${absorbed}; ${funds.length} rows remain, ratio now ${(best.ratio || 0).toFixed(4)}`);
+      }
+    }
+  }
   const untypedFlood = funds.filter(untypedSecurity);
   const itemized = funds.filter((f) => (f.type === "Stock" || f.type === "Company stock") &&
     !isEmployer(f.name) && !inheritedMenuRow(f));
@@ -4147,6 +4298,16 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
     sma = itemized.slice(0, 150).map((f) => ({ name: f.name, type: f.type, value: f.value }));
     smaKind = treatAllAsBrok || (brokRows.length && !mgdRows.length) ? "brokerage"
       : brokRows.length ? "mixed" : "managed";
+  }
+  /* v182: the rows a subtotal absorbed are still shown, on the securities tab,
+   * where the page says they are "held inside separately managed accounts —
+   * each account is a single menu choice". That is the filing's own wording:
+   * CVS's Description column for the Stable Value Fund reads `Separately
+   * Managed Fund`. The fold above wins if it also fired, so a plan never gets
+   * two competing detail lists. */
+  if (!sma && Array.isArray(best.absorbed) && best.absorbed.length) {
+    sma = best.absorbed.slice(0, 150).map((f) => ({ name: f.name, type: f.type, value: f.value }));
+    smaKind = "managed";
   }
   for (const f of funds) { delete f.sec; delete f._sl; }
 

@@ -20637,3 +20637,226 @@ welded into a capitalised word (`dInternational`), not token length.
 **Prevention, since this is the fourth time:** print the matches, ranked, and
 judge the predicate on them before quoting any count — an implausible size is
 the tell, and it has been the tell every time.
+
+---
+
+## 2026-09-27 — v182: CVS Health's remaining PARTIAL double count — a sleeve's own subtotal is the aggregate, never a second one beside its innards
+
+- **Wrong:** CVS Health Corporation (EIN 050494040 PN 017, **307,068
+  participants**, $30,087,909,242) published **120 rows at ratio 0.8012**,
+  summing $24,093,252,281 — and $2,690,990,208 of that was counted **twice**.
+  `Stable Value Fund Subtotal` $2,690,925,949 stood on the page beside **132 of
+  the filed rows it totals**: 98 synthetic-GIC securities (`ING GROEP NV`,
+  `BANK OF MONTREAL`, `MASTER CREDIT CARD T 1A A 144A`, `CITIGROUP INC`), six
+  `IGT <manager> <strategy> Fund` bond sub-funds, three `US TREASURY NOTE`,
+  seven insurer wrapper contracts, three `EB Temporary Investment Fund` cash
+  lines. Nobody picks BANK OF MONTREAL out of a 401(k) menu. The filing says so
+  itself: its first column is **CVS's OPTION NAME** and the Description column
+  for that block reads `Separately Managed Fund`.
+  v181 had **retyped** the line `Subtotal (not a holding)` rather than dropping
+  it, and that was right — the run does not match to the dollar because OCR
+  loses rows, and dropping it would have hidden $2.69B. This entry is the other
+  half of that decision, and it was queued by v181 rather than forgotten.
+- **Re-derived before anything was built, against the LIVE v181 store.**
+  Predicate, stated so it can be re-run: `confident lineup AND >= 30 rows typed
+  "Stable value / GIC"` for the class, and `a row typed SUBTOTAL_TYPE whose
+  value is covered by >= 30 of its own filed rows` for the defect. The
+  pre-v181 figure recorded on the queue (`~$1,537,896,945`) was the **`Stable
+  value / GIC` rows only** — the true double count on the v181 store is
+  **$2,690,990,208** across **132 filed rows**, because six `IGT` rows are
+  typed `Collective trust`, three are `Government securities`, and 20 more sat
+  beyond the 120-row display cap. Of the section, **100.00%** is inside the row
+  set in filed order (`best.ordered`), not the ~57% the queue note reported —
+  57.15% was measured on the CAPPED, DEDUPED store rows and is a different
+  quantity. Both numbers were right about what they measured and only one
+  answered the question.
+- **THE CLASS IS ONE PLAN, and is recorded as one plan.** Ten confident lineups
+  carry >= 30 `Stable value / GIC` rows (382,852 ppl). **Only CVS has anything
+  that totals them** — the other nine (USAA 52,789; Ace Hardware 9,574; Oncor
+  6,135; AVMA 3,641; Tyonek 1,899; Ottawa University 909; Manned Space Flight
+  424; Adelman Travel 216; Moritt Hock 197 = 75,784 ppl) publish the securities
+  with no subtotal and no aggregate beside them, so nothing is double counted
+  and their ratios are honest. They are a PRESENTATION item (bonds shown as
+  menu options), not a wrong answer, and they are queued below, not fixed here.
+  Store-wide there are 8 rows typed `Subtotal (not a holding)`; seven have runs
+  far under 30 and are the negative controls.
+- **MY OWN DIAGNOSIS FROM LAST CYCLE WAS WRONG AND THE CORRECTION MATTERS.**
+  The queue note read *"Fix = the existing managed-account fold applied to a
+  stable-value sleeve; `SEC_TYPE` excludes `Stable value / GIC`."* Admitting
+  that type to `SEC_TYPE` would have made the fold produce
+  `Managed account holdings (N positions)` **beside** the $2.69B subtotal — a
+  second aggregate covering the same money, so the double count would have
+  survived at a different row name. A one-line cause that is merely plausible
+  is not a cause; the arithmetic said so in one script.
+- **Change (v182, `namedSubtotals` gains a third outcome — ABSORB):** a row the
+  filing calls a subtotal that v181 RETAINED absorbs the contiguous run it
+  totals, and stands as the sleeve's single line. The absorbed rows leave the
+  menu and reappear on the securities tab (`smaKind: "managed"`, whose page
+  text is the filing's own wording). **The FILED figure is what preserves the
+  money**: our sum of the run is $2,690,990,208 and the filing says
+  $2,690,925,949, so the subtotal publishes the correct, larger number and the
+  page loses nothing.
+  - **The test is ARITHMETIC AND A ROW COUNT, not a name vocabulary**, and that
+    was measured before it was written: the shipped security shapes recognise
+    only **29 of the 98** synthetic-GIC rows, because OCR truncates the issuer
+    suffix their anchors need (`SUMITOMO MITSUI FINANCIAL GROU`, `VOLKSWAGEN
+    GROUP OF AMERI 144A,`) — the documented under-match direction, so gating on
+    them would have folded a third of the sleeve and left two thirds.
+  - `>= 30` is the **itemised-securities fold's OWN flood gate, reused rather
+    than re-chosen.** A menu does not have 132 options in one subtotalled
+    block; an itemisation does. It is also what makes v181's cases unreachable.
+  - Bounds, each aimed at a named failure on this record: the run is contiguous
+    and stops at another subtotal; it stops the moment the running sum would
+    pass the line, so a long tail cannot be trimmed to fit (v181's rule); it
+    must reach **90%** of the line, which is what refuses Main Street
+    Radiology's carry-forward standing for absent pages; and **no absorbed row
+    may exceed 50% of the line** — v181's own comment warns a loose bound "can
+    delete a row worth 11% of CVS Health's $30.1B plan", and CVS's largest
+    innard is 11.3% of its sleeve.
+  - **The dedup is why this is a SUBTRACTION and not a delete.** `funds` merges
+    same-named rows: `EB Temporary Investment Fund` is $67,221,540 across four
+    filed lines, **three inside the block and one belonging to the company-stock
+    fund**. Deleting the merged row would take $13,252,196 of real money off the
+    page; subtracting the absorbed part leaves exactly that, to the dollar.
+  - The subtotal **keeps** `Subtotal (not a holding)`. Retyping it would publish
+    `fundER("Stable Value Fund Subtotal")` = 0.35% for a subtotal — the second
+    outcome v181 measured and gated. One change, two outcomes, both asked.
+- **Measured, in the units of the claim.** CVS: **120 rows @ 0.8012 → 13 rows @
+  0.7118**, sum $24,093,252,281 → $21,415,578,814. The ratio falls by exactly
+  0.0894 = $2,690,990,208 / $30,087,909,242 — the double count and nothing
+  else. `Stable Value Fund Subtotal` still publishes at $2,690,925,949. The
+  page's coverage band said "under 95%" before and says so after; the number it
+  states is now honest rather than inflated by a phantom.
+- **PLACEMENT WAS DECIDED BY MEASUREMENT, AND THE STRONGER-LOOKING PLACEMENT WAS
+  WITHDRAWN.** v181's rule runs in the LEAVES, where `leafSum` feeds region
+  selection, so putting absorb there too was the obvious move — and it has a
+  real prize: CVS files **five** option subtotals and the winning region reaches
+  only one. Built and measured on the real filing: the wide region then wins
+  with **39 rows at ratio 1.061**, because the international-equity block is
+  FIVE rows and the diversified-bond block SIX, far under the flood gate, so
+  those sections stay double counted while the two big ones fold. **That trades
+  a double count for an OVERSHOOT, which is this project's fabrication
+  signature.** Reaching those blocks needs a threshold chosen on one filing
+  rather than one reused from the fold. So the rule runs POST-SELECTION, where
+  it cannot change which region wins, and the withdrawn experiment is recorded
+  in the code comment so the next session does not re-run it blind.
+- **RECORDED, SIZED, NOT FIXED — and it is the same defect costing twice.** CVS's
+  filing prints four more option subtotals the winning region never reaches:
+  **Large Cap Core $4,427,425,757, International Equity $1,609,057,959,
+  Diversified Bond $1,446,233,755, Small Mid Cap Core $715,395,365 =
+  $8,198,112,836 = 27.2% of the plan**, the second-largest option among them.
+  **The cause is NOT the 40-page OCR ceiling** — all five subtotals and their
+  items are in the OCR'd text, verified by reading it. The cause is the double
+  count itself: the wide region that holds all five reads $29.6B of investments
+  as **$39.6B** and scores **1.315**, out of the confidence band, losing to the
+  0.801 prefix that contains only the stable value block. CVS's true menu is
+  **14 options summing to $29,466,577,571 = ratio 0.979** against a filing that
+  declares `Total investments $29,611,826,736`. Owner's call, because it is a
+  pre-selection change with a threshold that cannot be borrowed.
+- **Controls, named in advance and chosen by a PROPERTY read out of the store by
+  value, never by a remembered ack** — same input text, v181 vs v182, row count
+  / ratio / sum must be byte-identical:
+  - single legitimate stable-value row, no subtotal (must not absorb): **Yale-New
+    Haven 40r 0.9871**, United Airlines 20r 0.8956, Curtiss Wright 27r 0.9732,
+    Teamsters National 25r 1.0351, Plan Professionals 43r 0.9733 — all identical.
+  - itemised securities NOT in a stable-value sleeve, brokerage fold already
+    fired (must not double-fold): **Microsoft 50r 0.9964**, Apple 27r 0.9875,
+    Oracle 40r 0.9111, FMR 120r 0.9702 — all identical.
+  - retained named subtotal with a short run (must not absorb): Chimes
+    International **94r 0.9558**, First National Bank **33r 0.9844**, Main
+    Street Radiology 18r 0.9920, Lowenstein Sandler 17r 0.9880, Premier
+    Properties 10r 1.2059, Your Recruiting 7r — all identical. Chimes and First
+    National carry MORE than 30 rows in total, which is the point: the gate is
+    on the run a subtotal covers, not on the lineup.
+  - **Four of these controls first came back `not-found` on both versions, which
+    reads exactly like a passing control and is not one** — their store entries
+    are OCR-derived and my text-only harness cannot reproduce them. They were
+    re-run through the production OCR path (`ONLY_ACKS_4I` + `OCR_CACHE_DIR`)
+    until each reproduced its stored row count, and only then counted. Golden
+    Krust stays `not-found` honestly: its stored lineup is a 2023 prior-year
+    fallback, so its own filing is not the input, and it is reported as not
+    usable rather than as passing.
+- **Gate and diff:** `parser-gate.mjs` green, **73 specimens** including the
+  shape contracts and the frozen-predicate tether. `diff-lineups.mjs 8491e3e1`
+  over the local corpus: **0 confidence gained, 0 lost, 0 fabricated generic
+  rows introduced, 0 removed, 0 menu sums moved >= 5% with the same rows**, and
+  exactly **one** row-count move — Cvs Health 120 -> 13. Specimen pinned in
+  `docs/defect-specimens.json` (`named-subtotal-PARTIAL-double-count-sleeve-innards`);
+  a newly pinned specimen is not compared until the NEXT diff-lineups run, so
+  the positive control on this run is the trace, which prints
+  `[subtotal182] "Stable Value Fund Subtotal"=2690925949 absorbs 132 filed rows
+  summing 2690990208 (100.00% of the line)`.
+- **PRE-REGISTERED PREDICTION for the next full re-parse at v182** (exact and
+  falsifiable; if any of these misses, read the store before re-running a
+  script):
+  1. `20251006141123NAL0003741777001` (Cvs Health, 307,068 ppl): **13 rows**,
+     `coverageRatio` **0.7118**, published sum **$21,415,578,814**;
+     `Stable Value Fund Subtotal` present at **$2,690,925,949** and still typed
+     `Subtotal (not a holding)`; `EB Temporary Investment Fund` present at
+     **exactly $13,252,196**; **132** rows in `sma` with `smaKind: "managed"`;
+     **no `cut` field** (the fold consumed the tail the cap used to hide).
+  2. Rows typed `Subtotal (not a holding)` store-wide stay at **8**, and
+     **0** of them carry a fund vehicle type.
+  3. The other seven subtotal plans are unchanged: Chimes International 94 rows,
+     First National Bank 33, Main Street Radiology 18, Lowenstein Sandler 17,
+     Premier Properties 10, Your Recruiting not confident, Golden Krust served
+     from its 2023 fallback.
+  4. **Confident count moves by 0** (+0 / −0) and the coverage line is otherwise
+     byte-identical: v182 removes rows INSIDE one already-confident plan, and
+     every coverage metric counts PLANS. `overshoot` unchanged at 331 — CVS was
+     never in it (0.801 is under the 1.15x bar) and 0.7118 is not either.
+  5. `rows-dropped.txt` **must list Cvs Health** with its ratio moving 0.089
+     away from 1.0, and audit-data must raise it as **WARN**. That is the
+     check working, not a regression — the WARN is a read-before-you-mirror
+     list, and this entry is the justification to read.
+- **Prevention:**
+  1. The rule and both bounds live in **one** exported function,
+     `namedSubtotals`, beside v181's two outcomes — so the three answers to
+     "what do I do with a subtotal" cannot drift apart, and parse4i recomputes
+     `absorb` by CALLING it rather than by carrying a second copy of the walk.
+     Three untethered copies of one rule is how the match-quote guard published
+     a false heading on 615 pages.
+  2. Two specimens now pin the two directions of the same line: Main Street
+     Radiology pins **must not absorb** (a carry-forward standing for absent
+     pages) and CVS pins **must absorb** (a sleeve's own itemisation). A gate
+     specimen proves the orientation it pins, so both had to exist.
+  3. **A control that returns `not-found` on both versions is not a passing
+     control.** Four of mine did, because the harness fed pdftotext text to
+     filings the pipeline reads through OCR. The rule: before counting a control
+     as passing, check that the baseline reproduces the plan's STORED row count;
+     if it does not, the input is wrong and the control is silent, not green.
+  4. **The queue note from the previous cycle was wrong in two ways at once** —
+     a wrong size ($1.54B for $2.69B, because it counted one type column) and a
+     wrong fix (`SEC_TYPE`, which would have built a second aggregate). Both
+     were caught by re-deriving against the live store before building, which is
+     the standing rule, and both are left readable here rather than corrected
+     silently.
+  5. The withdrawn leaves-stage experiment and its measured outcome (39 rows @
+     1.061) are written into the code comment at the point where a future
+     session would be tempted to try it, so the measurement is where the
+     decision is made rather than only in this log.
+
+### Found outside the item, sized and NOT fixed (participant-weighted random draw from PUBLISHED lineups, seed 20260927182, 12 plans)
+
+Eleven of twelve are clean menus with no double count and no fabricated row.
+The twelfth named a real class:
+
+- **A wrapped issuer cell whose continuation word lands at the FRONT: 1,145 rows
+  / 283 plans / 633,922 participants.** Global Medical Response (38,334 ppl)
+  publishes `{Company Empower Annuity Insurance} Putnam Retirement Advantage
+  2040 SA` on 11 rows; Amentum `{Company Fidelity Institutional Asset}`,
+  Schneider Electric `{Company State Street Global Advisors}`, Infosys
+  `{Company Vanguard Fiduciary Trust Company}`, Discover `{Company LLC Pacific
+  Investment Management}`, Helmerich & Payne `{Company Trust II Vanguard
+  Fiduciary Trust}` on 16. The firm name is right and its word order is not.
+  It is also a ticker-lookup risk, because `lookupTicker` tries issuer + name
+  FIRST — unmeasured here, and that measurement must transcribe `lookupTicker`
+  from app.js and pass the type as the second argument to
+  `fundTickerInfo(name, type)` rather than asking the table directly.
+- **Nine stable-value itemisations with nothing totalling them: 75,784
+  participants** (USAA 52,789 the largest). No double count, so no wrong
+  number — but readers see corporate bonds listed as menu options. This is the
+  item `SEC_TYPE` actually addresses, correctly scoped this time: admitting
+  `Stable value / GIC` to `SEC_TYPE` would fold them into
+  `Managed account holdings (N positions)`, and it is safe there precisely
+  because no subtotal exists to be double counted against.
