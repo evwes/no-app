@@ -22995,3 +22995,263 @@ a menu is a statement, and none asks whether a menu CONTAINS a statement line.
 The dominance guard, the overshoot test and both name audits are all
 whole-lineup judgements. Cummins (60.7%), Microsoft (8.6%) and ADP (3.5%) are
 the same defect at three scales, and only the first is anywhere near a threshold.
+
+## 2026-09-27 (21:xxZ) — v187: the item said the vehicle vocabulary had a large hole. It has a hole of ONE PLAN, and the thing that was actually blind was the CHECK
+
+**The item, as handed to me:** `GENERIC_TYPE_NAME` does not match some vehicle
+phrases, so `isStatement`, the dominant-row guard and two audits all pass an
+asset-class statement published as a fund menu — Cummins PN020 (38,567 ppl)
+`Common/collective trust funds` at 60.7% / $5,016,457,254, Morgan Stanley PN003
+(81,090) 62.1% / $13.44B, GM PN002 (67,246) 66.4%, GM PN014 (67,487) 63.6%.
+Sized at 4 plans / 48,697 ppl at ≥50% of a menu and 13 / 265,140 at ≥15%.
+
+**Four of its five claims are false, and each was settled by one measurement.**
+
+1. **`GENERIC_TYPE_ANY` — the symbol every guard and both audits actually read —
+   ALREADY MATCHES every phrase the item names.** Tested directly against the
+   shipped export: `Common/collective trust funds` Y, `Collective investment
+   trust funds` Y, `Collective investment trusts` Y, `Common collective trusts`
+   Y. v137 put them there deliberately. Only the NARROW `GENERIC_TYPE_NAME`
+   misses them, and v137's whole point was that the narrow copy feeds the
+   row-DELETING paths while the broad copy feeds the guard — widening the
+   deleting paths is what made 3M's fair-value note publishable.
+2. **`audit-generic-names.mjs` reports all four named plans, as the TOP FOUR
+   ROWS of its output.** 109 plans / $73.8B, led by `General Motors Llc | Common
+   collective trusts`, `Morgan Stanley Domestic Holdings, Llc | Collective Trust
+   Funds`, GM again, `Cummins Inc. | Common/collective trust funds`. The audit is
+   not blind. **What is true is that nothing ACTS on it:** `audit-data.mjs:584`
+   escalates at `genericPlans > 230` against a population of 109, so the guard
+   has 121 plans of headroom and cannot fire. A printed number with a dormant
+   threshold is the shape of a check nobody reads.
+3. **The dominance guard is silent for a THRESHOLD reason, not a vocabulary
+   reason.** `dominanceIsAggregate` needs the top row at ≥90%; these are 60–66%.
+   No vocabulary change reaches them.
+4. **CUMMINS — the item's headline example — IS NOT A READER-FACING DEFECT AT
+   ALL, and this is the expensive part.** `app.js:940` already carries a
+   name-blind suppression: for any plan with an `mtiaAck`, a lineup of ≤8 rows
+   with one row ≥60% of the value is treated as the parser's own trust-pointer
+   shape and `ownUsable` is set false. Cummins is 7 rows at 60.7%, its
+   `mtiaAck` resolves to CUMMINS INC. MASTER RETIREMENT SAVINGS TRUST, and that
+   trust's own lineup is **confident with 33 real rows** — `MFB NT COLLECTIVE
+   S&P 500 INDEX FUND - LENDING` $943,391,661, seven Vanguard target-date
+   vintages, `MFO JPMCB INTERMEDIATE INCOME BOND FUND`. **Its 38,567
+   participants are already shown that menu, not the aggregate.** Re-measured
+   through the transcribed display predicate, the class at ≥60% is 88 plans /
+   344,598 ppl **in the store** and **85 / 302,715 that reach a reader**; all
+   three suppressed plans show their trust's menu instead.
+
+**So the item's own measurement was taken on the STORE and stated as a claim
+about READERS.** That is the identical error this log recorded nine hours
+earlier, about the row VALUE rather than the row NAME: *there are two display
+paths and a claim about readers must name which.* Then it was `app.js:1683`
+already dividing by 1e6; here it is `app.js:940` already suppressing the shape.
+**Both times the shipped display code had solved the case the store made look
+open, and both times the fix for that is the same: transcribe the display
+predicate and call it the way the site calls it.**
+
+### What was genuinely absent, measured whole-store rather than projected
+**`commingled funds` is in NEITHER copy of the vocabulary, nor in
+`isClassLabel`, nor in `STMT_ROW`** — and the `... account funds` form of the
+pooled separate account is in neither either. Population, printed by name:
+**FOUR stored rows in 65,237 lineup entries**, two of them in published lineups.
+
+- **Blue Cross and Blue Shield of Vermont PN003 — 560 participants,
+  $92,947,865 — publishes a five-row "investment lineup" with NO FUND NAMED
+  ANYWHERE IN IT:** `Commingled funds` $77,064,619 = **97.5%**, `Mutual funds`
+  1.7%, `Money market funds` 0.7%, `Other deductions`, `Other additions`. The
+  filing has **no statutory 4i header at all**; the region is the fair-value /
+  changes-in-net-assets note, and it won at ratio 0.851 with score −0.1298. At
+  97.5% this is the **v105 dominant-row shape, live**, and it publishes because
+  two shipped tests each miss by a hair: `dominanceIsAggregate` needs the top
+  NAME in `GENERIC_TYPE_ANY`, and `isStatement`'s ≤8-row arm needs `STMT_ROW` on
+  half the rows and gets 2 of 6.
+  **CONFIRMED FROM THE FILING'S OWN TEXT, not from the parse:** the winning
+  region is the **Statement of Net Assets Available for Benefits** —
+  `Assets: / Investments (Note 3): / At fair value: / Mutual funds / Commingled
+  funds / Money market funds / Participant notes receivable / Employee
+  contributions receivable / Net assets available for benefits` — printed as a
+  **two-year comparative**, `$92,947,865` beside `$80,719,121`. **A Schedule H
+  line 4i schedule has exactly one year by construction, so a two-column
+  comparative cannot be one**, and that is a cleaner disqualifier than any
+  vocabulary. It also exposes a SECOND defect in the same filing, recorded and
+  not fixed because v187 withdraws the region anyway: **we published the OLDER
+  column.** The 2024 figures are `89,663,583 / 1,131,646 / 331,641` =
+  **$91,126,870 against $92,947,865 of assets, ratio 0.980**; our stored rows are
+  the 2023 column, `$78,057,589`, ratio 0.840. The ratio guard's own number was
+  the tell and nothing read it that way.
+- **Nationwide Mutual PN334 — 42,461 participants — is the DECOY**, and the
+  reason the fix is bounded by the 90% floor rather than by the word: it
+  publishes a real 39-row State Street menu and ALSO one row literally named
+  `Commingled funds`, at $5,957,304 = **0.103%** of a $5,801,502,699 menu.
+- McKinsey PN001 and Willis Towers Watson PN005 carry the phrase and are **not
+  confident under either version** (ratios 5.3 and 3.7 against plan assets).
+
+**Change (v187):** `commingled (?:trust |investment )?funds?|pooled separate
+account funds?` appended to **`GENERIC_TYPE_ANY` only**, never to
+`GENERIC_TYPE_NAME`, for v137's reason unchanged. `pooled separate account
+funds` has **zero members in the store**, so its blast radius is provably nil;
+it is included because the singular has been in the list since v104 and a
+vocabulary holding one and not the other is a trap for the next reader.
+
+**THE TWO OUTCOME NUMBERS, which are different populations:**
+- **plans that STOP PUBLISHING a statement as a menu: 1 / 560 participants**
+  (Blue Cross and Blue Shield of Vermont PN003).
+- **plans the AUDITS NEWLY SEE: 1 / 560 participants** — the same plan, and that
+  is the whole population, because `audit-generic-names`'s ≥25%-of-value gate
+  already caught every other member of the class including all four the item
+  named.
+
+**Controls, both directions, through the real production parser:**
+- POSITIVE, `trace-filing --vs HEAD`: BCBS Vermont `stmt=false → stmt=true`,
+  `CONFIDENT=true → false`, the same 5 rows at the same values and ratio 0.851 —
+  **withdrawn, not deleted**, so the page states the filing reports in aggregate
+  instead of showing an asset-class note as a menu.
+- NEGATIVE, same tool: Nationwide PN334 **39 rows, ratio 0.743, CONFIDENT=true,
+  unchanged**. McKinsey and WTW stay non-confident.
+- NEGATIVE, whole-store and not a sample: of **2,790 distinct published row
+  names containing `commingled` or `pooled separate account` (3,710 rows),
+  exactly ONE name / TWO rows flips** — the bare label. `FIAM Core Plus
+  Commingled Pool Class I` (33 rows), `Fidelity Contrafund Commingled Pool`,
+  `Pooled separate account - TIAA Real Estate` (31 rows) and USC's
+  `Real Estate Account (CREF)` are all untouched, because every arm is anchored
+  whole-string.
+- `parser-gate.mjs` green on all specimens including the `frozen` predicate tie.
+- **ONE MEASURED COLLATERAL EFFECT, named because a change is not "1 plan" just
+  because its headline is:** `isClassLabel` also reads `GENERIC_TYPE_ANY`, so
+  `subtotalIndices` can now treat a `Commingled funds` row as a class label.
+  McKinsey's `Commingled funds` row falls $18,187,638,369 → $8,675,489,235 and
+  its ratio moves 5.297 → 4.329 — **toward** 1.0, still far outside the band, not
+  confident either way, so no reader is affected. Bounded by the row scan above:
+  only entries containing the phrase can change, and there are four.
+
+**Specimen + decoy pinned** (`docs/defect-specimens.json`, now 133): BCBS
+Vermont as the class, Nationwide PN334 as the refusal.
+
+### The repair that needed no version at all: THE CHECK WAS NARROWER THAN THE RULE
+`scripts/diff-lineups.mjs` — the tool the operating protocol makes MANDATORY
+before any lineup version ships — computed its `fabricated()` count from
+**`GENERIC_TYPE_NAME`, the singular copy**, while every rule it exists to police
+reads `GENERIC_TYPE_ANY`. So a change that introduced `Common/collective trust
+funds` or `Collective investment trusts` at 60% of a menu printed
+**"FABRICATED GENERIC ROWS INTRODUCED: 0"**, and that zero is the line the
+protocol tells the next session to trust. It is the sibling of the recorded rule
+*a check must not reuse the THRESHOLD of the rule it checks*: it must not use a
+narrower VOCABULARY either.
+
+Fixed to read `GENERIC_TYPE_ANY`. It is applied to BOTH sides of the diff, so the
+baseline moves with the working tree and only a genuine introduction is reported
+— the change can only make the check stricter. **Measured on the local corpus
+(1,110 filings with a usable denominator): the per-side generic-row population
+rises from 36 rows across 34 filings to 61 rows across 56 filings** — 25 rows in
+22 filings the check could not see, every one a plural vehicle label
+(`Collective trusts` 6, `Common/collective trusts` 5, `Collective trust funds` 4,
+`Common/collective trust funds` 3, `Common collective trusts` 2,
+`Collective Trust Funds` 2, `Common Collective Trusts` 2, `Commingled trust
+funds` 1). A check that prints 0 on a quiet store has not been tested.
+
+**Corpus diff for v187 itself, run TWICE and the second run is the one that
+matters.** First run, before the specimen was pinned: 1,110 filings, every
+bucket 0 — the pure negative control, and the documented pinning-run behaviour
+(the tool reads `defect-specimens.json` at startup, so an ack pinned during the
+run is not compared). Second run, after pinning: **1,111 filings, CONFIDENCE
+GAINED 0, CONFIDENCE LOST 1 — `Blue Cross And Blue Shield Of Vermont
+[20251015100312NAL0008650690001] 5->5 rows, ratio 0.85->0.85` — FABRICATED
+GENERIC ROWS INTRODUCED 0, row count moved 0, MENU SUM moved 0.** So the
+designed withdrawal is the ONLY change across 1,111 filings, it is a withdrawal
+and not a deletion (5 rows before, 5 rows after, identical ratio), and both
+controls now live inside the mandated tool rather than only in a trace.
+
+### PRE-REGISTERED for the v187 run, per plan and per metric, against the audit run at 21:0xZ on the v185 store (confident 60,113, lineups 59,762, overshoot 330 / 427,343 ppl, generic-named 110, dominant non-fund 0, aggRow 112, HIGH 4, WARN 544, dl 128)
+- **confident 60,113 → 60,112: exactly −1 and +0**, and the one loss is
+  `20251015100312NAL0008650690001` (Blue Cross And Blue Shield Of Vermont
+  PN003, 560 ppl) and nothing else. `lineups` 59,762 → 59,761.
+- that ack's status gains **`dx: "stmt"`, `rw: 5`, `rt: 85`**.
+- **`overshoot` MUST NOT MOVE: 330.** It counts CONFIDENT lineups only
+  (`audit-data.mjs:361`) and BCBS Vermont's stored sum is $78,057,589 against
+  $92,947,865 of assets — ratio 0.84, never in the ≥1.15x population. Withdrawing
+  it removes it from the confident population without touching that count, which
+  is the fact that made a plausible prediction wrong last cycle.
+- **`FABRICATED-HOLDING SHAPES` generic-named 110 → 109, i.e. it FALLS by one
+  rather than rising.** The plan newly qualifies on value share (99.2% ≥ 25%) and
+  simultaneously leaves the confident population the audit requires, and the
+  second effect wins. `dominant non-fund` stays **0**; `audit-dominant-row` stays
+  **0**; `aggRow` stays **112**.
+- **HIGH 5 = the 4 baseline + 1 self-clearing `reparse-loss` naming this ack** —
+  predicted, not an anomaly. The merge triage flags a lost lineup that was
+  real-menu-shaped (n≥5 at ratio 0.7–1.3; this is n=5 at 0.851) unless its `agg`
+  discriminator says the old lineup was ≥90% aggregate-named — and **that
+  discriminator reads `AGG_DISCLOSURE || GENERIC_TYPE_NAME`, the NARROW copy**, so
+  it sees only `Mutual funds` at 1.7% and will not skip. Left as-is deliberately:
+  widening it there would silence a safety net for every plural-labelled
+  withdrawal, and the blast radius of that is a merge-time population I cannot
+  measure from the store. Recorded instead. `rows-dropped.txt` and
+  `swaps-degraded.txt` unchanged.
+- **`mirror-gate.mjs` will REFUSE the data gate at −1 lost**, correctly, and the
+  loss is this ack, to be read by name before any `--force-data`.
+
+### QUEUED FOR THE OWNER — the real question the item was pointing at, sized
+**85 published lineups / 302,715 participants reach a reader with a bare
+asset-class label as their largest row at ≥60% of the menu** (104 / 321,113 at
+≥50%). Morgan Stanley PN003 81,090 at 62.1%, GM PN014 67,487 at 63.6%, GM PN002
+67,246 at 66.4%, Ralph Lauren 15,230 at 69.0%, State Employees' Credit Union
+10,008 at 61.8%, Hub Group 8,042 at **89.6%**. This is **not** reachable by
+vocabulary — every one of these names is already matched — and it is **not** a
+fabrication in our parse: the FILING aggregates. It is a threshold-or-disclosure
+decision and it is the owner's:
+- **lowering the dominance floor from 90% withdraws all 85**, and for GM that is
+  a net loss (its plan-level table at least names `Conservative Income Fund`,
+  `Core Plus Bond Fund`, `Diversified Real Asset Fund`, while the GM SAVINGS
+  PLAN MASTER TRUST's own lineup is *itself* two class labels — `COMMON/
+  COLLECTIVE TRUSTS` 71.5%, `REGISTERED INVESTMENT COMPANY` 28.4%);
+- **the alternative costs nothing and withdraws nobody: say it on the page.**
+  The share of the published menu that is an unnamed asset-class aggregate is
+  computable from data already in the entry, and a reader told "62% of this menu
+  is one line the filing did not break out" has been told the truth. Frontend
+  only, no re-parse.
+**Also for the owner: `audit-data.mjs:584`'s `genericPlans > 230` against a
+population of 109.** Re-baselining it is a HIGH-threshold change that gates
+mirrors, so it is not touched here.
+
+### FROM THE MANDATED PARTICIPANT-WEIGHTED DRAW (seed 20260927193, 5 read whole)
+Amazon PN001 (1,336,478 ppl, 27 rows) and Kaiser PN039 (110,792, 24 rows) are
+clean. Three defects in the other three, all of known families, all small by
+value and all newly SIZED here — recorded, not fixed:
+- **An aggregate CAPTION welded to the front of a real fund name: 22 rows / 22
+  published plans / 34,437 participants.** `Participant directed investments
+  American Funds Cap Wld Bond R6` (Heavy Construction Systems),
+  `Participant-Directed Investments DFA International Value Portfolio I` (Crete
+  Carrier, 10,753 ppl), `Participant Directed Investments Fidelity® 500 Index
+  Fund` at **13.7%** of Orthosc. The name is unrecognisable, so the fee cell is
+  blank for a fund we could otherwise identify. Note `NOT_FUND_SHAPED` already
+  matches these strings — the vocabulary knows; only the ≥90% gate stops it
+  mattering, which is the same generalisation the 20:2xZ entry ends on.
+- **The plan's own filed CITY published as a holding: 114 rows / 114 published
+  plans / 426,430 participants.** `Mooresville` on Lowe's PN003 (318,750
+  participants), `Rockville` (30,219), `Cottonwood Heights` (12,305), `Sunrise`,
+  `Tucson`. Shares are small (0.01%–5.4%) but each is a holding that does not
+  exist, and the predicate is exact and cheap: row name == the plan's filed city.
+- **Kerned and OCR-damaged names inside an otherwise clean menu** (Pacific
+  Imaging PN006): `VANGUARD GROW TH INDEX FD ADMIRAL`, `SCHW AB S&P 500 INDEX`,
+  `AMERICAN FINDS US GOVT SEC R6`. The v141/v156 family; `despaceKerned` repairs
+  the display, the store and the ticker lookup still carry the break.
+
+### Prevention
+- **A CHECK MUST NOT BE NARROWER THAN THE RULE IT CHECKS — in vocabulary, not
+  only in threshold.** `diff-lineups` now imports the same symbol the guards do,
+  and the widening is measured on the corpus (36→61 rows) so it is known to be
+  exercised rather than assumed.
+- **Before writing that a predicate misses a phrase, CALL THE SHIPPED SYMBOL ON
+  THE PHRASE.** Four of this item's five claims died to a 16-line script that
+  printed GTN / ANY / NFS / isClassLabel for each name. The item had already
+  been corrected once, from "it is the plural" to "it is the `funds` tail", and
+  both versions were wrong in the same way: reasoned from the regex source
+  instead of executed.
+- **A claim about readers must name its display path.** The store said Cummins
+  publishes a 60.7% aggregate; `app.js:940` has been suppressing exactly that
+  shape for trust-linked plans, and its 38,567 participants see a 33-row menu.
+  Second occurrence in one day; the display-path transcription is now the first
+  step of any "N participants are shown X" measurement, not a verification step.
+- **Print the members before publishing the count.** The class was handed over
+  as 13 plans / 265,140 participants and is 1 plan / 560 — and the four biggest
+  named members were already on the top four lines of an audit that runs on
+  demand today.

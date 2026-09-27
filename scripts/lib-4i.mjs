@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 186;
+export const PARSER_VERSION = 187;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -215,7 +215,40 @@ export const GENERIC_TYPE_NAME = /^(?:total )?(?:registered investment compan(?:
  * for the plural forms it usually is not. Under this guard a plural label
  * at >=90% is refused (stmt), and nothing is ever deleted.
  */
-export const GENERIC_TYPE_ANY = new RegExp(GENERIC_TYPE_NAME.source.replace("trust(?: fund| portfolio)?|collective trust fund|", "trusts?(?: funds?| portfolios?)?|collective trust funds?|"), "i");
+/* v187: TWO VEHICLE PHRASES THAT ARE IN NEITHER COPY, and the important part
+ * is how small they are, because the item that produced them was framed as a
+ * large vocabulary gap and the measurement said otherwise.
+ *
+ * The 2026-09-27 draw reported that `Common/collective trust funds`,
+ * `Collective investment trust funds` and `Collective investment trusts` were
+ * unmatched. Tested against the SHIPPED symbol, all three are matched by
+ * GENERIC_TYPE_ANY already — v137 put them there. What is genuinely absent is
+ * `commingled funds` (which neither copy nor `isClassLabel` nor `STMT_ROW`
+ * reaches) and the `... account funds` form of the pooled separate account.
+ *
+ * WHOLE-STORE POPULATION, printed rather than projected: FOUR stored rows carry
+ * either phrase, two of them in published lineups, and the addition changes
+ * exactly ONE plan — Blue Cross and Blue Shield of Vermont PN003, 560
+ * participants, whose five-row "menu" is `Commingled funds` 97.5%,
+ * `Mutual funds` 1.7%, `Money market funds` 0.7%, `Other deductions`,
+ * `Other additions`: the fair-value/changes note, with no fund named anywhere
+ * in it, and its filing has no statutory 4i header at all. At 97.5% it is the
+ * v105 dominant-row shape live, and it publishes because two tests miss by a
+ * hair — `dominanceIsAggregate` needs the top NAME in this vocabulary, and
+ * `isStatement`'s ≤8-row arm needs STMT_ROW on half the rows and gets 2 of 6.
+ * `pooled separate account funds` has ZERO members in the store, so it is
+ * prophylactic and its blast radius is provably nil; it is here because the
+ * singular `pooled separate accounts` has been in the list since v104 and a
+ * vocabulary that holds one and not the other is a trap for the next reader.
+ *
+ * Appended to ANY and NOT to GENERIC_TYPE_NAME, for v137's reason unchanged:
+ * the narrow copy feeds row-DELETING paths, the broad copy feeds the guard and
+ * the audits, and widening the deleting paths is what made 3M's fair-value
+ * note publishable. */
+const GENERIC_TYPE_ANY_EXTRA = "commingled (?:trust |investment )?funds?|pooled separate account funds?";
+export const GENERIC_TYPE_ANY = new RegExp(GENERIC_TYPE_NAME.source
+  .replace("trust(?: fund| portfolio)?|collective trust fund|", "trusts?(?: funds?| portfolios?)?|collective trust funds?|")
+  .replace(/\)\$$/, `|${GENERIC_TYPE_ANY_EXTRA})$`), "i");
 /* DOCUMENT SHAPE (v113) — why a filing yields no schedule, judged from the
  * document rather than from our parse. `dx` already says what the PARSER did;
  * this says what the FILING contains, and they are different claims. A random

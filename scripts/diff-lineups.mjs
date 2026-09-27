@@ -23,7 +23,7 @@ import { execFileSync } from "node:child_process";
 import os from "node:os";
 import path from "node:path";
 import { loadPlans } from "./lib-schema.mjs";
-import { GENERIC_TYPE_NAME } from "./lib-4i.mjs";
+import { GENERIC_TYPE_ANY } from "./lib-4i.mjs";
 
 const ref = process.argv[2];
 if (!ref) { console.error("usage: node scripts/diff-lineups.mjs <git-ref>"); process.exit(2); }
@@ -44,10 +44,40 @@ const isConfident = (p) => p.found && p.funds.length >= 3 && (p.ratio || 0) > 0.
 /* a name that is nothing but an investment TYPE is never a real fund; when one
  * carries a large share of a lineup it is several holdings merged onto a
  * shared generic name */
+/* THE CHECK WAS NARROWER THAN THE RULE IT CHECKS (2026-09-27). This read
+ * GENERIC_TYPE_NAME, the SINGULAR copy. Every rule it exists to police reads
+ * GENERIC_TYPE_ANY — the parser's dominance guard (lib-4i `dominanceIsAggregate`),
+ * `isClassLabel`, `audit-generic-names` and `audit-data`'s inline fabricated-name
+ * count — because v137 added the plural forms to ANY and deliberately not to
+ * NAME. So the one tool the operating protocol makes MANDATORY before a lineup
+ * version ships could not see `Common/collective trust funds`, `Collective
+ * investment trusts`, `Collective trust funds` or `Commingled funds` at all: a
+ * change that introduced one of those at 60% of a menu printed
+ * "FABRICATED GENERIC ROWS INTRODUCED: 0", and that zero is the line the
+ * protocol tells the next session to trust.
+ *
+ * This is the sibling of the recorded rule "a check must not reuse the
+ * THRESHOLD of the rule it checks": it must not use a narrower VOCABULARY
+ * either. Reading ANY can only make the check stricter — it is applied to both
+ * sides of the diff, so the baseline moves with the working tree and only a
+ * genuine INTRODUCTION is reported. MEASURED on the local corpus when this
+ * changed (1,110 filings with a usable denominator): the per-side generic-row
+ * population rises from **36 rows across 34 filings** (NAME) to **61 rows across
+ * 56 filings** (ANY) — 25 rows in 22 filings the check could not see, every one
+ * a plural vehicle label: `Collective trusts` 6, `Common/collective trusts` 5,
+ * `Collective trust funds` 4, `Common/collective trust funds` 3,
+ * `Common collective trusts` 2, `Collective Trust Funds` 2,
+ * `Common Collective Trusts` 2, `Commingled trust funds` 1. So the widening is
+ * exercised rather than theoretical — a check that prints 0 on a quiet store has
+ * not been tested. Negative control, whole-store: of 2,790 distinct published row names
+ * containing a vehicle word, ANY matches only the bare labels — `FIAM Core Plus
+ * Commingled Pool Class I`, `Pooled separate account - TIAA Real Estate` and
+ * `Real Estate Account (CREF)` are untouched, because every arm is anchored
+ * whole-string. */
 const fabricated = (p) => {
   if (!p.found || !p.funds.length) return 0;
   const sum = p.funds.reduce((s, f) => s + (+f.value || 0), 0) || 1;
-  return p.funds.filter((f) => GENERIC_TYPE_NAME.test(String(f.name).trim()) && f.value / sum >= 0.15).length;
+  return p.funds.filter((f) => GENERIC_TYPE_ANY.test(String(f.name).trim()) && f.value / sum >= 0.15).length;
 };
 
 const P = loadPlans();
