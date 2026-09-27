@@ -1,136 +1,99 @@
-# Morning brief — 2026-09-21 (written 01:2xZ / 9:2x PM ET Sunday)
+# wampo morning brief — 2026-09-27, 06:1xZ (2:1x AM ET)
 
-Live on main: **the v176 store**. Eight versions shipped since yesterday
-morning — v169 through v176 — and the honest headline is not the count.
+First full night of the agent loop since the owner's 2026-09-21→24 pause. The
+Routine has fired itself **twelve times on schedule**, 20:07Z through 06:08Z,
+with no gaps. Everything below was measured; the numbers that turned out wrong
+are named as wrong rather than quietly dropped.
 
-**I broke Apple's page yesterday morning, reported it as a win, and found it
-myself twelve hours later.** Most of what follows comes from that.
+## Shipped and LIVE on main
 
-## Update — 08:4xZ Monday
+| what | who it reaches |
+|---|---|
+| **v181** — a row the filing calls a subtotal is never a holding | 313,509 ppl. CVS Health's $2,690,925,949 line is labelled `Subtotal (not a holding)` with its false 0.35% estimated ER refused; two genuine double counts removed to the dollar (Cwpm, Douglas County — ratio 1.003 → **1.000**) |
+| **v182 + v183** — a sleeve's own subtotal is the aggregate, and absorb only fires when the subtotal LINE is on the page | **307,068 ppl**. CVS's ~98 individual bonds stop being listed as fund choices beside the subtotal that totals them; $2.69B counted once, not twice |
+| **filed-misspelling repair** (`app.js`, no re-parse) | ticker **150,335 ppl**; expense ratio **85,306 ppl / $749,399,699**. University of Maryland Medical System's twelve `Vangaurd` rows — 65.2% of its menu — now show VTWNX…VTINX at 0.080% |
+| **`matchQuoteShown`** in the coverage trail | makes the AEP gap permanent: 5,397 counted, **1,785 shown**, 3,612 refused |
 
-**v177 shipped, ran the full universe, and did nothing.** It was one regex arm
-meant to stop Pechanga publishing its balance-sheet bottom line as a holding.
-Run #421 came back and the row is still there: `NOT_FUND_SHAPED`, the list I
-added it to, **does not remove rows** — it classifies them for region scoring
-and the audits, and the one place it can suppress requires the row to be 90% of
-the menu. Pechanga's is 63.7%. I sized the change by counting how many rows the
-new arm *matched* and read that as how many rows would be *removed*. Those are
-different questions, this file has recorded that exact confusion before, and I
-made it again. The defect is back in the queue, the specimen now says why, and
-nothing on the site got worse.
+Every mirror passed the **data gate unforced at +0 / −0**. `--force` was used
+only on the GIT check, over main's own cron commits, with the evidence produced
+first each time (0 acks / 0 plans the branch lacked, plans array
+byte-identical). `pages-build-deployment` #600 confirmed `success`.
 
-**v178 is in flight and this one is sound.** Marsh & McLennan's two plans —
-**49,784 participants between them, $8.9B** — publish a pointer at their master
-trust *as if it were their fund menu*: the same pointer, printed twice under two
-captions, plus one small cash row. The real menu (eleven SSGA index funds,
-company stock, synthetic GICs) has been sitting in the trust's own filing all
-along. The guard that should have caught this was not missing and its threshold
-was not wrong — it only recognised one of the two pointer rows, so it measured
-52% where the truth was 99%. **It was fed half its evidence.** This time I
-counted the outcome, not the condition: two plans change, nothing else does, and
-52 plans / 2.9M participants that legitimately show a trust pointer beside a
-real menu are untouched.
+## Store state
 
-**The mirror is held on purpose.** v177's store is identical to what is already
-live, so pushing it would give readers nothing. v178's store lands within the
-hour and is worth the push.
+pv 183 covers **68,638 of 68,767 acks (99.81%)**. Confident **60,115**, lineups
+59,764, HIGH **5** (the baseline), WARN 543, overshoot 331, aggRow 112, dl 128,
+`analyze` 1. Universe 111,782 plans.
 
-**One more thing found by the morning's random draw**, which reads real plan
-pages rather than the worst bucket: **1,336 fund names across 51 plans /
-207,238 participants have a price welded onto the end of them** — CHS/Community
-Health Systems shows `$0.00` on all fifteen of its rows, both Emory plans show
-`QCSTIX CREF Stock R3 $917.217600`. The values are right; the names carry a
-second number that does not belong, and a name like that also fails the ticker
-lookup, so those rows show a blank fee. Sized and queued, not started.
+## Answered for the owner
 
-## What reached readers, largest first
+**AEP is not a parser bug.** All seven "match" mentions in the 134-page filing
+were read; none is a formula, so the page's *"no formula stated in the audited
+notes"* is the honest answer, shown beside the $81,284,557 of employer money.
+The SEC 11-K the owner linked **is** the right source and the earlier EDGAR
+research scoped it wrongly — it asked only about fund schedules, never about the
+Description of the Plan, where the formula lives. SEC is unreachable from this
+sandbox, so it needs the documented `edgar-11k.yml` → `edgar-scratch` route.
 
-| | who | what |
+## What was HELD, and why
+
+- **v182 was NOT mirrored.** It fixed CVS exactly — all eight pre-registered
+  values — and cost I. Rice & Co. (131 ppl) a real 38-row menu. The
+  `reparse-loss` HIGH stopped the mirror, which is the machinery working. v183
+  restored I. Rice **byte-identically** and left CVS untouched; **exactly one
+  lineup entry changed in 68,767 acks**.
+- **CVS's remaining $8,198,112,836 — 27.2% of the plan** — in four option
+  subtotals is deliberately unfixed. The placement that reaches them was built
+  and measured at 39 rows / ratio 1.061: it trades a double count for an
+  overshoot and needs a threshold chosen from one filing. Withdrawn, with the
+  reasoning left in the code comment.
+
+## Measured and DELIBERATELY not fixed
+
+Each failed the outcome test, not the size test:
+
+| class | reach | why not |
 |---|---|---|
-| v174 | **1.17M participants across 506 plans** | fund names lose a bare `(1)` that no legend on the page explains — FMR on 110 of its 120 rows, Edustaff on 17 of 17, Thermo Fisher on 24 of 28 |
-| v173 | **429,252 participants across 260 plans** | a page break's `(continued)` stops being printed as the name of the firm behind a fund |
-| v176 | **145,428** | **Apple's $2,153,504,672 brokerage window is back**, after v172 deleted it |
-| v169 | 145,125 | UPS stops showing $1,470,493,000 of net appreciation as if it were a holding |
-| v174 | 21,847 | Chubb stops listing 125 individual stocks as though they were the fund menu — and $38M the row cap had hidden is now counted |
-| v176 | 9,282 | **Thrivent stops publishing a $1,700,835,259 "fund" that does not exist** |
+| a value welded into a row name | 420 rows / **823,268 ppl** / $10.31B | 0 ticker wins — honesty defect only (UnitedHealth shows a street address inside a fund name) |
+| a leading em-dash | 1,993 rows / **609,414 ppl** | cosmetic; the lookup already tolerates it |
+| front-first wrapped issuer | 926 rows / **444,655 ppl** | 0 ticker wins, and rotation would corrupt real names |
+| twin row carrying its own value | 6 pairs / 2 plans / 732 ppl | tiny; rides along with the next dedup change |
+| 158 rows priced by a looser pattern | — | repairing them rewrites 158 PUBLISHED numbers; each needs verifying |
 
-Live store: confident 60,117, lineups 59,766, findings 5, overshoot 332.
+## Waiting on the owner
 
-## What I got wrong, in order
-
-This is the useful half, and today it is longer than the half above.
-
-1. **v172 deleted $2,153,504,672 from Apple's menu** — 7% of a $30.8B plan —
-   and I wrote it up as a clean win. Apple's filing names its brokerage account
-   in one column and describes it as "Various Accounts" in the other; my rule
-   read the description, decided it was not a fund name, and dropped the whole
-   row. The page went from accounting for 98.7% of the plan to 91.7% with
-   nothing saying where the rest had gone.
-2. **My first fix for it would have invented a holding.** Trustmark files three
-   separate Schwab rows; naming all three from the same column merges them into
-   one $13,916,207 line that exists nowhere. Caught before shipping.
-3. **My second fix published a $1.7B phantom.** Thrivent's whole balance sits
-   under the bare word "Thrivent", and the fix turned a plan that had correctly
-   published *nothing* into one publishing a single 99.2% "fund". It passed all
-   three tests I had written for it. **Passing the tests you thought to write
-   is not the same as being right.**
-4. **I sized that class at 6 plans when it was 129**, by using a hand-written
-   word list in place of the actual rule.
-
-All four are fixed. Nothing from (2) or (3) ever reached the live site; (1) was
-live for about fifteen hours and is repaired.
-
-## Why it kept happening, and what now stops it
-
-Every one of those defects was **invisible to the standing check**. The corpus
-diff re-parses about a thousand filings chosen by size, and it reported "clean"
-over all three, because none of those plans is in the sample.
-
-What caught them was the same thing each time, done by hand: compare the whole
-store before and after a run and read what moved, ranked by money and by
-people. **That is now a permanent tool and part of the routine before every
-publish.** Run against yesterday's data it puts Apple's $2.15B first and
-Thrivent's $1.7B second — both would have been on screen within seconds
-instead of surviving for hours.
-
-Two more gaps closed behind it:
-
-- **Nothing was watching plans that quietly lose a row.** A lineup that stays
-  published, keeps its source and simply shows less money moved no existing
-  check at all — Apple's was a 27 → 26 row change carrying $2.15B. There is now
-  a check for exactly that, tested in both directions.
-- **The audit has been under-counting its own warnings since 11 September.**
-  One report said "5 findings" while the record it wrote the same minute said
-  6, and a whole category of warning had never once been printed. Fixed twice:
-  the second time because fixing the count still left those findings buried
-  beneath 543 routine lines, and counting them is not reading them.
-
-## Waiting on you, ranked by people affected
-
-1. **Match and vesting extraction as new coverage** (~13.5M + ~10M ppl).
-2. **fund-facts source** — fee and return cells stay empty until a retrieval
-   route is approved: an API key as a repo secret, an allowlist for two fund
-   company domains, or both.
-3. **Recordkeeper source fix** — 2,241 plans / 2.0M ppl publish a wrong or
-   missing provider name.
-4. Whether to spawn the parser agent each cycle at the current usage tier.
-5. Whether a class SUMMARY should ever publish as a lineup.
-
-## Open and queued, with sizes
-
-- **The brokerage fold — 269 plans / 630,032 ppl.** Where a filing says part of
-  the plan is "various investments" and does not itemise it, we now drop that
-  line rather than show a total, which leaves the menu quietly incomplete.
-  Whether to publish it under an honest label is question 5 above.
-- Pechanga (4,520 ppl): a balance-sheet total published as a holding at 63.7%
-  of its menu. One plan, and the one-word fix touches a shared rule, so it
-  waits for a version that is not also changing something else.
-- Marsh & McLennan (35,907 ppl): a $3.39B prose row at 48% of a 3-row menu.
-- JPMorgan Chase (299,277 ppl): a dollar value welded into a holding's name.
-  One plan seen, not yet sized.
+1. **Whether site-test's data-path trigger is worth a deploy key or PAT.** The
+   trigger exists; GitHub's anti-recursion rule means the pipeline's own
+   `GITHUB_TOKEN` pushes have never been able to fire it.
+2. **The recordkeeper fix** (prefer service codes 15/64, then the line-1b
+   platform or Schedule A carrier): up to **2,241 plans / 2,015,771 ppl**, of
+   which **1,509 / 1,482,658 currently publish a DIFFERENT PROFESSION's name**
+   — 103 auditors among them. A blank is honest; a name reads as knowledge.
+3. **Match and vesting as NEW COVERAGE** (~1,634 plans / ~2.9M ppl reachable
+   with no downloads; 0 path defects in 120 sampled, so it is new work rather
+   than a repair). Not started unasked.
+4. Custom domain DNS.
 
 ## What continues alone
 
-Hourly: reconcile, verdict any finished run, **whole-store diff**, mirror only
-on a clean verdict, dispatch the next gated version, draw randomly from
-published lineups and read the rows, record.
+#470 is in flight — a short incremental whose merge writes `matchQuoteShown`
+for the first time. Then the queue is CVS's $8.2B residue, the `E.I.N. 23-`
+survivor of the employer-ID class, and the hourly draw from published lineups.
+
+## The night's method lessons, since they cost real time
+
+- **An outcome test covers only the outcome it measures, and a fix can have
+  two.** The misspelling repair was published as "$975M of fee cells" when the
+  measurement had only asked `fundTickerInfo`; **rendering the page** showed
+  twelve tickers against twelve blank expense ratios. Both halves now ship.
+- **Read what a name refers to before asserting against it.** A predicted
+  `coverageRatio` field was compared against my own `sum / assetsEOY` and
+  printed `FAIL` on a correct number.
+- **Print the matches, ranked, before quoting a count.** Four sizing predicates
+  dissolved on inspection tonight — 54,287 rows that were real share classes,
+  934,871 ppl that included `BANK OF AMERICA CORP`, 492 plans whose
+  "duplicates" were coincident round values like $70, and 165 rows that were
+  two defects sharing one regex.
+- **`rows-dropped.txt` is not readable from a branch session** (never
+  committed; `losses-triage.txt` and `swaps-degraded.txt` are gitignored). The
+  HIGH and WARN still did their job.
