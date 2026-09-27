@@ -23729,3 +23729,14 @@ wrong answer three times on this record.
 Smoke test **GREEN** across all six page shapes including the new tether. The 289
 regenerated pages ship in the same commit so readers get it at the next mirror
 rather than the next pipeline run.
+
+### Verified on the largest page, and the honest caveat
+Walmart PN003's crawlable page (**1,921,006 participants**) now renders
+`Fiera Asset Management Usa` where it rendered `Fiera Asset Management Usa
+Collective Trust `. **That is the pre-existing `TYPE_SUFFIX` arm, and whether it
+is the right call is a separate question this change does not settle** — stripping
+`Collective Trust` loses the vehicle word, and the report has been doing it for
+weeks. What shipped here makes the two surfaces AGREE; it does not make every arm
+correct. Stating it that way because "Walmart's page improved" would be a stronger
+claim than the evidence supports, and the arms now reach twice as many readers,
+which raises the cost of any one of them being wrong.

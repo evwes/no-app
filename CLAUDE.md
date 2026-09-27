@@ -770,6 +770,13 @@ export, do not copy the line.
   being written**: folding the arms into one alternation dropped `Not Required`,
   because the footnote arm must stay case-SENSITIVE while every other arm must
   not, and one regex cannot be both.
+- **MIRROR HELD at 23:2xZ, pending a CI conclusion — read `site-test` run #89
+  (`a8269d2c`) before mirroring.** It was still `in_progress` three minutes after
+  the push and the rule on this record is explicit: read `conclusion` before
+  believing a frontend change is verified, because site-test was red for ten
+  consecutive runs while commit messages said "green" from a LOCAL run. The local
+  smoke test IS green here, including the new tether; that is not the same
+  evidence. Nothing is queued behind the hold, so it costs nothing.
 - **SHIPPED 2026-09-27 23:2xZ, and it is the largest reader-facing find of the
   day: THE CRAWLABLE PAGES HAD NEVER USED THE FILED-NAME CLEANER.**
   `build-seo-pages.mjs:185` rendered **`titleCase(f.name)` — the RAW stored
@@ -797,7 +804,14 @@ export, do not copy the line.
   `smoke-test.mjs`**, which runs the BROWSER copy against the module on fourteen
   real filed names and fails on drift. The module body was **extracted verbatim**
   from app.js rather than retyped. The 289 regenerated pages shipped in the same
-  commit. `docs/accuracy-log.md` 2026-09-27 (23:2xZ).
+  commit.
+  **THE HONEST CAVEAT, because the headline overstates it:** Walmart PN003's page
+  now renders `Fiera Asset Management Usa` where it rendered `Fiera Asset
+  Management Usa Collective Trust` — that is the pre-existing `TYPE_SUFFIX` arm,
+  and whether IT is right is a separate question this change does not settle.
+  What shipped makes the two surfaces AGREE; it does not make every arm correct,
+  and every arm now reaches twice as many readers, which raises the cost of any
+  one of them being wrong. `docs/accuracy-log.md` 2026-09-27 (23:2xZ).
 - **ALSO SHIPPED 23:2xZ, measured separately: `TYPE_PREFIX` widened — 169 rows /
   139 plans / 174,852 ppl, 0 tickers gained and 0 LOST.** The diagnosis is v188's
   one level up: the VOCABULARY was right and the **CONNECTIVE** was the hole. Only
