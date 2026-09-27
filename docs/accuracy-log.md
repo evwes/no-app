@@ -22937,3 +22937,61 @@ fair-value note publishable — so it needs the same corpus diff v137 got.
   Bekaert is fixed" was a plausible prediction and wrong — Bekaert was never in
   the 329. For v186 the signal is that **overshoot must NOT move**, and a rise
   of 1 is the failure.
+
+## 2026-09-27 (20:2xZ) — the draw: an EIGHTH over-matching predicate of mine, and two real instances inside it
+
+Participant-weighted draw, seed 20260927208. Four of the plans read clean —
+MTU Aero, WPP Group (42,052 ppl, 29 Vanguard/JPMCB rows @ 0.990), Centuri,
+C&D Technologies. **ADP TotalSource Group (346,164 participants, $9.19B)**
+publishes 25 rows that are almost all real, with one exception: a row whose
+whole name is **`Global Trust Company`** at **$320,126,975 = 3.5%** — a bare
+TRUSTEE name published as a holding, and at 3.5% it is below every guard's
+threshold.
+
+### THE SIZING I RAN IS NOT A DEFECT COUNT, and the implausible total is what said so
+Using the project's own store-wide test — *does this exact string appear as a
+COMPLETE issuer on other published rows?*, the empirical test the CHS
+issuer-strip established — rows whose entire name is such a firm name come to
+**10,608 rows / 9,046 plans / 13,642,338 participants / $45.1B**. **That is my
+predicate, not a class**, and printing the members ranked by participants says
+why. Three different things are in it:
+
+- **REAL insurance and annuity contracts, faithfully named by their carrier.**
+  TJX (303,498 ppl) holds `Metropolitan Life Ins. Co.` $2,983,000 and
+  `Voya Ret. Ins. And Annuity Co.` $2,515,000; Mass General Brigham holds
+  `Lincoln Financial` and `Mutual of America`; Principal's own plan holds
+  `Principal Life Insurance Company` $4,892,476. **A plan really does hold a
+  group annuity contract issued by a carrier, and the filing really does name it
+  by the carrier.** This is the USC `Real Estate Account (CREF)` lesson again and
+  it is the reason a blanket strip of firm-named rows would destroy real
+  holdings.
+- **REAL product names my test swept in** because they also appear as issuer
+  strings: Darden's `Principal Fixed Income Guaranteed Option*+`.
+- **Genuine bare-firm defects**, the residue and the only part that is ours.
+
+**Eighth over-matching predicate on this session's record** (after 54,287 real
+share classes, 934,871 ppl including `BANK OF AMERICA CORP`, 497 rows where
+"unallocated" is a real 403(b) product, 19,852 plans from a service-code map
+written from memory, 5,734 rows of "period space capital", and the rest). Every
+one died the same way: **the total was implausible, and printing the members
+disproved it.** Recorded so nobody re-sizes this at 13.6M participants.
+
+### TWO INSTANCES THAT ARE REAL AND WORTH THEIR OWN ITEM
+- **ADP TotalSource Group, 346,164 participants: `Global Trust Company`
+  $320,126,975 at 3.5%.** A trustee name as a holding, in an otherwise good
+  25-row menu.
+- **Microsoft Corporation, 183,509 participants: `Participant-directed`
+  $6,602,388,247 at 8.6%.** Not a firm name at all — it is the AGGREGATE LABEL
+  that `isStatement` exists to refuse, appearing as ONE row inside a real menu.
+  Every guard passes it: the dominance guard needs ≥90%, `audit-overshoot` needs
+  ≥1.15, and `GENERIC_TYPE_NAME` is anchored so it does not match a menu that
+  merely *contains* such a row. **This is the same structural gap as the Cummins
+  finding — a statement line living inside a confident menu rather than being
+  the whole of it — and it is the largest single dollar figure of the shape found
+  so far.** Queued with its size, not fixed.
+
+**The generalisation worth keeping:** every guard this project owns asks whether
+a menu is a statement, and none asks whether a menu CONTAINS a statement line.
+The dominance guard, the overshoot test and both name audits are all
+whole-lineup judgements. Cummins (60.7%), Microsoft (8.6%) and ADP (3.5%) are
+the same defect at three scales, and only the first is anywhere near a threshold.
