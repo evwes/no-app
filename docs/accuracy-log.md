@@ -21757,3 +21757,32 @@ classes a name-only test and a same-value test had each misfiled: **ask what
 RELATIONSHIP the two numbers have, not whether they match** — identical, ~1000x,
 or one appended to a name are three different defects, and a dollar apart is not
 a defect at all.
+
+### The v184 cycle's random draw from PUBLISHED lineups — 7 of 8 clean, one new class named
+Participant-weighted, seed 20260927184, over 59,764 published lineups /
+89,275,042 participants. Read row by row: CHS/Community Health (91,940),
+CommonSpirit Health (130,882), Corning (16,699), The William Carter Company
+(8,665), Visionworks (7,563), Quest Software (1,798), Mlsc Holding (1,084),
+General Committees of Adjustment (4,019). **No fabricated row found**, and
+Corning is worth noting as the positive case for the machinery this version
+touches: 17 sponsor-specific legend codes (`1CRN135`) all resolved to distinct
+Vanguard trust names with no collision.
+
+**ONE NEW CLASS, SIZED AND NOT FIXED: an ESOP allocated/unallocated suspense
+split published as a fund menu.** Mlsc Holding Co. (1,084 ppl) publishes three
+rows — `Unallocated - 31,532,015 Shares` **54.2%**, `Allocated - 26,118,009
+Shares` 44.9%, and $1,000,951 of Goldman cash — at ratio 1.00, so every guard
+passes it. Nothing is fabricated: those are the plan's real line items, and the
+share COUNT is glued into the name the way arm C's twins glue the dollar value.
+But no participant can choose "Unallocated", and the page presents it as a menu
+option. **Whole-store: 5 plans / 1,647 participants / $272,738,771** where
+allocated/unallocated rows are >=50% of the menu (Mlsc 99.1%, Molin Concrete
+91.7%, two Archerpoint entities, Tabletops Unlimited's
+`UNALLOCATED INSURANCE CONTRACTS`). Too small to bump a version for, and
+recorded here so it is not rediscovered as new.
+
+**Also observed, already-known classes, no action:** CHS publishes
+`CHS Stable Value Fund Master Trust Inv estment Account` — a kerned split
+inside the word, which `despaceKerned` renders readably at display but which
+sits in the store; and `Master Trust` appears in the NAME column here, where
+v183 stripped it from the ISSUER column. Neither merges anything.
