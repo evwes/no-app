@@ -770,6 +770,50 @@ export, do not copy the line.
   being written**: folding the arms into one alternation dropped `Not Required`,
   because the footnote arm must stay case-SENSITIVE while every other arm must
   not, and one regex cannot be both.
+- **SHIPPED 2026-09-27 23:2xZ, and it is the largest reader-facing find of the
+  day: THE CRAWLABLE PAGES HAD NEVER USED THE FILED-NAME CLEANER.**
+  `build-seo-pages.mjs:185` rendered **`titleCase(f.name)` — the RAW stored
+  name** — so not one arm of `app.js`'s `cleanFiledName` had ever reached a
+  `p/*.html` page. Every display-time repair this project shipped was invisible
+  on the crawlable surface: the leading CUSIP (`922908371 VANGUARD EXT MKT
+  INDX-INST+`), the `(1)` footnote (recorded at 1.95M ppl), the OCR bar read as a
+  share-class `I` (683k), the kerned de-spacer, the doubled house prefix (486k),
+  `TYPE_PREFIX`, `TYPE_SUFFIX` — **and the UnitedHealth address strip shipped
+  earlier the same day and recorded as reaching 274,906 participants, which
+  reached the report only.**
+  **MY FIRST NUMBER WAS WRONG AND THE CORRECTION IS THE METHOD.** A store-side
+  proxy (`clean(name) !== name`) said 2,790 rows / 9,689,129 ppl. Regenerating the
+  pages and diffing the FILES says **289 pages / 6,941,304 participants**, because
+  `titleCase` already absorbed some differences. **The page is the artifact; the
+  proxy is not.** Walmart PN003 **1,921,006**, Target 475,573, CVS 307,068,
+  JPMorgan Chase 299,277, UnitedHealth 274,906, AT&T 203,226, Macy's 170,858.
+  **SECOND TIME IN ONE DAY that two display paths diverged** — the
+  false-precision defect was recorded as affecting the report and was only ever on
+  these same static pages. The rule is earned twice: **there are TWO display paths
+  and a claim about readers must name which.**
+  Fixed on the `frozenClaimOk`/`coverageBand` pattern, because app.js is a plain
+  browser script with no module system: canonical in `scripts/lib-disclose.mjs`,
+  imported by `build-seo-pages.mjs`, twinned in app.js, and **TETHERED by
+  `smoke-test.mjs`**, which runs the BROWSER copy against the module on fourteen
+  real filed names and fails on drift. The module body was **extracted verbatim**
+  from app.js rather than retyped. The 289 regenerated pages shipped in the same
+  commit. `docs/accuracy-log.md` 2026-09-27 (23:2xZ).
+- **ALSO SHIPPED 23:2xZ, measured separately: `TYPE_PREFIX` widened — 169 rows /
+  139 plans / 174,852 ppl, 0 tickers gained and 0 LOST.** The diagnosis is v188's
+  one level up: the VOCABULARY was right and the **CONNECTIVE** was the hole. Only
+  `- – :` were allowed, so every form the store uses escaped —
+  `MUTUAL FUNDS SHARES / UNITS Fidelity 500 Index` (the column caption, no
+  separator at all), `Mutual Funds, at Fair Value Schwab S&P 500 Index` (a
+  measurement basis), `Money Market SHARES Fidelity Government Money Market Fund`.
+  **The member read caught damage in my own draft:** `invested in` was an arm, it
+  wins one row and **damages three** where the filed name really is `Index Fund
+  invested in stocks included in the S&P 500`. The count (173 rows, 0 tickers
+  lost) looked clean; printing every distinct before→after is what showed it.
+  Dropped and pinned as a control. Residue named, not waved at: 1 doubled caption,
+  5 leading accounting parentheticals, both strictly better than before.
+  **This is a fraction of caption class B** (re-derived at v188: 4,680 rows / 701
+  plans / 1,206,468 ppl), so B stays open and its remaining connectives are
+  unmeasured.
 - **FROM THE 22:2xZ DRAW, SIZED AND DELIBERATELY REFUSED: 495 rows / 158
   published plans / 170,917 participants / $827,869,631 publish an OCR'd Empower
   LEGEND CODE as the holding name** (`IFXAIX`, `1JLGMX`) — re-derived at v188 as

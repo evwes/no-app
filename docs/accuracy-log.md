@@ -23656,3 +23656,76 @@ has since it was created on 2026-09-17. Ten days, zero funds. The machinery is
 real and unused. Nothing here is broken; it simply has never been populated, and
 a file described as the sole home of a fact type should not be discovered empty by
 a sizing script.
+
+## 2026-09-27 23:2xZ — THE CRAWLABLE PAGES HAD NEVER USED THE FILED-NAME CLEANER
+
+The cycle's queue item was caption class B (a section heading welded onto a real
+fund name, re-derived at v188 as **4,680 rows / 701 plans / 1,206,468 ppl**).
+Diagnosing why the shipped rule misses it led somewhere larger.
+
+### The diagnosis of B, which is v188's shape one level up
+`TYPE_PREFIX` in `app.js` requires a separator — `\s*[-–:]\s+` — so it strips
+`Mutual Fund - Fidelity 500 Index` and misses every connective the store actually
+uses. **The vocabulary was right and the CONNECTIVE was the hole**, exactly as the
+vocabulary was right and the DECORATION was the hole for v188. Widened to three
+observed forms and nothing more: the bare column caption
+(`MUTUAL FUNDS SHARES / UNITS Fidelity 500 Index`), a measurement basis
+(`Mutual Funds, at Fair Value Schwab S&P 500 Index`), and
+`Money Market SHARES Fidelity Government Money Market Fund`. Measured through
+`cleanFiledName` on the v188 store: **169 rows / 139 plans / 174,852
+participants** read better, **0 rows gain a ticker and 0 lose one** — an honesty
+fix, not a fee-coverage one, which is what the earlier sizing of B predicted.
+
+**The member read caught damage in my own draft.** `invested in` was an arm. It
+wins one row (`Pooled Separate Account invested in Amerfds 2030 Trgt Date`) and
+**damages three**, where the filed name really is `Index Fund invested in stocks
+included in the S&P 500` and the vehicle word is part of the name. Printing every
+distinct before→after is what showed it; the count alone (173 rows, 0 tickers
+lost) looked clean and would have shipped it. Dropped, and pinned as a control.
+
+Named residue rather than waved at: **1 row** keeps a doubled caption
+(`MUTUAL FUNDS, AT FAIR VALUE SHARES / UNITS Vanguard Target Ret 2030 Inst` →
+`SHARES / UNITS Vanguard …`, because the remainder no longer STARTS with a type
+word) and **5** keep a leading accounting parenthetical
+(`(Net Asset Value Practical Expedient) MetLife Stabl`). Both are strictly better
+than before; neither is widened for without its own measurement.
+
+### AND THEN THE LARGER FIND: THE FIX WOULD NOT HAVE REACHED THE CRAWLABLE PAGES
+`scripts/build-seo-pages.mjs:185` rendered **`titleCase(f.name)` — the RAW stored
+name.** Not one arm of `cleanFiledName` had ever reached a `p/*.html` page. Every
+display-time repair this project has shipped was invisible on the crawlable
+surface: the leading CUSIP (`922908371 VANGUARD EXT MKT INDX-INST+`), the `(1)`
+footnote (recorded at 1.95M ppl), the OCR bar read as a share-class `I` (683k),
+the kerned de-spacer, the doubled house prefix (486k), `TYPE_PREFIX`,
+`TYPE_SUFFIX` — **and the UnitedHealth address strip shipped EARLIER TODAY and
+recorded as reaching 274,906 participants, which reached the report only.**
+
+**MY FIRST NUMBER WAS WRONG AND THE CORRECTION IS THE METHOD.** A store-side
+proxy (`clean(name) !== name`) gave 2,790 rows across pages serving 9,689,129
+participants. Regenerating the pages and diffing the FILES gives **289 pages /
+6,941,304 participants**, because `titleCase` already absorbed some differences.
+**The page is the artifact; the proxy is not.** Largest: Walmart PN003
+**1,921,006**, Target 475,573, CVS 307,068, JPMorgan Chase 299,277, UnitedHealth
+274,906, AT&T 203,226, Macy's 170,858, the Teamsters National plan 167,196.
+
+**This is the SECOND time in one day that two display paths diverged** — the
+false-precision defect was recorded as affecting the report and was only ever on
+these same static pages. So the rule is earned twice and belongs in the operating
+protocol, not in a bullet: **there are TWO display paths and a claim about readers
+must name which.**
+
+### The shape of the fix, and why it is not one shared import
+`app.js` is a plain browser script with no module system, so the established
+pattern here is `frozenClaimOk` and `coverageBand`: canonical in
+`scripts/lib-disclose.mjs`, imported by `build-seo-pages.mjs`, twinned in
+`app.js`, and **TETHERED by the smoke test**, which runs the BROWSER copy against
+the module and fails on drift. The tether uses **fourteen real filed names from
+the store** plus three controls that must come back unchanged (the `invested in`
+name, a bare `Mutual funds` that must stay visible to the generic-name audit, and
+`Stable Value Fund`). The module's body was **extracted verbatim** from app.js
+rather than retyped, because a transcribed copy of a shipped rule has produced a
+wrong answer three times on this record.
+
+Smoke test **GREEN** across all six page shapes including the new tether. The 289
+regenerated pages ship in the same commit so readers get it at the next mirror
+rather than the next pipeline run.
