@@ -770,13 +770,15 @@ export, do not copy the line.
   being written**: folding the arms into one alternation dropped `Not Required`,
   because the footnote arm must stay case-SENSITIVE while every other arm must
   not, and one regex cannot be both.
-- **MIRROR HELD at 23:2xZ, pending a CI conclusion — read `site-test` run #89
-  (`a8269d2c`) before mirroring.** It was still `in_progress` three minutes after
-  the push and the rule on this record is explicit: read `conclusion` before
-  believing a frontend change is verified, because site-test was red for ten
-  consecutive runs while commit messages said "green" from a LOCAL run. The local
-  smoke test IS green here, including the new tether; that is not the same
-  evidence. Nothing is queued behind the hold, so it costs nothing.
+- **HELD ~5 MINUTES ON CI AND THEN MIRRORED IN THE SAME CYCLE — `site-test` #89
+  on `a8269d2c` reads job `conclusion: success`, every step green including the
+  new tether and the map test.** The RUN-level `status` still said `in_progress`
+  when the job had finished, which is the #239 lesson in miniature: **only
+  `conclusion` settles it, and the JOB carries it before the run does.** The hold
+  was right — the local smoke test being green is not the same evidence, and this
+  record carries the cost of confusing them (site-test red for ten consecutive
+  runs while commit messages said "green" from a local run) — and it cost nothing,
+  because nothing was queued behind it.
 - **SHIPPED 2026-09-27 23:2xZ, and it is the largest reader-facing find of the
   day: THE CRAWLABLE PAGES HAD NEVER USED THE FILED-NAME CLEANER.**
   `build-seo-pages.mjs:185` rendered **`titleCase(f.name)` — the RAW stored
