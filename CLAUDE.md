@@ -667,18 +667,38 @@ export, do not copy the line.
   **`analyze` 0** (#475 re-read both stuck acks to the cleaner `no-section`),
   `no-section` 7,123. **`matchQuote` 5,397 of which only 1,785 are SHOWN to
   readers** — the condition/outcome pair shipped 2026-09-27.
-- **`PARSER_VERSION` in the tree is 184. NOTHING IS IN FLIGHT** as of
-  2026-09-27 16:3xZ — #473 (the v184 full re-parse) finished `success` at
-  13:45Z and #475 (incremental, no bump) at 16:18Z.
-- **`audit-dominant-row` IS 1, NOT 0, AND THAT IS v184 WORKING.** Cobre Valley
-  Regional Medical Center (578 ppl) publishes `Registered investment companies`
-  at **97%** of a 4-row menu. It published the SAME row twice at 49.1% each
-  until v184 collapsed the twin — both halves sat under the audit's 0.90
-  threshold, so the guard was blind to a 98.2% junk holding. **The dedup moved
-  in front of the test and the test started working**, exactly as the
-  2026-09-27 draw entry predicted in writing. The defect is old, the detection
-  is new, and the lineup should be withdrawn (the v105 shape). **Next parser
-  item** — small by people, but this audit may not sit at 1.
+- **`PARSER_VERSION` in the tree is 185. #477 IS IN FLIGHT** — the v185 full
+  re-parse, dispatched 2026-09-27 17:49Z on `ebbdfb8f` and observed queued.
+  #473 (v184) finished 13:45Z, #475 and #476 (incremental, no bump) at 16:18Z
+  and 17:4xZ, both byte-identical no-op hours.
+  **THE MIRROR IS HELD ON PURPOSE:** the branch head carries v185 CODE over the
+  v184 STORE, and mirroring that makes main's own `:23` cron run a duplicate
+  full re-parse ON MAIN. Mirror the matched pair once #477's store lands.
+- **`audit-dominant-row` WAS 1 AND v185 RETURNS IT TO 0 — the cause was a guard
+  computed on rows that no longer exist.** Cobre Valley (578 ppl) publishes
+  `Registered investment companies` at **96.6%** of a 4-row menu whose other
+  three rows are the auditor's OCR'd letterhead. It published that row TWICE at
+  49.1% each until v184 collapsed the twin, and `aggOnly` needs a SINGLE row at
+  ≥90%. **v184 put `collapseDoubleRender` in the `parse4i` WRAPPER — deliberately
+  post-selection so no region could change places — while every arithmetic guard
+  lives inside `parse4iPass`. Order is guard, then collapse.** The dedup moved in
+  front of the AUDIT and the audit started working; it never moved in front of
+  the GUARD. v185 lifts the v105/v110/v111 family to `dominanceIsAggregate` and
+  asks it again after the collapse — one function, never a second copy, because
+  the whole value of asking twice is that both asks are the same question.
+  **Verified independently on the real 2023 filing with the real denominator:
+  v184 `stmt=0`, v185 `stmt=1`, 4 rows @ 0.732, top row 96.6%.** Blast radius is
+  1 plan / 578 ppl, the entire population.
+- **QUEUED, sized, display-side, needs no re-parse: WE PUBLISH DOLLAR PRECISION
+  THE FILINGS NEVER GAVE — 176 plans / 5,641,116 participants.** Every published
+  row is an exact multiple of $1,000 (169 plans / 5,533,112 ppl) or $1,000,000
+  (7 / 108,004), because those filings report in thousands or millions and our
+  own documented scaling multiplies up. Amazon (1,336,478), TJX, Costco, Tyson,
+  Mass General Brigham, Whole Foods, Nordstrom, Oracle; PPG prints `671` and we
+  print `$671,000,000`. **0 of the 176 fall outside the confidence band, which is
+  the check that exonerates the parser** — the magnitudes are right and only the
+  precision is asserted beyond the filing. `docs/accuracy-log.md` 2026-09-27
+  (17:xxZ).
 - **LIVE ON MAIN: the v184 store — MIRRORED 2026-09-27 14:1xZ**
   (`2bf641df → 13028d3c`), **data gate UNFORCED at +0 gained / −0 lost**;
   `--force` covered the GIT check alone over main's one cron commit (#474,

@@ -22255,3 +22255,71 @@ ppl) and Local 360's `AMERICAN FUNDS BLANC MUTUAL FUND` (2,418, the
 truncated-vintage filing v184 deliberately refused to touch) — so an unanchored
 arm needs a real-fund-name exclusion, which is its own version and its own
 member read. Proposed with its size; not started.
+
+## 2026-09-27 (17:xxZ) — the draw: a store count that ISN'T a reader count (caught this time), and FALSE PRECISION for 5.6M participants
+
+Participant-weighted draw from published lineups, seed 20260927177, eight plans.
+Six were clean. Two produced findings and one of those died before it was
+reported, which is the point of the order it was checked in.
+
+### KILLED BEFORE PUBLISHING: the leading `- ` on every row name
+RELX Inc. (20,583 ppl) stores all 27 of its rows with a leading dash —
+`- BlackRock Russell 1000 Index M Fund`, `- Vanguard Target Retire Trust Plus
+2035`. Store-wide that is **2,184 rows across 374 plans**, which reads like a
+substantial defect. Measured through `cleanFiledName`, called the way `app.js`
+calls it: **0 rows still carry it at display.** Readers see clean names.
+**One cycle earlier I made exactly this mistake and published a store count
+(3,718 stray-quote rows / 637,869 ppl) as a reader count**, and it was the
+agent's re-measurement that corrected it to 231 rows / 220,004 ppl. This time
+the display check came first and the finding never left the cycle. The rule is
+now cheap to apply and there is no excuse for skipping it: **whenever a
+display-time repair stands between the store and the page, measure through the
+repair.**
+
+### REAL, AND THE LARGEST DISPLAY-HONESTY CLASS IN A WHILE: we publish dollar precision the filings never gave
+PPG Industries (24,217 ppl) publishes a 28-row menu summing to exactly
+**$3,995,000,000**, and every one of its 28 rows is an exact multiple of
+**$1,000,000** — `BlackRock Equity Index Fund $671,000,000`,
+`Fidelity Growth Company $510,000,000`. A sum that round is the tell this record
+already names: *a number that comes out suspiciously round is reporting on the
+query, not the data.* Here it is reporting on the FILING: PPG's schedule is
+printed in millions, and our documented `(thousands)`/millions scaling
+multiplies up, which by construction leaves every value an exact unit multiple.
+
+Whole store, confident lineups with ≥5 valued rows, every row an exact multiple
+of a unit:
+
+| unit | plans | participants |
+|---|---|---|
+| $1,000 | 169 | 5,533,112 |
+| $1,000,000 | 7 | 108,004 |
+| **total** | **176** | **5,641,116** |
+
+Amazon (**1,336,478 participants**, 27 rows, ratio 0.910), TJX (303,498),
+Costco (263,899), Tyson (131,960), Mass General Brigham (131,090), Whole Foods
+(122,881), Nordstrom (108,781), Oracle (101,985), O'Reilly, Cigna,
+Intermountain, PNC. The seven at millions are Louisiana-Pacific, Comerica, PPG,
+Trinity, Dow Chemical, Regions and one trust.
+
+**The discriminating check, and it exonerates the parser: 0 of the 176 fall
+outside the confidence band.** Every ratio sits between 0.85 and 1.00. If the
+scaling were wrong the magnitudes would be off by 1,000× and the ratios would be
+absurd, so what is wrong is not the number but the **precision we assert about
+it**. PPG's filing printed `671`; we print `$671,000,000`, which invites a
+reader to compare two funds on digits that do not exist. Coincidence is not a
+competing explanation — five or more rows all landing on exact thousands is
+~10⁻¹⁵, and the mechanism is ours by construction.
+
+**NOT FIXED, and deliberately queued rather than started:** it is display-side
+and needs no re-parse, but a `wam` agent was mid-flight in `app.js`'s
+neighbourhood and a second concurrent edit there is how a verified change gets
+swept. The fix shape is to render at the filing's own precision (or say "the
+filing reports in thousands") rather than to change any stored value — the store
+stays faithful, as always.
+
+### Also drawn, clean and worth recording so the draw is not read as a defect finder only
+Helix Traffic Solutions (2,903 ppl, 29 rows @ 0.990), Forest County Potawatomi
+(4,909 @ 0.979), The Nemours Foundation (15,426, 120 rows at the cap with its
+83 cut rows and $4,584,795 disclosed), Gypsum Management (6,696 @ 0.986),
+The Chrysalis Center (619 @ 0.973), ScribeAmerica (1,937 @ 0.993) — real fund
+names, issuers attached, ratios sane.
