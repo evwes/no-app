@@ -22930,6 +22930,21 @@ Steel at 86.9%, and one master trust at 60.9% / $924M. **Not fixed**: that regex
 also feeds `isStatement`, which is the v137 hazard — widening it made 3M's
 fair-value note publishable — so it needs the same corpus diff v137 got.
 
+> **CORRECTED IN THE 21:xxZ ENTRY BELOW — read it before reusing anything in
+> this section.** The table above tests `GENERIC_TYPE_NAME`, the narrow copy.
+> **Every consumer that matters — the parser's `dominanceIsAggregate`,
+> `isClassLabel`, `audit-generic-names` and `audit-data`'s inline count — reads
+> `GENERIC_TYPE_ANY`, and that symbol already matches `Common/collective trust
+> funds`, `Collective investment trust funds` and `Collective investment
+> trusts`.** So three of the four "MISSES" above are not misses for any shipped
+> consumer, all four named plans are already on the top four lines of
+> `audit-generic-names`'s output, and the only genuine hole is `commingled
+> funds` — **1 plan / 560 participants**, fixed in v187. The correction is not
+> "the second framing was wrong where the first was right": both were reasoned
+> from the regex SOURCE rather than executed against the symbol, and a 16-line
+> script printing GTN / ANY / NFS / isClassLabel per phrase would have ended it
+> either time.
+
 ### CLAUDE.md corrections found in this cycle
 - `band-hi` is **87 plans / 101,031 ppl**, not the recorded 88 / 99,688.
 - **`overshoot` counts CONFIDENT lineups only** (`audit-data.mjs:361` skips the
@@ -23039,6 +23054,16 @@ Sized at 4 plans / 48,697 ppl at ≥50% of a menu and 13 / 265,140 at ≥15%.
    through the transcribed display predicate, the class at ≥60% is 88 plans /
    344,598 ppl **in the store** and **85 / 302,715 that reach a reader**; all
    three suppressed plans show their trust's menu instead.
+
+**A note on where the item's two sizes came from, because they do not describe
+the same set and that mattered.** The 19:5xZ entry's "4 plans / 48,697 ppl at
+≥50%" is Cummins (38,567) + State Employees' Credit Union (10,008) + Glazier
+Steel + one master trust — **Morgan Stanley and the two GM plans are not in
+it**; they arrived from the separate "13 plans / 265,140 at ≥15%" figure. The
+handoff merged the two lists and presented the large plans as members of the
+small threshold. Each number was defensible on its own predicate; the pairing
+was not, and the tell was arithmetic — 38,567 + 81,090 + 67,246 + 67,487 is
+254,390, not 48,697.
 
 **So the item's own measurement was taken on the STORE and stated as a claim
 about READERS.** That is the identical error this log recorded nine hours
