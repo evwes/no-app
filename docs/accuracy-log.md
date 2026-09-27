@@ -21536,3 +21536,51 @@ Participant-weighted, seed 20260927777, 12 plans read row by row (Amazon
 Central · Daniel Food · Brewster Heights · Extrahop · Mountain View Hospital
 and three smaller). **No fabricated row found.** The one observation is the
 duplicate pair above.
+
+## 2026-09-27 — Adjudicating the case-insensitive duplicates: wam was right to hesitate, and the split found a third class
+wam's draw (seed 20260927777) reported **294 rows / 135 plans / 168,832 ppl**
+with two published rows matching ignoring case, and deliberately **did not call
+it a defect** — v174's own negative control is Western Ecosystems publishing
+`Putnam Stable Value Fund` $14,679 beside `PUTNAM STABLE VALUE FUND (15)`
+$14,678, two real rows a dollar apart that must never be collapsed. Correct
+hesitation. **The discriminator is the VALUE, not the name**, and splitting on it
+gives three populations rather than one:
+
+| | size | verdict |
+|---|---|---|
+| **identical value** — one holding read twice | **38 groups / 11 plans / 11,908 ppl / $37,059,532 redundant** | a REAL double count |
+| **~1000x apart** — the same holding at two scales | **18 pairs / 1 plan / 2,230 ppl / $406,437** | a REAL units defect, one plan |
+| otherwise different values | 132 groups / ~44 plans | **v174's legitimate shape — leave alone** |
+
+- **The identical-value set is stranger than "case differs".** Several pairs have
+  **byte-identical names**: Adams Fairacre Farms publishes `Fidelity 500 Index
+  Fund` twice at $1,397,193, SMR Automotive has five such pairs, Resource Label
+  four. Two rows identical in name AND value surviving the dedup means the dedup
+  keys on something else as well (issuer or type), which is worth knowing
+  independently of the size.
+- **THE MECHANISM WORTH KEEPING, because it defeats every guard we have:
+  Printpack's duplicate sits at ratio 0.54.** A double count in an
+  UNDER-COVERED plan never pushes the sum above assets, so `audit-overshoot`
+  (≥1.15) cannot see it, `audit-dominant-row` (≥90%) cannot see it, and the
+  confidence band (0.45–1.6) welcomes it. **Ratio-based guards only catch
+  double counts in plans that were already near 1.0.** Every fabrication class
+  on this record so far was found because it pushed a ratio; this one is the
+  first that hides by being small in a plan that publishes too little.
+- **The two-scales class is ALLETE, INC. and nothing else** — 2,230
+  participants, eighteen pairs, the filing printing its schedule once in dollars
+  and once in thousands (`Fidelity 500 Index` $100,610,290 beside
+  `FIDELITY 500 INDEX` $100,610; every factor between 999.3 and 1000.4). The
+  $406,437 the thousands copies add is ~0.1% of the menu, so its ratio reads
+  0.97 and nothing flags it either.
+- **Both are recorded, NOT fixed.** 11,908 and 2,230 participants do not justify
+  a `PARSER_VERSION` bump on their own, and the identical-value signature
+  (same plan, same name, same value) is narrow and safe enough to fold into the
+  dedup whenever that code is next opened — the same disposition as the
+  twin-value class recorded earlier today.
+- **Prevention, and this is the transferable part:** *this population was
+  misfiled twice by two different predicates before the split.* A name-only test
+  saw 168,832 participants of "duplicates" and could not tell a double count
+  from a real pair; a same-value test cleared the Allete rows as "two real rows"
+  because their values differ. The question that separated all three was **what
+  is the RATIO between the two values** — neither the names nor the values alone.
+  **Ask what relationship the numbers have, not just whether they match.**
