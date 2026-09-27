@@ -22793,3 +22793,64 @@ CONDITION is not sizing the HARM, and only the condition is measured.
 5. The coverage line otherwise byte-identical apart from `confident +1`,
    `lineups +1` and the overshoot pair — v186 touches two row VALUES in one
    plan, and every other metric counts plans.
+
+### The 19:5xZ participant-weighted draw from PUBLISHED lineups (seed 20260927195, 8 plans)
+
+Six of eight are clean and read correctly: Northwell Health (42,221 ppl, 27
+Vanguard trusts at 0.985), Smith Industries (542, OCR, 27 real names at 0.999),
+Hampshire Fire (231, 22 at 0.988), Cleveland Clinic (81,999, 120 rows at 0.990 —
+at `ROW_CAP`, abbreviated by the filer itself), Sunbelt Rentals (23,021, 23 at
+0.969), Lifespan / Brown University Health (19,490, 33 at 0.733 — under-covered,
+not fabricated).
+
+**One apparent defect was MY OWN MISREADING and the check is why it is not in a
+report.** Broad River Rehabilitation (1,983 ppl) stores every row as a bare
+fragment — `Retirement 2055`, `500 Index Adm.`, `Growth R6`, `Govt Obl PRM` — and
+read off the row names alone that is a house-stripped menu no reader could
+identify. **26 of its 28 rows carry `iss: "T. Rowe Price"`**, so the page shows
+the firm before the fund and there is nothing wrong. *Reading the stored `name`
+is not reading the page*: the same mistake as the precision claim corrected
+earlier today, where the row VALUE had two display paths and only one was
+measured. Here the row NAME has two fields and only one was looked at.
+
+**ONE REAL DEFECT, AND IT IS LARGER BY PARTICIPANTS THAN THE ITEM THIS CYCLE
+WORKED. Cummins Inc. PN020 (38,567 ppl, $7.49B) publishes a SEVEN-ROW
+ASSET-CLASS STATEMENT as its fund menu**, led by `Common/collective trust funds`
+at **60.7% = $5,016,457,254**, with `Registered investment companies` 4.4%,
+`Synthetic GIC` 4.8%, and a master-trust pointer row at 1.4%. **All three guards
+pass it, and the third one is the interesting failure:** `audit-overshoot` needs
+≥1.15 and it sits at 1.103; `audit-dominant-row` needs ≥90% and it is 60.7%; and
+**the shipped `GENERIC_TYPE_NAME` DOES NOT MATCH THE STRING**, so
+`audit-generic-names` — the audit that exists for exactly this shape — reports 0.
+
+Probed directly: the predicate matches `Registered investment companies` and
+`Pooled separate accounts`, and **MISSES** `Common/collective trust funds`,
+`Common collective trust funds`, `Collective trust funds`,
+`Common/Collective Trusts` and `Synthetic GIC`. **It is the plural and the
+`funds` tail, not the slash** — which is the under-matching this file's own
+method note describes, in a new place, and it was found by reading a drawn plan
+rather than by any counter.
+
+**Sized as an OUTCOME — published menus led by a phrase the predicate misses, at
+≥15% of the menu: 13 plans / 265,140 participants / $41.07B behind that one
+row.** Ranked:
+
+| ppl | share | $ behind the row | rows | plan | the row |
+|---|---|---|---|---|---|
+| 81,090 | 62.1% | $13.44B | 10 | Morgan Stanley Domestic Holdings PN003 | `Collective Trust Funds` |
+| 67,487 | 63.6% | $6.22B | 9 | General Motors PN014 | `Common collective trusts` |
+| 67,246 | 66.4% | $15.83B | 9 | General Motors PN002 | `Common collective trusts` |
+| 38,567 | 60.7% | $5.02B | 7 | Cummins PN020 | `Common/collective trust funds` |
+| 3,154 | 68.4% | $20M | 8 | Home Depot Puerto Rico PN001 | `Collective trust funds` |
+| 2,918 | 37.5% | $310M | 13 | Paul Hastings PN001 | `Collective trusts` |
+| 2,680 | 63.0% | $217M | 3 | Convergeone Holdings PN002 | `Collective trust funds` |
+
+plus six under 600 participants (Wts Paradigm, Roadrunner Recycling, The Witham
+Family, Ryan Fireprotection, Beauchamp Distributing, Glazier Steel).
+
+**NOT FIXED HERE, deliberately.** Widening a shared predicate is the exact move
+v137 records as dangerous — widening this same regex made 3M's fair-value note
+publishable, and only the corpus diff caught it — and `GENERIC_TYPE_NAME` feeds
+`isStatement`, the dominant-row guard and two audits at once, so a widening
+changes what is PUBLISHED as well as what is COUNTED. It needs its own version,
+its own corpus diff and its own audit re-baseline. Queued with the size above.
