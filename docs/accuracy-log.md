@@ -20904,3 +20904,156 @@ The twelfth named a real class:
   ambiguous between rotate and delete, which is exactly the kind of choice that
   needs the filing rather than a regex. Recorded here so a later cycle does not
   rediscover it as a win.
+
+---
+
+## 2026-09-27 — v183: v182's absorb arm took a real menu off the page, because the line meant to stand for the money was not on it
+
+- **Wrong (a REGRESSION I shipped one cycle earlier, caught by the pipeline's own
+  loss triage before any mirror):** run #467 delivered every one of v182's eight
+  pre-registered CVS values exactly — and `confident` went **60,115 → 60,114**
+  against a pre-registered +0 / −0. The loss is a real menu.
+  **I. Rice & Co., Inc.** (`20251015084536NAL0004103681001`, EIN 231730455 PN
+  001, **131 participants**, $14,975,634): **38 rows @ ratio 0.986, confident →
+  10 rows @ 0.271, not confident**, published sum $13,947,979 → $5,052,176.
+  **$8,895,803 of real money left the page**, and `dx=band-lo rw=10 rt=27`.
+  It is real-menu-shaped by this project's own definition (n≥7), so it raised
+  the `reparse-loss` HIGH and the WARN, and the mirror was correctly withheld.
+- **TWO DIAGNOSES CAME FIRST AND BOTH WERE WRONG, AND BOTH READ THE SAME WRONG
+  EVIDENCE.** (1) Absorb was ruled out on the ground that the AFTER-parse rows
+  contain **0** names matching `total`/`subtotal` — true, and irrelevant: the
+  gate reads `best.ordered`, the **PRE-DEDUP LEAVES**, which do contain one.
+  (2) The itemised-securities fold was blamed because the entry carries
+  `smaKind: "managed"` — but v182's own sma wiring sets that string too, so it
+  is not a witness for which code path ran. The tell that pointed the right way
+  was arithmetic, not vocabulary: `sma` holds `Fidelity Advisor Balanced Fund -
+  Class Z` **four times** and `T. Rowe Price Health Sciences - I Class` twice at
+  an identical $36,004, and duplicate rows at identical values are the signature
+  of the pre-dedup `ordered` array, never of the deduped `funds` the fold draws
+  from.
+  **`WAMPO_TRACE=rows` settled it in one run**, naming the line and the numbers:
+  `[subtotal182] "Sub-total:"=13861182 absorbs 51 filed rows summing 13788927
+  (99.48% of the line)`. Reading the output rows had already *excluded* the right
+  answer. This is the v100 lesson for the third time — print the loop state.
+- **Cause, from the filing:** it prints
+  `Sub-total: Registered Investment Companies $13,861,182` — an **asset-CLASS
+  total spanning the plan's entire mutual-fund block**, i.e. the whole menu —
+  and its run is 51 filed rows at **99.48%** of the line. **Every bound v182 had
+  was satisfied**: contiguous, stopped at a subtotal, never passed the line, over
+  90% of it, no absorbed row above 50% of it, and far more than 30 rows. The
+  ≥30 flood gate did not protect it, because a duplicated schedule (this filing
+  prints the whole thing twice) makes even a 38-row menu a 51-row run.
+  **The condition v182 lacked is the MIRROR of the one v181 already has.** v181
+  asks *"are the rows it covers in this set?"* to choose drop-vs-retype; v183
+  asks *"is the LINE in this set?"* to choose absorb-vs-leave-alone. For I. Rice
+  it is **not** — the region's own restatement machinery had already removed it,
+  which is why v181's 38-row parse never showed it either — so absorbing the run
+  deleted the money with nothing left standing for it. **That is the v172/Apple
+  loss, and it is the Main Street Radiology shape arriving from the other side:
+  v181 pinned a specimen precisely for "the subtotal stands for rows that are
+  not here, so do not delete IT", and v182 built the symmetric hole.**
+- **Change (v183):** absorb requires the subtotal LINE to be present in the
+  published row set, matched by name-key and value within 0.5%. If it is absent,
+  the run is left alone and the trace says so. One condition, no threshold.
+  It lives in `parse4i` and not in `namedSubtotals` for the same reason v181's
+  discriminator does: **both are row-set questions, and `namedSubtotals` sees
+  rows, not the published view.** Third placement decision in this family
+  settled by the same question — *where can the evidence be seen?*
+- **Measured, both directions, on the real filings.** I. Rice: **10 rows @ 0.271
+  not confident → 38 rows @ 0.986 confident**, `sma` absent, trace prints
+  `[subtotal183] REFUSED`. CVS Health: **unchanged on all eight pre-registered
+  values** — 13 rows, ratio 0.7118, sum $21,415,578,814, subtotal $2,690,925,949
+  still typed `Subtotal (not a holding)`, `EB Temporary Investment Fund` exactly
+  $13,252,196, 132 `sma` rows, `smaKind: "managed"`, no `cut`. Thirteen
+  assertions, run as a script, all pass.
+- **THE WHOLE-STORE ANSWER CAME FROM THE STORE, NOT FROM A PREDICATE I INVENTED,
+  and it is the cleanest part of this.** Asked whether other plans moved
+  silently in the same direction, I diffed the v182 data commit against
+  `8491e3e1` entry by entry: run #467 touched **exactly two lineup shards (28
+  and 41) and exactly TWO entries in 68,767 acks** — CVS (the intended fix) and
+  I. Rice (the regression). Confident gained 0, lost 1. **Nothing moved
+  silently, because absorb fired on two plans in the entire universe.** At v183
+  it fires on one.
+  **I also built the shape predicate the question suggested and it is MY
+  predicate, not a population** — "confident, ≥30 rows, ≥3 duplicate-value
+  groups, no subtotal row" returns **492 plans / 725,273 ppl**, and printing the
+  matches says why it is worthless here: Greif Packaging's duplicate group is
+  **$70**, Mass General Brigham's is `$2,078,000`, AT&T's `$7,451,000` —
+  coincident round values, not duplicated schedules. And absorb cannot reach any
+  of them anyway: it needs a subtotal-named LEAF, which is invisible from the
+  store (I. Rice is the proof — it published no subtotal row and absorb still
+  fired). **Do not carry 492 forward.** The sound number is 2, and it is
+  empirical. Fifth time this project has been saved by printing the matches
+  before quoting a count.
+  Store-wide for reference: **8** confident lineups publish a row typed
+  `Subtotal (not a holding)`, the same 8 as at v181/v182.
+- **`rows-dropped.txt` and `swaps-degraded.txt` are NOT readable from the
+  branch** — both are in `.gitignore`, so they exist only in the merge job's log
+  and artifacts. The check still did its job through the path that IS committed:
+  `losses-triage` raised the `reparse-loss` HIGH on I. Rice and audit-data
+  raised the WARN, which is exactly what stopped the mirror. Recorded because
+  "read the triage file" is not an instruction a session on the branch can
+  actually follow, and that is worth knowing before it is relied on again.
+- **Gate and diff:** `parser-gate.mjs` green, **73 specimens**.
+  `diff-lineups.mjs d978090b` (the v182 data commit) over **1,019** corpus
+  filings: **CONFIDENCE GAINED 1 — I. Rice & Co. 10 → 38 rows, ratio 0.99** —
+  confidence lost 0, fabricated generic rows introduced 0, removed 0, row-count
+  moves with confidence unchanged **0**, menu sums moved ≥5% **0**. CVS does not
+  appear, which is the correct answer: the baseline IS the v182 store, so CVS is
+  already at 13 rows there and v183 leaves it alone. Both plans pinned in `docs/defect-specimens.json`:
+  CVS gains a `note_v183` naming all eight values as v183's regression test, and
+  I. Rice is added as
+  `absorb-must-not-fire-when-the-SUBTOTAL-LINE-is-not-published`. **Neither
+  removed; 115 → 116 specimens.** A newly pinned specimen is not compared until
+  the NEXT diff-lineups run, so the positive control on this run is the trace.
+  Note also: my first attempt to pin it edited the JSON as TEXT and spliced a
+  placeholder entry inside an existing `was` value. Reverted from git and redone
+  by parsing, mutating and re-serialising, with a refusal if the CVS specimen is
+  missing or I. Rice is already present.
+- **PRE-REGISTERED PREDICTION for the next full re-parse at v183** (exact and
+  falsifiable):
+  1. `20251015084536NAL0004103681001` (I. Rice & Co., 131 ppl): **c=1, 38 rows,
+     `coverageRatio` 0.99** (stored to 2dp), published sum **$13,947,979**, **no
+     `sma`**, **no `dx`**, and `rw`/`rt` absent.
+  2. `20251006141123NAL0003741777001` (CVS Health, 307,068 ppl): **13 rows,
+     ratio 0.7118, sum $21,415,578,814**, subtotal at **$2,690,925,949** typed
+     `Subtotal (not a holding)`, `EB Temporary Investment Fund` at exactly
+     **$13,252,196**, **132** `sma` rows with `smaKind: "managed"`, **no `cut`**.
+     If any of these moves, v183 is wrong.
+  3. **`confident` returns to 60,115 (+1 / −0 against the v182 store)**, and the
+     `reparse-loss` HIGH clears itself, leaving **HIGH back at the baseline**
+     (4 contrib outliers + the pre-existing `trust-overshoot`, which v183 does
+     not touch).
+  4. Rows typed `Subtotal (not a holding)` store-wide stay at **8**, with **0**
+     carrying a fund vehicle type. `overshoot` **331**, `aggRow` **112**,
+     `dl` **128** — v183 changes one plan and adds one refusal.
+  5. **Exactly ONE lineup entry changes across the whole store** (I. Rice), i.e.
+     one shard file (41) moves. If a second entry moves, the guard is reaching
+     further than the two plans absorb has ever fired on.
+- **Prevention:**
+  1. **The guard and its mirror now sit in one place and cite each other.** v181's
+     drop-vs-retype discriminator and v183's absorb-vs-leave-alone discriminator
+     are the same question asked of the two halves of a subtotal, and the code
+     comment states that explicitly so the next arm added here has to answer it
+     too.
+  2. **Two specimens pin the two orientations, and a third pins the trap
+     between them**: Main Street Radiology = *do not delete the LINE when its
+     rows are absent*; CVS = *absorb the ROWS when the line is present*;
+     I. Rice = *do not absorb the rows when the LINE is absent*. A gate
+     specimen proves the orientation it pins, so all three had to exist.
+  3. **`smaKind` is no longer usable as evidence of which code path ran**, and
+     that is written down here because it cost a wrong diagnosis: v182's absorb
+     wiring and the itemised-securities fold both set `"managed"`. When two
+     paths write one field, the field cannot answer "which path"; the trace can.
+  4. **A row-count identity is a cheap and decisive instrument, and it was
+     available before either wrong diagnosis.** 38 before, 10 + 36 = 46 after:
+     the arithmetic does not close for a pure fold, and duplicate values inside
+     `sma` name the pre-dedup array outright. Check the identity before
+     proposing a mechanism.
+  5. **My v182 prediction was exact enough to fail on the metric I named, which
+     is why this took one cycle to find rather than a mirror to readers.** Keep
+     predictions at that resolution; a prediction that cannot fail buys nothing.
+  6. **v182 shipped with 1,018 corpus filings diffed clean and the regression
+     was not in the corpus.** That is the standing limit of `diff-lineups`, and
+     it is why the pinned-specimen list exists — I. Rice is now in it, so this
+     class is compared on every future parser change.

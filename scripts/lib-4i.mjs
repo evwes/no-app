@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 182;
+export const PARSER_VERSION = 183;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -4237,6 +4237,37 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
       const absorbedRows = [];
       let absorbed = 0;
       for (const [i, run] of absorb) {
+        /* v183: THE LINE THAT IS SUPPOSED TO STAND FOR THE MONEY MUST ITSELF BE
+         * ON THE PAGE. This is the guard v182 shipped without, and it cost a
+         * real menu on the first run: I. Rice & Co. (131 participants,
+         * $14,975,634) files `Sub-total: Registered Investment Companies
+         * $13,861,182` — an ASSET-CLASS total spanning the plan's WHOLE
+         * mutual-fund block — and its run is 51 filed rows at 99.48% of the
+         * line, so every bound v182 has was satisfied. But that subtotal row is
+         * NOT in the published set (the region's own restatement machinery had
+         * already removed it, and v181's 38-row parse never showed it either),
+         * so absorbing its run deleted $10,701,040 with nothing standing in:
+         * 38 rows at ratio 0.986 became 10 at 0.271, confidence lost.
+         * THAT IS THE v172/APPLE LOSS AND THE MAIN STREET RADIOLOGY SHAPE
+         * ARRIVING FROM THE OTHER SIDE. v181 asks "are the rows it covers in
+         * this set?" to decide drop-vs-retype; v183 asks the mirror question,
+         * "is the LINE in this set?", to decide absorb-vs-leave-alone. Both are
+         * row-set questions, which is why neither can be answered inside
+         * `namedSubtotals` — it sees rows, not the published view — and why this
+         * one lives here, where `funds` exists.
+         * MY OWN FIRST DIAGNOSIS OF THIS LOSS WAS WRONG, and so was the one
+         * offered to me: absorb was ruled out because the AFTER-parse rows
+         * contain no `subtotal` name. The gate reads `best.ordered`, the
+         * pre-dedup leaves, which do. Printing the parser's loop state named
+         * the cause in one run; reading the output rows had already excluded
+         * the right answer. */
+        const sk = keyOf182(ord[i].name), sv = (+ord[i].value || 0) * scale182;
+        const line = funds.find((g) => keyOf182(g.name) === sk &&
+          Math.abs((+g.value || 0) - sv) <= Math.max(1, sv * 0.005));
+        if (!line) {
+          if (TRACE_ROWS) console.error(`[subtotal183] REFUSED ${JSON.stringify(String(ord[i].name).slice(0, 44))}=${sv}: the subtotal line is not in the published set, so absorbing its ${run.length} rows would take the money off the page`);
+          continue;
+        }
         for (const j of run) {
           const r = ord[j], k = keyOf182(r.name), want = (+r.value || 0) * scale182;
           const f = funds.find((g) => keyOf182(g.name) === k && (+g.value || 0) >= want - 1);
