@@ -1282,10 +1282,34 @@
 
   /* Three kinds of "missing" deserve three different labels: the DOL never
    * collects it (short-form filers), the filing was parsed but the auditor
-   * didn't state it, or the attachment couldn't be read at all. */
+   * didn't state it, or the attachment couldn't be read at all.
+   *
+   * FOUR, and the fourth was being told the third one's sentence, which is
+   * false (2026-09-27). A plan whose 4i schedule we READ and PUBLISHED but
+   * whose filing yielded no features at all has no `filedFeatures`, so it fell
+   * through to "filing attachment absent or unreadable" — printed three times
+   * on the same page as "FUND HOLDINGS — 28 FILED · Schedule H line 4i
+   * attachment". Verified by rendering: Dollar General (201,691 participants)
+   * and IBEW Local 60 (4,544) both say it above their own filed menus.
+   * The census's B1 bucket is exactly this population: 1,084 plans /
+   * 1,196,101 participants, every one of them told the attachment could not be
+   * read while its holdings are listed underneath.
+   * A RANDOM 60 of the 1,050 whose own newest filing supplied the schedule
+   * (seed 20260927) says the truth is split and we do not record which: 35
+   * publish the form and the schedule only, 12 add the auditor's opinion
+   * letter with the financial statements withheld, 12 do publish note prose
+   * that simply never states this feature (1 withdrawn, 403). So the honest
+   * sentence names both possibilities rather than asserting the one we cannot
+   * tell apart — recording which would need a parse-time flag, and until that
+   * exists the page must not pick. Excludes a lineup served from a PRIOR YEAR
+   * (`fb`) or from the master TRUST (`fromTrust`): for those the newest
+   * attachment really was unreadable or belongs to another filer, and the old
+   * sentence is the true one. */
   function whyUnknown(plan) {
     if (plan.isSF) return "Not collected — DOL short-form filing";
     if (plan.filedFeatures) return "Not stated in the audited notes";
+    if (plan.filedLineup && !plan.filedLineup.fromTrust && !plan.filedLineup.fb)
+      return "Not stated — this filing's audit notes are absent or silent on it";
     return "Not stated — filing attachment absent or unreadable";
   }
 
