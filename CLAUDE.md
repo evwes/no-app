@@ -690,6 +690,47 @@ export, do not copy the line.
 - **`PARSER_VERSION` in the tree is 188 and the store is at 188. NOTHING IS IN
   FLIGHT.** #481 (v187 + v188) ran `success` 20:59–21:54Z on `5dd4369d`, store
   commit `42739932`. #480 (v186) ran `success` 19:54–20:48Z, **+7 / −0**.
+- **MIRRORED 2026-09-28 09:3xZ, UNFORCED ON BOTH CHECKS** (`c0f3003c →
+  613f15c5`, a plain fast-forward; data gate +0 / −0). `pages-build-deployment`
+  #637 built it `success` at 09:34Z, and `site-test` #98's JOB reads
+  `conclusion: success` with every step green — read, not assumed.
+  **What reached readers, and the second half is much the larger:**
+  (1) **caption class A — 524 rows / 446 plans / 1,335,275 participants** stop
+  seeing the same word twice (`Mutual funds` in the name, `Mutual fund` in the
+  type) and are told *"Filing names no specific fund"*, which is itself a filed
+  fact; 112 of those rows are ≥50% of their plan's menu.
+  (2) **THE CRAWLABLE PAGES HAD NEVER PRINTED THE ISSUER — 16,572 rows / 2,229
+  pages / 27,249,112 participants.** `build-seo-pages.mjs` rendered the name
+  alone, so the 4i identity column the report has shown since v126 was
+  discarded on the surface search engines read. **Fourth instance of the
+  two-display-paths divergence and by far the biggest.**
+  **The two are ONE change because the issuer DECIDES the qualifier**: a row
+  named `Mutual Fund Shares` whose issuer reads `Vanguard Target Retirement
+  2030` is named in the report and was nameless on the page, so the report's
+  issuer exclusion could not be copied across. 2,280 pages regenerated /
+  28,255,631 ppl, 0 unexplained. **Two of my own drafts were wrong and each was
+  caught by a control, not by reading:** a loan arm and a brokerage-by-name arm
+  whose negative control FAILED TO FAIL (both structurally unreachable — a name
+  must be a bare vehicle type before any exclusion is asked; measured across all
+  912 generic-named rows: subtotal 2, stock 110, brokerage 0, loans 0), and a
+  twin generator whose END MARKER was no longer the block's last line, leaving a
+  STALE duplicate that won by hoisting order while the tether stayed green
+  because the stale copy assigned the same window hook. **A generator that edits
+  in place is only as honest as its end marker.**
+- **MIRRORED 2026-09-28 09:5xZ: the `(continued)` caption stripped from the
+  holding NAME — 96 rows / 80 plans / 461,671 ppl**, IBM (149,818),
+  NY-Presbyterian (66,650), Northwell (61,177), UPenn (45,173). **Found by the
+  09:0xZ participant-weighted draw** inside a published 31-row menu whose other
+  29 rows are clean — no audit sees this shape. **v173 closed this class in the
+  ISSUER column and it is closed THERE**; the same words in the NAME column were
+  untouched, and the leading-parenthetical arm cannot reach them because it
+  requires the string to OPEN with a vehicle type while these captions open with
+  a firm, a heading or a model portfolio. **A fix for one COLUMN is not a fix
+  for the class.** +1 ticker, 0 lost, DRIFT 0 over 1,720,349 rows, 2 crawlable
+  pages. The relaxation that made it work is worth keeping: **`the` is furniture
+  when a remainder must prove it is a name and is NOT when `(continued)` has
+  already proved it** — the same token that damaged the comma family's first
+  draft, now in the opposite direction.
 - **LIVE ON MAIN: the v188 store — MIRRORED 2026-09-27 22:2xZ**
   (`5dd4369d → b351f295`). The GIT check passed UNFORCED (fast-forward, main
   held nothing the branch lacked); **`--force-data` covered the 16 withdrawals,

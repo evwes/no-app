@@ -24543,3 +24543,86 @@ handed to the next cycle rather than shipped at 00:3xZ without a member read of
   it is not tail-of-a-cycle work; a narrower inline test was considered and
   rejected because "displayed name equals filed type" catches under half the
   population. The draft was reverted rather than left half-built.
+
+## 2026-09-28 (09:3xZ) — Caption class A SHIPPED, and the issuer was being thrown away on every crawlable page
+- **Wrong (1):** 524 rows / 446 plans / **1,335,275 participants** publish a
+  bare vehicle type as the whole holding name, with the type cell repeating the
+  same word back. 112 of those rows are ≥50% of their plan's published menu
+  (225,452 ppl) — the v105 dominant-row shape sitting below the 90% guard.
+- **Wrong (2), and it is the larger half:** `build-seo-pages.mjs` rendered
+  `titleCase(cleanFiledName(f.name))` and nothing else, so the 4i IDENTITY
+  column was discarded on every static page — **16,572 rows / 2,229 pages /
+  27,249,112 participants** read `Institutional 500 Index Trust` where the
+  report has read `VANGUARD · INSTITUTIONAL 500 INDEX TRUST` since v126.
+  **Fourth instance of the two-display-paths divergence and by far the biggest**
+  (after the filed-name cleaner, the false-precision note and the loan rows).
+- **Change:** the type cell reads *"Filing names no specific fund"*; the static
+  page prints the issuer and carries the qualifier in the name. One rule,
+  `isNamelessFundRow`, canonical in `lib-disclose`, imported by the generator,
+  extracted VERBATIM into app.js by script, tethered on 14 crafted rows.
+  Regenerated 2,280 pages / 28,255,631 participants — 2,230 gain the issuer,
+  50 gain the qualifier, **0 unexplained**.
+- **The two halves are ONE change, and that is the finding**: the issuer decides
+  the qualifier. A row named `Mutual Fund Shares` whose issuer reads `Vanguard
+  Target Retirement 2030` is NAMED in the report and was NAMELESS on the page,
+  so the report's issuer exclusion could not be copied across. Printing the
+  issuer is what makes one shared rule honest on both surfaces. The issuer test
+  therefore stays in app.js: it is a property of the SURFACE, not of the row.
+- **Prevention, and it was earned twice in one hour.** (a) A loan arm and a
+  brokerage-by-name arm were written and the negative control on the second
+  FAILED TO FAIL. They are structurally unreachable — a name must be a bare
+  vehicle type before any exclusion is asked. Measured across all 912 published
+  generic-named rows: subtotal 2, employer stock 110, brokerage-by-type 0,
+  brokerage-by-name 0, loans 0. Both dead arms removed; each of the three that
+  remain was then deleted one at a time and the tether failed by name on all
+  three. (b) The generator that writes the twin into app.js cut at an END MARKER
+  that was no longer the block's last line, leaving the previous tail in the
+  file — two declarations of one function, the **STALE one winning by hoisting
+  order**, and the tether blind to it because the stale copy assigned the same
+  window hook. **A generator that edits in place is only as honest as its end
+  marker.**
+- **Cost, named:** restoring the issuer also restores 6 rows / 5 pages / 33,059
+  ppl whose identity cell carries a caption rather than a firm (`MUTUAL FUNDS
+  AND MONEY MARKET FUNDS FIDELITY`). This makes the two surfaces AGREE; it does
+  not make every issuer value correct.
+
+## 2026-09-28 (09:4xZ) — A page break's `(continued)` caption welded into the NAME
+- **Wrong:** 96 rows / 80 plans / **461,671 participants** — IBM (149,818),
+  NY-Presbyterian (66,650), Northwell (61,177), UPenn (45,173), Cooper Health
+  (40,321) — publish an auditor's repeated section caption as part of the fund
+  name: `Fidelity Management Trust Company (continued) VANG SM CP IDX IS PL`.
+- **Found by the 09:0xZ participant-weighted draw**, inside a published,
+  confident, 31-row menu whose other 29 rows are clean. No audit sees it.
+- **v173 closed this class in the ISSUER column and this record calls it
+  closed. It is closed THERE.** The same words in the NAME column were never
+  touched, and the leading-parenthetical arm shipped earlier the same day
+  cannot reach them either — it requires the string to OPEN with a vehicle type,
+  while these captions open with a firm, a heading (`Exchange Traded Funds:`), a
+  model portfolio or nothing at all. **A fix for one COLUMN is not a fix for the
+  class**, the column-wise twin of v131's lesson about phrasings.
+- **Change:** strip everything up to and including the first `(continued)`
+  marker when a name follows. The wider cut is safe *because of the marker*: no
+  fund is named "(continued)", so everything before it is caption by
+  construction — which is exactly what caption class B's bare captions cannot
+  claim. +1 ticker, **0 LOST**, so this is an honesty fix for 461,671 readers
+  and not a fee-coverage one whatever the row count suggests.
+- **THE ARTICLE, and the same token has now caused damage in both directions.**
+  `John Hancock sub-accounts (continued) The Growth Fund of America` and
+  `Renasant Growth Model Fund - (Continued) The Hartford Dividend and Growth
+  Fund` were both REFUSED, because `the` is furniture in the shared remainder
+  screen — and it is in that list precisely because including it in the comma
+  family's screen flagged three real funds. **It is furniture when a remainder
+  has to prove it is a name; it is not when `(continued)` has already proved
+  it.** The screen looks past a leading article; the name keeps it.
+- **Prevention:** seven cases pinned in the smoke tether including both article
+  rows, plus two controls that must NOT be cut — a caption with nothing after
+  it, and one whose remainder is a bare share class. DRIFT 0 across 1,720,349
+  rows. An identifier collision (`cm` already declared) was caught by the module
+  loader on extraction; it would have broken the browser copy silently.
+- **RECONCILED rather than shrugged at:** the outcome test predicted 100 rows
+  and the diff measured 96. 162 rows carry the marker in total, 66 already
+  handled by the earlier type-prefixed arm — the prediction, computed on
+  already-cleaned names, was counting a population the live function reaches in
+  two places. Crawlable surface: **2 pages** (IBM, Hospital for Special
+  Surgery), because the family sits mostly outside the top 5,000 or below the
+  12-row cap.
