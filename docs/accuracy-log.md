@@ -25338,3 +25338,89 @@ returns United Services Automobile Association. All five were empty before.
    Advance Auto Parts is fine, because typing `advance` alone does find it.
    The owner did not type `advance`. **A measure that a real reported case
    falls outside is measuring the wrong thing.**
+
+---
+
+## 2026-09-28 (18:0xZ) — Owner-reported: a fund a web search names in one click, and wampo does not
+
+- **Wrong:** the owner sent Landmark Properties Real Estate Partners
+  (EIN 31-1831114 PN 001, 1,067 participants) and asked why
+  `Fidelity Frdm Idx 2015 Ins Pre` shows no ticker when typing that string into
+  a search engine lands on Fidelity's own page for **FIWFX**. Read through the
+  shipped lookup, **24 of its 29 rows carry no ticker — $18,981,979 of
+  $22,058,531, 86.1% of the menu** — and every one of the 24 is an ordinary
+  registered mutual fund with a public ticker, a public fee and a public fact
+  sheet. The five that resolve are the five whose filed name is spelled out.
+- **The answer to the question as asked: nothing in wampo has ever looked a
+  fund up.** `fund-er.js` is a hand-written pattern table. It contains no
+  Fidelity Freedom Index entry at all, so the twelve target-date rows that are
+  55% of this plan's money could not resolve at any spelling — and its ER
+  pattern still priced them, at 0.10%.
+- **AND THE LOOKUP WAS BUILT FIVE WEEKS AGO AND NEVER CONNECTED.**
+  `scripts/fetch-sec-funds.mjs`, `scripts/match-sec-tickers.mjs`,
+  `build-ticker-reference.mjs`, `ticker-precision.mjs`, `ticker-denominator.mjs`,
+  `build-filing-worklist.mjs` and `.github/workflows/sec-funds.yml` all exist
+  and all default to a file at repo root, `sec-funds.json`, **which was never
+  fetched**: no `sec-scratch` branch existed on origin. The workflow's own
+  comment records a near miss of the same kind — a `MODE=companies` run wrote
+  a different filename, the push guard tested for `sec-funds.json`
+  specifically, exited 0, and a green run delivered nothing.
+  Dispatched `mode=build`; it ran in ~90 seconds and pushed
+  **29,406 share-class rows across 12,328 series** from
+  `investment-company-series-class-2026.csv`, the SEC's own registrant filing.
+  It contains the owner's fund under exactly the name he saw:
+  `FIDELITY ABERDEEN STREET TRUST :: Fidelity Freedom Index 2015 Fund`,
+  `Institutional Premium Class`, **FIWFX**. Committed at repo root with its
+  `source` URL and `generated` date, because a ticker here is SOURCED and the
+  source has to be in the tree.
+- **What the index is worth, measured as an OUTCOME through the shipped path**
+  (`fundTickerInfo` with the type column and the issuer-prefixed name, the way
+  `app.js` calls it) and counted only where the FILING ITSELF types the row a
+  registered mutual fund, because a CIT or separate account cannot carry a
+  fund's ticker as fact: 312,708 such rows are named today; **663,283 rows /
+  43,682 plans / 70,439,361 participants / $1.50T are not**, and the index
+  would name **293,704 rows / 37,887 plans / 55,391,441 participants /
+  $561.5B** with no vocabulary change — 147,042 of them exactly and 146,662 as
+  an ambiguous share class behind the comparable asterisk.
+- **NOT SHIPPED, and the reason is a measured error rate, not caution for its
+  own sake.** Ranked reading picked the top 40 and they are right. A RANDOM 30
+  is what decides a rate, and it found **one clear false positive and one
+  doubtful**: `BlackRock High Yield Portfolio K Fund` resolves to **CPHYX**, a
+  Class A of a series literally registered as `High Yield Fund`, because the
+  manager gate was satisfied by the ISSUER column — which on that row reads
+  `Principal Trust Company`. **The issuer column often holds a TRUSTEE, not the
+  fund house**, a fact already on this record from the 2026-09-16
+  issuer-prefix work, and the matcher's manager gate has no way to tell one
+  from the other. ~3–7% wrong is not publishable as fact.
+- **THE DRAW REPORTED ON MY HARNESS FIRST, and this is the thirteenth
+  instance.** My first read of the same 30 flagged FOUR manager-less matches as
+  wrong — `Core Plus BD R6`, `Freedom Fund 2050`, `S&P Small Cap 600 Index Fund
+  Inv`, `BlackRock High Yield Portfolio K`. Three were correct and my print
+  statement was the defect: it showed the FILED name while the resolution had
+  come from the ISSUER-PREFIXED string, so `Carillon Reams Core Plus BD R6`
+  read on the page as a fund naming no manager at all. Recording WHICH string
+  resolved turned a 13% error rate into ~3–7% and left exactly one real defect.
+  **A draw is only as honest as the string it prints.**
+- **The remaining gap on the owner's own plan is VOCABULARY, and every miss now
+  has a named cause** rather than "no match": `frdm`→freedom and `ins pre`→
+  Institutional Premium; `lc`→large cap, `gr`→growth; `sust grw`→sustainable
+  growth; `amermut`→American Mutual; `sht drtn inc`→short duration income;
+  `inf-pr`→inflation-protected; `emerg mkt`→emerging markets; `bd fd of am`→
+  Bond Fund of America. The matcher's guards are working, not failing:
+  `Fidelity Adv Stk Sel Sm Cp Z` finds the subset `fidelity small cap stock`
+  and **refuses it**, because Fidelity Advisor Stock Selector Small Cap is a
+  different fund; `Principal Guaranteed Option` resolves to nothing and should,
+  being a guaranteed insurance product and not a registered fund.
+- **Queued in three pieces, smallest claim first:** (1) the conservative
+  subset — **24,324 names / 129,411 rows** that resolve EXACTLY from the filed
+  name alone, no issuer, no ambiguous class; (2) the trustee-vs-house guard on
+  the issuer column, which is what the ambiguous-via-issuer bucket needs before
+  any of it ships; (3) the recordkeeper abbreviations above. **The ambiguous
+  half must not carry a fee**: `fund-er.js` prices a ticker, and a Class A
+  number on an R-6 holding is precisely the claim 10,387 fee cells were
+  withdrawn for this morning.
+- **Prevention:** `sec-funds.json` is in the tree with its source URL and
+  generation date, so the six scripts written against it are runnable in-sandbox
+  and the "built but never connected" state cannot repeat silently. The
+  measurement script records which string resolved, so a future draw cannot
+  misattribute a match to a name that did not make it.

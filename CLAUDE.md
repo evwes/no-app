@@ -692,6 +692,52 @@ export, do not copy the line.
   `32f4568` reads `conclusion: success`** — dispatched deliberately, as #100
   was, because these changes ship under `[skip ci]` and local green is not CI
   green, the confusion that once left site-test red for ten runs.
+- **OWNER-REPORTED AND MIRRORED 2026-09-28 18:0xZ, UNFORCED, DATA GATE
+  +0 / −0 (`7f772a8 → 1f43a78`): a plan is findable by its own name.** #491
+  passed its pre-registered test to the kilobyte — `plans-list.json` ships
+  **36,491** plan names against 4,844, gz **2,677 → 3,069 KB**, and the
+  coverage line is byte-identical (confident 60,103, HIGH 4). **Verified in a
+  real browser on the regenerated file, not the patched one**: `advance auto
+  parts` returns *Advance Stores Company, Inc. — Advance Auto Parts, Inc.
+  401(k) Plan*, and `gapshare`, `usaa retirement` and `landmark properties`
+  return theirs. 32,711 plans / 32,581,567 participants were unfindable by
+  their own brand phrase.
+- **OWNER-REPORTED, SIZED, NOT SHIPPED — THE FUND LOOKUP EXISTS AND WAS NEVER
+  CONNECTED.** The owner sent Landmark Properties Real Estate Partners (1,067
+  ppl) where **24 of 29 rows / 86.1% of the menu carry no ticker**, and asked
+  why a web search names `Fidelity Frdm Idx 2015 Ins Pre` in one click. Answer:
+  **nothing in wampo has ever looked a fund up** — `fund-er.js` is a hand
+  table with no Freedom Index entry at all. But `scripts/fetch-sec-funds.mjs`,
+  `match-sec-tickers.mjs` and four more scripts have existed since 2026-08-23,
+  all defaulting to `sec-funds.json` at repo root, **and it had never been
+  fetched — no `sec-scratch` branch existed.** Dispatched `sec-funds.yml
+  mode=build`: **29,406 share classes / 12,328 series** from SEC's own
+  `investment-company-series-class-2026.csv`, now committed at root with its
+  source URL. It holds the owner's fund as `Institutional Premium Class`
+  **FIWFX**.
+  **Worth, as an OUTCOME through the shipped path, counted only where the
+  FILING types the row a registered mutual fund: 293,704 rows / 37,887 plans /
+  55,391,441 participants / $561.5B** newly named (147,042 exact, 146,662 an
+  ambiguous class behind the asterisk), against 663,283 / 70.4M / $1.50T
+  unnamed today.
+  **NOT SHIPPED on a MEASURED error rate:** a random 30 found **one clear false
+  positive** — `BlackRock High Yield Portfolio K Fund` → **CPHYX**, a Class A
+  of a series registered as bare `High Yield Fund`, because the manager gate
+  was satisfied by an issuer column reading `Principal Trust Company`. **The
+  issuer column often holds a TRUSTEE, not the house**, already on this record
+  from the 2026-09-16 issuer-prefix work. Queued in three pieces, smallest
+  claim first: (1) **24,324 names / 129,411 rows** that resolve EXACTLY from
+  the filed name alone; (2) the trustee-vs-house guard; (3) the recordkeeper
+  abbreviations (`frdm`, `ins pre`, `lc gr`, `sht drtn inc`, `inf-pr`).
+  **The ambiguous half must not carry a FEE** — `fund-er.js` prices a ticker,
+  and a Class A number on an R-6 holding is the claim 10,387 fee cells were
+  withdrawn for this morning.
+  **THIRTEENTH INSTANCE OF A MEASUREMENT REPORTING ON THE HARNESS:** my first
+  read of the same 30 flagged FOUR manager-less matches and three were correct
+  — the print showed the FILED name while the ISSUER-PREFIXED string had done
+  the resolving, so `Carillon Reams Core Plus BD R6` read as naming no manager.
+  **A draw is only as honest as the string it prints.**
+  `docs/accuracy-log.md` 2026-09-28 (18:0xZ).
 - **MIRRORED 2026-09-28 16:3xZ, UNFORCED (`5e3941b → 32f4568 → c172a26`):
   `TYPE_SUFFIX` reaches three shapes it could not — 1,973 rows / 462 plans /
   2,996,261 ppl / $26,024,783,093, and +0 tickers gained, −0 lost, 0 flipped.**
