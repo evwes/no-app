@@ -1,99 +1,98 @@
-# wampo morning brief — 2026-09-27, 06:1xZ (2:1x AM ET)
+# wampo morning brief — 2026-09-28, 07:3xZ (3:3x AM ET)
 
-First full night of the agent loop since the owner's 2026-09-21→24 pause. The
-Routine has fired itself **twelve times on schedule**, 20:07Z through 06:08Z,
-with no gaps. Everything below was measured; the numbers that turned out wrong
-are named as wrong rather than quietly dropped.
+Second full night of the loop. The Routine fired every hour from 20:07Z through
+07:27Z with no gaps. Everything below is measured. **Seven numbers I published
+to my own record overnight turned out wrong and each is named as wrong here
+rather than quietly dropped** — that is the most useful thing in this brief and
+it has a section of its own.
 
 ## Shipped and LIVE on main
 
 | what | who it reaches |
 |---|---|
-| **v181** — a row the filing calls a subtotal is never a holding | 313,509 ppl. CVS Health's $2,690,925,949 line is labelled `Subtotal (not a holding)` with its false 0.35% estimated ER refused; two genuine double counts removed to the dollar (Cwpm, Douglas County — ratio 1.003 → **1.000**) |
-| **v182 + v183** — a sleeve's own subtotal is the aggregate, and absorb only fires when the subtotal LINE is on the page | **307,068 ppl**. CVS's ~98 individual bonds stop being listed as fund choices beside the subtotal that totals them; $2.69B counted once, not twice |
-| **filed-misspelling repair** (`app.js`, no re-parse) | ticker **150,335 ppl**; expense ratio **85,306 ppl / $749,399,699**. University of Maryland Medical System's twelve `Vangaurd` rows — 65.2% of its menu — now show VTWNX…VTINX at 0.080% |
-| **`matchQuoteShown`** in the coverage trail | makes the AEP gap permanent: 5,397 counted, **1,785 shown**, 3,612 refused |
+| **The American Funds fee table was calibrated for ONE share class and priced all of them.** `fund-er.js` heads that block with its own comment — `--- American Funds (R6) ---` — and no pattern beneath it tested the class | **2,065,081 ppl** / 2,227 plans / $9.26B. 10,387 fee cells withdrawn. `American Funds Eupac R4` and `American Balanced Fund Class A` were publishing the R-6 number; R-1…R-4, A, C and F-1 pay a 12b-1 fee that R-5, R-6 and F-2 do not |
+| **Participant loans are not a menu choice** — typed and tinted, never dropped, so the money stays accounted for | **1,369,274 ppl** / 482 plans. Plus 17 crawlable pages / 279,408 ppl, where there is no type column so the qualifier goes in the name |
+| **Caption class B, three arms**: the comma family, the bare-whitespace family, the leading parenthetical | **~580,000 ppl** across 3,542 rows. `Mutual Fund, Freedom Index 2030`; `Registered Investment Company Vanguard Inter-Term Bnd Index Fd Adm`; `Mutual funds (continued) Dodge & Cox International Stock Fund`. **+132 tickers gained, 0 lost** |
+| **`Shares of registered investment companies` was displaying as "Shares of"** — a holding named after a preposition | **58,446 ppl** get their filed name back; the family falls 70 → 29 rows |
+| **A new audit: the filing's own ticker as a check on ours** | 64 rows / **383,085 ppl** publish a symbol the filing itself contradicts. Live in the merge job as of run #484 |
 
-Every mirror passed the **data gate unforced at +0 / −0**. `--force` was used
-only on the GIT check, over main's own cron commits, with the evidence produced
-first each time (0 acks / 0 plans the branch lacked, plans array
-byte-identical). `pages-build-deployment` #600 confirmed `success`.
+## What was found wrong and is NOT fixed
 
-## Store state
+- **We publish a symbol the filing contradicts for 383,085 participants.** The
+  readable cases are share-class mismatches where the filing is right — VITSX
+  (Institutional) published as VTSAX (Admiral), **MEIJX (MFS Value R4)
+  published as MEIKX (R6)**, which is a defect on this record since 2026-09-15
+  and was caught automatically for the first time last night. 1,426 rows agree,
+  which is why the 64 are worth reading. **Fixing it means preferring the filed
+  symbol at display, which publishes a filing string as a ticker — the
+  fabrication surface this project is careful about. Your call.**
+- **`audit-data.mjs` writes to the accuracy trail every time it runs**, locally
+  included. Five junk lines from my own development runs were caught only
+  because a stop hook flagged a dirty tree; one read `warn: 1970` from a
+  deliberately inverted control. Reverted. The fix — gate the append, or split
+  reporting from recording — changes a file the merge job depends on.
+- **The pipeline is less durable than this project claims.** CLAUDE.md said the
+  `:23` cron makes main's data move *hourly*. Measured over 660 hours and 152
+  scheduled runs: **median gap 3.60h, mean 4.37h, worst gap 44.2 hours.** The
+  mirror procedure is unaffected; the durability claim is not. Corrected in the
+  file.
 
-pv 183 covers **68,638 of 68,767 acks (99.81%)**. Confident **60,115**, lineups
-59,764, HIGH **5** (the baseline), WARN 543, overshoot 331, aggRow 112, dl 128,
-`analyze` 1. Universe 111,782 plans.
+## What I got wrong overnight
 
-## Answered for the owner
+Seven, and the rate is itself the signal:
 
-**AEP is not a parser bug.** All seven "match" mentions in the 134-page filing
-were read; none is a formula, so the page's *"no formula stated in the audited
-notes"* is the honest answer, shown beside the $81,284,557 of employer money.
-The SEC 11-K the owner linked **is** the right source and the earlier EDGAR
-research scoped it wrongly — it asked only about fund schedules, never about the
-Description of the Plan, where the formula lives. SEC is unreachable from this
-sandbox, so it needs the documented `edgar-11k.yml` → `edgar-scratch` route.
+1. **Fidelity K/K6** — I wrote up 7.6M participants as a defect. It is a
+   documented decision, stated six lines above the patterns.
+2. **The filed-ticker strip** — I reopened it believing the leading symbol
+   blocked the lookup. It gains **zero** tickers; the blanks are missing table
+   entries.
+3. **"4,872 crawlable pages don't disclose their 12-row cap"** — my grep
+   searched for a word the pages never use. They say *"top holdings"* and
+   *"N more holdings in the interactive report"*; **4,852 of 4,872 disclose.**
+4. **The follow-up probe on the remaining 20** — read the plan's ack where the
+   generator falls back to the master trust's.
+5. **"The generic-name audit under-counts"** — it does not; on the displayed
+   name it reports *fewer* plans but *more* rows. The bases disagree both ways.
+6. **A cron-cadence script returned 0 scheduled runs** — which would have read
+   as "the cron has stopped". It was `fetch()` vs `curl`.
+7. **A baseline timing returned 0s** because Node would not load a file saved
+   with a `.headtmp` extension.
 
-## What was HELD, and why
+**Every one was caught the same way: an implausible number, or reading the
+artifact instead of the proxy.** Nothing in the list reached a reader — but
+(1), (2) and (5) had already been written into the permanent record before they
+were caught, and correcting them is now a routine part of each cycle.
 
-- **v182 was NOT mirrored.** It fixed CVS exactly — all eight pre-registered
-  values — and cost I. Rice & Co. (131 ppl) a real 38-row menu. The
-  `reparse-loss` HIGH stopped the mirror, which is the machinery working. v183
-  restored I. Rice **byte-identically** and left CVS untouched; **exactly one
-  lineup entry changed in 68,767 acks**.
-- **CVS's remaining $8,198,112,836 — 27.2% of the plan** — in four option
-  subtotals is deliberately unfixed. The placement that reaches them was built
-  and measured at 39 rows / ratio 1.061: it trades a double count for an
-  overshoot and needs a threshold chosen from one filing. Withdrawn, with the
-  reasoning left in the code comment.
+One correction ran the other way and is the most valuable single number here:
+the filed-ticker class was **closed in the negative on 2026-09-16 at "1,305
+participants"**. Re-derived: **1,066 rows / 136 plans / 1,341,198 participants /
+$5.24B.** A thousandfold. Closed items go stale too.
 
-## Measured and DELIBERATELY not fixed
+## Waiting on you
 
-Each failed the outcome test, not the size test:
+1. **`data/fund-facts.json` is still empty** — `"funds": {}` since 2026-09-17,
+   eleven days. It is described as the only place a verified ticker, fee or
+   return may live, and it now blocks three separate items: the American Funds
+   target-date tickers (**3,034,841 participants reachable**), correct per-class
+   fees for the cells withdrawn last night, and the ticker-conflict resolution
+   above. **capitalgroup.com and the Voya fact sheets are both blocked by this
+   sandbox's egress proxy**, so I cannot source them from here.
+2. **62 crawlable pages no run can ever repair** — `p/` holds 5,062 files
+   against `TOP_N = 5000`. Now with a live instance: a fix shipped last night
+   reached 17 of the 18 pages that needed it, and `p/651156742-001.html`
+   (2,673 ppl) is outside every regeneration. Fixing it changes which URLs
+   exist, so it is yours.
+3. **The recordkeeper name** — 1,509 live plans / 1.48M ppl publish an auditor,
+   lawyer or advisor as the recordkeeper. Pipeline change, sized, unstarted.
+4. **Whether site-test's data-path trigger is worth a deploy key or PAT.**
 
-| class | reach | why not |
-|---|---|---|
-| a value welded into a row name | 420 rows / **823,268 ppl** / $10.31B | 0 ticker wins — honesty defect only (UnitedHealth shows a street address inside a fund name) |
-| a leading em-dash | 1,993 rows / **609,414 ppl** | cosmetic; the lookup already tolerates it |
-| front-first wrapped issuer | 926 rows / **444,655 ppl** | 0 ticker wins, and rotation would corrupt real names |
-| twin row carrying its own value | 6 pairs / 2 plans / 732 ppl | tiny; rides along with the next dedup change |
-| 158 rows priced by a looser pattern | — | repairing them rewrites 158 PUBLISHED numbers; each needs verifying |
+## What continues today
 
-## Waiting on the owner
+The loop. Next by people affected: the ticker-conflict population once the
+check has run a few cycles; caption class A (472 rows / 1.29M ppl publishing a
+bare vehicle type as the whole name); and the `audit-data.mjs` write side
+effect, which deserves its own cycle and its own control.
 
-1. **Whether site-test's data-path trigger is worth a deploy key or PAT.** The
-   trigger exists; GitHub's anti-recursion rule means the pipeline's own
-   `GITHUB_TOKEN` pushes have never been able to fire it.
-2. **The recordkeeper fix** (prefer service codes 15/64, then the line-1b
-   platform or Schedule A carrier): up to **2,241 plans / 2,015,771 ppl**, of
-   which **1,509 / 1,482,658 currently publish a DIFFERENT PROFESSION's name**
-   — 103 auditors among them. A blank is honest; a name reads as knowledge.
-3. **Match and vesting as NEW COVERAGE** (~1,634 plans / ~2.9M ppl reachable
-   with no downloads; 0 path defects in 120 sampled, so it is new work rather
-   than a repair). Not started unasked.
-4. Custom domain DNS.
-
-## What continues alone
-
-#470 is in flight — a short incremental whose merge writes `matchQuoteShown`
-for the first time. Then the queue is CVS's $8.2B residue, the `E.I.N. 23-`
-survivor of the employer-ID class, and the hourly draw from published lineups.
-
-## The night's method lessons, since they cost real time
-
-- **An outcome test covers only the outcome it measures, and a fix can have
-  two.** The misspelling repair was published as "$975M of fee cells" when the
-  measurement had only asked `fundTickerInfo`; **rendering the page** showed
-  twelve tickers against twelve blank expense ratios. Both halves now ship.
-- **Read what a name refers to before asserting against it.** A predicted
-  `coverageRatio` field was compared against my own `sum / assetsEOY` and
-  printed `FAIL` on a correct number.
-- **Print the matches, ranked, before quoting a count.** Four sizing predicates
-  dissolved on inspection tonight — 54,287 rows that were real share classes,
-  934,871 ppl that included `BANK OF AMERICA CORP`, 492 plans whose
-  "duplicates" were coincident round values like $70, and 165 rows that were
-  two defects sharing one regex.
-- **`rows-dropped.txt` is not readable from a branch session** (never
-  committed; `losses-triage.txt` and `swaps-degraded.txt` are gitignored). The
-  HIGH and WARN still did their job.
+Store: **pv 188 at 99.8%**, confident 60,104, HIGH **4 = the baseline**, WARN
+**608** (544 + the 64 new ticker conflicts — expected, not a regression), dl 128,
+`analyze` 0. Nothing in flight.
