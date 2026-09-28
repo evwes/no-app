@@ -24239,3 +24239,32 @@ handed to the next cycle rather than shipped at 00:3xZ without a member read of
   now the most frequent one on this record — **an implausible number reports on
   the harness, not the data** — and because both corrections came from reading
   the artifact rather than grepping for a string I assumed would be in it.
+
+## 2026-09-28 (04:3xZ) — The hourly cron is configured hourly and delivers every 3.6 hours
+
+- **Wrong (in project memory, not in code):** CLAUDE.md states the `23 * * * *`
+  schedule "makes main's data move **HOURLY**, not daily", and that claim is
+  load-bearing — it is the stated reason a long dev run "will ALWAYS come back
+  to a main that has moved", and it underwrites calling the pipeline the
+  **durable** layer that ingests filings with no session present.
+- **Measured over 660 hours and 152 scheduled runs:** median gap **3.60h**,
+  mean **4.37h**, only **5% of intervals under 1.5h**, and a worst gap of
+  **44.2 hours**. An hourly cron would sit near 1.00.
+- **The obvious alternative explanation was checked and refuted:** only **3 of
+  152** scheduled runs were cancelled, so concurrency cancellations from my own
+  dispatches are not eating them. The firing minute is scattered across **52
+  distinct values** rather than clustered at :23 — the same free-public-runner
+  de-prioritisation this record already documents as making scheduled start
+  times "fiction" (4–8h late on two sampled runs).
+- **What changes and what does not.** The mirror procedure does not change:
+  `mirror-gate.mjs` compares the stores and refuses regardless of cadence, and
+  a *less* frequent cron makes that hazard rarer, not worse. What does change is
+  the durability claim — **a 44-hour gap is a long time for "the layer that
+  survives everything"**, and the daily `12 5 * * *` cron, itself late, is the
+  real floor.
+- **Method note, because I got it wrong first:** my initial script fetched the
+  run history with `fetch()` and got **0 scheduled runs**, which I could have
+  read as "the cron has stopped" — a far more alarming and entirely false
+  conclusion. The zero was the harness; `curl` fetches the same data fine.
+  That is the fifth time in this session that an implausible number reported on
+  the harness rather than the data, and the second in one hour.

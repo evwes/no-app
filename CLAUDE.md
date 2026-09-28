@@ -203,6 +203,23 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   reach the auto-managed issue, whether or not any session exists. A scheduled
   run executes on the DEFAULT branch and commits its data to **main**.
   **CORRECTED 2026-09-10: that makes main's data move HOURLY, not daily.**
+  **AND CORRECTED AGAIN 2026-09-28, BY MEASUREMENT — IT DOES NOT. The cron is
+  CONFIGURED hourly and DELIVERS about every 3.6 hours.** Over a 660-hour
+  window, 152 scheduled runs: median gap **3.60h**, mean **4.37h**, and only
+  **5% of intervals under 1.5h**. An hourly cron would sit near 1.00. The
+  worst gap in that window is **44.2 hours** — nearly two days with no
+  scheduled run at all. Cancellation does not explain it (3 of 152 scheduled
+  runs were cancelled), and the firing minute is scattered across 52 distinct
+  values rather than clustered at :23, which is the same free-public-runner
+  de-prioritisation this file already records as making start times "fiction".
+  **Two things follow and both matter.** The hazard below is real but far less
+  frequent than "hourly" implies — most dev runs come back to a main that has
+  NOT moved, and `mirror-gate.mjs` is what settles it either way, so nothing
+  about the mirror procedure changes. The other half is less comfortable:
+  **the pipeline is described here as the DURABLE layer that ingests new
+  filings whether or not a session exists, and a 44-hour worst-case gap makes
+  that weaker than the word "durable" suggests.** The daily `12 5 * * *` cron
+  is the real floor, and it is late too. `docs/accuracy-log.md` 2026-09-28.
   This section and the Architecture block both used to name only the daily and
   weekly crons, so "check `git log origin/main --not origin/<dev branch>`
   before every force-mirror" read as a once-a-day chore. Observed this morning:
