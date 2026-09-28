@@ -687,7 +687,45 @@ export, do not copy the line.
   `audit-dominant-row` **0**, `audit-generic-names` **212 against the 230
   escalation threshold — still not raised**. **`matchQuote` 5,397 of which only
   1,785 are SHOWN to readers** — the condition/outcome pair shipped 2026-09-27.
-- **NOTHING IS IN FLIGHT.** Tree and store are both at v189.
+- **NOTHING IS IN FLIGHT.** Tree and store are both at v189. **`site-test` #100
+  on `891a510` reads `conclusion: success`** — dispatched deliberately, because
+  the loan-description change shipped under `[skip ci]` and was green only
+  LOCALLY, which is the exact confusion that left site-test red for ten runs.
+- **ANSWERED AND THE ANSWER IS NO: the 90% dominance floor must NOT come down.**
+  #489's verdict pointed at the threshold (Tides Center 84.4%, Finch Paper
+  88.2%). A threshold table said a 0.60 floor withdraws 105 plans / 373,062 ppl
+  — **and acting on it would have destroyed a real menu for 67,246 people.**
+  **General Motors** leads with `Common collective trusts` at **66.4%** and
+  carries **`Conservative Income Fund` $2,781,021,000**, `Core Plus Bond Fund`
+  $875,008,000 and two more real separate accounts behind it.
+  **Morgan Stanley Domestic Holdings leads at 62.1% — SMALLER than GM — and
+  every one of its ten rows is an asset class** (`Corporate equities`
+  $6,134,568,486, `Government and agency securities`, `Repurchase agreements`,
+  `Derivative instruments`, `Cash and cash equivalents`). **81,090 participants
+  are shown a schedule of assets BY CATEGORY as their fund menu**, ratio 0.975,
+  and no guard can see it: dominance asks about ONE ROW, and no setting of a
+  one-row threshold separates these two plans.
+  **THE VOCABULARY HOLE IS REAL AND WAS FILED IN THE WRONG POPULATION.** This
+  file has said since 2026-09-11 that `isGenericTypeName` covers VEHICLES and
+  not ASSET CLASSES, and called it *"too small to fix: 29 plans / 12,688
+  participants"* — measured inside the `band-hi` GAP bucket. It is a
+  **PUBLISHED-lineup** defect. Re-sized where it lives, with an anchored
+  experimental arm controlled 13/13 both ways: **9 plans / 86,175 ppl** newly
+  reach ≥80% of value naming no fund — **of which Morgan Stanley is 81,090, 94%
+  of the class.** So it is one very large plan and a small tail, not a large
+  class; the count was never the point.
+  **OWNER DECISION, nothing shipped:** the implied change is not a vocabulary
+  edit but a **whole-table test** (*what share of the menu's VALUE names no
+  fund*) beside the existing one-row test — and widening the vocabulary moves
+  `audit-generic-names`, at **212 against the 230 threshold** this record
+  already leaves to the owner. **Method note worth more than the finding: the
+  threshold table's decisive column was computed from `fundTickerInfo`, which
+  cannot name a CIT or separate account BY DESIGN, so "no identifiable fund"
+  read as "junk". Reading eight plans' rows is what stopped it.**
+  `docs/accuracy-log.md` 2026-09-28 (15:2xZ).
+- **ALSO FOUND, small and unfixed:** General Motors PN 002 publishes the
+  AUDITOR'S OWN ADDRESS AND NAME as two holdings — `One Kennedy Square`
+  $7,101,000 and `Ernst & Young LLP` $7,100,000.
 - **MIRRORED 2026-09-28 15:0xZ (`fa71694 → 313efbd`), GIT CHECK UNFORCED**
   (main held nothing the branch lacked); **`--force-data` over ONE named loss,
   read first**: 11 Capital, Llc (251 ppl) published `MUTUALFUND ••` at **94.2%**

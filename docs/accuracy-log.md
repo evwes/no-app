@@ -24997,3 +24997,82 @@ one case you have READ is not a discriminator, and a rate computed with one is
 a number about your harness.** Ninth instance on this record. The class stands
 at N=1 known, with no store-side proxy and no cheap way to size it; 0/30 at
 large bounds it only loosely, and that is the honest statement.
+
+## 2026-09-28 (15:2xZ) — the dominance THRESHOLD is the wrong knob, and the largest case is one plan with 81,090 participants
+
+**The question this cycle set out to answer was #489's own finding: should the
+90% floor in `dominanceIsAggregate` come down?** Tides Center sits at 84.4% and
+Finch Paper at 88.2%, both just under it, and v188's residuals (Flashparking
+82.2%, Fiber Instrument 89.4%) said the same thing from the other side.
+
+**The answer is NO, and the reading is what settled it.** A threshold table was
+easy to produce — at a 0.60 floor, 105 plans / 373,062 participants would be
+withdrawn — and it would have been acted on wrongly, because its decisive column
+was false. I had labelled each plan by whether any OTHER row resolves through
+`fundTickerInfo`, and **that predicate cannot name a collective trust or a
+separate account BY DESIGN**, which this record already states twice. The four
+largest plans in the band are exactly the CIT-heavy large-plan shape, so they
+read as "no identifiable fund" — as junk — when they are nothing of the kind.
+
+**Reading their rows splits the band into two shapes a single threshold cannot
+separate:**
+
+- **General Motors (67,246 ppl), top row `Common collective trusts` at 66.4%** —
+  and behind it `Conservative Income Fund` **$2,781,021,000**, `Core Plus Bond
+  Fund` $875,008,000, `Diversified Real Asset Fund`, `Multi-Asset Balanced Risk
+  Fund`. Real separate accounts. **Lowering the floor to catch a 66% top row
+  would withdraw a real menu from 67,246 people.** (It also carries two rows
+  that are the auditor's own address and name — `One Kennedy Square` and `Ernst
+  & Young LLP` at $7.1M each — a separate, small defect now on the record.)
+- **Morgan Stanley Domestic Holdings (81,090 ppl), top row `Collective Trust
+  Funds` at 62.1%** — and **every one of its ten rows is an asset class**:
+  `Corporate equities` $6,134,568,486, `Government and agency securities`,
+  `Repurchase agreements`, `Corporate debt instruments`, `Derivative
+  instruments`, `Other sovereign government obligations`, `Cash and cash
+  equivalents`. A schedule of assets BY CATEGORY, which is a lawful thing to
+  file and is not a fund menu.
+
+**So the guard is asking about ONE ROW when the defect is the WHOLE TABLE, and
+no setting of a one-row threshold can tell these two apart.** Morgan Stanley's
+largest row is smaller than General Motors'.
+
+**THE VOCABULARY HOLE IS NAMED AND IT IS NOT WHERE THIS RECORD FILED IT.**
+`isGenericTypeName` covers investment VEHICLES and not ASSET CLASSES —
+CLAUDE.md has said so since 2026-09-11 and filed it as **"too small to fix: 29
+plans / 12,688 participants."** That was measured inside the `band-hi` GAP
+bucket. **It is a PUBLISHED-lineup defect, and it was sized in the wrong
+population** — the same error shape as the master-trust class that "looked
+dominant" in the six largest plans and was 4 of 128.
+
+**Re-sized where it lives, with an anchored experimental arm and controls run
+first (13 must-match, 13 must-NOT-match, 0 wrong — `Fidelity 500 Index Fund`,
+`TIAA Real Estate`, `Galliard Stable Return Fund X`, `Principal U.S. Property
+Separate Account` all correctly refused):**
+
+| share of a menu's VALUE naming no fund | shipped vocabulary | + asset classes |
+|---|---|---|
+| >= 95% | 7 plans / 4,969 ppl | 9 / **86,174** |
+| >= 90% | 15 / 15,814 | 22 / 99,051 |
+| >= 85% | 44 / 49,533 | 49 / 134,823 |
+| >= 80% | 70 / 75,910 | 79 / 162,085 |
+
+**And the honest deflation of my own finding: the arm newly reaches 9 plans /
+86,175 participants at >=80%, of which Morgan Stanley is 81,090 — 94% of the
+class.** So "asset classes are a large unmeasured class" is FALSE; it is one
+very large plan and a small tail (Home Depot Puerto Rico 3,154, Bartlett & West
+477, Riedell Shoes 115). The 2026-09-11 verdict reached nearly the right
+conclusion from the wrong population, and the count was never the point — the
+81,090 readers were.
+
+**NOTHING SHIPPED, deliberately.** Widening the real vocabulary moves
+`audit-generic-names`, which reads **212 against an escalation threshold of
+230** that this record explicitly leaves as the owner's call; and the guard
+change this actually implies is not a vocabulary edit but a new whole-table
+test (*what share of the menu's value names no fund*) beside the existing
+one-row test. Both are owner decisions, now with numbers attached.
+
+**The method note is the reusable part: I had the threshold table in hand and
+it recommended an action that would have destroyed a real menu for 67,246
+people. What stopped it was reading eight plans' rows.** A column computed from
+a predicate that under-matches by design is not evidence, in either direction,
+and labelling it "has no identifiable fund" made an absence look like a finding.
