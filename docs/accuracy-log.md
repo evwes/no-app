@@ -24134,3 +24134,46 @@ handed to the next cycle rather than shipped at 00:3xZ without a member read of
   `/american balanced/i`, which `AF_HOUSE` also contains, so `AF_HOUSE` is a
   superset of the block by construction. The block's membership was **sliced out
   of fund-er.js**, not listed from memory.
+
+## 2026-09-28 (03:5xZ) — The leading-parenthetical family, read in full: A is strippable, B must never be
+
+- Handed on last cycle as **MIXED** and therefore needing a member read before
+  any rule. Re-derived at v188: **132 rows / 118 plans / 363,990 participants /
+  125 distinct** (the earlier "~45 rows" was an eyeball count, already corrected
+  once). **All 125 distinct names were read**, not sampled — the population is
+  small enough that sampling would be a choice to know less.
+- **The split is decisive and it is structural, not lexical: does anything
+  survive the parenthetical?**
+  - **A — something follows it: 98 rows / 85 plans / 236,197 ppl / 96
+    distinct.** Overwhelmingly a page break's `(continued)` / `(Continued)`
+    (and one OCR'd `(Continucd)`) in front of a REAL fund name — `Mutual funds
+    (continued) Dodge & Cox International Stock Fund`, `MUTUAL FUNDS
+    (Continued) FID FREEDOM 2060 K`. Also custodial asides that identify
+    nothing about the holding — `(held by Voya Retirement Insurance and Annuity
+    Company)`, `(held by Vanguard Fiduciary Trust Company)` — and accounting
+    notes: `(at fair value)`, `(Certified)`, `(Net Asset Value Practical
+    Expedient)`, `(Participant Directed)`.
+  - **B — the parenthetical IS the whole remainder: 34 rows / 33 plans /
+    127,793 ppl / 29 distinct. NEVER strippable**, and reading all 29 is what
+    settles it: every one is a footnote marker (`(i)`, `(a)`, `(d)`, `(f)`), a
+    measurement basis (`(at fair value)`, `(contract value)`, `(NAV)`), or a
+    designation (`(Class R1)`, `(75 BPS)`, `(CCT)`, `(GMZXX)`). Stripping any of
+    them leaves a bare vehicle type — strictly worse than what is published now.
+- **Three exceptions live INSIDE A and a blanket rule would damage them**, which
+  is exactly why the read came before the rule: `Stable Value Fund (Group
+  Annuity Contract), at contract value` (the remainder is a BASIS, not a name);
+  `Mutual Funds (TIAA-CREF, not certified) CREF Stock R1` (the parenthetical
+  carries the HOUSE); `Collective Investment Trust (Stable Value Fund) -
+  Federated Capital Preservation Fund` (it carries a vehicle designation the
+  remainder does not repeat).
+- **So the rule the read settles**, for the next cycle to ship with its own
+  controls and tether: strip the type plus the parenthetical only when the
+  parenthetical is NON-IDENTIFYING — page furniture, a custodian aside, or a
+  measurement basis — **and** the remainder opens with a contentful alphanumeric
+  token, the same screen the bare-whitespace arm already uses. **Not shipped
+  here**: a display change of this family needs the regenerated-page read that
+  caught a live regression in each of the last two cycles, and that wants a full
+  verification pass rather than the tail of one.
+- Curiosities worth one line each, recorded not acted on: `Money Market Fund
+  (GMZXX)` puts a **ticker** in the parenthetical, and `Registered investment
+  companies (mutual funds)` glosses the type with its own synonym.
