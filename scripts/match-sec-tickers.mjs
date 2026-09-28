@@ -125,8 +125,38 @@ const ASSET_WORDS = new Set([...DISCRIMINATORS, "bond", "stock", "stocks", "equi
 
 /* Share-class markers: words a filing adds that name a class, not a fund. */
 const CLASS_MARK = /^(?:r[1-6]|k6|[akyzci]|inv|investor|adm|admrl|admiral|adv|advisor|institutional|instl|inst|premier|premium|retail|service|select|shares?)$/;
+/* …and the subset of those that also NAME A SEPARATE SERIES, which is the only
+ * reason the interrupting-token guard below exists. Measured, not guessed: on
+ * the v189 store, restricting the guard to this word costs 954 names / 1,551
+ * rows of previously-resolved holdings and keeps 569 names / 3,277 rows of
+ * genuinely wrong ones. The words left out are the reason it is restricted —
+ * `advisor` and `select` are ordinary parts of a fund's name (`Fidelity Select
+ * Natural Resources`, `MassMutual Select Mid Cap Growth`, `Fidelity Adv Total
+ * Bond Z`), and guarding on them withdrew correct answers, including some the
+ * SEC's own class names would have excused had the filing not abbreviated
+ * `Advisor` to `Adv`. */
+const INTERRUPT_WORD = /^(?:institutional|instl|inst)$/;
 
 const hintOf = (s) => { const t = norm(s); for (const [k, re] of CLASS_HINTS) if (re.test(t)) return k; return null; };
+/* EVERY class word a name states, not just the first one CLASS_HINTS happens
+ * to list. `hintOf` returns the earliest match in table order, so "Principal
+ * Real Estate Securities Instl R6" answered "institutional" — the table lists
+ * it above r6 — and the Institutional ticker PIREX was returned AS FACT for a
+ * holding whose filed name says R-6. The ticker is wrong and so is the fee
+ * beside it, which is the whole reason the class is read at all. */
+const hintsRaw = (s) => { const t = norm(s); return CLASS_HINTS.filter(([, re]) => re.test(t)).map(([k]) => k); };
+/* A CLASS WORD INSIDE PARENTHESES LOSES TO ONE OUTSIDE THEM, because a 4i
+ * schedule's parentheses are usually a FOOTNOTE MARKER and not a class.
+ * `Invesco Diversified Dividend Fund R5 Class (i)` states R-5 in the open and
+ * carries a footnote `(i)`; norm strips the brackets, `\bclass i\b` then
+ * matched, and the R-5 ticker DDFIX was replaced by Class A behind an
+ * asterisk — a correct answer lost to a marker this project has already
+ * recorded costing 1.17M readers in another guise. Where the brackets hold the
+ * only class word there is nothing to prefer, so the full name is used. */
+const hintsOf = (s) => {
+  const open = hintsRaw(String(s).replace(/\([^)]*\)/g, " "));
+  return open.length ? open : hintsRaw(s);
+};
 
 /* Manager vocabulary, derived from the SEC entity names rather than hand-listed
  * so it covers every registrant in the file. A token counts as a manager word
@@ -385,10 +415,39 @@ function resolveUncached(idx, filedName) {
      * house name the filing states and the registrant's legal name omits
      * ("American Funds Growth Fund of America"). Anything else and we do not
      * know what we are looking at. */
-    for (const w of ft) {
+    /* A SHARE CLASS NEVER INTERRUPTS THE FUND NAME, and that is the only
+     * signal that separates a class marker from a word that is part of a
+     * DIFFERENT product's name. "Vanguard Institutional Target Retirement
+     * 2070" matched the series "vanguard target retirement 2070" with
+     * "institutional" excused as a class marker, and was returned as VSVNX
+     * WITH NO ASTERISK — asserted as fact. The Institutional Target Retirement
+     * funds are a separate series and are not in the SEC file at all, so the
+     * honest answer is a refusal, not a better pick. Same shape reached
+     * "Vanguard Institutional Target Retire 2020" -> VTWNX.
+     *
+     * The test is positional AND evidential, because the positional half alone
+     * costs real matches: "Fidelity Advisor Mid Cap Value Fund Class Z" leaves
+     * "advisor" sitting between "fidelity" and "mid", and it IS a class — the
+     * SEC's own class name for it reads "Fidelity Advisor Mid Cap Value Fund:
+     * Class Z". So an interrupting word is excused only when some class of
+     * this very series NAMES it. Vanguard's 2070 classes read "Investor
+     * Shares" and nothing else, which is the index saying it does not know
+     * this product. */
+    const pos = [];
+    for (let i = 0; i < ft.length; i++) if (sset.has(ft[i])) pos.push(i);
+    const lo = pos.length ? pos[0] : -1, hi = pos.length ? pos[pos.length - 1] : -1;
+    let classWords = null;
+    for (let i = 0; i < ft.length; i++) {
+      const w = ft[i];
       if (sset.has(w) || house.has(w)) continue;
-      if (CLASS_MARK.test(w)) continue;
-      return null;
+      if (!CLASS_MARK.test(w)) return null;
+      if (!INTERRUPT_WORD.test(w)) continue;            // not a word that renames a series
+      if (i <= lo || i >= hi) continue;                 // trailing/leading: an ordinary class marker
+      if (!classWords) {
+        classWords = new Set();
+        for (const c of best) for (const t of tokens(c.className)) classWords.add(t);
+      }
+      if (!classWords.has(w)) return null;              // part of another product's name
     }
     }
   }
@@ -433,9 +492,19 @@ function resolveUncached(idx, filedName) {
     return { ticker: uniq[0].ticker, comparable: pooled, why: pooled ? why + "+pooled" : why, series: uniq[0].series, className: uniq[0].className };
   }
   // several share classes -> does the filed name name one?
-  const h = hintOf(filedName);
-  if (h) {
-    const hit = uniq.filter((c) => c.hint === h);
+  const hs = hintsOf(filedName);
+  if (hs.length === 1) {
+    const hit = uniq.filter((c) => c.hint === hs[0]);
+    if (hit.length === 1) {
+      return { ticker: hit[0].ticker, comparable: pooled, why: why + (pooled ? "+pooled" : "+class"), series: hit[0].series, className: hit[0].className };
+    }
+  } else if (hs.length > 1) {
+    /* The filed name states TWO class words. Only a class that accounts for
+     * BOTH is an answer; anything else is a guess between them, and a guess
+     * about the class is a guess about the FEE. When none does, this falls
+     * through to the ambiguous branch below and the asterisk goes on, which
+     * is the honest form of "the fund is identified and the class is not". */
+    const hit = uniq.filter((c) => { const s = new Set(hintsOf(c.className)); return hs.every((k) => s.has(k)); });
     if (hit.length === 1) {
       return { ticker: hit[0].ticker, comparable: pooled, why: why + (pooled ? "+pooled" : "+class"), series: hit[0].series, className: hit[0].className };
     }
@@ -448,6 +517,61 @@ function resolveUncached(idx, filedName) {
   const rep = uniq.find((c) => c.hint === "investor") || uniq.find((c) => c.hint === "a")
     || uniq.find((c) => c.hint === "admiral") || uniq.find((c) => c.hint === "institutional") || uniq[0];
   return { ticker: rep.ticker, comparable: true, why: why + "+ambiguous", series: rep.series, className: rep.className, classes: uniq.length };
+}
+
+/* PINNED CASES — must-change and must-keep in ONE table, so a control that
+ * stops reaching the rule it guards is visible rather than silently green.
+ * Run: node scripts/match-sec-tickers.mjs --selftest
+ * Negative control: check out the previous revision of this file and run the
+ * same table against it — it must fail by name on the four `null` rows and
+ * hold every other. A guard whose negative control passes has not been tested.
+ * `*` means comparable (the asterisk the page renders), `—` means refused. */
+const SELFTEST = [
+  // the institutional series published as the retail one, asserted as fact
+  ["Vanguard Institutional Target Retirement 2070 Fund Institutional Shares", "—"],
+  ["Vanguard Institutional Target Retire 2020", "—"],
+  ["Vanguard Institutional Target Retirement 2040 Fund", "—"],
+  // two class words stated; neither class accounts for both
+  ["Principal Real Estate Securities Instl R6", "PRRAX*"],
+  // a footnote marker in brackets is not a share class
+  ["Invesco Diversified Dividend Fund R5 Class (i)", "DDFIX"],
+  ["Fidelity Freedom Index 2050 Fund Investor Class (i)", "FIPFX"],
+  // …but two REAL class words still refuse
+  ["Fidelity Freedom Index 2050 Fund Investor Class K", "FIPFX*"],
+  ["Pimco Real Return Strategy Fund Inst Class A", "PRRIX*"],
+  // "Premier" is this fund's NAME; recorded as a residual, pinned so a later
+  // change to the institutional arm of CLASS_HINTS shows up here
+  ["ROYCE PREMIER FUND INV CL", "RPFIX*"],
+  // the class name itself carries both stated words -> assertable
+  ["Alger Capital Appreciation Institutional Fund Class I", "ALARX"],
+  ["Alger Capital Appreciation Institutional Fund - Class Y", "ACAYX"],
+  // controls: an interrupting word that IS a class, per the index's own naming
+  ["Fidelity Advisor Mid Cap Value Fund Class Z", "FIDFX"],
+  ["Fidelity Advisor Equity Income Fund - Class A", "FEIAX"],
+  // controls: ordinary resolutions that must not move
+  ["Vanguard Explorer Fund: Admiral Shares", "VEXRX"],
+  ["Federated Hermes Instl High Yield Bond", "FIHBX"],
+  ["American Funds Capital World Growth and Income R-6", "RWIGX"],
+  ["Fidelity 500 Index Fund", "FXAIX"],
+  ["Pimco Income Institutional Fund", "PIMIX"],
+  ["Vanguard Small Cap Value Index Admiral", "VSIAX"],
+  ["Fidelity Freedom Index 2035 Fund;Investor", "FIHFX"],
+  ["Vanguard Target Retirement 2070 Fund", "VSVNX"],
+  // a trust edition is the comparable, never the fund
+  ["VANGUARD TGT RET 2025 TRUST", "VTTVX*"],
+  ["Massachusetts Investors Trust Class R4", "MITDX*"],
+];
+
+if (process.argv.includes("--selftest")) {
+  const idx = buildIndex(INDEX);
+  let bad = 0;
+  for (const [name, want] of SELFTEST) {
+    const r = resolve(idx, name);
+    const got = r ? r.ticker + (r.comparable ? "*" : "") : "—";
+    if (got !== want) { bad++; console.log(`FAIL want ${want.padEnd(8)} got ${got.padEnd(8)} ${name}`); }
+  }
+  console.log(bad ? `\n${bad} of ${SELFTEST.length} FAILED` : `selftest: ${SELFTEST.length}/${SELFTEST.length} ok`);
+  process.exit(bad ? 1 : 0);
 }
 
 if (process.argv[1] && process.argv[1].endsWith("match-sec-tickers.mjs")) {

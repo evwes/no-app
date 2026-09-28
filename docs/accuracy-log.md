@@ -25424,3 +25424,84 @@ returns United Services Automobile Association. All five were empty before.
   and the "built but never connected" state cannot repeat silently. The
   measurement script records which string resolved, so a future draw cannot
   misattribute a match to a name that did not make it.
+
+---
+
+## 2026-09-28 (18:3xZ) — The SEC matcher asserted a retail ticker for an institutional series
+
+Nothing here reaches readers yet: `match-sec-tickers.mjs` is not wired into
+either display path. It is the thing the previous entry queued, and these are
+the defects that had to be closed before it can be.
+
+- **Wrong (1): a share class never interrupts a fund name, and the matcher had
+  no way to know it.** `Vanguard Institutional Target Retirement 2070 Fund`
+  matched the series `vanguard target retirement 2070` with `institutional`
+  excused as a class marker, and returned **VSVNX with no asterisk — asserted
+  as fact.** The Institutional Target Retirement funds are a SEPARATE SERIES
+  and are absent from the SEC file entirely, so the honest answer is a refusal,
+  not a better pick. Whole family: `Vanguard Instl Target Retirement 2050` →
+  VFIFX, `… Income` → VTINX, and so on.
+- **Change:** a leftover word that sits STRICTLY BETWEEN two series tokens is
+  excused only when some class of that very series NAMES it. The positional
+  half alone is not enough and the control proves it: `Fidelity Advisor Mid Cap
+  Value Fund Class Z` leaves `advisor` between `fidelity` and `mid`, and it IS
+  a class — the SEC's own class name reads *"Fidelity Advisor Mid Cap Value
+  Fund: Class Z"*. Evidence from the index, not a vocabulary judgement.
+- **AND THE GUARD WAS RESTRICTED AFTER MEASURING ITS COST, which is the part
+  worth keeping.** Applied to every `CLASS_MARK` word it withdrew **1,523 names
+  / 4,828 rows**; restricted to the institutional family it withdraws **791 /
+  3,639**, of which **711 names / 3,504 rows are the Vanguard Institutional
+  family itself**. The 732 names it stopped withdrawing are ordinary fund names
+  — `Fidelity Select Natural Resources`, `MassMutual Select Mid Cap Growth`,
+  `Fidelity Adv Total Bond Z` — where `select` and `advisor` are the product,
+  not the class, and one of those the index would have excused had the filing
+  not abbreviated `Advisor` to `Adv`. **A guard aimed at a measured case must be
+  aimed at the measured case.** The 80 names / 135 rows of residue were read in
+  full: mostly `T. Rowe Price Institutional Large Cap Growth` → TRLGX, which was
+  already ASTERISKED and which `fund-er.js` resolves independently and first.
+- **Wrong (2): a name stating two class words got whichever `CLASS_HINTS`
+  listed earliest.** `Principal Real Estate Securities Instl R6` answered
+  `institutional` — the table lists it above `r6` — and **PIREX was returned as
+  fact for a holding whose filed name says R-6**. The ticker is wrong and so is
+  the fee beside it, which is the only reason the class is read at all.
+- **Change:** `hintsOf` returns EVERY class word stated. One word behaves as
+  before; two or more resolve only when a single class accounts for BOTH,
+  otherwise the asterisk goes on. It cuts both ways and the cut upward is the
+  surprise: `Alger Capital Appreciation Institutional Fund Class I` was
+  ambiguous and is now **ALARX asserted**, because that class's own name
+  carries both words, and `… - Class Y` moves from ALARX* to **ACAYX**.
+- **Wrong (3), found by the fix and not by a count: a footnote marker is not a
+  share class.** `Invesco Diversified Dividend Fund R5 Class (i)` states R-5 in
+  the open and carries a footnote `(i)`; `norm` strips the brackets, `\bclass
+  i\b` then matched, two hints fired, and the correct **DDFIX was replaced by
+  Class A behind an asterisk.** A class word INSIDE parentheses now loses to one
+  outside them. Same marker this project has already recorded costing 1.17M
+  readers in another guise.
+- **Blast radius, whole store, both matchers over the same population and the
+  same strings `app.js` would use:** 278,994 distinct (name, issuer) pairs the
+  filing types a registered mutual fund, **278,025 unchanged**; withdrawn 791
+  names / 3,639 rows; fact → asterisk 44 / 45, every one a contradictory class
+  statement read by hand; different ticker 134 / 205, of which 182 rows move
+  from an asserted ticker to an asterisked one and 22 the other way, all 22 the
+  Alger family above. Matched holdings 684,446 → 680,551.
+- **MY OWN READING WAS DEFEATED BY A 44-CHARACTER TRUNCATION, the fourteenth
+  instance of a measurement reporting on the harness.** Eighteen demotions
+  printed as `Fidelity Freedom Index 2050 Fund Investor Cl` and resolved
+  unchanged when I retyped them, which made no sense until the print was
+  widened: the stored names are `… Investor Class K` and `… Investor Class (i)`
+  — two different causes, one of them a real defect and one of them mine. **A
+  truncated print is a different string.**
+- **Residual, named and not fixed:** `premier` sits in the `institutional` arm
+  of `CLASS_HINTS`, so a fund whose NAME contains it — `Royce Premier Fund`,
+  `Royce International Premier` — has a class asserted that the filing never
+  stated. Pre-existing, not introduced here, and it needs its own measurement.
+- **Prevention:** `node scripts/match-sec-tickers.mjs --selftest` — **23 cases
+  pinned in one table, must-change and must-keep together**, so a control that
+  stops reaching the rule it guards is visible rather than silently green.
+  23/23 pass. **Negative-controlled against the pre-change matcher: it fails by
+  name on 9 of the 23 and holds the other 14.** A guard whose negative control
+  passes has not been tested. The two bracket cases pass BOTH ways, and that is
+  recorded rather than hidden: before `hintsOf` existed only one hint was ever
+  read, so the footnote could not yet do damage — the bracket rule exists
+  because `hintsOf` created the exposure, and the pin is there for the next
+  change, not for this one.
