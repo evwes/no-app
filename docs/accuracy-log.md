@@ -25669,3 +25669,102 @@ path. This is piece (2) of the queue the 18:0xZ entry opened, finished.
   a second source for an existing fact arrives, diff it against the first
   before using it** — the disagreements are free findings and they are the ones
   that were never going to surface from either source alone.
+
+## 2026-09-28 (21:2xZ) — A descriptive series name manufactured a house, and the manager gate published it
+- **Wrong:** `Vanguard Short-Term Bond`, `Victory Short Term Bond Fund R6
+  Shares`, `TIAA-CREF Short-Term Bond Inst`, `PIMCO Short Term Bond Fund`,
+  `Allspring Short-Term Bond`, `Virtus Short Term Bond Fund`, `Schwab
+  Short-Term Bond I`, `American Funds Short Term Bond Fund` and 115 more
+  distinct filed names all published **HOSBX — Homestead Funds' Short-Term Bond
+  Fund** — as the holding's ticker. **187 rows / 204 plans / 278,339
+  participants / $116,678,251.** The filing names its house on the row; we
+  published a different one.
+- **Cause, and it is ONE MISSING WORD.** `managerPhrase` extends past a generic
+  lead token, so HOMESTEAD FUNDS INC's series — registered under the bare
+  descriptive name `Short-Term Bond Fund` — produced the phrase `short term`.
+  The function rejects a phrase whose every word is descriptive, and `term` was
+  the one descriptive word absent from `DESCRIPTIVE`. Homestead's manager keys
+  became `["homestead", "short term"]`, and `short term` is a token of every
+  house's short-term bond fund, so the manager gate — the mechanism whose whole
+  job is to stop one house's fund standing in for another's — admitted Homestead
+  for all of them. **Third instance of a shape this file already records twice**:
+  the single-token `t` from "T. Rowe Price Growth Stock Fund, Inc." admitting the
+  entire index, and `bond fund` matching a filed "High Yield Bd Fund". *A phrase
+  that describes what a fund holds names no house.*
+- **Change:** `term` added to `DESCRIPTIVE`, with the measurement in the comment
+  beside it. No `PARSER_VERSION` bump — `stk` is written by merge-4i over the
+  whole store every run.
+- **Also moved, all read:** **16 rows FLIP to the house the filing's own issuer
+  cell names** (`Short Term Bond Fund` [iss Transamerica] → TASTX, [iss Nuveen]
+  → TISIX, [iss Fidelity Advisor] → FBNIX, and eight Vanguard short-term
+  TREASURY rows off PRTBX — T. Rowe Price's short-term BOND fund, wrong twice
+  over). Those were unreachable before: the bogus direct hit returned first and
+  the issuer path was never consulted. **2 rows GAIN** one (`Commerce Short-Term
+  Government Fund` → CFSTX).
+- **Cost named, 7 rows / 1,418 participants, NOT zero.** The American Funds
+  `Short-Term Bond Fund of America` family (RAMCX, RAMEX ×3, RAMFX) and `Lord
+  Abbett Short Term Duration Income Fund R6` → LDLVX lose a correct answer,
+  because those registrants' legal names state no house either, so the filed
+  name now names no manager and the early gate refuses before the house-less
+  registrant escape hatch is reached. **QUEUED, deliberately not bundled:** that
+  hatch should fire when the series key is not ALL-descriptive — `new world` and
+  `american balanced` survive the same rule that removes `short term` — and it
+  is a second change owing its own whole-store measurement.
+- **MEASURED THROUGH THE SHIPPED PATH, and the first number was a proxy.** The
+  first pass diffed `resolve`'s raw answer and reported 232 rows. **merge-4i
+  stores a ticker only when the answer is not `comparable`**, and re-running
+  under that rule gives 187 / 16 / 2. The real merge then reproduced it to the
+  row: `sec tickers 338,445 → 338,260 rows across 37,059 → 37,028 plans` =
+  −187 +2 exactly. CONFIDENCE DIFF +0 / −0, no losses, no degraded swaps, no
+  dropped rows.
+- **Prevention:** `node scripts/match-sec-tickers.mjs --selftest` is 55 cases.
+  Seven are new and pinned on BOTH sides — four that must REFUSE, and `American
+  Funds New World R6` → RNWGX, `American Funds American Balanced R6` → RLBGX,
+  `American Funds Growth Fund of America R6` → RGAGX, which must KEEP because
+  those registrants also name no house and the rule must not reach them; three
+  issuer cases pin the flips. Negative-controlled: the pre-change file fails by
+  name on exactly those 7 and holds the other 48, including the already-pinned
+  `Vanguard Short Term Bond Index Fund` → VBISX*, which states the same three
+  words and must not move.
+- **How it was found, which is the transferable part.** It came out of the
+  override question — may the SEC index replace a published `fund-er.js` ticker
+  — by drawing 25 disagreeing rows at random and reading them. 24 were the SEC
+  correctly reading a share class the pattern table ignores. The 25th returned a
+  different FUND, and chasing that single row to its cause found a defect that
+  has nothing to do with the override and is larger than it. **The point of
+  reading a draw is the row that does not fit.**
+
+## 2026-09-28 (21:2xZ) — The override question: answered NO for now, with the negative results recorded
+- **Question:** 744 names / 3,844 rows / 2,643 plans / 5,962,185 participants /
+  $35.3B where `fund-er.js` and the SEC index both name a fund exactly and
+  DISAGREE. May the SEC answer replace the published one?
+- **A random 25 read one by one: 24 SEC-right, 1 SEC-WRONG.** The 24 are share
+  classes the pattern table ignores (K6, Investor vs Admiral, Class K). The one
+  failure is `American Funds The Growth Fund of American R6` → **RGWGX**
+  (`American Funds Growth Portfolio`) where the answer is **RGAGX** (`GROWTH
+  FUND OF AMERICA`): **the filing misspells "America" as "American"**, so the
+  correct series stops being a token-subset and a neighbouring one wins with
+  zero leftovers. `resolve`'s own leftover ranking is what normally picks the
+  right series here — its comment names this exact pair — so the matcher is not
+  at fault; the candidate set no longer contains the answer.
+- **THREE DISCRIMINATORS WERE PROPOSED AND ALL THREE FAILED, recorded so they
+  are not tried again:**
+  - *same-series vs different-series* (look `fund-er.js`'s ticker up in the
+    index): splits 1,189 rows / 1,657,079 ppl same-series against 2,655 /
+    4,551,280 different-series — **useless**, because K6 funds are genuinely
+    separate SERIES, so the one wrong answer sits among thousands of right ones.
+  - *series-key length* (the wrong answer's key `american growth` is 2 tokens):
+    the ≤2-token band is 435 rows and is **dominated by correct answers** —
+    `VWENX→VWELX [vanguard wellington]`, `FCNTX→FCNKX [fidelity contrafund]`,
+    `FBALX→FBAKX [fidelity balanced]`, `VPMAX→VPMCX [vanguard primecap]`.
+  - *series key retains a non-asset, non-house token*: kills `fidelity balanced`
+    (→ FBAKX, correct), since `balanced` is an asset word.
+- **Verdict: the override stays QUEUED**, and the reason is unchanged — **3,513
+  of the 3,844 rows also publish a NAME-based expense ratio**, so correcting the
+  ticker alone leaves a K6 row showing the retail fund's fee beside the K6
+  symbol. A half-corrected row is not obviously better than a wholly wrong one.
+- **Sized on the way past, small and live:** the `of American` misspelling
+  appears on **39 distinct filed names / 47 rows / 46 plans / 75,937 ppl**. Most
+  resolve to nothing, which is safe; **4 rows publish a wrong fund as fact**
+  (RGWGX ×3, RGWEX ×1). Recorded, not fixed: a spelling repair is a separate
+  claim and `repairHouse`'s `Vangaurd` precedent is for a HOUSE, not a fund name.
