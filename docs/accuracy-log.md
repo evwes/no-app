@@ -24427,3 +24427,49 @@ handed to the next cycle rather than shipped at 00:3xZ without a member read of
   tail of a cycle.
 - **Not started here.** Recorded with its size corrected, its risk named and a
   discriminator sketched, which is what the next cycle needs to decide it.
+
+## 2026-09-28 (06:4xZ) — The filing's own ticker as a check, and the item I started was not the item I shipped
+
+- **The measurement refuted my premise, which is the useful part.** I reopened
+  the filed-ticker class believing the symbol welded to the front of the name
+  was BLOCKING the lookup, and sized a strip at 2,377 rows. **It gains ZERO
+  tickers.** `FXAIX - Fidelity 500 Index Fund` already resolves to FXAIX with
+  the prefix in place — the lookup tries the bare name too. The blanks are
+  **missing table entries** (Vanguard's sector index funds — Consumer Staples,
+  Utilities, Energy, Materials — are simply not in `fund-er.js`), which is a
+  different problem needing the sourcing that is blocked from this sandbox.
+- **What the filed symbol IS good for is checking, not sourcing** — and that
+  needs no network. Where a 4i schedule states the symbol in the holding name
+  and `fund-er.js` also resolves that row, the two can be compared. **Nothing
+  in this project had ever asked.**
+- **64 rows / 34 plans / 383,085 participants disagree**, and the readable ones
+  are share-class mismatches where **the filing is right**: VITSX
+  (Institutional) published as VTSAX (Admiral), VMCIX as VIMAX, TRJLX as TRRMX,
+  and **MEIJX (MFS Value R4) published as MEIKX (R6)** — this record's own
+  long-standing MFS Value defect, caught automatically for the first time.
+  **1,426 rows AGREE**, which is the reassuring half and is what makes the 64
+  worth reading.
+- **Raised as WARN and listed in the section that prints IN FULL.** A plain
+  WARN would have been wrong and `audit-data.mjs` says why forty lines below:
+  the WARN list truncates at 40 and these are appended last, which is how
+  `swaps-degraded` sat unprinted from the day it shipped. *A check nobody reads
+  is a check that does not exist.*
+- **Scoped so it can live in the merge job.** A `fundTickerInfo` sweep over all
+  1.7M published rows runs more than ten minutes; only rows whose name states a
+  symbol can conflict, which is ~3,100. **Cost measured rather than asserted:
+  44s → 55s.** My first draft of that comment said "costs nothing", which was a
+  guess dressed as a measurement.
+- **Negative-controlled in the direction that matters:** inverting the
+  comparison makes it report the AGREEING population instead — 64 becomes
+  1,426 — so the detector demonstrably sees both groups and it is the
+  comparison, not the matcher, that decides which is reported.
+- **Sixth harness error of the session, recorded because the rate is the
+  signal:** timing the baseline first returned **0s**, because Node would not
+  load the copy saved under a `.headtmp` extension. An implausible number
+  reporting on the harness rather than the data, again.
+- **Left open:** whether to PREFER the filed symbol at display where the two
+  disagree. It would fix 383,085 participants' ticker and fee cells, and unlike
+  every other open ticker item it needs no external source — but it publishes a
+  string from the filing as a symbol, which is the fabrication surface this
+  record is careful about. The check has to run for a while first; that is what
+  it is for.
