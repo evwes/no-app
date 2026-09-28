@@ -1131,7 +1131,45 @@ console.log(`wrote plans-all.json: ${rowsOut.length} plans, ${(Buffer.byteLength
     if (avgC > 800) avgC = 0;
     cols.ein.push(g(r, "ein")); cols.pn.push(+g(r, "pn") || 0);
     cols.name.push(g(r, "sponsorName"));
-    cols.plan.push(einCount.get(g(r, "ein")) > 1 ? g(r, "planName") : "");
+    /* THE PLAN NAME ALSO SHIPS WHEN IT IS THE ONLY PLACE A SEARCHABLE NAME
+     * LIVES (2026-09-28, owner-reported: "advance auto parts does not appear
+     * in wampo").
+     *
+     * The old gate was `einCount > 1` alone, and that gate answers a DIFFERENT
+     * question — *can two plans of one sponsor be told apart?* — which is about
+     * DISAMBIGUATION, not about being found at all. `matchesQuery` does search
+     * `plan.planName`, but for a single-plan sponsor that field is EMPTY until
+     * `ensureDetail` runs, and `ensureDetail` runs when a plan is EXPANDED. So
+     * the plan name was searchable only after you had already found the plan.
+     *
+     * Advance Auto Parts is the type case and it is not obscure: EIN
+     * 54-0118110 PN 002, 67,469 participants, sponsor `Advance Stores Company,
+     * Inc.` — the words "Advance Auto Parts" appear ONLY in the plan name, so
+     * typing them returned nothing. Measured across the universe the same way
+     * `matchesQuery` matches (raw substring, then punctuation-stripped):
+     * **32,711 plans / 32,581,567 participants** could not be found by their
+     * own brand phrase, among them Elevance Health (94,689) filed under `Ath
+     * Holding Company`, Enterprise Holdings (98,721) under `The Crawford
+     * Group`, GE Aerospace (105,231), USAA (52,789) and Allied Universal
+     * (258,360).
+     *
+     * COST, measured gzipped because that is what a reader downloads: +392 KB
+     * on a 2,677 KB file, 31,647 extra names. Shipping EVERY plan name would
+     * cost +1,111 KB, so the condition earns its keep. A search-only column
+     * carrying just the stripped brand phrase was measured at +328 KB and
+     * REFUSED: 64 KB is not worth publishing derived text where the filed name
+     * itself will do, and the filed name serves the list's sub-line too.
+     * `al` could not be reused at any price — it renders as "Previously filed
+     * as", so a plan's own current name there would be a false claim. */
+    const planName = g(r, "planName") || "";
+    const bootHay = [g(r, "sponsorName"), g(r, "ticker"), g(r, "recordkeeper"), g(r, "alias")]
+      .join(" ").toLowerCase().replace(/[^a-z0-9]/g, "");
+    const brandPhrase = planName.toLowerCase()
+      .replace(/[^a-z0-9& ]+/g, " ").replace(/\s+/g, " ")
+      .replace(/\b(?:the|inc|llc|lp|llp|pc|company|companies|plan|plans|401|403|k|b|savings|retirement|employees|employee|corp|corporation|profit|sharing|trust|thrift|investment|incorporated|and|of|for)\b/g, " ")
+      .replace(/[^a-z0-9]/g, "");
+    const addsSearchableName = brandPhrase.length >= 3 && !bootHay.includes(brandPhrase);
+    cols.plan.push(einCount.get(g(r, "ein")) > 1 || addsSearchableName ? planName : "");
     cols.st.push(g(r, "state") || ""); cols.bc.push(g(r, "businessCode") || "");
     cols.parts.push(parts); cols.am.push(Math.round(assets / 1e5));
     cols.ab.push(avgBal); cols.ac.push(avgC);
