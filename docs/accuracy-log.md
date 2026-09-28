@@ -24626,3 +24626,78 @@ handed to the next cycle rather than shipped at 00:3xZ without a member read of
   two places. Crawlable surface: **2 pages** (IBM, Hospital for Special
   Surgery), because the family sits mostly outside the top 5,000 or below the
   12-row cap.
+
+## 2026-09-28 (10:2xZ) — The audit wrote to the accuracy trail on every local run
+- **Wrong:** `audit-data.mjs` reads as a REPORTING step — it prints findings and
+  the reparse verdict — and had a write side effect on
+  `docs/coverage-history.jsonl`, the file CLAUDE.md calls the source of truth
+  for coverage trends. Developing the ticker-conflict check meant running it
+  five times, so **five lines describing no pipeline run** landed in the trail,
+  one carrying `warn: 1970` from a deliberately inverted negative control. They
+  were caught only because a stop hook flagged the dirty tree. A one-line append
+  to a 307-line log is exactly the diff nobody reads.
+- **Change:** the line is computed either way and written only for a pipeline
+  run. **The condition is "CI, unless told otherwise" and NOT a workflow flag,
+  and the reasoning is the general one:** a flag the workflow must pass is a
+  guard that fails SILENT and in the worse direction — forget to wire it and the
+  trail stops, taking the REPARSE VERDICT's baseline with it, and that failure
+  shows up as *nothing at all*, where a junk line at least shows up as a junk
+  line. The merge job is CI's only call site, so `GITHUB_ACTIONS` names the
+  pipeline run exactly and needs no wiring. `WAMPO_RECORD=1` records
+  deliberately; `WAMPO_RECORD=0` suppresses even in CI.
+- **Prevention:** controlled in **all four directions**, with the file's own
+  line count as the witness rather than the console output — local 307→307
+  refused, `GITHUB_ACTIONS=1` 307→**308 WROTE**, CI+`WAMPO_RECORD=0` 308→308
+  refused, local+`WAMPO_RECORD=1` 308→**309 WROTE**. *A gate never seen to WRITE
+  is as untested as one never seen to refuse.* Then controlled in PRODUCTION:
+  run #485's data commit adds **exactly one** trail line, HIGH 4 at the baseline.
+- **And a false cause in my own first draft:** it printed "this is not a pipeline
+  run" for both suppression paths, when `WAMPO_RECORD=0` is a pipeline run told
+  to hold its tongue. The two reasons are now named separately. Same shape as
+  the `e=download` code that told readers a filing had been withdrawn when the
+  failure was ours — **a message stating a cause is a published claim.**
+
+## 2026-09-28 (10:4xZ) — A section caption in the ISSUER column, vocabulary widened
+- **Wrong:** 789 rows / 238 plans / **829,353 participants** publish a 4i section
+  caption welded to the front of the firm. From the 10:0xZ participant-weighted
+  draw: Starbucks (307,988 ppl) stores `Target Date Funds Vanguard` on the first
+  row under its target-date heading, so the report reads `Target Date Funds
+  Vanguard · Vanguard Target Retirement 2050 Trust Plus`. The dominant shape is
+  not a vehicle label at all — a bare leading `Company`, **569 rows**, the tail
+  of a wrapped `… Trust Company` landing at the front of the next row's issuer.
+- **Change:** the MECHANISM was already right and in the right place — merge-4i
+  has stripped these since 2026-09-21, gated on store-wide evidence (*does the
+  REMAINDER stand alone as a complete issuer elsewhere?*). Only its VOCABULARY
+  was too narrow. Widening is safe **by construction**: `Company Vanguard
+  Fiduciary Trust` strips because `Vanguard Fiduciary Trust` stands alone, while
+  a firm named `Company of New York` would leave `of New York`, which stands
+  alone nowhere. No re-parse; it applies on the next merge.
+- **THE FIRST DRAFT WAS WRONG AND NO COUNT COULD SHOW IT.** At 809 rows the
+  numbers looked clean; printing every distinct transformation showed two
+  dangling fragments — `Cash equivalents` → `equivalents` and `Company of
+  America` → `of America`, 5 rows each. **Both cleared the standalone gate, and
+  that is the structural finding: a floor of ONE means a single already-damaged
+  row LICENSES the same damage elsewhere, so the gate can be fed by its own
+  mistakes.** An issuer begins with a capital or a digit; a fragment left by an
+  over-eager cut begins lowercase. Ten rows, gone.
+- **Prevention:** four checks named before they were run, all passed — the
+  specimen class `Target Date Funds <house>` 4 → 0 (a Fidelity and a JPMorgan
+  instance the draw never saw came with it); TIAA's REAL `Real Estate Account
+  (CREF)` untouched; Sony's `Corporate Stock - Common` untouched, 6 rows both
+  sides; issuers beginning lowercase 2,165 → **2,163, DOWN not up**, both
+  departures named and both correct strips. 171 distinct transformations, every
+  one read; 0 names, 0 values, 0 row counts moved.
+- **DELIBERATELY NOT ADDED:** bare `Growth`, `Value`, `Index`, `International` —
+  3 rows each, and `Value Line` is a real house. Nine rows does not buy a
+  vocabulary arm that has to be right about a firm name, so the count is a
+  FLOOR and is stated as one.
+- **AND THE SIZING BEFORE IT WAS WRONG BY A FACTOR OF FORTY.** My first
+  predicate asked *does SOME suffix of this issuer stand alone?* and returned
+  **33,716 rows / 10.7M ppl**, whose first three examples were `The Vanguard
+  Group`, `Baron Capital Group` and `Charles Schwab` — it could not tell a
+  caption from a surname, because nearly every firm name ends in a token that
+  appears alone somewhere. **Sixth instance on this record of an implausible
+  number reporting on the harness.** It also means the cost I published an hour
+  earlier beside the issuer restoration — 6 rows / 5 pages / 33,059 ppl — was
+  measured with an anchored test that cannot see this shape and was **too low**.
+  This entry is the correction and the repair together.

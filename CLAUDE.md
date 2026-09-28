@@ -690,6 +690,36 @@ export, do not copy the line.
 - **`PARSER_VERSION` in the tree is 188 and the store is at 188. NOTHING IS IN
   FLIGHT.** #481 (v187 + v188) ran `success` 20:59–21:54Z on `5dd4369d`, store
   commit `42739932`. #480 (v186) ran `success` 19:54–20:48Z, **+7 / −0**.
+- **MIRRORED 2026-09-28 10:5xZ, UNFORCED ON BOTH CHECKS** (`40d2fa5 →
+  7b73ea1`, fast-forward; data gate +0 / −0). Carries run **#485**, dispatched
+  by `workflow_dispatch` after a `scripts/**` push produced no run — the
+  documented intermittent trigger, handled by the documented remedy.
+  **#485 PASSED ITS PRE-REGISTERED TEST: the accuracy trail gained EXACTLY ONE
+  line**, HIGH **4 = the baseline**, WARN 608 (544 + the 64 ticker conflicts,
+  expected), confident 60,104, pv 188 at 99.8%, dl 128, overshoot 325.
+  **(1) `audit-data.mjs` no longer writes to the accuracy trail unless it is a
+  pipeline run.** It reads as a REPORTING step and had a write side effect on
+  `docs/coverage-history.jsonl`; five lines describing no pipeline run were left
+  in the tree overnight, one reading `warn: 1970` from an inverted control.
+  **The condition is "CI, unless told otherwise" and NOT a workflow flag on
+  purpose:** a flag the workflow must pass fails SILENT and in the worse
+  direction — forget to wire it and the trail stops, taking the REPARSE
+  VERDICT's baseline with it. Controlled in all four directions with the file's
+  own line count as the witness, then in production by #485.
+  **(2) The 4i section caption in the ISSUER column — 789 rows / 238 plans /
+  829,353 ppl, landing on the next merge.** The mechanism was already right and
+  in the right place (merge-4i, gated on *does the remainder stand alone
+  elsewhere?*); only its VOCABULARY was narrow. Dominant shape is a bare
+  leading `Company`, 569 rows, the tail of a wrapped `… Trust Company`.
+  **My first draft produced two dangling fragments that no count could see** —
+  `Cash equivalents` → `equivalents`, `Company of America` → `of America` — and
+  **both cleared the standalone gate, which is the structural finding: a floor
+  of ONE lets a single damaged row LICENSE the same damage elsewhere, so the
+  gate can be fed by its own mistakes.** Fixed by requiring the remainder to
+  begin like a firm. **And the sizing before it was wrong by a factor of
+  forty** (33,716 rows claimed; the predicate could not tell a caption from a
+  surname) — which also means the cost published an hour earlier with the
+  issuer restoration, 6 rows / 5 pages / 33,059 ppl, was **too low**.
 - **MIRRORED 2026-09-28 09:3xZ, UNFORCED ON BOTH CHECKS** (`c0f3003c →
   613f15c5`, a plain fast-forward; data gate +0 / −0). `pages-build-deployment`
   #637 built it `success` at 09:34Z, and `site-test` #98's JOB reads
