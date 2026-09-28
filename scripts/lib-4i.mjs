@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 188;
+export const PARSER_VERSION = 189;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -264,6 +264,40 @@ if (GTA_SOURCE === GTA_PLURALISED) {
   throw new Error("lib-4i: GENERIC_TYPE_ANY's v187 append found no trailing ')$' — the derivation is a silent no-op, fix it rather than shipping a quiet guard");
 }
 export const GENERIC_TYPE_ANY = new RegExp(GTA_SOURCE, "i");
+/* v189 — THE VOCABULARY WAS RIGHT AND THE KERNING WAS THE HOLE.
+ *
+ * Tides Center (813 participants) publishes `Regi s tered i nves tment compa
+ * ni es` at 97.1% of a four-row menu. That is the v105 dominant-row shape and
+ * `dominanceIsAggregate` should have refused the lineup; it could not, because
+ * a broken font encoding sprays spaces through the label and no arm of the
+ * vocabulary matches it. 43 rows / 42 plans / 101,200 participants publish such
+ * a label as a holding name, and 8 plans / 5,942 participants have one
+ * DOMINATING their menu at >=90%.
+ *
+ * The comparison is v141/v142's own: strip the spaces from both sides. It is
+ * DERIVED from GTA_SOURCE rather than retyped, with the same import assertion
+ * the pluralisation and the v187 append carry — a despaced vocabulary written
+ * by hand is a second copy that drifts.
+ *
+ * WHY THERE IS NO `KERNED` GATE, which the neighbouring despaced tests use:
+ * KERNED wants two consecutive one-or-two-letter words and fires on NOT ONE of
+ * these ten shapes — `M utual Fund` has a single short token. Gating on it
+ * would have made this whole change inert while every test still passed, which
+ * is the decorative-guard failure this record has paid for. It is safe
+ * ungated because the vocabulary stays ANCHORED `^…$`: only a string whose
+ * ENTIRE letters-only form is a vocabulary term can match, so `AMERICAN FUNDS
+ * BLANC MUTUAL FUND` and `Mutual of America MUTUAL FUND` — the v188 pinned
+ * controls — are refused, as are `Spartan 500 Index Plus Fund` and `Invesco
+ * Stable Value Trust B1`. Twenty-two probes, all agreeing, before a line of
+ * this shipped. */
+const GTD_SOURCE = GTA_SOURCE.replace(/ /g, "");
+if (GTD_SOURCE === GTA_SOURCE) {
+  throw new Error("lib-4i: GENERIC_TYPE_DESPACED's v189 space strip found no spaces in GTA_SOURCE — the derivation is a silent no-op, fix it rather than shipping a quiet guard");
+}
+export const GENERIC_TYPE_DESPACED = new RegExp(GTD_SOURCE, "i");
+if (!GENERIC_TYPE_DESPACED.test("registeredinvestmentcompanies") || GENERIC_TYPE_DESPACED.test("americanfundsblancmutualfund")) {
+  throw new Error("lib-4i: GENERIC_TYPE_DESPACED no longer agrees with its probes — it must match a despaced asset-class label and refuse a real fund");
+}
 /* v188 — THE VOCABULARY WAS RIGHT AND THE DECORATION WAS THE HOLE.
  *
  * `GENERIC_TYPE_ANY` is anchored `^…$`, deliberately: an unanchored version
@@ -340,7 +374,14 @@ export function stripGenericDecoration(name) {
 export function isGenericTypeName(n) {
   const s = String(n || "").trim();
   if (!s) return false;
-  return GENERIC_TYPE_ANY.test(s) || GENERIC_TYPE_ANY.test(stripGenericDecoration(s));
+  /* v189: the third arm asks the SAME question of the letters-only string, so
+   * a kerned rendering of an asset-class label is recognised. It lives here
+   * rather than in the dominance guard so that every caller — the guard, both
+   * audits, diff-lineups and the browser twin — asks one question. The twin is
+   * GENERATED from this file and `smoke-test.mjs` fails on drift, which is how
+   * adding an arm here is prevented from silently splitting the two surfaces. */
+  return GENERIC_TYPE_ANY.test(s) || GENERIC_TYPE_ANY.test(stripGenericDecoration(s))
+      || GENERIC_TYPE_DESPACED.test(s.toLowerCase().replace(/[^a-z]/g, ""));
 }
 /* ASSERTED AT IMPORT, in this file's own style: a strip whose patterns stop
  * matching returns its input unchanged and reports nothing, so the widening

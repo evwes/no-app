@@ -336,6 +336,14 @@ try {
      * v187's EXTRAS (`commingled … funds`, `pooled separate account funds`). */
     "Commingled funds", "Commingled trust funds", "Commingled investment funds",
     "Pooled separate account funds", "Collective trust funds", "Common collective trusts",
+    /* v189's DESPACED arm, and these exist because the tether did NOT fail when
+     * that arm was added: not one of the cases above reaches it, so the check
+     * was decorative for the newest rule in it. A kerned font sprays spaces
+     * through an asset-class label and the vocabulary sees a string no arm
+     * matches; the comparison strips the spaces from both sides. Removing the
+     * arm from the generated twin must fail HERE. */
+    "M utual Fund", "Mutua l Fund", "Regi s tered i nves tment compa ni es",
+    "Colle ctive Trust", "Registered Investm ent Com pany", "Group Annuity C ontrac t",
     /* must NOT be generic — real funds, including v188's pinned controls */
     "Fidelity 500 Index Fund", "Vanguard Target Retirement 2030",
     "AMERICAN FUNDS BLANC MUTUAL FUND", "Mutual of America MUTUAL FUND",
@@ -351,9 +359,9 @@ try {
     for (const n of genDrift) console.error(`  ${JSON.stringify(n)}  app.js=${genGot[genCases.indexOf(n)]}  lib-4i=${isGenericTypeName(n)}`);
     fail(`the generated generic-name twin in app.js disagrees with scripts/lib-4i.mjs on ${genDrift.length} of ${genCases.length} names — regenerate it`);
   }
-  for (const n of genCases.slice(0, 16))
+  for (const n of genCases.slice(0, 22))
     if (!isGenericTypeName(n)) fail(`generic-name predicate no longer recognises an asset-class label: ${JSON.stringify(n)}`);
-  for (const n of genCases.slice(16))
+  for (const n of genCases.slice(22))
     if (isGenericTypeName(n)) fail(`generic-name predicate now calls a REAL FUND generic: ${JSON.stringify(n)}`);
 
   /* AND THE ROW DECISION, which is the half the name test cannot see. Whether

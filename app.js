@@ -819,14 +819,15 @@
     return /[A-Za-z]{3}/.test(s) ? s : String(name).trim();
   }
   /* GENERATED FROM scripts/lib-4i.mjs — DO NOT EDIT BY HAND.
-   * lib-4i derives GENERIC_TYPE_ANY from GENERIC_TYPE_NAME by two asserted
-   * replacements, so it is a DERIVED pattern and transcribing it is the move
-   * this record says produces wrong answers. The source below is the COMPILED
-   * regex, written here by a script, and `smoke-test.mjs` compares this copy
+   * lib-4i derives these patterns from GENERIC_TYPE_NAME by asserted
+   * replacements, so they are DERIVED and transcribing one is the move this
+   * record says produces wrong answers. The sources below are the COMPILED
+   * regexes, written here by a script, and `smoke-test.mjs` compares this copy
    * against lib-4i's own export on every push — a change to the derivation
    * shows up as drift, not as silence.
-   * Regenerate: node <scratch>/gentwin.mjs */
+   * Regenerate: node scripts/gen-generic-twin.mjs */
   const GENERIC_TYPE_ANY = new RegExp("^(?:total )?(?:registered investment compan(?:y|ies)|(?:common[\\/ ]?)?collective (?:investment )?trusts?(?: funds?| portfolios?)?|collective trust funds?|mutual funds?|common (?:and preferred )?stocks?|corporate stocks?|pooled separate accounts?|separate accounts?|guaranteed (?:investment|interest) contracts?|group annuity contracts?|commingled (?:trust |investment )?funds?|pooled separate account funds?)$", "i");
+  const GENERIC_TYPE_DESPACED = new RegExp("^(?:total)?(?:registeredinvestmentcompan(?:y|ies)|(?:common[\\/]?)?collective(?:investment)?trusts?(?:funds?|portfolios?)?|collectivetrustfunds?|mutualfunds?|common(?:andpreferred)?stocks?|corporatestocks?|pooledseparateaccounts?|separateaccounts?|guaranteed(?:investment|interest)contracts?|groupannuitycontracts?|commingled(?:trust|investment)?funds?|pooledseparateaccountfunds?)$", "i");
   const GENERIC_DECO = [
     [/^(?:sub[- ]?total|total)\s*[:.]?\s+/i, ""],
     [/^description\s*:\s*/i, ""],
@@ -852,7 +853,8 @@
   function isGenericName(n) {
     const s = String(n || "").trim();
     if (!s) return false;
-    return GENERIC_TYPE_ANY.test(s) || GENERIC_TYPE_ANY.test(stripGenericDecoration(s));
+    return GENERIC_TYPE_ANY.test(s) || GENERIC_TYPE_ANY.test(stripGenericDecoration(s))
+        || GENERIC_TYPE_DESPACED.test(s.toLowerCase().replace(/[^a-z]/g, ""));
   }
   window.__wampoGenericName = isGenericName;  // read by the smoke test only
   function isNamelessFundRow(f, cleanedName, isGenericName) {
