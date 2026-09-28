@@ -801,7 +801,51 @@ export, do not copy the line.
   `resolveHolding`), 45/45; the pre-change file fails by name on 5 of the 32
   and the old caller pattern fails on the BlackRock row.
   `docs/accuracy-log.md` 2026-09-28 (19:4xZ).
-- **IN FLIGHT: #495, dispatched 2026-09-28 22:2xZ on `bb7cdc5`, observed queued.
+- **IN FLIGHT: #496 (v190), dispatched 2026-09-28 23:1xZ on `fe983e8`, observed
+  queued — a FULL re-parse on the version bump.** **A BARE TRUST DESIGNATION IS
+  NOT A FUND NAME: 58 rows / 53 plans / 1,528,497 ppl-weighted / $67.8B**
+  publish a holding named only `Master Trust`, `Trust`, `Interest in Master
+  Trust` or `Plan interest in master trust`. **Found by the participant-weighted
+  draw** on FedEx (177,265 ppl), whose 26-row Vanguard menu is otherwise clean
+  at ratio 0.972 and carries `Master Trust` at $664,474,627.
+  **The cause is structural, not an omission:** `trust` reached
+  `GENERIC_TYPE_NAME` only ever INSIDE `collective (?:investment )?trust`, never
+  standing alone, so the bare name was outside the vocabulary BY CONSTRUCTION
+  and the dominance guard, both audits, `diff-lineups` and the browser twin were
+  all blind to it.
+  **Split by what the reader is TOLD: 27 rows / 711,611 ppl have a BLANK type
+  column**; 22 / 488,910 already read `Master trust interest`; 3 / 311,006
+  `Company stock`; 6 / 16,970 `Collective trust`. **Eight rows are ≥50% of their
+  own menu and five ≥90%** — the v105 shape, a plan whose entire menu says
+  `Master Trust`.
+  **IT DOES NOT CONTRADICT v189 and the code comment says so where the next
+  reader will stand:** v189 kept `master trust` out of `TYPE_SUFFIX` because
+  that arm STRIPS the words off a LONGER name; this test is anchored `^…$` on
+  the WHOLE name. One vocabulary entry was settling two different questions.
+  **PRE-REGISTERED:** `confident` −5 at most, every loss inside {Corteva 26,098,
+  New York Life 19,598, New York Life 15,104, DuPont 13,884, PPC 1,600};
+  `audit-generic-names` **212 → 213, MEASURED not estimated**;
+  `audit-dominant-row` stays 0; Jones Day (88.2%) and Ahold Delhaize (70.0%)
+  stay published, under the 90% floor this change does not touch.
+  **THE THRESHOLD NUMBER I EXPECTED WAS WRONG:** I predicted 212 → ~265, past
+  the 230 escalation threshold this record reserves for the owner, and nearly
+  queued the item on that basis. 52 of the 53 plans were already counted.
+  **Sixteenth instance of a measurement correcting an estimate about to be
+  published.** 12 controls green (six must-FLAG, six must-KEEP including both
+  v189 pins and four real trust-NAMED funds); `parser-gate.mjs` all green.
+  `docs/accuracy-log.md` 2026-09-28 (23:1xZ).
+- **MIRRORED 2026-09-28 23:1xZ (`bb7cdc5 → b6b3793`), UNFORCED ON BOTH CHECKS**
+  — a plain fast-forward, data gate +0 / −0. Pages #664 built the prior mirror
+  `success`.
+- **#495 PASSED ITS PRE-REGISTERED TEST TO THE ROW** (`conclusion: success`,
+  data commit `b6b3793`): `sec tickers` **338,463 rows across 37,034 plans**,
+  exactly predicted; coverage line byte-identical (confident 60,103, HIGH 4,
+  overshoot 325, dl 129). Read out of the store: the American Funds flagship
+  family now publishes on **1,669 rows / 1,443 plans / 1,459,357 ppl-weighted**
+  (RGAGX 570, RBFGX 543, RIDGX 169, RGAEX 90, RGACX 80 …), **`HOSBX` and
+  `PRTBX` still 0**, and **`RIGGX` holds at 107 rows** — the must-keep the
+  first draft of that rule would have destroyed.
+- **PREVIOUSLY IN FLIGHT: #495, dispatched 2026-09-28 22:2xZ on `bb7cdc5`, observed queued.
   NO PARSER BUMP.** **GROWTH, BOND AND INCOME FUND OF AMERICA RESOLVE AT LAST —
   203 rows / 158 plans / 141,142 ppl gain a ticker, 0 withdrawn, 0 flipped.**
   All 102 distinct filed names read; every one an American Funds flagship

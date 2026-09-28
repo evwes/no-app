@@ -25809,3 +25809,51 @@ path. This is piece (2) of the queue the 18:0xZ entry opened, finished.
   exactly the 5 new must-gain cases and holds the other 57, including all four
   Homestead refusals and RIGGX. Verified through the real merge: `sec tickers
   338,260 → 338,463` across 37,028 → 37,034 plans, CONFIDENCE DIFF +0 / −0.
+
+## 2026-09-28 (23:1xZ) — v190: a bare trust designation published as a fund
+- **Wrong:** **58 rows / 53 plans / 1,528,497 participant-weighted / $67.8B**
+  publish a holding whose whole name is a bare trust designation — `Master
+  Trust`, `Trust`, `Interest in Master Trust`, `Plan interest in master trust`.
+  It names no fund. **Found by the participant-weighted draw**, on FedEx
+  (177,265 ppl), whose 26-row Vanguard menu is otherwise clean at ratio 0.972
+  and carries `Master Trust` at $664,474,627.
+- **Cause, and it is structural rather than an omission:** `trust` reached
+  `GENERIC_TYPE_NAME` only ever INSIDE `(?:common[\/ ]?)?collective
+  (?:investment )?trust(?: fund| portfolio)?` — never standing alone — so a
+  whole name of `Master Trust` sat outside the vocabulary **by construction**,
+  and the dominance guard, both audits, `diff-lineups` and the browser twin
+  were all blind to it.
+- **Split by what the reader is told beside the name**, which is the number
+  that matters: **27 rows / 711,611 ppl have a BLANK type column** and nothing
+  saying it is not a fund; 22 / 488,910 already read `Master trust interest`;
+  3 / 311,006 read `Company stock`; 6 / 16,970 `Collective trust`.
+- **Eight rows are ≥50% of their own menu and five are ≥90%** — the v105
+  one-row-statement shape, a plan whose entire published menu says `Master
+  Trust`: Corteva Agriscience 97.1% (26,098 ppl), Dupont De Nemours 95.7%
+  (13,884), Ppc Industries 94.9% (1,600), New York Life twice at 99.9%
+  (19,598 + 15,104).
+- **IT DOES NOT CONTRADICT v189 AND THE CODE COMMENT SAYS SO.** v189
+  deliberately kept `master trust` out of `TYPE_SUFFIX`, which STRIPS the words
+  off the end of a longer name and would damage `Investment in BNSF 401(k)
+  Plans Master Trust`. This test is anchored `^…$` on the WHOLE name and fires
+  only when the designation is all there is. **One vocabulary entry was
+  settling two different questions.**
+- **THE NUMBER I EXPECTED WAS WRONG AND THAT IS WHY IT WAS MEASURED.** I
+  predicted this would push `audit-generic-names` from 212 past its 230
+  escalation threshold — the margin this record explicitly reserves for the
+  owner — and was about to queue the whole item as an owner decision on that
+  basis. Patching the vocabulary and running the real audit gives **212 → 213
+  plans / 435 → 439 rows**: 52 of the 53 plans were already counted for other
+  generic rows. The threshold was never the blocker. **Sixteenth instance of a
+  measurement correcting an estimate about to be published.**
+- **Pre-registered for #496:** `confident` falls by AT MOST 5, every loss
+  inside {Corteva 26,098, New York Life 19,598, New York Life 15,104, DuPont
+  13,884, PPC 1,600} (~76,284 ppl); `audit-generic-names` 212 → 213;
+  `audit-dominant-row` stays 0; Jones Day (88.2%, 72.3%) and Ahold Delhaize
+  (70.0%) stay published with the row typed honestly, because they sit under
+  the 90% floor this change deliberately does not touch.
+- **Prevention:** 12 controls, six must-FLAG and six must-KEEP, the latter
+  including both v189 pinned controls and four real trust-NAMED funds
+  (`Vanguard Retirement Savings Trust II`, `Great Gray Trust`, `T. Rowe Price
+  Retirement 2035 Trust`, `Fidelity Freedom Index 2030 Trust`).
+  `parser-gate.mjs` green on all specimens including the frozen tether.
