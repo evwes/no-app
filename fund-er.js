@@ -567,10 +567,39 @@ function expandFundVariants(name) {
 }
 
 // eslint-disable-next-line no-unused-vars
+/* THE AMERICAN FUNDS BLOCK IS CALIBRATED FOR ONE SHARE CLASS AND WAS APPLIED TO
+ * ALL OF THEM. Its own section header at the top of FUND_ER reads
+ * `--- American Funds (R6) ---`, and not one pattern beneath it tests the
+ * class — so a holding the filing names `American Funds Eupac R4` or
+ * `American Balanced Fund Class A` published the R6 number.
+ *
+ * Measured on the v188 store through this table: 10,396 rows / 2,240 plans /
+ * 2,072,706 participants / $9,239,809,172 state a class that pays a 12b-1 fee
+ * (R-1, R-2, R-3, R-4, A, C, F-1) and were priced as if it did not. R-5, R-6
+ * and F-2 pay none, which is why those keep the number.
+ *
+ * NO REPLACEMENT NUMBER IS PUBLISHED, and that is deliberate rather than lazy.
+ * The real per-class figures could not be SOURCED — capitalgroup.com and the
+ * Voya fact sheets are both blocked by the egress proxy — and this project's
+ * rule is that a fee is sourced, never derived. So the claim is withdrawn
+ * instead of replaced: a blank cell says "we cannot identify this", which is
+ * true, where 0.32% on an R-2 holding says something false. `A blank is
+ * honest; a name reads as knowledge` is already on this record about
+ * recordkeepers, and it applies to fees at least as strongly.
+ *
+ * Deliberately NOT generalised to other houses. The evidence here is the
+ * table's own comment, in this repository; MFS, Putnam and the rest have share
+ * classes too, but nothing in the table states which class their numbers are,
+ * so refusing them would be a guess in the other direction. */
+const AF_HOUSE = /american funds?|americanfunds|\bam(?:er)?\.? ?f(?:un)?ds?\b|amerfds|american balanced|europacific|eupac|washington mutual|growth fund of america/i;
+const AF_LOAD_CLASS = /\b(?:r-? ?[1234]|class ?[ac]|cl ?[ac]|f-? ?1)\b/i;
+const AF_NOLOAD_CLASS = /\b(?:r-? ?[56]|r-?5e|f-? ?2|class ?f-?2)\b/i;
+
 function fundER(name) {
   if (!name) return null;
   if (/self-directed|brokerage|individually listed|participant loan/i.test(name)) return null;
   if (/common stock|company stock|employer stock/i.test(name)) return null;
+  if (AF_HOUSE.test(name) && AF_LOAD_CLASS.test(name) && !AF_NOLOAD_CLASS.test(name)) return null;
   const vs = expandFundVariants(name);
   for (const [re, er] of FUND_ER) if (re.test(name) || vs.some((v) => re.test(v))) return er;
   return null;

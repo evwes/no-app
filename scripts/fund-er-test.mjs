@@ -39,7 +39,8 @@ const src = SRC
 const ctx = { console };
 vm.createContext(ctx);
 vm.runInContext(src + "\nglobalThis.__t = fundTickerInfo;"
-  + "\nglobalThis.__v = typeof expandFundVariants === 'function' ? expandFundVariants : null;", ctx);
+  + "\nglobalThis.__v = typeof expandFundVariants === 'function' ? expandFundVariants : null;"
+  + "\nglobalThis.__e = fundER;", ctx);
 const tk = (n, type) => { const r = ctx.__t(n, type || ""); return r ? r.tk + (r.comparable ? "*" : "") : ""; };
 
 /* MUST RESOLVE, and to exactly this ticker. A wrong ticker here is worse than
@@ -155,5 +156,44 @@ if (ctx.__v) {
     }
   }
 }
-console.log(`fund-er fixtures: ${MUST.length} must-resolve, ${MUST_NOT.length} must-not-resolve, ${fail} failures`);
+/* THE EXPENSE RATIO IS A SEPARATE CLAIM FROM THE TICKER, and until 2026-09-28
+ * nothing here tested it. fund-er.js's own section header reads
+ * `--- American Funds (R6) ---` and not one pattern beneath it tested the
+ * share class, so 10,387 rows / 2,227 plans / 2,065,081 participants /
+ * $9,258,280,862 published the R6 fee for a holding the filing names R-1
+ * through R-4, Class A, Class C or F-1 — classes that pay a 12b-1 fee R-5,
+ * R-6 and F-2 do not.
+ *
+ * The guard REFUSES rather than re-prices, because the real per-class figures
+ * could not be sourced (capitalgroup.com and the Voya fact sheets are both
+ * blocked by the egress proxy) and a fee on this site is sourced, never
+ * derived. These fixtures pin both directions: the classes that must now come
+ * back blank, and the ones that must keep their number. */
+const ER_MUST_BLANK = [
+  "American Funds Eupac R4", "American Balanced Fund Class A",
+  "American Funds Trgt Date Ret 2040 R2", "AMERFDS AMERICAN BALANCED R4",
+  "American Funds 2035 Target Date Fund R3", "AMERICAN FUNDS 2060 TARGET DATE FUND R1",
+  "American Funds Capital World Bond R3", "AMERICAN FUNDS 2040 TRGT DATE RET F1",
+  "American Funds Washington Mutual Cl C",
+];
+const ER_MUST_KEEP = [
+  "American Funds 2030 Target Date Retirement Fund R6",
+  "American Funds 2030 Target Date Retirement Fund",
+  "American Funds Washington Mutual R5",
+  "American Funds 2045 Target Date F2",
+  "American Funds EuroPacific Growth R6",
+  "American Funds New World R6",
+  /* other houses are deliberately untouched: nothing in the table states which
+   * share class THEIR numbers are, so refusing them would be a guess */
+  "MFS Value Fund Cl A", "Vanguard Target Retirement 2040", "Fidelity 500 Index",
+];
+for (const n of ER_MUST_BLANK) {
+  const got = ctx.__e(n);
+  if (got != null) { console.log(`FAIL er want (blank) got ${got}% ${JSON.stringify(n)}`); fail++; }
+}
+for (const n of ER_MUST_KEEP) {
+  const got = ctx.__e(n);
+  if (got == null) { console.log(`FAIL er want a number, got (blank) ${JSON.stringify(n)}`); fail++; }
+}
+console.log(`fund-er fixtures: ${MUST.length} must-resolve, ${MUST_NOT.length} must-not-resolve, ${ER_MUST_BLANK.length} must-blank-fee, ${ER_MUST_KEEP.length} must-keep-fee, ${fail} failures`);
 process.exit(fail ? 1 : 0);
