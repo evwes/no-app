@@ -24307,3 +24307,42 @@ handed to the next cycle rather than shipped at 00:3xZ without a member read of
   ticker column claims deserves the regenerated-artifact read that has caught a
   live regression in three of the last four cycles, and that wants a full pass
   rather than the tail of one.
+
+## 2026-09-28 (05:2xZ) — CORRECTION to the entry above: the Fidelity K/K6 mapping is DOCUMENTED and deliberate, and I overstated it
+
+- An hour ago I recorded the Fidelity K/K6 rows as **"the ticker-side twin of
+  this cycle's fee defect"** — 5,594 rows / 7,634,061 participants — implying an
+  oversight of the same kind. **Reading the table before acting on it says
+  otherwise, and the entry above is wrong in its framing.**
+- `fund-er.js:625` heads those patterns **`// Fidelity active (name = one fund;
+  class suffixes K/K6 share the strategy)`**, and the Total Bond row carries a
+  fuller statement: *"one strategy, and the K6 suffix is a share class of it,
+  which is why the row matches the name rather than the class."* **It is a
+  decision with its reasoning written down, not a gap.** The American Funds case
+  was the opposite: a header naming ONE class (`R6`) over patterns that tested
+  none.
+- **The population count stands; the diagnosis does not.** 5,594 rows / 3,733
+  plans / 7,634,061 participants do publish the retail symbol for a name stating
+  K or K6 — that measurement reproduces. What was wrong was calling it a defect
+  of the same family and implying a fix was owed.
+- **Two of the three routes I listed are now closed on their own evidence:**
+  - *Refuse, as the fee guard does* — the fee guard's own entry says why not:
+    "nothing in the table states which class their numbers are, so refusing them
+    would be a guess in the other direction." `// --- Fidelity active ---` states
+    no class, so that applies here verbatim. **My own shipped reasoning rules
+    this out**, which I should have checked before listing it as an option.
+  - *Mark them comparable* — the `*` means *"what the holding tracks, not what
+    it is"* and is used for vehicles with **no public ticker at all**
+    (collective trusts, separate accounts). A share class of a registered fund
+    has its own ticker, so the asterisk would assert something false in a new
+    direction.
+- **What is genuinely left is narrow and is a DISPLAY question, not a data one:**
+  `fundTickerInfo` returns `comparable: false`, which the report renders as the
+  exact fund with no qualifier, while the code's own comment says the ticker
+  stands for the **strategy**. Intent and display disagree by one asterisk's
+  worth. That is worth deciding on its merits; it is not 7.6M participants
+  being shown a wrong fund.
+- **The lesson is one this record already carries and I did not apply:** *check
+  whether the thing is documented before calling it a defect.* The draw made the
+  row look wrong, the whole-store count made it look large, and neither is a
+  substitute for reading the six lines above the pattern.
