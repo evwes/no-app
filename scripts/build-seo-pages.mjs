@@ -116,6 +116,41 @@ for (const r of d.plans.slice(0, TOP_N)) {
   const adminRaw = g(r, "adminExpenses") || 0;
   const planYear = g(r, "planYear");
   const funds = entry && entry.confident && entry.funds ? entry.funds.slice(0, 12) : null;
+  /* WHICH YEAR'S MENU IS THIS? The page opens by asserting "Everything below
+   * comes from the plan's own Form 5500 filing (plan year N)", and "everything
+   * below" includes the fund table. For 54 pages / 919,537 participants that
+   * sentence is FALSE: v41's fallback serves the menu from the plan's
+   * next-newest filing when the newest one has no readable schedule, and the
+   * REPORT prints `lu.source` saying so while this generator never read it.
+   * Lowe's (318,750 participants), Elevance (94,689), Meta (84,993) and Cisco
+   * (72,556) all state one plan year over a menu from another.
+   *
+   * FIFTH INSTANCE of the two-display-paths divergence, and the first that is
+   * a false CLAIM rather than an omission — the others dropped a field, this
+   * one asserts a year that is wrong for what sits under it. Found by
+   * enumerating the fields each surface reads instead of waiting for the sixth.
+   *
+   * The FEATURE fallback beside it (`entry.featFb`) has been disclosed
+   * carefully since the note below was written; the LINEUP fallback had no
+   * equivalent. It covers 12 of the 54 by accident and says nothing about the
+   * menu even there, because it is a sentence about match and vesting. */
+  /* TWO WORDINGS, and my first draft matched one of them. The store carries
+   * ten distinct `source` strings in two families: the ordinary
+   * "…, plan year YYYY filing" (60,474 rows) and the FALLBACK
+   * "…from the plan's YYYY filing — <cause>" (971 rows, eight cause variants).
+   * The regex matched only the first, so the note fired on 26 pages and missed
+   * all 55 fallbacks — Lowe's, Meta, Cisco, Elevance: the entire population
+   * this was written for. Caught by reconciling 26 against a predicted 54
+   * rather than accepting the smaller number.
+   *
+   * And the fallback family states its OWN cause after the em dash, which the
+   * report prints verbatim. Use that instead of inventing one: eight variants
+   * say different things ("has no readable…", "reports…", "carries…") and a
+   * single hand-written clause would be wrong for most of them. */
+  const luSrc = String((entry && entry.source) || "");
+  const luM = /(?:plan year (\d{4}) filing|from the plan's (\d{4}) filing)/i.exec(luSrc);
+  const luYear = luM && String(luM[1] || luM[2]) !== String(planYear) ? (luM[1] || luM[2]) : null;
+  const luCause = luYear && luSrc.includes(" — ") ? luSrc.split(" — ").slice(1).join(" — ").trim() : "";
   /* Coverage is judged on the FILED lineup, not the twelve rows shown — the
    * claim being qualified is what the plan's schedule itemises, and the
    * twelve-row cap is disclosed separately below the table. */
@@ -261,7 +296,13 @@ ${ff.nec ? `<h2>Employer nonelective contribution, as filed</h2>
 ${ff.necText ? `<blockquote>${esc(ff.necText)}</blockquote>` : ""}` : ""}
 ${ff.vestingText ? `<h2>Vesting, as filed</h2><blockquote>${esc(ff.vestingText)}</blockquote>` : ""}
 ${funds ? `<h2>Fund lineup${lineupVia ? ` (via ${esc(lineupVia)})` : ""} — top holdings</h2>
-${!lineupVia && ff.nonPartDirected ? `<p class="muted"><strong>Part of these holdings is employer-directed.</strong> The filing states some of this plan's assets are not participant-directed, and those holdings are listed here alongside the menu — so a holding's share of the table is not a share of what participants chose.</p>${ff.nonPartDirectedText ? `<blockquote>${esc(ff.nonPartDirectedText)}</blockquote>` : ""}` : ""}
+${/* THE NEWLINE LIVES INSIDE THE CONDITIONAL, and the block six lines down
+     already says why: an unconditionally emitted newline adds a blank line to
+     every page that has a fund table. My first draft put it outside and the
+     regenerated diff came back at 4,892 pages against 54 predicted. The warning
+     was written in the same function, by me, about the same mistake. An
+     implausible number reporting on the harness, the seventh instance. */""
+  }${luYear ? `<p class="muted"><strong>Note: these holdings are from the ${luYear} filing, not the ${planYear} one.</strong>${luCause ? ` ${esc(luCause.charAt(0).toUpperCase() + luCause.slice(1))}${/[.!?]$/.test(luCause) ? "" : "."}` : ""} A plan's investment menu can change between years, so verify against your current statement. Participants, assets and fees above are from the ${planYear} filing.</p>\n` : ""}${!lineupVia && ff.nonPartDirected ? `<p class="muted"><strong>Part of these holdings is employer-directed.</strong> The filing states some of this plan's assets are not participant-directed, and those holdings are listed here alongside the menu — so a holding's share of the table is not a share of what participants chose.</p>${ff.nonPartDirectedText ? `<blockquote>${esc(ff.nonPartDirectedText)}</blockquote>` : ""}` : ""}
 ${cov ? `<p class="muted">${cov.kind === "under"
   ? `<strong>This lineup is not all of the plan.</strong> Its schedule of assets itemises ${usdB(lineupTotal)} across ${entry.funds.length} holdings, about ${cov.pct.toFixed(0)}% of the ${usdB(assets)} the plan reports on its Schedule H. The rest is money the filing accounts for that the schedule does not itemise.`
   : `<strong>These holdings exceed the plan's reported assets.</strong> They total ${usdB(lineupTotal)} against ${usdB(assets)} reported on Schedule H — about ${cov.pct.toFixed(0)}%. Treat the table as unreconciled.`}</p>` : ""}
