@@ -24346,3 +24346,49 @@ handed to the next cycle rather than shipped at 00:3xZ without a member read of
   whether the thing is documented before calling it a defect.* The draw made the
   row look wrong, the whole-store count made it look large, and neither is a
   substitute for reading the six lines above the pattern.
+
+## 2026-09-28 (05:4xZ) — `Shares of registered investment companies` was displaying as "Shares of"
+
+- **Wrong:** `TYPE_SUFFIX` stripped the trailing vehicle type and left a
+  dangling preposition, so a reader saw a holding named **"Shares of"**.
+  **70 rows / 63 plans / 94,634 participants / $2,160,606,167** displayed as
+  such a fragment; about half were this arm's doing rather than the filing's.
+- **Change:** the strip now asks the shared `bwOpensWithAName` screen of
+  **every** token and keeps the filed name when not one identifying word
+  survives. **48 rows / 42 plans / 58,446 participants** get their filed name
+  back; the family falls **70 → 29**. DRIFT 0 across all 1,720,349 rows; 0
+  tickers moved; 3 crawlable pages change.
+- **The two-token floor could not catch it because `Shares of` IS two tokens.**
+  What makes a remainder useless is not its length but that every token is a
+  function word.
+- **My first draft regressed and a spot-check caught it before it shipped.**
+  Asking the screen of the LAST token stopped `Vanguard Institutional Index
+  Fund Mutual Fund` from stripping, because `fund` is furniture and nearly
+  every fund name ends in it. *"Does anything identifying remain"* and *"is the
+  last word identifying"* are different questions; only the first matters here.
+  Both directions are pinned.
+- **HOW THE CYCLE REACHED IT, which is the transferable part.** The queue item
+  was a recorded discrepancy — *"353 plans publish a bare `Mutual Funds` while
+  `audit-generic-names` reports 114."* Re-deriving showed the audit judges the
+  **stored** name while readers see the **displayed** one, and that the two
+  disagree in BOTH directions — **17 plans readers see as generic that the
+  audit cannot, and 33 the audit flags that readers do not see that way.**
+  Asking what that second group actually *displays* as is what found this:
+  they display as `Shares of`. **The audit's blind spot and a live display
+  defect turned out to be the same fact.**
+- **A framing of mine was wrong mid-investigation and is corrected here:** I
+  first called the audit an under-counter — "it under-counts by exactly the
+  amount our display work improves legibility." It does not. On the shown name
+  it reports **fewer plans (161 vs 177) but more rows (227 → 351)**, because
+  the cleaner both reveals generics (a share count stripped off a bare type)
+  and resolves them (`Mutual Fund - Fidelity 500 Index` → a real fund). The
+  bases disagree in both directions; neither is a subset.
+- **Residue named:** 29 rows / 28 plans / 43,424 ppl still display as a
+  fragment, and those were already fragments when parsed — `Shares of`,
+  `Investments in`, `Interest at`, `Shares in` stored with nothing after them.
+  A separate item, not this arm's doing.
+- **Left open deliberately:** whether `audit-generic-names` should judge the
+  displayed name. It is the right basis in principle — an audit of what readers
+  see should judge what readers see — but it moves a gate that raises a HIGH on
+  every merge, and this fix changes the population underneath it. Re-measure
+  after this store settles rather than moving both at once.
