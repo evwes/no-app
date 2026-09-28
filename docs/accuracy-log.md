@@ -25076,3 +25076,69 @@ it recommended an action that would have destroyed a real menu for 67,246
 people. What stopped it was reading eight plans' rows.** A column computed from
 a predicate that under-matches by design is not evidence, in either direction,
 and labelling it "has no identifiable fund" made an absence look like a finding.
+
+## 2026-09-28 (15:3xZ) — from the draw: a trailing vehicle type the filed-name cleaner does not reach, and a candidate that turned out to be the guard WORKING
+
+**The draw** (participant-weighted, seed 20260928157) took Google, BJC Health
+System, Waste Management and Walmart. Google and Walmart are clean. Two
+candidates came out of the other two and they resolved in opposite directions.
+
+**(A) QUEUED, sized, and its first draft already damages things.** Waste
+Management (47,426 ppl) publishes nine rows reading `PIMCO RealPath Blend 2030
+Collective Trust Funds` — the fund, then the vehicle type welded on the end.
+`cleanFiledName` has a `TYPE_SUFFIX` arm (it is what renders Walmart's `Fiera
+Asset Management Usa Collective Trust` as `Fiera Asset Management Usa`), and
+asking the SHIPPED cleaner shows it does not reach this shape: the string comes
+back unchanged.
+
+Class size: **2,228 rows / 527 plans / 1,391,176 participants / $28,646,914,243.**
+**Outcome test first, because a count of a condition is not a count of an
+outcome: stripping the suffix wins +11 tickers and loses 0.** So this is an
+HONESTY item for 1.39M readers, not a fee-coverage item, whatever the row count
+suggests — the same finding shape as caption class B.
+
+**And printing every distinct before→after is what showed the draft is not
+safe**, which is now the fourth time on this record that a count looked clean
+while the strings were wrong:
+- `Investment in BNSF 401(k) Plans Master Trust` -> `Investment in BNSF 401(k)
+  Plans` — **$3,521,680,000**, and it destroys the meaning of a master-trust
+  pointer rather than tidying a caption;
+- `Korn Ferry Master Trust` -> `Korn Ferry` — a trust reduced to a bare house
+  name, which is the v167 defect verbatim;
+- `Plan interest in Master Trust` -> `Plan interest in`, `Assets Investment in
+  Master Trust` -> `Assets Investment in` — dangling connectives;
+- `Shares of registered investment company` -> `Shares of`, **27 rows /
+  $1.45B** — my "remainder must be at least two tokens" guard let it through
+  because `Shares of` is two tokens. A token FLOOR is not a contentfulness test.
+- `Retirement 2055 Common and Collective Trust Fund` -> `Retirement 2055 Common
+  and`.
+
+So the arm needs `master trust` OUT of its vocabulary entirely — it is a
+meaningful designation, not a caption — and the remainder needs the
+contentfulness screen the comma family already uses, not a token count. The
+genuinely good strips are `PIMCO RealPath Blend 2030 Collective Trust Funds` ->
+`PIMCO RealPath Blend 2030`, `BLACKROCK SP 500 IDX (IS) Separate Account` and
+`State Street S&P 500 Indx SL Cl II Collective trust funds`.
+
+**(B) NOT A DEFECT — recorded so a later cycle does not chase it.** BJC Health
+System (42,830 ppl, an OCR'd filing) types `Vanguard Total Stock Market Index
+Fund Institutional Plus Shares` and `Fidelity Growth Company K6 Fund` as
+`Collective trust`, and `fund-er.js` therefore publishes a labelled COMPARABLE
+rather than the fund itself. Sized store-wide by OUTCOME — rows whose name
+states a mutual-fund share class, typed collective trust or separate account,
+and demoted as a result — that is **3,452 rows / 1,017 plans / 1,850,475 ppl /
+$43.7B**, which looks like a large defect and is not one.
+
+**A plan really can hold `Vanguard 500 Index Fund Admiral` INSIDE a pooled
+separate account**, and when it does, the fee the participant pays is the
+wrapper's and not VFIAX's. Publishing VFIAX's number there is precisely what
+the 2026-09-21 separate-account demotion was shipped to STOP (878 rows / 207
+plans / 311,893 ppl). **The measurement is counting the guard working.** The
+narrow question that remains is BJC's own filing, where the type column is
+internally inconsistent — `Vanguard 500 Index Fund Admiral Shares` is typed
+blank two rows away — which points at OCR mis-assignment in one filing, not at
+a class.
+
+**The reusable half: an outcome test can return a large number and still be
+measuring a FIX. Before sizing a defect, check whether the behaviour was
+deliberately shipped** — this record named that exact change seven days ago.
