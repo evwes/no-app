@@ -24268,3 +24268,42 @@ handed to the next cycle rather than shipped at 00:3xZ without a member read of
   conclusion. The zero was the harness; `curl` fetches the same data fine.
   That is the fifth time in this session that an implausible number reported on
   the harness rather than the data, and the second in one hour.
+
+## 2026-09-28 (04:4xZ) — From the weighted draw: the Fidelity K / K6 share class, and it is the ticker-side twin of this cycle's fee defect
+
+- Drawn participant-weighted (Manna Development 7,013 ppl, Bandit Industries
+  784, Darden Restaurants 201,534). All three parse cleanly — ratios 0.972 /
+  0.974 / 0.975. One row on the first is the find: **`Fidelity Growth Company
+  Fund Class K6` publishes FDGRX**, the RETAIL class.
+- **Sized whole-store through the display path: 5,594 rows / 3,733 plans /
+  7,634,061 participants / $54,934,862,278** state a Fidelity `K` or `K6`
+  class and publish the retail ticker **as the fund itself** (`comparable`
+  false, so no `*`). Largest families: `Fidelity Total Bond K6` → FTBFX (852
+  rows across spellings), `FID GOVT MMKT K6` → SPAXX (553), `Fidelity
+  Contrafund K6/K` → FCNTX (568), `Blue Chip Growth K6` → FBGRX (497).
+- **This is the same shape as the fee defect shipped an hour ago, one column
+  over.** There the table had a single number for a series with seven share
+  classes; here it has a single ticker. The difference in direction is worth
+  stating: the American Funds fee was too LOW for the classes it was misapplied
+  to, whereas Fidelity's K and K6 classes are cheaper than retail, so this one
+  most likely publishes a ticker whose fee is too HIGH. **I have not sourced
+  either figure and am not asserting them** — what is certain without any
+  source is that **the displayed ticker names a share class the filing does not
+  state.**
+- It is also a concrete, dominant sub-family of a class already on this record —
+  *"4,321 rows / 14.45M participant-weighted publish an R6/institutional ticker
+  for a name stating class A/C/R1–R5 … needs table work, not matcher work."*
+  That entry had no named sub-family; this one is 7.6M participants in a single
+  house.
+- **Three routes, and the choice is genuinely open:** (a) add the K/K6 tickers —
+  blocked the same way the target-date tickers are, since fund pages are behind
+  the egress proxy and a ticker here is sourced, never derived; (b) refuse, as
+  the fee guard does, which blanks 5,594 tickers for 7.6M readers; (c) mark them
+  **comparable**, which is the mechanism this codebase already has for *"what
+  the holding tracks, not what it is"* — the `*` and the labelled analogue.
+  **(c) looks right and is not obviously right**, because it also swaps the fee
+  cell to the comparable's ER.
+- **Not shipped here, deliberately.** A 7.6M-participant change to what the
+  ticker column claims deserves the regenerated-artifact read that has caught a
+  live regression in three of the last four cycles, and that wants a full pass
+  rather than the tail of one.
