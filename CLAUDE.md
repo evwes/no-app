@@ -825,17 +825,46 @@ export, do not copy the line.
   Company of America`, `The Bond Fund of America`). Printing the suspects is what
   showed it; all three are pinned in the tether. **DRIFT 0** — the app.js and
   `lib-disclose` copies were compared over all 1,720,349 published rows.
-- **AND THE BARE-WHITESPACE FAMILY IS REFUSED WITH ITS SIZE ON THE RECORD: 2,949
-  rows / 764 plans / 1,407,036 ppl.** A blanket strip turns `Stable Value Fund Fee
-  Class R1` into `Fee Class R1` (116 rows). The principled alternative — strip
-  only where the remainder resolves to a fund through the shipped lookup, which
-  cannot cost a ticker by construction — **reaches 19 rows / 8 plans / 9,053
-  ppl**, because `fund-er.js` cannot name a Principal separate account or a CIT BY
-  DESIGN and that is exactly what these remainders are (`Prin LgCp S&P 500 Index
-  SA-Z`, `Prin LifeTime Hybr 2035 CIT Z`). **The recorded rule was that the MISS
-  side of that predicate is not "nothing here"; the new half is that it must not
-  be used as a GATE over a population it cannot see.** Needs a different
-  discriminator and its own measurement. **The largest open row-level class.**
+- **SHIPPED 2026-09-28 01:2xZ — THE BARE-WHITESPACE FAMILY, and the discriminator
+  is LENGTH, not a house list. 2,370 rows / 238 plans / 305,802 ppl, +10 tickers,
+  0 lost.** It was refused twice and both refusals were right: a blanket strip
+  turns `Stable Value Fund Fee Class R1` into `Fee Class R1`, and an outcome gate
+  reached 19 rows because `fund-er.js` cannot name a Principal separate account
+  or a CIT BY DESIGN. **The handoff proposed a HOUSE LIST and named its own
+  weakness; it was not needed.** Printing every distinct remainder split the
+  family at **four tokens** — below it `Shares`, `Fee Class R1`, `and`,
+  `Omitted`, `at fair value`; at or above it `Fidelity Freedom Index 2030`,
+  `PGIM Ttl Ret Bond R2 Fund`, `Am Fds EuroPacific Grth R6 Fd`, the last two
+  exactly what the typed list missed. **The data chose the discriminator**, and
+  an arm with no vocabulary has nothing to keep in sync. Length alone is not
+  enough (`Class 25 - I` is four tokens of pure designation), so the remainder
+  must also OPEN with a contentful token; GICs leave the vocabulary entirely
+  because a GIC's filed name really is the type plus a contract NUMBER.
+  **TWO PINNED CONTROLS FAILED MY OWN DRAFT, one from each of the last two
+  cycles** — the v188 Affinity Plus decoy (`Separate Account A, at fair value`,
+  cut to `A, at fair value` because the comma was not stripped before `A` was
+  judged) and last cycle's `Index Fund invested in stocks included in the S&P
+  500`. A control written one cycle earlier failed the next cycle's draft; that
+  is the whole return on pinning them. **DRIFT 0** over 1,720,349 rows; surface
+  named at **12 crawlable pages / 56,309 ppl**. Residue: ~45 leading
+  parentheticals, ~20 em-dash/underscore connectives outside `[-–:]`.
+  **AND A NUMBER I PUBLISHED TO MYSELF WAS WRONG:** the first page diff said 489
+  pages / 12.6M ppl and I explained it as the cron's data commit — the snapshot
+  directory was left over from the previous cycle. `git diff --stat p/` says 12.
+  **An implausibly large number reports on the harness, not the data**, the
+  fourth instance on this record.
+- **QUEUED from the 01:0xZ weighted draw — PARTICIPANT LOANS PUBLISHED AS A FUND
+  MENU OPTION: 483 rows / 483 plans / 1,372,445 ppl / $1,251,824,848**, exactly
+  one row per plan. `LOAN FUND` 364, `Loan` 40, `Loan Fund` 26, `Loans` 19.
+  Kelly Services 185,135, Accenture 115,910, ABM 89,480, Securitas 84,140. No
+  participant can choose it, and listing it among the funds inflates the
+  denominator every percentage is computed against. **This is NOT what v131
+  fixed** — that removed loan DESCRIPTION rows (`rates ranged from 4.25% to
+  9.50%`, 7,052 → 9); a row literally NAMED `Loan Fund` survived it untouched.
+  *A fix for one phrasing of a class is not a fix for the class.* The right
+  treatment is v181's `Subtotal (not a holding)` pattern — type the row, do not
+  drop it, so the money stays accounted for — which is a change to the fund
+  table's shape and wants its own controls.
 - **AND THE TWO SURFACES AGREE NOW AND STILL REACH DIFFERENT POPULATIONS.** The
   comma fix changes **4 crawlable pages / 8,166 ppl** against 98 plans / 92,758 in
   the report, because that family lives outside the generator's top 5,000 by

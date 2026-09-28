@@ -23829,3 +23829,96 @@ this record at least four times; the house set must be derived from a shipped
 source** (`fund-er.js`'s own table, or `KERN_WORDS`), not from memory. Sized and
 handed to the next cycle rather than shipped at 00:3xZ without a member read of
 2,335 rows.
+
+## 2026-09-28 (01:2xZ) — Caption class B's bare-whitespace family: the discriminator is LENGTH, and a house list was never needed
+
+- **Wrong:** 3,536 published rows opened with a vehicle type and nothing but a
+  space before the fund's real name — `Registered Investment Company Vanguard
+  Inter-Term Bnd Index Fd Adm`, `Common/Collective Trust Prin LifeTime Hybr 2035
+  CIT Z`. Class B's largest arm, refused in each of the two previous cycles.
+- **Both refusals were right, and that is worth keeping.** A blanket strip turns
+  `Stable Value Fund Fee Class R1` into `Fee Class R1`. An outcome gate — strip
+  only where the remainder resolves through the shipped lookup — reached **19
+  rows**, because `fund-er.js` cannot name a Principal separate account or a CIT
+  BY DESIGN and those are exactly what these remainders are.
+- **Change:** the handoff proposed a HOUSE LIST and named its own weakness (it
+  missed `pgim`, abbreviated American Funds to `Am Fds`, split `JP Morgan`).
+  **It was not needed.** Printing every distinct remainder split the family at
+  **four tokens**: below it sit `Shares`, `Fee Class R1`, `and`, `Omitted`,
+  `III`, `at fair value`; at or above it sit `Fidelity Freedom Index 2030`,
+  `T. Rowe Price Overseas`, `PGIM Ttl Ret Bond R2 Fund`, `Am Fds EuroPacific
+  Grth R6 Fd` — the last two exactly the names the typed list missed. **LENGTH
+  is the discriminator and the data said so.** This is a better outcome than a
+  working house list, because the arm has no vocabulary to keep in sync with
+  anything.
+- Length alone is not enough (`Stable Value Fund Class 25 - I` is four tokens of
+  pure designation), so the remainder must also OPEN with a contentful token.
+  Four exclusions, each earned by reading a suspect: **GICs leave the vocabulary
+  entirely** (a GIC's filed name really is the type plus a contract NUMBER —
+  `GA 29013 DTD 04/28/11`); `number`/`amount`/`wrapper`/`cit`/`gac` are
+  furniture; a remainder that itself starts with a vehicle type is refused; and
+  the participles (`invested`, `issued`, `managed`, `measured`) because they
+  CONTINUE the type phrase rather than start a name.
+- **TWO PINNED CONTROLS FAILED MY OWN DRAFT, one from each of the last two
+  cycles.** `Separate Account A, at fair value` — the v188 Affinity Plus DECOY —
+  was being cut to `A, at fair value`, because the screen judged `A,` contentful
+  without stripping the comma first. `Index Fund invested in stocks included in
+  the S&P 500` — pinned LAST cycle when it damaged the `TYPE_PREFIX` widening —
+  was being cut to `invested in stocks…`. **A control written one cycle earlier
+  is what failed the next cycle's draft.** That is the whole return on pinning
+  them, and it is the second time this week that the member read beat the count.
+- **Outcome**, through the display path on the v188 store: **2,370 rows / 238
+  plans / 305,802 participants** read better, **10 rows gain a ticker, 0 lose
+  one**. The people figure is small against the family's 1.7M because the
+  accepted rows sit in mid-size plans (Peraton 25,685, Ciena Healthcare 14,689,
+  BDO USA 14,500), not in the giants. Surface named, as the record requires:
+  **12 crawlable pages / 56,309 participants**, this family living outside the
+  generator's top 5,000 by assets. **DRIFT 0** over all 1,720,349 published rows.
+- **A NUMBER I PUBLISHED TO MYSELF WAS WRONG AND GIT CORRECTED IT.** The first
+  page diff said **489 pages / 12.6M participants**, and I explained it as the
+  hourly cron's data commit landing between generations — plausible, and false.
+  The snapshot directory was **left over from the previous cycle**, so I was
+  diffing against yesterday's pages. `git diff --stat p/` says 12; the isolated
+  regeneration says 12; they agree. **An implausibly large number reports on the
+  harness, not the data** — the fourth instance on this record — and the cheap
+  check was available the whole time.
+- **Prevention:** five bare-whitespace names and **ten new controls** in the
+  smoke-test tether, including both decoys, the GIC contract number, the
+  designation-only four-token remainder, and the three names the typed house
+  list would have missed. The `lib-disclose` body is re-extracted VERBATIM from
+  `app.js` by script, never retyped.
+- **Residue, named:** ~45 rows keep a leading parenthetical (`(continued) Davis
+  Financial Fund`, `(held by Vanguard Fiduciary Trust Company) …`); ~20 keep an
+  em-dash (U+2014) or underscore connective the shipped separator class `[-–:]`
+  does not include; 12 suspects remain that a read judged neutral-to-better.
+
+## 2026-09-28 (01:3xZ) — From the weighted draw: participant loans published as a fund menu option
+
+- Three plans drawn participant-weighted from published lineups (Imagineering
+  Enterprises 208 ppl, Formosa Plastics 4,153, Securitas Security Services
+  84,140). All three parse cleanly — ratios 0.961 / 0.993 / 1.000, no phantom
+  row, no generic label dominating. **Two of the three publish a `LOAN FUND` row
+  in the fund table.**
+- **Sized whole-store: 483 rows / 483 plans / 1,372,445 participants /
+  $1,251,824,848.** Exactly one row per plan, which is what a clean class looks
+  like. Names are unambiguous — `LOAN FUND` 364, `Loan` 40, `Loan Fund` 26,
+  `Loans` 19, plus a tail carrying the rate range (`Loan Fund (4.25% - 9.5%)`).
+  Largest: Kelly Services 185,135, Accenture 115,910, ABM Industries 89,480,
+  Securitas 84,140, Lithia Motors 30,318. At ≥5% of the published menu it is 12
+  plans / 21,557 ppl (Securitas 3.6%, McLane 3.8%, Loomis Armored 3.7%).
+- **Why it is a defect and not a filing quirk:** participant loans are a real
+  plan ASSET and belong on Schedule H line 4i, but they are not an investment
+  OPTION — no participant can choose `LOAN FUND` from a menu — and listing them
+  among the funds both implies they can and inflates the denominator every row's
+  percentage is computed against.
+- **This is NOT what v131 fixed.** v131 removed loan *description* rows (`rates
+  ranged from 4.25% to 9.50%`, 7,052 rows / 6,970 plans / 12.75M ppl → 9). A row
+  literally *named* `Loan Fund` is a different shape and survived it untouched.
+  A fix for one phrasing of a class is not a fix for the class.
+- **Queued, not shipped.** The right treatment is disclosure rather than
+  deletion — the v181 `Subtotal (not a holding)` pattern, typing the row instead
+  of dropping it, so the money stays accounted for and the menu stops claiming
+  it is an option. That is a change to the fund table's shape and wants its own
+  measurement and its own controls (a fund whose real name merely contains
+  "loan" must be untouched; the anchored screen used for sizing passes that
+  test, but a display change deserves the same member read this cycle's arm got).
