@@ -24771,3 +24771,56 @@ handed to the next cycle rather than shipped at 00:3xZ without a member read of
   mirror and #486 had nothing left to do, which is why its coverage line came
   back byte-identical. **The checkout step's timestamp is not when the merge
   reads the branch.**
+
+## 2026-09-28 (12:3xZ) — ANOTHER EMPLOYER'S SCHEDULE PUBLISHED AS THIS PLAN'S MENU
+- **Wrong:** Living Well Disability Services (682 participants) publishes 43
+  holdings, of which **11 rows / $860,264 = 5.6% of the menu belong to a
+  different employer.** Its composite PDF carries a second Schedule H line 4i
+  attachment headed *"The Arc of Walker County, EIN: 63-0760044, Plan Number:
+  001"*, and the parser's region ran across the page break and absorbed it.
+- **THE ARITHMETIC GUARD WAS SATISFIED BY THE ERROR, which is the general
+  lesson.** As published the menu sums to 1.005 of plan assets; **remove the
+  foreign rows and it falls to 0.949.** The other plan's money is what made this
+  plan's menu add up. Every guard passed *because* of the defect — the same
+  shape as UPMC's participating-employer roster, where a table that apportions
+  something scores 1.0 by construction. **A ratio near 1.0 is evidence for a
+  menu only among tables that are candidate menus for THIS plan.**
+- **Found by the participant-weighted draw, and the filing changed the
+  diagnosis.** From the store the shape reads as DUPLICATE ROWS: `Vanguard
+  Treasury` $178,984 beside `Mutual of America Vanguard Treasury` $178,984,
+  four such pairs differing by a rounding dollar. I sized that symptom at **378
+  pairs / 181 plans / 192,948 participants / $246,674,608** and was about to
+  ship a twin-collapse at the merge. **That fix would have been wrong**: it
+  would have deleted one row of each pair and left the rest of the foreign
+  schedule in place, while pushing the ratio further from 1.0. The pairs are not
+  duplicates at all — two employers on the same platform hold similar funds at
+  similar values, so their rows merely look like twins.
+- **The discriminator is in the filing text and is unambiguous: the second
+  table's page header names a different EIN and plan number.** v132 already
+  ends a 4i region at another statutory schedule's caption; this is the SAME
+  caption belonging to a DIFFERENT PLAN, so the caption test cannot fire. The
+  extension is to end a region when a page header names an EIN or plan number
+  that is not this filing's.
+- **NOT SHIPPED, and the size is honestly unknown.** The twin signature (181
+  plans / 192,948 ppl) is a CANDIDATE set, not the class: one member was opened
+  and proved to be a foreign schedule, and the rest cannot be classified from
+  the store because the discriminator lives in the PDF. Fixing it is a parser
+  change and needs a `PARSER_VERSION` bump, a sized candidate set read filing by
+  filing, and a control that a plan legitimately holding two similar funds is
+  not collapsed.
+- **Also found in the same draw and separately sized: a KERNED generic label
+  defeats the dominance guard.** 43 rows / 42 plans / 101,200 ppl publish
+  `M utual Fund`, `Regi s tered Inves tment Compa ny`, `Colle ctive Trust` as a
+  holding name, and **8 plans / 5,942 ppl have one DOMINATING the menu at ≥90%**
+  — the v105 fabrication shape, invisible to `dominanceIsAggregate` because the
+  kerning defeats the vocabulary. Tides Center (813 ppl) publishes
+  `Regi s tered i nves tment compa ni es` at **97.1%** of a four-row menu.
+  `despaceKerned` does NOT reach this shape — verified on the exact string — so
+  readers see the kerned text too. The fix is v141/v142's own move, comparing
+  with all spaces removed, and needs no new vocabulary.
+- **My first sizing of that returned 0 plans while the case sat in the draw
+  output** — it asked `isGenericTypeName(despaceKerned(name))`, and
+  `despaceKerned` leaves this shape untouched, so the condition could never
+  fire. Eighth instance on this record of a measurement reporting on the
+  harness. Probing the two predicates against the one string settled it in a
+  single run.
