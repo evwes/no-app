@@ -819,8 +819,28 @@ try {
 // regression shows up as a dip in the next line rather than needing
 // someone to read run logs. audit-high.txt feeds the workflow step that
 // keeps the auto-managed "HIGH findings" GitHub issue current.
+//
+// GATED 2026-09-28, AND THE GATE IS THE POINT. This script reads as a
+// REPORTING step — it prints findings and a verdict — and had a write side
+// effect on a file CLAUDE.md calls the source of truth for coverage trends.
+// Developing one new check meant running it five times, so five lines
+// describing no pipeline run landed in the trail, one of them carrying
+// `warn: 1970` from a deliberately inverted negative control. They were
+// caught only because a stop hook flagged the dirty tree, and reverted; a
+// one-line append to a 307-line log is exactly the diff nobody reads.
+//
+// WHY THE CONDITION IS "CI, UNLESS TOLD OTHERWISE" RATHER THAN AN EXPLICIT
+// WORKFLOW FLAG: a flag the workflow must pass is a guard that fails SILENT
+// and in the worse direction — forget to wire it and the trail simply stops,
+// which takes the REPARSE VERDICT's baseline with it and shows up as nothing
+// at all. The merge job is the only place CI runs this (one call site,
+// build-data.yml:222), so `GITHUB_ACTIONS` names the pipeline run exactly and
+// needs no wiring. WAMPO_RECORD=1 is the deliberate local override, and
+// WAMPO_RECORD=0 suppresses it even in CI for a dry run.
+const recordTrail = process.env.WAMPO_RECORD === "1"
+  || (process.env.GITHUB_ACTIONS && process.env.WAMPO_RECORD !== "0");
 try {
-  appendFileSync("docs/coverage-history.jsonl", JSON.stringify({
+  const line = JSON.stringify({
     d: new Date().toISOString().slice(0, 10),
     plans: statTotal, fullForm: covTot.full, entries, confident,
     rk: covTot.rk, match: covTot.match, vesting: covTot.vesting,
@@ -859,7 +879,23 @@ try {
     // in the trail, which is how #244's 16.7% download failures read as a
     // clean +160 improvement.
     ...auditCoverage,
-  }) + "\n");
+  }) + "\n";
+  if (recordTrail) appendFileSync("docs/coverage-history.jsonl", line);
+  /* Say which way it went, every run and in both directions. A guard that is
+   * silent when it suppresses is how someone later concludes the trail has
+   * stopped working; a guard that is silent when it writes is how the write
+   * went unnoticed in the first place. The two suppression REASONS are named
+   * separately because they are different facts: a local run is not a
+   * pipeline run, while WAMPO_RECORD=0 is a pipeline run told to hold its
+   * tongue. The first draft printed "this is not a pipeline run" for both,
+   * which is a false statement of a cause — the shape this project keeps
+   * finding in its own error codes. */
+  console.log(recordTrail
+    ? "\naccuracy trail: line APPENDED to docs/coverage-history.jsonl (pipeline run)"
+    : "\naccuracy trail: line computed and NOT written — "
+      + (process.env.WAMPO_RECORD === "0" ? "suppressed by WAMPO_RECORD=0" : "this is not a pipeline run")
+      + ".\n  " + line.trim().slice(0, 160) + (line.trim().length > 160 ? "…" : "")
+      + "\n  (set WAMPO_RECORD=1 to record it deliberately)");
   // cap the issue feed — GitHub bodies max out at 65k chars, and a mass
   // finding (like the 500+ lineup-junk sweep) must not break the step
   const highLines = findings.high.length > 150
