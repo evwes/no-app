@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 189;
+export const PARSER_VERSION = 190;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -253,7 +253,22 @@ export const GENERIC_TYPE_NAME = /^(?:total )?(?:registered investment compan(?:
  * computed-and-discarded shape this project has paid for four times (run #244's
  * failure reason, the Schedule A carrier, the feature-fallback denominator, the
  * `rt` ratio). Fail at import instead: it is the first line of every parse. */
-const GENERIC_TYPE_ANY_EXTRA = "commingled (?:trust |investment )?funds?|pooled separate account funds?";
+/* A BARE TRUST DESIGNATION NAMES NO FUND, and `trust` reached this vocabulary
+ * only ever inside `collective (?:investment )?trust` — never standing alone —
+ * so `Master Trust` as a whole holding name was outside it by construction and
+ * the dominance guard and both audits could not see it. Found by the
+ * participant-weighted draw on FedEx (177,265 ppl), which publishes
+ * `Master Trust` at $664,474,627.
+ *
+ * This does NOT contradict the v189 decision to keep `master trust` out of
+ * `TYPE_SUFFIX`. That decision is about STRIPPING the words off the end of a
+ * longer name, where `Investment in BNSF 401(k) Plans Master Trust` would be
+ * damaged. This test is ANCHORED `^…$` on the WHOLE name, so it fires only
+ * when the designation is all there is. Two different questions were being
+ * settled by one vocabulary entry. Both BNSF and `Korn Ferry Master Trust` are
+ * pinned controls and both stay kept, as do real trust-NAMED funds
+ * (`Vanguard Retirement Savings Trust II`, `Great Gray Trust`). */
+const GENERIC_TYPE_ANY_EXTRA = "commingled (?:trust |investment )?funds?|pooled separate account funds?|(?:plan )?(?:interest in )?master trusts?(?: funds?)?|trusts?";
 const GTA_PLURALISED = GENERIC_TYPE_NAME.source
   .replace("trust(?: fund| portfolio)?|collective trust fund|", "trusts?(?: funds?| portfolios?)?|collective trust funds?|");
 if (GTA_PLURALISED === GENERIC_TYPE_NAME.source) {
