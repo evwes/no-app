@@ -530,7 +530,35 @@ export function cleanFiledName(name) {
   const lead = s.replace(/^(?:\d{1,3}(?:,\d{3})+|\d{5,})\s+(?=[A-Za-z].*\s\S)/, "").trim();
   if (lead !== s && /[A-Za-z]{3}/.test(lead)) s = lead;
   const m = s.match(TYPE_SUFFIX);
-  if (m) { const rest = s.slice(0, m.index).trim(); if (rest.split(/\s+/).length >= 2 && /[A-Za-z]{3}/.test(rest)) s = rest; }
+  /* A DANGLING REMAINDER IS WORSE THAN THE NAME IT REPLACED. `Shares of
+   * registered investment companies` was being cut to **"Shares of"** — a
+   * holding named after a preposition. 70 rows / 63 plans / 94,634
+   * participants / $2,160,606,167 displayed as such a fragment on the v188
+   * store, and roughly half of those were this arm's doing rather than the
+   * filing's (the rest were already fragments when parsed, which is a
+   * separate item).
+   *
+   * The two-token floor did not catch it because "Shares of" IS two tokens.
+   * What makes a remainder useless is not its length but that every token is
+   * a function word, so the test is the shared `bwOpensWithAName` screen
+   * asked of EVERY token: if not one identifying word survives, keep the
+   * filed name.
+   *
+   * The first draft of this asked it of the LAST token and a spot-check
+   * caught the regression before it shipped — `Vanguard Institutional Index
+   * Fund Mutual Fund` stopped stripping, because `fund` is furniture and
+   * almost every fund name ends in it. "Does anything identifying remain"
+   * and "is the last word identifying" are different questions, and only the
+   * first one is the one that matters here. Restoring `Shares of registered investment companies` is honest —
+   * it is what the filing says — and it also returns those rows to
+   * `audit-generic-names`, which reads the stored name and had been flagging
+   * them for a reason the page no longer showed. */
+  if (m) {
+    const rest = s.slice(0, m.index).trim();
+    const tk = rest.split(/\s+/);
+    const keeps = tk.some((t) => bwOpensWithAName(t.replace(/[^A-Za-z0-9&]/g, "")));
+    if (tk.length >= 2 && /[A-Za-z]{3}/.test(rest) && keeps) s = rest;
+  }
   s = s.replace(/[\s\-–,;:]+$/, "").trim();
   return /[A-Za-z]{3}/.test(s) ? s : String(name).trim();
 }

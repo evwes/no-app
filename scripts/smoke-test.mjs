@@ -267,6 +267,9 @@ try {
     "Pooled Separate Account, TIAA Real Estate",
     "Money market fund, Fidelity Govt Money Market Fund",
     "Mutual Fund, The Growth Fund of America",
+    /* TYPE_SUFFIX must not leave a dangling fragment, 2026-09-28 */
+    "Shares of registered investment companies",
+    "Vanguard Institutional Index Fund Mutual Fund",
     /* the leading-parenthetical family, 2026-09-28 */
     "Mutual funds (continued) Dodge & Cox International Stock Fund",
     "MUTUAL FUNDS (Continued) FID FREEDOM 2060 K",
@@ -354,6 +357,21 @@ try {
     ["Common/Collective Trust Funds (Continued) T. Rowe Price Retire 2030 Trust Fund", "Common/Collective Trust Funds (Continued) T. Rowe Price Retire 2030 Trust Fund"],
     ["Mutual Funds Trust Growth Fund Investor", "Mutual Funds Trust Growth Fund Investor"],
     ["Index Fund account T. Rowe Price Retirement Balanced I", "Index Fund account T. Rowe Price Retirement Balanced I"],
+    /* A DANGLING REMAINDER IS WORSE THAN THE NAME IT REPLACED. TYPE_SUFFIX was
+     * cutting `Shares of registered investment companies` to "Shares of" — a
+     * holding named after a preposition, 70 rows / 63 plans / 94,634 ppl of
+     * such fragments on the v188 store, about half of them this arm's doing.
+     * The guard asks whether ANY identifying token survives, not whether the
+     * last one does: the first draft asked the last, and `Vanguard
+     * Institutional Index Fund Mutual Fund` stopped stripping because `fund`
+     * is furniture and nearly every fund name ends in it. Both directions are
+     * pinned here for that reason. */
+    ["Shares of registered investment companies", "Shares of registered investment companies"],
+    ["Shares of mutual funds", "Shares of mutual funds"],
+    ["Units of mutual funds", "Units of mutual funds"],
+    ["Vanguard Institutional Index Fund Mutual Fund", "Vanguard Institutional Index Fund"],
+    ["Harbor Capital Appreciation Registered Investment Company", "Harbor Capital Appreciation"],
+    ["Dodge & Cox Income Fund Mutual Fund", "Dodge & Cox Income Fund"],
     /* THE LEADING-PARENTHETICAL ARM, and every control here came out of reading
      * all 125 distinct members rather than out of a guess. The strippable half
      * is page furniture in front of a real fund name; the refused half either
