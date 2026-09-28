@@ -24701,3 +24701,73 @@ handed to the next cycle rather than shipped at 00:3xZ without a member read of
   earlier beside the issuer restoration — 6 rows / 5 pages / 33,059 ppl — was
   measured with an anchored test that cannot see this shape and was **too low**.
   This entry is the correction and the repair together.
+
+## 2026-09-28 (11:4xZ) — A crawlable page asserted a plan year over a menu from another year
+- **Wrong:** every static page opens with *"Everything below comes from the
+  plan's own Form 5500 filing (plan year N)"*, and "everything below" includes
+  the fund table. For **80 pages / 1,747,629 participants** that was FALSE —
+  v41's fallback serves the menu from the plan's next-newest filing and the
+  REPORT prints `lu.source` saying so, while the generator never read it.
+  Lowe's (318,750), PepsiCo (167,015), Verizon (119,145), Elevance (94,689),
+  Meta (84,993), Cisco (72,556).
+- **FIFTH INSTANCE of the two-display-paths divergence and the first that is a
+  false CLAIM rather than an omission.** The coverage note, the precision note,
+  the filed-name cleaner and the issuer column all DROPPED something; this one
+  asserts a year that is wrong for what sits under it.
+- **Found by looking rather than waiting.** The four before it were each found
+  by accident, by happening to open the other surface. This came from
+  enumerating every `plan.*` / `f.*` / `lu.*` field each file reads and diffing
+  the sets — `lu.source`, `fromTrust`, `cut`, `trustName`, `sma` are all in the
+  report and absent from the generator. **`lib-disclose.mjs` only prevents the
+  divergence for rules that were MOVED into it; nothing enumerated what each
+  surface reads.**
+- **Change:** the note states the filing's OWN cause verbatim rather than an
+  invented one — *"these holdings are from the 2023 filing, not the 2024 one.
+  The newest filing's public copy reports its investments only by asset class or
+  as a trust interest, not as holdings."*
+- **Prevention, and both of my drafts were caught by a number that would not
+  reconcile.** (a) The first regenerated **4,892 pages against 54 predicted**:
+  the conditional's newline sat OUTSIDE it, adding a blank line to every page
+  with a fund table — and the block six lines below carries a comment warning
+  about exactly that, written by me, about the same mistake. (b) The second
+  matched **26**, and I nearly accepted it as "fewer than predicted". The store
+  carries TEN distinct `source` strings in two families, and the regex matched
+  only the ordinary one, so the note covered 26 incidental cases and **missed
+  all 55 fallbacks — the entire population it was written for.** Enumerating the
+  shapes first is also why the note quotes the filing: the eight fallback cause
+  variants say different things and one hand-written clause would be wrong for
+  most.
+- **Residue is exactly one and it is not a miss:** Pep Boys (9,779 ppl) has a
+  prior-year lineup and no note because `p/` holds 5,062 files against
+  `TOP_N = 5000` — the orphaned-page class already queued as an owner decision,
+  now with a second live instance.
+
+## 2026-09-28 (12:0xZ) — The bare `Cash` caption arm, withdrawn an hour after it shipped
+- **Wrong:** the issuer caption widening included a bare `cash` arm. It won 15
+  strips and cost two — `Cash Equivalents` → `Equivalents`, live on main.
+- **The remainder guard was written to stop exactly this and did not.** I tested
+  it on `Cash equivalents` — lowercase, the one casing my first draft happened
+  to produce — and `/^[A-Z0-9]/` waves the title-cased variant through. **A
+  guard tested on one casing of one example**, in the same commit whose message
+  explains why the guard was needed.
+- **A count floor was the obvious second fix and THE DATA REFUSED IT**, which is
+  worth more than the fix. Across all 789 strips the lowest standalone counts
+  are `Account American Funds` 2, `Comerica Bank and Trust, N.A` 2, `Earnest` 3,
+  `Equivalents` 3, `Prudential Retirement` 3. **Any floor catching `Equivalents`
+  also refuses two real firms; any floor sparing them keeps `Equivalents`.
+  Frequency does not separate a term from a surname.**
+- **Change:** the arm is WITHDRAWN rather than patched — 15 strips lost, the
+  class of damage closed. `cash and mutual funds` stays because its remainder
+  follows a COMPLETE phrase. Controlled both ways: the three casings of
+  `Cash Equivalents` refused, `Cash Vanguard` and `Cash Charles Schwab` refused
+  too (the stated cost), and all four arms that must still fire do.
+- **Residue, stated rather than implied:** withdrawing the arm stops the strip
+  HAPPENING; it cannot restore a value already overwritten. **2 rows / 168
+  participants** keep reading `Equivalents` until those acks are re-parsed.
+- **And a correction to the same morning's record:** I wrote that #485's merge
+  did not pick up the widening because `actions/checkout` completed before the
+  push. It did — **merge-4i resets to the latest branch head before merging**,
+  which CLAUDE.md already documents — so the strip went live with the 10:5x
+  mirror and #486 had nothing left to do, which is why its coverage line came
+  back byte-identical. **The checkout step's timestamp is not when the merge
+  reads the branch.**
