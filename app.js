@@ -627,6 +627,30 @@
     s = s.replace(/^((?:\S+\s+){0,2}\S+)\s+\1(?=\s+\S)/i, "$1");
     const pm = s.match(TYPE_PREFIX);
     if (pm) { const rest = s.slice(pm[0].length).trim(); if (rest.split(/\s+/).length >= 2 && /[A-Za-z]{3}/.test(rest)) s = rest; }
+    /* THE COMMA FAMILY, 2026-09-28. A comma after a COMPLETE vehicle type is a
+     * caption separator, not part of a fund name: "Mutual Fund, Freedom Index
+     * 2030", "Pooled Separate Account, TIAA Real Estate", "Money market fund,
+     * Fidelity Govt Money Market Fund". 1,077 rows / 595 distinct names on the
+     * v188 store. It needs its own arm rather than a comma in TYPE_PREFIX
+     * because the remainder has to be SCREENED, and the screen is what the
+     * members taught:
+     *
+     *   120 rows would be DAMAGED and are excluded — a measurement BASIS ("at
+     *   contract value", "at fair value"), a bare CLASS or SERIES designation
+     *   ("Stable Value Fund, Class M" -> "Class M"), and a UNIT PRICE with no
+     *   letters at all ("Mutual Funds, @ $688.090000").
+     *
+     * `the` was in the first draft of that screen and came OUT, because it
+     * flagged three real funds — "Mutual Fund, The Growth Fund of America",
+     * "The Investment Company of America", "The Bond Fund of America". A leading
+     * "The" is ordinary in a fund name. Printing the suspects is what showed it;
+     * the screen was written to catch damage and its first version caused some. */
+    const cm = s.match(/^(?:common\/?collective trusts?(?: funds?)?|collective investment trusts?(?: funds?)?|registered investment compan(?:y|ies)|pooled separate accounts?|separate accounts?|mutual funds?|money market funds?|stable value funds?|guaranteed (?:investment|interest) contracts?|index funds?|target date funds?)\s*,\s+(?=\S)/i);
+    if (cm) {
+      const rest = s.slice(cm[0].length).trim();
+      const notAName = /^(?:at|of|in|on|for|and|as|to|with|per|net|@)\b|^(?:fee\s+)?class\b|^series\b|^unit/i;
+      if (/[A-Za-z]{3}/.test(rest) && !notAName.test(rest)) s = rest;
+    }
     // the leading-dash strip at the top of this function runs BEFORE the type
     // prefix above, so "Stable Value Fund- — John Hancock Life Insurance
     // Company" (Empower Electric) came out still wearing the dash. Re-run it

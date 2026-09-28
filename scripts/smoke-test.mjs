@@ -227,6 +227,11 @@ try {
     "JP Morgan JP Morgan Mid Cap Growth Fund",
     "Fidelity 500 Index \u00ab",
     "V an gu ard Targe t Re tire m e nt 2045 Tru st II",
+    /* the comma family, 2026-09-28 */
+    "Mutual Fund, Freedom Index 2030",
+    "Pooled Separate Account, TIAA Real Estate",
+    "Money market fund, Fidelity Govt Money Market Fund",
+    "Mutual Fund, The Growth Fund of America",
     /* controls: a real name whose vehicle word is part of it, a bare type that
      * must stay visible to the generic-name audit, and a real quoted class */
     "Index Fund invested in stocks included in the S&P 500",
@@ -243,7 +248,17 @@ try {
     for (const n of nameDrift) console.error(`  ${JSON.stringify(n)}\n    app.js: ${JSON.stringify(nameGot[nameCases.indexOf(n)])}\n    module: ${JSON.stringify(cleanFiledName(n))}`);
     fail(`filed-name cleaner in app.js disagrees with scripts/lib-disclose.mjs on ${nameDrift.length} of ${nameCases.length} filed names`);
   }
-  for (const [n, want] of [["Index Fund invested in stocks included in the S&P 500", "Index Fund invested in stocks included in the S&P 500"], ["Mutual funds", "Mutual funds"], ["Stable Value Fund", "Stable Value Fund"]]) {
+  for (const [n, want] of [["Index Fund invested in stocks included in the S&P 500", "Index Fund invested in stocks included in the S&P 500"],
+    ["Mutual funds", "Mutual funds"], ["Stable Value Fund", "Stable Value Fund"],
+    /* the comma arm's own screen: a measurement BASIS, a bare CLASS designation,
+     * a unit PRICE, and the bare-whitespace family it deliberately leaves alone */
+    ["Guaranteed investment contract, at contract value", "Guaranteed investment contract, at contract value"],
+    ["Stable Value Fund, Class M", "Stable Value Fund, Class M"],
+    ["Mutual Funds, @ $688.090000", "Mutual Funds, @ $688.090000"],
+    ["Stable Value Fund Fee Class R1", "Stable Value Fund Fee Class R1"],
+    /* and a real fund whose name opens with "The" — the first draft of the
+     * screen flagged this one, which is why `the` is not in it */
+    ["Mutual Fund, The Growth Fund of America", "The Growth Fund of America"]]) {
     if (cleanFiledName(n) !== want) fail(`the filed-name cleaner now damages a control: ${JSON.stringify(n)} -> ${JSON.stringify(cleanFiledName(n))}`);
   }
 
