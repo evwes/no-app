@@ -678,18 +678,86 @@ export, do not copy the line.
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, ≥100
   participants at either end of the plan year): **68,259 full-form**, 43,523
   short-form, 68,767 parse-status entries.
-- **STORE: pv 188 covers 68,637 of 68,767 acks (99.8%)** — one dominant pv plus
-  the documented ~190-row old-version tail (pv180 23, pv106 18, pv98/123/124 10
+- **STORE: pv 189 covers 68,636 of 68,767 acks (99.81%)** — one dominant pv plus
+  the documented ~190-row old-version tail (pv180 23, pv106 18, pv124/123 10
   each), which is the completeness test, not a partial store. Confident
-  **60,104**, lineups 59,753, entries 65,241, HIGH **20 = 4 baseline + 16
-  self-clearing `reparse-loss`**, WARN 544, overshoot **325** / 400,840 ppl,
-  aggRow 112, dl **128**, **`analyze` 0**, `no-section` ~7,123.
-  `audit-dominant-row` **0**, `audit-generic-names` **182**. **`matchQuote`
-  5,397 of which only 1,785 are SHOWN to readers** — the condition/outcome pair
-  shipped 2026-09-27.
-- **IN FLIGHT: #489 (v189), dispatched 2026-09-28 13:4xZ by `workflow_dispatch`
-  on the dev branch, observed queued.** A kerned asset-class label no longer
-  defeats the dominance guard: Tides Center (813 ppl) publishes
+  **60,103**, lineups 59,752, entries 65,241, HIGH **4 = the baseline**, WARN
+  608, overshoot **325** / 400,840 ppl, aggRow 112, dl **129** (129 of 129
+  HEAD-probed 403), **`analyze` 0**, `no-section` ~7,123.
+  `audit-dominant-row` **0**, `audit-generic-names` **212 against the 230
+  escalation threshold — still not raised**. **`matchQuote` 5,397 of which only
+  1,785 are SHOWN to readers** — the condition/outcome pair shipped 2026-09-27.
+- **NOTHING IS IN FLIGHT.** Tree and store are both at v189.
+- **MIRRORED 2026-09-28 15:0xZ (`fa71694 → 313efbd`), GIT CHECK UNFORCED**
+  (main held nothing the branch lacked); **`--force-data` over ONE named loss,
+  read first**: 11 Capital, Llc (251 ppl) published `MUTUALFUND ••` at **94.2%**
+  of a four-row menu — the v105 shape v189 exists to catch.
+- **#489 PASSED ALL FOUR PRE-REGISTERED TESTS — and the case it was WRITTEN FOR
+  is still publishing the defect, which matters more than the pass.**
+  `confident` **−1** against a ceiling of 8, the one loss inside the named set,
+  `audit-dominant-row` **0**, `audit-generic-names` **212** against ~212
+  predicted, `overshoot` held at **325**.
+  **Seven of the eight were rescued by the prior-year fallback and FIVE are wins
+  larger than the withdrawal would have been** — Smc Corporation Of America
+  (2,137 ppl) publishes **46 MFS Lifetime rows**, Conga (1,228) **25 Vanguard
+  Target Retirement rows**, Realty Center (504) 26, Ims Masonry (378) 36, Ron
+  Bouchard's (194) 32, all real menus where a kerned asset-class statement
+  stood. That is v188's rule repeating: **a guard that withdraws is sometimes a
+  guard that PROMOTES**, and it is why the prediction was a CEILING plus a named
+  set rather than a number.
+  **BUT Tides Center (813 ppl) still leads with `Regi s tered i nves tment compa
+  ni es` at 84.4%** of its 2023 fallback, where it led at 97.1% of its 2024
+  filing, and **Finch Paper PN 2 (437) leads with `M utual Fund` at 88.2%**. The
+  guard refused the 2024 region; the fallback served an earlier filing carrying
+  the SAME SHAPE, now just under the 90% floor. **So the limit is the 90%
+  THRESHOLD, not the vocabulary** — exactly what v188's residuals already said
+  (Flashparking 82.2%, Fiber Instrument 89.4%) and I failed to carry into v189's
+  prediction. Both join the owner-queued class of lineups leading with a bare
+  asset-class label at ≥60%. **A version can pass every test it registered and
+  leave its motivating case unfixed.**
+- **MIRRORED 2026-09-28 15:0xZ: a wrapped loan description's continuation line
+  is no longer published as a fund — 627 rows / 627 plans / 1,394,114 ppl /
+  $1,131,565,111**, Nissan (22,188, `at rates of interest ranging from 4.25% to`
+  at $63,385,312) and **Dollar General (225,308, `from 3.21% to`)**. **NOT what
+  v181 fixed:** `LOAN_ROW` is anchored on the name BEGINNING with loan words —
+  which is what keeps `Bank Loan Fund` safe — so a fragment that never says
+  "loan" cannot be reached. Two conditions, neither a list of fund names: the
+  rate must be quoted as a RANGE (a loan has a range, a GIC has one), and
+  NOTHING may be left once the loan description is stripped (`General Account
+  (interest at 3.05%)` is KEPT). **The name is replaced here and nowhere else in
+  the loan family**, because these rows are an artefact of our parse rather than
+  a filed name; value and percentage untouched.
+  **The unreadable half was settled STRUCTURALLY:** 117 accepted names are bare
+  rate fragments that name nothing either way, and **in 626 of 627 plans the
+  accepted row is the menu's ONLY loan row**, with no plan holding more than
+  one.
+  **THREE THINGS IT GOT WRONG FIRST:** (1) my draft typed **two REAL holdings**
+  as loans — Griswold's `Interest Rate of 0.15% to 0.62% … Principal` is a
+  Principal GIC crediting rate, and the strip vocabulary listed `principal` for
+  `principal residence` and so **deleted a house name**; caught by READING the
+  accepted names, both now pinned; (2) **the sizing I read was not the rule I
+  shipped** — a candidate pre-filter meant the predicate accepted **627 where I
+  had read 372**, so all 117 extra names were read before shipping (and the
+  wider net is what reaches Dollar General); (3) the two cells said the same
+  thing, the redundancy the nameless-row change removed one cycle earlier.
+  Tethered on 19 names, **9 of which must come back false**, negative-controlled.
+  **8 crawlable pages / 275,703 ppl**, attributed cell by cell against the
+  regenerated files, 0 unexplained.
+- **RETIRED, and the number must not be carried forward: the foreign-schedule
+  CANDIDATE set of 181 plans / 192,948 ppl is not that class.** Living Well
+  publishing The Arc of Walker County's rows is real and stands at **N=1 known**;
+  the same-value twin signature that sized it carries **no enrichment** — 0 of
+  12 drawn from the candidate set, 0 of 30 drawn flat from all published
+  lineups, under a discriminator that FIRES on the known positive.
+  **Two harnesses produced a rate first and both measured something else:** 50%,
+  driven by `012345678`/`123456789`, the blank Form 5500 instruction page's
+  example EINs; then 25%, driven by AUDITORS and DFEs, which every filing names
+  by design. **A discriminator not shown to fire on the one case you have READ
+  is not a discriminator.** Ninth instance of a measurement reporting on the
+  harness.
+- **PREVIOUSLY IN FLIGHT: #489 (v189), dispatched 2026-09-28 13:4xZ, ran
+  `success` 13:44–14:47Z.** A kerned asset-class label no longer defeats the
+  dominance guard: Tides Center (813 ppl) publishes
   `Regi s tered i nves tment compa ni es` at **97.1%** of a four-row menu, the
   v105 shape, invisible because a broken font sprays spaces through the label.
   43 rows / 42 plans / **101,200 ppl** publish such a name; **8 plans / 5,942

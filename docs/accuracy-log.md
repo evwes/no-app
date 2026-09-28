@@ -24824,3 +24824,176 @@ handed to the next cycle rather than shipped at 00:3xZ without a member read of
   fire. Eighth instance on this record of a measurement reporting on the
   harness. Probing the two predicates against the one string settled it in a
   single run.
+
+## 2026-09-28 (15:0xZ) — run #489 verdict (v189), and the fix worked on the region it aimed at while the FALLBACK rebuilt the same shape
+
+**All four pre-registered tests PASSED**, and the store is at pv 189 covering
+68,636 of 68,767 acks (99.81%) — one dominant pv plus the documented ~190-row
+tail, which is the completeness test. `confident` fell by **1** against a
+ceiling of 8; the one loss is **inside the named set**; `audit-dominant-row`
+**0**; `audit-generic-names` **212** against a prediction of ~212;
+`overshoot` held at **325** exactly as predicted; HIGH **4**, the baseline.
+
+**THE MARGIN STAYS WHERE IT WAS PUT.** 212 against the escalation threshold of
+230, which was calibrated for the narrower predicate and has still NOT been
+raised. A later run crossing 230 is a real signal.
+
+**The single withdrawal is correct and was read before the override.**
+11 Capital, Llc (251 ppl, $3,634,347) published `MUTUALFUND ••` at **94.2%** of
+a four-row menu — the v105 dominant-row shape verbatim, which is the whole
+reason v189 exists. Mirrored `fa71694 -> 313efbd`, the GIT check UNFORCED (main
+held nothing the branch lacked), `--force-data` over that one named loss.
+
+**SEVEN OF THE EIGHT WERE RESCUED BY THE PRIOR-YEAR FALLBACK, and FIVE of those
+are wins larger than the withdrawal would have been.** Smc Corporation Of
+America (2,137 ppl) now publishes **46 MFS Lifetime rows**, Conga (1,228) **25
+Vanguard Target Retirement rows**, Realty Center (504) 26, Ims Masonry (378) 36,
+Ron Bouchard's (194) 32 — all from their 2023 filings, all real menus where a
+kerned asset-class statement stood. This is v188's finding repeating exactly:
+**a guard that withdraws is sometimes a guard that PROMOTES**, and it is why the
+prediction was written as a CEILING plus a named set rather than a number. The
+fallback cannot be reproduced in-sandbox, so −8 was never a forecast.
+
+**AND THE PART THAT IS NOT A WIN, stated plainly because the headline hides it:
+the plan v189 WAS WRITTEN FOR IS STILL PUBLISHING THE DEFECT.** Tides Center
+(813 ppl) leads with `Regi s tered i nves tment compa ni es` at **84.4%** of its
+2023 fallback, where it led at 97.1% of its 2024 filing. Finch Paper PN 2 (437)
+leads with `M utual Fund` at **88.2%**. The guard refused the 2024 region, the
+fallback served an earlier filing, and that filing carries the SAME SHAPE one
+year back — now sitting just under the 90% floor where the guard cannot reach
+it. So **the limit on this fix is the 90% THRESHOLD, not the vocabulary** —
+which is precisely what v188's own residuals said (Flashparking at 82.2%, Fiber
+Instrument at 89.4%) and I did not carry forward into v189's prediction. Both
+plans join the owner-queued class of lineups leading with a bare asset-class
+label at >=60%. **A version can pass every test it registered and leave its
+motivating case unfixed; the named set proved the mechanism, not the outcome.**
+
+**`dl` 128 -> 129, PROBED WHOLE-POPULATION: 129 of 129 answered 403.** The
+fourth time this discriminator has been run and the fourth time it has
+EXONERATED the code — the bucket grew by one withdrawn filing. `e=download`
+remains an honest published claim.
+
+**MY OWN RECOMPUTATION OF `audit-generic-names` SAID 742 against the audit's
+212.** A hand-rolled copy of a shipped predicate, wrong again, for at least the
+third time on this record. The number that was published is the audit's.
+
+## 2026-09-28 (15:0xZ) — a wrapped loan description's continuation line published as a fund: 627 rows / 627 plans / 1,394,114 participants / $1,131,565,111
+
+**What was wrong.** Nissan North America (22,188 ppl) published `at rates of
+interest ranging from 4.25% to` carrying **$63,385,312** as a holding. The filed
+line is `Participant loans, at rates of interest ranging from 4.25% to 9.50%`,
+wrapped over two lines; the parse kept the second. Dollar General (**225,308
+ppl**) published `from 3.21% to` at $31,711,461.
+
+**Why v181 could not reach it.** `LOAN_ROW` is ANCHORED on the name BEGINNING
+with loan words, deliberately, because that is what keeps `Bank Loan Fund`,
+`Floating Rate Loan Fund` and J&J's real `Loans Secured By Mtges-Resid.` safe.
+These fragments never say "loan" at all. **A fix for one phrasing of a class is
+not a fix for the class** — v181's own comment records that lesson, and it came
+back one level down.
+
+**The change.** Two conditions, neither a list of fund names. (1) **The rate is
+quoted as a RANGE** — a plan's loans carry a range, a GIC or a short-term
+account carries one, which alone separates Nissan's truncated `ranging from
+4.25% to` from `Interest rate 1.75%` and `Short term investment fund (interest
+rate 4.4393%)`. (2) **Nothing is left** once the loan description is stripped:
+`General Account (interest at 3.05%)` leaves `General Account` and is KEPT. The
+residue idiom the merge's caption strip already uses — ask what REMAINS rather
+than enumerate what must not. It under-reaches on purpose; 270 distinct names
+refused, every one read.
+
+**THE NAME IS REPLACED, and only here in the loan family.** v181's rows are
+NAMED and typing them was enough. These are a wrapped description's second line,
+so the string under a column headed "Fund" is an artefact of our parse, not a
+fact about the plan. Value and percentage untouched; the money stays accounted
+for.
+
+**THE STRUCTURAL CHECK THAT SETTLED THE UNREADABLE HALF.** 117 of the accepted
+names are bare rate fragments (`from 3.50% to`) that name nothing in either
+direction, so reading them cannot decide anything. The filing's structure can:
+in **626 of 627 plans the accepted row is the menu's ONLY loan row**, and **no
+plan has more than one accepted row**. The single exception carries `LOAN FUND`
+and `rates range from 4.25% to` — one loan split across two rows, so typing both
+is right. Evidence ABOUT the rule, not part of it: both surfaces ask it one row
+at a time.
+
+**THREE THINGS IT GOT WRONG FIRST.**
+1. **My draft typed two REAL holdings as loans.** Griswold Industries publishes
+   `Interest Rate of 0.15% to 0.62% (Maturing in 2023) Principal` — a `Principal
+   Guaranteed Interest Account` crediting rate, in a plan whose entire menu is
+   Principal separate accounts. The strip vocabulary listed `principal` for the
+   phrase `principal residence` and was **deleting a house name**. One token,
+   two meanings. Caught by READING the accepted names; no count could see it.
+   Both rows pinned.
+2. **The sizing I read was not the rule I shipped.** The prototype gated on a
+   candidate shape list before asking the predicate — a sizing convenience, not
+   part of the rule — so the shipped predicate accepted **627 where I had read
+   372**. All 117 extra distinct names were then read before anything shipped,
+   and the wider net is the better one: it is what reaches Dollar General.
+   **A predicate is only as trustworthy as the names it was read on, and the
+   pre-filter that made the reading tractable is not part of it.**
+3. **The two cells said the same thing.** First render: `Participant loans` in
+   the name, `Participant loans — not a menu choice` in the type — the exact
+   redundancy the nameless-row change removed one cycle ago. Type is now `Not a
+   menu choice`.
+
+**Both surfaces, one rule**: canonical in `lib-disclose`, twinned into app.js by
+`gen-generic-twin.mjs` (extracted verbatim — the vocabulary is a
+60-alternative alternation), read directly by `build-seo-pages.mjs`. The
+generator's END MARKER moved with the block's last line and now keeps the
+previous marker as a fallback, because a stale tail is how a duplicate
+declaration once won by hoisting order.
+
+**Tethered on 19 names, NINE of which must come back false**, and
+negative-controlled: re-adding `principal` to the twin fails the tether by name
+on exactly the two Griswold rows.
+
+**Measured through the ARTIFACT.** 15 crawlable pages regenerated, attributed
+cell by cell: **8 pages / 275,703 ppl from this change**, 7 pages / 83,941 ppl
+from v189's kerned arm reaching the static surface for the first time, **0
+unexplained**. Report verified by rendering Nissan's own page — `Participant
+loans | Not a menu choice | $63.4M | 1.5%`, with the Vanguard control beside it
+untouched.
+
+Side effect, additive by construction: `filedAvgER`'s coverage gate stops
+counting these rows against fee coverage, the treatment v181 gave loans.
+
+## 2026-09-28 (14:xxZ) — the foreign-schedule candidate set is RETIRED: 0 of 12, and 0 of 30 at large
+
+The 12:0xZ draw found Living Well Disability Services publishing 11 rows /
+$860,264 belonging to **The Arc of Walker County**, whose 4i attachment is bound
+into the same composite PDF. I sized the SYMPTOM — same-value suffix twins — at
+**181 plans / 192,948 participants** and recorded honestly that the class itself
+was unmeasured because the discriminator lives in the PDF.
+
+**It is now measured, and the candidate set carries no enrichment at all.**
+Drawn randomly (the record's rule: rank to choose what to READ, draw randomly to
+estimate a RATE), downloaded and text-extracted: **0 of 12**. A flat draw from
+all 59,753 published lineups: **0 of 30**. So the twin signature is not a proxy
+for this class, and **the 181-plan / 192,948-participant figure must not be
+carried forward as the size of anything** — it would read later as an open
+defect of that size, which is the hazard this project already names as *check
+the example is still in the bucket*, applied to a candidate set.
+
+**TWO HARNESSES PRODUCED A RATE BEFORE THE RIGHT ONE, and both were measuring
+something else.** The first asked "does an EIN other than this filing's appear
+in the PDF?" and returned **50%** — four of its six hits driven by `012345678`
+and `123456789`, the blank Form 5500 **instruction page's example EINs**. The
+second excluded those and returned **25%** — its three hits were **auditors and
+DFEs** (`FORVIS MAZARS`, `EIDE BAILLY`, `Charles Schwab`), which every filing
+names by design on Schedules C and D. An EIN that is not this filing's is not
+thereby another PLAN's.
+
+**What fixed it was building the discriminator FROM the known positive instead
+of from a guess about it.** Dumping Living Well's PDF shows each 4i caption
+sitting under its own header block — `EIN: 23-7181360` under the first,
+`The Arc of Walker County / EIN: 63-0760044 / Plan Number: 001` under the
+second. The signature is an EIN **inside a caption's own header block**, not
+anywhere in the document. The third script runs the positive control FIRST and
+refuses to report a rate if the control does not fire.
+
+**The rule earned here: a discriminator that has not been shown to fire on the
+one case you have READ is not a discriminator, and a rate computed with one is
+a number about your harness.** Ninth instance on this record. The class stands
+at N=1 known, with no store-side proxy and no cheap way to size it; 0/30 at
+large bounds it only loosely, and that is the honest statement.
