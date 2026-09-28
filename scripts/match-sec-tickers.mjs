@@ -431,8 +431,17 @@ function resolveUncached(idx, filedName, issuerWords) {
   const filedNorm = " " + norm(filedName) + " ";
   const filedMgrs = [];
   for (const m of MANAGERS) if (filedNorm.includes(" " + m + " ")) filedMgrs.push(m);
-  if (!filedMgrs.length) return null;
   const mgrHit = (c) => c.mgrKeys.some((k) => filedMgrs.includes(k));
+  /* A SERIES WHOSE REGISTRANT NAMES NO HOUSE, MATCHED BY A FILED NAME THAT
+   * NAMES NO HOUSE EITHER. `SHORT-TERM BOND FUND OF AMERICA` and `GROWTH FUND
+   * OF AMERICA` are American Funds funds whose legal names say so nowhere, so
+   * they carry no manager key; a filing that writes only `Short-Term Bond Fund
+   * of America R4` then names no manager either and the gate refused both
+   * sides. Allowed only when the SERIES KEY IS NOT ENTIRELY DESCRIPTIVE —
+   * `short term bond america` keeps `america`, while Homestead's `short term
+   * bond` keeps nothing, which is exactly the pair that must be separated. */
+  const anonDistinct = (st, list) => list.every((c) => !c.mgrKeys.length)
+    && st.some((w) => !DESCRIPTIVE.has(w) && !STRUCTURAL.has(w));
   // tokens of the houses the filing names, and share-class markers: the two
   // kinds of filed word a series is allowed to leave unaccounted for
   /* A word the ISSUER cell contributed is not part of the filed name and can
@@ -515,7 +524,7 @@ function resolveUncached(idx, filedName, issuerWords) {
         const sset = new Set(st);
         let all = true;
         for (const w of core) if (!sset.has(w)) { all = false; break; }
-        if (!all || !list.some(mgrHit)) continue;
+        if (!all || !(list.some(mgrHit) || anonDistinct(st, list))) continue;
         uniq.set(st.join(" "), list);
         if (uniq.size > 1) break;
       }
@@ -603,7 +612,8 @@ function resolveUncached(idx, filedName, issuerWords) {
    * marker. Nothing looser -- this is what keeps it from also accepting
    * "American Funds EuroPacific Growth Fund R6", whose "europacific" belongs
    * to none of the three and which is absent from the SEC file entirely. */
-  if (!mine.length && classes.every((c) => !c.mgrKeys.length)) {
+  if (!mine.length && classes.every((c) => !c.mgrKeys.length)
+      && (filedMgrs.length || anonDistinct(tokens(classes[0].series), classes))) {
     const sset = new Set(tokens(classes[0].series));
     const house = new Set(filedMgrs.flatMap((m) => m.split(" ")));
     const ok = ft.every((w) => sset.has(w) || house.has(w)
@@ -722,6 +732,30 @@ const SELFTEST = [
   ["American Funds New World R6", "RNWGX"],
   ["American Funds American Balanced R6", "RLBGX"],
   ["American Funds Growth Fund of America R6", "RGAGX"],
+  /* THE FILED NAME NAMES NO HOUSE AND NEITHER DOES THE REGISTRANT. American
+   * Funds' three flagships are registered as `GROWTH FUND OF AMERICA`, `BOND
+   * FUND OF AMERICA` and `INCOME FUND OF AMERICA`, and a filing that writes
+   * only that plus a class names no manager either — so both sides of the gate
+   * were empty and 203 rows resolved to nothing. They are safe because the
+   * series key keeps `america`; Homestead's `short term bond` keeps nothing,
+   * which is the pair the rule has to separate and the reason the four
+   * refusals above are pinned beside these. */
+  ["GROWTH FUND OF AMERICA R6", "RGAGX"],
+  ["The Bond Fund of America R6", "RBFGX"],
+  ["INCOME FUND OF AMERICA R6", "RIDGX"],
+  ["Short-Term Bond Fund Of America;R4", "RAMEX"],
+  ["The Growth Fund of America R3", "RGACX"],
+  /* …and the must-keeps that a first draft of the same rule DESTROYED: the
+   * distinctive-key test is asked only when the filed name names no house,
+   * because `International Growth and Income` is three descriptive words and
+   * demanding a distinctive key there withdrew 127 correct rows. */
+  ["American Funds International Growth and Income R6", "RIGGX"],
+  /* The same fund with the house NOT in the filed name refuses on its own —
+   * `international growth income` is entirely descriptive and names nobody —
+   * and is resolved by the issuer cell instead, pinned in the issuer table.
+   * This expectation was written the other way round and the selftest caught
+   * it: the rule is about what the STRING can discriminate, not about which
+   * fund a reader knows is meant. */
 ];
 
 /* THE ISSUER CELL, pinned separately because it is a CALLER rule and the
@@ -749,6 +783,8 @@ const SELFTEST_ISS = [
   ["Short Term Bond Fund", "Fidelity", "FBNAX*"],
   ["Short-Term Bond Fund", "T. Rowe Price", "PRWBX*"],
   ["Short Term Bond Fund Class R6", "Transamerica", "TASTX"],
+  // the house-less registrant reached through the issuer cell instead
+  ["International Growth and Income Fund R6", "American Funds", "RIGGX"],
 ];
 
 if (process.argv.includes("--selftest")) {
