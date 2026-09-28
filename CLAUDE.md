@@ -738,6 +738,35 @@ export, do not copy the line.
   the resolving, so `Carillon Reams Core Plus BD R6` read as naming no manager.
   **A draw is only as honest as the string it prints.**
   `docs/accuracy-log.md` 2026-09-28 (18:0xZ).
+- **AND PIECE (2) IS DONE — MIRRORED 2026-09-28 18:4xZ, UNFORCED, DATA GATE
+  +0 / −0 (`135bc92 → 01ebe0d`). Still reaches NO reader**, because
+  `match-sec-tickers.mjs` is wired into neither display path; it is what makes
+  the index safe to wire. **A share class never interrupts a fund name**, so
+  `Vanguard Institutional Target Retirement 2070` no longer publishes VSVNX —
+  the retail series — **as fact**; a leftover word between two series tokens is
+  excused only when a class of that series NAMES it (the index's own evidence,
+  which is what keeps `Fidelity Advisor Mid Cap Value Fund Class Z`).
+  **`hintsOf` reads EVERY class word**, so `Principal Real Estate Securities
+  Instl R6` stops asserting the Institutional ticker for an R-6 holding — and
+  it cuts upward too, `Alger … Institutional Fund Class I` moving from
+  ambiguous to **ALARX asserted**. **A footnote marker in brackets is not a
+  share class** (`… R5 Class (i)` keeps DDFIX).
+  **THE GUARD WAS RESTRICTED AFTER MEASURING ITS COST:** over every
+  `CLASS_MARK` word it withdrew 1,523 names / 4,828 rows; over the
+  institutional family alone it withdraws **791 / 3,639, of which 711 names /
+  3,504 rows are the Vanguard Institutional family itself**. The 732 it stopped
+  withdrawing are ordinary fund names — `Fidelity Select Natural Resources`,
+  `Fidelity Adv Total Bond Z`. Whole-store: **278,025 of 278,994 pairs
+  unchanged**, 44 demoted to the asterisk, 134 re-tickered.
+  **FOURTEENTH HARNESS INSTANCE: a 44-character truncation** made eighteen
+  demotions print identically and resolve unchanged when retyped — the stored
+  names are `… Investor Class K` and `… Investor Class (i)`, two causes, one of
+  them mine. **A truncated print is a different string.**
+  **`node scripts/match-sec-tickers.mjs --selftest` — 23 pinned cases,
+  must-change and must-keep in one table, 23/23; the pre-change matcher fails
+  by name on 9 and holds 14.** Residual pinned, not fixed: `premier` sits in
+  the `institutional` arm of `CLASS_HINTS`, so `Royce Premier Fund` has a class
+  asserted its filing never stated. `docs/accuracy-log.md` 2026-09-28 (18:3xZ).
 - **MIRRORED 2026-09-28 16:3xZ, UNFORCED (`5e3941b → 32f4568 → c172a26`):
   `TYPE_SUFFIX` reaches three shapes it could not — 1,973 rows / 462 plans /
   2,996,261 ppl / $26,024,783,093, and +0 tickers gained, −0 lost, 0 flipped.**
