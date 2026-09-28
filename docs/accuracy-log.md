@@ -23922,3 +23922,38 @@ handed to the next cycle rather than shipped at 00:3xZ without a member read of
   measurement and its own controls (a fund whose real name merely contains
   "loan" must be untouched; the anchored screen used for sizing passes that
   test, but a display change deserves the same member read this cycle's arm got).
+
+## 2026-09-28 (01:4xZ) — Backtracking defeated the bare-whitespace anchor, and only a PAGE could see it
+
+- **Wrong:** BDO USA's regenerated crawlable page rendered `Funds (Continued) T.
+  Rowe Price Retire 2030 Trust Fund` where it had rendered `Common/Collective
+  Trust Funds (Continued) T. Rowe Price Retire 2030 Trust Fund`. Worse, not
+  better — a regression introduced by the arm shipped an hour earlier.
+- **Mechanism, and it is a regex fact rather than a vocabulary one.** The arm's
+  type alternation ends `common\/?collective trusts?(?: funds?)?`. It first
+  matched `Common/Collective Trust Funds`; the lookahead `(?=[A-Za-z0-9])` then
+  failed on the `(` of `(Continued)`; **the engine backtracked the optional
+  group away**, matched `Common/Collective Trust` plus one space, and the anchor
+  was satisfied one word early. `Funds` became the remainder's first token, and
+  nothing in the screen said a bare vehicle noun cannot open a fund name.
+- **Change:** `fund(s)`, `trust(s)`, `account(s)`, `company/companies` and
+  `portfolio(s)` join the furniture — encoding the thing that was missing, that
+  a remainder opening with a bare vehicle noun is a caption fragment and not a
+  name. **4 rows / 4 plans / 36,048 ppl → 0.**
+- **WHAT FOUND IT IS THE WHOLE VALUE OF THIS ENTRY.** The store-wide row diff
+  said 2,370 rows changed, **0 tickers lost**, and **DRIFT 0 across 1,720,349
+  rows** — and this row sat inside that 2,370 counted as an improvement. The
+  suspect screen missed it because the remainder is well-formed; the ticker test
+  missed it because neither string resolves. **No count could see it. Opening
+  one regenerated page could.** Same lesson as the false-precision defect and
+  the SEO cleaner, now earned a third time: *the page is the artifact, and a
+  claim about readers is checked by reading what a reader gets.*
+- **Prevention:** three controls pinned in the smoke-test tether, one per
+  observed shape (`Common/Collective Trust Funds (Continued) …`, `Mutual Funds
+  Trust Growth Fund Investor`, `Index Fund account T. Rowe Price Retirement
+  Balanced I`). **Revised outcome: 2,366 rows / 234 plans / 269,754
+  participants, +10 tickers, 0 lost; 11 crawlable pages / 41,809 participants.**
+- **A method note that generalises past this arm:** an optional group at the end
+  of an anchored alternation is a *silent* second anchor position. Any future
+  arm written this way should either be measured against a remainder-shape
+  control or have the optional group made non-backtrackable.

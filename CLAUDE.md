@@ -853,6 +853,20 @@ export, do not copy the line.
   directory was left over from the previous cycle. `git diff --stat p/` says 12.
   **An implausibly large number reports on the harness, not the data**, the
   fourth instance on this record.
+- **AND THE ARM HAD A REGRESSION THAT ONLY A PAGE COULD SEE — CORRECTED 01:4xZ,
+  final numbers 2,366 rows / 234 plans / 269,754 ppl / 11 crawlable pages /
+  41,809 ppl.** BDO USA's regenerated page read `Funds (Continued) T. Rowe Price
+  Retire 2030 Trust Fund` where it had read `Common/Collective Trust Funds
+  (Continued) …`. **Regex BACKTRACKING**: the alternation's trailing
+  `(?: funds?)?` matched ` Funds`, the `(?=[A-Za-z0-9])` lookahead failed on
+  `(`, the engine gave the optional group back, and the anchor was satisfied one
+  word early. 4 rows / 36,048 ppl, now 0 — `fund(s)`, `trust(s)`, `account(s)`,
+  `compan(y|ies)`, `portfolio(s)` join the furniture. **The store-wide diff said
+  0 tickers lost and DRIFT 0 over 1,720,349 rows and this row sat INSIDE the
+  2,370 counted as an improvement. No count could see it; one regenerated page
+  could** — the third time this week that *the page is the artifact* was the
+  operative rule. **General form worth keeping: an optional group at the end of
+  an anchored alternation is a silent SECOND anchor position.**
 - **QUEUED from the 01:0xZ weighted draw — PARTICIPANT LOANS PUBLISHED AS A FUND
   MENU OPTION: 483 rows / 483 plans / 1,372,445 ppl / $1,251,824,848**, exactly
   one row per plan. `LOAN FUND` 364, `Loan` 40, `Loan Fund` 26, `Loans` 19.
