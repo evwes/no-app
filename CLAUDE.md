@@ -814,6 +814,34 @@ export, do not copy the line.
   What shipped makes the two surfaces AGREE; it does not make every arm correct,
   and every arm now reaches twice as many readers, which raises the cost of any
   one of them being wrong. `docs/accuracy-log.md` 2026-09-27 (23:2xZ).
+- **SHIPPED 2026-09-28 00:1xZ: caption class B's COMMA family — 1,097 rows / 98
+  plans / 92,758 ppl, and 122 rows GAIN a ticker with 0 lost.** `Mutual Fund,
+  Freedom Index 2030`, `Pooled Separate Account, TIAA Real Estate`. A comma after
+  a COMPLETE vehicle type is a caption separator, and the arm strips only when the
+  remainder has letters and is not a measurement basis, a bare class/series
+  designation or a unit price — **120 rows correctly excluded.**
+  **The screen's own first draft caused damage:** it included `the` and flagged
+  three real funds (`Mutual Fund, The Growth Fund of America`, `The Investment
+  Company of America`, `The Bond Fund of America`). Printing the suspects is what
+  showed it; all three are pinned in the tether. **DRIFT 0** — the app.js and
+  `lib-disclose` copies were compared over all 1,720,349 published rows.
+- **AND THE BARE-WHITESPACE FAMILY IS REFUSED WITH ITS SIZE ON THE RECORD: 2,949
+  rows / 764 plans / 1,407,036 ppl.** A blanket strip turns `Stable Value Fund Fee
+  Class R1` into `Fee Class R1` (116 rows). The principled alternative — strip
+  only where the remainder resolves to a fund through the shipped lookup, which
+  cannot cost a ticker by construction — **reaches 19 rows / 8 plans / 9,053
+  ppl**, because `fund-er.js` cannot name a Principal separate account or a CIT BY
+  DESIGN and that is exactly what these remainders are (`Prin LgCp S&P 500 Index
+  SA-Z`, `Prin LifeTime Hybr 2035 CIT Z`). **The recorded rule was that the MISS
+  side of that predicate is not "nothing here"; the new half is that it must not
+  be used as a GATE over a population it cannot see.** Needs a different
+  discriminator and its own measurement. **The largest open row-level class.**
+- **AND THE TWO SURFACES AGREE NOW AND STILL REACH DIFFERENT POPULATIONS.** The
+  comma fix changes **4 crawlable pages / 8,166 ppl** against 98 plans / 92,758 in
+  the report, because that family lives outside the generator's top 5,000 by
+  assets. **Sharing the rule removed the divergence, not the difference in
+  coverage — "what reached readers" still has to name the surface.**
+  `docs/accuracy-log.md` 2026-09-28 (00:1xZ).
 - **ALSO SHIPPED 23:2xZ, measured separately: `TYPE_PREFIX` widened — 169 rows /
   139 plans / 174,852 ppl, 0 tickers gained and 0 LOST.** The diagnosis is v188's
   one level up: the VOCABULARY was right and the **CONNECTIVE** was the hole. Only

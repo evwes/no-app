@@ -23740,3 +23740,67 @@ weeks. What shipped here makes the two surfaces AGREE; it does not make every ar
 correct. Stating it that way because "Walmart's page improved" would be a stronger
 claim than the evidence supports, and the arms now reach twice as many readers,
 which raises the cost of any one of them being wrong.
+
+## 2026-09-28 00:1xZ — caption class B's two connective families, and the gate that could not see its own population
+
+Last cycle's widening reached 169 of class B's ~4,700 rows and the entry said the
+remaining connectives were unmeasured. Measured on the v188 store, through the
+shipped display path: **4,735 rows / 863 plans / 1,767,900 ppl still open with a
+vehicle type**, across 1,086 distinct connective shapes that collapse to two
+families.
+
+| family | size | shipped? |
+|---|---|---|
+| a COMMA after a complete vehicle type | 1,077 rows / 595 distinct names | **yes** |
+| BARE WHITESPACE | 2,949 rows / 764 plans / 1,407,036 ppl | **no — see below** |
+
+### The bare-whitespace family is REFUSED, and the reason is a gate failing
+A blanket strip turns **`Stable Value Fund Fee Class R1` into `Fee Class R1`** —
+116 rows in that family whose remainder is only a class designation. So I tried
+the principled alternative, and it is the kind this project prefers: strip only
+where the remainder **resolves to a fund** through the shipped lookup and the
+whole string does not, which by construction cannot cost a ticker.
+
+**It reaches 19 rows / 8 plans / 9,053 participants.** The cause is already on
+this record and it bit the GATE rather than a count: `fund-er.js` cannot name a
+Principal separate account or a collective trust **by design**, and those are
+exactly what these remainders are — `Prin LgCp S&P 500 Index SA-Z`,
+`Prin LifeTime Hybr 2035 CIT Z`, `Prin Real Estate Secs SA-Z`. The recorded rule
+was *the miss side of that predicate must never be read as "nothing here"*; the
+new half is that **it must not be used as a GATE over a population it cannot see
+either.** The family needs a different discriminator — does the remainder look
+like a fund NAME (a house token, a vintage, a share class)? — and that needs its
+own measurement, so it is sized and left open rather than guessed at.
+
+### What shipped, and the screen is the interesting half
+The comma arm strips only when the remainder has letters and is not (i) a
+measurement BASIS (`at contract value`, `at fair value`), (ii) a bare CLASS or
+SERIES designation (`Stable Value Fund, Class M`), or (iii) a unit PRICE with no
+letters (`Mutual Funds, @ $688.090000`). **120 rows correctly excluded.**
+
+**And the screen's own first draft caused damage.** It included `the`, which
+flagged three REAL funds: `Mutual Fund, The Growth Fund of America`,
+`The Investment Company of America`, `The Bond Fund of America`. A leading "The"
+is ordinary in a fund name. **A screen written to catch damage introduced some,
+and only printing the suspects could tell** — the same discipline that killed the
+`invested in` arm last cycle, applied this time to the guard rather than the rule.
+All three are pinned in the tether.
+
+### Outcome
+**1,097 rows / 98 plans / 92,758 participants** read better; **122 rows GAIN a
+ticker and 0 lose one.** Unlike last cycle's caption widening this one adds fee
+data rather than only honesty.
+
+**DRIFT 0**, compared directly: the app.js copy and the `lib-disclose` copy were
+run over all **1,720,349** published rows and agree on every one. That is the
+point of extracting the module body verbatim instead of retyping it, and it is
+checked rather than assumed.
+
+### The two surfaces now agree and still reach different populations
+Yesterday's find was that they disagreed. Today they share the code, and the same
+fix still lands very differently: **only 4 crawlable pages / 8,166 participants**
+change (Globus Medical 2,817, State Bankshares 2,251, Boardwalk Pipeline 1,619,
+John Carroll 1,479), because the comma family lives almost entirely in plans
+outside the generator's top 5,000 by assets, while the report gets all 1,097 rows.
+**So "what reached readers" still has to name the surface even now that the code is
+shared** — sharing the rule removed the divergence, not the difference in coverage.
