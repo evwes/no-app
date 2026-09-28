@@ -24177,3 +24177,65 @@ handed to the next cycle rather than shipped at 00:3xZ without a member read of
 - Curiosities worth one line each, recorded not acted on: `Money Market Fund
   (GMZXX)` puts a **ticker** in the parenthetical, and `Registered investment
   companies (mutual funds)` glosses the type with its own synonym.
+
+## 2026-09-28 (04:2xZ) — The leading-parenthetical arm shipped, and the read is what made it safe
+
+- **Wrong:** a page break's `(continued)` published as part of the fund's name —
+  `Mutual funds (continued) Dodge & Cox International Stock Fund`. **79 rows /
+  72 plans / 218,287 participants.**
+- **Change:** strip the type plus the parenthetical only where the parenthetical
+  is NON-IDENTIFYING and a name follows. **DRIFT 0** across all 1,720,349
+  published rows; **0 tickers gained, 0 lost.**
+- **THE ALLOWLIST IS THE DESIGN DECISION AND IT CAME OUT OF THE READING.** Three
+  members of the strippable half would be damaged by a blanket rule, each
+  carrying information the remainder never repeats: `(TIAA-CREF, not certified)`
+  holds the HOUSE, `(Stable Value Fund)` and `(Group Annuity Contract)` hold a
+  vehicle designation. An allowlist of non-identifying contents refuses all
+  three **without having to anticipate them by name** — which is what a
+  blocklist would have required, and what a blocklist written from a sample
+  would have missed.
+- **The 34-row half that must never be stripped is refused BY CONSTRUCTION**,
+  not by a rule that could drift: the remainder screen requires a name to
+  follow, and in that half nothing follows. `Stable Value Fund (i)` cannot be
+  reached by this arm at all.
+- **ONE REMAINDER SCREEN, NOT TWO.** The bare-whitespace arm's screen is hoisted
+  to `bwOpensWithAName` and both arms ask it. A second copy of a shipped
+  predicate has produced a wrong answer on this record at least four times.
+- **Residue named, all twelve read:** four `separate account (group annuity
+  contract)` and one `(TIAA-CREF, not certified)` refused **by design**; three
+  open their remainder with the initial `T`/`T.` (T. Rowe Price), which the
+  shared code test reads as a bare class letter — **a real miss, 3 rows**, not
+  widened for without its own measurement; two have a bare house as the
+  remainder (`Morley`, `Invesco`) where refusing is right; two correct refusals.
+- **Surface: 0 crawlable pages change, and the zero is EXPLAINED rather than
+  reported.** 69 of the 79 rows sit in plans with no page at all (outside the
+  generator's top 5,000 by assets); the other 10 sit in plans whose page exists
+  but whose fund table does not list that row, because those pages show the top
+  12 holdings. So this reaches the **report only**.
+- **Prevention:** fifteen controls in the tether, **negative-controlled both
+  ways** — widening the allowlist to everything fails the tether as DRIFT when
+  only app.js is broken, and fails the control assertion by name when both
+  copies are (`Mutual Funds (TIAA-CREF, not certified) CREF Stock R1` →
+  `CREF Stock R1`).
+
+## 2026-09-28 (04:2xZ) — Two probes of my own were wrong in one side-thread, and the crawlable cap is fine
+
+- Chasing why 10 changed rows sat on pages that did not show them, I measured
+  that **4,872 crawlable pages show exactly 12 fund rows** and concluded only
+  **8 of them disclosed the cap** — which would have been a large honesty
+  defect and the v138 80-row shape reappearing on the other display path.
+- **It was my grep.** I searched for the word `twelve`, which the page never
+  uses. Reading an actual page shows the heading **"Fund lineup — top
+  holdings"** and, below the table, **"21 more holdings in the interactive
+  report."** Re-measured against the real string: **4,852 of 4,872 disclose.**
+- **Then the second probe was wrong too.** The 20 without the line looked like
+  silent prefixes — `Thrivent` 11 holdings, `Altria` 1, `Verizon` 26 against a
+  12-row table, which does not reconcile and therefore should not have been
+  believed. `build-seo-pages.mjs:110` falls back to the **master trust's**
+  lineup when the plan's own entry is not confident, and my script read only the
+  plan's ack. The residual 20 need a trust-aware lookup to judge; several are
+  plans with exactly 12 holdings and nothing to disclose.
+- **Nothing was wrong with the pages.** Recorded because the failure mode is
+  now the most frequent one on this record — **an implausible number reports on
+  the harness, not the data** — and because both corrections came from reading
+  the artifact rather than grepping for a string I assumed would be in it.
