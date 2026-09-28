@@ -174,9 +174,33 @@ if (demoted) console.log(`demoted ${demoted} junk-named confident entries (store
  * one on weak evidence.
  *
  * Not a PARSER_VERSION change: it needs no re-parse and takes effect on the
- * next merge. */
+ * next merge.
+ *
+ * VOCABULARY WIDENED 2026-09-28, and the diagnosis is the one this record
+ * keeps arriving at from the other side: the MECHANISM was right and one
+ * dimension of it was too narrow. Found by the 10:0xZ participant-weighted
+ * draw — Starbucks (307,988 participants) stores `Target Date Funds Vanguard`
+ * on the first row under its target-date heading, and the caption escaped
+ * because only vehicle labels were listed. Measured store-wide against the
+ * v188 store, the escapees are 707 rows / 231 plans / 862,093 ppl, and the
+ * dominant one is not a vehicle label at all: a bare leading `Company`, 569
+ * rows, the tail of a wrapped `… Trust Company` landing at the front of the
+ * next row's issuer.
+ *
+ * WIDENING THIS IS SAFE BY CONSTRUCTION, which is why it is a vocabulary
+ * change and not a new rule: the strip still happens only where the REMAINDER
+ * stands alone as a complete issuer elsewhere in the store. `Company Vanguard
+ * Fiduciary Trust` strips because `Vanguard Fiduciary Trust` stands alone; a
+ * firm actually named `Company of New York` would leave `of New York`, which
+ * stands alone nowhere. The empirical gate does the work the vocabulary
+ * cannot.
+ *
+ * DELIBERATELY NOT ADDED: bare `Growth`, `Value`, `Index`, `International`.
+ * They are 3 rows each in the measurement and `Value Line` is a real house —
+ * nine rows is not worth a vocabulary arm that has to be right about a firm
+ * name. The escapee count is therefore a FLOOR and is stated as one. */
 {
-  const SECTION_HEAD = /^(?:master trust(?: investment account)?|common[\/ ]?collective trusts?|collective (?:investment )?trusts?|pooled separate accounts?|separate accounts?|registered investment compan(?:y|ies)(?: shares)?|mutual funds?|common stocks?|corporate (?:debt|stock)s?|government securities|interest[- ]bearing cash|real estate|103[- ]12 investments?)\s+(?=\S)/i;
+  const SECTION_HEAD = /^(?:master trust(?: investment account)?|common[\/ ]?collective trusts?|collective (?:investment )?trusts?|pooled separate accounts?|separate accounts?|(?:shares of )?registered investment compan(?:y|ies)(?: shares)?|mutual funds?(?:,? at fair value)?|common stocks?|corporate (?:debt|stock)s?|government securities|interest[- ]bearing cash|real estate|103[- ]12 investments?|compan(?:y|ies)|target[- ]date funds?|group annuity contracts?|guaranteed (?:interest|investment) contracts?|cash(?: and mutual funds?)?)\s+(?=\S)/i;
   const norm = (x) => String(x).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
   /* pass 1: how often does each issuer value stand ALONE across the store? */
   const standalone = new Map();
@@ -199,6 +223,18 @@ if (demoted) console.log(`demoted ${demoted} junk-named confident entries (store
         if (!m) continue;
         const rest = v.slice(m[0].length).trim();
         if (rest.length < 3 || !standalone.get(norm(rest))) continue;
+        /* THE REMAINDER MUST STILL LOOK LIKE A FIRM, and this line exists
+         * because the widened vocabulary produced two dangling fragments in
+         * its first draft — `Cash equivalents` -> `equivalents` (5 rows) and
+         * `Company of America` -> `of America` (5 rows). Both cleared the
+         * standalone gate, which is the more interesting half: a floor of ONE
+         * means a single already-damaged row LICENSES the same damage
+         * elsewhere, so the gate can be fed by its own mistakes. An issuer is
+         * a firm name and begins with a capital or a digit; a fragment left
+         * behind by an over-eager cut begins lowercase. Ten rows, caught by
+         * printing every distinct transformation rather than the count — the
+         * count looked clean at 809. */
+        if (!/^[A-Z0-9]/.test(rest)) continue;
         f.iss = rest; fixed++; fixedAcks.add(ack);
       }
     }
