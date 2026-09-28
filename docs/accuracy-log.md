@@ -24392,3 +24392,38 @@ handed to the next cycle rather than shipped at 00:3xZ without a member read of
   see should judge what readers see — but it moves a gate that raises a HIGH on
   every merge, and this fix changes the population underneath it. Re-measure
   after this store settles rather than moving both at once.
+
+## 2026-09-28 (06:0xZ) — REOPENED: the filed ticker in the holding name is 1,341,198 participants, not 1,305
+
+- From the weighted draw (Gulf Coast Restaurant 1,256 ppl, Emory University
+  35,748, Boeing 216,698 — ratios 0.936 / 0.895 / 0.981, all three clean).
+  Emory publishes **`QCSTIX CREF Stock R3`** and `QCSCIX CREF Social Choice R3`:
+  **the ticker is welded to the front of the filed name and we publish no
+  ticker at all.**
+- This record **closed that class in the negative on 2026-09-16** — *"filed
+  tickers size to 1,305 participants"*. Emory alone is 35,748 with two such
+  rows, so the figure was checked rather than inherited. Re-derived against the
+  v188 store through the display path: **1,066 rows / 136 plans / 1,341,198
+  participants / $5,240,880,101.** Largest: JPMorgan Chase 299,277, Boeing
+  216,698, Mass General Brigham 131,090, Capital One 66,717, Abbott 60,382.
+  **A thousand times the recorded number.** Whether it was wrong then or has
+  grown since, the closure does not hold and the class is reopened.
+- The filing states the symbol itself — `VCSAX - Vanguard Consumer Staples
+  Index`, `RNPGX - American Funds New Perspective R6`, `FPADX - Fidelity
+  Emerging Markets Index` — so unlike the American Funds target-date gap this
+  one **needs no external sourcing**, which is rare among the open ticker items.
+- **The risk is named and it is the one this record already carries.** A bare
+  five-character token ending in X is the US open-end convention, but it is
+  also the shape of an OCR'd Empower vintage code: `LIHKX`, `LINKX`, `LIPKX`
+  differ by one middle letter and are internal series, not tickers. *"A
+  five-character internal code colliding with a real ticker would publish a
+  wrong fund and a wrong expense ratio."* So the leading shape alone is not a
+  licence.
+- **The discriminator this population has and the Empower one lacked:** a
+  readable fund name follows. `VCSAX - Vanguard Consumer Staples Index` names
+  its fund; `1JLGMX` names nothing. A safe rule likely requires the remainder
+  to resolve, or at least to name a HOUSE consistent with the symbol — which is
+  a design that wants its own measurement and its own controls rather than the
+  tail of a cycle.
+- **Not started here.** Recorded with its size corrected, its risk named and a
+  discriminator sketched, which is what the next cycle needs to decide it.
