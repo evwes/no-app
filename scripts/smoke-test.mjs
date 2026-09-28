@@ -294,6 +294,95 @@ try {
   }, nameCases);
   if (!nameGot) fail("app.js no longer exposes __wampoCleanFiledName — the filed-name cleaner cannot be cross-checked");
 
+  /* THE GENERIC-NAME PREDICATE, tethered 2026-09-28, and this one is GENERATED
+   * rather than hand-twinned. lib-4i derives GENERIC_TYPE_ANY from
+   * GENERIC_TYPE_NAME by two asserted string replacements, so it is a DERIVED
+   * pattern; app.js carries the COMPILED source written in by a script. That
+   * removes the transcription risk and leaves exactly one risk in its place —
+   * that the derivation in lib-4i changes and the generated copy is not
+   * regenerated. This is the check for that, and it is why the copy may be
+   * generated at all.
+   *
+   * The cases are the ones v188 pinned as decoys plus the real funds that must
+   * survive: a strip that removes only non-identifying wrappers cannot reach a
+   * name that identifies something. */
+  const { isGenericTypeName } = await import("./lib-4i.mjs");
+  const genCases = ["Mutual funds", "Mutual Fund Shares", "Registered Investment Company",
+    "Common collective trust", "Shares of registered investment companies",
+    "Sub-total: Registered Investment Companies", "DESCRIPTION: POOLED SEPARATE ACCOUNT",
+    "Mutual fund shares", "Pooled separate accounts", "Guaranteed investment contract",
+    /* THE DERIVED ARMS, and these are the whole point. My first draft of this
+     * tether was GREEN when the v187 `commingled` arm was deleted from the
+     * generated copy, because not one case exercised it — a check that cannot
+     * fail is decorative, which this record has paid for before. GENERIC_TYPE_ANY
+     * differs from GENERIC_TYPE_NAME in exactly two ways and both are pinned
+     * here: v137's PLURALISATION (`trusts`, `collective trust funds`) and
+     * v187's EXTRAS (`commingled … funds`, `pooled separate account funds`). */
+    "Commingled funds", "Commingled trust funds", "Commingled investment funds",
+    "Pooled separate account funds", "Collective trust funds", "Common collective trusts",
+    /* must NOT be generic — real funds, including v188's pinned controls */
+    "Fidelity 500 Index Fund", "Vanguard Target Retirement 2030",
+    "AMERICAN FUNDS BLANC MUTUAL FUND", "Mutual of America MUTUAL FUND",
+    "Separate Account A, at fair value", "Fidelity Government Money Market Fund",
+    "Vanguard tax-Managed Balanced Fund Admiral Shares Registered Investment Company"];
+  const genGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoGenericName !== "function") return null;
+    return cs.map((n) => window.__wampoGenericName(n));
+  }, genCases);
+  if (!genGot) fail("app.js no longer exposes __wampoGenericName — the generated generic-name twin cannot be cross-checked");
+  const genDrift = genCases.filter((n, i) => isGenericTypeName(n) !== genGot[i]);
+  if (genDrift.length) {
+    for (const n of genDrift) console.error(`  ${JSON.stringify(n)}  app.js=${genGot[genCases.indexOf(n)]}  lib-4i=${isGenericTypeName(n)}`);
+    fail(`the generated generic-name twin in app.js disagrees with scripts/lib-4i.mjs on ${genDrift.length} of ${genCases.length} names — regenerate it`);
+  }
+  for (const n of genCases.slice(0, 16))
+    if (!isGenericTypeName(n)) fail(`generic-name predicate no longer recognises an asset-class label: ${JSON.stringify(n)}`);
+  for (const n of genCases.slice(16))
+    if (isGenericTypeName(n)) fail(`generic-name predicate now calls a REAL FUND generic: ${JSON.stringify(n)}`);
+
+  /* AND THE ROW DECISION, which is the half the name test cannot see. Whether
+   * a row is "nameless" is the generic-name question MINUS four exclusions —
+   * employer stock, participant loans, a filed subtotal, a brokerage window —
+   * and each of those is the difference between a true qualifier and a false
+   * one. The rule is canonical in lib-disclose and extracted verbatim into
+   * app.js; the static generator imports it directly, so these three surfaces
+   * cannot disagree without this failing.
+   *
+   * Every case below is chosen to exercise ONE arm, and the last two are the
+   * pair that matters most: the same name, generic on its own, excluded by the
+   * type in one row and not the other. */
+  const rowCases = [
+    { name: "Mutual funds", type: "Mutual fund" },
+    { name: "Common/collective trust funds", type: "" },
+    { name: "Sub-total: Registered Investment Companies", type: "" },
+    { name: "Registered Investment Companies", type: "Mutual fund" },
+    { name: "Fidelity 500 Index Fund", type: "Mutual fund" },
+    { name: "Vanguard Target Retirement 2030", type: "Mutual fund" },
+    { name: "COMMON STOCK", type: "Employer security" },
+    { name: "Company stock fund", type: "" },
+    { name: "Participant loans", type: "" },
+    { name: "Notes receivable from participants", type: "" },
+    { name: "Self-Directed Brokerage Account", type: "" },
+    { name: "BrokerageLink", type: "" },
+    { name: "Mutual funds", type: "Subtotal (not a holding)" },
+    { name: "Mutual funds", type: "Brokerage window" },
+  ];
+  const { isNamelessFundRow } = await import("./lib-disclose.mjs");
+  const rowGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoNamelessRow !== "function" || typeof window.__wampoGenericName !== "function") return null;
+    return cs.map((r) => window.__wampoNamelessRow(r, r.name, window.__wampoGenericName));
+  }, rowCases);
+  if (!rowGot) fail("app.js no longer exposes __wampoNamelessRow — the nameless-row twin cannot be cross-checked");
+  const rowDrift = rowCases.filter((r, i) => isNamelessFundRow(r, r.name, isGenericTypeName) !== rowGot[i]);
+  if (rowDrift.length) {
+    for (const r of rowDrift) console.error(`  ${JSON.stringify(r)}  app.js=${rowGot[rowCases.indexOf(r)]}  lib-disclose=${isNamelessFundRow(r, r.name, isGenericTypeName)}`);
+    fail(`the nameless-row twin in app.js disagrees with scripts/lib-disclose.mjs on ${rowDrift.length} of ${rowCases.length} rows — regenerate it`);
+  }
+  for (const r of rowCases.slice(0, 4))
+    if (!isNamelessFundRow(r, r.name, isGenericTypeName)) fail(`nameless-row rule no longer flags a filing that names no fund: ${JSON.stringify(r)}`);
+  for (const r of rowCases.slice(4))
+    if (isNamelessFundRow(r, r.name, isGenericTypeName)) fail(`nameless-row rule would tell a reader "no specific fund" about a row that IS identified: ${JSON.stringify(r)}`);
+
   /* THE PARTICIPANT-LOAN PREDICATE, tethered 2026-09-28. It lives twice —
    * canonical in scripts/lib-disclose.mjs for the crawlable pages, twinned in
    * app.js for the report — so the two are held together the way the filed-name

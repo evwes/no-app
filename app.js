@@ -779,6 +779,53 @@
     s = s.replace(/[\s\-–,;:]+$/, "").trim();
     return /[A-Za-z]{3}/.test(s) ? s : String(name).trim();
   }
+  /* GENERATED FROM scripts/lib-4i.mjs — DO NOT EDIT BY HAND.
+   * lib-4i derives GENERIC_TYPE_ANY from GENERIC_TYPE_NAME by two asserted
+   * replacements, so it is a DERIVED pattern and transcribing it is the move
+   * this record says produces wrong answers. The source below is the COMPILED
+   * regex, written here by a script, and `smoke-test.mjs` compares this copy
+   * against lib-4i's own export on every push — a change to the derivation
+   * shows up as drift, not as silence.
+   * Regenerate: node <scratch>/gentwin.mjs */
+  const GENERIC_TYPE_ANY = new RegExp("^(?:total )?(?:registered investment compan(?:y|ies)|(?:common[\\/ ]?)?collective (?:investment )?trusts?(?: funds?| portfolios?)?|collective trust funds?|mutual funds?|common (?:and preferred )?stocks?|corporate stocks?|pooled separate accounts?|separate accounts?|guaranteed (?:investment|interest) contracts?|group annuity contracts?|commingled (?:trust |investment )?funds?|pooled separate account funds?)$", "i");
+  const GENERIC_DECO = [
+    [/^(?:sub[- ]?total|total)\s*[:.]?\s+/i, ""],
+    [/^description\s*:\s*/i, ""],
+    [/^shares\s+(?:of|in)\s+/i, ""],
+    [/^(?:individual|managed|master|annuity|variable annuity in)\s+/i, ""],
+    [/\s*[:;.]+$/, ""],
+    [/[,;]?\s*at fair value$/i, ""],
+    [/\s+shares$/i, ""],
+    [/[,;]?\s*dividends?\s*\/\s*interest reinvested$/i, ""],
+    [/\s+not required$/i, ""],
+    [/\s+[a-z]$/, ""],
+  ];
+  function stripGenericDecoration(name) {
+    let s = String(name || "").trim();
+    for (let i = 0; i < 8; i++) {
+      const before = s;
+      for (const [re, to] of GENERIC_DECO) s = s.replace(re, to);
+      s = s.trim();
+      if (s === before) break;
+    }
+    return s;
+  }
+  function isGenericName(n) {
+    const s = String(n || "").trim();
+    if (!s) return false;
+    return GENERIC_TYPE_ANY.test(s) || GENERIC_TYPE_ANY.test(stripGenericDecoration(s));
+  }
+  window.__wampoGenericName = isGenericName;  // read by the smoke test only
+  function isNamelessFundRow(f, cleanedName, isGenericName) {
+    const type = String((f && f.type) || "");
+    const name = String(cleanedName || (f && f.name) || "");
+    if (/^subtotal \(not a holding\)$/i.test(type)) return false;
+    if (/brokerage window/i.test(type)) return false;
+    if (/company stock|employer (security|stock)/i.test(type + " " + name)) return false;
+    return !!isGenericName(name);
+  }
+
+  window.__wampoNamelessRow = isNamelessFundRow;  // read by the smoke test only
   window.__wampoCleanFiledName = cleanFiledName;
   window.__wampoLoanRow = (n) => LOAN_ROW.test(String(n || "").trim());  // read by the smoke test only
   /* Misspellings of a fund HOUSE that appear in filed 4i schedules, each one
@@ -1865,7 +1912,32 @@
       // tint it so it reads as a doorway, not a fund (owner request)
       const brokRow = /brokerage window/i.test(f.type || "")
         || /brokerage|self.?directed|self.?managed|brokeragelink|\bpcra\b/i.test(f.name);
+      /* THE FILING NAMED NO FUND, AND THE TYPE CELL WAS REPEATING THE NAME.
+       * A bare vehicle type as the whole name — `Mutual funds`,
+       * `Common/collective trust funds`, decorated variants such as
+       * `Sub-total: Registered Investment Companies` — leaves a reader seeing
+       * `Mutual funds` in the name column and `Mutual fund` in the type
+       * column: the same word twice and nothing about what the money is in.
+       * A large share of these rows are >=50% of their plan's published menu,
+       * which is the v105 dominant-row shape sitting below the 90% guard.
+       *
+       * Nothing can be recovered — the filing says `Mutual funds` and stops.
+       * So say THAT, which is itself a filed fact, in the cell that was
+       * redundant. The name, the value and the percentage are untouched.
+       *
+       * The exclusions live in `isNamelessFundRow` in scripts/lib-disclose.mjs
+       * because the static pages need exactly the same ones and a second copy
+       * is how two surfaces drift. The ISSUER test stays HERE and deliberately
+       * does not move into the shared rule: it is not a property of the row,
+       * it is a property of THIS surface, which prints the issuer before the
+       * name — so `Vanguard Target Retirement 2030 · Mutual Fund Shares` reads
+       * as a named holding and must not be qualified. The generator prints the
+       * issuer too as of this change, so the two agree; if one ever stopped,
+       * the shared rule would still be right and only this line would move. */
+      const namelessRow = !String(f.iss || "").replace(/\*+/g, "").trim()
+        && isNamelessFundRow(f, f.name, isGenericName);
       const shownType = loanRow ? "Participant loans — not a menu choice"
+        : namelessRow ? "Filing names no specific fund"
         : f.type || (brokRow ? "Brokerage window" : "—");
       return `
       <tr${brokRow || subtotalRow || loanRow ? ` class="row-brokerage"` : ""}>

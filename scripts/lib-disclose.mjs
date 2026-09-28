@@ -582,3 +582,49 @@ export const LOAN_ROW = /^(?:participant[- ]?)?loans?(?:\s*(?:fund|receivable|to
 export function isParticipantLoanRow(name) {
   return LOAN_ROW.test(String(name || "").trim());
 }
+
+/* THE FILING NAMED NO FUND — one decision, asked by both display paths.
+ *
+ * A row whose whole name is a bare vehicle type (`Mutual funds`,
+ * `Common/collective trust funds`, decorated variants such as `Sub-total:
+ * Registered Investment Companies`) identifies nothing. The report can say so
+ * in its type column; the static page has no type column and must say it in
+ * the name. Either way the same four shapes must be EXCLUDED, and each
+ * exclusion is load-bearing rather than cosmetic:
+ *
+ *   - employer stock — `COMMON STOCK` is 110 of these rows store-wide and both
+ *     surfaces already carry the PLAN'S OWN ticker for it, so the filing does
+ *     identify the holding and "no specific fund" would be false;
+ *   - a row the FILING calls a subtotal (v181, 2 rows) and one typed as a
+ *     brokerage window — both already say what they are.
+ *
+ * THERE IS NO LOAN ARM AND NO BROKERAGE-BY-NAME ARM, and their absence is
+ * measured rather than an oversight. Both were written, and the negative
+ * control on the second FAILED TO FAIL: removing it left every test green.
+ * The reason is structural — a name must be a bare vehicle type before any
+ * exclusion is reached, and `Participant loans` and `Self-Directed Brokerage
+ * Account` are not vehicle types, so neither arm can ever be asked. Measured
+ * across all 912 published rows whose cleaned name is generic: subtotal 2,
+ * employer stock 110, brokerage-by-type 0, brokerage-by-name 0, loans 0. The
+ * two that cannot fire are gone; carrying unreachable code as though it were
+ * protecting someone is how a guard's absence gets mistaken for its presence.
+ *
+ * THE ISSUER IS NOT AN EXCLUSION HERE, and that is the correction this
+ * function exists to make. app.js excluded any row carrying an issuer because
+ * app.js PRINTS the issuer before the name, so `Vanguard · Mutual Fund Shares`
+ * reads as a named holding. The static generator printed the name alone, so
+ * the same row was nameless there — the exclusion was sound for one surface
+ * and wrong for the other. The generator now prints the issuer too, which is
+ * what makes one shared rule correct for both.
+ *
+ * Takes the row and its already-cleaned display name, because the two callers
+ * clean at different points. app.js keeps a twin (browser script, no modules);
+ * `smoke-test.mjs` runs the browser copy against this one and fails on drift. */
+export function isNamelessFundRow(f, cleanedName, isGenericName) {
+  const type = String((f && f.type) || "");
+  const name = String(cleanedName || (f && f.name) || "");
+  if (/^subtotal \(not a holding\)$/i.test(type)) return false;
+  if (/brokerage window/i.test(type)) return false;
+  if (/company stock|employer (security|stock)/i.test(type + " " + name)) return false;
+  return !!isGenericName(name);
+}

@@ -10,7 +10,8 @@
  * EIN-PN (stable forever, no orphans when a sponsor renames). */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { matchQuoteOk } from "./lib-quote.mjs";
-import { coverageBand, filedUnit, cleanFiledName, isParticipantLoanRow } from "./lib-disclose.mjs";
+import { coverageBand, filedUnit, cleanFiledName, isParticipantLoanRow, isNamelessFundRow } from "./lib-disclose.mjs";
+import { isGenericTypeName } from "./lib-4i.mjs";
 
 const BASE = "https://evwes.github.io/no-app"; // becomes the custom domain when DNS lands
 const TOP_N = 5000;
@@ -187,9 +188,27 @@ for (const r of d.plans.slice(0, TOP_N)) {
    * as a fund a member could pick. 18 pages / 282,081 participants on the v188
    * store. Say it in the name instead; the value stays, so the money is still
    * accounted for (the report's treatment, and v181's before it). */
+  /* THE ISSUER WAS BEING THROWN AWAY ON EVERY STATIC PAGE — 16,572 rows /
+   * 2,229 pages / 27,249,112 participants on the v188 store. The 4i identity
+   * column is a filed fact and the report has printed it before the name since
+   * v126, so `VANGUARD · INSTITUTIONAL 500 INDEX TRUST` rendered here as
+   * `Institutional 500 Index Trust`, attributed to nobody. That is the same
+   * two-display-paths divergence as the filed-name cleaner (2026-09-27) and
+   * the false-precision note, found the same way: by asking what this surface
+   * does with a field rather than assuming it does what the report does.
+   *
+   * It also decides the line below it. A row named `Mutual Fund Shares` whose
+   * issuer reads `Vanguard Target Retirement 2030` is a NAMED holding in the
+   * report and was a nameless one here — so the report's issuer exclusion
+   * could not simply be copied over. Printing the issuer is what makes one
+   * shared rule honest on both surfaces. */
   const fundRows = funds ? funds.map((f) => {
     const nm = cleanFiledName(f.name);
-    const label = titleCase(nm) + (isParticipantLoanRow(nm) ? " — participant loans, not a menu choice" : "");
+    const iss = String(f.iss || "").replace(/\*+/g, "").trim();
+    const nameless = !iss && isNamelessFundRow(f, nm, isGenericTypeName);
+    const label = (iss ? titleCase(iss) + " · " : "") + titleCase(nm)
+      + (isParticipantLoanRow(nm) ? " — participant loans, not a menu choice" : "")
+      + (nameless ? " — the filing names no specific fund" : "");
     return `<tr><td>${esc(label)}</td><td class="num">${usd(f.value || 0)}</td></tr>`;
   }).join("") : "";
   const provRows = fee && fee.p ? fee.p.slice(0, 6).map((p) =>
