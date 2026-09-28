@@ -267,6 +267,12 @@ try {
     "Pooled Separate Account, TIAA Real Estate",
     "Money market fund, Fidelity Govt Money Market Fund",
     "Mutual Fund, The Growth Fund of America",
+    /* the leading-parenthetical family, 2026-09-28 */
+    "Mutual funds (continued) Dodge & Cox International Stock Fund",
+    "MUTUAL FUNDS (Continued) FID FREEDOM 2060 K",
+    "Mutual Funds (at fair value) American Century Value Fund",
+    "Stable Value Fund (i)",
+    "Mutual Funds (TIAA-CREF, not certified) CREF Stock R1",
     /* the bare-whitespace family, 2026-09-28 */
     "Registered Investment Company Vanguard Inter-Term Bnd Index Fd Adm",
     "Common/Collective Trust Prin LifeTime Hybr 2035 CIT Z",
@@ -348,6 +354,28 @@ try {
     ["Common/Collective Trust Funds (Continued) T. Rowe Price Retire 2030 Trust Fund", "Common/Collective Trust Funds (Continued) T. Rowe Price Retire 2030 Trust Fund"],
     ["Mutual Funds Trust Growth Fund Investor", "Mutual Funds Trust Growth Fund Investor"],
     ["Index Fund account T. Rowe Price Retirement Balanced I", "Index Fund account T. Rowe Price Retirement Balanced I"],
+    /* THE LEADING-PARENTHETICAL ARM, and every control here came out of reading
+     * all 125 distinct members rather than out of a guess. The strippable half
+     * is page furniture in front of a real fund name; the refused half either
+     * IS the parenthetical (strip it and a bare vehicle type is all that is
+     * left) or carries information the remainder never repeats — the HOUSE in
+     * `(TIAA-CREF, not certified)`, a vehicle designation in `(Stable Value
+     * Fund)` and `(Group Annuity Contract)`. That is why the arm allowlists
+     * what may be stripped instead of blocklisting what may not. */
+    ["Mutual funds (continued) Dodge & Cox International Stock Fund", "Dodge & Cox International Stock Fund"],
+    ["MUTUAL FUNDS (Continued) FID FREEDOM 2060 K", "FID FREEDOM 2060 K"],
+    ["Mutual Funds (at fair value) American Century Value Fund", "American Century Value Fund"],
+    ["Mutual Funds (Certified) Fidelity Advisor New Insights Z", "Fidelity Advisor New Insights Z"],
+    ["Collective Investment Trust (Net Asset Value Practical Expedient) Fidelity Managed Income", "Fidelity Managed Income"],
+    ["Stable Value Fund (i)", "Stable Value Fund (i)"],
+    ["Stable Value Fund (at fair value)", "Stable Value Fund (at fair value)"],
+    ["Stable Value Fund (Class R1)", "Stable Value Fund (Class R1)"],
+    ["Stable Value Fund (75 BPS)", "Stable Value Fund (75 BPS)"],
+    ["Collective investment trusts (NAV)", "Collective investment trusts (NAV)"],
+    ["Money Market Fund (GMZXX)", "Money Market Fund (GMZXX)"],
+    ["Stable Value Fund (Group Annuity Contract), at contract value", "Stable Value Fund (Group Annuity Contract), at contract value"],
+    ["Mutual Funds (TIAA-CREF, not certified) CREF Stock R1", "Mutual Funds (TIAA-CREF, not certified) CREF Stock R1"],
+    ["Collective Investment Trust (Stable Value Fund) - Federated Capital Preservation Fund", "Collective Investment Trust (Stable Value Fund) - Federated Capital Preservation Fund"],
     /* and the three the typed house list of the previous cycle would have missed */
     ["Registered Investment Company PGIM Ttl Ret Bond R2 Fund", "PGIM Ttl Ret Bond R2 Fund"],
     ["Registered Investment Company Am Fds EuroPacific Grth R6 Fd", "Am Fds EuroPacific Grth R6 Fd"],

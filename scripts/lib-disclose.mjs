@@ -463,16 +463,54 @@ export function cleanFiledName(name) {
    * `invested in stocks…` until `invested` joined the furniture — a control
    * written last cycle caught this cycle's draft, which is what controls are
    * for. 2,369 rows / 237 plans / 305,540 ppl, +10 tickers, 0 lost. */
+  /* ONE remainder screen, asked by both the bare-whitespace arm and the
+   * parenthetical arm below. A second copy of a shipped predicate has
+   * produced a wrong answer on this record at least four times, so the two
+   * arms share this rather than each carrying their own. */
+  const bwOpensWithAName = (t0) => {
+    const furniture = /^(?:class(?:es)?|cl|fee|fees|series|ser|shares?|sh|units?|tier|lot|level|at|of|in|on|for|and|or|as|to|with|per|net|the|a|an|value|values|fair|contract|market|cost|book|nav|bps|no|not|required|omitted|available|na|none|total|subtotal|held|directed|participant|participants|self|various|other|misc|continued|cont|certified|uncertified|approx|approximate|number|amount|wrapper|cit|gac|invested|issued|managed|measured|consisting|comprised|including|investments|funds?|trusts?|accounts?|compan(?:y|ies)|portfolios?)$/i;
+    const code = /^(?:[ivxl]{1,4}|[a-z]|[a-z]?\d{1,6}[a-z]?|[a-z]{1,2}\d{1,4}|\d+bps)$/i;
+    return !!t0 && !furniture.test(t0) && !code.test(t0);
+  };
   const bwTYPE = /^(?:common\/?collective trusts?(?: funds?)?|collective investment trusts?(?: funds?)?|registered investment compan(?:y|ies)|pooled separate accounts?|separate accounts?|mutual funds?|money market funds?|stable value funds?|index funds?|target date funds?)/i;
   const bm = s.match(new RegExp(bwTYPE.source + "\\s+(?=[A-Za-z0-9])", "i"));
   if (bm) {
     const rest = s.slice(bm[0].length).trim();
     const toks = rest.split(/\s+/);
     const t0 = toks[0].replace(/[^A-Za-z0-9&]/g, "");
-    const furniture = /^(?:class(?:es)?|cl|fee|fees|series|ser|shares?|sh|units?|tier|lot|level|at|of|in|on|for|and|or|as|to|with|per|net|the|a|an|value|values|fair|contract|market|cost|book|nav|bps|no|not|required|omitted|available|na|none|total|subtotal|held|directed|participant|participants|self|various|other|misc|continued|cont|certified|uncertified|approx|approximate|number|amount|wrapper|cit|gac|invested|issued|managed|measured|consisting|comprised|including|investments|funds?|trusts?|accounts?|compan(?:y|ies)|portfolios?)$/i;
-    const code = /^(?:[ivxl]{1,4}|[a-z]|[a-z]?\d{1,6}[a-z]?|[a-z]{1,2}\d{1,4}|\d+bps)$/i;
-    if (toks.length >= 4 && t0 && !furniture.test(t0) && !code.test(t0)
+    if (toks.length >= 4 && bwOpensWithAName(t0)
         && !bwTYPE.test(rest) && /[A-Za-z]{3}/.test(rest)) s = rest;
+  }
+  /* THE LEADING-PARENTHETICAL FAMILY, 2026-09-28. All 125 distinct members
+   * were READ, not sampled — 132 rows / 118 plans / 363,990 ppl — and the
+   * split is structural rather than lexical: does anything survive the
+   * parenthetical?
+   *
+   *   98 rows / 236,197 ppl have a real fund name after it, almost always
+   *      behind a page break's `(continued)` — `Mutual funds (continued)
+   *      Dodge & Cox International Stock Fund`.
+   *   34 rows / 127,793 ppl ARE the parenthetical — `Stable Value Fund (i)`,
+   *      `(at fair value)`, `(NAV)`, `(Class R1)`, `(75 BPS)`. Stripping any
+   *      of those leaves a bare vehicle type, which is strictly WORSE than
+   *      what is published today, so they are refused by construction: the
+   *      remainder screen below requires a name to follow.
+   *
+   * The parenthetical must be NON-IDENTIFYING, and that is an allowlist
+   * rather than a blocklist because three members of the strippable half
+   * would be damaged by a blanket rule and each carries real information a
+   * blocklist would have to anticipate: `(TIAA-CREF, not certified)` holds
+   * the HOUSE, `(Stable Value Fund)` and `(Group Annuity Contract)` hold a
+   * vehicle designation the remainder never repeats. An allowlist refuses all
+   * three without naming them. */
+  const pm2 = s.match(new RegExp(bwTYPE.source + "\\s*\\(([^)]*)\\)\\s*(?=[A-Za-z0-9])", "i"));
+  if (pm2) {
+    const inner = pm2[1].trim();
+    const nonIdentifying = /^(?:continued|continucd|cont\.?|certified|participant[- ]?directed|nonparticipant[- ]?directed|(?:at\s+)?fair value|net asset value practical expedient|nav|held by .+)$/i;
+    const rest = s.slice(pm2[0].length).trim();
+    const toks = rest.split(/\s+/);
+    const t0 = toks[0].replace(/[^A-Za-z0-9&]/g, "");
+    if (nonIdentifying.test(inner) && toks.length >= 2 && bwOpensWithAName(t0)
+        && /[A-Za-z]{3}/.test(rest)) s = rest;
   }
   // the leading-dash strip at the top of this function runs BEFORE the type
   // prefix above, so "Stable Value Fund- — John Hancock Life Insurance
