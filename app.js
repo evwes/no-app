@@ -867,6 +867,29 @@
   }
 
   window.__wampoNamelessRow = isNamelessFundRow;  // read by the smoke test only
+  const LOAN_DESC_RANGE = /\brates?\b[^.;]{0,40}?\b(?:rang(?:e|es|ing)|between|vary|varying|from)\b|\b\d+(?:\.\d+)?\s*%?\s*(?:to|[-–—])\s*\d+(?:\.\d+)?\s*%|\bfrom\s+\d+(?:\.\d+)?\s*%\s*(?:to|[-–—])/i;
+  const LOAN_DESC_WORDS = /\b(?:participants?|participation|loans?|notes?|promissory|receivable|outstanding|balances?|interest|rates?|ranging|range|ranges|rang|between|varying|various|vary|varies|bearing|earning|carrying|accruing|maturing|maturity|maturities|due|payable|dated?|dates|through|until|to|from|at|with|of|and|or|the|a|an|per|annum|annually|percent|pct|secured|collateralized|collateral|by|vested|terms?|years?|months?|less|more|than|generally|stated|fixed|variable|cost|no|later|amounts?|extending|into|repayment|plan|in|on|all|up)\b/gi;
+  const LOAN_DESC_MONTHS = /\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\b/gi;
+
+  function loanDescriptionResidue(name) {
+    return String(name || "")
+      .replace(/\d+(?:\.\d+)?\s*%/g, " ")
+      .replace(/\b(?:19|20)\d{2}\b/g, " ")
+      .replace(/\b\d+(?:\.\d+)?\b/g, " ")
+      .replace(LOAN_DESC_MONTHS, " ")
+      .replace(LOAN_DESC_WORDS, " ")
+      .replace(/[^A-Za-z]+/g, " ")
+      .trim()
+      .split(/\s+/)
+      .filter((t) => t.length >= 2);
+  }
+  function isLoanDescriptionRow(name) {
+    const s = String(name || "").trim();
+    if (!s || !/\d/.test(s) || !LOAN_DESC_RANGE.test(s)) return false;
+    return loanDescriptionResidue(s).length === 0;
+  }
+
+  window.__wampoLoanDescRow = isLoanDescriptionRow;  // read by the smoke test only
   window.__wampoCleanFiledName = cleanFiledName;
   window.__wampoLoanRow = (n) => LOAN_ROW.test(String(n || "").trim());  // read by the smoke test only
   /* Misspellings of a fund HOUSE that appear in filed 4i schedules, each one
@@ -1859,7 +1882,7 @@
        * rows from `total` can only RAISE the ratio — and measured: 3 plans /
        * 2,255 ppl newly publish an average-ER line, 0 lose one, and not one
        * published ER VALUE changes, because loans were never in the numerator. */
-      if (LOAN_ROW.test(f.name || "")) continue;
+      if (LOAN_ROW.test(f.name || "") || isLoanDescriptionRow(f.name || "")) continue;
       total += f.value;
       const er = (f.cit || /collective trust|pooled separate/i.test(f.type || "")) ? null : fundER(f.name);
       if (er != null) { matchedVal += f.value; weighted += er * f.value; matched++; }
@@ -1924,7 +1947,16 @@
        * is at most 10.9% of a menu and usually 1-3%; removing them would
        * rewrite every other row's published percentage for 1.37M readers to
        * buy a cosmetic gain. */
-      const loanRow = LOAN_ROW.test(f.name || "");
+      /* ...and the same row when the parse kept only the DESCRIPTION's
+       * continuation line, so the name never says "loan" at all: Nissan's
+       * `at rates of interest ranging from 4.25% to` at $63,385,312. LOAN_ROW
+       * is anchored on the name beginning with loan words and cannot reach it;
+       * `isLoanDescriptionRow` asks what is LEFT after the loan description is
+       * stripped. 627 rows / 627 plans / 1,394,114 ppl, and in 626 of those
+       * plans it is the menu's ONLY loan row — which is the filing's own
+       * structure agreeing with the reading. */
+      const descLoanRow = isLoanDescriptionRow(f.name || "");
+      const loanRow = LOAN_ROW.test(f.name || "") || descLoanRow;
       /* v67 entries carry the 4i identity column as f.iss ("Vanguard",
        * "Western Asset"). Ticker matching sees issuer + name together, which
        * is what makes "Core Bond IS" resolvable at all; entries parsed
@@ -1977,12 +2009,27 @@
        * the shared rule would still be right and only this line would move. */
       const namelessRow = !String(f.iss || "").replace(/\*+/g, "").trim()
         && isNamelessFundRow(f, f.name, isGenericName);
-      const shownType = loanRow ? "Participant loans — not a menu choice"
+      /* when the NAME cell has been replaced with `Participant loans`, the type
+       * must not say it again — `Participant loans | Participant loans — not a
+       * menu choice` is the same phrase twice, which is the exact redundancy
+       * the nameless-row change removed one cycle ago. v181's rows keep their
+       * filed names, so for those the full qualifier still carries the fact. */
+      const shownType = descLoanRow ? "Not a menu choice"
+        : loanRow ? "Participant loans — not a menu choice"
         : namelessRow ? "Filing names no specific fund"
         : f.type || (brokRow ? "Brokerage window" : "—");
+      /* THE NAME IS REPLACED HERE AND NOWHERE ELSE IN THE LOAN FAMILY.
+       * v181's rows are NAMED (`LOAN FUND`, `Notes receivable from
+       * participants`) and keep their names — typing them was enough. These
+       * rows are a wrapped description's second line, so `at rates of interest
+       * ranging from 4.25% to` in a column headed "Fund" is not a fact about
+       * the plan, it is an artefact of our own parse. Saying `Participant
+       * loans` states what the filing's row IS; the value and the percentage
+       * are untouched, so the money stays accounted for exactly as before. */
+      const shownName = descLoanRow ? "Participant loans" : f.name;
       return `
       <tr${brokRow || subtotalRow || loanRow ? ` class="row-brokerage"` : ""}>
-        <td class="fund-name-col"><div class="fund-name">${f.iss ? `<span class="fund-issuer">${esc(f.iss.replace(/\*+/g, "").trim())} · </span>` : ""}${esc(f.name)}</div>${tk ? `<div class="fund-ticker">${esc(tk)}${star ? "*" : ""}</div>` : ""}</td>
+        <td class="fund-name-col"><div class="fund-name">${f.iss && !descLoanRow ? `<span class="fund-issuer">${esc(f.iss.replace(/\*+/g, "").trim())} · </span>` : ""}${esc(shownName)}</div>${tk ? `<div class="fund-ticker">${esc(tk)}${star ? "*" : ""}</div>` : ""}</td>
         <td class="fund-type">${esc(shownType)}</td>
         <td class="num">${er != null ? er.toFixed(er < 0.1 ? 3 : 2) + "%" + (star ? "*" : "") : "—"}</td>
         <td class="num">${money(f.value / 1e6)}</td>

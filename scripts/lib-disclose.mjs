@@ -622,6 +622,70 @@ export function isParticipantLoanRow(name) {
   return LOAN_ROW.test(String(name || "").trim());
 }
 
+/* A LOAN DESCRIPTION'S CONTINUATION LINE PUBLISHED AS A HOLDING NAME.
+ *
+ * Nissan North America (22,188 participants) publishes `at rates of interest
+ * ranging from 4.25% to` carrying $63,385,312 as though it were a fund. The
+ * filed line is `Participant loans, at rates of interest ranging from 4.25% to
+ * 9.50%`, wrapped over two lines, and the parse took the SECOND line.
+ *
+ * `LOAN_ROW` above is ANCHORED on the name BEGINNING with loan words, which is
+ * what keeps `Bank Loan Fund` safe — so it cannot reach a fragment that never
+ * says "loan" at all. A fix for one phrasing of a class is not a fix for the
+ * class, which is the lesson `LOAN_ROW`'s own comment records, arriving one
+ * level down.
+ *
+ * TWO CONDITIONS, BOTH REQUIRED, and neither is a list of fund names:
+ *
+ *   1. THE RATE IS QUOTED AS A RANGE. A plan's loans carry a range of rates; a
+ *      GIC or a short-term account carries one. That alone separates Nissan's
+ *      truncated `ranging from 4.25% to` from `Interest rate 1.75%`, `Short
+ *      term investment fund (interest rate 4.4393%)` and `Fixed annuity at
+ *      1.41% interest rate` — all real holdings, all refused, all pinned.
+ *
+ *   2. NOTHING IS LEFT. Strip the loan description — rates, maturities, dates,
+ *      the loan vocabulary — and the remainder must not still name something.
+ *      `General Account (interest at 3.05%)` leaves `General Account` and is
+ *      KEPT. This is the residue idiom the merge's caption strip and the
+ *      bare-whitespace family already use: ask what REMAINS rather than
+ *      enumerate what must not.
+ *
+ * IT UNDER-REACHES ON PURPOSE. A loan row with a fund-shaped trailer
+ * (`rates ranging from 4.25% - 4.75%. GuideStone Financial Resources total
+ * assets held`) is refused, because typing a real fund as a loan is the
+ * expensive error and leaving a loan untyped is merely the status quo. 270
+ * distinct names are refused and every one was read.
+ *
+ * `principal` IS DELIBERATELY ABSENT FROM THE VOCABULARY, and its absence cost
+ * a correction. It was there for the phrase `principal residence`, and it
+ * deleted a HOUSE NAME: Griswold Industries publishes `Interest Rate of 0.15%
+ * to 0.62% (Maturing in 2023) Principal`, which is a wrapped
+ * `Principal Guaranteed Interest Account` crediting rate, not a loan — 0.15%
+ * is no participant-loan rate, and the plan's whole menu is Principal separate
+ * accounts. One token carrying two meanings, caught by READING the accepted
+ * names rather than counting them. Both rows are pinned controls. */
+const LOAN_DESC_RANGE = /\brates?\b[^.;]{0,40}?\b(?:rang(?:e|es|ing)|between|vary|varying|from)\b|\b\d+(?:\.\d+)?\s*%?\s*(?:to|[-–—])\s*\d+(?:\.\d+)?\s*%|\bfrom\s+\d+(?:\.\d+)?\s*%\s*(?:to|[-–—])/i;
+const LOAN_DESC_WORDS = /\b(?:participants?|participation|loans?|notes?|promissory|receivable|outstanding|balances?|interest|rates?|ranging|range|ranges|rang|between|varying|various|vary|varies|bearing|earning|carrying|accruing|maturing|maturity|maturities|due|payable|dated?|dates|through|until|to|from|at|with|of|and|or|the|a|an|per|annum|annually|percent|pct|secured|collateralized|collateral|by|vested|terms?|years?|months?|less|more|than|generally|stated|fixed|variable|cost|no|later|amounts?|extending|into|repayment|plan|in|on|all|up)\b/gi;
+const LOAN_DESC_MONTHS = /\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\b/gi;
+
+export function loanDescriptionResidue(name) {
+  return String(name || "")
+    .replace(/\d+(?:\.\d+)?\s*%/g, " ")
+    .replace(/\b(?:19|20)\d{2}\b/g, " ")
+    .replace(/\b\d+(?:\.\d+)?\b/g, " ")
+    .replace(LOAN_DESC_MONTHS, " ")
+    .replace(LOAN_DESC_WORDS, " ")
+    .replace(/[^A-Za-z]+/g, " ")
+    .trim()
+    .split(/\s+/)
+    .filter((t) => t.length >= 2);
+}
+export function isLoanDescriptionRow(name) {
+  const s = String(name || "").trim();
+  if (!s || !/\d/.test(s) || !LOAN_DESC_RANGE.test(s)) return false;
+  return loanDescriptionResidue(s).length === 0;
+}
+
 /* THE FILING NAMED NO FUND — one decision, asked by both display paths.
  *
  * A row whose whole name is a bare vehicle type (`Mutual funds`,

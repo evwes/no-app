@@ -210,7 +210,7 @@ try {
   /* Same drift protection for the coverage band: scripts/lib-disclose.mjs is
    * canonical, app.js carries a twin because it is a plain browser script.
    * Run the BROWSER copy against the module's own boundary cases. */
-  const { coverageBand, frozenClaimOk, cleanFiledName, isParticipantLoanRow } = await import("./lib-disclose.mjs");
+  const { coverageBand, frozenClaimOk, cleanFiledName, isParticipantLoanRow, isLoanDescriptionRow } = await import("./lib-disclose.mjs");
   const frozCases = [
     [true, "The Plan was terminated effective December 31, 2023.", "Capital Region Medical"],
     [true, "As amended on December 31, 2024, the Plan was frozen and all participants of the Plan became fully vested.", "Hanes Companies, Inc."],
@@ -433,6 +433,48 @@ try {
     if (!isParticipantLoanRow(n)) fail(`participant-loan predicate no longer recognises a loan row: ${JSON.stringify(n)}`);
   for (const n of loanCases.slice(10))
     if (isParticipantLoanRow(n)) fail(`participant-loan predicate now damages a REAL FUND: ${JSON.stringify(n)}`);
+
+  /* THE LOAN-DESCRIPTION PREDICATE, tethered the same way. It is the rule for
+   * rows whose name is the CONTINUATION LINE of a wrapped loan description and
+   * never says "loan" at all — Nissan's `at rates of interest ranging from
+   * 4.25% to` at $63,385,312, Dollar General's `from 3.21% to`.
+   *
+   * Nine of these must come back FALSE and that half is where the cost lives,
+   * because this rule REPLACES the displayed name rather than only qualifying
+   * it. Two of the nine are Griswold Industries' rows, which my own draft
+   * accepted: `Interest Rate of 0.15% to 0.62% (Maturing in 2023) Principal`
+   * is a Principal Guaranteed Interest Account crediting rate, and the strip
+   * vocabulary was deleting the house name because it listed `principal` for
+   * the phrase `principal residence`. Reading the accepted names is what
+   * caught it; no count could have. */
+  const descCases = [
+    "at rates of interest ranging from 4.25% to", "from 3.21% to", "Rates from 4.25% to",
+    "3.25% to 9.50% with maturities ranging until 2035", "4.25% to 9.50% (cost $0)",
+    "INTEREST RATES BETWEEN 4.25% AND 9.50% ANNUALLY",
+    "Promissory notes* Varying maturity dates with interest rates ranging from 4.25% to",
+    "rates ranging from 4.25 to 9.50 percent", "Interest-bearing at 4.25 - 9.5%, maturing through November 2030",
+    /* must stay real, from here down */
+    "GUARANTEED LONG TERM FUND General Account (CONTRACT INTEREST RATE: 1/1-6/30 Contract PRIAC",
+    "General Account (interest at 3.05%)", "Short term investment fund (interest rate 4.4393%)",
+    "Fixed annuity at 1.41% interest rate -0", "Interest rate 1.75%",
+    "(Interest rates up to 5.56%; maturing 2024 - 2030) Morley Stable Value VI Fund",
+    "Interest Rate of 0.15% to 0.62% (Maturing in 2023) Principal",
+    "Interest Rate of 4.18% to 5.89% (Maturing in 2024) Principal",
+    "Bank Loan Fund", "Fidelity 500 Index Fund"];
+  const descGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoLoanDescRow !== "function") return null;
+    return cs.map((n) => window.__wampoLoanDescRow(n));
+  }, descCases);
+  if (!descGot) fail("app.js no longer exposes __wampoLoanDescRow — the loan-description predicate cannot be cross-checked");
+  const descDrift = descCases.filter((n, i) => isLoanDescriptionRow(n) !== descGot[i]);
+  if (descDrift.length) {
+    for (const n of descDrift) console.error(`  ${JSON.stringify(n)}  app.js=${descGot[descCases.indexOf(n)]}  module=${isLoanDescriptionRow(n)}`);
+    fail(`the loan-description predicate in app.js disagrees with scripts/lib-disclose.mjs on ${descDrift.length} of ${descCases.length} names`);
+  }
+  for (const n of descCases.slice(0, 9))
+    if (!isLoanDescriptionRow(n)) fail(`loan-description predicate no longer recognises a wrapped loan description: ${JSON.stringify(n)}`);
+  for (const n of descCases.slice(9))
+    if (isLoanDescriptionRow(n)) fail(`loan-description predicate would RENAME a real holding "Participant loans": ${JSON.stringify(n)}`);
   const nameDrift = nameCases.filter((n, i) => cleanFiledName(n) !== nameGot[i]);
   if (nameDrift.length) {
     for (const n of nameDrift) console.error(`  ${JSON.stringify(n)}\n    app.js: ${JSON.stringify(nameGot[nameCases.indexOf(n)])}\n    module: ${JSON.stringify(cleanFiledName(n))}`);

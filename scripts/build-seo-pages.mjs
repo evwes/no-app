@@ -10,7 +10,7 @@
  * EIN-PN (stable forever, no orphans when a sponsor renames). */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { matchQuoteOk } from "./lib-quote.mjs";
-import { coverageBand, filedUnit, cleanFiledName, isParticipantLoanRow, isNamelessFundRow } from "./lib-disclose.mjs";
+import { coverageBand, filedUnit, cleanFiledName, isParticipantLoanRow, isNamelessFundRow, isLoanDescriptionRow } from "./lib-disclose.mjs";
 import { isGenericTypeName } from "./lib-4i.mjs";
 
 const BASE = "https://evwes.github.io/no-app"; // becomes the custom domain when DNS lands
@@ -241,7 +241,15 @@ for (const r of d.plans.slice(0, TOP_N)) {
     const nm = cleanFiledName(f.name);
     const iss = String(f.iss || "").replace(/\*+/g, "").trim();
     const nameless = !iss && isNamelessFundRow(f, nm, isGenericTypeName);
-    const label = (iss ? titleCase(iss) + " · " : "") + titleCase(nm)
+    /* a wrapped loan DESCRIPTION's continuation line, which names nothing at
+     * all — `at rates of interest ranging from 4.25% to`. This page has no
+     * type column, so the report's qualifier cannot be copied across: the row
+     * has to say what it IS in the only cell it has. The filed fragment is
+     * dropped rather than qualified because it is an artefact of our parse,
+     * not something the filing calls this holding. */
+    const descLoan = isLoanDescriptionRow(nm);
+    const label = descLoan ? "Participant loans — not a menu choice"
+      : (iss ? titleCase(iss) + " · " : "") + titleCase(nm)
       + (isParticipantLoanRow(nm) ? " — participant loans, not a menu choice" : "")
       + (nameless ? " — the filing names no specific fund" : "");
     return `<tr><td>${esc(label)}</td><td class="num">${usd(f.value || 0)}</td></tr>`;

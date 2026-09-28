@@ -20,7 +20,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import vm from "node:vm";
 import { GENERIC_TYPE_ANY, GENERIC_TYPE_DESPACED, isGenericTypeName } from "./lib-4i.mjs";
-import { isNamelessFundRow } from "./lib-disclose.mjs";
+import { isNamelessFundRow, isLoanDescriptionRow } from "./lib-disclose.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const lib = readFileSync(ROOT + "scripts/lib-4i.mjs", "utf8");
@@ -36,6 +36,15 @@ const deco = lib.slice(ds, de);
 const ns = dis.indexOf("export function isNamelessFundRow(");
 if (ns < 0) throw new Error("gen-generic-twin: isNamelessFundRow moved in lib-disclose");
 const nameless = dis.slice(ns, dis.indexOf("\n}\n", ns) + 3).replace(/^export /, "");
+
+/* the loan-description rule, also VERBATIM: three constants and two functions.
+ * It is a residue test, so the vocabulary regex is the rule — a retyped copy
+ * of a 60-alternative alternation is a drift waiting to happen. */
+const lds = dis.indexOf("const LOAN_DESC_RANGE = ");
+if (lds < 0) throw new Error("gen-generic-twin: LOAN_DESC_RANGE moved in lib-disclose");
+const lde = dis.indexOf("\n}\n", dis.indexOf("export function isLoanDescriptionRow(")) + 3;
+if (lde < 3) throw new Error("gen-generic-twin: isLoanDescriptionRow moved in lib-disclose");
+const loandesc = dis.slice(lds, lde).replace(/^export /gm, "");
 
 const block = `  /* GENERATED FROM scripts/lib-4i.mjs — DO NOT EDIT BY HAND.
    * lib-4i derives these patterns from GENERIC_TYPE_NAME by asserted
@@ -67,6 +76,8 @@ ${deco.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
   window.__wampoGenericName = isGenericName;  // read by the smoke test only
 ${nameless.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
   window.__wampoNamelessRow = isNamelessFundRow;  // read by the smoke test only
+${loandesc.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
+  window.__wampoLoanDescRow = isLoanDescriptionRow;  // read by the smoke test only
 `;
 
 /* THE END MARKER MUST BE THE BLOCK'S LAST LINE. It was `__wampoGenericName`
@@ -77,12 +88,19 @@ ${nameless.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
  * the same window hook. A generator that edits in place is only as honest as
  * its end marker. */
 const MARK_S = "  /* GENERATED FROM scripts/lib-4i.mjs — DO NOT EDIT BY HAND.";
-const MARK_E = "  window.__wampoNamelessRow = isNamelessFundRow;  // read by the smoke test only\n";
+const MARK_E = "  window.__wampoLoanDescRow = isLoanDescriptionRow;  // read by the smoke test only\n";
+/* the PREVIOUS end marker, so a block written before the loan rule was
+ * appended is still found whole and replaced rather than left behind. The
+ * stale-duplicate failure this file records happened exactly because the
+ * marker moved and the old tail stayed. */
+const MARK_E_PREV = "  window.__wampoNamelessRow = isNamelessFundRow;  // read by the smoke test only\n";
 const app = readFileSync(ROOT + "app.js", "utf8");
 let out;
 if (app.includes(MARK_S)) {
-  const a = app.indexOf(MARK_S), b = app.indexOf(MARK_E, a) + MARK_E.length;
-  if (b < MARK_E.length) throw new Error("gen-generic-twin: start marker found but end marker missing — refusing to write a truncated block");
+  const a = app.indexOf(MARK_S);
+  let b = app.indexOf(MARK_E, a);
+  b = b < 0 ? app.indexOf(MARK_E_PREV, a) + MARK_E_PREV.length : b + MARK_E.length;
+  if (b < Math.min(MARK_E.length, MARK_E_PREV.length)) throw new Error("gen-generic-twin: start marker found but no end marker (current or previous) — refusing to write a truncated block");
   out = app.slice(0, a) + block + app.slice(b);
 } else {
   const anchor = "  window.__wampoCleanFiledName = cleanFiledName;";
@@ -99,6 +117,7 @@ const ctx = {}; vm.createContext(ctx);
 vm.runInContext(block
   .replace("window.__wampoGenericName = isGenericName;  // read by the smoke test only", "globalThis.__g = isGenericName;")
   .replace("window.__wampoNamelessRow = isNamelessFundRow;  // read by the smoke test only", "globalThis.__n = isNamelessFundRow;")
+  .replace("window.__wampoLoanDescRow = isLoanDescriptionRow;  // read by the smoke test only", "globalThis.__l = isLoanDescriptionRow;")
   .replace(/^\s{2}/gm, ""), ctx);
 const names = ["Mutual funds", "Mutual Fund Shares", "Sub-total: Registered Investment Companies",
   "Commingled funds", "Pooled separate account funds", "Collective trust funds",
@@ -112,7 +131,21 @@ const rows = [
   { name: "Mutual funds", type: "Subtotal (not a holding)" },
   { name: "Mutual funds", type: "Brokerage window" },
   { name: "Fidelity 500 Index Fund", type: "Mutual fund" }];
+/* the loan-description arm, both directions — a probe set that cannot reach an
+ * arm is how a guard passes while doing nothing, and the must-KEEP half is
+ * where the cost of this rule being wrong lives */
+const loans = [
+  "at rates of interest ranging from 4.25% to", "from 3.21% to", "Rates from 4.25% to",
+  "INTEREST RATES BETWEEN 4.25% AND 9.50% ANNUALLY", "4.25% to 9.50% (cost $0)",
+  "Promissory notes* Varying maturity dates with interest rates ranging from 4.25% to",
+  "General Account (interest at 3.05%)", "Short term investment fund (interest rate 4.4393%)",
+  "Interest Rate of 0.15% to 0.62% (Maturing in 2023) Principal", "Interest rate 1.75%",
+  "Fixed annuity at 1.41% interest rate -0", "Bank Loan Fund", "Fidelity 500 Index Fund",
+  "(Interest rates up to 5.56%; maturing 2024 - 2030) Morley Stable Value VI Fund"];
 let bad = 0;
+for (const n of loans) if (ctx.__l(n) !== isLoanDescriptionRow(n)) {
+  bad++; console.log(`  LOAN DRIFT ${JSON.stringify(n)} twin=${ctx.__l(n)} lib=${isLoanDescriptionRow(n)}`);
+}
 for (const n of names) if (ctx.__g(n) !== isGenericTypeName(n)) {
   bad++; console.log(`  NAME DRIFT ${JSON.stringify(n)} twin=${ctx.__g(n)} lib4i=${isGenericTypeName(n)}`);
 }
@@ -120,4 +153,4 @@ for (const r of rows) if (ctx.__n(r, r.name, ctx.__g) !== isNamelessFundRow(r, r
   bad++; console.log(`  ROW DRIFT ${JSON.stringify(r)}`);
 }
 if (bad) { console.error(`generated with ${bad} DRIFT — do not commit`); process.exit(1); }
-console.log(`generated; twin agrees with lib-4i on ${names.length} names and with lib-disclose on ${rows.length} rows`);
+console.log(`generated; twin agrees with lib-4i on ${names.length} names, with lib-disclose on ${rows.length} rows and ${loans.length} loan-description names`);
