@@ -801,7 +801,67 @@ export, do not copy the line.
   `resolveHolding`), 45/45; the pre-change file fails by name on 5 of the 32
   and the old caller pattern fails on the BlackRock row.
   `docs/accuracy-log.md` 2026-09-28 (19:4xZ).
-- **IN FLIGHT: #492 (build-data) and `site-test` #102, both dispatched
+- **IN FLIGHT: #493, dispatched 2026-09-28 21:4xZ on `bd8e0fa` and observed
+  queued. NO PARSER BUMP — it exists to let the MERGE rewrite `stk`.**
+  **A DESCRIPTIVE SERIES NAME WAS MANUFACTURING A HOUSE AND THE MANAGER GATE
+  PUBLISHED IT: 187 rows / 204 plans / 278,339 ppl / $116,678,251 stop being
+  told their short-term bond holding is HOMESTEAD's.** `managerPhrase` extends
+  past a generic lead, so HOMESTEAD FUNDS INC's bare-named `Short-Term Bond
+  Fund` series yielded the phrase **`short term`** — rejected only when EVERY
+  word is descriptive, and **`term` was the one descriptive word missing from
+  the list**. So `short term` became a manager key, and it is a token of every
+  house's short-term bond fund: the gate admitted Homestead for Vanguard,
+  Victory, TIAA-CREF, PIMCO, Allspring, Virtus, Schwab, Invesco, Transamerica,
+  Calvert, DFA and American Funds holdings. **Third instance of a shape this
+  file's own comments record twice** (`t` from T. Rowe Price; `bond fund`
+  matching a filed `High Yield Bd Fund`) — *a phrase that describes what a fund
+  holds names no house.*
+  **16 rows FLIP to the house the filing's ISSUER cell names** (`Short Term
+  Bond Fund` [iss Transamerica] → TASTX, [iss Nuveen] → TISIX; eight Vanguard
+  short-term TREASURY rows off **PRTBX**, T. Rowe Price's short-term BOND fund,
+  wrong twice over) — unreachable before, because the bogus direct hit returned
+  first and the issuer path was never consulted. 2 rows GAIN one.
+  **COST NAMED, 7 rows / 1,418 ppl, not zero:** the American Funds `Short-Term
+  Bond Fund of America` family (RAMCX/RAMEX×3/RAMFX) and `Lord Abbett Short
+  Term Duration Income Fund R6` → LDLVX lose a CORRECT answer, because those
+  registrants name no house either. **QUEUED, not bundled:** the house-less
+  registrant escape hatch should fire when the series key is not ALL-descriptive
+  (`new world`, `american balanced` survive the same rule).
+  **MEASURED THROUGH THE SHIPPED PATH AND THE FIRST NUMBER WAS A PROXY:** a diff
+  of `resolve`'s raw answer said 232 rows; **merge stores a ticker only when the
+  answer is NOT `comparable`**, and under that rule it is 187/16/2 — which the
+  real merge then reproduced to the row (`sec tickers 338,445 → 338,260` across
+  37,059 → 37,028 plans). **PRE-REGISTERED for #493:** that same line, coverage
+  byte-identical (confident 60,103, HIGH 4), CONFIDENCE DIFF +0 / −0.
+  **`--selftest` 55/55**, 7 new cases pinned on both sides; the pre-change file
+  fails by name on exactly those 7 and holds the other 48, including the
+  already-pinned `Vanguard Short Term Bond Index Fund` → VBISX*.
+  **FOUND BY THE ROW THAT DID NOT FIT** — it came out of the override draw
+  below, where 24 of 25 were the SEC reading a share class correctly and the
+  25th was a different fund; chasing that one row found a defect unrelated to
+  the override and larger than it. `docs/accuracy-log.md` 2026-09-28 (21:2xZ).
+- **THE OVERRIDE QUESTION IS ANSWERED — NO, AND IT STAYS QUEUED, with three
+  dead discriminators recorded so they are not retried.** May the SEC index
+  replace a published `fund-er.js` ticker on the 744 names / 3,844 rows / 2,643
+  plans / 5,962,185 ppl where both name a fund exactly and disagree? A random 25
+  read one by one: **24 SEC-right** (share classes the pattern table ignores),
+  **1 SEC-wrong** — `American Funds The Growth Fund of American R6` → RGWGX
+  where the answer is RGAGX, because **the filing misspells "America"**, so the
+  right series stops being a token-subset. `resolve`'s leftover ranking normally
+  picks it and its comment names this exact pair, so the matcher is sound and
+  the candidate set is the problem. **FAILED discriminators: (1) same-series vs
+  different-series** (1,189 / 2,655 rows — useless, K6 funds are separate
+  SERIES); **(2) series-key length** (the ≤2-token band is 435 rows and is
+  dominated by CORRECT answers — `VWENX→VWELX`, `FCNTX→FCNKX`, `FBALX→FBAKX`,
+  `VPMAX→VPMCX`); **(3) series key retains a non-asset non-house token** (kills
+  `fidelity balanced` → FBAKX, correct). **The blocker is unchanged: 3,513 of
+  the 3,844 rows also publish a NAME-based ER**, so correcting the ticker alone
+  leaves a K6 row showing the retail fee beside the K6 symbol.
+  **Sized in passing, live and unfixed:** the `of American` misspelling is **39
+  distinct names / 47 rows / 46 plans / 75,937 ppl**; most resolve to nothing
+  (safe) and **4 rows publish a wrong fund as fact** (RGWGX ×3, RGWEX ×1).
+- **PREVIOUSLY IN FLIGHT: #492 (build-data) and `site-test` #102, both
+  dispatched
   2026-09-28 20:2xZ on `bb8b291` and both observed `in_progress`. NO PARSER
   BUMP** — the work list is the 129 dead 403s, so #492 exists to let the MERGE
   write the new field. **PIECE (1) IS SHIPPED AND IT REACHES READERS: 147,835
