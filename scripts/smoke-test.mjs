@@ -270,6 +270,26 @@ try {
     /* TYPE_SUFFIX must not leave a dangling fragment, 2026-09-28 */
     "Shares of registered investment companies",
     "Vanguard Institutional Index Fund Mutual Fund",
+    /* TYPE_SUFFIX widened 2026-09-28, and these six exist because the negative
+     * control FAILED TO FAIL without them: drifting the twin's DANGLING_TAIL
+     * from case-sensitive to `/i` left every one of the cases above green, so
+     * the tether was decorative for the newest rule in it. Each of these
+     * reaches an arm the older cases cannot.
+     *   - a trailing ` funds` on `collective trust`, and the bare
+     *     `separate account`: the two vocabulary gaps;
+     *   - `Common and Collective Trust Fund`, which the space-less
+     *     `common/collective` arm could only cut the tail off;
+     *   - `Global A …`, where a trailing share-class `A` must NOT read as an
+     *     article — the case-sensitivity the drift test flips;
+     *   - `… Fund of mutual fund`, which the dangling guard must now REFUSE
+     *     to strip where the old code produced `… Fund of`;
+     *   - `Korn Ferry Master Trust`, which must never be stripped at all. */
+    "PIMCO RealPath Blend 2030 Collective Trust Funds",
+    "BLACKROCK SP 500 IDX (IS) Separate Account",
+    "Retirement 2055 Common and Collective Trust Fund",
+    "Global A Pooled separate accounts",
+    "Fidelity 500 Index Fund of mutual fund",
+    "Korn Ferry Master Trust",
     /* the leading-parenthetical family, 2026-09-28 */
     "Mutual funds (continued) Dodge & Cox International Stock Fund",
     "MUTUAL FUNDS (Continued) FID FREEDOM 2060 K",

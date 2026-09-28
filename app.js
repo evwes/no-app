@@ -472,7 +472,26 @@
    * the original when it would leave fewer than three letters. Display and
    * lookup only; the store is unchanged, and the parser-side strip is queued.
    * Leading dashes from a wrapped bullet ("— Vanguard U.S. Growth Fund") go too. */
-  const TYPE_SUFFIX = /\s+(?:mutual funds?(?: shares?)?|common\/?collective trusts?(?: funds?)?|collective (?:investment )?trusts?|registered investment compan(?:y|ies)(?: shares?)?|pooled separate accounts?|units? of participation)\s*$/i;
+  /* WIDENED 2026-09-28 — the MECHANISM and the guard below were already right
+   * and only the VOCABULARY was narrow, the third time that is the diagnosis.
+   * `collective trust` allowed no trailing ` funds` (Waste Management's nine
+   * `PIMCO RealPath Blend 2030 Collective Trust Funds` rows, 47,426 ppl), the
+   * bare `separate account` was missing, and `common/collective` allowed a
+   * SLASH but not a SPACE — so `Common Collective Trust Fund` was never matched
+   * whole and only its tail was cut, leaving `… Common` dangling.
+   *
+   * `MASTER TRUST` IS DELIBERATELY ABSENT: it is a meaningful DESIGNATION, not
+   * a column caption, so stripping it destroys meaning — `Investment in BNSF
+   * 401(k) Plans Master Trust` ($3.52B) and `Korn Ferry Master Trust` are
+   * pinned controls. Kept in sync with scripts/lib-disclose.mjs by the smoke
+   * test, which fails on drift. */
+  const TYPE_SUFFIX = /\s+(?:mutual funds?(?: shares?)?|common(?:[\/ ]|\s+and\s+)?collective trusts?(?: funds?)?|collective (?:investment )?trusts?(?: funds?)?|registered investment compan(?:y|ies)(?: shares?)?|(?:pooled )?separate accounts?|units? of participation)\s*$/i;
+  /* A remainder may not END in a connective. CASE-SENSITIVE, lowercase only:
+   * an `/i` first draft refused real strips because a trailing share-class `A`
+   * (`Global A Pooled separate accounts`) and `IN` read as function words —
+   * the v188 decoy lesson, that case is the only signal, arriving from the
+   * side where the cost is a refused repair rather than a damaged name. */
+  const DANGLING_TAIL = /\b(?:and|or|of|the|a|an|in|for|with|at|to|from|on|by|&)$/;
   /* The same column glued to the FRONT with a separator — "Mutual Fund -
    * Fidelity 500 Index Fund", "Separate Account - JPMorgan Equity Income
    * Fund R6" (Texas Health Resources, 13:1xZ draw 2026-09-18). Sized on the
@@ -813,7 +832,7 @@
       const rest = s.slice(0, m.index).trim();
       const tk = rest.split(/\s+/);
       const keeps = tk.some((t) => bwOpensWithAName(t.replace(/[^A-Za-z0-9&]/g, "")));
-      if (tk.length >= 2 && /[A-Za-z]{3}/.test(rest) && keeps) s = rest;
+      if (tk.length >= 2 && /[A-Za-z]{3}/.test(rest) && keeps && !DANGLING_TAIL.test(rest)) s = rest;
     }
     s = s.replace(/[\s\-–,;:]+$/, "").trim();
     return /[A-Za-z]{3}/.test(s) ? s : String(name).trim();

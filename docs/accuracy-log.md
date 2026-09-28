@@ -25142,3 +25142,78 @@ a class.
 **The reusable half: an outcome test can return a large number and still be
 measuring a FIX. Before sizing a defect, check whether the behaviour was
 deliberately shipped** — this record named that exact change seven days ago.
+
+## 2026-09-28 (16:2xZ) — the trailing vehicle type: 1,973 rows / 462 plans / 2,996,261 participants, and FIVE of the six damages I predicted were my own harness
+
+**Shipped.** `TYPE_SUFFIX` now reaches three shapes it could not:
+`collective trust` with a trailing ` funds` (Waste Management's nine `PIMCO
+RealPath Blend 2030 Collective Trust Funds` rows, 47,426 ppl), the BARE
+`separate account`, and — the one that mattered most — `common collective
+trust` **with a space**, because the existing arm was `common\/?collective`
+and allowed a SLASH but not a SPACE.
+
+**Measured through the shipped function against the PREVIOUS shipped function,
+not against a hand-rolled regex: 1,973 rows / 462 plans / 2,996,261 ppl /
+$26,024,783,093, and +0 tickers gained, −0 lost, 0 flipped.** A pure honesty
+item for ~3.0M readers; no fee cell moves. 30 crawlable pages / 671,309 ppl,
+every changed cell printed in full and read — CVS PN 017's $7.35B `Vanguard
+Institutional 500 Index Trust Fund Common Collective Trust Fund` loses its
+doubled caption, and `T. Rowe Price Group, Inc. · Retirement 2055 Common And
+Collective Trust Fund` becomes `T. Rowe Price Group, Inc. · Retirement 2055`.
+
+**THE CORRECTION THAT MATTERS, and it is about my own method.** Last cycle I
+sized this class with my own `TRAIL` regex and a two-token floor, and reported
+six damaging strips — `Shares of registered investment company` -> `Shares of`,
+`Investment in BNSF 401(k) Plans Master Trust` -> `Investment in BNSF 401(k)
+Plans`, and four more. **Reading the shipped code showed the guard was already
+there** (`tk.some(bwOpensWithAName)`), written for that exact string, with a
+comment recording that its own first draft asked the question of the LAST token
+and was caught. **Five of the six were my harness, not the code** — the tenth
+instance on this record of a measurement reporting on itself, and the reason
+the rule is *ask the shipped predicate the question it answers*. Only one of
+the six was real: `master trust`, which I had correctly reasoned must stay out
+of the vocabulary because it is a DESIGNATION and not a caption, and which
+stays out, pinned.
+
+**TWO THINGS THE CONTROLS CAUGHT IN THIS CYCLE'S OWN DRAFT.**
+1. **A dangling connective the existing screen could not see.** `Retirement
+   2055 Common and Collective Trust Fund` came out as `Retirement 2055 Common
+   and`. The `keeps` screen asks *does anything identifying survive* and
+   `Retirement` and `2055` both do, so it passed a name ending in `and`. Those
+   are different questions. Root cause was the space-less `common/collective`
+   arm above — now fixed, which turns those rows into complete, correct strips
+   — and `DANGLING_TAIL` stays as the backstop, because the next caption added
+   will not have its space handled either.
+2. **`DANGLING_TAIL` had to be CASE-SENSITIVE and my first draft was `/i`.**
+   That draft REFUSED real strips: `Global A Pooled separate accounts` stopped
+   stripping because the trailing `A` is a SHARE CLASS read as an article, and
+   `VOYINTLHIDIVLOW VOL PORT IN MUTUAL FUND SHARES` for the same reason on
+   `IN`. **This is the v188 Affinity Plus decoy exactly — a capital `A` may be
+   a real designation and case is the only signal — arriving from the opposite
+   side, where the cost is a refused repair rather than a damaged name.**
+
+**A BONUS THE GUARD PRODUCED: 30 rows where the new code REFUSES a strip the
+old code made**, every sampled one a dangling-connective repair —
+`Fidelity 500 Index Fund of mutual fund` had been rendering as `Fidelity 500
+Index Fund of`, `Corporate stocks and mutual funds` as `Corporate stocks and`,
+`Mutual funds of registered investment companies` as `Mutual funds of`. Those
+were live and nothing had counted them.
+
+**AND THE NEGATIVE CONTROL FAILED TO FAIL, which is the third thing this cycle
+got wrong.** Drifting the app.js twin's `DANGLING_TAIL` to `/i` left the smoke
+tether GREEN across all 37 of its filed-name cases: **not one of them reached
+the new rule**, so the tether was decorative for the newest thing in it — the
+same failure v189 recorded one week's work earlier, and the reason that entry
+says pinning cases is not optional. Six cases now reach the new arms, one per
+arm plus the refusal and the must-never-strip, and the drift test fails by name
+on exactly 1 of 43.
+
+**Two stale expectations of mine were corrected by the controls rather than by
+argument**, and both are now pinned with their reasoning: `Retirement 2055 …`
+was asserted must-be-UNCHANGED (written when only its tail could be cut) and is
+now a must-STRIP; `Class A Common Collective Trust Fund` I expected to become
+`Class A`, and the `keeps` screen refuses it — correctly, because `Class A`
+alone names nothing and the filed name is the more informative of the two.
+
+Residue, named not waved at: `Vanguard Target Retirement 2025 Trust Select ©
+Common` -> `… ©` keeps a pre-existing OCR artefact this change does not touch.

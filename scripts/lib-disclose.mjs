@@ -255,7 +255,61 @@ if (process.argv[1] && process.argv[1].endsWith("lib-disclose.mjs") && process.a
  * The body below is EXTRACTED VERBATIM from app.js rather than retyped, because
  * a transcribed copy of a shipped rule has produced a wrong answer three times
  * on this record. */
-const TYPE_SUFFIX = /\s+(?:mutual funds?(?: shares?)?|common\/?collective trusts?(?: funds?)?|collective (?:investment )?trusts?|registered investment compan(?:y|ies)(?: shares?)?|pooled separate accounts?|units? of participation)\s*$/i;
+/* WIDENED 2026-09-28, and for the third time the diagnosis is the same one:
+ * the MECHANISM was right, the guard below was already right, and only the
+ * VOCABULARY was narrow. Two gaps, both found by asking this function directly
+ * rather than by reasoning about it:
+ *
+ *   - `collective (?:investment )?trusts?` allowed no trailing ` funds`, so
+ *     Waste Management's nine `PIMCO RealPath Blend 2030 Collective Trust
+ *     Funds` rows (47,426 ppl) came back unchanged, while the `common/`-led
+ *     arm beside it had carried `(?: funds?)?` all along;
+ *   - only `pooled separate account` was listed, so the BARE form escaped —
+ *     `BLACKROCK SP 500 IDX (IS) Separate Account`, `ALL WORLD EX-US STOCK
+ *     INDEX FUND Separate Account`.
+ *
+ * `MASTER TRUST` IS DELIBERATELY ABSENT and that is the load-bearing decision
+ * here. It reads like the others and is not: a master trust is a meaningful
+ * DESIGNATION, not a column caption, so stripping it destroys meaning rather
+ * than restoring it — `Investment in BNSF 401(k) Plans Master Trust`
+ * ($3,521,680,000) would become `Investment in BNSF 401(k) Plans`, and
+ * `Korn Ferry Master Trust` would become `Korn Ferry`, which is the v167
+ * bare-house defect verbatim. Both are pinned controls.
+ *
+ * The trailing optional groups are safe against the v-BDO backtracking trap —
+ * an optional group before an anchor is a silent second anchor position only
+ * when the anchor is a LOOKAHEAD that can fail; here it is `\s*$`, so giving
+ * back ` funds` leaves it unconsumed and the match fails rather than
+ * succeeding one word early. Verified on `… Collective Trust Funds (Continued)`,
+ * which correctly does not match at all. */
+const TYPE_SUFFIX = /\s+(?:mutual funds?(?: shares?)?|common(?:[\/ ]|\s+and\s+)?collective trusts?(?: funds?)?|collective (?:investment )?trusts?(?: funds?)?|registered investment compan(?:y|ies)(?: shares?)?|(?:pooled )?separate accounts?|units? of participation)\s*$/i;
+/* A REMAINDER MAY NOT END IN A CONNECTIVE, and this guard exists because the
+ * widening above produced exactly that before it shipped. `Retirement 2055
+ * Common and Collective Trust Fund` was cut to `Retirement 2055 Common and`.
+ *
+ * The existing screen asks whether ANY token identifies something, and
+ * `Retirement` and `2055` both do, so it passed a name ending in `and`. The
+ * two questions are different: "does anything survive" and "does the survivor
+ * END cleanly". The root cause was a narrower bug in the vocabulary — the
+ * `common/collective` arm allowed a SLASH but not a SPACE, so `Common
+ * Collective Trust Fund` was never matched whole and only its tail was cut —
+ * and that is now fixed above, which turns those rows into correct strips
+ * rather than dangling ones. This stays as the backstop, because the next
+ * caption to be added will not have its space handled either. */
+/* CASE-SENSITIVE, LOWERCASE ONLY, and that is not fastidiousness — the first
+ * draft was `/i` and it REFUSED strips it should have made. `Global A Pooled
+ * separate accounts` stopped stripping because the trailing `A` is a SHARE
+ * CLASS and the pattern read it as an article; `VOYINTLHIDIVLOW VOL PORT IN
+ * MUTUAL FUND SHARES` stopped for the same reason on `IN`. This is the v188
+ * Affinity Plus decoy exactly — *a capital `A` may be a real designation and
+ * case is the only signal* — arriving from the opposite direction, where the
+ * cost is a refused repair rather than a damaged name.
+ *
+ * A genuine dangling connective in a filed name is lowercase (`Common and`,
+ * `Shares of`); an all-caps tail is a designation. `Shares of registered
+ * investment companies` in either case is still caught by the `keeps` screen
+ * above, which was written for it. */
+const DANGLING_TAIL = /\b(?:and|or|of|the|a|an|in|for|with|at|to|from|on|by|&)$/;
 /* The same column glued to the FRONT with a separator — "Mutual Fund -
  * Fidelity 500 Index Fund", "Separate Account - JPMorgan Equity Income
  * Fund R6" (Texas Health Resources, 13:1xZ draw 2026-09-18). Sized on the
@@ -596,7 +650,7 @@ export function cleanFiledName(name) {
     const rest = s.slice(0, m.index).trim();
     const tk = rest.split(/\s+/);
     const keeps = tk.some((t) => bwOpensWithAName(t.replace(/[^A-Za-z0-9&]/g, "")));
-    if (tk.length >= 2 && /[A-Za-z]{3}/.test(rest) && keeps) s = rest;
+    if (tk.length >= 2 && /[A-Za-z]{3}/.test(rest) && keeps && !DANGLING_TAIL.test(rest)) s = rest;
   }
   s = s.replace(/[\s\-–,;:]+$/, "").trim();
   return /[A-Za-z]{3}/.test(s) ? s : String(name).trim();
