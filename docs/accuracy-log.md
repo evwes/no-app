@@ -23804,3 +23804,28 @@ John Carroll 1,479), because the comma family lives almost entirely in plans
 outside the generator's top 5,000 by assets, while the report gets all 1,097 rows.
 **So "what reached readers" still has to name the surface even now that the code is
 shared** — sharing the rule removed the divergence, not the difference in coverage.
+
+### A candidate discriminator for the bare-whitespace family, SIZED and handed on
+The ticker gate failed because `fund-er.js` cannot see CITs or separate accounts.
+A different question — **does the remainder carry a fund HOUSE token or a
+target-date VINTAGE?** — splits the family usefully:
+
+| | rows | plans | participants |
+|---|---|---|---|
+| house or vintage present | **2,335** | 347 | **732,277** |
+| neither | 1,277 | 568 | 913,524 |
+
+Every printed member of the HIT set is a real fund name (`Fidelity 500 Index
+Fund`, `Prin Real Estate Secs SA-Z`, `American Funds AmerMut R6 Fd`), and the MISS
+set correctly holds all the damage cases the blanket strip would have caused
+(`Fee Class R1`, `Class M`, `Series 25053`, `- EQUITY`).
+
+**But the limiting factor is my own house list, and that is the recorded error
+again.** The MISS set also contains real funds — `PGIM High Yield R6 Fund`,
+`Am Fds EuroPacific Grth R6 Fd`, `JP Morgan Mid Cap Growth R6 Fd` — because the
+set I typed lacks `pgim`, abbreviates `American Funds` to `Am Fds`, and splits
+`JP Morgan`. **A hand-rolled copy of a predicate has produced a wrong answer on
+this record at least four times; the house set must be derived from a shipped
+source** (`fund-er.js`'s own table, or `KERN_WORDS`), not from memory. Sized and
+handed to the next cycle rather than shipped at 00:3xZ without a member read of
+2,335 rows.
