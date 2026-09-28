@@ -278,6 +278,14 @@ try {
     ["Stable Value Fund (Group Annuity Contract), at contract value", "Stable Value Fund (Group Annuity Contract), at contract value"],
     ["Stable Value Fund Class 25 - I", "Stable Value Fund Class 25 - I"],
     ["Stable Value Fund Standard Insurance Company", "Stable Value Fund Standard Insurance Company"],
+    /* BACKTRACKING. `Common/Collective Trust Funds (Continued) …` matched the
+     * arm's optional `(?: funds?)?`, failed the `(?=[A-Za-z0-9])` lookahead on
+     * `(`, and the engine gave the optional group back — satisfying the anchor
+     * one word early and making `Funds` the remainder's first token. 4 rows on
+     * the v188 store, found by reading a regenerated PAGE, not by any count. */
+    ["Common/Collective Trust Funds (Continued) T. Rowe Price Retire 2030 Trust Fund", "Common/Collective Trust Funds (Continued) T. Rowe Price Retire 2030 Trust Fund"],
+    ["Mutual Funds Trust Growth Fund Investor", "Mutual Funds Trust Growth Fund Investor"],
+    ["Index Fund account T. Rowe Price Retirement Balanced I", "Index Fund account T. Rowe Price Retirement Balanced I"],
     /* and the three the typed house list of the previous cycle would have missed */
     ["Registered Investment Company PGIM Ttl Ret Bond R2 Fund", "PGIM Ttl Ret Bond R2 Fund"],
     ["Registered Investment Company Am Fds EuroPacific Grth R6 Fd", "Am Fds EuroPacific Grth R6 Fd"],
