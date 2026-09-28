@@ -687,10 +687,55 @@ export, do not copy the line.
   `audit-dominant-row` **0**, `audit-generic-names` **212 against the 230
   escalation threshold — still not raised**. **`matchQuote` 5,397 of which only
   1,785 are SHOWN to readers** — the condition/outcome pair shipped 2026-09-27.
-- **NOTHING IS IN FLIGHT.** Tree and store are both at v189. **`site-test` #100
-  on `891a510` reads `conclusion: success`** — dispatched deliberately, because
-  the loan-description change shipped under `[skip ci]` and was green only
-  LOCALLY, which is the exact confusion that left site-test red for ten runs.
+- **NOTHING IS IN FLIGHT.** Tree and store are both at v189; cron #490 ran
+  `success` and its data commit `5e3941b` is adopted. **`site-test` #101 on
+  `32f4568` reads `conclusion: success`** — dispatched deliberately, as #100
+  was, because these changes ship under `[skip ci]` and local green is not CI
+  green, the confusion that once left site-test red for ten runs.
+- **MIRRORED 2026-09-28 16:3xZ, UNFORCED (`5e3941b → 32f4568 → c172a26`):
+  `TYPE_SUFFIX` reaches three shapes it could not — 1,973 rows / 462 plans /
+  2,996,261 ppl / $26,024,783,093, and +0 tickers gained, −0 lost, 0 flipped.**
+  A pure honesty item for ~3.0M readers. `collective trust` allowed no trailing
+  ` funds` (Waste Management's nine `PIMCO RealPath Blend 2030 Collective Trust
+  Funds`), the bare `separate account` was absent, and **`common collective
+  trust` WITH A SPACE was never matched whole** because the arm read
+  `common\/?collective` — a slash and not a space — so only its tail could be
+  cut. **`MASTER TRUST` STAYS OUT** and that is the load-bearing decision: it is
+  a DESIGNATION, not a caption, so `Investment in BNSF 401(k) Plans Master
+  Trust` ($3.52B) and `Korn Ferry Master Trust` are pinned controls.
+  **FIVE OF THE SIX DAMAGES I PREDICTED LAST CYCLE WERE MY OWN HARNESS** — the
+  shipped `keeps` screen already refused them, with a comment recording that its
+  own first draft was caught the same way. Only `master trust` was real.
+  **THREE THINGS THIS DRAFT GOT WRONG, each caught by a control:** a dangling
+  connective the `keeps` screen cannot see (`Retirement 2055 Common and`);
+  `DANGLING_TAIL` needing to be CASE-SENSITIVE, because an `/i` draft REFUSED
+  real strips when a trailing share-class `A` read as an article — **the v188
+  Affinity Plus decoy from the opposite side, where the cost is a refused repair
+  rather than a damaged name**; and **the negative control FAILING TO FAIL**,
+  green across all 37 filed-name cases because not one reached the new rule.
+  Six cases pinned; the drift test now fails by name on 1 of 43.
+  **Bonus: 30 rows where the new guard REFUSES a strip the old code made** —
+  `Fidelity 500 Index Fund of mutual fund` had been rendering as `Fidelity 500
+  Index Fund of`. Live, and nothing had counted them. 30 crawlable pages /
+  671,309 ppl, every changed cell printed in full and read.
+- **QUEUED from the 16:2xZ draw — the bare HOUSE name as a holding, re-derived
+  at v189: 5,752 rows / 4,585 plans / 8,370,934 ppl / $26.9B across 409
+  houses.** Intermountain Health (84,616 ppl) publishes `William Blair` at
+  **$192,161,000 = 2.9%**. **The row count is not the harm** — most are a
+  negligible sweep slice — so the split that matters is by menu share: **93 rows
+  at ≥30%, 626 at ≥10%, 2,633 at ≥2% (4,337,212 ppl)**. Largest material slices:
+  **Southwest Airlines `Dodge and Cox` 11.6% / $2,157,392,326** (85,764 ppl) and
+  Universal Health Services `Fidelity` 9.8%. **NOT SHIPPED:** v167 closed this
+  in the DESCRIPTION column and left the IDENTITY column alone by design, and
+  `William Blair` is what that column says — replacing it is a claim, not a
+  repair, so it is a parser-side contest change.
+  **MY FIRST NUMBER WAS WRONG BY HALF (10,441 rows / 13,097,812 ppl)** because
+  the house list was built by FREQUENCY alone, which swept in real PRODUCTS:
+  `Vanguard Total Intl Stock Index Admiral` stands alone as an issuer on **936**
+  rows, `Voya Fixed Account` on 1,023. The identity column legitimately carries
+  fund names since v126, so frequency cannot tell a firm from a product.
+  **Eleventh instance of a measurement reporting on the harness, and the second
+  in two cycles where the tell was a list printed in order to READ.**
 - **ANSWERED AND THE ANSWER IS NO: the 90% dominance floor must NOT come down.**
   #489's verdict pointed at the threshold (Tides Center 84.4%, Finch Paper
   88.2%). A threshold table said a 0.60 floor withdraws 105 plans / 373,062 ppl
