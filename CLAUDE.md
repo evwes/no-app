@@ -801,8 +801,44 @@ export, do not copy the line.
   `resolveHolding`), 45/45; the pre-change file fails by name on 5 of the 32
   and the old caller pattern fails on the BlackRock row.
   `docs/accuracy-log.md` 2026-09-28 (19:4xZ).
-- **IN FLIGHT: #493, dispatched 2026-09-28 21:4xZ on `bd8e0fa` and observed
-  queued. NO PARSER BUMP — it exists to let the MERGE rewrite `stk`.**
+- **IN FLIGHT: #495, dispatched 2026-09-28 22:2xZ on `bb7cdc5`, observed queued.
+  NO PARSER BUMP.** **GROWTH, BOND AND INCOME FUND OF AMERICA RESOLVE AT LAST —
+  203 rows / 158 plans / 141,142 ppl gain a ticker, 0 withdrawn, 0 flipped.**
+  All 102 distinct filed names read; every one an American Funds flagship
+  (RGAGX/RGAEX/RGAFX/RGACX/AGTHX, RBFGX/RBFEX/RBFFX/RBFCX,
+  RIDGX/RIDEX/RIDFX/RIDCX/AMECX, RAMEX/RAMCX/RAMFX), each stating a share class
+  and getting that class. **Cause: the manager gate needs a house on BOTH sides
+  and these have it on neither** — American Funds registers its three largest
+  funds under their bare product names, and the escape hatch for house-less
+  registrants required the FILED name to supply a house, so it could never fire
+  for the family it was written for. **The discriminator is this cycle's own,
+  used in the opposite direction:** a house-less series may answer a house-less
+  filed name only when its key is not ENTIRELY descriptive — `short term bond
+  america` keeps `america`, Homestead's `short term bond` keeps nothing.
+  **A FIRST DRAFT WITHDREW 127 CORRECT ROWS** (`American Funds International
+  Growth and Income R6` → RIGGX, three descriptive words) and the whole-store
+  diff caught it before anything shipped: the test is asked ONLY when the filed
+  name names no house. **AND A PINNED EXPECTATION I WROTE WAS WRONG**, caught by
+  the selftest before commit — the bare `International Growth and Income Fund
+  R6` must REFUSE and resolves through its issuer cell instead. *The rule is
+  about what the STRING can discriminate, not which fund a reader knows is
+  meant.* **Restores 6 of the 7 rows the previous fix cost**; `Lord Abbett Short
+  Term Duration Income Fund R6` → LDLVX stays refused and is named, not rounded
+  away (1 row / 123 ppl). Real merge: `sec tickers 338,260 → 338,463` across
+  37,028 → 37,034 plans, CONFIDENCE DIFF +0 / −0. **`--selftest` 62/62**; the
+  pre-change gate fails by name on exactly the 5 new must-gain cases and holds
+  the other 57. `docs/accuracy-log.md` 2026-09-28 (22:3xZ).
+- **MIRRORED 2026-09-28 22:3xZ (`85621bd → bb7cdc5`), DATA GATE UNFORCED
+  +0 / −0**; `--force` covered the GIT check alone over main's one cron commit,
+  evidence first: **0 acks and 0 plans the branch lacked, 0 acks newer on main,
+  0 confident on main the branch lacks, plans array byte-identical.**
+- **#493 PASSED ITS PRE-REGISTERED TEST TO THE ROW** (data commit `1d1480a`):
+  `sec tickers` **338,260 rows across 37,028 plans**, exactly predicted; the
+  coverage line byte-identical (confident 60,103, HIGH 4, overshoot 325, dl
+  129). Read out of the store, not the log: **`HOSBX` 0 rows and `PRTBX` 0
+  rows** — the wrong houses are gone — and the flips landed (TASTX 5, TISIX 21,
+  VFIRX 80, CFSTX 1). Pages #662 built the mirror `success`.
+- **PREVIOUSLY IN FLIGHT: #493, dispatched 2026-09-28 21:4xZ on `bd8e0fa`. NO PARSER BUMP — it exists to let the MERGE rewrite `stk`.**
   **A DESCRIPTIVE SERIES NAME WAS MANUFACTURING A HOUSE AND THE MANAGER GATE
   PUBLISHED IT: 187 rows / 204 plans / 278,339 ppl / $116,678,251 stop being
   told their short-term bond holding is HOMESTEAD's.** `managerPhrase` extends
