@@ -44,6 +44,24 @@ const aggPlan = byAssets.find((r) =>
   !g(r, "sf") && ((bootBits[rowOf.get(r)] || 0) & 4096) && (g(r, "assetsEOY") || 0) > 0);
 if (!fullPlan || !trustPlan || !sfPlan) fail("could not pick specimen plans from data");
 if (!aggPlan) fail("could not pick a filed-in-aggregate specimen — no live plan carries bit 4096");
+/* PARTICIPANT LOANS, 2026-09-28. 482 published menus carry a row named `LOAN
+ * FUND` / `Loans` / `Participant Loans` — a plan ASSET that Schedule H line 4i
+ * correctly reports, but not something a participant can pick off a menu.
+ * app.js types and tints it. The specimen is chosen by a PROPERTY IT HAS (its
+ * lineup shard carries a loan-named row) rather than by a remembered ack,
+ * because addressing a control by a recalled identifier has read as a control
+ * FAILING twice on this record. */
+const LOAN_FIND = /^(?:participant[- ]?)?loans?\b|^notes? receivable from participants?\b/i;
+const shardOf = (a) => { let h = 0; for (const c of a) h = (h * 31 + c.charCodeAt(0)) >>> 0; return String(h % 64).padStart(2, "0"); };
+const loanPlan = byAssets.find((r) => {
+  const ack = g(r, "ack");
+  if (!ack || g(r, "sf") || !((idx[ack] || 0) & 1)) return false;
+  try {
+    const e = JSON.parse(readFileSync(`data/lineups/${shardOf(ack)}.json`, "utf8"))[ack];
+    return !!(e && (e.funds || []).some((f) => LOAN_FIND.test(String(f.name || "").trim())));
+  } catch { return false; }
+});
+if (!loanPlan) fail("could not pick a participant-loan specimen — no published menu carries a loan row");
 /* bit 65536: the plan's own rows say its money is an interest in a master
  * trust we could not link. Six plans, 75,808 participants - small, but they
  * were being told something false about their filing, so the page they get
@@ -148,6 +166,23 @@ try {
   if (/we could not match this plan to that return/i.test(t6.replace(/\s+/g, " ")))
     fail("trust-linked-opaque: page claims we could not match a trust we DID match");
 
+  /* A loan row must READ as a loan: labelled, and carrying no expense ratio.
+   * The predicate lives once, in app.js; this asserts the RENDER instead of a
+   * second copy of the rule — and it asserts it on the page, because a
+   * store-side count called a live regression an improvement earlier today. */
+  const tL = await openPlan(loanPlan, "participant-loan");
+  const loanCells = await page.evaluate(() => [...document.querySelectorAll("tr")]
+    .map((tr) => [...tr.querySelectorAll("td")].map((x) => x.innerText.replace(/\s+/g, " ").trim()))
+    .filter((td) => td.length >= 5 && /^(?:participant[- ]?)?loans?\b|^notes? receivable from participants?\b/i.test(td[0]))
+    .map((td) => ({ name: td[0], type: td[1], er: td[2] })));
+  if (!loanCells.length) fail("participant-loan: specimen rendered no loan row at all");
+  for (const c of loanCells) {
+    if (!/not a menu choice/i.test(c.type))
+      fail(`participant-loan: ${JSON.stringify(c.name)} renders type ${JSON.stringify(c.type)} — it is a plan asset, not a menu choice`);
+    if (c.er !== "\u2014")
+      fail(`participant-loan: ${JSON.stringify(c.name)} publishes an expense ratio (${JSON.stringify(c.er)}) — a loan has none`);
+  }
+
   const t4 = await openPlan(aggPlan, "filed-in-aggregate");
   if (!/in aggregate/i.test(t4))
     fail("filed-in-aggregate: page does not explain that the FILING reports investments in aggregate");
@@ -175,7 +210,7 @@ try {
   /* Same drift protection for the coverage band: scripts/lib-disclose.mjs is
    * canonical, app.js carries a twin because it is a plain browser script.
    * Run the BROWSER copy against the module's own boundary cases. */
-  const { coverageBand, frozenClaimOk, cleanFiledName } = await import("./lib-disclose.mjs");
+  const { coverageBand, frozenClaimOk, cleanFiledName, isParticipantLoanRow } = await import("./lib-disclose.mjs");
   const frozCases = [
     [true, "The Plan was terminated effective December 31, 2023.", "Capital Region Medical"],
     [true, "As amended on December 31, 2024, the Plan was frozen and all participants of the Plan became fully vested.", "Hanes Companies, Inc."],
@@ -249,6 +284,33 @@ try {
     return cs.map((n) => window.__wampoCleanFiledName(n));
   }, nameCases);
   if (!nameGot) fail("app.js no longer exposes __wampoCleanFiledName — the filed-name cleaner cannot be cross-checked");
+
+  /* THE PARTICIPANT-LOAN PREDICATE, tethered 2026-09-28. It lives twice —
+   * canonical in scripts/lib-disclose.mjs for the crawlable pages, twinned in
+   * app.js for the report — so the two are held together the way the filed-name
+   * cleaner is. Eight of these are REAL FUNDS whose names contain "loan" and
+   * must come back false, including J&J's `Loans Secured By Mtges-Resid.`,
+   * which my own first measurement of this class wrongly counted as a loan. */
+  const loanCases = ["LOAN FUND", "Loan Fund", "Loans", "Loan", "Participant Loans",
+    "Notes Receivable from Participants", "Loan Fund (4.25% - 9.5%)", "Loans to Participants",
+    "LOAN FUND, 4.25%-9.50%", "Participant note",
+    "Bank Loan Fund", "Floating Rate Loan Fund", "Senior Loan Portfolio",
+    "Loans Secured By Mtges-Resid.", "Loomis Sayles Core Plus Bond",
+    "Invesco Senior Loan ETF", "Loan Participation Fund", "Eaton Vance Floating Rate"];
+  const loanGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoLoanRow !== "function") return null;
+    return cs.map((n) => window.__wampoLoanRow(n));
+  }, loanCases);
+  if (!loanGot) fail("app.js no longer exposes __wampoLoanRow — the participant-loan predicate cannot be cross-checked");
+  const loanDrift = loanCases.filter((n, i) => isParticipantLoanRow(n) !== loanGot[i]);
+  if (loanDrift.length) {
+    for (const n of loanDrift) console.error(`  ${JSON.stringify(n)}  app.js=${loanGot[loanCases.indexOf(n)]}  module=${isParticipantLoanRow(n)}`);
+    fail(`the participant-loan predicate in app.js disagrees with scripts/lib-disclose.mjs on ${loanDrift.length} of ${loanCases.length} names`);
+  }
+  for (const n of loanCases.slice(0, 10))
+    if (!isParticipantLoanRow(n)) fail(`participant-loan predicate no longer recognises a loan row: ${JSON.stringify(n)}`);
+  for (const n of loanCases.slice(10))
+    if (isParticipantLoanRow(n)) fail(`participant-loan predicate now damages a REAL FUND: ${JSON.stringify(n)}`);
   const nameDrift = nameCases.filter((n, i) => cleanFiledName(n) !== nameGot[i]);
   if (nameDrift.length) {
     for (const n of nameDrift) console.error(`  ${JSON.stringify(n)}\n    app.js: ${JSON.stringify(nameGot[nameCases.indexOf(n)])}\n    module: ${JSON.stringify(cleanFiledName(n))}`);

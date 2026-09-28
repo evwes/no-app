@@ -10,7 +10,7 @@
  * EIN-PN (stable forever, no orphans when a sponsor renames). */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { matchQuoteOk } from "./lib-quote.mjs";
-import { coverageBand, filedUnit, cleanFiledName } from "./lib-disclose.mjs";
+import { coverageBand, filedUnit, cleanFiledName, isParticipantLoanRow } from "./lib-disclose.mjs";
 
 const BASE = "https://evwes.github.io/no-app"; // becomes the custom domain when DNS lands
 const TOP_N = 5000;
@@ -182,7 +182,16 @@ for (const r of d.plans.slice(0, TOP_N)) {
     ["Auto-enrollment", ff.autoEnroll ? esc(String(ff.autoEnroll === true ? "Yes (per the filing)" : ff.autoEnroll)) : /2S/.test(g(r, "codes") || "") ? "Yes (Form 5500 code 2S)" : nStat()],
   ];
 
-  const fundRows = funds ? funds.map((f) => `<tr><td>${esc(titleCase(cleanFiledName(f.name)))}</td><td class="num">${usd(f.value || 0)}</td></tr>`).join("") : "";
+  /* This table's only columns are Fund and Value — there is no type column to
+   * carry the qualifier the report shows, so a participant-loan row would read
+   * as a fund a member could pick. 18 pages / 282,081 participants on the v188
+   * store. Say it in the name instead; the value stays, so the money is still
+   * accounted for (the report's treatment, and v181's before it). */
+  const fundRows = funds ? funds.map((f) => {
+    const nm = cleanFiledName(f.name);
+    const label = titleCase(nm) + (isParticipantLoanRow(nm) ? " — participant loans, not a menu choice" : "");
+    return `<tr><td>${esc(label)}</td><td class="num">${usd(f.value || 0)}</td></tr>`;
+  }).join("") : "";
   const provRows = fee && fee.p ? fee.p.slice(0, 6).map((p) =>
     `<tr><td>${esc(titleCase(p.n))}</td><td>${esc(decodeServices(p.c).slice(0, 3).join(", ") || "—")}</td><td class="num">${usd(p.d || 0)}</td></tr>`).join("") : "";
   const peers = peerNote(participants, adminRaw);

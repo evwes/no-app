@@ -496,3 +496,23 @@ export function cleanFiledName(name) {
   s = s.replace(/[\s\-–,;:]+$/, "").trim();
   return /[A-Za-z]{3}/.test(s) ? s : String(name).trim();
 }
+
+/* PARTICIPANT LOANS ARE NOT A MENU CHOICE — canonical copy, 2026-09-28.
+ * Schedule H line 4i lists participant loans because they ARE plan assets, but
+ * nobody can pick `LOAN FUND` off a menu. 482 published menus carry one, and
+ * 18 crawlable pages / 282,081 participants list it under a column headed
+ * "Fund" with no type column to qualify it.
+ *
+ * app.js keeps a twin because it is a plain browser script with no module
+ * system; `smoke-test.mjs` runs the BROWSER copy against this one and fails on
+ * drift. The regex below is EXTRACTED VERBATIM from app.js by script, never
+ * retyped — a transcribed copy of a shipped rule has produced a wrong answer
+ * on this record at least four times.
+ *
+ * ANCHORED, which is what keeps real funds safe: `Bank Loan Fund`, `Floating
+ * Rate Loan Fund`, `Senior Loan Portfolio` and J&J's real `Loans Secured By
+ * Mtges-Resid.` are all refused, and all four are pinned controls. */
+export const LOAN_ROW = /^(?:participant[- ]?)?loans?(?:\s*(?:fund|receivable|to participants?|account))?\b[\s.,;:()%\d-]*$|^(?:notes? receivable from |loans? to )participants?\b|^participant notes?\b/i;
+export function isParticipantLoanRow(name) {
+  return LOAN_ROW.test(String(name || "").trim());
+}

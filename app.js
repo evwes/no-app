@@ -713,7 +713,8 @@
     s = s.replace(/[\s\-–,;:]+$/, "").trim();
     return /[A-Za-z]{3}/.test(s) ? s : String(name).trim();
   }
-  window.__wampoCleanFiledName = cleanFiledName;  // read by the smoke test only
+  window.__wampoCleanFiledName = cleanFiledName;
+  window.__wampoLoanRow = (n) => LOAN_ROW.test(String(n || "").trim());  // read by the smoke test only
   /* Misspellings of a fund HOUSE that appear in filed 4i schedules, each one
    * observed in the store rather than imagined, and each a transposition or
    * dropped letter in a house name — never a fund name, where a near-miss
@@ -1673,11 +1674,38 @@
 
   /* Value-weighted estimated expense ratio across a filed lineup; null until
    * fund-er.js patterns cover at least half the lineup's value. */
+  /* PARTICIPANT LOANS ARE A PLAN ASSET AND NOT A MENU CHOICE. Schedule H line
+   * 4i lists them because they ARE plan assets, but nobody can pick `LOAN
+   * FUND` off a menu, and printing it among the funds says they can. 483 rows
+   * / 483 plans / 1,372,445 participants / $1,251,824,848 on the v188 store —
+   * exactly one row per plan, which is what a clean class looks like.
+   *
+   * MEASURED BEFORE THIS WAS WRITTEN, and it NARROWED the defect: 0 of the 483
+   * render a ticker and 0 render an expense ratio, so there is no fabricated
+   * fee here and the queue entry that implied one was wrong. What remains is
+   * presentational.
+   *
+   * ANCHORED on purpose — that is what keeps real funds safe. `Bank Loan
+   * Fund`, `Floating Rate Loan Fund`, `Senior Loan Portfolio` and `Loomis
+   * Sayles Core Plus Bond` are all refused, and all four are pinned controls.
+   *
+   * NOT what v131 fixed: that removed loan DESCRIPTION rows (`rates ranged
+   * from 4.25% to 9.50%`, 7,052 rows → 9). A row literally NAMED `Loan Fund`
+   * survived it untouched. A fix for one phrasing of a class is not a fix for
+   * the class. */
+  const LOAN_ROW = /^(?:participant[- ]?)?loans?(?:\s*(?:fund|receivable|to participants?|account))?\b[\s.,;:()%\d-]*$|^(?:notes? receivable from |loans? to )participants?\b|^participant notes?\b/i;
   function filedAvgER(plan) {
     const lu = plan.filedLineup;
     if (!lu) return null;
     let total = 0, matchedVal = 0, weighted = 0, matched = 0;
     for (const f of lu.funds) {
+      /* a loan is not a fund, so it must not count against fee COVERAGE. The
+       * gate is matchedVal/total and loans never match, so they only ever
+       * pushed plans below it. Strictly additive by construction — excluding
+       * rows from `total` can only RAISE the ratio — and measured: 3 plans /
+       * 2,255 ppl newly publish an average-ER line, 0 lose one, and not one
+       * published ER VALUE changes, because loans were never in the numerator. */
+      if (LOAN_ROW.test(f.name || "")) continue;
       total += f.value;
       const er = (f.cit || /collective trust|pooled separate/i.test(f.type || "")) ? null : fundER(f.name);
       if (er != null) { matchedVal += f.value; weighted += er * f.value; matched++; }
@@ -1736,6 +1764,13 @@
        * names in the class, with or without the type, so the ticker half is
        * belt-and-braces for future callers. */
       const subtotalRow = /^subtotal \(not a holding\)$/i.test(f.type || "");
+      /* participant loans — see LOAN_ROW above. Treated exactly as v181 treats
+       * a subtotal: typed and tinted, never dropped, and left in the
+       * percentage denominator so the money stays accounted for. Their share
+       * is at most 10.9% of a menu and usually 1-3%; removing them would
+       * rewrite every other row's published percentage for 1.37M readers to
+       * buy a cosmetic gain. */
+      const loanRow = LOAN_ROW.test(f.name || "");
       /* v67 entries carry the 4i identity column as f.iss ("Vanguard",
        * "Western Asset"). Ticker matching sees issuer + name together, which
        * is what makes "Core Bond IS" resolvable at all; entries parsed
@@ -1748,7 +1783,7 @@
        * 3.10M participants resolve on the bare name and fail with the
        * prefix — blank fee cells since v67. Try issuer+name first (keeps
        * every existing win), then the bare name. Strict superset. */
-      const info = tab === "menu" && !gicRow && !subtotalRow
+      const info = tab === "menu" && !gicRow && !subtotalRow && !loanRow
         ? lookupTicker(f)
         : null;
       // employer stock IS a listed security: the plan's own ticker names it
@@ -1758,15 +1793,16 @@
       const tk = stockRow ? (plan.ticker || null) : (info ? info.tk : (f.tk || null));
       const star = !stockRow && info && info.comparable;
       if (star) starred = true;
-      const er = tab !== "menu" || stockRow || gicRow || subtotalRow ? null
+      const er = tab !== "menu" || stockRow || gicRow || subtotalRow || loanRow ? null
         : star ? info.er : (noPublicPrice ? null : fundERFiled(f.name));
       // the brokerage window is a menu choice with no holdings of its own —
       // tint it so it reads as a doorway, not a fund (owner request)
       const brokRow = /brokerage window/i.test(f.type || "")
         || /brokerage|self.?directed|self.?managed|brokeragelink|\bpcra\b/i.test(f.name);
-      const shownType = f.type || (brokRow ? "Brokerage window" : "—");
+      const shownType = loanRow ? "Participant loans — not a menu choice"
+        : f.type || (brokRow ? "Brokerage window" : "—");
       return `
-      <tr${brokRow || subtotalRow ? ` class="row-brokerage"` : ""}>
+      <tr${brokRow || subtotalRow || loanRow ? ` class="row-brokerage"` : ""}>
         <td class="fund-name-col"><div class="fund-name">${f.iss ? `<span class="fund-issuer">${esc(f.iss.replace(/\*+/g, "").trim())} · </span>` : ""}${esc(f.name)}</div>${tk ? `<div class="fund-ticker">${esc(tk)}${star ? "*" : ""}</div>` : ""}</td>
         <td class="fund-type">${esc(shownType)}</td>
         <td class="num">${er != null ? er.toFixed(er < 0.1 ? 3 : 2) + "%" + (star ? "*" : "") : "—"}</td>
