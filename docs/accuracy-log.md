@@ -24066,3 +24066,60 @@ handed to the next cycle rather than shipped at 00:3xZ without a member read of
   (the `fund-facts` agent's) — and that file has been empty since it was
   created on 2026-09-17. Per-vintage, per-class tickers must be **verified with
   a source**, never derived, which is exactly what that machinery exists for.
+
+## 2026-09-28 (03:3xZ) — The American Funds fee table was calibrated for ONE share class and priced all of them
+
+- **Wrong:** `fund-er.js` heads that block with its own comment —
+  `--- American Funds (R6) ---` — and **not one pattern beneath it tests the
+  share class**. So a holding the filing names `American Funds Eupac R4`,
+  `American Balanced Fund Class A` or `American Funds Trgt Date Ret 2040 R2`
+  published the R-6 number. R-1 through R-4, Class A, Class C and F-1 pay a
+  12b-1 fee that R-5, R-6 and F-2 do not. **10,387 rows / 2,227 plans /
+  2,065,081 participants / $9,258,280,862.**
+- **Change:** `fundER` refuses a name that states a 12b-1 class of this house.
+  Measured through the display path, both directions: **0 cells added, 0 fee
+  values changed, 0 removed without a stated 12b-1 class, 0 such rows kept a
+  fee.** The guard only ever refuses.
+- **NO REPLACEMENT NUMBER, and that is the decision rather than a shortcut.**
+  The real per-class figures could not be SOURCED from here —
+  `capitalgroup.com` and the Voya fact sheets are both blocked by the egress
+  proxy — and a fee on this site is sourced, never derived. So the claim is
+  **withdrawn instead of replaced**. *A blank is honest; a name reads as
+  knowledge* is already on this record about recordkeepers, and it holds at
+  least as hard for fees: a blank says "we cannot identify this", which is
+  true, where 0.32% on an R-2 holding says something false.
+- **Confined to this house on purpose.** The evidence for which class the
+  numbers are is **in this repository** — the block's own header. MFS, Putnam
+  and the rest have share classes too, but nothing in the table states which
+  class their numbers are, so refusing them would be a guess in the other
+  direction. `MFS Value Fund Cl A` is pinned as a control that must KEEP its
+  number for exactly that reason.
+- **HOW THE CYCLE GOT HERE IS THE MORE USEFUL HALF.** The queue item was the
+  missing **ticker** on the American Funds target-date series (58,930 rows /
+  4,410,671 ppl / $110.3B, zero resolving). Measuring what those rows publish
+  **today**, before trying to add anything, showed 96.5% already carry an
+  expense ratio — and that every share class carries the same one. **A wrong
+  number outranks an absent one**, so the cycle changed target. The ticker gap
+  stays queued and needs sourcing the same way.
+- **A failing spot-check was MY TEST, not the code.** `AMERICAN EUROPACIFIC
+  GROWTH R6` came back blank and read as a regression; **at HEAD it was already
+  blank**, because the pattern requires the word `funds` and that filed name
+  omits it. Checked against HEAD before recording it. A separate, small
+  coverage gap — recorded, not fixed.
+- **And the harness was the bottleneck twice.** The first measurement swept all
+  1,720,349 published rows through two tables and was still running after ten
+  minutes. Both halves are settled by the code's SHAPE instead: the guard's
+  first condition is `AF_HOUSE`, so rows outside that house cannot change, and
+  **`fundER` is referenced nowhere in fund-er.js outside its own definition**,
+  so no ticker can move. Scoped to 139,644 rows it answers in seconds.
+  **A structural fact beats a sweep.**
+- **Prevention, and the gap it closes is embarrassing in the right way:**
+  `scripts/fund-er-test.mjs` tested **tickers only and never once tested a
+  FEE** — which is how a block could be calibrated for one class and applied to
+  all of them with a CI guard running on every push. It now carries nine
+  must-blank and nine must-keep fee fixtures, **negative-controlled**: disabling
+  the guard fails all nine and prints the exact wrong fees (`American Funds
+  Capital World Bond R3` at 0.4%, `American Funds Washington Mutual Cl C` at
+  0.26%).
+- **Surface:** the crawlable pages render no per-fund expense ratio at all, so
+  this reaches the **report only**.

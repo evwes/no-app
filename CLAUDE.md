@@ -894,7 +894,31 @@ export, do not copy the line.
   (2,673 ppl) did not**, because it sits outside `TOP_N = 5000`. A fix that
   shipped today demonstrably cannot reach it. Still the owner's call, because
   fixing it changes which URLs exist.
-- **QUEUED from the 02:0xZ draw, and it is the largest ticker gap on record:
+- **SHIPPED 2026-09-28 03:3xZ — THE AMERICAN FUNDS FEE TABLE WAS CALIBRATED FOR
+  ONE SHARE CLASS AND PRICED ALL OF THEM: 10,387 fee cells removed / 2,227
+  plans / 2,065,081 ppl / $9,258,280,862.** `fund-er.js` heads that block with
+  its own comment — `--- American Funds (R6) ---` — and no pattern beneath it
+  tests the class, so `American Funds Eupac R4`, `American Balanced Fund Class
+  A` and `American Funds Trgt Date Ret 2040 R2` all published the R-6 number.
+  **0 added, 0 values changed, 0 over-reach, 0 under-reach** — the guard only
+  refuses. **NO REPLACEMENT NUMBER**: the per-class figures could not be
+  SOURCED (capitalgroup.com and the Voya fact sheets are both egress-blocked)
+  and a fee here is sourced, never derived, so the claim is WITHDRAWN rather
+  than replaced. Confined to this house because the evidence is in-repo; `MFS
+  Value Fund Cl A` is pinned as a control that must KEEP its number.
+  **HOW THE CYCLE GOT THERE IS THE LESSON: the queue item was the missing
+  TICKER, and measuring what those rows publish TODAY before adding anything
+  showed 96.5% already carry an ER and every class carries the same one. A
+  wrong number outranks an absent one**, so the target changed.
+  **`fund-er-test.mjs` tested tickers only and had NEVER tested a fee** — now
+  nine must-blank and nine must-keep fixtures, negative-controlled (disabling
+  the guard fails all nine and prints the wrong fees). Surface: the crawlable
+  pages render no per-fund ER, so this reaches the REPORT only.
+  **And the harness was the bottleneck twice** — a 1.7M-row sweep still running
+  after ten minutes, when the guard's first condition is `AF_HOUSE` and
+  `fundER` is called nowhere else in the file. **A structural fact beats a
+  sweep.**
+- **STILL QUEUED, and unchanged by the above:
   THE AMERICAN FUNDS TARGET-DATE SERIES RESOLVES TO NO TICKER — 58,930 rows /
   5,903 plans / 4,410,671 ppl / $110,346,044,084, and 0 resolve**, while
   **56,870 (96.5%) already carry an estimated ER**. So `fund-er.js` prices the
