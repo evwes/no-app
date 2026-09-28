@@ -291,7 +291,7 @@ const KERN_WORDS = new Set(("vanguard fidelity blackrock schwab invesco pimco pu
   "target retirement trust trusts fund funds index institutional instl inst admiral adm investor inv shares share class cl plus select premium growth value blend core total stock market mkt intl international global emerging markets developed world equity equities bond bonds fixed income high yield short term intermediate long treasury government govt inflation protected securities tips real estate reit mid cap small large extended balanced moderate conservative aggressive money mutual common collective commingled pooled separate account accounts stable capital preservation guaranteed interest contract contracts insurance company general portfolio portfolios lifepath lifecycle freedom smartretirement retire strategic allocation dividend appreciation opportunities opportunity health sciences technology sector explorer windsor primecap wellesley star " +
   "interests option options unit units series contributions participant participants loans notes receivable " +
   "us u.s. ii iii iv r6 r5 r4 r3 r2 r1 k6 k a b c d e f g h i j l m n o p q r s t u v w x y z z6 z3 cit cits ret rtmt idx fd tr blnd").split(/\s+/));
-function despaceKerned(name) {
+export function despaceKerned(name) {
   const toks = name.trim().split(/\s+/);
   // the kerning signature is a word broken INSIDE: a lowercase-initial
   // fragment after the first token ("V an", "Targe t", "Fu nd"). Real names
@@ -433,6 +433,46 @@ export function cleanFiledName(name) {
     const rest = s.slice(cm[0].length).trim();
     const notAName = /^(?:at|of|in|on|for|and|as|to|with|per|net|@)\b|^(?:fee\s+)?class\b|^series\b|^unit/i;
     if (/[A-Za-z]{3}/.test(rest) && !notAName.test(rest)) s = rest;
+  }
+  /* THE BARE-WHITESPACE FAMILY, 2026-09-28 — caption class B's largest arm.
+   * A vehicle type followed by nothing but a space: "Registered Investment
+   * Company Vanguard Inter-Term Bnd Index Fd Adm", "Common/Collective Trust
+   * Prin LifeTime Hybr 2035 CIT Z". Refused twice before, and the refusals
+   * were right both times: a blanket strip turns "Stable Value Fund Fee Class
+   * R1" into "Fee Class R1", and an outcome gate (strip only where the
+   * remainder resolves through fund-er.js) reached 19 rows because that table
+   * cannot name a Principal separate account or a CIT BY DESIGN.
+   *
+   * The last handoff proposed a HOUSE LIST and named its own weakness. It is
+   * not needed: printing every distinct remainder split the family at FOUR
+   * TOKENS. Below that sit `Shares`, `Fee Class R1`, `and`, `Omitted`, `III`,
+   * `at fair value`; at or above it sit `Fidelity Freedom Index 2030`,
+   * `T. Rowe Price Overseas`, `PGIM Ttl Ret Bond R2 Fund`, `Am Fds
+   * EuroPacific Grth R6 Fd` — the last two exactly the names a typed house
+   * list missed. LENGTH is the discriminator; the data said so, not me.
+   *
+   * Length alone is not enough — "Stable Value Fund Class 25 - I" is four
+   * tokens of pure designation — so the remainder must also OPEN with a token
+   * that carries naming content. Each exclusion below was earned by reading a
+   * suspect, and one of them is the v188 pinned DECOY: `Separate Account A,
+   * at fair value` survives only because the comma is stripped before `A` is
+   * judged a bare code. GICs leave the vocabulary entirely, because a GIC's
+   * filed name really is the type plus a CONTRACT NUMBER (`GA 29013 DTD
+   * 04/28/11`). The participles are what saved the OTHER pinned control:
+   * `Index Fund invested in stocks included in the S&P 500` was being cut to
+   * `invested in stocks…` until `invested` joined the furniture — a control
+   * written last cycle caught this cycle's draft, which is what controls are
+   * for. 2,369 rows / 237 plans / 305,540 ppl, +10 tickers, 0 lost. */
+  const bwTYPE = /^(?:common\/?collective trusts?(?: funds?)?|collective investment trusts?(?: funds?)?|registered investment compan(?:y|ies)|pooled separate accounts?|separate accounts?|mutual funds?|money market funds?|stable value funds?|index funds?|target date funds?)/i;
+  const bm = s.match(new RegExp(bwTYPE.source + "\\s+(?=[A-Za-z0-9])", "i"));
+  if (bm) {
+    const rest = s.slice(bm[0].length).trim();
+    const toks = rest.split(/\s+/);
+    const t0 = toks[0].replace(/[^A-Za-z0-9&]/g, "");
+    const furniture = /^(?:class(?:es)?|cl|fee|fees|series|ser|shares?|sh|units?|tier|lot|level|at|of|in|on|for|and|or|as|to|with|per|net|the|a|an|value|values|fair|contract|market|cost|book|nav|bps|no|not|required|omitted|available|na|none|total|subtotal|held|directed|participant|participants|self|various|other|misc|continued|cont|certified|uncertified|approx|approximate|number|amount|wrapper|cit|gac|invested|issued|managed|measured|consisting|comprised|including|investments)$/i;
+    const code = /^(?:[ivxl]{1,4}|[a-z]|[a-z]?\d{1,6}[a-z]?|[a-z]{1,2}\d{1,4}|\d+bps)$/i;
+    if (toks.length >= 4 && t0 && !furniture.test(t0) && !code.test(t0)
+        && !bwTYPE.test(rest) && /[A-Za-z]{3}/.test(rest)) s = rest;
   }
   // the leading-dash strip at the top of this function runs BEFORE the type
   // prefix above, so "Stable Value Fund- — John Hancock Life Insurance

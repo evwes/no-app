@@ -232,6 +232,12 @@ try {
     "Pooled Separate Account, TIAA Real Estate",
     "Money market fund, Fidelity Govt Money Market Fund",
     "Mutual Fund, The Growth Fund of America",
+    /* the bare-whitespace family, 2026-09-28 */
+    "Registered Investment Company Vanguard Inter-Term Bnd Index Fd Adm",
+    "Common/Collective Trust Prin LifeTime Hybr 2035 CIT Z",
+    "Registered Investment Company PGIM Ttl Ret Bond R2 Fund",
+    "Registered Investment Company Am Fds EuroPacific Grth R6 Fd",
+    "Pooled Separate Accounts Prin LgCp S&P 500 Index SA-Z",
     /* controls: a real name whose vehicle word is part of it, a bare type that
      * must stay visible to the generic-name audit, and a real quoted class */
     "Index Fund invested in stocks included in the S&P 500",
@@ -258,7 +264,24 @@ try {
     ["Stable Value Fund Fee Class R1", "Stable Value Fund Fee Class R1"],
     /* and a real fund whose name opens with "The" — the first draft of the
      * screen flagged this one, which is why `the` is not in it */
-    ["Mutual Fund, The Growth Fund of America", "The Growth Fund of America"]]) {
+    ["Mutual Fund, The Growth Fund of America", "The Growth Fund of America"],
+    /* the bare-whitespace arm's own screen, every entry a suspect that was READ:
+     * a class designation, a bare code (the v188 Affinity Plus DECOY, which
+     * survives only because the comma comes off before `A` is judged), a
+     * furniture opener, a GIC's contract NUMBER, a parenthetical that IS the
+     * description, a designation-only four-token remainder, and an issuer that
+     * stands alone nowhere */
+    ["Mutual Fund Shares", "Mutual Fund Shares"],
+    ["Separate Account A, at fair value", "Separate Account A, at fair value"],
+    ["Money Market Funds Value of Interest in", "Money Market Funds Value of Interest in"],
+    ["GUARANTEED INVESTMENT CONTRACT GA 29013 DTD 04/28/11", "GUARANTEED INVESTMENT CONTRACT GA 29013 DTD 04/28/11"],
+    ["Stable Value Fund (Group Annuity Contract), at contract value", "Stable Value Fund (Group Annuity Contract), at contract value"],
+    ["Stable Value Fund Class 25 - I", "Stable Value Fund Class 25 - I"],
+    ["Stable Value Fund Standard Insurance Company", "Stable Value Fund Standard Insurance Company"],
+    /* and the three the typed house list of the previous cycle would have missed */
+    ["Registered Investment Company PGIM Ttl Ret Bond R2 Fund", "PGIM Ttl Ret Bond R2 Fund"],
+    ["Registered Investment Company Am Fds EuroPacific Grth R6 Fd", "Am Fds EuroPacific Grth R6 Fd"],
+    ["Registered Investment Company JP Morgan Large Cap Growth Fd", "JP Morgan Large Cap Growth Fd"]]) {
     if (cleanFiledName(n) !== want) fail(`the filed-name cleaner now damages a control: ${JSON.stringify(n)} -> ${JSON.stringify(cleanFiledName(n))}`);
   }
 
