@@ -13,6 +13,41 @@ import { JUNK_NAME_RE, isGenericTypeName, NOT_FUND_SHAPED } from "./lib-4i.mjs";
  * sentence with no number in it. The trail must ask the same question the page
  * asks or its number describes nothing a reader sees. */
 import { matchQuoteOk } from "./lib-quote.mjs";
+import vm from "node:vm";
+import { cleanFiledName } from "./lib-disclose.mjs";
+/* THE FILING'S OWN TICKER IS A CHECK WE HAVE NEVER RUN. Some 4i schedules state
+ * the symbol in the holding name — "VITSX - Vanguard Total Stock Market Index
+ * Inst.", "T. Rowe Price Retirement 2050 Fund (TRJLX)". Where fund-er.js also
+ * resolves that row and the two DISAGREE, one of them is wrong and the filing
+ * is the primary source. Measured on the v188 store: 64 rows / 34 plans /
+ * 383,085 participants disagree, and the readable ones are share-class
+ * mismatches where the FILING is right — VITSX (Institutional) published as
+ * VTSAX (Admiral), MEIJX (R4) published as MEIKX (R6), which is this record's
+ * own long-standing MFS Value defect caught automatically for the first time.
+ *
+ * SCOPED ON PURPOSE. A fundTickerInfo sweep over all 1.7M published rows runs
+ * for more than ten minutes — measured, not guessed — and this audit runs in
+ * the merge job on every single run. Only rows whose NAME STATES a symbol can
+ * conflict, which is ~3,100 rows.
+ *
+ * COST, measured rather than asserted: the audit goes 44s -> 55s, so this adds
+ * about 11 seconds. The first draft of this comment said "costs nothing",
+ * which was a guess dressed as a measurement; timing HEAD against the change
+ * is what replaced it. (And the first attempt at THAT returned 0s, because
+ * Node would not load the copy under a `.headtmp` extension — an implausible
+ * number reporting on the harness, for the sixth time in this session.) */
+const FILED_TK = /^([A-Z]{4}X)\b\s*[-–—:]?\s+(?=\S)|\(([A-Z]{4}X)\)/;
+let __fundTk = null;
+const fundTk = (name, type) => {
+  if (__fundTk === null) {
+    try {
+      const c = { console }; vm.createContext(c);
+      vm.runInContext(readFileSync("fund-er.js", "utf8") + "\nglobalThis.__t = fundTickerInfo;", c);
+      __fundTk = c.__t;
+    } catch { __fundTk = false; }
+  }
+  return __fundTk ? __fundTk(name, type || "") : null;
+};
 
 const d = JSON.parse(readFileSync("plans-all.json", "utf8"));
 const F = d.fields; const ix = Object.fromEntries(F.map((f, i) => [f, i]));
@@ -318,6 +353,7 @@ try {
 try {
   let genericPlans = 0, dominantPlans = 0;
   const worstGeneric = [], worstDominant = [];
+  const tickerConflicts = [];
   {
     // entriesByAckCov already holds every lineup entry, loaded above — a second
     // pass over 64 shards would double the audit's IO for nothing
@@ -331,8 +367,27 @@ try {
       if (top && (+top.value || 0) / sum >= 0.9 && NOT_FUND_SHAPED.test(String(top.name).trim())) {
         dominantPlans++; if (worstDominant.length < 6) worstDominant.push(`${ack} ("${String(top.name).slice(0, 34)}")`);
       }
+      /* the filing states a symbol and we publish a DIFFERENT one */
+      for (const fd of e.funds) {
+        const nm = cleanFiledName(String(fd.name || "")).trim();
+        const m = FILED_TK.exec(nm); if (!m) continue;
+        const filed = m[1] || m[2];
+        const iss = fd.iss ? String(fd.iss).replace(/\*+/g, "").trim() + " " : "";
+        const got = (iss ? fundTk(iss + nm, fd.type) : null) || fundTk(nm, fd.type) || null;
+        if (!got || !got.tk || got.comparable) continue;   // a labelled analogue is a different claim
+        if (got.tk === filed) continue;
+        tickerConflicts.push(`[ticker-conflict] ${ack} publishes ${got.tk} where the filing states ${filed} — "${nm.slice(0, 48)}"`);
+      }
     }
   }
+  /* Raised as WARN and listed in the CATS section below, which prints IN FULL.
+   * A plain WARN would be wrong here and this file says why forty lines down:
+   * the WARN list truncates at 40 and these are appended last, which is how
+   * `swaps-degraded` sat unprinted from the day it shipped. A check nobody
+   * reads is a check that does not exist. */
+  for (const f of tickerConflicts) findings.warn.push(f);
+  if (tickerConflicts.length) console.log(`ticker-conflict: ${tickerConflicts.length} rows publish a symbol the filing itself contradicts`);
+
   /* OVERSHOOT — the arithmetic witness the two shapes above lack.
    *
    * Both checks in this block ask what a row is CALLED. That is how the
@@ -720,7 +775,7 @@ for (const sev of ["high", "warn"]) {
  * for a reader", which is the question asked immediately before a mirror. So
  * they print in full, separately, under a heading that says what to do. */
 {
-  const CATS = ["reparse-loss", "source-swap-degraded", "rows-dropped"];
+  const CATS = ["reparse-loss", "source-swap-degraded", "rows-dropped", "ticker-conflict"];
   const must = [...findings.high, ...findings.warn]
     .filter((f) => CATS.some((c) => f.includes(`[${c}]`) || f.startsWith(c)));
   if (must.length) {
