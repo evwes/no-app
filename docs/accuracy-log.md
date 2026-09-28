@@ -23957,3 +23957,19 @@ handed to the next cycle rather than shipped at 00:3xZ without a member read of
   of an anchored alternation is a *silent* second anchor position. Any future
   arm written this way should either be measured against a remainder-shape
   control or have the optional group made non-backtrackable.
+- **AND THE RESIDUE I NAMED IN THE SAME COMMIT WAS EYEBALLED AND BOTH FIGURES
+  WERE LOW.** I wrote "about 45 rows" of leading parenthetical and "~20" of
+  em-dash connective, counted off a suspect print. Measured whole-store:
+  **parenthetical 140 rows / 126 plans / 371,504 ppl**, **em-dash or underscore
+  68 rows / 6 plans / 72,865 ppl**. Counting a printed list by eye is the same
+  error as trusting a proxy, and it happened in the very entry that recorded the
+  proxy version of it.
+- **Both are handed on with the shape a fix needs, not just a size.** The
+  parenthetical class is MIXED and cannot take a blanket strip: `Stable Value
+  Fund (i)`, `(at fair value)`, `(contract value)` are the holding's own
+  description, while `(continued)`, `(Continued)` and `(held by Voya Retirement
+  Insurance and Annuity Company)` are page furniture — so it needs the same
+  member read this arm got. The em-dash class is **6 plans**, and its remainders
+  carry OCR noise (`— 2040 Target Date ee`, `— 2050 Target Date +e`), so what a
+  strip would publish is a vintage plus a category plus garbage: worth naming as
+  small and low-value rather than queueing as a win.
