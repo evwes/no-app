@@ -24504,3 +24504,42 @@ handed to the next cycle rather than shipped at 00:3xZ without a member read of
   is present, or split reporting from recording. All three change a file the
   merge job depends on, so it is the kind of change that deserves its own cycle
   and its own control rather than being bolted onto this one.
+
+## 2026-09-28 (08:3xZ) — Caption class A re-sized: 268 of its rows were never a defect, and shipping the rest needs a tethered predicate
+
+- **The recorded size was 472 rows / 353 plans / 1,291,668 ppl.** Re-derived
+  through the display path: **879 rows / 629 plans / 1,824,694 ppl** carry a
+  bare vehicle type as their whole NAME — but that is not the reader-facing
+  number, and the correction is the point.
+- **268 rows / 129 plans / 477,516 participants are NOT a defect.** `app.js`
+  renders `<span class="fund-issuer">{iss} · </span>{name}`, so a row named
+  `Mutual Fund Shares` whose ISSUER is `Vanguard Target Retirement 2030` reads
+  as a named holding. **That is why ten rows sharing one name resolve to ten
+  different tickers** — the lookup tries issuer+name first and the issuer is
+  carrying the fund. I found this only by asking why a bare type was publishing
+  a specific ticker, which looked like a fabrication and was the opposite.
+  **Measuring the NAME field is not measuring what renders**, for the seventh
+  time in this session.
+- **The honest population is 644 rows / 535 plans / 1,495,874 participants**,
+  with no issuer, where the reader sees only a type. **115 of those rows are
+  ≥50% of their plan's published menu (115 plans / 225,966 ppl)** — the acute
+  part, and the v105 dominant-row shape sitting below the 90% guard threshold.
+- **The name and the type cell say the same word twice**: `Mutual funds` /
+  `Mutual fund` (103 rows), `Registered Investment Company` / `Mutual fund`,
+  `Common collective trust` / `Collective trust`. The type cell is redundant
+  for exactly this population, which is what makes it the right place to put
+  something true instead — *"Filing names no specific fund"*, a filed fact,
+  with the name and the value untouched. The mechanism already exists (v181's
+  subtotals, last night's loans).
+- **Employer stock must be excluded and the exclusion is not cosmetic:**
+  `COMMON STOCK` / `Company stock` is 85 of these rows, and app.js already
+  shows the PLAN'S OWN ticker for them, so the filing does identify the
+  holding. Telling that reader "no specific fund" would be false.
+- **NOT SHIPPED, and the blocker is named rather than vague.** The test needs
+  `isGenericTypeName`, which lives in `lib-4i.mjs` — a module the browser
+  cannot import. Shipping it means a THIRD copy of that predicate (parser,
+  `lib-disclose`, `app.js`), which this record permits only when every copy is
+  tethered, as `frozenClaimOk` is. That is a known, bounded piece of work and
+  it is not tail-of-a-cycle work; a narrower inline test was considered and
+  rejected because "displayed name equals filed type" catches under half the
+  population. The draft was reverted rather than left half-built.
