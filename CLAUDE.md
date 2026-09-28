@@ -687,8 +687,46 @@ export, do not copy the line.
   `audit-dominant-row` **0**, `audit-generic-names` **182**. **`matchQuote`
   5,397 of which only 1,785 are SHOWN to readers** — the condition/outcome pair
   shipped 2026-09-27.
-- **`PARSER_VERSION` in the tree is 188 and the store is at 188. NOTHING IS IN
-  FLIGHT.** #481 (v187 + v188) ran `success` 20:59–21:54Z on `5dd4369d`, store
+- **IN FLIGHT: #489 (v189), dispatched 2026-09-28 13:4xZ by `workflow_dispatch`
+  on the dev branch, observed queued.** A kerned asset-class label no longer
+  defeats the dominance guard: Tides Center (813 ppl) publishes
+  `Regi s tered i nves tment compa ni es` at **97.1%** of a four-row menu, the
+  v105 shape, invisible because a broken font sprays spaces through the label.
+  43 rows / 42 plans / **101,200 ppl** publish such a name; **8 plans / 5,942
+  ppl** have one dominating at ≥90%. The comparison is v141/v142's own — strip
+  the spaces from both sides — DERIVED from `GTA_SOURCE` with the same import
+  assertion the v137 pluralisation and v187 append carry, and placed in
+  `isGenericTypeName` so guard, both audits, `diff-lineups` and the browser twin
+  ask ONE question.
+  **PRE-REGISTERED as a CEILING plus a named set:** `confident` falls by AT MOST
+  8 and every loss must sit inside {Smc Corporation Of America 2,137, Conga
+  1,228, Tides Center 813, Realty Center 504, Finch Paper 437, Ims Masonry 378,
+  11 Capital 251, Ron Bouchard's 194}; `audit-dominant-row` stays 0;
+  `audit-generic-names` 182 → ~212 after the withdrawals.
+  **THE MARGIN IS STATED, NOT TUNED:** on the v188 store the new predicate reads
+  **220 against the 230 escalation threshold**. The count rises because the
+  audit can now see rows it was blind to; the threshold was calibrated against
+  the narrower predicate and **has NOT been raised**. A later run crossing 230
+  is a real signal.
+  **THREE THINGS IT GOT WRONG FIRST, each caught by a control:** (1) the
+  established idiom gates a despaced test on `KERNED`, which fires on **none**
+  of these ten shapes — gating would have made the change inert while every
+  test passed; it is safe ungated because the vocabulary stays ANCHORED, and 22
+  probes including the v188 pinned controls were run before a line shipped;
+  (2) **the smoke tether did NOT fail** when the arm was added — not one of its
+  23 cases reached the new rule, the decorative-guard failure one step later;
+  six kerned cases are pinned and the control now fails by name on exactly six
+  of 29; (3) **the generator that writes the browser twin lived in a session
+  scratchpad and a container restart wiped it, the second time that directory
+  has been cleared mid-session.** It is now `scripts/gen-generic-twin.mjs`, in
+  the repo, probing every arm and refusing to write a truncated block.
+- **MIRRORED 2026-09-28 13:5xZ, UNFORCED** (`7f3d66a → 242971d`, data gate
+  +0 / −0). Carries **v189 CODE over the v188 STORE**, which is safe by
+  `SCHEDULE_INCREMENTAL`, and gets the DISPLAY half to readers now: the 43
+  kerned rows are typed *"Filing names no specific fund"* without waiting for
+  the re-parse. The withdrawal of the 8 dominant lineups needs #489.
+- **`PARSER_VERSION` in the tree is 189 and the store is at 188 until #489
+  lands.** #481 (v187 + v188) ran `success` 20:59–21:54Z on `5dd4369d`, store
   commit `42739932`. #480 (v186) ran `success` 19:54–20:48Z, **+7 / −0**.
 - **MIRRORED 2026-09-28 10:5xZ, UNFORCED ON BOTH CHECKS** (`40d2fa5 →
   7b73ea1`, fast-forward; data gate +0 / −0). Carries run **#485**, dispatched
