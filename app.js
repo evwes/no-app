@@ -729,6 +729,45 @@
       if (nonIdentifying.test(inner) && toks.length >= 2 && bwOpensWithAName(t0)
           && /[A-Za-z]{3}/.test(rest)) s = rest;
     }
+    /* A PAGE BREAK'S `(continued)` MARKER, AND WHATEVER CAPTION CARRIES IT.
+     *
+     * Found by the 09:0xZ participant-weighted draw: Trustees of the University
+     * of Pennsylvania (45,173 participants) publishes a clean 31-row Vanguard
+     * menu with two rows reading `Fidelity Management Trust Company (continued)
+     * VANG SM CP IDX IS PL`. The auditor repeats the section caption at the top
+     * of the next page and the first holding under it absorbs the whole line.
+     *
+     * v173 closed this class in the ISSUER column and this record calls it
+     * closed. It is closed THERE. The same words in the NAME column were never
+     * touched by that fix: 100 rows / 83 plans / 476,960 participants.
+     *
+     * THE ARM ABOVE CANNOT REACH THEM because it requires the string to OPEN
+     * with a vehicle type, and these captions open with a firm (`Fidelity
+     * Management Trust Company`), a heading (`Exchange Traded Funds:`), a model
+     * portfolio (`Renasant Moderate Growth Model -`) or nothing at all. What
+     * makes a wider cut safe here is the marker itself: no fund is named
+     * "(continued)", so everything before it is caption by construction — which
+     * is exactly what caption class B's bare captions cannot claim.
+     *
+     * OUTCOME TEST: +1 ticker, 0 LOST. So this is an HONESTY fix for 476,960
+     * readers, not a fee-coverage one, whatever the row count suggests.
+     *
+     * THE ARTICLE IS WHY THE REMAINDER SCREEN IS RELAXED HERE, and the two rows
+     * that forced it are the same shape that damaged the comma family's first
+     * draft: `John Hancock sub-accounts (continued) The Growth Fund of America`
+     * and `Renasant Growth Model Fund - (Continued) The Hartford Dividend and
+     * Growth Fund` were both REFUSED, because `the` is furniture in the shared
+     * screen. It is furniture when a remainder has to prove it is a name; it is
+     * not when `(continued)` has already proved it. So the article is skipped
+     * for the screen and KEPT in the name. */
+    const contM = s.match(/^.*?\((?:continued|continucd|cont\.?)\)\s*[-–—:,]?\s*(?=\S)/i);
+    if (contM) {
+      const rest = s.slice(contM[0].length).trim();
+      const toks = rest.split(/\s+/);
+      const probe = (/^(?:the|a|an)$/i.test(toks[0]) && toks.length >= 3 ? toks[1] : toks[0] || "")
+        .replace(/[^A-Za-z0-9&]/g, "");
+      if (toks.length >= 2 && /[A-Za-z]{3}/.test(rest) && bwOpensWithAName(probe)) s = rest;
+    }
     // the leading-dash strip at the top of this function runs BEFORE the type
     // prefix above, so "Stable Value Fund- — John Hancock Life Insurance
     // Company" (Empower Electric) came out still wearing the dash. Re-run it

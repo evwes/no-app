@@ -282,11 +282,27 @@ try {
     "Registered Investment Company PGIM Ttl Ret Bond R2 Fund",
     "Registered Investment Company Am Fds EuroPacific Grth R6 Fd",
     "Pooled Separate Accounts Prin LgCp S&P 500 Index SA-Z",
+    /* the page-break `(continued)` family in the NAME column, 2026-09-28 —
+     * captions the earlier arm cannot reach because they open with a firm, a
+     * heading or a model portfolio rather than a vehicle type. The last two
+     * are the ARTICLE cases, which the shared remainder screen refused until
+     * it was told to look past a leading `the`. */
+    "Fidelity Management Trust Company (continued) VANG SM CP IDX IS PL",
+    "Exchange Traded Funds: (continued) iShares U.S. Home Construction ETF",
+    "Stock (Continued) Wingstop Inc",
+    "John Hancock sub-accounts (continued) The Growth Fund of America",
+    "Renasant Growth Model Fund - (Continued) The Hartford Dividend and Growth Fund",
     /* controls: a real name whose vehicle word is part of it, a bare type that
      * must stay visible to the generic-name audit, and a real quoted class */
     "Index Fund invested in stocks included in the S&P 500",
     "Mutual funds",
     "Stable Value Fund",
+    /* controls for the arm above: a caption with NOTHING after it, and one
+     * whose remainder is a bare share class. Neither may be cut — a strip that
+     * leaves a dangling fragment is the defect this record shipped a fix for
+     * once already ("Shares of"). */
+    "Common/Collective Trust Funds (Continued)",
+    "Common/Collective Trust Funds (Continued) Class R6",
   ];
   const nameGot = await page.evaluate((cs) => {
     if (typeof window.__wampoCleanFiledName !== "function") return null;
