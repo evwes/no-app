@@ -243,7 +243,18 @@ const CLASS_WORDS = new Set(["institutional", "investor", "premier", "premium", 
 const DESCRIPTIVE = new Set([...DISCRIMINATORS, "bond", "stock", "stocks", "equity",
   "equities", "money", "market", "return", "estate", "cap", "balanced", "date",
   "dividend", "fixed", "opportunity", "opportunities", "asset", "allocation",
-  "target", "retirement", "total"]);
+  "target", "retirement", "total",
+  /* `term` belongs here for the same reason every other word does, and leaving
+   * it out cost 232 rows. `managerPhrase("Short-Term Bond Fund")` extends past
+   * the generic lead `short` to `short term`, and that two-word phrase is not
+   * ALL-descriptive only because `term` was missing from this set — so it was
+   * kept as a manager. HOMESTEAD FUNDS INC registers its series under the bare
+   * name `Short-Term Bond Fund`, so its manager keys became ["homestead",
+   * "short term"], and `short term` is a token of EVERY house's short-term
+   * bond fund. The manager gate then admitted Homestead for Vanguard, Victory,
+   * TIAA-CREF, PIMCO, Allspring, Virtus, Schwab and American Funds holdings,
+   * and HOSBX was published as fact on 171 of them. */
+  "term"]);
 function managerPhrase(entity) {
   const t = norm(entity).split(" ").filter(Boolean);
   if (!t.length) return null;
@@ -695,6 +706,22 @@ const SELFTEST = [
   ["Vanguard Mid-Cap Index Fund Institutional", "VIMSX*"],
   ["Vanguard Short Term Bond Index Fund", "VBISX*"],
   ["American Funds Capital World Growth and Income R6", "RWIGX"],
+  /* A DESCRIPTIVE SERIES NAME MUST NOT MANUFACTURE A HOUSE. Homestead's series
+   * is the bare `Short-Term Bond Fund`, and while `short term` counted as one
+   * of its manager keys every house's short-term bond fund satisfied the gate
+   * and was handed HOSBX. The first three must refuse; the fourth is the
+   * must-keep control, a real Vanguard series that states the same words. */
+  ["Vanguard Short-Term Bond", "—"],
+  ["Victory Short Term Bond Fund R6 Shares", "—"],
+  ["Short Term Bond Fund", "—"],
+  ["TIAA-CREF Short-Term Bond Inst", "—"],
+  /* …and these must keep, because their series names are NOT all-descriptive:
+   * `new world` and `american balanced` survive the same rule that removes
+   * `short term`, which is what keeps two of the largest funds held in 401(k)
+   * plans resolving from registrants that name no house. */
+  ["American Funds New World R6", "RNWGX"],
+  ["American Funds American Balanced R6", "RLBGX"],
+  ["American Funds Growth Fund of America R6", "RGAGX"],
 ];
 
 /* THE ISSUER CELL, pinned separately because it is a CALLER rule and the
@@ -717,6 +744,11 @@ const SELFTEST_ISS = [
   // is a SECTOR word and is half of Prudential's legal name
   ["PGIM High Yield Fund", "Prudential Financial, Inc.", "PBHAX*"],
   ["PGIM Total Return BD R6", "Prudential Financial", "PTRQX"],
+  /* Once the filed name stops resolving to Homestead on its own, the issuer
+   * path reaches the house the filing actually names. All three were HOSBX. */
+  ["Short Term Bond Fund", "Fidelity", "FBNAX*"],
+  ["Short-Term Bond Fund", "T. Rowe Price", "PRWBX*"],
+  ["Short Term Bond Fund Class R6", "Transamerica", "TASTX"],
 ];
 
 if (process.argv.includes("--selftest")) {
