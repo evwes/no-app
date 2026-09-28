@@ -25768,3 +25768,44 @@ path. This is piece (2) of the queue the 18:0xZ entry opened, finished.
   resolve to nothing, which is safe; **4 rows publish a wrong fund as fact**
   (RGWGX ×3, RGWEX ×1). Recorded, not fixed: a spelling repair is a separate
   claim and `repairHouse`'s `Vangaurd` precedent is for a HOUSE, not a fund name.
+
+## 2026-09-28 (22:3xZ) — Growth, Bond and Income Fund of America resolved to nothing
+- **Wrong:** **203 rows / 158 plans / 141,142 participants** published no ticker
+  for American Funds' three largest funds — `GROWTH FUND OF AMERICA`, `THE BOND
+  FUND OF AMERICA`, `INCOME FUND OF AMERICA` and `SHORT-TERM BOND FUND OF
+  AMERICA`, across every share class the filings state.
+- **Cause:** the manager gate needs a house on both sides and these have it on
+  neither. American Funds registers those funds under their bare product names,
+  so the series carries no manager key; a filing writing `The Bond Fund of
+  America R6` names no manager either. The escape hatch that exists for
+  house-less registrants **required the FILED name to supply a house**, so it
+  could never fire for the family it was written for.
+- **Change:** a house-less series may answer a house-less filed name when its
+  series key is **not entirely descriptive**. `short term bond america` keeps
+  `america`; Homestead's `short term bond` keeps nothing — the same
+  discriminator the entry above uses in the opposite direction, which is why
+  the four Homestead refusals are pinned beside the five new gains.
+- **A first draft withdrew 127 correct rows and the whole-store diff caught it
+  before anything shipped.** Asking for a distinctive key unconditionally
+  refused `American Funds International Growth and Income R6` → RIGGX, whose
+  series is three descriptive words. The test is asked ONLY when the filed name
+  names no house; when it does, the pre-existing requirement (every filed token
+  accounted for by the series, that house, or a class marker) is already the
+  evidence. Both directions pinned.
+- **AND A PINNED EXPECTATION I WROTE WAS WRONG, caught by the selftest before
+  commit.** I pinned `International Growth and Income Fund R6` → RIGGX on the
+  bare name; with no house in the string and an all-descriptive key it must
+  refuse, and in the store that row carries the issuer `American Funds`, so it
+  resolves through the issuer cell. Moved to the issuer table. **The rule is
+  about what the STRING can discriminate, not about which fund a reader knows
+  is meant** — and a pinned control is only worth what its expectation is worth.
+- **Cost of the preceding fix, restored 6 of 7:** the `Short-Term Bond Fund of
+  America` family returns (RAMCX, RAMEX ×3, RAMFX). `Lord Abbett Short Term
+  Duration Income Fund R6` → LDLVX stays refused — that filed name DOES name a
+  house so this rule never reaches it, and it is unmatched because the filing
+  writes `Short Term Duration` where the fund is `Short Duration`. 1 row / 123
+  participants, named rather than rounded away.
+- **Prevention:** `--selftest` is 62 cases; the pre-change gate fails by name on
+  exactly the 5 new must-gain cases and holds the other 57, including all four
+  Homestead refusals and RIGGX. Verified through the real merge: `sec tickers
+  338,260 → 338,463` across 37,028 → 37,034 plans, CONFIDENCE DIFF +0 / −0.
