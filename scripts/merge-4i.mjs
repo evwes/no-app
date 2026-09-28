@@ -195,12 +195,35 @@ if (demoted) console.log(`demoted ${demoted} junk-named confident entries (store
  * stands alone nowhere. The empirical gate does the work the vocabulary
  * cannot.
  *
+ * AND THE BARE `Cash` ARM IS GONE, WITHDRAWN AFTER IT SHIPPED. It won 15
+ * strips (`Cash Vanguard`, `Cash Charles Schwab`) and cost two: `Cash
+ * Equivalents` -> `Equivalents`. The remainder guard was supposed to stop
+ * exactly that and did not, because I tested it on `Cash equivalents` —
+ * lowercase, the one casing the first draft happened to produce — and
+ * `/^[A-Z0-9]/` waves the title-cased variant straight through. A guard tested
+ * on one casing of one example.
+ *
+ * A COUNT FLOOR WAS THE OBVIOUS SECOND FIX AND THE DATA REFUSED IT. Across all
+ * 789 strips, the remainders that stand alone fewest times are `Account
+ * American Funds` (2), `Comerica Bank and Trust, N.A` (2), `Earnest` (3),
+ * `Equivalents` (3), `Prudential Retirement` (3). Any floor that catches
+ * `Equivalents` also refuses two real firms, and any floor that spares them
+ * keeps `Equivalents`. Frequency does not separate a term from a surname here,
+ * so no floor is the right instrument — which is worth more than the fix.
+ *
+ * What DOES separate them is that `Cash Equivalents` is a single asset-class
+ * TERM whose second word is not a firm, and nothing in the store distinguishes
+ * that from caption-plus-firm without a vocabulary this rule exists to avoid.
+ * So the arm is withdrawn rather than patched: 15 strips lost, the class of
+ * damage closed. `cash and mutual funds` stays because its remainder follows a
+ * COMPLETE phrase.
+ *
  * DELIBERATELY NOT ADDED: bare `Growth`, `Value`, `Index`, `International`.
  * They are 3 rows each in the measurement and `Value Line` is a real house —
  * nine rows is not worth a vocabulary arm that has to be right about a firm
  * name. The escapee count is therefore a FLOOR and is stated as one. */
 {
-  const SECTION_HEAD = /^(?:master trust(?: investment account)?|common[\/ ]?collective trusts?|collective (?:investment )?trusts?|pooled separate accounts?|separate accounts?|(?:shares of )?registered investment compan(?:y|ies)(?: shares)?|mutual funds?(?:,? at fair value)?|common stocks?|corporate (?:debt|stock)s?|government securities|interest[- ]bearing cash|real estate|103[- ]12 investments?|compan(?:y|ies)|target[- ]date funds?|group annuity contracts?|guaranteed (?:interest|investment) contracts?|cash(?: and mutual funds?)?)\s+(?=\S)/i;
+  const SECTION_HEAD = /^(?:master trust(?: investment account)?|common[\/ ]?collective trusts?|collective (?:investment )?trusts?|pooled separate accounts?|separate accounts?|(?:shares of )?registered investment compan(?:y|ies)(?: shares)?|mutual funds?(?:,? at fair value)?|common stocks?|corporate (?:debt|stock)s?|government securities|interest[- ]bearing cash|real estate|103[- ]12 investments?|compan(?:y|ies)|target[- ]date funds?|group annuity contracts?|guaranteed (?:interest|investment) contracts?|cash and mutual funds?)\s+(?=\S)/i;
   const norm = (x) => String(x).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
   /* pass 1: how often does each issuer value stand ALONE across the store? */
   const standalone = new Map();
