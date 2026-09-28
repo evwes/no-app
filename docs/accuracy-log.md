@@ -23973,3 +23973,96 @@ handed to the next cycle rather than shipped at 00:3xZ without a member read of
   carry OCR noise (`— 2040 Target Date ee`, `— 2050 Target Date +e`), so what a
   strip would publish is a vintage plus a category plus garbage: worth naming as
   small and low-value rather than queueing as a win.
+
+## 2026-09-28 (02:3xZ) — Participant loans published as a fund menu option, on both surfaces
+
+- **Wrong:** 482 published menus listed a row named `LOAN FUND` / `Loans` /
+  `Participant Loans` among the funds, with a type cell and a percentage —
+  **482 rows / 482 plans / 1,369,274 participants / $1,248,413,860**, exactly
+  one row per plan. Schedule H line 4i lists participant loans because they ARE
+  plan assets, but no participant can pick one off a menu, and printing it
+  among the funds says they can.
+- **MEASURING FIRST NARROWED THE DEFECT, and the queue entry written an hour
+  earlier was wrong about half of it.** It implied a fabricated-fee risk.
+  There is none: **0 of the 482 render a ticker and 0 render an expense ratio.**
+  What remained was presentational, and only that shipped.
+- **Change:** v181's treatment — **type the row, do not drop it.** The report's
+  type cell reads *"Participant loans — not a menu choice"*, the row keeps the
+  brokerage tint, the ticker and ER are suppressed, and the value stays, so the
+  money is still accounted for. Loans also stay in the percentage denominator
+  exactly as v181's subtotals do: their share is at most 10.9% of a menu and
+  usually 1–3%, and removing them would rewrite every other row's published
+  percentage for 1.37M readers to buy something cosmetic.
+- **NOT what v131 fixed.** That removed loan *description* rows (`rates ranged
+  from 4.25% to 9.50%`, 7,052 rows → 9). A row literally *named* `Loan Fund`
+  survived it untouched. **A fix for one phrasing of a class is not a fix for
+  the class.**
+- **BOTH SURFACES, because the rule earned three times this week is that a
+  claim about readers must name which.** The crawlable pages have only `Fund`
+  and `Value` columns and no type cell at all, so there the qualifier goes into
+  the name: **17 pages / 279,408 participants** now read *"Loan Fund —
+  participant loans, not a menu choice"*.
+- **AND THE EIGHTEENTH PAGE GIVES THE ORPHAN DEFECT ITS FIRST LIVE INSTANCE.**
+  18 pages carry a loan row and **17 regenerated**. `p/651156742-001.html`
+  (2,673 participants) did not, because it is one of the **62 committed pages
+  outside the generator's `TOP_N = 5000` that no run can ever repair**. That
+  item was queued on reasoning — v168's `appreciat` rows, v173's `(continued)`
+  — and now has a measured case: a fix shipped today that demonstrably cannot
+  reach it.
+- **Side effect, strictly additive by construction and measured:** `filedAvgER`'s
+  coverage gate is `matchedVal / total`, and loans never matched, so they only
+  ever pushed plans *below* it. Excluding them can only raise the ratio — **3
+  plans / 2,255 participants newly publish an average-ER line, 0 lose one, and
+  not one published ER value changes.**
+- **MY OWN FIRST MEASUREMENT OF THE CRAWLABLE SURFACE WAS WRONG AND THE SHIPPED
+  PREDICATE CAUGHT IT.** A loose grep said **36 pages / 504,745 participants**.
+  It was counting `Participant loan processing, Direct payment from plan` — a
+  Schedule C *service* row — and Johnson & Johnson's `Loans Secured By
+  Mtges-Resid.`, a **real mortgage-backed holding**. Asking the shipped,
+  anchored predicate of the fund table alone says 18. **Third time in one day
+  that an implausible number reported on my harness rather than the data**, and
+  the anchoring is what refused both.
+- **Prevention, and both halves are negative-controlled rather than merely
+  green.** The predicate lives twice — canonical `isParticipantLoanRow` in
+  `lib-disclose.mjs` for the pages, twinned in `app.js` for the report — and
+  `smoke-test.mjs` **tethers** them on eighteen names, ten loans and eight real
+  funds including the J&J mortgage row. A new smoke specimen is picked by a
+  **property it has** (its lineup shard carries a loan row), never a remembered
+  ack. Controls: removing the typing fails the render assertion by name;
+  a drifted twin fails the tether on **8 of 18** and prints the real funds it
+  would damage. **A check that has never failed has not been tested.**
+- **Residue, named:** 1 row (`Loan Fund, participants loans -0`) is refused by
+  the anchored predicate because letters follow the loan words. Widening to
+  catch it would loosen the anchor that protects `Bank Loan Fund` and
+  `Floating Rate Loan Fund`, so it stays.
+
+## 2026-09-28 (02:4xZ) — From the weighted draw, sized and handed on: the American Funds target-date series resolves to no ticker
+
+- Drawn participant-weighted from published lineups (Barrett Business Services
+  49,064 ppl, Orlando Health 43,041, Mobile Lumber 288). All three parse
+  cleanly — ratios 0.972 / 0.982 / 1.000. One gap appears in **both** of
+  tonight's draws and in the 01:0xZ draw before them.
+- **Sized whole-store: 58,930 rows / 5,903 plans / 4,410,671 participants /
+  $110,346,044,084 publish an American Funds target-date holding, and ZERO
+  resolve to a ticker** — while **56,870 of them (96.5%) already carry an
+  estimated expense ratio**. So this is not an ER-coverage gap: `fund-er.js`
+  already prices the series by pattern and simply cannot name it. The same
+  house's `EuroPacific Growth R6` resolves to RERGX on the same pages, which is
+  what makes this one SERIES rather than a matcher problem.
+- **THE SHARE CLASS IS THE WHOLE QUESTION, and it splits the class cleanly:**
+  **39,312 rows / 3,979 plans / 3,034,841 ppl / $77.8B state a class in the
+  filed name** (R6 33,674, R4 2,583, R3 1,875, R5 588, R2 522, A 45, R1 19) and
+  are assignable without guessing; **19,618 rows / 2,088 plans / 1,540,432 ppl
+  / $32.5B state none** and are not. Assigning R6 to the bare names would
+  recreate this record's own defect verbatim — *4,321 rows publish an
+  R6/institutional ticker for a name stating class A/C/R1–R5* — so the reachable
+  half is the stated half and the other half must stay blank.
+- At ≥25% of a published menu the series covers **4,567 plans / 3,683,470
+  participants** (WVU Health System 78.7%, Barnabas Health 78.0%, Brinker
+  International 48.0% of 52,713 readers), so for millions of people the largest
+  block of their menu carries no fund identity at all.
+- **Queued, not started:** this is table work for `fund-er.js` (the
+  `funds-and-tickers` agent's) or verified entries in `data/fund-facts.json`
+  (the `fund-facts` agent's) — and that file has been empty since it was
+  created on 2026-09-17. Per-vintage, per-class tickers must be **verified with
+  a source**, never derived, which is exactly what that machinery exists for.

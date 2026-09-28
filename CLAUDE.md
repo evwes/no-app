@@ -867,18 +867,48 @@ export, do not copy the line.
   could** — the third time this week that *the page is the artifact* was the
   operative rule. **General form worth keeping: an optional group at the end of
   an anchored alternation is a silent SECOND anchor position.**
-- **QUEUED from the 01:0xZ weighted draw — PARTICIPANT LOANS PUBLISHED AS A FUND
-  MENU OPTION: 483 rows / 483 plans / 1,372,445 ppl / $1,251,824,848**, exactly
-  one row per plan. `LOAN FUND` 364, `Loan` 40, `Loan Fund` 26, `Loans` 19.
-  Kelly Services 185,135, Accenture 115,910, ABM 89,480, Securitas 84,140. No
-  participant can choose it, and listing it among the funds inflates the
-  denominator every percentage is computed against. **This is NOT what v131
-  fixed** — that removed loan DESCRIPTION rows (`rates ranged from 4.25% to
-  9.50%`, 7,052 → 9); a row literally NAMED `Loan Fund` survived it untouched.
-  *A fix for one phrasing of a class is not a fix for the class.* The right
-  treatment is v181's `Subtotal (not a holding)` pattern — type the row, do not
-  drop it, so the money stays accounted for — which is a change to the fund
-  table's shape and wants its own controls.
+- **SHIPPED 2026-09-28 02:3xZ — PARTICIPANT LOANS ARE NOT A MENU CHOICE: 482
+  rows / 482 plans / 1,369,274 ppl / $1,248,413,860**, exactly one row per plan.
+  v181's treatment — **type the row, do not drop it**: the report reads
+  *"Participant loans — not a menu choice"*, ticker and ER suppressed, value and
+  denominator untouched so the money stays accounted for. **NOT what v131
+  fixed** — that removed loan DESCRIPTION rows (7,052 → 9) and a row literally
+  NAMED `Loan Fund` survived it: *a fix for one phrasing of a class is not a fix
+  for the class.* **Measuring first NARROWED the defect and my own queue entry
+  was wrong about half of it**: 0 of the 482 rendered a ticker and 0 an expense
+  ratio, so there was no fabricated fee. **Both surfaces** — the crawlable pages
+  have no type column, so there the qualifier goes in the NAME (17 pages /
+  279,408 ppl). Side effect, additive by construction: `filedAvgER`'s coverage
+  gate stops counting loans against fee coverage — **3 plans / 2,255 ppl newly
+  publish an average-ER line, 0 lose one, 0 ER values change.**
+  **MY FIRST SEO NUMBER WAS WRONG — a loose grep said 36 pages / 504,745 ppl**,
+  counting a Schedule C SERVICE row and J&J's real `Loans Secured By
+  Mtges-Resid.` mortgage holding. The shipped anchored predicate refuses both;
+  the answer is 18. **Third time in one day that an implausible number reported
+  on my harness, not the data.** Predicate canonical in `lib-disclose`, twinned
+  in app.js, TETHERED on 18 names (8 of them real funds), and **both guards
+  negative-controlled** — removing the typing fails the render assertion,
+  a drifted twin fails the tether on 8 of 18.
+- **AND THE ORPHANED-PAGE ITEM NOW HAS A LIVE INSTANCE, not just reasoning.**
+  18 crawlable pages carry a loan row; **17 regenerated and `p/651156742-001.html`
+  (2,673 ppl) did not**, because it sits outside `TOP_N = 5000`. A fix that
+  shipped today demonstrably cannot reach it. Still the owner's call, because
+  fixing it changes which URLs exist.
+- **QUEUED from the 02:0xZ draw, and it is the largest ticker gap on record:
+  THE AMERICAN FUNDS TARGET-DATE SERIES RESOLVES TO NO TICKER — 58,930 rows /
+  5,903 plans / 4,410,671 ppl / $110,346,044,084, and 0 resolve**, while
+  **56,870 (96.5%) already carry an estimated ER**. So `fund-er.js` prices the
+  series by pattern and cannot NAME it; the same house's EuroPacific R6 resolves
+  to RERGX on the same pages, which makes it one SERIES, not a matcher problem.
+  **The share class splits it cleanly: 39,312 rows / 3,979 plans / 3,034,841 ppl
+  / $77.8B STATE a class** (R6 33,674, R4 2,583, R3 1,875, R5 588, R2 522) and
+  are assignable; **19,618 / 2,088 / 1,540,432 / $32.5B state none** and must
+  stay blank — assigning R6 there recreates this record's own defect verbatim
+  (4,321 rows publishing an R6 ticker for a name stating class A/C/R1–R5). At
+  ≥25% of a menu the series covers **4,567 plans / 3,683,470 ppl** (WVU Health
+  78.7%, Barnabas Health 78.0%, Brinker 48.0% of 52,713). Table work for
+  `funds-and-tickers` or verified entries in the still-empty
+  `data/fund-facts.json` — tickers must be sourced, never derived.
 - **AND THE TWO SURFACES AGREE NOW AND STILL REACH DIFFERENT POPULATIONS.** The
   comma fix changes **4 crawlable pages / 8,166 ppl** against 98 plans / 92,758 in
   the report, because that family lives outside the generator's top 5,000 by
