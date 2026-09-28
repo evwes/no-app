@@ -24123,3 +24123,14 @@ handed to the next cycle rather than shipped at 00:3xZ without a member read of
   0.26%).
 - **Surface:** the crawlable pages render no per-fund expense ratio at all, so
   this reaches the **report only**.
+- **AND THE HOLE MY OWN MEASUREMENT COULD NOT SEE WAS CLOSED SEPARATELY.** The
+  outcome diff scoped to `AF_HOUSE`, so by construction it could not report an
+  American Funds holding whose filed name never says "American Funds" — and one
+  such name had already turned up by accident (`AMERICAN EUROPACIFIC GROWTH
+  R6`). Asked the complementary question — which rows state a 12b-1 class, still
+  publish a fee, and are priced by a pattern *inside the R6 block* — the answer
+  is **0 rows**. It is provable as well as measured: six of the block's seven
+  patterns require the literal `american funds`, and the seventh is
+  `/american balanced/i`, which `AF_HOUSE` also contains, so `AF_HOUSE` is a
+  superset of the block by construction. The block's membership was **sliced out
+  of fund-er.js**, not listed from memory.
