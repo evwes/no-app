@@ -998,6 +998,26 @@
       const hit = (iss ? fundTickerInfo(iss + rep, f.type) : null) || fundTickerInfo(rep, f.type);
       if (hit) return hit;
     }
+    /* LAST OF ALL: the ticker the MERGE resolved from the SEC's own
+     * series/class file and stored on the row. `fund-er.js` is a hand-written
+     * pattern table and cannot finish the tail — measured 2026-09-28, 663,283
+     * rows the FILING ITSELF types a registered mutual fund carry no ticker —
+     * and `scripts/match-sec-tickers.mjs` names 147,835 of them EXACTLY
+     * (29,979 plans / 43,455,784 participants / $297.2B).
+     *
+     * It runs LAST and only fills a blank, deliberately. On 3,844 rows the two
+     * sources both name a fund exactly and name DIFFERENT ones — overwhelmingly
+     * a share class the filing states and the pattern table ignores (`Fidelity
+     * Total Bond K6` -> FTBFX where the K6 fund is FTKFX; `Vanguard 500 Index
+     * Fund Investor Shares` -> VFIAX, the ADMIRAL class) — and every one of
+     * those reads as the SEC being right. Overriding a published ticker is a
+     * larger claim than filling a blank, so it is recorded with its numbers
+     * and left to its own cycle; nothing here changes a value already shown.
+     *
+     * It carries NO FEE and cannot: `fundER` is called on the NAME
+     * (app.js:1906/1919) and never on a ticker, so a row that gains a ticker
+     * here still renders a blank expense ratio unless the name resolves. */
+    if (typeof f.stk === "string" && f.stk) return { tk: f.stk, comparable: false };
     return null;
   }
   function cleanCostMarkers(e) {

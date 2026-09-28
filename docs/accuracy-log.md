@@ -25602,3 +25602,70 @@ path. This is piece (2) of the queue the 18:0xZ entry opened, finished.
   must-change and must-keep together, 45/45 passing. Negative-controlled
   against the pre-change file: it fails by name on 5 of the 32 and holds 27,
   and the old caller pattern fails on the BlackRock row.
+
+---
+
+## 2026-09-28 (20:4xZ) — The SEC ticker reaches readers, and the cross-check found a live defect in the table it was filling
+
+- **SHIPPED, and it is the first half of the fund lookup that reaches anyone:
+  147,835 rows / 29,979 plans / 43,455,784 participants / $297,213,426,113 gain
+  a fund ticker they did not have**, resolved EXACTLY from the SEC's own
+  series/class file. `merge-4i` resolves each row once and stores `stk`;
+  `app.js`'s `lookupTicker` reads it LAST, after every `fund-er.js` attempt,
+  so it can only fill a blank.
+- **WHY THE MERGE AND NOT THE BROWSER.** The resolver is an ES module with a
+  29,406-row index behind it, and the 2026-08-09 boot split exists to keep
+  megabytes off that path. The lineup shards are already fetched per-plan on
+  demand, so a field on the row costs a reader nothing: **226 MB → 230 MB
+  across 64 shards, none of it at boot.**
+- **IT CANNOT INTRODUCE A FEE, and that was checked before a line was written.**
+  `fundER` is called on the NAME (`app.js:1906/1919`) and never on a ticker, so
+  a row that gains `stk` still renders a blank expense ratio unless the name
+  itself resolves. This is what makes the change purely additive.
+- **VERIFIED ON THE PAGE, not the store.** Paychex Retirement (**645,304
+  participants**) gains six — `Vanguard Growth Index Fund Institutional Shares`
+  → **VIGIX**, `Vanguard Value Index Fund Institutional Shares` → VIVIX,
+  `American Funds American Balanced Fund Class R6` → RLBGX, `JPMorgan Core Bond
+  Fund Class R6` → JCBUX, and two State Street Class K funds — and the rendered
+  table shows VIGIX with no asterisk beside a 0.050% ER that `fund-er.js`
+  supplied from the name. Source 4 Solutions (127,153) gains 28 of 50 rows.
+  **Every one states a share class and gets that class**: R6 → RLBGX, R-6 →
+  RNPGX, Institutional Shares → VIGIX and not VIGAX, Institutional Class →
+  DFSTX.
+- **AND THE CROSS-CHECK IS THE MORE IMPORTANT HALF — two independent sources
+  for one fact is the cheapest audit there is.** On **14,194 names both
+  `fund-er.js` and the SEC file name a fund EXACTLY. They agree on 13,450 and
+  DISAGREE on 744** — which is **3,844 rows / 2,643 plans / 5,962,185
+  participants / $35,285,940,554**, and reading them, the SEC is right every
+  time. The disagreement is almost entirely a SHARE CLASS the filing states and
+  the pattern table ignores:
+
+  | the filing says | rows | published | correct |
+  |---|---|---|---|
+  | K6 | 2,564 | `Fidelity Total Bond K6` → FTBFX | **FTKFX** |
+  | Investor Shares | 752 | `Vanguard 500 Index Fund Investor Shares` → VFIAX (**Admiral**) | **VFINX** |
+  | Class K | 432 | `Fidelity Contrafund - Class K` → FCNTX | **FCNKX** |
+  | other | 96 | | |
+
+  `Fidelity Contrafund K6` → FLCNX, `Blue Chip Growth K6` → FBCGX,
+  `Diversified International K6` → FKIDX, `Growth Company K6` → FGKFX,
+  `Balanced K6` → FBKFX, `Low-Priced Stock K6` → FLKSX, `Puritan K6` → FPKFX;
+  `Wellington Investor Shares` → VWELX not VWENX, `Windsor II Investor` →
+  VWNFX, `Small-Cap Index Investor` → NAESX not VSMAX, `PRIMECAP Investor` →
+  VPMCX, `Total Stock Market Investor` → VTSMX.
+  **This is the FTBFX/Fidelity-Advisor defect this project already fixed once,
+  on 2026-09-15, in a class the fix did not reach** — and the Vanguard half
+  runs the other way, publishing the CHEAPER Admiral class for a row the filing
+  labels Investor, so the fee shown is too LOW.
+- **NOT OVERRIDDEN, deliberately, and the reason is not timidity.** Filling a
+  blank changes nothing already shown; replacing a published ticker on 3,844
+  rows is a different claim and needs its own cycle — not least because
+  **3,513 of those rows also publish an expense ratio, and the ER is NAME-based,
+  so correcting the ticker alone would leave a K6 row showing the retail
+  fund's fee beside the K6 fund's symbol.** A half-corrected row is not
+  obviously better than a wholly wrong one. Queued with its numbers.
+- **Prevention:** the cross-check is a script over the whole store, not a
+  sample, and it is what turned an additive feature into an audit. **Whenever
+  a second source for an existing fact arrives, diff it against the first
+  before using it** — the disagreements are free findings and they are the ones
+  that were never going to surface from either source alone.

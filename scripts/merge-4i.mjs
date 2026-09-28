@@ -264,6 +264,49 @@ if (demoted) console.log(`demoted ${demoted} junk-named confident entries (store
   if (fixed) console.log(`issuer section-caption strip: ${fixed} rows across ${fixedAcks.size} plans`);
 }
 
+/* THE SEC TICKER, RESOLVED ONCE AT MERGE AND STORED ON THE ROW.
+ *
+ * `fund-er.js` is a hand-written pattern table and cannot finish the tail:
+ * measured 2026-09-28, 663,283 rows the FILING ITSELF types a registered
+ * mutual fund carry no ticker at all. The SEC's own series/class file names
+ * them, and `sec-funds.json` sits in the tree with its source URL and
+ * generation date because a ticker here is SOURCED, never derived.
+ *
+ * WHY HERE AND NOT IN THE BROWSER. The resolver is an ES module with a 29,406
+ * row index behind it; shipping either to the page would put megabytes on the
+ * boot path the 2026-08-09 split exists to protect. The lineup shards are
+ * already fetched per-plan on demand, so a field on the row costs a reader
+ * nothing extra.
+ *
+ * ONLY THE EXACT ANSWER IS STORED. `resolveHolding` also returns a COMPARABLE
+ * — a representative share class behind an asterisk — and that is a different
+ * claim: `fund-er.js` prices a ticker, and this record carries 10,387 fee
+ * cells withdrawn on 2026-09-28 for pricing one share class as another. The
+ * comparable half is queued, not shipped.
+ *
+ * It cannot introduce a FEE: `fundER` is called on the NAME and never on the
+ * ticker (app.js:1906/1919), so a row that gains `stk` still renders a blank
+ * expense ratio unless the name itself resolves. Verified before writing this.
+ */
+try {
+  const { buildIndex, resolveHolding } = await import("./match-sec-tickers.mjs");
+  const idx = buildIndex("sec-funds.json");
+  let named = 0; const acks = new Set();
+  for (let i = 0; i < SHARDS; i++)
+    for (const [ack, e] of Object.entries(buckets[i])) {
+      if (!e || !Array.isArray(e.funds)) continue;
+      for (const f of e.funds) {
+        if (!/^mutual fund/i.test(String(f.type || ""))) continue;   // the FILING's own word
+        const r = resolveHolding(idx, f.name, f.iss);
+        if (!r || r.comparable) { delete f.stk; continue; }
+        f.stk = r.ticker; named++; acks.add(ack);
+      }
+    }
+  console.log(`sec tickers: ${named} rows across ${acks.size} plans (index ${idx.rows} classes, ${idx.generated})`);
+} catch (err) {
+  console.log(`sec tickers: skipped (${err.message})`);
+}
+
 status.generated = new Date().toISOString();
 writeFileSync("lineups-status.json", JSON.stringify(status));
 const index = {};
