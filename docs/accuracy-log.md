@@ -25505,3 +25505,100 @@ the defects that had to be closed before it can be.
   read, so the footnote could not yet do damage — the bracket rule exists
   because `hintsOf` created the exposure, and the pin is there for the next
   change, not for this one.
+
+---
+
+## 2026-09-28 (19:4xZ) — The SEC matcher answered with a different fund, twice over
+
+Still reaches no reader: `match-sec-tickers.mjs` is wired into neither display
+path. This is piece (2) of the queue the 18:0xZ entry opened, finished.
+
+- **Wrong (1): the ISSUER cell supplied a manager and licensed the issuer's own
+  fund.** `BlackRock High Yield Portfolio K Fund` with the issuer cell
+  `Principal Trust Company` resolved to **CPHYX**, a Class A of a series
+  registered as the bare `High Yield Fund`. The issuer cell often holds a
+  TRUSTEE, which this project recorded on 2026-09-16 when the same prefix was
+  BREAKING matches in `fund-er.js`; here it does the opposite and worse,
+  because a trustee is itself a registrant and so satisfies the manager gate.
+  Same shape, read whole: `Columbia Small Cap Value Fund` → **Empower** Small
+  Cap Value, `Blackrock High Yield Bond Portfolio` → **Empower** High Yield
+  Bond, `Invesco Core Bond r6` [iss Vanguard] → **Vanguard** Core Bond,
+  `Janus Balanced Fund` [iss Fidelity] → **Fidelity** Balanced,
+  `iShares S&P 500 Index Fund` [iss Invesco / Nationwide / Empower] → each
+  issuer's own fund.
+- **Change:** `resolveHolding(idx, name, issuer)` — one shared call rule, so no
+  caller composes its own string. The issuer may ADD a manager and may never
+  REPLACE one: a house that LEADS the filed name must be accounted for by the
+  series the match landed on, or by the issuer itself.
+- **THE OBVIOUS TEST WAS WRONG AND THE MEASUREMENT SAID SO BEFORE IT SHIPPED.**
+  The first draft asked *does the filed name name a manager at all* and refused
+  the issuer if so. `MANAGERS` is deliberately permissive — a wrong manager
+  merely fails the gate — so it holds `emerging`, `intermediate`, `selected`,
+  `world` and `mutual fund` beside `blackrock`. That draft cost **1,758 names /
+  3,330 rows of CORRECT answers** (`Emerging Markets Index` [iss Fidelity] →
+  FPADX, 74 rows). **A COUNT THRESHOLD DOES NOT RESCUE IT AND THAT IS WORTH
+  RECORDING SO IT IS NOT TRIED AGAIN:** `emerging` carries 18 series and
+  `mutual fund` 44, while `blackrock` carries 39 and `american funds` 49. No
+  cut exists. The question that works is about the ANSWER, not the name.
+- **Wrong (2), FOUND BY THE FIRST FIX AND INDEPENDENT OF IT — the same junk
+  vocabulary was letting the superset pass DROP A DISCRIMINATOR.** The leftover
+  check excuses a filed token when it belongs to a house the filing names, and
+  `house` is built from those same permissive phrases. So a word that says what
+  the fund HOLDS excused itself, with no issuer involved at all:
+
+  | filed name | was published as |
+  |---|---|
+  | `Vanguard SmallCap Value Index Fund` | Vanguard **Value** Index — a large-cap fund |
+  | `Vanguard Smallcap Index Fund Institutional` | Vanguard **Institutional** Index, an S&P 500 fund |
+  | `Vanguard Short-Term Inflation-Protected Securities` | the **intermediate** TIPS fund |
+  | `American Funds Capital World Growth` | American Funds **Growth Portfolio** |
+  | `American Funds World Growth and Income Fund` | the **Growth and Income** Portfolio |
+  | `Fidelity Growth Strategy Fund` | Fidelity **Growth Company** Fund |
+  | `Loomis Sayles SmallCap Growth` | Loomis Sayles **Growth** Fund |
+
+  This is the failure the leftover check's own comment was written to prevent
+  (`VANGUARD MIDCAP INDEX INSTL` → VINIX), returning through a different door.
+- **Change:** a token may not be excused as a house word when it is an ASSET
+  word — the set the file already carries. The concatenated forms matter, since
+  a filing writes `SmallCap` as one token, so the test tries the splits with
+  `cap` as a split-only part.
+- **BOTH FIXES DAMAGED SOMETHING FIRST AND A CONTROL CAUGHT EACH.**
+  (a) Stripping asset words from `house` cost **eight correct PGIM answers**,
+  because the issuer cell reads `Prudential Financial, Inc.` and **`financial`
+  is a SECTOR word**. A word the ISSUER contributed is not part of the filed
+  name and can never be the filing's own discriminator, so issuer tokens are
+  exempt. (b) A pinned control moved and is recorded rather than quietly
+  re-aimed: `Pimco Real Return Strategy Fund Inst Class A` goes from PRRIX* to
+  a REFUSAL, which is right — there is no "PIMCO Real Return Strategy Fund",
+  there is PIMCO Real Return (PRRIX) and PIMCO **Commodity** Real Return
+  **Strategy** (PCRIX), and this file's own comment already names that pair as
+  a shipped defect.
+- **Blast radius, whole store, both versions over the same population and the
+  same strings `app.js` would use:** 278,994 distinct (name, issuer) pairs the
+  filing types a registered mutual fund, **278,775 unchanged**. 219 names /
+  **277 rows / 248,660 participant-weighted** change: 211 names / 269 rows
+  withdrawn, and **8 rows GAINED** (`American Funds New World Fund; Mutual
+  Fund` → NEWFX and family, where dropping the junk house tokens let the right
+  series win the ranking).
+- **The cost, named: 28 names / 28 rows / 48,265 participant-weighted are the
+  TIAA-CREF → Nuveen RENAME.** `TIAA-CREF Lifecycle Index 2040 Inst` [iss
+  Nuveen] was resolving to `Nuveen Lifecycle Index 2040 Fund` — the right fund
+  under its current name — so the withdrawal is a real loss. It is accepted
+  because the answer was **also asserting the wrong share class** (the filing
+  says `Inst`, the ticker returned was `Premier Class`) and because no signal
+  distinguishes a corporate rename from `BlackRock` under `Principal Trust
+  Company`: in both, the filed name's house and the answer's house differ.
+- **MY OWN READING OF THE WITHDRAWALS WAS WRONG UNTIL THE PRINT CHANGED, and
+  that is the fifteenth instance.** Reading the list by filed name I judged
+  ~26 of them correct answers being destroyed — `Capital World Growth and Inc
+  R6`, `Short-Term Inflation-Protected Securities`, `SmallCap Value Index Fund`
+  all looked right beside their old tickers. **Printing the old answer's SERIES
+  beside the filed name showed every one of them was a different fund.** A
+  ticker is not a reading; the series name is. The same print had earlier
+  omitted the ISSUER, which made eight PGIM rows look like a mystery until it
+  was added.
+- **Prevention:** `node scripts/match-sec-tickers.mjs --selftest` now runs
+  **45 cases in two tables** — 32 on `resolve` and 13 on `resolveHolding`,
+  must-change and must-keep together, 45/45 passing. Negative-controlled
+  against the pre-change file: it fails by name on 5 of the 32 and holds 27,
+  and the old caller pattern fails on the BlackRock row.

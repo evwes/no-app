@@ -123,6 +123,41 @@ const ASSET_WORDS = new Set([...DISCRIMINATORS, "bond", "stock", "stocks", "equi
   "world", "pacific", "europe", "european", "japan", "china", "asia", "asian",
   "dividend", "fixed", "allocation", "target", "retirement", "total", "core", "plus"]);
 
+/* A WORD THAT SAYS WHAT A FUND HOLDS CAN NEVER BE EXCUSED AS A HOUSE WORD.
+ *
+ * The leftover check in the superset pass excuses a filed token when it is
+ * part of a house name the filing states — which is right for `American Funds
+ * Growth Fund of America`. But `house` is built from `MANAGERS`, and MANAGERS
+ * is deliberately permissive: it is scraped from every registrant name in the
+ * SEC file, so it holds `short term`, `smallcap`, `world` and `capital world`
+ * beside `vanguard`. Those tokens then excused themselves, and the superset
+ * pass dropped the very words that say WHICH product the filing means — the
+ * exact failure the leftover check's own comment was written to prevent:
+ *
+ *   `Vanguard SmallCap Value Index Fund`            -> Vanguard VALUE Index
+ *   `Vanguard Smallcap Index Fund Institutional`    -> Vanguard INSTITUTIONAL
+ *                                                      Index, an S&P 500 fund
+ *   `Vanguard Short-Term Inflation-Protected Sec…`  -> the INTERMEDIATE TIPS
+ *                                                      fund
+ *   `American Funds World Growth and Income Fund`   -> American Funds GROWTH
+ *                                                      AND INCOME Portfolio
+ *
+ * Every one of those was returned with no issuer involved at all, so it is a
+ * defect in `resolve` and not in how a caller composes the string.
+ * The concatenated forms matter: a filing writes `SmallCap` as one token and
+ * `small` and `cap` are both asset words, so the test has to try the splits. */
+/* `cap` is not a discriminator on its own — "Cap" says nothing — but it is
+ * half of one when a filing welds it: `SmallCap`, `MidCap`, `LargeCap`. It
+ * belongs to the SPLIT test only, never to ASSET_WORDS itself, whose members
+ * are judged whole elsewhere. */
+const CONCAT_PART = new Set([...ASSET_WORDS, "cap", "caps"]);
+function isAssetWord(w) {
+  if (ASSET_WORDS.has(w)) return true;
+  for (let i = 3; i <= w.length - 3; i++)
+    if (CONCAT_PART.has(w.slice(0, i)) && CONCAT_PART.has(w.slice(i))) return true;
+  return false;
+}
+
 /* Share-class markers: words a filing adds that name a class, not a fund. */
 const CLASS_MARK = /^(?:r[1-6]|k6|[akyzci]|inv|investor|adm|admrl|admiral|adv|advisor|institutional|instl|inst|premier|premium|retail|service|select|shares?)$/;
 /* …and the subset of those that also NAME A SEPARATE SERIES, which is the only
@@ -283,17 +318,92 @@ export function buildIndex(indexPath) {
   return { bySeries, byLead, byYear, managers: MANAGERS, memo: new Map(), generated: j.generated, source: j.source, rows: j.funds.length };
 }
 
+/* Does this string name a fund house the SEC file knows? */
+export function namesManager(idx, s) {
+  const hay = " " + norm(s) + " ";
+  for (const m of idx.managers) if (hay.includes(" " + m + " ")) return m;
+  return null;
+}
+
+/* THE ONE WAY A HOLDING SHOULD BE LOOKED UP, so every caller shares the rule.
+ *
+ * A 4i row has two name cells and `app.js` tries both. The issuer cell is the
+ * problem: it OFTEN HOLDS A TRUSTEE rather than the fund house — `Principal
+ * Trust Company`, `Empower Trust Company, LLC` — which this project already
+ * recorded on 2026-09-16 when the same prefix was BREAKING matches in
+ * `fund-er.js`. Here it does the opposite and worse: a trustee is a registrant
+ * in the SEC file, so prefixing it SUPPLIES a manager to the gate and licenses
+ * a series that belongs to the trustee rather than to the fund.
+ *
+ * Measured case, found by a random draw of 30 and the only clear false
+ * positive in it: `BlackRock High Yield Portfolio K Fund` with the issuer cell
+ * `Principal Trust Company` resolved to CPHYX — a Class A of a series
+ * registered as the bare `High Yield Fund`. The filed name says BlackRock. The
+ * answer contradicted the row's own words.
+ *
+ * So the issuer may ADD a manager and may never REPLACE one: when the filed
+ * name already names a house, the bare name is the only string asked. */
+export function resolveHolding(idx, filedName, issuer) {
+  const direct = resolve(idx, filedName);
+  if (direct) return direct;
+  const iss = String(issuer || "").replace(/\*+/g, "").trim();
+  if (!iss) return null;
+  const out = resolve(idx, iss + " " + filedName, new Set(norm(iss).split(" ").filter(Boolean)));
+  if (!out) return null;
+  /* ASKING "DOES THE FILED NAME NAME A HOUSE" IS THE WRONG QUESTION, and the
+   * measurement said so before this shipped. `MANAGERS` is built permissive on
+   * purpose — a wrong manager merely fails the gate — so it holds `emerging`,
+   * `intermediate`, `selected`, `world` and `mutual fund` beside `blackrock`.
+   * Refusing the issuer whenever the name matched any of them cost 1,758 names
+   * / 3,330 rows of CORRECT answers (`Emerging Markets Index` [iss Fidelity]
+   * → FPADX, 74 rows).
+   * A COUNT THRESHOLD DOES NOT SEPARATE THEM EITHER, and that is worth
+   * recording so it is not tried again: `emerging` carries 18 series and
+   * `mutual fund` 44, while `blackrock` carries 39 and `american funds` 49.
+   * No cut exists.
+   * The question that does work is about the ANSWER, not the name: a house
+   * that LEADS the filed name must be accounted for by the series the match
+   * landed on, or by the issuer itself. `BlackRock High Yield Portfolio K` led
+   * with blackrock and landed on a series registered as the bare `High Yield
+   * Fund` under a `Principal Trust Company` issuer — the answer contradicted
+   * the row's own first word. `Emerging Markets Index` landing on `Fidelity
+   * Emerging Markets Index Fund` contradicts nothing. */
+  const lead = leadManager(idx, filedName);
+  if (!lead) return out;
+  const hay = " " + norm(out.series || "") + " | " + norm(out.className || "") + " | " + norm(iss) + " ";
+  return hay.includes(" " + lead + " ") ? out : null;
+}
+
+/* A house LEADS a fund's name. Returns the manager phrase the filed name
+ * opens with, or null — and never a phrase built only from vehicle words,
+ * because `Mutual Fund, 500 Index` opens with the registrant phrase
+ * `mutual fund` and names no house at all. */
+const VEHICLE_WORD = new Set(["mutual", "fund", "funds", "shares", "share", "trust", "trusts",
+  "portfolio", "portfolios", "series", "account", "accounts", "collective", "common", "pooled",
+  "separate", "index", "the", "of", "and", "class", "investment", "investments"]);
+function leadManager(idx, filedName) {
+  const t = norm(filedName).split(" ").filter(Boolean);
+  for (let n = 3; n >= 1; n--) {
+    if (t.length < n) continue;
+    const p = t.slice(0, n).join(" ");
+    if (!idx.managers.has(p)) continue;
+    if (t.slice(0, n).every((w) => VEHICLE_WORD.has(w))) return null;
+    return p;
+  }
+  return null;
+}
+
 /* Resolve one filed holding name. Returns null, or
  * { ticker, comparable, why, series, className } */
-export function resolve(idx, filedName) {
-  const memoKey = norm(filedName);
+export function resolve(idx, filedName, issuerWords) {
+  const memoKey = norm(filedName) + (issuerWords ? "\u0000i" : "");
   if (idx.memo && idx.memo.has(memoKey)) return idx.memo.get(memoKey);
-  const out = resolveUncached(idx, filedName);
+  const out = resolveUncached(idx, filedName, issuerWords);
   if (idx.memo) idx.memo.set(memoKey, out);
   return out;
 }
 
-function resolveUncached(idx, filedName) {
+function resolveUncached(idx, filedName, issuerWords) {
   // A collective trust is never the mutual fund, however well the names line
   // up: "Vanguard Target Retirement 2025 Trust I" resolved to VTTVX and was
   // reported EXACT because "trust" is stripped as noise. Its fee is negotiated
@@ -314,7 +424,12 @@ function resolveUncached(idx, filedName) {
   const mgrHit = (c) => c.mgrKeys.some((k) => filedMgrs.includes(k));
   // tokens of the houses the filing names, and share-class markers: the two
   // kinds of filed word a series is allowed to leave unaccounted for
-  const house = new Set(filedMgrs.flatMap((m) => m.split(" ")));
+  /* A word the ISSUER cell contributed is not part of the filed name and can
+   * never be the filing's own discriminator — `Prudential Financial, Inc.`
+   * puts `financial` into the string, and `financial` is a SECTOR word, so
+   * stripping it cost eight correct PGIM answers before this exemption. */
+  const house = new Set(filedMgrs.flatMap((m) => m.split(" "))
+    .filter((w) => !isAssetWord(w) || (issuerWords && issuerWords.has(w))));
 
   let classes = idx.bySeries.get(key);
   let why = "exact";
@@ -538,7 +653,14 @@ const SELFTEST = [
   ["Fidelity Freedom Index 2050 Fund Investor Class (i)", "FIPFX"],
   // …but two REAL class words still refuse
   ["Fidelity Freedom Index 2050 Fund Investor Class K", "FIPFX*"],
-  ["Pimco Real Return Strategy Fund Inst Class A", "PRRIX*"],
+  /* MOVED FROM PRRIX* TO A REFUSAL, deliberately, and the pin records why so
+   * the change is not read later as drift. There is no "PIMCO Real Return
+   * Strategy Fund": there is PIMCO Real Return (PRRIX) and PIMCO COMMODITY
+   * Real Return STRATEGY (PCRIX), and this file's own comment already names
+   * that pair as a shipped defect. `strategy` is an asset word, so it stopped
+   * being excusable as a house word — and a leftover asset word means the
+   * filing may mean the other fund. */
+  ["Pimco Real Return Strategy Fund Inst Class A", "—"],
   // "Premier" is this fund's NAME; recorded as a residual, pinned so a later
   // change to the institutional arm of CLASS_HINTS shows up here
   ["ROYCE PREMIER FUND INV CL", "RPFIX*"],
@@ -560,17 +682,59 @@ const SELFTEST = [
   // a trust edition is the comparable, never the fund
   ["VANGUARD TGT RET 2025 TRUST", "VTTVX*"],
   ["Massachusetts Investors Trust Class R4", "MITDX*"],
+  /* A WORD THAT SAYS WHAT THE FUND HOLDS IS NOT A HOUSE WORD. Each of these
+   * returned a DIFFERENT fund because the junk manager vocabulary excused the
+   * discriminator: the answer is named in the comment beside it. */
+  ["Vanguard SmallCap Value Index Fund", "—"],              // was VIVAX, the LARGE-cap value fund
+  ["Vanguard Smallcap Index Fund Institutional", "—"],      // was VINIX, an S&P 500 fund
+  ["Vanguard Short-Term Inflation-Protected Securities", "—"], // was VIPSX, the INTERMEDIATE TIPS fund
+  ["American Funds World Growth and Income Fund", "—"],     // was the Growth AND INCOME Portfolio
+  // …and the controls that prove it is not a blanket refusal
+  ["American Funds SMALLCAP World Fund R6", "RLLGX"],       // `smallcap` is IN this series' name
+  ["Vanguard Small-Cap Value Index Fund Admiral Shares", "VSIAX"],
+  ["Vanguard Mid-Cap Index Fund Institutional", "VIMSX*"],
+  ["Vanguard Short Term Bond Index Fund", "VBISX*"],
+  ["American Funds Capital World Growth and Income R6", "RWIGX"],
+];
+
+/* THE ISSUER CELL, pinned separately because it is a CALLER rule and the
+ * table above tests `resolve` alone. Negative control: the old caller pattern
+ * (`resolve(name) || resolve(issuer + " " + name)`) must fail on the first. */
+const SELFTEST_ISS = [
+  ["BlackRock High Yield Portfolio K Fund", "Principal Trust Company", "—"],
+  ["Columbia Small Cap Value Fund", "Empower Trust Company, LLC", "—"],
+  ["Invesco Core Bond r6", "Vanguard", "—"],
+  ["Janus Balanced Fund", "Fidelity", "—"],
+  ["American Century Growth R6", "American Funds", "—"],
+  // the issuer ADDING a manager the filed name does not state — all must keep
+  ["Core Plus BD R6", "Carillon Reams", "SCPWX"],
+  ["S&P Small Cap 600 Index Fund Inv", "Empower", "MXISX"],
+  ["Freedom Fund 2050", "Fidelity", "FFPFX*"],
+  ["Fidelity Inflation Protected Bond Index Fund", "Empower Trust Company, LLC", "FIPDX"],
+  ["Fidelity 500 Index Fund", "Empower Trust Company, LLC", "FXAIX"],
+  ["Institutional High Yield Bond Fund R6", "Federated Hermes", "FIHAX*"],
+  // the issuer's own words must not be stripped as asset words: `financial`
+  // is a SECTOR word and is half of Prudential's legal name
+  ["PGIM High Yield Fund", "Prudential Financial, Inc.", "PBHAX*"],
+  ["PGIM Total Return BD R6", "Prudential Financial", "PTRQX"],
 ];
 
 if (process.argv.includes("--selftest")) {
   const idx = buildIndex(INDEX);
-  let bad = 0;
+  let bad = 0, n = 0;
   for (const [name, want] of SELFTEST) {
+    n++;
     const r = resolve(idx, name);
     const got = r ? r.ticker + (r.comparable ? "*" : "") : "—";
     if (got !== want) { bad++; console.log(`FAIL want ${want.padEnd(8)} got ${got.padEnd(8)} ${name}`); }
   }
-  console.log(bad ? `\n${bad} of ${SELFTEST.length} FAILED` : `selftest: ${SELFTEST.length}/${SELFTEST.length} ok`);
+  for (const [name, iss, want] of SELFTEST_ISS) {
+    n++;
+    const r = resolveHolding(idx, name, iss);
+    const got = r ? r.ticker + (r.comparable ? "*" : "") : "—";
+    if (got !== want) { bad++; console.log(`FAIL want ${want.padEnd(8)} got ${got.padEnd(8)} ${name}  [iss ${iss}]`); }
+  }
+  console.log(bad ? `\n${bad} of ${n} FAILED` : `selftest: ${n}/${n} ok`);
   process.exit(bad ? 1 : 0);
 }
 

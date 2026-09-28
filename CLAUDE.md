@@ -767,6 +767,40 @@ export, do not copy the line.
   by name on 9 and holds 14.** Residual pinned, not fixed: `premier` sits in
   the `institutional` arm of `CLASS_HINTS`, so `Royce Premier Fund` has a class
   asserted its filing never stated. `docs/accuracy-log.md` 2026-09-28 (18:3xZ).
+- **AND PIECE (3) — MIRRORED 2026-09-28 19:5xZ, UNFORCED, DATA GATE +0 / −0.
+  Still reaches NO reader.** Two defects, both "a DIFFERENT fund", both closed.
+  **(1) The ISSUER cell supplied a manager and licensed the issuer's own fund**
+  — `BlackRock High Yield Portfolio K Fund` [iss `Principal Trust Company`] →
+  **CPHYX**; `Columbia Small Cap Value` [iss Empower] → **Empower**'s;
+  `Invesco Core Bond r6` [iss Vanguard] → **Vanguard**'s; `Janus Balanced` [iss
+  Fidelity] → **Fidelity**'s. `resolveHolding(idx, name, issuer)` is now the
+  one shared call rule: **the issuer may ADD a manager and never REPLACE one.**
+  **(2) FOUND BY (1) AND INDEPENDENT OF IT — the same junk vocabulary let the
+  superset pass DROP A DISCRIMINATOR, with no issuer involved:** `Vanguard
+  SmallCap Value Index Fund` published **Vanguard Value Index** (large cap),
+  `Vanguard Smallcap Index Institutional` published **VINIX, an S&P 500 fund**,
+  `Vanguard Short-Term Inflation-Protected` published the **intermediate** TIPS
+  fund, `Fidelity Growth Strategy` published **Fidelity Growth Company**. An
+  asset word can no longer be excused as a house word.
+  **THE OBVIOUS TEST WAS WRONG AND THE MEASUREMENT CAUGHT IT FIRST:** asking
+  *does the filed name name a manager* cost **1,758 names / 3,330 rows of
+  CORRECT answers**, because `MANAGERS` holds `emerging`, `selected`, `world`
+  and `mutual fund`. **A COUNT THRESHOLD CANNOT RESCUE IT — `emerging` carries
+  18 series and `mutual fund` 44 against `blackrock` 39 and `american funds`
+  49.** Whole-store: **278,775 of 278,994 pairs unchanged**, 211 names / 269
+  rows withdrawn, **8 rows GAINED**, 248,660 participant-weighted touched.
+  **COST NAMED: 28 rows / 48,265 ppl-weighted are the TIAA-CREF → Nuveen
+  RENAME** — accepted because that answer was also asserting the wrong share
+  class (filed `Inst`, returned `Premier`) and nothing distinguishes a rename
+  from the BlackRock case.
+  **FIFTEENTH HARNESS INSTANCE: I judged ~26 withdrawals to be correct answers
+  being destroyed, reading the list by filed name and old ticker. Printing the
+  old answer's SERIES showed every one was a different fund.** A ticker is not
+  a reading; the series name is.
+  **`--selftest` is now 45 cases in two tables** (32 on `resolve`, 13 on
+  `resolveHolding`), 45/45; the pre-change file fails by name on 5 of the 32
+  and the old caller pattern fails on the BlackRock row.
+  `docs/accuracy-log.md` 2026-09-28 (19:4xZ).
 - **MIRRORED 2026-09-28 16:3xZ, UNFORCED (`5e3941b → 32f4568 → c172a26`):
   `TYPE_SUFFIX` reaches three shapes it could not — 1,973 rows / 462 plans /
   2,996,261 ppl / $26,024,783,093, and +0 tickers gained, −0 lost, 0 flipped.**
