@@ -801,6 +801,38 @@ export, do not copy the line.
   `resolveHolding`), 45/45; the pre-change file fails by name on 5 of the 32
   and the old caller pattern fails on the BlackRock row.
   `docs/accuracy-log.md` 2026-09-28 (19:4xZ).
+- **IN FLIGHT: #492 (build-data) and `site-test` #102, both dispatched
+  2026-09-28 20:2xZ on `bb8b291` and both observed `in_progress`. NO PARSER
+  BUMP** — the work list is the 129 dead 403s, so #492 exists to let the MERGE
+  write the new field. **PIECE (1) IS SHIPPED AND IT REACHES READERS: 147,835
+  rows / 29,979 plans / 43,455,784 participants / $297,213,426,113 gain a fund
+  ticker they did not have**, resolved EXACTLY from the SEC file. `merge-4i`
+  resolves each row once and stores `stk`; `lookupTicker` reads it LAST, after
+  every `fund-er.js` attempt, so it can only fill a blank. Shards 226 → 230 MB,
+  **none of it at boot** (they are fetched per-plan already). **It cannot add a
+  FEE** — `fundER` is called on the NAME and never on a ticker, checked before
+  a line was written.
+  **VERIFIED ON THE PAGE:** Paychex Retirement (**645,304 ppl**) gains six,
+  `Vanguard Growth Index Fund Institutional Shares` → **VIGIX** rendering with
+  no asterisk beside the 0.050% ER the name supplies; Source 4 Solutions
+  (127,153) gains 28 of 50. Every gained row states a share class and gets that
+  class.
+  **AND THE CROSS-CHECK IS THE LARGER FINDING — two sources for one fact is the
+  cheapest audit there is.** On **14,194 names both sources name a fund exactly;
+  they agree on 13,450 and DISAGREE on 744 — 3,844 rows / 2,643 plans /
+  5,962,185 ppl / $35.3B — and reading them the SEC is right every time.**
+  `fund-er.js` ignores a share class the filing states: **K6 2,564 rows**
+  (`Fidelity Total Bond K6` → FTBFX where the K6 fund is **FTKFX**),
+  **Investor Shares 752** (`Vanguard 500 Index Fund Investor Shares` → VFIAX,
+  the **ADMIRAL** class, so the fee shown is too LOW), **Class K 432**
+  (`Fidelity Contrafund - Class K` → FCNTX, is **FCNKX**), other 96. **This is
+  the FTBFX defect fixed once on 2026-09-15, in a class that fix did not
+  reach.**
+  **QUEUED, NOT OVERRIDDEN:** replacing a published ticker is a different claim
+  from filling a blank, and **3,513 of the 3,844 also publish a NAME-based ER**,
+  so correcting the ticker alone leaves a K6 row showing the retail fund's fee
+  beside the K6 symbol. A half-corrected row is not obviously better than a
+  wholly wrong one. `docs/accuracy-log.md` 2026-09-28 (20:4xZ).
 - **MIRRORED 2026-09-28 16:3xZ, UNFORCED (`5e3941b → 32f4568 → c172a26`):
   `TYPE_SUFFIX` reaches three shapes it could not — 1,973 rows / 462 plans /
   2,996,261 ppl / $26,024,783,093, and +0 tickers gained, −0 lost, 0 flipped.**
