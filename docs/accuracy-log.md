@@ -25217,3 +25217,53 @@ alone names nothing and the filed name is the more informative of the two.
 
 Residue, named not waved at: `Vanguard Target Retirement 2025 Trust Select ©
 Common` -> `… ©` keeps a pre-existing OCR artefact this change does not touch.
+
+## 2026-09-28 (16:3xZ) — the bare HOUSE name as a holding, re-derived at v189, and an eleventh harness error caught by reading
+
+**From the draw** (seed 20260928162, which took Intermountain, Sutter Health,
+Americantcs and Walmart). **Intermountain Health (84,616 ppl) publishes
+`William Blair` at $192,161,000 = 2.9%** of a 67-row menu — a fund FAMILY with
+no fund after it, typed `Collective trust`. This record names the shape three
+times and v167 closed it in the DESCRIPTION column while stating plainly that
+the IDENTITY column was left alone.
+
+**Re-derived at v189: 5,752 rows / 4,585 plans / 8,370,934 participants /
+$26,943,849,699**, across 409 distinct houses. **But the row count is not the
+harm** — most are a negligible sweep slice, so the number that matters is the
+share of the menu the house stands for:
+
+| house is ≥ this share of the menu | rows | plans | participants | value |
+|---|---|---|---|---|
+| ≥30% | 93 | 92 | 51,911 | $1.33B |
+| ≥20% | 202 | 199 | 121,936 | $2.91B |
+| ≥10% | 626 | 609 | 689,857 | $12.13B |
+| ≥5% | 1,389 | 1,306 | 1,612,848 | $17.70B |
+| ≥2% | 2,633 | 2,353 | 4,337,212 | $24.40B |
+
+Largest by money in a material slice: **Southwest Airlines (85,764 ppl) shows
+`Dodge and Cox` at 11.6% / $2,157,392,326**; Universal Health Services (80,651)
+`Fidelity` at 9.8% / $351,900,380; ADP TotalSource (346,164) `Global Trust
+Company` at 3.5% / $320,126,975; Intermountain's `William Blair`. The most
+frequent houses are `Mutual of America` (305 rows), `Dodge & Cox` (294),
+`T. Rowe Price` (227), `Fidelity` (215), `American Century` (189).
+
+**AND THE FIRST NUMBER WAS WRONG BY HALF — 10,441 rows / 13,097,812
+participants — because my house list was built by frequency alone.** "An issuer
+string seen standing alone on ≥25 rows IS a house" swept in **real products**:
+`Vanguard Total Intl Stock Index Admiral` stands alone as an `iss` on **936**
+rows, `Voya Fixed Account` on 1,023, `Principal Fixed Income Guaranteed Option`
+on 427, `EI Fixed Account - Series Class I` on 399. The identity column
+legitimately carries FUND names on many filings — v126 promoted issuer headers
+into it — so frequency cannot distinguish a firm from a product.
+
+**Reading the "most common" list is what showed it**, in the first eight lines
+of output; no amount of re-running would have. Eleventh instance on this record
+of a measurement reporting on the harness, and the second in two cycles where
+the tell was a list I printed in order to read rather than to count. The
+corrected predicate adds what frequency cannot supply: a house is SHORT (≤4
+tokens) and carries no product vocabulary.
+
+**Not shipped.** v167's own entry says the identity column is deliberately
+untouched, and the fix is a parser-side contest change rather than a display
+repair — `William Blair` is what the filing's identity column says, so replacing
+it would be a claim rather than a repair. Queued with its numbers.
