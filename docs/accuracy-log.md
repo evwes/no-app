@@ -24473,3 +24473,34 @@ handed to the next cycle rather than shipped at 00:3xZ without a member read of
   string from the filing as a symbol, which is the fabrication surface this
   record is careful about. The check has to run for a while first; that is what
   it is for.
+
+## 2026-09-28 (06:5xZ) — Running `audit-data.mjs` locally POISONS the accuracy trail, and I did it five times
+
+- **What happened:** developing the ticker-conflict check meant running
+  `node scripts/audit-data.mjs` five times. Each run **appends a line to
+  `docs/coverage-history.jsonl`** — the file CLAUDE.md calls the source of
+  truth for coverage trends, the one the REPARSE VERDICT diffs against, and the
+  one a future session reads to decide whether a version regressed.
+- **So five lines that describe no pipeline run at all were sitting in the
+  working tree**, and one of them reads **`warn: 1970`** — the output of the
+  deliberately INVERTED negative control, which reports the 1,426 agreements
+  instead of the 64 conflicts. Committed, that line would have shown a later
+  reader a 1,426-WARN spike on 2026-09-28 that never happened.
+- **Reverted, not committed.** The trail ends where the last real run left it:
+  `2026-09-28 warn 544 high 4`.
+- **The trap is worth more than the incident.** The audit is presented as a
+  read-only reporting step and is not: it has a write side effect on a
+  committed data file, so *every local invocation is an edit to the accuracy
+  record.* Nothing warns about this, and it is silent — the file is one line
+  per run in a 300-line append-only log, which is exactly the shape nobody
+  reviews in a diff. It was caught only because a stop hook flagged the dirty
+  tree.
+- **A related consequence a later session needs, so it is not read as a
+  regression:** the ticker-conflict check raises **64 new WARNs**, so the next
+  REAL pipeline run will legitimately move `warn` 544 → ~608. That is the
+  check working, not a defect appearing.
+- **Not fixed here, and the options want a decision rather than a reflex:**
+  gate the append behind an env var the workflow sets, write only when a delta
+  is present, or split reporting from recording. All three change a file the
+  merge job depends on, so it is the kind of change that deserves its own cycle
+  and its own control rather than being bolted onto this one.
