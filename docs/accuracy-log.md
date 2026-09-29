@@ -28900,3 +28900,72 @@ managed-account fold (six securities behind a cost marker restored; the 35 MENU
 rows are unchanged). `node scripts/diff-lineups.mjs HEAD` over 316 filings
 including 114 pinned specimens: **confidence gained 0, lost 0, fabricated
 generic rows introduced 0, menu sums moved ≥5% 0.** Ten specimens pinned.
+
+---
+
+## 2026-09-29 (22:3xZ) — a refusal cannot override an assertion: the share-class guard protects nobody where `fund-er.js` answers first
+
+**Found by re-sizing a stale recorded class.** The 22:0x participant-weighted
+draw (Midmark, 2,443 ppl) published `MFS Value Fund Class R3` → **MEIKX**, which
+is MFS Value's **R6** ticker. That is the class recorded on 2026-09-15 as
+*"4,321 rows / 14.45M participant-weighted"* and never re-derived — fifty-plus
+parser versions ago. **A number copied forward is asserted again**, so it was
+re-measured through `lookupTicker` as app.js actually calls it (issuer-prefixed,
+RAW name first, `f.type` passed on every call).
+
+**It splits in two, and only one half is new.**
+
+**(1) THE OVERRIDE QUESTION, re-derived and essentially UNCHANGED: 3,856 rows /
+2,638 plans / 5,997,900 participants / $35,855,244,720** where `fund-er.js`
+asserts a ticker and the stored SEC answer says a different one — against
+**3,844 / 2,643 / 5,962,185** recorded 2026-09-28. Same class, same shape,
+dominated by K-class funds (`FTBFX` vs **FTKFX** 989 rows, `FCNTX` vs **FLCNX**
+526, `FBGRX` vs **FBCGX** 388). **This question is already answered — NO — for
+a stated reason that still holds:** 3,513 of those rows also publish a
+NAME-based expense ratio, so correcting the ticker alone leaves a K6 row showing
+the retail fund's fee beside the K6 symbol. Re-deriving it was still worth doing:
+it confirms the class is stable rather than growing.
+
+**(2) THE NEW HALF, AND IT IS A LIMIT ON A FIX THIS RECORD ALREADY CLAIMS:
+2,072 rows / 224 plans / 772,849 participants / $24,258,045,041.** The
+2026-09-28 entry says `Vanguard Institutional Target Retirement 2070` "no longer
+publishes VSVNX — the retail series — **as fact**". Probed directly at the live
+store: **`fundTickerInfo` returns VSVNX with `comparable: false`**, which is
+exactly "as fact".
+
+**The guard is not broken. It is unreachable.** `match-sec-tickers`'s refusal is
+correct, and **merge stores only non-`comparable` answers — so a refusal stores
+NOTHING**. `lookupTicker` then asks `fund-er.js` FIRST and the stored `stk`
+LAST, so on these rows there is no stored answer to override with and the older
+pattern table wins by default. **A refusal cannot override an assertion; only a
+different assertion can.** The fix is real, tested, and protects nobody in the
+population it was written for.
+
+Whole family, by asserted ticker: VTIVX 189, VTTHX 187, VTTVX 187, VFFVX 187,
+VFORX 184, VFIFX 184, VTHRX 183, VTTSX 181, VLXVX 174, VTWNX 173, VTINX 152,
+VSVNX 91. Every one is the **Investor** class of the RETAIL series; Vanguard's
+Institutional Target Retirement is a separate, cheaper series.
+
+**A HARNESS OVER-REACH OF MINE, caught by reading the tickers rather than the
+counts, and it cut the class by more than half.** The first screen asked whether
+a house name is followed by "Institutional" and returned **4,881 rows /
+8,028,379 participants** — whose most frequent answer is **VINIX on 1,627 rows
+for `Vanguard Institutional Index Fund`, which is CORRECT.** That is a real
+product whose name legitimately contains the word; "Institutional" is a share
+class only where a RETAIL series of the same name also exists. Same shape as
+`{Vanguard} Wellington Admiral Fund` carrying its sub-adviser. **Do not carry
+4,881 or 8,028,379 forward.** Narrowed to the Target Retirement family, which is
+the family the 09-28 entry itself names.
+
+**And the disagreement count is not a defect count.** A first pass counted every
+row whose published ticker's own SEC class contradicts the class the filed name
+states: **9,433 rows / 13,343,407 participants**. 83% of it is a single
+`INST → ADM/INV` Vanguard shape, most of which is the VINIX false positive
+above. The honest figures are (1) and (2), not 9,433.
+
+**NOT SHIPPED.** (1) is owner-gated and already answered. (2) is a genuine
+defect but its fix is a CALL-ORDER change — consult the SEC refusal before
+`fund-er.js`'s assertion — which inverts a priority every other row depends on,
+and the 2026-09-18 measurement that set raw-first order recorded it gaining 37
+tickers while LOSING 26 and FLIPPING 26. Re-ordering needs its own whole-store
+measurement, not an argument.
