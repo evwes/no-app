@@ -28046,3 +28046,13 @@ disagreeing on the same row.
   page's own vocabulary, which cannot occur in a fund's name; `JUNK_NAME_RE`
   and `SKIP_ROW` already carry the family and simply lack these phrases. Parser
   side, so it needs a bump — recorded, not started.
+
+- **CORRECTION, same cycle, and it is the SECOND transcription slip in this one
+  entry.** The `lib-disclose` comment first read *"46 rows gain a fund ticker
+  and 93 gain an expense ratio"*. The measured figure is **102**, and it already
+  nets out the 9 guarantee refusals — I subtracted them a second time by hand.
+  Both slips in this entry (the Duke row count, and this) were arithmetic done
+  in my head over a number a script had already printed correctly. **Neither
+  measurement was wrong; both transcriptions were.** The reason it matters here
+  is that a comment is the next reader's evidence, and a number in a comment is
+  asserted every time it is read.

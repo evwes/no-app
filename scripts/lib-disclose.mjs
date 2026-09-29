@@ -1238,9 +1238,10 @@ export function isInvestmentContractRow(f, cleanedName, namesAFund) {
  *     move them in any case.
  *
  * THE COVERAGE HALF IS REAL AND IS NOT THE LARGER HALF: 46 rows gain a fund
- * ticker and 93 gain an expense ratio they were denied. That is what makes
- * this item different from its annuity and investment-contract siblings, which
- * cost readers nothing but the truth.
+ * ticker and 102 gain an expense ratio they were denied, both counted AFTER
+ * the guarantee refusal below. That is what makes this item different from its
+ * annuity and investment-contract siblings, which cost readers nothing but the
+ * truth.
  *
  * AND THE FEE MUST NOT BE LIFTED BLINDLY, which the measurement caught before
  * anything shipped. 9 of the flagged rows would newly publish `fund-er.js`'s
