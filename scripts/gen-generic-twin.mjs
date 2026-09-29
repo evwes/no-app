@@ -123,8 +123,18 @@ const names = ["Mutual funds", "Mutual Fund Shares", "Sub-total: Registered Inve
   "Commingled funds", "Pooled separate account funds", "Collective trust funds",
   /* v189 kerned arm */ "M utual Fund", "Regi s tered i nves tment compa ni es",
   "Colle ctive Trust", "Registered Investm ent Com pany", "Group Annuity C ontrac t",
+  /* v190 bare trust designation. ADDED BECAUSE NOT ONE OF THE NAMES ABOVE
+   * REACHES THAT ARM — the twin would have agreed here whether or not it
+   * carried v190, which is v189's failure repeating one version later. The
+   * must-KEEP half below is where the cost of this rule being wrong lives:
+   * a designation at the END of a longer name is a real fund's name. */
+  "Master Trust", "Trust", "Interest in Master Trust",
+  "Plan interest in master trust", "Master Trust Fund",
   /* must stay real */ "Fidelity 500 Index Fund", "AMERICAN FUNDS BLANC MUTUAL FUND",
-  "Mutual of America MUTUAL FUND", "Separate Account A, at fair value", "Not Required"];
+  "Mutual of America MUTUAL FUND", "Separate Account A, at fair value", "Not Required",
+  "Korn Ferry Master Trust", "Investment in BNSF 401(k) Plans Master Trust",
+  "Vanguard Retirement Savings Trust II", "Great Gray Trust",
+  "T. Rowe Price Retirement 2035 Trust", "Fidelity Freedom Index 2030 Trust"];
 const rows = [
   { name: "Mutual funds", type: "Mutual fund" }, { name: "M utual Fund", type: "" },
   { name: "COMMON STOCK", type: "Employer security" },
