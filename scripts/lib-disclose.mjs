@@ -1006,3 +1006,139 @@ export function annuityFeeIsGuaranteeOnly(cleanedName, priceOf) {
   const rest = s.replace(GUARANTEE_PRICED_WORDS, " ").replace(/\s+/g, " ").trim();
   return priceOf(rest) == null;
 }
+
+/* AN INVESTMENT CONTRACT TYPED `Mutual fund` — canonical copy, 2026-09-29.
+ *
+ * THE ANNUITY RULE ABOVE, ONE LEGAL NOUN ALONG, AND LARGER. Where that one
+ * reads `annuity contract`, a filer describing the same kind of holding under
+ * ASC 962-325 usually writes `investment contract` or `insurance contract`:
+ *   `Fully benefit responsive investment contracts American General Life
+ *    Insurance`  (Bmo Financial Corp., 30,897 participants)
+ *   `Unallocated Insurance Contracts`                (34,051 participants)
+ *   `Investment contract - Empower Guaranteed Income Fund`
+ * Each is typed `Mutual fund`, so the page tells those readers their holding is
+ * a registered mutual fund when the filing says it is a contract with an
+ * insurer. The name is faithful; the TYPE is the false claim, which is why no
+ * name-based guard — the dominance guard, `audit-generic-names`, `diff-lineups`
+ * — could ever have seen it.
+ *
+ * RE-DERIVED AGAINST THE LIVE v192 STORE, through the PUBLICATION gate
+ * (`lineups-status.c`), never a stored-entry count:
+ *   `investment contract`  222 rows / 219 plans / 300,684 ppl / $1,447,457,131
+ *   `insurance contract`    50 rows /  50 plans /  93,306 ppl / $  259,507,434
+ * The queue entry this item was filed under said 223 / 220 / 330,533 for the
+ * first of those; the store has taken two data commits since and one plan of
+ * 29,849 participants has left the class. A number is asserted every time it is
+ * copied forward.
+ *
+ * BOTH PHRASES SHIP AS ONE RULE, and that is a measured decision rather than a
+ * tidy one. All 47 distinct `insurance contract` names were read and not one
+ * names a registered fund — they are the same TIAA / Lincoln / Principal /
+ * VALIC / Key Guaranteed products in the other word. Shipping only the phrase
+ * the item was filed under would be this record's own v131 mistake: a fix for
+ * one phrasing of a class is not a fix for the class.
+ *
+ * THE BARE WORD `contract` IS DELIBERATELY NOT IN THE VOCABULARY, and the
+ * evidence is a third bucket that was measured before the choice: 117 further
+ * `Mutual fund` rows carry the word without either phrase, and reading all 103
+ * distinct names they are overwhelmingly REAL FUNDS wearing a caption —
+ * `at contract value Fidelity 500 Index`, `Contract Vanguard Value Index Fund
+ * Adm`, `Contract T. Rowe Price Retirement 2045 Fund`, `Contract MFS Value R6`.
+ * `contract value` is a measurement basis, not a vehicle. Those rows are a
+ * caption defect and belong to that family, not to this one.
+ *
+ * THE STRUCTURAL EVIDENCE THAT THE PHRASE IS A CATEGORY AND NOT A BRAND, run
+ * the same way v192's was: of the 29,406 SEC-registered share classes in
+ * `sec-funds.json`, ZERO contain `investment contract`, ZERO contain
+ * `insurance contract`, and ZERO contain the word `contract` at all — against
+ * 22,224 that contain `Fund`, which is the sanity count that makes the zero
+ * readable. (The first run of that probe also returned zero and was a HARNESS
+ * artefact: the entries are ARRAYS and it read `c.registrant`. A zero reports
+ * on the query until something implausible in the same run says otherwise.)
+ *
+ * BUT ONE COUNT IS TWO CLASSES, WHICH IS THE WHOLE DIFFICULTY, and unlike the
+ * annuity rule this one needs an escape hatch on the evidence. Five published
+ * rows say `investment contract` and ALSO name a fund:
+ *   `investment contract Dodge & Cox Income Fund Class X`   DODIX, 0.41%
+ *   `Investment Contract American Funds Europacific GR R6`  RERGX, 0.46%
+ *   `Responsive Investment Contract American Funds The Bond Fund of America`
+ * On those the contract words are a section caption our parse welded on, the
+ * type `Mutual fund` is TRUE, and typing them `Investment contract` would
+ * destroy a correct answer and a correct fee.
+ *
+ * SO THE DISCRIMINATOR IS WHAT THE NAME STILL SAYS ONCE THE CONTRACT
+ * DESIGNATION IS TAKEN OUT OF IT — the sibling rule's structure, asked of
+ * IDENTITY rather than of price. Remove the contract phrase and the guarantee
+ * vocabulary the fee table prices a guarantee on, then ask whether anything the
+ * site can identify is left. It is deliberately NOT keyed on a constant: the
+ * class was FOUND with `er === 0.35`, and a rule keyed on today's fallback
+ * value stops working in silence the day that value moves.
+ *
+ * `namesAFund` is injected for the same reason `priceOf` is above — this module
+ * has no dependency on `fund-er.js`, a plain browser script. Both callers pass
+ * `(n) => fundER(n) != null || !!fundTickerInfo(n)`: BOTH halves are needed and
+ * that is measured, not belt-and-braces. `American Funds The Bond Fund of
+ * America` resolves to no ticker and IS priced by name, while a hypothetical
+ * ticker-only test would flag it and delete a real fund's fee.
+ * `fundTickerInfo` is called WITHOUT the row's type on purpose: the type is the
+ * very thing in dispute, so it cannot also be the evidence.
+ *
+ * THE VOCABULARY IS THE MINIMAL ONE AND THAT IS MEASURED. Three nested strip
+ * vocabularies were tried — the contract phrase alone; plus
+ * `benefit-responsive`/`unallocated`; plus `at contract value`/`with an
+ * insurance company` — and ALL THREE give the identical 267 / 5 split, so the
+ * shortest ships. Every extra word is a word the rule would delete from a real
+ * fund's name the day one arrives carrying it.
+ *
+ * MEASURED BOTH WAYS OVER THE WHOLE LIVE STORE, every distinct name read:
+ *   - 267 rows flagged across 234 distinct names, all 234 read one by one.
+ *     Every one is an insurance guarantee or stable-value contract, a bare
+ *     legal designation (`Unallocated Insurance Contracts`, `Insurance
+ *     contracts`), or — on exactly 2 rows / 400 participants — a Schedule H
+ *     table line our parse welded into a name. Not one names a registered fund.
+ *   - 5 rows are kept, and all five were printed IN FULL rather than truncated,
+ *     because a truncated print is a different string and this record carries
+ *     the cost of learning that.
+ *
+ * IT SUPPRESSES THE FEE AND THE TICKER, like its annuity sibling and for the
+ * same reason `gicRow` does: an investment contract's cost sits inside the
+ * crediting rate and is not a fund expense ratio. 89 of the flagged rows
+ * publish exactly 0.35% today — `fund-er.js`'s last generic fallback,
+ * /stable value|managed income|guaranteed|gic\b/ — on a holding the filing
+ * names as a contract with an insurance company. 0 publish a ticker, so the
+ * ticker half is future-proofing and is named as such.
+ *
+ * THE ROW IS TYPED, NEVER DROPPED — v181's treatment. Value and percentage are
+ * untouched, so the money stays accounted for and no other row's share moves.
+ *
+ * ONE LABEL FOR BOTH PHRASINGS, and it is the filings' own: 24 of the 234 names
+ * read `Investment contract(s) with insurance company/companies` verbatim, and
+ * `investment contract` is what ASC 962-325 calls this whole category. So an
+ * unallocated INSURANCE contract typed `Investment contract` is the category
+ * name, not a second claim — and one label means one vocabulary, where a second
+ * regex to choose between two labels is a derived pattern waiting to drift.
+ *
+ * KNOWN RESIDUAL, NAMED RATHER THAN ROUNDED AWAY — 1 row / 537 participants.
+ * `Fully Benefit-Responsive Investment Contract American United Life Insurance
+ * AUL Stable Val` is an insurance product that SHOULD be flagged and is kept,
+ * because the stored name is truncated to `Stable Val`: the literal
+ * `\bstable value\b` in the strip cannot match it while `fund-er.js`'s own
+ * variant expansion reads `Val` as `Value` and prices it at 0.35%. The strip
+ * and the pricer disagree about an abbreviation. Widening the shared
+ * `GUARANTEE_PRICED_WORDS` to chase it would change the annuity rule's measured
+ * 144/0 split for one row, which is a worse trade than the row.
+ *
+ * app.js keeps a twin (browser script, no module system); the generator
+ * extracts this VERBATIM and `smoke-test.mjs` runs the browser copy against
+ * this one on pinned names and fails on drift. */
+export const CONTRACT_DESIGNATION_NAME = /\b(?:investment|insurance) contracts?\b/i;
+const CONTRACT_DESIGNATION_WORDS = /\b(?:investment|insurance) contracts?\b/gi;
+export function isInvestmentContractRow(f, cleanedName, namesAFund) {
+  const type = String((f && f.type) || "");
+  if (!/^mutual fund/i.test(type)) return false;
+  const s = String(cleanedName || (f && f.name) || "");
+  if (!CONTRACT_DESIGNATION_NAME.test(s)) return false;
+  const rest = s.replace(CONTRACT_DESIGNATION_WORDS, " ")
+    .replace(GUARANTEE_PRICED_WORDS, " ").replace(/\s+/g, " ").trim();
+  return !namesAFund(rest);
+}

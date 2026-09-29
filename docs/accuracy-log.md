@@ -27349,3 +27349,205 @@ Fund` — brokerage windows, master trusts and CITs, which have **no ticker by
 design**. (3) An index-coverage probe reporting **`entries: 0`** because my
 accessor tried `classes`/`rows`/`data` and the file's key is `funds`.
 *A zero, a round number and an implausibly large number all report on the query.*
+
+---
+
+## 2026-09-29 (12:5xZ) — SHIPPED: an INVESTMENT CONTRACT typed `Mutual fund` — the annuity rule one legal noun along, and larger
+
+- **Wrong:** 272 published holding rows carry a filed name saying
+  `investment contract` or `insurance contract` and are **typed `Mutual
+  fund`**. A contract with an insurance company is not a registered mutual
+  fund, so the type cell is a false claim — and on **89 of those rows the
+  false type was also buying a fabricated 0.35% expense ratio**, `fund-er.js`'s
+  last generic fallback `/stable value|managed income|guaranteed|gic\b/`.
+  `Unallocated Insurance Contracts` (Ochsner Clinic Foundation, 33,867
+  participants), `Fully benefit responsive investment contracts American
+  General Life Insurance` (Bmo Financial Corp., 30,897), `Fully
+  Benefit-Responsive Insurance Contract` (Sharp Healthcare, 21,526),
+  `Investment contract EI Fixed Account - Series Class V` (Trihealth, 18,586).
+  **This is v192's shape one legal noun along**: v190 and v192 stopped a NAME
+  making a false claim; here the name is faithful and the TYPE is the claim,
+  so **no name-based guard could ever have seen it** — not the dominance
+  guard, not `audit-generic-names`, not `diff-lineups`.
+
+- **THE SIZE WAS RE-DERIVED BEFORE ANYTHING WAS TOUCHED, and the queue entry
+  was stale.** `CLAUDE.md` carried *223 rows / 220 plans / 330,533
+  participants / $1,447,476,149*. Against the live v192 store, through the
+  PUBLICATION gate (`lineups-status.c`) and never a stored-entry count, the
+  same predicate gives **222 rows / 219 plans / 300,684 participants /
+  $1,447,457,131** — the dollars agree to four significant figures and one
+  plan of **29,849 participants** has left the class across the two data
+  commits since. *A number is asserted every time it is copied forward.*
+
+- **Change — DISPLAY-SIDE, no `PARSER_VERSION` bump.** The whole discriminator
+  is in the stored `name` and `type`, so it reaches readers without a
+  re-parse. `isInvestmentContractRow(f, cleanedName, namesAFund)` is canonical
+  in `scripts/lib-disclose.mjs`, extracted VERBATIM into app.js by
+  `scripts/gen-generic-twin.mjs`, and tethered by `scripts/smoke-test.mjs`.
+  The row is **TYPED, never dropped** — v181's treatment — so value and
+  percentage are untouched and no other row's published share moves. The type
+  cell reads `Investment contract`; the ticker and the fee are suppressed for
+  exactly the reason `gicRow` suppresses them, because an investment
+  contract's cost sits inside the crediting rate.
+
+- **What reached readers, measured whole-store through app.js's own `er`, `tk`
+  and `shownType` expressions over ALL 1,720,602 published rows:**
+  **263 rows / 260 plans / 386,175 participants / $1,698,096,097** stop being
+  told a contract with an insurer is a registered mutual fund;
+  **89 rows / 89 plans / 104,327 participants / $261,037,800 stop publishing a
+  fabricated 0.35%**, every one of them at 0.35 and none at any other value.
+  **1,720,339 of 1,720,602 rows unchanged. CHANGES OUTSIDE THE NEW TYPE: 0.
+  0 tickers gained, 0 lost, 0 flipped. 0 fees gained, 0 fees changed.**
+  The 4-row gap between the 267 the rule flags and the 263 that change is the
+  rows v192 already types `Annuity contract` — their name says both nouns, the
+  annuity arm is asked first, and their fee was already gone.
+
+- **BOTH PHRASES SHIP AS ONE RULE, and that is measured rather than tidy.**
+  The item was filed as `investment contract` alone (222 rows). All **47
+  distinct `insurance contract` names were read** and not one names a
+  registered fund — they are the same TIAA / Lincoln / Principal / VALIC / Key
+  Guaranteed products in the other word, 50 rows / 50 plans / 93,306
+  participants. Shipping only the filed phrasing would be this record's own
+  v131 mistake: *a fix for one phrasing of a class is not a fix for the class.*
+
+- **THE BARE WORD `contract` IS DELIBERATELY OUT, and the cost of putting it in
+  was measured first.** 117 further `Mutual fund` rows carry the word without
+  either phrase; reading all **103 distinct names** they are overwhelmingly
+  REAL FUNDS wearing a caption — `at contract value Fidelity 500 Index`,
+  `Contract Vanguard Value Index Fund Adm`, `Contract T. Rowe Price Retirement
+  2045 Fund`, `Contract MFS Value R6`. **`contract value` is a measurement
+  basis, not a vehicle.** Those rows belong to the caption family, not this one,
+  and three of them are pinned in the tether as the price of that widening.
+
+- **ONE COUNT WAS TWO CLASSES, exactly as the warning said, and the rule needs
+  an escape its annuity sibling did not.** Five published rows say `investment
+  contract` and ALSO name a fund: `investment contract Dodge & Cox Income Fund
+  Class X` → **DODIX at 0.41%**, `Investment Contract American Funds
+  Europacific GR R6` → **RERGX at 0.46%**, `Responsive Investment Contract
+  American Funds The Bond Fund of America` → **0.40% by name with no ticker**.
+  On those the contract words are a section caption our parse welded on, the
+  type `Mutual fund` is TRUE, and typing them would destroy a correct answer
+  and a correct fee.
+
+- **THE DISCRIMINATOR IS STRUCTURAL AND IN THE FILING'S OWN WORDS — never a
+  constant.** Remove the contract designation and the guarantee vocabulary the
+  fee table prices a guarantee on, then ask whether anything the site can
+  identify is left. The class was FOUND with `er === 0.35`; a rule keyed on
+  today's fallback value stops working in silence the day that value moves.
+  **The vocabulary is the minimal one and that is measured:** three nested
+  strip vocabularies were tried — the contract phrase alone; plus
+  `benefit-responsive`/`unallocated`; plus `at contract value`/`with an
+  insurance company` — and **all three give the identical 267 / 5 split**, so
+  the shortest ships.
+
+- **THE IDENTITY PROBE NEEDS BOTH HALVES AND THAT IS MEASURED, not
+  belt-and-braces.** `namesAFund = (n) => fundER(n) != null ||
+  !!fundTickerInfo(n)`. `American Funds The Bond Fund of America` resolves to
+  **no ticker** and IS priced by name, so a ticker-only test would delete a
+  real fund's published fee. `fundTickerInfo` is called **without the row's
+  type** on purpose: the type is the very thing in dispute, so it cannot also
+  be the evidence.
+
+- **THE FEE HALF WAS MEASURED THROUGH THE FUNCTION THE PAGE CALLS, because the
+  last two cycles were not.** The harness transcribes app.js's FULL `er`
+  expression from app.js SOURCE — `gicRow`, `subtotalRow`, `loanRow`,
+  `descLoanRow`, `annuityRow`, `guaranteeOnlyFee`, `stockRow`,
+  `noPublicPrice`, the `star ? info.er : …` branch and **`fundERFiled`, which
+  lives in app.js and not in fund-er.js**. It reproduces the live store's
+  current answers exactly before measuring any change.
+
+- **All 234 distinct FLAGGED names were read one by one.** Every one is an
+  insurance guarantee or stable-value contract, a bare legal designation
+  (`Unallocated Insurance Contracts`, `Insurance contracts`, `General Insurance
+  Contract`), or — on exactly **2 rows / 400 participants** — a Schedule H
+  table line our parse welded into a name (`Mutual funds $ 28,944,068 $
+  28,944,068 $ --- Investment contract with insurance company`). Not one names
+  a registered fund. Those 2 rows are a different defect and are named here
+  rather than claimed as fixed; the new type is no more wrong than `Mutual
+  fund` was, and they publish no ticker and no fee under either.
+
+- **KNOWN RESIDUAL, NAMED RATHER THAN ROUNDED AWAY — 1 row / 537
+  participants.** `Fully Benefit-Responsive Investment Contract American United
+  Life Insurance AUL Stable Val` is an insurance product that SHOULD be
+  flagged and is KEPT, keeping its fabricated 0.35%. The stored name is
+  TRUNCATED to `Stable Val`: the literal `\bstable value\b` in the strip cannot
+  match it, while `fund-er.js`'s own variant expansion reads `Val` as `Value`
+  and prices it. **The strip and the pricer disagree about an abbreviation.**
+  Widening the shared `GUARANTEE_PRICED_WORDS` to chase it would change the
+  annuity rule's measured 144/0 split for one row — a worse trade than the row.
+  Also deliberately kept: `Investment Contracts Galliard Stable Return Fund`
+  (1,540 participants), a real NAMED collective trust priced 0.35% by
+  fund-er's own `/galliard/` entry, not by the generic fallback. Its type is
+  arguably `Collective trust` rather than `Mutual fund`, but typing it
+  `Investment contract` would replace one wrong type with another.
+
+- **THE STRUCTURAL EVIDENCE THAT THE PHRASE IS A CATEGORY AND NOT A BRAND**,
+  run the way v192's was: of the **29,406** SEC-registered share classes in
+  `sec-funds.json`, **ZERO contain `investment contract`, ZERO contain
+  `insurance contract`, and ZERO contain the word `contract` at all** — against
+  **22,224 that contain `Fund`**, which is the sanity count that makes the zero
+  readable.
+
+- **WHICH DISPLAY PATH: the REPORT only, and the crawlable pages are a finding
+  rather than an omission.** `scripts/build-seo-pages.mjs` renders a fund row
+  as name + value with **no type column and no expense-ratio column**, so the
+  false `Mutual fund` claim and the fabricated 0.35% do not exist on that
+  surface at all. Pages regenerated and **`git diff --stat p/` is empty** —
+  0 of 5,000 changed.
+
+- **Prevention.** Canonical in `lib-disclose`, twin extracted VERBATIM by the
+  generator (which now refuses to write unless it finds both new constants and
+  the function), tethered by `smoke-test.mjs` on **18 pinned rows, 11 of which
+  must come back FALSE in three kinds** — three real funds behind a welded
+  caption, three whose filed type is already honest or more specific, five that
+  never say either phrase including the three `contract value` measurement
+  bases. `gen-generic-twin.mjs`'s own self-check carries the same 18 and
+  asserts BOTH directions, because a probe set that cannot reach an arm is how
+  a guard passes while doing nothing — caught at v189, v190, v191, v192 and,
+  had these not been added, here: **not one existing probe reaches this arm**,
+  since every annuity case says `annuity contract` and none says `investment
+  contract`.
+
+- **NEGATIVE CONTROL, FIVE WAYS, and each fails BY NAME on exactly the cases
+  its arm decides and on none of the others:** the LIVE twin drifts on **0 of
+  18**; the PRE-CHANGE twin has no hook at all and the tether fails at it;
+  narrowing the vocabulary to the phrase the item was filed under drifts on
+  **exactly the 2 insurance-only must-flags**; removing the escape hatch drifts
+  on **exactly the 3 real-fund must-keeps**; removing the type gate drifts on
+  **exactly the 3 whose filed type is already honest**; widening to the bare
+  word `contract` drifts on **exactly 2 measurement-basis must-keeps**. And the
+  tether was proved able to FAIL end to end: with the escape hatch removed from
+  the twin, `smoke-test.mjs` reports `SMOKE FAIL … disagrees … on 3 of 18` and
+  prints all three names.
+
+- **THREE HARNESS ERRORS CAUGHT IN MYSELF, all in the negative control, and
+  this project counts them deliberately.**
+  **(1) A probe that returned a zero for the wrong reason.** The first
+  SEC-registry check reported `0` share classes containing `contract` — true,
+  as it turned out, but measured with `c.registrant` on entries that are
+  **ARRAYS**, so it would have reported 0 for any string. The tell was the
+  companion count `bare word contract: 0` being implausible; adding the
+  `Fund` → 22,224 sanity count is what made the real zero readable.
+  *A zero reports on the query until something implausible in the same run
+  says otherwise.*
+  **(2) A control that reported ABSENT for the LIVE twin.** My first run of the
+  five-way negative control printed "the arm is ABSENT" for every case
+  including my own just-generated code — a broken hook-renaming chain left
+  `__i` unassigned. **A control that fails identically in every direction,
+  including on the case that must pass, is measuring the harness.**
+  **(3) A mutation that applied to the WRONG FUNCTION.** The type-gate drift
+  reported 0 and read like a passing control. The line
+  `if (!/^mutual fund/i.test(type)) return false;` exists **twice** in app.js —
+  `isAnnuityContractRow` has the identical line — and a non-global `.replace`
+  took the FIRST occurrence, so the control mutated the annuity rule and left
+  the rule under test intact. Scoped to the function, it drifts on exactly 3.
+  *A mutation that silently fails to apply, or applies somewhere else, is a
+  control that cannot fail.* Both (2) and (3) now assert that the mutation
+  changed the source before the comparison is run.
+
+- **Unrelated and pre-existing, named because a red check is worse than no
+  check:** `scripts/map-test.mjs` fails in this sandbox with
+  `ERR_CERT_AUTHORITY_INVALID` on an external resource. Verified against the
+  PRE-CHANGE tree with `git stash`: **it fails identically there**, so it is
+  the sandbox's egress and not this change. `parser-gate.mjs` all green,
+  `smoke-test.mjs` green, `fund-er-test.mjs` 46 / 26 / 9 / 9 with 0 failures.

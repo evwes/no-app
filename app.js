@@ -932,8 +932,31 @@
   }
 
   window.__wampoGuaranteeOnlyFee = (n) => annuityFeeIsGuaranteeOnly(n, fundER);  // read by the smoke test only
+  const CONTRACT_DESIGNATION_NAME = /\b(?:investment|insurance) contracts?\b/i;
+  const CONTRACT_DESIGNATION_WORDS = /\b(?:investment|insurance) contracts?\b/gi;
+  function isInvestmentContractRow(f, cleanedName, namesAFund) {
+    const type = String((f && f.type) || "");
+    if (!/^mutual fund/i.test(type)) return false;
+    const s = String(cleanedName || (f && f.name) || "");
+    if (!CONTRACT_DESIGNATION_NAME.test(s)) return false;
+    const rest = s.replace(CONTRACT_DESIGNATION_WORDS, " ")
+      .replace(GUARANTEE_PRICED_WORDS, " ").replace(/\s+/g, " ").trim();
+    return !namesAFund(rest);
+  }
+
+  window.__wampoInvestmentContractRow = (f) => isInvestmentContractRow(f, (f && f.name) || "", namesAFund);  // read by the smoke test only
   window.__wampoCleanFiledName = cleanFiledName;
   window.__wampoLoanRow = (n) => LOAN_ROW.test(String(n || "").trim());  // read by the smoke test only
+  /* "does this string identify a fund at all?" — the identity probe
+   * `isInvestmentContractRow` takes, injected for the same reason `priceOf` is:
+   * lib-disclose has no dependency on fund-er.js. BOTH halves are needed and
+   * that is measured, not belt-and-braces — `American Funds The Bond Fund of
+   * America` resolves to no ticker and IS priced by name, so a ticker-only
+   * probe would delete a real fund's published fee. `fundTickerInfo` is called
+   * WITHOUT a type on purpose: the row's type is the thing in dispute, so it
+   * cannot also be the evidence. Declared as a function so the generated twin
+   * above can close over it whatever order the file is read in. */
+  function namesAFund(n) { return fundER(n) != null || !!fundTickerInfo(n); }
   /* Misspellings of a fund HOUSE that appear in filed 4i schedules, each one
    * observed in the store rather than imagined, and each a transposition or
    * dropped letter in a house name — never a fund name, where a near-miss
@@ -2042,6 +2065,16 @@
        * on all 1,405 rows this gate can reach). FEE ONLY — the ticker is left
        * alone, because 0 of the 1,361 rows it flags publish one. */
       const guaranteeOnlyFee = annuityFeeIsGuaranteeOnly(f.name || "", fundER);
+      /* AN INVESTMENT CONTRACT TYPED `Mutual fund` — the annuity rule one legal
+       * noun along, and larger. 267 rows / 264 plans / 388,683 participants say
+       * `investment contract` or `insurance contract` in the filed name and are
+       * typed `Mutual fund`, which tells those readers a contract with an
+       * insurer is a registered mutual fund. 89 of them also publish a
+       * fabricated 0.35% off fund-er.js's generic /guaranteed|stable value/
+       * fallback. The rule, the escape hatch that keeps the five rows which
+       * really do name a fund, and the whole safety argument live in
+       * scripts/lib-disclose.mjs; this is the generated twin's call site. */
+      const contractRow = isInvestmentContractRow(f, f.name || "", namesAFund);
       /* v67 entries carry the 4i identity column as f.iss ("Vanguard",
        * "Western Asset"). Ticker matching sees issuer + name together, which
        * is what makes "Core Bond IS" resolvable at all; entries parsed
@@ -2055,6 +2088,7 @@
        * prefix — blank fee cells since v67. Try issuer+name first (keeps
        * every existing win), then the bare name. Strict superset. */
       const info = tab === "menu" && !gicRow && !subtotalRow && !loanRow && !annuityRow
+        && !contractRow
         ? lookupTicker(f)
         : null;
       // employer stock IS a listed security: the plan's own ticker names it
@@ -2065,7 +2099,7 @@
       const star = !stockRow && info && info.comparable;
       if (star) starred = true;
       const er = tab !== "menu" || stockRow || gicRow || subtotalRow || loanRow || annuityRow
-        || guaranteeOnlyFee ? null
+        || guaranteeOnlyFee || contractRow ? null
         : star ? info.er : (noPublicPrice ? null : fundERFiled(f.name));
       // the brokerage window is a menu choice with no holdings of its own —
       // tint it so it reads as a doorway, not a fund (owner request)
@@ -2108,10 +2142,19 @@
        * nameless-row change removed. So the annuity arm only reaches rows that
        * DO name something, and the fee suppression above is independent of
        * this ordering — it fires on every annuity row either way. */
+      /* `contractRow` sits after `namelessRow` for the reason the annuity arm
+       * does: a row whose whole name is `Insurance contracts` already reads
+       * "Filing names no specific fund", the stronger true statement, and
+       * printing "Investment contract" beside it would be the same phrase
+       * twice. The fee suppression above is independent of this ordering and
+       * fires on every contract row either way. ONE LABEL covers both
+       * phrasings: 24 of the flagged names read "Investment contracts with
+       * insurance companies" verbatim, and that is the category's own name. */
       const shownType = descLoanRow ? "Not a menu choice"
         : loanRow ? "Participant loans — not a menu choice"
         : namelessRow ? "Filing names no specific fund"
         : annuityRow ? "Annuity contract"
+        : contractRow ? "Investment contract"
         : f.type || (brokRow ? "Brokerage window" : "—");
       /* THE NAME IS REPLACED HERE AND NOWHERE ELSE IN THE LOAN FAMILY.
        * v181's rows are NAMED (`LOAN FUND`, `Notes receivable from

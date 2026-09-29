@@ -21,7 +21,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import vm from "node:vm";
 import { GENERIC_TYPE_ANY, GENERIC_TYPE_DESPACED, isGenericTypeName } from "./lib-4i.mjs";
 import { isNamelessFundRow, isLoanDescriptionRow, isAnnuityContractRow,
-  annuityFeeIsGuaranteeOnly } from "./lib-disclose.mjs";
+  annuityFeeIsGuaranteeOnly, isInvestmentContractRow } from "./lib-disclose.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const lib = readFileSync(ROOT + "scripts/lib-4i.mjs", "utf8");
@@ -68,6 +68,16 @@ const gfe = dis.indexOf("\n}\n", dis.indexOf("export function annuityFeeIsGuaran
 if (gfe < 3) throw new Error("gen-generic-twin: annuityFeeIsGuaranteeOnly moved in lib-disclose");
 const guarfee = dis.slice(gfs, gfe).replace(/^export /gm, "");
 
+/* the investment-contract rule, VERBATIM: two constants and one function. Both
+ * constants travel because the rule reads BOTH cells and then STRIPS — a copy
+ * carrying the test regex and a retyped strip regex would flag the same rows
+ * and keep different ones, which is drift no count could see. */
+const ics = dis.indexOf("export const CONTRACT_DESIGNATION_NAME = ");
+if (ics < 0) throw new Error("gen-generic-twin: CONTRACT_DESIGNATION_NAME moved in lib-disclose");
+const ice = dis.indexOf("\n}\n", dis.indexOf("export function isInvestmentContractRow(")) + 3;
+if (ice < 3) throw new Error("gen-generic-twin: isInvestmentContractRow moved in lib-disclose");
+const invcontract = dis.slice(ics, ice).replace(/^export /gm, "");
+
 const block = `  /* GENERATED FROM scripts/lib-4i.mjs — DO NOT EDIT BY HAND.
    * lib-4i derives these patterns from GENERIC_TYPE_NAME by asserted
    * replacements, so they are DERIVED and transcribing one is the move this
@@ -104,6 +114,8 @@ ${annuity.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
   window.__wampoAnnuityRow = isAnnuityContractRow;  // read by the smoke test only
 ${guarfee.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
   window.__wampoGuaranteeOnlyFee = (n) => annuityFeeIsGuaranteeOnly(n, fundER);  // read by the smoke test only
+${invcontract.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
+  window.__wampoInvestmentContractRow = (f) => isInvestmentContractRow(f, (f && f.name) || "", namesAFund);  // read by the smoke test only
 `;
 
 /* THE END MARKER MUST BE THE BLOCK'S LAST LINE. It was `__wampoGenericName`
@@ -121,6 +133,7 @@ const MARK_S = "  /* GENERATED FROM scripts/lib-4i.mjs — DO NOT EDIT BY HAND."
  * moved and the old tail stayed — so the list only ever grows, and the cut must
  * be made at the LAST marker present, not the first one found. */
 const MARK_ENDS = [
+  "  window.__wampoInvestmentContractRow = (f) => isInvestmentContractRow(f, (f && f.name) || \"\", namesAFund);  // read by the smoke test only\n",
   "  window.__wampoGuaranteeOnlyFee = (n) => annuityFeeIsGuaranteeOnly(n, fundER);  // read by the smoke test only\n",
   "  window.__wampoAnnuityRow = isAnnuityContractRow;  // read by the smoke test only\n",
   "  window.__wampoLoanDescRow = isLoanDescriptionRow;  // read by the smoke test only\n",
@@ -154,6 +167,11 @@ const ctx = { console }; vm.createContext(ctx);
  * generated function and never be able to call it — a self-check that cannot
  * reach an arm, which is the failure this file already records at v189. */
 vm.runInContext(readFileSync(ROOT + "fund-er.js", "utf8"), ctx);
+/* the identity probe the investment-contract rule takes, defined ONCE here and
+ * mirrored by app.js's own `namesAFund`. It needs BOTH halves and that is
+ * measured: `American Funds The Bond Fund of America` resolves to no ticker and
+ * IS priced by name, so a ticker-only probe would delete a real fund's fee. */
+vm.runInContext("globalThis.__namesAFund = (n) => fundER(n) != null || !!fundTickerInfo(n);", ctx);
 vm.runInContext(block
   .replace("window.__wampoGenericName = isGenericName;  // read by the smoke test only", "globalThis.__g = isGenericName;")
   .replace("window.__wampoNamelessRow = isNamelessFundRow;  // read by the smoke test only", "globalThis.__n = isNamelessFundRow;")
@@ -161,6 +179,8 @@ vm.runInContext(block
   .replace("window.__wampoAnnuityRow = isAnnuityContractRow;  // read by the smoke test only", "globalThis.__a = isAnnuityContractRow;")
   .replace("window.__wampoGuaranteeOnlyFee = (n) => annuityFeeIsGuaranteeOnly(n, fundER);  // read by the smoke test only",
     "globalThis.__q = (n) => annuityFeeIsGuaranteeOnly(n, fundER);")
+  .replace("window.__wampoInvestmentContractRow = (f) => isInvestmentContractRow(f, (f && f.name) || \"\", namesAFund);  // read by the smoke test only",
+    "globalThis.__i = (f) => isInvestmentContractRow(f, (f && f.name) || \"\", __namesAFund);")
   .replace(/^\s{2}/gm, ""), ctx);
 const names = ["Mutual funds", "Mutual Fund Shares", "Sub-total: Registered Investment Companies",
   "Commingled funds", "Pooled separate account funds", "Collective trust funds",
@@ -261,7 +281,50 @@ const guarFeeNames = [
   "Guaranteed Income Fund", "Key Guaranteed Portfolio Fund",
   "Principal Stable Value Preferred Fund", "Fidelity 500 Index Fund",
 ];
+/* the investment-contract arm, BOTH CELLS and both directions, and it needed
+ * its OWN probes for the sixth cycle running: not one row above reaches it,
+ * because every annuity probe's name says `annuity contract` and none says
+ * `investment contract` or `insurance contract`. A probe set that cannot reach
+ * an arm is how a guard passes while doing nothing — caught at v189, v190,
+ * v191, v192 and again here. The must-KEEP half is the whole safety argument:
+ * five published rows say `investment contract` and ALSO name a registered
+ * fund, and typing those would destroy a correct answer AND a correct fee. */
+const investmentContractRows = [
+  /* must FLAG — the type asserts `Mutual fund` and the name says a contract */
+  { name: "Fully benefit responsive investment contracts American General Life Insurance", type: "Mutual fund" },
+  { name: "Unallocated Insurance Contracts", type: "Mutual fund" },
+  { name: "Investment contract - Empower Guaranteed Income Fund", type: "Mutual fund" },
+  { name: "Investment Contracts with Insurance Companies", type: "Mutual fund" },
+  { name: "Unallocated investment contract - Key Guaranteed Portfolio Fund", type: "Mutual fund" },
+  { name: "Investment Contract with Insurance Company Great-West Funds", type: "Mutual fund" },
+  { name: "Insurance contracts", type: "Mutual fund" },
+  /* must KEEP — the contract words are a caption and the row names a real fund */
+  { name: "investment contract Dodge & Cox Income Fund Class X", type: "Mutual fund" },
+  { name: "Investment Contract American Funds Europacific GR R6", type: "Mutual fund" },
+  { name: "Responsive Investment Contract American Funds The Bond Fund of America", type: "Mutual fund" },
+  /* must KEEP — the type is already honest or more specific than this one */
+  { name: "Unallocated Insurance Contracts", type: "Stable value / GIC" },
+  { name: "Investment contract - Lincoln Stable Value Account", type: "Collective trust" },
+  { name: "Fully Benefit-Responsive Investment Contract VALIC", type: "" },
+  /* must KEEP — typed `Mutual fund`, and the name says no contract at all.
+   * `contract value` is a MEASUREMENT BASIS and must never reach this arm. */
+  { name: "Fidelity 500 Index Fund", type: "Mutual fund" },
+  { name: "at contract value Fidelity 500 Index", type: "Mutual fund" },
+  { name: "Contract Vanguard Value Index Fund Adm", type: "Mutual fund" },
+  { name: "Lincoln Stable Value (at contract value)", type: "Mutual fund" },
+  { name: "Group Annuity Contract PRIAC Guaranteed Income Fund", type: "Mutual fund" },
+];
 let bad = 0;
+for (const r of investmentContractRows) {
+  const twin = ctx.__i(r), lib = isInvestmentContractRow(r, r.name, ctx.__namesAFund);
+  if (twin !== lib) { bad++; console.log(`  INVESTMENT-CONTRACT DRIFT ${JSON.stringify(r)} twin=${twin} lib=${lib}`); }
+}
+for (const r of investmentContractRows.slice(0, 7)) if (!isInvestmentContractRow(r, r.name, ctx.__namesAFund)) {
+  bad++; console.log(`  INVESTMENT-CONTRACT rule no longer types a contract the filing names: ${JSON.stringify(r)}`);
+}
+for (const r of investmentContractRows.slice(7)) if (isInvestmentContractRow(r, r.name, ctx.__namesAFund)) {
+  bad++; console.log(`  INVESTMENT-CONTRACT rule would retype a row it must leave alone: ${JSON.stringify(r)}`);
+}
 for (const r of annuityRows) if (ctx.__a(r, r.name) !== isAnnuityContractRow(r, r.name)) {
   bad++; console.log(`  ANNUITY DRIFT ${JSON.stringify(r)} twin=${ctx.__a(r, r.name)} lib=${isAnnuityContractRow(r, r.name)}`);
 }
@@ -284,4 +347,4 @@ for (const r of rows) if (ctx.__n(r, r.name, ctx.__g) !== isNamelessFundRow(r, r
   bad++; console.log(`  ROW DRIFT ${JSON.stringify(r)}`);
 }
 if (bad) { console.error(`generated with ${bad} DRIFT — do not commit`); process.exit(1); }
-console.log(`generated; twin agrees with lib-4i on ${names.length} names, with lib-disclose on ${rows.length} rows, ${loans.length} loan-description names, ${annuityRows.length} annuity-contract rows and ${guarFeeNames.length} guarantee-only fee names`);
+console.log(`generated; twin agrees with lib-4i on ${names.length} names, with lib-disclose on ${rows.length} rows, ${loans.length} loan-description names, ${annuityRows.length} annuity-contract rows, ${guarFeeNames.length} guarantee-only fee names and ${investmentContractRows.length} investment-contract rows`);

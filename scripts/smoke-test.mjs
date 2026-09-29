@@ -212,7 +212,8 @@ try {
    * canonical, app.js carries a twin because it is a plain browser script.
    * Run the BROWSER copy against the module's own boundary cases. */
   const { coverageBand, frozenClaimOk, cleanFiledName, isParticipantLoanRow, isLoanDescriptionRow,
-    isAnnuityContractRow, annuityFeeIsGuaranteeOnly } = await import("./lib-disclose.mjs");
+    isAnnuityContractRow, annuityFeeIsGuaranteeOnly,
+    isInvestmentContractRow } = await import("./lib-disclose.mjs");
   const frozCases = [
     [true, "The Plan was terminated effective December 31, 2023.", "Capital Region Medical"],
     [true, "As amended on December 31, 2024, the Plan was frozen and all participants of the Plan became fully vested.", "Hanes Companies, Inc."],
@@ -627,6 +628,72 @@ try {
     if (!annuityFeeIsGuaranteeOnly(n, tableER)) fail(`guarantee-only fee rule no longer suppresses a fabricated annuity fee: ${JSON.stringify(n)}`);
   for (const n of guarFeeCases.slice(6))
     if (annuityFeeIsGuaranteeOnly(n, tableER)) fail(`guarantee-only fee rule would withdraw a fee a fund's own name supports: ${JSON.stringify(n)}`);
+
+  /* THE INVESTMENT-CONTRACT PREDICATE, tethered the same way, 2026-09-29. It
+   * needed its OWN cases for the sixth cycle running: not one case above
+   * reaches it, because every annuity case's name says `annuity contract` and
+   * none says `investment contract` or `insurance contract`, so without these
+   * the twin would agree whether or not it carried the rule — the
+   * decorative-guard failure caught at v189, v190, v191 and v192.
+   *
+   * Eleven of the eighteen must come back FALSE, in three kinds, and that half
+   * is the entire safety argument:
+   *   - THREE name a real registered fund behind a welded caption
+   *     (`investment contract Dodge & Cox Income Fund Class X` -> DODIX,
+   *     `Investment Contract American Funds Europacific GR R6` -> RERGX,
+   *     `... American Funds The Bond Fund of America`, which resolves to NO
+   *     ticker and is priced by name — it is why the identity probe needs both
+   *     halves and why a ticker-only test would delete a real fund's fee);
+   *   - THREE say a contract and are typed something already honest or more
+   *     specific, so the gate must stay shut on the type;
+   *   - FIVE never say either phrase. `at contract value Fidelity 500 Index`,
+   *     `Contract Vanguard Value Index Fund Adm` and `Lincoln Stable Value (at
+   *     contract value)` are pinned precisely because they are the cost of
+   *     widening the vocabulary to the bare word `contract`: a measurement
+   *     basis is not a vehicle, and 103 distinct published names carry the
+   *     word that way. They are the price of that widening, sitting in the
+   *     test.
+   *
+   * The identity probe is built HERE from fund-er.js, mirroring what app.js's
+   * `namesAFund` passes at the call site, so the two sides are comparable. */
+  const namesAFund = (n) => tableER(n) != null || !!erCtx.fundTickerInfo(n);
+  if (typeof erCtx.fundTickerInfo !== "function") fail("fund-er.js no longer defines fundTickerInfo — the investment-contract rule cannot be cross-checked");
+  const contractCases = [
+    /* must FLAG — typed `Mutual fund`, and the filing names a contract */
+    { name: "Fully benefit responsive investment contracts American General Life Insurance", type: "Mutual fund" },
+    { name: "Unallocated Insurance Contracts", type: "Mutual fund" },
+    { name: "Investment contract - Empower Guaranteed Income Fund", type: "Mutual fund" },
+    { name: "Investment Contracts with Insurance Companies", type: "Mutual fund" },
+    { name: "Unallocated investment contract - Key Guaranteed Portfolio Fund", type: "Mutual fund" },
+    { name: "Investment Contract with Insurance Company Great-West Funds", type: "Mutual fund" },
+    { name: "Insurance contracts", type: "Mutual fund" },
+    /* must KEEP, from here down */
+    { name: "investment contract Dodge & Cox Income Fund Class X", type: "Mutual fund" },
+    { name: "Investment Contract American Funds Europacific GR R6", type: "Mutual fund" },
+    { name: "Responsive Investment Contract American Funds The Bond Fund of America", type: "Mutual fund" },
+    { name: "Unallocated Insurance Contracts", type: "Stable value / GIC" },
+    { name: "Investment contract - Lincoln Stable Value Account", type: "Collective trust" },
+    { name: "Fully Benefit-Responsive Investment Contract VALIC", type: "" },
+    { name: "Fidelity 500 Index Fund", type: "Mutual fund" },
+    { name: "at contract value Fidelity 500 Index", type: "Mutual fund" },
+    { name: "Contract Vanguard Value Index Fund Adm", type: "Mutual fund" },
+    { name: "Lincoln Stable Value (at contract value)", type: "Mutual fund" },
+    { name: "Group Annuity Contract PRIAC Guaranteed Income Fund", type: "Mutual fund" },
+  ];
+  const conGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoInvestmentContractRow !== "function") return null;
+    return cs.map((r) => window.__wampoInvestmentContractRow(r));
+  }, contractCases);
+  if (!conGot) fail("app.js no longer exposes __wampoInvestmentContractRow — the investment-contract predicate cannot be cross-checked");
+  const conDrift = contractCases.filter((r, i) => isInvestmentContractRow(r, r.name, namesAFund) !== conGot[i]);
+  if (conDrift.length) {
+    for (const r of conDrift) console.error(`  ${JSON.stringify(r)}  app.js=${conGot[contractCases.indexOf(r)]}  module=${isInvestmentContractRow(r, r.name, namesAFund)}`);
+    fail(`the investment-contract rule in app.js disagrees with scripts/lib-disclose.mjs on ${conDrift.length} of ${contractCases.length} rows — regenerate it`);
+  }
+  for (const r of contractCases.slice(0, 7))
+    if (!isInvestmentContractRow(r, r.name, namesAFund)) fail(`investment-contract rule no longer types a contract the filing names: ${JSON.stringify(r)}`);
+  for (const r of contractCases.slice(7))
+    if (isInvestmentContractRow(r, r.name, namesAFund)) fail(`investment-contract rule would retype a row it must leave alone: ${JSON.stringify(r)}`);
 
   const nameDrift = nameCases.filter((n, i) => cleanFiledName(n) !== nameGot[i]);
   if (nameDrift.length) {
