@@ -819,7 +819,48 @@ export, do not copy the line.
   9 rows → 5, still confident — and **the merge's own `rows-dropped` check caught
   it unprompted** (`warn` 608 → 609). `dl` 129 → 131.
   `docs/accuracy-log.md` 2026-09-29 (00:2xZ).
-- **IN FLIGHT: #501 (v192), dispatched 2026-09-29 05:2xZ on `99b2c73`, observed
+- **NOTHING IS IN FLIGHT. #501 (v192) RAN `success`** (data commit `cfd7e89`)
+  and **passed all three pre-registered tests exactly**: `audit-generic-names`
+  **217 → 217 plans, rows 439 → 441** — predicted to the row —
+  `audit-dominant-row` **0**, `confident` **+0 / −0**, HIGH 4 = the baseline,
+  coverage line otherwise byte-identical to #500's.
+  **MIRRORED 2026-09-29 06:3xZ (`f92f178 → cfd7e89`), UNFORCED ON BOTH CHECKS**,
+  data gate +0 / −0, pv 192 at 99.8%.
+  **THE PREDICTION-METHOD CORRECTION IS CONFIRMED BY THIS RUN:** #500's figure
+  was computed against the store the run REPLACES and missed by 2; v192's was
+  computed against the store it would actually RUN on and landed exactly, on
+  both the plan count and the row count. *State a store-dependent prediction
+  against the store the run will read.*
+- **QUEUED, FULLY MEASURED AND SAFE, NOT SHIPPED — caption class B's
+  CONNECTIVE-LESS half: 997 rows / 466 plans / 2,802,869 ppl / $13,503,381,620**
+  publish a name that opens with a vehicle-type caption welded straight onto a
+  real fund name with no separator (`Investments Vanguard Bond Index Fund`,
+  `Registered Investment Company Fidelity 500 Index`). **23 rows GAIN a ticker,
+  0 LOSE one.** **Found by the 06:2xZ draw on Walmart (1,921,006 ppl)**, whose
+  menu carries `Investments Walmart Inc. Equity Securities`. v189's
+  `TYPE_PREFIX` widened the CONNECTIVES and cannot reach the half that has none.
+  **THE SAFETY TEST NAMED ITS OWN DISCRIMINATOR:** over the whole bucket 34 rows
+  would have LOST a resolution and every one is the SINGULAR `Investment`
+  leading a fund's own name (`INVESTMENT CO OF AMERICA` → RICEX, `Investment
+  Grade Bond R6` → JIGEX), while every gain is a PLURAL or multi-word caption.
+  **The vocabulary takes `investments` and never the bare singular.**
+  **READING THE DISTINCT TRANSFORMATIONS CAUGHT ~90 ROWS OF DAMAGE NO COUNT
+  COULD SEE** — `Investments measured at NAV` → `measured at NAV` (29),
+  `Mutual Funds and` → `and` (12), `Collective Trust Fund(s)` → `Fund(s)` (20),
+  `Investments Held in` → `Held in`. The surviving screen is written out in the
+  log entry; implement it, do not re-derive it.
+  **NOT SHIPPED because it is a DISPLAY change** and needs the full pattern:
+  canonical in `lib-disclose`, twinned in `app.js`, tethered by
+  `smoke-test.mjs`, a negative control that fails by name, pages regenerated —
+  two display paths, and a claim about 2.8M readers must name which.
+  Remaining connective buckets sized so they are not re-counted: `;` 101 rows,
+  `—` 46, `_` 26, `(` 53; **`/` (232) must NOT be stripped** — `Money Market /
+  Cash Equivalent` is a compound type — and `,` (104) is already refused by the
+  comma family's measurement-basis screen.
+  **A harness error caught by an implausible zero:** the first outcome test
+  returned 0 rows because my "has a connective" filter counted the SPACE after
+  the caption as one. `docs/accuracy-log.md` 2026-09-29 (06:3xZ).
+- **PREVIOUSLY IN FLIGHT: #501 (v192), dispatched 2026-09-29 05:2xZ on `99b2c73`, observed
   queued — a FULL re-parse on the version bump. A BARE `PREFERRED STOCK`
   DESIGNATION IS NOT A FUND NAME: 29 rows / 21 plans / 310,633 ppl /
   $9,859,671** stop being shown a holding named only `Preferred stock` with

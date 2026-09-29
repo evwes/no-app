@@ -26508,3 +26508,90 @@ repaired the same control in the v190 cycle. `parser-gate.mjs` all green.
 **Residue named, not rounded away:** a bare `Preferred Securities` (3 rows) is
 an asset class rather than a fund and sits outside this anchor deliberately —
 a wider claim that gets its own measurement.
+
+## 2026-09-29 (06:3xZ) — #501's verdict, and caption class B's connective-less half, measured and gated
+
+**#501 (v192) ran `success`** (data commit `cfd7e89`) and **passed all three
+pre-registered tests exactly**: `audit-generic-names` **217 → 217 plans, rows
+439 → 441** — predicted to the row — `audit-dominant-row` **0**, `confident`
+**+0 / −0**, HIGH 4 = the baseline, coverage line otherwise byte-identical to
+#500's. **MIRRORED 2026-09-29 06:3xZ (`f92f178 → cfd7e89`), UNFORCED ON BOTH
+CHECKS**, data gate +0 / −0, pv 192 at 99.8%.
+
+**The prediction method correction from the 05:2x entry is confirmed by this
+run.** #500's figure was computed against the store the run REPLACES and missed
+by 2; v192's was computed against the store it would actually RUN on and landed
+exactly, on both the plan count and the row count. *State a store-dependent
+prediction against the store the run will read.*
+
+### Caption class B, connective-less half — measured, safe, NOT yet shipped
+
+**997 rows / 466 plans / 2,802,869 participants / $13,503,381,620** publish a
+holding whose displayed name still opens with a vehicle-type caption welded
+directly onto a real fund name, with no separator at all: `Investments Vanguard
+Bond Index Fund`, `Registered Investment Company Fidelity 500 Index`,
+`Investments American Funds EuroPacific Growth Fund`. **23 rows would GAIN a
+ticker and 0 would LOSE one.**
+
+**Found by the 06:2xZ participant-weighted draw**, which landed on **Walmart
+(1,921,006 ppl — the largest plan in the country)**, whose menu carries
+`Investments Walmart Inc. Equity Securities`. v189's `TYPE_PREFIX` work widened
+the CONNECTIVES (`- – :`, the bare caption, a measurement basis) and this is the
+half with no connective, which that arm cannot reach.
+
+**THE SAFETY TEST NAMED ITS OWN DISCRIMINATOR, which is why it is worth writing
+down rather than re-deriving.** A first pass over the whole bucket (2,543 rows)
+showed **34 rows would LOSE a resolution**, and reading them showed every one is
+the SINGULAR `Investment` leading a fund's own name — `INVESTMENT CO OF AMERICA
+Class R-4` → RICEX, `Investment Grade Bond R6` → JIGEX, `Investment Grade Bond
+Fund Class A` → LIGRX. Every one of the 53 gains was a PLURAL or multi-word
+caption (`Investments`, `Pooled Separate Account`, `Registered Investment
+Company`). **So the caption vocabulary must take `investments` and never the
+bare singular `investment`** — the data chose the split, as length chose the
+bare-whitespace family's on 2026-09-28.
+
+**AND READING THE DISTINCT TRANSFORMATIONS CAUGHT ~90 ROWS OF DAMAGE IN MY OWN
+DRAFT THAT NO COUNT COULD SEE** — the same step that caught `invested in` in the
+`TYPE_PREFIX` draft. The count said 1,467 rows / 0 losses and looked clean:
+`Investments measured at NAV` → `measured at NAV` (29 rows, a measurement basis),
+`Mutual Funds and` → `and` (12, a dangling connective), `Collective Trust Fund`
+→ `Fund` and `Collective Trust Funds` → `Funds` (20, furniture), `Collective
+Trust Total` → `Total` (6), `Investments Held in` → `Held in` (4), `Mutual Fund
+Participant` → `Participant` and `Mutual Fund Directed` → `Directed` (6).
+
+**The screen that survives, stated so the next cycle implements rather than
+re-derives it.** Strip only when all of these hold:
+1. the caption is a COMPLETE vehicle type and not the bare singular
+   `investment` — `investments|mutual funds?|common(?:[ /]collective)?
+   trusts?|collective (?:investment )?trusts?|pooled separate accounts?|separate
+   accounts?|registered investment (?:companies|company)`;
+2. what follows is WHITESPACE, not a punctuation connective (those are the
+   comma / em-dash / semicolon / underscore buckets, sized separately below);
+3. the remainder has letters, is not a bare share-class designation, does not
+   OPEN with furniture (`and or in of at the held measured invested total
+   subtotal participant directed other value fund trust account shares units`),
+   is not itself `isGenericTypeName`, and is at least two tokens — a lone
+   remainder is a bare house at best, which v167 already refuses.
+
+Under that screen: **997 rows, 23 ticker gains, 0 losses**, and every distinct
+transformation with ≥2 rows was read and is correct.
+
+**NOT SHIPPED THIS CYCLE, deliberately.** It is a DISPLAY change and therefore
+needs the full pattern this record requires and nothing less: canonical in
+`lib-disclose`, twinned in `app.js`, tethered by `smoke-test.mjs`, a negative
+control that fails by name, and the crawlable pages regenerated — **two display
+paths, and a claim about 2.8M readers must name which.** Shipping it
+half-tethered is how the twin drifted in the v190 cycle.
+
+**The remaining connective buckets, sized at v192 so they are not re-counted:**
+`;` 101 rows / 6 plans (Arisa Health, `Pooled separate accounts; Vanguard 500
+Index Fund Adm`), `—` em-dash 46 / 9, `_` 26 / 2, `(` 53 / 46 (`(Continued)`,
+`(held by …)`). The `/` bucket (232 rows) must NOT be stripped — `Money Market /
+Cash Equivalent` is a compound type name, not a caption plus a fund — and the
+`,` bucket (104) is already correctly refused by the comma family's
+measurement-basis screen.
+
+**A harness error, caught by an implausible zero:** the first outcome test
+returned **0 rows** because my "has a connective" filter treated the SPACE after
+the caption as one, skipping the entire population. *A zero on a population you
+have already counted at 3,180 is reporting on the harness.*
