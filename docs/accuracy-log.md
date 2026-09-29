@@ -28556,3 +28556,124 @@ but whether an unsourced estimate should be published for a contract whose cost
 is inside its crediting rate. That is the same question `gicRow` already answers
 "no" to whenever the TYPE cell says so — so the shape is a display fix, not a
 table fix, and it is not this entry's.
+
+---
+
+## 2026-09-29 (20:1xZ) — the loan-description guard reads `%` and never the word `percent`, and a collateral clause carries no rate at all
+
+**Found by the 20:0x participant-weighted draw** (seed 20260929200) on **Premium
+Brands Services LLC (14,694 participants, $382,638,224)**, whose 28-row menu is
+otherwise immaculate — a full Vanguard Target Retirement ladder with exact
+tickers and fees, Fidelity index funds — and which publishes
+`to June 2038 and secured by participant account balance` at **$3,102,662**,
+typed blank. A participant-loan description's continuation line, published as a
+fund holding, in a plan where nothing else is wrong.
+
+**THIS IS NOT THE CLASS FIXED ON 2026-09-28 AND NOT THE ONE QUEUED AT 17:1xZ.**
+`isLoanDescriptionRow` has two conditions, and the FIRST one is what these
+escape: the name must carry a rate quoted as a RANGE (`LOAN_DESC_RANGE`). The
+17:1xZ item was about the SECOND condition, the residue test. These rows never
+reach it.
+
+**Screened on the filing's own collateral vocabulary — `secured by` /
+`collateralized` — over every published row not already caught: 90 rows / 90
+plans / 155,891 participants / $164,952,768**, exactly one row per plan, which
+is the filing's own structure agreeing with the reading.
+
+**READING THE 84 DISTINCT NAMES SPLITS IT THREE WAYS, and the third is mine.**
+
+**(a) THE RATE IS SPELLED `percent` AND THE REGEX READS ONLY `%`.** The range
+arm is `\d+(?:\.\d+)?\s*%?\s*(?:to|[-–—])\s*\d+(?:\.\d+)?\s*%` — the SECOND
+percent sign is not optional and the word is never matched. Probed directly:
+
+    "interest rates ranging from 4.25% to 9.50%"                 -> true
+    "4.3 percent to 10.5 percent, secured by ... vested account" -> FALSE
+    "bearing interest at rates of 4.25 to 9.50 percent"          -> FALSE
+
+So a filer who writes the word instead of the sign escapes a guard written for
+exactly their row. Nutrien US (15,690 ppl, $25,394,498), Merrick & Company,
+PCS Administration, Dolese Bros.
+
+**(b) THE FRAGMENT CARRIES NO RATE AT ALL — 34 of the 90.** `to June 2038 and
+secured by participant account balance` (Premium Brands), `; secured by the
+vested account balances of participants` (Vanderbilt, 22,184 ppl), `Plan
+participants collateralized by the respective participants' account balances`
+(SkyWest, 18,854, $15,373,677), `secured by vested benefits, due 2026 to 2040`
+(Enviri). The parse kept the tail of the sentence and the rate was on the part
+it dropped, so no rate test of any kind can reach these — the discriminator has
+to be the collateral clause itself.
+
+**(c) TWO FALSE POSITIVES OF MY OWN SCREEN, read and named rather than rounded
+away, and BOTH are real holdings:**
+
+  - `Collateralized Loan Obligation` (Nuvance Health, 4,635 ppl, $177,637) — a
+    **CLO**, a genuine security type. The word `collateralized` is part of the
+    instrument's name, not a description of a participant loan.
+  - `LOANS (OTHER THAN TO PARTICIPANTS) SECURED BY MORTGAGES. COMMERCIAL
+    MORRISON STREET DEBT O` (Stoel Rives LLP, 1,336 ppl, $286,803) — the 4i
+    schedule's own statutory category for **mortgage loans the filing
+    explicitly says are NOT to participants**. The filing is telling us the
+    opposite of what the screen concluded.
+
+*A collateral word in a holding's name is not always a description of a loan* —
+and the second one is the sharper lesson, because the row says `OTHER THAN TO
+PARTICIPANTS` in its own words and a vocabulary screen read straight past it.
+
+**QUEUED, NOT SHIPPED**, and deliberately not folded into one count: (a) is a
+one-character widening of a shipped regex and needs its own controls, (b) needs
+a new discriminator keyed on the collateral clause with (c)'s two shapes pinned
+as must-KEEPs, and both must preserve v181's treatment — **type the row, never
+drop it**, so the value stays in the denominator and every other row's
+published percentage is unchanged.
+
+**ALSO SEEN IN THE SAME DRAW, unsized here because a sizer was still running:**
+`MassMutual Diversified SAGIC II Fund` (Premium Brands, 4.4% of the menu,
+$16,901,910) publishes **0.35%** with a BLANK type cell — `gicRow` reads the
+type and the annuity rule reads `\bannuity contracts?\b` in the name, and a
+SAGIC says neither. The fabricated generic-guarantee number again, in a third
+place.
+
+---
+
+## 2026-09-29 (21:0xZ) — what is left of the fabricated 0.35, now that it is one class instead of two
+
+**RE-SIZED AFTER THE `gic\b` FIX, and the two measurements reconcile exactly:**
+14,645 − 7,256 withdrawn − 5 changed = **7,384**, which is what the re-run
+returns. An arithmetic check that the before and after populations are the same
+population.
+
+**7,384 rows / 7,056 plans + 37 master trusts (75 members) / 12,737,238
+participants / $44,525,458,948**, and reading the 2,370 distinct names they are
+now homogeneous — every frequent one is a GENUINE guarantee or stable-value
+product: `Key Guaranteed Portfolio Fund` (349), `TIAA Stable Value` (321),
+`AUL STABLE VALUE ACCOUNT` (301), `Guaranteed Income Fund` (257), `Principal
+Fixed Income Guaranteed Option` (231), `Lincoln Stable Value Account`,
+`Transamerica Stable Value Core Option`, `Putnam Stable Value Fund`, `John
+Hancock Stable Value`. The `gic` defect was the whole of the contamination.
+
+**THE TYPE CELL IS BLANK ON 6,437 OF THE 7,384**, which is the entire
+mechanism: `gicRow` is `/stable value|\bgic\b/i` asked of the TYPE, so a filer
+who left that column empty defeats it while writing "Stable Value" in the name
+in plain English.
+
+**SO THE SITE APPLIES OPPOSITE STANDARDS TO THE SAME FACT**, exactly the shape
+recorded this morning for the R-6 ticker/fee inconsistency: where the type cell
+says `Stable value / GIC` the site REFUSES to publish an estimated expense
+ratio, and where the same holding's type cell is empty it publishes 0.35%.
+Both cannot be right.
+
+**IT IS NOT THE SAME CALL AS R-6, THOUGH, AND THE DIFFERENCE MATTERS.** There
+the fee is probably CORRECT (such a holding usually is R-6) and withdrawing is
+a judgement. Here the site's own shipped policy already says this number should
+not be published for this kind of holding — `gicRow` exists for precisely that
+— and the only reason it escapes is a column the filer left blank. Withdrawing
+would be applying an existing decision consistently, not making a new one. The
+shape of the fix is the shipped annuity pattern: **ask the NAME as well as the
+TYPE**, as `isAnnuityContractRow` already does for annuities.
+
+**RECORDED AND NOT SHIPPED.** 12.7M participants is larger than any withdrawal
+this record has made, and larger than the 10.5M one it explicitly reserves for
+the owner. A session should not remove a fee cell from an eighth of the
+universe on its own initiative, and should not leave the inconsistency
+unwritten either. Owner's call; the recommendation is to withdraw, for the
+reason `gicRow` already gives.
