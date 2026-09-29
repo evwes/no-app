@@ -891,13 +891,16 @@ export, do not copy the line.
   University of Maryland Medical System still shows `Fidelity Total Bond Fund
   K6 → FTBFX` at 0.45% where the K6 fund is **FTKFX** — the wrong-share-class
   shape this record has now recorded four times.
-- **QUEUED FROM THE 12:0xZ DRAW, SIZED, PRICED, CONTROLLED, NOT SHIPPED
-  (held only because the `wam` agent held `lib-disclose.mjs` at the time) — A
-  LEADING STRAY QUOTE IS STILL GLUED TO THE FRONT OF A FUND NAME: 229 rows /
-  143 plans / 138,737 participants / $474,878,302**, on BOTH display paths (6
-  crawlable pages / 61,185 ppl — JetBlue 28,485, FirstEnergy 16,802, Synovus
-  6,955). `‘Vanguard 500 Index Fund Admiral Shares`, `'VANGUARD EXPLORER ADM`,
-  `‘American Funds New Perspective R6`.
+- **SHIPPED 2026-09-29 13:3xZ — A LEADING STRAY QUOTE IS NOT PART OF A FUND'S
+  NAME: 229 rows / 143 plans / 138,737 participants / $474,878,302** on the
+  report, **4 crawlable pages / 25,745 ppl**. `‘Vanguard 500 Index Fund Admiral
+  Shares`, `'VANGUARD EXPLORER ADM`, `‘American Funds New Perspective R6`.
+  **THE PAGE FIGURE CORRECTED MY OWN PROXY — I predicted 6 pages / 61,185 and
+  the regenerated files say 4 / 25,745.** The proxy asked whether a plan has a
+  page and an affected row and never whether that row is inside the page's
+  **top-twelve cut**: JetBlue's is rank 22 of 26, Synovus's 46 and 51 of 66, so
+  both change in the report and not on the page. **A third distinct flavour of
+  "the page is the artifact".**
   **THE ARM EXISTS AND ITS VOCABULARY IS THE HOLE — v188's diagnosis exactly,
   and the evidence that it is an oversight rather than a decision is SEVEN
   LINES ABOVE IT:** `cleanFiledName`'s LEADING-quote arm reads `[”“"]`, double
@@ -931,6 +934,30 @@ export, do not copy the line.
   A name that looks house-less may be resolving through the identity column.
   *A hand probe that contradicts your own harness is the more likely to be
   wrong of the two.*
+  **Tether: 5 probes + 6 pinned controls, added after checking that NOT ONE of
+  the 27 existing probes leads with a quote of any kind** — the twin agreed
+  whether or not it carried the arm. Negative control fails **by name on
+  exactly the 4 must-strips** and holds both must-keeps.
+  `docs/accuracy-log.md` 2026-09-29 (13:3xZ).
+- **TWO DEAD DISCRIMINATORS FROM THE 13:2xZ DRAW (Sony, 26,151 ppl, $6.21B, a
+  broken-font filing at ratio 0.685) — recorded so they are not retried.**
+  **(1) The ISSUER column carrying a kerned generic TYPE label is 29 rows / 2
+  plans / 26,824 ppl** — essentially Sony alone — **and must NOT be "fixed"**:
+  its `Corporate Stock - Common` issuer is a **pinned negative control** from
+  the 2026-09-21 issuer strip. *Read the shipped guard before pricing a cost it
+  may already stop.*
+  **(2) "A NAME THAT READS TOTAL IS A SUBTOTAL" IS NOT A CLASS, and the
+  implausible size was the tell TWICE.** First screen **8,538 rows / 5,555
+  plans / 8,622,589 ppl**; adding a names-no-fund gate cut it to **3,431 /
+  3,160 / 5,470,501** and it was STILL dominated by real funds — `Total Return
+  Bond Fund` 383, `Total Bond Market Index Fund` 349, `Total Stock Market Index
+  Fund` 311 — because `fund-er.js` cannot name them without a house prefix, so
+  the ticker gate does not discriminate. **Do not carry 8,538 or 3,431
+  forward.** Sony's own `Tota II C.ommon,,and Pref.erred Stock` does not
+  reconcile either: at $430,494,438 it is **1.325x** the sum of the 26 stock
+  rows beneath it, so it cannot be claimed as a double-count. *A first word is
+  not a signature* — v181's `Subtotal (not a holding)` identifies the family
+  structurally and that stays the only sound route.
 - **ALSO FROM THE 12:0xZ DRAW, AND IT MUST NOT BE CARRIED FORWARD AS ONE
   CLASS: a FORFEITURE account published as a menu holding, 133 rows / 132
   plans / 302,996 ppl / $51,651,782, is AT LEAST THREE DEFECTS.** Reading the

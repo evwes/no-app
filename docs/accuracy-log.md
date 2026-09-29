@@ -27600,3 +27600,97 @@ green including the frozen-predicate tether (7/7); `smoke-test.mjs` green across
 all six page shapes; `build-seo-pages.mjs` regenerated and `git diff --stat p/`
 **empty** over all 5,000 pages, which is what establishes this as a REPORT-path
 change rather than an assumption that it is one.
+
+## 2026-09-29 (13:3xZ) — a leading stray quote is not part of a fund's name,
+## and two dead discriminators from the draw
+
+**WHAT WAS WRONG.** 229 published rows / 143 plans / 138,737 participants /
+$474,878,302 showed a reader a quote glyph glued to the front of a real fund
+name — `‘Vanguard 500 Index Fund Admiral Shares`, `'VANGUARD EXPLORER ADM`,
+`‘American Funds New Perspective R6`. All 229 are OCR'd filings.
+
+**THE CHANGE.** `cleanFiledName`'s leading-quote arm read `[”“"]`, double quotes
+only. The TRAILING strip **seven lines above it** has always carried the wider
+`[”“"'’‘™®©]`. One character class, one arm, and its own sibling disagreed with
+it — v188's diagnosis in a different file, and the strongest evidence available
+that it was an oversight rather than a decision.
+
+**THE STORE COUNT IS NOT THE READER COUNT.** 282 rows lead with stray
+punctuation in the store; **50 were already repaired here**, so 232 reach a
+reader and the widening fixes 229. Sizing from the store would have overstated
+the change by a fifth.
+
+**THE BALANCED TEST BESIDE IT STAYS ON DOUBLE QUOTES ONLY, and that is a
+decision with evidence.** An interior apostrophe is ordinary inside a real name,
+so asking that test of single quotes would refuse correct repairs — `‘TIAA
+Access Lifecycle 2050 T'4` is the pinned case and keeps its interior `'` because
+the strip is anchored `^`. Measured whole-store: no filed name opens a balanced
+single-quoted term, while the residue's two balanced cases are both
+double-quoted and both still refused.
+
+**THE RESIDUE OF 4 IS THE PRE-EXISTING GUARDS WORKING, not a miss:** two
+balanced quoted terms (the FMC `Institutional "Plus" Shares` shape) and two
+whose remainder is a SINGLE word (`“RAX`, `‘Uncoln`), refused by the arm's own
+two-word floor. **No new guard was needed**, which is what a correctly scoped
+vocabulary widening should look like.
+
+**OUTCOME: +1 ticker, 0 lost, 0 flipped.** An honesty fix and not a coverage
+fix — `lookupTicker` tries the RAW name first and the pattern table matches
+through a leading quote on nearly every row already. **The one gain is correct
+and was nearly filed as a fabrication risk:** `‘Target 2060 Mutual Fund &` gains
+**VTTSX**, exact, because the row carries `iss: "Vanguard"` and **the page
+prepends the issuer**.
+
+**THE PREVENTION, and it is the part worth keeping.** *A name that looks
+house-less may be resolving through the identity column.* I hand-probed
+`fundTickerInfo` WITHOUT the issuer prefix, got `null` on six forms, and
+believed the hand probe over my own harness — which had included the issuer and
+was right. **A hand probe that contradicts your own harness is the more likely
+of the two to be wrong.**
+
+**AND THE PAGE FIGURE CORRECTED MY OWN PROXY, a third distinct flavour of "the
+page is the artifact".** I predicted 6 crawlable pages / 61,185 participants;
+the regenerated files say **4 pages / 25,745**. The proxy asked whether a plan
+has a page and an affected row and never whether that row falls inside the
+page's **top-twelve cut** — JetBlue's affected row is rank 22 of 26 and
+Synovus's are 46 and 51 of 66, so both change in the report and not on the page.
+Every changed cell on all four pages was read: each a clean quote removal with
+the value byte-identical.
+
+**Tether:** 5 drift probes + 6 pinned controls, added after checking that **not
+one of the 27 existing probes leads with a quote of any kind** — so the twin
+agreed whether or not it carried this arm, the decorative-guard failure this
+record keeps recording. Negative control: the pre-change module fails **by name
+on exactly the 4 must-strips** and holds both must-keeps. parser-gate green,
+smoke-test green.
+
+### Two dead discriminators from the 13:2xZ draw — recorded so they are not retried
+
+The participant-weighted draw landed on **Sony Corporation Of America** (26,151
+ppl, $6.21B, ratio 0.685), a broken-font filing whose names read `NT COLLECTIV E
+S&P500 I NDEX FUND- DC- NON LENDI NG`, `Coll ecti11e Trusts`, `Tota II
+C.ommon,,and Pref.erred Stock`. Two candidate classes came out of it and
+**neither survived measurement**.
+
+**(1) The ISSUER column carrying a kerned generic TYPE label: 29 rows / 2 plans
+/ 26,824 participants** — essentially Sony alone. And it must NOT be "fixed":
+Sony's `Corporate Stock - Common` issuer is a **pinned negative control** from
+the 2026-09-21 issuer strip, deliberately preserved. *Read the shipped guard
+before pricing a cost it may already stop.*
+
+**(2) "A row whose name reads TOTAL is a subtotal published as a holding" IS NOT
+A CLASS, and the implausible size was the tell — twice.** The first screen
+returned **8,538 rows / 5,555 plans / 8,622,589 participants**; adding a
+names-no-fund gate cut it to **3,431 / 3,160 / 5,470,501** and it was *still*
+dominated by real funds. `Total Return Bond Fund` (383 rows), `Total Bond Market
+Index Fund` (349), `Total Stock Market Index Fund` (311), `Total Bond K6` — all
+real products whose names simply begin with the word, and the ticker gate does
+not discriminate because `fund-er.js` cannot name them without a house prefix.
+**Do not carry 8,538 or 3,431 forward.** Sony's own `Tota II C.ommon,,and
+Pref.erred Stock` does not reconcile either: at $430,494,438 it is **1.325x**
+the sum of the 26 stock rows beneath it, so it cannot be claimed as a
+double-count of what is published.
+
+*A first word is not a signature.* The subtotal family this project already
+handles (`Subtotal (not a holding)`, v181) is identified structurally, and that
+remains the only sound route.
