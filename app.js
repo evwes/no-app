@@ -922,6 +922,16 @@
   }
 
   window.__wampoAnnuityRow = isAnnuityContractRow;  // read by the smoke test only
+  const GUARANTEE_PRICED_WORDS =
+    /\bstable value\b|\bmanaged income\b|\bguarantee(?:d|s)?\b|\bsa?gic\b/gi;
+  function annuityFeeIsGuaranteeOnly(cleanedName, priceOf) {
+    const s = String(cleanedName || "");
+    if (!ANNUITY_CONTRACT_NAME.test(s)) return false;
+    const rest = s.replace(GUARANTEE_PRICED_WORDS, " ").replace(/\s+/g, " ").trim();
+    return priceOf(rest) == null;
+  }
+
+  window.__wampoGuaranteeOnlyFee = (n) => annuityFeeIsGuaranteeOnly(n, fundER);  // read by the smoke test only
   window.__wampoCleanFiledName = cleanFiledName;
   window.__wampoLoanRow = (n) => LOAN_ROW.test(String(n || "").trim());  // read by the smoke test only
   /* Misspellings of a fund HOUSE that appear in filed 4i schedules, each one
@@ -2018,6 +2028,20 @@
        * fund-er.js's generic /guaranteed|stable value/ fallback, and the only
        * reason they escape `gicRow` is the wrong type this line repairs. */
       const annuityRow = isAnnuityContractRow(f, f.name || "");
+      /* ...and the SAME fabricated fee on the rows that rule cannot reach,
+       * because it reads the TYPE cell and these types assert nothing: blank,
+       * `Cash / short-term`, `Separate account`, ETF, `Corporate debt`. 144
+       * rows publish exactly 0.35% off fund-er.js's last generic fallback for
+       * a holding the filing names as an annuity contract and nothing else.
+       * The rule and its whole safety argument — including why 40 rows naming
+       * a real fund held THROUGH a group annuity contract keep their fee —
+       * live in scripts/lib-disclose.mjs; this is the generated twin's call
+       * site. It takes the bare fee TABLE, not `fundERFiled`: the
+       * house-misspelling repair is for a string believed to be a fund's name
+       * and the remainder here is explicitly not one (measured: the two agree
+       * on all 1,405 rows this gate can reach). FEE ONLY — the ticker is left
+       * alone, because 0 of the 1,361 rows it flags publish one. */
+      const guaranteeOnlyFee = annuityFeeIsGuaranteeOnly(f.name || "", fundER);
       /* v67 entries carry the 4i identity column as f.iss ("Vanguard",
        * "Western Asset"). Ticker matching sees issuer + name together, which
        * is what makes "Core Bond IS" resolvable at all; entries parsed
@@ -2040,7 +2064,8 @@
       const tk = stockRow ? (plan.ticker || null) : (info ? info.tk : (f.tk || null));
       const star = !stockRow && info && info.comparable;
       if (star) starred = true;
-      const er = tab !== "menu" || stockRow || gicRow || subtotalRow || loanRow || annuityRow ? null
+      const er = tab !== "menu" || stockRow || gicRow || subtotalRow || loanRow || annuityRow
+        || guaranteeOnlyFee ? null
         : star ? info.er : (noPublicPrice ? null : fundERFiled(f.name));
       // the brokerage window is a menu choice with no holdings of its own —
       // tint it so it reads as a doorway, not a fund (owner request)

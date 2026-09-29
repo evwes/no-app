@@ -20,7 +20,8 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import vm from "node:vm";
 import { GENERIC_TYPE_ANY, GENERIC_TYPE_DESPACED, isGenericTypeName } from "./lib-4i.mjs";
-import { isNamelessFundRow, isLoanDescriptionRow, isAnnuityContractRow } from "./lib-disclose.mjs";
+import { isNamelessFundRow, isLoanDescriptionRow, isAnnuityContractRow,
+  annuityFeeIsGuaranteeOnly } from "./lib-disclose.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const lib = readFileSync(ROOT + "scripts/lib-4i.mjs", "utf8");
@@ -56,6 +57,17 @@ const ace = dis.indexOf("\n}\n", dis.indexOf("export function isAnnuityContractR
 if (ace < 3) throw new Error("gen-generic-twin: isAnnuityContractRow moved in lib-disclose");
 const annuity = dis.slice(acs, ace).replace(/^export /gm, "");
 
+/* the guarantee-only FEE rule, VERBATIM: one constant and one function. The
+ * constant IS the rule — a retyped alternation is a drift waiting to happen,
+ * and this one is the minimal vocabulary measured against the store, so a
+ * "harmless" extra arm typed into the copy would change which rows lose a fee
+ * on the page and nowhere else. */
+const gfs = dis.indexOf("export const GUARANTEE_PRICED_WORDS =");
+if (gfs < 0) throw new Error("gen-generic-twin: GUARANTEE_PRICED_WORDS moved in lib-disclose");
+const gfe = dis.indexOf("\n}\n", dis.indexOf("export function annuityFeeIsGuaranteeOnly(")) + 3;
+if (gfe < 3) throw new Error("gen-generic-twin: annuityFeeIsGuaranteeOnly moved in lib-disclose");
+const guarfee = dis.slice(gfs, gfe).replace(/^export /gm, "");
+
 const block = `  /* GENERATED FROM scripts/lib-4i.mjs — DO NOT EDIT BY HAND.
    * lib-4i derives these patterns from GENERIC_TYPE_NAME by asserted
    * replacements, so they are DERIVED and transcribing one is the move this
@@ -90,6 +102,8 @@ ${loandesc.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
   window.__wampoLoanDescRow = isLoanDescriptionRow;  // read by the smoke test only
 ${annuity.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
   window.__wampoAnnuityRow = isAnnuityContractRow;  // read by the smoke test only
+${guarfee.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
+  window.__wampoGuaranteeOnlyFee = (n) => annuityFeeIsGuaranteeOnly(n, fundER);  // read by the smoke test only
 `;
 
 /* THE END MARKER MUST BE THE BLOCK'S LAST LINE. It was `__wampoGenericName`
@@ -107,6 +121,7 @@ const MARK_S = "  /* GENERATED FROM scripts/lib-4i.mjs — DO NOT EDIT BY HAND."
  * moved and the old tail stayed — so the list only ever grows, and the cut must
  * be made at the LAST marker present, not the first one found. */
 const MARK_ENDS = [
+  "  window.__wampoGuaranteeOnlyFee = (n) => annuityFeeIsGuaranteeOnly(n, fundER);  // read by the smoke test only\n",
   "  window.__wampoAnnuityRow = isAnnuityContractRow;  // read by the smoke test only\n",
   "  window.__wampoLoanDescRow = isLoanDescriptionRow;  // read by the smoke test only\n",
   "  window.__wampoNamelessRow = isNamelessFundRow;  // read by the smoke test only\n",
@@ -133,12 +148,19 @@ writeFileSync(ROOT + "app.js", out);
  * The row cases exercise every exclusion; the name cases exercise every arm,
  * INCLUDING the v189 despaced one — a probe set that cannot reach an arm is
  * how a guard passes while doing nothing. */
-const ctx = {}; vm.createContext(ctx);
+const ctx = { console }; vm.createContext(ctx);
+/* fund-er.js goes into the same context FIRST: the guarantee-only fee rule
+ * takes the fee table as an argument, so a context without it can hold the
+ * generated function and never be able to call it — a self-check that cannot
+ * reach an arm, which is the failure this file already records at v189. */
+vm.runInContext(readFileSync(ROOT + "fund-er.js", "utf8"), ctx);
 vm.runInContext(block
   .replace("window.__wampoGenericName = isGenericName;  // read by the smoke test only", "globalThis.__g = isGenericName;")
   .replace("window.__wampoNamelessRow = isNamelessFundRow;  // read by the smoke test only", "globalThis.__n = isNamelessFundRow;")
   .replace("window.__wampoLoanDescRow = isLoanDescriptionRow;  // read by the smoke test only", "globalThis.__l = isLoanDescriptionRow;")
   .replace("window.__wampoAnnuityRow = isAnnuityContractRow;  // read by the smoke test only", "globalThis.__a = isAnnuityContractRow;")
+  .replace("window.__wampoGuaranteeOnlyFee = (n) => annuityFeeIsGuaranteeOnly(n, fundER);  // read by the smoke test only",
+    "globalThis.__q = (n) => annuityFeeIsGuaranteeOnly(n, fundER);")
   .replace(/^\s{2}/gm, ""), ctx);
 const names = ["Mutual funds", "Mutual Fund Shares", "Sub-total: Registered Investment Companies",
   "Commingled funds", "Pooled separate account funds", "Collective trust funds",
@@ -218,9 +240,39 @@ const annuityRows = [
   { name: "TIAA Traditional Annuity", type: "Mutual fund" },
   { name: "Vanguard Variable Annuity Balanced Portfolio", type: "Mutual fund" },
 ];
+/* the guarantee-only FEE arm, both directions, and it needed its own probes for
+ * the fifth cycle running: NOT ONE row above reaches it, because that rule reads
+ * the TYPE cell first and this one never reads a type at all. The must-KEEP half
+ * is the entire safety argument — every one of those four is a real registered
+ * fund held through a group annuity contract, whose published fee comes from the
+ * fund's own name and must survive. */
+const guarFeeNames = [
+  /* must SUPPRESS — the guarantee is the only thing that priced the row */
+  "Guaranteed Annuity Contract", "Guaranteed annuity contract - contract value",
+  "Group Annuity Contract Lincoln Stable Value Account",
+  "Group fixed annuity contracts Empower Select Guaranteed Fund",
+  "SAGIC Group Annuity Contract 21016", "Annuity Contracts TIAA Stable Value",
+  /* must KEEP — a real fund held THROUGH the contract, priced by its own name */
+  "Vanguard VIF Real Estate Index Portfolio GROUP ANNUITY CONTRACT",
+  "Mutual of America Group Annuity Contract Equity Index Fund",
+  "Neuberger Berman AMT Sustainable Equity Portfolio GROUP ANNUITY CONTRACT",
+  "MoA US Government Money Market Fund GROUP ANNUITY CONTRACT",
+  /* must KEEP — the name never says "annuity contract", so the gate is shut */
+  "Guaranteed Income Fund", "Key Guaranteed Portfolio Fund",
+  "Principal Stable Value Preferred Fund", "Fidelity 500 Index Fund",
+];
 let bad = 0;
 for (const r of annuityRows) if (ctx.__a(r, r.name) !== isAnnuityContractRow(r, r.name)) {
   bad++; console.log(`  ANNUITY DRIFT ${JSON.stringify(r)} twin=${ctx.__a(r, r.name)} lib=${isAnnuityContractRow(r, r.name)}`);
+}
+for (const n of guarFeeNames) if (ctx.__q(n) !== annuityFeeIsGuaranteeOnly(n, ctx.fundER)) {
+  bad++; console.log(`  GUARANTEE-FEE DRIFT ${JSON.stringify(n)} twin=${ctx.__q(n)} lib=${annuityFeeIsGuaranteeOnly(n, ctx.fundER)}`);
+}
+for (const n of guarFeeNames.slice(0, 6)) if (!annuityFeeIsGuaranteeOnly(n, ctx.fundER)) {
+  bad++; console.log(`  GUARANTEE-FEE rule no longer suppresses a fabricated annuity fee: ${JSON.stringify(n)}`);
+}
+for (const n of guarFeeNames.slice(6)) if (annuityFeeIsGuaranteeOnly(n, ctx.fundER)) {
+  bad++; console.log(`  GUARANTEE-FEE rule would withdraw a fee a fund's own name supports: ${JSON.stringify(n)}`);
 }
 for (const n of loans) if (ctx.__l(n) !== isLoanDescriptionRow(n)) {
   bad++; console.log(`  LOAN DRIFT ${JSON.stringify(n)} twin=${ctx.__l(n)} lib=${isLoanDescriptionRow(n)}`);
@@ -232,4 +284,4 @@ for (const r of rows) if (ctx.__n(r, r.name, ctx.__g) !== isNamelessFundRow(r, r
   bad++; console.log(`  ROW DRIFT ${JSON.stringify(r)}`);
 }
 if (bad) { console.error(`generated with ${bad} DRIFT — do not commit`); process.exit(1); }
-console.log(`generated; twin agrees with lib-4i on ${names.length} names, with lib-disclose on ${rows.length} rows, ${loans.length} loan-description names and ${annuityRows.length} annuity-contract rows`);
+console.log(`generated; twin agrees with lib-4i on ${names.length} names, with lib-disclose on ${rows.length} rows, ${loans.length} loan-description names, ${annuityRows.length} annuity-contract rows and ${guarFeeNames.length} guarantee-only fee names`);

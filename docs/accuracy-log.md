@@ -26996,3 +26996,249 @@ X`, `T. Rowe Price Price Value Fund`, `MFS Aggressive Growth Allocation Fund
 Fund Class R4`). **A signature is not a class, and 497 must not be carried
 forward as one** — this record's own "ONE count was four defects" rule, met
 again at six.
+
+---
+
+## 2026-09-29 (10:3xZ) — SHIPPED: the SAME fabricated annuity fee, on the 144 rows the type gate cannot reach
+
+**Wrong.** This morning's `isAnnuityContractRow` fires only when the TYPE cell
+says `Mutual fund`, because that is the one string that asserts something
+false. It was never a fee rule and the 34 fees it removed were a side effect.
+**144 further published rows / 137 plans / 318,197 participants (plan-distinct)
+/ $2,406,853,650 name an annuity contract in their filed name, carry a type
+that asserts nothing — blank on 139, `Cash / short-term` 3, `Corporate debt` 1,
+ETF 1 — escape `gicRow` because that reads the TYPE too, and publish an
+estimated expense ratio of exactly 0.35%.** That is `fund-er.js`'s last generic
+fallback, `/stable value|managed income|guaranteed|gic\b/`. An annuity's cost
+sits inside the crediting rate of the contract; 0.35% there is a number nobody
+filed. `The Cooper Health System 403(b)` (40,321 ppl) showed it on two TIAA
+Traditional rows at $11.9M and $619K.
+
+**A BLANKET NAME-BASED SUPPRESSION WOULD BE WRONG, and that is the whole
+difficulty of the item.** 40 published rows name a REAL insurance-dedicated
+fund held THROUGH a group annuity contract — `Vanguard VIF Real Estate Index
+Portfolio GROUP ANNUITY CONTRACT` (0.1), `Mutual of America Group Annuity
+Contract Equity Index Fund` (0.06), `Neuberger Berman AMT Sustainable Equity
+Portfolio GROUP ANNUITY CONTRACT` (0.65), `T. Rowe Price Blue Chip Growth
+Portfolio GROUP ANNUITY CONTRACT` (0.7) — and their fee comes from the fund's
+own name and is plausibly right. One count, two classes; this one arrived
+already split and had to stay split.
+
+**Change.** `annuityFeeIsGuaranteeOnly(cleanedName, priceOf)` in
+`scripts/lib-disclose.mjs`, twinned into `app.js` by
+`scripts/gen-generic-twin.mjs`, tethered by `scripts/smoke-test.mjs`. The
+discriminator is **what the name still says once the guarantee is taken out of
+it**: remove the words the fee table actually prices a guarantee on and ask the
+SAME table again — if the fee disappears, the only thing that priced the row
+was the fact that it is a guaranteed insurance contract. It is `v181`'s and
+`isLoanDescriptionRow`'s shape (strip, then re-ask the same predicate), and it
+is deliberately NOT the test that SIZED the class.
+
+**THE SIZING TEST WAS A PROXY AND SHIPPING IT WOULD HAVE BEEN A LATENT BUG.**
+The two classes were separated by `er === 0.35`, which works only because 0.35
+is today's fallback value. A rule keyed on a magic number stops working, in
+silence, the day that constant moves — and the whole point of the fallback is
+that it is a table someone edits. The shipped rule reads the NAME.
+
+**THE VOCABULARY IS THE MINIMAL ONE, AND THAT IS MEASURED RATHER THAN CHOSEN.**
+Three nested vocabularies were tried — (a) only what the fee table prices a
+guarantee on, (b) that plus the annuity phrase itself, (c) a wide one adding
+`fixed` / `unallocated` / `general account` / `benefit responsive` — and **all
+three give the identical 144/0 split**, so the shortest ships. Every extra word
+is a word the rule would delete from a real fund's name if one ever arrived.
+`sa?gic` is in it because fund-er's own pattern is `/gic\b/` with **no leading
+boundary**, so it prices `SAGIC Group Annuity Contract 21016` on a substring
+accident.
+
+**Read, not sampled.** All **83 distinct Class A names** were read one by one:
+every one is an insurance guarantee product — TIAA Traditional, SAGIC, Key
+Guaranteed Portfolio Fund, Empower Guaranteed Certificate/Fixed, Principal
+Fixed Income Guaranteed Option, and Lincoln / AUL / MassMutual / NY Life /
+Brighthouse / Transamerica / CMFG stable-value accounts. Not one names a
+registered fund. All **20 distinct Class B names** were read too, and the
+reason they survive is structural rather than lucky: **for every one of them
+the strip is a NO-OP.** They contain no guarantee word at all, so there is
+nothing for this rule to remove and nothing it can change.
+
+**Whole-store diff, through the page's own `er` expression** (transcribed from
+`app.js`, not approximated), over all **1,718,086 published rows**:
+
+| | |
+|---|---|
+| rows the rule flags | **1,361** |
+| of those, name does NOT say "annuity contract" | **0** |
+| **ER cells changed** | **144**, every one a withdrawal, every one from 0.35 |
+| tickers gained / lost / flipped | **0 / 0 / 0** |
+| plans | 137 |
+| participants, PLAN-DISTINCT | **318,197** |
+| value of the changed rows | $2,406,853,650 |
+| distinct names changed | 83 |
+
+**FEE ONLY, and the narrower claim is the one the evidence supports.** Unlike
+its sibling this arm is NOT in the `info` guard, so the ticker is untouched by
+construction — and measured, **0 of the 1,361 flagged rows publish a ticker**,
+so a ticker half would have been an unmeasurable no-op dressed as a guard. The
+1,217 flagged rows that are not in the 144 already render a blank fee cell;
+they gain nothing and lose nothing.
+
+**Requirement answered by measurement, not by assertion: what else does the
+rule reach? Nothing.** 0 of 1,718,086 rows are flagged whose name does not say
+"annuity contract". **And the gate is not decorative — it is priced.** With the
+gate removed the same strip-and-re-ask would withdraw **14,630 further fee
+cells across 8,240 plans / 17,239,191 participants / $191,989,752,131 / 5,011
+distinct names**, and reading the top of that list is what the gate is for:
+`Key Guaranteed Portfolio Fund` (349), `TIAA Stable Value` (321), `AUL STABLE
+VALUE ACCOUNT` (301), `Guaranteed Income Fund` (257) — but also **`Fidelity VIP
+Contrafund Portfolio` (146) and the whole `Target Retirement <year> Fund`
+family**, which are real funds pricing through the comparable-ticker path.
+
+**READ THE PAGE, both directions.** `The Cooper Health System 403(b)` rendered
+in a real browser before and after:
+
+```
+before  ["TIAA Traditional Account – Benefit Responsive Guaranteed Annuity Contracts","—","0.35%","$11.9M","1.3%"]
+after   ["TIAA Traditional Account – Benefit Responsive Guaranteed Annuity Contracts","—","—","$11.9M","1.3%"]
+```
+
+Name, type, value and percentage byte-identical; only the fee cell moved. And
+the three must-keeps on the same page are byte-identical in both renders —
+`MetLife Stable Value, Contract No. 37475` (already blank via `gicRow`),
+`Guaranteed interest option` and `Strategic Value Annuity (Fixed Option)`,
+which keep 0.35% because their names never say "annuity contract".
+
+**THE RESIDUE IS NAMED, AND TWO OF ITS MEMBERS ARE ON THE VERY PAGE THIS FIX
+WAS VERIFIED ON.** `Guaranteed interest option` ($5.3M) and `Strategic Value
+Annuity (Fixed Option)` ($305K) still publish 0.35% for Cooper's 40,321
+readers. That class — a guarantee product priced by the generic fallback whose
+filed name stops short of "annuity contract" — is NOT touched here and is NOT
+the same claim: the gate exists because the same words also appear in real
+fund names, and separating them needs its own read. **Sized so it is not
+rediscovered, in two disjoint bands, both at exactly 0.35% through the page's
+own expression:**
+
+| rows | plans | ppl (plan-distinct) | value | names | |
+|---|---|---|---|---|---|
+| **215** | 205 | **270,270** | $895,281,948 | 159 | the name says ANNUITY but never "annuity contract" |
+| 6,930 | 6,727 | 11,282,520 | $39,411,309,864 | 2,132 | a guarantee word and no "annuity" at all |
+
+The first band is the tight one and its top names are the same products this
+fix just handled — `Empower Annuity Insurance Company of America Key Guaranteed
+Portfolio Fund` (13), `Fixed Annuities Key Guaranteed Portfolio Fund` (8),
+`Guaranteed Fixed Annuity` (4), and **`Guaranteed Annuity Ccontract`, a filer's
+typo that no anchored phrase can reach**. It is NOT uniform, though, which is
+exactly why it is queued rather than folded in: `Voya Retirement Insurance and
+Annuity Company BlackRock Strategic Global Bond K` sits in the same band and
+names a real fund. The second band must NOT be read as a defect count — a
+large part of it is genuine stable-value funds, for which 0.35% is this
+project's declared, labelled pattern estimate rather than a fabrication.
+
+**THE HANDOFF'S OWN NUMBER WAS A HARNESS FIGURE, AND THE CORRECTION IS THE
+METHOD.** The item was filed at **178 rows / 169 plans / 368,046 participants /
+$2,759,346,443**, measured through `fundER` on the name. Reproduced exactly —
+so the arithmetic was right — but two steps short of the page, in two ways
+this record has now recorded repeatedly:
+
+1. **It tested the RAW stored name; `fundERFiled` is called on the CLEANED
+   one.** Two rows read `Stable Value Fund - Key Annuity Contract Empower…`
+   in the store and `Key Annuity Contract Empower…` on the page, and the words
+   that priced them are exactly the ones `cleanFiledName` removes. They have
+   rendered a blank fee all along.
+2. **It ignored `noPublicPrice`.** **34 of the 178 rows / 33 plans / 52,905
+   participants / $368,862,477 are typed `Pooled separate account` (20) or
+   `Collective trust` (14), and the page has never priced those.**
+
+Reader-facing truth: **144, not 178** — and the same correction on the other
+side, **40 must-keeps on the page rather than 42**. *Measure through the
+function the page calls, on the string the page passes it.* Nineteenth,
+twentieth… this is the same shape as the `f.stk`-vs-`lookupTicker` error of
+2026-09-28 and the `fundERFiled`-vs-`fundER` error of 09:2xZ this morning —
+the third consecutive cycle in which a fee or ticker class was filed at the
+wrong size because the measurement stopped one function short of the render.
+The figure this fix reports, **144 / 137 / 318,197**, is the one that
+reproduces against `app.js`'s own `er` line.
+
+**A HARNESS ERROR OF MY OWN, caught by an implausible runtime rather than an
+implausible number.** My first whole-store pass evaluated the full display cell
+TWICE per row over 1.7M rows and had not finished after ten minutes. The
+structural fact that fixes it is the shape of the change: the new term is in
+the `er` line only, so a row the rule does not flag is bit-identical before and
+after and needs no second evaluation. *A structural fact beats a sweep* — the
+same note this record made about the American Funds fee guard.
+
+**AND A DRAFT OF THE HARNESS ITSELF WAS WRONG IN THE DIRECTION THAT WOULD HAVE
+HIDDEN A COST.** My first `makeCell` put the new term in the `info` guard as
+well as the `er` line — not what ships — which would have reported ticker
+losses that the shipped code cannot cause, or masked ones it could. Corrected
+to match `app.js` line for line before any number was published.
+
+**Prevention.**
+- Canonical in `lib-disclose.mjs`; `gen-generic-twin.mjs` extracts the constant
+  and the function **verbatim** (the constant IS the rule — a retyped
+  alternation is a drift waiting to happen) and refuses to write on drift. Its
+  self-check now loads `fund-er.js` into the same vm context, because the rule
+  takes the fee table as an argument and **a context without it can hold the
+  generated function and never be able to call it** — a self-check that cannot
+  reach an arm, the v189 failure.
+- **14 new pinned cases in `smoke-test.mjs`, eight of them must-KEEP**, in two
+  kinds: four real funds held through a group annuity contract, and four —
+  `Guaranteed Income Fund`, `Key Guaranteed Portfolio Fund`, `Principal Stable
+  Value Preferred Fund`, `Fidelity 500 Index Fund` — that never say "annuity
+  contract" and are pinned precisely because they WOULD be stripped to nothing
+  if the gate ever came off. The cost of widening this rule now sits in the
+  test.
+- **Negative control in both directions.** (1) The pre-change `app.js` fails by
+  name: *"app.js no longer exposes `__wampoGuaranteeOnlyFee`"*. (2) The
+  stronger one — a DRIFTED twin with one vocabulary arm (`stable value`)
+  removed **fails by name on exactly the two pinned cases that arm decides**,
+  `Group Annuity Contract Lincoln Stable Value Account` and `Annuity Contracts
+  TIAA Stable Value`, and on none of the other twelve.
+- **Surface named by regenerating, not by assuming:** all 5,000 crawlable pages
+  were rebuilt and `git diff --stat p/` is **empty**. The static pages render
+  no per-fund ER column, so this is the REPORT path only.
+- `node scripts/smoke-test.mjs` green; `node scripts/parser-gate.mjs` all
+  specimens green. **`map-test.mjs` FAILS, and it fails identically on the
+  unchanged tree** (`ERR_CERT_AUTHORITY_INVALID` on a tile request through the
+  sandbox proxy) — attributed by running it on a stashed tree, not waved away.
+
+### The 10:3xZ draw — participant-weighted, from PUBLISHED lineups
+
+Four lineups, **113 rows read one by one**: Raley's (20,651 ppl, 29 rows),
+Williams Scotsman (5,493, 31), Daktronics (2,721, 28) and Ampler QSR (1,481,
+25). Three are clean. Ampler QSR carries three findings, two of them classes:
+
+**(1) QUEUED, SIZED, NOT SHIPPED — an INVESTMENT contract typed `Mutual fund`:
+223 rows / 220 plans / 330,533 participants / $1,447,476,149 / 193 distinct
+names.** Ampler QSR publishes `Investment contract - Guaranteed Option Account`
+($804,175) typed **`Mutual fund`**. This is *exactly* this morning's
+annuity-contract type defect with a different legal noun, so **neither guard
+can see it**: `isAnnuityContractRow` requires the words "annuity contract" and
+`gicRow` reads the TYPE cell. Top names are the same houses one column along —
+`Fully Benefit-Responsive Investment Contract Empower Annuity Insurance Company
+of America` (8), `Unallocated investment contract - Key Guaranteed Portfolio
+Fund` (5), `Unallocated investment contract - Lincoln Stable Value` (2),
+`INVESTMENT CONTRACT WITH INSURANCE COMPANY Voya Fixed Account, at Contract
+Value` (2). **It is larger in participants than the fee class fixed in this
+cycle** (330,533 against 318,197). Not bundled: retyping a row is a different
+claim from withdrawing a fee, and `type` is stored, so it is parser-side or a
+second display typing — the owner's call, with a number.
+
+**(2) QUEUED — two real holdings welded into one published name by the
+party-in-interest marker and the schedule's own row number: 61 rows / 48 plans
+/ 97,408 participants / $23,100,449, 61 distinct names, one per row.** Ampler
+QSR's is `2015 Target Date Retirement * 20 2020 Target Date Retirement`; the
+family reads the same everywhere — `Pioneer Strategic Income Fund Class Y * 41
+American Funds American Balanced R6`, `PIMCO REAL RETURN FUND CLASS A * 55
+PIMCO TOTAL RETURN FUND CLASS A`, `Calvert Bond Fund Class R6 ** 4 Putnam Large
+Cap Value Fund Class R6`, and one triple. **This is the v100/Amgen
+fabricated-merge family**, and the `* NN` between the two names is the
+discriminator: `lib-4i` already knows a leading `*` is a party-in-interest
+marker and not a footnote, but an asterisk followed by a row NUMBER in the
+middle of a name is a row boundary the line stage did not take. One fund
+disappears from each of these menus. Money is small; the claim is not.
+
+**(3) Not a defect, and checking it is the point.** Ampler QSR also stores
+`rates ranging from 4.25 to 9.50 percent` ($612,027) typed `Mutual fund` — a
+wrapped loan description. It renders as *"Participant loans — not a menu
+choice"*, because that exact string is a pinned must-suppress case in
+`smoke-test.mjs`'s `descCases`. A stored row that still looks wrong is not a
+published row that is wrong; the display rule got there first.

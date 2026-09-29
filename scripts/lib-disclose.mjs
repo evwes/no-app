@@ -931,3 +931,78 @@ export function isAnnuityContractRow(f, cleanedName) {
   if (!/^mutual fund/i.test(type)) return false;
   return ANNUITY_CONTRACT_NAME.test(String(cleanedName || (f && f.name) || ""));
 }
+
+/* THE SAME FABRICATED FEE, ON THE ROWS THE TYPE GATE CANNOT REACH — 2026-09-29.
+ *
+ * The rule above fires only when the TYPE cell says `Mutual fund`, because that
+ * is the one string that asserts something false. It was never a fee rule, and
+ * the fee it happened to remove was a side effect. 144 further rows say
+ * `annuity contract` in their filed name, carry a type that asserts nothing
+ * (blank on 118, `Cash / short-term`, `Separate account`, ETF, `Corporate
+ * debt`), escape `gicRow` because that reads the TYPE too, and still publish an
+ * estimated expense ratio of exactly 0.35% — `fund-er.js`'s last generic
+ * fallback, /stable value|managed income|guaranteed|gic\b/. An annuity's cost
+ * sits inside the crediting rate of the contract; it is not a fund expense
+ * ratio, and 0.35% here is a number nobody filed.
+ *
+ * A BLANKET NAME-BASED SUPPRESSION WOULD BE WRONG, which is the whole
+ * difficulty. 40 published rows name a REAL insurance-dedicated fund held
+ * THROUGH a group annuity contract — `Vanguard VIF Real Estate Index Portfolio
+ * GROUP ANNUITY CONTRACT`, `Neuberger Berman AMT Sustainable Equity Portfolio
+ * GROUP ANNUITY CONTRACT`, `Mutual of America Group Annuity Contract Equity
+ * Index Fund` — and their fee is fund-specific (0.03-0.7) and plausibly right.
+ * One count, two classes.
+ *
+ * SO THE DISCRIMINATOR IS WHAT THE NAME STILL SAYS ONCE THE GUARANTEE IS TAKEN
+ * OUT OF IT. Remove the words the fee table actually prices a guarantee on and
+ * ask the SAME table again: if the fee disappears, the only thing that priced
+ * the row was the fact that it is a guaranteed insurance contract. That is a
+ * statement about the NAME, and it is deliberately NOT the test used to size
+ * the class — the class was separated by `er === 0.35`, which works only
+ * because 0.35 is today's fallback value and would silently stop working the
+ * day that constant moves. A rule keyed on a magic number is not a rule.
+ *
+ * THE VOCABULARY IS THE MINIMAL ONE AND THAT IS MEASURED, not chosen. Three
+ * nested vocabularies were tried — this one, this one plus the annuity phrase
+ * itself, and a wide one adding `fixed`/`unallocated`/`general account`/
+ * `benefit responsive` — and ALL THREE give the identical 144/0 split, so the
+ * shortest is what ships. Every extra word is a word the rule would delete
+ * from a real fund's name if one ever arrived. `sa?gic` covers SAGIC because
+ * fund-er's own pattern is `/gic\b/` with no leading boundary, so it prices
+ * `SAGIC Group Annuity Contract 21016` on a substring accident.
+ *
+ * MEASURED BOTH WAYS OVER THE WHOLE LIVE STORE, every distinct name read:
+ *   - 144 of 144 rows priced at the generic fallback are flagged; all 83
+ *     distinct names were read one by one and every one is an insurance
+ *     guarantee product — TIAA Traditional, SAGIC, Key Guaranteed Portfolio
+ *     Fund, Empower Guaranteed, Principal Fixed Income Guaranteed Option,
+ *     Lincoln / AUL / MassMutual / NY Life / Brighthouse / Transamerica /
+ *     CMFG stable-value accounts. Not one names a registered fund.
+ *   - 0 of 40 rows priced from a fund's own name are flagged, and the reason
+ *     is structural rather than lucky: for all 20 of their distinct names the
+ *     strip is a NO-OP. They contain no guarantee word at all, so there is
+ *     nothing for this rule to remove and nothing it can change.
+ *
+ * IT SUPPRESSES THE FEE AND NOT THE TICKER, unlike its sibling above, because
+ * the narrower claim is the one the evidence supports: 1,361 published rows
+ * are flagged store-wide and 0 of them publish a ticker, so the ticker half
+ * would be an unmeasurable no-op dressed up as a guard.
+ *
+ * `priceOf` is injected rather than imported — this module has no dependency
+ * on `fund-er.js`, which is a plain browser script. Both callers pass the bare
+ * fee table `fundER`, NOT app.js's `fundERFiled`: the house-misspelling repair
+ * is a lookup repair for a string believed to be a fund's name, and the
+ * remainder here is explicitly not one. Measured before choosing: the two
+ * disagree on 0 of the 1,405 rows this gate can reach.
+ *
+ * app.js keeps a twin (browser script, no module system); the generator
+ * extracts this VERBATIM and `smoke-test.mjs` runs the browser copy against
+ * this one on pinned names and fails on drift. */
+export const GUARANTEE_PRICED_WORDS =
+  /\bstable value\b|\bmanaged income\b|\bguarantee(?:d|s)?\b|\bsa?gic\b/gi;
+export function annuityFeeIsGuaranteeOnly(cleanedName, priceOf) {
+  const s = String(cleanedName || "");
+  if (!ANNUITY_CONTRACT_NAME.test(s)) return false;
+  const rest = s.replace(GUARANTEE_PRICED_WORDS, " ").replace(/\s+/g, " ").trim();
+  return priceOf(rest) == null;
+}

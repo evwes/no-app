@@ -10,6 +10,7 @@
  * (requires playwright; serves the repo root on :8901). */
 import { readFileSync } from "fs";
 import { spawn } from "child_process";
+import vm from "node:vm";
 import { chromium } from "playwright";
 
 const PORT = 8901;
@@ -210,7 +211,8 @@ try {
   /* Same drift protection for the coverage band: scripts/lib-disclose.mjs is
    * canonical, app.js carries a twin because it is a plain browser script.
    * Run the BROWSER copy against the module's own boundary cases. */
-  const { coverageBand, frozenClaimOk, cleanFiledName, isParticipantLoanRow, isLoanDescriptionRow, isAnnuityContractRow } = await import("./lib-disclose.mjs");
+  const { coverageBand, frozenClaimOk, cleanFiledName, isParticipantLoanRow, isLoanDescriptionRow,
+    isAnnuityContractRow, annuityFeeIsGuaranteeOnly } = await import("./lib-disclose.mjs");
   const frozCases = [
     [true, "The Plan was terminated effective December 31, 2023.", "Capital Region Medical"],
     [true, "As amended on December 31, 2024, the Plan was frozen and all participants of the Plan became fully vested.", "Hanes Companies, Inc."],
@@ -571,6 +573,60 @@ try {
     if (!isAnnuityContractRow(r, r.name)) fail(`annuity-contract rule no longer catches an insurance contract typed a mutual fund: ${JSON.stringify(r)}`);
   for (const r of annuityCases.slice(6))
     if (isAnnuityContractRow(r, r.name)) fail(`annuity-contract rule would retype a row whose filed type is honest, or a real fund: ${JSON.stringify(r)}`);
+
+  /* THE GUARANTEE-ONLY FEE RULE, tethered the same way, 2026-09-29. It needed
+   * its own cases for the fifth cycle running: NOT ONE case above reaches it,
+   * because the rule above reads the TYPE cell first and this one never reads
+   * a type at all — so without these the twin would agree whether or not it
+   * carried the rule, the decorative-guard failure this record has caught at
+   * v189, v190, v191 and v192.
+   *
+   * Eight of the fourteen must come back FALSE, in two kinds, and that half is
+   * the whole safety argument:
+   *   - four name a REAL insurance-dedicated fund held THROUGH a group annuity
+   *     contract. Their published fee (0.06 / 0.2 / 0.65 / 0.1) comes from the
+   *     fund's own name and must survive; the strip is a NO-OP on every one of
+   *     them, because none contains a guarantee word at all;
+   *   - four never say "annuity contract", so the gate is shut before the
+   *     strip is reached. `Guaranteed Income Fund`, `Key Guaranteed Portfolio
+   *     Fund` and `Principal Stable Value Preferred Fund` are pinned precisely
+   *     because they WOULD be stripped to nothing if the gate ever came off —
+   *     they are the cost of widening this rule, sitting in the test.
+   *
+   * Both copies are given the bare fee TABLE, which is what app.js passes at
+   * the call site, so the two sides are comparable without reconstructing
+   * `fundERFiled` here. */
+  const erCtx = vm.createContext({ console });
+  vm.runInContext(readFileSync("fund-er.js", "utf8"), erCtx);
+  const tableER = erCtx.fundER;
+  if (typeof tableER !== "function") fail("fund-er.js no longer defines fundER — the guarantee-only fee rule cannot be cross-checked");
+  const guarFeeCases = [
+    /* must SUPPRESS the fee */
+    "Guaranteed Annuity Contract", "Guaranteed annuity contract - contract value",
+    "Group Annuity Contract Lincoln Stable Value Account",
+    "Group fixed annuity contracts Empower Select Guaranteed Fund",
+    "SAGIC Group Annuity Contract 21016", "Annuity Contracts TIAA Stable Value",
+    /* must KEEP the fee, from here down */
+    "Vanguard VIF Real Estate Index Portfolio GROUP ANNUITY CONTRACT",
+    "Mutual of America Group Annuity Contract Equity Index Fund",
+    "Neuberger Berman AMT Sustainable Equity Portfolio GROUP ANNUITY CONTRACT",
+    "MoA US Government Money Market Fund GROUP ANNUITY CONTRACT",
+    "Guaranteed Income Fund", "Key Guaranteed Portfolio Fund",
+    "Principal Stable Value Preferred Fund", "Fidelity 500 Index Fund"];
+  const guarGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoGuaranteeOnlyFee !== "function") return null;
+    return cs.map((n) => window.__wampoGuaranteeOnlyFee(n));
+  }, guarFeeCases);
+  if (!guarGot) fail("app.js no longer exposes __wampoGuaranteeOnlyFee — the guarantee-only fee rule cannot be cross-checked");
+  const guarDrift = guarFeeCases.filter((n, i) => annuityFeeIsGuaranteeOnly(n, tableER) !== guarGot[i]);
+  if (guarDrift.length) {
+    for (const n of guarDrift) console.error(`  ${JSON.stringify(n)}  app.js=${guarGot[guarFeeCases.indexOf(n)]}  module=${annuityFeeIsGuaranteeOnly(n, tableER)}`);
+    fail(`the guarantee-only fee rule in app.js disagrees with scripts/lib-disclose.mjs on ${guarDrift.length} of ${guarFeeCases.length} names — regenerate it`);
+  }
+  for (const n of guarFeeCases.slice(0, 6))
+    if (!annuityFeeIsGuaranteeOnly(n, tableER)) fail(`guarantee-only fee rule no longer suppresses a fabricated annuity fee: ${JSON.stringify(n)}`);
+  for (const n of guarFeeCases.slice(6))
+    if (annuityFeeIsGuaranteeOnly(n, tableER)) fail(`guarantee-only fee rule would withdraw a fee a fund's own name supports: ${JSON.stringify(n)}`);
 
   const nameDrift = nameCases.filter((n, i) => cleanFiledName(n) !== nameGot[i]);
   if (nameDrift.length) {
