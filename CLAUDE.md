@@ -891,9 +891,11 @@ export, do not copy the line.
   University of Maryland Medical System still shows `Fidelity Total Bond Fund
   K6 → FTBFX` at 0.45% where the K6 fund is **FTKFX** — the wrong-share-class
   shape this record has now recorded four times.
-- **SHIPPED 2026-09-29 13:3xZ — A LEADING STRAY QUOTE IS NOT PART OF A FUND'S
-  NAME: 229 rows / 143 plans / 138,737 participants / $474,878,302** on the
-  report, **4 crawlable pages / 25,745 ppl**. `‘Vanguard 500 Index Fund Admiral
+- **MIRRORED 2026-09-29 13:4xZ (`c755a7c2 → 8785b2fb`), UNFORCED ON BOTH
+  CHECKS**, data gate +0 / −0; `site-test` #109 `conclusion: success` on the
+  exact commit, read not assumed. **A LEADING STRAY QUOTE IS NOT PART OF A
+  FUND'S NAME: 229 rows / 143 plans / 138,737 participants / $474,878,302** on
+  the report, **4 crawlable pages / 25,745 ppl**. `‘Vanguard 500 Index Fund Admiral
   Shares`, `'VANGUARD EXPLORER ADM`, `‘American Funds New Perspective R6`.
   **THE PAGE FIGURE CORRECTED MY OWN PROXY — I predicted 6 pages / 61,185 and
   the regenerated files say 4 / 25,745.** The proxy asked whether a plan has a
