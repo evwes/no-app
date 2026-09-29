@@ -925,6 +925,77 @@ export, do not copy the line.
   agent and that was VERIFIED, not assumed: plans array byte-identical, 0 of
   68,767 status entries changed, `data/lineups/**` untouched** — only
   `generated` differs. Branch, main and local level at `8522c450`.
+- **MIRRORED 2026-09-29 19:4xZ (`187152c1 → ae96a25a`), UNFORCED ON BOTH
+  CHECKS**, data gate +0 / −0. **THE FEE LOOKUP NEVER SAW THE ISSUER COLUMN, AND
+  NOW DOES: 59,521 rows / 8,483 plans + 3 trusts (4 members) / 12,404,738
+  participants / $171,674,834,061 gain an expense ratio that was BLANK.** The
+  largest reader-facing coverage item on the queue, closed. `lookupTicker` has
+  prepended the 4i IDENTITY cell since v67; the fee asked `fundERFiled(f.name)`,
+  the cleaned name ALONE — so a row whose house lives only in the identity
+  column (the normal shape since v126) resolved a ticker and published a blank
+  fee beside it. **Strictly additive BY CONSTRUCTION**: the issuer arm runs only
+  after the bare name returns null.
+  **THE GATE IS THE WORK and it REUSES `resolveHolding`'s shipped rule** — *the
+  issuer may ADD a manager and never REPLACE one* — in three parts: the issuer
+  contributes a firm and NOT its corporate form (a trustee's `… TRUST Company`
+  was satisfying a pattern's VEHICLE condition and publishing the collective-
+  trust price); the issuer must not supply the answer BY ITSELF (kills three of
+  the four recorded false positives, each `fund-er.js`'s bare house arm firing
+  on issuer text, and closes a route that would have manufactured the exact
+  0.35% withdrawn from 89 rows this morning); and past a leading share-class
+  designation the fund's own first word must be LOAD-BEARING.
+  **NO HOUSE VOCABULARY SHIPS** — one was built to READ the residue with and its
+  most frequent hit is `{Vanguard} Wellington Admiral Fund`, a real Vanguard
+  fund carrying its SUB-ADVISER. *A house list is wrong in the unsafe
+  direction.*
+  **MY INDEPENDENT REPLICATION MATCHED EVERY SAFETY-CRITICAL FIGURE EXACTLY** —
+  59,521 rows, **$171,674,834,061 to the dollar**, CHANGED 0, LOST 1, and **0
+  gains at 0.35**.
+  **MY FIRST HARNESS COULD NOT HAVE SEEN THE LOSS:** it loaded the NEW
+  `fund-er.js` for BOTH sides, so the one non-additive part — the `AF_LOAD_CLASS`
+  widening, which edits `fundER` itself — was invisible to the comparison meant
+  to police it. *A before/after harness is only as honest as its "before".*
+  Tested exactly instead, and that needed no sweep: over all **392,610 distinct
+  published names exactly ONE** resolves differently (`AMERICAN BALANCED FUND
+  A-CLASS` 0.28 → null, one row, Pediatric Academic Association, 555 ppl).
+  `AMERICA-CLASS` stays unmatched; R-6 names keep their fee.
+  **ONE NUMBER SHORT, THE FAMILIAR ONE: 12,404,738 ppl, not 12,398,051** — three
+  flagged rows sit in MASTER TRUSTS, which have no `plans-all` row. **Third time
+  on this record.** Direction is the safe one.
+  **AND THE SURFACE CLAIM IS STRONGER THAN THE ONE MADE FOR IT:**
+  `build-seo-pages.mjs` **never imports `fund-er.js`**, so the crawlable pages
+  cannot render a per-fund ER under any input. *An empty `p/` diff is an
+  observation; an absent import is a guarantee.*
+  **A STALE MEASURED NUMBER IN A SHIPPED COMMENT, corrected:** app.js read
+  "59,526 gained, 0 lost" — the figure from before the A-CLASS arm existed.
+  *A measured number in a comment has to be the number that shipped.*
+  parser-gate green (frozen tether 7/7), smoke-test green, fund-er-test
+  46/26/12/11 0 failures. `docs/accuracy-log.md` 2026-09-29 (19:3xZ).
+- **QUEUED, SIZED, NOT SHIPPED — A COLLECTIVE TRUST PRICED AS A MUTUAL FUND:
+  396 rows / 129 plans + 4 trusts (9 members) / 653,154 ppl / $6,947,802,798.**
+  Found by the 19:0x draw (seed 20260929191) on **American Woodmark (7,727
+  ppl)**, whose menu is otherwise immaculate: eleven `Vanguard Target Retirement
+  … Trust II` rows, ten typed `Collective trust` and priced at nothing, and
+  **one — type cell BLANK — publishing 0.045**. Same holding, same filed name,
+  priced on one row and not the other ten.
+  **`noPublicPrice` reads the TYPE cell and never the NAME**, so a row whose own
+  filed name states a collective-trust unit class escapes it whenever the type
+  is blank (257) or wrongly says `Mutual fund` (132).
+  **THE COUNT THAT MATTERS IS SMALLER AND THE SPLIT IS THE FINDING: 182 of the
+  396 publish a LABELLED comparable** (the 2026-09-21 demotion working as
+  designed) and only **214 publish an UNLABELLED retail fee**. A Trust II unit
+  class is normally CHEAPER than the retail fund the ticker names, so the number
+  is wrong in the direction that flatters.
+  **8 OF THE 328 DISTINCT NAMES ARE FALSE POSITIVES OF MY OWN SCREEN, read and
+  named:** `MFS Series Trust II - MFS Growth Fund`, `JPMorgan Trust II - …`,
+  `Funds Series Trust I - Columbia Contrarian Core` — **a registrant's series
+  trust is not a collective-trust unit class.** Reader-facing class is ~205 rows,
+  not 396. *A vehicle word in a fund's name is not always a vehicle.*
+  **The control says the site already knows this: 28,950 rows /
+  $318,059,621,621** carry the same name shape WITH a collective-trust type and
+  are correctly unpriced. The rule is right and is asked of the wrong cell.
+  Display-side, on the annuity/investment-contract pattern; the labelled-
+  comparable half must be left alone.
 - **QUEUED, SIZED, SAFE, NOT SHIPPED — A TRUNCATED WORD IS NOT A SURVIVING FUND
   NAME: 13 rows / 13 plans / 70,205 participants / $39,532,590.** Found by the
   17:0x draw (seed 20260929170) on **Aimbridge Parent (53,606 ppl)**, whose
