@@ -925,6 +925,67 @@ export, do not copy the line.
   agent and that was VERIFIED, not assumed: plans array byte-identical, 0 of
   68,767 status entries changed, `data/lineups/**` untouched** — only
   `generated` differs. Branch, main and local level at `8522c450`.
+- **IN FLIGHT: #510 (v193), dispatched 2026-09-29 21:3xZ on `d3f93c4b`, observed
+  `in_progress` on the dev branch — a FULL re-parse on the version bump. FOUR
+  fabricated-row classes, 385 published lineups / 693,409 participants.**
+  (A) the Form 5500 COVER PAGE as a fund menu 58 rows / 36 lineups / 168,079 ppl;
+  (B) Schedule H line 4a's DELINQUENT-CONTRIBUTIONS grid 120 / 111 / 166,688;
+  (C) the party-in-interest marker WELDING two real holdings 58 / 46 / 95,833
+  (William Beaumont Hospital's 49,582 see `BlackRock Global Allocation Fund * 8
+  Delaware VIP Diversified Income Fund`); (D) **found by measuring (A) and the
+  largest — 193 rows / 193 lineups / 263,209 ppl**: the cover prints the address
+  box beside the NAICS box, so `541370` reads as a $541,370 holding, up to 42.1%
+  of a menu. **(D) surfaced only because removing the DocuSign row promoted this
+  line in its place — one junk row swapped for another, row count unchanged,
+  invisible to every count.**
+  **EVERY CLASS RE-SIZED AT pv 192 BEFORE ANYTHING WAS WRITTEN and three of the
+  four moved** (A was queued at 41/31/165,425, B at 98/96/157,098) — *a class
+  size travels with the predicate that produced it.*
+  **(C)'s QUEUE PREDICATE WAS WRONG, NOT MERELY STALE:** "anything, a marker,
+  anything" returns **247 rows / 172,909 ppl**, dominated by two OTHER shapes (a
+  leading row number, and the issuer welded on with no figure between). **Do not
+  carry 247 or 172,909 forward.** The discriminator is the FIGURE between marker
+  and second name — `**` sits in column (d) Cost, so what follows is the (e)
+  Current Value, and a 1–2 digit value fails `valueRe`'s 3-character floor.
+  **PRE-REGISTERED against the pv-192 store the run reads**, with the harness
+  first shown to reproduce the shipped figures: `confident` **+0 / −0** (ceiling
+  ±5, any loss a lineup under five rows); `audit-generic-names` **217 → 217**;
+  `audit-dominant-row` **0**; HIGH **4 = the baseline**; `overshoot` falls or
+  holds; VFCP / cover / docusign rows → **0** while `DOCUSIGN INC` holds at 1 row
+  / $162,450.
+  **THE MIRROR IS HELD ON PURPOSE UNTIL THE VERDICT, and the reason is narrower
+  than the old rule:** code ahead of the store is safe by `SCHEDULE_INCREMENTAL`
+  and #510 is on the DEV branch, so neither hazard applies — but v193 is a PURE
+  PARSER change with **no display half**, so mirroring it now delivers nothing to
+  a reader and only puts unverified parser code on main. Mirror when #510's store
+  is complete.
+  **TWO GATE EXPECTATIONS MOVED AND BOTH RECONCILE TO THE DOLLAR** (checked
+  independently, because updating a gate expectation is how a regression gets
+  normalised): Physician's Computer 32 → 31 rows, sum down **exactly $124,842**,
+  its own line 4a row; Costco **menu rows unchanged at 35** with the securities
+  flood up $480,000. Both are gains in correctness.
+  **COST NAMED PLAN BY PLAN, ~1,900 ppl against 693,409:** Vortex Companies (830)
+  is the one clear degradation, bisected to the single phrase `three[- ]digit`;
+  three swap BETTER (Republic National Distributing's 15,199 gain real names for
+  `IMDIZX`). **`swaps-degraded` and `rows-dropped` see none of these** — the
+  known third blind spot.
+  **THE AGENT'S OWN HARNESS ERROR, recorded because the shape recurs:** its first
+  pre-registration printed `confident LOST 44`, naming JPMorgan Chase and CVS.
+  Entirely the harness — it compared the STORED entry against a fresh local
+  `pdftotext` parse, and those acks carry `ov=8`/`fb`, so their stored entries
+  come from the production path. *The only honest delta is base-parse vs
+  work-parse on the same text.*
+- **#509 (cron, on MAIN) RAN `success`** (data `f6a15f14`): coverage line
+  **byte-identical** — confident 60,103, HIGH **4 = the baseline**, WARN 608,
+  overshoot 326, dl 131, pv 192 at 99.8%. Correct for a scheduled incremental
+  whose work list is the dead 403s.
+  **IT MOVED BOTH REFS AND THAT IS BY DESIGN, verified in the workflow rather
+  than assumed:** `build-data.yml`'s `Keep the dev branch level with main` step
+  runs only on scheduled runs and only when the dev branch is a strict ANCESTOR
+  of main, making the sync a pure fast-forward. It exists because scheduled
+  commits used to strand main ahead until a session noticed — two days of that
+  on 2026-09-05/06. **The CLAUDE.md automation section still describes the
+  hand-reconcile as the only route; the runner now does the safe half itself.**
 - **MIRRORED 2026-09-29 19:4xZ (`187152c1 → ae96a25a`), UNFORCED ON BOTH
   CHECKS**, data gate +0 / −0. **THE FEE LOOKUP NEVER SAW THE ISSUER COLUMN, AND
   NOW DOES: 59,521 rows / 8,483 plans + 3 trusts (4 members) / 12,404,738
