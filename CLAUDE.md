@@ -664,7 +664,7 @@ don't confuse them). Frontend: python http.server + Playwright at
 /opt/pw-browsers/chromium; verify TK page, tabs, filters, deep links
 (#plan=EIN|PN|TICKER).
 
-## Current state — RE-DERIVED FROM THE STORE 2026-09-27 15:0xZ
+## Current state — RE-DERIVED FROM THE STORE 2026-09-29 23:5xZ
 
 **Re-derive this block from the store; never edit its date.** An earlier
 version of this header said "Store at v168 … `PARSER_VERSION` in the tree is
@@ -673,25 +673,29 @@ flight — the first bullet a new session reads, wrong, exactly the hazard this
 file warns about elsewhere and aimed at itself. It has now gone stale three
 times (v123-for-v124, v168-for-v177, and v181-for-v184 across a container
 restart), so the fix is the habit: read `lineups-status.json` and `lib-4i`'s
-export, do not copy the line.
+export, do not copy the line. **It went stale a FOURTH time on 2026-09-29
+across a container restart**, reading "IN FLIGHT: #510 … THE MIRROR IS HELD ON
+PURPOSE" for an hour after #510 had been verdicted AND mirrored. Same shape,
+same cause: the restart is what separates the cycle that writes a status line
+from the cycle that would have cleared it.
 
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, ≥100
   participants at either end of the plan year): **68,259 full-form**, 43,523
   short-form, 68,767 parse-status entries.
-- **STORE: pv 189 covers 68,636 of 68,767 acks (99.81%)** — one dominant pv plus
-  the documented ~190-row old-version tail (pv180 23, pv106 18, pv124/123 10
-  each), which is the completeness test, not a partial store. Confident
-  **60,103**, lineups 59,752, entries 65,241, HIGH **4 = the baseline**, WARN
-  608, overshoot **325** / 400,840 ppl, aggRow 112, dl **129** (129 of 129
-  HEAD-probed 403), **`analyze` 0**, `no-section` ~7,123.
-  `audit-dominant-row` **0**, `audit-generic-names` **212 against the 230
+- **STORE: pv 193 covers 68,624 of 68,767 acks (99.79%)** — one dominant pv plus
+  the documented ~140-row old-version tail (pv180 23, pv106 18, pv192 12,
+  pv124/123 10 each), which is the completeness test, not a partial store.
+  Confident **60,103**, lineups 59,752, entries 65,241, **HIGH 9 in CI / 4
+  locally** (the five extra are self-clearing `reparse-loss` entries raised from
+  `losses-triage.txt`, a run ARTIFACT that exists only in CI — *a metric that
+  differs between CI and local is a question about the inputs, not the store*),
+  WARN 629, overshoot **318** / 398,757 ppl, aggRow 112, **dl 142** (the last 11
+  HEAD-probed, 11 of 11 answered 403), **`analyze` 0**.
+  `audit-dominant-row` **0**, `audit-generic-names` **214 against the 230
   escalation threshold — still not raised**. **`matchQuote` 5,397 of which only
   1,785 are SHOWN to readers** — the condition/outcome pair shipped 2026-09-27.
-- **NOTHING IS IN FLIGHT.** Tree and store are both at v189; cron #490 ran
-  `success` and its data commit `5e3941b` is adopted. **`site-test` #101 on
-  `32f4568` reads `conclusion: success`** — dispatched deliberately, as #100
-  was, because these changes ship under `[skip ci]` and local green is not CI
-  green, the confusion that once left site-test red for ten runs.
+- **NOTHING IS IN FLIGHT.** Tree and store are both at v193, and local, the dev
+  branch and main are all level at `d7c96c34`.
 - **OWNER-REPORTED AND MIRRORED 2026-09-28 18:0xZ, UNFORCED, DATA GATE
   +0 / −0 (`7f772a8 → 1f43a78`): a plan is findable by its own name.** #491
   passed its pre-registered test to the kilobyte — `plans-list.json` ships
@@ -925,9 +929,27 @@ export, do not copy the line.
   agent and that was VERIFIED, not assumed: plans array byte-identical, 0 of
   68,767 status entries changed, `data/lineups/**` untouched** — only
   `generated` differs. Branch, main and local level at `8522c450`.
-- **IN FLIGHT: #510 (v193), dispatched 2026-09-29 21:3xZ on `d3f93c4b`, observed
-  `in_progress` on the dev branch — a FULL re-parse on the version bump. FOUR
-  fabricated-row classes, 385 published lineups / 693,409 participants.**
+- **#510 (v193) RAN `success` AND IS MIRRORED — 2026-09-29 23:2xZ
+  (`f6a15f14 → f58d1d89`), `--force-data` over five losses, every one read and
+  diagnosed first. FOUR fabricated-row classes, 385 published lineups / 693,409
+  participants.**
+  **THE NET TEST PASSED AND THE NAMED CONDITION DID NOT, and the second matters
+  more.** `confident` **+5 / −5, net 0** against a ceiling of ±5 — but the
+  pre-registration said any loss would be "a lineup of fewer than five rows" and
+  **two were not**: Pedulla Excavating **27 rows → 0** and Benchmark Landscape
+  **26 → 27** (losing confidence while GAINING a row). *A ±5 ceiling met by five
+  losses and five gains is not the same fact as five SMALL losses, and only
+  reading them tells the two apart.* `audit-dominant-row` **0** PASSED,
+  `overshoot` **326 → 318** PASSED, `audit-generic-names` **214 against the 217
+  registered** — missed by 3, direction good.
+  **6,154 participants GAINED against 1,014 lost** (Novel Home Health Care
+  0 → 14 rows, Anderson Regional 4 → 10), and four of the five losses are guards
+  working. **Two queued from the verdict:** Pedulla is a REAL regression with a
+  hypothesis and not a cause (`no-section`/`noattach` on an OCR'd 2023 fallback,
+  `ov` unchanged, so a v193 arm plausibly removed a SEEDING line — *instrument
+  before believing it*), and v193 ADDED a junk row at Benchmark,
+  `Loan Repayments are included:` at $240,932, first by value in a menu whose
+  next row is $7,318 — a loan caption restored by the (C) weld arm.
   (A) the Form 5500 COVER PAGE as a fund menu 58 rows / 36 lineups / 168,079 ppl;
   (B) Schedule H line 4a's DELINQUENT-CONTRIBUTIONS grid 120 / 111 / 166,688;
   (C) the party-in-interest marker WELDING two real holdings 58 / 46 / 95,833
@@ -953,12 +975,13 @@ export, do not copy the line.
   `audit-dominant-row` **0**; HIGH **4 = the baseline**; `overshoot` falls or
   holds; VFCP / cover / docusign rows → **0** while `DOCUSIGN INC` holds at 1 row
   / $162,450.
-  **THE MIRROR IS HELD ON PURPOSE UNTIL THE VERDICT, and the reason is narrower
-  than the old rule:** code ahead of the store is safe by `SCHEDULE_INCREMENTAL`
-  and #510 is on the DEV branch, so neither hazard applies — but v193 is a PURE
-  PARSER change with **no display half**, so mirroring it now delivers nothing to
-  a reader and only puts unverified parser code on main. Mirror when #510's store
-  is complete.
+  **THE MIRROR WAS HELD UNTIL THE VERDICT ON PURPOSE, and the reason was
+  narrower than the old rule:** code ahead of the store is safe by
+  `SCHEDULE_INCREMENTAL` and #510 was on the DEV branch, so neither hazard
+  applied — but v193 is a PURE PARSER change with **no display half**, so
+  mirroring it early would have delivered nothing to a reader and only put
+  unverified parser code on main. Held, verdicted, then mirrored in the same
+  cycle.
   **TWO GATE EXPECTATIONS MOVED AND BOTH RECONCILE TO THE DOLLAR** (checked
   independently, because updating a gate expectation is how a regression gets
   normalised): Physician's Computer 32 → 31 rows, sum down **exactly $124,842**,
