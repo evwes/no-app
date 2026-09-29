@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 193;
+export const PARSER_VERSION = 194;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -184,7 +184,28 @@ const SKIP_ROW = new RegExp("^(total|subtotal|grand total|schedule|page \\d|form
   // spellings — 631 confident lineups carried "Investments, at fair value"
   // statement rows (up to 97% of the shown sum) because only the bare
   // space-separated form was covered
-  "(net assets|benefits paid|investment (income|gain|loss)|(participation|interest) in (the )?net (income|loss)|net income \\(?loss\\)?|net income (of|from)\\b|interest and dividends|realized|unrealized|net\\s*\\(?\\s*(?:appreciation|depreciation)|(?:^|net )transfers?\\b|transfers? (?:in|out|to|from|of|between)\\b|contributions?\\b|deemed distribut|administrative expense|beginning of year|end of year|financial statements|indirect compensation|reconcil|adjustment|level [123]\\b|liabilit|receivable|payable|expenses\\b|distribution|net (increase|decrease|change)|due (to|from)|notes? (to|receivable)|similar party|description of investment|current value|investments?,?\\s*[—–-]?\\s*at (fair|contract) value)|" +
+  /* v194: `beginning of year|end of year` allowed NO `the` and no `period`, so
+   * `End of the year`, `Beginning of the year`, `End of period` and `Beginning
+   * of period` were outside this vocabulary BY CONSTRUCTION. Seven published
+   * rows of 1,719,942, and the old spellings match ZERO of them, so the
+   * widening is strictly additive — but one of the seven is The McClatchy
+   * Company's `End of the year` at **$592,952,331 = 87.4%** of a 24-row menu,
+   * under `audit-dominant-row`'s 90% floor, and another is what COST Pedulla
+   * Excavating its whole 27-row menu at v193: removing two junk rows moved the
+   * real region's ratio 0.805 -> 0.784, its score -0.0495 -> -0.0959, and this
+   * two-row caption region — untouched at -0.0628 — overtook it. A missing
+   * `the` in an anchored list, for the sixth recorded time.
+   *
+   * `loan repayments?` lands in the same alternation and is v193's OWN cost: its
+   * cost-marker weld arm restored `Loan Repayments are included:`, a
+   * recordkeeper-report caption carrying a value welded off a neighbouring
+   * column, on 20 published rows / 20 plans / 28,920 ppl / $7,519,157. Every
+   * one of the 8 distinct published names containing the phrase was read and
+   * not one is a fund (`Year Loan Repayments 2024` is a table header). It does
+   * NOT touch v181's loan treatment: a participant-loan HOLDING never says
+   * "repayment", so `LOAN_ROW` still types those rows and keeps their money in
+   * the denominator. */
+  "(net assets|benefits paid|investment (income|gain|loss)|(participation|interest) in (the )?net (income|loss)|net income \\(?loss\\)?|net income (of|from)\\b|interest and dividends|realized|unrealized|net\\s*\\(?\\s*(?:appreciation|depreciation)|(?:^|net )transfers?\\b|transfers? (?:in|out|to|from|of|between)\\b|contributions?\\b|loan repayments?\\b|deemed distribut|administrative expense|(?:beginning|end) of (?:the )?(?:year|period)|financial statements|indirect compensation|reconcil|adjustment|level [123]\\b|liabilit|receivable|payable|expenses\\b|distribution|net (increase|decrease|change)|due (to|from)|notes? (to|receivable)|similar party|description of investment|current value|investments?,?\\s*[—–-]?\\s*at (fair|contract) value)|" +
   // form-page boilerplate: a filing with NO 4i attachment can still seed a
   // region from the Schedule H checkbox line, and the parser then reads phone
   // numbers and zip codes off address/signature pages as \"values\" (Aramark)

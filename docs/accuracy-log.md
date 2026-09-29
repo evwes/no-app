@@ -29050,3 +29050,163 @@ catches it with a **stronger witness than my SEC cross-check: the filing states
 the ticker itself.** WARN 608 → 629 is mostly these. **A class I was sizing from
 the store was already instrumented in the pipeline** — read the existing checks
 before building a new measure of the same thing.
+
+## 2026-09-29 (23:5xZ) — v194: removing a fabricated row LOWERS the winning region's score, and that is how v193 cost Pedulla its whole menu
+
+**Started as a trace of v193's own regression and ended as two classes, one of
+them live for 5,006 readers, plus a correction to the #510 verdict I wrote an
+hour earlier.**
+
+### The regression, reproduced and then explained
+
+Pedulla Excavating (185 ppl) went **27 rows → 0** at v193. The queued hypothesis
+was the `three[- ]digit` arm, on the strength of it being the one phrase behind
+v193's other clear degradation. **It was not that, and the instrument said so in
+one run.**
+
+Its lineup is served from a **2023 prior-year fallback digitised by OCR**, and
+`fallbacks.json` is artifact-only — but the stored entry carries **`fbAck`**, so
+the filing was one download away, and the OCR path is reproducible from
+production's own constants (4 bad pages via `findBadPages` **sliced out of
+`fetch-4i.mjs` rather than retyped**, `pdftoppm -r 200 -gray` one page per call,
+an OSD probe returning `Rotate: 180` so `--psm 1`, joined with `\f`, then
+`text + "\f" + otext`).
+
+    baseline v192   27 rows, ratio 0.805, CONFIDENT=true
+    working v193     2 rows, ratio 1.088, CONFIDENT=false
+
+**And the winning REGION had changed, not the rows inside it.** The candidate
+scores say it exactly:
+
+| region | v192 | v193 |
+|---|---|---|
+| the real menu (`John Hancock Stable Val` …) | 33 rows, ratio 0.805, **score −0.0495** | 29 rows, ratio 0.784, score −0.0959 |
+| a two-row caption (`End of the year` / `Beginning of the year`) | 4 rows, ratio 1.088, score −0.0628 | **unchanged at −0.0628** |
+
+v193 correctly removed two junk rows from the real menu — `instructions) US
+Mooresville NC 28115` at $238,900 (its own address-box arm) and `@ Total non` at
+$31,538. That moved the region's **ratio 0.805 → 0.784, away from 1.0**, its
+score fell by 0.046, and the caption region — which v193 never touched —
+overtook it.
+
+**THE GENERAL FORM IS WORTH MORE THAN THE CASE: removing a fabricated row lowers
+its region's score, so a junk-removal version can LOSE a region contest it
+previously won, and what it loses can be the real menu.** This record already
+carries *"a dominance guard can be defeated by adding junk"*; this is the same
+fact on the region contest, in the opposite direction, and it means **every
+junk-removal version should be checked for region FLIPS and not only for dropped
+rows** — a flip is invisible to `losses-triage` (the plan may keep a lineup), to
+`swaps-degraded` (the source year does not change) and to `rows-dropped` (the row
+count can move either way).
+
+### The fix is a missing `the`, for the sixth recorded time
+
+The statement-lines alternation read **`beginning of year|end of year`** —
+allowing no `the` and no `period`. So `End of the year`, `Beginning of the year`,
+`End of period` and `Beginning of period` were outside that vocabulary **by
+construction**, exactly as `statements`, `Preferred stock`, `Master Trust`,
+`investments` and `%`-versus-`percent` were before them.
+
+**Blast radius measured over all 1,719,942 published rows: 7 rows, 4 distinct
+names, and the OLD spellings match ZERO of them** — so the widening is strictly
+additive and touches nothing else. All four names read:
+`Beginning of period` 2, `End of the year` 2, `Beginning of the year` 2,
+`End of period` 1.
+
+### What it reaches, and it is live today
+
+**7 rows / 4 plans / 5,006 participants / $690,053,564**, and the largest is the
+kind of row a dominance guard is meant to catch and cannot:
+
+- **The Mcclatchy Company (3,595 ppl) publishes `Beginning of period` at
+  $592,952,331 = 87.4%** of a 24-row menu, with `Deductions Payment of benefits`
+  $84,415,440 second and `Other deductions` / `Other additions` behind it. That
+  is the statement of **changes** in net assets, not a menu. **87.4% is under
+  `audit-dominant-row`'s 90% floor** — the same gap this record already named for
+  Tides Center (84.4%) and Finch Paper (88.2%).
+- **Caterpillar PN 037 (485 ppl)** published `End of the year` + `Beginning of
+  the year` = 68.2% of a 9-row asset-class table. **v194 lets a different region
+  win: `Master Trust - at fair value` $54,024,140 at 97.5%, `trustPtr=true`,
+  `stmt=true`** — so the plan is correctly read as master-trust held and its page
+  says so. *A guard that withdraws a menu can promote the truth*, the v181/#481
+  lesson again.
+- **Edgewater Federal Solutions (697 ppl) is a pure WIN: 3 rows → 35.** Its
+  prior-year fallback published `End of the year` + `Beginning of the year` =
+  96.4% of the shown money; it now publishes `FID 500 INDEX`, `TRP DIV GROWTH`,
+  `TRP RETIRE 2045 ADV`, `FID CONTRAFUND` and 31 more at ratio 0.674.
+- **Pedulla publishes 26 rows at 0.785 — one BETTER than the 27 it had**, because
+  v193's address-box and `@ Total non` removals now land *and* the menu wins.
+
+### v193's other cost, and it is twenty times the case it was filed under
+
+The verdict named a junk row v193 ADDED at Benchmark Landscape:
+`Loan Repayments are included:` at $240,932. Sized store-wide it is **20 published
+rows / 20 plans / 28,920 participants / $7,519,157** — a recordkeeper-report
+caption carrying a value welded off a neighbouring column, restored by the (C)
+cost-marker weld arm. **All 8 distinct published names containing
+`loan repayments?` were read and not one is a fund** (`Year Loan Repayments 2024`
+is a table header). Keysight Technologies' is **$4,160,976**.
+
+It does **not** touch v181's loan treatment: a participant-loan HOLDING never
+says "repayment", so `LOAN_ROW` still types those rows and keeps their money in
+the denominator. Per-plan confidence effect measured on all 21: **20 keep their
+lineup** (Keysight 55 rows → 54 at ratio 0.989) and **one loses it** —
+Northwood Investors, below.
+
+### THE CORRECTION TO MY OWN #510 VERDICT, and it is the most expensive thing here
+
+That verdict read: *"The five gains, larger in people than the losses … 6,154
+participants gained against 1,014 lost."* **I applied "only reading them tells
+the two apart" to the LOSSES and not to the GAINS.** Reading all five now:
+
+| gain | ppl | what it actually publishes |
+|---|---|---|
+| Northwood Investors PN 001 | 2,277 | `at Fair Value` $46,540,940, `Employee 401(k) Deferral` $6,221,073, `Loan Repayments are Included Yes` $838,846 — **not one a fund** |
+| Anderson Regional PN 002 | 1,911 | 94.9% is a master-trust pointer welded with `Mutual and`; also `$_saz` |
+| Novel Home Health Care | 1,200 | 14 Fidelity Freedom Index rows — **real names**, OCR suffixes (`¥`, `al`, `™`) |
+| Leading Technology Composites | 551 | 89.3% `Value of Int in Regist Invest Co.` — a generic type label — plus the plan's own name and `© General investments: a ee` at $1 |
+| Bison Gear PN 003 | 215 | three rows of **$1 each** |
+
+**So 4,954 of the 6,154 participants I recorded as gained — 80% — gained a menu
+that is not a menu.** v194 withdraws Northwood on the three-row floor, which is
+correct and was arrived at from the other direction entirely. *A gain is a claim
+about a filing and has to be read like a loss.*
+
+### Two hypotheses of mine refuted by their own measurement
+
+**(1) "A confident plan on negligible assets is a scaling defect" — NO.** 992
+published lineups / 348,529 participants have year-end assets under the $1M floor
+`diagnose()` uses, and the largest is **Indeed Flex with 21,443 participants and
+$86,516**, which I read as impossible. Every one checked is internally
+consistent: True Care Ventures and Cottage Homecare have `assetsBOY 0` and a
+mid-year `pyb` (first-year plans), Golden Touch has $5,040 of employer
+contributions against $858,050 of assets. These are staffing and home-health
+plans where nearly every participant is **eligible and not saving**. *A
+participant-to-assets ratio is not a plausibility test, because Form 5500 counts
+eligibility.* Do not carry 992 or 348,529 forward as a defect.
+
+**(2) The "menu of pennies" residue is not new either — it is WIND-DOWN.** 5
+plans / 1,588 ppl, and Bison Gear PN 003 reads **`assetsBOY $8,750,323 →
+assetsEOY $2,094`** (its sister plan $14,289,087 → $641). The existing wind-down
+explanation rung gates on **exactly $0**, so a plan that collapsed to $2,094
+escapes it and publishes three $1 rows instead. **Queued, small, and it is a
+display change, not a parser one:** the wind-down sentence should trigger on a
+collapse in assets and not only on zero.
+
+### Gates
+
+`parser-gate.mjs` all specimens green with **no expectation moved** — which is
+the right outcome for an arm whose whole footprint is 28 rows.
+`diff-lineups HEAD` over 316 corpus filings: **0 gained, 0 lost, 0 fabricated
+rows introduced, 0 removed, 0 row-count moves, 0 menu sums moved ≥5%** — the
+negative control. The positive control is the three `--vs` traces above, which
+fail by name on exactly the designed plans.
+
+**Two specimens pinned and two deliberately NOT.** McClatchy and Caterpillar
+PN 037 are in `plans-all`, so `diff-lineups` can compare them. Pedulla's and
+Edgewater's are **prior-year FALLBACK acks, in neither `plans-all` nor
+`mtias.json`**, and `diff-lineups` skips an ack it cannot price — pinning them
+would have been decorative, the trap this record names. Their reproduction is
+recorded instead: `trace-filing.mjs <fbAck> --assets <current-year assets>
+--sponsor <name>`, with `CORPUS_DIR` pointed at a pre-built combined text for the
+OCR one.
