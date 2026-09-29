@@ -94,7 +94,29 @@ const CLASS_HINTS = [
   ["institutional select", /institutional select/],
   ["admiral", /\badmiral\b|\badm\b/],
   ["etf", /\betf\b/],
-  ["institutional", /\binstitutional\b|\binst\b|\bpremier\b/],
+  /* PREMIER IS NOT INSTITUTIONAL, and collapsing them made a whole family
+   * unanswerable. Fidelity Freedom Index runs FOUR classes — `Investor`,
+   * `Institutional Premium`, `Premier`, `Premier II` — and with `premier`
+   * folded into the `institutional` arm, THREE of them returned the hint
+   * `institutional`. The selector needs `hit.length === 1`, so it could never
+   * resolve, fell through to the ambiguous branch, and handed back the
+   * INVESTOR class behind an asterisk for a filing that says PREMIER. That is
+   * a different share class and therefore a different fee.
+   * Measured on published lineups: 16,630 rows / 17.4M participant-weighted
+   * state a class and get nothing, against 21,706 / 33.3M that state none and
+   * must stay blank.
+   * Order is longest-first because `hintOf` takes the FIRST match in table
+   * order: `Premier II` must be read before `Premier`, and `Institutional
+   * Premium` before the bare `Institutional`, or the specific class is eaten
+   * by the general one — the same failure one level down. */
+  ["premier ii", /\bpremier\s*(?:ii|2)\b/],
+  ["institutional premium", /\binstitutional premium\b|\binstl?\s*prem\b|\bins\s*pre\b/],
+  /* the specific arm must not also match the general one, or a class name
+   * answers to both and set-membership can no longer separate them:
+   * `Premier II Class` must not read as `premier`, and `Institutional Premium
+   * Class` must not read as bare `institutional`. */
+  ["premier", /\bpremier\b(?!\s*(?:ii|2)\b)/],
+  ["institutional", /\binstitutional\b(?!\s*(?:premium|select)\b)|\binst\b/],
   ["investor", /\binvestor\b|\binv\b/],
   ["r6", /\br ?6\b/], ["r5", /\br ?5\b/], ["r4", /\br ?4\b/], ["r3", /\br ?3\b/],
   ["k6", /\bk ?6\b/], ["k", /\bclass k\b|\bk shares?\b/],
@@ -682,9 +704,38 @@ function resolveUncached(idx, filedName, issuerWords) {
     return { ticker: uniq[0].ticker, comparable: pooled, why: pooled ? why + "+pooled" : why, series: uniq[0].series, className: uniq[0].className };
   }
   // several share classes -> does the filed name name one?
-  const hs = hintsOf(filedName);
+  /* A CLASS WORD THAT IS PART OF THE SERIES NAME CANNOT DISCRIMINATE BETWEEN
+   * THAT SERIES' CLASSES. `Royce Premier Fund` and `Invesco Premier Portfolio`
+   * are fund NAMES carrying the word; once `premier` became a class hint in
+   * its own right it competed with the class those filings actually state, so
+   * `ROYCE PREMIER INSTL` — which says Institutional in as many words — fell
+   * through to the ambiguous branch and lost a correct answer. The series
+   * already owns the word, so it carries no information about the class.
+   * Same idiom as the leftover rule: a word is excused only when the index's
+   * own evidence accounts for it.
+   *
+   * IT ONLY BREAKS TIES, and that restriction was forced by the pins. A first
+   * draft filtered unconditionally and broke two of them: `Federated Hermes
+   * Instl High Yield Bond` sits in the series `Institutional High Yield Bond
+   * Fund`, so the series owns `institutional` and the filed name's ONLY class
+   * signal was removed, dropping a pinned exact answer to an asterisk. When
+   * the filing states one class word there is nothing to disambiguate and the
+   * word is taken at face value; the filter fires only where a SECOND word
+   * can carry the class instead. */
+  let hs = hintsOf(filedName);
+  if (hs.length > 1) {
+    const seriesOwns = new Set(hintsOf(uniq[0].series || ""));
+    const kept = hs.filter((k) => !seriesOwns.has(k));
+    if (kept.length) hs = kept;
+  }
   if (hs.length === 1) {
-    const hit = uniq.filter((c) => c.hint === hs[0]);
+    /* MEMBERSHIP, NOT `c.hint`. `c.hint` is the FIRST hint in table order, and
+     * a class name that embeds the fund name answers to the fund's words
+     * first: every class of `Alger Capital Appreciation Institutional Fund`
+     * is stored as `… Institutional Fund Class Y`, so all four carried the
+     * hint `institutional` and a filing naming Class Y could not be matched.
+     * Asking whether the class STATES the hint reads the whole name. */
+    const hit = uniq.filter((c) => hintsOf(c.className).includes(hs[0]));
     if (hit.length === 1) {
       return { ticker: hit[0].ticker, comparable: pooled, why: why + (pooled ? "+pooled" : "+class"), series: hit[0].series, className: hit[0].className };
     }
@@ -824,10 +875,19 @@ const SELFTEST_ISS = [
   // the issuer ADDING a manager the filed name does not state — all must keep
   ["Core Plus BD R6", "Carillon Reams", "SCPWX"],
   ["S&P Small Cap 600 Index Fund Inv", "Empower", "MXISX"],
-  ["Freedom Fund 2050", "Fidelity", "FFPFX*"],
+  /* WAS PINNED FFPFX* AND THE EXPECTATION WAS WRONG, not the code. FFPFX is
+   * `Premier Class`; FFFHX is the base `Fidelity Freedom 2050 Fund` share
+   * class. The filing names no class, so this branch is choosing a
+   * REPRESENTATIVE, and its own comment says to prefer a retail one. FFPFX
+   * only won because `premier` used to answer the `institutional` finder. */
+  ["Freedom Fund 2050", "Fidelity", "FFFHX*"],
   ["Fidelity Inflation Protected Bond Index Fund", "Empower Trust Company, LLC", "FIPDX"],
   ["Fidelity 500 Index Fund", "Empower Trust Company, LLC", "FXAIX"],
-  ["Institutional High Yield Bond Fund R6", "Federated Hermes", "FIHAX*"],
+  /* WAS PINNED FIHAX*, which is `Class A Shares` behind an asterisk — a
+   * representative guess for a filing that states R6 in as many words. FIHLX
+   * IS `Class R6 Shares` of that series. Reading the stated class is the whole
+   * point of reading the class at all. */
+  ["Institutional High Yield Bond Fund R6", "Federated Hermes", "FIHLX"],
   // the issuer's own words must not be stripped as asset words: `financial`
   // is a SECTOR word and is half of Prudential's legal name
   ["PGIM High Yield Fund", "Prudential Financial, Inc.", "PBHAX*"],
@@ -839,6 +899,31 @@ const SELFTEST_ISS = [
   ["Short Term Bond Fund Class R6", "Transamerica", "TASTX"],
   // the house-less registrant reached through the issuer cell instead
   ["International Growth and Income Fund R6", "American Funds", "RIGGX"],
+  /* SHARE CLASSES THAT COLLAPSED ONTO ONE HINT. Fidelity Freedom Index runs
+   * Investor / Institutional Premium / Premier / Premier II; with `premier`
+   * folded into the `institutional` arm, three of them answered the same hint
+   * and none could be selected. must-CHANGE: */
+  ["FID FREEDOM INDEX 2050 PREMIER", "", "FRLPX"],
+  ["Fidelity Freedom Index 2050 Fund Institutional Premium Class", "", "FFOPX"],
+  /* PINNED AS A KNOWN RESIDUE, NOT FIXED HERE. `Instl Prem` is refused before
+   * the class stage: `prem` is not a class marker, so the leftover check
+   * rejects the whole name. Widening CLASS_MARK is its own change with its own
+   * blast radius and does not belong in this commit. Roughly 1,350 rows across
+   * the Freedom Index vintages wait on it; when it is fixed this pin fails and
+   * should become FFOPX. */
+  ["Fidelity Freedom Index 2050 Instl Prem", "", "—"],
+  /* must-KEEP AMBIGUOUS — the filing states NO class, and asserting one here
+   * is the defect that withdrew 10,387 fee cells on 2026-09-28: */
+  ["Fidelity Freedom Index 2050 Fund", "", "FIPFX*"],
+  ["T. Rowe Price Retirement 2040 Fund", "", "TRRDX*"],
+  /* the series OWNS the word `premier`, so it cannot name a class of itself;
+   * the class the filing really states must still win: */
+  ["ROYCE PREMIER INSTL", "", "RPFIX"],
+  ["Invesco Premier US Government Money Inst", "", "IUGXX"],
+  ["Royce Premier Fund", "", "RPFIX*"],
+  /* and Premier must never be handed to a filing that says Institutional:
+   * this series has NO institutional class (R6 / Premier / Retirement / I) */
+  ["Nuveen Lifecycle Index 2030 Inst", "", "TLHIX*"],
   /* `of American` — a FILED typo that names a different real fund. The first
    * two were published as RGWGX / RGPCX, classes of `American Funds Growth
    * Portfolio`; the rest had no ticker at all. The issuer-cell cases are here
