@@ -25976,3 +25976,69 @@ MERGE rewrite `stk`): `sec tickers: 338,478 rows across 37,035 plans`
 (+15 rows, +1 plan), against a harness that reproduces the CURRENT line at
 **338,463 / 37,034 exactly**; CONFIDENCE DIFF +0 / −0; coverage line
 byte-identical (confident 60,103, HIGH 4, overshoot 325).
+
+## 2026-09-29 (01:4xZ) — the participant-weighted draw, and a HARD GATE on the queued comparable half
+
+**The draw** (seed 20260929011, three plans drawn by participant weight from the
+59,752 PUBLISHED lineups / 89.26M ppl): Paychex Retirement (645,304 ppl, 25 rows
+@ 0.979), KIPP DC (1,846, 19 @ 0.962), Med One Capital (362, 26 @ 0.999). All
+three are clean menus. **Two things that looked like defects were shipped
+guards working:** Med One publishes a row named bare `Loans` at $147,106, and
+`isParticipantLoanRow` already types it *"Participant loans — not a menu
+choice"* — the 2026-09-28 02:3x fix covers the bare form, tested. And most
+un-tickered rows in KIPP DC resolve only as `comparable`, which the merge
+deliberately does not store.
+
+**THE FINDING IS IN THAT COMPARABLE HALF, and it changes the shape of a queued
+item.** `Blackrock Emerging Markets` resolves to **TWMIX — `AMERICAN CENTURY
+WORLD MUTUAL FUNDS INC :: EMERGING MARKETS FUND`**. Not an ambiguous share
+class of the right fund: a different HOUSE's fund. The queued item ("the
+ambiguous half, 146,662 rows behind an asterisk") was filed as *right fund,
+uncertain class*. It is not only that.
+
+**Sized on the one family I can demonstrate, verified by direct ticker lookup
+rather than by any map: 1,350 rows / 1,340 plans / 1,277,392 participant-weighted
+/ $1,416,343,099** resolve to TWMIX from a filed name that does not say American
+Century — `DFA Emerging Markets I` (171), `BlackRock Emerging Markets Fund`,
+`Delaware Emerging Markets`, `Vanguard Emerging Markets`, `JPMorgan`, `Invesco`,
+`Lazard`, `VanEck`, `Victory`, `Driehaus`, `Brandes`, `Wasatch`, `Northern`,
+`Putnam`, `PIMCO`, `Franklin Templeton`, `John Hancock`. Roughly 400 of the
+1,350 are a bare `Emerging Markets` naming no house and are honestly ambiguous;
+the rest name a house the answer contradicts.
+
+**NOTHING HERE REACHES A READER.** `merge-4i` stores a ticker only when the
+answer is NOT `comparable`, so this is not a live defect — it is a **hard gate
+on shipping the comparable half**, now with a number attached. The manager gate
+is evidently not applied on the comparable path; that is the fix, and it is
+queued, not attempted here with a run in flight.
+
+**TWO SIZING ATTEMPTS BEFORE THIS ONE BOTH MEASURED MY HARNESS, and both are
+worth recording because each looked authoritative.**
+
+**(20) `leadManager` cannot size this, because it fires on CORRECT answers.**
+Flagging every comparable whose filed name leads with a house the answer does
+not account for gives **8,684 rows / 9,118,522 ppl** — and the top of that list
+is `American Funds New World Fund -> NEWFX`, `American Funds New Perspective
+Fund -> ANWPX`, `American Funds American Balanced Fund -> ABALX`, every one
+**correct**. American Funds registers its flagships under bare product names
+(`NEW WORLD FUND INC`), so the lead `american funds` appears in no series name
+and each trips. That is #495's house-less-registrant wall reappearing *inside a
+measurement of it*, and it is the same conclusion from the other side: no
+discriminator here either.
+
+**(21) The refinement introduced a SECOND artifact — a map keyed on a
+non-unique name.** Checking the REGISTRANT instead of the series cut it to
+6,894 rows and printed `American Century Small Cap Value Fund -> ASVIX
+[NORTHERN FUNDS]`, `American Century Small Cap Growth Fund -> ANOIX
+[BRIDGEWAY FUNDS INC]` and `Principal Real Estate Securities Fund -> PRRAX
+[John Hancock Funds II]` — three flagship wrong-house cases, all **false**. My
+map was keyed by normalised SERIES name, and `SMALL CAP VALUE FUND` exists
+under several registrants, so the last one loaded won. Direct ticker lookup:
+ASVIX and ANOIX are American Century's and PRRAX is **Principal's**. All three
+answers are right.
+**A lookup keyed on a name that is not unique is not a lookup.** It is the
+`sum(c*31)` shard-hash error of 2026-09-16 in a new dress: a key that collides
+returns a confident wrong row rather than nothing.
+
+So the reportable number is the one family verified ticker by ticker, and the
+8,684 and 6,894 figures must not be carried forward as anything.

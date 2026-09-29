@@ -819,6 +819,67 @@ export, do not copy the line.
   9 rows → 5, still confident — and **the merge's own `rows-dropped` check caught
   it unprompted** (`warn` 608 → 609). `dl` 129 → 131.
   `docs/accuracy-log.md` 2026-09-29 (00:2xZ).
+- **IN FLIGHT: #497, dispatched 2026-09-29 01:2xZ on `20cfa79`, observed queued.
+  NO PARSER BUMP — it exists only to let the MERGE rewrite `stk`.** A filed
+  `of American` is a typo that names a DIFFERENT REAL FUND: `American Funds The
+  Growth Fund of American R6` resolved EXACTLY to **RGWGX**, a class of
+  `American Funds Growth Portfolio`, because after structural words that series'
+  key is only `{american, growth}` — so the MISSPELLED `american` is one of its
+  tokens while the right series needs `america`, which the filing never types.
+  Nothing in the matcher can see it; the string is wrong, so the string is
+  repaired, in `resolveHolding` — the one shared call rule.
+  **The test is a POSITIVE vocabulary of what may FOLLOW**, never a blocklist:
+  the American Funds forms end the entity at `America` and are followed by
+  nothing, a share class or a vehicle word, while all four real entities in the
+  store continue with a proper noun (`of American Airlines, Inc.`, `of American
+  United Life Insurance Company`, `of American Trust Company`, `Best of American
+  Fixed`).
+  **READER-FACING: 15 rows / 11,299 ppl GAIN a correct ticker** (RBFGX, RIDGX,
+  RGAEX), **2 rows / 562 ppl stop publishing a different fund as fact**
+  (Trailboss RGWGX → RGAGX, Evans Transportation RGPCX → RGACX), 0 lost, 17
+  plans, $20,129,610.
+  **AND THE NUMBER THIS ITEM WAS FILED UNDER WAS WRONG THE SAME WAY AS
+  YESTERDAY'S:** the queue said "4 rows publish a wrong fund as fact" and that
+  counted **`f.stk`, a STORED field**. `lookupTicker` asks `fund-er.js` FIRST
+  and `f.stk` LAST, and fund-er matches straight through this typo and answers
+  RGAGX correctly — so three of those rows never showed a reader anything wrong.
+  **2 rows / 562 people against the 75,937 the item was filed under, a factor of
+  135.** *A stored field is not a published one — measure through the function
+  the page calls.* **Nineteenth harness instance**, one day after the identical
+  shape cost a class size.
+  Whole-store through the merge's own gate and storage rule: **977,783 of
+  977,803 rows unchanged, 0 lost, CHANGES OUTSIDE THE PHRASE 0.**
+  **`--selftest` 75/75**, 13 new cases (7 must-change, 6 must-keep); the
+  pre-change file fails by name on exactly the 7 and holds all 6.
+  **PRE-REGISTERED: `sec tickers: 338,478 rows across 37,035 plans`** (+15 rows,
+  +1 plan) — against a harness that reproduces the CURRENT line at **338,463 /
+  37,034 exactly**; CONFIDENCE DIFF +0 / −0; coverage line byte-identical
+  (confident 60,103, HIGH 4, overshoot 325).
+  `docs/accuracy-log.md` 2026-09-29 (01:1xZ).
+- **QUEUED, AND NOW WITH A HARD GATE AND A NUMBER: the SEC index's `comparable`
+  half contains WRONG-HOUSE answers, not merely uncertain share classes.**
+  Found by the 01:3xZ participant-weighted draw: `Blackrock Emerging Markets`
+  resolves to **TWMIX — `AMERICAN CENTURY WORLD MUTUAL FUNDS INC :: EMERGING
+  MARKETS FUND`**. Sized on the one family verified ticker by ticker: **1,350
+  rows / 1,340 plans / 1,277,392 ppl-weighted / $1,416,343,099** resolve to
+  TWMIX from a filed name that does not say American Century (DFA 171,
+  BlackRock, Delaware, Vanguard, JPMorgan, Invesco, Lazard, VanEck, Victory,
+  Driehaus, Brandes, Wasatch, Northern, Putnam, PIMCO, Franklin Templeton, John
+  Hancock); ~400 are a bare `Emerging Markets` naming no house and are honestly
+  ambiguous. **NOTHING REACHES A READER** — merge stores only non-`comparable`
+  answers — so this is a gate on shipping that half, not a live defect. The
+  manager gate is evidently not applied on the comparable path.
+  **TWO SIZING ATTEMPTS FIRST AND BOTH MEASURED THE HARNESS. (20)** `leadManager`
+  flags 8,684 rows and its top entries — `American Funds New World Fund` →
+  NEWFX, `New Perspective` → ANWPX, `American Balanced` → ABALX — are all
+  **correct**, because those registrants name no house; #495's wall reappearing
+  inside a measurement of it. **(21)** Checking the REGISTRANT instead cut it to
+  6,894 and produced three flagship false positives (`ASVIX [NORTHERN FUNDS]`,
+  `ANOIX [BRIDGEWAY]`, `PRRAX [John Hancock]`) because **my map was keyed on
+  the SERIES name, which is not unique** — direct lookup says ASVIX and ANOIX
+  are American Century's and PRRAX is Principal's. *A lookup keyed on a name
+  that is not unique is not a lookup* — the shard-hash error in a new dress.
+  **Do not carry 8,684 or 6,894 forward.**
 - **SHIPPED 2026-09-29 00:1xZ — v190's display half, and the tether would not
   have caught the drift.** app.js's generated twin of `isGenericTypeName` still
   carried the PRE-v190 pattern (`build-seo-pages.mjs` imports the predicate live,
