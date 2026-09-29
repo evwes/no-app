@@ -26214,3 +26214,46 @@ byte-identical (confident 60,103, HIGH 4, overshoot 325).
 and the table supplied neither. Fees need a source URL, an as-of date and a
 share class per row; the 21,706 rows stating no class must stay blank whatever
 arrives.
+
+## 2026-09-29 (03:3xZ) — the draw: `statements` published as a holding, and a sizing predicate I refused to publish
+
+**Draw** (seed 20260929031, participant-weighted from the 59,752 published
+lineups): Chugach Alaska (3,674 ppl, 29 rows @ 1.000 — clean), General Atomics
+(16,186, 26 @ 0.983 — clean), **Avangrid Management (9,980, $2.56B, 32 rows @
+ratio 1.098)**.
+
+**Avangrid publishes two junk rows worth $668,659,150 = 23.7% of its menu**:
+`Mutual funds` at 12.6% (in the vocabulary, typed honestly since v188) and
+**`statements` at 11.1% / $313,497,660, which is in no vocabulary at all.**
+
+**SIZED EXACTLY: `statements` as a published holding is 22 rows / 22 plans /
+95,237 participants / $666,362,991.** It is not a long tail — **seven plans
+carry it at ≥40% of their own menu**, led by **Pebble Beach Company (2,479 ppl)
+at 74.0% / $144,220,775**, then J. M. Bozeman 64.6%, Goodbuy Gear 60.9%, Openly
+50.4%, Flagship Oral Surgery 49.5%, Suffolk Restorative 49.3%, Nr Parentco
+40.8%. **21 of the 22 have a BLANK type column**, so nothing on the page tells
+the reader it is not a fund. **Only 6 are OCR parses**, so this is not an OCR
+artifact — sixteen come from clean text. The ratios cluster ABOVE 1.0 (1.361,
+1.261, 1.179, 1.138, 1.115, 1.102 …), the signature of a phantom row inflating
+the sum.
+Shape: the tail of a wrapped phrase — *"…certified by the trustee's
+statements"*, *"Notes to financial statements"* — carrying the value from its
+own line. The v100/v130 wrapped-continuation family in a new vocabulary, and
+`audit-generic-names` cannot see it because a sentence fragment is not a
+vehicle type. **Queued as a parser item** (it needs a version bump, and #499 is
+in flight); the v190 treatment applies — an anchored `^…$` entry so the guard,
+both audits, `diff-lineups` and the browser twin ask one question.
+
+**AND THE PREDICATE THAT FOUND IT WAS TOO BROAD TO PUBLISH, which is the method
+note.** Generalising to "a published holding whose name is a single ordinary
+word" returns **4,329 rows / 1,043 distinct words, 1,702 rows / 1,353 plans /
+1,966,018 ppl at ≥2% of a menu** — and reading the list kills it. It sweeps in
+**individual securities correctly itemised in brokerage floods** (`FABRINET`
+Procter & Gamble, `ERICSSON` Boeing, `SANOFI` Microsoft, `CUBESMART` Goldman
+Sachs, `CONOCOPHILLIPS` Chubb, `Repligen`, `Mooresville`), **real annuity and
+stable-value products** (`VALIC`, `CREF`, `PRIAC` $1.71B at Cigna, `Morley`,
+`Empower`), and **the bare-house class already queued separately** (`Fidelity`
+$1.40B, `Vanguard`, `American`, `Pioneer`). **That number is not a defect count
+and must not be carried forward.** Twenty-fourth instance of a measurement
+reporting on the harness — and the tell was again a list printed in order to
+READ, not a count.
