@@ -354,7 +354,61 @@ export function namesManager(idx, s) {
  *
  * So the issuer may ADD a manager and may never REPLACE one: when the filed
  * name already names a house, the bare name is the only string asked. */
+/* `of American` IS A FILED TYPO FOR `of America`, AND IT NAMES A DIFFERENT
+ * REAL FUND, which is why it is repaired here rather than left alone.
+ *
+ * `American Funds The Growth Fund of American R6` resolved EXACTLY to RGWGX —
+ * `American Funds Growth Portfolio`, the Portfolio Series fund-of-funds — and
+ * the matcher was right to: after structural words that series' key is only
+ * {american, growth}, so the misspelled `american` IS one of its tokens while
+ * the right series (`GROWTH FUND OF AMERICA`) needs `america`, which the
+ * filing never types. Nothing in the matcher can see the difference; the
+ * string is wrong, so the string is repaired.
+ *
+ * THE TEST IS A POSITIVE VOCABULARY OF WHAT MAY FOLLOW, never a blocklist of
+ * entity names. The American Funds forms end the entity at `America` and are
+ * followed by nothing, a share class, or a vehicle word; a real entity
+ * continues with a proper noun, and all four in the store do — `of American
+ * Airlines, Inc.`, `of American United Life Insurance Company`, `of American
+ * Trust Company`, `Best of American Fixed`. A blocklist would have to name
+ * every entity that could ever follow; this names the handful of things that
+ * may.
+ *
+ * UNDER-REPAIR IS THE SAFE DIRECTION AND IT IS TAKEN: `Mutual of American
+ * Small Cap Growth Fund` is genuinely Mutual of America misspelled, and is
+ * refused here because `Small` continues like a name. Those rows are typed
+ * `Pooled separate account`, which the merge's own gate excludes anyway. */
+const OF_AMERICAN = /\bof American\b(?=\s*$|\s*[-–,]|\s+(?:fund|funds|class|cl|shares?|r\b|r\s*-?\s*\d|[a-f]\d?\b|return\b))/i;
+export function repairFiledName(s) {
+  const t = String(s || "");
+  return OF_AMERICAN.test(t) ? t.replace(OF_AMERICAN, "of America") : null;
+}
+
 export function resolveHolding(idx, filedName, issuer) {
+  /* The repair is asked FIRST, and only when the vocabulary above fires. Once
+   * it has, the filed string is established as a misspelling, so an answer it
+   * resolves to is an answer to a name no fund has — which is how the two
+   * flips below were being published as fact. It can still only improve: when
+   * the repaired name resolves to nothing, the faithful path runs unchanged
+   * and nothing is withdrawn. Measured whole-store: 15 rows gained a ticker,
+   * 2 moved off `American Funds Growth Portfolio` onto the Growth Fund of
+   * America class the filing states, 0 lost, and nothing outside the phrase
+   * moved. The DISPLAYED name is untouched — only the lookup is repaired,
+   * exactly as `repairHouse` does for `Vangaurd` on the display side.
+   *
+   * The repaired name gets the WHOLE faithful path, issuer cell included — a
+   * first draft only re-asked `resolve`, which is inert, because the issuer
+   * branch is where `Bond Fund of American R6` [iss American Funds] is
+   * decided. */
+  const fixed = repairFiledName(filedName);
+  if (fixed) {
+    const r = resolveFaithful(idx, fixed, issuer);
+    if (r) return r;
+  }
+  return resolveFaithful(idx, filedName, issuer);
+}
+
+function resolveFaithful(idx, filedName, issuer) {
   const direct = resolve(idx, filedName);
   if (direct) return direct;
   const iss = String(issuer || "").replace(/\*+/g, "").trim();
@@ -785,6 +839,29 @@ const SELFTEST_ISS = [
   ["Short Term Bond Fund Class R6", "Transamerica", "TASTX"],
   // the house-less registrant reached through the issuer cell instead
   ["International Growth and Income Fund R6", "American Funds", "RIGGX"],
+  /* `of American` — a FILED typo that names a different real fund. The first
+   * two were published as RGWGX / RGPCX, classes of `American Funds Growth
+   * Portfolio`; the rest had no ticker at all. The issuer-cell cases are here
+   * rather than in SELFTEST because the repaired name has to reach the whole
+   * caller rule, which a first draft did not. */
+  ["American Funds the Growth Fund of American Class R-6", "", "RGAGX"],
+  ["Growth Fund of American-R3", "American Funds", "RGACX"],
+  ["American Funds Bond Fund of American R6", "", "RBFGX"],
+  ["Bond Fund of American R6", "American Funds", "RBFGX"],
+  ["Income Fund of American R6", "", "RIDGX"],
+  ["American Growth Fund of American R4", "American Funds", "RGAEX"],
+  ["The Bond Fund of American R-6", "", "RBFGX"],
+  /* MUST REFUSE THE REPAIR — every one continues a real entity with a proper
+   * noun, which is the whole discriminator. `Best of American Fixed` is a
+   * genuine misspelling of Nationwide's `Best of America` and is refused
+   * anyway: under-repair is the safe direction. */
+  ["of American Airlines, Inc. and Affiliates, at fair value", "", "—"],
+  ["Group Annuity Contract of American United Life Insurance Company AUL Fixed Fund", "", "—"],
+  ["The Premier Trust Fund of American Trust Company", "", "—"],
+  ["Best of American Fixed", "", "—"],
+  ["Mutual of American Small Cap Growth Fund", "", "—"],
+  /* and the correct spelling must be untouched by any of it */
+  ["American Funds The Growth Fund of America R6", "", "RGAGX"],
 ];
 
 if (process.argv.includes("--selftest")) {
