@@ -251,6 +251,20 @@ try {
    * drifting: every case below is a real filed name from the store, plus the
    * three controls that must come back UNCHANGED. */
   const nameCases = [
+    /* THE TWO NOISE SCREENS, 2026-09-29. Added for the same reason as
+     * everything below: not one existing case reaches `bwNoise` or the two
+     * new furniture participles, so the twin would agree whether or not it
+     * carried them. All six must be KEPT WHOLE, and every one of them is a
+     * string the arm STRIPPED before this change — a share-count column, the
+     * OCR'd N/A column in two spellings, an OCR'd measurement basis, and two
+     * prose continuations that were publishing as holdings named after a
+     * relative pronoun. */
+    "Mutual Fund 99,566.045 shs",
+    "Mutual fund NIA NIA 233,946 dy",
+    "Mutual Fund nla nla nla 945",
+    "Investments measure at NAV",
+    "Mutual Fund that invests at least 80% of",
+    "Mutual Fund investing in the domestic",
     /* 2026-09-29, added for the reason every previous cycle's were: not one
      * case above reaches the `investments` caption or the initial guard, so
      * the twin would agree whether or not it carried them. */
@@ -531,6 +545,24 @@ try {
     ["Stable Value Fund (Group Annuity Contract), at contract value", "Stable Value Fund (Group Annuity Contract), at contract value"],
     ["Stable Value Fund Class 25 - I", "Stable Value Fund Class 25 - I"],
     ["Stable Value Fund Standard Insurance Company", "Stable Value Fund Standard Insurance Company"],
+    /* the two noise screens, 2026-09-29 — each of these was STRIPPED before
+     * the change and must now be kept whole. The first two are what the
+     * four-token floor had been standing in front of without being a screen
+     * about either shape; the last two were live on the page as holdings
+     * named after a relative pronoun. */
+    ["Mutual Fund 99,566.045 shs", "Mutual Fund 99,566.045 shs"],
+    ["Mutual fund NIA NIA 233,946 dy", "Mutual fund NIA NIA 233,946 dy"],
+    ["Mutual Fund nla nla nla 945", "Mutual Fund nla nla nla 945"],
+    ["Investments measure at NAV", "Investments measure at NAV"],
+    ["Mutual Fund that invests at least 80% of", "Mutual Fund that invests at least 80% of"],
+    ["Mutual Fund investing in the domestic", "Mutual Fund investing in the domestic"],
+    /* and the screens must not reach a real name. The seven-digit lead is
+     * the case that DISCRIMINATES (`code` already refuses six or fewer); the
+     * four-digit VINTAGE beside it is pinned because my first draft of this
+     * screen was written believing it was at risk, and it never was. */
+    ["Registered Investment Company Vanguard Institutional Index Fund", "Vanguard Institutional Index Fund"],
+    ["Mutual Fund 1234567 Retirement Trust Select", "Mutual Fund 1234567 Retirement Trust Select"],
+    ["Mutual Fund 2045 Retirement Trust Select", "Mutual Fund 2045 Retirement Trust Select"],
     /* BACKTRACKING. `Common/Collective Trust Funds (Continued) …` matched the
      * arm's optional `(?: funds?)?`, failed the `(?=[A-Za-z0-9])` lookahead on
      * `(`, and the engine gave the optional group back — satisfying the anchor

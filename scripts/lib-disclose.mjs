@@ -516,13 +516,48 @@ export function cleanFiledName(name) {
    * `Index Fund invested in stocks included in the S&P 500` was being cut to
    * `invested in stocks…` until `invested` joined the furniture — a control
    * written last cycle caught this cycle's draft, which is what controls are
-   * for. 2,369 rows / 237 plans / 305,540 ppl, +10 tickers, 0 lost. */
+   * for. 2,369 rows / 237 plans / 305,540 ppl, +10 tickers, 0 lost.
+   *
+   * THE FLOOR WAS MEASURED ON 2026-09-29 AND DELIBERATELY NOT MOVED. Every
+   * remainder it refuses was read — 474 rows / 223 plans / 460,163 ppl — and
+   * the read says three different things at the three lengths:
+   *
+   *   ONE token — all 32 distinct read, NOT ONE publishable. Bare houses
+   *     (`Putnam`, `Dreyfus`, `Metlife`), bare designations (`Admiral`,
+   *     `Investor`, `MMF-R3`), OCR mush (`ial`, `e7igi8`, `baie`) and asset
+   *     words (`Equity`, `Guaranteed`). The floor is simply right here.
+   *   TWO tokens — about half junk, and the junk is not a family that can be
+   *     screened: `Sch N`, `Select S`, `Prudential GA-`, `Brought Forward`,
+   *     `CTF A` sit beside `MFS Utilities`, `Fidelity Contrafund` and
+   *     `Vanguard 500`. Left refused.
+   *   THREE tokens — 237 distinct, overwhelmingly real fund names, and the
+   *     junk is five NAMED families rather than a spectrum, which is what
+   *     makes the level shippable at all.
+   *
+   * Four of those five families are now screened anyway, because they also
+   * occur ABOVE the floor where the arm already ships: `bwNoise` for the
+   * share-count and N/A-column families, and `measure`/`that`/`investing` in
+   * the furniture. Those screens are this cycle's actual shipped work and
+   * they are worth more than the floor drop would have been, because they
+   * repair rows readers see TODAY.
+   *
+   * WHAT BLOCKS THE FIFTH FAMILY IS A PINNED CONTROL FROM THE PREVIOUS
+   * CYCLE, and it is the reason the level did not move: the draft stripped
+   * `Stable Value Fund Standard Insurance Company` to a bare ISSUER, which
+   * the tether below pins as a must-KEEP. About eight rows do that
+   * (`Investments T. Rowe Price`, `Mutual funds DODGE & COX`), and they feed
+   * the bare-house-as-a-holding class this project already has open. No
+   * clean screen exists for it: a corporate suffix cannot tell `Standard
+   * Insurance Company` from `Fidelity Growth Company`, which is a real fund.
+   * So the three-token level stays refused until that class is settled, and
+   * the ~248 real fund names sitting in it stay unreached. Named, not
+   * waved at. */
   /* ONE remainder screen, asked by both the bare-whitespace arm and the
    * parenthetical arm below. A second copy of a shipped predicate has
    * produced a wrong answer on this record at least four times, so the two
    * arms share this rather than each carrying their own. */
   const bwOpensWithAName = (t0) => {
-    const furniture = /^(?:class(?:es)?|cl|fee|fees|series|ser|shares?|sh|units?|tier|lot|level|at|of|in|on|for|and|or|as|to|with|per|net|the|a|an|value|values|fair|contract|market|cost|book|nav|bps|no|not|required|omitted|available|na|none|total|subtotal|held|directed|participant|participants|self|various|other|misc|continued|cont|certified|uncertified|approx|approximate|number|amount|wrapper|cit|gac|invested|issued|managed|measured|valued|using|consisting|comprised|including|investments|funds?|trusts?|accounts?|compan(?:y|ies)|portfolios?)$/i;
+    const furniture = /^(?:class(?:es)?|cl|fee|fees|series|ser|shares?|sh|units?|tier|lot|level|at|of|in|on|for|and|or|as|to|with|per|net|the|a|an|value|values|fair|contract|market|cost|book|nav|bps|no|not|required|omitted|available|na|none|total|subtotal|held|directed|participant|participants|self|various|other|misc|continued|cont|certified|uncertified|approx|approximate|number|amount|wrapper|cit|gac|invested|issued|managed|measured|measure|valued|using|that|investing|consisting|comprised|including|investments|funds?|trusts?|accounts?|compan(?:y|ies)|portfolios?)$/i;
     const code = /^(?:[ivxl]{1,4}|[a-z]|[a-z]?\d{1,6}[a-z]?|[a-z]{1,2}\d{1,4}|\d+bps)$/i;
     return !!t0 && !furniture.test(t0) && !code.test(t0);
   };
@@ -537,6 +572,31 @@ export function cleanFiledName(name) {
    * a single letter followed by a full stop is an initial, and a filed share
    * class is never written that way (`Class A`, never `A.`). */
   const bwInitial = (raw) => /^[A-Za-z]\.$/.test(raw);
+  /* TWO THINGS THE t0 SCREEN STRUCTURALLY CANNOT SEE, 2026-09-29, both found
+   * by measuring what the four-token floor was refusing rather than by
+   * reading a page.
+   *
+   * A SHARE COUNT is not a name. `bwOpensWithAName`'s `code` arm caps at six
+   * digits, so `Mutual Fund 99,566.045 shs` strips to the eight-digit
+   * `99566045` and passes — a share-COUNT column read as a holding name.
+   *
+   * A CONTROL I WROTE FOR THIS WAS DECORATIVE, and running it is what said
+   * so. I pinned `Mutual Fund 2045 Retirement Trust Select` as must-be-
+   * unchanged, expecting a bare `is this numeric` test to eat a target-date
+   * VINTAGE — the trap the leading-count strip a hundred lines below already
+   * carries a comment about, recording that its own draft "took 13,000
+   * vintage-led rows with it". It cannot happen here: `code` refuses any
+   * lead of six digits or fewer BEFORE this screen is reached, so `2045` was
+   * already refused and the pin asserted a behaviour the change never
+   * touched. The narrowing it prompted was therefore reverted as redundant,
+   * and the pin moved to the case that actually discriminates — a SEVEN
+   * digit lead, which `code`'s cap lets through and this catches.
+   *
+   * `NIA` / `nla` is OCR of the `N/A` column, never part of a fund name —
+   * `Pooled separate accounts NIA NIA qQ`. Anchored per token so a real name
+   * containing the letters cannot be reached. */
+  const bwNoise = (toks) =>
+    /^[\d.,]+$/.test(toks[0]) || toks.some((t) => /^n[il]a$/i.test(t.replace(/[^A-Za-z]/g, "")));
   /* `investments` PLURAL ONLY, and the singular is the whole reason this is
    * spelled out rather than written `investments?`. Measured 2026-09-29 over
    * the whole caption bucket: allowing the bare singular `investment` would
@@ -552,7 +612,7 @@ export function cleanFiledName(name) {
     const rest = s.slice(bm[0].length).trim();
     const toks = rest.split(/\s+/);
     const t0 = toks[0].replace(/[^A-Za-z0-9&]/g, "");
-    if (toks.length >= 4 && (bwOpensWithAName(t0) || bwInitial(toks[0]))
+    if (toks.length >= 4 && !bwNoise(toks) && (bwOpensWithAName(t0) || bwInitial(toks[0]))
         && !bwTYPE.test(rest) && /[A-Za-z]{3}/.test(rest)) s = rest;
   }
   /* THE LEADING-PARENTHETICAL FAMILY, 2026-09-28. All 125 distinct members
