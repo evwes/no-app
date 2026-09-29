@@ -925,6 +925,46 @@ export, do not copy the line.
   agent and that was VERIFIED, not assumed: plans array byte-identical, 0 of
   68,767 status entries changed, `data/lineups/**` untouched** — only
   `generated` differs. Branch, main and local level at `8522c450`.
+- **QUEUED, SIZED, SAFE, NOT SHIPPED — A TRUNCATED WORD IS NOT A SURVIVING FUND
+  NAME: 13 rows / 13 plans / 70,205 participants / $39,532,590.** Found by the
+  17:0x draw (seed 20260929170) on **Aimbridge Parent (53,606 ppl)**, whose
+  25-row menu is otherwise immaculate and publishes `with varying maturity dates
+  through August 2034, bearing interest at 4.25% to 9.50% per an` at $6,206,114.
+  **The guard exists and its RESIDUE TEST is what lets these through:**
+  `isLoanDescriptionRow` requires `loanDescriptionResidue(s).length === 0`, and
+  that condition is load-bearing — it is what keeps Griswold's pinned Principal
+  GIC. **The residue is not a name; it is a loan word cut mid-token by the
+  column width.** All thirteen distinct residues read: `mat` `thr` `dat` `matu`
+  `Bear` `balan` `partic` `Ap` `Col` `bear` `par` `matur` `rangi` — each a word
+  the guard already strips, arriving one truncation short of the regex that
+  would have removed it. Discriminator: **a surviving token that is a proper
+  PREFIX of a stripped word is that word, cut short.** Largest is Hyatt
+  Corporation (44,487 ppl, $27,202,834 typed `Collective trust`).
+  **THE OBVIOUS WIDER RULE WAS MEASURED AND REFUSED, AND THAT IS THE MORE
+  VALUABLE HALF.** This record's investment-contract rule — *strip the
+  designation, ask whether anything IDENTIFIABLE is left* — withdraws **146 rows
+  / 223,746 ppl** and is WRONG, because **`namesAFund` cannot see a wrap
+  contract, by design, exactly as `fundTickerInfo` cannot name a CIT.** It would
+  have destroyed six genuine synthetic-GIC wrap contracts in a master trust
+  reaching 16,245 ppl — JP Morgan Chase / Prudential / Transamerica / Nationwide
+  / American General / State Street Global Wrap, **$220,384,728 of real assets**
+  — plus `MetLife, Contract #1071020`. *A predicate that is right for one class
+  is not thereby right for its neighbour.*
+  **AND THE FIRST SCREEN WAS A HARNESS ARTEFACT WHOSE SIZE WAS THE TELL:** a
+  broad `\bloans?\b` arm returned **2,174 rows / 6,090,255 ppl / $3.34B**,
+  dominated by REAL securities — `Freddie Mac Whole Loan Securities Trust`
+  (299,277 ppl), `VOLKSWAGEN AUTO LOAN ENHANCED TRUST`, `FEDERAL HOME LOAN BANK
+  OF BOSTON`. **Do not carry 2,174 or 6,090,255 forward.**
+  **SURFACE: the REPORT only** — 0 of 5,062 committed pages carry these strings,
+  and Hyatt/Churchill Downs/North Memorial all HAVE pages, so the rows sit below
+  the top-twelve cut. Risks pinned not rounded away: `bear` could be `Bear
+  Stearns` and `Col` `Columbia`; in this store neither is, and the rule is asked
+  only of rows already matching the loan-RANGE regex.
+  **Two further defects separated out, not to be folded back into one count:**
+  a REAL CONTRACT WEARING A LOAN CAPTION (8 rows / ~56,566 ppl / $272M, the
+  Global Wrap + MetLife + Cooper Health `Fidelity Management Trust Company`
+  family) and OCR-SPLIT LOAN WORDS (North Memorial, 8,260 ppl, `Notes recei va
+  bl e with interes t`). `docs/accuracy-log.md` 2026-09-29 (17:1xZ).
 - **OWNER'S CALL, SIZED, NOT SHIPPED — THE TICKER COLUMN REFUSES TO ASSERT R-6
   AND THE FEE COLUMN ASSERTS IT: 36,252 rows / 8,609 plans / 10,482,854
   participants / $60,701,413,608.** Found by the 16:1x draw on **DoorDash

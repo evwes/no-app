@@ -28101,3 +28101,97 @@ assumption that it is one. `site-test` #110 reads `conclusion: success` on
 `5ce3599c`; the follow-up `ecd2572f` was verified **comment-only** —
 `git diff 5ce3599c ecd2572f -- app.js` is empty — so that green covers every
 executable line that shipped.
+
+---
+
+## 2026-09-29 (17:1xZ) — a TRUNCATED WORD is not a surviving fund name: the loan-description guard's residue test, and the two defects hiding behind it
+
+**Found by the 17:0x participant-weighted draw**, seed 20260929170, which landed
+on **Aimbridge Parent, Inc (53,606 participants, $424,062,133)**. Its 25-row
+menu is otherwise immaculate — Fidelity index funds with exact tickers and
+fees, a full T. Rowe Price Retirement vintage ladder — and row 16 publishes
+`with varying maturity dates through August 2034, bearing interest at 4.25% to
+9.50% per an` at **$6,206,114**, typed blank. A participant-loan description
+line, published as a fund holding. The second draw (Cast & Crew, 1,306 ppl)
+carried the same shape under a filer typo: `Notes Receviable from participants,
+interest rates`.
+
+**THE GUARD EXISTS AND ITS RESIDUE TEST IS WHAT LETS THESE THROUGH.**
+`isLoanDescriptionRow` (2026-09-28) requires two things: the rate must be
+quoted as a RANGE, and `loanDescriptionResidue(s).length === 0` — **nothing may
+be left** once the loan vocabulary is stripped. That second condition is
+load-bearing and must not simply be relaxed: it is what keeps Griswold's
+`Interest Rate of 0.15% to 0.62% (Maturing in 2023) Principal`, a Principal GIC
+crediting rate pinned as a must-KEEP when `principal` was removed from the
+strip vocabulary for deleting a house name.
+
+**THE RESIDUE IS NOT A NAME. IT IS A LOAN WORD CUT MID-TOKEN BY THE FILING'S
+COLUMN WIDTH.** `loanDescriptionResidue` already drops tokens under two
+characters, so a three-letter stub survives and reads to the test as a
+surviving holding name. All thirteen distinct residues, every one read:
+
+    mat  thr  dat  matu  Bear  balan  partic  Ap  Col  bear  par  matur  rangi
+
+`mat`[urity], `thr`[ough], `dat`[es], `balan`[ces], `partic`[ipants],
+`rangi`[ng]. Not one is a name; each is a word the guard already strips,
+arriving one truncation short of the regex that would have removed it.
+
+**So the discriminator is structural and narrow: a surviving token that is a
+proper PREFIX of a word the guard already strips is that same word, cut short.**
+**13 rows / 13 plans / 70,205 participants / $39,532,590**, led by Hyatt
+Corporation (44,487 ppl, $27,202,834 typed `Collective trust`), Churchill Downs
+(8,531), Southern Nevada & California Glaziers (8,335).
+
+**THE OBVIOUS WIDER RULE WAS MEASURED AND REFUSED, AND THE REFUSAL IS THE MORE
+VALUABLE HALF.** The natural generalisation is this record's own
+investment-contract rule — *strip the designation, ask whether anything
+IDENTIFIABLE is left* — implemented as `namesAFund` (transcribed from app.js:959,
+`fundER(n) != null || !!fundTickerInfo(n)`). It withdraws **146 rows / 223,746
+participants**, and reading the list shows it is wrong, because **`namesAFund`
+cannot see a wrap contract, by design, exactly as `fundTickerInfo` cannot name a
+CIT.** It would have withdrawn six genuine synthetic-GIC wrap contracts from a
+master trust reaching 16,245 participants — `JP Morgan Chase Global Wrap`
+$49,140,544, `Prudential Insurance Co of America Global Wrap` $43,156,604,
+`Transamerica Premier Life` $37,521,547, `Nationwide Life` $34,927,615,
+`American General Life` $31,609,020, `State Street Bank and Trust Co`
+$24,029,398 — **$220,384,728 of real assets**, plus `MetLife, Contract
+#1071020`. A predicate that is right for one class is not thereby right for its
+neighbour; the test has to be asked of the thing that actually distinguishes
+them, and here that is truncation, not identifiability.
+
+**THE FIRST SCREEN WAS A HARNESS ARTEFACT AND ITS SIZE WAS THE TELL.** A broad
+`\bloans?\b` arm returned **2,174 rows / 2,017 plans / 6,090,255 participants /
+$3,335,291,280**, and its most frequent members are REAL securities: `Freddie
+Mac Whole Loan Securities Trust` (JPMorgan Chase, 299,277 ppl), `College Loan
+Corp Trust I` (Wells Fargo), `VOLKSWAGEN AUTO LOAN ENHANCED TRUST` (Boeing),
+`FEDERAL HOME LOAN BANK OF BOSTON` (Pentegra, $115,744,176), `Loan Collateral
+Fund`, `Plan Loan Default Fund`. **Do not carry 2,174 or 6,090,255 forward.**
+A word that appears in a loan description also appears in the name of every
+mortgage-backed security a plan holds.
+
+**SURFACE: the REPORT only, and the committed pages are what say so.** Grepping
+`p/` for the affected strings returns zero of 5,062 pages — and the pages for
+Hyatt, Churchill Downs and North Memorial all EXIST, so the rows are simply
+below the generator's top-twelve cut. That is the third distinct flavour of
+*the page is the artifact* this record carries (cf. JetBlue rank 22 of 26).
+
+**TWO RISKS NAMED RATHER THAN ROUNDED AWAY**, both from the stub vocabulary
+itself: a residue of `bear` could in principle be `Bear Stearns` truncated, and
+`Col` could be `Columbia`. In this store neither is — `Bear` comes from *"Bear
+interest at 5.0—9.50%"* and `Col` from *"Collateralized"* — and the rule is
+only ever asked of a row that has already matched the loan-RANGE regex, which
+no fund name does. Both belong in the tether as pinned controls.
+
+**QUEUED, SIZED, NOT SHIPPED** — the display predicates were held by another
+change in flight this hour. Two further defects were separated out and must not
+be folded back into one count:
+
+- **A REAL CONTRACT WEARING A LOAN CAPTION — 8 rows / 2 plans + 1 trust (2
+  members) / ~56,566 participants / $272M.** The six Global Wrap rows, `MetLife,
+  Contract #1071020 Collateral Loan …`, and Cooper Health's `Fidelity Management
+  Trust Company Varying maturity dates; interest rates ranging from 4.25`
+  ($8,935,206). The holding is real and its NAME has a rate caption welded on —
+  the caption-weld family, not the loan family.
+- **OCR-SPLIT LOAN WORDS — North Memorial Health Care (8,260 ppl, $5,519,000):**
+  `Notes recei va bl e with interes t`, residue `recei va bl interes`. No
+  vocabulary can reach a word broken into pieces; a de-spacing repair would.
