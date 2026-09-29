@@ -28375,3 +28375,97 @@ be folded back into one count:
   map itself rendering 352 dots and 9,592 plans in both runs. Stated rather than
   claimed green: it is an egress-proxy artefact here and says nothing either way
   about the change. Read the CI conclusion.
+
+---
+
+## 2026-09-29 (19:3xZ) — verification of the issuer-priced fee arm, and a collective trust priced as a mutual fund
+
+**VERIFIED INDEPENDENTLY BEFORE THE MIRROR, from a harness written off app.js
+source rather than from the agent's report. Every safety-critical figure
+reproduced exactly:** GAINED **59,521 rows**, **$171,674,834,061 to the
+dollar**, **CHANGED 0**, **LOST 1** — the same named row — and **0 of the
+59,521 gains come out at 0.35**, so the fabrication route this record has
+withdrawn cells for twice really is closed.
+
+**MY FIRST HARNESS COULD NOT HAVE SEEN THE LOSS, and that is the method note.**
+It loaded the NEW `fund-er.js` for both sides and compared `fundERFiled`
+against `fundERRow` — which measures the issuer arm alone. But the change also
+widens `AF_LOAD_CLASS`, and that edits `fundER` itself, so the only
+non-additive part of the whole change was invisible to the comparison meant to
+police it. Corrected by loading BOTH versions of the table. *A before/after
+harness is only as honest as its "before".*
+
+**THE NON-ADDITIVE PART WAS THEN TESTED EXACTLY AND CHEAPLY**, which is the
+better test and needed no sweep at all: over all **392,610 distinct published
+names**, exactly **ONE** resolves differently under the new table —
+`AMERICAN BALANCED FUND A-CLASS`, 0.28 → null — carried by exactly **one**
+published row, Pediatric Academic Association (555 participants, $56,787). So
+`LOST 1 / CHANGED 0` is confirmed at the name level, not merely counted.
+`AMERICA-CLASS` and `GROWTH FUND OF AMERICA-CLASS` were probed directly and
+both stay unmatched, and R-6 names keep their fee — the pinned control holds.
+
+**ONE NUMBER IS SHORT AND IT IS THE FAMILIAR ONE: 12,404,738 participants, not
+12,398,051.** Three flagged rows sit in MASTER TRUSTS, which have no row in
+`plans-all`, so a plan-keyed count cannot see the 4 member plans they reach.
+**Third time on this record** — the Permanente investment-contract row and the
+Willis Towers Watson comma — that *a participant count keyed on plans is blind
+to every master-trust row.* Direction is the safe one: the reach was
+understated.
+
+**AND THE SURFACE CLAIM IS STRONGER THAN THE ONE MADE FOR IT.** The commit
+establishes "report path only" with `git diff --stat p/` empty. It is
+structural: `scripts/build-seo-pages.mjs` **never imports `fund-er.js` at all**,
+so the crawlable pages cannot render a per-fund expense ratio under any input.
+An empty diff is an observation; an absent import is a guarantee.
+
+**A STALE MEASURED NUMBER IN A SHIPPED COMMENT, corrected here.** app.js read
+*"59,526 rows gained, 0 changed, 0 lost"* while the commit message and this log
+both read 59,521 / 0 / 1 — the figure from before the A-CLASS arm was added.
+Nothing was wrong with the code; the comment simply stopped being the number
+that shipped. **A measured number in a comment is a claim and has to be the
+number that shipped.**
+
+Gates re-run on the merged tree, not taken on report: `parser-gate` all
+specimens green including the frozen-predicate tether 7/7, `smoke-test` green
+across all six page shapes, `fund-er-test` 46 must-resolve / 26 must-not / 12
+must-blank-fee / 11 must-keep-fee, 0 failures.
+
+### QUEUED, SIZED, NOT SHIPPED — a collective trust priced as a mutual fund
+
+**Found by the 19:0x participant-weighted draw** (seed 20260929191) on
+**American Woodmark Corporation (7,727 ppl)**, whose menu is otherwise
+immaculate: eleven `Vanguard Target Retirement … Trust II` rows, ten typed
+`Collective trust` and priced at nothing, and **one — `Vanguard Target
+Retirement 2050 Trust II`, type cell BLANK — publishing 0.045**. The same
+holding, the same filed name, the same fund family, priced on one row and not
+on the other ten, purely because one type cell is empty.
+
+`noPublicPrice` reads the TYPE cell (`f.cit` or a type matching
+`collective trust|pooled separate`) and never the NAME, so a row whose own
+filed name states a collective-trust unit class escapes it whenever the type
+cell is blank or wrongly says `Mutual fund`.
+
+**Sized whole-store through app.js's full `er` expression: 396 rows / 129 plans
++ 4 master trusts (9 members) / 653,154 participants / $6,947,802,798**, type
+blank on 257 and `Mutual fund` on 132.
+
+**THE COUNT THAT MATTERS IS SMALLER AND THE SPLIT IS THE FINDING: 182 of the
+396 publish a LABELLED comparable** (`star`, the 2026-09-21 demotion working as
+designed — an honest "comparable fund" marker), and only **214 publish an
+unlabelled retail mutual-fund fee** as though the plan held the retail share
+class. A Trust II unit class is normally CHEAPER than the retail fund the
+ticker names, so the published number is wrong in the direction that flatters.
+
+**AND 8 OF THE 328 DISTINCT NAMES ARE FALSE POSITIVES OF MY OWN SCREEN, read
+and named rather than rounded away:** `MFS Series Trust II - MFS Growth Fund`,
+`JPMorgan Trust II - JPMorgan U.S. Government Money Market Fund`, `Funds Series
+Trust I - Columbia Contrarian Core Fund` and five more — **a registrant's
+series trust is not a collective-trust unit class**, and those are real
+registered funds correctly priced. So the reader-facing class is ~205 rows, not
+396. *A vehicle word in a fund's name is not always a vehicle.*
+
+**The control is what says the site already knows this:** **28,950 rows /
+$318,059,621,621** carry the same name shape WITH a collective-trust type and
+are correctly unpriced. The rule is already right; it is asked of the wrong
+cell. Display-side, on the annuity/investment-contract pattern — ask the NAME
+as well as the TYPE — and the labelled-comparable half must be left alone.

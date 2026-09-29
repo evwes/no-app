@@ -1083,8 +1083,14 @@
    *
    * STRICTLY ADDITIVE BY CONSTRUCTION: the issuer arm runs only once the bare
    * name has returned null, so a row that publishes a fee today publishes the
-   * identical fee after. Measured whole-store before shipping — 59,526 rows
-   * gained, 0 changed, 0 lost.
+   * identical fee after. Measured whole-store before shipping — 59,521 rows
+   * gained, 0 changed, 1 lost, and the one loss is not this arm at all: it is
+   * the separate AF_LOAD_CLASS widening in fund-er.js, which withdraws exactly
+   * one published cell (`AMERICAN BALANCED FUND A-CLASS`, 555 participants).
+   * Replicated independently 2026-09-29: 59,521 rows and $171,674,834,061 to
+   * the dollar, 0 gains at 0.35. This comment carried 59,526 / 0 lost, the
+   * figure from before the A-CLASS arm was added — a measured number in a
+   * comment has to be the number that shipped.
    *
    * The rule, its three gates and the whole safety argument live in
    * scripts/lib-disclose.mjs; this is the generated twin's call site. It takes
