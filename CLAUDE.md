@@ -819,7 +819,46 @@ export, do not copy the line.
   9 rows → 5, still confident — and **the merge's own `rows-dropped` check caught
   it unprompted** (`warn` 608 → 609). `dl` 129 → 131.
   `docs/accuracy-log.md` 2026-09-29 (00:2xZ).
-- **IN FLIGHT: #497, dispatched 2026-09-29 01:2xZ on `20cfa79`, observed queued.
+- **#497 PASSED ITS PRE-REGISTERED TEST TO THE ROW** (`conclusion: success`,
+  data commit `14aef95`): `sec tickers` **338,478 rows across 37,035 plans**,
+  exactly predicted; coverage line holds (confident 60,103, HIGH 4, overshoot
+  325, dl 131); **0 `of American` rows still carry a Growth Portfolio ticker**.
+  Tallies reconcile exactly — RGAGX 570→574, RBFGX 543→555, RIDGX 169→171,
+  RGACX 80→81, RGAEX 90→91 = +20, less 5 flipped = **+15 net**, as predicted.
+  **MIRRORED 2026-09-29 02:2xZ (`c54247d → 14aef95`), UNFORCED ON BOTH
+  CHECKS**, data gate +0 / −0.
+  **A CHECK LINE I WROTE WAS THE WRONG TEST:** it asserted store-wide `RGWGX 0`
+  and read 85 — but plans genuinely hold that fund, so the count must be
+  nonzero. *A whole-store count of a ticker is not a test of a name-specific
+  fix.*
+- **LIVE AND QUEUED — A MAGNET SERIES KEY: 57 rows / 30,965 ppl are SHOWN a
+  Growth Portfolio ticker for a filing naming a different fund.** All 102 rows
+  carrying RGWGX/RGPCX reach readers through `stk` (`fund-er.js` answers none).
+  Read name by name: **45 rows say `Growth Portfolio` and are correct**; 39 /
+  20,428 ppl say `Growth Fund` (The Growth Fund of America — one row,
+  `Fund; Class R-6 American Funds Growth Fund of`, keeps the `of`); 9 / 4,851
+  say `Growth and Income`; 3 / 2,858 say `EUPAC Growth` (RERGX); 6 ambiguous.
+  **MECHANISM:** `portfolio` sits in `NOISE`, dropped from both sides, so the
+  series `American Funds Growth Portfolio` has the key **`{american, growth}`**
+  — a house token plus an asset word and nothing else, which every American
+  Funds growth-ish name is a superset of.
+  **TWENTY-SECOND HARNESS INSTANCE: I named the wrong constant.** I reported it
+  as `STRUCTURAL`, patched that set, and the whole-store diff returned **0 rows
+  changed** — a control failing to fail. `STRUCTURAL` is read only by
+  `managerPhrase`/`anonDistinct` and **builds no key**; `NOISE` does.
+  **THE OBVIOUS FIX IS DEAD, MEASURED: removing `portfolio` from `NOISE` costs
+  5,901 correct rows / 5,830,477 ppl / 1,196 names** — Dimensional registers
+  `U.S. Targeted Value Portfolio` and filings write `DFA US Targeted Value I`,
+  so the whole DFA family withdraws (DFFVX 640, DFREX 477, DFIVX 216 …) against
+  180 gained. **`portfolio` must stay in `NOISE`** — the exact mirror of that
+  list's own comment on why `series` must stay OUT.
+  **CANDIDATE RULE, stated so it is tested not re-derived:** where a series key
+  is built only from a house token and asset words, require the NOISE words to
+  AGREE. `…Growth Portfolio R6` agrees and is kept; `…Growth Fund R6` conflicts
+  and is refused; DFA's key `us targeted value` is distinctive so the check is
+  never asked. Not shipped — it needs its own whole-store diff, selftest cases
+  and negative control. `docs/accuracy-log.md` 2026-09-29 (02:2xZ).
+- **PREVIOUSLY IN FLIGHT: #497, dispatched 2026-09-29 01:2xZ on `20cfa79`.
   NO PARSER BUMP — it exists only to let the MERGE rewrite `stk`.** A filed
   `of American` is a typo that names a DIFFERENT REAL FUND: `American Funds The
   Growth Fund of American R6` resolved EXACTLY to **RGWGX**, a class of

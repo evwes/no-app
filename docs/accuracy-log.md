@@ -26042,3 +26042,72 @@ returns a confident wrong row rather than nothing.
 
 So the reportable number is the one family verified ticker by ticker, and the
 8,684 and 6,894 figures must not be carried forward as anything.
+
+## 2026-09-29 (02:2xZ) — #497 verdict, and a magnet series key: 57 rows are shown a different American Funds fund
+
+**#497 PASSED ITS PRE-REGISTERED TEST TO THE ROW** (`conclusion: success`, data
+commit `14aef95`): `sec tickers` **338,478 rows across 37,035 plans**, exactly
+predicted, and the coverage line holds — confident **60,103**, HIGH **4**,
+overshoot **325**, dl 131. All six named rows carry their predicted tickers
+(RGAGX, RGACX, RBFGX ×2, RIDGX, RGAEX), and **0 `of American` rows still carry
+a Growth Portfolio ticker**. The ticker tallies reconcile exactly: RGAGX
+570→574, RBFGX 543→555, RIDGX 169→171, RGACX 80→81, RGAEX 90→91 = +20 gained,
+less the 5 flipped off RGWGX/RGPCX = **+15 net**, the predicted figure.
+**MIRRORED 02:2xZ (`c54247d → 14aef95`), UNFORCED ON BOTH CHECKS**, data gate
++0 / −0.
+
+**A CHECK LINE I WROTE WAS ITSELF THE WRONG TEST.** My verdict script asserted
+"RGWGX 0 and RGPCX 0" and they read 85 and 17. That is not a miss: plans
+genuinely hold `American Funds Growth Portfolio`, so a store-wide count of its
+ticker must be nonzero. The test that means anything is *does any `of American`
+row still carry it*, and that is 0. **A whole-store count of a ticker is not a
+test of a name-specific fix.**
+
+**AND CHASING THE 102 REMAINING ROWS FOUND A LARGER, LIVE DEFECT: 57 rows /
+30,965 participants are SHOWN a Growth Portfolio ticker for a filing that names
+a different fund.** All 102 reach readers through `stk` — `fund-er.js` answers
+none of them. Read name by name, not counted:
+
+| rows | ppl | the filing says | the answer is |
+|---|---|---|---|
+| 45 | 24,247 | `Growth Portfolio` | **correct** |
+| 39 | 20,428 | `Growth Fund` | almost certainly The Growth Fund of America |
+| 9 | 4,851 | `Growth and Income` | a different Portfolio Series fund |
+| 3 | 2,858 | `EUPAC Growth` | EuroPacific Growth Fund (RERGX) |
+| 6 | 2,828 | bare `Growth` | genuinely ambiguous |
+
+One row settles the `Growth Fund` reading on its own: `Fund; Class R-6 American
+Funds Growth Fund of` — the truncation preserves the `of`.
+
+**THE MECHANISM IS A MAGNET KEY.** `portfolio` is in `NOISE`, dropped from both
+sides before comparison, so the series `American Funds Growth Portfolio` has
+the key **`{american, growth}`** — a house token and an asset word, and nothing
+else. Every American Funds growth-ish holding name is a superset of it.
+
+**I NAMED THE WRONG CONSTANT FIRST, AND THE PROBE CAUGHT IT — twenty-second
+harness instance.** I reported the mechanism as `portfolio` being in
+`STRUCTURAL`, patched that set, and the whole-store diff came back **0 rows
+changed**: a control failing to fail. `STRUCTURAL` is read only by
+`managerPhrase` and `anonDistinct` and **builds no key at all**; `NOISE` does.
+The substance of the diagnosis was right and the variable was wrong, which no
+count could have told me — only running the experiment and getting zero.
+
+**THE OBVIOUS FIX IS DEAD, MEASURED: removing `portfolio` from `NOISE` costs
+5,901 correct rows / 5,830,477 participants / 1,196 names.** Dimensional
+registers its series as `U.S. Targeted Value Portfolio`, `Real Estate
+Securities Portfolio`, and filings write `DFA US Targeted Value I` with no such
+word — so the whole DFA family is withdrawn (DFFVX 640 rows, DFREX 477, DFIVX
+216, DFSTX 227 …), against 180 gained and 5 flipped. **`portfolio` must stay in
+`NOISE`**, which is the exact mirror of the note already in that list's comment
+explaining why `series` must stay OUT of it. One vocabulary, two words, opposite
+answers, and only measurement separates them.
+
+**QUEUED, with the candidate rule stated so it can be tested rather than
+re-derived:** the discriminator is not the word but the AGREEMENT. Where a
+series key is not distinctive — built only from a house token and asset words —
+require the NOISE words to AGREE between filed name and series. `American Funds
+Growth Portfolio R6` agrees (`portfolio` on both sides) and is kept; `American
+Funds Growth Fund R6` conflicts (`fund` vs `portfolio`) and is refused; DFA's
+key `us targeted value` is distinctive, so the check is never asked and the
+5,901 rows are untouched. Not shipped: it is a second matcher change in one
+hour and it needs its own whole-store diff, selftest cases and negative control.
