@@ -938,12 +938,38 @@ export, do not copy the line.
   so the whole DFA family withdraws (DFFVX 640, DFREX 477, DFIVX 216 …) against
   180 gained. **`portfolio` must stay in `NOISE`** — the exact mirror of that
   list's own comment on why `series` must stay OUT.
-  **CANDIDATE RULE, stated so it is tested not re-derived:** where a series key
-  is built only from a house token and asset words, require the NOISE words to
-  AGREE. `…Growth Portfolio R6` agrees and is kept; `…Growth Fund R6` conflicts
-  and is refused; DFA's key `us targeted value` is distinctive so the check is
-  never asked. Not shipped — it needs its own whole-store diff, selftest cases
-  and negative control. `docs/accuracy-log.md` 2026-09-29 (02:2xZ).
+  **SHIPPED 2026-09-29 04:5xZ, `[skip ci]` behind #500 — AND THE CANDIDATE RULE
+  THIS BULLET USED TO STATE WAS WRONG.** It said *"require the NOISE words to
+  AGREE"*; that is draft (2) below and the whole-store diff killed it.
+  **71 rows / 71 plans / 52,172 ppl stop being SHOWN a Growth Portfolio ticker
+  as fact**, 0 gained, 0 flipped, 0 correct answers withdrawn. `fund-er.js`
+  answers **0 of 71**, so every one genuinely reaches a reader; the diff's 110
+  changed rows are 71 at the surface because the 39 asterisked ones were never
+  stored. **The queued figure of 57 / 30,965 was too SMALL** — it counted
+  RGWGX/RGPCX and the class also reaches readers through RGWEX and RGWFX.
+  **TWO DRAFTS DIED ON THE SAME FAMILY, the one that killed the `portfolio`
+  fix a cycle earlier:** (1) *key = house tokens + asset words* withdrew
+  **2,510 rows / 2.68M ppl**, because `mgrKeys` holds `managerPhrase(series)`
+  and `U.S. Targeted Value Portfolio` yields `us targeted`, covering two thirds
+  of its own key; (2) the vehicle-noun test alone still withdrew **992 / 1.17M**
+  — **Dimensional registers every series as a `Portfolio` and filings write
+  `Fund` or nothing**, so `DFA Global Equity I` is a correct answer whose
+  registrant just uses the other word.
+  **The discriminator is what the key still SAYS once the filed name's house is
+  removed:** `global equity` keeps TWO asset words and two asset words name a
+  product; `american growth` keeps ONE, and one asset word cannot choose among
+  the dozens of growth funds a house registers. The vehicle noun is asked only
+  there. `fidelity balanced` keeps one too and is untouched — Fidelity's series
+  is a `Fund` and so is the filing.
+  **A PIN I WROTE WAS DECORATIVE AND THE CONTROL SAID SO:** `Growth Fund R6`
+  with an empty issuer refuses anyway and never reaches the new rule; the store
+  row carries `iss = "American Funds"`. **The control went 6 of 7 → 8 of 8 on
+  that correction alone.** `--selftest` **100/100**, 16 new cases; negative
+  control **8 of 8 must-change, 8 of 8 must-keep**.
+  **PRE-REGISTERED: `sec tickers: 346,703 rows across 37,086 plans`** against a
+  harness reproducing the current line at **346,774 / 37,090 exactly**;
+  CONFIDENCE DIFF +0 / −0; coverage line otherwise byte-identical.
+  `docs/accuracy-log.md` 2026-09-29 (02:2xZ, 04:5xZ).
 - **PREVIOUSLY IN FLIGHT: #497, dispatched 2026-09-29 01:2xZ on `20cfa79`.
   NO PARSER BUMP — it exists only to let the MERGE rewrite `stk`.** A filed
   `of American` is a typo that names a DIFFERENT REAL FUND: `American Funds The

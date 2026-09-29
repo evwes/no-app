@@ -26315,3 +26315,104 @@ predicate MISSES 5 of 5 must-flag and HOLDS 6 of 6 must-keep**; the browser
 twin's probes go **27 → 34**, added for exactly the reason v190's were — not
 one existing probe reaches this arm, so the twin would have agreed whether or
 not it carried the change. `parser-gate.mjs` all specimens green.
+
+## 2026-09-29 (04:5xZ) — a MAGNET SERIES KEY: one asset word cannot name a fund within a house
+
+**71 rows / 71 plans / 52,172 participants stop being SHOWN a Growth Portfolio
+ticker as fact for a filing that names a different fund.** 0 gained, 0 flipped,
+0 correct answers withdrawn. Queued on 2026-09-29 (02:2xZ) with a candidate
+rule stated but untested; this is that rule, tested, and it is **not** the rule
+that was stated.
+
+**The defect.** `AMERICAN FUNDS PORTFOLIO SERIES :: American Funds Growth
+Portfolio` keeps only `{american, growth}` once NOISE is dropped — a house word
+and an asset word — so every American Funds growth-ish filed name is a
+token-superset of it. `American Funds Growth Fund R6` (26 rows) got RGWGX, the
+Portfolio, where the filing names The Growth Fund of America; `AF GRTH & INC
+R6` and `American Funds Growth and Inc Class R-6` got it for Growth AND INCOME;
+`American Funds EUPAC Growth R6` got it for EuroPacific; and **`JPMORGAN GRWTH
+ADV FUND SELECT CLASS af` got an American Funds ticker outright.** Not one of
+the 71 filed names says `Portfolio`.
+
+**Measured through the function the page calls.** `lookupTicker` asks
+`fund-er.js` first and `f.stk` LAST, and on this class **fund-er answers 0 of
+71**, so every one genuinely reaches a reader. The merge stores only
+non-`comparable` answers, which is why the whole-store diff's **110** changed
+rows are **71** at the surface: the 39 asterisked ones (GWPAX\*, JAHJX\*) were
+never stored and never shown. Two independent measurements agree to the row —
+the reader-side count and the merge-tally diff both say 71.
+
+**AND THE NUMBER THIS ITEM WAS FILED UNDER WAS TOO SMALL, in the opposite
+direction from the last two times.** The queue said *"57 rows / 30,965 ppl"*,
+counted over RGWGX/RGPCX alone; the class also reaches readers through RGWEX
+and RGWFX, and the honest figure is 71 / 52,172. An under-count is still a
+wrong count, and the fix is the same one: enumerate the answers the class
+produces rather than the two that were noticed first.
+
+**THREE GATES WERE WRITTEN AND THE WHOLE-STORE DIFF KILLED THE FIRST TWO.**
+Both casualty lists were the same family — the one that killed the obvious fix
+a cycle earlier:
+
+1. *"the key is house tokens plus asset words"* — **2,510 rows / 2.68M
+   participant-weighted withdrawn.** `mgrKeys` holds `managerPhrase(series)`
+   as well as the registrant's, and a series' own phrase is built from its own
+   leading words: `U.S. Targeted Value Portfolio` yields `us targeted`, which
+   covered two thirds of its own key and made DFA a magnet.
+2. the vehicle-noun test on its own, however the house tokens are built —
+   **992 rows / 1.17M still withdrawn, because DIMENSIONAL REGISTERS EVERY
+   SERIES AS A `Portfolio` AND FILINGS WRITE `Fund` OR NOTHING.** `DFA Global
+   Equity I` and `DFA International Small Company Fund` are correct answers
+   whose registrant simply uses the other word.
+
+**So the vehicle noun is not the discriminator, and the candidate rule as
+queued — "require the NOISE words to AGREE" — is exactly draft (2) and is
+wrong.** What separates the two cases is how much the key still SAYS once the
+house the filing names is removed: `global equity` and `international small`
+keep TWO asset words, and two asset words name a product; `american growth`
+keeps ONE, and one asset word cannot choose between the dozens of growth funds
+a house registers. The registrant's own vehicle noun is asked ONLY there —
+where it is the last evidence there is rather than a preference between two
+readings. `fidelity balanced` also keeps one and is untouched, because Fidelity
+registers that series as a `Fund` and the filing says `Fund` too.
+
+It **filters** the bucket rather than refusing it: `american growth` holds John
+Hancock's `American Growth Trust` beside American Funds' `Growth Portfolio`,
+and a filed name stating `Trust` should reach the first and not the second.
+
+**`portfolio` STAYS IN NOISE** and the comment now says why where the next
+reader will stand: taking it out costs 5,901 correct rows / 5,830,477
+participant-weighted / 1,196 names — the exact mirror of that list's own note
+on why `series` must stay out of it.
+
+**A PINNED CASE I WROTE WAS DECORATIVE AND THE NEGATIVE CONTROL SAID SO.**
+`Growth Fund R6` pinned with an empty issuer refuses on its own and never
+reaches the new rule — it would have passed before and after, the same
+decorative-control failure this record has now caught twice in three cycles.
+The store's row carries `iss = "American Funds"`, which supplies the house and
+makes it resolve; the pin now carries it. **The control went from 6 of 7 to 8
+of 8 on that correction alone** — which is the whole reason a negative control
+is run against the new table rather than the old one.
+
+**`--selftest` 100/100**, 16 new cases: 8 must-REFUSE and 8 must-KEEP, the
+keeps being the two Growth Portfolio classes, four DFA names, `Fidelity
+Balanced Fund Class K` and `American Funds Growth and Income Portfolio R6`.
+**Negative control: the pre-change file fails by name on 8 of 8 must-change and
+holds 8 of 8 must-keep.**
+
+**Pre-registered for the next merge: `sec tickers: 346,703 rows across 37,086
+plans`** (−71 rows, −4 plans), against a harness that reproduces the CURRENT
+line at **346,774 / 37,090 exactly** — the number #499's verdict read out of
+the run log. CONFIDENCE DIFF +0 / −0; coverage line otherwise byte-identical
+(confident 60,103, HIGH 4, overshoot 325). **No parser bump**; committed
+`[skip ci]` because #500 is in flight, and verified afterwards that #500 was
+still `in_progress` on `037e00e`.
+
+**Residue named, not rounded away.** `American Growth Portfolio CL R6` (1 row /
+9,401 ppl) now resolves to nothing: it states `Portfolio`, so the filter keeps
+the American Funds classes, but the filing names no house the gate accepts
+(`american growth` is John Hancock's registrant-derived manager, not American
+Funds'), so the manager gate refuses. It was publishing JAHJX\* before — a John
+Hancock variable-insurance series, comparable and therefore never stored — so
+no reader loses anything. `Fund; Class R-6 American Funds Growth Fund of`
+(1 row / 484 ppl) is withdrawn rather than corrected to RGAGX; the string keeps
+the dangling `of`, and repairing it is a different change.
