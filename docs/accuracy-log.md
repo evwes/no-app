@@ -27242,3 +27242,110 @@ wrapped loan description. It renders as *"Participant loans — not a menu
 choice"*, because that exact string is a pinned must-suppress case in
 `smoke-test.mjs`'s `descCases`. A stored row that still looks wrong is not a
 published row that is wrong; the display rule got there first.
+
+---
+
+## 2026-09-29 (11:2xZ) — verdict, mirror, and the shipped count corrected 144 → 146
+
+**MIRRORED `82de7561 → f567c558`, DATA GATE UNFORCED +0 / −0.** `--force`
+covered the GIT check alone over main's one cron commit, evidence first: **0
+acks, 0 plans, 0 newer pv, 0 confident on main the branch lacks, plans array
+byte-identical** — only the `generated` timestamp differed.
+**#505 ran `success`** (data commit `a50ab3f`); store complete at pv 192 /
+99.81%, coverage line byte-identical, HIGH **4 = the baseline**.
+
+### The fee withdrawal is correct, and its published number was 2 short
+
+`annuityFeeIsGuaranteeOnly` suppresses the estimated **0.35%** on a holding the
+filing names as an annuity contract and nothing else. The discriminator is
+structural and deliberately NOT the `er === 0.35` proxy that sized the class:
+**remove the words the fee table prices a guarantee on, and ask the same table
+again** — if the fee disappears, only the guarantee was ever pricing the row.
+A rule keyed on a magic constant stops working in silence the day that constant
+moves.
+
+**THE COUNT IS 146 rows / 139 plans / 318,640 participants / $2,410,183,731,
+not the 144 / 137 / 318,197 the commit states.** Found by replicating app.js's
+FULL `er` expression independently and refusing to accept a near-match: my pass
+returned 146 twice, once with hand-rolled suppressors and again after aligning
+every one of them to app.js's actual definitions (`stockRow` reads type **plus
+name**; `subtotalRow` is anchored `^subtotal \(not a holding\)$`; `annuityRow`
+takes the RAW name). Diffing the two name lists gave three names, one a
+curly-quote artefact of my own dump and **two real: `Stable Value Fund - Group
+Annuity Contract Empower Annuity Insurance Company of America` and its `- Key`
+sibling.** Both were then checked in the store: **type BLANK, no `cit`**, so
+`gicRow` and `noPublicPrice` never fired, `fundER` prices them at 0.35, and the
+shipped predicate answers `true` on both. **They change.**
+Direction of the error is the safe one — the change withdraws two more invented
+fees than claimed, every withdrawal is from 0.35, and **0 flagged rows have a
+name that does not say "annuity contract"** — so nothing was mis-shipped, only
+mis-counted. *"Close" is not a verification; diff the member lists.*
+
+### And the handoff figure I wrote was wrong in the other direction — 178
+
+I filed this item at **178 rows / 368,046 ppl**. That reproduces exactly, and it
+is a harness figure: it tested the **RAW** stored name where the page prices the
+**cleaned** one (2 rows), and it ignored **`noPublicPrice`** — 34 rows / 33
+plans / 52,905 ppl typed `Pooled separate account` or `Collective trust`, which
+the page has never priced at all. **Third consecutive cycle in which a fee or
+ticker class was filed at the wrong size because the measurement stopped one
+function short of the render**, and the second time in one day for me
+specifically. The rule is on this record three times and keeps being the one I
+skip: *measure through the function the page calls, all the way to the cell.*
+
+**The gate is priced, not assumed:** removing it would withdraw **14,630 further
+fee cells / 8,240 plans / 17,239,191 ppl / $192.0B**, including `Fidelity VIP
+Contrafund Portfolio` and the whole Target Retirement family. Class B survives
+structurally rather than by luck — for all 20 must-keep names the strip is a
+**NO-OP**, because they carry no guarantee word for it to remove.
+Independently re-run: `parser-gate` green, full `smoke-test` green,
+`git diff --stat p/` **empty** — the REPORT path only.
+
+### Queued from this cycle, none shipped
+
+- **AN INVESTMENT CONTRACT TYPED `Mutual fund`: 223 rows / 220 plans /
+  330,533 participants / $1,447,476,149.** This morning's annuity-type shape one
+  legal noun along, and **larger in participants than the annuity fix itself.**
+- **THE PARTY-IN-INTEREST MARKER WELDS TWO REAL HOLDINGS INTO ONE: 61 rows /
+  48 plans / 97,408 ppl** — `PIMCO REAL RETURN FUND CLASS A * 55 PIMCO TOTAL
+  RETURN FUND CLASS A`. One fund vanishes from each menu. The v100/Amgen family;
+  parser-side, needs a bump.
+- **Residue this fee fix deliberately leaves, named not rounded: 215 rows / 205
+  plans / 270,270 ppl / $895M** say ANNUITY but never the phrase "annuity
+  contract" (including `Guaranteed Annuity Ccontract`, a typo no anchored phrase
+  reaches). NOT uniform — `Voya … BlackRock Strategic Global Bond K` sits in it,
+  so it cannot be swept. A second band of 6,930 rows / 11.3M ppl is mostly
+  legitimate stable-value estimates and **must not be read as a defect count.**
+
+### The fund-identification gap, sized honestly across three attempts
+
+**139,910 rows / 28,693 plans / 38,745,363 participants** carry a filed name
+stating BOTH a house AND a share class, typed a registered mutual fund by the
+filing itself, and resolve to **nothing**. Dominated by the **R6 institutional
+class** — `MFS Mid Cap Value R6` 606 rows, `PGIM Total Return Bond R6` 409,
+`MFS Mid Cap Growth R6` 401, `Putnam Large Cap Value R6` 357, `PGIM High Yield
+R6` 305, `BLACKROCK TOTAL RETURN K` 244 — plus the already-queued American Funds
+target-date vintages.
+
+**THE CAUSE IS DIAGNOSED AND IT IS NOT WHAT I GUESSED.** I expected these in the
+SEC index's `comparable` half, which this record already gates. They are not:
+**seven of eight probe names return `null` outright.** Nor is the index missing
+them — `MFS Mid Cap Value Fund` is present with **nine share classes**. So it is
+a **MATCHER gap, not a data gap**, which is what makes it actionable.
+Live risk found in the same probe: `Putnam Large Cap Value R6` **does** resolve,
+to **PEYAX — the Class A ticker** — via `superset+ambiguous`, for a filing that
+says R6. That is the wrong-share-class shape this record forbids carrying a fee.
+**NEW COVERAGE, not a defect** (the cell is blank, which is honest), so it is
+the owner's call and was not started.
+
+**THREE OF MY OWN NUMBERS ON THE WAY WERE HARNESS ARTEFACTS, all caught by
+implausibility.** (1) An "abbreviation" class at 98,115 rows / **45.5M ppl** —
+over half the universe — because my token list held `MFS`, `AF` and `NT`, which
+are full house names. (2) A whole-store "63.9% of rows have no ticker", true but
+**not a defect measure**: the top entries by participant weight are
+`Self-Directed Brokerage Account` (21.3M), `Putnam Stable Value Fund`,
+`Russell 1000 Index Non-Lendable Fund`, `GQG Partners International Equity CIT
+Fund` — brokerage windows, master trusts and CITs, which have **no ticker by
+design**. (3) An index-coverage probe reporting **`entries: 0`** because my
+accessor tried `classes`/`rows`/`data` and the file's key is `funds`.
+*A zero, a round number and an implausibly large number all report on the query.*
