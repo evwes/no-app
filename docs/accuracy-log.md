@@ -25857,3 +25857,39 @@ path. This is piece (2) of the queue the 18:0xZ entry opened, finished.
   (`Vanguard Retirement Savings Trust II`, `Great Gray Trust`, `T. Rowe Price
   Retirement 2035 Trust`, `Fidelity Freedom Index 2030 Trust`).
   `parser-gate.mjs` green on all specimens including the frozen tether.
+
+## 2026-09-29 (00:2xZ) — #496 verdict: v190's guard works, and the class size I published was a STORED-entry count
+- **The store is complete:** pv 190 covers 68,634 of 68,767 (99.81%), one
+  dominant pv plus the documented ~190-row tail.
+- **PASSED, exactly as pre-registered:** `audit-generic-names` **212 → 213**
+  (predicted 213, and that prediction was measured rather than estimated);
+  `audit-dominant-row` **0**.
+- **DID NOT LAND, and the cause is my premise rather than the guard:**
+  `confident` was pre-registered to fall by up to 5 and is **60,103, unchanged**.
+  The five named plans read **`c=0`, `pv=190`, no `fb`** — the guard fired and
+  they are not published. They were **already non-confident at v189**, so there
+  was never anything to withdraw.
+- **AND THAT EXPOSES A NUMBER I PUBLISHED TO MYSELF LAST CYCLE.** The class was
+  recorded as **58 rows / 53 plans / 1,528,497 participant-weighted / $67.8B**.
+  That pool gated on `funds.length >= 3` and **never on `c`** — so it counted
+  STORED lineup entries, most of which no reader ever sees. **A stored lineup
+  entry is not a published one.** Re-measured on published (`c=1`) plans only:
+  **16 plans / 392,657 ppl at v189 → 15 / 390,005 at v190.** The people figure
+  was overstated by ~3.9x. EIGHTEENTH instance of a measurement reporting on
+  the harness, and the first where the harness error was a missing JOIN rather
+  than a bad predicate.
+- **What actually reached readers is the DISPLAY half, not the withdrawal.**
+  FedEx (177,265 ppl) was the motivating case and its `Master Trust` row is
+  2.7% of the menu — far under the 90% floor, so it was never a withdrawal
+  candidate and should not have been. What v190 does for those readers is TYPE
+  the row as naming no fund, which needed the browser twin regenerated (done
+  this cycle) and the crawlable pages rebuilt (done by #496's merge).
+- **One plan left the published class: Akin Gump Strauss Hauer & Feld (2,652
+  ppl)** — it stayed confident and went **9 rows → 5**, and the merge's own
+  `rows-dropped` check caught it (`warn` 608 → 609). That is the third blind
+  spot's guard working unprompted on a change I did not predict.
+- `dl` 129 → 131, the bucket growing by two withdrawn filings.
+- **The lesson to carry: size a reader-facing class through the PUBLICATION
+  gate.** Every population count in this project that is meant to describe
+  readers must join `lineups-status`'s `c` flag, exactly as "measure through
+  the display path" requires for names and values.

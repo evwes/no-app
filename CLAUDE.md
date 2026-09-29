@@ -801,8 +801,40 @@ export, do not copy the line.
   `resolveHolding`), 45/45; the pre-change file fails by name on 5 of the 32
   and the old caller pattern fails on the BlackRock row.
   `docs/accuracy-log.md` 2026-09-28 (19:4xZ).
-- **IN FLIGHT: #496 (v190), dispatched 2026-09-28 23:1xZ on `fe983e8`, observed
-  queued — a FULL re-parse on the version bump.** **A BARE TRUST DESIGNATION IS
+- **#496 (v190) RAN `success` AND THE VERDICT CORRECTS MY OWN HEADLINE.** Store
+  complete: pv 190 at 99.81%. **PASSED exactly: `audit-generic-names` 212 → 213**
+  (the number was measured, not estimated) and **`audit-dominant-row` 0**.
+  **DID NOT LAND: `confident` −5.** It is 60,103, unchanged — and the cause is
+  my PREMISE, not the guard: the five named plans read **`c=0`, `pv=190`, no
+  `fb`**, so the guard fired and they were **already non-confident at v189**.
+  **THE CLASS SIZE I PUBLISHED WAS A STORED-ENTRY COUNT.** "58 rows / 53 plans /
+  1,528,497 ppl / $67.8B" gated on `funds.length >= 3` and **never on `c`**.
+  Published-only: **16 plans / 392,657 ppl → 15 / 390,005**. Overstated ~3.9x on
+  people. **A stored lineup entry is not a published one** — size a reader-facing
+  class through the PUBLICATION gate. Eighteenth harness instance, the first
+  caused by a missing JOIN rather than a bad predicate.
+  **What reached readers is the DISPLAY half:** FedEx's row is 2.7% of its menu,
+  never a withdrawal candidate, and what v190 gives those 177,265 readers is the
+  row TYPED as naming no fund. One plan left the class — Akin Gump (2,652 ppl),
+  9 rows → 5, still confident — and **the merge's own `rows-dropped` check caught
+  it unprompted** (`warn` 608 → 609). `dl` 129 → 131.
+  `docs/accuracy-log.md` 2026-09-29 (00:2xZ).
+- **SHIPPED 2026-09-29 00:1xZ — v190's display half, and the tether would not
+  have caught the drift.** app.js's generated twin of `isGenericTypeName` still
+  carried the PRE-v190 pattern (`build-seo-pages.mjs` imports the predicate live,
+  so only the REPORT path was stale — the two-display-paths split again).
+  Regenerated from the compiled source. **NOT ONE of the generator's 16 probe
+  names reached the new arm**, so the twin agreed whether or not it carried v190
+  — v189's failure one version later. Eleven probes added (five must-FLAG, six
+  must-KEEP including both v189 pins and four real trust-NAMED funds), 16 → 27.
+  **MY FIRST NEGATIVE CONTROL MEASURED MY OWN HARNESS:** I reverted the twin and
+  then called `gen-generic-twin.mjs --check` before probing — there is no
+  `--check` mode, so it simply REGENERATED the twin and found no drift. Re-run
+  without that step: **5 of 7 probes drift by name**, both must-keeps agree.
+  **Seventeenth harness instance, and the first where the harness step silently
+  repaired the very thing it was meant to detect.** Full smoke test green.
+- **PREVIOUSLY IN FLIGHT: #496 (v190), dispatched 2026-09-28 23:1xZ on `fe983e8`
+  — a FULL re-parse on the version bump.** **A BARE TRUST DESIGNATION IS
   NOT A FUND NAME: 58 rows / 53 plans / 1,528,497 ppl-weighted / $67.8B**
   publish a holding named only `Master Trust`, `Trust`, `Interest in Master
   Trust` or `Plan interest in master trust`. **Found by the participant-weighted
