@@ -831,12 +831,66 @@ export, do not copy the line.
   computed against the store it would actually RUN on and landed exactly, on
   both the plan count and the row count. *State a store-dependent prediction
   against the store the run will read.*
+- **MIRRORED 2026-09-29 12:5xZ (`ceaad14a → c755a7c2`), UNFORCED ON BOTH
+  CHECKS**, data gate +0 / −0. **AN INVESTMENT CONTRACT IS NO LONGER TYPED
+  `Mutual fund`: 263 rows / 260 plans / $1,698,096,097**, and **89 rows / 89
+  plans / 104,327 ppl / $261,037,800 stop publishing a fabricated fee — all 89
+  at 0.35%**, the generic guarantee fallback. v192's shape one legal noun
+  along: the NAME is faithful and the TYPE is the claim, so no name-based guard
+  could ever have seen it. Report path only (`git diff --stat p/` empty over
+  all 5,000 pages, verified independently after regenerating).
+  **`insurance contract` SHIPPED WITH `investment contract` AS ONE RULE** — all
+  47 distinct insurance-contract names read, not one a registered fund —
+  because shipping only the phrase the item was filed under is v131's recorded
+  mistake. **The bare word `contract` was REFUSED on measurement:** 117 further
+  rows, all 103 distinct names read, overwhelmingly REAL FUNDS wearing a
+  caption (`at contract value Fidelity 500 Index`, `Contract MFS Value R6`) —
+  `contract value` is a measurement basis, not a vehicle.
+  **THE ESCAPE HATCH IS ON THE EVIDENCE:** 5 rows say `investment contract` AND
+  name a fund (DODIX 0.41%, RERGX 0.46%), where the contract words are a
+  caption our parse welded on and the `Mutual fund` type is TRUE. The
+  discriminator is the sibling rule's structure asked of IDENTITY rather than
+  price — strip the designation, ask whether anything identifiable is left.
+  **MY INDEPENDENT REPLICATION MATCHED THE FEE TO THE DOLLAR AND THE
+  PARTICIPANTS TO THE PERSON (89 / 89 / 104,327 / $261,037,800; 386,175) AND
+  CAME UP ONE ROW AND $568,463,522 SHORT — AND THE MISSING ROW IS THE
+  FINDING.** It is `Guranteed Investment Contracts` (the filer's typo) at
+  **$568,463,522 in THE PERMANENTE MEDICAL GROUP, INC. MASTER TRUST**, which
+  has **no row in `plans-all`**, so my plan-keyed scan dropped it and the
+  agent's did not. The agent's number was right and mine was short.
+  **BUT A TRUST ROW CARRIES NO PARTICIPANTS OF ITS OWN AND STILL REACHES
+  READERS THROUGH ITS MEMBER PLANS: 2 Permanente plans / 30,108 participants /
+  $10.09B**, none of them inside the 386,175. **True reader reach is 416,283,
+  not 386,175 — the headline understated it by 7.8%.** *A participant count
+  keyed on plans is blind to every master-trust row; size a trust-held class
+  through the trust's MEMBERS.* The dollar gap reconciled exactly
+  ($1,129,632,575 + $568,463,522), which is what made the one-row difference
+  findable — **"close" is not a verification; diff the member lists.**
+  **A HARNESS ERROR OF MINE EN ROUTE:** I wrote `namesAFund` with a
+  `/[A-Za-z]{3}/` precondition app.js does not have. It changed nothing here,
+  but app.js:959 is `fundER(n) != null || !!fundTickerInfo(n)` and the rule is
+  to transcribe, not approximate.
+  `docs/accuracy-log.md` 2026-09-29 (12:4xZ).
 - **MIRRORED 2026-09-29 12:1xZ (`f567c558 → ceaad14a`), UNFORCED ON BOTH
   CHECKS**, data gate +0 / −0, pv 192 at 99.8%. **#507 ran `success`** and its
   coverage line is byte-identical to #505's and #506's — confident 60,103, HIGH
   **4 = the baseline**, WARN 608, dl 131 — which is the pre-registered outcome
   for an incremental carrying a DISPLAY-only change whose whole work list is
   the dead 403s, not a stall.
+- **QUEUED, FOUND BY THE INVESTMENT-CONTRACT WORK, AND IT IS BOTH AN HONESTY
+  DEFECT AND A COVERAGE LOSS — A ROW TYPED `Company stock` WHOSE FILED NAME
+  NAMES A TARGET-DATE OR INDEX FUND: 79 rows / 14 plans / 111,072 participants
+  / $6,361,147,582.** Duke Energy (35,803 ppl) is **16 rows at 50.1% of an
+  $11.27B menu** — `Target Retirement Date Fund 2045`, `Non-US Equity Index
+  Fund`, `Fixed Income Blend Fund`, all typed employer stock. **`stockRow`
+  suppresses the ticker AND the fee**, so unlike the annuity and contract
+  items this one also costs readers a number they could have had. Same COLUMN
+  family as what shipped, one type-string along; store-side.
+- **ALSO FROM THAT DRAW, unsized:** Microsoft (183,509 ppl) publishes
+  `Participant-directed` at **8.6% / ~$6.7B** with a blank type; and
+  University of Maryland Medical System still shows `Fidelity Total Bond Fund
+  K6 → FTBFX` at 0.45% where the K6 fund is **FTKFX** — the wrong-share-class
+  shape this record has now recorded four times.
 - **QUEUED FROM THE 12:0xZ DRAW, SIZED, PRICED, CONTROLLED, NOT SHIPPED
   (held only because the `wam` agent held `lib-disclose.mjs` at the time) — A
   LEADING STRAY QUOTE IS STILL GLUED TO THE FRONT OF A FUND NAME: 229 rows /

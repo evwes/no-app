@@ -27551,3 +27551,52 @@ accessor tried `classes`/`rows`/`data` and the file's key is `funds`.
   PRE-CHANGE tree with `git stash`: **it fails identically there**, so it is
   the sandbox's egress and not this change. `parser-gate.mjs` all green,
   `smoke-test.mjs` green, `fund-er-test.mjs` 46 / 26 / 9 / 9 with 0 failures.
+
+## 2026-09-29 (12:4xZ) — verification of the investment-contract change, and a
+## participant count blind to master trusts
+
+The investment-contract retype (`c755a7c2`) was verified independently before
+the mirror rather than taken on report, as every shipped change on this project
+is. The replication matched the fee withdrawal **to the dollar** — 89 rows / 89
+plans / 104,327 participants / $261,037,800, every one at 0.35% and none at any
+other value — and matched the participant total **to the person** at 386,175.
+
+It came up **one row and $568,463,522 short** on the retype, and the missing row
+is worth more than the agreement.
+
+It is `Guranteed Investment Contracts` — the filer's own typo — at
+**$568,463,522 in THE PERMANENTE MEDICAL GROUP, INC. MASTER TRUST**. A master
+trust has **no row in `plans-all`**; it lives in `mtias.json`. My scan keyed its
+population on plan rows, so the trust's lineup was invisible to it. The agent's
+figure was right and mine was short, and the dollar gap reconciled exactly
+($1,129,632,575 + $568,463,522 = $1,698,096,097), which is the only reason a
+one-row difference was findable at all. **"Close" is not a verification; diff
+the member lists** — the rule earned three days ago, paying again.
+
+**THE DURABLE PART IS WHAT THE TRUST ROW DOES TO A PARTICIPANT COUNT.** A trust
+carries no participants of its own, so every trust-held row scores **zero** in a
+plan-keyed participant tally while reaching readers through the trust's member
+plans. This one reaches **2 plans / 30,108 participants / $10.09B** — The
+Permanente Medical Group's two salary deferral plans — and not one of those
+30,108 is inside the 386,175 the change was filed under. **True reader reach is
+416,283, an understatement of 7.8%.**
+
+*A participant count keyed on plans is blind to every master-trust row. Size a
+class that can be trust-held through the trust's MEMBERS, not through the acks
+that carry the rows.* This is the same family as the stored-entry-vs-published
+error of 2026-09-29 (00:2xZ) — a population defined by the wrong join — but in
+the opposite direction: that one overstated by counting rows no reader sees,
+this one understates by missing readers a row does reach.
+
+**A harness error of mine en route, caught and corrected before it mattered:** I
+wrote the injected `namesAFund` with a `/[A-Za-z]{3}/` precondition that app.js
+does not have. It changed no number here, but `app.js:959` is exactly
+`fundER(n) != null || !!fundTickerInfo(n)`, and the standing rule is to
+transcribe the function the page calls, not to approximate it. An approximation
+that happens to agree is still an approximation.
+
+**Controls re-run independently on the merged tree:** `parser-gate.mjs` all
+green including the frozen-predicate tether (7/7); `smoke-test.mjs` green across
+all six page shapes; `build-seo-pages.mjs` regenerated and `git diff --stat p/`
+**empty** over all 5,000 pages, which is what establishes this as a REPORT-path
+change rather than an assumption that it is one.
