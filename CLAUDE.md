@@ -831,6 +831,64 @@ export, do not copy the line.
   computed against the store it would actually RUN on and landed exactly, on
   both the plan count and the row count. *State a store-dependent prediction
   against the store the run will read.*
+- **MIRRORED 2026-09-29 12:1xZ (`f567c558 → ceaad14a`), UNFORCED ON BOTH
+  CHECKS**, data gate +0 / −0, pv 192 at 99.8%. **#507 ran `success`** and its
+  coverage line is byte-identical to #505's and #506's — confident 60,103, HIGH
+  **4 = the baseline**, WARN 608, dl 131 — which is the pre-registered outcome
+  for an incremental carrying a DISPLAY-only change whose whole work list is
+  the dead 403s, not a stall.
+- **QUEUED FROM THE 12:0xZ DRAW, SIZED, PRICED, CONTROLLED, NOT SHIPPED
+  (held only because the `wam` agent held `lib-disclose.mjs` at the time) — A
+  LEADING STRAY QUOTE IS STILL GLUED TO THE FRONT OF A FUND NAME: 229 rows /
+  143 plans / 138,737 participants / $474,878,302**, on BOTH display paths (6
+  crawlable pages / 61,185 ppl — JetBlue 28,485, FirstEnergy 16,802, Synovus
+  6,955). `‘Vanguard 500 Index Fund Admiral Shares`, `'VANGUARD EXPLORER ADM`,
+  `‘American Funds New Perspective R6`.
+  **THE ARM EXISTS AND ITS VOCABULARY IS THE HOLE — v188's diagnosis exactly,
+  and the evidence that it is an oversight rather than a decision is SEVEN
+  LINES ABOVE IT:** `cleanFiledName`'s LEADING-quote arm reads `[”“"]`, double
+  quotes only, while the TRAILING strip on the previous line already carries
+  the wider `[”“"'’‘™®©]`. One character class, one arm, and its own sibling
+  disagrees with it.
+  **THE STORE COUNT IS NOT THE READER COUNT AND THE GAP IS THE FINDING: 282
+  rows lead with stray punctuation in the store and 50 are ALREADY repaired**
+  (the arm catches the straight `"` and the curly LEFT double `“`), so what
+  reaches a reader is 232 — and the widening fixes 229 of them.
+  **EVERY ONE OF THE 205 DISTINCT TRANSFORMATIONS WAS READ and not one removes
+  anything but the quote**; `‘TIAA Access Lifecycle 2050 T'4` keeps its
+  INTERIOR apostrophe because the arm is anchored `^`, and
+  `‘Voya … Company ‘Vangrd Tot int Stk In F Adm` loses only the leading one.
+  **THE RESIDUE OF 4 IS THE PRE-EXISTING GUARDS WORKING, not a miss:** two are
+  balanced quoted terms (`"Brokerage" Account` — the FMC `Institutional "Plus"
+  Shares` control shape) and two leave a SINGLE word (`“RAX`, `‘Uncoln`),
+  which the arm's own ≥2-word floor refuses. No new guard is needed.
+  **OUTCOME TEST THROUGH `lookupTicker`'s REAL CALL ORDER: +1 ticker, −0, 0
+  flipped.** It is an HONESTY fix and not a coverage fix, and that is the
+  honest framing: `lookupTicker` tries the RAW name FIRST, and `fund-er.js`
+  matches through a leading quote on almost every row already.
+  **AND THE ONE GAIN IS CORRECT, after I nearly filed it as a fabrication
+  risk.** `‘Target 2060 Mutual Fund &` (American Security Mortgage, 177 ppl)
+  gains **VTTSX, exact, `comparable: false`** — because the row carries
+  `iss: "Vanguard"` and **the page PREPENDS the issuer**, so the string that
+  resolves is `Vanguard Target 2060 Mutual Fund &`.
+  **HARNESS INSTANCE, AND A NEW SHAPE OF IT: I hand-probed `fundTickerInfo`
+  WITHOUT the issuer prefix, got `null` on six forms, and believed the hand
+  probe over my own harness — which had included the issuer and was right.**
+  A name that looks house-less may be resolving through the identity column.
+  *A hand probe that contradicts your own harness is the more likely to be
+  wrong of the two.*
+- **ALSO FROM THE 12:0xZ DRAW, AND IT MUST NOT BE CARRIED FORWARD AS ONE
+  CLASS: a FORFEITURE account published as a menu holding, 133 rows / 132
+  plans / 302,996 ppl / $51,651,782, is AT LEAST THREE DEFECTS.** Reading the
+  105 distinct names: a bare forfeiture suspense account (`Forfeiture Account`,
+  `Forfeiture/Asset Holding Account` — real plan money, not a menu choice, so
+  v181's loan treatment: TYPE the row, never drop it); a REAL FUND holding the
+  forfeitures (`Galliard Stable Return Fund - Forfeiture Asset Holding Acct`,
+  `Putnam Stable Value Fund- Forfeitures Account`, `US Government Money Market
+  Fund - Forfeitures` — these must KEEP their identity and their fee); and
+  audit PROSE (`2024 and 2023, balance on forfeited nonvested accounts amount
+  to $14,175 and`). The "ONE count was several defects" rule, met again at
+  three — size each arm separately before any of it is worked.
 - **MIRRORED 2026-09-29 11:2xZ (`82de7561 → f567c558`), DATA GATE UNFORCED
   +0 / −0**; `--force` covered the GIT check alone over main's one cron commit,
   evidence first: 0 acks, 0 plans, 0 newer pv, 0 confident the branch lacks,
