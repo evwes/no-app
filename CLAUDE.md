@@ -877,6 +877,47 @@ export, do not copy the line.
   **4 = the baseline**, WARN 608, dl 131 — which is the pre-registered outcome
   for an incremental carrying a DISPLAY-only change whose whole work list is
   the dead 403s, not a stall.
+- **MIRRORED 2026-09-29 17:0xZ (`f153382b → ecd2572f`) — A TARGET-DATE FUND WAS
+  WEARING THE EMPLOYER'S TICKER: 184 rows / 62 plans / 355,635 participants /
+  $10,909,455,123.** `stockRow` does not merely suppress — **`app.js:2153` is
+  `const tk = stockRow ? (plan.ticker || null) : …`, so it PUBLISHES the
+  SPONSOR'S own stock symbol.** Duke Energy's 35,803 participants saw sixteen
+  pooled funds — nine target-date vintages, three index funds, four blend funds,
+  **$5,575,809,000 = 50.1% of the menu** — each tagged **DUK**. A wrong SYMBOL,
+  not a wrong label, which makes it materially worse than the queue entry it was
+  filed under (79 rows / 14 plans / 111,072 ppl — *a class size travels with the
+  predicate that produced it*).
+  **CAUSE READ IN THE FILING:** Duke's 4i prints under the filer's own headings
+  `Common Stock Funds` / `Institutional Funds` / `Commingled Funds`, and
+  `lib-4i` adopts a heading only when the heading itself classifies —
+  `Institutional Funds` names no vehicle, so `Common Stock Funds` stayed in
+  force over the whole block. **A section heading that names no known vehicle
+  does not reset the type.** Parser-side, recorded for a bump; the display half
+  shipped because the evidence to withdraw the claim is in the stored name+type.
+  **MY INDEPENDENT REPLICATION MATCHED EVERY HEADLINE EXACTLY** — 184 rows,
+  $10,909,455,123, 167 distinct names, 27 symbols withdrawn, 6 corrected
+  (HRB → VEXAX, CNX → VSMAX), 46 tickers gained, **102 ERs gained**, 9 fees
+  REFUSED as guarantee-only (which would have recreated the 0.35% withdrawn
+  from 89 rows the same morning), 0 rows flagged that were not stock rows.
+  **AND ONE NUMBER WAS SHORT: 62 plans / 355,635 ppl, not 61 / 353,959.** The
+  two flagged master trusts reach **FIVE** member plans, not three — and the
+  missed one is **`Willis Towers Watson Us, Llc` (1,676), which differs from
+  `Willis Towers Watson Us Llc` (25,967) BY A SINGLE COMMA.** Second time this
+  record has lost a plan to sponsor-name punctuation (cf. Alpha Source,
+  2026-09-27). Overlap checked, not assumed: 0 of the 5 is also directly
+  flagged, so the union is a plain sum. Direction is the safe one.
+  Gates re-run on the merged tree: parser-gate green, smoke-test green, **`git
+  diff --stat p/` empty** over all 5,000 pages (REPORT path only); `site-test`
+  #110 `success` on `5ce3599c`, and the follow-up `ecd2572f` verified
+  **comment-only** so that green covers every executable line shipped.
+  `docs/accuracy-log.md` 2026-09-29 (15:5xZ, 17:0xZ).
+- **QUEUED, SIZED, NOT SHIPPED — THE FORM 5500 COVER PAGE PUBLISHED AS A FUND
+  MENU: 41 rows / 31 published plans / 165,425 participants / $43,729,586.**
+  PNC Financial (79,485 ppl), Eastman Chemical (15,910), Vestis (14,063),
+  NBCUniversal (11,612 — its 9-row "menu" is a 96.9% trust pointer plus `This
+  form is required to be filed for employee benefit plans under sections` and
+  `Docusign Envelope ID: …`). `JUNK_NAME_RE`/`SKIP_ROW` already carry the family
+  and lack these phrases. Parser-side, needs a bump.
 - **#508 (cron, on MAIN) RAN `success`** (data `8522c450`): coverage line
   **byte-identical** — confident 60,103, HIGH **4 = the baseline**, WARN 608,
   overshoot 326, dl 131, pv 192 at 99.8%. Correct for a scheduled incremental

@@ -28056,3 +28056,48 @@ disagreeing on the same row.
   measurement was wrong; both transcriptions were.** The reason it matters here
   is that a comment is the next reader's evidence, and a number in a comment is
   asserted every time it is read.
+
+## 2026-09-29 (17:0xZ) — verification of the mistyped-stock change, and a
+## second plan lost to a comma
+
+Verified independently before the mirror rather than taken on report. **Every
+headline number reproduced exactly** from a harness written off app.js source:
+184 rows, 59 published entries, $10,909,455,123, 167 distinct names, **27
+sponsor symbols withdrawn, 6 corrected, 46 tickers gained, 102 expense ratios
+gained, 9 fees refused as guarantee-only**, and **0 rows flagged that were not
+`Company stock` rows before** — the out-of-scope control.
+
+**THE CENTRAL CLAIM WAS CHECKED IN THE SOURCE, not accepted.** `app.js:2153`
+reads `const tk = stockRow ? (plan.ticker || null) : …`. So when `stockRow`
+fires the ticker cell renders **the SPONSOR'S own stock symbol**, and the
+defect really is a wrong SYMBOL rather than an absent one. Duke Energy's
+sixteen pooled rows carried `DUK`. That is a materially stronger defect than
+the queue entry it was filed under, and the report's framing is correct.
+
+**ONE NUMBER IS SHORT AND THE CAUSE IS WORTH MORE THAN THE CORRECTION: 62 plans
+/ 355,635 participants, not 61 / 353,959.** The two flagged master trusts reach
+**five** member plans, not the three the report counted:
+
+- Bristol-Myers Squibb Company 34,900
+- Willis Towers Watson Us Llc 25,967
+- Bristol-Myers Squibb Puerto Rico, Inc. 1,937
+- **Willis Towers Watson Us, Llc 1,676  ← missed**
+- Bristol-Myers Squibb Company 288
+
+**The two Willis Towers Watson plans differ by a single comma.** That is the
+same shape as the 2026-09-27 Alpha Source selector error — *address a plan by a
+property it has, not by a name that another plan nearly shares* — and it is the
+second time this record has lost a plan to sponsor-name punctuation.
+
+**The overlap was checked rather than assumed:** 0 of the five trust members is
+also directly flagged, so the union is a plain sum and 355,635 is
+plan-distinct. Direction of the error is the safe one — the reach was
+understated, never overstated.
+
+**Gates re-run on the merged tree:** `parser-gate.mjs` green, `smoke-test.mjs`
+green, all 5,000 crawlable pages regenerated with **`git diff --stat p/`
+empty**, which is what establishes this as a REPORT-path change rather than an
+assumption that it is one. `site-test` #110 reads `conclusion: success` on
+`5ce3599c`; the follow-up `ecd2572f` was verified **comment-only** —
+`git diff 5ce3599c ecd2572f -- app.js` is empty — so that green covers every
+executable line that shipped.
