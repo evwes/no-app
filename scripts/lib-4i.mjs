@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 190;
+export const PARSER_VERSION = 191;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -268,7 +268,31 @@ export const GENERIC_TYPE_NAME = /^(?:total )?(?:registered investment compan(?:
  * settled by one vocabulary entry. Both BNSF and `Korn Ferry Master Trust` are
  * pinned controls and both stay kept, as do real trust-NAMED funds
  * (`Vanguard Retirement Savings Trust II`, `Great Gray Trust`). */
-const GENERIC_TYPE_ANY_EXTRA = "commingled (?:trust |investment )?funds?|pooled separate account funds?|(?:plan )?(?:interest in )?master trusts?(?: funds?)?|trusts?";
+/* v191: A WRAPPED SENTENCE'S TAIL IS NOT A FUND NAME. 22 published rows / 22
+ * plans / 95,237 participants / $666,362,991 carry a holding named only
+ * `statements` — the end of a phrase such as "…certified by the trustee's
+ * statements" or "Notes to financial statements", which took the value from
+ * its own line. Found by the participant-weighted draw on Avangrid
+ * Management (9,980 ppl), where it stands at 11.1% / $313,497,660 beside a
+ * `Mutual funds` row, in a menu whose ratio is 1.098.
+ *
+ * It is NOT an OCR artefact — only 6 of the 22 are OCR parses and sixteen
+ * come from clean text — and it is not a tail: SEVEN plans carry it at >=40%
+ * of their own menu, led by Pebble Beach Company at 74.0% / $144,220,775,
+ * and 21 of the 22 have a BLANK type column, so nothing on the page tells
+ * the reader it is not a fund.
+ *
+ * `audit-generic-names` could not see it because a sentence fragment is not
+ * a vehicle TYPE, which is the same by-construction blindness v190 recorded
+ * for a bare trust designation.
+ *
+ * ANCHORED `^…$`, so the twelve published names that merely CONTAIN the word
+ * are untouched — `(See Attached Statement)`, `Misstatements net of tax
+ * impact`, and the OCR-corrupted `Real Estatement Index Fund - Admiral`.
+ * The singular matches 0 rows in the store today and is included anyway,
+ * because no fund is named `Statement` either; it is pinned as a control
+ * rather than left to be tested by a store that cannot exercise it. */
+const GENERIC_TYPE_ANY_EXTRA = "commingled (?:trust |investment )?funds?|pooled separate account funds?|(?:plan )?(?:interest in )?master trusts?(?: funds?)?|trusts?|statements?";
 const GTA_PLURALISED = GENERIC_TYPE_NAME.source
   .replace("trust(?: fund| portfolio)?|collective trust fund|", "trusts?(?: funds?| portfolios?)?|collective trust funds?|");
 if (GTA_PLURALISED === GENERIC_TYPE_NAME.source) {
