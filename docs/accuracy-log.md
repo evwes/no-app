@@ -27694,3 +27694,76 @@ double-count of what is published.
 *A first word is not a signature.* The subtotal family this project already
 handles (`Subtotal (not a holding)`, v181) is identified structurally, and that
 remains the only sound route.
+
+## 2026-09-29 (15:5xZ) — the TICKER lookup gets the issuer prefix and the FEE
+## lookup never has. Sized, not shipped.
+
+Found by the 14:0x participant-weighted draw, from an asymmetry visible on the
+page rather than in any count. **TruGreen Limited Partnership (14,396 ppl)
+publishes a ticker on 17 of its 24 rows and an expense ratio on 3.** Cardinal
+Services (215 ppl) publishes **12 tickers and ZERO fees**, and every one of the
+twelve is a Vanguard target-date fund that resolved cleanly.
+
+**THE MECHANISM IS ONE ARGUMENT.** `lookupTicker` (app.js ~977) prepends the
+row's ISSUER on every attempt — `const hit = (iss ? fundTickerInfo(iss + n,
+f.type) : null) || fundTickerInfo(n, f.type)`. The fee is resolved four lines
+of logic later by **`fundERFiled(f.name)` — the cleaned name ALONE**. So a row
+whose house lives only in the identity column, which is the normal shape since
+v126 promoted issuer headers, resolves a ticker and publishes a blank fee.
+TruGreen's `Retirement 2030 Active Fund` [iss `T. Rowe Price`] is the type
+case: TRRCX renders, the fee cell is empty, and the only difference between the
+two lookups is that one string.
+
+**SIZED WHOLE-STORE through app.js's full `er` expression** — `gicRow`,
+`subtotalRow`, `stockRow`, `noPublicPrice`, `loanRow`, `annuityRow` and
+`annuityFeeIsGuaranteeOnly` all transcribed, so suppressed rows are excluded
+and the figure is what a reader would actually gain:
+
+- **WOULD GAIN A FEE: 80,955 rows / 12,197 plans / 17,888,184 participants /
+  $209,357,139,112.** Top issuers are ordinary houses — American Funds 24,847,
+  Vanguard 19,454, T. Rowe Price 6,671, Fidelity 5,828.
+- **WOULD CHANGE AN EXISTING FEE: 42,883 rows / 9,105 plans / 12,895,467
+  participants** — and on the samples read the prefixed answer looks MORE
+  correct, not less: `{Fidelity} 500 Index Fund` 0.03 → **0.015**,
+  `{Fidelity} Mid Cap Index Fund` 0.1 → **0.025**, `{Vanguard} Federal Money
+  Market Fund` 0.2 → **0.11**.
+
+**IT IS NOT SHIPPABLE AS A ONE-LINE CHANGE, and the reason is already on this
+record.** The issuer column often holds a TRUSTEE or a RECORDKEEPING PLATFORM
+rather than the fund's house, so prefixing it can price a competitor's fund at
+this platform's rate:
+
+- `{American Funds} American Century Small Cap Growth R6` → 0.4%
+- `{American Funds} Invesco Oppenheimer International Growth R6` → 0.4%
+- `{American Funds Plans} DODGE & COX GLOBAL BOND - I` → 0.4%
+- `{— The American Funds Group} Columbia Select Large Cap Value` → 0.4%
+- `{Dimensional Fund Advisors} Schwab Fundamental International` → 0.3%
+- `{T. Rowe Price Trust Company} MFS Mid Cap Value` → 0.65%
+
+**The discriminator already exists and is already shipped elsewhere:**
+`resolveHolding`'s rule of 2026-09-28 — *the issuer may ADD a manager and never
+REPLACE one.* The fee lookup needs the same gate, and it needs the American
+Funds share-class guard of 2026-09-28 to stay in force on the prefixed string.
+
+**THE TRUSTEE-SHAPED RISK IS SMALL AND MOSTLY BENIGN: 380 rows / 113 plans /
+257,547 ppl** of the gain set carry an issuer matching `trust company | bank |
+insurance | custodian`, and the bulk are the house's OWN trust company —
+`T. Rowe Price Trust Company` 130, `Vanguard Fiduciary Trust Company` 111,
+`Fidelity Management Trust Company` 27 — which resolve to the right family.
+
+**A HARNESS ERROR OF MINE, CAUGHT BY READING THE FLAGGED LIST.** My
+wrong-house screen returned **630 rows / 520 plans / 1,009,129 ppl**, and the
+single most frequent entry is `{Vanguard} Wellington Admiral Fund`. **Vanguard
+Wellington IS a Vanguard fund** — Wellington Management is its sub-adviser, and
+its name legitimately contains another firm's name. My `HOUSE` vocabulary read
+the sub-adviser as a competing house. **Do not carry 630 forward as the
+wrong-house population**; the genuine cases are the ones where the ISSUER is a
+platform or trustee name, not the ones where the NAME contains a sub-adviser.
+*A firm's name inside a fund's name is not always a second house.*
+
+**Why this is the largest reader-facing coverage item currently open, stated
+with its own caveat:** 17.9M participants would gain a fee cell that is blank
+today. But a fee on this project is SOURCED, never derived, and 42,883 changed
+numbers is a large claim — so the change-existing half needs verification per
+family before any of it ships, and the gain half needs the ADD-never-REPLACE
+gate first. Queued, not started.

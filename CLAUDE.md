@@ -877,6 +877,44 @@ export, do not copy the line.
   **4 = the baseline**, WARN 608, dl 131 — which is the pre-registered outcome
   for an incremental carrying a DISPLAY-only change whose whole work list is
   the dead 403s, not a stall.
+- **QUEUED AND IT IS THE LARGEST READER-FACING COVERAGE ITEM CURRENTLY OPEN —
+  THE TICKER LOOKUP GETS THE ISSUER PREFIX AND THE FEE LOOKUP NEVER HAS.**
+  `lookupTicker` prepends the row's ISSUER on every attempt; the fee is
+  `fundERFiled(f.name)` — **the cleaned name ALONE**. So a row whose house
+  lives only in the identity column (the normal shape since v126 promoted
+  issuer headers) resolves a ticker and publishes a BLANK fee. One argument.
+  **FOUND BY AN ASYMMETRY ON THE PAGE, not by any count:** the 14:0x draw's
+  TruGreen (14,396 ppl) publishes **17 tickers of 24 rows and 3 fees**;
+  Cardinal Services publishes **12 tickers and ZERO fees**, all twelve clean
+  Vanguard target-date funds. `Retirement 2030 Active Fund` [iss `T. Rowe
+  Price`] renders TRRCX beside an empty fee cell.
+  **SIZED WHOLE-STORE through app.js's FULL `er` expression** (every
+  suppressor transcribed, so this is what a reader would actually gain):
+  **WOULD GAIN A FEE — 80,955 rows / 12,197 plans / 17,888,184 participants /
+  $209,357,139,112**; **WOULD CHANGE AN EXISTING FEE — 42,883 rows / 9,105
+  plans / 12,895,467 ppl**, and on the samples read the prefixed answer is MORE
+  correct (`{Fidelity} 500 Index Fund` 0.03 → **0.015**, `{Vanguard} Federal
+  Money Market` 0.2 → **0.11**).
+  **NOT A ONE-LINE CHANGE, and the reason is already on this record:** the
+  issuer often holds a TRUSTEE or a RECORDKEEPING PLATFORM, so prefixing it
+  prices a competitor's fund at this platform's rate — `{American Funds}
+  American Century Small Cap Growth R6` → 0.4%, `{American Funds Plans} DODGE &
+  COX GLOBAL BOND - I` → 0.4%, `{Dimensional Fund Advisors} Schwab Fundamental
+  International` → 0.3%, `{T. Rowe Price Trust Company} MFS Mid Cap Value` →
+  0.65%. **The discriminator is already shipped elsewhere:** `resolveHolding`'s
+  2026-09-28 rule — *the issuer may ADD a manager and never REPLACE one* — plus
+  the American Funds share-class guard held in force on the prefixed string.
+  **Trustee-shaped risk is small and mostly benign: 380 rows / 113 plans /
+  257,547 ppl**, dominated by the house's OWN trust company (T. Rowe Price
+  Trust Company 130, Vanguard Fiduciary Trust Company 111).
+  **HARNESS ERROR, caught by reading the flagged list: my wrong-house screen
+  said 630 rows / 1,009,129 ppl and its most frequent entry is `{Vanguard}
+  Wellington Admiral Fund` — a REAL Vanguard fund whose name carries its
+  SUB-ADVISER.** Do not carry 630 forward. *A firm's name inside a fund's name
+  is not always a second house.*
+  **A fee here is SOURCED, never derived**, so the change-existing half needs
+  verification per family before any of it ships and the gain half needs the
+  ADD-never-REPLACE gate first. `docs/accuracy-log.md` 2026-09-29 (15:5xZ).
 - **QUEUED, FOUND BY THE INVESTMENT-CONTRACT WORK, AND IT IS BOTH AN HONESTY
   DEFECT AND A COVERAGE LOSS — A ROW TYPED `Company stock` WHOSE FILED NAME
   NAMES A TARGET-DATE OR INDEX FUND: 79 rows / 14 plans / 111,072 participants
