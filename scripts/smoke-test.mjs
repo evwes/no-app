@@ -213,7 +213,8 @@ try {
    * Run the BROWSER copy against the module's own boundary cases. */
   const { coverageBand, frozenClaimOk, cleanFiledName, isParticipantLoanRow, isLoanDescriptionRow,
     isAnnuityContractRow, annuityFeeIsGuaranteeOnly,
-    isInvestmentContractRow } = await import("./lib-disclose.mjs");
+    isInvestmentContractRow, isMistypedStockRow,
+    mistypedStockFeeIsGuaranteeOnly } = await import("./lib-disclose.mjs");
   const frozCases = [
     [true, "The Plan was terminated effective December 31, 2023.", "Capital Region Medical"],
     [true, "As amended on December 31, 2024, the Plan was frozen and all participants of the Plan became fully vested.", "Hanes Companies, Inc."],
@@ -704,6 +705,107 @@ try {
     if (!isInvestmentContractRow(r, r.name, namesAFund)) fail(`investment-contract rule no longer types a contract the filing names: ${JSON.stringify(r)}`);
   for (const r of contractCases.slice(7))
     if (isInvestmentContractRow(r, r.name, namesAFund)) fail(`investment-contract rule would retype a row it must leave alone: ${JSON.stringify(r)}`);
+
+  /* THE MISTYPED-EMPLOYER-STOCK PREDICATE, tethered the same way, 2026-09-29.
+   * It needed its OWN cases for the seventh cycle running: every case above is
+   * typed `Mutual fund` and this rule gates on `Company stock`, so not one of
+   * them reaches it and without these the twin would agree whether or not it
+   * carried the rule.
+   *
+   * THIRTEEN OF THE TWENTY-TWO MUST COME BACK FALSE, in three kinds, and that
+   * half is the entire safety argument:
+   *   - SEVEN are REAL employer stock whose name happens to carry a word that
+   *     also describes a portfolio. `JOHNSON CONTROLS INTERNATIONAL`,
+   *     `Oceaneering International, Inc.`, `Titan International, Inc.`,
+   *     `S&P GLOBAL INC`, `Dine Brands Global, Inc.`, `Freedom Bank Unitized
+   *     Stock` and Charles Schwab's own `Schwab 401(k) Equity Unit Fund` are
+   *     exactly why `equity`, `international`, `global`, `real estate`,
+   *     `value` and a bare `freedom` are NOT in the vocabulary. They are the
+   *     price of a wider list, sitting in the test.
+   *   - THREE say company/employer stock in the NAME, where the shipped name
+   *     arm of `stockRow` must go on deciding and this rule must stand aside —
+   *     which is what keeps `Fidelity Leveraged Company Stock Fund`, a real
+   *     registered fund, behaving exactly as it did.
+   *   - THREE are not typed employer stock at all, so the gate is shut.
+   *
+   * `EQ/Common Stock Index` is pinned on the FLAG side deliberately: it is
+   * Equitable's S&P 500 separate account, it says `Common Stock` and not
+   * `company stock`, and 24 published rows of it were tagged with their
+   * sponsor's symbol. */
+  const stockCases = [
+    /* must FLAG — a maturity vintage, a tracked index or an asset class */
+    { name: "Target Retirement Date Fund 2045", type: "Company stock" },
+    { name: "Non-US Equity Index Fund", type: "Company stock" },
+    { name: "Non-US Equity Blend Fund", type: "Company stock" },
+    { name: "US Equity Small/Midcap Index Fund", type: "Company stock" },
+    { name: "Fidelity Freedom 2040 Fund Class K", type: "Company stock" },
+    { name: "American Funds 2050 Target", type: "Company stock" },
+    { name: "Vanguard Total Bond Market Index Fund", type: "Company stock" },
+    { name: "NOV Stable Value Fund", type: "Company stock" },
+    { name: "EQ/Common Stock Index", type: "Employer security" },
+    /* must KEEP, from here down */
+    { name: "JOHNSON CONTROLS INTERNATIONAL", type: "Company stock" },
+    { name: "Freedom Bank Unitized Stock", type: "Company stock" },
+    { name: "Schwab 401(k) Equity Unit Fund", type: "Company stock" },
+    { name: "S&P GLOBAL INC", type: "Company stock" },
+    { name: "Dine Brands Global, Inc.", type: "Company stock" },
+    { name: "Oceaneering International, Inc.", type: "Company stock" },
+    { name: "Titan International, Inc.", type: "Company stock" },
+    { name: "Fidelity Leveraged Company Stock Fund", type: "Company stock" },
+    { name: "Marriott International, Inc. Common Stock Fund", type: "Company stock" },
+    { name: "Employer Security Knight Stock", type: "Company stock" },
+    { name: "Vanguard Target Retirement 2045 Fund", type: "Mutual fund" },
+    { name: "Fidelity 500 Index Fund", type: "" },
+    { name: "US Equity S&P 500 Index Fund", type: "Collective trust" },
+  ];
+  const stkGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoMistypedStockRow !== "function") return null;
+    return cs.map((r) => window.__wampoMistypedStockRow(r));
+  }, stockCases);
+  if (!stkGot) fail("app.js no longer exposes __wampoMistypedStockRow — the mistyped-employer-stock predicate cannot be cross-checked");
+  const stkDrift = stockCases.filter((r, i) => isMistypedStockRow(r, r.name) !== stkGot[i]);
+  if (stkDrift.length) {
+    for (const r of stkDrift) console.error(`  ${JSON.stringify(r)}  app.js=${stkGot[stockCases.indexOf(r)]}  module=${isMistypedStockRow(r, r.name)}`);
+    fail(`the mistyped-employer-stock rule in app.js disagrees with scripts/lib-disclose.mjs on ${stkDrift.length} of ${stockCases.length} rows — regenerate it`);
+  }
+  for (const r of stockCases.slice(0, 9))
+    if (!isMistypedStockRow(r, r.name)) fail(`mistyped-employer-stock rule no longer withdraws the claim from a pooled fund: ${JSON.stringify(r)}`);
+  for (const r of stockCases.slice(9))
+    if (isMistypedStockRow(r, r.name)) fail(`mistyped-employer-stock rule would withdraw a claim it must leave alone: ${JSON.stringify(r)}`);
+
+  /* ...and its FEE half, which is a separate function over the same rows and
+   * therefore needs separate cases: not one row above reaches it, because it
+   * reads no type at all. Seven of the thirteen must come back FALSE, and
+   * three of those carry a guarantee word AND still name a fund — that is
+   * where the cost of this rule being wrong lands, and all three are real
+   * published names rather than invented ones. */
+  const stockFeeCases = [
+    /* must SUPPRESS — the guarantee is the only thing that priced the row */
+    "NOV Stable Value Fund", "Lincoln Stable Value Fund",
+    "Principal Fixed Income Guaranteed Option", "Fixed Income Guarantee Option",
+    "Managed Income Portfolio", "Principal Stable Value Preferred Fund",
+    /* must KEEP — a guarantee word is present and the remainder names a fund */
+    "TRP BLUE CHIP GR T2 Stable value",
+    "Vanguard Total Bond Market Index Admiral 1TRSV-A T. Rowe Price Stable Value Common Trst A",
+    "PIMCO INCOME INSTL $35.42 GUARANTEED INCOME FUND",
+    /* must KEEP — no guarantee word at all, so the rule must be INERT */
+    "Vanguard 500 Index Admiral", "Fidelity 500 Index Fund",
+    "Vanguard Total Bond Market Index Fund", "Target Retirement Date Fund 2045",
+  ];
+  const stkFeeGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoMistypedStockGuaranteeFee !== "function") return null;
+    return cs.map((n) => window.__wampoMistypedStockGuaranteeFee(n));
+  }, stockFeeCases);
+  if (!stkFeeGot) fail("app.js no longer exposes __wampoMistypedStockGuaranteeFee — the mistyped-stock fee rule cannot be cross-checked");
+  const stkFeeDrift = stockFeeCases.filter((n, i) => mistypedStockFeeIsGuaranteeOnly(n, tableER) !== stkFeeGot[i]);
+  if (stkFeeDrift.length) {
+    for (const n of stkFeeDrift) console.error(`  ${JSON.stringify(n)}  app.js=${stkFeeGot[stockFeeCases.indexOf(n)]}  module=${mistypedStockFeeIsGuaranteeOnly(n, tableER)}`);
+    fail(`the mistyped-stock fee rule in app.js disagrees with scripts/lib-disclose.mjs on ${stkFeeDrift.length} of ${stockFeeCases.length} names — regenerate it`);
+  }
+  for (const n of stockFeeCases.slice(0, 6))
+    if (!mistypedStockFeeIsGuaranteeOnly(n, tableER)) fail(`mistyped-stock fee rule would publish a fabricated guarantee fee: ${JSON.stringify(n)}`);
+  for (const n of stockFeeCases.slice(6))
+    if (mistypedStockFeeIsGuaranteeOnly(n, tableER)) fail(`mistyped-stock fee rule would withdraw a fee a fund's own name supports: ${JSON.stringify(n)}`);
 
   const nameDrift = nameCases.filter((n, i) => cleanFiledName(n) !== nameGot[i]);
   if (nameDrift.length) {

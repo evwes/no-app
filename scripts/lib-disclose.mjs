@@ -1159,3 +1159,153 @@ export function isInvestmentContractRow(f, cleanedName, namesAFund) {
     .replace(GUARANTEE_PRICED_WORDS, " ").replace(/\s+/g, " ").trim();
   return !namesAFund(rest);
 }
+
+/* A POOLED FUND TYPED `Company stock` — 2026-09-29, and it is the first of
+ * this family that costs readers a NUMBER as well as telling them a falsehood.
+ *
+ * THE CLAIM. `stockRow` in app.js reads the type and the name together, and
+ * when it fires it does two things: it suppresses the ticker and the expense
+ * ratio, and it puts the PLAN SPONSOR'S OWN STOCK TICKER in the ticker cell,
+ * because an employer security really is named by the sponsor's symbol. So a
+ * row typed `Company stock` whose filed name is `Target Retirement Date Fund
+ * 2045` does not merely carry a wrong label: Duke Energy's 35,803 participants
+ * were shown SIXTEEN pooled funds — nine target-date vintages, three index
+ * funds and four blend funds, $5,575,809,000, 50.1% of the published menu —
+ * each tagged DUK. A wrong answer outranks a missing one, and a symbol reads
+ * as knowledge.
+ *
+ * THE CAUSE IS IN THE FILING AND IT IS STRUCTURAL, read rather than inferred.
+ * Duke's Schedule H line 4i is printed under its own section headings:
+ *     Common Stock Funds
+ *       Duke Energy Common Stock Fund .................... 1,070,296
+ *     Institutional Funds
+ *       US Equity Small/Midcap Blend Fund .................. 572,190
+ *       Target Retirement Date Fund 2045 ................... 313,262
+ *     Commingled Funds
+ *       US Equity S&P 500 Index Fund ..................... 2,884,255
+ * `lib-4i` adopts a heading as the current section only when the heading
+ * itself CLASSIFIES, so `Commingled Funds` resets the type and `Institutional
+ * Funds` — which names no vehicle in the type table — does not. The previous
+ * section's type therefore leaks over every row beneath it until the next
+ * heading that happens to classify. That is a parser defect and it is worth a
+ * bump of its own; this rule is the DISPLAY half, and it is display-side
+ * because the whole of the evidence is in the stored name and type.
+ *
+ * THE DISCRIMINATOR IS WHAT THE NAME SAYS THE HOLDING IS, in the filing's own
+ * words: a maturity vintage, a tracked index, or an asset class. A company's
+ * shares have no maturity year, track no index and are not an asset class, so
+ * a name stating one of those is not naming the employer's stock whatever the
+ * type column inherited.
+ *
+ * WORDS THAT CAN ALSO NAME A FIRM ARE DELIBERATELY ABSENT, and each was
+ * measured out rather than reasoned out. A first draft included `equity`,
+ * `international`, `global`, `real estate`, `freedom` and `value`, and every
+ * one produced false positives on real employer stock in this store:
+ * `JOHNSON CONTROLS INTERNATIONAL`, `Oceaneering International, Inc.`,
+ * `S&P GLOBAL INC`, `Dine Brands Global, Inc.`, `Real Estate Investment Trust`
+ * [issuer American Tower Corporation], `Freedom Bank Unitized Stock`, and
+ * Charles Schwab's own `Schwab 401(k) Equity Unit Fund`. An asset word is not
+ * a house word — and here a house word is not an asset word either.
+ * `freedom` survives only bound to a vintage (`Fidelity Freedom 2040`), which
+ * is what separates it from Freedom Bank.
+ *
+ * THE VOCABULARY IS THE MINIMAL SUFFICIENT ONE AND THAT IS MEASURED. Every arm
+ * below brings in at least one row no other arm reaches. Three further arms
+ * were written and dropped because their marginal contribution over the whole
+ * live store is ZERO: `\blifecycle\b|\blifepath\b`, `\bfixed income\b` (Duke's
+ * two such rows are reached by `blend` and `index`) and `\basset allocation\b`.
+ *
+ * THE NAME ARM OF `stockRow` IS NOT TOUCHED, by construction: a row whose own
+ * name says `common stock` or `employer security` is refused here, so
+ * everything this rule can change is a row the TYPE alone condemned. That is
+ * what keeps `Fidelity Leveraged Company Stock Fund`, `Marriott International,
+ * Inc. Common Stock Fund` and `Listed equity securities Tesla Motors, Inc.
+ * Common Stock` exactly as they are.
+ *
+ * MEASURED OVER THE WHOLE LIVE STORE THROUGH THE PUBLICATION GATE
+ * (`lineups-status.c`), every distinct name read:
+ *   - 184 rows / 59 published entries (2 of them master trusts) / 61 plans /
+ *     353,959 participants / $10,909,455,123, across 167 distinct names.
+ *   - 166 of the 167 name a pooled investment. The one that does not is
+ *     `Bonds, and Common Stock Notes from 5.75% to` ($57,744) — an OCR'd prose
+ *     fragment that names nothing either way, so the change withdraws a claim
+ *     from it rather than making one. It is named here rather than rounded off.
+ *   - 33 rows stop publishing the SPONSOR'S OWN TICKER on a pooled fund: 27
+ *     withdrawn outright and 6 CORRECTED to the fund's own symbol (H&R Block's
+ *     `Vanguard Extended Market Index Fund` moves HRB -> VEXAX).
+ *   - 0 rows sit at 25% or more of their own menu, so no dominance guard and
+ *     no confidence decision can move; this is a display rule and could not
+ *     move them in any case.
+ *
+ * THE COVERAGE HALF IS REAL AND IS NOT THE LARGER HALF: 46 rows gain a fund
+ * ticker and 93 gain an expense ratio they were denied. That is what makes
+ * this item different from its annuity and investment-contract siblings, which
+ * cost readers nothing but the truth.
+ *
+ * AND THE FEE MUST NOT BE LIFTED BLINDLY, which the measurement caught before
+ * anything shipped. 9 of the flagged rows would newly publish `fund-er.js`'s
+ * generic /stable value|managed income|guaranteed|gic/ fallback — `NOV Stable
+ * Value Fund`, `Lincoln Stable Value Fund`, `Principal Fixed Income Guaranteed
+ * Option` — which is the exact fabricated number 89 rows had withdrawn from
+ * them on 2026-09-29. So the fee half asks its sibling's question: remove the
+ * words the table prices a guarantee on and ask the same table again; if
+ * nothing identifiable is left to price, the guarantee was the only thing
+ * priced and no fee is published. Deliberately NOT keyed on `er === 0.35` — a
+ * rule keyed on a magic number stops working in silence the day it moves.
+ *
+ * THE RESIDUE IS NAMED, NOT WAVED AT. Of the 1,810 rows this rule leaves typed
+ * `Company stock`, 863 carry a stock designation in the name or issuer and 559
+ * share a distinctive word with the plan sponsor's own filed name; all 385
+ * distinct names in the remaining 388 were read. They are overwhelmingly an
+ * affiliate's or parent's stock (`Elevance Health` at ATH Holding, `AT&T INC`
+ * at BellSouth) or a brokerage window's individual securities. A real residue
+ * of pooled funds this vocabulary does not reach survives and is not claimed
+ * as fixed: `FID GR CO POOL CL O` ($2,201,284,123, a master trust),
+ * `Fidelity Leveraged` and `Fidelity Advisor Leveraged` on nine small plans,
+ * `Washington Mutual Investors Fund Class R-6`, `Income Fund` [Dodge & Cox],
+ * `Enterprise Fund` [Janus Henderson], `Invesco Qqq Trust Series 1`,
+ * `Ishares Bitcoin Trust ETF`. None of them states a vintage, an index or an
+ * asset class, so no honest extension of this vocabulary reaches them; the
+ * parser-side section fix would.
+ *
+ * app.js keeps a twin (browser script, no module system); the generator
+ * extracts BOTH functions VERBATIM and `smoke-test.mjs` runs the browser copy
+ * against this one on pinned rows and fails on drift. */
+export const EMPLOYER_STOCK_CLAIM = /company stock|employer (security|stock)/i;
+export const POOLED_CONSTRUCTION_NAME = new RegExp([
+  /* a maturity vintage — a fund has one, a share of stock does not */
+  "\\btarget(?:ed)?[- ](?:date|retirement)\\b", "\\bretirement date\\b",
+  "\\b(?:freedom|target|retirement|lifecycle|lifepath)[- ]?\\s*20[0-7]\\d\\b",
+  "\\b20[0-7]\\d[- ]?\\s*(?:target|retirement)\\b",
+  /* a tracked index — a company's shares track nothing */
+  "\\bindex\\b", "\\bidx\\b", "\\bs&p ?\\d", "\\brussell\\b", "\\bnasdaq\\b",
+  "\\bmsci\\b", "\\bftse\\b", "\\bdow jones\\b",
+  /* an asset class or a construction style — a pool, never one issuer */
+  "\\bmoney market\\b", "\\bbonds?\\b", "\\btreasur",
+  "\\bsmall.?cap\\b", "\\bmid.?cap\\b", "\\blarge.?cap\\b", "\\ball.?cap\\b",
+  "\\bsmall/mid\\b", "\\bmidcap\\b", "\\bemerging markets?\\b",
+  "\\bblend\\b", "\\bbalanced\\b", "\\binflation[- ](?:protected|response)\\b",
+  "\\bgrowth fund\\b", "\\bstable value\\b", "\\bmanaged income\\b",
+  "\\bguarantee(?:d|s)?\\b",
+].join("|"), "i");
+export function isMistypedStockRow(f, cleanedName) {
+  const type = String((f && f.type) || "");
+  if (!EMPLOYER_STOCK_CLAIM.test(type)) return false;
+  const s = String(cleanedName || (f && f.name) || "");
+  /* the NAME arm of the shipped predicate keeps deciding for itself */
+  if (EMPLOYER_STOCK_CLAIM.test(s)) return false;
+  return POOLED_CONSTRUCTION_NAME.test(s);
+}
+/* The fee a row may publish once the employer-stock claim is withdrawn — the
+ * annuity rule's question asked of a different population, and kept as its own
+ * function rather than folded into `annuityFeeIsGuaranteeOnly` because that one
+ * is shipped, tethered on pinned names, and gates on the annuity phrase this
+ * population does not carry. It requires a guarantee word to be PRESENT (the
+ * strip must actually remove something), so it is inert on the 175 flagged rows
+ * that carry none and cannot quietly blank a real fund's fee. */
+export function mistypedStockFeeIsGuaranteeOnly(cleanedName, priceOf) {
+  const s = String(cleanedName || "").replace(/\s+/g, " ").trim();
+  const rest = s.replace(GUARANTEE_PRICED_WORDS, " ").replace(/\s+/g, " ").trim();
+  if (rest === s) return false;
+  return priceOf(rest) == null;
+}

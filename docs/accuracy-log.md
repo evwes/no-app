@@ -27825,3 +27825,224 @@ than reading its row names — DoorDash's names are all perfectly clean, and
 nothing in the store, the audits or the coverage line distinguishes its 0.32%
 cells from correct ones. The tell was a ticker column and a fee column
 disagreeing on the same row.
+
+## 2026-09-29 (15:5xZ) — A pooled fund typed `Company stock` was tagged with the SPONSOR'S OWN STOCK TICKER
+
+- **Wrong:** `app.js`'s `stockRow` reads the type cell and the name cell
+  together, and when it fires it does not merely suppress the ticker and the
+  expense ratio — **it PUBLISHES `plan.ticker`, the sponsor's own stock symbol,
+  in the ticker cell**, because an employer security really is named by that
+  symbol. So a row typed `Company stock` whose filed name is `Target Retirement
+  Date Fund 2045` does not carry a wrong label; it carries a wrong SYMBOL.
+  **Duke Energy's 35,803 participants were shown sixteen pooled funds — nine
+  target-date vintages, three index funds and four blend funds,
+  $5,575,809,000, 50.1% of the published menu and 49.5% of the plan — each
+  rendered with `DUK` beside it.** (My first draft of this paragraph said
+  fifteen rows and $4,505,513,000, hand-counted off a truncated print; the
+  queue entry's own "16 rows at 50.1%" was right and my re-derivation of it was
+  not. **A truncated print is a different string** — this record's own words,
+  and the count was one script away.)
+  Measured through the publication gate (`lineups-status.c`) against the live
+  v192 store: **184 rows / 59 published entries (2 of them master trusts) /
+  61 plans / 353,959 participants / $10,909,455,123**, across 167 distinct
+  names. Largest by participants is **Capital One Financial Corporation
+  (66,717), whose `U.S. Small/Mid Cap Equity Fund` is $1,140,343,117**; then
+  Duke (35,803), Bristol-Myers Squibb (34,900 + 1,937 + 288, through their
+  master trust's `SP 500 INDEX PL CL E` at $2,423,813,562 and `FID US BOND IDX`
+  at $615,949,024), Arthur J. Gallagher (29,477), Willis Towers Watson
+  (25,967), Hackensack Meridian (25,694), McLaren Health (23,845), H&R Block
+  (18,487), NOV (16,148), Hershey (15,994).
+
+- **THE CAUSE IS IN THE FILING AND WAS READ, NOT INFERRED.** Duke's Schedule H
+  line 4i prints its holdings under the filer's own section headings:
+  `Common Stock Funds` / `Institutional Funds` / `Commingled Funds` /
+  `Self-directed Brokerage Accounts` / `Common Collective Trust Funds`.
+  `lib-4i` adopts a heading as the current section only when the heading itself
+  CLASSIFIES (`lib-4i.mjs` ~1767, `t.split(/\s+/).length <= 5 && classify(t) &&
+  typeOnly(t)`), and `classify("Institutional Funds")` returns "" because no
+  vehicle pattern matches it. `Commingled Funds` resets the section and
+  `Institutional Funds` does not — so `Common Stock Funds` stayed in force over
+  the whole Institutional block, and only the `Commingled` rows escaped.
+  **A section heading that names no known vehicle does not reset the type, so
+  the previous section leaks down the page.** That is a parser defect and it is
+  the right long-term fix; it is recorded here and left for a bump, because the
+  whole of the evidence needed to withdraw the false CLAIM is already in the
+  stored name and type.
+
+- **Change (DISPLAY, REPORT PATH ONLY, no `PARSER_VERSION` bump).**
+  `isMistypedStockRow` and `mistypedStockFeeIsGuaranteeOnly` are canonical in
+  `scripts/lib-disclose.mjs`, extracted VERBATIM into app.js by
+  `scripts/gen-generic-twin.mjs`, and tethered by `smoke-test.mjs`. The
+  discriminator is what the filed NAME says the holding IS, in the filing's own
+  words: a maturity vintage, a tracked index, or an asset class. **A company's
+  shares have no maturity year, track no index and are not an asset class.**
+  The row is TYPED, never dropped — value and percentage are untouched, so no
+  other row's published share moves.
+
+- **THE CLAIM IS WITHDRAWN AND NOT REPLACED**, which is narrower than its
+  siblings on purpose. The annuity and investment-contract rules put a TRUE
+  type in place of a false one because the filed name says which one it is.
+  Here the name says only that the holding is a POOL; which vehicle it is, is
+  exactly what the inherited heading destroyed — Duke's fifteen rows are in
+  fact two different vehicles in the filing. So the cell reads what it reads
+  for any row whose filing states no type: nothing.
+
+- **WORDS THAT CAN ALSO NAME A FIRM WERE MEASURED OUT, NOT REASONED OUT.** A
+  first draft's vocabulary included `equity`, `international`, `global`,
+  `real estate`, `value` and a bare `freedom`, and every one produced false
+  positives on real employer stock in this store: `JOHNSON CONTROLS
+  INTERNATIONAL`, `Oceaneering International, Inc.`, `Titan International,
+  Inc.`, `S&P GLOBAL INC`, `Dine Brands Global, Inc.`, `Real Estate Investment
+  Trust` [issuer American Tower Corporation], `Freedom Bank Unitized Stock`,
+  and Charles Schwab's own `Schwab 401(k) Equity Unit Fund`. All seven are
+  pinned as must-KEEP controls. **An asset word is not a house word — and a
+  house word is not an asset word either.** `freedom` survives only bound to a
+  vintage (`Fidelity Freedom 2040`), which is what separates it from Freedom
+  Bank.
+
+- **THE VOCABULARY IS THE MINIMAL SUFFICIENT ONE AND THAT IS MEASURED.** Every
+  shipped arm brings in at least one row no other arm reaches. Three further
+  arms were written and dropped on a marginal contribution of ZERO over the
+  whole store: `\blifecycle\b|\blifepath\b`, `\bfixed income\b` (Duke's two
+  such rows are reached by `blend` and by `index`) and `\basset allocation\b`.
+
+- **THE NAME ARM OF `stockRow` IS NOT TOUCHED, BY CONSTRUCTION.** A row whose
+  own name says `common stock` or `employer security` is refused by this rule,
+  so everything it can change is a row the TYPE ALONE condemned. That is what
+  keeps `Fidelity Leveraged Company Stock Fund` — a real registered fund whose
+  name contains the words — behaving exactly as it did.
+
+- **Outcome, whole-store, through the shipped `er` and `lookupTicker`
+  expressions transcribed from app.js rather than approximated:**
+  **184 rows change and 0 rows change outside the rule**, verified by rendering
+  a 1-in-25 control sample of 68,817 non-flagged published rows both ways
+  (DRIFT 0). Type cell changed 184; **NAME cell changed 0** — this rule never
+  renames. **Ticker: 27 sponsor symbols withdrawn, 6 CORRECTED to the fund's
+  own** (H&R Block's `Vanguard Extended Market Index Fund` HRB → VEXAX, CNX's
+  `Small Cap Index Fund` CNX → VSMAX), **46 gained, 0 lost.** **Expense ratio:
+  102 gained, 0 lost, 0 flipped.** 0 rows sit at ≥25% of their own menu, so no
+  dominance guard and no confidence decision can move.
+
+- **AND THE FEE MUST NOT BE LIFTED BLINDLY — the measurement caught that before
+  anything shipped.** Nine of the flagged rows would newly have published
+  `fund-er.js`'s generic `/stable value|managed income|guaranteed|gic/`
+  fallback: `NOV Stable Value Fund`, `Lincoln Stable Value Fund` (×2),
+  `Principal Fixed Income Guaranteed Option`, `John Hancock SV Guaranteed Inc`,
+  `Prudential Guaranteed Income Fund`, `Managed Income Portfolio`, `Fidelity
+  Managed Income Portfolio II` (0.40), `Fixed Annuity - General Account
+  American United Life Insurance Company AUL Stable Value Ac`. That is the
+  exact fabricated number 89 rows had withdrawn from them earlier the same day.
+  So the fee half asks the annuity rule's structural question — remove the
+  words the table prices a guarantee on and ask the same table again; if
+  nothing identifiable is left to price, the guarantee was the only thing
+  priced — and is **deliberately not keyed on `er === 0.35`**, because a rule
+  keyed on a magic number stops working in silence the day that number moves.
+  It requires a guarantee word to be PRESENT, so it is inert on the 175 flagged
+  rows that carry none and cannot quietly blank a real fund's fee.
+
+- **A PINNED CONTROL FAILED MY OWN DRAFT AND THE CONTROL WAS THE THING THAT WAS
+  WRONG.** `Principal Stable Value Preferred Fund` was written as a must-KEEP,
+  copied across from the annuity rule's list where it is kept for a different
+  reason (that gate needs the words `annuity contract`, which this name does not
+  carry). The generator refused to write the twin. Reading the evidence rather
+  than the pin: `fundER` prices this name at exactly **0.35** — the generic
+  fallback — and the remainder `Principal Preferred Fund` prices at **null**, so
+  the guarantee IS the only thing priced and suppression is correct. The pin was
+  moved to the must-SUPPRESS side **with its evidence recorded beside it**, and
+  three REAL published names were added on the must-KEEP side that carry a
+  guarantee word and still name a fund — `TRP BLUE CHIP GR T2 Stable value`
+  (0.70), `Vanguard Total Bond Market Index Admiral 1TRSV-A T. Rowe Price Stable
+  Value Common Trst A` (0.04), `PIMCO INCOME INSTL $35.42 GUARANTEED INCOME
+  FUND` (0.51). They were found by asking the store for them, not invented.
+
+- **Every distinct name on both sides was read.** All 167 flagged: **166 name a
+  pooled investment.** The one that does not is `Bonds, and Common Stock Notes
+  from 5.75% to` ($57,744, Gastrointestinal Associates, P.C.) — an OCR'd prose
+  fragment that names nothing either way, so the change withdraws a claim from
+  it rather than making one. It is named here rather than rounded away.
+  On the keep side, of the 1,810 rows left typed `Company stock`, 863 carry a
+  stock designation in the name or issuer and 559 share a distinctive word with
+  the plan sponsor's own filed name; **all 385 distinct names in the remaining
+  388 were read.** They are overwhelmingly an affiliate's or parent's stock
+  (`Elevance Health` at ATH Holding, `AT&T INC` at BellSouth, `GE Vernova` at
+  Ropcor) or a brokerage window's individual securities.
+
+- **THE RESIDUE IS NAMED, NOT CLAIMED AS FIXED.** Real pooled funds this
+  vocabulary cannot reach stay typed `Company stock`: **`FID GR CO POOL CL O`
+  ($2,201,284,123, a master trust)**, `Fidelity Leveraged` and `Fidelity Advisor
+  Leveraged` on nine small plans, `Washington Mutual Investors Fund Class R-6`,
+  `Income Fund` [Dodge & Cox], `Enterprise Fund` [Janus Henderson],
+  `Invesco Qqq Trust Series 1`, `Ishares Bitcoin Trust ETF`,
+  `WisdomTree US Efficient Core Fund`. None states a vintage, an index or an
+  asset class, so no honest extension of this vocabulary reaches them. **The
+  parser-side section-heading fix would, and that is the argument for doing it.**
+
+- **SURFACE NAMED: the REPORT only, and `git diff --stat p/` is what says so.**
+  The 5,000 crawlable pages were regenerated and **not one byte changed** —
+  `build-seo-pages.mjs` renders a holding's issuer, name and value and has no
+  type column, no ticker column and no expense-ratio column, so this rule
+  cannot reach that surface at all. That is a finding rather than an omission:
+  the false DUK symbol was never on the static pages, and the 102 recovered fee
+  cells cannot appear there either.
+
+- **Prevention.** (1) The rule is canonical in one module and the browser copy
+  is GENERATED from it — `gen-generic-twin.mjs` now extracts
+  `EMPLOYER_STOCK_CLAIM`, `POOLED_CONSTRUCTION_NAME`, `isMistypedStockRow` and
+  `mistypedStockFeeIsGuaranteeOnly` verbatim and refuses to write on drift, and
+  the vocabulary is BUILT from an array of arms, so transcribing it by hand is
+  not possible. (2) `smoke-test.mjs` runs the browser copy against the module on
+  **22 pinned rows and 13 pinned fee names**, added because **not one of the
+  existing probes reaches either arm** — every one of them is typed `Mutual
+  fund` and these gate on `Company stock`, so without new cases the twin would
+  have agreed whether or not it carried the rule. That is the decorative-guard
+  failure this record has now caught at v189, v190, v191, v192 and here, which
+  is why the check is made explicitly every time. (3) **Both halves were
+  NEGATIVE-CONTROLLED separately**: drifting the row predicate in app.js fails
+  the smoke test **by name on exactly the 9 must-FLAG rows and holds all 13
+  must-KEEP**; drifting only the fee predicate fails **by name on exactly the 6
+  must-SUPPRESS names and holds all 7 must-KEEP**. (4) `parser-gate.mjs` green,
+  `smoke-test.mjs` green.
+
+- **Method notes, both of which cost time and both of which are this record's
+  own rules repeating.**
+  **(a) The queue entry's size was measured with a different predicate and does
+  not reproduce.** It read *"79 rows / 14 plans / 111,072 participants /
+  $6,361,147,582"*; re-derived through the publication gate the shipped rule is
+  184 / 61 / 353,959 / $10.9B. The difference is not a correction of a mistake
+  so much as evidence that **a class size travels with the predicate that
+  produced it** — quote the predicate or re-derive.
+  **(b) The COVERAGE half is much the smaller half, and the item was filed the
+  other way round.** The queue described an honesty defect AND a coverage loss.
+  Measured: of the 1,994 published rows typed `Company stock`, **470 render a
+  ticker today and every one of them is the sponsor's own symbol**, while only
+  58 rows would resolve a FUND ticker and 131 an expense ratio if the
+  suppression were lifted store-wide — and several of those 131 are real
+  employer stock that would gain a FABRICATED fee (`Wells Fargo & Company` at
+  0.45%, `Eagle Materials Inc.` at 0.75%). **Lifting the suppression on the
+  condition would have created new false numbers; the rule had to be about the
+  CLAIM, with coverage as a by-product.**
+
+- **A HARNESS ERROR OF MY OWN, caught by reading the shipped source.** My first
+  outcome harness modelled the change as "blank the type and re-render", which
+  would ALSO have changed what `lookupTicker` passes to `fundTickerInfo(n,
+  type)`. The shipped change does not touch `f.type` at the lookup site. Reading
+  `fund-er.js` settled it: the type argument is used only by
+  `/collective trust|separate account|managed account|master trust/i`, which
+  `Company stock` does not match, so the two agree — but the harness was
+  modelling a different function until that was checked, and on a different
+  vocabulary it would have measured a class that does not exist.
+
+- **FOUND BY THE PARTICIPANT-WEIGHTED DRAW AND NOT FIXED, sized so it is not
+  re-counted: THE FORM 5500 COVER PAGE PUBLISHED AS A FUND MENU — 41 rows / 31
+  published plans / 165,425 participants / $43,729,586.** NBCUniversal, LLC
+  (11,612 ppl) publishes a nine-row "menu" that is a master-trust pointer at
+  96.9% (`($ in thousands) Interest in The Comcast Corporation Employee`) plus
+  eight rows of cover-page furniture: `This form is required to be filed for
+  employee benefit plans under sections`, `Department of the Treasury Department
+  of Labor Employee Benefits Security sections 6057(b)`, `Part I Annual Report
+  Identification Information 01/01/`, `Docusign Envelope ID: B6899C8B-...`.
+  Largest affected is **The PNC Financial Services Group (79,485 ppl)**, then
+  Eastman Chemical (15,910) and Vestis (14,063). The discriminator is the cover
+  page's own vocabulary, which cannot occur in a fund's name; `JUNK_NAME_RE`
+  and `SKIP_ROW` already carry the family and simply lack these phrases. Parser
+  side, so it needs a bump — recorded, not started.

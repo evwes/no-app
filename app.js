@@ -948,6 +948,47 @@
   }
 
   window.__wampoInvestmentContractRow = (f) => isInvestmentContractRow(f, (f && f.name) || "", namesAFund);  // read by the smoke test only
+  const EMPLOYER_STOCK_CLAIM = /company stock|employer (security|stock)/i;
+  const POOLED_CONSTRUCTION_NAME = new RegExp([
+    /* a maturity vintage — a fund has one, a share of stock does not */
+    "\\btarget(?:ed)?[- ](?:date|retirement)\\b", "\\bretirement date\\b",
+    "\\b(?:freedom|target|retirement|lifecycle|lifepath)[- ]?\\s*20[0-7]\\d\\b",
+    "\\b20[0-7]\\d[- ]?\\s*(?:target|retirement)\\b",
+    /* a tracked index — a company's shares track nothing */
+    "\\bindex\\b", "\\bidx\\b", "\\bs&p ?\\d", "\\brussell\\b", "\\bnasdaq\\b",
+    "\\bmsci\\b", "\\bftse\\b", "\\bdow jones\\b",
+    /* an asset class or a construction style — a pool, never one issuer */
+    "\\bmoney market\\b", "\\bbonds?\\b", "\\btreasur",
+    "\\bsmall.?cap\\b", "\\bmid.?cap\\b", "\\blarge.?cap\\b", "\\ball.?cap\\b",
+    "\\bsmall/mid\\b", "\\bmidcap\\b", "\\bemerging markets?\\b",
+    "\\bblend\\b", "\\bbalanced\\b", "\\binflation[- ](?:protected|response)\\b",
+    "\\bgrowth fund\\b", "\\bstable value\\b", "\\bmanaged income\\b",
+    "\\bguarantee(?:d|s)?\\b",
+  ].join("|"), "i");
+  function isMistypedStockRow(f, cleanedName) {
+    const type = String((f && f.type) || "");
+    if (!EMPLOYER_STOCK_CLAIM.test(type)) return false;
+    const s = String(cleanedName || (f && f.name) || "");
+    /* the NAME arm of the shipped predicate keeps deciding for itself */
+    if (EMPLOYER_STOCK_CLAIM.test(s)) return false;
+    return POOLED_CONSTRUCTION_NAME.test(s);
+  }
+  /* The fee a row may publish once the employer-stock claim is withdrawn — the
+   * annuity rule's question asked of a different population, and kept as its own
+   * function rather than folded into `annuityFeeIsGuaranteeOnly` because that one
+   * is shipped, tethered on pinned names, and gates on the annuity phrase this
+   * population does not carry. It requires a guarantee word to be PRESENT (the
+   * strip must actually remove something), so it is inert on the 175 flagged rows
+   * that carry none and cannot quietly blank a real fund's fee. */
+  function mistypedStockFeeIsGuaranteeOnly(cleanedName, priceOf) {
+    const s = String(cleanedName || "").replace(/\s+/g, " ").trim();
+    const rest = s.replace(GUARANTEE_PRICED_WORDS, " ").replace(/\s+/g, " ").trim();
+    if (rest === s) return false;
+    return priceOf(rest) == null;
+  }
+
+  window.__wampoMistypedStockRow = (f) => isMistypedStockRow(f, (f && f.name) || "");  // read by the smoke test only
+  window.__wampoMistypedStockGuaranteeFee = (n) => mistypedStockFeeIsGuaranteeOnly(n, fundER);  // read by the smoke test only
   window.__wampoCleanFiledName = cleanFiledName;
   window.__wampoLoanRow = (n) => LOAN_ROW.test(String(n || "").trim());  // read by the smoke test only
   /* "does this string identify a fund at all?" — the identity probe
@@ -2094,15 +2135,35 @@
         && !contractRow
         ? lookupTicker(f)
         : null;
+      /* A POOLED FUND TYPED `Company stock` — the rule, its vocabulary and its
+       * whole safety argument live in scripts/lib-disclose.mjs; this is the
+       * generated twin's call site. It is the ONE gate in this file that must
+       * be asked before `stockRow`, because `stockRow` does not merely suppress
+       * a ticker: it PUBLISHES the plan sponsor's own symbol in its place. Duke
+       * Energy's SIXTEEN pooled funds — nine target-date vintages, three index
+       * funds, four blend funds, $5,575,809,000 = 50.1% of its published menu
+       * — each rendered with `DUK` beside it. A blank is honest; a symbol
+       * reads as knowledge. */
+      const mistypedStock = isMistypedStockRow(f, f.name || "");
       // employer stock IS a listed security: the plan's own ticker names it
-      const stockRow = /company stock|employer (security|stock)/i.test((f.type || "") + " " + f.name);
+      const stockRow = !mistypedStock
+        && /company stock|employer (security|stock)/i.test((f.type || "") + " " + f.name);
       // v143: a row named from the SEC class index carries the ticker the
       // filing's own code stated; show it even when fund-er has no entry
       const tk = stockRow ? (plan.ticker || null) : (info ? info.tk : (f.tk || null));
       const star = !stockRow && info && info.comparable;
       if (star) starred = true;
+      /* ...and the fee a mistyped row may publish once that claim is withdrawn.
+       * 9 of the flagged rows would otherwise newly print fund-er.js's generic
+       * /stable value|managed income|guaranteed|gic/ fallback — `NOV Stable
+       * Value Fund`, `Principal Fixed Income Guaranteed Option` — which is the
+       * exact fabricated 0.35% withdrawn from 89 rows this morning. The rule
+       * asks its sibling's structural question and is inert on the 175 flagged
+       * rows carrying no guarantee word at all. */
+      const mistypedGuaranteeFee = mistypedStock
+        && mistypedStockFeeIsGuaranteeOnly(f.name || "", fundER);
       const er = tab !== "menu" || stockRow || gicRow || subtotalRow || loanRow || annuityRow
-        || guaranteeOnlyFee || contractRow ? null
+        || guaranteeOnlyFee || contractRow || mistypedGuaranteeFee ? null
         : star ? info.er : (noPublicPrice ? null : fundERFiled(f.name));
       // the brokerage window is a menu choice with no holdings of its own —
       // tint it so it reads as a doorway, not a fund (owner request)
@@ -2153,12 +2214,22 @@
        * fires on every contract row either way. ONE LABEL covers both
        * phrasings: 24 of the flagged names read "Investment contracts with
        * insurance companies" verbatim, and that is the category's own name. */
+      /* THE MISTYPED EMPLOYER-STOCK CLAIM IS WITHDRAWN AND NOT REPLACED, which
+       * is deliberate and is the narrowest honest move. Its siblings above put
+       * a TRUE type in place of a false one because the filed name says which
+       * one it is — `annuity contract`, `investment contract`. Here the name
+       * says only that the holding is a POOL; whether the vehicle is a
+       * collective trust, a separate account or a registered fund is exactly
+       * what the inherited section heading destroyed, and Duke's fifteen rows
+       * are in fact two different vehicles. So the cell reads what it reads for
+       * every row whose filing states no type: nothing. A blank is honest. */
+      const filedType = mistypedStock ? "" : (f.type || "");
       const shownType = descLoanRow ? "Not a menu choice"
         : loanRow ? "Participant loans — not a menu choice"
         : namelessRow ? "Filing names no specific fund"
         : annuityRow ? "Annuity contract"
         : contractRow ? "Investment contract"
-        : f.type || (brokRow ? "Brokerage window" : "—");
+        : filedType || (brokRow ? "Brokerage window" : "—");
       /* THE NAME IS REPLACED HERE AND NOWHERE ELSE IN THE LOAN FAMILY.
        * v181's rows are NAMED (`LOAN FUND`, `Notes receivable from
        * participants`) and keep their names — typing them was enough. These

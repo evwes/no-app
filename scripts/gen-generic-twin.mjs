@@ -21,7 +21,8 @@ import { readFileSync, writeFileSync } from "node:fs";
 import vm from "node:vm";
 import { GENERIC_TYPE_ANY, GENERIC_TYPE_DESPACED, isGenericTypeName } from "./lib-4i.mjs";
 import { isNamelessFundRow, isLoanDescriptionRow, isAnnuityContractRow,
-  annuityFeeIsGuaranteeOnly, isInvestmentContractRow } from "./lib-disclose.mjs";
+  annuityFeeIsGuaranteeOnly, isInvestmentContractRow, isMistypedStockRow,
+  mistypedStockFeeIsGuaranteeOnly } from "./lib-disclose.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const lib = readFileSync(ROOT + "scripts/lib-4i.mjs", "utf8");
@@ -78,6 +79,18 @@ const ice = dis.indexOf("\n}\n", dis.indexOf("export function isInvestmentContra
 if (ice < 3) throw new Error("gen-generic-twin: isInvestmentContractRow moved in lib-disclose");
 const invcontract = dis.slice(ics, ice).replace(/^export /gm, "");
 
+/* the mistyped-employer-stock rule, VERBATIM: three constants and two
+ * functions, all travelling together. `POOLED_CONSTRUCTION_NAME` is BUILT from
+ * an array of arms, so it is a derived pattern and transcribing one is the move
+ * this record says produces wrong answers; and the fee half is a second
+ * function over the same rows, so extracting only the row test would leave the
+ * browser re-deciding the fee from memory. */
+const mss = dis.indexOf("export const EMPLOYER_STOCK_CLAIM = ");
+if (mss < 0) throw new Error("gen-generic-twin: EMPLOYER_STOCK_CLAIM moved in lib-disclose");
+const mse = dis.indexOf("\n}\n", dis.indexOf("export function mistypedStockFeeIsGuaranteeOnly(")) + 3;
+if (mse < 3) throw new Error("gen-generic-twin: mistypedStockFeeIsGuaranteeOnly moved in lib-disclose");
+const mistyped = dis.slice(mss, mse).replace(/^export /gm, "");
+
 const block = `  /* GENERATED FROM scripts/lib-4i.mjs — DO NOT EDIT BY HAND.
    * lib-4i derives these patterns from GENERIC_TYPE_NAME by asserted
    * replacements, so they are DERIVED and transcribing one is the move this
@@ -116,6 +129,9 @@ ${guarfee.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
   window.__wampoGuaranteeOnlyFee = (n) => annuityFeeIsGuaranteeOnly(n, fundER);  // read by the smoke test only
 ${invcontract.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
   window.__wampoInvestmentContractRow = (f) => isInvestmentContractRow(f, (f && f.name) || "", namesAFund);  // read by the smoke test only
+${mistyped.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
+  window.__wampoMistypedStockRow = (f) => isMistypedStockRow(f, (f && f.name) || "");  // read by the smoke test only
+  window.__wampoMistypedStockGuaranteeFee = (n) => mistypedStockFeeIsGuaranteeOnly(n, fundER);  // read by the smoke test only
 `;
 
 /* THE END MARKER MUST BE THE BLOCK'S LAST LINE. It was `__wampoGenericName`
@@ -133,6 +149,7 @@ const MARK_S = "  /* GENERATED FROM scripts/lib-4i.mjs — DO NOT EDIT BY HAND."
  * moved and the old tail stayed — so the list only ever grows, and the cut must
  * be made at the LAST marker present, not the first one found. */
 const MARK_ENDS = [
+  "  window.__wampoMistypedStockGuaranteeFee = (n) => mistypedStockFeeIsGuaranteeOnly(n, fundER);  // read by the smoke test only\n",
   "  window.__wampoInvestmentContractRow = (f) => isInvestmentContractRow(f, (f && f.name) || \"\", namesAFund);  // read by the smoke test only\n",
   "  window.__wampoGuaranteeOnlyFee = (n) => annuityFeeIsGuaranteeOnly(n, fundER);  // read by the smoke test only\n",
   "  window.__wampoAnnuityRow = isAnnuityContractRow;  // read by the smoke test only\n",
@@ -181,6 +198,10 @@ vm.runInContext(block
     "globalThis.__q = (n) => annuityFeeIsGuaranteeOnly(n, fundER);")
   .replace("window.__wampoInvestmentContractRow = (f) => isInvestmentContractRow(f, (f && f.name) || \"\", namesAFund);  // read by the smoke test only",
     "globalThis.__i = (f) => isInvestmentContractRow(f, (f && f.name) || \"\", __namesAFund);")
+  .replace("window.__wampoMistypedStockRow = (f) => isMistypedStockRow(f, (f && f.name) || \"\");  // read by the smoke test only",
+    "globalThis.__m = (f) => isMistypedStockRow(f, (f && f.name) || \"\");")
+  .replace("window.__wampoMistypedStockGuaranteeFee = (n) => mistypedStockFeeIsGuaranteeOnly(n, fundER);  // read by the smoke test only",
+    "globalThis.__mq = (n) => mistypedStockFeeIsGuaranteeOnly(n, fundER);")
   .replace(/^\s{2}/gm, ""), ctx);
 const names = ["Mutual funds", "Mutual Fund Shares", "Sub-total: Registered Investment Companies",
   "Commingled funds", "Pooled separate account funds", "Collective trust funds",
@@ -314,7 +335,98 @@ const investmentContractRows = [
   { name: "Lincoln Stable Value (at contract value)", type: "Mutual fund" },
   { name: "Group Annuity Contract PRIAC Guaranteed Income Fund", type: "Mutual fund" },
 ];
+/* the mistyped-employer-stock arm, BOTH CELLS and both directions, and it
+ * needed its OWN probes for the seventh cycle running: not one row above
+ * reaches it, because every one of them is typed `Mutual fund` and this arm
+ * gates on `Company stock`. A probe set that cannot reach an arm is how a
+ * guard passes while doing nothing.
+ * The must-KEEP half is the entire safety argument and has three parts: a
+ * genuine employer security whose name states a portfolio word (`JOHNSON
+ * CONTROLS INTERNATIONAL`, `Freedom Bank Unitized Stock`, `Schwab 401(k)
+ * Equity Unit Fund`); a row whose own NAME says company/employer stock, which
+ * the shipped name arm must go on deciding; and any row not typed employer
+ * stock at all. */
+const mistypedStockRows = [
+  /* must FLAG — a maturity vintage, a tracked index or an asset class */
+  { name: "Target Retirement Date Fund 2045", type: "Company stock" },
+  { name: "Non-US Equity Index Fund", type: "Company stock" },
+  { name: "Non-US Equity Blend Fund", type: "Company stock" },
+  { name: "US Equity Small/Midcap Index Fund", type: "Company stock" },
+  { name: "Fidelity Freedom 2040 Fund Class K", type: "Company stock" },
+  { name: "American Funds 2050 Target", type: "Company stock" },
+  { name: "Vanguard Total Bond Market Index Fund", type: "Company stock" },
+  { name: "NOV Stable Value Fund", type: "Company stock" },
+  { name: "EQ/Common Stock Index", type: "Employer security" },
+  /* must KEEP — real employer stock carrying a word that can also be a firm's */
+  { name: "JOHNSON CONTROLS INTERNATIONAL", type: "Company stock" },
+  { name: "Freedom Bank Unitized Stock", type: "Company stock" },
+  { name: "Schwab 401(k) Equity Unit Fund", type: "Company stock" },
+  { name: "S&P GLOBAL INC", type: "Company stock" },
+  { name: "Real Estate Investment Trust", type: "Company stock" },
+  { name: "Oceaneering International, Inc.", type: "Company stock" },
+  { name: "Titan International, Inc.", type: "Company stock" },
+  /* must KEEP — the NAME arm of `stockRow` decides these, not this rule */
+  { name: "Fidelity Leveraged Company Stock Fund", type: "Company stock" },
+  { name: "Marriott International, Inc. Common Stock Fund", type: "Company stock" },
+  { name: "Employer Security Knight Stock", type: "Company stock" },
+  /* must KEEP — not typed employer stock at all, so the gate is shut */
+  { name: "Vanguard Target Retirement 2045 Fund", type: "Mutual fund" },
+  { name: "Fidelity 500 Index Fund", type: "" },
+  { name: "US Equity S&P 500 Index Fund", type: "Collective trust" },
+];
+/* the FEE half, both directions. The must-SUPPRESS names are the rows that
+ * would newly publish fund-er.js's generic guarantee fallback once the
+ * employer-stock claim is withdrawn; the must-KEEP names are real funds whose
+ * published fee comes from their own name and must survive, INCLUDING two that
+ * carry no guarantee word at all, where the rule must be inert rather than
+ * accidentally true. */
+const mistypedStockFeeNames = [
+  /* must SUPPRESS — the guarantee is the only thing that priced the row */
+  "NOV Stable Value Fund", "Lincoln Stable Value Fund",
+  "Principal Fixed Income Guaranteed Option", "Fixed Income Guarantee Option",
+  "Managed Income Portfolio",
+  /* AND THE PIN THAT CAUGHT MY OWN DRAFT, moved here WITH ITS EVIDENCE rather
+   * than deleted: `Principal Stable Value Preferred Fund` was written as a
+   * must-KEEP, copied from the annuity rule's list where it is kept for a
+   * different reason (that gate needs the words `annuity contract`, which this
+   * name does not carry). The control failed, and it was the control that was
+   * wrong: `fundER` prices this name at exactly 0.35 — the generic
+   * /stable value|managed income|guaranteed|gic/ fallback — and the remainder
+   * `Principal Preferred Fund` prices at null. The guarantee IS the only thing
+   * priced, so suppression is correct. */
+  "Principal Stable Value Preferred Fund",
+  /* must KEEP — a guarantee word is PRESENT and the remainder still names a
+   * fund, which is the whole cost of this rule being wrong. All three are real
+   * published names, found by asking the store for them rather than invented. */
+  "TRP BLUE CHIP GR T2 Stable value",
+  "Vanguard Total Bond Market Index Admiral 1TRSV-A T. Rowe Price Stable Value Common Trst A",
+  "PIMCO INCOME INSTL $35.42 GUARANTEED INCOME FUND",
+  /* must KEEP — no guarantee word at all, so the rule must be INERT here
+   * rather than accidentally true; `Target Retirement Date Fund 2045` prices
+   * at null and must still come back false. */
+  "Vanguard 500 Index Admiral", "Fidelity 500 Index Fund",
+  "Vanguard Total Bond Market Index Fund", "Target Retirement Date Fund 2045",
+];
 let bad = 0;
+for (const r of mistypedStockRows) {
+  const twin = ctx.__m(r), lib = isMistypedStockRow(r, r.name);
+  if (twin !== lib) { bad++; console.log(`  MISTYPED-STOCK DRIFT ${JSON.stringify(r)} twin=${twin} lib=${lib}`); }
+}
+for (const r of mistypedStockRows.slice(0, 9)) if (!isMistypedStockRow(r, r.name)) {
+  bad++; console.log(`  MISTYPED-STOCK rule no longer withdraws an employer-stock claim from a pooled fund: ${JSON.stringify(r)}`);
+}
+for (const r of mistypedStockRows.slice(9)) if (isMistypedStockRow(r, r.name)) {
+  bad++; console.log(`  MISTYPED-STOCK rule would withdraw a claim it must leave alone: ${JSON.stringify(r)}`);
+}
+for (const n of mistypedStockFeeNames) if (ctx.__mq(n) !== mistypedStockFeeIsGuaranteeOnly(n, ctx.fundER)) {
+  bad++; console.log(`  MISTYPED-STOCK FEE DRIFT ${JSON.stringify(n)} twin=${ctx.__mq(n)} lib=${mistypedStockFeeIsGuaranteeOnly(n, ctx.fundER)}`);
+}
+for (const n of mistypedStockFeeNames.slice(0, 6)) if (!mistypedStockFeeIsGuaranteeOnly(n, ctx.fundER)) {
+  bad++; console.log(`  MISTYPED-STOCK FEE rule would publish a fabricated guarantee fee: ${JSON.stringify(n)}`);
+}
+for (const n of mistypedStockFeeNames.slice(6)) if (mistypedStockFeeIsGuaranteeOnly(n, ctx.fundER)) {
+  bad++; console.log(`  MISTYPED-STOCK FEE rule would withdraw a fee a fund's own name supports: ${JSON.stringify(n)}`);
+}
 for (const r of investmentContractRows) {
   const twin = ctx.__i(r), lib = isInvestmentContractRow(r, r.name, ctx.__namesAFund);
   if (twin !== lib) { bad++; console.log(`  INVESTMENT-CONTRACT DRIFT ${JSON.stringify(r)} twin=${twin} lib=${lib}`); }
@@ -347,4 +459,4 @@ for (const r of rows) if (ctx.__n(r, r.name, ctx.__g) !== isNamelessFundRow(r, r
   bad++; console.log(`  ROW DRIFT ${JSON.stringify(r)}`);
 }
 if (bad) { console.error(`generated with ${bad} DRIFT — do not commit`); process.exit(1); }
-console.log(`generated; twin agrees with lib-4i on ${names.length} names, with lib-disclose on ${rows.length} rows, ${loans.length} loan-description names, ${annuityRows.length} annuity-contract rows, ${guarFeeNames.length} guarantee-only fee names and ${investmentContractRows.length} investment-contract rows`);
+console.log(`generated; twin agrees with lib-4i on ${names.length} names, with lib-disclose on ${rows.length} rows, ${loans.length} loan-description names, ${annuityRows.length} annuity-contract rows, ${guarFeeNames.length} guarantee-only fee names, ${investmentContractRows.length} investment-contract rows, ${mistypedStockRows.length} mistyped-employer-stock rows and ${mistypedStockFeeNames.length} mistyped-stock fee names`);
