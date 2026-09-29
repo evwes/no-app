@@ -819,7 +819,56 @@ export, do not copy the line.
   9 rows → 5, still confident — and **the merge's own `rows-dropped` check caught
   it unprompted** (`warn` 608 → 609). `dl` 129 → 131.
   `docs/accuracy-log.md` 2026-09-29 (00:2xZ).
-- **IN FLIGHT: #500 (v191), dispatched 2026-09-29 04:0xZ on `037e00e`, observed
+- **IN FLIGHT: #501 (v192), dispatched 2026-09-29 05:2xZ on `99b2c73`, observed
+  queued — a FULL re-parse on the version bump. A BARE `PREFERRED STOCK`
+  DESIGNATION IS NOT A FUND NAME: 29 rows / 21 plans / 310,633 ppl /
+  $9,859,671** stop being shown a holding named only `Preferred stock` with
+  nothing saying it names no fund. 0 rows lose a typing they have.
+  **FOUND BY THE PARTICIPANT-WEIGHTED DRAW** on Bank of America (250,040 ppl),
+  whose 38-row menu ends in individual securities — `EXXON MOBIL CORP`,
+  `INTERNATIONAL BUSINESS MACHS`, four `PREFERRED STOCK` lines typed
+  **`Mutual fund`**. The money is 0.00% of a $64.9B menu; the CLAIM is the harm.
+  **v190'S SHAPE ONE WORD ALONG:** `isGenericTypeName` is TRUE for `Common
+  Stock` / `Common Stocks` / `Common and Preferred Stock` and FALSE for
+  `Preferred stock`, so the class was outside the vocabulary BY CONSTRUCTION —
+  **the third cycle running that a missing entry in an anchored list hid a
+  class.** Of **205 distinct published names containing `preferred` the arm
+  flags 5 and KEEPS 200**, every one read and every one a real fund.
+  **THE COST I WENT IN EXPECTING TO WEIGH WAS ALREADY PREVENTED:** the 84 rows
+  named `Common Stock` typed `Company stock` keep their type, because
+  `isNamelessFundRow` excludes `company stock` and is asked only when there is
+  **no issuer** — which also protects the 12 rows whose issuer names the
+  security. *Read the shipped guard before pricing a cost it may already stop.*
+  **A CONTROL I WROTE FAILED MY OWN EXPECTATION:** `PREFERRED STOCK 795` pinned
+  must-KEEP is actually FLAGGED — `COMMON STOCK 600` already read true pre-v192,
+  because v188's `stripGenericDecoration` strips a trailing number and re-asks.
+  **TWO OF MY OWN NUMBERS WERE HARNESS ARTEFACTS:** a sponsor-word screen said
+  1,033 rows / 3.56M ppl (it flagged `APi Group Corporation` ← Api Group), and
+  my first participant total row-summed to 1,613,811 where **plan-distinct is
+  810,644** — BofA carries four such rows. *A participant-weighted count must be
+  plan-distinct.*
+  **PRE-REGISTERED against the v191 store it runs on:** `audit-generic-names`
+  **217 → 217** (rows 439 → 441), `audit-dominant-row` **0**, `confident`
+  +0 / −0. 28 controls green; negative control **7 of 7 miss, 9 of 9 hold**;
+  twin probes 34 → 44 and the pre-v192 twin **drifts on exactly the 4
+  must-flags**, run without calling the generator first.
+  `docs/accuracy-log.md` 2026-09-29 (05:2xZ).
+- **#500 (v191) RAN `success`** (data commit `42e67c1`): **`confident` +0 / −0
+  PASSED**, **`audit-dominant-row` 0 PASSED**, HIGH **4 = the baseline**, WARN
+  608, dl 131. **`audit-generic-names` came in at 217 against the 219 I
+  registered, and the METHOD is the finding.** The 219 was computed with v191's
+  predicate against the **v190 store** — but a parser bump CHANGES the store,
+  rows move, and a plan's generic share crosses the 25%-of-value threshold in
+  both directions. **A count that depends on the store the run will produce
+  cannot be predicted from the store it replaces.** Direction right (+6
+  predicted, +4 delivered), harness wrong in kind. New variant of a shape this
+  record carries twice — v190's stored-vs-published class size and #497's
+  `f.stk`-vs-`lookupTicker`. Unregistered and named: `overshoot` 325 → 326.
+- **MIRRORED 2026-09-29 05:1xZ (`b7dad2b → f92f178`), UNFORCED ON BOTH CHECKS**,
+  data gate +0 / −0 — carried v191 CODE over the v190 store, which is safe by
+  `SCHEDULE_INCREMENTAL`, to get v191's DISPLAY half to report readers without
+  waiting for the re-parse. Pages #671 built it `success`.
+- **PREVIOUSLY IN FLIGHT: #500 (v191), dispatched 2026-09-29 04:0xZ on `037e00e`, observed
   queued — a FULL re-parse on the version bump. A WRAPPED SENTENCE'S TAIL IS NOT
   A FUND NAME: 22 rows / 22 plans / 29,795 ppl / $666,201,616** publish a holding
   named only `Statements` — the continuation line of *"…the accompanying

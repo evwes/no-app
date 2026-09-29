@@ -26416,3 +26416,95 @@ Hancock variable-insurance series, comparable and therefore never stored — so
 no reader loses anything. `Fund; Class R-6 American Funds Growth Fund of`
 (1 row / 484 ppl) is withdrawn rather than corrected to RGAGX; the string keeps
 the dangling `of`, and repairing it is a different change.
+
+## 2026-09-29 (05:2xZ) — #500's verdict, and v192: a bare PREFERRED STOCK designation
+
+**#500 (v191) ran `success`** (data commit `42e67c1`). Against its
+pre-registration: **`confident` +0 / −0 PASSED**, **`audit-dominant-row` 0
+PASSED**, HIGH **4 = the baseline**, WARN 608, dl 131.
+
+**`audit-generic-names` came in at 217 against the 219 I registered, and the
+method behind that 219 is the thing worth recording.** I computed it with
+v191's predicate against the **v190 store** — but a parser bump *changes the
+store*: v191 retypes and moves rows, and a plan's generic share crosses the
+audit's 25%-of-value threshold in both directions as it does. **A count that
+depends on the store the run will produce cannot be predicted from the store it
+replaces.** The direction and rough size were right (+6 predicted, +4
+delivered); the harness was wrong in kind, not just in magnitude. This is a new
+variant of a shape this record already carries twice — v190's class size
+measured on stored rather than published rows, and #497's item measured on
+`f.stk` rather than through `lookupTicker`. The common form: **measure the thing
+through the state it will actually be read in.**
+
+Unregistered movement, small and named rather than waved at: `overshoot`
+325 → 326, `overshootPpl` +227.
+
+### v192 — a bare `PREFERRED STOCK` designation is not a fund name
+
+**29 rows / 21 plans / 310,633 participants / $9,859,671** stop being shown a
+holding named only `Preferred stock` with nothing on the page saying it names no
+fund. **0 rows lose a typing they have.**
+
+**Found by the participant-weighted draw** on The Bank of America 401(k) Plan
+(250,040 ppl), whose 38-row menu ends in a tail of individual securities —
+`EXXON MOBIL CORP`, `INTERNATIONAL BUSINESS MACHS`, and four `PREFERRED STOCK`
+lines typed **`Mutual fund`**. The money is trivial (0.00% of a $64.9B menu);
+the claim is not, because a row typed `Mutual fund` says this holding is one.
+
+**It is v190's shape one word along.** `isGenericTypeName` answers TRUE for
+`Common Stock`, `Common Stocks` and `Common and Preferred Stock`, and FALSE for
+`Preferred stock` — so a filing that wrote the one word rather than the other
+was outside the vocabulary BY CONSTRUCTION, and the dominance guard, both
+audits, `diff-lineups` and the browser twin were all blind to it. **Third cycle
+running in which a missing entry in an anchored list has hidden a class.**
+
+**Anchored, and that is the whole safety argument:** of the **205 distinct
+published names containing `preferred`, the arm flags 5 and KEEPS 200** — every
+one read, and every one a real fund (Cohen & Steers Preferred Securities and
+Income Fund, Nuveen Preferred Securities & Income I, iShares Preferred & Income
+Securities ETF, Principal Spectrum Preferred, Invesco Variable Rate Preferred
+ETF, Principal Stable Value Preferred Fund).
+
+**What it deliberately does not touch, and the guard had already settled it.**
+I went in expecting to have to weigh the cost of overriding the **84 rows named
+`Common Stock` and typed `Company stock`**, which are honest and informative.
+`isNamelessFundRow` excludes `company stock` outright, and its call site
+(`build-seo-pages.mjs:243`) asks it only when the row has **no issuer** — so
+those 84, and the **12** bare-stock rows whose issuer names the security
+(`DILLARDS CAPITAL TRUST I`, `WELLS FARGO & CO`, `Gabelli Equity Trust`), are
+unaffected. *Read the shipped guard before pricing a cost it may already
+prevent.*
+
+**A control I wrote failed my own expectation, and the pre-change file explained
+it.** I pinned `PREFERRED STOCK 795` as a must-KEEP, reasoning that a trailing
+lot number sits outside the anchor. It does not: **`COMMON STOCK 600` already
+read TRUE before this change**, because v188's `stripGenericDecoration` removes
+a trailing number as non-identifying and asks the anchored predicate again. The
+preferred form inherits that for free. The pin is corrected to must-FLAG with
+the reason beside it; no reader sees a change on those three rows, all of which
+carry an issuer.
+
+**Two numbers I produced along the way were my own harness and are recorded so
+they are not reused.** (1) A "`Company stock` whose name is not the sponsor's"
+screen returned **1,033 rows / 3,558,277 ppl** and is meaningless — it flagged
+`APi Group Corporation` ← Api Group, `Master Trust` ← FedEx (v190's class) and
+`Unitized company stock fund` ← Reynolds, because a sponsor-word test cannot
+tell a firm from a phrase. (2) My first participant total for the bare-stock
+family, **1,613,811**, row-summed and double-counted the large plans — Bank of
+America carries four such rows. **Plan-distinct it is 810,644.** *A
+participant-weighted count must be plan-distinct.*
+
+**Controls 28 green** (7 must-FLAG, 21 must-KEEP carrying the v190 and v191 pins
+forward). **Negative control: the pre-v192 predicate misses 7 of 7 must-flag and
+holds 9 of 9 must-keep.** Twin probes **34 → 44**, and the **pre-v192 twin
+drifts by name on exactly the 4 must-flags while agreeing on all 6 must-keeps**
+— run *without* calling the generator first, which is the step that silently
+repaired the same control in the v190 cycle. `parser-gate.mjs` all green.
+
+**Pre-registered for #501**, stated against the v191 store it will run on:
+`audit-generic-names` **217 → 217, plans unchanged** (rows 439 → 441);
+`audit-dominant-row` stays **0**; `confident` **+0 / −0**.
+
+**Residue named, not rounded away:** a bare `Preferred Securities` (3 rows) is
+an asset class rather than a fund and sits outside this anchor deliberately —
+a wider claim that gets its own measurement.
