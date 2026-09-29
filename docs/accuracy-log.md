@@ -25893,3 +25893,86 @@ path. This is piece (2) of the queue the 18:0xZ entry opened, finished.
   gate.** Every population count in this project that is meant to describe
   readers must join `lineups-status`'s `c` flag, exactly as "measure through
   the display path" requires for names and values.
+
+## 2026-09-29 (01:1xZ) — a filed `of American` is a typo that names a DIFFERENT real fund
+
+**What was wrong.** `American Funds The Growth Fund of American R6` resolved
+EXACTLY to **RGWGX** — a Class R-6 of `American Funds Growth Portfolio`, the
+Portfolio Series fund-of-funds — and `Growth Fund of American-R3` to **RGPCX**,
+the R-3 of the same wrong series. The matcher was right to: after structural
+words that series' key is only `{american, growth}`, so the MISSPELLED
+`american` is one of its tokens, while the right series (`GROWTH FUND OF
+AMERICA`) needs `america`, which the filing never types. No signal inside the
+matcher separates them. The string is wrong, so the string is repaired.
+
+**The change.** `repairFiledName` in `scripts/match-sec-tickers.mjs`, asked at
+the top of `resolveHolding` — the one shared call rule, so a second caller
+cannot miss it. The test is a **positive vocabulary of what may FOLLOW the
+phrase**, never a blocklist of entity names: the American Funds forms end the
+entity at `America` and are followed by nothing, a share class or a vehicle
+word, while a real entity continues with a proper noun. All four in the store
+do — `of American Airlines, Inc.`, `of American United Life Insurance Company`,
+`of American Trust Company`, `Best of American Fixed`. A blocklist would have
+to name every entity that could ever follow; this names the handful of things
+that may.
+
+**Reader-facing outcome, measured through `lookupTicker` and not through the
+store: 15 rows / 11,299 participants GAIN a correct ticker**, 2 rows / 562
+participants **stop publishing a different fund as fact**, 0 lost, across 17
+plans and $20,129,610. Gains are RBFGX (Bond Fund of America R-6), RIDGX
+(Income Fund of America R-6) and RGAEX (Growth Fund of America R-4); flips are
+Trailboss Enterprises RGWGX → RGAGX and Evans Transportation RGPCX → RGACX.
+Every share class was verified against the SEC file before any of it was
+trusted.
+
+**AND THE NUMBER THIS ITEM WAS FILED UNDER WAS WRONG IN THE SAME WAY AS
+YESTERDAY'S.** The queue said *"4 rows publish a wrong fund as fact (RGWGX ×3,
+RGWEX ×1)"*. That counted **`f.stk`, a STORED field**. `lookupTicker` asks
+`fund-er.js` FIRST and `f.stk` LAST, and fund-er's pattern table matches
+straight through this typo and answers **RGAGX correctly** — so three of those
+rows never showed a reader a wrong ticker at all, and one of the two remaining
+is RGPCX, not RGWEX. The honest figure is **2 rows / 562 people against the
+75,937 the item was filed under, a factor of 135 on the people axis**.
+**A stored field is not a published one — measure through the function the page
+calls.** Nineteenth instance of a measurement reporting on the harness, one day
+after the identical shape ("a stored lineup entry is not a published one") cost
+a class size. The two are the same rule in two fields, which is why it is
+written here as the general form.
+
+**The sizing predicate also over-matched and the read is what showed it.** A
+plain `/of american/i` sweep returns 47 rows / 46 plans / 75,607 ppl, and seven
+of those distinct names are real entities — American Airlines, American United
+Life, American Trust Company, Nationwide's `Best of America` product, and three
+`Mutual of American` separate accounts. Printing every distinct name is what
+separated them; no count could.
+
+**Controls.** `--selftest` **75/75**, 13 new cases in one table — 7 must-change
+and 6 must-keep, including all four real entities, the Nationwide product and
+the correctly spelled `of America` control. **Negative control: the pre-change
+file fails by name on exactly the 7 must-change cases and holds all 6.** It
+also surfaced a third wrong answer nobody had counted — `American Growth Fund
+of American R4` → **JAHJX\***, a comparable, which the merge's storage rule
+deletes, so it never reached a reader.
+
+**Whole-store control** through the merge's own gate and storage rule (type
+must begin `mutual fund`; a `comparable` answer is not stored): **977,783 of
+977,803 rows unchanged, 0 lost, and CHANGES OUTSIDE THE PHRASE = 0.** Three
+further rows change their stored `stk` with no reader change, because fund-er
+already answered them.
+
+**A first draft was inert and the measurement caught it:** it re-asked
+`resolve` on the repaired name only, when the issuer branch is where
+`Bond Fund of American R6` [iss American Funds] is actually decided. The
+repaired name now gets the whole faithful path.
+
+**Under-repair is the safe direction and is taken, not hidden:** `Mutual of
+American Small Cap Growth Fund` is genuinely Mutual of America misspelled and
+is refused, because `Small` continues like a name. Those rows are typed
+`Pooled separate account`, which the merge's gate excludes anyway. Residue, not
+a closed class.
+
+**Pre-registered for the run** (no parser bump — it exists only to let the
+MERGE rewrite `stk`): `sec tickers: 338,478 rows across 37,035 plans`
+(+15 rows, +1 plan), against a harness that reproduces the CURRENT line at
+**338,463 / 37,034 exactly**; CONFIDENCE DIFF +0 / −0; coverage line
+byte-identical (confident 60,103, HIGH 4, overshoot 325).
