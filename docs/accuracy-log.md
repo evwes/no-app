@@ -28469,3 +28469,90 @@ $318,059,621,621** carry the same name shape WITH a collective-trust type and
 are correctly unpriced. The rule is already right; it is asked of the wrong
 cell. Display-side, on the annuity/investment-contract pattern — ask the NAME
 as well as the TYPE — and the labelled-comparable half must be left alone.
+
+---
+
+## 2026-09-29 (20:4xZ) — `gic\b` matched the tail of "strateGIC": 7,256 real funds priced as guaranteed investment contracts
+
+**8,624,296 participants across 6,264 plans were shown a fabricated 0.35%
+expense ratio on a real registered fund because its name contains the word
+"Strategic".** `fund-er.js`'s last generic guarantee arm read
+`/stable value|managed income|guaranteed|gic\b/i` — and **`gic\b` has a word
+boundary only at the END**, so it matches the final three letters of
+`strate`**`gic`**. `Vanguard Strategic Equity Fund`, `Fidelity Strategic Income
+Fund`, `BlackRock Strategic Global Bond K`, `Thornburg Strategic Income R6`,
+`Pioneer Strategic Income`, `Hartford`, `Columbia`, `MID CAP STRATEGIC GWTH`.
+
+**THE SAME CONCEPT IS WRITTEN CORRECTLY IN THE OTHER FILE, which is what makes
+this an oversight rather than a decision.** `app.js`'s `gicRow` has always been
+`/stable value|\bgic\b/i`, with the leading boundary. One regex, two files, and
+only one of them right.
+
+**AND THAT IS ALSO WHY NO DISPLAY GUARD COULD SEE IT.** Every guard this record
+has shipped against the fabricated 0.35 — `gicRow`, `isAnnuityContractRow`,
+`annuityFeeIsGuaranteeOnly`, `isInvestmentContractRow`,
+`mistypedStockFeeIsGuaranteeOnly` — suppresses by what the row IS, reading the
+TYPE cell or a contract noun in the name. This one fabricates from an ordinary
+English adjective in the name of an ordinary equity fund, so there was nothing
+for a type-based guard to catch.
+
+**FOUND BY MEASURING THE RESIDUE OF AN ALREADY-FIXED CLASS.** The 20:0x
+participant-weighted draw (Premium Brands Services, 14,694 ppl) showed
+`MassMutual Diversified SAGIC II Fund` publishing 0.35% with a blank type cell,
+so I sized what was LEFT of the fabricated 0.35 after every shipped guard:
+**14,645 rows / 19,687,098 participants**. Reading the 5,077 distinct names
+split that immediately — genuine stable-value products (`TIAA Stable Value`,
+`Key Guaranteed Portfolio Fund`, `AUL STABLE VALUE ACCOUNT`), which is the
+known open item, and **real mutual funds with "Strategic" in the name**, which
+was not. **Do not carry 14,645 forward as one class; it is at least two.** The
+"ONE count was several defects" rule again.
+
+**The mechanism was then read out of the regex rather than guessed:** stripping
+`strategic` from each name and re-asking returned `null` every time, and
+`"Vanguard Strategic Equity Fund".match(arm)` returns **`"gic"`**.
+
+### The fix, and the one thing that must survive it
+
+`\b(?:sa)?gic\b`. **The `(?:sa)?` is not decoration: a SAGIC is a Separate
+Account GIC and really is a guarantee product**, and a naive `\bgic\b` stops
+matching it. Measured before choosing: **114 distinct names / 292 rows** depend
+on it — `SAGIC Diversified Bond II`, `MassMutual SAGIC Core Bond I`,
+`Diversified SAGIC II` — and every one keeps the number.
+
+### Outcome, whole-store, through app.js's full `er` expression
+
+**WITHDRAWN 7,256 rows / 6,264 plans + 22 master trusts (46 members) /
+8,624,296 participants / $6,512,797,520. GAINED 0. CHANGED 5.**
+
+**All five changes are the defect's removal unblocking the CORRECT answer**, and
+each was traced rather than assumed: the false `gic` match was returning 0.35 on
+the bare filed name, so `fundERFiled` answered and the issuer-informed lookup
+never ran. With it gone the bare name falls through and the right arm wins —
+`{Vanguard} Life Strat Growth` 0.35 → **0.1**, `{Loomis} Sayles Strategic Income
+Y NR` 0.35 → **0.6**, `{Neuberger} Berman Strategic Income R6` 0.35 → **0.65**.
+Every one is closer to the fund's real fee.
+
+**NO REPLACEMENT NUMBER for the 7,256.** The claim is WITHDRAWN, not re-priced,
+for the reason this record gives each time: **a fee is SOURCED, never derived.**
+A blank cell is honest; 0.35% on Vanguard Strategic Equity is not.
+
+**SURFACE: the REPORT only, and structurally so** — `build-seo-pages.mjs` never
+imports `fund-er.js`, so the crawlable pages cannot render a per-fund expense
+ratio under any input.
+
+**Tether:** 7 new must-blank-fee fixtures and 7 new must-keep (the SAGIC family,
+plus `GIC Account`, `TIAA Stable Value` and `Key Guaranteed Portfolio Fund`, so
+the arm's real job is pinned on both sides). `fund-er-test.mjs` reads 46 / 26 /
+19 / 18 with 0 failures. **Negative-controlled:** reverting the one character
+fails **by name on exactly the 7 must-blanks** and holds all 18 must-keeps.
+smoke-test green.
+
+**STILL OPEN and now separated from this: the genuine stable-value products
+publishing an unsourced 0.35 with a blank type cell** — `TIAA Stable Value`
+(321 rows), `Key Guaranteed Portfolio Fund` (349), `AUL STABLE VALUE ACCOUNT`
+(301), `Principal Fixed Income Guaranteed Option` (231). These really are
+guarantee products, so the question is not whether the arm should match them
+but whether an unsourced estimate should be published for a contract whose cost
+is inside its crediting rate. That is the same question `gicRow` already answers
+"no" to whenever the TYPE cell says so — so the shape is a display fix, not a
+table fix, and it is not this entry's.

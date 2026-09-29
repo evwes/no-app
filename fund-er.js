@@ -348,7 +348,25 @@ const FUND_ER = [
   [/equity index|stock index|bond index|aggregate index|russell \d+ index|msci .*index|acwi/i, 0.06],
   [/\bindex\b/i, 0.1],
   [/money market|cash reserves|treasury only/i, 0.2],
-  [/stable value|managed income|guaranteed|gic\b/i, 0.35],
+  /* `gic\b` HAD NO LEADING WORD BOUNDARY, so it matched the last three letters
+   * of "strateGIC". Found 2026-09-29 by the participant-weighted draw, sizing
+   * what was left of the fabricated 0.35 after every display guard: 5,604 rows
+   * / 5,028 plans / 7,324,367 participants / $7,110,334,527 were being priced
+   * as guaranteed investment contracts because their name says "Strategic" --
+   * `Vanguard Strategic Equity Fund`, `Fidelity Strategic Income`, `BlackRock
+   * Strategic Global Bond`, `Thornburg Strategic Income R6`. All 1,904 distinct
+   * names were read and every one is a real registered fund.
+   *
+   * app.js's own `gicRow` has always been `/stable value|\bgic\b/i` -- the same
+   * concept, written correctly in one file and not in this one, which is why no
+   * display guard could see it: they suppress by TYPE and this fabricates by
+   * NAME.
+   *
+   * THE `(?:sa)?` IS NOT DECORATION. A SAGIC is a Separate Account GIC and
+   * really is a guarantee product; a naive `\bgic\b` stops matching it. 114
+   * distinct names / 292 rows depend on it -- `SAGIC Diversified Bond II`,
+   * `MassMutual SAGIC Core Bond I` -- and they must keep the number. */
+  [/stable value|managed income|guaranteed|\b(?:sa)?gic\b/i, 0.35],
 ];
 
 /* ---- recordkeeper abbreviations ---------------------------------------------

@@ -170,6 +170,13 @@ if (ctx.__v) {
  * derived. These fixtures pin both directions: the classes that must now come
  * back blank, and the ones that must keep their number. */
 const ER_MUST_BLANK = [
+  /* `gic\b` matched the tail of "strateGIC", pricing real funds as guaranteed
+   * investment contracts. 5,604 rows / 7,324,367 participants; all 1,904
+   * distinct names read and every one a real registered fund. 2026-09-29. */
+  "Vanguard Strategic Equity Fund", "Fidelity Strategic Income Fund",
+  "BlackRock Strategic Global Bond K", "Pioneer Strategic Income R6",
+  "Thornburg Strategic Income Fund", "MID CAP STRATEGIC GWTH",
+  "Vanguard Strategic Small-Cap Equity Inv",
   "American Funds Eupac R4", "American Balanced Fund Class A",
   "American Funds Trgt Date Ret 2040 R2", "AMERFDS AMERICAN BALANCED R4",
   "American Funds 2035 Target Date Fund R3", "AMERICAN FUNDS 2060 TARGET DATE FUND R1",
@@ -183,6 +190,12 @@ const ER_MUST_BLANK = [
   "American Funds Washington Mutual Investors Fund C-Class",
 ];
 const ER_MUST_KEEP = [
+  /* ...and a SAGIC is a Separate Account GIC, which really IS a guarantee
+   * product and really does end in `gic`. A naive `\bgic\b` drops these: 114
+   * distinct names / 292 rows depend on the `(?:sa)?`. */
+  "SAGIC Diversified Bond II", "MassMutual SAGIC Core Bond I",
+  "Sagic Diversified Bond I", "Diversified SAGIC II",
+  "GIC Account", "TIAA Stable Value", "Key Guaranteed Portfolio Fund",
   "American Funds 2030 Target Date Retirement Fund R6",
   "American Funds 2030 Target Date Retirement Fund",
   "American Funds Washington Mutual R5",
