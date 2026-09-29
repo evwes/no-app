@@ -831,6 +831,76 @@ export, do not copy the line.
   computed against the store it would actually RUN on and landed exactly, on
   both the plan count and the row count. *State a store-dependent prediction
   against the store the run will read.*
+- **MIRRORED 2026-09-29 09:2xZ (`a0a4fb8 → b52b02e`), DATA GATE UNFORCED
+  +0 / −0**; `--force` covered the GIT check alone over main's one cron commit,
+  evidence first: **0 acks and 0 plans the branch lacked, 0 newer on main, 0
+  confident on main the branch lacks, plans array byte-identical.**
+  **#502 ran `success`** (data commit `8984818`), store complete at pv 192 /
+  **99.81%**, coverage line byte-identical to #501's — confident 60,103, HIGH
+  **4 = the baseline**, WARN 608, overshoot 326, dl 131. Correct for an
+  incremental whose whole work list is the dead 403s, not a stall.
+  **AN INSURANCE ANNUITY CONTRACT IS NO LONGER TYPED `Mutual fund`: 186 rows /
+  153 plans / 216,782 participants / $2,084,149,902** — TIAA Traditional, CREF
+  variable, Empower and PRIAC group annuities, Lincoln, SAGIC. American
+  University's LARGEST holding (13.5% / $182,342,343) was one.
+  **v190's and v192's shape one COLUMN along:** those stopped a NAME making a
+  false claim; here the name is faithful and the TYPE is the claim, so **no
+  name-based guard could ever have seen it.** Display-side, no bump —
+  `isAnnuityContractRow` canonical in `lib-disclose`, extracted verbatim into
+  app.js by the generator, tethered. The row is TYPED, never dropped; value
+  and percentage untouched. REPORT path only (the crawlable pages carry no
+  type and no ER column, `git diff --stat p/` empty).
+  **AND MY OWN QUEUE ENTRY'S "NO FABRICATED FEE" WAS FALSE — the more
+  expensive half.** I asked `fundTickerInfo(...).er` and the stored `f.tk` /
+  `f.stk`; the page prices a row through **`fundER(name)`**, whose generic
+  `/stable value|guaranteed|gic/` fallback priced **34 of the 186 rows at
+  0.35%** (33 plans / 77,264 ppl / $153,841,087). **The site already refuses
+  that number for every row typed `Stable value / GIC` (`gicRow`), so the
+  wrong TYPE was the only reason the fee escaped — one defect was feeding
+  another.**
+  **AND I REPRODUCED THE ERROR WHILE CHECKING IT:** my verification reached for
+  `fundERFiled` in `fund-er.js`, got "function present: false", and printed a
+  clean **`0 priced`** that looked like confirmation. `fundERFiled` lives in
+  **app.js** and wraps `fundER`; calling `fundER` gives 34. *Measure through
+  the function the page calls* — failed twice in twenty minutes, once writing
+  the item and once checking it, and **the tell both times was a suspiciously
+  clean zero.**
+  Verified independently: 186 / 153 / 216,782 / 146 distinct names reproduce
+  exactly; the tether's negative control fails **by name on exactly 4 of 14**,
+  and the 4 are precisely the rows the type gate protects. smoke + parser gate
+  green.
+  **ADJACENT, SIZED, NOT SHIPPED, and LARGER: 184 rows / 150 plans / 322,394
+  ppl / $2,411,652,415 publish an estimated ER on a holding the filing names
+  an annuity contract**, typed blank (162), `Cash / short-term` (15),
+  `Separate account` (5), ETF (1), `Corporate debt` (1) — outside this item
+  because their type makes no mutual-fund claim, but the FEE is the same
+  unsourced number. `docs/accuracy-log.md` 2026-09-29 (09:2xZ).
+- **QUEUED, SIZED, NOT SHIPPED — SCHEDULE H LINE 4a's DELINQUENT PARTICIPANT
+  CONTRIBUTIONS TABLE IS PUBLISHED AS FUND HOLDINGS: 98 rows / 96 plans /
+  157,098 participants / $19,336,239.** All **81 distinct names read** and not
+  one is a fund: `Corrected Outside VFCP Correction in VFCP ☑`, `Plan Corrected
+  VFCP in VFCP 51 Check Here if Late`, `Amount Date Date Withheld Withheld
+  Remitted`. The DOL's own COMPLIANCE schedule read as a menu — the family
+  this record already names (UPMC's employer roster, the fair-value note, the
+  statement of changes). Largest is 5.3% of its menu, so **no dominance guard
+  can see it**; type blank on 80 of 98 and `Mutual fund` on 5; **0 ticker, 0
+  ER, 0 `stk`, checked through `fundER`.** Discriminator is the compliance
+  vocabulary itself (`VFCP`, `PTE 2002-51`, `Amount Withheld`, `Date
+  Remitted`), which cannot appear in a fund name. Parser-side like v131's
+  loan-description removal, so it needs a bump. **Two log entries recorded
+  single instances of this as one-off junk; it is a class of 96 plans and was
+  never sized.**
+  **THE COUNT THAT FOUND IT IS NOT A CLASS.** The 09:0xZ draw on Marriott
+  (137,769 ppl, `VANGUARD RETIREMENT RETIREMENT INCOME`, `FIDELITY INVESTMENTS
+  MONEY MONEY PORTFOLIO`) led me to size "a word repeated back-to-back" at
+  **497 rows / 286 plans / 905,232 ppl** — and reading all 445 distinct names,
+  that signature spans **at least SIX unrelated defects**: the VFCP table, the
+  `nia` OCR column, `TIAA# TIAA Traditional` (32 rows — the doubled house with
+  a legend marker between, which v149's prefix fix cannot reach), OCR mush, a
+  bare `Vanguard Vanguard`, and real doubled-word damage (`Dodge & Cox Income
+  Fund, Fund, Class X`, `T. Rowe Price Price Value Fund`). **497 must not be
+  carried forward as a class** — the "ONE count was four defects" rule, met
+  again at six.
 - **MIRRORED 2026-09-29 07:5xZ (`f7ff3fe → 119c88b`), UNFORCED ON BOTH CHECKS**,
   data gate +0 / −0. **AN OCR'D N/A COLUMN AND A SHARE COUNT WERE PUBLISHING AS
   HOLDING NAMES: 44 rows / 5 plans / 21,338 participants** get the FILED name
