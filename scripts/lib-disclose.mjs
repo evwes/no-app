@@ -522,17 +522,37 @@ export function cleanFiledName(name) {
    * produced a wrong answer on this record at least four times, so the two
    * arms share this rather than each carrying their own. */
   const bwOpensWithAName = (t0) => {
-    const furniture = /^(?:class(?:es)?|cl|fee|fees|series|ser|shares?|sh|units?|tier|lot|level|at|of|in|on|for|and|or|as|to|with|per|net|the|a|an|value|values|fair|contract|market|cost|book|nav|bps|no|not|required|omitted|available|na|none|total|subtotal|held|directed|participant|participants|self|various|other|misc|continued|cont|certified|uncertified|approx|approximate|number|amount|wrapper|cit|gac|invested|issued|managed|measured|consisting|comprised|including|investments|funds?|trusts?|accounts?|compan(?:y|ies)|portfolios?)$/i;
+    const furniture = /^(?:class(?:es)?|cl|fee|fees|series|ser|shares?|sh|units?|tier|lot|level|at|of|in|on|for|and|or|as|to|with|per|net|the|a|an|value|values|fair|contract|market|cost|book|nav|bps|no|not|required|omitted|available|na|none|total|subtotal|held|directed|participant|participants|self|various|other|misc|continued|cont|certified|uncertified|approx|approximate|number|amount|wrapper|cit|gac|invested|issued|managed|measured|valued|using|consisting|comprised|including|investments|funds?|trusts?|accounts?|compan(?:y|ies)|portfolios?)$/i;
     const code = /^(?:[ivxl]{1,4}|[a-z]|[a-z]?\d{1,6}[a-z]?|[a-z]{1,2}\d{1,4}|\d+bps)$/i;
     return !!t0 && !furniture.test(t0) && !code.test(t0);
   };
-  const bwTYPE = /^(?:common\/?collective trusts?(?: funds?)?|collective investment trusts?(?: funds?)?|registered investment compan(?:y|ies)|pooled separate accounts?|separate accounts?|mutual funds?|money market funds?|stable value funds?|index funds?|target date funds?)/i;
+  /* AN INITIAL IS NOT A SHARE-CLASS CODE, 2026-09-29. `bwOpensWithAName`
+   * strips punctuation before judging, so `T. Rowe Price Overseas` arrived as
+   * the bare `T` and was refused by the one-letter `code` arm — leaving
+   * `Registered Investment Company T. Rowe Price Overseas` published whole on
+   * 129 rows / 38 plans / 62,598 participants. This project's record already
+   * carries `t` from T. Rowe Price as a trap in the matcher's manager
+   * vocabulary; it is the same letter defeating a different predicate.
+   * The discriminator is the PERIOD, which the punctuation strip threw away:
+   * a single letter followed by a full stop is an initial, and a filed share
+   * class is never written that way (`Class A`, never `A.`). */
+  const bwInitial = (raw) => /^[A-Za-z]\.$/.test(raw);
+  /* `investments` PLURAL ONLY, and the singular is the whole reason this is
+   * spelled out rather than written `investments?`. Measured 2026-09-29 over
+   * the whole caption bucket: allowing the bare singular `investment` would
+   * have withdrawn a resolution from 34 rows, and every one of them is a real
+   * fund whose own name STARTS with the word — `INVESTMENT CO OF AMERICA
+   * Class R-4` (RICEX), `Investment Grade Bond R6` (JIGEX), `Investment Grade
+   * Bond Fund - Class A` (LIGRX). Every row the plural gains is a genuine
+   * caption. The data chose the split, as length chose this arm's floor.
+   * 418 rows / 344 plans / 2,599,053 participants. */
+  const bwTYPE = /^(?:common\/?collective trusts?(?: funds?)?|collective investment trusts?(?: funds?)?|registered investment compan(?:y|ies)|pooled separate accounts?|separate accounts?|mutual funds?|money market funds?|stable value funds?|index funds?|target date funds?|investments)/i;
   const bm = s.match(new RegExp(bwTYPE.source + "\\s+(?=[A-Za-z0-9])", "i"));
   if (bm) {
     const rest = s.slice(bm[0].length).trim();
     const toks = rest.split(/\s+/);
     const t0 = toks[0].replace(/[^A-Za-z0-9&]/g, "");
-    if (toks.length >= 4 && bwOpensWithAName(t0)
+    if (toks.length >= 4 && (bwOpensWithAName(t0) || bwInitial(toks[0]))
         && !bwTYPE.test(rest) && /[A-Za-z]{3}/.test(rest)) s = rest;
   }
   /* THE LEADING-PARENTHETICAL FAMILY, 2026-09-28. All 125 distinct members

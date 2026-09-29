@@ -704,17 +704,17 @@
      * produced a wrong answer on this record at least four times, so the two
      * arms share this rather than each carrying their own. */
     const bwOpensWithAName = (t0) => {
-      const furniture = /^(?:class(?:es)?|cl|fee|fees|series|ser|shares?|sh|units?|tier|lot|level|at|of|in|on|for|and|or|as|to|with|per|net|the|a|an|value|values|fair|contract|market|cost|book|nav|bps|no|not|required|omitted|available|na|none|total|subtotal|held|directed|participant|participants|self|various|other|misc|continued|cont|certified|uncertified|approx|approximate|number|amount|wrapper|cit|gac|invested|issued|managed|measured|consisting|comprised|including|investments|funds?|trusts?|accounts?|compan(?:y|ies)|portfolios?)$/i;
+      const furniture = /^(?:class(?:es)?|cl|fee|fees|series|ser|shares?|sh|units?|tier|lot|level|at|of|in|on|for|and|or|as|to|with|per|net|the|a|an|value|values|fair|contract|market|cost|book|nav|bps|no|not|required|omitted|available|na|none|total|subtotal|held|directed|participant|participants|self|various|other|misc|continued|cont|certified|uncertified|approx|approximate|number|amount|wrapper|cit|gac|invested|issued|managed|measured|valued|using|consisting|comprised|including|investments|funds?|trusts?|accounts?|compan(?:y|ies)|portfolios?)$/i;
       const code = /^(?:[ivxl]{1,4}|[a-z]|[a-z]?\d{1,6}[a-z]?|[a-z]{1,2}\d{1,4}|\d+bps)$/i;
       return !!t0 && !furniture.test(t0) && !code.test(t0);
     };
-    const bwTYPE = /^(?:common\/?collective trusts?(?: funds?)?|collective investment trusts?(?: funds?)?|registered investment compan(?:y|ies)|pooled separate accounts?|separate accounts?|mutual funds?|money market funds?|stable value funds?|index funds?|target date funds?)/i;
+    const bwTYPE = /^(?:common\/?collective trusts?(?: funds?)?|collective investment trusts?(?: funds?)?|registered investment compan(?:y|ies)|pooled separate accounts?|separate accounts?|mutual funds?|money market funds?|stable value funds?|index funds?|target date funds?|investments)/i;
     const bm = s.match(new RegExp(bwTYPE.source + "\\s+(?=[A-Za-z0-9])", "i"));
     if (bm) {
       const rest = s.slice(bm[0].length).trim();
       const toks = rest.split(/\s+/);
       const t0 = toks[0].replace(/[^A-Za-z0-9&]/g, "");
-      if (toks.length >= 4 && bwOpensWithAName(t0)
+      if (toks.length >= 4 && (bwOpensWithAName(t0) || /^[A-Za-z]\.$/.test(toks[0]))
           && !bwTYPE.test(rest) && /[A-Za-z]{3}/.test(rest)) s = rest;
     }
     /* THE LEADING-PARENTHETICAL FAMILY, 2026-09-28. All 125 distinct members

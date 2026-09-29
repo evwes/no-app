@@ -251,6 +251,13 @@ try {
    * drifting: every case below is a real filed name from the store, plus the
    * three controls that must come back UNCHANGED. */
   const nameCases = [
+    /* 2026-09-29, added for the reason every previous cycle's were: not one
+     * case above reaches the `investments` caption or the initial guard, so
+     * the twin would agree whether or not it carried them. */
+    "Investments Vanguard Bond Index Fund",
+    "INVESTMENT CO OF AMERICA Class R-4",
+    "Registered Investment Company T. Rowe Price Overseas",
+    "Investments using NAV (CCT funds)",
     "MUTUAL FUNDS SHARES / UNITS Fidelity 500 Index",
     "Mutual Funds, at Fair Value Schwab S&P 500 Index",
     "MUTUAL FUNDS SHARES I UNITS Vanguard 500 Index Admiral Fund",
@@ -572,7 +579,23 @@ try {
     /* and the three the typed house list of the previous cycle would have missed */
     ["Registered Investment Company PGIM Ttl Ret Bond R2 Fund", "PGIM Ttl Ret Bond R2 Fund"],
     ["Registered Investment Company Am Fds EuroPacific Grth R6 Fd", "Am Fds EuroPacific Grth R6 Fd"],
-    ["Registered Investment Company JP Morgan Large Cap Growth Fd", "JP Morgan Large Cap Growth Fd"]]) {
+    ["Registered Investment Company JP Morgan Large Cap Growth Fd", "JP Morgan Large Cap Growth Fd"],
+    /* 2026-09-29: `Investments` PLURAL is a caption; the bare SINGULAR is the
+     * first word of real funds and must never be stripped. The must-KEEPs
+     * below are the exact rows a singular arm would have destroyed, each one
+     * a ticker this store publishes today. */
+    ["Investments Vanguard Bond Index Fund", "Vanguard Bond Index Fund"],
+    ["Investments American Funds EuroPacific Growth Fund", "American Funds EuroPacific Growth Fund"],
+    ["Investments Walmart Inc. Equity Securities", "Walmart Inc. Equity Securities"],
+    ["INVESTMENT CO OF AMERICA Class R-4", "INVESTMENT CO OF AMERICA Class R-4"],
+    ["Investment Grade Bond Fund - Class A", "Investment Grade Bond Fund - Class A"],
+    /* an INITIAL is not a share-class code — the period is the discriminator */
+    ["Registered Investment Company T. Rowe Price Overseas", "T. Rowe Price Overseas"],
+    ["Common/Collective Trust T. Rowe Price BC Gr Tr CI T2", "T. Rowe Price BC Gr Tr CI T2"],
+    /* …and the remainder must still NAME something: two participles caught by
+     * reading the whole-store diff, which the counts called clean */
+    ["Investments using NAV (CCT funds)", "Investments using NAV (CCT funds)"],
+    ["Investments valued at NAV Morley Stable Value", "Investments valued at NAV Morley Stable Value"]]) {
     if (cleanFiledName(n) !== want) fail(`the filed-name cleaner now damages a control: ${JSON.stringify(n)} -> ${JSON.stringify(cleanFiledName(n))}`);
   }
 
