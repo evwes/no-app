@@ -175,6 +175,12 @@ const ER_MUST_BLANK = [
   "American Funds 2035 Target Date Fund R3", "AMERICAN FUNDS 2060 TARGET DATE FUND R1",
   "American Funds Capital World Bond R3", "AMERICAN FUNDS 2040 TRGT DATE RET F1",
   "American Funds Washington Mutual Cl C",
+  /* the REVERSED designation, added 2026-09-29: this arm read `class a` and not
+   * `A-CLASS`, so one filer's four rows kept the R-6 number for Class A
+   * holdings. Found by reading the rows the issuer-priced fee arm would add. */
+  "AMERICAN FUNDS EUROPACIFIC GROWTH FUND A-CLASS",
+  "AMERICAN FUNDS THE GROWTH FUND OF AMERICA A-CLASS",
+  "American Funds Washington Mutual Investors Fund C-Class",
 ];
 const ER_MUST_KEEP = [
   "American Funds 2030 Target Date Retirement Fund R6",
@@ -183,6 +189,11 @@ const ER_MUST_KEEP = [
   "American Funds 2045 Target Date F2",
   "American Funds EuroPacific Growth R6",
   "American Funds New World R6",
+  /* the widened arm must not reach a name that merely ENDS in `America` before
+   * the word Class — there is no word boundary inside `AMERICA-CLASS`, and the
+   * R-6 forms below are the ones that must keep their number */
+  "AMERICAN FUNDS GROWTH FUND OF AMERICA CLASS R-6",
+  "American Funds EuroPacific Growth Fund R6 Class",
   /* other houses are deliberately untouched: nothing in the table states which
    * share class THEIR numbers are, so refusing them would be a guess */
   "MFS Value Fund Cl A", "Vanguard Target Retirement 2040", "Fidelity 500 Index",

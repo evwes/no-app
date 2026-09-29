@@ -214,7 +214,7 @@ try {
   const { coverageBand, frozenClaimOk, cleanFiledName, isParticipantLoanRow, isLoanDescriptionRow,
     isAnnuityContractRow, annuityFeeIsGuaranteeOnly,
     isInvestmentContractRow, isMistypedStockRow,
-    mistypedStockFeeIsGuaranteeOnly } = await import("./lib-disclose.mjs");
+    mistypedStockFeeIsGuaranteeOnly, issuerPricedER } = await import("./lib-disclose.mjs");
   const frozCases = [
     [true, "The Plan was terminated effective December 31, 2023.", "Capital Region Medical"],
     [true, "As amended on December 31, 2024, the Plan was frozen and all participants of the Plan became fully vested.", "Hanes Companies, Inc."],
@@ -806,6 +806,71 @@ try {
     if (!mistypedStockFeeIsGuaranteeOnly(n, tableER)) fail(`mistyped-stock fee rule would publish a fabricated guarantee fee: ${JSON.stringify(n)}`);
   for (const n of stockFeeCases.slice(6))
     if (mistypedStockFeeIsGuaranteeOnly(n, tableER)) fail(`mistyped-stock fee rule would withdraw a fee a fund's own name supports: ${JSON.stringify(n)}`);
+
+  /* THE ISSUER-PRICED FEE RULE, tethered the same way, 2026-09-29. It needed
+   * its OWN cases, and this time the reason is structural rather than merely
+   * habitual: NOT ONE probe anywhere above this line passes an ISSUER at all,
+   * so a probe set reused from them could not reach this arm in principle. A
+   * control that cannot fail is decorative — caught at v189, v190, v191, v192
+   * and twice since.
+   *
+   * The must-REFUSE half is the whole safety argument, and every case in it was
+   * READ out of the store: three where the issuer's own house arm answers by
+   * itself, five where a SECOND HOUSE leads the filed name while a
+   * house-anchored arm ignores it, one where the trustee's corporate form
+   * supplied a pattern's VEHICLE word and published the collective-trust price
+   * for a registered fund, and two where a caption in the identity cell fires
+   * fund-er.js's generic guarantee fallback — the exact 0.35% this record
+   * withdrew from 89 rows and from 34 before that.
+   * `{Vanguard} Wellington Fund` is in the must-PRICE half on purpose: it is a
+   * REAL Vanguard fund whose name carries its SUB-ADVISER, and it is 274 of the
+   * 282 rows a house vocabulary would wrongly flag. */
+  const issuerFeeCases = [
+    /* must PRICE — the identity column supplies the house and nothing else */
+    ["Retirement 2030 Active Fund", "T. Rowe Price", 0.55],
+    ["Explorer Value Fund Investor Shares", "Vanguard", 0.3],
+    ["Europac Growth R6", "American Funds", 0.46],
+    ["2040 Target Date Retirement Fund", "American Funds", 0.32],
+    ["The Growth Fund of America", "American Funds", 0.3],
+    ["Advisor Total Bond Z", "Fidelity", 0.45],
+    ["International Stock Fund", "Dodge & Cox", 0.62],
+    ["Wellington Fund", "Vanguard", 0.17],
+    /* must REFUSE from here */
+    ["American Century Small Cap Growth R6", "American Funds", null],
+    ["DODGE & COX GLOBAL BOND - I", "American Funds Plans", null],
+    ["Schwab Fundamental International", "Dimensional Fund Advisors", null],
+    ["MFS Mid Cap Value R6", "T. Rowe Price", null],
+    ["AB Large Cap Growth I", "JP Morgan", null],
+    ["American Century Equity Income", "JPMorgan", null],
+    ["Parnassus Equity Income Inst", "T. Rowe Price", null],
+    ["Western Asset Core Plus Bond Fund", "JP Morgan", null],
+    ["Class R6 PGIM New World Fund Class R6", "American Funds", null],
+    ["Vanguard Retirement Target 2045", "Fidelity Management Trust Company", null],
+    ["UNALLOCATED INSURANCE CONTRACTS", "GUARANTEED INTEREST OPTION", null],
+    ["Traditional", "Guaranteed Annuity Contracts TIAA", null],
+    ["Fidelity 500 Index Fund", "", null],
+  ];
+  const issFeeGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoIssuerPricedER !== "function") return null;
+    return cs.map(([n, iss]) => window.__wampoIssuerPricedER(n, iss));
+  }, issuerFeeCases.map(([n, iss]) => [n, iss]));
+  if (!issFeeGot) fail("app.js no longer exposes __wampoIssuerPricedER — the issuer-priced fee rule cannot be cross-checked");
+  const issFeeDrift = issuerFeeCases.filter(([n, iss], i) => {
+    const lib = issuerPricedER(tableER, n, iss);
+    return (lib == null ? null : lib) !== (issFeeGot[i] == null ? null : issFeeGot[i]);
+  });
+  if (issFeeDrift.length) {
+    for (const [n, iss] of issFeeDrift) {
+      const i = issuerFeeCases.findIndex((c) => c[0] === n && c[1] === iss);
+      console.error(`  {${iss}} ${JSON.stringify(n)}  app.js=${issFeeGot[i]}  module=${issuerPricedER(tableER, n, iss)}`);
+    }
+    fail(`the issuer-priced fee rule in app.js disagrees with scripts/lib-disclose.mjs on ${issFeeDrift.length} of ${issuerFeeCases.length} cases — regenerate it`);
+  }
+  for (const [n, iss, want] of issuerFeeCases) {
+    const got = issuerPricedER(tableER, n, iss);
+    if ((got == null ? null : got) !== want)
+      fail(`issuer-priced fee rule moved: {${iss}} ${JSON.stringify(n)} want=${want} got=${got}`);
+  }
 
   const nameDrift = nameCases.filter((n, i) => cleanFiledName(n) !== nameGot[i]);
   if (nameDrift.length) {

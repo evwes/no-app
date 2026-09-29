@@ -989,6 +989,46 @@
 
   window.__wampoMistypedStockRow = (f) => isMistypedStockRow(f, (f && f.name) || "");  // read by the smoke test only
   window.__wampoMistypedStockGuaranteeFee = (n) => mistypedStockFeeIsGuaranteeOnly(n, fundER);  // read by the smoke test only
+  const ISSUER_FORM_WORDS =
+    /\b(?:trustee|trust|fiduciary|bank|banking|n\.?\s*a\.?|national association|custodian|custody|llc|l\.l\.c\.|inc|incorporated|corp|corporation|company|companies|co|l\.?p\.?|plc|ltd|limited)\b\.?/gi;
+  /* Words that cannot name a fund house, so gate (2) is not asked of them. READ
+   * off the first tokens the gate refuses; firm-capable words are absent on
+   * purpose and that omission costs rows rather than correctness. */
+  const NAME_LEAD_DESIGNATION =
+    /^(?:\d+|[a-z]|[a-z]\d|r-?\d|f-?\d|k\d?|the|an?|class|cls?|series)$/i;
+  const NAME_LEAD_NEVER_A_FIRM =
+    new RegExp(NAME_LEAD_DESIGNATION.source.replace(/\)\$$/, "")
+      + "|institutional|institutionl|instl|inst|admiral|adm|advisors?|adv|retail"
+      + "|funds?|fds?|shares?|shs|shrs|units?|registered|target(?:ed)?|trgt"
+      + "|retirement|retire)$", "i");
+
+  function issuerPricedER(priceOf, cleanedName, issuer) {
+    const name = String(cleanedName || "").replace(/\s+/g, " ").trim();
+    /* (0) the firm, without its corporate form */
+    const iss = String(issuer || "").replace(/\*+/g, " ")
+      .replace(ISSUER_FORM_WORDS, " ").replace(/[^A-Za-z0-9&.\- ]+/g, " ")
+      .replace(/\s+/g, " ").trim();
+    if (!name || !iss) return null;
+    const er = priceOf(iss + " " + name);
+    if (er == null) return null;
+    /* (1) the issuer must not supply the answer by itself */
+    if (er === priceOf(iss)) return null;
+    /* (2) past a leading share-class designation, the fund's own first word must
+     * be load-bearing — unless that word is one that cannot name a firm */
+    const parts = name.split(" ");
+    if (parts.length < 2) return er;
+    const word = (p) => String(p || "").replace(/[^A-Za-z0-9&.-]/g, "");
+    let j = 0;
+    while (j < parts.length && NAME_LEAD_DESIGNATION.test(word(parts[j]))) j++;
+    if (j >= parts.length) return er;               // the name is designation only
+    const w = word(parts[j]);
+    if (!w || NAME_LEAD_NEVER_A_FIRM.test(w)) return er;
+    const less = parts.slice(0, j).concat(parts.slice(j + 1)).join(" ").trim();
+    if (less && priceOf(iss + " " + less) === er) return null;
+    return er;
+  }
+
+  window.__wampoIssuerPricedER = (n, iss) => issuerPricedER(fundER, n, iss);  // read by the smoke test only
   window.__wampoCleanFiledName = cleanFiledName;
   window.__wampoLoanRow = (n) => LOAN_ROW.test(String(n || "").trim());  // read by the smoke test only
   /* "does this string identify a fund at all?" — the identity probe
@@ -1033,6 +1073,29 @@
     if (direct != null) return direct;
     const rep = repairHouse(name);
     return rep ? fundER(rep) : null;
+  }
+  /* THE FEE FOR ONE ROW, which until 2026-09-29 was `fundERFiled(f.name)` — the
+   * cleaned name ALONE — while `lookupTicker` below has prepended the row's 4i
+   * IDENTITY cell on every attempt since v67. A row whose house lives only in
+   * that column therefore resolved a ticker and published a BLANK fee beside
+   * it; Cardinal Services shows twelve clean Vanguard target-date tickers and
+   * zero fees.
+   *
+   * STRICTLY ADDITIVE BY CONSTRUCTION: the issuer arm runs only once the bare
+   * name has returned null, so a row that publishes a fee today publishes the
+   * identical fee after. Measured whole-store before shipping — 59,526 rows
+   * gained, 0 changed, 0 lost.
+   *
+   * The rule, its three gates and the whole safety argument live in
+   * scripts/lib-disclose.mjs; this is the generated twin's call site. It takes
+   * the bare fee TABLE and not `fundERFiled`, exactly as the annuity rule does:
+   * the house-misspelling repair is a repair for a string believed to be a
+   * fund's name, and two of the three gates ask about strings that are
+   * explicitly not one. */
+  function fundERRow(f) {
+    const direct = fundERFiled(f.name);
+    if (direct != null) return direct;
+    return issuerPricedER(fundER, f.name, f.iss);
   }
   /* Ticker lookup order: the FILED name first (with and without the issuer),
    * the cleaned display name only as a fallback. Measured 2026-09-18 before
@@ -2164,7 +2227,7 @@
         && mistypedStockFeeIsGuaranteeOnly(f.name || "", fundER);
       const er = tab !== "menu" || stockRow || gicRow || subtotalRow || loanRow || annuityRow
         || guaranteeOnlyFee || contractRow || mistypedGuaranteeFee ? null
-        : star ? info.er : (noPublicPrice ? null : fundERFiled(f.name));
+        : star ? info.er : (noPublicPrice ? null : fundERRow(f));
       // the brokerage window is a menu choice with no holdings of its own —
       // tint it so it reads as a doorway, not a fund (owner request)
       const brokRow = /brokerage window/i.test(f.type || "")

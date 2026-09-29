@@ -28195,3 +28195,183 @@ be folded back into one count:
 - **OCR-SPLIT LOAN WORDS — North Memorial Health Care (8,260 ppl, $5,519,000):**
   `Notes recei va bl e with interes t`, residue `recei va bl interes`. No
   vocabulary can reach a word broken into pieces; a de-spacing repair would.
+
+---
+
+## 2026-09-29 — The ticker lookup gets the issuer prefix and the fee lookup never had
+
+- **Wrong:** `lookupTicker` has prepended the row's 4i IDENTITY cell on every
+  attempt since v67. The fee never did — `app.js` asked `fundERFiled(f.name)`,
+  the cleaned name **alone**. So a row whose house lives only in the identity
+  column, the normal shape since v126 promoted issuer headers, resolved a
+  TICKER and published a BLANK fee beside it. **Cardinal Services publishes
+  twelve clean Vanguard target-date tickers and ZERO fees**; TruGreen (14,396
+  ppl) publishes 17 tickers of 24 rows and 3 fees. Found by that asymmetry on
+  the page, not by any count.
+
+- **Change:** `issuerPricedER` in `scripts/lib-disclose.mjs`, twinned into
+  app.js by `gen-generic-twin.mjs` and called from `fundERRow` **only after the
+  bare-name lookup has returned null**, so the change is strictly additive by
+  construction. It asks `fund-er.js` — the only expense-ratio source — a more
+  complete question about the same row, and invents nothing: when the prefixed
+  string resolves nothing the cell stays blank.
+
+- **Measured whole-store, HEAD against the working tree, through app.js's FULL
+  `er` expression with every suppressor transcribed** (`gicRow`, `subtotalRow`,
+  `stockRow` on type PLUS name, `noPublicPrice`, `loanRow`, `annuityRow` on the
+  RAW name, `isMistypedStockRow`/`mistypedStockFeeIsGuaranteeOnly`,
+  `isInvestmentContractRow`, and the `star` branch):
+  **GAINED 59,521 rows / 8,485 plans / 12,398,051 participants /
+  $171,674,834,061. CHANGED 0. LOST 1**, and the one loss is the deliberate,
+  separately named A-CLASS withdrawal below. Fee cells 855,277 → 914,797.
+  **SURFACE: the REPORT path only** — `build-seo-pages.mjs` renders no per-fund
+  ER column, and `git diff --stat p/` over all 5,000 regenerated pages is empty,
+  which is what says so rather than a reading of the code.
+
+- **THE GATE IS THE WHOLE OF THE WORK, AND IT IS `resolveHolding`'s 2026-09-28
+  RULE REUSED: the issuer may ADD a manager and may never REPLACE one.** The
+  identity cell often holds a TRUSTEE or a recordkeeping platform, so a naive
+  prefix prices a competitor's fund at this platform's rate. Three gates, each
+  measured against the rows it exists to stop:
+  - **(0) the issuer contributes a FIRM, not its corporate form.** Leaving the
+    legal wrapper in lets it satisfy a pattern's VEHICLE condition:
+    `{Fidelity Management TRUST Company} Vanguard Retirement Target 2045` matched
+    fund-er.js's *vanguard + target + (trust|collective|pool)* arm and published
+    **0.045, the COLLECTIVE TRUST price**, on seven rows — with the word `trust`
+    supplied entirely by the trustee's corporate name. Right house, wrong
+    vehicle, still a fabricated number. **This gate is not only a refusal: the
+    strip also RECOVERS 91 rows the naive prefix never proposed** —
+    `{Vanguard Fiduciary Trust Company} Windsor II ADM`, `{Vanguard:} Equity
+    Income Fund`, `{Blackrock, Inc} High Yield Bond Institution`.
+  - **(1) the issuer must not supply the answer by itself.** If the prefixed
+    string resolves to the same number the issuer alone resolves to, the NAME
+    contributed nothing and what publishes is the issuer's house-wide default.
+    Three of the four recorded false positives die here outright —
+    `{American Funds} American Century Small Cap Growth R6 → 0.4`,
+    `{American Funds Plans} DODGE & COX GLOBAL BOND - I → 0.4`,
+    `{Dimensional Fund Advisors} Schwab Fundamental International → 0.3` — each
+    being fund-er.js's bare `/american funds/i` or `/dfa |dimensional/i` arm
+    firing on the ISSUER text. **It also closes a fabrication route this record
+    has withdrawn cells for twice:** an identity cell reading `Guaranteed
+    Annuity Contracts TIAA` or `Stable value fund Standard Insurance Company`
+    triggers the generic `/stable value|managed income|guaranteed|gic/` arm and
+    would manufacture the exact 0.35% removed from 89 rows this morning and
+    from 34 before that. **The queue entry did not name that risk; it was found
+    by printing the issuer strings that license a gain and reading them.**
+  - **(2) past a leading share-class designation, the fund's own first word
+    must be LOAD-BEARING.** Drop it, ask the same table again; if the answer
+    does not move the match never used that word, and in every wrong-house row
+    read out of the residue that word is the OTHER house — `{T. Rowe Price} MFS
+    Mid Cap Value R6 → 0.65` through a T. Rowe arm that never reads `MFS`, and
+    the same for `{JP Morgan} AB Large Cap Growth I`, `{JPMorgan} American
+    Century Equity Income`, `{T. Rowe Price} Parnassus Equity Income Inst`,
+    `{T. Rowe Price} Putnam Large Cap Growth R6`, `{JP Morgan} Western Asset
+    Core Plus Bond Fund`. This is the shipped sibling rule's own shape — remove
+    the words, ask again — asked of IDENTITY rather than of price.
+
+- **WHAT IS DELIBERATELY NOT SHIPPED: a vocabulary of fund HOUSES.** One was
+  built to READ the residue with and it is the right tool for that — it is how
+  every wrong-house row above was found. It is the wrong tool to ship. **Its
+  most frequent hit is `{Vanguard} Wellington Admiral Fund`, a REAL Vanguard
+  fund whose name carries its SUB-ADVISER, and 272 of the 281 rows it flags in
+  the final gain are that shape** (the other 9 are split or typo'd American
+  Funds issuers, same house). A firm's name inside a fund's name is not always a
+  second house, and a house list is wrong in the UNSAFE direction: a house it
+  omits publishes a wrong fee in silence. Every gate that shipped is structural
+  and asks the fee table itself. **The queue entry's recorded harness error —
+  "do not carry 630 forward" — is why the list stayed a reading aid.**
+
+- **TWO DEAD DISCRIMINATORS, recorded so they are not retried.**
+  **(a) "does the bare name already identify a fund to `fundTickerInfo`"**: it
+  LICENSES all twelve wrong-house rows and REFUSES a correct one
+  (`{American Funds} Europac Growth R6`), because the ticker table needs a house
+  on the name exactly as the fee table does. **(b) "the issuer alone must price
+  nothing"** — gate (1)'s blunt form — refuses **36,938 of 80,075** candidate
+  gains including the entire American Funds family, because the fee table prices
+  several houses at a house-wide default. Gate (1) compares the two ANSWERS
+  instead, which is the same question asked where it can discriminate.
+
+- **A DRAFT THAT BROKE THIS ITEM'S OWN MOTIVATING CASE, caught by a pinned
+  control.** Gate (2)'s second draft skipped the whole run of excused words
+  rather than a share-class designation, walked past `Retirement 2030` in
+  `{T. Rowe Price} Retirement 2030 Active Fund` and landed on `Active`, an
+  adjective the T. Rowe arm ignores — so it refused 0.55 on the very row the
+  rule exists to fill. A share-class prefix is not part of the fund's name and
+  may be stepped over; the fund's own first word may not.
+
+- **WHY GATE (2)'s EXCUSE LIST IS NEGATIVE, and what it costs.** A vintage year
+  is never load-bearing (`{American Funds} 2040 Target Date Retirement Fund`
+  resolves 0.32 through `/american funds.*target date/i`, which does not read
+  `2040`), and refusing those would withdraw **9,473 correct rows**. So the list
+  names words that CANNOT name a firm and therefore **fails SAFE: a word missing
+  from it costs a correct gain and can never publish a wrong fee.** It was read
+  off the **159 distinct first tokens** the gate refuses, not written from
+  memory, and the firm-capable ones were deliberately LEFT OUT even at a cost —
+  `american`, `capital`, `mutual`, `investors`, `research`, `america` and every
+  house abbreviation (`amerfds`, `trwpr`, `amf`), because each can lead another
+  house's name.
+
+- **THE GATE'S TOTAL COST, stated rather than rounded away: it refuses 20,645
+  of the 80,075 candidate gains (25.8%), 12,096,998 participant-weighted.**
+  Reading the refusals, they are overwhelmingly house-DEFAULT answers —
+  `{American Funds} New Perspective Fund → 0.4`, `{Janus Henderson} Triton Fund
+  → 0.7`, `{Allspring} Special Mid Cap Value → 0.45`, `{Carillon Eagle} Mid Cap
+  Growth → 0.75`. Most of those really are the house's own funds. They are
+  refused anyway because **the same blanket arm answers 0.4 for `American
+  Beacon Large Cap Value R6` under the same issuer, and nothing in the answer
+  distinguishes them.** The way to reach those 20,645 rows is not a looser gate:
+  it is fund-SPECIFIC arms in `fund-er.js` for those families, which is a
+  sourced-number question, not a matcher question.
+
+- **FOUND WHILE READING A RANDOM 60 OF THE ROWS THIS CHANGE WOULD ADD, AND
+  FIXED IN THE SHIPPED GUARD: `A-CLASS` IS A CLASS.** `AF_LOAD_CLASS` read
+  `class a` and `cl a` and not the reversed designation, so
+  `{AMERICAN FUNDS} EUROPACIFIC GROWTH FUND A-CLASS` came back **0.46, the R-6
+  number, for a holding whose own name states Class A**. Four of the rows this
+  change would have added sat in that blind spot. Closed by one alternative in
+  the shipped arm, with the whole-store cost measured first: **exactly ONE
+  published cell is withdrawn — `AMERICAN BALANCED FUND A-CLASS` at 0.28, 555
+  participants, the same plan** — and it is withdrawn rather than re-priced, for
+  the reason the 2026-09-28 block already gives. Pinned in
+  `fund-er-test.mjs` in both directions, including a control that
+  `AMERICA-CLASS` has no word boundary and must not be reached.
+  **This is the only non-additive line in the change and it is named here
+  because "strictly additive" was the scope: 59,521 gained, 0 changed, 1
+  withdrawn.**
+
+- **Prevention.** The rule is canonical in `scripts/lib-disclose.mjs`, extracted
+  VERBATIM into app.js by `scripts/gen-generic-twin.mjs` (start/end markers
+  extended, the old end marker kept so a stale tail cannot be left behind), and
+  tethered in `scripts/smoke-test.mjs` on **21 pinned cases, 8 must-PRICE and 13
+  must-REFUSE**, with 29 in the generator's own self-check.
+  **THE PROBES ARE NEW BECAUSE NOT ONE EXISTING PROBE COULD REACH THIS ARM IN
+  PRINCIPLE — no probe anywhere in the file passes an ISSUER at all** — so a
+  reused set would have agreed whether or not the rule was carried, which is the
+  decorative-guard failure caught at v189, v190, v191, v192 and twice since.
+  **Negative-controlled in four directions, each failing BY NAME on exactly the
+  rows it uniquely protects:** disabling gate (0) in the twin fails on the
+  Vanguard-under-Fidelity-trustee row alone; gate (1) on the
+  `{Guaranteed Annuity Contracts TIAA}` 0.35 fabrication alone; gate (2) on six
+  wrong-house rows; removing every gate in the module fails all 15 must-REFUSE
+  cases in the generator while all 14 must-PRICE hold.
+  **Worth recording from those controls: gates (1) and (2) OVERLAP on the
+  house-default rows — with (1) off, (2) still catches American Century under
+  American Funds — so each gate's unique contribution is smaller than its
+  refusal count, and both are needed.**
+  `parser-gate.mjs` green, `smoke-test.mjs` green, `fund-er-test.mjs` green
+  (46 must-resolve, 26 must-not-resolve, 12 must-blank-fee, 11 must-keep-fee).
+
+- **FOUND, SIZED, NOT FIXED — the weighted AVERAGE-ER line still asks the bare
+  name.** `filedAvgER` calls `fundER(f.name)` with no issuer and no
+  house-misspelling repair, so **1,683 lineups / 1,869,136 participants** now
+  publish a per-row fee the plan-level average does not count, and its "N of M"
+  denominator disagrees with the table beneath it. Deliberately untouched: it
+  would REWRITE a published average for plans that already show one, which is a
+  changed claim rather than an added one and belongs in its own cycle with its
+  own before/after.
+
+- **`map-test.mjs` fails in this sandbox at HEAD as well as on this change**,
+  identically — `ERR_CERT_AUTHORITY_INVALID` on an external resource, with the
+  map itself rendering 352 dots and 9,592 plans in both runs. Stated rather than
+  claimed green: it is an egress-proxy artefact here and says nothing either way
+  about the change. Read the CI conclusion.

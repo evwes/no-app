@@ -1310,3 +1310,152 @@ export function mistypedStockFeeIsGuaranteeOnly(cleanedName, priceOf) {
   if (rest === s) return false;
   return priceOf(rest) == null;
 }
+
+/* THE FEE LOOKUP NEVER SAW THE ISSUER COLUMN — canonical copy, 2026-09-29.
+ *
+ * `lookupTicker` has prepended the row's 4i IDENTITY cell on every attempt
+ * since v67. The fee never has: app.js asked `fundERFiled(f.name)`, the cleaned
+ * name ALONE. So a row whose house lives only in the identity column — the
+ * normal shape since v126 promoted issuer headers — resolves a TICKER and
+ * publishes a BLANK fee beside it. Cardinal Services publishes twelve clean
+ * Vanguard target-date tickers and ZERO fees; TruGreen publishes 17 tickers of
+ * 24 rows and 3 fees. Found by that asymmetry on the page, not by any count.
+ *
+ * This asks `fund-er.js` — the ONLY expense-ratio source — a more complete
+ * question about the same row. It never invents, interpolates or defaults a
+ * number: when the prefixed string resolves nothing the cell stays blank. And
+ * it is STRICTLY ADDITIVE by construction, because app.js calls it only after
+ * the bare-name lookup has already returned null.
+ *
+ * THE ISSUER MAY ADD A MANAGER AND MAY NEVER REPLACE ONE. That is
+ * `resolveHolding`'s 2026-09-28 rule in scripts/match-sec-tickers.mjs, reused
+ * rather than reinvented, because the identity cell OFTEN HOLDS A TRUSTEE or a
+ * recordkeeping platform and a naive prefix then prices a competitor's fund at
+ * this platform's rate. Three gates, and each was MEASURED against the rows it
+ * exists to stop — all four of the recorded false positives, plus one this
+ * record had not named:
+ *
+ *  (0) THE ISSUER CONTRIBUTES A FIRM, NOT ITS CORPORATE FORM. A firm's legal
+ *      wrapper is not part of any fund's name, and leaving it in lets the
+ *      wrapper satisfy a pattern's VEHICLE condition: `Vanguard Retirement
+ *      Target 2045` under `Fidelity Management TRUST Company` matched
+ *      fund-er.js's Vanguard-plus-target-plus-`trust|collective|pool` arm and
+ *      published 0.045 — the COLLECTIVE TRUST price — on seven rows, with the
+ *      word `trust` supplied entirely by the trustee's corporate name. Right
+ *      house, wrong vehicle, and still a fabricated number. So the fiduciary
+ *      and corporate-form words come off before the prefix is made.
+ *
+ *  (1) THE ISSUER MUST NOT SUPPLY THE ANSWER BY ITSELF. If the prefixed string
+ *      resolves to the same number the issuer alone resolves to, the NAME
+ *      contributed nothing and what is published is the issuer's house-wide
+ *      default applied to whatever the row says. This is the largest gate and
+ *      it catches three of the four recorded false positives outright:
+ *        {American Funds} American Century Small Cap Growth R6 -> 0.4
+ *        {American Funds Plans} DODGE & COX GLOBAL BOND - I    -> 0.4
+ *        {Dimensional Fund Advisors} Schwab Fundamental Intl   -> 0.3
+ *      each of which is `fund-er.js`'s bare `/american funds/i` or
+ *      `/dfa |dimensional/i` house arm firing on the ISSUER text alone. It also
+ *      closes a fabrication route this record has withdrawn cells for twice:
+ *      an identity cell reading `Guaranteed Annuity Contracts TIAA` or
+ *      `Stable value fund Standard Insurance Company` triggers the generic
+ *      `/stable value|managed income|guaranteed|gic/` arm and would manufacture
+ *      the exact 0.35% removed from 89 rows on 2026-09-29 and 34 before that.
+ *
+ *  (2) THE NAME'S FIRST WORD THAT COULD NAME A FIRM MUST BE LOAD-BEARING. Drop
+ *      it and ask the same table again; if the answer does not move, the match
+ *      never used that word — and in every wrong-house row read out of the
+ *      residue that word is the OTHER house. `T. Rowe Price` + `MFS Mid Cap
+ *      Value R6` resolves 0.65
+ *      through a T. Rowe mid-cap-value arm that never reads `MFS`, and drops to
+ *      the same 0.65 with `MFS` deleted. So does `{JP Morgan} AB Large Cap
+ *      Growth I`, `{JPMorgan} American Century Equity Income`, `{T. Rowe Price}
+ *      Parnassus Equity Income Inst`, `{T. Rowe Price} Putnam Large Cap Growth
+ *      R6` and `{JP Morgan} Western Asset Core Plus Bond Fund`. This is the
+ *      shipped sibling rule's own shape — remove the words, ask again — asked
+ *      of IDENTITY rather than of price.
+ *
+ *      IT SKIPS A LEADING SHARE-CLASS DESIGNATION FIRST, and that one step was
+ *      forced by the read: `{American Funds} Class R6 PGIM New World Fund Class
+ *      R6` (2,582 participants) escaped a draft that looked only at the leading
+ *      word, because `Class` is excused, so the gate never reached `PGIM` and
+ *      0.57 — American Funds' New World fee — published under a name that says
+ *      PGIM.
+ *
+ *      IT SKIPS ONLY A DESIGNATION, THOUGH, AND A SECOND DRAFT THAT SKIPPED
+ *      EVERY EXCUSED WORD BROKE THIS ITEM'S OWN MOTIVATING CASE. Skipping the
+ *      whole excused run walks past `Retirement 2030` in `{T. Rowe Price}
+ *      Retirement 2030 Active Fund` and lands on `Active`, an adjective the
+ *      T. Rowe retirement arm ignores — so the gate refused 0.55 on the very
+ *      row this rule exists to fill. A share-class prefix is not part of the
+ *      fund's name and may be stepped over; the fund's own first word may not.
+ *
+ * WHY GATE (2) NEEDS AN EXCUSE LIST, AND WHY THAT LIST IS NEGATIVE. A vintage
+ * year is never load-bearing: `{American Funds} 2040 Target Date Retirement
+ * Fund` resolves 0.32 through `/american funds.*target date/i`, which does not
+ * read `2040`, and refusing it would withdraw 9,473 CORRECT rows. The same is
+ * true of `The`, `Institutional` and `Advisor`. So the list names words that
+ * CANNOT NAME A FIRM — and being negative it fails SAFE: a word missing from it
+ * costs a correct gain and can never publish a wrong fee. It was read off the
+ * 159 distinct first tokens gate (2) refuses, not written from memory, and the
+ * firm-capable ones were deliberately LEFT OUT even where that costs rows:
+ * `american`, `capital`, `mutual`, `investors`, `research`, `america` and every
+ * house abbreviation (`amerfds`, `trwpr`, `amf`) are absent, because each of
+ * them can lead another house's name — `American Beacon`, `American Century`,
+ * `Capital Group`, `Mutual of America` — and the measured cost of refusing them
+ * is ~2,300 rows against a wrong number on a live page.
+ *
+ * WHAT IS DELIBERATELY NOT HERE: a vocabulary of fund HOUSES. One was built to
+ * READ the residue with, and it is the right tool for that — it is how these
+ * wrong-house rows were found at all — but it is the wrong tool to ship. Its
+ * most frequent hit is `{Vanguard} Wellington Admiral Fund`, a REAL Vanguard
+ * fund whose name carries its SUB-ADVISER, and 260 of the 294 rows it flags are
+ * that shape. A firm's name inside a fund's name is not always a second house,
+ * and a house list is wrong in the UNSAFE direction: a house it omits publishes
+ * a wrong fee in silence. Every gate above is structural and asks the fee table
+ * itself.
+ *
+ * `priceOf` is injected for the same reason the two rules above inject it: this
+ * module has no dependency on `fund-er.js`, a plain browser script. The caller
+ * passes the bare table `fundER`, NOT app.js's `fundERFiled` — the
+ * house-misspelling repair is a repair for a string believed to be a fund's
+ * name, and two of the three gates here ask about strings that are explicitly
+ * not one. app.js keeps a twin; the generator extracts this VERBATIM and
+ * `smoke-test.mjs` runs the browser copy against this one on pinned cases. */
+export const ISSUER_FORM_WORDS =
+  /\b(?:trustee|trust|fiduciary|bank|banking|n\.?\s*a\.?|national association|custodian|custody|llc|l\.l\.c\.|inc|incorporated|corp|corporation|company|companies|co|l\.?p\.?|plc|ltd|limited)\b\.?/gi;
+/* Words that cannot name a fund house, so gate (2) is not asked of them. READ
+ * off the first tokens the gate refuses; firm-capable words are absent on
+ * purpose and that omission costs rows rather than correctness. */
+export const NAME_LEAD_DESIGNATION =
+  /^(?:\d+|[a-z]|[a-z]\d|r-?\d|f-?\d|k\d?|the|an?|class|cls?|series)$/i;
+export const NAME_LEAD_NEVER_A_FIRM =
+  new RegExp(NAME_LEAD_DESIGNATION.source.replace(/\)\$$/, "")
+    + "|institutional|institutionl|instl|inst|admiral|adm|advisors?|adv|retail"
+    + "|funds?|fds?|shares?|shs|shrs|units?|registered|target(?:ed)?|trgt"
+    + "|retirement|retire)$", "i");
+
+export function issuerPricedER(priceOf, cleanedName, issuer) {
+  const name = String(cleanedName || "").replace(/\s+/g, " ").trim();
+  /* (0) the firm, without its corporate form */
+  const iss = String(issuer || "").replace(/\*+/g, " ")
+    .replace(ISSUER_FORM_WORDS, " ").replace(/[^A-Za-z0-9&.\- ]+/g, " ")
+    .replace(/\s+/g, " ").trim();
+  if (!name || !iss) return null;
+  const er = priceOf(iss + " " + name);
+  if (er == null) return null;
+  /* (1) the issuer must not supply the answer by itself */
+  if (er === priceOf(iss)) return null;
+  /* (2) past a leading share-class designation, the fund's own first word must
+   * be load-bearing — unless that word is one that cannot name a firm */
+  const parts = name.split(" ");
+  if (parts.length < 2) return er;
+  const word = (p) => String(p || "").replace(/[^A-Za-z0-9&.-]/g, "");
+  let j = 0;
+  while (j < parts.length && NAME_LEAD_DESIGNATION.test(word(parts[j]))) j++;
+  if (j >= parts.length) return er;               // the name is designation only
+  const w = word(parts[j]);
+  if (!w || NAME_LEAD_NEVER_A_FIRM.test(w)) return er;
+  const less = parts.slice(0, j).concat(parts.slice(j + 1)).join(" ").trim();
+  if (less && priceOf(iss + " " + less) === er) return null;
+  return er;
+}

@@ -592,7 +592,14 @@ function expandFundVariants(name) {
  * classes too, but nothing in the table states which class their numbers are,
  * so refusing them would be a guess in the other direction. */
 const AF_HOUSE = /american funds?|americanfunds|\bam(?:er)?\.? ?f(?:un)?ds?\b|amerfds|american balanced|europacific|eupac|washington mutual|growth fund of america/i;
-const AF_LOAD_CLASS = /\b(?:r-? ?[1234]|class ?[ac]|cl ?[ac]|f-? ?1)\b/i;
+/* `A-CLASS` IS A CLASS, and this arm read only `class a`. Found 2026-09-29 by
+ * reading a random 60 of the rows the new issuer-priced fee arm would add:
+ * `{AMERICAN FUNDS} EUROPACIFIC GROWTH FUND A-CLASS` came back 0.46, the R-6
+ * number, for a holding whose own name states Class A. One filer writes the
+ * designation reversed, and the whole-store cost of closing it is exactly ONE
+ * published cell (555 participants, the same plan) — withdrawn, never
+ * re-priced, for the reason the block above gives. */
+const AF_LOAD_CLASS = /\b(?:r-? ?[1234]|class ?[ac]|cl ?[ac]|[ac][- ]class|f-? ?1)\b/i;
 const AF_NOLOAD_CLASS = /\b(?:r-? ?[56]|r-?5e|f-? ?2|class ?f-?2)\b/i;
 
 function fundER(name) {

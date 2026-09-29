@@ -22,7 +22,7 @@ import vm from "node:vm";
 import { GENERIC_TYPE_ANY, GENERIC_TYPE_DESPACED, isGenericTypeName } from "./lib-4i.mjs";
 import { isNamelessFundRow, isLoanDescriptionRow, isAnnuityContractRow,
   annuityFeeIsGuaranteeOnly, isInvestmentContractRow, isMistypedStockRow,
-  mistypedStockFeeIsGuaranteeOnly } from "./lib-disclose.mjs";
+  mistypedStockFeeIsGuaranteeOnly, issuerPricedER } from "./lib-disclose.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const lib = readFileSync(ROOT + "scripts/lib-4i.mjs", "utf8");
@@ -91,6 +91,17 @@ const mse = dis.indexOf("\n}\n", dis.indexOf("export function mistypedStockFeeIs
 if (mse < 3) throw new Error("gen-generic-twin: mistypedStockFeeIsGuaranteeOnly moved in lib-disclose");
 const mistyped = dis.slice(mss, mse).replace(/^export /gm, "");
 
+/* the issuer-priced FEE rule, VERBATIM: two constants and one function, and all
+ * three must travel. `ISSUER_FORM_WORDS` decides what the identity cell is
+ * allowed to contribute and `NAME_LEAD_NEVER_A_FIRM` decides when gate (2) is
+ * asked at all — both were read off the store's own first tokens, so a retyped
+ * copy would license a different population while every count stayed still. */
+const ips = dis.indexOf("export const ISSUER_FORM_WORDS =");
+if (ips < 0) throw new Error("gen-generic-twin: ISSUER_FORM_WORDS moved in lib-disclose");
+const ipe = dis.indexOf("\n}\n", dis.indexOf("export function issuerPricedER(")) + 3;
+if (ipe < 3) throw new Error("gen-generic-twin: issuerPricedER moved in lib-disclose");
+const isspriced = dis.slice(ips, ipe).replace(/^export /gm, "");
+
 const block = `  /* GENERATED FROM scripts/lib-4i.mjs — DO NOT EDIT BY HAND.
    * lib-4i derives these patterns from GENERIC_TYPE_NAME by asserted
    * replacements, so they are DERIVED and transcribing one is the move this
@@ -132,6 +143,8 @@ ${invcontract.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
 ${mistyped.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
   window.__wampoMistypedStockRow = (f) => isMistypedStockRow(f, (f && f.name) || "");  // read by the smoke test only
   window.__wampoMistypedStockGuaranteeFee = (n) => mistypedStockFeeIsGuaranteeOnly(n, fundER);  // read by the smoke test only
+${isspriced.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
+  window.__wampoIssuerPricedER = (n, iss) => issuerPricedER(fundER, n, iss);  // read by the smoke test only
 `;
 
 /* THE END MARKER MUST BE THE BLOCK'S LAST LINE. It was `__wampoGenericName`
@@ -149,6 +162,7 @@ const MARK_S = "  /* GENERATED FROM scripts/lib-4i.mjs — DO NOT EDIT BY HAND."
  * moved and the old tail stayed — so the list only ever grows, and the cut must
  * be made at the LAST marker present, not the first one found. */
 const MARK_ENDS = [
+  "  window.__wampoIssuerPricedER = (n, iss) => issuerPricedER(fundER, n, iss);  // read by the smoke test only\n",
   "  window.__wampoMistypedStockGuaranteeFee = (n) => mistypedStockFeeIsGuaranteeOnly(n, fundER);  // read by the smoke test only\n",
   "  window.__wampoInvestmentContractRow = (f) => isInvestmentContractRow(f, (f && f.name) || \"\", namesAFund);  // read by the smoke test only\n",
   "  window.__wampoGuaranteeOnlyFee = (n) => annuityFeeIsGuaranteeOnly(n, fundER);  // read by the smoke test only\n",
@@ -202,6 +216,8 @@ vm.runInContext(block
     "globalThis.__m = (f) => isMistypedStockRow(f, (f && f.name) || \"\");")
   .replace("window.__wampoMistypedStockGuaranteeFee = (n) => mistypedStockFeeIsGuaranteeOnly(n, fundER);  // read by the smoke test only",
     "globalThis.__mq = (n) => mistypedStockFeeIsGuaranteeOnly(n, fundER);")
+  .replace("window.__wampoIssuerPricedER = (n, iss) => issuerPricedER(fundER, n, iss);  // read by the smoke test only",
+    "globalThis.__ip = (n, iss) => issuerPricedER(fundER, n, iss);")
   .replace(/^\s{2}/gm, ""), ctx);
 const names = ["Mutual funds", "Mutual Fund Shares", "Sub-total: Registered Investment Companies",
   "Commingled funds", "Pooled separate account funds", "Collective trust funds",
@@ -407,7 +423,66 @@ const mistypedStockFeeNames = [
   "Vanguard 500 Index Admiral", "Fidelity 500 Index Fund",
   "Vanguard Total Bond Market Index Fund", "Target Retirement Date Fund 2045",
 ];
+/* the issuer-priced FEE arm, both directions, and it needed its OWN probes for
+ * the eighth cycle running: NOT ONE case above takes an issuer at all, so
+ * without these the twin would agree whether or not it carried the rule — the
+ * decorative-guard failure caught at v189, v190, v191, v192 and twice since.
+ *
+ * The must-REFUSE half is the entire safety argument and every row in it was
+ * READ out of the store, not invented: three are the recorded false positives
+ * where the issuer's own house arm answers by itself, six are a SECOND HOUSE
+ * leading the filed name while a house-anchored arm ignores it, one is the
+ * trustee's corporate form satisfying a pattern's VEHICLE condition, and three
+ * are the generic guarantee fallback firing on a caption in the identity cell —
+ * the exact 0.35% this record withdrew from 89 rows and from 34 before that. */
+const issuerFeeCases = [
+  /* must PRICE — the identity column supplies the house and nothing else */
+  ["Retirement 2030 Active Fund", "T. Rowe Price", 0.55],
+  ["Explorer Value Fund Investor Shares", "Vanguard", 0.3],
+  ["Europac Growth R6", "American Funds", 0.46],
+  ["2040 Target Date Retirement Fund", "American Funds", 0.32],
+  ["The Growth Fund of America", "American Funds", 0.3],
+  ["Advisor Total Bond Z", "Fidelity", 0.45],
+  ["Blue Chip Growth K6", "Fidelity", 0.55],
+  ["International Stock Fund", "Dodge & Cox", 0.62],
+  ["Large Cap Growth Fund", "JPMorgan", 0.44],
+  /* must PRICE — a REAL fund whose own name carries its SUB-ADVISER. 274 of the
+   * 282 rows a house vocabulary would flag are this shape, which is why no
+   * house vocabulary ships here. */
+  ["Wellington Fund", "Vanguard", 0.17],
+  ["Wellington Admiral Fund", "Vanguard", 0.17],
+  /* must REFUSE — gate (1), the issuer's house arm answers by itself */
+  ["American Century Small Cap Growth R6", "American Funds", null],
+  ["DODGE & COX GLOBAL BOND - I", "American Funds Plans", null],
+  ["Schwab Fundamental International", "Dimensional Fund Advisors", null],
+  ["Columbia Select Large Cap Value ol", "— The American Funds Group", null],
+  /* must REFUSE — gate (2), a second house leads the filed name */
+  ["MFS Mid Cap Value R6", "T. Rowe Price", null],
+  ["MFS Mid Cap Value", "T. Rowe Price Trust Company", null],
+  ["AB Large Cap Growth I", "JP Morgan", null],
+  ["American Century Equity Income", "JPMorgan", null],
+  ["Parnassus Equity Income Inst", "T. Rowe Price", null],
+  ["Putnam Large Cap Growth R6", "T. Rowe Price", null],
+  ["Western Asset Core Plus Bond Fund", "JP Morgan", null],
+  /* must REFUSE — gate (2) past a leading share-class designation */
+  ["Class R6 PGIM New World Fund Class R6", "American Funds", null],
+  /* must REFUSE — gate (0), the trustee's corporate form supplied `trust` and
+   * published the COLLECTIVE TRUST price for a registered fund */
+  ["Vanguard Retirement Target 2045", "Fidelity Management Trust Company", null],
+  /* must REFUSE — the generic guarantee fallback, fired by the identity cell */
+  ["UNALLOCATED INSURANCE CONTRACTS", "GUARANTEED INTEREST OPTION", null],
+  ["Traditional", "Guaranteed Annuity Contracts TIAA", null],
+  ["Fully-benefit responsive investment contract", "Principal Fixed Income Guaranteed Option", null],
+  /* must REFUSE — no issuer to add, so there is nothing to ask */
+  ["Fidelity 500 Index Fund", "", null],
+  ["", "Vanguard", null],
+];
 let bad = 0;
+for (const [n, iss, want] of issuerFeeCases) {
+  const twin = ctx.__ip(n, iss), lib = issuerPricedER(ctx.fundER, n, iss);
+  if (twin !== lib) { bad++; console.log(`  ISSUER-FEE DRIFT {${iss}} ${JSON.stringify(n)} twin=${twin} lib=${lib}`); }
+  if (lib !== want) { bad++; console.log(`  ISSUER-FEE rule moved: {${iss}} ${JSON.stringify(n)} want=${want} got=${lib}`); }
+}
 for (const r of mistypedStockRows) {
   const twin = ctx.__m(r), lib = isMistypedStockRow(r, r.name);
   if (twin !== lib) { bad++; console.log(`  MISTYPED-STOCK DRIFT ${JSON.stringify(r)} twin=${twin} lib=${lib}`); }
@@ -459,4 +534,4 @@ for (const r of rows) if (ctx.__n(r, r.name, ctx.__g) !== isNamelessFundRow(r, r
   bad++; console.log(`  ROW DRIFT ${JSON.stringify(r)}`);
 }
 if (bad) { console.error(`generated with ${bad} DRIFT — do not commit`); process.exit(1); }
-console.log(`generated; twin agrees with lib-4i on ${names.length} names, with lib-disclose on ${rows.length} rows, ${loans.length} loan-description names, ${annuityRows.length} annuity-contract rows, ${guarFeeNames.length} guarantee-only fee names, ${investmentContractRows.length} investment-contract rows, ${mistypedStockRows.length} mistyped-employer-stock rows and ${mistypedStockFeeNames.length} mistyped-stock fee names`);
+console.log(`generated; twin agrees with lib-4i on ${names.length} names, with lib-disclose on ${rows.length} rows, ${loans.length} loan-description names, ${annuityRows.length} annuity-contract rows, ${guarFeeNames.length} guarantee-only fee names, ${investmentContractRows.length} investment-contract rows, ${mistypedStockRows.length} mistyped-employer-stock rows and ${mistypedStockFeeNames.length} mistyped-stock fee names and ${issuerFeeCases.length} issuer-priced fee cases`);
