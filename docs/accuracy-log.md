@@ -29210,3 +29210,23 @@ would have been decorative, the trap this record names. Their reproduction is
 recorded instead: `trace-filing.mjs <fbAck> --assets <current-year assets>
 --sponsor <name>`, with `CORPUS_DIR` pointed at a pre-built combined text for the
 OCR one.
+
+**GATE ADDENDUM, same cycle: the SECOND `diff-lineups` run is the positive
+control, and it landed on the pre-registered numbers.** The first run reported
+`0` in every direction — correct, and only the negative control, because
+**a newly pinned specimen is not compared until the next run** (the tooling fact
+already on this record). Re-run with the two pins in the corpus, over **318
+filings**:
+
+    CONFIDENCE LOST: 2
+      The Mcclatchy Company, Llc   24->23 rows, ratio 1.13->0.14
+      Caterpillar Inc. PN 037       9->3 rows, ratio 1.08->1.00
+    FABRICATED GENERIC ROWS INTRODUCED: 0
+    row count moved, confidence unchanged: 0
+    MENU SUM moved >=5%: 0
+
+Both are the designed withdrawals, named by the tool rather than by me, at the
+row counts and ratios registered before the run. **So the pin was worth making
+in the same commit as the fix**, which is the opposite of the decorative-control
+outcome — and it is why the two fallback acks were deliberately left unpinned
+rather than pinned for symmetry.

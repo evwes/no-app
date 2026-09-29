@@ -694,8 +694,79 @@ from the cycle that would have cleared it.
   `audit-dominant-row` **0**, `audit-generic-names` **214 against the 230
   escalation threshold — still not raised**. **`matchQuote` 5,397 of which only
   1,785 are SHOWN to readers** — the condition/outcome pair shipped 2026-09-27.
-- **NOTHING IS IN FLIGHT.** Tree and store are both at v193, and local, the dev
-  branch and main are all level at `d7c96c34`.
+- **IN FLIGHT: #511 (v194), dispatched 2026-09-29 23:5xZ on `417acea1`, observed
+  queued on the dev branch — a FULL re-parse on the version bump. Tree at v194,
+  store at v193 until it lands.** Two classes, both v193's OWN COST.
+  **(1) A STATEMENT-OF-NET-ASSETS CAPTION AS A HOLDING — 7 rows / 4 plans / 5,006
+  ppl / $690,053,564.** The statement-lines alternation read `beginning of
+  year|end of year`, allowing **no `the` and no `period`**, so `End of the year`,
+  `Beginning of the year`, `End of period` and `Beginning of period` were outside
+  it BY CONSTRUCTION — **the sixth recorded time a missing entry in an anchored
+  list hid a class.** Over all 1,719,942 published rows the widening reaches
+  exactly 7 across 4 names and **the old spellings match ZERO of them.**
+  **The Mcclatchy Company (3,595 ppl) publishes `Beginning of period` at
+  $592,952,331 = 87.4%** of a 24-row menu whose second row is `Deductions Payment
+  of benefits` — the statement of CHANGES, and **87.4% is under
+  `audit-dominant-row`'s 90% floor**, the Tides Center / Finch Paper gap again.
+  Caterpillar PN 037 stops publishing a caption table and its **master-trust
+  pointer wins at 97.5%** instead; **Edgewater (697 ppl) goes 3 rows → 35.**
+  **(2) AND IT EXPLAINS THE PEDULLA REGRESSION, whose queued hypothesis was
+  WRONG.** Not the `three[- ]digit` arm: **the winning REGION changed.** v193
+  correctly removed two junk rows from the real menu (an address-box row at
+  $238,900, `@ Total non`), which moved that region's **ratio 0.805 → 0.784, AWAY
+  from 1.0, and its score −0.0495 → −0.0959**; the two-row caption region,
+  untouched at **−0.0628**, overtook it. **REMOVING A FABRICATED ROW LOWERS ITS
+  REGION'S SCORE, so a junk-removal version can LOSE a region contest it
+  previously won, and what it loses can be the real menu** — invisible to
+  `losses-triage` (the lineup may survive), `swaps-degraded` (the source year does
+  not change) and `rows-dropped` (the count can move either way). **A FOURTH
+  BLIND SPOT, and the first one no existing check watches at all.** Reproduced
+  from the stored entry's own **`fbAck`** plus production's OCR constants sliced
+  out of `fetch-4i` rather than retyped. Pedulla now publishes **26 rows at 0.785
+  — one better than the 27 it had.**
+  **(3) `loan repayments?` joins the same alternation, also v193's cost:** its
+  cost-marker weld arm restored `Loan Repayments are included:` on **20 published
+  rows / 20 plans / 28,920 ppl / $7,519,157** (Keysight's is $4,160,976). All 8
+  distinct published names read, not one a fund. v181's loan treatment is
+  untouched — a participant-loan HOLDING never says "repayment".
+  **PRE-REGISTERED against the pv-193 store the run READS:** `confident` **net
+  −3 / +1**, ceiling −4 / +1, every loss inside {McClatchy 3,595, Northwood
+  Investors 2,277, Caterpillar PN 037 485, Indy Connection 229} and the gain
+  Pedulla 185, Edgewater staying confident at 3 → 35 rows; `audit-dominant-row`
+  **0** (McClatchy's 87.4% sat UNDER the floor, so it cannot move this);
+  `overshoot` **must FALL from 318**; both classes read out of the store at **0**;
+  `audit-generic-names` **214 ± 2**.
+- **AND THE #510 VERDICT I WROTE AN HOUR EARLIER NEEDED CORRECTING — the most
+  expensive thing in the cycle.** It read *"6,154 participants gained against
+  1,014 lost"*: **counted, not read.** I applied *only reading them tells the two
+  apart* to the LOSSES and not to the GAINS. Reading all five: **Northwood
+  Investors (2,277)** publishes `at Fair Value` $46,540,940, `Employee 401(k)
+  Deferral` and a loan caption — **not one a fund**; **Anderson Regional (1,911)**
+  is 94.9% a master-trust pointer welded with `Mutual and`, plus `$_saz`;
+  **Leading Technology Composites (551)** is 89.3% `Value of Int in Regist Invest
+  Co.`, a generic type label, plus `© General investments: a ee` at $1; **Bison
+  Gear (215)** is three rows of **$1 each**. Only Novel Home Health Care's names
+  are real. **So 4,954 of the 6,154 — 80% — gained a menu that is not a menu.**
+  v194 withdraws Northwood on the three-row floor, reached from the other
+  direction entirely. *A gain is a claim about a filing and has to be read like a
+  loss.*
+- **TWO HYPOTHESES OF MINE REFUTED BY THEIR OWN MEASUREMENT — recorded so they
+  are not retried.** **(1) "A confident plan on negligible assets is a scaling
+  defect" — NO.** 992 published lineups / **348,529 ppl** sit under the $1M floor
+  `diagnose()` uses, and the largest is **Indeed Flex, 21,443 participants against
+  $86,516**, which I read as impossible. Every one checked is internally
+  consistent: True Care Ventures and Cottage Homecare have `assetsBOY 0` and a
+  mid-year `pyb` (first-year plans), Golden Touch has $5,040 of employer
+  contributions against $858,050. These are staffing and home-health plans where
+  nearly every participant is **eligible and not saving**. *A
+  participant-to-assets ratio is not a plausibility test, because Form 5500 counts
+  eligibility.* **Do not carry 992 or 348,529 forward as a defect.**
+  **(2) The "menu of pennies" residue is WIND-DOWN, not new:** 5 plans / 1,588
+  ppl, and Bison Gear PN 003 reads **`assetsBOY $8,750,323 → assetsEOY $2,094`**
+  (its sister plan $14,289,087 → $641). **QUEUED, small, DISPLAY-side:** the
+  wind-down explanation rung gates on **exactly $0**, so a plan that collapsed to
+  $2,094 escapes it and publishes three $1 rows instead. It should trigger on a
+  COLLAPSE in assets, not only on zero.
 - **OWNER-REPORTED AND MIRRORED 2026-09-28 18:0xZ, UNFORCED, DATA GATE
   +0 / −0 (`7f772a8 → 1f43a78`): a plan is findable by its own name.** #491
   passed its pre-registered test to the kilobyte — `plans-list.json` ships
