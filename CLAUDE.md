@@ -877,6 +877,40 @@ export, do not copy the line.
   **4 = the baseline**, WARN 608, dl 131 — which is the pre-registered outcome
   for an incremental carrying a DISPLAY-only change whose whole work list is
   the dead 403s, not a stall.
+- **#508 (cron, on MAIN) RAN `success`** (data `8522c450`): coverage line
+  **byte-identical** — confident 60,103, HIGH **4 = the baseline**, WARN 608,
+  overshoot 326, dl 131, pv 192 at 99.8%. Correct for a scheduled incremental
+  whose work list is the dead 403s. **The store did not move under the running
+  agent and that was VERIFIED, not assumed: plans array byte-identical, 0 of
+  68,767 status entries changed, `data/lineups/**` untouched** — only
+  `generated` differs. Branch, main and local level at `8522c450`.
+- **OWNER'S CALL, SIZED, NOT SHIPPED — THE TICKER COLUMN REFUSES TO ASSERT R-6
+  AND THE FEE COLUMN ASSERTS IT: 36,252 rows / 8,609 plans / 10,482,854
+  participants / $60,701,413,608.** Found by the 16:1x draw on **DoorDash
+  (10,627 ppl)**, whose menu is otherwise immaculate — every Vanguard row has an
+  exact SEC ticker — while **13 American Funds rows at $217,616,136 = 52.2% of
+  the menu publish 0.32% and not one states a share class.**
+  **READ THE SHIPPED GUARD FIRST:** `fund-er.js`'s 2026-09-28 rule is
+  `AF_HOUSE && AF_LOAD_CLASS && !AF_NOLOAD_CLASS` — it withdraws only where the
+  name states a class that PAYS a 12b-1 fee (R-1–R-4, A, C, F-1). R-5/R-6/F-2
+  correctly KEEP the number (62,003 rows / 20,682,855 ppl, not at issue). **A
+  name stating NO class was never considered and keeps it too.**
+  **Not a rounding slice: in 1,879 plans / 1,507,297 ppl those no-class rows are
+  ≥25% of the menu's VALUE** — HonorHealth 76.2%, TA Operating 68.6%,
+  Knight-Swift 67.2%, Barrett Business Services 65.8%, Edward D. Jones 32.8% of
+  54,690 ppl.
+  **THE FINDING IS AN INCONSISTENCY BETWEEN TWO COLUMNS, not a broken guard.**
+  This record already rules on the identical fact in the TICKER column — *"19,618
+  rows state none and must stay blank; assigning R6 there recreates this
+  record's own defect verbatim"* — so the site **applies opposite standards to
+  the same missing fact.** Both cannot be right.
+  **THE COUNTER-ARGUMENT IS REAL:** such a holding usually IS R-6, the cell is
+  labelled "est.", and withdrawing costs 10.5M participants a fee cell — far
+  larger than the 10,387 the 2026-09-28 guard removed. Against it: *a fee is
+  SOURCED, never derived*, and the ticker column already refuses the inference.
+  **A session must not ship a 10.5M-participant withdrawal unasked, and must not
+  leave the two columns disagreeing unrecorded either.**
+  `docs/accuracy-log.md` 2026-09-29 (16:2xZ).
 - **QUEUED AND IT IS THE LARGEST READER-FACING COVERAGE ITEM CURRENTLY OPEN —
   THE TICKER LOOKUP GETS THE ISSUER PREFIX AND THE FEE LOOKUP NEVER HAS.**
   `lookupTicker` prepends the row's ISSUER on every attempt; the fee is

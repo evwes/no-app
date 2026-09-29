@@ -27767,3 +27767,61 @@ today. But a fee on this project is SOURCED, never derived, and 42,883 changed
 numbers is a large claim — so the change-existing half needs verification per
 family before any of it ships, and the gain half needs the ADD-never-REPLACE
 gate first. Queued, not started.
+
+## 2026-09-29 (16:2xZ) — the TICKER column refuses to assert R-6 and the FEE
+## column asserts it: 36,252 rows / 10,482,854 participants. Sized, owner's call.
+
+Found by the 16:1x participant-weighted draw on **DoorDash, Inc. (10,627 ppl)**,
+whose menu is otherwise immaculate — every Vanguard row carries an exact
+SEC-resolved ticker. **Thirteen American Funds rows carrying $217,616,136 =
+52.2% of the menu publish an estimated 0.32% and NOT ONE states a share class.**
+
+**WHAT THE SHIPPED GUARD ACTUALLY DOES, read before any claim was made.**
+`fund-er.js`'s 2026-09-28 guard is
+`AF_HOUSE.test(name) && AF_LOAD_CLASS.test(name) && !AF_NOLOAD_CLASS.test(name)`.
+It withdraws the fee only where the filed name states a class that PAYS A 12b-1
+FEE (R-1 to R-4, A, C, F-1). A name stating **R-5 / R-6 / F-2 keeps the number
+correctly** — the table is calibrated for those. A name stating **no class at
+all was never considered**, and it keeps the number too.
+
+**SPLIT WHOLE-STORE USING THE GUARD'S OWN VOCABULARY, transcribed verbatim, and
+through app.js's suppressors so these are rows a reader is actually shown:**
+
+- states R-5 / R-6 / F-2 — **62,003 rows / 16,441 plans / 20,682,855 ppl /
+  $116.8B**. Correctly priced; not at issue.
+- **states NO class at all — 36,252 rows / 8,609 plans / 10,482,854
+  participants / $60,701,413,608.** Values published: 0.32% on 16,218 rows,
+  0.4% on 13,301, then 0.46 / 0.28 / 0.57 / 0.3 / 0.26.
+
+**It is not a rounding-error slice of a menu: in 1,879 plans / 1,507,297
+participants those no-class rows are ≥25% of the menu's VALUE** — HonorHealth
+76.2%, TA Operating 68.6%, Knight-Swift 67.2%, Barrett Business Services 65.8%,
+DoorDash 52.2%, Edward D. Jones 32.8% of 54,690 participants.
+
+**THE FINDING IS AN INCONSISTENCY BETWEEN TWO COLUMNS, not a broken guard.**
+This record already rules on exactly this fact in the TICKER column, in the
+queued American Funds target-date item: *"19,618 rows … state none and must stay
+blank — assigning R6 there recreates this record's own defect verbatim."* The
+site therefore applies **opposite standards to the same missing fact**: the
+ticker refuses to assert R-6 where the filing is silent, and the fee asserts the
+R-6 number on the same row. Both cannot be right.
+
+**THE COUNTER-ARGUMENT IS REAL AND IS STATED RATHER THAN BURIED.** An American
+Funds holding inside a mid-size 401(k) usually IS the R-6 class, the cell is
+labelled "est.", and withdrawing it costs 10.5M participants a fee cell they
+have today. That is a much larger withdrawal than the 10,387 cells the
+2026-09-28 guard removed, and the direction is not obvious. Against it stands
+this project's own standard — **a fee is SOURCED, never derived** — and the fact
+that the ticker column already refuses the same inference on the same rows.
+
+**So it is recorded and sized and NOT shipped: it is the owner's call**, in the
+same class as the fund-identification gap and the whole-table generic test. What
+a session must not do is ship a 10.5M-participant withdrawal on its own
+initiative, and what it must not do either is leave the two columns disagreeing
+without the disagreement written down.
+
+**Method note.** The find came from asking what a drawn plan PUBLISHES rather
+than reading its row names — DoorDash's names are all perfectly clean, and
+nothing in the store, the audits or the coverage line distinguishes its 0.32%
+cells from correct ones. The tell was a ticker column and a fee column
+disagreeing on the same row.
