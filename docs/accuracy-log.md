@@ -26111,3 +26111,106 @@ Funds Growth Fund R6` conflicts (`fund` vs `portfolio`) and is refused; DFA's
 key `us targeted value` is distinctive, so the check is never asked and the
 5,901 rows are untouched. Not shipped: it is a second matcher change in one
 hour and it needs its own whole-store diff, selftest cases and negative control.
+
+## 2026-09-29 (03:0xZ) — Premier is not Institutional, and an owner's table sized before it was applied
+
+**The owner sent 54 target-date ticker/fee rows and asked "does this help at
+all? (confirm before using as fact)". Confirming first is what made the cycle
+worth anything.**
+
+**THE TABLE COULD NOT BE USED.** Checked against `sec-funds.json` — the SEC's
+own series/class file, already in the tree with its source URL: **30 of 54
+verified, and ~12 are wrong.** Positively refuted, because the file names a
+different fund: `TRRIX` → T. Rowe Price Retirement **Balanced** (table says
+2030; the 2030 fund is TRRCX); `LIFKX` → **Lord Abbett Inflation Focused Fund
+Class R4** (table says BlackRock 2050 *and* 2055); `SWYLX` → Schwab Target
+**2020** (table says 2060; 2060 is SWYNX). Near-misses: `VTXVX`→**VTTVX**,
+`FGIFX`→**FXIFX**, `FDKVX`→**FDKLX**, `SWYIX`→**SWYMX**, and `FIJX` is four
+characters. **`LIJKX`, `LIHKX` and `LIWIX` each appear on two target years**,
+and a ticker names exactly one class of one series.
+**AND ABSENCE WAS NOT TREATED AS REFUTATION:** BlackRock LifePath Index and
+John Hancock Multimanager Lifetime have **zero classes in the extract**, so for
+18 of the 20 missing rows the silence says nothing. LIFKX is the exception — it
+is present, as someone else's fund. **0 of the 54 FEES are verifiable here**;
+the series/class file carries none.
+
+**AND THE TABLE WAS THE WRONG SHAPE, which only the store could show.** Those
+six families are **188,527 published rows / ~19,000 plans**, with **60,716
+showing no ticker**. Split by whether the FILING STATES A CLASS:
+**21,706 rows / 33.3M participant-weighted state NONE** — giving them the
+retail ticker is the defect that withdrew 10,387 fee cells on 2026-09-28 — and
+**16,630 / 17.4M DO state one** and were blocked by something else entirely.
+*One fee per house cannot be right when Fidelity Freedom Index 2030 has four
+classes at four prices.*
+
+**THE DEFECT, and it is one word.** `CLASS_HINTS` folded `premier` into the
+`institutional` arm. Fidelity Freedom Index runs Investor / Institutional
+Premium / Premier / Premier II, so **three classes returned the same hint**;
+the selector needs `hit.length === 1`, could never resolve, fell to the
+ambiguous branch and returned the **Investor** class behind an asterisk for a
+filing that says **PREMIER**.
+
+**Outcome, whole-store through the merge's gate and storage rule: 9,329 rows /
+7,862,491 participants gain an exact ticker; 1,033 lost; 0 flipped;
+967,441 of 977,803 unchanged.**
+
+**THE LOSSES ARE MOSTLY CORRECTIONS AND THAT WAS TESTED.** **1,005 of the 1,033
+/ 2,096,588 ppl** had the old answer asserting a **Premier** class for a filing
+that never says premier — `Nuveen Lifecycle Index 2030 Inst` returned TLHPX,
+and **that series has no institutional class at all** (R6 / Premier /
+Retirement / I). The answer existed only because of the conflation being
+removed. Genuine residue **28 rows / 16,779 ppl**, all `Premier` inside a FUND
+NAME with no other class word stated.
+
+**FOUR DRAFTS WERE WRONG AND EVERY ONE WAS CAUGHT BY A CONTROL, NOT BY
+READING** — the clearest run of that this record carries:
+1. **I named the wrong constant (23rd harness instance).** Reported the
+   magnet-key mechanism as `STRUCTURAL`, patched it, and the whole-store diff
+   returned **0 rows changed** — a control failing to fail. `STRUCTURAL` builds
+   no key; `NOISE` does.
+2. **An unconditional series-owns filter broke two pins.** `Federated Hermes
+   Instl High Yield Bond` sits in the series `Institutional High Yield Bond
+   Fund`, so the series owned the word and the filed name's ONLY class signal
+   was stripped. It now fires only as a TIE-BREAKER.
+3. **Narrowing to one hint routed it through `c.hint`**, the FIRST match in
+   table order — and Alger stores every class as `Alger Capital Appreciation
+   Institutional Fund Class Y`, so all four carried `institutional` and Class Y
+   was unselectable. The test now asks whether the class name STATES the hint.
+4. **That membership test then broke `Vanguard Total International Bond Index
+   Fund Institutional Shares`**, because `Institutional Select` answers to
+   `institutional` too. The specific arms carry negative lookaheads so a class
+   name answers to exactly one.
+
+**TWO PINNED EXPECTATIONS WERE WRONG AND WERE UPDATED WITH EVIDENCE, NOT
+QUIETLY.** `Institutional High Yield Bond Fund R6` was pinned **FIHAX\*** —
+Class A behind an asterisk — for a filing stating R6 in as many words, where
+**FIHLX is that series' Class R6 Shares**. `Freedom Fund 2050` was pinned
+**FFPFX (Premier)** as the ambiguous REPRESENTATIVE, where **FFFHX is the base
+retail class** and that branch's own comment says to prefer a retail one; FFPFX
+only won because premier answered the institutional finder.
+
+**IT CLOSES A RESIDUAL THIS RECORD PINNED AND LEFT UNFIXED on 2026-09-28:**
+`Royce Premier Fund` had *"a class asserted its filing never stated"* and now
+returns RPFIX\* behind the asterisk, while `ROYCE PREMIER INSTL` — which does
+state one — keeps RPFIX exact.
+
+**`--selftest` 84/84**, nine new cases including **four must-stay-AMBIGUOUS**
+(`Fidelity Freedom Index 2050 Fund`, `T. Rowe Price Retirement 2040 Fund`),
+because asserting a class there is the fabrication the whole change avoids.
+**Negative control: the pre-change file fails by name on 5 of 5 must-change and
+holds 6 of 7 must-keep** — the seventh being the Royce residual above.
+
+**Residue pinned, not fixed:** `Instl Prem` is refused before the class stage
+because `prem` is not a class marker (~1,350 Freedom Index rows). Widening
+`CLASS_MARK` has its own blast radius and was not bundled.
+
+**Pre-registered for #499** (no parser bump — it exists to let the MERGE
+rewrite `stk`): **`sec tickers: 346,774 rows across 37,090 plans`** (+8,296
+rows, +55 plans, measured); CONFIDENCE DIFF +0 / −0; coverage line otherwise
+byte-identical (confident 60,103, HIGH 4, overshoot 325).
+
+**STILL OPEN AND OWNER-GATED: the fee half.** Nothing was written to
+`data/fund-facts.json` — it refuses undated and unsourced figures by design,
+and the table supplied neither. Fees need a source URL, an as-of date and a
+share class per row; the 21,706 rows stating no class must stay blank whatever
+arrives.

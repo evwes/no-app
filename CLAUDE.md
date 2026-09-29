@@ -819,6 +819,53 @@ export, do not copy the line.
   9 rows → 5, still confident — and **the merge's own `rows-dropped` check caught
   it unprompted** (`warn` 608 → 609). `dl` 129 → 131.
   `docs/accuracy-log.md` 2026-09-29 (00:2xZ).
+- **IN FLIGHT: #499, dispatched 2026-09-29 03:0xZ on `3b82ea2`, observed queued.
+  NO PARSER BUMP — it exists to let the MERGE rewrite `stk`.** **PREMIER IS NOT
+  INSTITUTIONAL: 9,329 rows / 7,862,491 ppl gain an EXACT ticker and 1,005 rows
+  / 2,096,588 stop being told the wrong share class, 0 flipped.**
+  `CLASS_HINTS` folded `premier` into the `institutional` arm, so three of
+  Fidelity Freedom Index's four classes (Investor / Institutional Premium /
+  Premier / Premier II) returned one hint; the selector needs `hit.length === 1`,
+  never resolved, and handed back the **Investor** class behind an asterisk for
+  a filing saying **PREMIER**.
+  **FOUND BY SIZING AN OWNER-SENT TABLE BEFORE APPLYING IT.** 54 target-date
+  ticker/fee rows: **30 of 54 verified against `sec-funds.json`, ~12 wrong**
+  (`TRRIX`→Retirement **Balanced**, `LIFKX`→**Lord Abbett Inflation Focused R4**,
+  `SWYLX`→Schwab **2020**; `VTXVX`→VTTVX, `FGIFX`→FXIFX, `FDKVX`→FDKLX,
+  `SWYIX`→SWYMX, `FIJX` four characters; LIJKX/LIHKX/LIWIX each on two years).
+  **Absence was NOT treated as refutation** — BlackRock LifePath and JH
+  Multimanager have zero classes in the extract. **0 of 54 FEES are verifiable
+  here.**
+  **AND THE TABLE WAS THE WRONG SHAPE:** of 60,716 no-ticker rows in those six
+  families, **21,706 / 33.3M ppl STATE NO CLASS** and must stay blank, while
+  **16,630 / 17.4M DO state one** and were blocked by the hint defect.
+  **THE LOSSES ARE MOSTLY CORRECTIONS, TESTED:** 1,005 of 1,033 had the old
+  answer asserting **Premier** for a filing that never says premier — `Nuveen
+  Lifecycle Index 2030 Inst` → TLHPX, and that series **has no institutional
+  class at all**. Genuine residue **28 rows / 16,779 ppl**.
+  **FOUR DRAFTS WRONG, EACH CAUGHT BY A CONTROL:** (23rd harness instance) I
+  patched `STRUCTURAL` and the diff returned **0 rows changed** — it builds no
+  key, `NOISE` does; an unconditional series-owns filter stripped the ONLY class
+  signal from `Federated Hermes Instl High Yield Bond` and broke two pins;
+  narrowing to one hint routed through `c.hint`, which returns `institutional`
+  for every Alger class because the class names embed the fund name; the
+  membership fix then broke `Vanguard … Institutional Shares` because
+  `Institutional Select` answers to `institutional` too.
+  **TWO PINS WERE WRONG AND WERE UPDATED WITH EVIDENCE:** `Institutional High
+  Yield Bond Fund R6` was pinned **FIHAX\*** (Class A, asterisked) where FIHLX
+  IS that series' R6 class; `Freedom Fund 2050` was pinned **FFPFX (Premier)**
+  as the ambiguous representative where FFFHX is the base retail class.
+  **AND IT CLOSES THE `Royce Premier Fund` RESIDUAL** pinned unfixed 2026-09-28.
+  **`--selftest` 84/84**, nine new cases including **four must-stay-AMBIGUOUS**;
+  negative control fails by name on 5 of 5 must-change, holds 6 of 7 must-keep.
+  Residue pinned not fixed: `Instl Prem` refused because `prem` is not a class
+  marker (~1,350 rows).
+  **PRE-REGISTERED: `sec tickers: 346,774 rows across 37,090 plans`** (+8,296,
+  +55 plans, measured); CONFIDENCE DIFF +0 / −0; coverage line otherwise
+  byte-identical (confident 60,103, HIGH 4, overshoot 325).
+  **OWNER-GATED, NOTHING WRITTEN: the FEE half.** `data/fund-facts.json` refuses
+  undated/unsourced figures and the table had neither. Fees need a source URL,
+  an as-of date and a SHARE CLASS per row. `docs/accuracy-log.md` 2026-09-29.
 - **#497 PASSED ITS PRE-REGISTERED TEST TO THE ROW** (`conclusion: success`,
   data commit `14aef95`): `sec tickers` **338,478 rows across 37,035 plans**,
   exactly predicted; coverage line holds (confident 60,103, HIGH 4, overshoot
