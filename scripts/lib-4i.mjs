@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 191;
+export const PARSER_VERSION = 192;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -291,8 +291,39 @@ export const GENERIC_TYPE_NAME = /^(?:total )?(?:registered investment compan(?:
  * impact`, and the OCR-corrupted `Real Estatement Index Fund - Admiral`.
  * The singular matches 0 rows in the store today and is included anyway,
  * because no fund is named `Statement` either; it is pinned as a control
- * rather than left to be tested by a store that cannot exercise it. */
-const GENERIC_TYPE_ANY_EXTRA = "commingled (?:trust |investment )?funds?|pooled separate account funds?|(?:plan )?(?:interest in )?master trusts?(?: funds?)?|trusts?|statements?";
+ * rather than left to be tested by a store that cannot exercise it.
+ *
+ * v192 — `PREFERRED STOCK` WAS OUTSIDE THE LIST WHILE `COMMON STOCK` WAS IN
+ * IT, which is v190's shape again: one word missing from an anchored
+ * vocabulary is invisible to the guard, both audits, `diff-lineups` and the
+ * browser twin BY CONSTRUCTION. Measured on the v191 store:
+ * `isGenericTypeName` answers TRUE for `Common Stock`, `Common Stocks` and
+ * `Common and Preferred Stock`, and FALSE for `Preferred stock` — so a plan
+ * whose filing wrote the one word rather than the other was told nothing.
+ * 33 rows / 30 plans / 340,144 participants, $19,800,669.
+ *
+ * ANCHORED, and that is the whole safety argument: of the 205 distinct
+ * published names CONTAINING `preferred`, this arm flags 5 and KEEPS 200 —
+ * every one of them read, and every one a real fund (`Cohen & Steers
+ * Preferred Securities and Income Fund`, `Nuveen Preferred Securities & Income
+ * I`, `iShares Preferred & Income Securities ETF`, `Principal Spectrum
+ * Preferred`, `Invesco Variable Rate Preferred ETF`).
+ *
+ * A TRAILING LOT NUMBER COMES ALONG FOR FREE, and finding that out corrected
+ * what this comment first said. I wrote that `PREFERRED STOCK 795` would stay
+ * outside the anchor and pinned it as a must-KEEP; the control FAILED, and
+ * the pre-v192 file explains why — `COMMON STOCK 600` already read TRUE,
+ * because v188's `stripGenericDecoration` removes a trailing number as
+ * non-identifying and asks the anchored predicate again. The preferred form
+ * simply inherits that. So the three Bank of America lot rows are flagged
+ * too; no reader sees a change there, because all three carry an ISSUER
+ * (`DILLARDS CAPITAL TRUST I`, `WELLS FARGO & CO`, `CHARLES SCHWAB CORP`) and
+ * `isNamelessFundRow` is asked only where there is none.
+ *
+ * Residue that IS real and is left alone: a bare `Preferred Securities`
+ * (3 rows) is an asset class rather than a fund, and sits outside this
+ * anchor deliberately — it is a wider claim and gets its own measurement. */
+const GENERIC_TYPE_ANY_EXTRA = "commingled (?:trust |investment )?funds?|pooled separate account funds?|(?:plan )?(?:interest in )?master trusts?(?: funds?)?|trusts?|statements?|preferred stocks?";
 const GTA_PLURALISED = GENERIC_TYPE_NAME.source
   .replace("trust(?: fund| portfolio)?|collective trust fund|", "trusts?(?: funds?| portfolios?)?|collective trust funds?|");
 if (GTA_PLURALISED === GENERIC_TYPE_NAME.source) {

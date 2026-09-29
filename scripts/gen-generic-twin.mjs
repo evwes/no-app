@@ -143,7 +143,17 @@ const names = ["Mutual funds", "Mutual Fund Shares", "Sub-total: Registered Inve
   "statements", "Statements", "statement",
   /* must stay real */ "(See Attached Statement)", "Misstatements net of tax impact",
   "Real Estatement Index Fund - Admiral",
-  "Statement of Net Assets Available for Benefits"];
+  "Statement of Net Assets Available for Benefits",
+  /* v192 the bare preferred-stock designation, added for the third cycle
+   * running for the same reason: not one probe above reaches this arm. The
+   * must-KEEP half is the whole safety argument — 200 of the 205 distinct
+   * published names containing `preferred` are real funds, and these five
+   * stand for them. */
+  "Preferred stock", "PREFERRED STOCK", "Preferred Stocks", "PREFERRED STOCK 795",
+  /* must stay real */ "Cohen & Steers Preferred Securities and Income Fund",
+  "Nuveen Preferred Securities & Income I", "iShares Preferred & Income Securities ETF",
+  "Principal Stable Value Preferred Fund", "Invesco Variable Rate Preferred ETF",
+  "Preferred Securities"];
 const rows = [
   { name: "Mutual funds", type: "Mutual fund" }, { name: "M utual Fund", type: "" },
   { name: "COMMON STOCK", type: "Employer security" },
