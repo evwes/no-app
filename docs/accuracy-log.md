@@ -28969,3 +28969,84 @@ defect but its fix is a CALL-ORDER change — consult the SEC refusal before
 and the 2026-09-18 measurement that set raw-first order recorded it gaining 37
 tickers while LOSING 26 and FLIPPING 26. Re-ordering needs its own whole-store
 measurement, not an argument.
+
+---
+
+## 2026-09-29 (23:2xZ) — run #510 (v193) verdict: the net test passed and the NAMED CONDITION did not
+
+**MIRRORED `f6a15f14 → f58d1d89`, `--force-data` over five losses, every one read
+and diagnosed first.** pv 193 covers 68,624 of 68,767 (99.8%).
+
+### Against the pre-registered tests
+
+| test | registered | result |
+|---|---|---|
+| `confident` | **+0 / −0**, ceiling ±5 | **+5 / −5, net 0** — PASSED |
+| `audit-dominant-row` | 0 | **0** — PASSED |
+| `overshoot` | falls or holds | **326 → 318** — PASSED |
+| `audit-generic-names` | 217 → 217 | **214** — MISSED by 3, direction good |
+| HIGH | 4 = the baseline | **9 in CI, 4 locally** — see below |
+
+**THE NET TEST PASSED AND THE NAMED CONDITION FAILED, and the second matters
+more.** The pre-registration said any loss would be "a lineup of fewer than five
+rows." **Two were not**: Pedulla Excavating **27 rows → 0** and Benchmark
+Landscape **26 → 27** (losing confidence while GAINING a row). A ±5 ceiling met
+by five losses and five gains is not the same fact as five *small* losses, and
+only reading them tells the two apart.
+
+**HIGH 9 vs 4 IS NOT A DISAGREEMENT — IT IS WHERE THE AUDIT RUNS.** Re-running
+`audit-data.mjs` locally on the identical committed store returns **HIGH 4,
+WARN 608**, the baseline. The extra five are `reparse-loss` entries raised from
+`losses-triage.txt`, a run ARTIFACT that exists only in CI and is not committed.
+They are the five losses below, and they self-clear on the next run. *A metric
+that differs between CI and local is a question about the inputs, not the store.*
+
+### The five losses, each diagnosed rather than counted
+
+- **Ernest Spencer Metals (163 ppl, 8 → 7) — CORRECT SUPPRESSION.** Its top row
+  was `Mutual fund shares` at **$3,889,615** and its second its own sponsor name.
+  With the junk gone the remainder is dominated by a generic statement and `dx`
+  flips to `stmt`. Readers get the filed-in-aggregate sentence instead of a
+  statement line published as their largest holding.
+- **Benchmark Landscape (158 ppl) — `dx: "tiny"`, NOT A COVERAGE LOSS.** Year-end
+  assets under $1M, where the ratio divides by almost nothing, so the 2026-09-12
+  design refuses to judge it at all. **But v193 ADDED a junk row here** —
+  `Loan Repayments are included:` at $240,932, first by value in a menu whose
+  next row is $7,318. A loan caption, restored by the (C) weld arm. Queued.
+- **Alliance Homecare (314 ppl, 3 → 2)** and **Mission Valley Wings (194 ppl,
+  3 → 0)** — junk falling under the three-row floor, which is the floor working.
+- **Pedulla Excavating (185 ppl, 27 → 0) — A REAL REGRESSION, CAUSE NOT YET
+  PROVEN.** It was served from a **2023 prior-year fallback digitised by OCR**
+  and now reads `e: "no-section"`, `ds: "noattach"`. It is **NOT** a download
+  failure (checked: its code is `no-section`, and it is not in the `dl` set).
+  Same OCR text (`ov` unchanged at 8, and a PARSER bump does not re-rasterise),
+  so a v193 arm plausibly removed a line that was SEEDING the region — and the
+  agent's own cost note names `three[- ]digit` as the single phrase behind its
+  one other clear degradation (Vortex Companies). **That is a hypothesis, not a
+  cause. Instrument before believing it.** Queued for a trace.
+
+### The five gains, larger in people than the losses
+
+Novel Home Health Care **0 → 14 rows** (1,200 ppl), Anderson Regional Medical
+Center **4 → 10** (1,911), Northwood Investors (2,277), Leading Technology
+Composites (551), Bison Gear (215) — **6,154 participants gained against 1,014
+lost**, and four of the five losses are guards working.
+
+### `dl` 131 → 142 — probed, and the code is exonerated
+
+The verdict rules say this metric must not jump. **All 11 new failures were
+HEAD-probed — the whole population, not a sample — and 11 of 11 answered 403.**
+The EFAST2 bucket genuinely grew by eleven withdrawn filings, so `e=download`
+remains an honest published claim. This is the #244/#246 discriminator run in
+the direction that EXONERATES the code, which is the point of running it.
+
+### And the audit already watches the class I sized an hour earlier
+
+The merge log's WARN block is full of `[ticker-conflict]` lines —
+*"publishes VBTLX where the filing states VBTIX"*, *"publishes VTSAX where the
+filing states VITSX"*, *"publishes MEIKX where the filing states MEIJX"*. That
+is the same `INST → ADM` and R-class family recorded at 22:3xZ, and the audit
+catches it with a **stronger witness than my SEC cross-check: the filing states
+the ticker itself.** WARN 608 → 629 is mostly these. **A class I was sizing from
+the store was already instrumented in the pipeline** — read the existing checks
+before building a new measure of the same thing.
