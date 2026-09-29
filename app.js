@@ -592,7 +592,10 @@
     // that are not a word: "Fidelity 500 Index “«", "…2065 Trust IX ”",
     // "…Index Plus “x", "BNY Mellon Bond Market Index Shares ” i" — the
     // trailing strip above only reaches the ones with nothing after them.
-    const qlead = s.replace(/^[”“"]+\s*/, "").trim();
+    // single quotes added 2026-09-29 — see lib-disclose for why the balanced
+    // test below stays on double quotes only (an interior apostrophe is
+    // ordinary inside a real name).
+    const qlead = s.replace(/^[”“"'’‘`´]+\s*/, "").trim();
     // …unless a CLOSING quote follows with more name after it — that is a
     // balanced quoted term the filer meant ("\"Brokerage\" Account"), the same
     // shape as the FMC control, and it is left exactly as filed.

@@ -410,10 +410,27 @@ export function cleanFiledName(name) {
   // that are not a word: "Fidelity 500 Index “«", "…2065 Trust IX ”",
   // "…Index Plus “x", "BNY Mellon Bond Market Index Shares ” i" — the
   // trailing strip above only reaches the ones with nothing after them.
-  const qlead = s.replace(/^[”“"]+\s*/, "").trim();
+  // SINGLE quotes belong in (a) too, added 2026-09-29. The arm read `[”“"]`
+  // — double quotes only — while the TRAILING strip seven lines above has
+  // always carried the wider `[”“"'’‘™®©]`. One character class, one arm, and
+  // its own sibling disagreed with it. 229 published rows / 143 plans /
+  // 138,737 participants / $474,878,302 reached readers with a leading `‘`
+  // or `'` glued to a real fund name: `‘Vanguard 500 Index Fund Admiral
+  // Shares`, `'VANGUARD EXPLORER ADM`, `‘American Funds New Perspective R6`.
+  // All 205 distinct transformations were read and not one removes anything
+  // but the quote. (The store count is 282; 50 were already repaired here,
+  // which is why the reader-facing number is the smaller one.)
+  const qlead = s.replace(/^[”“"'’‘`´]+\s*/, "").trim();
   // …unless a CLOSING quote follows with more name after it — that is a
   // balanced quoted term the filer meant ("\"Brokerage\" Account"), the same
   // shape as the FMC control, and it is left exactly as filed.
+  // THE BALANCED TEST STAYS ON DOUBLE QUOTES ONLY, and that is deliberate
+  // rather than an oversight: an interior apostrophe is ordinary inside a
+  // real name, so asking it of single quotes would refuse correct repairs —
+  // `‘TIAA Access Lifecycle 2050 T'4` is the pinned case, and it keeps its
+  // interior `'` because this strip is anchored `^`. Measured whole-store:
+  // no filed name opens a BALANCED single-quoted term, while the residue's
+  // two balanced cases are both double-quoted and both still refused.
   if (qlead !== s && !/["”].*\S/.test(qlead) &&
       qlead.split(/\s+/).length >= 2 && /[A-Za-z]{3}/.test(qlead)) s = qlead;
   for (let pass = 0; pass < 2; pass++) {

@@ -276,6 +276,16 @@ try {
     "Registered Investment Company T. Rowe Price Overseas",
     "Investments using NAV (CCT funds)",
     "MUTUAL FUNDS SHARES / UNITS Fidelity 500 Index",
+    /* 2026-09-29, the LEADING SINGLE QUOTE. Checked before adding, for the
+     * reason this comment keeps being written: NOT ONE of the 27 cases above
+     * leads with a quote of any kind, so the twin agreed whether or not it
+     * carried this arm. The last two must come back WHOLE — a balanced
+     * double-quoted term, and a remainder of one word. */
+    "‘Vanguard 500 Index Fund Admiral Shares",
+    "'VANGUARD EXPLORER ADM",
+    "‘TIAA Access Lifecycle 2050 T'4",
+    "\"Brokerage\" Account",
+    "‘Uncoln",
     "Mutual Funds, at Fair Value Schwab S&P 500 Index",
     "MUTUAL FUNDS SHARES I UNITS Vanguard 500 Index Admiral Fund",
     "Money market fund - Vanguard Federal Money Market Fund",
@@ -806,7 +816,19 @@ try {
     /* …and the remainder must still NAME something: two participles caught by
      * reading the whole-store diff, which the counts called clean */
     ["Investments using NAV (CCT funds)", "Investments using NAV (CCT funds)"],
-    ["Investments valued at NAV Morley Stable Value", "Investments valued at NAV Morley Stable Value"]]) {
+    ["Investments valued at NAV Morley Stable Value", "Investments valued at NAV Morley Stable Value"],
+    /* A LEADING SINGLE QUOTE IS OCR NOISE, 2026-09-29. The strip is anchored
+     * `^`, which is what lets the third case keep its INTERIOR apostrophe —
+     * and is why the balanced-quote test beside it stays on double quotes
+     * only. The last two are that test and the two-word floor doing their
+     * jobs: a balanced quoted term the filer meant, and a remainder that is
+     * one word and therefore names nothing on its own. */
+    ["‘Vanguard 500 Index Fund Admiral Shares", "Vanguard 500 Index Fund Admiral Shares"],
+    ["'VANGUARD EXPLORER ADM", "VANGUARD EXPLORER ADM"],
+    ["‘TIAA Access Lifecycle 2050 T'4", "TIAA Access Lifecycle 2050 T'4"],
+    ["‘American Funds New Perspective R6", "American Funds New Perspective R6"],
+    ["\"Brokerage\" Account", "\"Brokerage\" Account"],
+    ["‘Uncoln", "‘Uncoln"]]) {
     if (cleanFiledName(n) !== want) fail(`the filed-name cleaner now damages a control: ${JSON.stringify(n)} -> ${JSON.stringify(cleanFiledName(n))}`);
   }
 
