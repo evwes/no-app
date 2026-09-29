@@ -26595,3 +26595,70 @@ measurement-basis screen.
 returned **0 rows** because my "has a connective" filter treated the SPACE after
 the caption as one, skipping the entire population. *A zero on a population you
 have already counted at 3,180 is reporting on the harness.*
+
+---
+
+## 2026-09-29 (07:2xZ) — SHIPPED: a caption welded straight onto a fund name, and an initial that is not a share class
+
+**287 of 1,720,602 published rows change / 258 plans / 2,393,636 participants**,
+on BOTH display paths. 12 crawlable pages / 2,074,330 participants, Walmart
+among them. Mirrored `cfd7e89 → f7ff3fe`, **UNFORCED ON BOTH CHECKS**, data gate
++0 / −0. `site-test` #107 `conclusion: success`; Pages #673 `success`.
+
+**Found by the 06:2xZ participant-weighted draw on Walmart (1,921,006 ppl — the
+largest plan in the country)**, whose menu carries `Investments Walmart Inc.
+Equity Securities`. The queued measurement (06:3xZ entry above) sized the
+CONNECTIVE-LESS half of caption class B at 997 rows. **Measuring WHY those rows
+were refused split them three ways rather than one**, and only two of the three
+were shipped.
+
+**(A) `investments` was missing from the bare-whitespace arm's vocabulary —
+418 candidate rows / 2,599,053 ppl-weighted**, the largest of the three by
+people.
+
+**THE PLURAL ONLY, and that is the load-bearing decision.** Over the whole
+caption bucket, allowing the bare SINGULAR `investment` withdraws a resolution
+from **34 rows, and every one is a real fund whose own name starts with the
+word** — `INVESTMENT CO OF AMERICA Class R-4` (RICEX), `Investment Grade Bond
+R6` (JIGEX), `Investment Grade Bond Fund - Class A` (LIGRX). Every row the
+plural gains is a genuine caption. **The safety test named its own
+discriminator**, as LENGTH named this arm's four-token floor a cycle ago.
+
+**(B) An INITIAL is not a share-class code — 129 rows / 38 plans / 62,598 ppl.**
+`bwOpensWithAName` strips punctuation before judging, so `T. Rowe Price
+Overseas` arrived as the bare `T` and was refused by the one-letter code arm,
+leaving `Registered Investment Company T. Rowe Price Overseas` published whole.
+**This record already carries `t` from T. Rowe Price as a trap in the matcher's
+manager vocabulary** — the same letter defeating a different predicate, in a
+different file, a week apart. The discriminator is the PERIOD, which the
+punctuation strip threw away: a filed share class is never written `A.`.
+
+**(C) The remaining 456 rows are the four-token floor refusing short real names**
+(`Registered Investment Company Fidelity 500 Idx`). NOT TOUCHED — that floor was
+chosen by the data and lowering it is its own measurement. Queued.
+
+**READING THE DISTINCT TRANSFORMATIONS CAUGHT TWO ROWS OF DAMAGE THE COUNTS
+CALLED CLEAN**, the third cycle running that this step has earned its place. The
+first draft turned `Investments using NAV (CCT funds)` → `using NAV (CCT funds)`
+and `Investments valued at NAV Morley Stable Value` → `valued at NAV Morley
+Stable Value`. The remainder furniture already listed `invested`, `measured`,
+`consisting`, `comprised` and `including`; it was missing **`valued` and
+`using`**. Both refused, both pinned.
+
+Shipped narrower than the 997-row candidate set because the arm's other screens
+still refuse the rest — **that is them working, not a shortfall.**
+
+**TETHERED AND CONTROLLED IN BOTH DIRECTIONS.** Canonical in `lib-disclose`,
+twinned in `app.js`, **DRIFT 0 over all 1,720,602 published rows**. Negative
+control on the twin: the pre-change copy drifts by name on exactly the 287 rows
+the change touches. The smoke tether gains 9 pinned cases (5 must-KEEP including
+both singular-`Investment` funds, 4 must-STRIP) and 4 drift probes — added for
+the reason every previous cycle's were, that **not one existing case reaches
+these arms**, so the twin would have agreed whether or not it carried them.
+Negative control on the tether: a reverted twin FAILS by name on exactly the 2
+must-strip probes and holds both must-keeps. Full smoke test green across all
+six page shapes. Every changed page cell read in full.
+
+**Connective buckets still queued, sized at v192 so they are not re-counted:**
+the four-token floor 456 rows / 116 plans / 169,683 ppl; `;` 101 rows, `—` 46,
+`_` 26, `(` 53. `/` (232) must NOT be stripped; `,` (104) already refused.

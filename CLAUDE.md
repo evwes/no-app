@@ -831,35 +831,46 @@ export, do not copy the line.
   computed against the store it would actually RUN on and landed exactly, on
   both the plan count and the row count. *State a store-dependent prediction
   against the store the run will read.*
-- **QUEUED, FULLY MEASURED AND SAFE, NOT SHIPPED — caption class B's
-  CONNECTIVE-LESS half: 997 rows / 466 plans / 2,802,869 ppl / $13,503,381,620**
-  publish a name that opens with a vehicle-type caption welded straight onto a
-  real fund name with no separator (`Investments Vanguard Bond Index Fund`,
-  `Registered Investment Company Fidelity 500 Index`). **23 rows GAIN a ticker,
-  0 LOSE one.** **Found by the 06:2xZ draw on Walmart (1,921,006 ppl)**, whose
-  menu carries `Investments Walmart Inc. Equity Securities`. v189's
-  `TYPE_PREFIX` widened the CONNECTIVES and cannot reach the half that has none.
-  **THE SAFETY TEST NAMED ITS OWN DISCRIMINATOR:** over the whole bucket 34 rows
-  would have LOST a resolution and every one is the SINGULAR `Investment`
-  leading a fund's own name (`INVESTMENT CO OF AMERICA` → RICEX, `Investment
-  Grade Bond R6` → JIGEX), while every gain is a PLURAL or multi-word caption.
-  **The vocabulary takes `investments` and never the bare singular.**
-  **READING THE DISTINCT TRANSFORMATIONS CAUGHT ~90 ROWS OF DAMAGE NO COUNT
-  COULD SEE** — `Investments measured at NAV` → `measured at NAV` (29),
-  `Mutual Funds and` → `and` (12), `Collective Trust Fund(s)` → `Fund(s)` (20),
-  `Investments Held in` → `Held in`. The surviving screen is written out in the
-  log entry; implement it, do not re-derive it.
-  **NOT SHIPPED because it is a DISPLAY change** and needs the full pattern:
-  canonical in `lib-disclose`, twinned in `app.js`, tethered by
-  `smoke-test.mjs`, a negative control that fails by name, pages regenerated —
-  two display paths, and a claim about 2.8M readers must name which.
-  Remaining connective buckets sized so they are not re-counted: `;` 101 rows,
-  `—` 46, `_` 26, `(` 53; **`/` (232) must NOT be stripped** — `Money Market /
-  Cash Equivalent` is a compound type — and `,` (104) is already refused by the
-  comma family's measurement-basis screen.
+- **MIRRORED 2026-09-29 07:2xZ (`cfd7e89 → f7ff3fe`), UNFORCED ON BOTH CHECKS**,
+  data gate +0 / −0; `site-test` #107 `conclusion: success`, Pages #673
+  `success`. **A CAPTION WELDED STRAIGHT ONTO A FUND NAME, AND AN INITIAL THAT
+  IS NOT A SHARE CLASS: 287 of 1,720,602 published rows / 258 plans /
+  2,393,636 participants**, on BOTH display paths; 12 crawlable pages /
+  2,074,330 ppl, Walmart among them. **Found by the 06:2xZ participant-weighted
+  draw on Walmart (1,921,006 ppl)**, whose menu carries `Investments Walmart
+  Inc. Equity Securities`.
+  **MEASURING WHY THE 997 QUEUED ROWS WERE REFUSED SPLIT THEM THREE WAYS, and
+  only two shipped.** **(A) `investments` was missing from the bare-whitespace
+  arm's vocabulary — 418 rows / 2,599,053 ppl-weighted. THE PLURAL ONLY, and
+  the safety test named its own discriminator:** the bare SINGULAR `investment`
+  withdraws a resolution from **34 rows and every one is a real fund whose own
+  name starts with the word** (`INVESTMENT CO OF AMERICA Class R-4` → RICEX,
+  `Investment Grade Bond R6` → JIGEX). **(B) An INITIAL is not a share-class
+  code — 129 rows / 38 plans / 62,598 ppl:** `bwOpensWithAName` strips
+  punctuation before judging, so `T. Rowe Price Overseas` arrived as the bare
+  `T` and hit the one-letter code arm — **the same letter that traps the
+  matcher's manager vocabulary, a different predicate in a different file a
+  week apart.** The discriminator is the PERIOD the strip threw away.
+  **(C) 456 rows are the four-token floor refusing short real names**
+  (`Registered Investment Company Fidelity 500 Idx`) — NOT TOUCHED, because
+  that floor was chosen by the data and lowering it is its own measurement.
+  **READING THE DISTINCT TRANSFORMATIONS CAUGHT TWO ROWS OF DAMAGE THE COUNTS
+  CALLED CLEAN**, third cycle running: `Investments using NAV (CCT funds)` and
+  `Investments valued at NAV Morley Stable Value` lost their first word — the
+  furniture list held `invested`/`measured`/`including` and was missing
+  **`valued` and `using`.** Both pinned.
+  **DRIFT 0 over all 1,720,602 rows**; the pre-change twin drifts by name on
+  exactly the 287; tether +9 pinned cases +4 probes, **added because not one
+  existing case reaches these arms**; reverted twin fails by name on exactly
+  the 2 must-strip probes.
+  **STILL QUEUED, sized at v192 so they are not re-counted:** the four-token
+  floor **456 rows / 116 plans / 169,683 ppl**; `;` 101 rows, `—` 46, `_` 26,
+  `(` 53; **`/` (232) must NOT be stripped** — `Money Market / Cash Equivalent`
+  is a compound type — and `,` (104) is already refused by the comma family's
+  measurement-basis screen.
   **A harness error caught by an implausible zero:** the first outcome test
   returned 0 rows because my "has a connective" filter counted the SPACE after
-  the caption as one. `docs/accuracy-log.md` 2026-09-29 (06:3xZ).
+  the caption as one. `docs/accuracy-log.md` 2026-09-29 (06:3xZ, 07:2xZ).
 - **PREVIOUSLY IN FLIGHT: #501 (v192), dispatched 2026-09-29 05:2xZ on `99b2c73`, observed
   queued — a FULL re-parse on the version bump. A BARE `PREFERRED STOCK`
   DESIGNATION IS NOT A FUND NAME: 29 rows / 21 plans / 310,633 ppl /
