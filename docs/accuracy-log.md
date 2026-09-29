@@ -26257,3 +26257,61 @@ $1.40B, `Vanguard`, `American`, `Pioneer`). **That number is not a defect count
 and must not be carried forward.** Twenty-fourth instance of a measurement
 reporting on the harness — and the tell was again a list printed in order to
 READ, not a count.
+
+## 2026-09-29 (04:1xZ) — #499's verdict, and v191 dispatched
+
+**#499 PASSED ITS PRE-REGISTERED TEST TO THE ROW** (`conclusion: success`, data
+commit `b7dad2b`): **`sec tickers: 346,774 rows across 37,090 plans`**, exactly
+predicted, +8,296 rows / +55 plans. Coverage line byte-identical — confident
+**60,103**, HIGH **4**, overshoot **325**, WARN 608, dl 131, pv 190 at 99.8%.
+**MIRRORED 04:1xZ (`0981231 → b7dad2b`), UNFORCED ON BOTH CHECKS**, data gate
++0 / −0.
+
+**Every named control landed, read out of the STORE rather than the log.** The
+Premier classes publish for the first time — FRLPX 554, FQIPX 552, FTYPX 550,
+FPIPX 547, FNIPX 540, FUIPX 539, FMKPX 531, FVIPX 517, FLIPX 488, FKIPX 380,
+**5,198 rows across ten vintages** — and Institutional Premium resolves (FFIZX
+330, FFLDX 331, FFOPX 330). **`TLHPX` is 0**: the Nuveen Lifecycle rows that
+were being told their Institutional holding was PREMIER are entirely gone. The
+restorations hold — RPFIX 7, IUGXX 8 (the series-owns tie-breaker), VTIFX 17
+(the `Institutional Select` lookahead), ACAYX 4 (Alger Class Y, which the
+`c.hint` path could not select), FIHLX 92 (the re-pinned R6 class).
+
+**So the owner's table produced 9,329 rows / 7,862,491 participants gaining an
+exact ticker and 1,005 rows / 2,096,588 losing a wrong share class — and not
+one figure from the table itself was used.** What it did was point at a
+population; checking it before applying it is what turned it into a defect.
+
+---
+
+**v191 DISPATCHED as #500 on `037e00e`, observed queued — the push trigger
+fired on its own this time.** A wrapped sentence's tail is not a fund name:
+**22 rows / 22 plans / 95,237 participants / $666,362,991** publish a holding
+named only `statements`. Seven plans carry it at ≥40% of their own menu, led
+by **Pebble Beach Company at 74.0% / $144,220,775**; 21 of 22 have a BLANK type
+column; only 6 are OCR parses. Anchored `^…$`, so the twelve published names
+that merely CONTAIN the word are untouched.
+
+**THE AUDIT DELTA WAS MEASURED AND MY FIRST NUMBER WAS WRONG — twenty-fifth
+harness instance, and this one was caught by the rule rather than by luck.**
+I first counted "any published plan with a generic-named row" and got
+**750 → 768, +18**. The audit reports **213**, so the harness was measuring a
+different population. `audit-generic-names.mjs` counts a plan only when the
+generic rows are **≥25% of the menu's VALUE**; reproducing that rule gives
+**exactly 213 — the number the run reported** — moving to **219, +6**, with 11
+of headroom under the 230 threshold this record reserves for the owner.
+**Reproducing the shipped count before classifying anything is what made the
+second number trustworthy**, and it is the same rule that caught a 327-plan
+`stmt` pool in 2026-09-12.
+
+Pre-registered for #500: `audit-generic-names` 213 → 219; `audit-dominant-row`
+stays 0; **`confident` +0 / −0**, because the dominance guard needs a single
+non-fund row at ≥90% and the largest here is 74.0% — if any lineup is
+withdrawn, every loss must sit inside the named 22.
+
+**Controls 18 green** (7 must-FLAG, 11 must-KEEP including all three real names
+containing the word and the v190 pins); **negative control: the pre-v191
+predicate MISSES 5 of 5 must-flag and HOLDS 6 of 6 must-keep**; the browser
+twin's probes go **27 → 34**, added for exactly the reason v190's were — not
+one existing probe reaches this arm, so the twin would have agreed whether or
+not it carried the change. `parser-gate.mjs` all specimens green.

@@ -819,7 +819,46 @@ export, do not copy the line.
   9 rows → 5, still confident — and **the merge's own `rows-dropped` check caught
   it unprompted** (`warn` 608 → 609). `dl` 129 → 131.
   `docs/accuracy-log.md` 2026-09-29 (00:2xZ).
-- **IN FLIGHT: #499, dispatched 2026-09-29 03:0xZ on `3b82ea2`, observed queued.
+- **IN FLIGHT: #500 (v191), dispatched 2026-09-29 04:0xZ on `037e00e`, observed
+  queued — a FULL re-parse on the version bump. A WRAPPED SENTENCE'S TAIL IS NOT
+  A FUND NAME: 22 rows / 22 plans / 29,795 ppl / $666,201,616** publish a holding
+  named only `Statements` — the continuation line of *"…the accompanying
+  financial Statements"* — the largest at **74.0% of its menu** (Avangrid, 1,187
+  ppl, `Statements` $46,566,930 of a 5-row menu).
+  **FOUND BY THE PARTICIPANT-WEIGHTED DRAW**, and it is v190's own shape one
+  vocabulary entry later: `GENERIC_TYPE_ANY_EXTRA` is anchored `^…$`, so the
+  question is only *is this WHOLE name a bare type word*, and `statements` was
+  simply absent from that list. **The singular `statement` matches 0 rows today
+  and ships anyway** — the same wrapping produces it and the anchor makes it
+  safe.
+  **PRE-REGISTERED: `audit-generic-names` 213 → 219, MEASURED not estimated;
+  `audit-dominant-row` stays 0; `confident` +0 / −0** (the guard needs a single
+  non-fund row at ≥90% and the largest here is 74.0%, so no lineup should be
+  withdrawn — any loss must sit inside the named 22).
+  **MY FIRST AUDIT DELTA WAS THE WRONG POPULATION: 750 → 768, +18.**
+  `audit-generic-names` counts a published plan only when the generic rows carry
+  **≥25% of the menu's VALUE**; reproducing that rule gives **213 exactly, the
+  number the run reported**, and the delta is +6. *A count that does not
+  reproduce the shipped number is measuring something else.*
+  18 controls green (must-FLAG and must-KEEP, including `(See Attached
+  Statement)`, `Misstatements net of tax impact`, `Real Estatement Index Fund -
+  Admiral` and `Statement of Net Assets Available for Benefits`); negative
+  control fails by name on 5 of 5 and holds 6 of 6; 7 new twin probes (27 → 34),
+  twin regenerated; `parser-gate.mjs` all green.
+  `docs/accuracy-log.md` 2026-09-29 (03:3xZ, 04:1xZ).
+- **#499 PASSED ITS PRE-REGISTERED TEST TO THE ROW** (`conclusion: success`, data
+  commit `b7dad2b`): **`sec tickers: 346,774 rows across 37,090 plans`**, exactly
+  predicted; coverage line byte-identical (confident 60,103, HIGH 4, overshoot
+  325, WARN 608, dl 131); CONFIDENCE DIFF +0 / −0. Every named control read out
+  of the store, not the log: the ten Fidelity Freedom Index **Premier** classes
+  publish on **5,198 rows** (FRLPX 554, FQIPX 552, FTYPX 550, FPIPX 547, FNIPX
+  540, FUIPX 539, FMKPX 531, FVIPX 517, FLIPX 488, FKIPX 380); the Institutional
+  Premium classes hold (FFIZX 330, FFLDX 331, FFOPX 330); **TLHPX 0** — the
+  Nuveen Lifecycle series has no institutional class and stops asserting one;
+  and the four must-keeps stand (RPFIX 7, IUGXX 8, VTIFX 17, ACAYX 4, FIHLX 92).
+  **MIRRORED 2026-09-29 04:0xZ (`0981231 → b7dad2b`), UNFORCED ON BOTH CHECKS**,
+  data gate +0 / −0.
+- **PREVIOUSLY IN FLIGHT: #499, dispatched 2026-09-29 03:0xZ on `3b82ea2`.
   NO PARSER BUMP — it exists to let the MERGE rewrite `stk`.** **PREMIER IS NOT
   INSTITUTIONAL: 9,329 rows / 7,862,491 ppl gain an EXACT ticker and 1,005 rows
   / 2,096,588 stop being told the wrong share class, 0 flipped.**
