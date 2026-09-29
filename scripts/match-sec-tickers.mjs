@@ -173,6 +173,18 @@ const ASSET_WORDS = new Set([...DISCRIMINATORS, "bond", "stock", "stocks", "equi
  * belongs to the SPLIT test only, never to ASSET_WORDS itself, whose members
  * are judged whole elsewhere. */
 const CONCAT_PART = new Set([...ASSET_WORDS, "cap", "caps"]);
+
+/* VEHICLE NOUNS, for the magnet-key rule below. They are members of NOISE, so
+ * `tokens()` throws them away on both sides before anything is compared — the
+ * whole point of NOISE being that they carry no identity. `fund` and `funds`
+ * are deliberately ABSENT: they are universal furniture, present in most
+ * registered names and absent from most filed ones, so requiring them to
+ * agree would refuse thousands of correct answers (`Fidelity Balanced Fund`
+ * against a filed `Fidelity Balanced K`). What is left is the small set of
+ * words a registrant uses to say this product is NOT the plain fund. */
+const VEHICLE_NOUN = new Set(["portfolio", "portfolios", "trust", "trusts", "account", "accounts"]);
+const vehiclesOf = (s) => new Set(norm(s).split(" ")
+  .filter((w) => VEHICLE_NOUN.has(w)).map((w) => w.replace(/s$/, "")));
 function isAssetWord(w) {
   if (ASSET_WORDS.has(w)) return true;
   for (let i = 3; i <= w.length - 3; i++)
@@ -609,6 +621,70 @@ function resolveUncached(idx, filedName, issuerWords) {
       why = "year-pinned";
     } else {
     classes = best; why = "superset";
+    /* A MAGNET SERIES KEY: A HOUSE TOKEN PLUS ASSET WORDS AND NOTHING ELSE.
+     *
+     * `AMERICAN FUNDS PORTFOLIO SERIES :: American Funds Growth Portfolio`
+     * keeps only {american, growth} once NOISE is dropped — a house word and
+     * an asset word — and EVERY American Funds growth-ish filed name is a
+     * superset of that pair. So `American Funds Growth Fund R6` and
+     * `American Funds Growth and Income R6` were both handed a Growth
+     * Portfolio ticker, asserted as fact, for filings naming a different fund.
+     * Measured on the v191 store: 57 rows / 30,965 participant-weighted are
+     * SHOWN such an answer through `stk`, which `app.js` reads when
+     * `fund-er.js` has none.
+     *
+     * THE OBVIOUS FIX IS DEAD AND WAS KILLED BY MEASUREMENT, so it is recorded
+     * rather than retried: taking `portfolio` out of NOISE costs 5,901 correct
+     * rows / 5,830,477 participant-weighted / 1,196 names, because Dimensional
+     * registers `U.S. Targeted Value Portfolio` while filings write `DFA US
+     * Targeted Value I`, and the whole DFA family withdraws. `portfolio` stays
+     * in NOISE. This is the exact mirror of that list's own comment on why
+     * `series` must stay OUT of it.
+     *
+     * So the NOISE words are not restored — they are ASKED TO AGREE, and only
+     * where the key has nothing else left to discriminate with. A registrant
+     * that says `Portfolio` or `Trust` where the filing says neither is
+     * naming a different product, and with an all-descriptive key that is the
+     * only evidence there is. `fund`/`funds` are excluded because they are
+     * furniture on both sides (see VEHICLE_NOUN).
+     *
+     * THE GATE IS "WHAT IS LEFT OF THE KEY ONCE THE HOUSE IS ACCOUNTED FOR",
+     * and two weaker forms were written first and killed by the same
+     * whole-store diff, so they are recorded rather than left to be retried:
+     *
+     *   (1) "the key is house tokens plus asset words" — fires on nearly
+     *       everything, because `mgrKeys` holds `managerPhrase(series)` as
+     *       well as the registrant's, and a series' own phrase is built from
+     *       its own leading words. `U.S. Targeted Value Portfolio` yields
+     *       `us targeted`, which covered two thirds of its own key. 2,510
+     *       rows / 2.68M participant-weighted withdrawn, overwhelmingly DFA.
+     *   (2) the vehicle test on its own, however the house tokens are built —
+     *       992 rows / 1.17M still withdrawn, because DIMENSIONAL REGISTERS
+     *       EVERYTHING AS `Portfolio` AND FILINGS WRITE `Fund` OR NOTHING.
+     *       `DFA Global Equity I` and `DFA International Small Company Fund`
+     *       are correct answers whose registrant simply uses the other word.
+     *
+     * What separates them is not the vehicle noun but how much the key still
+     * says. `global equity` and `international small` keep TWO asset words
+     * after DFA's house is removed, and two asset words name a product;
+     * `american growth` keeps ONE, and one asset word cannot choose between
+     * the dozens of growth funds a house registers. So the vehicle noun is
+     * asked ONLY where the key has nothing else left — where it is the last
+     * evidence there is rather than a preference between two readings.
+     * `fidelity balanced` also keeps one, and is untouched, because Fidelity
+     * registers that series as a `Fund` and the filing says `Fund` too.
+     *
+     * It FILTERS the bucket rather than refusing it, because one key can hold
+     * two registrants' products: `american growth` holds John Hancock's
+     * `American Growth Trust` beside American Funds' `Growth Portfolio`, and a
+     * filed name stating `Trust` should reach the first and not the second. */
+    const rest = bestKey.filter((w) => !house.has(w));
+    if (rest.length <= 1 && rest.every(isAssetWord)) {
+      const fv = vehiclesOf(filedName);
+      const kept = best.filter((c) => [...vehiclesOf(c.series)].every((v) => fv.has(v)));
+      if (!kept.length) return null;
+      classes = kept; best = kept;
+    }
     // A superset match must not drop a DISCRIMINATOR. "BLACKROCK RUSSELL 2000
     // VAL IDX FD" is not "Russell 2000 Fund" -- value/index change which
     // product it is, and a subset match silently discards them. If the filing
@@ -947,6 +1023,42 @@ const SELFTEST_ISS = [
   ["Mutual of American Small Cap Growth Fund", "", "—"],
   /* and the correct spelling must be untouched by any of it */
   ["American Funds The Growth Fund of America R6", "", "RGAGX"],
+
+  /* THE MAGNET SERIES KEY. `American Funds Growth Portfolio` keeps only
+   * {american, growth}, so every American Funds growth-ish filed name is a
+   * superset of it. Must REFUSE — none of these says `Portfolio`: */
+  ["American Funds Growth Fund R6", "", "—"],
+  /* THE HOUSE COMES FROM THE ISSUER CELL ON THIS ONE, and the pin carries it
+   * for that reason: written with an empty issuer the bare `Growth Fund R6`
+   * refuses on its own and the case never reaches the new rule at all — it
+   * would have passed both before and after, the decorative control this
+   * record has now been caught writing twice. The store's row has
+   * `iss = "American Funds"`, which supplies the house and makes it resolve. */
+  ["Growth Fund R6", "American Funds", "—"],
+  ["Growth Fund R4", "American Funds", "—"],
+  ["American Funds Growth R3", "", "—"],
+  ["AF GRTH & INC R6", "", "—"],
+  ["American Funds EUPAC Growth R6", "", "—"],
+  ["American Funds New Perspective Growth Fund", "", "—"],
+  ["JPMORGAN GRWTH ADV FUND SELECT CLASS af", "", "—"],
+  /* …and must KEEP, because the filing states the registrant's own word: */
+  ["American Funds Growth Portfolio R6", "", "RGWGX"],
+  ["American Funds Growth Portfolio Class R-4", "", "RGWEX"],
+  /* TWO ASSET WORDS AFTER THE HOUSE IS REMOVED NAME A PRODUCT, so the rule is
+   * never asked. These are the family whose withdrawal killed two earlier
+   * drafts of it: Dimensional registers every series as a `Portfolio` and
+   * filings write `Fund` or nothing at all. */
+  ["DFA Global Equity I", "", "DGEIX"],
+  ["DFA International Small Company Fund", "", "DFISX"],
+  ["DFA US Targeted Value I", "", "DFFVX"],
+  ["DFA International Value I Fund", "", "DFIVX"],
+  /* ONE asset word left, and untouched, because the registrant's own word is
+   * `Fund` and so is the filing's — the pair that shows the gate is the
+   * vehicle noun and not the key length. */
+  ["Fidelity Balanced Fund Class K", "", "FBAKX"],
+  /* a Growth and Income filing still reaches Growth and Income: two asset
+   * words survive the house, so the rule does not fire */
+  ["American Funds Growth and Income Portfolio R6", "", "RGNGX"],
 ];
 
 if (process.argv.includes("--selftest")) {
