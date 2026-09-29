@@ -26662,3 +26662,106 @@ six page shapes. Every changed page cell read in full.
 **Connective buckets still queued, sized at v192 so they are not re-counted:**
 the four-token floor 456 rows / 116 plans / 169,683 ppl; `;` 101 rows, `—` 46,
 `_` 26, `(` 53. `/` (232) must NOT be stripped; `,` (104) already refused.
+
+---
+
+## 2026-09-29 (07:5xZ) — SHIPPED: an OCR'd N/A column and a share count were publishing as holding names; and the four-token floor, measured and deliberately NOT moved
+
+**44 rows / 5 plans / 21,338 participants** stop being shown a holding named
+`NIA NIA 233,946 dy` or `that invests at least 80% of`, and get the FILED name
+back. 0 rows gain a strip, **0 gain or lose a ticker** (0 of 44 resolve under
+either form, so the claim holds whatever the call order), **0 crawlable pages
+change — the REPORT path only**, and `git diff --stat p/` is what says so
+rather than my inferring it from the plan list. Mirrored `f7ff3fe → 119c88b`,
+UNFORCED ON BOTH CHECKS, data gate +0 / −0.
+
+**FOUND BY MEASURING A QUEUED ITEM AND THEN NOT SHIPPING IT.** The queue held
+*lower the bare-whitespace arm's four-token floor*, sized at 456 rows. Reading
+every remainder the floor refuses — **474 rows / 223 plans / 460,163 ppl, the
+whole population, not a sample** — both killed that item and found this one,
+which is larger in the only way that counts: **these 44 rows reach readers
+today, where everything behind the floor does not.**
+
+**WHAT THE READ SAID.** The level means three different things:
+
+| remainder | read |
+|---|---|
+| ONE token | all **32 distinct read, NOT ONE publishable** — bare houses (`Putnam`, `Dreyfus`), bare designations (`Admiral`, `MMF-R3`), OCR mush (`ial`, `e7igi8`, `baie`), asset words (`Equity`). The floor is simply right. |
+| TWO tokens | about half junk and **not a screenable family**: `Sch N`, `Select S`, `Prudential GA-`, `CTF A` sit beside `MFS Utilities`, `Fidelity Contrafund`, `Vanguard 500`. |
+| THREE tokens | **237 distinct, overwhelmingly real fund names**, junk in five NAMED families rather than a spectrum. |
+
+**FOUR OF THE FIVE FAMILIES ALSO OCCUR ABOVE THE FLOOR, WHERE THE ARM ALREADY
+SHIPS — that is what shipped:**
+
+- **a share COUNT column as a name.** `bwOpensWithAName`'s `code` arm caps at
+  six digits, so `Mutual Fund 99,566.045 shs` strips to the eight-digit
+  `99566045` and passes. **The FLOOR was the only thing in front of this, and a
+  floor about length is not a screen about numbers.**
+- **`NIA` / `nla` — OCR of the `N/A` column**, never part of a fund name.
+  `Mutual fund NIA NIA 233,946 dy` was live. Anchored per token.
+- **`that` and `investing`** — prose continuations publishing as holdings named
+  after a relative pronoun (`Mutual Fund that invests mainly in`), plus
+  `measure` for an OCR'd measurement basis the furniture held only as
+  `measured`.
+
+**THE FLOOR DID NOT MOVE, AND A PINNED CONTROL FROM LAST CYCLE IS WHY.** The
+draft that lowered it stripped `Stable Value Fund Standard Insurance Company`
+to a bare ISSUER, which the tether pins as must-KEEP. About eight rows do that
+and they feed the **bare-house-as-a-holding class this project already has
+open**. No clean screen exists — a corporate suffix cannot tell `Standard
+Insurance Company` from **`Fidelity Growth Company`, a real fund**. So ~248 real
+fund names stay unreached at three tokens, **named rather than waved at.**
+*A control written one cycle earlier stopped this cycle's draft.*
+
+**A CONTROL I WROTE FOR THIS CHANGE WAS DECORATIVE, and running it said so.** I
+pinned `Mutual Fund 2045 Retirement Trust Select`, expecting a bare numeric test
+to eat a target-date VINTAGE — the trap the leading-count strip a hundred lines
+below already documents ("took 13,000 vintage-led rows with it"). It cannot
+happen here: **`code` refuses any lead of six digits or fewer BEFORE this screen
+is reached**, so `2045` was already refused and the pin asserted a behaviour the
+change never touched. The narrowing it prompted was reverted as redundant and
+the pin moved to the case that discriminates — a **seven**-digit lead.
+
+**A CANDIDATE DROPPED ON ITS MEASURED COST:** adding `admiral` to the furniture
+withdraws **34 strips where a real fund name survives the caption** (`Index Fund
+Admiral Shares Vanguard Wellington Fund Admiral Shares`). A partial repair beats
+the filed name there, so it is out.
+
+Tethered: DRIFT **0** over all 1,720,602 published rows; the pre-change twin
+fails by name on exactly the 44. 6 must-KEEP-whole probes + 8 pinned pairs;
+**the pre-change module STRIPS 4 of the 6**, so the control can fail. 12/12
+pins green, full smoke test green, `parser-gate.mjs` green.
+
+### The 07:4xZ participant-weighted draw — two findings, neither shipped
+
+Three plans drawn. Erickson Incorporated (778 ppl, 27 rows, ratio 0.988) is
+clean.
+
+**QUEUED, SIZED, SAFE — AN ANNUITY CONTRACT TYPED `Mutual fund`: 186 rows /
+153 plans / 216,782 participants / $2,084,149,902.** Found on **American
+University** (7,009 ppl), whose largest holding is `Traditional Fixed Annuity
+Contracts - Non-Fully Benefit Responsive` at 13.5%, typed **`Mutual fund`**.
+A row typed `Mutual fund` says the holding IS a registered mutual fund; these
+are TIAA Traditional, CREF variable, Empower group annuity and PRIAC contracts,
+which are none of them that. **It is v192's shape in a different column.**
+The discriminator is anchored and in the filing's own words — `\bannuity
+contracts?\b` in the NAME. Of the 1,405 rows whose name says so, 934 carry a
+blank type and only these 186 claim `Mutual fund`; the rest are typed
+`Collective trust` (87), `Pooled separate account` (73), `Cash / short-term`
+(70), `Stable value / GIC` (33), `Separate account` (20).
+**NO FABRICATED FEE, checked before pricing the item: 0 of 186 publish a
+ticker, 0 an expense ratio, 0 carry a stored SEC ticker.** So the harm is the
+CLAIM alone. `type` is a STORED field, so this is parser-side and needs a
+version bump — or a display-side typing on v181's loan pattern.
+
+**A NAMED LARGE MEMBER FOR THE OWNER-QUEUED WHOLE-TABLE CLASS: Cummins Inc.
+(38,567 ppl, $7.49B).** Its 7-row "menu" is an asset-class table —
+`Common/collective trust funds` **60.7% / $5,016,457,254**, `Registered
+investment companies` 4.4%, plus a master-trust pointer row and two synthetic
+GICs. **65.1% of the menu's VALUE names no fund.** `isGenericTypeName` answers
+TRUE on both rows and the share is well over the audit's 25% floor, **so
+Cummins is already one of the 217 plans `audit-generic-names` counts — and
+nothing withdraws it**, because `audit-dominant-row` needs 90% on a SINGLE row
+and the largest here is 60.7%. That is exactly the Morgan Stanley / General
+Motors gap this record leaves to the owner: the implied change is a
+**whole-table** test beside the existing one-row test.

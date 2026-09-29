@@ -831,6 +831,59 @@ export, do not copy the line.
   computed against the store it would actually RUN on and landed exactly, on
   both the plan count and the row count. *State a store-dependent prediction
   against the store the run will read.*
+- **MIRRORED 2026-09-29 07:5xZ (`f7ff3fe → 119c88b`), UNFORCED ON BOTH CHECKS**,
+  data gate +0 / −0. **AN OCR'D N/A COLUMN AND A SHARE COUNT WERE PUBLISHING AS
+  HOLDING NAMES: 44 rows / 5 plans / 21,338 participants** get the FILED name
+  back instead of `NIA NIA 233,946 dy` or `that invests at least 80% of`.
+  0 strips gained, **0 tickers gained or lost** (0 of 44 resolve under either
+  form, so the claim holds whatever the call order), **0 crawlable pages — the
+  REPORT path only, and `git diff --stat p/` is what says so.**
+  **FOUND BY MEASURING A QUEUED ITEM AND THEN NOT SHIPPING IT.** The queue held
+  *lower the four-token floor*. Reading every remainder it refuses — **474 rows
+  / 223 plans / 460,163 ppl, the whole population** — killed that item and found
+  this one, **which reaches readers TODAY where everything behind the floor does
+  not**. ONE token: all **32 distinct read, NOT ONE publishable**. TWO tokens:
+  half junk and not screenable. THREE tokens: **237 distinct, overwhelmingly
+  real fund names**, junk in five NAMED families — four of which also occur
+  ABOVE the floor, which is what shipped (`bwNoise` for the share-count and
+  N/A-column families; `measure`/`that`/`investing` in the furniture).
+  **THE FLOOR DID NOT MOVE AND A PINNED CONTROL FROM LAST CYCLE IS WHY:** the
+  draft stripped `Stable Value Fund Standard Insurance Company` to a bare
+  ISSUER. ~8 rows do that and they feed the open bare-house class; no clean
+  screen exists, because a corporate suffix cannot tell it from **`Fidelity
+  Growth Company`, a real fund**. So **~248 real fund names stay unreached at
+  three tokens** — named, not waved at.
+  **A CONTROL I WROTE WAS DECORATIVE:** I pinned `Mutual Fund 2045 Retirement
+  Trust Select` expecting a numeric test to eat a target-date VINTAGE, but
+  `code` refuses any lead of six digits or fewer BEFORE the screen is reached,
+  so it was already refused. The narrowing it prompted was reverted as redundant
+  and the pin moved to a **seven**-digit lead. **A candidate dropped on measured
+  cost:** `admiral` in the furniture withdraws **34 strips where a real fund
+  name survives the caption**. DRIFT 0 over 1,720,602 rows; pre-change twin
+  fails by name on exactly the 44; pre-change module STRIPS 4 of 6 must-keeps;
+  12/12 pins, smoke + parser gate green.
+  `docs/accuracy-log.md` 2026-09-29 (07:5xZ).
+- **QUEUED, SIZED, SAFE, NOT SHIPPED — AN ANNUITY CONTRACT TYPED `Mutual fund`:
+  186 rows / 153 plans / 216,782 ppl / $2,084,149,902.** Found by the 07:4xZ
+  draw on **American University** (7,009 ppl), whose largest holding is
+  `Traditional Fixed Annuity Contracts - Non-Fully Benefit Responsive` typed
+  **`Mutual fund`** — TIAA Traditional, CREF variable, Empower group annuity,
+  PRIAC. **v192's shape in a different column.** Discriminator anchored and in
+  the filing's own words: `\bannuity contracts?\b` in the NAME. Of 1,405 rows
+  whose name says so, 934 carry a blank type and only these 186 claim `Mutual
+  fund`. **NO FABRICATED FEE, checked before pricing the item: 0 publish a
+  ticker, 0 an ER, 0 carry `stk`** — the harm is the CLAIM alone. `type` is a
+  STORED field, so parser-side and needs a bump, or a display typing on v181's
+  loan pattern.
+- **A NAMED LARGE MEMBER FOR THE OWNER-QUEUED WHOLE-TABLE CLASS: Cummins Inc.
+  (38,567 ppl, $7.49B).** Its 7-row menu is an asset-class table —
+  `Common/collective trust funds` **60.7% / $5,016,457,254** plus `Registered
+  investment companies` 4.4%, so **65.1% of the menu's VALUE names no fund**.
+  `isGenericTypeName` is TRUE on both, the share clears the audit's 25% floor,
+  **so Cummins is already one of the 217 plans `audit-generic-names` counts —
+  and nothing withdraws it**, because `audit-dominant-row` needs 90% on a
+  SINGLE row and the largest is 60.7%. The Morgan Stanley / General Motors gap
+  exactly: the implied change is a **whole-table** test beside the one-row test.
 - **MIRRORED 2026-09-29 07:2xZ (`cfd7e89 → f7ff3fe`), UNFORCED ON BOTH CHECKS**,
   data gate +0 / −0; `site-test` #107 `conclusion: success`, Pages #673
   `success`. **A CAPTION WELDED STRAIGHT ONTO A FUND NAME, AND AN INITIAL THAT
