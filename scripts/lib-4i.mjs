@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 192;
+export const PARSER_VERSION = 193;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -100,6 +100,54 @@ const SKIP_ROW = new RegExp("^(total|subtotal|grand total|schedule|page \\d|form
    * the ZIP+4 rows v132 removed from Delta's menu, a different page of the
    * same filing. Values are small, so no coverage metric ever moved. */
   "washington,? ?d\\.? ?c\\.?|commission file (?:number|no)|securities and exchange commission|annual report pursuant to section|pursuant to section 15\\(d\\)|" +
+  /* v193: THE FORM 5500 COVER PAGE IS NOT A SCHEDULE OF ASSETS EITHER — the
+   * exact sibling of the 11-K block above, one form along. When no readable
+   * 4i attachment anchors the region, the parser seeds off the form itself
+   * and the cover's own figures become values: the plan-year boxes give
+   * "and ending 12/31/" a value of 2,024 (2,024,000 under a thousands
+   * marker), "Effective date of plan 01/29/" takes the year beside it, and
+   * the DocuSign margin stamp's trailing hex digits parse as a holding.
+   * NBCUniversal's 11,612 participants are shown a nine-row "menu" that is a
+   * 96.9% master-trust pointer plus eight pieces of the form.
+   *
+   * Measured whole-store before the change, against the SHIPPED vocabulary
+   * below rather than the draft that sized the item: 58 rows in 36 PUBLISHED
+   * lineups / 168,079 participants / $68,257,186 — PNC Financial (79,485),
+   * Eastman Chemical (15,910), Vestis (14,063), NBCUniversal (11,612). Every
+   * one of the 58 was read; not one names a fund. (The queue carried 41 / 31
+   * / 165,425 / $43,729,586 — a class size travels with its predicate.)
+   *
+   * Vocabulary, and why each phrase is safe as an unanchored LINE test:
+   * none can occur inside a holding's name. `docusign envelope id` is the
+   * stamp and deliberately NOT the bare word — `DOCUSIGN INC` is a real
+   * equity holding in this store and must keep publishing. `and ending` is
+   * ANCHORED, because a prose line may end a sentence with it; the cover's
+   * own box always starts the line. `for calendar plan year` catches the
+   * SAME line from the other column: NBCU's row is named from the
+   * description cell (`and ending 12/31/`) while the identity cell reads
+   * `For calendar plan year 2024 or fiscal plan year beginning`, so the one
+   * line needs two spellings and neither is redundant. */
+  "this form is required to be filed|department of the treasury|internal revenue service|employee benefits security|public inspection|annual report identification|pension benefit guaranty|for calendar plan year|fiscal plan year beginning|^and ending\\b|effective date of plan|three[- ]digit|6057\\s*\\(?[b6]\\)?\\s*(?:and|&)\\s*6058|docusign envelope id|" +
+  /* v193: SCHEDULE H LINE 4a — THE DELINQUENT-CONTRIBUTIONS TABLE IS A
+   * COMPLIANCE SCHEDULE, NOT A MENU. The DOL's own supplemental schedule of
+   * "participant contributions transferred late to the plan" is a grid of
+   * checkboxes and dollar amounts, and its cells parse as holdings:
+   * `Corrected Outside VFCP Correction in VFCP ☑`, `Plan Corrected VFCP in
+   * VFCP 51 Check Here if Late`, `Amount Date Date Withheld Withheld
+   * Remitted`, `5 days delinquent`.
+   *
+   * Measured whole-store before the change, against the SHIPPED vocabulary
+   * below: 120 rows in 111 PUBLISHED
+   * lineups / 166,688 participants / $21,468,075 — Rollins (18,304), Ingles
+   * Markets (18,050), Hospital Housekeeping (16,153), GPM Investments
+   * (13,504). All 96 distinct names were read and not one is a fund. The
+   * largest is 5.3% of its own menu, so no dominance guard can ever see it.
+   *
+   * The discriminator is the compliance vocabulary itself, which cannot
+   * appear in a fund name: the programme's initialism, its statutory
+   * exemption, the schedule's column captions, and the late-remittance
+   * language the auditor uses beside it. */
+  "\\bvfcp\\b|voluntary fiduciary correction|\\bpte\\s*2002\\s*-?\\s*51\\b|contributions transferred late|check here if late|corrected outside|amount withheld|date remitted|\\bwithheld\\b|\\bdays delinquent\\b|" +
   /* FOOTNOTE REFERENCES, not holdings. L3Harris's master trust carries the
    * line "NOTE: TRANSACTIONS ARE BASED ON THE 2023-12-31 VALUE …" alongside a
    * figure, and it parsed as a $14.19 BILLION holding — which pushed the
@@ -1602,8 +1650,25 @@ export function parseRows(section, opts = {}) {
     // columnized address lines ("CLEVELAND   OH   44122"): the comma form is
     // in SKIP_ROW, but -layout renders sponsor addresses as columns and the
     // zip then parses as a $44k holding (Eaton)
-    if (/\s[A-Z]{2}\s+\d{5}(?:-\d{4})?\s*$/.test(t) && !/\$/.test(t) &&
-        t.split(/\s+/).length <= 5) { nameBuf = []; continue; }
+    /* v193: …and the Form 5500 cover prints the sponsor's address box beside
+     * the BUSINESS CODE box, so the ZIP is not line-terminal:
+     *   "US Beaumont TX 77707                                        541370"
+     * — 541370 is the NAICS code, read as a $541,370 holding (Whiteley
+     * Technical Services). Found because removing the DocuSign stamp above it
+     * let this line become the row instead of being absorbed: one junk row
+     * swapped for another, which no count would have shown. An optional
+     * trailing figure is allowed and the word cap goes 5 -> 6 to make room
+     * for it ("St. Louis Park  MN 55416  623000" is six words).
+     *
+     * THE TRAILING FIGURE IS SIX BARE DIGITS AND NOT A GENERAL NUMBER, and
+     * that restriction was measured rather than assumed: a NAICS business
+     * code is exactly six digits with no thousands separator (541370, 623000,
+     * 541990, 315240 are the four observed), while a holding's Current Value
+     * is comma-grouped. An unrestricted `[\d,]+` reaches real stable-value
+     * names of the shape "VANGRD TRGT RETIRE INC FD 78926   <value>" — saved
+     * here only by the word cap, which is too thin a margin to rely on. */
+    if (/\s[A-Z]{2}\s+\d{5}(?:-\d{4})?(?:\s+\d{6})?\s*$/.test(t) && !/\$/.test(t) &&
+        t.split(/\s+/).length <= 6) { nameBuf = []; continue; }
     /* v68: the same address, spelled out. An auditor's letterhead prints
      * "500 North Lewis Road, Limerick PA 19468" — more than five words, so
      * the compact guard above misses it, and the leading street number makes
@@ -1741,6 +1806,48 @@ export function parseRows(section, opts = {}) {
     if (!vm && !opts.smallValues) {
       const sm = t.match(/\$?\s*([0-9]{1,2})\s*$/);
       if (sm && classify(t) && t.slice(0, t.length - sm[0].length).trim().length >= 12) vm = sm;
+    }
+    /* v193: THE OTHER PROOF THAT A LINE IS A 4i DATA ROW — the COST column's
+     * own marker, and the arm above could not see it because these filings
+     * print no type column at all.
+     *
+     * Read out of the filing rather than reasoned from the name (Markquart,
+     * 20251013162534NAL0001707665001, page 2083):
+     *
+     *   (a)            (b)                         (c)              (d)      (e)
+     *   Party-in-   Identity of Issue …   Description of investment …   Cost   Current Value
+     *   *                               Fidelity 500 Index Fund        **  $  4,389,103
+     *   *                               Fidelity Small Cap Index Fund  **            40
+     *   *                               Fidelity Mid Cap Index Fund    **            40
+     *   *                               Fidelity Large Cap Value Fund  **     3,328,154
+     *
+     * `**` is the (d) Cost column's "not required to be disclosed" marker for
+     * participant-directed money, so the figure after it is the (e) Current
+     * Value. Two of those rows are worth $40 each; `valueRe` needs three
+     * digit/comma characters, so both lines read as VALUELESS, entered the
+     * name buffer and welded onto the next real holding. Markquart's 515
+     * participants are shown `Fidelity Small Cap Index Fund ** 40 Fidelity Mid
+     * Cap Index Fund ** 40 Fidelity Large Cap Value Index Fund` at 10.6% of
+     * their menu, and two funds vanish from it — the v100/Amgen family, where
+     * several real holdings collapse onto one row.
+     *
+     * Measured whole-store before the change: 58 rows in 46 PUBLISHED lineups
+     * / 95,833 participants / $22,697,938, every one read and every one two or
+     * three real fund names welded together. William Beaumont Hospital
+     * (49,582) files `BlackRock Global Allocation Fund * 8` above `Delaware
+     * VIP Diversified Income Fund * 233,860`; McLaren Health Care (23,845)
+     * files the same shape.
+     *
+     * The marker is what makes lifting the floor safe here: the comment above
+     * keeps the floor to stop a stray digit on a form page faking a row, and a
+     * stray digit is not preceded by the cost column's marker. Cents are
+     * tolerated because one filer prints `** 50.84`. The row is EMITTED, not
+     * dropped: the figure is the filed Current Value, so publishing it both
+     * un-welds the next row's name and returns the holding to the menu. */
+    if (!vm && !opts.smallValues) {
+      const cm = t.match(/\s[*^†‡]{1,3}\s+\$?\s*([0-9]{1,2}(?:\.[0-9]{1,2})?)\s*$/);
+      if (cm && /[A-Za-z]{2}/.test(t.slice(0, cm.index)) &&
+          t.slice(0, cm.index).trim().length >= 12) vm = cm;
     }
     if (vm && totalWrap && t.slice(0, t.length - vm[0].length).trim().split(/\s+/).length <= 3) {
       totalWrap = false;

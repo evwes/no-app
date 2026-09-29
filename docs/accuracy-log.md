@@ -28677,3 +28677,226 @@ the owner. A session should not remove a fee cell from an eighth of the
 universe on its own initiative, and should not leave the inconsistency
 unwritten either. Owner's call; the recommendation is to withdraw, for the
 reason `gicRow` already gives.
+
+## 2026-09-29 (v193) — the Form 5500 cover page, the Schedule H line 4a compliance grid, and a party-in-interest marker welding two real holdings into one
+
+Three parser-side queue items shipped in one `PARSER_VERSION` bump, plus a
+fourth class found by measuring the first. **Every count below is re-derived
+against the live pv-192 store through the PUBLICATION gate (`st.c`), not from
+the figures the queue carried** — three of the four moved.
+
+### (A) THE FORM 5500 COVER PAGE PUBLISHED AS A FUND MENU
+
+- **Wrong:** where no readable 4i attachment anchors the region, the parser
+  seeds off the form itself and the cover's own boxes become holdings. The
+  plan-year box gives `and ending 12/31/` a value of 2,024 (2,024,000 under a
+  thousands marker), `Effective date of plan 01/29/` takes the year beside it,
+  and a DocuSign margin stamp's trailing hex digits parse as a value.
+  **NBCUniversal's 11,612 participants are shown a nine-row "menu" that is a
+  96.9% master-trust pointer plus eight pieces of the form.**
+  **Re-sized at pv 192: 58 rows / 36 published lineups / 168,079 participants
+  / $68,257,186** — PNC Financial (79,485), Eastman Chemical (15,910), Vestis
+  (14,063), NBCUniversal (11,612). The queue said 41 / 31 / 165,425 /
+  $43,729,586; the row and dollar figures were low. Every one of the 58 rows
+  was read and not one names a fund.
+- **Change:** a new alternation in `SKIP_ROW`, the exact sibling of the v165
+  SEC Form 11-K cover-page block one form along. Fourteen phrases, each
+  impossible inside a holding's name.
+- **Two decisions inside it, both made on measurement rather than on reading:**
+  the arm is `docusign envelope id` and NOT the bare brand, because
+  **`DOCUSIGN INC` at $162,450 is a real equity holding** in Houff Transfer's
+  menu (pinned as a decoy); and `and ending` is ANCHORED while `for calendar
+  plan year` is not, because NBCU's row is named from the DESCRIPTION cell
+  (`and ending 12/31/`) while the IDENTITY cell of the same line reads `For
+  calendar plan year 2024 or fiscal plan year beginning` — one line needs two
+  spellings and neither is redundant.
+- **Prevention:** four specimens pinned (NBCUniversal, PNC, Whiteley, and the
+  Houff Transfer decoy). Negative control: with this arm alone reverted the
+  parse drifts by name on 4 of 4 must-protect filings and the decoy holds.
+
+### (B) SCHEDULE H LINE 4a — THE DELINQUENT-CONTRIBUTIONS GRID AS A MENU
+
+- **Wrong:** the DOL's own supplemental compliance schedule — a grid of
+  checkboxes, dates and amounts — parses as holdings: `Corrected Outside VFCP
+  Correction in VFCP ☑`, `Plan Corrected VFCP in VFCP 51 Check Here if Late`,
+  `Amount Date Date Withheld Withheld Remitted`, `5 days delinquent`.
+  **Re-sized at pv 192: 120 rows / 111 published lineups / 166,688
+  participants / $21,468,075** — Rollins (18,304), Ingles Markets (18,050),
+  Hospital Housekeeping (16,153), GPM Investments (13,504). All 96 distinct
+  names were read and not one is a fund. **The largest is 5.3% of its own
+  menu, so no dominance guard can ever see this class** — it hides inside
+  otherwise-correct lineups.
+- **Change:** a second `SKIP_ROW` alternation carrying the compliance
+  vocabulary itself — the programme's initialism, its statutory exemption
+  (`PTE 2002-51`), the schedule's column captions and the late-remittance
+  language the auditor writes beside it. None of it can appear in a fund name;
+  the whole-store footprint of every arm was printed and read before shipping.
+- **Prevention:** two specimens pinned (Claim Assist Solutions, eight rows of
+  `N days delinquent`; Rollins, the large single-row case). Negative control:
+  reverted alone it drifts by name on 4 of 4 and on nothing else.
+
+### (C) THE PARTY-IN-INTEREST MARKER WELDS TWO REAL HOLDINGS INTO ONE
+
+- **Wrong, and the cause was READ OUT OF THE FILING rather than reasoned from
+  the name.** Markquart's schedule (page 2083) prints:
+
+      *     Fidelity 500 Index Fund            **  $  4,389,103
+      *     Fidelity Small Cap Index Fund      **            40
+      *     Fidelity Mid Cap Index Fund        **            40
+      *     Fidelity Large Cap Value Fund      **     3,328,154
+
+  `**` is column (d) Cost's "not required to be disclosed" marker for
+  participant-directed money, so the figure after it is column (e) Current
+  Value. Two of those rows are genuinely worth **$40**; `valueRe` needs three
+  digit/comma characters, so both lines read as VALUELESS, entered the name
+  buffer and welded onto the next real holding. 515 participants are shown
+  `Fidelity Small Cap Index Fund ** 40 Fidelity Mid Cap Index Fund ** 40
+  Fidelity Large Cap Value Index Fund` at 10.6% of their menu. **The v100 /
+  Amgen family: several real holdings collapsing onto one row.**
+  **Re-sized at pv 192: 58 rows / 46 published lineups / 95,833 participants /
+  $22,697,938** — William Beaumont Hospital (49,582), McLaren Health Care
+  (23,845), Golden State Orthopedics (764). The queue said 61 / 48 / 97,408.
+- **THE PREDICATE THAT SIZES IT IS NOT THE ONE THE QUEUE'S EXAMPLE SUGGESTS,
+  and the first two drafts were four and two times too big.** A net of
+  "anything, a marker, anything" returns **247 rows / 91 plans / 172,909 ppl**
+  and is dominated by two OTHER shapes: a leading ROW NUMBER or share count
+  before the marker (`28 * Fidelity Advisor Freedom 2050 Fund A FFFLX`,
+  `556,554 * T. Rowe Price Retirement 2045 SA`) and the ISSUER welded to the
+  name with no figure between (`Principal Global Investors Trust Co. *
+  Principal LifeTime Hybrid 2035 CIT Fund`, Blackhawk Bank & Trust). Both are
+  one holding wearing a decoration, not two holdings merged. **The
+  discriminator is the FIGURE between the marker and the second name** — it is
+  the first fund's own Current Value, refused by the floor. *Do not carry 247
+  or 172,909 forward.*
+- **Change:** the sibling of the arm already sitting three lines above it. That
+  arm lifts the 3-character floor when the row "proves itself a 4i data row" by
+  carrying an investment TYPE column; these filings print no type column at
+  all. **The cost column's own marker is the other proof**, and it is what
+  makes lifting the floor safe: the floor exists to stop a stray digit on a
+  form page faking a row, and a stray digit is not preceded by a cost marker.
+  The row is EMITTED rather than dropped, so the name un-welds and the value is
+  the filed one.
+- **WHAT IT DOES NOT DO, named rather than implied:** the restored rows are
+  usually worth under $10,000 and are then removed by the existing sub-$10k
+  residue filter unless they carry their own type column. So the SURVIVING
+  fund gets its correct name back and the tiny one stays out of the menu.
+  Publishing sub-$10k rows is a separate, measured decision and was not taken.
+- **Prevention:** two specimens pinned (Markquart's three-way weld, William
+  Beaumont's two). Negative control: reverted alone it drifts by name on 4 of 4.
+
+### (D) FOUND BY MEASURING (A), AND THE LARGEST OF THE FOUR
+
+- **Wrong:** the Form 5500 cover prints the sponsor's address box beside the
+  NAICS BUSINESS CODE box, so the ZIP is not line-terminal:
+
+      US Beaumont TX 77707                                        541370
+
+  `541370` is the business code, read as a $541,370 holding. The compact
+  address guard requires the ZIP at end of line, so it missed the whole shape.
+  **193 rows / 193 published lineups / 263,209 participants / $89,877,918** —
+  the largest is **42.1% of its menu** (Children's Home Society of West
+  Virginia, 451 participants, `US Charleston WV 25330` at $624,100), then
+  Hughson Samaritan Village 30.9%, Cavu Holdings 26.9%. All **183 distinct
+  names read; every one is a US mailing address.**
+- **HOW IT WAS FOUND IS THE METHOD NOTE: no count would have shown it.**
+  Removing Whiteley Technical Services' DocuSign row under (A) promoted this
+  line into the menu in its place — **one junk row swapped for another, row
+  count unchanged.** It surfaced only because every distinct transformation was
+  printed and read.
+- **Change:** the guard allows an optional trailing figure and the word cap
+  goes 5 → 6 (`St. Louis Park  MN 55416  623000` is six words).
+- **THE TRAILING FIGURE IS SIX BARE DIGITS AND THAT RESTRICTION WAS MEASURED,
+  NOT ASSUMED.** A NAICS code is exactly six digits with no separator (541370,
+  623000, 541990, 315240 observed); a holding's Current Value is comma-grouped.
+  An unrestricted `[\d,]+` reaches real Empower stable-value names of the shape
+  `VANGRD TRGT RETIRE INC FD 78926   <value>` and `MET GG SV 25554 - J`
+  (52 rows store-wide) — saved only by the word cap, which is too thin a
+  margin. Both are pinned as decoys.
+- **RESIDUE NAMED, NOT ROUNDED AWAY:** the six-word cap leaves the longer
+  address lines unfixed — `instructions) US Fort Lauderdale FL 33315-3310` is
+  six words before the code. Raising the cap is a separate measurement and was
+  not taken.
+
+### WHAT WAS MEASURED, AND WHAT IT COST
+
+**Outcome test, base-parse vs work-parse on the same text, 521 filings:** the
+whole of the A/B/C published populations, the 200-filing review corpus and a
+**140-ack RANDOM draw from published lineups** (a ranked corpus cannot predict
+a yield). **169 re-parse differently; confidence +0 / −0.** Item D's own
+population re-tested whole: **134 of 193 change, confidence +0 / −0.**
+
+**Random-draw drift: 4 of 140 (2.9%).** Two are pure junk removals (Datapath's
+`Duluth` $541,990, Fulton Science Academy's VFCP row) and two are region swaps,
+both toward better names (`IMDIZX` → `MFS International Diversification Fund
+R6` for Republic National Distributing's 15,199 participants).
+
+**THE COST IS REGION SWAPS AND IT IS NAMED PLAN BY PLAN.** Removing a junk row
+changes a region's score, and where two renders of one schedule are near-tied
+the winner can flip. Six such plans across the whole measured population:
+- **Vortex Companies (830 ppl) — the one clear degradation.** `TIAA-CREF
+  Lifecycle Index 2050 I` becomes `NUVEEN LIFECYCLE IDX 2050 R6 MUTUAL FUND
+  SHARES` (the display layer strips the caption; the reader sees `NUVEEN
+  LIFECYCLE IDX 2050 R6`). Values and ratio identical. Bisected to a single
+  phrase: `Three-digit Plan Number:  001` is the schedule's own header block,
+  22 lines above the menu, and refusing it tips the contest.
+- **Paya (484 ppl):** `Vanguard Target Retirement 2045 Fund` → `Vngrd Trgt Date
+  2045`. Abbreviated, same values.
+- **Horizons Programs (300 ppl):** ratio 0.955 → 0.884, moving AWAY from 1.0 —
+  the `swaps-degraded` signature.
+- Better, not worse: Resource Pro (423, `Growth Index Fund` → `VANGUARD GROWTH
+  INDEX ADM FUND`), Early Learning Coalition (259, ratio 0.940 → **1.002**),
+  Republic National Distributing (15,199).
+**Roughly 1,900 participants swap render against 693,409 whose menus stop
+carrying a fabricated row.** `swaps-degraded.txt` and `rows-dropped.txt` see
+none of these, because the source does not change and the row count mostly does
+not — which is why they are written here.
+
+**Bonus, not predicted:** `Your Recruiting Company` (514 ppl) loses a seven-row
+lineup that was entirely DocuSign stamps and audit prose at $88,685 each;
+Cleveland-Cliffs (5,188 ppl) becomes a clean one-row trust pointer instead of
+thirteen fair-value-note rows. Neither was published, so neither reaches a
+reader; both clean the `dx` diagnosis.
+
+### PRE-REGISTERED VERDICT TESTS FOR THE v193 RUN
+
+Computed against the store the run will READ (pv 192), with the harness first
+shown to reproduce the shipped numbers exactly: confident-with-rows **60,103**,
+`audit-generic-names` **217**, `audit-dominant-row` **0**.
+
+1. **`confident` +0 / −0.** Ceiling ±5. Any loss must be a lineup of fewer than
+   five published rows; no named plan is expected to lose one.
+2. **`audit-generic-names` 217 → 217.**
+3. **`audit-dominant-row` 0 → 0.**
+4. **HIGH 4 = the baseline.** `overshoot` should FALL or hold: every arm removes
+   a row that inflates the sum, and no measured plan's ratio moved away from
+   1.0 by more than Horizons' 0.955 → 0.884.
+5. Row-level: `three-digit`, `VFCP` and `docusign envelope id` rows go to **0**
+   in published lineups; `DOCUSIGN INC` stays at 1 row / $162,450.
+
+### AND A MEASUREMENT OF MINE THAT REPORTED ON THE HARNESS
+
+My first pre-registration printed **"confident LOST 44"**, naming JPMorgan
+Chase (299,277 participants), CVS Health (307,068), Meta, Stanford, Cargill and
+AstraZeneca. It was **entirely my harness.** It compared the STORED entry with
+a fresh local `pdftotext` parse; those acks carry `ov=8` / `fb`, so their stored
+entries come from the production path (OCR text, prior-year fallback, thousands
+detection) and differ from a naive text-layer parse **under v192 exactly as
+much as under v193**. Base-parse vs work-parse on the same four acks: **4
+unchanged, 0 changed.**
+
+*The only honest delta is base-parse versus work-parse on the same text.* The
+tell was the same one this record keeps naming — an implausibly large number,
+and a list whose members had nothing to do with the change. The corrected
+harness is `predict2.mjs`'s shape and it reproduces the shipped
+`audit-generic-names` figure of 217 before it reports any delta, which is the
+check that catches this class.
+
+### GATES
+
+`node scripts/parser-gate.mjs` — all specimens green. **Two moved and both were
+diagnosed before the expectation was touched:** Physician's Computer 32 → 31
+rows (its own Schedule H line 4a row, $124,842) and Costco +$480,000 in the
+managed-account fold (six securities behind a cost marker restored; the 35 MENU
+rows are unchanged). `node scripts/diff-lineups.mjs HEAD` over 316 filings
+including 114 pinned specimens: **confidence gained 0, lost 0, fabricated
+generic rows introduced 0, menu sums moved ≥5% 0.** Ten specimens pinned.

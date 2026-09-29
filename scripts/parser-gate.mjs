@@ -211,8 +211,12 @@ const SPECIMENS = [
    * wrapped name, and "Participant Directed" is the Cost column's standing
    * answer, not a description. Together they renamed all fifteen of this
    * plan's funds and merged them into one $16.2M row, 75% of the plan. */
+  // v193 (intentional): this filing also carries a Schedule H line 4a
+  // delinquent-contributions row — `included: Corrected VFCP VFCP 2002-51`
+  // $124,842 — which the compliance vocabulary now refuses. 32 -> 31 rows,
+  // ratio 1.000 -> 0.994. The row is a checkbox grid cell, not a holding.
   ["Physician's Computer (group header + cost column)", "20251010104425NAL0012869808001", 21684776,
-    { found: true, n: 32, sum: 21672058 }],
+    { found: true, n: 31, sum: 21547216 }],
   /* v105: a NEGATIVE specimen — this parse must never be publishable. Comcast's
    * public filing contains no Schedule H 4i table at all; its money sits in a
    * master trust. We published a confident five-row lineup whose top row was
@@ -320,7 +324,12 @@ const SPECIMENS = [
     // v144: the fold runs BEFORE the display cap, so it sees all 389
     // positions ($2.10B) and the sum is the whole schedule, not the capped
     // prefix; four real T. Rowe Price trusts that sat past the cap surface
-    { found: true, n: 35, sum: 40217428000 }],
+    // v193 (intentional, +$480,000): six securities whose Current Value is
+    // one or two digits behind the cost column's marker were being read as
+    // valueless and welding their names onto the next row; they are now rows
+    // and land in the managed-account fold (420 -> 426 positions). The 35
+    // MENU rows are unchanged — this is the securities flood, not the menu.
+    { found: true, n: 35, sum: 40217908000 }],
   // v56: the REAL "$ in thousands" schedule ($39.3B master-trust
   // participation + $4.6B BrokerageLink) replaced a fair-value-note
   // fragment — trust-pointer flagged, so it can never display as a lineup

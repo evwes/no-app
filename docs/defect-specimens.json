@@ -1005,6 +1005,76 @@
       "fixed": "v188",
       "sponsor": "Affinity Plus Federal Credit Union",
       "was": "DECOY and a deliberate MISS: `Separate Account A, at fair value` at 90.3% is NOT caught, because the footnote arm strips only a lower-case trailing letter and a capital `A` may be a real share-class or separate-account designation. Case is the only signal; pinned so a later widening to capitals has to argue with this filing"
+    },
+    {
+      "ack": "20251007174512NAL0008660608002",
+      "class": "form5500-cover-page",
+      "fixed": "v193",
+      "sponsor": "NBCUniversal",
+      "was": "a 9-row \"menu\" that is a 96.9% master-trust pointer plus eight pieces of the Form 5500 itself — `Department of the Treasury Department of Labor Employee Benefits Security sections 6057(b)`, `Public Inspection`, `and ending 12/31/`, `Effective date of plan 01/29/`, `This form is required to be filed...`, a DocuSign margin stamp; the plan-year boxes give each row a value of 2,024,000"
+    },
+    {
+      "ack": "20251015111606NAL0002308595003",
+      "class": "form5500-cover-page-large",
+      "fixed": "v193",
+      "sponsor": "PNC Financial Services Group",
+      "was": "79,485 participants: four Form 5500 cover rows inside an otherwise real 26-row menu, so no dominance or ratio guard could see them (26 rows -> 22, ratio unchanged at 0.989)"
+    },
+    {
+      "ack": "20260728132211NAL0019500417001",
+      "class": "form5500-cover-DECOY-docusign-inc",
+      "fixed": "v193",
+      "sponsor": "Houff Transfer",
+      "was": "DECOY, must stay confident and keep every row: `DOCUSIGN INC` at $162,450 is a real equity holding. The cover-page arm matches `docusign envelope id` and deliberately not the bare brand — the bare word would delete this holding"
+    },
+    {
+      "ack": "20251015120021NAL0002367731001",
+      "class": "form5500-cover-business-code",
+      "fixed": "v193",
+      "sponsor": "Whiteley Technical Services",
+      "was": "`US Beaumont TX 77707      541370` — the sponsor address box beside the NAICS business-code box, the code read as a $541,370 holding. The ZIP is not line-terminal, so the compact-address guard missed it. Found only because removing the DocuSign row above it promoted this line: one junk row swapped for another, invisible to any count"
+    },
+    {
+      "ack": "20251022155713NAL0001837827001",
+      "class": "sch-h-4a-delinquent-table",
+      "fixed": "v193",
+      "sponsor": "Claim Assist Solutions",
+      "was": "eight rows of the Schedule H line 4a delinquent-contributions table published as holdings — `2 days delinquent`, `5 days delinquent`, `13 days delinquent` …"
+    },
+    {
+      "ack": "20260519141628NAL0000609891001",
+      "class": "sch-h-4a-vfcp",
+      "fixed": "v193",
+      "sponsor": "Rollins",
+      "was": "18,304 participants: the VFCP correction grid's cells as a menu row inside a real lineup, at a few percent of the menu, so no dominance guard can reach it"
+    },
+    {
+      "ack": "20251013162534NAL0001707665001",
+      "class": "pii-marker-weld",
+      "fixed": "v193",
+      "sponsor": "Markquart",
+      "was": "`Fidelity Small Cap Index Fund ** 40 Fidelity Mid Cap Index Fund ** 40 Fidelity Large Cap Value Index Fund` at 10.6% — two $40 rows fell under the 3-character value floor, entered the name buffer and welded onto the next real holding; the v100/Amgen family"
+    },
+    {
+      "ack": "20251014071211NAL0001064067001",
+      "class": "pii-marker-weld-large",
+      "fixed": "v193",
+      "sponsor": "William Beaumont Hospital",
+      "was": "49,582 participants: `BlackRock Global Allocation Fund * 8 Delaware VIP Diversified Income Fund` and `Voya Index Solution 2045 Portfolio, Service Class * 47 Voya Intermediate Bond Portfolio, C` — the cost column's marker makes the trailing 1-2 digit Current Value invisible to valueRe"
+    },
+    {
+      "ack": "20251013151534NAL0003430482001",
+      "class": "form5500-address-DECOY-fund-with-digits",
+      "fixed": "v193",
+      "sponsor": "David Peyser Sportswear",
+      "was": "DECOY, must keep every row: `VANGRD TRGT RETIRE INC FD 78926` is a real Empower stable-value holding whose name ends in a two-letter token and a five-digit code. The Form 5500 address guard allows a trailing figure only when it is SIX BARE DIGITS (the NAICS business-code box); an unrestricted `[\\d,]+` reaches this name and it is saved only by the six-word cap"
+    },
+    {
+      "ack": "20241115114103NAL0001317840001",
+      "class": "form5500-address-DECOY-met-gg-sv",
+      "fixed": "v193",
+      "sponsor": "Marlette Funding",
+      "was": "DECOY, must keep every row: `MET GG SV 25554 - J` at $725,425 — 52 rows store-wide carry this shape. Same reason as above"
     }
   ]
 }
