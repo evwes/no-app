@@ -20,7 +20,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import vm from "node:vm";
 import { GENERIC_TYPE_ANY, GENERIC_TYPE_DESPACED, isGenericTypeName } from "./lib-4i.mjs";
-import { isNamelessFundRow, isLoanDescriptionRow } from "./lib-disclose.mjs";
+import { isNamelessFundRow, isLoanDescriptionRow, isAnnuityContractRow } from "./lib-disclose.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const lib = readFileSync(ROOT + "scripts/lib-4i.mjs", "utf8");
@@ -45,6 +45,16 @@ if (lds < 0) throw new Error("gen-generic-twin: LOAN_DESC_RANGE moved in lib-dis
 const lde = dis.indexOf("\n}\n", dis.indexOf("export function isLoanDescriptionRow(")) + 3;
 if (lde < 3) throw new Error("gen-generic-twin: isLoanDescriptionRow moved in lib-disclose");
 const loandesc = dis.slice(lds, lde).replace(/^export /gm, "");
+
+/* the annuity-contract rule, VERBATIM: one constant and one function. It is a
+ * two-cell test (the filed NAME against the stored TYPE), so both halves must
+ * travel together — extracting only the regex is how a caller ends up
+ * re-deciding the type half from memory. */
+const acs = dis.indexOf("export const ANNUITY_CONTRACT_NAME = ");
+if (acs < 0) throw new Error("gen-generic-twin: ANNUITY_CONTRACT_NAME moved in lib-disclose");
+const ace = dis.indexOf("\n}\n", dis.indexOf("export function isAnnuityContractRow(")) + 3;
+if (ace < 3) throw new Error("gen-generic-twin: isAnnuityContractRow moved in lib-disclose");
+const annuity = dis.slice(acs, ace).replace(/^export /gm, "");
 
 const block = `  /* GENERATED FROM scripts/lib-4i.mjs — DO NOT EDIT BY HAND.
    * lib-4i derives these patterns from GENERIC_TYPE_NAME by asserted
@@ -78,6 +88,8 @@ ${nameless.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
   window.__wampoNamelessRow = isNamelessFundRow;  // read by the smoke test only
 ${loandesc.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
   window.__wampoLoanDescRow = isLoanDescriptionRow;  // read by the smoke test only
+${annuity.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
+  window.__wampoAnnuityRow = isAnnuityContractRow;  // read by the smoke test only
 `;
 
 /* THE END MARKER MUST BE THE BLOCK'S LAST LINE. It was `__wampoGenericName`
@@ -88,19 +100,27 @@ ${loandesc.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
  * the same window hook. A generator that edits in place is only as honest as
  * its end marker. */
 const MARK_S = "  /* GENERATED FROM scripts/lib-4i.mjs — DO NOT EDIT BY HAND.";
-const MARK_E = "  window.__wampoLoanDescRow = isLoanDescriptionRow;  // read by the smoke test only\n";
-/* the PREVIOUS end marker, so a block written before the loan rule was
- * appended is still found whole and replaced rather than left behind. The
- * stale-duplicate failure this file records happened exactly because the
- * marker moved and the old tail stayed. */
-const MARK_E_PREV = "  window.__wampoNamelessRow = isNamelessFundRow;  // read by the smoke test only\n";
+/* EVERY end marker this block has ever ended with, NEWEST FIRST. The current
+ * one is index 0; the rest are kept so a block written before a later rule was
+ * appended is still found WHOLE and replaced rather than left behind. The
+ * stale-duplicate failure this file records happened exactly because the marker
+ * moved and the old tail stayed — so the list only ever grows, and the cut must
+ * be made at the LAST marker present, not the first one found. */
+const MARK_ENDS = [
+  "  window.__wampoAnnuityRow = isAnnuityContractRow;  // read by the smoke test only\n",
+  "  window.__wampoLoanDescRow = isLoanDescriptionRow;  // read by the smoke test only\n",
+  "  window.__wampoNamelessRow = isNamelessFundRow;  // read by the smoke test only\n",
+];
 const app = readFileSync(ROOT + "app.js", "utf8");
 let out;
 if (app.includes(MARK_S)) {
   const a = app.indexOf(MARK_S);
-  let b = app.indexOf(MARK_E, a);
-  b = b < 0 ? app.indexOf(MARK_E_PREV, a) + MARK_E_PREV.length : b + MARK_E.length;
-  if (b < Math.min(MARK_E.length, MARK_E_PREV.length)) throw new Error("gen-generic-twin: start marker found but no end marker (current or previous) — refusing to write a truncated block");
+  let b = -1;
+  for (const m of MARK_ENDS) {
+    const i = app.indexOf(m, a);
+    if (i >= 0) b = Math.max(b, i + m.length);
+  }
+  if (b < 0) throw new Error("gen-generic-twin: start marker found but no end marker (current or any previous) — refusing to write a truncated block");
   out = app.slice(0, a) + block + app.slice(b);
 } else {
   const anchor = "  window.__wampoCleanFiledName = cleanFiledName;";
@@ -118,6 +138,7 @@ vm.runInContext(block
   .replace("window.__wampoGenericName = isGenericName;  // read by the smoke test only", "globalThis.__g = isGenericName;")
   .replace("window.__wampoNamelessRow = isNamelessFundRow;  // read by the smoke test only", "globalThis.__n = isNamelessFundRow;")
   .replace("window.__wampoLoanDescRow = isLoanDescriptionRow;  // read by the smoke test only", "globalThis.__l = isLoanDescriptionRow;")
+  .replace("window.__wampoAnnuityRow = isAnnuityContractRow;  // read by the smoke test only", "globalThis.__a = isAnnuityContractRow;")
   .replace(/^\s{2}/gm, ""), ctx);
 const names = ["Mutual funds", "Mutual Fund Shares", "Sub-total: Registered Investment Companies",
   "Commingled funds", "Pooled separate account funds", "Collective trust funds",
@@ -171,7 +192,36 @@ const loans = [
   "Interest Rate of 0.15% to 0.62% (Maturing in 2023) Principal", "Interest rate 1.75%",
   "Fixed annuity at 1.41% interest rate -0", "Bank Loan Fund", "Fidelity 500 Index Fund",
   "(Interest rates up to 5.56%; maturing 2024 - 2030) Morley Stable Value VI Fund"];
+/* the annuity-contract arm, BOTH CELLS and both directions. Not one probe above
+ * reaches it — every one of them passes a bare name — so without these the twin
+ * would agree whether or not it carried the rule, which is the decorative-guard
+ * failure this record has now caught at v189, v190, v191 and v192. The must-KEEP
+ * half is where the cost lives: a row that says "annuity contract" and is typed
+ * something MORE specific must not be re-typed, and a real registered fund must
+ * never be reached at all. */
+const annuityRows = [
+  /* must FLAG */
+  { name: "Traditional Fixed Annuity Contracts - Non-Fully Benefit Responsive", type: "Mutual fund" },
+  { name: "TIAA Traditional Annuity Contract - Nonbenefit-Responsive", type: "Mutual fund" },
+  { name: "Group annuity contract - TIAA Traditional Annuity", type: "Mutual fund" },
+  { name: "Group Annuity Contract PRIAC Guaranteed Income Fund", type: "Mutual fund" },
+  { name: "Variable Annuity Contracts CREF", type: "Mutual fund" },
+  { name: "Lincoln Financial Multi-Fund Group Variable Annuity Contract American Funds Global Growth", type: "Mutual fund" },
+  /* must KEEP — the type is already honest or more specific */
+  { name: "TIAA Traditional Annuity Contract - Fully Benefit-Responsive", type: "Stable value / GIC" },
+  { name: "MetLife Group Annuity Contract", type: "Collective trust" },
+  { name: ". GROUP ANNUITY CONTRACT Mutual of America", type: "Cash / short-term" },
+  { name: "Fidelity VIP Contrafund Portfolio GROUP ANNUITY CONTRACT", type: "" },
+  /* must KEEP — typed `Mutual fund` and the name does NOT say annuity contract */
+  { name: "Fidelity 500 Index Fund", type: "Mutual fund" },
+  { name: "Schwab Government Money Market Portfolio", type: "Mutual fund" },
+  { name: "TIAA Traditional Annuity", type: "Mutual fund" },
+  { name: "Vanguard Variable Annuity Balanced Portfolio", type: "Mutual fund" },
+];
 let bad = 0;
+for (const r of annuityRows) if (ctx.__a(r, r.name) !== isAnnuityContractRow(r, r.name)) {
+  bad++; console.log(`  ANNUITY DRIFT ${JSON.stringify(r)} twin=${ctx.__a(r, r.name)} lib=${isAnnuityContractRow(r, r.name)}`);
+}
 for (const n of loans) if (ctx.__l(n) !== isLoanDescriptionRow(n)) {
   bad++; console.log(`  LOAN DRIFT ${JSON.stringify(n)} twin=${ctx.__l(n)} lib=${isLoanDescriptionRow(n)}`);
 }
@@ -182,4 +232,4 @@ for (const r of rows) if (ctx.__n(r, r.name, ctx.__g) !== isNamelessFundRow(r, r
   bad++; console.log(`  ROW DRIFT ${JSON.stringify(r)}`);
 }
 if (bad) { console.error(`generated with ${bad} DRIFT — do not commit`); process.exit(1); }
-console.log(`generated; twin agrees with lib-4i on ${names.length} names, with lib-disclose on ${rows.length} rows and ${loans.length} loan-description names`);
+console.log(`generated; twin agrees with lib-4i on ${names.length} names, with lib-disclose on ${rows.length} rows, ${loans.length} loan-description names and ${annuityRows.length} annuity-contract rows`);

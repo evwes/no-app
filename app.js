@@ -914,6 +914,14 @@
   }
 
   window.__wampoLoanDescRow = isLoanDescriptionRow;  // read by the smoke test only
+  const ANNUITY_CONTRACT_NAME = /\bannuity contracts?\b/i;
+  function isAnnuityContractRow(f, cleanedName) {
+    const type = String((f && f.type) || "");
+    if (!/^mutual fund/i.test(type)) return false;
+    return ANNUITY_CONTRACT_NAME.test(String(cleanedName || (f && f.name) || ""));
+  }
+
+  window.__wampoAnnuityRow = isAnnuityContractRow;  // read by the smoke test only
   window.__wampoCleanFiledName = cleanFiledName;
   window.__wampoLoanRow = (n) => LOAN_ROW.test(String(n || "").trim());  // read by the smoke test only
   /* Misspellings of a fund HOUSE that appear in filed 4i schedules, each one
@@ -2001,6 +2009,15 @@
        * structure agreeing with the reading. */
       const descLoanRow = isLoanDescriptionRow(f.name || "");
       const loanRow = LOAN_ROW.test(f.name || "") || descLoanRow;
+      /* AN INSURANCE ANNUITY CONTRACT TYPED `Mutual fund` — the rule and its
+       * whole safety argument live in scripts/lib-disclose.mjs; this is the
+       * generated twin's call site. It suppresses the ticker and the fee for
+       * exactly the reason `gicRow` does: an annuity's cost is inside the
+       * crediting rate and is not a fund expense ratio. That half is NOT
+       * belt-and-braces — 34 of these rows publish 0.35% today off
+       * fund-er.js's generic /guaranteed|stable value/ fallback, and the only
+       * reason they escape `gicRow` is the wrong type this line repairs. */
+      const annuityRow = isAnnuityContractRow(f, f.name || "");
       /* v67 entries carry the 4i identity column as f.iss ("Vanguard",
        * "Western Asset"). Ticker matching sees issuer + name together, which
        * is what makes "Core Bond IS" resolvable at all; entries parsed
@@ -2013,7 +2030,7 @@
        * 3.10M participants resolve on the bare name and fail with the
        * prefix — blank fee cells since v67. Try issuer+name first (keeps
        * every existing win), then the bare name. Strict superset. */
-      const info = tab === "menu" && !gicRow && !subtotalRow && !loanRow
+      const info = tab === "menu" && !gicRow && !subtotalRow && !loanRow && !annuityRow
         ? lookupTicker(f)
         : null;
       // employer stock IS a listed security: the plan's own ticker names it
@@ -2023,7 +2040,7 @@
       const tk = stockRow ? (plan.ticker || null) : (info ? info.tk : (f.tk || null));
       const star = !stockRow && info && info.comparable;
       if (star) starred = true;
-      const er = tab !== "menu" || stockRow || gicRow || subtotalRow || loanRow ? null
+      const er = tab !== "menu" || stockRow || gicRow || subtotalRow || loanRow || annuityRow ? null
         : star ? info.er : (noPublicPrice ? null : fundERFiled(f.name));
       // the brokerage window is a menu choice with no holdings of its own —
       // tint it so it reads as a doorway, not a fund (owner request)
@@ -2058,9 +2075,18 @@
        * menu choice` is the same phrase twice, which is the exact redundancy
        * the nameless-row change removed one cycle ago. v181's rows keep their
        * filed names, so for those the full qualifier still carries the fact. */
+      /* `namelessRow` is asked BEFORE the annuity arm on purpose. A row whose
+       * whole name is `Group Annuity Contract` already reads "Filing names no
+       * specific fund", which is the stronger true statement and says
+       * something the name does not; putting "Annuity contract" there instead
+       * would print the same phrase twice, the exact redundancy the
+       * nameless-row change removed. So the annuity arm only reaches rows that
+       * DO name something, and the fee suppression above is independent of
+       * this ordering — it fires on every annuity row either way. */
       const shownType = descLoanRow ? "Not a menu choice"
         : loanRow ? "Participant loans — not a menu choice"
         : namelessRow ? "Filing names no specific fund"
+        : annuityRow ? "Annuity contract"
         : f.type || (brokRow ? "Brokerage window" : "—");
       /* THE NAME IS REPLACED HERE AND NOWHERE ELSE IN THE LOAN FAMILY.
        * v181's rows are NAMED (`LOAN FUND`, `Notes receivable from

@@ -865,3 +865,69 @@ export function isNamelessFundRow(f, cleanedName, isGenericName) {
   if (/company stock|employer (security|stock)/i.test(type + " " + name)) return false;
   return !!isGenericName(name);
 }
+
+/* AN INSURANCE ANNUITY CONTRACT TYPED `Mutual fund` — canonical copy, 2026-09-29.
+ *
+ * v190 (`Master Trust`) and v192 (`Preferred stock`) both stopped a NAME making
+ * a false claim. This is the same shape one COLUMN along: the name is fine and
+ * the TYPE cell is the claim. American University (7,009 participants) files
+ * `Traditional Fixed Annuity Contracts - Non-Fully Benefit Responsive` as its
+ * largest holding, 13.5% of the menu, and the row is typed `Mutual fund` — so
+ * the page tells 7,009 people their biggest holding is a registered mutual fund
+ * when the filing says it is an insurance contract with TIAA.
+ *
+ * 186 rows / 153 plans / 216,782 participants / $2,084,149,902.
+ *
+ * THE DISCRIMINATOR IS THE FILING'S OWN WORDS AND IT IS ANCHORED ON A PHRASE,
+ * not on a vocabulary of products. `\bannuity contracts?\b` is what the filer
+ * typed; nothing is inferred from a house name or an issuer. The safety
+ * argument is measured from two independent directions:
+ *
+ *   - ALL 146 distinct flagged names were read, one by one. Every one is an
+ *     insurance product: TIAA Traditional, CREF variable, Empower and PRIAC
+ *     group annuities, Lincoln stable value accounts, SAGIC and EI fixed
+ *     accounts. NOT ONE is a registered fund. The 34 that carry a fund-shaped
+ *     word were read separately for exactly this reason — `Group Annuity
+ *     Contract PRIAC Guaranteed Income Fund` and `Group Annuity Contracts Key
+ *     Guaranteed Portfolio Fund` are insurance separate accounts whose BRAND
+ *     ends in "Fund", not registered funds.
+ *   - Of the 29,406 SEC-registered share classes in `sec-funds.json`, ZERO have
+ *     `annuity contract` anywhere in the registrant, series or class name, and
+ *     exactly ONE registrant contains the bare word "annuity" at all (SCHWAB
+ *     ANNUITY PORTFOLIOS, whose series is `Schwab Government Money Market
+ *     Portfolio` and so cannot match this phrase). A registered fund is not
+ *     named "annuity contract" — the phrase is a legal category, not a brand.
+ *
+ * IT DOES NOT FIRE ON THE NAME ALONE, and that restriction is deliberate. 1,219
+ * further rows say "annuity contract" and are typed `Collective trust`, `Pooled
+ * separate account`, `Stable value / GIC`, `Cash / short-term` or nothing at
+ * all. Those types are either more specific than this one or already honest, and
+ * 934 of them are blank — filling a blank is NEW COVERAGE and a different claim.
+ * What is repaired here is the one type string that asserts something false. The
+ * store holds exactly ONE such string, `Mutual fund`, on 976,193 rows; the
+ * anchor is a PREFIX so a future variant still could not assert it.
+ *
+ * THE FALSE TYPE WAS ALSO BUYING A FABRICATED FEE, which the queue item did not
+ * know and a stored-field check could not see. `fundERFiled` is called on the
+ * NAME, and `fund-er.js`'s last generic fallback prices anything matching
+ * /stable value|managed income|guaranteed|gic\b/ at 0.35%. 34 of the 186 rows
+ * (33 plans / 77,264 participants / $153,841,087) therefore publish an estimated
+ * expense ratio on an insurance contract. The site ALREADY refuses that number
+ * for every row typed `Stable value / GIC` — `gicRow` suppresses it — so the
+ * wrong type was the only reason the fee escaped. Callers must suppress the fee
+ * and the ticker here for the same reason they do for a GIC: an annuity's cost
+ * sits inside the crediting rate and is not a fund expense ratio.
+ *
+ * THE ROW IS TYPED, NEVER DROPPED — v181's treatment. The value and the
+ * percentage are untouched, so the money stays accounted for and no other row's
+ * published share moves.
+ *
+ * app.js keeps a twin because it is a plain browser script with no module
+ * system; `scripts/gen-generic-twin.mjs` extracts this VERBATIM and
+ * `smoke-test.mjs` runs the browser copy against this one and fails on drift. */
+export const ANNUITY_CONTRACT_NAME = /\bannuity contracts?\b/i;
+export function isAnnuityContractRow(f, cleanedName) {
+  const type = String((f && f.type) || "");
+  if (!/^mutual fund/i.test(type)) return false;
+  return ANNUITY_CONTRACT_NAME.test(String(cleanedName || (f && f.name) || ""));
+}

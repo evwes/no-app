@@ -26765,3 +26765,146 @@ nothing withdraws it**, because `audit-dominant-row` needs 90% on a SINGLE row
 and the largest here is 60.7%. That is exactly the Morgan Stanley / General
 Motors gap this record leaves to the owner: the implied change is a
 **whole-table** test beside the existing one-row test.
+
+---
+
+## 2026-09-29 (08:4xZ) — An insurance ANNUITY CONTRACT was typed `Mutual fund`, and the false type was buying a fabricated FEE
+
+**Wrong, and it is two claims rather than one.**
+
+**(1) THE TYPE CELL.** 186 published rows / 153 plans / **216,782 participants
+(plan-distinct)** / $2,084,149,902 carry a filed name that says
+`annuity contract` in the filer's own words and a `type` cell reading
+**`Mutual fund`**. A row typed `Mutual fund` asserts the plan holds shares of a
+registered investment company. These are insurance contracts — TIAA Traditional,
+CREF variable, Empower and PRIAC group annuities, Lincoln stable value accounts,
+SAGIC and EI fixed accounts. **American University** (7,009 participants) is the
+motivating case, found by the 07:4x participant-weighted draw: its LARGEST
+holding, `Traditional Fixed Annuity Contracts - Non-Fully Benefit Responsive` at
+**13.5% of the menu / $182,342,343**, is typed a mutual fund.
+
+This is v190's (`Master Trust`) and v192's (`Preferred stock`) shape one COLUMN
+along. Those stopped a NAME making a false claim; here the name is faithful and
+the TYPE is the claim, so no name-based guard — `isGenericTypeName`,
+`audit-generic-names`, `audit-dominant-row`, `diff-lineups`, the browser twin —
+could ever have seen it. **A vocabulary that only ever reads one cell is blind
+to the other one.**
+
+**(2) THE FEE, WHICH THE QUEUE ITEM SAID DID NOT EXIST — AND THE CORRECTION IS
+THE MORE EXPENSIVE HALF.** The item was filed as *"0 of the 186 publish a
+ticker, 0 an expense ratio, 0 carry a stored `stk`, so the harm is the CLAIM
+alone."* The ticker half is right. **The fee half is wrong: 34 of the 186 rows —
+33 plans / 77,264 participants / $153,841,087 — publish an estimated expense
+ratio today.** The filed check read `f.tk` and `f.stk`, which are STORED fields;
+`fundERFiled` is called on the **NAME**, and `fund-er.js`'s last generic fallback
+prices anything matching `/stable value|managed income|guaranteed|gic\b/` at
+**0.35%**. So `Guaranteed Annuity Contract`, `TIAA Stable Value Annuity
+Contracts` and `Group Annuity Contract Lincoln Stable Value Account` all render
+a fee. Two more: `Variable annuity contracts TIAA Access Intl Equity Idx T3` at
+**0.06%** off the `equity index` fallback, and `Lincoln Financial Multi-Fund
+Group Variable Annuity Contract American Funds Global Growth` at **0.4%** —
+which is the underlying fund's number with the annuity's M&E charge invisible,
+so it is not merely unsourced but low.
+
+**The site had ALREADY decided this question and the wrong type was the only
+thing defeating it:** `gicRow` suppresses the expense ratio for every row typed
+`Stable value / GIC`. An annuity's cost sits inside the crediting rate and is
+not a fund expense ratio. The false type was the sole reason these 34 escaped.
+**Nineteenth-odd instance of the same shape this record keeps catching: a stored
+field is not a published one — measure through the function the page calls.**
+
+**Change — DISPLAY-SIDE, route (b), no `PARSER_VERSION` bump.** `type` is a
+stored field, so a parser fix would need a bump and a full re-parse; but the
+evidence that refutes it is the filed NAME, which is already stored and already
+cleaned. So the rule is `isAnnuityContractRow(f, cleanedName)`, canonical in
+`scripts/lib-disclose.mjs`, on the exact v181 loan pattern: extracted VERBATIM
+into app.js's twin by `scripts/gen-generic-twin.mjs`, tethered by
+`scripts/smoke-test.mjs`. The row is **typed, never dropped** — value and
+percentage untouched, so the money stays accounted for and no other row's
+published share moves. The type cell reads `Annuity contract`; the ticker lookup
+and the expense ratio are suppressed exactly as they are for a GIC.
+
+**The discriminator is a PHRASE from the filing, and the safety argument is
+measured from two independent directions.** `\bannuity contracts?\b`:
+
+- **All 146 distinct flagged names were read, one by one. Not one is a
+  registered fund.** The 34 that end in something fund-shaped were read
+  separately for exactly that reason — `Group Annuity Contract PRIAC Guaranteed
+  Income Fund`, `Group Annuity Contracts Key Guaranteed Portfolio Fund` — and
+  every one is an insurance separate account whose BRAND ends in "Fund".
+- **Of the 29,406 SEC-registered share classes in `sec-funds.json`, ZERO have
+  `annuity contract` anywhere in the registrant, series or class name**, and
+  exactly ONE registrant contains the bare word "annuity" at all — `SCHWAB
+  ANNUITY PORTFOLIOS`, whose series is `Schwab Government Money Market
+  Portfolio` and so cannot match the phrase. It is a legal category, not a
+  brand. That case is pinned.
+
+**The TYPE half of the rule is load-bearing and its cost was measured, not
+argued.** A name-only draft was run whole-store: **1,380 rows / 948 plans /
+1,920,358 participants**, of which **254 rows would have their MORE SPECIFIC
+type flattened** — 87 `Collective trust`, 71 `Pooled separate account`, 55
+`Cash / short-term`, 30 `Stable value / GIC`, 14 `Separate account` — to the
+vaguer `Annuity contract`. That is information destroyed, not a repair. A
+further ~900 blank-typed rows would be FILLED, which is new coverage and a
+different claim. The rule fires only where the type asserts something false.
+The store holds exactly one such string, `Mutual fund`, on 976,193 rows; the
+anchor is a PREFIX so a future variant still could not assert it.
+
+**`namelessRow` is asked BEFORE the annuity arm**, so a row whose whole name is
+`Group Annuity Contract` keeps "Filing names no specific fund" — the stronger
+true statement — rather than printing the same phrase twice, the redundancy the
+nameless-row change removed. The fee suppression is independent of that ordering
+and fires on every annuity row either way.
+
+**Whole-store diff, over all 1,718,086 published rows, through the pipeline
+app.js actually runs** (`cleanCostMarkers` → `shownType` / `lookupTicker` /
+`fundERFiled`, with `lookupTicker` transcribed rather than approximated):
+**186 rows changed / 153 plans / 216,782 participants / $2,084,149,902**;
+**tickers gained 0, lost 0, flipped 0**; ER gained 0, **withdrawn 34**, changed
+0. Four distinct transformations, all four read in full.
+
+**SURFACE NAMED, AND IT IS ONE OF THE TWO: the REPORT only.** The crawlable
+pages' holdings table has exactly two columns, `Fund` and a value — **no type
+column and no expense-ratio column** — so neither false claim can physically
+appear there, and the name it already prints says "Annuity Contracts". Verified
+at the artifact level rather than by proxy: all 5,000 pages regenerated,
+`git diff --stat p/` **empty**. American University does have a page
+(`p/530196549-001.html`) and it was already honest.
+
+**Prevention.** `smoke-test.mjs` runs the browser twin against the module on
+**14 pinned rows, 8 of which must come back FALSE** — three kinds, each
+load-bearing: the type is already honest or more specific (`Stable value / GIC`,
+`Collective trust`, `Cash / short-term`, blank); the name does not say the
+phrase, so `TIAA Traditional Annuity` and `Vanguard Variable Annuity Balanced
+Portfolio` are KEPT, which is what makes the two-word phrase do work rather than
+decorate; and the one real SEC collision. **Both negative controls fail, and by
+NAME:** a twin with the type gate removed fails on exactly the 4 rows the gate
+protects (`TIAA Traditional Annuity Contract - Fully Benefit-Responsive`
+[Stable value / GIC], `MetLife Group Annuity Contract` [Collective trust],
+`. GROUP ANNUITY CONTRACT Mutual of America` [Cash / short-term],
+`Fidelity VIP Contrafund Portfolio GROUP ANNUITY CONTRACT` [blank]); a twin
+removed entirely fails the render. `gen-generic-twin.mjs` carries the same 14
+rows, **added because not one of its existing 44 name probes or 6 row probes
+reaches a two-cell rule** — the decorative-guard failure this record has now
+caught at v189, v190, v191 and v192, avoided by construction here.
+
+**A GENERATOR FIX MADE ON THE WAY, because the next appender would have hit
+it.** `gen-generic-twin.mjs` cut its in-place replacement at ONE end marker with
+ONE fallback. Appending a third rule makes that two-deep chain a three-deep one,
+and this file already records a stale-duplicate block that won by hoisting order
+when the marker moved. The markers are now a LIST, newest first, and the cut is
+made at the LAST one present, so no historical block can be left behind.
+
+**Full `smoke-test.mjs` green; `parser-gate.mjs` all specimens green.**
+`map-test.mjs` fails in-sandbox on `ERR_CERT_AUTHORITY_INVALID` — a proxy CA
+artifact, **identical on the unmodified tree with identical numbers (352 dots,
+9,592 plans)**, so it is not this change.
+
+**ADJACENT, SIZED, DELIBERATELY NOT SHIPPED — and it is LARGER than what was
+fixed. 184 rows / 150 plans / 322,394 participants / $2,411,652,415 publish an
+estimated expense ratio on a holding the filing names an annuity contract, typed
+blank (162), `Cash / short-term` (15), `Separate account` (5),
+`Exchange-traded fund` (1) or `Corporate debt` (1).** Their TYPE cells are not
+making the mutual-fund claim, so they are outside this item — but the FEE is the
+same unsourced 0.35%-class number, and withdrawing a fee from a blank-typed row
+is its own decision. Queued with its number rather than bundled.

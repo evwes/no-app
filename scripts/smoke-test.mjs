@@ -210,7 +210,7 @@ try {
   /* Same drift protection for the coverage band: scripts/lib-disclose.mjs is
    * canonical, app.js carries a twin because it is a plain browser script.
    * Run the BROWSER copy against the module's own boundary cases. */
-  const { coverageBand, frozenClaimOk, cleanFiledName, isParticipantLoanRow, isLoanDescriptionRow } = await import("./lib-disclose.mjs");
+  const { coverageBand, frozenClaimOk, cleanFiledName, isParticipantLoanRow, isLoanDescriptionRow, isAnnuityContractRow } = await import("./lib-disclose.mjs");
   const frozCases = [
     [true, "The Plan was terminated effective December 31, 2023.", "Capital Region Medical"],
     [true, "As amended on December 31, 2024, the Plan was frozen and all participants of the Plan became fully vested.", "Hanes Companies, Inc."],
@@ -516,6 +516,62 @@ try {
     if (!isLoanDescriptionRow(n)) fail(`loan-description predicate no longer recognises a wrapped loan description: ${JSON.stringify(n)}`);
   for (const n of descCases.slice(9))
     if (isLoanDescriptionRow(n)) fail(`loan-description predicate would RENAME a real holding "Participant loans": ${JSON.stringify(n)}`);
+
+  /* THE ANNUITY-CONTRACT PREDICATE, tethered the same way, 2026-09-29. It is a
+   * TWO-CELL rule — the filed NAME against the stored TYPE — so every case here
+   * carries both, and passing a bare string would silently test nothing.
+   *
+   * Eight of the fourteen must come back FALSE and that half is the whole
+   * safety argument, in three kinds:
+   *   - the type is already honest or MORE specific (`Stable value / GIC`,
+   *     `Collective trust`, `Cash / short-term`, blank) and must not be
+   *     flattened to "Annuity contract";
+   *   - the name does NOT say "annuity contract", so a real registered fund is
+   *     never reached — `TIAA Traditional Annuity` and `Vanguard Variable
+   *     Annuity Balanced Portfolio` contain the word "annuity" and must be
+   *     KEPT, which is what makes the two-word phrase load-bearing rather than
+   *     decorative;
+   *   - `Schwab Government Money Market Portfolio` is the series of the ONE
+   *     SEC registrant (SCHWAB ANNUITY PORTFOLIOS) whose name contains
+   *     "annuity" at all, pinned so the single real collision stays visible.
+   *
+   * Two of the must-FLAG cases are deliberately fund-shaped — `Group Annuity
+   * Contract PRIAC Guaranteed Income Fund` and the Lincoln Multi-Fund VA row
+   * naming American Funds Global Growth. Both END in something that reads like
+   * a fund and neither is one: the holding is the contract, and the filing says
+   * so in its own words. */
+  const annuityCases = [
+    /* must FLAG */
+    { name: "Traditional Fixed Annuity Contracts - Non-Fully Benefit Responsive", type: "Mutual fund" },
+    { name: "TIAA Traditional Annuity Contract - Nonbenefit-Responsive", type: "Mutual fund" },
+    { name: "Group annuity contract - TIAA Traditional Annuity", type: "Mutual fund" },
+    { name: "Variable Annuity Contracts CREF", type: "Mutual fund" },
+    { name: "Group Annuity Contract PRIAC Guaranteed Income Fund", type: "Mutual fund" },
+    { name: "Lincoln Financial Multi-Fund Group Variable Annuity Contract American Funds Global Growth", type: "Mutual fund" },
+    /* must stay as filed, from here down */
+    { name: "TIAA Traditional Annuity Contract - Fully Benefit-Responsive", type: "Stable value / GIC" },
+    { name: "MetLife Group Annuity Contract", type: "Collective trust" },
+    { name: ". GROUP ANNUITY CONTRACT Mutual of America", type: "Cash / short-term" },
+    { name: "Fidelity VIP Contrafund Portfolio GROUP ANNUITY CONTRACT", type: "" },
+    { name: "TIAA Traditional Annuity", type: "Mutual fund" },
+    { name: "Vanguard Variable Annuity Balanced Portfolio", type: "Mutual fund" },
+    { name: "Schwab Government Money Market Portfolio", type: "Mutual fund" },
+    { name: "Fidelity 500 Index Fund", type: "Mutual fund" }];
+  const annGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoAnnuityRow !== "function") return null;
+    return cs.map((r) => window.__wampoAnnuityRow(r, r.name));
+  }, annuityCases);
+  if (!annGot) fail("app.js no longer exposes __wampoAnnuityRow — the annuity-contract predicate cannot be cross-checked");
+  const annDrift = annuityCases.filter((r, i) => isAnnuityContractRow(r, r.name) !== annGot[i]);
+  if (annDrift.length) {
+    for (const r of annDrift) console.error(`  ${JSON.stringify(r)}  app.js=${annGot[annuityCases.indexOf(r)]}  module=${isAnnuityContractRow(r, r.name)}`);
+    fail(`the annuity-contract predicate in app.js disagrees with scripts/lib-disclose.mjs on ${annDrift.length} of ${annuityCases.length} rows — regenerate it`);
+  }
+  for (const r of annuityCases.slice(0, 6))
+    if (!isAnnuityContractRow(r, r.name)) fail(`annuity-contract rule no longer catches an insurance contract typed a mutual fund: ${JSON.stringify(r)}`);
+  for (const r of annuityCases.slice(6))
+    if (isAnnuityContractRow(r, r.name)) fail(`annuity-contract rule would retype a row whose filed type is honest, or a real fund: ${JSON.stringify(r)}`);
+
   const nameDrift = nameCases.filter((n, i) => cleanFiledName(n) !== nameGot[i]);
   if (nameDrift.length) {
     for (const n of nameDrift) console.error(`  ${JSON.stringify(n)}\n    app.js: ${JSON.stringify(nameGot[nameCases.indexOf(n)])}\n    module: ${JSON.stringify(cleanFiledName(n))}`);
