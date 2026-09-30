@@ -816,6 +816,12 @@ from the cycle that would have cleared it.
   correct and the reading was mine.** *A ticker is not a reading; the series name
   is*, recorded about the code and applying to the person reading it.
   `docs/accuracy-log.md` 2026-09-30 (09:1xZ).
+- **`site-test` #115 DISPATCHED on `19e800fc`, the exact mirrored commit, and
+  observed `in_progress` — READ ITS `conclusion`.** Dispatched deliberately
+  because the doubled-class fix shipped under `[skip ci]`, and local green is not
+  CI green; this record carries ten consecutive red site-test runs whose commit
+  messages said "green" from a local run. Pages #718 is building the same commit,
+  and Pages #717 built the #517 data mirror `success`.
 - **SHIPPED AND MIRRORED 2026-09-30 07:4xZ (`fda28a8c → af83067b`), UNFORCED ON
   BOTH CHECKS, data gate +0 / −0 — A BARE MATURITY DATE IS THE PARTICIPANT-LOAN
   ROW: 68 rows / 67 plans / 135,334 participants / $153,709,833.** Found by the
