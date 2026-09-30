@@ -605,7 +605,22 @@ costs a night.
 - **Mirror ONLY with `bash scripts/mirror.sh`.** It refuses when main carries a
   commit the branch lacks (the daily schedule commits data straight to main)
   and when local disagrees with origin, and prints what a force push would
-  destroy. Both refusals have negative-control tests. The hand-rolled
+  destroy. Both refusals have negative-control tests.
+  **THE DATA GATE IS PLAN-KEYED AS OF 2026-09-30 AND THE ACK-KEYED VERSION WAS
+  HARMFUL, NOT MERELY NOISY.** On a DOL refresh it reported **7,830 lost
+  lineups** where **22** plans actually stopped being served — 7,585 were the
+  same plan under a newer ack, 171 wind-downs ($0 year-end, correctly no menu),
+  82 moved to the SHORT FORM (no attachment BY LAW). Presenting 7,830 unreadable
+  rows pushes the operator onto `--force-data`, **which then rubber-stamps the
+  22 real losses inside it** — *a gate that can only be satisfied by overriding
+  it is not protecting anything.* Both stores ship their own `plans-all`, so the
+  ack → EIN|PN join needs nothing new stored; `merge-4i` cannot ask this because
+  it purges superseded acks (`merge-4i:88`) and then cannot name the plan.
+  **An ack owned by no plan is resolved through its MEMBER PLANS** — without
+  that the gate reads 18 and silently drops Levi Strauss (8,288) and Motrex
+  (2,939), which are served by their TRUST and never by their own ack, the fifth
+  instance of a count keyed on plans being blind to a trust.
+  `MIRROR_GATE_MAIN_REF=<ref>` replays any pair on demand. The hand-rolled
   `git push --force-with-lease=main …` is retired: running the check by eye
   failed on 2026-09-02 — the check printed the offending commit and an
   unconditional "(nothing above…)" echo overrode the reading of it.
