@@ -705,6 +705,28 @@ from the cycle that would have cleared it.
   trust-aware standalone script — the standalone's single trust is the one lineup
   v196 withdrew. **`matchQuote` 5,397 of which only
   1,785 are SHOWN to readers** — the condition/outcome pair shipped 2026-09-27.
+- **QUEUED, SIZED, NOT SHIPPED 2026-09-30 06:3xZ — AN OCR COLUMN-BLEED RESIDUE
+  ON AN OTHERWISE IMMACULATE FUND NAME: 2,493 rows / 689 plans / 613,748
+  participants / $5,404,521,731**, narrowed by outcome from a raw population of
+  6,054 / 1,272 / 1,874,788. Found by the 06:1xZ draw on **Logistics Plus (608
+  ppl, 31 rows @ 0.995, OCR'd)**, three of whose American Century rows read
+  `One Choice 2055 ee` / `One Choice 2060 ee` / `One Choice 2035 ae`.
+  **IT IS AN HONESTY FIX AND NOT A COVERAGE FIX, MEASURED: +0 tickers, +0 fees,
+  0 flipped** — `fund-er.js` already matches through a trailing residue, as it
+  does through a trailing `+` and a leading stray quote, and **742 of the 2,493
+  already publish a ticker and 2,469 a fee.**
+  **THE RAW 6,054 IS AT LEAST FOUR DEFECTS and must not be carried forward:**
+  (A) the OCR bleed proper, 5,095 rows in OCR'd entries (`ae` 600, `al` 399,
+  `ial` 396, `il` 331, `ee` 304); **(B) `of`, 140 rows, a TRUNCATION where
+  stripping makes the name worse** — `American Funds Growth Fund of` cut before
+  `America`; (C) `at`/`in`, wrapped-sentence tails, already a recorded class;
+  (D) `xx`, 129 rows, a masked figure.
+  **THE GUARD IT STILL NEEDS IS NAMED BY THE POPULATION: an OCR-SPLIT WORD
+  looks identical to a residue** — `Vanguard Total Bond Market Index Ad min` is
+  `Admiral`, and stripping `min` leaves `… Index Ad`. The discriminator is the
+  03:3xZ prefix rule run backwards (the preceding token plus the tail must not
+  itself be a word), and it needs building and tethering first.
+  `docs/accuracy-log.md` 2026-09-30 (06:3xZ).
 - **NOTHING SHIPPED 2026-09-30 06:1xZ AND THAT IS THE FINDING — THREE OF FOUR
   PARSER-SIDE QUEUE ITEMS WERE STALE AND THE FOURTH WAS NEVER A MEASUREMENT.**
   Re-sized against the pv-196 store: the `Company stock`-typed-fund item is

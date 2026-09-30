@@ -30366,3 +30366,62 @@ stale and one was never a measurement, so a session acting on this list would
 have bumped `PARSER_VERSION` for work already live. **Re-size a queued class
 against the current store before spending a run on it** — the list is a record
 of what was true when it was written, not of what is true now.
+
+## 2026-09-30 (06:3xZ) — QUEUED, SIZED, NOT SHIPPED: AN OCR COLUMN-BLEED RESIDUE ON AN OTHERWISE IMMACULATE FUND NAME
+
+The 06:1xZ participant-weighted draw returned **Logistics Plus, Inc. (608 ppl,
+$19,266,669, 31 rows at ratio 0.995, OCR'd)**, whose menu is clean American
+Century / Vanguard / Fidelity holdings except that three rows read
+`One Choice 2055 ee`, `One Choice 2060 ee` and `One Choice 2035 ae`. Two or
+three lowercase letters from the adjacent column, glued to the end of a
+complete fund name. The second draw, **Smw Health Network (4,384 ppl)**, is
+immaculate — eighteen T. Rowe Price Retirement Blend and Fidelity index rows,
+every one real.
+
+**THE WHOLE POPULATION IS 6,054 rows / 1,272 plans / 1,874,788 participants /
+$25,486,041,114, AND IT IS AT LEAST FOUR DEFECTS. Do not carry 6,054 forward as
+a class.** Reading it by tail:
+
+- **(A) the OCR column bleed**, 5,095 of the 6,054 rows sitting in OCR'd
+  entries: `ae` 600, `al` 399, `ial` 396, `il` 331, `ee` 304, `el` 163,
+  `lal` 141, `we` 124, `ia` 103, `ad` 103, `nla` 95, `lel` 86, `oe` 76 —
+  `Vanguard Total International Stock Index Fund, Admiral Shares ae`,
+  `Nuveen Real Estate Sec Sel R6 ial`, `JP Morgan Equity Income R6 lel`.
+- **(B) a TRUNCATION, and stripping it makes the name WORSE**: `of`, 140 rows.
+  `American Funds Growth Fund of` is cut before `America`; removing the `of`
+  yields `American Funds Growth Fund`, a plausible-looking name that is not the
+  fund. **Excluded by construction, not by threshold.**
+- **(C) real words ending a wrapped SENTENCE**, already a recorded class: `at`
+  (`Credited with Interest at`, `Partnership/joint venture interests at`), `in`
+  (`MM Select T. Rowe Price Value of Interest in`).
+- **(D) `xx`**, 129 rows — `Interest in stable value collective trust xx` — a
+  masked or footnoted figure, not a residue.
+
+**THE OUTCOME TEST NARROWS IT AND CHANGES WHAT IT IS.** Asking only of rows
+whose HEAD already names a fund through the shipped `fundER`/`fundTickerInfo`:
+**2,493 rows / 689 plans / 613,748 participants / $5,404,521,731**. And through
+the shipped lookup, stripping the residue gains **0 tickers, 0 fees, and flips
+0** — because `fund-er.js` already matches straight through a trailing residue,
+exactly as it does through a trailing `+` (2026-09-30 00:1xZ) and a leading
+stray quote (2026-09-29 13:3xZ). **742 of the 2,493 already publish a ticker and
+2,469 already publish a fee.** So it is an HONESTY fix for 613,748 readers who
+see a garbled name beside a correct ticker and a correct number, and it must not
+be sold as coverage.
+
+**THE ARM STILL NEEDS ONE GUARD THAT THE NARROW SCREEN DOES NOT HAVE, and the
+population names it: an OCR-SPLIT WORD looks identical to a residue.**
+`Vanguard Total Bond Market Index Ad min` is `Admiral` split by the column, and
+stripping `min` leaves `… Index Ad`, which is worse than what shipped.
+`Putnam Stable Value Fund 15 bps` ends in a meaningful abbreviation.
+`T. Rowe Price Retirement Blend 2050 Fund 8.167.515 ial` carries an OCR'd VALUE
+inside the name and belongs to a different family. The discriminator is the
+03:3xZ prefix rule run backwards — **the preceding token concatenated with the
+tail must not itself be a word** — and it has to be built and tethered before
+any of this ships.
+
+**AND MY FIRST SIZER RETURNED 0 BY CONSTRUCTION, ONE CYCLE AFTER THE SAME SHAPE
+KILLED THE LOAN-CAPTION MEASUREMENT.** It gated on `e.c`, which is a
+`lineups-status.json` field; the lineup SHARDS spell it `confident`, so every
+entry was skipped and the answer was a clean zero. *A suspiciously clean zero
+reports on the query* — twice in one cycle, and the second time in a harness
+written immediately after recording the first.
