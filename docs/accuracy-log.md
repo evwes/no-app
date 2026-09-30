@@ -29877,3 +29877,83 @@ the twin fails BY NAME on exactly the 6 new must-flags and holds all 7
 must-keeps.** **No defect specimen is pinned, deliberately:** `diff-lineups`
 compares PARSER output and this is a display rule, so a pin there would be
 decorative — the tether and the negative control are the guard.
+
+## 2026-09-30 (03:5xZ) — OWNER'S CALL, SIZED, NOT SHIPPED: AN ASSERTED TICKER WHOSE OWN REGISTERED CLASS CONTRADICTS THE FILING — 5,861 rows / 3,977 plans / 8,288,788 participants
+
+**Found by the 03:3xZ participant-weighted draw** on U-Haul Holding (35,385
+participants), whose 22-row Fidelity menu is otherwise immaculate and whose
+`Total Bond K6 Fund` renders **FTBFX at 0.45%** — and `sec-funds.json` says FTBFX
+is registered `Fidelity Total Bond Fund` while the K6 fund is **FTKFX**. Not
+asterisked, not labelled a comparable: published as fact.
+
+**SIZED WHOLE-STORE through app.js's REAL `lookupTicker` order** (issuer+raw,
+raw, issuer+clean, clean), counting only ASSERTED answers and only where the
+SEC index can say what the answer's own class IS: **5,861 rows / 3,977 plans /
+8,288,788 participants** across **689 distinct name→ticker pairs**, and
+**5,854 of them / 8,282,460 participants ALSO publish the other fund's FEE**
+through the full expression with every suppressor transcribed.
+
+The list needs no interpretation — the filing states the class in its own words
+and the answer's registered name states a different one:
+
+| filed name | published | registered as | fee shown |
+|---|---|---|---|
+| `Fidelity Contrafund K6` (318 rows) | FCNTX | Fidelity Contrafund | 0.45 |
+| `Fidelity Total Bond K6` (382) | FTBFX | Fidelity Total Bond Fund | 0.45 |
+| `FID GOVT MMKT K6` (345) | SPAXX | Fidelity Government Money Market | 0.42 |
+| `Fidelity Blue Chip Growth K6 Fund` (199) | FBGRX | …Blue Chip Growth Fund | 0.55 |
+| `Fidelity Diversified International K6 Fund` (65) | FDIVX | …International Fund | 0.65 |
+| `Vanguard Small-Cap Index Fund Investor Shares` (44) | **VSMAX = Admiral** | Admiral Shares | 0.05 |
+| `WELLINGTON FUND INVESTOR SHARES` (1, 250,040 ppl) | **VWENX = Admiral** | Admiral Shares | 0.17 |
+
+**The Vanguard half errs in the FLATTERING direction** — an Investor-class
+holding priced at the Admiral fee — which is the same asymmetry the
+collective-trust item had this morning.
+
+**THIS RECORD HAS NAMED THE DEFECT FOUR TIMES AND ITS SIZE IS LARGER THAN EVERY
+PREVIOUS MEASUREMENT.** The 2026-09-28 SEC cross-check put the disagreement at
+744 names / 3,844 rows / 5,962,185 ppl, because it counted only names where BOTH
+sources resolve a fund EXACTLY. Asking the narrower and more damning question —
+*does the asserted answer's own registered class contradict the class the filing
+states* — reaches 5,861 / 8,288,788. *A class size travels with the predicate
+that produced it*, and this predicate is the one that matches the claim.
+
+**WHY IT IS STILL OPEN, and the third option this record had not considered.**
+The 2026-09-28 entry refused to override the ticker because *"correcting the
+ticker alone leaves a K6 row showing the retail fee beside the K6 symbol, and a
+half-corrected row is not obviously better than a wholly wrong one."* That
+reasoning stands, and it leaves three routes:
+
+1. **Correct the ticker only** — refused above, and the refusal holds.
+2. **Correct both** — `sec-funds.json` supplies FTKFX, but a FEE IS SOURCED,
+   NEVER DERIVED, and `fund-er.js` has no K6 numbers. This is the right answer
+   and it needs `data/fund-facts.json` populated per share class first.
+3. **WITHDRAW BOTH** — publish no ticker and no fee where the filed name states a
+   class the answer contradicts. This is exactly the move made for the 10,387
+   American Funds fee cells on 2026-09-28: *the claim is withdrawn rather than
+   replaced, because a wrong number outranks an absent one.* It was never
+   considered here, and by this project's own principles it is the correct
+   interim state.
+
+**It is not shipped because route 3 costs 8.3M participants a ticker and a fee
+they have today, and a session must not ship a withdrawal at that scale
+unasked** — the same line drawn for the R-6 item (10.5M ppl) and for the
+whole-table generic test. **Recommendation, stated so the owner has something to
+decide rather than a description:** take route 3 now and route 2 as the
+`fund-facts` agent fills in per-class figures, because the two compose — a row
+withdrawn today is a row that gains a SOURCED number later, whereas a row left
+asserting FTBFX at 0.45% is a published falsehood in the meantime.
+
+**A harness error of mine, the shape this record already names:** my first pass
+read `sec-funds.json` entries as objects and asked for `f.ticker`, which returned
+nothing and would have sized the class at 0. The entries are ARRAYS —
+`["Registrant :: Series", ticker, "class", "Class Name"]`. The sizer now asserts
+that FTKFX and FTBFX both resolve before it counts anything, so the same mistake
+cannot return a quiet zero.
+
+**Also from this draw, checked and NOT a defect:** U-Haul's row 1 is
+`Freedom Index 2025 il`, an OCR-welded fragment — and it costs nothing, because
+the whole Fidelity Freedom Index family resolves to no ticker with or without it
+(the matcher gap already on this record). Its row 22, `statements` at $42,435, is
+v191's class and is correctly typed. J.M. Smucker's `Common Shares` carries the
+issuer `The J. M. Smucker Company` and is correctly read as employer stock.
