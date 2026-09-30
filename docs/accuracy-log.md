@@ -31408,3 +31408,88 @@ the browser copy against the module. parser-gate, smoke and fund-er-test
 
 **3 crawlable pages / 265,547 participants**, every changed cell read: Microsoft
 (183,509), Morgan Stanley Domestic Holdings (81,090) and Gunderson Dettmer (948).
+
+---
+
+## 2026-09-30 (15:2xZ) — SIZED, MEASURED AND **NOT SHIPPED**: THE ISSUER COLUMN'S CLASS-DEBRIS LEAD IS A ROTATION, AND THE OBVIOUS STRIP TRUNCATES THE FIRM
+
+The 14:2xZ draw on **Capital Blue Cross (2,862 ppl)** left this class open:
+`{Growth Fund; Class R6 Vanguard}`, `{Inst'l Shr Invesco}`, `{Class L Vanguard}`
+— a fund-name fragment welded in front of the real firm. Two empirical
+predicates were refuted that cycle (longest standalone SUFFIX = 50,057 rows of
+truncated real firms; adding the mirror PREFIX condition still leaves 18,949),
+and the one structural fact left was that **a share class is never a firm** —
+true in the ISSUER column, false in the NAME column where a class is part of the
+fund's own name.
+
+Built on that fact, the predicate reaches **333 rows / 134 entries / 198,007
+participants / $1,169,273,658**. It is not shippable, and why is the finding.
+
+### The mechanism claim was refuted by its own test
+
+The class was queued as *the PREVIOUS row's wrapped tail*. That is checkable
+directly from the stored filed order, and it is **3 of 333** — 62 if the lead
+need only appear anywhere in the previous row. The row's OWN name does no better:
+**19 of 333**, and reading the 314 it refuses shows nearly all of them are
+correct repairs (`Class R6 JPMorgan` → `JPMorgan` on a row named `JPMorgan Mid
+Cap Growth Fund`). **Neither corroboration is the mechanism, and neither is a
+usable guard.**
+
+### The real mechanism is a ROTATION, and it is what makes the strip unsafe
+
+`Annuity Company R6 Voya Retirement Insurance and`, `Company Class K6 Fidelity
+Management Trust`, `LLC R1 Great Gray Trust Company,`, `Company Adm Minnesota
+Life Insurance`. **The issuer's own name wraps across two lines and the two
+halves are re-joined in the wrong order, with the row's share class caught
+between them.** The firm is all there; it is out of order.
+
+So **the naive strip publishes a TRUNCATED FIRM on the largest members of the
+class it was written for**: `Fidelity Management Trust` for *Fidelity Management
+Trust Company*, `Great Gray Trust Company,` for *Great Gray Trust Company, LLC*,
+`Minnesota Life Insurance` for *Minnesota Life Insurance Company*. Measured:
+**45 rows / 20 entries / 32,947 participants** where re-joining the OTHER way
+round yields a string attested as a complete issuer — `Fidelity Management Trust
+Company` **9,361 times**, `Great Gray Trust Company` 4,697, `Empower Trust
+Company, LLC` 2,198, `Vanguard Fiduciary Trust Company` 1,784, `Minnesota Life
+Insurance Company` 1,342.
+
+**And 45 is a FLOOR set by my own class vocabulary, not by the data.** Reading
+the residue, `Company CIT Z Principal Global Investors Trust` (12 rows) and
+`Company Trust II Vanguard Fiduciary Trust` (9) are the same rotation; they sit
+in the other bucket only because `CIT Z` and `Trust II` are not in the
+share-class run the predicate recognises. *A split whose boundary is a
+vocabulary is only as good as that vocabulary*, and here the vocabulary decides
+which family a row is assigned to rather than merely whether it is reached.
+
+### Two guards measured and refused, both for the same reason
+
+**(1) "the LEAD must not stand alone as a complete issuer"** — refuses **34 rows
+that are CORRECT repairs**, because `Admiral Vanguard → Vanguard` has a lead
+that stands alone **once**. That single standalone `Admiral` is itself damage,
+so the guard is the floor-of-one trap this record already names: *a gate can be
+fed by its own mistakes.*
+
+**(2) the rotation test itself, unguarded** — fires on `Fund Admiral Vanguard`
+→ **`Vanguard Fund`** (attested 21), `Advisors Institutional Class Fidelity` →
+**`Fidelity Advisors`** (389), `Company Admiral American Funds` → **`American
+Funds Company`** (54), `Trust Class CT Fidelity` → **`Fidelity Trust`** (27).
+None of those four is a firm. **A floor of three is nowhere near enough when the
+damaged form is itself attested in the hundreds** — the same failure the
+2026-09-28 caption strip hit at a floor of one, one order of magnitude up.
+
+### Two clear false positives in the base predicate, named
+
+`MFS Institutional International Equity` → **`International Equity`**, and
+`Admiral American` → **`American`** (whose row is named `Funds New Perspective
+R6`, so the filer's `American Funds` was split across the two columns). Both
+remainders clear the attestation floor and neither is a firm.
+
+### Status
+
+**NOT SHIPPED.** Three predicates refused on this class now, and this third one
+would have published a truncated firm name as fact on its own largest members.
+What it needs before it can ship is the ROTATION arm built first and preferred
+over the strip, with a remainder test strong enough to refuse `Vanguard Fund`
+and `Fidelity Advisors` — which is not an attestation floor. **Do not carry 333
+forward as a class size:** it is at least two mechanisms, and the split between
+them currently depends on a vocabulary rather than on the data.

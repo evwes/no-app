@@ -873,6 +873,42 @@ from the cycle that would have cleared it.
   parser-gate, smoke, fund-er-test (46/26/19/18) green. **REPORT path only as a
   GUARANTEE: `build-seo-pages.mjs` never imports `fund-er.js`**; `git diff
   --stat p/` empty. `docs/accuracy-log.md` 2026-09-30 (11:5xZ).
+- **SIZED, MEASURED AND REFUSED 2026-09-30 15:2xZ — THE ISSUER'S CLASS-DEBRIS
+  LEAD IS A ROTATION, AND THE OBVIOUS STRIP TRUNCATES THE FIRM. 333 rows / 134
+  entries / 198,007 ppl / $1,169,273,658, and NOT SHIPPABLE.** The 14:2xZ draw's
+  open class (`{Growth Fund; Class R6 Vanguard}`, `{Inst'l Shr Invesco}`). Built
+  on the one structural fact left after two refutations — *a share class is never
+  a firm*, true in the ISSUER column and false in the NAME column.
+  **THE MECHANISM CLAIM WAS REFUTED BY ITS OWN TEST: the lead is the PREVIOUS
+  row's tail on 3 of 333**, and the row's OWN name on 19 — and reading the 314
+  that test refuses shows nearly all are correct repairs, so neither
+  corroboration is a usable guard either.
+  **THE REAL MECHANISM IS A ROTATION: the issuer's own name wraps and the halves
+  are re-joined in the WRONG ORDER with the row's share class between them.**
+  `Company Class K6 Fidelity Management Trust`, `LLC R1 Great Gray Trust
+  Company,`, `Company Adm Minnesota Life Insurance`. So **the naive strip
+  publishes a TRUNCATED FIRM on the largest members of the class it was written
+  for** — `Fidelity Management Trust` for a firm attested **9,361** times as
+  *Fidelity Management Trust Company*, `Great Gray Trust Company,` for *…, LLC*
+  (1,021), `Minnesota Life Insurance` (1,342). **45 rows / 32,947 ppl measured,
+  and 45 is a FLOOR SET BY MY OWN VOCABULARY** — `Company CIT Z Principal Global
+  Investors Trust` (12) and `Company Trust II Vanguard Fiduciary Trust` (9) are
+  the same rotation, sitting in the other bucket only because `CIT Z` and `Trust
+  II` are not in the class run. *A split whose boundary is a vocabulary is only
+  as good as that vocabulary.*
+  **TWO GUARDS MEASURED AND REFUSED, BOTH THE SAME TRAP.** *"The lead must not
+  stand alone as an issuer"* refuses **34 CORRECT repairs**, because `Admiral
+  Vanguard → Vanguard` has a lead standing alone **once** and that once is itself
+  damage — the floor-of-one trap. And the rotation test unguarded yields
+  **`Vanguard Fund` (21), `Fidelity Advisors` (389), `American Funds Company`
+  (54), `Fidelity Trust` (27)**, none a firm: **a floor of three is nowhere near
+  enough when the damaged form is itself attested in the hundreds.**
+  Two base false positives named: `MFS Institutional International Equity` →
+  `International Equity`, and `Admiral American` → `American` (its row named
+  `Funds New Perspective R6` — the filer's `American Funds` split across the two
+  columns). **Do not carry 333 forward as a class size.** It needs the ROTATION
+  arm built FIRST and preferred over the strip, with a remainder test that is not
+  an attestation floor. `docs/accuracy-log.md` 2026-09-30 (15:2xZ).
 - **SHIPPED AND MIRRORED 2026-09-30 15:0xZ (`7f553567 → 311e29c3`), UNFORCED ON
   BOTH CHECKS, data gate +0 / −0 — A SCHEDULE H PARTICIPANT-DIRECTION CAPTION IS
   NOT A HOLDING: 16 rows / 16 plans / 294,238 participants / $6,813,553,902.**
@@ -909,7 +945,10 @@ from the cycle that would have cleared it.
   app.js, wired into `build-seo-pages.mjs` so it reaches BOTH surfaces, tethered
   on 18 pinned cases (10 must-flag / 8 must-keep). parser-gate, smoke and
   fund-er-test (46/26/19/18) green; **3 crawlable pages / 265,547 ppl**, every
-  changed cell read. `docs/accuracy-log.md` 2026-09-30 (15:0xZ).
+  changed cell read. **`site-test` #117 reads `conclusion: success` ON THE EXACT
+  MIRRORED COMMIT** — dispatched deliberately because the change shipped under
+  `[skip ci]` and local green is not CI green.
+  `docs/accuracy-log.md` 2026-09-30 (15:0xZ).
 - **NOTHING IS IN FLIGHT. #520 RAN `success` AND IS MIRRORED — 2026-09-30 14:2xZ
   (`b6e61585 → 7f553567`), the git check FORCED over main's one cron commit with
   the evidence first (plans array byte-identical, 0 acks / 0 newer status
