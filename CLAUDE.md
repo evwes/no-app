@@ -781,6 +781,53 @@ from the cycle that would have cleared it.
   analyze-stuck TRUST, **confident on both sides**, so nothing lost and the stale
   branch pv means the next incremental re-reads it), **1 confident on main only**
   (the Caterpillar withdrawal above). Gate **+4 gained / −1 lost**.
+- **IN FLIGHT: #513 (v195), dispatched 2026-09-30 01:1xZ on `b123f0f1`, observed
+  `in_progress` on the dev branch — a FULL re-parse on the version bump. IT IS A
+  REVERT OF v194's OWN ARM, and the reason outlives it.**
+  **v194's verdict recorded `loan-repayment rows 21 → 0` and PASSED. The rows did
+  not go away — they stopped saying what they were.** `SKIP_ROW` is anchored `^`
+  and this family **WRAPS**: `Loan Repayments are` / `included:  240,932`. So the
+  arm matched the FIRST line, cleared `nameBuf` and continued, leaving the
+  continuation to name the row. **23 published rows / 23 plans / 33,695
+  participants went from `Loan Repayments are included:` to `included`**, and
+  Northwood Investors' (2,277 ppl) to **`Yes`**; Keysight's carries **$4,160,976**.
+  **THE CHECK COULD NOT HAVE CAUGHT IT, AND THAT IS THE TRANSFERABLE PART: a check
+  keyed on the VOCABULARY the rule removes is guaranteed to read 0 whether the fix
+  worked or destroyed the name.** Sibling of *a check must not reuse the THRESHOLD
+  of the rule it checks*, and of `diff-lineups` reading the narrower
+  `GENERIC_TYPE_NAME`. **What would have caught it is counting the ROWS, not the
+  phrase** — and the per-plan row count was unchanged, which is exactly the blind
+  spot v193's item (D) named. **v194 walked into it from the other side while
+  fixing it.**
+  **TWO HALVES, NEITHER OF THEM THE ARM.** v195 REVERTS it, because skipping the
+  first line of a wrapped answer yields a cryptic name where the original was
+  self-describing; the `lib-4i` comment now records the wrap so it cannot be
+  re-added. **And the DISPLAY half is ALREADY LIVE (mirrored `e35bda25 →
+  b123f0f1`)**: `isLoanAnswerRow` answers for **BOTH** the restored phrase and the
+  remnant still in the store, so **a reader is served before and after the
+  re-parse**. **TYPED, NOT DROPPED (v181)** — the value is the plan's loan balance,
+  so it stays in the denominator and **no other row's published percentage moves**.
+  **OUTCOME: 23 rows / 23 plans / 33,695 ppl / $7,070,319 typed `Participant loans
+  — not a menu choice`, and 0 of them publish a fee or a ticker today** — the harm
+  was the claim alone, and v194 had made it harder to recognise.
+  14 tether cases (6 must-flag / 8 must-keep — `Included Value Fund` and `Yes Bank
+  Ltd` OPEN with the remnant words, `Bank Loan Fund` and `Loan Repayment
+  (Interest)` are not answer lines, `Participant loans` / `Loan Fund` are already
+  typed by `LOAN_ROW`); negative control fails by name on exactly the 6 and holds
+  all 8. Wired into `build-seo-pages.mjs` too; **`git diff --stat p/` empty**
+  because every one of the 23 rows is 0.0–2.6% of its menu, below the top-twelve
+  cut. parser-gate green, smoke green, fund-er-test 46/26/19/18 0 failures.
+  **PRE-REGISTERED against the pv-194 store it reads:** rows named
+  `included`/`Included`/`Yes` **24 → 0**; rows matching `^loan repayments? are`
+  **0 → ~21** (the self-describing name RETURNS); `confident` **+0 / −0** (typed,
+  never dropped, so no sum or ratio moves); `audit-dominant-row` **0**;
+  `audit-generic-names` **214 ± 2**; `overshoot` holds at **317**.
+  `docs/accuracy-log.md` 2026-09-30 (01:2xZ).
+- **TOOLING FACT, 2026-09-30: `mcp__github__actions_list` IGNORES its
+  `workflow_id`, `branch`, `event` and `status` filters** and returns the
+  repository's newest runs regardless — a dispatch was verified only by widening
+  `perPage` until the build-data run appeared among them. Do not read a single-row
+  listing as evidence about a particular workflow.
 - **NOTHING IS IN FLIGHT. #511 (v194) RAN `success` AND IS MIRRORED — 2026-09-30
   01:0xZ (`dba53e34 → 35c36a9f`), `--force` on the git check over main's one cron
   commit and `--force-data` over the single loss, both with the evidence first.
