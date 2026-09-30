@@ -873,6 +873,74 @@ from the cycle that would have cleared it.
   parser-gate, smoke, fund-er-test (46/26/19/18) green. **REPORT path only as a
   GUARANTEE: `build-seo-pages.mjs` never imports `fund-er.js`**; `git diff
   --stat p/` empty. `docs/accuracy-log.md` 2026-09-30 (11:5xZ).
+- **IN FLIGHT: #523 (build-data, `workflow_dispatch` on `a56703b0`) — NO PARSER
+  BUMP. IT EXISTS TO MEASURE, AND TWO RUNS FIRED ON THE SAME COMMIT.** The
+  `scripts/**` push trigger fired (#522, `event: push`, observed `in_progress`)
+  AND the dispatch I sent one second later created #523. Same ref, same SHA, so
+  concurrency cancels the older and the survivor does identical work — but *a
+  cancelled run's merge still commits* (`if: always()`), so **read the pv
+  distribution at the verdict, not the status field.** Harmless here because
+  without a bump the work list is the dead 403s. This is the documented
+  intermittent push trigger in its OTHER direction: it also sometimes fires, so
+  a dispatch sent for safety can double up.
+- **WHAT #523 CARRIES — THE TRUST'S OWN SCHEDULE D WAS NEVER SCANNED, the
+  second and larger half of the owner-sent PSEG finding.** `scanSchD`'s
+  `wantedAcks` is built from `universe`, which holds PLANS only; an MTIA filing
+  `continue`s out of the plan loop at `build-data.mjs:208`, so **a master
+  trust's ack was never in the wanted set and every row of every trust's
+  Schedule D was skipped** — including the one place a trust-held plan's fund
+  menu is written down. For PSEG it is not that the names were read and
+  dropped; **that filing's Schedule D was never looked at.** (The 18:0xZ entry's
+  discard finding is real and is the plan-level half.)
+  Two lines of ingest: MTIA acks join `wantedAcks`, and the entity-code-C
+  branch keeps `{n, v}` beside the value set the CIT typing already uses.
+  **NOTHING IS PUBLISHED.** A Schedule D menu is the TRUST's holdings, not a
+  plan's 4i slice, so publishing it is a separate claim needing its own
+  labelled wording — and the deciding numbers cannot be measured in-sandbox
+  because the EFAST2 extracts come from the DOL site, which is unreachable
+  from here. **So the run IS the measurement.**
+  **The population it could serve, measured in-sandbox: 123 full-form plans /
+  1,363,069 participants / $197.1B** linked to a trust where NEITHER side
+  publishes a lineup (Albertsons 222,465, Northrop Grumman 151,821, Delta
+  112,713, Medtronic 56,318), against **488 plans / 8,269,176 already served by
+  a confident trust** — the precedent that makes this shape legitimate.
+  **PRE-REGISTERED, first line first:** the prep log must print `SCH_D
+  collective-trust NAMES: resolved at index N (NAME)`, and **`NOT FOUND` means
+  the column name is wrong and THAT is the finding** (v195's `activeBOY`
+  instrumentation, same reason); then `Schedule D collective-trust menus: N of
+  M trusts carry one (R rows), reaching P member plans / Q participants`.
+  **No published number may move** — no bump, so `confident` 60,103, lineups,
+  HIGH 5, `warn`, `overshoot` 316, `dl` 142 must be byte-identical to #517's.
+  **HARNESS NOTE:** my first count of the 123 printed `plan's own lineup
+  confident: 0` and `trust confident: 0` — `lineups-status.json` nests under
+  `.plans` and I read the top level. *A clean zero reports on the query*,
+  caught before the number was written down.
+  Prevention: **`scripts/schd-name-test.mjs`, IN THE REPO**, slicing the
+  shipped `scanSchD` out of `build-data.mjs` (its module top level downloads
+  DOL extracts, so it cannot be imported) and running a crafted Schedule D in
+  the PSEG shape — **10/10**, with the negative control renaming the name
+  column out of the header: capture goes to **0** *and the log says NOT FOUND*
+  while the MTIA links still resolve. Read via `new URL(…, import.meta.url)`
+  and run from two working directories.
+  `docs/accuracy-log.md` 2026-09-30 (18:2xZ).
+- **THE OTHER THREE PSEG DEFECTS, all read from the owner's filings and none
+  shipped:** **(1)** we publish `Invesco Advisors, Inc` as the recordkeeper
+  where the filing reads *"Fidelity Investments is the recordkeeper"* and our
+  own `sdbaBrand` independently says Fidelity BrokerageLink — a named instance
+  of the 1,509-plan / 1,482,658-ppl wrong-provider class. **(2)** vesting is
+  stated under its own heading — *"All Participants are 100% vested in the Plan
+  from the first date of hire"*, with line 6h = 0 corroborating — and we
+  publish none; the sentence we STORED is the 24-month withdrawal suspension.
+  **Discriminator isolated against the production extractor: the immediate arm
+  needs the adverb ADJACENT to the verb** (`immediately 100% vested` parses,
+  `100% vested from the first date of hire` does not, nor `fully vested … at
+  all times`). **(3)** the match is `50% of each Participant's first 8%` (PN
+  004) / `7%` (PN 006), stored and unparsed. **My hypothesis was the possessive
+  and its own test refuted it** — removing `each Participant's` changes
+  nothing. The discriminator is WORD ORDER: `matching contribution is 50% of
+  the first 8%` parses, `an amount equal to 50% of the first 8% … as its
+  matching contribution` does not. A named instance of the largest queued match
+  family (1,011 plans / 1,464,750 ppl).
 - **SHIPPED 2026-09-30 17:4xZ, `[skip ci]` — AN UNCLOSED PARENTHETICAL IS A
   TRUNCATION: 260 rows / 141 entries / 455,663 participants / $2,429,129,653.**
   Found by the 17:1xZ draw on **Hawai'i Pacific Health (10,929 ppl)**, whose
