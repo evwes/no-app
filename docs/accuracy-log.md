@@ -32068,3 +32068,61 @@ unit. Both caught before a number was written down.
 
 **Mirrored** `556b7eda → 52a9171f`, git check UNFORCED, `--force-data` over the
 ack-keyed count with the plan-keyed reconciliation above.
+
+## 2026-09-30 (19:3xZ) — CORRECTION to the 18:5xZ entry: the superseded-ack loss is 104 plans / 30,897 participants, not 168 / 149,811, and I made the error this record names most often
+
+The entry above published **"168 plans / 149,811 participants lose a menu the
+day their new filing publishes"** and supported it with *"assets GREW in every
+one"*. **I read six cases and generalised to 168.** The population does not
+behave like the six.
+
+**THE SPLIT, measured over the whole population rather than sampled:** of the
+168 carrying `e=no-section`, **163 / 147,067 participants report $0 year-end
+assets on the new filing.** They are **wind-downs** — the plan terminated, the
+money left with the people, and a final-year return correctly has no menu.
+This record already names them ("wind-down ghosts") and already states the
+mechanism: *with `assetsEOY` = 0 the ratio guard can never accept a region.*
+The menu is absent BY CONSTRUCTION and that is right.
+
+**The real defect is 7 plans / 11,934 participants in that class, and 104
+plans / 30,897 across all 275 plan-keyed losses** — against 171 / 149,049 that
+are wind-downs. Overstated **4.8x on people**.
+
+***RANK TO PICK WHAT TO READ; DRAW RANDOMLY TO ESTIMATE A RATE.*** Written on
+this record for fix yields, broken here for a defect rate, one cycle after the
+same shape was recorded about `boy-count-contradicted` — where 219 of 390
+flagged filings were wind-downs for the identical reason. **The tell was
+available and I did not ask for it:** one column, `assetsEOY`, splits the
+population in a single pass.
+
+**AND THE MECHANISM CLAIM WAS ALSO WRONG — THE FALLBACK IS NOT MUTE.**
+The entry said v41's prior-year fallback "fired on 0 of 168", inferred from
+`fb` being absent. The status objects say otherwise: **27 of them carry
+`ffb`**, which is set only from `fbUsed` inside the fallback candidate loop —
+so the loop ran, a prior-year PDF was downloaded and read, and its NOTES were
+used. What it declined to take was the LINEUP, and `fetch-4i:872` says why in
+its own comment: *"Ratio is judged against the CURRENT year's assets."* With
+current assets at $0 no prior-year sum can land inside the band. **167 of the
+168 fall outside `0.45 < ratio < 1.6` when the prior year's published sum is
+divided by the new year's assets** — so the guard is working, not failing.
+*An absent field is weaker evidence than a present one; `fb` absent says the
+lineup was not taken, never that nothing was tried.*
+
+**WHAT SURVIVES AS A REAL FINDING, and it is worth keeping:** **Levi Strauss &
+Co. (8,288 participants) went $1,027.6M → $1,176.5M in assets and lost its
+published menu**, as did its sister plan (902) and Standard Retirement Services
+(2,480, $29.7M → $43.1M). Those are live, growing plans whose newly published
+return we cannot read and whose prior-year lineup was not substituted. **104
+plans / 30,897 participants**, which is a real and tractable class — an order
+of magnitude smaller than published, and now correctly sized.
+
+**AND THE `fb-vanished` DIAGNOSTIC CANNOT SEE ANY OF THEM.** `fetch-4i:923`
+reads `buckets[shardOf(plan.ack)][plan.ack]` — the previous entry keyed by the
+plan's CURRENT ack — and fires only when `prevEntry.confident && prevEntry.fb`.
+A plan whose ack just changed has **no stored entry under the new ack at all**,
+so the one diagnostic written for "a lineup is about to disappear" is blind to
+supersession by construction. **The same ack-keyed blindness as `mirror-gate`,
+in the check built to catch this exact failure.** That is the shippable piece:
+key the look-back on EIN|PN, not on the ack.
+
+**Do not carry 168 or 149,811 forward.**

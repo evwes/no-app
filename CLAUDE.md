@@ -906,21 +906,36 @@ from the cycle that would have cleared it.
   refused with **7,830 lost lineups**; ack-keyed it cannot tell a withdrawal
   from a SUPERSESSION. Re-asked plan-keyed: **275 plans lost a menu / 188,394
   ppl, 197 gained one / 227,803**, net **+39,409 readers served**.
-- **THE DEFECT THE RE-ASKING FOUND, AND IT IS THE LARGEST THING IN THE CYCLE —
-  A SUPERSEDED ACK'S PARSE IS PRUNED AND THE PRIOR-YEAR FALLBACK NEVER FIRES:
-  168 plans / 149,811 participants lose a menu the day their new filing
-  publishes.** They carry `e=no-section` on the newly published return and
-  **assets GREW in every one** (29,671,417 → 43,109,135), so these are live
-  plans whose brand-new attachment is simply not readable yet. **v41's fallback
-  exists for exactly this shape and fired on 0 of 168.** The mechanism is one
-  line of the measurement: **`prior ack still present in lineups-status: 0`** —
-  the merge prunes the status entry of an ack that has left the universe, so the
-  confident parse that served those readers yesterday is DELETED in the same run
-  that makes the new filing unreadable. *A plan does not merely fail to gain; it
-  LOSES what it had, on the day its sponsor files.* **Recorded, not fixed:**
-  `fallbacks.json` is artifact-only and unreachable from the sandbox, so why
-  prep offered no candidate is a run's work and not a read's. **NEXT
-  PARSER-SIDE ITEM.**
+- **A SUPERSEDED ACK'S PARSE IS PRUNED AND THE PLAN CAN LOSE ITS MENU: 104
+  plans / 30,897 participants — CORRECTED 19:3xZ FROM THE 168 / 149,811 I
+  PUBLISHED AN HOUR EARLIER, AND THE ERROR IS THE ONE THIS RECORD NAMES MOST
+  OFTEN.** I read SIX cases, saw assets grow in all six, and generalised to 168.
+  **Measured whole-population: 163 of the 168 report $0 year-end assets on the
+  new filing** — wind-downs, where the plan terminated and a final-year return
+  correctly has no menu, and where *`assetsEOY` = 0 means the ratio guard can
+  never accept a region* **by construction**. Across all 275 plan-keyed losses:
+  **171 / 149,049 wind-downs against 104 / 30,897 real.** Overstated **4.8x on
+  people**. ***RANK TO PICK WHAT TO READ; DRAW RANDOMLY TO ESTIMATE A RATE*** —
+  broken one cycle after `boy-count-contradicted` flagged 219 correct wind-downs
+  for the identical reason, and **one column (`assetsEOY`) splits the population
+  in a single pass.** **Do not carry 168 or 149,811 forward.**
+  **AND THE MECHANISM CLAIM WAS WRONG TOO — THE FALLBACK IS NOT MUTE.** I
+  inferred "fired on 0 of 168" from `fb` being absent; **27 carry `ffb`**, set
+  only inside the fallback candidate loop, so a prior-year PDF was downloaded
+  and read and its NOTES were used. It declined the LINEUP, and `fetch-4i:872`
+  says why in its own comment — *"Ratio is judged against the CURRENT year's
+  assets"* — so **167 of 168 fall outside `0.45 < ratio < 1.6`** once the prior
+  sum meets the new assets. The guard is working. *An absent field says the
+  lineup was not taken, never that nothing was tried.*
+  **WHAT SURVIVES IS REAL AND TRACTABLE: Levi Strauss & Co. (8,288 ppl) went
+  $1,027.6M → $1,176.5M and lost its published menu**, with its sister plan
+  (902) and Standard Retirement Services (2,480, $29.7M → $43.1M).
+  **AND `fb-vanished` CANNOT SEE ANY OF THEM:** `fetch-4i:923` reads
+  `buckets[shardOf(plan.ack)][plan.ack]` and fires only on
+  `prevEntry.confident && prevEntry.fb`, so a plan whose ack just changed has
+  **no stored entry under the new ack at all** — the same ack-keyed blindness as
+  `mirror-gate`, in the check written for this exact failure. **THE SHIPPABLE
+  PIECE: key the look-back on EIN|PN, not on the ack.**
 - **WHAT #523 WAS FOR LANDED EXACTLY.** The name column resolved — `NOT FOUND`
   would have shown as zero — and **379 of 508 master trusts now carry a named
   Schedule D list, 4,334 rows, $936,597,264,187**. Reach: **93 full-form plans /
