@@ -682,21 +682,28 @@ from the cycle that would have cleared it.
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, ≥100
   participants at either end of the plan year): **68,259 full-form**, 43,523
   short-form, 68,767 parse-status entries.
-- **STORE: pv 195 covers 68,623 of 68,767 acks (99.79%)** — one dominant pv plus
+- **STORE: pv 196 covers 68,623 of 68,767 acks (99.79%)** — one dominant pv plus
   the documented ~144-row old-version tail (pv180 23, pv106 18, pv192 12,
-  pv98/123/124 10 each), which is the completeness test, not a partial store.
-  Confident **60,106**, lineups 59,755, entries 65,241, **HIGH 4 = the baseline
-  and nothing else** (a `reparse-loss` HIGH is raised from `losses-triage.txt`, a
-  run ARTIFACT that exists only in CI — *a metric that differs between CI and
-  local is a question about the inputs, not the store*),
-  WARN **608**, overshoot **317** / 397,964 ppl, aggRow 112, **dl 142** (the last
+  pv98/123 10 each), which is the completeness test, not a partial store.
+  Confident **60,103**, lineups 59,753, entries 65,240,
+  WARN **609** (608 + the `boy-count-contradicted` aggregate, which is the
+  predicted arrival and not a regression), overshoot **316** / 397,499 ppl,
+  overshootTrust 12, aggRow 112, **dl 142** (the last
   11 HEAD-probed, 11 of 11 answered 403).
-  `audit-dominant-row` **0 plans / $0.0B** by the PLAN-keyed count and **1 by the
-  trust-aware standalone script** — see the v196 bullet, the two are different
-  populations. `audit-generic-names` **214 plans / 438 rows** under the pre-v196
-  predicate and **238 / 482 under v196's on the same store, which CROSSES the
-  230-plan escalation threshold; the threshold is NOT moved and the crossing is
-  expected.** **`matchQuote` 5,397 of which only
+  **THE HIGH BASELINE IS NOW 5, NOT 4, AND THAT IS v196's OWN EXPECTED
+  CROSSING.** `audit-generic-names` reads **235 plans / 477 rows** against the
+  `fabricated-name` escalation threshold of 230, so that HIGH is now STANDING
+  rather than absent: HIGH = 4 `contrib` + `fabricated-name`. The threshold was
+  deliberately NOT moved (raising a threshold to accommodate one's own widening
+  is how a regression gets normalised) and the flag text names the re-basing, so
+  the crossing is self-explaining. **CI reports 7** — the extra two are
+  self-clearing `reparse-loss` entries raised from `losses-triage.txt`, a run
+  ARTIFACT that exists only in CI; *a metric that differs between CI and local is
+  a question about the inputs, not the store*. What the owner item asks for is
+  unchanged: a WHOLE-TABLE generic test beside the one-row test.
+  `audit-dominant-row` **0 plans / $0.0B** by BOTH the plan-keyed count and the
+  trust-aware standalone script — the standalone's single trust is the one lineup
+  v196 withdrew. **`matchQuote` 5,397 of which only
   1,785 are SHOWN to readers** — the condition/outcome pair shipped 2026-09-27.
 - **SHIPPED 2026-09-30 03:1xZ, `[skip ci]` behind #514 — THE PARTICIPANT COUNT
   THAT EVERY MEASUREMENT HERE IS WEIGHTED BY CAN BE A FILER TYPO: 390 plans /
@@ -784,8 +791,48 @@ from the cycle that would have cleared it.
   (`["Registrant :: Series", ticker, "class", "Class Name"]`), and the sizer now
   asserts FTKFX and FTBFX both resolve before counting.
   `docs/accuracy-log.md` 2026-09-30 (03:5xZ).
-- **IN FLIGHT: #514 (v196), dispatched 2026-09-30 03:0xZ — a FULL re-parse on the
-  version bump. A NAME THAT IS NOTHING BUT DECORATION ESCAPED THE
+- **NOTHING IS IN FLIGHT. #514 (v196) RAN `success` AND IS MIRRORED — 2026-09-30
+  04:2xZ (`076d369f → 84fc8ed4`), the git check UNFORCED and `--force-data` over
+  three losses, each read row by row and REPRODUCED from its own `fbAck` first.
+  FIVE OF SIX PRE-REGISTERED TESTS PASSED:** standalone `audit-dominant-row`
+  **1 → 0** while the plan-keyed count held at **0** both ways;
+  `audit-generic-names` **235 plans / 477 rows** against 238 ± 3; the
+  `fabricated-name` HIGH **appeared, as registered**; `overshoot` **317 → 316**
+  and `dl` **142**; and `warn` **609 not 608**, exactly as the mid-run commit
+  predicted — merge-4i checks out the LATEST branch state, so the
+  `boy-count-contradicted` check executed in #514's own merge.
+  **`confident` MISSED — 60,103, net −3 / +0, where −1 / +0 was registered with a
+  single named loss — AND THE CAUSE IS A CONSUMER OF THE WIDENED VOCABULARY I
+  NEVER PRICED.** I sized v196 against `isGenericTypeName`'s consumers: the
+  dominance guard, both audits, `diff-lineups`, the two display paths.
+  **`GENERIC_TYPE_ANY` is ALSO read by `isClassLabel`, which is read by
+  `isStatement`'s label-share arm inside the REGION CONTEST** (`judged.length >= 3
+  && labely / judged.length >= 0.6`). So a vocabulary widening does not only
+  withdraw one row's CLAIM — **it can demote a whole REGION from menu to
+  statement**, which `isConfident` then refuses. Scott M & A Corp's five rows give
+  `labely` 2/5 = 0.40 at v195 and **3/5 = 0.60 at v196, the threshold to the
+  digit**; neither arm of `dominanceIsAggregate` fires on either row set under
+  either version, which is what pointed at `isStatement` rather than at the guard.
+  **AND THE DEMOTED REGION IS ONE NO WHOLE-STORE SCAN CAN SEE:** both extra
+  losses published from a PRIOR-YEAR FALLBACK, and a fallback region exists only
+  inside a run — `fallbacks.json` is artifact-only and the store holds the
+  fallback's OUTPUT, never the candidate the next run judges. *Price a vocabulary
+  change against the regions a run will CONTEST, not only against the rows the
+  store already publishes.*
+  Reproduced from each entry's own `fbAck` on the real text: **`stmt` flips 0 → 1
+  in both with the row sets BYTE-IDENTICAL** — ratio, sums and names unmoved, only
+  the classification (Scott 5 rows @ 1.329, Paragon Anesthesia 3 @ 0.912).
+  **All three withdrawals are correct and the miss is in the SAFE direction.**
+  Scott (456 ppl) published `Investments` at 47.7% **and `Pooled Separate
+  Accounts` at 47.7% carrying the identical $5,371,156** — a double render — plus
+  loans, an unallocated insurance general account and a group annuity: **not one
+  of five names is a fund**. Paragon (140) published `Investments Registered
+  investment companies at fair value` at **75.6%**. Hallmark's three rows are a
+  trustee's statement of changes. **596 participants stop being shown an
+  asset-class statement as a menu and no real menu was lost.**
+  `docs/accuracy-log.md` 2026-09-30 (04:2xZ).
+- **WHAT #514 SHIPPED (v196), for the record: A NAME THAT IS NOTHING BUT
+  DECORATION ESCAPED THE
   DECORATION-AWARE GUARD: 166 rows / 164 plans / 501,561 participants /
   $29,813,863,521 on the report and 20 crawlable pages / 352,780 ppl** (J&J
   72,991, Cisco 72,556) stop being shown a measurement basis as a holding.

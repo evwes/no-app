@@ -29957,3 +29957,94 @@ the whole Fidelity Freedom Index family resolves to no ticker with or without it
 (the matcher gap already on this record). Its row 22, `statements` at $42,435, is
 v191's class and is correctly typed. J.M. Smucker's `Common Shares` carries the
 issuer `The J. M. Smucker Company` and is correctly read as employer stock.
+
+## 2026-09-30 (04:2xZ) — Run #514 (v196) verdict: five of six tests passed, and `confident` missed because a generic-vocabulary widening reaches the REGION CONTEST
+
+- **Run:** #514, `workflow_dispatch` on `ea38542c`, `conclusion: success`
+  02:44–03:44Z, data commit `84fc8ed4`. Store COMPLETE — pv 196 covers 68,623 of
+  68,767 acks (**99.79%**) with the documented old-version tail (pv180 23,
+  pv106 18, pv192 12, pv98/123 10 each).
+
+- **PASSED, five of six.**
+  - standalone `audit-dominant-row` **1 → 0**, registered exactly, while
+    `audit-data`'s plan-keyed count held at **0** both ways — the two are
+    different populations and both behaved as registered.
+  - `audit-generic-names` **235 plans / 477 rows** against a registered
+    **238 ± 3**. At the low edge of the band and in it.
+  - the `fabricated-name` **HIGH APPEARED, which the registration called
+    EXPECTED**, and its text names v196's own re-basing so the crossing of the
+    230 threshold is self-explaining rather than read as a regression. HIGH 7 =
+    the 4 baseline `contrib` + that one + **2 self-clearing `reparse-loss`**,
+    both of them losses read below.
+  - `overshoot` **317 → 316** against "holds at 317 or falls by at most 1";
+    `overshootTrust` 13 → 12, which is the withdrawn Hallmark trust.
+  - `dl` **142**, unchanged.
+  - `warn` **609, not 608**, exactly as the 03:1xZ commit predicted: merge-4i
+    checks out the LATEST branch state, so the `boy-count-contradicted` check
+    committed mid-run executed in #514's own merge. The recorded `tkShare`
+    mechanism, stated in advance and confirmed.
+
+- **MISSED: `confident` 60,106 → 60,103, net −3 / +0, where −1 / +0 was
+  registered with a named single loss.** The registered loss is there
+  (`20251015101938NAL0002134947003`, the Hallmark Cards master trust, whose
+  `BEGINNING NET ASSET VALUE:` row held 92.9% of a three-row OCR'd
+  statement-of-changes page). **Two were not**, and both were read before the
+  mirror: **Scott M & A Corp (456 ppl)** and **Paragon Anesthesia (140 ppl)**,
+  596 participants in all.
+
+- **THE CAUSE IS A CONSUMER OF THE WIDENED VOCABULARY THAT THE PRE-REGISTRATION
+  NEVER PRICED, AND IT IS NOT THE GUARD.** v196 widened `GENERIC_TYPE_ANY`, and
+  I sized it against `isGenericTypeName`'s direct consumers: the dominance
+  guard, the two audits, `diff-lineups`, and the two display paths.
+  **`GENERIC_TYPE_ANY` is also read by `isClassLabel`, which is read by
+  `isStatement`'s label-share arm inside the REGION CONTEST** —
+  `judged.length >= 3 && labely / judged.length >= 0.6`. So widening the
+  vocabulary does not only withdraw one row's CLAIM; it can demote a whole
+  REGION from menu to statement, which `isConfident` then refuses.
+  Verified at the predicate level, three names flipping false → true at v196
+  and being exactly the top rows of the withdrawn menus: `Investments`,
+  `Investments Registered investment companies at fair value`,
+  `BEGINNING NET ASSET VALUE:`. Scott's five rows give `labely` 2/5 = 0.40 at
+  v195 and **3/5 = 0.60 at v196 — the threshold to the digit.**
+
+- **AND THE REGION IT DEMOTED IS ONE NO WHOLE-STORE SCAN CAN SEE.** Both plans
+  published from a PRIOR-YEAR FALLBACK (`fb: 2023`), and a fallback region
+  exists only inside a run — `fallbacks.json` is artifact-only, and the store
+  holds the fallback's OUTPUT, never the candidate the next run will judge. My
+  measurement read 166 rows across the published store and could not have seen
+  either. **A vocabulary change must be priced against the regions a run will
+  CONTEST, not only against the rows the store already publishes.**
+
+- **REPRODUCED, because a diagnosis that cannot be reproduced is not a
+  diagnosis.** Each entry carries its own `fbAck`; both 2023 filings were
+  downloaded and run through `parse4i` under v195 and v196 on the same text.
+  `stmt` flips **0 → 1** in both, with the row sets **byte-identical** — the
+  ratio, the sums and the names do not move, only the classification. Scott
+  5 rows @ 1.329, Paragon 3 rows @ 0.912. Neither arm of
+  `dominanceIsAggregate` fires on either row set (checked directly, both
+  versions, `aggOnly` and `aggSplit` false throughout), which is what pointed
+  at `isStatement` rather than at the guard.
+
+- **ALL THREE WITHDRAWALS ARE CORRECT AND THE MISS IS IN THE SAFE DIRECTION.**
+  Scott published `Investments` at 47.7% **and `Pooled Separate Accounts` at
+  47.7% carrying the identical $5,371,156** — a double render — plus employee
+  loans, an unallocated insurance general account and a group annuity contract:
+  **not one of the five names is a fund.** Paragon published
+  `Investments Registered investment companies at fair value` at **75.6%**
+  beside a brokerage window and a cash line, and its own 2024 filing is worse
+  (`Mutual fund, due on demand` at 97.4%, which is why the primary reads
+  `stmt`). Hallmark's three rows are a trustee's statement of changes. 596
+  participants stop being shown an asset-class statement as a fund menu, and
+  **no real menu was lost** — `confident` fell by three and every one of the
+  three is a guard working.
+
+- **MIRRORED** `076d369f → 84fc8ed4`, the **git check UNFORCED** (main held
+  nothing the branch lacked) and **`--force-data` over the three losses**, each
+  read row by row and reproduced from its own `fbAck` first.
+
+- **Prevention:** the widening's blast radius must be measured through every
+  consumer of the regex, not through the predicate that names it. Recorded here
+  and in project memory as the general form: **`GENERIC_TYPE_ANY` has three
+  consumers, and only two of them are about a ROW** — the third decides whether
+  a REGION is a menu at all, and it is reached during a run rather than
+  observable in the store.
