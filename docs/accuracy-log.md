@@ -31024,3 +31024,30 @@ or 2,048,738.** The "ONE count was several defects" rule, met at five.
   A filer's abbreviation is faithful; our inability to read it is not.
 - **NOT STARTED:** this is NEW COVERAGE for 5.4M participants, which is the
   owner's call, and the share-class gate has to be built and measured first.
+
+## 2026-09-30 (13:3xZ) — #519 verdict: the lost-space repair, every figure to the row
+- **`conclusion: success`.** Pre-registered and PASSED: `lost-space repair`
+  **140 rows / 98 entries** and `sec tickers` **347,386 rows / 37,107 entries**,
+  both computed from the ARTIFACT by diffing the 64 lineup shards at `e1dcebc4`
+  against the data commit, because the merge log's blob host is
+  `connect_rejected` from the sandbox. Coverage line byte-identical: confident
+  60,103, HIGH 5, warn 610, overshoot 316, dl 142, pv 196 at 99.8%.
+  Mirrored `1fb86faf → 869c5f03`, unforced on both checks, data gate +0 / −0.
+- **AND THE PRE-RUN `p/` DIFF WAS EMPTY FOR A REASON THAT DOES NOT SURVIVE THE
+  RUN.** It was taken against the OLD store, so it could only ever say that the
+  committed pages matched the data then present. The run's own generator
+  regenerated **4 crawlable pages / 30,824 participants**, and a local
+  regeneration afterwards adds nothing — the surfaces agree. *An empty page
+  diff taken before a store change is evidence about the old store.*
+- All four changed cells read, one per page, each the intended repair:
+  Equitable Financial (12,994) `Hoodriver Small Cap Growth` → `Hood River Small
+  Cap Growth`; Privia Health (7,546) `Invescocomstock Fund A` → `Invesco
+  Comstock Fund A`; Nidec Motor (5,770) `Vanguard Total Bondmarket Index Fund:
+  Inst'l Shr` → `Vanguard Total Bond Market Index Fund: Inst'l Shr`; Tift
+  Regional (4,514) `Health Sciencesopps Instl` → `Health Sciences Opps Instl`.
+- **`titleCase` HAD BEEN HIDING THE SEAM.** It lowercases the second half, so a
+  crawlable page rendered `HoodRiver` as `Hoodriver` — an ordinary-looking
+  single word — where the store at least showed the capital that gives the
+  defect away. *A display transform can make a defect harder to see than the
+  data it renders*, which is why the repair had to be measured on the RAW
+  stored name and not on what either surface prints.

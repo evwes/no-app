@@ -873,9 +873,31 @@ from the cycle that would have cleared it.
   parser-gate, smoke, fund-er-test (46/26/19/18) green. **REPORT path only as a
   GUARANTEE: `build-seo-pages.mjs` never imports `fund-er.js`**; `git diff
   --stat p/` empty. `docs/accuracy-log.md` 2026-09-30 (11:5xZ).
-- **IN FLIGHT: #519, dispatched 2026-09-30 12:3xZ on `493db6b0` by the PUSH
-  TRIGGER (observed `queued`). NO PARSER BUMP — it is a MERGE-side change, so
-  the run exists to let the merge apply it.** **A LOST SPACE INSIDE A PUBLISHED
+- **NOTHING IS IN FLIGHT. #519 RAN `success` AND IS MIRRORED — 2026-09-30 13:3xZ
+  (`1fb86faf → 869c5f03`), UNFORCED ON BOTH CHECKS, data gate +0 / −0. EVERY
+  PRE-REGISTERED FIGURE PASSED TO THE ROW, AND BOTH RUN-ONLY FIGURES WERE READ
+  OUT OF THE ARTIFACT RATHER THAN THE LOG** (the merge log's blob host is
+  `connect_rejected` from the sandbox): diffing the 64 lineup shards at
+  `e1dcebc4` against the data commit gives **names changed 140 rows across 98
+  entries**, exactly as registered, and **`sec tickers` 347,386 rows across
+  37,107 entries**, also exact. Coverage line byte-identical — confident
+  60,103, HIGH 5, warn 610, overshoot 316, dl 142, pv 196 at 99.8%.
+  *A figure computed from the artifact does not depend on a log being
+  readable.*
+  **AND THE PAGES CHANGED, WHICH THE PRE-RUN `p/` DIFF COULD NOT HAVE SHOWN:**
+  that diff was empty because it was taken against the OLD store. The run's own
+  generator regenerated **4 crawlable pages / 30,824 participants** and a local
+  regeneration adds nothing further, so the surfaces agree. All four changed
+  cells read, one per page, every one the intended repair: Equitable Financial
+  (12,994) `Hoodriver Small Cap Growth` → `Hood River …`; Privia Health (7,546)
+  `Invescocomstock Fund A` → `Invesco Comstock …`; Nidec Motor (5,770)
+  `Vanguard Total Bondmarket Index Fund: Inst'l Shr` → `… Total Bond Market …`;
+  Tift Regional (4,514) `Health Sciencesopps Instl` → `Health Sciences Opps …`.
+  **`titleCase` had been HIDING the seam** — it lowercases the second half, so
+  the page rendered `Hoodriver` as one ordinary-looking word where the store at
+  least showed `HoodRiver`. *A display transform can make a defect harder to
+  see than the data it renders.*
+  **WHAT #519 CARRIED — A LOST SPACE INSIDE A PUBLISHED FUND NAME.** **A LOST SPACE INSIDE A PUBLISHED
   FUND NAME: 140 rows / 98 plans / 140,349 participants / $291,925,206.**
   `Vanguard Total Bond**M**arket Index Adm`, `JPMorgan**M**id Cap Growth Fund
   R6`, `Fidelity**T**otal Bond K6 Fund`, `Empower**G**uaranteed Interest Fund`.
