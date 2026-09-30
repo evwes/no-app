@@ -31090,3 +31090,169 @@ or 2,048,738.** The "ONE count was several defects" rule, met at five.
 - **NOT STARTED.** New coverage, so the owner's call, and the share-class gate
   named at 12:5xZ (`Dodge & Cox Inc X` → DODIX where Class X is DOXIX) still
   has to be built and measured before any of it ships.
+
+## 2026-09-30 (14:4xZ) — a statement bullet and a page number are not part of a firm's name, and TWO predicates reported on themselves before one worked
+
+**Found by the 14:2xZ participant-weighted draw** on Capital Blue Cross
+(2,862 ppl, $507,787,761, OCR'd). Its 29-row Vanguard menu is immaculate —
+ratio 0.985, every name a real fund — and its ISSUER column is not. Eight rows
+carry the PREVIOUS row's wrapped tail welded in front of the house:
+`{Inst'l Shr Invesco}`, `{Growth Fund; Class R6 Vanguard}`, `{Class L
+Vanguard}`, `{Fund: Adm Shares Vanguard}`, `{Institutional Shares DFA}`.
+
+**THE ISSUER IS PUBLISHED, WHICH IS WHY THIS MATTERS.** `app.js:2619` renders
+`f.iss` with only the party-in-interest `*` removed, and `build-seo-pages.mjs`
+has printed it since 2026-09-28. So a reader is told the firm behind their fund
+is `— Fidelity Investments`, `. Mutual of America`, `-0- VOYA FINANCIAL`,
+`‘Vanguard` or `| Principal Life Insurance Company`.
+
+### Two predicates, each refused by its own measurement
+
+**(1) The longest proper SUFFIX that stands alone as a complete issuer:
+50,057 rows / 9,588 entries / 18,301,077 ppl / $363,088,364,225.** The size was
+the tell — this was a shape read in ONE filing. Reading the transformations
+shows it is overwhelmingly real firm names being truncated: `Fidelity Management
+Trust Company` → `Management Trust Company` (9,149), `The Vanguard Group` →
+`Vanguard Group` (4,335), `College Retirement Equities Fund` → `Retirement
+Equities Fund` (1,933), `Charles Schwab` → `Schwab` (1,490), `Lincoln National
+Life Insurance Company` → `National Life Insurance Company`, `Franklin
+Templeton` → `Templeton`. **The cause is structural: the store legitimately
+holds both the long and the short form of a firm's name, so a firm's own suffix
+is frequently a standalone issuer.**
+
+**(2) Adding the mirror-image condition — the PREFIX stands alone NOWHERE —
+still leaves 18,949 rows / 3,508 entries / 6,753,683 ppl.** `Charles Schwab` →
+`Schwab`, `BNY Mellon` → `Mellon`, `AXA Equitable` → `Equitable`, `Baron Capital
+Group` → `Capital Group`, `PGIM Jennison` → `Jennison`, `MFS International` →
+`International`, `TCW MetWest` → `MetWest`. **A real firm's LEADING word
+(`Charles`, `BNY`, `AXA`, `PGIM`, `MFS`, `TCW`) is almost never used as an
+issuer on its own, so "the prefix is not a firm" is satisfied by nearly every
+multi-word firm name.**
+
+**DO NOT CARRY 50,057 / 18,301,077 OR 18,949 / 6,753,683 FORWARD.** Both are
+measurements of the predicate, not of the data.
+
+### What does work is purely structural, and its whole population is readable
+
+**Leading junk on the issuer cell: 7,702 rows / 559 entries / 403,982
+participants / $5,661,540,544**, and only **403 distinct values — the whole
+population, every one read.** Not one remainder is anything but a real firm or
+fund name. The arm carries **no firm vocabulary at all.**
+
+### It is an HONESTY fix and not a coverage fix, and that was measured
+
+Through **all three resolvers**, each sliced from the shipped source rather than
+stood in for — app.js's `lookupTicker`, app.js's `fundERRow`, and merge-4i's own
+SEC `resolveHolding`:
+
+| resolver | gained | lost | changed |
+|---|---|---|---|
+| ticker (`lookupTicker`) | 0 | 0 | 0 |
+| fee (`fundERRow`) | 0 | 0 | 0 |
+| SEC (`resolveHolding`) | 0 | 0 | 0 |
+
+**A clean zero reports on the query**, so each arm was POSITIVE-CONTROLLED
+before the zero was believed: with the issuer supplied rather than stripped,
+`500 Index Fund` {} → {Vanguard} gains **VFIAX**, **0.03** and **VFINX** on the
+three paths. The arms are reachable; the zero is real. The reason is
+demonstrated rather than assumed — `fund-er.js` returns VFIAX and 0.02 for
+`Vanguard 500 Index Fund`, `— Vanguard 500 Index Fund`, `. Vanguard 500 Index
+Fund` **and** `-0- Vanguard 500 Index Fund` alike. **The harm was the CLAIM
+alone.**
+
+### Why the run is every NON-LETTER, which is where the reading paid
+
+The obvious `^[^A-Za-z0-9]+` stops at the digit and leaves `0- VOYA FINANCIAL`.
+**27 leaders carry a digit and every one is a PAGE NUMBER or a statement
+legend**: `-0- JOHN HANCOCK` and its fifteen siblings (`-0- J.H. MFS`, `-0- JH
+FRANKLIN TEMPLETON` — a John Hancock / Voya statement template), `-18- Sponsor:
+Houston Distributing Company inc.`, `-14- American Funds`, `-1 Wilmington
+Trust`, `%4 John Hancock`, `- 13 - Empower Trust Company, LLC`, `“> 592905749
+METROPOLITAN WEST UNCONSTRAINED BOND`.
+
+### Two further conditions, each protecting a different family
+
+**The run must END in punctuation or space.** This makes a digit-leading FIRM
+safe **by construction rather than by a head count**: zero issuers lead with a
+digit across all 535,864 stored values — measured — but `3M Company` would
+otherwise strip to `M Company`, and **a rule whose safety rests on a population
+that can change is a rule waiting to break.** A page number is fenced off from
+the firm; a digit inside a name is not. The guard costs **nothing**: 7,702
+before and after.
+
+**The remainder must begin with a CAPITAL** — the sibling caption strip's own
+gate. This is what leaves OCR wreckage **exactly as filed** instead of
+half-repairing it: `/anguard Group` (a `V` read as a slash) would become
+`anguard Group`, `.lohn Ilancock USA` would become `lohn Ilancock USA`, and
+`‘hence nest tiem pe miei American Funds` would keep its mush. All refused.
+
+**Zero issuers lead with a party-in-interest `*`** (v127 strips it upstream), so
+this arm cannot consume that marker — checked rather than assumed, because an
+issuer strip that quietly dropped it would be withdrawing a filed fact.
+
+### The placement is what buys the largest transformation
+
+It runs **before** the section-caption strip so the two compose. `. GROUP
+ANNUITY CONTRACT Mutual of America` — **5,145 rows**, the single largest value —
+loses its leading dot here and is then a caption the sibling arm already knows,
+landing on `Mutual of America`. Replicating both arms in the shipped order over
+the live store: the caption strip alone reproduces its baseline of **0** (the
+store is already stripped, as it must be), and the composed pair gives
+`leading-junk 7702 / 559` then `caption 5145 / 178`, with **exactly one**
+transformation unlocked. The order also feeds the caption strip's own evidence:
+its pass 1 counts how often a value stands ALONE, and 403 damaged variants were
+splitting that count away from their clean forms.
+
+### Reader reach, and the recurring miss caught again
+
+**403,982 participants, not 396,518.** One of the 559 entries is a MASTER TRUST
+with no `plans-all` row (`20250902172600NAL0024761040001`), reaching **1 member
+plan / 7,464 ppl**, overlap checked at **0**, so the union is a plain sum.
+*A participant count keyed on plans is blind to every master-trust row* — this
+record's own rule, missed once more and caught by asking.
+
+### Surface
+
+**7 crawlable pages / 60,590 participants**, measured on the ARTIFACT and not a
+proxy: both arms were applied to the local shards, `build-seo-pages.mjs` was
+re-run, the diff read, and the shards restored from git. Saint Luke's Health
+System (15,891 and 14,392 across two plans), United Wholesale Mortgage (10,467),
+Community Foundation of Northwest Indiana (9,837), Follett Higher Education
+(7,784), Electronic Theatre Controls (1,247), Hinshaw & Culbertson (972). Every
+changed cell read; every one the intended repair.
+
+**Electronic Theatre Controls is worth naming**: its page carried `— Fidelity
+Management Trust Company` on some rows and the clean `Fidelity Management Trust
+Company` on others **within one menu**, which is itself evidence that the leader
+is noise rather than part of the name.
+
+### Prevention
+
+`scripts/merge-name-test.mjs` gains an issuer block that slices
+`stripIssuerLead` **by name** out of merge-4i rather than restating it, asserts
+**25 pinned cases 25/25**, and carries **a negative control per condition**:
+dropping the fence disagrees **by name on exactly `3M Company`** (the others are
+caught by the capital gate, which the control states honestly), and dropping the
+capital gate disagrees on exactly the four OCR and non-name cases. Each control
+throws if removing its condition changes nothing — *a control that cannot fail
+is decorative.*
+
+parser-gate, smoke-test and fund-er-test (46/26/19/18) all green;
+`git diff --stat p/` empty in the committed tree.
+
+**PRE-REGISTERED for #520** (dispatched 13:4xZ on `924d75b0` by the push
+trigger, observed `queued`): the merge log prints `issuer leading-junk strip:
+7702 rows across 559 plans` and `issuer section-caption strip: 5145 rows across
+178 plans`; CONFIDENCE DIFF **+0 / −0**; `rows-dropped` **0**; `sec tickers`
+unchanged at **347,386 rows across 37,107 plans**; `confident` **60,103**, HIGH
+**5**, `warn` **610**, `overshoot` **316**, `dl` **142**, pv 196 at **99.79%** —
+all unchanged, since no name, sum or ratio moves.
+
+**STILL OPEN, and it is the class the draw actually found:** the issuer carrying
+the previous row's wrapped TAIL in front of the house — `{Growth Fund; Class R6
+Vanguard}`, `{Inst'l Shr Invesco}`. The residue there is arbitrary fund-name
+words, so no vocabulary covers it and both empirical predicates above are
+refuted. The one structural fact available is that **a share class is never a
+firm**, which is true in the ISSUER column specifically and false in the NAME
+column (where the 09:3xZ cycle refused 331 rows for exactly that reason). That
+asymmetry is where the next attempt should start.

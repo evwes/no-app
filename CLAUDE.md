@@ -873,7 +873,72 @@ from the cycle that would have cleared it.
   parser-gate, smoke, fund-er-test (46/26/19/18) green. **REPORT path only as a
   GUARANTEE: `build-seo-pages.mjs` never imports `fund-er.js`**; `git diff
   --stat p/` empty. `docs/accuracy-log.md` 2026-09-30 (11:5xZ).
-- **NOTHING IS IN FLIGHT. #519 RAN `success` AND IS MIRRORED — 2026-09-30 13:3xZ
+- **IN FLIGHT: #520, dispatched 2026-09-30 13:4xZ on `924d75b0` by the PUSH
+  TRIGGER (observed `queued`). NO PARSER BUMP — a MERGE-side change, so the run
+  exists to let the merge apply it.** **A STATEMENT BULLET AND A PAGE NUMBER
+  ARE NOT PART OF A FIRM'S NAME: 7,702 rows / 559 entries / 403,982
+  participants / $5,661,540,544.** 567 plans are shown `— Fidelity
+  Investments`, `. Mutual of America`, `-0- VOYA FINANCIAL`, `‘Vanguard` or
+  `| Principal Life Insurance Company` as **the firm behind their fund**;
+  app.js:2619 renders `f.iss` with only the party-in-interest `*` removed and
+  `build-seo-pages` prints it too, so the leader reaches **both surfaces**.
+  Found by the 14:2xZ draw on **Capital Blue Cross (2,862 ppl)**, whose 29-row
+  Vanguard menu is immaculate but whose issuer column carries the PREVIOUS
+  row's wrapped tail — `{Growth Fund; Class R6 Vanguard}`, `{Inst'l Shr
+  Invesco}`, `{Class L Vanguard}`. **That class stays OPEN; this arm is the
+  piece decidable per row, and much the larger.**
+  **AN HONESTY FIX AND NOT A COVERAGE FIX, MEASURED THROUGH ALL THREE
+  RESOLVERS:** app.js `lookupTicker`, app.js `fundERRow` and merge's own SEC
+  `resolveHolding` each report **0 gained / 0 lost / 0 changed** over the whole
+  affected population — `fund-er.js` already matches straight through a leading
+  `—`, a bare `.` and even `-0-`. ***A clean zero reports on the query***, so
+  each arm was POSITIVE-CONTROLLED first: `500 Index Fund` {} → {Vanguard}
+  gains VFIAX, 0.03 and VFINX on the three paths.
+  **TWO PREDICATES WERE MEASURED AND REFUSED FIRST AND NEITHER NUMBER MAY BE
+  CARRIED FORWARD.** The longest proper SUFFIX that stands alone as a complete
+  issuer is **50,057 rows / 18,301,077 ppl** and is overwhelmingly real firms
+  being truncated (`Fidelity Management Trust Company` → `Management Trust
+  Company`, `Charles Schwab` → `Schwab`). Adding the mirror condition — the
+  PREFIX stands alone nowhere — still leaves **18,949 / 6,753,683** with `BNY
+  Mellon` → `Mellon` and `PGIM Jennison` → `Jennison`, because *a real firm's
+  leading word is almost never used as an issuer on its own.*
+  **THE RUN IS EVERY NON-LETTER AND NOT LETTERS-AND-DIGITS**, which is where
+  the reading paid: the naive run stops at the digit and leaves `0- VOYA
+  FINANCIAL`. **27 leaders carry a digit and every one is a PAGE NUMBER or a
+  statement legend** — `-0- JOHN HANCOCK` and its fifteen siblings, `-18-
+  Sponsor:`, `-14- American Funds`, `%4 John Hancock`.
+  **THE TWO FURTHER CONDITIONS EACH PROTECT A DIFFERENT FAMILY.** The run must
+  END in punctuation or space, **which makes a digit-leading FIRM safe BY
+  CONSTRUCTION rather than by a head count** — zero issuers lead with a digit
+  across all 535,864 values, but `3M Company` would otherwise become `M
+  Company`, and *a rule whose safety rests on a population that can change is a
+  rule waiting to break.* And the remainder must begin with a CAPITAL — the
+  sibling arm's own gate — which leaves OCR wreckage **exactly as filed** rather
+  than half-repairing it (`/anguard Group`, a `V` read as a slash).
+  **All 403 distinct values read, the WHOLE population, not one remainder
+  anything but a real firm or fund name**; zero lead with a `*`, so the marker
+  cannot be consumed.
+  **IT RUNS BEFORE THE CAPTION STRIP SO THE TWO COMPOSE**, and that is the
+  largest single transformation: `. GROUP ANNUITY CONTRACT Mutual of America`
+  (**5,145 rows**) loses its dot here and is then a caption the sibling already
+  knows, landing on `Mutual of America`. The order also feeds that strip's own
+  evidence — 403 damaged variants were splitting the standalone count away from
+  their clean forms.
+  **TRUE REACH IS 403,982 AND NOT 396,518:** one of the 559 entries is a MASTER
+  TRUST with no `plans-all` row, reaching a member plan of 7,464, overlap 0.
+  *A count keyed on plans is blind to every trust row* — the recurring miss.
+  **PRE-REGISTERED:** the merge log prints `issuer leading-junk strip: 7702 rows
+  across 559 plans` and `issuer section-caption strip: 5145 rows across 178
+  plans`; CONFIDENCE DIFF **+0 / −0**, `rows-dropped` **0**; `sec tickers`
+  unchanged at **347,386 / 37,107**; `confident` 60,103, HIGH 5, `warn` 610,
+  `overshoot` 316, `dl` 142, pv 196 at 99.79% — all unchanged.
+  `scripts/merge-name-test.mjs` slices `stripIssuerLead` BY NAME, 25 pins 25/25,
+  **a negative control per condition**: dropping the fence disagrees by name on
+  exactly `3M Company`, dropping the capital gate on exactly the four OCR and
+  non-name cases. **7 crawlable pages / 60,590 ppl**, every changed cell read.
+  parser-gate, smoke, fund-er-test (46/26/19/18) green.
+  `docs/accuracy-log.md` 2026-09-30 (14:4xZ).
+- **PREVIOUSLY: #519 RAN `success` AND IS MIRRORED — 2026-09-30 13:3xZ
   (`1fb86faf → 869c5f03`), UNFORCED ON BOTH CHECKS, data gate +0 / −0. EVERY
   PRE-REGISTERED FIGURE PASSED TO THE ROW, AND BOTH RUN-ONLY FIGURES WERE READ
   OUT OF THE ARTIFACT RATHER THAN THE LOG** (the merge log's blob host is
