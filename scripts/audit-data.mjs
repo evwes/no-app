@@ -59,6 +59,29 @@ const flag = (sev, rule, msg) => findings[sev].push(`[${rule}] ${msg}`);
 // separate so a skipped block simply omits its fields instead of throwing.
 const auditCoverage = {};
 
+/* LINE 5 CONTRADICTED BY THE SAME FILING — added 2026-09-30 after a
+ * participant-weighted draw landed on Iti Intermodal (363206648|001), whose
+ * filing reports 294,352 total participants at the beginning of the plan year
+ * against 328 ACTIVE participants at that same instant (line 6a(1)), 401 at
+ * year end and 338 with account balances, on $8,709,186 of assets. Read in the
+ * PDF, not inferred: our ingest is faithful and the filer's keystroke is wrong.
+ *
+ * This matters past one plan because `participants` is line 5 whenever line 5
+ * is >= 100, it is the headline count on the plan's page, and it is what EVERY
+ * participant-weighted figure this project publishes is weighted by -- including
+ * the random draw that found it, which spent one of two slots on this plan.
+ * 390 plans carry a headline count above ten times every other participant field
+ * on the same filing, 768,216 participants in total where their own fields imply
+ * about 12,957.
+ *
+ * ONE aggregate line, not 390: the existing per-plan `counts` check compares
+ * balances against the END-of-year total and so cannot see this at all, and 390
+ * separate WARNs would drown a trail that carries four baseline HIGHs. The test
+ * finds a CONTRADICTION and does not say which side is wrong -- line 6a(1) is
+ * the same-instant witness that would settle it and prep does not ingest it,
+ * which is the concrete next step. */
+let boyContra = 0, boyContraPpl = 0, boyContraPlaus = 0;
+const boyContraWorst = [];
 let statTotal = 0;
 for (const r of d.plans) {
   statTotal++;
@@ -89,7 +112,19 @@ for (const r of d.plans) {
   if (act >= 100 && er / act > 120000) flag("warn", "contrib", `${name}: avg employer contribution $${Math.round(er / act / 1000)}K/active`);
   // year-over-year swings beyond market plausibility (mergers excepted — warn only)
   if (boy > 1e7 && a > boy * 4) flag("warn", "yoy", `${name}: assets grew ${(a / boy).toFixed(1)}x in one year`);
+  // line 5 against every other participant field on the same filing
+  {
+    const head = g(r, "participants") || 0;
+    const other = Math.max(act, g(r, "partEOY") || 0, pb);
+    if (head && other && head > other * 10) {
+      boyContra++; boyContraPpl += head; boyContraPlaus += other;
+      boyContraWorst.push([head, `${name} ${head} vs ${other}`]);
+    }
+  }
 }
+boyContraWorst.sort((x, y) => y[0] - x[0]);
+if (boyContra)
+  flag("warn", "boy-count-contradicted", `${boyContra} plans report a beginning-of-year participant total above 10x every other participant field on the same filing — ${boyContraPpl.toLocaleString()} participants weighted into every published figure where their own fields imply about ${boyContraPlaus.toLocaleString()}; the filings contradict themselves and our ingest is faithful (see docs/accuracy-log.md 2026-09-30): ${boyContraWorst.slice(0, 3).map((x) => x[1]).join("; ")}`);
 
 // lineup shards: sums vs Schedule H, single-holding dominance
 const byAck = new Map(d.plans.map((r) => [g(r, "ack"), r]));

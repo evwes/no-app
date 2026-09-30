@@ -29759,3 +29759,55 @@ both of those forms are now pinned as must-KEEPs. Negative control: the reverted
 twin fails by name on exactly the 4 new must-flags and holds all 4 must-keeps.
 REPORT path only — `git diff --stat p/` empty over all 5,000 regenerated pages,
 every one of the 60 rows below the top-twelve cut.
+
+## 2026-09-30 (03:1xZ) — THE DRAW LANDED ON A FILING THAT CONTRADICTS ITSELF, AND THE FIELD IT CONTRADICTS IS THE ONE EVERY MEASUREMENT HERE IS WEIGHTED BY
+
+**The 03:0xZ participant-weighted draw (seed 20260930030) returned Iti
+Intermodal, Inc. (363206648|001) at 294,352 participants against $8,709,186 of
+assets** — $29.60 per participant, from a trucking company in Wilmington,
+Illinois whose lineup is twenty immaculate Vanguard/Fidelity/American Funds rows
+at ratio 0.89. This record already refutes the obvious reading — *a
+participant-to-assets ratio is not a plausibility test, because Form 5500 counts
+eligibility* (Indeed Flex, 21,443 against $86,516) — so the ratio chose what to
+OPEN and the filing decided.
+
+**READ IN THE PDF, NOT INFERRED. The filing contradicts itself on one page:
+line 5 (total participants at the BEGINNING of the plan year) reads `294352`,
+and line 6a(1) — ACTIVE participants at that SAME INSTANT — reads `328`.**
+Line 6d (end of year) is 401 and participants-with-balances 338. A plan with 328
+active participants on 1 January cannot have had 294,352 total participants on
+1 January. **Our ingest is faithful**: `build-data.mjs:206` takes line 5 whenever
+line 5 is ≥ 100, and that is the right field. The keystroke is the filer's.
+
+**Why it matters past one plan, and this is the part worth keeping.**
+`participants` is the headline count on the plan's page AND **the weight on every
+reader-reach figure this project publishes** — including the random draw that
+found it, which spent one of two slots on this plan. **390 plans carry a headline
+count above ten times every other participant field on the same filing: 768,216
+participants weighted into every published number, where their own fields imply
+about 12,957.** So up to **755,259 participants — 0.68% of the 111,387,550 in the
+universe — may be fictional, and 294,352 of them are one plan**, which is 0.26%
+of the universe on its own. Nothing in this cycle's own figures touches it (Iti's
+twenty rows are all real fund names), but any future class that includes it gains
+294,352 spurious readers.
+
+**SHIPPED, and deliberately only this much: ONE aggregate `boy-count-contradicted`
+WARN** in `audit-data.mjs`, so the class stops being invisible and enters the
+accuracy trail. Not 390 separate WARNs — that would drown a trail carrying four
+baseline HIGHs — and not a change to any published number, because **the test
+finds a CONTRADICTION and does not say which side is wrong.** For Iti the
+filing's own line 6a(1) settles it; for Sun Pharmaceutical Industries
+(382505723|001, the ONE member of the class with a crawlable page — 2,439 against
+71 actives on $308,559,232, and already a standing `avg-balance` WARN for exactly
+this reason) it does not. **The discriminator that would settle every one is line
+6a(1), the same-instant witness for line 5, and prep does not ingest it** — one
+line in `build-data.mjs`, and the concrete next step. The existing per-plan
+`counts` check cannot see any of this: it compares balances against the
+END-of-year total by design.
+
+**NOTE FOR #514's VERDICT: this commit lands while #514 is running, and
+`merge-4i` checks out the LATEST branch state, so #514's own merge executes the
+new check and its coverage line will read `warn` 609 rather than 608.** That is
+the recorded mechanism from the `tkShare` change, not a regression — and stating
+it here is what stops the next reader treating it as one. Negative control: with
+the bar raised past the class the audit returns to 608 exactly.

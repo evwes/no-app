@@ -698,6 +698,34 @@ from the cycle that would have cleared it.
   230-plan escalation threshold; the threshold is NOT moved and the crossing is
   expected.** **`matchQuote` 5,397 of which only
   1,785 are SHOWN to readers** — the condition/outcome pair shipped 2026-09-27.
+- **SHIPPED 2026-09-30 03:1xZ, `[skip ci]` behind #514 — THE PARTICIPANT COUNT
+  THAT EVERY MEASUREMENT HERE IS WEIGHTED BY CAN BE A FILER TYPO: 390 plans /
+  768,216 participants whose headline count is above TEN TIMES every other
+  participant field on the same filing, where their own fields imply about
+  12,957.** Found by the 03:0xZ draw on **Iti Intermodal (363206648|001), 294,352
+  participants against $8,709,186** — and **READ IN THE PDF**: line 5 reads
+  `294352` while **line 6a(1), active participants at that SAME INSTANT, reads
+  `328`**; line 6d is 401 and balances 338. `build-data.mjs:206` takes line 5
+  whenever line 5 is ≥100, which is the right field, so **our ingest is faithful
+  and the keystroke is the filer's.**
+  **The consequence is not one plan.** `participants` is the headline on the plan
+  page and the WEIGHT on every reader-reach figure this project publishes —
+  including the draw that found it, which spent one of two slots here. **Up to
+  755,259 participants, 0.68% of the universe, may be fictional, and 294,352 of
+  them are ONE plan (0.26% on its own).** Any future class containing it gains
+  294,352 spurious readers.
+  **Shipped is ONE aggregate `boy-count-contradicted` WARN and nothing else**, so
+  the class enters the trail without drowning it and no published number moves —
+  because **the test finds a CONTRADICTION and does not say which side is
+  wrong.** Line 6a(1) is the same-instant witness that settles it and **prep does
+  not ingest it: one line in `build-data.mjs`, and the concrete next step.** Only
+  ONE member has a crawlable page (Sun Pharmaceutical, 2,439 against 71 actives
+  on $308,559,232 — already a standing `avg-balance` WARN for the same reason).
+  **#514's coverage line will read `warn` 609, not 608**: merge-4i checks out the
+  LATEST branch state, so a `[skip ci]` commit made mid-run takes effect in that
+  run's own merge — the recorded `tkShare` mechanism, not a regression. Negative
+  control: with the bar raised past the class the audit returns to 608 exactly.
+  `docs/accuracy-log.md` 2026-09-30 (03:1xZ).
 - **IN FLIGHT: #514 (v196), dispatched 2026-09-30 03:0xZ — a FULL re-parse on the
   version bump. A NAME THAT IS NOTHING BUT DECORATION ESCAPED THE
   DECORATION-AWARE GUARD: 166 rows / 164 plans / 501,561 participants /
