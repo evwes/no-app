@@ -82,6 +82,10 @@ const auditCoverage = {};
  * which is the concrete next step. */
 let boyContra = 0, boyContraPpl = 0, boyContraPlaus = 0;
 const boyContraWorst = [];
+/* the same contradiction split by WHICH side of the plan year is wrong, which
+ * only line 6a(1) / 5d(1) can say, and by whether the plan simply wound down */
+let boyWind = 0, boyLine5 = 0, boyLine5Ppl = 0, boyEoy = 0, boyEoyPpl = 0, boyUnsettled = 0, boyNoWitness = 0;
+const boyEoyWorst = [];
 let statTotal = 0;
 for (const r of d.plans) {
   statTotal++;
@@ -115,16 +119,46 @@ for (const r of d.plans) {
   // line 5 against every other participant field on the same filing
   {
     const head = g(r, "participants") || 0;
-    const other = Math.max(act, g(r, "partEOY") || 0, pb);
+    const eoy = g(r, "partEOY") || 0;
+    const other = Math.max(act, eoy, pb);
+    /* A PLAN THAT TERMINATED MID-YEAR REPORTS THIS HONESTLY, and 219 of the 390
+     * this check first flagged are exactly that: the opening count is large, the
+     * closing count is tiny, and the money left with the people. SVB Financial
+     * files 7,926 -> 3 against $1.19B -> $2.2M. An assets COLLAPSE is the
+     * witness that tells a wind-down from a keystroke, so those are counted
+     * separately and never reported as a contradiction. */
+    const collapsed = boy > 0 && a <= boy * 0.25;
     if (head && other && head > other * 10) {
       boyContra++; boyContraPpl += head; boyContraPlaus += other;
       boyContraWorst.push([head, `${name} ${head} vs ${other}`]);
+      if (collapsed) boyWind++;
+      else {
+        /* LINE 6a(1) IS THE ONLY COUNT TAKEN AT THE SAME INSTANT AS LINE 5, so
+         * it is the only field that can say which of the two is the typo — and
+         * it answers in BOTH directions. Iti Intermodal files line 5 = 294,352
+         * with 6a(1) = 328, convicting line 5. Sun Pharmaceutical files line 5 =
+         * 2,439 with 6a(1) = 1,477, EXONERATING line 5 and convicting its line
+         * 6d of 71 — which is the number `parts` publishes, so that plan's page
+         * shows 71 participants against $308,559,232. One field, two opposite
+         * verdicts. Absent the column every row reads 0 and every plan lands in
+         * `unsettled`, which is the honest answer rather than a guess. */
+        const abo = g(r, "activeBOY") || 0;
+        if (!abo) boyNoWitness++;
+        else if (abo * 10 < head) { boyLine5++; boyLine5Ppl += head; }
+        else if (abo > other * 10) {
+          boyEoy++; boyEoyPpl += head;
+          boyEoyWorst.push([a, `${name} publishes ${eoy || other} where line 5 says ${head} and line 6a(1) says ${abo}`]);
+        } else boyUnsettled++;
+      }
     }
   }
 }
 boyContraWorst.sort((x, y) => y[0] - x[0]);
+boyEoyWorst.sort((x, y) => y[0] - x[0]);
 if (boyContra)
-  flag("warn", "boy-count-contradicted", `${boyContra} plans report a beginning-of-year participant total above 10x every other participant field on the same filing — ${boyContraPpl.toLocaleString()} participants weighted into every published figure where their own fields imply about ${boyContraPlaus.toLocaleString()}; the filings contradict themselves and our ingest is faithful (see docs/accuracy-log.md 2026-09-30): ${boyContraWorst.slice(0, 3).map((x) => x[1]).join("; ")}`);
+  flag("warn", "boy-count-contradicted", `${boyContra} plans report a beginning-of-year participant total above 10x every other participant field on the same filing — ${boyContraPpl.toLocaleString()} participants weighted into every published figure where their own fields imply about ${boyContraPlaus.toLocaleString()}. Of those ${boyWind} are plans that WOUND DOWN (assets collapsed to a quarter or less, so the opening count is honest and the filing is correct), leaving ${boyContra - boyWind} real contradictions: line 6a(1) convicts LINE 5 on ${boyLine5} (${boyLine5Ppl.toLocaleString()} ppl), convicts the END-of-year subtotal on ${boyEoy} (${boyEoyPpl.toLocaleString()} ppl, and that subtotal is what the site publishes), ${boyUnsettled} are unsettled by it and ${boyNoWitness} have no 6a(1) filed at all. Worst: ${boyContraWorst.slice(0, 3).map((x) => x[1]).join("; ")} (docs/accuracy-log.md 2026-09-30)`);
+if (boyEoy)
+  flag("warn", "eoy-count-contradicted", `${boyEoy} plans PUBLISH an end-of-year participant subtotal that their own line 5 and line 6a(1) both contradict, with no assets collapse to explain it — the filer completed line 6a(2) and left 6b and 6c blank, and \`parts\` prefers that subtotal unconditionally: ${boyEoyWorst.slice(0, 3).map((x) => x[1]).join("; ")}`);
 
 // lineup shards: sums vs Schedule H, single-holding dominance
 const byAck = new Map(d.plans.map((r) => [g(r, "ack"), r]));
@@ -804,9 +838,23 @@ try {
  * third instance found in this repo by looking rather than by being bitten. */
 console.log(`\naudit: ${statTotal} plans, ${entries} lineup entries (${confident} confident)`);
 for (const sev of ["high", "warn"]) {
-  console.log(`\n== ${sev.toUpperCase()} (${findings[sev].length})`);
-  for (const f of findings[sev].slice(0, 40)) console.log("  " + f);
-  if (findings[sev].length > 40) console.log(`  … and ${findings[sev].length - 40} more`);
+  const all = findings[sev];
+  console.log(`\n== ${sev.toUpperCase()} (${all.length})`);
+  for (const f of all.slice(0, 40)) console.log("  " + f);
+  if (all.length > 40) {
+    console.log(`  … and ${all.length - 40} more`);
+    /* A FLAG NOBODY CAN READ IS A FLAG THAT DOES NOT EXIST. Class-level findings
+     * are raised AFTER the per-plan loop, so they land at the end of the array
+     * and the 40-row cut hid them: `boy-count-contradicted` shipped 2026-09-30,
+     * counted toward `warn` on every run since, and its text has never once
+     * appeared in a run log. The discriminator needs no registry and cannot go
+     * stale — a per-plan rule fires many times and a class-level rule fires
+     * ONCE, so any rule with a single finding is printed past the cut. */
+    const byRule = new Map();
+    const ruleOf = (f) => (String(f).match(/^\[([^\]]+)\]/) || [, ""])[1];
+    for (const f of all) byRule.set(ruleOf(f), (byRule.get(ruleOf(f)) || 0) + 1);
+    for (const f of all.slice(40)) if (byRule.get(ruleOf(f)) === 1) console.log("  " + f);
+  }
 }
 
 /* AND THE THREE TRIAGE CATEGORIES GET THEIR OWN SECTION, because counting

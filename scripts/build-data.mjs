@@ -160,6 +160,18 @@ async function scanMainForm(csv, year) {
     partTotal: colIndex(H, ["TOT_PARTCP_BOY_CNT", "TOT_ACT_RTD_SEP_BENEF_CNT", "TOT_PARTCP_CNT"], /TOT_PARTCP/),
     partEOY: colIndex(H, ["TOT_ACT_RTD_SEP_BENEF_CNT"], /ACT_RTD_SEP_BENEF/),
     partActive: colIndex(H, ["TOT_ACTIVE_PARTCP_CNT", "TOT_ACT_PARTCP_CNT"], /ACTIVE_PARTCP|ACT_PARTCP/),
+    /* LINE 6a(1), ACTIVE PARTICIPANTS AT THE *BEGINNING* OF THE PLAN YEAR — the
+     * only count on the form taken at the SAME INSTANT as line 5, and therefore
+     * the one field that can say WHICH of two contradicting counts is wrong.
+     * Iti Intermodal files line 5 = 294,352 with 6a(1) = 328 on the same page,
+     * so line 5 is a keystroke; Sun Pharmaceutical files line 5 = 2,439 with
+     * 6a(1) = 1,477, so line 5 is HONEST and its line 6d of 71 (6a(2) filled,
+     * 6b and 6c left blank) is the wrong number — and 6d is what the site
+     * publishes. One field, two opposite verdicts, which is why it is worth a
+     * column. Its exact candidates come before `partActive`'s in the map above
+     * only by accident of ordering; `partActive`'s own exact names are tried
+     * first, so the loose /ACT_PARTCP/ regex there cannot steal this column. */
+    partActiveBOY: colIndex(H, ["TOT_ACTIVE_PARTCP_BOY_CNT", "TOT_ACT_PARTCP_BOY_CNT"], /ACT(?:IVE)?_PARTCP_BOY/),
     partBalances: colIndex(H, ["PARTCP_ACCOUNT_BAL_CNT", "TOT_PARTCP_ACCOUNT_BAL_CNT"], /ACCOUNT_BAL_CNT/),
     pensionCode: colIndex(H, ["TYPE_PENSION_BNFT_CODE"], /PENSION.*CODE/),
     businessCode: colIndex(H, ["BUSINESS_CODE"], /BUSINESS_CODE/),
@@ -181,6 +193,12 @@ async function scanMainForm(csv, year) {
     priorPlanName: colIndex(H, ["LAST_RPT_PLAN_NAME"], /LAST_RPT.*PLAN_NAME/),
   };
   console.log("columns:", JSON.stringify(col));
+  /* SAY WHETHER THE WITNESS RESOLVED. A column that silently reads -1 gives a
+   * 0 in every row and an audit that then finds nothing reports on the
+   * ingest, not on the filings -- the computed-and-discarded shape this
+   * project has paid for four times. The extract headers are not reachable
+   * from a sandbox, so the RUN is what tells us the name is right. */
+  console.log(`line 6a(1) active-at-BOY column: ${col.partActiveBOY !== -1 ? "resolved at index " + col.partActiveBOY + " (" + H[col.partActiveBOY] + ")" : "NOT FOUND — the same-instant witness is absent and every activeBOY will be 0"}`);
 
   const out = [];
   let n = 0;
@@ -223,6 +241,7 @@ async function scanMainForm(csv, year) {
       city: r[col.city], state: r[col.state], zip: (r[col.zip] || "").slice(0, 5),
       participants,
       activeParticipants: +r[col.partActive] || 0,
+      activeBOY: col.partActiveBOY !== -1 ? +r[col.partActiveBOY] || 0 : 0,
       partBalances: col.partBalances !== -1 ? +r[col.partBalances] || 0 : 0,
       pensionCode: code,
       businessCode: col.businessCode !== -1 ? r[col.businessCode] : "",
@@ -308,6 +327,13 @@ async function scanSF(csv, year) {
     partBOY: colIndex(H, ["SF_TOT_PARTCP_BOY_CNT"], /TOT_PARTCP_BOY/),
     partEOY: colIndex(H, ["SF_TOT_PARTCP_EOY_CNT", "SF_TOT_ACT_RTD_SEP_BENEF_CNT"], /PARTCP_EOY|ACT_RTD_SEP_BENEF/),
     partActive: colIndex(H, ["SF_TOT_ACT_PARTCP_CNT", "SF_TOT_ACTIVE_PARTCP_CNT"], /ACT.*PARTCP/),
+    /* the short form's line 5d(1), the same same-instant witness. Sound Harbor
+     * Development publishes 61,835 participants against $69,588 of assets and
+     * its own 5a, 5c(1), 5c(2), 5d(1) and 5d(2) all read 3 — the 61,835 is in
+     * line 5b AND again in line 6g, the participant-loan DOLLAR amount, so the
+     * filer keyed a balance into a count box. Our ingest is faithful; the
+     * keystroke is theirs; and this column is how the audit can say so. */
+    partActiveBOY: colIndex(H, ["SF_TOT_ACT_PARTCP_BOY_CNT", "SF_TOT_ACTIVE_PARTCP_BOY_CNT"], /ACT.*PARTCP_BOY/),
     partBalances: colIndex(H, ["SF_PARTCP_ACCOUNT_BAL_CNT"], /ACCOUNT_BAL_CNT/),
     pensionCode: colIndex(H, ["SF_TYPE_PENSION_BNFT_CODE"], /PENSION.*CODE/),
     businessCode: colIndex(H, ["SF_BUSINESS_CODE"], /BUSINESS_CODE/),
@@ -323,6 +349,7 @@ async function scanSF(csv, year) {
     priorPlanName: colIndex(H, ["SF_LAST_RPT_PLAN_NAME"], /LAST_RPT.*PLAN_NAME/),
   };
   console.log("SF columns:", JSON.stringify(col));
+  console.log(`SF line 5d(1) active-at-BOY column: ${col.partActiveBOY !== -1 ? "resolved at index " + col.partActiveBOY + " (" + H[col.partActiveBOY] + ")" : "NOT FOUND — the same-instant witness is absent and every activeBOY will be 0"}`);
   const out = [];
   let n = 0;
   for await (const r of rows) {
@@ -348,6 +375,7 @@ async function scanSF(csv, year) {
       city: r[col.city], state: r[col.state], zip: (r[col.zip] || "").slice(0, 5),
       participants,
       activeParticipants: col.partActive !== -1 ? +r[col.partActive] || 0 : 0,
+      activeBOY: col.partActiveBOY !== -1 ? +r[col.partActiveBOY] || 0 : 0,
       partBalances: col.partBalances !== -1 ? +r[col.partBalances] || 0 : 0,
       pensionCode: code,
       businessCode: col.businessCode !== -1 ? r[col.businessCode] : "",
@@ -1023,7 +1051,7 @@ function titleCase(s) {
 const FIELDS = ["ein", "pn", "sponsorName", "planName", "city", "state", "zip", "businessCode",
   "planYear", "participants", "activeParticipants", "assetsBOY", "assetsEOY",
   "contribEmployer", "contribParticipant", "rollovers", "adminExpenses",
-  "filedDate", "recordkeeper", "ticker", "ack", "codes", "pyb", "partBalances", "feeProf", "feeAdmin", "feeInvMgmt", "feeOther", "benefitsPaid", "mtiaAck", "sf", "shr", "pye", "feeSal", "cctVals", "partEOY", "mtiaName", "alias"];
+  "filedDate", "recordkeeper", "ticker", "ack", "codes", "pyb", "partBalances", "feeProf", "feeAdmin", "feeInvMgmt", "feeOther", "benefitsPaid", "mtiaAck", "sf", "shr", "pye", "feeSal", "cctVals", "partEOY", "mtiaName", "alias", "activeBOY"];
 
 // pye is stored only for IRREGULAR plan years (short first/final years) —
 // blank means the year ends at the natural 12-month boundary, which keeps
@@ -1052,6 +1080,7 @@ for (const p of universe) {
     p.partBalances || 0, h.feeProf || 0, h.feeAdmin || 0, h.feeInvMgmt || 0, h.feeOther || 0, h.benefitsPaid || 0,
     p.mtiaAck || "", p.sf || 0, schR.get(p.ack) || "", irregularYearEnd(p),
     h.feeSalaries || 0, p.cctVals || "", p.partEOY || 0, p.mtiaName || "", p.alias || "",
+    p.activeBOY || 0,
   ]);
 }
 rowsOut.sort((a, b) => b[12] - a[12]); // by assets desc
