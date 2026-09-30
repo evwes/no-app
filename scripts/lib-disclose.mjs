@@ -984,6 +984,53 @@ export function isAnnuityContractRow(f, cleanedName) {
   return ANNUITY_CONTRACT_NAME.test(String(cleanedName || (f && f.name) || ""));
 }
 
+/* A COLLECTIVE TRUST NAMED IN THE ROW'S OWN NAME — 2026-09-30.
+ *
+ * `noPublicPrice` in app.js reads `f.cit` and the TYPE cell and never the NAME,
+ * so a row whose filed name states a collective-trust unit class publishes an
+ * estimated RETAIL fee whenever the type is blank or wrong. A Trust II unit
+ * class is normally CHEAPER than the registered fund the pattern table prices,
+ * so the number is wrong in the direction that flatters.
+ *
+ * 48 rows / 20 plans / 30,432 participants / $691,004,818, and ALL 47 distinct
+ * names were read: BlackRock LifePath Index CIT, Vanguard (Group) Target
+ * Retirement … Trust II, Invesco Stable Value Trust I/III/V, Voya Stable Value
+ * CIT, Wells Fargo Core Bond CIT. Not one is a registered fund.
+ *
+ * THE VOCABULARY IS DELIBERATELY NARROW, AND THE TWO ARMS IT REFUSES ARE THE
+ * FINDING — the queue had this item at 214 reader-facing rows and that number
+ * counted REGISTERED FUNDS WHOSE NAMES END IN "TRUST":
+ *
+ *   - a BARE terminal `Trust` reaches 201 rows and is dominated by
+ *     `American Funds American High-Income Trust` (60+ rows), a registered
+ *     mutual fund whose own name ends in that word — inseparable from the real
+ *     `Target Retirement 2035 Trust` beside it by any syntactic test;
+ *   - `Trust Class …` reaches 81 and is worse, because **`Trust Class` is
+ *     Neuberger Berman's RETAIL share-class name** (`Neuberger Berman Genesis
+ *     Fund Trust Class`) and `American Funds American High-Income Trust Class
+ *     R-6` is that fund's R-6 class. Only 6 of the 81 are collective trusts.
+ *
+ * So the test demands either an explicit vehicle phrase (`collective trust`,
+ * `collective investment trust`, `common collective trust`, a terminal `CIT`)
+ * or a terminal ROMAN-NUMERAL unit class, which a registered fund never carries.
+ * `\bcit\b` is anchored terminal so `CIT Group` — the lender — cannot match.
+ * A registrant's SERIES trust is excluded by the same anchor: it puts the trust
+ * words at the FRONT (`MFS Series Trust II - MFS Growth Fund`, `SPDR Series
+ * Trust`, `AIM Counselor Series Trust Fund`).
+ *
+ * It suppresses a FEE only. The row keeps its name, its value, its percentage
+ * and any labelled comparable ticker — the 493 rows / 830,385 ppl that publish
+ * a comparable behind the 2026-09-21 asterisk are untouched by construction,
+ * because app.js reaches this test only when `star` is false. */
+export const CIT_VEHICLE_NAME =
+  /\b(?:collective(?:\s+investment)?\s+trusts?|common\s+collective\s+trusts?)\b|\bcits?\s*$|\btrust\s+(?:i{1,3}|iv|vi{0,3})\s*$/i;
+export const CIT_SERIES_TRUST = /\bseries\s+trust\b|\btrust\s+(?:i{1,3}|\d)\s*[-–—:]\s*\S/i;
+export function isCollectiveTrustName(name) {
+  const s = String(name || "");
+  if (CIT_SERIES_TRUST.test(s)) return false;
+  return CIT_VEHICLE_NAME.test(s);
+}
+
 /* THE SAME FABRICATED FEE, ON THE ROWS THE TYPE GATE CANNOT REACH — 2026-09-29.
  *
  * The rule above fires only when the TYPE cell says `Mutual fund`, because that

@@ -29317,3 +29317,82 @@ reverted module fails by name on exactly the 5 must-strips and holds all 4
 must-keeps.** smoke-test green across all six page shapes, `fund-er-test`
 46/26/19/18 with 0 failures, and every one of the 5 regenerated pages' changed
 cells read in full — each removes the marker and nothing else.
+
+## 2026-09-30 (00:5xZ) — a collective trust priced as a mutual fund, and the queued number counted registered funds whose names end in "Trust"
+
+**SHIPPED: 47 rows / 19 plans / 30,171 participants / $690,372,638** stop
+publishing an estimated RETAIL expense ratio on a holding whose own filed name
+states a collective-trust unit class. `noPublicPrice` reads `f.cit` and the TYPE
+cell and **never the NAME**, so a row whose type is blank or wrongly says
+`Mutual fund` escaped it. A Trust II unit class is normally CHEAPER than the
+registered fund the pattern table prices, so **the number was wrong in the
+direction that flatters.**
+
+### The queued figure was 214 reader-facing rows. It is 47, and the gap is the finding.
+
+The screen that produced 214 matched any name ending in `Trust`. Splitting it
+into arms and reading each one:
+
+| arm | rows | verdict |
+|---|---|---|
+| **A** explicit `CIT` / `collective trust` | 19 | **all 19 read, all real** — BlackRock LifePath Index CIT, Great Gray/T. Rowe Stable Value CIT, Voya Stable Value CIT, Wells Fargo Core Bond CIT |
+| **B** terminal ROMAN-numeral unit class | 29 | **all 28 distinct read, all real** — Vanguard (Group) Target Retirement … Trust II, Invesco Stable Value Trust I/III/V |
+| **C** `Trust Class …` | 81 | **REFUSED** |
+| **D** bare terminal `Trust` | 201 | **REFUSED** |
+
+**Arm D is dominated by `American Funds American High-Income Trust` — 60+ rows
+of a REGISTERED MUTUAL FUND whose own name ends in that word** — sitting beside
+genuine CITs (`Target Retirement 2035 Trust`, `Invesco Stable Value Trust`) that
+no syntactic test separates from it. **Arm C is worse: `Trust Class` is Neuberger
+Berman's own RETAIL share-class name** (`Neuberger Berman Genesis Fund Trust
+Class`), and `American Funds American High-Income Trust Class R-6` is that fund's
+R-6 class. Only 6 of the 81 are collective trusts.
+
+So shipping the queued predicate would have **withdrawn the fee from roughly 230
+rows of registered mutual funds.** *A vehicle word in a fund's name is not always
+a vehicle* — the same shape as the `VANGUARD EXT MKT INDX-INST+` finding an hour
+earlier, where `INST+` was Institutional **Plus** and not a marker.
+
+### The measurement failed twice first, both times on a shape this record names
+
+**(1) A SUSPICIOUSLY CLEAN ZERO.** The first pass returned **0 rows** — and the
+tell is one this file already carries. The harness required a TICKER before it
+checked the fee, but app.js is
+
+    star ? info.er : (noPublicPrice ? null : fundERRow(f))
+
+and `star` needs `info && info.comparable`, so **a fee publishes with no ticker
+at all**. *Measure through the function the page calls* — failed again, and again
+the tell was the clean zero rather than the code.
+
+**(2) A SWEEP WHERE A STRUCTURAL FACT WOULD DO.** The corrected harness called
+the ticker path on all 1,719,942 rows before the cheap regex and ran past two
+minutes. Testing the arm FIRST makes it seconds. *A structural fact beats a
+sweep*, recorded 2026-09-28 and re-learned here.
+
+### What it deliberately does not touch, verified rather than asserted
+
+**166 labelled-comparable rows were REACHED and LEFT ALONE.** app.js gets to this
+test only when `star` is false, so the 2026-09-21 asterisk demotion — a CIT shown
+with the retail fund it tracks, explicitly labelled — is untouched by
+construction, and the outcome test counted them rather than assuming it.
+**0 of the 47 withdrawn rows publish a ticker**, so this removes a fee and
+nothing else: no name, value, percentage or symbol moves.
+
+`\bcit\b` is anchored TERMINAL, so **`CIT Group` — the lender — cannot match**,
+and the same anchor excludes a registrant's SERIES trust (`SPDR Series Trust`,
+`AIM Counselor Series Trust Fund`, `MFS Series Trust II - MFS Growth Fund`).
+
+### Gates
+
+Canonical in `lib-disclose.mjs`, twinned in app.js, **TETHERED by `smoke-test.mjs`
+on 15 names — 6 must-flag and 9 must-keep**, the must-keeps being exactly the
+registered funds and series trusts above. **Negative control: with the arm absent
+the tether fails by name on exactly the 6 must-flags and holds all 9 must-keeps.**
+smoke-test green across all six page shapes; `fund-er-test` 46/26/19/18 with 0
+failures.
+
+**SURFACE: the REPORT only, and the claim is a guarantee rather than an
+observation** — `build-seo-pages.mjs` **never imports `fund-er.js`**, so a
+crawlable page cannot render a per-fund ER under any input. `git diff --stat p/`
+is empty over all 5,000 regenerated pages, which is the weaker of the two checks.

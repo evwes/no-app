@@ -929,6 +929,21 @@
 
   window.__wampoLoanDescRow = isLoanDescriptionRow;  // read by the smoke test only
   const ANNUITY_CONTRACT_NAME = /\bannuity contracts?\b/i;
+  /* TWIN of lib-disclose.mjs `isCollectiveTrustName`, extracted verbatim. The
+   * two arms this vocabulary REFUSES are the point: a bare terminal `Trust` is
+   * dominated by `American Funds American High-Income Trust`, a registered
+   * fund, and `Trust Class` is Neuberger Berman's retail share-class name.
+   * `\bcit\b` is anchored terminal so `CIT Group` cannot match, and the same
+   * anchor excludes a registrant's SERIES trust. */
+  const CIT_VEHICLE_NAME =
+    /\b(?:collective(?:\s+investment)?\s+trusts?|common\s+collective\s+trusts?)\b|\bcits?\s*$|\btrust\s+(?:i{1,3}|iv|vi{0,3})\s*$/i;
+  const CIT_SERIES_TRUST = /\bseries\s+trust\b|\btrust\s+(?:i{1,3}|\d)\s*[-–—:]\s*\S/i;
+  function isCollectiveTrustName(name) {
+    const s = String(name || "");
+    if (CIT_SERIES_TRUST.test(s)) return false;
+    return CIT_VEHICLE_NAME.test(s);
+  }
+  window.__wampoCitName = isCollectiveTrustName;  // read by the smoke test only
   function isAnnuityContractRow(f, cleanedName) {
     const type = String((f && f.type) || "");
     if (!/^mutual fund/i.test(type)) return false;
@@ -2129,7 +2144,18 @@
       // matching dollar value — keying only on the Sch D match priced some
       // flexPath vintages at 0.10% and left their siblings blank in one
       // table (Swinerton).
-      const noPublicPrice = f.cit || /collective trust|pooled separate/i.test(f.type || "");
+      // ...and the row's own NAME, which this test never asked until 2026-09-30.
+      // 48 rows / 20 plans / 30,432 ppl published an estimated RETAIL fee on a
+      // holding whose filed name states a collective-trust unit class, because
+      // the type cell was blank or said `Mutual fund`. A Trust II unit class is
+      // normally CHEAPER than the fund the pattern table prices, so the number
+      // was wrong in the flattering direction. The vocabulary is narrow on
+      // purpose: a BARE terminal `Trust` reaches 201 rows dominated by
+      // `American Funds American High-Income Trust`, a REGISTERED fund, and
+      // `Trust Class` is Neuberger Berman's own retail share-class name — see
+      // lib-disclose.mjs for both refusals and the names behind them.
+      const noPublicPrice = f.cit || /collective trust|pooled separate/i.test(f.type || "")
+        || isCollectiveTrustName(f.name || "");
       // A collective trust has no ticker and no published fee. Where its name
       // identifies the trust edition of a specific registered fund, that fund
       // is shown with a "*" — what the holding tracks, not what it is; its

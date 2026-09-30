@@ -212,7 +212,7 @@ try {
    * canonical, app.js carries a twin because it is a plain browser script.
    * Run the BROWSER copy against the module's own boundary cases. */
   const { coverageBand, frozenClaimOk, cleanFiledName, isParticipantLoanRow, isLoanDescriptionRow,
-    isAnnuityContractRow, annuityFeeIsGuaranteeOnly,
+    isAnnuityContractRow, annuityFeeIsGuaranteeOnly, isCollectiveTrustName,
     isInvestmentContractRow, isMistypedStockRow,
     mistypedStockFeeIsGuaranteeOnly, issuerPricedER } = await import("./lib-disclose.mjs");
   const frozCases = [
@@ -602,6 +602,45 @@ try {
     if (!isAnnuityContractRow(r, r.name)) fail(`annuity-contract rule no longer catches an insurance contract typed a mutual fund: ${JSON.stringify(r)}`);
   for (const r of annuityCases.slice(6))
     if (isAnnuityContractRow(r, r.name)) fail(`annuity-contract rule would retype a row whose filed type is honest, or a real fund: ${JSON.stringify(r)}`);
+
+  /* THE COLLECTIVE-TRUST NAME RULE, tethered the same way, 2026-09-30. The
+   * first six must FLAG (a fee is withdrawn); the last nine must be KEPT, and
+   * they are the whole reason the vocabulary is narrow: `American Funds
+   * American High-Income Trust` is a REGISTERED fund whose name ends in that
+   * word, `Trust Class` is Neuberger Berman's own retail share-class name,
+   * `CIT Group` is a lender, and a registrant's SERIES trust puts the trust
+   * words at the front. A bare terminal `Trust` reaches 201 rows dominated by
+   * the American Funds family, so it is deliberately not matched. */
+  const citCases = [
+    "BlackRock Lifepath Index 2035 CIT",
+    "Vanguard Group Target Retirement 2050 Trust II",
+    "Invesco Stable Value Trust V",
+    "Common/Colle ctive Trust Invesco Stable Value Trust I",
+    "Voya Stable Value Fund 20 CIT",
+    "Target Retirement Income Trust II",
+    "American Funds American High-Income Trust",
+    "American Funds American High-Income Trust Class R-6",
+    "Neuberger Berman Genesis Fund Trust Class",
+    "Target Retirement 2035 Trust",
+    "SPDR Series Trust",
+    "AIM Counselor Series Trust Fund",
+    "MFS Series Trust II - MFS Growth Fund",
+    "CIT Group Inc",
+    "Fidelity 500 Index Fund"];
+  const citGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoCitName !== "function") return null;
+    return cs.map((n) => window.__wampoCitName(n));
+  }, citCases);
+  if (!citGot) fail("app.js no longer exposes __wampoCitName — the collective-trust name predicate cannot be cross-checked");
+  const citDrift = citCases.filter((n, i) => isCollectiveTrustName(n) !== citGot[i]);
+  if (citDrift.length) {
+    for (const n of citDrift) console.error(`  ${JSON.stringify(n)}  app.js=${citGot[citCases.indexOf(n)]}  module=${isCollectiveTrustName(n)}`);
+    fail(`the collective-trust name predicate in app.js disagrees with scripts/lib-disclose.mjs on ${citDrift.length} of ${citCases.length} names`);
+  }
+  for (const n of citCases.slice(0, 6))
+    if (!isCollectiveTrustName(n)) fail(`collective-trust rule no longer catches a CIT unit class, so a retail fee publishes on it: ${JSON.stringify(n)}`);
+  for (const n of citCases.slice(6))
+    if (isCollectiveTrustName(n)) fail(`collective-trust rule would withdraw the fee of a REGISTERED fund or a series trust: ${JSON.stringify(n)}`);
 
   /* THE GUARANTEE-ONLY FEE RULE, tethered the same way, 2026-09-29. It needed
    * its own cases for the fifth cycle running: NOT ONE case above reaches it,
