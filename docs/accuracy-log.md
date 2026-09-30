@@ -29425,3 +29425,75 @@ arm sizer, and I "corrected" it downward to match the flawed harness.
 observation** — `build-seo-pages.mjs` **never imports `fund-er.js`**, so a
 crawlable page cannot render a per-fund ER under any input. `git diff --stat p/`
 is empty over all 5,000 regenerated pages, which is the weaker of the two checks.
+
+## 2026-09-30 (01:0xZ) — run #511 (v194) verdict: six of seven tests passed exactly, and `confident` missed in the SAFE direction because two registered LOSSES turned into real menus
+
+**MIRRORED `dba53e34 → 35c36a9f`**, `--force` on the git check over main's one
+cron commit and `--force-data` over the single loss, both with the evidence
+produced first. Store complete: **pv 194 covers 68,623 of 68,767 (99.79%)**.
+
+### Against the pre-registered tests
+
+| test | registered | result |
+|---|---|---|
+| statement-caption rows | 7 → **0** | **0** — PASSED exactly |
+| loan-repayment rows | 21 → **0** | **0** — PASSED exactly |
+| `audit-dominant-row` | 0 | **0 plans / $0.0B** — PASSED |
+| `audit-generic-names` | 214 ± 2 | **214 plans / 438 rows** — PASSED exactly |
+| `overshoot` | must FALL from 318 | **317** — PASSED, by one |
+| `dl` | must not jump | **142**, unchanged — PASSED |
+| `confident` | net −3 / +1 (60,101) | **60,106, net +3** — MISSED, opposite direction |
+
+HIGH **5** = the 4 baseline plus one self-clearing `reparse-loss`; WARN 629 → 608.
+
+### The miss is the interesting half, and it is the #481 pattern again
+
+**Two plans I registered as LOSSES came back as WINS**, because refusing the
+caption region handed them to the prior-year fallback:
+
+- **The Mcclatchy Company (3,595 ppl)** — registered to fall to `dx=stmt`. It is
+  **`c=1`, `fb=2023`, 37 rows at ratio 0.99**, topped by `Vanguard Institutional
+  Index Fund Instl Plus Shares` at 23.8%. Those 3,595 readers go from a
+  **$592,952,331 statement-of-changes phantom at 87.4%** to a real 37-row
+  Vanguard menu — a far larger win than the withdrawal would have been.
+- **Indy Connection Electrical (229 ppl)** — same shape, 9 real T. Rowe Price
+  Retirement rows at 1.01.
+
+*A guard that withdraws is sometimes a guard that PROMOTES* — recorded at #481
+and true again. **And it is why a prediction of "withdrawn" is a prediction about
+one REGION, not about the filing**, which is exactly why the registration was a
+named set rather than a bare number.
+
+The rest of the named set behaved:
+
+- **Caterpillar PN 037 (485)** lost as predicted — `c=0`, `dx=stmt`, `tp=1`, its
+  **master-trust pointer at 97.5%**, so the page now says where the money is.
+  This is the one row `--force-data` covered.
+- **Edgewater Federal Solutions (697)** stayed confident at **35 rows / 0.67**.
+- **Pedulla Excavating (185) is back: 25 rows at 0.78.** I predicted 26 — one row
+  out, named rather than rounded.
+
+### Two misses of mine, both recorded rather than waved through
+
+**(1) Northwood Investors (2,277 ppl) did NOT lose, and the reason is v193's own
+lesson repeating.** Registered to fall under the three-row floor once the loan
+caption went. It still publishes **3 rows, top `at Fair Value` at 86.8%** — so
+removing the caption **promoted another junk row into its place**. One junk row
+swapped for another, row count unchanged, invisible to every count: the (D) shape
+v193 recorded, now on the other side of the fix.
+
+**(2) MY OWN ARM CREATED A JUNK ROW AT BENCHMARK LANDSCAPE.** Dropping the line
+`Loan Repayments are` promoted its wrapped continuation to a holding named
+**`included:` at 94.6%** of a 27-row menu, ratio 9.92. Not reader-facing — the
+plan is `dx=tiny`, under $1M of assets — but it is v194's own cost and it is the
+same swap shape as (1). **A line-level skip can promote the continuation of the
+line it skipped.** Queued.
+
+### Reconciling main, with the evidence first
+
+Main's cron (#512) left one data commit. Measured before any override: **0 acks
+the branch lacked**, **1 ack newer on main** — `G & E HOCKER'S MTIA PLAN`, the
+documented analyze-stuck TRUST, **confident on both sides**, so nothing is lost
+and its stale branch pv means the next incremental re-reads it — and **1 confident
+on main only**, which is Caterpillar PN 037, the designed withdrawal above. Gate:
+**+4 gained, −1 lost.**
