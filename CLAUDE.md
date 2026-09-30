@@ -729,6 +729,43 @@ from the cycle that would have cleared it.
   must-strips** and holds all 4 must-keeps. smoke green, fund-er-test
   46/26/19/18 0 failures, every changed cell on all 5 pages read.
   `docs/accuracy-log.md` 2026-09-30 (00:1xZ).
+- **SHIPPED 2026-09-30 00:5xZ, `[skip ci]`, NOT YET MIRRORED — A COLLECTIVE TRUST
+  PRICED AS A MUTUAL FUND: 47 rows / 19 plans / 30,171 ppl / $690,372,638** stop
+  publishing an estimated RETAIL fee on a holding whose own filed name states a
+  collective-trust unit class. `noPublicPrice` read `f.cit` and the TYPE cell and
+  **never the NAME**. A Trust II unit class is normally CHEAPER than the fund the
+  table prices, so the number was wrong in the **flattering** direction.
+  **THE QUEUED FIGURE WAS 214 AND IT IS 47 — the gap is the finding.** That
+  screen matched any name ending in `Trust`. Split into arms and read: explicit
+  `CIT`/`collective trust` **19 rows, all read, all real**; terminal ROMAN-numeral
+  unit class **29, all 28 distinct read, all real**. **Both other arms REFUSED:**
+  a bare terminal `Trust` is **201 rows dominated by `American Funds American
+  High-Income Trust`, a REGISTERED MUTUAL FUND** whose own name ends in that
+  word, beside genuine CITs no syntactic test separates from it; and **`Trust
+  Class` is NEUBERGER BERMAN'S OWN RETAIL SHARE-CLASS NAME** (81 rows, only 6 of
+  them CITs). Shipping the queued predicate would have **withdrawn the fee from
+  ~230 rows of registered funds.** *A vehicle word in a fund's name is not always
+  a vehicle* — the `INST+` finding an hour earlier, again.
+  **THE MEASUREMENT FAILED TWICE FIRST, both on shapes this record names:** a
+  **suspiciously clean ZERO**, because the harness required a TICKER before
+  checking the fee and app.js prices through `fundERRow` whenever `star` is false
+  — *a fee publishes with no ticker at all*; and a two-minute **sweep** where
+  testing the arm first takes seconds — *a structural fact beats a sweep*.
+  **166 labelled-comparable rows were REACHED AND LEFT ALONE** (counted, not
+  assumed — app.js reaches this test only when `star` is false), **0 of the 47
+  publish a ticker**, and `\bcit\b` is anchored terminal so **`CIT Group`, the
+  lender, cannot match**. 15 tether cases (6 must-flag / 9 must-keep); negative
+  control fails by name on exactly the 6 and holds all 9. smoke green,
+  fund-er-test 46/26/19/18 0 failures. **REPORT path only, as a GUARANTEE:
+  `build-seo-pages.mjs` never imports `fund-er.js`.**
+  `docs/accuracy-log.md` 2026-09-30 (00:5xZ).
+- **`site-test` #113 reads `conclusion: success`** on `f1ad15e5`, the exact
+  mirrored commit carrying the trailing-plus fix — dispatched deliberately
+  because that change shipped under `[skip ci]` and local green is not CI green.
+- **THE MIRROR IS HELD: #512, the :23 cron, is IN FLIGHT ON MAIN** (started
+  00:32Z, late as always). Force-pushing the branch onto main while a run is
+  about to commit there is the one mirror hazard that is real. It will leave a
+  data commit on main to reconcile before the next mirror.
 - **IN FLIGHT: #511 (v194), dispatched 2026-09-29 23:5xZ on `417acea1`, observed
   `in_progress` on the dev branch — a FULL re-parse on the version bump. Tree at v194,
   store at v193 until it lands.** Two classes, both v193's OWN COST.
