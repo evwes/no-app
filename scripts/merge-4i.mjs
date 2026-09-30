@@ -144,6 +144,99 @@ for (let i = 0; i < SHARDS; i++) {
 }
 if (demoted) console.log(`demoted ${demoted} junk-named confident entries (stored, unfetchable)`);
 
+/* LEADING JUNK ON THE ISSUER CELL — 2026-09-30 (14:2xZ).
+ *
+ * Found by the 14:2xZ participant-weighted draw on Capital Blue Cross (2,862
+ * ppl), whose 29-row Vanguard menu is immaculate but whose issuer column
+ * carries the PREVIOUS row's wrapped tail. That class is still open; this arm
+ * is the piece of it that is decidable per row, and it is much the larger.
+ *
+ * The page renders `f.iss` with only `*` removed (app.js:2619) and the
+ * crawlable pages print it too, so 567 plans are shown `— Fidelity
+ * Investments`, `. Mutual of America`, `-0- VOYA FINANCIAL`, `‘Vanguard` or
+ * `| Principal Life Insurance Company` as the firm behind their fund. A
+ * statement's bullet, a page number and an OCR'd leader are not part of a
+ * firm's name.
+ *
+ * IT IS AN HONESTY FIX AND NOT A COVERAGE FIX, MEASURED THROUGH ALL THREE
+ * RESOLVERS rather than assumed: app.js's `lookupTicker`, app.js's
+ * `fundERRow` and this file's own SEC `resolveHolding` each report 0 gained,
+ * 0 lost, 0 changed over the whole affected population — because
+ * `fund-er.js` already matches straight through a leading `—`, a bare `.`
+ * and even `-0-`, exactly as it does through a trailing `+` and a leading
+ * stray quote. A clean zero reports on the query, so each arm was
+ * positive-controlled first: with the issuer supplied rather than stripped,
+ * all three move (`500 Index Fund` {} -> {Vanguard} gains VFIAX, 0.03 and
+ * VFINX). The harm here is the CLAIM alone.
+ *
+ * WHY THE RUN IS NOT LETTERS-AND-DIGITS, which is where the reading paid:
+ * the naive `^[^A-Za-z0-9]+` stops at the digit and leaves `0- VOYA
+ * FINANCIAL`. 27 leaders carry a digit and every one is a PAGE NUMBER or a
+ * statement legend — `-0- JOHN HANCOCK` and its fifteen siblings (a John
+ * Hancock / Voya template), `-18- Sponsor: Houston Distributing Company
+ * inc.`, `-14- American Funds`, `%4 John Hancock`, `- 13 - Empower Trust
+ * Company, LLC`. So the run is every non-LETTER, and that is safe by a
+ * whole-population fact rather than a judgement: across all 535,864 stored
+ * issuer values, ZERO lead with a digit.
+ *
+ * ZERO also lead with a party-in-interest `*` (v127 strips it upstream), so
+ * this arm cannot consume that marker — checked, because an issuer strip that
+ * quietly dropped it would be withdrawing a filed fact.
+ *
+ * THE GATE IS THE SIBLING ARM'S: the remainder must begin with a capital.
+ * That is what refuses the OCR wreckage instead of half-repairing it —
+ * `/anguard Group` (a `V` read as a slash) would become `anguard Group`, and
+ * `.lohn Ilancock USA` would become `lohn Ilancock USA`. Both are left as
+ * filed. All 403 distinct values were read, which is the whole population,
+ * and not one remainder is anything but a real firm or fund name.
+ *
+ * IT RUNS BEFORE THE CAPTION STRIP BELOW SO THE TWO COMPOSE, and that is
+ * where the largest single transformation comes from: `. GROUP ANNUITY
+ * CONTRACT Mutual of America` (5,145 rows) loses its leading dot here and is
+ * then a caption the strip below already knows, landing on `Mutual of
+ * America`. The order also feeds that strip's own evidence — its pass 1
+ * counts how often a value stands ALONE, and 403 damaged variants were
+ * splitting that count away from their clean forms.
+ *
+ * Not a PARSER_VERSION change: it needs no re-parse and takes effect on the
+ * next merge. */
+function stripIssuerLead(iss) {
+  const v = String(iss || "").trim();
+  if (!v) return null;
+  const run = (v.match(/^[^A-Za-z]+/) || [""])[0];
+  if (!run) return null;
+  /* THE RUN MUST END IN PUNCTUATION OR SPACE, which is what makes a
+   * digit-leading FIRM safe by construction rather than by a head count. No
+   * issuer in the store leads with a digit today — that was measured over all
+   * 535,864 values — but `3M Company` would otherwise strip to `M Company`,
+   * and a rule whose safety rests on a population that can change is a rule
+   * waiting to break. A page number is fenced off from the firm (`-0- VOYA`,
+   * `-18- Sponsor:`, `%4 John Hancock`); a digit INSIDE a name is not. */
+  if (/[A-Za-z0-9]$/.test(run)) return null;
+  const rest = v.slice(run.length).trim();
+  if (!rest) return null;
+  /* An issuer is a firm name and begins with a capital. This is the sibling
+   * arm's own gate and it is what refuses OCR wreckage rather than
+   * half-repairing it: `/anguard Group` (a V read as a slash) would become
+   * `anguard Group`, and `.lohn Ilancock USA` would become `lohn Ilancock
+   * USA`. Both are left exactly as filed. */
+  if (!/^[A-Z]/.test(rest)) return null;
+  return rest;
+}
+{
+  let led = 0; const ledAcks = new Set();
+  for (let i = 0; i < SHARDS; i++)
+    for (const [ack, e] of Object.entries(buckets[i])) {
+      if (!e || !e.confident || !Array.isArray(e.funds)) continue;
+      for (const f of e.funds) {
+        const rest = stripIssuerLead(f.iss);
+        if (rest === null) continue;
+        f.iss = rest; led++; ledAcks.add(ack);
+      }
+    }
+  if (led) console.log(`issuer leading-junk strip: ${led} rows across ${ledAcks.size} plans`);
+}
+
 /* A 4i SECTION CAPTION GLUED ONTO THE ISSUER COLUMN.
  *
  * CHS/Community Health (91,940 ppl) stores `iss = "Master Trust Principal

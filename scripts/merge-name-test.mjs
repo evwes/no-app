@@ -94,4 +94,90 @@ for (const [inp, want] of CASES) {
 }
 console.log(`  it now disagrees on ${broke.length} of ${CASES.length}:`);
 for (const b of broke) console.log(`    ${b}`);
-process.exit(bad ? 1 : 0);
+if (bad) process.exitCode = 1;
+
+/* ---------------------------------------------------------------------- *
+ * CONTROL for merge-4i's ISSUER LEADING-JUNK STRIP — 2026-09-30 (14:4xZ).
+ *
+ * Sliced by name out of merge-4i, never restated. Two negative controls,
+ * because the arm has exactly two conditions beyond the strip itself and each
+ * protects a different family:
+ *   (1) the run must END in punctuation or space — without it a digit-leading
+ *       FIRM is truncated (`3M Company` -> `M Company`);
+ *   (2) the remainder must begin with a CAPITAL — without it OCR wreckage is
+ *       half-repaired instead of left alone (`/anguard Group`, where a V was
+ *       read as a slash).
+ * A control that cannot fail is decorative, so each is asserted to disagree
+ * BY NAME on exactly the cases it exists for.
+ * ---------------------------------------------------------------------- */
+{
+  const s2 = fs.readFileSync(`${R}/scripts/merge-4i.mjs`, "utf8");
+  const a = s2.indexOf("function stripIssuerLead(");
+  if (a < 0) throw new Error("stripIssuerLead slice moved");
+  let d = 0, b = s2.indexOf("{", a);
+  for (let k = b; k < s2.length; k++) {
+    if (s2[k] === "{") d++;
+    else if (s2[k] === "}") { d--; if (!d) { b = k + 1; break; } }
+  }
+  const body = s2.slice(a, b);
+  const mk = (drop) => {
+    let t = body;
+    if (drop === "fence") t = t.replace(/if \(\/\[A-Za-z0-9\]\$\/\.test\(run\)\) return null;/, "");
+    if (drop === "capital") t = t.replace(/if \(!\/\^\[A-Z\]\/\.test\(rest\)\) return null;/, "");
+    if (t === body) throw new Error("negative control '" + drop + "' changed nothing");
+    return new Function(t + "; return stripIssuerLead;")();
+  };
+  const shippedIss = new Function(body + "; return stripIssuerLead;")();
+
+  const ISS = [
+    // must STRIP — a statement bullet, an OCR leader, a legend mark
+    ["— Fidelity Investments", "Fidelity Investments"],
+    ["— Fidelity Management Trust Company", "Fidelity Management Trust Company"],
+    [". GROUP ANNUITY CONTRACT Mutual of America", "GROUP ANNUITY CONTRACT Mutual of America"],
+    [". Mutual of America", "Mutual of America"],
+    ["‘Vanguard", "Vanguard"],
+    ["| Principal Life Insurance Company", "Principal Life Insurance Company"],
+    ["++ Empower Trust Company LLC", "Empower Trust Company LLC"],
+    ["• Principal Global Investors Trust Co", "Principal Global Investors Trust Co"],
+    // must STRIP — a PAGE NUMBER, which the letters-and-digits run cannot reach
+    ["-0- VOYA FINANCIAL", "VOYA FINANCIAL"],
+    ["-0- J.H. MFS", "J.H. MFS"],
+    ["-18- Sponsor: Houston Distributing Company inc.", "Sponsor: Houston Distributing Company inc."],
+    ["-14- American Funds", "American Funds"],
+    ["%4 John Hancock", "John Hancock"],
+    ["- 13 - Empower Trust Company, LLC", "Empower Trust Company, LLC"],
+    // must KEEP — already clean
+    ["Fidelity Investments", null],
+    ["The Vanguard Group, Inc.", null],
+    ["T. Rowe Price", null],
+    ["Empower Trust Company, LLC", null],
+    // must KEEP — a digit-leading FIRM (the fence)
+    ["3M Company", null],
+    ["1st Global Advisors", null],
+    ["21st Century Fund", null],
+    ["401(k) Plan", null],
+    // must KEEP — OCR wreckage, left exactly as filed (the capital gate)
+    ["/anguard Group", null],
+    [".lohn Ilancock USA", null],
+    ["‘hence nest tiem pe miei American Funds", null],
+  ];
+  let ibad = 0;
+  for (const [inp, want] of ISS) {
+    const got = shippedIss(inp);
+    if ((got || null) !== want) { ibad++; console.log(`  FAIL  ${JSON.stringify(inp)}\n        want ${JSON.stringify(want)}\n        got  ${JSON.stringify(got)}`); }
+  }
+  console.log(`\nshipped stripIssuerLead: ${ISS.length - ibad}/${ISS.length} pinned cases`);
+
+  for (const drop of ["fence", "capital"]) {
+    const f = mk(drop);
+    const broke = [];
+    for (const [inp, want] of ISS) {
+      const got = f(inp) || null;
+      if (got !== want) broke.push(`${JSON.stringify(inp)} -> ${JSON.stringify(got)}`);
+    }
+    console.log(`NEGATIVE CONTROL — drop the ${drop} condition: disagrees on ${broke.length} of ${ISS.length}`);
+    for (const b of broke) console.log(`    ${b}`);
+    if (!broke.length) { console.log("  !! a control that cannot fail is decorative"); ibad++; }
+  }
+  if (ibad) process.exitCode = 1;
+}
