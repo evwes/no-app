@@ -31493,3 +31493,66 @@ over the strip, with a remainder test strong enough to refuse `Vanguard Fund`
 and `Fidelity Advisors` — which is not an attestation floor. **Do not carry 333
 forward as a class size:** it is at least two mechanisms, and the split between
 them currently depends on a vocabulary rather than on the data.
+
+---
+
+## 2026-09-30 (15:3xZ) — NOTHING SHIPPED FROM THE DRAW, AND THE FINDING IS THREE PREDICATES REFUSED BY THE SAME MECHANISM
+
+The 15:1xZ participant-weighted draw (seed 20260930151) landed on **Parametrix
+(1,057 ppl, 30 rows @ 0.892, a 2023 fallback)** — immaculate, nothing to report —
+and **WinCo Foods (29,596 ppl, 19 rows @ 0.993)**, whose menu is clean but whose
+issuer column contradicts three of its own rows:
+
+- `Principal High Yield A` issued by **`{Prudential Investments}`** — a different house;
+- `Virtus Duff & Phelps Glbl Real Est A` by **`{New Horizons Fund}`** — a T. Rowe
+  Price *fund*, not a firm at all;
+- `JPMorgan Government Bond R3` by `{JP Morgan Government Bond}` — the row's own
+  fund name standing in for a firm.
+
+### It reaches no reader through either resolver, and that was measured
+
+Sliced the SHIPPED `lookupTicker` out of `app.js` with its helpers
+(`repairHouse`, `HOUSE_MISSPELLINGS`, `leadingHouse`) rather than standing in for
+it, and passed the whole row as the page does. **All three contradicting rows
+resolve to `null`, as do all 19 WinCo rows**, with the positive control
+`{Vanguard} 500 Index Fund → VFIAX` proving the arm is reachable. So the harm is
+confined to the ISSUER DISPLAY — real, since #520 established that `f.iss` prints
+on both surfaces, but not a wrong ticker or a wrong fee.
+
+### Three predicates measured and refused, and all three failed the same way
+
+**(1) "The issuer is attested as a published fund NAME and shares no token with
+this row's name" — 342,395 rows / 38,543,094 ppl.** The size was the tell, and
+reading the members shows it convicts the store's **most correct** rows:
+`{Vanguard}` on `Target Retirement 2050 Fund`, `{Fidelity}` on `500 Index Fund`.
+`Vanguard` clears the attestation floor as a *holding name* only because of the
+**separate, already-recorded bare-house defect** (5,752 rows). ***The gate is fed
+by the store's own damage*** — the floor-of-one lesson at a floor of three, and
+the third instance in two cycles.
+
+**(2) "The issuer ends in the singular `Fund`, because a firm's name does not" —
+3,104 rows / 1,817,731 ppl.** Structurally appealing (`Vanguard`, `Fidelity`,
+`Dodge & Cox`, `Principal Life Insurance Company` all fail it; `New Horizons
+Fund` passes). **Its dominant member is CORRECT:** `College Retirement Equities
+Fund` really is the registered issuer of `CREF Stock R1`, and my token-overlap
+test could not see it because **CREF is that issuer's acronym.**
+
+**(3) The same predicate with an acronym-and-containment escape — 2,322 rows /
+1,727,347 ppl — and it is STILL essentially one filer template.** The residue is
+overwhelmingly `{College Retirement Equities Fund}` on TIAA and Vanguard
+holdings: the TIAA/CREF **platform** in column (b), which is the
+trustee-or-recordkeeper shape this record already names. Not a general defect.
+
+**Do not carry 342,395, 3,104 or 2,322 forward.** None is a class size.
+
+### What the cycle is entitled to conclude
+
+WinCo's `{New Horizons Fund}` is a genuine one-off, not the visible tip of a
+class; the class that does exist is the platform-in-column-(b) shape, already
+recorded and already known not to reach the ticker column. Column (b) is
+statutorily *"Identity of issue, borrower, lessor, or similar party"*, so a fund
+name there can be perfectly faithful — which is exactly why no purely structural
+test separates the faithful case from the contradicting one.
+
+*A draw that produces two clean menus and three dead predicates is not a wasted
+cycle; it is three routes that will not be retried.*
