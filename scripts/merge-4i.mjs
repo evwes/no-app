@@ -361,6 +361,103 @@ if (demoted) console.log(`demoted ${demoted} junk-named confident entries (store
   if (bled) console.log(`ocr tail-residue strip: ${bled} rows across ${bledAcks.size} plans`);
 }
 
+/* A LOST SPACE INSIDE A PUBLISHED FUND NAME — `Great Gray TrustInternational
+ * Stock R1 Fund`, `Vanguard Total BondMarket Index Adm`, `JPMorganMid Cap
+ * Growth Fund R6`. It runs BEFORE the SEC block on purpose: a repaired name is
+ * what lets that resolver answer, and 36 of the 140 rows gain a ticker there.
+ *
+ * THE OBVIOUS PREDICATE IS NOT A CLASS AND THE SIZE IS THE TELL. A
+ * lowercase-to-uppercase seam inside a token matches 93,171 published rows
+ * across 39.5M participants, because CamelCase is how these funds are NAMED:
+ * `LifePath` 28,826, `BlackRock` 24,868, `EuroPacific` 7,938,
+ * `SmartRetirement` 5,221, `MassMutual` 3,634, plus ClearBridge, RealPath,
+ * ActiveBeta, FlexPath, SmallCap, LargeCap, MyWayRet, YourPath.
+ *
+ * NOR DOES TOKEN RARITY DISCRIMINATE, which is the finding worth keeping.
+ * Requiring the joined token to be unattested while both halves are ordinary
+ * published words still leaves 529 rows / 689,387 ppl, and that is at least
+ * THREE mechanisms: (A) REAL firm names that are merely rare — `FirstEnergy
+ * common stock` at 16,802 participants and $458,084,933, `ExxonMobil Stock
+ * Fund`, `BancPlus Corporation`, `HomeTrust Bancshares`, `LifePoint Health
+ * Stable Value`, `SoundShore`, `VantageTrust` — which must NEVER be split;
+ * (B) the genuine lost space; (C) a DOUBLE RENDER welded at the seam
+ * (`Dodge & Cox IncomeDodge & Cox Income`), where splitting leaves a doubled
+ * name and the defect is something else entirely. A rare-but-real CamelCase
+ * name and a lost space are INDISTINGUISHABLE BY COUNT.
+ *
+ * So the test is the issuer strip's own, asked of the WHOLE REPAIRED NAME:
+ * does the repaired string appear elsewhere as a COMPLETE published name?
+ * `Vanguard Total Bond Market Index Fund: Inst'l Shr` stands alone 81 times,
+ * `Vanguard Growth Index Adm` 1,271, `Blackrock Total Return Fund` 202. (A)
+ * and (C) are refused BY CONSTRUCTION — `First Energy common stock` is
+ * attested nowhere, and neither is a doubled name. The floor is 3 and not 1
+ * for the reason written above the OCR strip.
+ *
+ * ONE REPAIR PER NAME, and it costs nothing: measured whole-store, ZERO names
+ * offer more than one attested repair. A second pass would have to attest an
+ * intermediate string that by construction does not exist.
+ *
+ * OUTCOME, and it is NOT the honesty fix this was queued as — all 137 distinct
+ * transformations were read and every one is a real fund name: fund-er.js
+ * +17 tickers / -0 / 0 flipped and +18 fees / -0 / 9 CHANGED (every change a
+ * correction away from a generic pattern — `Vanguard Developed Markets Index
+ * Admiral` 0.1 -> 0.05, `Fidelity Mid Cp Index Fund` 0.1 -> 0.025); and the
+ * SEC index **+29 / -0 / 0**, including `FidelityTotal Bond K6 Fund` -> FTKFX,
+ * the K6 share class this record has named as a defect four times.
+ *
+ * THAT 29 IS THE REAL MERGE'S NUMBER AND MY HARNESS SAID 36. The block below
+ * stores `stk` only where the FILING types the row a registered mutual fund,
+ * and my outcome test asked `resolveHolding` without that gate, so seven gains
+ * sit on rows that never reach the field. *Measure through the function the
+ * page calls* — here the merge's own gate, and the merge is what settled it.
+ *
+ * 140 rows / 98 plans / 140,349 participants / $291,925,206. Measured on the
+ * RAW stored name, which is what the merge holds; the same predicate over
+ * `cleanFiledName`'s output reads 151 / 108 / 151,454, and that is the
+ * DISPLAY string, not this one. */
+{
+  const SEAM = /\b[A-Za-z]{3,}[a-z][A-Z][a-z]{2,}[A-Za-z]*\b/g;
+  const nk = (s) => String(s).trim().toLowerCase();
+  const whole = new Map(), tok = new Map();
+  for (let i = 0; i < SHARDS; i++)
+    for (const [, e] of Object.entries(buckets[i])) {
+      if (!e || !e.confident || !Array.isArray(e.funds)) continue;
+      for (const f of e.funds) {
+        const n = String(f.name || "").trim(); if (!n) continue;
+        whole.set(nk(n), (whole.get(nk(n)) || 0) + 1);
+        for (const t of n.split(/[^A-Za-z]+/))
+          if (t.length > 1) tok.set(t.toLowerCase(), (tok.get(t.toLowerCase()) || 0) + 1);
+      }
+    }
+  const cnt = (w) => tok.get(String(w).toLowerCase()) || 0;
+  const weldRepair = (name) => {
+    const s = String(name || "").trim();
+    SEAM.lastIndex = 0; let m, best = null;
+    while ((m = SEAM.exec(s))) {
+      const t = m[0];
+      if (cnt(t) > 2) continue;                       // the joined form IS the name
+      const sm = /([a-z])([A-Z])/.exec(t);
+      const i = t.indexOf(sm[0]) + 1;
+      const L = t.slice(0, i), Rt = t.slice(i);
+      if (cnt(L) < 3 || cnt(Rt) < 3) continue;        // both halves ordinary published words
+      const rep = s.slice(0, m.index) + L + " " + Rt + s.slice(m.index + t.length);
+      if ((whole.get(nk(rep)) || 0) >= 3) best = rep; // the repaired WHOLE NAME stands alone
+    }
+    return best;
+  };
+  let weld = 0; const weldAcks = new Set();
+  for (let i = 0; i < SHARDS; i++)
+    for (const [ack, e] of Object.entries(buckets[i])) {
+      if (!e || !e.confident || !Array.isArray(e.funds)) continue;
+      for (const f of e.funds) {
+        const rep = weldRepair(f.name);
+        if (!rep) continue;
+        f.name = rep; weld++; weldAcks.add(ack);
+      }
+    }
+  if (weld) console.log(`lost-space repair: ${weld} rows across ${weldAcks.size} plans`);
+}
+
 /* THE SEC TICKER, RESOLVED ONCE AT MERGE AND STORED ON THE ROW.
  *
  * `fund-er.js` is a hand-written pattern table and cannot finish the tail:

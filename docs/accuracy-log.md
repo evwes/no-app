@@ -30928,3 +30928,65 @@ or 2,048,738.** The "ONE count was several defects" rule, met at five.
   rows' changed cells read, tether cases pinned on both sides (with family (A)
   as the must-KEEP half), negative control, and the outcome measured through
   BOTH ticker resolvers and the fee table before anything lands.
+
+## 2026-09-30 (12:5xZ) — A LOST SPACE inside a published fund name, repaired merge-side
+- **Wrong:** 140 published rows carry a fund name with a space missing inside
+  it — `Great Gray Trust**I**nternational Stock R1 Fund` (Preferred Podiatry
+  Management, 593 ppl, found by the 11:5xZ participant-weighted draw),
+  `Vanguard Total Bond**M**arket Index Adm`, `JPMorgan**M**id Cap Growth Fund
+  R6`, `Fidelity**T**otal Bond K6 Fund`, `Empower**G**uaranteed Interest Fund`.
+  98 plans / 140,349 participants / $291,925,206.
+- **Change:** `merge-4i` repairs the seam only where the **repaired WHOLE NAME
+  appears elsewhere as a complete published name** — the issuer strip's own
+  test, which only the merge can ask because only the merge holds the store.
+  Placed BEFORE the SEC-ticker block on purpose, so a repaired name resolves.
+  Floor **3, not 1**, on this record's own rule.
+- **THE OBVIOUS PREDICATE IS NOT A CLASS AND THE SIZE WAS THE TELL.** A
+  lowercase-to-uppercase seam matches **93,171 rows / 39,461,818 ppl**, because
+  **CamelCase is how these funds are NAMED**: `LifePath` 28,826, `BlackRock`
+  24,868, `EuroPacific` 7,938, `SmartRetirement` 5,221, `MassMutual` 3,634.
+  **Do not carry 93,171 or 39,461,818 forward.**
+- **NOR DOES TOKEN RARITY DISCRIMINATE, and that is the transferable half.**
+  Requiring the joined token to be unattested while both halves are ordinary
+  published words still leaves **529 rows / 689,387 ppl**, and that is at least
+  THREE mechanisms: (A) **REAL firm names that are merely rare** —
+  `FirstEnergy common stock` (16,802 ppl / $458,084,933), `ExxonMobil Stock
+  Fund`, `BancPlus Corporation`, `HomeTrust Bancshares`, `LifePoint Health
+  Stable Value`, `SoundShore` — which must NEVER be split; (B) the genuine lost
+  space; (C) a **DOUBLE RENDER welded at the seam** (`Dodge & Cox IncomeDodge &
+  Cox Income`), where splitting leaves a doubled name. *A rare-but-real
+  CamelCase name and a lost space are indistinguishable by count* — the mirror
+  of the floor-of-one lesson. **Do not carry 529 or 689,387 forward either.**
+  (A) and (C) are refused BY CONSTRUCTION: `First Energy common stock` is
+  attested nowhere.
+- **IT IS NOT THE HONESTY FIX IT WAS QUEUED AS.** All **137 distinct
+  transformations read**, every one a real fund name. Outcome: `fund-er.js`
+  **+17 tickers / −0 / 0 flipped** and **+18 fees / −0 / 9 CHANGED**, every
+  change a correction away from a generic pattern (`Vanguard Developed Markets
+  Index Admiral` 0.1 → 0.05, `Fidelity Mid Cp Index Fund` 0.1 → 0.025); the SEC
+  index **+29 / −0 / 0**, including **`FidelityTotal Bond K6 Fund` → FTKFX**,
+  the K6 share class this record has named as a defect four times.
+- **AND THE 29 IS THE REAL MERGE'S NUMBER WHERE MY HARNESS SAID 36.** The SEC
+  block stores `stk` only where the FILING types the row a registered mutual
+  fund, and my outcome test called `resolveHolding` without that gate, so seven
+  gains sit on rows that never reach the field. ***Measure through the function
+  the page calls*** — here the merge's own gate, and running the real merge is
+  what settled it.
+- **MEASURED ON THE RAW STORED NAME, which is what the merge holds:** 140 / 98
+  / 140,349. The same predicate over `cleanFiledName`'s output reads **151 / 108
+  / 151,454** — the DISPLAY string, not this one, and yesterday's queue entry
+  carried the display figure. *The second half of the same rule: with the
+  argument the caller passes.*
+- **ONE REPAIR PER NAME, and it costs nothing** — measured whole-store, **zero**
+  names offer more than one attested repair, so the limit is free.
+- **Prevention:** `scripts/merge-name-test.mjs`, **in the repo** because the
+  last generator that lived in a session scratchpad was wiped by a container
+  restart. It SLICES the shipped `weldRepair` out of `merge-4i` rather than
+  restating it, builds the attestation maps from the live store, and asserts
+  **20 pinned cases 20/20**. Its negative control removes the one condition —
+  the repaired whole name must stand alone — and the predicate **fails by name
+  on exactly the 7** it exists to protect (the six real firm names and the
+  double render) while all six must-repairs and all seven CamelCase must-keeps
+  hold. The real merge reproduced **140 rows across 98 plans** and
+  `sec tickers` **347,357 → 347,386**. parser-gate, smoke and fund-er-test
+  (46/26/19/18) green; `git diff --stat p/` empty over all regenerated pages.
