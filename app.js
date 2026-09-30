@@ -1214,6 +1214,27 @@
   }
 
   window.__wampoDirectionCaptionRow = isDirectionCaptionRow;  // read by the smoke test only
+
+  /* AN AUDIT FIRM'S OFFICE LIST IS NOT A HOLDING — the whole seven-row
+   * population, why TWO groups are required rather than one, and why the value
+   * is left in place although it is not plan money, are all in
+   * scripts/lib-disclose.mjs. This is its twin. */
+  const OFFICE_GROUP = new RegExp(
+    ",\\s*(?:Alabama|Alaska|Arizona|Arkansas|California|Colorado|Connecticut" +
+      "|Delaware|Florida|Georgia|Hawaii|Idaho|Illinois|Indiana|Iowa|Kansas" +
+      "|Kentucky|Louisiana|Maine|Maryland|Massachusetts|Michigan|Minnesota" +
+      "|Mississippi|Missouri|Montana|Nebraska|Nevada|New Hampshire|New Jersey" +
+      "|New Mexico|New York|North Carolina|North Dakota|Ohio|Oklahoma|Oregon" +
+      "|Pennsylvania|Rhode Island|South Carolina|South Dakota|Tennessee|Texas" +
+      "|Utah|Vermont|Virginia|Washington|West Virginia|Wisconsin|Wyoming)" +
+      "\\s+\\d{5}\\b",
+    "gi");
+  function isOfficeListRow(name) {
+    const s = String(name || "");
+    return (s.match(OFFICE_GROUP) || []).length >= 2;
+  }
+
+  window.__wampoOfficeListRow = isOfficeListRow;  // read by the smoke test only
   /* A BARE MATURITY DATE IS THE PARTICIPANT-LOAN ROW — the rule, the three
    * filings it was read in and the missing-sibling evidence are all in
    * scripts/lib-disclose.mjs; this is its twin. Anchored `^…$` on a name that
@@ -2562,7 +2583,12 @@
            * is not a vehicle type: 0 of the 18 candidates were already typed.
            * It shares the no-issuer gate above for the same reason that gate
            * exists at all. lib-disclose.mjs carries the measurement. */
-          || isDirectionCaptionRow(f.name));
+          || isDirectionCaptionRow(f.name)
+          /* ...or the row is an AUDIT FIRM'S OFFICE LIST read off the bottom of
+           * a scanned page — seven rows and one string, all with a blank issuer
+           * and a blank type, so neither the vehicle-type test nor the caption
+           * test can reach it. lib-disclose.mjs carries the population. */
+          || isOfficeListRow(f.name));
       /* v196: AND `namelessRow` JOINS THE FEE SUPPRESSORS, which is why this
        * definition had to move above `er`. The two comments below say of their
        * own arms that "the fee suppression above is independent of this

@@ -1259,6 +1259,50 @@ export function isDirectionCaptionRow(name) {
   return DIRECTION_CAPTION.test(String(name || "").trim());
 }
 
+/* AN AUDIT FIRM'S OFFICE LIST IS NOT A HOLDING — 2026-09-30 (16:3xZ).
+ *
+ * Found by the 16:1xZ participant-weighted draw on CHEWY (20,339 ppl), whose
+ * OCR'd 23-row Vanguard menu ends in
+ *   `Boca Raton, Florida 33431 Fort Myers, Florida 33907 Naples, Florida 34108
+ *    Orlando, Florida`
+ * at $32,801 — the auditor's letterhead, read off the bottom of a scanned page.
+ *
+ * THE WHOLE POPULATION IS SEVEN ROWS AND ONE STRING, every one read: the same
+ * Florida firm's letterhead in seven unrelated filings (Chewy, Fontainebleau
+ * Development 5,245, Fontainebleau Hospitality, Turnberry Hospitality ×2,
+ * Flightstar, Vertical Bridge) — 28,677 participants, $229,607, 0 publishing a
+ * ticker, all seven with a BLANK issuer and a BLANK type. An arm whose whole
+ * population is one name is read by reading it.
+ *
+ * THE TEST IS STRUCTURAL AND NEEDS NO VOCABULARY OF PLACES: TWO OR MORE
+ * `<City>, <State> <ZIP>` groups in one name. ONE such group is deliberately
+ * not enough — a single address can sit inside a real entity's filed name, and
+ * this record already carries General Motors publishing `One Kennedy Square`
+ * beside `Ernst & Young LLP`. Two is a LIST of offices, and no fund has one.
+ * The ZIP is required so that an ordinary `Kansas City, Missouri` pair inside a
+ * sponsor's name cannot reach the rule twice by accident.
+ *
+ * TYPED, NOT DROPPED (v181), THOUGH THE VALUE IS NOT PLAN MONEY. All seven rows
+ * carry the IDENTICAL $32,801, in seven plans with nothing else in common,
+ * which is what says the figure is an artifact of reading that page rather than
+ * a holding. Dropping it would move sums, ratios and confidence, so that is a
+ * PARSER-side change and is queued as one; this arm only stops the row claiming
+ * to be a fund. */
+export const OFFICE_GROUP = new RegExp(
+  ",\\s*(?:Alabama|Alaska|Arizona|Arkansas|California|Colorado|Connecticut" +
+    "|Delaware|Florida|Georgia|Hawaii|Idaho|Illinois|Indiana|Iowa|Kansas" +
+    "|Kentucky|Louisiana|Maine|Maryland|Massachusetts|Michigan|Minnesota" +
+    "|Mississippi|Missouri|Montana|Nebraska|Nevada|New Hampshire|New Jersey" +
+    "|New Mexico|New York|North Carolina|North Dakota|Ohio|Oklahoma|Oregon" +
+    "|Pennsylvania|Rhode Island|South Carolina|South Dakota|Tennessee|Texas" +
+    "|Utah|Vermont|Virginia|Washington|West Virginia|Wisconsin|Wyoming)" +
+    "\\s+\\d{5}\\b",
+  "gi");
+export function isOfficeListRow(name) {
+  const s = String(name || "");
+  return (s.match(OFFICE_GROUP) || []).length >= 2;
+}
+
 /* A BARE MATURITY DATE IS THE PARTICIPANT-LOAN ROW — 2026-09-30 (07:3xZ).
  *
  * The third member of the wrapped-loan-description family, and the one the

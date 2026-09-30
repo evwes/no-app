@@ -214,6 +214,7 @@ try {
   const { coverageBand, frozenClaimOk, cleanFiledName, isParticipantLoanRow, isLoanDescriptionRow,
     isAnnuityContractRow, annuityFeeIsGuaranteeOnly, isCollectiveTrustName, isLoanAnswerRow, isLoanMaturityRow,
     isDirectionCaptionRow,
+    isOfficeListRow,
     isInvestmentContractRow, isMistypedStockRow,
     mistypedStockFeeIsGuaranteeOnly, issuerPricedER, leadingHouse } = await import("./lib-disclose.mjs");
   const frozCases = [
@@ -721,6 +722,47 @@ try {
     if (!isDirectionCaptionRow(n)) fail(`direction-caption rule no longer types a Schedule H caption, so it reads as a fund: ${JSON.stringify(n)}`);
   for (const n of dirCases.slice(10))
     if (isDirectionCaptionRow(n)) fail(`direction-caption rule would claim a real brokerage window or a real fund: ${JSON.stringify(n)}`);
+
+  /* THE AUDIT FIRM'S OFFICE LIST, tethered the same way, 2026-09-30 (16:3xZ).
+   * The first four must FLAG: the whole seven-row population is ONE string, so
+   * the real case is pinned verbatim and the other three are the same shape in
+   * other states, proving the rule is not a memorised string.
+   * The last eight must be KEPT, and they are the safety argument. ONE
+   * `City, State ZIP` group is not enough -- a single address can sit inside a
+   * real filed name, and this record already carries General Motors publishing
+   * `One Kennedy Square` beside `Ernst & Young LLP`. A state name with no ZIP
+   * is ordinary inside a fund or sponsor name (`Kansas City Southern`), and a
+   * bare pair of ZIPs with no state cannot reach the rule at all. */
+  const offCases = [
+    "Boca Raton, Florida 33431 Fort Myers, Florida 33907 Naples, Florida 34108 Orlando, Florida",
+    "Austin, Texas 78701 Dallas, Texas 75201",
+    "Chicago, Illinois 60601  Milwaukee, Wisconsin 53202  Detroit, Michigan 48226",
+    "New York, New York 10017 Stamford, Connecticut 06901",
+    // must KEEP -- one group only, or no ZIP, or no state
+    "Boca Raton, Florida 33431",
+    "Ernst & Young LLP, One Kennedy Square, Detroit, Michigan 48226",
+    "Kansas City Southern Industries Common Stock",
+    "Virginia National Financial Common Stock",
+    "New York Life Insurance Company Guaranteed Interest Account",
+    "Washington Mutual Investors Fund Class R-6",
+    "Vanguard 500 Index Fund Admiral Shares",
+    "T. Rowe Price Retirement 2030 Trust F",
+    "Colonial Trust of Richmond, Virginia and Baltimore, Maryland Common Fund",
+  ];
+  const offGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoOfficeListRow !== "function") return null;
+    return cs.map((n) => window.__wampoOfficeListRow(n));
+  }, offCases);
+  if (!offGot) fail("app.js no longer exposes __wampoOfficeListRow — the office-list predicate cannot be cross-checked");
+  const offDrift = offCases.filter((n, i) => isOfficeListRow(n) !== offGot[i]);
+  if (offDrift.length) {
+    for (const n of offDrift) console.error(`  ${JSON.stringify(n)}  app.js=${offGot[offCases.indexOf(n)]}  module=${isOfficeListRow(n)}`);
+    fail(`the office-list predicate in app.js disagrees with scripts/lib-disclose.mjs on ${offDrift.length} of ${offCases.length} names`);
+  }
+  for (const n of offCases.slice(0, 4))
+    if (!isOfficeListRow(n)) fail(`office-list rule no longer types an audit firm's office list, so it reads as a fund: ${JSON.stringify(n)}`);
+  for (const n of offCases.slice(4))
+    if (isOfficeListRow(n)) fail(`office-list rule would claim a real fund or a single filed address: ${JSON.stringify(n)}`);
 
   /* THE BARE MATURITY DATE, tethered the same way, 2026-09-30 (07:3xZ). The
    * first eight must FLAG — every one is a real published name from the class,

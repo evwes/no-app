@@ -31556,3 +31556,75 @@ test separates the faithful case from the contradicting one.
 
 *A draw that produces two clean menus and three dead predicates is not a wasted
 cycle; it is three routes that will not be retried.*
+
+---
+
+## 2026-09-30 (16:3xZ) — AN AUDIT FIRM'S OFFICE LIST IS NOT A HOLDING
+
+**SHIPPED** (`[skip ci]`, display-side, no parser bump). **7 rows / 7 plans /
+28,677 participants / $229,607.**
+
+Found by the 16:1xZ participant-weighted draw on **Chewy (20,339 ppl)**, whose
+OCR'd 23-row Vanguard menu ends in a row named
+
+> `Boca Raton, Florida 33431 Fort Myers, Florida 33907 Naples, Florida 34108 Orlando, Florida`
+
+at $32,801 — the auditor's letterhead, read off the bottom of a scanned page.
+
+### The whole population is seven rows and ONE string
+
+The same Florida firm's letterhead in seven unrelated filings — Chewy,
+Fontainebleau Development (5,245), Fontainebleau Hospitality, Turnberry
+Hospitality (two plans), Flightstar Aircraft Services, Vertical Bridge — every
+one with a **blank issuer, a blank type, 0 tickers, and the identical
+$32,801.** *An arm whose whole population is one name is read by reading it*,
+and all seven were.
+
+### The test is structural and carries no vocabulary of places
+
+**Two or more `<City>, <State> <ZIP>` groups in one name.** Both conditions are
+load-bearing and both are negative-controlled by name:
+
+- **ONE group is deliberately not enough.** Dropping the floor to one convicts
+  `Boca Raton, Florida 33431` and **`Ernst & Young LLP, One Kennedy Square,
+  Detroit, Michigan 48226`** — which is this record's own General Motors
+  finding, where the auditor's single address really is what the filing says.
+- **The ZIP is required.** Dropping it convicts `Colonial Trust of Richmond,
+  Virginia and Baltimore, Maryland Common Fund`. **That case was added because
+  the control could not fail without it** — no pinned name had two bare state
+  names and no ZIP, so the ZIP condition was untested, and *a control that
+  cannot fail is decorative.*
+
+13 pinned cases 13/13 (4 must-flag, 9 must-keep), tethered by `smoke-test.mjs`
+against the app.js twin. Each control variant is built **directly** rather than
+by string surgery on the shipped source — the last control built that way broke
+the tail instead of widening it and convicted the must-FLAG side.
+
+### Typed, not dropped — though the value is not plan money
+
+All seven rows carry the **identical $32,801 in seven plans with nothing else in
+common**, which is what says the figure is an artifact of reading that page
+rather than a holding. Dropping it would move sums, ratios and confidence, so
+that is a PARSER-side change and is **queued** as one; this arm only stops the
+row claiming to be a fund.
+
+### Surface
+
+**REPORT path only**, and here that is an observation rather than a guarantee:
+`build-seo-pages.mjs` does import the predicate, and `git diff --stat p/` is
+empty over all 5,000 regenerated pages because every one of the seven rows sits
+below the page's top-twelve cut. parser-gate, smoke and fund-er-test
+(46/26/19/18) green.
+
+### And the class the draw appeared to find was not one
+
+The same Chewy menu publishes `CommornCollective Trusts` with issuer
+`{VANGUARD TARGET 2030}`, which read as the two columns being the wrong way
+round. Sized at **487 rows / 205 entries / 784,499 participants / $4.9B** — and
+then refused, because **the filing is right and so is the render.** Form 5500
+column (b) is *"Identity of issue"* and column (c) is *"Description of
+investment"*, so a fund in (b) with a vehicle type in (c) is the STANDARD
+layout; and both surfaces render `issuer · name`, so the reader sees
+`VANGUARD TARGET 2030 · CommornCollective Trusts` — the fund named first.
+**Do not carry 487 or 784,499 forward.** *Reading the render is what stopped
+this, and it took one grep.*
