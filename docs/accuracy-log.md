@@ -31256,3 +31256,72 @@ refuted. The one structural fact available is that **a share class is never a
 firm**, which is true in the ISSUER column specifically and false in the NAME
 column (where the 09:3xZ cycle refused 331 rows for exactly that reason). That
 asymmetry is where the next attempt should start.
+
+## 2026-09-30 (14:2xZ) — run #520 verdict: all seven pre-registered tests passed, and the one that looked like a miss was the verdict harness
+
+`conclusion: success` (data commit `7f553567`). **MIRRORED `b6e61585 →
+7f553567`**, the git check forced over main's one cron commit with the evidence
+produced first — plans array **byte-identical**, **0** acks the branch lacked,
+**0** status entries newer on main, **0** confident on main only — and the DATA
+gate passed **UNFORCED at +0 gained / −0 lost**, pv 196 covering 99.8%, fetch
+failures 142 (0.21%), reader failures 0.
+
+### The run-only figures, computed from the artifact
+
+The merge log lives on a blob host the sandbox cannot reach, so rather than
+quote a line I diffed the 64 lineup shards at `924d75b0` against the data
+commit:
+
+| registered | measured |
+|---|---|
+| `issuer leading-junk strip: 7702 rows across 559 plans` | **7,702 rows / 559 entries** |
+| `issuer section-caption strip: 5145 rows across 178 plans` | **5,145 rows / 178 entries** |
+| CONFIDENCE DIFF +0 / −0 | entries **60,103 → 60,103** |
+| `rows-dropped` 0 | rows **1,720,271 → 1,720,271** |
+| coverage line unchanged | **byte-identical** — confident 60,103, HIGH 5, warn 610, overshoot 316, dl 142, pv 99.8% |
+
+Names changed on **0** rows, which is the right answer: this arm touches the
+ISSUER column and nothing else. The composition landed exactly as designed —
+of the 7,702 rows the leading-junk arm cleaned, **5,145 then passed through the
+section-caption strip** and finished at `Mutual of America`.
+
+### The one that read as a miss, and it was mine
+
+`sec tickers` came back at **347,204 rows across 37,063 entries** against the
+**347,386 / 37,107** I registered — an apparent **−182 rows / −44 entries**, in
+the worst possible direction for a change whose whole claim is that it withdraws
+no answer.
+
+**It is not a withdrawal. Diffing `stk` row by row across all 64 shards gives
+0 lost, 0 gained, 0 changed** — the stored field did not move on a single row.
+The difference is that **my verdict script counted only entries where
+`confident` is set, and the registering measurement counted every stored
+entry.** Counted both ways at both commits:
+
+| predicate | `924d75b0` | `7f553567` |
+|---|---|---|
+| confident entries only (60,103) | 347,204 | **347,204** |
+| all stored entries (65,240) | 347,386 | **347,386** |
+
+Unchanged under either. The claim held; the number I compared it against was a
+different question.
+
+**A VERDICT HARNESS HAS TO ASK THE QUESTION WITH THE PREDICATE THE
+REGISTRATION USED.** This record already carries *a stored lineup entry is not a
+published one* (v190, where the gap cost a class size by a factor of 3.9) and
+*a delta against a remembered number is not a measurement* (#517). This is the
+same 65,240-vs-60,103 gap biting a **verdict** rather than a class size — and a
+verdict is where it is most dangerous, because a false miss invites a
+withdrawal that never happened to be "explained", and a false pass hides a real
+one. The confirming test is cheap and decisive: **ask the store for the before
+and after with ONE predicate**, rather than differencing against a figure
+recorded by an earlier cycle's script.
+
+### Surface
+
+**7 crawlable pages / 60,590 participants**, exactly the count measured before
+dispatch, and a local regeneration against the new store adds **nothing** — so
+the two surfaces agree. Saint Luke's Health System (15,891 and 14,392 across two
+plans), United Wholesale Mortgage (10,467), Community Foundation of Northwest
+Indiana (9,837), Follett Higher Education (7,784), Electronic Theatre Controls
+(1,247), Hinshaw & Culbertson (972).
