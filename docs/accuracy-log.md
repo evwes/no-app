@@ -30250,3 +30250,59 @@ class-level finding cannot ship invisibly again.
   `parts` can prefer line 5 where 6a(1) corroborates it — a change to 33
   published counts, which is the owner's call and is recorded as such rather
   than taken.
+
+## 2026-09-30 (05:2xZ) — QUEUED: the same fund, the same share class, two published fees, and the abbreviation decides which
+
+Found by the 05:1xZ participant-weighted draw (seed 20260930051), which returned
+two plans whose menus are both dominated by the American Funds target-date series
+at R-6 — **Shore United Bank** (752 ppl, 13 of 38 rows) and **Remington Hotels**
+(8,959 ppl, 9 of 32 rows at ~57% of the menu). Both immaculate otherwise. They
+publish **different fees for the same fund**:
+
+- `American Funds Target Date 2035 R6` → **0.32%**
+- `AM Fds Trgt Dte Rtm 2035 R6 Fd` → **0.40%**
+
+**Sized whole-store through app.js's full `er` expression, every suppressor
+transcribed: 59,456 published rows / 6,190 plans / 4,817,281 participants** carry
+this series, and they split by the filed SPELLING:
+
+| published fee | rows | plans | participants |
+|---|---|---|---|
+| **0.32%** | 44,785 | 4,512 | 3,478,406 |
+| **0.40%** | **9,136** | **1,217** | **1,130,692** |
+| blank | 5,532 | 589 | 307,264 |
+
+**1,130,692 participants are shown 0.40% for a holding that 3,478,406 others are
+shown at 0.32%, and nothing distinguishes them but how the filer typed the
+name.** `AMERICAN FUNDS 2055 TARGET R6` (277 rows) and
+`Am Fds 2030 Trgt Dte Rtm R6 Fd` (183) miss `fund-er.js`'s target-date pattern
+and fall through to the generic American Funds house arm, which is 0.40%; the
+unabbreviated `American Funds 2030 Target Date Retirement Fund` (544) hits the
+specific pattern at 0.32%. **The more specific pattern losing to the fallback is
+the table's own design intent inverted.**
+
+**The blank group is the 2026-09-28 share-class guard working as designed** —
+every top spelling there states R-4 (`American Funds 2040 Target Date Fund R4`),
+a class that pays a 12b-1 fee, so the R-6 number is correctly withheld. Not a
+defect and not part of this item.
+
+**NOT SHIPPED, and the reason is the standing rule rather than the size.** The
+obvious repair — widen the target-date pattern to reach the abbreviations — makes
+the site self-consistent, and self-consistency is a real improvement. But it
+would also *assert* that 0.32% is the right number for 1.13M more readers, and
+**a fee is SOURCED, never derived**: 0.32 and 0.40 are both pattern estimates,
+and the majority answer is not evidence. The sourced route exists and is the
+better one — `data/fund-facts.json` with a per-share-class figure, an as-of date
+and a source URL, which settles 0.32 against 0.40 instead of picking the more
+popular. (Recorded again in passing: that file is still empty, thirteen days on.)
+
+**Recommendation, smallest claim first:** source the American Funds R-6
+target-date ER once, then let both spellings resolve to the sourced figure. If
+the source cannot be reached, the fallback position is to make the abbreviations
+reach the same pattern as the full spellings and say in the commit that this
+unifies two estimates rather than verifying either.
+
+**Two one-off rows at the bottom of the split are a different, already-recorded
+class** and must not be folded in: `Retirement 2045 Fund American Funds
+EuroPacific Growth` and `Retirement 2020 Fund American Funds Growth Fund of
+America R6` are welds of two holdings, priced at the second fund's fee.
