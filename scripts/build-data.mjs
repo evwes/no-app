@@ -429,6 +429,28 @@ async function scanSchD(csv, year, wantedAcks) {
   console.log("SCH_D columns:", JSON.stringify(col), "| header sample:", H.slice(0, 14).join(","));
   const out = new Map(); // plan ack -> [einpn,...] of MTIAs
   const cct = new Map(); // plan ack -> Set of collective-trust dollar values
+  /* SCHEDULE D PART I IS A FUND MENU AND THIS FUNCTION THREW THE NAMES AWAY.
+   * Found 2026-09-30 from an owner-sent filing: Public Service Enterprise
+   * Group's two plans (12,611 participants, $4.45B) publish no menu at all,
+   * because both plans correctly refuse their fair-value note and the master
+   * trust holding the money has no readable 4i. Its Schedule D Part I names
+   * and VALUES the whole thing -- VFTC Institutional 500 Index Trust
+   * $1,216,710,409 plus fourteen Vanguard Fiduciary target-date collective
+   * trusts, about $2.0B, essentially the entire trust.
+   *
+   * The `name` column above was already resolved and was read only on the
+   * MTIA-link branch; the entity-code-C branch kept the dollar value alone,
+   * as a matching key for CIT typing. So the names were read from the DOL
+   * extract and discarded on every run ever made -- the fifth instance of
+   * the computed-and-discarded shape on this record, after run #244's
+   * failure reason, the Schedule A carrier, `thousands` and
+   * INS_CARRIER_NAME.
+   *
+   * NOTHING IS PUBLISHED FROM THIS YET. It is captured and counted so the
+   * next cycle can decide on measured numbers rather than an estimate: a
+   * Schedule D menu is the TRUST's holdings, not a plan's own 4i slice, so
+   * publishing it is a separate claim that needs its own labelled wording. */
+  const cctNamed = new Map(); // ack -> [{n, v}] collective trusts, named
   let n = 0, cctRows = 0;
   for await (const r of rows) {
     n++;
@@ -441,6 +463,12 @@ async function scanSchD(csv, year, wantedAcks) {
         cctRows++;
         if (!cct.has(ack)) cct.set(ack, new Set());
         if (cct.get(ack).size < 60) cct.get(ack).add(v);
+        const nm = col.name === -1 ? "" : String(r[col.name] || "").replace(/\s+/g, " ").trim();
+        if (nm) {
+          if (!cctNamed.has(ack)) cctNamed.set(ack, []);
+          const a = cctNamed.get(ack);
+          if (a.length < 60) a.push({ n: nm, v });
+        }
       }
       continue;
     }
@@ -451,9 +479,14 @@ async function scanSchD(csv, year, wantedAcks) {
       out.get(ack).push({ key, name: col.name === -1 ? "" : String(r[col.name] || "").trim() });
     }
   }
+  /* SAY WHETHER THE NAME COLUMN RESOLVED. A silent -1 gives an empty list on
+   * every row and a later count of 0 would then report on the ingest rather
+   * than on the filings. The extract headers are unreachable from a sandbox,
+   * so the RUN is what says the column name is right. */
   console.log(`SCH_D rows: ${n}, plans with MTIA links: ${out.size}, collective-trust rows: ${cctRows} across ${cct.size} plans` +
     (col.value === -1 ? "  ⚠ no dollar-value column resolved — CIT typing disabled" : ""));
-  return { mtia: out, cct };
+  console.log(`SCH_D collective-trust NAMES: ${col.name === -1 ? "NOT FOUND — the name column did not resolve and every list will be empty" : "resolved at index " + col.name + " (" + H[col.name] + ")"}; ${cctNamed.size} acks carry at least one named collective trust`);
+  return { mtia: out, cct, cctNamed };
 }
 
 /* ---------- pass 3: schedule C (recordkeeper) ---------- */
@@ -889,14 +922,23 @@ console.log(`MTIA filings: ${mtiaFilings.length}, unique trusts: ${mtiaByKey.siz
 // plan -> trust links from Schedule D
 const schD = new Map();
 const schDCct = new Map(); // plan ack -> Set of Schedule D collective-trust values
+const schDNamed = new Map(); // ack (plan OR TRUST) -> [{n, v}] named collective trusts
+/* THE TRUST'S OWN SCHEDULE D WAS NEVER SCANNED, which is the other half of
+ * the PSEG finding and the larger one. `wantedAcks` was built from `universe`
+ * alone, and an MTIA filing `continue`s out of the plan loop at ~line 208, so
+ * a master trust's ack is not in the universe and every row of its Schedule D
+ * was skipped -- including the one place its fund menu is written down.
+ * MTIA acks now join the wanted set. */
 for (const year of YEARS) {
   const acks = new Set(universe.filter((p) => p.year === year).map((p) => p.ack));
+  for (const m of mtiaFilings) if (m.year === year) acks.add(m.ack);
   if (!acks.size) continue;
   try {
     const csv = unzip(await download(year, `F_SCH_D_PART1_${year}_Latest.zip`));
-    const { mtia, cct } = await scanSchD(csv, year, acks);
+    const { mtia, cct, cctNamed } = await scanSchD(csv, year, acks);
     for (const [k, v] of mtia) schD.set(k, v);
     for (const [k, v] of cct) schDCct.set(k, v);
+    for (const [k, v] of cctNamed) schDNamed.set(k, v);
   } catch (e) { console.warn(`Sch D ${year}: ${e.message}`); }
 }
 // attach the collective-trust values so merge can retype matching holdings
@@ -1219,9 +1261,31 @@ console.log(`wrote plans-all.json: ${rowsOut.length} plans, ${(Buffer.byteLength
 // master-trust parse work list for fetch-4i
 const mtiaOut = [...usedMtias.entries()].map(([ack, m]) => ({
   ack, name: m.name, planYear: m.year, assetsEOY: (schH.get(ack) || {}).assetsEOY || 0,
+  // Schedule D Part I of the trust's own filing: the collective trusts it
+  // holds, named and valued. Captured only -- nothing reads `cct` yet.
+  ...(schDNamed.has(ack) ? { cct: schDNamed.get(ack) } : {}),
 }));
 writeFileSync("mtias.json", JSON.stringify({ generated: new Date().toISOString(), count: mtiaOut.length, trusts: mtiaOut }, null, 1));
 console.log(`wrote mtias.json: ${mtiaOut.length} referenced master trusts`);
+/* WHAT A SCHEDULE D MENU COULD SERVE, printed so the next cycle decides on a
+ * measured number. The population that matters is the plans linked to a trust
+ * where NEITHER the plan nor the trust publishes a lineup today -- measured
+ * in-sandbox at 123 plans / 1,363,069 participants / $197.1B before this
+ * change, against 488 plans / 8,269,176 already served by a confident trust.
+ * This run says how many of those trusts have a named Schedule D list. */
+{
+  let withCct = 0, cctRowsOut = 0;
+  for (const t of mtiaOut) if (t.cct && t.cct.length) { withCct++; cctRowsOut += t.cct.length; }
+  const trustHasCct = new Set(mtiaOut.filter((t) => t.cct && t.cct.length).map((t) => t.ack));
+  let reachPlans = 0, reachPpl = 0;
+  for (const p of universe) {
+    if (!p.mtiaAck || !trustHasCct.has(p.mtiaAck)) continue;
+    reachPlans++; reachPpl += Number(p.participants || 0);
+  }
+  console.log(`Schedule D collective-trust menus: ${withCct} of ${mtiaOut.length} trusts carry one (${cctRowsOut} rows), reaching ${reachPlans} member plans / ${reachPpl.toLocaleString()} participants`);
+  const selfNamed = [...schDNamed.keys()].filter((a) => !usedMtias.has(a)).length;
+  console.log(`  (plan-level Schedule D collective-trust names captured on ${selfNamed} plan acks — not trusts)`);
+}
 
 /* --- S&P subset (existing shape; feeds fetch-4i + curated overlay) --- */
 const picked = pickTickered(universe);

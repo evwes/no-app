@@ -31890,3 +31890,69 @@ caught with the 2024 amendment to 4%, the brokerage window is named
 (**Fidelity BrokerageLink**, which the filing describes as *"a self-directed
 brokerage account"*), and both plans correctly refuse to publish the
 fair-value note as a menu.
+
+## 2026-09-30 (18:2xZ) — THE TRUST'S OWN SCHEDULE D WAS NEVER SCANNED, AND THAT IS THE LARGER HALF OF THE PSEG FINDING
+
+- **Wrong, and it is TWO defects, not one.** The 18:0xZ entry recorded that
+  `scanSchD`'s entity-code-C branch keeps the dollar value and discards the
+  NAME. Reading the call site shows a second and bigger omission underneath
+  it: **`wantedAcks` is built from `universe`, and `universe` holds plans
+  only.** An MTIA filing `continue`s out of the plan loop at
+  `build-data.mjs:208`, so a master trust's ack was never in the wanted set
+  and **every row of every trust's Schedule D was skipped** — including the
+  one place a trust-held plan's fund menu is written down.
+  So for PSEG it is not that we read the names and dropped them; **we never
+  looked at that filing's Schedule D at all.**
+
+- **Change, and it publishes NOTHING yet.** Two lines of ingest:
+  MTIA acks join `wantedAcks` for each year, and the C branch keeps
+  `{n, v}` beside the value set the CIT typing already uses. The trust's list
+  lands on its `mtias.json` entry as `cct`. **No consumer reads it.** A
+  Schedule D menu is the TRUST's holdings and not a plan's own 4i slice, so
+  publishing it is a separate claim needing its own labelled wording, and the
+  numbers that decision turns on cannot be measured in-sandbox — the EFAST2
+  extracts come from the DOL site, which is unreachable from here.
+  **So this run exists to MEASURE.** It prints how many trusts carry a named
+  Schedule D list, how many rows, and how many member plans and participants
+  those trusts reach.
+
+- **The population it could serve, measured in-sandbox before the change:
+  123 full-form plans / 1,363,069 participants / $197.1B** are linked to a
+  master trust where NEITHER the plan nor the trust publishes a lineup —
+  Albertsons 222,465, Northrop Grumman 151,821, Delta 112,713, Medtronic
+  56,318, Johnson Controls 53,662, Nestlé 49,794, and PSEG's two. Of the 904
+  trust-linked plans, 293 publish their own lineup and **488 / 8,269,176 are
+  already served by a confident trust**, which is the precedent: showing a
+  reader the trust's holdings where the plan's money is in the trust is
+  something this site already does.
+
+- **HARNESS NOTE, caught by this record's own rule.** My first pass at that
+  count printed `plan's own lineup confident: 0` and `trust confident: 0`.
+  `lineups-status.json` nests under `.plans` and I read the top level.
+  *A clean zero reports on the query* — caught before the number was written
+  down, and the corrected split is the one above.
+
+- **PRE-REGISTERED, and the first line is the one that matters:** the prep log
+  must print `SCH_D collective-trust NAMES: resolved at index N (NAME)`.
+  **If it prints `NOT FOUND` the column name is wrong and that is the
+  finding** — the same instrumentation v195's `activeBOY` column carries, for
+  the same reason. Then `Schedule D collective-trust menus: N of M trusts
+  carry one (R rows), reaching P member plans / Q participants`.
+  **No published number may move:** this run carries no parser bump, so its
+  work list is the dead 403s, and `confident`, `lineups`, HIGH, `warn`,
+  `overshoot` and `dl` must all come back byte-identical to #517's line.
+  A `cct` key appears on `mtias.json` entries and nothing reads it.
+
+- **Prevention: `scripts/schd-name-test.mjs`, IN THE REPO** because a
+  generator left in a session scratchpad was wiped by a container restart
+  once already. It SLICES the shipped `scanSchD` out of `build-data.mjs`
+  rather than restating it — the module's top level downloads DOL extracts,
+  so it cannot be imported — and runs a crafted Schedule D carrying the PSEG
+  shape: a trust ack with three named collective trusts, a plan ack with one
+  MTIA link and one collective trust, and an ack nobody asked for.
+  **10 assertions, 10/10**, including the negative control: with the name
+  column renamed out of the header the capture goes to **0** *and the log
+  says `NOT FOUND`*, while the MTIA links still resolve. It reads its source
+  through `new URL(..., import.meta.url)` and was run from two different
+  working directories — *never hardcode the sandbox path in anything CI
+  runs.*
