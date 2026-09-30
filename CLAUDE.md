@@ -679,17 +679,24 @@ PURPOSE" for an hour after #510 had been verdicted AND mirrored. Same shape,
 same cause: the restart is what separates the cycle that writes a status line
 from the cycle that would have cleared it.
 
-- **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, ≥100
-  participants at either end of the plan year): **68,259 full-form**, 43,523
-  short-form, 68,767 parse-status entries.
-- **STORE: pv 196 covers 68,623 of 68,767 acks (99.79%)** — one dominant pv plus
-  the documented ~144-row old-version tail (pv180 23, pv106 18, pv192 12,
-  pv98/123 10 each), which is the completeness test, not a partial store.
-  Confident **60,103**, lineups 59,753, entries 65,240,
-  WARN **609** (608 + the `boy-count-contradicted` aggregate, which is the
-  predicted arrival and not a regression), overshoot **316** / 397,499 ppl,
-  overshootTrust 12, aggRow 112, **dl 142** (the last
-  11 HEAD-probed, 11 of 11 answered 403).
+- **Universe 112,652 plans, RE-DERIVED FROM THE STORE 2026-09-30 19:0xZ AFTER A
+  DOL DATASET REFRESH — do not carry the old 111,782 forward** (401(k)-type 2J
+  + ERISA 403(b) 2L/2M, ≥100 participants at either end of the plan year):
+  **68,538 full-form**, 44,114 short-form, 69,046 parse-status entries. The
+  refresh added a September ack month of **10,222 filings** and moved plan year
+  2025 from 33,008 to **44,548**.
+- **STORE: pv 196 covers 69,027 of 69,046 acks (99.97%)** — one dominant pv plus
+  a 19-row old-version tail (pv192 11, pv189/180/37 2 each), which is the
+  completeness test, not a partial store.
+  Confident **60,170**, lineups 59,822, entries 65,479,
+  WARN **608**, overshoot **372** / 436,224 ppl — **the rise is 83 entrants of
+  which 83 are acks NEW to the store and 0 pre-existing**, so the baseline
+  travels with the universe —
+  overshootTrust 12, aggRow 113, **dl 19** (the 142 dead 403s largely resolved
+  because a newer filing replaced the withdrawn one). **HIGH is back to 4:**
+  `audit-generic-names` fell back under its 230 threshold on the new store, so
+  the `fabricated-name` HIGH cleared and the baseline is the 4 `contrib`
+  outliers again.
   **THE HIGH BASELINE IS NOW 5, NOT 4, AND THAT IS v196's OWN EXPECTED
   CROSSING.** `audit-generic-names` reads **235 plans / 477 rows** against the
   `fabricated-name` escalation threshold of 230, so that HIGH is now STANDING
@@ -873,16 +880,64 @@ from the cycle that would have cleared it.
   parser-gate, smoke, fund-er-test (46/26/19/18) green. **REPORT path only as a
   GUARANTEE: `build-seo-pages.mjs` never imports `fund-er.js`**; `git diff
   --stat p/` empty. `docs/accuracy-log.md` 2026-09-30 (11:5xZ).
-- **IN FLIGHT: #523 (build-data, `workflow_dispatch` on `a56703b0`) — NO PARSER
-  BUMP. IT EXISTS TO MEASURE, AND TWO RUNS FIRED ON THE SAME COMMIT.** The
-  `scripts/**` push trigger fired (#522, `event: push`, observed `in_progress`)
-  AND the dispatch I sent one second later created #523. Same ref, same SHA, so
-  concurrency cancels the older and the survivor does identical work — but *a
-  cancelled run's merge still commits* (`if: always()`), so **read the pv
-  distribution at the verdict, not the status field.** Harmless here because
-  without a bump the work list is the dead 403s. This is the documented
-  intermittent push trigger in its OTHER direction: it also sometimes fires, so
-  a dispatch sent for safety can double up.
+- **NOTHING IS IN FLIGHT. #523 RAN `success` AND IS MIRRORED — 2026-09-30 19:0xZ
+  (`556b7eda → 52a9171f`), git check UNFORCED, `--force-data` over an ACK-KEYED
+  count that a plan-keyed re-ask cut by a factor of 28. THE PRE-REGISTRATION
+  FAILED AS STATED AND THE CAUSE WAS NOT THE CHANGE: DOL PUBLISHED A FRESH
+  BATCH BETWEEN THE DISPATCH AND THE PREP.** A September ack month that did not
+  exist in the before-store at all (**10,222 filings**), plan year 2025
+  **33,008 → 44,548** while 2024 fell 70,493 → 59,977 as *newest filing per
+  EIN|PN wins* swapped thousands of plans onto a new return. Universe
+  **111,782 → 112,652**, `dl` **142 → 19** (the dead 403s resolved because a
+  newer filing replaced the withdrawn one), `pvTopShare` **99.8 → 100**, HIGH
+  **5 → 4**, confident 60,103 → **60,170**, overshoot 316 → **372**.
+  **ATTRIBUTION, PER ACK, AND IT IS TOTAL.** Over the **100,557 plans present in
+  both stores at the SAME ack, `cctVals` — my change's only published output —
+  changed on 0**. Confident acks gained 7,897, **7,897 of them new to the
+  store**; lost 7,830, **7,830 gone from it**. `overshoot` reproduces to the
+  unit from `audit-data`'s own rule and of its **83 entrants, 83 are new acks
+  and 0 pre-existing**. Not one pre-existing ack moved in any direction.
+  ***PRE-REGISTER THE CHANGE'S FOOTPRINT, NOT THE STORE'S TOTALS, WHEN THE RUN
+  RE-INGESTS ITS OWN INPUTS.*** "No published number may move" silently asserts
+  that DOL published nothing — a claim about a third party's release schedule,
+  not about the code. The testable claim was *my change moves nothing* and it
+  held at 100.00%; the untestable one is what failed.
+  **AND `mirror-gate.mjs` IS ACK-KEYED, SO A REFRESH MAKES IT UNREADABLE.** It
+  refused with **7,830 lost lineups**; ack-keyed it cannot tell a withdrawal
+  from a SUPERSESSION. Re-asked plan-keyed: **275 plans lost a menu / 188,394
+  ppl, 197 gained one / 227,803**, net **+39,409 readers served**.
+- **THE DEFECT THE RE-ASKING FOUND, AND IT IS THE LARGEST THING IN THE CYCLE —
+  A SUPERSEDED ACK'S PARSE IS PRUNED AND THE PRIOR-YEAR FALLBACK NEVER FIRES:
+  168 plans / 149,811 participants lose a menu the day their new filing
+  publishes.** They carry `e=no-section` on the newly published return and
+  **assets GREW in every one** (29,671,417 → 43,109,135), so these are live
+  plans whose brand-new attachment is simply not readable yet. **v41's fallback
+  exists for exactly this shape and fired on 0 of 168.** The mechanism is one
+  line of the measurement: **`prior ack still present in lineups-status: 0`** —
+  the merge prunes the status entry of an ack that has left the universe, so the
+  confident parse that served those readers yesterday is DELETED in the same run
+  that makes the new filing unreadable. *A plan does not merely fail to gain; it
+  LOSES what it had, on the day its sponsor files.* **Recorded, not fixed:**
+  `fallbacks.json` is artifact-only and unreachable from the sandbox, so why
+  prep offered no candidate is a run's work and not a read's. **NEXT
+  PARSER-SIDE ITEM.**
+- **WHAT #523 WAS FOR LANDED EXACTLY.** The name column resolved — `NOT FOUND`
+  would have shown as zero — and **379 of 508 master trusts now carry a named
+  Schedule D list, 4,334 rows, $936,597,264,187**. Reach: **93 full-form plans /
+  1,124,285 participants** linked to a trust where neither side publishes a menu
+  (Albertsons 236,172, Northrop Grumman 151,108, Mars 66,642, Medtronic 55,692),
+  of which **65 plans / 888,650 sit behind a trust listing THREE OR MORE funds**.
+  That split is load-bearing: **Northrop Grumman's trust lists ONE fund at
+  $11.4B**, a trust holding a single collective trust, which is not a menu.
+  **The owner's own filing is served** — PSEG PN 004 and PN 006, 12,781 ppl, 15
+  named Vanguard collective trusts, the funds highlighted in what they sent.
+  **Nothing is published**: `cct` is read only by build-data's own reporting
+  line, verified by grep. Publishing it is a separate labelled claim.
+  **TWO HARNESS CATCHES:** a guessed `sponsor` printed blank for ten plans and
+  `loadPlans` named `sponsorName`; and an overshoot proxy keyed on a stored `rt`
+  read **0 on both sides** — *a clean zero reports on the query* — so the
+  shipped rule was read out of `audit-data` instead.
+  `docs/accuracy-log.md` 2026-09-30 (18:5xZ).
 - **WHAT #523 CARRIES — THE TRUST'S OWN SCHEDULE D WAS NEVER SCANNED, the
   second and larger half of the owner-sent PSEG finding.** `scanSchD`'s
   `wantedAcks` is built from `universe`, which holds PLANS only; an MTIA filing

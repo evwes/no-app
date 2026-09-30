@@ -31987,3 +31987,84 @@ fair-value note as a menu.
   0 ticker gains, 0 fee gains** — because the shipped `repairHouse` already
   fires inside `lookupTicker`, so the "before" side already has the answer.
   *A candidate that is already shipped must gain nothing*, and it did.
+
+## 2026-09-30 (18:5xZ) — A superseded ack's parse is PRUNED, and the prior-year fallback never fires: 168 plans / 149,811 participants lose a menu the day their new filing publishes
+
+Found while verdicting #523, whose pre-registration said **no published number
+may move** and every one of them did. The cause was not the change.
+
+**THE INPUTS MOVED UNDERNEATH THE RUN.** DOL published a fresh batch of EFAST2
+extracts between the dispatch and the prep: a September ack month that did not
+exist in the before-store at all (**10,222 filings**), plan year 2025 going
+**33,008 → 44,548** while 2024 fell 70,493 → 59,977 as "newest filing per
+EIN|PN wins" swapped thousands of plans onto a newly published return.
+Universe **111,782 → 112,652**, `dl` **142 → 19** (the dead 403s resolved
+because a newer filing replaced the withdrawn one), `pvTopShare` **99.8 → 100**,
+HIGH **5 → 4**.
+
+**ATTRIBUTION, PER ACK, AND IT IS TOTAL.** The change touches `scanSchD`, whose
+only output on a published path is `cctVals`. Over the **100,557 plans present
+in both stores at the SAME ack, `cctVals` changed on 0**. Confident acks gained
+7,897 — **7,897 of them acks new to the store**; lost 7,830 — **7,830 of them
+acks gone from it**. `overshoot` 316 → 372 reproduces exactly on both sides from
+`audit-data`'s own rule, and of the **83 entrants, 83 are new acks and 0
+pre-existing**. Not one pre-existing ack moved in any direction.
+
+**THE METHOD LESSON, which is the transferable half: pre-register the CHANGE's
+footprint, not the store's totals, when the run re-ingests its own inputs.**
+"No published number may move" silently asserts that DOL published nothing —
+a claim about a third party's release schedule, not about the code. The
+testable claim was *my change moves nothing*, and it held at 100.00% on both
+sides. The untestable one is what failed. A prediction that depends on an input
+you do not control is not a test of your change.
+
+**AND `mirror-gate.mjs` IS ACK-KEYED, so a refresh makes it unreadable.** It
+refused with **7,830 lost lineups** and listed acks at 120 rows each. Ack-keyed,
+it cannot tell a withdrawal from a SUPERSESSION — an ack disappears because a
+newer filing replaced it, and the plan keeps its menu under a different ack.
+A reader addresses a plan by EIN|PN, so the question was re-asked plan-keyed:
+**275 plans lost a menu / 188,394 participants, 197 gained one / 227,803**, net
+**+39,409 readers served**. 7,830 against 275 is a factor of 28.
+
+**THE DEFECT THE RE-ASKING FOUND, and it is the largest thing in this cycle.**
+Of the 275, **272 lost their own confident lineup, and 168 plans / 149,811
+participants carry `e=no-section` on the newly published return** — Standard
+Retirement Services, Flaherty Sensabaugh & Bonasso, Medical Diagnostic
+Associates. **Assets GREW in every one** (29,671,417 → 43,109,135;
+18,037,922 → 21,596,929), so these are live, healthy plans, not wind-downs:
+their brand-new attachment is simply not readable yet.
+
+**v41's prior-year fallback exists for exactly this shape and fired on 0 of
+168.** The mechanism is one line of the measurement: **`prior ack still present
+in lineups-status: 0`.** The merge prunes the status entry of an ack that has
+left the universe, so the confident parse that served those readers yesterday
+is DELETED in the same run that makes the new filing unreadable — and the
+fallback, which would have served the prior year, did not run. A plan does not
+merely fail to gain; it LOSES what it had, on the day its sponsor files.
+
+Recorded, not fixed — it needs `fallbacks.json`, which is artifact-only and
+unreachable from the sandbox, so the diagnosis of WHY prep offered no candidate
+is a run's work and not a read's. Queued as the next parser-side item.
+
+**WHAT #523 WAS FOR LANDED EXACTLY.** The name column resolved — a `NOT FOUND`
+would have shown as zero — and **379 of 508 master trusts now carry a named
+Schedule D list, 4,334 rows, $936,597,264,187**. Reach: **93 full-form plans /
+1,124,285 participants** are linked to a trust where neither side publishes a
+menu (Albertsons 236,172, Northrop Grumman 151,108, Mars 66,642, Medtronic
+55,692), and **65 plans / 888,650 sit behind a trust listing THREE OR MORE
+funds**. That split is load-bearing: **Northrop Grumman's trust lists ONE fund
+at $11.4B** — a trust holding a single collective trust, which is not a menu.
+**The owner's own filing is served**: PSEG PN 004 and PN 006, 12,781
+participants, 15 named Vanguard collective trusts, the funds highlighted in the
+filings they sent. **Nothing is published** — `cct` is read only by
+build-data's own reporting line, verified by grep.
+
+**A GUESSED FIELD NAME PRINTED BLANK AND `lib-schema` NAMED THE REAL ONE.** My
+first reach for the sponsor printed empty strings for ten plans; `loadPlans`
+throws on `sponsor` and answers `sponsorName`. And an overshoot proxy keyed on a
+stored `rt` returned **0 on both sides** — *a clean zero reports on the query* —
+so the shipped rule was read out of `audit-data` and reproduced 316 / 372 to the
+unit. Both caught before a number was written down.
+
+**Mirrored** `556b7eda → 52a9171f`, git check UNFORCED, `--force-data` over the
+ack-keyed count with the plan-keyed reconciliation above.
