@@ -32126,3 +32126,62 @@ in the check built to catch this exact failure.** That is the shippable piece:
 key the look-back on EIN|PN, not on the ack.
 
 **Do not carry 168 or 149,811 forward.**
+
+## 2026-09-30 (20:3xZ) — The mirror gate is ack-keyed, and on a dataset refresh that makes it worse than noisy: 7,830 "lost lineups" are 22
+
+Second correction in two cycles, and the class kept shrinking because each pass
+asked one more structural question. The 18:5xZ entry said 168 plans / 149,811
+participants; the 19:3xZ correction said 104 / 30,897; **the answer is 22 plans
+/ 16,996 participants**, and the intermediate figures were each one population
+short.
+
+**ONE COUNT WAS FOUR POPULATIONS.** Of the 7,830 confident lineups an ack-keyed
+diff reports lost across a DOL refresh: **7,585 are the same plan under a newer
+ack** (supersession — merge purges the old entry, the plan keeps its menu),
+**171 are WIND-DOWNS** ($0 year-end assets; the plan terminated and a final-year
+return correctly has no menu, and with `assetsEOY` = 0 the ratio guard can never
+accept a region anyway), **82 moved to the SHORT FORM**, which files no
+attachment BY LAW, 1 left the universe — and **22 are real**.
+
+**AND THE GATE IS NOT MERELY NOISY HERE, IT IS HARMFUL.** `mirror-gate` refuses
+on any ack-keyed loss, so a refresh presents the operator with 7,830 rows they
+cannot read and pushes them onto `--force-data` — **which then rubber-stamps the
+22 real losses hiding inside it.** *A gate that can only be satisfied by
+overriding it is not protecting anything.* That is what happened this morning:
+the mirror went out under `--force-data` with the real residue unexamined.
+
+**THE JOIN THAT WAS MISSING WAS ALREADY IN THE ROOM.** Both stores ship their
+own `plans-all`, so ack → EIN|PN is available on both sides and a supersession
+can be told from a withdrawal with nothing new stored. `merge-4i` cannot ask
+this — it purges superseded acks at `merge-4i:88` and by then has no way to name
+which plan a pruned ack belonged to — but the gate compares two complete stores,
+which is exactly where the question is answerable. *Where can the evidence be
+seen?*, the third time that question has settled a placement decision.
+
+**THE FIRST VERSION READ 18 / 4,499 AND OMITTED THE TWO LARGEST, AND THE CAUSE
+IS THIS RECORD'S MOST-REPEATED BLIND SPOT.** **Levi Strauss & Co. (8,288
+participants, $1,027.6M → $1,176.5M) and Motrex (2,939) were served by their
+MASTER TRUST, never by their own ack** — so their own acks never enter the loss
+list, and the trust's ack maps to no `plans-all` row, so the gate filed the
+trust's loss as benign. **Fifth instance of a count keyed on plans being blind to
+a trust**, here inverted: the blindness made a real loss look like housekeeping.
+An ack owned by no plan is now resolved through its member plans.
+
+**Verified by two independent computations agreeing to the person:** a
+hand-written pass over the stores and the shipped gate both return **22 plans /
+16,996 participants**, same members. *"Close" is not a verification; diff the
+member lists* — which is what caught the trust gap, since 18 against 22 is close.
+
+Positive control: `MIRROR_GATE_MAIN_REF` (added only so the classification can
+be reproduced on demand — *a gate whose behaviour cannot be reproduced is a gate
+nobody can trust*) replays this morning's exact pair and prints 7,830 by ack, 22
+by plan. Negative control on the trust arm: removed, the gate reads 18 / 4,499
+and drops **exactly** Levi Strauss ×2 and Motrex ×2, by name. Ordinary case
+(branch vs live main) returns `+0 / −0` and `ok` — and that zero is trustworthy
+only because the positive control ran first, *a check that prints 0 on a quiet
+store having not been tested.*
+
+**What it does NOT do:** it does not rescue the 22. Levi Strauss's newly
+published return carries `ds: "noattach"` — no audited attachment in the public
+copy yet — and its trust lost confidence at the same time. The gate now makes
+that visible and refuses on it instead of burying it in 7,830 rows.
