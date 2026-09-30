@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 195;
+export const PARSER_VERSION = 196;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -405,7 +405,7 @@ export const GENERIC_TYPE_NAME = /^(?:total )?(?:registered investment compan(?:
  * Residue that IS real and is left alone: a bare `Preferred Securities`
  * (3 rows) is an asset class rather than a fund, and sits outside this
  * anchor deliberately — it is a wider claim and gets its own measurement. */
-const GENERIC_TYPE_ANY_EXTRA = "commingled (?:trust |investment )?funds?|pooled separate account funds?|(?:plan )?(?:interest in )?master trusts?(?: funds?)?|trusts?|statements?|preferred stocks?";
+const GENERIC_TYPE_ANY_EXTRA = "commingled (?:trust |investment )?funds?|pooled separate account funds?|(?:plan )?(?:interest in )?master trusts?(?: funds?)?|trusts?|statements?|preferred stocks?|investments?|assets|(?:beginning |ending )?(?:fair|contract|market|net asset|book) values?";
 const GTA_PLURALISED = GENERIC_TYPE_NAME.source
   .replace("trust(?: fund| portfolio)?|collective trust fund|", "trusts?(?: funds?| portfolios?)?|collective trust funds?|");
 if (GTA_PLURALISED === GENERIC_TYPE_NAME.source) {
@@ -502,6 +502,17 @@ const GENERIC_DECO = [
   [/^(?:individual|managed|master|annuity|variable annuity in)\s+/i, ""],
   [/\s*[:;.]+$/, ""],
   [/[,;]?\s*at fair value$/i, ""],
+  /* v196 — the MEASUREMENT BASIS in every spelling the store uses, and a
+   * trailing footnote taken with it rather than through a general
+   * parenthesised-letter arm, so v188's case-SENSITIVE caution above stays
+   * exactly as narrow as it was. `(?:at|using)` is required: a bare `\bnav\b`
+   * would eat `PIMCO Short-Term Floating NAV Portfolio II`. */
+  [/[,;]?\s*\(?\s*practical expedient\s*\)?$/i, ""],
+  [/[,;]?\s*(?:(?:as\s+)?(?:measured?|valued|stated|carried|reported)\s+)?(?:at|using)\s+(?:(?:fair|contract|market|net asset|book|redemption)\s+value|n\.?a\.?v\.?)\s*(?:\(\s*[a-z0-9]{1,2}\s*\)|\d{1,2})?$/i, ""],
+  /* A parenthesised NUMBER is the footnote marker v174 removed from 7,429
+   * welded rows; unlike a letter it cannot be a share class. */
+  [/\s*\(\s*\d{1,2}\s*\)$/, ""],
+  [/^(?:investments?|assets)\s+(?=\S)/i, ""],
   [/\s+shares$/i, ""],
   [/[,;]?\s*dividends?\s*\/\s*interest reinvested$/i, ""],
   [/\s+not required$/i, ""],
@@ -532,7 +543,17 @@ export function isGenericTypeName(n) {
    * audits, diff-lineups and the browser twin — asks one question. The twin is
    * GENERATED from this file and `smoke-test.mjs` fails on drift, which is how
    * adding an arm here is prevented from silently splitting the two surfaces. */
-  return GENERIC_TYPE_ANY.test(s) || GENERIC_TYPE_ANY.test(stripGenericDecoration(s))
+  /* v196: A NAME THAT IS NOTHING BUT DECORATION escaped the decoration-aware
+   * guard, and the arm that produced the hole is v188's own. `At fair value`
+   * strips to the EMPTY STRING, and an empty remainder is in no vocabulary, so
+   * the predicate asked its question of nothing and answered false — while
+   * Northwood Investors published that row at 86.8% of its menu and Universal
+   * Orlando at 75.3%. If the strip consumed the whole name, the name carried no
+   * identity to begin with: there is no vocabulary to widen and nothing to
+   * read, which is why this arm is stated structurally. */
+  const bare = stripGenericDecoration(s);
+  if (!bare) return true;
+  return GENERIC_TYPE_ANY.test(s) || GENERIC_TYPE_ANY.test(bare)
       || GENERIC_TYPE_DESPACED.test(s.toLowerCase().replace(/[^a-z]/g, ""));
 }
 /* ASSERTED AT IMPORT, in this file's own style: a strip whose patterns stop
@@ -543,7 +564,16 @@ export function isGenericTypeName(n) {
 for (const s of ["Shares of Registered Investment Companies", "Mutual fund shares",
   "Sub-total: Registered Investment Companies", "DESCRIPTION: POOLED SEPARATE ACCOUNT",
   "Registered investment companies:", "Mutual fund, dividends/interest reinvested",
-  "Master Separate Account", "Mutual Funds Not Required", "Mutual fund shares a"]) {
+  "Master Separate Account", "Mutual Funds Not Required", "Mutual fund shares a",
+  /* v196 — the measurement basis in the spellings the store actually uses, and
+   * the two that are nothing BUT a basis (Northwood Investors, Universal
+   * Orlando), which the empty-remainder arm is the only thing that reaches. */
+  "At fair value", "at Fair Value", "At contract value", "Contract Value",
+  "Investments", "Investments measured at NAV", "Investments at Net Asset Value",
+  "Investments using NAV practical expedient", "Investment measured at NAV(A)",
+  "measured at net asset value (a)", "measured at NAV 1", "Collective Trusts(1) at NAV",
+  "Common Collective Trust Measured at NAV", "Investments Mutual funds, at fair value",
+  "Beginning Market Value", "dividends/interest reinvested"]) {
   if (!isGenericTypeName(s)) {
     throw new Error(`lib-4i: v188's decoration strip no longer reaches ${JSON.stringify(s)} — the widening is silent, fix it rather than shipping a quiet guard`);
   }
@@ -551,7 +581,17 @@ for (const s of ["Shares of Registered Investment Companies", "Mutual fund share
 for (const s of ["Fidelity Government Money Market Fund", "AMERICAN FUNDS BLANC MUTUAL FUND",
   "Vanguard tax-Managed Balanced Fund Admiral Shares Registered Investment Company",
   "Mutual of America MUTUAL FUND", "Vanguard Fiduciary Trust Company Mutual funds",
-  "Shares of Berkshire Hathaway Inc Class B"]) {
+  "Shares of Berkshire Hathaway Inc Class B",
+  /* v196 — a REAL holding wearing a measurement caption keeps its identity, and
+   * the NAV arm must require `at`/`using`: a bare `\bnav\b` eats the PIMCO fund.
+   * `Investment Company Of America` is the control on the leading-noun strip —
+   * the remainder must not land back in the vocabulary. */
+  "Managed Income Portfolio, at fair value", "Voya Fixed Account, at contract value",
+  "TIAA Traditional (contract value)", "Lincoln Stable Value (at contract value)",
+  "Guaranteed Income Fund (at contract value)", "Acuity DC Trust at fair value",
+  "Fidelity MIP CL 1 (Fair Value)", "PIMCO Short-Term Floating NAV Portfolio II",
+  "Investment Company Of America", "Stable value fund, at contract value",
+  "Separate Account A, at fair value"]) {
   if (isGenericTypeName(s)) {
     throw new Error(`lib-4i: v188's decoration strip now swallows the real fund ${JSON.stringify(s)} — narrow it rather than deleting a holding`);
   }

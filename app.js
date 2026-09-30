@@ -864,8 +864,8 @@
    * against lib-4i's own export on every push — a change to the derivation
    * shows up as drift, not as silence.
    * Regenerate: node scripts/gen-generic-twin.mjs */
-  const GENERIC_TYPE_ANY = new RegExp("^(?:total )?(?:registered investment compan(?:y|ies)|(?:common[\\/ ]?)?collective (?:investment )?trusts?(?: funds?| portfolios?)?|collective trust funds?|mutual funds?|common (?:and preferred )?stocks?|corporate stocks?|pooled separate accounts?|separate accounts?|guaranteed (?:investment|interest) contracts?|group annuity contracts?|commingled (?:trust |investment )?funds?|pooled separate account funds?|(?:plan )?(?:interest in )?master trusts?(?: funds?)?|trusts?|statements?|preferred stocks?)$", "i");
-  const GENERIC_TYPE_DESPACED = new RegExp("^(?:total)?(?:registeredinvestmentcompan(?:y|ies)|(?:common[\\/]?)?collective(?:investment)?trusts?(?:funds?|portfolios?)?|collectivetrustfunds?|mutualfunds?|common(?:andpreferred)?stocks?|corporatestocks?|pooledseparateaccounts?|separateaccounts?|guaranteed(?:investment|interest)contracts?|groupannuitycontracts?|commingled(?:trust|investment)?funds?|pooledseparateaccountfunds?|(?:plan)?(?:interestin)?mastertrusts?(?:funds?)?|trusts?|statements?|preferredstocks?)$", "i");
+  const GENERIC_TYPE_ANY = new RegExp("^(?:total )?(?:registered investment compan(?:y|ies)|(?:common[\\/ ]?)?collective (?:investment )?trusts?(?: funds?| portfolios?)?|collective trust funds?|mutual funds?|common (?:and preferred )?stocks?|corporate stocks?|pooled separate accounts?|separate accounts?|guaranteed (?:investment|interest) contracts?|group annuity contracts?|commingled (?:trust |investment )?funds?|pooled separate account funds?|(?:plan )?(?:interest in )?master trusts?(?: funds?)?|trusts?|statements?|preferred stocks?|investments?|assets|(?:beginning |ending )?(?:fair|contract|market|net asset|book) values?)$", "i");
+  const GENERIC_TYPE_DESPACED = new RegExp("^(?:total)?(?:registeredinvestmentcompan(?:y|ies)|(?:common[\\/]?)?collective(?:investment)?trusts?(?:funds?|portfolios?)?|collectivetrustfunds?|mutualfunds?|common(?:andpreferred)?stocks?|corporatestocks?|pooledseparateaccounts?|separateaccounts?|guaranteed(?:investment|interest)contracts?|groupannuitycontracts?|commingled(?:trust|investment)?funds?|pooledseparateaccountfunds?|(?:plan)?(?:interestin)?mastertrusts?(?:funds?)?|trusts?|statements?|preferredstocks?|investments?|assets|(?:beginning|ending)?(?:fair|contract|market|netasset|book)values?)$", "i");
   const GENERIC_DECO = [
     [/^(?:sub[- ]?total|total)\s*[:.]?\s+/i, ""],
     [/^description\s*:\s*/i, ""],
@@ -873,6 +873,17 @@
     [/^(?:individual|managed|master|annuity|variable annuity in)\s+/i, ""],
     [/\s*[:;.]+$/, ""],
     [/[,;]?\s*at fair value$/i, ""],
+    /* v196 — the MEASUREMENT BASIS in every spelling the store uses, and a
+     * trailing footnote taken with it rather than through a general
+     * parenthesised-letter arm, so v188's case-SENSITIVE caution above stays
+     * exactly as narrow as it was. `(?:at|using)` is required: a bare `\bnav\b`
+     * would eat `PIMCO Short-Term Floating NAV Portfolio II`. */
+    [/[,;]?\s*\(?\s*practical expedient\s*\)?$/i, ""],
+    [/[,;]?\s*(?:(?:as\s+)?(?:measured?|valued|stated|carried|reported)\s+)?(?:at|using)\s+(?:(?:fair|contract|market|net asset|book|redemption)\s+value|n\.?a\.?v\.?)\s*(?:\(\s*[a-z0-9]{1,2}\s*\)|\d{1,2})?$/i, ""],
+    /* A parenthesised NUMBER is the footnote marker v174 removed from 7,429
+     * welded rows; unlike a letter it cannot be a share class. */
+    [/\s*\(\s*\d{1,2}\s*\)$/, ""],
+    [/^(?:investments?|assets)\s+(?=\S)/i, ""],
     [/\s+shares$/i, ""],
     [/[,;]?\s*dividends?\s*\/\s*interest reinvested$/i, ""],
     [/\s+not required$/i, ""],
@@ -888,12 +899,30 @@
     }
     return s;
   }
-  function isGenericName(n) {
+  function isGenericTypeName(n) {
     const s = String(n || "").trim();
     if (!s) return false;
-    return GENERIC_TYPE_ANY.test(s) || GENERIC_TYPE_ANY.test(stripGenericDecoration(s))
+    /* v189: the third arm asks the SAME question of the letters-only string, so
+     * a kerned rendering of an asset-class label is recognised. It lives here
+     * rather than in the dominance guard so that every caller — the guard, both
+     * audits, diff-lineups and the browser twin — asks one question. The twin is
+     * GENERATED from this file and `smoke-test.mjs` fails on drift, which is how
+     * adding an arm here is prevented from silently splitting the two surfaces. */
+    /* v196: A NAME THAT IS NOTHING BUT DECORATION escaped the decoration-aware
+     * guard, and the arm that produced the hole is v188's own. `At fair value`
+     * strips to the EMPTY STRING, and an empty remainder is in no vocabulary, so
+     * the predicate asked its question of nothing and answered false — while
+     * Northwood Investors published that row at 86.8% of its menu and Universal
+     * Orlando at 75.3%. If the strip consumed the whole name, the name carried no
+     * identity to begin with: there is no vocabulary to widen and nothing to
+     * read, which is why this arm is stated structurally. */
+    const bare = stripGenericDecoration(s);
+    if (!bare) return true;
+    return GENERIC_TYPE_ANY.test(s) || GENERIC_TYPE_ANY.test(bare)
         || GENERIC_TYPE_DESPACED.test(s.toLowerCase().replace(/[^a-z]/g, ""));
   }
+
+  const isGenericName = isGenericTypeName;
   window.__wampoGenericName = isGenericName;  // read by the smoke test only
   function isNamelessFundRow(f, cleanedName, isGenericName) {
     const type = String((f && f.type) || "");
@@ -929,33 +958,6 @@
 
   window.__wampoLoanDescRow = isLoanDescriptionRow;  // read by the smoke test only
   const ANNUITY_CONTRACT_NAME = /\bannuity contracts?\b/i;
-  /* TWIN of lib-disclose.mjs `isCollectiveTrustName`, extracted verbatim. The
-   * two arms this vocabulary REFUSES are the point: a bare terminal `Trust` is
-   * dominated by `American Funds American High-Income Trust`, a registered
-   * fund, and `Trust Class` is Neuberger Berman's retail share-class name.
-   * `\bcit\b` is anchored terminal so `CIT Group` cannot match, and the same
-   * anchor excludes a registrant's SERIES trust. */
-  const CIT_VEHICLE_NAME =
-    /\b(?:collective(?:\s+investment)?\s+trusts?|common\s+collective\s+trusts?)\b|\bcits?\s*$|\btrust\s+(?:i{1,3}|iv|vi{0,3})\s*$/i;
-  const CIT_SERIES_TRUST = /\bseries\s+trust\b|\btrust\s+(?:i{1,3}|\d)\s*[-–—:]\s*\S/i;
-  function isCollectiveTrustName(name) {
-    const s = String(name || "");
-    if (CIT_SERIES_TRUST.test(s)) return false;
-    return CIT_VEHICLE_NAME.test(s);
-  }
-  window.__wampoCitName = isCollectiveTrustName;  // read by the smoke test only
-  /* TWIN of lib-disclose.mjs `isLoanAnswerRow`, extracted verbatim. Two arms
-   * because v194 created the second spelling: the restored phrase, and the bare
-   * remnant still in the store. Both are anchored on the WHOLE name, which is
-   * what keeps `Included Value Fund`, `Yes Bank Ltd` and `Bank Loan Fund`. */
-  const LOAN_ANSWER_PHRASE = /^loan\s+repayments?\s+are\b|^loan\s+repayments?\s*:/i;
-  const LOAN_ANSWER_REMNANT = /^(?:included|yes|no)[.:]?$/i;
-  function isLoanAnswerRow(name) {
-    const s = String(name || "").trim();
-    return LOAN_ANSWER_PHRASE.test(s) || LOAN_ANSWER_REMNANT.test(s);
-  }
-  window.__wampoLoanAnswerRow = isLoanAnswerRow;  // read by the smoke test only
-
   function isAnnuityContractRow(f, cleanedName) {
     const type = String((f && f.type) || "");
     if (!/^mutual fund/i.test(type)) return false;
@@ -1067,6 +1069,24 @@
   }
 
   window.__wampoIssuerPricedER = (n, iss) => issuerPricedER(fundER, n, iss);  // read by the smoke test only
+  const CIT_VEHICLE_NAME =
+    /\b(?:collective(?:\s+investment)?\s+trusts?|common\s+collective\s+trusts?)\b|\bcits?\s*$|\btrust\s+(?:i{1,3}|iv|vi{0,3})\s*$/i;
+  const CIT_SERIES_TRUST = /\bseries\s+trust\b|\btrust\s+(?:i{1,3}|\d)\s*[-–—:]\s*\S/i;
+  function isCollectiveTrustName(name) {
+    const s = String(name || "");
+    if (CIT_SERIES_TRUST.test(s)) return false;
+    return CIT_VEHICLE_NAME.test(s);
+  }
+
+  window.__wampoCitName = isCollectiveTrustName;  // read by the smoke test only
+  const LOAN_ANSWER_PHRASE = /^loan\s+repayments?\s+are\b|^loan\s+repayments?\s*:/i;
+  const LOAN_ANSWER_REMNANT = /^(?:included|yes|no)[.:]?$/i;
+  function isLoanAnswerRow(name) {
+    const s = String(name || "").trim();
+    return LOAN_ANSWER_PHRASE.test(s) || LOAN_ANSWER_REMNANT.test(s);
+  }
+
+  window.__wampoLoanAnswerRow = isLoanAnswerRow;  // read by the smoke test only
   window.__wampoCleanFiledName = cleanFiledName;
   window.__wampoLoanRow = (n) => LOAN_ROW.test(String(n || "").trim());  // read by the smoke test only
   /* "does this string identify a fund at all?" — the identity probe
@@ -2293,13 +2313,6 @@
        * rows carrying no guarantee word at all. */
       const mistypedGuaranteeFee = mistypedStock
         && mistypedStockFeeIsGuaranteeOnly(f.name || "", fundER);
-      const er = tab !== "menu" || stockRow || gicRow || subtotalRow || loanRow || annuityRow
-        || guaranteeOnlyFee || contractRow || mistypedGuaranteeFee ? null
-        : star ? info.er : (noPublicPrice ? null : fundERRow(f));
-      // the brokerage window is a menu choice with no holdings of its own —
-      // tint it so it reads as a doorway, not a fund (owner request)
-      const brokRow = /brokerage window/i.test(f.type || "")
-        || /brokerage|self.?directed|self.?managed|brokeragelink|\bpcra\b/i.test(f.name);
       /* THE FILING NAMED NO FUND, AND THE TYPE CELL WAS REPEATING THE NAME.
        * A bare vehicle type as the whole name — `Mutual funds`,
        * `Common/collective trust funds`, decorated variants such as
@@ -2324,6 +2337,31 @@
        * the shared rule would still be right and only this line would move. */
       const namelessRow = !String(f.iss || "").replace(/\*+/g, "").trim()
         && isNamelessFundRow(f, f.name, isGenericName);
+      /* v196: AND `namelessRow` JOINS THE FEE SUPPRESSORS, which is why this
+       * definition had to move above `er`. The two comments below say of their
+       * own arms that "the fee suppression above is independent of this
+       * ordering"; of THIS arm it was not true. A row the page itself declares
+       * names no specific fund was still free to publish an estimated expense
+       * ratio derived from that same non-name.
+       *
+       * Measured through the whole `er` expression over every published row:
+       * 787 nameless rows are reached today, `fundER` prices 34 of them, and 32
+       * are already suppressed because their TYPE cell reads `Stable value /
+       * GIC`. So the guard withdraws NOTHING that publishes today — it exists
+       * because v196's own widening creates the first two escapes, `Guaranteed
+       * interest contract(s), at contract value` with a BLANK type at Mote
+       * Marine (443 ppl) and Vernet US (232), each of which would print the
+       * generic 0.35% guarantee fallback: the exact fabricated number withdrawn
+       * from 89 rows on 2026-09-29. A widening that adds rows to a population
+       * has to be measured against what that population publishes, not only
+       * against what it says. */
+      const er = tab !== "menu" || stockRow || gicRow || subtotalRow || loanRow || annuityRow
+        || guaranteeOnlyFee || contractRow || mistypedGuaranteeFee || namelessRow ? null
+        : star ? info.er : (noPublicPrice ? null : fundERRow(f));
+      // the brokerage window is a menu choice with no holdings of its own —
+      // tint it so it reads as a doorway, not a fund (owner request)
+      const brokRow = /brokerage window/i.test(f.type || "")
+        || /brokerage|self.?directed|self.?managed|brokeragelink|\bpcra\b/i.test(f.name);
       /* when the NAME cell has been replaced with `Participant loans`, the type
        * must not say it again — `Participant loans | Participant loans — not a
        * menu choice` is the same phrase twice, which is the exact redundancy

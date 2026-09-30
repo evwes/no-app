@@ -1089,6 +1089,27 @@
    "fixed": "v194",
    "sponsor": "Caterpillar Inc. PN 037",
    "was": "Published `End of the year` $22,511,846 + `Beginning of the year` $18,345,347 = 68.2% of a 9-row asset-class table. Must stop winning: v194 lets a DIFFERENT region win, `Master Trust - at fair value` $54,024,140 at 97.5% with trustPtr=true and stmt=true, so the plan is correctly read as master-trust held and its page says so. A guard that withdraws a menu can promote the truth"
+  },
+  {
+   "ack": "20251007175519NAL0005143121003",
+   "class": "measurement-basis-as-holding-name",
+   "fixed": "v196",
+   "sponsor": "Universal City Development Partners (Universal Orlando)",
+   "was": "Published `At fair value` at 75.3% of a four-row menu. The name is NOTHING but a measurement basis, and v188's own decoration strip is what hid it: `at fair value` was already a removable wrapper, so the strip consumed the WHOLE name, and an empty remainder is in no vocabulary -- the predicate asked its question of nothing and answered false. Must stay confident (75.3% is under the 90% dominance floor) with the row typed `Filing names no specific fund`"
+  },
+  {
+   "ack": "20251015065413NAL0005372816001",
+   "class": "measurement-basis-as-holding-name-nav",
+   "fixed": "v196",
+   "sponsor": "Vitas Healthcare Corporation",
+   "was": "Published `Investments using NAV practical expedient` at 63.0% of a 13-row menu. Two arms in sequence: the `practical expedient` tail is removed first, then the `(?:at|using) NAV` basis, leaving the bare `Investments`. The `at|using` requirement is load-bearing -- a bare \\bnav\\b would eat `PIMCO Short-Term Floating NAV Portfolio II`, pinned as a must-keep in lib-4i's own import assertion"
+  },
+  {
+   "ack": "20251015101938NAL0002134947003",
+   "class": "measurement-basis-dominant-trust-withdrawal",
+   "fixed": "v196",
+   "sponsor": "HALLMARK CARDS INCORPORATED MASTER TRUST US TIPS INDEX (member: Hallmark Cards, 8,492 ppl)",
+   "was": "The ONLY lineup v196 withdraws. An OCR'd statement-of-changes page read as a three-row menu: `BEGINNING NET ASSET VALUE:` $125,940,081 = 92.9%, `5% OF ASSET VALUE:` $6,297,004, and the trustee's own name at $3,328,262 -- not one of the three is a fund, and Hallmark's 8,492 participants read it through the trust link. It is a TRUST, so it has no plans-all row and diff-lineups skips it: the pin is a record, not a comparison, and the plan-keyed audit in audit-data.mjs cannot see it either"
   }
  ]
 }

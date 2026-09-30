@@ -29569,3 +29569,143 @@ published rows named `included`/`Included`/`Yes` **24 → 0**; rows matching
 `confident` **+0 / −0** (the row is typed, never dropped, so no sum and no ratio
 moves); `audit-dominant-row` **0**; `audit-generic-names` **214 ± 2**;
 `overshoot` holds at 317.
+
+## 2026-09-30 (02:2xZ) — v196: A NAME THAT IS NOTHING BUT DECORATION ESCAPED THE DECORATION-AWARE GUARD
+
+**What was wrong.** Northwood Investors (2,277 participants) published a holding
+named `at Fair Value` at **86.8%** of a three-row menu; Universal Orlando
+(23,662) published `At fair value` at **75.3%**; Cisco (72,556) published
+`Collective Trusts(1) at NAV` at **77.9%**; Vitas Healthcare (13,326)
+`Investments using NAV practical expedient` at **63.0%**; Calpine (3,014) a bare
+`Investments` at **79.8%**. A measurement basis is not a holding.
+
+**The mechanism, and the arm that produced the hole is v188's own.**
+`GENERIC_TYPE_ANY` is anchored `^…$` and `stripGenericDecoration` removes
+material that cannot identify a fund and asks the same predicate again. One of
+its arms was already `[,;]?\s*at fair value$`. So `At fair value` stripped to the
+**EMPTY STRING** — and an empty remainder is in no vocabulary, so the predicate
+asked its question of nothing and answered false. **A guard that strips
+decoration and then looks for a vocabulary word is blind to a name that is
+nothing but decoration**, and the one basis spelling it already knew about is
+exactly the one that produces the empty remainder. There is no word to add:
+v196 states it structurally — if the strip consumed the whole name, the name
+carried no identity.
+
+**The whole population of that arm, over all 1,710,451 published rows, is 11
+distinct names / 37 rows**, every one read: `At contract value` (23),
+`At fair value`, `At Contract Value`, `dividends/interest reinvested`,
+`at Fair Value`, `measured at net asset value (a)`, `Measured at Net Asset
+Value`, `measured at NAV 1`, `measured at NAV`, `measured at NAV (practical
+expedient)`, `Measured at contract value`. Not one is a fund. An arm with no
+vocabulary is read by reading its population.
+
+**Three further arms carry the rest of the family**, all terminal-anchored and
+chained, never folded into one alternation: the `practical expedient` tail; the
+measurement basis itself, in every spelling the store uses, with a trailing
+footnote taken along rather than through a general parenthesised-letter strip —
+so v188's case-SENSITIVE caution (`Separate Account A, at fair value`) stays
+exactly as narrow as it was, and remains a pinned must-keep; a parenthesised
+NUMBER, which unlike a letter cannot be a share class (v174's footnote family);
+and a leading `investments`/`assets`, with `investments?|assets` and
+`(?:beginning |ending )?(?:fair|contract|market|net asset|book) values?` added to
+the anchored vocabulary. **`(?:at|using)` is REQUIRED on the NAV arm**: a bare
+`\bnav\b` eats `PIMCO Short-Term Floating NAV Portfolio II`.
+
+**Whole-store, before/after against git HEAD's own lib-4i and not a replica:
+174 rows / 170 plans / 530,326 ppl / $31,838,876,698 become generic-typed, 0 stop
+being, and all 63 DISTINCT NAMES were read.** Not one is a fund. The must-keeps
+hold on the same pass: `Managed Income Portfolio, at fair value`, `Voya Fixed
+Account, at contract value`, `TIAA Traditional (contract value)`, `Lincoln
+Stable Value (at contract value)`, `Acuity DC Trust at fair value`, `Fidelity
+MIP CL 1 (Fair Value)`, `Investment Company Of America`, `at contract value
+Fidelity 500 Index` (a LEADING caption, a separate recorded defect, untouched
+because every new arm is terminal-anchored).
+
+**Through the PUBLICATION gate — `isNamelessFundRow` is asked only where the
+issuer cell is empty: 166 rows / 164 plans / 501,561 participants /
+$29,813,863,521** are newly told *"Filing names no specific fund"*, **8 keep
+their identity because the issuer names the holding**, and 0 are excluded by the
+subtotal/stock/brokerage carve-outs. **20 crawlable pages / 352,780
+participants**, J&J 72,991 and Cisco 72,556 among them; every page gained
+exactly one qualifier and **none lost one**, checked page by page.
+
+**AND `namelessRow` JOINS THE FEE SUPPRESSORS, which is the half that was not on
+the queue.** `app.js`'s `er` expression listed `stockRow`, `gicRow`,
+`subtotalRow`, `loanRow`, `annuityRow`, `guaranteeOnlyFee`, `contractRow` and
+`mistypedGuaranteeFee` — and not `namelessRow`. Two of its sibling comments
+assert that "the fee suppression above is independent of this ordering"; of this
+arm it was not true. **A row the page itself declares names no specific fund was
+free to publish an estimated expense ratio derived from that same non-name.**
+Measured through the whole `er` expression: **787 nameless rows are reached
+today, `fundER` prices 34 of them, and 32 are already suppressed because their
+TYPE cell reads `Stable value / GIC`** — so the guard withdraws **nothing that
+publishes today**. It exists because v196's own widening creates the first two
+escapes: `Guaranteed interest contract(s), at contract value` with a BLANK type
+at Mote Marine (443 ppl) and Vernet US (232), **2 rows / 675 ppl / $7,512,380**,
+each of which would have printed the generic **0.35%** guarantee fallback — the
+exact fabricated number withdrawn from 89 rows on 2026-09-29. *A widening that
+adds rows to a population has to be measured against what that population
+PUBLISHES, not only against what it says.*
+
+**EXACTLY ONE LINEUP IS WITHDRAWN, and the plan-keyed pass could not see it.**
+The dominance guard needs a single non-fund row at ≥90%; over every published
+row keyed on plans the answer was **0**, and the standalone
+`audit-dominant-row.mjs` said **1**. The difference is a MASTER TRUST, which has
+no `plans-all` row — **the fifth time on this record that a count keyed on plans
+was blind to a trust.** It is `20251015101938NAL0002134947003`, HALLMARK CARDS
+INCORPORATED MASTER TRUST US TIPS INDEX, read row by row: `BEGINNING NET ASSET
+VALUE:` $125,940,081 = **92.9%**, `5% OF ASSET VALUE:` $6,297,004, and the
+trustee's own name `HALLMARK CARDS, INC. MASTER TRUST, STATE STREET BANK &
+TRUST, TRUSTEE` $3,328,262. An OCR'd statement-of-changes page, **not one of the
+three a fund**, and Hallmark's **8,492** participants read it through the trust
+link. Note also that `audit-data.mjs`'s in-pipeline `dominant non-fund` count is
+plan-keyed too and stays at 0 either way, so the standalone script is the only
+instrument that sees this class.
+
+**THE REGENERATION DELETED TWO TWINS AND THE TETHER CAUGHT IT — the most
+transferable thing in this cycle.** `isCollectiveTrustName` (shipped 00:5xZ) and
+`isLoanAnswerRow` (01:2xZ) were hand-written INTO app.js's GENERATED block in
+their own cycles. Running `gen-generic-twin.mjs` replaced the whole block and
+took both with it; the smoke test failed on the very next change with
+`isLoanAnswerRow is not defined`. **A generator that edits a block in place
+deletes anything a later hand-edit puts inside its boundaries** — the sibling of
+this file's own end-marker failure, where the marker moved and the old tail
+stayed. Both are now VERBATIM SLICES out of `lib-disclose`, both have drift
+checks with cases reaching BOTH arms (10 collective-trust names, 12 loan-answer
+names), and the end-marker list grew by one so a block written before this
+change is still found whole. **And `isGenericTypeName`'s own body is now sliced
+verbatim too** — it was the last hand-retyped piece in a generator whose whole
+purpose is that nothing is hand-maintained, so v196's arm would otherwise have
+left the twin one arm short.
+
+**`audit-generic-names` GOES 214 plans / 438 rows → 238 / 482 ON THE SAME STORE,
+past the 230 escalation threshold, AND THE THRESHOLD IS NOT MOVED.** v189 left
+that number to the owner and wrote that "a later run crossing 230 is a real
+signal"; this is that run. The crossing is the audit seeing more of a class that
+was always published, not new fabrication — and raising a threshold to
+accommodate one's own widening is how a regression gets normalised. The flag
+text now names the re-basing, because a HIGH that fires every run with no
+explanation is the noise that hides a real one. **The owner decision it points
+at is the one already on the queue: a WHOLE-TABLE test (what share of the menu's
+VALUE names no fund) beside the existing one-row test.**
+
+**Gates.** Import assertions extended in both directions — 16 must-catch
+(including the two the empty-remainder arm alone reaches) and 11 must-keep;
+`parser-gate.mjs` all green with no expectation moved; `diff-lineups.mjs` over
+318 corpus filings **0 in every direction**; `fund-er-test.mjs` 46/26/19/18 with
+0 failures; smoke test green across all six page shapes. **Four negative
+controls, one per arm, each removing it from the shipped twin and confirming it
+fails BY NAME on exactly the cases it reaches**: empty-remainder 5 of 13,
+basis 5 of 13, leading-noun 2 of 13, vocabulary 4 of 13, and **all 8 must-keeps
+hold under every variant**. The leading-noun control was decorative on its first
+run — it missed 0 of 10, because my probe list contained no name needing it —
+and was fixed by adding `Investments Mutual funds, at fair value`, `Assets
+Investments` and `Total assets at fair value`.
+
+**PRE-REGISTERED against the pv-195 store the run will read:** `confident`
+**−1 / +0**, ceiling −1, and the single loss must be
+`20251015101938NAL0002134947003`; the standalone `audit-dominant-row`
+**1 → 0** while `audit-data`'s plan-keyed count holds at **0** both ways;
+`audit-generic-names` **238 ± 3 plans** and a `fabricated-name` **HIGH APPEARS**,
+which is EXPECTED and is not a regression; `overshoot` holds at **317** or falls
+by at most 1; `dl` unchanged at **142**.

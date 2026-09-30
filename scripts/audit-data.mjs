@@ -636,7 +636,16 @@ try {
     flag("warn", "trust-overshoot", `${overT} master-trust lineups (${overTPlans} plans / ${overTPpl.toLocaleString()} participants) sum to >=1.15x trust assets: ${worstOverT.slice(0, 3).map((x) => x[1]).join("; ")}`);
 
   console.log(`\n== FABRICATED-HOLDING SHAPES: ${genericPlans} generic-named, ${dominantPlans} dominant non-fund`);
-  if (genericPlans > 230) flag("high", "fabricated-name", `${genericPlans} published lineups carry a bare investment-type name holding >=25% of the shown sum (baseline 206 on v104 data) — several real funds have merged onto one name: ${worstGeneric.join(" ")}`);
+  /* THE THRESHOLD IS DELIBERATELY NOT MOVED, and v196 crosses it. Widening
+   * `isGenericTypeName` to the measurement-basis family took this count from
+   * 214 plans / 438 rows to 238 / 482 ON THE SAME STORE, so the crossing is the
+   * audit seeing more of a class that was always published, not new
+   * fabrication — and raising a threshold to accommodate one's own widening is
+   * how a regression gets normalised. v189 left this number to the owner and
+   * wrote that "a later run crossing 230 is a real signal"; this is that run.
+   * The flag text says so, because a HIGH that fires every run with no
+   * explanation becomes the noise that hides a real one. */
+  if (genericPlans > 230) flag("high", "fabricated-name", `${genericPlans} published lineups carry a bare investment-type name holding >=25% of the shown sum (baseline 206 on v104 data; v196's measurement-basis widening re-based the same store 214 -> 238, so the first crossing is EXPECTED — see docs/accuracy-log.md 2026-09-30 and the owner-queued whole-table test) — several real funds have merged onto one name: ${worstGeneric.join(" ")}`);
   if (dominantPlans > 60) flag("high", "fabricated-name", `${dominantPlans} published lineups are one non-fund row carrying >=90% of the sum (baseline 50 on v104 data) — that is not a menu: ${worstDominant.join(" ")}`);
 } catch (e) { console.warn("fabricated-holding audit skipped: " + e.message); }
 

@@ -22,7 +22,8 @@ import vm from "node:vm";
 import { GENERIC_TYPE_ANY, GENERIC_TYPE_DESPACED, isGenericTypeName } from "./lib-4i.mjs";
 import { isNamelessFundRow, isLoanDescriptionRow, isAnnuityContractRow,
   annuityFeeIsGuaranteeOnly, isInvestmentContractRow, isMistypedStockRow,
-  mistypedStockFeeIsGuaranteeOnly, issuerPricedER } from "./lib-disclose.mjs";
+  mistypedStockFeeIsGuaranteeOnly, issuerPricedER, isCollectiveTrustName,
+  isLoanAnswerRow } from "./lib-disclose.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const lib = readFileSync(ROOT + "scripts/lib-4i.mjs", "utf8");
@@ -33,6 +34,18 @@ const ds = lib.indexOf("const GENERIC_DECO = [");
 const de = lib.indexOf("];", ds) + 2;
 if (ds < 0 || de < 2) throw new Error("gen-generic-twin: GENERIC_DECO markers moved in lib-4i");
 const deco = lib.slice(ds, de);
+
+/* v196: `isGenericTypeName`'s BODY, extracted VERBATIM rather than retyped.
+ * It was retyped here — two `return` lines copied by hand — and that is the one
+ * hand-maintained piece in a generator whose whole purpose is that nothing is
+ * hand-maintained. Adding v196's empty-remainder arm to lib-4i would have left
+ * the twin one arm short, and the drift check below only catches that if a probe
+ * name happens to REACH the new arm, which is the failure v189 paid for. */
+const gs = lib.indexOf("export function isGenericTypeName(");
+if (gs < 0) throw new Error("gen-generic-twin: isGenericTypeName moved in lib-4i");
+const ge = lib.indexOf("\n}\n", gs) + 3;
+if (ge < 3) throw new Error("gen-generic-twin: isGenericTypeName's body has no closing brace in lib-4i");
+const genericfn = lib.slice(gs, ge).replace(/^export /, "");
 
 /* `isNamelessFundRow` extracted VERBATIM from lib-disclose, body and all */
 const ns = dis.indexOf("export function isNamelessFundRow(");
@@ -102,6 +115,27 @@ const ipe = dis.indexOf("\n}\n", dis.indexOf("export function issuerPricedER("))
 if (ipe < 3) throw new Error("gen-generic-twin: issuerPricedER moved in lib-disclose");
 const isspriced = dis.slice(ips, ipe).replace(/^export /gm, "");
 
+/* v196 — THE TWO TWINS A REGENERATION DELETED, now sliced VERBATIM so they
+ * cannot be lost again. `isCollectiveTrustName` (2026-09-30 00:5xZ) and
+ * `isLoanAnswerRow` (01:2xZ) were hand-written INTO this generated block in
+ * their own cycles; the next run of this generator replaced the whole block and
+ * took them with it. The smoke tether is what caught it, on the very next
+ * change — which is the argument for the tether, and the argument for never
+ * hand-writing a twin inside a block a script owns. Sibling of the end-marker
+ * failure recorded below: a generator that edits in place deletes anything a
+ * later hand-edit puts inside its own boundaries. */
+const cts = dis.indexOf("export const CIT_VEHICLE_NAME =");
+if (cts < 0) throw new Error("gen-generic-twin: CIT_VEHICLE_NAME moved in lib-disclose");
+const cte = dis.indexOf("\n}\n", dis.indexOf("export function isCollectiveTrustName(")) + 3;
+if (cte < 3) throw new Error("gen-generic-twin: isCollectiveTrustName moved in lib-disclose");
+const citname = dis.slice(cts, cte).replace(/^export /gm, "");
+
+const las = dis.indexOf("export const LOAN_ANSWER_PHRASE = ");
+if (las < 0) throw new Error("gen-generic-twin: LOAN_ANSWER_PHRASE moved in lib-disclose");
+const lae = dis.indexOf("\n}\n", dis.indexOf("export function isLoanAnswerRow(")) + 3;
+if (lae < 3) throw new Error("gen-generic-twin: isLoanAnswerRow moved in lib-disclose");
+const loanans = dis.slice(las, lae).replace(/^export /gm, "");
+
 const block = `  /* GENERATED FROM scripts/lib-4i.mjs — DO NOT EDIT BY HAND.
    * lib-4i derives these patterns from GENERIC_TYPE_NAME by asserted
    * replacements, so they are DERIVED and transcribing one is the move this
@@ -123,12 +157,8 @@ ${deco.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
     }
     return s;
   }
-  function isGenericName(n) {
-    const s = String(n || "").trim();
-    if (!s) return false;
-    return GENERIC_TYPE_ANY.test(s) || GENERIC_TYPE_ANY.test(stripGenericDecoration(s))
-        || GENERIC_TYPE_DESPACED.test(s.toLowerCase().replace(/[^a-z]/g, ""));
-  }
+${genericfn.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
+  const isGenericName = isGenericTypeName;
   window.__wampoGenericName = isGenericName;  // read by the smoke test only
 ${nameless.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
   window.__wampoNamelessRow = isNamelessFundRow;  // read by the smoke test only
@@ -145,6 +175,10 @@ ${mistyped.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
   window.__wampoMistypedStockGuaranteeFee = (n) => mistypedStockFeeIsGuaranteeOnly(n, fundER);  // read by the smoke test only
 ${isspriced.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
   window.__wampoIssuerPricedER = (n, iss) => issuerPricedER(fundER, n, iss);  // read by the smoke test only
+${citname.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
+  window.__wampoCitName = isCollectiveTrustName;  // read by the smoke test only
+${loanans.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
+  window.__wampoLoanAnswerRow = isLoanAnswerRow;  // read by the smoke test only
 `;
 
 /* THE END MARKER MUST BE THE BLOCK'S LAST LINE. It was `__wampoGenericName`
@@ -162,6 +196,7 @@ const MARK_S = "  /* GENERATED FROM scripts/lib-4i.mjs — DO NOT EDIT BY HAND."
  * moved and the old tail stayed — so the list only ever grows, and the cut must
  * be made at the LAST marker present, not the first one found. */
 const MARK_ENDS = [
+  "  window.__wampoLoanAnswerRow = isLoanAnswerRow;  // read by the smoke test only\n",
   "  window.__wampoIssuerPricedER = (n, iss) => issuerPricedER(fundER, n, iss);  // read by the smoke test only\n",
   "  window.__wampoMistypedStockGuaranteeFee = (n) => mistypedStockFeeIsGuaranteeOnly(n, fundER);  // read by the smoke test only\n",
   "  window.__wampoInvestmentContractRow = (f) => isInvestmentContractRow(f, (f && f.name) || \"\", namesAFund);  // read by the smoke test only\n",
@@ -218,6 +253,10 @@ vm.runInContext(block
     "globalThis.__mq = (n) => mistypedStockFeeIsGuaranteeOnly(n, fundER);")
   .replace("window.__wampoIssuerPricedER = (n, iss) => issuerPricedER(fundER, n, iss);  // read by the smoke test only",
     "globalThis.__ip = (n, iss) => issuerPricedER(fundER, n, iss);")
+  .replace("window.__wampoCitName = isCollectiveTrustName;  // read by the smoke test only",
+    "globalThis.__ct = isCollectiveTrustName;")
+  .replace("window.__wampoLoanAnswerRow = isLoanAnswerRow;  // read by the smoke test only",
+    "globalThis.__la = isLoanAnswerRow;")
   .replace(/^\s{2}/gm, ""), ctx);
 const names = ["Mutual funds", "Mutual Fund Shares", "Sub-total: Registered Investment Companies",
   "Commingled funds", "Pooled separate account funds", "Collective trust funds",
@@ -253,7 +292,19 @@ const names = ["Mutual funds", "Mutual Fund Shares", "Sub-total: Registered Inve
   /* must stay real */ "Cohen & Steers Preferred Securities and Income Fund",
   "Nuveen Preferred Securities & Income I", "iShares Preferred & Income Securities ETF",
   "Principal Stable Value Preferred Fund", "Invesco Variable Rate Preferred ETF",
-  "Preferred Securities"];
+  "Preferred Securities",
+  /* v196 the measurement basis, added for the fifth cycle running for the same
+   * reason: not one probe above reaches these arms. Two of these reach the
+   * EMPTY-REMAINDER arm specifically, which is the one the vocabulary cannot
+   * express — the name is nothing but decoration, so there is no word to add. */
+  "At fair value", "at Fair Value", "At contract value", "Contract Value",
+  "Investments", "Investments measured at NAV", "Collective Trusts(1) at NAV",
+  "Investment measured at NAV(A)", "measured at NAV 1", "dividends/interest reinvested",
+  "Investments Mutual funds, at fair value", "Assets Investments", "Total assets at fair value",
+  /* must stay real */ "Managed Income Portfolio, at fair value",
+  "Voya Fixed Account, at contract value", "TIAA Traditional (contract value)",
+  "PIMCO Short-Term Floating NAV Portfolio II", "Acuity DC Trust at fair value",
+  "Investment Company Of America", "Fidelity MIP CL 1 (Fair Value)"];
 const rows = [
   { name: "Mutual funds", type: "Mutual fund" }, { name: "M utual Fund", type: "" },
   { name: "COMMON STOCK", type: "Employer security" },
@@ -533,5 +584,24 @@ for (const n of names) if (ctx.__g(n) !== isGenericTypeName(n)) {
 for (const r of rows) if (ctx.__n(r, r.name, ctx.__g) !== isNamelessFundRow(r, r.name, isGenericTypeName)) {
   bad++; console.log(`  ROW DRIFT ${JSON.stringify(r)}`);
 }
+/* v196: the two twins a regeneration had deleted now carry drift checks of
+ * their own, with cases that REACH both arms of each rule. Without these the
+ * slices above would be silent the next time either rule changed — and a twin
+ * with no drift check is the decorative guard this file already records. */
+const citNames = ["Vanguard Target Retirement 2040 Trust II", "Voya Stable Value Fund 20 CIT",
+  "Great Grey Trust - T. Rowe Price Stable Value CIT", "Invesco Stable Value Trust III",
+  /* must stay FALSE */ "MFS Series Trust II - MFS Growth Fund", "JPMorgan Trust II - Core Bond",
+  "American Funds American High-Income Trust", "Neuberger Berman Genesis Fund Trust Class",
+  "Fidelity 500 Index Fund", "CIT Group Inc"];
+for (const n of citNames) if (ctx.__ct(n) !== isCollectiveTrustName(n)) {
+  bad++; console.log(`  CIT-NAME DRIFT ${JSON.stringify(n)} twin=${ctx.__ct(n)} lib=${isCollectiveTrustName(n)}`);
+}
+const loanAnsNames = ["Loan Repayments are included:", "loan repayments: 240,932",
+  "included", "Included", "Yes", "no",
+  /* must stay FALSE */ "Included Value Fund", "Yes Bank Ltd", "Bank Loan Fund",
+  "Loan Repayment (Interest)", "Participant loans", "Loan Fund"];
+for (const n of loanAnsNames) if (ctx.__la(n) !== isLoanAnswerRow(n)) {
+  bad++; console.log(`  LOAN-ANSWER DRIFT ${JSON.stringify(n)} twin=${ctx.__la(n)} lib=${isLoanAnswerRow(n)}`);
+}
 if (bad) { console.error(`generated with ${bad} DRIFT — do not commit`); process.exit(1); }
-console.log(`generated; twin agrees with lib-4i on ${names.length} names, with lib-disclose on ${rows.length} rows, ${loans.length} loan-description names, ${annuityRows.length} annuity-contract rows, ${guarFeeNames.length} guarantee-only fee names, ${investmentContractRows.length} investment-contract rows, ${mistypedStockRows.length} mistyped-employer-stock rows and ${mistypedStockFeeNames.length} mistyped-stock fee names and ${issuerFeeCases.length} issuer-priced fee cases`);
+console.log(`generated; twin agrees with lib-4i on ${names.length} names, with lib-disclose on ${rows.length} rows, ${loans.length} loan-description names, ${annuityRows.length} annuity-contract rows, ${guarFeeNames.length} guarantee-only fee names, ${investmentContractRows.length} investment-contract rows, ${mistypedStockRows.length} mistyped-employer-stock rows and ${mistypedStockFeeNames.length} mistyped-stock fee names and ${issuerFeeCases.length} issuer-priced fee cases, ${citNames.length} collective-trust names and ${loanAnsNames.length} loan-answer names`);
