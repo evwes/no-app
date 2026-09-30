@@ -726,6 +726,64 @@ from the cycle that would have cleared it.
   run's own merge — the recorded `tkShare` mechanism, not a regression. Negative
   control: with the bar raised past the class the audit returns to 608 exactly.
   `docs/accuracy-log.md` 2026-09-30 (03:1xZ).
+- **SHIPPED 2026-09-30 03:3xZ, `[skip ci]` behind #514 — A TRUNCATED WORD IS NOT A
+  SURVIVING FUND NAME: 21 rows / 21 plans / 91,184 participants / $51,879,475.**
+  Hyatt (44,487) published `Plan participants Notes with interest rates ranging
+  from 3.25% to 10.50%, with various mat`; TriHealth (18,586) `with 4.25%–9.50%
+  annual interest rate`; Churchill Downs (8,531) `… maturity dates thr`.
+  **The guard's RESIDUE TEST is what let them through and it must stay** — it is
+  what keeps Griswold's `… 0.15% to 0.62% … Principal`, a GIC whose surviving
+  word is a house name. **But these residues are not names: they are words the
+  rule ALREADY STRIPS, cut mid-token by the column width** — `mat` `thr` `dat`
+  `matu` `matur` `throug` `Bear` `bear` `balan` `partic` `par` `Ap` `Col` `Coll`
+  `Colla` `annual` `ye`, and Metro CU's OCR-split `Inte re st`. So the arm is
+  structural and adds no vocabulary: **a residue token that is a PROPER PREFIX of
+  a stripped word is that word**, with the vocabulary DERIVED from
+  `LOAN_DESC_WORDS.source` under an import assertion.
+  **The queued figure was 13 / 70,205 and it is 21 / 91,184** (measured at v183,
+  store now pv 195), and three of the extra rows are shapes the queue had
+  separated out as their own defects — including the OCR-split family.
+  **Over 1,710,454 published rows exactly 21 change and 0 are LOST**, all 21
+  names read, **0 publishing a ticker, a `stk` or a fee.** **THE NAMED RISK IS
+  REFUSED BY SOMETHING STRONGER THAN THE PREFIX TEST:** `Bear Stearns High Yield`
+  keeps `Stearns`, `Columbia Short Term Bond` keeps `Columbia` — *a real name
+  arrives WHOLE*, so the arm can only consume an already-abbreviated token.
+  REPORT path only, `git diff --stat p/` empty over all 5,000 regenerated pages.
+  Tether 14 → 20, twin probes 14 → 19, negative control fails by name on exactly
+  the 6 new must-flags; **no specimen pinned, deliberately** — `diff-lineups`
+  compares PARSER output and this is a display rule.
+  `docs/accuracy-log.md` 2026-09-30 (03:3xZ).
+- **OWNER'S CALL, SIZED, NOT SHIPPED — AN ASSERTED TICKER WHOSE OWN REGISTERED
+  CLASS CONTRADICTS THE FILING: 5,861 rows / 3,977 plans / 8,288,788
+  participants, of which 5,854 / 8,282,460 ALSO publish the other fund's FEE.**
+  Found by the 03:3xZ draw on **U-Haul Holding (35,385 ppl)**, whose `Total Bond
+  K6 Fund` renders **FTBFX at 0.45%** where `sec-funds.json` says FTBFX is
+  `Fidelity Total Bond Fund` and the K6 fund is **FTKFX** — not asterisked, not a
+  labelled comparable, published as fact. `Fidelity Contrafund K6` → FCNTX (318
+  rows), `FID GOVT MMKT K6` → SPAXX (345), `Vanguard Small-Cap Index Fund
+  Investor Shares` → **VSMAX, the ADMIRAL class**, priced at Admiral's 0.05% —
+  **the Vanguard half errs in the FLATTERING direction.**
+  **LARGER THAN EVERY PREVIOUS MEASUREMENT OF THIS DEFECT**, which this record
+  has now named four times: the 2026-09-28 SEC cross-check said 744 names / 3,844
+  rows / 5,962,185 ppl because it counted only names where BOTH sources resolve
+  exactly. The narrower and more damning question — *does the asserted answer's
+  own registered class contradict the class the filing states* — reaches 5,861 /
+  8,288,788.
+  **THE THIRD OPTION THIS RECORD HAD NOT CONSIDERED.** 2026-09-28 refused to
+  override the ticker because that leaves the retail FEE beside the K6 symbol,
+  and that holds. (1) ticker only — refused. (2) BOTH — the right answer, but *a
+  fee is SOURCED, never derived* and `fund-er.js` has no K6 numbers, so it needs
+  `data/fund-facts.json` populated per share class. (3) **WITHDRAW BOTH** — which
+  is exactly the move made for the 10,387 American Funds fee cells, *a wrong
+  number outranks an absent one*, and was never considered here.
+  **Not shipped: route 3 costs 8.3M participants a ticker and a fee they have
+  today**, the same line drawn for the R-6 item. **Recommendation: route 3 now,
+  route 2 as `fund-facts` fills in per-class figures — they compose.**
+  Harness note: my first pass read `sec-funds.json` entries as OBJECTS and asked
+  `f.ticker`, which would have sized the class at **0**; they are ARRAYS
+  (`["Registrant :: Series", ticker, "class", "Class Name"]`), and the sizer now
+  asserts FTKFX and FTBFX both resolve before counting.
+  `docs/accuracy-log.md` 2026-09-30 (03:5xZ).
 - **IN FLIGHT: #514 (v196), dispatched 2026-09-30 03:0xZ — a FULL re-parse on the
   version bump. A NAME THAT IS NOTHING BUT DECORATION ESCAPED THE
   DECORATION-AWARE GUARD: 166 rows / 164 plans / 501,561 participants /
