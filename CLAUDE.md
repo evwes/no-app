@@ -682,17 +682,18 @@ from the cycle that would have cleared it.
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, ≥100
   participants at either end of the plan year): **68,259 full-form**, 43,523
   short-form, 68,767 parse-status entries.
-- **STORE: pv 193 covers 68,624 of 68,767 acks (99.79%)** — one dominant pv plus
+- **STORE: pv 194 covers 68,623 of 68,767 acks (99.79%)** — one dominant pv plus
   the documented ~140-row old-version tail (pv180 23, pv106 18, pv192 12,
   pv124/123 10 each), which is the completeness test, not a partial store.
-  Confident **60,103**, lineups 59,752, entries 65,241, **HIGH 9 in CI / 4
-  locally** (the five extra are self-clearing `reparse-loss` entries raised from
+  Confident **60,106**, lineups 59,755, entries 65,241, **HIGH 5** = the 4
+  baseline plus one self-clearing `reparse-loss` (earlier runs read HIGH 9 in CI / 4
+  locally (the five extra are self-clearing `reparse-loss` entries raised from
   `losses-triage.txt`, a run ARTIFACT that exists only in CI — *a metric that
   differs between CI and local is a question about the inputs, not the store*),
-  WARN 629, overshoot **318** / 398,757 ppl, aggRow 112, **dl 142** (the last 11
-  HEAD-probed, 11 of 11 answered 403), **`analyze` 0**.
-  `audit-dominant-row` **0**, `audit-generic-names` **214 against the 230
-  escalation threshold — still not raised**. **`matchQuote` 5,397 of which only
+  WARN **608**, overshoot **317** / 397,964 ppl, aggRow 112, **dl 142** (the last
+  11 HEAD-probed, 11 of 11 answered 403).
+  `audit-dominant-row` **0 plans / $0.0B**, `audit-generic-names` **214 plans /
+  438 rows against the 230-plan escalation threshold — still not raised**. **`matchQuote` 5,397 of which only
   1,785 are SHOWN to readers** — the condition/outcome pair shipped 2026-09-27.
 - **SHIPPED 2026-09-30 00:1xZ, `[skip ci]` behind #511 — A TRAILING PLUS IS A
   FOOTNOTE MARKER, EXCEPT WHEN IT IS THE NAME: 861 rows / 289 lineups / 195,234
@@ -773,13 +774,44 @@ from the cycle that would have cleared it.
 - **`site-test` #113 reads `conclusion: success`** on `f1ad15e5`, the exact
   mirrored commit carrying the trailing-plus fix — dispatched deliberately
   because that change shipped under `[skip ci]` and local green is not CI green.
-- **THE MIRROR IS HELD: #512, the :23 cron, is IN FLIGHT ON MAIN** (started
-  00:32Z, late as always). Force-pushing the branch onto main while a run is
-  about to commit there is the one mirror hazard that is real. It will leave a
-  data commit on main to reconcile before the next mirror.
-- **IN FLIGHT: #511 (v194), dispatched 2026-09-29 23:5xZ on `417acea1`, observed
-  `in_progress` on the dev branch — a FULL re-parse on the version bump. Tree at v194,
-  store at v193 until it lands.** Two classes, both v193's OWN COST.
+- **THE MIRROR WAS HELD ON #512 AND THEN TAKEN.** The :23 cron was in flight ON
+  MAIN at 00:32Z — the one mirror hazard that is real — so the branch waited, and
+  its data commit was reconciled with the evidence first: **0 acks the branch
+  lacked**, **1 newer on main** (`G & E HOCKER'S MTIA PLAN`, the documented
+  analyze-stuck TRUST, **confident on both sides**, so nothing lost and the stale
+  branch pv means the next incremental re-reads it), **1 confident on main only**
+  (the Caterpillar withdrawal above). Gate **+4 gained / −1 lost**.
+- **NOTHING IS IN FLIGHT. #511 (v194) RAN `success` AND IS MIRRORED — 2026-09-30
+  01:0xZ (`dba53e34 → 35c36a9f`), `--force` on the git check over main's one cron
+  commit and `--force-data` over the single loss, both with the evidence first.
+  SIX OF SEVEN PRE-REGISTERED TESTS PASSED EXACTLY:** statement-caption rows
+  **7 → 0**, loan-repayment rows **21 → 0**, `audit-dominant-row` **0**,
+  `audit-generic-names` **214 plans / 438 rows** against 214 ± 2; `overshoot`
+  318 → **317** and `dl` **142** unchanged both passed.
+  **`confident` MISSED — 60,106, net +3, where net −3 was registered — AND THE
+  MISS IS IN THE SAFE DIRECTION BECAUSE TWO REGISTERED LOSSES CAME BACK AS WINS.**
+  Refusing the caption region handed them to the prior-year fallback: **The
+  Mcclatchy Company (3,595 ppl) is `c=1`, `fb=2023`, 37 rows at ratio 0.99** topped
+  by `Vanguard Institutional Index Fund Instl Plus Shares`, so those readers go
+  from a **$592,952,331 statement-of-changes phantom at 87.4%** to a real 37-row
+  Vanguard menu; **Indy Connection (229)** gains 9 real T. Rowe Price rows.
+  *A guard that withdraws is sometimes a guard that PROMOTES* — #481's pattern
+  again, and why a prediction of "withdrawn" is about one REGION and not about the
+  filing, which is what makes a NAMED SET the right registration.
+  The rest behaved: **Caterpillar PN 037 (485) lost as predicted** and now shows
+  its master-trust pointer at 97.5% (the one row `--force-data` covered);
+  **Edgewater (697) held at 35 rows / 0.67**; **Pedulla (185) is back at 25 rows /
+  0.78**, where I predicted 26.
+  **TWO MISSES OF MINE, both the same shape and both queued.** Northwood Investors
+  (2,277) did NOT fall under the three-row floor — it still publishes 3 rows topped
+  by `at Fair Value` at 86.8%, so removing the loan caption **promoted another junk
+  row into its place**, invisible to every count. And **my own arm created one**:
+  dropping the line `Loan Repayments are` at Benchmark Landscape promoted its
+  wrapped continuation to a holding named **`included:` at 94.6%** of a 27-row
+  menu. Not reader-facing (`dx=tiny`) but it is v194's cost. **A line-level skip
+  can promote the continuation of the line it skipped.**
+  `docs/accuracy-log.md` 2026-09-30 (01:0xZ).
+- **WHAT #511 SHIPPED (v194), for the record:** Two classes, both v193's OWN COST.
   **(1) A STATEMENT-OF-NET-ASSETS CAPTION AS A HOLDING — 7 rows / 4 plans / 5,006
   ppl / $690,053,564.** The statement-lines alternation read `beginning of
   year|end of year`, allowing **no `the` and no `period`**, so `End of the year`,
