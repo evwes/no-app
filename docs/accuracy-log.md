@@ -32338,3 +32338,38 @@ and is faithful in the filing.
   four blank spellings (the widening becomes inert), dropping the mutual-fund
   arm on exactly the three typed ones (the 147,835 rows already shipping are
   withdrawn). fund-er-test 46/26/19/18 with 0 failures.
+
+## 2026-09-30 (23:1xZ) — #526 verdict: every pre-registered figure passed to the row
+
+- **#526 ran `success`** (22:31–22:43Z, 12 minutes, correct for an incremental
+  whose whole work list is the 19 dead 403s) and is **MIRRORED
+  (`09a16988 → 8f9e0f35`), UNFORCED ON BOTH CHECKS, data gate +0 / −0 by ack AND
+  by plan** — the first mirror since the gate became plan-keyed where both
+  keyings agree at zero.
+- **PASSED:** `tkExact` **36.18**, `tkComparable` **3.27**, `tkShare` **24.47**,
+  and every other figure byte-identical to #523's line — confident **60,170**,
+  lineups **59,822**, entries **65,479**, HIGH **4**, warn **608**, overshoot
+  **372**, overshootTrust **12**, aggRow **113**, dl **19**, pvTopShare **100**.
+  The two `tkExact` effects landed exactly as separated: 24.67 → 33.58 is the
+  instrumentation fix on the 147,835 rows the field already carried, 33.58 →
+  36.18 is the widening.
+- **THE RUN-ONLY FIGURE WAS READ OUT OF THE ARTIFACT, NOT THE LOG** (the merge
+  log's blob host is `connect_rejected` from the sandbox): diffing the 64 lineup
+  shards at `56637757` against the data commit gives **459,695 rows across
+  47,534 entries**, exactly the registered `sec tickers` line, and the gain
+  **109,662 rows / 11,282 entries / 11,346 plans / 13,751,840 participants /
+  $261,166,139,187, LOST 0, CHANGED 0** — identical to the local merge to the
+  digit. *A figure computed from the artifact does not depend on a log being
+  readable*, and here it also says the production merge reproduced the local one
+  exactly rather than approximately.
+- **AND THE REPORT-PATH CLAIM WAS CONFIRMED IN PRODUCTION rather than only by
+  reading the import list:** `git diff --stat 56637757 8f9e0f35 -- p/` is
+  **EMPTY** — 0 of 5,062 crawlable pages changed while 13.7M participants' rows
+  gained a ticker on the report. The absent import is the guarantee; the empty
+  production diff is the confirmation, and having both is the difference between
+  a claim and a measurement.
+- **#525 was cancelled by concurrency** — the push trigger fired at 22:31:10Z
+  and the dispatch four seconds later superseded it. Both were on the same
+  commit, so whichever committed would have written the same data; the record's
+  standing hazard (a cancelled run's `if: always()` merge committing a partial
+  store) cannot bite when the two runs carry identical code.

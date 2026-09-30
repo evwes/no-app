@@ -895,8 +895,25 @@ from the cycle that would have cleared it.
   parser-gate, smoke, fund-er-test (46/26/19/18) green. **REPORT path only as a
   GUARANTEE: `build-seo-pages.mjs` never imports `fund-er.js`**; `git diff
   --stat p/` empty. `docs/accuracy-log.md` 2026-09-30 (11:5xZ).
-- **IN FLIGHT: #525, dispatched 2026-09-30 22:5xZ. NO PARSER BUMP — it exists to
-  let the MERGE rewrite `stk`. A BLANK TYPE CELL IS NOT A CONTRADICTION, AND
+- **NOTHING IS IN FLIGHT. #526 RAN `success` AND IS MIRRORED — 2026-09-30 23:1xZ
+  (`09a16988 → 8f9e0f35`), UNFORCED ON BOTH CHECKS, data gate +0 / −0 by ack AND
+  by plan. EVERY PRE-REGISTERED FIGURE PASSED TO THE ROW.** `tkExact` **36.18**,
+  `tkComparable` **3.27**, `tkShare` **24.47**, and every other figure
+  byte-identical to #523's line — confident 60,170, lineups 59,822, entries
+  65,479, HIGH 4, warn 608, overshoot 372, overshootTrust 12, aggRow 113, dl 19,
+  pv 196 at 100%. The run-only figure was read out of the ARTIFACT rather than
+  the log (the merge log's blob host is `connect_rejected`): diffing the 64
+  lineup shards at `56637757` against the data commit gives **459,695 rows
+  across 47,534 entries** — exactly as registered — and the gain **109,662 rows
+  / 11,282 entries / 11,346 plans / 13,751,840 ppl / $261,166,139,187, LOST 0,
+  CHANGED 0**, identical to the local merge to the digit. *The production merge
+  reproduced the local one exactly.*
+  **AND THE REPORT-PATH GUARANTEE WAS CONFIRMED IN PRODUCTION, not only by
+  reading the import list: `git diff --stat 56637757 8f9e0f35 -- p/` is EMPTY**,
+  0 of 5,062 crawlable pages changed while 13.7M participants' rows gained a
+  ticker. #525 (the push trigger) was cancelled by concurrency on the same
+  commit, so nothing was lost either way.
+  **WHAT IT CARRIED: A BLANK TYPE CELL IS NOT A CONTRADICTION, AND
   TWO RESOLVERS WERE APPLYING OPPOSITE STANDARDS TO IT: 45,894 rows / 9,151
   entries / 9,182 plans / 9,610,149 participants / $85,992,537,937 gain a fund
   ticker they do not have**, across 13,668 distinct names; the STORED footprint
