@@ -30882,3 +30882,49 @@ or 2,048,738.** The "ONE count was several defects" rule, met at five.
   is the whole of it, and Nuveen IS TIAA's asset manager**), a welded issuer
   carrying two firms 7, trustees and custodians dominating the rest, and only
   then the genuine contradiction. Do not quote 12,734 or 2,048,738.
+
+## 2026-09-30 (12:0xZ) — A LOST SPACE inside a published fund name: sized, discriminated, queued MERGE-SIDE
+- **Found by the 11:5xZ participant-weighted draw** on Preferred Podiatry
+  Management (593 ppl), whose 32-row Great Gray / Fidelity menu is otherwise
+  immaculate and publishes `Great Gray Trust**I**nternational Stock R1 Fund`.
+- **THE OBVIOUS PREDICATE IS NOT A CLASS AND THE SIZE WAS THE TELL: 93,171 rows
+  / 23,315 plans / 39,461,818 participants** carry a lowercase-to-uppercase
+  seam inside a token, and reading the families says why — **CamelCase is how
+  these funds are NAMED.** `LifePath` 28,826, `BlackRock` 24,868, `EuroPacific`
+  7,938, `SmartRetirement` 5,221, `MassMutual` 3,634, plus `ClearBridge`,
+  `RealPath`, `ActiveBeta`, `FlexPath`, `SmallCap`, `LargeCap`, `MyWayRet`,
+  `YourPath`, `RetireOnTrack®`. **Do not carry 93,171 or 39,461,818 forward.**
+- **NOR DOES TOKEN RARITY DISCRIMINATE, and this is the sharper finding.**
+  Requiring the joined token to be unattested (≤2 store-wide) while both halves
+  are ordinary published words gives **529 rows / 373 plans / 689,387 ppl**,
+  and that is still **at least three mechanisms**: (A) **REAL firm names that
+  are merely rare** — `FirstEnergy common stock` (16,802 ppl, $458,084,933),
+  `ExxonMobil Stock Fund`, `BancPlus Corporation`, `HomeTrust Bancshares`,
+  `LifePoint Health Stable Value`, `FirstCash Holdings`, `SoundShore`,
+  `VantageTrust`, `First Interstate BancSystem`, `ClearCourse®` — which must
+  NEVER be split; (B) the genuine lost space; (C) a **DOUBLE RENDER welded at
+  the seam** (`Dodge & Cox IncomeDodge & Cox Income`, `Deposit administration
+  contract CMFG Life Insurance CompanyDeposit administration contract`), where
+  splitting leaves a doubled name and the defect is something else entirely.
+  A rare-but-real CamelCase name and a lost space are **indistinguishable by
+  count**, which is the mirror of this record's own floor-of-one lesson.
+- **THE DISCRIMINATOR THAT WORKS IS THE ISSUER STRIP'S OWN, ASKED OF THE WHOLE
+  REPAIRED NAME: does the repaired string appear elsewhere as a COMPLETE
+  published name? 151 rows / 108 entries / 108 plans / 151,454 participants /
+  $300,291,381**, and **every one of the distinct repaired names was read —
+  all real funds, not one a firm or an employer stock.** `Vanguard Total
+  BondMarket Index Fund: Inst'l Shr` (repaired name attested **81×**),
+  `Vanguard High-Yield CorporateFund Admiral Shares` (134×), `VanguardGrowth
+  Index Adm` (1,271×), `JPMorganMid Cap Growth Fund R6` (128×),
+  `BlackrockTotal Return Fund` (202×), `EmpowerGuaranteed Interest Fund` (46×),
+  `Money Market/CashEquivalent` (222×), `Federated HermesMid-Cap Index Fund`.
+  **Family (A) is refused by construction** — `First Energy common stock` is
+  attested nowhere — and so is (C).
+- **NOT SHIPPED THIS CYCLE, and the placement is the reason:** the test needs
+  the WHOLE STORE, so it belongs in `merge-4i` beside the issuer strip and
+  #517's OCR tail strip, not in `cleanFiledName`. A floor of **3** is used, not
+  1, on this record's own rule that a floor of one lets a single damaged row
+  license the same damage elsewhere. Next cycle's ship: every one of the 151
+  rows' changed cells read, tether cases pinned on both sides (with family (A)
+  as the must-KEEP half), negative control, and the outcome measured through
+  BOTH ticker resolvers and the fee table before anything lands.

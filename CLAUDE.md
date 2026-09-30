@@ -821,9 +821,92 @@ from the cycle that would have cleared it.
   that green covers every executable line of the doubled-class fix. Dispatched
   deliberately because it shipped under `[skip ci]` and local green is not CI
   green.
-- **QUEUED, SIZED, WRITTEN, MEASURED AND REFUSED 2026-09-30 10:1xZ — THE ISSUER
+- **SHIPPED AND MIRRORED 2026-09-30 11:4xZ (`8b5bad78 → a4a5e312`), UNFORCED ON
+  BOTH CHECKS, data gate +0 / −0; `site-test` #116 reads `conclusion: success`
+  ON THE EXACT SHIPPED COMMIT — THE ISSUER MAY ADD A MANAGER AND NEVER REPLACE
+  ONE, IN THE TICKER COLUMN TOO: 16 rows / 17 plans / 52,838 participants /
+  $78,246,497 stop publishing a COMPETITOR'S fund as fact.** `{Fidelity}
+  Vanguard Total Bond Market Institutional` → **FTBFX, Fidelity's own Total
+  Bond Fund** (University of Miami's four plans 31,932 ppl, RIT 8,365,
+  Presbyterian Health Plan 2,885); `{T. Rowe Price}` landing TRLGX, TRMCX,
+  RPMGX, PRFDX and OTCFX on JPMorgan, Putnam, MFS, Neuberger Berman, TIAA-CREF
+  and PIMCO holdings. All 16 read, not one right. **Nine lose a ticker with
+  nothing to replace it — the accepted cost, because a wrong number outranks an
+  absent one.** Both changes are corrections verified against `sec-funds.json`
+  (VTINX → VTWNX off Target Retirement INCOME; FTBFX → JMGMX, the SEC's Class
+  R6 of that fund). **0 gained, 0 asterisks moved, 0 correct answers lost.**
+  **TWO DRAFTS DIED ON THE WHOLE-STORE DIFF AND NEITHER DIED ON ITS CONTROLS.**
+  (1) Reusing `issuerPricedER` with the ticker as its value passed a 15-case
+  table and whole-store **withdraws 3,470 CORRECT answers** — *a predicate that
+  is right for one class is not thereby right for its neighbour*, and *a
+  hand-built control table tests the cases its author already imagined*.
+  (2) **THE HOUSE-LIST VERSION THEN MEASURED 275 ROWS / 68 ENTRIES / 151,874
+  PARTICIPANTS PROMOTED from a labelled COMPARABLE to an ASSERTION — larger in
+  people than the 31 rows it repairs, and in the unsafe direction.** Blocking a
+  contradicting issuer lets the bare name resolve, and where the prefixed answer
+  was already asterisked the only effect is to remove the asterisk. **Cleveland
+  Clinic's 81,999 would have been told `DODGE & COX STOCK X A` is DODGX, which
+  the SEC registers as Class I where Class X is DOXGX**, and every `Vanguard
+  Instl Target Ret <year> Instl` row would have asserted the INVESTOR class.
+  **0 moved the other way.** So the guard blocks only an ASSERTION: a comparable
+  answer is already labelled an approximation, and refusing it withdraws no
+  claim. ***A guard that withdraws an assertion can also PROMOTE one.***
+  **THIRTEEN GENUINE CORRECTIONS ARE REFUSED WITH THE 275 AND NAMED IN THE
+  CODE** — twelve `{Fidelity Management Trust Company} T. Rowe Price Retirement
+  <year> I Fund` rows moving to the -I Class the filing STATES, and TRBCX →
+  TBCIX twice — because **refusing a repair is the safe direction.**
+  **AND THE MEASUREMENT WAS WRONG TWICE BEFORE IT WAS RIGHT.** The stand-in
+  harness that produced 17/14 was a hand-transcribed closure ending in `return
+  null`; the real `lookupTicker` has **two further fallback stages after the
+  loop** (the house-misspelling repair, and the stored SEC `stk`). Slicing the
+  SHIPPED body out of app.js moved a row between buckets; passing the WHOLE fund
+  row, as the page does, changed nothing here but is the second half of the same
+  rule — ***measure through the function the page calls, WITH THE ARGUMENT THE
+  PAGE PASSES.***
+  `leadingHouse` canonical in `lib-disclose`, twinned verbatim, **tethered on 18
+  pinned cases (9 must-detect / 9 must-be-null), negative-controlled THREE
+  ways** — two dropped twin entries fail by name on exactly those 2, a platform
+  added to the canonical list on exactly 1, and **unanchoring the rule on
+  exactly 2, a control that existed only after the first one showed the
+  ANCHORING was untested** (no pinned case had a real house INSIDE the string
+  behind a non-house). *A control that cannot fail is decorative*, met again.
+  parser-gate, smoke, fund-er-test (46/26/19/18) green. **REPORT path only as a
+  GUARANTEE: `build-seo-pages.mjs` never imports `fund-er.js`**; `git diff
+  --stat p/` empty. `docs/accuracy-log.md` 2026-09-30 (11:5xZ).
+- **QUEUED, SIZED, DISCRIMINATED, NOT SHIPPED 2026-09-30 12:0xZ — A LOST SPACE
+  INSIDE A PUBLISHED FUND NAME: 151 rows / 108 plans / 151,454 participants /
+  $300,291,381.** Found by the 11:5xZ draw on **Preferred Podiatry Management
+  (593 ppl)**, whose otherwise immaculate 32-row menu publishes `Great Gray
+  Trust**I**nternational Stock R1 Fund`.
+  **THE OBVIOUS PREDICATE IS NOT A CLASS AND THE SIZE WAS THE TELL: 93,171 rows
+  / 39,461,818 ppl** carry a lowercase-to-uppercase seam, and **CamelCase is how
+  these funds are NAMED** — `LifePath` 28,826, `BlackRock` 24,868, `EuroPacific`
+  7,938, `SmartRetirement` 5,221, `MassMutual` 3,634. **Do not carry 93,171 or
+  39,461,818 forward.**
+  **NOR DOES TOKEN RARITY DISCRIMINATE:** unattested joined token + both halves
+  ordinary words gives **529 rows / 689,387 ppl** and is **at least three
+  mechanisms** — (A) REAL firm names that are merely rare (`FirstEnergy common
+  stock`, 16,802 ppl / $458,084,933; `ExxonMobil Stock Fund`; `BancPlus
+  Corporation`; `LifePoint Health Stable Value`), which must NEVER be split;
+  (B) the genuine lost space; (C) a **DOUBLE RENDER welded at the seam**
+  (`Dodge & Cox IncomeDodge & Cox Income`). *A rare-but-real CamelCase name and
+  a lost space are indistinguishable by count* — the mirror of the floor-of-one
+  lesson. **Do not carry 529 or 689,387 forward either.**
+  **THE DISCRIMINATOR THAT WORKS IS THE ISSUER STRIP'S OWN, ASKED OF THE WHOLE
+  REPAIRED NAME** — does the repaired string appear elsewhere as a COMPLETE
+  published name? All the distinct repairs read, **every one a real fund**:
+  `Vanguard Total BondMarket Index Fund` (repaired name attested **81×**),
+  `VanguardGrowth Index Adm` (1,271×), `JPMorganMid Cap Growth Fund R6` (128×),
+  `BlackrockTotal Return Fund` (202×), `EmpowerGuaranteed Interest Fund` (46×).
+  **(A) and (C) are refused BY CONSTRUCTION** — `First Energy common stock` is
+  attested nowhere. **Needs the WHOLE STORE, so it is MERGE-SIDE** beside the
+  issuer strip and #517's OCR tail strip, floor **3 and not 1**. Next ship.
+- **PREVIOUSLY QUEUED, SIZED, WRITTEN, MEASURED AND REFUSED 2026-09-30 10:1xZ —
+  THE ISSUER
   MAY ADD A MANAGER AND NEVER REPLACE ONE, AND `lookupTicker` NEVER GOT THE
-  RULE: 17 published rows name a COMPETITOR'S fund as fact.** It has prepended
+  RULE: 17 published rows name a COMPETITOR'S fund as fact.** *(Superseded by
+  the shipped bullet above; its 17/14 figures are the stand-in harness's and the
+  shipped numbers are 16/2.)* It has prepended
   the issuer since v67 and tries the prefixed string **FIRST**, so a
   contradicting issuer does not merely fill a blank — it can OVERRIDE.
   `{Fidelity} Vanguard Total Bond Market Institutional` → **FTBFX, Fidelity's own
