@@ -214,7 +214,7 @@ try {
   const { coverageBand, frozenClaimOk, cleanFiledName, isParticipantLoanRow, isLoanDescriptionRow,
     isAnnuityContractRow, annuityFeeIsGuaranteeOnly, isCollectiveTrustName, isLoanAnswerRow, isLoanMaturityRow,
     isInvestmentContractRow, isMistypedStockRow,
-    mistypedStockFeeIsGuaranteeOnly, issuerPricedER } = await import("./lib-disclose.mjs");
+    mistypedStockFeeIsGuaranteeOnly, issuerPricedER, leadingHouse } = await import("./lib-disclose.mjs");
   const frozCases = [
     [true, "The Plan was terminated effective December 31, 2023.", "Capital Region Medical"],
     [true, "As amended on December 31, 2024, the Plan was frozen and all participants of the Plan became fully vested.", "Hanes Companies, Inc."],
@@ -1040,6 +1040,69 @@ try {
     const got = issuerPricedER(tableER, n, iss);
     if ((got == null ? null : got) !== want)
       fail(`issuer-priced fee rule moved: {${iss}} ${JSON.stringify(n)} want=${want} got=${got}`);
+  }
+
+  /* THE LEADING HOUSE, tethered 2026-09-30. `lookupTicker` prepends the 4i
+   * IDENTITY cell and tries that string FIRST, so a contradicting issuer does
+   * not merely fill a blank — it OVERRIDES, and `{Fidelity} Vanguard Total Bond
+   * Market Institutional` published FTBFX, Fidelity's own Total Bond Fund, as
+   * fact. `leadingHouse` is what lets the two sides be compared.
+   *
+   * Every case was READ out of the store. The must-DETECT half is the four
+   * shapes that actually occur: the house alone, a TRUSTEE's full corporate
+   * name, the filer's own misspelling, and a party-in-interest marker welded on.
+   * The must-be-NULL half is the whole safety argument, because a null on the
+   * NAME side means no contradiction and the issuer arm keeps firing:
+   * `Wellington Admiral Fund` is the recorded false positive — a REAL Vanguard
+   * fund carrying its SUB-ADVISER — and it is safe here only because the test
+   * is anchored `^`, which is exactly the property this pins. A trustee or
+   * platform that is not a fund house (Empower, Great Gray, Matrix) must also
+   * read null, or the guard would block a correct answer for every plan on that
+   * platform. Omissions from the list are additive and harmless: an unknown
+   * house reads null, no contradiction is found, and nothing changes. */
+  const houseCases = [
+    /* must DETECT */
+    ["Fidelity Management Trust Company", "fidelity"],
+    ["Charles Schwab Trust Bank", "schwab"],
+    ["T. Rowe Price", "t rowe price"],
+    ["TIAA-Cref Vanguard Target Retire Income TIAA-Cref", "tiaa"],
+    ["Vangaurd Target Retirement 2020 Inv", "vanguard"],
+    ["JP Morgan", "jpmorgan"],
+    ["American Funds Plans", "american funds"],
+    ["Fidelity**", "fidelity"],
+    ["The Hartford Balanced Income", "hartford"],
+    /* must be NULL — nothing may be read as a house from here.
+     * The first two are THE ANCHOR CONTROL and they are here because the
+     * negative control for this block found the anchoring untested: dropping
+     * the `^` was caught by nothing until a case existed where a real house
+     * sits INSIDE the string and a non-house leads it. Great Gray is a real
+     * trustee of Vanguard-branded collective trusts, so the string occurs. */
+    ["Great Gray Trust Company Vanguard Target Retirement 2030 Trust", null],
+    ["Sentinel Benefits Fidelity 500 Index Pool", null],
+    ["Wellington Admiral Fund", null],
+    ["Empower Trust Company, LLC", null],
+    ["Great Gray Trust Company", null],
+    ["Matrix Trust Company", null],
+    ["Principal Trust Company", "principal"],
+    ["Retirement 2030 Active Fund", null],
+    ["", null],
+  ];
+  const houseGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoLeadingHouse !== "function") return null;
+    return cs.map((s) => window.__wampoLeadingHouse(s));
+  }, houseCases.map(([s]) => s));
+  if (!houseGot) fail("app.js no longer exposes __wampoLeadingHouse — the leading-house test cannot be cross-checked");
+  const houseDrift = houseCases.filter(([s], i) => (leadingHouse(s) || null) !== (houseGot[i] || null));
+  if (houseDrift.length) {
+    for (const [s] of houseDrift) {
+      const i = houseCases.findIndex((c) => c[0] === s);
+      console.error(`  ${JSON.stringify(s)}  app.js=${houseGot[i]}  module=${leadingHouse(s)}`);
+    }
+    fail(`the leading-house test in app.js disagrees with scripts/lib-disclose.mjs on ${houseDrift.length} of ${houseCases.length} cases`);
+  }
+  for (const [s, want] of houseCases) {
+    const got = leadingHouse(s) || null;
+    if (got !== want) fail(`leading-house test moved: ${JSON.stringify(s)} want=${want} got=${got}`);
   }
 
   const nameDrift = nameCases.filter((n, i) => cleanFiledName(n) !== nameGot[i]);

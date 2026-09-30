@@ -325,6 +325,65 @@ const DANGLING_TAIL = /\b(?:and|or|of|the|a|an|in|for|with|at|to|from|on|by|&)$/
  * introduces it — otherwise "T. Rowe Price …" would read its own initial as a
  * class. The head must be followed by a LETTER, so a name that is nothing but
  * a designation cannot match. */
+/* WHICH FUND HOUSE DOES THIS STRING LEAD WITH? Used ONLY to detect a
+ * CONTRADICTION between a holding's own name and its 4i identity cell — never
+ * to find a house inside a name, which is where a house list goes wrong
+ * (`Vanguard Wellington Admiral Fund` carries its SUB-ADVISER, and this record
+ * has a measurement spoiled by exactly that). Anchored `^` on both sides for
+ * the same reason.
+ *
+ * A trustee or platform LEADS with its own firm — `Fidelity Management Trust
+ * Company`, `Voya Retirement Insurance and Annuity Company` — and that is
+ * wanted: where such a cell sits in front of a rival house's fund, the prefix
+ * is dragging the lookup to the wrong answer either way.
+ *
+ * The list is not a claim to completeness. A house it omits simply leaves the
+ * row as it is today, so growing it can only ever be additive, and every row
+ * the current list touches was read before it shipped. */
+export const LEADING_HOUSE = [
+  ["american funds", /^(?:the\s+)?american funds\b/i],
+  ["american century", /^american century\b/i],
+  ["tiaa", /^tiaa[- ]?cref\b|^tiaa\b/i],
+  ["nuveen", /^nuveen\b/i],
+  ["vanguard", /^vanguard\b|^vangaurd\b/i],
+  ["fidelity", /^fidelity\b|^fid\b/i],
+  ["t rowe price", /^t\.?\s*rowe\s+price\b/i],
+  ["blackrock", /^blackrock\b/i],
+  ["pimco", /^pimco\b/i],
+  ["mfs", /^mfs\b/i],
+  ["jpmorgan", /^jp\s?morgan\b|^jpmorgan\b/i],
+  ["invesco", /^invesco\b/i],
+  ["janus", /^janus\b/i],
+  ["franklin", /^franklin\b/i],
+  ["dodge & cox", /^dodge\s*&?\s*cox\b/i],
+  ["putnam", /^putnam\b/i],
+  ["allspring", /^allspring\b/i],
+  ["pgim", /^pgim\b/i],
+  ["schwab", /^(?:charles\s+)?schwab\b/i],
+  ["state street", /^state street\b|^ssga\b/i],
+  ["dimensional", /^dimensional\b|^dfa\b/i],
+  ["columbia", /^columbia\b/i],
+  ["hartford", /^(?:the\s+)?hartford\b/i],
+  ["voya", /^voya\b/i],
+  ["principal", /^principal\b/i],
+  ["lord abbett", /^lord abbett\b/i],
+  ["neuberger", /^neuberger\b/i],
+  ["goldman", /^goldman\b/i],
+  ["federated", /^federated\b/i],
+  ["victory", /^victory\b/i],
+  ["macquarie", /^macquarie\b/i],
+  ["transamerica", /^transamerica\b/i],
+  ["eaton vance", /^eaton vance\b/i],
+  ["metwest", /^metropolitan west\b|^metwest\b/i],
+  ["western asset", /^western asset\b/i],
+];
+export function leadingHouse(s) {
+  const t = String(s || "").replace(/\*+/g, " ").replace(/\s+/g, " ").trim();
+  if (!t) return null;
+  for (const [k, re] of LEADING_HOUSE) if (re.test(t)) return k;
+  return null;
+}
+
 const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1,2}|r-?[1-9])|(r-?[1-9]))\b[\s.,()\-]+(?=[A-Za-z])/i;
 const DOUBLED_CLASS_TAIL = /(?:\b(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1,2}|r-?[1-9])|\b(r-?[1-9]))\s*$/i;
 const classCode = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]/g, "");

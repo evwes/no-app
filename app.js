@@ -522,6 +522,52 @@
    * ("(Net Asset Value Practical Expedient) MetLife Stabl"). Both are strictly
    * better than before and neither is widened for without its own measurement.
    * The `I` in the shares/units alternation is OCR's reading of the slash. */
+  /* verbatim twin of lib-disclose's leadingHouse — see there for why the
+   * test is anchored on BOTH sides and what it may not be used for.
+   * Tethered by smoke-test.mjs, which fails on drift. */
+  const LEADING_HOUSE = [
+  ["american funds", /^(?:the\s+)?american funds\b/i],
+  ["american century", /^american century\b/i],
+  ["tiaa", /^tiaa[- ]?cref\b|^tiaa\b/i],
+  ["nuveen", /^nuveen\b/i],
+  ["vanguard", /^vanguard\b|^vangaurd\b/i],
+  ["fidelity", /^fidelity\b|^fid\b/i],
+  ["t rowe price", /^t\.?\s*rowe\s+price\b/i],
+  ["blackrock", /^blackrock\b/i],
+  ["pimco", /^pimco\b/i],
+  ["mfs", /^mfs\b/i],
+  ["jpmorgan", /^jp\s?morgan\b|^jpmorgan\b/i],
+  ["invesco", /^invesco\b/i],
+  ["janus", /^janus\b/i],
+  ["franklin", /^franklin\b/i],
+  ["dodge & cox", /^dodge\s*&?\s*cox\b/i],
+  ["putnam", /^putnam\b/i],
+  ["allspring", /^allspring\b/i],
+  ["pgim", /^pgim\b/i],
+  ["schwab", /^(?:charles\s+)?schwab\b/i],
+  ["state street", /^state street\b|^ssga\b/i],
+  ["dimensional", /^dimensional\b|^dfa\b/i],
+  ["columbia", /^columbia\b/i],
+  ["hartford", /^(?:the\s+)?hartford\b/i],
+  ["voya", /^voya\b/i],
+  ["principal", /^principal\b/i],
+  ["lord abbett", /^lord abbett\b/i],
+  ["neuberger", /^neuberger\b/i],
+  ["goldman", /^goldman\b/i],
+  ["federated", /^federated\b/i],
+  ["victory", /^victory\b/i],
+  ["macquarie", /^macquarie\b/i],
+  ["transamerica", /^transamerica\b/i],
+  ["eaton vance", /^eaton vance\b/i],
+  ["metwest", /^metropolitan west\b|^metwest\b/i],
+  ["western asset", /^western asset\b/i],
+  ];
+  function leadingHouse(s) {
+  const t = String(s || "").replace(/\*+/g, " ").replace(/\s+/g, " ").trim();
+  if (!t) return null;
+  for (const [k, re] of LEADING_HOUSE) if (re.test(t)) return k;
+  return null;
+  }
   /* verbatim twins of lib-disclose's doubled-class constants — see there. */
   const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1,2}|r-?[1-9])|(r-?[1-9]))\b[\s.,()\-]+(?=[A-Za-z])/i;
   const DOUBLED_CLASS_TAIL = /(?:\b(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1,2}|r-?[1-9])|\b(r-?[1-9]))\s*$/i;
@@ -1167,6 +1213,7 @@
   }
 
   window.__wampoLoanMaturityRow = isLoanMaturityRow;  // read by the smoke test only
+  window.__wampoLeadingHouse = leadingHouse;  // read by the smoke test only
   window.__wampoCleanFiledName = cleanFiledName;
   window.__wampoLoanRow = (n) => LOAN_ROW.test(String(n || "").trim());  // read by the smoke test only
   /* "does this string identify a fund at all?" — the identity probe
@@ -1261,8 +1308,81 @@
      * class's expense ratio. Raw-first still holds everywhere else, which is
      * what keeps "TROWEPRICE RET 2025 TR-F MUTUAL FUND SHARES" exact. */
     const order = /\s\|+\s*$/.test(raw) && raw !== f.name ? [f.name, raw] : [raw, f.name];
+    /* THE ISSUER MAY ADD A MANAGER AND NEVER REPLACE ONE, 2026-09-30. That rule
+     * reached `resolveHolding` (the SEC matcher, 2026-09-28) and
+     * `issuerPricedER` (the fee, 2026-09-29) and never reached THIS path, which
+     * has prepended the issuer since v67 and tries it FIRST — so a contradicting
+     * issuer could not merely fill a blank, it could OVERRIDE a correct answer.
+     *
+     * 16 rows published a COMPETITOR'S fund as fact. `{Fidelity} Vanguard Total
+     * Bond Market Institutional` resolved to FTBFX, Fidelity's own Total Bond
+     * Fund — University of Miami's four plans (31,932 participants,
+     * $52,478,012), Rochester Institute of Technology (8,365), Presbyterian
+     * Health Plan (2,885) — and `{T. Rowe Price}` landed TRLGX, TRMCX, RPMGX,
+     * PRFDX and OTCFX on JPMorgan, Putnam, MFS, Neuberger Berman, TIAA-CREF and
+     * PIMCO holdings. All 16 read, not one right. Nine lose their ticker with
+     * nothing to replace it, which is the accepted cost: a wrong number
+     * outranks an absent one.
+     *
+     * THE ELEGANT FIX WAS WRITTEN AND KILLED BY THE WHOLE-STORE DIFF, which is
+     * why this one carries a vocabulary. `issuerPricedER` is generic over its
+     * resolver, so it can be reused verbatim with the ticker as its value — no
+     * new words — and on a 15-case table it refused all ten wrong-house cases
+     * and kept five legitimate ones. Whole-store it withdraws 3,470 rows that
+     * are overwhelmingly CORRECT: `{State Street} S&P 500 Index` -> SSSYX,
+     * `{Fidelity} S&P 500 Index` -> FXAIX. Its arm (2) drops the fund's first
+     * load-bearing word and refuses when the answer is unchanged, which is right
+     * for the FEE table and wrong for the TICKER table, because `State Street
+     * 500 Index` still resolves. A PREDICATE THAT IS RIGHT FOR ONE CLASS IS NOT
+     * THEREBY RIGHT FOR ITS NEIGHBOUR.
+     *
+     * So the test is a CONTRADICTION and not a repair: the issuer prefix is
+     * refused only where the fund's own name already LEADS with a house and the
+     * issuer leads with a DIFFERENT one. A house list is wrong in the unsafe
+     * direction when used to find a second house INSIDE a name (`Vanguard
+     * Wellington Admiral` carries its sub-adviser), so it is asked only of the
+     * LEADING token on each side — and the blast radius is fully enumerated:
+     * over all 535,864 rows carrying an issuer, 16 withdrawn, 2 changed,
+     * 0 gained, 0 asterisks moved, 0 correct answers lost, every one of the 18
+     * read. 17 entries / 17 plans / 52,838 participants / $78,246,497.
+     *
+     * BOTH CHANGES ARE CORRECTIONS, each verified against `sec-funds.json`
+     * because a ticker is not a reading and the series is:
+     * `{TIAA-Cref …} Vanguard Target Ret 2020 Inv` moves off VTINX, Target
+     * Retirement INCOME, to VTWNX; `{Fidelity … J.P. Morgan} JPMORGAN MID CAP
+     * GROWTH R6` moves off FTBFX to JMGMX, which the SEC registers as that
+     * fund's Class R6.
+     *
+     * THIRTEEN FURTHER CORRECTIONS WERE MEASURED AND ARE DELIBERATELY NOT
+     * TAKEN. Blocking a TRUSTEE prefix also let twelve `{Fidelity Management
+     * Trust Company} T. Rowe Price Retirement <year> I Fund` rows move from the
+     * base class to the -I Class the filing STATES, and TRBCX -> TBCIX twice.
+     * Every one is right — and every one arrives by the same promotion that
+     * gives Cleveland Clinic DODGX as fact, so they are refused with the 275.
+     * REFUSING A REPAIR IS THE SAFE DIRECTION; they are recorded here so the
+     * next reader knows the cost was counted rather than missed.
+     *
+     * REPORT path only — `build-seo-pages.mjs` never imports `fund-er.js`,
+     * which is a guarantee rather than an observation. */
+    const nameHouse = leadingHouse(f.name) || leadingHouse(raw);
+    const issHouse = leadingHouse(f.iss);
+    const issContradicts = !!nameHouse && !!issHouse && nameHouse !== issHouse;
     for (const n of order) {
-      const hit = (iss ? fundTickerInfo(iss + n, f.type) : null) || fundTickerInfo(n, f.type);
+      const issHit = iss ? fundTickerInfo(iss + n, f.type) : null;
+      /* AND IT BLOCKS ONLY AN ASSERTION, which the whole-store diff is what
+       * taught. A `comparable` answer is ALREADY labelled an approximation on
+       * the page, so a contradicting issuer producing one is not publishing a
+       * competitor's fund as fact — and refusing it does not withdraw a claim,
+       * it PROMOTES the bare name's own answer out of that label. Measured on
+       * the unnarrowed guard: 0 rows demoted and 275 rows / 68 entries /
+       * 151,874 participants promoted from a labelled comparable to an
+       * assertion, in the WRONG SHARE CLASS on the largest of them — Cleveland
+       * Clinic's 81,999 participants would have been told `DODGE & COX STOCK
+       * X A` is DODGX, which sec-funds.json registers as Class I where Class X
+       * is DOXGX, and every `Vanguard Instl Target Ret <year> Instl` row would
+       * have asserted the INVESTOR class. Larger in people than the 31 rows the
+       * guard repairs, and in the unsafe direction. */
+      const hit = (issHit && !(issContradicts && !issHit.comparable) ? issHit : null) || fundTickerInfo(n, f.type);
       if (hit) return hit;
       if (order[0] === order[1]) break;
     }

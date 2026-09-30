@@ -30789,3 +30789,96 @@ Institutional T. Rowe Price`, H&R Block 18,487 ppl); trustees and custodians
 (`Fidelity Personal Trust Company, FSB`, bare `Fidelity` as the brokerage), which
 dominate the rest; and only then the genuine contradiction. **Do not quote 12,734
 or 2,048,738.** The "ONE count was several defects" rule, met at five.
+
+## 2026-09-30 (11:5xZ) — The issuer may ADD a manager and never REPLACE one, and `lookupTicker` never got the rule
+- **Wrong:** `lookupTicker` has prepended the row's 4i IDENTITY cell since v67
+  and tries that string **FIRST**, so a contradicting issuer did not merely
+  fill a blank — it could **OVERRIDE**. Sixteen published rows named a
+  COMPETITOR'S fund as fact. `{Fidelity} Vanguard Total Bond Market
+  Institutional` → **FTBFX, Fidelity's own Total Bond Fund**: University of
+  Miami's four plans (31,932 participants / $52,478,012), Rochester Institute
+  of Technology (8,365), Presbyterian Health Plan (2,885). `{T. Rowe Price}`
+  landed TRLGX, TRMCX, RPMGX, PRFDX and OTCFX on JPMorgan, Putnam, MFS,
+  Neuberger Berman, TIAA-CREF and PIMCO holdings. All 16 read, not one right.
+- **Change:** the test is a CONTRADICTION and not a repair — the issuer prefix
+  is refused only where the fund's own name already LEADS with a house and the
+  issuer leads with a DIFFERENT one, and only where the issuer-prefixed answer
+  is **asserted as fact**. `leadingHouse` is canonical in `lib-disclose`,
+  twinned in app.js, tethered. Whole-store: **16 withdrawn / 2 changed / 0
+  gained / 0 asterisks moved / 0 correct answers lost**, 17 entries / 17 plans
+  / 52,838 participants / $78,246,497, every one of the 18 read. Both changes
+  are corrections verified against `sec-funds.json` (VTINX → VTWNX off Target
+  Retirement INCOME; FTBFX → JMGMX, the SEC's Class R6 of that fund).
+  **Nine rows lose a ticker with nothing to replace it** — the accepted cost,
+  because a wrong number outranks an absent one.
+- **THE ELEGANT FIX WAS WRITTEN, CONTROLLED 15/15, AND KILLED BY THE
+  WHOLE-STORE DIFF.** `issuerPricedER` is generic over its resolver, so it
+  could be reused VERBATIM with the ticker as its value — no new vocabulary,
+  the shape this record prefers. Whole-store it withdraws **3,470 rows that are
+  overwhelmingly CORRECT** (`{State Street} S&P 500 Index` → SSSYX,
+  `{Fidelity} S&P 500 Index` → FXAIX). Its arm (2) drops the name's first
+  load-bearing word and refuses when the answer is unchanged — right for the
+  FEE table, wrong for the TICKER table, because `State Street 500 Index` still
+  resolves. ***A predicate that is right for one class is not thereby right for
+  its neighbour.*** And **my 15 controls were DECORATIVE in the one direction
+  that mattered**: every must-KEEP I chose survives the guard, not one had the
+  shape that breaks it. *A hand-built control table tests the cases its author
+  already imagined, so the whole-store diff is not a formality after the
+  controls pass; it is the only thing that saw this.*
+- **AND THE SECOND VERSION WAS CAUGHT THE SAME WAY, BY THE SAME TEST, ONE
+  CYCLE LATER — a guard that WITHDRAWS an assertion can also PROMOTE one.**
+  The house-list version measured 16 withdrawn / 15 changed and **275 rows /
+  68 entries / 151,874 participants promoted from a labelled COMPARABLE to an
+  assertion of fact** — larger in people than the 31 rows it repairs, and in
+  the unsafe direction. Blocking a contradicting issuer lets the bare name
+  resolve, and where the issuer-prefixed answer was already asterisked the
+  only effect is to remove the asterisk. **The largest is Cleveland Clinic's
+  81,999 participants**, whose `DODGE & COX STOCK X A` would be asserted as
+  **DODGX — which `sec-funds.json` registers as Class I, where Class X is
+  DOXGX** — and every `Vanguard Instl Target Ret <year> Instl` row would have
+  asserted **VTTHX etc., the INVESTOR class**, for a filing that says
+  Institutional twice. **0 rows moved the other way.** So the guard blocks only
+  an ASSERTION: a comparable answer is already labelled an approximation, and
+  refusing it withdraws no claim.
+- **THIRTEEN REAL CORRECTIONS ARE REFUSED WITH THE 275 AND THAT IS THE RIGHT
+  TRADE.** Blocking a TRUSTEE prefix moved twelve `{Fidelity Management Trust
+  Company} T. Rowe Price Retirement <year> I Fund` rows from the base class to
+  the **-I Class the filing STATES** (TRRHX → TREHX), and TRBCX → TBCIX twice
+  — closing this record's own investor-vs-I-class defect from a new direction.
+  Every one is right; every one arrives by the same promotion. **Refusing a
+  repair is the safe direction**, and they are named here so the cost is
+  recorded as counted rather than missed.
+- **AND THE MEASUREMENT ITSELF WAS WRONG TWICE BEFORE IT WAS RIGHT, both on
+  shapes this record already names.** (1) My first fee sizer said **275
+  fabricated fees** — it asked `fundER(iss + name)` raw, but `issuerPricedER`
+  lives in **app.js**, not `fund-er.js`; sliced properly it publishes **0**,
+  with `{Vanguard} 500 Index Fund → 0.02` as the reachability control.
+  *Measure through the function the page calls*, walked into again and this
+  time EXONERATING the code. (2) The stand-in harness that produced 17/14 was
+  a hand-transcribed closure ending in `return null`, and the real
+  `lookupTicker` has **two further fallback stages after the loop** — the
+  house-misspelling repair and the stored SEC `stk`. Slicing the shipped body
+  out of app.js moved one row between buckets; passing the WHOLE fund row, as
+  the page does, changed nothing here but is the second half of the same rule:
+  ***measure through the function the page calls, WITH THE ARGUMENT THE PAGE
+  PASSES.***
+- **Prevention:** `leadingHouse` is canonical in `scripts/lib-disclose.mjs`,
+  written into app.js as a verbatim twin, and tethered by `smoke-test.mjs` on
+  18 pinned cases — 9 must-DETECT (the house alone, a trustee's corporate name,
+  the filer's misspelling, a party-in-interest marker) and 9 must-be-NULL.
+  Negative-controlled three ways: dropping two twin entries fails **by name on
+  exactly those 2 of 18**; adding a platform (Empower) to the canonical list
+  fails on exactly 1; **unanchoring the rule fails on exactly 2** — and that
+  third control existed only after the first negative control showed the
+  ANCHORING was untested, because no pinned case had a real house sitting
+  INSIDE the string behind a non-house. *A control that cannot fail is
+  decorative*, met again. parser-gate, smoke and fund-er-test (46/26/19/18)
+  green. **REPORT path only, as a GUARANTEE: `build-seo-pages.mjs` never
+  imports `fund-er.js`**; `git diff --stat p/` empty over all regenerated pages.
+- **NOT carried forward: 12,734 rows / 1,822 plans / 2,048,738 ppl.** That is
+  the raw count of a filed name and an issuer naming different firms, and it is
+  **AT LEAST FIVE MECHANISMS** — platform issuers 10,917 (Voya, Transamerica,
+  a separate account's real sponsor), same-firm brand pairs 1,327 (**TIAA↔Nuveen
+  is the whole of it, and Nuveen IS TIAA's asset manager**), a welded issuer
+  carrying two firms 7, trustees and custodians dominating the rest, and only
+  then the genuine contradiction. Do not quote 12,734 or 2,048,738.
