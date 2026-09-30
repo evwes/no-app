@@ -730,7 +730,7 @@ from the cycle that would have cleared it.
   46/26/19/18 0 failures, every changed cell on all 5 pages read.
   `docs/accuracy-log.md` 2026-09-30 (00:1xZ).
 - **SHIPPED 2026-09-30 00:5xZ, `[skip ci]`, NOT YET MIRRORED — A COLLECTIVE TRUST
-  PRICED AS A MUTUAL FUND: 47 rows / 19 plans / 30,171 ppl / $690,372,638** stop
+  PRICED AS A MUTUAL FUND: 48 rows / 20 plans / 30,432 ppl / $691,004,818** stop
   publishing an estimated RETAIL fee on a holding whose own filed name states a
   collective-trust unit class. `noPublicPrice` read `f.cit` and the TYPE cell and
   **never the NAME**. A Trust II unit class is normally CHEAPER than the fund the
@@ -751,10 +751,21 @@ from the cycle that would have cleared it.
   checking the fee and app.js prices through `fundERRow` whenever `star` is false
   — *a fee publishes with no ticker at all*; and a two-minute **sweep** where
   testing the arm first takes seconds — *a structural fact beats a sweep*.
-  **166 labelled-comparable rows were REACHED AND LEFT ALONE** (counted, not
-  assumed — app.js reaches this test only when `star` is false), **0 of the 47
+  **167 labelled-comparable rows were REACHED AND LEFT ALONE** (counted, not
+  assumed — app.js reaches this test only when `star` is false), **0 of the 48
   publish a ticker**, and `\bcit\b` is anchored terminal so **`CIT Group`, the
-  lender, cannot match**. 15 tether cases (6 must-flag / 9 must-keep); negative
+  lender, cannot match**.
+  **AND I PUBLISHED 47 BEFORE DIFFING THE MEMBER LISTS — THE COMMIT SAYS 47 AND
+  IT IS 48.** The missing row is `Voya Stable Value Fund 20 CIT` (Juneau
+  Construction, 261 ppl), whose STORED name ends `CIT a`, a trailing footnote
+  letter. The predicate is TERMINAL-ANCHORED, so it reads **false on the raw name
+  and true on the cleaned one** — and **app.js:1214 is `f.name =
+  cleanFiledName(f.nameRaw)`, so the page passes the CLEANED name and the shipped
+  code was right.** My harness read the store's RAW name. ***Measure through the
+  function the page calls* has a second half: WITH THE ARGUMENT THE PAGE
+  PASSES.** An unanchored predicate never notices — the annuity rule reads raw or
+  cleaned alike — so a terminal anchor is where it bites, and this is the first
+  anchored predicate handed `f.name`. Direction is safe: understated. 15 tether cases (6 must-flag / 9 must-keep); negative
   control fails by name on exactly the 6 and holds all 9. smoke green,
   fund-er-test 46/26/19/18 0 failures. **REPORT path only, as a GUARANTEE:
   `build-seo-pages.mjs` never imports `fund-er.js`.**

@@ -29320,7 +29320,7 @@ cells read in full — each removes the marker and nothing else.
 
 ## 2026-09-30 (00:5xZ) — a collective trust priced as a mutual fund, and the queued number counted registered funds whose names end in "Trust"
 
-**SHIPPED: 47 rows / 19 plans / 30,171 participants / $690,372,638** stop
+**SHIPPED: 48 rows / 20 plans / 30,432 participants / $691,004,818** stop
 publishing an estimated RETAIL expense ratio on a holding whose own filed name
 states a collective-trust unit class. `noPublicPrice` reads `f.cit` and the TYPE
 cell and **never the NAME**, so a row whose type is blank or wrongly says
@@ -29391,6 +29391,35 @@ registered funds and series trusts above. **Negative control: with the arm absen
 the tether fails by name on exactly the 6 must-flags and holds all 9 must-keeps.**
 smoke-test green across all six page shapes; `fund-er-test` 46/26/19/18 with 0
 failures.
+
+### CORRECTED WITHIN THE HOUR: I PUBLISHED 47 AND IT IS 48, AND THE CAUSE IS A NEW HALF OF AN OLD RULE
+
+The commit and the first version of this entry said **47 rows / 19 plans /
+30,171 ppl**. The arm sizer said **48 / 20 / 30,432** and I took the outcome
+test's number because it transcribes app.js. *"Close" is not a verification;
+diff the member lists* — and the diff named one row:
+**Juneau Construction Company (261 ppl), `Voya Stable Value Fund 20 CIT`.**
+
+Its STORED name is `Voya Stable Value Fund 20 CIT a` — a trailing footnote
+letter. `isCollectiveTrustName` is TERMINAL-ANCHORED, so it answers **false on
+the raw name and true on the cleaned one**, and `cleanFiledName`'s existing
+`\b(R\d|[A-Z]|…)\s+[a-z]{1,3}$` arm is what removes the ` a`.
+
+**app.js:1214 is `f.name = cleanFiledName(f.nameRaw)`, so the page passes the
+CLEANED name and the shipped code was right all along. My HARNESS read the
+store's raw `f.name` and passed that.**
+
+So *measure through the function the page calls* has a second half: **with the
+ARGUMENT the page passes.** An unanchored predicate would never have noticed —
+the annuity rule is `\bannuity contracts?\b` and reads raw or cleaned alike.
+A terminal anchor is exactly where the distinction bites, and this fix is the
+first anchored predicate to be handed `f.name`.
+
+Direction is the safe one: the claim was UNDERSTATED by one row and 261 people.
+Final figures, re-derived with the cleaned name: **48 rows / 20 plans / 30,432
+participants / $691,004,818**, with **167** labelled-comparable rows reached and
+left alone. The lib-disclose comment already carried 48 — it was written from the
+arm sizer, and I "corrected" it downward to match the flawed harness.
 
 **SURFACE: the REPORT only, and the claim is a guarantee rather than an
 observation** — `build-seo-pages.mjs` **never imports `fund-er.js`**, so a
