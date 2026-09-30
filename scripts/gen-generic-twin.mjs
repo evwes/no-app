@@ -598,8 +598,14 @@ for (const n of citNames) if (ctx.__ct(n) !== isCollectiveTrustName(n)) {
 }
 const loanAnsNames = ["Loan Repayments are included:", "loan repayments: 240,932",
   "included", "Included", "Yes", "no",
+  /* the 02:5xZ widening: the leading `Loan` lands on the row ABOVE when the
+   * layout gives each fragment its own value */
+  "Repayments are Included", "Repayments are", "repayments are included: X",
+  "Repayments are Included Yes",
   /* must stay FALSE */ "Included Value Fund", "Yes Bank Ltd", "Bank Loan Fund",
-  "Loan Repayment (Interest)", "Participant loans", "Loan Fund"];
+  "Loan Repayment (Interest)", "Participant loans", "Loan Fund",
+  "repayment schedules through August 2029 with interest rates ranging from 2.88% to",
+  "Repayment Holdings Ltd"];
 for (const n of loanAnsNames) if (ctx.__la(n) !== isLoanAnswerRow(n)) {
   bad++; console.log(`  LOAN-ANSWER DRIFT ${JSON.stringify(n)} twin=${ctx.__la(n)} lib=${isLoanAnswerRow(n)}`);
 }

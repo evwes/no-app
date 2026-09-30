@@ -1079,7 +1079,7 @@
   }
 
   window.__wampoCitName = isCollectiveTrustName;  // read by the smoke test only
-  const LOAN_ANSWER_PHRASE = /^loan\s+repayments?\s+are\b|^loan\s+repayments?\s*:/i;
+  const LOAN_ANSWER_PHRASE = /^(?:loan\s+)?repayments?\s+are\b|^loan\s+repayments?\s*:/i;
   const LOAN_ANSWER_REMNANT = /^(?:included|yes|no)[.:]?$/i;
   function isLoanAnswerRow(name) {
     const s = String(name || "").trim();

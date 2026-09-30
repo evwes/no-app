@@ -1009,7 +1009,21 @@ export function isAnnuityContractRow(f, cleanedName) {
  * A bare `no` is included for symmetry and matches 0 rows today — the same
  * reasoning as v191's singular `statement`, where the anchor is what makes an
  * unused arm safe. */
-export const LOAN_ANSWER_PHRASE = /^loan\s+repayments?\s+are\b|^loan\s+repayments?\s*:/i;
+/* WIDENED 2026-09-30 (02:5xZ) BY #513's OWN VERDICT, and the residue is a second
+ * mechanism rather than a missed spelling. v195 predicted the remnant rows would
+ * go to 0 and SEVEN survived; reading them showed why — where the layout gives
+ * each fragment its OWN VALUE, `Loan Repayments are` and `included:` are two
+ * ROWS, not one wrapped name, so no line-joining rule can reunite them.
+ * Kentucky Rebuild Corporation (159 ppl) is the proof: it publishes `Included:`
+ * at $210,579 AND `Repayments are` at $205,396, two rows, two figures. The
+ * leading `Loan` lands on the row above.
+ *
+ * 60 rows / 60 plans / 78,071 participants / $9,385,509, 13 distinct names, all
+ * read, not one a fund, 0 publishing a ticker or a fee, largest 9.1% of a menu.
+ * The `are` is load-bearing: `repayment schedules through August 2029 with
+ * interest rates ranging from…` is the loan-DESCRIPTION family, a separate
+ * queued item, and must not be reached from here. */
+export const LOAN_ANSWER_PHRASE = /^(?:loan\s+)?repayments?\s+are\b|^loan\s+repayments?\s*:/i;
 export const LOAN_ANSWER_REMNANT = /^(?:included|yes|no)[.:]?$/i;
 export function isLoanAnswerRow(name) {
   const s = String(name || "").trim();

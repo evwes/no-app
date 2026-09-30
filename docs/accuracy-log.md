@@ -29709,3 +29709,53 @@ Investments` and `Total assets at fair value`.
 `audit-generic-names` **238 ± 3 plans** and a `fabricated-name` **HIGH APPEARS**,
 which is EXPECTED and is not a regression; `overshoot` holds at **317** or falls
 by at most 1; `dl` unchanged at **142**.
+
+## 2026-09-30 (02:5xZ) — #513 (v195) VERDICT: the store tests passed exactly, the two CLASS counts missed, and the miss found a second mechanism
+
+**PASSED EXACTLY.** `confident` **60,106, +0 / −0** — registered, and it is the
+right answer for a version that TYPES a row and never drops it. `overshoot`
+**317** held to the unit. `dl` **142** unchanged. HIGH **4 = the baseline** (the
+self-clearing `reparse-loss` cleared). WARN 608. The coverage line is otherwise
+byte-identical to #511's.
+
+**MISSED, both in the same direction: rows named `included`/`Included`/`Yes`
+registered 24 → 0 and came in at 7; rows matching `^loan repayments? are`
+registered 0 → ~21 and came in at 19.** The revert restored the self-describing
+name for 19 filings and seven kept the remnant.
+
+**Reading the seven names the CAUSE, and it is a second mechanism rather than a
+missed spelling.** The registration assumed one mechanism for the whole class —
+a wrapped name whose first line v194 skipped — so reverting the skip had to
+restore every one. It did not, because **where the layout gives each fragment its
+OWN VALUE, `Loan Repayments are` and `included:` are two ROWS and no
+line-joining rule can reunite them.** Kentucky Rebuild Corporation (159 ppl) is
+the proof and it is unambiguous: it publishes `Included:` at **$210,579** AND
+`Repayments are` at **$205,396**, two rows with two figures, adjacent in a
+value-sorted 24-row menu. The other six sit between two real funds in value
+order for the same reason. All seven carry `ov8` — OCR'd or broken-font pages,
+where the column split is what produces the second figure.
+
+**THE OUTCOME LANDED IN FULL AND THAT IS WHAT THE CHANGE WAS FOR: all 26 rows
+across both spellings are typed `Participant loans — not a menu choice`,**
+because the display half was deliberately built to answer for the restored phrase
+AND the remnant. *A prediction about which STRING the store will hold is a
+different claim from a prediction about what a reader will see, and only the
+second one is the point.* Designed, not lucky — and the argument for shipping a
+display half beside a parser revert rather than waiting for the re-parse.
+
+**AND THE VERDICT FOUND ITS OWN RESIDUE, shipped in the same cycle: the loan
+answer line MISSING ITS LEADING `Loan` — 60 rows / 60 plans / 78,071
+participants / $9,385,509.** `LOAN_ANSWER_PHRASE` required the name to begin with
+`loan`; when the split puts `Loan` on the row above, what is left begins
+`Repayments are`. All **13 distinct names read** — `Repayments are Included`,
+`Repayments are`, `repayments are included: X`, `Repayments are Included Yes`,
+`Repayments are included: $519,719` — not one a fund, **0 publishing a ticker and
+0 publishing a fee**, largest 9.1% of a menu, so the harm is the claim alone.
+**The `are` is load-bearing and its cost was measured before the arm shipped:**
+an opening `repayments?` alone reaches a further 28 rows of the loan-DESCRIPTION
+family (`repayment schedules through August 2029 with interest rates ranging
+from 2.88% to`), which is a separate queued item with its own residue test, and
+both of those forms are now pinned as must-KEEPs. Negative control: the reverted
+twin fails by name on exactly the 4 new must-flags and holds all 4 must-keeps.
+REPORT path only — `git diff --stat p/` empty over all 5,000 regenerated pages,
+every one of the 60 rows below the top-twelve cut.

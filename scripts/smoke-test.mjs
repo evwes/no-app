@@ -610,12 +610,23 @@ try {
    * with the remnant words, `Bank Loan Fund` and `Loan Repayment (Interest)`
    * are not answer lines, and `Participant loans` / `Loan Fund` are already
    * typed by `LOAN_ROW` and must not be claimed twice. */
+  /* WIDENED 02:5xZ: the first ten must FLAG. `Repayments are …` is the same
+   * answer line with its leading `Loan` on the ROW ABOVE, which happens
+   * whenever the layout gives each fragment its own value — Kentucky Rebuild
+   * publishes `Included:` and `Repayments are` as two rows with two figures.
+   * The `are` is what keeps the loan-DESCRIPTION family out, so the
+   * `repayment schedules through …` case below is a must-KEEP and not an
+   * oversight: it is a separate queued item. */
   const loanAnsCases = [
     "Loan Repayments are included:", "Loan Repayments are Included Yes", "included",
     "Included", "Yes", "included:",
+    "Repayments are Included", "Repayments are", "repayments are included: X",
+    "Repayments are Included Yes",
     "Loan Repayment (Interest)", "Participant loans", "Loan Fund",
     "Included Value Fund", "Yes Bank Ltd", "Bank Loan Fund",
-    "Fidelity 500 Index Fund", "Loans to participants"];
+    "Fidelity 500 Index Fund", "Loans to participants",
+    "repayment schedules through August 2029 with interest rates ranging from 2.88% to",
+    "Repayment Holdings Ltd"];
   const loanAnsGot = await page.evaluate((cs) => {
     if (typeof window.__wampoLoanAnswerRow !== "function") return null;
     return cs.map((n) => window.__wampoLoanAnswerRow(n));
@@ -626,9 +637,9 @@ try {
     for (const n of loanAnsDrift) console.error(`  ${JSON.stringify(n)}  app.js=${loanAnsGot[loanAnsCases.indexOf(n)]}  module=${isLoanAnswerRow(n)}`);
     fail(`the loan-answer predicate in app.js disagrees with scripts/lib-disclose.mjs on ${loanAnsDrift.length} of ${loanAnsCases.length} names`);
   }
-  for (const n of loanAnsCases.slice(0, 6))
+  for (const n of loanAnsCases.slice(0, 10))
     if (!isLoanAnswerRow(n)) fail(`loan-answer rule no longer types a recordkeeper answer line, so it reads as a fund: ${JSON.stringify(n)}`);
-  for (const n of loanAnsCases.slice(6))
+  for (const n of loanAnsCases.slice(10))
     if (isLoanAnswerRow(n)) fail(`loan-answer rule would claim a real fund or an already-typed loan row: ${JSON.stringify(n)}`);
 
   /* THE COLLECTIVE-TRUST NAME RULE, tethered the same way, 2026-09-30. The
