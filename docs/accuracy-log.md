@@ -30502,3 +30502,88 @@ a closed vocabulary of the residue tokens contains `bad`, `we`, `id`, `bid` and
 store and can ask the standalone test the issuer strip already uses** — with a
 floor above one, because *a floor of ONE lets a single damaged row license the
 same damage elsewhere*. Re-queued there, not abandoned.
+
+## 2026-09-30 (08:3xZ) — AN OCR COLUMN-BLEED RESIDUE ON THE HOLDING NAME: 3,291 rows / 671 plans / 565,760 participants / $5,593,466,858
+
+The item queued at 06:3xZ and re-homed at 07:4xZ, shipped. A scanned 4i schedule
+drops two or three letters of the adjacent column onto the end of an otherwise
+immaculate fund name — `Nuveen Real Estate Sec Sel R6 ial`, `PGIM High Yield
+Fund R6 ial`, `Voya Index Solution 2050 P Z lal`, `Vanguard Total International
+Stock Index Fund, Admiral Shares ae`.
+
+**IT LIVES IN `merge-4i` BECAUSE OF A STANDING GUARANTEE, not a preference.**
+The only sound narrowing gate at display is *does the head already name a fund*,
+an outcome test through `fund-er.js` — and **`build-seo-pages.mjs` must never
+import `fund-er.js`**, that absence being what makes it impossible for a
+crawlable page to render a per-fund ER. A purely syntactic display rule cannot
+do the job either: nothing syntactic separates `Vanguard Total Bond Market Index
+Ad min` (a split `Admiral`, must keep) from `Nuveen Real Estate Sec Sel R6 ial`.
+
+So the test is **the issuer strip's own, which only the merge can ask because
+only the merge holds the whole store: does the head appear as a COMPLETE
+published name elsewhere?** `PGIM High Yield Fund R6` stands alone 627 times,
+`Small Cap Index` 898, `International Index` 514. The damaged strings do not —
+`Vanguard Total Bond Market Index Ad` is seen twice and is refused, so **the
+named risk is handled structurally rather than by vocabulary.**
+
+**THE FLOOR IS 3 AND NOT 1** for the reason already in that function's comment —
+*a floor of one lets a single damaged row license the same damage elsewhere.*
+Measured: floor 1 → 3,841 rows, 2 → 3,519, 3 → 3,309, 5 → 3,136.
+
+**AND THE GATE WAS STILL FED BY ITS OWN MISTAKE ONCE, WHICH IS THE FINDING.**
+`Putnam Stable Value Fund 15 bps` strips to `Putnam Stable Value Fund 15` —
+**attested THIRTY times**, because those thirty rows had already lost their
+`bps`, the basis-point unit that is the entire meaning of the number. Corroboration
+attests a head that is itself damaged. Two guards, both cheap: `bps` joins the
+keep list, and a head ending in a **bare number** is refused outright, that being
+the signature of a lost suffix. The numeric guard costs **8 rows**, every one of
+which looks like a correct repair (`LVIP Dimensional U.S. Core Equity 1 ee`) —
+accepted, because refusing a repair is the safe direction and `bps` was found by
+probing rather than by luck.
+
+**THE OUTCOME TEST DID NOT SAY WHAT I PREDICTED, AND BOTH SURPRISES ARE WINS.**
+
+**(1) The residue was MANUFACTURING FEES.** Through `fund-er.js`: 0 tickers
+gained, 0 lost, 0 flipped — but **5 rows stop publishing a fee the pattern table
+matched off the OCR NOISE ITSELF.** `af` reads as AMERICAN FUNDS and put **0.4%**
+on `Vanguard Strategic Equity Fund af` and on `FIDELITY ZERO TOTAL MARKET INDEX
+af` — a fund whose real fee is zero; `mm` reads as MONEY MARKET and put **0.2%**
+on `EuroPacific Growth Fund - Class R6 mm` and on `Avantis Emerging Markets
+Equity Fund Institutional Class mm`. Three withdrawn, two corrected.
+*A residue is not inert: two letters can name a house.*
+
+**(2) 502 ROWS GAIN AN SEC TICKER, 0 LOST, 0 CHANGED — and I measured through
+the wrong resolver first.** My outcome test asked `fund-er.js` and reported
+"+0 gained", but `stk` comes from `match-sec-tickers.mjs`, a different resolver
+that `lookupTicker` reads LAST. The real merge's own line moved and the diff
+against git HEAD settles it: `stk` **346,855 → 347,357**. Every gain read states
+a share class and gets that class — `American Funds 2055 Target Date Retirement
+R6` → RFKTX, `Fidelity Small Cap Index Fund` → FSSNX, `PIMCO Income Fund
+Institutional Class` → PIMIX, `Parnassus Value Equity Fund Instl` → PFPWX,
+`Hartford International Opportunities R6 Fund` → IHOVX. **So it is a coverage fix
+as well as an honesty fix, which the queue entry explicitly denied.**
+*There are TWO ticker resolvers and an outcome test has to ask both.*
+
+**AND A DELTA AGAINST A REMEMBERED NUMBER IS NOT A MEASUREMENT.** I first read
+the gain as +583, differencing the merge's line against the 346,774 recorded for
+run #499. The store's own before-value is **346,855**, and the reconciliation —
+0 of 65,240 entries skipped — gives exactly 502 with 3,291 names changed.
+
+**THE KEEP LIST IS EVIDENCE, NOT DECORATION.** `ind`, `idx` and `ext` are
+TRUNCATED WORDS rather than residue: `Vanguard Total Bond Market ind` is
+`… Market Index`, and stripping it was **the one genuine ticker loss (VBTLX) in
+the first measurement** — caught by the outcome test, not by reading.
+
+Gates: the real merge reproduces **3,291 rows across 671 plans** to the row;
+CONFIDENCE DIFF **+0 / −0**; `rows-dropped` **0**; parser-gate green, smoke
+green, fund-er-test 46/26/19/18 0 failures. **Surface: 12 crawlable pages**, every
+changed cell read — `Fidelity 500 Index Fund Mutual Fund Nt` → `Fidelity 500
+Index Fund`, `Jp Morgan · Smart Retirement 2035 Ak` → `… 2035`, `Northern Trust ·
+Extended Equity Market Index Ee` → `… Index`.
+
+**PRE-REGISTERED for the dispatched run**, which exists only to let a merge apply
+this — no parser bump, so the work list stays the dead 403s: the log prints
+`ocr tail-residue strip: 3291 rows across 671 plans`; `sec tickers` reads
+**347,357 rows across 37,107 plans**; CONFIDENCE DIFF **+0 / −0**; `confident`
+**60,103**, HIGH **5 = the standing baseline**, `overshoot` **316**, `dl` **142**,
+pv 196 at 99.79% all unchanged.

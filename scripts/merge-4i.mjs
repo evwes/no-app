@@ -264,6 +264,103 @@ if (demoted) console.log(`demoted ${demoted} junk-named confident entries (store
   if (fixed) console.log(`issuer section-caption strip: ${fixed} rows across ${fixedAcks.size} plans`);
 }
 
+/* AN OCR COLUMN-BLEED RESIDUE ON THE HOLDING NAME — 2026-09-30 (08:3xZ).
+ *
+ * A scanned 4i schedule can drop two or three letters of the adjacent column
+ * onto the end of an otherwise immaculate fund name: `Nuveen Real Estate Sec
+ * Sel R6 ial`, `PGIM High Yield Fund R6 ial`, `Vanguard Total International
+ * Stock Index Fund, Admiral Shares ae`, `Voya Index Solution 2050 P Z lal`.
+ * 84% of the population sits in entries carrying `ocr`.
+ *
+ * IT LIVES HERE AND NOT AT DISPLAY, and the reason is a standing guarantee
+ * rather than a preference. The only sound narrowing gate is *does the HEAD
+ * already name a fund*, which is an outcome test through `fund-er.js` — and
+ * `build-seo-pages.mjs` must NEVER import `fund-er.js`, that absence being
+ * what makes it impossible for a crawlable page to render a per-fund ER. A
+ * purely syntactic display rule cannot do the job either, because no such
+ * rule separates `Vanguard Total Bond Market Index Ad min` (a split
+ * `Admiral`, MUST KEEP) from `Nuveen Real Estate Sec Sel R6 ial`.
+ *
+ * So the test is the ISSUER STRIP'S OWN, which only the merge can ask because
+ * only the merge holds the whole store: **does the head appear as a COMPLETE
+ * published name elsewhere?** `PGIM High Yield Fund R6` stands alone 627
+ * times, `Small Cap Index` 898, `International Index` 514. The damaged strings
+ * do not: `Vanguard Total Bond Market Index Ad` is seen twice and is refused.
+ *
+ * THE FLOOR IS 3 AND NOT 1 for the reason written twenty lines above — a floor
+ * of one lets a single damaged row LICENSE the same damage elsewhere. Measured
+ * across floors: 1 -> 3,841 rows, 2 -> 3,519, 3 -> 3,309, 5 -> 3,136.
+ *
+ * AND THE GATE WAS STILL FED BY ITS OWN MISTAKE ONCE, which is why the numeric
+ * guard exists. `Putnam Stable Value Fund 15 bps` strips to `Putnam Stable
+ * Value Fund 15` — attested THIRTY times, because those thirty rows had
+ * already lost their `bps`, the basis-point unit that is the whole meaning of
+ * the number. A fund name ending in a bare number is the signature of a lost
+ * suffix, so a head of that shape is refused. Cost 8 rows, every one of which
+ * looked like a correct repair (`LVIP Dimensional U.S. Core Equity 1 ee`);
+ * accepted, because refusing a repair is the safe direction and `bps` was
+ * found by probing rather than by luck.
+ *
+ * OUTCOME THROUGH `fund-er.js`, AND IT IS NOT THE "NOTHING MOVES" PREDICTED:
+ * 0 tickers gained, **0 LOST**, 0 flipped — but **5 rows stop publishing a fee
+ * the pattern table matched off the OCR NOISE ITSELF.** `af` reads as AMERICAN
+ * FUNDS and put 0.4% on `Vanguard Strategic Equity Fund af` and on `FIDELITY
+ * ZERO TOTAL MARKET INDEX af`; `mm` reads as MONEY MARKET and put 0.2% on
+ * `EuroPacific Growth Fund - Class R6 mm` and on `Avantis Emerging Markets
+ * Equity Fund Institutional Class mm`. Three fees are withdrawn and two
+ * corrected. *A residue is not inert: two letters can name a house.*
+ *
+ * THE KEEP LIST IS NOT DECORATION — each entry was found by a probe or by the
+ * outcome test. `bps` is the unit above. `ind`, `idx` and `ext` are TRUNCATED
+ * WORDS, not residue: `Vanguard Total Bond Market ind` is `… Market Index`,
+ * and stripping it was the ONE genuine ticker loss in the first measurement
+ * (VBTLX). The rest are ordinary trailing tokens of real fund names.
+ *
+ * 3,291 rows / 671 plans / 565,760 participants / $5,593,466,858. */
+{
+  const TAIL = /^(.+?[A-Za-z0-9)])\s+([a-z]{2,3})$/;
+  /* tokens that legitimately END a filed fund name: share classes, vehicle and
+   * asset abbreviations, ordinary words, the basis-point unit, and the three
+   * truncated words the outcome test convicted. */
+  const TAIL_KEEP = new Set(["the","and","inc","llc","ltd","co","ii","iii","iv","adv","idx","adm",
+    "inv","ret","gr","fd","tr","lp","na","us","uk","eq","sm","mid","cap","bd","gov","int","of","at",
+    "in","on","to","by","for","shs","par","new","all","one","two","net","sub","non","pre","pro",
+    "per","via","est","fee","tax","usa","reg","are","sel","svc","ins","agg","em","ex","hy","ig",
+    "re","sa","ac","fi","bps","bp","ind","ext"]);
+  const NUMERIC_HEAD = /\s\d{1,3}$/;
+  const key = (x) => String(x).trim().toLowerCase();
+  const headOf = (n) => {
+    const m = TAIL.exec(String(n || "").trim());
+    if (!m || TAIL_KEEP.has(m[2].toLowerCase())) return null;
+    const h = m[1].trim();
+    if (h.length < 12 || h.split(/\s+/).length < 2) return null;
+    if (NUMERIC_HEAD.test(h)) return null;
+    return h;
+  };
+  /* pass 1: how often does each NAME stand alone across the whole store? */
+  const whole = new Map();
+  for (let i = 0; i < SHARDS; i++)
+    for (const [, e] of Object.entries(buckets[i])) {
+      if (!e || !e.confident || !Array.isArray(e.funds)) continue;
+      for (const f of e.funds) {
+        const n = String(f.name || "").trim();
+        if (n) whole.set(key(n), (whole.get(key(n)) || 0) + 1);
+      }
+    }
+  /* pass 2: strip only where the head is independently attested */
+  let bled = 0; const bledAcks = new Set();
+  for (let i = 0; i < SHARDS; i++)
+    for (const [ack, e] of Object.entries(buckets[i])) {
+      if (!e || !e.confident || !Array.isArray(e.funds)) continue;
+      for (const f of e.funds) {
+        const h = headOf(f.name);
+        if (!h || (whole.get(key(h)) || 0) < 3) continue;
+        f.name = h; bled++; bledAcks.add(ack);
+      }
+    }
+  if (bled) console.log(`ocr tail-residue strip: ${bled} rows across ${bledAcks.size} plans`);
+}
+
 /* THE SEC TICKER, RESOLVED ONCE AT MERGE AND STORED ON THE ROW.
  *
  * `fund-er.js` is a hand-written pattern table and cannot finish the tail:
