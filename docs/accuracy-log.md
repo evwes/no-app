@@ -31051,3 +31051,42 @@ or 2,048,738.** The "ONE count was several defects" rule, met at five.
   defect away. *A display transform can make a defect harder to see than the
   data it renders*, which is why the repair had to be measured on the RAW
   stored name and not on what either surface prints.
+
+## 2026-09-30 (13:5xZ) — the abbreviation class splits three ways, and only one half is safe
+- **Found by the 13:3xZ participant-weighted draw on AMAZON (1,336,478
+  participants, the second-largest plan in the store).** Its 27-row menu is
+  immaculate — every row a real Vanguard/SSGA holding, correctly typed, sum
+  $31,466,246,000 — and **four of its five `Mutual fund` rows carry no
+  ticker**: `VANG FTSE SOC IDX IS` ($873,714,000), `VANG SM VAL IDX INST`
+  ($340,985,000), `AF EUROPAC GROWTH R6` ($180,005,000), `VANG CR FED MM ADM`
+  ($59,815,000). Only `VANG EXPLORER ADM` resolves (VEXRX).
+- **They are NOT in the 6,932 queued at 12:5xZ, and the reason splits the
+  class.** That expansion handles VEHICLE and DESCRIPTOR words (`Fd`, `Idx`,
+  `Adm`, `Instl`); these abbreviate the **HOUSE** — `VANG`, `AF`, `VG` — which
+  no descriptor expansion can reach. Split of the whole no-ticker population
+  the FILING types a registered mutual fund:
+
+  | half | rows | entries | participants |
+  |---|---|---|---|
+  | the house is WRITTEN OUT, only descriptors short | 260,854 | 34,751 | 49,266,337 |
+  | no house named at all — correctly blank | 204,236 | 34,234 | 50,607,054 |
+  | **the HOUSE ITSELF abbreviated** | **42,878** | **12,918** | **15,472,314** |
+
+  The queued 6,932 lives in the first half, which is where expansion is safe.
+- **AND THE HOUSE-ABBREVIATED HALF IS NOT A DICTIONARY PROBLEM OF 42,878
+  STRINGS — IT IS A HANDFUL OF RECORDKEEPER TEMPLATES.** `FID FDM IDX <year>
+  IPR` (Fidelity Freedom Index, Institutional Premium) appears **~2,000 times
+  across nine vintages**; `Am Fds <year> Trgt Dte Rtm R6 Fd` ~1,400 across
+  eight; `FID EXTD MKT IDX` 305; `Prin Inc Guar Option` 273; `AB Large Cap
+  Growth Z` 255. A template is verifiable against `sec-funds.json` once and
+  then applies thousands of times, which is a different and far more tractable
+  shape than a house list — and this record warns repeatedly that a house list
+  is wrong in the unsafe direction.
+- **DO NOT CARRY 42,878 AS ONE MECHANISM.** My classifier put `DFA Emerging
+  Markets I` (176 rows) and `DFA Inflation-Protected Securities I` (168) in the
+  abbreviated half, and **`DFA` is how Dimensional is ordinarily written** —
+  those names are complete, and their blank is a `fund-er.js` coverage gap
+  rather than an abbreviation. The half mixes at least two causes.
+- **NOT STARTED.** New coverage, so the owner's call, and the share-class gate
+  named at 12:5xZ (`Dodge & Cox Inc X` → DODIX where Class X is DOXIX) still
+  has to be built and measured before any of it ships.
