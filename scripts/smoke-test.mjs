@@ -375,6 +375,34 @@ try {
      * once already ("Shares of"). */
     "Common/Collective Trust Funds (Continued)",
     "Common/Collective Trust Funds (Continued) Class R6",
+    /* THE DOUBLED SHARE CLASS, 2026-09-30, added because NOT ONE of the 67
+     * cases above reaches the new arm — the tether agreed whether or not
+     * app.js carried it, the decorative-control failure this record has now
+     * paid for three times. Six must-STRIP: */
+    "Class K Fidelity Contrafund Class K",
+    "Class R-6 EuroPacific Growth Fund Class R-6",
+    "R6 American Funds Wash Mutual R6",
+    "Class K6 Fidelity Contrafund Class K6",
+    "Class IS ClearBridge Small Cap Growth fund, Class IS",
+    "R6 Hartford Balanced Inc-R6",
+    /* …and seven must-KEEP, one per way the arm can be wrong. The first two
+     * are the class-first STYLE, where the lead is the ONLY statement of the
+     * class and stripping destroys it. The next two state two DIFFERENT
+     * classes, where nothing says which is wrong — and the second of them is
+     * the row that FOUND this defect (Innovative Employee Solutions, 5,856
+     * ppl), deliberately pinned on the refused side. Then the three generic
+     * remainders, where the letter is a real designation of the employer's
+     * own stock: QuikTrip files the first at $3,535,256,080 and Moog the
+     * second at $369,929,005. The last is the reason the bare single-letter
+     * head needs the word "Class" in front of it — an initial is not a
+     * share class. */
+    "Class R6 Fidelity Global ex U.S. Index Fund",
+    "Class R6 American Funds 2040 Target Date Retirement Fund",
+    "Class R1 Macquarie Mid Cap Growth R6",
+    "II Class R1 Blackrock LifePath Index 2030 Fund S",
+    "Class E Common Stock",
+    "Class B Common Stock",
+    "T. Rowe Price Retirement 2030 Fund Class R",
   ];
   const nameGot = await page.evaluate((cs) => {
     if (typeof window.__wampoCleanFiledName !== "function") return null;

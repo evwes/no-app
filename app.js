@@ -522,6 +522,10 @@
    * ("(Net Asset Value Practical Expedient) MetLife Stabl"). Both are strictly
    * better than before and neither is widened for without its own measurement.
    * The `I` in the shares/units alternation is OCR's reading of the slash. */
+  /* verbatim twins of lib-disclose's doubled-class constants — see there. */
+  const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1,2}|r-?[1-9])|(r-?[1-9]))\b[\s.,()\-]+(?=[A-Za-z])/i;
+  const DOUBLED_CLASS_TAIL = /(?:\b(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1,2}|r-?[1-9])|\b(r-?[1-9]))\s*$/i;
+  const classCode = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
   const TYPE_PREFIX = /^(?:mutual funds?|common[\/ ]?collective (?:trust )?funds?|collective (?:investment )?trusts?(?: funds?)?|common[\/ ]?collective trusts?|pooled separate accounts?|separate accounts?|registered investment compan(?:y|ies)|stable value(?: funds?)?|money market(?: funds?)?|guaranteed (?:investment|interest) contracts?|target date funds?|index funds?)(?:\s*[-–:]\s+|[,;]?\s*(?:at\s+)?fair value[,;]?\s+|\s*(?:shares?|units?)(?:\s*[\/&I]\s*(?:shares?|units?))*\s*[-–:,]?\s+)(?=\S)/i;
   const KERN_WORDS = new Set(("vanguard fidelity blackrock schwab invesco pimco putnam principal prudential nuveen tiaa cref dodge cox american funds franklin templeton mfs jpmorgan jp morgan jpmcb wellington wells fargo allspring columbia janus henderson federated hermes goldman sachs galliard artisan harbor oakmark loomis sayles neuberger berman dimensional dfa ishares spdr state street ssga northern trust voya empower lincoln transamerica john hancock massmutual nationwide metlife great west securian tiaa-cref " +
     "target retirement trust trusts fund funds index institutional instl inst admiral adm investor inv shares share class cl plus select premium growth value blend core total stock market mkt intl international global emerging markets developed world equity equities bond bonds fixed income high yield short term intermediate long treasury government govt inflation protected securities tips real estate reit mid cap small large extended balanced moderate conservative aggressive money mutual common collective commingled pooled separate account accounts stable capital preservation guaranteed interest contract contracts insurance company general portfolio portfolios lifepath lifecycle freedom smartretirement retire strategic allocation dividend appreciation opportunities opportunity health sciences technology sector explorer windsor primecap wellesley star " +
@@ -658,6 +662,23 @@
     // before a DIFFERENT house ("Empower T. Rowe Price …") is left alone —
     // "BlackRock iShares …" is a real name.
     s = s.replace(/^((?:\S+\s+){0,2}\S+)\s+\1(?=\s+\S)/i, "$1");
+    /* A SHARE CLASS STATED AT BOTH ENDS OF ONE NAME IS STATED ONCE,
+     * 2026-09-30. 57 rows / 47 plans / 77,331 ppl. Canonical in
+     * scripts/lib-disclose.mjs, which carries the full reasoning and the two
+     * refused neighbours (the class-first STYLE, 331 rows, where the lead is
+     * the only statement of the class; and two DIFFERENT classes, 80 rows,
+     * where nothing in the string says which is wrong). Verbatim twin —
+     * tethered by smoke-test.mjs, which fails on drift. */
+    {
+      const h = DOUBLED_CLASS_HEAD.exec(s);
+      if (h) {
+        const hc = classCode(h[1] || h[2]);
+        const rest = s.slice(h[0].length).trim();
+        const t = hc && rest.length >= 12 && rest.split(/\s+/).length >= 2
+          ? DOUBLED_CLASS_TAIL.exec(rest) : null;
+        if (t && hc === classCode(t[1] || t[2]) && !isGenericTypeName(rest)) s = rest;
+      }
+    }
     const pm = s.match(TYPE_PREFIX);
     if (pm) { const rest = s.slice(pm[0].length).trim(); if (rest.split(/\s+/).length >= 2 && /[A-Za-z]{3}/.test(rest)) s = rest; }
     /* THE COMMA FAMILY, 2026-09-28. A comma after a COMPLETE vehicle type is a

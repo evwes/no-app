@@ -34,6 +34,14 @@
  * @param {boolean} fromTrust  lineup came from a master trust — never caveat
  * @returns {null | {kind: "under"|"over", pct: number, severe: boolean}}
  */
+/* The one shared question about whether a name identifies a fund at all.
+ * Imported rather than copied: app.js carries a GENERATED twin of it, kept
+ * honest by gen-generic-twin.mjs and the smoke tether, and a third hand-typed
+ * copy is how the match-quote guard once published a false heading on 615
+ * pages. build-seo-pages.mjs already imports the same symbol, and lib-4i
+ * imports nothing from this file, so there is no cycle. */
+import { isGenericTypeName } from "./lib-4i.mjs";
+
 export function coverageBand(total, planAssets, fromTrust = false) {
   if (fromTrust) return null;
   if (!total || !planAssets || total <= 0 || planAssets <= 0) return null;
@@ -310,6 +318,16 @@ const TYPE_SUFFIX = /\s+(?:mutual funds?(?: shares?)?|common(?:[\/ ]|\s+and\s+)?
  * investment companies` in either case is still caught by the `keeps` screen
  * above, which was written for it. */
 const DANGLING_TAIL = /\b(?:and|or|of|the|a|an|in|for|with|at|to|from|on|by|&)$/;
+/* A share-class designation at the very front, and the same one at the very
+ * end. Both are deliberately narrow: the code is 1-2 letters (optionally with
+ * a digit, so "K6" and "IS" and "A1" are reachable), a 1-2 digit number, or an
+ * R-code, and a bare single letter only counts when the word "Class" or "Cl"
+ * introduces it — otherwise "T. Rowe Price …" would read its own initial as a
+ * class. The head must be followed by a LETTER, so a name that is nothing but
+ * a designation cannot match. */
+const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1,2}|r-?[1-9])|(r-?[1-9]))\b[\s.,()\-]+(?=[A-Za-z])/i;
+const DOUBLED_CLASS_TAIL = /(?:\b(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1,2}|r-?[1-9])|\b(r-?[1-9]))\s*$/i;
+const classCode = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
 /* The same column glued to the FRONT with a separator — "Mutual Fund -
  * Fidelity 500 Index Fund", "Separate Account - JPMorgan Equity Income
  * Fund R6" (Texas Health Resources, 13:1xZ draw 2026-09-18). Sized on the
@@ -514,6 +532,65 @@ export function cleanFiledName(name) {
   // before a DIFFERENT house ("Empower T. Rowe Price …") is left alone —
   // "BlackRock iShares …" is a real name.
   s = s.replace(/^((?:\S+\s+){0,2}\S+)\s+\1(?=\s+\S)/i, "$1");
+  /* A SHARE CLASS STATED AT BOTH ENDS OF ONE NAME IS STATED ONCE, 2026-09-30.
+   * "Class K Fidelity Contrafund Class K", "Class R-6 EuroPacific Growth Fund
+   * Class R-6", "R6 American Funds Wash Mutual R6". 57 rows / 47 plans /
+   * 77,331 ppl / $188,195,155 on the pv-196 store, all 52 distinct
+   * transformations read, every one a real fund name.
+   *
+   * THE ARGUMENT IS INTERNAL AND THAT IS WHY IT NEEDS NO STORE. The same
+   * designation appears twice in one string, so removing one copy cannot
+   * change which fund is named — unlike the issuer strip and the OCR tail
+   * strip, whose safety rests on a whole-store attestation only merge-4i can
+   * ask. This one is self-evident per row, so it lives at display and reaches
+   * both surfaces at once.
+   *
+   * THE ARM SITS BESIDE THE DOUBLED-HOUSE PREFIX ABOVE AND CANNOT REACH THIS
+   * SHAPE: that one requires the repeat to be ADJACENT, and here the fund's
+   * whole name sits between the two copies.
+   *
+   * TWO NEIGHBOURING POPULATIONS ARE REFUSED, both measured and both larger
+   * than what ships:
+   *
+   *   331 rows / 170 plans / 334,922 ppl lead with a class the remainder
+   *   NEVER repeats ("Class R6 Fidelity Global ex U.S. Index Fund"). That is
+   *   not damage — it is the filer writing the class first, and the block
+   *   structure proves it: the row above is "Class R6 American Funds 2035
+   *   Target Date Retirement Fund" and the one above that "…2040", a whole
+   *   menu in class-first style. Stripping there DESTROYS the only statement
+   *   of the share class.
+   *
+   *   80 rows / 58 plans / 171,594 ppl state two DIFFERENT classes ("Class R1
+   *   Macquarie Mid Cap Growth R6", "Class H Invesco Stable Value Trust Class
+   *   A1"). One of them is wrong and nothing in the string says which, so
+   *   picking the trailing one would be a guess wearing a repair's clothes.
+   *
+   * AND THE ROW THAT FOUND IT IS IN THE REFUSED HALF. Innovative Employee
+   * Solutions (5,856 ppl) publishes "II Class R1 Blackrock LifePath Index
+   * 2030 Fund S", whose lead is the previous row's tail ("Small Cap Value
+   * Fund II Fee Class R1") and whose classes disagree. It is left as filed.
+   *
+   * A GENERIC REMAINDER IS REFUSED BY isGenericTypeName BEFORE ANY OF THIS —
+   * QuikTrip (16,054 ppl) files "Class E Common Stock" at $3,535,256,080 and
+   * Moog "Class B Common Stock" at $369,929,005, where the letter is a real
+   * designation of the employer's own stock and the remainder names no fund.
+   * Those four rows are 69% of the candidate population BY VALUE, and a
+   * shipped predicate refuses them with no new vocabulary.
+   *
+   * Outcome: +0 tickers, -0 lost, 0 flipped, +0 fees, -0 lost, 0 changed.
+   * An HONESTY fix and not a coverage fix, and here that holds by
+   * construction rather than by measurement: lookupTicker tries the RAW name
+   * FIRST, and `stk` is a STORED field a display arm cannot reach. */
+  {
+    const h = DOUBLED_CLASS_HEAD.exec(s);
+    if (h) {
+      const hc = classCode(h[1] || h[2]);
+      const rest = s.slice(h[0].length).trim();
+      const t = hc && rest.length >= 12 && rest.split(/\s+/).length >= 2
+        ? DOUBLED_CLASS_TAIL.exec(rest) : null;
+      if (t && hc === classCode(t[1] || t[2]) && !isGenericTypeName(rest)) s = rest;
+    }
+  }
   const pm = s.match(TYPE_PREFIX);
   if (pm) { const rest = s.slice(pm[0].length).trim(); if (rest.split(/\s+/).length >= 2 && /[A-Za-z]{3}/.test(rest)) s = rest; }
   /* THE COMMA FAMILY, 2026-09-28. A comma after a COMPLETE vehicle type is a
