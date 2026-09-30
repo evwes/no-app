@@ -30587,3 +30587,25 @@ this — no parser bump, so the work list stays the dead 403s: the log prints
 **347,357 rows across 37,107 plans**; CONFIDENCE DIFF **+0 / −0**; `confident`
 **60,103**, HIGH **5 = the standing baseline**, `overshoot` **316**, `dl` **142**,
 pv 196 at 99.79% all unchanged.
+
+### 2026-09-30 (08:5xZ) — the 08:xx draw, and a small class recorded without overclaiming
+
+**Tenet Healthcare (149,730 ppl, $8,693,235,208, 65 rows at ratio 0.984)** is a
+strong menu — Fidelity/Spartan collective pools, GQG, Schroder, T. Rowe Price,
+Cohen & Steers, all named with their unit classes. **Kenan Advantage Group
+(7,843)** likewise.
+
+Two Tenet rows weld identifier metadata into the NAME: `MFB Coltv Daily 1-5 Yr
+Cr Bd ; 2.385%; CUSIP: 786993972` and `MFB NT Coltv Asset-Backed; 0.597%; CUSIP:
+003999AF6`. Sized store-wide: **150 rows / 7 plans / 334,573 participants /
+$6,626,192,453**, 134 distinct names, 17 publishing a ticker and 30 a fee.
+
+**THE COUNT IS NOT A CLASS AND IS RECORDED SO IT IS NOT CARRIED FORWARD AS ONE.**
+Reading the names, the overwhelming majority are **individual SECURITIES in a
+brokerage or managed-account flood** — `CONOCOPHILLIPS COM CUSIP : 20825C104`,
+`VISA INC COM CL A STK`, `SAP SE-SPONSORED ADR`, `Germany - USD ADR BAYER A G` —
+which are correctly listed holdings that merely carry their CUSIP, not menu rows
+making a false claim. Only a handful, Tenet's two among them, are pooled funds
+whose name has swallowed a rate and an identifier. **Do not carry 150 / 334,573
+forward**; the reader-facing item is the pooled-fund subset and it has not been
+separated out. Seven plans, so it is small either way.

@@ -705,6 +705,55 @@ from the cycle that would have cleared it.
   trust-aware standalone script — the standalone's single trust is the one lineup
   v196 withdrew. **`matchQuote` 5,397 of which only
   1,785 are SHOWN to readers** — the condition/outcome pair shipped 2026-09-27.
+- **IN FLIGHT: #517, dispatched 2026-09-30 08:4xZ on `bf0ccc46`, observed queued.
+  NO PARSER BUMP — it exists only to let the MERGE apply the strip, so the work
+  list is the dead 403s. THE MIRROR IS HELD UNTIL ITS VERDICT ON PURPOSE:**
+  unlike a display change, this rewrites STORED NAMES inside `merge-4i`, which
+  **main's own cron also runs**, so mirroring early would apply an unverdicted
+  rule on main unsupervised.
+  **AN OCR COLUMN-BLEED RESIDUE ON THE HOLDING NAME: 3,291 rows / 671 plans /
+  565,760 participants / $5,593,466,858** — the item queued at 06:3xZ and
+  re-homed at 07:4xZ. `Nuveen Real Estate Sec Sel R6 ial`, `PGIM High Yield Fund
+  R6 ial`, `Voya Index Solution 2050 P Z lal`.
+  **THE TEST IS THE ISSUER STRIP'S OWN AND ONLY THE MERGE CAN ASK IT: does the
+  head appear as a COMPLETE published name elsewhere?** `PGIM High Yield Fund R6`
+  stands alone **627** times, `Small Cap Index` 898, `International Index` 514;
+  the damaged strings do not, so **`Vanguard Total Bond Market Index Ad` is seen
+  twice and REFUSED — the named risk is handled structurally, not by
+  vocabulary.** Floor **3, not 1** (1 → 3,841 rows, 2 → 3,519, 3 → 3,309,
+  5 → 3,136), because *a floor of one lets a single damaged row license the same
+  damage elsewhere.*
+  **AND THE GATE WAS STILL FED BY ITS OWN MISTAKE ONCE.** `Putnam Stable Value
+  Fund 15 bps` strips to a head **attested THIRTY times**, because those thirty
+  rows had already lost their `bps` — the basis-point unit that is the whole
+  meaning of the number. `bps` joins the keep list AND a head ending in a bare
+  number is refused; the numeric guard costs **8 rows that look like correct
+  repairs**, accepted because refusing a repair is the safe direction.
+  **TWO SURPRISES IN THE OUTCOME TEST AND BOTH ARE WINS.** (1) **The residue was
+  MANUFACTURING FEES: `af` reads as AMERICAN FUNDS** and put **0.4%** on
+  `Vanguard Strategic Equity Fund af` and on `FIDELITY ZERO TOTAL MARKET INDEX
+  af` — whose real fee is zero — **and `mm` as MONEY MARKET**, 0.2% on two equity
+  funds; 3 withdrawn, 2 corrected. *A residue is not inert: two letters can name
+  a house.* (2) **502 rows GAIN an SEC ticker, 0 lost, 0 changed** (RFKTX, FSSNX,
+  PIMIX, PFPWX, IHOVX — each states a class and gets that class), **and I
+  measured through the wrong resolver first**: `stk` comes from
+  `match-sec-tickers.mjs`, not `fund-er.js`. *There are TWO ticker resolvers and
+  an outcome test has to ask both* — so the queue entry's "honesty fix, not a
+  coverage fix" was wrong.
+  **AND A DELTA AGAINST A REMEMBERED NUMBER IS NOT A MEASUREMENT:** I first read
+  the gain as +583 by differencing against #499's recorded 346,774; the store's
+  own before-value is **346,855**, and the reconciliation (0 of 65,240 entries
+  skipped) gives exactly **502**.
+  `ind`/`idx`/`ext` are kept as TRUNCATED WORDS — `Vanguard Total Bond Market
+  ind` is `… Market Index`, **the one genuine ticker loss (VBTLX) in the first
+  measurement**, caught by the outcome test and not by reading.
+  **PRE-REGISTERED:** the log prints `ocr tail-residue strip: 3291 rows across
+  671 plans`; `sec tickers` **347,357 rows across 37,107 plans**; CONFIDENCE DIFF
+  **+0 / −0**; `confident` **60,103**, HIGH **5**, `overshoot` **316**, `dl`
+  **142**, pv 196 at 99.79% unchanged. Gates: real merge reproduces to the row,
+  `rows-dropped` 0, parser-gate / smoke / fund-er-test green, **12 crawlable
+  pages**, every changed cell read.
+  `docs/accuracy-log.md` 2026-09-30 (08:3xZ).
 - **SHIPPED AND MIRRORED 2026-09-30 07:4xZ (`fda28a8c → af83067b`), UNFORCED ON
   BOTH CHECKS, data gate +0 / −0 — A BARE MATURITY DATE IS THE PARTICIPANT-LOAN
   ROW: 68 rows / 67 plans / 135,334 participants / $153,709,833.** Found by the
