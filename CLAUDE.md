@@ -791,9 +791,47 @@ from the cycle that would have cleared it.
   (`["Registrant :: Series", ticker, "class", "Class Name"]`), and the sizer now
   asserts FTKFX and FTBFX both resolve before counting.
   `docs/accuracy-log.md` 2026-09-30 (03:5xZ).
-- **IN FLIGHT: #515, dispatched 2026-09-30 04:5xZ by the PUSH trigger (it fired
-  this time) on `d317b016`, observed `in_progress`. NO PARSER BUMP — it exists to
-  let PREP write a new field. THE SAME-INSTANT PARTICIPANT WITNESS, AND IT ANSWERS
+- **NOTHING IS IN FLIGHT. #515 RAN `success` AND IS MIRRORED — 2026-09-30 05:1xZ
+  (`e4550e5d → 10d45d5b`), UNFORCED ON BOTH CHECKS, data gate +0 / −0. EVERY
+  PRE-REGISTERED TEST PASSED AND THE WITNESS CONVICTED 119 PLANS IN TWO
+  DIRECTIONS.** `fields` is **39** with `activeBOY` last; **both columns
+  resolved** (67,749 of 68,259 full-form and 43,212 of 43,523 short-form carry a
+  non-zero value, 99.3% each); **`warn` 609 → 610** exactly as registered, the
+  extra being `eoy-count-contradicted`; and **no published number moved** —
+  `confident` 60,103, lineups 59,753, entries 65,240, `overshoot` 316, `dl` 142,
+  `tkShare` 24.42 all byte-identical. Unregistered and correct: **`high` 7 → 5**,
+  #514's two self-clearing `reparse-loss` entries clearing, so **HIGH 5 = 4
+  `contrib` + `fabricated-name` is the standing baseline.**
+  **THE THREE VALUES MATCH THE FILINGS I READ BY EYE, TO THE PERSON: Iti
+  Intermodal 328, Sun Pharmaceutical 1,477, Sound Harbor 3.** Three independent
+  confirmations in one read that the column name is right, the ingest is faithful
+  and the readings were right.
+  **THE SPLIT, of 171 real contradictions (219 of the 390 being wind-downs whose
+  filings are correct): line 6a(1) convicts LINE 5 on 86 (426,701 ppl), convicts
+  the END-of-year subtotal on 33 (151,953 ppl), 1 unsettled, 51 with no 6a(1)
+  filed.** The 33 matter most because **the end-of-year subtotal is what the site
+  PUBLISHES** — `parts = partEOY || participants`, unconditionally.
+  **AND IT SETTLED THE CASE I HAD EXPLICITLY LEFT AMBIGUOUS: Inova Health System
+  Foundation publishes 842 where line 5 says 22,529 and 6a(1) says 22,057**, so
+  line 5 is honest and the published count is wrong by a factor of 27.
+  Fontainebleau is the same shape (208 published, 5,245 filed, 6a(1) 5,178).
+  *A field that resolves a case you already read and could not settle is worth
+  more than one that confirms a case you could.*
+  **MY POSITIVE CONTROL UNDERSTATED THE CLASS BY TWO ORDERS OF MAGNITUDE and that
+  is not a defect in it** — it set three witnesses by hand (1 / 1 / 1 / 168) and
+  production has 99.3% coverage. *A control proves the branches are reachable and
+  correctly wired; it cannot size a population whose inputs it chose.*
+  **AND THE PRINT FIX DELIVERED: #515's log is the FIRST run log ever to carry
+  these five class-level findings as text** — the two above plus
+  `folded-aggregate` (112 menus / 1,156,064 ppl, worst RTX Savings Plan Master
+  Trust 61%), `lineup-overshoot` (316 / 397,499, worst BNSF 1.37x) and
+  `trust-overshoot` (12 / 203,974, worst Paramount Global Master Trust 1.36x).
+  Three of the five were counted in the coverage line and never printed.
+  **NEXT, AND IT IS A DECISION RATHER THAN A MEASUREMENT:** the 33 have a filed
+  witness on both sides, so `parts` could prefer line 5 where 6a(1) corroborates
+  it — 33 published counts move, which is the owner's call.
+  `docs/accuracy-log.md` 2026-09-30 (05:1xZ).
+- **WHAT #515 SHIPPED: THE SAME-INSTANT PARTICIPANT WITNESS, AND IT ANSWERS
   IN BOTH DIRECTIONS.** Line 6a(1) — active participants at the BEGINNING of the
   plan year — is the only count taken at the same instant as line 5. **Iti
   Intermodal** files line 5 = 294,352 with **6a(1) = 328**, so line 5 is the

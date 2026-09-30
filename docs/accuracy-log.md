@@ -30171,3 +30171,82 @@ says it will not publish.
 **Prevention:** the split between what a store field holds and what the packing
 publishes is now stated in both places it is read; and the print fix means a
 class-level finding cannot ship invisibly again.
+
+## 2026-09-30 (05:1xZ) — Run #515 verdict: the witness landed, and it convicted 119 plans in two directions
+
+- **Run:** #515, push trigger on `d317b016`, `conclusion: success` 04:40–04:46Z,
+  data commit `10d45d5b`. **MIRRORED `e4550e5d → 10d45d5b`, UNFORCED ON BOTH
+  CHECKS**, data gate +0 / −0. pv 196 covers 68,625 of 68,767 (99.8%).
+
+- **EVERY PRE-REGISTERED TEST PASSED.**
+  - `fields` is **39** with `activeBOY` last, so no existing index moved.
+  - **Both columns resolved**, which was the one thing a sandbox could not check:
+    **67,749 of 68,259 full-form rows (99.3%)** and **43,212 of 43,523
+    short-form (99.3%)** carry a non-zero `activeBOY`.
+  - **`warn` 609 → 610**, exactly as registered, the extra being
+    `eoy-count-contradicted` firing.
+  - **No published number moved**: `confident` 60,103, `lineups` 59,753,
+    `entries` 65,240, `overshoot` 316, `dl` 142, `tkShare` 24.42 — all
+    byte-identical, which is the correct outcome for a run that adds a field and
+    splits a WARN.
+  - Unregistered and correct: **`high` 7 → 5**. #514's two self-clearing
+    `reparse-loss` entries cleared, leaving **HIGH 5 = 4 `contrib` +
+    `fabricated-name`**, the standing baseline v196 created.
+
+- **AND THE THREE VALUES MATCH THE FILINGS I READ BY EYE, TO THE PERSON.**
+  Before the run I opened three PDFs and read line 6a(1) / 5d(1): **Iti
+  Intermodal 328**, **Sun Pharmaceutical 1,477**, **Sound Harbor Development 3**.
+  The store now holds **328, 1,477 and 3**. Three independent confirmations in
+  one read that the column name is right, the ingest is faithful, and the
+  readings were right — the cheapest possible check that a new field means what
+  it is documented to mean.
+
+- **THE SPLIT IS THE PAYOFF AND IT IS MUCH LARGER THAN MY CONTROL SUGGESTED.**
+  Of 390 flagged plans, 219 are wind-downs whose filings are correct, leaving
+  **171 real contradictions**, now resolved by direction:
+
+  | verdict | plans | participants |
+  |---|---|---|
+  | line 6a(1) convicts **LINE 5** | **86** | 426,701 |
+  | line 6a(1) convicts the **END-of-year subtotal** | **33** | 151,953 |
+  | unsettled by it | 1 | — |
+  | no 6a(1) filed at all | 51 | — |
+
+  **The 33 matter most, because the end-of-year subtotal is what the site
+  PUBLISHES.** `build-data` packs `parts = partEOY || participants`
+  unconditionally, so those 33 pages show a count that the filing's own line 5
+  and line 6a(1) both contradict, with no assets collapse to explain it.
+
+- **AND IT SETTLED THE CASE I HAD EXPLICITLY LEFT AMBIGUOUS.** Last cycle I
+  looked at **Inova Health System Foundation** — published 842, line 5 = 22,529,
+  $156.6M of assets — and wrote that both readings were plausible and I could
+  not tell which was wrong. **Line 6a(1) reads 22,057**, taken at the same
+  instant as line 5's 22,529. So line 5 is honest and **the published 842 is
+  wrong by a factor of 27**. Fontainebleau Development is the same shape (208
+  published, 5,245 filed, 6a(1) = 5,178). *A field that resolves a case you have
+  already read and could not settle is worth more than one that confirms a case
+  you could.*
+
+- **MY POSITIVE CONTROL UNDERSTATED THE CLASS BY TWO ORDERS OF MAGNITUDE, and
+  that is not a defect in it.** The control set three witnesses by hand and got
+  line 5 convicted 1, end-of-year 1, unsettled 1, no witness 168. Production has
+  99.3% witness coverage and gets 86 / 33 / 1 / 51. **A control proves the
+  branches are reachable and correctly wired; it cannot size the population,
+  because its inputs are three rows I chose.** Both numbers are right about
+  different questions.
+
+- **AND THE PRINT FIX DELIVERED EXACTLY WHAT IT WAS FOR.** #515's log is the
+  first run log in this project's history to carry these five class-level
+  findings as text: `boy-count-contradicted`, `eoy-count-contradicted`,
+  `folded-aggregate` (112 menus / 1,156,064 ppl, worst RTX Savings Plan Master
+  Trust at 61%), `lineup-overshoot` (316 / 397,499, worst BNSF 1.37x) and
+  `trust-overshoot` (12 / 203,974, worst Paramount Global Master Trust 1.36x).
+  Three of those five had been counted in the coverage line and never once
+  printed. **A per-plan rule fires many times and a class-level rule fires ONCE**
+  — the discriminator needed no registry and cost four lines of output.
+
+- **Prevention:** the next step is now a decision rather than a measurement. The
+  33 EOY-contradicted plans have a named, filed witness on both sides, so
+  `parts` can prefer line 5 where 6a(1) corroborates it — a change to 33
+  published counts, which is the owner's call and is recorded as such rather
+  than taken.
