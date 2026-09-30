@@ -1212,6 +1212,53 @@ export function isLoanAnswerRow(name) {
   return LOAN_ANSWER_PHRASE.test(s) || LOAN_ANSWER_REMNANT.test(s);
 }
 
+/* A SCHEDULE H PARTICIPANT-DIRECTION CAPTION IS NOT A HOLDING — 2026-09-30
+ * (14:4xZ). Found by the 14:3xZ participant-weighted draw on MICROSOFT
+ * (183,509 participants, $77.9B), whose 50-row BlackRock/Vanguard/Fidelity
+ * menu is otherwise immaculate and whose THIRD-LARGEST row is named
+ * `Participant-directed` at $6,602,388,247 = 8.6% of the menu, with a blank
+ * type cell.
+ *
+ * "Participant-directed" and "non-participant-directed" are the statutory
+ * split Schedule H line 4i is reported under — a COLUMN CAPTION, not a fund.
+ * The money is real and correctly counted (Microsoft's menu sums to 0.98 of
+ * plan assets, so this is a distinct bucket and not a subtotal of the rows
+ * around it), so the row is TYPED and never dropped, on v181's pattern: the
+ * value stays in the denominator and no other row's percentage moves.
+ *
+ * 16 rows / 16 plans / 294,238 participants / $6,813,553,902. All 18
+ * candidate names read, not one a fund, and 0 publish a ticker — so the harm
+ * is the CLAIM alone.
+ *
+ * THE DOMINANT NEIGHBOUR IS NOT A DEFECT AND MUST NOT BE TOUCHED, which is
+ * most of the value of having measured it: 174 rows / 851,690 participants /
+ * $7,529,381,895 read `Participant-Directed Brokerage Accounts`, and a
+ * participant-directed brokerage account is a REAL self-directed window —
+ * exactly the aggregate this site already types as one. The raw count of 192
+ * is two mechanisms and the bigger one is correct.
+ *
+ * SO THE TAIL IS A POSITIVE VOCABULARY OF WHAT MAY FOLLOW, never a blocklist:
+ * nothing, `investments`, `accounts` or `assets`. `brokerage accounts` is
+ * outside that list, so the brokerage family is refused BY CONSTRUCTION rather
+ * than by a rule that has to know the word — and the `^…$` ANCHOR is the other
+ * half of the same refusal. The controls say so precisely: removing EITHER the
+ * tail vocabulary or the anchor convicts exactly the same five names, the four
+ * brokerage windows plus `Participant Directed Retirement Fund`. An earlier
+ * draft of this comment credited only the vocabulary; they are joint, and
+ * either alone would do the work.
+ *
+ * AND THE NO-ISSUER GATE IS LOAD-BEARING, exactly as it is for
+ * `isNamelessFundRow`: two of the eighteen carry an IDENTITY column that names
+ * a real fund — `{Vangaurd Target Retirement 2045 Fd I}` (the filer's own
+ * recorded misspelling) and a kerned `{M anaged Income Portfolio CL 2}` — so
+ * there the caption is in the name column and the fund is in the other one.
+ * Declaring those two nameless would withdraw a name the filing supplies. */
+export const DIRECTION_CAPTION =
+  /^(?:non-?\s?)?participant[-\s]?directed(?:\s+(?:investments?|accounts?|assets))?$/i;
+export function isDirectionCaptionRow(name) {
+  return DIRECTION_CAPTION.test(String(name || "").trim());
+}
+
 /* A BARE MATURITY DATE IS THE PARTICIPANT-LOAN ROW — 2026-09-30 (07:3xZ).
  *
  * The third member of the wrapped-loan-description family, and the one the

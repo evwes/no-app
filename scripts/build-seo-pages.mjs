@@ -10,7 +10,7 @@
  * EIN-PN (stable forever, no orphans when a sponsor renames). */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { matchQuoteOk } from "./lib-quote.mjs";
-import { coverageBand, filedUnit, cleanFiledName, isParticipantLoanRow, isNamelessFundRow, isLoanDescriptionRow, isLoanAnswerRow, isLoanMaturityRow } from "./lib-disclose.mjs";
+import { coverageBand, filedUnit, cleanFiledName, isParticipantLoanRow, isNamelessFundRow, isLoanDescriptionRow, isLoanAnswerRow, isLoanMaturityRow, isDirectionCaptionRow } from "./lib-disclose.mjs";
 import { isGenericTypeName } from "./lib-4i.mjs";
 
 const BASE = "https://evwes.github.io/no-app"; // becomes the custom domain when DNS lands
@@ -240,7 +240,10 @@ for (const r of d.plans.slice(0, TOP_N)) {
   const fundRows = funds ? funds.map((f) => {
     const nm = cleanFiledName(f.name);
     const iss = String(f.iss || "").replace(/\*+/g, "").trim();
-    const nameless = !iss && isNamelessFundRow(f, nm, isGenericTypeName);
+    /* ...or a Schedule H participant-direction CAPTION, which
+     * `isNamelessFundRow` cannot reach because a caption is not a vehicle
+     * type. Same no-issuer gate, same reason. lib-disclose.mjs. */
+    const nameless = !iss && (isNamelessFundRow(f, nm, isGenericTypeName) || isDirectionCaptionRow(nm));
     /* a wrapped loan DESCRIPTION's continuation line, which names nothing at
      * all — `at rates of interest ranging from 4.25% to`. This page has no
      * type column, so the report's qualifier cannot be copied across: the row

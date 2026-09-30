@@ -213,6 +213,7 @@ try {
    * Run the BROWSER copy against the module's own boundary cases. */
   const { coverageBand, frozenClaimOk, cleanFiledName, isParticipantLoanRow, isLoanDescriptionRow,
     isAnnuityContractRow, annuityFeeIsGuaranteeOnly, isCollectiveTrustName, isLoanAnswerRow, isLoanMaturityRow,
+    isDirectionCaptionRow,
     isInvestmentContractRow, isMistypedStockRow,
     mistypedStockFeeIsGuaranteeOnly, issuerPricedER, leadingHouse } = await import("./lib-disclose.mjs");
   const frozCases = [
@@ -686,6 +687,40 @@ try {
     if (!isLoanAnswerRow(n)) fail(`loan-answer rule no longer types a recordkeeper answer line, so it reads as a fund: ${JSON.stringify(n)}`);
   for (const n of loanAnsCases.slice(10))
     if (isLoanAnswerRow(n)) fail(`loan-answer rule would claim a real fund or an already-typed loan row: ${JSON.stringify(n)}`);
+
+  /* THE SCHEDULE H PARTICIPANT-DIRECTION CAPTION, 2026-09-30 (14:4xZ). The
+   * first ten must FLAG — every one is a real published name from the class,
+   * Microsoft's own row among them. The last eight must be KEPT, and they are
+   * the whole safety argument: `Participant-Directed Brokerage Accounts` and
+   * its siblings are a REAL self-directed window (174 rows / 851,690 ppl),
+   * refused because the tail vocabulary is POSITIVE and `brokerage` is not in
+   * it; `Directed Share Program` and `Participant Loans` are not the caption
+   * at all; and a real fund's name is never the bare caption. */
+  const dirCases = [
+    "Participant-directed", "participant directed", "PARTICIPANT DIRECTED",
+    "Participant Directed", "Participant-directed investments",
+    "Participant Directed Investments", "Participant Directed Account",
+    "Participant Directed Accounts", "Nonparticipant Directed",
+    "Non-Participant Directed",
+    "Participant-Directed Brokerage Accounts", "Participant Directed Brokerage Account",
+    "participant directed brokerage accounts", "Participant-Directed Brokerage Account",
+    "Directed Share Program", "Participant Loans",
+    "Participant Directed Retirement Fund", "Vanguard 500 Index Fund",
+  ];
+  const dirGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoDirectionCaptionRow !== "function") return null;
+    return cs.map((n) => window.__wampoDirectionCaptionRow(n));
+  }, dirCases);
+  if (!dirGot) fail("app.js no longer exposes __wampoDirectionCaptionRow — the direction-caption predicate cannot be cross-checked");
+  const dirDrift = dirCases.filter((n, i) => isDirectionCaptionRow(n) !== dirGot[i]);
+  if (dirDrift.length) {
+    for (const n of dirDrift) console.error(`  ${JSON.stringify(n)}  app.js=${dirGot[dirCases.indexOf(n)]}  module=${isDirectionCaptionRow(n)}`);
+    fail(`the direction-caption predicate in app.js disagrees with scripts/lib-disclose.mjs on ${dirDrift.length} of ${dirCases.length} names`);
+  }
+  for (const n of dirCases.slice(0, 10))
+    if (!isDirectionCaptionRow(n)) fail(`direction-caption rule no longer types a Schedule H caption, so it reads as a fund: ${JSON.stringify(n)}`);
+  for (const n of dirCases.slice(10))
+    if (isDirectionCaptionRow(n)) fail(`direction-caption rule would claim a real brokerage window or a real fund: ${JSON.stringify(n)}`);
 
   /* THE BARE MATURITY DATE, tethered the same way, 2026-09-30 (07:3xZ). The
    * first eight must FLAG — every one is a real published name from the class,

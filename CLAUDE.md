@@ -873,9 +873,38 @@ from the cycle that would have cleared it.
   parser-gate, smoke, fund-er-test (46/26/19/18) green. **REPORT path only as a
   GUARANTEE: `build-seo-pages.mjs` never imports `fund-er.js`**; `git diff
   --stat p/` empty. `docs/accuracy-log.md` 2026-09-30 (11:5xZ).
-- **IN FLIGHT: #520, dispatched 2026-09-30 13:4xZ on `924d75b0` by the PUSH
-  TRIGGER (observed `queued`). NO PARSER BUMP — a MERGE-side change, so the run
-  exists to let the merge apply it.** **A STATEMENT BULLET AND A PAGE NUMBER
+- **NOTHING IS IN FLIGHT. #520 RAN `success` AND IS MIRRORED — 2026-09-30 14:2xZ
+  (`b6e61585 → 7f553567`), the git check FORCED over main's one cron commit with
+  the evidence first (plans array byte-identical, 0 acks / 0 newer status
+  entries / 0 confident-only on main) and the DATA GATE UNFORCED at +0 / −0.
+  ALL SEVEN PRE-REGISTERED TESTS PASSED, AND THE ONE THAT READ AS A MISS WAS THE
+  VERDICT HARNESS.** Both run-only figures computed from the ARTIFACT — the
+  merge log's blob host is `connect_rejected` — by diffing the 64 lineup shards
+  at `924d75b0` against the data commit: **issuer changed on 7,702 rows across
+  559 entries**, and **of those, 5,145 rows across 178 entries** were then
+  reached by the section-caption strip, **both exact**. *The composition landed
+  as designed.* Names changed on **0** rows (this arm touches the ISSUER column
+  and nothing else); entries **60,103 → 60,103**, rows **1,720,271 → 1,720,271**,
+  coverage line byte-identical.
+  **`sec tickers` READ 347,204 / 37,063 AGAINST THE 347,386 / 37,107 REGISTERED
+  — AN APPARENT 182 WITHDRAWN ANSWERS, IN THE WORST DIRECTION FOR A CHANGE WHOSE
+  WHOLE CLAIM IS THAT IT WITHDRAWS NONE. It is not a withdrawal: diffing `stk`
+  row by row across all 64 shards gives 0 lost, 0 gained, 0 changed.** My verdict
+  script counted only **confident** entries (60,103) where the registering
+  measurement counted every **stored** entry (65,240). Under either predicate the
+  figure is UNCHANGED — 347,204 both sides confident-only, 347,386 both sides
+  all-entries.
+  ***A VERDICT HARNESS HAS TO ASK THE QUESTION WITH THE PREDICATE THE
+  REGISTRATION USED.*** This is v190's stored-vs-published gap — which cost a
+  class size a factor of 3.9 — biting a **VERDICT** instead, where it is worse:
+  a false miss invites a withdrawal that never happened to be explained away, and
+  a false pass hides a real one. Ask the store for before AND after with ONE
+  predicate rather than differencing against a figure an earlier cycle's script
+  recorded.
+  **7 crawlable pages / 60,590 ppl**, exactly the pre-dispatch count, and a local
+  regeneration adds nothing — the surfaces agree.
+  `docs/accuracy-log.md` 2026-09-30 (14:2xZ).
+- **WHAT #520 CARRIED: A STATEMENT BULLET AND A PAGE NUMBER
   ARE NOT PART OF A FIRM'S NAME: 7,702 rows / 559 entries / 403,982
   participants / $5,661,540,544.** 567 plans are shown `— Fidelity
   Investments`, `. Mutual of America`, `-0- VOYA FINANCIAL`, `‘Vanguard` or

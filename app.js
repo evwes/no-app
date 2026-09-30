@@ -1200,6 +1200,20 @@
   }
 
   window.__wampoLoanAnswerRow = isLoanAnswerRow;  // read by the smoke test only
+
+  /* A SCHEDULE H PARTICIPANT-DIRECTION CAPTION IS NOT A HOLDING — the rule,
+   * the Microsoft row that found it ($6,602,388,247 = 8.6% of a 50-row menu),
+   * the positive tail vocabulary that refuses the 174-row BROKERAGE family by
+   * construction, and the no-issuer gate that keeps the two rows whose
+   * identity column names a real fund, are all in scripts/lib-disclose.mjs.
+   * This is its twin. */
+  const DIRECTION_CAPTION =
+    /^(?:non-?\s?)?participant[-\s]?directed(?:\s+(?:investments?|accounts?|assets))?$/i;
+  function isDirectionCaptionRow(name) {
+    return DIRECTION_CAPTION.test(String(name || "").trim());
+  }
+
+  window.__wampoDirectionCaptionRow = isDirectionCaptionRow;  // read by the smoke test only
   /* A BARE MATURITY DATE IS THE PARTICIPANT-LOAN ROW — the rule, the three
    * filings it was read in and the missing-sibling evidence are all in
    * scripts/lib-disclose.mjs; this is its twin. Anchored `^…$` on a name that
@@ -2542,7 +2556,13 @@
        * issuer too as of this change, so the two agree; if one ever stopped,
        * the shared rule would still be right and only this line would move. */
       const namelessRow = !String(f.iss || "").replace(/\*+/g, "").trim()
-        && isNamelessFundRow(f, f.name, isGenericName);
+        && (isNamelessFundRow(f, f.name, isGenericName)
+          /* ...or the row is a Schedule H PARTICIPANT-DIRECTION caption, which
+           * `isNamelessFundRow` is blind to by construction because a caption
+           * is not a vehicle type: 0 of the 18 candidates were already typed.
+           * It shares the no-issuer gate above for the same reason that gate
+           * exists at all. lib-disclose.mjs carries the measurement. */
+          || isDirectionCaptionRow(f.name));
       /* v196: AND `namelessRow` JOINS THE FEE SUPPRESSORS, which is why this
        * definition had to move above `er`. The two comments below say of their
        * own arms that "the fee suppression above is independent of this
