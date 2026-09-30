@@ -30702,3 +30702,90 @@ assertion on the strength of the `V` prefix. `sec-funds.json` says
 **the resolution is correct and the reading was mine.** *A ticker is not a
 reading; the series name is* — recorded 2026-09-28 about the code, and it applies
 to the person reading the code.
+
+## 2026-09-30 (10:1xZ) — the issuer may add a manager and never replace one, and the ticker path never got the rule
+
+**NOTHING SHIPPED AND THAT IS THE RIGHT OUTCOME.** The defect is real, sized and
+named; the obvious fix was written, measured whole-store and REFUSED on its own
+cost. `site-test` #115 read `conclusion: success` on `19e800fc`, the exact
+mirrored commit, and the one commit on top of it is verified docs-only, so that
+green covers every executable line of the 09:1xZ doubled-class fix.
+
+**THE DEFECT: 17 PUBLISHED ROWS NAME A COMPETITOR'S FUND AS FACT.** `lookupTicker`
+has prepended the row's ISSUER since v67 and tries the prefixed string **FIRST**,
+so a contradicting issuer does not merely fill a blank — it can OVERRIDE. All 17
+read, not one right:
+`{Fidelity} Vanguard Total Bond Market Institutional` → **FTBFX, Fidelity's own
+Total Bond Fund** — **University of Miami's four plans, 31,932 participants and
+$52,478,012**, Rochester Institute of Technology (8,365 / $13,241,000),
+Presbyterian Health Plan (2,885), Piggly Wiggly Alabama (554);
+`{T. Rowe Price} JPMorgan Large Cap Growth Fund` → TRLGX, and the same issuer
+onto Putnam Large Cap Growth (TRLGX), MFS Mid Cap Value (TRMCX), Neuberger Berman
+Mid Cap Growth (RPMGX), TIAA-CREF Large-Cap Gr Idx (TRLGX), PIMCO Small-Cap
+StocksPLUS (OTCFX), AB Large Cap Growth (TRLGX); `{JP Morgan} MFS Mid Cap Growth
+R6` → JMGMX.
+
+**THE RULE ALREADY EXISTS AND REACHED EVERY OTHER PATH BUT THIS ONE.** *The issuer
+may ADD a manager and never REPLACE one* was shipped into `resolveHolding` (the
+SEC matcher) on 2026-09-28 and into `issuerPricedER` (the fee) on 2026-09-29.
+**The fee path is clean and that was verified, not assumed:** slicing
+`issuerPricedER` verbatim out of app.js and running it over the whole
+contradicting population gives **0 fees published**, with the positive control
+`{Vanguard} 500 Index Fund → 0.02` proving the arm is reachable. *A check that
+prints 0 on a quiet store has not been tested* — this one was.
+
+**AND MY OWN FIRST MEASUREMENT OF THAT SAID 275.** It asked `fundER(iss + name)`
+directly, which is the raw prefix and not the page: `issuerPricedER` lives in
+app.js, not in `fund-er.js`. **The recorded trap, walked into again — *measure
+through the function the page calls*** — and this time it EXONERATED the code,
+which is the direction this habit is supposed to work in as readily as the other.
+
+**THE FIX WAS WRITTEN, CONTROLLED 15/15, AND KILLED BY THE WHOLE-STORE DIFF.**
+`issuerPricedER` is generic over its resolver, so it can be reused VERBATIM with
+the TICKER as its value — no new vocabulary, which is the shape this record
+prefers. On a 15-case table it refused all ten wrong-house cases and kept all
+five where the issuer legitimately adds a house. **Whole-store it withdraws 3,470
+rows and they are overwhelmingly CORRECT answers**: `{State Street} S&P 500 Index`
+→ SSSYX, `{Fidelity} S&P 500 Index` → FXAIX, `{Vanguard Federal Money Market Fund}
+Money Market / Cash Equivalent` → VMFXX, the whole State Street Target Retirement
+family at Galls (1,800 ppl). The guard's arm (2) drops the name's first
+load-bearing word and refuses when the answer is unchanged — right for the FEE
+table, wrong for the TICKER table, because `State Street 500 Index` still
+resolves. ***A predicate that is right for one class is not thereby right for its
+neighbour*** — this record's own sentence, from 2026-09-29, earned again.
+
+**AND MY 15 CONTROLS WERE DECORATIVE IN THE ONE DIRECTION THAT MATTERED.** Every
+must-KEEP case I chose (`{Vanguard} 500 Index Fund`, `{T. Rowe Price} Retirement
+2030 Active Fund`) happens to survive the guard; not one had the shape that
+breaks it. A hand-built control table tests the cases its author already imagined,
+so **the whole-store diff is not a formality after the controls pass — it is the
+only thing that saw this.**
+
+**WHAT THE CORRECT DISCRIMINATOR COSTS, MEASURED: 17 withdrawn / 14 CHANGED / 0
+gained / 0 correct answers lost**, touching 20 entries / 55,809 ppl. It asks
+whether the NAME's leading token states a house and the ISSUER states a DIFFERENT
+one — a house LIST, which this record warns is "wrong in the unsafe direction", so
+it ships only with every affected row read, and all 31 were.
+**THE 14 CHANGED ARE ALL CORRECTIONS AND WERE NOT PREDICTED** — verified one by
+one against `sec-funds.json`, because *a ticker is not a reading; the series is*.
+Where the issuer is a TRUSTEE welded in front of a real name, blocking it lets the
+name's own share class resolve: twelve `{Fidelity Management Trust Company}
+T. Rowe Price Retirement <year> I Fund` rows move from the base class to the
+**-I Class the filing states** (TRRHX → TREHX, TRRCX → TRFHX …); `{TIAA-Cref
+Vanguard Target Retire Income TIAA-Cref} Vanguard Target Ret 2020 Inv` moves from
+**VTINX, Target Retirement INCOME**, to VTWNX, the 2020 vintage; and `{Fidelity
+FIDELITY TOTAL BOND K6 J.P. Morgan} JPMORGAN MID CAP GROWTH R6` from FTBFX to
+JMGMX. **`{Fidelity Management Trust Company} T. Rowe Price Blue Chip Growth I
+Fund` goes TRBCX → TBCIX, which is this record's own recorded investor-vs-I-class
+defect closed from a direction nobody was looking.**
+
+**AND THE RAW CLASS MUST NOT BE CARRIED FORWARD AS ONE NUMBER: 12,734 rows / 1,822
+plans / 2,048,738 participants carry an issuer whose house contradicts the name's,
+and that is at least FIVE mechanisms.** Platform issuers 10,917 (Voya,
+Transamerica — the separate account's real sponsor, not a contradiction);
+**same-firm brand pairs 1,327, of which TIAA↔Nuveen is the whole of it and Nuveen
+IS TIAA's asset manager**; a welded issuer carrying two firms 7 (`PIMCO
+Institutional T. Rowe Price`, H&R Block 18,487 ppl); trustees and custodians
+(`Fidelity Personal Trust Company, FSB`, bare `Fidelity` as the brokerage), which
+dominate the rest; and only then the genuine contradiction. **Do not quote 12,734
+or 2,048,738.** The "ONE count was several defects" rule, met at five.

@@ -816,12 +816,61 @@ from the cycle that would have cleared it.
   correct and the reading was mine.** *A ticker is not a reading; the series name
   is*, recorded about the code and applying to the person reading it.
   `docs/accuracy-log.md` 2026-09-30 (09:1xZ).
-- **`site-test` #115 DISPATCHED on `19e800fc`, the exact mirrored commit, and
-  observed `in_progress` — READ ITS `conclusion`.** Dispatched deliberately
-  because the doubled-class fix shipped under `[skip ci]`, and local green is not
-  CI green; this record carries ten consecutive red site-test runs whose commit
-  messages said "green" from a local run. Pages #718 is building the same commit,
-  and Pages #717 built the #517 data mirror `success`.
+- **`site-test` #115 reads `conclusion: success`** on `19e800fc`, the exact
+  mirrored commit, and the one commit on top of it is verified **docs-only**, so
+  that green covers every executable line of the doubled-class fix. Dispatched
+  deliberately because it shipped under `[skip ci]` and local green is not CI
+  green.
+- **QUEUED, SIZED, WRITTEN, MEASURED AND REFUSED 2026-09-30 10:1xZ — THE ISSUER
+  MAY ADD A MANAGER AND NEVER REPLACE ONE, AND `lookupTicker` NEVER GOT THE
+  RULE: 17 published rows name a COMPETITOR'S fund as fact.** It has prepended
+  the issuer since v67 and tries the prefixed string **FIRST**, so a
+  contradicting issuer does not merely fill a blank — it can OVERRIDE.
+  `{Fidelity} Vanguard Total Bond Market Institutional` → **FTBFX, Fidelity's own
+  Total Bond Fund**: **University of Miami's four plans, 31,932 participants /
+  $52,478,012**, Rochester Institute of Technology 8,365, Presbyterian Health
+  Plan 2,885. `{T. Rowe Price} JPMorgan Large Cap Growth Fund` → TRLGX, and the
+  same issuer onto Putnam, MFS, Neuberger Berman, TIAA-CREF and PIMCO holdings.
+  All 17 read, not one right.
+  **THE FEE PATH IS CLEAN AND THAT WAS VERIFIED, NOT ASSUMED:** `issuerPricedER`
+  sliced verbatim out of app.js publishes **0** fees across the whole population,
+  with the positive control `{Vanguard} 500 Index Fund → 0.02` proving the arm is
+  reachable. **My first measurement said 275** — it asked `fundER(iss + name)`
+  directly, the raw prefix and not the page, because `issuerPricedER` lives in
+  app.js and not in `fund-er.js`. *Measure through the function the page calls*,
+  walked into again and this time EXONERATING the code.
+  **THE FIX WAS WRITTEN, CONTROLLED 15/15 AND KILLED BY THE WHOLE-STORE DIFF.**
+  `issuerPricedER` is generic over its resolver, so it can be reused VERBATIM with
+  the TICKER as its value — no new vocabulary, the shape this record prefers.
+  **Whole-store it withdraws 3,470 rows that are overwhelmingly CORRECT**:
+  `{State Street} S&P 500 Index` → SSSYX, `{Fidelity} S&P 500 Index` → FXAIX, the
+  whole State Street Target Retirement family at Galls. Its arm (2) drops the
+  name's first load-bearing word and refuses when the answer is unchanged — right
+  for the FEE table, wrong for the TICKER table, because `State Street 500 Index`
+  still resolves. ***A predicate that is right for one class is not thereby right
+  for its neighbour.*** **And my 15 controls were DECORATIVE in the one direction
+  that mattered** — every must-KEEP I chose survives the guard, not one had the
+  shape that breaks it. *A hand-built control table tests the cases its author
+  already imagined, so the whole-store diff is not a formality after the controls
+  pass; it is the only thing that saw this.*
+  **THE CORRECT DISCRIMINATOR IS MEASURED: 17 withdrawn / 14 CHANGED / 0 gained /
+  0 correct answers lost**, 20 entries / 55,809 ppl. It needs a house LIST, which
+  this record warns is wrong in the unsafe direction, so it ships only with every
+  affected row read — and all 31 were. **THE 14 CHANGED ARE ALL CORRECTIONS AND
+  WERE NOT PREDICTED**, each verified against `sec-funds.json`: twelve
+  `{Fidelity Management Trust Company} T. Rowe Price Retirement <year> I Fund`
+  rows move from the base class to the **-I Class the filing states** (TRRHX →
+  TREHX); `Vanguard Target Ret 2020 Inv` from **VTINX, Target Retirement INCOME**,
+  to VTWNX; `JPMORGAN MID CAP GROWTH R6` from FTBFX to JMGMX. **And TRBCX → TBCIX
+  closes this record's own recorded investor-vs-I-class defect from a direction
+  nobody was looking.**
+  **THE RAW CLASS MUST NOT BE CARRIED FORWARD: 12,734 rows / 1,822 plans /
+  2,048,738 ppl is AT LEAST FIVE MECHANISMS** — platform issuers 10,917 (Voya,
+  Transamerica, the separate account's real sponsor), same-firm brand pairs 1,327
+  (**TIAA↔Nuveen is the whole of it, and Nuveen IS TIAA's asset manager**), a
+  welded issuer carrying two firms 7, trustees and custodians dominating the rest,
+  and only then the genuine contradiction. **Do not quote 12,734 or 2,048,738.**
+  `docs/accuracy-log.md` 2026-09-30 (10:1xZ).
 - **SHIPPED AND MIRRORED 2026-09-30 07:4xZ (`fda28a8c → af83067b`), UNFORCED ON
   BOTH CHECKS, data gate +0 / −0 — A BARE MATURITY DATE IS THE PARTICIPANT-LOAN
   ROW: 68 rows / 67 plans / 135,334 participants / $153,709,833.** Found by the
