@@ -664,7 +664,7 @@ don't confuse them). Frontend: python http.server + Playwright at
 /opt/pw-browsers/chromium; verify TK page, tabs, filters, deep links
 (#plan=EIN|PN|TICKER).
 
-## Current state — RE-DERIVED FROM THE STORE 2026-09-29 23:5xZ
+## Current state — RE-DERIVED FROM THE STORE 2026-09-30 02:5xZ
 
 **Re-derive this block from the store; never edit its date.** An earlier
 version of this header said "Store at v168 … `PARSER_VERSION` in the tree is
@@ -682,19 +682,109 @@ from the cycle that would have cleared it.
 - **Universe 111,782 plans** (401(k)-type 2J + ERISA 403(b) 2L/2M, ≥100
   participants at either end of the plan year): **68,259 full-form**, 43,523
   short-form, 68,767 parse-status entries.
-- **STORE: pv 194 covers 68,623 of 68,767 acks (99.79%)** — one dominant pv plus
-  the documented ~140-row old-version tail (pv180 23, pv106 18, pv192 12,
-  pv124/123 10 each), which is the completeness test, not a partial store.
-  Confident **60,106**, lineups 59,755, entries 65,241, **HIGH 5** = the 4
-  baseline plus one self-clearing `reparse-loss` (earlier runs read HIGH 9 in CI / 4
-  locally (the five extra are self-clearing `reparse-loss` entries raised from
-  `losses-triage.txt`, a run ARTIFACT that exists only in CI — *a metric that
-  differs between CI and local is a question about the inputs, not the store*),
+- **STORE: pv 195 covers 68,623 of 68,767 acks (99.79%)** — one dominant pv plus
+  the documented ~144-row old-version tail (pv180 23, pv106 18, pv192 12,
+  pv98/123/124 10 each), which is the completeness test, not a partial store.
+  Confident **60,106**, lineups 59,755, entries 65,241, **HIGH 4 = the baseline
+  and nothing else** (a `reparse-loss` HIGH is raised from `losses-triage.txt`, a
+  run ARTIFACT that exists only in CI — *a metric that differs between CI and
+  local is a question about the inputs, not the store*),
   WARN **608**, overshoot **317** / 397,964 ppl, aggRow 112, **dl 142** (the last
   11 HEAD-probed, 11 of 11 answered 403).
-  `audit-dominant-row` **0 plans / $0.0B**, `audit-generic-names` **214 plans /
-  438 rows against the 230-plan escalation threshold — still not raised**. **`matchQuote` 5,397 of which only
+  `audit-dominant-row` **0 plans / $0.0B** by the PLAN-keyed count and **1 by the
+  trust-aware standalone script** — see the v196 bullet, the two are different
+  populations. `audit-generic-names` **214 plans / 438 rows** under the pre-v196
+  predicate and **238 / 482 under v196's on the same store, which CROSSES the
+  230-plan escalation threshold; the threshold is NOT moved and the crossing is
+  expected.** **`matchQuote` 5,397 of which only
   1,785 are SHOWN to readers** — the condition/outcome pair shipped 2026-09-27.
+- **IN FLIGHT: #514 (v196), dispatched 2026-09-30 03:0xZ — a FULL re-parse on the
+  version bump. A NAME THAT IS NOTHING BUT DECORATION ESCAPED THE
+  DECORATION-AWARE GUARD: 166 rows / 164 plans / 501,561 participants /
+  $29,813,863,521 on the report and 20 crawlable pages / 352,780 ppl** (J&J
+  72,991, Cisco 72,556) stop being shown a measurement basis as a holding.
+  Northwood Investors (2,277) published `at Fair Value` at **86.8%** of a
+  three-row menu; Universal Orlando (23,662) `At fair value` at **75.3%**; Cisco
+  `Collective Trusts(1) at NAV` at **77.9%**; Vitas (13,326) `Investments using
+  NAV practical expedient` at **63.0%**; Calpine (3,014) a bare `Investments` at
+  **79.8%**.
+  **THE ARM THAT PRODUCED THE HOLE IS v188's OWN.** `stripGenericDecoration`
+  already carried `[,;]?\s*at fair value$`, so `At fair value` strips to the
+  **EMPTY STRING** — and an empty remainder is in no vocabulary, so the anchored
+  predicate asked its question of nothing and answered false. **A guard that
+  strips decoration and then looks for a vocabulary word is blind to a name that
+  is nothing BUT decoration**, and the one basis spelling it already knew is
+  exactly the one that empties the string. There is no word to add, so the arm is
+  structural; **its whole population over all 1,710,451 published rows is 11
+  distinct names / 37 rows, every one read, not one a fund** — an arm with no
+  vocabulary is read by reading its population.
+  Three further arms carry the family, all terminal-anchored and CHAINED: the
+  `practical expedient` tail; the basis in every stored spelling, with a trailing
+  footnote taken along rather than through a general parenthesised-LETTER strip,
+  so v188's case-SENSITIVE caution stays as narrow as it was and `Separate Account
+  A, at fair value` is still a pinned must-keep; a parenthesised NUMBER, which
+  unlike a letter cannot be a share class; and a leading `investments`/`assets`.
+  **`(?:at|using)` is REQUIRED on the NAV arm** — a bare `\bnav\b` eats `PIMCO
+  Short-Term Floating NAV Portfolio II`.
+  Whole-store against git HEAD's own lib-4i: **174 rows newly generic, 0 lost, all
+  63 DISTINCT NAMES read**, none a fund.
+  **AND `namelessRow` JOINS THE FEE SUPPRESSORS, which was not on the queue.**
+  app.js's `er` listed eight suppressors and not this one — two of its sibling
+  comments assert "the fee suppression above is independent of this ordering" and
+  of this arm it was not true, so **a row the page itself declares names no
+  specific fund was free to publish an estimated ER derived from that non-name.**
+  787 nameless rows are reached today, `fundER` prices 34, and **32 are already
+  suppressed by their TYPE cell reading `Stable value / GIC`, so the guard
+  withdraws NOTHING that publishes today.** It exists because v196's own widening
+  creates the first two escapes — `Guaranteed interest contract(s), at contract
+  value` with a BLANK type at Mote Marine (443 ppl) and Vernet US (232), **2 rows
+  / 675 ppl / $7,512,380**, each of which would print the generic **0.35%**
+  guarantee fallback, the exact number withdrawn from 89 rows on 2026-09-29.
+  *A widening that adds rows to a population must be measured against what that
+  population PUBLISHES, not only against what it says.*
+  **EXACTLY ONE LINEUP IS WITHDRAWN AND THE PLAN-KEYED PASS COULD NOT SEE IT.**
+  Keyed on plans the ≥90% answer was **0**; the standalone `audit-dominant-row`
+  said **1**. The difference is a MASTER TRUST with no `plans-all` row — **the
+  fifth time a count keyed on plans was blind to a trust.**
+  `20251015101938NAL0002134947003`, HALLMARK CARDS INCORPORATED MASTER TRUST US
+  TIPS INDEX: `BEGINNING NET ASSET VALUE:` $125,940,081 = **92.9%**, `5% OF ASSET
+  VALUE:` $6,297,004, and the trustee's own name at $3,328,262 — an OCR'd
+  statement-of-changes page, **not one of the three a fund**, read by Hallmark's
+  **8,492** participants through the trust link. `audit-data`'s in-pipeline count
+  is plan-keyed too and stays 0 either way.
+  **THE REGENERATION DELETED TWO TWINS AND THE TETHER CAUGHT IT.**
+  `isCollectiveTrustName` (00:5xZ) and `isLoanAnswerRow` (01:2xZ) were
+  hand-written INTO app.js's GENERATED block in their own cycles; running
+  `gen-generic-twin.mjs` replaced the block and took both with it, and the smoke
+  test failed on the very next change with `isLoanAnswerRow is not defined`.
+  **A generator that edits a block in place deletes anything a later hand-edit
+  puts inside its boundaries** — sibling of the end-marker failure this file
+  already carries. Both are now VERBATIM SLICES with drift checks reaching both
+  arms; the end-marker list grew by one; and **`isGenericTypeName`'s own body is
+  sliced verbatim too**, it being the last hand-retyped piece in a generator whose
+  whole purpose is that nothing is hand-maintained.
+  **`audit-generic-names` 214 plans / 438 rows → 238 / 482 ON THE SAME STORE,
+  PAST THE 230 THRESHOLD, AND THE THRESHOLD IS NOT MOVED.** v189 left that number
+  to the owner and wrote that "a later run crossing 230 is a real signal"; this is
+  that run. The crossing is the audit seeing more of a class that was always
+  published, and raising a threshold to accommodate one's own widening is how a
+  regression gets normalised. The flag text names the re-basing so the HIGH is
+  self-explaining. **What it points at is the owner item already queued: a
+  WHOLE-TABLE test beside the one-row test.**
+  **PRE-REGISTERED against the pv-195 store it reads:** `confident` **−1 / +0**,
+  ceiling −1, the single loss `20251015101938NAL0002134947003`; standalone
+  `audit-dominant-row` **1 → 0** while `audit-data`'s plan-keyed count holds at
+  **0** both ways; `audit-generic-names` **238 ± 3** and a `fabricated-name`
+  **HIGH APPEARS, which is EXPECTED**; `overshoot` holds at **317** or falls by at
+  most 1; `dl` **142**.
+  Gates: import assertions 16 must-catch / 11 must-keep, parser-gate green with no
+  expectation moved, `diff-lineups` over 318 corpus filings **0 in every
+  direction**, fund-er-test 46/26/19/18 0 failures, smoke green. **Four negative
+  controls, one per arm, each failing BY NAME on exactly the cases it reaches**
+  (5, 5, 2 and 4 of 13) with all 8 must-keeps holding under every variant — and
+  **the leading-noun control was DECORATIVE on its first run**, missing 0 of 10
+  because my probe list held no name needing it. `docs/accuracy-log.md`
+  2026-09-30 (02:2xZ).
 - **SHIPPED 2026-09-30 00:1xZ, `[skip ci]` behind #511 — A TRAILING PLUS IS A
   FOOTNOTE MARKER, EXCEPT WHEN IT IS THE NAME: 861 rows / 289 lineups / 195,234
   participants**, and **5 crawlable pages / 25,999 ppl** (the top-twelve cut).
@@ -781,9 +871,35 @@ from the cycle that would have cleared it.
   analyze-stuck TRUST, **confident on both sides**, so nothing lost and the stale
   branch pv means the next incremental re-reads it), **1 confident on main only**
   (the Caterpillar withdrawal above). Gate **+4 gained / −1 lost**.
-- **IN FLIGHT: #513 (v195), dispatched 2026-09-30 01:1xZ on `b123f0f1`, observed
-  `in_progress` on the dev branch — a FULL re-parse on the version bump. IT IS A
-  REVERT OF v194's OWN ARM, and the reason outlives it.**
+- **#513 (v195) RAN `success` AND IS VERDICTED. THE STORE TESTS PASSED EXACTLY —
+  `confident` 60,106 (+0 / −0), `overshoot` 317 to the unit, `dl` 142, HIGH 4 =
+  the baseline — AND THE TWO CLASS COUNTS MISSED, which found a second
+  mechanism.** Rows named `included`/`Included`/`Yes` were registered 24 → 0 and
+  came in at **7**; rows matching `^loan repayments? are` were registered 0 → ~21
+  and came in at **19**. The registration assumed ONE mechanism for the whole
+  class, so reverting the skip had to restore every one. It did not: **where the
+  layout gives each fragment its OWN VALUE, `Loan Repayments are` and `included:`
+  are two ROWS and no line-joining rule can reunite them.** Kentucky Rebuild
+  Corporation (159 ppl) publishes `Included:` at **$210,579** AND `Repayments are`
+  at **$205,396**, two rows with two figures, adjacent in a value-sorted 24-row
+  menu; all seven carry `ov8`, so the column split is an OCR artefact.
+  **THE OUTCOME LANDED IN FULL: all 26 rows across BOTH spellings are typed
+  `Participant loans — not a menu choice`,** because the display half was built to
+  answer for the restored phrase and the remnant alike. *A prediction about which
+  STRING the store will hold is a different claim from a prediction about what a
+  reader will see, and only the second is the point.*
+  **AND THE VERDICT'S OWN RESIDUE SHIPPED IN THE SAME CYCLE (02:5xZ, `[skip ci]`):
+  the answer line missing its leading `Loan` — 60 rows / 60 plans / 78,071
+  participants / $9,385,509.** All 13 distinct names read, not one a fund, **0
+  publishing a ticker and 0 a fee**, largest 9.1% of a menu. The `are` is
+  load-bearing and its cost was measured first: a bare opening `repayments?`
+  reaches a further 28 rows of the loan-DESCRIPTION family (`repayment schedules
+  through August 2029 with interest rates ranging from 2.88% to`), a separate
+  queued item, and both forms are pinned must-KEEPs. Tether 14 → 20, negative
+  control fails by name on exactly the 4 new must-flags. REPORT path only.
+  `docs/accuracy-log.md` 2026-09-30 (02:5xZ).
+- **PREVIOUSLY IN FLIGHT: #513 (v195), dispatched 2026-09-30 01:1xZ on `b123f0f1`.
+  IT IS A REVERT OF v194's OWN ARM, and the reason outlives it.**
   **v194's verdict recorded `loan-repayment rows 21 → 0` and PASSED. The rows did
   not go away — they stopped saying what they were.** `SKIP_ROW` is anchored `^`
   and this family **WRAPS**: `Loan Repayments are` / `included:  240,932`. So the
