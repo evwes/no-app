@@ -873,6 +873,70 @@ from the cycle that would have cleared it.
   parser-gate, smoke, fund-er-test (46/26/19/18) green. **REPORT path only as a
   GUARANTEE: `build-seo-pages.mjs` never imports `fund-er.js`**; `git diff
   --stat p/` empty. `docs/accuracy-log.md` 2026-09-30 (11:5xZ).
+- **SHIPPED AND MIRRORED 2026-09-30 16:4xZ (`53c7d723 → 07980160`), UNFORCED ON
+  BOTH CHECKS, data gate +0 / −0 — AN AUDIT FIRM'S OFFICE LIST IS NOT A HOLDING:
+  7 rows / 7 plans / 28,677 participants / $229,607.** Found by the 16:1xZ draw
+  on **Chewy (20,339 ppl, OCR'd)**, whose 23-row Vanguard menu ends in `Boca
+  Raton, Florida 33431 Fort Myers, Florida 33907 Naples, Florida 34108 Orlando,
+  Florida` at $32,801 — the auditor's letterhead off the bottom of a scanned page.
+  **THE WHOLE POPULATION IS SEVEN ROWS AND ONE STRING**, the same Florida firm in
+  seven unrelated filings (Fontainebleau Development 5,245, Turnberry ×2,
+  Flightstar, Vertical Bridge), every one with a **blank issuer, a blank type, 0
+  tickers and the IDENTICAL $32,801**. *An arm whose whole population is one name
+  is read by reading it.*
+  **TWO OR MORE `<City>, <State> <ZIP>` GROUPS — no vocabulary of places, and both
+  conditions negative-controlled BY NAME.** Dropping the floor to ONE convicts
+  `Boca Raton, Florida 33431` and **`Ernst & Young LLP, One Kennedy Square,
+  Detroit, Michigan 48226`** — this record's own General Motors finding, where the
+  single address really is what the filing says. Dropping the ZIP convicts
+  `Colonial Trust of Richmond, Virginia and Baltimore, Maryland Common Fund`, **a
+  case added BECAUSE the control could not fail without it** — no pinned name had
+  two bare state names and no ZIP, so *a control that cannot fail is decorative*
+  caught an untested condition before it shipped. 13 pins 13/13, each variant
+  built DIRECTLY rather than by surgery on the shipped source.
+  **TYPED, NOT DROPPED (v181), THOUGH THE VALUE IS NOT PLAN MONEY:** the identical
+  $32,801 across seven unrelated plans is what says it is a reading artifact, and
+  dropping it moves sums, ratios and confidence — **queued as a PARSER-side
+  change.** REPORT path only, and here that is an OBSERVATION not a guarantee:
+  `build-seo-pages` does import the predicate and `git diff --stat p/` is empty
+  because all seven rows sit below the top-twelve cut. parser-gate, smoke,
+  fund-er-test (46/26/19/18) green.
+  **AND THE CLASS THE DRAW APPEARED TO FIND WAS NOT ONE.** The same menu publishes
+  `CommornCollective Trusts` with issuer `{VANGUARD TARGET 2030}`, read as the two
+  columns being the wrong way round and sized at **487 rows / 205 entries /
+  784,499 ppl / $4.9B** — then REFUSED, because **the filing is right and so is
+  the render**: Form 5500 column (b) is *"Identity of issue"* and (c) is
+  *"Description of investment"*, so a fund in (b) with a vehicle type in (c) is
+  the STANDARD layout, and both surfaces render `issuer · name`, so the reader
+  sees the fund FIRST. **Do not carry 487 or 784,499 forward.** *Reading the
+  render stopped it, and it took one grep.*
+  `docs/accuracy-log.md` 2026-09-30 (16:3xZ).
+- **THREE FURTHER ISSUER PREDICATES MEASURED AND REFUSED 2026-09-30 15:3xZ, ALL
+  BY THE SAME MECHANISM — recorded so they are not retried.** The 15:1xZ draw hit
+  **Parametrix (1,057 ppl)**, immaculate, and **WinCo Foods (29,596 ppl)**, whose
+  issuer column contradicts three of its own rows (`Principal High Yield A` by
+  **`{Prudential Investments}`**, `Virtus Duff & Phelps Glbl Real Est A` by
+  **`{New Horizons Fund}`** — a T. Rowe Price *fund*, not a firm).
+  **IT REACHES NO READER, MEASURED:** slicing the shipped `lookupTicker` out of
+  app.js with its helpers and passing the whole row as the page does, **all three
+  resolve to `null`, as do all 19 WinCo rows**, with `{Vanguard} 500 Index Fund →
+  VFIAX` as the positive control. The harm is the issuer DISPLAY alone.
+  **(1)** *issuer attested as a published fund NAME and sharing no token with this
+  row's name* — **342,395 rows / 38,543,094 ppl**, and it convicts the store's
+  MOST CORRECT rows (`{Vanguard}` on `Target Retirement 2050 Fund`), because
+  `Vanguard` clears the floor as a holding NAME only thanks to the separate
+  bare-house defect. ***The gate is fed by the store's own damage*** — the
+  floor-of-one lesson at a floor of three.
+  **(2)** *issuer ends in the singular `Fund`, because a firm's name does not* —
+  **3,104 / 1,817,731**, and its DOMINANT member is CORRECT: `College Retirement
+  Equities Fund` really is the registered issuer of `CREF Stock R1`, which my
+  token test could not see because **CREF is that issuer's own acronym**.
+  **(3)** the same with an acronym-and-containment escape — **2,322 / 1,727,347**,
+  still essentially ONE filer template (the TIAA/CREF platform in column (b)).
+  **Do not carry 342,395, 3,104 or 2,322 forward.** Column (b) is statutorily
+  *"Identity of issue"*, so a fund name there can be faithful — which is exactly
+  why no purely structural test separates it from the contradicting case.
+  `docs/accuracy-log.md` 2026-09-30 (15:3xZ).
 - **SIZED, MEASURED AND REFUSED 2026-09-30 15:2xZ — THE ISSUER'S CLASS-DEBRIS
   LEAD IS A ROTATION, AND THE OBVIOUS STRIP TRUNCATES THE FIRM. 333 rows / 134
   entries / 198,007 ppl / $1,169,273,658, and NOT SHIPPABLE.** The 14:2xZ draw's
