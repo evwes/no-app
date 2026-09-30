@@ -574,22 +574,49 @@ function stripIssuerLead(iss) {
  * It cannot introduce a FEE: `fundER` is called on the NAME and never on the
  * ticker (app.js:1906/1919), so a row that gains `stk` still renders a blank
  * expense ratio unless the name itself resolves. Verified before writing this.
+ *
+ * A BLANK TYPE CELL IS NOT A CONTRADICTION, and requiring the filing's word
+ * held this index to a stricter standard than the hand table beside it.
+ * `fundTickerInfo(name, type)` reads the type to DEMOTE a collective trust or
+ * a separate account to a labelled comparable — never to require corroboration
+ * — so `fund-er.js` has always asserted a ticker from the name alone wherever
+ * the cell is empty. Asking the SEC index for the filing's own word as well
+ * meant two resolvers applying opposite standards to the same missing fact.
+ *
+ * So the gate keeps refusing every type that CONTRADICTS (pooled separate
+ * account, collective trust, separate account, stable value, company stock,
+ * ETF, the debt and cash categories) and admits the blank cell, which states
+ * nothing. Only the EXACT answer is stored either way.
+ *
+ * The widening needs no vehicle screen and that is the index's own doing, not
+ * a guard: the SEC registers no collective trust, so a name that states one
+ * cannot resolve exactly. Measured over the whole admitted population, a
+ * vehicle-word screen refuses 0 rows — `Vanguard Institutional Target
+ * Retirement 2030 Trust II` is null and `Vanguard Target Retirement 2030 Trust
+ * Select` is a COMPARABLE, which this block already declines to store.
  */
 try {
   const { buildIndex, resolveHolding } = await import("./match-sec-tickers.mjs");
   const idx = buildIndex("sec-funds.json");
-  let named = 0; const acks = new Set();
+  /* The filing's TYPE cell admits an SEC answer when it says mutual fund or
+   * says nothing. Anything else names a different vehicle and refuses. */
+  const secTypeAdmits = (type) => {
+    const t = String(type || "").trim();
+    return t === "" || /^mutual fund/i.test(t);
+  };
+  let named = 0, blank = 0; const acks = new Set();
   for (let i = 0; i < SHARDS; i++)
     for (const [ack, e] of Object.entries(buckets[i])) {
       if (!e || !Array.isArray(e.funds)) continue;
       for (const f of e.funds) {
-        if (!/^mutual fund/i.test(String(f.type || ""))) continue;   // the FILING's own word
+        const t = String(f.type || "").trim();
+        if (!secTypeAdmits(t)) continue;               // the FILING contradicts
         const r = resolveHolding(idx, f.name, f.iss);
         if (!r || r.comparable) { delete f.stk; continue; }
-        f.stk = r.ticker; named++; acks.add(ack);
+        f.stk = r.ticker; named++; if (!t) blank++; acks.add(ack);
       }
     }
-  console.log(`sec tickers: ${named} rows across ${acks.size} plans (index ${idx.rows} classes, ${idx.generated})`);
+  console.log(`sec tickers: ${named} rows across ${acks.size} plans (${blank} on a blank type cell) (index ${idx.rows} classes, ${idx.generated})`);
 } catch (err) {
   console.log(`sec tickers: skipped (${err.message})`);
 }

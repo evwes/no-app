@@ -32231,3 +32231,110 @@ table's house number on a name stating no share class, which is exactly the
 **REFUSED. Do not carry 5,615 or 11,127,755 forward as a defect class.** Reading
 the two menus cost one cycle and closed a shape that looks alarming in a count
 and is faithful in the filing.
+
+## 2026-09-30 (22:4xZ) — A blank type cell is not a contradiction, and two resolvers were applying opposite standards to it
+
+- **Wrong:** `merge-4i`'s SEC-ticker block stored `stk` only where the filing's
+  own TYPE cell reads `Mutual fund`. A cell that reads nothing at all was
+  treated as a refusal, so **109,662 rows whose filed name resolves EXACTLY to
+  a registered share class carried no ticker** — of which **45,894 rows / 9,151
+  entries / 9,182 plans / 9,610,149 participants / $85,992,537,937 publish no
+  ticker to a reader at all**, across 13,668 distinct names.
+  **The inconsistency is between two resolvers, not inside one.**
+  `fundTickerInfo(name, type)` reads the type to **DEMOTE** a collective trust
+  or a separate account to a labelled comparable — never to **REQUIRE**
+  corroboration — so `fund-er.js` has always asserted a ticker from the name
+  alone wherever the cell is blank, and does so on **63,748** of these very
+  rows today. The SEC index was held to a stricter standard than the hand
+  table beside it, for the same missing fact.
+- **Found by** the 22:0xZ participant-weighted draw, restricted to acks **NEW
+  to the store** after yesterday's DOL refresh (7,872 newly published menus /
+  12,409,763 participants, seed 20260930220) — 12,095 acks no cycle had ever
+  reviewed. It drew Chickasaw Nation (9,520 ppl, 27 rows @ 0.952), clean, and
+  **Innoviva Specialty Therapeutics (316 ppl, 30 rows @ 0.996)**, whose menu is
+  immaculate, whose every row carries an issuer prefix, whose **28 of 30 type
+  cells are blank — and not one row carries a ticker, while 23 of the 30
+  resolve EXACTLY.**
+- **Change:** the gate admits a type cell that says mutual fund **or says
+  nothing**, and keeps refusing every type that CONTRADICTS — pooled separate
+  account, separate account, collective trust, stable value, company stock,
+  exchange-traded fund, the cash, government and corporate-debt categories,
+  master-trust interest, subtotal and loan typings. Only the EXACT answer is
+  stored, as before; a COMPARABLE is still declined.
+- **THE WIDENING CANNOT ASSERT A SHARE CLASS THE FILING DID NOT STATE, and
+  that is structural rather than a guard.** `resolve` returns EXACT only where
+  the stated class is unique or the series has exactly one registered class.
+  Probed: `Fidelity Contrafund` → **comparable** FCNTX, `Vanguard 500 Index
+  Fund` → comparable VFINX, `Dodge & Cox Stock Fund` → comparable DODGX,
+  `American Funds Growth Fund of America` → comparable AGTHX. `Vanguard Target
+  Retirement 2035` is EXACT only because VTTHX is that series' **only**
+  registered class — the Institutional funds are a separate series and the
+  Trust units are not registered at all.
+- **AND THE VEHICLE SCREEN THE WIDENING LOOKS LIKE IT NEEDS IS THE INDEX'S OWN
+  DOING.** A vocabulary screen for `collective` / `trust` / `separate account`
+  / `stable value` refuses **0 rows** of the admitted population, because the
+  SEC registers no collective trust: `Vanguard Institutional Target Retirement
+  2030 Trust II` resolves to **null** and `Vanguard Target Retirement 2030
+  Trust Select` to a **comparable**, which this block already declines. The
+  screen was written, measured at zero, and **not shipped** — a guard that
+  cannot fire is decoration, and naming why it cannot is worth more than
+  carrying it.
+- **Measured through the real merge, not a harness: GAINED 109,662 rows /
+  11,282 entries / 11,346 plans / 13,751,840 participants / $261,166,139,187.
+  LOST 0. CHANGED 0.** CONFIDENCE DIFF +0 / −0, `rows-dropped` 0,
+  `losses-triage` 0, `swaps-degraded` 0. The stored figure and the
+  reader-facing figure differ by 63,748 rows fund-er.js already answers plus
+  **20 rows that sit in non-confident entries** and reach nobody — reconciled
+  exactly (109,662 = 45,894 + 63,748 + 20) rather than called close.
+- **All 40 distinct names drawn at random from the reader-facing population
+  read, each against its own registered SERIES rather than its symbol, and all
+  40 correct.** `Freedom Index Ret Premier` → FAPIX **Premier Class** (the
+  2026-09-29 fix holding), `SmallCap Growth I R6 Fund` {Principal} → PCSMX,
+  `Van Global Equity - INV` → VHGEX, `2055 Lifetime Blend R6` {John Hancock} →
+  JLKYX, `Fidelity Multi Asset Index` **{Lincoln Financial Group}** → FFNOX,
+  where the issuer names a platform and the NAME names the house.
+  **One read as a mis-resolution and is not:** `2025 Target Date Retirement CL
+  R6` → RFDTX, registered as *American Funds 2025 Target Date Retirement
+  **Income** Fund*, Class R-6 — the registrant's own name for the past-dated
+  vintage, confirmed across all fourteen of that series' classes. *A ticker is
+  not a reading; the series name is.*
+- **THE TWO-SOURCE CROSS-CHECK, on the population the widening admits:** where
+  fund-er.js ASSERTS and the SEC index also resolves exactly, they agree on
+  **61,965 of 63,158 rows (98.11%)** and disagree on **1,193** — and every
+  disagreement read is the SEC being right about a share class the pattern
+  table ignores (`Fidelity Total Bond K6` → FTBFX where the K6 fund is FTKFX;
+  `Fidelity Contrafund K6` → FCNTX where it is FLCNX; `Wellington Fund Investor
+  Shares` → VWENX, the **Admiral** class). **Nothing changes for them** —
+  `fund-er.js` is read FIRST — so this sizes the queued override item on this
+  population and withdraws nothing.
+- **AND THE COVERAGE METRIC COULD NOT SEE THE FIELD IT MEASURES.**
+  `audit-data`'s `tkExact` re-implements app.js's `lookupTicker` and **stopped
+  one stage short of `f.stk`**, so it read **0 of the 147,835 rows that field
+  already carried** and would have recorded no movement at all for a 13.7M-
+  participant change. Fixed in the same commit, and the two effects are
+  separated because they are different claims: on the SAME live store the
+  instrumentation fix alone moves `tkExact` **24.67 → 33.58 (+8.91)**, and the
+  widening then moves it **33.58 → 36.18 (+2.60)**. `tkShare` is deliberately
+  untouched at 24.47 — it asks `fundTickerInfo` one argument on the bare name
+  and its value is an unbroken history. *A flag nobody can read is a flag that
+  does not exist*, one column along.
+- **It cannot introduce a FEE and it reaches ONE surface.** `fundER` is called
+  on the NAME and never on a ticker, so a row that gains `stk` still renders a
+  blank expense ratio unless the name itself resolves. REPORT path only, and
+  here as a GUARANTEE rather than an observation: `build-seo-pages.mjs` reads
+  no `stk` field and imports no `fund-er.js`.
+- **PRE-REGISTERED for the dispatched run** (no parser bump; the work list is
+  the 19 dead 403s and the run exists to let the MERGE rewrite `stk`): the
+  merge log prints `sec tickers: 459695 rows across 47534 plans (109662 on a
+  blank type cell)`; CONFIDENCE DIFF **+0 / −0**; `tkExact` **36.18**,
+  `tkComparable` **3.27**, `tkShare` **24.47**; and every other figure
+  byte-identical to #523's line — confident **60,170**, lineups **59,822**,
+  entries **65,479**, HIGH **4**, warn **608**, overshoot **372**,
+  overshootTrust **12**, aggRow **113**, dl **19**, pvTopShare **100**.
+- **Prevention:** `secTypeAdmits` is a named predicate in `merge-4i` and
+  `scripts/merge-name-test.mjs` slices it BY NAME rather than restating it —
+  20 pinned cases 20/20, and **a negative control per arm, each failing by name
+  on exactly its own cases**: dropping the blank arm disagrees on exactly the
+  four blank spellings (the widening becomes inert), dropping the mutual-fund
+  arm on exactly the three typed ones (the 147,835 rows already shipping are
+  withdrawn). fund-er-test 46/26/19/18 with 0 failures.

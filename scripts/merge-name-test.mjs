@@ -181,3 +181,77 @@ if (bad) process.exitCode = 1;
   }
   if (ibad) process.exitCode = 1;
 }
+
+/* ------------------------------------------------------------------------
+ * CONTROL for merge-4i's SEC-TICKER TYPE GATE — 2026-09-30 (22:4xZ).
+ *
+ * Sliced by name out of merge-4i, never restated. The gate decides which rows
+ * may carry an SEC-resolved ticker: the filing's TYPE cell must say mutual
+ * fund or say nothing. A blank cell states nothing, and `fund-er.js` has
+ * always asserted from the name alone where it is blank; a cell naming a
+ * different vehicle contradicts, and that refusal is the whole guard.
+ *
+ * Two negative controls, one per arm, because each protects a different side:
+ *   (1) drop the blank arm and the widening is inert — the 45,894 rows this
+ *       change exists for stop being admitted;
+ *   (2) drop the mutual-fund arm and the 147,835 rows already shipping are
+ *       withdrawn.
+ * A control that cannot fail is decorative, so each must disagree BY NAME.
+ * ---------------------------------------------------------------------- */
+{
+  const s3 = fs.readFileSync(`${R}/scripts/merge-4i.mjs`, "utf8");
+  const a = s3.indexOf("const secTypeAdmits = (type) => {");
+  if (a < 0) throw new Error("secTypeAdmits slice moved");
+  let d = 0, b = s3.indexOf("{", s3.indexOf("=>", a));
+  for (let k = b; k < s3.length; k++) {
+    if (s3[k] === "{") d++;
+    else if (s3[k] === "}") { d--; if (!d) { b = k + 1; break; } }
+  }
+  const body = s3.slice(a, b) + ";";
+  const shipped = new Function(body + " return secTypeAdmits;")();
+
+  const mk = (drop) => {
+    let t = body;
+    if (drop === "blank") t = t.replace('t === "" || ', "");
+    if (drop === "mutualfund") t = t.replace(' || /^mutual fund/i.test(t)', "");
+    if (t === body) throw new Error("negative control '" + drop + "' changed nothing");
+    return new Function(t + " return secTypeAdmits;")();
+  };
+
+  const TY = [
+    // must ADMIT — the filing says nothing (Innoviva files 28 of 30 this way)
+    ["", true], [null, true], [undefined, true], ["   ", true],
+    // must ADMIT — the filing's own word
+    ["Mutual fund", true], ["mutual fund", true], ["Mutual funds", true],
+    // must REFUSE — the filing names a DIFFERENT vehicle
+    ["Pooled separate account", false],
+    ["Separate account", false],
+    ["Collective trust", false],
+    ["Stable value / GIC", false],
+    ["Company stock", false],
+    ["Exchange-traded fund", false],
+    ["Cash / short-term", false],
+    ["Government securities", false],
+    ["Corporate debt", false],
+    ["Master trust interest", false],
+    ["Subtotal (not a holding)", false],
+    ["Participant loans — not a menu choice", false],
+    ["Brokerage window", false],
+  ];
+  let tbad = 0;
+  for (const [inp, want] of TY) {
+    const got = !!shipped(inp);
+    if (got !== want) { tbad++; console.log(`  FAIL  type ${JSON.stringify(inp)}  want ${want} got ${got}`); }
+  }
+  console.log(`\nshipped secTypeAdmits: ${TY.length - tbad}/${TY.length} pinned cases`);
+
+  for (const drop of ["blank", "mutualfund"]) {
+    const f = mk(drop);
+    const broke = [];
+    for (const [inp, want] of TY) if (!!f(inp) !== want) broke.push(JSON.stringify(inp));
+    console.log(`NEGATIVE CONTROL — drop the ${drop} arm: disagrees on ${broke.length} of ${TY.length}`);
+    for (const x of broke) console.log(`    ${x}`);
+    if (!broke.length) { console.log("  !! a control that cannot fail is decorative"); tbad++; }
+  }
+  if (tbad) process.exitCode = 1;
+}

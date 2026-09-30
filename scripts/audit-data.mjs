@@ -671,6 +671,17 @@ try {
           if (hit) return hit;
           if (order[0] === order[1]) break;
         }
+        /* LAST, exactly as app.js:1487 does: the ticker the merge resolved from
+         * the SEC file and stored on the row. Without this line the metric is
+         * blind BY CONSTRUCTION to the whole SEC path — it read 0 of the
+         * 147,835 rows that field already carried, and would have recorded no
+         * movement at all for the 2026-09-30 type-gate widening (109,662 rows
+         * / 13.7M participants). A coverage metric that cannot see the field
+         * it is meant to measure is the "flag nobody can read" shape one
+         * column along. `tkShare` is deliberately left alone: it asks
+         * `fundTickerInfo` one argument on the bare name and its value is an
+         * unbroken history. */
+        if (typeof f.stk === "string" && f.stk) return { tk: f.stk, comparable: false };
         return null;
       };
       for (const [ack, e] of Object.entries(entriesByAckCov)) {

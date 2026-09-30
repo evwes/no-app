@@ -895,7 +895,69 @@ from the cycle that would have cleared it.
   parser-gate, smoke, fund-er-test (46/26/19/18) green. **REPORT path only as a
   GUARANTEE: `build-seo-pages.mjs` never imports `fund-er.js`**; `git diff
   --stat p/` empty. `docs/accuracy-log.md` 2026-09-30 (11:5xZ).
-- **NOTHING IS IN FLIGHT. #523 RAN `success` AND IS MIRRORED — 2026-09-30 19:0xZ
+- **IN FLIGHT: #525, dispatched 2026-09-30 22:5xZ. NO PARSER BUMP — it exists to
+  let the MERGE rewrite `stk`. A BLANK TYPE CELL IS NOT A CONTRADICTION, AND
+  TWO RESOLVERS WERE APPLYING OPPOSITE STANDARDS TO IT: 45,894 rows / 9,151
+  entries / 9,182 plans / 9,610,149 participants / $85,992,537,937 gain a fund
+  ticker they do not have**, across 13,668 distinct names; the STORED footprint
+  is **109,662 rows / 11,346 plans / 13,751,840 ppl / $261,166,139,187, LOST 0,
+  CHANGED 0**, the gap being 63,748 rows `fund-er.js` already answers and 20 in
+  non-confident entries (reconciled exactly, not called close).
+  **Found by the 22:0xZ draw restricted to acks NEW to the store after the DOL
+  refresh** (7,872 newly published menus / 12,409,763 ppl, seed 20260930220 —
+  12,095 acks no cycle had ever reviewed), on **Innoviva Specialty Therapeutics
+  (316 ppl, 30 rows @ 0.996)**, whose menu is immaculate, whose **28 of 30 type
+  cells are blank, and not one row carries a ticker — while 23 of the 30 resolve
+  EXACTLY.**
+  **THE INCONSISTENCY IS BETWEEN TWO RESOLVERS, NOT INSIDE ONE.**
+  `fundTickerInfo(name, type)` reads the type to **DEMOTE** a collective trust or
+  a separate account to a labelled comparable — never to REQUIRE corroboration —
+  so `fund-er.js` has always asserted from the name alone on a blank cell, and
+  does so on **63,748 of these very rows today**. The SEC index alone demanded
+  the filing's own word.
+  **THE WIDENING CANNOT ASSERT A SHARE CLASS THE FILING DID NOT STATE, AND THAT
+  IS STRUCTURAL:** `resolve` returns EXACT only where the class is stated or the
+  series has ONE registered class — `Fidelity Contrafund` → **comparable**
+  FCNTX, `Vanguard 500 Index Fund` → comparable VFINX, `Dodge & Cox Stock Fund`
+  → comparable DODGX, and a comparable is never stored. **AND THE VEHICLE SCREEN
+  IT LOOKS LIKE IT NEEDS IS THE INDEX'S OWN DOING** — written, measured at **0
+  rows**, NOT shipped: the SEC registers no collective trust, so `… Target
+  Retirement 2030 Trust II` is null and `… Trust Select` is a comparable. *A
+  guard that cannot fire is decoration, and naming why it cannot is worth more
+  than carrying it.*
+  All **40 distinct names drawn at random read against their own registered
+  SERIES, 40 of 40 correct**; the one that read as a mis-resolution is not
+  (`2025 Target Date Retirement CL R6` → RFDTX, registered as *American Funds
+  2025 Target Date Retirement **Income** Fund* — the registrant's own name for
+  the past-dated vintage).
+  **TWO-SOURCE CROSS-CHECK on the admitted population: 61,965 of 63,158 agree
+  (98.11%), 1,193 disagree, and every disagreement read is the SEC being right
+  about a share class** (`Fidelity Total Bond K6` → FTBFX where it is FTKFX;
+  `Wellington Fund Investor Shares` → VWENX, the ADMIRAL class). Nothing changes
+  for them — `fund-er.js` is read FIRST — so this sizes the queued override item
+  and withdraws nothing.
+  **AND THE COVERAGE METRIC COULD NOT SEE THE FIELD IT MEASURES.**
+  `audit-data`'s `tkExact` re-implements `lookupTicker` and **stopped one stage
+  short of `f.stk`**, reading **0 of the 147,835 rows that field already
+  carried**. Fixed in the same commit, and the two effects are separated because
+  they are different claims: on the SAME live store the instrumentation fix
+  alone moves `tkExact` **24.67 → 33.58**, and the widening then **33.58 →
+  36.18**. `tkShare` deliberately untouched at 24.47.
+  **PRE-REGISTERED:** merge log `sec tickers: 459695 rows across 47534 plans
+  (109662 on a blank type cell)`; CONFIDENCE DIFF **+0 / −0**; `tkExact`
+  **36.18**, `tkComparable` **3.27**, `tkShare` **24.47**; everything else
+  byte-identical to #523's line — confident **60,170**, lineups **59,822**,
+  entries **65,479**, HIGH **4**, warn **608**, overshoot **372**,
+  overshootTrust **12**, aggRow **113**, dl **19**, pvTopShare **100**.
+  No fee is possible (`fundER` is called on the NAME, never on a ticker);
+  **REPORT path only as a GUARANTEE — `build-seo-pages.mjs` reads no `stk` and
+  imports no `fund-er.js`**. `secTypeAdmits` sliced BY NAME in
+  `scripts/merge-name-test.mjs`, 20 pins 20/20, **a negative control per arm
+  failing by name on exactly its own cases** (drop the blank arm → the widening
+  is inert; drop the mutual-fund arm → the 147,835 already shipping are
+  withdrawn). smoke green, fund-er-test 46/26/19/18 green.
+  `docs/accuracy-log.md` 2026-09-30 (22:4xZ).
+- **PREVIOUSLY: #523 RAN `success` AND IS MIRRORED — 2026-09-30 19:0xZ
   (`556b7eda → 52a9171f`), git check UNFORCED, `--force-data` over an ACK-KEYED
   count that a plan-keyed re-ask cut by a factor of 28. THE PRE-REGISTRATION
   FAILED AS STATED AND THE CAUSE WAS NOT THE CHANGE: DOL PUBLISHED A FRESH
