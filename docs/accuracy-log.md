@@ -30990,3 +30990,37 @@ or 2,048,738.** The "ONE count was several defects" rule, met at five.
   hold. The real merge reproduced **140 rows across 98 plans** and
   `sec tickers` **347,357 → 347,386**. parser-gate, smoke and fund-er-test
   (46/26/19/18) green; `git diff --stat p/` empty over all regenerated pages.
+
+## 2026-09-30 (13:0xZ) — QUEUED, SIZED, NOT SHIPPED: an ABBREVIATED WORD is the only obstacle to a ticker
+- **Found by the 12:5xZ participant-weighted draw** on **Ancon Marine (613
+  ppl)**, whose 34-row menu is entirely real fund names typed `Mutual fund` and
+  publishes **six tickers**. `Vanguard 500 Index Fd Admiral` resolves to
+  nothing; `Vanguard 500 Index Fund Admiral` resolves exactly.
+- **SIZED THROUGH BOTH RESOLVERS with the gates each applies — only rows a
+  reader sees BLANK today: 6,932 rows / 5,259 plans / 5,398,585
+  participants** would gain a ticker if a filer's ABBREVIATION were expanded
+  before the lookup. `Vanguard Inflation-Protected Secs Adm` → VAIPX (206
+  rows), `Fidelity Sm Cp Ind Fd` → FSSNX (165), `Vanguard Equity-Inc Adm Fund`
+  → VEIRX (149), `FID LG CAP GR IDX` → FSPGX (115), `American Funds US
+  Government Sec R6` → RGVGX (102). 2,192 distinct name→name pairs.
+- **SEVEN OF EIGHT PROBES ARE RIGHT DOWN TO THE SHARE CLASS**, verified against
+  `sec-funds.json`: `Adm` → *Admiral Shares*, `R6` → *Class R-6*, `Instl` →
+  *Institutional*. The expansions are dictionary-like — `Fd`/`Idx`/`Adml`/
+  `Instl`/`Mkt`/`Intl`/`Secs`/`Grw` — not a guess about which fund is meant.
+- **THE EIGHTH NAMES THE GATE AND IT IS THIS RECORD'S OWN: `Dodge & Cox Inc X`
+  → DODIX, which `sec-funds.json` registers as CLASS I where Class X is
+  DOXIX.** 40 rows. So the class needs the share-class contradiction test the
+  2026-09-30 03:5xZ item already describes, applied before anything ships —
+  *does the asserted answer's own registered class contradict the class the
+  filing states?*
+- **AND `Inc` IS THE DANGEROUS EXPANSION**, because it is both *Income* and the
+  corporate suffix *Incorporated*. It is right in every case read here
+  (`PIMCO Inc Instl` → PIMIX, PIMCO **Income** Institutional; `T. Rowe Price
+  Equity Inc` → PRFDX) and it is the one that must be measured separately
+  rather than assumed.
+- **PLACEMENT IS ALREADY DECIDED BY PRECEDENT: the expansion belongs in the
+  LOOKUP and NEVER in the stored name**, exactly as `repairHouse` repairs a
+  filer's misspelling for the lookup while the displayed name stays as filed.
+  A filer's abbreviation is faithful; our inability to read it is not.
+- **NOT STARTED:** this is NEW COVERAGE for 5.4M participants, which is the
+  owner's call, and the share-class gate has to be built and measured first.

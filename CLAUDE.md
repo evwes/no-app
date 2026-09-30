@@ -873,9 +873,52 @@ from the cycle that would have cleared it.
   parser-gate, smoke, fund-er-test (46/26/19/18) green. **REPORT path only as a
   GUARANTEE: `build-seo-pages.mjs` never imports `fund-er.js`**; `git diff
   --stat p/` empty. `docs/accuracy-log.md` 2026-09-30 (11:5xZ).
-- **QUEUED, SIZED, DISCRIMINATED, NOT SHIPPED 2026-09-30 12:0xZ — A LOST SPACE
+- **IN FLIGHT: #519, dispatched 2026-09-30 12:3xZ on `493db6b0` by the PUSH
+  TRIGGER (observed `queued`). NO PARSER BUMP — it is a MERGE-side change, so
+  the run exists to let the merge apply it.** **A LOST SPACE INSIDE A PUBLISHED
+  FUND NAME: 140 rows / 98 plans / 140,349 participants / $291,925,206.**
+  `Vanguard Total Bond**M**arket Index Adm`, `JPMorgan**M**id Cap Growth Fund
+  R6`, `Fidelity**T**otal Bond K6 Fund`, `Empower**G**uaranteed Interest Fund`.
+  **IT IS NOT THE HONESTY FIX IT WAS QUEUED AS.** All **137 distinct
+  transformations read**, every one a real fund name: `fund-er.js` **+17
+  tickers / −0 / 0 flipped** and **+18 fees / −0 / 9 CHANGED**, every change a
+  correction away from a generic pattern (`Vanguard Developed Markets Index
+  Admiral` 0.1 → 0.05, `Fidelity Mid Cp Index Fund` 0.1 → 0.025); the SEC index
+  **+29 / −0 / 0**, including **`FidelityTotal Bond K6 Fund` → FTKFX**, the K6
+  share class this record has named as a defect four times.
+  **AND THE 29 IS THE REAL MERGE'S NUMBER WHERE MY HARNESS SAID 36** — the SEC
+  block stores `stk` only where the FILING types the row a registered mutual
+  fund, and my outcome test called `resolveHolding` without that gate, so seven
+  gains sit on rows that never reach the field. ***Measure through the function
+  the caller calls***, and the real merge is what settled it.
+  **MEASURED ON THE RAW STORED NAME, which is what the merge holds: 140 / 98 /
+  140,349.** The same predicate over `cleanFiledName`'s output reads **151 / 108
+  / 151,454** — the DISPLAY string, and the queue entry below carried it. *The
+  second half of the same rule: with the argument the caller passes.*
+  **ONE REPAIR PER NAME and it costs nothing** — whole-store, **zero** names
+  offer more than one attested repair.
+  **PRE-REGISTERED:** the merge log prints `lost-space repair: 140 rows across
+  98 plans`; `sec tickers` **347,386 rows across 37,107 plans**; CONFIDENCE DIFF
+  **+0 / −0** and `rows-dropped` **0** (names change, no sum or ratio moves);
+  `confident` **60,103**, HIGH **5**, `warn` **610**, `overshoot` **316**, `dl`
+  **142**, pv 196 at 99.79% — all unchanged.
+  **THE MIRROR IS HELD UNTIL THE VERDICT ON PURPOSE**, for v193's narrow
+  reason: this has **no display half**, so mirroring early delivers nothing to a
+  reader and only puts unverified code on main.
+  **Prevention: `scripts/merge-name-test.mjs`, IN THE REPO** because the last
+  generator that lived in a session scratchpad was wiped by a container restart.
+  It SLICES the shipped `weldRepair` out of `merge-4i` rather than restating it,
+  asserts **20 pinned cases 20/20**, and its negative control removes the one
+  condition — the repaired whole name must stand alone — and **fails by name on
+  exactly the 7** it protects (six real firm names and the double render) while
+  all six must-repairs and all seven CamelCase must-keeps hold. parser-gate,
+  smoke, fund-er-test (46/26/19/18) green; `git diff --stat p/` empty.
+  `docs/accuracy-log.md` 2026-09-30 (12:5xZ).
+- **PREVIOUSLY QUEUED 2026-09-30 12:0xZ — A LOST SPACE
   INSIDE A PUBLISHED FUND NAME: 151 rows / 108 plans / 151,454 participants /
-  $300,291,381.** Found by the 11:5xZ draw on **Preferred Podiatry Management
+  $300,291,381.** *(Shipped above; those figures are the DISPLAY string's and
+  the shipped ones are 140 / 98 / 140,349.)* Found by the 11:5xZ draw on
+  **Preferred Podiatry Management
   (593 ppl)**, whose otherwise immaculate 32-row menu publishes `Great Gray
   Trust**I**nternational Stock R1 Fund`.
   **THE OBVIOUS PREDICATE IS NOT A CLASS AND THE SIZE WAS THE TELL: 93,171 rows
