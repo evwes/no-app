@@ -620,6 +620,17 @@
     // GRTH |" — 743 plans / 683k ppl / 1,723 rows), repaired to the letter
     // rather than deleted so the class survives. 15:1xZ draw 2026-09-18.
     s = s.replace(/\s*\(\s*\d{1,2}\s*\)\s*$/, "").trim();
+    // a trailing footnote marker spelled with a PLUS — `Vanguard Extended
+    // Market Idx | +e`, `Vngrd Wlsly Inc Adml +`, `LgCap S&P 500 Index Sep
+    // Acct+`. 861 rows / 289 lineups / 195,234 ppl, +0 tickers gained and −0
+    // lost, so it is an honesty fix and not a coverage one. The SPACE arm is
+    // unconditional; the NO-SPACE arm fires only after a vehicle noun, because
+    // `VANGUARD EXT MKT INDX-INST+` is Institutional PLUS and `iShares TR 20+`
+    // is the 20+ Year Treasury ETF — see lib-disclose.mjs for the measurement.
+    // Both run BEFORE the column-bar repair: order is load-bearing, or
+    // `… Idx | +e` ends at `… Idx |` instead of recovering its class.
+    s = s.replace(/\s+\+{1,3}\s*[a-z]?\s*$/i, "").trim();
+    s = s.replace(/((?:sep(?:arate)?\s*acc?t|separate\s+accounts?|\bSA|funds?|trusts?|accounts?|portfolios?))\+{1,3}\s*$/i, "$1").trim();
     s = s.replace(/\s+\|+\s*$/, " I");
     // the 4i column caption's wrapped tail glued to the FRONT of a page's
     // first holding ("maturity date American Funds EuroPacific R6", "Par or

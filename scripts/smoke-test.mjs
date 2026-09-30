@@ -255,6 +255,23 @@ try {
    * drifting: every case below is a real filed name from the store, plus the
    * three controls that must come back UNCHANGED. */
   const nameCases = [
+    /* 2026-09-30, the TRAILING PLUS MARKER. Checked before adding, for the
+     * reason this comment keeps being written: not one case below reaches
+     * either plus arm, so the twin would agree whether or not it carried
+     * them. The first four must STRIP; the last five must come back WHOLE,
+     * because their plus is part of the name — `INST+` is Institutional PLUS,
+     * a different share class from `-INST`, and `iShares TR 20+` is the 20+
+     * Year Treasury ETF. `… Idx | +e` also tests the ORDER: it must recover
+     * its share class as `… Idx I`, not end at a bare bar. */
+    "Vanguard Extended Market Idx | +e",
+    "Vngrd Wlsly Inc Adml +",
+    "Fidelity 500 Index +a",
+    "LgCap S&P 500 Index Sep Acct+",
+    "VANGUARD EXT MKT INDX-INST+",
+    "VANGUARD TOT BD MKT IDX-INS+",
+    "iShares TR 20+",
+    "Target Date 2065+",
+    "GOVERNMENT NAT MTG AS REMIC PT SOFR30A+",
     /* THE TWO NOISE SCREENS, 2026-09-29. Added for the same reason as
      * everything below: not one existing case reaches `bwNoise` or the two
      * new furniture participles, so the twin would agree whether or not it
@@ -995,7 +1012,26 @@ try {
     ["‘TIAA Access Lifecycle 2050 T'4", "TIAA Access Lifecycle 2050 T'4"],
     ["‘American Funds New Perspective R6", "American Funds New Perspective R6"],
     ["\"Brokerage\" Account", "\"Brokerage\" Account"],
-    ["‘Uncoln", "‘Uncoln"]]) {
+    ["‘Uncoln", "‘Uncoln"],
+    /* A TRAILING PLUS IS A FOOTNOTE MARKER — EXCEPT WHEN IT IS THE NAME,
+     * 2026-09-30. The first three strip it. The fourth is the ORDER test: with
+     * the plus stripped after the column-bar repair it ended at a bare bar, so
+     * the expectation here is the recovered share class. The no-space arm needs
+     * a vehicle noun in front, which is why the fifth strips and the last four
+     * are kept WHOLE: `INST+` is Institutional PLUS, a different and cheaper
+     * class than `-INST`; `iShares TR 20+` is the 20+ Year Treasury ETF; and a
+     * store-wide "does the remainder stand alone?" test said 388 of 388 were
+     * safe, which was false unanimity — a stem stands alone because ANOTHER row
+     * carries the same damage. */
+    ["Vngrd Wlsly Inc Adml +", "Vngrd Wlsly Inc Adml"],
+    ["Fidelity 500 Index +a", "Fidelity 500 Index"],
+    ["American Funds Amer Mutual R6 +k", "American Funds Amer Mutual R6"],
+    ["Vanguard Extended Market Idx | +e", "Vanguard Extended Market Idx I"],
+    ["LgCap S&P 500 Index Sep Acct+", "LgCap S&P 500 Index Sep Acct"],
+    ["VANGUARD EXT MKT INDX-INST+", "VANGUARD EXT MKT INDX-INST+"],
+    ["VANGUARD TOT BD MKT IDX-INS+", "VANGUARD TOT BD MKT IDX-INS+"],
+    ["iShares TR 20+", "iShares TR 20+"],
+    ["Target Date 2065+", "Target Date 2065+"]]) {
     if (cleanFiledName(n) !== want) fail(`the filed-name cleaner now damages a control: ${JSON.stringify(n)} -> ${JSON.stringify(cleanFiledName(n))}`);
   }
 

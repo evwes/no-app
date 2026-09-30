@@ -29230,3 +29230,90 @@ row counts and ratios registered before the run. **So the pin was worth making
 in the same commit as the fix**, which is the opposite of the decorative-control
 outcome — and it is why the two fallback acks were deliberately left unpinned
 rather than pinned for symmetry.
+
+## 2026-09-30 (00:1xZ) — a trailing PLUS is a footnote marker, except when it is the name, and a shipped discriminator said 388 of 388 were safe
+
+**Found by the 23:5xZ participant-weighted draw (seed 20260929235) on Mercy
+Health Corporation (12,559 ppl, $827,710,557)**, whose 61-row menu is otherwise
+immaculate — a full Vanguard target-date ladder, JPMorgan US Equity R6, a Schwab
+SDBA — and **9 of whose rows end in a footnote marker spelled with a plus**:
+`Vanguard Extended Market Idx | +e`, `Harding Loevner International Eq Instl Z
++e`, `Principal Real Estate Securities Fd R6 +e`.
+
+**SHIPPED: 861 rows / 289 lineups / 195,234 participants**, and on the crawlable
+surface **5 pages / 25,999 ppl** (the top-twelve cut again). **+0 tickers gained,
+−0 lost, 0 flipped** through app.js's real `lookupTicker` call order — so it is
+an **honesty fix and not a coverage fix**, and that is the honest framing:
+`fund-er.js` already matches through a trailing marker, exactly as it did through
+the leading stray quote on 2026-09-29.
+
+### THE SHIPPED DISCRIMINATOR RETURNED 388 OF 388 AND WAS WRONG
+
+Two arms, because the SPACE before the plus turns out to be load-bearing — and I
+nearly shipped one arm on a test that said it was not.
+
+The no-space form (`… Sep Acct+`) covers **710 further rows**, and this project's
+own standalone discriminator — *does the remainder appear as a COMPLETE published
+name elsewhere in the store?*, the test that made the 2026-09-21 issuer strip
+safe — answered **388 of 388 names / 710 of 710 rows, with witnesses of 64, 72
+and 74 rows.** Unanimous.
+
+**It is false unanimity, and the record already names the mechanism: "a floor of
+ONE lets a single damaged row LICENSE the same damage elsewhere, so the gate can
+be fed by its own mistakes" (2026-09-28, the issuer caption).** A stem stands
+alone because ANOTHER row carries the same marker — or because the stem is a
+genuinely different share class.
+
+**Reading the residue is what settled it, and it contains real plusses:**
+
+- **`VANGUARD EXT MKT INDX-INST+` is Vanguard Institutional PLUS** — a different
+  and cheaper share class than `-INST`. Stripping the plus publishes the wrong
+  class. Also `VANGUARD INST INDEX-INST+`, `VANGUARD TOT BD MKT IDX-INS+`.
+- **`iShares TR 20+` is the iShares 20+ Year Treasury Bond ETF.** The plus is the
+  fund.
+- `Target Date 2065+` and `GOVERNMENT NAT MTG AS REMIC PT SOFR30A+` (a spread
+  over a rate index).
+
+So the no-space arm fires only after a **POSITIVE vocabulary of what the plus may
+FOLLOW** — a vehicle noun (`Sep Acct`, `Separate Account`, `SA`, `Fund`, `Trust`,
+`Account`, `Portfolio`) — which reaches **635 rows / 153 plans / 95,032 ppl** (the
+Principal separate-account family) and refuses 75. **About 65 of those 75 are
+markers too** (`Vngrd Fin Indx Adml+`, `Gabelli Gold Inst+`, `Fid Ttl Mkt Indx+`)
+and are **left exactly as filed and named here rather than rounded away**: no
+purely syntactic rule separates them from `INST+`, and **a wrong share class is
+worse than a visible marker.**
+
+### THE ORDER OF THE ARMS IS LOAD-BEARING, and only a probe could see it
+
+With the plus stripped AFTER the column-bar repair, `Vanguard Extended Market
+Idx | +e` ended at **`Vanguard Extended Market Idx |`** — the bar arm cannot
+match a string ending in `+e`, so removing the marker left the bar with nothing
+to repair it. Stripped FIRST, the same row **recovers its share class as
+`Vanguard Extended Market Idx I`.**
+
+**861 rows changed and this one was inside them**, so the count called it an
+improvement. It was caught by probing the arm on nine strings, which is the third
+cycle running that reading or probing the transformations found damage no count
+could see.
+
+### One further movement, checked rather than assumed
+
+`Equity Income Separate Account+` now renders as **`Equity Income`**, losing the
+vehicle phrase as well as the marker — 9 rows. **That is the shipped `TYPE_SUFFIX`
+arm becoming reachable, not new damage, and the decisive test is one probe:
+`Equity Income Separate Account` with no plus ALREADY renders as `Equity Income`
+today.** So the marked row now gets exactly the treatment its unmarked sibling
+has had since 2026-09-28. `Overseas Separate Account+` keeps its phrase, because
+that arm's own two-word floor refuses a one-word remainder.
+
+### Gates
+
+Whole-store before/after with **BOTH modules loaded** — my 19:3xZ error was a
+harness whose "before" was the new file — over all 1,719,942 published rows: 861
+changed, +0/−0/0 on tickers. **9 tether cases and 9 must-keep controls added,
+after checking that NOT ONE of the 36 existing cases reaches either arm**, so the
+twin would have agreed whether or not it carried them. **Negative control: the
+reverted module fails by name on exactly the 5 must-strips and holds all 4
+must-keeps.** smoke-test green across all six page shapes, `fund-er-test`
+46/26/19/18 with 0 failures, and every one of the 5 regenerated pages' changed
+cells read in full — each removes the marker and nothing else.

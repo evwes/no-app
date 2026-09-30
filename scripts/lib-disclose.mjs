@@ -452,6 +452,41 @@ export function cleanFiledName(name) {
   // GRTH |" — 743 plans / 683k ppl / 1,723 rows), repaired to the letter
   // rather than deleted so the class survives. 15:1xZ draw 2026-09-18.
   s = s.replace(/\s*\(\s*\d{1,2}\s*\)\s*$/, "").trim();
+  /* a trailing footnote marker spelled with a PLUS, optionally carrying the
+   * footnote's letter — `Vanguard Extended Market Idx | +e`, `Vngrd Wlsly Inc
+   * Adml +`, `Fidelity 500 Index +a`. Found by the 23:5xZ participant-weighted
+   * draw on Mercy Health (12,559 ppl), 9 of whose 61 otherwise-immaculate rows
+   * carry it. 233 rows / 132 plans / 98,067 ppl with a space before the plus,
+   * and all 35 distinct names beyond `+e` were read — every one a real fund
+   * name plus a footnote letter.
+   *
+   * TWO ARMS, because the SPACE is load-bearing and a store-wide test said
+   * otherwise. `\S+$` (no space) covers 710 further rows, and the shipped
+   * "does the remainder stand ALONE elsewhere?" discriminator returned **388 of
+   * 388** for them — false unanimity, the 2026-09-28 "a gate fed by its own
+   * mistakes" trap in the name column, because a stem stands alone only because
+   * another row carries the same damage. Reading the residue settles it: a
+   * trailing plus with no space is often REAL — `VANGUARD EXT MKT INDX-INST+`
+   * is Institutional **Plus**, a different and cheaper share class than
+   * `-INST`; `iShares TR 20+` is the 20+ Year Treasury ETF; `Target Date 2065+`
+   * and `GOVERNMENT NAT MTG AS REMIC PT SOFR30A+` likewise. So the no-space arm
+   * fires only after a POSITIVE vocabulary of what the plus may FOLLOW — a
+   * vehicle noun — which reaches 635 rows / 153 plans / 95,032 ppl (the
+   * Principal `Sep Acct+` / `... R6 Fund+` family) and refuses 75, of which the
+   * four named above are the ones that matter. The ~65 refused markers
+   * (`Vngrd Fin Indx Adml+`, `Gabelli Gold Inst+`) are left exactly as filed:
+   * no purely syntactic rule separates them from `INST+`, and a wrong share
+   * class is worse than a visible marker.
+   *
+   * BOTH ARMS RUN BEFORE THE COLUMN-BAR REPAIR BELOW, and the order is
+   * load-bearing: with the plus stripped afterwards, `Vanguard Extended Market
+   * Idx | +e` ended at `Vanguard Extended Market Idx |` — the bar arm could not
+   * match a string ending in `+e`, and stripping the marker then left the bar
+   * with nothing to repair it. Stripped first, the same row recovers its share
+   * class as `Vanguard Extended Market Idx I`. Caught by probing the arm rather
+   * than by any count: 861 rows changed and this one was inside them. */
+  s = s.replace(/\s+\+{1,3}\s*[a-z]?\s*$/i, "").trim();
+  s = s.replace(/((?:sep(?:arate)?\s*acc?t|separate\s+accounts?|\bSA|funds?|trusts?|accounts?|portfolios?))\+{1,3}\s*$/i, "$1").trim();
   s = s.replace(/\s+\|+\s*$/, " I");
   // the 4i column caption's wrapped tail glued to the FRONT of a page's
   // first holding ("maturity date American Funds EuroPacific R6", "Par or
