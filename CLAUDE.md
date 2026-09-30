@@ -694,8 +694,43 @@ from the cycle that would have cleared it.
   `audit-dominant-row` **0**, `audit-generic-names` **214 against the 230
   escalation threshold — still not raised**. **`matchQuote` 5,397 of which only
   1,785 are SHOWN to readers** — the condition/outcome pair shipped 2026-09-27.
+- **SHIPPED 2026-09-30 00:1xZ, `[skip ci]` behind #511 — A TRAILING PLUS IS A
+  FOOTNOTE MARKER, EXCEPT WHEN IT IS THE NAME: 861 rows / 289 lineups / 195,234
+  participants**, and **5 crawlable pages / 25,999 ppl** (the top-twelve cut).
+  **+0 tickers gained, −0 lost, 0 flipped** through app.js's real `lookupTicker`
+  order, so it is an **HONESTY fix and not a coverage fix** — `fund-er.js`
+  already matches through a trailing marker, exactly as through the leading
+  stray quote. Found by the 23:5xZ draw on **Mercy Health (12,559 ppl)**, 9 of
+  whose 61 otherwise-immaculate rows carry it.
+  **THIS PROJECT'S OWN STANDALONE DISCRIMINATOR SAID 388 OF 388 WERE SAFE AND
+  WAS WRONG.** The no-space form (`… Sep Acct+`) covers 710 further rows, and
+  the test that made the 2026-09-21 issuer strip safe — *does the remainder
+  appear as a COMPLETE published name elsewhere?* — answered unanimously with
+  witnesses of 64, 72 and 74 rows. **False unanimity, and the mechanism is
+  already on this record: "a floor of ONE lets a single damaged row LICENSE the
+  same damage elsewhere, so the gate can be fed by its own mistakes."**
+  **Reading the residue holds REAL plusses:** `VANGUARD EXT MKT INDX-INST+` is
+  Institutional **PLUS**, a different and cheaper class than `-INST`;
+  **`iShares TR 20+` is the 20+ Year Treasury Bond ETF**; `Target Date 2065+`;
+  `SOFR30A+`. So the no-space arm fires only after a **POSITIVE vocabulary of
+  what the plus may FOLLOW** — a vehicle noun — reaching 635 rows / 95,032 ppl
+  and refusing 75. **~65 of those 75 are markers too and are LEFT AS FILED and
+  named**, because no purely syntactic rule separates them from `INST+` and **a
+  wrong share class is worse than a visible marker.**
+  **THE ORDER OF THE ARMS IS LOAD-BEARING:** stripped AFTER the column-bar
+  repair, `Vanguard Extended Market Idx | +e` ended at `… Idx |`; stripped
+  FIRST it **recovers its share class as `… Idx I`.** 861 rows changed and this
+  one was INSIDE them, so the count called it an improvement — a nine-string
+  probe caught it, the third cycle running that reading the transformations
+  found damage no count could see.
+  Whole-store before/after with **BOTH modules loaded**; 9 tether cases + 9
+  must-keep controls added after checking **not one of the 36 existing cases
+  reaches either arm**; negative control fails by name on **exactly the 5
+  must-strips** and holds all 4 must-keeps. smoke green, fund-er-test
+  46/26/19/18 0 failures, every changed cell on all 5 pages read.
+  `docs/accuracy-log.md` 2026-09-30 (00:1xZ).
 - **IN FLIGHT: #511 (v194), dispatched 2026-09-29 23:5xZ on `417acea1`, observed
-  queued on the dev branch — a FULL re-parse on the version bump. Tree at v194,
+  `in_progress` on the dev branch — a FULL re-parse on the version bump. Tree at v194,
   store at v193 until it lands.** Two classes, both v193's OWN COST.
   **(1) A STATEMENT-OF-NET-ASSETS CAPTION AS A HOLDING — 7 rows / 4 plans / 5,006
   ppl / $690,053,564.** The statement-lines alternation read `beginning of
