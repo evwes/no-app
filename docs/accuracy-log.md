@@ -32185,3 +32185,49 @@ store having not been tested.*
 published return carries `ds: "noattach"` — no audited attachment in the public
 copy yet — and its trust lost confidence at the same time. The gate now makes
 that visible and refuses on it instead of burying it in 7,830 rows.
+
+## 2026-09-30 (21:2xZ) — Participant-weighted draw: two immaculate menus, one class measured and REFUSED, and the K6 matcher exonerated
+
+The standing draw from PUBLISHED lineups (seed 20260930210, pool 59,822 plans /
+91,581,640 participants) landed on **BJ's Wholesale Club (38,661 ppl, 24 rows @
+0.970)** and **Pike Enterprises (11,994 ppl, 30 rows @ 0.966)**. Both menus read
+clean end to end — real fund names, correct vehicle types, sensible shares.
+
+**THE K6 SHARE CLASS IS RESOLVING CORRECTLY, and that is worth recording because
+this record has named it as a defect five times.** BJ's publishes `Fidelity Blue
+Chip Growth K6` → **FBCGX** and `Fidelity Diversified International K6 Fund` →
+**FKIDX**, and `sec-funds.json` registers both as that series' **K6 fund** —
+not the retail class, not Class K (FDIKX). The 2026-09-28 matcher work is doing
+its job on the exact family that produced the FTBFX finding. *A draw that
+exonerates the code is as useful as one that convicts it, and it is the only way
+to know a fix held.*
+
+**THE ONE THING THAT LOOKED WRONG IS NOT OURS.** Pike publishes `Vanguard
+Federal` and `Fidelity Government` — two-token names with the vehicle noun
+missing, beside twenty-eight fully-named rows including `Vanguard Total Bond
+Market Index Fund Admiral Shares`. That shape sizes to **5,615 rows / 5,379
+entries / 11,127,755 participants** (`Fidelity Government` 2,107, `Vanguard
+Federal` 1,862, `Vanguard Treasury` 540, `Voya Government` 279).
+
+**It is the FILER's shorthand, not our truncation: 5,447 of 5,489 stored RAW
+names are already short.** The 42 we do shorten are the leading-junk strip
+removing a `— ` and one `Mutual Fund` vehicle suffix — both correct. *A short
+name is not self-evidently a truncation; the store answers that in one pass, and
+the answer here is that our read is faithful.*
+
+**AND THE RESOLUTIONS ARE RIGHT, measured through `lookupTicker` and `fundERRow`
+with the row the page passes** (positive control `{Vanguard} 500 Index Fund` →
+VFIAX first): **2,091 rows publish an asserted ticker and the dominant answers
+are correct** — `Vanguard Federal` → **VMFXX** (Vanguard's only Federal fund is
+the Federal Money Market), `Fidelity Balanced` → FBALX, `T. Rowe Price Value` →
+TRVLX. The truncation is unambiguous *within the house*, which is why it
+resolves. 3,566 publish no ticker at all, which is honest.
+
+**The only residue is already queued and owner-gated:** `American Funds Growth`
+and `American Funds Balanced` publish **0.4%** with no ticker — the pattern
+table's house number on a name stating no share class, which is exactly the
+10.5M-participant R-6 inconsistency this record leaves to the owner. Nothing new.
+
+**REFUSED. Do not carry 5,615 or 11,127,755 forward as a defect class.** Reading
+the two menus cost one cycle and closed a shape that looks alarming in a count
+and is faithful in the filing.
