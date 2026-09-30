@@ -30048,3 +30048,126 @@ issuer `The J. M. Smucker Company` and is correctly read as employer stock.
   consumers, and only two of them are about a ROW** — the third decides whether
   a REGION is a menu at all, and it is reached during a run rather than
   observable in the store.
+
+## 2026-09-30 (04:5xZ) — The same-instant participant witness, and two of my own shipped things corrected
+
+**Two corrections to work shipped three hours earlier, and one new class for the
+owner. Nothing here changes a published number.**
+
+### 1. Line 6a(1) ingested, and it answers in BOTH directions
+
+The 03:1xZ note queued line 6a(1) — active participants at the BEGINNING of the
+plan year — as "the same-instant witness that settles it", meaning: which of two
+contradicting participant counts is the filer's keystroke. It is that, and it is
+also the witness for the OTHER end of the year, which the note did not consider.
+
+- **Iti Intermodal** files line 5 = **294,352** with **6a(1) = 328** on the same
+  page. Line 5 is the keystroke.
+- **Sun Pharmaceutical Industries** files line 5 = **2,439** with
+  **6a(1) = 1,477**, 6b = 0, 6c = 0, **6d = 71**, while assets GREW
+  **$225,321,641 → $308,559,232**. So line 5 is HONEST, and the wrong number is
+  **line 6d** — the filer completed 6a(2) and left 6b and 6c blank.
+  `build-data.mjs` packs `parts = partEOY || participants`, so **6d is what the
+  site publishes: that page shows 71 participants against $308,559,232**, which
+  is the standing $4.3M `avg-balance` WARN, and it is OURS.
+
+One field, two opposite verdicts. Ingested for the full form (6a(1)) and the
+short form (5d(1)) as `activeBOY`, appended at the END of plans-all's `FIELDS` so
+no existing index moves, and **both branches log whether the column RESOLVED** —
+the extract headers are unreachable from a sandbox, so the RUN is what says the
+name is right, and a column silently reading −1 would give 0 in every row and an
+audit that then found nothing would be reporting on the ingest rather than on the
+filings. That is the computed-and-discarded shape, pre-empted this time.
+
+`audit-data` now splits the contradiction four ways: **wind-down**, **line 5
+convicted**, **end-of-year convicted**, **unsettled**, plus **no 6a(1) filed**.
+A second flag, `eoy-count-contradicted`, names the plans whose PUBLISHED count is
+the contradicted one.
+
+### 2. My own 03:1xZ WARN flagged 219 CORRECT filings
+
+The shipped `boy-count-contradicted` counted **390 plans / 768,216
+participants**. **219 of those are plans that WOUND DOWN** — a plan terminated
+mid-year honestly reports a huge opening count and a tiny closing one, because
+the money left with the people: **SVB Financial 7,926 → 3 against $1.19B →
+$2.2M**, Bed Bath's successor **16,903 → 5 against $513.8M → $70**. An assets
+COLLAPSE is the witness that tells a wind-down from a keystroke. **171 are real
+contradictions.** The class was shipped as a union and it was at least two
+mechanisms — *"ONE count was several defects"*, met again, this time in my own
+work one cycle later.
+
+Also corrected: the 03:1xZ note said *"`participants` is the headline on the plan
+page"*. It is not, for any filing with an EOY subtotal — `parts = partEOY ||
+participants` prefers 6d, so Iti's page shows **401**, not 294,352. Measured
+through the packing rather than asserted from the store field: **only 156 of the
+390 reach a reader with the contradicted count, and 155 of those 156 are
+SHORT-FORM filers** — which is structural, not coincidence, because the SF branch
+never writes `partEOY` at all.
+
+### 3. A FLAG NOBODY CAN READ IS A FLAG THAT DOES NOT EXIST
+
+`boy-count-contradicted` is raised AFTER the per-plan loop, so it lands at the end
+of the findings array, and `audit-data`'s print cuts each severity at 40 rows.
+**It has counted toward `warn` on every run since it shipped and its text has
+never once appeared in a run log.** Nor had **`folded-aggregate`** (112 menus /
+1,156,064 ppl), **`lineup-overshoot`** (316 / 397,499) or **`trust-overshoot`**
+(12 / 203,974) — their numbers are in the coverage line, their sentences were
+unreachable.
+
+The discriminator needs no registry and cannot go stale: **a per-plan rule fires
+many times and a class-level rule fires ONCE**, so any rule with a single finding
+prints past the cut. Four lines added on the live store, all four of them classes.
+
+### Controls
+
+Positive control through the shipped audit, **all four verdict branches at
+once**, on a crafted store carrying the two 6a(1) values READ FROM THE FILINGS
+(Iti 328, Sun Pharmaceutical 1,477) plus one that settles nothing: line 5
+convicted **1**, end-of-year convicted **1**, unsettled **1**, no witness
+**168**. Negative control on the live store, where the column does not exist yet:
+**0 / 0 / 0 / 171** — the honest answer rather than a guess.
+
+### 4. OWNER'S CALL, SIZED, NOT SHIPPED — `gicRow` AND `fund-er.js` CONTRADICT EACH OTHER, AND THE ARBITER IS AN EMPTY COLUMN: 4,782 rows / 4,648 plans / **7,839,651 participants** / $28,686,273,454
+
+Found by the 04:3xZ participant-weighted draw (seed 20260930043) on **Tallahassee
+Memorial Healthcare (5,789 ppl)**, whose `Lincoln Stable Value (at contract
+value)` is typed `Mutual fund` and publishes an estimated **0.35%**.
+
+`gicRow` is `/stable value|\bgic\b/i.test(f.type)` — the **TYPE cell, never the
+NAME**. So the site's own position, that a stable-value or GIC holding must not
+carry an estimated expense ratio, is enforced only where the filer filled in a
+type. Where the cell is blank, `fund-er.js`'s generic
+`/stable value|guaranteed|gic/` fallback prices the row at **0.35%** — and that
+is **the exact number withdrawn from 89 rows on 2026-09-29 and refused again by
+v196's guard this morning**. `TIAA Stable Value` (303 rows / 365,642 ppl),
+`Guaranteed Income Fund` (239 / 541,292), `Putnam Stable Value Fund` (107 /
+537,620), `AUL STABLE VALUE ACCOUNT` (301 / 159,561), `PIMCO STABLE VALUE FUND`
+(1 / 115,910): **4,719 of the 4,782 rows publish exactly 0.35%.**
+
+**Two shipped rules disagree and which one applies depends on whether a column is
+blank.** Measured through app.js's FULL `er` expression with `gicRow` transcribed
+verbatim from `app.js:2246`, so this is what a reader is shown.
+
+**The risk is measured and it is almost nil: 4,781 of the 4,782 publish NO
+ticker**, and the one that does is a WELD of two holdings
+(`PIMCO Income Instl 1JPM-F JPMCB Stable Asset Income CF` → PIMIX at 0.51%), not
+a stable-value fund resolving to a registered one. The names are insurance and
+bank stable-value accounts.
+
+**The machinery to fix it already exists and needs no new vocabulary:**
+`annuityFeeIsGuaranteeOnly(name, fundER)` already asks the structural question —
+*does this row's fee come ONLY from the guarantee fallback?* — and the same
+question asked of a row whose NAME states a stable-value or guaranteed account,
+regardless of its type cell, is the whole change.
+
+**NOT SHIPPED, on the R-6 precedent: a session must not withdraw a fee cell from
+7.8M participants unasked.** Recommendation: withdraw the **4,719 rows at the
+generic 0.35%**, which is unsourced and already refused by the site's own rule,
+and leave the **63 rows carrying a house-specific pattern** (T. Rowe Price Stable
+Value 0.30%, Wells Fargo 0.45%) alone, because those at least name a house and a
+product. *A wrong number outranks an absent one*, and this one the site already
+says it will not publish.
+
+**Prevention:** the split between what a store field holds and what the packing
+publishes is now stated in both places it is read; and the print fix means a
+class-level finding cannot ship invisibly again.

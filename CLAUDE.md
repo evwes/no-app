@@ -791,7 +791,80 @@ from the cycle that would have cleared it.
   (`["Registrant :: Series", ticker, "class", "Class Name"]`), and the sizer now
   asserts FTKFX and FTBFX both resolve before counting.
   `docs/accuracy-log.md` 2026-09-30 (03:5xZ).
-- **NOTHING IS IN FLIGHT. #514 (v196) RAN `success` AND IS MIRRORED — 2026-09-30
+- **IN FLIGHT: #515, dispatched 2026-09-30 04:5xZ by the PUSH trigger (it fired
+  this time) on `d317b016`, observed `in_progress`. NO PARSER BUMP — it exists to
+  let PREP write a new field. THE SAME-INSTANT PARTICIPANT WITNESS, AND IT ANSWERS
+  IN BOTH DIRECTIONS.** Line 6a(1) — active participants at the BEGINNING of the
+  plan year — is the only count taken at the same instant as line 5. **Iti
+  Intermodal** files line 5 = 294,352 with **6a(1) = 328**, so line 5 is the
+  keystroke. **Sun Pharmaceutical** files line 5 = 2,439 with **6a(1) = 1,477**,
+  6b = 0, 6c = 0, **6d = 71**, while assets GREW **$225,321,641 → $308,559,232** —
+  so line 5 is HONEST and the wrong number is **line 6d**, the filer having
+  completed 6a(2) and left 6b and 6c blank. **`build-data` packs `parts = partEOY
+  || participants`, so 6d is what the site PUBLISHES: that page shows 71
+  participants against $308,559,232**, which is the standing $4.3M `avg-balance`
+  WARN, and it is OURS. One field, two opposite verdicts. Stored as `activeBOY`
+  appended at the END of plans-all's `FIELDS` so no existing index moves, for both
+  the full form and the short form (5d(1)), and **both branches LOG whether the
+  column resolved** — the extract headers are unreachable from a sandbox, so the
+  run is what says the name is right.
+  **AND MY OWN 03:1xZ WARN FLAGGED 219 CORRECT FILINGS.** A plan that terminated
+  mid-year honestly reports a huge opening count and a tiny closing one, because
+  the money left with the people: **SVB Financial 7,926 → 3 against $1.19B →
+  $2.2M**. An assets COLLAPSE tells a wind-down from a keystroke, so of the 390,
+  **219 are wind-downs and 171 are real contradictions** — *ONE count was several
+  defects*, met again in my own work one cycle later.
+  **AND THE 03:1xZ CLAIM THAT `participants` IS THE PAGE HEADLINE WAS WRONG.**
+  `parts` prefers 6d, so **Iti's page shows 401, not 294,352**, and only **156 of
+  the 390 reach a reader with the contradicted count — 155 of them SHORT-FORM,
+  which is structural because the SF branch never writes `partEOY` at all.**
+  **AND A FLAG NOBODY CAN READ IS A FLAG THAT DOES NOT EXIST.** Class-level
+  findings are raised after the per-plan loop and `audit-data` cut each severity at
+  40 rows, so `boy-count-contradicted` counted toward `warn` on every run since it
+  shipped and **its text never once appeared in a run log** — nor had
+  `folded-aggregate` (112 menus / 1,156,064 ppl), `lineup-overshoot` (316 /
+  397,499) or `trust-overshoot` (12 / 203,974). The discriminator needs no registry
+  and cannot go stale: **a per-plan rule fires many times, a class-level rule fires
+  ONCE**, so any rule with a single finding prints past the cut. Four lines added
+  on the live store, all four of them classes.
+  Positive control through the shipped audit, all four verdict branches at once on
+  a crafted store carrying the two 6a(1) values READ FROM THE FILINGS: line 5
+  convicted 1, end-of-year convicted 1, unsettled 1, no witness 168. Negative
+  control on the live store, where the column does not exist: **0 / 0 / 0 / 171**.
+  **PRE-REGISTERED:** the prep log prints `line 6a(1) active-at-BOY column:
+  resolved at index N (NAME)` and the SF equivalent, and **if either says NOT FOUND
+  the column name is wrong and that is the finding**; `fields` gains `activeBOY` as
+  the 39th entry; **`warn` 609 → 610**, the extra being `eoy-count-contradicted`
+  firing on Sun Pharmaceutical; `boy-count-contradicted`'s text appears in a run
+  log for the first time with a non-zero three-way split; `confident` 60,103,
+  HIGH 5, `overshoot` 316, `dl` 142, pv 196 at 99.79% all unchanged. **No published
+  number moves — the count selection is untouched.**
+  `docs/accuracy-log.md` 2026-09-30 (04:5xZ).
+- **OWNER'S CALL, SIZED, NOT SHIPPED — `gicRow` AND `fund-er.js` CONTRADICT EACH
+  OTHER AND THE ARBITER IS AN EMPTY COLUMN: 4,782 rows / 4,648 plans / 7,839,651
+  participants / $28,686,273,454 publish an estimated fee on a holding whose own
+  filed NAME says stable value or a guaranteed account.** Found by the 04:3xZ draw
+  on **Tallahassee Memorial Healthcare (5,789 ppl)**, whose `Lincoln Stable Value
+  (at contract value)` is typed `Mutual fund` and prices at **0.35%**.
+  `gicRow` is `/stable value|\bgic\b/i.test(f.type)` — **the TYPE cell, never the
+  NAME** — so the site's own position that such a holding must carry no estimated
+  ER is enforced only where the filer filled in a type. Where the cell is blank,
+  `fund-er.js`'s generic `/stable value|guaranteed|gic/` fallback prices the row at
+  **0.35%: the exact number withdrawn from 89 rows on 2026-09-29 and refused again
+  by v196 this morning. 4,719 of the 4,782 publish exactly 0.35%.** `TIAA Stable
+  Value` 303 rows / 365,642 ppl, `Guaranteed Income Fund` 239 / 541,292, `Putnam
+  Stable Value Fund` 107 / 537,620.
+  **RISK MEASURED AND ALMOST NIL: 4,781 of 4,782 publish NO ticker**, and the one
+  that does is a weld of two holdings. **The machinery needs no new vocabulary** —
+  `annuityFeeIsGuaranteeOnly(name, fundER)` already asks *does this row's fee come
+  only from the guarantee fallback?*, and asking it of a row whose NAME states a
+  stable-value account regardless of its type cell is the whole change.
+  **NOT SHIPPED on the R-6 precedent: a session must not withdraw a fee cell from
+  7.8M participants unasked. Recommendation: withdraw the 4,719 generic-0.35% rows
+  and leave the 63 carrying a house-specific pattern** (T. Rowe Price 0.30%, Wells
+  Fargo 0.45%), which at least name a house and a product.
+  `docs/accuracy-log.md` 2026-09-30 (04:5xZ).
+- **PREVIOUSLY: #514 (v196) RAN `success` AND IS MIRRORED — 2026-09-30
   04:2xZ (`076d369f → 84fc8ed4`), the git check UNFORCED and `--force-data` over
   three losses, each read row by row and REPRODUCED from its own `fbAck` first.
   FIVE OF SIX PRE-REGISTERED TESTS PASSED:** standalone `audit-dominant-row`
