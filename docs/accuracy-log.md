@@ -31718,3 +31718,175 @@ this, and it took one grep.*
   read — Sony 26,151, PayPal 15,948, Zions 14,506, Ametek 12,312, Hawai'i
   Pacific Health 10,929, Konica Minolta 8,334, Vertex 5,975, Boston College
   3,584, Revlon 2,985, Iona 1,410, Tronox 849.
+
+## 2026-09-30 (17:5xZ) — QUEUED, SIZED, PLACEMENT DECIDED: THE FILING PRINTS THE TICKER AND WE DO NOT USE IT
+
+- **Found by the 17:4xZ participant-weighted draw on Oasis Outsourcing Holdings
+  (113,807 ppl, $2.13B, 36 rows @ ratio 0.982)**, a PEO plan whose menu is
+  immaculate and whose every row is filed as **`FXAIX - Fidelity 500 Index`**:
+  the filer typed the SYMBOL into the identity column. Nothing in wampo reads
+  it.
+
+- **Sized, SEC-verified: 1,926 rows / 57 entries / 384,896 participants /
+  $9,106,629,776** open with a five-character symbol that `sec-funds.json`
+  registers as a real share class. Dominated by PEO plans — Oasis 113,807,
+  G&A Partners 46,552, Vensure 43,373, S2 HR Group 35,077, Questco 16,501.
+  Measured through app.js's own `lookupTicker` and `fundERRow`, both
+  positive-controlled first:
+  **(a)** the site already AGREES with the filed symbol on 1,156 rows;
+  **(b)** **746 rows / 56 entries / 384,722 ppl / $1,493,914,951 publish NO
+  ticker at all**, of which 315 publish neither ticker nor fee — a pure gain,
+  sourced from the filing and verified against the SEC;
+  **(c)** **24 rows / 16 entries / 288,423 ppl / $813,000,925 ASSERT A
+  DIFFERENT SYMBOL than the one the filing types**, none of them behind an
+  asterisk.
+
+- **(c) IS THE STRONGEST FORM OF A DEFECT THIS RECORD HAS NOW NAMED FIVE
+  TIMES, because the correct answer is the FIRST TOKEN OF THE ROW.** All nine
+  distinct, each verified against `sec-funds.json`: `VITSX - Vanguard Total
+  Stock Market Index Inst.` (Institutional Shares) publishes **VTSAX, the
+  ADMIRAL class** (9 rows); `MWTSX … Cl P` (Plan Class) publishes MWTIX (4);
+  `VMCIX … Instl` publishes VIMAX (3); `VTSNX` → VTIAX (2); `VSCIX … Inst` →
+  VSMAX (2); `MEIJX … Cl R4` → MEIKX, the R6 class; `VBTIX … Instl` → VBTLX;
+  `DOXGX - Dodge & Cox Stock Fund` (Class X) → DODGX, which the SEC registers
+  as Class I. And **`VMRXX - Vanguard Federal` publishes VMFXX, a DIFFERENT
+  FUND** — VMRXX is Cash Reserves Federal Money Market, VMFXX is Federal Money
+  Market — because the filed name is truncated and `fund-er.js` matched the
+  truncation.
+
+- **THE FEE QUESTION WAS ASKED BEFORE ANYTHING WAS DESIGNED, because the
+  2026-09-28 refusal of the K6 class turned on exactly it.** All 24 publish a
+  fee today, and on five of the nine names the two classes' estimates differ by
+  a basis point or less (VITSX/VTSAX 0.04, VMCIX/VIMAX 0.05, VSCIX/VSMAX 0.05).
+  So correcting the symbol here does not leave the other class's fee beside it
+  in the way the K6 case would have — and the fee is a pattern estimate
+  labelled "est." either way, unchanged by this arm.
+
+- **PLACEMENT SETTLED, AND IT IS NOT THE BROWSER.** Verification needs
+  `sec-funds.json`'s 29,168 symbols, which the page deliberately does not
+  carry (`merge-4i.mjs`'s own comment: shipping the index would put megabytes
+  on the boot path the 2026-08-09 split exists to protect). So the extraction
+  and the verification belong in **`merge-4i`, beside the existing `stk`
+  block**, with a display arm in `lookupTicker` that prefers `stk` when the
+  cleaned name OPENS with exactly that symbol. No parser bump — a run that
+  exists only to let the merge rewrite `stk`, as #497 and #499 did.
+
+- **AND THE EXISTING GATE IS WHY THE CLASS STORES NOTHING TODAY — 16 rows of
+  2,202 carry `stk`.** The `stk` block requires `/^mutual fund/i.test(f.type)`,
+  "the FILING's own word", and on this class **1,771 of 1,926 rows carry a
+  BLANK type** against 40 that say `Mutual fund`. That gate is right for
+  NAME-based resolution and wrong for a FILED SYMBOL, because a symbol the SEC
+  registers as a share class **is** the filing stating the identity — stronger
+  evidence than the type cell, not weaker.
+  **53 rows are typed `Collective trust` and must be REFUSED**: a CIT has no
+  ticker, the site already refuses to price one, and a filer who typed a
+  mutual-fund symbol beside a CIT vehicle has contradicted themselves.
+
+- **MY FIRST SCREEN WAS CONTAMINATED AND THE CONTAMINATION NAMED THE FIX.**
+  Requiring five uppercase letters reaches 2,202 rows and sweeps in
+  `PIMCO - All Asset Instl` and `VALIC- Vanguard Windsor II` — five uppercase
+  letters that are HOUSES, not symbols. A US open-end fund symbol ends in **X**,
+  and that one character removes both.
+
+- **ABSENCE FROM THE SEC INDEX IS NOT REFUTATION AND IS NOT TREATED AS ONE.**
+  118 rows / $581,952,952 lead with a symbol the extract does not carry —
+  `BTMKX` ×44 (iShares MSCI EAFE International Index Class K) and the
+  `LIRKX`/`LIJKX`/`LIHKX`/`LIPKX`/`LIKKX`/`LIVKX` family. Those stay blank,
+  which is the safe direction, and this record's 2026-09-29 note stands:
+  BlackRock LifePath and JH Multimanager have zero classes in the extract, so
+  a missing symbol is a gap in the index rather than a fake ticker.
+  **The verification is also exactly what separates a real symbol from an
+  Empower LEGEND CODE** — the 2026-09-27 refusal warned that a five-character
+  internal code colliding with a real ticker would publish a wrong fund, and
+  requiring the SEC index to name it is the guard that warning asked for.
+
+## 2026-09-30 (18:0xZ) — OWNER-SENT FILINGS: PUBLIC SERVICE ENTERPRISE GROUP, FOUR DEFECTS IN TWO CONFIDENT-LOOKING PLANS
+
+The owner sent the PSEG plan filing and its master trust with the vesting,
+match, pre-tax/Roth, core-investment and self-directed-brokerage areas
+highlighted. **Two plans, 12,611 participants, $4.45B** — Thrift & Tax Deferred
+Savings (EIN 222625848 PN 004, 3,892 ppl, $2.28B) and Employee Savings (PN 006,
+8,719 ppl, $2.18B), both linked to Master Employee Benefit Plan Trust
+`20251013135637NAL0000680483001`. Every claim below is read from the filings.
+
+### 1. THE RECORDKEEPER IS WRONG AND THE FILING SAYS SO IN ONE SENTENCE
+We publish **`Invesco Advisors, Inc`** on both plans. The filing reads:
+*"The trustee of the Plan, The Bank of New York Mellon ("Trustee"), is
+responsible for the custody of the Plan's assets and **Fidelity Investments is
+the recordkeeper**."* The stored features independently agree — `sdbaBrand`
+reads **"Fidelity BrokerageLink"** from the same document.
+A named instance of the class this record sized on 2026-09-14 at **1,509 live
+plans / 1,482,658 participants** publishing an auditor, adviser or investment
+manager as the recordkeeper, because pass 3 takes the TOP-FEE Schedule C item-2
+row. **A blank is honest; a name reads as knowledge.**
+
+### 2. VESTING IS STATED UNDER ITS OWN HEADING AND WE PUBLISH NONE
+The filing has a `Vesting` heading and one sentence under it: ***"All
+Participants are 100% vested in the Plan from the first date of hire."*** Form
+5500 line 6h — participants who terminated with less than 100% vested — is
+**0**, corroborating. We publish no vesting at all, and the sentence we STORED
+as `vestingText` is a different rule entirely: the 24-month withdrawal
+suspension (*"…before such amounts have been in the Plan for twenty-four
+months, the Participant will not be eligible to receive matching…"*), which
+says nothing about vesting.
+**DISCRIMINATOR ISOLATED by probing the production extractor:** the immediate
+arm needs the adverb ADJACENT to the verb. `Participants are **immediately**
+100% vested in all contributions` → `Immediate`; `100% vested in the Plan
+**from the first date of hire**` → nothing, as do `fully vested … at all times`
+and `100% vested … immediately upon hire`. The arm recognises the adverb and
+not the TIMING PHRASE that follows the verb.
+
+### 3. THE MATCH IS THE CANONICAL SHAPE AND FAILS ON WORD ORDER
+PN 004 files *"an amount equal to 50% of each Participant's first **8%** of
+eligible compensation"*, PN 006 the same at **7%**. Both store `matchText` and
+neither parses a formula.
+**MY FIRST HYPOTHESIS WAS THE POSSESSIVE AND ITS OWN TEST REFUTED IT** —
+removing `each Participant's` changes nothing. The discriminator is **where the
+match word sits relative to the rate**: `The Employer **matching contribution
+is** 50% of the first 8%` parses, `The Company **matches** 50% of the first 8%`
+parses, `a **matching contribution equal to** 50% of the first 8%` parses, and
+`contributes an amount equal to 50% of the first 8% … **as its matching
+contribution**` does not. The trailing attribution is invisible to the arm.
+This is a named instance of the largest queued match family — `plain N% of`,
+**1,011 plans / 1,464,750 participants** — and the discriminator is now stated.
+
+### 4. THE LARGEST ONE: SCHEDULE D PART I IS A FUND MENU AND `scanSchD` THROWS THE NAMES AWAY
+Neither PSEG plan is confident (`dx: band-lo`, 14 and 10 rows summing to
+$9.3M and $10.0M against $2.28B and $2.18B — correctly refused, they are the
+fair-value note), and **the master trust has no lineup entry at all**
+(`dx: few`, 1 row). So 12,611 participants see no menu.
+**The menu is in the trust's Schedule D Part I, named and valued:** VFTC
+INSTITUTIONAL 500 INDEX TRUST **$1,216,710,409**, and fourteen Vanguard
+Fiduciary Trust Co target-date collective trusts — TGT RET 2050 $120,938,037,
+2045 $102,505,829, 2030 $97,626,170, 2025 $88,267,105, 2055 $85,107,077, 2040
+$83,166,898, 2035 $82,999,324, 2060 $42,471,350, INC $27,480,162, 2020
+$24,087,628, 2065 $11,846,781, TARGET RETIRE IG $2,086,117, 2070 $1,497,250 —
+about **$2.0B**, which is essentially the whole trust.
+**AND WE ALREADY DOWNLOAD IT.** `build-data.mjs`'s `scanSchD` resolves a `name`
+column and reads it ONLY on the `M` (MTIA-link) branch; the entity-code-**C**
+branch — the collective trusts — does `cct.get(ack).add(v)` and keeps **the
+dollar value alone**, as a matching key for CIT typing. The names are read from
+the DOL extract and discarded on every run ever made. **Fifth instance of the
+computed-and-discarded shape** on this record, after run #244's failure reason,
+the Schedule A carrier, `thousands`, and `INS_CARRIER_NAME`.
+**SIZED: 123 full-form plans / 1,363,069 participants / $197.1B are linked to a
+master trust where NEITHER the plan nor the trust publishes a menu** —
+Albertsons 222,465, Northrop Grumman 151,821, Delta 112,713, Medtronic 56,318,
+Johnson Controls 53,662, Nestlé 49,794, Lumen 49,140, Siemens 42,932, and the
+two PSEG plans. (Of the 904 trust-linked plans, 293 publish their own lineup
+and 488 / 8,269,176 ppl are served by a confident trust today.) A Schedule D
+menu is not a 4i schedule — it names the vehicles the trust holds, not the
+plan's own slice — so it would ship as its own labelled reading, not as a
+lineup. **It needs no PDF and no parser bump: one branch of `scanSchD` and a
+prep run.**
+**HARNESS NOTE:** my first pass at that count printed `plan's own lineup
+confident: 0` and `trust confident: 0` — `lineups-status.json` nests under
+`.plans` and I read the top level. *A clean zero reports on the query*, caught
+by this record's own rule before the number was written down.
+
+### CORRECT AND WORTH SAYING
+Roth is caught (`roth: true`, in-plan conversion true), auto-enrolment at 3% is
+caught with the 2024 amendment to 4%, the brokerage window is named
+(**Fidelity BrokerageLink**, which the filing describes as *"a self-directed
+brokerage account"*), and both plans correctly refuse to publish the
+fair-value note as a menu.
