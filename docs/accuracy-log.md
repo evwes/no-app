@@ -31956,3 +31956,34 @@ fair-value note as a menu.
   through `new URL(..., import.meta.url)` and was run from two different
   working directories — *never hardcode the sandbox path in anything CI
   runs.*
+
+## 2026-09-30 (18:4xZ) — A FILER'S MISSPELLING OF A FUND HOUSE, SIZED BY OUTCOME AND REFUSED: FIVE TICKERS
+
+- Found by the 18:3xZ participant-weighted draw on **Plan Professionals /
+  iSolved (43,210 ppl)**, a 43-row Transamerica separate-account menu that is
+  otherwise immaculate and carries two filer typos — `State Steet Prtn
+  Series` on three rows and `American Century Onet Choice 2060`.
+- **Sized by OUTCOME rather than by the spelling**, through app.js's own
+  `lookupTicker` and `fundERRow` with the whole row: `steet` → `Street` is
+  **106 rows / 50 entries / 106,270 participants and gains FOUR tickers and
+  ZERO fees**; `onet` → `One` is 1 row and gains nothing; a `fidelilty` probe
+  is 1 row / 1 ticker. **Five tickers in total.**
+- **The reason the count collapses is in the type column:** nearly every
+  `State Steet` row is typed `Pooled separate account`, which `noPublicPrice`
+  already refuses to price and which resolves no ticker under either spelling.
+  A misspelling only costs something where the correct spelling would have
+  resolved.
+- **REFUSED.** Five answers do not justify a vocabulary of misspellings, and
+  this record already holds the reason a house list is the wrong instrument:
+  *a house list is wrong in the unsafe direction.* The five entries in
+  `HOUSE_MISSPELLINGS` exist because the Vangaurd case was **326 rows / 158
+  plans / 150,335 participants** — two orders of magnitude larger.
+- **Nothing is wrong with the DISPLAY either**, and that is the settled rule
+  from the Vangaurd work: the filing says `State Steet`, our parse is
+  faithful, and the repair belongs in the LOOKUP and never in the displayed
+  name. So there is no honesty half here to ship.
+- **THE CONTROL IS WHAT MAKES THE FOUR CREDIBLE:** `vangaurd` → `Vanguard`
+  was measured alongside as a candidate and reads **406 rows / 172,194 ppl and
+  0 ticker gains, 0 fee gains** — because the shipped `repairHouse` already
+  fires inside `lookupTicker`, so the "before" side already has the answer.
+  *A candidate that is already shipped must gain nothing*, and it did.
