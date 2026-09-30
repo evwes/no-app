@@ -873,6 +873,43 @@ from the cycle that would have cleared it.
   parser-gate, smoke, fund-er-test (46/26/19/18) green. **REPORT path only as a
   GUARANTEE: `build-seo-pages.mjs` never imports `fund-er.js`**; `git diff
   --stat p/` empty. `docs/accuracy-log.md` 2026-09-30 (11:5xZ).
+- **SHIPPED AND MIRRORED 2026-09-30 15:0xZ (`7f553567 → 311e29c3`), UNFORCED ON
+  BOTH CHECKS, data gate +0 / −0 — A SCHEDULE H PARTICIPANT-DIRECTION CAPTION IS
+  NOT A HOLDING: 16 rows / 16 plans / 294,238 participants / $6,813,553,902.**
+  **Microsoft's 183,509 participants** are shown `Participant-directed` at
+  **$6,602,388,247 = 8.6%** of their menu with a BLANK type — the 13:5xZ draw's
+  own unsized residue, now closed. Morgan Stanley Domestic Holdings (81,090) and
+  Gunderson Dettmer (948) are the other two crawlable pages.
+  **`Participant-directed` / `Non-participant-directed` is the STATUTORY SPLIT on
+  Schedule H line 4i, not a fund** — the filer captioning their two halves, which
+  `isNamelessFundRow` is blind to by construction because it asks whether the name
+  is a bare VEHICLE type and this is a DIRECTION.
+  **THE RAW COUNT IS 192 AND 174 OF THEM ARE CORRECT: the neighbour is the real
+  brokerage aggregate** (`Participant-directed brokerage accounts`), a genuine
+  holding a plan genuinely offers. Splitting on the tail word is what separates
+  them, so the arm ships a POSITIVE vocabulary of what the caption may be
+  FOLLOWED BY — `investments`, `accounts`, `assets` and nothing else — never a
+  blocklist. *A count that mixes a correct row with a defective one is not a
+  class size.*
+  **AND THE ANCHOR AND THE TAIL ARE JOINT, which I credited to the tail alone
+  until the control said otherwise:** both negative controls — dropping the tail
+  vocabulary and unanchoring the rule — **fail by name on exactly the same 5**,
+  the four brokerage rows plus `Participant Directed Retirement Fund`, a real
+  fund whose name merely opens with the words. **My first control was a harness
+  artefact** — string surgery on the shipped source broke the tail instead of
+  widening it, convicting the must-FLAG side, which is a control failing in the
+  direction that looks like success. Rebuilt each variant directly.
+  **TWO MORE ROWS ARE REFUSED BY THE NO-ISSUER GATE AND THAT IS RIGHT:** where
+  the identity column names a real fund, the caption is a wrapped tail and the
+  row is not nameless. 16, not 18.
+  **0 of the 16 publish a ticker and `fundER` prices 0**, so the harm is the
+  CLAIM alone. TYPED, NOT DROPPED (v181) — the value is the participant-directed
+  half of the plan, stays in the denominator, and no other row's percentage
+  moves. `isDirectionCaptionRow` canonical in `lib-disclose`, twinned verbatim in
+  app.js, wired into `build-seo-pages.mjs` so it reaches BOTH surfaces, tethered
+  on 18 pinned cases (10 must-flag / 8 must-keep). parser-gate, smoke and
+  fund-er-test (46/26/19/18) green; **3 crawlable pages / 265,547 ppl**, every
+  changed cell read. `docs/accuracy-log.md` 2026-09-30 (15:0xZ).
 - **NOTHING IS IN FLIGHT. #520 RAN `success` AND IS MIRRORED — 2026-09-30 14:2xZ
   (`b6e61585 → 7f553567`), the git check FORCED over main's one cron commit with
   the evidence first (plans array byte-identical, 0 acks / 0 newer status

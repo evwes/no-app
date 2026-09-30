@@ -31325,3 +31325,86 @@ the two surfaces agree. Saint Luke's Health System (15,891 and 14,392 across two
 plans), United Wholesale Mortgage (10,467), Community Foundation of Northwest
 Indiana (9,837), Follett Higher Education (7,784), Electronic Theatre Controls
 (1,247), Hinshaw & Culbertson (972).
+
+---
+
+## 2026-09-30 (15:0xZ) — A SCHEDULE H PARTICIPANT-DIRECTION CAPTION IS NOT A HOLDING
+
+**SHIPPED AND MIRRORED** (`7f553567 → 311e29c3`), unforced on both checks, data
+gate +0 / −0. **16 rows / 16 plans / 294,238 participants / $6,813,553,902.**
+
+Found by the 14:3xZ participant-weighted draw on **Microsoft (183,509
+participants, $77.9B)**, whose 50-row BlackRock / Vanguard / Fidelity menu is
+otherwise immaculate and whose **third-largest row is named
+`Participant-directed` at $6,602,388,247 = 8.6% of the menu**, type cell blank.
+
+It closes a class this log queued two cycles ago under *"two instances that are
+real and worth their own item"*, where it was recorded with its size and not
+fixed.
+
+### What the name is
+
+`Participant-directed` and `non-participant-directed` are the **statutory split
+Schedule H line 4i is reported under** — the filer captioning their two halves.
+It is not a fund, and it is not a vehicle type either, which is exactly why
+`isNamelessFundRow` is blind to it **by construction**: that predicate asks
+whether the whole name is a bare vehicle (`Mutual funds`, `Collective trust`),
+and a DIRECTION is a different kind of word. 0 of the 18 candidates were already
+typed by it, so the guard is entirely additive.
+
+### The raw count is 192 and 174 of them are correct
+
+**`Participant-Directed Brokerage Accounts` — 174 rows / 851,690 participants /
+$7,529,381,895 — is a REAL self-directed window**, exactly the aggregate this
+site already types as one. The bigger half of the raw population is not a
+defect. *A count that mixes a correct row with a defective one is not a class
+size*, and **192 must not be carried forward.**
+
+So the tail is a **POSITIVE vocabulary of what may FOLLOW** — nothing,
+`investments`, `accounts`, `assets` — never a blocklist. The same shape as the
+2026-09-29 `of American` repair and the trailing-plus arm.
+
+### The controls named what actually does the refusing, and corrected the comment
+
+Both negative controls — dropping the tail vocabulary, and unanchoring the rule
+— **fail by name on exactly the same five**: the four brokerage windows plus
+`Participant Directed Retirement Fund`, a real fund whose name merely opens with
+the words. **The anchor and the vocabulary are JOINT**, and an earlier draft of
+the shipped comment credited the vocabulary alone.
+
+**The FIRST negative control was a harness artefact**, and it failed in the
+direction that reads as success: string surgery on the shipped source broke the
+tail expression instead of widening it, so the variant convicted the **must-FLAG**
+side rather than the must-keep side. Each variant is now built directly rather
+than by substitution into a source string. *A control that convicts the wrong
+side is not a control that passed.*
+
+### The no-issuer gate is load-bearing, and 18 is not 16
+
+Two of the eighteen carry an identity column that **names a real fund** —
+`{Vangaurd Target Retirement 2045 Fd I}`, the filer's own recorded misspelling,
+and a kerned `{M anaged Income Portfolio CL 2}`. There the caption is in the
+NAME column and the fund is in the OTHER one, so declaring the row nameless
+would withdraw a name the filing supplies. That is the entire 18-to-16
+difference, and it was found only by checking rather than by assuming the gate
+that protects `isNamelessFundRow` protects this too.
+
+### Outcome
+
+**0 of the 16 publish a ticker and `fundER` prices 0** — the harm is the CLAIM
+alone. **TYPED, NOT DROPPED (v181)**: Microsoft's menu sums to 0.98 of plan
+assets, so this is a distinct bucket rather than a subtotal of the rows around
+it; the value stays in the denominator and **no other row's published
+percentage moves.**
+
+### Prevention
+
+`isDirectionCaptionRow` canonical in `scripts/lib-disclose.mjs`, twinned
+verbatim in `app.js` behind `window.__wampoDirectionCaptionRow`, and wired into
+`build-seo-pages.mjs` so it reaches **both** surfaces. Tethered by
+`smoke-test.mjs` on 18 pinned cases, 10 must-flag and 8 must-keep, cross-checking
+the browser copy against the module. parser-gate, smoke and fund-er-test
+(46/26/19/18) green.
+
+**3 crawlable pages / 265,547 participants**, every changed cell read: Microsoft
+(183,509), Morgan Stanley Domestic Holdings (81,090) and Gunderson Dettmer (948).
