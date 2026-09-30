@@ -212,7 +212,7 @@ try {
    * canonical, app.js carries a twin because it is a plain browser script.
    * Run the BROWSER copy against the module's own boundary cases. */
   const { coverageBand, frozenClaimOk, cleanFiledName, isParticipantLoanRow, isLoanDescriptionRow,
-    isAnnuityContractRow, annuityFeeIsGuaranteeOnly, isCollectiveTrustName, isLoanAnswerRow,
+    isAnnuityContractRow, annuityFeeIsGuaranteeOnly, isCollectiveTrustName, isLoanAnswerRow, isLoanMaturityRow,
     isInvestmentContractRow, isMistypedStockRow,
     mistypedStockFeeIsGuaranteeOnly, issuerPricedER } = await import("./lib-disclose.mjs");
   const frozCases = [
@@ -658,6 +658,36 @@ try {
     if (!isLoanAnswerRow(n)) fail(`loan-answer rule no longer types a recordkeeper answer line, so it reads as a fund: ${JSON.stringify(n)}`);
   for (const n of loanAnsCases.slice(10))
     if (isLoanAnswerRow(n)) fail(`loan-answer rule would claim a real fund or an already-typed loan row: ${JSON.stringify(n)}`);
+
+  /* THE BARE MATURITY DATE, tethered the same way, 2026-09-30 (07:3xZ). The
+   * first eight must FLAG — every one is a real published name from the class,
+   * including the three whose filings were read (Kodak, Baylor Scott & White,
+   * TotalEnergies) and the trailing-punctuation shapes the wrap leaves behind.
+   * The last nine must be KEPT, and they are the whole safety argument: a
+   * target-date VINTAGE is a year with words in front of it, and a bare year
+   * with no month is deliberately outside the rule because `2065` alone is a
+   * vintage far more often than a maturity. */
+  const loanMatCases = [
+    "November 2029", "December 2034", "March, 2032)", "October 2054).",
+    "December-30", "June 2031", "Sept. 2028", "(August 2049)",
+    "Target Retirement 2030", "Fidelity Freedom 2035", "LifePath Index 2040",
+    "2065", "Class 2029", "May Department Stores Common Stock",
+    "American Funds 2030 Target Date R6", "T. Rowe Price Retirement 2035",
+    "Maturities through November 2039"];
+  const loanMatGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoLoanMaturityRow !== "function") return null;
+    return cs.map((n) => window.__wampoLoanMaturityRow(n));
+  }, loanMatCases);
+  if (!loanMatGot) fail("app.js no longer exposes __wampoLoanMaturityRow — the maturity-date predicate cannot be cross-checked");
+  const loanMatDrift = loanMatCases.filter((n, i) => isLoanMaturityRow(n) !== loanMatGot[i]);
+  if (loanMatDrift.length) {
+    for (const n of loanMatDrift) console.error(`  ${JSON.stringify(n)}  app.js=${loanMatGot[loanMatCases.indexOf(n)]}  module=${isLoanMaturityRow(n)}`);
+    fail(`the maturity-date predicate in app.js disagrees with scripts/lib-disclose.mjs on ${loanMatDrift.length} of ${loanMatCases.length} names`);
+  }
+  for (const n of loanMatCases.slice(0, 8))
+    if (!isLoanMaturityRow(n)) fail(`maturity-date rule no longer types a wrapped loan row, so it reads as a fund: ${JSON.stringify(n)}`);
+  for (const n of loanMatCases.slice(8))
+    if (isLoanMaturityRow(n)) fail(`maturity-date rule would claim a real fund or a target-date vintage: ${JSON.stringify(n)}`);
 
   /* THE COLLECTIVE-TRUST NAME RULE, tethered the same way, 2026-09-30. The
    * first six must FLAG (a fee is withdrawn); the last nine must be KEPT, and

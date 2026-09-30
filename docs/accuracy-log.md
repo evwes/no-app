@@ -30425,3 +30425,80 @@ KILLED THE LOAN-CAPTION MEASUREMENT.** It gated on `e.c`, which is a
 entry was skipped and the answer was a clean zero. *A suspiciously clean zero
 reports on the query* — twice in one cycle, and the second time in a harness
 written immediately after recording the first.
+
+## 2026-09-30 (07:3xZ) — A BARE MATURITY DATE IS THE PARTICIPANT-LOAN ROW: 68 rows / 67 plans / 135,334 participants / $153,709,833
+
+Found by the 07:1xZ participant-weighted draw on **Eastman Kodak (8,020 ppl,
+$2,148,394,223, 22 rows at ratio 1.000)** — a menu of BlackRock and T. Rowe
+Price collective trusts that is immaculate except for one row named
+**`March, 2032)`** at $2,463,992, type blank.
+
+**THE THIRD MEMBER OF THE WRAPPED-LOAN-DESCRIPTION FAMILY, AND THE ONE THE
+OTHER TWO CANNOT REACH.** `isLoanDescriptionRow` needs the loan RANGE words in
+the name; `isLoanAnswerRow` needs the answer words. Here the description wraps
+over THREE lines and the value lands on the third, so the row is named by a
+fragment carrying neither — just a month and a year.
+
+**THE CAUSE WAS READ IN THREE FILINGS, NOT INFERRED, and all three put the real
+name in the identity column:**
+
+- **Kodak** — `* Participant Loans | (Interest Rates ranging from 3.25% to 9.25%
+  with / Maturity Dates ranging from January, 2025 to / March, 2032)  2,463,992`
+- **Baylor Scott & White (57,248 ppl)** — `* Notes receivable from participants
+  of … | Interest rates ranging from 4.25% to 9.50% due through / December 2034
+  $ 58,243` (thousands; the store holds 58,243,000)
+- **TotalEnergies (3,097)** — `* Participant Loans | Interest rate range: 4.25%
+  to 9.50% / Maturities through: / November 2039  ** 10,053,521`
+
+Kodak's own statement of net assets carries the identical figure as **`Notes
+Receivable from Participants 2,463,992`**, which is independent confirmation
+that the value is the loan balance and not a holding.
+
+**AND THE POPULATION CORROBORATES THE CLAIM WITHOUT A SINGLE DOWNLOAD: of the 68
+rows, 68 sit in a menu with NO loan row at all and 0 sit beside one.** A plan
+whose 4i schedule itemises participant loans and appears to have none is a plan
+whose loan row lost its name — so **the missing sibling is the evidence**, and
+it is what makes the claim safe to publish for all 68 rather than for the 3 that
+were read. *A class-wide absence can corroborate a cause read in three cases.*
+
+All **50 distinct names read** and every one is a bare month-year — `November
+2029` (5 rows), `December 2034`, `March, 2032)`, `October 2054).`,
+`December-30`. Not one is a fund; **0 publish a ticker and `fundER` prices 0**,
+so the harm is the CLAIM alone.
+
+**TYPED, NOT DROPPED (v181):** the value is the plan's loan balance, so it stays
+in the denominator and **no other row's published percentage moves**; it loses
+the ticker and the fee, neither of which a loan balance has.
+
+**THE ANCHOR IS THE WHOLE SAFETY ARGUMENT, and a deliberate omission is part of
+it.** The test is `^…$` on a name that is NOTHING BUT a date, so a target-date
+vintage cannot be reached — `Target Retirement 2030`, `Fidelity Freedom 2035`,
+`LifePath Index 2040` all lead with words. **A bare YEAR is excluded on purpose:
+`2065` as a whole name is a vintage far more often than a maturity**, so the
+month name is required.
+
+Gates: over **1,720,271 published rows the shipped predicate flags exactly 68
+across 50 names, and 0 of them were already typed by an existing loan rule** —
+strictly additive, reaching nothing else. 17 pinned cases (8 must-flag, 9
+must-keep) 17/17; **negative control drifts the twin and fails BY NAME on
+exactly the 8 must-flags while holding all 9 must-keeps**. parser-gate green,
+smoke green, fund-er-test 46/26/19/18 0 failures. **Surface: exactly ONE
+crawlable page** (Peterson Holding, 2,518 ppl) now reads `November 2029 —
+participant loans, not a menu choice`; the other 67 rows sit below the
+top-twelve cut.
+
+**AND THE ITEM THIS CYCLE SET OUT TO SHIP WAS BLOCKED, which is why this one was
+found.** The queued OCR column-bleed residue (2,493 rows / 613,748 ppl) cannot
+ship as designed: its narrowing gate was *does the HEAD already name a fund*,
+which is an outcome test through `fund-er.js` — and **`build-seo-pages.mjs` must
+never import `fund-er.js`**, that absence being the standing guarantee that the
+crawlable pages cannot render a per-fund ER. A display-path rule therefore has
+to be purely syntactic, and no syntactic rule separates `Vanguard Total Bond
+Market Index Ad min` (a split `Admiral`, must keep) from `Nuveen Real Estate Sec
+Sel R6 ial` (must strip). Two candidate discriminators were measured and both
+failed: the tails' 1:1 rows-to-distinct-names ratio is just name uniqueness, and
+a closed vocabulary of the residue tokens contains `bad`, `we`, `id`, `bid` and
+`ad`, which are words. **The right home is `merge-4i`, which holds the whole
+store and can ask the standalone test the issuer strip already uses** — with a
+floor above one, because *a floor of ONE lets a single damaged row license the
+same damage elsewhere*. Re-queued there, not abandoned.

@@ -1133,6 +1133,19 @@
   }
 
   window.__wampoLoanAnswerRow = isLoanAnswerRow;  // read by the smoke test only
+  /* A BARE MATURITY DATE IS THE PARTICIPANT-LOAN ROW — the rule, the three
+   * filings it was read in and the missing-sibling evidence are all in
+   * scripts/lib-disclose.mjs; this is its twin. Anchored `^…$` on a name that
+   * is nothing but a month and a year, so a target-date vintage cannot be
+   * reached. TYPED, NOT DROPPED: the value is the loan balance and stays in
+   * the denominator. */
+  const BARE_MATURITY_DATE =
+    /^[\s(,.-]*(?:\d{1,2}[\s,/-]*)?(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\.?[\s,/-]*\d{1,4}[\s)\.,-]*$/i;
+  function isLoanMaturityRow(name) {
+    return BARE_MATURITY_DATE.test(String(name || "").trim());
+  }
+
+  window.__wampoLoanMaturityRow = isLoanMaturityRow;  // read by the smoke test only
   window.__wampoCleanFiledName = cleanFiledName;
   window.__wampoLoanRow = (n) => LOAN_ROW.test(String(n || "").trim());  // read by the smoke test only
   /* "does this string identify a fund at all?" — the identity probe
@@ -2282,7 +2295,13 @@
        * neither of which a loan balance has. Rule and measurement in
        * lib-disclose.mjs. */
       const loanAnsRow = isLoanAnswerRow(f.name || "");
-      const loanRow = LOAN_ROW.test(f.name || "") || descLoanRow || loanAnsRow;
+      /* ...and the THIRD member of that family, where the description wraps
+       * over three lines and the VALUE lands on the third, so the row is named
+       * by a bare month and year carrying neither the range words nor the
+       * answer words. Read in three filings; 68 of 68 sit in a menu with no
+       * loan row at all, which is the corroboration. lib-disclose.mjs. */
+      const loanMatRow = isLoanMaturityRow(f.name || "");
+      const loanRow = LOAN_ROW.test(f.name || "") || descLoanRow || loanAnsRow || loanMatRow;
       /* AN INSURANCE ANNUITY CONTRACT TYPED `Mutual fund` — the rule and its
        * whole safety argument live in scripts/lib-disclose.mjs; this is the
        * generated twin's call site. It suppresses the ticker and the fee for

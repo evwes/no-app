@@ -1076,6 +1076,62 @@ export function isLoanAnswerRow(name) {
   return LOAN_ANSWER_PHRASE.test(s) || LOAN_ANSWER_REMNANT.test(s);
 }
 
+/* A BARE MATURITY DATE IS THE PARTICIPANT-LOAN ROW — 2026-09-30 (07:3xZ).
+ *
+ * The third member of the wrapped-loan-description family, and the one the
+ * other two cannot reach. `isLoanDescriptionRow` needs the loan RANGE words in
+ * the name; `isLoanAnswerRow` needs the answer words. Here the description
+ * wraps over THREE lines and the VALUE sits on the third, so the row is named
+ * by a fragment that carries neither — just a month and a year.
+ *
+ * 68 rows / 67 plans / 135,334 participants / $153,709,833. All 50 distinct
+ * names read and every one is a bare month-year: `November 2029` (5 rows),
+ * `December 2034` (2), `March, 2032)`, `October 2054).`, `December-30`.
+ * Not one is a fund, 0 publish a ticker and `fundER` prices 0 — so the harm is
+ * the CLAIM alone, exactly as in the answer-line family.
+ *
+ * THE CAUSE WAS READ IN THREE FILINGS, NOT INFERRED, and all three agree that
+ * the identity column holds the real name:
+ *
+ *   Kodak (8,020 ppl)   `* Participant Loans | (Interest Rates ranging from
+ *                        3.25% to 9.25% with / Maturity Dates ranging from
+ *                        January, 2025 to / March, 2032)      2,463,992`
+ *   Baylor Scott &      `* Notes receivable from participants of … |
+ *   White (57,248)       Interest rates ranging from 4.25% to 9.50% due
+ *                        through / December 2034        $ 58,243` (thousands)
+ *   TotalEnergies       `* Participant Loans | Interest rate range: 4.25% to
+ *   (3,097)              9.50% / Maturities through: / November 2039
+ *                                                         ** 10,053,521`
+ *
+ * Kodak's own statement of net assets carries the identical figure as `Notes
+ * Receivable from Participants 2,463,992`, which is independent confirmation
+ * that the value is the loan balance and not a holding.
+ *
+ * AND THE POPULATION CORROBORATES IT WITHOUT A SINGLE DOWNLOAD: of the 68 rows,
+ * **68 sit in a menu with NO loan row at all** and 0 sit beside one. A plan
+ * whose 4i schedule itemises participant loans and appears to have none is a
+ * plan whose loan row lost its name — so the missing sibling is the evidence,
+ * and it is what makes the claim safe to publish for all 68 rather than the 3
+ * that were read.
+ *
+ * TYPED, NOT DROPPED (v181): the value is the plan's loan balance, so it stays
+ * in the denominator and no other row's published percentage moves; it loses
+ * the ticker and the fee, neither of which a loan balance has.
+ *
+ * THE ANCHOR IS THE WHOLE SAFETY ARGUMENT. It is `^…$` on a name that is
+ * NOTHING BUT a date, so a real fund carrying a vintage cannot be reached:
+ * `Target Retirement 2030`, `Fidelity Freedom 2035`, `LifePath Index 2040` all
+ * lead with words. The year is bounded to four digits and the month must be a
+ * real month name, so `2030` alone and `Class 2029` are both outside it — and
+ * a bare year IS deliberately excluded, because `2065` as a whole name is a
+ * target-date vintage far more often than a maturity. Trailing `)`/`.`/`,` and
+ * a leading `(` are taken along because the wrap cuts mid-parenthetical. */
+export const BARE_MATURITY_DATE =
+  /^[\s(,.-]*(?:\d{1,2}[\s,/-]*)?(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\.?[\s,/-]*\d{1,4}[\s)\.,-]*$/i;
+export function isLoanMaturityRow(name) {
+  return BARE_MATURITY_DATE.test(String(name || "").trim());
+}
+
 /* A COLLECTIVE TRUST NAMED IN THE ROW'S OWN NAME — 2026-09-30.
  *
  * `noPublicPrice` in app.js reads `f.cit` and the TYPE cell and never the NAME,
