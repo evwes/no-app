@@ -2459,7 +2459,15 @@ from the cycle that would have cleared it.
   `Separate account` (5), ETF (1), `Corporate debt` (1) — outside this item
   because their type makes no mutual-fund claim, but the FEE is the same
   unsourced number. `docs/accuracy-log.md` 2026-09-29 (09:2xZ).
-- **QUEUED, SIZED, NOT SHIPPED — SCHEDULE H LINE 4a's DELINQUENT PARTICIPANT
+- **CLOSED 2026-09-30 (14:5xZ), re-sized at pv 196 — SCHEDULE H LINE 4a's
+  DELINQUENT-CONTRIBUTIONS TABLE IS 1 ROW.** Queued at 98 rows / 96 plans /
+  157,098 ppl; **v193's (B) arm shipped exactly this** (120 / 111 / 166,688) and
+  the bullet was never retired. The residue is a single fragment,
+  `Check here if Late Participant` (228 ppl, $203,406), which does not OPEN with
+  the compliance words the shipped arm anchors on. **Fourth stale queue entry
+  found by re-sizing rather than by working it** — *a queued class records what
+  was true when it was written.* The original entry follows, as history.
+- **ORIGINALLY QUEUED — SCHEDULE H LINE 4a's DELINQUENT PARTICIPANT
   CONTRIBUTIONS TABLE IS PUBLISHED AS FUND HOLDINGS: 98 rows / 96 plans /
   157,098 participants / $19,336,239.** All **81 distinct names read** and not
   one is a fund: `Corrected Outside VFCP Correction in VFCP ☑`, `Plan Corrected
