@@ -705,13 +705,21 @@ from the cycle that would have cleared it.
   trust-aware standalone script — the standalone's single trust is the one lineup
   v196 withdrew. **`matchQuote` 5,397 of which only
   1,785 are SHOWN to readers** — the condition/outcome pair shipped 2026-09-27.
-- **IN FLIGHT: #517, dispatched 2026-09-30 08:4xZ on `bf0ccc46`, observed queued.
-  NO PARSER BUMP — it exists only to let the MERGE apply the strip, so the work
-  list is the dead 403s. THE MIRROR IS HELD UNTIL ITS VERDICT ON PURPOSE:**
-  unlike a display change, this rewrites STORED NAMES inside `merge-4i`, which
-  **main's own cron also runs**, so mirroring early would apply an unverdicted
-  rule on main unsupervised.
-  **AN OCR COLUMN-BLEED RESIDUE ON THE HOLDING NAME: 3,291 rows / 671 plans /
+- **NOTHING IS IN FLIGHT. #517 RAN `success` AND IS MIRRORED — 2026-09-30 09:2xZ
+  (`5608e91f → 10e574ec`), UNFORCED ON BOTH CHECKS, data gate +0 / −0. EVERY
+  PRE-REGISTERED TEST PASSED, AND THE TWO RUN-ONLY FIGURES WERE READ OUT OF THE
+  ARTIFACT RATHER THAN THE LOG.** The merge log lives on a blob host the sandbox
+  cannot reach (`connect_rejected`), so instead of quoting a line I diffed the 64
+  lineup shards at `08547e9d` against the data commit: **names changed 3,291 rows
+  across 671 entries**, exactly as registered, and **`sec tickers` 347,357 rows
+  across 37,107 entries** against 346,855 / 37,097 before — **+502 / −0 / 0
+  changed**, also exact. REPARSE VERDICT `confident +0, match +0, vesting +0,
+  lineups +0`; coverage line byte-identical to #515's (confident 60,103, HIGH 5,
+  warn 610, overshoot 316, dl 142, pv 196 at 99.8%). *A figure computed from the
+  artifact does not depend on a log being readable*, and the measurement the log
+  line reports is one the store can be asked directly.
+  The hold was released the moment the verdict existed, which is what it was for.
+  **WHAT #517 CARRIED — AN OCR COLUMN-BLEED RESIDUE ON THE HOLDING NAME: 3,291 rows / 671 plans /
   565,760 participants / $5,593,466,858** — the item queued at 06:3xZ and
   re-homed at 07:4xZ. `Nuveen Real Estate Sec Sel R6 ial`, `PGIM High Yield Fund
   R6 ial`, `Voya Index Solution 2050 P Z lal`.
@@ -754,6 +762,60 @@ from the cycle that would have cleared it.
   `rows-dropped` 0, parser-gate / smoke / fund-er-test green, **12 crawlable
   pages**, every changed cell read.
   `docs/accuracy-log.md` 2026-09-30 (08:3xZ).
+- **SHIPPED 2026-09-30 09:3xZ, `[skip ci]` — A SHARE CLASS STATED AT BOTH ENDS OF
+  ONE NAME IS STATED ONCE: 57 rows / 47 plans / 77,331 participants /
+  $188,195,155.** `Class K Fidelity Contrafund Class K`, `Class R-6 EuroPacific
+  Growth Fund Class R-6`, `R6 American Funds Wash Mutual R6`. All 52 distinct
+  transformations read, every one a real fund name.
+  **THE ARGUMENT IS INTERNAL AND THAT IS WHY IT NEEDS NO STORE:** the same
+  designation appears twice in one string, so removing one copy cannot change
+  which fund is named. The issuer strip and #517's OCR tail strip both rest on a
+  whole-store attestation *only `merge-4i` can ask*; this one is self-evident per
+  row, so it lives in `cleanFiledName` and reaches BOTH surfaces with no run.
+  **v149's doubled-house arm sits three lines above it and cannot reach the
+  shape** — that one needs the repeat ADJACENT, and here the fund's whole name
+  sits between the two copies.
+  **TWO NEIGHBOURING POPULATIONS REFUSED, BOTH LARGER THAN WHAT SHIPS:** **331
+  rows / 334,922 ppl** lead with a class the remainder never repeats (`Class R6
+  Fidelity Global ex U.S. Index Fund`) — the filer writing the class FIRST, where
+  stripping destroys the only statement of it; and **80 rows / 171,594 ppl** state
+  two DIFFERENT classes (`Class R1 Macquarie Mid Cap Growth R6`), where one is
+  wrong and nothing says which.
+  **MY HYPOTHESIS ABOUT THE MECHANISM WAS REFUTED BY ITS OWN TEST.** I expected
+  the lead to be the PREVIOUS ROW'S TAIL, checkable directly from the stored filed
+  order — **6 of 119 in one half, 2 of 331 in the other.** The refutation is what
+  bought the split: the non-corroborated rows sit in BLOCKS (`Class R6 … 2035`
+  directly under `Class R6 … 2040`), which is a house style. *A refuted mechanism
+  is not a wasted measurement when it re-partitions the population* — the test
+  meant to confirm a cause is what stopped 331 rows being "repaired".
+  **AND THE ROW THAT FOUND IT IS IN THE REFUSED HALF** — Innovative Employee
+  Solutions' (5,856 ppl) `II Class R1 Blackrock LifePath Index 2030 Fund S`, whose
+  lead really is the previous row's tail and whose classes disagree, is pinned on
+  the must-KEEP side. *The drawn case is evidence about a class; it is not
+  entitled to be the case the fix repairs.*
+  **A GENERIC REMAINDER IS REFUSED BY `isGenericTypeName` WITH NO NEW
+  VOCABULARY:** QuikTrip (16,054 ppl) files `Class E Common Stock` at
+  **$3,535,256,080** and Moog `Class B Common Stock` at $369,929,005, where the
+  letter is a real designation of the employer's own stock — **those four rows are
+  69% of the candidate population BY VALUE**, and the guard protecting most of the
+  money is one already written.
+  **+0 tickers, −0 lost, 0 flipped, +0 fees, −0 lost, 0 changed** through both
+  resolvers — an HONESTY fix, and here that holds **by construction**:
+  `lookupTicker` tries the RAW name FIRST and `stk` is a STORED field a display
+  arm cannot reach. The exact inverse of #517, where the second resolver is where
+  the surprise was.
+  13 pins (6 must-strip / 7 must-keep) 13/13, **added because NOT ONE of the 67
+  existing filed-name cases reaches the new arm**; negative control fails by name
+  on exactly the 6, and drifting the app.js twin fails the smoke tether on exactly
+  **6 of 80**. parser-gate, smoke and fund-er-test (46/26/19/18) green. **4
+  crawlable pages / 15,171 ppl**, every changed cell read.
+  **AND A FLAG OF MINE WAS WRONG:** the same draw's Commonspirit Health (46,022
+  ppl) publishes `JP Morgan US Value R6` → **VGINX**, which I flagged as a
+  wrong-house assertion on the strength of the `V` prefix. `sec-funds.json` says
+  `JPMorgan Trust I :: JPMorgan U.S. Value Fund`, Class R6 — **the resolution is
+  correct and the reading was mine.** *A ticker is not a reading; the series name
+  is*, recorded about the code and applying to the person reading it.
+  `docs/accuracy-log.md` 2026-09-30 (09:1xZ).
 - **SHIPPED AND MIRRORED 2026-09-30 07:4xZ (`fda28a8c → af83067b`), UNFORCED ON
   BOTH CHECKS, data gate +0 / −0 — A BARE MATURITY DATE IS THE PARTICIPANT-LOAN
   ROW: 68 rows / 67 plans / 135,334 participants / $153,709,833.** Found by the

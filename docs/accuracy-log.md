@@ -30609,3 +30609,96 @@ making a false claim. Only a handful, Tenet's two among them, are pooled funds
 whose name has swallowed a rate and an identifier. **Do not carry 150 / 334,573
 forward**; the reader-facing item is the pooled-fund subset and it has not been
 separated out. Seven plans, so it is small either way.
+
+## 2026-09-30 (09:1xZ) — run #517 verdict, and a share class stated at both ends of one name
+
+**#517 passed every pre-registered test, and the two run-only figures were read
+out of the ARTIFACT rather than the log.** The merge log lives on a blob host
+the sandbox cannot reach (`connect_rejected`, a documented egress fact), so
+instead of quoting a line I diffed the 64 lineup shards at `08547e9d` against
+the data commit `10e574ec`. That is stronger evidence than the log line it
+replaces: **names changed 3,291 rows across 671 entries**, exactly as
+registered; **`sec tickers` 347,357 rows across 37,107 entries** against 346,855
+/ 37,097 before, so **+502 gained / −0 lost / 0 changed**, also exactly as
+registered. REPARSE VERDICT `confident +0, match +0, vesting +0, lineups +0`,
+and the coverage line is byte-identical to #515's — confident 60,103, HIGH 5,
+warn 610, overshoot 316, dl 142, pv 196 at 99.8%. **MIRRORED 09:2xZ
+(`5608e91f → 10e574ec`), UNFORCED ON BOTH CHECKS**, data gate +0 / −0; the hold
+was released the moment the verdict existed, which is what it was for.
+
+*A figure computed from the artifact does not depend on a log being readable* —
+and the measurement the log line reports is one the store can be asked directly.
+
+**SHIPPED 09:3xZ, `[skip ci]` — A SHARE CLASS STATED AT BOTH ENDS OF ONE NAME IS
+STATED ONCE: 57 rows / 47 plans / 77,331 participants / $188,195,155.** `Class K
+Fidelity Contrafund Class K`, `Class R-6 EuroPacific Growth Fund Class R-6`,
+`R6 American Funds Wash Mutual R6`, `Class K6 Fidelity Contrafund Class K6`. All
+52 distinct transformations read, every one a real fund name.
+
+**THE ARGUMENT IS INTERNAL AND THAT IS WHY IT NEEDS NO STORE.** The same
+designation appears twice in one string, so removing one copy cannot change
+which fund is named. The 2026-09-21 issuer strip and this morning's OCR tail
+strip both rest on a whole-store attestation *only `merge-4i` can ask*; this one
+is self-evident per row, so it lives in `cleanFiledName` and reaches the report
+and the crawlable pages at once, with no run. **v149's doubled-house arm sits
+three lines above it and cannot reach the shape** — that one requires the repeat
+to be ADJACENT, and here the fund's whole name sits between the two copies.
+
+**TWO NEIGHBOURING POPULATIONS ARE REFUSED AND BOTH ARE LARGER THAN WHAT
+SHIPS.** (1) **331 rows / 170 plans / 334,922 ppl lead with a class the remainder
+never repeats** (`Class R6 Fidelity Global ex U.S. Index Fund`) — not damage but
+the filer writing the class first, and stripping there destroys the only
+statement of the class. (2) **80 rows / 58 plans / 171,594 ppl state two
+DIFFERENT classes** (`Class R1 Macquarie Mid Cap Growth R6`); one is wrong and
+nothing in the string says which, so picking the trailing one would be a guess
+wearing a repair's clothes.
+
+**AND MY HYPOTHESIS ABOUT THE MECHANISM WAS REFUTED BY ITS OWN TEST.** I
+expected the lead to be the PREVIOUS ROW'S TAIL, which the stored filed order
+can check directly — and it is not: **6 of 119 in one half, 2 of 331 in the
+other.** What the refutation bought is the whole distinction above: the block
+structure of the non-corroborated rows (`Class R6 … 2035` directly under
+`Class R6 … 2040`) is a house style, so *the test that was meant to confirm a
+cause is what stopped 331 rows being "repaired".* A refuted mechanism is not a
+wasted measurement when it re-partitions the population.
+
+**AND THE ROW THAT FOUND THE DEFECT IS IN THE REFUSED HALF.** Innovative
+Employee Solutions (5,856 ppl) publishes `II Class R1 Blackrock LifePath Index
+2030 Fund S`, whose lead really *is* the previous row's tail (`Small Cap Value
+Fund II Fee Class R1`) and whose two classes disagree. It is pinned on the
+must-KEEP side. *The drawn case is evidence about a class; it is not entitled to
+be the case the fix repairs.*
+
+**A GENERIC REMAINDER IS REFUSED BY `isGenericTypeName` AND A SHIPPED PREDICATE
+DOES THE WHOLE JOB WITH NO NEW VOCABULARY.** QuikTrip (16,054 ppl) files
+`Class E Common Stock` at **$3,535,256,080** and Moog `Class B Common Stock` at
+$369,929,005, where the letter is a real designation of the employer's own stock
+and the remainder names no fund. **Those four rows are 69% of the candidate
+population BY VALUE** — the guard that protects most of the money is one already
+written.
+
+**OUTCOME: +0 tickers, −0 lost, 0 flipped, +0 fees, −0 lost, 0 changed** through
+both resolvers. An HONESTY fix and not a coverage fix — and here that holds **by
+construction** rather than by measurement, since `lookupTicker` tries the RAW
+name FIRST and `stk` is a STORED field a display arm cannot reach. That is the
+exact inverse of this morning's OCR strip, where the second resolver is where the
+surprise was, and the difference is worth stating rather than reporting the same
+"0" twice with the same confidence.
+
+13 pinned cases (6 must-strip, 7 must-keep), 13/13, **added because NOT ONE of
+the 67 existing filed-name cases reaches the new arm** — the third time this
+record has caught a control that would have agreed either way. Negative control
+on the module fails by name on exactly the 6 must-strips and holds all 7
+must-keeps; drifting the app.js twin fails the smoke tether on exactly **6 of
+80**. parser-gate green, smoke green, fund-er-test 46/26/19/18 0 failures.
+**4 crawlable pages / 15,171 ppl** (Billings Clinic, Colas, Golden 1, Synergy55),
+every changed cell read, 0 unexplained.
+
+**AND A FLAG OF MINE WAS WRONG, RECORDED BECAUSE THE SHAPE RECURS.** The same
+draw returned Commonspirit Health (46,022 ppl), whose `JP Morgan US Value R6`
+publishes **VGINX** at 3.4% / $100,391,941. I flagged it as a wrong-house
+assertion on the strength of the `V` prefix. `sec-funds.json` says
+`["JPMorgan Trust I :: JPMorgan U.S. Value Fund","VGINX","class","Class R6"]` —
+**the resolution is correct and the reading was mine.** *A ticker is not a
+reading; the series name is* — recorded 2026-09-28 about the code, and it applies
+to the person reading the code.
