@@ -31628,3 +31628,93 @@ layout; and both surfaces render `issuer · name`, so the reader sees
 `VANGUARD TARGET 2030 · CommornCollective Trusts` — the fund named first.
 **Do not carry 487 or 784,499 forward.** *Reading the render is what stopped
 this, and it took one grep.*
+
+## 2026-09-30 (17:3xZ) — AN UNCLOSED PARENTHETICAL IS A TRUNCATION, AND THE NAIVE RULE WAS CONVICTED BY ITS OWN OUTCOME TEST
+
+- **Wrong:** 260 published rows across 141 entries — **455,663 participants /
+  $2,429,129,653** — name a holding with a bracket that opens and never closes,
+  because the column width cut the parenthetical mid-word. Found by the 17:1xZ
+  participant-weighted draw on **Hawai'i Pacific Health (10,929 ppl)**, whose
+  42-row menu publishes `Charles Schwab Institutional – Personal Choice
+  Retirement Account (comprising of common st` at **$78,619,557**. A filer does
+  not open a bracket and never close it, so an unbalanced `(` is evidence about
+  OUR read, not about the filing.
+
+- **Change:** an arm at the end of `cleanFiledName` (canonical in
+  `scripts/lib-disclose.mjs`, twinned verbatim in `app.js`, reaching the
+  crawlable pages through `build-seo-pages.mjs`'s existing import) drops the
+  unclosed tail — under two structural conditions and no vocabulary.
+
+- **THE NAIVE RULE WAS MEASURED FIRST AND IT LOST TWELVE FEE ANSWERS.**
+  Stripping every unclosed tail reaches 339 rows, and the outcome test through
+  app.js's own `fundERRow` showed real damage — **because an unclosed `(` is
+  OFTEN AN OCR'D LETTER OR DIGIT, and then the real fund name sits AFTER it,
+  not before.** `Vanguard Real (state Index Admiral` is Real ESTATE;
+  `American Funds 206( Target Date R6` is 2060; `John Hancock Trust Com(any` is
+  Company; `Fund Non-Lending (Tier III Northern Trust S&P 500 Index Fund
+  Non-Lending` (5,674 ppl) carries the whole fund inside the bracket. Two
+  conditions refuse all of them:
+  **(1)** a SPACE must precede the bracket, so an OCR'd letter inside a word
+  cannot match; **(2)** the surviving HEAD must be longer than the tail it
+  drops, so a bracket carrying the fund name is refused. A three-word floor
+  stops a strip ever leaving a fragment.
+
+- **Narrowed it is 260 rows / 141 entries / 455,663 ppl, and through app.js's
+  own `lookupTicker` and `fundERRow` it is 0 tickers gained, 0 lost, 0 flipped,
+  0 fees gained, 0 lost, 0 changed** — an HONESTY fix. Both arms were
+  POSITIVE-CONTROLLED first ({Vanguard} `500 Index Fund` → VFIAX, 0.03),
+  because *a clean zero reports on the query*.
+
+- **AND THE MEASUREMENT HAD TO BE TAKEN THROUGH THE FUNCTION, NOT OVER THE RAW
+  NAME.** A raw-name proxy reads **263 rows / 247 distinct** and the honest
+  figure is **260 / 244**. Two causes, both instructive: the arm runs on the
+  PARTIALLY-CLEANED string, and `cleanFiledName` ends by returning the RAW name
+  when the result holds no three consecutive letters — which is what keeps one
+  all-numeric OCR row (1,003 ppl) out of the count even though the predicate
+  fires on it. ***Measure through the function the page calls, with the
+  argument the page passes*** — met again, and this time the gap was small and
+  in the safe direction, which is exactly when it is easiest to publish.
+
+- **ALL 244 DISTINCT TRANSFORMATIONS READ.** Six TIAA Access rows recover a
+  clean fund name from a cut description; share counts drop off (`… Admiral
+  Shares (2,176.30`); the LVIP Macquarie rename note (`(WAS DELAWARE`) goes.
+  **ACCEPTED COST, named rather than rounded away:** five rows across four
+  names carry a share class INSIDE the bracket (`Templeton Global Bond Fund
+  (R6}`, `… Washington Mutual Investors Fund (R` ×2, `… Core Equity Portfolio
+  (Institutional`, `… Conservative Long-term (Class`), and Iona University's
+  two TIAA rows lose the CONTRACT type the same way (`Traditional, Non-Benefit
+  Responsive (Ra`, `Traditional, Benefit Responsive (Sra, Tiaa` — RA and SRA
+  are different TIAA contracts). Each becomes less specific and none becomes
+  wrong; the outcome test says none loses a ticker or a fee, and a true shorter
+  name beats a broken bracket.
+
+- **AND THE RULE IS CONSERVATIVE RATHER THAN CLAIRVOYANT, WHICH THE PINS SAY
+  OUT LOUD.** `TIAA Access DFA Emerging Markets Portfolio Fund (Invested
+  primarily in foreign equity secu` is repaired and `TIAA Access Nuveen
+  Small-Cap Equity Fund (invested in small-cap domestic equity securities` is
+  REFUSED — the same family, separated only by whether the description happens
+  to be longer than the name. Both are pinned, on opposite sides, so the
+  boundary is documented rather than discovered later as a surprise.
+
+- **Prevention:** 16 pinned cases in `scripts/smoke-test.mjs`'s `nameCases`
+  tether and its expectation table (6 must-strip / 10 must-keep), **added
+  because NOT ONE of the 74 cases already there carries an unbalanced
+  bracket** — the tether would have agreed whether or not app.js carried the
+  arm, the decorative-control failure this record has now paid for four times.
+  A negative control per condition, **each variant written DIRECTLY rather than
+  by string surgery on the shipped source**, fails by name on exactly its own
+  cases: the SPACE condition on `206(` and `Com(any`, HEAD-LONGER on Eversource
+  and the TIAA Access row, the three-word floor on `Security-backed (`, and the
+  arm removed on exactly the 6 must-strips.
+  **THE FIRST DRAFT OF THE PIN SET LEFT TWO OF THE THREE CONDITIONS
+  UNTESTABLE** — every must-keep I chose was refused by the floor first, so
+  dropping HEAD-LONGER changed 0 of 13 verdicts. *A control that cannot fail is
+  decorative*, caught before commit by running the per-condition control rather
+  than assuming it discriminated.
+  Drifting the app.js twin fails the smoke tether by name on exactly the 6.
+  parser-gate, smoke and fund-er-test (46/26/19/18) green.
+
+- **Surface: 11 crawlable pages / 102,983 participants**, every changed cell
+  read — Sony 26,151, PayPal 15,948, Zions 14,506, Ametek 12,312, Hawai'i
+  Pacific Health 10,929, Konica Minolta 8,334, Vertex 5,975, Boston College
+  3,584, Revlon 2,985, Iona 1,410, Tronox 849.

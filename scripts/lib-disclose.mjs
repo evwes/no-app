@@ -920,6 +920,67 @@ export function cleanFiledName(name) {
     const keeps = tk.some((t) => bwOpensWithAName(t.replace(/[^A-Za-z0-9&]/g, "")));
     if (tk.length >= 2 && /[A-Za-z]{3}/.test(rest) && keeps && !DANGLING_TAIL.test(rest)) s = rest;
   }
+  /* AN UNCLOSED PARENTHETICAL IS A TRUNCATION — 2026-09-30 (17:3xZ).
+   *
+   * Found by the 17:1xZ draw on Hawai'i Pacific Health (10,929 ppl), whose
+   * 42-row menu publishes `Charles Schwab Institutional – Personal Choice
+   * Retirement Account (comprising of common st` at $78,619,557: the column
+   * width cut the parenthetical mid-word. A filer does not open a bracket and
+   * never close it, so an unclosed `(` is evidence about OUR read.
+   *
+   * THE NAIVE RULE WAS CONVICTED BY ITS OWN OUTCOME TEST AND THIS IS THE
+   * NARROWED ONE. Stripping every unclosed tail reaches 339 rows and the fee
+   * path loses 12 answers — because an unclosed `(` is OFTEN AN OCR'D LETTER
+   * OR DIGIT, and then the real fund name sits AFTER it, not before:
+   * `Vanguard Real (state Index Admiral` is Real ESTATE, `American Funds 206(
+   * Target Date R6` is 2060, `John Hancock Trust Com(!anlr'. …` is Company,
+   * and `Fund Non-Lending (Tier III Northern Trust S&P 500 Index Fund
+   * Non-Lending` carries the whole fund inside the bracket. Two conditions
+   * refuse all of them, and neither needs a vocabulary:
+   *   (1) a SPACE before the bracket, so an OCR'd letter inside a word cannot
+   *       match (`206(`, `Com(`, `r(`);
+   *   (2) the surviving HEAD longer than the tail it drops, so a bracket
+   *       carrying the fund name is refused (`PSA (investing in American Funds
+   *       2065 - TD`, the Tier III row).
+   * Narrowed it reaches 260 rows / 141 entries / 455,663 participants /
+   * $2,429,129,653, and through app.js's own `lookupTicker` and `fundERRow`
+   * it is **0 tickers gained, 0 lost, 0 flipped, 0 fees gained, 0 lost, 0
+   * changed** — an HONESTY fix, with the positive control ({Vanguard} `500
+   * Index Fund` → VFIAX, 0.03) proving both arms reachable.
+   *
+   * MEASURE IT THROUGH THIS FUNCTION AND NOT OVER THE RAW STORED NAME. A
+   * raw-name proxy reads 263 rows / 247 distinct, because the arm runs on the
+   * PARTIALLY-CLEANED string and because `cleanFiledName` ends by returning
+   * the RAW name when the result holds no three consecutive letters — which
+   * is what keeps one all-numeric OCR row (1,003 ppl) out of the count. The
+   * honest figures are the 260 / 141 / 244-distinct above.
+   *
+   * All 244 distinct transformations read: six TIAA Access rows recovering a
+   * clean fund name from a cut description, share counts dropping off (`…
+   * Admiral Shares (2,176.30`), the LVIP Macquarie rename note (`(WAS
+   * DELAWARE`). ACCEPTED COST, named rather than rounded away: FIVE rows
+   * across four names carry a share class INSIDE the bracket (`Templeton
+   * Global Bond Fund (R6}`, `… Washington Mutual Investors Fund (R` ×2, `…
+   * Core Equity Portfolio (Institutional`, `… Conservative Long-term (Class`)
+   * and become less specific, and Iona University's two TIAA rows lose the
+   * CONTRACT type the same way (`Traditional, Non-Benefit Responsive (Ra`,
+   * `Traditional, Benefit Responsive (Sra, Tiaa` — RA and SRA are different
+   * TIAA contracts). They lose no ticker and no fee — the outcome test is
+   * what says so — and a true shorter name beats a broken bracket.
+   *
+   * SURFACE: 11 crawlable pages / 102,983 participants, every changed cell
+   * read (Sony 26,151, PayPal 15,948, Zions 14,506, Ametek 12,312, Hawai'i
+   * Pacific Health 10,929). */
+  {
+    const open = (s.match(/\(/g) || []).length, close = (s.match(/\)/g) || []).length;
+    if (open > close) {
+      const i = s.lastIndexOf("(");
+      if (i > 0 && /\s/.test(s[i - 1]) && !/[()]/.test(s.slice(i + 1))) {
+        const head = s.replace(/\s*\([^()]*$/, "").trim();
+        if (head && head.length > s.length - i && head.split(/\s+/).length >= 3) s = head;
+      }
+    }
+  }
   s = s.replace(/[\s\-–,;:]+$/, "").trim();
   return /[A-Za-z]{3}/.test(s) ? s : String(name).trim();
 }

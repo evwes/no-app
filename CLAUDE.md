@@ -873,6 +873,52 @@ from the cycle that would have cleared it.
   parser-gate, smoke, fund-er-test (46/26/19/18) green. **REPORT path only as a
   GUARANTEE: `build-seo-pages.mjs` never imports `fund-er.js`**; `git diff
   --stat p/` empty. `docs/accuracy-log.md` 2026-09-30 (11:5xZ).
+- **SHIPPED 2026-09-30 17:4xZ, `[skip ci]` — AN UNCLOSED PARENTHETICAL IS A
+  TRUNCATION: 260 rows / 141 entries / 455,663 participants / $2,429,129,653.**
+  Found by the 17:1xZ draw on **Hawai'i Pacific Health (10,929 ppl)**, whose
+  42-row menu publishes `Charles Schwab Institutional – Personal Choice
+  Retirement Account (comprising of common st` at $78,619,557. A filer does not
+  open a bracket and never close it, so an unbalanced `(` is evidence about OUR
+  read.
+  **THE NAIVE RULE WAS CONVICTED BY ITS OWN OUTCOME TEST AND LOST TWELVE FEE
+  ANSWERS — because an unclosed `(` is OFTEN AN OCR'D LETTER OR DIGIT, and then
+  the real fund name sits AFTER it, not before.** `Vanguard Real (state Index
+  Admiral` is Real ESTATE, `American Funds 206( Target Date R6` is 2060, `Fund
+  Non-Lending (Tier III Northern Trust S&P 500 Index Fund Non-Lending` (5,674
+  ppl) carries the whole fund inside the bracket. Two structural conditions and
+  no vocabulary refuse all of them: **a SPACE before the bracket**, and **the
+  surviving HEAD longer than the tail it drops**, with a three-word floor so a
+  strip can never leave a fragment. Narrowed: 339 rows → 260, and **0 tickers
+  gained / 0 lost / 0 flipped, 0 fees gained / 0 lost / 0 changed** through
+  app.js's own `lookupTicker` and `fundERRow`, both positive-controlled first.
+  **AND THE RAW-NAME PROXY READ 263 / 247 WHERE THE FUNCTION READS 260 / 244.**
+  The arm runs on the PARTIALLY-CLEANED string, and `cleanFiledName` ends by
+  returning the RAW name when the result holds no three consecutive letters —
+  keeping one all-numeric OCR row (1,003 ppl) out of the count even though the
+  predicate fires on it. *Measure through the function the page calls, with the
+  argument the page passes* — met again, and this time the gap was small and in
+  the safe direction, which is exactly when it is easiest to publish.
+  All 244 distinct transformations read. **ACCEPTED COST:** five rows across
+  four names carry a share class INSIDE the bracket, and Iona University's two
+  TIAA rows lose the CONTRACT type the same way (`Traditional, Non-Benefit
+  Responsive (Ra` — RA and SRA are different TIAA contracts). Each becomes less
+  specific, none becomes wrong, and none loses a ticker or a fee.
+  **THE RULE IS CONSERVATIVE RATHER THAN CLAIRVOYANT AND THE PINS SAY SO:** one
+  TIAA Access row is repaired and its sibling REFUSED, separated only by whether
+  the description happens to be longer than the name — both pinned, on opposite
+  sides.
+  **MY FIRST PIN SET LEFT TWO OF THE THREE CONDITIONS UNTESTABLE** — every
+  must-keep I chose was refused by the three-word floor first, so dropping
+  HEAD-LONGER changed 0 of 13 verdicts. *A control that cannot fail is
+  decorative*, caught by running the per-condition control instead of assuming
+  it discriminated. 16 pins (6 must-strip / 10 must-keep), **added because NOT
+  ONE of the 74 existing filed-name cases carries an unbalanced bracket**; a
+  negative control per condition, each variant written DIRECTLY rather than by
+  surgery on the shipped source, fails by name on exactly its own cases, and
+  drifting the app.js twin fails the smoke tether on exactly the 6.
+  parser-gate, smoke, fund-er-test (46/26/19/18) green. **11 crawlable pages /
+  102,983 ppl** (Sony 26,151, PayPal 15,948, Zions 14,506), every changed cell
+  read. `docs/accuracy-log.md` 2026-09-30 (17:3xZ).
 - **SHIPPED AND MIRRORED 2026-09-30 16:4xZ (`53c7d723 → 07980160`), UNFORCED ON
   BOTH CHECKS, data gate +0 / −0 — AN AUDIT FIRM'S OFFICE LIST IS NOT A HOLDING:
   7 rows / 7 plans / 28,677 participants / $229,607.** Found by the 16:1xZ draw

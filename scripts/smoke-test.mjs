@@ -405,6 +405,42 @@ try {
     "Class E Common Stock",
     "Class B Common Stock",
     "T. Rowe Price Retirement 2030 Fund Class R",
+    /* THE UNCLOSED PARENTHETICAL, 2026-09-30, added because NOT ONE of the 74
+     * cases above carries an unbalanced bracket — the tether agreed whether or
+     * not app.js carried this arm, which is the decorative-control failure
+     * this record has now paid for four times. Six must-STRIP, every one a
+     * real stored name: the row that found it, two State Street securities-
+     * lending rows cut at a share count, a TIAA Access row cut mid-description,
+     * a bracket with nothing in it at all, and the LVIP rename note. */
+    "Charles Schwab Institutional – Personal Choice Retirement Account (comprising of common st",
+    "State Street Global All Cap Equity Ex-U.S. Index Securities Lending Series Fund Class X (2",
+    "Vanguard FTSE Social Index Fund Admiral Shares (2,176.30",
+    "TIAA Access DFA Emerging Markets Portfolio Fund (Invested primarily in foreign equity secu",
+    "FID INSTL CASH US GOVT FD (",
+    "LVIP Macquarie Diversified Income Fund (WAS DELAWARE",
+    /* …and ten must-KEEP. The first four are the OCR'D LETTER OR DIGIT family,
+     * where the `(` sits INSIDE a word and the real name is what FOLLOWS it —
+     * `Real (state` is Real ESTATE, `206(` is 2060 — refused by the SPACE
+     * condition. The next four carry substantive content inside the bracket
+     * and are refused by the HEAD-LONGER condition, two of them on that
+     * condition ALONE (Eversource's ESOP note and a TIAA Access row whose
+     * description is simply longer than its name — the SAME family as a
+     * must-strip above, which is the honest shape of this rule: it is
+     * conservative, not clairvoyant). The last two are the three-word floor,
+     * `Security-backed (` on that condition ALONE, so a strip can never leave
+     * a fragment. EACH CONDITION HAS A PIN OF ITS OWN — the first draft of
+     * this block had none for two of the three, so two thirds of the negative
+     * control could not fail. */
+    "Vanguard Real (state Index Admiral",
+    "American Funds 206( Target Date R6",
+    "John Hancock Trust Com(any",
+    "Alger SmallCapFocusClassASSS(MutualFund",
+    "Eversource Common Shares Fund (including the ESOP allocated Eversource Energy Common Share",
+    "TIAA Access Nuveen Small-Cap Equity Fund (invested in small-cap domestic equity securities",
+    "PSA (investing in American Funds 2065 - TD",
+    "Fund Non-Lending (Tier III Northern Trust S&P 500 Index Fund Non-Lending",
+    "Security-backed (",
+    "Gia (Including Frozen Reserve",
   ];
   const nameGot = await page.evaluate((cs) => {
     if (typeof window.__wampoCleanFiledName !== "function") return null;
@@ -1324,7 +1360,37 @@ try {
     ["VANGUARD EXT MKT INDX-INST+", "VANGUARD EXT MKT INDX-INST+"],
     ["VANGUARD TOT BD MKT IDX-INS+", "VANGUARD TOT BD MKT IDX-INS+"],
     ["iShares TR 20+", "iShares TR 20+"],
-    ["Target Date 2065+", "Target Date 2065+"]]) {
+    ["Target Date 2065+", "Target Date 2065+"],
+    /* AN UNCLOSED PARENTHETICAL IS A TRUNCATION, 2026-09-30. A filer does not
+     * open a bracket and never close it, so the unbalanced `(` is evidence
+     * about OUR read — the column width cut the parenthetical. The first six
+     * strip. The last seven are the two structural conditions doing their
+     * jobs, and each is a family the NAIVE rule damaged: a SPACE must precede
+     * the bracket, because an unclosed `(` is often an OCR'd letter or digit
+     * with the real name AFTER it (`Real (state` is Real ESTATE, `206(` is
+     * 2060); the surviving HEAD must be longer than the tail it drops, because
+     * a bracket can carry the whole fund; and three words must survive, so a
+     * strip can never leave a fragment. EACH CONDITION HAS A PIN THAT ONLY IT
+     * REFUSES — `206(` and `Com(any` for the space, Eversource and the TIAA
+     * Access row for head-longer, `Security-backed (` for the floor — because
+     * the first draft had none for two of them and a control that cannot fail
+     * is decorative. */
+    ["Charles Schwab Institutional – Personal Choice Retirement Account (comprising of common st", "Charles Schwab Institutional – Personal Choice Retirement Account"],
+    ["State Street Global All Cap Equity Ex-U.S. Index Securities Lending Series Fund Class X (2", "State Street Global All Cap Equity Ex-U.S. Index Securities Lending Series Fund Class X"],
+    ["Vanguard FTSE Social Index Fund Admiral Shares (2,176.30", "Vanguard FTSE Social Index Fund Admiral Shares"],
+    ["TIAA Access DFA Emerging Markets Portfolio Fund (Invested primarily in foreign equity secu", "TIAA Access DFA Emerging Markets Portfolio Fund"],
+    ["FID INSTL CASH US GOVT FD (", "FID INSTL CASH US GOVT FD"],
+    ["LVIP Macquarie Diversified Income Fund (WAS DELAWARE", "LVIP Macquarie Diversified Income Fund"],
+    ["Vanguard Real (state Index Admiral", "Vanguard Real (state Index Admiral"],
+    ["American Funds 206( Target Date R6", "American Funds 206( Target Date R6"],
+    ["John Hancock Trust Com(any", "John Hancock Trust Com(any"],
+    ["Alger SmallCapFocusClassASSS(MutualFund", "Alger SmallCapFocusClassASSS(MutualFund"],
+    ["Eversource Common Shares Fund (including the ESOP allocated Eversource Energy Common Share", "Eversource Common Shares Fund (including the ESOP allocated Eversource Energy Common Share"],
+    ["TIAA Access Nuveen Small-Cap Equity Fund (invested in small-cap domestic equity securities", "TIAA Access Nuveen Small-Cap Equity Fund (invested in small-cap domestic equity securities"],
+    ["PSA (investing in American Funds 2065 - TD", "PSA (investing in American Funds 2065 - TD"],
+    ["Fund Non-Lending (Tier III Northern Trust S&P 500 Index Fund Non-Lending", "Fund Non-Lending (Tier III Northern Trust S&P 500 Index Fund Non-Lending"],
+    ["Security-backed (", "Security-backed ("],
+    ["Gia (Including Frozen Reserve", "Gia (Including Frozen Reserve"]]) {
     if (cleanFiledName(n) !== want) fail(`the filed-name cleaner now damages a control: ${JSON.stringify(n)} -> ${JSON.stringify(cleanFiledName(n))}`);
   }
 

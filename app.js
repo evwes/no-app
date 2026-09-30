@@ -920,6 +920,21 @@
       const keeps = tk.some((t) => bwOpensWithAName(t.replace(/[^A-Za-z0-9&]/g, "")));
       if (tk.length >= 2 && /[A-Za-z]{3}/.test(rest) && keeps && !DANGLING_TAIL.test(rest)) s = rest;
     }
+    /* AN UNCLOSED PARENTHETICAL IS A TRUNCATION — the two conditions, the
+     * OCR'd-letter family they refuse (`Vanguard Real (state Index Admiral`
+     * is Real ESTATE), the outcome test that convicted the naive rule and the
+     * five accepted share-class losses are all in scripts/lib-disclose.mjs.
+     * This is its twin. */
+    {
+      const open = (s.match(/\(/g) || []).length, close = (s.match(/\)/g) || []).length;
+      if (open > close) {
+        const i = s.lastIndexOf("(");
+        if (i > 0 && /\s/.test(s[i - 1]) && !/[()]/.test(s.slice(i + 1))) {
+          const head = s.replace(/\s*\([^()]*$/, "").trim();
+          if (head && head.length > s.length - i && head.split(/\s+/).length >= 3) s = head;
+        }
+      }
+    }
     s = s.replace(/[\s\-–,;:]+$/, "").trim();
     return /[A-Za-z]{3}/.test(s) ? s : String(name).trim();
   }
