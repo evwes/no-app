@@ -944,6 +944,18 @@
     return CIT_VEHICLE_NAME.test(s);
   }
   window.__wampoCitName = isCollectiveTrustName;  // read by the smoke test only
+  /* TWIN of lib-disclose.mjs `isLoanAnswerRow`, extracted verbatim. Two arms
+   * because v194 created the second spelling: the restored phrase, and the bare
+   * remnant still in the store. Both are anchored on the WHOLE name, which is
+   * what keeps `Included Value Fund`, `Yes Bank Ltd` and `Bank Loan Fund`. */
+  const LOAN_ANSWER_PHRASE = /^loan\s+repayments?\s+are\b|^loan\s+repayments?\s*:/i;
+  const LOAN_ANSWER_REMNANT = /^(?:included|yes|no)[.:]?$/i;
+  function isLoanAnswerRow(name) {
+    const s = String(name || "").trim();
+    return LOAN_ANSWER_PHRASE.test(s) || LOAN_ANSWER_REMNANT.test(s);
+  }
+  window.__wampoLoanAnswerRow = isLoanAnswerRow;  // read by the smoke test only
+
   function isAnnuityContractRow(f, cleanedName) {
     const type = String((f && f.type) || "");
     if (!/^mutual fund/i.test(type)) return false;
@@ -2191,7 +2203,20 @@
        * plans it is the menu's ONLY loan row — which is the filing's own
        * structure agreeing with the reading. */
       const descLoanRow = isLoanDescriptionRow(f.name || "");
-      const loanRow = LOAN_ROW.test(f.name || "") || descLoanRow;
+      /* THE LOAN-REPAYMENT ANSWER LINE, 2026-09-30, and it is v194's own cost.
+       * `Loan Repayments are included:` is a recordkeeper-report answer whose
+       * value is the plan's loan balance. v194's SKIP_ROW arm is anchored `^`
+       * and this family WRAPS, so it skipped `Loan Repayments are` and left the
+       * continuation to name the row: 23 published rows / 23 plans / 33,695 ppl
+       * now read `included`, and Northwood Investors' reads `Yes` (Keysight's
+       * carries $4,160,976). v195 reverts the parser arm, so this answers for
+       * BOTH spellings and a reader is served before and after the re-parse.
+       * TYPED, NOT DROPPED (v181): the value stays in the denominator, so no
+       * other row's published percentage moves; it loses the ticker and the fee,
+       * neither of which a loan balance has. Rule and measurement in
+       * lib-disclose.mjs. */
+      const loanAnsRow = isLoanAnswerRow(f.name || "");
+      const loanRow = LOAN_ROW.test(f.name || "") || descLoanRow || loanAnsRow;
       /* AN INSURANCE ANNUITY CONTRACT TYPED `Mutual fund` — the rule and its
        * whole safety argument live in scripts/lib-disclose.mjs; this is the
        * generated twin's call site. It suppresses the ticker and the fee for

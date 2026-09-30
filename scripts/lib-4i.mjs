@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 194;
+export const PARSER_VERSION = 195;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -196,16 +196,29 @@ const SKIP_ROW = new RegExp("^(total|subtotal|grand total|schedule|page \\d|form
    * two-row caption region — untouched at -0.0628 — overtook it. A missing
    * `the` in an anchored list, for the sixth recorded time.
    *
-   * `loan repayments?` lands in the same alternation and is v193's OWN cost: its
-   * cost-marker weld arm restored `Loan Repayments are included:`, a
-   * recordkeeper-report caption carrying a value welded off a neighbouring
-   * column, on 20 published rows / 20 plans / 28,920 ppl / $7,519,157. Every
-   * one of the 8 distinct published names containing the phrase was read and
-   * not one is a fund (`Year Loan Repayments 2024` is a table header). It does
-   * NOT touch v181's loan treatment: a participant-loan HOLDING never says
-   * "repayment", so `LOAN_ROW` still types those rows and keeps their money in
-   * the denominator. */
-  "(net assets|benefits paid|investment (income|gain|loss)|(participation|interest) in (the )?net (income|loss)|net income \\(?loss\\)?|net income (of|from)\\b|interest and dividends|realized|unrealized|net\\s*\\(?\\s*(?:appreciation|depreciation)|(?:^|net )transfers?\\b|transfers? (?:in|out|to|from|of|between)\\b|contributions?\\b|loan repayments?\\b|deemed distribut|administrative expense|(?:beginning|end) of (?:the )?(?:year|period)|financial statements|indirect compensation|reconcil|adjustment|level [123]\\b|liabilit|receivable|payable|expenses\\b|distribution|net (increase|decrease|change)|due (to|from)|notes? (to|receivable)|similar party|description of investment|current value|investments?,?\\s*[—–-]?\\s*at (fair|contract) value)|" +
+   * `loan repayments?` WAS ADDED HERE IN v194 AND IS REVERTED IN v195, and the
+   * reason is worth more than the arm was. SKIP_ROW is anchored `^`, and this
+   * family WRAPS:
+   *
+   *     Loan Repayments are
+   *     included:            240,932
+   *
+   * so the arm skipped the FIRST line, cleared `nameBuf`, and left the
+   * continuation to name the row. The row never went away — it just stopped
+   * saying what it was. 23 published rows / 23 plans / 33,695 participants went
+   * from `Loan Repayments are included:` to **`included`**, and one to **`Yes`**
+   * (Keysight's carries $4,160,976). v194's own verdict recorded the class as
+   * `21 -> 0` and PASSED, because the count asked for the PHRASE the arm
+   * removes: **a check keyed on the vocabulary of the rule it checks cannot see
+   * a row that survived with that vocabulary stripped out.** The sibling of "a
+   * check must not reuse the THRESHOLD of the rule it checks".
+   *
+   * A row whose value is the plan's loan balance must be TYPED and not dropped
+   * (v181), so the treatment is display-side: `isLoanAnswerRow` in
+   * lib-disclose types it "Participant loans", suppressing ticker and fee while
+   * the value stays in the denominator. Reverting here restores the
+   * self-describing name the reader sees beside that label. */
+  "(net assets|benefits paid|investment (income|gain|loss)|(participation|interest) in (the )?net (income|loss)|net income \\(?loss\\)?|net income (of|from)\\b|interest and dividends|realized|unrealized|net\\s*\\(?\\s*(?:appreciation|depreciation)|(?:^|net )transfers?\\b|transfers? (?:in|out|to|from|of|between)\\b|contributions?\\b|deemed distribut|administrative expense|(?:beginning|end) of (?:the )?(?:year|period)|financial statements|indirect compensation|reconcil|adjustment|level [123]\\b|liabilit|receivable|payable|expenses\\b|distribution|net (increase|decrease|change)|due (to|from)|notes? (to|receivable)|similar party|description of investment|current value|investments?,?\\s*[—–-]?\\s*at (fair|contract) value)|" +
   // form-page boilerplate: a filing with NO 4i attachment can still seed a
   // region from the Schedule H checkbox line, and the parser then reads phone
   // numbers and zip codes off address/signature pages as \"values\" (Aramark)

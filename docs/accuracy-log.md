@@ -29497,3 +29497,75 @@ documented analyze-stuck TRUST, **confident on both sides**, so nothing is lost
 and its stale branch pv means the next incremental re-reads it — and **1 confident
 on main only**, which is Caterpillar PN 037, the designed withdrawal above. Gate:
 **+4 gained, −1 lost.**
+
+## 2026-09-30 (01:2xZ) — v195: my own v194 arm renamed 23 junk rows instead of removing them, and the check that passed could not see it
+
+**v194's verdict recorded `loan-repayment rows 21 → 0` and PASSED. The rows did
+not go away — they stopped saying what they were.**
+
+`SKIP_ROW` is anchored `^`, and this family **wraps across two lines**:
+
+    Loan Repayments are
+    included:            240,932
+
+so v194's `loan repayments?` arm matched the FIRST line, cleared `nameBuf` and
+`continue`d — leaving the continuation to name the row. **23 published rows / 23
+plans / 33,695 participants went from `Loan Repayments are included:` to
+`included`**, and Northwood Investors' (2,277 ppl) to **`Yes`**. Keysight
+Technologies' carries **$4,160,976**.
+
+### THE CHECK COULD NOT HAVE CAUGHT IT, AND THAT IS THE TRANSFERABLE PART
+
+I registered the class as *published rows matching `loan repayments?` → 0* and it
+came back 0. **A check keyed on the VOCABULARY the rule removes cannot see a row
+that survived with that vocabulary stripped out** — it is guaranteed to read 0
+whether the fix worked or destroyed the name. This is the sibling of the recorded
+rule *a check must not reuse the THRESHOLD of the rule it checks*, and of
+`diff-lineups` reading the narrower `GENERIC_TYPE_NAME` while the rules it polices
+read `GENERIC_TYPE_ANY`.
+
+**What would have caught it: count the ROWS, not the phrase.** The row count per
+plan was unchanged, which is exactly the blind spot v193's item (D) named — *one
+junk row swapped for another, row count unchanged, invisible to every count* — and
+v194 walked into it from the other side while fixing it.
+
+### The fix is in two halves and neither is the arm
+
+**v195 REVERTS the parser arm.** Skipping the first line of a wrapped answer is
+worse than not skipping it: the name it produces is cryptic where the original was
+self-describing. The comment in `lib-4i.mjs` now records the wrap, so the next
+reader cannot re-add it.
+
+**The DISPLAY half types the row, and answers for BOTH spellings.**
+`isLoanAnswerRow` in `lib-disclose.mjs` matches the restored phrase AND the
+remnant still sitting in the store, so **a reader is served before and after the
+re-parse** rather than only once v195's store lands. Typed, **not dropped** (v181):
+the value is the plan's participant-loan balance, so it stays in the denominator
+and **no other row's published percentage moves.**
+
+**OUTCOME, measured: 23 rows / 23 plans / 33,695 ppl / $7,070,319 are typed
+`Participant loans — not a menu choice`, and 0 of them publish a fee or a ticker
+today.** So this is purely an honesty fix — the harm was the claim that a
+recordkeeper answer line is a menu choice, and v194 had made that claim harder to
+recognise rather than easier.
+
+### Gates
+
+Both arms anchored on the WHOLE name, which is what the must-keeps test: **14
+tether cases, 6 must-flag / 8 must-keep**, the keeps being `Included Value Fund`
+and `Yes Bank Ltd` (they OPEN with the remnant words), `Bank Loan Fund` and `Loan
+Repayment (Interest)` (not answer lines), and `Participant loans` / `Loan Fund`
+(already typed by `LOAN_ROW`, and must not be claimed twice). **Negative control
+fails by name on exactly the 6 and holds all 8.** Canonical in `lib-disclose`,
+twinned in app.js, tethered by `smoke-test.mjs`, **and wired into
+`build-seo-pages.mjs` too** — `git diff --stat p/` is empty over all 5,000 pages
+because every one of the 23 rows is 0.0–2.6% of its menu and sits below the
+top-twelve cut, so the SEO wiring is insurance rather than a change. parser-gate
+green, smoke green, fund-er-test 46/26/19/18 with 0 failures.
+
+**PRE-REGISTERED for the v195 run**, against the pv-194 store it will read:
+published rows named `included`/`Included`/`Yes` **24 → 0**; rows matching
+`^loan repayments? are` **0 → ~21**, i.e. the self-describing name RETURNS;
+`confident` **+0 / −0** (the row is typed, never dropped, so no sum and no ratio
+moves); `audit-dominant-row` **0**; `audit-generic-names` **214 ± 2**;
+`overshoot` holds at 317.

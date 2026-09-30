@@ -212,7 +212,7 @@ try {
    * canonical, app.js carries a twin because it is a plain browser script.
    * Run the BROWSER copy against the module's own boundary cases. */
   const { coverageBand, frozenClaimOk, cleanFiledName, isParticipantLoanRow, isLoanDescriptionRow,
-    isAnnuityContractRow, annuityFeeIsGuaranteeOnly, isCollectiveTrustName,
+    isAnnuityContractRow, annuityFeeIsGuaranteeOnly, isCollectiveTrustName, isLoanAnswerRow,
     isInvestmentContractRow, isMistypedStockRow,
     mistypedStockFeeIsGuaranteeOnly, issuerPricedER } = await import("./lib-disclose.mjs");
   const frozCases = [
@@ -602,6 +602,34 @@ try {
     if (!isAnnuityContractRow(r, r.name)) fail(`annuity-contract rule no longer catches an insurance contract typed a mutual fund: ${JSON.stringify(r)}`);
   for (const r of annuityCases.slice(6))
     if (isAnnuityContractRow(r, r.name)) fail(`annuity-contract rule would retype a row whose filed type is honest, or a real fund: ${JSON.stringify(r)}`);
+
+  /* THE LOAN-REPAYMENT ANSWER LINE, tethered the same way, 2026-09-30. Six must
+   * FLAG — three the restored v195 phrase, three the remnant v194 left in the
+   * store — and eight must be KEPT. The must-keeps are why both arms are
+   * anchored on the WHOLE name: `Included Value Fund` and `Yes Bank Ltd` open
+   * with the remnant words, `Bank Loan Fund` and `Loan Repayment (Interest)`
+   * are not answer lines, and `Participant loans` / `Loan Fund` are already
+   * typed by `LOAN_ROW` and must not be claimed twice. */
+  const loanAnsCases = [
+    "Loan Repayments are included:", "Loan Repayments are Included Yes", "included",
+    "Included", "Yes", "included:",
+    "Loan Repayment (Interest)", "Participant loans", "Loan Fund",
+    "Included Value Fund", "Yes Bank Ltd", "Bank Loan Fund",
+    "Fidelity 500 Index Fund", "Loans to participants"];
+  const loanAnsGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoLoanAnswerRow !== "function") return null;
+    return cs.map((n) => window.__wampoLoanAnswerRow(n));
+  }, loanAnsCases);
+  if (!loanAnsGot) fail("app.js no longer exposes __wampoLoanAnswerRow — the loan-answer predicate cannot be cross-checked");
+  const loanAnsDrift = loanAnsCases.filter((n, i) => isLoanAnswerRow(n) !== loanAnsGot[i]);
+  if (loanAnsDrift.length) {
+    for (const n of loanAnsDrift) console.error(`  ${JSON.stringify(n)}  app.js=${loanAnsGot[loanAnsCases.indexOf(n)]}  module=${isLoanAnswerRow(n)}`);
+    fail(`the loan-answer predicate in app.js disagrees with scripts/lib-disclose.mjs on ${loanAnsDrift.length} of ${loanAnsCases.length} names`);
+  }
+  for (const n of loanAnsCases.slice(0, 6))
+    if (!isLoanAnswerRow(n)) fail(`loan-answer rule no longer types a recordkeeper answer line, so it reads as a fund: ${JSON.stringify(n)}`);
+  for (const n of loanAnsCases.slice(6))
+    if (isLoanAnswerRow(n)) fail(`loan-answer rule would claim a real fund or an already-typed loan row: ${JSON.stringify(n)}`);
 
   /* THE COLLECTIVE-TRUST NAME RULE, tethered the same way, 2026-09-30. The
    * first six must FLAG (a fee is withdrawn); the last nine must be KEPT, and

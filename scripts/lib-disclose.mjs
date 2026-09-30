@@ -984,6 +984,38 @@ export function isAnnuityContractRow(f, cleanedName) {
   return ANNUITY_CONTRACT_NAME.test(String(cleanedName || (f && f.name) || ""));
 }
 
+/* THE LOAN-REPAYMENT ANSWER LINE — 2026-09-30, and it is v194's own cost.
+ *
+ * `Loan Repayments are included:` is a recordkeeper-report ANSWER line whose
+ * value is the plan's participant-loan balance. 23 published rows / 23 plans /
+ * 33,695 participants carry one; Keysight Technologies' is **$4,160,976**.
+ *
+ * TWO SPELLINGS, because v194 created the second. SKIP_ROW is anchored `^` and
+ * this family WRAPS across two lines, so v194's `loan repayments?` arm skipped
+ * `Loan Repayments are`, cleared the name buffer, and left the continuation
+ * `included: 240,932` to name the row. Every one of those 23 rows now reads
+ * **`included`**, and Northwood Investors' reads **`Yes`**. v195 reverts the
+ * parser arm, so this predicate has to answer for BOTH the restored phrase and
+ * the remnant still in the store — a reader is served either way, before and
+ * after the re-parse.
+ *
+ * TYPED AND NOT DROPPED, per v181: the value is real plan money, so it stays in
+ * the denominator and every other row's published percentage is unchanged. What
+ * it loses is the ticker and the fee, neither of which a loan balance has.
+ *
+ * The remnant arm is anchored on the WHOLE name and the vocabulary cannot name a
+ * fund: measured over all 1,720,026 published rows, `included` / `Included` /
+ * `Yes` as a COMPLETE holding name occur 24 times and every one is this family.
+ * A bare `no` is included for symmetry and matches 0 rows today — the same
+ * reasoning as v191's singular `statement`, where the anchor is what makes an
+ * unused arm safe. */
+export const LOAN_ANSWER_PHRASE = /^loan\s+repayments?\s+are\b|^loan\s+repayments?\s*:/i;
+export const LOAN_ANSWER_REMNANT = /^(?:included|yes|no)[.:]?$/i;
+export function isLoanAnswerRow(name) {
+  const s = String(name || "").trim();
+  return LOAN_ANSWER_PHRASE.test(s) || LOAN_ANSWER_REMNANT.test(s);
+}
+
 /* A COLLECTIVE TRUST NAMED IN THE ROW'S OWN NAME — 2026-09-30.
  *
  * `noPublicPrice` in app.js reads `f.cit` and the TYPE cell and never the NAME,
