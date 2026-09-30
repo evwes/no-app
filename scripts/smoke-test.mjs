@@ -525,7 +525,24 @@ try {
     "INTEREST RATES BETWEEN 4.25% AND 9.50% ANNUALLY",
     "Promissory notes* Varying maturity dates with interest rates ranging from 4.25% to",
     "rates ranging from 4.25 to 9.50 percent", "Interest-bearing at 4.25 - 9.5%, maturing through November 2030",
+    /* 2026-09-30: the residue is a loan word CUT MID-TOKEN by the column width.
+     * Aimbridge Parent's is `per an`; Hyatt's `various mat`; Intercos America's
+     * `Col`; Metro CU's OCR-split `Inte re st`. Every one a proper prefix of a
+     * word this rule already strips, so the arm needs no new vocabulary. */
+    "Plan participants Notes with interest rates ranging from 3.25% to 10.50%, with various mat",
+    "Bear interest at 5.0\u20149.50% at varying maturity dates",
+    "by vested interest, various terms, interest rates of 3.25% to 8.50%; maturities through Ap",
+    "62 Participants Notes - interest rates of 4.25% - 9.50%; Maturities from 2025 to 2029; Col",
+    "Inte re st from 4.25% to",
+    "participants secured by vested balances, 4.25% to 9.50% fixed interest, maturing in 1\u20135 ye",
     /* must stay real, from here down */
+    /* the prefix arm must not reach a house or vehicle word that arrived WHOLE:
+     * `Stearns` and `Columbia` are the named risks, and what refuses them is
+     * that the rest of the name survives the strip intact. */
+    "Bear Stearns High Yield 4.25% to 9.50%",
+    "Columbia Short Term Bond rates ranging from 4.25% to 9.50%",
+    "State Street Global Wrap 4.25% to 9.50%",
+    "MetLife, Contract #1071020 rates 4.25% to 9.50%",
     "GUARANTEED LONG TERM FUND General Account (CONTRACT INTEREST RATE: 1/1-6/30 Contract PRIAC",
     "General Account (interest at 3.05%)", "Short term investment fund (interest rate 4.4393%)",
     "Fixed annuity at 1.41% interest rate -0", "Interest rate 1.75%",
@@ -543,9 +560,9 @@ try {
     for (const n of descDrift) console.error(`  ${JSON.stringify(n)}  app.js=${descGot[descCases.indexOf(n)]}  module=${isLoanDescriptionRow(n)}`);
     fail(`the loan-description predicate in app.js disagrees with scripts/lib-disclose.mjs on ${descDrift.length} of ${descCases.length} names`);
   }
-  for (const n of descCases.slice(0, 9))
+  for (const n of descCases.slice(0, 15))
     if (!isLoanDescriptionRow(n)) fail(`loan-description predicate no longer recognises a wrapped loan description: ${JSON.stringify(n)}`);
-  for (const n of descCases.slice(9))
+  for (const n of descCases.slice(15))
     if (isLoanDescriptionRow(n)) fail(`loan-description predicate would RENAME a real holding "Participant loans": ${JSON.stringify(n)}`);
 
   /* THE ANNUITY-CONTRACT PREDICATE, tethered the same way, 2026-09-29. It is a

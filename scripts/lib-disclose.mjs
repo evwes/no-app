@@ -854,6 +854,52 @@ const LOAN_DESC_RANGE = /\brates?\b[^.;]{0,40}?\b(?:rang(?:e|es|ing)|between|var
 const LOAN_DESC_WORDS = /\b(?:participants?|participation|loans?|notes?|promissory|receivable|outstanding|balances?|interest|rates?|ranging|range|ranges|rang|between|varying|various|vary|varies|bearing|earning|carrying|accruing|maturing|maturity|maturities|due|payable|dated?|dates|through|until|to|from|at|with|of|and|or|the|a|an|per|annum|annually|percent|pct|secured|collateralized|collateral|by|vested|terms?|years?|months?|less|more|than|generally|stated|fixed|variable|cost|no|later|amounts?|extending|into|repayment|plan|in|on|all|up)\b/gi;
 const LOAN_DESC_MONTHS = /\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\b/gi;
 
+/* A TRUNCATED WORD IS NOT A SURVIVING FUND NAME — 2026-09-30.
+ *
+ * The residue test above is load-bearing and must stay: it is what keeps
+ * Griswold's `Interest Rate of 0.15% to 0.62% … Principal` GIC, where the
+ * surviving `Principal` is a house name. But thirteen rows survive it on a
+ * residue that is not a name at all — it is one of the words this rule ALREADY
+ * STRIPS, cut mid-token by the filing's column width. Aimbridge Parent (53,606
+ * participants) publishes `with varying maturity dates through August 2034,
+ * bearing interest at 4.25% to 9.50% per an` at $6,206,114; the residue is
+ * `mat`, `thr`, `dat`, `matu`, `Bear`, `balan`, `partic`, `Ap`, `Col`, `bear`,
+ * `par`, `matur`, `rangi` — every one a proper prefix of a stripped word.
+ *
+ * So the discriminator is structural and needs no new vocabulary: a residue
+ * token that is a PROPER PREFIX of a word this rule strips is that word, and
+ * the vocabulary is DERIVED from the two regexes above rather than retyped, so
+ * a later widening of either cannot leave this arm behind. Month names are
+ * spelled out because `LOAN_DESC_MONTHS` matches `apr[a-z]*` and therefore
+ * strips `April` whole while leaving `Ap`.
+ *
+ * The risk is named rather than rounded away: `bear` could open `Bear Stearns`
+ * and `Col` could open `Columbia`. What contains it is that this test is asked
+ * ONLY of a row whose name already states a rate RANGE (`LOAN_DESC_RANGE`), and
+ * every flagged row was read. */
+const LOAN_DESC_PREFIXABLE = (() => {
+  const src = LOAN_DESC_WORDS.source.replace(/^\\b\(\?:/, "").replace(/\)\\b$/, "");
+  if (src === LOAN_DESC_WORDS.source) {
+    throw new Error("lib-disclose: LOAN_DESC_WORDS no longer has the \\b(?:…)\\b shape its prefix vocabulary is derived from — fix the derivation rather than shipping a quiet guard");
+  }
+  const out = new Set();
+  for (const alt of src.split("|")) {
+    const w = alt.trim();
+    if (!w) continue;
+    if (/^[a-z]+\?$/i.test(w)) { out.add(w.slice(0, -2)); out.add(w.slice(0, -1)); }
+    else if (/^[a-z]+$/i.test(w)) out.add(w);
+  }
+  for (const m of ["january", "february", "march", "april", "may", "june", "july",
+    "august", "september", "october", "november", "december"]) out.add(m);
+  if (!out.has("maturing") || !out.has("through") || !out.has("april") || !out.has("date")) {
+    throw new Error("lib-disclose: the loan-word prefix vocabulary lost an entry the shipped cases depend on — the derivation is broken");
+  }
+  return [...out];
+})();
+function isTruncatedLoanWord(tok) {
+  const t = tok.toLowerCase();
+  return LOAN_DESC_PREFIXABLE.some((w) => w.length > t.length && w.startsWith(t));
+}
 export function loanDescriptionResidue(name) {
   return String(name || "")
     .replace(/\d+(?:\.\d+)?\s*%/g, " ")
@@ -864,7 +910,7 @@ export function loanDescriptionResidue(name) {
     .replace(/[^A-Za-z]+/g, " ")
     .trim()
     .split(/\s+/)
-    .filter((t) => t.length >= 2);
+    .filter((t) => t.length >= 2 && !isTruncatedLoanWord(t));
 }
 export function isLoanDescriptionRow(name) {
   const s = String(name || "").trim();

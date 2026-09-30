@@ -29811,3 +29811,69 @@ new check and its coverage line will read `warn` 609 rather than 608.** That is
 the recorded mechanism from the `tkShare` change, not a regression — and stating
 it here is what stops the next reader treating it as one. Negative control: with
 the bar raised past the class the audit returns to 608 exactly.
+
+## 2026-09-30 (03:3xZ) — A TRUNCATED WORD IS NOT A SURVIVING FUND NAME: 21 rows / 91,184 participants
+
+**What was wrong.** Hyatt Corporation (44,487 participants) published a holding
+named `Plan participants Notes with interest rates ranging from 3.25% to 10.50%,
+with various mat`; TriHealth (18,586) `with 4.25%–9.50% annual interest rate`;
+Churchill Downs (8,531) `… with maturity dates thr`; Metro CU Federal Credit
+Union (130) `Inte re st from 4.25% to`. **21 rows / 21 plans / 91,184
+participants / $51,879,475**, every one a wrapped participant-loan description
+published as though it named a fund.
+
+**The guard exists and its RESIDUE TEST is what let them through, and that test
+must stay.** `isLoanDescriptionRow` requires `loanDescriptionResidue(s).length
+=== 0` — which is what keeps Griswold's `Interest Rate of 0.15% to 0.62% …
+Principal`, a Principal GIC crediting rate whose surviving `Principal` is a house
+name. **But the residue on these 21 is not a name: it is one of the words the
+rule ALREADY STRIPS, cut mid-token by the filing's column width.** All 21
+residues read: `mat` `thr` `dat` `matu` `matur` `throug` `Bear` `bear` `balan`
+`partic` `par` `Ap` `Col` `Coll` `Colla` `annual` `ye`, and Metro CU's
+OCR-split `Inte` `re` `st`. Every one a proper prefix of a stripped word.
+
+**So the discriminator needs no new vocabulary and is stated structurally:** a
+residue token that is a PROPER PREFIX of a word this rule strips is that word.
+The vocabulary is **DERIVED from `LOAN_DESC_WORDS.source` under an import
+assertion**, not retyped, so a later widening of that regex cannot leave this arm
+behind; month names are spelled out because `LOAN_DESC_MONTHS` matches
+`apr[a-z]*` and therefore strips `April` whole while leaving `Ap`.
+
+**THE QUEUED FIGURE WAS 13 rows / 70,205 ppl AND IT IS 21 / 91,184.** That size
+was measured at v183 and the store is at pv 195 — *a class size travels with the
+predicate that produced it*, and it travels with the STORE too. Three of the
+eight extra rows are shapes the queue entry had separated out as their own
+defects and which this arm closes for free: TriHealth's `annual` (a prefix of
+`annually`), Tmag's `ye` (of `years`), and **Metro CU's OCR-SPLIT `Inte re st`**,
+which the entry filed as a third, separate item.
+
+**Whole-store against git HEAD's own lib-disclose, not a replica: over
+1,710,454 published rows exactly 21 change and 0 are LOST.** That is the whole
+population, so the safety argument is not a sample: all 21 distinct names were
+read and not one is a fund.
+
+**THE NAMED RISK IS REFUSED BY SOMETHING STRONGER THAN THE PREFIX TEST.** The
+queue entry warned that `bear` could open `Bear Stearns` and `Col` could open
+`Columbia`. Probed: `Bear Stearns High Yield 4.25% to 9.50%` keeps the residue
+`Stearns`, `Columbia Short Term Bond …` keeps `Columbia`, `State Street Global
+Wrap` keeps `Street Global Wrap`, `MetLife, Contract #1071020` keeps `MetLife
+Contract`. **A real name arrives WHOLE, so the rest of it survives the strip and
+the residue is not empty** — the prefix arm can only ever consume a token that is
+already abbreviated. The six synthetic-GIC wrap contracts and `MetLife, Contract
+#1071020` that the *wider* rule this record refused would have destroyed are all
+untouched, which is the point of having refused it.
+
+**0 of the 21 publish a ticker, 0 a stored `stk`, 0 a fee** — the harm is the
+claim alone. **REPORT path only, confirmed by regenerating all 5,000 crawlable
+pages rather than by proxy: `git diff --stat p/` empty.** Five of the 21 plans
+HAVE a page (Hyatt, TriHealth, Churchill Downs, Central Ohio Primary Care, the
+NHL Players' plan) and in every one the row sits below the top-twelve cut.
+
+**Gates.** Two import assertions on the derivation (the `\b(?:…)\b` shape, and
+four entries the shipped cases depend on); tether 14 → 20 cases, 15 must-flag /
+5 must-keep; twin probes 14 → 19; parser-gate green, fund-er-test 46/26/19/18
+with 0 failures, smoke green. **Negative control: with the prefix filter removed
+the twin fails BY NAME on exactly the 6 new must-flags and holds all 7
+must-keeps.** **No defect specimen is pinned, deliberately:** `diff-lineups`
+compares PARSER output and this is a display rule, so a pin there would be
+decorative — the tether and the negative control are the guard.

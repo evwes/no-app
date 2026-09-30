@@ -321,7 +321,13 @@ const loans = [
   "General Account (interest at 3.05%)", "Short term investment fund (interest rate 4.4393%)",
   "Interest Rate of 0.15% to 0.62% (Maturing in 2023) Principal", "Interest rate 1.75%",
   "Fixed annuity at 1.41% interest rate -0", "Bank Loan Fund", "Fidelity 500 Index Fund",
-  "(Interest rates up to 5.56%; maturing 2024 - 2030) Morley Stable Value VI Fund"];
+  "(Interest rates up to 5.56%; maturing 2024 - 2030) Morley Stable Value VI Fund",
+  /* the 2026-09-30 truncation arm: not one probe above reaches it, so without
+   * these the twin would agree whether or not it carried the rule. */
+  "Plan participants Notes with interest rates ranging from 3.25% to 10.50%, with various mat",
+  "Inte re st from 4.25% to", "Bear interest at 5.0\u20149.50% at varying maturity dates",
+  "Bear Stearns High Yield 4.25% to 9.50%",
+  "Columbia Short Term Bond rates ranging from 4.25% to 9.50%"];
 /* the annuity-contract arm, BOTH CELLS and both directions. Not one probe above
  * reaches it — every one of them passes a bare name — so without these the twin
  * would agree whether or not it carried the rule, which is the decorative-guard
