@@ -705,6 +705,20 @@ from the cycle that would have cleared it.
   trust-aware standalone script — the standalone's single trust is the one lineup
   v196 withdrew. **`matchQuote` 5,397 of which only
   1,785 are SHOWN to readers** — the condition/outcome pair shipped 2026-09-27.
+- **NOTHING SHIPPED 2026-09-30 06:1xZ AND THAT IS THE FINDING — THREE OF FOUR
+  PARSER-SIDE QUEUE ITEMS WERE STALE AND THE FOURTH WAS NEVER A MEASUREMENT.**
+  Re-sized against the pv-196 store: the `Company stock`-typed-fund item is
+  **CLOSED** (85 of 86 already reached by `isMistypedStockRow`, which also blanks
+  the type cell — the guard shipped 2026-09-29, one bullet away from the entry
+  queuing it); the party-in-interest weld **61 rows → 1** and the Form 5500 cover
+  page **41 → 0**, both closed by v193. **And my "real contract wearing a loan
+  caption" sizer returned 0 BY CONSTRUCTION:** it asked for
+  `isLoanDescriptionRow` true AND a surviving issuer, but that predicate requires
+  an EMPTY residue and an issuer IS residue, so the conjunction can never fire.
+  **Do not carry that 0 forward** — it reports on the query. *A queued class must
+  be re-sized against the current store before a run is spent on it; the list
+  records what was true when it was written.* `docs/accuracy-log.md` 2026-09-30
+  (06:1xZ).
 - **SHIPPED 2026-09-30 03:1xZ, `[skip ci]` behind #514 — THE PARTICIPANT COUNT
   THAT EVERY MEASUREMENT HERE IS WEIGHTED BY CAN BE A FILER TYPO: 390 plans /
   768,216 participants whose headline count is above TEN TIMES every other
@@ -1508,13 +1522,10 @@ from the cycle that would have cleared it.
   #110 `success` on `5ce3599c`, and the follow-up `ecd2572f` verified
   **comment-only** so that green covers every executable line shipped.
   `docs/accuracy-log.md` 2026-09-29 (15:5xZ, 17:0xZ).
-- **QUEUED, SIZED, NOT SHIPPED — THE FORM 5500 COVER PAGE PUBLISHED AS A FUND
-  MENU: 41 rows / 31 published plans / 165,425 participants / $43,729,586.**
-  PNC Financial (79,485 ppl), Eastman Chemical (15,910), Vestis (14,063),
-  NBCUniversal (11,612 — its 9-row "menu" is a 96.9% trust pointer plus `This
-  form is required to be filed for employee benefit plans under sections` and
-  `Docusign Envelope ID: …`). `JUNK_NAME_RE`/`SKIP_ROW` already carry the family
-  and lack these phrases. Parser-side, needs a bump.
+- **CLOSED 2026-09-30, re-sized at pv 196 — THE FORM 5500 COVER PAGE AS A FUND
+  MENU IS 0 ROWS.** Queued at 41 rows / 31 plans / 165,425 ppl (PNC Financial
+  79,485, Eastman Chemical 15,910, NBCUniversal 11,612); **v193's (A) and (D)
+  arms closed it whole** and this bullet was never retired.
 - **#508 (cron, on MAIN) RAN `success`** (data `8522c450`): coverage line
   **byte-identical** — confident 60,103, HIGH **4 = the baseline**, WARN 608,
   overshoot 326, dl 131, pv 192 at 99.8%. Correct for a scheduled incremental
@@ -1778,15 +1789,29 @@ from the cycle that would have cleared it.
   **A fee here is SOURCED, never derived**, so the change-existing half needs
   verification per family before any of it ships and the gain half needs the
   ADD-never-REPLACE gate first. `docs/accuracy-log.md` 2026-09-29 (15:5xZ).
-- **QUEUED, FOUND BY THE INVESTMENT-CONTRACT WORK, AND IT IS BOTH AN HONESTY
-  DEFECT AND A COVERAGE LOSS — A ROW TYPED `Company stock` WHOSE FILED NAME
-  NAMES A TARGET-DATE OR INDEX FUND: 79 rows / 14 plans / 111,072 participants
-  / $6,361,147,582.** Duke Energy (35,803 ppl) is **16 rows at 50.1% of an
-  $11.27B menu** — `Target Retirement Date Fund 2045`, `Non-US Equity Index
-  Fund`, `Fixed Income Blend Fund`, all typed employer stock. **`stockRow`
-  suppresses the ticker AND the fee**, so unlike the annuity and contract
-  items this one also costs readers a number they could have had. Same COLUMN
-  family as what shipped, one type-string along; store-side.
+- **CLOSED 2026-09-30, AND IT WAS CLOSED BY A GUARD THAT SHIPPED THE SAME CYCLE
+  THAT QUEUED IT — A ROW TYPED `Company stock` WHOSE FILED NAME NAMES A POOLED
+  FUND.** Queued at 79 rows / 14 plans / 111,072 ppl; re-sizes at pv 196 to
+  **86 / 17 / 113,251 / $6,376,539,686**, of which **85 are already reached by
+  `isMistypedStockRow`** (shipped 2026-09-29, `lib-disclose.mjs`), which gates
+  `stockRow` at app.js:2346 **and blanks the type cell at app.js:2441**
+  (`const filedType = mistypedStock ? "" : (f.type || "")`). So the sponsor's
+  ticker is already withheld, the false type is already gone and the fee is
+  already free to resolve — the whole reader-facing harm the entry describes was
+  closed one bullet away, and neither bullet knew about the other.
+  **THE 1 RESIDUE IS MY OWN SIZING SCREEN'S FALSE POSITIVE:** `Freedom Bank
+  Unitized Stock` (126 ppl) matched on the token `freedom`, chosen for the
+  Fidelity Freedom family — a real employer stock fund whose SPONSOR is a bank
+  called Freedom, and the shipped guard is right to refuse it. *A house token
+  inside a sponsor's name is not a house.*
+  **AND THE WIDENING IS REFUSED ON ITS MEASURED INCREMENT:** asking the same
+  question with v133's `FUND_PRODUCT` vocabulary reaches **+370 rows /
+  1,786,883 ppl** that MIX real employer stock funds which must keep the typing
+  (`DaVita Stock Fund`, `Crown Holdings, Inc. Stock Fund`, BNSF's `Company Stock
+  Fund`) with real funds that should be retyped (`Fidelity Leveraged Company
+  Stock Fund`, Crescent River's iShares/SPDR ETFs). The discriminator is
+  sponsor-vs-house, a lookup and not a vocabulary.
+  `docs/accuracy-log.md` 2026-09-30 (06:1xZ).
 - **ALSO FROM THAT DRAW, unsized:** Microsoft (183,509 ppl) publishes
   `Participant-directed` at **8.6% / ~$6.7B** with a blank type; and
   University of Maryland Medical System still shows `Fidelity Total Bond Fund
@@ -1914,10 +1939,10 @@ from the cycle that would have cleared it.
   223 rows / 220 plans / 330,533 participants / $1,447,476,149.** The
   annuity-type shape one legal noun along, and **larger in participants than the
   annuity fix itself.**
-- **QUEUED — THE PARTY-IN-INTEREST MARKER WELDS TWO REAL HOLDINGS INTO ONE: 61
-  rows / 48 plans / 97,408 ppl** (`PIMCO REAL RETURN FUND CLASS A * 55 PIMCO
-  TOTAL RETURN FUND CLASS A`). One fund vanishes from each menu — the v100/Amgen
-  family. Parser-side, needs a bump.
+- **CLOSED 2026-09-30, re-sized at pv 196 — THE PARTY-IN-INTEREST WELD IS 1
+  ROW.** Queued at 61 rows / 48 plans / 97,408 ppl (`PIMCO REAL RETURN FUND
+  CLASS A * 55 PIMCO TOTAL RETURN FUND CLASS A`); **v193's (C) arm shipped
+  exactly this** and the bullet was never retired.
 - **QUEUED, OWNER'S CALL — THE FUND-IDENTIFICATION GAP, sized honestly: 139,910
   rows / 28,693 plans / 38,745,363 participants** carry a filed name stating
   BOTH a house AND a share class, typed a registered mutual fund by the filing,

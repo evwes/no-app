@@ -30306,3 +30306,63 @@ unifies two estimates rather than verifying either.
 class** and must not be folded in: `Retirement 2045 Fund American Funds
 EuroPacific Growth` and `Retirement 2020 Fund American Funds Growth Fund of
 America R6` are welds of two holdings, priced at the second fund's fee.
+
+## 2026-09-30 (06:1xZ) — THREE QUEUE ITEMS RE-SIZED AT pv 196 AND ALL THREE ARE CLOSED; A FOURTH "MEASUREMENT" WAS 0 BY CONSTRUCTION
+
+No code shipped this cycle, and that is the finding. Four parser-side items had
+been sized at v192/v193 and carried forward in CLAUDE.md as open. Re-sizing each
+against the pv-196 store — *a class size travels with the predicate that
+produced it*, and with the STORE it was measured on — closes three of them and
+kills the fourth as a harness artefact.
+
+**(1) A ROW TYPED `Company stock` WHOSE FILED NAME NAMES A POOLED FUND —
+QUEUED AT 79 rows / 14 plans / 111,072 ppl, RE-SIZES TO 86 / 17 / 113,251 /
+$6,376,539,686, AND 85 OF THE 86 ARE ALREADY REACHED BY A GUARD THAT SHIPPED
+2026-09-29.** `isMistypedStockRow(f, cleanedName)` in `lib-disclose.mjs` gates
+`stockRow` at `app.js:2346` and, at `app.js:2441`, reads
+`const filedType = mistypedStock ? "" : (f.type || "")` — so the false
+`Company stock` type is already blanked, the sponsor's own ticker is already
+withheld, and the fee is already free to resolve. The whole reader-facing harm
+the queue entry describes was closed by the same cycle that recorded it, one
+bullet apart, and neither bullet knew about the other.
+
+**THE ONE RESIDUE IS MY OWN ARM'S FALSE POSITIVE AND THE SHIPPED GUARD IS RIGHT
+TO REFUSE IT.** `Freedom Bank Unitized Stock` [The Freedom Bank Of Virginia,
+126 ppl, $397,511] matched my narrow `FUNDISH` screen on the token `freedom`,
+chosen for the Fidelity Freedom family. It is a real employer stock fund whose
+sponsor is a bank called Freedom. *A house token inside a sponsor's name is not
+a house* — the `INST+`, `Trust Class` and `emerging`/`mutual fund` findings
+again, this time inside a sizing screen rather than a shipped rule.
+
+**AND THE WIDENING THE ITEM IMPLIES IS REFUSED ON ITS MEASURED INCREMENT.**
+Asking the same question with v133's `FUND_PRODUCT` vocabulary instead of my
+narrow one reaches **+370 rows / 1,786,883 participants**, and reading the
+increment it is a MIXTURE no syntactic rule separates: real employer stock funds
+that must KEEP the typing (`DaVita Stock Fund`, `Crown Holdings, Inc. Stock
+Fund`, `STANLEY BLACK & DECKER STOCK FUND`, BNSF's `Company Stock Fund`) sitting
+beside real funds that should be retyped (`Fidelity Leveraged Company Stock
+Fund`, Crescent River's iShares and SPDR ETFs). The discriminator is
+sponsor-vs-house, which is a lookup and not a vocabulary. Not shipped.
+
+**(2) THE PARTY-IN-INTEREST MARKER WELDING TWO REAL HOLDINGS — QUEUED AT 61 rows
+/ 48 plans / 97,408 ppl, RE-SIZES TO 1 ROW.** v193's (C) arm shipped exactly
+this and the queue bullet was never retired.
+
+**(3) THE FORM 5500 COVER PAGE AS A FUND MENU — QUEUED AT 41 rows / 31 plans /
+165,425 ppl, RE-SIZES TO 0.** v193's (A) and (D) arms closed it whole.
+
+**(4) A REAL CONTRACT WEARING A LOAN CAPTION — THE ARM RETURNED 0 AND THE 0 IS
+BY CONSTRUCTION, NOT A MEASUREMENT.** My sizer asked for rows where
+`isLoanDescriptionRow` is true AND an issuer survives the strip. That predicate
+requires `loanDescriptionResidue(s).length === 0`, and a surviving issuer IS
+residue, so the conjunction can never fire whatever the store holds. **Do not
+carry "0" forward as evidence the class is closed** — it is evidence the query
+contradicts itself. Sibling of *a check keyed on the vocabulary the rule removes
+is guaranteed to read 0*, and the same tell: a suspiciously clean zero reports
+on the query.
+
+**WHAT THE CYCLE IS FOR, STATED PLAINLY:** three of four queue entries were
+stale and one was never a measurement, so a session acting on this list would
+have bumped `PARSER_VERSION` for work already live. **Re-size a queued class
+against the current store before spending a run on it** — the list is a record
+of what was true when it was written, not of what is true now.
