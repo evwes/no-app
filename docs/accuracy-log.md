@@ -33335,3 +33335,101 @@ flagged four times: **`Fidelity Contra Fund K6` → FLCNX**.
 MERGE-SIDE (it needs the 29,406-row index the page must never download), so it
 stores `stk` and needs a run. Remaining before it ships: read the 865 distinct
 transformations, and the whole-store diff through all four resolvers.
+
+## 2026-10-01 (07:4xZ) — THE FILING SPLIT A WORD THE REGISTRY JOINS: 1,927 rows / 997 plans / 1,569,418 participants / $5,009,993,968 gain a ticker
+
+**IN FLIGHT as #531, dispatched on `1cce81bb` and observed `in_progress`.**
+MERGE-SIDE: it writes the stored `stk`, so a run is what delivers it. Penn
+Engineering & Manufacturing's ten `JPMorgan Smart Retirement <year> Fund` rows
+are **55.9% of its menu** and resolved to nothing, because the SEC registers the
+series as `JPMorgan SmartRetirement 2035 Fund`, **one word**.
+
+**IT IS THE EXACT MIRROR OF v529's ALL-CAPS ARM AND USES THE SAME WITNESS.**
+That arm added the registry as evidence to REFUSE splitting `SMALLCAP`; this one
+reads the registry in the other direction to JOIN `Small Cap` → **RLLGX**. One
+witness, both directions — and **v529's own recorded loss, the row that lost
+RLLGX, sits inside this population.**
+
+**STRICTLY ADDITIVE BY CONSTRUCTION:** the arm is unreachable unless
+`resolveFaithful` returned null, so it can only fill a blank. **0 flipped, 0 fee
+moves, 0 asterisk moves**, measured through the display path with the positive
+control firing first and `f.stk` the only moving input.
+
+### MY SIZING WAS WRONG ON THREE COUNTS AND THE CALL SITE SAYS SO IN ITS OWN COMMENT
+
+The queue entry said 1,706 rows / 914 plans / 1,462,375 ppl. It passed
+`cleanFiledName(f.name)` where `merge-4i` passes **`f.name`**, applied **no
+`secTypeAdmits` gate**, and counted **only confident entries**. That is the
+defect recorded at `merge-4i:501` — *measure through the function the caller
+calls, with the argument the caller passes* — which cost that entry 36 against
+29. **Do not carry 1,706 / 914 / 1,462,375 forward.** Fourth instance of this
+one rule in a single session.
+
+### ALL FOUR NEGATIVE CONTROLS WERE DECORATIVE, AND MEASURING THEM REWROTE TWO CONDITIONS
+
+Every control passed first time against pins I had chosen from memory —
+`Variation Margin Receivable Account`, `Mid Cap Index Fund`, a faithful American
+Funds name, a bare `Fidelity Contrafund` — because **a pin set tests the cases
+its author already imagined.** Run over the whole admitted population instead:
+
+- **THE FLOOR WAS WRONG AND THE CONTROL PRICED IT.** It shipped at three letters
+  a side; dropping it admitted **196 rows / 91 plans / 110,706 ppl and all 181
+  distinct were read**, every one a broken font splitting a word at a short
+  seam — `Grow th`, `T arget`, `M arket`, `Schw ab`, `FIDELIT Y`, `Admira l`,
+  `Investo r`, `V anguard`, `Incom e`, `U .S. A ggregate`. **Zero of the 196
+  changed an existing answer**; every one filled a blank. The floor was
+  protecting nothing and costing all of them. One letter, worth **324 rows**.
+- **THE WITNESS THEN FIRED IN THE WRONG DIRECTION**, refusing **135 correct
+  repairs** of short words (`M id` → Mid, `C ap` → Cap, `Stoc k` → Stock,
+  `DF A` → DFA, `FID GNM A` → GNMA) — **and it was reading only HALF the
+  registry.** It was built from the registrant/series column alone, so `Class`,
+  `Inst` and `Admiral` were missing from a set whose whole claim is to be *the
+  registry's own spelling*, and the control named them (`C lass R5`, `Clas s R6`,
+  `CLA SS R6`). ***A guard can fire in the WRONG DIRECTION, and only the
+  whole-store control shows which. Half a registry is not the registry.***
+- **THE ORDERING IS LOAD-BEARING:** asking the join FIRST — the ordering the
+  `of American` misspelling repair correctly uses — moves **66 rows across 66
+  plans onto a competitor's fund**, `Empower S&P Small Cap 600 Index Inst` from
+  Empower's MXERX to Principal's PSSIX. A misspelling is established; a join is
+  speculative, so the faithful answer must always win.
+- **ONLY AN EXACT ANSWER:** **2,599 rows** sit behind that condition, all
+  comparable answers to names stating no class (`Fidelity Contra Fund` → FCNTX*).
+
+**WITNESS COST NAMED, 7 rows in 7 plans**, all filer abbreviations the registry
+cannot witness: `M KT`, `Ins T`, `T ot`, `AD M`, `M M`, `A Dm`, `A F`. Pinned as
+a cost rather than rounded away, so that if the witness is ever widened those 7
+are what moves.
+
+### WHAT IT SERVES
+
+All **1,132 distinct names read across 122 joined-word families**, not one a
+wrong house, and a whole-population screen agrees: **0 of 1,132 answers share no
+content word with the registered name.** The families are the brands
+(SmartRetirement 222, SmallCap 187, JPMorgan 152, MidCap, LargeCap, MassMutual,
+AllSpring, CommoditiesPlus, LifeStrategy, DynaTech, ComStock, Conestoga **SMid**)
+and the OCR splits — **which close the 2026-09-30 06:3xZ residue item that was
+re-queued because *"no syntactic rule separates `… Index Ad min` (a split
+`Admiral`, must keep) from `… R6 ial` (must strip)"*. The registry witness is
+that rule, in the join direction.**
+
+**AND THE SECOND RESOLVER CORROBORATES IT:** 35 rows already resolve through
+`fund-er.js`, which reaches `Adm iral` and `JPM organ` on its own, and **in all
+30 distinct cases it offers the SAME symbol the join does.**
+
+16 pins, one per condition **taken from the store by the control that named
+it**; each control now fails by name on exactly its own case (1 of 132 each).
+`--selftest` 132/132, parser-gate, smoke, fund-er-test (62/26/19/18/18) green.
+
+**PRE-REGISTERED for #531:** the merge log prints `sec tickers: 461738 rows
+across 48555 plans` (+1,964 rows / +1,012 entries against 459,774 / 47,543);
+`filed tickers` unchanged at **2,166 / 75**; CONFIDENCE DIFF **+0 / −0** and
+`rows-dropped` **0** — this writes one stored field and moves no sum, ratio or
+name; `confident` **60,170**, lineups 59,822, entries 65,479, HIGH **4**,
+overshoot 372, dl 19, pv 100 all unchanged. `tkExact` rises (it counts rows
+`lookupTicker` can name) and `tkShare` is a 1-in-20 sample, so movement there is
+phase. No fee is possible and no asterisk can move. **REPORT path only as a
+GUARANTEE: `build-seo-pages.mjs` renders no ticker.**
+
+**THE MIRROR IS HELD UNTIL THE VERDICT ON PURPOSE**, for v193's narrow reason:
+this has no display half, so mirroring early delivers nothing to a reader and
+only puts unverified code on main.

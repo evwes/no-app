@@ -1213,7 +1213,63 @@ from the cycle that would have cleared it.
   slices app.js's body from source and imports the canonical suppressors.
   ***A transcription of a shipped expression rots as the expression grows; three
   instruments rot three times.***
-- **QUEUED 2026-10-01 05:5xZ, SIZED, NOT SHIPPED — THE FILING SPLIT A WORD THE
+- **IN FLIGHT: #531, dispatched 2026-10-01 07:0xZ on `1cce81bb` and observed
+  `in_progress` — THE FILING SPLIT A WORD THE REGISTRY JOINS: 1,927 rows / 997
+  plans / 1,569,418 participants / $5,009,993,968 gain a ticker, 0 flipped, 0 fee
+  moves, 0 asterisk moves.** MERGE-SIDE (it writes the stored `stk`), so the run
+  is what delivers it. **THE MIRROR IS HELD UNTIL THE VERDICT**, v193's reason:
+  no display half, so mirroring early delivers nothing to a reader.
+  **THE EXACT MIRROR OF v529's ALL-CAPS ARM, SAME WITNESS:** that arm reads the
+  registry to REFUSE splitting `SMALLCAP`; this one reads it to JOIN `Small Cap`
+  → **RLLGX**, and **v529's own recorded loss is inside this population.**
+  **STRICTLY ADDITIVE BY CONSTRUCTION** — unreachable unless `resolveFaithful`
+  returned null, so it can only fill a blank.
+  **THE QUEUED FIGURE BELOW WAS WRONG ON THREE COUNTS AND THE CALL SITE SAYS SO
+  IN ITS OWN COMMENT:** it passed `cleanFiledName(f.name)` where `merge-4i`
+  passes **`f.name`**, applied **no `secTypeAdmits` gate**, and counted **only
+  confident entries** — the defect recorded at `merge-4i:501`, which cost that
+  entry 36 against 29. **Do not carry 1,706 / 914 / 1,462,375 forward.** Fourth
+  instance of that one rule in a single session.
+  **ALL FOUR NEGATIVE CONTROLS WERE DECORATIVE AGAINST PINS I CHOSE FROM MEMORY,
+  AND MEASURING THEM WHOLE-STORE REWROTE TWO CONDITIONS.** The **FLOOR** shipped
+  at three letters a side and the control priced it at **196 correct repairs
+  refused** — a broken font splits a word anywhere, so the short seam is the
+  common case (`Grow th`, `T arget`, `Schw ab`, `FIDELIT Y`, `Admira l`,
+  `Investo r`, `V anguard`), **0 of the 196 changed an answer** — now one letter,
+  worth 324 rows. The **WITNESS** then **FIRED IN THE WRONG DIRECTION**, refusing
+  135 correct repairs of short words (`M id`, `C ap`, `Stoc k`, `DF A`, `GNM A`),
+  **and it was reading only HALF the registry** — the class-name column was never
+  in it, so `Class`, `Inst` and `Admiral` were missing from a set whose whole
+  claim is to be the registry's own spelling. ***A guard can fire in the WRONG
+  DIRECTION, and only the whole-store control shows which; half a registry is not
+  the registry.*** The **ORDERING** is load-bearing: asking the join first moves
+  **66 rows / 66 plans** onto a competitor's fund (`Empower S&P Small Cap 600
+  Index Inst` from Empower's MXERX to Principal's PSSIX). **ONLY AN EXACT
+  ANSWER** holds back 2,599 comparable rows.
+  **WITNESS COST NAMED, 7 rows / 7 plans**, all filer abbreviations the registry
+  cannot witness (`M KT`, `Ins T`, `T ot`, `AD M`, `M M`, `A Dm`, `A F`), pinned
+  as a cost.
+  All **1,132 distinct names read across 122 families**, not one a wrong house,
+  and a whole-population screen agrees — **0 of 1,132 share no content word with
+  the registered name**. **The OCR-split half CLOSES the 2026-09-30 06:3xZ
+  residue item**, which was re-queued because *"no syntactic rule separates
+  `… Index Ad min` from `… R6 ial`"*: the registry witness is that rule.
+  **AND THE SECOND RESOLVER CORROBORATES IT** — 35 rows already resolve through
+  `fund-er.js`, which reaches `Adm iral` and `JPM organ` on its own, and in all
+  30 distinct cases it offers the SAME symbol.
+  16 pins, one per condition **taken from the store by the control that named
+  it**; each control fails by name on exactly its own case (1 of 132 each).
+  `--selftest` 132/132, parser-gate, smoke, fund-er-test (62/26/19/18/18) green.
+  **PRE-REGISTERED:** merge log `sec tickers: 461738 rows across 48555 plans`
+  (+1,964 / +1,012 against 459,774 / 47,543); `filed tickers` **2,166 / 75**
+  unchanged; CONFIDENCE DIFF **+0 / −0**, `rows-dropped` **0**; confident
+  **60,170**, lineups 59,822, entries 65,479, HIGH **4**, overshoot 372, dl 19,
+  pv 100 unchanged; `tkExact` rises and `tkShare` movement is phase. No fee and
+  no asterisk can move. **REPORT path only as a GUARANTEE.**
+  `docs/accuracy-log.md` 2026-10-01 (07:4xZ).
+- **PREVIOUSLY QUEUED 2026-10-01 05:5xZ (superseded by the bullet above; its
+  figures are the wrong-argument count and the shipped ones are 1,927 / 997 /
+  1,569,418) — THE FILING SPLIT A WORD THE
   REGISTRY JOINS: 1,706 rows / 914 plans / 1,462,375 participants /
   $4,228,023,207 would newly name a fund EXACTLY.** Found by the 05:4xZ draw on
   **Penn Engineering & Manufacturing (1,262 ppl, 26 rows @ 0.990)**, whose
