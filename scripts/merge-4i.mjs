@@ -511,6 +511,11 @@ function stripIssuerLead(iss) {
 {
   const SEAM = /\b[A-Za-z]{3,}[a-z][A-Z][a-z]{2,}[A-Za-z]*\b/g;
   const nk = (s) => String(s).trim().toLowerCase();
+  /* a CLASS key: the registry writes `Class R-6` where a filer writes `Class
+   * R6`, so the comparison has to be punctuation-insensitive. `nk` deliberately
+   * is not — see the class-rotation note below, where that strictness is what
+   * keeps a rotated name with a punctuation seam attested nowhere. */
+  const ck = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
   const whole = new Map(), tok = new Map();
   for (let i = 0; i < SHARDS; i++)
     for (const [, e] of Object.entries(buckets[i])) {
@@ -621,7 +626,99 @@ function stripIssuerLead(iss) {
     }
     return best;
   };
-  let weld = 0, caps = 0; const weldAcks = new Set(), capsAcks = new Set();
+  /* A SHARE CLASS ROTATED TO THE FRONT OF THE NAME — 2026-10-01 (08:1xZ).
+   *
+   * The filer's name wraps and the halves are re-joined in the wrong order, so
+   * the DESIGNATION leads and the fund follows: `Fund I Class T. Rowe Price
+   * Retirement 2045`, `Institutional Premium Class Fidelity Freedom Index 2055
+   * Fund`, `Admiral Shares Vanguard Total International Stock Index`. The same
+   * rotation this record measured in the ISSUER column on 2026-09-30 (15:2xZ)
+   * and refused there, because the only repair available was a STRIP and a
+   * strip truncates the firm. Here the repair is the rotation itself, which is
+   * why it ships: moving the lead back to the end destroys nothing.
+   *
+   * IT MUST ROTATE AND MUST NOT STRIP, and that is measured, not argued.
+   * Dropping `Admiral Fund` from `Admiral Fund Vanguard Total Bond Market
+   * Index` would withdraw VBTLX, a correct answer, because the class word is
+   * the only thing distinguishing it from four sibling classes. A repair that
+   * withdraws a correct answer is not a repair.
+   *
+   * THE WITNESS IS THE REGISTRY'S CLASS-NAME COLUMN — the same evidence v529
+   * reads to REFUSE splitting `SMALLCAP` and v531 reads to JOIN `Small Cap`,
+   * in a third direction: a lead the SEC registers as a class name is a
+   * designation, and a designation belongs at the end. It is load-bearing and
+   * the whole-store control prices it at 835 further rows, which are
+   * overwhelmingly CORRECT NAMES the ratio alone would have destroyed —
+   * `Cash, non-interest bearing` -> `non-interest bearing Cash,`, `Robeco
+   * Boston Partners Mid Cap Value` -> `Mid Cap Value Robeco Boston Partners`,
+   * and the `SACG`/`GM` legend-and-sponsor prefixes, which want a STRIP and
+   * not a rotation. FAILS CLOSED: no registry, no repair.
+   *
+   * THE RATIO IS THE SECOND LOAD-BEARING CONDITION, v529's guard again: a
+   * RATIO between two whole names rather than a floor on one, because repeated
+   * damage feeds a floor. It costs about six correct repairs it cannot
+   * distinguish from five wrong ones (`Fund Class I T. Rowe Price Retirement
+   * 2055`, `Class K BlackRock LifePath Index Retirement` are refused beside
+   * `Retirement Income Fund Vanguard Target` -> `Income Fund Vanguard Target
+   * Retirement`, where neither spelling is right). Refusing a repair is the
+   * safe direction.
+   *
+   * THE PUNCTUATION CONDITION IS DECORATIVE ON THIS STORE — 0 rows, measured —
+   * and is labelled rather than presented as protection. It exists because the
+   * registry's class-name column holds a FULL FUND NAME for some registrants
+   * (`Core Bond Fund`, `Inflation Protected Fund`, `Growth Fund`), so the
+   * witness alone would admit `Core Bond Fund - VALIC` -> `- VALIC Core Bond
+   * Fund`. What actually refuses those today is `nk`'s exact normalisation,
+   * which keeps the punctuation in the key so the rotated form is attested
+   * nowhere; the check is kept so a later loosening of `nk` cannot quietly
+   * re-open the shape. A floor of 3 is subsumed by the ratio for the same
+   * reason it is in the arm above and is kept as a PRE-FILTER only.
+   *
+   * 672 rows / 179 plans / 288,327 participants / $2,267,257,067 across 474
+   * distinct transformations. Outcome through every resolver the stored name
+   * moves: display ticker +7 / -0 / 19 FLIPPED, stored SEC stk +57 / -0 / 0
+   * changed, fee +0 / -0 / 5 changed, 0 asterisks. Every one of the 15 distinct
+   * flips is the T. Rowe Price Retirement `-I Class` the filing states, read
+   * out of the registry — the wrong-share-class defect this record has named
+   * five times, corrected here because the filing hands us the answer. The 5
+   * fee moves are two names reaching `fund-er.js`'s own SOURCED Admiral rate
+   * (0.05 -> 0.07), whose pattern requires `admiral` AFTER the fund words; both
+   * move UP, the direction that cannot be a flattering bias. */
+  let secClasses = null;
+  try {
+    const sfc = JSON.parse(readFileSync("sec-funds.json", "utf8"));
+    secClasses = new Set();
+    for (const r of (sfc.funds || [])) { const c = ck(r[3]); if (c) secClasses.add(c); }
+    console.log(`class-rotation repair: ${secClasses.size} registered class names available as the witness`);
+  } catch (err) {
+    console.log(`class-rotation repair: SKIPPED, no registry witness (${err.message})`);
+  }
+  const rotRepair = (name) => {
+    if (!secClasses) return null;                      // fail closed, see above
+    const s = String(name || "").trim();
+    const toks = s.split(/\s+/);
+    if (toks.length < 3) return null;
+    const filed = whole.get(nk(s)) || 0;
+    let best = null, bestN = -1;
+    for (let k = 1; k <= 3 && k < toks.length - 1; k++) {
+      const lead = toks.slice(0, k).join(" ");
+      /* break, not continue: every longer lead opens with the same token */
+      if (!/^[A-Za-z0-9]/.test(lead)) break;           // DECORATIVE, see above
+      const ln = ck(lead);
+      /* a wrapped line often carries the vehicle word along with the class */
+      if (!secClasses.has(ln) && !secClasses.has(ln.replace(/^fund\s+/, ""))) continue;
+      const rest = toks.slice(k).join(" ");
+      if (!/^[A-Za-z0-9]/.test(rest)) continue;        // DECORATIVE, see above
+      const cand = `${rest} ${lead}`;
+      const n = whole.get(nk(cand)) || 0;
+      if (n < 3) continue;                             // PRE-FILTER only, see above
+      if (n < filed * 3) continue;                     // rotated >> as filed
+      if (n > bestN) { best = cand; bestN = n; }
+    }
+    return best;
+  };
+  let weld = 0, caps = 0, rot = 0;
+  const weldAcks = new Set(), capsAcks = new Set(), rotAcks = new Set();
   for (let i = 0; i < SHARDS; i++)
     for (const [ack, e] of Object.entries(buckets[i])) {
       if (!e || !e.confident || !Array.isArray(e.funds)) continue;
@@ -632,11 +729,18 @@ function stripIssuerLead(iss) {
          * no case transition for SEAM to find — so the order cannot matter, and
          * `continue` says so rather than relying on it */
         const crep = capsRepair(f.name);
-        if (crep) { f.name = crep; caps++; capsAcks.add(ack); }
+        if (crep) { f.name = crep; caps++; capsAcks.add(ack); continue; }
+        /* the rotation is a whole-name REORDER where the two above are
+         * per-token repairs, so it is asked last and only of a name neither
+         * touched; the attestation maps are built from the stored names, so a
+         * name repaired this run is attested in its damaged form either way */
+        const rrep = rotRepair(f.name);
+        if (rrep) { f.name = rrep; rot++; rotAcks.add(ack); }
       }
     }
   if (weld) console.log(`lost-space repair: ${weld} rows across ${weldAcks.size} plans`);
   if (caps) console.log(`all-caps lost-space repair: ${caps} rows across ${capsAcks.size} plans`);
+  if (rot) console.log(`class-rotation repair: ${rot} rows across ${rotAcks.size} plans`);
 }
 
 /* THE SEC TICKER, RESOLVED ONCE AT MERGE AND STORED ON THE ROW.

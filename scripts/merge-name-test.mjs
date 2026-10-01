@@ -347,3 +347,132 @@ if (capsBad) process.exitCode = 1;
   }
   if (tbad) process.exitCode = 1;
 }
+
+/* ---------------------------------------------------------------------- *
+ * CONTROL for merge-4i's CLASS-ROTATION REPAIR — 2026-10-01 (08:1xZ).
+ *
+ * Neither arm above can see this family. `weldRepair` needs a case transition
+ * INSIDE a word and `capsRepair` an all-caps token; here nothing is misspelt
+ * at all — the filer's wrapped halves are re-joined in the wrong ORDER, so the
+ * designation leads and the fund follows (`Fund I Class T. Rowe Price
+ * Retirement 2045`). The repair is the rotation, never a strip: dropping the
+ * lead would destroy the share class and withdraw VBTLX from `Admiral Fund
+ * Vanguard Total Bond Market Index`.
+ *
+ * TWO CONDITIONS ARE LOAD-BEARING AND ONE IS NOT, and the controls say which.
+ * The WITNESS — a lead the SEC registers as a class name — is priced at 835
+ * further rows whole-store, overwhelmingly CORRECT names the ratio alone would
+ * have destroyed. The RATIO is priced at 11. The PUNCTUATION check changes 0
+ * rows on this store and is labelled decorative at the call site; it is tested
+ * here against a CRAFTED attestation map, where it does fire, so the condition
+ * is pinned by intent even though the live store cannot exercise it.
+ */
+{
+  const si = src.indexOf("  let secClasses = null;");
+  const sj = src.indexOf("  let weld = 0, caps = 0, rot = 0;", si);
+  if (si < 0 || sj < 0) throw new Error("rotation slice moved");
+  const rbody = src.slice(si, sj);
+  if (!/rotRepair/.test(rbody)) throw new Error("slice missed rotRepair");
+  if (!/secClasses/.test(rbody)) throw new Error("slice missed the witness");
+
+  const mkRot = (drop, wholeMap) => {
+    let b = rbody;
+    if (drop === "witness") b = b.replace(
+      "if (!secClasses.has(ln) && !secClasses.has(ln.replace(/^fund\\s+/, \"\"))) continue;", "");
+    if (drop === "ratio") b = b.replace("if (n < filed * 3) continue;", "");
+    if (drop === "punct") b = b
+      .replace("if (!/^[A-Za-z0-9]/.test(lead)) break;", "")
+      .replace("if (!/^[A-Za-z0-9]/.test(rest)) continue;", "");
+    const ctx = { console: { log() {} }, whole: wholeMap,
+      nk: (s) => String(s).trim().toLowerCase(),
+      ck: (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim(),
+      readFileSync: (f, enc) => fs.readFileSync(path.isAbsolute(f) ? f : `${R}/${f}`, enc) };
+    vm.createContext(ctx);
+    vm.runInContext(b + "\n; this.__r = rotRepair;", ctx);
+    return ctx.__r;
+  };
+
+  const rot = mkRot(false, whole);
+  const ROT = [
+    // must ROTATE — the designation leads and the fund follows
+    ["Fund I Class T. Rowe Price Retirement 2045", "T. Rowe Price Retirement 2045 Fund I Class"],
+    ["Institutional Premium Class Fidelity Freedom Index 2055 Fund", "Fidelity Freedom Index 2055 Fund Institutional Premium Class"],
+    ["Admiral Shares Vanguard Total International Stock Index", "Vanguard Total International Stock Index Admiral Shares"],
+    ["Fund Admiral Shares Vanguard Small-Cap Value Index", "Vanguard Small-Cap Value Index Fund Admiral Shares"],
+    ["Class K6 Fidelity Freedom 2050 Fund", "Fidelity Freedom 2050 Fund Class K6"],
+    ["Class R-6 2035 Target Date Retirement Fund", "2035 Target Date Retirement Fund Class R-6"],
+    ["Investor Class Fidelity Freedom Index 2030 Fund", "Fidelity Freedom Index 2030 Fund Investor Class"],
+    ["Institutional Class DFA U.S. Small Cap Portfolio", "DFA U.S. Small Cap Portfolio Institutional Class"],
+    ["Growth Fund American Funds EuroPacific", "American Funds EuroPacific Growth Fund"],
+    // must KEEP — the WITNESS: a lead that is no class at all
+    ["Cash, non-interest bearing", null],
+    ["Robeco Boston Partners Mid Cap Value", null],
+    ["SACG Vanguard 500 Index", null],
+    ["GM Fidelity 500 Index Fund", null],
+    ["Large Cap Growth / JPMorgan", null],
+    /* must KEEP — the RATIO, and every one of these was taken FROM THE STORE by
+     * the whole-store control, because the two I first wrote here by hand
+     * (`Vanguard Institutional Index Fund`, `Fidelity Contrafund`) are refused
+     * by a neighbouring condition and made the ratio control decorative. A pin
+     * set tests the cases its author already imagined; the store says which
+     * cases exist. */
+    ["Retirement Money Market Fund", null],
+    /* AND THE CONTROLS CORRECTED MY OWN COMMENT HERE. I wrote that neither
+     * spelling of this one is right; dropping the WITNESS shows the shipped
+     * search can reach `Vanguard Target Retirement Income Fund`, which IS the
+     * fund's name, at k=3 — the witness refuses it only because `Retirement
+     * Income Fund` is not a registered class name. So it is pinned must-KEEP
+     * for a different and stricter reason: with the ratio dropped the search
+     * picks k=1 instead and produces `Income Fund Vanguard Target Retirement`,
+     * which is wrong. Both conditions must hold for this row to stay still. */
+    ["Retirement Income Fund Vanguard Target", null],
+    /* AND THIS ONE IS A NAMED COST, not a save: the rotation really is correct
+     * and the ratio refuses it, because nothing separates it from the two
+     * above. Refusing a repair is the safe direction. */
+    ["Class K BlackRock LifePath Index Retirement", null],
+    // must KEEP — the registry's class column holds whole FUND names for some
+    // registrants, so the witness alone admits these; nk's strictness and the
+    // punctuation check both refuse them
+    ["Core Bond Fund - VALIC", null],
+    ["Inflation Protected Fund - VALIC", null],
+    ["Bond Index Fund (Fidelity US)", null],
+    ["(a) 500 Index Fund", null],
+    ["(y) Putnam Large Cap Value Fund", null],
+  ];
+  let rbad = 0;
+  for (const [inp, want] of ROT) {
+    const got = rot(inp) || null;
+    if (got !== want) { rbad++; console.log(`  FAIL  rot ${JSON.stringify(inp)}\n        want ${JSON.stringify(want)}\n        got  ${JSON.stringify(got)}`); }
+  }
+  console.log(`\nshipped rotRepair: ${ROT.length - rbad}/${ROT.length} pinned cases`);
+
+  for (const drop of ["witness", "ratio"]) {
+    const f = mkRot(drop, whole);
+    const broke = [];
+    for (const [inp, want] of ROT) if ((f(inp) || null) !== want) broke.push(`${JSON.stringify(inp)} -> ${JSON.stringify(f(inp))}`);
+    console.log(`NEGATIVE CONTROL — drop the ${drop}: disagrees on ${broke.length} of ${ROT.length}`);
+    for (const x of broke) console.log(`    ${x}`);
+    if (!broke.length) { console.log("  !! a control that cannot fail is decorative"); rbad++; }
+  }
+
+  /* THE PUNCTUATION CONTROL NEEDS A CRAFTED MAP, and saying so is the point:
+   * on the live store it changes 0 rows, because `nk` keeps the punctuation in
+   * the key so `- VALIC Core Bond Fund` is attested nowhere. Attest it, and the
+   * witness admits the rotation — which is exactly the shape the check exists
+   * to refuse should `nk` ever be loosened. */
+  const crafted = new Map(whole);
+  crafted.set("- valic core bond fund", 9);
+  crafted.set("500 index fund (a)", 9);
+  const pOn = mkRot(false, crafted), pOff = mkRot("punct", crafted);
+  const PUNCT = ["Core Bond Fund - VALIC", "(a) 500 Index Fund"];
+  const pBroke = [];
+  for (const inp of PUNCT) {
+    const on = pOn(inp) || null, off = pOff(inp) || null;
+    if (on !== null) { console.log(`  FAIL  punct-on should refuse ${JSON.stringify(inp)}, got ${JSON.stringify(on)}`); rbad++; }
+    if (off !== null) pBroke.push(`${JSON.stringify(inp)} -> ${JSON.stringify(off)}`);
+  }
+  console.log(`NEGATIVE CONTROL — drop the punctuation check (crafted map): disagrees on ${pBroke.length} of ${PUNCT.length}`);
+  for (const x of pBroke) console.log(`    ${x}`);
+  if (!pBroke.length) { console.log("  !! a control that cannot fail is decorative"); rbad++; }
+  if (rbad) process.exitCode = 1;
+}
