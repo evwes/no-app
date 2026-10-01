@@ -369,7 +369,7 @@ if (capsBad) process.exitCode = 1;
  */
 {
   const si = src.indexOf("  let secClasses = null;");
-  const sj = src.indexOf("  let weld = 0, caps = 0, rot = 0;", si);
+  const sj = src.indexOf("  /* A BROKEN FONT SHIFTED A RUN", si);
   if (si < 0 || sj < 0) throw new Error("rotation slice moved");
   const rbody = src.slice(si, sj);
   if (!/rotRepair/.test(rbody)) throw new Error("slice missed rotRepair");
@@ -475,4 +475,107 @@ if (capsBad) process.exitCode = 1;
   for (const x of pBroke) console.log(`    ${x}`);
   if (!pBroke.length) { console.log("  !! a control that cannot fail is decorative"); rbad++; }
   if (rbad) process.exitCode = 1;
+}
+
+/* THE CIPHER-RUN ARM — a broken font shifted a run of the name by +29.
+ *
+ * Pinned HERE rather than in the smoke test because the repair must happen to
+ * the STORED name: `cleanFiledName` replaces every control character with a
+ * space, so the ciphered digits (0x13-0x1c) are gone before any display arm
+ * could decode them, and `&ODVV<03>5<19>` could never come out `Class R6`.
+ *
+ * A NEGATIVE CONTROL PER CONDITION, each built by dropping exactly that
+ * condition from the SHIPPED slice. The seed is the only thing protecting a
+ * real ALL-CAPS word from being read as cipher, and the fence is the only
+ * thing protecting a sponsor's own name that sits beside a ciphered run.
+ */
+{
+  const xi = src.indexOf("  const CIPH_CH = /");
+  const xj = src.indexOf("  let weld = 0, caps", xi);
+  if (xi < 0 || xj < 0) throw new Error("cipher slice moved");
+  const xbody = src.slice(xi, xj);
+  if (!/cipherRepair/.test(xbody)) throw new Error("slice missed cipherRepair");
+  if (!/0x20/.test(src.slice(src.indexOf("A BROKEN FONT"), xi)))
+    throw new Error("slice missed the plain-space fence note");
+
+  const mkCiph = (drop) => {
+    let b = xbody;
+    if (drop === "fence") b = b.replace(
+      "const CIPH_CH = /[\\x03-\\x1f\\x21-\\x3d\\x44-\\x5d]/;",
+      "const CIPH_CH = /[\\x03-\\x5d]/;");
+    if (drop === "trim") b = b.replace(
+      "if (k < s.length && /[A-Za-z0-9]/.test(s[k]))      // cut MID-WORD, see above\n        while (k > i && CIPH_AMBIG.test(s[k - 1])) k--;", "");
+    if (drop === "seed") b = b.replace("cnt(d) >= 3", "true");
+    if (drop === "ctrl") b = b.replace(
+      "if (/[\\u0000-\\u001f\\u007f]/.test(run)) {", "if (true) {");
+    const ctx = { console: { log() {} }, cnt: (w) => tok.get(String(w).toLowerCase()) || 0 };
+    vm.createContext(ctx);
+    vm.runInContext(b + "\n; this.__x = cipherRepair;", ctx);
+    return ctx.__x;
+  };
+  const ciph = mkCiph(false);
+  const C = String.fromCharCode(3);          // the ciphered space
+  const CIPH = [
+    /* must REPAIR — read out of the live store, every one checked against the
+     * filing's own wording */
+    [`1XYHHQ${C}6PDOO${C}&DS${C}%OHQG${C},QGH[${C})XQG${C}&ODVV${C}5`,
+      "Nuveen Small Cap Blend Index Fund Class R"],
+    /* the half-decode the queue predicted, solved by decoding the separator:
+     * 0x19 is the ciphered `6` */
+    [`1XYHHQ${C}/DUJH${C}&DS${C}5HVSRQVLEOH${C}(TXLW\\${C})XQG${C}&ODVV${C}5${String.fromCharCode(0x19)}`,
+      "Nuveen Large Cap Responsible Equity Fund Class R6"],
+    [`3XWQDP${C}/DUJH${C}&DS${C}9DOXH${C})XQG`, "Putnam Large Cap Value Fund"],
+    /* a PLAIN prefix beside a ciphered run — the fence at work, and `,,` is II */
+    [`Vanguard Windsor${C},,${C}$GPLUDO${C})XQG`, "Vanguard Windsor II Admiral Fund"],
+    [`3ODQ${C}1DPH${C}`, "Plan Name"],
+    /* the sponsor's own name must survive beside the run */
+    [`Ź ANTONINI FREIGHT EXPRESS, INC. 401(K) & PROFIT SHARING PLAN (PSOR\\HU${C},GHQWLILFDWLRQ${C}1XPE`,
+      "Ź ANTONINI FREIGHT EXPRESS, INC. 401(K) & PROFIT SHARING PLAN Employer Identification Numb"],
+    /* the Form 5500 line references are UNSHIFTED inside a ciphered caption */
+    [`7RWDO${String.fromCharCode(0x11)}${C}${C}$GG${C}OLQHV${C}6d${C}DQG${C}6e`,
+      "Total. Add lines 6d and 6e"],
+
+    // must KEEP — not one of these is ciphered
+    [`AEGON${C}US${C}High${C}Yi eld${C}Ret${C}Opt`, null],
+    [`JH Mid Cap Growth Fund${C}`, null],
+    [`DFA US Targeted Value Fund${C}`, null],
+    [`Vanguard Tot Wld Stk Index ETF${C}`, null],
+    [`See independent auditor's report.${C} John Hancock Value IT Fund`, null],
+    ["Vanguard Windsor II Admiral Fund", null],      // no control character at all
+    ["DODGE & COX STOCK FUND CLASS X", null],        // all-caps and real
+    /* THE COST, pinned so it cannot be paid silently: Absolute Dental Group's
+     * and American Financial Resources' form caption really IS ciphered and
+     * really does decode to `instructions`, and the ciphered-space requirement
+     * refuses it, because the run is ONE token bounded by a plain space and a
+     * single coincidental token is where the evidence is thinnest. Refusing a
+     * repair is the safe direction, and the row names no fund either way. */
+    [`LQVWUXFWLRQV ${C}`, null],
+  ];
+  let xbad = 0;
+  for (const [inp, want] of CIPH) {
+    const got = ciph(inp) || null;
+    if (got !== want) {
+      console.log(`  FAIL  ${JSON.stringify(inp)}\n        want ${JSON.stringify(want)}\n        got  ${JSON.stringify(got)}`);
+      xbad++;
+    }
+  }
+  console.log(`\nshipped cipherRepair: ${CIPH.length - xbad}/${CIPH.length} pinned cases`);
+
+  for (const [label, drop, expect] of [
+    ["the plain-space FENCE", "fence", [5]],
+    ["the mid-word TRIM", "trim", [6]],
+    ["the decode-attested SEED", "seed", [7, 8, 9, 10]],
+    ["the ciphered-space requirement", "ctrl", [14]],
+  ]) {
+    const v = mkCiph(drop);
+    const broke = [];
+    for (let n = 0; n < CIPH.length; n++) {
+      const got = v(CIPH[n][0]) || null;
+      if (got !== CIPH[n][1]) broke.push(`#${n} ${JSON.stringify(String(CIPH[n][0]).slice(0, 44))} -> ${JSON.stringify(String(got).slice(0, 56))}`);
+    }
+    console.log(`NEGATIVE CONTROL — drop ${label}: disagrees on ${broke.length} of ${CIPH.length}`);
+    for (const x of broke) console.log(`    ${x}`);
+    if (!broke.length) { console.log("  !! a control that cannot fail is decorative"); xbad++; }
+  }
+  if (xbad) process.exitCode = 1;
 }

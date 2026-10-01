@@ -717,8 +717,136 @@ function stripIssuerLead(iss) {
     }
     return best;
   };
-  let weld = 0, caps = 0, rot = 0;
-  const weldAcks = new Set(), capsAcks = new Set(), rotAcks = new Set();
+  /* A BROKEN FONT SHIFTED A RUN OF THE NAME BY +29 — 2026-10-01 (15:4xZ).
+   *
+   * The PDF's cmap is offset, so every character of a run arrives 29 code
+   * points low: `$GPLUDO` is `Admiral`, `1XYHHQ` is `Nuveen`, `7RWDO QXPEHU`
+   * is `Total number`. The browser renders the ciphered SPACE (0x03) as
+   * nothing, which is the class shipped at 14:0xZ; this is the other half of
+   * the same font, where the LETTERS moved too.
+   *
+   * THE QUEUED MECHANISM IS REFUTED BY THE POPULATION. It read: a token
+   * PRECEDED by a control character is in the same ciphered run, because 0x03
+   * IS the ciphered space. But 0x03 is ALSO how this font encodes an ORDINARY
+   * space — that is precisely the 14:0xZ class — so Fairway Market's
+   * `AEGON<03>US<03>High<03>Yi eld<03>Ret<03>Opt` has a control separator
+   * before every token and is PLAIN TEXT throughout. Licensing a token off its
+   * separator decodes it to `^bdlk rp e v  o l`.
+   *
+   * WHAT IS TRUE IS THE SAME OBSERVATION USED AS A FENCE RATHER THAN A
+   * LICENCE, and it makes the run a CHARACTER SPAN instead of a token list.
+   * Inside a ciphered run the space is 0x03; a PLAIN space is 0x20, and 0x20
+   * is not a character the shift can produce, so it BOUNDS the run. Extending
+   * a seed outward over [\x03-\x1f\x21-\x3d\x44-\x5d] and stopping at 0x20
+   * keeps Antonini Freight Express's own `ANTONINI FREIGHT EXPRESS, INC.
+   * 401(K) & PROFIT SHARING PLAN` whole while decoding the `(PSOR\HU
+   * ,GHQWLILFDWLRQ` that follows it. Dropping the fence CHANGES 15 of the 23
+   * rows and destroys that sponsor name into `=^kqlkfkf=cobfdeq=bumobppI=`.
+   *
+   * AND IT SOLVES THE HALF-DECODE THE QUEUE PREDICTED, FOR FREE. A token-level
+   * rule decodes `&ODVV` to `Class` and leaves the `5`, publishing `Class 5`
+   * where the filing says `Class R` — a wrong share class asserted. A span
+   * decodes its SEPARATORS too, and 0x03 -> " " while 0x19 -> "6", so
+   * Retriever Medical Dental Payment's `&ODVV<03>5<19>` comes out `Class R6`
+   * and Edelman's `,,` comes out `II`. No floor is needed and no token is left
+   * behind.
+   *
+   * FOUR CONDITIONS, each negative-controlled over the whole population and
+   * each naming its own cases:
+   *   - the PLAIN-SPACE FENCE (above): 15 rows changed, all damaged.
+   *   - the MID-WORD TRIM: 0x30-0x3d is AMBIGUOUS, being both a literal digit
+   *     and the ciphered form of an uppercase Q-Z, so it cannot fence a run —
+   *     Retriever needs `5` -> `R`. But Lifespan files `Add lines 6d and 6e`,
+   *     Form 5500 line references set in an UNSHIFTED font inside a ciphered
+   *     caption, and the span swallowed the `6` and published `Sd`. A real run
+   *     is never followed by an ALPHANUMERIC character, because inside the run
+   *     the next letter would itself be ciphered; so where the span is cut
+   *     mid-word its trailing ambiguous characters are the unshifted text's.
+   *     Dropping it changes exactly those 2 rows.
+   *   - the DECODE ATTESTED >= 3: this is what protects `AEGON`, not the fence.
+   *     Dropping it admits 3 rows of garbage — `Vanguard Tot Wld Stk Index
+   *     bqc` (an `ETF` decoded), `Abdlk Balanced`, `Abdlk rp eigh`.
+   *   - a CIPHERED SPACE INSIDE THE RUN, which is the structural claim that
+   *     this is a run at all rather than one coincidental token. COST NAMED:
+   *     it refuses 2 CORRECT repairs, Absolute Dental Group's and American
+   *     Financial Resources' `LQVWUXFWLRQV` -> `instructions`, a form caption
+   *     naming no fund. Refusing a repair is the safe direction.
+   *
+   * THERE IS NO FILED-ATTESTATION TEST AND THE MEASUREMENT IS WHY. The draft
+   * carried the issuer strip's two-sided witness — the token as filed attested
+   * NOWHERE — and that test COSTS 6 ROWS reaching 118,240 participants
+   * (Fiserv 39,782, Philips 29,491, Gallagher 29,477, Lifespan 19,490), because
+   * the attestation maps are built from the STORED names and this font appears
+   * in several filings: `FRPSOHWH`, `WKLV` and `LWHP` are each attested in
+   * their CIPHERED form. Third instance of that trap on this record and the
+   * FIRST in the refusal direction — a floor that reads repetition as evidence
+   * of authenticity is fed by repeated damage, exactly as the OCR strip's
+   * ceiling was. Replacing it with a RATIO was measured too and is DECORATIVE
+   * at every factor up to 3 (0 rows against no test at all), so it is not
+   * shipped: a condition that cannot fire is decoration.
+   *
+   * ALL-CAPS CIPHERED TEXT IS OUT OF REACH BY CONSTRUCTION and that is left as
+   * under-reach: the seed is a ciphered LOWERCASE word (0x44-0x5d), so IBEW's
+   * `,%(:<03>/2&$/` has no seed and stays as filed.
+   *
+   * OUTCOME through all four resolvers, since the name is STORED: display
+   * ticker +1 / -0 / 0 flipped (Edelman gains VWNAX), display fee +1 / -0 / 0
+   * changed, SEC `stk` +2 / -0 / 0 (VWNAX, TISCX), `ftk` +0 / -0 / 0, 0
+   * asterisks moved.
+   *
+   * TWO COSTS IN THAT OUTCOME, both named rather than rounded away. (1) The
+   * queue entry predicted this would CORRECT Edelman's fee, which publishes
+   * 0.3 where `Vanguard Windsor II Admiral` is 0.26 — it does not. The table
+   * has ONE Windsor entry (`fund-er.js:203`), so the fee was wrong
+   * independently of legibility and the row now carries a correct symbol
+   * beside the same wrong number. The cipher hid the share class; it was not
+   * why the fee was wrong. (2) `Nuveen Small Cap Blend Index Fund Class R`
+   * gains the GENERIC unattributed index estimate 0.1 on a name that states a
+   * house — a live instance of the queued fee pre-emption, fed by one row and
+   * not caused here, in the understating direction.
+   *
+   * 23 rows / 13 plans / 127,006 participants / $87,902,604, 18 distinct
+   * transformations, all read. STORED and PUBLISHED are the same set (the arm
+   * joins the three above in gating on `e.confident`) and 0 rows sit in a
+   * trust. It must run HERE and never at display: `cleanFiledName` replaces
+   * every control character with a space, so the ciphered digits (0x13-0x1c)
+   * are gone before a display arm could decode them. */
+  const CIPH_CH = /[\x03-\x1f\x21-\x3d\x44-\x5d]/;
+  const CIPH_AMBIG = /[\x21-\x3d]/;
+  const CIPH_WORD = /[\x21-\x3d]?[\x44-\x5d]{2,}/g;
+  const unshift = (s) => s.replace(/[\s\S]/g, (c) => {
+    const o = c.charCodeAt(0);
+    return o >= 0x03 && o <= 0x5d ? String.fromCharCode(o + 29) : c;
+  });
+  const cipherRepair = (name) => {
+    const s = String(name || "");
+    if (!/[\u0000-\u001f\u007f]/.test(s)) return null;   // a run carries its own space
+    let out = "", i = 0, moved = 0;
+    while (i < s.length) {
+      if (!CIPH_CH.test(s[i])) { out += s[i++]; continue; }
+      let j = i; while (j < s.length && CIPH_CH.test(s[j])) j++;
+      let k = j;
+      if (k < s.length && /[A-Za-z0-9]/.test(s[k]))      // cut MID-WORD, see above
+        while (k > i && CIPH_AMBIG.test(s[k - 1])) k--;
+      const run = s.slice(i, k);
+      let seeded = 0;
+      if (/[\u0000-\u001f\u007f]/.test(run)) {
+        CIPH_WORD.lastIndex = 0; let m;
+        while ((m = CIPH_WORD.exec(run))) {
+          const d = unshift(m[0]);
+          if (/^[A-Za-z]{3,}$/.test(d) && cnt(d) >= 3) seeded++;
+        }
+      }
+      out += seeded ? unshift(run) + s.slice(k, j) : s.slice(i, j);
+      if (seeded) moved++;
+      i = j;
+    }
+    if (!moved) return null;
+    const a = out.replace(/\s{2,}/g, " ").trim(), b = s.replace(/\s{2,}/g, " ").trim();
+    return a && a !== b ? a : null;
+  };
+  let weld = 0, caps = 0, rot = 0, ciph = 0;
+  const weldAcks = new Set(), capsAcks = new Set(), rotAcks = new Set(), ciphAcks = new Set();
   for (let i = 0; i < SHARDS; i++)
     for (const [ack, e] of Object.entries(buckets[i])) {
       if (!e || !e.confident || !Array.isArray(e.funds)) continue;
@@ -735,12 +863,20 @@ function stripIssuerLead(iss) {
          * touched; the attestation maps are built from the stored names, so a
          * name repaired this run is attested in its damaged form either way */
         const rrep = rotRepair(f.name);
-        if (rrep) { f.name = rrep; rot++; rotAcks.add(ack); }
+        if (rrep) { f.name = rrep; rot++; rotAcks.add(ack); continue; }
+        /* asked LAST and only of a name no arm above touched. The three above
+         * all require the damaged form to be attested or unattested as ASCII
+         * words; a ciphered run contains a control character, which `whole`
+         * and `tok` key on as a word boundary, so none of them can have fired
+         * on one. The `continue` states that rather than relying on it. */
+        const xrep = cipherRepair(f.name);
+        if (xrep) { f.name = xrep; ciph++; ciphAcks.add(ack); }
       }
     }
   if (weld) console.log(`lost-space repair: ${weld} rows across ${weldAcks.size} plans`);
   if (caps) console.log(`all-caps lost-space repair: ${caps} rows across ${capsAcks.size} plans`);
   if (rot) console.log(`class-rotation repair: ${rot} rows across ${rotAcks.size} plans`);
+  if (ciph) console.log(`cipher-run repair: ${ciph} rows across ${ciphAcks.size} plans`);
 }
 
 /* THE SEC TICKER, RESOLVED ONCE AT MERGE AND STORED ON THE ROW.
