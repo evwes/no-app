@@ -219,7 +219,45 @@ const FUND_ER = [
   [/(ssga|state st(reet)?).*target (retire(ment)?|date)/i, 0.09],
   [/(ssga|state street).*(bond|aggregate).*index/i, 0.04],
   [/(ssga|state street).*index/i, 0.05],
-  [/(northern trust|nt |ntgi).*index/i, 0.05],
+  /* `nt ` had NO LEADING WORD BOUNDARY, so it matched the last two letters of
+   * any ordinary word before a space and published Northern Trust's collective-
+   * index estimate on another house's fund: 970 rows / 506 plans / 1,291,747
+   * participants / $3,688,721,567, across 730 distinct names, 0 of which lose
+   * their fee (every one resolves to a correctly attributed house or to the
+   * generic estimate). The live triggers are the filing abbreviations rather
+   * than anything exotic -- `INT ` for International or Intermediate (VANGUARD
+   * TOTAL INT STOCK INDEX, NUVEEN INT EQ INDEX R6, SCHWAB FUNDMTL INT SMMID
+   * INDEX), `Government `, `Management ` (Fidelity Management Trust Company's
+   * whole index range), `Retirement ` (MyWayRetirement Index 2060), `Quant `
+   * (PGIM Quant Solutions) and `Installment `.
+   *
+   * THIS IS THE SAME MECHANISM AS THE 2026-09-29 `gic` FIX IN THIS FILE, which
+   * had its boundary on the END and none at the START and so matched the tail of
+   * "strateGIC" across 5,604 rows. An audit of every short alternative in the
+   * table found six reachable from inside a longer word, and `nt` is the only
+   * one whose tail-matches are ordinary words: measured against the store's
+   * 415,861 distinct published names, `nt` appears as a word tail in 67,603 of
+   * them while `ssga` reaches 4, `dfa` 8, `acwi` 1, `msci` 3 and `ntgi` 0.
+   * OCCURRENCE IS NOT RESOLUTION, and asking the second question is what settled
+   * it: of those twelve, SEVEN actually resolve through the unbounded token --
+   * all six `dfa` ones plus `Lincoln National Life Insurance Co. SALASSgA S&P
+   * MidCp Idx Non-Ln` -- and every one is an OCR weld of the house's OWN name
+   * (`IDFA Real Estate Securities Portfolio`, `Empower Annuity Insurance
+   * CompaDFA Emerging Markets Core Equity I`), so there the missing boundary is
+   * RESCUING a damaged name and bounding it would withdraw a correct fee. The
+   * other five never reach the pattern. So the boundary is added here and
+   * deliberately NOT swept across the others.
+   *
+   * THE SIBLING RULE'S STRICTER FORM WAS MEASURED AND REJECTED. `ntSp500Re`
+   * nine lines below trusts a bare `nt` only next to "collective", and applying
+   * that here costs 52 rows / 37,289 participants of GENUINE Northern Trust
+   * attribution -- `NT Agg Bond Index Fund NL T4` (15 rows) is a real NT
+   * collective index fund that does not say "collective" -- and withdraws one
+   * entry's fee entirely ($424,363,958). The distinction is principled: that
+   * pattern asserts a TICKER, which is a claim about identity, where this one
+   * supplies a labelled estimate, and in this population a standalone `NT`
+   * beside `index` really is Northern Trust. */
+  [/(northern trust|\bnt\b|ntgi).*index/i, 0.05],
   [/(northern trust|ntgi).*(government|short[- ]term|stif)/i, 0.15],
   [/geode/i, 0.05],
   // --- T. Rowe Price ---

@@ -219,5 +219,51 @@ for (const n of ER_MUST_KEEP) {
   const got = ctx.__e(n);
   if (got == null) { console.log(`FAIL er want a number, got (blank) ${JSON.stringify(n)}`); fail++; }
 }
-console.log(`fund-er fixtures: ${MUST.length} must-resolve, ${MUST_NOT.length} must-not-resolve, ${ER_MUST_BLANK.length} must-blank-fee, ${ER_MUST_KEEP.length} must-keep-fee, ${fail} failures`);
+
+/* ---- fees pinned to an exact VALUE ------------------------------------------
+ * The two tables above test only whether a fee is PRESENT, which cannot see a
+ * defect that publishes the WRONG number — and the 2026-10-01 `nt ` defect was
+ * exactly that: a short alternative with no LEADING word boundary matched the
+ * last two letters of "ManagemeNT ", "InvestmeNT ", "GovernmeNT " and the
+ * abbreviation "INT " for International, so 970 rows / 506 plans / 1,291,747
+ * participants carried Northern Trust's 0.05 collective-index estimate on a fund
+ * of another house. Sibling of the 2026-09-29 `gic` fix, whose boundary was on
+ * the end and missing at the start.
+ *
+ * These pin the number on both sides of that boundary: the ordinary words that
+ * must NOT reach the Northern Trust arm, and the genuine NT names that must. */
+const ER_MUST_EQUAL = [
+  /* a word merely ENDING in -nt may not be read as Northern Trust */
+  ["Management 500 Index Fund", 0.03],
+  ["Fidelity Management Trust Company 500 Index Fund", 0.03],
+  ["John Hancock Asset Management 500 Index Fund", 0.03],
+  ["VANGUARD TOTAL INT STOCK INDEX", 0.06],
+  ["NUVEEN INT EQ INDEX R6", 0.06],
+  ["Intermediate Government Bond Index Fund", 0.06],
+  ["SCHWAB FUNDMTL INT SMMID INDEX", 0.04],
+  ["MyWayRetirement Index 2060 R", 0.1],
+  ["PGIM Quant Solutions Large-Cap Index Z", 0.1],
+  ["Shelton Capital Management Nasdaq-100 Index Fund", 0.1],
+  ["{Dimensional} DFA US Large Company Installment Index Fund", 0.3],
+  /* ...and Northern Trust itself must keep its estimate, including the forms
+   * that do NOT say "collective" — requiring that word was measured at a cost of
+   * 52 rows / 37,289 participants of genuine attribution and rejected */
+  ["Northern Trust Collective Aggregate Bond Index Fund", 0.05],
+  ["NT Collective S&P 500 Index Fund", 0.05],
+  ["NT Agg Bond Index Fund NL T4", 0.05],
+  ["NTGI Collective Russell 1000 Index", 0.05],
+  /* the audit found five further short tokens reachable from inside a word. Of
+   * their twelve live occurrences, SEVEN actually resolve through the token and
+   * every one is an OCR weld of the house's OWN name, so bounding those would
+   * withdraw a CORRECT fee — they are pinned here to keep it. (The other five
+   * never reach the pattern at all; occurrence is not resolution.) */
+  ["IDFA Real Estate Securities Portfolio Institutional", 0.3],
+  ["Empower Annuity Insurance CompaDFA Emerging Markets Core Equity I", 0.3],
+  ["Lincoln National Life Insurance Co. SALASSgA S&P MidCp Idx Non-Ln", 0.05],
+];
+for (const [n, want] of ER_MUST_EQUAL) {
+  const got = ctx.__e(n);
+  if (got !== want) { console.log(`FAIL er want ${want}% got ${got}% ${JSON.stringify(n)}`); fail++; }
+}
+console.log(`fund-er fixtures: ${MUST.length} must-resolve, ${MUST_NOT.length} must-not-resolve, ${ER_MUST_BLANK.length} must-blank-fee, ${ER_MUST_KEEP.length} must-keep-fee, ${ER_MUST_EQUAL.length} must-equal-fee, ${fail} failures`);
 process.exit(fail ? 1 : 0);

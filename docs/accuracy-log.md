@@ -32477,3 +32477,183 @@ and is faithful in the filing.
   answer can itself be wrong where the issuer names a trustee or a platform —
   the 2026-09-29 entry's own measured risk), and *a fee is SOURCED, never
   derived*. The next cycle's work is reading the 5,803, not re-measuring them.
+
+## 2026-10-01 (01:4xZ) — Reading the 5,803: the decision is per ISSUER, and there are 126 of them
+
+- **THE READ THE LAST ENTRY ASKED FOR, and its shape was the first finding.**
+  5,803 distinct transformations is the count keyed on the RAW issuer string;
+  keyed on the FORM-STRIPPED firm — the string `issuerPricedER` actually uses —
+  it is **5,674**, over the same 37,039 rows. Either way the number of DECISIONS
+  is neither: there are **126 distinct issuers**, and **{Vanguard} 17,808 rows
+  and {Fidelity} 15,249 are 33,057 of 37,039 (89%)**, each pricing its own funds.
+  The correctness question is *does this firm's price belong on this holding*, so
+  it is answered per issuer, and 126 issuers were all read.
+- **356 rows (0.96%) sit outside the five plain houses** (Vanguard, Fidelity,
+  BlackRock, Schwab, State Street) and that is where the trustee/platform risk
+  the 2026-09-29 entry names had to live. Most of it is a genuine correction:
+  **`{Fidelity Investments} Government Money Market Fund` → 0.42 is SPAXX's real
+  gross expense ratio** (274 rows / 469,990 ppl), `{Fidelity Freedom} Index 2040
+  Fund IPR` → **0.12** is that Institutional Premium class's real figure (36
+  rows), `{Blackrock Lifepath} Index 2050` → **0.09** is the K unit class's.
+- **AND READING IT FOUND A DEFECT THAT IS LIVE TODAY AND HAS NOTHING TO DO WITH
+  THE PRE-EMPTION** — see the entry below. `{Fidelity Management} 500 Index Fund`
+  publishes **0.05**, which is neither Fidelity's 0.015 nor the generic 0.03, and
+  chasing where 0.05 comes from is what found it. *The queued item was a call
+  order; reading its population found a wrong number already on the page.*
+- **FOUR FAMILIES IN THE 356 STILL NEED JUDGMENT and are NOT resolved by the fix
+  below.** (1) **a bank MONEY-MARKET DEPOSIT ACCOUNT has no expense ratio at
+  all** — `{Schwab Savings} Money Market Deposit Account`, 63 rows, where the
+  published 0.2 and the specific 0.26 are both wrong and the right answer is
+  blank. (2) **a Northern Trust COLLECTIVE TRUST priced as a fund** — `{MFB NT
+  COLLECTIVE LONG-TERM GOVT BD} INDEX FUND-NON-LENDING`, 3 rows but **594,565
+  participants**, which is the queued collective-trust item intersecting this
+  one. (3) `{T. Rowe Price} Stable Value Fund CTF A` moves 0.35 → 0.30 and **both
+  numbers are fabrications on this record** — the stable-value item, owner-gated.
+  (4) `{Schwab Capital} Target 2030 Index Fund` → 0.04 against a published
+  Schwab target-date fee of 0.08, 8 rows / 159 ppl, unsettled.
+- **The pre-emption itself therefore stays UNSHIPPED**, and now for a sharper
+  reason than "it should be read": its own population contains a live wrong
+  number that the fix would propagate, and three families whose correct answer is
+  BLANK rather than either value. Fix the number first.
+
+## 2026-10-01 (01:5xZ) — The two ticker sources disagree about a different FUND, not a different class
+
+- **Wrong:** `lookupTicker` asks `fund-er.js` FIRST and the stored SEC `stk`
+  LAST, so **`fund-er.js` wins every disagreement**. Over the **257,558 published
+  rows where both sources assert**, they agree on 252,288 and **disagree on
+  5,270** — and the split that had never been asked is the finding:
+  **3,491 rows / 2,725 entries / 2,753 plans / 5,826,968 participants /
+  $36,740,275,720 publish a ticker belonging to a DIFFERENT REGISTERED SERIES**,
+  against 1,779 rows / 838 plans / 1,852,958 ppl that are the same series under a
+  different class. **0 rows have an unregistered side.**
+- **THE #526 CROSS-CHECK UNDERSTATED THIS.** It recorded *"every disagreement
+  read is the SEC being right about a share class"* — a statement about the CLASS
+  field. The registry's own SERIES names say otherwise: `Fidelity Total Bond K6`
+  publishes **FTBFX**, which the SEC registers as *FIDELITY INCOME FUND /MA/ ::
+  Fidelity Total Bond **Fund***, while the filing's own name resolves to **FTKFX**,
+  *:: Fidelity Total Bond **K6** Fund* — a separate registered series of the same
+  registrant, not a class of one. The whole K6 family is this shape (Total Bond
+  679 rows, Contrafund 522, Blue Chip Growth 383, Growth Company 106, Diversified
+  International 95, Balanced 137, Low-Priced Stock 68, Puritan 21), and so is
+  **`Vanguard PRIMECAP Core Fund` → VPMAX**, which belongs to *VANGUARD CHESTER
+  FUNDS :: Vanguard PRIMECAP Fund* where PRIMECAP **Core** is *VANGUARD FENWAY
+  FUNDS* — a different registrant, 19 rows.
+- **AND THE FEE FOLLOWS THE WRONG SYMBOL.** `Fidelity Total Bond K6` publishes
+  **0.45**, which is FTBFX's figure, so the symbol and the number both name the
+  retail fund. The same is true in the sameSeries half: **`Vanguard 500 Index
+  Inv` publishes VFIAX at 0.02** where the filing states the Investor class and
+  the SEC registers that class as VFINX, so **the number published is the table's
+  figure for the class WE assigned rather than for the class the filing states.**
+  Same shape on `Vanguard Small-Cap Index Inv` → VSMAX, `Vanguard Total Bond
+  Market Index Inv` → VBTLX, and the Wellington, Windsor II and PRIMECAP Investor
+  rows.
+  **I am deliberately NOT quoting the Investor-class figures, and that restraint
+  is the rule rather than caution:** vanguard.com is unreachable from the sandbox,
+  so naming them would be deriving a fee, and *a fee is SOURCED, never derived*.
+  What is measured here is the MISMATCH, not its size in basis points — and
+  supplying the size is what `data/fund-facts.json` exists for.
+- **Found by the standing participant-weighted draw** (seed 20261001010, pool
+  59,822 lineups / 89,744,230 participants) on **Bayada Home Health Care (43,227
+  ppl, 19 rows @ 0.990)**, whose menu reads clean end to end on NAMES and whose
+  `PIMCO Total Return II Fund Institutional Class` publishes **PTTRX** — *PIMCO
+  FUNDS :: PIMCO Total Return Fund*, no II — while its stored `stk` is **PMBIX**,
+  the registered Institutional class of *Total Return Fund II*. The other draw,
+  Butler America Aerospace (803 ppl, 29 rows @ 1.000), is immaculate.
+  *A draw that reads clean on names can still be wrong on numbers.*
+- **NOT SHIPPED — this is the owner-gated override item and the recommendation is
+  now split.** The standing refusal (2026-09-28, restated 2026-09-30 03:5xZ) was
+  that correcting the ticker alone leaves the retail FEE beside the right symbol,
+  and that still holds for the sameSeries half. **For the 3,491 different-SERIES
+  rows it is weaker:** the published symbol names a fund the filing does not,
+  which is a wrong fact rather than an imprecise one, and *a wrong number
+  outranks an absent one* was the reasoning that withdrew 10,387 American Funds
+  fee cells. **Recommendation: prefer `stk` where the two sources name different
+  SERIES, and withdraw the fee on those rows rather than carry the old fund's;
+  leave the class half to `fund-facts` per-class figures.** A session must not
+  move 5.8M participants' ticker cells unasked.
+- **Prevention:** the split is reproducible from the store alone —
+  `sec-funds.json`'s own series field answers *same fund or not* with no
+  downloads — and a positive control pins one pair on each side (PTTRX/PMBIX must
+  differ in series, VBTLX/VBMFX must share one) so a harness that loads one side
+  twice fails before it counts anything.
+
+## 2026-10-01 (02:1xZ) — `nt ` had no leading word boundary, so Northern Trust priced another house's fund
+
+- **Wrong:** `fund-er.js:222` read `/(northern trust|nt |ntgi).*index/i`. The
+  `nt ` alternative has a space closing it and **nothing opening it**, so it
+  matched the last two letters of any ordinary word before a space and published
+  **Northern Trust's 0.05 collective-index estimate on a fund of another house:
+  970 rows / 501 entries / 506 plans / 1,291,747 participants / $3,688,721,567**,
+  across **730 distinct names**.
+  The live triggers are filing abbreviations rather than anything exotic:
+  **`INT `** for International or Intermediate (`VANGUARD TOTAL INT STOCK INDEX`
+  33 rows, `NUVEEN INT EQ INDEX R6` 25, `SCHWAB FUNDMTL INT SMMID INDEX` 8),
+  **`Government `** (`Intermediate Government Bond Index Fund`, `BlackRock 1-3
+  Year Government Bond Index Fund`), **`Management `** — Fidelity Management
+  Trust Company's whole index range, and `Shelton Capital Management Nasdaq-100
+  Index Fund` — **`Retirement `** (Transamerica's `MyWayRetirement Index 2060`,
+  Voya's `flexPATH Index+`, `College Retirement Equities Fund Equity Index R1`),
+  **`Quant `** (`PGIM Quant Solutions Large-Cap Index Z`) and **`Installment `**.
+- **ALL 730 DISTINCT TRANSFORMATIONS READ, and 0 rows lose their fee** — every
+  one resolves either to a correctly attributed house (`SCHWAB FUNDMTL INT SMMID
+  INDEX` → Schwab's 0.04, `DFA US Large Company Installment Index Fund` →
+  Dimensional's 0.3, the Vanguard international and government-bond families →
+  0.06) or to the honest generic index estimate. Value transitions: 0.05 → 0.1 on
+  546 distinct, → 0.06 on 150, → 0.03 on 21, → 0.04 on 11, → 0.4 and → 0.3 on one
+  each. **The number often goes UP, and that is the point: an estimate derived
+  from the wrong manager is replaced by one that does not name a manager at all.**
+- **THE SAFETY CHECK IS THE WHOLE POPULATION, NOT A SAMPLE: exactly ONE changed
+  name mentions "northern" and reading it confirms the claim.** `MFC NORTHERN LTS
+  FD TR PFG FDLITY INT AM EQTY IND STR FD CL` is **Northern *Lights* Fund
+  Trust**, a third-party series trust, matched through `INT ` and not through
+  Northern Trust at all. No genuine Northern Trust attribution is lost.
+- **Change:** `nt ` → `\bnt\b`. **THE SIBLING RULE'S STRICTER FORM WAS MEASURED
+  AND REJECTED.** `ntSp500Re`, nine lines below, trusts a bare `nt` only next to
+  "collective" — and its own comment states why, that NT alone is too short to be
+  an unambiguous manager token. Applying that rule here costs **52 rows / 37,289
+  participants of GENUINE Northern Trust attribution** (`NT Agg Bond Index Fund
+  NL T4`, 15 rows, is a real NT collective index fund that never says
+  "collective") and **withdraws one entry's fee entirely, $424,363,958**. The
+  distinction is principled rather than convenient: that pattern asserts a
+  TICKER, a claim about identity, where this one supplies a labelled estimate.
+- **SAME MECHANISM AS THE 2026-09-29 `gic` FIX IN THIS FILE**, which had its
+  boundary on the END and none at the START and so matched the tail of
+  "strateGIC" across 5,604 rows / 7,324,367 participants. Two instances made it
+  worth auditing the whole table rather than patching a line: of 323 regex
+  literals in the fee table, **six short alternatives are reachable from inside a
+  longer word**, and `nt` is the only one whose tail-matches are ordinary words —
+  measured against the store's 415,861 distinct published names, **`nt` appears
+  as a word tail in 67,603 of them** while `ssga` reaches 4, `dfa` 8, `acwi` 1,
+  `msci` 3 and `ntgi` 0.
+- **AND OCCURRENCE IS NOT RESOLUTION — my own claim about those twelve was
+  unfounded until I tested it.** I wrote that all twelve are OCR welds where the
+  missing boundary RESCUES the row, having measured only that the names CONTAIN
+  the token. Bounding each token and re-asking: **seven of the twelve actually
+  resolve through it** — all six `dfa` ones plus `Lincoln National Life Insurance
+  Co. SALASSgA S&P MidCp Idx Non-Ln` — and for those seven the claim holds, every
+  one an OCR weld of the house's own name (`IDFA Real Estate Securities
+  Portfolio`, `Empower Annuity Insurance CompaDFA Emerging Markets Core Equity
+  I`) where a boundary would withdraw a CORRECT fee. The other five never reach
+  the pattern. So the boundary is added to `nt` alone, and that is now a measured
+  decision rather than an assertion. *A count of occurrences is not a count of
+  resolutions* — the sibling of *a stored field is not a published one*, and the
+  tell was a fixture of mine failing.
+- **WHAT IT EXPOSES, which is the queued fee item and composes with it:**
+  `Fidelity Management Trust Company Freedom Index 2035 IPR` now reads the generic
+  0.1 where the correct figure is **0.12** — exactly the number the pre-emption
+  read identified for that Institutional Premium class. This fix removes a false
+  attribution; the call-order fix would then supply the right one. **That is the
+  order: a wrong house first, the right number second.**
+- **Prevention:** `scripts/fund-er-test.mjs` gains a THIRD fixture table,
+  `ER_MUST_EQUAL`, which pins an exact VALUE. The two existing tables test only
+  whether a fee is PRESENT and so **could not see a defect that publishes the
+  wrong number** — this one went undetected through every green run of them.
+  18 cases: 11 ordinary words that must not reach the Northern Trust arm, 4
+  genuine NT names that must (including the two that do not say "collective"), 3
+  OCR welds that must keep their rescued answer. The negative control reverts the
+  boundary and **fails by name on exactly the 11 and holds all 7**. parser-gate
+  green (frozen tether 7/7), smoke green. `fund-er.js` has no twin — app.js's
+  only mention of Northern Trust is its kerning word list — so there is one
+  source and nothing to drift. **REPORT path only, and as a GUARANTEE:
+  `build-seo-pages.mjs` imports no `fund-er.js`, so a crawlable page cannot
+  render a per-fund ER under any input.**

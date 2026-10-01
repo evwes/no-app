@@ -895,6 +895,107 @@ from the cycle that would have cleared it.
   parser-gate, smoke, fund-er-test (46/26/19/18) green. **REPORT path only as a
   GUARANTEE: `build-seo-pages.mjs` never imports `fund-er.js`**; `git diff
   --stat p/` empty. `docs/accuracy-log.md` 2026-09-30 (11:5xZ).
+- **SHIPPED 2026-10-01 02:1xZ, `[skip ci]` — `nt ` HAD NO LEADING WORD BOUNDARY,
+  SO NORTHERN TRUST PRICED ANOTHER HOUSE'S FUND: 970 rows / 506 plans /
+  1,291,747 participants / $3,688,721,567.** `fund-er.js:222` was
+  `/(northern trust|nt |ntgi).*index/i` — a space closes `nt ` and **nothing
+  opens it** — so it matched the last two letters of any ordinary word and
+  published Northern Trust's 0.05 collective-index estimate. Triggers are filing
+  abbreviations: **`INT `** for International/Intermediate (`VANGUARD TOTAL INT
+  STOCK INDEX` 33 rows, `NUVEEN INT EQ INDEX R6` 25, `SCHWAB FUNDMTL INT SMMID
+  INDEX` 8), **`Government `**, **`Management `** (Fidelity Management Trust
+  Company's whole index range), **`Retirement `** (`MyWayRetirement Index 2060`,
+  Voya `flexPATH Index+`), **`Quant `**, **`Installment `**.
+  **All 730 distinct transformations read and 0 rows lose a fee** — each resolves
+  to a correctly attributed house or to the honest generic. The number often goes
+  UP, which is the point: *an estimate derived from the wrong manager is replaced
+  by one that names no manager.*
+  **THE SAFETY CHECK IS THE WHOLE POPULATION: exactly ONE changed name mentions
+  "northern" and it is `MFC NORTHERN LTS FD TR …` — Northern *Lights* Fund Trust,
+  matched through `INT `.** No genuine NT attribution is lost.
+  **SAME MECHANISM AS THE 2026-09-29 `gic` FIX** (boundary on the END, none at the
+  START, matching "strateGIC" across 5,604 rows), so the whole table was audited:
+  of 323 regex literals, **six short alternatives are reachable from inside a
+  word**, and `nt` is the only one whose tail-matches are ordinary words — 67,603
+  of the store's 415,861 distinct names against `ssga` 4, `dfa` 8, `acwi` 1,
+  `msci` 3, `ntgi` 0.
+  **AND OCCURRENCE IS NOT RESOLUTION — my claim about those twelve was unfounded
+  until tested.** I wrote that all twelve are OCR welds the boundary RESCUES,
+  having measured only that the names CONTAIN the token; bounding each and
+  re-asking, **seven actually resolve through it** (all six `dfa` plus one
+  `SALASSgA` row) and for those the claim holds — a boundary would withdraw a
+  CORRECT fee. The other five never reach the pattern. *A count of occurrences is
+  not a count of resolutions*, and a failing fixture of mine was the tell.
+  **THE SIBLING'S STRICTER RULE WAS MEASURED AND REJECTED:** trusting a bare `nt`
+  only beside "collective" (as `ntSp500Re` does) costs **52 rows / 37,289 ppl of
+  GENUINE NT attribution** (`NT Agg Bond Index Fund NL T4`) and withdraws one
+  entry's fee entirely ($424,363,958). That pattern asserts a TICKER; this one a
+  labelled estimate.
+  **Prevention: a THIRD fixture table, `ER_MUST_EQUAL`, pinning an exact VALUE** —
+  the two existing tables test only PRESENCE and so could not see a wrong number,
+  which is why this passed every green run. 18 cases, negative control fails by
+  name on exactly the 11 and holds all 7. parser-gate, smoke, fund-er-test
+  46/26/19/18/18 green. No twin (app.js's only "northern trust" is its kerning
+  list). **REPORT path only as a GUARANTEE.** `docs/accuracy-log.md` 2026-10-01
+  (02:1xZ).
+- **WHAT IT EXPOSES AND WHY THE ORDER IS THIS WAY:** `Fidelity Management Trust
+  Company Freedom Index 2035 IPR` now reads the generic 0.1 where the right figure
+  is **0.12** — the number the pre-emption read below identified for that
+  Institutional Premium class. This fix removes a wrong HOUSE; the call-order fix
+  supplies the right NUMBER. A wrong attribution first, the better figure second.
+- **THE 5,803 WERE READ 2026-10-01 01:4xZ, AND THE DECISION IS PER ISSUER — THERE
+  ARE 126 OF THEM.** 5,803 is the count keyed on the RAW issuer; keyed on the
+  FORM-STRIPPED firm (the string `issuerPricedER` uses) it is **5,674** over the
+  same 37,039 rows — and **{Vanguard} 17,808 + {Fidelity} 15,249 = 89%**, each
+  pricing its own funds. **356 rows (0.96%) sit outside the five plain houses**,
+  where the trustee/platform risk had to live, and most of that is a genuine
+  correction: `{Fidelity Investments} Government Money Market Fund` → **0.42 is
+  SPAXX's real gross ER** (274 rows / 469,990 ppl), `{Fidelity Freedom} Index 2040
+  Fund IPR` → 0.12, `{Blackrock Lifepath} Index 2050` → 0.09.
+  **FOUR FAMILIES STILL NEED JUDGMENT and the fix above does not resolve them:**
+  (1) **a bank MONEY-MARKET DEPOSIT ACCOUNT has no expense ratio at all** —
+  `{Schwab Savings} Money Market Deposit Account`, 63 rows, where 0.2 and 0.26 are
+  both wrong and the answer is BLANK; (2) a Northern Trust **COLLECTIVE TRUST**
+  priced as a fund, 3 rows but **594,565 ppl**, the queued CIT item intersecting;
+  (3) `{T. Rowe Price} Stable Value Fund CTF A` 0.35 → 0.30 where **both numbers
+  are fabrications** (owner-gated); (4) `{Schwab Capital} Target 2030 Index Fund`
+  → 0.04 against a published 0.08, 8 rows, unsettled.
+  **So the pre-emption stays UNSHIPPED for a sharper reason than "read it first":
+  its own population contained a live wrong number (now fixed above) and three
+  families whose correct answer is BLANK rather than either value.**
+- **MEASURED, OWNER-GATED, NOT SHIPPED 2026-10-01 01:5xZ — THE TWO TICKER SOURCES
+  DISAGREE ABOUT A DIFFERENT *FUND*, NOT A DIFFERENT CLASS.** `lookupTicker` asks
+  `fund-er.js` FIRST and the stored SEC `stk` LAST, so fund-er wins every
+  disagreement. Over the **257,558 rows where both assert** they agree on 252,288
+  and **disagree on 5,270**, and the split never asked before is the finding:
+  **3,491 rows / 2,753 plans / 5,826,968 ppl / $36,740,275,720 publish a ticker
+  belonging to a DIFFERENT REGISTERED SERIES**, against 1,779 / 838 plans /
+  1,852,958 ppl that are the same series under another class; **0 unregistered.**
+  **#526's cross-check UNDERSTATED THIS** — it recorded "the SEC being right about
+  a share class", a claim about the CLASS field, where the registry's SERIES names
+  say otherwise: `Fidelity Total Bond K6` publishes **FTBFX** (*:: Fidelity Total
+  Bond **Fund***) where the filing resolves to **FTKFX** (*:: Fidelity Total Bond
+  **K6** Fund*), a separate registered series. The whole K6 family is this shape
+  (Total Bond 679 rows, Contrafund 522, Blue Chip Growth 383, Balanced 137, Growth
+  Company 106, Diversified Intl 95, Low-Priced Stock 68, Puritan 21), and so is
+  **`Vanguard PRIMECAP Core Fund` → VPMAX**, a different REGISTRANT (Chester vs
+  Fenway), 19 rows.
+  **AND THE FEE FOLLOWS THE WRONG SYMBOL:** that row publishes 0.45, FTBFX's
+  figure. In the sameSeries half `Vanguard 500 Index Inv` publishes VFIAX at 0.02
+  where the filing states Investor (VFINX) — **the table's figure for the class WE
+  assigned, not the one the filing states.** The Investor-class figures are
+  deliberately NOT quoted: vanguard.com is unreachable from the sandbox and *a fee
+  is SOURCED, never derived*; what is measured is the MISMATCH, not its size.
+  **Found by the 01:0xZ draw** (seed 20261001010, pool 59,822 / 89,744,230) on
+  **Bayada Home Health Care (43,227 ppl, 19 rows @ 0.990)**, whose `PIMCO Total
+  Return II Fund Institutional Class` publishes **PTTRX** (*Total Return Fund*, no
+  II) while its `stk` is **PMBIX**, the registered Institutional class of Total
+  Return Fund II. Butler America Aerospace (803 ppl, 29 rows @ 1.000) is
+  immaculate. *A draw that reads clean on names can still be wrong on numbers.*
+  **RECOMMENDATION, owner's call: prefer `stk` where the two name different
+  SERIES and withdraw the fee on those rows rather than carry the old fund's;
+  leave the class half to `fund-facts` per-class figures.** A session must not move
+  5.8M participants' ticker cells unasked. `docs/accuracy-log.md` 2026-10-01.
 - **QUEUED 2026-10-01 00:1xZ, THE LARGEST HONESTY DEFECT CURRENTLY OPEN — THE
   GENERIC FEE ESTIMATE PRE-EMPTS THE HOUSE-SPECIFIC ONE, AND THE SITE PUBLISHES
   UP TO FOUR EXPENSE RATIOS FOR ONE TICKER: 196 of 1,174 tickers carry more than
