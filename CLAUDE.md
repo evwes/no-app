@@ -986,10 +986,74 @@ from the cycle that would have cleared it.
   source the project lacks** — the ticker is in the filed text, so using it is
   reading the filing, not deriving. Remaining: the predicate, its twin, a tether
   with a per-condition negative control, and the whole-store diff.
-- **QUEUED, SIZED, READ, NOT SHIPPED 2026-10-01 03:5xZ — A LOST SPACE INSIDE AN
-  ALL-CAPS FILED NAME: 163 rows / 146 plans / 321,605 participants /
-  $741,939,255 across 62 distinct transformations, ALL 62 READ and every one a
-  real fund-name repair.** `AMERICAN FUNDS NEWWORLD R6` (67 rows), `DODGE & COX
+- **SHIPPED AND MIRRORED 2026-10-01 04:2xZ (`b7b3645c → a8ab1078`), UNFORCED ON
+  BOTH CHECKS, data gate +0 / −0 — A LOST SPACE INSIDE AN ALL-CAPS FILED NAME:
+  147 rows / 126 entries / 132 plans / 299,782 participants / $721,375,392**
+  across 49 distinct transformations, all read. `AMERICAN FUNDS NEWWORLD R6` (68
+  rows), `DODGE & COX STOCKFUND X`, `JANUSHENDERSON TRITON N`, `GOLDMANSACHS US
+  MORTGAGES R6`, `FIDELITY BLUECHIP GROWTH`, `MSCIEAFE International Index`.
+  **#529 and `site-test` #124 both fired from the push on the exact commit and
+  were observed `in_progress`.**
+  **PRE-REGISTERED for #529:** the merge log prints `all-caps lost-space repair:
+  147 rows across 126 plans` and `all-caps repair: 3252 registered name words
+  available as the witness`; `sec tickers` **459,774 rows across 47,543 plans
+  (109,673 on a blank type cell)**, up 79 rows / 9 plans; `filed tickers` **2,166
+  / 75** unchanged; CONFIDENCE DIFF **+0 / −0**, `rows-dropped` 0; confident
+  **60,170**, HIGH **4**, warn 608, overshoot 372, dl 19, pv 100 — all unchanged.
+  `tkExact` may rise by at most 0.02 from the 79 new `stk`, and `tkShare` is a
+  1-in-20 sample so a hair of movement there is phase and not signal.
+  **THE DRAWN ROW IS REFUSED BY THE CEILING, NOT THE FLOOR:** its repaired whole
+  name is attested **1,299 times** while `VANGUARDTARGET` is itself attested
+  **eight**, so *a ceiling that reads repetition as evidence of correctness is fed
+  by repeated damage* — the floor-of-one lesson at a ceiling of two. The guard is
+  a **RATIO between two WHOLE NAMES**.
+  **AND THE RATIO ALONE WAS NOT ENOUGH, WHICH ONLY THE OUTCOME TEST COULD SHOW.**
+  It admitted `SMALLCAP WORLD R6 FUND` → `SMALL CAP WORLD R6 FUND` and that row
+  **LOST its ticker** — the SEC registers the series as `SMALLCAP WORLD FUND INC`,
+  one word, so American Funds' own spelling is the joined one. **Reading all 62
+  transformations did not catch it**; the whole-store ticker diff did. The arm now
+  asks an **INDEPENDENT WITNESS and no vocabulary** — a token the SEC registers
+  inside a fund's own name is a word and may never be split — which also refuses
+  `CONTRAFUND`, `EUROPACIFIC`, `LIFESTRATEGY`, `BLACKROCK`, `JPMORGAN`,
+  `MASSMUTUAL` and `ALLSPRING`. **It FAILS CLOSED**, and that branch was
+  exercised by accident when a harness context lacked `readFileSync`: the arm
+  skipped itself, said so, and the positive control failed by name.
+  **TWO CONDITIONS THAT LOOK LIKE GUARDS CANNOT FIRE and are labelled as such:**
+  a floor of 3 is subsumed by the ratio (the row's own name is attested at least
+  once), and both-halves-attested follows from the repaired name being published
+  at all — removing either changes **0 of the rows**, measured, so the second
+  stays only as a pre-filter.
+  **OUTCOME THROUGH ALL FOUR RESOLVERS, because the name is STORED and moves
+  every one:** `fund-er.js` **+9 tickers / −0 / 0 flipped** and **+18 fees / −0 /
+  70 CHANGED**; SEC `stk` **+79 / −0 / 0**; `ftk` **+0 / −0 / 0**. **All four
+  distinct fee changes are an EXISTING specific entry finally reaching a legible
+  name** — `/american funds.*new world/` → 0.57 against the generic 0.4 (68 rows),
+  `/fidelity government cash reserves/` → 0.25 against 0.2, MSCI EAFE 0.1 → 0.06
+  — and **two of the three move the fee UP**, the direction that cannot be a
+  flattering bias.
+  **A HARNESS ARTEFACT caught because its own list named the arm's two largest
+  members:** a factor sweep reported `NEWWORLD` and `STOCKFUND` as outside the
+  factor-3 set, because the baseline was filled during that iteration and the
+  comparison ran before it. The counts hold (254 / 193 / 163 / 135 / 45 / 34 / 15
+  at factors 1/2/3/5/10/25/100); the membership lists did not.
+  22 pins, **a negative control PER CONDITION** failing by name on exactly its own
+  cases (ratio → `EUROPACIFIC`; witness → exactly the two `SMALLCAP World` rows).
+  Real merge reproduces to the row; field by field the store moved `name` on 147
+  and `stk` on 79 **and nothing else**. **2 crawlable pages / 10,520 ppl** (Timken
+  7,861, Samtec 2,659), both read — and **`titleCase` had been lowercasing the
+  seam**, so the page showed an ordinary-looking word where the store showed
+  capitals, the same transform that hid v519's seam. parser-gate, smoke,
+  fund-er-test (46/26/19/18/18) green. `docs/accuracy-log.md` 2026-10-01 (04:2xZ).
+- **AND #528's VERDICT: the production merge reproduced the local one EXACTLY.**
+  `conclusion: success`, mirrored 04:2xZ unforced, data gate +0 / −0 by ack and by
+  plan; the coverage line **byte-identical** (confident 60,170, HIGH 4, warn 608,
+  overshoot 372, dl 19, pv 100, tkExact 36.18, tkComparable 3.27, tkShare 24.47);
+  `filed tickers` **2,166 rows / 75 plans** read out of the ARTIFACT, and diffing
+  `ftk` across all 64 shards against the commit I wrote gives **0 differing rows**.
+  `data/lineups/**` is not even in the data commit's file list.
+- **PREVIOUSLY QUEUED (superseded by the bullet above; its 163 / 146 / 321,605
+  figures are the pre-witness count and the shipped ones are 147 / 132 /
+  299,782):** `AMERICAN FUNDS NEWWORLD R6` (67 rows), `DODGE & COX
   STOCKFUND X` (16), `JANUSHENDERSON TRITON N` (8), `MFS NEWDISCOVERY VALUE FUND
   R6` (6), `GOLDMANSACHS US MORTGAGES R6`, `MSCIEAFE International Index`.
   Found by the 03:3xZ draw on **Texas Children's (21,233 ppl, 29 rows @ 0.990)**,

@@ -33030,3 +33030,107 @@ and is faithful in the filing.
   this plan alone; and **`LINCOLN STABLE VALUE` → 0.35 with a BLANK type cell**,
   which is the `gicRow`-reads-the-type item (4,782 rows / 7,839,651 ppl) in a
   plan drawn at random.
+
+## 2026-10-01 (04:2xZ) — The all-caps lost space, and the outcome test convicting my own rule twice
+- **Wrong:** Texas Children's (21,233 ppl) published `VANGUARDTARGET RETIREMENT
+  INCOME`. **147 rows / 126 entries / 132 plans / 299,782 participants /
+  $721,375,392** across 49 distinct transformations — `AMERICAN FUNDS NEWWORLD
+  R6` (68 rows), `DODGE & COX STOCKFUND X`, `JANUSHENDERSON TRITON N`,
+  `GOLDMANSACHS US MORTGAGES R6`, `FIDELITY BLUECHIP GROWTH`, `MSCIEAFE
+  International Index`.
+  v519's weld repair cannot see the family **by construction**: its seam needs a
+  lowercase letter followed by an uppercase one inside a word, and an all-caps
+  filed name never has one.
+- **Change:** `capsRepair` in `merge-4i`, beside `weldRepair` and disjoint from
+  it. The repair EVIDENCE transfers unchanged — does the repaired WHOLE NAME
+  stand alone elsewhere — and only the seam finder differs: split an unattested
+  token into two attested ones.
+  **THE DRAWN ROW IS REFUSED BY THE CEILING, NOT THE FLOOR, and that is the
+  transferable half.** Its repaired whole name is attested **1,299 times**, so
+  the floor is satisfied comfortably; what refuses it is `cnt(t) > 2`, the guard
+  that stops a CamelCase house name being split — and **`VANGUARDTARGET` is
+  itself attested EIGHT times.** *A ceiling that reads repetition as evidence of
+  correctness is fed by repeated damage* — the floor-of-one lesson (2026-09-28)
+  at a ceiling of two. So the test is a **RATIO between two WHOLE NAMES**:
+  the repaired form must be attested more than three times the damaged one.
+- **AND THE RATIO ALONE WAS NOT ENOUGH, WHICH ONLY THE OUTCOME TEST COULD SHOW.**
+  It admitted `SMALLCAP WORLD R6 FUND` → `SMALL CAP WORLD R6 FUND` and that row
+  **LOST its ticker**: the SEC registers the series as `SMALLCAP WORLD FUND INC`,
+  one word, so American Funds' own spelling is the joined one and the split
+  destroys the match. **Reading all 62 transformations did not catch it** —
+  `SMALL CAP WORLD` reads as correct to a human eye — and the whole-store ticker
+  diff did. *A transformation that looks right is not thereby a transformation
+  that resolves right.*
+  The fix asks an **INDEPENDENT WITNESS and no vocabulary**: a token the SEC
+  registers inside a fund's own name is a word and may never be split. It
+  refuses `SMALLCAP`, and independently refuses `CONTRAFUND`, `EUROPACIFIC`,
+  `LIFESTRATEGY`, `BLACKROCK`, `JPMORGAN`, `MASSMUTUAL` and `ALLSPRING`, which
+  the ratio had been carrying alone. **It FAILS CLOSED** — with no registry the
+  arm does nothing, because a repair with no witness is a guess — and that branch
+  was exercised accidentally and correctly: the scratchpad harness's vm context
+  lacked `readFileSync`, the arm skipped itself, said so in one line, and the
+  positive control failed by name.
+- **TWO CONDITIONS THAT LOOK LIKE GUARDS CANNOT FIRE, and they are labelled as
+  what they are rather than carried as reassurance.** (a) A floor of 3 on the
+  repaired name is SUBSUMED: the arm runs only over confident entries and the
+  maps are built from the same population, so the row's own name is attested at
+  least once and `w > joined * 3` already forces `w >= 4`. (b) The
+  both-halves-attested test is SUBSUMED too: if the repaired whole name is
+  published four times then each half appears as a token in those same rows.
+  **Removing either changes 0 of the 163 rows, measured**, so (b) stays only as a
+  PRE-FILTER and says so in the code. *Naming why a condition cannot fire is
+  worth more than carrying it.*
+- **OUTCOME THROUGH ALL FOUR RESOLVERS, because the name is a STORED field and
+  moves every one of them:** `fund-er.js` **+9 tickers / −0 / 0 flipped** and
+  **+18 fees / −0 / 70 CHANGED**; the SEC index **+79 `stk` / −0 / 0 flipped**;
+  the filed-symbol `ftk` **+0 / −0 / 0**.
+  **All FOUR distinct fee changes are an EXISTING specific entry finally reaching
+  a legible name, not a new number** — `/american funds.*new world/` → **0.57**
+  where the generic American Funds R6 pattern answered 0.4 (68 rows),
+  `/fidelity government cash reserves/` → **0.25** against the generic
+  money-market 0.2, and MSCI EAFE 0.1 → 0.06. **Two of the three move the fee
+  UP**, which is the direction that cannot be a flattering bias.
+- **A HARNESS ARTEFACT, caught because its own list contained the arm's headline
+  cases.** A factor-sensitivity sweep printed `AMERICAN FUNDS NEWWORLD R6` and
+  `DODGE & COX STOCKFUND X` as "not in the factor-3 set" when both are its two
+  largest members: the baseline set was filled during the factor-3 iteration and
+  the comparison ran at factors 1 and 2 BEFORE it. The counts (254 / 193 / 163 /
+  135 / 45 / 34 / 15 rows at factors 1/2/3/5/10/25/100) are sound; the membership
+  lists were meaningless, and a direct read of the two attestation counts settled
+  it in one script. *A sweep that compares against a baseline must fill the
+  baseline first.*
+- **Prevention:** 22 pinned cases in `scripts/merge-name-test.mjs`, sliced from
+  the shipped source rather than restated, with **a negative control PER
+  CONDITION, each failing BY NAME on exactly its own cases**: replacing the ratio
+  with a bare floor disagrees on `EUROPACIFIC GROWTH R6`, and dropping the
+  registry witness disagrees on exactly the two `SMALLCAP World` rows. Four
+  must-keeps pin the family the whole-name evidence refuses with no vocabulary of
+  words or places — `VARIATION MARGIN …`, `AUTONATION, INC`, `THE INTERPUBLIC
+  GROUP`, `NEWTOWER TRUST COMPANY`.
+  The real merge reproduces to the row: `all-caps lost-space repair: 147 rows
+  across 126 plans`, `sec tickers` 459,695 → **459,774**, CONFIDENCE DIFF
+  **+0 / −0**, `rows-dropped` 0. Field by field against HEAD the store moved
+  `name` on 147 rows and `stk` on 79 **and nothing else**; the three index files
+  differ only in `generated`.
+  **TWO crawlable pages change, 10,520 participants**, both read: The Timken
+  Company (7,861) `Fidelity Bluechip Growth` → `Fidelity Blue Chip Growth` at
+  $141,403,397, and Samtec (2,659) `Dodge & Cox Stockfund X` → `Dodge & Cox Stock
+  Fund X` at $22,162,984. **`titleCase` had been lowercasing the second half**,
+  so the page rendered the seam as an ordinary word where the store at least
+  showed it in capitals — the same display transform that hid v519's seam.
+  parser-gate, smoke and fund-er-test (46/26/19/18/18) green.
+
+## 2026-10-01 (04:1xZ) — #528 verdict: the production merge reproduced the local one exactly
+- `conclusion: success`, data commit `b7b3645c`, **mirrored 04:2xZ UNFORCED on
+  both checks**, data gate +0 / −0 by ack and by plan.
+- **PRE-REGISTERED AND PASSED:** the coverage line is **byte-identical** —
+  confident 60,170, lineups 59,822, entries 65,479, HIGH 4, warn 608, overshoot
+  372, overshootTrust 12, aggRow 113, dl 19, pvTopShare 100, `tkExact` 36.18,
+  `tkComparable` 3.27, `tkShare` 24.47.
+- **The run-only figure was read out of the ARTIFACT rather than the log** (the
+  merge log's blob host is `connect_rejected`): `filed tickers` reads **2,166
+  rows across 75 plans** in the run's own store, exactly as registered, and
+  diffing `ftk` row by row across all 64 shards against the commit I wrote gives
+  **0 differing rows — 0 mine only, 0 theirs only.** `data/lineups/**` does not
+  even appear in the data commit's file list, which is the same fact stated more
+  strongly: *the production merge reproduced the local one byte for byte.*
