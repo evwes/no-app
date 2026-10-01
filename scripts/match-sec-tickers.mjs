@@ -360,6 +360,31 @@ export function buildIndex(indexPath) {
     const p = managerPhrase(String(name).split(" :: ")[0]);
     if (p) MANAGERS.add(p);
   }
+  /* THE REGISTRY'S OWN WORDS, for the join repair below: every token of three or
+   * more letters the SEC spells as ONE word anywhere in a registrant, series or
+   * share-class name. It is the SAME witness v529's all-caps arm uses to REFUSE
+   * splitting `SMALLCAP`, read here in the opposite direction to license JOINING
+   * `Small Cap` — one witness, both directions.
+   *
+   * THREE LETTERS, AND SIX SHIPPED FIRST AND WAS REFUTED BY ITS OWN CONTROL.
+   * Six looked safe — "a shorter join is not evidence of anything" — and at a
+   * six-letter floor the witness changed 0 verdicts, which made it decoration.
+   * Lowered to one letter on the SEAM it then refused 135 correct repairs in 80
+   * plans, every one a broken font splitting a SHORT word: `M id` -> Mid,
+   * `C ap` -> Cap, `Stoc k` -> Stock, `DF A` -> DFA, `FID GNM A` -> GNMA,
+   * `Ins T` -> Inst. A guard can fire in the WRONG DIRECTION, and only the
+   * whole-store control shows which.
+   *
+   * AND IT READS THE CLASS-NAME COLUMN TOO, which the first version did not —
+   * so `Class`, `Inst` and `Admiral` were missing from a set meant to be "the
+   * registry's own spelling", and the control named them: `C lass R5`,
+   * `Clas s R6`, `CLA SS R6` all stood refused. Half a registry is not the
+   * registry. */
+  const words = new Set();
+  for (const row of j.funds)
+    for (const field of [row[0], row[3]])
+      for (const t of String(field || "").split(/[^A-Za-z]+/))
+        if (t.length > 2) words.add(t.toLowerCase());
   /* ticker -> the series it is registered under, for resolveFiledTicker below.
    * The symbol is the key here rather than a derived name, which is the one
    * place in this file where a lookup is exact by construction. */
@@ -369,7 +394,7 @@ export function buildIndex(indexPath) {
     const [entity, series] = String(name).includes(" :: ") ? String(name).split(" :: ") : ["", String(name)];
     byTicker.set(String(ticker).toUpperCase(), { ticker, entity, series, className: className || "" });
   }
-  return { bySeries, byLead, byYear, byTicker, managers: MANAGERS, memo: new Map(), generated: j.generated, source: j.source, rows: j.funds.length };
+  return { bySeries, byLead, byYear, byTicker, words, managers: MANAGERS, memo: new Map(), generated: j.generated, source: j.source, rows: j.funds.length };
 }
 
 /* THE FILING PRINTS THE TICKER, SO READING IT IS READING THE FILING.
@@ -507,7 +532,62 @@ export function resolveHolding(idx, filedName, issuer) {
     const r = resolveFaithful(idx, fixed, issuer);
     if (r) return r;
   }
-  return resolveFaithful(idx, filedName, issuer);
+  const faithful = resolveFaithful(idx, filedName, issuer);
+  if (faithful) return faithful;
+  /* THE FILING SPLIT A WORD THE REGISTRY JOINS, and this runs LAST rather than
+   * first — which is the whole difference from the misspelling repair above.
+   * `of American` is ESTABLISHED as a typo by its own vocabulary, so an answer
+   * the faithful path gives it is an answer to a name no fund has, and the
+   * repair must pre-empt. A JOIN is speculative: `Small Cap World` is a
+   * perfectly ordinary spelling, so the faithful answer is always preferred and
+   * this arm only ever fills a blank. Strictly additive BY CONSTRUCTION — it is
+   * unreachable unless `resolveFaithful` returned null.
+   *
+   * Penn Engineering & Manufacturing's ten `JPMorgan Smart Retirement <year>
+   * Fund` rows are 55.9% of its menu and resolve to nothing, because the SEC
+   * registers the series as `JPMorgan SmartRetirement 2035 Fund`, one word.
+   *
+   * ONLY AN EXACT ANSWER IS TAKEN. A comparable answer is an approximation of a
+   * name we have already altered, which is two inferences deep, and the merge
+   * would not store it anyway. */
+  for (const cand of joinCandidates(idx, filedName)) {
+    const r = resolveFaithful(idx, cand, issuer);
+    if (r && !r.comparable) return r;
+  }
+  return null;
+}
+
+/* Candidate spellings in which ONE adjacent token pair has been joined, where
+ * the registry spells that join as a word. Bounded: a name yields at most one
+ * candidate per seam and the seams are few.
+ *
+ * THE OBVIOUS GUARD — "both halves are registered words on their own, so
+ * joining might destroy a real name" — WAS MEASURED AND REFUSED. It splits the
+ * population 1,526 / 180 and its *risky* half is dominated by CORRECT repairs:
+ * `Small` and `Cap`, `Smart` and `Retirement` are each registered words
+ * somewhere, yet joining them is right every time. Do not reinstate it.
+ * What makes the arm safe is not a guard on the seam but the OUTCOME: the
+ * original must resolve to nothing and the join must resolve EXACTLY. */
+function joinCandidates(idx, filedName) {
+  const out = [];
+  if (!idx || !idx.words) return out;              // fail closed, no witness
+  const toks = String(filedName || "").trim().split(/\s+/);
+  if (toks.length < 3) return out;                 // a two-token name has no remainder to corroborate
+  for (let k = 0; k < toks.length - 1; k++) {
+    const a = toks[k].replace(/[^A-Za-z]/g, ""), b = toks[k + 1].replace(/[^A-Za-z]/g, "");
+    /* BOTH HALVES NEED ONLY ONE LETTER, and a floor of three was shipped first
+     * and REFUTED BY ITS OWN NEGATIVE CONTROL. Dropping the floor admitted 196
+     * rows / 91 plans / 110,706 participants and all 181 distinct were read: a
+     * broken font splits a word anywhere, so the short half is the common case
+     * — `Grow th`, `T arget`, `M arket`, `Schw ab`, `FIDELIT Y`, `Admira l`,
+     * `Investo r`, `V anguard`, `Incom e`, `U .S. A ggregate`. ZERO of the 196
+     * changed an existing answer; every one filled a blank. The floor was
+     * protecting nothing and costing all of them. */
+    if (!a.length || !b.length) continue;
+    if (!idx.words.has((a + b).toLowerCase())) continue;
+    out.push([...toks.slice(0, k), a + b, ...toks.slice(k + 2)].join(" "));
+  }
+  return out;
 }
 
 function resolveFaithful(idx, filedName, issuer) {
@@ -1170,6 +1250,101 @@ const SELFTEST_FT = [
   ["TOTAL Return Bond Fund Class I", "—"],
 ];
 
+/* The join arm with ONE of its conditions dropped, written out in full rather
+ * than produced by patching the shipped function, so a control cannot quietly
+ * repair what it is meant to detect — the failure this file already records on
+ * the lead control. Exported so the SAME variant can be run over the whole
+ * store, because every one of the four controls was DECORATIVE against pins I
+ * chose from memory: a pin set tests the cases its author already imagined, and
+ * the store is what says which cases exist. */
+export function joinVariantFor(idx, name, iss, jdrop) {
+  if (!jdrop) return resolveHolding(idx, name, iss);
+  const fixed = repairFiledName(name);
+  if (fixed) { const r = resolveFaithful(idx, fixed, iss); if (r) return r; }
+  const faithful = resolveFaithful(idx, name, iss);
+  /* "faithless" asks the join FIRST, which is the ordering the misspelling
+   * repair uses and the wrong one here: a join is speculative, so a faithful
+   * answer must always win. */
+  if (faithful && jdrop !== "faithless") return faithful;
+  const toks = String(name || "").trim().split(/\s+/);
+  if (toks.length >= 3) {
+    for (let k = 0; k < toks.length - 1; k++) {
+      const a = toks[k].replace(/[^A-Za-z]/g, ""), b = toks[k + 1].replace(/[^A-Za-z]/g, "");
+      /* the shipped floor is ONE letter; the "floor" control raises it to three,
+       * which is what the arm shipped with until the control priced it */
+      const floor = jdrop === "floor" ? 3 : 1;
+      if (a.length < floor || b.length < floor) continue;
+      if (jdrop !== "witness" && !idx.words.has((a + b).toLowerCase())) continue;
+      const cand = [...toks.slice(0, k), a + b, ...toks.slice(k + 2)].join(" ");
+      const r = resolveFaithful(idx, cand, iss);
+      if (r && (jdrop === "takecomparable" || !r.comparable)) return r;
+    }
+  }
+  return faithful || null;
+}
+
+/* THE JOIN ARM. Pinned on both sides, and added because NOT ONE of the cases
+ * above reaches it — every one of them already resolves, and this arm runs only
+ * where nothing does, so the existing tables could not have seen it.
+ *
+ * The must-gains are the families read whole in the 1,638-row population: the
+ * brand joins (SmartRetirement, SmallCap, LargeCap, MassMutual, AllSpring,
+ * CommoditiesPlus) and the OCR SPLITS, which are the half that closes the
+ * 2026-09-30 residue item (`Adm iral`, `Retirem ent`, `PRINCI PAL`).
+ *
+ * The must-keeps are each refused by a DIFFERENT condition, so each control
+ * below has something that can fail:
+ *   - `Variation Margin Receivable` — `Vari`+`ation` is NOT a registered word,
+ *     so the witness refuses it; without the witness this becomes `Vari ation`
+ *     and the whole v529 destruction list reopens.
+ *   - `Mid Cap Index Fund` — the halves are under three letters, and `midcap`
+ *     IS registered, so only the floor refuses it.
+ *   - `American Funds Growth Fund of America R6` — resolves faithfully, so the
+ *     arm is never reached; it pins the ordering.
+ *   - `Fidelity Contrafund` — resolves COMPARABLE (the class is unstated), and
+ *     a comparable answer must not be taken from an altered name. */
+const SELFTEST_JOIN = [
+  ["JPMorgan Smart Retirement 2035 R6", "", "SRJYX"],
+  ["JP Morgan Smart Retirement Income R6", "", "JSIYX"],
+  ["American Funds Small Cap World R6", "", "RLLGX"],
+  ["Principal Small Cap Growth I R6", "", "PCSMX"],
+  ["Principal Large Cap Growth I R6 Fund", "", "PLCGX"],
+  ["Mass Mutual US Government Money Market Fund", "", "MKSXX"],
+  ["PIMCO Commodities Plus Strategy Instl", "", "PCLIX"],
+  ["Vanguard 500 Index Adm iral", "", "VFIAX"],                       // OCR split
+  ["Vanguard Short-Term Treas ury Adm", "", "VFIRX"],                 // OCR split
+  ["PRINCI PAL BLUE CHIP CL R6", "", "PGBHX"],                        // OCR split
+  ["American Funds New Perspec tive R6", "", "RNPGX"],                // OCR split
+  ["Large Cap Index Adm iral", "Vanguard", "VLCAX"],                  // split + issuer
+  /* ONE CASE PER CONDITION, AND EVERY ONE WAS TAKEN FROM THE STORE BY THE
+   * CONTROL THAT NAMED IT. The four pins written here from memory first —
+   * `Variation Margin Receivable Account`, `Mid Cap Index Fund`, a faithful
+   * American Funds name and a bare `Fidelity Contrafund` — ALL FOUR PASSED
+   * under every variant, which made all four controls decoration: a pin set
+   * tests the cases its author already imagined.
+   *
+   * the FLOOR: with a three-letter floor this is refused, because the split
+   * left `Grow` beside a two-letter `th` */
+  ["Vanguard Grow th Index Adm", "", "VIGAX"],
+  /* the ORDERING: a faithful answer must win. Asking the join first moves this
+   * to PSSIX — Principal's fund — for a holding whose filing says Empower, and
+   * does the same to 66 rows across 66 plans. */
+  ["Empower S&P Small Cap 600 Index Inst", "", "MXERX"],
+  /* ONLY AN EXACT ANSWER: the join offers FCNTX*, the retail class of a name
+   * that states no class, and a comparable answer to a name we have already
+   * altered is two inferences deep. 2,599 rows sit behind this condition. */
+  ["Fidelity Contra Fund", "", "—"],
+  /* THE WITNESS, AND THIS PIN IS A COST RATHER THAN A WIN. Dropping the witness
+   * resolves this to BAGIX, correctly — `Ins T` is `Inst`. It stays refused
+   * because `inst` is a FILER abbreviation the registry never spells, and the
+   * witness is what bounds the candidate set to the registry's own vocabulary.
+   * Its whole measured cost is 7 rows in 7 plans, all abbreviations of this
+   * shape: `M KT`, `T ot`, `AD M`, `M M`, `A Dm`, `A F`. Named, not rounded
+   * away — and the pin exists so that if the witness is ever widened, the 7
+   * are what moves. */
+  ["Baird Aggregate Bond Ins T", "", "—"],
+];
+
 if (process.argv.includes("--selftest")) {
   const idx = buildIndex(INDEX);
   let bad = 0, n = 0;
@@ -1216,6 +1391,22 @@ if (process.argv.includes("--selftest")) {
     n++;
     const got = ftVariant(name) || "—";
     if (got !== want) { bad++; console.log(`FAIL want ${want.padEnd(8)} got ${got.padEnd(8)} ${name}`); }
+  }
+  /* The join arm, shipped or with ONE of its conditions dropped. Every variant
+   * is written out here in full rather than produced by patching the shipped
+   * function, so a control cannot quietly repair what it is meant to detect —
+   * the failure this file already records on the lead control. */
+  const jdrop = process.argv.includes("--nowitness") ? "witness"
+    : process.argv.includes("--nofloor") ? "floor"
+    : process.argv.includes("--faithless") ? "faithless"
+    : process.argv.includes("--takecomparable") ? "takecomparable" : "";
+  const joinVariant = (name, iss) => joinVariantFor(idx, name, iss, jdrop);
+  if (jdrop) console.log(`NEGATIVE CONTROL: join condition "${jdrop}" dropped — it must fail by name on exactly the cases it reaches`);
+  for (const [name, iss, want] of SELFTEST_JOIN) {
+    n++;
+    const r = joinVariant(name, iss);
+    const got = r ? r.ticker + (r.comparable ? "*" : "") : "—";
+    if (got !== want) { bad++; console.log(`FAIL want ${want.padEnd(8)} got ${got.padEnd(8)} ${name}${iss ? `  [iss ${iss}]` : ""}`); }
   }
   console.log(bad ? `\n${bad} of ${n} FAILED` : `selftest: ${n}/${n} ok`);
   process.exit(bad ? 1 : 0);
