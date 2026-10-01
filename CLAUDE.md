@@ -1213,6 +1213,75 @@ from the cycle that would have cleared it.
   slices app.js's body from source and imports the canonical suppressors.
   ***A transcription of a shipped expression rots as the expression grows; three
   instruments rot three times.***
+- **SHIPPED AND MIRRORED 2026-10-01 14:2xZ (`66da4f3e → 9da3b858`), UNFORCED ON
+  BOTH CHECKS, data gate +0 / −0 BY ACK AND BY PLAN — THE FEE HALF OF THE
+  CONTRACT RULE SHIPPED FOR ONE WORDING: 117 rows / 117 plans / 191,275
+  participants / $749,120,771 stop being shown a fabricated expense ratio**, and
+  **every one of the 117 publishes exactly 0.35** — `fund-er.js`'s generic
+  `/stable value|guaranteed|gic/` fallback, the same number withdrawn from 89
+  rows on 2026-09-29 and refused again by v196. **0 tickers move, 0 shown types
+  move.**
+  **BOTH HALVES OF THIS RULE SHIPPED IN THE SAME COMMIT WITH DIFFERENT REACH.**
+  `annuityFeeIsGuaranteeOnly` opens with `ANNUITY_CONTRACT_NAME.test(s)`, so
+  `investment contract` / `insurance contract` is outside the FEE rule BY
+  CONSTRUCTION — while `isInvestmentContractRow`, four lines below it, was
+  written for all three wordings DELIBERATELY, its own comment recording that
+  shipping only the phrase an item was filed under is v131's mistake. **The TYPE
+  half learned the lesson and the FEE half, written the same hour, did not** —
+  the eighth instance of *a fix for one phrasing of a class is not a fix for the
+  class.*
+  **THE PREDICATE IS REUSED AND NOT RETYPED:** the gate now also tests
+  `CONTRACT_DESIGNATION_NAME`, the TYPE rule's **own constant**, so the two
+  halves cannot drift apart again; `ANNUITY_CONTRACT_NAME` stays separate
+  because `isAnnuityContractRow` uses it to TYPE a row `Annuity contract`.
+  **ALL 89 DISTINCT NAMES READ**, not one a registered fund — Baptist Healthcare
+  19,840 ppl, Parkview Health 18,080, Bob Evans 15,749, Steel Dynamics 11,783.
+  **IT IS NOT THE OWNER-GATED STABLE-VALUE ITEM AND MUST NOT BE READ AS A BITE
+  OUT OF IT.** That one re-derives this cycle at **4,669 rows / 4,525 plans /
+  7,389,704 ppl** (4,571 at 0.35) and STAYS GATED; these 117 additionally carry
+  the filing's own word `contract`, which is the condition already decided.
+  **MY FIRST FIX WAS INERT AND THE MEASUREMENT SAID SO BEFORE IT WAS WRITTEN
+  UP.** The escape hatch really is circular — `isInvestmentContractRow` stands
+  down when the remainder `namesAFund`, and the only thing making `Guaranteed
+  Income Fund` name a fund is the generic fallback whose number is the problem —
+  so I proposed screening `namesAFund` with `annuityFeeIsGuaranteeOnly`. **It
+  reaches 0 rows**, because that function answers FALSE on every one of them for
+  the gate reason above. *The tool for the circularity was unreachable, not
+  absent*, and a clean zero reported on the query.
+  5 must-suppress + 2 must-keep pins **added because NOT ONE of the 15 existing
+  cases says `investment` or `insurance` contract**; the sharpest is `Fully
+  benefit-responsive investment contract Key Guaranteed Portfolio Fund` six
+  lines above the must-KEEP `Key Guaranteed Portfolio Fund` — same fund name,
+  the filing's own word `contract` the whole difference. Negative control fails
+  by name on exactly the 5 and holds all 16 others. parser-gate, smoke,
+  fund-er-test (62/26/19/18/18) green. **REPORT path only as a GUARANTEE**;
+  `git diff --stat p/` empty. `docs/accuracy-log.md` 2026-10-01 (14:2xZ).
+- **AND A FOURTH HAND-WRITTEN TWIN DELETED BY A REGENERATION, caught in the same
+  cycle by the smoke tether.** `isLoanVocabularyRow` (11:4xZ) and
+  `isBankDepositRow` (01:5xZ) were typed into app.js's GENERATED block, and this
+  cycle's `gen-generic-twin.mjs` run replaced the block and took both — the page
+  threw `isLoanVocabularyRow is not defined`, so **every row on every plan page
+  would have failed to render.** Both are now VERBATIM SLICES with their hooks
+  in `MARK_ENDS` and a drift probe each, as `isCollectiveTrustName` and
+  `isLoanAnswerRow` were on 2026-09-30. **Four twins lost to three regenerations
+  is not a slip, it is the default outcome of hand-writing one**, so the rule is
+  now stated at the TOP of the generator: *a predicate app.js twins is sliced
+  there on the day it ships and never typed into app.js.* The tether caught all
+  four on the very next change — the argument for the tether, not an excuse for
+  the habit.
+- **THE 14:0xZ DRAW, and both of its apparent findings resolved without a new
+  defect.** Seed 2026100114; Bob Evans Restaurants (15,749 ppl, 13 rows @ 1.000)
+  and Oracle (101,985 ppl, 40 rows @ 0.911). Bob Evans' guaranteed-income row is
+  what found the item above. **Oracle's FOUR PAIRS OF NEAR-IDENTICAL VALUES are
+  a 50/50 manager split and not a double render, and the pair differing by
+  exactly $1,000 is what says so** — `DFA Emerging Markets Core Equity`
+  $107,457,000 beside `RBC Emerging Markets Equity Fund Class I` $107,456,000 is
+  a $214,913,000 sleeve halved and rounded, which a parse artifact cannot
+  produce. *Recorded because two rows with the same value will look like a
+  defect to the next cycle too.* Also live in the same menu and already queued:
+  `Empower Trust Company, LLC` at 3.0% of Bob Evans (the bare-house class) and
+  `BlackRock Inflation Protected Bond Instl` resolving to nothing (the matcher
+  family).
 - **SHIPPED AND MIRRORED 2026-10-01 14:0xZ (`8b491049 → 6cbde627`), UNFORCED ON
   BOTH CHECKS, data gate +0 / −0 BY ACK AND BY PLAN — A CONTROL CHARACTER WHERE A
   SPACE BELONGS: 128 rows / 32 plans / 139,537 participants / $169,299,036**, and
