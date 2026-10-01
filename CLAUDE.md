@@ -1213,6 +1213,43 @@ from the cycle that would have cleared it.
   slices app.js's body from source and imports the canonical suppressors.
   ***A transcription of a shipped expression rots as the expression grows; three
   instruments rot three times.***
+- **THE 11:4xZ DRAW FOUND ONE REAL DEFECT AND REFUTED MY GENERALISATION OF IT IN
+  THE SAME PASS.** Seed 20261001114; Edelman Financial Engines (2,315 ppl, 15
+  rows @ 0.991) and Campbell Transportation (711 ppl, 30 rows @ 0.928, OCR'd).
+  **THE DEFECT IS ONE ROW: Edelman publishes
+  `Vanguard Windsor\u0003,,\u0003$GPLUDO\u0003)XQG` at $16,761,074 = 2.8% of
+  its menu WITH AN EXPENSE RATIO OF 0.3 BESIDE IT.** Shift the printable range by
+  one and the filing says **`Vanguard Windsor II Admiral Fund`**, whose real
+  figure is 0.26 — the legible prefix `Vanguard Windsor` is what `fundER`
+  matched, and **the share class, on which the whole fee depends, is in the
+  unreadable part.**
+  **AND THE OBVIOUS GENERALISATION IS FALSE, measured before anything was
+  written.** *"A control character means the name is unreadable"* reaches **128
+  rows / 32 plans / 139,537 ppl**, of which 46 publish a ticker or a fee — and
+  **45 of those 46 are LEGIBLE names where `\u0003` is simply the SPACE**, every
+  answer correct (`Vanguard\u0003Target\u0003Ret\u00032065` → VLXVX,
+  `Fidelity 500 Index\u0003` → FXAIX, `Target Rtmt 2025\u0003` → VTTVX). *A
+  control character is not a signal about the name.* **Do not carry 128 or
+  139,537 forward.**
+  **WHAT IS LEFT IS THE CIPHER ENCODING ITSELF AND IT IS NOT SIZED.** A first
+  predicate was written and **abandoned because it matches almost every fund
+  name** — any name carrying ` - Adm` or `, Inc` satisfies it. It is my regex,
+  not a population, and **no number from it is recorded**. *An implausible match
+  rate is the tell, and the honest entry is the one with no figure in it.*
+  **A CLEANER MEMBER IS VISIBLE IN THE SAME 128:** four rows named
+  `a(2) 7RWDO QXPEHU RI DFWLYH SDUWLFLSDQWV` — *"Total number of active
+  participants"* — and three more `g(1) FRPSOHWH WKLV LWHP`: **v193's Form 5500
+  COVER-PAGE family IN CIPHER**, which every arm that reads words is blind to by
+  construction.
+  **TWO OWNER-GATED ITEMS HAVE NAMED LIVE INSTANCES IN THE SAME DRAW:** Campbell
+  publishes **thirteen `<year> Target Date Retirement Fund` rows issued by
+  American Funds, 51.7% of its menu, 0 tickers and 0 fees** (the R-6 item and the
+  American Funds target-date gap in one plan), and **`T. Rowe Price` at 6.5% /
+  $2,312,673 typed `Collective trust`** is the bare-house class.
+  **AND THE 09:4xZ MANAGER-GATE FIX IS VISIBLY DELIVERING IN THE SAME MENU:**
+  `MFS Value R6` → **MEIKX** through the stored SEC field, the R6 class the
+  filing states. *A draw taken two hours after a ship is a cheap independent
+  check that it reached a reader.* `docs/accuracy-log.md` 2026-10-01 (12:0xZ).
 - **SHIPPED AND MIRRORED 2026-10-01 11:4xZ (`3fac688a → bc12604e`), UNFORCED ON
   BOTH CHECKS, data gate +0 / −0 BY ACK AND BY PLAN — THE LOAN ANCHOR WAS TOO
   STRICT: 1,488 rows / 1,465 plans / 1,168,452 participants / $1,769,996,593**
