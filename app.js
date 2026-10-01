@@ -727,6 +727,20 @@
     }
     const pm = s.match(TYPE_PREFIX);
     if (pm) { const rest = s.slice(pm[0].length).trim(); if (rest.split(/\s+/).length >= 2 && /[A-Za-z]{3}/.test(rest)) s = rest; }
+    /* verbatim twin of lib-disclose's OCR'd N/A tail strip — see there for the
+     * population, why `bwNoise` cannot reach a tail, and why one dropped token
+     * must be an N/A. The smoke test caught this arm missing here on two cases
+     * it already carried, which is the whole return on the tether. */
+    {
+      const toks = s.split(/\s+/);
+      const isNA = (t) => /^n[il1y]a$/i.test(t.replace(/[^A-Za-z]/g, ""));
+      const droppable = (t) => isNA(t) || /^[\d.,]{3,}$/.test(t)
+        || /^[^A-Za-z]*[a-z]{0,3}[^A-Za-z]*$/.test(t);
+      let k = toks.length, sawNA = false;
+      while (k > 0 && droppable(toks[k - 1])) { if (isNA(toks[k - 1])) sawNA = true; k--; }
+      const head = toks.slice(0, k);
+      if (sawNA && head.filter((t) => /[A-Za-z]{3}/.test(t)).length >= 2) s = head.join(" ");
+    }
     /* THE COMMA FAMILY, 2026-09-28. A comma after a COMPLETE vehicle type is a
      * caption separator, not part of a fund name: "Mutual Fund, Freedom Index
      * 2030", "Pooled Separate Account, TIAA Real Estate", "Money market fund,

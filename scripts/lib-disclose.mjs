@@ -652,6 +652,38 @@ export function cleanFiledName(name) {
   }
   const pm = s.match(TYPE_PREFIX);
   if (pm) { const rest = s.slice(pm[0].length).trim(); if (rest.split(/\s+/).length >= 2 && /[A-Za-z]{3}/.test(rest)) s = rest; }
+  /* THE OCR'd `N/A` COLUMN TRAILING A REAL FUND NAME, 2026-10-01.
+   *
+   * Chimes International (3,791 ppl, OCR'd) names its Vanguard target-date rows
+   * `Mutual fund NIA 391,719 (eb)`; elsewhere the debris trails a name that is
+   * entirely real — `Principal LifeTime 2035 RS Fund NIA`, `American Funds
+   * Fundamental Investors R3 Fund NIA`, `PIMCO Total Return RFund NIA`, `Total
+   * Bond Market NIA`. 363 rows / 56 plans / 133,681 participants, and this is a
+   * COVERAGE defect and not only an honesty one: 303 of them publish NO ticker
+   * and 277 no fee, because the welded debris breaks every lookup.
+   *
+   * `bwNoise` above already knows `NIA` and cannot reach these, because it is a
+   * REFUSAL inside the leading-caption arm — it declines to strip a caption whose
+   * remainder is noise, and never strips noise that TRAILS a name. *A fix for one
+   * position of a class is not a fix for the class*, the `(continued)` shape
+   * again, closed in the issuer column and left open in the name column.
+   *
+   * The rule drops tokens from the END and needs no vocabulary of funds: an OCR'd
+   * `N/A`, a bare figure, or short OCR bracket noise. What makes it THIS class
+   * rather than a general trailing-junk strip is that **at least one of the
+   * dropped tokens must be an N/A** — `NIA` is the OCR of a column header the
+   * filer left blank, and no registered fund is named NIA. A head of two real
+   * words must survive, so the strip can never leave a fragment. */
+  {
+    const toks = s.split(/\s+/);
+    const isNA = (t) => /^n[il1y]a$/i.test(t.replace(/[^A-Za-z]/g, ""));
+    const droppable = (t) => isNA(t) || /^[\d.,]{3,}$/.test(t)
+      || /^[^A-Za-z]*[a-z]{0,3}[^A-Za-z]*$/.test(t);   // OCR bracket noise, or pure punctuation
+    let k = toks.length, sawNA = false;
+    while (k > 0 && droppable(toks[k - 1])) { if (isNA(toks[k - 1])) sawNA = true; k--; }
+    const head = toks.slice(0, k);
+    if (sawNA && head.filter((t) => /[A-Za-z]{3}/.test(t)).length >= 2) s = head.join(" ");
+  }
   /* THE COMMA FAMILY, 2026-09-28. A comma after a COMPLETE vehicle type is a
    * caption separator, not part of a fund name: "Mutual Fund, Freedom Index
    * 2030", "Pooled Separate Account, TIAA Real Estate", "Money market fund,

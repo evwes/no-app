@@ -1332,8 +1332,25 @@ try {
      * about either shape; the last two were live on the page as holdings
      * named after a relative pronoun. */
     ["Mutual Fund 99,566.045 shs", "Mutual Fund 99,566.045 shs"],
-    ["Mutual fund NIA NIA 233,946 dy", "Mutual fund NIA NIA 233,946 dy"],
-    ["Mutual Fund nla nla nla 945", "Mutual Fund nla nla nla 945"],
+    /* TWO OF THOSE PINS MOVED 2026-10-01 AND THE JUSTIFICATION MATTERS, because
+     * updating a control is how a regression gets normalised. They were written
+     * to assert that the CAPTION is not stripped and the DEBRIS left standing as
+     * the holding's name — `Mutual fund NIA NIA 233,946 dy` must never become
+     * `NIA NIA 233,946 dy`. That intent is untouched and is now pinned directly,
+     * two lines below. What changed is the opposite half: the OCR'd N/A column is
+     * stripped and the caption KEPT, so the reader sees `Mutual fund` beside an
+     * issuer cell that names the fund, rather than a column header the filer left
+     * blank. The pin's intent is satisfied more fully than before, not relaxed. */
+    ["Mutual fund NIA NIA 233,946 dy", "Mutual fund"],
+    ["Mutual Fund nla nla nla 945", "Mutual Fund"],
+    /* The danger the two pins above were written for, asserted on its own so it
+     * cannot be lost when a later arm moves them again — and pinned at the value
+     * HEAD already produced rather than the one I expected. The N/A tail arm is
+     * TRAILING-anchored, so a debris-LED name never reaches it; what this string
+     * actually exercises is the pre-existing caption and leading-count arms, and
+     * their answer is untouched by this change (verified against HEAD). Two
+     * stored names lead with the debris, so the shape is real. */
+    ["NIA NIA 233,946 dy Mutual fund", "NIA 233,946 dy"],
     ["Investments measure at NAV", "Investments measure at NAV"],
     ["Mutual Fund that invests at least 80% of", "Mutual Fund that invests at least 80% of"],
     ["Mutual Fund investing in the domestic", "Mutual Fund investing in the domestic"],
