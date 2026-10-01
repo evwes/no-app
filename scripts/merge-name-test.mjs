@@ -22,10 +22,11 @@ import { fileURLToPath } from "node:url";
 const R = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const src = fs.readFileSync(`${R}/scripts/merge-4i.mjs`, "utf8");
 const i = src.indexOf("  const SEAM = /\\b[A-Za-z]{3,}");
-const j = src.indexOf("  let weld = 0;", i);
+const j = src.indexOf("  let weld = 0, caps", i);
 if (i < 0 || j < 0) throw new Error("slice moved");
 const body = src.slice(i, j);
 if (!/weldRepair/.test(body)) throw new Error("slice missed weldRepair");
+if (!/capsRepair/.test(body)) throw new Error("slice missed capsRepair");
 
 // the real store's attestation maps, built the way the block builds them
 const whole = new Map(), tok = new Map();
@@ -42,16 +43,28 @@ for (let s = 0; s < 64; s++) {
   }
 }
 function make(drop) {
-  const ctx = { buckets: [], SHARDS: 0, console };
+  /* the caps arm loads its registry witness with readFileSync, so the vm
+   * context needs it and the path must resolve from the repo root rather than
+   * from wherever this test was invoked — never a hardcoded sandbox path */
+  const ctx = { buckets: [], SHARDS: 0, console,
+    readFileSync: (f, enc) => fs.readFileSync(path.isAbsolute(f) ? f : `${R}/${f}`, enc) };
   vm.createContext(ctx);
   let b = body;
-  if (drop) b = b.replace("if ((whole.get(nk(rep)) || 0) >= 3) best = rep;", "best = rep;");
-  vm.runInContext(b + "\n; this.__w = weldRepair; this.__whole = whole; this.__tok = tok;", ctx);
+  if (drop === true) b = b.replace("if ((whole.get(nk(rep)) || 0) >= 3) best = rep;", "best = rep;");
+  /* the caps arm's ONE guard, replaced by the bare floor it looks like it could
+   * be — this is the variant that convicts 333 real fund names */
+  if (drop === "caps-noratio") b = b.replace("if (w <= joined * 3) continue;", "if (w < 3) continue;");
+  /* the WITNESS, which only the whole-store ticker diff could show was needed:
+   * without it `SMALLCAP WORLD R6 FUND` is split and LOSES RLLGX, because
+   * American Funds' own registered spelling of that series is the joined one */
+  if (drop === "caps-nowitness") b = b.replace("if (secWords.has(t.toLowerCase())) continue;", "");
+  vm.runInContext(b + "\n; this.__w = weldRepair; this.__c = capsRepair; this.__whole = whole; this.__tok = tok;", ctx);
   for (const [k, v] of whole) ctx.__whole.set(k, v);
   for (const [k, v] of tok) ctx.__tok.set(k, v);
-  return ctx.__w;
+  return String(drop || "").startsWith("caps") ? ctx.__c : ctx.__w;
 }
 const shipped = make(false), drifted = make(true);
+const caps = make("caps"), capsNoRatio = make("caps-noratio"), capsNoWitness = make("caps-nowitness");
 
 const CASES = [
   // must REPAIR — the lost space
@@ -95,6 +108,85 @@ for (const [inp, want] of CASES) {
 console.log(`  it now disagrees on ${broke.length} of ${CASES.length}:`);
 for (const b of broke) console.log(`    ${b}`);
 if (bad) process.exitCode = 1;
+
+/* ---------------------------------------------------------------------- *
+ * CONTROL for merge-4i's ALL-CAPS LOST-SPACE REPAIR — 2026-10-01 (04:1xZ).
+ *
+ * `weldRepair` cannot see this family BY CONSTRUCTION: its seam needs a
+ * lowercase letter followed by an uppercase one inside a word, and an all-caps
+ * filed name never has one. Texas Children's (21,233 ppl) published
+ * `VANGUARDTARGET RETIREMENT INCOME`.
+ *
+ * THE ARM HAS EXACTLY ONE GUARD and the control is built to prove that, not to
+ * decorate it: the repaired WHOLE NAME must be attested more than three times
+ * the damaged one. Replace it with the bare floor it resembles and it convicts
+ * the real fund names whose joined spelling is their actual spelling —
+ * EUROPACIFIC, CONTRAFUND, JPMORGAN, BLACKROCK, LIFESTRATEGY, SMALLCAP,
+ * MASSMUTUAL, ALLSPRING (333 transformations whole-store).
+ *
+ * The two conditions that look like guards cannot fire and are documented as
+ * such at the call site rather than tested here, because a test that cannot
+ * fail is decoration: a floor of 3 is implied by the ratio (the row's own name
+ * is attested at least once), and both-halves-attested follows from the
+ * repaired name being published at all.
+ */
+const CAPS_CASES = [
+  // must REPAIR — read in the store, all 62 distinct transformations reviewed
+  ["VANGUARDTARGET RETIREMENT INCOME", "VANGUARD TARGET RETIREMENT INCOME"],
+  ["AMERICAN FUNDS NEWWORLD R6", "AMERICAN FUNDS NEW WORLD R6"],
+  ["DODGE & COX STOCKFUND X", "DODGE & COX STOCK FUND X"],
+  ["JANUSHENDERSON TRITON N", "JANUS HENDERSON TRITON N"],
+  ["GOLDMANSACHS US MORTGAGES R6", "GOLDMAN SACHS US MORTGAGES R6"],
+  ["FIDELITY BLUECHIP GROWTH", "FIDELITY BLUE CHIP GROWTH"],
+  // must KEEP — the joined spelling IS the fund's name, and each of these is
+  // what the single guard exists to refuse
+  ["EUROPACIFIC GROWTH R6", null],
+  ["FIDELITY CONTRAFUND", null],
+  ["JPMORGAN LARGE CAP GROWTH R6", null],
+  ["BLACKROCK HIGH YIELD BOND INSTL", null],
+  ["VANGUARD LIFESTRATEGY GROWTH", null],
+  ["MASSMUTUAL SELECT MID CAP GROWTH R5", null],
+  ["ALLSPRING SPECIAL SMALL CAP VALUE R6", null],
+  ["PRINCIPAL SMALLCAP GROWTH R6", null],
+  /* THE CASE THE OUTCOME TEST FOUND AND READING COULD NOT: splitting this row
+   * loses RLLGX, because the SEC registers the series as `SMALLCAP WORLD FUND
+   * INC` and the joined spelling is American Funds' own */
+  ["SMALLCAP WORLD R6 FUND", null],
+  ["SMALLCAP World Fund Class R6", null],
+  // must KEEP — a real word and a real firm, which is what the whole-name
+  // evidence refuses without any vocabulary of words or places
+  ["VARIATION MARGIN ON OPEN CONTRACTS TO DATE - GAIN(LOSS)", null],
+  ["AUTONATION, INC", null],
+  ["THE INTERPUBLIC GROUP OF COMPANIES, INC", null],
+  ["NEWTOWER TRUST COMPANY MULTI-EMPLOYER PROPERTY TRUST", null],
+  // must KEEP — fewer than eight capitals in the token, so never a candidate
+  ["VANGUARD TARGET RETIREMENT 2040", null],
+  ["FIDELITY CONTRA FUND", null],
+];
+let capsBad = 0;
+for (const [inp, want] of CAPS_CASES) {
+  const got = caps(inp) || null;
+  if (got !== want) { capsBad++; console.log(`  FAIL  ${JSON.stringify(inp)}\n        want ${JSON.stringify(want)}\n        got  ${JSON.stringify(got)}`); }
+}
+console.log(`\nall-caps repair: ${CAPS_CASES.length - capsBad}/${CAPS_CASES.length} pinned cases`);
+
+console.log(`NEGATIVE CONTROL — replace the ratio with a bare attestation floor:`);
+const capsBroke = [];
+for (const [inp, want] of CAPS_CASES) {
+  const got = capsNoRatio(inp) || null;
+  if (got !== want) capsBroke.push(`${JSON.stringify(inp)} -> ${JSON.stringify(got)}`);
+}
+console.log(`  it now disagrees on ${capsBroke.length} of ${CAPS_CASES.length}:`);
+for (const b of capsBroke) console.log(`    ${b}`);
+console.log(`NEGATIVE CONTROL — drop the registry witness:`);
+const capsBrokeW = [];
+for (const [inp, want] of CAPS_CASES) {
+  const got = capsNoWitness(inp) || null;
+  if (got !== want) capsBrokeW.push(`${JSON.stringify(inp)} -> ${JSON.stringify(got)}`);
+}
+console.log(`  it now disagrees on ${capsBrokeW.length} of ${CAPS_CASES.length}:`);
+for (const b of capsBrokeW) console.log(`    ${b}`);
+if (capsBad) process.exitCode = 1;
 
 /* ---------------------------------------------------------------------- *
  * CONTROL for merge-4i's ISSUER LEADING-JUNK STRIP — 2026-09-30 (14:4xZ).

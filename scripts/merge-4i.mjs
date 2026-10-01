@@ -538,17 +538,105 @@ function stripIssuerLead(iss) {
     }
     return best;
   };
-  let weld = 0; const weldAcks = new Set();
+  /* THE SAME LOST SPACE INSIDE AN ALL-CAPS NAME, which `weldRepair` cannot see
+   * BY CONSTRUCTION. Its SEAM needs a lowercase letter followed by an uppercase
+   * one inside a word, and an all-caps filed name never has one — so Texas
+   * Children's (21,233 ppl) published `VANGUARDTARGET RETIREMENT INCOME`.
+   *
+   * The repair EVIDENCE transfers unchanged: does the repaired WHOLE NAME stand
+   * alone elsewhere, floor 3. Only the seam finder differs — split an
+   * unattested token into two attested ones.
+   *
+   * AND THE CEILING CANNOT TRANSFER, WHICH IS THE POINT. `weldRepair` refuses
+   * when the joined token is itself attested more than twice, because that is
+   * how a CamelCase house name (`BlackRock`, `LifePath`) is protected. Here the
+   * drawn row's joined token is attested EIGHT times and its repaired whole
+   * name 1,299 times — *a ceiling that reads repetition as evidence of
+   * correctness is fed by repeated damage*, the floor-of-one lesson at a
+   * ceiling of two. So the test is a RATIO between two WHOLE NAMES: the
+   * repaired form must be attested far more often than the damaged one.
+   *
+   * THE RATIO IS THE WHOLE GUARD AND IT IS THE ONLY ONE — measured, not
+   * asserted. Replacing it with a bare floor (repaired name attested >= 3)
+   * admits a further 333 transformations and they overwhelmingly DESTROY REAL
+   * FUND NAMES: `EUROPACIFIC` -> `EURO PACIFIC`, `CONTRAFUND` -> `CONTRA FUND`,
+   * `JPMORGAN` -> `JPM ORGAN`, `BLACKROCK` -> `BLACK ROCK`, `LIFESTRATEGY` ->
+   * `LIFE STRATEGY`, `SMALLCAP` -> `SMALL CAP`, `MASSMUTUAL` -> `MASS MUTUAL`,
+   * `ALLSPRING` -> `ALL SPRING`. All of those are attested in their joined form
+   * hundreds of times, which is exactly what the ratio reads.
+   *
+   * AND THE TWO CONDITIONS THAT LOOK LIKE GUARDS CANNOT FIRE, so they are named
+   * as what they are rather than carried as reassurance. (a) A floor of 3 on the
+   * repaired name is SUBSUMED: this runs only over confident entries and the
+   * maps are built from the same population, so the row's own name is attested
+   * at least once, and `w > joined * 3` already forces `w >= 4`. (b) The
+   * both-halves-attested test is SUBSUMED too: if the repaired whole name is
+   * published 4+ times then each half appears as a token in those same rows.
+   * Removing either changes 0 of the 163 rows, measured. (b) stays only as a
+   * PRE-FILTER — two map lookups instead of building a candidate string at
+   * every split point — and is labelled so no later reader mistakes it for
+   * protection.
+   *
+   * AND THE RATIO ALONE WAS NOT ENOUGH, which only the OUTCOME test could show.
+   * It admitted `SMALLCAP WORLD R6 FUND` -> `SMALL CAP WORLD R6 FUND` and that
+   * row LOST its ticker: the SEC registers the series as `SMALLCAP WORLD FUND
+   * INC`, one word, so American Funds' own spelling is the joined one and the
+   * split destroys the match. Reading all 62 transformations did not catch it —
+   * `SMALL CAP WORLD` looks right to a human eye — and the whole-store
+   * ticker diff did.
+   *
+   * So the arm asks an INDEPENDENT WITNESS and no vocabulary: a token the SEC
+   * registers inside a fund's own name is a word, and may never be split. It
+   * refuses `SMALLCAP`, and it independently refuses `CONTRAFUND`,
+   * `EUROPACIFIC`, `LIFESTRATEGY`, `BLACKROCK`, `JPMORGAN`, `MASSMUTUAL` and
+   * `ALLSPRING`, which the ratio was carrying alone. It FAILS CLOSED: without
+   * the registry the arm does nothing, because a repair with no witness is a
+   * guess. */
+  let secWords = null;
+  try {
+    const sf = JSON.parse(readFileSync("sec-funds.json", "utf8"));
+    secWords = new Set();
+    for (const r of (sf.funds || []))
+      for (const t of String(r[0] || "").split(/[^A-Za-z]+/)) if (t.length > 2) secWords.add(t.toLowerCase());
+    console.log(`all-caps repair: ${secWords.size} registered name words available as the witness`);
+  } catch (err) {
+    console.log(`all-caps repair: SKIPPED, no registry witness (${err.message})`);
+  }
+  const capsRepair = (name) => {
+    if (!secWords) return null;                        // fail closed, see above
+    const s = String(name || "").trim();
+    const joined = whole.get(nk(s)) || 0;
+    let best = null, bestScore = -1;
+    for (const m of s.matchAll(/\b[A-Z]{8,}\b/g)) {
+      const t = m[0];
+      if (secWords.has(t.toLowerCase())) continue;     // the SEC spells it joined: it is a word
+      for (let k = 3; k <= t.length - 3; k++) {
+        const L = t.slice(0, k), R = t.slice(k);
+        if (cnt(L) < 3 || cnt(R) < 3) continue;        // PRE-FILTER only, see above
+        const rep = s.slice(0, m.index) + L + " " + R + s.slice(m.index + t.length);
+        const w = whole.get(nk(rep)) || 0;
+        if (w <= joined * 3) continue;                 // repaired >> damaged
+        if (w > bestScore) { best = rep; bestScore = w; }
+      }
+    }
+    return best;
+  };
+  let weld = 0, caps = 0; const weldAcks = new Set(), capsAcks = new Set();
   for (let i = 0; i < SHARDS; i++)
     for (const [ack, e] of Object.entries(buckets[i])) {
       if (!e || !e.confident || !Array.isArray(e.funds)) continue;
       for (const f of e.funds) {
         const rep = weldRepair(f.name);
-        if (!rep) continue;
-        f.name = rep; weld++; weldAcks.add(ack);
+        if (rep) { f.name = rep; weld++; weldAcks.add(ack); continue; }
+        /* disjoint from the arm above by construction — an all-caps token has
+         * no case transition for SEAM to find — so the order cannot matter, and
+         * `continue` says so rather than relying on it */
+        const crep = capsRepair(f.name);
+        if (crep) { f.name = crep; caps++; capsAcks.add(ack); }
       }
     }
   if (weld) console.log(`lost-space repair: ${weld} rows across ${weldAcks.size} plans`);
+  if (caps) console.log(`all-caps lost-space repair: ${caps} rows across ${capsAcks.size} plans`);
 }
 
 /* THE SEC TICKER, RESOLVED ONCE AT MERGE AND STORED ON THE ROW.
