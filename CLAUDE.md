@@ -727,6 +727,91 @@ from the cycle that would have cleared it.
   trust-aware standalone script — the standalone's single trust is the one lineup
   v196 withdrew. **`matchQuote` 5,397 of which only
   1,785 are SHOWN to readers** — the condition/outcome pair shipped 2026-09-27.
+- **THE 23:2xZ DRAW, AND IT FOUND THE 05:4xZ SHIP'S DEFECT ONE SHARE CLASS ALONG
+  — QUEUED, SIZED, SPLIT, OWNER-GATED, NOT SHIPPED: a filing stating the plain
+  INSTITUTIONAL class publishes the ADMIRAL retail symbol, 2,767 rows / 1,571
+  entries / 8,441,775 participants / $52,790,525,018.** Seed 20261001232, pool
+  **59,822 published lineups / 91,581,640 ppl** weighted by `partEOY ||
+  participants`; **Hoag Memorial Hospital Presbyterian** (11,699 ppl, 35 rows)
+  and **Prospect Medical Holdings** (13,551 ppl, 28 rows), both clean at 0.997
+  and 0.990. Prospect publishes `Vanguard Sm Cap Index Inst Fd` → **VSMAX** and
+  `Vanguard Mid Cp Idx Instl Fund` → **VIMAX**, both ADMIRAL, a RETAIL class,
+  where the SEC registers the Institutional class as **VSCIX** and **VMCIX**.
+  The 05:4xZ ship covered Institutional **PLUS** (295 rows / 2,270,590 ppl);
+  *a fix for one share class is not a fix for the class* — the shape this record
+  has filed under POSITION, under COLUMN, under PHRASING and now under CLASS,
+  twice in one day.
+  **DO NOT CARRY 3,273 ROWS OR 14,759,239 PPL FORWARD AS THE CLASS.** That is the
+  raw hit count and **481 rows / 7,127,366 ppl / $175,145,739,186 of it is the
+  2026-09-21 demotion WORKING** — `Vanguard Institutional 500 Index Trust` →
+  VFIAX\* at **$45,398,177,338** is a collective trust whose registered
+  equivalent really is the 500 Index Fund. The dollar headline is almost entirely
+  that half. **TYPE CELL CORROBORATES THE SPLIT: not one collective-trust row is
+  in the unasterisked set** (2,233 `Mutual fund`, 524 blank, 7 `Cash /
+  short-term`, 3 `Company stock`).
+  **DECIDABLE WITHOUT AMBIGUITY, which is what makes the large half tractable:**
+  1,983 hits sit in series carrying BOTH `Institutional Shares` and
+  `Institutional Select Shares`, and a filing writing plain `Institutional` /
+  `Inst'l` / `Inst` means the class REGISTERED under that exact name, so an exact
+  class-name match settles it. **9 target symbols, 588 distinct filed names**:
+  VBTIX 734 rows / 4,062,751 ppl, VSCIX 583 / 4,043,494, VMCIX 504 / 3,039,998,
+  VTSNX 455 / 2,666,731, VIEIX 303 / 1,489,614, VITSX 183 / 859,776, + 5 rows.
+  The 25 NOT decidable are named: 14 are `Vanguard 500 Index Fund`, whose series
+  registers only `Institutional Select Shares` because the plain institutional
+  S&P 500 vehicle is a **separate registered series** (VINIX), and 11 are funds
+  with no institutional class at all.
+  **NO BETTER ANSWER IS ALREADY STORED, AND THAT ZERO WAS CONTROLLED BEFORE IT
+  WAS BELIEVED:** `stk` is absent on **2,767 of 2,767**, while the store carries
+  **477,627** `stk` rows overall and the very entry that produced the finding has
+  `MFEKX` on its MFS row. Unlike Bayada's PTTRX/PMBIX four hours earlier, the
+  correct symbol is NOT on the row.
+  **THE FEE IS NOT WRONG-BY-CLASS; IT IS CLASS-BLIND — the measurement that
+  decides the remedy.** Asked of the function the page calls, the bare name,
+  `… Admiral Shares` and `… Institutional Shares` return the **identical symbol
+  and the identical number** for all six material funds (VBTLX 0.04, VSMAX 0.05,
+  VIMAX 0.05, VTIAX 0.04, VEXAX 0.05, VTSAX 0.04). `fund-er.js` holds one entry
+  per fund with the Admiral symbol attached and **the class word is read by
+  NEITHER table.** So this is **not** the LifeStrategy case, where the fee
+  travelled to a fund with twice the equity exposure: correcting the symbol
+  cannot move the fee onto another fund's number. *A defect that looks like its
+  predecessor can differ in the one respect that decides the remedy.*
+  **FOUR ROUTES AND THE ONE THAT LOOKED FREE IS REFUSED BY ITS OWN FOOTNOTE.**
+  (1) **ticker only** — strictly better on the symbol, no worse on the fee, but
+  it moves 8.4M ticker cells and *a session must not do that unasked* (the rule
+  written for the 5,826,968-ppl different-SERIES item); (2) **ticker + a SOURCED
+  Institutional ER** — the right answer, and the job is **nine figures, six
+  material**, the smallest sourcing task on this record; `data/fund-facts.json`
+  is its designed home, refuses undated and unsourced figures, and **has been
+  empty since 2026-09-17**, while vanguard.com is unreachable from the sandbox,
+  so *a fee is SOURCED, never derived* makes it the `fund-facts` agent's;
+  (3) **withdraw** — the American Funds move, but that was a FABRICATED fee and
+  this is a correct fund under the wrong class label; (4) **demote to the
+  labelled comparable** — looked free, needs no source, 481 siblings already
+  carry it, and **REFUSED on reading `app.js:3100`**, whose footnote asserts
+  *"That holding is a collective trust or separate account — it has no ticker and
+  no published expense ratio"*, false of every one of these registered mutual
+  funds. ***The asterisk is not a generic "approximate" marker; its footnote
+  makes a specific claim about the VEHICLE***, so route 4 trades a wrong share
+  class for a wrong vehicle — and **every count would have scored it a win.**
+  **RECOMMENDATION, owner's call: route 1 now, route 2 as `fund-facts` fills in
+  the nine per-class figures — they compose.**
+  **AND THE DRAW HARNESS PRINTED `ratio 0.000` FOR BOTH PLANS, which is my field
+  name and not the data** — a stored entry carries no `ratio`, so it had to be
+  recomputed as menu-sum over `assetsEOY`. *A clean zero reports on the query*,
+  and two independent plans reading exactly 0.000 is the tell.
+  **ALSO LIVE IN THE SAME TWO MENUS, all of it already queued:** Hoag's
+  `American Fund Europacfic Growth R6` resolves to **nothing** while Prospect's
+  correctly-spelled `Am Fds EuroPacific Grth R6 Fd` → RERGX at 0.46 — *the filer
+  dropped one letter and the row lost its fund*, and `Europacfic` IS an ordered
+  subsequence of `EuroPacific`, so the LifeStrategy reach rule's shape reaches
+  it; `PGIM Total Return Bond Fund - Class R6` ($24,364,986) resolves to nothing
+  with the class stated; `Vanguard Equity-Income Fund Admiral Shares` publishes
+  **VEIRX with no fee**; five further rows resolve to nothing (the matcher
+  family). **And two shipped guards are visibly working:** Hoag's `2039; interest
+  ranges from 4.25% to` renders as *"Participant loans — not a menu choice"* —
+  the 11:4xZ ship reaching a reader twelve hours later — and all twelve of
+  Prospect's Vanguard target-date TRUST rows carry the asterisk rather than
+  asserting the mutual fund. `docs/accuracy-log.md` 2026-10-01 (23:4xZ).
 - **BUILT, TRACED AND REVERTED 2026-10-01 23:3xZ — THE CATEGORY-TABLE FIX IS
   ALREADY IN `lib-4i` AS v74, AND THE GATE IT NEEDS DOES NOT EXIST. NOTHING WAS
   PUSHED; `PARSER_VERSION` IS BACK AT 196.** The queued rule — *a description
