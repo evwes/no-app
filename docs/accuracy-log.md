@@ -33723,3 +33723,38 @@ Allegis 193,721, Oracle 101,985, Intermountain 84,616, Dollar Tree 83,276,
 **Circle K 71,309 — the plan whose immaculate menu exposed this.**
 REPORT path only as a GUARANTEE. selftest 153/153, parser-gate, smoke and
 fund-er-test (62/26/19/18/18) green.
+
+## 2026-10-01 (09:5xZ) — the draw corrected two of my own readings, and the instrument was stale again
+
+Seed 20261001094: **Baylor Scott & White (57,248 ppl, 26 rows @ 1.000)** and
+**Trader Joe's (73,932 ppl, 16 rows @ 1.000)**.
+
+**`December 2034` at $58,243,000 looked like an unguarded participant-loan row.
+The shipped guard answers TRUE.** `isLoanMaturityRow` fires on it, and
+`app.js:2569` and `build-seo-pages.mjs:256` both wire it, so those readers are
+already told it is a loan. **What was stale is the DRAW HARNESS — a FOURTH
+incomplete transcription in `apppath.mjs`**, whose `loanRow` carried only
+`LOAN_ROW` and `isLoanDescriptionRow` where app.js also has `isLoanAnswerRow`
+and `isLoanMaturityRow`. Not cosmetic: `loanRow` feeds BOTH `shownType` and
+`suppressedBefore`, so the instrument would also have over-reported a fee on
+exactly those rows. Repaired by importing both from `lib-disclose` rather than
+restating them. ***Ask the guard before sizing a defect***, and *a transcription
+of a shipped expression rots as the expression grows* — four times now in this
+one harness.
+
+**And `iShares U.S. Aggregate Bond Index Fund` → WFBIX read as a wrong house on
+the strength of the symbol's letters.** The registry says `BlackRock Funds III
+:: iShares U.S. Aggregate Bond Index Fund`, Class K — the legacy Wells Fargo
+symbol carried over on acquisition. **Correct.** ***A ticker is not a reading;
+the series name is*** — recorded about the code on 2026-09-28 and met by the
+person reading it twice now, two days apart.
+
+**What the draw did find is already queued and none of it new:** `Dodge & Cox
+Stock Fund Class X` → **DODGX asserted** where the SEC registers Class X as
+DOXGX, and `Vanguard Inst Total Intl Stk Mrkt Idx TRBSWVTI` → **VTIAX, the
+ADMIRAL retail class**, on a name stating Inst — two live instances of the
+owner-gated different-class item; and Trader Joe's four `American Funds …` rows
+publishing 0.26–0.40 while **stating no share class at all**, the owner-gated
+R-6 inconsistency. **One small NEW member:** `All investments held in` typed
+`Mutual fund` at $2,023,000 — a wrapped-sentence tail as a holding, v191's
+`Statements` family one phrase along, 0.0% of its menu.

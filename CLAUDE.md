@@ -1213,7 +1213,110 @@ from the cycle that would have cleared it.
   slices app.js's body from source and imports the canonical suppressors.
   ***A transcription of a shipped expression rots as the expression grows; three
   instruments rot three times.***
-- **QUEUED 2026-10-01 08:4xZ, CAUSE DIAGNOSED, NOT SHIPPED — THE MANAGER GATE
+- **SHIPPED AND MIRRORED 2026-10-01 09:4xZ (`de63cf2d → 0b3e9b1a`), UNFORCED ON
+  BOTH CHECKS, data gate +0 / −0 BY ACK AND BY PLAN — THE MANAGER GATE REFUSED
+  ITS OWN EXACT MATCHES: 13,591 rows / 9,943 plans / 11,640,610 participants /
+  $19,246,511,528 gain a named fund, 0 lost, 0 flipped, 0 fee moves, 0 asterisks
+  moved.** The largest ticker change on this record. The data ships in the SAME
+  COMMIT as the code (#528's precedent) because the local merge's whole effect
+  was attributed field by field; **#533 and `site-test` #128 both fired on
+  `0b3e9b1a` and #533 was observed `in_progress`**, so the run confirms the
+  production merge rather than delivering it.
+  **THE CAUSE WAS INSTRUMENTED, NOT REASONED ABOUT** — every `return null` in
+  `resolveUncached` labelled, and the first one reached named itself. **The key
+  is the registrant's LEGAL ENTITY name and a filing writes the BRAND**
+  (`MFS SERIES TRUST IV` → `mfs series`); `mgrKeys` carries
+  `managerPhrase(SERIES)` too but `filedMgrs` is drawn from MANAGERS, built from
+  registrants ALONE, so that key is unreachable BY CONSTRUCTION.
+  **AND THE WHOLE POPULATION IS AN ACRONYM HOUSE, which states the mechanism
+  exactly:** `managerPhrase` extends past a lead of four characters or fewer, and
+  an acronym brand IS such a lead — all fourteen families are two to four letters
+  (MFS, AMG, TCW, AQR, GMO, RBC, CRM, BBH, SA, LKCM, YCG, RMB, EA, AGF).
+  **THE RULE IS ONE SENTENCE, NO VOCABULARY AND NO THRESHOLD: a series-leading
+  token is a HOUSE when every registrant that registers a series under it is
+  itself named after it** — 234 of 1,256 qualify — plus the series' own manager
+  phrase present in the filed name as a whole phrase.
+  **TWO SIMPLER RULES WERE REFUTED BY READING THEIR OWN OUTPUT and both are
+  pinned so the refutation cannot be undone silently.** *"The series leads with
+  its OWN registrant's leading token"* is satisfied for free by a registrant
+  named after its product and published **`American Funds Washington Mutual R6`
+  → AMERICAN MUTUAL FUND, a DIFFERENT FUND**; *"the series-leading token is
+  RARE"* measures rarity and not house-ness, and handed **`BlackRock Floating
+  Rate Income Portfolio Class K` to John Hancock's**; a third, *"the token leads
+  SOME registrant"*, gave `{Goldman Sachs} Short Duration Fund` American
+  Century's.
+  **THE PHRASE CONDITION IS LOAD-BEARING AND ITS CONTROL NAMES WRONG ANSWERS**
+  (without it `MFS Massachusetts Investor Growth Fund` resolves to `MFS Growth
+  Fund`), and **its cost is named**: `Utilities (MFS)` and `{AQR Capital
+  Management} Managed Futures Strategy Fund` are refused because the house sits
+  in a bracket or an issuer cell.
+  **AND IT CARRIES A SAFETY PROPERTY THE GATE OTHERWISE SUPPLIES BY HAND:** a
+  bucket is shared by every registrant with the same series key, so under this
+  test **the bucket is SINGLE-HOUSE by construction** and no competitor's class
+  can be returned.
+  **0 WRONG HOUSES OVER THE WHOLE POPULATION, screened not sampled:** of 2,595
+  distinct pairs, 409 name another house and **all 409 are MFS's own legal name
+  `Massachusetts Financial Services` (206) or a TRUSTEE in the issuer cell**
+  (Fidelity 65, Empower 65, Principal 14, Vanguard 9) — the answer following the
+  FILED NAME, which is `resolveHolding`'s own *add a manager, never replace one*.
+  **All 202 distinct claims read**, the MFS R3/R4/R6 ticker ladder exact
+  throughout; the 30 whose filed name lacks the house token read individually,
+  every one the wrapped-name shape, nine of them `M FS Lifetime <year> R6` where
+  **v531's join arm repairs the broken font and this arm then admits it — two
+  arms composing.**
+  **MY FIRST FOOTPRINT WAS A PROXY AND LOW BY A FACTOR OF TEN, 1,648 against
+  15,830.** It judged the gate's FIRST refused candidate; `resolveHolding` calls
+  `resolve` several times and the arm applies inside every one. ***A capture at
+  an inner site is not the predicate's verdict when the caller calls it many
+  times*** — *measure through the function the caller calls*, a fifth time.
+  Stored **15,830 rows / 11,273 entries** against **13,591 reaching a reader**,
+  reconciled rather than conflated. 20 pins **because not one of the 132
+  existing cases reaches the arm**; a negative control per condition failing by
+  name on exactly its own cases (3 / 4), and **the variant clears the resolver's
+  memo on both sides — not housekeeping, because `resolve` memoizes on the filed
+  name and every drop would otherwise pass.** **Two of three new class pins were
+  written from memory and were wrong.** Real merge reproduces it: `stk` on
+  15,830 rows **and nothing else**. Largest: Paychex Retirement 645,304, Allegis
+  193,721, Oracle 101,985, **Circle K 71,309 — the plan whose immaculate menu
+  exposed it.** **PRE-REGISTERED:** `sec tickers: 477625 rows across 47915 plans
+  (113423 on a blank type cell)`; `filed tickers` 2,166 / 75 unchanged;
+  CONFIDENCE DIFF +0 / −0, rows-dropped 0; confident 60,170, HIGH 4, warn 603,
+  overshoot 372, dl 19, pv 100 unchanged; **tkExact 36.34 → 37.2**, tkComparable
+  3.27, **tkShare 24.47 exactly** (a separate one-argument sample that cannot
+  read the stored field). REPORT path only as a GUARANTEE.
+  `docs/accuracy-log.md` 2026-10-01 (09:4xZ).
+- **AND THE 09:4xZ DRAW CORRECTED TWO OF MY OWN READINGS BEFORE EITHER WAS
+  FILED AS A DEFECT.** Seed 20261001094, Baylor Scott & White (57,248 ppl, 26
+  rows @ 1.000) and Trader Joe's (73,932, 16 rows @ 1.000).
+  **(1) `December 2034` at $58,243,000 looked like an unguarded loan row and the
+  shipped guard answers TRUE** — `isLoanMaturityRow` fires, app.js:2569 and
+  `build-seo-pages.mjs:256` both wire it, so those readers are already told it is
+  a participant loan. **What was stale is the DRAW HARNESS: a FOURTH incomplete
+  transcription in `apppath.mjs`**, whose `loanRow` had only `LOAN_ROW` and
+  `isLoanDescriptionRow` where app.js also has `isLoanAnswerRow` and
+  `isLoanMaturityRow` — and that feeds `shownType` AND the fee suppression, so it
+  would have over-reported a fee on the same rows. Repaired by importing both
+  from `lib-disclose`. *Ask the guard before sizing a defect*, and *a transcription
+  of a shipped expression rots as the expression grows.*
+  **(2) `iShares U.S. Aggregate Bond Index Fund` → WFBIX read as a wrong house on
+  the strength of the symbol's letters, and the registry says `BlackRock Funds
+  III :: iShares U.S. Aggregate Bond Index Fund`, Class K** — the legacy Wells
+  Fargo symbol carried over on acquisition. **Correct.** *A ticker is not a
+  reading; the series name is* — met for the second time on this record, two days
+  apart.
+  **WHAT THE DRAW DID FIND, all of it already on the queue and none of it new:**
+  `Dodge & Cox Stock Fund Class X` → **DODGX asserted** where the SEC registers
+  Class X as DOXGX, and `Vanguard Inst Total Intl Stk Mrkt Idx TRBSWVTI` →
+  **VTIAX, the ADMIRAL retail class**, on a name stating Inst — two live
+  instances of the owner-gated different-class item; and Trader Joe's four
+  `American Funds ...` rows publishing 0.26–0.40 while **stating no share class
+  at all**, the owner-gated R-6 inconsistency, 73,932 ppl in this plan alone.
+  **One small NEW member:** `All investments held in` typed `Mutual fund` at
+  $2,023,000 — a wrapped-sentence tail as a holding, v191's `Statements` family
+  one phrase along, 0.0% of the menu.
+- **PREVIOUSLY QUEUED (superseded by the two bullets above; its 4,590-row figure
+  is the first proxy's and the shipped one is 13,591 reaching a reader out of
+  15,830 stored):** **QUEUED 2026-10-01 08:4xZ, CAUSE DIAGNOSED, NOT SHIPPED — THE MANAGER GATE
   REFUSES ITS OWN EXACT MATCHES: 4,590 rows / 3,294 plans / 4,924,153
   participants / $8,448,467,583 would newly name a fund.** This is the
   fund-identification gap the queue held at 139,910 rows / 38.7M ppl with the
