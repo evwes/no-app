@@ -2685,7 +2685,21 @@
         && /company stock|employer (security|stock)/i.test((f.type || "") + " " + f.name);
       // v143: a row named from the SEC class index carries the ticker the
       // filing's own code stated; show it even when fund-er has no entry
-      const tk = stockRow ? (plan.ticker || null) : (info ? info.tk : (f.tk || null));
+      /* A PARTICIPANT-LOAN ROW NEVER CARRIES A SYMBOL, WHATEVER ITS TYPE CELL
+       * SAYS — 2026-10-01 (14:5xZ). This line branched on `stockRow` first
+       * while `shownType` below branches on `loanRow` first, so a row that is
+       * BOTH — the type cell claiming employer stock, the name a loan balance
+       * — printed one answer in each column: Nektar Therapeutics (775 ppl)
+       * published `Outstanding Loan Balance` labelled *"Participant loans —
+       * not a menu choice"* with **NKTR** beside it. One row store-wide, and
+       * it is a structural disagreement rather than a missing vocabulary
+       * entry: two columns asking the same predicates in a different ORDER.
+       * Found by a whole-store cross-column audit, which is also what cleared
+       * the other eight buckets. A loan balance is the only suppressor added
+       * here, because it is the only one that can be true beside `stockRow`
+       * and still mean the row is not a security. */
+      const tk = loanRow ? null
+        : stockRow ? (plan.ticker || null) : (info ? info.tk : (f.tk || null));
       const star = !stockRow && info && info.comparable;
       if (star) starred = true;
       /* ...and the fee a mistyped row may publish once that claim is withdrawn.
