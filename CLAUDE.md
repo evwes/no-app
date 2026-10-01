@@ -895,7 +895,7 @@ from the cycle that would have cleared it.
   parser-gate, smoke, fund-er-test (46/26/19/18) green. **REPORT path only as a
   GUARANTEE: `build-seo-pages.mjs` never imports `fund-er.js`**; `git diff
   --stat p/` empty. `docs/accuracy-log.md` 2026-09-30 (11:5xZ).
-- **THE PRE-EMPTION FOOTPRINT IS NOW EXACT, 2026-10-01 03:4xZ: 36,790 rows /
+- **THE PRE-EMPTION FOOTPRINT IS NOW EXACT, 2026-10-01 02:0xZ: 36,790 rows /
   7,509 entries / 7,510 plans / 11,443,967 participants / $115,117,759,657, across
   5,667 distinct transformations.** The upper bound overstated it by **249 rows /
   150,610 ppl / $2.9B** (0.7% / 1.3%), in the predicted direction, and the new
@@ -904,10 +904,10 @@ from the cycle that would have cleared it.
   11,594,577 forward.** Exact rather than sampled because `issuerPricedER` returns
   null without an issuer, so a row with no issuer cell cannot qualify — 539,038
   carry one. *A pre-filter derived from the predicate's own first condition costs
-  no accuracy.* **Still not shippable**, but on the 01:4xZ read's blockers (the
+  no accuracy.* **Still not shippable**, but on the 01:3xZ read's blockers (the
   families whose answer is BLANK, and reading the 5,667), not on the size.
-  `docs/accuracy-log.md` 2026-10-01 (03:4xZ).
-- **SHIPPED 2026-10-01 03:0xZ, `[skip ci]` — AN FDIC-INSURED BANK DEPOSIT HAS NO
+  `docs/accuracy-log.md` 2026-10-01 (02:0xZ).
+- **SHIPPED 2026-10-01 01:5xZ, `[skip ci]` — AN FDIC-INSURED BANK DEPOSIT HAS NO
   EXPENSE RATIO: 105 rows / 101 plans / 130,291 participants / $88,585,280.**
   Schwab Bank Savings, Charles Schwab Trust Bank, TD Bank USA N.A., Banc of
   California, the Merrill Lynch and Raymond James Bank Deposit Programs, `Wells
@@ -938,7 +938,7 @@ from the cycle that would have cleared it.
   direction. 20 pins (14 must-detect / 6 must-be-false), a negative control per
   arm failing by name on exactly 3 and exactly 9. parser-gate, smoke, fund-er-test
   46/26/19/18/18 green. **REPORT path only as a GUARANTEE.**
-  `docs/accuracy-log.md` 2026-10-01 (03:0xZ).
+  `docs/accuracy-log.md` 2026-10-01 (01:5xZ).
 - **AND IT FOUND A DEFECT IN MY OWN INSTRUMENT THAT CORRECTS A PUBLISHED NUMBER.**
   The scratchpad harness rendering app.js's display path carried an **incomplete
   transcription of the `er` expression** — missing `contractRow`,
@@ -961,8 +961,8 @@ from the cycle that would have cleared it.
   harness defect touched, two are settled and one is not:** `nt` is exact, the
   bank-deposit figure was corrected 110 → 105 before publication, and **the
   pre-emption footprint stays an UPPER BOUND.** `docs/accuracy-log.md` 2026-10-01
-  (03:2xZ).
-- **SHIPPED 2026-10-01 02:1xZ, `[skip ci]` — `nt ` HAD NO LEADING WORD BOUNDARY,
+  (01:5xZ).
+- **SHIPPED 2026-10-01 01:4xZ, `[skip ci]` — `nt ` HAD NO LEADING WORD BOUNDARY,
   SO NORTHERN TRUST PRICED ANOTHER HOUSE'S FUND: 970 rows / 506 plans /
   1,291,747 participants / $3,688,721,567.** `fund-er.js:222` was
   `/(northern trust|nt |ntgi).*index/i` — a space closes `nt ` and **nothing
@@ -1004,13 +1004,13 @@ from the cycle that would have cleared it.
   name on exactly the 11 and holds all 7. parser-gate, smoke, fund-er-test
   46/26/19/18/18 green. No twin (app.js's only "northern trust" is its kerning
   list). **REPORT path only as a GUARANTEE.** `docs/accuracy-log.md` 2026-10-01
-  (02:1xZ).
+  (01:4xZ).
 - **WHAT IT EXPOSES AND WHY THE ORDER IS THIS WAY:** `Fidelity Management Trust
   Company Freedom Index 2035 IPR` now reads the generic 0.1 where the right figure
   is **0.12** — the number the pre-emption read below identified for that
   Institutional Premium class. This fix removes a wrong HOUSE; the call-order fix
   supplies the right NUMBER. A wrong attribution first, the better figure second.
-- **THE 5,803 WERE READ 2026-10-01 01:4xZ, AND THE DECISION IS PER ISSUER — THERE
+- **THE 5,803 WERE READ 2026-10-01 01:3xZ, AND THE DECISION IS PER ISSUER — THERE
   ARE 126 OF THEM.** 5,803 is the count keyed on the RAW issuer; keyed on the
   FORM-STRIPPED firm (the string `issuerPricedER` uses) it is **5,674** over the
   same 37,039 rows — and **{Vanguard} 17,808 + {Fidelity} 15,249 = 89%**, each
@@ -1030,7 +1030,7 @@ from the cycle that would have cleared it.
   **So the pre-emption stays UNSHIPPED for a sharper reason than "read it first":
   its own population contained a live wrong number (now fixed above) and three
   families whose correct answer is BLANK rather than either value.**
-- **MEASURED, OWNER-GATED, NOT SHIPPED 2026-10-01 01:5xZ — THE TWO TICKER SOURCES
+- **MEASURED, OWNER-GATED, NOT SHIPPED 2026-10-01 01:3xZ — THE TWO TICKER SOURCES
   DISAGREE ABOUT A DIFFERENT *FUND*, NOT A DIFFERENT CLASS.** `lookupTicker` asks
   `fund-er.js` FIRST and the stored SEC `stk` LAST, so fund-er wins every
   disagreement. Over the **257,558 rows where both assert** they agree on 252,288

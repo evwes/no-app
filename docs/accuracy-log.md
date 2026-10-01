@@ -32478,7 +32478,7 @@ and is faithful in the filing.
   the 2026-09-29 entry's own measured risk), and *a fee is SOURCED, never
   derived*. The next cycle's work is reading the 5,803, not re-measuring them.
 
-## 2026-10-01 (01:4xZ) — Reading the 5,803: the decision is per ISSUER, and there are 126 of them
+## 2026-10-01 (01:3xZ) — Reading the 5,803: the decision is per ISSUER, and there are 126 of them
 
 - **THE READ THE LAST ENTRY ASKED FOR, and its shape was the first finding.**
   5,803 distinct transformations is the count keyed on the RAW issuer string;
@@ -32516,7 +32516,7 @@ and is faithful in the filing.
   number that the fix would propagate, and three families whose correct answer is
   BLANK rather than either value. Fix the number first.
 
-## 2026-10-01 (01:5xZ) — The two ticker sources disagree about a different FUND, not a different class
+## 2026-10-01 (01:3xZ) — The two ticker sources disagree about a different FUND, not a different class
 
 - **Wrong:** `lookupTicker` asks `fund-er.js` FIRST and the stored SEC `stk`
   LAST, so **`fund-er.js` wins every disagreement**. Over the **257,558 published
@@ -32577,7 +32577,7 @@ and is faithful in the filing.
   differ in series, VBTLX/VBMFX must share one) so a harness that loads one side
   twice fails before it counts anything.
 
-## 2026-10-01 (02:1xZ) — `nt ` had no leading word boundary, so Northern Trust priced another house's fund
+## 2026-10-01 (01:4xZ) — `nt ` had no leading word boundary, so Northern Trust priced another house's fund
 
 - **Wrong:** `fund-er.js:222` read `/(northern trust|nt |ntgi).*index/i`. The
   `nt ` alternative has a space closing it and **nothing opening it**, so it
@@ -32658,7 +32658,7 @@ and is faithful in the filing.
   `build-seo-pages.mjs` imports no `fund-er.js`, so a crawlable page cannot
   render a per-fund ER under any input.**
 
-## 2026-10-01 (03:0xZ) — An FDIC-insured bank deposit has no expense ratio
+## 2026-10-01 (01:5xZ) — An FDIC-insured bank deposit has no expense ratio
 
 - **Wrong:** **105 rows / 101 entries / 101 plans / 130,291 participants /
   $88,585,280** published an estimated expense ratio on a holding whose own filed
@@ -32670,7 +32670,7 @@ and is faithful in the filing.
   imprecisely — it describes one that does not exist.** Values withdrawn: 0.2 on
   91 rows (`fund-er.js`'s generic unattributed money-market fallback), 0.26 on
   11, 0.45 on 2, 0.35 on 1.
-- **Surfaced by the 01:4xZ read of the fee pre-emption**, where `{Schwab Savings}
+- **Surfaced by the 01:3xZ read of the fee pre-emption**, where `{Schwab Savings}
   Money Market Deposit Account` publishes 0.2 against an issuer-specific 0.26 —
   and the finding was that **BOTH are wrong**, which no comparison of the two
   could have produced. *A row whose correct answer is BLANK cannot be fixed by
@@ -32743,7 +32743,7 @@ and is faithful in the filing.
   per-fund ER under any input — confirmed by regenerating all pages and finding
   `git diff --stat p/` empty.
 
-## 2026-10-01 (03:2xZ) — The `nt` figure re-measured through the corrected harness, and it holds exactly
+## 2026-10-01 (01:5xZ) — The `nt` figure re-measured through the corrected harness, and it holds exactly
 
 - The harness defect recorded in the entry above put every "publishes a fee today"
   figure in doubt, so the one published an hour earlier was re-asked rather than
@@ -32766,7 +32766,7 @@ and is faithful in the filing.
   that item ships.** *Re-asking a number you already published is cheap; leaving a
   doubt attached to it is not.*
 
-## 2026-10-01 (03:4xZ) — The pre-emption footprint, exact
+## 2026-10-01 (02:0xZ) — The pre-emption footprint, exact
 
 - The upper bound flagged two entries above is now an exact figure, measured
   through the corrected harness with the positive control firing first:
@@ -32784,7 +32784,35 @@ and is faithful in the filing.
   one. *A pre-filter derived from the predicate's own first condition costs no
   accuracy; one derived from a guess about the data costs all of it.*
 - **The item is still not shippable, and the remaining blockers are the ones the
-  01:4xZ read named** rather than the measurement: four families inside the
+  01:3xZ read named** rather than the measurement: four families inside the
   population whose correct answer is BLANK (one of which, the bank deposits,
-  shipped at 03:0xZ), and the 5,667 transformations' own reading. What is closed
+  shipped at 01:5xZ), and the 5,667 transformations' own reading. What is closed
   is the doubt about the size.
+
+## 2026-10-01 (02:1xZ) — My own timestamps drifted up to 92 minutes inside one cycle
+
+- **Wrong:** every entry this cycle carried a label I ESTIMATED rather than read,
+  and because each estimate was made forward from the last, the error compounded:
+  the `nt ` fix is labelled 02:1xZ and committed at **01:42Z**, the bank-deposit
+  fix 03:0xZ and committed at **01:57Z**, the re-measurement 03:2xZ against
+  **01:59Z**, the exact footprint 03:4xZ against **02:08Z**. Drift 30, 63, 81 and
+  **92 minutes**, all in the same direction.
+- **Why it matters here more than it would elsewhere.** This log is ordered by
+  those labels and a session reads them as the sequence of events; CLAUDE.md's
+  state block cites them to say what shipped when; and the file's own standing
+  hazard is a header that reads plausibly and is wrong. A label 92 minutes ahead
+  would have a later session believe this work landed after a cron run that in
+  fact came first — the same class of error as the state header that read "v168 …
+  NOTHING IS IN FLIGHT" while the tree was at v177.
+- **Change:** all six headings and three cross-references re-derived from
+  `git log --format=%cd`, plus eight citations in CLAUDE.md. Corrected to 01:3xZ,
+  01:3xZ, 01:4xZ, 01:5xZ, 01:5xZ and 02:0xZ.
+- **Prevention, and it is the method rather than a rule to remember:** the
+  correction script was keyed on SURROUNDING TEXT, never on the label, and it
+  REFUSES unless each anchor matches exactly once — because nine entries from
+  2026-09-19 through 2026-09-29 carry the identical label strings and a
+  search-and-replace on `03:0xZ` would have silently rewritten another day's
+  history. All nine verified untouched afterwards. **And the clock is one command:
+  `date -u`, or the commit's own `%cd`. An estimated timestamp is a derived
+  number, and this project's first principle applies to the ones in its own
+  documentation too, not only to the ones on its pages.**
