@@ -385,6 +385,52 @@ export function buildIndex(indexPath) {
     for (const field of [row[0], row[3]])
       for (const t of String(field || "").split(/[^A-Za-z]+/))
         if (t.length > 2) words.add(t.toLowerCase());
+  /* WHICH SERIES-LEADING TOKENS NAME A HOUSE, asked of the registry and of
+   * nothing else, for the manager-gate arm in `resolve` below.
+   *
+   *   A SERIES-LEADING TOKEN IS A HOUSE WHEN EVERY REGISTRANT THAT REGISTERS A
+   *   SERIES UNDER IT IS ITSELF NAMED AFTER IT.
+   *
+   * 234 of 1,256 series-leading tokens qualify. No vocabulary and no threshold:
+   * `mfs` -> {mfs}, `vanguard` -> {vanguard}, `dodge` -> {dodge}, while
+   * `floating` -> {variable, john}, `short` -> {russell, permanent, john,
+   * american, glenmede} and `american` -> {american, john, morgan, tidal, etf}.
+   *
+   * TWO SIMPLER RULES WERE WRITTEN FIRST AND EACH WAS REFUTED BY READING ITS
+   * OWN OUTPUT, which is why this one is shaped the way it is:
+   *   - "the series leads with its OWN registrant's leading token" is satisfied
+   *     for free by a registrant named after its product, and admitted
+   *     `American Funds Washington Mutual R6` -> AMERICAN MUTUAL FUND, a
+   *     DIFFERENT FUND.
+   *   - "the series-leading token is RARE across registrants" measures rarity
+   *     and not house-ness, and admitted `BlackRock Floating Rate Income
+   *     Portfolio Class K` -> John Hancock's `Floating Rate Income Fund`.
+   *   - "the token leads SOME registrant" is polluted by registrants named
+   *     after products, and admitted `{Goldman Sachs} Short Duration Fund` ->
+   *     American Century's `SHORT DURATION FUND`.
+   *
+   * AND IT CARRIES A SAFETY PROPERTY THE GATE OTHERWISE SUPPLIES BY HAND: a
+   * bucket is shared by every registrant with the same series key, and the
+   * gate's own comment records a DFA filing satisfying it while an American
+   * Century class was handed back. Under this test every registrant in the
+   * bucket is named after the same word, so the bucket is SINGLE-HOUSE by
+   * construction and no competitor's class can be returned.
+   *
+   * COST NAMED: a house that renamed, or registers under two brands, fails it
+   * — `pgim` -> {prudential, target, pgim}, `ab` -> {ab, bernstein}, `nuveen`
+   * -> {nuveen, tiaa, nushares}. Refusing a repair is the safe direction. */
+  const leadRegs = new Map();
+  for (const [name] of j.funds) {
+    const s = String(name);
+    if (!s.includes(" :: ")) continue;
+    const [ent, ser] = s.split(" :: ");
+    const st = tokens(ser), et = norm(ent).split(" ").filter(Boolean);
+    if (!st.length || !et.length) continue;
+    if (!leadRegs.has(st[0])) leadRegs.set(st[0], new Set());
+    leadRegs.get(st[0]).add(et[0]);
+  }
+  const houseLeads = new Set();
+  for (const [t, regs] of leadRegs) if (regs.size === 1 && regs.has(t)) houseLeads.add(t);
   /* ticker -> the series it is registered under, for resolveFiledTicker below.
    * The symbol is the key here rather than a derived name, which is the one
    * place in this file where a lookup is exact by construction. */
@@ -394,7 +440,7 @@ export function buildIndex(indexPath) {
     const [entity, series] = String(name).includes(" :: ") ? String(name).split(" :: ") : ["", String(name)];
     byTicker.set(String(ticker).toUpperCase(), { ticker, entity, series, className: className || "" });
   }
-  return { bySeries, byLead, byYear, byTicker, words, managers: MANAGERS, memo: new Map(), generated: j.generated, source: j.source, rows: j.funds.length };
+  return { bySeries, byLead, byYear, byTicker, words, houseLeads, managers: MANAGERS, memo: new Map(), generated: j.generated, source: j.source, rows: j.funds.length };
 }
 
 /* THE FILING PRINTS THE TICKER, SO READING IT IS READING THE FILING.
@@ -920,6 +966,35 @@ function resolveUncached(idx, filedName, issuerWords) {
       || /^(?:r[1-6]|k6|[akyzci]|investor|admiral|adv|advisor)$/.test(w));
     if (ok) mine = classes;
   }
+  /* THE GATE REFUSES ITS OWN EXACT MATCHES. `MFS Mid Cap Growth Fund` matches
+   * the series `MFS Mid Cap Growth Fund` as an exact string and is then thrown
+   * away, because the only key `mgrHit` can test is `managerPhrase(REGISTRANT)`
+   * and for `MFS SERIES TRUST IV` that phrase is `mfs series` — THE KEY IS THE
+   * REGISTRANT'S LEGAL ENTITY NAME AND A FILING WRITES THE BRAND. `mgrKeys`
+   * already carries `managerPhrase(SERIES)` as a second key, but `filedMgrs` is
+   * drawn from MANAGERS, which is built from registrants ALONE, so that key is
+   * unreachable BY CONSTRUCTION. Only 57 of 12,323 series have no live key at
+   * all: these are live and unreachable, which is a narrower fault than absent.
+   *
+   * Two conditions, both read out of the registry and neither a vocabulary:
+   * the series' leading token is one the registry attests as a HOUSE (see
+   * `houseLeads` in buildIndex, where the two rules that were refuted first are
+   * recorded), and the series' OWN manager phrase appears in the filed name as
+   * a whole phrase.
+   *
+   * THE PHRASE CONDITION IS LOAD-BEARING AND ITS CONTROL NAMES WRONG ANSWERS,
+   * not merely weak ones: without it `MFS Massachusetts Investor Growth Fund`
+   * resolves to `MFS Growth Fund` — a DIFFERENT MFS FUND — and `Principal Real
+   * Estate Securities SA-Z` to SA Funds' own fund. It costs correct answers
+   * too, all of them a house named in a bracket or an issuer cell rather than
+   * in front of the fund (`Utilities (MFS)`, `{AQR Capital Management} Managed
+   * Futures Strategy Fund`), and those are accepted as the price. */
+  if (!mine.length && idx.houseLeads) {
+    const lead = tokens(classes[0].series)[0];
+    const house = GATE_DROP === "house" || (lead && idx.houseLeads.has(lead));
+    const sp = house ? managerPhrase(classes[0].series) : null;
+    if (sp && (GATE_DROP === "phrase" || filedNorm.includes(" " + sp + " "))) mine = classes;
+  }
   if (!mine.length) return null;
   classes = mine;
 
@@ -1257,6 +1332,29 @@ const SELFTEST_FT = [
  * store, because every one of the four controls was DECORATIVE against pins I
  * chose from memory: a pin set tests the cases its author already imagined, and
  * the store is what says which cases exist. */
+/* THE GATE ARM'S NEGATIVE CONTROL, and it is shaped differently from the join
+ * arm's below ON PURPOSE. That one re-implements its conditions in full,
+ * because the rule here is that a variant must never be produced by SURGERY ON
+ * THE SHIPPED SOURCE — a sliced-and-edited copy once broke the condition it was
+ * meant to widen and convicted the must-flag side, a control failing in the
+ * direction that looks like success. This arm sits four lines deep inside
+ * `resolve`, so re-implementing it would mean duplicating `resolve` itself and
+ * the copy would rot; a drop flag the arm reads is neither a transcription nor
+ * an edit, and the shipped path with no flag set is byte-identical. */
+let GATE_DROP = "";
+export function gateVariantFor(idx, name, iss, gdrop) {
+  /* AND THE MEMO IS CLEARED ON BOTH SIDES, which is not housekeeping — it is
+   * what keeps the control able to fail. `resolve` memoizes on the filed name
+   * alone, so a name an earlier table already resolved would hand the variant
+   * the SHIPPED answer out of the cache, and every drop would pass. */
+  if (idx.memo) idx.memo.clear();
+  GATE_DROP = gdrop || "";
+  try { return resolveHolding(idx, name, iss); } finally {
+    GATE_DROP = "";
+    if (idx.memo) idx.memo.clear();
+  }
+}
+
 export function joinVariantFor(idx, name, iss, jdrop) {
   if (!jdrop) return resolveHolding(idx, name, iss);
   const fixed = repairFiledName(name);
@@ -1303,6 +1401,72 @@ export function joinVariantFor(idx, name, iss, jdrop) {
  *     arm is never reached; it pins the ordering.
  *   - `Fidelity Contrafund` — resolves COMPARABLE (the class is unstated), and
  *     a comparable answer must not be taken from an altered name. */
+/* THE MANAGER-GATE ARM. Pinned on both sides, and added because NOT ONE of the
+ * tables above reaches it — every case there already resolves, and this arm
+ * runs only where the gate refused, so the existing pins could not have seen
+ * it. The must-keeps are not invented: each is the answer one of the two
+ * REFUTED earlier rules would have published, read out of the store and kept
+ * so the refutation cannot be undone silently.
+ * `—` means refused. */
+const SELFTEST_GATE = [
+  // the acronym houses the gate could never reach: a lead of four characters
+  // or fewer is exactly what `managerPhrase` extends past, into the corporate
+  // form, so `MFS SERIES TRUST IV` yields `mfs series` and a filing writes MFS
+  ["MFS Mid Cap Growth Fund R6", "", "OTCKX"],
+  ["MFS Value Fund Class R6", "", "MEIKX"],
+  ["MFS International Diversification R6", "", "MDIZX"],
+  ["AQR Large Cap Defensive Style Fund Class R6", "", "QUERX"],
+  ["AMG Yacktman Fund I", "", "YACKX"],
+  ["GMO Quality Fund R6", "", "GQESX"],
+  ["RBC Emerging Markets Equity Fund R6", "", "RREMX"],
+  ["CRM Mid Cap Value Fund Class Institutional", "", "CRIMX"],
+  /* THESE THREE WERE PINNED FROM MEMORY FIRST AND TWO WERE WRONG — I wrote
+   * TGIFX and BBBIX and the registry says TGLMX and BBBIX, and the resolver
+   * says neither is reached EXACTLY. A pin written from memory is a guess; the
+   * value here is the one the code produced, verified against the registry.
+   *
+   * And the asterisks name a RESIDUAL this arm does not fix and does not
+   * cause. `TCW Securitized Bond Fund Class I` is registered `I CLASS`, and
+   * `BBH ... Class Institutional` is registered `CLASS I SHARES` — the class
+   * step matches neither, so the bucket stays ambiguous and the representative
+   * is picked by hint order, which lands BBH on the N class. That is the
+   * share-class gap this record has named repeatedly, visible here only
+   * because the arm now gets far enough to reach it, and it reaches NO READER:
+   * `merge-4i` stores a ticker only when the answer is not comparable. */
+  ["TCW Securitized Bond Fund Class I", "", "TGLMX*"],
+  ["BBH Limited Duration Fund Class Institutional", "", "BBBMX*"],
+  ["TCW MetWest Total Return Bond Fund I", "", "MWTIX*"],
+  /* must KEEP — "the series leads with its OWN registrant's leading token",
+   * refuted: a registrant named after its product satisfies it for free, and
+   * this is the row it would publish — AMERICAN MUTUAL FUND for a WASHINGTON
+   * MUTUAL holding, a DIFFERENT FUND. */
+  ["American Funds Washington Mutual R6", "", "—"],
+  /* must KEEP — "the series-leading token is RARE", refuted: rarity is not
+   * house-ness. `floating` is a rare DESCRIPTIVE word and the answer is John
+   * Hancock's fund for a BlackRock holding. */
+  ["BlackRock Floating Rate Income Portfolio Class K", "", "—"],
+  /* must KEEP — "the token leads SOME registrant", refuted the same way:
+   * American Century's SHORT DURATION FUND for a Goldman Sachs holding. */
+  ["Short Duration Fund", "Goldman Sachs", "—"],
+  /* must KEEP — the PHRASE condition, and these are the reason it is in the
+   * rule at all. Both are a house-attested lead reaching the WRONG FUND:
+   * MFS Massachusetts Investors Growth Stock is not MFS Growth Fund, and a
+   * Principal holding is not SA Funds' own. */
+  ["MFS Massachusetts Investor Growth Fund", "", "—"],
+  ["Principal Real Estate Securities SA-Z", "", "—"],
+  /* must KEEP, and these are a NAMED COST rather than a save: the house is
+   * named in a bracket or an issuer cell instead of in front of the fund, so
+   * the phrase is absent and a correct answer is refused. Refusing a repair is
+   * the safe direction. */
+  ["Utilities (MFS)", "", "—"],
+  ["Managed Futures Strategy Fund", "AQR Capital Management", "—"],
+  /* must KEEP — a bare generic name, with and without a house in the issuer
+   * cell. `Total Return Bond Fund` is the name of a dozen houses' funds. */
+  ["Total Return Bond Fund", "", "—"],
+  ["International fund", "MFS", "—"],
+  ["Capital Appreciation Fund", "John Hancock", "—"],
+];
+
 const SELFTEST_JOIN = [
   ["JPMorgan Smart Retirement 2035 R6", "", "SRJYX"],
   ["JP Morgan Smart Retirement Income R6", "", "JSIYX"],
@@ -1396,6 +1560,19 @@ if (process.argv.includes("--selftest")) {
    * is written out here in full rather than produced by patching the shipped
    * function, so a control cannot quietly repair what it is meant to detect —
    * the failure this file already records on the lead control. */
+  /* The manager-gate arm, shipped or with ONE of its two conditions dropped.
+   * `--nohouse` lets any series lead qualify; `--nophrase` stops requiring the
+   * series' own manager phrase in the filed name. Each must fail BY NAME on
+   * exactly the cases it reaches. */
+  const gdrop = process.argv.includes("--nohouse") ? "house"
+    : process.argv.includes("--nophrase") ? "phrase" : "";
+  if (gdrop) console.log(`NEGATIVE CONTROL: gate condition "${gdrop}" dropped — it must fail by name on exactly the cases it reaches`);
+  for (const [name, iss, want] of SELFTEST_GATE) {
+    n++;
+    const r = gateVariantFor(idx, name, iss, gdrop);
+    const got = r ? r.ticker + (r.comparable ? "*" : "") : "—";
+    if (got !== want) { bad++; console.log(`FAIL want ${want.padEnd(8)} got ${got.padEnd(8)} ${name}${iss ? `  [iss ${iss}]` : ""}`); }
+  }
   const jdrop = process.argv.includes("--nowitness") ? "witness"
     : process.argv.includes("--nofloor") ? "floor"
     : process.argv.includes("--faithless") ? "faithless"

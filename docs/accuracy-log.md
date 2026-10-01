@@ -33624,3 +33624,102 @@ registered series before a single one is published, and it is merge-side so it
 needs a run. The cause is diagnosed, the class is split, the safe half is
 measured and the discriminator is named; the next cycle's work is reading the
 4,219, not re-measuring them.
+
+## 2026-10-01 (09:4xZ) — the manager gate refused its own exact matches
+
+**13,591 rows / 9,943 plans / 11,640,610 participants / $19,246,511,528 gain a
+named fund; 0 lost, 0 flipped, 0 fee moves, 0 asterisks moved.** The largest
+ticker change on this record. `MFS Mid Cap Growth Fund` matches the series
+`MFS Mid Cap Growth Fund` as an exact string and was then thrown away.
+
+**The cause was instrumented, not reasoned about.** Every `return null` in
+`resolveUncached` was labelled and the first one reached named itself. The only
+key `mgrHit` can test is `managerPhrase(REGISTRANT)`, and for `MFS SERIES TRUST
+IV` that phrase is `mfs series` — **the key is the registrant's LEGAL ENTITY
+name and a filing writes the BRAND.** `mgrKeys` already carries
+`managerPhrase(SERIES)`, but `filedMgrs` is drawn from `MANAGERS`, built from
+registrants ALONE, so that key is unreachable BY CONSTRUCTION. Only 57 of
+12,323 series have no live key at all: these are live and *unreachable*.
+
+**And the whole population is an ACRONYM house, which states the mechanism
+exactly:** `managerPhrase` extends past a lead of four characters or fewer, and
+an acronym brand IS such a lead. All fourteen families are two to four letters —
+MFS, AMG, TCW, AQR, GMO, RBC, CRM, BBH, SA, LKCM, YCG, RMB, EA, AGF.
+
+**THE RULE IS ONE SENTENCE, NO VOCABULARY AND NO THRESHOLD: a series-leading
+token is a HOUSE when every registrant that registers a series under it is
+itself named after it.** `mfs` → {mfs}; 234 of 1,256 qualify. Plus the series'
+own manager phrase present in the filed name as a whole phrase.
+
+**TWO SIMPLER RULES WERE REFUTED BY READING THEIR OWN OUTPUT, and both are
+pinned so the refutation cannot be undone silently.** *"The series leads with
+its OWN registrant's leading token"* is satisfied for free by a registrant named
+after its product and published **`American Funds Washington Mutual R6` →
+AMERICAN MUTUAL FUND, a DIFFERENT FUND**. *"The series-leading token is RARE"*
+measures rarity and not house-ness — `floating` is a rare DESCRIPTIVE word, and
+it handed **`BlackRock Floating Rate Income Portfolio Class K` to John
+Hancock's**. A third, *"the token leads SOME registrant"*, is polluted the same
+way and gave `{Goldman Sachs} Short Duration Fund` American Century's.
+
+**The PHRASE condition is load-bearing and its control names WRONG answers
+rather than weak ones:** without it `MFS Massachusetts Investor Growth Fund`
+resolves to `MFS Growth Fund` and `Principal Real Estate Securities SA-Z` to SA
+Funds' own. **Cost named:** it also refuses correct answers where the house sits
+in a bracket or an issuer cell (`Utilities (MFS)`, `{AQR Capital Management}
+Managed Futures Strategy Fund`). Refusing a repair is the safe direction.
+
+**And it carries a safety property the gate otherwise supplies by hand:** a
+bucket is shared by every registrant with the same series key — the gate's own
+comment records a DFA filing satisfying it while an American Century class was
+returned. Under this test every registrant in the bucket is named after the same
+word, so **the bucket is SINGLE-HOUSE by construction.**
+
+**0 WRONG HOUSES OVER THE WHOLE POPULATION, screened not sampled:** of 2,595
+distinct pairs, 2,186 name only their answer's house and 409 name another — all
+409 being MFS's own legal name `Massachusetts Financial Services` (206) or a
+TRUSTEE in the issuer cell (Fidelity 65, Empower 65, Principal 14, Vanguard 9,
+Lincoln, Nationwide, John Hancock, MassMutual, JP Morgan, Goldman Sachs). In
+every one the answer follows the FILED NAME, which is `resolveHolding`'s own
+rule: **the issuer may ADD a manager and may never REPLACE one.**
+
+**All 202 distinct claims read** against their registered series and class, not
+one wrong — the MFS R3/R4/R6 ticker ladder exact throughout. The 30 pairs whose
+filed name lacks the house token were read individually: every one the
+wrapped-name shape with the issuer cell holding the first half, plus nine
+`M FS Lifetime <year> R6` rows where a broken font split `MFS` — **repaired by
+v531's join arm and then admitted by this one, two arms composing.**
+
+**MY FIRST FOOTPRINT WAS A PROXY AND LOW BY A FACTOR OF TEN — 1,648 against
+15,830.** It judged the gate's FIRST refused candidate, captured inside
+`resolve`; `resolveHolding` calls `resolve` several times (repaired name, bare
+name, issuer-prefixed name, each join candidate) and the shipped arm applies
+inside every one. ***A capture at an inner site is not the predicate's verdict
+when the caller calls it many times*** — *measure through the function the
+caller calls*, met a fifth time.
+
+**Stored against reader-facing, reconciled rather than conflated:** the store
+gains `stk` on **15,830 rows across 11,273 entries**, and **13,591 reach a
+reader**, the difference being rows `fund-er.js` already answers.
+**Fee-neutral BY CONSTRUCTION and measured anyway at 0/0/0.**
+
+20 pins added **because not one of the 132 existing cases reaches the arm**; a
+negative control PER CONDITION failing by name on exactly its own cases
+(`--nohouse` 3, `--nophrase` 4). **The variant clears the resolver's memo on
+both sides, which is not housekeeping:** `resolve` memoizes on the filed name,
+so a name an earlier table resolved would hand the variant the SHIPPED answer
+out of the cache and **every drop would pass** — a control that cannot fail.
+
+**And two of the three new class pins were written from memory and were wrong.**
+I pinned TGIFX and BBBIX; the registry says TGLMX and BBBIX and the resolver
+reaches neither EXACTLY, because `I CLASS` and `CLASS I SHARES` are not matched
+by the class step. That residual is named in the file, is not caused here, and
+**reaches no reader** — merge stores a ticker only when the answer is not
+comparable.
+
+Real merge reproduces it: field by field the store moved `stk` on 15,830 rows
+**and nothing else** (0 acks added or removed, 0 row-count changes), the index
+files differing only in `generated`. Largest: Paychex Retirement 645,304,
+Allegis 193,721, Oracle 101,985, Intermountain 84,616, Dollar Tree 83,276,
+**Circle K 71,309 — the plan whose immaculate menu exposed this.**
+REPORT path only as a GUARANTEE. selftest 153/153, parser-gate, smoke and
+fund-er-test (62/26/19/18/18) green.
