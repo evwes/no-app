@@ -959,7 +959,11 @@ from the cycle that would have cleared it.
   moving the branch below the fund-er attempts fails it by name.
   **REPORT path only as a GUARANTEE:** `build-seo-pages.mjs` renders no ticker
   and reads no such field. parser-gate, smoke, fund-er-test (46/26/19/18/18)
-  green. `docs/accuracy-log.md` 2026-10-01 (03:2xZ).
+  green, and **`site-test` #123 reads `conclusion: success` ON THE EXACT SHIPPED
+  COMMIT `792a0582`** — the first CI green covering the precedence tether and the
+  934 changed ticker cells, read rather than assumed. Pages #752/#753 built the
+  two mirrors `success`, so readers have it. `docs/accuracy-log.md` 2026-10-01
+  (03:2xZ).
 - **PREVIOUSLY QUEUED (superseded by the bullet above; its 898-row figure was the
   pre-condition-(3) count and the shipped number is 899):**
   `VITSX - Vanguard Total Stock Market Index Inst.` publishes **VTSAX**, the
