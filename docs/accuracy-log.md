@@ -7,6 +7,219 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-01 (20:0xZ) — The LifeStrategy ship verified independently: three figures to the digit, the participant figure corrected, and the adversarial residue measured at zero
+
+**VERIFIED, THEN MIRRORED.** `155a3aa8` was re-measured from scratch through one
+display path, with the BEFORE side produced by reverting BOTH changed blocks in
+`fund-er.js` through `apppath.mjs`'s `ER_PATCH` pairs — which throw when a patch
+string fails to match, so a stale revert cannot silently measure the shipped file
+as "before". The positive control fires in both directions on the drawn row:
+`Vanguard LifeStrategy Cnsrv Gr Inv` reads **VASGX at 0.1** before and **VSCGX at
+0.12** after.
+
+**THREE OF FOUR HEADLINE FIGURES REPRODUCE EXACTLY: 422 rows, 410 plans,
+$202,887,862**, and every outcome column to the digit — **ticker +2 / −0 / 416
+flipped, fee +3 / −0 / 395 changed, 0 asterisks moved, 0 shown types moved**, all
+395 fee moves `0.1 → 0.12`, upward.
+
+**THE PARTICIPANT FIGURE IS 311,555 AND NOT 323,826, AND THE GAP RECONCILES
+EXACTLY.** The plan SET agrees on all 410, so the only question was which
+per-plan count is summed: `participants` (Form 5500 line 5) gives 323,826 and
+**`partEOY || participants` — which is what `build-data` packs into `parts` and
+what the page publishes — gives 311,555.** Every one of the 410 carries a
+`partEOY`, so the `||` never falls through and the two differ by 12,271 (3.9%).
+*A reader-reach figure has to be summed over the field the page publishes* — the
+same rule this record carries for predicates and harnesses, one level down at a
+column name. Overstated, so the direction is safe; the commit message retains the
+old number and the figure of record is this entry's.
+
+**A STRUCTURAL PRE-FILTER MADE THE WHOLE-STORE DIFF POSSIBLE AT ALL, AND IT IS
+EXACT RATHER THAN A SAMPLE.** A first attempt rendered all 1,724,078 published
+rows twice and did not finish — the sweep this record already warns about. All
+four changed arms, in both tables, open with the same `LS` prefix
+(`vanguard\s*life\s*strat(?:egy)?\b`), **asserted against the shipped source
+rather than assumed**, so a row whose issuer-plus-name carries no `lifestrat`
+once non-letters are removed cannot reach any of them under either version. That
+is **6,156 of 1,724,078 rows**, and the letters-only normalisation also covers
+app.js's kerned de-spacer. *A structural fact beats a sweep — when the structural
+fact is the predicate's own first condition.*
+
+**THE ADVERSARIAL QUESTION THE DESIGN INVITES WAS ASKED AND THE ANSWER IS ZERO.**
+An ordered subsequence anchored on the first letter is deliberately not a
+vocabulary, and the price of that is that **ordinary words are subsequences too**:
+asked of the shipped `LS_CONSERV` and `LS_MODERATE` literals, sliced from
+`fund-er.js` rather than retyped, `Core`, `Cost`, `Cat`, `Cove` and `Co` all read
+as *conservative* and `Mor`, `More`, `Mode` and `Md` as *moderate* (while `Cap`,
+`Cash`, `Class`, `Corp`, `Mid`, `Modified`, `Market`, `Master`, `Mutual` and
+`Managed` are refused). So the arm would claim a hypothetical `Vanguard
+LifeStrategy Core Growth`. **Over the whole 6,156-row population not one of the
+144 distinct transformations takes that path** — every one states a genuine
+conservative or moderate contraction — and all 144 were read. The latent risk is
+real and the live exposure is nil; recorded so a future `Core` row is recognised
+rather than rediscovered. (144 against the ship's 138 is the same set under a
+different key: mine counts a name once per before/after pair and reads the issuer
+cell as well as the name.)
+
+**ONE RESIDUE OF MY OWN READING, not named in the ship: a row that names THREE
+funds gets whichever arm sits first in the table.** `Vanguard LifeStrategy Consv
+Growth Inv 13 LifeStrategy Moderate Gr Inv 13 Vanguard Mid-Cap` is a welded row
+whose answer moves **VSMGX → VSCGX** — from the second-named fund to the
+first-named one. One row. Neither answer is better evidenced than the other; what
+changed is which of three names the table reaches first, and the leading name is
+at least the more defensible choice. The weld is the open class, not this arm.
+
+**CORROBORATION INSIDE THE CHANGED SET, which is the strongest part of the
+case:** four of the 422 rows **print the symbol we were contradicting** —
+`Lifestrategy Cnsrv Gr Inv (1VSCGX)`, `LifeStrat Cnsrv Gr Inv (VSCGX)`,
+`Vanguard LifeStrategy Consv Growth Inv (VSCGX)` and `1VSCGX Vanguard
+LifeStrategy Cnsrv Gr Inv` — and one, `Vanguard LifeStrategy 40/60 Cons Gro`,
+prints VSCGX's own registered allocation. The filings adjudicate it.
+
+**And one changed row has no name at all:** `7,306.809 mutual fund shares` moves
+VASGX → VSCGX with no fee either side, resolving entirely through its ISSUER
+cell. That is the 2026-09-29 issuer arm working as designed, and it is why the
+pre-filter had to read issuer-plus-name rather than the name alone.
+
+Gates re-run independently on the merged tree: `parser-gate` all specimens green
+(the parser is untouched — the commit is `fund-er.js`, `fund-er-test.mjs` and
+this log, so parser output cannot move, which is why `diff-lineups` must read 0
+and does), `smoke-test` green across all six page shapes, `fund-er-test`
+83/26/19/18/28 with 0 failures, `lib-disclose --selftest` 25/25,
+`merge-name-test` every pinned set green (22/22, 25/25, 20/20, 22/22, 15/15).
+`site-test` dispatched on the exact commit because it shipped `[skip ci]` and
+local green is not CI green.
+
+---
+
+## 2026-10-01 (19:5xZ) — A FEE WITHOUT A TICKER IS 314,299 ROWS, AND IT IS NOT A DEFECT CLASS — do not carry the figure forward as one
+
+Asked of all **1,724,078** published rows through the display path, with the
+positive control firing first (`{Vanguard} 500 Index Fund` → VFIAX at 0.02):
+**ticker AND fee 593,576; ticker, no fee 91,423** (the queued coverage item);
+**FEE, NO TICKER 314,299 rows / 50,064 plans / 69,688,869 participants /
+$723,805,384,407** across 74,382 distinct names; neither 714,983.
+
+**THE HEADLINE INVITES THE WRONG READING AND MY FIRST FRAMING TOOK IT.** "Priced
+but unnamed" sounds like 69.7M people shown a fabricated number. **Reading the
+population says otherwise:** its most frequent names are
+`American Funds New World Fund` (940 rows), `Vanguard Growth Index Fund` (717),
+`American Funds EuroPacific Growth Fund` (689), `American Balanced Fund` (610),
+`Vanguard Value Index Fund` (596), `PIMCO Income Fund` (596) and the American
+Funds target-date series — **full house-and-product names whose pattern fee is
+the right fee and whose TICKER is what is missing.** So the bulk of this is the
+*ticker-column coverage* gap the queue already holds at 139,910 rows, seen from
+the other side, and **not** fee-column fabrication.
+
+**WHAT IS GENUINELY A FEE QUESTION IS THE UNATTRIBUTED HALF: 143,083 of the
+314,299 publish one of the generic fallbacks** (0.1 unattributed index, 0.2
+unattributed money market, 0.35 guarantee) against 171,216 publishing something
+more specific. Only the first half carries a number derived from no house, and
+even there a bare `500 Index Fund` — 1,092 rows, the single most frequent name in
+the whole population — is a case the **queued fee pre-emption item already owns**,
+its correct answer being the issuer-specific figure rather than a blank.
+
+**So the honest decomposition is three existing items and no new one:** the
+ticker-coverage gap, the fee pre-emption (36,790 rows / 11,443,967 ppl), and the
+owner-gated stable-value withdrawal. **Do not quote 314,299 or 69,688,869 as a
+defect class.** *A count of a condition is not a measure of a defect* — met again,
+and the tell this time was that the condition's most frequent members are the rows
+the site gets RIGHT.
+
+---
+
+## 2026-10-01 (19:0xZ) — The draw, and a ticker read as a wrong house TWICE by me and right by the registry both times
+
+Seed 20261001190, participant-weighted over published lineups. **Bayada Home
+Health Care (50,157 ppl, $398,592,342, 19 rows @ 0.990)** and **Group Plan
+Systems (12,833 ppl, 53 rows @ 0.983)**.
+
+**TWO SYMBOLS LOOKED LIKE WRONG-HOUSE ASSERTIONS AND BOTH ARE CORRECT, and the
+way I got there wrong is the entry.** Bayada publishes **OLGAX** and **HRAUX**,
+neither of whose letters suggests the house beside it. I reconstructed the rows
+from the symbols — writing them up as `Oppenheimer Developing Markets Y` → OLGAX
+and `Hartford Schroders US Small Cap Opps` → HRAUX, two plausible houses whose
+initials fit — and the store says **neither row exists**. The actual rows are
+`JPMorgan Large Cap Growth Fund Class A` and `Carillon Eagle Mid Cap Growth Fund
+Class R6`, and `sec-funds.json` registers OLGAX as *JPMORGAN TRUST II :: JPMorgan
+Large Cap Growth Fund, Class A* and HRAUX as *CARILLON SERIES TRUST :: Carillon
+Eagle Mid Cap Growth Fund, Class R-6*. **Exactly right, both, class included.**
+***A ticker is not a reading; the series name is*** — a rule this record already
+carries about the CODE, committed here by the person writing it down, in a draft
+that was one commit from being published.
+
+**Whole-population check, because a near-miss deserves the real number: every
+published row carrying either symbol is correct. 892 rows / 158 distinct names /
+1,163,449 participants**, and all 158 are a `Carillon Eagle Mid Cap Growth … R6`
+or `JPMorgan Large Cap Growth Fund Class A` spelling. The resolver is exonerated
+on this family, and it is 892 rows to find that out.
+
+**THE REAL DEFECT IN THE DRAW IS OWNER-GATED AND NOW HAS ITS NAMED LIVE
+INSTANCE.** Bayada publishes `PIMCO Total Return II Fund Institutional Class` →
+**PTTRX at 0.51**, which the SEC registers as the Institutional class of *PIMCO
+Total Return Fund* — no II — while **the row's own stored `stk` is PMBIX**, the
+registered Institutional class of *Total Return Fund II*, the fund the filing
+names. `lookupTicker` asks `fund-er.js` first and `stk` last, so the pattern
+table wins and a different registered SERIES is published as fact on 7.1% of a
+$398M plan. That is the 2026-10-01 01:3xZ item (3,491 rows / 5,826,968
+participants), and what this draw adds is that **the correct answer is already
+stored on the same row.** Its same-series sibling is two rows below: `Vanguard
+Total Bond Market Index Fund Investor Shares` → **VBTLX, the ADMIRAL class, at
+0.04**, where the filing states Investor and `stk` holds VBMFX.
+
+**Four further live instances of queued items in one menu**, which is what a
+clean plan is useful for: `American Funds EuroPacific Growth Fund Class R-6`
+publishes 0.46 and **no ticker** although the class is stated (the
+fee-without-ticker population above, in its reachable half); `Vanguard Selected
+Value Fund Investor Shares` publishes VASVX and **no fee** (its mirror image);
+`Dryden S&P 500 Index Fund` typed `Pooled separate account` publishes nothing (the
+9,050-row pooled split); and `Blackrock Eq Dividend K`, `Invesco Small Cap Value
+Fund Class R6` and `Harding Loevner International Equity Portfolio Institutional
+Class` resolve to nothing at all (the matcher's abbreviation gap). Group Plan
+Systems adds `American Funds American Balanced Fund` at **0.28 with no class
+stated** — the owner-gated R-6 inconsistency — and `TD Bank, N.A.` typed `Mutual
+fund`, the bare-house class.
+
+**AND THE SHIPPED LOAN GUARD IS VISIBLY WORKING IN THE SAME MENU:** Group Plan
+Systems' `Repayments are` row renders as *"Participant loans — not a menu
+choice"*, which is v195's display half reaching a reader. *A draw is a cheap
+independent check that a shipped fix landed.*
+
+---
+
+## 2026-10-01 (20:1xZ) — QUEUED: a page-break caption LEADING a fund's name, and the fix for the TRAILING form cannot reach it
+
+**32 published rows / 30 entries / 15,636 participants / $96,666,568**, 32
+distinct names, **every one read and not one a fund actually named `Continued
+…`**: `continued Vanguard Target Retirement Fund 2045`, `Continued Fidelity
+Freedom Index 2030 Fund Investor Class`, `(Continuation) PIMCO RealPath Blend 2055
+INST`, `Continued from previous page Principal LifeTime Hybrid 2035 Fund`,
+`continued AF Washington Mutual Investors Fund`.
+
+**THE 2026-09-28 FIX CLOSED THIS CLASS IN THE TRAILING POSITION AND THIS IS THE
+LEADING ONE, which is outside it BY CONSTRUCTION rather than by oversight** — the
+leading-parenthetical arm requires the string to OPEN with a vehicle TYPE, and
+these open with a caption word followed by a real fund. *A fix for one POSITION
+of a class is not a fix for the class*, the same shape as that entry's own
+observation that a fix for one COLUMN is not a fix for the class.
+
+**IT IS PART HONESTY AND PART COVERAGE, measured: 8 of the 32 already publish a
+ticker and 16 a fee**, because `fund-er.js` reaches through the leading caption on
+many — `continued Vanguard Target Retirement Fund 2045` → VTIVX at 0.08 is
+already right. The ones to win are where it does not: `Continued Vanguard Value
+Index Fund` and `continued Vanguard Wellesley Income Admiral Class Fund` publish
+nothing while their bare names resolve.
+
+**THREE MEMBERS ARE PURE CAPTION AND MUST BE TYPED, NOT STRIPPED** — `(continued)`
+alone, `Continued from page 10`, `Continued Balance Brought Forward` — where
+removing the caption leaves no name, so the honest answer is the nameless-row
+treatment rather than a repair. And two are the loan-prose family already served
+(`continued- Loans Participants Interest rates ranging from 10.00% to 10.50%`),
+which must keep their loan typing. Display-side, no vocabulary beyond the literal
+caption word, sibling arm already present; small, so it is queued rather than
+jumped ahead of the larger items.
+
+---
+
 ## 2026-10-01 (19:4xZ) — A conservative allocation published as a growth allocation: SHIPPED, and the fee was a second reach failure in a second table
 
 **SHIPPED — 422 rows / 410 plans / 323,826 participants / $202,887,862 stop
