@@ -117,6 +117,115 @@ const JPM_R6 = "(?:[^a-z0-9]|class|cl|shares?|fd|fund)*r-? ?6\\b";
  * classes. "TRP" cannot match — \btr\b requires the word boundary. */
 const TRUST_CLASS = "\\btr[\\s.-]+(?:i{1,3}|iv|vi{0,3}|sel(?:ect)?|plus|[a-z0-9])\\s*$";
 
+/* A CONSERVATIVE ALLOCATION WAS PUBLISHED AS A GROWTH ALLOCATION, AS FACT.
+ *
+ * The four LifeStrategy arms (one pair in FUND_ER, one in FUND_TICKER) spelled
+ * the allocation word out in full — `conserv(?:ative)?`, `moderate` — while the
+ * recordkeepers that file this family drop its vowels. So `Vanguard
+ * LifeStrategy Cnsrv Gr Inv` matched neither named arm, fell through to the
+ * GROWTH catch-all (whose own lookahead only excluded the literal "conserv"),
+ * and published VASGX — the 80/20 LifeStrategy Growth Fund — for a holding the
+ * filing names Conservative Growth, which the SEC registers as VSCGX, the 40/60
+ * fund. Twice the equity exposure, asserted with no asterisk, and the fee
+ * followed it: 0.1 where the table's own Conservative entry, one line above,
+ * says 0.12.
+ *
+ * IT WAS A REACH FAILURE AND NOT A MISSING ENTRY, which is what made it safe to
+ * correct with no new source: `Vanguard LifeStrategy Conservative Growth Fund`
+ * already resolved to VSCGX at 0.12, so both right answers were in this file
+ * and only the abbreviated spellings could not reach them.
+ *
+ * MEASURED whole-store through the display path, both tables patched together:
+ * 422 rows / 410 plans / 323,826 participants / $202,887,862 — 392 VASGX ->
+ * VSCGX, 23 VASGX -> VSMGX, 2 gained, 1 VSMGX -> VSCGX; fee 395 at 0.1 -> 0.12
+ * and 3 blank -> 0.12, EVERY ONE UPWARD, the direction that cannot be a
+ * flattering bias. 0 symbols lost, 0 asterisks moved, 0 shown types moved. All
+ * 138 distinct transformations read; 137 state the allocation in the name
+ * itself and the 138th carries it in the ISSUER cell.
+ *
+ * THE RULE IS AN ORDERED SUBSEQUENCE OF THE REGISTERED WORD AND CARRIES NO
+ * VOCABULARY OF ABBREVIATIONS. A filing drops whatever vowels it likes, so the
+ * pattern accepts the letters it KEPT, in order, anchored on the word's first
+ * letter: `cnsrv`, `consv`, `cons`, `consrv`, `csrv`, `cns`, `con`, `cnsv`,
+ * `cnserv`, `conserve` and the filer typo `conserative` are all subsequences of
+ * `conservative`; `md` and `mod` of `moderate`. This is the shape this record
+ * prefers because a closed list of abbreviations is the thing that hid the
+ * class in the first place.
+ *
+ * A NEGATIVE CONTROL PER CONDITION, each variant written directly and run over
+ * the whole 7,178-row population, each disagreeing by NAME on exactly its own
+ * cases — and two of them corrected a claim this comment made before they were
+ * run, so the numbers below are the controls' and not an author's:
+ *
+ *  - the MANDATORY FIRST LETTER (`c`/`m` before the optionals) is by far the
+ *    most load-bearing condition, and NOT for the reason first written here. A
+ *    draft of this note said it stops `inv` reading as conservative; `inv` is
+ *    not an ordered subsequence of `conservative` at all (there is no `n` after
+ *    the `i`), so that was simply false. What the mandatory letter prevents is
+ *    the DEGENERATE EMPTY MATCH: with every letter optional the pattern matches
+ *    at any word boundary, so `\b…\b` is satisfied by nothing and the
+ *    conservative arm claims the whole family — measured, **2,496 rows / 469
+ *    names**, including every plain `LifeStrategy Growth` and every
+ *    `Moderate Growth`.
+ *  - the TRAILING TOKEN BOUNDARY, 19 rows: without it the subsequence may match
+ *    a PREFIX of a longer word, which both admits `Mid`/`Modified` as moderate
+ *    and — in the lookahead — lets `Companies`, `Account` and `Mutual` refuse
+ *    the Growth arm, withdrawing 4 correct answers.
+ *  - ORDER (the optionals in the registered word's sequence, rather than a
+ *    character class over the same letters), 7 rows. Its COST is named: it
+ *    refuses six filer typos a class would have repaired (`Converv`,
+ *    `Convervative`, `Consservative`, `Casrv`, `Moderage`, `Mad`). It is kept
+ *    because the same class also admits `Vanguard LifeStrat Constant Growth`,
+ *    where `Constant` is an ordinary word and asserting VSCGX for it would be a
+ *    claim the filing does not make. Refusing a repair is the safe direction.
+ *  - the MINIMUM-LENGTH lookahead `(?=[a-z])`, 1 row, and on this store its
+ *    only effect is a COST: it refuses `Vanguard LifeStrategy M oderate
+ *    Growth`, a broken-font split whose bare `M` really is Moderate. Kept
+ *    because a bare `C` or `M` token is otherwise a share-class letter, and
+ *    this family has only ever had the Investor class, so such a token would be
+ *    someone else's row.
+ *  - the widened LOOKAHEADS in the Growth catch-all: **0 rows. DECORATIVE on
+ *    this store** and labelled as such below, kept because the spelled-out
+ *    originals expressed the same intent and dropping them would quietly
+ *    narrow it.
+ *
+ * RESIDUE, MEASURED AND READ, 16 rows / 9,009 participants keep VASGX where
+ * the name states or garbles a non-Growth allocation: six `LifeStrategy Mid
+ * Growth`, two `Modified Growth`, seven filer typos and one `Constant Growth`.
+ * There is no registered LifeStrategy Mid or Modified fund, so those names are
+ * a filer error rather than an abbreviation, and ASSERTING VSMGX from a
+ * misspelling is a step beyond expanding a contraction. Named, not silent.
+ *
+ * THE FILINGS ADJUDICATE IT IN THREE PLACES: `LifeStrat Cnsrv Gr Inv (VSCGX)`,
+ * `Vanguard LifeStrategy Consv Growth Inv (VSCGX)` and `1VSCGX Vanguard
+ * LifeStrategy Cnsrv Gr Inv` print the symbol we were contradicting, and
+ * `Vanguard LifeStrategy 40/60 Cons Gro` prints VSCGX's own registered
+ * allocation beside our 80/20 answer.
+ *
+ * AND A SECOND, INDEPENDENT MECHANISM WAS FOUND WHILE SIZING THIS ONE AND IS
+ * NOT FIXED HERE. 114 rows name the fund by its ALLOCATION rather than by the
+ * word; this file has no numeric arm, so the stored SEC `stk` is the last stage
+ * and wins — and it CONTRADICTS ITSELF: 60/40 publishes VSMGX on 14 rows and
+ * VSCGX on 12, 20/80 publishes VASIX on 8 and VASGX on 7. At least one side of
+ * each is wrong and the store says so with no external source. Merge-side, so
+ * it needs a run; 19 rows / ~5,755 participants. This change makes the 40/60
+ * family UNANIMOUS at VSCGX (26 stored rows plus the one corrected here), which
+ * is a second route to the same answer. */
+const LS_CONSERV = "c(?=[a-z])(?:o)?(?:n)?(?:s)?(?:e)?(?:r)?(?:v)?(?:a)?(?:t)?(?:i)?(?:v)?(?:e)?";
+const LS_MODERATE = "m(?=[a-z])(?:o)?(?:d)?(?:e)?(?:r)?(?:a)?(?:t)?(?:e)?";
+const LS = "vanguard\\s*life\\s*strat(?:egy)?\\b";
+const lsConsGrowth = () => new RegExp(LS + ".*\\b" + LS_CONSERV + "\\b.*growth", "i");
+const lsModGrowth = () => new RegExp(LS + ".*\\b" + LS_MODERATE + "\\b.*growth", "i");
+const lsIncome = () => new RegExp(LS + ".*income", "i");
+/* the catch-all's lookaheads are the SAME patterns, so the two halves cannot
+ * drift apart the way the spelled-out pair did. They are not redundant with the
+ * named arms above: those require the allocation word to PRECEDE "growth", and
+ * a name that states it afterwards is refused here and claimed by nothing,
+ * which is the honest answer. Measured on this store: 0 rows take that path, so
+ * the lookaheads are DECORATIVE here and kept for the original arms' intent. */
+const lsGrowth = () => new RegExp(LS + "(?!.*\\b" + LS_CONSERV + "\\b)(?!.*\\b"
+  + LS_MODERATE + "\\b).*growth", "i");
+
 const FUND_ER = [
   // --- Fidelity index ---
   [/fidelity (500|s&p 500) index/i, 0.015],
@@ -188,10 +297,13 @@ const FUND_ER = [
   [/vanguard total world stock index/i, 0.09],
   [/vanguard international growth\b/i, 0.26],
   [/vanguard treasury money market/i, 0.07],
-  [/vanguard\s*life\s*strat(?:egy)?\b.*conserv(?:ative)?\b.*growth/i, 0.12],
-  [/vanguard\s*life\s*strat(?:egy)?\b.*moderate\b.*growth/i, 0.10],
-  [/vanguard\s*life\s*strat(?:egy)?\b.*income/i, 0.10],
-  [/vanguard\s*life\s*strat(?:egy)?\b(?!.*conserv)(?!.*moderate).*growth/i, 0.10],
+  // see the LifeStrategy note above FUND_ER: the allocation word is matched as
+  // an ordered subsequence, so a vowel-dropped filing reaches the same figure
+  // the spelled-out name already reached
+  [lsConsGrowth(), 0.12],
+  [lsModGrowth(), 0.10],
+  [lsIncome(), 0.10],
+  [lsGrowth(), 0.10],
   [/metwest total return/i, 0.45],
   [/vanguard (500|institutional) index/i, 0.02],
   [/vanguard russell \d+ .*(index|trust)/i, 0.05],
@@ -801,10 +913,10 @@ const FUND_TICKER = [
   // "- Inv" tail states that class explicitly, and the table's own
   // convention (T. Rowe Price Investor rows above) is to give the ticker
   // when the filing states the class the ticker actually is
-  [/vanguard\s*life\s*strat(?:egy)?\b.*conserv(?:ative)?\b.*growth/i, "VSCGX"],
-  [/vanguard\s*life\s*strat(?:egy)?\b.*moderate\b.*growth/i, "VSMGX"],
-  [/vanguard\s*life\s*strat(?:egy)?\b.*income/i, "VASIX"],
-  [/vanguard\s*life\s*strat(?:egy)?\b(?!.*conserv)(?!.*moderate).*growth/i, "VASGX"],
+  [lsConsGrowth(), "VSCGX"],
+  [lsModGrowth(), "VSMGX"],
+  [lsIncome(), "VASIX"],
+  [lsGrowth(), "VASGX"],
   // other managers with distinctive single-strategy names
   [/dodge & cox stock/i, "DODGX"],
   [/dodge & cox income/i, "DODIX"],

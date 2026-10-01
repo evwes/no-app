@@ -7,6 +7,222 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-01 (19:4xZ) — A conservative allocation published as a growth allocation: SHIPPED, and the fee was a second reach failure in a second table
+
+**SHIPPED — 422 rows / 410 plans / 323,826 participants / $202,887,862 stop
+being told a 40/60 holding is the 80/20 fund.** `Vanguard LifeStrategy Cnsrv Gr
+Inv` and 137 sibling spellings published **VASGX**, the LifeStrategy Growth
+Fund, as fact with no asterisk, for a holding the filing names Conservative
+Growth — which the SEC registers as **VSCGX**, the 40/60 fund. Twice the equity
+exposure. Display-side, no `PARSER_VERSION` bump, no run needed.
+
+Ticker **+2 gained / −0 lost / 416 flipped** (392 VASGX → VSCGX, 23 VASGX →
+VSMGX, 1 VSMGX → VSCGX). Fee **+3 / −0 / 395 changed, every one 0.1 → 0.12,
+UPWARD** — the direction that cannot be a flattering bias. **0 asterisks moved,
+0 shown types moved.** All **138 distinct transformations read**: 137 state the
+allocation in the NAME and the 138th (`7,306.809 mutual fund shares`) carries it
+in the ISSUER cell, which the page prepends.
+
+**IT WAS A REACH FAILURE AND NOT A MISSING ENTRY, which is what made it
+correctable with no new source.** `Vanguard LifeStrategy Conservative Growth
+Fund` already resolved to VSCGX at 0.12; only the vowel-dropped spellings the
+recordkeepers actually file could not reach it. The four arms spelled the
+allocation word out (`conserv(?:ative)?`, `moderate`) while the filings write
+`Cnsrv`, `Consv`, `Cons`, `Csrv`, `Cns`, `Con`, `Cnsv`, `Cnserv`, `Md`, `Mod` —
+so the name fell through to the GROWTH catch-all, whose own lookahead excluded
+only the literal `conserv`.
+
+**THE RULE IS AN ORDERED SUBSEQUENCE OF THE REGISTERED WORD AND CARRIES NO
+VOCABULARY OF ABBREVIATIONS.** A filing drops whatever vowels it likes, so the
+pattern accepts the letters it KEPT, in order, anchored on the word's first
+letter. Every spelling above is an ordered subsequence of `conservative` or
+`moderate`, including the filer typo `conserative`; a closed list of
+contractions is the thing that hid the class in the first place, and this record
+carries that lesson seven times already.
+
+**THE FILINGS ADJUDICATE IT IN FOUR PLACES, which is stronger than any external
+source:** `LifeStrat Cnsrv Gr Inv (VSCGX)`, `Vanguard LifeStrategy Consv Growth
+Inv (VSCGX)` and `1VSCGX Vanguard LifeStrategy Cnsrv Gr Inv` print the symbol we
+were contradicting, and `Vanguard LifeStrategy 40/60 Cons Gro` prints VSCGX's own
+registered allocation beside our 80/20 answer. **The sharpest pin is one page
+publishing all three:** WellSpan Health's two plans (28,242 + 2,143 ppl) each
+showed `Moderate Growth → VSMGX` and `Growth Inv → VASGX` correctly and
+`Cnsrv Gr Inv → VASGX` beside them — *the same symbol printed for two different
+funds on one page.* Both now carry their own, and the conservative row's fee
+corrects to 0.12.
+
+**THE FEE DID NOT TRAVEL WITH THE TICKER AND THE QUEUE ENTRY SAID IT DID.** The
+first whole-store diff came back **0 fee moves**, which contradicted the
+handoff. Asking the function the page calls on both spellings settled it:
+`FUND_ER` carries the IDENTICAL shape 600 lines above `FUND_TICKER`, so the
+abbreviated name reached the generic 0.1 there too. ***Shipping the symbol alone
+would have left a CORRECT symbol beside another fund's number*** — the Edelman
+Windsor shape on this record — so both tables ship in one commit and the fee is
+pinned separately. *A reach failure in one table is a reach failure in every
+table that shares the shape.*
+
+**A NEGATIVE CONTROL PER CONDITION, each variant written DIRECTLY rather than by
+surgery on the shipped source, each run over the whole 7,178-row population and
+each disagreeing BY NAME on exactly its own cases — and two of them corrected
+claims I had already written into the source comment:**
+
+- **the MANDATORY FIRST LETTER: 2,496 rows / 469 names.** My comment said it
+  stops `inv` reading as conservative. **`inv` is not an ordered subsequence of
+  `conservative` at all** (there is no `n` after the `i`), so that was simply
+  false, and the "348 correct answers" figure beside it was never measured. What
+  the mandatory letter actually prevents is the **DEGENERATE EMPTY MATCH**: with
+  every letter optional the pattern matches at any word boundary, so the
+  conservative arm claims the entire family — every plain `LifeStrategy Growth`
+  and every `Moderate Growth`. ***A measured-sounding number in a comment has to
+  be a number that was measured***, and the control is what caught it.
+- **the TRAILING TOKEN BOUNDARY: 19 rows**, load-bearing in BOTH directions —
+  without it the subsequence matches a PREFIX of a longer word, which admits
+  `Mid`/`Modified` as moderate AND lets `Companies`, `Account` and `Mutual`
+  satisfy the lookahead and withdraw 4 CORRECT Growth answers.
+- **ORDER (ordered optionals rather than a character class over the same
+  letters): 7 rows, and its COST IS NAMED.** It refuses six filer typos a class
+  would have repaired (`Converv`, `Convervative`, `Consservative`, `Casrv`,
+  `Moderage`, `Mad`). Kept because the same class admits `Vanguard LifeStrat
+  Constant Growth`, where `Constant` is an ordinary word and VSCGX would be a
+  claim the filing does not make. Refusing a repair is the safe direction.
+- **the MINIMUM-LENGTH lookahead: 1 row, and on this store its only effect is a
+  COST** — it refuses `Vanguard LifeStrategy M oderate Growth`, a broken-font
+  split whose bare `M` really is Moderate. Kept because a bare `C` or `M` token
+  is otherwise a share-class letter, and this family has only ever had the
+  Investor class. *A condition can be load-bearing prospectively and
+  net-negative on the store in front of you; say which.*
+- **the widened LOOKAHEADS in the Growth catch-all: 0 rows, DECORATIVE on this
+  store** and labelled as such in the source. Not redundant in principle — the
+  named arms require the allocation word to PRECEDE "growth" — but no row states
+  it afterwards.
+
+**RESIDUE, MEASURED AND READ: 16 rows / 9,009 participants keep VASGX** where
+the name states or garbles a non-Growth allocation — six `LifeStrategy Mid
+Growth`, two `Modified Growth`, seven typos and one `Constant Growth`. There is
+no registered LifeStrategy Mid or Modified fund, so those are a filer error
+rather than a contraction, and asserting VSMGX from a misspelling is a step
+beyond expanding one. **My own residue screen produced 18 and two were its own
+false positives** — `Corebridge Vanguard Lifestrategy Growth` (a platform, Duke
+University, 69,741 ppl, correctly VASGX) and a `CL-122` class code.
+
+**THE NEIGHBOUR THE BRIEF NAMED IS SAFE, MEASURED RATHER THAN ARGUED: 1,896
+LifeStrategy rows whose TYPE names a pooled vehicle publish no symbol, and 0 of
+them gain one.** Structural, not luck: `fundTickerInfo` sets `pooled` from the
+type cell and then consults only `FUND_COMPARABLE`, which this change does not
+touch. The 4 rows where a fee moves inside that population are typed bare
+`Separate account`, which `noPublicPrice` does not cover, so they published a fee
+and no symbol before and after — and the fee is now the right fund's.
+
+**EVERY COLUMN WAS POSITIVE-CONTROLLED BEFORE A ZERO WAS BELIEVED.** The
+`shownType` column responds in the same `render` (Mutual fund → Brokerage window
+→ Annuity contract) and the asterisk column reaches `star=1` on real pooled rows
+(`Vanguard Target Retirement 2030 Trust II` → VTHRX\*), so both zeros are facts
+about the change. **And the asterisk zero is a GUARANTEE rather than a
+measurement:** `comparable: true` is returned only from `FUND_COMPARABLE`
+(fund-er.js:1329 and :1341) and `FUND_TICKER` always returns
+`comparable: false`, so this change cannot move an asterisk. *Saying why a
+figure cannot move is stronger than bounding it.*
+
+**THREE CORRECTIONS TO THE HANDOFF, two of them mine and one of them not:**
+
+1. **The queued figure of 295 rows / 295 plans / 243,131 participants is LOW; the
+   shipped figure is 422 / 410 / 323,826.** The screen that produced it looked
+   only at the conservative arm, and the MODERATE arm has the same reach failure
+   (23 rows, `Md`/`Mod`), plus two `Conserve` gains and four fee-only rows.
+2. **`Vanguard Life Strat Mod Gr` really does resolve to null, before AND after —
+   the brief was right and my first correction of it would have been wrong.** I
+   measured `Vanguard Life Strat Mod Growth Fund I` flipping VASGX → VSMGX and
+   generalised. Debugging the difference instead of reasoning about it found a
+   **THIRD, SEPARATE GAP: ABBREV expands `\bSTRAT\b` → "Strategic"**
+   (fund-er.js:598), so a filing writing the brand SPACED has the brand word
+   destroyed before any LifeStrategy arm is asked — `Vanguard Life Strat Mod Gr`
+   becomes `Vanguard Life **Strategic** Moderate Growth`, which matches
+   `vanguard\s*life\s*strat(?:egy)?\b` nowhere. The sibling flips only because
+   `lookupTicker` also tries the RAW name, which already says "Growth". **48 rows
+   / 39 plans / 61,140 participants / $82,454,311 publish neither a symbol nor a
+   fee for this reason, 40 of the 48 Vanguard-named.** A BLANK, so coverage and
+   not a defect, and not bundled. *The two strings differed by one word and the
+   reason was an abbreviation three hundred lines away; the debug print found it
+   in one run where two readings had already failed.*
+3. **A SECOND, INDEPENDENT DEFECT, found while sizing this one and NOT fixed
+   here.** 114 rows / 35 names name the fund by its ALLOCATION rather than by the
+   word. `fund-er.js` has no numeric arm, so the stored SEC `stk` is the last
+   stage and wins — **and it contradicts itself: 60/40 publishes VSMGX on 14 rows
+   and VSCGX on 12; 20/80 publishes VASIX on 8 and VASGX on 7.** At least one
+   side of each is wrong and **the store says so with no external source.** Both
+   wrong answers attach to the ` Investor` spelling, which points at the SEC
+   matcher's class-token handling. **19 rows / ~5,755 participants**, merge-side,
+   so it needs a run. **This change makes the 40/60 family UNANIMOUS at VSCGX**
+   (26 stored rows plus the one corrected here), which is a second route to the
+   same answer; 80/20 was already unanimous at VASGX and is attested twice by the
+   filings' own `80/20 Growth` spelling.
+
+**AND MY OWN ATTESTATION SCREEN COMMITTED THE DEFECT IT WAS WRITTEN TO FIND.** It
+searched for names carrying both an allocation and an allocation WORD, with
+`conserv\w*` as the word — the spelled-out form — so it reported only
+80/20 ↔ growth and MISSED `Vanguard LifeStrategy 40/60 Cons Gro`, the single
+sharpest piece of evidence in the item. *The reach failure, inside the screen
+measuring the reach failure.*
+
+**PREVENTION.** `scripts/fund-er-test.mjs` gains **25 must-resolve pins and 10
+`ER_MUST_EQUAL` pins**, added because **not one of the four existing LifeStrategy
+cases reaches the new arm** — all four spell the allocation out, which is exactly
+how the class stayed invisible. The pins cover both directions: the abbreviated
+spellings, the filing-printed symbols, the Growth and Income arms that must NOT
+move, and the residue (`Mid Growth`, `Modified Growth`, `Constant Growth`) pinned
+to VASGX so a later widening cannot change it in silence. Negative control: HEAD's
+`fund-er.js` run against the new fixture file **fails by name on exactly the 17
+new cases (13 tickers, 4 fees) and holds every must-keep**, including all 70
+pre-existing ones.
+
+**FOUR OF MY PINS FAILED FIRST AND THE CODE WAS RIGHT.** I wrote them from the
+store's own strings — `Lifestrategy Cnserv Gr`, `LifeStrategy Growth Fund`,
+`LifeStrat Cnsrv Gr Inv (VSCGX)`, `LifeStrategy Mid Growth Fund` — and all four
+lack the house word, because those rows carry `Vanguard` in the ISSUER cell and
+`lookupTicker` PREPENDS it before asking. ***The stored name is not the string the
+resolver sees, so a fixture must use the one it does*** — the "with the argument
+the page passes" rule, met in a test table rather than in a harness.
+
+**A STALE COMMENT CORRECTED IN THE SAME FILE:** the `MUST_NOT` pin
+`"Vanguard LifeStrategy 60/40"` carried *"numeric form, not filed in this
+population"*. The numeric form **is** filed, on 114 published rows, and 108 of
+them DO publish a symbol — through `stk`, not through this file. The pin is still
+right about `fund-er.js`; its comment was wrong about the universe.
+
+**GATES.** `fund-er-test` 83 must-resolve / 26 must-not / 19 must-blank-fee / 18
+must-keep-fee / 28 must-equal-fee, **0 failures**; `parser-gate` all specimens
+green; `smoke-test` green; `lib-disclose --selftest` 25/25; `merge-name-test`
+green (22/25/20/22/15); **`diff-lineups` against `1ae7a6ca` reports 0 in every
+direction**, which is the right answer for a display change that cannot reach
+parser output. **REPORT path only, as a GUARANTEE and not an empty diff:**
+`build-seo-pages.mjs` renders `<th>Fund</th><th>Value</th>` — **no symbol cell
+and no fee cell at all** — and never imports `fund-er.js`; `git diff --stat p/`
+is empty.
+
+**THE STANDING DRAW** (seed 20261001190, participant-weighted over 60,058
+published lineups / 97,982,407 participants) hit Big Y Foods (12,052 ppl, 21
+rows), which reads clean, and Tempus Unlimited (526 ppl, 28 rows), whose findings
+are all already queued: `The Standard` at 3.4% of the menu (the bare-house
+class), six rows naming a share class and resolving to nothing (the matcher gap),
+two rows carrying a symbol and no fee, and **three live instances of the
+generic-fee pre-emption** — `{Vanguard} Value Index Admiral` and
+`{Vanguard} Developed Markets Index Adm` publish 0.1 where the house-specific
+figure is 0.05, and `{Fidelity} 500 Index Funds` publishes 0.03 where it is
+0.015. **A "plural vehicle noun" hypothesis for the last one was refuted by its
+own probe** — `Fidelity 500 Index Funds` resolves to 0.015 on its own, so the
+plural is irrelevant and the cause is the pre-emption already sized at 36,790
+rows / 11.4M participants.
+
+**HARNESS NOTE, declared because another agent measures through the same file:**
+`scratchpad/apppath.mjs` gained numbered patch pairs (`ER_PATCH_FROM2`/`TO2` …)
+alongside the existing single pair, because `fund-er.js` carries the same
+strategy shape in two tables and one pair cannot express a change to both. Each
+numbered pair still THROWS when it does not match, so a stale patch string fails
+loudly rather than measuring an unpatched file as "after". Nothing else in that
+file changed.
+
+---
+
 ## 2026-10-01 (18:3xZ) — A conservative allocation published as a growth allocation, and a `grep` of a working tree an agent holds
 
 **QUEUED, SIZED, HANDED OFF, NOT SHIPPED — 295 rows / 295 plans / 243,131

@@ -87,6 +87,43 @@ const MUST = [
   ["Vang LifeStrategy Income Inv", "VASIX"],
   ["Van LifeStrat Mod Growth - Inv", "VSMGX"],
   ["Vang LifeStrategy Growth Inv", "VASGX"],
+  /* THE FOUR CASES ABOVE SPELL THE ALLOCATION OUT, so not one of them reached
+   * the vowel-dropped spellings the recordkeepers actually file — the whole
+   * class below published VASGX, the 80/20 Growth fund, for a Conservative
+   * Growth (40/60) holding. Every spelling here is taken from the store, and
+   * the rule is an ORDERED SUBSEQUENCE of the registered word rather than a
+   * list of contractions (see the note above FUND_ER). */
+  ["Vanguard LifeStrategy Consv Growth Inv", "VSCGX"],
+  ["Vanguard LifeStrategy Cnsrv Gr Inv", "VSCGX"],
+  ["VANGUARD LIFESTRAT CSRV GR INV", "VSCGX"],
+  ["Vanguard LifeStrat Cns Gr Fd Inv", "VSCGX"],
+  ["Vanguard LifeStrategy Con Grth", "VSCGX"],
+  ["Vanguard LifeStrat Cnsv Gr Inv", "VSCGX"],
+  /* THE HOUSE WORD IS REQUIRED and four pins written from the store's own
+   * strings failed on it: hundreds of these rows are filed as a bare
+   * `LifeStrategy …` with `Vanguard` in the ISSUER cell, and app.js's
+   * lookupTicker PREPENDS the issuer before asking. So the store name is not
+   * the string the resolver sees, and a fixture must use the one it does. */
+  ["Vanguard Lifestrategy Cnserv Gr", "VSCGX"],
+  ["Vanguard Lifestrategy Conserative Growth", "VSCGX"],   // filer typo, still in order
+  ["Vanguard Life Strategy Conserve Growth Fund", "VSCGX"],  // gained: `conserve` ends in e
+  ["Vanguard LifeStrat Md Grw Fd Inv", "VSMGX"],
+  ["Vanguard Life Strat Mod Growth Fund I", "VSMGX"],
+  /* the filing adjudicates it: these print the symbol we were contradicting */
+  ["Vanguard LifeStrat Cnsrv Gr Inv (VSCGX)", "VSCGX"],
+  ["Vanguard LifeStrategy 40/60 Cons Gro", "VSCGX"],
+  /* ...and the Growth and Income arms must be untouched by the widening */
+  ["Vanguard LifeStrategy Growth Fund Investor Shares", "VASGX"],
+  ["Vanguard Lifestrategy Growth Investor Class", "VASGX"],  // `Class` is not conservative
+  ["VANGUARD LIFESTRATEGY GROWTH", "VASGX"],
+  ["Corebridge Vanguard Lifestrategy Growth", "VASGX"],      // a platform, not an allocation
+  ["Vanguard LifeStrategy Growth Fd", "VASGX"],
+  /* NAMED RESIDUE, pinned so a later widening cannot change it in silence:
+   * there is no registered LifeStrategy Mid or Modified fund, so these are a
+   * filer error rather than a contraction and VSMGX is not asserted for them */
+  ["Vanguard LifeStrat Mid Growth Fund", "VASGX"],
+  ["Vanguard LifeStrategy Modified Growth", "VASGX"],
+  ["Vanguard LifeStrat Constant Growth", "VASGX"],  // `Constant` is an ordinary word
   ["Vang Smcpvl Idx Adm", "VSIAX"],                 // glued token, no word boundary
   ["Vang Mdcpval Idx Adm", "VMVAX"],
   ["Vang Mdcpgr Idx Adm", "VMGMX"],
@@ -164,7 +201,14 @@ const MUST_NOT = [
   "Vanguard High-Yield Tax-Exempt Fund Admiral Shares", // different bond fund, no "corp"
   "Vanguard Emerging Markets Bond Fund Admiral Shares", // different fund, no "stock index"
   "Vanguard Real Estate Index Institutional",      // Institutional class not verified here
-  "Vanguard LifeStrategy 60/40",                   // numeric form, not filed in this population
+  /* CORRECTED 2026-10-01: the numeric form IS filed — 114 published rows name a
+   * LifeStrategy fund by its allocation — and 108 of them DO publish a symbol,
+   * through the stored SEC `stk` rather than through this file. The pin is
+   * still right about fund-er.js and its comment was wrong about the universe.
+   * That resolver contradicts itself there (60/40 -> VSMGX on 14 rows and
+   * VSCGX on 12; 20/80 -> VASIX on 8 and VASGX on 7), which is a separate,
+   * merge-side item. */
+  "Vanguard LifeStrategy 60/40",                   // no numeric arm in THIS file
 ];
 
 /* Variant generation must stay a RESPELLING: bounded, and never dropping the
@@ -294,6 +338,21 @@ const ER_MUST_EQUAL = [
   ["IDFA Real Estate Securities Portfolio Institutional", 0.3],
   ["Empower Annuity Insurance CompaDFA Emerging Markets Core Equity I", 0.3],
   ["Lincoln National Life Insurance Co. SALASSgA S&P MidCp Idx Non-Ln", 0.05],
+  /* THE SAME REACH FAILURE SITS IN BOTH TABLES, so the fee needs its own pins:
+   * FUND_ER carries 0.12 for LifeStrategy Conservative Growth and 0.10 for the
+   * other three, and the abbreviated spellings reached only the 0.10. Shipping
+   * the symbol without the fee would have left a CORRECT symbol beside another
+   * fund's number. All 395 measured moves are 0.1 -> 0.12, i.e. UPWARD. */
+  ["Vanguard LifeStrategy Conservative Growth Fund", 0.12],
+  ["Vanguard LifeStrategy Consv Growth Inv", 0.12],
+  ["Vanguard LifeStrategy Cnsrv Gr Inv", 0.12],
+  ["VANGUARD LIFESTRAT CSRV GR INV", 0.12],
+  ["Vanguard LifeStrategy Con Grth", 0.12],
+  ["Vanguard LifeStrategy Growth Inv", 0.1],
+  ["Vanguard LifeStrategy Moderate Growth Fund", 0.1],
+  ["Vanguard LifeStrat Md Grw Fd Inv", 0.1],
+  ["Vanguard LifeStrategy Income Fund", 0.1],
+  ["Vanguard LifeStrat Mid Growth Fund", 0.1],            // residue: not asserted as moderate
 ];
 for (const [n, want] of ER_MUST_EQUAL) {
   const got = ctx.__e(n);
