@@ -1686,7 +1686,43 @@ export const GUARANTEE_PRICED_WORDS =
   /\bstable value\b|\bmanaged income\b|\bguarantee(?:d|s)?\b|\bsa?gic\b/gi;
 export function annuityFeeIsGuaranteeOnly(cleanedName, priceOf) {
   const s = String(cleanedName || "");
-  if (!ANNUITY_CONTRACT_NAME.test(s)) return false;
+  /* THE GATE READS ALL THREE CONTRACT WORDINGS AS OF 2026-10-01 (14:2xZ), AND
+   * UNTIL NOW IT READ ONE — the eighth recorded instance of a fix for one
+   * PHRASING of a class not being a fix for the class, and this time both
+   * halves shipped in the SAME commit with different reach. On 2026-09-29 the
+   * TYPE rule below was written for `investment contract` AND `insurance
+   * contract` BECAUSE shipping only the phrase an item was filed under is a
+   * recorded mistake; this FEE rule, four lines up, kept the annuity-only gate
+   * and so was outside that class by construction.
+   *
+   * 117 rows / 117 plans / 191,275 participants / $749,120,771, EVERY ONE at
+   * 0.35 — `fund-er.js`'s generic `/stable value|guaranteed|gic/` fallback,
+   * the same number withdrawn from 89 rows on 2026-09-29 and refused again by
+   * v196. `Fully benefit-responsive investment contract Principal Fixed Income
+   * Guaranteed Option`, `… Key Guaranteed Portfolio Fund`, `Guaranteed
+   * insurance contract`. Found by the 14:0xZ draw on Bob Evans Restaurants
+   * (15,749 ppl), whose `Unallocated investment contract - Guaranteed Income
+   * Fund` is 15.9% of its menu.
+   *
+   * THE PREDICATE IS REUSED AND NOT RETYPED: `CONTRACT_DESIGNATION_NAME` is the
+   * TYPE rule's own constant, so the two halves cannot drift apart again — and
+   * `ANNUITY_CONTRACT_NAME` stays separate because `isAnnuityContractRow` uses
+   * it to TYPE a row `Annuity contract`, which an investment contract is not.
+   *
+   * IT IS NOT THE OWNER-GATED STABLE-VALUE ITEM AND MUST NOT BE READ AS A BITE
+   * OUT OF IT. That one (4,669 rows / 7.39M ppl, re-derived the same cycle) is
+   * a policy call about rows whose name says only `stable value`; these 117
+   * additionally carry the filing's OWN word `contract`, which is the condition
+   * the project already decided on. 0 of the 117 publish a ticker, so the whole
+   * effect is the withdrawal of one fabricated number.
+   *
+   * AND THE FIRST NARROWING I PROPOSED WAS INERT, measured before it was
+   * written up: feeding `namesAFund` a guarantee-only screen reaches 0 rows,
+   * because this function answers FALSE on every one of them for the gate
+   * reason above. The circularity is real — `fundER("Guaranteed Income Fund")`
+   * is 0.35 with no ticker, so `namesAFund` is true on the fee alone — but the
+   * tool for it was unreachable, not absent. */
+  if (!ANNUITY_CONTRACT_NAME.test(s) && !CONTRACT_DESIGNATION_NAME.test(s)) return false;
   const rest = s.replace(GUARANTEE_PRICED_WORDS, " ").replace(/\s+/g, " ").trim();
   return priceOf(rest) == null;
 }

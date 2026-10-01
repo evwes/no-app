@@ -1,5 +1,19 @@
 /* Regenerate app.js's twin of `isGenericTypeName` FROM lib-4i, never by hand.
  *
+ * THE RULE THIS FILE EXISTS TO ENFORCE, now stated because four twins have
+ * been lost to three regenerations: A PREDICATE app.js TWINS IS SLICED HERE ON
+ * THE DAY IT SHIPS, AND NEVER TYPED INTO app.js. `isCollectiveTrustName` and
+ * `isLoanAnswerRow` (2026-09-30), then `isLoanVocabularyRow` and
+ * `isBankDepositRow` (2026-10-01), were each hand-written INTO the generated
+ * block and each deleted by the next run of this generator — because a
+ * generator that edits a block in place deletes anything a later hand-edit
+ * puts inside its boundaries. The smoke tether caught all four on the very
+ * next change, which is the argument for the tether and not an excuse for the
+ * habit: between the edit and the catch, the published page lost a suppressor
+ * with nothing saying so. Adding a slice costs five lines — the constant's
+ * start marker, the function's end marker, the block line, the window hook in
+ * MARK_ENDS, and a drift probe.
+ *
  * WHY THIS LIVES IN THE REPO, which is the lesson that put it here: it lived
  * in a session scratchpad, a container restart wiped it, and the next change
  * to lib-4i's derivation arrived with no way to regenerate the copy that must
@@ -23,7 +37,7 @@ import { GENERIC_TYPE_ANY, GENERIC_TYPE_DESPACED, isGenericTypeName } from "./li
 import { isNamelessFundRow, isLoanDescriptionRow, isAnnuityContractRow,
   annuityFeeIsGuaranteeOnly, isInvestmentContractRow, isMistypedStockRow,
   mistypedStockFeeIsGuaranteeOnly, issuerPricedER, isCollectiveTrustName,
-  isLoanAnswerRow } from "./lib-disclose.mjs";
+  isLoanAnswerRow, isLoanVocabularyRow, isBankDepositRow } from "./lib-disclose.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const lib = readFileSync(ROOT + "scripts/lib-4i.mjs", "utf8");
@@ -136,6 +150,31 @@ const lae = dis.indexOf("\n}\n", dis.indexOf("export function isLoanAnswerRow(")
 if (lae < 3) throw new Error("gen-generic-twin: isLoanAnswerRow moved in lib-disclose");
 const loanans = dis.slice(las, lae).replace(/^export /gm, "");
 
+/* A THIRD TWIN A REGENERATION DELETED — 2026-10-01 (14:2xZ). The loan
+ * VOCABULARY arm shipped three hours earlier was hand-written into this block
+ * and the next run of this generator took it with the rest. The smoke tether
+ * caught it on the very next change, exactly as it caught the previous two, so
+ * the lesson is not the tether but the habit it keeps having to rescue: a
+ * generator that edits in place deletes anything a later hand-edit puts inside
+ * its own boundaries, and the only durable answer is to slice the function
+ * VERBATIM here on the same day it ships. */
+const lvs = dis.indexOf("const LOAN_NOTE_MARKER = ");
+if (lvs < 0) throw new Error("gen-generic-twin: LOAN_NOTE_MARKER moved in lib-disclose");
+const lve = dis.indexOf("\n}\n", dis.indexOf("export function isLoanVocabularyRow(")) + 3;
+if (lve < 3) throw new Error("gen-generic-twin: isLoanVocabularyRow moved in lib-disclose");
+const loanvocab = dis.slice(lvs, lve).replace(/^export /gm, "");
+
+/* AND A FOURTH, FOUND BY THE SAME TETHER IN THE SAME CYCLE: the bank-deposit
+ * fee suppressor (2026-10-01 01:5xZ). Four hand-written twins deleted by three
+ * regenerations is no longer a slip, it is the default outcome of hand-writing
+ * one — so the rule is now explicit at the top of this file: a predicate app.js
+ * twins is sliced HERE on the day it ships, never typed into app.js. */
+const bds = dis.indexOf("export const BANK_DEPOSIT_NAME =");
+if (bds < 0) throw new Error("gen-generic-twin: BANK_DEPOSIT_NAME moved in lib-disclose");
+const bde = dis.indexOf("\n}\n", dis.indexOf("export function isBankDepositRow(")) + 3;
+if (bde < 3) throw new Error("gen-generic-twin: isBankDepositRow moved in lib-disclose");
+const bankdep = dis.slice(bds, bde).replace(/^export /gm, "");
+
 const block = `  /* GENERATED FROM scripts/lib-4i.mjs — DO NOT EDIT BY HAND.
    * lib-4i derives these patterns from GENERIC_TYPE_NAME by asserted
    * replacements, so they are DERIVED and transcribing one is the move this
@@ -179,6 +218,10 @@ ${citname.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
   window.__wampoCitName = isCollectiveTrustName;  // read by the smoke test only
 ${loanans.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
   window.__wampoLoanAnswerRow = isLoanAnswerRow;  // read by the smoke test only
+${loanvocab.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
+  window.__wampoLoanVocabRow = isLoanVocabularyRow;  // read by the smoke test only
+${bankdep.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
+  window.__wampoBankDepositRow = (n) => isBankDepositRow(n);  // read by the smoke test only
 `;
 
 /* THE END MARKER MUST BE THE BLOCK'S LAST LINE. It was `__wampoGenericName`
@@ -196,6 +239,8 @@ const MARK_S = "  /* GENERATED FROM scripts/lib-4i.mjs — DO NOT EDIT BY HAND."
  * moved and the old tail stayed — so the list only ever grows, and the cut must
  * be made at the LAST marker present, not the first one found. */
 const MARK_ENDS = [
+  "  window.__wampoBankDepositRow = (n) => isBankDepositRow(n);  // read by the smoke test only\n",
+  "  window.__wampoLoanVocabRow = isLoanVocabularyRow;  // read by the smoke test only\n",
   "  window.__wampoLoanAnswerRow = isLoanAnswerRow;  // read by the smoke test only\n",
   "  window.__wampoIssuerPricedER = (n, iss) => issuerPricedER(fundER, n, iss);  // read by the smoke test only\n",
   "  window.__wampoMistypedStockGuaranteeFee = (n) => mistypedStockFeeIsGuaranteeOnly(n, fundER);  // read by the smoke test only\n",
@@ -257,6 +302,10 @@ vm.runInContext(block
     "globalThis.__ct = isCollectiveTrustName;")
   .replace("window.__wampoLoanAnswerRow = isLoanAnswerRow;  // read by the smoke test only",
     "globalThis.__la = isLoanAnswerRow;")
+  .replace("window.__wampoLoanVocabRow = isLoanVocabularyRow;  // read by the smoke test only",
+    "globalThis.__lv = isLoanVocabularyRow;")
+  .replace("window.__wampoBankDepositRow = (n) => isBankDepositRow(n);  // read by the smoke test only",
+    "globalThis.__bd = (n) => isBankDepositRow(n);")
   .replace(/^\s{2}/gm, ""), ctx);
 const names = ["Mutual funds", "Mutual Fund Shares", "Sub-total: Registered Investment Companies",
   "Commingled funds", "Pooled separate account funds", "Collective trust funds",
@@ -366,6 +415,18 @@ const guarFeeNames = [
   "Group Annuity Contract Lincoln Stable Value Account",
   "Group fixed annuity contracts Empower Select Guaranteed Fund",
   "SAGIC Group Annuity Contract 21016", "Annuity Contracts TIAA Stable Value",
+  /* must SUPPRESS — 2026-10-01, the gate now reads all three contract
+   * wordings, and not one probe above says `investment` or `insurance`
+   * contract, so the twin would have agreed either way */
+  "Unallocated investment contract - Guaranteed Income Fund",
+  "Fully benefit-responsive investment contract Principal Fixed Income Guaranteed Option",
+  "Guaranteed insurance contract",
+  "Investment Contract With Insurance Company Lincoln Financial Group Stable Value Account",
+  "Fully benefit-responsive investment contract Key Guaranteed Portfolio Fund",
+  /* must KEEP — the contract words are there and the remainder still names a
+   * fund, so the strip leaves something that prices */
+  "Fully benefit responsive investment contract Dodge & Cox Income Fund",
+  "Investment contract Fidelity 500 Index Fund",
   /* must KEEP — a real fund held THROUGH the contract, priced by its own name */
   "Vanguard VIF Real Estate Index Portfolio GROUP ANNUITY CONTRACT",
   "Mutual of America Group Annuity Contract Equity Index Fund",
@@ -575,10 +636,10 @@ for (const r of annuityRows) if (ctx.__a(r, r.name) !== isAnnuityContractRow(r, 
 for (const n of guarFeeNames) if (ctx.__q(n) !== annuityFeeIsGuaranteeOnly(n, ctx.fundER)) {
   bad++; console.log(`  GUARANTEE-FEE DRIFT ${JSON.stringify(n)} twin=${ctx.__q(n)} lib=${annuityFeeIsGuaranteeOnly(n, ctx.fundER)}`);
 }
-for (const n of guarFeeNames.slice(0, 6)) if (!annuityFeeIsGuaranteeOnly(n, ctx.fundER)) {
+for (const n of guarFeeNames.slice(0, 11)) if (!annuityFeeIsGuaranteeOnly(n, ctx.fundER)) {
   bad++; console.log(`  GUARANTEE-FEE rule no longer suppresses a fabricated annuity fee: ${JSON.stringify(n)}`);
 }
-for (const n of guarFeeNames.slice(6)) if (annuityFeeIsGuaranteeOnly(n, ctx.fundER)) {
+for (const n of guarFeeNames.slice(11)) if (annuityFeeIsGuaranteeOnly(n, ctx.fundER)) {
   bad++; console.log(`  GUARANTEE-FEE rule would withdraw a fee a fund's own name supports: ${JSON.stringify(n)}`);
 }
 for (const n of loans) if (ctx.__l(n) !== isLoanDescriptionRow(n)) {
@@ -615,5 +676,27 @@ const loanAnsNames = ["Loan Repayments are included:", "loan repayments: 240,932
 for (const n of loanAnsNames) if (ctx.__la(n) !== isLoanAnswerRow(n)) {
   bad++; console.log(`  LOAN-ANSWER DRIFT ${JSON.stringify(n)} twin=${ctx.__la(n)} lib=${isLoanAnswerRow(n)}`);
 }
+/* the loan VOCABULARY arm, 2026-10-01, and it needed its own probes for the
+ * same reason every block above did: not one loan-ANSWER name reaches it. The
+ * must-KEEP half is where this rule's cost lives — a NOTE is a security before
+ * it is a loan, and a fund whose own name carries the word is not a loan line. */
+const loanVocabNames = ["Outstanding Loan Balance", "Outstanding Plan Loans",
+  "Loans to Plan Participants", "Participant's Loan Account",
+  "Notes receivable from participants", "Promissory notes - participants",
+  /* must stay FALSE */ "Bank Loan Fund", "Senior Loan Portfolio",
+  "Invesco Senior Loan ETF", "Note @ 1.500% Maturing 2/15/2030",
+  "Note 3.150% due 03/15/2027", "FEDERAL HOME LOAN BANK OF BOSTON",
+  "Interest rate 1.75%"];
+for (const n of loanVocabNames) if (ctx.__lv(n) !== isLoanVocabularyRow(n)) {
+  bad++; console.log(`  LOAN-VOCAB DRIFT ${JSON.stringify(n)} twin=${ctx.__lv(n)} lib=${isLoanVocabularyRow(n)}`);
+}
+const bankDepNames = ["Schwab Bank Savings", "Charles Schwab Trust Bank",
+  "TD Bank USA N.A.", "Merrill Lynch Bank Deposit Program",
+  "Wells Fargo Bank, N.A.-Bank Deposit Sweep",
+  /* must stay FALSE */ "Gabelli U.S. Treasury Money Market Fund Class AAA",
+  "Vanguard Federal Money Market Fund", "Fidelity 500 Index Fund"];
+for (const n of bankDepNames) if (ctx.__bd(n) !== isBankDepositRow(n)) {
+  bad++; console.log(`  BANK-DEPOSIT DRIFT ${JSON.stringify(n)} twin=${ctx.__bd(n)} lib=${isBankDepositRow(n)}`);
+}
 if (bad) { console.error(`generated with ${bad} DRIFT — do not commit`); process.exit(1); }
-console.log(`generated; twin agrees with lib-4i on ${names.length} names, with lib-disclose on ${rows.length} rows, ${loans.length} loan-description names, ${annuityRows.length} annuity-contract rows, ${guarFeeNames.length} guarantee-only fee names, ${investmentContractRows.length} investment-contract rows, ${mistypedStockRows.length} mistyped-employer-stock rows and ${mistypedStockFeeNames.length} mistyped-stock fee names and ${issuerFeeCases.length} issuer-priced fee cases, ${citNames.length} collective-trust names and ${loanAnsNames.length} loan-answer names`);
+console.log(`generated; twin agrees with lib-4i on ${names.length} names, with lib-disclose on ${rows.length} rows, ${loans.length} loan-description names, ${annuityRows.length} annuity-contract rows, ${guarFeeNames.length} guarantee-only fee names, ${investmentContractRows.length} investment-contract rows, ${mistypedStockRows.length} mistyped-employer-stock rows and ${mistypedStockFeeNames.length} mistyped-stock fee names and ${issuerFeeCases.length} issuer-priced fee cases, ${citNames.length} collective-trust names and ${loanAnsNames.length} loan-answer names and ${loanVocabNames.length} loan-vocabulary names and ${bankDepNames.length} bank-deposit names`);

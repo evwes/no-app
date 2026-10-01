@@ -34087,3 +34087,70 @@ Transportation** (711 ppl, 30 rows @ 0.928, OCR'd).
   and never after the display arm. It does, and that is why they are separable
   rather than merely separate. The draft is kept at
   `scratchpad/cipher-arm.patch`.
+
+## 2026-10-01 (14:2xZ) — The fee half of the contract rule shipped for one wording: 117 rows / 117 plans / 191,275 participants
+- **Wrong:** `annuityFeeIsGuaranteeOnly` opened with
+  `ANNUITY_CONTRACT_NAME.test(s)`, so a filing writing `investment contract` or
+  `insurance contract` was outside the FEE rule **by construction** and kept
+  publishing `fund-er.js`'s generic `/stable value|guaranteed|gic/` fallback.
+  **117 rows / 117 plans / 191,275 participants / $749,120,771, every one at
+  0.35** — the same number withdrawn from 89 rows on 2026-09-29 and refused
+  again by v196. Baptist Healthcare System (19,840 ppl), Parkview Health
+  (18,080), Bob Evans Restaurants (15,749), Steel Dynamics (11,783).
+- **AND BOTH HALVES SHIPPED IN THE SAME COMMIT WITH DIFFERENT REACH.** On
+  2026-09-29 the TYPE rule was deliberately written for all three wordings —
+  *"shipping only the phrase the item was filed under is v131's recorded
+  mistake"* — and the FEE rule four lines above it was not. **The eighth
+  recorded instance of a fix for one PHRASING of a class not being a fix for
+  the class, and the first where the two halves were written the same hour.**
+- **Change:** the gate reads `CONTRACT_DESIGNATION_NAME` as well — the TYPE
+  rule's **own constant, reused and not retyped**, so the two halves cannot
+  drift apart again. `ANNUITY_CONTRACT_NAME` stays separate because
+  `isAnnuityContractRow` uses it to TYPE a row `Annuity contract`, which an
+  investment contract is not. **0 tickers move, 0 shown types move**, so the
+  whole effect is the withdrawal of one fabricated number. All **89 distinct
+  names read**, every one an insurance or investment contract wrapping a
+  stable-value or guaranteed-interest account, not one a registered fund.
+- **NOT THE OWNER-GATED STABLE-VALUE ITEM, and must not be read as a bite out
+  of it.** That one (re-derived the same cycle at 4,669 rows / 4,525 plans /
+  7,389,704 ppl) is a policy call about rows whose name says only `stable
+  value`; these 117 additionally carry the filing's **own word `contract`**,
+  which is the condition the project already decided on.
+- **MY FIRST FIX WAS INERT AND THE MEASUREMENT SAID SO BEFORE IT WAS WRITTEN
+  UP.** The drawn row's escape hatch IS circular — `isInvestmentContractRow`
+  stands down when the remainder `namesAFund`, and the only thing making
+  `Guaranteed Income Fund` name a fund is the generic guarantee fallback whose
+  number is the problem — so I proposed screening `namesAFund` with
+  `annuityFeeIsGuaranteeOnly`. **It reaches 0 rows**, because that function
+  answers FALSE on every one of them for the gate reason above. *The tool for
+  the circularity was unreachable, not absent*, and a clean zero reported on
+  the query.
+- **Prevention:** 5 new must-suppress and 2 new must-keep pins **added because
+  not one of the 15 existing cases says `investment` or `insurance` contract**
+  — every one is an ANNUITY contract, so the tether would have agreed either
+  way. The sharpest is `Fully benefit-responsive investment contract Key
+  Guaranteed Portfolio Fund` sitting six lines above the must-KEEP `Key
+  Guaranteed Portfolio Fund`: the same fund name, and the filing's own word
+  `contract` is the whole difference. The negative control restores the
+  annuity-only gate and fails **by name on exactly the 5**, holding all 16
+  others — including the two new must-keeps, which are protected by the STRIP
+  and not by the gate, so they must hold under both.
+
+## 2026-10-01 (14:2xZ) — A FOURTH hand-written twin deleted by a regeneration
+- **Wrong:** `isLoanVocabularyRow` (shipped 11:4xZ) and `isBankDepositRow`
+  (01:5xZ) were hand-written into app.js's **generated** block, and this
+  cycle's run of `gen-generic-twin.mjs` replaced the block and took both with
+  it. The page threw `isLoanVocabularyRow is not defined`, so **every** row on
+  every plan page would have failed to render.
+- **Change:** both are now VERBATIM SLICES in the generator, with their window
+  hooks in `MARK_ENDS` and a drift probe each (13 loan-vocabulary names, 8
+  bank-deposit names). `isCollectiveTrustName` and `isLoanAnswerRow` were
+  repaired the same way on 2026-09-30.
+- **Prevention:** the rule is now stated at the top of the generator rather
+  than only in the comment beside the repair — **a predicate app.js twins is
+  sliced in `gen-generic-twin.mjs` on the day it ships and never typed into
+  app.js**. Four twins lost to three regenerations is not a slip, it is the
+  default outcome of hand-writing one. The smoke tether caught all four on the
+  very next change, which is the argument for the tether and not an excuse for
+  the habit: between the edit and the catch, the published page lost a
+  suppressor with nothing saying so.

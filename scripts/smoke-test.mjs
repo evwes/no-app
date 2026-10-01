@@ -979,7 +979,26 @@ try {
     "Group Annuity Contract Lincoln Stable Value Account",
     "Group fixed annuity contracts Empower Select Guaranteed Fund",
     "SAGIC Group Annuity Contract 21016", "Annuity Contracts TIAA Stable Value",
+    /* 2026-10-01: the gate now reads all three contract wordings, and these
+     * five exist because NOT ONE of the six above says `investment` or
+     * `insurance` contract — every one is an ANNUITY contract, so the tether
+     * would have agreed whether or not the gate was widened. The first is the
+     * drawn row (Bob Evans, 15,749 ppl, 15.9% of its menu); the last is the
+     * sharpest boundary case on the list, because `Key Guaranteed Portfolio
+     * Fund` sits six lines below it as a must-KEEP — the SAME fund name, and
+     * the filing's own word `contract` is the whole difference. */
+    "Unallocated investment contract - Guaranteed Income Fund",
+    "Fully benefit-responsive investment contract Principal Fixed Income Guaranteed Option",
+    "Guaranteed insurance contract",
+    "Investment Contract With Insurance Company Lincoln Financial Group Stable Value Account",
+    "Fully benefit-responsive investment contract Key Guaranteed Portfolio Fund",
     /* must KEEP the fee, from here down */
+    /* …and these two carry the contract words AND name a real fund, so the
+     * strip leaves something that still prices and the rule stands down. They
+     * are the escape hatch the investment-contract TYPE rule already relies on,
+     * asked of the FEE rule for the first time. */
+    "Fully benefit responsive investment contract Dodge & Cox Income Fund",
+    "Investment contract Fidelity 500 Index Fund",
     "Vanguard VIF Real Estate Index Portfolio GROUP ANNUITY CONTRACT",
     "Mutual of America Group Annuity Contract Equity Index Fund",
     "Neuberger Berman AMT Sustainable Equity Portfolio GROUP ANNUITY CONTRACT",
@@ -996,9 +1015,9 @@ try {
     for (const n of guarDrift) console.error(`  ${JSON.stringify(n)}  app.js=${guarGot[guarFeeCases.indexOf(n)]}  module=${annuityFeeIsGuaranteeOnly(n, tableER)}`);
     fail(`the guarantee-only fee rule in app.js disagrees with scripts/lib-disclose.mjs on ${guarDrift.length} of ${guarFeeCases.length} names — regenerate it`);
   }
-  for (const n of guarFeeCases.slice(0, 6))
+  for (const n of guarFeeCases.slice(0, 11))
     if (!annuityFeeIsGuaranteeOnly(n, tableER)) fail(`guarantee-only fee rule no longer suppresses a fabricated annuity fee: ${JSON.stringify(n)}`);
-  for (const n of guarFeeCases.slice(6))
+  for (const n of guarFeeCases.slice(11))
     if (annuityFeeIsGuaranteeOnly(n, tableER)) fail(`guarantee-only fee rule would withdraw a fee a fund's own name supports: ${JSON.stringify(n)}`);
 
   /* THE INVESTMENT-CONTRACT PREDICATE, tethered the same way, 2026-09-29. It

@@ -1038,10 +1038,6 @@
   }
 
   window.__wampoNamelessRow = isNamelessFundRow;  // read by the smoke test only
-  /* `of` is in the DANGLING-RANGE arm and not in the connective list: the
-   * connective arm needs no second number, so it would reach `Fixed rate of
-   * 3.00%` — an ordinary crediting rate — and this predicate REPLACES the
-   * displayed name. See scripts/lib-disclose.mjs for the measurement. */
   const LOAN_DESC_RANGE = /\brates?\b[^.;]{0,40}?\b(?:rang(?:e|es|ing)|between|vary|varying|from)\b|\b\d+(?:\.\d+)?\s*%?\s*(?:to|[-–—])\s*\d+(?:\.\d+)?\s*%|\b(?:from|of)\s+\d+(?:\.\d+)?\s*%\s*(?:to|[-–—])/i;
   const LOAN_DESC_WORDS = /\b(?:participants?|participation|loans?|notes?|promissory|receivable|outstanding|balances?|interest|rates?|ranging|range|ranges|rang|between|varying|various|vary|varies|bearing|earning|carrying|accruing|maturing|maturity|maturities|due|payable|dated?|dates|through|until|to|from|at|with|of|and|or|the|a|an|per|annum|annually|percent|pct|secured|collateralized|collateral|by|vested|terms?|years?|months?|less|more|than|generally|stated|fixed|variable|cost|no|later|amounts?|extending|into|repayment|plan|in|on|all|up)\b/gi;
   const LOAN_DESC_MONTHS = /\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\b/gi;
@@ -1110,26 +1106,7 @@
     return loanDescriptionResidue(s).length === 0;
   }
 
-  /* A NAME THAT IS NOTHING BUT LOAN VOCABULARY IS THE LOAN ROW — the arm
-   * `LOAN_ROW`'s anchor cannot reach, because the name opens with an ordinary
-   * adjective (`OUTSTANDING LOAN BALANCE`). No vocabulary of its own: `fund`,
-   * `trust`, `portfolio` and `etf` are absent from the strip list, so every
-   * real holding keeps a residue. A `note` is a SECURITY before it is a loan —
-   * 37 Treasury and corporate notes said so — hence the marker.
-   * Canonical in scripts/lib-disclose.mjs; the smoke test holds the two
-   * together. */
-  const LOAN_NOTE_MARKER = /\b(?:participants?|receivable|rec|promissory)\b/i;
-  function isLoanVocabularyRow(name) {
-    const s = String(name || "").trim();
-    if (!s) return false;
-    const hasLoan = /\bloans?\b/i.test(s);
-    const hasNote = /\bnotes?\b|\bpromissory\b/i.test(s);
-    if (!hasLoan && !(hasNote && LOAN_NOTE_MARKER.test(s))) return false;
-    return loanDescriptionResidue(s).length === 0;
-  }
-
   window.__wampoLoanDescRow = isLoanDescriptionRow;  // read by the smoke test only
-  window.__wampoLoanVocabRow = isLoanVocabularyRow;  // read by the smoke test only
   const ANNUITY_CONTRACT_NAME = /\bannuity contracts?\b/i;
   function isAnnuityContractRow(f, cleanedName) {
     const type = String((f && f.type) || "");
@@ -1142,7 +1119,43 @@
     /\bstable value\b|\bmanaged income\b|\bguarantee(?:d|s)?\b|\bsa?gic\b/gi;
   function annuityFeeIsGuaranteeOnly(cleanedName, priceOf) {
     const s = String(cleanedName || "");
-    if (!ANNUITY_CONTRACT_NAME.test(s)) return false;
+    /* THE GATE READS ALL THREE CONTRACT WORDINGS AS OF 2026-10-01 (14:2xZ), AND
+     * UNTIL NOW IT READ ONE — the eighth recorded instance of a fix for one
+     * PHRASING of a class not being a fix for the class, and this time both
+     * halves shipped in the SAME commit with different reach. On 2026-09-29 the
+     * TYPE rule below was written for `investment contract` AND `insurance
+     * contract` BECAUSE shipping only the phrase an item was filed under is a
+     * recorded mistake; this FEE rule, four lines up, kept the annuity-only gate
+     * and so was outside that class by construction.
+     *
+     * 117 rows / 117 plans / 191,275 participants / $749,120,771, EVERY ONE at
+     * 0.35 — `fund-er.js`'s generic `/stable value|guaranteed|gic/` fallback,
+     * the same number withdrawn from 89 rows on 2026-09-29 and refused again by
+     * v196. `Fully benefit-responsive investment contract Principal Fixed Income
+     * Guaranteed Option`, `… Key Guaranteed Portfolio Fund`, `Guaranteed
+     * insurance contract`. Found by the 14:0xZ draw on Bob Evans Restaurants
+     * (15,749 ppl), whose `Unallocated investment contract - Guaranteed Income
+     * Fund` is 15.9% of its menu.
+     *
+     * THE PREDICATE IS REUSED AND NOT RETYPED: `CONTRACT_DESIGNATION_NAME` is the
+     * TYPE rule's own constant, so the two halves cannot drift apart again — and
+     * `ANNUITY_CONTRACT_NAME` stays separate because `isAnnuityContractRow` uses
+     * it to TYPE a row `Annuity contract`, which an investment contract is not.
+     *
+     * IT IS NOT THE OWNER-GATED STABLE-VALUE ITEM AND MUST NOT BE READ AS A BITE
+     * OUT OF IT. That one (4,669 rows / 7.39M ppl, re-derived the same cycle) is
+     * a policy call about rows whose name says only `stable value`; these 117
+     * additionally carry the filing's OWN word `contract`, which is the condition
+     * the project already decided on. 0 of the 117 publish a ticker, so the whole
+     * effect is the withdrawal of one fabricated number.
+     *
+     * AND THE FIRST NARROWING I PROPOSED WAS INERT, measured before it was
+     * written up: feeding `namesAFund` a guarantee-only screen reaches 0 rows,
+     * because this function answers FALSE on every one of them for the gate
+     * reason above. The circularity is real — `fundER("Guaranteed Income Fund")`
+     * is 0.35 with no ticker, so `namesAFund` is true on the fee alone — but the
+     * tool for it was unreachable, not absent. */
+    if (!ANNUITY_CONTRACT_NAME.test(s) && !CONTRACT_DESIGNATION_NAME.test(s)) return false;
     const rest = s.replace(GUARANTEE_PRICED_WORDS, " ").replace(/\s+/g, " ").trim();
     return priceOf(rest) == null;
   }
@@ -1161,19 +1174,6 @@
   }
 
   window.__wampoInvestmentContractRow = (f) => isInvestmentContractRow(f, (f && f.name) || "", namesAFund);  // read by the smoke test only
-  /* AN FDIC-INSURED BANK DEPOSIT HAS NO EXPENSE RATIO — twin of the canonical
-   * rule in scripts/lib-disclose.mjs, which carries the population, the reading
-   * of all 78 names and the argument for gating on the row's own resolved TICKER
-   * rather than on `namesAFund` (whose fundER arm answers 0.2 for any
-   * money-market remainder and so cannot discriminate here). This half is purely
-   * the NAME test; the `!tk` half is at the call site, where the page's own
-   * answer already is. */
-  const BANK_DEPOSIT_NAME =
-    /\bdeposit\s+acc(?:oun)?ts?\b|\bbank\s+deposit\b/i;
-  function isBankDepositRow(cleanedName) {
-    return BANK_DEPOSIT_NAME.test(String(cleanedName || ""));
-  }
-  window.__wampoBankDepositRow = (n) => isBankDepositRow(n);  // read by the smoke test only
   const EMPLOYER_STOCK_CLAIM = /company stock|employer (security|stock)/i;
   const POOLED_CONSTRUCTION_NAME = new RegExp([
     /* a maturity vintage — a fund has one, a share of stock does not */
@@ -1273,6 +1273,24 @@
   }
 
   window.__wampoLoanAnswerRow = isLoanAnswerRow;  // read by the smoke test only
+  const LOAN_NOTE_MARKER = /\b(?:participants?|receivable|rec|promissory)\b/i;
+  function isLoanVocabularyRow(name) {
+    const s = String(name || "").trim();
+    if (!s) return false;
+    const hasLoan = /\bloans?\b/i.test(s);
+    const hasNote = /\bnotes?\b|\bpromissory\b/i.test(s);
+    if (!hasLoan && !(hasNote && LOAN_NOTE_MARKER.test(s))) return false;
+    return loanDescriptionResidue(s).length === 0;
+  }
+
+  window.__wampoLoanVocabRow = isLoanVocabularyRow;  // read by the smoke test only
+  const BANK_DEPOSIT_NAME =
+    /\bdeposit\s+acc(?:oun)?ts?\b|\bbank\s+deposit\b/i;
+  function isBankDepositRow(cleanedName) {
+    return BANK_DEPOSIT_NAME.test(String(cleanedName || ""));
+  }
+
+  window.__wampoBankDepositRow = (n) => isBankDepositRow(n);  // read by the smoke test only
 
   /* A SCHEDULE H PARTICIPANT-DIRECTION CAPTION IS NOT A HOLDING — the rule,
    * the Microsoft row that found it ($6,602,388,247 = 8.6% of a 50-row menu),
