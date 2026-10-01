@@ -32765,3 +32765,26 @@ and is faithful in the filing.
   11,594,577 participants) remains an UPPER BOUND and must be re-measured before
   that item ships.** *Re-asking a number you already published is cheap; leaving a
   doubt attached to it is not.*
+
+## 2026-10-01 (03:4xZ) — The pre-emption footprint, exact
+
+- The upper bound flagged two entries above is now an exact figure, measured
+  through the corrected harness with the positive control firing first:
+  **36,790 rows / 7,509 entries / 7,510 plans / 11,443,967 participants /
+  $115,117,759,657**, across **5,667 distinct transformations**.
+- **The overcount was 249 rows / 150,610 participants / $2.9B** — 0.7% on rows and
+  1.3% on people — against the published 37,039 / 7,611 / 11,594,577 /
+  $118,036,414,865. Small, and in the predicted direction. The mechanism is
+  visible in the new breakdown: **1,689 rows DIFFER between the two answers but
+  publish no fee today at all**, which is exactly the population the three missing
+  suppressors blank, and the old harness counted part of it.
+- **EXACT rather than sampled, and the pre-filter is why it is cheap:**
+  `issuerPricedER` returns null without an issuer, so a row with no issuer cell
+  cannot be in the population and skipping it changes nothing. 539,038 rows carry
+  one. *A pre-filter derived from the predicate's own first condition costs no
+  accuracy; one derived from a guess about the data costs all of it.*
+- **The item is still not shippable, and the remaining blockers are the ones the
+  01:4xZ read named** rather than the measurement: four families inside the
+  population whose correct answer is BLANK (one of which, the bank deposits,
+  shipped at 03:0xZ), and the 5,667 transformations' own reading. What is closed
+  is the doubt about the size.

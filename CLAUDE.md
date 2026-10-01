@@ -895,6 +895,18 @@ from the cycle that would have cleared it.
   parser-gate, smoke, fund-er-test (46/26/19/18) green. **REPORT path only as a
   GUARANTEE: `build-seo-pages.mjs` never imports `fund-er.js`**; `git diff
   --stat p/` empty. `docs/accuracy-log.md` 2026-09-30 (11:5xZ).
+- **THE PRE-EMPTION FOOTPRINT IS NOW EXACT, 2026-10-01 03:4xZ: 36,790 rows /
+  7,509 entries / 7,510 plans / 11,443,967 participants / $115,117,759,657, across
+  5,667 distinct transformations.** The upper bound overstated it by **249 rows /
+  150,610 ppl / $2.9B** (0.7% / 1.3%), in the predicted direction, and the new
+  breakdown shows the mechanism: **1,689 rows DIFFER but publish no fee today**,
+  the population the three missing suppressors blank. **Do not carry 37,039 or
+  11,594,577 forward.** Exact rather than sampled because `issuerPricedER` returns
+  null without an issuer, so a row with no issuer cell cannot qualify — 539,038
+  carry one. *A pre-filter derived from the predicate's own first condition costs
+  no accuracy.* **Still not shippable**, but on the 01:4xZ read's blockers (the
+  families whose answer is BLANK, and reading the 5,667), not on the size.
+  `docs/accuracy-log.md` 2026-10-01 (03:4xZ).
 - **SHIPPED 2026-10-01 03:0xZ, `[skip ci]` — AN FDIC-INSURED BANK DEPOSIT HAS NO
   EXPENSE RATIO: 105 rows / 101 plans / 130,291 participants / $88,585,280.**
   Schwab Bank Savings, Charles Schwab Trust Bank, TD Bank USA N.A., Banc of
