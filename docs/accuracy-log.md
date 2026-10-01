@@ -32373,3 +32373,67 @@ and is faithful in the filing.
   commit, so whichever committed would have written the same data; the record's
   standing hazard (a cancelled run's `if: always()` merge committing a partial
   store) cannot bite when the two runs carry identical code.
+
+## 2026-10-01 (00:1xZ) — The generic fee estimate pre-empts the house-specific one, and the site publishes up to four expense ratios for one ticker
+
+- **Wrong:** `fundERRow` is `fundERFiled(f.name)` and only then
+  `issuerPricedER(fundER, f.name, f.iss)`. The issuer arm was made **strictly
+  additive on purpose** on 2026-09-29 — it runs only where the bare name returns
+  null — but a bare `Mid Cap Index Fund` does **not** return null: it returns
+  `fund-er.js`'s GENERIC estimate (0.1% for an unattributed index fund, 0.2% for
+  an unattributed money market). So the generic number is published beside a
+  SPECIFIC ticker and the house-specific answer is never asked for.
+  ***A guard built to add nothing can also prevent a correction*** — the safety
+  property of my own fix, working against it one week later.
+- **THE EVIDENCE IS THE STORE CONTRADICTING ITSELF: 196 of 1,174 tickers are
+  published with MORE THAN ONE expense ratio**, and the filed names say exactly
+  which value goes with which. The correct one always sits on the name that
+  STATES THE HOUSE; the wrong one on the name that does not:
+
+  | ticker | true | published | the names behind them |
+  |---|---|---|---|
+  | FXAIX | 0.015 | 17,083 rows at 0.015 / **2,818 at 0.03** / 13 at 0.1 | `Fidelity 500 Index Fund` vs bare `500 Index Fund` |
+  | FSMDX | 0.025 | 10,951 at 0.025 / **1,811 at 0.1** | `Fidelity Mid Cap Index` vs bare `Mid Cap Index` |
+  | FSSNX | 0.025 | 9,742 at 0.025 / **1,737 at 0.1** | `Fidelity Small Cap Index` vs bare `Small Cap Index` |
+  | VSMAX | 0.05 | 12,264 at 0.05 / **2,300 at 0.1** | `Vanguard Small-Cap Index Adm` vs bare `Small Cap Index Fund` |
+  | VIMAX | 0.05 | 11,716 at 0.05 / **2,209 at 0.1** | `Vanguard Mid Cap Index Adm` vs bare `Mid Cap Index Fund` |
+  | VMFXX | 0.11 | 4,971 at 0.11 / **884 at 0.2** | `Vanguard Federal Money Market` vs bare `Federal Money Market` |
+
+  **Every conflict errs HIGH — two to four times the real cost** — so the
+  direction is the safer one for a saver reading it, and it is still a wrong
+  number presented as fact, about the cheap index funds most plans actually hold.
+- **THE 290,119 ROWS / 72,169,343 PARTICIPANTS THAT CARRY A CONFLICTED TICKER IS
+  NOT THE CLASS SIZE AND MUST NOT BE QUOTED AS ONE** — it mixes the 17,083
+  CORRECT FXAIX rows in with the 2,818 wrong ones. *A count that mixes a correct
+  row with a defective one is not a class size.* The honest footprint is the rows
+  where a house-specific answer EXISTS and DIFFERS, measured through the shipped
+  functions (`issuerPricedER` imported canonically from `lib-disclose`, `fundER`
+  sliced out of the page, positive-controlled before counting) — in flight at the
+  time of writing, and deliberately not guessed at here.
+- **FOUND BY READING TWO MENUS SIDE BY SIDE, which no count would have done.**
+  The 23:1xZ participant-weighted draw over the plans that gained a ticker in
+  #526 landed on **Supreme Service & Specialty (733 ppl, OCR'd)**, which writes
+  `Vanguard Target Retirement 2030 Fund` and publishes **VTHRX at 0.08**, and
+  **Hightower Holding (1,736 ppl)**, which writes `Vanguard Target Retrmnt 2030`
+  and now publishes **VTHRX and a blank fee**. Same fund, same class, two plans,
+  one price. The blank is what pointed at the pre-emption; the four-value
+  contradiction is what the blank turned out to be hiding.
+- **AND THE DRAW ALSO CONFIRMED #526 ON THE SURFACE: all 16 new tickers across
+  the two menus are correct**, read against their own registered classes rather
+  than their symbols. `American Century Small Cap Val R6` → **ASVDX**, which
+  `sec-funds.json` registers as the **R6 Class** against eight sibling classes;
+  ten Vanguard Target Retirement vintages, each exact only because its series has
+  exactly one registered class. `site-test` #120 reads `conclusion: success` on
+  the exact mirrored commit `1cf1107b`, which is the first CI green covering the
+  45,894 new ticker cells — the local smoke run had tested the OLD store.
+- **ADJACENT AND LARGER, QUEUED NOT SHIPPED — a row whose ticker is known still
+  cannot be priced: 39,651 rows / 12,588 entries / 12,591 plans / 16,047,315
+  participants / $99,785,853,495 would gain a fee** from the site's own published
+  (ticker → ER) pair (`Target Retirement 2040 Fund` → VFORX 0.08 on 689 rows,
+  `New World R6` → RNWGX 0.57 on 455, `American Century Mid Cap Value R6` →
+  AMDVX 0.4 on 386). It needs no new source, and the *class* claim was already
+  made by the ticker, so the fee makes it explicit rather than adding it — but by
+  the same token the fee inherits the ticker's correctness, and 56 readings is
+  thin for 16M people. **It is gated on the contradiction above**: propagating a
+  pair that is not well defined spreads the contradiction instead of filling a
+  blank. That ordering is the finding, not an inconvenience.

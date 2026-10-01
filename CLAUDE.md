@@ -895,6 +895,47 @@ from the cycle that would have cleared it.
   parser-gate, smoke, fund-er-test (46/26/19/18) green. **REPORT path only as a
   GUARANTEE: `build-seo-pages.mjs` never imports `fund-er.js`**; `git diff
   --stat p/` empty. `docs/accuracy-log.md` 2026-09-30 (11:5xZ).
+- **QUEUED 2026-10-01 00:1xZ, THE LARGEST HONESTY DEFECT CURRENTLY OPEN — THE
+  GENERIC FEE ESTIMATE PRE-EMPTS THE HOUSE-SPECIFIC ONE, AND THE SITE PUBLISHES
+  UP TO FOUR EXPENSE RATIOS FOR ONE TICKER: 196 of 1,174 tickers carry more than
+  one ER.** `fundERRow` is `fundERFiled(f.name)` and only then
+  `issuerPricedER(…)`; the issuer arm was made **strictly additive on purpose**
+  (2026-09-29) so it runs only where the bare name returns null — and a bare
+  `Mid Cap Index Fund` does NOT return null, it returns `fund-er.js`'s GENERIC
+  estimate (0.1% unattributed index fund, 0.2% unattributed money market). ***A
+  guard built to add nothing can also prevent a correction.***
+  **The correct value always sits on the name that STATES THE HOUSE:** FXAIX
+  17,083 rows at 0.015 against **2,818 at 0.03** (`Fidelity 500 Index Fund` vs
+  bare `500 Index Fund`); FSMDX 10,951 at 0.025 against **1,811 at 0.1**; FSSNX
+  9,742 against **1,737 at 0.1**; VSMAX 12,264 at 0.05 against **2,300 at 0.1**;
+  VIMAX 11,716 against **2,209**; VMFXX 4,971 at 0.11 against **884 at 0.2**.
+  **Every conflict errs HIGH, two to four times the real cost** — the safer
+  direction for a reader, still a wrong number about the cheap index funds most
+  plans hold.
+  **DO NOT QUOTE 290,119 ROWS / 72,169,343 PPL AS THE CLASS SIZE** — that is
+  every row carrying a conflicted ticker and it mixes the 17,083 CORRECT FXAIX
+  rows with the 2,818 wrong ones. The footprint is the rows where a
+  house-specific answer EXISTS and DIFFERS, measured through the shipped
+  functions.
+  **FOUND BY READING TWO MENUS SIDE BY SIDE and by no count:** the 23:1xZ draw's
+  Supreme Service & Specialty (733 ppl) writes `Vanguard Target Retirement 2030
+  Fund` → **VTHRX 0.08**, Hightower Holding (1,736) writes `Vanguard Target
+  Retrmnt 2030` → **VTHRX and a blank fee**. Same fund, same class, one price.
+- **ADJACENT, LARGER, GATED ON THE ABOVE — A ROW WHOSE TICKER IS KNOWN STILL
+  CANNOT BE PRICED: 39,651 rows / 12,591 plans / 16,047,315 participants /
+  $99,785,853,495 would gain a fee** from the site's own published (ticker → ER)
+  pair. No new source, and the class claim was already made by the ticker — but
+  the fee inherits the ticker's correctness, 56 readings is thin for 16M people,
+  and **propagating a pair that is not well defined spreads the contradiction
+  instead of filling a blank.** That ordering is the finding.
+- **AND THE 23:1xZ DRAW CONFIRMED #526 ON THE SURFACE: all 16 new tickers across
+  both menus are correct**, read against their registered classes — `American
+  Century Small Cap Val R6` → **ASVDX, the R6 Class** against eight siblings, and
+  ten Vanguard Target Retirement vintages each exact only because its series has
+  one registered class. **`site-test` #120 `conclusion: success` on `1cf1107b`,
+  the exact mirrored commit — the first CI green covering the 45,894 new ticker
+  cells**, the local smoke run having tested the OLD store.
+  `docs/accuracy-log.md` 2026-10-01 (00:1xZ).
 - **NOTHING IS IN FLIGHT. #526 RAN `success` AND IS MIRRORED — 2026-09-30 23:1xZ
   (`09a16988 → 8f9e0f35`), UNFORCED ON BOTH CHECKS, data gate +0 / −0 by ack AND
   by plan. EVERY PRE-REGISTERED FIGURE PASSED TO THE ROW.** `tkExact` **36.18**,
