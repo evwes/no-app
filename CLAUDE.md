@@ -727,6 +727,90 @@ from the cycle that would have cleared it.
   trust-aware standalone script — the standalone's single trust is the one lineup
   v196 withdrew. **`matchQuote` 5,397 of which only
   1,785 are SHOWN to readers** — the condition/outcome pair shipped 2026-09-27.
+- **BUILT, TRACED AND REVERTED 2026-10-01 23:3xZ — THE CATEGORY-TABLE FIX IS
+  ALREADY IN `lib-4i` AS v74, AND THE GATE IT NEEDS DOES NOT EXIST. NOTHING WAS
+  PUSHED; `PARSER_VERSION` IS BACK AT 196.** The queued rule — *a description
+  shared by three or more rows whose IDENTITY cells differ is a CATEGORY* — reads
+  as new and is **v74's own split**, scoped to rows the leading-share-count strip
+  renamed (`_sl`). Its comment states the cost of unscoping it: a brokerage
+  listing carries `Preferred stock` dozens of times under different issuers, and
+  splitting them *"moved $19.4M out of the displayed list."* **So the work was
+  never to write a rule; it was to widen a scope past a named cost** — the item
+  was more nearly done than the queue said and harder, for the same reason.
+  **BOTH FILINGS READ IN FULL, BOTH SUMS CONFIRMED TO THE DIGIT.** Bayer
+  (`20260731094136NAL0024409521001`, **28,899 ppl**, $11.84B) files columns
+  *labelled* `COLUMN A / B / C`; twelve `Vanguard Target Retirement … Trust Plus`
+  rows carry `Target Retirement Trust Fund` in column C and sum to
+  **$4,865,552,105**, the stored figure. Fifteen `Bayer Corporation Fixed Fund`
+  rows over insurer identities sum to **$576,630,671**, also exact. Paramount
+  (**33,764 ppl**) carries a strategy label on EVERY row.
+  **AND THE SAME FILING WANTS THE OPPOSITE ANSWER TWICE, which is the finding the
+  queue did not have.** Bayer's twelve vintages are twelve menu choices and must
+  SPLIT; its fifteen fixed-fund rows are ONE option in fifteen wrap contracts and
+  must NOT — this record already rules the wrap-contract-issuer family *correct as
+  filed* at Textron. Paramount repeats it: nine LifePath vintages must separate,
+  four `Large Cap US Equity Fund` sleeves (`Dodge & Cox`, `Wellington Management
+  Company`, `Sanders Capital`, `Sustainable Growth Advisors`, filed under
+  **Separately Managed Accounts**) must not. *The category test is TRUE and not
+  SUFFICIENT: it does not say which column serves the reader.*
+  **THE DISCRIMINATOR WANTED IS *does column B name a PRODUCT or a FIRM*, AND
+  NEITHER CANDIDATE PREDICATE ANSWERS IT — ASKED DIRECTLY RATHER THAN ASSUMED.**
+  `isHouseName` is TRUE for `Wellington Management Company` and `Dodge & Cox` and
+  **FALSE for `Transamerica Life Insurance`, `Massachusetts Mutual` and `New York
+  Life 29709`** (it is `HOUSE_ONLY` plus a corporate-suffix test at ≤5 words, so a
+  firm ending in `Insurance` is not a house to it); `identityIsProductName`
+  (v102's word-count-≥3 screen) calls `Wellington Management Company` a PRODUCT.
+  **Four plain firms, two TRUE and two FALSE.** *Ask the guard before designing
+  around it* — asked here, it refused the design.
+  **THE BUILD'S OWN TRACE CONVICTED IT ON THREE COUNTS, each an observation from
+  the shipped path and not a prediction.** (1) **The name is still the category**
+  — the split works and twelve rows read `{Vanguard Target Retirement 2035 Trust
+  Plus} Target Retirement Trust Fund`, the fund only in the issuer cell; making
+  the fund the NAME is far larger, because v67's comment states the design
+  explicitly (*"names stay byte-identical to v66, so dedup keys, region scores,
+  confidence and the parser gate are untouched by design"*) and v161 records a
+  real 34-row menu lost when a rule moved which REGION won. (2) **It INTRODUCED a
+  double count** — Bayer 17 rows @ 0.993 → **34 @ 1.024**, two rows twice at
+  identical values, because the filing renders the schedule twice across a page
+  break and the double-render dedup (`e.vals.has(r.value)`) is what collapsed
+  them; a fresh per-issuer key bypasses it and the `while (seen.has(alt))` loop
+  mints a second key for the same issuer and value. **The v100/Dove Schools shape
+  rebuilt by a fix written to REMOVE fabrications**, the fourth time a de-merging
+  change has done it. (3) **It mis-attributed $1,954,847,000 to a $112M fund** —
+  Paramount published `{Vanguard FTSE Social Index Fund} Passively Managed Fund`
+  at that figure, three funds' values summed onto the smallest one's identity.
+  *A PARTIAL split is worse than no split: the merged row at least named no fund.*
+  **MY DIAGNOSIS OF (3) WAS WRONG TWICE** before the predicate probe settled it (I
+  blamed `isHouseName` calling a fund a house, then `_dw` going unset), and the
+  honest outcome was to revert rather than keep guessing.
+  **RE-QUEUED AS THREE PIECES, NOT ONE:** (a) a firm-vs-product discriminator that
+  cannot be either existing predicate; (b) a split that is **double-render-safe**,
+  keyed so an equal value under an equal issuer still collapses first; (c) the
+  name swap, whose effect on REGION SELECTION must be measured before it is
+  believed. **Not shippable in one version.** `docs/accuracy-log.md` 2026-10-01
+  (23:3xZ).
+- **FOUND EN ROUTE, PRE-EXISTING ON THE LIVE v196 STORE AND EXACT — PARAMOUNT
+  GLOBAL PUBLISHES ITS FOUR SMA SLEEVES TWICE: $627,746,000 DOUBLE-COUNTED, 9.9%
+  of a $6,362,245,213 plan claimed twice, 33,764 readers.** The menu carries
+  `Large Cap US Equity Fund` **$627,746,000** — the four Separately Managed
+  Account rows merged on their shared column-C label — **and** `DODGE & COX`
+  $161,677,000, `SANDERS CAPITAL FUND` $156,513,000, `WELLINGTON MANAGEMENT CO`
+  $156,091,000 and `SUSTAINABLE GROWTH ADVISORS` $153,465,000, each typed `Stable
+  value / GIC`, and **the four sum to 627,746 to the thousand.** That is why the
+  plan reads **ratio 1.194** and sits in the `overshoot` set: *the overshoot is
+  not noise, it is this.*
+  **THE DOUBLE-RENDER DEDUP CANNOT SEE IT BY CONSTRUCTION**, which is what makes
+  it a distinct item rather than an instance of a solved one: that dedup pairs a
+  row rendered twice at the SAME NAME and the same value, and v145's second key
+  only drops filler a recordkeeper varies — here the two renderings have
+  **entirely different names**, the column-C label on one side and the managers'
+  own names on the other, so neither key can pair them. **The identical values are
+  the only witness available.**
+  Adjacent to the category-merge item and NOT the same defect — fixing the merge
+  would leave the four manager rows, fixing this would leave the merge. Sized at
+  one plan and deliberately not generalised; the whole-store question is **how
+  many plans carry a merged category row whose value equals the sum of other rows
+  in the same menu**, computable from the store with no downloads.
 - **SHIPPED AND MIRRORED 2026-10-01 20:1xZ (`8343219d → 155a3aa8`), UNFORCED ON
   BOTH CHECKS, data gate +0 / −0 BY ACK AND BY PLAN — A CONSERVATIVE ALLOCATION
   NO LONGER PUBLISHES AS A GROWTH ALLOCATION: 422 rows / 410 plans / 311,555
@@ -1045,8 +1129,9 @@ from the cycle that would have cleared it.
   Flashparking 82.2%, Fiber Instrument 89.4%. The answer is unchanged — the
   floor must not come down, General Motors leading at 66.4% with real funds
   behind it — so this needs the parser fix, not a threshold move. **PARSER-SIDE
-  and it needs a bump plus a region-contest change in `lib-4i`**; not started
-  because an agent held the tree. Paramount also publishes `Evergreen &` at
+  and it needs a bump plus a region-contest change in `lib-4i`**; **ATTEMPTED AND
+  REVERTED 23:3xZ — read the v197 bullet above before touching this again: the
+  rule is v74's, and the gate it needs does not exist.** Paramount also publishes `Evergreen &` at
   9.0% / $679,811,000, a truncated name and a third defect in one menu.
   `docs/accuracy-log.md` 2026-10-01 (17:2xZ).
 - **AND A FAMILY NOW IN TWO CONSECUTIVE DRAWS IS THE LARGEST NAMEABLE-FUND GAP
