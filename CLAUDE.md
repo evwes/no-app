@@ -1213,12 +1213,87 @@ from the cycle that would have cleared it.
   slices app.js's body from source and imports the canonical suppressors.
   ***A transcription of a shipped expression rots as the expression grows; three
   instruments rot three times.***
-- **IN FLIGHT: #531, dispatched 2026-10-01 07:0xZ on `1cce81bb` and observed
-  `in_progress` — THE FILING SPLIT A WORD THE REGISTRY JOINS: 1,927 rows / 997
+- **IN FLIGHT: #532 and `site-test` #127, both fired from the push on `c47559ab`
+  and observed queued — A SHARE CLASS ROTATED TO THE FRONT OF A FUND'S NAME: 672
+  rows / 179 plans / 288,327 participants / $2,267,257,067** across 474 distinct
+  transformations. `Fund I Class T. Rowe Price Retirement 2045`, `Institutional
+  Premium Class Fidelity Freedom Index 2055 Fund`, `Institutional Class Fidelity
+  500 Index`. The data ships in the SAME COMMIT as the code (#528's precedent),
+  because the local merge's whole effect is attributed field by field, so a
+  reader is served now and the run confirms the production merge reproduces it.
+  **THE SAME ROTATION THIS RECORD MEASURED IN THE ISSUER COLUMN 2026-09-30
+  (15:2xZ) AND REFUSED, and the difference is that here the repair IS the
+  rotation.** There the only move was a STRIP and a strip truncates the firm.
+  **It must not strip: dropping `Admiral Fund` from `Admiral Fund Vanguard Total
+  Bond Market Index` would withdraw VBTLX**, the class word being the only thing
+  separating it from four sibling classes. ***A rotation DELETES NOTHING***, so
+  even where the order is arguable every word of the filed name survives — a
+  bound a strip never has.
+  **THE WITNESS IS THE REGISTRY'S CLASS-NAME COLUMN, the same evidence v529
+  reads to REFUSE splitting `SMALLCAP` and v531 to JOIN `Small Cap`, in a third
+  direction.** Priced whole-store at **835 further rows**, overwhelmingly CORRECT
+  names the ratio alone would destroy — `Cash, non-interest bearing` →
+  `non-interest bearing Cash,`, `Robeco Boston Partners Mid Cap Value` → `Mid Cap
+  Value Robeco Boston Partners`, and the `SACG`/`GM` prefixes, **which want a
+  STRIP and not a rotation**. Fails closed.
+  **OUTCOME, AND THE TICKER COLUMN IS WHERE IT PAYS: display ticker +7 / −0 / 19
+  FLIPPED, stored `stk` +57 / −0 / 0 changed, fee +0 / −0 / 5 changed, 0
+  asterisks. All 15 distinct flips are the T. Rowe Price Retirement `-I Class`
+  THE FILING STATES** — TRRKX → TRIKX, TRRJX → TRFJX, TRRDX → TRHDX — the
+  wrong-share-class defect this record has named five times, corrected because
+  the filing hands us the answer. The 5 fee moves are two names reaching
+  `fund-er.js`'s own SOURCED Admiral rate 0.05 → 0.07, both **UP**.
+  **READING THE TRANSFORMATIONS FOUND DAMAGE NO COUNT COULD SEE:** the ratio
+  alone convicts `Core Bond Fund - VALIC` → `- VALIC Core Bond Fund` and five
+  siblings, because **the registry's class-name column holds a FULL FUND NAME for
+  some registrants**, and admits `(a) 500 Index Fund` because the registry lists
+  a class literally named `A`.
+  **AND MY FIRST OUTCOME NUMBERS WERE MEASURED ON THE WRONG PREDICATE.** The
+  sizing pass took the best rotation FIRST and asked the witness afterwards; the
+  shipped rule asks it INSIDE the search and can pick a different `k`. Different
+  searches — 18 and 18 belonged to a predicate that is not the one shipping, and
+  the shipped one reads **19 and 57**. *Measure through the function the caller
+  calls*, met four times this session.
+  **THE PUNCTUATION CONDITION IS DECORATIVE ON THIS STORE (0 rows) and is
+  labelled as such**; what refuses VALIC is `nk`'s exact normalisation, and the
+  check is controlled against a CRAFTED map where it does fire. **And the RATIO
+  control was decorative against pins I chose from memory** — both hand-written
+  must-keeps are refused by a neighbour, so the whole-store control named real
+  ones and those became the pins, including **`Class K BlackRock LifePath Index
+  Retirement`, a NAMED COST**: a correct repair the ratio refuses.
+  22 pins, a negative control per condition failing by name on exactly its own
+  cases (3 / 3 / 2 of 2). Real merge reproduces to the row; field by field the
+  store moved `name` on 672 and `stk` on 57 **and nothing else**, the index files
+  differing only in `generated`. **13 crawlable pages / 44,181 ppl**, every
+  changed cell read. parser-gate, smoke, fund-er-test (62/26/19/18/18) green.
+  **PRE-REGISTERED:** merge log `class-rotation repair: 672 rows across 179
+  plans`; `sec tickers: 461795 rows across 47588 plans (110205 on a blank type
+  cell)`; `filed tickers` **2,166 / 75** unchanged; CONFIDENCE DIFF **+0 / −0**,
+  `rows-dropped` **0**; confident **60,170**, lineups 59,822, entries 65,479,
+  HIGH **4**, warn 603, overshoot 372, dl 19, pv 100 unchanged.
+  `docs/accuracy-log.md` 2026-10-01 (08:2xZ).
+- **#531 RAN `success` AND IS MIRRORED — 2026-10-01 07:2xZ (`c42259df →
+  13507fcc`), UNFORCED ON BOTH CHECKS, data gate +0 / −0 BY ACK AND BY PLAN. THE
+  ROW FIGURE PASSED EXACTLY AND THE PLAN FIGURE MISSED BECAUSE OF MY OWN
+  ARITHMETIC.** `sec tickers` **461,738 rows**, +1,964, and diffing `stk` row by
+  row across all 64 shards against the commit I wrote gives **GAINED 1,964 / LOST
+  0 / CHANGED 0** — the production merge reproduced the local one to the row.
+  Coverage line byte-identical except `tkExact` 36.19 → **36.34**, as registered.
+  **I registered 48,555 = 47,543 + 1,012, adding *entries the join TOUCHES* to
+  *entries that already carry any `stk`*; 967 of the 1,012 were already in that
+  set**, so the answer is 47,543 + 45 = **47,588**, which is what the run
+  printed. ***A row either has a field or does not, so a row delta is additive;
+  a plan count is a count of a SET, and set membership SATURATES.*** The same
+  shape as *a count of a condition is not a measure of what a fix wins*, one
+  level up. Register the row figure and derive the entry figure from a measured
+  overlap, never as a sum.
+- **PREVIOUSLY IN FLIGHT: #531, dispatched 2026-10-01 07:0xZ on `1cce81bb` and
+  observed `in_progress` — THE FILING SPLIT A WORD THE REGISTRY JOINS: 1,927 rows / 997
   plans / 1,569,418 participants / $5,009,993,968 gain a ticker, 0 flipped, 0 fee
   moves, 0 asterisk moves.** MERGE-SIDE (it writes the stored `stk`), so the run
-  is what delivers it. **THE MIRROR IS HELD UNTIL THE VERDICT**, v193's reason:
-  no display half, so mirroring early delivers nothing to a reader.
+  was what delivered it, and the mirror was held until the verdict for v193's
+  reason: no display half, so mirroring early delivers nothing to a reader.
+  **BOTH ARE DONE — see the verdict bullet above; this entry is history.**
   **THE EXACT MIRROR OF v529's ALL-CAPS ARM, SAME WITNESS:** that arm reads the
   registry to REFUSE splitting `SMALLCAP`; this one reads it to JOIN `Small Cap`
   → **RLLGX**, and **v529's own recorded loss is inside this population.**

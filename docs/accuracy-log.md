@@ -33433,3 +33433,117 @@ GUARANTEE: `build-seo-pages.mjs` renders no ticker.**
 **THE MIRROR IS HELD UNTIL THE VERDICT ON PURPOSE**, for v193's narrow reason:
 this has no display half, so mirroring early delivers nothing to a reader and
 only puts unverified code on main.
+
+## 2026-10-01 (08:2xZ) — #531's verdict, and a share class rotated to the front of a name
+
+**#531 ran `success` and is MIRRORED (`c42259df → 13507fcc`), unforced on both
+checks, data gate +0 / −0 by ack and by plan.** The row figure passed exactly:
+`sec tickers` **461,738 rows**, +1,964, and diffing `stk` row by row across all
+64 shards against the commit I wrote gives **GAINED 1,964 / LOST 0 / CHANGED 0**
+— the production merge reproduced the local one to the row. Coverage line
+byte-identical except `tkExact` 36.19 → **36.34**, exactly as registered.
+
+**THE PLAN FIGURE MISSED AND THE CAUSE IS MY ARITHMETIC, NOT THE RUN.** I
+registered 48,555 = 47,543 + 1,012, adding *entries the join TOUCHES* to
+*entries that already carry any `stk`*. Measured: of the 1,012, **967 were
+already in that set**, so the answer is 47,543 + 45 = **47,588**, which is what
+the run printed. ***A row either has a field or does not, so a row delta is
+additive; a plan count is a count of a SET, and set membership SATURATES.*** The
+same shape as *a count of a condition is not a measure of what a fix wins*, one
+level up: a count of touched entries is not a delta to a count of entries having
+any. Register the row figure and derive the entry figure from an overlap, or
+register it as a measured number rather than a sum.
+
+**SHIPPED AND IN FLIGHT AS #532 — A SHARE CLASS ROTATED TO THE FRONT OF A FUND'S
+NAME: 672 rows / 179 plans / 288,327 participants / $2,267,257,067** across 474
+distinct transformations. The filer's name wraps and the halves are re-joined in
+the wrong ORDER, so the designation leads and the fund follows: `Fund I Class
+T. Rowe Price Retirement 2045`, `Institutional Premium Class Fidelity Freedom
+Index 2055 Fund`, `Institutional Class Fidelity 500 Index`.
+
+**THE SAME ROTATION THIS RECORD MEASURED IN THE ISSUER COLUMN ON 2026-09-30
+(15:2xZ) AND REFUSED, and the difference is that here the repair IS the
+rotation.** There the only move available was a STRIP and a strip truncates the
+firm; moving a lead back to the end destroys nothing. It must not strip:
+dropping `Admiral Fund` from `Admiral Fund Vanguard Total Bond Market Index`
+would withdraw **VBTLX**, because the class word is the only thing separating it
+from four sibling classes. ***A rotation DELETES NOTHING***, so even where the
+order is arguable every word of the filed name survives — a bound a strip never
+has.
+
+**THE WITNESS IS THE REGISTRY'S CLASS-NAME COLUMN** — the same evidence v529
+reads to REFUSE splitting `SMALLCAP` and v531 reads to JOIN `Small Cap`, in a
+third direction: a lead the SEC registers as a class name is a designation, and
+a designation belongs at the end. Priced whole-store at **835 further rows**
+that are overwhelmingly CORRECT names the ratio alone would destroy —
+`Cash, non-interest bearing` → `non-interest bearing Cash,`, `Robeco Boston
+Partners Mid Cap Value` → `Mid Cap Value Robeco Boston Partners`, and the
+`SACG`/`GM` legend-and-sponsor prefixes, **which want a STRIP and not a
+rotation**. Fails closed.
+
+**OUTCOME, AND THE TICKER COLUMN IS WHERE IT PAYS: display ticker +7 / −0 / 19
+FLIPPED, stored SEC `stk` +57 / −0 / 0 changed, fee +0 / −0 / 5 changed, 0
+asterisks.** All **15 distinct flips are the T. Rowe Price Retirement `-I Class`
+the filing STATES**, each read out of the registry — TRRKX → TRIKX, TRRJX →
+TRFJX, TRRDX → TRHDX. The wrong-share-class defect this record has named five
+times, corrected because **the filing hands us the answer** rather than because
+anything was inferred. The 5 fee moves are two names reaching `fund-er.js`'s own
+**SOURCED** Admiral rate, 0.05 → 0.07, whose pattern requires `admiral` AFTER
+the fund words; both move **UP**, the direction that cannot be a flattering bias.
+
+**READING THE TRANSFORMATIONS FOUND DAMAGE NO COUNT COULD SEE.** The ratio alone
+convicts `Core Bond Fund - VALIC` → `- VALIC Core Bond Fund` and five siblings,
+because **the registry's class-name column holds a FULL FUND NAME for some
+registrants**; and it admits `(a) 500 Index Fund` because the registry lists a
+class literally named `A`.
+
+**AND MY FIRST OUTCOME NUMBERS WERE MEASURED ON THE WRONG PREDICATE.** The
+sizing pass took the best rotation FIRST and asked the witness afterwards; the
+shipped rule asks the witness INSIDE the search and can pick a different `k`.
+They are **different searches**, so the 18 flips and 18 `stk` gains I had
+written down belonged to a predicate that is not the one shipping. Re-measured
+through the shipped function: **19 and 57**. *Measure through the function the
+caller calls* — met four times this session, here catching my own verdict
+numbers before they were published.
+
+**THE PUNCTUATION CONDITION IS DECORATIVE ON THIS STORE (0 rows) and is labelled
+as such** rather than presented as protection. What refuses the VALIC family
+today is `nk`'s exact normalisation, which keeps punctuation in the key so the
+rotated form is attested nowhere; the check is kept against a later loosening of
+`nk` and is controlled against a **CRAFTED** attestation map where it does fire.
+A floor of 3 is subsumed by the ratio and is a PRE-FILTER only.
+
+**AND THE RATIO CONTROL WAS DECORATIVE AGAINST PINS I CHOSE FROM MEMORY.** Both
+must-keeps I wrote by hand are refused by a neighbouring condition, so dropping
+the ratio changed no verdict. The whole-store control named real ones and those
+became the pins — `Retirement Money Market Fund`, `Retirement Income Fund
+Vanguard Target`, and **`Class K BlackRock LifePath Index Retirement`, a NAMED
+COST**: a correct repair the ratio refuses because nothing separates it from the
+other two. Refusing a repair is the safe direction.
+
+**The controls also corrected a comment of mine.** I wrote that neither spelling
+of `Retirement Income Fund Vanguard Target` is right; dropping the witness shows
+the search reaches **`Vanguard Target Retirement Income Fund`** at k=3, which IS
+the fund's name, refused only because `Retirement Income Fund` is not a
+registered class name. It stays must-KEEP for a stricter reason: with the ratio
+dropped the search picks k=1 and produces something wrong, so **both conditions
+must hold for that row to stay still**.
+
+22 pins, a negative control PER CONDITION failing by name on exactly its own
+cases (witness 3, ratio 3, punctuation 2 of 2). **Real merge reproduces it to
+the row**, and field by field against HEAD the store moved `name` on 672 and
+`stk` on 57 **and nothing else** — 0 acks added or removed, 0 entries whose row
+count changed, the three index files differing only in `generated`, which is why
+the data ships in the same commit. **13 crawlable pages / 44,181 participants**,
+every changed cell read. REPORT path only as a GUARANTEE for the `stk` half.
+parser-gate, smoke and fund-er-test (62/26/19/18/18) green.
+
+**THE DRAW THAT FOUND IT, and the drawn plan is in the REFUSED half.** Seed
+20261001073, pool 59,822 / 89,744,230. **Walmart (1,970,230 ppl, 42 rows @
+0.952) reads clean end to end** — v130's wrapped-name fix still holding on the
+largest plan in the country. **Bread Financial Payments (11,087 ppl, 26 rows @
+0.969)** publishes `Bond Fund Vanguard Extended Market Index` — an equity index
+fund announced as a bond fund — and `Admiral Fund Vanguard Total Bond Market
+Index`; both are in `other` and the shipped rule refuses them, because `Bond
+Fund` and `Admiral Fund` are not registered class names. *A drawn case is
+evidence about a class; it is not entitled to be the case the fix repairs.*
