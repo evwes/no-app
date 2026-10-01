@@ -909,14 +909,34 @@ from the cycle that would have cleared it.
   bare `500 Index Fund`); FSMDX 10,951 at 0.025 against **1,811 at 0.1**; FSSNX
   9,742 against **1,737 at 0.1**; VSMAX 12,264 at 0.05 against **2,300 at 0.1**;
   VIMAX 11,716 against **2,209**; VMFXX 4,971 at 0.11 against **884 at 0.2**.
-  **Every conflict errs HIGH, two to four times the real cost** — the safer
-  direction for a reader, still a wrong number about the cheap index funds most
-  plans hold.
+  **FOOTPRINT, measured through the shipped functions with the positive control
+  firing first** (`issuerPricedER("500 Index Fund", {Fidelity})` = **0.015**
+  against a bare `0.03`): **37,039 rows / 7,610 entries / 7,611 plans /
+  11,594,577 participants / $118,036,414,865**, across **5,803 distinct
+  transformations**. A further 73,445 rows have the two answers AGREE (harmless)
+  and 689,826 have no issuer answer at all (the generic estimate is the only one
+  and stays).
   **DO NOT QUOTE 290,119 ROWS / 72,169,343 PPL AS THE CLASS SIZE** — that is
   every row carrying a conflicted ticker and it mixes the 17,083 CORRECT FXAIX
-  rows with the 2,818 wrong ones. The footprint is the rows where a
-  house-specific answer EXISTS and DIFFERS, measured through the shipped
-  functions.
+  rows with the 2,818 wrong ones.
+  **AND "EVERY CONFLICT ERRS HIGH" WAS WRONG — corrected 00:3xZ.** True of the
+  conflicted-ticker table, false of the pre-empt population: `{Fidelity}
+  Government Money Market Fund` → SPAXX publishes **0.2 where the specific entry
+  says 0.42** (553 rows) and `{Vanguard} Real Estate Index Admiral` → VGSLX
+  publishes **0.1 against 0.13** (188), so at least **741 rows UNDERSTATE** and
+  the fix moves numbers both ways. *A direction claim read off one population is
+  not a direction claim about its neighbour* — and moving both ways is the
+  stronger evidence, since a change that only ever moved fees down could be a
+  bias in the specific table.
+  **The headline "a row whose TICKER is known" also overstates the
+  precondition:** `{Vanguard} Growth Index Fund` carries **no ticker** on 190
+  rows and still publishes the generic 0.1 against a specific 0.05. The defect is
+  the fee lookup's call order, with or without a symbol beside it.
+  **NOT SHIPPED: 11.6M participants is larger than any fee change on this record,
+  all 5,803 transformations should be read first** (`issuerPricedER` can itself
+  be wrong where the issuer names a trustee or a platform — its own measured
+  risk), and *a fee is SOURCED, never derived*. **The next cycle's work is
+  reading the 5,803, not re-measuring them.**
   **FOUND BY READING TWO MENUS SIDE BY SIDE and by no count:** the 23:1xZ draw's
   Supreme Service & Specialty (733 ppl) writes `Vanguard Target Retirement 2030
   Fund` → **VTHRX 0.08**, Hightower Holding (1,736) writes `Vanguard Target

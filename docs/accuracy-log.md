@@ -32437,3 +32437,43 @@ and is faithful in the filing.
   thin for 16M people. **It is gated on the contradiction above**: propagating a
   pair that is not well defined spreads the contradiction instead of filling a
   blank. That ordering is the finding, not an inconvenience.
+
+## 2026-10-01 (00:3xZ) — The footprint of the fee pre-emption, and a correction to the entry above it
+
+- **FOOTPRINT, measured through the shipped functions with the positive control
+  firing first** (`issuerPricedER("500 Index Fund", {Fidelity})` = **0.015**
+  against a bare `fundERFiled` of **0.03**): **37,039 rows / 7,610 entries /
+  7,611 plans / 11,594,577 participants / $118,036,414,865 publish a GENERIC fee
+  where a house-specific answer exists and differs**, across **5,803 distinct
+  transformations**. On a further **73,445 rows the two answers AGREE** (so the
+  pre-emption is harmless there) and on **689,826 rows no issuer answer exists**
+  at all (so the generic estimate is the only answer and stays).
+  Largest members: `{Fidelity} 500 Index Fund` **0.03 → 0.015** (1,481 rows),
+  `{Fidelity} Mid Cap Index Fund` **0.1 → 0.025** (857), `{Fidelity} Small Cap
+  Index Fund` **0.1 → 0.025** (760), `{Fidelity} International Index Fund`
+  **0.1 → 0.035** (653), `{Vanguard} 500 Index Admiral` **0.03 → 0.02** (378).
+- **CORRECTION TO THE 00:1xZ ENTRY: "every conflict errs HIGH" IS FALSE ON THIS
+  POPULATION.** That was read off the conflicted-ticker table, where the
+  generic value was the dearer one every time. Reading the pre-empt list finds
+  the opposite direction too: **`{Fidelity} Government Money Market Fund` →
+  SPAXX publishes 0.2 where the house-specific entry says 0.42** (553 rows
+  across two spellings), and **`{Vanguard} Real Estate Index Admiral` → VGSLX
+  publishes 0.1 where the specific entry says 0.13** (188). So at least **741
+  rows understate the cost**, and the fix moves numbers in BOTH directions.
+  **That is stronger evidence, not weaker:** a change that only ever moved fees
+  down could be a systematic bias in the specific table, and one that moves them
+  both ways is behaving like a lookup of the right answer rather than a
+  discount. *A direction claim read off one population is not a direction claim
+  about its neighbour.*
+- **AND THE HEADLINE "a row whose TICKER is known" OVERSTATES THE PRECONDITION.**
+  The predicate is about the FEE and does not require a ticker: `{Vanguard}
+  Growth Index Fund` carries **no ticker at all** on 190 rows and still publishes
+  the generic 0.1 where the specific answer is 0.05. The defect is the fee
+  lookup's call order, independent of whether a symbol publishes beside it.
+- **NOT SHIPPED THIS CYCLE, and the reason is the standing rule rather than
+  doubt about the cause.** 11.6M participants is larger than any fee change this
+  record has made, every one of the 5,803 distinct transformations should be read
+  before it ships (the four-arm structure of `issuerPricedER` means the specific
+  answer can itself be wrong where the issuer names a trustee or a platform —
+  the 2026-09-29 entry's own measured risk), and *a fee is SOURCED, never
+  derived*. The next cycle's work is reading the 5,803, not re-measuring them.
