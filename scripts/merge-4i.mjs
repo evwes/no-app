@@ -843,7 +843,35 @@ function stripIssuerLead(iss) {
     }
     if (!moved) return null;
     const a = out.replace(/\s{2,}/g, " ").trim(), b = s.replace(/\s{2,}/g, " ").trim();
-    return a && a !== b ? a : null;
+    if (!a || a === b) return null;
+    /* A REPAIR THAT MAKES A JUNK ROW LEGIBLE HANDS THE WHOLE PLAN TO A GUARD
+     * WRITTEN FOR LEGIBLE JUNK — measured by #536, which withdrew FIVE real
+     * menus reaching 61,261 participants.
+     *
+     * `JUNK_NAME_RE`'s demotion sixty lines above is ENTRY-level: one row whose
+     * name carries form vocabulary withdraws the whole lineup. Most of this
+     * class is v193's Form 5500 COVER-PAGE family in cipher, and decoding
+     * `7RWDO QXPEHU RI DFWLYH SDUWLFLSDQWV` or `(PSOR\HU ,GHQWLILFDWLRQ`
+     * produces exactly the vocabulary that guard reads — so Fiserv's 37-row
+     * Vanguard menu (39,782 ppl) was convicted by three caption rows among it,
+     * along with Lifespan (19,490), Plastic Ingenuity, McElroy and Antonini.
+     *
+     * The demotion is not wrong; it is aimed elsewhere. Its own comment says it
+     * exists for a STORED entry whose PDF became undownloadable, where the
+     * parser-side guards can never reach the junk. These five are fresh parses
+     * at the current pv with no error code, and the correct response to three
+     * caption rows in a thirty-seven-row menu is to drop or type those ROWS,
+     * not to withdraw the menu. *A guard's live population is not always the
+     * population it was written for.*
+     *
+     * So the repair declines where it would create the conviction, and the cost
+     * is named rather than hidden: those caption rows stay ciphered, exactly as
+     * they were before this arm existed, and no reader loses anything they had.
+     * The entry it was WRITTEN for — a real fund name — is untouched. What this
+     * costs is the "composition win" the first write-up claimed for making the
+     * captions legible; that was a composition LOSS. */
+    if (JUNK_NAME_RE.test(a) && !JUNK_NAME_RE.test(b)) return null;
+    return a;
   };
   let weld = 0, caps = 0, rot = 0, ciph = 0;
   const weldAcks = new Set(), capsAcks = new Set(), rotAcks = new Set(), ciphAcks = new Set();

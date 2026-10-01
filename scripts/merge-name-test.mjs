@@ -21,6 +21,7 @@ import { fileURLToPath } from "node:url";
  * reading of that failure at the runner image. */
 const R = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const src = fs.readFileSync(`${R}/scripts/merge-4i.mjs`, "utf8");
+const { JUNK_NAME_RE } = await import(`${R}/scripts/lib-4i.mjs`);
 const i = src.indexOf("  const SEAM = /\\b[A-Za-z]{3,}");
 const j = src.indexOf("  let weld = 0, caps", i);
 if (i < 0 || j < 0) throw new Error("slice moved");
@@ -508,7 +509,10 @@ if (capsBad) process.exitCode = 1;
     if (drop === "seed") b = b.replace("cnt(d) >= 3", "true");
     if (drop === "ctrl") b = b.replace(
       "if (/[\\u0000-\\u001f\\u007f]/.test(run)) {", "if (true) {");
-    const ctx = { console: { log() {} }, cnt: (w) => tok.get(String(w).toLowerCase()) || 0 };
+    if (drop === "junk") b = b.replace(
+      "if (JUNK_NAME_RE.test(a) && !JUNK_NAME_RE.test(b)) return null;", "");
+    const ctx = { console: { log() {} }, cnt: (w) => tok.get(String(w).toLowerCase()) || 0,
+      JUNK_NAME_RE };
     vm.createContext(ctx);
     vm.runInContext(b + "\n; this.__x = cipherRepair;", ctx);
     return ctx.__x;
@@ -527,13 +531,17 @@ if (capsBad) process.exitCode = 1;
     [`3XWQDP${C}/DUJH${C}&DS${C}9DOXH${C})XQG`, "Putnam Large Cap Value Fund"],
     /* a PLAIN prefix beside a ciphered run — the fence at work, and `,,` is II */
     [`Vanguard Windsor${C},,${C}$GPLUDO${C})XQG`, "Vanguard Windsor II Admiral Fund"],
-    [`3ODQ${C}1DPH${C}`, "Plan Name"],
-    /* the sponsor's own name must survive beside the run */
-    [`Ź ANTONINI FREIGHT EXPRESS, INC. 401(K) & PROFIT SHARING PLAN (PSOR\\HU${C},GHQWLILFDWLRQ${C}1XPE`,
-      "Ź ANTONINI FREIGHT EXPRESS, INC. 401(K) & PROFIT SHARING PLAN Employer Identification Numb"],
-    /* the Form 5500 line references are UNSHIFTED inside a ciphered caption */
-    [`7RWDO${String.fromCharCode(0x11)}${C}${C}$GG${C}OLQHV${C}6d${C}DQG${C}6e`,
-      "Total. Add lines 6d and 6e"],
+    /* THREE PINS FLIPPED TO null AND THE JUSTIFICATION IS #536'S VERDICT, not a
+     * convenience: each one decodes to Form 5500 cover-page vocabulary that
+     * `JUNK_NAME_RE`'s ENTRY-level demotion then reads, and #536 withdrew five
+     * real menus reaching 61,261 participants that way. Updating a control is
+     * how a regression gets normalised, so the DECODE claim these three were
+     * written to assert is pinned on its own in CIPH_DECODE below — the span
+     * mechanism still reads every one of them correctly, and what changed is
+     * only whether the repair is WRITTEN. */
+    [`3ODQ${C}1DPH${C}`, null],
+    [`Ź ANTONINI FREIGHT EXPRESS, INC. 401(K) & PROFIT SHARING PLAN (PSOR\\HU${C},GHQWLILFDWLRQ${C}1XPE`, null],
+    [`7RWDO${String.fromCharCode(0x11)}${C}${C}$GG${C}OLQHV${C}6d${C}DQG${C}6e`, null],
 
     // must KEEP — not one of these is ciphered
     [`AEGON${C}US${C}High${C}Yi eld${C}Ret${C}Opt`, null],
@@ -561,11 +569,35 @@ if (capsBad) process.exitCode = 1;
   }
   console.log(`\nshipped cipherRepair: ${CIPH.length - xbad}/${CIPH.length} pinned cases`);
 
+  /* THE DECODE CLAIM, kept from the three pins that flipped: the span mechanism
+   * reads these correctly and the gate declines to WRITE them. Asserted against
+   * the junk-gate-dropped variant, which is the decoder with nothing else
+   * changed — so the sponsor name still survives the fence, the Form 5500 line
+   * references are still left unshifted, and `Plan Name` still decodes. */
+  {
+    const dec = mkCiph("junk");
+    const CIPH_DECODE = [
+      [`3ODQ${C}1DPH${C}`, "Plan Name"],
+      [`Ź ANTONINI FREIGHT EXPRESS, INC. 401(K) & PROFIT SHARING PLAN (PSOR\\HU${C},GHQWLILFDWLRQ${C}1XPE`,
+        "Ź ANTONINI FREIGHT EXPRESS, INC. 401(K) & PROFIT SHARING PLAN Employer Identification Numb"],
+      [`7RWDO${String.fromCharCode(0x11)}${C}${C}$GG${C}OLQHV${C}6d${C}DQG${C}6e`,
+        "Total. Add lines 6d and 6e"],
+    ];
+    let dbad = 0;
+    for (const [inp, want] of CIPH_DECODE) {
+      const got = dec(inp) || null;
+      if (got !== want) { console.log(`  FAIL  decode ${JSON.stringify(inp)}\n        want ${JSON.stringify(want)}\n        got  ${JSON.stringify(got)}`); dbad++; }
+    }
+    console.log(`cipher DECODE claim (gate dropped): ${CIPH_DECODE.length - dbad}/${CIPH_DECODE.length}`);
+    if (dbad) xbad++;
+  }
+
   for (const [label, drop, expect] of [
     ["the plain-space FENCE", "fence", [5]],
     ["the mid-word TRIM", "trim", [6]],
     ["the decode-attested SEED", "seed", [7, 8, 9, 10]],
     ["the ciphered-space requirement", "ctrl", [14]],
+    ["the JUNK-NAME gate", "junk", [4, 5, 6]],
   ]) {
     const v = mkCiph(drop);
     const broke = [];
