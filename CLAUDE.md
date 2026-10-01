@@ -727,6 +727,47 @@ from the cycle that would have cleared it.
   trust-aware standalone script — the standalone's single trust is the one lineup
   v196 withdrew. **`matchQuote` 5,397 of which only
   1,785 are SHOWN to readers** — the condition/outcome pair shipped 2026-09-27.
+- **THE 15:4xZ DRAW, AND ITS FINDING IS AN INCONSISTENCY INSIDE ONE MENU —
+  QUEUED, CAUSE DIAGNOSED, SIZED, NOT SHIPPED: a POOLED row whose name is in
+  `FUND_TICKER` but not in `FUND_COMPARABLE` publishes NOTHING, 9,050 rows /
+  2,861 plans / 4,420,537 participants / $28,599,516,351 across 2,001 distinct
+  names.** Seed 20261001154. **Walmart (1,970,230 ppl, 42 rows @ 0.952) reads
+  CLEAN end to end** — v130's wrapped-name fix still holds, `MSCI ACWI ex-U.S.
+  IMI Index Non-Lendable Fund` whole at $4.71B — with only the queued bare-house
+  row `Fiera Asset Management USA` at 3.2% / $1.77B.
+  **Spanish Cove Housing Authority (200 ppl) is where it shows: 21 rows, every
+  one typed `Pooled separate account` by Standard Insurance Company, and exactly
+  ONE publishes anything** — `T. Rowe Price Mid-Cap Growth` → RPMGX\* at 0.77 —
+  while `Vanguard Windsor II Adm`, `Fidelity 500 Index`, `MFS Value R6` and
+  `JPMorgan Large Cap Growth R6` publish blanks.
+  **CAUSE ASKED OF THE SHIPPED FUNCTION RATHER THAN REASONED ABOUT:**
+  `fundTickerInfo` splits on `pooled`, and when the TYPE names a non-registered
+  vehicle it consults **only `FUND_COMPARABLE`** — the hand-verified table — and
+  never `FUND_TICKER`. So two rows of one menu are treated differently for a
+  reason about OUR TABLES rather than about the filing.
+  **IT IS NOT A REVERSAL OF THE 2026-09-21 DEMOTION BUT THE THIRD OPTION THAT
+  DEMOTION DID NOT TAKE.** That change withdrew 878 rows asserting
+  `comparable:false` — *the plan holds VWNAX* — and its comment is right: a
+  separate account filed as `VALIC Vanguard Windsor II Fund` does not hold the
+  Vanguard fund, it holds an account investing in it at a higher cost. The
+  weaker claim, `comparable:true` with the asterisk and footnote, is exactly
+  what the 44,484 pooled rows that DO publish already carry.
+  **AND MY OWN FIRST PROBE COMMITTED THE MISTAKE IT WAS WRITTEN TO FIND:** its
+  `bare` and `+issuer` columns called `fundTickerInfo` with a BLANK type, so it
+  tested the lookup and not the demotion and reported every name resolving.
+  *Measure through the function the page calls, WITH THE ARGUMENT THE PAGE
+  PASSES* — inside the probe written to find a case of it.
+  **NOT SHIPPED on SIZE and on reading, not on evidence:** 4.4M participants
+  gaining an asserted-by-asterisk comparable is larger than any ticker change
+  since the manager gate, and all 2,001 distinct names must be read against
+  their registered funds first. Largest members: Lowe's 303,546 (1 row),
+  Insperity 229,666, Accenture 115,910, T-Mobile 96,694 (15.3% of menu), DaVita
+  78,487 (17.7%); and **Mapes Food Services (224 ppl) is 100.0% of its menu**.
+  **HARNESS NOTE: the sweep rendered all 1.7M rows and could not finish; the
+  predicate's own first condition — the TYPE names a pooled vehicle — is an
+  exact pre-filter and it ran in minutes.** *A structural fact beats a sweep*,
+  and this is the mirror of the cross-column audit's pre-filter, which was exact
+  but NOT fast.
 - **SHIPPED AND MIRRORED 2026-10-01 15:4xZ (`4c4527ad → da6a5ea3`), UNFORCED ON
   BOTH CHECKS, data gate +0 / −0 BY ACK AND BY PLAN; #536 AND `site-test` #133
   BOTH FIRED ON THE EXACT COMMIT AND WERE OBSERVED QUEUED — A BROKEN FONT

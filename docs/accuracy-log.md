@@ -7,6 +7,43 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-01 (15:5xZ) — QUEUED: a pooled row in `FUND_TICKER` but not in `FUND_COMPARABLE` publishes nothing
+
+- **Found by the 15:4xZ participant-weighted draw** (seed 20261001154).
+  **Walmart (1,970,230 ppl, 42 rows @ ratio 0.952) reads clean end to end**;
+  Spanish Cove Housing Authority (200 ppl) files 21 rows all typed `Pooled
+  separate account` by Standard Insurance Company, and **exactly one publishes
+  anything** — `T. Rowe Price Mid-Cap Growth` → RPMGX\* at 0.77 — while
+  `Vanguard Windsor II Adm`, `Fidelity 500 Index`, `MFS Value R6` and `JPMorgan
+  Large Cap Growth R6` publish blanks.
+- **Cause, asked of the shipped function rather than reasoned about:**
+  `fundTickerInfo` splits on `pooled`, and where the filing's TYPE names a
+  non-registered vehicle it consults **only `FUND_COMPARABLE`** and never
+  `FUND_TICKER`. Two rows of one menu differ for a reason about OUR TABLES
+  rather than about the filing.
+- **Size: 9,050 rows / 2,861 plans / 4,420,537 participants / $28,599,516,351**,
+  2,001 distinct names, against **44,484 pooled rows that already publish** a
+  labelled comparable.
+- **It is not a reversal of the 2026-09-21 demotion but the third option that
+  demotion did not take.** That change withdrew 878 rows asserting
+  `comparable:false` — *the plan holds VWNAX* — and its reasoning holds. The
+  weaker claim, `comparable:true` with the asterisk and footnote, is what the
+  44,484 already carry.
+- **NOT SHIPPED** on size and on reading: 4.4M participants is larger than any
+  ticker change since the manager gate, and the 2,001 names must be read
+  against their registered funds first. `FUND_COMPARABLE` entries are
+  hand-verified; promoting a `FUND_TICKER` hit asserts that this separate
+  account TRACKS that fund, which is a new claim even behind an asterisk.
+- **Two method notes.** My first probe called `fundTickerInfo` with a BLANK
+  type in the columns labelled `bare` and `+issuer`, so it tested the lookup and
+  not the demotion and reported every name resolving — *measure through the
+  function the page calls, with the argument the page passes*, committed inside
+  the probe written to find a case of it. And the sizing sweep rendered all
+  1.7M rows and could not finish, where the predicate's own first condition is
+  an exact pre-filter: **a structural fact beats a sweep.**
+
+---
+
 ## 2026-10-01 (15:4xZ) — A broken font shifted a run of the name by +29
 
 - **Wrong:** a PDF cmap offset by 29 code points left `$GPLUDO` where the
