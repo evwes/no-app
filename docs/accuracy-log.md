@@ -33134,3 +33134,38 @@ and is faithful in the filing.
   **0 differing rows — 0 mine only, 0 theirs only.** `data/lineups/**` does not
   even appear in the data commit's file list, which is the same fact stated more
   strongly: *the production merge reproduced the local one byte for byte.*
+
+## 2026-10-01 (04:4xZ) — The OCR'd N/A column welded into the holding name, sized
+- **Found by the 04:3xZ participant-weighted draw** (seed 20261001043, pool
+  59,822 / 89,744,230) on **Chimes International Limited (3,791 ppl, 94 rows @
+  0.960, OCR'd)**, whose Vanguard target-date rows are named `Mutual fund NIA
+  391,719 (eb)` and `Mutual fund NIA NIA 233,946 dy` — the filing's repeated
+  `N/A` column and a share count, OCR'd into the NAME cell.
+- **Wrong, and it is a COVERAGE defect and not only an honesty one: 363 rows /
+  56 entries / 56 plans / 133,681 participants / $2,037,345,941**, across **362
+  distinct names**, of which **303 publish NO ticker and 277 NO fee** — because
+  the welded debris breaks every lookup. The names underneath are overwhelmingly
+  REAL: `Principal LifeTime 2035 RS Fund NIA`, `American Funds Fundamental
+  Investors R3 Fund NIA`, `PIMCO Total Return RFund NIA`, `Total Bond Market
+  NIA`, `Treasury Money Market NIA`.
+  Split by what the reader has to fall back on: **198 rows / 32 plans / 100,455
+  ppl have an ISSUER cell that names the fund** (so the page still shows
+  something true beside the garbage), and **165 rows / 24 plans / 33,226 ppl do
+  not**.
+- **It is NOT the class the 2026-09-29 (07:5xZ) `bwNoise` fix closed**, which was
+  measured at 44 rows / 5 plans / 21,338 ppl and anchored on the name OPENING
+  with the debris (`NIA NIA 233,946 dy`). Here the debris TRAILS a real fund
+  name, which that arm cannot reach — *a fix for one position of a class is not a
+  fix for the class*, the same shape as the `(continued)` caption closed in the
+  issuer column and left open in the name column.
+- **The discriminator needs no vocabulary of funds and is safe by construction:**
+  `NIA` is the OCR of `N/A` and no registered fund is named NIA, so a trailing
+  run of `NIA` / `N IA` tokens — with share counts and OCR paren noise between
+  them — cannot be part of a name. The strip must be TRAILING-anchored and must
+  leave the head intact, and the whole-store diff has to show tickers and fees
+  only GAINED, since this is the first name repair on this record expected to
+  move coverage rather than only the claim.
+- **Not shipped this cycle:** #529 is in flight, so a `scripts/**` commit needs
+  `[skip ci]`, and the item still needs the strip written, its pins, a negative
+  control, and the outcome test through all four resolvers — the test that
+  convicted the previous item's first rule an hour earlier.
