@@ -727,6 +727,83 @@ from the cycle that would have cleared it.
   trust-aware standalone script — the standalone's single trust is the one lineup
   v196 withdrew. **`matchQuote` 5,397 of which only
   1,785 are SHOWN to readers** — the condition/outcome pair shipped 2026-09-27.
+- **SHIPPED AND MIRRORED 2026-10-01 15:4xZ (`4c4527ad → da6a5ea3`), UNFORCED ON
+  BOTH CHECKS, data gate +0 / −0 BY ACK AND BY PLAN; #536 AND `site-test` #133
+  BOTH FIRED ON THE EXACT COMMIT AND WERE OBSERVED QUEUED — A BROKEN FONT
+  SHIFTED A RUN OF THE NAME BY +29: 23 rows / 13 plans / 127,006 participants /
+  $87,902,604**, 18 distinct transformations, all read. `$GPLUDO` is `Admiral`,
+  `1XYHHQ` is `Nuveen`. Edelman Financial Engines (2,315 ppl) published
+  `Vanguard Windsor ,, $GPLUDO )XQG` at 2.8% of its menu; the bulk by
+  participants is v193's Form 5500 COVER-PAGE family IN CIPHER (Fiserv 39,782,
+  Philips 29,491, Gallagher 29,477, Lifespan 19,490), which every arm that reads
+  words is blind to by construction. The data ships in the SAME COMMIT as the
+  code (#528's precedent) because the local merge's whole effect was attributed
+  field by field: **`name` on 23 rows, `stk` on 2, 0 acks added or removed, 0
+  row-count changes**, index files differing only in `generated`.
+  **THE QUEUED MECHANISM IS REFUTED BY THE POPULATION.** It read: *a token
+  PRECEDED by a control character is in the same ciphered run, because 0x03 IS
+  the ciphered space.* But 0x03 is **also** how this font encodes an ORDINARY
+  space — that is the 128-row class shipped at 14:0xZ — so Fairway Market's
+  `AEGON<03>US<03>High<03>Yi eld` carries a control separator before every token
+  and is PLAIN TEXT throughout; licensing off the separator decodes it to
+  `^bdlk rp e v  o l`.
+  **WHAT IS TRUE IS THE SAME OBSERVATION USED AS A FENCE RATHER THAN A LICENCE,
+  and it makes the run a CHARACTER SPAN instead of a token list.** A plain space
+  is 0x20 and the shift cannot produce 0x20, so it BOUNDS the run — which keeps
+  Antonini Freight Express's own `ANTONINI FREIGHT EXPRESS, INC. 401(K) & PROFIT
+  SHARING PLAN` whole while decoding the `(PSOR\HU ,GHQWLILFDWLRQ` after it.
+  **AND IT SOLVES THE HALF-DECODE THE QUEUE PREDICTED, FOR FREE: a span decodes
+  its SEPARATORS too**, 0x03 → `" "` and 0x19 → `"6"`, so `&ODVV<03>5<19>` comes
+  out **`Class R6`** rather than the `Class 5` a token rule would publish, and
+  `,,` comes out `II`. *A mechanism that removes the need for a guard is worth
+  more than the guard.*
+  **THERE IS NO FILED-ATTESTATION TEST AND THE MEASUREMENT IS WHY.** The draft
+  carried the issuer strip's two-sided witness — the token as filed attested
+  NOWHERE — and that test **COSTS 6 ROWS reaching 118,240 participants**,
+  because the attestation maps are built from the STORED names and this font
+  appears in several filings: `FRPSOHWH`, `WKLV` and `LWHP` are each attested in
+  their CIPHERED form (6 / 14 / 8). **Third instance of that trap and the FIRST
+  in the refusal direction** — *a floor that reads repetition as evidence of
+  authenticity is fed by repeated damage.* A RATIO in its place is **DECORATIVE
+  at every factor up to 3** (0 rows against no test at all), so it is not
+  shipped.
+  **FOUR CONDITIONS, a negative control per condition over the whole
+  population, each failing by name on exactly its own cases (2 / 1 / 2 / 1):**
+  the plain-space FENCE (15 rows changed, all damaged); the mid-word TRIM,
+  because 0x30-0x3d is BOTH a literal digit AND a ciphered uppercase Q-Z so it
+  cannot fence — Retriever needs `5` → `R` while Lifespan's Form 5500 line
+  references `6d`/`6e` were publishing as `Sd`/`Se`; the decode attested ≥3,
+  **which is what protects `AEGON` rather than the fence** (`ETF` → `bqc`); and
+  a ciphered space inside the run, **whose COST IS NAMED and PINNED** — it
+  refuses 2 CORRECT `LQVWUXFWLRQV` → `instructions` repairs.
+  **OUTCOME THROUGH ALL FOUR RESOLVERS:** display ticker **+1 / −0 / 0 flipped**
+  (Edelman gains VWNAX), fee +1 / −0 / 0 changed, SEC `stk` **+2 / −0 / 0**,
+  `ftk` +0 / −0 / 0, **0 asterisks moved.**
+  **TWO COSTS, both named. The queue predicted this would CORRECT Edelman's fee
+  — 0.3 where `Vanguard Windsor II Admiral` is 0.26 — AND IT DOES NOT.**
+  `fund-er.js:203` has ONE Windsor entry, so the fee was wrong independently of
+  legibility and the row now carries a correct symbol beside the same wrong
+  number: *the cipher hid the share class; it was not why the fee was wrong.*
+  And `Nuveen Small Cap Blend Index Fund Class R` gains the generic
+  unattributed index 0.1 on a name that states a house, in the understating
+  direction.
+  **MERGE-SIDE BY NECESSITY, not by convention:** `cleanFiledName` replaces
+  every control character with a space, so the ciphered digits are gone before a
+  display arm could decode them and `Class R6` could never be recovered.
+  ALL-CAPS ciphered text is out of reach BY CONSTRUCTION (the seed is a ciphered
+  LOWERCASE word) and is left as named under-reach. 15 pins in
+  `scripts/merge-name-test.mjs`, slicing the shipped function rather than
+  restating it. parser-gate, smoke, fund-er-test (62/26/19/18/18) green.
+  **1 crawlable page / 2,315 ppl**, its one changed cell read.
+  **PRE-REGISTERED for #536:** the merge log prints `cipher-run repair: 23 rows
+  across 13 plans`; `sec tickers: 477627 rows across 47915 plans (113424 on a
+  blank type cell)`; `filed tickers` **2,166 / 75** unchanged; CONFIDENCE DIFF
+  **+0 / −0**, `rows-dropped` 0; confident **60,170**, lineups 59,822, entries
+  65,479, HIGH **4**, warn 603, overshoot 372, overshootTrust 12, aggRow 113,
+  dl 19, pv 100 unchanged. **`tkExact` 37.2 and `tkComparable` 3.27 CANNOT
+  move** — 2 new `stk` rows against 1.72M cannot shift a two-decimal figure —
+  and saying *why* a figure cannot move is a stronger claim than bounding it.
+  `docs/accuracy-log.md` 2026-10-01 (15:4xZ).
 - **NOTHING IS IN FLIGHT. #517 RAN `success` AND IS MIRRORED — 2026-09-30 09:2xZ
   (`5608e91f → 10e574ec`), UNFORCED ON BOTH CHECKS, data gate +0 / −0. EVERY
   PRE-REGISTERED TEST PASSED, AND THE TWO RUN-ONLY FIGURES WERE READ OUT OF THE

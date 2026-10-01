@@ -7,6 +7,83 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-01 (15:4xZ) — A broken font shifted a run of the name by +29
+
+- **Wrong:** a PDF cmap offset by 29 code points left `$GPLUDO` where the
+  filing says `Admiral` and `1XYHHQ` where it says `Nuveen`. Edelman Financial
+  Engines (2,315 ppl) published `Vanguard Windsor ,, $GPLUDO )XQG` at 2.8% of
+  its menu; Retriever Medical Dental Payment (332 ppl) two Nuveen rows; Fiserv,
+  Philips, Arthur J. Gallagher and Lifespan the Form 5500 cover-page captions in
+  cipher — v193's family, which every arm that reads words is blind to by
+  construction. **23 rows / 13 plans / 127,006 participants / $87,902,604**, 18
+  distinct transformations, all read.
+- **THE QUEUED MECHANISM IS REFUTED BY THE POPULATION.** It read: *a token
+  PRECEDED by a control character is in the same ciphered run, because 0x03 IS
+  the ciphered space.* But 0x03 is **also** how this font encodes an ORDINARY
+  space — that is the 128-row class shipped at 14:0xZ — so Fairway Market's
+  `AEGON<03>US<03>High<03>Yi eld<03>Ret<03>Opt` carries a control separator
+  before every token and is PLAIN TEXT throughout; licensing off the separator
+  decodes it to `^bdlk rp e v  o l`.
+- **The change:** the same observation used as a FENCE rather than a LICENCE,
+  which makes the run a CHARACTER SPAN instead of a token list. A plain space
+  is 0x20 and the shift cannot produce 0x20, so it BOUNDS the run. Extending a
+  seed outward over `[\x03-\x1f\x21-\x3d\x44-\x5d]` keeps Antonini Freight
+  Express's own `ANTONINI FREIGHT EXPRESS, INC. 401(K) & PROFIT SHARING PLAN`
+  whole while decoding the `(PSOR\HU ,GHQWLILFDWLRQ` that follows it.
+- **AND IT SOLVES THE HALF-DECODE THE QUEUE PREDICTED, FOR FREE.** A token rule
+  decodes `&ODVV` to `Class` and leaves the `5`, publishing `Class 5` where the
+  filing says `Class R` — a wrong share class asserted. A span decodes its
+  SEPARATORS too, and 0x03 → `" "` while 0x19 → `"6"`, so `&ODVV<03>5<19>`
+  comes out **`Class R6`** and `,,` comes out `II`. No floor is needed and no
+  token is left behind. *A mechanism that removes the need for a guard is
+  worth more than the guard.*
+- **THERE IS NO FILED-ATTESTATION TEST AND THE MEASUREMENT IS WHY.** The draft
+  carried the issuer strip's two-sided witness — the token as filed attested
+  NOWHERE — and that test **costs 6 rows reaching 118,240 participants**
+  (Fiserv 39,782, Philips 29,491, Gallagher 29,477, Lifespan 19,490), because
+  the attestation maps are built from the STORED names and this font appears in
+  several filings: `FRPSOHWH`, `WKLV` and `LWHP` are each attested in their
+  CIPHERED form (6, 14 and 8 times). **Third instance of that trap on this
+  record and the FIRST in the refusal direction** — *a floor that reads
+  repetition as evidence of authenticity is fed by repeated damage*, the
+  OCR strip's ceiling lesson inverted. A RATIO in its place was measured too
+  and is **DECORATIVE at every factor up to 3** (0 rows against no test at
+  all), so it is not shipped: *a condition that cannot fire is decoration.*
+- **FOUR CONDITIONS, each negative-controlled over the whole population and
+  each naming its own cases:** the plain-space FENCE (15 rows changed, all
+  damaged); the mid-word TRIM, because 0x30-0x3d is **both** a literal digit
+  **and** the ciphered form of an uppercase Q-Z and so cannot fence a run —
+  Retriever needs `5` → `R` while Lifespan's Form 5500 line references `6d`/`6e`
+  were being published as `Sd`/`Se` (2 rows); the decode attested ≥3, **which is
+  what protects `AEGON` rather than the fence** (3 rows of garbage, `ETF` →
+  `bqc`); and a ciphered space inside the run, **whose COST IS NAMED** — it
+  refuses 2 CORRECT `LQVWUXFWLRQV` → `instructions` repairs, pinned so it
+  cannot be paid silently. *Refusing a repair is the safe direction.*
+- **Outcome through all four resolvers**, since the name is STORED: display
+  ticker **+1 / −0 / 0 flipped** (Edelman gains VWNAX), display fee +1 / −0 / 0
+  changed, SEC `stk` **+2 / −0 / 0** (VWNAX, TISCX), `ftk` +0 / −0 / 0, **0
+  asterisks moved.**
+- **TWO COSTS IN THAT OUTCOME, both named.** (1) The queue predicted this would
+  CORRECT Edelman's fee, which publishes 0.3 where `Vanguard Windsor II Admiral`
+  is 0.26 — **it does not.** `fund-er.js:203` has ONE Windsor entry, so the fee
+  was wrong independently of legibility and the row now carries a correct symbol
+  beside the same wrong number. *The cipher hid the share class; it was not why
+  the fee was wrong.* (2) `Nuveen Small Cap Blend Index Fund Class R` gains the
+  generic unattributed index estimate 0.1 on a name that states a house — a live
+  instance of the queued fee pre-emption, in the understating direction.
+- **Prevention:** it must run in `merge-4i` and never at display —
+  `cleanFiledName` replaces every control character with a space, so the
+  ciphered digits (0x13-0x1c) are gone before a display arm could decode them
+  and `Class R6` could never be recovered. 15 pins in
+  `scripts/merge-name-test.mjs`, slicing the shipped `cipherRepair` rather than
+  restating it, with a negative control per condition failing by name on exactly
+  its own cases (2 / 1 / 2 / 1). The real merge reproduces to the row and the
+  field-by-field diff moves `name` on 23 and `stk` on 2 and **nothing else**.
+  ALL-CAPS ciphered text is out of reach by construction (the seed is a ciphered
+  LOWERCASE word) and is left as named under-reach.
+
+---
+
 ## 2026-07-18 — Fabricated fund returns and expense ratios
 - **Wrong:** the curated overlay displayed synthetic per-fund returns and
   expense ratios that had no source.
