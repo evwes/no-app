@@ -33169,3 +33169,31 @@ and is faithful in the filing.
   `[skip ci]`, and the item still needs the strip written, its pins, a negative
   control, and the outcome test through all four resolvers — the test that
   convicted the previous item's first rule an hour earlier.
+
+## 2026-10-01 (05:1xZ) — #529 verdict, and a name repair licensing a further one
+- `conclusion` to be read on the run page; the store landed as `a761a7c4` and is
+  **mirrored (`075870fa → 7aec77df`), UNFORCED on both checks**, data gate
+  +0 / −0.
+- **EVERY PRE-REGISTERED FIGURE PASSED.** The coverage line is byte-identical
+  except **`tkExact` 36.18 → 36.19**, which is exactly what was registered ("may
+  rise by at most 0.02 from the 79 new `stk`"): confident 60,170, lineups 59,822,
+  entries 65,479, HIGH 4, warn 608, overshoot 372, overshootTrust 12, aggRow 113,
+  dl 19, pvTopShare 100, `tkShare` 24.47, `tkComparable` 3.27 all unchanged.
+- **Read out of the ARTIFACT rather than the log** (the merge log's blob host is
+  `connect_rejected`): the run's store carries **459,774 `stk` rows**, exactly as
+  registered, and diffing `stk` row by row against the commit I wrote gives **0
+  differing rows** — the production merge reproduced the 79 new tickers exactly.
+- **AND ONE NAME DIFFERS, WHICH IS A MECHANISM AND NOT A DEFECT.** The run
+  repaired `Vanguard EmergingMkts Stock Idx Adm` → `Vanguard Emerging Mkts Stock
+  Idx Adm` (VEMAX, correct) where my local merge did not — and that is v519's
+  CamelCase arm, not the new caps arm. The cause: **the attestation maps are built
+  from the STORED names, so my 147 committed caps repairs raised the attested
+  count of a repaired form and pushed a sibling repair over its floor of 3.**
+  *A name repair increases the attestation of the repaired form, so a correct
+  repair can license a further correct repair on the NEXT run.* The arms are
+  convergent across runs rather than idempotent in one.
+  Two things follow. **"147 rows" is not a fixed point** — a later run may add a
+  few more, and a changed count must not be read as a regression. And the same
+  mechanism is the floor-of-one trap seen from the other side: it is why the floor
+  is 3 and the caps guard is a RATIO, because the identical feedback with DAMAGE
+  in place of a repair is how a gate gets fed by its own mistakes.
