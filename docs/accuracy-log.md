@@ -7,6 +7,152 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-01 (17:5xZ) — A row typed employer stock that names a DIFFERENT company published the sponsor's symbol
+
+- **Wrong:** `app.js`'s ticker cell was `stockRow ? (plan.ticker || null) : ...`,
+  so where a row is judged employer stock the page did not merely withhold a
+  symbol — **it published the plan sponsor's own, whatever the row was named.**
+  Bank of America's **250,040** participants were shown `INTERNATIONAL BUSINESS
+  MACHS` and `EXXON MOBIL CORP` with **BAC** beside them. FedEx's two plans
+  (**310,374** between them) showed `Master Trust` as **FDX**. And the GE
+  spin-off read wrong in **both directions**: General Electric's plan (105,231)
+  printed `GE Vernova Common Stock` as **GE** where GE Vernova is GEV, and
+  Ropcor's (33,134, GE Vernova's own filer) printed `GE Common Stock` as
+  **GEV**.
+- **Re-sized from scratch, because a queued class records what was true when it
+  was written.** CLAUDE.md's entry says "DO NOT CARRY 87 ROWS / 1,187,546 PPL
+  FORWARD", and that was right. Measured through app.js's own render with
+  `plan.ticker` supplied per MEMBER PLAN — a trust lineup is read by several
+  plans and each passes its own symbol — **463 published rows across 424 plans
+  / 10,432,227 participants print the sponsor's symbol today**, and **51 of
+  them are false**: 57 (plan,row) pairs / **47 plans / 1,061,663 participants /
+  $4,659,144,002**, 49 distinct names, all 51 read. So the queue's figure was
+  **1.7x too large in rows and 1.1x in people**, and the direction mattered
+  less than the composition: a large part of its 87 was its own screen's false
+  positives, and every one of those (`COMMON STOCK` at PepsiCo, `MCDONALD'S
+  CORPORATION`, `AIT INC`, `IFF Common Stock`, `Corporate common stock`,
+  `Employer Stock`) is verified **kept** here.
+- **Cause, diagnosed rather than guessed.** `isMistypedStockRow` (2026-09-29)
+  cannot reach any of them, and not by oversight: it stands down whenever the
+  NAME itself claims stock — which is what keeps a genuine `Employer Common
+  Stock` row safe and exactly what lets a spun-off company's *stock fund* read
+  as the sponsor's own — and otherwise requires `POOLED_CONSTRUCTION_NAME`, so a
+  row naming a single other COMPANY, a master trust or an ordinary mutual fund
+  is outside it by construction.
+- **The rule, in one sentence: the sponsor's symbol is published only where the
+  row NAMES the sponsor, and never where it names a DIFFERENT listed company.**
+  Two arms, both over evidence the page already holds — the plan's own filed
+  sponsor name, the curated public name behind its ticker (`TICKER_NAME`, in
+  app.js since the boot split), and the boot payload's own 112,652 (sponsor,
+  ticker) pairs. No registry, no new source, no vocabulary of companies.
+  **(I) corroboration**: a content token of the company's name, or a SHORT FORM
+  (the plan's own symbol, an acronym, a 2–5 character prefix of one of its
+  words) where everything else in the name is employer-stock caption, or a bare
+  caption identifying nothing at all. **(II) contradiction**: a contiguous run
+  of the name's content tokens that is another plan sponsor's whole key, mapping
+  to a different ticker. That is the queue's own discriminator — Phillips 66,
+  Keysight, Uber, Murphy USA and The Coca-Cola Company are themselves sponsors
+  in our universe — and **only arm II reaches its 7 rows.**
+- **It withdraws and never asserts.** Arm II positively identifies the other
+  company and its symbol is deliberately not published in place: the row is
+  typed `Company stock` by a section heading our own parse inherited, so what
+  the holding IS remains unknown and only the false claim can be removed.
+- **A RESIDUE TEST WAS WRITTEN FIRST AND ITS OWN OUTPUT KILLED IT.** "Remove the
+  company's words and the caption vocabulary and ask whether anything is left"
+  is the idiom this record already uses for the loan description and the
+  investment contract, and whole-store it withdraws **85** rows — destroying
+  IBM's own 149,818-participant row (`International Business Machines
+  Corporation - Managed by Independent Fiduciary - State Str`), PPG's
+  `Investment in PPG Industries, Inc.`, Markel's `common stock, cost of`,
+  Vertex's `real-time traded stock fund`, Leidos' `Closed Stock Fund` and
+  Schwab's Ameritrade and option rows. **An employer-stock row legitimately
+  carries arbitrary descriptive prose about the FUND**, so an empty residue is
+  not available as evidence here. *A predicate that is right for one class is
+  not thereby right for its neighbour*, met again — and the measurement is what
+  said so, not the reading.
+- **Three narrowings that each looked principled were refused by their own
+  output**, recorded so they are not retried: *"the corroborating token must be
+  the name's LEADING one"* withdraws `Common and preferred stocks BANK OF
+  AMERICA CORPORATION` (250,040) and the OCR'd `C OM PA N Y ST OC K TOYOTA ADR
+  FUND` (52,368); *"drop industry words from the company's token set"* is a
+  frequency list that cannot separate `ford` (295 sponsors, correct for Ford)
+  from `technologies` (1,088, wrong for Uber at Agilent); and *"require the
+  match on the company's rarest token"* needs a frequency table the browser
+  cannot have.
+- **Outcome, whole-store, through every cell a reader sees, with the BEFORE side
+  loading HEAD's app.js AND HEAD's lib-disclose so the gate is genuinely absent
+  there: 53,822 (plan,row) cells rendered both ways — ticker −57 / +0 / 0
+  flipped, fee +0 / −0 / 0 changed, asterisks 0 moved, shown types 0 moved.**
+  Every column was positive-controlled first, because a clean zero reports on
+  the query: a variant refusing every employer-stock row moves the ticker on
+  **488** (the whole population), a perturbed `fund-er.js` moves the fee on
+  **620**, and a variant typing every row an investment contract moves the
+  asterisk on 4,996 and the shown type on 53,648.
+- **Cost named: 0 correct symbols withdrawn**, which is what reading all 51 rows
+  establishes rather than a count — 24 name a different, identifiable company,
+  the other 27 name a master trust, a mutual fund, cash, a brokerage aggregate
+  or audit prose. What the 51 DO keep is their `Company stock` type and their
+  suppressed fee, which is the accepted cost of staying narrow: `stockRow` is
+  untouched, so `MFS International Equity Fund Class 3A` stops asserting HRB and
+  still does not resolve its own fund. Lifting the fee means deciding what the
+  holding is, which is the parser-side section fix.
+- **Residue, named rather than claimed as fixed:** two Rockwell Automation rows
+  (15,827 ppl) keep ROK on `ELEVANCE HEALTH INC` and `OLIN CORP`, because
+  `rockwell` corroborates and neither other company is a two-word ticker-bearing
+  sponsor key in our universe; `Fidelity Adv Leveraged Company Stock` and
+  `Fidelity Leveraged Company Stock Fund` lose their symbol here and stay typed
+  `Company stock`.
+- **Prevention.** Canonical in `scripts/lib-disclose.mjs`; app.js's twin is a
+  VERBATIM SLICE written by `gen-generic-twin.mjs` with its two hooks in
+  `MARK_ENDS`, **never typed into app.js** — four twins have been lost to three
+  regenerations. **42 pinned cases** in the generator and **35 in
+  `smoke-test.mjs`**, added because not one existing probe anywhere passes a
+  sponsor name or a ticker, so none could reach this arm in principle. Both
+  tethers were shown to FAIL: drifting one condition in app.js fails the smoke
+  test by name on exactly 1 of 35 cases, and drifting `sponsorNameKey` on 6 of
+  6. **A negative control per condition, each variant written DIRECTLY from the
+  shipped body** (the baseline variant reproduces the shipped function on 463
+  of 463 rows, so each control isolates one condition): the token arm 325 rows,
+  the short arm 11, the caption arm 13, arm II 7, the curated public name 1, and
+  `rest is caption` on the short arm **1 — the 105,231-participant GE row,
+  because `GE` is both General Electric's symbol and a prefix of `General`.
+  **Three conditions measure DECORATIVE on this store and are labelled as such
+  in the source rather than left to be discovered**: prefix-only containment (0
+  rows — arm II withdraws Phillips 66 anyway; kept because arm II only reaches a
+  company that is itself a sponsor here), deleting rather than spacing the
+  apostrophe (0 — `mcdonald` is a PREFIX of `mcdonalds`, so arm I rescues
+  `MCDONALD'S CORPORATION` either way), and the acronym floor of 3 (0 —
+  subsumed by `rest is caption`). parser-gate, smoke, fund-er-test
+  (62/26/19/18/18), merge-name-test and `lib-disclose --selftest` green.
+- **Surface: the REPORT only, as a GUARANTEE and not as an empty diff.**
+  `build-seo-pages.mjs` renders two columns, name and value, and has **no symbol
+  cell for a holding at all** — `employerStockSymbolOk` has 0 references there —
+  so no crawlable page can carry this claim and 0 of 5,062 pages change.
+- **AND THE SEVENTH INCOMPLETE TRANSCRIPTION OF A SHIPPED EXPRESSION, in the
+  harness measuring this very arm, closed by removing the caller's chance to be
+  wrong rather than by fixing one call.** `apppath.mjs`'s `render` took the
+  guard's two new arguments as plan FIELDS (`plan.publicName`,
+  `plan.otherSponsors`) where app.js computes them itself
+  (`TICKER_NAME[plan.ticker]`, `sponsorTickerIndex()`). My own caller supplied
+  both, and the discriminating controls prove it — dropping the index moves the
+  count 51 → 44 and names exactly the 7 arm-II rows, dropping the public name
+  moves it 51 → 52 and names exactly `GE Vernova` at Ropcor — so no published
+  figure was affected. **But a future caller passing an app.js-shaped plan would
+  have fed `undefined` to the index and arm II would have returned true at its
+  first line: the contradiction test silently off, inside the harness built to
+  measure it.** The map is now SLICED from app.js source and the index built
+  inside the harness with the canonical key builder, so `render` needs only
+  `{ticker, sponsorName}`. Three more gaps in the same file were repaired in the
+  same pass — `er` called `fundERFiled(f.name)` where app.js calls
+  `fundERRow(f)` (the 2026-09-29 issuer arm, so every "publishes a fee today"
+  figure through it UNDER-counted), `namelessRow` had only one of three arms,
+  and `info` was not gated on `contractRow` — and all 23 expressions in
+  `render` were then reconciled against app.js by text. ***A harness is code and
+  earns the same suspicion as the thing it measures; a contract a caller can get
+  wrong in silence is worse than a transcription, because it fails open.***
+
+---
+
 ## 2026-10-01 (16:2xZ) — A repair that makes a junk row legible hands the whole plan to a junk guard
 
 - **Wrong:** #536's verdict missed its own pre-registration. `confident` was

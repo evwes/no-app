@@ -37,7 +37,8 @@ import { GENERIC_TYPE_ANY, GENERIC_TYPE_DESPACED, isGenericTypeName } from "./li
 import { isNamelessFundRow, isLoanDescriptionRow, isAnnuityContractRow,
   annuityFeeIsGuaranteeOnly, isInvestmentContractRow, isMistypedStockRow,
   mistypedStockFeeIsGuaranteeOnly, issuerPricedER, isCollectiveTrustName,
-  isLoanAnswerRow, isLoanVocabularyRow, isBankDepositRow } from "./lib-disclose.mjs";
+  isLoanAnswerRow, isLoanVocabularyRow, isBankDepositRow,
+  employerStockSymbolOk, sponsorNameKey } from "./lib-disclose.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const lib = readFileSync(ROOT + "scripts/lib-4i.mjs", "utf8");
@@ -175,6 +176,20 @@ const bde = dis.indexOf("\n}\n", dis.indexOf("export function isBankDepositRow("
 if (bde < 3) throw new Error("gen-generic-twin: isBankDepositRow moved in lib-disclose");
 const bankdep = dis.slice(bds, bde).replace(/^export /gm, "");
 
+/* AND A FIFTH, SLICED ON THE DAY IT SHIPS rather than typed into app.js —
+ * 2026-10-01, the employer-stock PROVENANCE rule. It is the largest slice in
+ * this file (two vocabularies, three helpers and two exported functions) and
+ * every piece must travel: `ESP_CAPTION_WORD` decides when a SHORT token is the
+ * whole identification, `espInitials` is a derived set, and `sponsorNameKey` is
+ * what the browser's own index builder calls — a retyped key builder would
+ * normalise differently from arm II and the contradiction arm would simply
+ * never fire while every count stayed still. */
+const ess = dis.indexOf("const ESP_FORM_WORD = new Set(");
+if (ess < 0) throw new Error("gen-generic-twin: ESP_FORM_WORD moved in lib-disclose");
+const ese = dis.indexOf("\n}\n", dis.indexOf("export function employerStockSymbolOk(")) + 3;
+if (ese < 3) throw new Error("gen-generic-twin: employerStockSymbolOk moved in lib-disclose");
+const empstock = dis.slice(ess, ese).replace(/^export /gm, "");
+
 const block = `  /* GENERATED FROM scripts/lib-4i.mjs — DO NOT EDIT BY HAND.
    * lib-4i derives these patterns from GENERIC_TYPE_NAME by asserted
    * replacements, so they are DERIVED and transcribing one is the move this
@@ -222,6 +237,9 @@ ${loanvocab.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
   window.__wampoLoanVocabRow = isLoanVocabularyRow;  // read by the smoke test only
 ${bankdep.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
   window.__wampoBankDepositRow = (n) => isBankDepositRow(n);  // read by the smoke test only
+${empstock.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
+  window.__wampoEmployerStockSymbolOk = employerStockSymbolOk;  // read by the smoke test only
+  window.__wampoSponsorNameKey = sponsorNameKey;  // read by the smoke test only
 `;
 
 /* THE END MARKER MUST BE THE BLOCK'S LAST LINE. It was `__wampoGenericName`
@@ -239,6 +257,7 @@ const MARK_S = "  /* GENERATED FROM scripts/lib-4i.mjs — DO NOT EDIT BY HAND."
  * moved and the old tail stayed — so the list only ever grows, and the cut must
  * be made at the LAST marker present, not the first one found. */
 const MARK_ENDS = [
+  "  window.__wampoSponsorNameKey = sponsorNameKey;  // read by the smoke test only\n",
   "  window.__wampoBankDepositRow = (n) => isBankDepositRow(n);  // read by the smoke test only\n",
   "  window.__wampoLoanVocabRow = isLoanVocabularyRow;  // read by the smoke test only\n",
   "  window.__wampoLoanAnswerRow = isLoanAnswerRow;  // read by the smoke test only\n",
@@ -306,6 +325,10 @@ vm.runInContext(block
     "globalThis.__lv = isLoanVocabularyRow;")
   .replace("window.__wampoBankDepositRow = (n) => isBankDepositRow(n);  // read by the smoke test only",
     "globalThis.__bd = (n) => isBankDepositRow(n);")
+  .replace("window.__wampoEmployerStockSymbolOk = employerStockSymbolOk;  // read by the smoke test only",
+    "globalThis.__es = employerStockSymbolOk;")
+  .replace("window.__wampoSponsorNameKey = sponsorNameKey;  // read by the smoke test only",
+    "globalThis.__sk = sponsorNameKey;")
   .replace(/^\s{2}/gm, ""), ctx);
 const names = ["Mutual funds", "Mutual Fund Shares", "Sub-total: Registered Investment Companies",
   "Commingled funds", "Pooled separate account funds", "Collective trust funds",
@@ -698,5 +721,105 @@ const bankDepNames = ["Schwab Bank Savings", "Charles Schwab Trust Bank",
 for (const n of bankDepNames) if (ctx.__bd(n) !== isBankDepositRow(n)) {
   bad++; console.log(`  BANK-DEPOSIT DRIFT ${JSON.stringify(n)} twin=${ctx.__bd(n)} lib=${isBankDepositRow(n)}`);
 }
+/* THE EMPLOYER-STOCK PROVENANCE ARM, 2026-10-01: all six arguments and both
+ * directions, and it needed its own probes for the ninth cycle running —
+ * NOT ONE case above passes a sponsor name or a ticker, so without these the
+ * twin would agree whether or not it carried the rule. Every name is READ out
+ * of the live store, and the must-KEEP half is the whole safety argument: it
+ * holds the two short forms, the OCR'd caption, the descriptive prose an
+ * employer-stock row legitimately carries, and both sides of the GE spin-off,
+ * which is the one pair no single arm separates. */
+const espIdx = new Map([
+  ["uber technologies", new Set(["UBER"])],
+  ["murphy oil", new Set(["MUR"])],
+  ["murphy usa", new Set(["MUSA"])],
+  ["coca cola", new Set(["KO"])],
+  ["keysight technologies", new Set(["KEYS"])],
+  ["agilent technologies", new Set(["A"])],
+]);
+const espCases = [
+  /* [name, issuer, sponsor, ticker, curated public name, may publish, why] */
+  /* must WITHDRAW — arm I, the row names another company outright */
+  ["INTERNATIONAL BUSINESS MACHS", "", "Bank Of America Corporation", "BAC", "Bank of America", false,
+    "IBM in BofA's brokerage window, printed as BAC for 250,040 readers"],
+  ["EXXON MOBIL CORP", "", "Bank Of America Corporation", "BAC", "Bank of America", false, "same row set"],
+  ["The J.M. Smucker Company", "", "The Procter & Gamble Company", "PG", "Procter & Gamble", false, "SJM at P&G"],
+  ["LXP INDUSTRIAL TRUST", "", "American Express Company And Its Participating Subsidiaries", "AXP", "American Express", false,
+    "a REIT at Amex — `trust` is not caption vocabulary here"],
+  ["ONEOK, Inc.", "", "One Gas, Inc.", "OGS", "", false, "the former parent at the spun-off company"],
+  ["Albemarle Corporation", "", "Newmarket Corporation", "NEU", "", false, "ALB at NewMarket"],
+  ["FORD MOTOR COMPANY", "", "Cleveland-Cliffs Inc.", "CLF", "", false, "F at Cleveland-Cliffs"],
+  ["ESAB Corporation", "", "Enovis Corporation", "ENOV", "", false, "the spin-off at its former parent"],
+  ["Emerson Stock Fund", "", "Esco Technologies Inc.", "ESE", "", false, "EMR at ESCO"],
+  ["Vitesse", "", "Jefferies Financial Group, Inc.", "JEF", "", false, "a one-word spin-off"],
+  /* must WITHDRAW — arm I, the row names no company at all */
+  ["Master Trust", "", "Fedex Corporation", "FDX", "FedEx", false,
+    "a master-trust interest printed as FDX for 310,374 readers across two plans"],
+  ["MFS International Equity Fund Class 3A", "", "H&R Block Management, Llc", "HRB", "", false, "a mutual fund"],
+  ["Fidelity Cash Reserves", "Fidelity Investments", "Powell Industries, Inc.", "POWL", "", false, "a money-market fund"],
+  ["Cash on hand", "", "Arrow Financial Corporation", "AROW", "", false, "cash is not a share"],
+  ["Participant directed brokerage accounts", "", "Entegris, Inc.", "ENTG", "", false, "a brokerage aggregate"],
+  ["Corporate Stocks (other than Employer Securities)", "", "Crane Nxt, Co.", "CXT", "", false,
+    "the caption says in words that it is NOT employer securities"],
+  /* must WITHDRAW — the GE spin-off, BOTH directions, which is the pair the
+   * rest-is-caption condition on the short-form arm exists for */
+  ["GE Vernova Common Stock", "GE Vernova Inc.", "General Electric Company", "GE", "GE Aerospace", false,
+    "GE Vernova is GEV; `GE` is both GE's symbol and a prefix of `General`"],
+  ["GE Common Stock", "", "Ropcor, Inc.", "GEV", "GE Vernova", false,
+    "General Electric at GE Vernova's own filer — the same defect reversed"],
+  /* must WITHDRAW — arm II, the row names another plan's SPONSOR even though
+   * arm I is satisfied by a shared industry or family word */
+  ["Uber Technologies Inc", "", "Agilent Technologies, Inc.", "A", "", false,
+    "arm I is satisfied by `technologies`; the row names Uber"],
+  ["Keysight Technologies Inc", "", "Agilent Technologies, Inc.", "A", "", false, "the spin-off at its former parent"],
+  ["Murphy USA Stock Fund 1", "", "Murphy Oil Corporation", "MUR", "", false, "arm I satisfied by `murphy`"],
+  ["Murphy Oil Corporation", "", "Murphy Usa Inc.", "MUSA", "", false, "the same pair reversed"],
+  ["The Coca Cola Company", "", "Coca-Cola Consolidated, Inc.", "COKE", "", false,
+    "the bottler is not The Coca-Cola Company"],
+  /* must PUBLISH — the row names the sponsor by a content token */
+  ["Walmart Inc. Equity Securities", "", "Walmart Inc.", "WMT", "Walmart", true, "the plain shape"],
+  ["Common and preferred stocks BANK OF AMERICA CORPORATION", "", "Bank Of America Corporation", "BAC", "Bank of America", true,
+    "a caption prefix before the sponsor's own name"],
+  ["International Business Machines Corporation - Managed by Independent Fiduciary - State Str", "", "International Business Machines Corporation", "IBM", "IBM", true,
+    "149,818 readers — an employer-stock row carries arbitrary prose about the FUND, which is why a residue test is not available as evidence"],
+  ["Investment in PPG Industries, Inc.", "", "Ppg Industries, Inc.", "PPG", "", true, "a leading `Investment in`"],
+  ["Interest-bearing cash within the Cintas Corporation", "", "Cintas Corporation", "CTAS", "", true, "the stock fund's cash sleeve"],
+  ["Schwab Ameritrade Converted Equity Unit Fund", "", "The Charles Schwab Corporation", "SCHW", "Charles Schwab", true,
+    "`schwab` is the sponsor's SECOND token, so a leading-token rule would destroy this"],
+  ["MCDONALD'S CORPORATION", "", "Mcdonalds Corporation And Subsidiaries", "MCD", "McDonald's", true,
+    "the apostrophe must be DELETED and not spaced — the third time punctuation in a sponsor name cost this record a match"],
+  ["GE Vernova", "", "Ropcor, Inc.", "GEV", "GE Vernova", true,
+    "the CURATED public name behind the ticker is what corroborates a filer whose own name shares nothing with it"],
+  /* must PUBLISH — a SHORT FORM that is the whole identification */
+  ["IFF Common Stock", "", "International Flavors & Fragrances Inc.", "IFF", "", true, "the plan's own symbol"],
+  ["FBIN STOCK", "", "Fortune Brands Innovations, Inc.", "FBIN", "", true, "the plan's own symbol"],
+  ["UPC Common Stock", "", "Union Pacific Railroad Company", "UNP", "Union Pacific", true,
+    "an acronym skipping an interior word: Union Pacific [Railroad] Company"],
+  ["CFSI ESOP", "", "Community Financial System, Inc", "CBU", "", true, "an acronym including the corporate form's initial"],
+  ["EZ Corp", "", "Ezcorp, Inc.", "EZPW", "", true, "a two-character prefix of the sponsor's own word"],
+  /* must PUBLISH — a bare employer-stock caption identifies nothing and so
+   * claims nothing beyond what the TYPE cell already says */
+  ["COMMON STOCK", "", "Pepsico, Inc.", "PEP", "PepsiCo", true, "167,015 readers"],
+  ["EMPLOYER RELATED SECURITIES", "", "Verizon Communications Inc.", "VZ", "Verizon", true, "119,145 readers"],
+  ["Common Stock, $.01 par value per share", "", "Sei Investments Company", "SEIC", "", true, "a caption with a par value in it"],
+  ["INC. COMMON STOCK FUND", "", "Hawaiian Electric Industries, Inc.", "HE", "", true, "a truncated caption"],
+  ["COMPANY STOCK PENDING FUND", "", "Educational Development Corp.", "EDUC", "", true, "a caption with a status word"],
+  ["C OM PA N Y ST OC K TOYOTA ADR FUND", "", "Toyota Motor North America, Inc", "TM", "Toyota", true,
+    "52,368 readers — an OCR'd caption whose only content token is the sponsor's"],
+];
+for (const [n, iss, sp, tk, pub, want, why] of espCases) {
+  const twin = ctx.__es(n, iss, sp, tk, pub, espIdx);
+  const lib = employerStockSymbolOk(n, iss, sp, tk, pub, espIdx);
+  if (twin !== lib) { bad++; console.log(`  EMPLOYER-STOCK DRIFT ${JSON.stringify(n)} twin=${twin} lib=${lib}`); }
+  if (lib !== want) { bad++; console.log(`  EMPLOYER-STOCK rule moved: ${JSON.stringify(n)} {${sp}/${tk}} want=${want} got=${lib} — ${why}`); }
+}
+/* the key builder must agree too: the browser's index is built with it and arm
+ * II looks the name up in that index, so a drifted key makes the arm inert */
+for (const sp of ["Uber Technologies Inc", "Murphy Usa Inc.", "Coca-Cola Consolidated, Inc.",
+  "Mcdonalds Corporation And Subsidiaries", "The Charles Schwab Corporation", "Ropcor, Inc."]) {
+  if (ctx.__sk(sp) !== sponsorNameKey(sp)) {
+    bad++; console.log(`  SPONSOR-KEY DRIFT ${JSON.stringify(sp)} twin=${ctx.__sk(sp)} lib=${sponsorNameKey(sp)}`);
+  }
+}
 if (bad) { console.error(`generated with ${bad} DRIFT — do not commit`); process.exit(1); }
-console.log(`generated; twin agrees with lib-4i on ${names.length} names, with lib-disclose on ${rows.length} rows, ${loans.length} loan-description names, ${annuityRows.length} annuity-contract rows, ${guarFeeNames.length} guarantee-only fee names, ${investmentContractRows.length} investment-contract rows, ${mistypedStockRows.length} mistyped-employer-stock rows and ${mistypedStockFeeNames.length} mistyped-stock fee names and ${issuerFeeCases.length} issuer-priced fee cases, ${citNames.length} collective-trust names and ${loanAnsNames.length} loan-answer names and ${loanVocabNames.length} loan-vocabulary names and ${bankDepNames.length} bank-deposit names`);
+console.log(`generated; twin agrees with lib-4i on ${names.length} names, with lib-disclose on ${rows.length} rows, ${loans.length} loan-description names, ${annuityRows.length} annuity-contract rows, ${guarFeeNames.length} guarantee-only fee names, ${investmentContractRows.length} investment-contract rows, ${mistypedStockRows.length} mistyped-employer-stock rows and ${mistypedStockFeeNames.length} mistyped-stock fee names and ${issuerFeeCases.length} issuer-priced fee cases, ${citNames.length} collective-trust names and ${loanAnsNames.length} loan-answer names and ${loanVocabNames.length} loan-vocabulary names and ${bankDepNames.length} bank-deposit names and ${espCases.length} employer-stock provenance cases`);

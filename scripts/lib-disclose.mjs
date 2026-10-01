@@ -2091,6 +2091,236 @@ export function mistypedStockFeeIsGuaranteeOnly(cleanedName, priceOf) {
   return priceOf(rest) == null;
 }
 
+/* A ROW TYPED EMPLOYER STOCK THAT NAMES A DIFFERENT COMPANY — 2026-10-01.
+ *
+ * `app.js`'s ticker cell is `stockRow ? (plan.ticker || null) : ...`, so where
+ * the row is judged employer stock the page does not merely withhold a symbol:
+ * it PUBLISHES THE PLAN SPONSOR'S OWN, whatever the row is named. Bank of
+ * America's 250,040 participants were shown `INTERNATIONAL BUSINESS MACHS` and
+ * `EXXON MOBIL CORP` with **BAC** beside them; FedEx's two plans (310,374
+ * between them) showed `Master Trust` as **FDX**; and the GE spin-off reads
+ * wrong in BOTH directions — General Electric's plan (105,231) printed
+ * `GE Vernova Common Stock` as **GE** where GE Vernova is GEV, and Ropcor's
+ * (33,134, GE Vernova's own filer) printed `GE Common Stock` as **GEV**.
+ *
+ * `isMistypedStockRow` above cannot reach any of them, and not by oversight: it
+ * stands down whenever the NAME itself claims stock — which is what keeps a
+ * genuine `Employer Common Stock` row safe and exactly what lets a spun-off
+ * company's *stock fund* read as the sponsor's own — and otherwise requires
+ * `POOLED_CONSTRUCTION_NAME`, so a row naming a single other COMPANY, a master
+ * trust or an ordinary mutual fund is outside it by construction.
+ *
+ * THE RULE, in one sentence: THE SPONSOR'S SYMBOL IS PUBLISHED ONLY WHERE THE
+ * ROW NAMES THE SPONSOR, AND NEVER WHERE IT NAMES A DIFFERENT LISTED COMPANY.
+ * Two arms, both over evidence the page already holds — the plan's own filed
+ * sponsor name, the curated public name behind its ticker, and the boot
+ * payload's 112,652 (sponsor, ticker) pairs. No registry, no new source and no
+ * vocabulary of companies.
+ *
+ *   I  CORROBORATION. A content token of the company's name (>=3 characters,
+ *      equal or in a PREFIX relation), or a SHORT FORM — the plan's own symbol,
+ *      an acronym of the company's name, or a 2-5 character prefix of one of
+ *      its words — where everything else in the name is employer-stock caption
+ *      vocabulary, or a bare caption with no identification in it at all.
+ *   II CONTRADICTION. Even when corroborated, a contiguous run of the name's
+ *      content tokens that is ANOTHER plan sponsor's whole key, mapping to a
+ *      different ticker, means the row names that company. This is the queue's
+ *      own discriminator: Phillips 66, Keysight Technologies, Uber
+ *      Technologies, Murphy USA and The Coca-Cola Company are themselves
+ *      sponsors in our universe.
+ *
+ * IT WITHDRAWS AND NEVER ASSERTS. Arm II positively identifies the other
+ * company and its symbol is deliberately NOT published in place: the row is
+ * typed `Company stock` by a section heading our own parse inherited, so what
+ * the holding IS remains unknown and only the false claim can be removed. A
+ * blank is honest; a symbol reads as knowledge.
+ *
+ * MEASURED OVER THE WHOLE LIVE STORE through app.js's own render, with
+ * plan.ticker supplied per MEMBER PLAN because a trust lineup is read by
+ * several plans and each has its own symbol:
+ *   - 463 published rows across 424 plans / 10,432,227 participants print the
+ *     sponsor's symbol today. 412 are kept; 51 are withdrawn (44 by arm I,
+ *     7 by arm II), across 45 plans / 1,047,002 participants.
+ *   - all 51 read: 24 name a different, identifiable company (IBM and Exxon at
+ *     BAC, Smucker at P&G and at ADM, LXP Industrial Trust at Amex and at CSX,
+ *     Spotify at DXC, Raymond James at Ameriprise, Olin and Elevance at
+ *     Rockwell, Albemarle at NewMarket, Ford at Cleveland-Cliffs, ONEOK at ONE
+ *     Gas, Emerson at ESCO, ESAB at Enovis, Vitesse at Jefferies, ADC
+ *     Therapeutics at Western Union, Pfizer at Minerals Technologies, F&G and
+ *     Cannae at FNF, both GE rows, both Murphy rows, Coca-Cola at its bottler,
+ *     Uber and Keysight at Agilent and Keysight); the other 27 name a MASTER
+ *     TRUST, a mutual fund, cash, a brokerage aggregate or audit prose. Not one
+ *     is the sponsor's own stock.
+ *   - 0 fees move, 0 asterisks move, 0 shown types move: `stockRow` still
+ *     suppresses the fee on these rows exactly as before, so the only cell that
+ *     changes is the symbol.
+ *
+ * A RESIDUE TEST WAS WRITTEN FIRST AND ITS OWN OUTPUT KILLED IT. "Remove the
+ * company's words and the caption vocabulary and ask whether anything is left"
+ * is the idiom this file already uses for the loan description and the
+ * investment contract, and here it withdraws 85 rows — destroying IBM's own
+ * 149,818-participant row (`International Business Machines Corporation -
+ * Managed by Independent Fiduciary - State Str`), PPG's `Investment in PPG
+ * Industries, Inc.`, Markel's `common stock, cost of`, Vertex's `real-time
+ * traded stock fund`, Leidos' `Closed Stock Fund` and Schwab's Ameritrade and
+ * option rows. An employer-stock row legitimately carries arbitrary
+ * descriptive prose about the FUND, so an empty residue is not available as
+ * evidence. *A predicate that is right for one class is not thereby right for
+ * its neighbour.*
+ *
+ * A NEGATIVE CONTROL PER CONDITION over the whole reachable population, each
+ * variant written DIRECTLY from this body rather than by surgery on it, and
+ * each required to disagree BY NAME on exactly its own cases. Six are
+ * load-bearing and THREE ARE DECORATIVE ON THIS STORE, which is said here
+ * rather than discovered later:
+ *   (1) the content-token arm          325 rows — the rule itself
+ *   (3) `rest is caption` on the short arm  1 — and it is the 105,231-participant
+ *       `GE Vernova Common Stock` row, because `GE` is both General Electric's
+ *       symbol and a prefix of `General`
+ *   (4) the short-form arm                11 — FBIN, IFF, AIT, NJR x2, UPC,
+ *       WD-40, `ADM COMMON STOCK`
+ *   (5) the bare-caption arm              13 — Verizon's 119,145 and Cisco's
+ *       72,556 among them
+ *   (6) arm II                             7 — and ONLY arm II reaches those 7
+ *   (9) the curated public name            1 — `GE Vernova` at Ropcor, the
+ *       filer whose own name shares nothing with the company it files for
+ *   (2) PREFIX-only containment   0 rows: subsumed, because arm II withdraws
+ *       `Phillips 66 Stock Fund` at ConocoPhillips anyway. KEPT because arm
+ *       II only reaches a company that is ITSELF a sponsor in our universe
+ *       (1,190 keys), and this condition is the belt for every company that is
+ *       not.
+ *   (7) DELETING the apostrophe   0 rows: subsumed, because `mcdonald` is a
+ *       PREFIX of `mcdonalds`, so arm I rescues `MCDONALD'S CORPORATION` even
+ *       when the apostrophe is spaced. Kept because deletion is the correct
+ *       normalisation and the two conditions are independent — spacing the
+ *       apostrophe is the recorded miss that cost this record a sponsor match
+ *       for the third time, and it is not protected here by design.
+ *   (8) the acronym floor of 3    0 rows: subsumed by (3), which refuses `GE`
+ *       before the floor is consulted. Kept as a pre-filter.
+ *
+ *
+ * COST NAMED: 0 correct symbols are withdrawn, and that is what the reading of
+ * all 51 rows establishes rather than a count. The arm-I floor of three
+ * characters costs nothing only because of the short-form arm: without it
+ * `EZ Corp` at EZCORP (4,511 ppl), `UPC Common Stock` at Union Pacific
+ * (33,283), `CFSI ESOP` at Community Financial System (3,775), `IFF Common
+ * Stock` (7,094), `FBIN STOCK` (6,433), `AIT INC` (5,948) and `NJR Common
+ * Stock` (1,639) all lose a CORRECT symbol.
+ *
+ * AND THE 51 ROWS KEEP THEIR `Company stock` TYPE AND THEIR SUPPRESSED FEE,
+ * which is the accepted cost of staying narrow: `stockRow` is untouched, so a
+ * row like `MFS International Equity Fund Class 3A` stops asserting HRB and
+ * still does not resolve its own fund. Lifting the fee means deciding what the
+ * holding IS, which is the parser-side section fix.
+ *
+ * RESIDUE, named rather than claimed as fixed. Two Rockwell Automation rows
+ * (15,827 ppl) keep ROK on `ELEVANCE HEALTH INC` and `OLIN CORP`, because
+ * `rockwell` corroborates and neither other company is a ticker-bearing
+ * sponsor key of two or more words in our universe; `Fidelity Adv Leveraged
+ * Company Stock` and `Fidelity Leveraged Company Stock Fund` are withdrawn
+ * here but still typed `Company stock`, which is the parser-side section fix.
+ *
+ * REPORT PATH ONLY, as a GUARANTEE and not as an empty diff:
+ * `build-seo-pages.mjs` renders two columns, name and value, and has no symbol
+ * cell for a holding at all, so no crawlable page can carry this claim.
+ * app.js keeps the twin; the generator slices this VERBATIM and
+ * `smoke-test.mjs` runs the browser copy against this one on pinned rows. */
+const ESP_FORM_WORD = new Set(["inc", "incorporated", "corp", "corporation", "co",
+  "company", "companies", "holding", "holdings", "group", "llc", "llp", "lp", "plc",
+  "ltd", "limited", "sa", "nv", "ag", "se", "the", "and", "of", "its",
+  "participating", "subsidiaries", "subsidiary"]);
+/* Words an employer-stock row carries INSTEAD of naming anything — read off the
+ * 463 rows this rule can reach, and used only to decide whether a SHORT token
+ * is the whole identification. A word that could name a company is absent on
+ * purpose, and that omission costs rows rather than correctness. */
+const ESP_CAPTION_WORD = new Set(["common", "stock", "stocks", "share", "shares",
+  "employer", "employers", "employee", "employees", "security", "securities",
+  "related", "corporate", "fund", "funds", "unit", "units", "unitized", "esop",
+  "equity", "equities", "preferred", "par", "value", "values", "per", "class",
+  "at", "fair", "held", "sponsor", "sponsors", "allocated", "unallocated",
+  "nonparticipant", "participant", "directed", "pending", "qualifying",
+  "investments", "in", "no", "adr", "interest"]);
+const espNorm = (s) => String(s || "").toLowerCase()
+  .replace(/['’`]/g, "")          // DELETED, never spaced: Mcdonald's
+  .replace(/&/g, " and ")
+  .replace(/[^a-z0-9]+/g, " ").replace(/\s+/g, " ").trim();
+const espToks = (s) => espNorm(s).split(" ").filter(Boolean);
+const espContent = (s) => espToks(s).filter((w) => !ESP_FORM_WORD.has(w));
+/* every in-order subsequence of a company name's token initials, 3-5 long:
+ * `UPC` for Union Pacific [Railroad] Company, `CFSI` for Community Financial
+ * System Inc, `AIT` for Applied Industrial Technologies. A floor of three is
+ * what keeps `GE` out of General Electric's initials. */
+function espInitials(words) {
+  const out = new Set();
+  const n = Math.min(words.length, 8);
+  const rec = (i, acc) => {
+    if (acc.length >= 3 && acc.length <= 5) out.add(acc);
+    if (acc.length >= 5 || i >= n) return;
+    for (let j = i; j < n; j++) rec(j + 1, acc + words[j][0]);
+  };
+  rec(0, "");
+  return out;
+}
+const espRestIsCaption = (tokens, skip) => tokens.filter((w) => w !== skip)
+  .every((w) => ESP_CAPTION_WORD.has(w) || ESP_FORM_WORD.has(w)
+    || /^\d+$/.test(w) || w.length === 1);
+
+/** The index key for one sponsor name. Exported so the browser's index builder
+ *  and arm II cannot normalise differently. */
+export function sponsorNameKey(sponsorName) {
+  return espContent(sponsorName).join(" ");
+}
+
+/** May this row publish the plan sponsor's own ticker?
+ *  @param otherSponsors Map<sponsorNameKey, Set<ticker>> over the boot list, or
+ *  a falsy value — in which case arm II is inert, which is the safe direction. */
+export function employerStockSymbolOk(cleanedName, iss, sponsorName, ticker, publicName, otherSponsors) {
+  const nameToks = espToks(cleanedName);
+  const nt = nameToks.concat(espToks(iss));
+  if (!nt.length) return true;                      // nothing to judge
+  const tk = espNorm(ticker);
+  let ok = false;
+  /* (I) a content token of the company's name */
+  const own = new Set(espContent(sponsorName).concat(espContent(publicName)));
+  for (const w of nt) {
+    if (w.length < 3) continue;
+    if (own.has(w)) { ok = true; break; }
+    let pref = false;
+    for (const s of own) {
+      if (w.length >= 4 && s.length >= 4 && (w.startsWith(s) || s.startsWith(w))) { pref = true; break; }
+    }
+    if (pref) { ok = true; break; }
+  }
+  /* (I) a SHORT FORM, but only where it is the WHOLE identification */
+  if (!ok) {
+    const ac = espInitials(espToks(sponsorName));
+    for (const w of espInitials(espToks(publicName))) ac.add(w);
+    const filed = espContent(sponsorName);
+    for (const w of nt) {
+      if (w.length < 2 || w.length > 5) continue;
+      if (!espRestIsCaption(nameToks, w)) continue;
+      if ((tk && w === tk) || ac.has(w)) { ok = true; break; }
+      for (const s of filed) if (s.startsWith(w)) { ok = true; break; }
+      if (ok) break;
+    }
+  }
+  /* (I) a bare employer-stock caption identifies nothing and claims nothing */
+  if (!ok && nameToks.length && espRestIsCaption(nameToks, null)) ok = true;
+  if (!ok) return false;
+  /* (II) ...and the name must not be ANOTHER listed company's */
+  if (!otherSponsors || !otherSponsors.size) return true;
+  const t = espContent(cleanedName);
+  const max = Math.min(t.length, 6);
+  for (let len = max; len >= 2; len--) {
+    for (let i = 0; i + len <= t.length; i++) {
+      const hit = otherSponsors.get(t.slice(i, i + len).join(" "));
+      if (!hit) continue;
+      return hit.has(String(ticker || ""));         // its own symbol: faithful
+    }
+  }
+  return true;
+}
+
 /* THE FEE LOOKUP NEVER SAW THE ISSUER COLUMN — canonical copy, 2026-09-29.
  *
  * `lookupTicker` has prepended the row's 4i IDENTITY cell on every attempt

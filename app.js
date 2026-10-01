@@ -1291,6 +1291,104 @@
   }
 
   window.__wampoBankDepositRow = (n) => isBankDepositRow(n);  // read by the smoke test only
+  const ESP_FORM_WORD = new Set(["inc", "incorporated", "corp", "corporation", "co",
+    "company", "companies", "holding", "holdings", "group", "llc", "llp", "lp", "plc",
+    "ltd", "limited", "sa", "nv", "ag", "se", "the", "and", "of", "its",
+    "participating", "subsidiaries", "subsidiary"]);
+  /* Words an employer-stock row carries INSTEAD of naming anything — read off the
+   * 463 rows this rule can reach, and used only to decide whether a SHORT token
+   * is the whole identification. A word that could name a company is absent on
+   * purpose, and that omission costs rows rather than correctness. */
+  const ESP_CAPTION_WORD = new Set(["common", "stock", "stocks", "share", "shares",
+    "employer", "employers", "employee", "employees", "security", "securities",
+    "related", "corporate", "fund", "funds", "unit", "units", "unitized", "esop",
+    "equity", "equities", "preferred", "par", "value", "values", "per", "class",
+    "at", "fair", "held", "sponsor", "sponsors", "allocated", "unallocated",
+    "nonparticipant", "participant", "directed", "pending", "qualifying",
+    "investments", "in", "no", "adr", "interest"]);
+  const espNorm = (s) => String(s || "").toLowerCase()
+    .replace(/['’`]/g, "")          // DELETED, never spaced: Mcdonald's
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, " ").replace(/\s+/g, " ").trim();
+  const espToks = (s) => espNorm(s).split(" ").filter(Boolean);
+  const espContent = (s) => espToks(s).filter((w) => !ESP_FORM_WORD.has(w));
+  /* every in-order subsequence of a company name's token initials, 3-5 long:
+   * `UPC` for Union Pacific [Railroad] Company, `CFSI` for Community Financial
+   * System Inc, `AIT` for Applied Industrial Technologies. A floor of three is
+   * what keeps `GE` out of General Electric's initials. */
+  function espInitials(words) {
+    const out = new Set();
+    const n = Math.min(words.length, 8);
+    const rec = (i, acc) => {
+      if (acc.length >= 3 && acc.length <= 5) out.add(acc);
+      if (acc.length >= 5 || i >= n) return;
+      for (let j = i; j < n; j++) rec(j + 1, acc + words[j][0]);
+    };
+    rec(0, "");
+    return out;
+  }
+  const espRestIsCaption = (tokens, skip) => tokens.filter((w) => w !== skip)
+    .every((w) => ESP_CAPTION_WORD.has(w) || ESP_FORM_WORD.has(w)
+      || /^\d+$/.test(w) || w.length === 1);
+
+  /** The index key for one sponsor name. Exported so the browser's index builder
+   *  and arm II cannot normalise differently. */
+  function sponsorNameKey(sponsorName) {
+    return espContent(sponsorName).join(" ");
+  }
+
+  /** May this row publish the plan sponsor's own ticker?
+   *  @param otherSponsors Map<sponsorNameKey, Set<ticker>> over the boot list, or
+   *  a falsy value — in which case arm II is inert, which is the safe direction. */
+  function employerStockSymbolOk(cleanedName, iss, sponsorName, ticker, publicName, otherSponsors) {
+    const nameToks = espToks(cleanedName);
+    const nt = nameToks.concat(espToks(iss));
+    if (!nt.length) return true;                      // nothing to judge
+    const tk = espNorm(ticker);
+    let ok = false;
+    /* (I) a content token of the company's name */
+    const own = new Set(espContent(sponsorName).concat(espContent(publicName)));
+    for (const w of nt) {
+      if (w.length < 3) continue;
+      if (own.has(w)) { ok = true; break; }
+      let pref = false;
+      for (const s of own) {
+        if (w.length >= 4 && s.length >= 4 && (w.startsWith(s) || s.startsWith(w))) { pref = true; break; }
+      }
+      if (pref) { ok = true; break; }
+    }
+    /* (I) a SHORT FORM, but only where it is the WHOLE identification */
+    if (!ok) {
+      const ac = espInitials(espToks(sponsorName));
+      for (const w of espInitials(espToks(publicName))) ac.add(w);
+      const filed = espContent(sponsorName);
+      for (const w of nt) {
+        if (w.length < 2 || w.length > 5) continue;
+        if (!espRestIsCaption(nameToks, w)) continue;
+        if ((tk && w === tk) || ac.has(w)) { ok = true; break; }
+        for (const s of filed) if (s.startsWith(w)) { ok = true; break; }
+        if (ok) break;
+      }
+    }
+    /* (I) a bare employer-stock caption identifies nothing and claims nothing */
+    if (!ok && nameToks.length && espRestIsCaption(nameToks, null)) ok = true;
+    if (!ok) return false;
+    /* (II) ...and the name must not be ANOTHER listed company's */
+    if (!otherSponsors || !otherSponsors.size) return true;
+    const t = espContent(cleanedName);
+    const max = Math.min(t.length, 6);
+    for (let len = max; len >= 2; len--) {
+      for (let i = 0; i + len <= t.length; i++) {
+        const hit = otherSponsors.get(t.slice(i, i + len).join(" "));
+        if (!hit) continue;
+        return hit.has(String(ticker || ""));         // its own symbol: faithful
+      }
+    }
+    return true;
+  }
+
+  window.__wampoEmployerStockSymbolOk = employerStockSymbolOk;  // read by the smoke test only
+  window.__wampoSponsorNameKey = sponsorNameKey;  // read by the smoke test only
 
   /* A SCHEDULE H PARTICIPANT-DIRECTION CAPTION IS NOT A HOLDING — the rule,
    * the Microsoft row that found it ($6,602,388,247 = 8.6% of a 50-row menu),
@@ -1931,6 +2029,32 @@
   function publicName(plan) {
     const n = plan.ticker && TICKER_NAME[plan.ticker];
     return n && n.toLowerCase() !== (plan.company || "").toLowerCase() ? n : null;
+  }
+
+  /* EVERY LISTED COMPANY WE CAN NAME, FROM A FILE THE PAGE ALREADY DOWNLOADS.
+   * `employerStockSymbolOk`'s contradiction arm asks whether a holding row
+   * names a DIFFERENT listed company, and this is the index it asks: the boot
+   * payload's own (sponsor name, ticker) pairs, keyed by `sponsorNameKey` so
+   * the builder and the lookup cannot normalise differently. Only
+   * ticker-bearing sponsors are indexed — an unlisted employer's name cannot
+   * be the wrong answer to "whose stock is this" — and only keys of two or more
+   * content words, because a one-word key is a prefix of too much of the world
+   * (the `match-sponsors.mjs` measurement that cost Banner Health and Citizens
+   * Financial their matches). 1,190 keys over the live list.
+   * Memoized: built on the first expanded plan that has an employer-stock row,
+   * never at boot. */
+  let _sponsorTickers = null;
+  function sponsorTickerIndex() {
+    if (_sponsorTickers) return _sponsorTickers;
+    _sponsorTickers = new Map();
+    for (const p of (state.plans || [])) {
+      if (!p.ticker) continue;
+      const k = sponsorNameKey(p.sponsorName || "");
+      if (!k || k.indexOf(" ") < 0) continue;
+      const set = _sponsorTickers.get(k);
+      if (set) set.add(p.ticker); else _sponsorTickers.set(k, new Set([p.ticker]));
+    }
+    return _sponsorTickers;
   }
 
   // full state names -> postal codes, so "florida" and "fl" both select the
@@ -2698,8 +2822,26 @@
        * the other eight buckets. A loan balance is the only suppressor added
        * here, because it is the only one that can be true beside `stockRow`
        * and still mean the row is not a security. */
+      /* A ROW TYPED EMPLOYER STOCK THAT NAMES A DIFFERENT COMPANY —
+       * 2026-10-01. The branch below does not merely withhold a symbol where
+       * `stockRow` is true: it PUBLISHES THE SPONSOR'S OWN. So Bank of
+       * America's 250,040 participants were shown `INTERNATIONAL BUSINESS
+       * MACHS` and `EXXON MOBIL CORP` as BAC, FedEx's two plans showed `Master
+       * Trust` as FDX, and the GE spin-off read wrong in both directions. The
+       * rule, its two arms, the 51 rows it withdraws and the residue it does
+       * not reach are all in scripts/lib-disclose.mjs; this is the generated
+       * twin's call site. It WITHDRAWS and never asserts — arm II identifies
+       * the other company and its symbol is still not published, because the
+       * row's `Company stock` type came from a section heading our own parse
+       * inherited and what the holding IS remains unknown. `stockRow` itself is
+       * untouched, so the fee stays suppressed exactly as before and the only
+       * cell that changes is the symbol. */
+      const stockSymbolOk = !stockRow || employerStockSymbolOk(f.name || "",
+        f.iss || "", plan.sponsorName || "", plan.ticker || "",
+        TICKER_NAME[plan.ticker] || "", sponsorTickerIndex());
       const tk = loanRow ? null
-        : stockRow ? (plan.ticker || null) : (info ? info.tk : (f.tk || null));
+        : stockRow ? (stockSymbolOk ? (plan.ticker || null) : null)
+        : (info ? info.tk : (f.tk || null));
       const star = !stockRow && info && info.comparable;
       if (star) starred = true;
       /* ...and the fee a mistyped row may publish once that claim is withdrawn.

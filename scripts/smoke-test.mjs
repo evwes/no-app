@@ -216,7 +216,8 @@ try {
     isDirectionCaptionRow,
     isOfficeListRow,
     isInvestmentContractRow, isMistypedStockRow, isBankDepositRow,
-    mistypedStockFeeIsGuaranteeOnly, issuerPricedER, leadingHouse } = await import("./lib-disclose.mjs");
+    mistypedStockFeeIsGuaranteeOnly, issuerPricedER, leadingHouse,
+    employerStockSymbolOk, sponsorNameKey } = await import("./lib-disclose.mjs");
   const frozCases = [
     [true, "The Plan was terminated effective December 31, 2023.", "Capital Region Medical"],
     [true, "As amended on December 31, 2024, the Plan was frozen and all participants of the Plan became fully vested.", "Hanes Companies, Inc."],
@@ -1294,6 +1295,114 @@ try {
     const got = issuerPricedER(tableER, n, iss);
     if ((got == null ? null : got) !== want)
       fail(`issuer-priced fee rule moved: {${iss}} ${JSON.stringify(n)} want=${want} got=${got}`);
+  }
+
+  /* THE EMPLOYER-STOCK PROVENANCE RULE, tethered 2026-10-01. `tk` is
+   * `stockRow ? (stockSymbolOk ? plan.ticker : null) : ...`, so where this
+   * predicate is wrong the page does not print a blank — it prints the WRONG
+   * COMPANY'S SYMBOL as fact. It needed its own cases for the tenth cycle
+   * running, and here the reason is structural: not one probe above this line
+   * passes a SPONSOR NAME or a TICKER, so none of them could reach this arm in
+   * principle. A control that cannot fail is decorative.
+   *
+   * The must-PUBLISH half is the whole safety argument and every case in it was
+   * READ out of the live store: the two short forms (`IFF`, `FBIN`), the two
+   * acronyms (`UPC` skipping an interior word, `CFSI` including the corporate
+   * form's initial), the OCR'd Toyota caption whose only content token is the
+   * sponsor's, IBM's own 149,818-participant row carrying arbitrary prose about
+   * the fund, Schwab's row corroborated by its sponsor's SECOND token, and
+   * `MCDONALD'S CORPORATION`, which fails unless the apostrophe is DELETED
+   * rather than spaced.
+   *
+   * The GE spin-off appears on BOTH sides on purpose: `GE Vernova` at GE
+   * Vernova's own filer must publish GEV, and `GE Vernova Common Stock` in
+   * General Electric's plan must NOT publish GE — one pair, two verdicts, and
+   * no single arm separates them. */
+  const espIdx = [["uber technologies", ["UBER"]], ["murphy oil", ["MUR"]],
+    ["murphy usa", ["MUSA"]], ["coca cola", ["KO"]],
+    ["keysight technologies", ["KEYS"]], ["agilent technologies", ["A"]]];
+  const espCases = [
+    /* [name, issuer, sponsor, ticker, curated public name, may publish] */
+    /* must WITHDRAW — the row names a different, identifiable company */
+    ["INTERNATIONAL BUSINESS MACHS", "", "Bank Of America Corporation", "BAC", "Bank of America", false],
+    ["EXXON MOBIL CORP", "", "Bank Of America Corporation", "BAC", "Bank of America", false],
+    ["The J.M. Smucker Company", "", "The Procter & Gamble Company", "PG", "Procter & Gamble", false],
+    ["LXP INDUSTRIAL TRUST", "", "American Express Company And Its Participating Subsidiaries", "AXP", "American Express", false],
+    ["ONEOK, Inc.", "", "One Gas, Inc.", "OGS", "", false],
+    ["FORD MOTOR COMPANY", "", "Cleveland-Cliffs Inc.", "CLF", "", false],
+    ["Emerson Stock Fund", "", "Esco Technologies Inc.", "ESE", "", false],
+    /* must WITHDRAW — the row names no company at all */
+    ["Master Trust", "", "Fedex Corporation", "FDX", "FedEx", false],
+    ["MFS International Equity Fund Class 3A", "", "H&R Block Management, Llc", "HRB", "", false],
+    ["Cash on hand", "", "Arrow Financial Corporation", "AROW", "", false],
+    ["Corporate Stocks (other than Employer Securities)", "", "Crane Nxt, Co.", "CXT", "", false],
+    /* must WITHDRAW — the GE spin-off, printed wrong in BOTH directions */
+    ["GE Vernova Common Stock", "GE Vernova Inc.", "General Electric Company", "GE", "GE Aerospace", false],
+    ["GE Common Stock", "", "Ropcor, Inc.", "GEV", "GE Vernova", false],
+    /* must WITHDRAW — the contradiction arm, where a shared industry or family
+     * word satisfies corroboration and the row still names another sponsor */
+    ["Uber Technologies Inc", "", "Agilent Technologies, Inc.", "A", "", false],
+    ["Keysight Technologies Inc", "", "Agilent Technologies, Inc.", "A", "", false],
+    ["Murphy USA Stock Fund 1", "", "Murphy Oil Corporation", "MUR", "", false],
+    ["Murphy Oil Corporation", "", "Murphy Usa Inc.", "MUSA", "", false],
+    ["The Coca Cola Company", "", "Coca-Cola Consolidated, Inc.", "COKE", "", false],
+    /* must PUBLISH — the row names the sponsor */
+    ["Walmart Inc. Equity Securities", "", "Walmart Inc.", "WMT", "Walmart", true],
+    ["Common and preferred stocks BANK OF AMERICA CORPORATION", "", "Bank Of America Corporation", "BAC", "Bank of America", true],
+    ["International Business Machines Corporation - Managed by Independent Fiduciary - State Str", "", "International Business Machines Corporation", "IBM", "IBM", true],
+    ["Investment in PPG Industries, Inc.", "", "Ppg Industries, Inc.", "PPG", "", true],
+    ["Interest-bearing cash within the Cintas Corporation", "", "Cintas Corporation", "CTAS", "", true],
+    ["Schwab Ameritrade Converted Equity Unit Fund", "", "The Charles Schwab Corporation", "SCHW", "Charles Schwab", true],
+    ["MCDONALD'S CORPORATION", "", "Mcdonalds Corporation And Subsidiaries", "MCD", "McDonald's", true],
+    ["GE Vernova", "", "Ropcor, Inc.", "GEV", "GE Vernova", true],
+    /* must PUBLISH — a short form that is the whole identification */
+    ["IFF Common Stock", "", "International Flavors & Fragrances Inc.", "IFF", "", true],
+    ["FBIN STOCK", "", "Fortune Brands Innovations, Inc.", "FBIN", "", true],
+    ["UPC Common Stock", "", "Union Pacific Railroad Company", "UNP", "Union Pacific", true],
+    ["CFSI ESOP", "", "Community Financial System, Inc", "CBU", "", true],
+    ["EZ Corp", "", "Ezcorp, Inc.", "EZPW", "", true],
+    /* must PUBLISH — a bare employer-stock caption claims nothing */
+    ["COMMON STOCK", "", "Pepsico, Inc.", "PEP", "PepsiCo", true],
+    ["EMPLOYER RELATED SECURITIES", "", "Verizon Communications Inc.", "VZ", "Verizon", true],
+    ["Common Stock, $.01 par value per share", "", "Sei Investments Company", "SEIC", "", true],
+    ["C OM PA N Y ST OC K TOYOTA ADR FUND", "", "Toyota Motor North America, Inc", "TM", "Toyota", true],
+  ];
+  const espIdxMap = new Map(espIdx.map(([k, v]) => [k, new Set(v)]));
+  const espGot = await page.evaluate(([cs, pairs]) => {
+    if (typeof window.__wampoEmployerStockSymbolOk !== "function") return null;
+    const idx = new Map(pairs.map(([k, v]) => [k, new Set(v)]));
+    return cs.map(([n, iss, sp, tk, pub]) =>
+      window.__wampoEmployerStockSymbolOk(n, iss, sp, tk, pub, idx));
+  }, [espCases.map(([n, iss, sp, tk, pub]) => [n, iss, sp, tk, pub]), espIdx]);
+  if (!espGot) fail("app.js no longer exposes __wampoEmployerStockSymbolOk — the employer-stock provenance rule cannot be cross-checked");
+  const espDrift = espCases.filter(([n, iss, sp, tk, pub], i) =>
+    employerStockSymbolOk(n, iss, sp, tk, pub, espIdxMap) !== espGot[i]);
+  if (espDrift.length) {
+    for (const c of espDrift) {
+      const i = espCases.indexOf(c);
+      console.error(`  ${JSON.stringify(c[0])} {${c[2]}/${c[3]}}  app.js=${espGot[i]}  module=${employerStockSymbolOk(c[0], c[1], c[2], c[3], c[4], espIdxMap)}`);
+    }
+    fail(`the employer-stock provenance rule in app.js disagrees with scripts/lib-disclose.mjs on ${espDrift.length} of ${espCases.length} cases — regenerate it`);
+  }
+  for (const [n, iss, sp, tk, pub, want] of espCases) {
+    const got = employerStockSymbolOk(n, iss, sp, tk, pub, espIdxMap);
+    if (got !== want)
+      fail(`employer-stock provenance rule moved: ${JSON.stringify(n)} {${sp}/${tk}} want=${want} got=${got}`);
+  }
+  /* the KEY BUILDER too: the browser builds its index with it and the
+   * contradiction arm looks names up in that index, so a drifted key makes the
+   * arm inert while every count above stays still */
+  const espKeys = ["Uber Technologies Inc", "Murphy Usa Inc.", "Coca-Cola Consolidated, Inc.",
+    "Mcdonalds Corporation And Subsidiaries", "The Charles Schwab Corporation", "Ropcor, Inc."];
+  const espKeyGot = await page.evaluate((ks) => {
+    if (typeof window.__wampoSponsorNameKey !== "function") return null;
+    return ks.map((k) => window.__wampoSponsorNameKey(k));
+  }, espKeys);
+  if (!espKeyGot) fail("app.js no longer exposes __wampoSponsorNameKey — the sponsor index key cannot be cross-checked");
+  const espKeyDrift = espKeys.filter((k, i) => sponsorNameKey(k) !== espKeyGot[i]);
+  if (espKeyDrift.length) {
+    for (const k of espKeyDrift) console.error(`  ${JSON.stringify(k)}  app.js=${espKeyGot[espKeys.indexOf(k)]}  module=${sponsorNameKey(k)}`);
+    fail(`the sponsor index key in app.js disagrees with scripts/lib-disclose.mjs on ${espKeyDrift.length} of ${espKeys.length} names — regenerate it`);
   }
 
   /* THE LEADING HOUSE, tethered 2026-09-30. `lookupTicker` prepends the 4i
