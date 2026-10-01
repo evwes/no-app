@@ -1152,7 +1152,103 @@ from the cycle that would have cleared it.
   **`LINCOLN STABLE VALUE` → 0.35 on a BLANK type cell** (the `gicRow`-reads-the-
   type item, 4,782 rows / 7,839,651 ppl). `docs/accuracy-log.md` 2026-10-01
   (03:5xZ).
-- **AND THE CLASS IT CAME OUT OF, MEASURED AND NOT SHIPPED: a filing stating
+- **SHIPPED AND MIRRORED 2026-10-01 05:4xZ (`26ab367d → 18f16a5b`), UNFORCED ON
+  BOTH CHECKS, data gate +0 / −0 BY ACK AND BY PLAN; `site-test` #126 reads
+  `conclusion: success` ON THE EXACT MIRRORED COMMIT — A FILING STATING
+  INSTITUTIONAL PLUS GETS THE INSTITUTIONAL PLUS CLASS: 295 rows corrected /
+  224 plans / 2,270,590 participants / $33,414,762,661, plus 4 gained, 0 LOST, 0
+  asterisks moved.** VINIX is the **Institutional** class; VSMAX, VIMAX, VEXAX,
+  VBTLX, VTIAX and VTSAX are **ADMIRAL, a RETAIL class**, so six of the seven
+  answers erred in the flattering direction. Every corrected symbol is read out of
+  `sec-funds.json`: VIIIX, VSCPX, VMCPX, VEMPX, VSMPX, VBMPX, VTPSX. *A fee is
+  SOURCED, never derived, and so is a share class.*
+  **THE QUEUED FIGURE BELOW WAS WRONG AND LOW — the class is 394 rows / 263 plans
+  / 3,303,464 ppl, not 239 / 176 / 2,109,185** — because that predicate read only
+  the spelled-out spelling; and the whole-store diff came in larger still, since
+  the marker can live in the **ISSUER** cell. *A hand sizing predicate
+  under-matches what the display path does.*
+  **TWO INDEPENDENT ROUTES REACH THE SAME SEVEN SYMBOLS, and the second is the
+  filings.** The contamination check found **ten** before-rows already publishing
+  these symbols where 4 were expected — and 10 of 10 come from **`ftk`**, #528's
+  filed-ticker rule, on rows where the filer printed the symbol. *A check run to
+  detect contamination instead corroborated the answer from a second source.* One
+  corrected row says it alone: `Vanguard Institutional Index Fund Institutional
+  Plus (VIIIX)` printed the symbol in brackets and we published VINIX beside it.
+  **ORDER-FREE AND MEASURED:** the filer writes the class FIRST on 5 rows and the
+  objection that such a lead is the previous row's tail is refuted by the stored
+  filed order on **0 of 5**; a row naming TWO of the seven funds, which order-free
+  matching would decide by table position, is **0 rows**.
+  **THE REGISTRY REFUSES THE TWO WELDS BY ITSELF** — `Instl Plus Shares Vanguard
+  PRIMECAP Fund` and `Institutional Plus Shares Fidelity Contrafund Class K` name
+  a series registering no Institutional Plus class, so there is no entry to reach
+  and no vocabulary of weld shapes is needed.
+  **A NEGATIVE CONTROL PER CONDITION over the whole 433,408-row population:**
+  order-freedom is **LOAD-BEARING** (4 rows / 8,053 ppl, Skanska ×3 + Arctera);
+  the `vanguard` requirement protects **1 row and NOT for the reason it was
+  written** (Aultman Health, 10,728 ppl, declined because its RAW name omits the
+  house, which keeps a trust-held row from being called the mutual fund — ***a
+  guard's live population is not always the population it was written for***); and
+  the contradicting-class lookahead is **DECORATIVE ON THIS STORE, 0 rows**,
+  labelled as such in the source while its FIXTURE still flips one pinned case.
+  **FEE-NEUTRAL, MEASURED RATHER THAN ARGUED: 0 gained / 0 lost / 0 changed**, and
+  `names moved` 0. All **114 distinct corrections and 3 distinct gains read**, not
+  one a wrong house. 16 pins added **because NOT ONE of the 46 existing
+  must-resolve cases reaches the new arm**; the pre-change file fails by name on
+  exactly the 14 must-corrects and holds both must-keeps. parser-gate, smoke,
+  fund-er-test (62/26/19/18/18) green. **REPORT path only as a GUARANTEE.**
+  `docs/accuracy-log.md` 2026-10-01 (05:4xZ).
+- **AND A THIRD INCOMPLETE TRANSCRIPTION, IN TWO HARNESSES, BOTH FIXED BEFORE ANY
+  NUMBER WAS PUBLISHED.** `apppath.mjs` carried app.js's `stockRow` regex WITHOUT
+  the `!mistypedStock` gate, so every mistyped row read back the SPONSOR'S symbol:
+  it reported **H&R Block's Vanguard Institutional Index row (27,766 ppl) as
+  publishing HRB** — a false live defect — and repairing it moved this class's own
+  count 133 → 135. **The draw harness was worse, because the draw's whole job is
+  to show what a reader sees:** it hand-transcribed `lookupTicker` as three
+  `fundTickerInfo` attempts and read **neither `ftk` nor `stk`**, so `DFA U.S.
+  Targeted Value Portfolio` printed `tk=-` where the page publishes **DFFVX**, and
+  every State Street Target Retirement row printed `er=-` where the page publishes
+  **0.09**. Both columns wrong, in the instrument used to find defects. Three
+  instances in one session (the `er` chain at 01:5xZ, `stockRow`, the draw), so the
+  fix is ONE instrument: **the draw now renders through `apppath.mjs`**, which
+  slices app.js's body from source and imports the canonical suppressors.
+  ***A transcription of a shipped expression rots as the expression grows; three
+  instruments rot three times.***
+- **QUEUED 2026-10-01 05:5xZ, SIZED, NOT SHIPPED — THE FILING SPLIT A WORD THE
+  REGISTRY JOINS: 1,706 rows / 914 plans / 1,462,375 participants /
+  $4,228,023,207 would newly name a fund EXACTLY.** Found by the 05:4xZ draw on
+  **Penn Engineering & Manufacturing (1,262 ppl, 26 rows @ 0.990)**, whose
+  immaculate menu's largest family — ten `JPMorgan Smart Retirement <year> Fund`
+  rows, **55.9% of the menu** — publishes no ticker and no fee, because the SEC
+  registers the series as `JPMorgan SmartRetirement 2035 Fund`, **one word**.
+  **Novant Health (51,913 ppl, 41 rows @ 0.980)** reads clean.
+  **IT IS THE EXACT MIRROR OF v529's ALL-CAPS ARM AND THAT ARM'S RECORDED LOSS IS
+  IN THIS POPULATION.** v529 added a registry witness to REFUSE splitting
+  `SMALLCAP`; this arm uses the SAME witness to JOIN `Small Cap World` →
+  `SmallCap World` → **RLLGX**. One witness, both directions. Outcome test inline:
+  the original must resolve to nothing and the join EXACTLY (never comparable).
+  Families: American Funds SmallCap World (RLLGX/RSLEX/RSLFX), Principal
+  SmallCap/LargeCap (PCSMX, PSMVX, PLGIX), JPMorgan SmartRetirement (SRJYX, JSMYX,
+  JSAYX, JTSYX, JFFYX, JAKYX, JNSYX, SMTYX), Columbia SmallCap, Hartford MidCap,
+  PIMCO CommoditiesPlus.
+  **ONE DEAD DISCRIMINATOR, recorded so it is not retried: "both halves are
+  registered words on their own" is NOT a usable guard.** It splits the class
+  1,526 / 180 and its *risky* half is dominated by CORRECT repairs — `Small` and
+  `Cap`, `Smart` and `Retirement` are each registered words somewhere, yet joining
+  them is right every time.
+  **AND THE 180-ROW SAFE HALF CLOSES AN ITEM THAT WAS STUCK FOR A STATED REASON.**
+  The 2026-09-30 06:3xZ OCR entry was re-queued because *"no syntactic rule
+  separates `… Index Ad min` (a split `Admiral`, must keep) from `… R6 ial` (must
+  strip)"*. **The registry witness is that rule, in the join direction:**
+  `Vanguard 500 Index Adm iral` → VFIAX, `JPM organ Large Cap Growth R6` → JLGMX,
+  `Van Guard Small Cap Index Adm` → VSMAX, `Mass Mutual` → MassMutual, `All
+  Spring` → AllSpring, `PIMCO Commodity RealReturn` → PCRIX — and it names the K6
+  class this record has flagged four times, **`Fidelity Contra Fund K6` → FLCNX**.
+  MERGE-SIDE (it needs the 29,406-row index), so it stores `stk` and needs a run.
+  Remaining: read the 865 distinct transformations, and the whole-store diff
+  through all four resolvers.
+- **PREVIOUSLY QUEUED (superseded by the bullet above; its 239 / 176 / 2,109,185
+  figures are the spelled-out-only count and the shipped ones are 295 / 224 /
+  2,270,590): a filing stating
   INSTITUTIONAL PLUS gets a cheaper class — 239 rows / 176 plans / 2,109,185 ppl /
   $26,156,539,626, and 0 rows get it right.** The arm does not exist rather than
   misfiring: `VINIX` on `… Institutional Plus Shares` 61 rows, `VBTLX` 29, `VSMAX`
