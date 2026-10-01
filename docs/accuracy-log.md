@@ -32971,3 +32971,62 @@ and is faithful in the filing.
   in the same commit as the code rather than waiting for a run, so a reader is
   served now; #528 exists to confirm the production merge reproduces it.
   parser-gate, smoke and fund-er-test (46/26/19/18/18) green.
+
+## 2026-10-01 (03:5xZ) — A lost space inside an ALL-CAPS filed name, and a ceiling fed by repeated damage
+- **Found by the 03:3xZ participant-weighted draw** (seed 20261001032, pool
+  59,822 published lineups / 89,744,230 participants) on **Texas Children's
+  (21,233 ppl, 29 rows @ 0.990)**, which publishes **`VANGUARDTARGET RETIREMENT
+  INCOME`** at 0.9% of its menu. The second draw, HNTB Holdings (7,744 ppl, 23
+  rows @ 1.000), is clean on names and its one suspicious row — `range from
+  4.25% to` — was asked of the shipped predicate rather than read by eye and
+  **`isLoanDescriptionRow` already returns true**, so those readers are told it
+  is a participant-loan row. *A row that looks like a defect may already be
+  handled; ask the guard before sizing it.*
+- **Wrong:** v519's weld repair cannot see this class **by construction**. Its
+  seam regex is `/\b[A-Za-z]{3,}[a-z][A-Z][a-z]{2,}[A-Za-z]*\b/`, which needs a
+  lowercase letter followed by an uppercase one INSIDE a word — and an all-caps
+  filed name never has one. The repair EVIDENCE transfers unchanged (does the
+  repaired WHOLE NAME stand alone elsewhere, floor 3, counts folded to lower
+  case exactly as `merge-4i` folds them); only the seam finder differs, and for
+  all caps it is **split an unattested token into two attested ones**.
+- **AND THE DRAWN ROW IS REFUSED BY THE CEILING, NOT THE FLOOR — which is the
+  transferable half.** Measured rather than assumed: the repaired whole name
+  `VANGUARD TARGET RETIREMENT INCOME` is attested **1,299 times**, so the floor
+  is satisfied comfortably. What refuses it is `cnt(t) > 2`, the guard that
+  protects a CamelCase house name from being split — and **`VANGUARDTARGET` is
+  itself attested EIGHT times.** *A ceiling that reads repetition as evidence of
+  correctness is fed by repeated damage*, which is the floor-of-one lesson
+  (2026-09-28, the issuer caption strip) arriving at a ceiling of two.
+  The fix for the caps arm is a **RATIO** and not an absolute ceiling: the
+  repaired whole name must be attested far more often than the damaged one
+  (`w > joined * 3`), which is a comparison between two whole names rather than
+  a count of one token.
+- **SIZED BOTH WAYS.** With the ceiling kept: **31 rows / 18 plans / 145,679 ppl
+  / $447,865,372**, 30 distinct, all read. With the ratio instead: **163 rows /
+  146 plans / 321,605 participants / $741,939,255**, 62 distinct, **all 62 read
+  and every one a real fund-name repair** — `AMERICAN FUNDS NEWWORLD R6` (67
+  rows), `DODGE & COX STOCKFUND X` (16), `JANUSHENDERSON TRITON N` (8), `MFS
+  NEWDISCOVERY VALUE FUND R6` (6), `FIDELITY BLUECHIP GROWTH`, `GOLDMANSACHS US
+  MORTGAGES R6`, `MSCIEAFE International Index`, and the drawn row itself.
+- **THE WHOLE-NAME FLOOR IS LOAD-BEARING AND ITS COST WAS MEASURED, NOT
+  ASSUMED.** Dropping it admits a further **279 rows / 226 plans / 2,895,174
+  ppl**, and that population **destroys real words and real names**: `VARIATION
+  MARGIN …` → **`VARI ATION`**, `AUTONATION, INC` → `AUTO NATION`, `THE
+  INTERPUBLIC GROUP` → `INTER PUBLIC`, **`NEWTOWER TRUST COMPANY` → `NEW TOWER`
+  (NewTower Trust Company is the firm's actual name)**, `CAREAGLE SMALL CAP
+  GROWTH` → `CAR EAGLE`, `FLEXPATH INDEX AGGRSSIVE RET M` → `AGGR SSIVE`. So the
+  2.9M figure is **not a class size** and must not be carried forward; it is the
+  measured cost of the guard that makes the arm safe.
+- **Not shipped this cycle.** It is merge-side (it needs the whole store, like
+  the issuer strip and the OCR tail strip), **#528 is in flight**, and the
+  outcome test through both resolvers — tickers and fees gained, lost and
+  flipped — has not been run. `SMALLCAP R6` → `SMALL CAP R6` (3 rows) is the one
+  transformation that is neutral rather than an improvement, and the ratio
+  variant admits it where the ceiling refused it; it names no fund either way.
+- **Two named live instances of already-queued OWNER-GATED items, from the same
+  draw, recorded so the queue carries a reader count and not only a total:**
+  Texas Children's publishes **`FIDELITY CONTRAFUND K6` → FCNTX at 0.45**, where
+  the K6 fund is FTKFX — the different-SERIES override, 21,233 participants in
+  this plan alone; and **`LINCOLN STABLE VALUE` → 0.35 with a BLANK type cell**,
+  which is the `gicRow`-reads-the-type item (4,782 rows / 7,839,651 ppl) in a
+  plan drawn at random.

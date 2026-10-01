@@ -982,6 +982,47 @@ from the cycle that would have cleared it.
   source the project lacks** — the ticker is in the filed text, so using it is
   reading the filing, not deriving. Remaining: the predicate, its twin, a tether
   with a per-condition negative control, and the whole-store diff.
+- **QUEUED, SIZED, READ, NOT SHIPPED 2026-10-01 03:5xZ — A LOST SPACE INSIDE AN
+  ALL-CAPS FILED NAME: 163 rows / 146 plans / 321,605 participants /
+  $741,939,255 across 62 distinct transformations, ALL 62 READ and every one a
+  real fund-name repair.** `AMERICAN FUNDS NEWWORLD R6` (67 rows), `DODGE & COX
+  STOCKFUND X` (16), `JANUSHENDERSON TRITON N` (8), `MFS NEWDISCOVERY VALUE FUND
+  R6` (6), `GOLDMANSACHS US MORTGAGES R6`, `MSCIEAFE International Index`.
+  Found by the 03:3xZ draw on **Texas Children's (21,233 ppl, 29 rows @ 0.990)**,
+  which publishes `VANGUARDTARGET RETIREMENT INCOME`.
+  **v519's weld repair cannot see it BY CONSTRUCTION** — its seam needs a
+  lowercase letter followed by an uppercase one inside a word, which an all-caps
+  name never has. The repair EVIDENCE transfers unchanged (does the repaired
+  WHOLE NAME stand alone, floor 3); only the seam finder differs: **split an
+  unattested token into two attested ones.**
+  **AND THE DRAWN ROW IS REFUSED BY THE CEILING, NOT THE FLOOR, WHICH IS THE
+  TRANSFERABLE HALF.** Its repaired whole name is attested **1,299 times**, so
+  the floor is satisfied; what refuses it is `cnt(t) > 2`, the guard protecting a
+  CamelCase house name — and **`VANGUARDTARGET` is itself attested EIGHT times.**
+  *A ceiling that reads repetition as evidence of correctness is fed by repeated
+  damage* — the floor-of-one lesson at a ceiling of two. The caps arm needs a
+  **RATIO** (repaired whole name ≫ damaged whole name) rather than an absolute
+  count of one token. With the ceiling kept the class is **31 rows / 145,679
+  ppl**; with the ratio, 163 / 321,605.
+  **THE WHOLE-NAME FLOOR IS LOAD-BEARING AND ITS COST IS MEASURED: dropping it
+  admits a further 279 rows / 2,895,174 ppl that DESTROY real words and real
+  names** — `VARIATION MARGIN …` → **`VARI ATION`**, `AUTONATION, INC` → `AUTO
+  NATION`, `THE INTERPUBLIC GROUP` → `INTER PUBLIC`, **`NEWTOWER TRUST COMPANY`
+  → `NEW TOWER`**, `CAREAGLE SMALL CAP GROWTH` → `CAR EAGLE`. **Do not carry
+  279 or 2,895,174 forward as a class size** — it is the guard's measured cost.
+  Remaining: the outcome test through both resolvers, the tether, and the
+  whole-store diff. MERGE-SIDE, so it waits on #528.
+  **AND THE SAME DRAW'S SUSPICIOUS ROW WAS ALREADY HANDLED:** HNTB Holdings
+  (7,744 ppl) publishes `range from 4.25% to`, and asking the shipped predicate
+  rather than reading by eye says `isLoanDescriptionRow` is **true** — those
+  readers are already told it is a participant-loan row. *Ask the guard before
+  sizing a defect.*
+  **TWO NAMED LIVE INSTANCES OF OWNER-GATED ITEMS, same draw:** Texas Children's
+  publishes **`FIDELITY CONTRAFUND K6` → FCNTX at 0.45** where the K6 fund is
+  FTKFX (the different-SERIES override, 21,233 ppl in this plan alone), and
+  **`LINCOLN STABLE VALUE` → 0.35 on a BLANK type cell** (the `gicRow`-reads-the-
+  type item, 4,782 rows / 7,839,651 ppl). `docs/accuracy-log.md` 2026-10-01
+  (03:5xZ).
 - **AND THE CLASS IT CAME OUT OF, MEASURED AND NOT SHIPPED: a filing stating
   INSTITUTIONAL PLUS gets a cheaper class — 239 rows / 176 plans / 2,109,185 ppl /
   $26,156,539,626, and 0 rows get it right.** The arm does not exist rather than
