@@ -1213,6 +1213,42 @@ from the cycle that would have cleared it.
   slices app.js's body from source and imports the canonical suppressors.
   ***A transcription of a shipped expression rots as the expression grows; three
   instruments rot three times.***
+- **QUEUED, SIZED, SPLIT, NOT SHIPPED 2026-10-01 11:0xZ — THE LOAN ANCHOR IS TOO
+  STRICT: 693 rows / 564 plans / 1,350,736 participants / $2,827,697,085 of loan
+  prose that NO shipped guard types**, against 955 rows the guards already
+  serve. Largest shape **`OUTSTANDING LOAN BALANCE`, 85 rows across spellings**,
+  with `Outstanding Plan Loans`, `Outstanding participants' loans`, `Loans to
+  Plan Participants`, `Loans Issued at`, `Loans with`. `LOAN_ROW` is anchored on
+  the name BEGINNING with the loan word — the anchor that keeps `Bank Loan Fund`
+  safe — so a row beginning with `Outstanding` is outside it BY CONSTRUCTION;
+  **the sixth-plus instance of a missing entry in an anchored list hiding a
+  class**, the missing entry here being a leading adjective. Second, smaller arm:
+  `LOAN_DESC_RANGE` reads `rates? … (rang|between|vary|from)` and **omits `of`**,
+  so `rates of 4.25% to` (15 rows) states a range the predicate cannot see.
+  **THE MUST-KEEP SET IS WHY IT IS QUEUED AND NOT SHIPPED:** a real holding may
+  quote a crediting rate (`Stable Asset Fund II (interest rate 3.20%)`,
+  `Guaranteed Income Fund (1.90% interest rate)`, Griswold's pinned Principal
+  GIC), and **`LOANS SECURED BY MTGES-RESID.` is J&J's real MORTGAGE holding**,
+  already pinned from the 2026-09-28 loan work.
+- **AND THE ROUTE THERE IS A DEAD DISCRIMINATOR WORTH NOT RETRYING: "a name that
+  ends in a function word is a wrapped sentence" IS NOT A CLASS.** The first list
+  read **37,687 rows / 20,243,075 ppl** and is almost all REAL FUNDS, because
+  `a`, `an`, `as`, `is` are SHARE-CLASS DESIGNATIONS before they are English
+  words — `Columbia Small Cap Index A`, `Western Asset Core Bond IS`, `Vngrd 500
+  Index Fd As`. Narrowed to prepositions and conjunctions it reads **1,489 /
+  2,526,764** and is **at least FIVE mechanisms, two of which must be LEFT
+  ALONE**: a TRUNCATED REAL NAME that stripping makes worse (`PIMCO GNMA and`,
+  `American Funds Capital World Growth and`), and a TRUNCATED SHARE CLASS —
+  **`in` is the largest tail word at 541 rows and is dominated by `FIDELITY
+  FREEDOM INDEX 2060 IN`, a cut `Institutional`.** **Do not carry 37,687,
+  20,243,075, 1,489 or 2,526,764 forward.**
+  **AND MY SKIP FILTER IS WHY THE LOAN HALF LOOKED UNSERVED:** it excluded rows
+  whose shown type matched `/loan/i` and the label those rows carry is **`Not a
+  menu choice`**, so the pass reported `already typed: 0` and I read it as
+  evidence. Asking the predicates BY NAME, `isLoanDescriptionRow` already serves
+  `rates ranging from 4.25% to` and its siblings. ***Ask the guard — and when a
+  guard's answer is a LABEL, match the label it actually prints.***
+  `docs/accuracy-log.md` 2026-10-01 (11:0xZ).
 - **NOTHING IS IN FLIGHT. #533 RAN `success` AND IS MIRRORED — 2026-10-01 10:1xZ
   (`0b3e9b1a → b7d4e0ef`), UNFORCED ON BOTH CHECKS, data gate +0 / −0 BY ACK AND
   BY PLAN. EVERY PRE-REGISTERED FIGURE PASSED, AND THE PRODUCTION MERGE

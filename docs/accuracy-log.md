@@ -33784,3 +33784,66 @@ made it checkable. ***Register why a figure cannot move, not how far it may.***
 
 `site-test` #128 reads `conclusion: success` on `0b3e9b1a`, the exact mirrored
 commit, so CI green covers every executable line shipped.
+
+## 2026-10-01 (11:0xZ) — "ends in a function word" is not a class, and the loan anchor is too strict
+
+The 09:4xZ draw found `All investments held in` typed `Mutual fund` — a wrapped
+sentence's tail published as a holding. The obvious generalisation is
+grammatical rather than a list of funds: **a name that ends in a function word
+cannot be a complete fund name.** It is not a class, and the measurement said so
+twice.
+
+**FIRST LIST: 37,687 rows / 11,128 plans / 20,243,075 ppl — and almost all of it
+is real funds.** `a`, `an`, `as`, `is` are SHARE-CLASS DESIGNATIONS before they
+are English words: `Columbia Small Cap Index A` (101), `Western Asset Core Bond
+IS` (76 — ClearBridge's Class IS), `Vngrd 500 Index Fd As` (56 — Admiral
+Shares). ***Do not carry 37,687 or 20,243,075 forward*** — it is the measured
+cost of four careless words, and the implausible size was the tell.
+
+**NARROWED to prepositions and conjunctions: 1,489 rows / 1,152 plans /
+2,526,764 ppl — and that is AT LEAST FIVE MECHANISMS, two of which must be LEFT
+ALONE.** *Do not carry 1,489 or 2,526,764 forward either.*
+- **(A) a TRUNCATED REAL NAME, which stripping makes WORSE** — `PIMCO GNMA and`
+  (13), `American Funds Capital World Growth and` (7), `Janus Henderson Global
+  Technology and`, `Vanguard Target Retirement Income and`. The repair is to
+  RESTORE the remainder, never to cut. Same family as the recorded `of`
+  truncation (`American Funds Growth Fund of`).
+- **(B) a TRUNCATED SHARE CLASS, the first list's defect one level in** — `in`
+  is the largest tail word at 541 rows and is dominated by `FIDELITY FREEDOM
+  INDEX 2060 IN`, `Harbor Capital Appreciation In`, `Vanguard Treasury Money Mkt
+  In`: a cut `Institutional` or `Index`. `AT` and `BY` the same (`500 INDEX
+  ADMIRAL SHARES - AT`).
+- (C) loan prose, (D) audit-note fragments (`2024 FS effect -
+  (overstated)/understated by`), (E) genuine generic captions (`Mutual Funds
+  and`, `Cash equivalents including`).
+
+**AND MY SKIP FILTER WAS THE REASON (C) LOOKED UNSERVED.** It excluded rows
+whose shown type matched `/loan/i`, and the label those rows carry is **`Not a
+menu choice`** — which contains no such word. So the pass reported `already
+typed: 0` and I read it as evidence. Asking the shipped predicates BY NAME
+instead: `isLoanDescriptionRow` already serves `rates ranging from 4.25% to`,
+`from 4.25% to`, `Rates from 4.25% to`, `rates between 4.75% and`. ***Ask the
+guard, and when a guard's answer is a LABEL, match the label it actually
+prints.***
+
+**WHAT SURVIVES IS REAL AND IS THE LOAN ANCHOR: 693 rows / 564 plans /
+1,350,736 participants / $2,827,697,085 of loan prose that NO shipped guard
+types**, against 955 rows the guards already serve. The largest single shape is
+**`OUTSTANDING LOAN BALANCE` (85 rows across spellings)**, with `Outstanding
+Plan Loans`, `Outstanding participants' loans`, `Outstanding Loans`, `Loans to
+Plan Participants`, `Loans Issued at`, `Loans with`. `LOAN_ROW` is anchored on
+the name BEGINNING with the loan word — the anchor that keeps `Bank Loan Fund`
+safe — so a row that begins with `Outstanding` is outside it BY CONSTRUCTION.
+**The sixth-plus recorded instance of a missing entry in an anchored list
+hiding a class**, and here the missing entry is a leading adjective.
+A second, smaller arm: `LOAN_DESC_RANGE`'s alternation reads
+`rates? … (rang|between|vary|from)` and omits **`of`**, so `rates of 4.25% to`
+(15 rows across spellings) states a range the predicate cannot see.
+
+**THE MUST-KEEP SET IS SUBSTANTIAL AND IS WHY THIS IS QUEUED RATHER THAN
+SHIPPED.** A real holding may quote a crediting rate — `Stable Asset Fund II
+(interest rate 3.20%)`, `Guaranteed Income Fund (1.90% interest rate)`, `Fixed
+annuity at 1.41% interest rate`, Griswold's pinned Principal GIC — and **`LOANS
+SECURED BY MTGES-RESID.` is Johnson & Johnson's real MORTGAGE holding**, already
+pinned on this record as a must-keep from the 2026-09-28 loan work. Any arm
+here ships with those pinned on the refusing side and every flagged row read.
