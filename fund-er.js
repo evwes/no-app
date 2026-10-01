@@ -668,6 +668,53 @@ function fundER(name) {
   return null;
 }
 
+/* A FILING STATING INSTITUTIONAL PLUS GOT A DIFFERENT AND USUALLY RETAIL CLASS.
+ * The bare `vanguard institutional index` / `… total stock market index` arms
+ * below assert a class the filed name never states, and where the name DOES
+ * state one they were asserting a different one: measured through app.js's own
+ * lookupTicker on the pv-196 store, 394 rows / 263 plans / 3,303,464
+ * participants / $41,960,090,164 name an Institutional Plus share class, 296 of
+ * them are answered with a symbol, and only the 4 carrying the filing's own
+ * printed symbol (#528's `ftk`) get it right. VINIX is the INSTITUTIONAL class;
+ * the other six answers — VSMAX, VIMAX, VEXAX, VBTLX, VTIAX, VTSAX — are
+ * ADMIRAL, a retail class, so the number beside them errs in the flattering
+ * direction.
+ *
+ * Every corrected symbol is READ OUT OF sec-funds.json, the SEC's own series and
+ * class registry, not recalled: VANGUARD INSTITUTIONAL INDEX FUNDS :: Vanguard
+ * Institutional Index Fund registers VINIX "Institutional Shares" and VIIIX
+ * "Institutional Plus Shares"; VANGUARD INDEX FUNDS :: Small-Cap VSCPX, Mid-Cap
+ * VMCPX, Extended Market VEMPX, Total Stock Market VSMPX; VANGUARD BOND INDEX
+ * FUNDS :: Total Bond Market VBMPX; VANGUARD STAR FUNDS :: Total International
+ * Stock VTPSX. A fee is SOURCED, never derived, and so is a share class.
+ *
+ * THE MATCH IS ORDER-FREE AND THAT WAS MEASURED RATHER THAN ASSUMED. The filer
+ * writes the class first on 5 rows (`Institutional Plus Shares Vanguard Mid Cap
+ * Index`), and the obvious objection — that such a lead is the PREVIOUS row's
+ * tail — is refuted by the stored filed order on 0 of 5. The risk order-free
+ * matching carries is a row naming TWO of the seven funds, where whichever entry
+ * sits first in the table would win: across the whole population that is 0 rows.
+ *
+ * THE REGISTRY REFUSES THE TWO WELDS BY ITSELF, which is why no vocabulary of
+ * weld shapes is needed. `Instl Plus Shares Vanguard PRIMECAP Fund` and
+ * `Institutional Plus Shares Fidelity Contrafund Class K` carry a leading marker
+ * for a series that registers NO Institutional Plus class — PRIMECAP has only
+ * Investor and Admiral, Contrafund only its base class and Class K — so there is
+ * no entry for them to reach and both keep the answer they have. The Contrafund
+ * row is the separate owner-gated wrong-class item, not this one.
+ *
+ * THE CONTRADICTING-CLASS LOOKAHEAD CANNOT FIRE TODAY AND IS LABELLED AS SUCH.
+ * Exactly one row states two different classes — `Inst'l Plus Vanguard Intl.
+ * Growth Fund Admiral Shr`, whose sibling row above it is `Instl Class Vanguard
+ * Equity Inc. Fund Admiral Shr`, the same filer's house style — and it already
+ * resolves to null because no entry names Intl. Growth. The guard stays because
+ * the shape is real and one wrong class is worse than one refused repair; it is
+ * recorded here as unable to fire rather than carried as if it were load-bearing.
+ */
+const VG_IPLUS = String.raw`(?:institutional|inst'?l?)\s*(?:plus|\+)`;
+const vgIPlus = (fund) => new RegExp(
+  String.raw`^(?!.*\b(?:admiral|investor)\b)(?=.*\bvanguard\b)(?=.*${fund})(?=.*${VG_IPLUS})`, "i");
+
 /* ---- ticker identification --------------------------------------------------
  * A ticker is attached ONLY when the filed name identifies a specific
  * registered fund (mutual fund/ETF). Institutional vehicles — collective
@@ -696,6 +743,16 @@ const FUND_TICKER = [
   [/fidelity otc/i, "FOCPX"],
   // Vanguard — only class-explicit or single-purpose names
   [/vanguard 500 index.{0,12}(adm|admiral)/i, "VFIAX"],
+  /* Institutional Plus FIRST, on the same class-explicit-above-bare idiom the
+   * VFIAX line one above already uses. See the registry citations at the head of
+   * this block; the bare arms beneath each of these stay exactly as they were. */
+  [vgIPlus("institutional index"), "VIIIX"],
+  [vgIPlus(String.raw`total stock market index`), "VSMPX"],
+  [vgIPlus(String.raw`total(?: international| intl\.?) stock index`), "VTPSX"],
+  [vgIPlus(String.raw`total bond market index`), "VBMPX"],
+  [vgIPlus(String.raw`extended market i(?:nde|d)x`), "VEMPX"],
+  [vgIPlus(String.raw`small[- ]?cap index`), "VSCPX"],
+  [vgIPlus(String.raw`mid[- ]?cap index`), "VMCPX"],
   [/vanguard institutional index/i, "VINIX"],
   [/vanguard total stock market index/i, "VTSAX"],
   [/vanguard total international stock (index|market)/i, "VTIAX"],

@@ -98,6 +98,40 @@ const MUST = [
   ["Vang Intl Growth Adm", "VWILX"],
   ["Vang Treasury Mm", "VUSXX"],
   ["Vang Vmmr-Fed Mmkt", "VMFXX"],                  // recordkeeper-feed prefix stripped
+  /* A FILING STATING INSTITUTIONAL PLUS GETS THE INSTITUTIONAL PLUS CLASS.
+   * Added because NOT ONE of the cases above reaches the new arm — every
+   * existing Vanguard index fixture states Admiral, Investor or no class at
+   * all, so the table could not have seen this. Each wanted symbol is the one
+   * sec-funds.json registers as that series' "Institutional Plus Shares".
+   * The seven series, one case each, then the spellings that exercise a
+   * condition rather than repeat one. */
+  ["Vanguard Institutional Index Fund Institutional Plus Shares", "VIIIX"],
+  ["Vanguard Total Stock Market Index Fund Institutional Plus Shares", "VSMPX"],
+  ["Vanguard Total International Stock Index Fund Institutional Plus Shares", "VTPSX"],
+  ["Vanguard Total Bond Market Index Fund Institutional Plus Shares", "VBMPX"],
+  ["Vanguard Extended Market Index Fund Institutional Plus Shares", "VEMPX"],
+  ["Vanguard Small-Cap Index Fund Institutional Plus Shares", "VSCPX"],
+  ["Vanguard Mid-Cap Index Fund Institutional Plus Shares", "VMCPX"],
+  ["Vanguard Inst Idx Inst Plus", "VIIIX"],          // ABBREV expands both INSTs
+  ["VANGUARD INSTL IDX INSTL PLUS", "VIIIX"],
+  ["Vanguard Total Bond Market Index Fund: Inst'l Plus Shr", "VBMPX"],  // apostrophe
+  ["Vanguard Extended Market Index InstlPlus", "VEMPX"],   // glued, ABBREV cannot fire
+  ["VANGUARD MID CAP INDEX-INST+", "VMCPX"],        // "+" is the Plus class
+  ["Institutional Plus Shares Vanguard Mid Cap Index", "VMCPX"],  // marker LEADS
+  ["Vanguard Mid-Cap Ind Inst Plus", "VMCPX"],       // IND -> Index
+  /* MUST NOT BE REPAIRED, and each of these can actually fail rather than being
+   * refused by an earlier condition — the point of pinning them.
+   * (1) two different classes stated: the contradicting-class lookahead is the
+   *     ONLY thing refusing, so without it this resolves VSCPX; with it the
+   *     bare arm answers as it did before the change. Pinned at the OLD answer
+   *     deliberately: declining to choose between two stated classes is not the
+   *     same as asserting the Admiral one is right, and whether the bare arm
+   *     should answer at all is a separate, larger question.
+   * (2) a series that registers NO Institutional Plus class — PRIMECAP has only
+   *     Investor and Admiral — so a leading marker there is a weld and the
+   *     registry refuses it with no vocabulary of weld shapes. */
+  ["Vanguard Small-Cap Index Fund Admiral Shares Institutional Plus", "VSMAX"],
+  ["Instl Plus Shares Vanguard PRIMECAP Fund", "VPMAX"],
 ];
 
 /* MUST NOT RESOLVE. A blank is the honest answer for all of these. */
