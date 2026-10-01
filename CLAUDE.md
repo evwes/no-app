@@ -727,6 +727,41 @@ from the cycle that would have cleared it.
   trust-aware standalone script — the standalone's single trust is the one lineup
   v196 withdrew. **`matchQuote` 5,397 of which only
   1,785 are SHOWN to readers** — the condition/outcome pair shipped 2026-09-27.
+- **THE 16:1xZ DRAW, AND ITS SIZING PREDICATE DIED ON A LESSON THIS RECORD
+  ALREADY CARRIES VERBATIM.** Seed 20261001164; **Textron (36,001 ppl, 33 rows
+  @ 0.975)** and **Unum Group (12,797 ppl, 32 rows @ 0.989)**, both largely
+  clean.
+  **THE REAL FIND IS ONE ROW: Textron publishes `Wells Fargo/BlackRock` at
+  $8,503,000 typed `Cash / short-term` with 0.45 beside it** — two houses
+  separated by a slash, which is no fund at all, carrying a fabricated number.
+  Its issuer cell is a TRUNCATED section caption (`Security-backed (Synthetic)
+  Investment Contracts (in Managed`). The bare-house class is queued
+  PARSER-side because replacing the name is a claim; **withdrawing the FEE is
+  DISPLAY-side and is the shape of five fixes already shipped this week**, and
+  `isNamelessFundRow` cannot reach it because that predicate asks whether the
+  name is a bare VEHICLE TYPE and a bare HOUSE is not one.
+  **BUT IT IS NOT SIZED, AND THE ATTEMPT MUST NOT BE RETRIED THE SAME WAY.** My
+  screen built the house vocabulary from strings that stand alone in the ISSUER
+  column at least fifty times, and it returned **63,602 rows / 9,319 plans /
+  14,555,895 ppl** whose top entries are `Vanguard Target Retirement 2040
+  Fund`, `Vanguard Institutional Index` and `Vanguard Wellington` — **real
+  funds with correct tickers and correct fees.** The cause is written in this
+  file already: *"The identity column legitimately carries fund names since
+  v126, so frequency cannot tell a firm from a product."* An issuer cell
+  reading `Vanguard Target Retirement 2030` put `target` and `retirement` into
+  the house set. **DO NOT CARRY 63,602 OR 14,555,895 FORWARD** — and the
+  implausible size was the tell, which is the only reason no number was
+  published from it.
+  **AND A NAMED LIVE INSTANCE OF AN OWNER-GATED ITEM: Unum publishes `Fidelity
+  Puritan K6 Fund` → FPURX at 0.47**, where the SEC registers the K6 fund as a
+  separate SERIES — the different-SERIES override (3,491 rows / 5,826,968 ppl,
+  `Puritan 21` of them), still the owner's call.
+  **AND A COVERAGE GAP IN THE SAME MENU: Unum's three `Spartan … Index Pool
+  Class D` rows are 32.1% of its menu with 0 tickers and 0 fees** — Fidelity's
+  former index brand as a commingled pool, the matcher family. Textron's four
+  insurance-company rows (`Pacific Life`, `Voya`, `Metropolitan Tower`,
+  `Prudential`) at ~$1.7M each are the recorded wrap-contract-issuer family and
+  are correct as filed.
 - **SHIPPED AND MIRRORED 2026-10-01 16:2xZ (`cb01bacd → adc213f4`), UNFORCED ON
   BOTH CHECKS, data gate +0 / −0; #537 AND `site-test` #134 BOTH FIRED ON THE
   EXACT COMMIT — A REPAIR THAT MAKES A JUNK ROW LEGIBLE HANDED FIVE WHOLE MENUS
