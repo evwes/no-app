@@ -34002,3 +34002,88 @@ Transportation** (711 ppl, 30 rows @ 0.928, OCR'd).
   `MFS Value R6` resolves to **MEIKX** through the stored SEC field, which is the
   R6 class the filing states. A draw taken two hours after a ship is a cheap
   independent check that it reached a reader.
+
+## 2026-10-01 (14:0xZ) — A control character where a space belongs: 128 rows / 32 plans / 139,537 participants
+- **Wrong:** a broken PDF font shifts its whole text run by +29, so the SPACE
+  (0x20) arrives as 0x03 and the browser renders **nothing** for it. Fiserv
+  (39,782 ppl), Philips (29,491), Arthur J. Gallagher (29,477) and Brown
+  University Health (19,490) were shown `VanguardTargetRet2065` where the filing
+  says `Vanguard Target Ret 2065`. $169,299,036.
+- **Change:** `cleanFiledName` replaces every C0 character and DEL with a space
+  and collapses the run, FIRST, because every arm below it reasons about word
+  boundaries. Canonical in `lib-disclose`, twinned in `app.js`, and the report
+  path is covered because `build-seo-pages` imports the cleaner directly.
+  **+9 tickers / −0 / 0 flipped, +21 fees / −0 / 4 changed, 1 asterisk gained**
+  to a labelled comparable. All 116 distinct transformations read.
+- **THE OBVIOUS READING IS WRONG AND THE PREDICATE'S OWN REFUSALS SAID SO.** A
+  +29 shift invites shifting the string back; of 114 rows carrying the shifted
+  space, **100 decode to garbage**, because their LETTERS were never shifted —
+  `Fidelity<0x03>Investments<0x03>Money<0x03>Market` is plain text and decodes
+  to `cidelity fnvestments joney j~rket`. **THE SHIFT IS PER-RUN AND NOT
+  PER-STRING:** Edelman Financial Engines publishes `Vanguard Windsor<0x03>,,
+  <0x03>$GPLUDO<0x03>)XQG` — plain `Vanguard Windsor` followed by a ciphered
+  `,, Admiral Fund` — so decoding the whole string destroys the half that was
+  already right. Restoring the ciphered WORDS needs a whole-store witness and is
+  queued, not shipped.
+- **THE ONE RISK IS A CONTROL CHARACTER INSIDE A WORD**, where a space SPLITS
+  what v519's arm would WELD, **and it does not happen here**: of 217 control
+  characters with a letter on BOTH sides, the joined form is a published word
+  while the left fragment is not on **0**. Whole population, not a sample, and
+  the test fires on a crafted `Vangua<0x03>rd`, so the zero is the data's and
+  not the query's.
+- **The class is every C0 character and DEL, not the +29 image of a space** —
+  `Vanguard Target Retirement Fund<0x02>2050` is the same defect one code point
+  along, so the rule is the character class and not the mechanism's story.
+- **COST NAMED, both in the composition with `TYPE_SUFFIX`:**
+  `Royce<0x03>Pennsylvania<0x03>Mutual<0x03>Fund` becomes `Royce Pennsylvania`,
+  losing a `Mutual Fund` that is genuinely part of the fund's name (0 ticker, 0
+  fee); and Electrolux's Fidelity government money-market row gains the
+  **generic 0.2** where its own name states the house — a named live instance of
+  the queued fee-pre-emption item, fed by one row and not caused here.
+- **Prevention:** 7 new `nameCases` and 8 new pinned expectations, added because
+  **not one of the 84 existing cases carries a control character** — the twin
+  would have agreed whether or not it carried this arm, the decorative-control
+  failure this record has now paid for five times. The module negative control
+  fails BY NAME on exactly the 8 and holds the other 91 of 99; drifting the
+  app.js twin fails the smoke tether BY NAME on exactly 7 of 103. The
+  composition cases are pinned too, so a later change to either arm has to look
+  at both.
+
+## 2026-10-01 (14:0xZ) — QUEUED, SIZED, MEASURED, NOT SHIPPED: a ciphered run inside a holding name
+- **What:** the same broken font, the other half. 16 rows carry a RUN of
+  +29-shifted letters — `1XYHHQ 6PDOO &DS %OHQG ,QGH[ )XQG &ODVV 5` is `Nuveen
+  Small Cap Blend Index Fund Class R`, `3XWQDP /DUJH &DS 9DOXH )XQG` is `Putnam
+  Large Cap Value Fund`, and Edelman's (2,315 ppl) is `Vanguard Windsor II
+  Admiral Fund`, which **publishes an expense ratio of 0.3 where Windsor II
+  Admiral's real figure is 0.26** — the legible prefix `Vanguard Windsor` is
+  what `fundER` matched, and the share class, on which the whole fee depends,
+  is in the unreadable part.
+- **A TOKEN'S SHAPE CANNOT DECIDE IT, which is why this needs the store.** +29
+  maps a lowercase letter into `D`-`]`, so a ciphered word and an ordinary
+  ALL-CAPS word are the same shape: a per-token rule keyed on shape alone turned
+  Antonini Freight Express's own `FREIGHT EXPRESS` into `cobfdeq bumobpp`. The
+  discriminator is the issuer strip's, two-sided — the token as filed must be
+  attested NOWHERE and its decode attested as an ordinary published word.
+  `FREIGHT` is attested and kept; `$GPLUDO` is not and `Admiral` is.
+- **A DRAFT WAS WRITTEN IN `merge-4i` AND IS NOT SHIPPED, FOR TWO REASONS THE
+  MEASUREMENT FOUND.** (1) It tokenised on `\s+`, and **`\u0003` is not `\s` in
+  JavaScript**, so against the stored name — which still carries its control
+  characters — the arm would have fired on **0 rows** while every gate passed.
+  *An arm that cannot fire is worse than an absent one, because its name implies
+  coverage.* (2) The floor of three characters leaves a ONE-CHARACTER ciphered
+  token as filed, so `&ODVV<0x03>5` would publish `Class 5` where the filing
+  says **Class R** — a WRONG SHARE CLASS asserted, in the same cycle that found
+  a wrong share class costing a fee.
+- **THE FIX FOR (2) IS THE MECHANISM TALKING AND IT IS WHAT THE NEXT CYCLE
+  SHOULD BUILD: the shift is per RUN, and `0x03` IS the ciphered space, so a
+  token PRECEDED by a control character is in the same ciphered run as what
+  follows it.** A plain space would be `0x20`. So the run is the unit: one
+  token in it passing the two-sided witness licenses every token in that run,
+  including the single characters, and Edelman's `,,` decodes to `II` while
+  `Vanguard Windsor` — preceded by a plain space — is left alone.
+- **AND THE ORDER MATTERS BETWEEN THE TWO ARMS:** the display arm above deletes
+  ciphered DIGITS along with the other control characters (`0x13`-`0x1c` are the
+  +29 images of `0`-`9`), so the decode must run on the STORED name in the merge
+  and never after the display arm. It does, and that is why they are separable
+  rather than merely separate. The draft is kept at
+  `scratchpad/cipher-arm.patch`.

@@ -441,6 +441,23 @@ try {
     "Fund Non-Lending (Tier III Northern Trust S&P 500 Index Fund Non-Lending",
     "Security-backed (",
     "Gia (Including Frozen Reserve",
+    /* A CONTROL CHARACTER WHERE A SPACE BELONGS, 2026-10-01. Added because
+     * NOT ONE of the 84 cases above carries a control character — checked, so
+     * the twin would have agreed whether or not it carried this arm, which is
+     * the decorative-control failure this record has now paid for five times.
+     * All seven are stored names. The first three are the live shape at 0x03;
+     * the fourth is the same defect at 0x02, which is why the rule is the
+     * CHARACTER CLASS and not the +29 story; the fifth has the character at
+     * BOTH ends, so the collapse and the trim are both exercised; and the
+     * last two are the COMPOSITION, where the restored space hands a trailing
+     * vehicle caption to `TYPE_SUFFIX`, which could not see it before. */
+    "Vanguard\u0003Target\u0003Ret\u00032065",
+    "Fidelity\u0003Investments\u0003Money\u0003Market",
+    "T.\u0003Rowe Price Sml Cap Value Fund\u0003",
+    "Vanguard Target Retirement Fund\u00022050",
+    "\u0003Money\u0003Market \u0003\u0003\u0003\u0003\u0003",
+    "Putnam Large Cap Value IA Collective Trust\u0003",
+    "Vanguard Target Retirement Fund\u00022035 Mutual funds",
   ];
   const nameGot = await page.evaluate((cs) => {
     if (typeof window.__wampoCleanFiledName !== "function") return null;
@@ -1547,7 +1564,28 @@ try {
     ["PSA (investing in American Funds 2065 - TD", "PSA (investing in American Funds 2065 - TD"],
     ["Fund Non-Lending (Tier III Northern Trust S&P 500 Index Fund Non-Lending", "Fund Non-Lending (Tier III Northern Trust S&P 500 Index Fund Non-Lending"],
     ["Security-backed (", "Security-backed ("],
-    ["Gia (Including Frozen Reserve", "Gia (Including Frozen Reserve"]]) {
+    ["Gia (Including Frozen Reserve", "Gia (Including Frozen Reserve"],
+    /* A CONTROL CHARACTER WHERE A SPACE BELONGS, 2026-10-01. The browser
+     * renders nothing for one, so the reader sees `VanguardTargetRet2065`.
+     * The arm is the character CLASS and makes no claim about what produced
+     * it: 0x03 is the +29 image of a space and 0x02 is a different shift of
+     * the same defect, and both are repaired the same way. The last two
+     * expectations are the COMPOSITION rather than this arm alone — once the
+     * trailing control character is a space, `TYPE_SUFFIX` sees a vehicle
+     * caption it could not see before, and that is pinned so a later change
+     * to either arm has to look at both. The MEASURED cost is in the same
+     * family and is named here: `Royce<0x03>Pennsylvania<0x03>Mutual<0x03>Fund`
+     * loses a `Mutual Fund` that is genuinely part of the fund's name, which
+     * is `TYPE_SUFFIX`'s standing behaviour reaching a newly legible name and
+     * not a new rule — it costs no ticker and no fee. */
+    ["Vanguard\u0003Target\u0003Ret\u00032065", "Vanguard Target Ret 2065"],
+    ["Fidelity\u0003Investments\u0003Money\u0003Market", "Fidelity Investments Money Market"],
+    ["T.\u0003Rowe Price Sml Cap Value Fund\u0003", "T. Rowe Price Sml Cap Value Fund"],
+    ["Vanguard Target Retirement Fund\u00022050", "Vanguard Target Retirement Fund 2050"],
+    ["\u0003Money\u0003Market \u0003\u0003\u0003\u0003\u0003", "Money Market"],
+    ["Putnam Large Cap Value IA Collective Trust\u0003", "Putnam Large Cap Value IA"],
+    ["Vanguard Target Retirement Fund\u00022035 Mutual funds", "Vanguard Target Retirement Fund 2035"],
+    ["Royce\u0003Pennsylvania\u0003Mutual\u0003Fund", "Royce Pennsylvania"]]) {
     if (cleanFiledName(n) !== want) fail(`the filed-name cleaner now damages a control: ${JSON.stringify(n)} -> ${JSON.stringify(cleanFiledName(n))}`);
   }
 

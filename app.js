@@ -612,6 +612,14 @@
   }
   function cleanFiledName(name) {
     let s = String(name).trim();
+    /* A CONTROL CHARACTER WHERE A SPACE BELONGS: a broken font shifts its run
+     * by +29, so the space (0x20) arrives as 0x03 and the browser renders
+     * nothing for it — the reader sees `VanguardTargetRet2065`. It is NOT a
+     * decode: 100 of 114 such rows are ordinary legible names whose spaces
+     * alone were shifted. Runs first, because every arm below reasons about
+     * word boundaries. scripts/lib-disclose.mjs holds the measurement and the
+     * whole-population check that no control character sits inside a word. */
+    s = s.replace(/[\u0000-\u001f\u007f]+/g, " ").replace(/\s{2,}/g, " ").trim();
     s = s.replace(/^[—–-]+\s*/, "");
     // OCR noise glued to the END: stray quote / trademark glyphs ("Trust II
     // CIT ”", "R6 ™", "…Fund®" — 674 plans / 1.08M ppl / 4,454 rows on the

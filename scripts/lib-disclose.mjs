@@ -457,6 +457,45 @@ export function despaceKerned(name) {
 }
 export function cleanFiledName(name) {
   let s = String(name).trim();
+  /* A CONTROL CHARACTER WHERE A SPACE BELONGS — 2026-10-01 (14:0xZ).
+   *
+   * A broken PDF font shifts its whole text run by +29, so the SPACE (0x20)
+   * arrives as 0x03. The browser renders NOTHING for a control character, so
+   * the reader sees `VanguardTargetRet2065` where the filing says `Vanguard
+   * Target Ret 2065` — 128 rows / 32 plans / 139,537 participants, Fiserv
+   * (39,782), Philips (29,491), Arthur J. Gallagher (29,477), Lifespan /
+   * Brown University Health (19,490).
+   *
+   * THIS IS NOT A DECODE AND MAKES NO CLAIM, and my first predicate's own
+   * refusals are what said so. The LETTERS in these rows were usually never
+   * shifted: of 114 rows carrying the shifted space, 100 are ordinary legible
+   * names (`Fidelity<0x03>Investments<0x03>Money<0x03>Market`) whose spaces
+   * alone came through as 0x03, and decoding the whole string gives
+   * `cidelity fnvestments joney j~rket`. So the repair is the one the SHAPE
+   * licenses on its own — a control character is not part of a name — and
+   * restoring the ciphered WORDS is a separate claim needing a whole-store
+   * witness.
+   *
+   * THE ONE THING THAT COULD GO WRONG IS A CONTROL CHARACTER INSIDE A WORD,
+   * where a space SPLITS what should be WELDED (v519's shape), AND IT DOES
+   * NOT HAPPEN HERE — asked of the whole population rather than by eye: of
+   * 217 control characters with a letter on BOTH sides, the joined form is a
+   * published word while the left fragment is not on 0. The test fires on a
+   * crafted `Vangua<0x03>rd`, so the zero is the data's and not the query's.
+   *
+   * The class is every C0 character and DEL, not the +29 image of a space,
+   * because the shift varies (`Vanguard Target Retirement Fund<0x02>2050`
+   * is the same defect one code point along) and because a control character
+   * cannot be part of a name whatever produced it. On this store that reaches
+   * 0x03 (539), 0x11 (519, the ciphered `.` of a dot leader), 0x02, the
+   * ciphered digits 0x13-0x1c, and nothing else; tab, newline and carriage
+   * return occur 0 times and are folded in for the same reason.
+   *
+   * It runs FIRST, because every arm below reasons about word boundaries and
+   * a control character hides one. The composition is where it pays: a
+   * trailing `Collective Trust<0x03>` becomes a suffix `TYPE_SUFFIX` already
+   * knows, and `… Fund<0x02>2050 Mutual funds` loses its vehicle caption. */
+  s = s.replace(/[\u0000-\u001f\u007f]+/g, " ").replace(/\s{2,}/g, " ").trim();
   s = s.replace(/^[—–-]+\s*/, "");
   // OCR noise glued to the END: stray quote / trademark glyphs ("Trust II
   // CIT ”", "R6 ™", "…Fund®" — 674 plans / 1.08M ppl / 4,454 rows on the
