@@ -1213,9 +1213,66 @@ from the cycle that would have cleared it.
   slices app.js's body from source and imports the canonical suppressors.
   ***A transcription of a shipped expression rots as the expression grows; three
   instruments rot three times.***
-- **QUEUED, SIZED, SPLIT, NOT SHIPPED 2026-10-01 11:0xZ — THE LOAN ANCHOR IS TOO
+- **SHIPPED AND MIRRORED 2026-10-01 11:4xZ (`3fac688a → bc12604e`), UNFORCED ON
+  BOTH CHECKS, data gate +0 / −0 BY ACK AND BY PLAN — THE LOAN ANCHOR WAS TOO
+  STRICT: 1,488 rows / 1,465 plans / 1,168,452 participants / $1,769,996,593**
+  stop being shown a participant-loan line as a menu holding. **0 tickers / 0
+  fees / 0 asterisks move and 0 typings are LOST** — an honesty fix, every arm
+  additive by construction. Three causes, each outside an existing rule BY
+  CONSTRUCTION rather than by oversight.
+  **(1) AN APOSTROPHE — 1,234 rows / 1,234 plans / 674,947 ppl, the largest
+  shape in the class.** `LOAN_ROW` accepts `Participant Loan Account` and
+  refuses `Participant's Loan Account`: the lead is `participant[- ]?`, so after
+  the noun the pattern meets `'s` where it wants `loans?`. **THAT THE ROW COUNT
+  AND THE PLAN COUNT ARE IDENTICAL IS ITSELF CORROBORATION** — a plan files ONE
+  participant-loan line. All 13 distinct names read.
+  **(2) A LEADING ADJECTIVE — 218 further rows**, the seventh instance of a
+  missing entry in an anchored list hiding a class and the first where **no list
+  can be widened**, because the missing entry is an adjective.
+  **(3) A MISSING PREPOSITION — 36 rows**, `rates of 4.25% to`.
+  **ARM (2) NEEDS NO VOCABULARY OF ITS OWN AND THAT IS THE WHOLE DESIGN:**
+  `loanDescriptionResidue` already strips the loan words, and `fund`, `trust`,
+  `portfolio` and `etf` are DELIBERATELY ABSENT from that list, so every real
+  holding keeps a residue and is refused without one fund name being enumerated
+  — `Bank Loan Fund` → {bank, fund}, `Senior Loan Portfolio`, `Invesco Senior
+  Loan ETF`, J&J's `LOANS SECURED BY MTGES-RESID.` → {mtges, resid}, `FEDERAL
+  HOME LOAN BANK OF BOSTON`, `VOLKSWAGEN AUTO LOAN ENHANCED TRUST`.
+  **A `NOTE` IS A SECURITY BEFORE IT IS A LOAN, AND THE DRAFT'S OWN OUTPUT SAID
+  SO:** a first version asking only for a loan-or-note word caught **37 rows of
+  `Note @ 1.500% Maturing 2/15/2030` and `Note 3.150% due 03/15/2027`** —
+  Treasury and corporate notes in a real bond sleeve, every one of which empties
+  the residue exactly as a loan line does. **COST NAMED, 6 rows** of genuine loan
+  fragments refused with the bonds.
+  **THE NAIVE REPAIR OF (3) WAS MEASURED AND REFUSED:** adding `of` to the
+  connective alternation needs no second number, so it reaches `Fixed rate of
+  3.00%` and two siblings — ordinary crediting rates — and that predicate
+  REPLACES the name. One token in the arm that already exists for `from`.
+  **COST NAMED, 1 row:** Northeast Community Bank's `Participation Loans`.
+  All 103 distinct newly-typed names read, not one a fund.
+  **AND A FIFTH INCOMPLETE TRANSCRIPTION IN THE DRAW HARNESS, MINE AND AN HOUR
+  OLD, CAUGHT BECAUSE TWO OF MY OWN COUNTS DISAGREED.** The first outcome test
+  read "1 ticker, 0 fees" and was worthless twice: it rendered the BEFORE through
+  the WORKING TREE's app.js, so every suppressor under test read as applied; and
+  once fixed the AFTER still reported **1,269 type changes against the
+  predicate's 1,488**, because `apppath.mjs`'s `loanRow` lists four arms and I
+  had added a fifth to app.js without adding it here. ***A before/after harness
+  is only as honest as its "before", and a transcription rots as the expression
+  grows — including when the author of the growth is you, the same hour.***
+  **Two disagreeing counts are the tell; neither was published until the gap was
+  named.**
+  25 pins on the new arm (12 must-flag / 13 must-keep, the must-keeps including
+  the three bond rows); the two existing tethers grow to 24 and 27. **A negative
+  control PER CONDITION, each built DIRECTLY rather than by surgery on the
+  shipped source, failing by name on exactly its own cases: 5 / 3 / 3, plus
+  `Interest rate 1.75%` for the loan-word condition.** parser-gate, smoke and
+  fund-er-test (62/26/19/18/18) green. **7 crawlable pages**, every changed cell
+  read, one per page. `site-test` #129 fired on the exact shipped commit.
+  `docs/accuracy-log.md` 2026-10-01 (11:4xZ).
+- **PREVIOUSLY QUEUED (superseded by the bullet above; its 693 / 564 / 1,350,736
+  figures are a candidate count and the shipped ones are 1,488 / 1,465 /
+  1,168,452, the gap being rows no arm could decide):** THE LOAN ANCHOR IS TOO
   STRICT: 693 rows / 564 plans / 1,350,736 participants / $2,827,697,085 of loan
-  prose that NO shipped guard types**, against 955 rows the guards already
+  prose that NO shipped guard types, against 955 rows the guards already
   serve. Largest shape **`OUTSTANDING LOAN BALANCE`, 85 rows across spellings**,
   with `Outstanding Plan Loans`, `Outstanding participants' loans`, `Loans to
   Plan Participants`, `Loans Issued at`, `Loans with`. `LOAN_ROW` is anchored on

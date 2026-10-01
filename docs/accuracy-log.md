@@ -33947,3 +33947,58 @@ here ships with those pinned on the refusing side and every flagged row read.
   no loan word in it and is the case written for that control alone.
   parser-gate, smoke and fund-er-test (62/26/19/18/18) green. **7 crawlable
   pages**, every changed cell read, one per page.
+
+## 2026-10-01 (12:0xZ) — The 11:4xZ draw, and a hypothesis of mine refuted by its own output
+
+Seed 20261001114, pool 59,822 published lineups / 89,744,230 participants.
+**Edelman Financial Engines** (2,315 ppl, 15 rows @ 0.991) and **Campbell
+Transportation** (711 ppl, 30 rows @ 0.928, OCR'd).
+
+- **ONE REAL DEFECT, AND IT IS ONE ROW:** Edelman publishes
+  `Vanguard Windsor\u0003,,\u0003$GPLUDO\u0003)XQG` at **$16,761,074 = 2.8%** of
+  its menu **with an expense ratio of 0.3 beside it**. The tail is this project's
+  documented BROKEN-FONT cipher — shift the printable range by one and `,,` is
+  `II`, `$GPLUDO` is `Admiral`, `)XQG` is `Fund` — so the filing says
+  **`Vanguard Windsor II Admiral Fund`**, whose real figure is 0.26. The legible
+  prefix `Vanguard Windsor` is what `fundER` matched, and **the share class, on
+  which the whole fee depends, is in the unreadable part.**
+
+- **AND THE OBVIOUS GENERALISATION IS FALSE, which the measurement said before
+  anything was written.** "A control character means the name is unreadable"
+  reaches **128 rows / 32 plans / 139,537 participants**, of which 46 publish a
+  ticker or a fee — and **45 of those 46 are LEGIBLE names where `\u0003` is
+  simply the space**, every answer correct:
+  `Vanguard\u0003Target\u0003Ret\u00032065` → VLXVX,
+  `Vanguard\u0003Target\u0003Ret\u00032060` → VTTSX,
+  `Fidelity 500 Index\u0003` → FXAIX, `Target Rtmt 2025\u0003` → VTTVX.
+  **A control character is not a signal about the name**; it is the cipher's
+  rendering of a space, and a name can be fully legible with one in it.
+  **Do not carry 128 or 139,537 forward as a defect class.**
+
+- **WHAT IS LEFT IS THE CIPHER ENCODING ITSELF, AND IT IS NOT SIZED.** A first
+  predicate — a token mixing letters with the shifted punctuation — was written
+  and **abandoned because it matches almost every fund name**: any name carrying
+  ` - Adm` or `, Inc` satisfies it. It is my regex, not a population, and no
+  number from it is recorded. *An implausible match rate is the tell, and the
+  honest entry is the one with no figure in it.*
+
+- **A SECOND, CLEANER MEMBER IS VISIBLE IN THE SAME 128 AND IS WORTH THE NEXT
+  LOOK:** four rows are named
+  `a(2)\u0003 7RWDO\u0003QXPEHU\u0003RI\u0003DFWLYH\u0003SDUWLFLSDQWV…` — *"Total
+  number of active participants at the end of the plan year"* — and three more
+  `g(1) FRPSOHWH\u0003WKLV\u0003LWHP`. That is **v193's Form 5500 cover-page
+  family IN CIPHER**, which every arm that reads words is blind to by
+  construction. Small, but it is a published holding whose name is an
+  instruction.
+
+- **TWO OWNER-GATED ITEMS HAVE NAMED LIVE INSTANCES IN THE SAME DRAW.** Campbell
+  Transportation publishes **thirteen `<year> Target Date Retirement Fund` rows
+  issued by American Funds, 51.7% of its menu, with 0 tickers and 0 fees** — the
+  R-6 item and the American Funds target-date coverage gap, in one plan; and
+  **`T. Rowe Price` at 6.5% / $2,312,673 typed `Collective trust`** is the
+  bare-house-name-as-a-holding class.
+
+- **AND THE 09:4xZ MANAGER-GATE FIX IS VISIBLY DELIVERING IN THE SAME MENU:**
+  `MFS Value R6` resolves to **MEIKX** through the stored SEC field, which is the
+  R6 class the filing states. A draw taken two hours after a ship is a cheap
+  independent check that it reached a reader.
