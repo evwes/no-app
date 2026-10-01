@@ -727,6 +727,56 @@ from the cycle that would have cleared it.
   trust-aware standalone script — the standalone's single trust is the one lineup
   v196 withdrew. **`matchQuote` 5,397 of which only
   1,785 are SHOWN to readers** — the condition/outcome pair shipped 2026-09-27.
+- **SHIPPED AND MIRRORED 2026-10-01 16:2xZ (`cb01bacd → adc213f4`), UNFORCED ON
+  BOTH CHECKS, data gate +0 / −0; #537 AND `site-test` #134 BOTH FIRED ON THE
+  EXACT COMMIT — A REPAIR THAT MAKES A JUNK ROW LEGIBLE HANDED FIVE WHOLE MENUS
+  TO A JUNK GUARD, 61,261 PARTICIPANTS.**
+  **#536's PRE-REGISTRATION FAILED AND THAT IS WHAT CAUGHT IT.** `confident` was
+  registered **+0 / −0** and the run produced **60,165 against 60,170**, on a
+  change that structurally cannot drop an entry.
+  **CAUSE, DIAGNOSED RATHER THAN GUESSED:** the five losses diff
+  **byte-identical** against the commit I wrote — same row counts, 0 field
+  changes, `name` moved on **0** rows — with only `c` flipped and `pv` unchanged
+  at 196, so fetch-4i never re-parsed them. **`merge-4i:136` is a JUNK-NAME
+  DEMOTION that is ENTRY-level:** one row whose name carries Form 5500
+  vocabulary withdraws the whole lineup. Most of the cipher class is v193's
+  COVER-PAGE family IN CIPHER, and decoding `3ODQ 1DPH`, `$GG OLQHV 6d` and
+  `(PSOR\HU ,GHQWLILFDWLRQ` produces exactly what `JUNK_NAME_RE` reads
+  (`^plan name`, `add lines? \d`, `employer identification`) — all five to the
+  pattern. **Fiserv's 37-row Vanguard menu (39,782 ppl) was convicted by three
+  caption rows among it**, with Lifespan 19,490, Plastic Ingenuity, McElroy and
+  Antonini.
+  **THE DEMOTION IS NOT WRONG; IT IS AIMED ELSEWHERE** — its own comment says it
+  exists for a STORED entry whose PDF became undownloadable, where the
+  parser-side guards can never reach the junk. These five are fresh parses at
+  the current pv with no error code, and the right answer to three caption rows
+  in a thirty-seven-row menu is to drop or type those ROWS. ***A guard's live
+  population is not always the population it was written for.***
+  **AND THE "COMPOSITION WIN" THE FIRST WRITE-UP CLAIMED WAS A COMPOSITION
+  LOSS.** I recorded making the captions legible as a benefit because an arm
+  that reads words could then see them; **one arm that reads words is a guard
+  that withdraws the plan.** *Price a legibility fix against the guards that
+  READ names, not only against the readers.*
+  **SHIPS: 17 rows / 10 plans / 125,017 participants / $83,643,044**, 12
+  distinct, against 23 / 13 / 127,006 before the gate; `confident` back to
+  **60,170**, CONFIDENCE DIFF **+0 / −0** through the real merge. **COST NAMED:
+  6 rows / 5 plans / 61,261 ppl keep their ciphered captions**, exactly as
+  before this arm existed, and those five plans keep their MENUS. The fund-name
+  half is untouched — Edelman's VWNAX, both Retriever Nuveen rows, Petra's
+  Putnam.
+  **OUTCOME ON THE ARTIFACT: 2 crawlable pages change and both are
+  RESTORATIONS** — Fiserv regains `Vanguard Institutional 500 Index Trust
+  $926,549,000` and 26 rows behind it, Lifespan the same.
+  **THE REGRESSION NEVER REACHED A READER:** main was still at the commit
+  carrying my local merge, where all five are confident, and only the dev branch
+  held #536's data — so the hold between a run's verdict and its mirror is what
+  contained it.
+  15 pins, **three flipped to `null` with the justification in the file, and the
+  DECODE claim they were written to assert pinned SEPARATELY against the
+  gate-dropped variant (3/3)**; a negative control per condition failing by name
+  on exactly its own cases (1 / 1 / 2 / 1 / **3**). parser-gate, smoke,
+  fund-er-test (62/26/19/18/18) green. `docs/accuracy-log.md` 2026-10-01
+  (16:2xZ).
 - **THE 15:4xZ DRAW, AND ITS FINDING IS AN INCONSISTENCY INSIDE ONE MENU —
   QUEUED, CAUSE DIAGNOSED, SIZED, NOT SHIPPED: a POOLED row whose name is in
   `FUND_TICKER` but not in `FUND_COMPARABLE` publishes NOTHING, 9,050 rows /

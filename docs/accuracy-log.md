@@ -7,6 +7,67 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-01 (16:2xZ) — A repair that makes a junk row legible hands the whole plan to a junk guard
+
+- **Wrong:** #536's verdict missed its own pre-registration. `confident` was
+  registered **+0 / −0** and the run produced **60,165 against 60,170** — five
+  lineups withdrawn, reaching **61,261 participants**, where a name repair
+  should be unable to drop an entry at all.
+- **Cause, diagnosed rather than guessed.** The five losses diff
+  **byte-identical** against the commit I wrote — same row counts, 0 field
+  changes, `name` moved on **0** rows — with only `c` flipped, and `pv`
+  unchanged at 196, so fetch-4i never re-parsed them. `merge-4i:136` is a
+  **JUNK-NAME DEMOTION that is ENTRY-level**: one row whose name carries Form
+  5500 vocabulary withdraws the whole lineup. Most of the cipher class is
+  v193's COVER-PAGE family in cipher, and decoding `3ODQ 1DPH`,
+  `$GG OLQHV 6d` and `(PSOR\HU ,GHQWLILFDWLRQ` produces exactly what
+  `JUNK_NAME_RE` reads — `^plan name`, `add lines? \d`,
+  `employer identification` — which account for all five to the pattern. So
+  **Fiserv's 37-row Vanguard menu (39,782 ppl) was convicted by three caption
+  rows among it**, with Lifespan (19,490), Plastic Ingenuity, McElroy and
+  Antonini.
+- **THE DEMOTION IS NOT WRONG; IT IS AIMED ELSEWHERE.** Its own comment says it
+  exists for a STORED entry whose PDF became undownloadable, where the
+  parser-side junk guards can never reach it. These five are fresh parses at
+  the current pv with no error code, and the right answer to three caption rows
+  in a thirty-seven-row menu is to drop or type those **ROWS**, not to withdraw
+  the menu. ***A guard's live population is not always the population it was
+  written for.***
+- **The change:** the repair declines where it would create the conviction —
+  one condition, `JUNK_NAME_RE.test(repaired) && !JUNK_NAME_RE.test(filed)`.
+  The carve-out matters: where the FILED name already carries the vocabulary
+  the entry was already convicted, so the repair changes nothing and proceeds.
+- **AND THE "COMPOSITION WIN" THE FIRST WRITE-UP CLAIMED WAS A COMPOSITION
+  LOSS.** I recorded making the cover-page captions legible as a benefit,
+  because an arm that reads words could then see them. **One arm that reads
+  words is a guard that withdraws the plan.** *Price a legibility fix against
+  the guards that READ names, not only against the readers.*
+- **Ships: 17 rows / 10 plans / 125,017 participants / $83,643,044**, 12
+  distinct transformations, against 23 / 13 / 127,006 before the gate.
+  `confident` back to **60,170**, CONFIDENCE DIFF **+0 / −0** through the real
+  merge. **Cost named: 6 rows / 5 plans / 61,261 ppl keep their ciphered
+  captions** — exactly as before this arm existed — and in exchange those five
+  plans keep their menus. The fund-name half is untouched: Edelman's VWNAX,
+  both Retriever Nuveen rows and Petra's Putnam all still repair.
+- **Outcome on the artifact: 2 crawlable pages change and both are
+  RESTORATIONS** — Fiserv regains its whole lineup (`Vanguard Institutional 500
+  Index Trust $926,549,000` and 26 rows behind it) and Lifespan the same. *A
+  page diff is what showed the fix delivering.*
+- **The regression never reached a reader:** main was still at the commit
+  carrying my local merge, where all five are confident, and only the dev
+  branch held #536's data. **The pre-registration is what caught it** — a
+  figure registered at +0 / −0 on a change that structurally cannot move it is
+  exactly the registration that convicts an interaction nobody predicted.
+- **Prevention:** 15 pins, **three flipped to `null` with the justification in
+  the file**, and the DECODE claim those three were written to assert pinned
+  **separately** against the gate-dropped variant (3/3) — the span mechanism
+  still reads every one correctly and what changed is only whether the repair
+  is WRITTEN. A negative control per condition, each failing by name on exactly
+  its own cases: fence 1, trim 1, seed 2, ciphered-space 1, **junk gate exactly
+  the 3**. parser-gate, smoke, fund-er-test (62/26/19/18/18) green.
+
+---
+
 ## 2026-10-01 (15:5xZ) — QUEUED: a pooled row in `FUND_TICKER` but not in `FUND_COMPARABLE` publishes nothing
 
 - **Found by the 15:4xZ participant-weighted draw** (seed 20261001154).
