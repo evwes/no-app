@@ -986,6 +986,67 @@ from the cycle that would have cleared it.
   source the project lacks** — the ticker is in the filed text, so using it is
   reading the filing, not deriving. Remaining: the predicate, its twin, a tether
   with a per-condition negative control, and the whole-store diff.
+- **SHIPPED AND MIRRORED 2026-10-01 05:1xZ (`075870fa → 7aec77df`), `[skip ci]`
+  BEHIND #529 — AN OCR'd `N/A` COLUMN IS NOT PART OF A FUND'S NAME: 351 rows /
+  42 plans / 109,341 participants / $2,007,684,420** across 345 distinct
+  transformations. Chimes International (3,791 ppl, OCR'd) named its Vanguard
+  target-date rows `Mutual fund NIA 391,719 (eb)`; elsewhere the debris trails a
+  name that is entirely real — `Principal LifeTime 2035 RS Fund NIA`, `American
+  Funds Fundamental Investors R3 Fund NIA`, `PIMCO Total Return RFund NIA`.
+  `NIA` is the OCR of a column header the filer left blank.
+  **AND MY OWN QUEUE ENTRY CALLED THIS A COVERAGE FIX AN HOUR EARLIER AND THE
+  OUTCOME TEST SAYS IT IS NOT.** I had written that 303 of these rows publish no
+  ticker and 277 no fee and inferred the strip would win them; measured by running
+  the display path twice, once under HEAD and once under the change: **0 tickers
+  gained / 0 lost / 0 flipped, 0 fees gained / 0 lost / 0 changed, 0 asterisks
+  moved.** The resolvable ones already resolved through the ISSUER prefix on the
+  raw name and the rest resolve under neither. ***"303 rows publish no ticker" is
+  a COUNT OF A CONDITION, not a measure of what a fix wins*** — the `band-hi`
+  lesson, in my own queue entry, one hour old.
+  **A CLEAN ZERO REPORTED ON THE QUERY FIRST:** the initial whole-store diff said
+  **0 rows changed**, because `cleanFiledName` has a TWIN in app.js and the page
+  runs that one — editing the canonical copy alone changes nothing a reader sees.
+  **The smoke tether caught it by name on two cases it already carried.**
+  **TWO PINNED CONTROLS MOVED AND THE JUSTIFICATION IS IN THE FILE**, because
+  updating a control is how a regression gets normalised: they were written to
+  assert the CAPTION is not stripped and the DEBRIS left standing as the name, and
+  that intent is now pinned on its own; what changed is the opposite half. **The
+  new standalone pin was first written with a value I had GUESSED** — HEAD produces
+  a different one and the pin records HEAD's, verified, because a debris-LED name
+  never reaches this trailing-anchored arm.
+  The rule drops tokens only from the END and needs no vocabulary: an OCR'd N/A, a
+  bare figure, or short bracket noise, with **at least one dropped token an N/A**
+  and a two-real-word head surviving. `bwNoise` already knows `NIA` and cannot
+  reach these because it is a REFUSAL inside the LEADING-caption arm — *a fix for
+  one position of a class is not a fix for the class.*
+  **IT COMPOSES WITH THE CAPTION STRIP AND THAT IS WHERE IT PAYS MOST:** `PGIM
+  Global Real Estate Registered investment company NIA` → `PGIM Global Real
+  Estate`, `Real Estate Separate Account Nia` → `Real Estate`, and `Group Annuity
+  Contract Nia Nia` becomes a bare vehicle type so the row now reads *"the filing
+  names no specific fund"* — a true statement replacing debris.
+  **4 crawlable pages / 62,163 ppl**, every changed cell read (Northwest
+  Carpenters 23,478, Amalgamated Transit Union 21,095, Southern District UBC
+  15,271, NYIT 2,319). Twinned verbatim, 12 pins, smoke and fund-er-test green.
+  **`site-test` dispatched on the current head deliberately, because it shipped
+  `[skip ci]` and local green is not CI green.**
+  `docs/accuracy-log.md` 2026-10-01 (04:4xZ).
+- **#529 RAN `success` AND IS MIRRORED — EVERY PRE-REGISTERED FIGURE PASSED.** The
+  coverage line is byte-identical except **`tkExact` 36.18 → 36.19**, exactly what
+  was registered ("at most 0.02 from the 79 new `stk`"): confident 60,170, lineups
+  59,822, HIGH 4, warn 608, overshoot 372, dl 19, pv 100, `tkShare` 24.47. Read
+  out of the ARTIFACT: the run's store carries **459,774 `stk` rows**, and diffing
+  `stk` against the commit I wrote gives **0 differing rows**.
+  **AND ONE NAME DIFFERS, WHICH IS A MECHANISM AND NOT A DEFECT.** The run
+  repaired `Vanguard EmergingMkts Stock Idx Adm` → `Vanguard Emerging Mkts Stock
+  Idx Adm` (VEMAX, correct) where the local merge did not — v519's CamelCase arm,
+  not the new one. The attestation maps are built from the STORED names, so **the
+  147 committed caps repairs raised the attested count of a repaired form and
+  pushed a sibling over its floor of 3.** *A correct repair can license a further
+  correct repair on the NEXT run*, so **"147 rows" is not a fixed point** and a
+  changed count later must not be read as a regression. The same feedback with
+  DAMAGE in place of a repair is the floor-of-one trap, which is why the floor is
+  3 and the caps guard is a ratio. `site-test` #124 reads `conclusion: success` on
+  `a8ab1078`.
 - **SHIPPED AND MIRRORED 2026-10-01 04:2xZ (`b7b3645c → a8ab1078`), UNFORCED ON
   BOTH CHECKS, data gate +0 / −0 — A LOST SPACE INSIDE AN ALL-CAPS FILED NAME:
   147 rows / 126 entries / 132 plans / 299,782 participants / $721,375,392**
