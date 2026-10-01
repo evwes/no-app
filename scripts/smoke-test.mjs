@@ -215,7 +215,7 @@ try {
     isAnnuityContractRow, annuityFeeIsGuaranteeOnly, isCollectiveTrustName, isLoanAnswerRow, isLoanMaturityRow,
     isDirectionCaptionRow,
     isOfficeListRow,
-    isInvestmentContractRow, isMistypedStockRow,
+    isInvestmentContractRow, isMistypedStockRow, isBankDepositRow,
     mistypedStockFeeIsGuaranteeOnly, issuerPricedER, leadingHouse } = await import("./lib-disclose.mjs");
   const frozCases = [
     [true, "The Plan was terminated effective December 31, 2023.", "Capital Region Medical"],
@@ -988,6 +988,50 @@ try {
     if (!isInvestmentContractRow(r, r.name, namesAFund)) fail(`investment-contract rule no longer types a contract the filing names: ${JSON.stringify(r)}`);
   for (const r of contractCases.slice(7))
     if (isInvestmentContractRow(r, r.name, namesAFund)) fail(`investment-contract rule would retype a row it must leave alone: ${JSON.stringify(r)}`);
+
+  /* AN FDIC-INSURED BANK DEPOSIT HAS NO EXPENSE RATIO, tethered the same way,
+   * 2026-10-01. It needs its OWN cases for the same reason every sibling did:
+   * not one case above carries deposit-account wording, so without these the
+   * twin would agree whether or not it carried the rule.
+   *
+   * This tethers the NAME test only. The rule's other half is `!tk` at the call
+   * site — the ticker the page has already resolved — so the three rows that weld
+   * a real fund onto a deposit caption are DEPOSIT ROWS by name, correctly true
+   * here, and keep their fee because they resolve. What must come back FALSE is
+   * the row that is not a deposit at all: an ordinary money-market FUND, which
+   * charges a real expense ratio, and a CERTIFICATE of deposit inside a fund's
+   * name. Both arms of the vocabulary are pinned and negative-controlled
+   * separately. */
+  const depCases = [
+    /* must SUPPRESS the fee, down to the marker */
+    "Money Market Deposit Account", "MONEY MARKET DEPOSIT ACCOUNT",
+    "Money market deposit account", "Money Market Deposit Acct",
+    "Money Market-Type Deposit Account", "Money Market Deposit Accounts", "Deposit Accts",
+    "Wells Fargo Bank, N.A.-Bank Deposit Sweep", "Wells Fargo Expanded Bank Deposit",
+    "TD Bank Institutional Money Market Deposit Account", "Demand deposit account",
+    "Raymond James bank deposit program Money Market",
+    /* a welded fund is still a deposit row BY NAME — the `!tk` half at the call
+     * site is what keeps its fee, not this predicate */
+    "Money Market Deposit Account VANGUARD FEDERAL MONEY MARKET INV",
+    "Banc Master Deposit Account A 4 shares 4 Vanguard 500 Index Admiral",
+    /* must come back FALSE from here down: not deposits at all */
+    "Vanguard Federal Money Market Fund", "Fidelity Government Money Market Fund",
+    "Fidelity Certificate of Deposit Portfolio Vanguard 500 Index Admiral",
+    "Schwab Value Advantage Money Fund Investor Shares"];
+  const depGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoBankDepositRow !== "function") return null;
+    return cs.map((n) => window.__wampoBankDepositRow(n));
+  }, depCases);
+  if (!depGot) fail("app.js no longer exposes __wampoBankDepositRow — the bank-deposit fee rule cannot be cross-checked");
+  const depDrift = depCases.filter((n, i) => isBankDepositRow(n) !== depGot[i]);
+  if (depDrift.length) {
+    for (const n of depDrift) console.error(`  ${JSON.stringify(n)}  app.js=${depGot[depCases.indexOf(n)]}  module=${isBankDepositRow(n)}`);
+    fail(`the bank-deposit fee rule in app.js disagrees with scripts/lib-disclose.mjs on ${depDrift.length} of ${depCases.length} names — regenerate it`);
+  }
+  for (const n of depCases.slice(0, 14))
+    if (!isBankDepositRow(n)) fail(`bank-deposit rule no longer recognises an FDIC-insured deposit: ${JSON.stringify(n)}`);
+  for (const n of depCases.slice(14))
+    if (isBankDepositRow(n)) fail(`bank-deposit rule would call a real fund a bank deposit: ${JSON.stringify(n)}`);
 
   /* THE MISTYPED-EMPLOYER-STOCK PREDICATE, tethered the same way, 2026-09-29.
    * It needed its OWN cases for the seventh cycle running: every case above is

@@ -32657,3 +32657,88 @@ and is faithful in the filing.
   source and nothing to drift. **REPORT path only, and as a GUARANTEE:
   `build-seo-pages.mjs` imports no `fund-er.js`, so a crawlable page cannot
   render a per-fund ER under any input.**
+
+## 2026-10-01 (03:0xZ) — An FDIC-insured bank deposit has no expense ratio
+
+- **Wrong:** **105 rows / 101 entries / 101 plans / 130,291 participants /
+  $88,585,280** published an estimated expense ratio on a holding whose own filed
+  name says it is a **bank deposit account** — Schwab Bank Savings, Charles
+  Schwab Trust Bank, TD Bank USA N.A., First Bank & Trust, Banc of California,
+  Alerus, DB&T FDIC Insured, the Merrill Lynch and Raymond James Bank Deposit
+  Programs, `Wells Fargo Bank, N.A.-Bank Deposit Sweep`. **A deposit pays
+  interest and charges no fund expenses, so the number does not describe a cost
+  imprecisely — it describes one that does not exist.** Values withdrawn: 0.2 on
+  91 rows (`fund-er.js`'s generic unattributed money-market fallback), 0.26 on
+  11, 0.45 on 2, 0.35 on 1.
+- **Surfaced by the 01:4xZ read of the fee pre-emption**, where `{Schwab Savings}
+  Money Market Deposit Account` publishes 0.2 against an issuer-specific 0.26 —
+  and the finding was that **BOTH are wrong**, which no comparison of the two
+  could have produced. *A row whose correct answer is BLANK cannot be fixed by
+  choosing between two numbers.*
+- **Change:** `isBankDepositRow` in `scripts/lib-disclose.mjs`, twinned verbatim
+  in app.js, ANDed at the call site with `!tk`. All **78 distinct names read**.
+  **FEE ONLY** — the ticker is untouched, because the rows that publish one are
+  exactly the rows that should.
+- **WHY THE GATE IS THE ROW'S OWN TICKER.** The sibling investment-contract rule
+  asks `namesAFund`, which is `fundER(n) != null || !!fundTickerInfo(n)` — and
+  that first arm answers **0.2 for any money-market-ish remainder**, so it is
+  true of this entire class by construction and cannot discriminate: the same
+  trap the fee pre-emption is made of. What separates them is whether the row
+  resolves to a registered fund, and of the 110 candidates exactly **three** do,
+  each a real fund WELDED onto the deposit caption — VMFXX twice and VFIAX once.
+  All three keep their fee.
+- **AND MY FIRST DRAFT ASKED THE WRONG STRING, which cost one of those three.**
+  It called `fundTickerInfo` on the NAME, where `lookupTicker` prepends the
+  ISSUER — so `{Vanguard Fed Money Market Fund Invest Share} Money Market Deposit
+  Account`, whose fund lives only in the identity column, resolved VMFXX on the
+  page and failed the gate, publishing **a symbol with no price beside it.**
+  *Measure through the function the page calls, with the argument the page
+  passes.* The fix was to stop asking a second resolver at all: the predicate is
+  now purely the NAME and the call site ANDs `!tk`, the answer the page has
+  already computed. One question, asked once, by the code that owns it.
+- **THE VOCABULARY IS TWO ARMS AND WAS FOUR, and the per-arm control is what
+  caught it.** `\bdeposit acct\b` is already covered by `acc(?:oun)?ts?` (which
+  matches acct, accts, account and accounts alike) and `\bdemand deposit\b`
+  reaches 0 rows in the store while being subsumed by the first arm on every
+  spelling a filing uses (`Demand deposit account`). **No pinned case could
+  depend on either**, so dropping them changed no verdict — *a guard that cannot
+  fire is decoration* — and both were removed rather than carried.
+- **THE ACCEPTED COST IS NAMED: 1 row.** `{Gabelli Funds} Money Market Deposit
+  Accounts Gabelli U.S. Treasury Money Market Fund Class AAA` names a real fund
+  in words, resolves to no ticker, and loses a fee. What it loses is the GENERIC
+  0.2 and not Gabelli's own figure, so it stops publishing a guess rather than
+  losing a fact, and **refusing a fee is the safe direction.** One further row,
+  `{Ameritas Life Insurance Company} Guaranteed deposit account` at 0.35, is
+  withdrawn here incidentally and properly belongs to the owner-gated
+  stable-value item.
+- **A DEFECT IN MY OWN INSTRUMENT, FOUND BY THIS FIX AND CORRECTING A NUMBER I
+  PUBLISHED TWO COMMITS AGO.** The scratchpad harness that renders app.js's
+  display path carried an **incomplete transcription of the `er` expression** —
+  it had `stockRow`, `gicRow`, `subtotalRow`, `loanRow`, `annuityRow` and
+  `guaranteeOnlyFee` and was missing `contractRow`, `mistypedGuaranteeFee` and
+  `namelessRow` — so every "publishes a fee today" figure taken through it
+  **overcounted**. It was caught only because a verification pass reported the
+  bank-deposit rows still publishing after the suppressor had shipped.
+  Consequences, both stated rather than quietly fixed: **this item's own sizing
+  said 110 rows / 106 plans / 138,550 participants and the shipped figure is
+  105 / 101 / 130,291** — the five-row gap is rows already suppressed by the
+  three missing arms; and **the 2026-10-01 00:3xZ pre-emption footprint of 37,039
+  rows / 11,594,577 participants was measured through the same harness and is
+  therefore an UPPER BOUND**, to be re-measured before that item ships rather
+  than carried forward as exact. The harness now imports all four suppressors
+  from `lib-disclose` — the same canonical functions app.js twins — instead of
+  restating them, and returns `erBefore` so a withdrawal can be measured rather
+  than inferred from a suppressed total. *A transcription of a shipped expression
+  rots as the expression grows; import the canonical function or the measurement
+  decays silently.*
+- **Prevention:** 20 pinned cases in `smoke-test.mjs`, 14 must-detect and 6 that
+  must come back FALSE (two ordinary money-market funds, a certificate of deposit
+  inside a fund's name, a Schwab money FUND), tethering the browser twin to the
+  module. **A negative control per arm, each failing BY NAME on exactly its own
+  cases** — dropping the bank-deposit arm disagrees on exactly 3, dropping the
+  deposit-account arm on exactly 9, and all 6 must-keeps hold under both.
+  parser-gate green, fund-er-test 46/26/19/18/18 green, smoke green.
+  **REPORT path only, and as a guarantee:** `build-seo-pages.mjs` imports no
+  `fund-er.js` and not this predicate either, so a crawlable page renders no
+  per-fund ER under any input — confirmed by regenerating all pages and finding
+  `git diff --stat p/` empty.

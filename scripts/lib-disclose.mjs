@@ -1678,6 +1678,83 @@ export function isInvestmentContractRow(f, cleanedName, namesAFund) {
   return !namesAFund(rest);
 }
 
+/* AN FDIC-INSURED BANK DEPOSIT HAS NO EXPENSE RATIO — canonical copy, 2026-10-01.
+ *
+ * THE CLAIM. 110 rows / 106 entries / 106 plans / 138,550 participants /
+ * $104,180,290 publish an estimated expense ratio on a holding whose own filed
+ * name says it is a BANK DEPOSIT ACCOUNT: `Money Market Deposit Account` at
+ * Schwab Bank Savings, Charles Schwab Trust Bank, TD Bank USA N.A., First Bank &
+ * Trust, Banc of California, Alerus, DB&T FDIC Insured, the Merrill Lynch Bank
+ * Deposit Program, the Raymond James Bank Deposit Program, `Wells Fargo Bank,
+ * N.A.-Bank Deposit Sweep`. A deposit pays interest and charges no fund
+ * expenses, so there is no expense ratio to estimate — the number is not
+ * imprecise, it describes a cost that does not exist. 103 of the 110 print
+ * exactly 0.2, `fund-er.js`'s generic unattributed money-market fallback.
+ *
+ * Surfaced by the 2026-10-01 read of the fee pre-emption, where `{Schwab
+ * Savings} Money Market Deposit Account` publishes 0.2 and the issuer-specific
+ * answer is 0.26 — and the finding was that BOTH are wrong, which no comparison
+ * of the two could have shown. *A row whose correct answer is BLANK cannot be
+ * fixed by choosing between two numbers.*
+ *
+ * WHY THE GATE IS THE ROW'S OWN TICKER, AND NOT `namesAFund`, AND NOT A SECOND
+ * RESOLVER. The sibling rule above asks whether anything identifiable survives
+ * the designation, through `namesAFund` — and that predicate is
+ * `fundER(n) != null || !!fundTickerInfo(n)`, whose first arm answers 0.2 for ANY
+ * money-market-ish remainder. So it is true of every row in this class by
+ * construction and cannot discriminate: the same trap the fee pre-emption is made
+ * of. What distinguishes them is whether the row resolves to a registered fund,
+ * and of the 110 exactly THREE do — each a real fund WELDED onto the deposit
+ * caption: `Money Market Deposit Account VANGUARD FEDERAL MONEY MARKET INV`
+ * (VMFXX), `{Vanguard Fed Money Market Fund Invest Share} Money Market Deposit
+ * Account` (VMFXX) and `Banc Master Deposit Account A 4 shares 4 Vanguard 500
+ * Index Admiral` (VFIAX). Those keep their fee; the other 107 lose it.
+ *
+ * AND MY FIRST DRAFT ASKED THE WRONG STRING, which cost the third of those three.
+ * It called `fundTickerInfo` on the NAME, where `lookupTicker` prepends the
+ * ISSUER — so the Vanguard row whose fund lives only in the identity column
+ * resolved VMFXX on the page and failed the gate, publishing a symbol with no
+ * price beside it. *Measure through the function the page calls, with the
+ * argument the page passes* — and the fix is to stop asking a second resolver at
+ * all: this predicate is now purely about the NAME, and the call site ANDs it
+ * with `!tk`, the ticker the page has already resolved. One question, asked once,
+ * by the code that owns the answer.
+ *
+ * ALL 78 DISTINCT NAMES READ, and the one accepted cost is named rather than
+ * rounded away: `{Gabelli Funds} Money Market Deposit Accounts Gabelli U.S.
+ * Treasury Money Market Fund Class AAA` names a real fund in words, resolves to
+ * no ticker, and so loses a fee. What it loses is the GENERIC 0.2 and not
+ * Gabelli's own figure, so the row stops publishing a guess rather than losing a
+ * fact — and refusing a fee is the safe direction.
+ *
+ * ONE ROW IS DELIBERATELY LEFT TO ANOTHER RULE: `{Ameritas Life Insurance
+ * Company} Guaranteed deposit account` prints 0.35, the guarantee fallback, and
+ * belongs to the owner-gated stable-value item rather than here — it is an
+ * insurer's guaranteed account, not a bank deposit, and this rule reaching it is
+ * incidental.
+ *
+ * FEE ONLY. The ticker is left alone: the three rows that publish one are
+ * precisely the three that should, and suppressing it would withdraw a correct
+ * identification to fix a fee.
+ *
+ * THE VOCABULARY IS TWO ARMS AND WAS FOUR, which the per-arm control is what
+ * caught. `\bdeposit acct\b` is already covered by `acc(?:oun)?ts?` — that group
+ * matches acct, accts, account and accounts alike — and `\bdemand deposit\b`
+ * reaches 0 rows in the store AND is subsumed by the first arm on every spelling
+ * a filing uses (`Demand deposit account`), so no pinned case could depend on
+ * either of them. Both were removed rather than carried: *a guard that cannot
+ * fire is decoration*, and here the tether is what proved it, since dropping an
+ * arm changed no verdict.
+ *
+ * app.js keeps a twin (browser script, no module system); the generator extracts
+ * this VERBATIM and `smoke-test.mjs` runs the browser copy against this one on
+ * pinned names and fails on drift. */
+export const BANK_DEPOSIT_NAME =
+  /\bdeposit\s+acc(?:oun)?ts?\b|\bbank\s+deposit\b/i;
+export function isBankDepositRow(cleanedName) {
+  return BANK_DEPOSIT_NAME.test(String(cleanedName || ""));
+}
+
 /* A POOLED FUND TYPED `Company stock` — 2026-09-29, and it is the first of
  * this family that costs readers a NUMBER as well as telling them a falsehood.
  *

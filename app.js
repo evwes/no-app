@@ -1116,6 +1116,19 @@
   }
 
   window.__wampoInvestmentContractRow = (f) => isInvestmentContractRow(f, (f && f.name) || "", namesAFund);  // read by the smoke test only
+  /* AN FDIC-INSURED BANK DEPOSIT HAS NO EXPENSE RATIO — twin of the canonical
+   * rule in scripts/lib-disclose.mjs, which carries the population, the reading
+   * of all 78 names and the argument for gating on the row's own resolved TICKER
+   * rather than on `namesAFund` (whose fundER arm answers 0.2 for any
+   * money-market remainder and so cannot discriminate here). This half is purely
+   * the NAME test; the `!tk` half is at the call site, where the page's own
+   * answer already is. */
+  const BANK_DEPOSIT_NAME =
+    /\bdeposit\s+acc(?:oun)?ts?\b|\bbank\s+deposit\b/i;
+  function isBankDepositRow(cleanedName) {
+    return BANK_DEPOSIT_NAME.test(String(cleanedName || ""));
+  }
+  window.__wampoBankDepositRow = (n) => isBankDepositRow(n);  // read by the smoke test only
   const EMPLOYER_STOCK_CLAIM = /company stock|employer (security|stock)/i;
   const POOLED_CONSTRUCTION_NAME = new RegExp([
     /* a maturity vintage — a fund has one, a share of stock does not */
@@ -2622,8 +2635,25 @@
        * from 89 rows on 2026-09-29. A widening that adds rows to a population
        * has to be measured against what that population publishes, not only
        * against what it says. */
+      /* AN FDIC-INSURED BANK DEPOSIT HAS NO EXPENSE RATIO — a deposit pays
+       * interest and charges no fund expenses, so the estimate does not describe
+       * a cost imprecisely, it describes one that does not exist. 110 rows / 106
+       * plans / 138,550 participants, 103 of them printing exactly 0.2 off
+       * fund-er.js's generic unattributed money-market fallback. The gate is
+       * `fundTickerInfo` and NOT `namesAFund`, because that predicate's fundER
+       * arm answers 0.2 for any money-market remainder and so is true of this
+       * whole class by construction. The discriminator is `tk`, the ticker THIS
+       * PAGE has already resolved, which is why the condition lives here and not
+       * inside the predicate: it separates the three rows that weld a real fund
+       * onto the deposit caption, and asking a second resolver instead cost one
+       * of those three, because lookupTicker prepends the ISSUER and a bare
+       * fundTickerInfo on the name does not. lib-disclose.mjs carries the reading
+       * of all 78 names and the one accepted cost. FEE ONLY — the ticker is left
+       * alone, since the rows that publish one are exactly the rows that should. */
+      const bankDepositFee = isBankDepositRow(f.name || "") && !tk;
       const er = tab !== "menu" || stockRow || gicRow || subtotalRow || loanRow || annuityRow
-        || guaranteeOnlyFee || contractRow || mistypedGuaranteeFee || namelessRow ? null
+        || guaranteeOnlyFee || contractRow || mistypedGuaranteeFee || namelessRow
+        || bankDepositFee ? null
         : star ? info.er : (noPublicPrice ? null : fundERRow(f));
       // the brokerage window is a menu choice with no holdings of its own —
       // tint it so it reads as a doorway, not a fund (owner request)

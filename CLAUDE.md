@@ -895,6 +895,51 @@ from the cycle that would have cleared it.
   parser-gate, smoke, fund-er-test (46/26/19/18) green. **REPORT path only as a
   GUARANTEE: `build-seo-pages.mjs` never imports `fund-er.js`**; `git diff
   --stat p/` empty. `docs/accuracy-log.md` 2026-09-30 (11:5xZ).
+- **SHIPPED 2026-10-01 03:0xZ, `[skip ci]` — AN FDIC-INSURED BANK DEPOSIT HAS NO
+  EXPENSE RATIO: 105 rows / 101 plans / 130,291 participants / $88,585,280.**
+  Schwab Bank Savings, Charles Schwab Trust Bank, TD Bank USA N.A., Banc of
+  California, the Merrill Lynch and Raymond James Bank Deposit Programs, `Wells
+  Fargo Bank, N.A.-Bank Deposit Sweep`. **A deposit pays interest and charges no
+  fund expenses, so the number does not describe a cost imprecisely — it describes
+  one that does not exist.** Withdrawn: 0.2 on 91 rows, 0.26 on 11, 0.45 on 2,
+  0.35 on 1. All 78 distinct names read. FEE ONLY.
+  **Surfaced by the read of the fee pre-emption**, where `{Schwab Savings} Money
+  Market Deposit Account` publishes 0.2 against an issuer-specific 0.26 and
+  **BOTH are wrong** — *a row whose correct answer is BLANK cannot be fixed by
+  choosing between two numbers.*
+  **THE GATE IS THE ROW'S OWN TICKER, not `namesAFund`**, whose `fundER` arm
+  answers 0.2 for any money-market remainder and so is true of this class by
+  construction. Of 110 candidates exactly **three** resolve to a registered fund,
+  each a real fund WELDED onto the caption (VMFXX ×2, VFIAX ×1), and all three
+  keep their fee.
+  **MY FIRST DRAFT ASKED THE WRONG STRING AND COST ONE OF THE THREE:** it called
+  `fundTickerInfo` on the NAME where `lookupTicker` prepends the ISSUER, so the
+  Vanguard row whose fund lives only in the identity column published **a symbol
+  with no price beside it.** Fixed by asking no second resolver — the predicate is
+  the NAME and the call site ANDs `!tk`.
+  **THE VOCABULARY IS TWO ARMS AND WAS FOUR**, the per-arm control catching that
+  `deposit acct` is subsumed by `acc(?:oun)?ts?` and `demand deposit` reaches 0
+  rows: dropping either changed no verdict, so both went.
+  **COST NAMED, 1 row:** `{Gabelli Funds} … Gabelli U.S. Treasury Money Market
+  Fund Class AAA` names a fund in words, resolves to no ticker, and loses the
+  GENERIC 0.2 rather than Gabelli's own figure — refusing a fee is the safe
+  direction. 20 pins (14 must-detect / 6 must-be-false), a negative control per
+  arm failing by name on exactly 3 and exactly 9. parser-gate, smoke, fund-er-test
+  46/26/19/18/18 green. **REPORT path only as a GUARANTEE.**
+  `docs/accuracy-log.md` 2026-10-01 (03:0xZ).
+- **AND IT FOUND A DEFECT IN MY OWN INSTRUMENT THAT CORRECTS A PUBLISHED NUMBER.**
+  The scratchpad harness rendering app.js's display path carried an **incomplete
+  transcription of the `er` expression** — missing `contractRow`,
+  `mistypedGuaranteeFee` and `namelessRow` — so every "publishes a fee today"
+  figure taken through it OVERCOUNTED. Caught only because a verification pass
+  reported the deposit rows still publishing after the suppressor shipped.
+  **This item's own sizing said 110 / 106 / 138,550 and the shipped figure is
+  105 / 101 / 130,291**; and **the 00:3xZ pre-emption footprint of 37,039 rows /
+  11,594,577 ppl came through the same harness and is an UPPER BOUND — re-measure
+  it before that item ships, do not carry it as exact.** The harness now imports
+  all four suppressors from `lib-disclose` rather than restating them, and returns
+  `erBefore` so a withdrawal is measured rather than inferred. *A transcription of
+  a shipped expression rots as the expression grows.*
 - **SHIPPED 2026-10-01 02:1xZ, `[skip ci]` — `nt ` HAD NO LEADING WORD BOUNDARY,
   SO NORTHERN TRUST PRICED ANOTHER HOUSE'S FUND: 970 rows / 506 plans /
   1,291,747 participants / $3,688,721,567.** `fund-er.js:222` was
