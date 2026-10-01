@@ -32742,3 +32742,26 @@ and is faithful in the filing.
   `fund-er.js` and not this predicate either, so a crawlable page renders no
   per-fund ER under any input — confirmed by regenerating all pages and finding
   `git diff --stat p/` empty.
+
+## 2026-10-01 (03:2xZ) — The `nt` figure re-measured through the corrected harness, and it holds exactly
+
+- The harness defect recorded in the entry above put every "publishes a fee today"
+  figure in doubt, so the one published an hour earlier was re-asked rather than
+  assumed: **970 rows / 501 entries / 506 plans / 1,291,747 participants /
+  $3,688,721,567, identical to the digit**, with **0 rows withdrawn** and the
+  transition profile unchanged in shape (0.05 → 0.1 on 668 rows, → 0.06 on 259,
+  → 0.03 on 23, → 0.04 on 18, → 0.3 and → 0.4 on one each).
+  The three missing suppressors simply reach no row in the `nt` population.
+- **The measurement had to run BACKWARDS, which is the part worth keeping.** The
+  fix is shipped, so `fund-er.js` no longer contains the broken pattern and the
+  patch direction reverses: the current file is "after" and the patched copy
+  restores the defect as "before". The positive control is the same probe in the
+  opposite direction (`Management 500 Index Fund` = 0.05 broken, 0.03 shipped) and
+  it still fails loudly if the patch does not take, which is what makes a
+  backwards re-measurement trustworthy.
+- **So of the three figures the harness defect touched, two are now settled and
+  one is not:** the `nt` fix is exact, the bank-deposit fix was corrected from 110
+  to 105 before publication, and **the pre-emption footprint (37,039 rows /
+  11,594,577 participants) remains an UPPER BOUND and must be re-measured before
+  that item ships.** *Re-asking a number you already published is cheap; leaving a
+  doubt attached to it is not.*

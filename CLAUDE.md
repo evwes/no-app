@@ -940,6 +940,16 @@ from the cycle that would have cleared it.
   all four suppressors from `lib-disclose` rather than restating them, and returns
   `erBefore` so a withdrawal is measured rather than inferred. *A transcription of
   a shipped expression rots as the expression grows.*
+- **AND THE `nt` FIGURE WAS RE-ASKED THROUGH THE CORRECTED HARNESS AND HOLDS TO
+  THE DIGIT: 970 rows / 501 entries / 506 plans / 1,291,747 ppl / $3,688,721,567,
+  0 withdrawn.** The three missing suppressors reach no row in that population.
+  **The measurement ran BACKWARDS** — the fix is shipped, so the current file is
+  "after" and a patched copy restores the defect as "before", with the same probe
+  as a positive control in the opposite direction. **So of the three figures the
+  harness defect touched, two are settled and one is not:** `nt` is exact, the
+  bank-deposit figure was corrected 110 → 105 before publication, and **the
+  pre-emption footprint stays an UPPER BOUND.** `docs/accuracy-log.md` 2026-10-01
+  (03:2xZ).
 - **SHIPPED 2026-10-01 02:1xZ, `[skip ci]` — `nt ` HAD NO LEADING WORD BOUNDARY,
   SO NORTHERN TRUST PRICED ANOTHER HOUSE'S FUND: 970 rows / 506 plans /
   1,291,747 participants / $3,688,721,567.** `fund-er.js:222` was
