@@ -32882,3 +32882,92 @@ and is faithful in the filing.
   rather than assumed. What remains is the predicate, its twin, a tether with a
   per-condition negative control (one for the LEADING anchor, one for the
   corroboration test), and the whole-store before/after.
+
+## 2026-10-01 (03:2xZ) — The filing prints the ticker and we publish a different one
+- **Wrong:** `VITSX - Vanguard Total Stock Market Index Inst.` published
+  **VTSAX**, the Admiral class. `MWTSX - Metropolitan West Total Return Cl P`
+  published MWTIX, Class I. `MEIJX - MFS Value Fund Cl R4` published MEIKX, R6
+  — *this record's own 2026-09-15 defect in a new instance, with the filing
+  handing us the answer.* `DOXIX … Cl X` published DODIX; `HNACX … Rt`
+  published HACAX; `VMRXX - Vanguard Federal` published VMFXX, a different
+  **fund** rather than a different class. **35 rows / 21 plans / 361,656
+  participants / $945,898,023 published a symbol other than the one printed
+  beside the holding**, and a further **899 rows / 72 plans / 461,917
+  participants** published none at all while the filing named one.
+- **Change:** `resolveFiledTicker` in `scripts/match-sec-tickers.mjs`, applied
+  once at merge and stored as `ftk`; `app.js`'s `lookupTicker` reads it FIRST,
+  which is the one place a stored field outranks `fund-er.js`. What licenses
+  that order is that the claim is the FILING's and not ours — and it has to be
+  first, because reading it last would only fill a blank and leave the 35 wrong.
+  **THE NAIVE RULE IS DEAD AND A CONTROL KILLED IT: `INDEX` IS a registered
+  ticker** (CYBER HORNET S&P 500 and Bitcoin 75/25 Strategy ETF), so one of the
+  commonest words in a fund's name is a symbol. Three structural conditions
+  survive and not one is a vocabulary: the symbol must **LEAD** the name, its
+  registered **SERIES** must share a content word with the remainder, and that
+  word must be **three letters or more**.
+  **THE THIRD CONDITION EXISTS ONLY BECAUSE READING THE TRANSFORMATIONS CAUGHT
+  WHAT THE CONTROL COULD NOT.** With the first two shipped, `INDEX` still got
+  through **twice**: `INDEX TR 500 ADMIRAL SHS` corroborated on the numeral
+  **500** against CYBER HORNET S&P 500, and `INDEX R6 Fid Infl-P Bd Idx` on the
+  single letter **`p`** out of `S&P`. A digit and a letter are the two things a
+  fund name is full of and neither identifies a fund. *My control had pinned the
+  one spelling of the collision I had already imagined.*
+  **1,232 rows already AGREE with the symbol they print**, which is the control
+  that the shape is common and usually read right. **All 16 distinct
+  corrections and all 470 distinct gains read, not one a wrong house.**
+  **NO TYPE GATE, AND THE MEASUREMENT DECIDED THAT RATHER THAN CAUTION.**
+  `secTypeAdmits` exists because resolving a NAME can land on a mutual fund
+  where the filing calls the row a collective trust. Applying it here refuses
+  **63 rows and every one is a correctly-named money-market or bond fund** typed
+  `Cash / short-term` or `Government securities` — an asset CATEGORY, not a
+  contradicting vehicle (`VMFXX - Vanguard Federal Money Market Fund Investor
+  Shares`, 38 rows). Across all 937 hits **not one carries a collective-trust or
+  separate-account type**, and that is the index's own doing: the SEC registers
+  no collective trust, so none can lead with a registered symbol.
+  **FEE-NEUTRAL, AND MEASURED RATHER THAN ARGUED** — which no other share-class
+  item on this record has been. `fundERRow` is called on the NAME and never on a
+  symbol, and over all **2,166 rows the field reaches the fee moves on 0 and 0
+  symbols are LOST**.
+  **ONE ASTERISK DOES MOVE, WHERE MY OWN COMMENT SAID NONE COULD.** `SSSYX STATE
+  STREET EQUITY 500 INDEX FUND - CLASS K` resolved to SSSYX as a labelled
+  COMPARABLE and now ASSERTS it — and the promotion is correct: the SEC
+  registers SSSYX as **Class K** of that fund against five sibling classes, the
+  filing states Class K and prints the symbol, and the fee is 0.02 on both sides
+  of the `star ? info.er : fundERRow(f)` branch. Corrected in the shipped
+  comment before the commit, because *a guard that withdraws an assertion can
+  also PROMOTE one* and *a measured number in a comment has to be the number
+  that shipped*.
+  **COST NAMED, 6 rows:** `MVCKX … CL R5` (4), `MFWLX … R5` and `STRYX Pioneer
+  Strategic Income K Fund` print a symbol the SEC registers to a different class
+  than the name's own class word states. The filer wrote both and they disagree;
+  the symbol is the more precise of the two, so it wins.
+  **THE POPULATION IS A FILER TEMPLATE, not a spread:** Oasis Outsourcing
+  (113,807 ppl), G & A Partners (46,552), Vensure (43,373), Emory Healthcare and
+  Emory University (72,174 together) — PEO multiple-employer plans whose
+  schedules print the symbol in the identity column.
+- **Prevention:** the predicate lives **once**, in `match-sec-tickers.mjs`, and
+  **has no browser twin to drift** — it needs a 29,406-row index the page must
+  never download, so it is asked at merge and the page only reads the field.
+  `--selftest` **116/116** with 17 new pinned cases, and **a negative control
+  PER CONDITION**, each variant written DIRECTLY rather than by surgery on the
+  shipped source: `--nolead` fails by name on exactly its 2, `--nocorrob` on
+  exactly its 3, `--noword` on exactly its 2.
+  **AND THE FIRST LEAD CONTROL WAS DECORATIVE AND PASSED.** The variant
+  corroborated against the text that FOLLOWED the match rather than the whole
+  remainder, so `Vanguard Total Stock Market Index VITSX` was refused for want
+  of a remainder instead of for want of an anchor and dropping the anchor
+  changed no verdict. *A control that cannot fail is decoration* — met again,
+  and the cause was in my variant, not in the rule.
+  The ORDER is tethered in `smoke-test.mjs` on **four pairs that are their own
+  negative control**: the same name with the field and without it, where the
+  `without` half must answer DIFFERENTLY. That is what makes the `with` half a
+  test of precedence rather than of a string being echoed; moving the branch
+  below the fund-er attempts fails it by name on `VITSX`.
+  **REPORT path only as a GUARANTEE** — `build-seo-pages.mjs` renders no ticker
+  and reads no such field, verified by grep rather than by an empty diff.
+  **The local merge's whole effect, field by field against HEAD: `ftk` on 2,166
+  rows across 75 entries, 0 acks added or removed, nothing else moved, and the
+  three index files differ only in `generated`.** That is why the data shipped
+  in the same commit as the code rather than waiting for a run, so a reader is
+  served now; #528 exists to confirm the production merge reproduces it.
+  parser-gate, smoke and fund-er-test (46/26/19/18/18) green.

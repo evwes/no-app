@@ -895,9 +895,73 @@ from the cycle that would have cleared it.
   parser-gate, smoke, fund-er-test (46/26/19/18) green. **REPORT path only as a
   GUARANTEE: `build-seo-pages.mjs` never imports `fund-er.js`**; `git diff
   --stat p/` empty. `docs/accuracy-log.md` 2026-09-30 (11:5xZ).
-- **QUEUED READY-TO-SHIP 2026-10-01 02:2xZ — THE FILING PRINTS THE TICKER AND WE
-  PUBLISH A DIFFERENT ONE: 35 rows / 21 plans / 361,656 participants /
-  $945,898,023 corrected, plus 898 rows / 72 plans / 461,917 ppl that GAIN one.**
+- **SHIPPED AND MIRRORED 2026-10-01 03:2xZ (`0c90d086 → 792a0582`), UNFORCED ON
+  BOTH CHECKS, data gate +0 / −0 BY ACK AND BY PLAN — THE FILING PRINTS THE
+  TICKER AND WE PUBLISHED A DIFFERENT ONE: 35 rows / 21 plans / 361,656
+  participants / $945,898,023 corrected, plus 899 rows / 72 plans / 461,917 ppl
+  that GAIN one.** The data shipped in the SAME COMMIT as the code, which no
+  previous merge-side item has done, because the local merge's whole effect was
+  measured field by field against HEAD: **`ftk` on 2,166 rows across 75 entries,
+  0 acks added or removed, nothing else moved**, and the three index files differ
+  only in `generated`. A reader is served now; **#528 and `site-test` #123 both
+  fired from the push on the exact commit and were observed `in_progress`**, so
+  the run exists to confirm the production merge reproduces it.
+  **PRE-REGISTERED for #528:** the merge log prints `filed tickers: 2166 rows
+  across 75 plans`; `sec tickers` unchanged at **459,695 rows across 47,534
+  plans (109,662 on a blank type cell)**; CONFIDENCE DIFF **+0 / −0**; coverage
+  line byte-identical — confident **60,170**, lineups 59,822, entries 65,479,
+  HIGH **4**, warn 608, overshoot 372, overshootTrust 12, aggRow 113, dl 19,
+  pv 196 at 100%.
+  **THE NAIVE RULE IS DEAD AND A CONTROL KILLED IT: `INDEX` IS a registered
+  ticker** (CYBER HORNET S&P 500), so one of the commonest words in a fund's name
+  is a symbol. **Three structural conditions survive and not one is a
+  vocabulary:** the symbol must LEAD the name, its registered SERIES must share a
+  content word with the remainder, and **that word must be three letters or
+  more** — the third existing only because the first two shipped and `INDEX`
+  still got through TWICE, corroborating once on the numeral **500** and once on
+  the **`p`** of `S&P`. *Reading the transformations caught what the control could
+  not: my control had pinned the one spelling of the collision I had already
+  imagined.* 1,232 rows already AGREE with the symbol they print, which is the
+  control that the shape is common and usually read right.
+  **NO TYPE GATE, AND THE MEASUREMENT DECIDED THAT RATHER THAN CAUTION:**
+  applying `secTypeAdmits` refuses **63 rows and every one is a correctly-named
+  money-market or bond fund** typed `Cash / short-term` or `Government
+  securities` — an asset CATEGORY, not a contradicting vehicle — and across all
+  937 hits **not one carries a collective-trust or separate-account type**,
+  because the SEC registers no collective trust and so none can lead with a
+  registered symbol.
+  **FEE-NEUTRAL, MEASURED RATHER THAN ARGUED: over all 2,166 rows the field
+  reaches the fee moves on 0 and 0 symbols are LOST. ONE ASTERISK DOES MOVE,
+  where my own comment said none could** — `SSSYX STATE STREET EQUITY 500 INDEX
+  FUND - CLASS K` goes from a labelled COMPARABLE to an ASSERTION, correctly
+  (the SEC registers SSSYX as Class K against five siblings, the filing states
+  Class K and prints the symbol, and the fee is 0.02 either side). *A guard that
+  withdraws an assertion can also PROMOTE one*, and *a measured number in a
+  comment has to be the number that shipped.*
+  **COST NAMED, 6 rows:** `MVCKX … CL R5` (4), `MFWLX … R5` and `STRYX Pioneer
+  Strategic Income K Fund` print a symbol the SEC registers to a different class
+  than the name's own class word states; the filer wrote both and the symbol is
+  the more precise. **All 16 distinct corrections and all 470 distinct gains
+  read, not one a wrong house.**
+  **THE POPULATION IS A FILER TEMPLATE AND NOT A SPREAD:** Oasis Outsourcing
+  (113,807 ppl), G & A Partners (46,552), Vensure (43,373), Emory Healthcare +
+  Emory University (72,174) — PEO multiple-employer plans printing the symbol in
+  the identity column.
+  **THE PREDICATE LIVES ONCE AND HAS NO BROWSER TWIN TO DRIFT** — it needs a
+  29,406-row index the page must never download, so it is asked at merge and
+  stored. `--selftest` 116/116 with 17 new pins and **a negative control PER
+  CONDITION** failing by name on exactly its own cases (2 / 3 / 2); **the first
+  lead control was DECORATIVE and passed**, because the variant corroborated
+  against the text AFTER the match rather than the whole remainder, so dropping
+  the anchor changed no verdict. The ORDER is tethered in `smoke-test.mjs` on
+  **four pairs that are their own negative control** — the same name with the
+  field and without it, the `without` half required to answer DIFFERENTLY — and
+  moving the branch below the fund-er attempts fails it by name.
+  **REPORT path only as a GUARANTEE:** `build-seo-pages.mjs` renders no ticker
+  and reads no such field. parser-gate, smoke, fund-er-test (46/26/19/18/18)
+  green. `docs/accuracy-log.md` 2026-10-01 (03:2xZ).
+- **PREVIOUSLY QUEUED (superseded by the bullet above; its 898-row figure was the
+  pre-condition-(3) count and the shipped number is 899):**
   `VITSX - Vanguard Total Stock Market Index Inst.` publishes **VTSAX**, the
   Admiral class (9 rows); `MWTSX - Metropolitan West Total Return Cl P` publishes
   MWTIX (Class I); `MEIJX - MFS Value Fund Cl R4` publishes **MEIKX, R6 — this
