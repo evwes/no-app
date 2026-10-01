@@ -7,6 +7,262 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-01 (18:3xZ) — A conservative allocation published as a growth allocation, and a `grep` of a working tree an agent holds
+
+**QUEUED, SIZED, HANDED OFF, NOT SHIPPED — 295 rows / 295 plans / 243,131
+participants / $151,258,543 publish VASGX, the LifeStrategy 80/20 Fund, for a
+name that says Conservative Growth.** The SEC registers Conservative Growth as
+**VSCGX, the 40/60 Fund** — twice the equity exposure, asserted with no
+asterisk. `Vanguard LifeStrategy Cnsrv Gr Inv` and 62 sibling spellings
+(`Consv Growth Inv` 79, `Cnsrv Gr Inv` 50, `LifeStrat Cons Gr Inv` 15 …) lose
+the `Cnsrv`/`Consv`/`Cons` token and the remainder matches the Growth arm.
+
+**The filing hands us the answer and one member prints it literally:**
+`Vanguard LifeStrategy **40/60** Cons Gro` carries VSCGX's own registered
+allocation while we publish the 80/20 fund beside it.
+
+**It is a REACH failure and not a missing entry, which is what makes the
+correction fully sourced inside the repo.** The unabbreviated name already
+resolves right: `Vanguard LifeStrategy Conservative Growth Fund` → VSCGX at
+**0.12**, while every abbreviation → VASGX at **0.1**. So the fee travels with
+the wrong fund and errs in the **flattering** direction, and both correct
+answers — the symbol in `sec-funds.json`, the rate in `fund-er.js` — are
+already present. *A fee is SOURCED, never derived*, and here the source is the
+table's own existing entry.
+
+**The sharpest pin is one page publishing all three:** WellSpan Health (28,242
+ppl) shows `Vanguard LifeStrategy Growth Inv` → VASGX (right), `… Moderate
+Growth` → VSMGX (right) and `… Cnsrv Gr Inv` → **VASGX (wrong)**. Two rows of
+one menu printing the same symbol for different funds. **That the row count
+equals the plan count — 295 / 295 — is itself corroboration**, since a plan
+files one Conservative Growth row. The registered family is four funds (VASIX
+20/80, VSCGX 40/60, VSMGX 60/40, VASGX 80/20) and `fund-er.js:800` already
+records that LifeStrategy has only ever had the Investor class, so there is no
+share-class question here — only which of four funds.
+
+**FOUND BY THE GATE ON A DIFFERENT, UNSHIPPED ITEM, which is the argument for
+the gate.** The pooled-split entry (9,050 rows / 4,420,537 ppl) is blocked on
+*"all 2,001 distinct names must be read against their registered funds first"*.
+Reading them against the registry's own SERIES names: **1,808 agree, 180
+disagree, 14 have no series** — and the disagreements are mostly MY check's
+weakness rather than real mis-resolutions, because **the registry abbreviates
+too**: `American Funds EuroPacific R6` → RERGX reads as a mismatch only because
+the registered series is `EUPAC Fund`, which shares no content word with
+`EuroPacific`. Likewise `JPMorgan LgCp Grw Fnd R6` → JLGMX and `Fid Intl Indx`
+→ FSPSX are correct and unmatchable by a content-word test. **So that item's
+blocker shrinks from 2,001 names to roughly 180** — and sitting inside the
+residue was this defect, which is LIVE rather than latent.
+
+### What was wrong in my own work, and it is the more transferable half
+
+**I TOLD THE AGENT ITS QUEUE ITEM WAS ALREADY SHIPPED, AND IT WAS NOT — I HAD
+GREPPED THE WORKING TREE WHILE THE AGENT WAS EDITING IT.** `grep -n
+employerStockSymbolOk app.js` returned a definition at line 1343, an index at
+2047 and a call site at 2841, and I reported the item closed by the 14:5xZ
+commit. At `3c1d398a`, the commit actually mirrored, `git show
+3c1d398a:app.js | grep -c employerStockSymbolOk` is **0**, `sponsorTickerIndex`
+is **0**, and line 2702 is still the bare `stockRow ? (plan.ticker || null)`.
+Every line I read was the agent's own uncommitted work. **Had it believed me it
+would have abandoned a real build reaching 1,061,663 participants.**
+
+The aggravating detail is that I sent that claim *in the same message* as the
+warning *"a harness that slices a file mid-edit is not measuring the shipped
+expression"* — and then did exactly that by hand. **PREVENTION, stated as a
+rule: a `grep` of the working tree is a MEASUREMENT and rots the same way a
+harness does. While an agent holds the tree, read through `git show <ref>:`,
+never the path.** This is the eighth instrument-level error on this record and
+the first committed with a plain shell command rather than a script.
+
+**And my second correction to the agent was wrong in its headline and right in
+its substance.** I reported that `apppath.mjs` fed `plan.publicName` and
+`plan.otherSponsors` where app.js computes `TICKER_NAME[plan.ticker]` and
+`sponsorTickerIndex()`, and concluded *"arm II receives `undefined` and the
+contradiction test is DISABLED in the harness"*. The agent's discriminating
+control refutes the conclusion: dropping the index moves its count **51 → 44**
+and names exactly the 7 arm-II rows, dropping the public name **51 → 52** and
+names exactly `GE Vernova` at Ropcor. Its callers supplied the fields the
+harness's own contract named; **mine threw**, because I passed a `loadPlans`
+proxy, which is why I saw the gap at all. The drift risk was real for a future
+caller and is now closed by removing the caller's chance to be wrong — the
+harness builds the index itself. *A field that is absent for one caller is not
+a field that is absent.*
+
+**MY TWO PUBLISHED FEE COUNTS WERE AT RISK FROM A REAL GAP THE AGENT FOUND AND
+RE-MEASURING CLEARED THEM.** It repaired three further gaps in that harness's
+`render`, one of which is that `er` called `fundERFiled(f.name)` where app.js
+calls `fundERRow(f)` — so every "publishes a fee today" figure taken through it
+**under-counts**, the issuer arm being missing. Both of this cycle's figures
+were re-asked through the repaired harness and are **unchanged**: the
+target-date class 15 tickers / 36 fees, the Spartan family 1 / 365. The extra
+arm fires only where the bare name returns null and an issuer exists, which
+reaches 0 rows in either population. *A warning that applies to a class does
+not thereby apply to its neighbour* — and the only way to know was to re-run it.
+
+### Remaining
+
+The whole-store before/after through all four resolvers; whether the `Moderate`
+arm has the same reach failure in abbreviation (`Vanguard Life Strat Mod Gr`
+resolves to null today); and the 2,845 LifeStrategy rows currently suppressed
+by the pooled type split, which must not start publishing as a side effect.
+`VG LifeStrat Inc` → null where VASIX is the 20/80 Income fund is a BLANK and
+therefore coverage, not a defect — not to be bundled.
+
+---
+
+## 2026-10-01 (17:2xZ) — A category table published as a fund menu: the description column merged a whole ladder
+
+**QUEUED PARSER-SIDE, SIZED, CAUSE PROVED TO THE DOLLAR IN TWO FILINGS, NOT
+SHIPPED.** Found by the 17:1xZ participant-weighted draw, seed 20261001170:
+NTT Data Americas (22,449 ppl, 26 rows @ 0.993) and **Bayer Corporation (30,109
+ppl, $11.84B, 17 rows @ 0.993)**, whose largest row is `Target Retirement Trust
+Fund` at **41.4% / $4,865,552,105** with a blank type, no ticker and no fee —
+one row for two fifths of the plan.
+
+**THE PARSE TOOK COLUMN C.** Bayer's 4i schedule lists **twelve vintages
+individually** — `Vanguard Target Retirement 2020 … 2070 Trust Plus` and
+`… Income Trust Plus`, $141,621,752 down to $12,577,328 — and every one carries
+`Target Retirement Trust Fund` in **column C, Description of Investment**,
+while column B holds the real vintage. **The twelve sum to $4,865,552,105: not
+"about", the stored figure.** Its twenty `Bayer Corporation Fixed Fund` rows
+(New York Life, Transamerica, MassMutual, Pacific Life, State Street,
+Prudential ×2, Nationwide ×2, Metropolitan ×6, CitiBank, JPMorgan, American
+General, Fidelity Government MMF) merge the same way.
+
+**READING A SECOND FILING IS WHAT WIDENED THE CLASS PAST TARGET-DATE.**
+**Paramount Global (36,431 ppl)** publishes **two** merged category rows
+totalling **59.5% of its plan**: `Target Retirement Date Fund`
+**$1,914,109,000** = nine `BlackRock LifePath` vintages (214,962 + 151,260 +
+222,871 + 322,159 + 325,405 + 337,854 + 213,755 + 106,043 + 19,800 thousand =
+**1,914,109** exactly) and **`Passively Managed Fund` $2,606,618,000** = five
+rows (112,203 + 1,525,754 + 329,284 + 322,487 + 316,890 = **2,606,618**
+exactly). Its schedule carries **six** shared descriptions in all, and
+`International Equity Fund` merges four more. **So the class is not a
+target-date vocabulary — its largest member is `Passively Managed Fund` — and
+the merge CROSSES the filing's own section headings**, the Vanguard FTSE Social
+Index row sitting under `Registered Investment Companies` and the other four
+under `Common / Collective Funds`.
+
+**WHAT 36,431 PEOPLE CANNOT SEE: that their plan holds a $1,525,754,000
+BlackRock S&P 500 Index Fund**, with Mawer International Equity, GQG Partners
+International Equity, INVESCO International Growth, Pzena International Value,
+Wasatch Core Growth CIT and Cramer Rosenthal McGlynn behind the same four
+labels — twenty nameable funds.
+
+**THREE WITNESSES ARE BLIND BY CONSTRUCTION.** Neither phrase is a bare vehicle
+type, so `isGenericTypeName` is false; 41.4% and 34.3% sit under
+`audit-dominant-row`'s 90% floor; and **a merge does not change the sum, so the
+ratio cannot see it** — Bayer is 0.993, a figure that reads as a clean parse.
+This is the gap this log already named in the abstract — *"the shipped
+`GENERIC_TYPE_NAME` covers investment VEHICLES and not ASSET CLASSES"* — now
+with a cause and a dollar figure, and it is where the owner-queued WHOLE-TABLE
+test points.
+
+**THE EXISTING MECHANISM IS RIGHT AND ITS VOCABULARY IS THE HOLE, which the
+same filing proves in the other direction:** Bayer's first fifteen rows share
+the description `Registered Investment Company` — also ≥3 rows, also differing
+identities — and the parser correctly preferred column B there, because that
+phrase IS in `GENERIC_TYPE_NAME`. **So the structural replacement for the
+vocabulary is already visible in the data: a description shared by three or
+more rows whose IDENTITY cells differ is a CATEGORY, not a fund name.** No new
+vocabulary and no new source.
+
+**SIZED BY AN ABSENCE, and the figure is a LOWER BOUND on one arm only.** The
+store holds the merged row, so the merge cannot be counted from it; what can is
+the loan-maturity class's own test — a menu that names a target-date allocation
+and carries NOT ONE VINTAGE is a menu whose ladder lost its names. That reads
+**97 rows / 75 plans / 211,105 participants / $12,670,197,497** at ≥5% of a
+menu. **Paramount's $2.61B `Passively Managed Fund` is OUTSIDE it**, so the
+true class is larger by an unmeasured amount. Largest found: Bayer $4.87B;
+Paramount $1.91B at 25.2%; Sephora (24,602) `Capital Group Target Date
+Retirement` at **72.2%**; Topbuild (19,534) `Lifecycle fund` at **74.5%**;
+Polaris (11,172) at **62.3% across TWO** such rows; Saint Louis University's
+two plans at 47.8% and 43.7% on `Lifecycle/asset allocation (c)` and `(d)`.
+
+**DO NOT CARRY 213 ROWS OR 220,916 PPL FORWARD, AND 97 IS NOT CLEAN EITHER.**
+My first screen read 213 / 99 / 220,916 because its vintage test was
+WORD-bounded and `BlackRock LifePath Index 2050K` has a letter after the year.
+Digit-bounded it reads 97, and **at least 13 of those are still my own false
+positives**: `Vanguard Target Retirement Income` (5 rows) — **the Income
+vintage IS a vintage**, VTINX, resolved correctly at 0.08 — and `State Street
+Target Retirement 2060**1**` (8 rows at GSF Properties), where a trailing
+FOOTNOTE DIGIT defeats a digit boundary and every answer is a correct
+asterisked one. *Two false-positive classes in one screen inside ten minutes,
+both caught by reading the members rather than the count.*
+
+**AND THE FEE QUESTION ANSWERS THE OPPOSITE WAY FROM WHAT THE SIZE SUGGESTS:
+this is an HONESTY defect, not a fabricated-fee one.** 15 of 97 publish a
+ticker and 36 a fee, and most of those are the false positives above being
+right. **Every headline member — Bayer, Paramount, Sephora, Topbuild, Saint
+Louis, Blackstone — publishes NO ticker and NO fee**, so ~200,000 readers are
+shown a holding that does not exist rather than a wrong number. The genuinely
+wrong numbers are about four rows: Lighthouse For The Blind (639 ppl) prices a
+bare `Vanguard Target Retirement` at 0.08 on **55.1% / $23,846,480**, Polaris's
+`Common collective trust (CCT) lifecycle` resolves to **VFORX\***, the 2040
+fund, on $132,373,289, and Original Footwear's `Nuveen Lifecycle Index Funds`
+prices a plural category at 0.1 on 69.5% of its menu. **Both figures were
+re-measured through the repaired harness afterwards and are unchanged.**
+
+**A NAMED INSTANCE OF THE 90% THRESHOLD LIMIT, for the third time:** Bear
+Mountain Healthcare (1,807 ppl) publishes `Vanguard Target Retirement` at
+**87.8%**, 2.2 points under the floor, beside Tides Center 84.4%, Finch Paper
+88.2%, Flashparking 82.2% and Fiber Instrument 89.4%. The answer is unchanged —
+the floor must not come down, because General Motors leads at 66.4% with real
+funds behind it — so this class needs the parser fix and not a threshold move.
+
+**PARSER-SIDE (the name is stored), so it needs a `PARSER_VERSION` bump and a
+change to the region contest in `lib-4i`, the riskiest surface here. Not
+started: an agent was mid-flight on the display path and two changes must not
+share a tree.** Paramount also publishes `Evergreen &` at 9.0% /
+$679,811,000 — a truncated name and a third defect in the same menu.
+
+### The same draw's second finding, sized
+
+**835 rows / 350 plans / 2,541,569 participants / $49,924,416,708 carry a
+`Spartan` name, and exactly ONE publishes a ticker while 365 publish a FEE.**
+`Spartan` was Fidelity's index brand until the 2016 rename, so nothing in
+`fund-er.js` or the SEC index answers to it. NTT Data's three `Spartan … Index
+Pool Class E` rows are **32.4% of its menu** (`Spartan 500 Index Pool Class E`
+alone 23.7% / $680,617,115), almost exactly Unum's 32.1% one cycle earlier —
+**the family has now appeared in two consecutive draws.** Truist Financial
+(59,476 ppl) **32.0% across 5 rows**, The Crawford Group (98,721) 15.3%, Ernst
+& Young (96,780) 12.2%, Tesla (89,700) 15.8%, CBRE (51,826) 19.9%, Quest
+Diagnostics (62,875) 13.7%, Microsoft's 183,509 at 0.3%.
+
+**The asymmetry is one this record has named before: the fee column asserts
+where the ticker column refuses.** 834 of 835 rows publish no symbol and 365
+publish an estimated expense ratio, so `fund-er.js` prices a holding it cannot
+name — a pattern match on `index` with no house attached.
+
+**And the family splits on one filed word, which decides what may be claimed
+for each half.** `Spartan 500 Index **Fund**` (27 rows), `Fidelity Spartan 500
+Index Fund` (18), `Spartan 500 Index` (16), `Spartan Extended Market Index
+Fund` (15), `Spartan International Index Fund` (13) and their siblings name a
+REGISTERED mutual fund that still exists under its current name, so an EXACT
+ticker is reachable — that half is a rename mapping, and **a rename is a FACT
+that must be SOURCED, never inferred from the brand.** `Spartan 500 Index
+**Pool** Class C/D/E` (33 + 18 + 12 + 10 + 8 … rows) is a COMMINGLED POOL with
+no registered class, where the most that may be published is a labelled
+comparable — exactly what 44,484 other pooled rows already carry. Table work
+for `funds-and-tickers` or sourced entries in `data/fund-facts.json`; **not
+startable by a session alone, because every mapping needs its rename documented
+per fund.**
+
+### A correction to the HIGH baseline, which was described two ways and is
+### neither
+
+The coverage line reads `high: 4` and both descriptions of its composition in
+`CLAUDE.md` are wrong. It is **3 `contrib` + `fabricated-name`** — Attentive
+Mobile, Napa Management Services and Transystems — not "the 4 `contrib`
+outliers again" and not "4 `contrib` + `fabricated-name`" = 5.
+`audit-generic-names` reads **237 plans / 508 rows** against the 230
+escalation threshold, so that HIGH is STANDING, and a fourth contrib outlier
+left the store on the DOL dataset refresh. **The total being correct by
+coincidence while both readings of it are stale** is the staleness hazard this
+file warns about, aimed at itself; there is no CI-vs-local divergence here —
+`audit-data` and the standalone script both read 237.
+
+---
+
 ## 2026-10-01 (17:5xZ) — A row typed employer stock that names a DIFFERENT company published the sponsor's symbol
 
 - **Wrong:** `app.js`'s ticker cell was `stockRow ? (plan.ticker || null) : ...`,
