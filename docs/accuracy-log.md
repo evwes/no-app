@@ -33758,3 +33758,29 @@ publishing 0.26–0.40 while **stating no share class at all**, the owner-gated
 R-6 inconsistency. **One small NEW member:** `All investments held in` typed
 `Mutual fund` at $2,023,000 — a wrapped-sentence tail as a holding, v191's
 `Statements` family one phrase along, 0.0% of its menu.
+
+## 2026-10-01 (10:1xZ) — #533's verdict: the production merge reproduced the local one exactly
+
+`conclusion: success`, mirrored `0b3e9b1a → b7d4e0ef` unforced on both checks,
+data gate +0 / −0 by ack and by plan.
+
+Read out of the ARTIFACT, the merge log's blob host being `connect_rejected`:
+**`sec tickers` 477,625 rows across 47,915 plans (113,423 on a blank type
+cell)** — all three to the digit — and diffing the data commit against the
+commit I wrote gives **`stk` 0 differing rows, `name` 0, 0 acks added or
+removed, 0 entries whose row count changed.**
+
+Coverage line byte-identical but for the one figure registered to move:
+**`tkExact` 36.34 → 37.2**, `tkComparable` 3.27, and confident 60,170, lineups
+59,822, entries 65,479, HIGH 4, warn 603, overshoot 372, overshootTrust 12,
+aggRow 113, dl 19, pv 100 all held.
+
+**`tkShare` held at 24.47 EXACTLY, and that registration is the point.**
+#532's verdict recorded that bounding `tkExact` with a tolerance was weaker than
+saying *why* the figure could not move; this run's registration said `tkShare`
+"is a separate one-argument sample that does not read the stored field and must
+hold at 24.47 exactly" — a mechanism, not a bound, and the mechanism is what
+made it checkable. ***Register why a figure cannot move, not how far it may.***
+
+`site-test` #128 reads `conclusion: success` on `0b3e9b1a`, the exact mirrored
+commit, so CI green covers every executable line shipped.

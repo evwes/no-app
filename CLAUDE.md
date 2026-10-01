@@ -1213,6 +1213,23 @@ from the cycle that would have cleared it.
   slices app.js's body from source and imports the canonical suppressors.
   ***A transcription of a shipped expression rots as the expression grows; three
   instruments rot three times.***
+- **NOTHING IS IN FLIGHT. #533 RAN `success` AND IS MIRRORED — 2026-10-01 10:1xZ
+  (`0b3e9b1a → b7d4e0ef`), UNFORCED ON BOTH CHECKS, data gate +0 / −0 BY ACK AND
+  BY PLAN. EVERY PRE-REGISTERED FIGURE PASSED, AND THE PRODUCTION MERGE
+  REPRODUCED THE LOCAL ONE EXACTLY.** Read out of the ARTIFACT (the merge log's
+  blob host is `connect_rejected`): `sec tickers` **477,625 rows across 47,915
+  plans (113,423 on a blank type cell)**, all three to the digit, and diffing the
+  data commit against the commit I wrote gives **`stk` 0 differing rows, `name`
+  0, 0 acks added or removed, 0 row-count changes.** Coverage line byte-identical
+  but for the one figure registered to move: **`tkExact` 36.34 → 37.2**, with
+  `tkComparable` 3.27 and confident 60,170, lineups 59,822, entries 65,479, HIGH
+  4, warn 603, overshoot 372, overshootTrust 12, aggRow 113, dl 19, pv 100 all
+  held. **`tkShare` held at 24.47 EXACTLY**, which is the sharper registration
+  #532's verdict said to prefer over a tolerance — it is a separate
+  one-argument sample that cannot read the stored field, so it could not move,
+  and saying *why* a figure cannot move is a stronger claim than bounding it.
+  `site-test` #128 reads `conclusion: success` on `0b3e9b1a`, the exact mirrored
+  commit, so CI green covers every executable line shipped.
 - **SHIPPED AND MIRRORED 2026-10-01 09:4xZ (`de63cf2d → 0b3e9b1a`), UNFORCED ON
   BOTH CHECKS, data gate +0 / −0 BY ACK AND BY PLAN — THE MANAGER GATE REFUSED
   ITS OWN EXACT MATCHES: 13,591 rows / 9,943 plans / 11,640,610 participants /
