@@ -10,7 +10,7 @@
  * EIN-PN (stable forever, no orphans when a sponsor renames). */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { matchQuoteOk } from "./lib-quote.mjs";
-import { coverageBand, filedUnit, cleanFiledName, isParticipantLoanRow, isNamelessFundRow, isLoanDescriptionRow, isLoanAnswerRow, isLoanMaturityRow, isDirectionCaptionRow, isOfficeListRow } from "./lib-disclose.mjs";
+import { coverageBand, filedUnit, cleanFiledName, isParticipantLoanRow, isNamelessFundRow, isLoanDescriptionRow, isLoanAnswerRow, isLoanMaturityRow, isLoanVocabularyRow, isDirectionCaptionRow, isOfficeListRow } from "./lib-disclose.mjs";
 import { isGenericTypeName } from "./lib-4i.mjs";
 
 const BASE = "https://evwes.github.io/no-app"; // becomes the custom domain when DNS lands
@@ -253,7 +253,7 @@ for (const r of d.plans.slice(0, TOP_N)) {
     const descLoan = isLoanDescriptionRow(nm);
     const label = descLoan ? "Participant loans — not a menu choice"
       : (iss ? titleCase(iss) + " · " : "") + titleCase(nm)
-      + (isParticipantLoanRow(nm) || isLoanAnswerRow(nm) || isLoanMaturityRow(nm) ? " — participant loans, not a menu choice" : "")
+      + (isParticipantLoanRow(nm) || isLoanAnswerRow(nm) || isLoanMaturityRow(nm) || isLoanVocabularyRow(nm) ? " — participant loans, not a menu choice" : "")
       + (nameless ? " — the filing names no specific fund" : "");
     return `<tr><td>${esc(label)}</td><td class="num">${usd(f.value || 0)}</td></tr>`;
   }).join("") : "";

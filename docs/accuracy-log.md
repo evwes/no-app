@@ -33847,3 +33847,103 @@ annuity at 1.41% interest rate`, Griswold's pinned Principal GIC — and **`LOAN
 SECURED BY MTGES-RESID.` is Johnson & Johnson's real MORTGAGE holding**, already
 pinned on this record as a must-keep from the 2026-09-28 loan work. Any arm
 here ships with those pinned on the refusing side and every flagged row read.
+
+## 2026-10-01 (11:4xZ) — The loan anchor is too strict: three arms, 1,488 rows, 1,168,452 participants
+
+- **Wrong:** 1,488 published rows across 1,465 plans / 1,168,452 participants /
+  $1,769,996,593 are participant-loan lines shown as menu holdings, and no
+  shipped guard types them. Three independent causes, each outside an existing
+  rule BY CONSTRUCTION rather than by oversight:
+
+  **(1) AN APOSTROPHE — 1,234 rows / 1,234 plans / 674,947 participants, the
+  largest shape in the class.** `LOAN_ROW` accepts `Participant Loan Account`
+  and refuses `Participant's Loan Account`: the lead is `participant[- ]?`, so
+  after the noun the pattern meets `'s` where it wants `loans?`. **That the row
+  count and the plan count are IDENTICAL is itself corroboration** — a plan
+  files ONE participant-loan line. All 13 distinct names read:
+  `Participant's Loan Account` (1,075), `Participants Loans` (101),
+  `Participants Loan` (16), `Participants’ loans`, `PARTICIPANT'S LOAN`.
+
+  **(2) A LEADING ADJECTIVE — 218 further rows.** `LOAN_ROW` requires the name
+  to BEGIN with the loan word, which is exactly what keeps `Bank Loan Fund`
+  safe, so `OUTSTANDING LOAN BALANCE` (81 rows), `Outstanding Plan Loans`,
+  `Loans to Plan Participants` and `Loans with` sit outside it structurally.
+  **The seventh recorded instance of a missing entry in an anchored list hiding
+  a class — and here no list can be widened**, because the missing entry is an
+  adjective.
+
+  **(3) A MISSING PREPOSITION — 36 rows.** `LOAN_DESC_RANGE`'s dangling-range
+  arm is `\bfrom\s+N%\s*(to|-)` and names only one preposition, so
+  `rates of 4.25% to` states a range the predicate cannot see.
+
+- **Change:** three arms, display-side, no parser bump, v181 treatment
+  throughout — the row is TYPED and never dropped, so the value stays in the
+  denominator and no other row's published percentage moves.
+
+  **(2) NEEDS NO VOCABULARY OF ITS OWN, and that is the whole design.**
+  `loanDescriptionResidue` already strips the loan words, and `fund`, `trust`,
+  `portfolio` and `etf` are DELIBERATELY ABSENT from that list — so every real
+  holding keeps a residue and is refused without one fund name being
+  enumerated: `Bank Loan Fund` -> {bank, fund}, `Senior Loan Portfolio` ->
+  {senior, portfolio}, `Invesco Senior Loan ETF` -> {invesco, senior, etf},
+  J&J's `LOANS SECURED BY MTGES-RESID.` -> {mtges, resid},
+  `FEDERAL HOME LOAN BANK OF BOSTON`, `VOLKSWAGEN AUTO LOAN ENHANCED TRUST`,
+  `Freddie Mac Whole Loan Securities Trust`. The residue idiom, asked of the
+  whole name rather than of a description's leftovers.
+
+- **A `NOTE` IS A SECURITY BEFORE IT IS A LOAN, AND THE DRAFT'S OWN OUTPUT SAID
+  SO.** A first version asking only for a loan-or-note word caught **37 rows of
+  `Note @ 1.500% Maturing 2/15/2030` and `Note 3.150% due 03/15/2027`** —
+  Treasury and corporate notes in a real bond sleeve, every one of which empties
+  the residue exactly as a loan line does. So `loan` stands alone and
+  `note`/`promissory` must be accompanied by a participant or receivable marker,
+  each of which is already in the strip vocabulary. **COST NAMED, 6 rows:**
+  `Notes with`, `Notes with various`, `Notes with varying`, `Secured Notes`,
+  `all outstanding notes` and `9.50% on all outstanding notes` are genuine loan
+  fragments refused with the bonds — refusing a repair is the safe direction.
+  *Reading the output caught what the count called a win.*
+
+- **THE NAIVE REPAIR OF (3) WAS MEASURED AND REFUSED.** Adding `of` to the
+  rang/between/vary/from alternation in the FIRST arm needs no second number, so
+  it reaches `Fixed rate of 3.00%`, `Guaranteed rate of 2.25%` and `Stable Value
+  Fund crediting rate of 3.11%` — ordinary crediting rates with no range at all
+  — and `isLoanDescriptionRow` REPLACES the displayed name rather than
+  qualifying it. What ships is one token inside the arm that already exists for
+  the sibling preposition, so `of` must still be followed by `N%` and a `to`.
+  All three are pinned must-KEEPs.
+
+- **OUTCOME, measured whole-store through the display path: 0 tickers gained or
+  lost, 0 fees gained, lost or changed, 0 asterisks moved, 0 typings LOST** —
+  every arm is additive by construction. An HONESTY fix and not a coverage fix.
+  All 103 distinct newly-typed names read, not one a fund. **COST NAMED, 1 row:**
+  Northeast Community Bank (177 ppl) files `Participation Loans` at 1.74%, a
+  bank's idiom for a shared loan as readily as for its own participants' — and a
+  shared loan is not a menu choice either.
+
+- **AND A FIFTH INCOMPLETE TRANSCRIPTION IN THE DRAW HARNESS, THIS ONE MINE AND
+  AN HOUR OLD, CAUGHT BECAUSE TWO OF MY OWN COUNTS DISAGREED.** The first
+  outcome test read "1 ticker, 0 fees" and the figure was worthless twice over:
+  it rendered the BEFORE through the WORKING TREE's app.js, so every suppressor
+  under test read as already applied; and when that was fixed the AFTER still
+  reported 1,269 type changes against the predicate's 1,488, because
+  `apppath.mjs`'s `loanRow` lists four arms and **I had added a fifth to app.js
+  without adding it here**. 218 rows read as "unchanged" in the very test meant
+  to price them. *A before/after harness is only as honest as its "before"* —
+  and *a transcription of a shipped expression rots as the expression grows,
+  including when the author of the growth is you, the same hour.* **Two
+  disagreeing counts are the tell; neither was published until the gap was
+  named.**
+
+- **Prevention:** `isLoanVocabularyRow` canonical in `scripts/lib-disclose.mjs`,
+  twinned verbatim in app.js, wired into `build-seo-pages.mjs` so it reaches
+  BOTH surfaces, and tethered by `smoke-test.mjs` on 25 pinned cases
+  (12 must-flag / 13 must-keep, the must-keeps including the three Treasury and
+  corporate notes). The possessive and the `of` token extend the two existing
+  tethers to 24 and 27 cases. **A NEGATIVE CONTROL PER CONDITION, each built
+  DIRECTLY rather than by surgery on the shipped source, failing BY NAME on
+  exactly its own cases:** drop the possessive -> the 5 possessive pins; drop
+  `of` -> the 3 dangling pins; drop the note marker -> the 3 bond pins; drop the
+  loan-word condition -> `Interest rate 1.75%`, which is an empty residue with
+  no loan word in it and is the case written for that control alone.
+  parser-gate, smoke and fund-er-test (62/26/19/18/18) green. **7 crawlable
+  pages**, every changed cell read, one per page.

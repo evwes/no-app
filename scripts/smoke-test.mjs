@@ -212,7 +212,7 @@ try {
    * canonical, app.js carries a twin because it is a plain browser script.
    * Run the BROWSER copy against the module's own boundary cases. */
   const { coverageBand, frozenClaimOk, cleanFiledName, isParticipantLoanRow, isLoanDescriptionRow,
-    isAnnuityContractRow, annuityFeeIsGuaranteeOnly, isCollectiveTrustName, isLoanAnswerRow, isLoanMaturityRow,
+    isAnnuityContractRow, annuityFeeIsGuaranteeOnly, isCollectiveTrustName, isLoanVocabularyRow, isLoanAnswerRow, isLoanMaturityRow,
     isDirectionCaptionRow,
     isOfficeListRow,
     isInvestmentContractRow, isMistypedStockRow, isBankDepositRow,
@@ -554,9 +554,16 @@ try {
   const loanCases = ["LOAN FUND", "Loan Fund", "Loans", "Loan", "Participant Loans",
     "Notes Receivable from Participants", "Loan Fund (4.25% - 9.5%)", "Loans to Participants",
     "LOAN FUND, 4.25%-9.50%", "Participant note",
+    /* THE POSSESSIVE, 2026-10-01 — 1,234 rows, the largest shape in the class,
+     * and the only thing that had been stopping them was an apostrophe. */
+    "Participant's Loan Account", "Participants Loans", "Participants\u2019 loans",
+    "PARTICIPANT'S LOAN", "Participants' Loans",
     "Bank Loan Fund", "Floating Rate Loan Fund", "Senior Loan Portfolio",
     "Loans Secured By Mtges-Resid.", "Loomis Sayles Core Plus Bond",
-    "Invesco Senior Loan ETF", "Loan Participation Fund", "Eaton Vance Floating Rate"];
+    "Invesco Senior Loan ETF", "Loan Participation Fund", "Eaton Vance Floating Rate",
+    /* the anchor is what the possessive must not loosen: a real fund may carry
+     * the possessive's own words and must still open with something else */
+    "Participating Mortgage Trust", "Nuveen Preferred Securities Loan Fund"];
   const loanGot = await page.evaluate((cs) => {
     if (typeof window.__wampoLoanRow !== "function") return null;
     return cs.map((n) => window.__wampoLoanRow(n));
@@ -567,9 +574,9 @@ try {
     for (const n of loanDrift) console.error(`  ${JSON.stringify(n)}  app.js=${loanGot[loanCases.indexOf(n)]}  module=${isParticipantLoanRow(n)}`);
     fail(`the participant-loan predicate in app.js disagrees with scripts/lib-disclose.mjs on ${loanDrift.length} of ${loanCases.length} names`);
   }
-  for (const n of loanCases.slice(0, 10))
+  for (const n of loanCases.slice(0, 15))
     if (!isParticipantLoanRow(n)) fail(`participant-loan predicate no longer recognises a loan row: ${JSON.stringify(n)}`);
-  for (const n of loanCases.slice(10))
+  for (const n of loanCases.slice(15))
     if (isParticipantLoanRow(n)) fail(`participant-loan predicate now damages a REAL FUND: ${JSON.stringify(n)}`);
 
   /* THE LOAN-DESCRIPTION PREDICATE, tethered the same way. It is the rule for
@@ -600,6 +607,11 @@ try {
     "by vested interest, various terms, interest rates of 3.25% to 8.50%; maturities through Ap",
     "62 Participants Notes - interest rates of 4.25% - 9.50%; Maturities from 2025 to 2029; Col",
     "Inte re st from 4.25% to",
+    /* `of` JOINS THE DANGLING-RANGE ARM, 2026-10-01. The three must-KEEPs below
+     * — `Fixed rate of 3.00%` and its siblings — are the whole reason it went
+     * there and not into the connective alternation, which needs no second
+     * number and would have RENAMED three ordinary crediting rates. */
+    "rates of 4.25% to", "Interest rates of 4.25% to", "at rates of 5.25% \u2013",
     "participants secured by vested balances, 4.25% to 9.50% fixed interest, maturing in 1\u20135 ye",
     /* must stay real, from here down */
     /* the prefix arm must not reach a house or vehicle word that arrived WHOLE:
@@ -615,6 +627,8 @@ try {
     "(Interest rates up to 5.56%; maturing 2024 - 2030) Morley Stable Value VI Fund",
     "Interest Rate of 0.15% to 0.62% (Maturing in 2023) Principal",
     "Interest Rate of 4.18% to 5.89% (Maturing in 2024) Principal",
+    "Fixed rate of 3.00%", "Guaranteed rate of 2.25%",
+    "Stable Value Fund crediting rate of 3.11%",
     "Bank Loan Fund", "Fidelity 500 Index Fund"];
   const descGot = await page.evaluate((cs) => {
     if (typeof window.__wampoLoanDescRow !== "function") return null;
@@ -626,10 +640,57 @@ try {
     for (const n of descDrift) console.error(`  ${JSON.stringify(n)}  app.js=${descGot[descCases.indexOf(n)]}  module=${isLoanDescriptionRow(n)}`);
     fail(`the loan-description predicate in app.js disagrees with scripts/lib-disclose.mjs on ${descDrift.length} of ${descCases.length} names`);
   }
-  for (const n of descCases.slice(0, 15))
+  for (const n of descCases.slice(0, 18))
     if (!isLoanDescriptionRow(n)) fail(`loan-description predicate no longer recognises a wrapped loan description: ${JSON.stringify(n)}`);
-  for (const n of descCases.slice(15))
+  for (const n of descCases.slice(18))
     if (isLoanDescriptionRow(n)) fail(`loan-description predicate would RENAME a real holding "Participant loans": ${JSON.stringify(n)}`);
+
+  /* THE LOAN-VOCABULARY PREDICATE, tethered the same way, 2026-10-01. It is the
+   * fourth member of the family and the one `LOAN_ROW`'s anchor cannot reach:
+   * the name is nothing but loan words but opens with an ordinary adjective,
+   * so `OUTSTANDING LOAN BALANCE` sits outside the anchored arm BY
+   * CONSTRUCTION. It adds NO vocabulary — `fund`, `trust`, `portfolio` and
+   * `etf` are absent from the strip list, which is what refuses every real
+   * holding below without a fund name being enumerated.
+   *
+   * Thirteen of these must come back FALSE and they are the safety argument in
+   * two kinds: real funds whose names contain "loan" (`Bank Loan Fund`,
+   * `Invesco Senior Loan ETF`, J&J's `LOANS SECURED BY MTGES-RESID.`), and
+   * REAL BOND HOLDINGS whose names contain "note" — `Note @ 1.500% Maturing
+   * 2/15/2030` and `Note 3.150% due 03/15/2027` are Treasury and corporate
+   * notes that empty the residue exactly as a loan line does. A first draft
+   * asking only for a loan-OR-note word caught 37 of them, which is why
+   * `note` needs a participant/receivable marker and `loan` does not. */
+  const vocabCases = [
+    /* must FLAG */
+    "OUTSTANDING LOAN BALANCE", "Outstanding Plan Loans", "Outstanding participants' loans",
+    "Loans to Plan Participants", "Loans with", "LOANS OUTSTANDING",
+    "Loan Balance", "Participant Plan Loans", "Notes from participants",
+    "Participants' Notes", "Interest on loans", "Notes rec. with",
+    /* must KEEP */
+    "Bank Loan Fund", "Floating Rate Loan Fund", "Senior Loan Portfolio",
+    "Loan Participation Fund", "Invesco Senior Loan ETF",
+    "LOANS SECURED BY MTGES-RESID.", "Freddie Mac Whole Loan Securities Trust",
+    "FEDERAL HOME LOAN BANK OF BOSTON", "VOLKSWAGEN AUTO LOAN ENHANCED TRUST",
+    "Note @ 1.500% Maturing 2/15/2030", "Note 3.150% due 03/15/2027",
+    "Secured Notes",
+    /* an empty residue with NO loan word at all: the loan-word condition is
+     * load-bearing and this is the case that fails when it is dropped */
+    "Interest rate 1.75%"];
+  const vocabGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoLoanVocabRow !== "function") return null;
+    return cs.map((n) => window.__wampoLoanVocabRow(n));
+  }, vocabCases);
+  if (!vocabGot) fail("app.js no longer exposes __wampoLoanVocabRow — the loan-vocabulary predicate cannot be cross-checked");
+  const vocabDrift = vocabCases.filter((n, i) => isLoanVocabularyRow(n) !== vocabGot[i]);
+  if (vocabDrift.length) {
+    for (const n of vocabDrift) console.error(`  ${JSON.stringify(n)}  app.js=${vocabGot[vocabCases.indexOf(n)]}  module=${isLoanVocabularyRow(n)}`);
+    fail(`the loan-vocabulary predicate in app.js disagrees with scripts/lib-disclose.mjs on ${vocabDrift.length} of ${vocabCases.length} names`);
+  }
+  for (const n of vocabCases.slice(0, 12))
+    if (!isLoanVocabularyRow(n)) fail(`loan-vocabulary predicate no longer recognises a loan row: ${JSON.stringify(n)}`);
+  for (const n of vocabCases.slice(12))
+    if (isLoanVocabularyRow(n)) fail(`loan-vocabulary predicate would tell a reader a REAL HOLDING is a participant loan: ${JSON.stringify(n)}`);
 
   /* THE ANNUITY-CONTRACT PREDICATE, tethered the same way, 2026-09-29. It is a
    * TWO-CELL rule — the filed NAME against the stored TYPE — so every case here

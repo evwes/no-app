@@ -1031,8 +1031,21 @@ export function cleanFiledName(name) {
  *
  * ANCHORED, which is what keeps real funds safe: `Bank Loan Fund`, `Floating
  * Rate Loan Fund`, `Senior Loan Portfolio` and J&J's real `Loans Secured By
- * Mtges-Resid.` are all refused, and all four are pinned controls. */
-export const LOAN_ROW = /^(?:participant[- ]?)?loans?(?:\s*(?:fund|receivable|to participants?|account))?\b[\s.,;:()%\d-]*$|^(?:notes? receivable from |loans? to )participants?\b|^participant notes?\b/i;
+ * Mtges-Resid.` are all refused, and all four are pinned controls.
+ *
+ * THE LARGEST SHAPE IN THE CLASS WAS AN APOSTROPHE — 2026-10-01 (12:1xZ).
+ * `Participant Loan Account` matched and `Participant's Loan Account` did not:
+ * the lead was `participant[- ]?`, so after the noun the pattern met `'s` where
+ * it wanted `loans?`. 1,234 rows / 1,234 plans / 674,947 participants, and that
+ * one-row-per-plan ratio is itself corroboration — a plan files ONE
+ * participant-loan line. All 13 distinct names read and every one is a
+ * possessive or a plural of a shape this arm already accepts:
+ * `Participant's Loan Account` (1,075), `Participants Loans` (101),
+ * `Participants’ loans`, `PARTICIPANT'S LOAN`. 0 publish a ticker and 0 a fee.
+ *
+ * THE ANCHOR IS UNTOUCHED AND IS STILL THE WHOLE SAFETY ARGUMENT: a bank-loan
+ * mutual fund does not open with the word "Participant". */
+export const LOAN_ROW = /^(?:participants?['’]?s?[- ]?)?loans?(?:\s*(?:fund|receivable|to participants?|account))?\b[\s.,;:()%\d-]*$|^(?:notes? receivable from |loans? to )participants?\b|^participant notes?\b/i;
 export function isParticipantLoanRow(name) {
   return LOAN_ROW.test(String(name || "").trim());
 }
@@ -1078,8 +1091,19 @@ export function isParticipantLoanRow(name) {
  * `Principal Guaranteed Interest Account` crediting rate, not a loan — 0.15%
  * is no participant-loan rate, and the plan's whole menu is Principal separate
  * accounts. One token carrying two meanings, caught by READING the accepted
- * names rather than counting them. Both rows are pinned controls. */
-const LOAN_DESC_RANGE = /\brates?\b[^.;]{0,40}?\b(?:rang(?:e|es|ing)|between|vary|varying|from)\b|\b\d+(?:\.\d+)?\s*%?\s*(?:to|[-–—])\s*\d+(?:\.\d+)?\s*%|\bfrom\s+\d+(?:\.\d+)?\s*%\s*(?:to|[-–—])/i;
+ * names rather than counting them. Both rows are pinned controls.
+ *
+ * `of` JOINS THE DANGLING-RANGE ARM AND NOT THE CONNECTIVE LIST — 2026-10-01
+ * (12:2xZ). `rates of 4.25% to` states a range this predicate could not see,
+ * because the only preposition the dangling arm names is `from`. The obvious
+ * repair is to add `of` to the rang/between/vary/from alternation in the FIRST
+ * arm, and it was measured and REFUSED: that arm needs no second number, so it
+ * reaches `Fixed rate of 3.00%`, `Guaranteed rate of 2.25%` and `Stable Value
+ * Fund crediting rate of 3.11%` — ordinary crediting rates with no range at
+ * all — and this predicate REPLACES the displayed name rather than qualifying
+ * it. What ships is one token inside the arm that already exists for the
+ * sibling preposition, so `of` must still be followed by `N%` and a `to`. */
+const LOAN_DESC_RANGE = /\brates?\b[^.;]{0,40}?\b(?:rang(?:e|es|ing)|between|vary|varying|from)\b|\b\d+(?:\.\d+)?\s*%?\s*(?:to|[-–—])\s*\d+(?:\.\d+)?\s*%|\b(?:from|of)\s+\d+(?:\.\d+)?\s*%\s*(?:to|[-–—])/i;
 const LOAN_DESC_WORDS = /\b(?:participants?|participation|loans?|notes?|promissory|receivable|outstanding|balances?|interest|rates?|ranging|range|ranges|rang|between|varying|various|vary|varies|bearing|earning|carrying|accruing|maturing|maturity|maturities|due|payable|dated?|dates|through|until|to|from|at|with|of|and|or|the|a|an|per|annum|annually|percent|pct|secured|collateralized|collateral|by|vested|terms?|years?|months?|less|more|than|generally|stated|fixed|variable|cost|no|later|amounts?|extending|into|repayment|plan|in|on|all|up)\b/gi;
 const LOAN_DESC_MONTHS = /\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\b/gi;
 
@@ -1144,6 +1168,60 @@ export function loanDescriptionResidue(name) {
 export function isLoanDescriptionRow(name) {
   const s = String(name || "").trim();
   if (!s || !/\d/.test(s) || !LOAN_DESC_RANGE.test(s)) return false;
+  return loanDescriptionResidue(s).length === 0;
+}
+
+/* A NAME THAT IS NOTHING BUT LOAN VOCABULARY IS THE LOAN ROW — 2026-10-01
+ * (12:2xZ). The fourth member of the family, and the one the anchor cannot
+ * reach: `LOAN_ROW` requires the name to BEGIN with the loan word, which is
+ * exactly what keeps `Bank Loan Fund` safe — so `OUTSTANDING LOAN BALANCE`
+ * (81 rows), `Outstanding Plan Loans`, `Loans to Plan Participants` and
+ * `Loans with` sit outside it BY CONSTRUCTION, the leading word being an
+ * ordinary adjective. A missing entry in an anchored list hiding a class, for
+ * the seventh recorded time; here the missing entry is a leading adjective,
+ * so no list can be widened and the test has to be structural.
+ *
+ * IT NEEDS NO VOCABULARY OF ITS OWN. `loanDescriptionResidue` already strips
+ * the loan words, and `fund`, `trust`, `portfolio` and `etf` are DELIBERATELY
+ * ABSENT from that list — which is why every real holding keeps a residue and
+ * is refused without a single fund name being enumerated:
+ *
+ *   `Bank Loan Fund`                  -> bank, fund
+ *   `Floating Rate Loan Fund`         -> floating, fund
+ *   `Senior Loan Portfolio`           -> senior, portfolio
+ *   `Loan Participation Fund`         -> fund
+ *   `Invesco Senior Loan ETF`         -> invesco, senior, etf
+ *   `LOANS SECURED BY MTGES-RESID.`   -> mtges, resid     (J&J's real mortgage)
+ *   `VOLKSWAGEN AUTO LOAN ENHANCED TRUST`, `FEDERAL HOME LOAN BANK OF BOSTON`,
+ *   `Freddie Mac Whole Loan Securities Trust`  — all refused the same way.
+ *
+ * A `NOTE` IS A SECURITY BEFORE IT IS A LOAN, and the draft's own output is
+ * what said so: a first version asking only for a loan-or-note word caught 37
+ * rows of `Note @ 1.500% Maturing 2/15/2030` and `Note 3.150% due 03/15/2027`
+ * — Treasury and corporate notes in a real bond sleeve, every one of which
+ * empties the residue. So `loan` stands alone and `note`/`promissory` must be
+ * accompanied by a participant or receivable marker, each of which is already
+ * in the strip vocabulary. COST NAMED, 6 rows: `Notes with`, `Notes with
+ * various`, `Notes with varying`, `Secured Notes`, `all outstanding notes` and
+ * `9.50% on all outstanding notes` are genuine loan fragments refused with the
+ * bonds — refusing a repair is the safe direction.
+ *
+ * 376 rows / 353 plans / 629,481 participants / $1,472,918,683 before the
+ * possessive arm above takes its share. All 83 distinct names read, not one a
+ * fund; 1 publishes a ticker and 0 a fee, so the harm is the CLAIM alone.
+ * COST NAMED, 1 row: Northeast Community Bank (177 ppl) files `Participation
+ * Loans` at 1.74%, which is a bank's idiom for a shared loan as readily as for
+ * its own participants' — and a shared loan is not a menu choice either.
+ *
+ * TYPED, NOT DROPPED (v181): the value is the plan's loan balance, so it stays
+ * in the denominator and no other row's published percentage moves. */
+const LOAN_NOTE_MARKER = /\b(?:participants?|receivable|rec|promissory)\b/i;
+export function isLoanVocabularyRow(name) {
+  const s = String(name || "").trim();
+  if (!s) return false;
+  const hasLoan = /\bloans?\b/i.test(s);
+  const hasNote = /\bnotes?\b|\bpromissory\b/i.test(s);
+  if (!hasLoan && !(hasNote && LOAN_NOTE_MARKER.test(s))) return false;
   return loanDescriptionResidue(s).length === 0;
 }
 

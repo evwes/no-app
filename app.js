@@ -1030,7 +1030,11 @@
   }
 
   window.__wampoNamelessRow = isNamelessFundRow;  // read by the smoke test only
-  const LOAN_DESC_RANGE = /\brates?\b[^.;]{0,40}?\b(?:rang(?:e|es|ing)|between|vary|varying|from)\b|\b\d+(?:\.\d+)?\s*%?\s*(?:to|[-–—])\s*\d+(?:\.\d+)?\s*%|\bfrom\s+\d+(?:\.\d+)?\s*%\s*(?:to|[-–—])/i;
+  /* `of` is in the DANGLING-RANGE arm and not in the connective list: the
+   * connective arm needs no second number, so it would reach `Fixed rate of
+   * 3.00%` — an ordinary crediting rate — and this predicate REPLACES the
+   * displayed name. See scripts/lib-disclose.mjs for the measurement. */
+  const LOAN_DESC_RANGE = /\brates?\b[^.;]{0,40}?\b(?:rang(?:e|es|ing)|between|vary|varying|from)\b|\b\d+(?:\.\d+)?\s*%?\s*(?:to|[-–—])\s*\d+(?:\.\d+)?\s*%|\b(?:from|of)\s+\d+(?:\.\d+)?\s*%\s*(?:to|[-–—])/i;
   const LOAN_DESC_WORDS = /\b(?:participants?|participation|loans?|notes?|promissory|receivable|outstanding|balances?|interest|rates?|ranging|range|ranges|rang|between|varying|various|vary|varies|bearing|earning|carrying|accruing|maturing|maturity|maturities|due|payable|dated?|dates|through|until|to|from|at|with|of|and|or|the|a|an|per|annum|annually|percent|pct|secured|collateralized|collateral|by|vested|terms?|years?|months?|less|more|than|generally|stated|fixed|variable|cost|no|later|amounts?|extending|into|repayment|plan|in|on|all|up)\b/gi;
   const LOAN_DESC_MONTHS = /\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\b/gi;
 
@@ -1098,7 +1102,26 @@
     return loanDescriptionResidue(s).length === 0;
   }
 
+  /* A NAME THAT IS NOTHING BUT LOAN VOCABULARY IS THE LOAN ROW — the arm
+   * `LOAN_ROW`'s anchor cannot reach, because the name opens with an ordinary
+   * adjective (`OUTSTANDING LOAN BALANCE`). No vocabulary of its own: `fund`,
+   * `trust`, `portfolio` and `etf` are absent from the strip list, so every
+   * real holding keeps a residue. A `note` is a SECURITY before it is a loan —
+   * 37 Treasury and corporate notes said so — hence the marker.
+   * Canonical in scripts/lib-disclose.mjs; the smoke test holds the two
+   * together. */
+  const LOAN_NOTE_MARKER = /\b(?:participants?|receivable|rec|promissory)\b/i;
+  function isLoanVocabularyRow(name) {
+    const s = String(name || "").trim();
+    if (!s) return false;
+    const hasLoan = /\bloans?\b/i.test(s);
+    const hasNote = /\bnotes?\b|\bpromissory\b/i.test(s);
+    if (!hasLoan && !(hasNote && LOAN_NOTE_MARKER.test(s))) return false;
+    return loanDescriptionResidue(s).length === 0;
+  }
+
   window.__wampoLoanDescRow = isLoanDescriptionRow;  // read by the smoke test only
+  window.__wampoLoanVocabRow = isLoanVocabularyRow;  // read by the smoke test only
   const ANNUITY_CONTRACT_NAME = /\bannuity contracts?\b/i;
   function isAnnuityContractRow(f, cleanedName) {
     const type = String((f && f.type) || "");
@@ -2451,7 +2474,7 @@
    * from 4.25% to 9.50%`, 7,052 rows → 9). A row literally NAMED `Loan Fund`
    * survived it untouched. A fix for one phrasing of a class is not a fix for
    * the class. */
-  const LOAN_ROW = /^(?:participant[- ]?)?loans?(?:\s*(?:fund|receivable|to participants?|account))?\b[\s.,;:()%\d-]*$|^(?:notes? receivable from |loans? to )participants?\b|^participant notes?\b/i;
+  const LOAN_ROW = /^(?:participants?['’]?s?[- ]?)?loans?(?:\s*(?:fund|receivable|to participants?|account))?\b[\s.,;:()%\d-]*$|^(?:notes? receivable from |loans? to )participants?\b|^participant notes?\b/i;
   function filedAvgER(plan) {
     const lu = plan.filedLineup;
     if (!lu) return null;
@@ -2567,7 +2590,11 @@
        * answer words. Read in three filings; 68 of 68 sit in a menu with no
        * loan row at all, which is the corroboration. lib-disclose.mjs. */
       const loanMatRow = isLoanMaturityRow(f.name || "");
-      const loanRow = LOAN_ROW.test(f.name || "") || descLoanRow || loanAnsRow || loanMatRow;
+      /* ...and the FOURTH, where the name is nothing but loan vocabulary but
+       * opens with an ordinary adjective, so `LOAN_ROW`'s anchor — the thing
+       * that keeps `Bank Loan Fund` safe — cannot reach it. lib-disclose.mjs. */
+      const loanVocabRow = isLoanVocabularyRow(f.name || "");
+      const loanRow = LOAN_ROW.test(f.name || "") || descLoanRow || loanAnsRow || loanMatRow || loanVocabRow;
       /* AN INSURANCE ANNUITY CONTRACT TYPED `Mutual fund` — the rule and its
        * whole safety argument live in scripts/lib-disclose.mjs; this is the
        * generated twin's call site. It suppresses the ticker and the fee for
