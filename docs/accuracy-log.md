@@ -33547,3 +33547,80 @@ fund announced as a bond fund — and `Admiral Fund Vanguard Total Bond Market
 Index`; both are in `other` and the shipped rule refuses them, because `Bond
 Fund` and `Admiral Fund` are not registered class names. *A drawn case is
 evidence about a class; it is not entitled to be the case the fix repairs.*
+
+## 2026-10-01 (08:4xZ) — #532's verdict, and the manager gate refuses its own exact matches
+
+**#532 ran `success` and is MIRRORED (`13507fcc → de63cf2d`), unforced on both
+checks, data gate +0 / −0 by ack and by plan. EVERY PRE-REGISTERED FIGURE
+PASSED, INCLUDING THE PLAN COUNT THAT MISSED LAST TIME.** Read out of the
+artifact: `sec tickers` **461,795 rows across 47,588 plans (110,205 on a blank
+type cell)** — all three to the digit — and diffing the data commit against the
+commit I wrote gives **`name` differs on 0, `stk` on 0, 0 acks added or
+removed, 0 row-count changes**. The production merge reproduced the local one
+exactly. Coverage line byte-identical; `tkExact` held at 36.34, which is inside
+the registered "rises by at most 0.02" — 57 new `stk` rows against 1.72M
+published rows cannot move a two-decimal figure, and saying so beforehand would
+have been a sharper registration than a tolerance. `site-test` #127 reads
+`conclusion: success` on `c47559ab`, the exact shipped commit.
+
+**The plan count passed because it was DERIVED FROM A MEASURED OVERLAP rather
+than from a sum**, which is the lesson #531 handed over one cycle earlier.
+
+**THE DRAW: seed 20261001080.** **Circle K (71,309 ppl, 25 rows @ 0.964) is
+immaculate** — every name a real fund — and Cascade Residential (543 ppl) is
+ten Voya separate accounts correctly carrying no ticker and no fee. What the
+clean menu exposes is a COVERAGE defect: `MFS Mid Cap Growth Fund R6` states a
+house and a class, is typed a registered mutual fund, and resolves to nothing.
+
+**AND THE CAUSE IS NOW DIAGNOSED, WHERE THE QUEUE HELD ONLY "A MATCHER GAP, NOT
+A DATA GAP" — which names a file and not a mechanism.** Instrumented rather
+than reasoned about: every `return null` inside `resolveUncached` was labelled
+and the first one reached names itself.
+
+**`MFS Mid Cap Growth Fund` MATCHES ITS SERIES EXACTLY (`why=exact`) AND THE
+MANAGER GATE THEN REFUSES ITS OWN EXACT MATCH.** The candidate's keys are
+`["mfs series", "mfs mid"]` and `filedMgrs` is **empty**, because
+`managerPhrase("MFS SERIES TRUST IV")` extends past a lead of four characters
+or fewer and takes the corporate form with it. **The key is the registrant's
+LEGAL ENTITY name and a filing writes the BRAND.** The all-furniture guard
+cannot see it: it rejects a phrase where EVERY word is furniture, and `mfs
+series` is half furniture — a real house beside a structural word.
+
+**TWO OF MY OWN FRAMINGS WERE REFUTED BY THEIR OWN MEASUREMENT.** I expected
+`mfs series` to be absent from `MANAGERS`; **it is present** — only 57 series
+of 12,323 have no live key at all. It is live and unreachable, which is a
+different and narrower fault. And I expected the shape `<house>
+<corporate-form>` to be the signature; **`american funds` has exactly that
+shape and is hit constantly**, so the shape is not the defect either. *A
+condition count is not a loss count, and the condition I counted was the wrong
+one twice.*
+
+**SIZED BY OUTCOME, through `merge-4i`'s own call shape — `resolveHolding(idx,
+f.name, f.iss)` on the RAW name under `secTypeAdmits`, on rows carrying no
+`stk`: 10,580 rows / 7,171 plans / 10,508,871 participants / $28,937,758,299
+match a registered series and are refused by the manager gate.**
+
+**MOST OF THAT IS THE GATE WORKING AND MUST NOT BE QUOTED AS THE CLASS.** Its
+top refused series are `High Yield Portfolio`, `S&P 500 Index Account`, `SMALL
+CAP VALUE FUND`, `Mid Cap Growth Fund` — house-less registered names that would
+otherwise be handed to any house's small-cap value holding, which is the exact
+failure the gate's own comment was written for ("Government Bond Fund R6 →
+American Century"). **5,991 rows are correctly refused.**
+
+**THE SEPARABLE HALF IS STRUCTURAL AND NEEDS NO VOCABULARY: THE SERIES NAME
+ITSELF NAMES A HOUSE AND THE FILED NAME NAMES THE SAME ONE. 4,590 rows / 3,294
+plans / 4,924,153 participants / $8,448,467,583**, across 4,219 distinct
+filed-name → series pairs. `MFS Value Fund` → the series `MFS Value Fund` **as
+an exact string**; `PGIM Total Return Bond R6` → `PGIM TOTAL RETURN BOND FUND`;
+`AB Small Cap Growth Z` → `AB Small Cap Growth Portfolio`; the MFS, PGIM and AB
+families throughout. The discriminator is the series' own LEADING token being a
+word the filed name also carries and not furniture and not a word describing
+what the fund holds.
+
+**NOT SHIPPED, and the reason is the size rather than the evidence.** 4.9M
+participants gaining an asserted ticker is larger than any ticker change on
+this record, every one of the 4,219 distinct pairs has to be read against its
+registered series before a single one is published, and it is merge-side so it
+needs a run. The cause is diagnosed, the class is split, the safe half is
+measured and the discriminator is named; the next cycle's work is reading the
+4,219, not re-measuring them.

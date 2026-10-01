@@ -1213,8 +1213,62 @@ from the cycle that would have cleared it.
   slices app.js's body from source and imports the canonical suppressors.
   ***A transcription of a shipped expression rots as the expression grows; three
   instruments rot three times.***
-- **IN FLIGHT: #532 and `site-test` #127, both fired from the push on `c47559ab`
-  and observed queued — A SHARE CLASS ROTATED TO THE FRONT OF A FUND'S NAME: 672
+- **QUEUED 2026-10-01 08:4xZ, CAUSE DIAGNOSED, NOT SHIPPED — THE MANAGER GATE
+  REFUSES ITS OWN EXACT MATCHES: 4,590 rows / 3,294 plans / 4,924,153
+  participants / $8,448,467,583 would newly name a fund.** This is the
+  fund-identification gap the queue held at 139,910 rows / 38.7M ppl with the
+  cause recorded only as *"a MATCHER gap, not a data gap"* — which names a file
+  and not a mechanism.
+  **`MFS Mid Cap Growth Fund` MATCHES ITS SERIES EXACTLY (`why=exact`) AND THE
+  GATE THEN REFUSES IT.** Instrumented, not reasoned about: every `return null`
+  in `resolveUncached` labelled, and the first one reached names itself. The
+  candidate's keys are `["mfs series", "mfs mid"]` and `filedMgrs` is **empty**,
+  because `managerPhrase("MFS SERIES TRUST IV")` extends past a lead of four
+  characters or fewer and takes the corporate form with it. ***The key is the
+  registrant's LEGAL ENTITY name and a filing writes the BRAND.*** The
+  all-furniture guard cannot see it — it rejects a phrase where EVERY word is
+  furniture, and `mfs series` is half furniture.
+  **TWO OF MY OWN FRAMINGS WERE REFUTED BY THEIR OWN MEASUREMENT:** I expected
+  `mfs series` to be ABSENT from `MANAGERS` and it is **present** (only 57 of
+  12,323 series have no live key), so it is live and *unreachable*, a narrower
+  fault; and I expected the shape `<house> <corporate-form>` to be the
+  signature, but **`american funds` has exactly that shape and is hit
+  constantly**. *A condition count is not a loss count, and I counted the wrong
+  condition twice.*
+  **THE RAW FIGURE IS 10,580 rows / 7,171 plans / 10,508,871 ppl / $28.9B AND
+  MOST OF IT IS THE GATE WORKING — do not quote it as the class.** Its top
+  refused series are `High Yield Portfolio`, `S&P 500 Index Account`, `SMALL CAP
+  VALUE FUND` — house-less registered names that would otherwise be handed to
+  any house's holding, the exact failure the gate's own comment was written for.
+  **5,991 rows are correctly refused.**
+  **THE SEPARABLE HALF IS STRUCTURAL AND NEEDS NO VOCABULARY: the series name
+  itself names a house and the filed name names the same one** — 4,219 distinct
+  pairs, `MFS Value Fund` → the series `MFS Value Fund` **as an exact string**,
+  `PGIM Total Return Bond R6` → `PGIM TOTAL RETURN BOND FUND`, `AB Small Cap
+  Growth Z` → `AB Small Cap Growth Portfolio`.
+  **NOT SHIPPED on SIZE, not on evidence:** 4.9M participants gaining an
+  asserted ticker is larger than any ticker change on this record, all 4,219
+  pairs must be read against their registered series first, and it is
+  merge-side so it needs a run. **The next cycle's work is reading the 4,219,
+  not re-measuring them.** Sized by the 08:0xZ draw (seed 20261001080), whose
+  **Circle K (71,309 ppl, 25 rows @ 0.964) is immaculate** — the defect a clean
+  menu exposes is coverage, not a false claim.
+  `docs/accuracy-log.md` 2026-10-01 (08:4xZ).
+- **#532 RAN `success` AND IS MIRRORED — 2026-10-01 08:2xZ (`13507fcc →
+  de63cf2d`), UNFORCED ON BOTH CHECKS, data gate +0 / −0 BY ACK AND BY PLAN.
+  EVERY PRE-REGISTERED FIGURE PASSED, INCLUDING THE PLAN COUNT THAT MISSED LAST
+  TIME.** Read out of the artifact: `sec tickers` **461,795 rows across 47,588
+  plans (110,205 on a blank type cell)**, all three to the digit, and diffing
+  the data commit against the commit I wrote gives **`name` 0, `stk` 0, 0 acks
+  added or removed, 0 row-count changes** — the production merge reproduced the
+  local one exactly. Coverage line byte-identical; `tkExact` held at 36.34,
+  inside the registered "at most 0.02", though **57 new `stk` rows against 1.72M
+  cannot move a two-decimal figure and saying THAT would have been the sharper
+  registration than a tolerance**. `site-test` #127 `conclusion: success` on
+  `c47559ab`. **The plan count passed because it was derived from a measured
+  overlap rather than a sum** — #531's lesson, one cycle later.
+- **PREVIOUSLY IN FLIGHT: #532 and `site-test` #127, both fired from the push on
+  `c47559ab` and observed queued — A SHARE CLASS ROTATED TO THE FRONT OF A FUND'S NAME: 672
   rows / 179 plans / 288,327 participants / $2,267,257,067** across 474 distinct
   transformations. `Fund I Class T. Rowe Price Retirement 2045`, `Institutional
   Premium Class Fidelity Freedom Index 2055 Fund`, `Institutional Class Fidelity
