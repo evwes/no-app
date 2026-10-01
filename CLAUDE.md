@@ -1213,6 +1213,75 @@ from the cycle that would have cleared it.
   slices app.js's body from source and imports the canonical suppressors.
   ***A transcription of a shipped expression rots as the expression grows; three
   instruments rot three times.***
+- **SHIPPED AND MIRRORED 2026-10-01 14:0xZ (`8b491049 → 6cbde627`), UNFORCED ON
+  BOTH CHECKS, data gate +0 / −0 BY ACK AND BY PLAN — A CONTROL CHARACTER WHERE A
+  SPACE BELONGS: 128 rows / 32 plans / 139,537 participants / $169,299,036**, and
+  it is not only an honesty fix: **+9 tickers / −0 / 0 flipped, +21 fees / −0 /
+  4 CHANGED, 1 asterisk gained** to a labelled comparable. A broken PDF font
+  shifts its whole run by +29, so the SPACE (0x20) arrives as 0x03 and the
+  browser renders **nothing** — Fiserv's 39,782, Philips' 29,491, Arthur J.
+  Gallagher's 29,477 and Brown University Health's 19,490 saw
+  `VanguardTargetRet2065`.
+  **THE OBVIOUS READING IS WRONG AND MY OWN PREDICATE'S REFUSALS SAID SO.** A +29
+  shift invites shifting the string back; **of 114 rows carrying the shifted
+  space, 100 decode to GARBAGE**, because their LETTERS were never shifted —
+  `Fidelity<0x03>Investments<0x03>Money<0x03>Market` is plain text and decodes to
+  `cidelity fnvestments joney j~rket`. **THE SHIFT IS PER-RUN AND NOT PER-STRING:**
+  Edelman's row is plain `Vanguard Windsor` followed by a ciphered `,, Admiral
+  Fund`, so decoding the whole string destroys the half that was already right.
+  **THE ONE RISK IS A CONTROL CHARACTER INSIDE A WORD**, where a space SPLITS what
+  v519's arm would WELD, **and it does not happen here: of 217 control characters
+  with a letter on BOTH sides, the joined form is a published word while the left
+  fragment is not on 0** — whole population, and the test fires on a crafted
+  `Vangua<0x03>rd`, so *the zero is the data's and not the query's*.
+  **THE CLASS IS EVERY C0 CHARACTER AND DEL, not the +29 image of a space**:
+  `Vanguard Target Retirement Fund<0x02>2050` is the same defect one code point
+  along, so the rule is the character class and not the mechanism's story.
+  **THE COMPOSITION IS WHERE IT PAYS AND IT IS PINNED:** once a trailing control
+  character is a space, `TYPE_SUFFIX` sees a vehicle caption it could not see
+  before. **COST NAMED, both inside that composition:**
+  `Royce<0x03>Pennsylvania<0x03>Mutual<0x03>Fund` → `Royce Pennsylvania`, losing a
+  `Mutual Fund` that is genuinely part of the name (0 ticker, 0 fee); and
+  Electrolux's Fidelity government money-market row gains the **generic 0.2** where
+  its name states the house — a named live instance of the queued fee pre-emption,
+  fed by one row and not caused here.
+  All 116 distinct transformations read; **all 4 fee changes are an EXISTING
+  specific entry finally reaching a legible name** (`AF New World Fund` 0.4 → 0.57
+  moves UP, the direction that cannot be a flattering bias). 7 new `nameCases` and
+  8 new pins **added because NOT ONE of the 84 existing cases carries a control
+  character**; the module control fails by name on exactly the 8 of 99, the twin
+  control on exactly 7 of 103. parser-gate, smoke, fund-er-test (62/26/19/18/18)
+  green. **2 crawlable pages / 5,713 ppl**, both cells read. `site-test` #130 and
+  Pages #775 both fired on the exact shipped commit and were observed running.
+  `docs/accuracy-log.md` 2026-10-01 (14:0xZ).
+- **QUEUED, SIZED, MEASURED, NOT SHIPPED — THE CIPHERED RUN, the other half of
+  the same font: 16 rows, and the draft DIED ON TWO THINGS THE MEASUREMENT
+  FOUND.** `1XYHHQ 6PDOO &DS %OHQG ,QGH[ )XQG &ODVV 5` is `Nuveen Small Cap Blend
+  Index Fund Class R`; Edelman's (2,315 ppl) is `Vanguard Windsor II Admiral
+  Fund`, **publishing 0.3 where that class's real figure is 0.26**.
+  **(1) THE DRAFT TOKENISED ON `\s+` AND `\u0003` IS NOT `\s` IN JAVASCRIPT**, so
+  against the STORED name — which still carries its control characters — the arm
+  would have fired on **0 rows while every gate passed**. *An arm that cannot fire
+  is worse than an absent one, because its name implies coverage.*
+  **(2) A FLOOR OF THREE CHARACTERS LEAVES A ONE-CHARACTER TOKEN AS FILED**, so
+  `&ODVV<0x03>5` would publish `Class 5` where the filing says **Class R** — a
+  wrong share class asserted, in the same cycle that found a wrong share class
+  costing a fee.
+  **THE FIX FOR (2) IS THE MECHANISM TALKING AND IT IS THE NEXT CYCLE'S WORK: the
+  shift is per RUN, and 0x03 IS the ciphered space, so a token PRECEDED by a
+  control character is in the same ciphered run** (a plain space would be 0x20).
+  One token passing the two-sided witness then licenses every token in that run,
+  including single characters, and `,,` decodes to `II` while `Vanguard Windsor`,
+  preceded by a plain space, is left alone.
+  **THE WITNESS IS THE ISSUER STRIP'S, TWO-SIDED, AND A TOKEN'S SHAPE CANNOT
+  REPLACE IT:** +29 maps a lowercase letter into `D`-`]`, so a ciphered word and
+  an ordinary ALL-CAPS word are the same shape — a shape-only rule turned Antonini
+  Freight Express's own `FREIGHT EXPRESS` into `cobfdeq bumobpp`. `FREIGHT` is
+  attested and kept; `$GPLUDO` is attested nowhere and `Admiral` is.
+  **AND THE ORDER BETWEEN THE TWO ARMS MATTERS:** the shipped display arm deletes
+  ciphered DIGITS with the other control characters (0x13-0x1c are the +29 images
+  of 0-9), so the decode must run on the STORED name in `merge-4i` and never after
+  it. Draft at `scratchpad/cipher-arm.patch`. MERGE-SIDE, so it needs a run.
 - **THE 11:4xZ DRAW FOUND ONE REAL DEFECT AND REFUTED MY GENERALISATION OF IT IN
   THE SAME PASS.** Seed 20261001114; Edelman Financial Engines (2,315 ppl, 15
   rows @ 0.991) and Campbell Transportation (711 ppl, 30 rows @ 0.928, OCR'd).
@@ -1343,7 +1412,12 @@ from the cycle that would have cleared it.
   `rates ranging from 4.25% to` and its siblings. ***Ask the guard — and when a
   guard's answer is a LABEL, match the label it actually prints.***
   `docs/accuracy-log.md` 2026-10-01 (11:0xZ).
-- **NOTHING IS IN FLIGHT. #533 RAN `success` AND IS MIRRORED — 2026-10-01 10:1xZ
+- **#534 and #535 (cron, on MAIN) RAN `success`** (data `edf23db9`, `8b491049`):
+  the coverage line is **byte-identical** to #533's — confident 60,170, lineups
+  59,822, entries 65,479, HIGH **4 = the baseline**, warn 603, overshoot 372, dl
+  19, pv 100, tkExact 37.2 — which is the correct outcome for a scheduled
+  incremental whose work list is the dead 403s, not a stall.
+- **PREVIOUSLY: #533 RAN `success` AND IS MIRRORED — 2026-10-01 10:1xZ
   (`0b3e9b1a → b7d4e0ef`), UNFORCED ON BOTH CHECKS, data gate +0 / −0 BY ACK AND
   BY PLAN. EVERY PRE-REGISTERED FIGURE PASSED, AND THE PRODUCTION MERGE
   REPRODUCED THE LOCAL ONE EXACTLY.** Read out of the ARTIFACT (the merge log's
