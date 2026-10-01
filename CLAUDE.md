@@ -1213,6 +1213,83 @@ from the cycle that would have cleared it.
   slices app.js's body from source and imports the canonical suppressors.
   ***A transcription of a shipped expression rots as the expression grows; three
   instruments rot three times.***
+- **SHIPPED AND MIRRORED 2026-10-01 14:5xZ (`9cc20b5a → 7d85e3b2`), UNFORCED ON
+  BOTH CHECKS, data gate +0 / −0 — TWO COLUMNS ASKED THE SAME PREDICATES IN A
+  DIFFERENT ORDER: 1 row / 775 participants.** `tk` branched on `stockRow`
+  first while `shownType` branches on `loanRow` first, so a row that is BOTH —
+  type cell claiming employer stock, name a loan balance — printed one answer in
+  each column: **Nektar Therapeutics published `Outstanding Loan Balance`
+  labelled *"Participant loans — not a menu choice"* with NKTR beside it.**
+  **EXACT, NOT DIFFERENTIAL: 1 of 2,146 loan rows store-wide**, computed from
+  the shipped expression's own terms. `tk` lives only in app.js — no twin, no
+  ticker column on the crawlable pages — so 0 of 5,000 pages change.
+  **AND MY BEFORE/AFTER HARNESS COULD NOT ASK THE QUESTION, WHICH ITS OWN
+  POSITIVE CONTROL SAID FIRST:** it printed `before tk=null` for a row HEAD
+  publishes as NKTR, because `apppath.mjs` slices app.js only to
+  `lookupTicker`'s close — the `tk` EXPRESSION is a transcription inside the
+  harness's own `render`, so `APPJS_PATH` cannot change it and I had already
+  edited the transcription. *A before/after harness is only as honest as its
+  "before", and here the "before" lived in the HARNESS rather than in the file
+  under comparison.* `docs/accuracy-log.md` 2026-10-01 (14:5xZ).
+- **THE CROSS-COLUMN AUDIT, and its larger result is what it RULED OUT.** Asked
+  of all 1,724,078 published rows: *where does the page print a TYPE that cannot
+  carry a fund expense ratio or a fund symbol, and print one anyway?*
+  **FOUR OF NINE BUCKETS ARE THE SHIPPED DESIGN WORKING AND MY BUCKET LIST WAS
+  WRONG TO INCLUDE THEM** — `Collective trust / pooled separate` reads **42,838
+  rows with a fee and 44,457 with a symbol across 32,240,433 ppl** and **every
+  one is ASTERISKED**, a labelled comparable, which is the 2026-09-21 demotion
+  doing its job. *Quoting that as a defect would have been the largest false
+  alarm on this record.*
+- **QUEUED, SIZED, SPLIT, NOT SHIPPED — A `Company stock` ROW NAMING A
+  DIFFERENT, IDENTIFIABLE COMPANY PUBLISHES THE SPONSOR'S SYMBOL.** Bank of
+  America (250,040 ppl) prints `INTERNATIONAL BUSINESS MACHS` and `EXXON MOBIL
+  CORP` as **BAC**; FedEx's two plans print `Master Trust` as **FDX** (177,265 +
+  133,109); **GE (105,231) prints `GE Vernova Common Stock` as GE where GE
+  Vernova is GEV, and Ropcor (33,134) prints `GE Common Stock` as GEV — the same
+  defect in both directions**; P&G (42,264) → `The J.M. Smucker Company`;
+  American Express (38,871) → `LXP INDUSTRIAL TRUST`; Fidelity National
+  Financial (24,092) → `F&G Annuities & Life` and `Cannae Holdings`;
+  ConocoPhillips (13,175) → `Phillips 66 Stock Fund`; Agilent (9,150) → `Uber
+  Technologies Inc`; H&R Block (27,766) → `MFS International Equity Fund Class
+  3A`.
+  **DO NOT CARRY 87 ROWS / 1,187,546 PPL FORWARD AS THE CLASS** — a large part is
+  my screen's own false positives: a bare `Common Stock` / `Employer Stock` /
+  `Corporate common stock` caption really IS the sponsor's stock, `AIT INC` and
+  `IFF Common Stock` are ACRONYMS of the sponsor, and `MCDONALD'S CORPORATION`
+  fails to match sponsor `Mcdonalds Corporation And Subsidiaries` on the
+  APOSTROPHE — **the third time punctuation in a sponsor name has cost this
+  record a match.**
+  **THE SHIPPED GUARD'S MISS IS DIAGNOSED, NOT GUESSED:** `isMistypedStockRow`
+  returns false when **the NAME itself claims stock** — which is what keeps a
+  genuine `Employer Common Stock` row safe and **exactly what lets a SPUN-OFF
+  company's *stock fund* read as the sponsor's own** — and otherwise requires
+  `POOLED_CONSTRUCTION_NAME`, so a row naming a single other COMPANY or an
+  ordinary mutual fund is outside it by construction.
+  **THE DISCRIMINATOR IS IN THE REPO AND UNUSED: `plans-all` carries 112,652
+  sponsor names WITH their tickers**, and Phillips 66, Keysight Technologies,
+  Uber Technologies, GE Vernova and Cannae Holdings are themselves sponsors in
+  our own universe — so *a row naming another plan's sponsor is naming another
+  company*, with no new vocabulary and no new source.
+- **AND THE STORED-TICKER LEAK IS DOING ACCIDENTAL GOOD, WHICH IS WHY THE
+  OBVIOUS FIX IS THE WRONG TRADE.** `tk` falls back to the stored symbol
+  wherever a suppressor sets `info = null`, and **27 rows / 2 plans / 7,002 ppl
+  reach a reader ONLY because of it**: **Hilti, Inc. (5,197 ppl) has its ENTIRE
+  27-row menu typed `Stable value / GIC`** while the names are `Vanguard
+  Institutional Index Fund Institutional Shares`, `MFS Growth Fund R6`, `Dodge &
+  Cox Stock Fund Class X`, and Adams Fairacre Farms (1,805) the same — correct
+  tickers, every fee withheld by `gicRow`. Closing the leak naively withdraws 27
+  correct answers to remove one wrong one; **Hilti's real defect is the TYPE,
+  upstream in the parser.**
+  Also found, small: `Fidelity Select Brokerage & Investment Management
+  Portfolio` typed `Brokerage window` because `brokerageRow` matches the NAME
+  (2 rows / 9,070 ppl, ticker right, type wrong); and 1 master-trust row
+  publishing the generic 0.35.
+  **METHOD NOTE, because I claimed both and only one was true: the audit's
+  pre-filter is EXACT but not FAST.** It is the union of the suppressors' own
+  first conditions, so nothing that could match is excluded — but one of those
+  is *the row has no issuer*, true of most published rows, so it rendered
+  **1,311,859 of 1,724,078**. A standing version needs the nameless arm's SECOND
+  condition in the filter too.
 - **SHIPPED AND MIRRORED 2026-10-01 14:2xZ (`66da4f3e → 9da3b858`), UNFORCED ON
   BOTH CHECKS, data gate +0 / −0 BY ACK AND BY PLAN — THE FEE HALF OF THE
   CONTRACT RULE SHIPPED FOR ONE WORDING: 117 rows / 117 plans / 191,275
