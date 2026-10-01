@@ -1359,6 +1359,53 @@
    * as a trust class and demotes it to a comparable. Raw-first means the strip
    * can only add. */
   function lookupTicker(f) {
+    /* THE SYMBOL THE FILING PRINTS WINS, and it is the only thing in this
+     * function that outranks `fund-er.js`.
+     *
+     * `VITSX - Vanguard Total Stock Market Index Inst.` published VTSAX, the
+     * ADMIRAL class; `MWTSX - Metropolitan West Total Return Cl P` published
+     * MWTIX, Class I; `MEIJX - MFS Value Fund Cl R4` published MEIKX, R6. The
+     * filer typed the symbol of the exact share class the plan holds and we
+     * answered with a different one — this record's own share-class defect with
+     * the answer sitting in the filed text. 35 rows / 21 plans / 361,656
+     * participants / $945,898,023 corrected, and 899 rows / 72 plans / 461,917
+     * participants gain a symbol they had none for.
+     *
+     * It must run FIRST rather than last like `f.stk`, because the whole point
+     * is that it CORRECTS a published answer; running it last would only ever
+     * fill a blank and leave the 35 wrong. That is the one place a stored field
+     * is allowed ahead of the hand table, and what licenses it is that the
+     * claim is the FILING's and not ours.
+     *
+     * `ftk` is written by merge-4i from the SEC's own series/class file: the
+     * symbol must LEAD the name, its registered series must share a word with
+     * the remainder, and that word must be three letters or more. The rule, its
+     * three conditions, its pinned table and a negative control per condition
+     * are all in scripts/match-sec-tickers.mjs — there is no browser twin to
+     * drift, because the predicate needs a 29,406-row index the page must never
+     * download, so it is asked once at merge and the page only reads the field.
+     *
+     * FEE-NEUTRAL, which no other share-class fix on this record has been, and
+     * it is MEASURED rather than argued: `fundERRow` is called on the NAME and
+     * never on a symbol, and across all 2,166 rows the field reaches the fee
+     * moves on 0 and 0 symbols are LOST.
+     *
+     * ONE ASTERISK DOES MOVE, where the comment first written here said none
+     * could. `SSSYX STATE STREET EQUITY 500 INDEX FUND - CLASS K` resolved to
+     * SSSYX as a labelled COMPARABLE and now asserts it — and that promotion is
+     * correct: the SEC registers SSSYX as Class K of that fund, one of six
+     * classes, and the filing states Class K and prints the symbol. The fee is
+     * 0.02 on both sides of the `star ? info.er : fundERRow(f)` branch, so
+     * nothing follows it. Recorded because this record's own rule is that a
+     * guard which withdraws an assertion can also PROMOTE one, and a measured
+     * number in a comment has to be the number that shipped.
+     *
+     * COST NAMED, 6 rows: `MVCKX ... CL R5` (4), `MFWLX ... R5` and `STRYX
+     * Pioneer Strategic Income K Fund` print a symbol the SEC registers to a
+     * different class than the name's own class word states. The filer wrote
+     * both and they disagree; the symbol is the more precise of the two, so it
+     * wins, and all 470 distinct gains plus all 16 corrections were read. */
+    if (typeof f.ftk === "string" && f.ftk) return { tk: f.ftk, comparable: false };
     const raw = typeof f.nameRaw === "string" ? f.nameRaw : f.name;
     const iss = f.iss ? f.iss.replace(/\*+/g, "").trim() + " " : "";
     /* ONE EXCEPTION TO RAW-FIRST, and it is narrow on purpose. A trailing
@@ -1500,6 +1547,7 @@
     if (typeof f.stk === "string" && f.stk) return { tk: f.stk, comparable: false };
     return null;
   }
+  window.__wampoLookupTicker = lookupTicker;  // read by the smoke test only
   function cleanCostMarkers(e) {
     if (!e || !e.funds || e._nameClean) return e;
     e._nameClean = true;

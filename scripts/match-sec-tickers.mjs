@@ -360,7 +360,75 @@ export function buildIndex(indexPath) {
     const p = managerPhrase(String(name).split(" :: ")[0]);
     if (p) MANAGERS.add(p);
   }
-  return { bySeries, byLead, byYear, managers: MANAGERS, memo: new Map(), generated: j.generated, source: j.source, rows: j.funds.length };
+  /* ticker -> the series it is registered under, for resolveFiledTicker below.
+   * The symbol is the key here rather than a derived name, which is the one
+   * place in this file where a lookup is exact by construction. */
+  const byTicker = new Map();
+  for (const [name, ticker, , className] of j.funds) {
+    if (!ticker) continue;
+    const [entity, series] = String(name).includes(" :: ") ? String(name).split(" :: ") : ["", String(name)];
+    byTicker.set(String(ticker).toUpperCase(), { ticker, entity, series, className: className || "" });
+  }
+  return { bySeries, byLead, byYear, byTicker, managers: MANAGERS, memo: new Map(), generated: j.generated, source: j.source, rows: j.funds.length };
+}
+
+/* THE FILING PRINTS THE TICKER, SO READING IT IS READING THE FILING.
+ *
+ * `VITSX - Vanguard Total Stock Market Index Inst.` publishes VTSAX, the
+ * ADMIRAL class; `MWTSX - Metropolitan West Total Return Cl P` publishes MWTIX,
+ * Class I; `MEIJX - MFS Value Fund Cl R4` publishes MEIKX, R6. In every case
+ * the filer has typed the symbol of the exact share class it holds and we
+ * answer with a different one — this record's own share-class defect, with the
+ * answer sitting in the filed text.
+ *
+ * It is the one route out of that problem that needs no source the project
+ * lacks. A fee is SOURCED and never derived, and a share class cannot be
+ * inferred from a name that does not state one; but a symbol the filing prints
+ * states the class exactly, and using it adds no claim of ours.
+ *
+ * THE NAIVE RULE IS DEAD AND A CONTROL KILLED IT: `INDEX` IS a registered
+ * ticker (CYBER HORNET S&P 500 and Bitcoin 75/25 Strategy ETF), so one of the
+ * commonest words in a fund's name is a symbol, and "a five-letter token that
+ * is registered" would read it as one. Two structural conditions survive, and
+ * neither is a vocabulary:
+ *
+ *   (1) the symbol must LEAD the name. A filer writing the ticker writes it
+ *       first, in its own column or ahead of the name; a word that merely
+ *       happens to be a symbol sits anywhere.
+ *   (2) the registered SERIES must share a content word with the REMAINDER —
+ *       the filing corroborating its own symbol. `INDEX`'s series shares
+ *       nothing with `Fund Institutional Plus Shares` and is refused.
+ *   (3) that shared token must be a WORD — three letters or more, no digits.
+ *       The first draft had only (1) and (2) and `INDEX` still got through
+ *       TWICE: `INDEX TR 500 ADMIRAL SHS` corroborated on the numeral `500`
+ *       against CYBER HORNET S&P 500, and `INDEX R6 Fid Infl-P Bd Idx` on the
+ *       single letter `p` out of `S&P`. A digit and a letter are the two things
+ *       a fund name is full of and neither identifies a fund. Caught by reading
+ *       the transformations, not by the control, which had pinned the one
+ *       spelling of the collision I had already imagined.
+ *
+ * Condition (2) asks only the registrant and the series, never the CLASS name:
+ * a class word agreeing proves nothing about which fund is meant, and the
+ * whole point of the symbol is that it already states the class. The stop set
+ * is `VEHICLE_WORD` — an existing vocabulary, used here for the same reason
+ * `leadManager` uses it — so a shared `fund`, `index` or `trust` cannot
+ * corroborate anything.
+ *
+ * 1,232 rows already AGREE with the symbol they print, which is the control
+ * that this shape is common and usually read right. */
+const FILED_TICKER_LEAD = /^([A-Z]{5})\b/;
+export function resolveFiledTicker(idx, filedName) {
+  if (!idx || !idx.byTicker) return null;
+  const s = String(filedName || "").trim();
+  const m = FILED_TICKER_LEAD.exec(s);
+  if (!m) return null;
+  const rec = idx.byTicker.get(m[1]);
+  if (!rec) return null;
+  const content = (str) => tokens(str).filter((w) => /^[a-z]{3,}$/.test(w) && !VEHICLE_WORD.has(w));
+  const own = new Set([...content(rec.entity), ...content(rec.series)]);
+  if (!own.size) return null;
+  for (const w of content(s.slice(m[1].length))) if (own.has(w)) return rec.ticker;
+  return null;
 }
 
 /* Does this string name a fund house the SEC file knows? */
@@ -1061,6 +1129,47 @@ const SELFTEST_ISS = [
   ["American Funds Growth and Income Portfolio R6", "", "RGNGX"],
 ];
 
+/* THE FILED-TICKER TABLE — `resolveFiledTicker`, one case per condition and per
+ * shape read in the store. `—` means refused.
+ *
+ * Negative control is PER CONDITION and each variant is built DIRECTLY rather
+ * than by surgery on the shipped source: `--selftest-ft-nolead` drops the
+ * LEADING anchor, `--selftest-ft-nocorrob` drops the corroboration test, and
+ * `--selftest-ft-noword` drops the three-letter floor. Each must fail by name
+ * on exactly the cases it reaches, and the third exists only because the first
+ * draft had conditions (1) and (2) and `INDEX` still got through twice. */
+const SELFTEST_FT = [
+  // the shape, read in the store: the symbol leads and its series corroborates
+  ["VITSX - Vanguard Total Stock Market Index Inst.", "VITSX"],
+  ["VIIIX Vanguard Inst Idx Inst Plus", "VIIIX"],
+  ["MWTSX - Metropolitan West Total Return Cl P", "MWTSX"],
+  ["MEIJX - MFS Value Fund Cl R4", "MEIJX"],
+  ["DOXGX - Dodge & Cox Stock Fund", "DOXGX"],
+  ["VMRXX - Vanguard Federal", "VMRXX"],
+  // the price and share columns welded onto the name do not reach the lead
+  ["VLCAX Vanguard Large-Cap Index Adm $144.120000 2,273.7551", "VLCAX"],
+  // a renamed series still corroborates through the house it kept
+  ["PRWAX - T. Rowe Price New American Growth Fund", "PRWAX"],
+  // CONDITION (1): the symbol must LEAD. A real ticker sitting mid-name is a
+  // reference, not the row's identity — and `lookupTicker` is free to resolve
+  // the name itself, which is what these rows already do.
+  ["Vanguard Total Stock Market Index VITSX", "—"],
+  ["Fidelity 500 Index Fund FXAIX Institutional", "—"],
+  // CONDITION (2): the series must corroborate. `INDEX` IS registered (CYBER
+  // HORNET S&P 500) and must never be read as this row's symbol.
+  ["INDEX Fund Institutional Plus Shares", "—"],
+  // CONDITION (3): the shared token must be a WORD. Both of these corroborated
+  // in the first draft — one on the numeral 500, one on the `p` of S&P.
+  ["INDEX TR 500 ADMIRAL SHS", "—"],
+  ["INDEX R6 Fid Infl-P Bd Idx", "—"],
+  // never a candidate: no five-capital token bounded on both sides, or the
+  // five capitals are not a registered symbol at all (`TOTAL` is not one, so
+  // that row is refused before any condition is asked and tests none of them)
+  ["VANGUARD TOTAL BOND MARKET INDEX FUND", "—"],
+  ["Vitsx Vanguard Total Stock Market", "—"],
+  ["TOTAL Return Bond Fund Class I", "—"],
+];
+
 if (process.argv.includes("--selftest")) {
   const idx = buildIndex(INDEX);
   let bad = 0, n = 0;
@@ -1075,6 +1184,38 @@ if (process.argv.includes("--selftest")) {
     const r = resolveHolding(idx, name, iss);
     const got = r ? r.ticker + (r.comparable ? "*" : "") : "—";
     if (got !== want) { bad++; console.log(`FAIL want ${want.padEnd(8)} got ${got.padEnd(8)} ${name}  [iss ${iss}]`); }
+  }
+  /* The filed-ticker table, run against the shipped predicate or against one of
+   * the three deliberately-broken variants. Each variant is written out in full
+   * rather than produced by editing the shipped source, so a control cannot
+   * silently repair the thing it is meant to detect. */
+  const drop = process.argv.includes("--nolead") ? "lead"
+    : process.argv.includes("--nocorrob") ? "corrob"
+    : process.argv.includes("--noword") ? "word" : "";
+  const ftVariant = (name) => {
+    if (!drop) return resolveFiledTicker(idx, name);
+    const s = String(name || "").trim();
+    const m = drop === "lead" ? /\b([A-Z]{5})\b/.exec(s) : /^([A-Z]{5})\b/.exec(s);
+    if (!m) return null;
+    const rec = idx.byTicker.get(m[1]);
+    if (!rec) return null;
+    if (drop === "corrob") return rec.ticker;
+    const keep = (w) => (drop === "word" ? true : /^[a-z]{3,}$/.test(w)) && !VEHICLE_WORD.has(w);
+    const own = new Set([...tokens(rec.entity).filter(keep), ...tokens(rec.series).filter(keep)]);
+    /* THE WHOLE REMAINDER, both sides of the symbol — and the first version of
+     * this variant sliced only what FOLLOWED it, which made the lead control
+     * DECORATIVE: `Vanguard Total Stock Market Index VITSX` was then refused
+     * for want of a remainder rather than for want of an anchor, so dropping
+     * the anchor changed no verdict. A control that cannot fail is decoration. */
+    const rest = s.slice(0, m.index) + " " + s.slice(m.index + m[1].length);
+    for (const w of tokens(rest).filter(keep)) if (own.has(w)) return rec.ticker;
+    return null;
+  };
+  if (drop) console.log(`NEGATIVE CONTROL: condition "${drop}" dropped — it must fail by name on exactly the cases it reaches`);
+  for (const [name, want] of SELFTEST_FT) {
+    n++;
+    const got = ftVariant(name) || "—";
+    if (got !== want) { bad++; console.log(`FAIL want ${want.padEnd(8)} got ${got.padEnd(8)} ${name}`); }
   }
   console.log(bad ? `\n${bad} of ${n} FAILED` : `selftest: ${n}/${n} ok`);
   process.exit(bad ? 1 : 0);

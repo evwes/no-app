@@ -596,7 +596,7 @@ function stripIssuerLead(iss) {
  * Select` is a COMPARABLE, which this block already declines to store.
  */
 try {
-  const { buildIndex, resolveHolding } = await import("./match-sec-tickers.mjs");
+  const { buildIndex, resolveHolding, resolveFiledTicker } = await import("./match-sec-tickers.mjs");
   const idx = buildIndex("sec-funds.json");
   /* The filing's TYPE cell admits an SEC answer when it says mutual fund or
    * says nothing. Anything else names a different vehicle and refuses. */
@@ -605,11 +605,31 @@ try {
     return t === "" || /^mutual fund/i.test(t);
   };
   let named = 0, blank = 0; const acks = new Set();
+  let filed = 0; const filedAcks = new Set();
   for (let i = 0; i < SHARDS; i++)
     for (const [ack, e] of Object.entries(buckets[i])) {
       if (!e || !Array.isArray(e.funds)) continue;
       for (const f of e.funds) {
         const t = String(f.type || "").trim();
+        /* THE SYMBOL THE FILING ITSELF PRINTS, stored separately because the
+         * page must prefer it over the pattern table rather than fall back to
+         * it. The rule and its three conditions are in match-sec-tickers.mjs.
+         *
+         * NO TYPE GATE, and the measurement is what decided that rather than
+         * caution. `secTypeAdmits` exists because resolving a NAME can land on
+         * a mutual fund where the filing calls the row a collective trust; a
+         * printed SYMBOL is not open to that, because the SEC registers no
+         * collective trust and so none can lead with one. Applying the gate
+         * here refuses 63 rows and every one is a correctly-named money-market
+         * or bond fund typed `Cash / short-term` or `Government securities` —
+         * an asset CATEGORY, not a contradicting vehicle. Across all 937 hits
+         * not one carries a collective-trust or separate-account type.
+         *
+         * It cannot move a FEE: `fundERRow` is called on the NAME and never on
+         * a symbol, and the answer is never `comparable`, so no asterisk moves
+         * either. Measured: 0 of the 35 corrections are asterisked today. */
+        const ftk = resolveFiledTicker(idx, f.name);
+        if (ftk) { f.ftk = ftk; filed++; filedAcks.add(ack); } else delete f.ftk;
         if (!secTypeAdmits(t)) continue;               // the FILING contradicts
         const r = resolveHolding(idx, f.name, f.iss);
         if (!r || r.comparable) { delete f.stk; continue; }
@@ -617,6 +637,7 @@ try {
       }
     }
   console.log(`sec tickers: ${named} rows across ${acks.size} plans (${blank} on a blank type cell) (index ${idx.rows} classes, ${idx.generated})`);
+  console.log(`filed tickers: ${filed} rows across ${filedAcks.size} plans`);
 } catch (err) {
   console.log(`sec tickers: skipped (${err.message})`);
 }

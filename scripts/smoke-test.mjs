@@ -1262,6 +1262,41 @@ try {
     if (got !== want) fail(`leading-house test moved: ${JSON.stringify(s)} want=${want} got=${got}`);
   }
 
+  /* THE FILED SYMBOL MUST OUTRANK THE PATTERN TABLE, 2026-10-01. `ftk` is
+   * written by merge-4i from the SEC's own series/class file where the FILING
+   * prints the ticker; its three conditions and their per-condition negative
+   * controls live in scripts/match-sec-tickers.mjs, so what needs guarding HERE
+   * is only the ORDER — `lookupTicker` must consult the field before
+   * `fund-er.js`, because the point of the field is that it CORRECTS a
+   * published answer rather than filling a blank.
+   *
+   * EACH CASE IS A PAIR AND THE PAIR IS ITS OWN NEGATIVE CONTROL: the same name
+   * with the field and without it. The `without` half must come back DIFFERENT,
+   * which is what proves the `with` half is testing precedence and not merely
+   * that a string was echoed. Move the branch below the fund-er attempts and
+   * every `with` fails by name; delete the pattern table's answer and every
+   * `without` fails. */
+  const ftCases = [
+    ["VITSX - Vanguard Total Stock Market Index Inst.", "VITSX", "VTSAX"],
+    ["VBMPX Vanguard Ttl Bd Mkt Idx InstPl", "VBMPX", "VBTLX"],
+    ["MEIJX - MFS Value Fund Cl R4", "MEIJX", "MEIKX"],
+    ["DOXGX - Dodge & Cox Stock Fund", "DOXGX", "DODGX"],
+  ];
+  const ftGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoLookupTicker !== "function") return null;
+    return cs.map(([n]) => [window.__wampoLookupTicker({ name: n, nameRaw: n, ftk: n.slice(0, 5) }),
+                            window.__wampoLookupTicker({ name: n, nameRaw: n })]);
+  }, ftCases);
+  if (!ftGot) fail("app.js no longer exposes __wampoLookupTicker — the filed-symbol precedence cannot be checked");
+  for (let i = 0; i < ftCases.length; i++) {
+    const [n, want, wantBare] = ftCases[i];
+    const [withF, without] = ftGot[i];
+    if (!withF || withF.tk !== want || withF.comparable)
+      fail(`filed symbol not preferred: ${JSON.stringify(n)} want ${want} asserted, got ${JSON.stringify(withF)}`);
+    if (!without || without.tk !== wantBare)
+      fail(`filed-symbol control weakened: ${JSON.stringify(n)} without the field should answer ${wantBare}, got ${JSON.stringify(without)} — the pair no longer tests precedence`);
+  }
+
   const nameDrift = nameCases.filter((n, i) => cleanFiledName(n) !== nameGot[i]);
   if (nameDrift.length) {
     for (const n of nameDrift) console.error(`  ${JSON.stringify(n)}\n    app.js: ${JSON.stringify(nameGot[nameCases.indexOf(n)])}\n    module: ${JSON.stringify(cleanFiledName(n))}`);
