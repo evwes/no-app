@@ -32816,3 +32816,69 @@ and is faithful in the filing.
   `date -u`, or the commit's own `%cd`. An estimated timestamp is a derived
   number, and this project's first principle applies to the ones in its own
   documentation too, not only to the ones on its pages.**
+
+## 2026-10-01 (02:2xZ) — A filing states Institutional Plus and we publish a cheaper class; and the filing often prints the ticker itself
+
+- **Found by the 02:1xZ participant-weighted draw** (seed 20261001021) on
+  **Walmart (1,970,230 ppl, 42 rows @ 0.950)**, which reads CLEAN end to end —
+  every collective trust correctly unpriced, every wrapped BlackRock and LSV name
+  whole, `Walmart Inc. Equity Securities` → WMT with no fee — and on **Harvard
+  (39,385 ppl, 31 rows @ 0.990)**, which publishes `Vanguard Ttl Bd Mkt Idx
+  InstPl` → **VBTLX at 0.04**, the ADMIRAL class, where Institutional Plus is
+  VBMPX. *A draw that reads clean on names can still be wrong on numbers.*
+  (Walmart also publishes `Fiera Asset Management USA` at 3.2% / ~$1.9B — a named
+  instance of the owner-queued bare-house-name class, on the largest plan in the
+  country.)
+- **CLASS ONE, MEASURED: 239 rows / 171 entries / 176 plans / 2,109,185
+  participants / $26,156,539,626 publish a NON-PLUS share class as fact where the
+  filed name states Institutional Plus — and 0 rows get it right.** The arm does
+  not exist rather than misfiring: `VINIX` (Institutional) on `Vanguard
+  Institutional Index Fund Institutional Plus Shares` 61 rows, `VBTLX` (Admiral)
+  on the Total Bond Plus forms 29, `VSMAX` 25, `VIMAX` 14, `VTSAX` 11, `VTIAX` 9,
+  `VEXAX` 10. A further 130 rows / 1,701,022 ppl assert nothing, which is honest.
+  **Every one carries `stk=-`**, so the SEC index resolves none of them and the
+  wrong answer is `fund-er.js`'s alone — the same shape as the 2026-09-29 "Premier
+  is not Institutional" defect, where a class was folded into its neighbour's hint.
+- **AND THREE OF THOSE NAMES PRINT THE CORRECT TICKER, WHICH OPENED A SECOND AND
+  CLEANER ITEM.** `VIIIX Vanguard Inst Idx Inst Plus` publishes VINIX; `VBMPX
+  Vanguard Ttl Bd Mkt Idx InstPl` publishes VBTLX; `VSCPX Vanguard Sm Cap Idx Inst
+  Plus` publishes VSMAX. The filing hands us the symbol and the pattern table
+  overrides it. **This is the one route out of the share-class problem that needs
+  no source the project lacks: the ticker is IN THE FILED NAME, so using it is
+  reading the filing rather than deriving anything.**
+- **THE NAIVE FORM OF THAT RULE IS DEAD AND A CONTROL KILLED IT BEFORE IT WAS
+  MEASURED.** "A five-letter token that is a registered ticker is a ticker" fails
+  because **`INDEX` IS a registered ticker** — the CYBER HORNET S&P 500 ETF — so
+  one of the commonest words in a fund's name is a symbol. *A control written to
+  assert something obvious is worth writing: this one fired.*
+- **WHAT SURVIVES IS STRUCTURAL AND MEASURED: the ticker must LEAD the name, and
+  its registered SERIES must share a content word with the remainder** — the
+  filing corroborating its own symbol. `VIIIX` → *Vanguard Institutional Index
+  Fund* against a remainder saying `Vanguard` is corroborated; `INDEX` → *CYBER
+  HORNET S&P 500* against `Fund Institutional Plus Shares` shares nothing and is
+  refused by construction, with no vocabulary of words.
+  **CORRECTIONS: 35 rows / 21 entries / 21 plans / 361,656 participants /
+  $945,898,023, across 16 distinct names, ALL READ, and the filing is right in
+  every one** — the name's own class words agree with the filed symbol's
+  registered class (`Inst.` → Institutional, `Cl R4` → R4, `Cl X` → Class X, `Rt`
+  → Retirement): VITSX for VTSAX 9 rows, MWTSX (Plan Class) for MWTIX 4, VMCIX 3,
+  VTSNX 2, VIIIX 2, VBMPX 2, VSCPX 2, HNACX 2, VSCIX 2, MEIJX 2, DOXIX 2, VMRXX 1,
+  VBTIX 1, DOXGX 1. **`MEIJX - MFS Value Fund Cl R4` publishing MEIKX (R6) is this
+  record's own 2026-09-15 defect in a new instance, and here the filing hands us
+  the answer.**
+  **GAINS, separately: 898 rows / 72 plans / 461,917 ppl where the filing names a
+  ticker and we publish none** (VCSAX 40, VUIAX 35, RNPGX 21, VTAPX 21, VSGDX 21,
+  FPADX 20), 455 distinct. And **1,232 rows already agree**, which is the control
+  that the leading-symbol shape is common and read correctly today.
+- **IT IS FEE-NEUTRAL BY CONSTRUCTION, which removes the objection that has gated
+  every other share-class item.** `fundERRow` is called on the NAME and never on a
+  symbol, so correcting `tk` cannot move a fee — the only path where it could is
+  `star ? info.er`, and **0 of the 35 are asterisked**. So this is the first member
+  of the family that does NOT leave a retail fee beside a corrected symbol, and it
+  needs no `fund-facts` entry to be honest.
+- **NOT SHIPPED THIS CYCLE, and ready to be:** the discriminator is proven with
+  its own collision control, the whole 16-name population is read, the gain and
+  correction halves are measured separately, and the fee neutrality is established
+  rather than assumed. What remains is the predicate, its twin, a tether with a
+  per-condition negative control (one for the LEADING anchor, one for the
+  corroboration test), and the whole-store before/after.

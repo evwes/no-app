@@ -895,6 +895,40 @@ from the cycle that would have cleared it.
   parser-gate, smoke, fund-er-test (46/26/19/18) green. **REPORT path only as a
   GUARANTEE: `build-seo-pages.mjs` never imports `fund-er.js`**; `git diff
   --stat p/` empty. `docs/accuracy-log.md` 2026-09-30 (11:5xZ).
+- **QUEUED READY-TO-SHIP 2026-10-01 02:2xZ — THE FILING PRINTS THE TICKER AND WE
+  PUBLISH A DIFFERENT ONE: 35 rows / 21 plans / 361,656 participants /
+  $945,898,023 corrected, plus 898 rows / 72 plans / 461,917 ppl that GAIN one.**
+  `VITSX - Vanguard Total Stock Market Index Inst.` publishes **VTSAX**, the
+  Admiral class (9 rows); `MWTSX - Metropolitan West Total Return Cl P` publishes
+  MWTIX (Class I); `MEIJX - MFS Value Fund Cl R4` publishes **MEIKX, R6 — this
+  record's own 2026-09-15 defect in a new instance, with the filing handing us the
+  answer**; `DOXIX … Cl X` publishes DODIX; `HNACX … Rt` publishes HACAX.
+  **All 16 distinct read and the filing is right in every one** — the name's own
+  class words agree with the filed symbol's registered class.
+  **THE NAIVE RULE IS DEAD AND A CONTROL KILLED IT: `INDEX` IS a registered
+  ticker** (CYBER HORNET S&P 500), so one of the commonest words in a fund's name
+  is a symbol. **What survives is structural: the ticker must LEAD the name and its
+  registered SERIES must share a content word with the remainder** — the filing
+  corroborating its own symbol, with no vocabulary. 1,232 rows already agree, which
+  is the control that the shape is common and usually read right.
+  **FEE-NEUTRAL BY CONSTRUCTION**, which no other share-class item has been:
+  `fundERRow` is called on the NAME and never on a symbol, and **0 of the 35 are
+  asterisked**, so correcting `tk` cannot move a fee and no `fund-facts` entry is
+  needed. **This is the one route out of the share-class problem that requires no
+  source the project lacks** — the ticker is in the filed text, so using it is
+  reading the filing, not deriving. Remaining: the predicate, its twin, a tether
+  with a per-condition negative control, and the whole-store diff.
+- **AND THE CLASS IT CAME OUT OF, MEASURED AND NOT SHIPPED: a filing stating
+  INSTITUTIONAL PLUS gets a cheaper class — 239 rows / 176 plans / 2,109,185 ppl /
+  $26,156,539,626, and 0 rows get it right.** The arm does not exist rather than
+  misfiring: `VINIX` on `… Institutional Plus Shares` 61 rows, `VBTLX` 29, `VSMAX`
+  25, `VIMAX` 14, `VTSAX` 11, `VTIAX` 9, `VEXAX` 10; 130 further rows assert
+  nothing, which is honest. **Every one carries `stk=-`**, so the SEC index
+  resolves none and the wrong answer is `fund-er.js`'s alone — the 2026-09-29
+  "Premier is not Institutional" shape, a class folded into its neighbour's hint.
+  Found by the 02:1xZ draw on **Harvard (39,385 ppl)**; **Walmart (1,970,230 ppl,
+  42 rows @ 0.950) reads CLEAN end to end** in the same draw, which is what says
+  v130's wrapped-name fix still holds. `docs/accuracy-log.md` 2026-10-01 (02:2xZ).
 - **THE PRE-EMPTION FOOTPRINT IS NOW EXACT, 2026-10-01 02:0xZ: 36,790 rows /
   7,509 entries / 7,510 plans / 11,443,967 participants / $115,117,759,657, across
   5,667 distinct transformations.** The upper bound overstated it by **249 rows /
