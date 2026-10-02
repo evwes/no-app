@@ -1295,7 +1295,89 @@ from the cycle that would have cleared it.
   / 2 typings across 280 plans / 365,305 ppl. **Register the SUM of the two, not
   each in turn** — the 00:3xZ/#541 lesson about two reporting changes queueing
   behind one run.
-- **COMMITTED, NOT PUSHED, GATED AND PRE-REGISTERED 2026-10-02 12:5xZ — THE LOST
+- **#547 RAN `success` AND IS MIRRORED — 2026-10-02 13:3xZ (`33a7b0d6 →
+  97ecdecf`), DATA GATE UNFORCED AT +0 / −0 BY ACK **AND** BY PLAN (0 plans / 0
+  participants stop being served), `--force` ON THE GIT CHECK ALONE WITH THE
+  EVIDENCE FIRST. EVERY PRE-REGISTERED FIGURE PASSED EXACTLY, INCLUDING ALL
+  THREE THAT WERE REGISTERED AS STRUCTURALLY UNABLE TO MOVE.** The merge log
+  prints **`issuer lost-space repair: 188 rows across 52 plans`** and
+  **`lost-space repair: 1 rows across 1 plans`**, both to the digit; `sec
+  tickers: 479695 rows across 48109 plans (113872 on a blank type cell)` — all
+  three figures exact, the row count being 479,694 + 1 and the PLAN count +0
+  **derived from measured set membership rather than summed**; `filed tickers`
+  2,166 / 75 and the trailing parenthetical 657 / 53 unchanged; CONFIDENCE DIFF
+  **+0 / −0**, real-menu-shaped losses 0, degraded swaps 0, **`rows-dropped`
+  0**; confident **60,167**, lineups 59,819, entries 65,480, **HIGH 4** composed
+  exactly as registered (3 `contrib` + `fabricated-name`), warn **556**,
+  overshoot 372, overshootTrust 12, aggRow 114, dl 39, pv 197 covering 69,007 of
+  69,046 (99.9%); and **`tkExact` 37.33 / `tkComparable` 3.27 / `tkShare` 24.49
+  all held EXACTLY** — the first two registered as unable to move because
+  `audit-data` calls `fundTickerInfo` with ONE argument, the third as a 1-in-20
+  positional sample. *The stronger claim was the true one in all three.*
+  **`ticker-conflict` HELD AT 3 — #541's three named survivors — AND THAT FIGURE
+  WAS REGISTERED BY THE VERDICT CYCLE RATHER THAN BY THE SHIP.** The audit's
+  `READ BEFORE MIRRORING` block prints three findings, and the original
+  pre-registration omitted them; all three were read on the local merge BEFORE
+  the push and are the two classes the 01:4xZ ship names as out of scope (St.
+  Jude's transposed `(VBITX)`, `PIMCO Total Return A (PTTAX)`, `CLASS (CMTFX)
+  TIAA-CRF`), none caused by this arm. *A figure a run prints and a registration
+  omits has to be read before the push, not explained after it.*
+  **THE WHOLE VERIFICATION WAS DONE BEFORE THE PUSH, NOT AFTER THE RUN, AND
+  THAT IS WHY THE RUN DISCOVERED NOTHING.** The real merge was run locally with
+  no deltas and its own printed lines read; the merged store was then diffed
+  against the committed one field by field — **0 acks ±, 1,730,676 rows both
+  sides, 0 row-count changes, 0 sums moved, `iss` on 188 across 52 entries,
+  `name` 1 (HEAD's own residual arm), `stk` +1 / −0 / 0 changed**, with
+  `lineups-status` / `lineups-index` / `plans-index` / `plans-all` byte-identical
+  once `generated` is removed. The one `stk` gain is **RNPGX on `American New
+  Perspective R6` once its issuer reads `American Funds`**, joining twenty-odd
+  sibling rows of the same name that already publish it.
+  **AND THE DELTA WAS EMPTY, WHICH IS WHY #545's MISS DID NOT RECUR.** The log
+  reads `merged 39 entries` — the 39 dead 403s — and a download failure creates
+  no entry, so every "+ the delta's own hits" in the registration resolved to
+  **+0** and the arm's CONTRIBUTION *is* the whole-store total. The registration
+  was right to state the two as different things; it happened not to be tested.
+  **A PUSH THAT TRIGGERS NO WORKFLOW CAN STILL RACE A RUNNING MERGE'S OWN PUSH —
+  NEW, AND THE RUN LOG IS WHERE IT SHOWS.** Mid-run I pushed a `.gitignore`
+  commit (`f3b2ee60`) and verified the thing this record tells me to verify: that
+  it fires no workflow and does not cancel #547. Both held — the next run in the
+  listing was #548, a `schedule` event on main. **But #547's merge job had
+  already finished merging and its own `git push` was REJECTED** (`! [rejected]
+  … fetch first`, then `push raced with a concurrent commit; retrying (attempt
+  1)`), because the branch head had moved under it. *I checked the hazard I knew
+  about and the race was in a different place: the merge job's commit-and-push
+  step, not the trigger.* The retry loop is the measured necessity this file
+  already records — reset to the new head, re-merge, push — and it worked,
+  costing about two minutes.
+  **AND THE ACCIDENT IS A FREE DETERMINISM CONTROL: the same merge ran TWICE, on
+  two different branch heads, and printed BYTE-IDENTICAL counts** — `issuer
+  lost-space repair: 188 rows across 52 plans` and `sec tickers: 479695 / 48109
+  / 113872` both times, at 12:49:11Z and 12:51:16Z. *Determinism corroborated
+  rather than assumed, by a race.* The rule stands either way: **a `scripts/**`
+  push is safe only while no run is in flight, and "safe" has to include the
+  merge job's push and not only the trigger.**
+  **THE SURFACE FIGURE WAS CORROBORATED FROM THE PRODUCTION DIFF, which the
+  pre-push check could not do** (the store was restored to HEAD before pushing,
+  so no page was regenerated locally): `git diff 33a7b0d6 97ecdecf -- p/` names
+  exactly **3 crawlable pages**, the registered number, and every changed cell
+  read — `Globalinvestments` → `Global Investments`, Sonoco's eleven
+  `Statestreet` → `State Street` cells, `Investorstrust` → `Investors Trust`.
+  Those lowercased forms are also the independent proof of the `titleCase`
+  observation: the page showed an ordinary-looking word where the store showed
+  the capitals, v519's finding again.
+  **THE MIRROR EVIDENCE, produced BEFORE the override:** main's `33a7b0d6` is
+  #548's own cron commit, run at 12:47Z against the PRE-change code, and it
+  carries **nothing the branch lacks** — 0 status acks either way, **0 acks at a
+  higher pv, 0 confident on main only**, 0 plans either way, and plans-all's
+  `plans` array **byte-identical**. So the force discarded a timestamp and the
+  pre-change code. **The store was restored to HEAD before the push ON PURPOSE**:
+  shipping the data in the same commit would have left the run's own merge
+  printing ~0 on an already-repaired store and broken the `188` registration
+  outright — *the #528 same-commit precedent costs its own pre-registration, so
+  it is a choice and not a default.*
+  `docs/accuracy-log.md` 2026-10-02 (13:3xZ verdict).
+- **WHAT #547 CARRIED — VERDICTED AND MIRRORED, see the bullet above; pushed on
+  `551ac908` and the push trigger fired. THE LOST
   SPACE IN THE ISSUER COLUMN: 188 rows / 52 entries / 52 plans / 119,370
   participants / $1,585,923,998, 30 distinct transformations, ALL READ. The
   re-size against the current store reproduces the draw's figure EXACTLY**, which
