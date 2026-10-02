@@ -7,6 +7,236 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-02 (03:0xZ) — the SEC registry stored its own names HTML-escaped, and one escape denied 1.08M readers an exact ticker
+
+**WHAT WAS WRONG.** `sec-funds.json` carried entity references intact from SEC's
+series-class CSV, so the registry's own series name read `BlackRock Funds III ::
+iShares S&amp;P 500 Index Fund`. `norm()` strips `&` and `;` as punctuation, so
+that series keyed as **`ishares s amp p 500 index`** — with a spurious `amp`
+token in it — and **no filed name written `S&P` could ever reach it.**
+
+**THE DISCRIMINATING PAIR IS ONE REGISTRANT, ONE FAMILY, ONE DIFFERENCE**, and it
+is the positive control: `iShares S&P 500 Index Fund Class K` resolved to
+**nothing** while its sibling `iShares U.S. Aggregate Bond Index Fund Class K`
+resolved to **WFBIX EXACT**. The only difference is the ampersand. After the
+decode the first returns WFSPX EXACT and the second is unchanged — which is what
+says a KEY was repaired rather than the matcher loosened.
+
+**THE SIZE I WAS HANDED WAS SEVEN ENTRIES AND ONE ENTITY, AND THE FILE HOLDS
+EIGHTEEN AND THREE. The first measurement asked a CLOSED LIST** —
+`amp|quot|apos|lt|gt|nbsp|#38|#39|#x27` — and an OPEN scan
+(`&[a-zA-Z#][a-zA-Z0-9]*;`) finds **`&reg;` on 16 occurrences and `&#153;` on 3,
+BOTH MORE FREQUENT THAN `&amp;`**, across 6 registrants rather than 3. Neither is
+in that list. ***A count keyed on a vocabulary measures the vocabulary, not the
+population*** — the same shape as this record's own `band-hi` and `few` screens,
+here in the sizing of a fix rather than of a defect.
+
+**AND THE TWO IT MISSED ARE THE ONES `norm()` ALREADY TRIED TO HANDLE.** That
+function opens with `.replace(/[®™℠]/g, " ")`, so the DECODED character is
+correctly dropped while the ESCAPED form walks straight past the line written for
+it and leaves `reg` — and, worse, the bare digits `153` — as identity-bearing
+tokens. `ERShares Global Entrepreneurs&#153;` keyed as `ershares global
+entrepreneurs 153`.
+
+**THE CHANGE.** `decodeEntities` in `scripts/match-sec-tickers.mjs`, applied in
+**both** places, and both halves are deliberate:
+- **`buildIndex`** decodes the rows ONCE at the top and every later pass reads the
+  decoded array, so the series key, the manager phrases, the `words` witness and
+  the house-lead test cannot disagree about what the registry says. This is the
+  half that reaches a reader: the committed file resolves correctly **with no
+  re-fetch**, and SEC is reachable only from Actions, so a fix needing new data
+  would have reached nobody.
+- **`fetch-sec-funds.mjs`** decodes at ingest, importing the one decoder rather
+  than retyping it, so the stored file stops carrying escapes at all. Neither is
+  redundant: *a stored file that was clean once is not thereby clean forever.*
+
+**AND THE DEFECT IS SYMMETRIC, WHICH IS WHERE THE ONLY LOSS WAS.** Three published
+rows reaching 988 people are named `iShares S&amp;P 500 Index Fund Class K Shares`
+— **the escape is in the STORED HOLDING NAME** — and they resolved only because
+the registry carried the SAME damage. **Two wrongs were making a right:** decoding
+one side alone LOSES them a correct ticker. `resolveHolding` decodes the filed
+name and the issuer too, so the loss is 0.
+
+***THAT LOSS IS THE METHOD FINDING AND IT IS WORTH MORE THAN THE FIX. The
+before/after harness I was handed had a `gain` bucket and a `change` bucket and
+NO LOSS BUCKET AT ALL***, so it reported "0 lost" **by construction** and the
+regression was invisible to the very measurement written to police it. *A
+before/after harness that cannot express a loss has not measured one.*
+
+**ADDITIVE BY CONSTRUCTION, MEASURED AND NOT ARGUED:** `decodeEntities` is the
+identity on any string containing no entity reference, and over the whole store it
+changes **2 of 417,260 distinct published names and 0 of 15,714 issuer cells**. So
+the filed side cannot reach a row that carries no escape. **The issuer half is
+therefore DECORATIVE on this store (0 of 15,714) and is labelled so in the
+source** rather than quietly carried — it costs nothing and an issuer cell may
+acquire an escape on any DOL refresh, but that is not evidence that the arm fires.
+
+**NO BUCKET MERGED, which is what bounds the blast radius exactly.** 10 distinct
+series keys move across 18 entries; the new key **already existed for 0 of them**,
+`bySeries` is 12,328 both sides and **0 buckets changed membership**. So the decode
+cannot change an answer except through those 10 keys — a structural bound, and the
+unfiltered whole-store diff then confirmed it empirically rather than resting on it.
+
+**THREE POPULATIONS, EACH MEASURED THROUGH THE RIGHT INSTRUMENT, AND THE HANDOFF'S
+HEADLINE WAS THE WIDEST OF THEM:**
+
+| measured through | rows | names | menus | participants |
+|---|---|---|---|---|
+| `resolveHolding`'s answer | **2,046** | 422 | 2,039 | 1,519,634 |
+| STORED `stk` (after `secTypeAdmits`) | **1,919** | — | — | — |
+| **what a READER gains** (app.js's own `lookupTicker`) | **1,550** | — | 1,547 | **1,077,891** |
+
+**0 CHANGED and 0 LOST at every level**, and **0 fees, 0 asterisks and 0 shown
+types move** — verified rather than argued: `fundER` is called on the NAME and
+never on a symbol. ***The 1.52M I was handed is the resolver-answer population and
+a reader gains 1,077,891*** — 29% narrower, the stored-versus-published
+distinction this record has now paid for a sixth time.
+
+**AND THE GAP RECONCILES TO THE ROW RATHER THAN BEING WAVED AT: 1,550 gained +
+369 the page ALREADY answered + 0 suppressed = 1,919.** The 369 are attributed to
+a stage, not guessed: no stored field carried a ticker on any of the 1,919, and
+those 369 resolve through `fund-er.js` **only where the string names BLACKROCK**
+(the issuer cell supplying it, or the name itself). So `fund-er.js` is not blind
+to this fund — it answers it under its registrant's name and never under its
+brand, and the 1,550 that gain are exactly the rows naming only `iShares`.
+
+**THE RESIDUE, COUNTED EXACTLY AND SHIPPED ON PURPOSE.** The series registers
+**exactly one class, `WFSPX | Class K Shares`**, so `resolve`'s one-class arm
+returns EXACT whatever class word the filing writes. Of the 1,550 reaching a
+reader: **882 rows / 525,422 ppl state K** (the registered class), **328 / 297,877
+state no class at all** (honest), and **340 rows / 87 names / 340 menus / 256,257
+ppl state a class the series does NOT register** — `… Index A` 29, `… Index Instl`
+27, `… INDEX I` 26, `… Investor A Shares`.
+
+**NO CONTRADICTING-CLASS GUARD SHIPS, AND THE SIBLING IS WHY.** `iShares U.S.
+Aggregate Bond Index Fund` carries no ampersand, registers exactly one class
+(`WFBIX | Class K Shares`) and **has been resolving all along — and 40 rows / 23
+names / 40 menus / 31,915 ppl ALREADY publish WFBIX today for a name stating
+Investor A, Inst, Institutional, I or Z.** So the residue is a **pre-existing
+property of the one-class arm**, not something this change creates, and refusing it
+only here would make two siblings of ONE registrant disagree — the
+opposite-standards inconsistency this record repeatedly flags. **Sized store-wide
+so the queued item is a number: 511 shipped `stk` rows / 339 names / 185 menus /
+395,265 ppl already come from a one-class series whose filed name states a
+different class**, dominated by `Vanguard Target Ret <year> Inst`. That is its own
+item, about `resolve`'s one-class arm and not about entities.
+
+**MY FIRST RESIDUE SCREEN HAD A FALSE POSITIVE OF ITS OWN AND THE COUNT WAS 2.5x
+TOO BIG: `S&P` norms to `s p`, and my hand-rolled class vocabulary contained
+`s`** — so it read every `iShares S&P 500 Index Fund` as stating share class S.
+That is the `a`/`an`/`as` trap this record already carries, in a fourth place, and
+it is why the shipped figure is counted by **leftover tokens against the series'
+own words** rather than against a typed class list. The handoff's estimate of
+"about 88" was also low by a factor of 4 for the same reason.
+
+**WHAT WAS DELIBERATELY NOT DONE.**
+- **The EAFE family is not widened to.** `iShares MSCI EAFE International Index
+  Fund` (308 rows) and `ISHARES MSCI EAFE INTL INDEX K` (316) resolve to nothing
+  because **that series is genuinely absent from the registry** — only the EAFE
+  ETFs and the BlackRock Funds III index funds are registered. Not an entity
+  defect; a separate, unsized item.
+- **`merge-4i`'s own `secWords` witness still carries `amp` and `reg`** (it reads
+  the raw file), and that is left alone **because it is decorative: 0 published
+  rows have an adjacent token pair that would JOIN to `amp` or `reg`.** Named with
+  its measured size rather than silently left or changed for symmetry.
+- **`&reg;` and `&#153;` are LATENT on the PFG and ERShares families and pinned as
+  such.** Instrumented rather than assumed: the bucket is reached and the filed
+  name IS a superset of the repaired key in both, and they still refuse because the
+  **MANAGER GATE** declines them — `ershares` and `pfg jpmorgan` are
+  `managerPhrase(SERIES)` keys and `filedMgrs` is drawn from `MANAGERS`, built from
+  REGISTRANT names alone, so those keys are **unreachable BY CONSTRUCTION**. That is
+  the 2026-10-01 09:4xZ defect in a family its `houseLeads` test does not qualify.
+  *A repair whose key lands and whose gate refuses is latent, not shipped* — and
+  the whole-store diff said the same independently: every gained row is WFSPX or
+  IAI. The `&reg;` half is NOT wholly latent: `Mutual Fund Return Stacked Balanced
+  Allocation & Systematic Macro Fund Class A` → RDMAX is pinned and reachable.
+
+**SECOND-ORDER EFFECT, MEASURED BECAUSE THE WITNESSES ARE BUILT FROM THE SAME
+STRINGS.** `idx.words` loses **exactly two words, `reg` and `amp`**, and nothing
+else; `managers` 503, `houseLeads` 234, `bySeries` 12,328 and `byTicker` 29,168 are
+all unchanged. Those two were spurious witnesses the escapes created, and the
+whole-store diff shows no join changed.
+
+**THE PREVENTION.**
+- **`--selftest` 187/187 with 16 new pins, added BECAUSE NOT ONE OF THE 134
+  EXISTING CASES REACHES THE ARM** — checked, not assumed: zero pinned names carry
+  an entity reference and zero pins expect an answer from any of the 18 affected
+  entries, so every existing control was green whether or not the decode existed.
+- **A NEGATIVE CONTROL, `--nodecode`, that fails BY NAME ON EXACTLY 9 AND IN BOTH
+  DIRECTIONS** — 8 must-resolve cases return to `—`, and `iShares S&amp;amp;P 500
+  Index Fund Class K` **resolves to WFSPX in the before state**, because the
+  damaged key made a doubly-escaped string a token-superset of it. The shipped
+  single-pass decode refuses it. A control that fires in both directions is the
+  strongest form available.
+- It uses a **drop flag the function itself reads**, on the `GATE_DROP` precedent,
+  because the honest BEFORE state here is "no decode on EITHER side" and
+  re-escaping the rows instead would have produced a doubly-escaped string the
+  file never held. **The index is REBUILT under the flag** — dropping it only on
+  the filed side would leave the repaired keys in place and the control could not
+  fail on the registry half. The memo is cleared on both sides.
+- **The sibling is pinned as a must-be-UNCHANGED control** (`iShares U.S.
+  Aggregate Bond Index Fund Class K` → WFBIX), which is what distinguishes a key
+  repair from a loosened matcher; plus `Dodge & Cox` must-keeps for a bare `&`, and
+  a `&notanentity;` must-refuse.
+- **EVERY EXISTING CONTROL'S COUNT IS IDENTICAL AT HEAD AND HERE** — nolead 2,
+  nocorrob 3, noword 2, notrail 2/2, nohouse 3, nophrase 4, nowitness 1, nofloor 1,
+  faithless 1, takecomparable 1 — so 171 → 187 is exactly the 16 new pins and the
+  decode perturbed no other arm.
+- **ONE decoder, imported by the ingest script rather than retyped**, so there is
+  no second copy to rot as the entity table grows.
+- Decoded in **ONE pass** on purpose: `&amp;amp;` becomes `&amp;` and not `&`,
+  because re-decoding one's own output is how an escaped literal becomes a live
+  one. The 0x80–0x9f block is mapped by the Windows-1252 table (SEC emits `&#153;`
+  for ™) rather than decoded literally into a control character, and anything
+  below a space or outside Unicode is left exactly as filed.
+
+**THE REAL MERGE REPRODUCES IT AND THE EFFECT IS ATTRIBUTED FIELD BY FIELD:**
+`row.stk` on **1,919 rows and NOTHING ELSE** — 0 acks added or removed, 0
+row-count changes, 1,730,535 rows both sides, and `lineups-status.json`,
+`lineups-index.json`, `plans-index.json` and `plans-all.json` all **identical once
+`generated` is removed**. So the data ships in the SAME COMMIT as the code (#528's
+precedent) and the run only confirms it.
+
+**REPORT PATH ONLY, AS A GUARANTEE FROM THE IMPORT LIST AND NOT AN EMPTY DIFF:**
+`build-seo-pages.mjs` imports `lib-quote`, `lib-disclose` and `lib-4i` and
+**reads no `stk`, no `ftk` and no `fund-er.js` at all** — 0 of its references
+match. Regenerating all 5,000 pages leaves `git diff --stat p/` empty, which
+corroborates the guarantee rather than constituting it.
+
+**AND ONE PRE-REGISTERED FIGURE WAS REFUTED BEFORE THE DISPATCH, WHICH IS WHAT
+THE PRE-REGISTRATION IS FOR.** I registered `tkExact` as **unable to move**, on
+the argument that 1,550 newly-published cells against 1,724,078 rows cannot shift
+it — a claim this record prefers to a tolerance because it is stronger. Running
+the audit says **37.2 → 37.32**: the figure is printed to TWO decimals
+(`toFixed(2)`), so a 0.09% population moves it by 0.12. ***An argument that a
+figure cannot move is still a prediction and has to be run; the stronger claim is
+only stronger when it is true.*** Registered as the measured 37.32.
+**`tkShare` 24.47 and `tkComparable` 3.27 DO hold and one of them has the
+structural reason the other claim wanted:** `audit-data`'s own comment records
+that `tkShare` calls `fundTickerInfo` with ONE argument, so it **cannot read the
+stored `stk` at all**, and no comparable answer is ever stored.
+
+**GATES:** `--selftest` 187/187 and all twelve negative controls firing by name;
+`parser-gate.mjs` all specimens green; `smoke-test.mjs` green; `fund-er-test.mjs`
+83/26/19/18/28 with 0 failures; `merge-name-test.mjs` 20/20 with its controls
+firing; `lib-disclose --selftest` 25/25; `build-seo-pages.mjs` 5,000 pages, 0
+changed.
+
+**AND THE CORRECTION THIS CYCLE OWES ITS OWN RECORD, which is the same lesson as
+the missing loss bucket one level up.** The 01:5xZ entry says *"a bare `iShares
+Core S&P Total U.S. Stock Market ETF` resolves to nothing, so the blank is the
+tables'."* **Asked of `resolveHolding` directly it resolves to ITOT EXACT** — and
+so do IXUS, AGG and DGRO. That control went through the DISPLAY path, where
+`fund-er.js` answers none of them, **so it measured the wrong resolver and read a
+matcher that works as a matcher that fails.** ***There are TWO ticker resolvers and
+a control has to name which one it asked*** — this record's own rule, stated on
+2026-09-30 and broken two days later. Both files are corrected in the same commit.
+The real cause of the Caputo blank is the **abbreviated filed name** (`iShares Core
+S&P Total US Stock Mkt` resolves to nothing under either resolver) plus this entity
+defect, not an absent registry.
+
+---
+
 ## 2026-10-02 (01:5xZ) — #541's verdict: every store figure passed, the HIGH miss was this file's own contradiction, and `warn` −45 reconciles to two of my own changes
 
 **#541 RAN `success` (data `1c9e4046`). EVERY REGISTERED STORE FIGURE PASSED:**
@@ -182,9 +412,18 @@ bare-house class.
 13,927 published `iShares` rows across 6,248 menus / 7,243,157 participants, of
 which 11,334 publish NO TICKER.** 2,593 publish one and **7,947 publish a FEE**,
 so about 5,354 rows price a holding they cannot name — the asymmetry at brand
-scale rather than at one plan. Control first, because a clean zero reports on
-the query: a bare `iShares Core S&P Total U.S. Stock Market ETF` resolves to
-nothing through the shipped tables, so the blank is theirs. Most frequent
+scale rather than at one plan. **CORRECTED 2026-10-02 (03:0xZ) — THIS SENTENCE
+WAS WRONG AND ITS CONTROL MEASURED THE WRONG RESOLVER.** It read: *"Control
+first, because a clean zero reports on the query: a bare `iShares Core S&P Total
+U.S. Stock Market ETF` resolves to nothing through the shipped tables, so the
+blank is theirs."* **Asked of `resolveHolding` directly that name resolves to
+ITOT EXACT**, and so do IXUS, AGG and DGRO. The control went through the DISPLAY
+path, where `fund-er.js` answers none of them, so it **read a matcher that works
+as a matcher that fails** — *there are TWO ticker resolvers and a control has to
+name which one it asked.* The real cause of the blank is the **abbreviated filed
+name** (`iShares Core S&P Total US Stock Mkt` resolves to nothing under either
+resolver) plus the HTML-entity defect fixed at 03:0xZ, which denied the whole
+`iShares S&P 500 Index` family its key. Most frequent
 unresolved names: `ISHARES MSCI EAFE INTL INDEX K` 316, `iShares MSCI EAFE
 International Index Fu` 308, `iShares S&P 500 Index K` 249 — and **`iShares`
 alone on 96 rows**, the bare-house class nested inside the brand.

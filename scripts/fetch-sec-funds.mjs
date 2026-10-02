@@ -23,6 +23,10 @@
  * kind: "class" (a specific share class) or "series" (the fund itself).
  */
 import { writeFileSync, mkdirSync } from "node:fs";
+/* The ONE decoder, imported rather than retyped. A second copy here would be a
+ * transcription of a shipped expression and would rot as the entity table grows
+ * — which is the failure this project has paid for five times in harnesses. */
+import { decodeEntities } from "./match-sec-tickers.mjs";
 
 const UA = "wampo evanatchley1@gmail.com";
 const HDRS = { "User-Agent": UA, "Accept-Encoding": "gzip, deflate" };
@@ -217,9 +221,24 @@ const main = async () => {
   for (let r = 1; r < rows.length; r++) {
     const row = rows[r];
     if (!row || row.length < 3) continue;
-    const entity = (iEntity >= 0 ? row[iEntity] : "").trim();
-    const series = (row[iSeries] || "").trim();
-    const klass = (iClass >= 0 ? row[iClass] : "").trim();
+    /* SEC's CSV ARRIVES HTML-ESCAPED AND AN ESCAPE IS NOT A WORD, so the names
+     * are decoded at ingest rather than stored and worked around. Un-decoded,
+     * `iShares S&amp;P 500 Index Fund` tokenised with a spurious `amp` in it
+     * and no filed name written `S&P` could reach it — 2,046 published rows
+     * across 2,039 menus and 1,519,634 participants were denied an exact
+     * ticker by one escape. The live population when this shipped was 18 of
+     * 29,406 entries: `&reg;` on 16 occurrences, `&amp;` on 8 and `&#153;` on
+     * 3, across 6 registrants.
+     *
+     * `match-sec-tickers.mjs` ALSO decodes as it builds the index, and both
+     * halves are deliberate: this one stops the stored file carrying escapes at
+     * all, that one makes the ALREADY-COMMITTED file resolve correctly with no
+     * re-fetch — SEC is reachable only from Actions, so a fix that needed new
+     * data would have reached no reader. Neither is redundant: a stored file
+     * that was clean once is not thereby clean forever. */
+    const entity = decodeEntities((iEntity >= 0 ? row[iEntity] : "")).trim();
+    const series = decodeEntities(row[iSeries] || "").trim();
+    const klass = decodeEntities((iClass >= 0 ? row[iClass] : "")).trim();
     const classId = (iClassId >= 0 ? row[iClassId] : "").trim();
     let ticker = (iTicker >= 0 ? row[iTicker] : "").trim().toUpperCase();
     if (!ticker && mf && classId && mf.has(classId)) ticker = mf.get(classId).toUpperCase();

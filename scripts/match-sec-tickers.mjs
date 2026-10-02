@@ -29,6 +29,79 @@ const arg = (k, d) => { const i = process.argv.indexOf(k); return i > 0 ? proces
 const INDEX = arg("--index", path.join(root, "sec-funds.json"));
 const SAMPLE = +arg("--sample", 40);
 
+/* ---- HTML entity references ------------------------------------------------
+ * THE REGISTRY STORES ITS OWN NAMES HTML-ESCAPED, AND AN ESCAPE IS NOT A WORD.
+ * SEC's series-class CSV arrives with entity references intact, so
+ * `sec-funds.json` carried `BlackRock Funds III :: iShares S&amp;P 500 Index
+ * Fund`. `norm()` strips `&` and `;` as punctuation, so that series tokenises
+ * with a spurious `amp` in it and NO filed name written `S&P` could ever reach
+ * it. The discriminating pair is the same registrant and the same family:
+ * `iShares S&P 500 Index Fund Class K` resolved to NOTHING while its sibling
+ * `iShares U.S. Aggregate Bond Index Fund Class K` resolved to WFBIX EXACT —
+ * the only difference being the ampersand.
+ *
+ * THE LIVE POPULATION WHEN THIS SHIPPED WAS 18 ENTRIES OF 29,406, THREE
+ * ENTITIES, SIX REGISTRANTS — and the first measurement said SEVEN entries and
+ * ONE entity, because it asked a CLOSED LIST (`amp|quot|apos|lt|gt|nbsp|#38|
+ * #39|#x27`) instead of asking the file what it contained. An OPEN scan
+ * (`&[a-zA-Z#][a-zA-Z0-9]*;`) finds `&reg;` on 16 occurrences and `&#153;` on 3
+ * — BOTH MORE FREQUENT THAN `&amp;` — and neither is in that list.
+ * *A count keyed on a vocabulary measures the vocabulary, not the population.*
+ *
+ * AND THE TWO THE CLOSED LIST MISSED ARE THE ONES `norm()` ALREADY TRIED TO
+ * HANDLE: it opens with `.replace(/[®™℠]/g, " ")`, so the DECODED character is
+ * correctly dropped while the ESCAPED form defeats that very line and leaves
+ * `reg` (and, worse, the bare digits `153`) as identity-bearing tokens.
+ * `ERShares Global Entrepreneurs&#153;` keyed as `ershares global entrepreneurs
+ * 153`. The strip was written for exactly these characters; the escape walked
+ * past it.
+ *
+ * Decoded in ONE pass, deliberately: `&amp;amp;` becomes `&amp;` and not `&`,
+ * because re-decoding one's own output is how an escaped literal turns into a
+ * live one. A `&` that opens no entity reference is left exactly as filed, so
+ * `AT&T`, `S&P 500` and `Dodge & Cox` are untouched — verified over the whole
+ * store: of 417,260 distinct published holding names the decode changes TWO,
+ * and of 15,714 distinct issuer cells it changes NONE. That identity is what
+ * makes the filed side additive by construction rather than by argument. */
+const ENT_NAMED = {
+  amp: "&", quot: '"', apos: "'", lt: "<", gt: ">", nbsp: " ",
+  reg: "®", trade: "™", copy: "©", sm: "℠", sect: "§",
+  mdash: "—", ndash: "–", rsquo: "’", lsquo: "‘",
+  rdquo: "”", ldquo: "“", hellip: "…", deg: "°",
+};
+/* The 0x80-0x9f block is not a legal Unicode code point in an entity reference,
+ * but SEC's feed emits `&#153;` for ™ — a Windows-1252 byte written as if it
+ * were a code point. Mapped by the Windows-1252 table rather than decoded
+ * literally, which would produce an unprintable control character. */
+const CP1252 = { 153: 0x2122, 174: 0x00ae, 169: 0x00a9, 147: 0x201c, 148: 0x201d,
+  145: 0x2018, 146: 0x2019, 150: 0x2013, 151: 0x2014, 133: 0x2026 };
+/* The negative control's drop flag, on the `GATE_DROP` precedent below: a flag
+ * the function itself reads is neither a transcription nor an edit of the
+ * shipped source, and with it unset this function is byte-identical. It is the
+ * only honest way to reproduce the BEFORE state here, because that state is
+ * "no decode on EITHER side" — index and filed name — and re-escaping the rows
+ * instead would turn `&amp;` into a doubly-escaped string the file never held. */
+let ENT_DROP = false;
+export function decodeEntities(s) {
+  const str = String(s == null ? "" : s);
+  if (ENT_DROP) return str;
+  if (!str.includes("&")) return str;                      // the common case, untouched
+  return str.replace(/&(#x[0-9a-fA-F]+|#\d+|[a-zA-Z]+);/g, (m, g) => {
+    const k = g.toLowerCase();
+    if (ENT_NAMED[k] !== undefined) return ENT_NAMED[k];
+    let cp = null;
+    if (k.startsWith("#x")) cp = parseInt(k.slice(2), 16);
+    else if (k.startsWith("#")) cp = parseInt(k.slice(1), 10);
+    if (cp == null || !Number.isFinite(cp)) return m;
+    if (CP1252[cp] !== undefined) return String.fromCodePoint(CP1252[cp]);
+    /* Anything below a space or outside Unicode is left as filed: a control
+     * character in a fund's name is damage, and inventing one is worse than
+     * showing the escape. */
+    if (cp < 32 || cp > 0x10ffff || (cp >= 0x7f && cp <= 0x9f)) return m;
+    try { return String.fromCodePoint(cp); } catch { return m; }
+  });
+}
+
 /* ---- normalization ---------------------------------------------------------
  * Both sides get the same treatment. Kept self-contained rather than importing
  * fund-er.js so the matcher can be reasoned about on its own. */
@@ -305,9 +378,23 @@ function managerPhrase(entity) {
 
 export function buildIndex(indexPath) {
   const j = JSON.parse(fs.readFileSync(indexPath, "utf8"));
+  /* ENTITY REFERENCES ARE DECODED ONCE, HERE, AND EVERY LATER PASS READS THE
+   * DECODED ROWS — so the series key, the manager phrases, the `words` witness
+   * and the house-lead test cannot disagree about what the registry says. Doing
+   * it at the point of use instead would have left `words` holding `amp` and
+   * `reg` as registry-attested "words", which is the witness that licenses a
+   * JOIN; a half-applied decode is how one repair feeds another's mistake.
+   *
+   * It is applied in the INDEX rather than only at ingest deliberately: the
+   * committed `sec-funds.json` is the shipped artifact and SEC is reachable only
+   * from Actions, so decoding here is what makes the existing file resolve
+   * correctly with no re-fetch. `fetch-sec-funds.mjs` decodes too, so a future
+   * rebuild stops carrying them at all — and this stays, because a stored file
+   * that was correct once is not thereby correct forever. */
+  const funds = j.funds.map((r) => [decodeEntities(r[0]), r[1], r[2], decodeEntities(r[3])]);
   // series key -> [{ticker, className, hint, entity}]
   const bySeries = new Map();
-  for (const [name, ticker, , className] of j.funds) {
+  for (const [name, ticker, , className] of funds) {
     const [entity, series] = String(name).includes(" :: ") ? String(name).split(" :: ") : ["", String(name)];
     const key = tokens(series).join(" ");
     if (!key) continue;
@@ -356,7 +443,7 @@ export function buildIndex(indexPath) {
   // Fund of America" -- which resolved to the wrong fund entirely -- and for
   // the manager-less "Large Cap Growth II". A phrase cannot do that: the filed
   // name must literally contain "american growth" to match that registrant.
-  for (const [name] of j.funds) {
+  for (const [name] of funds) {
     const p = managerPhrase(String(name).split(" :: ")[0]);
     if (p) MANAGERS.add(p);
   }
@@ -381,7 +468,7 @@ export function buildIndex(indexPath) {
    * `Clas s R6`, `CLA SS R6` all stood refused. Half a registry is not the
    * registry. */
   const words = new Set();
-  for (const row of j.funds)
+  for (const row of funds)
     for (const field of [row[0], row[3]])
       for (const t of String(field || "").split(/[^A-Za-z]+/))
         if (t.length > 2) words.add(t.toLowerCase());
@@ -420,7 +507,7 @@ export function buildIndex(indexPath) {
    * — `pgim` -> {prudential, target, pgim}, `ab` -> {ab, bernstein}, `nuveen`
    * -> {nuveen, tiaa, nushares}. Refusing a repair is the safe direction. */
   const leadRegs = new Map();
-  for (const [name] of j.funds) {
+  for (const [name] of funds) {
     const s = String(name);
     if (!s.includes(" :: ")) continue;
     const [ent, ser] = s.split(" :: ");
@@ -435,12 +522,12 @@ export function buildIndex(indexPath) {
    * The symbol is the key here rather than a derived name, which is the one
    * place in this file where a lookup is exact by construction. */
   const byTicker = new Map();
-  for (const [name, ticker, , className] of j.funds) {
+  for (const [name, ticker, , className] of funds) {
     if (!ticker) continue;
     const [entity, series] = String(name).includes(" :: ") ? String(name).split(" :: ") : ["", String(name)];
     byTicker.set(String(ticker).toUpperCase(), { ticker, entity, series, className: className || "" });
   }
-  return { bySeries, byLead, byYear, byTicker, words, houseLeads, managers: MANAGERS, memo: new Map(), generated: j.generated, source: j.source, rows: j.funds.length };
+  return { bySeries, byLead, byYear, byTicker, words, houseLeads, managers: MANAGERS, memo: new Map(), generated: j.generated, source: j.source, rows: funds.length };
 }
 
 /* THE FILING PRINTS THE TICKER, SO READING IT IS READING THE FILING.
@@ -650,6 +737,33 @@ export function repairFiledName(s) {
 }
 
 export function resolveHolding(idx, filedName, issuer) {
+  /* THE DEFECT IS SYMMETRIC AND THE FILED SIDE IS WHERE THE ONLY LOSS WAS, so
+   * the decode is applied to BOTH. Three published rows reaching 988 people are
+   * named `iShares S&amp;P 500 Index Fund Class K Shares` — the escape is in the
+   * STORED HOLDING NAME — and they resolve today only because the registry
+   * carried the SAME damage. Two wrongs were making a right: decode one side
+   * alone and those three rows LOSE a correct ticker.
+   *
+   * THAT LOSS IS ALSO THE METHOD FINDING. The handoff's before/after harness
+   * recorded a `gain` bucket and a `change` bucket and had NO LOSS BUCKET AT
+   * ALL, so it reported "0 lost" by construction and the regression was
+   * invisible to the measurement written to police it. *A before/after harness
+   * that cannot express a loss has not measured one.*
+   *
+   * ADDITIVE BY CONSTRUCTION, and measured rather than argued: `decodeEntities`
+   * is the identity on any string containing no entity reference, and over the
+   * whole store it changes 2 of 417,260 distinct published names and 0 of
+   * 15,714 issuer cells. So this cannot reach a row that does not carry an
+   * escape. The DISPLAYED name is untouched — only the lookup is decoded,
+   * exactly as `repairFiledName` does for `of American` and `repairHouse` does
+   * for `Vangaurd` on the display side.
+   *
+   * THE ISSUER HALF IS DECORATIVE ON THIS STORE (0 of 15,714) and is labelled
+   * so rather than quietly carried: it costs nothing, it is the same one-line
+   * call, and an issuer cell is free to acquire an escape on any DOL refresh.
+   * It is NOT evidence that the arm fires. */
+  filedName = decodeEntities(filedName);
+  issuer = decodeEntities(issuer);
   /* The repair is asked FIRST, and only when the vocabulary above fires. Once
    * it has, the filed string is established as a misspelling, so an answer it
    * resolves to is an answer to a name no fund has — which is how the two
@@ -1498,8 +1612,31 @@ export function gateVariantFor(idx, name, iss, gdrop) {
   }
 }
 
+/* The entity arm's negative control, on the `gateVariantFor` pattern: the flag
+ * is set around the shipped call rather than around a copy of it, and cleared in
+ * a `finally` so a throwing case cannot leave the module in the dropped state. */
+export function entityVariantIndex(indexPath) {
+  ENT_DROP = true;
+  try { return buildIndex(indexPath); } finally { ENT_DROP = false; }
+}
+export function entityVariantFor(idx, name, iss, edrop) {
+  if (!edrop) return resolveHolding(idx, name, iss);
+  if (idx.memo) idx.memo.clear();
+  ENT_DROP = true;
+  try { return resolveHolding(idx, name, iss); } finally {
+    ENT_DROP = false;
+    if (idx.memo) idx.memo.clear();
+  }
+}
+
 export function joinVariantFor(idx, name, iss, jdrop) {
   if (!jdrop) return resolveHolding(idx, name, iss);
+  /* The variant mirrors `resolveHolding`'s body, so it mirrors the decode too —
+   * otherwise the join controls would silently test a DIFFERENT input string
+   * than the shipped path for any name carrying an escape, which is the
+   * transcription rot this record has paid for five times. */
+  name = decodeEntities(name);
+  iss = decodeEntities(iss);
   const fixed = repairFiledName(name);
   if (fixed) { const r = resolveFaithful(idx, fixed, iss); if (r) return r; }
   const faithful = resolveFaithful(idx, name, iss);
@@ -1652,6 +1789,69 @@ const SELFTEST_JOIN = [
   ["Baird Aggregate Bond Ins T", "", "—"],
 ];
 
+/* THE ENTITY ARM, pinned on both sides — and ADDED BECAUSE NOT ONE OF THE 134
+ * CASES ABOVE REACHES IT. Checked rather than assumed: zero pinned names carry
+ * an entity reference, and zero pins expect an answer from any of the 18
+ * affected registry entries, so every existing control was green whether or not
+ * the decode existed.
+ *
+ * THE FIRST PAIR IS THE WHOLE DEFECT AND ITS OWN CONTROL: one registrant, one
+ * family, one difference. `iShares S&P 500 Index Fund Class K` must resolve;
+ * `iShares U.S. Aggregate Bond Index Fund Class K` must be UNCHANGED, and it is
+ * what says the decode repaired a key rather than loosened the matcher. */
+const SELFTEST_ENT = [
+  // must RESOLVE — the registry stored the series as `iShares S&amp;P 500 ...`
+  ["iShares S&P 500 Index Fund Class K", "", "WFSPX"],
+  ["iShares S&P 500 Index Fund", "", "WFSPX"],
+  ["ISHARES S&P 500 INDEX K", "", "WFSPX"],
+  ["S&P 500 Index K", "iShares", "WFSPX"],
+  ["iShares S&P 500 Index K Fund", "BlackRock", "WFSPX"],
+  // must RESOLVE — the FILED name carries the escape; 3 published rows do
+  ["iShares S&amp;P 500 Index Fund Class K Shares", "", "WFSPX"],
+  // must RESOLVE — the ampersand is mid-series, not in a house name
+  ["iShares U.S. Broker-Dealers & Securities Exchanges ETF", "", "IAI"],
+  ["Principal Core Plus Bond Fund fka Bond & Mortgage Securities Fund Institutional Class", "", "PMSIX"],
+  /* must RESOLVE — `&reg;`, the entity the first measurement's closed list
+   * MISSED and which is MORE FREQUENT in the file than `&amp;`. The series is
+   * `Return Stacked&reg; Balanced Allocation & Systematic Macro Fund`, so it
+   * carries BOTH an escape and a bare ampersand: the bare one was always
+   * harmless (punctuation on both sides) and the escape left `reg` keyed into
+   * the series. `norm()` opens by stripping the DECODED ® — the escape walked
+   * past the very line written for it. */
+  ["Mutual Fund Return Stacked Balanced Allocation & Systematic Macro Fund Class A", "", "RDMAX"],
+  /* must be UNCHANGED — the sibling with no ampersand, which resolved all along.
+   * A decode that changed this would be loosening the matcher, not repairing a key. */
+  ["iShares U.S. Aggregate Bond Index Fund Class K", "", "WFBIX"],
+  /* must be REFUSED, AND PINNED AS LATENT RATHER THAN AS A WIN. The decode
+   * repairs these two keys — instrumented, not assumed: the bucket is reached
+   * and the filed name IS a superset of the repaired key in both — and they
+   * still refuse, for a reason that has nothing to do with entities. The
+   * MANAGER GATE declines them: `ershares` and `pfg jpmorgan` are
+   * `managerPhrase(SERIES)` keys, and `filedMgrs` is drawn from `MANAGERS`,
+   * which is built from REGISTRANT names alone (`EntrepreneurShares Series
+   * Trust`, `Northern Lights Fund Trust`) — so those keys are unreachable BY
+   * CONSTRUCTION. That is the 2026-10-01 09:4xZ defect in a family its
+   * `houseLeads` test does not qualify.
+   * So `&#153;` and the PFG half of `&reg;` change 0 published rows today, which
+   * is what the whole-store diff independently said: every gained row is WFSPX
+   * or IAI. Pinned here so that when the gate widens, these are what move —
+   * *a repair whose key lands and whose gate refuses is latent, not shipped.* */
+  ["ERShares Global Entrepreneurs Institutional Class", "", "—"],
+  ["PFG JPMorgan Tactical Moderate Strategy Fund Class I", "", "—"],
+  /* must be UNCHANGED — a bare `&` that opens no entity reference is left
+   * exactly as filed, so the decode cannot touch an ordinary house name. */
+  ["Dodge & Cox Stock Fund Class I", "", "DODGX"],
+  ["Dodge & Cox Income Fund Class I", "", "DODIX"],
+  /* must be REFUSED — an escaped literal must not be re-decoded into a live
+   * one. `&amp;amp;` decodes to `&amp;` in ONE pass and stays unresolvable;
+   * decoding twice would turn it into `S&P` and manufacture an answer for a
+   * string the filing does not contain. */
+  ["iShares S&amp;amp;P 500 Index Fund Class K", "", "—"],
+  /* must be REFUSED — a non-entity that merely looks like one. `&notafund;` is
+   * left as filed rather than guessed at. */
+  ["iShares S&notanentity;P 500 Index Fund Class K", "", "—"],
+];
+
 if (process.argv.includes("--selftest")) {
   const idx = buildIndex(INDEX);
   let bad = 0, n = 0;
@@ -1758,6 +1958,31 @@ if (process.argv.includes("--selftest")) {
   for (const [name, iss, want] of SELFTEST_JOIN) {
     n++;
     const r = joinVariant(name, iss);
+    const got = r ? r.ticker + (r.comparable ? "*" : "") : "—";
+    if (got !== want) { bad++; console.log(`FAIL want ${want.padEnd(8)} got ${got.padEnd(8)} ${name}${iss ? `  [iss ${iss}]` : ""}`); }
+  }
+  /* The entity arm, shipped or with the decode dropped. `--nodecode` is the
+   * BEFORE state written out in full — an index built from the raw rows and a
+   * filed name passed through untouched — rather than produced by patching
+   * `decodeEntities`, so the control cannot quietly repair what it is meant to
+   * detect. It must fail BY NAME on exactly the nine must-resolve cases while
+   * every must-KEEP and must-REFUSE case holds. */
+  const nodecode = process.argv.includes("--nodecode");
+  let entIdx = idx;
+  if (nodecode) {
+    console.log("NEGATIVE CONTROL: the entity decode is dropped on BOTH sides — it must fail by name on exactly the cases it reaches");
+    /* The index is REBUILT with the flag set, because the decode happens at
+     * build time: dropping it only on the filed side would leave the repaired
+     * keys in place and the control could not fail on the registry half. */
+    entIdx = entityVariantIndex(INDEX);
+  }
+  for (const [name, iss, want] of SELFTEST_ENT) {
+    n++;
+    /* The memo is keyed on the filed name alone, so reusing a warm index would
+     * hand the variant the shipped answer out of the cache and every drop would
+     * pass — the failure `gateVariantFor` already records. */
+    if (entIdx.memo) entIdx.memo.clear();
+    const r = entityVariantFor(entIdx, name, iss, nodecode);
     const got = r ? r.ticker + (r.comparable ? "*" : "") : "—";
     if (got !== want) { bad++; console.log(`FAIL want ${want.padEnd(8)} got ${got.padEnd(8)} ${name}${iss ? `  [iss ${iss}]` : ""}`); }
   }
