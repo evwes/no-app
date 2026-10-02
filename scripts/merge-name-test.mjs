@@ -385,11 +385,27 @@ const ISS_CASES = [
    * it needs a vocabulary of one-word firm brands — the registry has no
    * `oppenheimerfunds`, and a house list is wrong in the unsafe direction. */
   ["OppenheimerFunds", "Oppenheimer Funds"],                                       // 17 -> 60
-  /* ...and the second cost is the ONLY transformation disjunct (1) contributes
-   * to this column. The filer misspelled AllianceBernstein (ei -> ie); both
+  /* THE SAME FIRM WITH ITS CORPORATE SUFFIX IS A DIFFERENT STORE VALUE, and it
+   * is the ONLY one disjunct (1) contributes to this column — CORRECTED
+   * 2026-10-02 (15:2xZ), because the attribution shipped with #547 named the
+   * wrong string. Whole-store over all 15,544 distinct RAW issuer values,
+   * `shipped` repairs and `no-disjunct-(1)` refuses exactly ONE: this. The bare
+   * `OppenheimerFunds` above and `AllianceBernstien` below are both accepted by
+   * disjunct (2) on their own, so dropping (1) leaves them untouched — which is
+   * why the `iss-noshipped` control read 0 of 31 and declared itself DECORATIVE,
+   * exiting 1. The count the commit registered (exactly 1) was right; the string
+   * it named was not, and the pin list held only the suffix-less form, so the
+   * control could not see the one case that exists. Pinning it here makes the
+   * control discriminate instead of being relabelled away.
+   *
+   * Measured the raw values, NOT `issWhole`'s keys: those are lowercased, and
+   * SEAM needs [a-z][A-Z], so the first pass answered 0 for all 14,500 by
+   * construction and the clean zero was the tell. */
+  ["OppenheimerFunds, Inc.", "Oppenheimer Funds, Inc."],                           //   2 rows, only-(1)
+  /* ...and the filer's MISSPELLING of the same one-word brand (ei -> ie); both
    * forms are wrong and the repair moves from one to another that 5 rows use.
-   * Dropping disjunct (1) loses exactly this and nothing else — so the
-   * `iss-noshipped` control below documents a COST, not a protection. */
+   * It is accepted by disjunct (2), not (1) — probed directly, `no-disjunct-(1)`
+   * still returns "Alliance Bernstien". */
   ["AllianceBernstien", "Alliance Bernstien"],                                     //  2 -> 5
   /* must KEEP — THE JOINED SPELLING IS THE FIRM'S NAME, and the ratio reads it
    * off the store with no vocabulary. `AllianceBernstein` is the pin that
@@ -432,12 +448,35 @@ for (const [inp, want] of ISS_CASES) {
   if (got !== want) { issBad++; console.log(`  FAIL  ${JSON.stringify(inp)}\n        want ${JSON.stringify(want)}\n        got  ${JSON.stringify(got)}`); }
 }
 console.log(`\nissuer lost-space repair: ${ISS_CASES.length - issBad}/${ISS_CASES.length} pinned cases`);
-/* EVERY PIN IN-POPULATION — see the note above: an out-of-population pin tests
- * the `joined === 0` branch, which production cannot reach. */
+/* EVERY PIN IN-POPULATION — an out-of-population pin tests the `joined === 0`
+ * branch, which production cannot reach.
+ *
+ * THE FIRST VERSION OF THIS CHECK WAS SELF-CONSUMING, AND THAT IS THE FINDING —
+ * CORRECTED 2026-10-02 (15:2xZ). It asked only whether the DAMAGED form is
+ * attested in the store, and the whole purpose of the arm it guards is to
+ * ELIMINATE the damaged forms. So it read 31/31 while the store was still
+ * damaged, passed its own pre-push run, and then went to 17/31 the instant
+ * #547's merge actually repaired the column — failing the gate for having
+ * SUCCEEDED. A gate that cannot survive its own success is worse than no gate:
+ * the record already carries ten consecutive red `site-test` runs, and a
+ * habitually red gate makes a real failure invisible.
+ *
+ * The question it means to ask is "could production ever see this string?", and
+ * after the repair that is no longer answerable from the damaged side alone: a
+ * NEW filing can carry the damage even though the stored column is clean. So a
+ * pin is in-population when the store attests EITHER side — the damaged form at
+ * all (pre-repair, or a fresh filing), or the REPAIRED form at the arm's own
+ * floor of 4, which is the threshold the predicate itself uses.
+ *
+ * That floor is what keeps the check honest rather than merely green: it still
+ * refuses `ExxonMobil`, whose repaired `Exxon Mobil` is attested ONCE as an
+ * issuer, so the branch really is unreachable and pinning it would pin
+ * behaviour that does not exist. `Oppenheimer Funds` is attested 77 and passes. */
 {
-  const out = ISS_CASES.filter(([s]) => !issWhole.get(String(s).trim().toLowerCase()));
-  console.log(`  pins drawn from the issuer column itself: ${ISS_CASES.length - out.length}/${ISS_CASES.length}`);
-  if (out.length) { console.log(`  OUT OF POPULATION (joined === 0, a branch production cannot reach): ${out.map(([s]) => JSON.stringify(s)).join(", ")}`); issBad++; }
+  const att = (s) => issWhole.get(String(s).trim().toLowerCase()) || 0;
+  const out = ISS_CASES.filter(([s, want]) => !att(s) && !(want && att(want) >= 4));
+  console.log(`  pins drawn from the issuer column itself: ${ISS_CASES.length - out.length}/${ISS_CASES.length} (damaged form attested, or the repaired form at the arm's floor of 4)`);
+  if (out.length) { console.log(`  OUT OF POPULATION (neither side attested — a branch production cannot reach): ${out.map(([s]) => JSON.stringify(s)).join(", ")}`); issBad++; }
 }
 /* REACH: how many of the NAME table's cases could have caught an issuer change */
 {
