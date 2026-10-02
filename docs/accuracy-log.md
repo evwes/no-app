@@ -7,6 +7,120 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-02 (12:3xZ) — the draw: a retired brand sized at 2.16M readers, and two of my own screens refuted by their own output
+
+Participant-weighted random draw from published lineups, seed 20261002123, pool
+**59,378 published plans / 100,067,338 participants**, weighted by
+`partEOY || participants` (the column the page publishes). The store was read at
+the COMMITTED ref rather than from the working tree, because an agent held the
+tree and the real `merge-4i` rewrites every lineup shard — *a draw of an
+uncommitted store measures an unshipped change.*
+
+**Tilson Technology Management (569 ppl, 17 rows @ 0.985) reads clean end to
+end**: every row a Vanguard or Fidelity fund with an exact ticker and a fee. Its
+one queued row is `Federated U.S. Treasury Cash Reserves Institutional Shares`
+publishing the generic **0.2** money-market fallback with no ticker, on a name
+stating both the house and the share class — the fee pre-emption inside an
+otherwise immaculate menu.
+
+**Rubenstein Law P.A. (286 ppl, 32 rows @ 0.968)** is where the work is.
+
+### What was sized: the OPPENHEIMER brand
+
+Oppenheimer Funds became Invesco in 2019, so nothing in the SEC registry or
+`fund-er.js` answers to the brand. Whole-store:
+
+| | |
+|---|---|
+| published rows naming Oppenheimer | **1,845** |
+| entries / reader plans | 1,621 / 1,595 |
+| participants (own ack **and** through `mtiaAck`) | **2,157,642** |
+| dollars | **$1,452,137,643** |
+| publish NO ticker | **1,844 of 1,845** |
+| publish neither a ticker nor a fee | 1,834 |
+| distinct published names | 908 |
+
+The Spartan shape (Fidelity's retired index brand, 835 rows) with a second brand
+and two and a half times the readers. The cells are BLANK, so this is coverage
+and not a false claim.
+
+**The split, with its arithmetic stated rather than left open:**
+
+- **(a) names BOTH `Invesco` and `Oppenheimer`** — 751 rows / 700 entries /
+  **994,805 ppl** / $813,064,689;
+- **(b) `Oppenheimer` alone** — 561 / 468 / 472,123 / $277,599,017, which needs a
+  SOURCED brand→brand rename;
+- **(c) a printed SYMBOL leading the name** — 18 / 18 / **197,106 ppl** /
+  $19,391,348;
+- **515 rows name Oppenheimer only in the ISSUER cell**, which is where the
+  `Inv Discov R6 Fd` / `Inv Dev Mark R6 Fd` recordkeeper-abbreviation family
+  sits — a different, already-recorded family, deliberately not folded in.
+
+**MY (a) HYPOTHESIS WAS REFUTED BY ITS OWN PROBE.** The class's most frequent
+member is `Invesco Oppenheimer International Growth Fund` (70 rows) — it names
+the CURRENT house as well as the retired one — so I expected the retired token to
+be the only blocker and the repair to need no external source. Asked of
+`resolveHolding`: **dropping `Oppenheimer` newly resolves 5 of 349 distinct
+names and leaves 344 resolving to nothing.** The five are `Invesco Real Estate
+Fund` → REINX, `Invesco Real Estate I Fund` → REINX, `Invesco Corporate Bond R6`
+→ ICBFX, `Invesco Corporate Bond R5` → ACCWX, `Invesco SteelPath MLP Income Y` →
+MLPDX. **The cause sits UPSTREAM of the brand token and is unanswered.**
+
+**(c) IS v528's GATE WORKING AS DESIGNED, asked rather than assumed.** All four
+leading symbols — **OGMIX, OPGSX, OIBIX, ODVIX** — are ABSENT from the SEC index,
+so the registry gate that keeps `INDEX` from being read as a symbol refuses them
+correctly. 197,106 readers see a filing print a symbol and a page publish
+nothing, and while the symbol names no live registered class that is the honest
+answer.
+
+### Two screens refuted, and no number from either may be carried forward
+
+Rubenstein publishes `Index K T.Rowe Price Retire 2065` → TRSJX and `Value Fund
+T.Rowe Price Retire 2025` → TRRHX: a FRAGMENT welded onto the FRONT of a real
+fund name. Both still resolve, so it is an honesty defect, not coverage.
+
+**(1) The issuer strip's own test — does the REMAINDER stand alone elsewhere? —
+reads 129,636 rows / 37,507 entries / $655,747,398,195, and its commonest
+members are REAL FUNDS**: `Vanguard 500 Index Fund` → `500 Index Fund`
+(remainder attested 3,735), `Schwab S&P 500 Index Fund`, `Fidelity Small Cap
+Value Fund` → `Small Cap Value Fund`, `Fidelity Capital & Income Fund` → `Income
+Fund`. ***A leading strip is the MIRROR of the issuer strip: there the remainder
+is a FIRM and the fragment is damage; here the remainder is a GENERIC fund name
+and the fragment is the HOUSE*** — the one token that must never be stripped.
+The implausible size was the tell. **Do not carry 129,636 or $655.7B forward.**
+
+**(2) Adding the discriminator those rows actually have — the REMAINDER STILL
+NAMES A HOUSE, witnessed by the registry's own 503-manager set rather than a
+typed list of firms — reads 13,676 rows / 4,348 entries / $50,628,229,752 and is
+ALSO contaminated, in two ways this record already names.** `MANAGERS` holds
+descriptive words, so `Avantis Emerging Markets Equity Fund` → `Emerging Markets
+Equity Fund` passes on the word `emerging`; and the largest clean-looking block
+is `VTIVX - Vanguard Target Retirement 2045` and some three hundred siblings,
+**which is v528's own FILED-TICKER population, where the lead is EVIDENCE and
+not damage.** The manager-set weakness is exactly the one #533 measured and
+refused, at a cost of 1,758 names / 3,330 correct rows. ***I reproduced a
+refuted instrument***, and only its own output said so — the positive control I
+wrote (the two motivating remainders must be reached, the three generic ones
+refused) passed, because a control built from the cases I had already imagined
+cannot see a contaminant I had not. **Do not carry 13,676 or $50.6B forward.**
+
+So the class I actually saw stays **unsized at 3 rows in one menu**, and one of
+those three is not even in it: `Class I Shares Blackrock Technology Opp. Instl`
+(resolving to nothing) is v532's leading-share-class population.
+
+### Also live in Rubenstein's one menu, all queued
+
+`T.Rowe Price` alone at **4.2% / $661,753** with no ticker and no fee (the
+bare-house class); `JPMorgan Small Cap Value Fund R6` → JSVUX and `T.Rowe Price
+Dividend Growth` → PRDGX each publishing **a symbol with no fee** (the
+91,423-row class); `Hartford Internat Opportunuties Fund`, a filer misspelling,
+resolving to nothing; `MSCI iShares MSCI Eafe International` → nothing, the EAFE
+family already measured as genuinely absent from the registry; and **`Blackrock
+Hecla Mining` at $4,430 — a fund house welded onto an individual SECURITY's
+name**, sized at one row here and unmeasured as a class.
+
+---
+
 ## 2026-10-02 (11:4xZ verdict) — #545: the per-arm print passed to the row, the whole-store total did not, and the delta is why
 
 **Mirrored** `34463fb2 → d5e36aa9`, data gate **unforced at +0 / −0 by ack and by

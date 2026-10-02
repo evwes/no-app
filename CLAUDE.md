@@ -1345,6 +1345,83 @@ from the cycle that would have cleared it.
   guards visibly working: all twelve Principal collective-trust vintages publish
   no fee and no ticker, and `Stable Value Z Fund` publishes no fee.
   `docs/accuracy-log.md` 2026-10-02 (11:5xZ).
+- **THE 12:3xZ DRAW FOUND NO NEW SHIPPABLE CLASS AND TWO OF MY OWN SCREENS DIED
+  ON THEIR OWN OUTPUT — ONE OF THEM REPRODUCING A REFUTATION ALREADY ON THIS
+  RECORD. WHAT IT DID SIZE IS A RETIRED BRAND: 1,845 published rows / 1,621
+  entries / 1,595 reader plans / 2,157,642 participants / $1,452,137,643 name an
+  OPPENHEIMER fund, and 1,844 of 1,845 publish NO TICKER while 1,834 publish
+  neither a ticker nor a fee.** Seed 20261002123, pool **59,378 published plans
+  / 100,067,338 ppl**, store read at the COMMITTED ref because an agent held the
+  tree. **Tilson Technology Management (569 ppl, 17 rows @ 0.985) reads clean end
+  to end** — every row a Vanguard or Fidelity fund with an exact ticker and a
+  fee. **Rubenstein Law P.A. (286 ppl, 32 rows @ 0.968)** is where the work is.
+  **THE OPPENHEIMER BRAND BECAME INVESCO IN 2019, so nothing in the registry or
+  `fund-er.js` answers to it** — the Spartan shape (Fidelity's retired index
+  brand, 835 rows) with a second brand and two and a half times the readers.
+  Blank cells, so this is COVERAGE and not a false claim.
+  **AND MY OWN SPLIT HYPOTHESIS WAS REFUTED BY ITS OWN PROBE, which is the
+  finding.** The class's most frequent member is `Invesco Oppenheimer
+  International Growth Fund` (70 rows) — it names the CURRENT house as well as
+  the retired one — so I expected the retired token to be the only blocker and
+  the repair to need no external source. **Measured through `resolveHolding`:
+  dropping `Oppenheimer` newly resolves 5 of 349 distinct names and leaves 344
+  resolving to nothing** (the five are `Invesco Real Estate Fund` → REINX,
+  `Invesco Corporate Bond R6` → ICBFX and three siblings). *The cause sits
+  UPSTREAM of the brand token, so a brand strip is not the fix* — and that
+  question is unanswered.
+  **THE SPLIT, each bucket sized, and the arithmetic stated rather than left
+  open:** (a) names BOTH Invesco and Oppenheimer **751 rows / 700 entries /
+  994,805 ppl / $813,064,689**; (b) Oppenheimer alone **561 / 468 / 472,123 /
+  $277,599,017**; (c) a printed SYMBOL leading the name **18 / 18 / 197,106 /
+  $19,391,348**; and the remaining **515 rows name Oppenheimer only in the
+  ISSUER cell**, which is where the `Inv Discov R6 Fd` / `Inv Dev Mark R6 Fd`
+  recordkeeper-abbreviation family sits — a different and already-recorded
+  family, not folded in.
+  **(c) IS v528's GATE WORKING AS DESIGNED, asked rather than assumed: all four
+  leading symbols — OGMIX, OPGSX, OIBIX, ODVIX — are ABSENT from the SEC index**,
+  so the registry gate that keeps `INDEX` from being read as a symbol refuses
+  them correctly. 197,106 readers see a filing print a symbol and a page publish
+  nothing, and that is the honest answer while the symbol names no live
+  registered class.
+  **TWO SCREENS REFUTED, AND NO NUMBER FROM EITHER MAY BE CARRIED FORWARD.**
+  Rubenstein publishes `Index K T.Rowe Price Retire 2065` → TRSJX and `Value
+  Fund T.Rowe Price Retire 2025` → TRRHX — a FRAGMENT welded onto the FRONT of a
+  real fund name, which still resolves, so an honesty defect. **(1) The issuer
+  strip's own test — does the REMAINDER stand alone elsewhere — reads 129,636
+  rows / $655,747,398,195 and is dominated by REAL FUNDS** (`Vanguard 500 Index
+  Fund` → `500 Index Fund`, remainder attested 3,735; `Fidelity Small Cap Value
+  Fund`; `Fidelity Capital & Income Fund` → `Income Fund`). ***A leading strip is
+  the MIRROR of the issuer strip: there the remainder is a FIRM and the fragment
+  is damage, here the remainder is a GENERIC fund name and the fragment is the
+  HOUSE*** — the one token that must never be stripped. **Do not carry 129,636
+  or $655.7B forward.** **(2) Adding the discriminator those rows actually have —
+  the REMAINDER STILL NAMES A HOUSE, witnessed by the registry's own manager set
+  rather than a typed list — reads 13,676 rows / $50,628,229,752 and is ALSO
+  contaminated, in two ways this record already names**: `MANAGERS` holds
+  descriptive words (`emerging`, `world`), so `Avantis Emerging Markets Equity
+  Fund` → `Emerging Markets Equity Fund` passes; and the largest clean-looking
+  block is **`VTIVX - Vanguard Target Retirement 2045` and 300-odd siblings,
+  which is v528's own FILED-TICKER population, where the lead is EVIDENCE and not
+  damage.** The manager-set weakness is the one #533 measured and refused at
+  1,758 names / 3,330 correct rows — ***I reproduced a refuted instrument***, and
+  its own output is what said so. **Do not carry 13,676 or $50.6B forward.** The
+  class I actually saw stays **unsized at 3 rows in one menu**, and one of those
+  three (`Class I Shares Blackrock Technology Opp. Instl`, resolving to nothing)
+  is v532's leading-share-class population rather than this one.
+  **ALSO LIVE IN RUBENSTEIN'S ONE MENU, all queued:** `T.Rowe Price` alone at
+  **4.2% / $661,753** with no ticker and no fee (the bare-house class);
+  `JPMorgan Small Cap Value Fund R6` → JSVUX and `T.Rowe Price Dividend Growth`
+  → PRDGX each publishing **a symbol with no fee** (the 91,423-row class); a
+  filer MISSPELLING (`Hartford Internat Opportunuties Fund`) resolving to
+  nothing; `MSCI iShares MSCI Eafe International` → nothing, the EAFE family this
+  record already measured as genuinely absent from the registry; and `Blackrock
+  Hecla Mining` at $4,430 — a fund house welded onto an individual SECURITY's
+  name, sized at one row and unmeasured as a class. **Tilson's one queued row:**
+  `Federated U.S. Treasury Cash Reserves Institutional Shares` publishes the
+  generic **0.2** money-market fallback with no ticker, on a name stating both
+  the house and the class — a named instance of the fee pre-emption inside an
+  otherwise immaculate menu.
+  `docs/accuracy-log.md` 2026-10-02 (12:3xZ).
 - **#545 RAN `success` AND IS MIRRORED — 2026-10-02 11:4xZ (`34463fb2 →
   d5e36aa9`), DATA GATE UNFORCED AT +0 / −0 BY ACK AND BY PLAN, `--force` ON THE
   GIT CHECK ALONE WITH THE EVIDENCE FIRST. THE HEADLINE REGISTRATION PASSED TO
