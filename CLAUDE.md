@@ -748,11 +748,32 @@ HIGH 4, warn 556, overshoot 372, confident 60,167, entries 65,480, dl 39.
 The issuer arm's own non-convergence: `issuer lost-space repair` should read
 **190**, not 188.
 
-**#551 (in flight, dispatched 19:30Z, prep-side):** the fee-shard log reads
-"N plans and ≤508 master trusts"; MTIA acks with a shard entry **0 of 508 →
-non-zero**; PSEG's trust ack `20251013135637NAL0000680483001` gains a shard-32
-entry carrying `mt: 1`; `i1`-carrying acks **42,385 +** the trusts'; the
-published `recordkeeper` moves on **0** plans; no parser metric moves.
+**#552 (in flight, dispatched 19:48Z, merge-side):** `welded-value repair: 34
+rows across 34 plans` plus the delta's own hits; ticker/fee/asterisk/stored
+`stk` **0 gained, 0 lost, 0 changed** — measured on all 34 rows, stronger than a
+tolerance; the other six rename arms unchanged by it; no parser metric moves.
+
+**#551 VERDICT (success 19:39Z): every claim held.** MTIA acks with a fee-shard
+entry **0 of 508 → 395**, 300 carrying `i1`; PSEG's trust ack gained its shard-32
+entry; the published `recordkeeper` moved on **0** plans.
+
+**AND IT SETTLES PSEG — the owner asked three times, and the filing's own codes
+answer it.** Trust ack `20251013135637NAL0000680483001` files six item-2 rows:
+`INVESCO ADVISORS, INC` codes **28 99 50** at **$534,926** (*what we publish*),
+`FID INV INST OPS CO` codes **65 99 64 50** at **$442,941**, BlackRock 28,
+BNY Mellon 18/19, `KRONICK KALADA BERDY & CO` **10** (the auditor), Willis Towers
+Watson 16. **No row is coded 15, so `isRk` is false for all six and
+`FID INV INST OPS CO` matches no `RK_BRANDS` pattern — so the winner is decided
+by COMPENSATION ALONE.** The filing's notes say *"Fidelity Investments is the
+recordkeeper"* and **the filing's own code 64 agrees with its notes.** The
+published name is an artifact of a tie-break, not a claim anyone filed.
+**NEXT, AND IT IS THE FIRST RECORDKEEPER VARIANT WITH DIRECT EVIDENCE:** prefer
+a row coded **64** over top-comp *only when* its name carries a recordkeeper
+brand witness — the bare code-64 rule was refused because it moved 2,395 plans
+onto consultants, and the brand witness is what the four refuted variants all
+lacked. **Must be measured store-wide before any claim**, and `FID INV INST OPS
+CO` is already a published recordkeeper string elsewhere (Charter
+Communications), so the witness exists in our own data.
 
 **#550 verdict (success, 9 min): the item-1 capture WORKS — 42,385 acks carry
 `i1`, 1,134 with no item-2 row against a predicted 1,274 — and the PSEG claim
@@ -1083,12 +1104,24 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   (`Plan Loan Default Fund` ×194, `Loan Collateral Fund` ×76, `Loan Escrow
   Fund` ×16). All publish no ticker and no fee, so the harm is the CLAIM alone.
   `docs/accuracy-log.md` 2026-10-02 (18:2xZ).
-- **CORRECTED 2026-10-02 BY MEASUREMENT: `scripts/merge-name-test.mjs` EXITS
-  0**, not 1. This entry said it "exits 1 at HEAD, verified pre-existing"; run
-  both stashed to HEAD and with a diff applied it exits **0** both times with
-  byte-identical output. The `drop the #536 junk guard: disagrees on 1 of 27`
-  line it prints is informational. *A queue entry records what was true when it
-  was written.*
+- **`scripts/merge-name-test.mjs` EXITS 1 AGAIN, AND THE CAUSE IS A GATE THAT
+  ERASES ITS OWN EVIDENCE (2026-10-02 20:0xZ).** This entry read "EXITS 0, not
+  1" — measured and true when written, wrong now; it exits 1 both stashed to
+  HEAD and with a diff applied. The failure is the **ISSUER arm's
+  `iss-noshipped` control reading 0 of 32** where the record says 1, and the
+  file correctly calls its own control decorative.
+  **The arithmetic:** the control's case was `AllianceBernstien → Alliance
+  Bernstien`, and the issuer column today holds **`AllianceBernstien` 0,
+  `Alliance Bernstien` 7**. #547's issuer repair shipped, ran, and removed the
+  damaged spelling — and the control's evidence maps are built FROM the store.
+  With `joined` at 0, disjunct (2)'s `w > joined * 3` became `7 > 0` = TRUE, so
+  the case flipped from "repaired by (1) only" to "repaired by both" and the
+  control for (1) can no longer fail. ***A repair arm that runs on every merge
+  destroys the evidence its own negative control depends on*** — every arm in
+  that file will go this way once it has done its work. Fix: a FROZEN fixture
+  instead of the live store. **It runs in no workflow, and must stay out of CI
+  until green — a red gate is worse than no gate.** *A queue entry records what
+  was true when it was written, and a corrected entry can go stale too.*
 - `scripts/map-test.mjs` fails IN THIS SANDBOX at HEAD with
   `ERR_CERT_AUTHORITY_INVALID` on a page resource — identical with a diff
   stashed and applied, so it is an outbound-TLS property of the sandbox and not
