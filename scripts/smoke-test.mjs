@@ -217,7 +217,8 @@ try {
     isOfficeListRow, isPageBreakCaptionRow,
     isInvestmentContractRow, isMistypedStockRow, isBankDepositRow,
     mistypedStockFeeIsGuaranteeOnly, issuerPricedER, leadingHouse,
-    employerStockSymbolOk, sponsorNameKey } = await import("./lib-disclose.mjs");
+    employerStockSymbolOk, sponsorNameKey,
+    GUARANTEE_PRICED_WORDS } = await import("./lib-disclose.mjs");
   const frozCases = [
     [true, "The Plan was terminated effective December 31, 2023.", "Capital Region Medical"],
     [true, "As amended on December 31, 2024, the Plan was frozen and all participants of the Plan became fully vested.", "Hanes Companies, Inc."],
@@ -1088,9 +1089,106 @@ try {
    * the call site, so the two sides are comparable without reconstructing
    * `fundERFiled` here. */
   const erCtx = vm.createContext({ console });
-  vm.runInContext(readFileSync("fund-er.js", "utf8"), erCtx);
+  vm.runInContext(readFileSync("fund-er.js", "utf8")
+    + "\nglobalThis.__FUND_ER = FUND_ER;", erCtx);
   const tableER = erCtx.fundER;
   if (typeof tableER !== "function") fail("fund-er.js no longer defines fundER — the guarantee-only fee rule cannot be cross-checked");
+
+  /* THE STRIP MUST COVER EVERY WORDING THE PRICER PRICES A GUARANTEE ON —
+   * 2026-10-02, and this is the prevention for a defect that cost 24 rows.
+   *
+   * `annuityFeeIsGuaranteeOnly` works by removing the words `fund-er.js`
+   * prices a guarantee on and asking the SAME table again, so the two patterns
+   * are halves of one rule living in two files. They had drifted on the
+   * commonest spelling of one of them: the strip read `\bsa?gic\b` = {sgic,
+   * sagic} while the pricer reads `\b(?:sa)?gic\b` = {gic, sagic}, so a row
+   * named `GIC METLIFE CONTRACT #GAC 32226` kept the generic 0.35 the gate
+   * exists to withhold. Not nested in either direction, so neither file's
+   * author could have seen it by reading their own.
+   *
+   * SO THE WITNESSES ARE DERIVED FROM THE PRICER'S OWN SOURCE, never typed: a
+   * typed probe list is the vocabulary this gate already replaced once, and it
+   * would go stale the next time `fund-er.js` widens. The entry is located by
+   * BEHAVIOUR — the one FUND_ER row whose pattern matches the bare word
+   * `guaranteed` — and its alternatives are expanded to literals. It FAILS
+   * CLOSED: an alternative the tiny expander cannot reduce is a failure naming
+   * itself, not a silent skip.
+   *
+   * NEGATIVE CONTROL: this fires on HEAD. With the old `\bsa?gic\b` the
+   * witness `gic` survives the strip and the check fails by name — it is not a
+   * guard that has only ever been seen passing.
+   *
+   * WHAT IT CANNOT SEE, named: `fund-er.js` also matches through its own
+   * ABBREVIATION EXPANSION, so `Stable Val` prices while the literal
+   * `\bstable value\b` cannot remove it (the 1-row residual recorded at
+   * `isInvestmentContractRow`). A comparison of two patterns is blind to a
+   * third mechanism, and this check claims only the pattern level. */
+  const erTable = erCtx.__FUND_ER;
+  if (!Array.isArray(erTable)) fail("fund-er.js no longer exposes FUND_ER as an array — the strip/pricer cross-check cannot run");
+  else {
+    /* NOT `instanceof RegExp`: fund-er.js is evaluated in a vm context with its
+     * OWN intrinsics, so `instanceof` is FALSE for every one of the 159 entries
+     * and the filter would select nothing. The first draft of this check did
+     * exactly that — it fails CLOSED (the "exactly one" test below rejects 0),
+     * so it would have broken the smoke test rather than passing quietly, but
+     * it would have been wrong for a reason about the harness and not about the
+     * patterns. *A cross-context type test measures the context.* */
+    const isRe = (x) => x && typeof x.test === "function" && typeof x.source === "string";
+    const guarEntries = erTable.filter(([re]) => isRe(re) && re.test("guaranteed"));
+    if (guarEntries.length !== 1)
+      fail(`expected exactly one FUND_ER entry pricing the bare word "guaranteed", found ${guarEntries.length}`
+        + " — the strip/pricer cross-check can no longer identify the guarantee fallback by behaviour");
+    else {
+      /* literals, \b, and the two optional-group forms the pricer uses */
+      const witnessesOf = (alt) => {
+        const bare = alt.replace(/\\b/g, "");
+        const m = bare.match(/^\(\?:([a-z ]+)\)\?(.*)$/i) || bare.match(/^([a-z])\?(.*)$/i);
+        const ws = m ? [m[2], m[1] + m[2]] : [bare];
+        for (const w of ws)
+          if (!/^[a-z0-9 ]+$/i.test(w)) return null;      // fail closed
+        return ws;
+      };
+      let checked = 0;
+      for (const alt of guarEntries[0][0].source.split("|")) {
+        const ws = witnessesOf(alt);
+        if (!ws) {
+          fail(`the guarantee fallback in fund-er.js has an alternative this check cannot reduce to a literal`
+            + ` witness: ${JSON.stringify(alt)} — extend the expander rather than dropping the check, or the`
+            + " strip and the pricer can drift again (2026-10-02)");
+          continue;
+        }
+        for (const w of ws) {
+          checked++;
+          const rest = w.replace(GUARANTEE_PRICED_WORDS, " ").replace(/\s+/g, " ").trim();
+          if (rest !== "")
+            fail(`GUARANTEE_PRICED_WORDS does not remove ${JSON.stringify(w)}, which fund-er.js prices as a`
+              + ` guarantee (leaves ${JSON.stringify(rest)}). The fee gate strips the guarantee words and asks the`
+              + " same table again, so a wording the pricer knows and the strip does not makes the gate REFUSE"
+              + " the rows it was written for — 24 of them on 2026-10-02.");
+        }
+      }
+      console.log(`  strip/pricer cross-check: ${checked} witnesses derived from fund-er.js's guarantee fallback`);
+    }
+    /* AND THE OTHER DIRECTION: THE STRIP MUST NOT REACH INSIDE A WORD.
+     *
+     * `fund-er.js` shipped `gic\b` with no LEADING boundary and priced 5,604
+     * rows / 7,324,367 participants as guaranteed investment contracts because
+     * their names say "strateGIC" (fixed 2026-09-29). The strip is the same
+     * pattern in the other file, and the same slip here is worse in kind: it
+     * would delete `gic` out of a real fund's name, leave a remainder that
+     * cannot price, and WITHDRAW a correct fee. This cannot be pinned as a
+     * gate verdict in the tether below — measured, every `strategic` row now
+     * prices at null, so the gate answers true on them for an unrelated reason
+     * — so it is asserted on the pattern, where it can actually fail. */
+    for (const w of ["strategic", "Vanguard Strategic Equity Fund", "logic", "magic", "tragic",
+      "Strategic Advisers Core Income"]) {
+      if (w.replace(GUARANTEE_PRICED_WORDS, " ") !== w)
+        fail(`GUARANTEE_PRICED_WORDS reaches inside a word: it changes ${JSON.stringify(w)}.`
+          + " The gic arm needs its LEADING word boundary — without it the strip deletes `gic` from a real"
+          + " fund's name and the gate WITHDRAWS a correct fee, which is fund-er.js's own 2026-09-29 defect"
+          + " (5,604 rows) in the opposite direction.");
+    }
+  }
   const guarFeeCases = [
     /* must SUPPRESS the fee */
     "Guaranteed Annuity Contract", "Guaranteed annuity contract - contract value",
@@ -1134,6 +1232,26 @@ try {
     "Stable value contract", "Lincoln Stable Value (at contract value)",
     "Change in contract value versus fair value in Morley Stable Value Fund",
     "Contract BlackRock Russell 1000 Growth CIT",
+    /* 2026-10-02 (05:5xZ): the strip's gic arm now covers the BARE `GIC`, and
+     * these seven exist because NOT ONE of the 21 probes above reaches that
+     * arm and 0 of the 37 change verdict under it — measured, not assumed, so
+     * without them the tether would agree whether or not the arm was widened
+     * (the decorative-guard failure caught at v189-v192 and in both of the
+     * last two ships). `SAGIC Group Annuity Contract 21016` above is the
+     * must-SUPPRESS that keeps the OPTIONAL GROUP load-bearing: a leading
+     * `s`/`sa` kills the leading word boundary, so a bare `\bgic\b` would not
+     * reach it and its control fails by name.
+     *
+     * All seven are real store rows, the whole class read: an insurer's
+     * guaranteed investment contract carrying its own contract number.
+     * `Guaranteed income contract (GIC)` spells the thing out AND abbreviates
+     * it; `MetLife Managed GIC (contract value)` is the one typed `Mutual
+     * fund`; `GIC Contract GA 29022, 2.65% Yield` is a `Separate Account` row
+     * after the TYPE_PREFIX strip, i.e. the form the gate actually receives. */
+    "GIC METLIFE CONTRACT #GAC 32226", "GIC PRUDENTIAL CONTRACT #GA-63216",
+    "GIC UNITED OF OMAHA INS CONTRACT #SDGA-30315",
+    "Guaranteed income contract (GIC)", "MetLife Managed GIC (contract value)",
+    "GIC Contract GA 29022, 2.65% Yield", "Guaranteed Insurance Contracts GIC 39356E",
     /* must KEEP the fee, from here down */
     /* …and these two carry the contract words AND name a real fund, so the
      * strip leaves something that still prices and the rule stands down. They
@@ -1155,6 +1273,23 @@ try {
     "at contract value Fidelity 500 Index", "Contract Fidelity International Index",
     "Contract Vanguard Value Index Fund Adm", "Contract T. Rowe Price Retirement 2045 Fund",
     "at contract value JPMorgan Large Cap Growth Fund",
+    /* must KEEP — 2026-10-02 (05:5xZ): a REAL FUND wearing a GIC caption. The
+     * widened arm removes `GIC` and the remainder still prices, so the gate
+     * stands down: the second condition is this gate's safety for the gic
+     * wording exactly as it is for every other one. It is CRAFTED and said to
+     * be, because the live store holds no such row — of the 114 rows the gate
+     * reaches inside the `gic` population, 24 lose a fabricated fee and the
+     * other 90 were already publishing none.
+     *
+     * The gic arm's OTHER condition — the LEADING word boundary, without which
+     * the strip would eat `gic` out of `strategic` and destroy a real fund's
+     * name, which is the 5,604-row defect `fund-er.js` shipped on 2026-09-29
+     * seen from the strip side — CANNOT be pinned as a gate verdict here:
+     * measured, every `strategic` row prices at null since that fix, so the
+     * gate answers true on them for an unrelated reason and the pin would
+     * assert nothing. It is asserted directly as a pattern witness in the
+     * strip/pricer cross-check above instead. */
+    "GIC Contract Fidelity 500 Index Fund",
     /* must KEEP — and this marks the line that must NOT be crossed. Its RAW
      * filed name says `contract`; the unclosed-parenthetical strip took the
      * word off the end, so the CLEANED name the gate reads does not. A row
@@ -1171,9 +1306,9 @@ try {
     for (const n of guarDrift) console.error(`  ${JSON.stringify(n)}  app.js=${guarGot[guarFeeCases.indexOf(n)]}  module=${annuityFeeIsGuaranteeOnly(n, tableER)}`);
     fail(`the guarantee-only fee rule in app.js disagrees with scripts/lib-disclose.mjs on ${guarDrift.length} of ${guarFeeCases.length} names — regenerate it`);
   }
-  for (const n of guarFeeCases.slice(0, 21))
+  for (const n of guarFeeCases.slice(0, 28))
     if (!annuityFeeIsGuaranteeOnly(n, tableER)) fail(`guarantee-only fee rule no longer suppresses a fabricated annuity fee: ${JSON.stringify(n)}`);
-  for (const n of guarFeeCases.slice(21))
+  for (const n of guarFeeCases.slice(28))
     if (annuityFeeIsGuaranteeOnly(n, tableER)) fail(`guarantee-only fee rule would withdraw a fee a fund's own name supports: ${JSON.stringify(n)}`);
 
   /* THE INVESTMENT-CONTRACT PREDICATE, tethered the same way, 2026-09-29. It

@@ -973,6 +973,119 @@ from the cycle that would have cleared it.
   **No fee, asterisk or shown type can move: `fundER` is called on the NAME and
   never on a symbol**, measured at 0 through the page's own render.
   `docs/accuracy-log.md` 2026-10-02 (03:0xZ).
+- **SHIPPED 2026-10-02 05:5xZ, `[skip ci]` — THE STRIP AND THE PRICER DISAGREED
+  ABOUT ONE ABBREVIATION, SO THE CONTRACT GATE REFUSED 24 ROWS IT WAS WRITTEN
+  FOR: 10 plans / 145,237 participants / $1,087,454,960, every one at 0.35.**
+  `annuityFeeIsGuaranteeOnly` removes the words `fund-er.js` prices a guarantee
+  on and asks the SAME table again, so the two patterns are halves of one rule
+  in two files — and **the two sets are not nested in either direction**: the
+  strip's `\bsa?gic\b` is {sgic, sagic} and the pricer's `\b(?:sa)?gic\b` is
+  {gic, sagic}. So on `GIC METLIFE CONTRACT #GAC 32226` ($280,882,048) the
+  strip leaves `GIC`, the remainder prices, and the gate's second condition is
+  false. Found by the **C2 negative control** of the 05:1xZ ship — *a control
+  per condition pays twice, once as a gate and once as a defect finder.*
+  **THE HANDOFF'S BLOCKER WAS A PREDICTION AND IT PRICED AT ZERO.** It read
+  *widening the shared constant moves the TYPE rule across its whole 2,915-row
+  population*; **measured, it moves 0**, and structurally — across all
+  **1,724,078** published rows only **TWO** reach `isInvestmentContractRow` and
+  contain `gic`, both spelling it `SAGIC`, which the old arm already stripped,
+  so the widening is the **identity** there; `mistypedStockFeeIsGuaranteeOnly`
+  reaches **0** `gic` rows. **The other route was BUILT and diffed MEMBER BY
+  MEMBER:** a fee-gate-local second strip gives 24 rows, **0 only in A, 0 only
+  in B**. Same change by outcome, so the choice fell to prevention — and a
+  third pattern for one concept is the defect, not the fix.
+  **OUTCOME whole-store through the page's own render, exact superset pre-filter
+  (raw, or raw despaced, contains `gic`) = 7,453 rows rendered twice:** fee
+  **withdrawn 24**, gained 0, changed 0, all `0.35 → null`; **0 tickers, 0
+  asterisks, 0 shown types**. The 114 rows condition 1 reaches here split 24
+  newly withdrawn / **90 already publishing no fee**, and **0 publish a fee
+  after the change**. All 23 distinct names read — MetLife, Pacific Life,
+  Prudential, Metropolitan Tower, Transamerica Premier, Lincoln National,
+  Jackson National, United of Omaha, Principal Life, Minnesota Life, each with
+  its own contract number — **not one a registered fund, 0 publishing a
+  ticker.**
+  **20 OF THE 24 REACH A READER AND 4 CANNOT.** 13 rows are TRUST-held and are
+  resolved through MEMBER PLANS (Corteva 24,519; Illinois Tool Works 27,157 +
+  554), so the handoff's plan-keyed **7 plans / 93,007 ppl** reproduces exactly
+  and is a FLOOR — *a count keyed on plans is blind to every trust row*, a
+  seventh time. The other **4 rows / $205,305,328** sit in ack
+  `20240930153047NAL0011507794003`, **confident, OCR'd, and referenced by no
+  plan, no `mtiaAck` and absent from `mtias.json`** — no reader can fetch it.
+  **SIDE FINDING, SIZED, NOT FIXED: 19 confident lineup entries / 261 rows /
+  $8,386,319,789 are referenced by no plan and no plan's `mtiaAck`** and are
+  stored-but-unreachable. The scan reproduces `confident` **60,170** exactly.
+  **THE PREVENTION IS DERIVED, NOT TYPED, and it lives in `smoke-test.mjs`**
+  because that is the one place both files load: (1) the FUND_ER entry is
+  located by **BEHAVIOUR** — the one row of 159 whose pattern matches the bare
+  word `guaranteed` — its alternatives expanded to 5 literal witnesses, each of
+  which the strip must empty, **failing CLOSED** on any alternative the
+  expander cannot reduce; (2) **and the strip must not reach inside a word**,
+  asserted on the pattern against `strategic`/`logic`/`magic`, because it
+  **cannot be pinned as a gate verdict** — every `strategic` row prices at null
+  since the 2026-09-29 boundary fix, so the gate answers true for an unrelated
+  reason. A typed probe list was refused: it is the vocabulary this gate already
+  replaced once.
+  **A NEGATIVE CONTROL PER CONDITION, each written out in full, each failing BY
+  NAME on exactly its own cases, and the third is the argument for three:** the
+  pre-change arm → **7 pins + the witness `gic`**; a bare `\bgic\b` → **1 pin
+  (`SAGIC Group Annuity Contract 21016`) + the witness `sagic`**; dropping the
+  leading `\b` → **0 pins, 0 cross-check witnesses, 6 boundary witnesses**.
+  Each was also run through the REAL smoke test and failed there by name, and
+  **drifting the app.js twin alone fails the tether on exactly 7 of 45** while
+  the cross-check stays green.
+  **8 NEW PINS (37 → 45), added BECAUSE NOT ONE of the 37 existing cases
+  reaches the new arm and 0 of the 37 change verdict.** The one must-KEEP is
+  **CRAFTED and said to be** — the live store holds no real fund wearing a GIC
+  caption.
+  **AND THE FIRST DRAFT OF THE CROSS-CHECK MEASURED THE HARNESS:** it selected
+  the entry with `re instanceof RegExp`, and `fund-er.js` runs in a **vm context
+  with its own intrinsics**, so that is FALSE for all 159 entries. It fails
+  closed, so it would have broken the smoke test rather than passed quietly —
+  ***a cross-context type test measures the context.***
+  **TWO STALE JUSTIFICATIONS CORRECTED IN PLACE, and the second is the
+  finding.** `lib-disclose`'s comment justified `sa?gic` by citing fund-er's
+  missing leading boundary — true when written, **false since 2026-09-29, and
+  the stale half is exactly where this gap sat**; and the `Stable Val` residual
+  note stated the general fact (*the strip and the pricer disagree about an
+  abbreviation*) and **priced it for one row**, while the same disagreement in
+  the gic arm was costing 24. ***A defect described in general and priced in
+  particular is a class nobody has counted.***
+  **NOT DONE, with its reason: `Stable Val` remains (1 row / 537 ppl)** and is
+  **not a pattern-level disagreement** — fund-er matches it through its own
+  ABBREVIATION EXPANSION, invisible to any comparison of the two sources.
+  **SURFACE: REPORT path only as a GUARANTEE FROM THE IMPORT LIST** —
+  `build-seo-pages.mjs` has **0** references to `fund-er`, `fundER`, `fundERRow`,
+  `fundTickerInfo`, `GUARANTEE_PRICED_WORDS` or `annuityFeeIsGuaranteeOnly`;
+  regenerating all 5,000 pages leaves `git diff --stat p/` empty.
+  **DISPLAY-SIDE: `PARSER_VERSION` stays 196, `lib-4i` untouched, no run, no
+  store change — SO THERE IS NOTHING TO PRE-REGISTER.** The twin is a VERBATIM
+  SLICE and was verified byte-present after regeneration. GATES:
+  `lib-disclose --selftest` 25/25, parser-gate green (frozen tether 7/7), smoke
+  green printing `strip/pricer cross-check: 5 witnesses`, fund-er-test
+  83/26/19/18/28, merge-name-test 20/20 22/22 25/25 20/20 22/22 15/15.
+  `docs/accuracy-log.md` 2026-10-02 (05:5xZ).
+- **THE 05:5xZ DRAW, TWO CLEAN MENUS AND NO NEW CLASS.** Seed 20261002055, pool
+  **60,312 published lineups / 100,136,907 ppl**. **Walmart (1,996,659 ppl, 42
+  rows @ 0.952) reads clean end to end on a NEWER ack
+  (`20260909124139NAL0004116481001`), and it re-confirms v130 on a filing v130
+  never saw** — all four wrapped BlackRock/LSV names whole and separate at their
+  own values (`MSCI ACWI ex-U.S. IMI Index Non-Lendable Fund` $4,711,712,195,
+  `The Collective LSV International (ACWI EX US) Value Equity Fund`, the Long
+  Term and Intermediate Government Bond Index funds), where the 2026-09-16
+  defect merged three of them into one `Lendable Fund` row. Its one queued row
+  is **`Fiera Asset Management USA` at 3.2% / $1,773,620,398**, the bare-house
+  class's largest named instance. **The Mohegan Tribe Of Indians Of Connecticut
+  (7,703 ppl, 26 rows @ 0.979)** carries live instances of four queued items and
+  no new one: **twelve `American Funds Target Date <year>` rows at 32.1% of the
+  menu, each publishing 0.32 with NO ticker and NO share class stated** (the
+  owner-gated R-6 fee item and the American Funds target-date ticker gap in one
+  plan); `JP Morgan Large Cap Growth` at **23.0% / $112,588,862 publishing 0.44
+  with no symbol**; **`Dodge & Cox Income X` → DODIX at 0.41** where the SEC
+  registers Class X as **DOXIX** — v528's own named residue in the other
+  direction, the filing stating X and the page publishing the I-class symbol;
+  and two rows resolving to nothing. Two shipped guards visibly working:
+  `Invesco Stable Value Tr Cl 4` publishes no fee, and Walmart's `Managed
+  account holdings (492 positions)` is folded rather than flooding the menu.
 - **THE 05:4xZ DRAW FOUND A GENERIC TYPE NAME DEFEATED BY A KEYSTROKE AND, IN
   THE SAME SCREEN, A BIGGER DEFECT ITS BUCKET LABEL GOT WRONG — THREE CLASSES,
   SEPARATELY SIZED, NONE SHIPPED.** Seed 20261002054, pool **58,893 published

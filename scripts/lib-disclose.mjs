@@ -1837,9 +1837,15 @@ export function isCollectiveTrustName(name) {
  * itself, and a wide one adding `fixed`/`unallocated`/`general account`/
  * `benefit responsive` — and ALL THREE give the identical 144/0 split, so the
  * shortest is what ships. Every extra word is a word the rule would delete
- * from a real fund's name if one ever arrived. `sa?gic` covers SAGIC because
- * fund-er's own pattern is `/gic\b/` with no leading boundary, so it prices
- * `SAGIC Group Annuity Contract 21016` on a substring accident.
+ * from a real fund's name if one ever arrived. The gic arm covers SAGIC
+ * because fund-er prices it, and `(?:sa?)?` covers the bare GIC and SGIC for
+ * the same reason — see the 2026-10-02 reading below. (This sentence used to
+ * justify `sa?gic` by saying "fund-er's own pattern is `/gic\b/` with no
+ * leading boundary, so it prices `SAGIC …` on a substring accident". That was
+ * true when written and stopped being true on 2026-09-29, when the missing
+ * leading boundary was itself shipped as a defect — and the stale half of it
+ * is exactly where the 24-row gap sat for three days.) *A justification that
+ * cites another file's source is a measurement and goes stale like one.*
  *
  * MEASURED BOTH WAYS OVER THE WHOLE LIVE STORE, every distinct name read:
  *   - 144 of 144 rows priced at the generic fallback are flagged; all 83
@@ -1868,8 +1874,62 @@ export function isCollectiveTrustName(name) {
  * app.js keeps a twin (browser script, no module system); the generator
  * extracts this VERBATIM and `smoke-test.mjs` runs the browser copy against
  * this one on pinned names and fails on drift. */
+/* AND THE STRIP AND THE PRICER DISAGREED ABOUT ONE ABBREVIATION — 2026-10-02,
+ * found by the C2 negative control of the widening recorded below, which is
+ * the point of writing a control per condition: C2's job is to name the rows
+ * the residue test KEEPS, and reading its list showed the gate keeping rows it
+ * was written for.
+ *
+ * `\bsa?gic\b` matches `sgic` and `sagic` and NOT the bare `GIC`, while
+ * `fund-er.js`'s own guarantee fallback is `\b(?:sa)?gic\b` — {gic, sagic}.
+ * Two patterns for one concept, differing on the commonest spelling of it, so
+ * on `GIC METLIFE CONTRACT #GAC 32226` ($280,882,048) the strip leaves `GIC`
+ * standing, `priceOf(rest)` returns the generic 0.35, the second condition is
+ * false and THE GATE REFUSES A ROW IT WAS WRITTEN FOR. 24 published rows / 10
+ * plans / 145,237 participants / $1,087,454,960, every one at 0.35. The two
+ * sets are not even nested: `sgic` is stripped and never priced, `gic` is
+ * priced and never stripped.
+ *
+ * `\b(?:sa?)?gic\b` is one arm covering all three spellings and is provably
+ * WIDER than both — {gic, sgic, sagic} ⊇ {sgic, sagic} and ⊇ {gic, sagic} —
+ * and `\bsa?gic\b` is NOT subsumed by a bare `\bgic\b`, which is why the arm
+ * is widened rather than a second one added: a leading `s`/`sa` kills the
+ * leading boundary, so `SAGIC Group Annuity Contract 21016` needs the optional
+ * group and its control fails by name without it.
+ *
+ * ALL 23 DISTINCT NAMES READ, the whole population: MetLife, Pacific Life,
+ * Prudential, Metropolitan Tower Life, Transamerica Premier Life, Lincoln
+ * National, Jackson National, United of Omaha, Principal Life, Minnesota Life
+ * — every one a guaranteed investment contract carrying the insurer's own
+ * contract number (`GIC PRUDENTIAL CONTRACT #GA-63216`, `GIC Contract GA
+ * 29022, 2.65% Yield`). Not one names a registered fund, and 0 of the 24
+ * publish a ticker.
+ *
+ * THE SHARED CONSTANT IS WIDENED AND A FEE-GATE-LOCAL SECOND STRIP WAS BUILT
+ * AND PRICED FIRST, because the handoff named the shared blast radius as this
+ * item's blocker: *widening the shared constant moves the TYPE rule across its
+ * whole 2,915-row population.* **MEASURED, IT MOVES 0 OF THEM**, and the
+ * reason is structural rather than lucky — `isInvestmentContractRow` demands
+ * `investment|insurance contract` in the name AND a `^mutual fund` type, and
+ * across all 1,724,078 published rows only TWO such rows contain `gic` at all,
+ * both spelling it `SAGIC`, which the old arm already stripped. The strip's
+ * third consumer, `mistypedStockFeeIsGuaranteeOnly`, reaches 0 `gic` rows.
+ * Both variants were rendered whole-store and their outcomes diffed MEMBER BY
+ * MEMBER, not compared as counts: 24 rows each, 0 only in one. *A blocker
+ * stated as a population is still a prediction*, and this one priced at zero.
+ * So the choice fell to prevention, where the local strip is strictly worse:
+ * the defect IS two patterns for one concept, and a third would add a new
+ * surface for them to disagree on — and the assertion below could no longer be
+ * written against one constant.
+ *
+ * NOT DONE, and named rather than rounded away: the sibling asymmetry recorded
+ * at `isInvestmentContractRow` — `Stable Val`, where `fund-er.js`'s VARIANT
+ * EXPANSION reads `Val` as `Value` and prices a name the literal
+ * `\bstable value\b` cannot match (1 row / 537 participants). That one is not
+ * a pattern-level disagreement, so the derived assertion below cannot see it
+ * and widening this constant cannot fix it. */
 export const GUARANTEE_PRICED_WORDS =
-  /\bstable value\b|\bmanaged income\b|\bguarantee(?:d|s)?\b|\bsa?gic\b/gi;
+  /\bstable value\b|\bmanaged income\b|\bguarantee(?:d|s)?\b|\b(?:sa?)?gic\b/gi;
 /* THE FILING'S OWN WORD, AND NOT A LIST OF THE WORDINGS IT APPEARS IN —
  * 2026-10-02. See the reading in annuityFeeIsGuaranteeOnly below: a vocabulary
  * is the wrong SHAPE for this gate, and the gate's own second condition was
@@ -2098,9 +2158,25 @@ export function annuityFeeIsGuaranteeOnly(cleanedName, priceOf) {
  * because the stored name is truncated to `Stable Val`: the literal
  * `\bstable value\b` in the strip cannot match it while `fund-er.js`'s own
  * variant expansion reads `Val` as `Value` and prices it at 0.35%. The strip
- * and the pricer disagree about an abbreviation. Widening the shared
- * `GUARANTEE_PRICED_WORDS` to chase it would change the annuity rule's measured
- * 144/0 split for one row, which is a worse trade than the row.
+ * and the pricer disagree about an abbreviation.
+ *
+ * AND THAT SENTENCE NAMED A CLASS WHOSE SECOND MEMBER COST 24 ROWS — corrected
+ * 2026-10-02. This note read "widening the shared `GUARANTEE_PRICED_WORDS` to
+ * chase it would change the annuity rule's measured 144/0 split for one row,
+ * which is a worse trade than the row", and the trade was priced for `Stable
+ * Val` alone. The same disagreement in the `gic` arm was withholding nothing
+ * from 24 rows / 145,237 participants, and nothing looked for it, because the
+ * general statement — *the strip and the pricer disagree about an
+ * abbreviation* — was filed as one row's footnote rather than sized as a
+ * class. The `gic` half is fixed above, with a derived assertion that fires on
+ * any future pattern-level divergence. *A defect described in general and
+ * priced in particular is a class nobody has counted.*
+ *
+ * `Stable Val` REMAINS, and its reason is now narrower and worth the
+ * distinction: it is not a pattern-level disagreement at all — the pricer
+ * matches through its own ABBREVIATION EXPANSION, which no comparison of the
+ * two sources can see, so the assertion above is silent on it by construction
+ * and widening this constant cannot reach it.
  *
  * app.js keeps a twin (browser script, no module system); the generator
  * extracts this VERBATIM and `smoke-test.mjs` runs the browser copy against

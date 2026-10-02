@@ -1155,7 +1155,7 @@
 
   window.__wampoAnnuityRow = isAnnuityContractRow;  // read by the smoke test only
   const GUARANTEE_PRICED_WORDS =
-    /\bstable value\b|\bmanaged income\b|\bguarantee(?:d|s)?\b|\bsa?gic\b/gi;
+    /\bstable value\b|\bmanaged income\b|\bguarantee(?:d|s)?\b|\b(?:sa?)?gic\b/gi;
   /* THE FILING'S OWN WORD, AND NOT A LIST OF THE WORDINGS IT APPEARS IN —
    * 2026-10-02. See the reading in annuityFeeIsGuaranteeOnly below: a vocabulary
    * is the wrong SHAPE for this gate, and the gate's own second condition was

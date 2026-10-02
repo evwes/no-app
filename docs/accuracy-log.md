@@ -7,6 +7,222 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-02 (05:5xZ) — the strip and the pricer disagreed about one abbreviation, so the contract gate refused 24 rows it was written for: 145,237 participants / $1,087,454,960
+
+**WHAT WAS WRONG.** `annuityFeeIsGuaranteeOnly` works by removing the words
+`fund-er.js` prices a guarantee on and asking the SAME table again — so the two
+patterns are halves of one rule living in two files. They had drifted on the
+commonest spelling of one of them, **and the two sets are not nested in either
+direction**:
+
+| | `gic` | `sgic` | `sagic` |
+|---|---|---|---|
+| strip `\bsa?gic\b` | **no** | yes | yes |
+| pricer `\b(?:sa)?gic\b` | **yes** | no | yes |
+
+So on `GIC METLIFE CONTRACT #GAC 32226` ($280,882,048) the strip leaves `GIC`
+standing, `priceOf(rest)` returns the generic **0.35**, the gate's second
+condition `priceOf(rest) == null` is false, and **the gate refuses a row it
+exists for.** **24 published rows / 10 plans / 145,237 participants /
+$1,087,454,960, every one at 0.35.** Found by the **C2 negative control** of the
+05:1xZ ship — the control whose job is to name the rows the residue test KEEPS,
+and reading its list showed the gate keeping rows it was written for. *A control
+per condition pays twice: once as a gate, once as a defect finder.*
+
+**ALL 23 DISTINCT NAMES READ, the whole population, not one a registered fund:**
+MetLife, Pacific Life, Prudential, Metropolitan Tower Life, Transamerica Premier
+Life, Lincoln National, Jackson National, United of Omaha, Principal Life,
+Minnesota Life — every one a guaranteed investment contract carrying the
+insurer's own contract number (`GIC PRUDENTIAL CONTRACT #GA-63216`, `GIC Contract
+GA 29022, 2.65% Yield`, `Guaranteed income contract (GIC)`). Type cells: 21
+blank, 1 `Cash / short-term`, 1 `Separate account`, 1 `Mutual fund`. **0 of the
+24 publish a ticker**, so `!tk` at the call site moves no verdict here and the
+whole effect is the withdrawal of one fabricated number.
+
+**THE HANDOFF'S BLOCKER WAS A PREDICTION AND IT PRICED AT ZERO.** It read:
+*widening the shared `GUARANTEE_PRICED_WORDS` moves the TYPE rule across its
+whole 2,915-row population*, and that is why the previous cycle deferred.
+**Measured, it moves 0 of them**, and the reason is structural rather than lucky:
+`isInvestmentContractRow` demands `investment|insurance contract` in the name
+**and** a `^mutual fund` type, and across all **1,724,078** published rows only
+**TWO** such rows contain `gic` at all — both spelling it `SAGIC`, which the old
+arm already stripped, so the widening is the **identity** on that rule. The
+strip's third consumer, `mistypedStockFeeIsGuaranteeOnly`, reaches **0** `gic`
+rows. *A blocker stated as a population is still a prediction, and this one has
+to be run.*
+
+**THE OTHER ROUTE WAS BUILT, RENDERED WHOLE-STORE AND DIFFED MEMBER BY MEMBER.**
+A fee-gate-LOCAL second strip (`FEE_ONLY_GIC`, leaving the shared constant alone)
+produces **24 rows, 0 only in A, 0 only in B** — the same change by outcome, to
+the row, which is what the three-consumer measurement above predicts. *"Close" is
+not a verification; diff the member lists.* So the choice fell entirely to
+prevention, where the local strip is strictly **worse**: the defect IS two
+patterns for one concept, a third adds a new surface for them to disagree on, and
+the derived assertion below could not then be written against one constant.
+
+**THE CHANGE.** One arm, `\b(?:sa?)?gic\b`, covering all three spellings and
+provably **wider** than both predecessors — {gic, sgic, sagic} ⊇ {sgic, sagic}
+and ⊇ {gic, sagic}. Widened rather than supplemented because `\bsa?gic\b` is
+**not** subsumed by a bare `\bgic\b`: a leading `s`/`sa` kills the leading word
+boundary, so `SAGIC Group Annuity Contract 21016` needs the optional group, and
+its control fails by name without it.
+
+**OUTCOME, whole-store through the page's own render** (`scripts/apppath.mjs`,
+BEFORE = HEAD's app.js), over an **exact superset pre-filter** — raw name, or raw
+with whitespace removed, contains `gic`, because `cleanFiledName` despaces kerned
+text and a raw name can GAIN the token — **7,453 rows rendered twice**:
+
+- fee **withdrawn 24**, gained 0, changed 0, every transition `0.35 → null`
+- **0 tickers, 0 asterisks, 0 shown types moved**
+- POSITIVE CONTROL AS A PAIR, first, both sides: `GIC METLIFE CONTRACT #GAC
+  32226` 0.35 → null while `Contract Fidelity 500 Index` holds 0.015 and `SAGIC
+  Group Annuity Contract 21016` holds null. One abbreviation apart.
+- the 114 rows the gate's first condition reaches inside this population split
+  24 newly withdrawn / **90 already publishing no fee**, and **0 publish a fee
+  after the change** — the gate stands down on nothing it should withhold.
+
+**20 OF THE 24 REACH A READER AND 4 CANNOT, and that is stated rather than
+rounded into the headline.** 13 rows are TRUST-held and are resolved through
+their MEMBER PLANS (Corteva Agriscience 24,519; Illinois Tool Works 27,157 +
+554), which is why the plan-keyed figure the handoff carried — **7 plans / 93,007
+ppl** — reproduces exactly and is a FLOOR: trust-resolved it is **10 plans /
+145,237 participants**, 56% more. *A count keyed on plans is blind to every
+master-trust row*, met a seventh time. The remaining **4 rows / $205,305,328**
+sit in ack `20240930153047NAL0011507794003`, which is **confident, OCR'd, and
+referenced by no plan, no plan's `mtiaAck` and not present in `mtias.json`** — so
+no reader can fetch it. Reader-facing: **20 rows / $882,149,632.**
+
+**SIDE FINDING, SIZED, NOT FIXED: 19 confident lineup entries / 261 rows /
+$8,386,319,789 are referenced by no plan and by no plan's `mtiaAck`, and none is
+in `mtias.json`.** The site fetches a lineup by `plan.ack` or `plan.mtiaAck`, so
+these rows are stored and unreachable — the stored-versus-published distinction
+one level further out than the usual one. Found only because 4 of my own 24 sit
+there and counting them as readers would have been wrong. The pool predicate
+reproduces the shipped `confident` **60,170** exactly, which is what says the
+scan is the right population.
+
+**THE PREVENTION, and it is derived rather than typed.** `smoke-test.mjs` already
+loads BOTH files — `fund-er.js` in a vm and `annuityFeeIsGuaranteeOnly` from
+`lib-disclose` — so a cross-file assertion belongs there and nowhere else:
+
+1. **THE STRIP MUST COVER EVERY WORDING THE PRICER PRICES A GUARANTEE ON.** The
+   FUND_ER entry is located by **BEHAVIOUR** — the one row of 159 whose pattern
+   matches the bare word `guaranteed` — never by a text search, and its
+   alternatives are expanded to literal witnesses (5 of them: `stable value`,
+   `managed income`, `guaranteed`, `gic`, `sagic`). It **FAILS CLOSED**: an
+   alternative the expander cannot reduce is a failure naming itself, not a skip.
+   A typed probe list was refused because it is the vocabulary this gate already
+   replaced once and would go stale the next time `fund-er.js` widens.
+2. **AND THE STRIP MUST NOT REACH INSIDE A WORD.** `fund-er.js` shipped `gic\b`
+   with no LEADING boundary and priced 5,604 rows / 7,324,367 participants as
+   guarantees because their names say "strateGIC" (fixed 2026-09-29). The same
+   slip in the strip is **worse in kind** — it would delete `gic` out of a real
+   fund's name, leave a remainder that cannot price, and **WITHDRAW a correct
+   fee.** Asserted on the pattern against six witnesses, because it **cannot be
+   pinned as a gate verdict**: measured, every `strategic` row prices at null
+   since that fix, so the gate answers true on them for an unrelated reason and
+   the pin would assert nothing.
+
+**A NEGATIVE CONTROL PER CONDITION, each variant written out IN FULL rather than
+by surgery on the shipped source, each failing BY NAME on exactly its own cases**
+— and the third is the argument for having three:
+
+| control | pins failing /45 | cross-check witnesses | boundary witnesses |
+|---|---|---|---|
+| SHIPPED | 0 | 0 | 0 |
+| the pre-change arm `\bsa?gic\b` | **7** (exactly the new must-SUPPRESSes) | **1** (`gic`) | 0 |
+| a bare `\bgic\b` (drop the optional group) | **1** (`SAGIC Group Annuity Contract 21016`) | **1** (`sagic`) | 0 |
+| drop the leading `\b` | **0** | **0** | **6** (`strategic` → `strate `, `Vanguard Strategic Equity Fund` → `Vanguard Strate  Equity Fund`, `logic`, `magic`, `tragic`) |
+
+Each was also run through the REAL smoke test and failed there by name: reverting
+both copies fires the cross-check quoting the witness and the mechanism; dropping
+the leading `\b` fires the boundary check; and **drifting the app.js twin alone
+fails the tether on exactly 7 of 45** while the cross-check stays green, which is
+the clean separation of what each control covers.
+
+**8 NEW PINS (7 must-SUPPRESS / 1 must-KEEP, 37 → 45), added BECAUSE NOT ONE of
+the 37 existing cases reaches the new arm and 0 of the 37 change verdict** —
+measured, the decorative-guard failure caught at v189-v192 and in both of the
+last two ships. All seven must-SUPPRESSes are real store rows. The must-KEEP,
+`GIC Contract Fidelity 500 Index Fund`, is **CRAFTED and said to be**: the live
+store holds no real fund wearing a GIC caption, because of the 114 rows the gate
+reaches in this population 24 lose a fabrication and the other 90 publish
+nothing.
+
+**AND THE FIRST DRAFT OF THE CROSS-CHECK MEASURED THE HARNESS.** It selected the
+guarantee entry with `re instanceof RegExp` — and `fund-er.js` is evaluated in a
+**vm context with its own intrinsics**, so `instanceof` is FALSE for all 159
+entries and the filter selected nothing. It fails CLOSED (the "exactly one" test
+rejects 0), so it would have broken the smoke test rather than passing quietly —
+but it would have been wrong for a reason about the harness and not about the
+patterns. ***A cross-context type test measures the context.*** Caught by running
+the negative control, which threw on the empty filter.
+
+**TWO STALE JUSTIFICATIONS CORRECTED IN PLACE, and the second is the finding.**
+(a) `lib-disclose`'s own comment justified `sa?gic` by saying *"fund-er's own
+pattern is `/gic\b/` with no leading boundary, so it prices `SAGIC …` on a
+substring accident"* — true when written, false since 2026-09-29 when that
+missing boundary was itself shipped as a defect, and **the stale half is exactly
+where this gap sat.** *A justification that cites another file's source is a
+measurement and goes stale like one.* (b) `isInvestmentContractRow` carried
+*"KNOWN RESIDUAL … The strip and the pricer disagree about an abbreviation.
+Widening the shared `GUARANTEE_PRICED_WORDS` to chase it would change the annuity
+rule's measured 144/0 split for one row, which is a worse trade than the row"* —
+the general statement was right and **priced for `Stable Val` alone**, while the
+same disagreement in the `gic` arm was withholding nothing from 24 rows / 145,237
+participants and nothing looked for it. ***A defect described in general and
+priced in particular is a class nobody has counted.***
+
+**NOT DONE, with its measured reason: `Stable Val` remains (1 row / 537
+participants)**, and its cause is now narrower and worth the distinction — it is
+**not a pattern-level disagreement at all.** `fund-er.js` matches it through its
+own ABBREVIATION EXPANSION, which no comparison of the two sources can see, so
+the derived assertion is silent on it by construction and widening this constant
+cannot reach it.
+
+**SURFACE: REPORT path only, as a GUARANTEE FROM THE IMPORT LIST.**
+`build-seo-pages.mjs` has **0** references to `fund-er`, `fundER`, `fundERRow`,
+`fundTickerInfo`, `GUARANTEE_PRICED_WORDS` or `annuityFeeIsGuaranteeOnly`, and
+imports none of them from `lib-disclose`, so the crawlable pages cannot render a
+per-fund ER under any input. Corroborated rather than constituted: regenerating
+all 5,000 pages leaves `git diff --stat p/` empty.
+
+**DISPLAY-SIDE: `PARSER_VERSION` stays 196, `lib-4i` is untouched, no run, no
+store change — so there is nothing to pre-register.** The twin is a VERBATIM
+SLICE (`gen-generic-twin.mjs`), never typed into app.js's generated block; the
+canonical slice is confirmed byte-present in app.js after regeneration. GATES:
+`lib-disclose --selftest` 25/25, parser-gate green (frozen tether 7/7),
+smoke green with `strip/pricer cross-check: 5 witnesses`, fund-er-test
+83/26/19/18/28, merge-name-test 20/20 22/22 25/25 20/20 22/22 15/15.
+
+**THE 05:5xZ DRAW, two clean menus and no new class.** Seed 20261002055, pool
+**60,312 published lineups / 100,136,907 ppl** weighted by `partEOY ||
+participants`. **Walmart (1,996,659 ppl, 42 rows @ 0.952, a NEWER ack
+`20260909124139NAL0004116481001`) reads clean end to end, and it re-confirms
+v130 on a filing v130 never saw** — all four wrapped BlackRock/LSV names are
+whole and separate at their own values (`MSCI ACWI ex-U.S. IMI Index Non-Lendable
+Fund` $4,711,712,195, `The Collective LSV International (ACWI EX US) Value Equity
+Fund`, `Long Term Government Bond Index Non-Lendable Fund`, `Intermediate
+Government Bond Index Non-Lendable Fund`), where the 2026-09-16 defect merged
+three of them into one `Lendable Fund` row. Its one queued row is
+**`Fiera Asset Management USA` at 3.2% / $1,773,620,398** — the bare-house class,
+and the largest named instance of it on this record.
+**The Mohegan Tribe Of Indians Of Connecticut (7,703 ppl, 26 rows @ 0.979)**
+carries live instances of four queued items and no new one: **twelve `American
+Funds Target Date <year>` rows at 32.1% of the menu, each publishing 0.32 with NO
+ticker and NO share class stated** (the owner-gated R-6 fee item and the American
+Funds target-date ticker gap, in one plan); `JP Morgan Large Cap Growth` at
+**23.0% / $112,588,862 publishing 0.44 with no symbol** (the
+fee-asserts-where-the-ticker-refuses asymmetry); **`Dodge & Cox Income X` → DODIX
+at 0.41** where the SEC registers Class X as **DOXIX** — v528's own named residue
+in the other direction, the filing stating X and the page publishing the I-class
+symbol; and `JHancock Disciplined Val MCP I` / `Blackrock Global Allocation I`
+resolving to nothing. Two shipped guards are visibly working: `Invesco Stable
+Value Tr Cl 4` publishes no fee, and Walmart's `Managed account holdings (492
+positions)` is folded rather than flooding the menu.
+
+---
+
 ## 2026-10-02 (05:4xZ) — the contract gate mirrored, and the draw finds a generic type name defeated by a keystroke; plus `Plans Master Trust`, 136,838 readers
 
 **THE 05:1xZ CONTRACT-GATE SHIP IS MIRRORED — `2adf1fcb → 614f4095`, UNFORCED ON
