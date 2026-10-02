@@ -1295,6 +1295,56 @@ from the cycle that would have cleared it.
   / 2 typings across 280 plans / 365,305 ppl. **Register the SUM of the two, not
   each in turn** — the 00:3xZ/#541 lesson about two reporting changes queueing
   behind one run.
+- **THE 11:5xZ DRAW FOUND #545's OWN FIX ONE COLUMN SHORT, AND THE TWO CANDIDATE
+  EVIDENCE SOURCES DISAGREE IN A WAY THAT DECIDES THE DESIGN — QUEUED, SIZED,
+  NOT SHIPPED: 188 rows / 52 entries / 52 plans / 119,370 participants /
+  $1,585,923,998 publish a FIRM whose name has lost a space.** Seed 20261002114,
+  pool **59,378 published plans / 100,067,338 ppl**. **Gehl Foods (1,110 ppl, 26
+  rows @ 0.984)** reads clean and publishes `Enter N Fund` with issuer
+  **`JanusHenderson`** — the same damage `weldRepair` repairs in the NAME column,
+  standing in the ISSUER column, which that arm never reads. *A fix for one
+  COLUMN is not a fix for the class*, and it matters beyond honesty because
+  **`lookupTicker` PREPENDS the issuer**, so damaged issuer text can block a
+  match the repaired form would make.
+  **30 distinct transformations, every one a real firm:** `John HancockLife
+  Insurance Company` 36 + 32, `T. RowePrice` 19, `OppenheimerFunds` 17,
+  `StateStreet Global Advisors` 15, `AmericanFunds` 10, `JanusHenderson` 6,
+  `GoldmanSachs` 5, `GreatGray Trust Company` 4, `WilmingtonTrust` 3.
+  **THE DESIGN CONSTRAINT IS MEASURED AND IT IS THE FINDING: the attestation
+  evidence must come from the COLUMN BEING REPAIRED.** Asked with the NAME
+  column's maps — which is what the shipped arm holds — the same function reads
+  **827 rows / 697,199 ppl, and 668 of those are `AllianceBernstein` →
+  `Alliance Bernstein`**, the one wrong repair #545 names as its cost,
+  **amplified 42-fold.** The issuer column's own evidence does not reach it at
+  all. ***Do not carry 827 or 697,199 forward.***
+  **ALSO NAMED: the arm repairs ONE SEAM PER CALL**, so `TRowePrice` → `TRowe
+  Price` (12 rows) and `T.RowePrice` → `T.Rowe Price` (2) are half-repairs and
+  need a loop or a second pass; and the issuer strip's own standalone test is the
+  natural second witness here, since `stripIssuerLead` already measures what
+  stands alone as a COMPLETE issuer.
+  **MERGE-SIDE, so it waits on #545 — and when it ships, register the SUM** of
+  whatever else is queued behind the same merge, not each in turn (the #541
+  lesson).
+  **AND THE SECOND DRAW PUTS A LOAN ASSET IN FRONT OF 262,794 READERS: The
+  Kroger Co. (262,794 ppl, trust-held, 8 rows) publishes `Other United States -
+  USD &&&KROGER LOAN ASSET` at 2.2% / $142,816,695 as a holding.** The other
+  seven rows are the trust's own unitised sleeves (`MFO KROGER US LARGE CAP UNIT
+  S` 43.1%), correct with no registered symbol by design. **Every loan predicate
+  is anchored on the name BEGINNING with the loan words** — the anchor that keeps
+  `Bank Loan Fund` safe — so a name beginning `Other United States - USD` is
+  outside all of them BY CONSTRUCTION, the shape recorded on 2026-10-01 at
+  11:4xZ met in a third position. Sized at 1 row here; the class is unmeasured.
+  **FOUR QUEUED ITEMS HAVE NAMED LIVE INSTANCES IN GEHL'S ONE MENU:** `500 Index
+  Fund` [iss `Fidelity`] publishes **0.03 where the issuer figure is 0.015** —
+  the fee pre-emption's own largest named member, 1,092 rows, in front of a
+  reader; `Total International Stock Index Fund` [iss `Fidelity`] publishes **a
+  fee of 0.06 and NO ticker** (the 314,299-row asymmetry); `Growth R6 Fund` and
+  `Total Return Bond Fund` carry **no issuer at all** and resolve to nothing; and
+  `Lifetime Hybrid 2070 Fund` has a **BLANK type cell beside twelve siblings
+  typed `Collective trust`**, a filer-level inconsistency and benign. Two shipped
+  guards visibly working: all twelve Principal collective-trust vintages publish
+  no fee and no ticker, and `Stable Value Z Fund` publishes no fee.
+  `docs/accuracy-log.md` 2026-10-02 (11:5xZ).
 - **IN FLIGHT: #545, fired from the push on `07b304ca` and observed `in_progress`
   — v529's GUARD PORTED BACK INTO `weldRepair`, WHICH REPAIRS A REGRESSION OF MY
   OWN FROM #544: 488 rows / 329 lineup entries / 329 plans / 286,318

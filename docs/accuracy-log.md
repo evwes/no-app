@@ -7,6 +7,75 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-02 (11:5xZ) — the draw: #545's fix is one COLUMN short, and the evidence source decides the design
+
+Participant-weighted random draw from published lineups, seed 20261002114,
+pool **59,378 plans / 100,067,338 participants**, weighted by
+`partEOY || participants` (what `build-data` packs as `parts` and the page
+publishes) and rendered through `apppath.mjs`, which slices app.js's own body.
+
+**Gehl Foods, Llc (1,110 ppl, 26 rows @ 0.984)** reads clean and publishes
+`Enter N Fund` with issuer **`JanusHenderson`** — the exact damage #545 repairs
+in the NAME column, standing in the ISSUER column, which `weldRepair` never
+reads. It is not only an honesty defect: **`lookupTicker` PREPENDS the issuer**,
+so damaged issuer text can block a match that the repaired form would make.
+
+**QUEUED, SIZED, NOT SHIPPED: 188 rows / 52 entries / 52 plans / 119,370
+participants / $1,585,923,998**, 30 distinct transformations, every one a real
+firm — `John HancockLife Insurance Company` 36 + 32, `T. RowePrice` 19,
+`OppenheimerFunds` 17, `StateStreet Global Advisors` 15, `AmericanFunds` 10,
+`JanusHenderson` 6, `GoldmanSachs` 5, `GreatGray Trust Company` 4,
+`WilmingtonTrust` 3. Measured by asking the SHIPPED function, sliced out of
+`merge-4i`, never restated — the mistake this same cycle had already paid for.
+
+### The design constraint is measured, and it is the finding
+
+**The attestation evidence must come from the COLUMN BEING REPAIRED.** Asked
+with the NAME column's maps — which is what the shipped arm holds — the same
+function reads **827 rows / 697,199 ppl, and 668 of those are
+`AllianceBernstein` → `Alliance Bernstein`**: the one wrong repair #545 names as
+its cost, **amplified 42-fold**. The issuer column's own evidence does not reach
+it at all.
+
+***Do not carry 827 or 697,199 forward.*** A repair whose evidence comes from a
+different population than the one it edits inherits that population's damage.
+
+Also named: the arm repairs **one seam per call**, so `TRowePrice` → `TRowe
+Price` (12 rows) and `T.RowePrice` → `T.Rowe Price` (2) are half-repairs and
+need a loop or a second pass. And `stripIssuerLead` already measures what stands
+alone as a COMPLETE issuer, so the natural second witness is in the repo.
+
+### The second draw puts a loan asset in front of 262,794 readers
+
+**The Kroger Co. (262,794 ppl, trust-held, 8 rows)** publishes `Other United
+States - USD &&&KROGER LOAN ASSET` at **2.2% / $142,816,695** as a holding. The
+other seven rows are the trust's own unitised sleeves (`MFO KROGER US LARGE CAP
+UNIT S` 43.1%), correct and with no registered symbol by design.
+
+Every loan predicate is **anchored on the name BEGINNING with the loan words** —
+the anchor that keeps `Bank Loan Fund` safe — so a name beginning `Other United
+States - USD` is outside all of them BY CONSTRUCTION. The shape recorded
+2026-10-01 (11:4xZ) met in a third position. Sized at 1 row here; the class is
+unmeasured.
+
+### Four queued items have named live instances in Gehl's one menu
+
+- `500 Index Fund` [iss `Fidelity`] publishes **0.03 where the issuer figure is
+  0.015** — the fee pre-emption's own largest named member (a bare `500 Index
+  Fund`, 1,092 rows) in front of a reader.
+- `Total International Stock Index Fund` [iss `Fidelity`] publishes **a fee of
+  0.06 and NO ticker** — the fee-asserts-where-the-ticker-refuses asymmetry.
+- `Growth R6 Fund` and `Total Return Bond Fund` carry **no issuer at all** and
+  resolve to nothing.
+- `Lifetime Hybrid 2070 Fund` has a **BLANK type cell beside twelve siblings
+  typed `Collective trust`** — a filer-level inconsistency, benign.
+
+Two shipped guards visibly working: all twelve Principal collective-trust
+vintages publish no fee and no ticker, and `Stable Value Z Fund` publishes no
+fee.
+
+---
+
 ## 2026-10-02 (11:4xZ) — v529's guard ported back into `weldRepair`: a ceiling refused a repair by one occurrence, and all three occurrences were damage
 
 **What was wrong.** `weldRepair` (v519, merge-side) repairs a lost space inside
