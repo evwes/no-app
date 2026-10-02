@@ -41078,3 +41078,82 @@ re-deriving: the number must be followed by `shares` / `Units` / a dash, must
 EQUAL the row's own value exactly, and the arm is a sibling of the 20:0xZ
 welded-value repair with the number in the MIDDLE rather than at the end. No
 thousands arm.
+
+## 2026-10-02 (21:2xZ) — PSEG's recordkeeper, fixed: publish the one the FILING codes, not the one that was paid most
+
+**The owner asked three times why PSEG shows `Invesco Advisors, Inc`. Two runs
+went into making the evidence readable and none into fixing what he can see.**
+That was the wrong order, and this entry is the fix rather than another
+explanation.
+
+**The evidence, available store-side only because #551 sharded the master
+trusts' Schedule C.** PSEG files no item-2 rows of its own; its trust files six:
+`INVESCO ADVISORS, INC` coded **28** at **$534,926** (what we published),
+`FID INV INST OPS CO` coded **65 99 64 50** at **$442,941**, BlackRock 28,
+BNY Mellon 18/19, `KRONICK KALADA BERDY & CO` **10** (the auditor), Willis
+Towers Watson 16. **No row is coded 15**, so `isRk` was false for all six and
+`FID INV INST OPS CO` matches no `RK_BRANDS` pattern — so **compensation alone
+decided it.** The filing's notes say *"Fidelity Investments is the
+recordkeeper"* and the filing's own **code 64** agrees with its notes. The
+published name was an artifact of a tie-break, not a claim anyone filed.
+
+**THE RULE:** a row the filer coded **64** whose name carries a recordkeeper
+brand may take the published name — **only where the current winner has no claim
+to be the recordkeeper** (no brand, no "recordkeep" in its name, not coded 15 or
+64).
+
+**THE GUARD IS THE WHOLE SAFETY, AND IT IS WHAT THE FOUR REFUSED VARIANTS
+LACKED.** Measured without it: **1,534 plans / 2,052,319 ppl** move, and the
+moves include **TIAA → Fidelity at Cornell, Brown, Northwestern and
+Dana-Farber** — a 403(b) using both, so a coin toss — plus Alight → Fidelity at
+U.S. Bancorp and T. Rowe Price → Fidelity at L3Harris. That is variant (2)'s
+recorded failure arriving by a new road. ***A brand witness stops the
+CONSULTANT; it does not stop the coin toss.*** The incumbent-claim guard does.
+
+**WITH IT: 31 plans / 411,449 participants, 0 blanked**, and every one replaces
+a firm that is not a recordkeeper — PricewaterhouseCoopers and Crowe (auditors),
+Willis Towers Watson ×3 and Towers Watson (consultants), Russell Investments and
+BlackRock (asset managers), Gallagher, Corient, Global Retirement Partners and
+Wells Fargo Clearing (advisors and brokers), and **`STRATEGIC ADVISORS` ×11**,
+which is Fidelity's own *advisory* arm standing where its *recordkeeping* arm
+belongs. Apple 147,655 · OhioHealth 37,660 · HP 33,749 · Inova 31,904 ·
+AstraZeneca 27,192 (55% of the recorded 39-plan auditor bucket) · PSEG both
+plans, via the trust.
+
+**ATTRIBUTION, STATED BECAUSE THE GENERAL FRAMING OVERSTATES IT: `RK_BRANDS`
+alone reaches 0 of the 31.** Every promotion today is carried by the Fidelity
+abbreviation. The rule is general in FORM and has exactly one live house. Said
+plainly rather than sold as a general recordkeeper fix — the same correction the
+Dodge & Cox sizing needed.
+
+**`RK_ALIASES` is deliberately NOT in `RK_BRANDS`:** that list confers the
+**2e15 platform tier**, which outranks a row the filer coded 15, so adding a
+name there can make it beat a correctly-coded recordkeeper — the hazard already
+recorded against adding VALIC. It is used for the code-64 witness and for
+display, nothing else.
+
+**A consistency fix comes with it:** a filer writing `FIDELITY INVESTMENTS
+INSTITUTIONAL` already rendered as "Fidelity", while one writing `FID INV INST
+OPS CO` rendered as "Fid Inv Inst Ops Co" — **the same firm shown two ways on
+121 plans / 2,020,774 participants.** `brandOf` now consults the aliases.
+Display only; no score moves.
+
+**TWO FIXTURE DEFECTS THE GATE CAUGHT IN ITSELF**, and both would have made it
+pass while testing nothing. The ITEM2 fixture had **no `ROW_ORDER` column**, so
+the child-table join never fired and **every row read an empty code string** —
+the promotion was silently inert, and three assertions failed by name rather
+than passing quietly. And my consultant case had the code-64 challenger
+**outpaying** the auditor, making it the ordinary winner. ***A fixture that
+cannot exercise the arm is a test of the fixture.***
+
+**And I misread my own evidence once:** I checked the run listing seconds after
+pushing, saw no run, called the push trigger dead, and dispatched — then #553
+(push) and #554 (dispatch) both appeared on the same SHA, 8 seconds apart. The
+trigger was slow, not absent. Cancelled the duplicate; #553 carries the change.
+*The run listing immediately after a push is the only evidence that counts — and
+"immediately" can be too early.*
+
+26 assertions in `schc-item1-test`, four negative controls each required to fail
+by name: dropping the guard moves the coin toss, dropping the witness promotes
+the consultant, and PSEG still moves without the guard, which locates the
+guard's effect precisely.

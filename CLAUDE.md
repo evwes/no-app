@@ -741,8 +741,19 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
-**NOTHING IS PRE-REGISTERED. #552 settled the last of it** — register the next
-change's figures here before dispatching it.
+**#553 IN FLIGHT (dispatched 21:18Z, prep-side) — THE RECORDKEEPER FIX.**
+Registered: `code-64 recordkeeper promotions: N acks` appears with **N ≥ 31**;
+**PSEG (EIN 22-2625848, pn 004 and 006) publishes Fidelity, not Invesco
+Advisors**; **Cornell, Brown, Northwestern and Dana-Farber still publish TIAA**;
+the **121** plans already showing a FIIOC abbreviation now read "Fidelity";
+`rk` coverage rises by **0** (this changes WHICH name, never whether there is
+one); no parser metric moves — confident 60,167, entries 65,480, HIGH 4, warn
+556, dl 39, pv 197, tkExact 37.76, tkComparable 3.41, tkShare 25.02.
+*The 31 is a scratch replica's count over the stored 12-row shards; the
+pipeline's own log line is the number to believe and can only be larger.*
+**NOTE #554 was a duplicate dispatch on the same SHA and was cancelled** — the
+push trigger fired ~90s after the push, not never, and I read the listing too
+early.
 
 **#552 VERDICT (success 19:57Z, mirrored): every figure hit.** The welded-value
 arm's population is **0** and the cheap screen went **1,229 → 1,195**, which is
@@ -1018,8 +1029,22 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   coded 10 or 29. Pipeline change, needs a prep run, and it moves up to ~2,200
   published provider names, so it is the owner's call.
   **A blank is honest; a name reads as knowledge.**
-- **THE RECORDKEEPER FIX WAS APPROVED, MEASURED AND REFUSED 2026-10-02 — FOUR
-  VARIANTS, FOUR REFUTATIONS, NOTHING SHIPPED. Do not retry any of them.**
+- **SHIPPED 2026-10-02 21:2xZ (#553) — THE FIFTH VARIANT WORKS, AND THE GUARD IS
+  WHY: 31 plans / 411,449 ppl, 0 blanked, PSEG among them.** A row the filer
+  coded **64** whose name carries a recordkeeper brand takes the published name
+  **only where the incumbent has no claim** (no brand, no "recordkeep", not
+  coded 15 or 64). **Without that guard it moves 1,534 plans / 2,052,319 ppl and
+  does TIAA → Fidelity at Cornell, Brown, Northwestern and Dana-Farber** — *a
+  brand witness stops the CONSULTANT, not the coin toss.* Every one of the 31
+  replaces an auditor, consultant, advisor, asset manager or broker
+  (`STRATEGIC ADVISORS` ×11 is Fidelity's advisory arm where its recordkeeping
+  arm belongs). **`RK_BRANDS` alone reaches 0 of 31 — the rule is general in FORM
+  with one live house**, the Fidelity abbreviation. `RK_ALIASES` is kept OUT of
+  `RK_BRANDS` because that list confers the 2e15 platform tier that outranks a
+  coded-15 row (the VALIC hazard), and also fixes a display inconsistency on
+  **121 plans / 2,020,774 ppl** showing `Fid Inv Inst Ops Co` where the same firm
+  reads "Fidelity" elsewhere. `docs/accuracy-log.md` 2026-10-02 (21:2xZ).
+- **THE FOUR EARLIER VARIANTS REMAIN REFUTED — do not retry any of them.**
   (1) **Reading it out of the NOTES**: 30 filings drawn RANDOMLY from the
   5,722-plan suspect pool — 29 mention "recordkeep", **2 state it unambiguously
   (6.7%), and BOTH already agree with what we publish**, so the correction yield
