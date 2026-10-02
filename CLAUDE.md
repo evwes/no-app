@@ -865,7 +865,9 @@ from the cycle that would have cleared it.
   imports `lib-quote`, `lib-disclose` and `lib-4i` and **reads no `stk`, no `ftk`
   and no `fund-er.js`** — 0 matching references; regenerating all 5,000 pages
   leaves `git diff --stat p/` empty, which corroborates rather than constitutes it.
-  **PRE-REGISTERED for the dispatched run:** the merge log prints
+  **PRE-REGISTERED for #542, dispatched 03:0xZ on `a6dd5be9` and observed
+  `in_progress` (the push fired `site-test` #139 on the exact commit but NOT
+  build-data — the documented intermittent trigger, handled by dispatching):** the merge log prints
   **`sec tickers: 479546 rows across 48104 plans (113848 on a blank type cell)`**
   — all three read off the local merge, and **the plan count is the merge's own
   measured number rather than 47,915 + 189, because set membership saturates**;
