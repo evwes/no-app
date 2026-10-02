@@ -741,17 +741,22 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
-`audit-data` re-implements these over `fund-er.js`, so the 15:0xZ Vanguard
-target-date change MUST move them: `tkExact` **37.33 → 37.76**, `tkComparable`
-**3.27 → 3.41**, `tkShare` **24.49 → 25.02**. Unchanged: `ticker-conflict` 3,
-HIGH 4, warn 556, overshoot 372, confident 60,167, entries 65,480, dl 39.
-The issuer arm's own non-convergence: `issuer lost-space repair` should read
-**190**, not 188.
+**NOTHING IS PRE-REGISTERED. #552 settled the last of it** — register the next
+change's figures here before dispatching it.
 
-**#552 (in flight, dispatched 19:48Z, merge-side):** `welded-value repair: 34
-rows across 34 plans` plus the delta's own hits; ticker/fee/asterisk/stored
-`stk` **0 gained, 0 lost, 0 changed** — measured on all 34 rows, stronger than a
-tolerance; the other six rename arms unchanged by it; no parser metric moves.
+**#552 VERDICT (success 19:57Z, mirrored): every figure hit.** The welded-value
+arm's population is **0** and the cheap screen went **1,229 → 1,195**, which is
+1,229 − 34 to the row, so it hit exactly its 34 and nothing adjacent. **The
+three figures carried unsettled since 15:0xZ are settled to the digit:**
+`tkExact` **37.76**, `tkComparable` **3.41**, `tkShare` **25.02**.
+**The "0 crawlable pages" claim was TRUE and my reason for it was WRONG** — a
+grep proves nothing when the page renders no holdings table (ABM's is 4,818
+bytes and has none). Measured against the previous store via `git show`: 0 of 34
+sat inside the page's rendered twelve, earliest at filed index 18 of 28, because
+cash and deposit lines sit at the END of a 4i schedule. *A clean zero reports on
+the query.* And a hypothesis fell in one query: `funds.slice(0, 12)` is NOT
+"filed order, not value order" — **all 4,625 pages with >12 rows are stored
+value-sorted descending, so 0 pages omit their largest holding.**
 
 **#551 VERDICT (success 19:39Z): every claim held.** MTIA acks with a fee-shard
 entry **0 of 508 → 395**, 300 carrying `i1`; PSEG's trust ack gained its shard-32
@@ -811,9 +816,18 @@ published cells:
   largest 62.1%) and Cummins (38,567 ppl, 65.1% of menu value naming no fund)
   are invisible. Widening the vocabulary also moves `audit-generic-names`, which
   is already past 230.
-- **62 crawlable pages no run can ever repair** — `p/` holds 5,062 committed
-  files against the generator's `TOP_N = 5000`, so 62 pages / 169,447 ppl are
-  served and outside every regeneration. Fixing it changes which URLs exist.
+- **Crawlable pages no run can ever repair — RE-SIZED 2026-10-02 and NEARLY
+  DOUBLED: 62 → 118 pages / 169,447 → 324,028 ppl**, plus **1 serving a plan no
+  longer in the universe at all.** `p/` holds **5,118** committed files against
+  the generator's `TOP_N = 5000`. **The growth mechanism, which the first
+  measurement did not name:** `build-seo-pages` does **not sort** — it takes
+  `d.plans.slice(0, TOP_N)` in `plans-all`'s own stored order, which is
+  assets-sorted, so every DOL refresh reshuffles the first 5,000 and a page for
+  a plan that drops out **stays committed, frozen at whatever it last said**
+  (mtimes show waves: some orphans last written 2 days ago, others 8). **So any
+  number written here is stale by the next refresh — re-measure, never read.**
+  Still gated: raising `TOP_N` regenerates the 118 but also creates pages for
+  plans ranked beyond them, and deleting them removes live URLs.
 
 **SIZED, NOT SHIPPED 2026-10-02 17:4xZ — THE HOUSE SPELLED `and` REACHES NO
 FUND: 228 rows / 200 plans / 443,410 participants / $1,742,866,275 shippable,

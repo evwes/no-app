@@ -40955,3 +40955,60 @@ the same way once it has done its work. The fix is a FROZEN fixture rather than
 the live store, and it is queued rather than rushed. `merge-name-test` runs in no
 workflow, so wiring it into CI must wait until it is green — *a red gate is worse
 than no gate.*
+
+## 2026-10-02 (20:1xZ) — #552's verdict, and the TOP_N orphan class has nearly doubled since it was queued
+
+**#552 VERDICT: every pre-registered figure hit, and the carried registrations
+finally settled.** The welded-value arm's population is now **0**: the cheap
+screen went **1,229 → 1,195**, which is 1,229 − 34 to the row, so the arm hit
+exactly its 34 and nothing adjacent. The 1,195 survivors are the contract
+numbers and CMO tranches the equality test was built to refuse.
+
+Coverage line: `confident` 60,167 · entries 65,480 · HIGH **4** · warn 556 ·
+overshoot 372 · dl 39 · pvTopShare 99.9 — all unchanged as registered. And the
+three figures carried unsettled since 15:0xZ are **settled to the digit**:
+`tkExact` 37.33 → **37.76**, `tkComparable` 3.27 → **3.41**, `tkShare`
+24.49 → **25.02**. Mirrored to main: 0 plans / 0 participants stop being served.
+
+**THE CRAWLABLE-PAGE CLAIM WAS TRUE AND MY REASON FOR IT WAS WRONG.** I
+registered "0 crawlable pages" and it is 0 — but the positive control shows
+ABM's page (`p/941369354-001.html`, 4,818 bytes) renders **no holdings table at
+all**, so a grep for the damaged name proves nothing on its own. *A clean zero
+reports on the query.* Measured properly against the PREVIOUS store via
+`git show`: all 34 damaged rows were found, and **0 of 34 sat inside the page's
+rendered twelve** — the earliest is at filed index **18 of 28**. Cash and
+deposit lines sit at the end of a 4i schedule. So the repair is visible on the
+report path only, for 34 plans / 183,439 participants, and that is now a
+measured statement rather than a hopeful one.
+
+**A HYPOTHESIS THAT FELL IN ONE QUERY, recorded because the refutation is the
+useful part.** `build-seo-pages` renders `entry.funds.slice(0, 12)`, and I wrote
+that down as "the first twelve in FILED order, not by value" — which would mean
+a page could show twelve small rows and omit the plan's largest holding. Asked of
+every page on disk: **4,625 pages carry a confident lineup of more than 12 rows,
+and all 4,625 are stored value-sorted descending**, so `slice(0, 12)` IS the real
+top twelve and **0 pages omit their largest holding.** It also explains the
+finding above rather than contradicting it: filed order and value order are the
+same thing here, which is precisely why the 34 small rows sat at index 18+.
+
+**RE-SIZED AND IT HAS NEARLY DOUBLED — THE `TOP_N` ORPHAN PAGES: 62 → 118.**
+The queue said "5,062 committed files against the generator's `TOP_N = 5000`, so
+62 pages / 169,447 ppl are served and outside every regeneration". Today:
+**5,118 committed pages, 118 orphans, 324,028 participants**, and **1 serves a
+plan no longer in the universe at all.**
+
+**The growth mechanism, which the original entry did not name:**
+`build-seo-pages` does **not sort** — it takes `d.plans.slice(0, TOP_N)` in
+`plans-all`'s own stored order, which is assets-sorted. Every DOL refresh
+reshuffles which plans occupy the first 5,000, and a page for a plan that drops
+out **stays committed and frozen at whatever it last said.** The mtimes show the
+drift happening in waves: some orphans last written 2 days ago, others 8. So this
+is not a static 62 to be fixed once; it is a leak that widens on every refresh,
+and the number in the queue entry will always be stale. *A re-size is a NEW
+measurement* — the fifth queue entry this session found materially different from
+its written form.
+
+It stays OWNER-GATED, because the remedy changes which URLs exist: raising
+`TOP_N` regenerates the 118 but also creates pages for plans ranked beyond them,
+and deleting them removes live URLs. What is no longer true is the idea that it
+affects 62 pages.
