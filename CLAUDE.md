@@ -1295,6 +1295,109 @@ from the cycle that would have cleared it.
   / 2 typings across 280 plans / 365,305 ppl. **Register the SUM of the two, not
   each in turn** — the 00:3xZ/#541 lesson about two reporting changes queueing
   behind one run.
+- **THE 14:2xZ DRAW FOUND THE DOUBLE-RENDER CLASS A WITNESS THE 01:4xZ ENTRY SAID
+  IT LACKED, AND IT TIES THAT CLASS TO THE OPEN OVERSHOOT DEFECT — QUEUED, SIZED,
+  SCREENED, NOT SHIPPED: 1,210 groups / 2,420 published rows / 514 entries /
+  $922,222,685 double-counted, where one holding is published TWICE at an
+  IDENTICAL value under two spellings and BOTH ROWS RESOLVE TO THE SAME
+  TICKER.** Seed 20261002140, pool **59,378 published plans / 100,067,338 ppl**.
+  **Workplace Options (615 ppl, 27 rows @ 0.994)** reads largely clean; **Ucb
+  Holdings (3,029 ppl, $979,689,325, 34 rows @ 0.979)** is where the work is — it
+  publishes `Vanguard Target Retirement Income Trust II Fund` $6,990,732 beside
+  `VANGUARD TARGET RET INC II` $6,990,732, and the same pair again at 2065
+  ($2,398,208) and 2070 ($401,198), each pair publishing the **same ticker and
+  the same fee**.
+  **THE 01:4xZ ENTRY REFUSED THIS POPULATION FOR A STATED REASON AND THE REASON IS
+  NOW ANSWERED.** It could only use one name being CONTAINED in the other (469
+  pairs) and wrote off the 4,851 unrelated-name groups as mostly Oracle's correct
+  50/50 manager split, because *"the others differ in more than the glue, and
+  guessing at them is the v174 hazard."* These pairs are the SPELLED and the
+  ABBREVIATED form of one fund — neither a substring of the other — so no
+  string rule reaches them. **The witness is not a string at all: two rows at an
+  identical value in one menu that RESOLVE TO THE SAME REGISTERED FUND cannot be
+  two holdings.** No vocabulary, no guessing, and all three shipped dedup arms are
+  blind to it by construction (A and B bucket by normalised NAME, C needs the
+  longer name to be the shorter plus this row's own value).
+  **TWO CONTAMINATION SCREENS RUN BEFORE THE NUMBER WAS BELIEVED, AND BOTH ARE
+  TINY — 15 of 1,225.** A **coincidental-equality** screen (value under $1,000 or
+  an exact multiple of $1,000) refuses **10**, and they are the shapes it was
+  written for (`vanguard federal` / `… money market inv` at **$6** and at $41).
+  A **class-contradiction** screen refuses **5**, the bucket where "same ticker"
+  would be OUR table's blindness rather than evidence — `fund-er.js` holds one
+  entry per FUND with the Admiral or institutional symbol, so a plan genuinely
+  offering Investor AND Admiral would look like a double render.
+  **AND 2 OF THOSE 5 ARE MY OWN SCREEN'S FALSE REFUSAL, NAMED RATHER THAN
+  COUNTED AS A WIN:** `vanguard total bond market index fund - class i` /
+  `vanguard total bd mkt index instl` and the Extended Market pair are the SAME
+  class — Vanguard's Class I *is* Institutional — so my hand-rolled marker list
+  invented a distinction, the `a`/`an`/`as` trap in a sixth place. The refusal is
+  in the safe direction, so the core is understated by ~2 rather than overstated;
+  the 3 genuine contradictions are Admiral-vs-Investor and
+  Admiral-vs-Institutional.
+  **MY EXPECTATION ABOUT THE RATIO WAS REFUTED BY ITS OWN MEASUREMENT, AND THE
+  REFUTATION IS WHAT MAKES THE CLASS MATTER.** From UCB I expected the duplicates
+  to be FLATTERING the parse (0.979 → 0.969 when removed, i.e. away from 1.0),
+  which would have explained why no audit sees them. Whole-population it is the
+  other way: of 1,210 groups, **826 move the ratio TOWARD 1.0 when the extra copy
+  is removed and only 384 away.** So for two thirds the menu currently OVERSHOOTS
+  and the duplicate is part of why — stronger evidence that the copy is spurious,
+  not weaker. ***A ratio direction read off the drawn case is not the direction of
+  the class***, the sibling of this record's own *a direction claim read off one
+  population is not a direction claim about its neighbour.*
+  **WHICH TIES IT TO AN OPEN DEFECT NOBODY HAD CONNECTED IT TO: 85 of the
+  `lineup-overshoot` set's menus (50,458 ppl) carry such a duplicate, and removing
+  it drops 43 of them (17,579 ppl) BELOW the 1.15 threshold entirely.** The
+  single best piece of evidence in the measurement is one menu going **ratio
+  1.477 → 1.000** on the removal of one double-rendered copy — not "about", the
+  plan's own assets to three decimals — with 1.455 → 1.119, 1.397 → 1.135 and
+  1.358 → 1.045 behind it. *A sum 48% above the plan's assets landing exactly on
+  it when one spurious copy is dropped is as close to a proof as this store
+  offers.*
+  **861 distinct name-pair shapes, the most frequent being `vanguard federal` /
+  `vanguard federal money market inv` (68), `vanguard 500 index adm` /
+  `… admiral` (11), and the Vanguard index and target-date families throughout;
+  every example read is unambiguous** — `retirement i 2010 i fund` / `t. rowe
+  price rtmt 2010 i fd` → TRPUX, `american funds europacific growth fund r6` /
+  `am fds europacific grth r6 fd` → RERGX, `total market index` / `fid ttl mkt
+  indx` → FSKAX.
+  **NOT SHIPPED, and the blocker is this record's own: removing a row LOWERS its
+  region's score.** v194 found that a junk-removal version can LOSE a region
+  contest it previously won, and v172 took $2.15B off Apple's page as a 27 → 26
+  row move that every count passed. So the remedy cannot be "drop the second
+  copy" until that contest effect is measured, and v181's rule (TYPE the row,
+  never drop it) does not apply cleanly here because **typing it leaves the
+  dollars double-counted, which is the whole defect.** That tension is the design
+  question, and it is why this is queued rather than built.
+  **DO NOT CARRY 1,225 OR 470,894 FORWARD AS THE CORE.** 1,225 is the raw screen
+  and the core is 1,210; and the 470,894-participant figure belongs to the 523
+  entries the RAW screen reaches, of which the core is 514 — the core's own reader
+  count was not computed separately and must not be quoted as 470,894.
+  **ALSO LIVE IN THE TWO MENUS, queued:** Workplace Options publishes **`Alliance
+  Bernstein` at 4.1% / $850,465 with no ticker and no fee** — the bare-house
+  class, and plausibly **#545's own named cost reaching a reader**, since that
+  ship split `AllianceBernstein` on 16 rows and named the spaced form as the
+  outcome; `Baird`, `American Beacon` and `Morley Stable` (truncated) the same
+  shape; `Fidelity Small Cap Growth K6` → FOCSX publishing **a symbol with no
+  fee** (the 91,423-row class); `PIMCO Global Bd Opport (USDHedged) I` resolving
+  to nothing. UCB adds `TRP CAP APPRECIATION I` and `JHENDERSON BLANACED
+  COLLECTIII` (a filer misspelling welded to a class fragment) resolving to
+  nothing, and `FID GROWTH COMPANY A` → FDGRX\* at 0.61 where the filing states
+  Class A. **Two shipped guards visibly working:** Workplace Options'
+  `Participant's Loan Account` renders as *"Participant loans — not a menu
+  choice"*, and every one of UCB's Vanguard target-date TRUST rows carries the
+  asterisk rather than asserting the mutual fund.
+  **HARNESS NOTE, and it is this cycle's own correction: the DRAW'S RESOLVER HAD
+  TO BE PINNED, not just its store.** At 12:3xZ an agent was editing `merge-4i`
+  (STORE-side) and pinning the store was enough; this cycle the agent is editing
+  **`fund-er.js`**, which is what the draw's ticker and fee columns READ, so an
+  unpinned draw would have reported symbols and fees **no reader sees** — in the
+  one instrument whose entire purpose is to show what a reader sees. Measured
+  before being trusted: the committed copy is 82,742 bytes against the worktree's
+  91,240, so the pin is LOAD-BEARING and not a precaution, and a positive control
+  asserts the pinned table still answers (`Vanguard 500 Index Fund Admiral Shares`
+  → VFIAX at 0.02) so a silently-empty pin cannot read as a store full of blanks.
+  ***Pin every input the harness reads that an agent may hold, not just the one it
+  held last time.*** `docs/accuracy-log.md` 2026-10-02 (14:2xZ).
 - **#547 RAN `success` AND IS MIRRORED — 2026-10-02 13:3xZ (`33a7b0d6 →
   97ecdecf`), DATA GATE UNFORCED AT +0 / −0 BY ACK **AND** BY PLAN (0 plans / 0
   participants stop being served), `--force` ON THE GIT CHECK ALONE WITH THE

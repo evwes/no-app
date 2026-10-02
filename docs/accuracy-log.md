@@ -7,6 +7,163 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-02 (14:2xZ) — the draw: the double-render class gets the witness the 01:4xZ entry said it lacked, and it ties that class to the open overshoot defect
+
+Participant-weighted random draw from published lineups, seed 20261002140, pool
+**59,378 published plans / 100,067,338 participants**, weighted by
+`partEOY || participants`.
+
+**Workplace Options, Llc (615 ppl, 27 rows @ 0.994)** reads largely clean.
+**Ucb Holdings, Inc. (3,029 ppl, $979,689,325, 34 rows @ 0.979)** is where the
+work is: it publishes
+
+```
+Vanguard Target Retirement Income Trust II Fund   $6,990,732   VTINX*  0.08
+VANGUARD TARGET RET INC II                        $6,990,732   VTINX*  0.08
+Vanguard Target Retirement 2065 Trust II Fund     $2,398,208   VLXVX*  0.08
+VANGUARD TARGET RET 2065 II                       $2,398,208   VLXVX*  0.08
+Vanguard Target Retirement 2070 Trust II Fund       $401,198   VSVNX*  0.08
+VANGUARD TARGET RET 2070 II                         $401,198   VSVNX*  0.08
+```
+
+Three pairs, each the SPELLED and the ABBREVIATED form of one fund, each pair at
+an identical value and publishing the same ticker and the same fee.
+
+### The witness the previous entry said it did not have
+
+The 01:4xZ entry sized "a holding published twice under two names" and stopped,
+because its only usable signal was one name being CONTAINED in the other (469
+pairs); it wrote off the 4,851 unrelated-name groups as mostly Oracle's correct
+50/50 manager split, on the stated ground that *"the others differ in more than
+the glue, and guessing at them is the v174 hazard."* Neither of these names is a
+substring of the other, so no string rule reaches them.
+
+**The witness is not a string: two rows at an identical value in one menu that
+RESOLVE TO THE SAME REGISTERED FUND cannot be two holdings.** No vocabulary and
+no guessing. All three shipped arms of `collapseDoubleRender` are blind to it by
+construction — A and B bucket rows by normalised NAME, so two spellings can
+never share a bucket, and C requires the longer name to be the shorter plus this
+row's own value.
+
+Pre-filter is EXACT and needs no render (group by value within an entry), so the
+display path is asked only of the groups and not of 1.73M rows.
+
+### Size, after two contamination screens
+
+| | |
+|---|---|
+| raw same-ticker equal-value groups | 1,225 |
+| refused: value under $1,000 or an exact multiple of $1,000 | 10 |
+| refused: the two names CONTRADICT on share class | 5 |
+| **clean core** | **1,210 groups / 2,420 rows / 514 entries** |
+| **double-counted dollars** (every copy beyond the first) | **$922,222,685** |
+| distinct name-pair shapes | 861 |
+
+The coincidence screen catches exactly the shapes it was written for
+(`vanguard federal` / `… money market inv` at **$6**, and at $41). The
+class-contradiction screen is the one that matters, because `fund-er.js` holds
+one entry per FUND with the Admiral or institutional symbol, so a plan genuinely
+offering Investor AND Admiral would present as a double render and "same ticker"
+would be OUR blindness rather than evidence.
+
+**AND 2 OF THOSE 5 ARE MY OWN SCREEN'S FALSE REFUSAL, named rather than counted
+as a win.** `vanguard total bond market index fund - class i` /
+`vanguard total bd mkt index instl`, and the Extended Market pair, are the SAME
+class — Vanguard's Class I *is* Institutional — so my hand-rolled marker list
+invented a distinction it does not have. That is the `a`/`an`/`as` trap in a
+sixth place. The refusal is in the safe direction, so the core is understated by
+about 2 rather than overstated; the 3 genuine contradictions are
+Admiral-vs-Investor and Admiral-vs-Institutional.
+
+### My expectation about the ratio was refuted, and the refutation is the finding
+
+From UCB I expected the duplicates to be FLATTERING the parse — its ratio goes
+0.979 → 0.969 when they are removed, i.e. AWAY from 1.0 — which would have
+explained neatly why no audit sees them. Measured whole-population, it is the
+other way round: of the 1,210 clean groups, **826 move the ratio TOWARD 1.0 when
+the extra copy is removed and only 384 away.**
+
+So for two thirds of them the menu currently OVERSHOOTS and the duplicate is part
+of why. That is *stronger* evidence that the copy is spurious, not weaker.
+***A ratio direction read off the drawn case is not the direction of the class***
+— the sibling of this record's own *a direction claim read off one population is
+not a direction claim about its neighbour.*
+
+### Which ties it to an open defect nobody had connected it to
+
+**85 of the `lineup-overshoot` set's menus (50,458 ppl) carry such a duplicate,
+and removing it drops 43 of them (17,579 ppl) below the 1.15 threshold
+entirely.**
+
+```
+ratio 1.477 -> 1.000   168p   dup $13,424,368
+ratio 1.455 -> 1.119   153p   dup  $4,015,402
+ratio 1.397 -> 1.135   138p   dup  $4,729,775
+ratio 1.358 -> 1.045   471p   dup  $5,915,951
+ratio 1.324 -> 1.071   133p   dup  $4,237,114
+```
+
+The first line is the best single piece of evidence in the measurement: a menu
+summing 48% above its plan's assets lands **exactly on 1.000** when one
+double-rendered copy is dropped. Not "about" — the plan's own assets to three
+decimals.
+
+So `lineup-overshoot` (372 menus / 436,224 ppl, an open defect since
+2026-09-15) is partly this, and that attribution is new.
+
+### Not shipped, and the blocker is this record's own
+
+The remedy cannot be "drop the second copy" until one thing is measured:
+**removing a row LOWERS its region's score.** v194 found that a junk-removal
+version can LOSE a region contest it previously won — and lose the real menu —
+and v172 took $2,153,504,672 off Apple's page as a 27 → 26 row move that every
+count passed. v181's rule (TYPE the row, never drop it) does not resolve it
+either, because **typing the row leaves the dollars double-counted, which is the
+whole defect.** That tension is the design question, and it is why this is queued
+rather than built.
+
+**Do not carry 1,225 or 470,894 forward as the core.** 1,225 is the raw screen
+and the core is 1,210; the 470,894-participant figure belongs to the 523 entries
+the RAW screen reaches, of which the core is 514, and the core's own reader count
+was not computed separately.
+
+### Also live in the two menus, all queued
+
+Workplace Options publishes **`Alliance Bernstein` at 4.1% / $850,465 with no
+ticker and no fee** — the bare-house class, and plausibly **#545's own named cost
+reaching a reader**, since that ship split `AllianceBernstein` on 16 rows and
+named the spaced form as its outcome; `Baird`, `American Beacon` and
+`Morley Stable` (truncated) are the same shape; `Fidelity Small Cap Growth K6` →
+FOCSX publishes **a symbol with no fee** (the 91,423-row class); `PIMCO Global Bd
+Opport (USDHedged) I` resolves to nothing. UCB adds `TRP CAP APPRECIATION I` and
+`JHENDERSON BLANACED COLLECTIII` — a filer misspelling welded to a class fragment
+— resolving to nothing, and `FID GROWTH COMPANY A` → FDGRX\* at 0.61 where the
+filing states Class A.
+
+**Two shipped guards visibly working:** Workplace Options' `Participant's Loan
+Account` renders as *"Participant loans — not a menu choice"*, and every one of
+UCB's Vanguard target-date TRUST rows carries the asterisk rather than asserting
+the mutual fund.
+
+### Harness note — the draw's RESOLVER had to be pinned, not just its store
+
+At 12:3xZ an agent was editing `merge-4i` (STORE-side) and pinning the store to a
+committed ref was enough. This cycle the agent is editing **`fund-er.js`**, which
+is exactly what the draw's ticker and fee columns read, so an unpinned draw would
+have reported symbols and fees **no reader sees** — in the one instrument whose
+entire purpose is to show what a reader sees.
+
+Measured before being trusted: the committed copy is **82,742 bytes** against the
+worktree's **91,240**, so the pin is LOAD-BEARING rather than a precaution. And a
+positive control asserts the pinned table still answers
+(`Vanguard 500 Index Fund Admiral Shares` → VFIAX at 0.02) and exits non-zero if
+not, so a silently-empty pin cannot read as a store full of blanks.
+
+***Pin every input the harness reads that an agent may hold, not just the one it
+held last time.***
+
+---
+
 ## 2026-10-02 (13:3xZ verdict) — #547: every registered figure exact, and a push that fired no workflow still raced the merge's own push
 
 **#547 ran `conclusion: success`** (all three jobs; prep 12:41:33→12:46:01Z, one
