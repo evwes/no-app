@@ -7,6 +7,142 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-02 (06:4xZ) — OWNER-GATED, SIZED, NOT SHIPPED: the filing states a share class the registry registers under that exact name, and the page publishes a different class's symbol — and its fee. 5,929 rows / 4,837 plans / 11,144,696 participants
+
+**WHAT IS WRONG.** A filed holding name ENDS in a share-class word, the registry
+registers a class of that series under that exact name, and the page publishes a
+DIFFERENT class's ticker — as an assertion, no asterisk — with that other
+class's expense ratio beside it. **5,929 rows / 4,837 plans / 11,144,696
+participants / $44,906,358,919, of which 5,916 also publish the other class's
+FEE.** 594 distinct names. Measured against the store at `601a7a67`, reading
+`app.js` and `lib-disclose` through `git show <ref>:` because an agent held the
+working tree at the time.
+
+**FOUND BY INDEPENDENTLY CHECKING A DRAW RATHER THAN BY A SWEEP.** The 05:5xZ
+draw reported Mohegan Tribe (7,703 ppl) publishing `Dodge & Cox Income X` →
+**DODIX at 0.41**; re-asked of the registry, `sec-funds.json` carries
+`DODGE & COX FUNDS :: Dodge & Cox Income Fund` with **DODIX = "Class I"** and
+**DOXIX = "Class X"**. The claim is exact, and that row is one of 1,409 like it.
+*A draw's job is to be checked, and the check is what opened the class.*
+
+**THE DECISION RULE NEEDS NO INFERENCE AND NO VOCABULARY OF ABBREVIATIONS**,
+which is what separates this from the owner-gated items it resembles: the filed
+name ENDS in a class word, the published symbol's own registered class is NOT
+that word, and **the SAME series registers a class under that exact name**. That
+is the 05:4xZ Institutional-Plus ship's own rule — *a filing writing a class
+name the series registers under that exact name means THAT class* — asked of
+every class marker instead of one.
+
+| stated | rows | plans | distinct names | publish a fee |
+|---|---|---|---|---|
+| X | 2,505 | 2,205 | 140 | 2,503 |
+| K | 1,489 | 959 | 217 | 1,488 |
+| K6 | 1,073 | 1,081 | 88 | 1,073 |
+| R3 | 258 | 259 | 23 | 258 |
+| A | 251 | 245 | 47 | 246 |
+| R4 | 172 | 173 | 17 | 172 |
+| M | 88 | 89 | 28 | 88 |
+| R | 45 | 44 | 14 | 45 |
+| R2 | 36 | 36 | 10 | 36 |
+| I | 9 | 9 | 7 | 7 |
+| C | 2 | 2 | 2 | 0 |
+| Y | 1 | 1 | 1 | 0 |
+
+Symbol pairs, most frequent: DODIX→DOXIX 1,409, **SPAXX→FNBXX 1,073** (the K6
+family this record has named six times), DODGX→DOXGX 783, FCNTX→FCNKX 366,
+DODFX→DOXFX 313, MEIKX→MEIHX 258, FBALX→FBAKX 235, FBGRX→FBGKX 214,
+FLPSX→FLPKX 212, **PTTRX→PTTAX 182**, FPURX→FPUKX 175, MEIKX→MEIJX 172,
+FDIVX→FDIKX 130. Largest by readers: Wells Fargo & Company **248,225 ppl**
+(`Dodge & Cox Stock Class X` → DODGX at 0.51, $1,163,744,387), Whole Foods
+123,250, Mayo Clinic 112,693 (two rows), Nordstrom 109,402 at 9.2% of its menu,
+Autozone 103,434, Advocate Aurora 103,145 (two rows, 5.1% + 3.6%), Oracle
+99,877, **Ernst & Young 97,058 at 10.6% / $1,924,969,364** (`Fidelity Blue Chip
+Growth Fund Class K` → FBGRX at 0.55).
+
+**AND IT ERRS IN BOTH DIRECTIONS, WHICH IS STRONGER EVIDENCE THAN A ONE-SIDED
+BIAS AND CHANGES THE REMEDY.** The `X` and `K`/`K6` buckets publish the
+EXPENSIVE base-class symbol and fee for a holding the filing says is the cheaper
+institutional class; the `A` and `R` buckets do the reverse — `PIMCO Total
+Return Fund Class A` publishes **PTTRX**, the Institutional symbol, so the fee
+shown is too LOW. A defect that moves fees both ways cannot be a bias in one
+table, and it means no blanket direction ("withdraw the expensive one") is
+available.
+
+**MY SCREEN'S OWN FALSE POSITIVES ARE NAMED RATHER THAN ROUNDED AWAY: ~9 of
+5,929 (0.15%), all in the single-letter buckets, which I read in full.** The `C`
+bucket is **both** of its rows (`Goldman Sachs Small Cap Value Fund
+Institutional C`, `Principal Blue Chip Fund Institutional C` — these state
+*Institutional* and the trailing letter is a footnote), the `Y` row states
+`Class I` at the FRONT, and 4 of the 9 `I` rows state something else
+(`JPMorgan Equrty Income Fund R6 I`, `Calvert Small- Cap R6 I`,
+`Individual Mutual Fund, 4 I`). **And the honest limit of the reading: I read
+the single-letter buckets in full and the HEADS of X / K / K6 / R-n, not all 594
+distinct names** — so this is a well-screened measurement, not a fully read one,
+and the 594 must be read before anything ships.
+
+**NOT SHIPPED, and the reason is the standing one: a session must not move 11.1M
+participants' ticker AND fee cells unasked.** It is the owner-gated
+different-CLASS item measured with a decidable rule for the first time — larger
+than the 2,767 rows / 8,441,775 ppl of the Institutional→Admiral framing, and
+unlike that one **the fee is NOT class-blind here**: DODIX 0.41 is not DOXIX's
+figure, so correcting the symbol without a sourced per-class fee leaves a
+correct symbol beside the wrong number, which is the trade
+`data/fund-facts.json` exists to settle.
+
+**RECOMMENDATION, owner's call: correct the SYMBOL on the exact-match population
+and WITHDRAW the fee rather than carry the other class's, with `fund-facts`
+filling the per-class figures as they are sourced — they compose.**
+
+**AND THE HARNESS TRAP, THIRD CYCLE RUNNING.** The first version of the
+measurement rendered all 1,724,078 published rows and did not finish inside ten
+minutes. The predicate's own first condition — the cleaned name ENDS in a class
+word — is an EXACT pre-filter using the same `clean` the render calls, so it
+excludes nothing that could match, and the render is then asked only of the
+hits. *A fast exact measurement must not be chained to a slow one.*
+
+### The same draw's claims, checked independently, and one of them understated
+
+- **Mohegan Tribe `Dodge & Cox Income X` → DODIX at 0.41 against the registry's
+  DOXIX = Class X.** Exact, and it is what opened the class above.
+- **Walmart on the NEWER ack `20260909124139NAL0004116481001` (1,996,659 ppl, 42
+  rows @ 0.952) reads clean, and v130 holds on a filing v130 never saw** — but
+  the wrapped family is **8 rows whole, not the four the draw named**:
+  `Russell 1000 Index Non-Lendable Fund` **$15,822,151,755 = 28.1%**,
+  `MSCI ACWI ex-U.S. IMI Index Non-Lendable Fund` $4,711,712,195,
+  `The Collective LSV International (ACWI EX US) Value Equity Fund`
+  $2,531,270,467, `Russell 2500` $1,514,991,729, `Russell 2000` $725,751,701,
+  `U.S. Treasury Inflation Protected Securities Non-Lendable` $502,044,417,
+  `Long Term Government Bond Index Non-Lendable` $238,998,840,
+  `Intermediate Government Bond Index Non-Lendable` $208,097,467 — and **0 of
+  v130's old fragments** (`Lendable Fund`, `US) Value Equity Fund`). A
+  regression test that holds on a filing it was never written against, on the
+  largest published holding row on this record, is the strongest form that test
+  has. `Fiera Asset Management USA` at 3.2% / $1,773,620,398 is confirmed as the
+  bare-house class's largest named instance.
+
+### A control of mine that was DECORATIVE, named rather than hidden
+
+In verifying the 05:5xZ bare-GIC ship I probed
+`fundER("GIC METLIFE CONTRACT #GAC 32226")` and got **0.35 on both sides** —
+correct, because the fee TABLE never changed; **the GATE did.** *A control has
+to exercise the thing that moved.* The render pair is what discriminated, and it
+reproduced every shipped figure: withdrawn 24 / gained 0 / changed 0, all
+`0.35 → null`, 0 tickers, 0 asterisks, 0 shown types, $1,087,454,960 across 10
+acks / 23 distinct names, reader reach 10 plans / 145,237 participants, 13 rows
+trust-held and resolved through member plans, 4 in an ack no plan references.
+
+### A correction to that ship's write-up: `DISCLOSE_PATH` IS read
+
+`apppath.mjs:81` is
+`await import(process.env.DISCLOSE_PATH || ".../lib-disclose.mjs")`. The claim
+that the variable is "read nowhere in the repo" is true of the REPO and false of
+the HARNESS — **and it matters, because that commit changed `lib-disclose.mjs`
+as well as the app.js twin, so a before side pinning only `APPJS_PATH` runs the
+NEW canonical suppressors and can report a false zero.** Pin both. *A statement
+about where a name is read has to name the surface it is read on.*
+
+---
+
 ## 2026-10-02 (06:3xZ) — v197: one predicate, two arms — a keystroke and a leading word defeated the anchor. 222 rows / 171 plans / 628,541 participants, and 4 lineups withdrawn
 
 **WHAT WAS WRONG.** `isGenericTypeName` is anchored `^…$` deliberately: an

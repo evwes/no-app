@@ -1064,6 +1064,69 @@ from the cycle that would have cleared it.
   green printing `strip/pricer cross-check: 5 witnesses`, fund-er-test
   83/26/19/18/28, merge-name-test 20/20 22/22 25/25 20/20 22/22 15/15.
   `docs/accuracy-log.md` 2026-10-02 (05:5xZ).
+- **OWNER-GATED, SIZED, NOT SHIPPED 2026-10-02 06:4xZ — THE FILING STATES A SHARE
+  CLASS THE REGISTRY REGISTERS UNDER THAT EXACT NAME AND THE PAGE PUBLISHES A
+  DIFFERENT CLASS'S SYMBOL, AND ITS FEE: 5,929 rows / 4,837 plans / 11,144,696
+  participants / $44,906,358,919, of which 5,916 ALSO PUBLISH THE OTHER CLASS'S
+  FEE.** 594 distinct names, measured against the store at `601a7a67`.
+  **FOUND BY INDEPENDENTLY CHECKING THE 05:5xZ DRAW RATHER THAN BY A SWEEP:** it
+  reported Mohegan Tribe (7,703 ppl) publishing `Dodge & Cox Income X` → **DODIX
+  at 0.41**, and `sec-funds.json` carries DODIX as **"Class I"** and DOXIX as
+  **"Class X"** — exact, and that row is one of 1,409 like it. *A draw's job is
+  to be checked.*
+  **THE DECISION RULE NEEDS NO INFERENCE AND NO VOCABULARY OF ABBREVIATIONS,
+  which is what separates it from the owner-gated items it resembles:** the filed
+  name ENDS in a class word, the published symbol's own registered class is NOT
+  that word, and **the SAME series registers a class under that exact name** —
+  the 05:4xZ Institutional-Plus ship's own rule asked of every class marker
+  instead of one. Buckets: X 2,505 rows, K 1,489, K6 1,073, R3 258, A 251, R4
+  172, M 88, R 45, R2 36, I 9, C 2, Y 1. Pairs: DODIX→DOXIX 1,409, **SPAXX→FNBXX
+  1,073** (the K6 family named six times), DODGX→DOXGX 783, FCNTX→FCNKX 366,
+  **PTTRX→PTTAX 182**. Largest readers: Wells Fargo **248,225** (`Dodge & Cox
+  Stock Class X` → DODGX at 0.51, $1,163,744,387), Whole Foods 123,250, Mayo
+  Clinic 112,693, Nordstrom 109,402, **Ernst & Young 97,058 at 10.6% /
+  $1,924,969,364**.
+  **AND IT ERRS IN BOTH DIRECTIONS, WHICH IS STRONGER EVIDENCE THAN A ONE-SIDED
+  BIAS AND CHANGES THE REMEDY:** X and K/K6 publish the EXPENSIVE base class for
+  a holding the filing says is institutional; A and R do the reverse (`PIMCO Total
+  Return Fund Class A` publishes **PTTRX**, so the fee is too LOW). No blanket
+  direction is available.
+  **MY SCREEN'S FALSE POSITIVES ARE NAMED: ~9 of 5,929 (0.15%)**, all in the
+  single-letter buckets, which I read in full — the whole `C` bucket states
+  *Institutional* with a footnote letter, the `Y` row states `Class I` at the
+  front. **The honest limit: I read the single-letter buckets in full and the
+  HEADS of X / K / K6 / R-n, not all 594 names** — well-screened, not fully read.
+  **NOT SHIPPED on the standing rule: a session must not move 11.1M
+  participants' ticker AND fee cells unasked.** Larger than the 2,767 rows /
+  8,441,775 ppl Institutional→Admiral framing, and **unlike that one the fee is
+  NOT class-blind** — DODIX 0.41 is not DOXIX's figure, so correcting the symbol
+  alone leaves a correct symbol beside the wrong number.
+  **RECOMMENDATION, owner's call: correct the SYMBOL on the exact-match
+  population and WITHDRAW the fee rather than carry the other class's, with
+  `fund-facts` filling the per-class figures as they are sourced — they compose.**
+  **AND THE HARNESS TRAP, THIRD CYCLE RUNNING:** the first measurement rendered
+  all 1,724,078 rows and did not finish; the predicate's own first condition is
+  an EXACT pre-filter through the same `clean` the render calls, so the render is
+  asked only of the hits. `docs/accuracy-log.md` 2026-10-02 (06:4xZ).
+- **AND THE 05:5xZ SHIP WAS VERIFIED INDEPENDENTLY BEFORE ITS MIRROR, WITH TWO
+  CORRECTIONS OF MY OWN AND ONE OF ITS WRITE-UP'S.** Every figure reproduced
+  through a before/after render — withdrawn **24** / gained 0 / changed 0, all
+  `0.35 → null`, **0 tickers, 0 asterisks, 0 shown types**, $1,087,454,960 across
+  10 acks / 23 distinct names, reader reach **10 plans / 145,237 participants**,
+  13 rows trust-held and resolved through MEMBER PLANS, 4 in an ack no plan
+  references. **MY POSITIVE CONTROL WAS DECORATIVE AND IS NAMED RATHER THAN
+  HIDDEN:** `fundER("GIC METLIFE CONTRACT #GAC 32226")` returns 0.35 on BOTH
+  sides, correctly — the fee TABLE never changed, **the GATE did** — so *a control
+  has to exercise the thing that moved*, and the render pair is what
+  discriminated. **AND `DISCLOSE_PATH` IS READ, against that ship's own claim:**
+  `apppath.mjs:81` is `await import(process.env.DISCLOSE_PATH || …)`, so the
+  "read nowhere in the repo" statement is true of the REPO and false of the
+  HARNESS — and it matters, because that commit changed `lib-disclose.mjs` too,
+  so **a before side pinning only `APPJS_PATH` runs the NEW canonical suppressors
+  and can report a false zero.** Pin both. **The 05:5xZ draw also understated its
+  own best control: Walmart's wrapped family is 8 rows whole, not four** —
+  `Russell 1000 Index Non-Lendable Fund` at **$15,822,151,755 = 28.1%** leading
+  them, with **0** of v130's old fragments, on an ack v130 never saw.
 - **IN FLIGHT: #544 (v197) — ONE PREDICATE, TWO ARMS, AND THE BLAST RADIUS IS ZERO
   WHERE IT MATTERS BY CONSTRUCTION: 222 rows / 171 plans / 628,541 participants /
   $7,012,007,386 stop publishing a vehicle-type label as a holding, 0 lost, 0 of
