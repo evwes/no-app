@@ -387,6 +387,53 @@ export function leadingHouse(s) {
 const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1,2}|r-?[1-9])|(r-?[1-9]))\b[\s.,()\-]+(?=[A-Za-z])/i;
 const DOUBLED_CLASS_TAIL = /(?:\b(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1,2}|r-?[1-9])|\b(r-?[1-9]))\s*$/i;
 const classCode = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+/* A PAGE BREAK'S CAPTION, THE LEADING POSITION — 2026-10-01.
+ *
+ * The auditor repeats a caption at the top of the next page and the first
+ * holding under it absorbs the whole line, so the fund's name arrives wearing
+ * a word no fund is named: `continued Vanguard Target Retirement Fund 2045`,
+ * `Continued Fidelity Freedom Index 2030 Fund Investor Class`, `(Continuation)
+ * PIMCO RealPath Blend 2055 INST`, `Continued from previous page Principal
+ * LifeTime Hybrid 2035 Fund`.
+ *
+ * The 2026-09-28 fix closed this class in the TRAILING position (the `contM`
+ * arm below, `^.*?\(continued\)`), and the leading-parenthetical arm requires
+ * the string to OPEN with a vehicle TYPE. Both are blind to these rows BY
+ * CONSTRUCTION, not by oversight — *a fix for one POSITION of a class is not a
+ * fix for the class*, which this record has now met at the trailing OCR
+ * residue, the issuer column and here.
+ *
+ * NO VOCABULARY BEYOND THE CAPTION WORD. Every leading token in the whole
+ * population was counted rather than imagined: `Continued` 16, `continued` 14,
+ * `Continuation` 2, `Cont'd` 1. A bare `Cont.` is DELIBERATELY ABSENT and the
+ * store says why — `NYL INSURANCE IPG GRP ANNUITY CONT.` is a group annuity
+ * CONTRACT at 42.7% of its menu, so that abbreviation collides with a real
+ * word. `continucd`, the OCR spelling the trailing arm carries, leads 0 rows
+ * and is left out for the same reason a guard that cannot fire is decoration.
+ *
+ * THE PAGE REFERENCE IS STRIPPED IN A SECOND, SEPARATE STEP AND THAT IS NOT
+ * STYLE. Written as one regex with the reference optional, the engine
+ * BACKTRACKS when the lookahead fails at the end of `Continued from page 10`:
+ * it gives the reference back, matches the caption word alone and publishes
+ * `from page 10` as the holding's name. That is this record's own
+ * "an optional group at the end of an anchored alternation is a silent SECOND
+ * anchor position", and sequential replaces have no such second position. */
+export const PAGE_BREAK_LEAD = /^\(?\s*(?:continu(?:ed|ation|ing)|cont['’]d)\b/i;
+const PAGE_BREAK_SEP = /^\s*\)?\s*(?:[-–—:,;.]\s*)?/;
+const PAGE_BREAK_REF = /^(?:from|on)\s+(?:the\s+)?(?:previous|preceding|prior|last|next)?\s*pages?(?:\s+\d{1,3})?\s*\)?\s*(?:[-–—:,;.]\s*)?/i;
+/* A PAGE-CARRY SUBTOTAL LINE. `lib-4i.mjs:3021` already drops these at parse
+ * time — `/^(balance |carried |brought )?forwards?(\s+(from|to)\b.*)?$/` — and
+ * that rule's own comment records what it is for: "the same-name dedup SUMS
+ * the distinct per-page values into a fake nine-figure fund". It is anchored
+ * on the carry word coming FIRST, so the three-word spelling `Balance Brought
+ * Forward` is outside it and survives into the store. This is the same fact
+ * asked the other way round — the carry word LAST, with at most two tokens in
+ * front of it — which is exact on this store: over all 1,724,078 published
+ * rows the phrase `brought forward` / `carried forward` appears 10 times and
+ * not one of the ten is a fund. No leading vocabulary is needed and none is
+ * carried, which is why `Assets- Brought Forward` and `Mutual Funds Brought
+ * Forward` are reached without naming either noun. */
+export const CARRIED_FORWARD = /^(?:\S+\s+){0,2}(?:brought|carried)\s+forwards?(?:\s+(?:from|to)\s+(?:the\s+)?(?:previous|preceding|prior|next)?\s*pages?(?:\s+\d{1,3})?)?$/i;
 /* The same column glued to the FRONT with a separator — "Mutual Fund -
  * Fidelity 500 Index Fund", "Separate Account - JPMorgan Equity Income
  * Fund R6" (Texas Health Resources, 13:1xZ draw 2026-09-18). Sized on the
@@ -951,6 +998,86 @@ export function cleanFiledName(name) {
   // 1,992 em-dash rows the census counts were already clean at display.
   const dl = s.replace(/^[—–-]+\s*/, "").trim();
   if (dl !== s && /[A-Za-z]{3}/.test(dl)) s = dl;
+  /* ...AND THE SAME CAPTION WITH NO BRACKETS TO MARK IT, which the `contM` arm
+   * further up cannot reach because it requires the marker to be
+   * parenthesised. 29 rows / 27 entries / 27 plans / 13,256 participants /
+   * $24,675,085 on the pv-196 store, and ALL 29 DISTINCT TRANSFORMATIONS WERE
+   * READ: every remainder is either a real fund name (`Fidelity Freedom Index
+   * 2030 Fund Investor Class`, `PIMCO RealPath Blend 2055 INST`, `Vanguard
+   * Wellesley Income Admiral Class Fund`) or, twice, participant-loan prose —
+   * see below, where the strip is what hands those two rows to a guard that
+   * was blind to them.
+   *
+   * IT SITS HERE, AFTER THE LEADING-DASH RE-RUN, AND THAT IS MEASURED RATHER
+   * THAN STYLISTIC. Placed beside `contM` it refused two rows while every gate
+   * passed: `Mutual Funds, at Fair Value - Continued Vanguard Target
+   * Retirement 2040 Fund` arrives with the caption behind its own vehicle
+   * prefix, `TYPE_PREFIX` removes the prefix and LEAVES THE DASH, so at the
+   * earlier position the string began `- ` and an anchored rule cannot match.
+   * Same shape as the comment immediately above this one, which exists because
+   * the dash strip itself ran too early; both are pinned in the tether.
+   *
+   * What makes a cut this wide safe is the marker itself rather than any
+   * screen: no fund is named `Continued`, so everything up to it is caption BY
+   * CONSTRUCTION. The remainder is still screened by `bwOpensWithAName`, and
+   * that is NOT belt-and-braces — it is the only thing standing between the
+   * reader and a holding named `from page 10`.
+   *
+   * THE ARTICLE RELAXATION AND `bwInitial` ARE BOTH TAKEN FROM THE `contM` ARM
+   * and BOTH ARE DECORATIVE on this store, which is worth naming rather than
+   * hiding: no remainder here opens with `The`, and none opens with a bare
+   * initial, so both conditions reach 0 rows. They are carried because the
+   * sibling's own two refusals (`John Hancock sub-accounts (continued) The
+   * Growth Fund of America`; the `T. Rowe Price` initial, which still costs
+   * `contM` four rows) are the shapes this arm will meet next, and because
+   * dropping them cannot ADD a row — it can only refuse a repair.
+   *
+   * TWO FURTHER CONDITIONS ARE DECORATIVE AND SAYING SO IS THE POINT. The `\b`
+   * after the caption word reaches 0 rows either way, because the alternation
+   * already spells complete suffixes — nothing can match `continu` followed by
+   * anything but `ed`, `ation` or `ing`. And a bare `Cont.` is ABSENT from the
+   * vocabulary although admitting it would change 0 rows today: no stored row
+   * LEADS with that abbreviation, and the refusal is precautionary, its
+   * evidence being `NYL INSURANCE IPG GRP ANNUITY CONT.` — a group annuity
+   * CONTRACT at 42.7% of its menu, which the `^` anchor is what protects.
+   *
+   * COST NAMED, 1 row / 172 participants: `Continued Total Intl Stock Index
+   * Adm` (Town Center Orthopaedic Associates) keeps its caption, because
+   * `Total` is furniture in the shared screen. Nothing else is lost — the row
+   * already publishes VTIAX at 0.06% through its `Vanguard` issuer cell — so
+   * the only cost is a caption word a reader can see, and refusing a repair is
+   * the safe direction.
+   *
+   * THE CARRIED-FORWARD REFUSAL IS WHAT KEEPS A NON-NAME FROM BECOMING THE
+   * NAME. `Continued Balance Brought Forward` is 52.8% of Wilson Bank &
+   * Trust's published menu ($46,880,875) and stripping the caption would leave
+   * `Balance Brought Forward` standing as the holding — strictly worse, because
+   * the caption word is the one thing telling the reader it is a page artefact.
+   * That row, and the two whose whole name is caption, are typed instead by
+   * `isPageBreakCaptionRow` below: THE THREE PURE-CAPTION MEMBERS ARE TYPED,
+   * NOT STRIPPED.
+   *
+   * AND THE TWO LOAN ROWS GAIN A TYPING THEY DO NOT HAVE TODAY, which corrects
+   * what this item was queued believing. `continued- Loans Participants
+   * Interest rates ranging from 10.00% to 10.50% with various m` (Verge Mobile,
+   * 2,628 ppl) publishes today as `Pooled separate account`, and its sibling at
+   * Arborworks (1,038 ppl) as `—`: `isLoanDescriptionRow` and
+   * `isLoanVocabularyRow` are anchored on the name beginning with loan words,
+   * so the leading caption put both rows OUTSIDE every loan guard. Asked of the
+   * stripped remainder both answer TRUE. The queue entry said these two "must
+   * keep their loan typing"; they had none, and the strip is what gives it. */
+  {
+    const cl = PAGE_BREAK_LEAD.exec(s);
+    if (cl) {
+      const rest = s.slice(cl[0].length).replace(PAGE_BREAK_SEP, "")
+        .replace(PAGE_BREAK_REF, "").trim();
+      const toks = rest.split(/\s+/).filter(Boolean);
+      const lead = /^(?:the|a|an)$/i.test(toks[0] || "") && toks.length >= 3 ? toks[1] : (toks[0] || "");
+      const probe = lead.replace(/[^A-Za-z0-9&]/g, "");
+      if (toks.length >= 2 && /[A-Za-z]{3}/.test(rest) && !CARRIED_FORWARD.test(rest)
+          && (bwOpensWithAName(probe) || bwInitial(lead))) s = rest;
+    }
+  }
   s = s.replace(/[,;:]+$/, "").trim();
   // a share COUNT is thousands or more (1,234 / 12345…); "Class R6 Shares"
   // is a share CLASS and must survive — the first draft of this cut it to
@@ -1511,6 +1638,65 @@ export const OFFICE_GROUP = new RegExp(
 export function isOfficeListRow(name) {
   const s = String(name || "");
   return (s.match(OFFICE_GROUP) || []).length >= 2;
+}
+
+/* A ROW WHOSE WHOLE NAME IS A PAGE BREAK'S CAPTION — 2026-10-01.
+ *
+ * The other half of the leading-caption class, and the half that may never be
+ * stripped: there is nothing behind the caption to strip TO. 12 rows / 11
+ * entries / 10 plans / 12,055 participants directly, PLUS 16,567 through a
+ * master trust (below) / $1,328,090,246 — more money than every other arm in
+ * this family put together, because a page-carry subtotal is by definition the
+ * sum of everything above it.
+ *
+ * ALL TWELVE READ, NOT ONE A FUND, and the largest is the whole point:
+ *
+ *   Leonardo DRS (8,846 ppl)   `Balance Brought Forward`  88.2% / $1,135,067,959
+ *   H & P Technologies (205)   `Continued from page 10`   91.7% / $19,396,062
+ *   Wilson Bank & Trust (739)  `Continued Balance Brought Forward`
+ *                                                          52.8% / $46,880,875
+ *   Animal Medical Center (695) `Mutual Funds Brought Forward` 45.6%, and
+ *                               `(continued)`                  13.2%
+ *   Manco Abbott (186)         `Balance brought forward`  82.1%
+ *   Stratford Academy (252)    `Assets- Brought Forward`  65.9%
+ *   Powell Electronics (260)   `Balance carried forward from page 15` 64.3%
+ *   Moorestown VNA (201)       `Balance carried forward`  53.3%
+ *   Brentwood Academy (198)    `Balance Brought Forward`  46.4%
+ *   Grain & Feed of Illinois (473) `Balance brought forward` 20.9%
+ *
+ * AND THE TWELFTH IS OWNED BY NO PLAN, which is the fifth-plus instance of a
+ * count keyed on plans being blind to a trust: `BALANCES CARRIED FORWARD`,
+ * $35,654,252, sits in ENTERGY CORPORATION QUALIFIED PLAN MASTER TRUST. All
+ * THREE Entergy plans read `c=0` against the trust's `c=1`, so 16,567
+ * participants are served that menu and none of them was in the plan-keyed
+ * figure. An ack owned by no plan is resolved through its MEMBER PLANS.
+ *
+ * TYPED, NOT DROPPED (v181): the value stays in the denominator, so no other
+ * row's published percentage moves, and the page says the true thing in the
+ * cell that was otherwise repeating the name or empty. Two of the twelve are
+ * typed `Mutual fund` today, which is a false claim about $65.9M; the other
+ * ten publish `—`.
+ *
+ * THE CAPTION WORD IS NOT REQUIRED, and that is deliberate rather than a
+ * widening for its own sake. Nine of the twelve carry NO continuation word at
+ * all — the filer wrote only the carry line — so requiring one would be the
+ * "fix for one phrasing" error this record has now paid for eight times, and
+ * it would leave the largest row in the family (88.2% of a 8,846-participant
+ * plan) publishing as a holding. `CARRIED_FORWARD`'s own safety is measured on
+ * the whole store: the phrase occurs 10 times in 1,724,078 published rows.
+ *
+ * 0 of the twelve publish a ticker and `fundER` prices 0 of them, so the harm
+ * is the CLAIM alone and nothing is withdrawn that a reader has today. */
+export function isPageBreakCaptionRow(name) {
+  let s = String(name || "").trim();
+  if (!s) return false;
+  const m = PAGE_BREAK_LEAD.exec(s);
+  if (m) {
+    s = s.slice(m[0].length).replace(PAGE_BREAK_SEP, "").replace(PAGE_BREAK_REF, "")
+      .replace(/^\s*\)?\s*$/, "").trim();
+    if (!s) return true;
+  }
+  return CARRIED_FORWARD.test(s);
 }
 
 /* A BARE MATURITY DATE IS THE PARTICIPANT-LOAN ROW — 2026-09-30 (07:3xZ).

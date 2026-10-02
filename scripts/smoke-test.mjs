@@ -214,7 +214,7 @@ try {
   const { coverageBand, frozenClaimOk, cleanFiledName, isParticipantLoanRow, isLoanDescriptionRow,
     isAnnuityContractRow, annuityFeeIsGuaranteeOnly, isCollectiveTrustName, isLoanVocabularyRow, isLoanAnswerRow, isLoanMaturityRow,
     isDirectionCaptionRow,
-    isOfficeListRow,
+    isOfficeListRow, isPageBreakCaptionRow,
     isInvestmentContractRow, isMistypedStockRow, isBankDepositRow,
     mistypedStockFeeIsGuaranteeOnly, issuerPricedER, leadingHouse,
     employerStockSymbolOk, sponsorNameKey } = await import("./lib-disclose.mjs");
@@ -459,6 +459,63 @@ try {
     "\u0003Money\u0003Market \u0003\u0003\u0003\u0003\u0003",
     "Putnam Large Cap Value IA Collective Trust\u0003",
     "Vanguard Target Retirement Fund\u00022035 Mutual funds",
+    /* A PAGE-BREAK CAPTION LEADING THE NAME, 2026-10-01. Added because NOT ONE
+     * of the 103 cases above reaches either new arm — checked, not assumed, so
+     * the tether would have agreed whether or not app.js carried them: the
+     * decorative-control failure this record has now paid for six times.
+     *
+     * Ten must-STRIP, every one a stored name: the four spellings the whole
+     * population uses (`Continued`, `continued`, `(Continuation)`, `Cont'd`),
+     * a bare page reference and a parenthesised one, the two rows whose
+     * separator is a dash (which are the participant-loan prose the strip
+     * hands to a guard that was blind to it), and TWO carrying their own
+     * vehicle caption in front — `Mutual Funds, at Fair Value - Continued …`
+     * is why this arm sits AFTER the leading-dash re-run rather than before
+     * it, because TYPE_PREFIX leaves the dash behind and the anchor then
+     * fails.
+     *
+     * Then five must-KEEP, and each pins a different condition:
+     *   `Continued from page 10`   — the page reference is the WHOLE string,
+     *       so the remainder is empty. This is the BACKTRACKING pin: written
+     *       as one regex with the reference optional, the engine gives it back
+     *       and publishes `from page 10` as the holding's name.
+     *   `Continued Balance Brought Forward` — the carried-forward refusal.
+     *       Stripping leaves a non-name standing as the name on 52.8% of a
+     *       plan's menu; it is TYPED instead.
+     *   `Continued Total Intl Stock Index Adm` — the shared remainder screen,
+     *       and a NAMED COST: `Total` is furniture, so this real fund keeps
+     *       its caption. Refusing a repair is the safe direction.
+     *   `NYL INSURANCE IPG GRP ANNUITY CONT.` — why a bare `Cont.` is not in
+     *       the vocabulary: that abbreviation is CONTRACT.
+     *   `PAYROLL MADE EASY, INC DBA CONTINUUM RETIREMENT SAVINGS PLAN` — why
+     *       the rule is anchored and asks for a word boundary. */
+    "continued Vanguard Target Retirement Fund 2045",
+    "Continued Fidelity Freedom Index 2030 Fund Investor Class",
+    "(Continuation) PIMCO RealPath Blend 2055 INST",
+    "Cont'd Vanguard Energy Index Fund",
+    "Continued from previous page Principal LifeTime Hybrid 2035 Fund",
+    "(continued from previous page) Yourpath Ishares 2035 Growth",
+    "continued- Loans Participants Interest rates ranging from 10.00% to 10.50% with various m",
+    "continued - Loans Participants Interest rates ranging from 8.00% to 9.50% with various m",
+    "Mutual Funds, at Fair Value - Continued Vanguard Target Retirement 2040 Fund",
+    "Pooled Separate Accounts, at Fair Value - Continued JH Multimanager 2035 Lifetime Fund",
+    "Continued from page 10",
+    "Continued Balance Brought Forward",
+    "Continued Total Intl Stock Index Adm",
+    "NYL INSURANCE IPG GRP ANNUITY CONT.",
+    "PAYROLL MADE EASY, INC DBA CONTINUUM RETIREMENT SAVINGS PLAN",
+    /* …and three more must-KEEP that exist only because the per-condition
+     * control said the conditions they test were UNTESTED. Two are stored
+     * rows of the TRAILING-caption class, which is a different item and must
+     * come back untouched: without the `^` anchor the rule strips from a
+     * caption in the MIDDLE of the string and types a real fund as a caption.
+     * The third is CRAFTED and labelled so — no stored row is a bare page
+     * reference with nothing after it, so the backtracking hazard has no
+     * filed witness, and this is the only pin in the block that is not a
+     * filed name. */
+    "Co-op Stable Asset Fund (continued)",
+    "Common/Collective Trust Funds (Continued) T. Rowe Price Retire 2030 Trust Fund",
+    "Continued from previous page",
   ];
   const nameGot = await page.evaluate((cs) => {
     if (typeof window.__wampoCleanFiledName !== "function") return null;
@@ -908,6 +965,66 @@ try {
     if (!isLoanMaturityRow(n)) fail(`maturity-date rule no longer types a wrapped loan row, so it reads as a fund: ${JSON.stringify(n)}`);
   for (const n of loanMatCases.slice(8))
     if (isLoanMaturityRow(n)) fail(`maturity-date rule would claim a real fund or a target-date vintage: ${JSON.stringify(n)}`);
+
+  /* THE PAGE-BREAK CAPTION ROW, tethered the same way, 2026-10-01. The first
+   * TEN must FLAG. Nine are stored published names out of the twelve-row
+   * population — three carrying a continuation word and SIX that carry none,
+   * which is the whole reason the caption word is not required: nine of the
+   * twelve say only the carry line, and requiring one would leave the largest
+   * row in the family published as a holding. That row is `Balance Brought
+   * Forward` at 88.2% of Leonardo DRS's menu ($1,135,067,959), and `BALANCES
+   * CARRIED FORWARD` is the row inside the Entergy master trust that no
+   * plan-keyed count could see (16,567 member participants).
+   *
+   * The last ELEVEN must be KEPT, and they are the safety argument. A real
+   * fund may carry `Forward` at the end of its name (`BNY Mellon Currency
+   * Forward Fund`); `NYL INSURANCE IPG GRP ANNUITY CONT.` is why a bare
+   * `Cont.` is not in the vocabulary; `CONTINUUM` is why the lead is bounded;
+   * a stripped remainder that IS a real fund must not then be typed a caption;
+   * and the last three are the pins the per-condition control named — the two
+   * TRAILING-caption rows that the `^` anchor refuses, and a real fund name
+   * ending in the carry words that the two-token lead cap refuses. */
+  const capCases = [
+    "(continued)", "Continued from page 10", "Continued Balance Brought Forward",
+    "Balance Brought Forward", "Balance brought forward", "Balance carried forward",
+    "Balance carried forward from page 15", "Assets- Brought Forward",
+    "BALANCES CARRIED FORWARD",
+    // …and one CRAFTED, labelled: a bare page reference with nothing after it
+    // has no stored witness, and it is what makes the two-step page-reference
+    // strip testable — written as one regex the engine backtracks and
+    // publishes `from previous page` as the holding's name.
+    "Continued from previous page",
+    // must KEEP
+    "NYL INSURANCE IPG GRP ANNUITY CONT.",
+    "PAYROLL MADE EASY, INC DBA CONTINUUM RETIREMENT SAVINGS PLAN",
+    "BNY Mellon Currency Forward Fund",
+    "Vanguard Target Retirement Fund 2045",
+    "Continued Total Intl Stock Index Adm",
+    "Fidelity Freedom Index 2030 Fund Investor Class",
+    "PIMCO RealPath Blend 2055 INST",
+    "Loans Participants Interest rates ranging from 10.00% to 10.50% with various m",
+    // …and three the per-condition control named: two stored rows of the
+    // TRAILING-caption class, which the `^` anchor is what refuses, and a real
+    // fund name with the carry words at the end, which the two-token lead cap
+    // on CARRIED_FORWARD is what refuses.
+    "Co-op Stable Asset Fund (continued)",
+    "Trust Company Fidelity Managed Income Portfolio (continued)",
+    "Vanguard Total Bond Market Index Fund Admiral Shares Brought Forward",
+  ];
+  const capGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoPageBreakCaptionRow !== "function") return null;
+    return cs.map((n) => window.__wampoPageBreakCaptionRow(n));
+  }, capCases);
+  if (!capGot) fail("app.js no longer exposes __wampoPageBreakCaptionRow — the page-break caption predicate cannot be cross-checked");
+  const capDrift = capCases.filter((n, i) => isPageBreakCaptionRow(n) !== capGot[i]);
+  if (capDrift.length) {
+    for (const n of capDrift) console.error(`  ${JSON.stringify(n)}  app.js=${capGot[capCases.indexOf(n)]}  module=${isPageBreakCaptionRow(n)}`);
+    fail(`the page-break caption predicate in app.js disagrees with scripts/lib-disclose.mjs on ${capDrift.length} of ${capCases.length} names`);
+  }
+  for (const n of capCases.slice(0, 10))
+    if (!isPageBreakCaptionRow(n)) fail(`page-break caption rule no longer types a page-carry line, so it reads as a fund: ${JSON.stringify(n)}`);
+  for (const n of capCases.slice(10))
+    if (isPageBreakCaptionRow(n)) fail(`page-break caption rule would claim a real fund or contract: ${JSON.stringify(n)}`);
 
   /* THE COLLECTIVE-TRUST NAME RULE, tethered the same way, 2026-09-30. The
    * first six must FLAG (a fee is withdrawn); the last nine must be KEPT, and
@@ -1713,7 +1830,35 @@ try {
     ["\u0003Money\u0003Market \u0003\u0003\u0003\u0003\u0003", "Money Market"],
     ["Putnam Large Cap Value IA Collective Trust\u0003", "Putnam Large Cap Value IA"],
     ["Vanguard Target Retirement Fund\u00022035 Mutual funds", "Vanguard Target Retirement Fund 2035"],
-    ["Royce\u0003Pennsylvania\u0003Mutual\u0003Fund", "Royce Pennsylvania"]]) {
+    ["Royce\u0003Pennsylvania\u0003Mutual\u0003Fund", "Royce Pennsylvania"],
+    /* A PAGE-BREAK CAPTION LEADING THE NAME, 2026-10-01. Ten must-STRIP and
+     * five must-KEEP, the reasoning for each in the nameCases block above.
+     * The last two must-strips are the PLACEMENT pin: the caption arrives
+     * behind its own vehicle prefix, TYPE_PREFIX removes the prefix and leaves
+     * the dash, and the arm therefore has to run AFTER the leading-dash
+     * re-run — it ran before, and those two rows were refused with everything
+     * else passing. `Continued from page 10` is the BACKTRACKING pin and
+     * `Continued Balance Brought Forward` the carried-forward refusal; both
+     * must come back UNCHANGED here, because they are typed rather than
+     * stripped (see the caption-row block below). */
+    ["continued Vanguard Target Retirement Fund 2045", "Vanguard Target Retirement Fund 2045"],
+    ["Continued Fidelity Freedom Index 2030 Fund Investor Class", "Fidelity Freedom Index 2030 Fund Investor Class"],
+    ["(Continuation) PIMCO RealPath Blend 2055 INST", "PIMCO RealPath Blend 2055 INST"],
+    ["Cont'd Vanguard Energy Index Fund", "Vanguard Energy Index Fund"],
+    ["Continued from previous page Principal LifeTime Hybrid 2035 Fund", "Principal LifeTime Hybrid 2035 Fund"],
+    ["(continued from previous page) Yourpath Ishares 2035 Growth", "Yourpath Ishares 2035 Growth"],
+    ["continued- Loans Participants Interest rates ranging from 10.00% to 10.50% with various m", "Loans Participants Interest rates ranging from 10.00% to 10.50% with various m"],
+    ["continued - Loans Participants Interest rates ranging from 8.00% to 9.50% with various m", "Loans Participants Interest rates ranging from 8.00% to 9.50% with various m"],
+    ["Mutual Funds, at Fair Value - Continued Vanguard Target Retirement 2040 Fund", "Vanguard Target Retirement 2040 Fund"],
+    ["Pooled Separate Accounts, at Fair Value - Continued JH Multimanager 2035 Lifetime Fund", "JH Multimanager 2035 Lifetime Fund"],
+    ["Continued from page 10", "Continued from page 10"],
+    ["Continued Balance Brought Forward", "Continued Balance Brought Forward"],
+    ["Continued Total Intl Stock Index Adm", "Continued Total Intl Stock Index Adm"],
+    ["NYL INSURANCE IPG GRP ANNUITY CONT.", "NYL INSURANCE IPG GRP ANNUITY CONT."],
+    ["PAYROLL MADE EASY, INC DBA CONTINUUM RETIREMENT SAVINGS PLAN", "PAYROLL MADE EASY, INC DBA CONTINUUM RETIREMENT SAVINGS PLAN"],
+    ["Co-op Stable Asset Fund (continued)", "Co-op Stable Asset Fund (continued)"],
+    ["Common/Collective Trust Funds (Continued) T. Rowe Price Retire 2030 Trust Fund", "Common/Collective Trust Funds (Continued) T. Rowe Price Retire 2030 Trust Fund"],
+    ["Continued from previous page", "Continued from previous page"]]) {
     if (cleanFiledName(n) !== want) fail(`the filed-name cleaner now damages a control: ${JSON.stringify(n)} -> ${JSON.stringify(cleanFiledName(n))}`);
   }
 

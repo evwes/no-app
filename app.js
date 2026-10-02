@@ -571,6 +571,16 @@
   /* verbatim twins of lib-disclose's doubled-class constants — see there. */
   const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1,2}|r-?[1-9])|(r-?[1-9]))\b[\s.,()\-]+(?=[A-Za-z])/i;
   const DOUBLED_CLASS_TAIL = /(?:\b(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1,2}|r-?[1-9])|\b(r-?[1-9]))\s*$/i;
+  /* A PAGE BREAK'S CAPTION IN THE LEADING POSITION, and the page-carry
+   * subtotal line that travels with it. The vocabulary is counted rather than
+   * imagined, `Cont.` is deliberately absent because it collides with
+   * CONTRACT, and the page reference is stripped in a SECOND step so an
+   * optional trailing group cannot backtrack into a second anchor position —
+   * all of it, with the measurements, in scripts/lib-disclose.mjs. */
+  const PAGE_BREAK_LEAD = /^\(?\s*(?:continu(?:ed|ation|ing)|cont['’]d)\b/i;
+  const PAGE_BREAK_SEP = /^\s*\)?\s*(?:[-–—:,;.]\s*)?/;
+  const PAGE_BREAK_REF = /^(?:from|on)\s+(?:the\s+)?(?:previous|preceding|prior|last|next)?\s*pages?(?:\s+\d{1,3})?\s*\)?\s*(?:[-–—:,;.]\s*)?/i;
+  const CARRIED_FORWARD = /^(?:\S+\s+){0,2}(?:brought|carried)\s+forwards?(?:\s+(?:from|to)\s+(?:the\s+)?(?:previous|preceding|prior|next)?\s*pages?(?:\s+\d{1,3})?)?$/i;
   const classCode = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
   const TYPE_PREFIX = /^(?:mutual funds?|common[\/ ]?collective (?:trust )?funds?|collective (?:investment )?trusts?(?: funds?)?|common[\/ ]?collective trusts?|pooled separate accounts?|separate accounts?|registered investment compan(?:y|ies)|stable value(?: funds?)?|money market(?: funds?)?|guaranteed (?:investment|interest) contracts?|target date funds?|index funds?)(?:\s*[-–:]\s+|[,;]?\s*(?:at\s+)?fair value[,;]?\s+|\s*(?:shares?|units?)(?:\s*[\/&I]\s*(?:shares?|units?))*\s*[-–:,]?\s+)(?=\S)/i;
   const KERN_WORDS = new Set(("vanguard fidelity blackrock schwab invesco pimco putnam principal prudential nuveen tiaa cref dodge cox american funds franklin templeton mfs jpmorgan jp morgan jpmcb wellington wells fargo allspring columbia janus henderson federated hermes goldman sachs galliard artisan harbor oakmark loomis sayles neuberger berman dimensional dfa ishares spdr state street ssga northern trust voya empower lincoln transamerica john hancock massmutual nationwide metlife great west securian tiaa-cref " +
@@ -902,6 +912,35 @@
     // 1,992 em-dash rows the census counts were already clean at display.
     const dl = s.replace(/^[—–-]+\s*/, "").trim();
     if (dl !== s && /[A-Za-z]{3}/.test(dl)) s = dl;
+    /* ...AND THE SAME CAPTION WITH NO BRACKETS TO MARK IT, which the `contM`
+     * arm further up cannot reach because it requires the marker to be
+     * parenthesised. It sits AFTER the leading-dash re-run and that is
+     * measured: placed beside `contM` it refused two rows whose caption
+     * arrives behind a vehicle prefix, because TYPE_PREFIX leaves the dash
+     * behind. 29 rows / 27 plans / 13,256 participants, all 29 distinct
+     * transformations read.
+     * The marker is what licenses a cut this wide — no fund is named
+     * `Continued` — and the remainder screen is what keeps a holding named
+     * `from page 10` off the page. A remainder that is a page-CARRY subtotal is
+     * refused and TYPED instead (`isPageBreakCaptionRow` below), because
+     * stripping `Continued` off `Continued Balance Brought Forward` would leave
+     * the non-name standing as the name. Measurements, the one named cost and
+     * the two loan rows this strip hands to a guard that was blind to them are
+     * all in scripts/lib-disclose.mjs. */
+    {
+      const cl = PAGE_BREAK_LEAD.exec(s);
+      if (cl) {
+        const rest = s.slice(cl[0].length).replace(PAGE_BREAK_SEP, "")
+          .replace(PAGE_BREAK_REF, "").trim();
+        const toks = rest.split(/\s+/).filter(Boolean);
+        const lead = /^(?:the|a|an)$/i.test(toks[0] || "") && toks.length >= 3 ? toks[1] : (toks[0] || "");
+        const probe = lead.replace(/[^A-Za-z0-9&]/g, "");
+        if (toks.length >= 2 && /[A-Za-z]{3}/.test(rest) && !CARRIED_FORWARD.test(rest)
+            // `bwInitial` is inlined here as it is above, this twin having no
+            // named helper for it; both reach 0 rows on this store.
+            && (bwOpensWithAName(probe) || /^[A-Za-z]\.$/.test(lead))) s = rest;
+      }
+    }
     s = s.replace(/[,;:]+$/, "").trim();
     // a share COUNT is thousands or more (1,234 / 12345…); "Class R6 Shares"
     // is a share CLASS and must survive — the first draft of this cut it to
@@ -1437,6 +1476,26 @@
   }
 
   window.__wampoLoanMaturityRow = isLoanMaturityRow;  // read by the smoke test only
+
+  /* A ROW WHOSE WHOLE NAME IS A PAGE BREAK'S CAPTION — the twelve rows, why
+   * the continuation word is NOT required (nine of the twelve carry none), the
+   * Entergy master trust that no plan-keyed count could see, and the
+   * whole-store measurement that the carry phrase occurs 10 times in 1,724,078
+   * published rows are all in scripts/lib-disclose.mjs. This is its twin.
+   * TYPED, NOT DROPPED: the value stays in the denominator. */
+  function isPageBreakCaptionRow(name) {
+    let s = String(name || "").trim();
+    if (!s) return false;
+    const m = PAGE_BREAK_LEAD.exec(s);
+    if (m) {
+      s = s.slice(m[0].length).replace(PAGE_BREAK_SEP, "").replace(PAGE_BREAK_REF, "")
+        .replace(/^\s*\)?\s*$/, "").trim();
+      if (!s) return true;
+    }
+    return CARRIED_FORWARD.test(s);
+  }
+
+  window.__wampoPageBreakCaptionRow = isPageBreakCaptionRow;  // read by the smoke test only
   window.__wampoLeadingHouse = leadingHouse;  // read by the smoke test only
   window.__wampoCleanFiledName = cleanFiledName;
   window.__wampoLoanRow = (n) => LOAN_ROW.test(String(n || "").trim());  // read by the smoke test only
@@ -2887,7 +2946,15 @@
            * a scanned page — seven rows and one string, all with a blank issuer
            * and a blank type, so neither the vehicle-type test nor the caption
            * test can reach it. lib-disclose.mjs carries the population. */
-          || isOfficeListRow(f.name));
+          || isOfficeListRow(f.name)
+          /* ...or the row is a PAGE BREAK'S own caption, or the page-carry
+           * subtotal that travels with it — `(continued)`, `Continued from
+           * page 10`, `Balance Brought Forward`. 12 rows, $1,328,090,246, and
+           * eight of them are 45-92% of their plan's published menu, which is
+           * what a carry line is: the sum of everything above it. Same
+           * no-issuer gate, same reason as its two siblings.
+           * lib-disclose.mjs. */
+          || isPageBreakCaptionRow(f.name));
       /* v196: AND `namelessRow` JOINS THE FEE SUPPRESSORS, which is why this
        * definition had to move above `er`. The two comments below say of their
        * own arms that "the fee suppression above is independent of this

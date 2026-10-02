@@ -7,6 +7,201 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-02 — A PAGE-BREAK CAPTION LEADING A FUND'S NAME, and the page-carry subtotal that travels with it: 41 rows / 38 entries / 37 plans / 25,311 participants directly plus 16,567 through a master trust / $1,352,765,331
+
+**WHAT WAS WRONG.** An auditor repeats a caption at the top of the next page and
+the first holding under it absorbs the whole line, so a fund arrives wearing a
+word no fund is named: `continued Vanguard Target Retirement Fund 2045`,
+`Continued Fidelity Freedom Index 2030 Fund Investor Class`, `(Continuation)
+PIMCO RealPath Blend 2055 INST`, `Continued from previous page Principal
+LifeTime Hybrid 2035 Fund`. Where there is nothing behind the caption the row IS
+the caption — `(continued)`, `Continued from page 10` — or it is the page-carry
+subtotal, which is by definition the sum of everything above it:
+**`Balance Brought Forward` at 88.2% of Leonardo DRS's published menu,
+$1,135,067,959, for 8,846 participants.**
+
+**IT WAS OUTSIDE THE SHIPPED FIX BY CONSTRUCTION.** The 2026-09-28 fix closed
+this class in the TRAILING position (`contM`, `^.*?\(continued\)`) and the
+leading-parenthetical arm requires the string to OPEN with a vehicle TYPE.
+*A fix for one POSITION of a class is not a fix for the class* — met here for
+the third time, after the trailing OCR residue and the issuer column.
+
+**THE CHANGE — TWO ARMS, and the split is the design rather than a convenience.**
+
+*ARM A, the STRIP* (`cleanFiledName`, canonical in `scripts/lib-disclose.mjs`,
+twinned verbatim in app.js): **29 rows / 27 entries / 27 plans / 13,256
+participants / $24,675,085**, all 29 distinct transformations read, every
+remainder a real fund name or (twice) participant-loan prose. No vocabulary
+beyond the caption word: every leading token in the whole population was
+counted rather than imagined — `Continued` 16, `continued` 14, `Continuation`
+2, `Cont'd` 1.
+
+*ARM B, the TYPING* (`isPageBreakCaptionRow`, OR'd into `namelessRow` and into
+`build-seo-pages.mjs`): **12 rows / 11 entries / 10 plans / 12,055
+participants / $1,328,090,246**, all twelve read, not one a fund, eight of them
+45–92% of their plan's menu. TYPED, NOT DROPPED (v181) — the value stays in the
+denominator, so no other row's published percentage moves.
+
+**THE CARRIED-FORWARD REFUSAL IS WHAT KEEPS A NON-NAME FROM BECOMING THE NAME.**
+`Continued Balance Brought Forward` is 52.8% of Wilson Bank & Trust's menu
+($46,880,875) and stripping its caption would leave `Balance Brought Forward`
+standing as the holding — strictly worse, because the caption word is the one
+thing telling the reader it is a page artefact. The three pure-caption members
+are typed, not stripped, which is what the item was queued asking for.
+
+**THE CAPTION WORD IS NOT REQUIRED IN ARM B, and that is where the money is.**
+Nine of the twelve carry no continuation word at all — the filer wrote only the
+carry line — so requiring one would be the "fix for one phrasing" error this
+record has now paid for eight times, and it would leave the largest row in the
+family publishing as a holding. `lib-4i.mjs:3021` already drops these at parse
+time, anchored on the carry word coming FIRST, so the three-word spelling
+`Balance Brought Forward` is outside it and survives into the store; this asks
+the same fact the other way round, with at most two tokens in front. Exact on
+this store: over all **1,724,078** published rows the phrase `brought forward` /
+`carried forward` appears **10 times** and not one of the ten is a fund.
+
+**AND THE TWELFTH ROW IS OWNED BY NO PLAN — the fifth-plus instance of a count
+keyed on plans being blind to a trust.** `BALANCES CARRIED FORWARD`,
+$35,654,252, sits in ENTERGY CORPORATION QUALIFIED PLAN MASTER TRUST. All three
+Entergy plans read `c=0` against the trust's `c=1`, so **16,567 participants are
+served that menu** and none of them is in the plan-keyed 25,311. An ack owned by
+no plan is resolved through its MEMBER PLANS.
+
+**OUTCOME, WHOLE-STORE, through the display path with HEAD's app.js as the
+BEFORE: ticker +0 / −0 / 0 flipped, fee +0 / −0 / 0 changed, 0 asterisks moved,
+shown type moved 14, name moved 29.** A pure HONESTY fix.
+
+**AND THAT CONTRADICTS THE QUEUE ENTRY, WHICH CALLED IT "PART HONESTY AND PART
+COVERAGE" AND NAMED THE TWO ROWS IT WOULD WIN.** Both measured and both win
+nothing: `continued Vanguard Wellesley Income Admiral Class Fund` resolves to
+no ticker and no fee under every spelling tried, which is a `fund-er.js` table
+gap a caption strip cannot reach; and `Continued Vanguard Value Index Fund`
+(Boudreau Pipeline) is typed `Pooled separate account`, so `noPublicPrice`
+suppresses it — it would publish 0.05 if its type said `Mutual fund`, which
+makes it a live instance of the queued pooled-split item (9,050 rows /
+4,420,537 ppl) and not of this one. ***"8 of 32 publish no ticker" is a COUNT OF
+A CONDITION, not a measure of what a fix wins*** — the `band-hi` lesson, second
+instance on this record and the first through this family's ticker column.
+
+**THE PARTICIPANT FIGURE IN THE QUEUE WAS ROW-SUMMED AND IS CORRECTED: the
+class is 14,891 participants, not 15,636.** Two plans carry two caption rows
+each (Obermayer Rebmann 289, Boudreau Pipeline 456) and 14,891 + 289 + 456 =
+15,636 exactly. *A participant-weighted count must be plan-distinct* — this
+record's own rule, and the arithmetic reproduces the error to the person, which
+is what identified it. The row count was also one low (32 against 33: `Cont'd
+Vanguard Energy Index Fund` is reached only by a screen that admits the
+apostrophe form) and the dollar figure one row short by exactly its $257,792.
+
+**A PLACEMENT DEFECT THAT EVERY GATE PASSED, found by reconciling two of my own
+counts.** The arm first sat beside `contM`; the prototype flagged 29 rows and
+the shipped arm 27. The two missing are `Mutual Funds, at Fair Value - Continued
+Vanguard Target Retirement 2040 Fund` and its Pooled-Separate-Accounts sibling:
+`TYPE_PREFIX` removes the vehicle caption and its `at fair value` basis and
+LEAVES THE DASH, so at the earlier position the string began `- ` and an anchored
+rule cannot match. Moved to after the leading-dash re-run — which exists for the
+identical reason one arm earlier — and both pinned. ***Two disagreeing counts are
+the tell; neither was published until the gap was named.***
+
+**TWO COSTS, NAMED.**
+- **1 row / 172 participants**: `Continued Total Intl Stock Index Adm` (Town
+  Center Orthopaedic Associates) keeps its caption, because `Total` is furniture
+  in the shared remainder screen. Nothing else is lost — the row already
+  publishes VTIAX at 0.06% through its `Vanguard` issuer cell — so the cost is a
+  caption word a reader can see, and refusing a repair is the safe direction.
+- **~65 rows of the TRAILING and MID-STRING shapes are untouched** and are listed
+  below as adjacent classes rather than folded into this count.
+
+**AND TWO ROWS GAIN A TYPING THEY DID NOT HAVE, which corrects the handoff.**
+The queue said two members "are loan prose and must keep their loan typing".
+They had none: `continued- Loans Participants Interest rates ranging from 10.00%
+to 10.50% with various m` (Verge Mobile, 2,628 ppl) published as `Pooled
+separate account` and its Arborworks sibling (1,038 ppl) as `—`, because
+`isLoanDescriptionRow` and `isLoanVocabularyRow` are anchored on the name
+BEGINNING with loan words and the caption put both outside every loan guard.
+Asked of the stripped remainder both answer TRUE, so the strip is what gives
+them the typing. *Ask the guard before believing a row is served.*
+
+**THE PREVENTION.**
+1. `scripts/lib-disclose.mjs` is canonical; app.js carries the twin; **the two
+   were compared over all 1,769,542 stored rows — menu and securities — and
+   DRIFT is 0 on both `cleanFiledName` and `isPageBreakCaptionRow`.**
+2. **25 pins in `scripts/smoke-test.mjs`**, added because **NOT ONE of the 103
+   existing filed-name cases reaches either new arm** (checked, not assumed —
+   the decorative-control failure this record has paid for six times): 10
+   must-STRIP with exact expected values, 5 must-KEEP, 10 must-FLAG / 11
+   must-KEEP in a new `isPageBreakCaptionRow` probe block.
+3. **A NEGATIVE CONTROL PER CONDITION, each variant written DIRECTLY rather than
+   by surgery on the shipped source, each failing BY NAME on exactly its own
+   cases**: the `^` anchor 3, the two-step page reference 1, the carried-forward
+   refusal 1, the remainder screen 1, the two-token lead cap 1, the placement 2.
+   **THREE OF THE EIGHT WERE DECORATIVE ON THE FIRST RUN and the pins were
+   changed rather than the claim**: the anchor and the backtracking conditions
+   had no discriminating pin until two stored trailing-caption rows and one
+   CRAFTED bare page reference were added. **Two remain decorative and are
+   labelled as such in the source**: the `\b` after the caption word (the
+   alternation already spells complete suffixes, so nothing can match `continu`
+   plus another ending) and the absence of a bare `Cont.` (no stored row leads
+   with it, so admitting it would change 0 rows today; the refusal is
+   precautionary and its evidence is `NYL INSURANCE IPG GRP ANNUITY CONT.`, a
+   group annuity CONTRACT at 42.7% of its menu).
+4. **The tether's own negative control, run end to end**: dropping the strip
+   from app.js's twin fails smoke by name on exactly **10 of 121** filed names;
+   dropping the caption predicate's carry clause fails on exactly **7 of 21**.
+   app.js restored byte-identical afterwards, verified.
+5. `scripts/apppath.mjs` is **IN THE REPO** now. It is the instrument every
+   "what a reader sees today" figure on this record goes through, it lived in a
+   session scratchpad, and a container restart had wiped it — the third time
+   that directory has been cleared. Rebuilding it is not free and a rebuilt
+   harness is a NEW harness with its own defects to find: **this one threw on
+   any asterisked row** (`starred` is `filedLineupTable`'s closure flag) and
+   only a positive control caught it, which means a measurement taken before
+   that fix would have silently omitted every asterisked row.
+
+**THE REPORT PATH IS AN OBSERVATION AND A GUARANTEE IN DIFFERENT HALVES.**
+`build-seo-pages.mjs` imports the predicate, so the typing reaches both
+surfaces — that is the guarantee. **Exactly 1 crawlable page changes** (Leonardo
+DRS, 8,846 participants), and its one changed cell was read: `Balance Brought
+Forward` → `Balance Brought Forward — the filing names no specific fund` on a
+$1,135,067,959 row. No fee can ever appear there, and that is a guarantee rather
+than an observation: `build-seo-pages.mjs` never imports `fund-er.js`.
+
+**GATES.** `parser-gate.mjs` all specimens green; `smoke-test.mjs` OK;
+`fund-er-test.mjs` 83/26/19/18/28, 0 failures; `lib-disclose --selftest` 25/25;
+`merge-name-test.mjs` 22/22 with both its negative controls firing.
+`diff-lineups` is deliberately NOT run and no specimen is pinned: it compares
+PARSER output and this is a display rule. **`map-test.mjs` FAILS, and it fails
+IDENTICALLY ON HEAD** — `ERR_CERT_AUTHORITY_INVALID` on the Google Fonts
+stylesheet, which is this sandbox's egress proxy intercepting TLS and not a
+property of the change. The control is the point: stashed to HEAD it fails the
+same way. That says nothing about CI, where no proxy sits in front of the
+runner.
+
+**FOUND OUTSIDE THE ITEM, SIZED, NOT FIXED.** A wide screen over all 1,724,078
+published rows — any row whose name carries a continuation or carry word
+anywhere — splits into the item plus four adjacent classes that no arm reaches:
+
+| rows | plans | ppl | $ | shape |
+|---|---|---|---|---|
+| 25 | 16 | 9,917 | $13,411,747 | the caption TRAILS the name (`Trust Company Fidelity Managed Income Portfolio (continued)`, `Renasant Income Model Fund - (Continued)`) |
+| 9 | 8 | 20,651 | $98,044,476 | the caption is parenthesised MID-string, so `contM` strips the FIRST marker and leaves a second, or the remainder opens with an initial |
+| 9 | 9 | 6,382 | $48,628,171 | the caption sits mid-string after a separator and is NOT parenthesised (`CORPORATE BONDS - Continued Oracle Corporation`, `Investments—Continued Common stock`) |
+| 2 | 1 | 271 | — | `Investments (cont.)`, and one FALSE POSITIVE of my own screen: `NYL INSURANCE IPG GRP ANNUITY CONT.` is a CONTRACT |
+
+**The mid-string bucket's largest member is 15,045 participants** — `Common/
+Collective Trust Funds (Continued) T. Rowe Price Retire 2030 Trust Fund`, where
+`contM` computes a probe of `T` and the shared screen refuses a single letter
+because a single letter IS a share class. **`bwInitial` does NOT fix it**: that
+predicate requires `^[A-Za-z]\.$` and three of the four members write `T Rowe`
+with no period, so the discriminator would have to be the NEXT token. A real
+design question, not a one-token repair, and deliberately left.
+
+**And one FALSE POSITIVE of the wide screen is worth recording because it is the
+argument for the anchor**: `PAYROLL MADE EASY, INC DBA CONTINUUM RETIREMENT
+SAVINGS PLAN` matches `continu` and is a real sponsor name. It is pinned on the
+must-KEEP side of both arms.
+
+---
+
 ## 2026-10-01 (23:4xZ) — The 23:2xZ draw: a filing stating the plain INSTITUTIONAL class publishes the ADMIRAL retail symbol, 8,441,775 participants — and the free route out is REFUSED by its own footnote
 
 **THE DRAW.** Seed 20261001232, pool **59,822 published lineups / 91,581,640
