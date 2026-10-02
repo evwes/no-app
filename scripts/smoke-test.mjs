@@ -1110,6 +1110,30 @@ try {
     "Guaranteed insurance contract",
     "Investment Contract With Insurance Company Lincoln Financial Group Stable Value Account",
     "Fully benefit-responsive investment contract Key Guaranteed Portfolio Fund",
+    /* 2026-10-02: the gate now reads the filing's own WORD rather than a list
+     * of the wordings it appears in, and these ten exist because NOT ONE of
+     * the 21 probes above reaches that arm — every one says `annuity`,
+     * `investment` or `insurance` contract, so the tether would have agreed
+     * whether or not the vocabulary was replaced (measured, not assumed; and
+     * 0 of the 21 change verdict under the widening). `TIAA Stable Value
+     * Contract` is the drawn row (Walsh University, 690 ppl). `Key Guaranteed
+     * Portfolio Fund, at contract value` is the sharpest boundary case here,
+     * because `Key Guaranteed Portfolio Fund` sits below as a must-KEEP and
+     * the filing's own word `contract` is the whole difference.
+     * `Guaranteed Investement Contract` and `GUARANTEED INVESTMNT CONTRACT`
+     * are two of SEVEN misspellings of `investment` the population carries,
+     * which is the measured reason a vocabulary was the wrong shape.
+     * `Contract BlackRock Russell 1000 Growth CIT` is the one real fund in the
+     * whole widened population: the PREDICATE flags it and app.js's call site
+     * KEEPS it via `!tk`, as it already does for `isBankDepositRow`, so a
+     * must-SUPPRESS here is the predicate's answer and not what a reader sees. */
+    "TIAA Stable Value Contract - Fully Benefit-Responsive",
+    "Guaranteed Income Contract", "Guaranteed Interest Balance Contract",
+    "Key Guaranteed Portfolio Fund, at contract value",
+    "Guaranteed Investement Contract", "GUARANTEED INVESTMNT CONTRACT",
+    "Stable value contract", "Lincoln Stable Value (at contract value)",
+    "Change in contract value versus fair value in Morley Stable Value Fund",
+    "Contract BlackRock Russell 1000 Growth CIT",
     /* must KEEP the fee, from here down */
     /* …and these two carry the contract words AND name a real fund, so the
      * strip leaves something that still prices and the rule stands down. They
@@ -1122,7 +1146,21 @@ try {
     "Neuberger Berman AMT Sustainable Equity Portfolio GROUP ANNUITY CONTRACT",
     "MoA US Government Money Market Fund GROUP ANNUITY CONTRACT",
     "Guaranteed Income Fund", "Key Guaranteed Portfolio Fund",
-    "Principal Stable Value Preferred Fund", "Fidelity 500 Index Fund"];
+    "Principal Stable Value Preferred Fund", "Fidelity 500 Index Fund",
+    /* must KEEP — 2026-10-02: the population 2026-09-29 refused the bare word
+     * FOR, and precisely what the residue test absorbs. Each is a real fund
+     * wearing a `contract` caption our parse welded on, and each still prices
+     * once the guarantee words come out, so the SECOND condition — not the
+     * first — is this gate's safety. */
+    "at contract value Fidelity 500 Index", "Contract Fidelity International Index",
+    "Contract Vanguard Value Index Fund Adm", "Contract T. Rowe Price Retirement 2045 Fund",
+    "at contract value JPMorgan Large Cap Growth Fund",
+    /* must KEEP — and this marks the line that must NOT be crossed. Its RAW
+     * filed name says `contract`; the unclosed-parenthetical strip took the
+     * word off the end, so the CLEANED name the gate reads does not. A row
+     * whose name says only `guaranteed` is the owner-gated stable-value item,
+     * and widening a NAME condition must never reach it. */
+    "Guaranteed Income Fund - Empower Annuity Insurance Company"];
   const guarGot = await page.evaluate((cs) => {
     if (typeof window.__wampoGuaranteeOnlyFee !== "function") return null;
     return cs.map((n) => window.__wampoGuaranteeOnlyFee(n));
@@ -1133,9 +1171,9 @@ try {
     for (const n of guarDrift) console.error(`  ${JSON.stringify(n)}  app.js=${guarGot[guarFeeCases.indexOf(n)]}  module=${annuityFeeIsGuaranteeOnly(n, tableER)}`);
     fail(`the guarantee-only fee rule in app.js disagrees with scripts/lib-disclose.mjs on ${guarDrift.length} of ${guarFeeCases.length} names — regenerate it`);
   }
-  for (const n of guarFeeCases.slice(0, 11))
+  for (const n of guarFeeCases.slice(0, 21))
     if (!annuityFeeIsGuaranteeOnly(n, tableER)) fail(`guarantee-only fee rule no longer suppresses a fabricated annuity fee: ${JSON.stringify(n)}`);
-  for (const n of guarFeeCases.slice(11))
+  for (const n of guarFeeCases.slice(21))
     if (annuityFeeIsGuaranteeOnly(n, tableER)) fail(`guarantee-only fee rule would withdraw a fee a fund's own name supports: ${JSON.stringify(n)}`);
 
   /* THE INVESTMENT-CONTRACT PREDICATE, tethered the same way, 2026-09-29. It

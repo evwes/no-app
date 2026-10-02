@@ -973,6 +973,114 @@ from the cycle that would have cleared it.
   **No fee, asterisk or shown type can move: `fundER` is called on the NAME and
   never on a symbol**, measured at 0 through the page's own render.
   `docs/accuracy-log.md` 2026-10-02 (03:0xZ).
+- **SHIPPED 2026-10-02 05:1xZ — THE CONTRACT FEE GATE HAD A VOCABULARY WHERE IT
+  NEEDED A WORD: 225 rows / 222 plans / 458,245 participants / $2,443,025,511
+  stop publishing a fabricated expense ratio, 224 of them the generic 0.35.**
+  `annuityFeeIsGuaranteeOnly`'s first condition read three wordings — `annuity`,
+  `investment`, `insurance` contract — so `TIAA Stable Value Contract`,
+  `Guaranteed Income Contract`, `Guaranteed Interest Balance Contract` and `Key
+  Guaranteed Portfolio Fund, at contract value` were outside it BY CONSTRUCTION.
+  **The NINTH recorded instance of *a fix for one phrasing of a class is not a
+  fix for the class*, and the SECOND inside this one function** — whose own
+  comment records the eighth, written one day earlier, when the same gate was
+  widened from one wording to three.
+  **THE VOCABULARY DIED ON ITS OWN MEASUREMENT AND THAT IS THE FINDING: the
+  phrase immediately preceding `contract` takes 67 DISTINCT FORMS, and
+  `investment` is MISSPELLED SEVEN WAYS inside them** — `Investement`,
+  `Invest`, `INVESTMNT`, `Intvestment`, `Investm ent`, `Inves tment`, plus
+  `annity` for `annuity` on 4 rows. *A vocabulary is defeated by a keystroke*,
+  and this population defeats one with seven; any widened list ships one wording
+  short of the next filing. Condition one is now the bare
+  `CONTRACT_WORD = /\bcontracts?\b/i`.
+  **WHAT MAKES THAT SAFE IS THE GATE'S OWN SECOND CONDITION, WHICH WAS THE RULE
+  ALL ALONG, AND IT WAS RE-MEASURED RATHER THAN INHERITED.** 2026-09-29 refused
+  the bare word FOR THE TYPE RULE after reading 103 names and finding them
+  *"overwhelmingly REAL FUNDS wearing a caption"*; that reading still holds, and
+  the residue test absorbs them — widened, the gate **REACHES 86 such rows and
+  REFUSES all 30 that publish a fee**, because `Fidelity International Index`
+  (FSPSX), `Vanguard Value Index Fund Adm` (VVIAX), `MFS Value R6` (MEIKX) and
+  `T. Rowe Price Retirement 2045 Fund` (TRRKX) all still price once the
+  guarantee words come out. *The caption is not what the gate reads; the
+  remainder is.*
+  **OUTCOME WHOLE-STORE THROUGH THE PAGE'S OWN RENDER, BEFORE SIDE ON HEAD's
+  app.js, EVERY COLUMN POSITIVE-CONTROLLED FIRST:** fee withdrawn **225**, fee
+  gained **0**, fee changed **0**, **0 tickers, 0 asterisks, 0 shown types
+  moved**. 4,381 rows rendered twice under an exact pre-filter that is a
+  SUPERSET — raw says `contract` OR raw with whitespace removed does, because
+  `cleanFiledName` despaces kerned text and a raw name can GAIN the word.
+  **ALL 183 DISTINCT NEWLY-FLAGGED NAMES READ: 182 are an insurance guarantee, a
+  stable-value contract, a bare legal designation or a filer's table line welded
+  into a name** (`Change in contract value versus fair value in Morley Stable
+  Value Fund`, `259,569.72 Guaranteed Income Contract`); **not one names a
+  registered fund.**
+  **THE 183rd IS A REAL FUND AND THE CALL SITE KEEPS IT, with the condition
+  priced before it was added.** `Contract BlackRock Russell 1000 Growth CIT`
+  (Wilson & Company, 1,009 ppl, $10,359,013) publishes IWF's 0.18 as a labelled
+  comparable from the resolved TICKER, which the residue test cannot see because
+  `priceOf` is the bare pattern table — so app.js ANDs the gate with **`!tk`**,
+  the `isBankDepositRow` pattern. **The pre-change gate flags 2,915 published
+  rows and 0 OF THEM PUBLISH A TICKER**, so `!tk` moves no shipped verdict and is
+  load-bearing on exactly one row. *A condition that changes one verdict is named
+  as changing one verdict.* Reconciles to the dollar: 226 reached − 1 kept = 225.
+  **THE HANDOFF'S 261 IS 5 TOO HIGH AND THE CAUSE IS THIS RECORD'S OWN RULE** —
+  it pre-filtered on the RAW stored name where the gate reads the CLEANED one, and
+  5 rows lost the word to the unclosed-parenthetical strip (`Guaranteed Income
+  Fund - Empower Annuity Insurance Company (contract Insurance Company Gen`).
+  ***Measure through the function the page calls, WITH THE ARGUMENT THE PAGE
+  PASSES.*** Direction matters: those 5 carry no contract word in the gate's input,
+  so they are the **owner-gated stable-value item** and are deliberately
+  unreachable — one is pinned as a must-KEEP to mark that line. The handoff's
+  `/\bcontract/i` also has **no trailing boundary** and matches `contractual`
+  (3 published rows), the `nt `-shaped trap; the shipped predicate uses both.
+  **COMPLETE ACCOUNT OF THE 261:** 5 unreachable + 225 withdrawn + 1 kept by
+  `!tk` + 9 correctly kept (real funds) + **21 kept INCORRECTLY** = 261.
+  **THE DEFECT CANNOT RECUR IN THIS DIRECTION, STRUCTURALLY: `CONTRACT_WORD` is
+  provably WIDER than both phrase regexes**, a stronger guarantee than the shared
+  constant it replaces, and **an import assertion checks that derivation on every
+  load in BOTH halves** — the source's shape and a live witness, because *a test
+  on `.source` is a claim about a STRING and not about what the regex does*. It
+  sits after `isInvestmentContractRow` for two measured reasons: beside the gate
+  it would read `CONTRACT_DESIGNATION_NAME` in its temporal dead zone, and inside
+  either generator slice it would be copied into app.js, **where a module-load
+  throw breaks every row on every plan page rather than failing a gate.**
+  **QUEUED, SIZED, NOT SHIPPED — FOUND BY THE C2 CONTROL: THE STRIP AND THE
+  PRICER DISAGREE ABOUT ONE ABBREVIATION, 24 rows / 8 plans / ≥93,007 ppl /
+  $1,087,454,960, ALL AT 0.35.** `GUARANTEE_PRICED_WORDS` carries `\bsa?gic\b`,
+  matching `sgic`/`sagic` and **NOT the bare `GIC`**, while `fund-er.js`'s own
+  fallback prices any `\bgic\b` — so `GIC METLIFE CONTRACT #GAC 32226`
+  ($280,882,048) keeps `GIC` in its residue, the residue prices, and **the gate
+  refuses a row it was written for.** 23 distinct names, every one a real
+  insurance contract. Exactly the recorded `Stable Val` shape one function along,
+  and **NOT fixed here for that entry's own reason**: the constant is SHARED with
+  `isInvestmentContractRow`, so widening it moves the TYPE rule across its whole
+  2,915-row population. **93,007 is a FLOOR** — 16 of the 24 rows sit in MASTER
+  TRUSTS with no `plans-all` row, the trust-blindness met a sixth time.
+  **GATES:** `lib-disclose --selftest` 25/25, parser-gate green (frozen tether
+  7/7), smoke green, fund-er-test **83/26/19/18/28**, merge-name-test 20/20
+  22/22 25/25 20/20 22/22 15/15. **16 new pins (21 must-SUPPRESS / 16 must-KEEP,
+  total 37), added BECAUSE NOT ONE of the 21 existing cases reaches the new arm
+  and 0 of them change verdict** — measured, the v189 decorative failure; every
+  candidate pin verified against the SHIPPED predicate before being written down.
+  **A NEGATIVE CONTROL PER CONDITION, each written out in full rather than by
+  surgery, each failing BY NAME on exactly its own cases:** C1 dropped → the old
+  vocabulary fails on exactly the 10 new must-SUPPRESS (1,265 whole-population
+  changes); C2 dropped → fails on exactly the 11 must-KEEPs carrying a contract
+  word (140 rows / 171,568 ppl); C3 dropped → fails on exactly 1 row; the twin
+  drifted → smoke fails by name on exactly 10 of 37; the import assertion fires
+  in both halves and the shipped file loads clean.
+  **SURFACE AS A GUARANTEE FROM THE IMPORT LIST: `build-seo-pages.mjs` has 0
+  references to `fund-er` and imports no `fundER`/`fundERRow`/`fundTickerInfo`,
+  so the crawlable pages cannot render a per-fund ER under any input** — REPORT
+  path only; regenerating all 5,000 pages leaves `git diff --stat p/` empty, which
+  corroborates rather than constitutes it. **DISPLAY-SIDE: no `PARSER_VERSION`
+  bump, no run, no store change.**
+  **TWO HANDOFF ERRORS NAMED: `DISCLOSE_PATH` is documented in `apppath.mjs`'s own
+  prologue and READ NOWHERE in the repo** (and is unnecessary — apppath slices
+  app.js, which carries the twin, so `APPJS_PATH` alone is a complete before
+  state); and **`lib-disclose --selftest` is not where this arm's pins live** —
+  its 25 cases are `coverageBand`/`frozenClaimOk` only, and the tether is in
+  `smoke-test.mjs` where the REAL fee table is loaded rather than a stub.
+  `docs/accuracy-log.md` 2026-10-02 (05:1xZ).
 - **THE 01:4xZ DRAW FOUND A HOLDING PUBLISHED TWICE UNDER TWO NAMES, AND ALL
   THREE ARMS OF THE SHIPPED DEDUP ARE BLIND TO IT BY CONSTRUCTION — QUEUED,
   SIZED, SPLIT, PARSER-SIDE, NOT SHIPPED.** Seed 20261002014. **Avangrid

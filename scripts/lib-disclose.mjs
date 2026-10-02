@@ -1870,6 +1870,13 @@ export function isCollectiveTrustName(name) {
  * this one on pinned names and fails on drift. */
 export const GUARANTEE_PRICED_WORDS =
   /\bstable value\b|\bmanaged income\b|\bguarantee(?:d|s)?\b|\bsa?gic\b/gi;
+/* THE FILING'S OWN WORD, AND NOT A LIST OF THE WORDINGS IT APPEARS IN —
+ * 2026-10-02. See the reading in annuityFeeIsGuaranteeOnly below: a vocabulary
+ * is the wrong SHAPE for this gate, and the gate's own second condition was
+ * the safety all along. Declared here rather than beside its phrase-level
+ * siblings so it travels INSIDE the generator's slice, which runs from
+ * GUARANTEE_PRICED_WORDS to the end of the function. */
+export const CONTRACT_WORD = /\bcontracts?\b/i;
 export function annuityFeeIsGuaranteeOnly(cleanedName, priceOf) {
   const s = String(cleanedName || "");
   /* THE GATE READS ALL THREE CONTRACT WORDINGS AS OF 2026-10-01 (14:2xZ), AND
@@ -1907,8 +1914,69 @@ export function annuityFeeIsGuaranteeOnly(cleanedName, priceOf) {
    * because this function answers FALSE on every one of them for the gate
    * reason above. The circularity is real — `fundER("Guaranteed Income Fund")`
    * is 0.35 with no ticker, so `namesAFund` is true on the fee alone — but the
-   * tool for it was unreachable, not absent. */
-  if (!ANNUITY_CONTRACT_NAME.test(s) && !CONTRACT_DESIGNATION_NAME.test(s)) return false;
+   * tool for it was unreachable, not absent.
+   *
+   * ============================================================
+   * AND THE NINTH INSTANCE ARRIVED ONE DAY LATER AND ENDED THE VOCABULARY —
+   * 2026-10-02. Three wordings were still three, and the filings write 67.
+   * `TIAA Stable Value Contract`, `Guaranteed Income Contract`, `Guaranteed
+   * Interest Balance Contract`, `Key Guaranteed Portfolio Fund, at contract
+   * value`: 226 published rows / 223 plans / 459,254 participants /
+   * $2,453,384,524 publish the exact fabricated 0.35 this gate exists to
+   * withhold, 225 of them at 0.35. Found by the 03:1xZ draw on Walsh
+   * University (690 ppl), whose row is typed `Mutual fund` as well as priced.
+   *
+   * SO THE FIRST CONDITION IS NOW THE FILING'S OWN WORD, AND THE REASON IS
+   * MEASURED RATHER THAN TIDY. Over the newly-reached names the phrase
+   * immediately preceding `contract` takes **67 distinct forms**, and the word
+   * `investment` is MISSPELLED SEVEN WAYS inside them — `Investement`,
+   * `Invest`, `INVESTMNT`, `Intvestment`, `Investm ent`, `Inves tment`, plus
+   * `annity` for `annuity` on 4 rows. *A vocabulary is defeated by a
+   * keystroke*, and this one was defeated by seven of them: every widened list
+   * would have shipped already one wording short of the next filing.
+   *
+   * WHAT MAKES THE BARE WORD SAFE IS THE SECOND CONDITION, WHICH WAS THE RULE
+   * ALL ALONG — and that is a measurement, not an argument. 2026-09-29
+   * deliberately refused the bare word for the TYPE rule below, having read
+   * 103 names and found them "overwhelmingly REAL FUNDS wearing a caption"
+   * (`at contract value Fidelity 500 Index`). That reading still holds and the
+   * residue test absorbs them: with this condition widened, the gate REACHES
+   * 86 such rows and REFUSES 30 of the 30 that publish a fee, because
+   * `Fidelity International Index`, `Vanguard Value Index Fund Adm`, `MFS
+   * Value R6`, `T. Rowe Price Retirement 2045 Fund` and `JPMorgan
+   * SmartRetirement 2040 Fund R5` all still price once the guarantee words
+   * come out. The caption is not what the gate reads; the remainder is.
+   *
+   * ALL 183 DISTINCT NEWLY-FLAGGED NAMES WERE READ and 182 are an insurance
+   * guarantee, a stable-value contract, a bare legal designation or a filer's
+   * table line welded into a name (`Change in contract value versus fair value
+   * in Morley Stable Value Fund`, `259,569.72 Guaranteed Income Contract`).
+   * NOT ONE names a registered fund. The 183rd is `Contract BlackRock Russell
+   * 1000 Growth CIT` — a real collective trust publishing IWF's 0.18 as a
+   * labelled comparable — and the CALL SITE keeps it, because this predicate
+   * is purely about the NAME and app.js ANDs it with `!tk`, exactly as
+   * `isBankDepositRow` is. Measured both halves before adding that: the
+   * SHIPPED gate flags 2,915 published rows and **0 of them publish a
+   * ticker**, so `!tk` moves no shipped verdict and is load-bearing on exactly
+   * that one row. *A condition that changes one verdict is named as changing
+   * one verdict.*
+   *
+   * THE DEFECT CANNOT RECUR IN THIS DIRECTION, and that is structural rather
+   * than remembered: `CONTRACT_WORD` is provably WIDER than both phrase
+   * regexes — every string either of them matches contains ` contract` with a
+   * trailing word boundary — which is a stronger guarantee than the shared
+   * constant it replaces. The import assertion below `isInvestmentContractRow`
+   * checks that derivation on every load rather than trusting this sentence.
+   *
+   * WHAT IT STILL CANNOT REACH, named rather than rounded away: 5 rows whose
+   * RAW filed name says `contract` and whose CLEANED name does not, because
+   * the unclosed-parenthetical strip (2026-09-30) or a leading caption took
+   * the word off the end — `Guaranteed Income Fund - Empower Annuity Insurance
+   * Company (contract Insurance Company Gen`. The gate reads the cleaned name,
+   * so no widening of a NAME condition can reach them; they are rows whose
+   * name says only `guaranteed`, i.e. the owner-gated stable-value item, and
+   * they are deliberately left there. */
+  if (!CONTRACT_WORD.test(s)) return false;
   const rest = s.replace(GUARANTEE_PRICED_WORDS, " ").replace(/\s+/g, " ").trim();
   return priceOf(rest) == null;
 }
@@ -2047,6 +2115,40 @@ export function isInvestmentContractRow(f, cleanedName, namesAFund) {
   const rest = s.replace(CONTRACT_DESIGNATION_WORDS, " ")
     .replace(GUARANTEE_PRICED_WORDS, " ").replace(/\s+/g, " ").trim();
   return !namesAFund(rest);
+}
+
+/* THE FEE GATE MUST NEVER AGAIN BE NARROWER THAN THE TYPE RULE — 2026-10-02.
+ *
+ * `annuityFeeIsGuaranteeOnly` reached ONE wording while the TYPE rule read
+ * three (the eighth recorded instance of a fix for one phrasing not being a
+ * fix for the class), was widened to those same three, and was then found a
+ * day later to be short of 67. It now reads the bare `CONTRACT_WORD`, which is
+ * provably wider than both phrase regexes — but "provably" is a claim about
+ * these strings, so it is CHECKED rather than asserted in prose.
+ *
+ * The derivation: a match of either phrase regex ends in `contract` or
+ * `contracts` with a trailing word boundary AND has a space immediately before
+ * it, so the matched text necessarily contains `\bcontracts?\b`. Both halves
+ * of that are tested — the source's shape, and a live witness, because a test
+ * on `.source` is a claim about a STRING and not about what the regex does.
+ *
+ * It lives here rather than beside the fee gate for two reasons, both
+ * measured: `CONTRACT_DESIGNATION_NAME` is declared below the gate, so an
+ * assertion placed there reads it in its temporal dead zone; and the
+ * generator's slices end at these two functions' closing braces, so an
+ * assertion inside one would be copied into app.js, where a module-load throw
+ * breaks every row on every plan page rather than failing a gate. */
+for (const [n, re] of [["ANNUITY_CONTRACT_NAME", ANNUITY_CONTRACT_NAME],
+  ["CONTRACT_DESIGNATION_NAME", CONTRACT_DESIGNATION_NAME]]) {
+  if (!/ contracts\?\\b$/.test(re.source))
+    throw new Error(`lib-disclose: ${n} no longer ends in " contracts?\\b", so CONTRACT_WORD can no longer`
+      + " be derived to be wider than it — the fee gate could silently narrow below the TYPE rule again"
+      + " (2026-10-02). Re-derive the relation rather than shipping a quiet guard.");
+  for (const probe of ["annuity contract", "annuity contracts", "an investment contract",
+    "unallocated insurance contracts"]) {
+    if (re.test(probe) && !CONTRACT_WORD.test(probe))
+      throw new Error(`lib-disclose: CONTRACT_WORD misses ${JSON.stringify(probe)}, which ${n} matches`);
+  }
 }
 
 /* AN FDIC-INSURED BANK DEPOSIT HAS NO EXPENSE RATIO — canonical copy, 2026-10-01.

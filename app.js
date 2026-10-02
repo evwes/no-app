@@ -1156,6 +1156,13 @@
   window.__wampoAnnuityRow = isAnnuityContractRow;  // read by the smoke test only
   const GUARANTEE_PRICED_WORDS =
     /\bstable value\b|\bmanaged income\b|\bguarantee(?:d|s)?\b|\bsa?gic\b/gi;
+  /* THE FILING'S OWN WORD, AND NOT A LIST OF THE WORDINGS IT APPEARS IN —
+   * 2026-10-02. See the reading in annuityFeeIsGuaranteeOnly below: a vocabulary
+   * is the wrong SHAPE for this gate, and the gate's own second condition was
+   * the safety all along. Declared here rather than beside its phrase-level
+   * siblings so it travels INSIDE the generator's slice, which runs from
+   * GUARANTEE_PRICED_WORDS to the end of the function. */
+  const CONTRACT_WORD = /\bcontracts?\b/i;
   function annuityFeeIsGuaranteeOnly(cleanedName, priceOf) {
     const s = String(cleanedName || "");
     /* THE GATE READS ALL THREE CONTRACT WORDINGS AS OF 2026-10-01 (14:2xZ), AND
@@ -1193,8 +1200,69 @@
      * because this function answers FALSE on every one of them for the gate
      * reason above. The circularity is real — `fundER("Guaranteed Income Fund")`
      * is 0.35 with no ticker, so `namesAFund` is true on the fee alone — but the
-     * tool for it was unreachable, not absent. */
-    if (!ANNUITY_CONTRACT_NAME.test(s) && !CONTRACT_DESIGNATION_NAME.test(s)) return false;
+     * tool for it was unreachable, not absent.
+     *
+     * ============================================================
+     * AND THE NINTH INSTANCE ARRIVED ONE DAY LATER AND ENDED THE VOCABULARY —
+     * 2026-10-02. Three wordings were still three, and the filings write 67.
+     * `TIAA Stable Value Contract`, `Guaranteed Income Contract`, `Guaranteed
+     * Interest Balance Contract`, `Key Guaranteed Portfolio Fund, at contract
+     * value`: 226 published rows / 223 plans / 459,254 participants /
+     * $2,453,384,524 publish the exact fabricated 0.35 this gate exists to
+     * withhold, 225 of them at 0.35. Found by the 03:1xZ draw on Walsh
+     * University (690 ppl), whose row is typed `Mutual fund` as well as priced.
+     *
+     * SO THE FIRST CONDITION IS NOW THE FILING'S OWN WORD, AND THE REASON IS
+     * MEASURED RATHER THAN TIDY. Over the newly-reached names the phrase
+     * immediately preceding `contract` takes **67 distinct forms**, and the word
+     * `investment` is MISSPELLED SEVEN WAYS inside them — `Investement`,
+     * `Invest`, `INVESTMNT`, `Intvestment`, `Investm ent`, `Inves tment`, plus
+     * `annity` for `annuity` on 4 rows. *A vocabulary is defeated by a
+     * keystroke*, and this one was defeated by seven of them: every widened list
+     * would have shipped already one wording short of the next filing.
+     *
+     * WHAT MAKES THE BARE WORD SAFE IS THE SECOND CONDITION, WHICH WAS THE RULE
+     * ALL ALONG — and that is a measurement, not an argument. 2026-09-29
+     * deliberately refused the bare word for the TYPE rule below, having read
+     * 103 names and found them "overwhelmingly REAL FUNDS wearing a caption"
+     * (`at contract value Fidelity 500 Index`). That reading still holds and the
+     * residue test absorbs them: with this condition widened, the gate REACHES
+     * 86 such rows and REFUSES 30 of the 30 that publish a fee, because
+     * `Fidelity International Index`, `Vanguard Value Index Fund Adm`, `MFS
+     * Value R6`, `T. Rowe Price Retirement 2045 Fund` and `JPMorgan
+     * SmartRetirement 2040 Fund R5` all still price once the guarantee words
+     * come out. The caption is not what the gate reads; the remainder is.
+     *
+     * ALL 183 DISTINCT NEWLY-FLAGGED NAMES WERE READ and 182 are an insurance
+     * guarantee, a stable-value contract, a bare legal designation or a filer's
+     * table line welded into a name (`Change in contract value versus fair value
+     * in Morley Stable Value Fund`, `259,569.72 Guaranteed Income Contract`).
+     * NOT ONE names a registered fund. The 183rd is `Contract BlackRock Russell
+     * 1000 Growth CIT` — a real collective trust publishing IWF's 0.18 as a
+     * labelled comparable — and the CALL SITE keeps it, because this predicate
+     * is purely about the NAME and app.js ANDs it with `!tk`, exactly as
+     * `isBankDepositRow` is. Measured both halves before adding that: the
+     * SHIPPED gate flags 2,915 published rows and **0 of them publish a
+     * ticker**, so `!tk` moves no shipped verdict and is load-bearing on exactly
+     * that one row. *A condition that changes one verdict is named as changing
+     * one verdict.*
+     *
+     * THE DEFECT CANNOT RECUR IN THIS DIRECTION, and that is structural rather
+     * than remembered: `CONTRACT_WORD` is provably WIDER than both phrase
+     * regexes — every string either of them matches contains ` contract` with a
+     * trailing word boundary — which is a stronger guarantee than the shared
+     * constant it replaces. The import assertion below `isInvestmentContractRow`
+     * checks that derivation on every load rather than trusting this sentence.
+     *
+     * WHAT IT STILL CANNOT REACH, named rather than rounded away: 5 rows whose
+     * RAW filed name says `contract` and whose CLEANED name does not, because
+     * the unclosed-parenthetical strip (2026-09-30) or a leading caption took
+     * the word off the end — `Guaranteed Income Fund - Empower Annuity Insurance
+     * Company (contract Insurance Company Gen`. The gate reads the cleaned name,
+     * so no widening of a NAME condition can reach them; they are rows whose
+     * name says only `guaranteed`, i.e. the owner-gated stable-value item, and
+     * they are deliberately left there. */
+    if (!CONTRACT_WORD.test(s)) return false;
     const rest = s.replace(GUARANTEE_PRICED_WORDS, " ").replace(/\s+/g, " ").trim();
     return priceOf(rest) == null;
   }
@@ -2825,7 +2893,27 @@
        * house-misspelling repair is for a string believed to be a fund's name
        * and the remainder here is explicitly not one (measured: the two agree
        * on all 1,405 rows this gate can reach). FEE ONLY — the ticker is left
-       * alone, because 0 of the 1,361 rows it flags publish one. */
+       * alone, because 0 of the 1,361 rows it flags publish one.
+       *
+       * 2026-10-02: the predicate now reads the filing's own WORD `contract`
+       * rather than a list of the three wordings it appears in, which reaches
+       * a further 226 rows / 223 plans / 459,254 participants, 225 of them at
+       * the same fabricated 0.35. The whole safety argument — including the 67
+       * distinct phrases that precede `contract`, the SEVEN misspellings of
+       * `investment` that killed the vocabulary, and the reading of all 183
+       * newly-flagged names — lives in scripts/lib-disclose.mjs.
+       *
+       * AND THE `!tk` IS THE `isBankDepositRow` PATTERN, FOR THE SAME REASON:
+       * the predicate is purely about the NAME, and the ticker the page has
+       * ALREADY resolved is what separates a real fund wearing a `contract`
+       * caption from a contract with an insurer. Priced before adding it: the
+       * pre-2026-10-02 gate flags 2,915 published rows and **0 publish a
+       * ticker**, so this moves no shipped verdict; across the widened
+       * population it is load-bearing on exactly ONE row, `Contract BlackRock
+       * Russell 1000 Growth CIT` (Wilson & Company, 1,009 ppl, $10,359,013),
+       * a real collective trust publishing IWF's 0.18 as a labelled
+       * comparable. A condition that changes one verdict is named as changing
+       * one verdict; it is not decorative and it is not large. */
       const guaranteeOnlyFee = annuityFeeIsGuaranteeOnly(f.name || "", fundER);
       /* AN INVESTMENT CONTRACT TYPED `Mutual fund` — the annuity rule one legal
        * noun along, and larger. 267 rows / 264 plans / 388,683 participants say
@@ -2990,7 +3078,7 @@
        * alone, since the rows that publish one are exactly the rows that should. */
       const bankDepositFee = isBankDepositRow(f.name || "") && !tk;
       const er = tab !== "menu" || stockRow || gicRow || subtotalRow || loanRow || annuityRow
-        || guaranteeOnlyFee || contractRow || mistypedGuaranteeFee || namelessRow
+        || (guaranteeOnlyFee && !tk) || contractRow || mistypedGuaranteeFee || namelessRow
         || bankDepositFee ? null
         : star ? info.er : (noPublicPrice ? null : fundERRow(f));
       // the brokerage window is a menu choice with no holdings of its own —

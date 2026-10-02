@@ -7,6 +7,254 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-02 (05:1xZ) — the contract fee gate had a VOCABULARY where it needed a WORD: 225 rows / 222 plans / 458,245 participants / $2,443,025,511 stop publishing a fabricated 0.35
+
+**SHIPPED. `annuityFeeIsGuaranteeOnly` read THREE wordings and the filings
+write SIXTY-SEVEN.** Its first condition was
+`ANNUITY_CONTRACT_NAME || CONTRACT_DESIGNATION_NAME` — `annuity contract`,
+`investment contract`, `insurance contract` — so a filer writing **`TIAA Stable
+Value Contract`**, **`Guaranteed Income Contract`**, **`Guaranteed Interest
+Balance Contract`** or **`Key Guaranteed Portfolio Fund, at contract value`**
+was outside the gate **by construction** and kept publishing the exact
+fabricated **0.35** the gate exists to withhold — `fund-er.js`'s generic
+`/stable value|managed income|guaranteed|gic/` fallback, the same number
+withdrawn from 89 rows on 2026-09-29, refused again by v196, and withdrawn from
+a further 117 at 2026-10-01 (14:2xZ).
+
+**IT IS THE NINTH RECORDED INSTANCE OF *A FIX FOR ONE PHRASING OF A CLASS IS
+NOT A FIX FOR THE CLASS*, AND THE SECOND INSIDE THIS ONE FUNCTION.** The
+function's own comment records the eighth — written one day earlier, when the
+fee half was widened from one wording to three because the TYPE half four lines
+below had been written for three from the start. Three was still a list.
+
+**THE POSITIVE CONTROL IS A PAIR, ONE WORDING APART, THROUGH THE PAGE'S OWN
+RENDER** (`scripts/apppath.mjs`): `Unallocated investment contract - Guaranteed
+Income Fund` → **er = null**, the shipped rule reaching it, and `TIAA Stable
+Value Contract - Fully Benefit-Responsive` → **er = 0.35**, the defect. Same
+holding kind, same fallback. Found by the 03:1xZ draw on **Walsh University
+(690 ppl, 56 rows @ 0.999)**, whose row is typed `Mutual fund` as well as priced.
+
+### THE FIX IS NOT A WIDER LIST — IT IS THE FILING'S OWN WORD, AND THE DATA CHOSE THAT
+
+Condition one is now the bare `CONTRACT_WORD = /\bcontracts?\b/i`. The handoff
+offered a widened vocabulary as the fallback option and **the measurement killed
+it outright**, in two independent ways over the newly-reached names:
+
+- **the phrase immediately preceding `contract` takes 67 DISTINCT FORMS** —
+  `guaranteed interest`, `unallocated`, `guaranteed interest balance`, `tiaa
+  stable value`, `guaranteed income`, `insurance company general account`,
+  `fully benefit-responsive`, `custodial guaranteed interest`, `group annity`…
+- **the word `investment` is MISSPELLED SEVEN WAYS inside them** —
+  `Investement`, `Invest`, `INVESTMNT`, `Intvestment`, `Investm ent`, `Inves
+  tment`, plus `annity` for `annuity` on 4 rows.
+
+*A vocabulary is defeated by a keystroke*, and this population defeats one with
+seven of them. Any widened list would have shipped already one wording short of
+the next filing. **That is the finding, and it is larger than the fix.**
+
+### WHAT MAKES THE BARE WORD SAFE IS THE GATE'S OWN SECOND CONDITION, WHICH WAS THE RULE ALL ALONG
+
+2026-09-29 deliberately refused the bare word **for the TYPE rule**, having read
+103 names and found them *"overwhelmingly REAL FUNDS wearing a caption"* — `at
+contract value Fidelity 500 Index`, `Contract MFS Value R6`. **That reading was
+re-measured rather than inherited, and it still holds — and the residue test
+absorbs them.** The gate is `(wording) && priceOf(rest) == null`: strip the
+guarantee-priced words, ask the same fee table again. With condition one widened
+the gate **REACHES 86 such rows and REFUSES all 30 that publish a fee**, because
+`Fidelity International Index` (FSPSX), `Vanguard Value Index Fund Adm` (VVIAX),
+`MFS Value R6` (MEIKX), `T. Rowe Price Retirement 2045 Fund` (TRRKX), `JPMorgan
+SmartRetirement 2040 Fund R5` and `JPMorgan Large Cap Growth Fund` all still
+price once the guarantee words come out. **The caption is not what the gate
+reads; the remainder is.**
+
+### THE SHIPPED OUTCOME, WHOLE-STORE, BOTH SIDES, EVERY COLUMN POSITIVE-CONTROLLED
+
+BEFORE loads HEAD's `app.js` (which CARRIES the generated twin, so it is the
+complete before-state), AFTER the working tree; 4,381 rows rendered twice under
+an exact pre-filter that is a **superset** — the raw name says `contract` OR the
+raw name with whitespace removed does, because `cleanFiledName` despaces kerned
+text and a raw name can GAIN the word.
+
+| column | result |
+|---|---|
+| **FEE WITHDRAWN** | **225 rows / 222 plans / 458,245 ppl / $2,443,025,511 / 182 distinct** |
+| FEE GAINED | 0 |
+| FEE CHANGED | 0 |
+| TICKER MOVED | 0 |
+| ASTERISK MOVED | 0 |
+| SHOWN TYPE MOVED | 0 |
+
+Withdrawn values: **0.35 × 224**, 0.4 × 1. Six positive controls ran first and
+all six passed — a withdrawal, a KEPT row whose residue prices, and the ticker,
+asterisk and shown-type columns each shown reachable, because *a harness that
+reaches no arm reports 0 in every column and looks like good news.*
+
+**ALL 183 DISTINCT NEWLY-FLAGGED NAMES WERE READ. 182 are an insurance
+guarantee, a stable-value contract, a bare legal designation, or a filer's table
+line welded into a name** (`Change in contract value versus fair value in Morley
+Stable Value Fund`, `259,569.72 Guaranteed Income Contract`). **NOT ONE names a
+registered fund.** Largest: `Guaranteed Interest Balance Contract`
+$350,029,149, `GUARANTEED LONG TERM FUND General Account (CONTRACT INTEREST
+RATE…` $665,831,000, `Unallocated contract - Guaranteed Long-Term Account`
+$215,028,418.
+
+### THE 183rd IS A REAL FUND, AND THE CALL SITE KEEPS IT WITH A CONDITION PRICED BEFORE IT WAS ADDED
+
+`Contract BlackRock Russell 1000 Growth CIT` (Wilson & Company, 1,009 ppl,
+$10,359,013, type `Collective trust`) is a genuine collective trust publishing
+**IWF's 0.18 as a labelled comparable** — its fee comes from the resolved TICKER,
+which the residue test cannot see because `priceOf` is the bare pattern table.
+So app.js ANDs the gate with **`!tk`**, exactly as it already does for
+`isBankDepositRow`, whose comment gives the reason: the ticker the page has
+ALREADY resolved is what separates a real fund wearing a caption from a contract
+with an insurer, and *one question, asked once, by the code that owns the answer.*
+
+**BOTH HALVES OF THAT WERE MEASURED BEFORE IT WAS WRITTEN: the pre-change gate
+flags 2,915 published rows and 0 OF THEM PUBLISH A TICKER**, so `!tk` moves no
+shipped verdict; across the widened population it is load-bearing on **exactly
+one row**. *A condition that changes one verdict is named as changing one
+verdict* — it is neither decorative nor large, and the whole-store diff
+reconciles to the dollar: 226 reached − 1 kept = 225 withdrawn, 223 − 1 = 222
+plans, 459,254 − 1,009 = 458,245 ppl, $2,453,384,524 − $10,359,013 =
+$2,443,025,511.
+
+### THE HANDOFF'S 261 IS 5 TOO HIGH, AND ITS CAUSE IS THIS RECORD'S OWN RULE
+
+Its pre-filter asked the **RAW stored name** where the gate reads the **CLEANED**
+one. Five rows say `contract` raw and not cleaned, because the
+unclosed-parenthetical truncation strip (2026-09-30 17:4xZ) or a leading caption
+took the word off the end:
+
+```
+RAW    "Guaranteed Income Fund - Empower Annuity Insurance Company (contract Insurance Company Gen"
+CLEAN  "Guaranteed Income Fund - Empower Annuity Insurance Company"
+RAW    "Guaranteed Interest Contracts, at Fair Value Three Year Guaranteed Interest Account"
+CLEAN  "Three Year Guaranteed Interest Account"
+```
+
+***Measure through the function the page calls, WITH THE ARGUMENT THE PAGE
+PASSES*** — and the direction matters: those five carry no contract word in the
+gate's own input, so they are rows whose name says only `guaranteed`, i.e. **the
+owner-gated stable-value item**, and no widening of a NAME condition can or
+should reach them. One of them is pinned as a must-KEEP precisely to mark that
+line. The handoff's `/\bcontract/i` also has **no trailing word boundary** and so
+matches `contractual` (3 published rows) — the `nt `-shaped trap this record
+carries; it caused 0 of the 5 here, and the shipped predicate uses both
+boundaries.
+
+**THE COMPLETE ACCOUNT OF THE 261, reconciled to the row:** 5 unreachable
+(cleaned name lacks the word) + 225 withdrawn + 1 kept by `!tk` (correct) + 9
+kept by the residue test (correct — real funds) + **21 kept by the residue test
+INCORRECTLY**, which is the residual below. 5 + 225 + 1 + 9 + 21 = 261.
+
+### THE DEFECT CANNOT RECUR IN THIS DIRECTION, AND THAT IS STRUCTURAL
+
+`CONTRACT_WORD` is provably **WIDER** than both phrase regexes — every string
+either matches ends in `contract`/`contracts` with a trailing word boundary and
+a space immediately before it, so it necessarily contains `\bcontracts?\b`. That
+is a **stronger** guarantee than the shared constant it replaces (the 14:2xZ fix
+shared `CONTRACT_DESIGNATION_NAME` so the two halves "cannot drift apart again",
+and they could still both be short). **An import assertion checks the
+derivation on every load rather than trusting the sentence**, in both halves —
+the source's shape and a live witness, because *a test on `.source` is a claim
+about a STRING and not about what the regex does*. It is placed after
+`isInvestmentContractRow` for two measured reasons: `CONTRACT_DESIGNATION_NAME`
+is declared below the fee gate, so an assertion beside the gate would read it in
+its temporal dead zone; and the generator's slices end at those two functions'
+closing braces, so an assertion inside one would be copied into app.js, **where
+a module-load throw breaks every row on every plan page rather than failing a
+gate.**
+
+### FOUND BY THE C2 CONTROL AND QUEUED, NOT SHIPPED — THE STRIP AND THE PRICER DISAGREE ABOUT ONE ABBREVIATION: 24 rows / 8 plans / ≥93,007 participants / $1,087,454,960, ALL AT 0.35
+
+`GUARANTEE_PRICED_WORDS` carries `\bsa?gic\b`, which matches `sgic` and `sagic`
+and **NOT the bare `GIC`**, while `fund-er.js`'s own last fallback prices any
+name containing `\bgic\b` at 0.35. So a genuine `GIC METLIFE CONTRACT #GAC
+32226` ($280,882,048) keeps `GIC` in its residue, the residue prices, and **the
+gate refuses a row it was written for.** 23 distinct names, every one a real
+insurance contract: `GIC PACIFIC LIFE CONTRACT #G-27347.01.0001` $160,559,091,
+`GIC PRUDENTIAL CONTRACT #GA-63216` $95,226,065, `MetLife Managed GIC (contract
+value)`, `Guaranteed income contract (GIC)`.
+
+**Exactly the shape of the residual this file already records one function
+along** — *"the stored name is truncated to `Stable Val`: the literal
+`\bstable value\b` in the strip cannot match it while `fund-er.js`'s own variant
+expansion reads `Val` as `Value`… The strip and the pricer disagree about an
+abbreviation."* **NOT FIXED HERE for the reason that entry gives:**
+`GUARANTEE_PRICED_WORDS` is SHARED with `isInvestmentContractRow`, so widening
+it changes the TYPE rule across its whole 2,915-row population — a separate
+measurement, not a bundle. **93,007 is a FLOOR on reach, not the figure:** 16 of
+the 24 rows sit in MASTER TRUSTS with no `plans-all` row, so they carry 0
+participants of their own and reach readers through their member plans — the
+blindness this record has now met six times.
+
+### GATES
+
+`lib-disclose --selftest` 25/25; **parser-gate** green including the frozen
+tether 7/7; **smoke-test** green; **fund-er-test** 83/26/19/18/28, 0 failures;
+**merge-name-test** 20/20, 22/22, 25/25, 20/20, 22/22, 15/15.
+
+**PINS: 16 new, 21 must-SUPPRESS / 16 must-KEEP, total 37 — and they were added
+BECAUSE *NOT ONE* OF THE 21 EXISTING CASES REACHES THE NEW ARM.** Measured, not
+assumed: every existing case says `annuity`, `investment` or `insurance`
+contract, and **0 of the 21 change verdict under the widening**, so the tether
+would have agreed whether or not the vocabulary was replaced — the decorative
+failure this record carries from v189. Every candidate pin's verdict was
+verified against the SHIPPED predicate before it was written down, because *two
+of three class pins were written from memory and were wrong* on 2026-10-01.
+
+**A NEGATIVE CONTROL PER CONDITION, each written out IN FULL rather than by
+surgery on the shipped source, each failing BY NAME on exactly its own cases:**
+
+- **C1** (condition one is the bare word): dropped → the old three-wording
+  vocabulary **fails on exactly the 10 new must-SUPPRESS pins**, 1,265 verdict
+  changes whole-population.
+- **C2** (the residue test): dropped → **fails on exactly the 11 must-KEEPs that
+  carry a contract word**, 140 rows / 51 plans / 171,568 ppl whole-population,
+  and its protected set is what named the GIC residual above.
+- **C3** (`!tk` at the call site): dropped → **fails on exactly 1 row**, by name.
+- **the import assertion**, both halves: breaking `CONTRACT_WORD` fires the live
+  witness, breaking `ANNUITY_CONTRACT_NAME`'s tail fires the source-shape check,
+  and the shipped file loads clean.
+- **the TWIN tether**: drifting app.js's copy back to the two regexes fails
+  `smoke-test` **by name on exactly 10 of 37**.
+
+The shipped predicate holds all 37.
+
+### SURFACE — A GUARANTEE FROM THE IMPORT LIST, NOT AN EMPTY DIFF
+
+`build-seo-pages.mjs` has **0 references to `fund-er`** and imports no
+`annuityFeeIsGuaranteeOnly`, `fundER`, `fundERRow` or `fundTickerInfo`, so **the
+crawlable pages cannot render a per-fund expense ratio under any input.** This
+reaches the **REPORT path only**. Regenerating all 5,000 pages leaves
+`git diff --stat p/` empty, which corroborates rather than constitutes it.
+
+**DISPLAY-SIDE: no `PARSER_VERSION` bump, no run, no store change.** The fee is
+computed at render time.
+
+### TWO THINGS IN THE HANDOFF THAT WERE WRONG, NAMED
+
+1. **`DISCLOSE_PATH` does not exist.** `apppath.mjs`'s own prologue says *"Pair
+   it with DISCLOSE_PATH for the same reason"*, and the variable is **read
+   nowhere in the repo**. It is also unnecessary: apppath slices app.js, which
+   CARRIES the generated twin, so `APPJS_PATH` alone gives a complete
+   before-state. A documented knob that does not exist invites a before/after
+   harness that silently loads the after-state's predicates.
+2. **`lib-disclose --selftest` is not where this arm's pins live.** Its 25 cases
+   are `coverageBand` and `frozenClaimOk` only; the guarantee-gate tether is in
+   `smoke-test.mjs` (and mirrored in `gen-generic-twin.mjs`), because the
+   predicate takes the real fee table as an argument and `lib-disclose` must not
+   depend on `fund-er.js`. Pins went where the REAL table is loaded rather than
+   next to a stub.
+
+**AND `map-test.mjs` FAILS IN THIS SANDBOX** with `ERR_CERT_AUTHORITY_INVALID`
+on the Google Fonts stylesheet — **control run: it fails identically on a clean
+HEAD tree**, so the failure is the sandbox's TLS interception and not this
+change. *Local red is no more evidence than local green; only the CI conclusion
+settles either.*
+
+---
+
 ## 2026-10-02 (03:2xZ) — #542's verdict, and the contract fee gate misses a fourth wording: 261 rows / 539,691 participants
 
 **#542 RAN `success` AND EVERY PRE-REGISTERED FIGURE PASSED, INCLUDING THE ONE

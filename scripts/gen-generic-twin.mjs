@@ -446,6 +446,26 @@ const guarFeeNames = [
   "Guaranteed insurance contract",
   "Investment Contract With Insurance Company Lincoln Financial Group Stable Value Account",
   "Fully benefit-responsive investment contract Key Guaranteed Portfolio Fund",
+  /* must SUPPRESS — 2026-10-02, the gate now reads the filing's own WORD, and
+   * NOT ONE of the 21 probes above reaches that arm: every one of them says
+   * `annuity`, `investment` or `insurance` contract, so the twin would have
+   * agreed whether or not the vocabulary was replaced. Measured, not assumed.
+   * The first is the drawn row (Walsh University, 690 ppl); the fourth is the
+   * sharpest boundary on the list, because `Key Guaranteed Portfolio Fund`
+   * sits below as a must-KEEP and the filing's own word is the whole
+   * difference; the fifth and sixth are two of the SEVEN misspellings of
+   * `investment` this population carries, which is why a vocabulary was the
+   * wrong shape. The last is the one real fund in the whole widened
+   * population: the PREDICATE flags it and app.js's call site KEEPS it via
+   * `!tk`, as it already does for `isBankDepositRow` — so a `SUPPRESS` here is
+   * the predicate's answer and not what the page does. */
+  "TIAA Stable Value Contract - Fully Benefit-Responsive",
+  "Guaranteed Income Contract", "Guaranteed Interest Balance Contract",
+  "Key Guaranteed Portfolio Fund, at contract value",
+  "Guaranteed Investement Contract", "GUARANTEED INVESTMNT CONTRACT",
+  "Stable value contract", "Lincoln Stable Value (at contract value)",
+  "Change in contract value versus fair value in Morley Stable Value Fund",
+  "Contract BlackRock Russell 1000 Growth CIT",
   /* must KEEP — the contract words are there and the remainder still names a
    * fund, so the strip leaves something that prices */
   "Fully benefit responsive investment contract Dodge & Cox Income Fund",
@@ -458,6 +478,20 @@ const guarFeeNames = [
   /* must KEEP — the name never says "annuity contract", so the gate is shut */
   "Guaranteed Income Fund", "Key Guaranteed Portfolio Fund",
   "Principal Stable Value Preferred Fund", "Fidelity 500 Index Fund",
+  /* must KEEP — 2026-10-02: the 2026-09-29 population the TYPE rule refused
+   * the bare word FOR, which is exactly what the residue test absorbs. Each is
+   * a real fund wearing a `contract` caption our parse welded on, and each
+   * still prices once the guarantee words come out. These are the reason the
+   * second condition, not the first, is this gate's safety. */
+  "at contract value Fidelity 500 Index", "Contract Fidelity International Index",
+  "Contract Vanguard Value Index Fund Adm", "Contract T. Rowe Price Retirement 2045 Fund",
+  "at contract value JPMorgan Large Cap Growth Fund",
+  /* must KEEP — and this one marks the line that must NOT be crossed. Its RAW
+   * filed name says `contract`; the unclosed-parenthetical strip took the word
+   * off the end, so the CLEANED name the gate reads does not. A row whose name
+   * says only `guaranteed` is the owner-gated stable-value item, and widening
+   * a NAME condition must never reach it. */
+  "Guaranteed Income Fund - Empower Annuity Insurance Company",
 ];
 /* the investment-contract arm, BOTH CELLS and both directions, and it needed
  * its OWN probes for the sixth cycle running: not one row above reaches it,
@@ -659,10 +693,10 @@ for (const r of annuityRows) if (ctx.__a(r, r.name) !== isAnnuityContractRow(r, 
 for (const n of guarFeeNames) if (ctx.__q(n) !== annuityFeeIsGuaranteeOnly(n, ctx.fundER)) {
   bad++; console.log(`  GUARANTEE-FEE DRIFT ${JSON.stringify(n)} twin=${ctx.__q(n)} lib=${annuityFeeIsGuaranteeOnly(n, ctx.fundER)}`);
 }
-for (const n of guarFeeNames.slice(0, 11)) if (!annuityFeeIsGuaranteeOnly(n, ctx.fundER)) {
+for (const n of guarFeeNames.slice(0, 21)) if (!annuityFeeIsGuaranteeOnly(n, ctx.fundER)) {
   bad++; console.log(`  GUARANTEE-FEE rule no longer suppresses a fabricated annuity fee: ${JSON.stringify(n)}`);
 }
-for (const n of guarFeeNames.slice(11)) if (annuityFeeIsGuaranteeOnly(n, ctx.fundER)) {
+for (const n of guarFeeNames.slice(21)) if (annuityFeeIsGuaranteeOnly(n, ctx.fundER)) {
   bad++; console.log(`  GUARANTEE-FEE rule would withdraw a fee a fund's own name supports: ${JSON.stringify(n)}`);
 }
 for (const n of loans) if (ctx.__l(n) !== isLoanDescriptionRow(n)) {
