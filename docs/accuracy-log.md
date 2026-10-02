@@ -7,6 +7,192 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-02 (17:4xZ) — the draw harness applies 2 of app.js's 11 fee suppressors, so every fee a draw has printed is an UPPER BOUND; and the ampersand gap is one house, 228 rows / 443,410 participants shippable
+
+**THE DRAW FOUND A DEFECT IN THE INSTRUMENT THE DRAW IS, AND IT REFUTED A CLAIM
+I WAS ONE PARAGRAPH FROM PUBLISHING.** Seed 20261002173, pool **59,819
+published lineups / 91,579,897 participants**, weighted by `partEOY ||
+participants` (the column the page publishes). **Starbucks (314,112 ppl, 28
+rows @ 0.983, OCR'd)** and **Accenture (112,414 ppl, $21.3B, 34 rows @
+1.001, OCR'd)**, both largely clean.
+
+### THE HARNESS DEFECT
+
+The shipped fee cell is `app.js:3175`:
+
+```
+const er = tab !== "menu" || stockRow || gicRow || subtotalRow || loanRow || annuityRow
+  || (guaranteeOnlyFee && !tk) || contractRow || mistypedGuaranteeFee || namelessRow
+  || bankDepositFee ? null
+  : star ? info.er : (noPublicPrice ? null : fundERRow(f));
+```
+
+`scratchpad/apppath.mjs`'s `render()` is `er = star ? info.er : fundERRow(f)`.
+**Two of eleven suppressors, and `noPublicPrice` dropped as well.**
+
+**IT COULD NEVER HAVE HAD THEM, which is the structural half:** the suppressors
+are defined at **app.js:2909–3174** and the slice ends at **app.js:1933**
+(`window.__wampoLookupTicker = lookupTicker;`), so they are outside it by
+construction. The harness's own prologue names **two** as missing — *"for a row
+that is NOT employer stock and NOT a loan"* — and nine more are. ***A
+transcription that documents its own gap can still document the wrong gap.***
+This is the 01:5xZ *"incomplete transcription of the `er` expression"* in the
+SAME FILE after that entry was written, which is why the repair has to be the
+full expression rather than another arm.
+
+**WHOLE-STORE, with the suppressors as the pre-filter so the render is asked
+only of the hits: 109,543 of 1,714,404 published rows (6.4%) across 25,396
+plans / $997,651,366,756 carry a fee the harness prints and the page
+withholds.** By first suppressor hit: `noPublicPrice` **106,443**, `gicRow`
+2,368, `guaranteeOnlyFee` 591, **`bankDepositFee` 105** — exactly the population
+the 01:5xZ ship withdrew, which is why a before/after through `render()` would
+report a false zero for that very item — `annuityRow` 35, `subtotalRow` 1.
+**IT IS A FLOOR AND IS STATED AS ONE:** `stockRow`, `namelessRow`, `contractRow`
+and `mistypedGuaranteeFee` need plan-level context this pass does not supply, so
+the true error is larger. Largest single reader population: Microsoft's 184,329
+see **eleven** BlackRock LifePath Unitized Account rows the harness priced at
+0.09 and the page leaves blank. **The participant figure deliberately is NOT
+quoted** — summing per row gives a 300,809,047 participant-ROW-WEIGHT, which is
+not a reader count, and the honest figure is the 25,396 plans.
+
+**AND MY FIRST VERSION OF THAT SWEEP VIOLATED THE RULE STATED IN ITS OWN
+COMMENT**, calling `render()` on all 1.71M rows and asking the cheap suppressors
+afterwards. It ran past thirty minutes. The suppressors ARE the exact pre-filter
+and the tk-dependent pair is asked with `tk=null` to keep the filter a superset.
+
+**MEASURED ON THE DRAWN MENUS, so the error is not hypothetical: `render()`
+printed a fee on 4 of 28 Starbucks rows and 2 of 34 Accenture rows that the page
+withholds**, every one `noPublicPrice` — Boston Partners Large Cap Value Class D
+(0.45), MFS Institutional International Class 3A (0.6), Galliard Stable Return
+Class E (0.35), Vanguard Institutional Extended Market Index Trust (0.1), and
+Accenture's `FIDELITY OTC` (0.6) and `VANGUARD INSTL TL BOND INDEX` (0.06).
+
+**AND THAT REFUTES THE CLAIM I HAD DRAFTED.** I had Starbucks' **Galliard
+Stable Return Fund Class E at 0.35 / $94,315,803** written down as a fabricated
+stable-value fee in front of **314,112 readers** — the largest named instance of
+the owner-gated stable-value item on this record. `noPublicPrice` withholds it,
+correctly, because the row is typed `Collective trust`. ***An instrument whose
+whole purpose is to show what a reader sees was showing me something no reader
+sees, and the figure it produced was large enough to publish.***
+
+**WHAT SURVIVES THE CORRECTION IS SMALLER AND REAL:** Accenture's **`PIMCO
+STABLE VALUE FUND` typed `Mutual fund`, publishing 0.35 on $358,548,781 = 1.7%
+of the menu to 112,414 readers** — it is NOT in the suppressed list, and the
+reason is exactly the queued item's own mechanism: `gicRow` reads the TYPE cell,
+the type says `Mutual fund`, so nothing withholds it. A named live instance of
+the owner-gated class (4,669 rows / 7,389,704 ppl), not a new one.
+
+**TWO CALL-SIGNATURE FAULTS OF MINE while building the correction, both caught
+by a throw rather than by a wrong number:** `annuityFeeIsGuaranteeOnly(name,
+priceOf)` takes the PRICER as a second argument — app.js passes `fundER` — and
+called with one it throws `priceOf is not a function`; and my first correction
+imported `lib-disclose` from the **live tree an agent was editing** rather than
+from the pin, which would have run the NEW predicate on the BEFORE side. *Measure
+through the function the page calls, with the argument the page passes*, twice in
+one script.
+
+**THE RUNNING AGENT WAS WARNED RATHER THAN LEFT TO FIND IT**, because
+`bankDepositFee` is one of the nine dropped and its item is the bank-deposit
+wording gap: a before/after fee measurement through `render()` would have
+reported a **false zero** for its own fix on both sides.
+
+### THE PIN, AND WHY IT WAS LOAD-BEARING
+
+An agent held `app.js` and `lib-disclose.mjs`, so the draw pinned `APPJS_PATH`,
+`DISCLOSE_PATH` and `FUNDER_PATH` to a `git archive` of the committed ref.
+**Each pin was proved by pointing it at a path that does not exist and requiring
+a THROW** — all three threw. That is the 15:3xZ lesson applied: comparing the two
+candidate inputs is not a test that the consumer read either of them, and
+**there are still TWO files named `apppath.mjs`**, the repo's 4,296-byte copy
+honouring all three env pins and the session's 14,308-byte copy honouring none of
+`FUNDER_PATH`. A loose file is not enough either: `lib-disclose` imports `lib-4i`
+relatively, so the pin has to be a sibling-complete tree.
+
+### THE AMPERSAND IS ONE HOUSE, BY MEASUREMENT RATHER THAN BY ASSUMPTION
+
+Starbucks publishes **`Dodge and Cox Income Fund Class X` at $90,558,579 typed
+`Mutual fund` with NO ticker and NO fee**, while `Dodge & Cox Income Fund Class
+X` resolves to DODIX at 0.41. The house spelled `and` reaches nothing.
+
+**I SIZED IT THREE TIMES AND ONLY THE THIRD FIGURE IS PUBLISHABLE.**
+
+| | |
+|---|---|
+| a string screen for `Dodge and Cox` | **372 rows / 319 plans / 1,394,092 ppl** — DO NOT CARRY FORWARD; it counts the 35 bare-house rows and every row whose `&` form also fails |
+| the store's own attestation of both spellings, any name | **522 names / 3,293 rows / 5,623,825 ppl** — DO NOT CARRY FORWARD; an upper bound on the VARIANT, not on the defect |
+| asked of the resolver, both directions | **96 distinct / 277 rows / 976,048 participant-row-weight / $2,407,233,845** |
+
+**AND THE GENERAL FRAMING COLLAPSED ON ITS OWN OUTPUT: every one of the 96 gains
+is Dodge & Cox.** 1,575 names already resolve under BOTH spellings, so the
+resolver handles `and`/`&` everywhere else and this house's entry is the only one
+keyed on the ampersand alone. The attestation screen's own top entries say why
+the wide framing was wrong — `capital world growth and income fund`, `science and
+technology fund`, `equity and income` — where the `and` is inside the FUND's own
+registered name and both spellings already work. ***A count keyed on a character
+measures the character, not the defect.***
+
+**THE FIX MUST BE ONE-DIRECTIONAL, PRICED: a blanket bidirectional substitution
+costs 1,061 distinct names / 7,251 rows** that resolve as filed with `&` and
+would stop (`Dodge & Cox Income Fund` 702 rows, `Dodge & Cox Stock Fund` 527).
+Twenty-six times what it wins.
+
+**PLAN-DISTINCT SPLIT, and the gated half carries MORE READERS than the
+shippable half, which a row count would reverse:**
+
+```
+SHIPPABLE    228 rows / 200 plans / 443,410 participants / $1,742,866,275
+OWNER-GATED   49 rows /  41 plans / 483,820 participants /   $664,367,570
+total        277 rows / 240 plans (union, overlap 1)
+```
+
+The shippable half states no contradicting class, so the base symbol is exactly
+what its **9,198** ampersand-spelled sibling rows already publish — the repair
+makes two spellings of one house agree. The gated half states **Class X** where
+DODIX/DODGX/DODFX are Class **I** (Dodge & Cox registers DOXIX/DOXGX/DOXFX), so
+a "gain" there publishes a wrong class AND a wrong fee: it is the 5,929-row
+stated-share-class item, and its largest member is `Dodge and Cox Income Fund
+Class X` at **316,323 participant-weight**.
+
+**AND THE ONE NAMED COST IS ZERO, CHECKED RATHER THAN ASSUMED:** `Vanguard
+Target Retirement Income and Growth Trust II` is a DIFFERENT product that the
+15:0xZ ship refuses on purpose, and it resolves to **nothing under BOTH
+spellings**, so no substitution resurrects it. Two further members must be
+refused and are named: `Dodge and Cox` alone (35 rows, the bare-house class) and
+**`IGT Dodge and Cox A or Better Core Fund`**, which is another manager's product
+naming this house.
+
+### Also live in the two menus, all queued, none new
+
+- **`Vanguard Institutional Extended Market Index Trust`**: adding the word
+  `Institutional` moves the fee from the specific **0.05** to the generic
+  **0.1**, and the institutional class is in reality CHEAPER than Admiral, so the
+  generic OVERSTATES. Suppressed on this row by `noPublicPrice`, so it reaches no
+  reader here — but `Vanguard Institutional Extended Market Index Fund` is 0.1
+  against the Admiral form's 0.05, which does.
+- **Accenture's abbreviated institutional names resolve to nothing**:
+  `VANGUARD GROWTH IND FD INSTL` at $1,274,475,292 (6.0%), `CAPITAL NEW
+  PERSPECTIVE TRUST` $864,012,234, `VANGUARD US TREASURY MON`,
+  `VANGUARD INFLATION-PROTECTED` — the recordkeeper-abbreviation family.
+- **`{SELF-DIRECT ACCT} OTHER ASSETS`** $502,181,890 and **`LOAN FUND`**
+  $108,809,695 and **`PENDING SETTLEMENT FUND`** $16,975, all blank type.
+- Three shipped guards visibly working: `VANGUARD TR INCOME & GROWTH TR`
+  publishes no symbol (the 15:0xZ veto), every Vanguard target-date TRUST row
+  carries the asterisk rather than asserting the mutual fund, and Starbucks'
+  `Winslow Large Cap Growth Fund Class M` publishes neither ticker nor fee,
+  correctly, a CIT with no registered symbol by design.
+
+### Not done, with its reason
+
+- **`scratchpad/apppath.mjs` IS NOT REPAIRED IN THIS COMMIT.** A background agent
+  is using that exact file, and editing a harness another worker has pinned is the
+  failure this record already carries. The repair is the full `er` expression
+  behind a named export, with the two-menu counts (4 of 28, 2 of 34) as its
+  positive control, and it lands after that agent does.
+- **The Dodge & Cox repair is not shipped**, only sized. It is a `fund-er.js`
+  table change and this cycle's write-up is the handoff; the shippable half needs
+  the bare-house rows and the IGT row refused, and the gated half needs the
+  owner's standing decision on the stated-share-class class.
+
 ## 2026-10-02 (17:1xZ) — the trust's own Schedule D was captured in September and rendered nowhere: 61 plans / 874,136 participants / $105.6B gain a named fund list, and the SHARE is what makes it publishable
 
 **THE OWNER ASKED TWICE AND THE SECOND TIME WAS THE ONE THAT LANDED.** At 16:0xZ

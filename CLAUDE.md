@@ -763,6 +763,55 @@ published cells:
   files against the generator's `TOP_N = 5000`, so 62 pages / 169,447 ppl are
   served and outside every regeneration. Fixing it changes which URLs exist.
 
+**SIZED, NOT SHIPPED 2026-10-02 17:4xZ — THE HOUSE SPELLED `and` REACHES NO
+FUND: 228 rows / 200 plans / 443,410 participants / $1,742,866,275 shippable,
+plus 49 rows / 41 plans / 483,820 ppl owner-gated.** Starbucks (314,112 ppl)
+publishes `Dodge and Cox Income Fund Class X` at $90,558,579 with no ticker and
+no fee while `Dodge & Cox Income Fund Class X` resolves to DODIX at 0.41.
+**THE GENERAL FRAMING COLLAPSED ON ITS OWN OUTPUT: every one of the 96 gains is
+Dodge & Cox** — 1,575 names already resolve under BOTH spellings, so the
+resolver handles `and`/`&` everywhere else and this house's entry is the only
+one keyed on the ampersand alone. **DO NOT CARRY 372 ROWS / 1,394,092 PPL (a
+string screen, counting 35 bare-house rows that resolve either way) OR 3,293
+ROWS / 5,623,825 PPL (the store's attestation of both spellings, whose top
+members — `capital world growth and income fund`, `science and technology fund`
+— are the FUND's own registered spelling and already work both ways).** ***A
+count keyed on a character measures the character, not the defect.*** **THE FIX
+MUST BE ONE-DIRECTIONAL, PRICED: a blanket bidirectional substitution costs
+1,061 distinct / 7,251 rows** that resolve as filed with `&` — 26x what it wins.
+The gated half states **Class X** where DODIX/DODGX/DODFX are Class I, so a gain
+there is a wrong class AND a wrong fee (the 5,929-row item), and **it carries
+MORE readers than the shippable half**, which a row count reverses. Named cost
+checked and ZERO: `Vanguard Target Retirement Income and Growth Trust` resolves
+to nothing under both spellings, so the 15:0xZ refusal of that different product
+survives. Two members must be refused: `Dodge and Cox` alone (35 rows) and
+`IGT Dodge and Cox A or Better Core Fund`, another manager's product.
+`docs/accuracy-log.md` 2026-10-02 (17:4xZ).
+
+**TOOLING DEFECT, FOUND BY THE DRAW AND NOT YET REPAIRED — `scratchpad/
+apppath.mjs`'s `render()` APPLIES 2 OF app.js's 11 FEE SUPPRESSORS, so every
+fee a draw has printed is an UPPER BOUND: 109,543 of 1,714,404 published rows
+(6.4%) across 25,396 plans / $997,651,366,756 carry a fee the harness prints
+and the page withholds.** `noPublicPrice` 106,443, `gicRow` 2,368,
+`guaranteeOnlyFee` 591, **`bankDepositFee` 105** (exactly the 01:5xZ ship's own
+population), `annuityRow` 35, `subtotalRow` 1 — and it is a FLOOR, because
+`stockRow`, `namelessRow`, `contractRow` and `mistypedGuaranteeFee` need
+plan-level context this pass does not supply. **IT COULD NEVER HAVE HAD THEM:**
+the suppressors are defined at app.js:2909–3174 and the slice ends at
+app.js:1933, so they are outside it by construction, and the harness's prologue
+names TWO as missing where nine are. ***A transcription that documents its own
+gap can still document the wrong gap*** — the 01:5xZ incomplete-`er` finding in
+the SAME FILE after that entry was written. **IT REFUTED A CLAIM ONE PARAGRAPH
+FROM PUBLICATION:** Starbucks' `Galliard Stable Return Fund Class E` at 0.35 /
+$94,315,803 was written down as a fabricated fee in front of 314,112 readers and
+`noPublicPrice` withholds it. What survives is Accenture's **`PIMCO STABLE VALUE
+FUND` typed `Mutual fund` publishing 0.35 on $358,548,781 to 112,414 readers** —
+a named live instance of the owner-gated stable-value item, escaping because
+`gicRow` reads the TYPE cell. **NOT repaired in that cycle because a background
+agent held the file**; the repair is the full `er` expression behind a named
+export, positive-controlled on the two drawn menus (4 of 28 Starbucks rows, 2 of
+34 Accenture rows).
+
 **SHIPPED 2026-10-02 17:1xZ — THE TRUST'S SCHEDULE D FUND LIST, captured by
 #523 in September and rendered nowhere until the owner asked twice: 61 plans /
 874,136 participants / $105.6B across 29 trusts gain a named fund list, on BOTH
