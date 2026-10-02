@@ -95,7 +95,58 @@ node scripts/mirror-gate.mjs ${FORCE_DATA:+--force} || {
   exit 1
 }
 
+# THE THIRD HAZARD, and it is neither git nor data: A SCHEDULED RUN ALREADY IN
+# FLIGHT ON MAIN WILL COMMIT AFTER THIS PUSH, USING THE CODE IT CHECKED OUT
+# WHEN IT STARTED.
+#
+# MEASURED 2026-10-02, and it silently reverted a shipped fix in front of the
+# owner. Run #556 started 23:02:03 on main at d9041652 — main BEFORE the
+# recordkeeper fix was mirrored. The mirror put the fix on main at 23:10:34.
+# #556 then finished and committed its data at 23:15:23, regenerating
+# plans-all.json and plans-list.json from the OLD build-data.mjs, so PSEG went
+# back to "Invesco Advisors, Inc" on the live site while main's SOURCE carried
+# the fix. Every check above passed: the git check ran before the clobber, and
+# the data gate compared a store that was still correct.
+#
+# A FORCE PUSH CANNOT PROTECT AGAINST A WRITER THAT HAS NOT WRITTEN YET.
+#
+# It only matters when the mirror changes code that PRODUCES data, so that is
+# exactly when this refuses.
+DATA_CODE="scripts/build-data.mjs scripts/merge-4i.mjs scripts/lib-4i.mjs scripts/fetch-4i.mjs"
+CHANGED=$(git diff --name-only origin/main "$BRANCH" -- $DATA_CODE 2>/dev/null)
+if [ -n "$CHANGED" ]; then
+  INFLIGHT=$(gh api "repos/evwes/no-app/actions/workflows/build-data.yml/runs?branch=main&per_page=5" \
+    --jq '[.workflow_runs[] | select(.status=="in_progress" or .status=="queued")] | length' 2>/dev/null || echo "?")
+  if [ "$INFLIGHT" != "0" ] && [ "$INFLIGHT" != "" ]; then
+    echo "REFUSING TO MIRROR — this mirror changes data-producing code AND a run is already in flight on main:"
+    echo "$CHANGED" | sed 's/^/    changed: /'
+    echo "    in-flight or queued runs on main: $INFLIGHT"
+    echo
+    echo "  That run checked out main BEFORE this code. It will commit its data"
+    echo "  AFTER this push and overwrite the output of the change you are"
+    echo "  mirroring. This is not hypothetical: it reverted the recordkeeper"
+    echo "  fix on 2026-10-02 and the owner saw the old value."
+    echo
+    echo "  Do this instead: wait for that run to finish, mirror, THEN dispatch"
+    echo "  a run on main so the data is regenerated with the new code."
+    [ -n "$FORCE_GIT" ] || exit 1
+    echo "  --force given: proceeding anyway."
+  fi
+fi
+
 BEFORE=$(git rev-parse --short origin/main)
 git push --force-with-lease=main origin "$BRANCH:main" || { echo "push failed"; exit 1; }
 git fetch -q origin main
 echo "mirrored: $BEFORE -> $(git rev-parse --short origin/main)"
+# Even with no run in flight, code that produces data has just reached main and
+# main's DATA was produced by the previous code. The store is only correct once
+# a run regenerates it, so say so rather than leaving the operator to assume
+# the mirror finished the job.
+if [ -n "$CHANGED" ]; then
+  echo
+  echo "  NOTE: this mirror changed data-producing code:"
+  echo "$CHANGED" | sed 's/^/      /'
+  echo "  main's DATA was produced by the PREVIOUS code and is now stale."
+  echo "  Dispatch a run on main and verify it, or the site keeps serving the"
+  echo "  old values with the new source sitting beside them."
+fi

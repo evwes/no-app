@@ -41270,3 +41270,56 @@ expense-ratio card reads **"15 funds held by its master trust"** where it read
 
 Mirror gate: 69,046 acks, dominant pv 197 at 99.9%, 39 fetch failures (0.06%),
 **0 plans / 0 participants stop being served**.
+
+## 2026-10-02 (23:5xZ) — a scheduled run on main silently reverted the recordkeeper fix, and every check passed
+
+**THE OWNER SAW `Invesco Advisors, Inc` AFTER I REPORTED IT FIXED. He was right
+and my verification was worthless.** I rendered the page from a LOCAL server
+against the LOCAL tree, which is a test with an empty cache and the branch's
+data — not the thing a reader loads.
+
+**THE SEQUENCE, from the run list and the commit times:**
+
+| | |
+|---|---|
+| 23:02:03 | **#556 (scheduled) starts on main at `d9041652`** — main BEFORE the fix was mirrored |
+| 23:10:34 | my mirror puts the fix on main (`48fb5543`) |
+| 23:15:23 | **#556 finishes and commits `cd3fec8d`** — data regenerated from the OLD `build-data.mjs` |
+
+So main ended with **the new source and the old data**: `plans-all.json` and
+`plans-list.json` both back to `Invesco Advisors, Inc`, while
+`scripts/build-data.mjs` on the same commit carried the promotion. ***A force
+push cannot protect against a writer that has not written yet.***
+
+**Every existing control passed, and each for a correct reason.** The git check
+ran at 23:10 and main was not ahead. The data gate compared a store that was
+still correct. `mirror-gate` reported 0 plans stopping being served — true at
+the time it ran. **The clobber happened AFTER all of them.**
+
+**And my own verdict was measured on the right numbers in the wrong place.**
+The 23:1xZ entry's diff — 152 plans, 121 renames, 31 promotions, variant-2 test
+0 — was all true of the BRANCH. It said nothing about what main would hold five
+minutes later. *A verdict on the branch is not a verdict on the site.*
+
+**SHIPPED: `mirror.sh` now refuses a mirror that changes data-producing code
+while a run is in flight on main**, and names the remedy (wait, mirror, then
+dispatch on main). It is scoped to the only case where it matters — a diff
+touching `build-data.mjs`, `merge-4i.mjs`, `lib-4i.mjs` or `fetch-4i.mjs` —
+because refusing a docs mirror for an unrelated run would be noise that teaches
+the operator to pass `--force`.
+
+**Two-sided control, both arms run:** replaying the real 23:10 state (main at
+`d9041652`) the guard **refuses, naming `scripts/build-data.mjs`**; a docs-only
+mirror produces an empty change set and is not blocked.
+
+**And a second, quieter half:** even with NO run in flight, mirroring
+data-producing code leaves main's DATA stale, because it was produced by the
+previous code. The script now says so after a successful push rather than
+letting the operator assume the mirror finished the job. **That is the actual
+lesson — mirroring code that produces data is half a deployment.**
+
+**Also corrected:** the workflow's concurrency group is
+`build-data-${{ github.ref }}`, i.e. **branch-scoped**, so a dev-branch push
+cannot cancel a run on main. I had been treating the group as global.
+
+#557 dispatched on main at `cd3fec8d`, which carries the fix.
