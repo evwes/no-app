@@ -3641,7 +3641,27 @@
           if (fe) return `<p class="stat-value">${fe.er.toFixed(2)}% <span class="est-chip">est.</span></p><p class="stat-sub">weighted, ${fe.matched} of ${fe.of} holdings</p>`;
           const ce = curatedAvgER(plan);
           if (ce) return `<p class="stat-value">${ce.er.toFixed(2)}% <span class="est-chip">est.</span></p><p class="stat-sub">${ce.matched} of ${ce.of} menu funds</p>`;
-          return `<p class="stat-value">—</p><p class="stat-sub">${plan.filedLineup ? plan.filedLineup.funds.length + " filed holdings" : plan.funds ? plan.funds.length + " fund options" : plan.filedFeatures && plan.filedFeatures.menu ? plan.filedFeatures.menu.length + " named options" : "lineup not added"}</p>`;
+          if (plan.filedLineup) return `<p class="stat-value">—</p><p class="stat-sub">${plan.filedLineup.funds.length} filed holdings</p>`;
+          if (plan.funds) return `<p class="stat-value">—</p><p class="stat-sub">${plan.funds.length} fund options</p>`;
+          if (plan.filedFeatures && plan.filedFeatures.menu) return `<p class="stat-value">—</p><p class="stat-sub">${plan.filedFeatures.menu.length} named options</p>`;
+          /* THE TRUST'S SCHEDULE D LIST, which the body already renders. Without
+           * this the card said "lineup not added" on the SAME PAGE that lists
+           * the trust's funds — 61 plans / 874,136 participants, Albertsons
+           * 236,172 and Medtronic 55,692 among them. Asked through the canonical
+           * predicate with the arguments the body passes, never re-derived. */
+          const tsd = plan.mtiaAck && state.trusts
+            ? trustScheduleDMenu(state.trusts[plan.mtiaAck],
+                !!(plan.funds && plan.funds.length), !!(plan.zeroEOY && plan.detailLoaded))
+            : null;
+          if (tsd) return `<p class="stat-value">—</p><p class="stat-sub">${tsd.rows.length} funds held by its master trust</p>`;
+          /* AND THE DEAD END SAYS WHAT IS TRUE OF THE FILING, NOT OF US.
+           * "lineup not added" read as an unfinished database on 52,334 plans /
+           * 15.7M participants — the exact label the owner directive condemns:
+           * it describes US, not the filing. Each branch below is a fact the
+           * store already carries. */
+          if (plan.isSF) return `<p class="stat-value">—</p><p class="stat-sub">Short-form filers don't file a schedule of assets</p>`;
+          if (plan.zeroEOY && plan.detailLoaded) return `<p class="stat-value">—</p><p class="stat-sub">No year-end assets to hold</p>`;
+          return `<p class="stat-value">—</p><p class="stat-sub">No readable schedule of assets in this filing</p>`;
         })()}</div>
         <div class="stat"><p class="stat-label">Recordkeeper</p><p class="stat-value stat-small">${esc(plan.provider || "—")}</p><p class="stat-sub">${plan.provider
           ? esc(plan.filed || "")

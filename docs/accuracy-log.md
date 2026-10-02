@@ -41189,3 +41189,36 @@ branch head is still the docs commit, with no data commit after it. The 21:2xZ
 entry's measurements all stand; only its closing claim about #553 was wrong.
 **#555 re-dispatched on `d1ef0504`, which carries the fix. The verdict is
 outstanding.**
+
+## 2026-10-02 (22:3xZ) — the card said "lineup not added" on the page that lists the trust's funds
+
+**The owner's PSEG screenshot showed two gaps. This is the second.** The
+Avg-expense-ratio stat card falls through a chain — own lineup, curated funds,
+audited-notes menu — and ends at **"lineup not added"**. It never knew about
+`trustScheduleDMenu`, which the 17:1xZ ship renders **further down the same
+page**.
+
+**So 61 plans / 874,136 participants published both claims at once:** a card
+saying the lineup was not added, above a body listing the trust's funds.
+Albertsons 236,172 · Medtronic 55,692 · Nestlé 50,509 · Johnson Controls 49,004
+· Lumen 35,683. That it is *exactly* the 17:1xZ population is the right answer
+rather than a coincidence — the card is blind to precisely what that ship added.
+
+Asked through the **canonical predicate with the arguments the body passes**,
+never re-derived.
+
+**AND THE DEAD END NOW DESCRIBES THE FILING RATHER THAN US.** "lineup not added"
+reads as an unfinished database and sat on **52,334 plans / 15,707,477
+participants**. It is the exact label the standing owner directive condemns —
+*that label describes US, not the filing*. Each replacement is a fact the store
+already carries: short-form (no schedule of assets **by law**, 
+the recordkeeper card two cards right already says the equivalent); `$0`
+year-end (8,782 of the 52,334); otherwise *"No readable schedule of assets in
+this filing"* — **which still points at us, deliberately**, because that is the
+honest statement when we cannot read a schedule that exists. It does not claim
+the filing lacks one.
+
+**Verified on the page, not on a store-side proxy:** PSEG in a real browser now
+reads *"15 funds held by its master trust"*, and "lineup not added" appears
+nowhere on it. Cache-buster re-derived and `index.html` committed — *a frontend
+change that skips the stamp ships to nobody.*
