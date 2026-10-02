@@ -574,6 +574,21 @@ costs a night.
   kick push, dispatch rather than waiting, because it also sometimes does not.
   The run listing immediately after any push is the only evidence that counts,
   in both directions.
+  **AND (3), MEASURED 2026-10-02 AT THE COST OF AN HOUR — "IMMEDIATELY" IS TOO
+  EARLY, AND A RACING DISPATCH DESTROYS THE RUN IT WAS MEANT TO REPLACE.**
+  I pushed the recordkeeper fix, read the listing seconds later, saw no run,
+  applied rule (2) and dispatched. **The push trigger then fired at +90
+  seconds**: #553 (push) and #554 (dispatch) appeared on the same SHA eight
+  seconds apart, concurrency cancelled #553, and cancelling the duplicate #554
+  left **nothing running at all** — both ended `cancelled` and the fix did not
+  run. *Cancelling the duplicate does not revive the original.*
+  **So: after a push, wait at least two minutes and re-read the listing before
+  dispatching. If a `push` run has appeared, do NOT dispatch** — a
+  `workflow_dispatch` on the same SHA is not a safety net, it is a second run
+  that concurrency resolves by killing the first. Dispatch only when the listing
+  still shows nothing after that wait. Nothing was lost here (both cancels
+  landed in prep, before any merge, and no partial store was committed) but the
+  next one may not be so cheap.
 - **AND VERIFY THE CONCLUSION, NOT JUST THAT A RUN EXISTS (2026-09-11).** The
   rule above covers a run that never started. Its mirror image cost three days:
   **site-test was RED for ten consecutive runs, #47 to #56, from 2026-09-08**,
@@ -741,7 +756,11 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
-**#553 IN FLIGHT (dispatched 21:18Z, prep-side) — THE RECORDKEEPER FIX.**
+**#555 IN FLIGHT (dispatched 22:1xZ on `d1ef0504`, prep-side) — THE
+RECORDKEEPER FIX. #553 AND #554 BOTH ENDED `cancelled` AND THE FIX NEVER RAN:**
+my dispatch raced the push trigger (which fired at +90s), concurrency cancelled
+the push run, and cancelling the duplicate left nothing. No partial store — both
+cancels landed in prep. Same registration:
 Registered: `code-64 recordkeeper promotions: N acks` appears with **N ≥ 31**;
 **PSEG (EIN 22-2625848, pn 004 and 006) publishes Fidelity, not Invesco
 Advisors**; **Cornell, Brown, Northwestern and Dana-Farber still publish TIAA**;
@@ -751,9 +770,8 @@ one); no parser metric moves — confident 60,167, entries 65,480, HIGH 4, warn
 556, dl 39, pv 197, tkExact 37.76, tkComparable 3.41, tkShare 25.02.
 *The 31 is a scratch replica's count over the stored 12-row shards; the
 pipeline's own log line is the number to believe and can only be larger.*
-**NOTE #554 was a duplicate dispatch on the same SHA and was cancelled** — the
-push trigger fired ~90s after the push, not never, and I read the listing too
-early.
+*The verdict is still outstanding: nothing has been measured against this
+registration yet.*
 
 **#552 VERDICT (success 19:57Z, mirrored): every figure hit.** The welded-value
 arm's population is **0** and the cheap screen went **1,229 → 1,195**, which is

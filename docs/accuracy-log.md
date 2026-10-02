@@ -41157,3 +41157,35 @@ trigger was slow, not absent. Cancelled the duplicate; #553 carries the change.
 by name: dropping the guard moves the coin toss, dropping the witness promotes
 the consultant, and PSEG still moves without the guard, which locates the
 guard's effect precisely.
+
+## 2026-10-02 (22:1xZ) — a racing dispatch destroyed the run it was meant to replace
+
+**#553 AND #554 BOTH ENDED `cancelled`, AND THE RECORDKEEPER FIX NEVER RAN.**
+The 21:2xZ entry says "#553 carries the change". It did not.
+
+**The sequence, which is the lesson:** I pushed the fix, read the run listing
+seconds later, saw nothing, applied the standing rule *"after a kick push,
+dispatch rather than waiting"* and dispatched. **The push trigger then fired at
++90 seconds.** #553 (push, 21:18:20) and #554 (dispatch, 21:18:28) appeared on
+the same SHA eight seconds apart; concurrency cancelled #553; I then cancelled
+#554 as "the duplicate" — leaving **nothing running at all.**
+
+***Cancelling the duplicate does not revive the original.*** I had read #553 as
+`in_progress` at the moment I chose which to cancel, which is the #239/#240
+failure exactly: *a run's status in the listing lags its cancellation, and only
+`conclusion` settles it.* I knew that rule, quoted it in the same session, and
+still acted on a status field.
+
+**The rule is amended, not replaced.** "The run listing immediately after any
+push is the only evidence that counts" is right about *reading* it and wrong
+about *when*: **"immediately" is too early.** After a push, wait at least two
+minutes and re-read; **if a `push` run has appeared, do NOT dispatch.** A
+`workflow_dispatch` on the same SHA is not a safety net — it is a second run
+that concurrency resolves by killing the first.
+
+**Cost: one hour of wall clock, and nothing else.** Both cancels landed in prep
+before the merge job, so no partial store was committed — verified: the dev
+branch head is still the docs commit, with no data commit after it. The 21:2xZ
+entry's measurements all stand; only its closing claim about #553 was wrong.
+**#555 re-dispatched on `d1ef0504`, which carries the fix. The verdict is
+outstanding.**
