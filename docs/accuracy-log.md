@@ -7,6 +7,150 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-02 (11:4xZ) — v529's guard ported back into `weldRepair`: a ceiling refused a repair by one occurrence, and all three occurrences were damage
+
+**What was wrong.** `weldRepair` (v519, merge-side) repairs a lost space inside
+a CamelCase filed name, and refuses when the joined token is itself attested
+more than twice — the ceiling that protects a real house name like `BlackRock`.
+It refused `EquityIncome Adm` because **`cnt("EquityIncome") = 3`**: refused by
+ONE occurrence. Reading those three occurrences, **all three are damage** —
+this row (Hias Pennsylvania, 123p), `Fidelity VIP EquityIncome Fund` (Empower
+Lga, 297p), and `HUBER CAPITAL EQUITYINCOME FUND INVESTOR 0.40% USADDRESS …`,
+an all-caps address weld. The repaired whole name `Equity Income Adm` is
+attested **163** times against the damaged form's **1**.
+
+That row then **lost an SEC ticker on #544**, in a registration I had put at
+**−0**.
+
+**It is v529's own recorded finding, met in the arm v529 did not fix.** The
+all-caps arm's comment says the ceiling *"CANNOT TRANSFER"* precisely because
+*a ceiling that reads repetition as evidence of correctness is fed by repeated
+damage*, and it built a **RATIO between two WHOLE NAMES** plus an **INDEPENDENT
+REGISTRY WITNESS** instead. Both belong in `weldRepair` too: the witness
+protects a CamelCase house name by evidence from OUTSIDE this store, where a
+ceiling protects it by its own frequency and can therefore be bought off by
+damage.
+
+### The change
+
+Accept a split under **either**:
+
+1. the shipped rule, verbatim — `cnt(t) <= 2 && w >= 3`; or
+2. v529's guard — `w > joined * 3` and the registry does not spell the token
+   joined anywhere inside a fund's own registered name.
+
+Shipped as a disjunction so it is **strictly additive by construction**: 0 rows
+repaired-only-before over all 1,724,201 confident rows.
+
+**And disjunct (1) is SUBSUMED on this store — 0 repairs lost across all
+415,221 distinct published names — so it is labelled as what it is rather than
+carried as reassurance**, v529's own treatment of its two subsumed conditions.
+It is **not** subsumed structurally: a repaired name attested exactly 3 beside a
+damaged one attested 1 satisfies `w >= 3` and fails `w > joined * 3`. The test
+asserts the 0, so a later store that makes it load-bearing surfaces as a
+surprise rather than passing quietly.
+
+### The witness asks CONTAINMENT, not equality — and only the outcome test could show it
+
+The naive substitution (ceiling → witness + ratio) **LOST PCRIX on 3 rows**:
+`PIMCO Commodity RealReturn Strategy Fund Institutional Class` splits, because
+`realreturn` is not a registry word — **while the registry spells the series
+`CommodityRealReturn`.** ***The damaged token can be a proper SUBSTRING of a
+registry word.*** It also **LOST VSGAX on 2 rows** (`Vanguard Small-Cap Growth
+Index FundAdm Shares`), where the ratio is stricter than the old floor; the
+disjunction removes that class by construction.
+
+**Reading 270 transformations caught neither.** The whole-store outcome test
+through both resolvers did — the same instrument that caught v529's own
+`SMALLCAP WORLD` defect.
+
+The caps arm's equality test is **deliberately left alone**: widening it moves a
+different population (≥8-char all-caps tokens) and that is its own measurement.
+
+### My first measurement was measuring itself — do not carry 1,153 or 775,449 forward
+
+The first harness **restated the predicate instead of slicing it**, and got two
+things wrong:
+
+| | mine | `merge-4i`'s |
+|---|---|---|
+| `nk` | lowercase + non-alphanumeric → space | **`trim().toLowerCase()`** |
+| `SEAM` | `/[A-Za-z]*[a-z][A-Z][A-Za-z]*/g` | `/\b[A-Za-z]{3,}[a-z][A-Z][a-z]{2,}[A-Za-z]*\b/g` |
+
+It read **1,153 rows / 869 plans / 775,449 participants** and put the headline on
+`American Funds NewWorld R6` at 466 rows — a family **the real SEAM cannot match
+at all**, because `New` is three characters where the pattern needs four before
+the capital.
+
+***The restatement was caught by its own pins:*** three cases written down off
+those numbers FAILED against the shipped function. Redone by slicing the block
+out of BOTH refs and running the shipped bodies in a vm, with the two sides
+asserted to disagree on the motivating row before any count was taken.
+
+**The true effect: 488 rows / 329 lineup entries / 329 plans / 286,318
+participants / $696,610,357.** Stored `stk` **+110 / −0 / 0 changed**, display
+ticker **+58 / −0 / 0**, fee **+284 / −0 / 39 changed and 0 lost**, asterisks
+**+20 / −0** (a labelled comparable is the weaker claim). All 270 distinct
+transformations read.
+
+### Cost named
+
+- **16 rows across four strings split `AllianceBernstein`** into `Alliance
+  Bernstein`. Its official spelling is one word and **no registry word contains
+  it**, so no registry-based witness can protect it. 0 tickers, 0 fees and 0
+  asterisks move on them, and **the store's own filers write it spaced 72 times
+  against joined 14** — so the row ends up agreeing with the majority filed
+  spelling. Accepted, named, and not papered over with a hand-typed keep-list,
+  which is the vocabulary this family of rules exists to avoid.
+- **3 rows move a fee toward the GENERIC estimate** (`Federal MoneyMarket
+  Investor` 0.11 → 0.2, two `… IndexFund` rows 0.05 → 0.1) — both in the
+  **OVERSTATING** direction.
+
+Everything else in the 270 is a correct repair, including `JanusHenderson` →
+`Janus Henderson`, `LoomisSayles` → `Loomis Sayles`, `GoldmanSachs` → `Goldman
+Sachs`, `PrinLifeTime` → `Prin LifeTime`, `RelianceMetLife` → `Reliance
+MetLife`, `NuveenLifeCycle` → `Nuveen LifeCycle`, `CorePlus Bond Fund` → `Core
+Plus Bond Fund`, and twelve `T. Rowe PriceRetirement <year> Fund` rows.
+
+### A control of mine went decorative, caused by my own edit
+
+The existing drift control replaced `if ((whole.get(nk(rep)) || 0) >= 3) best =
+rep;`. The disjunction moved that string, `String.replace` silently did nothing,
+and the harness printed **"disagrees on 0 of 20"** as though that were a result.
+That is the decorative-control failure this record has now paid for four times,
+and the harness's own `cut()` helper — which throws when its target has moved —
+was three lines away. It is asserted now and fails on **15 of 27**.
+
+**7 new pins (20 → 27), added because NOT ONE of the 20 existing cases reaches
+the widened disjunct**: every must-REPAIR there is accepted by the shipped rule
+and every must-KEEP is refused by a condition the ratio also refuses, **so the
+whole arm could have been inert and that table would still have read 20/20.**
+
+A negative control per condition, each asserted to have landed and each failing
+BY NAME on exactly its own cases: drop the widening → exactly the 6 new
+must-repairs; replace the ratio with a bare floor → exactly `EuroPacific`; drop
+the witness → exactly `RealReturn`; witness by equality only → exactly
+`RealReturn`.
+
+### A stale measured claim in v529's own comment, corrected in passing
+
+It records that the registry witness *"independently refuses `CONTRAFUND`,
+`EUROPACIFIC`, `LIFESTRATEGY`, `BLACKROCK`, `JPMORGAN`, `MASSMUTUAL` and
+`ALLSPRING`"*. Asked of the registry: **7 of those 8 hold and `europacific` is
+absent from it entirely** — what refuses `EUROPACIFIC` is the RATIO, not the
+witness. *A measured claim in a comment has to be the claim the code makes.*
+
+### Prevention
+
+`scripts/merge-name-test.mjs` slices the shipped `weldRepair` rather than
+restating it, which is the only reason the restatement above was caught; the
+drift control is asserted; the subsumed disjunct is asserted at 0 with its
+whole-store basis written next to it. **And the rule earned again, in the
+direction that cost most: a harness that restates a shipped predicate is
+measuring the restatement, and its first symptom is pins that fail.**
+
+---
+
 ## 2026-10-02 (10:5xZ) — #544 (v197) verdict: a ceiling that held over a named set that did not, and a `stk` regression the registration said could not happen
 
 **Run:** #544, id 36972079138, `push` on `2cecab51`, `conclusion: success`,

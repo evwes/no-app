@@ -1295,7 +1295,86 @@ from the cycle that would have cleared it.
   / 2 typings across 280 plans / 365,305 ppl. **Register the SUM of the two, not
   each in turn** — the 00:3xZ/#541 lesson about two reporting changes queueing
   behind one run.
-- **NOTHING IS IN FLIGHT. #544 RAN `success` AND IS MIRRORED — 2026-10-02 10:5xZ (`96d93309 → 8e66338a`),
+- **IN FLIGHT: #545, fired from the push on `07b304ca` and observed `in_progress`
+  — v529's GUARD PORTED BACK INTO `weldRepair`, WHICH REPAIRS A REGRESSION OF MY
+  OWN FROM #544: 488 rows / 329 lineup entries / 329 plans / 286,318
+  participants / $696,610,357, stored `stk` +110 / −0 / 0, display ticker +58 /
+  −0 / 0, fee +284 / −0 / 39 changed and 0 LOST, asterisks +20 / −0.**
+  `weldRepair` refused `EquityIncome Adm` because `cnt("EquityIncome") = 3` and
+  its ceiling cuts at `> 2` — **refused by ONE occurrence, and all three
+  occurrences feeding that ceiling are DAMAGE**: this row, `Fidelity VIP
+  EquityIncome Fund`, and an all-caps address weld. That row then lost an SEC
+  ticker on #544, which I had registered as −0.
+  **IT IS v529's OWN RECORDED FINDING MET IN THE ARM v529 DID NOT FIX.** Its
+  comment fifty lines below says the ceiling *"CANNOT TRANSFER"* to the all-caps
+  arm because *a ceiling that reads repetition as evidence of correctness is fed
+  by repeated damage*, and it built a RATIO between two WHOLE NAMES plus an
+  INDEPENDENT REGISTRY WITNESS instead. **Both belong here too: the witness
+  protects a CamelCase house name by evidence OUTSIDE this store, where a ceiling
+  protects it by its own frequency and can therefore be bought off by damage.**
+  **SHIPPED AS A DISJUNCTION so it is STRICTLY ADDITIVE — 0 rows
+  repaired-only-before over all 1,724,201 confident rows — AND THAT DISJUNCT IS
+  SUBSUMED ON THIS STORE (0 repairs lost across all 415,221 distinct published
+  names), so it is LABELLED AS SUCH rather than carried as reassurance**, with
+  the test asserting the 0 so a later store that makes it load-bearing surfaces
+  as a surprise. It is **not** subsumed structurally: a repaired name attested
+  exactly 3 beside a damaged one attested 1 satisfies `w >= 3` and fails
+  `w > joined * 3`.
+  **THE WITNESS ASKS CONTAINMENT, NOT EQUALITY, and only the OUTCOME TEST could
+  show that:** the naive substitution LOST PCRIX on 3 rows, because `realreturn`
+  is not a registry word while the registry spells the series
+  `CommodityRealReturn` — ***the damaged token can be a proper SUBSTRING of a
+  registry word.*** It also lost VSGAX on 2 rows where the ratio is stricter than
+  the old floor, which the disjunction removes by construction. Reading 270
+  transformations caught neither.
+  **AND MY FIRST MEASUREMENT OF THIS CHANGE WAS MEASURING ITSELF — DO NOT CARRY
+  1,153 ROWS OR 775,449 PPL FORWARD.** It RESTATED the predicate instead of
+  slicing it: `merge-4i`'s own `nk` is **`trim().toLowerCase()`**, not the
+  punctuation-normalising version I wrote, and its SEAM is
+  `/\b[A-Za-z]{3,}[a-z][A-Z][a-z]{2,}[A-Za-z]*\b/g`, far tighter than mine — so
+  `NewWorld` cannot match it at all and the 466-row `American Funds NewWorld R6`
+  family I had counted as the headline **is not reachable by this arm**.
+  ***The restatement was caught by its own pins: three cases written off those
+  numbers FAILED against the shipped function.*** Redone by slicing the block out
+  of BOTH refs and running the shipped bodies, with the two sides asserted to
+  disagree on the motivating row.
+  **COST NAMED: 16 rows across four strings split `AllianceBernstein`**, whose
+  official spelling is one word and which no registry word contains. 0 tickers,
+  0 fees and 0 asterisks move on them, and **the store's own filers write it
+  spaced 72 times against joined 14**, so the row ends up agreeing with the
+  majority filed spelling. Three further rows move a fee toward the GENERIC
+  estimate (`Federal MoneyMarket Investor` 0.11 → 0.2, two `… IndexFund` rows
+  0.05 → 0.1), **both in the OVERSTATING direction.** All 270 distinct
+  transformations read; nothing else destroys a real name.
+  **AND THE EXISTING DRIFT CONTROL WENT DECORATIVE THE MOMENT `weldRepair` GREW A
+  DISJUNCTION.** Its target string moved, `String.replace` silently did nothing,
+  and the harness printed *"disagrees on 0 of 20"* **as though that were a
+  result** — the failure this record has paid for four times, here caused by my
+  own edit. It is ASSERTED now and fails on 15 of 27. **7 new pins (20 → 27),
+  added because NOT ONE of the 20 existing cases reaches the widened disjunct** —
+  every must-REPAIR there is accepted by the shipped rule and every must-KEEP
+  refused by a condition the ratio also refuses, **so the whole arm could have
+  been inert and that table would still have read 20/20.**
+  A negative control PER CONDITION, each asserted to have landed and each failing
+  BY NAME on exactly its own cases (6 / 1 / 1 / 1). parser-gate green (frozen
+  tether 7/7), smoke green, fund-er-test 83/26/19/18/28, `lib-disclose
+  --selftest` 25/25.
+  **MERGE-SIDE, no `PARSER_VERSION` bump (197), so the work list stays the 40
+  stale acks. PRE-REGISTERED:** the merge log prints **`lost-space repair: 489
+  rows across 329 plans`** (HEAD's arm reads 1 row / 1 plan on this
+  already-repaired store, which is the right before-value and not a stall);
+  **`sec tickers: 479691 rows across 48109 plans (113870 on a blank type cell)`**
+  — rows **+85** and plans **+0, DERIVED from measured set membership rather than
+  summed** (the #531 lesson: a row delta is additive, a plan count SATURATES);
+  CONFIDENCE DIFF **+0 / −0** and `rows-dropped` **0**, because this renames and
+  never drops a row or moves a sum; confident **60,167**, lineups 59,819, entries
+  65,480, **HIGH 4** (3 `contrib` + `fabricated-name`), warn 556, overshoot 372,
+  overshootTrust 12, aggRow 114, dl 39, pv 197 at ~100%; `tkExact` **37.32 at
+  most +0.01** (58 display gains against 1.72M rows, and `audit-data` calls
+  `fundTickerInfo` with ONE argument so the stored `stk` cannot move it),
+  `tkComparable` 3.27, `tkShare` phase.
+  `docs/accuracy-log.md` 2026-10-02 (11:4xZ).
+- **#544 RAN `success` AND IS MIRRORED — 2026-10-02 10:5xZ (`96d93309 → 8e66338a`),
   GIT CHECK UNFORCED, `--force-data` OVER FOUR WITHDRAWALS THE GATE NAMES AS
   EXACTLY THE PRE-REGISTERED SET. STORE COMPLETE: pv 197 covers 69,006 of 69,046
   (99.9%), fetch failures 39 (0.06%), reader failures 1.** The designed outcome
