@@ -774,6 +774,86 @@ from the cycle that would have cleared it.
   defects. *When two reporting-only changes queue behind one run, register their
   SUM, not each in turn.* No CI-versus-local divergence: the local audit on
   #541's own store reproduces `HIGH (4)` / `WARN (556)` exactly.
+- **#542 RAN `success` AND IS MIRRORED — 2026-10-02 03:2xZ (`b43969cb →
+  790816d5`), UNFORCED ON BOTH CHECKS, data gate +0 / −0 BY ACK AND BY PLAN.
+  EVERY PRE-REGISTERED FIGURE PASSED AND THE PRODUCTION MERGE REPRODUCED THE
+  LOCAL ONE TO THE ROW.** Read out of the ARTIFACT (the merge log's blob host is
+  `connect_rejected`): `stk` on **479,546 rows across 48,104 plans, 113,848 on a
+  blank type cell**, all three to the digit, and `ftk` on **2,823 rows / 128
+  entries** = the registered 2,166 / 75 plus 657 / 53 exactly. Diffing all 64
+  lineup shards at `a6dd5be9` against the data commit: **`name` 0, `stk` 0,
+  `ftk` 0, 0 row-count changes, 0 acks added or removed**, 1,730,535 rows both
+  sides — and `data/lineups/**` is not in the data commit's file list, the same
+  statement from the other direction. Coverage line: confident **60,170**,
+  lineups 59,822, entries 65,479, **HIGH 4**, warn **556**, overshoot 372,
+  overshootTrust 12, aggRow 113, dl 19, pv 196 at **100%**, `tkComparable` 3.27,
+  `tkShare` 24.47 — and **`tkExact` 37.2 → 37.32, the figure the agent
+  registered only after its own "this cannot move" argument was refuted by
+  running it.** *An argument that a figure cannot move is still a prediction*,
+  and here the weaker, measured claim is the one that passed.
+  **`site-test` #139 reads `conclusion: success` ON `a6dd5be9`**, and the two
+  commits on top are verified docs-only (CLAUDE.md, 3 insertions) and data-only
+  (nine single-line JSON stores), so that green covers every executable line
+  shipped. 1,077,891 participants now have the iShares S&P 500 Index Fund named.
+- **THE 03:1xZ DRAW FOUND THE 14:2xZ SHIP'S OWN GATE ONE WORDING SHORT —
+  QUEUED, SIZED, HANDED OFF, NOT SHIPPED: 261 rows / 243 plans / 539,691
+  participants / $3,473,519,783 publish a fabricated expense ratio that the
+  shipped rule exists to withhold, and 250 of the 261 publish exactly 0.35.**
+  Seed 20261002031, pool 59,822 published lineups / 91,581,640 ppl; **Walsh
+  University (690 ppl, 56 rows @ 0.999)** and **Aya Healthcare Services (63,406
+  ppl, $582,970,258, 30 rows @ 0.998, OCR'd)**. Walsh publishes **`TIAA Stable
+  Value Contract - Fully Benefit-Responsive` typed `Mutual fund` at 0.35** —
+  `fund-er.js`'s generic `/stable value|guaranteed|gic/` fallback, the number
+  withdrawn from 89 rows on 2026-09-29, refused again by v196 and withdrawn from
+  a further 117 at 14:2xZ.
+  **ASKED OF THE SHIPPED SOURCE:** `annuityFeeIsGuaranteeOnly`'s first condition
+  is `/\bannuity contracts?\b/ || /\b(?:investment|insurance) contracts?\b/`, so
+  `Stable Value Contract`, `Guaranteed Income Contract`, `Guaranteed Interest
+  Contract` and `at contract value` are outside it BY CONSTRUCTION — **the NINTH
+  instance of *a fix for one phrasing of a class is not a fix for the class*,
+  and the SECOND inside this one function**, whose own comment records the
+  eighth and widened one wording to three in the same breath.
+  **POSITIVE CONTROL, THE PAIR, run before any count:** through the page's own
+  render `Unallocated investment contract - Guaranteed Income Fund` publishes
+  **no fee** and `TIAA Stable Value Contract - Fully Benefit-Responsive`
+  publishes **0.35**. One wording apart.
+  **217 DISTINCT NAMES IN THREE FAMILIES, and the split decides how the widening
+  may be written:** an unlisted DESIGNATION (`Guaranteed Income Contract` 6,
+  `Guaranteed Interest Contract` 4, `TIAA Stable Value Contract` 7, `Fixed
+  Interest Contract`); a **filer's MISSPELLING of a listed wording**
+  (`Guaranteed Investement Contract`, `Guaranteed Invest Contract` — four rows
+  that miss `investment contracts?` by a keystroke, which is what a vocabulary
+  makes possible); and **`at contract value`, a MEASUREMENT BASIS and not a
+  designation** (`Key Guaranteed Portfolio Fund, at contract value` 5, `Lincoln
+  Stable Value (at contract value)`, `CMFG Stable Value, at contract value`).
+  **THAT THIRD FAMILY IS EXACTLY WHY 2026-09-29 REFUSED THE BARE WORD
+  `contract`** — it measured 117 further rows and read all 103 names,
+  *"overwhelmingly REAL FUNDS wearing a caption"*. **What makes the widening
+  tractable anyway is that the gate's SECOND condition is the real safety and it
+  already ships:** `(wording) && priceOf(rest) == null` strips the
+  guarantee-priced words and asks the same table again, so `at contract value
+  Fidelity 500 Index` survives because its remainder prices while `Key
+  Guaranteed Portfolio Fund, at contract value` does not. **So the open question
+  is not whether to widen but WHAT THE SECOND CONDITION COSTS once the first is
+  widened, and that is a measurement rather than an argument** — how many rows a
+  bare `\bcontract` first condition reaches whose remainder DOES price, and
+  whether they are the 2026-09-29 population exactly. **5 of 261 publish a
+  ticker**, so for 256 the whole effect is withdrawing one invented number.
+  **NOT the owner-gated stable-value item** (4,669 rows / 7,389,704 ppl): every
+  one of these 261 additionally carries the filing's own word `contract`.
+  **ALSO LIVE IN THOSE TWO MENUS, queued and not bundled:** Aya's **`NUVEEN
+  LIFECYCLE !NDEX 2060 INST` at 13.2% / $76,586,960 with no ticker and no fee**
+  while six sibling vintages publish 0.1 — the OCR `!`-for-`I` class, recorded
+  2026-09-21 at **7 rows / 7 plans**, so **a 7-row class with a 63,406-ppl member
+  is worth re-sizing before it is called small again**; Aya's `ANNUITIES` at
+  $10,026,017 with a BLANK type beside a correctly-typed `Investments at Net
+  Asset Value` (a bare ASSET CLASS outside `isGenericTypeName`, the owner-queued
+  whole-table item); **`Aya Healthcare Services, Inc.` — its own sponsor name —
+  as a $1,276,573 holding**; Walsh's `TIAA Traditional Annuity Contract TIAA
+  Traditional Annuity Contract - Fully Benefit-Respon`, a whole phrase **doubled
+  then truncated**, which v149's adjacent-repeat arm cannot reach; and EQNVX,
+  HSNVX and ASVDX each publishing a **symbol with no fee beside it** (the
+  91,423-row class). `docs/accuracy-log.md` 2026-10-02 (03:2xZ).
 - **SHIPPED 2026-10-02 03:0xZ, DATA IN THE SAME COMMIT — THE SEC REGISTRY STORED
   ITS OWN NAMES HTML-ESCAPED AND ONE ESCAPE DENIED A WHOLE FUND ITS KEY: 1,550
   rows / 1,547 menus / 1,077,891 participants GAIN an exact ticker, 0 changed, 0
@@ -865,9 +945,11 @@ from the cycle that would have cleared it.
   imports `lib-quote`, `lib-disclose` and `lib-4i` and **reads no `stk`, no `ftk`
   and no `fund-er.js`** — 0 matching references; regenerating all 5,000 pages
   leaves `git diff --stat p/` empty, which corroborates rather than constitutes it.
-  **PRE-REGISTERED for #542, dispatched 03:0xZ on `a6dd5be9` and observed
-  `in_progress` (the push fired `site-test` #139 on the exact commit but NOT
-  build-data — the documented intermittent trigger, handled by dispatching):** the merge log prints
+  **PRE-REGISTERED for #542 — VERDICTED AND MIRRORED, see the 03:2xZ bullet
+  above; dispatched 02:30Z on `a6dd5be9` (not the 03:0xZ this line first said —
+  the run record settles it) and observed `in_progress` (the push fired
+  `site-test` #139 on the exact commit but NOT build-data — the documented
+  intermittent trigger, handled by dispatching):** the merge log prints
   **`sec tickers: 479546 rows across 48104 plans (113848 on a blank type cell)`**
   — all three read off the local merge, and **the plan count is the merge's own
   measured number rather than 47,915 + 189, because set membership saturates**;

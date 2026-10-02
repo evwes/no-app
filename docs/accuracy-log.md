@@ -7,6 +7,149 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-02 (03:2xZ) — #542's verdict, and the contract fee gate misses a fourth wording: 261 rows / 539,691 participants
+
+**#542 RAN `success` AND EVERY PRE-REGISTERED FIGURE PASSED, INCLUDING THE ONE
+THE AGENT REFUTED BEFORE THE DISPATCH.** Read out of the ARTIFACT rather than
+the merge log, whose blob host is `connect_rejected` from this sandbox: the
+store carries **`stk` on 479,546 rows across 48,104 plans, 113,848 of them on a
+blank type cell** — all three to the digit — and `ftk` on 2,823 rows across 128
+entries, which is the registered 2,166 / 75 plus 657 / 53 exactly.
+
+**AND THE PRODUCTION MERGE REPRODUCED THE LOCAL ONE TO THE ROW.** Diffing all 64
+lineup shards at `a6dd5be9`, the commit the agent wrote, against the data commit
+`790816d5`: **`name` 0 differing rows, `stk` 0, `ftk` 0, 0 row-count changes, 0
+acks added or removed**, 1,730,535 rows both sides. `data/lineups/**` is not even
+in the data commit's file list, which is the same statement from the other
+direction.
+
+Coverage line: confident **60,170**, lineups 59,822, entries 65,479, **HIGH 4**,
+warn **556**, overshoot 372, overshootTrust 12, aggRow 113, dl 19, pv 196 at
+**100%**, `tkComparable` **3.27**, `tkShare` **24.47** — every one as registered.
+**`tkExact` 37.2 → 37.32, which is the figure the agent registered only after
+its own argument that the number could not move was refuted by running it.**
+*An argument that a figure cannot move is still a prediction*, and the stronger
+claim is only stronger when it is true; here the weaker, measured claim is what
+passed.
+
+**`site-test` #139 reads `conclusion: success` ON `a6dd5be9`**, the exact commit
+carrying the decode, and the two commits on top of it are verified **docs-only**
+(`CLAUDE.md`, 3 insertions) and **data-only** (nine single-line JSON stores), so
+that green covers every executable line shipped. **MIRRORED 03:2xZ
+(`b43969cb → 790816d5`), UNFORCED ON BOTH CHECKS, data gate +0 / −0 BY ACK AND
+BY PLAN** — 1,077,891 participants now have the iShares S&P 500 Index Fund named
+on their page.
+
+---
+
+**THE 03:1xZ DRAW, AND IT FOUND THE 14:2xZ SHIP'S OWN GATE ONE WORDING SHORT —
+QUEUED, SIZED, HANDED OFF, NOT SHIPPED: 261 rows / 243 plans / 539,691
+participants / $3,473,519,783 publish a fabricated expense ratio the shipped
+rule exists to withhold, and 250 of the 261 publish exactly 0.35.**
+
+Seed 20261002031, pool **59,822 published lineups / 91,581,640 ppl** weighted by
+`partEOY || participants`. **Walsh University (690 ppl, 56 rows @ 0.999)** and
+**Aya Healthcare Services (63,406 ppl, $582,970,258, 30 rows @ 0.998, OCR'd)**.
+
+Walsh publishes **`TIAA Stable Value Contract - Fully Benefit-Responsive` typed
+`Mutual fund` at 0.35** — `fund-er.js`'s generic `/stable value|guaranteed|gic/`
+fallback, the number this record has now withdrawn from 89 rows (2026-09-29),
+refused again by v196, and withdrawn from a further 117 (2026-10-01 14:2xZ).
+
+**ASKED OF THE SHIPPED SOURCE RATHER THAN GUESSED:**
+`annuityFeeIsGuaranteeOnly`'s first condition is
+`ANNUITY_CONTRACT_NAME || CONTRACT_DESIGNATION_NAME`, which is
+`/\bannuity contracts?\b/` and `/\b(?:investment|insurance) contracts?\b/`. A
+filer writing **`Stable Value Contract`**, **`Guaranteed Income Contract`**,
+**`Guaranteed Interest Contract`** or **`at contract value`** is outside both BY
+CONSTRUCTION. **That is the NINTH recorded instance of *a fix for one phrasing
+of a class is not a fix for the class*, and the second inside this one
+function** — the 14:2xZ entry's own comment records it as the eighth and widened
+the gate from one wording to three in the same breath.
+
+**THE POSITIVE CONTROL IS THE PAIR, run before any count:** through the page's
+own render, `Unallocated investment contract - Guaranteed Income Fund` publishes
+**no fee** (the shipped rule reaching it) while
+`TIAA Stable Value Contract - Fully Benefit-Responsive` publishes **0.35**. Same
+holding kind, same fallback, one wording apart.
+
+**217 DISTINCT NAMES AND THEY SPLIT INTO THREE FAMILIES, which is what decides
+how the widening may be written:**
+
+- **A CONTRACT DESIGNATION THE REGEXES DO NOT LIST** — `Guaranteed Income
+  Contract` (6), `Guaranteed Interest Contract` (4), `Guaranteed Interest
+  Balance Contract` (3), `TIAA Stable Value Contract` (7 across two spellings),
+  `Custodial Guaranteed Interest Contract`, `Empower Separate Account Guaranteed
+  Interest Contract`, `Fixed Interest Contract`. These are the same legal
+  instrument under a fourth, fifth and sixth noun.
+- **A FILER'S MISSPELLING OF A LISTED WORDING** — `Guaranteed Investement
+  Contract` (2) and `Guaranteed Invest Contract` (2) miss
+  `investment contracts?` by a keystroke, so the gate's own vocabulary is
+  defeated by spelling. Recorded because it is the cheapest member and because
+  a vocabulary is what makes that possible.
+- **`at contract value` / `(contract value)`, A MEASUREMENT BASIS AND NOT A
+  DESIGNATION** — `Key Guaranteed Portfolio Fund, at contract value` (5),
+  `Principal Fixed Income Guaranteed Option, at contract value` (3), `Lincoln
+  Stable Value (at contract value)` (2), `CMFG Stable Value, at contract value`,
+  `Transamerica Stable Value Option (at contract value)`.
+
+**AND THAT THIRD FAMILY IS EXACTLY WHAT THE 2026-09-29 ENTRY REFUSED THE BARE
+WORD `contract` FOR, so the widening must not be written as one.** That entry
+measured 117 further rows and read all 103 distinct names: *"overwhelmingly REAL
+FUNDS wearing a caption (`at contract value Fidelity 500 Index`, `Contract MFS
+Value R6`) — `contract value` is a measurement basis, not a vehicle."*
+
+**WHAT MAKES THE WIDENING TRACTABLE ANYWAY IS THAT THE GATE'S SECOND CONDITION
+IS THE REAL SAFETY, AND IT ALREADY SHIPS.** The function is
+`(wording) && priceOf(rest) == null` — strip the words the fee table prices a
+guarantee on and ask the SAME table again — so a row whose remainder still names
+a fund is refused whatever its first condition says. `at contract value Fidelity
+500 Index` survives because `Fidelity 500 Index` prices; `Key Guaranteed
+Portfolio Fund, at contract value` does not, because nothing is left that names
+a fund. **So the open question is not whether to widen but WHAT THE SECOND
+CONDITION COSTS when the first is widened — and that is a measurement, not an
+argument.** It must be run before anything ships: how many rows does a bare
+`\bcontract` first condition reach whose remainder DOES price, and are they the
+2026-09-29 population exactly?
+
+**RISK MEASURED AND ALMOST NIL IN THE OTHER DIRECTION: 5 of 261 publish a
+ticker**, so for 256 rows the whole effect is the withdrawal of one invented
+number. Fee values: **0.35 on 250**, then 0.44 ×2, 0.4 ×2, and one each of 0.1,
+0.035, 0.5, 0.05, 0.18, 0.6, 0.29.
+
+**IT IS NOT THE OWNER-GATED STABLE-VALUE ITEM AND MUST NOT BE READ AS A BITE OUT
+OF IT.** That one (4,669 rows / 7,389,704 ppl) is a policy call about rows whose
+name says only `stable value`; every one of these 261 additionally carries the
+filing's own word **`contract`**, which is the condition the project already
+decided on twice.
+
+**ALSO IN THE SAME TWO MENUS, ALL OF IT ALREADY QUEUED AND NONE OF IT BUNDLED:**
+
+- **Aya publishes `NUVEEN LIFECYCLE !NDEX 2060 INST` at 13.2% / $76,586,960 with
+  no ticker and no fee**, while its six sibling vintages publish 0.1 — the OCR
+  `!`-for-`I` class, recorded 2026-09-21 at **7 rows / 7 plans** and *"a naive
+  `!`→`I` rewrite is WRONG on 4 of them"* (`Metrop!tn`, `Smal!Cap` want
+  lowercase `l`). **A 7-row class with a 63,406-participant member is worth
+  re-sizing against the current store before it is called small again.**
+- Aya's `ANNUITIES` at 1.7% / $10,026,017 carries a **blank** type while its
+  neighbour `Investments at Net Asset Value` is correctly typed *"Filing names
+  no specific fund"* (v196 working) — a bare ASSET CLASS outside
+  `isGenericTypeName`'s vehicle vocabulary, which is the owner-queued
+  whole-table item.
+- Aya publishes **`Aya Healthcare Services, Inc.`** — its own sponsor name — as a
+  $1,276,573 holding.
+- Walsh publishes `TIAA Traditional Annuity Contract TIAA Traditional Annuity
+  Contract - Fully Benefit-Respon`, a whole phrase **doubled and then
+  truncated** — v149's doubled-house arm needs the repeat ADJACENT and this one
+  is a doubled PHRASE.
+- Eleven `NUVEEN LIFECYCLE INDEX … INST` rows publish the generic 0.1 and no
+  symbol (the TIAA-CREF → Nuveen rename family), and `MFS EQUITY INCOME R6` →
+  EQNVX, `HARTFORD STRATEGIC INCOME R6` → HSNVX and `AMERICAN CENTURY SMALL CAP
+  VALUE R6` → ASVDX each publish a **symbol with no fee beside it** — the
+  91,423-row ticker-without-fee class.
+
+---
+
 ## 2026-10-02 (03:0xZ) — the SEC registry stored its own names HTML-escaped, and one escape denied 1.08M readers an exact ticker
 
 **WHAT WAS WRONG.** `sec-funds.json` carried entity references intact from SEC's
