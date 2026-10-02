@@ -7,6 +7,217 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-02 (12:5xZ) — the lost space in the ISSUER column, and the evidence had to come from the column being repaired
+
+**What was wrong.** `weldRepair` (v519, merge-side) repairs a lost space at a
+CamelCase seam in the holding NAME. The same damage stands in the ISSUER column,
+which that arm never read. Gehl Foods (1,110 ppl) publishes `Enter N Fund` with
+issuer `JanusHenderson`. *A fix for one COLUMN is not a fix for the class* —
+this record's fifth surface of that shape, after POSITION, COLUMN, PHRASING and
+CLASS.
+
+It is not only honesty: `lookupTicker` PREPENDS the issuer (app.js, since v67)
+and `resolveHolding` reads it too, so damaged issuer text can block a match the
+repaired form would make. Measured, it does.
+
+**RE-SIZED against the current store and unchanged from the draw:** 188 rows /
+52 entries / 52 plans / **119,370 participants** / $1,585,923,998, 30 distinct
+transformations, every one read and every one a real firm. #545 renamed 489
+holding NAMES, which can move attestation counts; it did not move these, because
+the evidence is the issuer column's own.
+
+### The change
+
+`weldRepair` takes its attestation evidence as a PARAMETER, defaulting to the
+name maps, and the issuer arm passes maps built over the issuer column. **One
+predicate asked twice, never a second copy** — the v185 rule, and here it is
+what makes the two asks provably the same question.
+
+### The design constraint was measured, and it is the finding
+
+**THE ATTESTATION EVIDENCE MUST COME FROM THE COLUMN BEING REPAIRED.** Asked
+with the maps the shipped arm holds — built over NAMES — the same function reads
+**827 rows / 697,199 ppl, and 668 of those are `AllianceBernstein` -> `Alliance
+Bernstein`**: the one wrong repair #545 names as its own cost, **amplified
+42-fold**, because that firm's joined spelling is common in FUND names and rare
+as a standalone issuer. Under the issuer column's own evidence it is attested
+682 joined against 1,138 spaced and is **REFUSED** (1,138 > 2,046 is false).
+*A repair whose evidence comes from a different population than the one it edits
+inherits that population's damage.* ***Do not carry 827 or 697,199 forward.***
+
+**And `whole` over issuers IS the second witness the queue asked for.** The
+entry proposed `stripIssuerLead`'s standalone test; that measurement actually
+lives in the CAPTION STRIP 250 lines above — its pass 1 counts how often each
+issuer value stands ALONE — and `whole` built over the issuer column is that
+count. No third test was invented, and the queue entry's attribution is
+corrected.
+
+### The queue's "one seam per call needs a loop" is REFUTED by measurement
+
+A fixpoint loop repairs **exactly the same 188 rows and changes 0 answers**. The
+residue `TRowePrice` -> `TRowe Price` (12 rows) and `T.RowePrice` -> `T.Rowe
+Price` (2) is a HALF repair whose remaining seam is `T|R` — uppercase then
+uppercase — which SEAM cannot see (it requires `[a-z][A-Z]`) and which the
+all-caps arm cannot either (it requires `\b[A-Z]{8,}\b`). Asked directly,
+`"TRowe Price".match(SEAM)` is **EMPTY**. So it is outside both arms BY
+CONSTRUCTION and not for want of a pass; an uppercase-uppercase seam finder is a
+separate measurement. **The half repair is not worthless — it is what buys
+Cantex's two fees (null -> 0.49).**
+
+### Outcome, through the page's own render
+
+Before store vs after store, every column positive-controlled first, with an
+EXACT pre-filter derived from the predicate's own first condition — 189
+candidate rows rendered twice, not 1.7M.
+
+| | |
+|---|---|
+| ticker | **+3 / -0 / 0 flipped** |
+| fee | **+3 / -0 / 1 changed** |
+| asterisk | **+2 / -0** |
+| stored `stk` | **+1 / -0 / 0 changed** |
+
+**So it is NOT ticker-neutral and is not claimed to be.** All three gains read
+against the registry: `American New Perspective R6` [`AmericanFunds` ->
+`American Funds`] gains **RNPGX**, which `sec-funds.json` registers as that
+series' Class R-6 and which **twenty-odd sibling rows of the same name already
+publish** — the repaired row joins them, which is the strongest corroboration
+available; and Sonoco's (11,589 ppl) two State Street collective trusts gain
+**SSSYX** and **MDY behind the asterisk**, where the footnote's claim (a
+collective trust with no ticker and no published ER) is TRUE of an `SL CL II`
+unit class. The one fee CHANGE is **0.03 -> 0.02** on that row: an unattributed
+generic replaced by the named comparable's own figure, under a label. Both
+asterisk moves are GAINS, which is the weaker claim.
+
+**MY FIRST OUTCOME TEST PASSED THE OLD `stk` TO BOTH SIDES** and so could not
+see the one `stk` the merge gains. ***A before/after harness that cannot express
+a change has not measured one*** — the 03:0xZ lesson about a missing loss
+bucket, met in the gain direction.
+
+**ADDITIVE OR NAMED, verified by running the real `merge-4i` with no deltas and
+diffing all 64 shards field by field:** 0 acks added or removed, 0 row-count
+changes, 0 sums moved, `iss` on 188, `ftk`/`tk`/`value`/`type` on **0**, and
+`lineups-status` / `lineups-index` / `plans-index` byte-identical once
+`generated` is removed. The 1 `name` change in that diff is **HEAD's OWN**
+residual arm: HEAD's merge on the same store prints `lost-space repair: 1 rows
+across 1 plans` and `sec tickers: 479694`, so this arm's contribution is **+1
+row / +0 plans**, attributed to the digit rather than differenced against a
+remembered number.
+
+**SURFACE: 3 crawlable pages** (`build-seo-pages.mjs:258` prints the issuer),
+every changed cell read — `Northern Trust Globalinvestments` -> `Northern Trust
+Global Investments`, Sonoco's eleven `Statestreet Global Advisors` cells, and
+`Principal Global Investorstrust Co.` And **`titleCase` had been LOWERCASING the
+seam**, so the page showed `Statestreet` and `Investorstrust` where the store
+showed the capitals: v519's finding again, the display transform making the
+damage harder to see than the data.
+
+### Costs, named: 19 of 188 rows, and 0 published cells move on any of them
+
+- **`OppenheimerFunds` -> `Oppenheimer Funds`, 17 rows.** `OppenheimerFunds,
+  Inc.` was the firm's OFFICIAL one-word styling, so this is a wrong repair. The
+  store's own issuer column writes the spaced form 60 times against the joined
+  17, so the row lands on the majority filed spelling. Protecting it needs a
+  vocabulary of one-word firm brands: the registry has no `oppenheimerfunds`,
+  and a house list is wrong in the unsafe direction.
+- **`AllianceBernstien` -> `Alliance Bernstien`, 2 rows.** The filer misspelled
+  a one-word brand; both forms are wrong and the repair moves from one to
+  another that 5 rows use. **It is the ONLY transformation disjunct (1) — the
+  pre-#545 rule — contributes to this column**, measured, so that disjunct is
+  load-bearing here only for a wrong repair. It is kept anyway rather than
+  forked per column: one predicate asked twice is worth two cosmetic rows, and
+  the test asserts the figure so a later store surfaces as a surprise.
+- **The ratio's own cost: `JohnHancock Insurance Company` -> `John Hancock
+  Insurance Company` is a CORRECT repair REFUSED by one factor** (joined 33,
+  repaired 72, and 72 > 99 is false), 33 rows. Refusing a repair is the safe
+  direction.
+
+### What the conditions are worth, priced rather than asserted
+
+**THE RATIO IS THE WHOLE GUARD.** Replacing it with a bare attestation floor
+admits **940 further rows**, of which **729 are the `AllianceBernstein` family** —
+the same wrong repair the NAME maps produce, reached from the other direction —
+plus `MainStay` -> `Main Stay` (50), `AssetMark` -> `Asset Mark` (26),
+`IndexSelect` (53) and `EuroPacific` (13), every one a real one-word brand.
+
+**THE REGISTRY WITNESS IS DECORATIVE FOR THIS COLUMN AND IS LABELLED SO:**
+dropping `regSpellsJoined` changes **0 of the 188 rows**, because the ratio
+already refuses every real one-word brand the registry knows (`BlackRock` joined
+8,984 against `Black Rock` 0, `MassMutual` 971, `TransAmerica` 2,771,
+`ClearBridge` 440, `FullerThaler` 25). It is NOT decorative for the NAME column,
+where the existing `weld-nowitness` control fails by name on PCRIX — and it is
+one function, so the condition is already controlled. **Constraint (4) answered
+in both directions: the registry's registrant column DOES carry firm words and
+reaches 337 issuer values, and it is nonetheless redundant here.**
+
+**`w > joined * 3` DEGENERATES TO `w > 0` WHEN `joined` IS 0**, so one
+attestation would license a repair. What forces `w >= 4` is that the arm is
+asked only about strings drawn from the very column its maps are built from,
+which makes `joined >= 1` true by construction (the maps are a snapshot taken
+before the loop, so a row repaired earlier cannot move them). The test ASSERTS
+every issuer pin is in-population for that reason: **`ExxonMobil` is attested 0
+times as an ISSUER and `Exxon Mobil` once, and the predicate splits it** — a
+branch production cannot reach, so pinning it would pin behaviour that does not
+exist and invite a floor that changes nothing.
+
+### Gates
+
+**31 new pins in `scripts/merge-name-test.mjs`, added because of the 27 existing
+weld cases 10 answer differently under the issuer maps and ALL TEN GO TO NULL** —
+they are fund names and the issuer column attests nothing for them, so not one is
+a must-REPAIR here and the existing table could not have verified any issuer
+repair. (That unanimity is also evidence the arm is not a blanket widening:
+handed the wrong column's string it refuses.) Every pin was run through the
+SHIPPED predicate before it was written down, with its (joined -> repaired)
+counts read off the store.
+
+**A negative control PER CONDITION, each ASSERTED to have landed via the file's
+own `cut()`:** the NAME maps fail by name on **4 of 31** including
+`AllianceBernstein`; the bare floor on **8**; dropping disjunct (1) on exactly
+**1**; the halves PRE-FILTER on **0**, labelled DECORATIVE as the caps arm's
+equivalent is.
+
+**AND THE `cut()` ASSERTION CAUGHT MY OWN EDIT ON THE FIRST RUN.** Taking the
+evidence as a parameter renamed `cnt` to `CNT` inside `weldRepair`, so the drift
+control's target string moved and the harness **refused to run**, naming the
+string. That is the exact complement of #545's failure, where the same control
+went decorative the moment `weldRepair` grew a disjunction and printed
+*"disagrees on 0 of 20"* as though that were a result.
+
+**THE CALL-SITE ORDER is controlled on a CRAFTED row, because it is DECORATIVE
+on this store** — measured, **0 of 1,730,676** published rows have BOTH columns
+damaged (188 issuer-only, 1 name-only). The NAME arms are five rules joined by
+`continue` and the issuer is a DIFFERENT COLUMN, so it is asked FIRST; moving the
+call after the chain leaves the crafted row's issuer unrepaired. **My first
+crafted strings were too short for SEAM** — it needs `[A-Za-z]{3,}[a-z][A-Z]
+[a-z]{2,}`, so a six-letter `FooBar` cannot match and the control failed rather
+than passing quietly.
+
+`parser-gate` green (frozen tether 7/7), `smoke-test` green, `fund-er-test`
+83/26/19/18/28, `lib-disclose --selftest` 25/25, `merge-name-test` 27/27 weld,
+22/22 caps, 25/25 stripIssuerLead, 20/20 secTypeAdmits, 22/22 rotRepair, 15/15
+cipherRepair, **31/31 issuer**.
+
+**AND THE DISPLAY HARNESS WAS REBUILT**: `scratchpad/apppath.mjs` was wiped by a
+container restart, so it was re-sliced from app.js's own body (down to
+`window.__wampoLookupTicker`) with `fund-er.js` and `lib-disclose` supplied, and
+positive-controlled before any count — `500 Index Fund` {} / {Vanguard} /
+{Fidelity} give null / VFIAX / FXAIX, and `Target Retirement 2030 Fund` {} ->
+null/null against {Vanguard} -> VTHRX/0.08, so both the ticker and the FEE are
+shown reachable through the issuer.
+
+**PREVENTION.** The predicate takes its evidence as a parameter, so a third
+column cannot be served by a second copy; the test asserts every pin is
+in-population, which closes the `joined === 0` branch against a future pin; and
+the call-site order has a crafted control, so the `continue` chain growing a
+sixth arm cannot silently swallow the issuer repair.
+
+**MERGE-SIDE, no `PARSER_VERSION` bump (197), so the work list stays the stale
+acks. PRE-REGISTERED** — see the commit message and `CLAUDE.md`.
+
+---
+
+
 ## 2026-10-02 (12:3xZ) — the draw: a retired brand sized at 2.16M readers, and two of my own screens refuted by their own output
 
 Participant-weighted random draw from published lineups, seed 20261002123, pool

@@ -1295,9 +1295,134 @@ from the cycle that would have cleared it.
   / 2 typings across 280 plans / 365,305 ppl. **Register the SUM of the two, not
   each in turn** — the 00:3xZ/#541 lesson about two reporting changes queueing
   behind one run.
-- **THE 11:5xZ DRAW FOUND #545's OWN FIX ONE COLUMN SHORT, AND THE TWO CANDIDATE
-  EVIDENCE SOURCES DISAGREE IN A WAY THAT DECIDES THE DESIGN — QUEUED, SIZED,
-  NOT SHIPPED: 188 rows / 52 entries / 52 plans / 119,370 participants /
+- **COMMITTED, NOT PUSHED, GATED AND PRE-REGISTERED 2026-10-02 12:5xZ — THE LOST
+  SPACE IN THE ISSUER COLUMN: 188 rows / 52 entries / 52 plans / 119,370
+  participants / $1,585,923,998, 30 distinct transformations, ALL READ. The
+  re-size against the current store reproduces the draw's figure EXACTLY**, which
+  is the right answer rather than a coincidence: #545 renamed 489 holding NAMES
+  and this arm's evidence is the issuer column's own.
+  `weldRepair` now takes its attestation evidence as a PARAMETER, defaulting to
+  the name maps, so it is **one predicate asked twice and never a second copy** —
+  the v185 rule, and what makes the two asks provably the same question. The
+  issuer arm is asked FIRST and OUTSIDE the five-arm `continue` chain, because a
+  different COLUMN must not be skipped because a name arm fired.
+  **THE DESIGN CONSTRAINT IS THE FINDING AND IT WAS MEASURED: the evidence must
+  come from the COLUMN BEING REPAIRED.** Asked with the NAME maps the same
+  function reads **827 rows / 697,199 ppl, 668 of them `AllianceBernstein` ->
+  `Alliance Bernstein`** — #545's own named cost amplified 42-fold — and the
+  issuer column's own evidence REFUSES it (joined 682 against 1,138 spaced,
+  1,138 > 2,046 false). ***Do not carry 827 or 697,199 forward.*** And `whole`
+  over issuers IS the second witness the queue asked for; that standalone count
+  lives in the CAPTION STRIP, not in `stripIssuerLead`, and the attribution is
+  corrected.
+  **THE QUEUE'S "ONE SEAM PER CALL NEEDS A LOOP" IS REFUTED BY MEASUREMENT: a
+  fixpoint loop repairs the same 188 rows and changes 0 answers.** `TRowePrice`
+  -> `TRowe Price` (12) and `T.RowePrice` -> `T.Rowe Price` (2) are HALF repairs
+  whose remaining seam is `T|R`, uppercase then uppercase — outside SEAM
+  (`[a-z][A-Z]`) and outside the all-caps arm (`\b[A-Z]{8,}\b`) BY CONSTRUCTION;
+  `"TRowe Price".match(SEAM)` is EMPTY. An uppercase-uppercase seam finder is a
+  separate measurement. **The half repair is not worthless — it buys Cantex's two
+  fees (null -> 0.49).**
+  **OUTCOME through the page's own render, before store vs after store, every
+  column positive-controlled first, EXACT pre-filter of 189 candidate rows and
+  not 1.7M: ticker +3 / −0 / 0 flipped, fee +3 / −0 / 1 changed, asterisk +2 /
+  −0, stored `stk` +1 / −0 / 0 changed. So it is NOT ticker-neutral and is not
+  claimed to be.** All three gains read against the registry: `American New
+  Perspective R6` gains **RNPGX**, that series' registered Class R-6, which
+  **twenty-odd sibling rows of the same name already publish** — the repaired row
+  joins them; and Sonoco's (11,589 ppl) two State Street collective trusts gain
+  SSSYX and MDY **behind the asterisk**, whose footnote claim is TRUE of an `SL
+  CL II` unit class. The one fee CHANGE is 0.03 → 0.02, an unattributed generic
+  replaced by the named comparable's own figure under a label. **MY FIRST OUTCOME
+  TEST PASSED THE OLD `stk` TO BOTH SIDES** and so could not see the `stk` gain —
+  *a before/after harness that cannot express a change has not measured one.*
+  **ADDITIVE OR NAMED, by running the real merge with no deltas and diffing all
+  64 shards field by field: 0 acks added or removed, 0 row-count changes, 0 sums
+  moved, `iss` on 188, `ftk`/`tk`/`value`/`type` on 0**, and `lineups-status` /
+  `lineups-index` / `plans-index` byte-identical once `generated` is removed. The
+  1 `name` change is **HEAD's OWN** residual — HEAD's merge on the same store
+  prints `lost-space repair: 1` and `sec tickers: 479694` — so this arm
+  contributes **+1 row / +0 plans**, attributed to the digit rather than
+  differenced against a remembered number. **SURFACE: 3 crawlable pages**, every
+  changed cell read, and **`titleCase` had been LOWERCASING the seam** so the page
+  showed `Statestreet` where the store showed the capitals — v519's finding again.
+  **COSTS NAMED, 19 of 188 rows, 0 published cells moving on any of them:**
+  `OppenheimerFunds` → `Oppenheimer Funds` (17), the firm's OFFICIAL one-word
+  styling, landing on the store's majority filed spelling (spaced 60 vs joined
+  17) and unprotectable without a one-word-brand vocabulary the registry lacks;
+  `AllianceBernstien` → `Alliance Bernstien` (2), a filer's misspelling of a
+  one-word brand and **the ONLY transformation disjunct (1) contributes to this
+  column**, kept rather than forked per column because one predicate asked twice
+  is worth two cosmetic rows; and the RATIO's own cost, `JohnHancock Insurance
+  Company` → `John Hancock Insurance Company`, a CORRECT repair refused by one
+  factor (joined 33, repaired 72, 72 > 99 false), 33 rows.
+  **THE RATIO IS THE WHOLE GUARD, priced: a bare attestation floor admits 940
+  further rows, 729 of them the `AllianceBernstein` family** plus `MainStay`
+  (50), `AssetMark` (26), `IndexSelect` (53), `EuroPacific` (13), every one a real
+  one-word brand. **THE REGISTRY WITNESS IS DECORATIVE FOR THIS COLUMN AND IS
+  LABELLED SO — 0 of 188** — because the ratio already refuses every brand it
+  knows (`BlackRock` 8,984 joined vs 0 spaced, `MassMutual` 971, `TransAmerica`
+  2,771, `ClearBridge` 440, `FullerThaler` 25); it is NOT decorative for the NAME
+  column, where `weld-nowitness` fails by name on PCRIX, and it is one function so
+  the condition is already controlled.
+  **`w > joined * 3` DEGENERATES TO `w > 0` WHEN `joined` IS 0**, and what forces
+  `w >= 4` is that the arm is asked only about strings drawn from the column its
+  maps are built from. The test ASSERTS every pin is in-population for that
+  reason: **`ExxonMobil` is attested 0 times as an ISSUER and `Exxon Mobil` once,
+  and the predicate splits it** — a branch production cannot reach, so pinning it
+  would pin behaviour that does not exist.
+  **31 NEW PINS, added because of the 27 existing weld cases 10 answer
+  differently under the issuer maps and ALL TEN GO TO NULL** — not one is a
+  must-REPAIR here, so the existing table could not have verified any issuer
+  repair, and that unanimity is itself evidence the arm is not a blanket
+  widening. A negative control PER CONDITION, each asserted via the file's own
+  `cut()`: NAME maps fail by name on **4 of 31** including `AllianceBernstein`,
+  the bare floor on **8**, dropping disjunct (1) on exactly **1**, the halves
+  PRE-FILTER on **0** and labelled DECORATIVE.
+  **AND THE `cut()` ASSERTION CAUGHT MY OWN EDIT ON THE FIRST RUN** — taking the
+  evidence as a parameter renamed `cnt` to `CNT`, the drift control's target moved
+  and the harness REFUSED TO RUN, naming the string. The exact complement of
+  #545's failure, where that control went decorative and printed "disagrees on 0
+  of 20" as a result. **THE CALL-SITE ORDER is controlled on a CRAFTED row because
+  it is DECORATIVE on this store — 0 of 1,730,676 rows have BOTH columns damaged**
+  — and moving the call after the chain leaves that row's issuer unrepaired; my
+  first crafted strings were too short for SEAM and the control FAILED rather than
+  passing quietly. `parser-gate` green (frozen tether 7/7), smoke green,
+  fund-er-test 83/26/19/18/28, `lib-disclose --selftest` 25/25, `merge-name-test`
+  27/27 weld / 22/22 caps / 25/25 stripIssuerLead / 20/20 secTypeAdmits / 22/22
+  rotRepair / 15/15 cipherRepair / **31/31 issuer**. `scratchpad/apppath.mjs` was
+  REBUILT (a container restart had wiped it) and positive-controlled before any
+  count.
+  **PRE-REGISTERED, and the whole-store totals are THIS ARM'S CONTRIBUTION PLUS
+  WHATEVER THE INCREMENTAL DELTA BRINGS — #545's `sec tickers` registration
+  missed by 3 rows because 40 newly merged entries fed a different rename arm,
+  while the figure DERIVED from measured set membership passed exactly.** The
+  merge log prints **`issuer lost-space repair: 188 rows across 52 plans`** plus
+  the delta's own hits; `lost-space repair` **1 + delta** (HEAD's residual on this
+  already-repaired store, the right before-value and not a stall); **`sec
+  tickers: 479695 rows across 48109 plans (113872 on a blank type cell)` + the
+  delta**, the row figure being 479,694 + **1** and the PLAN count **+0 derived
+  from measured set membership** rather than summed (a row delta is additive, a
+  plan count SATURATES); `filed tickers` **2,166 / 75** and `filed tickers
+  (trailing parenthetical)` **657 / 53** unchanged by this arm; CONFIDENCE DIFF
+  **+0 / −0** and `rows-dropped` **0**, because this renames one CELL and never
+  drops a row or moves a sum (measured: 0 sums moved, 0 row-count changes);
+  confident **60,167**, lineups **59,819**, entries **65,480**, **HIGH 4** (3
+  `contrib` + `fabricated-name`), warn **556**, overshoot **372**, overshootTrust
+  **12**, aggRow **114**, dl **39**, pv 197 at ~100%; **`tkExact` 37.33 and
+  `tkComparable` 3.27 CANNOT MOVE** — `audit-data` calls `fundTickerInfo` with ONE
+  argument, so it reads neither the stored `stk` nor the issuer, which is a
+  stronger claim than a tolerance — and **`tkShare` 24.49 is a 1-in-20 positional
+  sample, so a hair of movement there is phase and not signal.**
+  `docs/accuracy-log.md` 2026-10-02 (12:5xZ).
+- **SUPERSEDED BY THE BULLET ABOVE — SHIPPED 2026-10-02 12:5xZ; its 188 / 52 /
+  52 / 119,370 figures are EXACTLY the shipped ones, and its "a loop or a second
+  pass is needed" was REFUTED by measurement. Kept because the 827-row
+  wrong-column number must not be carried forward and because the second draw's
+  Kroger loan-asset finding is still open. THE 11:5xZ DRAW, as written:**
+  **#545's OWN FIX ONE COLUMN SHORT, AND THE TWO CANDIDATE
+  EVIDENCE SOURCES DISAGREE IN A WAY THAT DECIDES THE DESIGN — 188 rows / 52
+  entries / 52 plans / 119,370 participants /
   $1,585,923,998 publish a FIRM whose name has lost a space.** Seed 20261002114,
   pool **59,378 published plans / 100,067,338 ppl**. **Gehl Foods (1,110 ppl, 26
   rows @ 0.984)** reads clean and publishes `Enter N Fund` with issuer

@@ -31,11 +31,22 @@ if (!/capsRepair/.test(body)) throw new Error("slice missed capsRepair");
 
 // the real store's attestation maps, built the way the block builds them
 const whole = new Map(), tok = new Map(), caseOf = new Map();
+/* AND THE SAME MAPS OVER THE ISSUER COLUMN — 2026-10-02 (12:3xZ). `weldRepair`
+ * takes its evidence as a parameter so one predicate serves both columns; the
+ * test therefore has to build both, because feeding the issuer arm the NAME
+ * column's evidence is precisely the defect the issuer control exists to catch. */
+const issWhole = new Map(), issTok = new Map();
 for (let s = 0; s < 64; s++) {
   const E = JSON.parse(fs.readFileSync(`${R}/data/lineups/${String(s).padStart(2,"0")}.json`, "utf8"));
   for (const [, e] of Object.entries(E)) {
     if (!e || !e.confident || !Array.isArray(e.funds)) continue;
     for (const f of e.funds) {
+      const v = String(f.iss || "").trim();
+      if (v) {
+        issWhole.set(v.toLowerCase(), (issWhole.get(v.toLowerCase()) || 0) + 1);
+        for (const t of v.split(/[^A-Za-z]+/))
+          if (t.length > 1) issTok.set(t.toLowerCase(), (issTok.get(t.toLowerCase()) || 0) + 1);
+      }
       const n = String(f.name || "").trim(); if (!n) continue;
       const k = n.toLowerCase();
       whole.set(k, (whole.get(k) || 0) + 1);
@@ -65,7 +76,12 @@ function make(drop) {
    * did nothing, and the harness printed "disagrees on 0 of 20" as though that
    * were a result. Asserted now, like every `cut()` below. */
   if (drop === true) {
-    const from = "const shipped = cnt(t) <= 2 && w >= 3;";
+    /* `cnt` became `CNT` when `weldRepair` took its evidence as a parameter —
+     * and THIS ASSERTION is what caught that edit, by name, on the first run.
+     * The complement of #545's lesson: the control went decorative when the
+     * function grew a disjunction and printed 0 as a result; asserted, it now
+     * refuses to run instead. */
+    const from = "const shipped = CNT(t) <= 2 && w >= 3;";
     if (!b.includes(from)) throw new Error(`control "drift": target moved: ${from}`);
     b = b.replace(from, "const shipped = true;");
   }
@@ -96,20 +112,39 @@ function make(drop) {
   /* v529's GUARD PORTED BACK — one control per condition of the widened
    * disjunct, each built by surgery on the shipped source and each ASSERTED to
    * have landed. */
-  cut("weld-noshipped", "const shipped = cnt(t) <= 2 && w >= 3;", "const shipped = false;");
+  cut("weld-noshipped", "const shipped = CNT(t) <= 2 && w >= 3;", "const shipped = false;");
   cut("weld-nowidened", "const widened = !!secWords && w > joined * 3 && !regSpellsJoined(t);", "const widened = false;");
   cut("weld-noratio", "const widened = !!secWords && w > joined * 3 && !regSpellsJoined(t);",
                       "const widened = !!secWords && w >= 3 && !regSpellsJoined(t);");
   cut("weld-nowitness", "const widened = !!secWords && w > joined * 3 && !regSpellsJoined(t);",
                         "const widened = !!secWords && w > joined * 3;");
   cut("weld-nocontain", "    for (const w of secWords) if (w.length > k.length && w.includes(k)) return true;\n", "");
-  vm.runInContext(b + "\n; this.__w = weldRepair; this.__c = capsRepair; this.__b = bangRepair; this.__whole = whole; this.__tok = tok; this.__caseOf = caseOf;", ctx);
+  /* THE ISSUER ARM'S OWN CONTROLS — 2026-10-02 (12:3xZ). The conditions are the
+   * same lines (one predicate, two populations), so the surgery is the same and
+   * is asserted the same way; what differs is the EVIDENCE, and `iss-namemaps`
+   * is handled at the return rather than by surgery. */
+  cut("iss-noratio", "const widened = !!secWords && w > joined * 3 && !regSpellsJoined(t);",
+                     "const widened = !!secWords && w >= 3 && !regSpellsJoined(t);");
+  cut("iss-noshipped", "const shipped = CNT(t) <= 2 && w >= 3;", "const shipped = false;");
+  cut("iss-nohalves", "if (CNT(L) < 3 || CNT(Rt) < 3) continue;        // both halves ordinary published words", "");
+  vm.runInContext(b + "\n; this.__w = weldRepair; this.__c = capsRepair; this.__b = bangRepair; this.__whole = whole; this.__tok = tok; this.__caseOf = caseOf; this.__issWhole = issWhole; this.__issTok = issTok; this.__issEv = ISS_EV; this.__nameEv = { whole, cnt };",
+    ctx);
   for (const [k, v] of whole) ctx.__whole.set(k, v);
   for (const [k, v] of tok) ctx.__tok.set(k, v);
+  for (const [k, v] of issWhole) ctx.__issWhole.set(k, v);
+  for (const [k, v] of issTok) ctx.__issTok.set(k, v);
   /* `caseOf` is built from `buckets`, which this context stubs empty, so it is
    * filled here the way `whole`/`tok` are — otherwise the `!` arm would have no
    * case witness and every control would read the same. */
   for (const [k, v] of caseOf) ctx.__caseOf.set(k, v);
+  /* THE ISSUER ARM, which is the SAME function under the SAME variant with the
+   * column's own evidence. `iss-namemaps` hands it the NAME maps instead —
+   * constraint 1's control, and the one that matters most here. */
+  if (String(drop || "").startsWith("iss")) {
+    const ev = drop === "iss-namemaps" ? ctx.__nameEv : ctx.__issEv;
+    const f = ctx.__w;
+    return (s) => f(s, ev);
+  }
   if (String(drop || "").startsWith("bang")) return ctx.__b;
   if (String(drop || "").startsWith("weld")) return ctx.__w;
   return String(drop || "").startsWith("caps") ? ctx.__c : ctx.__w;
@@ -291,6 +326,198 @@ for (const [inp, want] of CAPS_CASES) {
 console.log(`  it now disagrees on ${capsBrokeW.length} of ${CAPS_CASES.length}:`);
 for (const b of capsBrokeW) console.log(`    ${b}`);
 if (capsBad) process.exitCode = 1;
+
+/* ---------------------------------------------------------------------- *
+ * CONTROL for merge-4i's ISSUER LOST-SPACE REPAIR — 2026-10-02 (12:3xZ).
+ *
+ * The SAME `weldRepair`, asked with the ISSUER column's own attestation
+ * evidence. It is one predicate and two populations, so the conditions are
+ * already controlled by the `weld-*` controls above; what is NEW and needs its
+ * own control is the EVIDENCE COLUMN.
+ *
+ * NEW PINS, and the reach measurement that justifies them: of the 27 existing
+ * weld cases, 10 answer DIFFERENTLY under the issuer maps and all 10 go from a
+ * repair to NULL — they are fund names, and the issuer column attests nothing
+ * for them. So not one existing case is a must-REPAIR here and the table could
+ * not have verified any issuer repair. (That unanimity is also evidence the arm
+ * is not a blanket widening: hand it the wrong column's string and it refuses.)
+ *
+ * EVERY PIN IS IN-POPULATION, asserted below, and that assertion is load-
+ * bearing rather than tidiness. `w > joined * 3` degenerates to `w > 0` when
+ * `joined` is 0, so ONE attestation would license a repair — and the caps arm's
+ * claim that the ratio "already forces w >= 4" holds only because the arm is
+ * asked about strings drawn from the very column its maps are built from, which
+ * makes `joined >= 1` true by construction. `ExxonMobil` is the case that shows
+ * it: as an ISSUER it is attested 0 times, `Exxon Mobil` once, and the
+ * predicate SPLITS it — a branch production can never reach, so pinning it
+ * would pin behaviour that does not exist and invite a floor that changes
+ * nothing. It is deliberately not a pin. */
+const iss = make("iss");
+const issNameMaps = make("iss-namemaps"), issNoRatio = make("iss-noratio");
+const issNoShipped = make("iss-noshipped"), issNoHalves = make("iss-nohalves");
+const ISS_CASES = [
+  /* must REPAIR — read in the store, ALL 30 distinct transformations reviewed.
+   * The counts in the comments are (joined -> repaired) standalone issuer
+   * attestations, read off the store rather than remembered. */
+  ["John HancockLife Insurance Company", "John Hancock Life Insurance Company"],   // 36 -> 5140
+  ["T. RowePrice", "T. Rowe Price"],                                               // 19 -> 14619
+  ["StateStreet Global Advisors", "State Street Global Advisors"],                  // 15 -> 1384
+  ["AmericanFunds", "American Funds"],                                             // 10 -> 33626
+  ["JanusHenderson", "Janus Henderson"],                                           //  7 -> 1735
+  ["GoldmanSachs", "Goldman Sachs"],                                               //  5 -> 1287
+  ["GreatGray Trust Company", "Great Gray Trust Company"],                         //  4 -> 5118
+  ["WilmingtonTrust", "Wilmington Trust"],                                         //  3 -> 1431
+  ["MatrixTrust Company", "Matrix Trust Company"],                                 //  1 -> 866
+  ["Principal Global investorsTrust Co.", "Principal Global investors Trust Co."],  //  1 -> 947
+  ["ValueLine", "Value Line"],                                                     //  1 -> 14
+  /* A HALF REPAIR, PINNED AS ONE. The remaining seam is `T|R` — uppercase then
+   * uppercase — and SEAM requires `[a-z][A-Z]`, so it is outside this arm BY
+   * CONSTRUCTION and not for want of a second pass: a fixpoint loop repairs the
+   * same 188 rows and changes 0 answers, measured. It is pinned because it is
+   * not worthless — it is what buys Cantex's two fees (null -> 0.49). */
+  ["TRowePrice", "TRowe Price"],                                                   // 12 -> 60
+  ["T.RowePrice", "T.Rowe Price"],                                                 //  2 -> 808
+  /* TWO NAMED COSTS, pinned on the side they land rather than wished away.
+   * `OppenheimerFunds, Inc.` was the firm's OFFICIAL one-word styling, so this
+   * is a wrong repair on 17 rows; it moves 0 tickers, 0 fees and 0 asterisks,
+   * and the store's own issuer column writes the spaced form 60 times against
+   * the joined 17, so the row lands on the majority filed spelling. Protecting
+   * it needs a vocabulary of one-word firm brands — the registry has no
+   * `oppenheimerfunds`, and a house list is wrong in the unsafe direction. */
+  ["OppenheimerFunds", "Oppenheimer Funds"],                                       // 17 -> 60
+  /* ...and the second cost is the ONLY transformation disjunct (1) contributes
+   * to this column. The filer misspelled AllianceBernstein (ei -> ie); both
+   * forms are wrong and the repair moves from one to another that 5 rows use.
+   * Dropping disjunct (1) loses exactly this and nothing else — so the
+   * `iss-noshipped` control below documents a COST, not a protection. */
+  ["AllianceBernstien", "Alliance Bernstien"],                                     //  2 -> 5
+  /* must KEEP — THE JOINED SPELLING IS THE FIRM'S NAME, and the ratio reads it
+   * off the store with no vocabulary. `AllianceBernstein` is the pin that
+   * proves constraint 1: under the issuer column's evidence it is attested 682
+   * times joined against 1138 spaced and is REFUSED (1138 > 2046 is false),
+   * where the NAME column's evidence SPLITS IT 668 TIMES. */
+  ["AllianceBernstein", null],                                                     // 682 vs 1138
+  ["AllianceBerstein", null],                                                      //  27 vs 24
+  ["MainStay", null],                                                              //  95 vs 3
+  ["AssetMark", null],                                                             //  26 vs 6
+  ["IndexSelect", null],                                                           //  55 vs 49
+  ["MetroWest", null],                                                             //   3 vs 4
+  ["EuroPacific", null],                                                           //  19 vs 5
+  /* must KEEP — the registry ALSO spells these joined inside a fund's own
+   * registered name, so two independent conditions refuse each. They are the
+   * same strings the `weld-nowitness` control above already exercises on the
+   * name side; here the ratio alone is decisive (measured: dropping the witness
+   * changes 0 of the 188 issuer rows, so for THIS column the witness is
+   * DECORATIVE and is labelled so rather than claimed). */
+  ["BlackRock", null],                                                             // 8984 vs 0
+  ["MassMutual", null],                                                            //  971 vs 0
+  ["TransAmerica", null],                                                          // 2771 vs 0
+  ["ClearBridge", null],                                                           //  440 vs 0
+  ["FullerThaler", null],                                                          //   25 vs 0
+  /* must KEEP — A CORRECT REPAIR THE RATIO REFUSES, named as the ratio's own
+   * cost rather than hidden: `John Hancock Insurance Company` is attested 72
+   * times against the joined 33, and 72 > 99 is false, so it is refused by one
+   * factor. 33 rows. Refusing a repair is the safe direction. */
+  ["JohnHancock Insurance Company", null],                                         //  33 vs 72
+  /* must KEEP — ALREADY REPAIRED, so the arm has to be a FIXPOINT. It runs on
+   * every merge over a store it has already edited, and the store carries 60
+   * `TRowe Price` and 808 `T.Rowe Price` rows that must not drift further. */
+  ["TRowe Price", null],
+  ["T.Rowe Price", null],
+  ["Alliance Bernstien", null],
+];
+let issBad = 0;
+for (const [inp, want] of ISS_CASES) {
+  const got = iss(inp) || null;
+  if (got !== want) { issBad++; console.log(`  FAIL  ${JSON.stringify(inp)}\n        want ${JSON.stringify(want)}\n        got  ${JSON.stringify(got)}`); }
+}
+console.log(`\nissuer lost-space repair: ${ISS_CASES.length - issBad}/${ISS_CASES.length} pinned cases`);
+/* EVERY PIN IN-POPULATION — see the note above: an out-of-population pin tests
+ * the `joined === 0` branch, which production cannot reach. */
+{
+  const out = ISS_CASES.filter(([s]) => !issWhole.get(String(s).trim().toLowerCase()));
+  console.log(`  pins drawn from the issuer column itself: ${ISS_CASES.length - out.length}/${ISS_CASES.length}`);
+  if (out.length) { console.log(`  OUT OF POPULATION (joined === 0, a branch production cannot reach): ${out.map(([s]) => JSON.stringify(s)).join(", ")}`); issBad++; }
+}
+/* REACH: how many of the NAME table's cases could have caught an issuer change */
+{
+  const reach = CASES.filter(([inp]) => (shipped(inp) || null) !== (iss(inp) || null));
+  console.log(`  of the ${CASES.length} existing weld cases, ${reach.length} answer differently under the issuer maps — and ${reach.filter(([inp]) => iss(inp) == null).length} of those go to NULL, so none is a must-REPAIR here`);
+}
+for (const [f, label] of [
+  [issNameMaps, "CONSTRAINT 1 — feed it the NAME column's evidence (the recorded 827-row / 697,199-ppl mistake)"],
+  [issNoRatio, "replace the ratio with a bare attestation floor"],
+  [issNoShipped, "drop disjunct (1), the shipped rule — this documents a COST, not a protection"],
+  [issNoHalves, "drop the both-halves-attested PRE-FILTER"],
+]) {
+  const brk = [];
+  for (const [inp, want] of ISS_CASES) {
+    const got = f(inp) || null;
+    if (got !== want) brk.push(`${JSON.stringify(inp)} -> ${JSON.stringify(got)}`);
+  }
+  console.log(`\nNEGATIVE CONTROL — ${label}:\n  disagrees on ${brk.length} of ${ISS_CASES.length}:`);
+  for (const x of brk) console.log(`    ${x}`);
+  if (!brk.length) {
+    /* the halves test is a PRE-FILTER and is measured DECORATIVE on this store
+     * (0 of 188 rows), exactly as the caps arm's is; it is named rather than
+     * carried as reassurance, and the whole-store 0 is in merge-4i's comment. */
+    if (f === issNoHalves) console.log(`  DECORATIVE on this store, as the caps arm's equivalent is — labelled, not claimed`);
+    else { console.log(`  DECORATIVE: this control cannot fail — it is not testing anything`); process.exitCode = 1; }
+  }
+}
+if (issBad) process.exitCode = 1;
+
+/* THE CALL SITE'S ORDER, controlled on a CRAFTED case because it is DECORATIVE
+ * on this store — measured, 0 of 1,730,676 published rows have BOTH columns
+ * damaged (188 issuer-only, 1 name-only). A condition that cannot fire on the
+ * live store is controlled on a crafted one rather than claimed.
+ *
+ * The NAME arms are five rules joined by `continue`; the issuer is a DIFFERENT
+ * COLUMN and is asked first, so a row whose name repair fires still gets its
+ * issuer repaired. Move the call after the chain and the crafted row loses it. */
+{
+  const mkLoop = (after) => {
+    const i2 = src.indexOf("  let weld = 0, caps");
+    const j2 = src.indexOf("\n}", i2);
+    if (i2 < 0 || j2 < 0) throw new Error("loop slice moved");
+    let L = src.slice(i2, j2);
+    if (!/weldRepair\(f\.iss, ISS_EV\)/.test(L)) throw new Error("loop slice missed the issuer call");
+    if (after) {
+      const from = "        const irep = weldRepair(f.iss, ISS_EV);\n        if (irep) { f.iss = irep; iweld++; iweldAcks.add(ack); }\n";
+      if (!L.includes(from)) throw new Error(`control "order": target moved: ${from}`);
+      L = L.replace(from, "") .replace("        const brep = bangRepair(f.name);",
+        from + "        const brep = bangRepair(f.name);");
+    }
+    /* A crafted store: one row damaged in BOTH columns, plus just enough
+     * attestation for both repairs to clear the ratio (joined 1, repaired 5,
+     * and 5 > 3). The tokens are ≥7 characters with four before the seam,
+     * because SEAM is `[A-Za-z]{3,}[a-z][A-Z][a-z]{2,}` and a six-letter
+     * `FooBar` cannot match it — caught by this control failing, not by
+     * reading. */
+    const fill = (n, v) => Array.from({ length: n }, () => ({ name: v.name, iss: v.iss, value: 1 }));
+    const funds = [{ name: "FoodBar Growth Fund", iss: "BazzQux Trust Company", value: 1 },
+      ...fill(5, { name: "Food Bar Growth Fund", iss: "Bazz Qux Trust Company" })];
+    const bucket = { ACK1: { confident: true, funds } };
+    const ctx = { buckets: [bucket], SHARDS: 1, console: { log() {} }, JUNK_NAME_RE,
+      readFileSync: (f, enc) => fs.readFileSync(path.isAbsolute(f) ? f : `${R}/${f}`, enc) };
+    vm.createContext(ctx);
+    /* no braces: `body` and `L` are the block's two halves and the block's own
+     * `{ }` are outside both, exactly as `make()` runs `body` on its own */
+    vm.runInContext(body + L, ctx);
+    return funds[0];
+  };
+  const ok = mkLoop(false), bad = mkLoop(true);
+  console.log(`\nCALL-SITE ORDER (crafted — decorative on the live store, 0 rows have both columns damaged):`);
+  console.log(`  shipped order: name ${JSON.stringify(ok.name)}  iss ${JSON.stringify(ok.iss)}`);
+  console.log(`  issuer asked AFTER the chain: name ${JSON.stringify(bad.name)}  iss ${JSON.stringify(bad.iss)}`);
+  if (ok.name !== "Food Bar Growth Fund" || ok.iss !== "Bazz Qux Trust Company") {
+    console.log(`  FAIL: the shipped order must repair BOTH columns`); process.exitCode = 1;
+  }
+  if (bad.iss !== "BazzQux Trust Company" || bad.name !== "Food Bar Growth Fund") {
+    console.log(`  DECORATIVE: moving the call changed nothing — the control is not testing the order`);
+    process.exitCode = 1;
+  }
+}
 
 /* ---------------------------------------------------------------------- *
  * CONTROL for merge-4i's ISSUER LEADING-JUNK STRIP — 2026-09-30 (14:4xZ).

@@ -528,6 +528,162 @@ function stripIssuerLead(iss) {
       }
     }
   const cnt = (w) => tok.get(String(w).toLowerCase()) || 0;
+  /* THE SAME EVIDENCE, OVER THE ISSUER COLUMN — 2026-10-02 (12:3xZ).
+   *
+   * `weldRepair` below repairs a lost space at a CamelCase seam, and the same
+   * damage stands in the ISSUER column, which that arm never read. Gehl Foods
+   * (1,110 ppl) publishes `Enter N Fund` with issuer `JanusHenderson`; the
+   * class is `John HancockLife Insurance Company` (36 + 32), `T. RowePrice`
+   * (19), `OppenheimerFunds` (17), `StateStreet Global Advisors` (15),
+   * `AmericanFunds` (10), `GoldmanSachs`, `GreatGray Trust Company`,
+   * `WilmingtonTrust` and 22 more. *A fix for one COLUMN is not a fix for the
+   * class* — this record's fifth surface of that shape, after POSITION, COLUMN,
+   * PHRASING and CLASS.
+   *
+   * It is not only honesty: `lookupTicker` PREPENDS the issuer (app.js, v67),
+   * so damaged issuer text can block a match the repaired form would make, and
+   * `resolveHolding` reads the issuer too. Measured below — it is NOT
+   * ticker-neutral.
+   *
+   * THE ATTESTATION EVIDENCE MUST COME FROM THE COLUMN BEING REPAIRED, and
+   * that is the finding rather than a precaution. Asked with the maps the
+   * shipped arm holds — built over NAMES — the same function reads 827 rows /
+   * 697,199 ppl, and 668 of those are `AllianceBernstein` -> `Alliance
+   * Bernstein`: the one wrong repair #545 names as its own cost, AMPLIFIED
+   * 42-FOLD, because that firm's joined spelling is common in FUND names
+   * (`AllianceBernstein Small Cap Growth`) and rare as a standalone issuer. The
+   * issuer column's own evidence refuses it. *A repair whose evidence comes from
+   * a different population than the one it edits inherits that population's
+   * damage.* DO NOT CARRY 827 OR 697,199 FORWARD.
+   *
+   * SO IT IS ONE PREDICATE ASKED TWICE, never a second copy: `weldRepair` takes
+   * the evidence as a parameter and defaults to the name maps, so the NAME arm
+   * is unchanged by construction and the two asks are provably the same
+   * question. The v185 rule — one function, because the whole value of asking
+   * twice is that both asks are the same question.
+   *
+   * AND `whole` OVER ISSUERS IS ALREADY THE SECOND WITNESS THE QUEUE ASKED FOR.
+   * The entry proposed `stripIssuerLead`'s standalone test; that measurement
+   * actually lives in the CAPTION STRIP ~250 lines above (its pass 1 counts how
+   * often each issuer value stands ALONE), and `whole` built over the issuer
+   * column IS that count. No third test was invented.
+   *
+   * THE CLASS, re-sized against the current store and unchanged from the draw:
+   * 188 rows / 52 entries / 52 plans / 119,370 participants / $1,585,923,998,
+   * 30 distinct transformations, ALL READ. The real merge reproduces it exactly.
+   *
+   * OUTCOME through the page's own render, before store vs after store, every
+   * column positive-controlled first and the EXACT pre-filter being the
+   * predicate's own first condition (189 candidate rows, not 1.7M): ticker
+   * **+3 / -0 / 0 flipped**, fee **+3 / -0 / 1 changed**, asterisk **+2 / -0**.
+   * So it is NOT ticker-neutral and is not claimed to be. All three gains read
+   * against the registry: `American New Perspective R6` [AmericanFunds ->
+   * American Funds] gains RNPGX, which `sec-funds.json` registers as that
+   * series' Class R-6 and which twenty-odd SIBLING ROWS OF THE SAME NAME ALREADY
+   * PUBLISH — the repaired row joins them, which is the strongest corroboration
+   * available; and Sonoco's (11,589 ppl) two State Street collective trusts gain
+   * SSSYX and MDY *behind the asterisk*, where the footnote's claim — a
+   * collective trust with no ticker and no published ER — is TRUE of an `SL CL
+   * II` unit class. The one fee CHANGE is 0.03 -> 0.02 on that row: an
+   * unattributed generic replaced by the named comparable's own figure, under a
+   * label. Both asterisk moves are GAINS, which is the weaker claim.
+   *
+   * STORE-SIDE: `stk` **+1 / -0 / 0 changed** — `resolveHolding` reads the
+   * issuer too — and nothing else moves. Verified by running the real
+   * `merge-4i` with no deltas and diffing all 64 shards field by field: 0 acks
+   * added or removed, 0 row-count changes, 0 sums moved, `iss` on 188, `ftk`
+   * `tk` `value` `type` on 0, and `lineups-status` / `lineups-index` /
+   * `plans-index` byte-identical once `generated` is removed. The 1 `name`
+   * change in that diff is HEAD's OWN residual arm — HEAD's merge on the same
+   * store prints `lost-space repair: 1 rows across 1 plans` and `sec tickers:
+   * 479694`, so this arm's contribution is +1 row / +0 plans, attributed to the
+   * digit rather than differenced against a remembered number.
+   *
+   * SURFACE: 3 crawlable pages (`build-seo-pages.mjs:258` prints the issuer),
+   * every changed cell read — Northern Trust Global Investments, Sonoco's
+   * eleven State Street cells, Principal Global Investors Trust Co. And
+   * `titleCase` had been LOWERCASING the seam, so the page showed `Statestreet`
+   * and `Investorstrust` where the store showed the capitals: v519's finding
+   * again, the display transform making the damage harder to see than the data.
+   *
+   * COSTS NAMED, 19 of 188 rows, and 0 published cells move on any of them.
+   * `OppenheimerFunds, Inc.` was the firm's OFFICIAL one-word styling, so 17
+   * rows are split wrongly; the store's own issuer column writes the spaced form
+   * 60 times against the joined 17, so the row lands on the majority filed
+   * spelling, and protecting it needs a vocabulary of one-word firm brands,
+   * which the registry does not have and which is wrong in the unsafe
+   * direction. `AllianceBernstien` (2 rows) is the filer's MISSPELLING of a
+   * one-word brand: both forms are wrong, and it is the ONLY transformation
+   * disjunct (1) contributes to this column — measured, so that disjunct is
+   * load-bearing here only for a wrong repair, and it is kept anyway rather than
+   * forked per column, because one predicate asked twice is worth two cosmetic
+   * rows and the test asserts the figure so a later store surfaces as a surprise.
+   *
+   * AND THE QUEUE'S "ONE SEAM PER CALL NEEDS A LOOP" IS REFUTED BY MEASUREMENT.
+   * A fixpoint loop repairs exactly the same 188 rows and changes 0 answers: the
+   * residue `TRowePrice` -> `TRowe Price` (12 rows) and `T.RowePrice` ->
+   * `T.Rowe Price` (2) is a HALF repair whose remaining seam is `T|R`, uppercase
+   * then uppercase, which SEAM cannot see (it requires `[a-z][A-Z]`) and which
+   * the all-caps arm cannot either (it requires `\b[A-Z]{8,}\b`). Asked
+   * directly, `"TRowe Price".match(SEAM)` is EMPTY. So it is outside both arms BY
+   * CONSTRUCTION and not for want of a pass; an uppercase-uppercase seam finder
+   * is a separate measurement. The half repair is NOT worthless — it is what
+   * buys Cantex's two fees (null -> 0.49).
+   *
+   * THE REGISTRY WITNESS IS DECORATIVE FOR THIS COLUMN AND IS LABELLED SO:
+   * dropping `regSpellsJoined` changes 0 of the 188 rows, because the RATIO
+   * already refuses every real one-word brand the registry knows (`BlackRock`
+   * joined 8,984 against `Black Rock` 0, `MassMutual` 971, `TransAmerica`
+   * 2,771, `ClearBridge` 440, `FullerThaler` 25). It is not decorative for the
+   * NAME column, where the existing `weld-nowitness` control fails by name on
+   * PCRIX, and it is one function, so the condition is already controlled.
+   *
+   * THE RATIO IS THE WHOLE GUARD HERE, priced: replacing it with a bare
+   * attestation floor admits 940 further rows, and 729 of them are the
+   * `AllianceBernstein` family — the same wrong repair the NAME maps produce,
+   * reached from the other direction — plus `MainStay` -> `Main Stay` (50),
+   * `AssetMark` -> `Asset Mark` (26), `IndexSelect` (53) and `EuroPacific` (13),
+   * every one a real one-word brand. ITS OWN COST IS NAMED: `JohnHancock
+   * Insurance Company` -> `John Hancock Insurance Company` is a CORRECT repair
+   * refused by one factor (joined 33, repaired 72, and 72 > 99 is false), 33
+   * rows. Refusing a repair is the safe direction.
+   *
+   * `w > joined * 3` DEGENERATES TO `w > 0` WHEN `joined` IS 0, so one
+   * attestation would license a repair — and what forces `w >= 4` is that the
+   * arm is asked only about strings drawn from the very column its maps are
+   * built from, which makes `joined >= 1` true by construction. The maps are a
+   * snapshot taken before the loop, so a row repaired earlier cannot move them.
+   * `scripts/merge-name-test.mjs` ASSERTS every issuer pin is in-population for
+   * that reason: `ExxonMobil` is attested 0 times as an issuer and `Exxon Mobil`
+   * once, and the predicate splits it — a branch production cannot reach, so
+   * pinning it would pin behaviour that does not exist.
+   *
+   * 31 PINS, added because of the 27 existing weld cases 10 answer differently
+   * under the issuer maps and ALL TEN GO TO NULL — they are fund names and the
+   * issuer column attests nothing for them, so not one is a must-REPAIR here and
+   * the existing table could not have verified any issuer repair. (That
+   * unanimity is also evidence the arm is not a blanket widening: handed the
+   * wrong column's string it refuses.) A negative control PER CONDITION, each
+   * asserted to have landed via the test's own `cut()`: the NAME maps fail by
+   * name on 4 of 31 including `AllianceBernstein`; the bare floor on 8; dropping
+   * disjunct (1) on exactly 1; the halves PRE-FILTER on 0 and is labelled
+   * DECORATIVE. The CALL-SITE ORDER is decorative on this store too — 0 of
+   * 1,730,676 published rows have BOTH columns damaged — so it is controlled on
+   * a CRAFTED row instead, and moving the call after the chain leaves that row's
+   * issuer unrepaired. */
+  const issWhole = new Map(), issTok = new Map();
+  for (let i = 0; i < SHARDS; i++)
+    for (const [, e] of Object.entries(buckets[i])) {
+      if (!e || !e.confident || !Array.isArray(e.funds)) continue;
+      for (const f of e.funds) {
+        const v = String(f.iss || "").trim(); if (!v) continue;
+        issWhole.set(nk(v), (issWhole.get(nk(v)) || 0) + 1);
+        for (const t of v.split(/[^A-Za-z]+/))
+          if (t.length > 1) issTok.set(t.toLowerCase(), (issTok.get(t.toLowerCase()) || 0) + 1);
+      }
+    }
+  const issCnt = (w) => issTok.get(String(w).toLowerCase()) || 0;
+  const ISS_EV = { whole: issWhole, cnt: issCnt };
   /* THE CASE THE STORE ITSELF PUBLISHES for a token, most-frequent spelling
    * first with a deterministic tie-break. Read only by the `!` arm below, to
    * decide the CASE of a replacement character it has already chosen by
@@ -621,20 +777,26 @@ function stripIssuerLead(iss) {
     for (const w of secWords) if (w.length > k.length && w.includes(k)) return true;
     return false;
   };
-  const weldRepair = (name) => {
+  /* `ev` carries the attestation evidence and DEFAULTS to the name maps, so
+   * every existing caller is unchanged by construction. The issuer arm passes
+   * `ISS_EV` — the SAME predicate over the column it edits. The registry
+   * witness is deliberately NOT parameterised: it is a registry, not a
+   * population, and it answers the same question for either column. */
+  const weldRepair = (name, ev) => {
+    const W = ev ? ev.whole : whole, CNT = ev ? ev.cnt : cnt;
     const s = String(name || "").trim();
-    const joined = whole.get(nk(s)) || 0;
+    const joined = W.get(nk(s)) || 0;
     SEAM.lastIndex = 0; let m, best = null;
     while ((m = SEAM.exec(s))) {
       const t = m[0];
       const sm = /([a-z])([A-Z])/.exec(t);
       const i = t.indexOf(sm[0]) + 1;
       const L = t.slice(0, i), Rt = t.slice(i);
-      if (cnt(L) < 3 || cnt(Rt) < 3) continue;        // both halves ordinary published words
+      if (CNT(L) < 3 || CNT(Rt) < 3) continue;        // both halves ordinary published words
       const rep = s.slice(0, m.index) + L + " " + Rt + s.slice(m.index + t.length);
-      const w = whole.get(nk(rep)) || 0;
+      const w = W.get(nk(rep)) || 0;
       // (1) the SHIPPED rule, kept verbatim so the widening adds and never removes
-      const shipped = cnt(t) <= 2 && w >= 3;
+      const shipped = CNT(t) <= 2 && w >= 3;
       // (2) v529's guard: repaired whole name >> damaged one, and the registry
       //     does not spell the token joined anywhere inside a fund's own name
       const widened = !!secWords && w > joined * 3 && !regSpellsJoined(t);
@@ -1123,12 +1285,23 @@ function stripIssuerLead(iss) {
     if (JUNK_NAME_RE.test(a) && !JUNK_NAME_RE.test(b)) return null;   // #536
     return a;
   };
-  let weld = 0, caps = 0, rot = 0, ciph = 0, bang = 0;
+  let weld = 0, caps = 0, rot = 0, ciph = 0, bang = 0, iweld = 0;
   const weldAcks = new Set(), capsAcks = new Set(), rotAcks = new Set(), ciphAcks = new Set(), bangAcks = new Set();
+  const iweldAcks = new Set();
   for (let i = 0; i < SHARDS; i++)
     for (const [ack, e] of Object.entries(buckets[i])) {
       if (!e || !e.confident || !Array.isArray(e.funds)) continue;
       for (const f of e.funds) {
+        /* THE ISSUER COLUMN, asked FIRST and OUTSIDE the chain below — 2026-10-02
+         * (12:3xZ). The chain is five arms on the NAME joined by `continue`, and
+         * a different COLUMN must not be skipped because a name arm fired: both
+         * cells of one row can be damaged and both must be repaired. Asked first
+         * so that is true by construction rather than by reading five
+         * `continue`s. The two are independent — `weldRepair(f.name)` reads only
+         * `f.name` and this reads only `f.iss` — and the maps are snapshots taken
+         * before the loop, so neither can see the other's edits. */
+        const irep = weldRepair(f.iss, ISS_EV);
+        if (irep) { f.iss = irep; iweld++; iweldAcks.add(ack); }
         const rep = weldRepair(f.name);
         if (rep) { f.name = rep; weld++; weldAcks.add(ack); continue; }
         /* disjoint from the arm above by construction — an all-caps token has
@@ -1160,6 +1333,7 @@ function stripIssuerLead(iss) {
         if (brep) { f.name = brep; bang++; bangAcks.add(ack); }
       }
     }
+  if (iweld) console.log(`issuer lost-space repair: ${iweld} rows across ${iweldAcks.size} plans`);
   if (weld) console.log(`lost-space repair: ${weld} rows across ${weldAcks.size} plans`);
   if (caps) console.log(`all-caps lost-space repair: ${caps} rows across ${capsAcks.size} plans`);
   if (rot) console.log(`class-rotation repair: ${rot} rows across ${rotAcks.size} plans`);
