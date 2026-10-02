@@ -952,7 +952,8 @@ function stripIssuerLead(iss) {
  * Select` is a COMPARABLE, which this block already declines to store.
  */
 try {
-  const { buildIndex, resolveHolding, resolveFiledTicker } = await import("./match-sec-tickers.mjs");
+  const { buildIndex, resolveHolding, resolveFiledTicker, resolveTrailingFiledTicker } =
+    await import("./match-sec-tickers.mjs");
   const idx = buildIndex("sec-funds.json");
   /* The filing's TYPE cell admits an SEC answer when it says mutual fund or
    * says nothing. Anything else names a different vehicle and refuses. */
@@ -962,6 +963,7 @@ try {
   };
   let named = 0, blank = 0; const acks = new Set();
   let filed = 0; const filedAcks = new Set();
+  let trail = 0; const trailAcks = new Set();
   for (let i = 0; i < SHARDS; i++)
     for (const [ack, e] of Object.entries(buckets[i])) {
       if (!e || !Array.isArray(e.funds)) continue;
@@ -984,8 +986,16 @@ try {
          * It cannot move a FEE: `fundERRow` is called on the NAME and never on
          * a symbol, and the answer is never `comparable`, so no asterisk moves
          * either. Measured: 0 of the 35 corrections are asterisked today. */
+        /* The TRAILING arm runs only where the leading one declined, so it can
+         * only ever fill a blank — and that it never shadows the leading rule
+         * is MEASURED, not argued: of its 659 hits, `resolveFiledTicker`
+         * already answers on 0. Its own guard and the three candidates it
+         * killed are documented at the function. */
         const ftk = resolveFiledTicker(idx, f.name);
-        if (ftk) { f.ftk = ftk; filed++; filedAcks.add(ack); } else delete f.ftk;
+        const ttk = ftk ? null : resolveTrailingFiledTicker(idx, f.name, f.iss);
+        if (ftk) { f.ftk = ftk; filed++; filedAcks.add(ack); }
+        else if (ttk) { f.ftk = ttk; trail++; trailAcks.add(ack); }
+        else delete f.ftk;
         if (!secTypeAdmits(t)) continue;               // the FILING contradicts
         const r = resolveHolding(idx, f.name, f.iss);
         if (!r || r.comparable) { delete f.stk; continue; }
@@ -994,6 +1004,7 @@ try {
     }
   console.log(`sec tickers: ${named} rows across ${acks.size} plans (${blank} on a blank type cell) (index ${idx.rows} classes, ${idx.generated})`);
   console.log(`filed tickers: ${filed} rows across ${filedAcks.size} plans`);
+  console.log(`filed tickers (trailing parenthetical): ${trail} rows across ${trailAcks.size} plans`);
 } catch (err) {
   console.log(`sec tickers: skipped (${err.message})`);
 }

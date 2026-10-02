@@ -488,6 +488,10 @@ export function buildIndex(indexPath) {
  * 1,232 rows already AGREE with the symbol they print, which is the control
  * that this shape is common and usually read right. */
 const FILED_TICKER_LEAD = /^([A-Z]{5})\b/;
+/* Lifted to module scope so BOTH filed-symbol arms ask one question. It was
+ * local to `resolveFiledTicker`; the trailing arm below needs the identical
+ * split, and a second copy of a rule is how two copies disagree. */
+const ftContent = (str) => tokens(str).filter((w) => /^[a-z]{3,}$/.test(w) && !VEHICLE_WORD.has(w));
 export function resolveFiledTicker(idx, filedName) {
   if (!idx || !idx.byTicker) return null;
   const s = String(filedName || "").trim();
@@ -495,11 +499,99 @@ export function resolveFiledTicker(idx, filedName) {
   if (!m) return null;
   const rec = idx.byTicker.get(m[1]);
   if (!rec) return null;
-  const content = (str) => tokens(str).filter((w) => /^[a-z]{3,}$/.test(w) && !VEHICLE_WORD.has(w));
-  const own = new Set([...content(rec.entity), ...content(rec.series)]);
+  const own = new Set([...ftContent(rec.entity), ...ftContent(rec.series)]);
   if (!own.size) return null;
-  for (const w of content(s.slice(m[1].length))) if (own.has(w)) return rec.ticker;
+  for (const w of ftContent(s.slice(m[1].length))) if (own.has(w)) return rec.ticker;
   return null;
+}
+
+/* THE SAME SYMBOL IN THE OTHER POSITION — `Fidelity Contrafund K6 (FLCNX)`.
+ *
+ * `resolveFiledTicker` is anchored on the symbol LEADING the name, and that
+ * anchor is load-bearing: it is what stops a word that merely happens to be a
+ * registered symbol (`INDEX`) being read as one. So the trailing parenthetical
+ * is outside it BY CONSTRUCTION, not by oversight — and it is the whole of
+ * what `audit-data`'s repaired `ticker-conflict` check still finds, 15 of 15.
+ * A fix for one POSITION of a class is not a fix for the class.
+ *
+ * THE EXTENSION NEEDS NO NEW PREDICATE, WHICH IS THE WHOLE DESIGN: rotate the
+ * parenthetical to the front and ask the SHIPPED function, so all three of its
+ * conditions apply unchanged and nothing is restated. A rotation also DELETES
+ * NOTHING — the bound a strip never has.
+ *
+ * Measured whole-store: 659 rows resolve, and on 0 of them does
+ * `resolveFiledTicker` already answer, so the arm is ADDITIVE BY MEASUREMENT
+ * and not merely by argument. 186 of the 659 AGREE with the symbol the page
+ * already publishes, which is the control that the shape is read right.
+ *
+ * AND IT CARRIES ONE GUARD THE LEADING ARM DOES NOT, because the population
+ * forced it: St. Jude Children's Research files `Vanguard Total Bond Market
+ * Index Fund Institutional (VBITX)` and the registry says VBITX is the
+ * SHORT-TERM bond fund while VBTIX is Total Bond Market. The filer TRANSPOSED
+ * TWO LETTERS, so the rotation alone would publish a different FUND to 11,703
+ * readers. v528's recorded principle does not cover it and the difference is
+ * exact: its named cost is "the filer wrote both and the symbol is the more
+ * precise", and every case behind that sentence is a share-CLASS disagreement
+ * WITHIN one fund. A transposition names a different fund, where the symbol is
+ * not more precise but wrong.
+ *
+ * THE GUARD IS A CONTRADICTION TEST AND NOT A CORROBORATION TEST, and that
+ * distinction is what three earlier candidates died on. Ask the filer's WORDS
+ * what fund they name, independently of the symbol, and refuse only when they
+ * name one INCOMPATIBLE with the symbol's — neither series' content tokens a
+ * subset of the other's. It is silent when the words resolve to nothing, which
+ * is the whole GAIN population's shape, so it costs neither the renames nor
+ * the abbreviations:
+ *
+ *   `TIAA-CREF LIFECYCLE INDEX 2030 INSTL (TLHIX)` — the words name no
+ *       registered fund (the series is now `Nuveen Lifecycle Index 2030`), so
+ *       there is nothing to contradict and the rename family survives.
+ *   `Target Retire 2045 Inv (VTIVX)`, `Federated GOVT Obligations PRM (GOFXX)`
+ *       — abbreviated past recognition, likewise silent.
+ *   `Fidelity Contrafund K6 (FLCNX)` — the words resolve to the SAME series.
+ *       The K6 family is this arm's main prize and it is KEPT.
+ *
+ * THREE SIMPLER GUARDS WERE BUILT AND KILLED BY THEIR WHOLE-POPULATION COST,
+ * recorded so they are not retried. (a) Requiring a shared token the SERIES
+ * carries and the ENTITY does not — *refuses `Fidelity Contrafund K6`*, because
+ * `contrafund` is in both, so it destroys the main prize; it was "correct on
+ * all four pinned cases" only because K6 was never pinned. (b) Requiring no
+ * series token to be ABSENT from the filed name — refuses 71 of the 186 AGREE
+ * rows, i.e. 38% of the rows whose answer we independently know, because the
+ * registry abbreviates and renames too. (c) Requiring the symbol's series to
+ * EQUAL the series the name resolves to — refuses the K6 family again, that
+ * being the entire point of the K6 defect.
+ *
+ * The contradiction test refuses 2 rows of 659 and **0 of the 186 AGREE rows**,
+ * against 29 and 71 for (a) and (b). Both refusals are read: St. Jude's
+ * transposition, and `Fidelity Freedom Index 2055 Fund Investor Class (FIDFX)`
+ * where FIDFX registers as `Fidelity Mid Cap Value Fund` (941 ppl) — a second
+ * instance of exactly the class the guard was written for, which the guard
+ * found rather than the reading.
+ *
+ * FAILS OPEN: the guard only ever removes rows from this arm, and this arm
+ * only ever fills a blank. */
+const FILED_TICKER_TRAIL = /\(\s*([A-Z]{5})\s*\)\s*$/;
+export function resolveTrailingFiledTicker(idx, filedName, issuer) {
+  if (!idx || !idx.byTicker) return null;
+  const s = String(filedName || "").trim();
+  const m = FILED_TICKER_TRAIL.exec(s);
+  if (!m) return null;
+  const rest = s.slice(0, m.index).trim();
+  if (!rest) return null;
+  const ftk = resolveFiledTicker(idx, m[1] + " " + rest);   // the SHIPPED rule
+  if (!ftk) return null;
+  const rec = idx.byTicker.get(String(ftk).toUpperCase());
+  if (!rec) return null;
+  const words = resolveHolding(idx, rest, issuer || "");
+  if (!words || !words.ticker || String(words.ticker).toUpperCase() === String(ftk).toUpperCase()) return ftk;
+  const other = idx.byTicker.get(String(words.ticker).toUpperCase());
+  if (!other) return ftk;
+  const A = new Set(ftContent(rec.series)), B = new Set(ftContent(other.series));
+  if (!A.size || !B.size) return ftk;
+  const sub = (x, y) => [...x].every((w) => y.has(w));
+  if (sub(A, B) || sub(B, A)) return ftk;    // one names the other more precisely
+  return null;                               // two funds; the symbol is not merely more precise
 }
 
 /* Does this string name a fund house the SEC file knows? */
@@ -1325,6 +1417,57 @@ const SELFTEST_FT = [
   ["TOTAL Return Bond Fund Class I", "—"],
 ];
 
+/* THE TRAILING-PARENTHETICAL ARM. Pinned on both sides, and added because NOT
+ * ONE of the cases above reaches it — every one of them puts the symbol FIRST,
+ * which is the condition this arm exists to complement, so the existing pins
+ * agreed whether or not the arm was present.
+ *
+ * `—` means refused. Negative control is PER CONDITION and each variant is
+ * written out in full in the runner: `--notrail-contra` drops the
+ * contradiction test and `--notrail-anchor` drops the terminal anchor. Each
+ * must fail by name on exactly the cases it reaches.
+ *
+ * The anchor's control is NOT decorative, which was checked before it was
+ * written: 80 store rows carry a bracketed five-capital token that is not
+ * terminal, and 30 of them would resolve if the anchor were dropped. They are
+ * a DIFFERENT class — the bracket is trailing and OCR debris follows it
+ * (`(AMCPX) 125,380 +e`, `(RFFTX) NIA`) — so they are recorded as adjacent
+ * coverage rather than silently swept in here. */
+const SELFTEST_FTT = [
+  // the shape: a share class stated in words and the symbol in brackets
+  ["Fidelity Contrafund K6 (FLCNX)", "FLCNX"],
+  ["JPMorgan Mid Cap Growth Fund Class R6 (JMGZX)", "JMGZX"],
+  ["Fidelity OTC Portfolio Class K (FOCKX)", "FOCKX"],
+  ["Fidelity Growth Company Fund Class K (FGCKX)", "FGCKX"],
+  ["T. Rowe Price Dividend Growth Fund (PDGIX)", "PDGIX"],
+  // the Institutional/Admiral pair the filing's own symbol adjudicates
+  ["Vanguard Extended Market Index Fund Institutional (VIEIX)", "VIEIX"],
+  ["Vanguard Total International Stock Index Fund Inst (VTSNX)", "VTSNX"],
+  // THE GUARD: a two-letter transposition names a DIFFERENT FUND. The registry
+  // registers VBITX as Short-Term and VBTIX as Total Bond Market, so the words
+  // and the symbol name two funds that cannot both be this holding.
+  ["Vanguard Total Bond Market Index Fund Institutional (VBITX)", "—"],
+  // the same holding correctly spelled must still resolve, so the guard is
+  // shown to turn on the DISAGREEMENT and not on the fund
+  ["Vanguard Short-Term Bond Index Fund Institutional (VBITX)", "VBITX"],
+  // the second instance the guard found rather than the reading
+  ["Fidelity Freedom Index 2055 Fund Investor Class (FIDFX)", "—"],
+  // SILENT where the words name no registered fund — which is what keeps the
+  // rename family and the abbreviations, the two populations that killed the
+  // subset guard
+  ["TIAA-CREF LIFECYCLE INDEX 2030 INSTL (TLHIX)", "TLHIX"],
+  ["Target Retire 2045 Inv (VTIVX)", "VTIVX"],
+  ["Federated GOVT Obligations PRM (GOFXX)", "GOFXX"],
+  // the shipped conditions still apply after the rotation: (2) corroboration
+  ["Fund Institutional Plus Shares (INDEX)", "—"],
+  // (1) the anchor: a bracketed symbol that is not terminal is not this arm's
+  ["American Funds AMCAP A (AMCPX) 125,380 +e", "—"],
+  ["Vanguard Int-Tm Bd Idx Adm Fd (VBILX) NIA", "—"],
+  // not a candidate at all
+  ["Vanguard Total Stock Market Index Fund", "—"],
+  ["Fidelity Contrafund K6 (FLCNX", "—"],
+];
+
 /* The join arm with ONE of its conditions dropped, written out in full rather
  * than produced by patching the shipped function, so a control cannot quietly
  * repair what it is meant to detect — the failure this file already records on
@@ -1554,6 +1697,39 @@ if (process.argv.includes("--selftest")) {
   for (const [name, want] of SELFTEST_FT) {
     n++;
     const got = ftVariant(name) || "—";
+    if (got !== want) { bad++; console.log(`FAIL want ${want.padEnd(8)} got ${got.padEnd(8)} ${name}`); }
+  }
+  /* The trailing arm, shipped or with ONE of its two conditions dropped. Both
+   * variants are written out in full rather than produced by patching the
+   * shipped function, so a control cannot quietly repair what it is meant to
+   * detect — the failure this file already records on the lead control. */
+  const dropT = process.argv.includes("--notrail-contra") ? "contra"
+    : process.argv.includes("--notrail-anchor") ? "anchor" : "";
+  const fttVariant = (name) => {
+    if (!dropT) return resolveTrailingFiledTicker(idx, name, "");
+    const s = String(name || "").trim();
+    const m = dropT === "anchor" ? /\(\s*([A-Z]{5})\s*\)/.exec(s) : /\(\s*([A-Z]{5})\s*\)\s*$/.exec(s);
+    if (!m) return null;
+    const rest = (s.slice(0, m.index) + " " + s.slice(m.index + m[0].length)).trim();
+    if (!rest) return null;
+    const ftk = resolveFiledTicker(idx, m[1] + " " + rest);
+    if (!ftk) return null;
+    if (dropT === "contra") return ftk;                 // the transpositions return
+    const rec = idx.byTicker.get(String(ftk).toUpperCase());
+    if (!rec) return null;
+    const words = resolveHolding(idx, rest, "");
+    if (!words || !words.ticker || String(words.ticker).toUpperCase() === String(ftk).toUpperCase()) return ftk;
+    const other = idx.byTicker.get(String(words.ticker).toUpperCase());
+    if (!other) return ftk;
+    const A = new Set(ftContent(rec.series)), B = new Set(ftContent(other.series));
+    if (!A.size || !B.size) return ftk;
+    const sub = (x, y) => [...x].every((w) => y.has(w));
+    return (sub(A, B) || sub(B, A)) ? ftk : null;
+  };
+  if (dropT) console.log(`NEGATIVE CONTROL: trailing condition "${dropT}" dropped — it must fail by name on exactly the cases it reaches`);
+  for (const [name, want] of SELFTEST_FTT) {
+    n++;
+    const got = fttVariant(name) || "—";
     if (got !== want) { bad++; console.log(`FAIL want ${want.padEnd(8)} got ${got.padEnd(8)} ${name}`); }
   }
   /* The join arm, shipped or with ONE of its conditions dropped. Every variant
