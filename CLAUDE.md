@@ -727,6 +727,81 @@ from the cycle that would have cleared it.
   trust-aware standalone script — the standalone's single trust is the one lineup
   v196 withdrew. **`matchQuote` 5,397 of which only
   1,785 are SHOWN to readers** — the condition/outcome pair shipped 2026-09-27.
+- **QUEUED, SIZED, THE DESIGN SETTLED, THE OBVIOUS GUARD REFUTED, NOT SHIPPED —
+  THE TRAILING-PARENTHETICAL EXTENSION OF v528: 459 rows GAIN a symbol / 47
+  entries / 91,455 ppl / $902,640,533, and 14 CORRECT one / 9 entries / 17,090
+  ppl / $169,176,127.** The 00:3xZ check fix left 15 `ticker-conflict` findings
+  and every one carries the symbol in a **trailing parenthetical** — outside
+  v528's LEADING anchor by construction — so this is the complement of a shipped
+  rule, the cheapest coverage there is to find.
+  **IT NEEDS NO NEW PREDICATE AND THAT IS THE WHOLE DESIGN: rotate the
+  parenthetical to the front and ask the SHIPPED function**, so conditions (1)
+  lead, (2) the registered series shares a content word with the remainder and
+  (3) that token is a word of three letters or more all apply unchanged. A
+  rotation also DELETES NOTHING. Of 1,724,078 rows, **754 end in a bracketed
+  five-capital token**; **95 are REFUSED by (2)/(3)** (the safety evidence),
+  **186 AGREE** with what we publish (the control that the shape is read right),
+  and **0 of 754 are already answered by v528** — the symbol never also leads, so
+  the extension is strictly additive *by construction*.
+  **THREE OF THE 14 CORRECTIONS ARE A SOURCED BITE OUT OF THE OWNER-GATED
+  INSTITUTIONAL→ADMIRAL ITEM SIZED ONE HOUR EARLIER:** St. Jude Children's
+  Research (11,703 ppl) prints `(VIEIX)` and `(VTSNX)` beside names stating
+  Institutional where we publish **VEXAX and VTIAX, the ADMIRAL retail classes**
+  — the filing's own symbol adjudicating it, which is the one route into that
+  8.4M-participant class needing no source the project lacks. Also `Fidelity
+  Contrafund K6 (FLCNX)` → FLCNX against FCNTX, the K6 defect named five times.
+  **AND IT IS BLOCKED BY ONE ROW, FOUND BECAUSE THE SAME SYMBOL APPEARED IN TWO
+  LISTS.** `VBITX` is a GAIN on `Vanguard Short-Term Bond Index Fund
+  Institutional (VBITX)` and a CORRECTION on `Vanguard Total Bond Market Index
+  Fund Institutional (VBITX)` — **one symbol cannot be two funds.** The registry
+  settles it: VBITX is **Short-Term**, VBTIX is **Total Bond Market**. St. Jude's
+  filing **transposed two letters**, so shipping as designed publishes the
+  Short-Term fund's symbol for a Total Bond Market holding to 11,703 readers,
+  trading a wrong CLASS for a wrong FUND.
+  **v528's RECORDED PRINCIPLE DOES NOT COVER IT AND THE DIFFERENCE IS EXACT:**
+  its named cost is *"the filer wrote both … the symbol is the more precise"*,
+  and every case behind that sentence is a share-CLASS disagreement within one
+  fund. A transposition names a **different fund**, where the symbol is not more
+  precise but wrong.
+  **CONDITION (2) CAN BE SATISFIED BY THE HOUSE TOKEN ALONE, PROVED BY PROBE, AND
+  THE SHIPPED COMMENT CLAIMS OTHERWISE** (it unions `content(entity)` with
+  `content(series)`): `VBITX Vanguard Target Retirement 2050 Fund` → **VBITX**,
+  `FXAIX Fidelity Puritan Fund` → **FXAIX**. *A measured claim in a comment has
+  to be the claim the code makes.* **In the shipped population it is LATENT** —
+  an entity-only/series-only split reads **1 live row of 2,166** (`DPRRX Delaware
+  REIT R`, 409 ppl) and **that row is CORRECT**, a renamed fund.
+  **AND MY SECOND TEST MEASURED ITSELF, so no figure from it is published: DO NOT
+  CARRY 292 / 494,432 OR 162 / 59,093 FORWARD AS A DEFECT SIZE.** Flagging a row
+  when every shared token also appears in the registrant's name is refuted by its
+  own output — `FXAIX - Fidelity 500 Index` shares only `[fidelity]` because the
+  rest are a digit and vehicle words **and is exactly right**, and `RPTTX - T.
+  Rowe Price Diversified Mid Cap Growth` is flagged while sharing SIX tokens
+  **because T. Rowe Price's registrant name IS its fund name.** The
+  `identityIsProductName` failure of the reverted category build, in a second
+  place.
+  **THE CANDIDATE GUARD WAS THEN BUILT, PRICED AND KILLED — one sentence from
+  being published as "the next thing to measure".** *Require the shared set to
+  contain a token the SERIES carries and the ENTITY does not*: correct on all
+  four pinned cases, and whole-population it would **REFUSE 292 shipped rows
+  reaching 494,432 participants, almost all of them CORRECT** (FXAIX at 116,682
+  ppl, `Vanguard Explorer Adm`, `Vanguard Ttl Bd Mkt Idx InstPl`, `John Hancock
+  Disciplnd Val R6`, `Loomis Sayles Sml Cp Grw Instl`), plus 162 extension rows
+  including the whole TIAA-CREF → Nuveen rename family. **Dead** — the third
+  plausible guard this session killed by its whole-population cost rather than by
+  its controls.
+  **AND THE REASON IS WORTH MORE THAN THE GUARD: A TRANSPOSITION AND A RENAME ARE
+  INDISTINGUISHABLE FROM THE STRING ALONE** — in both the printed symbol's series
+  disagrees with the filed name, and the registry holds only the CURRENT name.
+  Two further tests fail on named families: *no series token absent from the filed
+  name* costs the rename family, and *the symbol's series must match the series
+  the NAME resolves to* costs **the K6 family, the extension's main prize.**
+  **SO TWO INDEPENDENT ITEMS ARE NOW BLOCKED ON THE SAME MISSING DISCRIMINATOR —
+  the structural result of this cycle.** The category-table fix needs *does column
+  B name a PRODUCT or a FIRM* (23:3xZ, reverted) and this needs *do the shared
+  tokens include a PRODUCT token or only the house*. `isHouseName`,
+  `identityIsProductName` and a registrant-name test have each been measured and
+  refused for it. **Whatever is built for one should serve both, and neither
+  should ship before it exists.** `docs/accuracy-log.md` 2026-10-02 (00:4xZ).
 - **SHIPPED 2026-10-02 00:3xZ, `[skip ci]` — 65% OF A CHECK'S PUBLISHED FINDINGS
   WERE FALSE: `ticker-conflict` 48 → 15, `warn` 601 → 568.** The check looks for
   rows where we publish a symbol *the filing itself contradicts*, and it computed

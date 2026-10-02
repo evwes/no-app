@@ -7,6 +7,157 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-02 (00:4xZ) — The trailing-parenthetical extension of v528: SIZED, NOT SHIPPED, and blocked on a two-letter transposition that would publish a different fund to 11,703 readers
+
+**QUEUED, SIZED, THE DESIGN SETTLED, NOT SHIPPED.** The 00:3xZ check fix left 15
+`ticker-conflict` findings and every one carries the symbol in a **trailing
+parenthetical** — outside v528's LEADING anchor by construction, so none has an
+`ftk`. That is the complement of a shipped rule, which is the cheapest kind of
+coverage to find.
+
+**THE EXTENSION NEEDS NO NEW PREDICATE, AND THAT IS THE WHOLE DESIGN: rotate the
+parenthetical to the front and ask the SHIPPED function.** `resolveFiledTicker`'s
+three conditions — (1) the symbol LEADS, (2) the registered series shares a
+content word with the remainder, (3) that token is a word of three letters or
+more — then all apply unchanged and nothing is duplicated. **A rotation also
+DELETES NOTHING**, the bound a strip never has (the 2026-10-01 08:2xZ
+class-rotation entry's own argument, reused).
+
+**SIZED WHOLE-STORE, with both controls fired first** (`Fidelity 500 Index Fund
+(FXAIX)` → **null** today, which is the gap; rotated → **FXAIX**; and v528's own
+refusal `INDEX Fund Institutional Plus Shares` → null): of **1,724,078**
+published rows, **754 end in a bracketed five-capital token**.
+
+| | rows | entries | participants | dollars |
+|---|---|---|---|---|
+| **GAIN** a symbol (publish nothing today) | **459** | 47 | **91,455** | $902,640,533 |
+| **CORRECT** a different symbol | **14** | 9 | 17,090 | $169,176,127 |
+| AGREE with what we publish — the control that the shape is read right | 186 | | | |
+| REFUSED by conditions (2)/(3) — the safety evidence | 95 | | | |
+
+**ALREADY ANSWERED BY v528: 0 of 754.** The symbol never also leads, so the
+extension is **strictly additive by construction** rather than by measurement.
+
+**ALL 14 CORRECTIONS READ, AND THREE OF THEM ARE A SOURCED BITE OUT OF AN
+OWNER-GATED ITEM MEASURED ONE HOUR EARLIER.** St. Jude Children's Research
+(11,703 ppl) prints `(VIEIX)` and `(VTSNX)` beside names stating Institutional
+where we publish **VEXAX and VTIAX, the ADMIRAL retail classes** — the 23:2xZ
+Institutional→Admiral class (2,767 rows / 8,441,775 ppl), here with **the
+filing's own printed symbol adjudicating it**, which is the one route into that
+class needing no source the project lacks. Also `Fidelity Contrafund K6 (FLCNX)`
+→ FLCNX against FCNTX, the K6 defect this record has named five times, and
+`Fidelity OTC Portfolio Class K (FOCKX)`, `Fidelity Growth Company Fund Class K
+(FGCKX)`, `JPMorgan Mid Cap Growth Fund Class R6 (JMGZX)`, `T. Rowe Price
+Dividend Growth Fund (PDGIX)`.
+
+**AND IT IS BLOCKED BY ONE ROW, WHICH THE SIZING FOUND BECAUSE THE SAME SYMBOL
+APPEARED IN TWO LISTS.** `VBITX` is a GAIN on `Vanguard Short-Term Bond Index
+Fund Institutional (VBITX)` and a CORRECTION on `Vanguard Total Bond Market
+Index Fund Institutional (VBITX)` — **one symbol cannot be two funds.** The
+registry settles it: **VBITX is `Vanguard Short-Term Bond Index Fund`
+Institutional and VBTIX is `Vanguard Total Bond Market Index Fund`
+Institutional.** St. Jude's filing **transposed two letters**, so shipping the
+extension as designed would publish the SHORT-TERM BOND fund's symbol for a
+Total Bond Market holding, to 11,703 readers, with the current (merely
+wrong-class) VBTLX replaced by a wrong-FUND answer.
+
+**v528's RECORDED PRINCIPLE DOES NOT COVER THIS AND THE DIFFERENCE IS EXACT.**
+Its named cost is *"the filer wrote both and they disagree; the symbol is the
+more precise of the two"* — and every case behind that sentence is a **share
+CLASS** disagreement within one fund (`MVCKX … CL R5`). A transposition names a
+**DIFFERENT FUND**, where the symbol is not more precise but simply wrong. *The
+rule that resolves a class disagreement is not the rule for a fund
+disagreement* — the "a predicate right for one class is not thereby right for
+its neighbour" shape, at a share class versus a series.
+
+**CONDITION (2) CAN BE SATISFIED BY THE HOUSE TOKEN ALONE, PROVED BY PROBE, AND
+THE SHIPPED COMMENT SAYS OTHERWISE.** `resolveFiledTicker` unions
+`content(entity)` with `content(series)`, so:
+
+```
+VBITX Vanguard Target Retirement 2050 Fund   -> VBITX   (a short-term bond fund)
+FXAIX Fidelity Puritan Fund                  -> FXAIX   (the 500 index fund)
+```
+
+The comment reads *"the registered SERIES must share a content word with the
+REMAINDER — the filing corroborating its own symbol"*, and names `INDEX`'s
+refusal as its evidence. **A measured claim in a comment has to be the claim the
+code makes**, met again.
+
+**IN THE SHIPPED POPULATION THE WEAKNESS IS LATENT, measured two ways and
+neither number may be carried forward as its size.** An entity-only/series-only
+split reads **1 live row of 2,166** (`DPRRX Delaware REIT R`, 409 ppl) — *and
+that row is CORRECT*, a renamed fund (`Nomura Global Listed Real Assets`). But
+that split **under-detects by construction**: Vanguard's own SERIES names
+contain `Vanguard`, so a series-only index still corroborates on the house
+token.
+
+**AND MY SECOND TEST MEASURED ITSELF, which is why no figure from it is
+published.** Flagging a row when every shared token also appears in the
+REGISTRANT's name reads 292 rows / 494,432 ppl in the shipped population — **and
+its own output refutes it**: `FXAIX - Fidelity 500 Index` shares only
+`[fidelity]` because `500`, `index` and `fund` are a digit and vehicle words,
+and the answer is exactly right; `VGSNX - Vanguard REIT Index Inst` →
+`Vanguard Real Estate Index Fund` and `VMCPX Vanguard MCap Idx Instit Plus` →
+`Vanguard Mid-Cap Index Fund` are right too, the product words being the ones
+the filer ABBREVIATED. Worse, **it flags `RPTTX - T. Rowe Price Diversified Mid
+Cap Growth` as house-only while it shares six tokens**, because T. Rowe Price's
+REGISTRANT NAME IS ITS FUND NAME, so every token reads as a house token.
+***A count of a condition is not a measure of a defect***, and the test is the
+`identityIsProductName` failure of the reverted category build in a second
+place. **Do not carry 292 / 494,432 or 162 / 59,093 forward.**
+
+**SO TWO INDEPENDENT ITEMS ARE NOW BLOCKED ON THE SAME MISSING DISCRIMINATOR,
+which is the structural result of this cycle.** The category-table fix needs
+*does column B name a PRODUCT or a FIRM* (23:3xZ, reverted) and this extension
+needs *do the shared tokens include a PRODUCT token or only the house* — the
+same question, and `isHouseName`, `identityIsProductName` and a
+registrant-name test have each now been measured and refused for it. **Whatever
+is built for one should serve both, and neither should ship before it exists.**
+
+**AND THE OBVIOUS GUARD WAS BUILT, PRICED AND REFUTED IN THE SAME PASS — the
+most useful result here, because it was one sentence from being published as
+"the candidate to measure next".** The candidate: *require the shared set to
+contain a token the SERIES carries and the ENTITY does not*, i.e. a PRODUCT
+token rather than the house. It behaves exactly as predicted on all four pinned
+cases — it refuses the transposed `(VBITX)` and admits `(VIEIX)` and `(VTSNX)`.
+**Whole-population it is fatal: on the SHIPPED `ftk` rows it would REFUSE 292
+rows / 65 entries / 494,432 participants, and the refused list is overwhelmingly
+CORRECT ANSWERS REACHING READERS NOW** — `FXAIX - Fidelity 500 Index`
+(**116,682 ppl**, series `Fidelity 500 Index Fund`, whose every other token is a
+digit or a vehicle word), `VEXRX - Vanguard Explorer Adm`, `VBMPX Vanguard Ttl
+Bd Mkt Idx InstPl`, `JDVWX John Hancock Disciplnd Val R6`, `LSSIX Loomis Sayles
+Sml Cp Grw Instl`, and `RPTTX - T. Rowe Price Diversified Mid Cap Growth`, which
+shares SIX tokens and is still refused **because T. Rowe Price's registrant name
+IS its fund name.** On the extension it refuses 162 rows / 59,093 ppl, the
+transposition among them but also `RNPGX American Funds New Perspective Fund
+Class R6`, `CSDIX Cohen and Steers Real Estate Securities` and the whole
+TIAA-CREF → Nuveen rename family. **Dead.**
+
+**AND THE DEEPER REASON IT IS DEAD IS WORTH MORE THAN THE GUARD: A TRANSPOSITION
+AND A RENAME ARE INDISTINGUISHABLE FROM THE STRING ALONE.** In both, the printed
+symbol's registered series disagrees with the filed name — `VBITX`'s series says
+Short-Term where the filing says Total Bond Market, and `TLYIX`'s says Nuveen
+Lifecycle where the filing says TIAA CREF Life Cycle. The registry cannot
+separate them because it holds only the CURRENT name. Two further tests were
+reasoned through and fail on named families: requiring no series token to be
+absent from the filed name costs the whole rename family, and requiring the
+printed symbol's series to match the series the NAME itself resolves to costs
+**the K6 family, which is the extension's main prize** (`Fidelity Contrafund K6`
+resolves to FCNTX, a DIFFERENT series from FLCNX's, and that is the entire point
+of the K6 defect).
+
+**SO WHAT IS LEFT IS A JUDGEMENT AND NOT A MEASUREMENT, which is the honest
+place to stop:** ship the extension and 473 rows gain or correct a symbol from
+the filing's own text while **one row / 11,703 readers** moves from a
+wrong-CLASS answer (VBTLX) to a wrong-FUND answer (VBITX); or hold it. This
+record's standard — *refusing a repair is the safe direction*, and a wrong fund
+outranks a wrong class — points at holding until a discriminator exists, and the
+discriminator wanted is **the same house-versus-product question the category
+build needs.** Nothing is shipped.
+
+---
+
 ## 2026-10-02 (00:3xZ) — 65% of a CHECK's published findings were false: `ticker-conflict` computed its answer from one resolver and never read the two stored fields the page returns first and last
 
 **SHIPPED, `[skip ci]`. It changes no published number — `audit-data` is a
