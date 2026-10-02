@@ -504,8 +504,28 @@ const RK_BRANDS = [
   [/SLAVIC/i, "Slavic401k"], [/OneAmerica|ONE AMERICA/i, "OneAmerica"],
 ];
 
+/* RECORDKEEPING SUBSIDIARIES THAT FILE UNDER AN ABBREVIATION. FIIOC --
+ * Fidelity Investments Institutional Operations Company -- is Fidelity's actual
+ * recordkeeping entity, and 121 plans / 2,020,774 participants ALREADY publish
+ * it today under one of these spellings. It is deliberately NOT in RK_BRANDS:
+ * that list confers the 2e15 PLATFORM tier, which outranks a row the filer
+ * coded 15, so adding a name there can make it beat a correctly-coded
+ * recordkeeper. These are used for two narrower jobs only -- the code-64
+ * witness below, and display. */
+const RK_ALIASES = [[/\bFID(?:ELITY)?\s+INV|\bFIIOC\b|\bFMR\s+(?:LLC|CO)/i, "Fidelity"]];
+
+/* The witness for a row the FILER coded 64 (recordkeeping fees). Scoring never
+ * reads this list for the platform tier -- see the comment above. */
+const RK64_WITNESS = [...RK_BRANDS, ...RK_ALIASES];
+const hasRkWitness = (name) => RK64_WITNESS.some(([re]) => re.test(String(name || "")));
+
 function brandOf(name) {
   for (const [re, brand] of RK_BRANDS) if (re.test(name)) return brand;
+  /* DISPLAY ONLY, and it is a CONSISTENCY fix rather than a new claim: a filer
+   * who writes "FIDELITY INVESTMENTS INSTITUTIONAL" already renders as
+   * "Fidelity" via RK_BRANDS, while one who writes "FID INV INST OPS CO"
+   * rendered as "Fid Inv Inst Ops Co" -- the same firm shown two ways. */
+  for (const [re, brand] of RK_ALIASES) if (re.test(name)) return brand;
   return String(name || "").toLowerCase().replace(/\b[a-z]/g, (c) => c.toUpperCase()).slice(0, 40);
 }
 
@@ -632,6 +652,9 @@ async function scanSchC(year, wantedAcks, feeTables, item1Tables) {
 
   // per ack keep best row: recordkeeping service code (15) beats compensation size
   const best = new Map();
+  // ack -> the highest-paid row the filer coded 64 whose name carries a
+  // recordkeeper brand; applied only under the guard at the end of this pass
+  const best64 = new Map();
   let n = 0;
   for await (const r of rows) {
     n++;
@@ -664,7 +687,17 @@ async function scanSchC(year, wantedAcks, feeTables, item1Tables) {
     const isPlatform = RK_BRANDS.some(([re]) => re.test(name));
     const cur = best.get(ack);
     const score = (isPlatform ? 2e15 : 0) + (isRk ? 1e15 : 0) + comp;
-    if (!cur || score > cur.score) best.set(ack, { name, score });
+    /* Does THIS row have any claim to be the recordkeeper? Recorded on the
+     * winner so the promotion below can ask it without a second pass. */
+    const claims = isPlatform || isRk || hasRkWitness(name) || /(^|\D)64(\D|$)/.test(codes);
+    if (!cur || score > cur.score) best.set(ack, { name, score, claims });
+    /* THE CODE-64 CANDIDATE. A row the FILER coded 64 (recordkeeping fees)
+     * AND whose name carries a recordkeeper brand. Kept beside `best` rather
+     * than scored into it, because it may only win under the guard below. */
+    if (!isRk && /(^|\D)64(\D|$)/.test(codes) && hasRkWitness(name)) {
+      const c64 = best64.get(ack);
+      if (!c64 || comp > c64.comp) best64.set(ack, { name, comp });
+    }
   }
   // Part I line 1(b) — disclosers of eligible indirect compensation. Many
   // filings (esp. master trusts) name the recordkeeper ONLY here (Voya on
@@ -695,8 +728,55 @@ async function scanSchC(year, wantedAcks, feeTables, item1Tables) {
       }
     }
   } catch (e) { console.warn(`  SCH_C item1 ${year}: ${e.message}`); }
+  /* THE PROMOTION, AND ITS GUARD IS THE WHOLE SAFETY OF IT.
+   *
+   * A row the filer coded 64 with a recordkeeper brand may take the published
+   * name ONLY where the current winner has NO claim to be the recordkeeper --
+   * no brand, no "recordkeep" in its name, and not coded 15 or 64 by the filer.
+   *
+   * WITHOUT THAT GUARD this rule swaps one REAL recordkeeper for another on no
+   * better evidence: measured, it moves 1,534 plans / 2,052,319 participants
+   * and does TIAA -> Fidelity at Cornell, Brown, Northwestern and Dana-Farber
+   * (a 403(b) using both, so a coin toss) and Alight -> Fidelity at U.S.
+   * Bancorp. That is the recorded failure of the bare code-64 variant, which
+   * promoted consultants; a brand witness stops the consultant and does NOT
+   * stop the coin toss. The guard does.
+   *
+   * WITH IT: 31 plans / 411,449 participants, every one replacing an auditor,
+   * consultant, advisor, asset manager or broker -- PricewaterhouseCoopers and
+   * Crowe (auditors), Willis Towers Watson and Towers Watson (consultants),
+   * Russell Investments and BlackRock (asset managers), Gallagher and Corient
+   * (advisors), and `STRATEGIC ADVISORS` x11, which is Fidelity's own advisory
+   * arm standing where its recordkeeping arm belongs. 0 go blank.
+   *
+   * PSEG is the motivating case and the reason this exists: its filing says
+   * "Fidelity Investments is the recordkeeper", it files no item-2 rows of its
+   * own, and its TRUST files `INVESCO ADVISORS, INC` (coded 28) at $534,926
+   * beside `FID INV INST OPS CO` (coded 64) at $442,941 -- so compensation
+   * alone decided it and we published a string that appears nowhere in the
+   * filing. Both PSEG plans move here.
+   *
+   * ATTRIBUTION, stated because the general framing overstates it: RK_BRANDS
+   * alone reaches 0 of the 31. Every promotion today is carried by the Fidelity
+   * abbreviation in RK_ALIASES. The rule is general in form and has one live
+   * house. */
   const out = new Map();
-  for (const [ack, v] of best) out.set(ack, brandOf(v.name));
+  let promoted = 0;
+  const promoDemo = [];
+  for (const [ack, v] of best) {
+    const promote = !v.claims && best64.get(ack);
+    if (promote) {
+      promoted++;
+      if (promoDemo.length < 12) promoDemo.push(`${v.name} -> ${promote.name}`);
+    }
+    out.set(ack, brandOf(promote ? promote.name : v.name));
+  }
+  /* The run SAYS what it did. A whole-store count measured in a scratch replica
+   * is the replica's claim; this is the pipeline's own. */
+  if (promoted) {
+    console.log(`  code-64 recordkeeper promotions: ${promoted} acks`);
+    for (const d of promoDemo) console.log(`    ${d}`);
+  }
   console.log(`rows: ${n}, recordkeepers matched: ${out.size}/${wantedAcks.size}`);
   return out;
 }
