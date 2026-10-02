@@ -659,6 +659,19 @@ costs a night.
   frontend push: boots the site, opens full-form/master-trust/short-form
   specimens picked from live data, fails on undefined/NaN leaks or missing
   explanation rows. Run locally before pushing frontend changes.
+- **A frontend change must re-derive the cache-buster: `node
+  scripts/stamp-assets.mjs`, then commit `index.html`.** The stamps are sha256
+  content hashes of `app.js`, `styles.css`, `data.js` and `fund-er.js`, so
+  changing one of those without restamping leaves `index.html` pointing at the
+  old URL and **a returning browser keeps the cached copy — the change ships and
+  no reader sees it**, which is what the owner reported on 2026-10-02 as
+  "nothing is updated in wampo" after four stamps went up to seventeen days
+  stale. `site-test` enforces it with `--check`, and **that step runs BEFORE the
+  Playwright install, so a stale stamp means the smoke test did not run at all**:
+  *a red gate early in a job is not one failure, it is a job that stopped, and
+  every later step is unverified rather than passing.* It caught the very next
+  frontend commit after it shipped (`83a76dba`, whose message said "smoke-test
+  green" — true locally).
 - **Correctness check** in audit-data.mjs: every displayed formula's numbers
   must appear in its own quote (Jul-24 baseline: 252/43,488 = 0.58%
   mismatches, mostly quotes truncated before the formula — fixed by

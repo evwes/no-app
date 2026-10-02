@@ -65,6 +65,17 @@ green, a specimen and a decoy in `docs/defect-specimens.json`, and a
 `PARSER_VERSION` bump. Frontend changes need `smoke-test.mjs` and
 `map-test.mjs`.
 
+**A frontend change that touches `app.js`, `styles.css`, `data.js` or
+`fund-er.js` must also run `node scripts/stamp-assets.mjs` and commit
+`index.html`.** The stamps are content hashes, so changing one of those files
+without re-deriving its stamp leaves `index.html` pointing at the old URL and a
+returning browser keeps the cached copy — the change ships and no reader sees
+it, which is the defect the owner reported on 2026-10-02 as "nothing is updated
+in wampo". `site-test` enforces it with `stamp-assets.mjs --check`, and that
+step runs BEFORE the Playwright install, so a stale stamp means the smoke test
+did not run at all and every later step is unverified rather than passing.
+*A red gate early in a job is not one failure, it is a job that stopped.*
+
 **5. MEASURE what moved**, in the same units as the claim, and compare against
 the number you predicted. A fix whose yield you never checked is a fix you
 cannot defend.
