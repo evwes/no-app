@@ -1162,6 +1162,126 @@ const brRussell2500Re = new RegExp("blackrock russell 2500 index", "i");
  * iShares MSCI EAFE (EFA) and Russell 1000 (IWB) ETFs. Their expense ratios
  * are left null -- the fund is identified, the fee is not verified, and the
  * table renders "--" rather than a number nobody checked. */
+/* ---- Vanguard target-date: THE FEE HALF OF THIS FAMILY WAS CONVERTED TO
+ * LOOKAHEADS ON 2026-08-31 AND THE TICKER HALF WAS NOT -----------------------
+ *
+ * FUND_ER's own Vanguard target-date rows carry the comment
+ * "Lookaheads, not a sequence: the trust word is as often BEFORE the strategy
+ * as after it, because the filing names the TRUSTEE first", and the arm it
+ * justifies prices every one of these names. The twelve FUND_COMPARABLE rows
+ * below it stayed an ORDERED SEQUENCE
+ * (`vanguard (?:instl?|institutional)? ?target (?:retirement )?YYYY`), which
+ * demands the literal word `retirement` or nothing at all between `target` and
+ * the vintage and the house word immediately before `target`. So ANYTHING
+ * standing in either gap blocks the ticker while the fee still publishes —
+ * which is this record's fee-asserts-where-the-ticker-refuses asymmetry inside
+ * a single family, and the reason 2,246 rows of it carried a number with no
+ * symbol beside it.
+ *
+ * Measured whole-store, the gap is ONE structural fact with many surfaces, not
+ * the two mechanisms the item was queued as:
+ *   - the HOUSE spelled a way the sequence cannot reach: `Vangrd Trgt Retire
+ *     2050 Fd` (2,400 rows — `VANG`, `VG`, `VGD`, `VGRD`, `VNGRD` and `VAN`
+ *     are all in ABBREV and `VANGRD` is not), plus the filer misspellings
+ *     `Vangaurd` and `Vangurad`;
+ *   - a CLASS DESIGNATION infixed between the family and the vintage:
+ *     `Vanguard Target Retirement Trust Plus 2040`, `… Trust 2040`;
+ *   - the word `retirement` MISSPELLED, so the optional literal cannot match
+ *     it and the vintage is no longer adjacent: `RETIREMNT` (1,200 rows),
+ *     `Retirem't`, `Retiremnt`, `Retment`, `Rtrmnt`, `RETIREMT`, `RETMT`;
+ *   - a TRUSTEE between the house and the family: `Vanguard Fiduciary Trust
+ *     Company Target Retirement 2035 Trust II` — the exact shape FUND_ER's
+ *     comment names;
+ *   - the VINTAGE BEFORE the family: `VANGUARD 2045 TARGET RETIREMNT`;
+ *   - `Date` where the series says `Retirement`: `Vanguard Target Date 2060`.
+ * Lookaheads reach all six at once because none of them is about order.
+ *
+ * THE RETIREMENT WORD CARRIES NO INFORMATION and is therefore not required —
+ * FUND_ER's sibling arm already says so ("`Retirement` is optional because
+ * 8,201 filed rows spell the series `Vanguard Target 2045` with no such
+ * word"). Vanguard registers exactly one dated target series, so the house
+ * plus the family plus the vintage name it.
+ *
+ * THE FAMILY TOKEN IS A CLOSED LIST AND MUST STAY ONE. An ordered-subsequence
+ * form (the LifeStrategy ship's rule) would admit `Tr`, and this record's own
+ * measurement says `Tr` abbreviates TRUST before it abbreviates Target
+ * Retirement — 1,191 published `Tr`+vintage rows resolve at 0% because they
+ * are T. Rowe / Voya / State Street collective trusts with no registered
+ * symbol BY DESIGN. `tar` is in the list and is safe ONLY because the house
+ * lookahead is: measured store-wide, a bounded `TAR` is overwhelmingly
+ * American Funds' and State Street's own target-date contraction, so putting
+ * `TAR`->Target into ABBREV would be a far wider change than this one.
+ *
+ * `tr` IS IN THE LIST AND THAT IS THE ONE ENTRY THE TRUST TRAP ARGUES AGAINST,
+ * so it was priced against the WHOLE STORE before being added rather than
+ * reasoned about. Every published row naming a Vanguard token, a vintage and a
+ * standalone `TR` with no other family token is 196 rows across 162 distinct
+ * (issuer,name) pairs, and ALL 162 WERE READ: not one is a different fund.
+ * `Vanguard TR 2045 Trust II` settles it from inside the data — the trust word
+ * is spelled out in the same name, so the `TR` cannot be it. The three
+ * `Tr`-is-TRUST cases this record names (`T Rowe Price Ret Blend Slct Tr 2030
+ * Cl 5`, `Voya Trgt Solution Tr: 2030 8`, `STATE ST TR 2050 K`) are refused by
+ * the HOUSE lookahead and are pinned as must-be-null for that reason. */
+const VGTD_HOUSE = "(?=[\\s\\S]*vang)";
+const VGTD_FAMILY = "(?=[\\s\\S]*\\b(?:target|targe|targt|targ|trgt|tgt|tar|tr)\\b)";
+/* 2005/2010/2015 have no arm — Vanguard merged those funds into Income and
+ * quoting a dead ticker is the error the BlackRock note above describes — but
+ * they are vintages for the AMBIGUITY test, so a name quoting one of them
+ * beside a live one still names no single fund. */
+const VGTD_VINTAGE = { income: "\\bincome\\b" };
+for (const y of [2005, 2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050, 2055, 2060, 2065, 2070])
+  VGTD_VINTAGE[y] = "(?<!\\d)" + y + "(?!\\d)";
+const vgTarget = (v) => new RegExp(VGTD_HOUSE + VGTD_FAMILY + "(?=[\\s\\S]*" + VGTD_VINTAGE[v] + ")", "i");
+/* The family alone, for the ambiguity veto in fundTickerInfo. */
+const VGTD_FAMILY_RE = new RegExp(VGTD_HOUSE + VGTD_FAMILY, "i");
+const vgTargetVintages = (s) =>
+  Object.keys(VGTD_VINTAGE).filter((v) => new RegExp(VGTD_VINTAGE[v], "i").test(s));
+/* A HOLDING THAT NAMES TWO FUND HOUSES NAMES NEITHER. Reusing AF_HOUSE rather
+ * than typing a second American Funds list; measured store-wide, American
+ * Funds is the ONLY competing target-date house that co-occurs with both a
+ * Vanguard token and a family token, and it does so on exactly 2 rows
+ * (`American Funds 2040 Trgt Date Retire R6` and `Admiral Shares American
+ * Funds 2065 Target Date`, each filed with the issuer cell reading
+ * `Vanguard`). Every other collision — `BlackRock Lifepath Index 2065 K
+ * Fund`, `Great Gray Trust American Funds 2065` — is refused by the FAMILY
+ * condition instead, because those names carry no target token at all. */
+const VGTD_OTHER_HOUSE = AF_HOUSE;
+/* A DIFFERENT PRODUCT INSIDE THE SAME FAMILY, AND THE STORE IS WHAT SAYS SO.
+ *
+ * `Vanguard Target Retirement Income AND GROWTH Trust` is not the Target
+ * Retirement Income Fund — it is a separate, higher-equity collective trust
+ * with no registered mutual-fund edition at all. That was not taken from
+ * memory: 112 published lineups hold an `Income and Growth` row AND a plain
+ * `Income` row at completely different values (Vanguard Target Retirement
+ * Income and Growth Trust II $3,812,244 beside Income Trust II $186,129;
+ * $363,355 beside $4,814,538), and two rows at two values in one menu cannot
+ * be one fund. 133 published rows / $2,124,567,476 across 69 distinct
+ * spellings, 132 of them typed `Collective trust`.
+ *
+ * THEY RESOLVE TO VTINX TODAY — the pre-change `target (?:retirement )?income`
+ * arm matches straight through `and Growth` — so this refusal WITHDRAWS a
+ * published claim rather than declining a new one, and it is the LifeStrategy
+ * Conservative-Growth defect verbatim: a higher-equity allocation published as
+ * the lower-equity fund's symbol with its fee following.
+ *
+ * `blend` IS DELIBERATELY NOT HERE, AND THAT IS A REFUTATION OF MY OWN FIRST
+ * READING RATHER THAN AN OMISSION. `T. Rowe Price Target Retirement Blend 2035`
+ * is a real and different house's product, so the word looked like the same
+ * kind of evidence — and in the FILINGS it is an asset-class CATEGORY and not a
+ * product name: `Large Blend`, `Mid Cap Blend`, `Foreign Large Blend`, `Small
+ * Blend` are Morningstar category labels that filers put in the identity column
+ * all over this store. Refusing it was measured and cost 2 published rows where
+ * the ISSUER cell names the fund correctly and `Blend` is OCR debris
+ * (`{Vanguard Target Retirement 2050 Fund} Blend bad`, `{… 2055 Fund} Blend
+ * LO`), plus 8 correct gains inside a 23-row menu holding NINE Vanguard rows
+ * and ZERO T. Rowe rows — so `Vanguard Target Retirement Blend 2045 Inv` there
+ * is the Vanguard fund wearing a category word. T. Rowe's own 20 rows are
+ * refused by the HOUSE lookahead, which is where that protection belongs.
+ * *A word that names another house's product in its catalogue can be an
+ * asset-class category in a filing*, and only reading the members inside their
+ * own menus said so. */
+const VGTD_OTHER_PRODUCT = /\bincome\s*(?:and|&)\s*growth\b/i;
+
 const FUND_COMPARABLE = [
   // BlackRock BTC index trusts (order matters: EAFE and Mid Cap before plain)
   [brEquityIndexEafe, ["EFA", null, true]],
@@ -1214,18 +1334,22 @@ const FUND_COMPARABLE = [
    * the old name for the fund the plan now holds. Quoting the dead
    * institutional ticker would name a fund that no longer exists; the
    * successor's ticker is the honest answer. */
-  [/vanguard (?:instl?|institutional)? ?target (?:retirement )?income/i, ["VTINX", 0.08]],
-  [/vanguard (?:instl?|institutional)? ?target (?:retirement )?2020/i, ["VTWNX", 0.08]],
-  [/vanguard (?:instl?|institutional)? ?target (?:retirement )?2025/i, ["VTTVX", 0.08]],
-  [/vanguard (?:instl?|institutional)? ?target (?:retirement )?2030/i, ["VTHRX", 0.08]],
-  [/vanguard (?:instl?|institutional)? ?target (?:retirement )?2035/i, ["VTTHX", 0.08]],
-  [/vanguard (?:instl?|institutional)? ?target (?:retirement )?2040/i, ["VFORX", 0.08]],
-  [/vanguard (?:instl?|institutional)? ?target (?:retirement )?2045/i, ["VTIVX", 0.08]],
-  [/vanguard (?:instl?|institutional)? ?target (?:retirement )?2050/i, ["VFIFX", 0.08]],
-  [/vanguard (?:instl?|institutional)? ?target (?:retirement )?2055/i, ["VFFVX", 0.08]],
-  [/vanguard (?:instl?|institutional)? ?target (?:retirement )?2060/i, ["VTTSX", 0.08]],
-  [/vanguard (?:instl?|institutional)? ?target (?:retirement )?2065/i, ["VLXVX", 0.08]],
-  [/vanguard (?:instl?|institutional)? ?target (?:retirement )?2070/i, ["VSVNX", 0.08]],
+  /* order is immaterial here and that is a property of the ambiguity veto, not
+   * luck: a name reaching more than one of these twelve is refused outright by
+   * fundTickerInfo before the loop is entered, so no arm can win a contest
+   * with another by sitting above it. */
+  [vgTarget("income"), ["VTINX", 0.08]],
+  [vgTarget(2020), ["VTWNX", 0.08]],
+  [vgTarget(2025), ["VTTVX", 0.08]],
+  [vgTarget(2030), ["VTHRX", 0.08]],
+  [vgTarget(2035), ["VTTHX", 0.08]],
+  [vgTarget(2040), ["VFORX", 0.08]],
+  [vgTarget(2045), ["VTIVX", 0.08]],
+  [vgTarget(2050), ["VFIFX", 0.08]],
+  [vgTarget(2055), ["VFFVX", 0.08]],
+  [vgTarget(2060), ["VTTSX", 0.08]],
+  [vgTarget(2065), ["VLXVX", 0.08]],
+  [vgTarget(2070), ["VSVNX", 0.08]],
   [/vanguard (institutional )?(500|s&p 500) index/i, ["VFIAX", 0.04]],
   [/vanguard.*total international stock.*(index|market)/i, ["VTIAX", 0.09]],
   [/vanguard.*total bond market index/i, ["VBTLX", 0.05]],
@@ -1343,6 +1467,28 @@ function fundTickerInfo(name, type) {
    * it lived inside the individual patterns, and "MM S&P 500 Index Fd(Northern
    * Trust)" kept resolving to Northern's own fund. */
   const wrapped = WRAPPER.test(name);
+  /* VANGUARD TARGET-DATE: TWO VINTAGES NAME NO FUND, AND TWO HOUSES NAME NO
+   * FUND EITHER. Both are vetoes rather than conditions inside the twelve arms
+   * above, and that placement is forced rather than tidy: `hit()` ORs the
+   * variant spellings, so a negative lookahead written into an arm is defeated
+   * by any ONE spelling that happens not to contain the thing being excluded.
+   * Measured: with the test written as a lookahead, `Vanguard Target Inc. 2035`
+   * matched the 2035 arm off its RAW spelling (no `income` in it) while the
+   * expanded spelling — ABBREV turns `TARGET INC` into `Target Retirement
+   * Income` — carried both. A veto asked through `hit()` cannot be dodged that
+   * way, which is exactly why the stable-value rejection below is written the
+   * same way and says so in its own comment: a rejection is the conservative
+   * direction, so any spelling that reveals the problem must be able to veto.
+   *
+   * It WITHDRAWS as well as refuses: 185 published rows across 28 lineups /
+   * 38,538 participants name a vintage AND `Income` (`Vanguard Target
+   * Retirement Income 2040`, `Target Retirement 2035 Income Trust II`,
+   * `Vanguard Target Retirement 2020-2065 Fund`) and publish the Income fund's
+   * symbol today. One of the two statements in each of those names is wrong and
+   * nothing in the filing says which, so the honest cell is blank. */
+  if (hit(VGTD_FAMILY_RE)
+      && (hit(VGTD_OTHER_HOUSE) || hit(VGTD_OTHER_PRODUCT)
+          || new Set([name, ...vs].flatMap(vgTargetVintages)).size > 1)) return null;
   if (!pooled) {
     for (const [re, tk] of FUND_TICKER) if (hit(re)) return { tk, comparable: false };
     if (wrapped) return null;

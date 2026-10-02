@@ -169,6 +169,44 @@ const MUST = [
    *     registry refuses it with no vocabulary of weld shapes. */
   ["Vanguard Small-Cap Index Fund Admiral Shares Institutional Plus", "VSMAX"],
   ["Instl Plus Shares Vanguard PRIMECAP Fund", "VPMAX"],
+  /* ---- Vanguard target-date: LOOKAHEADS, not an ordered sequence ------------
+   * ADDED BECAUSE NOT ONE of the 83 must-resolve and 26 must-not cases above
+   * reaches the new arm — measured, not assumed: the whole arm could have been
+   * inert and this table would still have read 83/26/19/18/28. Every expected
+   * value below was probed against the SHIPPED predicate before being written
+   * down, because this record has already paid for pins written from memory.
+   *
+   * One case per surface the ordered sequence could not reach: the HOUSE spelled
+   * a way it cannot match, a CLASS DESIGNATION infixed between the family and
+   * the vintage, `retirement` MISSPELLED, a TRUSTEE between the house and the
+   * family, the VINTAGE BEFORE the family, `Date` for `Retirement`, `TR` for the
+   * family, and an apostrophe inside `Inst'l`. */
+  ["Vangrd Trgt Retire 2055 Fd", "VFFVX"],          // VANGRD: the one house contraction ABBREV lacks
+  ["Vangrd Trgt Retire Inc Fd", "VTINX"],
+  ["Vanguard Institutional TR 2060", "VTTSX"],      // the 08:2xZ draw's own row
+  ["Vanguard Target Retirement Trust Plus 2040", "VFORX*"],   // class infixed
+  ["Vanguard Target Retire Trust 2040", "VFORX*"],
+  ["Vanguard Fiduciary Trust Company Target Retirement 2035 Trust II", "VTTHX*"], // trustee first
+  ["The Vanguard Group Target Retirement 2030 Trust II", "VTHRX*"],
+  ["VANGUARD TARGET RETIREMNT 2030", "VTHRX"],      // `retirement` misspelled
+  ["VANGUARD TGT RETIREM'T INCOME", "VTINX"],
+  ["VANGUARD 2045 TARGET RETIREMNT", "VTIVX"],      // vintage BEFORE the family
+  ["Vanguard Target Date 2060", "VTTSX"],           // `Date` for `Retirement`
+  ["Vanguard Tar Ret 2070 Tr I", "VSVNX*"],
+  ["Vanguard TR 2045 Trust II", "VTIVX*"],          // `TR` is the family AND `Trust` is spelled out
+  ["VANG INSTL TR 2035 I", "VTTHX"],
+  ["Vanguard Inst’l Target Retirement 2050", "VFIFX"],   // curly apostrophe
+  ["Vangaurd Target Retirement 2035 Fund", "VTTHX"],          // filer misspelling of the house
+  /* `blend` is NOT a product word here and this pin is what locks that in: see
+   * fund-er.js's VGTD_OTHER_PRODUCT note. The plan filing this row holds nine
+   * Vanguard rows and zero T. Rowe rows, and T. Rowe's own Blend fund resolves
+   * correctly on the line below, refused by the HOUSE lookahead rather than by
+   * a word list. */
+  ["Vanguard Target Retirement Blend 2045 Inv", "VTIVX"],
+  ["T. Rowe Price Target Retirement Blend 2035", "TBLYX"],
+  /* `Intl`/`Industrials` are load-bearing Vanguard words and the arm must not
+   * swallow them: International Growth still resolves to its own fund. */
+  ["Vanguard Intl Growth Adm", "VWILX"],
 ];
 
 /* MUST NOT RESOLVE. A blank is the honest answer for all of these. */
@@ -209,6 +247,34 @@ const MUST_NOT = [
    * VSCGX on 12; 20/80 -> VASIX on 8 and VASGX on 7), which is a separate,
    * merge-side item. */
   "Vanguard LifeStrategy 60/40",                   // no numeric arm in THIS file
+  /* ---- Vanguard target-date: what the arm must REFUSE ----------------------
+   * (a) `Tr` abbreviates TRUST before it abbreviates Target Retirement — this
+   *     record measured 1,191 published `Tr`+vintage rows resolving at 0%
+   *     because they are other houses' collective trusts with no registered
+   *     symbol BY DESIGN. The House-lookahead control fails by name on TWO of
+   *     these three, which is what makes `tr` safe inside the family list; the
+   *     Voya row is refused by `WRAPPER` instead and is pinned as a cost-free
+   *     passenger rather than as evidence about this arm.
+   * (b) TWO VINTAGES in one name name no single fund, and the first two of
+   *     these publish VTINX today — the withdrawal this change makes.
+   * (c) `Income and Growth` is a DISTINCT Vanguard product: 112 published
+   *     lineups hold one of these rows AND a plain Income row at a different
+   *     value. It resolves to VTINX today.
+   * (d) a SECOND HOUSE named in the same string.
+   * (e) the digit fence: `20505` is not the 2050 fund.
+   * (f) a vintage Vanguard merged away has no arm, so it stays blank rather
+   *     than quoting a dead ticker. */
+  "T Rowe Price Ret Blend Slct Tr 2030 Cl 5",
+  "Voya Trgt Solution Tr: 2030 8",
+  "STATE ST TR 2050 K",
+  "Vanguard Target Retirement Income 2040 Fund",
+  "Vanguard Target Retirement 2035 Income Trust II",
+  "Vanguard Target Retirement Income and Growth Trust II",
+  "Vanguard Tgt Ret Inc & Gr Tr II",
+  "Vanguard American Funds 2040 Trgt Date Retire R6",
+  "Vanguard Target Retirement 20505",
+  "VANGUARD TARGET RETIREMENT 2015",
+  "Vanguard Industrials Index Admiral",            // a real Vanguard fund the table does not carry
 ];
 
 /* Variant generation must stay a RESPELLING: bounded, and never dropping the

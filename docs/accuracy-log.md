@@ -7,6 +7,345 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-02 (15:0xZ) — the Vanguard target-date family: the FEE half of this rule was converted to lookaheads on 2026-08-31 and the TICKER half was not
+
+**SHIPPED, DISPLAY-SIDE, NO `PARSER_VERSION` BUMP AND NO RUN — 9,868 rows / 1,095
+lineup entries / 1,099 plans / 2,623,042 participants / $116,744,197,941 gain a
+fund symbol, and 136 rows / 136 entries / 141 plans / 1,727,630 participants
+stop being told that a higher-equity collective trust is the Target Retirement
+Income Fund.** 15 rows are corrected, 203 further rows are withdrawn, 0 fees are
+lost. Every column was measured whole-store through the page's own render with
+both `APPJS_PATH` and `DISCLOSE_PATH` pinned and `fund-er.js` the only file
+differing between the two sides.
+
+### What was wrong
+
+`FUND_ER`'s own Vanguard target-date rows carry a comment written on 2026-08-31:
+
+> *Lookaheads, not a sequence: the trust word is as often BEFORE the strategy as
+> after it, because the filing names the TRUSTEE first — "Vanguard Fiduciary
+> Trust Vanguard Target 2050 N/R".*
+
+The arm it justifies prices every row in this family. **The twelve
+`FUND_COMPARABLE` rows seventy lines below it stayed an ORDERED SEQUENCE** —
+`vanguard (?:instl?|institutional)? ?target (?:retirement )?YYYY` — which
+demands the house word immediately before `target` and then the literal word
+`retirement` or nothing at all before the vintage. Anything standing in either
+gap blocks the symbol while the fee still publishes. That is this record's
+*fee-asserts-where-the-ticker-refuses* asymmetry **inside one family**, and it is
+why 2,593 of the rows that gain a symbol here were already publishing a NUMBER
+with no symbol beside it.
+
+**THE QUEUE SPLIT IT INTO TWO MECHANISMS AND IT IS ONE STRUCTURAL FACT WITH SIX
+SURFACES.** Measured whole-store rather than reasoned about:
+
+- the HOUSE spelled a way the sequence cannot reach — `Vangrd Trgt Retire 2050
+  Fd`, ~2,400 rows. `VANG`, `VG`, `VGD`, `VGRD`, `VNGRD` and `VAN` are all in
+  `ABBREV`; **`VANGRD` is not**, and nor are the filer misspellings `Vangaurd`
+  and `Vangurad`. For that whole family the house word is the ONLY blocker;
+- a CLASS DESIGNATION infixed between the family and the vintage — `Vanguard
+  Target Retirement Trust Plus 2040`, `… Trust 2040` (the queue's half (B));
+- the word `retirement` MISSPELLED, so the optional literal cannot match it and
+  the vintage stops being adjacent — `RETIREMNT` ~1,200 rows, plus `Retirem't`,
+  `Retiremnt`, `Retment`, `Rtrmnt`, `RETIREMT`, `RETMT`, `Re7rement`, `Retirernent`;
+- a TRUSTEE between the house and the family — `Vanguard Fiduciary Trust Company
+  Target Retirement 2035 Trust II` (91 rows / $4,568,922,888), `The Vanguard
+  Group Target Retirement 2030 Trust II` (35 / $1,235,529,391). **The exact shape
+  the fee arm's own comment names**, left unreached in the ticker table;
+- the VINTAGE BEFORE the family — `VANGUARD 2045 TARGET RETIREMNT`;
+- `Date` where the series says `Retirement` — `Vanguard Target Date 2060`.
+
+Lookaheads reach all six at once, because not one of them is about ORDER.
+*A fix for one position of a class is not a fix for the class* — and here the fix
+for the POSITION problem was already in the file, in the sibling table.
+
+### The change
+
+The twelve entries are generated from one function in the same positions and the
+same order:
+
+```
+VGTD_HOUSE  = "(?=[\s\S]*vang)"
+VGTD_FAMILY = "(?=[\s\S]*\b(?:target|targe|targt|targ|trgt|tgt|tar|tr)\b)"
+vgTarget(v) = VGTD_HOUSE + VGTD_FAMILY + "(?=[\s\S]*" + VGTD_VINTAGE[v] + ")"
+```
+
+**THE `retirement` WORD IS NOT REQUIRED, and the sibling arm already said why**
+— *"`Retirement` is optional because 8,201 filed rows spell the series `Vanguard
+Target 2045` with no such word"*. Vanguard registers exactly one dated target
+series, so the house plus the family plus the vintage name it, and every
+misspelling of the middle word becomes irrelevant rather than needing a list.
+
+**ORDER WITHIN THE TWELVE IS IMMATERIAL AND THAT IS A PROPERTY OF THE VETO, NOT
+LUCK:** a name reaching more than one of them is refused before the loop is
+entered, so no arm can win a contest with another by sitting above it.
+
+### The family token is a CLOSED list, and `tr` is the entry that had to be priced
+
+An ordered-subsequence form — the LifeStrategy ship's rule — would admit `Tr`,
+and **this record's own measurement says `Tr` abbreviates TRUST before it
+abbreviates Target Retirement**: 1,191 published `Tr`+vintage rows resolve at 0%
+because they are T. Rowe / Voya / State Street collective trusts with no
+registered symbol BY DESIGN. So the list is closed.
+
+`tar` and `tr` are in it anyway, and both were priced against the WHOLE STORE
+before being written down rather than argued about:
+
+- a bounded `TAR` reaches 147 distinct names and is **overwhelmingly American
+  Funds' and State Street's own target-date contraction** (`American Fds 2050
+  Tar Ret R6`, `State Street Tar Ret 2045 Fd K`), so putting `TAR`→Target into
+  `ABBREV` would be a far wider change than this one. Keeping the token local to
+  an arm that REQUIRES the Vanguard house is what makes it safe;
+- every published row naming a Vanguard token, a vintage and a standalone `TR`
+  with no other family token is **196 rows across 162 distinct (issuer,name)
+  pairs, and all 162 were read: not one is a different fund**. `Vanguard TR 2045
+  Trust II` settles it from inside the data — the trust word is spelled out in
+  the same name, so the `TR` cannot be it.
+
+The three `Tr`-is-TRUST cases are pinned as must-be-null, and **the house-lookahead
+control fails by name on two of the three** — the third (`Voya Trgt Solution Tr:
+2030 8`) is refused by `WRAPPER` instead and is pinned as a cost-free passenger
+rather than as evidence about this arm.
+
+### Two vetoes, and their PLACEMENT was forced rather than tidy
+
+`hit()` ORs the variant spellings, so **a negative lookahead written into an arm
+is defeated by any one spelling that happens not to contain the thing being
+excluded.** Measured: written as a lookahead, `Vanguard Target Inc. 2035` matched
+the 2035 arm off its RAW spelling (no `income` in it) while the expanded spelling
+— `ABBREV` turns `TARGET INC` into `Target Retirement Income` — carried both.
+Both vetoes are therefore asked through `hit()`, which is exactly how
+`fundTickerInfo`'s stable-value rejection is written, and its comment says why:
+*a rejection is the conservative direction, so any spelling that reveals the
+problem must be able to veto.*
+
+**(1) TWO VINTAGES NAME NO FUND — 200 rows / 34 entries / 52,057 participants
+withdrawn.** `Vanguard Target Retirement Income 2040`, `Target Retirement 2035
+Income Trust II`, `Vanguard Target Retirement 2020-2065 Fund`. One of the two
+statements in each name is wrong and nothing in the filing says which, so the
+honest cell is blank.
+
+**(2) `Income and Growth` IS A DIFFERENT PRODUCT, AND THE STORE IS WHAT SAYS SO
+— 136 rows / 141 plans / 1,727,630 participants / $2,779,469,817 withdrawn, the
+largest reader-facing half of this change.** Not taken from memory: **112
+published lineups hold an `Income and Growth` row AND a plain `Income` row at
+completely different values** (`Vanguard Target Retirement Income and Growth
+Trust II` $3,812,244 beside `Income Trust II` $186,129; $363,355 beside
+$4,814,538), and two rows at two values in one menu cannot be one fund. 133
+published rows across 69 distinct spellings, 132 typed `Collective trust`.
+**They resolved to VTINX before this change** — the old `target (?:retirement
+)?income` arm matches straight through `and Growth` — so this is a WITHDRAWAL of
+a published claim and not a declined new one, and **it is the LifeStrategy
+Conservative-Growth defect verbatim**: a higher-equity allocation published as
+the lower-equity fund's symbol with its fee following. Read on the real pages:
+**General Dynamics (144,837 ppl) publishes `VANGUARD TARGET RETIREMENT INCOME &
+GROWTH TR` at $593,908,061**, TJX (311,623), Accenture (112,414), State Farm
+(101,896), Southwest Airlines (87,150).
+
+A third refusal — **a holding that names TWO HOUSES names neither** — reuses
+`AF_HOUSE` rather than typing a second American Funds list. Measured store-wide,
+American Funds is the only competing target-date house that co-occurs with both a
+Vanguard token and a family token, on exactly 2 rows (`American Funds 2040 Trgt
+Date Retire R6`, `Admiral Shares American Funds 2065 Target Date`, each filed
+with the issuer cell reading `Vanguard`). Every other collision — `BlackRock
+Lifepath Index 2065 K Fund`, `Great Gray Trust American Funds 2065` — is refused
+by the FAMILY condition instead, because those names carry no target token at
+all. *A condition that changes two verdicts is named as changing two verdicts.*
+
+### `blend` WAS REFUSED AND THE REFUSAL WAS REMOVED BY ITS OWN EVIDENCE
+
+`T. Rowe Price Target Retirement Blend 2035` is a real and different house's
+product, so `blend` looked like the same kind of word as `Income and Growth` and
+was shipped into the refusal. **In the FILINGS it is an asset-class CATEGORY and
+not a product name**: `Large Blend`, `Mid Cap Blend`, `Foreign Large Blend`,
+`Small Blend` are Morningstar category labels filers put in the identity column
+all over this store. Refusing it cost **2 published rows where the ISSUER cell
+names the fund correctly and `Blend` is OCR debris** —
+`{Vanguard Target Retirement 2050 Fund} Blend bad`, `{… 2055 Fund} Blend LO` —
+**plus 8 correct gains inside a 23-row menu holding NINE Vanguard rows and ZERO
+T. Rowe rows**, so `Vanguard Target Retirement Blend 2045 Inv` there is the
+Vanguard fund wearing a category word. T. Rowe's own 20 rows resolve correctly to
+**TBLYX** and are refused by the HOUSE lookahead, which is where that protection
+belongs.
+
+***A word that names another house's product in its catalogue can be an
+asset-class category in a filing***, and only reading the members inside their
+own menus said so. Both halves are pinned: `Vanguard Target Retirement Blend
+2045 Inv` → VTIVX and `T. Rowe Price Target Retirement Blend 2035` → TBLYX sit
+one line apart in the fixture table.
+
+### Outcome, whole-store, every column
+
+| | rows | entries | plans | participants | $ |
+|---|---|---|---|---|---|
+| ticker GAINED | 9,868 | 1,095 | 1,099 | 2,623,042 | 116,744,197,941 |
+| ticker LOST | 339 | 173 | 178 | 1,781,438 | 4,980,163,290 |
+| ticker FLIPPED | 15 | 4 | 4 | 9,969 | 293,596,899 |
+| fee GAINED | 1,498 | 170 | 170 | 383,887 | 6,776,728,870 |
+| fee LOST | **0** | 0 | 0 | 0 | 0 |
+| fee CHANGED | 957 | 210 | 211 | 2,375,438 | 86,857,527,963 |
+| asterisk GAINED | 2,600 | 275 | 276 | 1,452,396 | 94,984,223,085 |
+| asterisk LOST | 196 | 141 | 141 | 1,499,648 | 3,523,745,179 |
+
+**Every column reconciles to the row across eleven transition shapes and
+nothing is left over.** Gains 5,784 + 1,491 + 1,491 + 799 + 303 = 9,868; losses
+158 + 143 + 38 = 339; flips 10 + 5 = 15; asterisks gained 1,491 + 799 + 303 + 7
+= 2,600 and lost 158 + 38 = 196.
+
+**THE FEE MOVES ARE EXACTLY TWO SHAPES AND BOTH ARE NAMED.** 799 rows go
+`0.045 → 0.08` — a Vanguard target-date TRUST row leaving `FUND_ER`'s unlabelled
+trust estimate for the labelled comparable's figure, which is precisely what the
+16,867 already-asterisked siblings publish today, so refusing it would make two
+spellings of one family disagree. 158 go `0.08 → 0.045`, the Income-and-Growth
+withdrawal falling back to the trust's own estimate, which is a correction.
+799 + 158 = 957.
+
+**THE 15 FLIPS ARE CORRECTIONS AND THEY ARRIVE BY A ROUTE I DID NOT PREDICT.**
+The ambiguity veto makes `fundTickerInfo` return null, so `lookupTicker` falls
+through to the **stored SEC `stk`** — an independent resolver — and in all 15 it
+answers with the VINTAGE rather than Income: `Vanguard Target Inc. 2030` VTINX →
+**VTHRX**, `Trgt Ret Inc 2050` → **VFIFX**, `{Vanguard Target Retirement Income}
+Vanguard Retirement 2040 Fund Investor Shares` → **VFORX**. *A veto that steps
+out of the way can hand a row to a better source rather than blanking it.*
+
+### Costs, each named
+
+- **386 rows / 44 entries / 44 plans / 30,686 participants / $385,896,226 newly
+  ASSERT a Vanguard mutual fund where the ISSUER cell names an insurance
+  platform** (Voya Retirement Insurance and Annuity Company, John Hancock,
+  Lincoln National), all with a blank type cell so `pooled` is false. **This is
+  NOT a new class and the measurement is what says so: 1,575 rows already assert
+  that way today** (`{John Hancock Life Insurance Company} Vanguard Target Ret
+  2035`, `{Empower Trust Company, LLC} Vanguard Target Retirement 2035`) against
+  1,541 asterisked. The cause is located and deliberately not changed:
+  `fundTickerInfo`'s `wrapped = WRAPPER.test(name)` reads the NAME, while
+  `lookupTicker` asks the bare name as a second attempt, so a wrapper in the
+  ISSUER column is invisible to it. Changing that is a general change to a
+  predicate every fund passes through, which a one-family repair may not do as a
+  side effect. **QUEUED as its own item at 386 rows this change adds against
+  1,575 pre-existing.** Note also that `{Empower Trust Company, LLC}` is a
+  TRUSTEE and its row really is the mutual fund, so `WRAPPER` in the issuer cell
+  is not a reliable statement that a row is a separate account — the
+  trustee-vs-house trap.
+- **140 rows / 21 entries / 21 plans / 37,852 participants / $987,688,869 named
+  `Vanguard Target Return <vintage>` gain a symbol, and that is the single
+  largest interpretive step in the change.** Vanguard registers no "Target
+  Return" series; the house, the family token and the vintage are all present and
+  `Return` identifies nothing, so Target Retirement is the only available
+  reading. 202 such rows exist store-wide, every one Vanguard's, no other house.
+- 3 rows lose a symbol to the DIGIT FENCE, which the pre-change arm lacked:
+  `Vanguard Target Retirement 20505` and `Target Retirement 20205 Inv` are not
+  the 2050 and 2020 funds, and `Vanguard Target Retirement IncomeMutual Inv` is
+  a genuine loss — `\bincome\b` needs a boundary and `IncomeMutual` has none.
+- 6 rows `Vanguard Dow Jones Target <vintage> Fund` ($7,238,546) and 2
+  `Vanguard Industrial Target …` ($17,481) and 15 `Vanguard Int'l/Intl Target
+  Retirement <vintage>` and 1 `Vanguard Trgt Putnam Retire 2060 Fnd Inv`
+  ($107,948) gain a symbol on a name carrying a word Vanguard does not use for
+  this series. Each was read; in every case Vanguard runs no such product, so the
+  dated target series is the only reading. `Vanguard Industrials Index Admiral`
+  (205 rows, a real sector fund) and `Vanguard Intl Growth Adm` → **VWILX** are
+  pinned to prove the arm does not swallow those words.
+
+### What must NOT be carried forward
+
+- **the queue's 1,008 rows / 161 plans / 699,584 participants is a DIFFERENT
+  SCREEN, not the class.** It required an ABBREVIATED family word; the shipped
+  outcome is 9,868 rows because the same structural fault also appears as a
+  misspelling, a trustee prefix, a reversed order and `Date` for `Retirement`.
+- **my own first family screen read 116,546 rows / 24,628,136 participants with
+  7,576 blanks, and neither number is a defect size.** That screen admits the
+  fully-spelled names (which resolve correctly and are the bulk) and its
+  `\binc\b` / `\btar\b` / `\bvg\b` arms admit noise. The implausible size was the
+  tell, as this record says it always is.
+- **a `Tr`+vintage screen reads 1,191 rows / 619,546 participants resolving at
+  0% and that is correct behaviour, not a gap** (recorded 2026-10-02 08:4xZ and
+  re-confirmed here).
+
+### Two defects in my own instruments, both caught before a number was published
+
+**(1) THE OUTCOME HARNESS IGNORED THE ISSUER, AND `lookupTicker` PREPENDS IT.**
+Keyed on (cleaned name, type) alone, one issuer's row stood in for every row
+sharing that pair, and the first measurement reported **`RFFTX → VTTHX`** — an
+American Funds target-date symbol becoming a Vanguard one — plus five
+`Vanguard Retirement <year> Fund Investor Shares` flips. With the ISSUER in the
+key all six vanish: they belonged to other issuers entirely. *Measure through the
+function the page calls, with the ARGUMENT the page passes* — and the argument
+`lookupTicker` passes is the whole ROW, issuer included.
+
+**(2) MY RESIDUE READER PARSED 402 OF 3,845 LINES AND THE 402 LOOKED LIKE THE
+WHOLE STORY.** Reading 3,845 distinct gain names is done by stripping the words
+the arm requires and printing every distinct REMAINDER — but my parser's regex
+allowed exactly one space where my own print format pads the type cell to 22
+characters, so it silently matched only the rows whose type string happened to be
+24 characters long. The first read showed "1,094 rows, residue = nothing" and I
+would have taken it for the population. Fixed, it reads 171 distinct residues
+across all 9,881 rows — and the `Income and Growth` family, the largest real
+finding in this cycle, is in the half that was missing. *A screen that silently
+drops 90% of its input reports on its own format.*
+
+### Prevention
+
+- **the generated arm is ONE function asked twelve times**, so the twelve entries
+  cannot drift apart from each other, and its comment states the FUND_ER sibling
+  it was derived from so the next reader sees both halves of the rule in one
+  place;
+- **`scripts/fund-er-test.mjs`: 83 → 102 must-resolve and 26 → 37 must-not,
+  ADDED BECAUSE NOT ONE of the 83 and 26 existing cases reaches the new arm.**
+  Measured, not assumed: the whole arm could have been inert and that table would
+  still have read 83/26/19/18/28. Every expected value was probed against the
+  SHIPPED predicate before being written down;
+- **a negative control PER CONDITION, each written out in full rather than by
+  surgery on a shared string, each asserted to have LANDED, and each failing BY
+  NAME on exactly its own cases**: house lookahead 3, family lookahead 1 (and it
+  protects an EXISTING pin — `Vanguard Equity Income Fund Investor Shares` would
+  publish VTINX without it), the `tr` token 3, the digit fence 1, the whole veto
+  5, its ambiguity half 2, its product half 2, its other-house half 1, and the
+  pre-change ORDERED SEQUENCE 18. The veto's three halves fail on disjoint sets
+  summing exactly to the whole veto's 5;
+- **a control on the PRE-FILTER itself**, because an exact pre-filter is a claim:
+  194,136 rows outside it rendered on both sides, 0 differences;
+- **no browser twin exists to drift** — `app.js` loads `fund-er.js` as a script
+  and carries 0 copies of these patterns, verified by grep.
+
+### Surface and scope
+
+**REPORT path only, as a guarantee from the import list:**
+`scripts/build-seo-pages.mjs` imports `lib-quote`, `lib-disclose` and `lib-4i`
+and has **0 references to `fund-er`, `fundER`, `fundTickerInfo` or
+`lookupTicker`**, so the crawlable pages cannot render a per-fund symbol or fee
+under any input. Corroborated rather than constituted: regenerating all 5,000
+pages leaves `git diff --stat p/` empty.
+
+**DISPLAY-SIDE: `PARSER_VERSION` stays 197, `lib-4i` and `merge-4i` are
+untouched, no store field moves, so there is nothing to re-parse.** The stored
+SEC `stk` is written by `scripts/match-sec-tickers.mjs`, which this change does
+not touch — and the 15 flips are that resolver answering, unchanged, for rows
+`fund-er.js` now declines.
+
+### Figures the next run will move, pre-registered
+
+`audit-data` re-implements the ticker metrics over `fund-er.js`, so three of them
+MUST move and the rest must not. Measured locally on the current store:
+**`tkExact` 37.33 → 37.76**, **`tkComparable` 3.27 → 3.41**, **`tkShare`
+24.49 → 25.02** (and unlike every stored-field change on this record, `tkShare`
+CAN move here, because this change is inside the function it calls). Unchanged:
+`ticker-conflict` **3** (#541's three named survivors), HIGH **4** (3 `contrib` +
+`fabricated-name`), warn **556**, overshoot **372**, overshootTrust **12**,
+generic-named **255**, dominant non-fund **0**, confident **60,167**, entries
+**65,480**, dl **39**, pv 197 at 99.9%.
+
+### Found outside the item and NOT fixed
+
+**`scripts/merge-name-test.mjs` EXITS 1 AT HEAD, before any change of mine**, on
+`NEGATIVE CONTROL — drop disjunct (2), the widening — must fail on exactly the
+new pins: DECORATIVE: this control cannot fail — it is not testing anything`.
+That is the #545 weld arm's own control reporting itself inert — the
+cannot-fail-control shape this record has paid for five times, this time caught
+by the harness itself and left red. Verified pre-existing by stashing the local
+diff and re-running. Reported, not touched: it belongs to that arm's owner.
+
+---
+
 ## 2026-10-02 (14:2xZ) — the draw: the double-render class gets the witness the 01:4xZ entry said it lacked, and it ties that class to the open overshoot defect
 
 Participant-weighted random draw from published lineups, seed 20261002140, pool
