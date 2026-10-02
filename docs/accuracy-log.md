@@ -40866,3 +40866,92 @@ generalised:** those 138 plans show no provider table because their own shard is
 absent. With the trust's Schedule C stored they could show it, labelled as the
 trust's — the same treatment the Schedule D fund list already gets. Render work,
 sized next; the store half is what this ships.
+
+## 2026-10-02 (20:0xZ) — a holding name carrying its own value; and PSEG's recordkeeper, named with the filing's own evidence
+
+**#551's verdict: every claim held.** MTIA acks with a fee-shard entry **0 of 508
+→ 395**, 300 carrying `i1`; PSEG's trust ack gained its shard-32 entry; the
+published `recordkeeper` moved on 0 plans.
+
+**AND IT SETTLES PSEG WITH THE FILING'S OWN CODES.** Trust ack
+`20251013135637NAL0000680483001` files six item-2 rows:
+
+| row | codes | comp |
+|---|---|---|
+| `INVESCO ADVISORS, INC` — **what we publish** | 28 99 50 | $534,926 |
+| `FID INV INST OPS CO` | 65 99 **64** 50 | $442,941 |
+| `BLACKROCK FINANICAL` | 28 99 50 | $415,215 |
+| `THE BANK OF NEW YORK MELLON` | 18 19 99 50 | $207,152 |
+| `KRONICK KALADA BERDY & CO` | **10** 99 50 | $72,800 |
+| `WILLIS TOWER WATSON US LLC` | 16 99 | $53,197 |
+
+**No row is coded 15, so `isRk` is false for all six; `FID INV INST OPS CO` does
+not match any `RK_BRANDS` pattern; so the winner is decided by COMPENSATION
+ALONE** — $534,926 beats $442,941. The filing's notes say *"Fidelity Investments
+is the recordkeeper"* and **the filing's own code 64 agrees with the notes.** The
+published name is an artifact of a tie-break, not a claim anyone filed.
+
+*This is what the morning's four refutations could not see*, because all four
+replayed plan-ack item-2 rows and PSEG files none of its own.
+
+**SHIPPED: the welded-value repair — 34 rows / 34 plans / 183,439 ppl /
+$13,386,345 stop publishing a number that is the row's own value as part of the
+fund's name.** ABM Industries (88,660 ppl) published `MONEY MARKET -415,027` on a
+row worth $415,027.
+
+**Its evidence is the ROW ITSELF**, which is what makes it the strongest
+condition in this file: every other repair here argues from how often a spelling
+appears elsewhere, and this one requires the trailing number to EQUAL the row's
+own value. **A vocabulary would have measured the vocabulary** — the cheap screen
+("a name ending in a negative or parenthesised number") reads **1,229** rows and
+the equality test keeps **34**. The 1,195 refused are real names: contract
+numbers (`Citibank N.A. Contract #TR24-100`), CMO tranches carrying maturity
+dates (`…FLTG RT07-15-2042`), insurer contract captions. A repair that stripped
+those would damage legible rows to fix illegible ones.
+
+**Only the minus form, because only it has a live case:** all 34 are
+`name -digits`, **0 parenthesised**, so a parenthesised arm would ship untested.
+*A floor of zero is not a floor.* **Disjointness measured, not assumed:** of the
+34 heads, 0 contain a camelCase seam and 0 an eight-capital run, so neither
+`weldRepair` nor `capsRepair` can claim one.
+
+**PRICED ON EVERY PUBLISHED CELL, and 0 move but the name:** ticker, fee,
+asterisk, shown type, all fourteen suppressor flags, and both the generic-name
+and not-fund-shaped guards are unchanged across all 34. The 12
+`CERT OF DEPOSIT / BANK DEPOSIT` rows already had `bankDepositFee` withholding
+their fee and still do; the 22 `MONEY MARKET` rows keep their 0.2 estimate.
+*A legibility fix must be priced against the guards that READ names* — three
+caption rows once handed five whole menus to a junk demotion. Only two distinct
+heads exist after the strip: `MONEY MARKET` ×22, `CERT OF DEPOSIT / BANK
+DEPOSIT` ×12.
+
+**I ADDED A WRONG PIN AND THE PROBE REMOVED IT WITHIN THE HOUR.** The file's
+subsumed-condition check asserts `weldRepair`'s disjunct (1) contributes nothing
+on the NAME column ("whole-store 0 of 415,221"). A script of mine found 3
+counter-examples, each missing disjunct (2)'s ratio by exactly one (`w`=3,
+`joined`=1). **Asked of the shipped predicate via `make(false)`,
+`make("weld-noshipped")` and `make("weld-nowidened")`, all three return NULL** —
+my script had REIMPLEMENTED `weldRepair` and omitted `secWords` and
+`regSpellsJoined`. The counter-examples were properties of my copy.
+***Measure through the function the page calls*** — at least the eighth
+instance, and the discriminating test was three lines.
+
+**FOUND, DIAGNOSED, NOT FIXED — `merge-name-test.mjs` IS RED AT HEAD, AND
+CLAUDE.md SAID IT EXITS 0.** That line was measured and true when written; it is
+wrong now. The failure is the ISSUER arm's `iss-noshipped` control reading
+**0 of 32** where the record says 1, and the file correctly calls its own
+control decorative and exits 1.
+
+**The cause is a GATE THAT ERASES ITS OWN EVIDENCE, with the arithmetic.** The
+control's case was `AllianceBernstien → Alliance Bernstien`. Counted in the
+issuer column today: **`AllianceBernstien` 0, `Alliance Bernstien` 7.** #547's
+issuer repair SHIPPED, RAN, and removed the damaged spelling from the store — and
+the control's evidence maps are built FROM the store. With `joined` fallen to 0,
+disjunct (2)'s ratio `w > joined * 3` became `7 > 0` = TRUE, so the case flipped
+from "repaired by (1) only" to "repaired by both", and the control for (1) can
+no longer fail. ***A repair arm that runs on every merge destroys the evidence
+its own negative control depends on.*** Every arm in this file will go decorative
+the same way once it has done its work. The fix is a FROZEN fixture rather than
+the live store, and it is queued rather than rushed. `merge-name-test` runs in no
+workflow, so wiring it into CI must wait until it is green — *a red gate is worse
+than no gate.*

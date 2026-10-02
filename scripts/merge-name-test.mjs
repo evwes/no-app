@@ -153,6 +153,24 @@ const shipped = make(false), drifted = make(true);
 const caps = make("caps"), capsNoRatio = make("caps-noratio"), capsNoWitness = make("caps-nowitness");
 
 const CASES = [
+  /* A PIN WAS ADDED HERE 2026-10-02 (20:0xZ) AND REMOVED THE SAME HOUR, which
+   * is worth a comment because the removal is the finding. The subsumed-
+   * condition check below asserts disjunct (1) contributes nothing on the NAME
+   * column ("whole-store 0 of 415,221 distinct names"), and a script of mine
+   * reported 3 counter-examples — `Fidelity Advisor Small CapFund Class I`,
+   * `LVIP TRowePrice 2060 FundSAP3`, `Fidadv Eq GrInst` — each missing
+   * disjunct (2)'s ratio by exactly one (`w`=3, `joined`=1).
+   *
+   * ASKED OF THE SHIPPED PREDICATE, ALL THREE RETURN NULL. The script had
+   * REIMPLEMENTED `weldRepair` rather than calling it, and the reimplementation
+   * omitted `secWords` and `regSpellsJoined` entirely. So the counter-examples
+   * were properties of my copy, the check's claim stands, and the pin was
+   * asserting a repair that does not happen.
+   *
+   * *Measure through the function the page calls* — recorded at least seven
+   * times before this one, and the discriminating test was three lines: hand
+   * the name to `make(false)`, `make("weld-noshipped")` and
+   * `make("weld-nowidened")` and read the three answers. All null. */
   // must REPAIR — the lost space
   ["Vanguard Total BondMarket Index Adm", "Vanguard Total Bond Market Index Adm"],
   ["JPMorganMid Cap Growth Fund R6", "JPMorgan Mid Cap Growth Fund R6"],
@@ -1107,4 +1125,106 @@ for (const [key, label] of BANG_CONTROLS) {
   }
   console.log(`  drop ${label}: disagrees on ${broke.length} of ${BANG_CASES.length}`);
   for (const b of broke) console.log(`      ${b}`);
+}
+
+/* ==== THE WELDED-VALUE REPAIR ============================================
+ * A holding name carrying its own value, negated: `MONEY MARKET -415,027` on a
+ * row whose value IS 415,027. Its evidence is the ROW, not an attestation map,
+ * so the predicate takes the whole row and the cases carry a value.
+ *
+ * The predicate is SLICED from merge-4i rather than retyped, and the slice's
+ * landing is asserted — the drift control in this very file went decorative
+ * once before when the function it targeted was renamed. */
+{
+  const MSRC = src;   // merge-4i.mjs, already read at the top of this file
+  const H = "  const valueRepair = (f) => {";
+  const T = "\n  };";
+  const h = MSRC.indexOf(H);
+  if (h < 0) throw new Error("merge-name-test: valueRepair moved in merge-4i.mjs");
+  const t = MSRC.indexOf(T, h);
+  const vsrc = MSRC.slice(h, t + T.length).replace(/^\s*const valueRepair =/, "valueRepair =");
+  const mk = (drop) => {
+    let s = vsrc;
+    if (drop === "v-equality") {
+      s = s.replace("if (!(num > 0 && Math.abs(num - v) <= 1)) return null;", "if (!(num > 0)) return null;");
+      if (s === vsrc) throw new Error("control v-equality did not land");
+    } else if (drop === "v-head") {
+      s = s.replace("if (!/[A-Za-z]{3}/.test(head)) return null;", "");
+      if (s === vsrc) throw new Error("control v-head did not land");
+    } else if (drop === "v-anchor") {
+      /* two ASCII-only targets: the source carries a literal U+2212, so a
+       * search string spelling it `−` cannot match -- which this control
+       * reported by refusing to land rather than by passing quietly */
+      s = s.replace("(.*[A-Za-z)])", "(.*)").replace("{3,}", "{2,}");
+      if (s === vsrc) throw new Error("control v-anchor did not land");
+    }
+    // eslint-disable-next-line no-new-func
+    return new Function(`let valueRepair; ${s}; return valueRepair;`)();
+  };
+
+  /* Every MUST-REPAIR case is a real store row; every MUST-REFUSE case is a
+   * real name the cheap screen reads and the equality test throws out. */
+  const V_CASES = [
+    // [name, value, expected]
+    ["MONEY MARKET -415,027", 415027, "MONEY MARKET"],                   // ABM, 88,660 ppl
+    ["MONEY MARKET -4,536,115", 4536115, "MONEY MARKET"],                // Stantec
+    ["CERT OF DEPOSIT / BANK DEPOSIT -306,404", 306404, "CERT OF DEPOSIT / BANK DEPOSIT"],
+    ["CERT OF DEPOSIT / BANK DEPOSIT -21,388", 21388, "CERT OF DEPOSIT / BANK DEPOSIT"],
+    ["MONEY MARKET -114,080", 114080, "MONEY MARKET"],                   // the smallest live case
+    /* the number is a CONTRACT number, not the value -- refused */
+    ["Citibank N.A. Contract #TR24-100", 102363000, null],
+    /* a maturity DATE inside a security's own name -- refused */
+    ["PVTPL CMO BX TRUST SR 25-GW CL B FLTG RT07-15-2042", 1002480, null],
+    /* a real fund whose name ENDS in a vintage, with no minus at all */
+    ["Nuveen Lifecycle Index 2030 R6", 2030, null],
+    /* the equality is what decides it: same shape, wrong number */
+    ["MONEY MARKET -415,027", 999999, null],
+    /* off by one is accepted (filers round), off by two is not */
+    ["MONEY MARKET -415,027", 415028, "MONEY MARKET"],
+    ["MONEY MARKET -415,027", 415029, null],
+    /* a head with no readable word must not be stripped to nothing. The FIRST
+     * of these is refused by the ANCHOR (it ends in a digit, not a letter), so
+     * it does NOT reach the three-letter floor -- the harness said so by name,
+     * reporting that control as changing 0 of 14. The second ends in a letter
+     * and so is the only case that reaches the floor; no live store row has
+     * that shape, so the floor is DEFENSIVE and labelled as such rather than
+     * claimed to be load-bearing. *An arm can be inert while every existing
+     * case still passes.* */
+    ["42 -415,027", 415027, null],
+    ["A B -415,027", 415027, null],
+    /* a negative value on the row: the name carries the ABSOLUTE figure */
+    ["MONEY MARKET -415,027", -415027, "MONEY MARKET"],
+    /* fewer than three digits is below the screen, so a real hyphenated
+     * class designation cannot be eaten */
+    ["Templeton Global Bond -50", 50, null],
+  ];
+  const vr = mk(null);
+  let vFails = 0;
+  for (const [name, value, want] of V_CASES) {
+    const got = vr({ name, value }) || null;
+    if (got !== want) { vFails++; console.error(`FAIL valueRepair(${JSON.stringify(name)}, ${value}) -> ${JSON.stringify(got)}, want ${JSON.stringify(want)}`); }
+  }
+  console.log(`\nwelded-value repair: ${V_CASES.length - vFails}/${V_CASES.length} passed`);
+  if (vFails) process.exitCode = 1;
+
+  /* NEGATIVE CONTROL, one per condition, each asserted to have LANDED and
+   * required to disagree on at least one case. A control that cannot fail is
+   * decorative. */
+  const V_CONTROLS = [
+    ["v-equality", "the equality with the row's own value"],
+    ["v-head",     "the three-letter floor on the remaining head"],
+    ["v-anchor",   "the letter/paren anchor and the three-digit screen"],
+  ];
+  console.log(`NEGATIVE CONTROL, one per condition:`);
+  for (const [key, label] of V_CONTROLS) {
+    const v = mk(key);
+    const broke = [];
+    for (const [name, value, want] of V_CASES) {
+      const got = v({ name, value }) || null;
+      if (got !== want) broke.push(`${JSON.stringify(name)} @${value} -> ${JSON.stringify(got)}`);
+    }
+    console.log(`  drop ${label}: disagrees on ${broke.length} of ${V_CASES.length}`);
+    for (const b of broke.slice(0, 4)) console.log(`      ${b}`);
+    if (!broke.length) { console.error(`FAIL the control for ${label} changed NOTHING -- it is decorative`); process.exitCode = 1; }
+  }
 }

@@ -1285,9 +1285,61 @@ function stripIssuerLead(iss) {
     if (JUNK_NAME_RE.test(a) && !JUNK_NAME_RE.test(b)) return null;   // #536
     return a;
   };
-  let weld = 0, caps = 0, rot = 0, ciph = 0, bang = 0, iweld = 0;
+  /* A HOLDING NAME CARRYING ITS OWN VALUE, NEGATED. ABM Industries (88,660
+   * ppl) publishes `MONEY MARKET -415,027` on a row whose value IS 415,027 --
+   * the 4i layout put a negative figure in the description column and the
+   * extractor welded it to the name.
+   *
+   * ITS EVIDENCE IS THE ROW ITSELF, which is why this needs no attestation map
+   * and no registry: the trailing number must EQUAL the row's own value. Every
+   * other repair in this file argues from how often a spelling appears
+   * elsewhere; this one is self-verifying, and that makes it the strongest
+   * condition available.
+   *
+   * A VOCABULARY WOULD HAVE MEASURED THE VOCABULARY. A screen for "a name
+   * ending in a negative or parenthesised number" reads 1,229 rows; the
+   * equality test keeps 34. The 1,195 refused are real names -- contract
+   * numbers (`Citibank N.A. Contract #TR24-100`), CMO tranches with maturity
+   * dates (`...FLTG RT07-15-2042`), insurer contract captions -- and a repair
+   * that stripped those would damage legible rows to fix illegible ones.
+   *
+   * ONLY THE MINUS FORM, BECAUSE ONLY IT HAS A LIVE CASE: all 34 are
+   * `name -digits` and 0 are parenthesised, so a parenthesised arm would ship
+   * untested. A floor of zero is not a floor.
+   *
+   * MEASURED DISJOINT from every arm below rather than assumed: of the 34
+   * heads, 0 contain a camelCase seam and 0 contain an eight-capital run, so
+   * neither `weldRepair` nor `capsRepair` can claim one. It is therefore asked
+   * FIRST and OUTSIDE the `continue` chain -- like the issuer arm, and for the
+   * same reason: stripping the bogus figure can only make a name MORE
+   * repairable, never less, so a later arm must still get its turn.
+   *
+   * PRICED ON EVERY PUBLISHED CELL, not just the name: across all 34 rows the
+   * ticker, fee, asterisk, shown type, all fourteen suppressor flags, and both
+   * the generic-name and not-fund-shaped guards are UNCHANGED. The 12
+   * `CERT OF DEPOSIT / BANK DEPOSIT` rows already have `bankDepositFee`
+   * withholding their fee and still do; the 22 `MONEY MARKET` rows keep their
+   * 0.2 pattern estimate. *A legibility fix must be priced against the guards
+   * that READ names* -- making three caption rows legible once handed five
+   * whole menus to a junk demotion. Here it moves nothing but the name.
+   *
+   * It runs after confidence and region selection, so it cannot affect which
+   * region won or whether a plan is published. */
+  const valueRepair = (f) => {
+    const n = String(f.name || "");
+    const m = /^(.*[A-Za-z)])\s*[-−]\s*([\d,]{3,})$/.exec(n);
+    if (!m) return null;
+    const num = Number(m[2].replace(/,/g, ""));
+    const v = Math.abs(Number(f.value) || 0);
+    if (!(num > 0 && Math.abs(num - v) <= 1)) return null;   // the self-evidence
+    const head = m[1].trim();
+    /* a repair that leaves no readable name behind is not a repair */
+    if (!/[A-Za-z]{3}/.test(head)) return null;
+    return head;
+  };
+  let weld = 0, caps = 0, rot = 0, ciph = 0, bang = 0, iweld = 0, vrep = 0;
   const weldAcks = new Set(), capsAcks = new Set(), rotAcks = new Set(), ciphAcks = new Set(), bangAcks = new Set();
-  const iweldAcks = new Set();
+  const iweldAcks = new Set(), vrepAcks = new Set();
   for (let i = 0; i < SHARDS; i++)
     for (const [ack, e] of Object.entries(buckets[i])) {
       if (!e || !e.confident || !Array.isArray(e.funds)) continue;
@@ -1302,6 +1354,11 @@ function stripIssuerLead(iss) {
          * before the loop, so neither can see the other's edits. */
         const irep = weldRepair(f.iss, ISS_EV);
         if (irep) { f.iss = irep; iweld++; iweldAcks.add(ack); }
+        /* the row's own value welded into its name — asked here, outside the
+         * chain, because its evidence is `f.value` and not the name maps, and
+         * because the strip can only make the remaining name more repairable */
+        const vr = valueRepair(f);
+        if (vr) { f.name = vr; vrep++; vrepAcks.add(ack); }
         const rep = weldRepair(f.name);
         if (rep) { f.name = rep; weld++; weldAcks.add(ack); continue; }
         /* disjoint from the arm above by construction — an all-caps token has
@@ -1333,6 +1390,7 @@ function stripIssuerLead(iss) {
         if (brep) { f.name = brep; bang++; bangAcks.add(ack); }
       }
     }
+  if (vrep) console.log(`welded-value repair: ${vrep} rows across ${vrepAcks.size} plans`);
   if (iweld) console.log(`issuer lost-space repair: ${iweld} rows across ${iweldAcks.size} plans`);
   if (weld) console.log(`lost-space repair: ${weld} rows across ${weldAcks.size} plans`);
   if (caps) console.log(`all-caps lost-space repair: ${caps} rows across ${capsAcks.size} plans`);
