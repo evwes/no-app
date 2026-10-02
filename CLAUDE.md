@@ -712,10 +712,20 @@ from the cycle that would have cleared it.
   `audit-generic-names` fell back under its 230 threshold on the new store, so
   the `fabricated-name` HIGH cleared and the baseline is the 4 `contrib`
   outliers again.
-  **THE HIGH BASELINE IS NOW 5, NOT 4, AND THAT IS v196's OWN EXPECTED
-  CROSSING.** `audit-generic-names` reads **235 plans / 477 rows** against the
-  `fabricated-name` escalation threshold of 230, so that HIGH is now STANDING
-  rather than absent: HIGH = 4 `contrib` + `fabricated-name`. The threshold was
+  **THE HIGH BASELINE IS 4 AND THIS PARAGRAPH SAID 5 UNTIL 2026-10-02 01:5xZ,
+  WHEN IT COST A PRE-REGISTRATION.** #541 was registered at HIGH **5** off this
+  line and the run read **4**; `audit-data` on #541's own store prints
+  `== HIGH (4)` composed of **3 `contrib` + 1 `fabricated-name`**, which is what
+  the 18:0xZ correction further down already said and what the line above this
+  one ("HIGH is back to 4") said too. So the file carried THREE statements of
+  one baseline — 4, then 5, then 4 — and a pre-registration read the middle one.
+  *A contradicted number in this file is asserted again every time it is read,
+  and the reader cannot tell which copy is live.* The crossing below is real and
+  its arithmetic is unchanged; only the TOTAL was wrong, because a fourth
+  `contrib` outlier had left the store on the DOL refresh.
+  `audit-generic-names` reads **235 plans / 477 rows** against the
+  `fabricated-name` escalation threshold of 230, so that HIGH is STANDING
+  rather than absent: HIGH = **3** `contrib` + `fabricated-name`. The threshold was
   deliberately NOT moved (raising a threshold to accommodate one's own widening
   is how a regression gets normalised) and the flag text names the re-basing, so
   the crossing is self-explaining. **CI reports 7** — the extra two are
@@ -737,6 +747,118 @@ from the cycle that would have cleared it.
   HEAD. CI runs the same job and passed, so **the failure is the sandbox and not
   the test** — recorded because *local red is no more evidence than local green*,
   and the only thing that settles either is the CI conclusion.
+- **#541 RAN `success` AND EVERY REGISTERED STORE FIGURE PASSED** (data
+  `1c9e4046`): confident **60,170**, lineups 59,822, entries 65,479, overshoot
+  **372**, overshootTrust 12, aggRow 113, **dl 19**, pv 196 at **100%**,
+  `tkExact` **37.2** (inside "at most +0.05") and `tkComparable` **3.27** held.
+  **`ticker-conflict` 15 → 3 against the registered "about 2", AND THE THREE
+  SURVIVORS ARE EXACTLY THE TWO CLASSES THE SHIP NAMED AS OUT OF SCOPE** — St.
+  Jude's transposed `(VBITX)`, refused on purpose, plus `PIMCO Total Return A
+  (PTTAX)` and `CLASS (CMTFX) TIAA-CRF …`, both carrying the bracket **mid-string
+  with debris after it**, which is the 80-row class the anchor excludes. *A
+  residue that is entirely the classes the change named is the strongest form of
+  a passed registration.*
+  **THE HIGH MISS IS THIS FILE'S OWN CONTRADICTION, NOT THE STORE'S.** I
+  registered **5** and the run read **4** = 3 `contrib` + `fabricated-name`;
+  CLAUDE.md carried THREE statements of one baseline in one block (4, then 5,
+  then an 18:0xZ correction back to 4) and the pre-registration read the middle
+  one. The 5-line is rewritten in place to name its own cost, because *a
+  contradicted number is asserted again every time it is read and the reader
+  cannot tell which copy is live.* Direction safe: AT baseline, not above.
+  **AND `warn` 601 → 556 RECONCILES EXACTLY TO TWO OF MY OWN CHANGES, NEITHER A
+  DATA IMPROVEMENT: −33** from the 00:3xZ `ticker-conflict` repair, which shipped
+  `[skip ci]` **after #540 had already run**, so no run ever recorded its
+  predicted 601 → 568 and **568 never appears in the trail**; **−12** from this
+  ship. 33 + 12 = 45. **The trail steps down 45 in one line and must not be read
+  as the data improving** — 45 fewer FALSE or stale findings, 0 fewer real
+  defects. *When two reporting-only changes queue behind one run, register their
+  SUM, not each in turn.* No CI-versus-local divergence: the local audit on
+  #541's own store reproduces `HIGH (4)` / `WARN (556)` exactly.
+- **THE 01:4xZ DRAW FOUND A HOLDING PUBLISHED TWICE UNDER TWO NAMES, AND ALL
+  THREE ARMS OF THE SHIPPED DEDUP ARE BLIND TO IT BY CONSTRUCTION — QUEUED,
+  SIZED, SPLIT, PARSER-SIDE, NOT SHIPPED.** Seed 20261002014. **Avangrid
+  Management Company (10,256 ppl, $2.56B, 32 rows, ratio 1.098, OCR) publishes
+  `accounts` $86,116,587 beside `Fidelity Brokerage Accounts` $86,116,587**, and
+  `Company stocks` $390,010 beside `Iberdrola S.A. Sponsored ADRs Company Stock`
+  $390,010.
+  **ASKED OF THE SOURCE RATHER THAN ASSUMED:** `collapseDoubleRender`'s ARM A and
+  ARM B group rows by `DR_KEY`, the normalised NAME, so two renderings whose
+  names differ can never share a bucket; ARM C's test is exact — the longer name
+  must be the shorter plus **THIS ROW'S OWN VALUE, digit for digit** — and here
+  it is the shorter plus a SHARE CLASS. **ARM C's own comment already named this
+  population:** *"it catches 6 of the ~12 twins … and deliberately leaves the
+  rest: the others differ in more than the glue, and guessing at them is the
+  v174 hazard."* This is the rest, sized.
+  **WHOLE-STORE AND IT NEEDED NO RENDER: 5,319 groups / 1,923 menus / 3,294,805
+  ppl / $12,321,465,059** carry two rows at an identical value under different
+  names. **DO NOT CARRY THAT FORWARD** — this record rules Oracle's four
+  near-identical pairs CORRECT (a 50/50 manager split), and the unrelated-name
+  half is **4,851 groups / 3,223,572 ppl / $11.83B** of mostly that. The signal
+  is where one name is CONTAINED in the other: **469 pairs / 344 menus / 322,959
+  ppl / $491,867,233.**
+  **AND READING THE 469 SPLITS THEM AGAIN — the claimable core is 70 pairs /
+  ~53 menus / ~40,233 ppl / $113,215,337**, the groups where the extra text
+  identifies NOTHING: a share CLASS only (51 pairs / $104,037,133), a vehicle
+  WORD only (12), or both (7) — `allspring core bd` / `… r6`, `vanguard 500
+  index` / `… adm`, `fidelity 500 index` / `… fund`. Two rows at one value where
+  one states a class and the other does not cannot be two holdings.
+  **ONE OF THE 51 WAS WRITTEN UP AS MY CLASSIFIER'S FALSE POSITIVE AND THAT
+  WRITE-UP WAS WRONG — CORRECTED THE SAME CYCLE.** `group annuity contract` →
+  `group annuity contracts` is an English PLURAL that my share-class regex
+  admitted as a bare `s`, so the **BUCKET LABEL** is wrong and the **MEMBERSHIP
+  is not**: a plural identifies nothing either, so the pair sits in the
+  decidable core more plainly than any share-class case. It is the **LARGEST
+  nested pair in all 469 by menu share — 26.6% twice over / $77,231,653 / 3,329
+  ppl — i.e. 74% of that bucket's whole dollar figure**, so calling it a false
+  positive would have retired the one member big enough to see. *A label being
+  wrong is not the same claim as a member being wrong, and I published the
+  stronger one.*
+  **THE TWO LARGE BUCKETS ARE AT LEAST THREE MECHANISMS AND MUST NOT BE ONE
+  COUNT** (217 pairs / 184,831 ppl "3+ other words", 182 / 112,045 "1–2 other
+  words"): a TRUNCATED twin (`instl us govt` / `… money market premier`), a
+  BARE-HOUSE twin (`bny mellon` / `bny mellon sm md cp gr y`, `fidelity` /
+  `fidelity contrafund k6 fund` — the queued bare-house class intersecting), and
+  a BARE-CAPTION twin (Avangrid's `accounts`). **Do not carry 217 or 184,831
+  forward.**
+  **AND MY NESTING TEST IS WEAKER THAN A PREFIX TEST:** it asks `b.includes(a)`
+  so it fires MID-STRING (`money market` inside `vanguard treasury money market
+  fund`), which is much weaker evidence of a twin than a prefix truncation; any
+  shipped rule must state the position.
+  **ONLY 152 OF 469 SIT IN A MENU WHOSE RATIO EXCEEDS 1.02** (109,065 ppl), so
+  two thirds are invisible to the overshoot audit as well as to the dedup — the
+  Paramount blindness again.
+  **ALSO LIVE IN THAT MENU, ALL QUEUED:** `Fidelity Diversified International K6`
+  → **FDIVX at 0.65**, the owner-gated different-SERIES item with a named
+  10,256-ppl instance; `statements` at **11.1% / $313,497,660** correctly typed
+  *"Filing names no specific fund"* (v191 working — claim withdrawn, money still
+  in the denominator); `Calvert US Large Cap Core IDX R6` publishing the generic
+  0.1 with no ticker.
+  **AND THE SECOND DRAW NAMES A BRAND-LEVEL COVERAGE GAP, NOW SIZED: 13,927
+  published `iShares` rows across 6,248 menus / 7,243,157 participants, of which
+  11,334 publish NO TICKER** — 2,593 publish one and **7,947 publish a FEE**, so
+  ~5,354 rows price a holding they cannot name, the fee-asserts-where-the-ticker-
+  refuses asymmetry at BRAND scale. Caputo's New Farm Produce (987 ppl) is where
+  it was found: TEN `{iShares Core}` rows naming real ETFs (IXUS, AGG, ITOT,
+  IDEV, ISTB, DGRO, IJR, HDV, IEMG) and not one resolves, while `{Vanguard} Mid
+  Cap Index Adm` → VIMAX resolves on the same page and `{Vanguard} Total Stock
+  Market ETF` publishes **a fee of 0.04 and no symbol**. Control first: a bare
+  `iShares Core S&P Total U.S. Stock Market ETF` resolves to nothing, so the zero
+  is the tables' and not the query's. Largest unresolved names `ISHARES MSCI EAFE
+  INTL INDEX K` 316, `iShares MSCI EAFE International Index Fu` 308, `iShares S&P
+  500 Index K` 249, and **`iShares` alone on 96 rows** — the bare-house class
+  inside the brand. **This bullet said "NOT SIZED" an hour earlier because the
+  sizing had been chained to a 1.7M-row render; splitting it out took one script
+  and no render** — *a fast exact measurement must not be chained to a slow one.*
+  **AND THE ISSUER-KEYED HALF OF THAT SWEEP IS NOT A DEFECT MEASURE — publish no
+  number from it.** No-ticker rows grouped by issuer put `{principal life
+  insurance c}` 16,343, `{principal global investors}` 8,932, `{mutual of
+  america}` 8,908 and `{great gray trust company}` 4,852 at the top of 11,599,
+  and all of those are separate accounts, collective trusts or stable value with
+  no registered symbol **by design** — the recorded *"63.9% have no ticker is
+  true and is not a defect measure"* trap, reproduced by the instrument written
+  after it. The iShares figure is usable because the brand names REGISTERED
+  ETFs, so a blank there is a matcher gap and never a vehicle fact.
+  `docs/accuracy-log.md` 2026-10-02 (01:5xZ).
 - **SHIPPED AND MIRRORED 2026-10-02 01:4xZ (`0e6782aa → 6552150e`), UNFORCED ON
   BOTH CHECKS, data gate +0 / −0 BY ACK AND BY PLAN; #541 AND `site-test` #138
   BOTH FIRED FROM THE PUSH ON THE EXACT COMMIT — THE SAME FILED SYMBOL IN THE
