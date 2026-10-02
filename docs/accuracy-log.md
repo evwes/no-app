@@ -274,6 +274,133 @@ re-parse whose own store this arm has not seen):
 
 ---
 
+## 2026-10-02 (08:4xZ)
+
+**THE 08:2xZ DRAW FOUND A WHOLE FUND FAMILY PUBLISHING NO SYMBOL BESIDE 17,665
+SIBLINGS THAT DO — QUEUED, SIZED, SPLIT INTO TWO MECHANISMS BY PROBE, NOT
+SHIPPED: 1,008 published rows / 161 plans / 699,584 participants /
+$13,917,833,776.** Seed 20261002082, pool **60,170 published lineups / 60,151
+with a reader / 103,489,995 ppl**. **Dave & Buster's (42,611 ppl, 27 rows @
+0.965)** and **Lowe's Companies (289,398 ppl, 25 rows @ 0.988)**, both largely
+clean — and Lowe's twelve asterisked Vanguard target-date TRUST rows are the
+2026-09-21 demotion visibly working, a labelled comparable where an assertion
+would be wrong.
+
+Dave & Buster's publishes **`Vanguard Institutional TR 2060` at 1.5% of its menu
+resolving to NOTHING** while nine sibling `Vanguard Target Retirement <year>`
+rows on the same page each resolve exactly. Whole-store, Vanguard house plus an
+abbreviated family word plus a vintage: **18,673 published rows / 2,051 plans /
+5,107,915 ppl**, of which **17,665 publish a symbol** (3,988 asterisked, 13,677
+asserted) and **1,008 publish none**. 590 distinct names; **66 of the blanks
+still publish a FEE**, the fee-asserts-where-the-ticker-refuses asymmetry inside
+one family.
+
+**IT IS AT LEAST TWO MECHANISMS AND THEY ARE SEPARATED BY PROBE RATHER THAN BY
+COUNT, so 1,008 must not be worked as one class.**
+
+**(A) AN ABBREVIATION REACH FAILURE — the repaired name resolves.**
+`Vangrd Trgt Retire 2055 Fd` → nothing, `Vanguard Target Retirement 2055 Fund` →
+**VFFVX\***; `Vanguard Institutional TR 2060` → nothing,
+`Vanguard Institutional Target Retirement 2060` → **VTTSX\***. Same for
+`Vangrd Trgt Retire Inc Fd` → VTINX\*, `VANGUARD TGT RETIREM'T INCOME` → VTINX\*,
+`Vanguard Tar Ret 2070 Tr I` → VSVNX\*, `Vangrd Trgt Rtire 2040 Trst II` →
+VFORX\*. Dominated by one recordkeeper template: `Vangrd Trgt Retire <year> Fd`
+is ~250 rows across its vintages.
+
+**(B) A CLASS DESIGNATION INFIXED BETWEEN THE FAMILY WORDS AND THE VINTAGE — and
+here the repaired name does NOT resolve, which is what makes it a separate
+item.** `Vanguard Target Retire Trust Plus 2040` → nothing, **and the fully
+spelled `Vanguard Target Retirement Trust Plus 2040` → nothing too**, while
+`Vanguard Target Retirement 2040` → **VFORX\*** and Lowe's own
+`Vanguard Target Retirement 2035 Trust A` → **VTTHX\***. So the blocker is not a
+spelling: it is `Trust Plus` (or a bare `Trust`) standing between the family and
+the vintage, where the table wants the vintage ADJACENT. One edit at a time:
+`… Retirement Trust 2040` null, `… Retire Trust 2040` null, `… Retire 2040`
+VFORX\*. **This half is the money** — JetBlue Airways' four rows at
+$404,046,506 / $366,362,083 / $346,378,523 / $314,890,205 (7.7% / 6.9% / 6.6% /
+6.0% of its menu), Ferguson Enterprises' four, Relx's three, every one typed
+`Collective trust` and publishing no symbol and no fee.
+**It is v532's shape one POSITION along**: that ship rotated a class designation
+from the FRONT of a name; this one sits in the MIDDLE. *A fix for one position of
+a class is not a fix for the class*, a fifth surface.
+
+**AND THE REMEDY IS SETTLED HERE WHERE IT WAS REFUSED ELSEWHERE, by the type
+cell.** The right answer is the **asterisked labelled comparable** — what the
+3,988 siblings already carry — because `app.js`'s footnote asserts *"That holding
+is a collective trust or separate account — it has no ticker and no published
+expense ratio"*, which is **TRUE of every one of these rows**, all typed
+`Collective trust`. That is exactly the route REFUSED on 2026-10-01 23:2xZ for
+the Institutional→Admiral item, where the same footnote's claim was FALSE of
+registered mutual funds. ***The same remedy is right for one class and wrong for
+its neighbour, and the type cell is what decides*** — so neither refusal nor
+adoption transfers between them.
+
+**TWO CORRECTIONS OF MY OWN, BOTH CAUGHT BY A CONTROL AND BOTH BEFORE ANY NUMBER
+WAS PUBLISHED.**
+
+**(1) MY FIRST PATTERN MEASURED THE VOCABULARY, AND THE TELL WAS A ZERO RATHER
+THAN THE SIZE — DO NOT CARRY 1,191 ROWS OR 619,546 PPL FORWARD.** A bounded
+`TR` + vintage reads **1,191 published rows of which 1,191 resolve to nothing**,
+and in a store where 37.3% of published rows carry an exact ticker a population
+that resolves at 0% is reading something other than a fund abbreviation. Reading
+the members: `Tr` is overwhelmingly **TRUST** — `T Rowe Price Ret Blend Slct Tr
+2030 Cl 5` (17 rows and ten sibling vintages), `Voya Trgt Solution Tr: 2030 8`
+(9), `STATE ST TR 2050 K` (6) — collective trusts with **no registered symbol BY
+DESIGN**, so a blank there is correct and not a defect. ***`Tr` is the
+abbreviation of TRUST before it is the abbreviation of Target Retirement***: the
+`nt `-inside-`International` trap, the `INST+`-is-Institutional-Plus trap and the
+`Trust Class`-is-a-retail-share-class trap, all on this record, met a fourth
+time. The house requirement is what keeps the shipped screen out of it.
+
+**(2) I READ `Retire` AS THE TRUNCATION TO REPAIR AND THE PROBE REFUTED IT:
+`Vanguard Target Retire 2040` ALREADY RESOLVES to VFORX\*.** The LifeStrategy
+ship's ordered-subsequence rule covers a subsequence of ONE registered word, and
+`Retire` is already reached; the blocker was the infixed class, one token away
+from where I was looking. *A mechanism named from the shape of a name is a
+hypothesis until the shipped function is asked.*
+
+**ALSO LIVE IN THE TWO MENUS, every item already queued:** Lowe's publishes
+**`SEI Trust Company` at $17,720,978** typed `Collective trust` — the bare-house
+class with a named **289,398-reader** instance — and `Dodge & Cox Income X Fund`
+resolving to nothing (honest, the type says collective trust, so the 06:4xZ
+class-word item cannot reach it); Dave & Buster's publishes `Vanguard Equity Inc`
+at **0.17 with no symbol** (the fee-without-ticker class), `PIMCO Income A` at
+0.51 with no symbol, `JVMRX` and `AVPAX` each with a **symbol and no fee** (the
+91,423-row class), and `Janus Enterprise T`, `{Loomis Sayles Funds} Small-Cap
+Growth Retail` and `PGIM Total Return Bond Z` resolving to nothing. Two shipped
+guards visibly working on the same pages: `{Putnam Fiduciary Trust} Putnam Stable
+Value Fund` publishes no fee, and `{Fidelity Investments} Fidelity Government
+Money Market` → SPAXX at **0.42**, that fund's real gross figure rather than the
+generic 0.2.
+
+---
+
+## 2026-10-02 (08:2xZ)
+
+**#544 IS HEALTHY AND ITS RUN RECORD SAYS NOTHING EITHER WAY — A STALE
+`updated_at` IS NOT EVIDENCE OF A STALL, AND ONLY THE JOB LIST CARRIES
+PROGRESS.** The run-level field read **`06:11:46Z` for two hours**, which reads
+exactly like a hung job and nearly cost a re-dispatch of a 3-hour run. The jobs
+settle it: **prep `success`, 20 parse shards, `parse (19)` success at 08:07:51Z
+and `parse (16)` at 08:12:06Z after ~2h each, the other 18 still inside their
+`Parse filings` step.** Prep sized **20 shards, which is the cap**, so the
+`max(work/5500, ocr/600)` formula saturated on the OCR term — this is the
+record's own **~3h OCR-heavy case rather than the ~1.5h one**, which is itself
+the explanation for the long shards.
+
+**This is the complement of a rule already here.** That rule says a run's
+**STATUS lags its cancellation**, so only `conclusion` settles whether a run
+died; this says a run's **`updated_at` lags its progress**, so only the job list
+settles whether it is alive. Both halves point the same way: *the run record is
+a summary and the jobs are the evidence.*
+
+And the verdict when it comes must cover **two commits, not one**: `45eb462f`
+(the OCR `!`-glyph repair, `[skip ci]`, PARSER_VERSION unchanged at 197) sits on
+the branch, and **merge-4i checks out the LATEST branch state**, so #544's own
+merge will run that file — the mechanism recorded for `tkShare` on #514.
+**Register the SUM of the two pre-registrations, not each in turn**, which is the
+00:3xZ/#541 lesson about two reporting-only changes queueing behind one run.
+
 ## 2026-10-02 (06:4xZ) — OWNER-GATED, SIZED, NOT SHIPPED: the filing states a share class the registry registers under that exact name, and the page publishes a different class's symbol — and its fee. 5,929 rows / 4,837 plans / 11,144,696 participants
 
 **WHAT IS WRONG.** A filed holding name ENDS in a share-class word, the registry

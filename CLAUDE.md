@@ -1127,6 +1127,80 @@ from the cycle that would have cleared it.
   own best control: Walmart's wrapped family is 8 rows whole, not four** —
   `Russell 1000 Index Non-Lendable Fund` at **$15,822,151,755 = 28.1%** leading
   them, with **0** of v130's old fragments, on an ack v130 never saw.
+- **THE 08:2xZ DRAW FOUND A WHOLE FUND FAMILY PUBLISHING NO SYMBOL BESIDE 17,665
+  SIBLINGS THAT DO — QUEUED, SIZED, SPLIT BY PROBE INTO TWO MECHANISMS, NOT
+  SHIPPED: 1,008 published rows / 161 plans / 699,584 participants /
+  $13,917,833,776.** Seed 20261002082, pool **60,170 published lineups / 60,151
+  with a reader / 103,489,995 ppl**. **Dave & Buster's (42,611 ppl, 27 rows @
+  0.965)** and **Lowe's (289,398 ppl, 25 rows @ 0.988)**, both largely clean, and
+  Lowe's twelve asterisked Vanguard target-date TRUST rows are the 2026-09-21
+  demotion visibly working. Whole-store, Vanguard house + an abbreviated family
+  word + a vintage: **18,673 rows / 2,051 plans / 5,107,915 ppl**, of which
+  **17,665 publish a symbol** (3,988 asterisked, 13,677 asserted) and **1,008
+  publish none**; 590 distinct names, **66 of the blanks still publish a FEE**.
+  **(A) AN ABBREVIATION REACH FAILURE, the repaired name resolves:** `Vangrd Trgt
+  Retire 2055 Fd` → nothing against `Vanguard Target Retirement 2055 Fund` →
+  **VFFVX\***; `Vanguard Institutional TR 2060` → **VTTSX\*** repaired; same for
+  `Vangrd Trgt Retire Inc Fd`, `VANGUARD TGT RETIREM'T INCOME`, `Vanguard Tar Ret
+  2070 Tr I`, `Vangrd Trgt Rtire 2040 Trst II`. One recordkeeper template,
+  `Vangrd Trgt Retire <year> Fd`, is ~250 rows.
+  **(B) A CLASS DESIGNATION INFIXED BETWEEN THE FAMILY WORDS AND THE VINTAGE, and
+  here the repaired name does NOT resolve, which is what makes it a separate
+  item:** `Vanguard Target Retire Trust Plus 2040` → nothing **and the fully
+  spelled `Vanguard Target Retirement Trust Plus 2040` → nothing too**, while
+  `Vanguard Target Retirement 2040` → VFORX\* and Lowe's `Vanguard Target
+  Retirement 2035 Trust A` → VTTHX\*. The table wants the vintage ADJACENT to the
+  family. **This half is the money** — JetBlue's four rows at $404,046,506 /
+  $366,362,083 / $346,378,523 / $314,890,205 (7.7–6.0% of its menu), Ferguson's
+  four, Relx's three. **v532's shape one POSITION along** (that ship rotated a
+  class off the FRONT; this one sits in the MIDDLE) — *a fix for one position of a
+  class is not a fix for the class*, a fifth surface.
+  **THE REMEDY IS SETTLED HERE WHERE IT WAS REFUSED ELSEWHERE, BY THE TYPE CELL:**
+  the asterisked labelled comparable is CORRECT, because the footnote asserts the
+  holding is a collective trust with no ticker and no published ER — **true of
+  every one of these rows, all typed `Collective trust`** — which is exactly the
+  route REFUSED at 23:2xZ for the Institutional→Admiral item, where that claim was
+  FALSE of registered mutual funds. ***The same remedy is right for one class and
+  wrong for its neighbour, and the type cell decides.***
+  **TWO CORRECTIONS OF MY OWN, both caught by a control before publication.**
+  **(1) DO NOT CARRY 1,191 ROWS OR 619,546 PPL FORWARD** — a bounded `TR` +
+  vintage reads 1,191 rows of which **1,191 resolve to nothing**, and in a store
+  where 37.3% of rows carry an exact ticker **a 0% resolution rate is the tell,
+  not the size**: `Tr` is overwhelmingly **TRUST** (`T Rowe Price Ret Blend Slct Tr
+  2030 Cl 5`, `Voya Trgt Solution Tr: 2030 8`, `STATE ST TR 2050 K`), collective
+  trusts with no registered symbol BY DESIGN. ***`Tr` abbreviates TRUST before it
+  abbreviates Target Retirement*** — the `nt `/`INST+`/`Trust Class` trap a fourth
+  time. **(2) I read `Retire` as the truncation and the probe refuted it:
+  `Vanguard Target Retire 2040` ALREADY resolves to VFORX\***, so the blocker was
+  the infixed class one token from where I was looking.
+  **ALSO LIVE, all queued:** Lowe's `SEI Trust Company` **$17,720,978** typed
+  `Collective trust` — the bare-house class with a named 289,398-reader instance;
+  Dave & Buster's `Vanguard Equity Inc` at **0.17 with no symbol**, `PIMCO Income
+  A` at 0.51 with no symbol, `JVMRX` and `AVPAX` each a symbol with no fee, and
+  four rows resolving to nothing. Two guards visibly working: Putnam Stable Value
+  publishes no fee, and SPAXX prices at **0.42**, its real gross figure.
+  `docs/accuracy-log.md` 2026-10-02 (08:4xZ).
+- **#544 IS HEALTHY AT 08:2xZ AND ITS RUN RECORD SAYS NOTHING EITHER WAY — A
+  STALE `updated_at` IS NOT EVIDENCE OF A STALL.** The run-level field has read
+  **`06:11:46Z` for two hours**, which reads exactly like a hung job; the JOB
+  LIST settles it — **prep `success`, 20 parse shards, `parse (19)` success at
+  08:07:51Z and `parse (16)` at 08:12:06Z after ~2h each, the other 18 still
+  inside their `Parse filings` step.** Prep sized **20 shards, which is the
+  cap**, so `max(work/5500, ocr/600)` saturated on the OCR term and this is the
+  record's own **~3h OCR-heavy case, not the ~1.5h one** — expected finish
+  ~08:30Z plus the merge. **The complement of the recorded rule that a run's
+  STATUS lags its cancellation: a run's `updated_at` lags its progress, and only
+  the job list carries either.** Do not re-dispatch, do not poll — the merge
+  runs under `if: always()` and a later cycle takes the verdict.
+  **AND THE VERDICT MUST COVER TWO COMMITS, NOT ONE.** `45eb462f` (the OCR
+  `!`-glyph repair, `[skip ci]`, PARSER_VERSION unchanged at 197) is on the
+  branch, and **merge-4i checks out the LATEST branch state**, so #544's merge
+  will run that file — the mechanism recorded for `tkShare` on #514. Its own
+  pre-registration is `name` on **393 rows / 280 entries**, `stk` **+28 / −0 /
+  0 changed**, and nothing else; reader gains 46 tickers / 31 fees / 9 asterisks
+  / 2 typings across 280 plans / 365,305 ppl. **Register the SUM of the two, not
+  each in turn** — the 00:3xZ/#541 lesson about two reporting changes queueing
+  behind one run.
 - **IN FLIGHT: #544 (v197) — ONE PREDICATE, TWO ARMS, AND THE BLAST RADIUS IS ZERO
   WHERE IT MATTERS BY CONSTRUCTION: 222 rows / 171 plans / 628,541 participants /
   $7,012,007,386 stop publishing a vehicle-type label as a holding, 0 lost, 0 of
