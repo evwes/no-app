@@ -7,6 +7,179 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-02 (01:4xZ) — The same filed symbol in the other position: 458 rows gain one, 13 correct one — and my own refusal of this an hour earlier was a SCOPING error
+
+**SHIPPED AND MIRRORED (`0e6782aa → 6552150e`), UNFORCED ON BOTH CHECKS, data
+gate +0 / −0 BY ACK AND BY PLAN. #541 and `site-test` #138 both fired from the
+push on the exact commit and were observed queued.**
+
+v528 reads the symbol a filing PRINTS, anchored on it **LEADING** the name — and
+that anchor is load-bearing, because it is what stops a word that merely happens
+to be a registered symbol (`INDEX`, which the SEC registers to CYBER HORNET S&P
+500) being read as one. So the **TRAILING parenthetical is outside it BY
+CONSTRUCTION**, and it is the whole of what the 00:3xZ repaired
+`ticker-conflict` check still finds, 15 of 15. *A fix for one POSITION of a
+class is not a fix for the class*, fourth surface.
+
+**THE EXTENSION NEEDS NO NEW PREDICATE, WHICH IS THE WHOLE DESIGN: rotate the
+parenthetical to the front and ask the SHIPPED function**, so all three of its
+conditions apply unchanged and nothing is restated. **A rotation also DELETES
+NOTHING** — the bound a strip never has (the 08:2xZ class-rotation entry's own
+argument, reused a second time).
+
+**OUTCOME, measured whole-store through the page's own render on both sides with
+the positive control firing first** (`Fidelity Contrafund K6 (FLCNX)`: before
+`FCNTX`, after `FLCNX`):
+
+| | rows | entries | participants | dollars |
+|---|---|---|---|---|
+| **GAIN** a symbol | **458** | 47 | **91,455** | $900,341,480 |
+| **CORRECT** one | **13** | 9 | 17,090 | $127,294,498 |
+| LOSE one | **0** | | | |
+| AGREE — the control that the shape is read right | 186 | 32 | 38,877 | |
+
+**ADDITIVE BY MEASUREMENT AND NOT BY ARGUMENT: of the arm's 657 hits,
+`resolveFiledTicker` already answers on 0.**
+
+**ALL 13 CORRECTIONS READ AND EVERY ONE IS A SHARE CLASS THE FILING BOTH STATES
+AND PRINTS** — FCNTX → **FLCNX** (the K6 defect this record has named six
+times), FOCPX → FOCKX, FDGRX → FGCKX, JMGMX → JMGZX, DODIX → DOXIX, PRDGX →
+PDGIX, HACAX → HNACX, MWTIX → MWTSX, VBTLX → VBTIX. **Two are a sourced bite out
+of the owner-gated Institutional→Admiral item sized two hours earlier:** St. Jude
+Children's Research (11,703 ppl) publishes **VEXAX and VTIAX, the ADMIRAL retail
+classes**, beside names stating Institutional, and its own filing prints
+`(VIEIX)` and `(VTSNX)`. That is the one route into that 8.4M-participant class
+needing no source the project lacks.
+
+**AND MY OWN REFUSAL OF THIS AN HOUR AGO WAS A SCOPING ERROR, which is the
+transferable part of the cycle.** The product-token guard was killed on a cost of
+**292 SHIPPED `ftk` rows reaching 494,432 participants** — but
+`resolveFiledTicker` has **exactly one production caller**, so a trailing arm is
+a SEPARATE FUNCTION and a guard that lives on it **cannot withdraw a shipped
+answer**. The 292 was never its price. Its price is the NEW COVERAGE it refuses,
+and *refusing a repair is the safe direction*. ***A whole-population cost has to
+be priced against the population the guard will actually be asked about*** — I
+had measured both populations in one pass and then reasoned about the union.
+
+**THE GUARD THAT SHIPS IS A CONTRADICTION TEST AND NOT A CORROBORATION TEST, and
+that distinction is what three candidates died on.** Ask the filer's WORDS what
+fund they name, independently of the symbol, and refuse only when they name one
+**INCOMPATIBLE** with the symbol's — neither series' content tokens a subset of
+the other's. It is **SILENT where the words resolve to nothing**, which is the
+whole GAIN population's shape, so it costs neither the renames nor the
+abbreviations:
+
+```
+TIAA-CREF LIFECYCLE INDEX 2030 INSTL (TLHIX)  words -> nothing   KEEP
+Target Retire 2045 Inv (VTIVX)                words -> nothing   KEEP
+Federated GOVT Obligations PRM (GOFXX)        words -> nothing   KEEP
+Fidelity Contrafund K6 (FLCNX)                words -> FLCNX     KEEP
+Vanguard Total Bond Market Index Fund Institutional (VBITX)
+                                              words -> VBMFX     REFUSE
+```
+
+**THREE SIMPLER GUARDS WERE BUILT AND KILLED BY MEASUREMENT, recorded so they
+are not retried.**
+**(a)** Requiring a shared token the SERIES carries and the ENTITY does not —
+**REFUSES `Fidelity Contrafund K6`**, because `contrafund` is in both, so it
+destroys the arm's main prize. It read as *"correct on all four pinned cases"*
+one cycle ago **only because K6 WAS NEVER PINNED**: the four pins were
+VBITX/VIEIX/VTSNX/FXAIX. *A pinned set proves the cases its author already
+imagined.*
+**(b)** Requiring no series token to be ABSENT from the filed name — refuses
+**71 of the 186 AGREE rows, 38% of the rows whose answer we independently
+know**, because the registry abbreviates and renames too: `VG TOTAL STOCK MKT
+IDX ADM (VTSAX)` is missing `[vanguard, market]`, `Target Retire 2045 Inv` is
+missing `[vanguard, retirement]`, `Federated GOVT Obligations PRM` is missing
+`[hermes, government]`, and the whole TIAA-CREF → Nuveen family is missing
+`[nuveen]`.
+**(c)** Requiring the symbol's series to EQUAL the series the name resolves to —
+refuses the K6 family again, that being the entire point of the K6 defect.
+
+**The contradiction test refuses 2 rows of 657 and 0 of the 186 AGREE rows,
+against 29 and 71 for (a) and (b).** That AGREE column is the discriminating
+control and it is only available because the arm has a population whose answer
+is known independently.
+
+**BOTH REFUSALS ARE READ AND BOTH ARE GENUINE FILER TYPOS NAMING A DIFFERENT
+FUND.** St. Jude's `Vanguard Total Bond Market Index Fund Institutional
+(VBITX)`, where the registry registers **VBITX as Short-Term** and **VBTIX as
+Total Bond Market**, so two letters are transposed and shipping unguarded would
+publish a different FUND to 11,703 readers; and **`Fidelity Freedom Index 2055
+Fund Investor Class (FIDFX)` where FIDFX registers as `Fidelity Mid Cap Value
+Fund`** (941 ppl) — **a second instance of exactly the class the guard was
+written for, which THE GUARD found rather than the reading.** One case is an
+anecdote; the guard finding the second is what makes it a class.
+
+**v528's RECORDED PRINCIPLE DOES NOT COVER THEM AND THE DIFFERENCE IS EXACT:**
+its named cost is *"the filer wrote both … the symbol is the more precise"*, and
+every case behind that sentence is a share-**CLASS** disagreement **WITHIN** one
+fund. A transposition names a **different fund**, where the symbol is not more
+precise but wrong.
+
+**NOT FEE-NEUTRAL, AND v528's "BY CONSTRUCTION" DOES NOT TRANSFER — which only
+the whole-store diff could show.** 2 fees and 3 asterisks move, and all three
+rows are ONE mechanism: **a row leaves a labelled COMPARABLE and becomes an
+ASSERTION**, because a symbol the filing prints is not an approximation. v528
+read and approved the identical move on `SSSYX` — and `State Street Equity 500
+Index K(SSSYX)` is literally one of the three, in the trailing position. The two
+fee moves are **the comparable table's number being replaced by the fund's own,
+traced rather than assumed**: `fundTickerInfo("Schwab Trust Vanguard Total Bond
+Mkt Index (VBTLX)")` returns `{er: 0.05, comparable: true}` while `fundER` and
+the bare registered `… Admiral Shares` both say **0.04**, so 0.05 → 0.04 makes
+that row AGREE with every other row of that fund; and WFSPX goes **null → 0.03**,
+its own entry finally reaching a legible row. **One down, one up, two different
+tables — so the direction is not a bias.** Whether 0.04 is right for Admiral is
+unchanged by this and is the queued `fund-facts` sourcing question: *that table
+is class-blind*, already on the record.
+
+**THE MID-STRING BRACKET IS NOT SWEPT IN AND IS SIZED INSTEAD, and checking it
+is what kept a control honest.** 80 store rows carry a **non-terminal** bracketed
+five-capital token and **30 would resolve** without the anchor — but they are a
+DIFFERENT class: the bracket IS trailing and **OCR debris follows it**
+(`American Funds AMCAP A (AMCPX) 125,380 +e`, `Vanguard Int-Tm Bd Idx Adm Fd
+(VBILX) NIA`, `Am Fds Trgt Dte Rtm 2035 R6 Fd (RFFTX) NIA`). Queued as adjacent
+coverage, and it composes with the shipped `NIA` strip and the OCR tail-residue
+strip — **but note those are DISPLAY-side while this is merge-side, so the debris
+is still in the store when `resolveFiledTicker` is asked.** It is also what makes
+the anchor's negative control non-decorative; *a control written before its
+population is checked is decoration.*
+
+**GATES.** `--selftest` **171/171** with **18 new pins, added because NOT ONE of
+the 153 existing cases reaches this arm** — every one puts the symbol first, so
+they agreed whether or not the arm existed. **A NEGATIVE CONTROL PER CONDITION**,
+each written out in full rather than by patching the shipped source, each failing
+**BY NAME** on exactly its own cases: dropping the contradiction test fails on
+exactly the 2 transpositions, dropping the anchor on exactly the 2 mid-string
+rows. parser-gate, fund-er-test (83/26/19/18/28), merge-name-test and
+`lib-disclose` 25/25 green; smoke green. `ftContent` was **lifted to module
+scope** so both filed-symbol arms ask one question rather than two copies of it.
+
+**THE DATA SHIPS IN THE SAME COMMIT AS THE CODE** (#528's precedent) because the
+local merge's whole effect was attributed field by field: **`ftk` on 657 rows
+across 53 entries AND NOTHING ELSE** — 0 acks added or removed, 0 row-count
+changes, **all 69,046 `lineups-status` entries byte-identical** (only `generated`
+moved), and both index files identical once `generated` is removed. A reader is
+served now and the run confirms the production merge rather than delivering it.
+
+**REPORT path only as a GUARANTEE:** `build-seo-pages.mjs` reads no `ftk`, no
+`stk` and does not import `fund-er.js` at all, so no crawlable page can render a
+symbol under any input.
+
+**PRE-REGISTERED for #541:** the merge log prints `filed tickers (trailing
+parenthetical): 657 rows across 53 plans`; `filed tickers: 2166 rows across 75
+plans` and `sec tickers: 477627 rows across 47915 plans (113424 on a blank type
+cell)` **both unchanged**; CONFIDENCE DIFF **+0 / −0** and `rows-dropped` 0;
+confident **60,170**, lineups 59,822, entries 65,479, **HIGH 5** = 4 `contrib` +
+`fabricated-name`, overshoot 372, overshootTrust 12, aggRow 113, dl 19, pv 196 at
+99.97%. **`ticker-conflict` must fall 15 → about 2**, because the check reads
+`ftk` FIRST and these rows now carry it, with the residue being the two typos it
+cannot bless. `tkExact` may rise by at most 0.05 from 471 changed cells against
+1.72M; `tkComparable` can only **FALL**, by the 3 promoted asterisks, which is
+too small to move two decimals.
+
+---
+
 ## 2026-10-02 (00:4xZ) — The trailing-parenthetical extension of v528: SIZED, NOT SHIPPED, and blocked on a two-letter transposition that would publish a different fund to 11,703 readers
 
 **QUEUED, SIZED, THE DESIGN SETTLED, NOT SHIPPED.** The 00:3xZ check fix left 15

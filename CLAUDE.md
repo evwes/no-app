@@ -737,10 +737,103 @@ from the cycle that would have cleared it.
   HEAD. CI runs the same job and passed, so **the failure is the sandbox and not
   the test** — recorded because *local red is no more evidence than local green*,
   and the only thing that settles either is the CI conclusion.
-- **QUEUED, SIZED, THE DESIGN SETTLED, THE OBVIOUS GUARD REFUTED, NOT SHIPPED —
-  THE TRAILING-PARENTHETICAL EXTENSION OF v528: 459 rows GAIN a symbol / 47
-  entries / 91,455 ppl / $902,640,533, and 14 CORRECT one / 9 entries / 17,090
-  ppl / $169,176,127.** The 00:3xZ check fix left 15 `ticker-conflict` findings
+- **SHIPPED AND MIRRORED 2026-10-02 01:4xZ (`0e6782aa → 6552150e`), UNFORCED ON
+  BOTH CHECKS, data gate +0 / −0 BY ACK AND BY PLAN; #541 AND `site-test` #138
+  BOTH FIRED FROM THE PUSH ON THE EXACT COMMIT — THE SAME FILED SYMBOL IN THE
+  OTHER POSITION: 458 rows GAIN one / 47 entries / 91,455 ppl / $900,341,480,
+  13 CORRECT one / 9 entries / 17,090 ppl / $127,294,498, 0 LOST.** v528's
+  anchor is load-bearing (it is what stops `INDEX`, a registered symbol, being
+  read as one), so the TRAILING parenthetical is outside it BY CONSTRUCTION —
+  and it was the whole of the 00:3xZ check's remaining 15 findings. *A fix for
+  one POSITION of a class is not a fix for the class*, fourth surface.
+  **NO NEW PREDICATE, AND THAT IS THE WHOLE DESIGN: rotate the parenthetical to
+  the front and ask the SHIPPED function**, so all three conditions apply
+  unchanged; **a rotation also DELETES NOTHING.** **ADDITIVE BY MEASUREMENT: of
+  the arm's 657 hits, `resolveFiledTicker` already answers on 0.**
+  **ALL 13 CORRECTIONS READ AND EVERY ONE IS A SHARE CLASS THE FILING BOTH
+  STATES AND PRINTS** — FCNTX → **FLCNX** (the K6 defect named six times), FOCPX
+  → FOCKX, FDGRX → FGCKX, JMGMX → JMGZX, DODIX → DOXIX, PRDGX → PDGIX, HACAX →
+  HNACX, MWTIX → MWTSX, VBTLX → VBTIX. **Two are a sourced bite out of the
+  owner-gated Institutional→Admiral item**: St. Jude Children's Research (11,703
+  ppl) published VEXAX and VTIAX, the ADMIRAL retail classes, beside names
+  stating Institutional, and its filing prints `(VIEIX)` and `(VTSNX)`.
+  **AND MY OWN REFUSAL OF THIS AN HOUR EARLIER WAS A SCOPING ERROR, the
+  transferable result.** The product-token guard was killed on a cost of **292
+  SHIPPED `ftk` rows / 494,432 ppl** — but `resolveFiledTicker` has **exactly one
+  production caller**, so a trailing arm is a SEPARATE FUNCTION and a guard on it
+  **cannot withdraw a shipped answer.** The 292 was never its price; its price is
+  the NEW COVERAGE it refuses, and refusing a repair is the safe direction.
+  ***A whole-population cost has to be priced against the population the guard
+  will actually be asked about*** — I measured both populations in one pass and
+  then reasoned about the union.
+  **THE SHIPPED GUARD IS A CONTRADICTION TEST AND NOT A CORROBORATION TEST, and
+  that distinction is what three candidates died on:** ask the filer's WORDS what
+  fund they name, independently of the symbol, and refuse only when they name one
+  INCOMPATIBLE with the symbol's. **It is SILENT where the words resolve to
+  nothing**, which is the whole GAIN population's shape, so it costs neither the
+  renames nor the abbreviations.
+  **THREE SIMPLER GUARDS KILLED BY MEASUREMENT, recorded so they are not
+  retried.** (a) *a shared token the SERIES carries and the ENTITY does not* —
+  **REFUSES `Fidelity Contrafund K6`**, `contrafund` being in both, destroying
+  the arm's main prize; it read as "correct on all four pinned cases" an hour
+  earlier **only because K6 WAS NEVER PINNED**, *a pinned set proving the cases
+  its author already imagined*. (b) *no series token absent from the filed name*
+  — refuses **71 of the 186 AGREE rows, 38% of the rows whose answer we
+  independently know**, because the registry abbreviates and renames too (`VG
+  TOTAL STOCK MKT IDX ADM`, `Target Retire 2045 Inv`, `Federated GOVT
+  Obligations PRM`, the whole TIAA-CREF → Nuveen family). (c) *the symbol's
+  series must equal the series the name resolves to* — refuses the K6 family
+  again. **The shipped test refuses 2 of 657 and 0 of 186 AGREE**, against 29 and
+  71; that AGREE column is the discriminating control and exists only because
+  this arm has a population whose answer is known independently.
+  **BOTH REFUSALS READ, BOTH GENUINE FILER TYPOS NAMING A DIFFERENT FUND:** St.
+  Jude's transposed `(VBITX)` (the registry registers VBITX as **Short-Term** and
+  VBTIX as **Total Bond Market**), and **`Fidelity Freedom Index 2055 Fund
+  Investor Class (FIDFX)` where FIDFX registers as `Fidelity Mid Cap Value
+  Fund`** (941 ppl) — **a second instance of exactly the class the guard was
+  written for, which THE GUARD found rather than the reading.** v528's principle
+  does not cover them: its named cost is *"the symbol is the more precise"* and
+  every case behind it is a share-CLASS disagreement WITHIN one fund.
+  **NOT FEE-NEUTRAL, AND v528's "BY CONSTRUCTION" DOES NOT TRANSFER** — 2 fees
+  and 3 asterisks move, all one mechanism: **a row leaves a labelled COMPARABLE
+  and becomes an ASSERTION**, because a printed symbol is not an approximation
+  (v528 read and approved the identical move on `SSSYX`, which is literally one
+  of the three). The fee moves are **the comparable table's number replaced by
+  the fund's own, traced not assumed**: `fundTickerInfo("Schwab Trust Vanguard
+  Total Bond Mkt Index (VBTLX)")` returns `{er: 0.05, comparable: true}` while
+  `fundER` and the bare `… Admiral Shares` both say **0.04**; WFSPX goes **null →
+  0.03**. **One down, one up, two different tables — so the direction is not a
+  bias.**
+  **THE MID-STRING BRACKET IS NOT SWEPT IN AND IS SIZED: 80 rows carry a
+  non-terminal bracketed five-cap token and 30 would resolve without the anchor**
+  — a DIFFERENT class, the bracket trailing with **OCR debris after it**
+  (`(AMCPX) 125,380 +e`, `(RFFTX) NIA`). **MERGE-side, so the shipped `NIA` and
+  tail-residue strips cannot help: they are DISPLAY-side and the debris is still
+  in the store when the arm is asked.** Checking it is also what made the
+  anchor's control non-decorative.
+  **GATES:** `--selftest` **171/171** with 18 new pins, **added because NOT ONE
+  of the 153 existing cases reaches this arm**; a negative control PER CONDITION
+  failing by name on exactly its own cases (2 / 2); parser-gate, fund-er-test
+  83/26/19/18/28, merge-name-test, `lib-disclose` 25/25 and smoke green;
+  `ftContent` lifted to module scope so both arms ask one question.
+  **DATA IN THE SAME COMMIT AS THE CODE** (#528's precedent): `ftk` on 657 rows /
+  53 entries **and nothing else** — 0 acks added or removed, 0 row-count changes,
+  all 69,046 `lineups-status` entries byte-identical, both index files identical
+  once `generated` is removed. **REPORT path only as a GUARANTEE** —
+  `build-seo-pages.mjs` reads no `ftk`, no `stk` and no `fund-er.js`.
+  **PRE-REGISTERED for #541:** `filed tickers (trailing parenthetical): 657 rows
+  across 53 plans`; `filed tickers` **2,166 / 75** and `sec tickers` **477,627 /
+  47,915 (113,424 blank)** unchanged; CONFIDENCE DIFF **+0 / −0**, rows-dropped
+  0; confident **60,170**, lineups 59,822, entries 65,479, **HIGH 5**, overshoot
+  372, dl 19, pv 196 at 99.97%; **`ticker-conflict` must fall 15 → about 2**, the
+  residue being the two typos it cannot bless; `tkExact` at most +0.05 and
+  `tkComparable` can only FALL by the 3 promoted asterisks.
+  `docs/accuracy-log.md` 2026-10-02 (01:4xZ).
+- **SUPERSEDED BY THE BULLET ABOVE — SHIPPED 2026-10-02 01:4xZ with a CONTRADICTION
+  test in place of the refuted product-token guard; its 459 / 14 figures are the
+  UNGATED count and the shipped ones are 458 / 13. Kept because its three dead
+  guards must not be retried and because the scoping error it contains is the
+  finding: THE TRAILING-PARENTHETICAL EXTENSION OF v528.** The 00:3xZ check fix left 15 `ticker-conflict` findings
   and every one carries the symbol in a **trailing parenthetical** — outside
   v528's LEADING anchor by construction — so this is the complement of a shipped
   rule, the cheapest coverage there is to find.
