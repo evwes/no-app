@@ -1127,6 +1127,100 @@ from the cycle that would have cleared it.
   own best control: Walmart's wrapped family is 8 rows whole, not four** —
   `Russell 1000 Index Non-Lendable Fund` at **$15,822,151,755 = 28.1%** leading
   them, with **0** of v130's old fragments, on an ack v130 never saw.
+- **THE FEE PRE-EMPTION RE-SIZED, SPLIT, AND THE FIRST DEFECT FOUND WAS IN MY
+  OWN INSTRUMENT — QUEUED, NOT SHIPPED: 40,229 rows / 8,330 plans / 13,274,448
+  participants / $130,863,488,196** publish a generic fee estimate where the
+  issuer cell supplies a house-specific one. The class was recorded at **36,790
+  / 7,510 / 11,443,967 / $115,117,759,657** (2026-10-01 02:0xZ). **THE GROWTH IS
+  NOT ATTRIBUTED AND MUST NOT BE GUESSED** — a DOL refresh added 10,222 filings
+  and moved the universe 111,782 → 112,652, v196 and v197 both changed what
+  publishes, and ~15 display ships landed in between; the honest statement is
+  that the class is larger and the cause of the difference is **unmeasured**.
+  *A re-size is a new measurement, not a delta against a remembered one.*
+  **MY FIRST SCREEN ASKED THE WRONG QUESTION AND A HAND PROBE CAUGHT IT, NOT A
+  COUNT.** It asked *do the two `fundER` answers differ* and never *does the page
+  SHOW the bare figure* — `{Northern Trust} S&P 500 Index Fund` renders **0.05,
+  the ISSUER figure**, because `issuerPricedER` already wins there. One line
+  (`if (o.er !== bare) continue;`) moved it **40,994 → 40,229**, cutting **385
+  plans / 1,232,657 ppl / $38.1B** off the loose count. ***A screen for "the two
+  answers differ" is not a screen for "the wrong one wins."***
+  **DIRECTION ERRS BOTH WAYS, which is stronger than a one-sided bias: issuer
+  HIGHER on 8,723 and LOWER on 31,506.**
+  **THE SPLIT NEEDS NO VOCABULARY — ask whether the BARE NAME already names a
+  fund:** (A) it does, **1,611 rows / 210 plans / 409,845 ppl / $10.4B**;
+  (B) it does not, **38,618 / 8,144 / 12,879,857 / $120.5B**.
+  **AND MY (A) LABEL WAS REFUTED BY ITS OWN OUTPUT.** I labelled (A) *"correcting
+  would INTRODUCE an error"*, and its most frequent member is `{Vanguard
+  Fiduciary Trust Company} Vanguard Target Retirement 2025 Fund 0.08 → 0.045
+  [VTTVX]` ×20 with nine sibling vintages — the issuer being Vanguard's own
+  **TRUST COMPANY**, so where the row really is a collective trust 0.045 is right
+  and 0.08 is the mutual fund's. **ASKED THE FILING'S OWN WITNESS, THE TYPE
+  CELL** (772 `Mutual fund`, 551 blank, 202 `Collective trust`, 65 `Pooled
+  separate account`, 21 `Cash / short-term`): **(A1) the type names a POOLED
+  vehicle so the ISSUER rate is better — 267 rows / 35 plans / 261,408 ppl**, and
+  **(A2) genuinely contested — 1,344 / 175 / 148,437, of which 1,030 are ALREADY
+  ASTERISKED**, leaving **314 rows asserting a contested figure unlabelled.**
+  **AND (B) IS NOT UNIFORM: 2 rows / 2 plans / 400,628 ppl are the clearest
+  wrong-direction shape and carry the largest reader population in the whole
+  split** — `{T. Rowe Price} Mid Cap Value Index Fund` **0.1 → 0.65** at Express
+  Services (400,441 ppl), T. Rowe's **ACTIVE** fund priced onto a name saying
+  **Index**, and `{T Rowe Price} Index K Retirement 2035 I` 0.1 → 0.58 at
+  Firstbank. ***A row count is the wrong axis for a reader-facing risk.***
+  **SPEED — THE EXACT-PRE-FILTER RULE ONE LEVEL DEEPER THAN THIS RECORD APPLIES
+  IT:** the first pass rendered all **539,038** issuer-bearing rows (~20 min),
+  but the two `fundER` calls need no render, so the render is asked only of the
+  **43,526 disagreements** — twelvefold, and every later pass ran in minutes. The
+  pre-filter belongs **inside the condition list**, between a cheap condition and
+  an expensive one, not only at the first condition.
+  **STILL NOT SHIPPED on unchanged blockers:** 13.3M fee cells is larger than any
+  fee change on this record, the **7,116 distinct (issuer, name) pairs are
+  unread**, and the families whose correct answer is BLANK are open — one sized
+  below. `docs/accuracy-log.md` 2026-10-02 (09:4xZ).
+- **AND FAMILY (1) OF THOSE BLOCKERS SURVIVED ITS OWN FIX AS A WORDING GAP, NOT
+  A COLUMN GAP — MY CONTROL REFUTED MY PREMISE: 61 rows / 61 plans / 50,024
+  participants / $123,676,563 publish a fee for a bank deposit program that
+  charges none.** `isBankDepositRow` shipped 2026-10-01 01:5xZ withdrawing 105
+  rows. **I asserted the residue was a COLUMN gap — the bank in the ISSUER cell
+  where the predicate reads the NAME — and wrote a positive control for it; the
+  control printed `isBankDepositRow("Schwab Bank Savings") = false`.**
+  `BANK_DEPOSIT_NAME` is `\bdeposit\s+acc(?:oun)?ts?\b|\bbank\s+deposit\b`, which
+  `Schwab Bank Savings` matches on **neither column** — so it is *a fix for one
+  WORDING of a class is not a fix for the class*, and the screen built on my
+  premise reads 3 rows, measuring the premise.
+  **AND THE 01:5xZ ENTRY'S OWN COMMENT RECORDS HOW THE WORDING WAS LOST: the
+  vocabulary was CUT FROM FOUR ARMS TO TWO** because two *"reach 0 rows in the
+  store"*. That pruning was right about those arms and asked them **against the
+  names the gate already reached**, so it could never see a wording outside all
+  four. ***A per-arm control measures the arms against the population the gate
+  already has, not against the class*** — the *a count keyed on a vocabulary
+  measures the vocabulary* shape, met for the first time in the PRUNING
+  direction.
+  **DO NOT CARRY 1,646 ROWS OR 1,255,820 PPL FORWARD:** a generous
+  `bank|savings|sweep|fdic|deposit` screen reads that, and **1,585 of them are
+  the word `bank` inside a TRUSTEE's name** (`{Charles Schwab Trust Bank} Schwab
+  S&P 500 Index Fund`, `{Capital Bank and Trust Company} American Funds 2030
+  Target Date Retirement Fund`) — the trustee-vs-house trap, and why `bank` can
+  never be the rule. **THE CORE, the string naming a deposit or sweep PROGRAM:
+  61 rows, 22 distinct pairs, ALL 22 READ and NOT ONE a registered fund**; 55
+  publish **0.2** (the generic money-market fallback) and 6 publish 0.26; **0
+  publish a ticker**, so app.js's `!tk` costs nothing. Essentially ONE program —
+  Charles Schwab Bank Savings in 21 of 22 spellings (`{SCHWAB BANK SAVINGS}
+  Money Market / Cash Equivalent` alone is 36 rows) plus one `{DB&T FDIC-Insured
+  Investment Account}`. **And one member misspells the vocabulary word itself —
+  `Money Market Depsoit Account`**, reached only through the `fdic` arm in its
+  issuer cell: a transposition defeating a vocabulary inside the class whose fix
+  WAS a vocabulary, hours after v197 shipped a transposition test for that
+  reason. A deposit charges no fund expenses, so the harm is a FABRICATED number
+  and the remedy is the shipped one widened past one wording. Display-side.
+- **AND MY OWN ESTIMATE OF #544 WAS LOW BY NINETY MINUTES, while the judgement
+  attached to it holds.** At 08:2xZ I recorded *"expected finish ~08:30Z plus the
+  merge"* from two finished shards. At 09:4xZ: **13 of 20 shards `success`, 7
+  still inside `Parse filings`**, the longest FINISHED shard having run **3h08m**
+  (shard 14, 06:12:10 → 09:20:03) and the seven live ones past 3h30m. Healthy,
+  do not re-dispatch — and the **job list is still the only thing carrying that**:
+  the run-level `updated_at` has read `06:11:46Z` for three and a half hours.
+  *An estimate from the first two members of a twenty-member population is a
+  ranked sample, and the rule about ranked samples is already on this record.*
 - **THE 08:2xZ DRAW FOUND A WHOLE FUND FAMILY PUBLISHING NO SYMBOL BESIDE 17,665
   SIBLINGS THAT DO — QUEUED, SIZED, SPLIT BY PROBE INTO TWO MECHANISMS, NOT
   SHIPPED: 1,008 published rows / 161 plans / 699,584 participants /
