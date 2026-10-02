@@ -140,6 +140,61 @@ else {
 if (!/if \(!entry\.p && !entry\.a && !entry\.i1\) continue;/.test(SRC))
   fails.push("the fee-shard skip does not keep an i1-only entry -- PSEG's bucket would get no shard");
 
+/* ---- THE FEE-SHARD ASSEMBLY, SLICED AND RUN -----------------------------
+ * The assembly is inline at module scope, so it is taken as source text and
+ * executed against crafted inputs rather than grepped. A source-text assertion
+ * cannot tell a loop that includes the trusts from one that mentions them in a
+ * comment -- and the whole defect this arm fixes was a loop that iterated
+ * `universe` while the comment above it discussed trusts.
+ *
+ * WHAT IT PINS: a master-trust ack gets its own shard entry, marked `mt`, and a
+ * plan entry does NOT carry that mark. 138 plans / 2,648,558 participants have
+ * the TRUST's Schedule C as the only source of their published recordkeeper, so
+ * if trust acks are dropped here that evidence is unstorable. */
+const SLICE_HEAD = "  const feeRows = [...universe.map(";
+const SLICE_TAIL = "    if (p.trust) trustsWithFees++; else plansWithFees++;\n  }";
+const sh = SRC.indexOf(SLICE_HEAD), st = SRC.indexOf(SLICE_TAIL);
+if (sh < 0 || st < 0) fails.push("the fee-shard assembly moved -- this gate tests nothing");
+else {
+  const loop = SRC.slice(sh, st + SLICE_TAIL.length);
+  const runLoop = (text) => {
+    const c = {
+      universe: [{ ack: "PLAN_A" }, { ack: "PLAN_NOTHING" }],
+      usedMtias: new Map([["TRUST_A", { year: 2025 }], ["TRUST_NOTHING", { year: 2025 }]]),
+      feeTables: new Map([["PLAN_A", [{ n: "X", d: 1 }]], ["TRUST_A", [{ n: "INVESCO ADVISORS INC", d: 9 }]]]),
+      schA: new Map(), item1Tables: new Map([["TRUST_A", ["SOME DISCLOSER"]]]),
+      FEE_SHARDS: 4, shardOf: () => 0, buckets: [{}, {}, {}, {}],
+      plansWithFees: 0, trustsWithFees: 0, console: { log() {} },
+    };
+    vm.createContext(c);
+    vm.runInContext(text, c);
+    return c;
+  };
+  const c = runLoop(loop);
+  const all = Object.assign({}, ...c.buckets);
+  ok(!!all.PLAN_A, "(6) a plan with item-2 rows lost its shard entry");
+  ok(!!all.TRUST_A, "(6) A MASTER TRUST ACK GOT NO SHARD ENTRY -- the trust's Schedule C, "
+    + "which is the only source of the recordkeeper for 2.6M participants, is unstorable");
+  ok(all.TRUST_A && all.TRUST_A.mt === 1, "(7) the trust entry is not marked `mt` -- a reader "
+    + "could mistake the trust's providers for the plan's own");
+  ok(all.PLAN_A && all.PLAN_A.mt === undefined, "(7) a PLAN entry was marked `mt`");
+  ok(!all.PLAN_NOTHING && !all.TRUST_NOTHING, "(8) an ack with no rows, no Sch A and no i1 was kept");
+  ok(c.plansWithFees === 1 && c.trustsWithFees === 1,
+     `(8) the tallies are wrong: plans=${c.plansWithFees} trusts=${c.trustsWithFees}`);
+
+  /* NEGATIVE CONTROL: drop the trust arm and require the trust assertion to
+   * FAIL BY NAME. This is the control the original loop would have passed. */
+  const noTrust = loop.replace(/,\n\s*\.\.\.\[\.\.\.usedMtias\.keys\(\)\][^\]]*\]/, "]");
+  if (noTrust === loop) fails.push("NEGATIVE CONTROL (trust arm) did not land -- it tests nothing");
+  else {
+    const c2 = runLoop(noTrust);
+    const all2 = Object.assign({}, ...c2.buckets);
+    ok(!all2.TRUST_A, "NEGATIVE CONTROL: the trust entry survived removal of the trust arm");
+    ok(!!all2.PLAN_A, "NEGATIVE CONTROL: removing the trust arm also dropped the PLAN entry");
+  }
+}
+
 if (fails.length) { for (const f of fails) console.error("FAIL " + f); process.exit(1); }
-console.log(`schc-item1: 10 assertions, 0 failures `
-  + `(captured ${item1.size} acks; published picks unchanged; negative control fires)`);
+console.log(`schc-item1: 18 assertions, 0 failures `
+  + `(item-1 captured, published picks unchanged, trust acks sharded and marked; `
+  + `both negative controls fire)`);

@@ -1085,8 +1085,33 @@ for (const p of unlinkable.sort((a, b) => ((schH.get(b.ack) || {}).assetsEOY || 
     return h % FEE_SHARDS;
   };
   const buckets = Array.from({ length: FEE_SHARDS }, () => ({}));
-  let plansWithFees = 0;
-  for (const p of universe) {
+  let plansWithFees = 0, trustsWithFees = 0;
+  /* MASTER TRUST ACKS ARE SHARDED TOO, and leaving them out was throwing away
+   * data already gathered at full cost. `acks` above ALREADY adds every used
+   * MTIA ack, so scanSchC scans the trusts' Schedule C and fills feeTables and
+   * item1Tables for them -- and this loop then iterated `universe` alone, so
+   * all of it was discarded.
+   *
+   * It is not a cosmetic gap. The published `recordkeeper` falls back to the
+   * TRUST's Schedule C (the `p.mtiaAck && schC.get(p.mtiaAck)` arm below), and
+   * for 138 plans / 2,648,558 participants that fallback is the ONLY source of
+   * the name -- their own Schedule C is absent. So the evidence behind
+   * 2.6 million participants' published provider was unstorable and could not
+   * be audited store-side at all. PSEG is in exactly that set: its two plans
+   * publish "Invesco Advisors, Inc" from trust ack
+   * 20251013135637NAL0000680483001, and no store-side query could say which
+   * row of which schedule produced it.
+   *
+   * THIS IS THE SIXTH TIME ON THIS RECORD that a count keyed on PLANS was
+   * blind to a master trust -- including, this morning, the four-variant
+   * recordkeeper measurement that replayed plan-ack item-2 rows and therefore
+   * COULD NOT SEE ITS OWN MOTIVATING CASE.
+   *
+   * Nothing published moves: the selection at the row assembly below is
+   * untouched and no renderer reads a trust key yet. */
+  const feeRows = [...universe.map((p) => ({ ack: p.ack, trust: false })),
+    ...[...usedMtias.keys()].map((ack) => ({ ack, trust: true }))];
+  for (const p of feeRows) {
     const entry = {};
     const provs = feeTables.get(p.ack);
     if (provs && provs.length) entry.p = provs;
@@ -1099,14 +1124,19 @@ for (const p of unlinkable.sort((a, b) => ((schH.get(b.ack) || {}).assetsEOY || 
      * PSEG's state, and would have left the class this field exists to measure
      * still invisible. */
     if (!entry.p && !entry.a && !entry.i1) continue;
+    /* a trust key says so, so a reader of the shard can never mistake the
+     * trust's providers for the plan's own -- the amounts are the TRUST's and
+     * are shared with every sister plan */
+    if (p.trust) entry.mt = 1;
     buckets[shardOf(p.ack)][p.ack] = entry;
-    plansWithFees++;
+    if (p.trust) trustsWithFees++; else plansWithFees++;
   }
   mkdirSync("data/fees", { recursive: true });
   for (let i = 0; i < FEE_SHARDS; i++) {
     writeFileSync(`data/fees/${String(i).padStart(2, "0")}.json`, JSON.stringify(buckets[i]));
   }
-  console.log(`wrote data/fees shards: ${plansWithFees} plans with a provider fee table or Sch A entry`);
+  console.log(`wrote data/fees shards: ${plansWithFees} plans and ${trustsWithFees} master trusts `
+    + `with a provider fee table, Sch A entry or Sch C item-1 discloser`);
 }
 
 function titleCase(s) {

@@ -40795,3 +40795,74 @@ already. **An instrument the project's published numbers depend on belongs in
 `scripts/`, and a measurement script imports it from there** — which is what the
 2026-10-01 rebuild said in its own prologue, and what the following day's queue
 entry then forgot.
+
+## 2026-10-02 (19:4xZ) — PSEG's published recordkeeper comes from its MASTER TRUST, and that evidence was never stored
+
+**The #550 verdict, honestly.** The run succeeded in 9 minutes and the capture
+works store-wide: **42,385 acks carry `i1`, 1,134 of them with no item-2 row**
+(the predicted bucket was 1,274). The Ingest gate ran. But the pre-registered
+claim that **PSEG's two acks would gain an entry carrying `i1` FAILED** — both
+are still ABSENT from the fee shards. *A pre-registration earns its keep when it
+fails.*
+
+**Why, and it is the answer to the owner's question.** `build-data.mjs:1144`
+reads `schC.get(p.ack) || (p.mtiaAck && schC.get(p.mtiaAck))`: a plan with no
+Schedule C of its own **inherits its master trust's**. PSEG's two plans publish
+`Invesco Advisors, Inc` from trust ack `20251013135637NAL0000680483001`, not
+from anything in their own filing — which is why the string appears nowhere in
+the filing, and why no amount of item-1 capture on *plan* acks could reach it.
+
+**Sized: 138 plans / 2,648,558 participants** publish a recordkeeper whose only
+possible source is the trust's Schedule C. **And the fallback is mostly RIGHT,
+which the framing had wrong** — read largest first, Target → `Alight`,
+HCA → `Conduent`, Boeing → `Fidelity`, Lockheed → `T. Rowe Price`,
+GM → `Fidelity`. So this is not 2.6M wrong names. It is **2.6M names whose
+evidence could not be examined**, with PSEG a case where it looks wrong.
+
+**MTIA acks had ZERO fee-shard entries — 0 of 508 — and the data was already
+gathered.** `acks` at `build-data.mjs:1048` ALREADY adds every used MTIA ack, so
+`scanSchC` scans each trust's Schedule C and fills `feeTables` and
+`item1Tables` for it. The shard assembly then iterated `universe` alone and
+**discarded all of it.** Paid for in full, thrown away.
+
+**THIRD INSTANCE OF THAT SHAPE IN ONE DAY**, which is why it goes in as a rule
+and not a fix: `cct` (17:1xZ) was 231,260 of the 406,247 bytes every visitor
+already downloaded, with no consumer; `i1` (19:1xZ) was read by `build-data` and
+every name but one discarded; this is the same again. ***Before adding a source,
+ask what the pipeline already reads and throws away.***
+
+**And it is the SIXTH time a count keyed on PLANS was blind to a master trust**
+— including, four hours earlier, **my own four-variant recordkeeper measurement,
+which replayed plan-ack item-2 rows and therefore could not see its own
+motivating case.** Each of the four refutations stands on its own evidence; what
+is corrected is their SCOPE. They measured the plans that file their own
+Schedule C and said nothing about these 138.
+
+**Shipped:** the shard assembly iterates plans *and* `usedMtias`, and a trust
+entry carries `mt: 1` so a reader can never mistake the trust's providers for
+the plan's own — the amounts are the TRUST's and are shared with every sister
+plan, exactly as the Schedule D fund list says of its own figures. Nothing
+published moves: the selection at line 1144 is untouched and no renderer reads a
+trust key yet.
+
+**Gated by slicing the assembly and RUNNING it**, not by grepping the source —
+*a source-text assertion cannot tell a loop that includes the trusts from one
+that mentions them in a comment,* and the defect was precisely a loop whose
+comment discussed trusts while iterating `universe`. Eight new assertions on
+crafted inputs: the trust ack gets an entry, it is marked `mt`, a plan entry is
+NOT, an ack with nothing is still dropped, and both tallies are right. **The
+negative control was run against the REAL source** — reverting the trust arm in
+`build-data.mjs` itself, not surgery on a copy inside the test — and it fails
+by name on three assertions plus its own landing check.
+
+**One defect found in my own gate while writing it:** the file's terminal
+`if (fails.length) … process.exit(1)` was left in the middle, so the run printed
+TWO success lines, the first reporting a stale "10 assertions". *A test that
+prints a pass before it has finished testing is a test that can pass while
+failing.*
+
+**Open, and this is the owner's Service Provider Compensation question
+generalised:** those 138 plans show no provider table because their own shard is
+absent. With the trust's Schedule C stored they could show it, labelled as the
+trust's — the same treatment the Schedule D fund list already gets. Render work,
+sized next; the store half is what this ships.
