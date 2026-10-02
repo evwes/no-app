@@ -915,6 +915,34 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
+- **THE WELDED SHARE COUNT — 29 rows / 24 plans / 170,735 ppl / $200,736,656, 4
+  publishing a ticker. PREDICATE STATED, ready to ship without re-deriving:**
+  sibling of the 20:0xZ welded-value arm with the number in the MIDDLE rather
+  than at the end — it must be followed by `shares` / `Units` / a dash and must
+  EQUAL the row's own value EXACTLY. **No thousands arm** (see below). The class
+  is almost all cash because **the welded number is a SHARE COUNT and equals the
+  dollar value only at a $1.00 NAV.** **The motivating case is a withdrawal, not
+  an assertion:** L Brands (30,989 ppl) publishes `Mutual Fund – 85,408,028 -
+  shares` at $85,408,028 resolving to **VMFXX** — the resolver matched the
+  caption `Mutual Fund`. Stripping the count leaves no fund name, so the row
+  correctly publishes NO ticker.
+  ***A TOLERANCE WIDE ENOUGH TO CATCH AN IMAGINED SHAPE IS WIDE ENOUGH TO
+  MANUFACTURE ONE.*** Allowing "the value in thousands" read **117** rows, and
+  most were arithmetic coincidences — a vintage year × 1,000 lands between $2.0M
+  and $2.07M, so `T. ROWE PRICE RET 2005 ACT B` at $2,005,350 and `Freedom 2020
+  K6` at $2,019,207 matched. Aimed squarely at the commonest fund family in the
+  store. `docs/accuracy-log.md` 2026-10-02 (20:3xZ).
+- **ONE TICKER, TWO FEES — 231 of 1,280 published tickers / 354,753 rows /
+  $1.91T**, over all 599,250 rows publishing both a symbol and a fee. The ticker
+  comes from a resolver and the fee from a NAME-pattern table, so one fund
+  priced under a fuller name gets its own fee and under a bare name a category
+  estimate: `FXAIX` 0.015 as `Fidelity 500 Index Fund` vs **0.03** as `500 Index
+  Fund`; `FSMDX` 0.025 vs **0.1**; `VBTLX` 0.04 vs **0.1**; `VFIAX` spans 0.02
+  to 0.4 (**×20**). **Adjacent to the gated fee pre-emption item but a sharper
+  claim: the page publishes two costs for one fund it has already named by
+  symbol.** Direction: where a row resolves to a ticker, the fee belongs to THAT
+  fund. **GATED** — hundreds of thousands of fee cells, and a fee is SOURCED,
+  never derived.
 - Double render: one holding published TWICE at an identical value under two
   spellings where BOTH rows resolve to the same ticker — 1,217 groups / 2,434
   rows / 515 entries / $943,251,783. 85 `lineup-overshoot` menus carry one and

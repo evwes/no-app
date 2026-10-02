@@ -41012,3 +41012,69 @@ It stays OWNER-GATED, because the remedy changes which URLs exist: raising
 `TOP_N` regenerates the 118 but also creates pages for plans ranked beyond them,
 and deleting them removes live URLs. What is no longer true is the idea that it
 affects 62 pages.
+
+## 2026-10-02 (20:3xZ) — one ticker, two fees (231 of 1,280); and a tolerance I widened invented its own matches
+
+**ONE TICKER, TWO FEES — 231 of 1,280 published tickers, 354,753 rows /
+$1,910,770,712,543.** Measured through the tracked harness over all 599,250
+rows that publish BOTH a symbol and a fee. A reader comparing two plans sees one
+fund priced two ways.
+
+**The mechanism is visible in the data and is not a tolerance problem.** The
+ticker comes from a resolver and the fee from a NAME-pattern table, so the same
+fund priced under a fuller name gets its own fee and under a bare name gets a
+category estimate:
+
+| ticker | full name | bare name | spread |
+|---|---|---|---|
+| `FXAIX` | `Fidelity 500 Index Fund` **0.015** (17,047 rows) | `500 Index Fund` **0.03** (2,822 rows / 3.9M ppl) | ×6.7 |
+| `FSMDX` | `Fidelity Mid Cap Index Fund` **0.025** | `Mid Cap Index Fund` **0.1** (1,826 rows) | ×4.0 |
+| `VBTLX` | `Vanguard Total Bond Market Index Adm` **0.04** | `Total Bond Market Index Fund` **0.1** (1,649 rows) | ×2.5 |
+| `VSMAX` | `Vanguard Small Cap Index Adm` **0.05** | `Small Cap Index Fund` **0.1** | ×2.0 |
+| `VFIAX` | `Vanguard 500 Index Adm` **0.02** | `500 Index Admiral` **0.03**, and one row at **0.4** | ×20.0 |
+
+**It is adjacent to the owner-gated fee pre-emption item but states something
+sharper:** not "which estimate is better" but *the page publishes two different
+costs for one fund it has already identified by symbol.* **Direction, unshipped:**
+where a row resolves to a ticker, the fee belongs to THAT fund, not to the bare
+string. **Still gated** — it moves hundreds of thousands of fee cells, and a fee
+is SOURCED, never derived.
+
+**THE SINGLE-ROW OUTLIERS ARE A DIFFERENT AND WORSE DEFECT: a WRONG TICKER.**
+`Mutual funds 15,838 AmFds Cap Wld Bd R6` → **VFIAX**; `GS Vit Gov Money Mkt Fd
+Inst` → **VFIFX**; `Vanguard Growth Index Fund Institutional Shares` → **VTINX**.
+A number welded into the middle of a name leaves a caption the resolver matches.
+
+**AND I WIDENED A TOLERANCE AND IT INVENTED ITS OWN MATCHES.** Sizing that
+class, I allowed the welded number to equal the value *or the value in
+thousands*, on a hypothesis that these rows are filed in thousands. The screen
+read 117 rows — and most were **arithmetic coincidences**: `T. ROWE PRICE RET
+2005 ACT B` at $2,005,350, `Freedom 2020 K6 Fund` at $2,019,207, `State Street
+Target Retirement 2065 Class VI` at $2,065,305. **A vintage year × 1,000 lands
+between $2.0M and $2.07M, and plenty of plans hold about $2 million in a
+target-date fund**, so the thousands arm is a systematic false-positive
+generator aimed squarely at the commonest fund family in the store. Not bad
+luck — *a tolerance wide enough to catch an imagined shape is wide enough to
+manufacture one.* Dropped entirely.
+
+**Exact equality only: 29 rows / 24 plans / 170,735 ppl / $200,736,656, and only
+4 publish a ticker.** The mechanism is then exact and explains why the class is
+almost entirely cash: **the welded number is a SHARE COUNT, and it equals the
+dollar value because these are $1.00-NAV money-market and stable-value funds.**
+`Vanguard Federal Money MKT Inv 133,041 Units`, `Fidelity Cash Reserves 23,148
+shares`, `Invesco Stable Value Trust, 91,398,409 shares`, `Putnam Stable Value
+PSVF 25 2,793,696 shares`.
+
+**The one that matters:** L Brands (30,989 ppl) publishes `Mutual Fund –
+85,408,028 - shares` at **$85,408,028** resolving to **VMFXX** — the resolver
+matched the caption `Mutual Fund` and named Vanguard's Federal Money Market for
+a holding the filing does not identify. Stripping the welded count leaves a row
+with no fund name, which correctly publishes NO ticker. **So the repair REMOVES
+a wrong symbol from an $85.4M row in front of 30,989 readers**, which is the
+rarer and better kind of fix: a withdrawal, not an assertion.
+
+**Queued with its predicate stated**, so the next cycle ships without
+re-deriving: the number must be followed by `shares` / `Units` / a dash, must
+EQUAL the row's own value exactly, and the arm is a sibling of the 20:0xZ
+welded-value repair with the number in the MIDDLE rather than at the end. No
+thousands arm.
