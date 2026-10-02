@@ -973,9 +973,92 @@ from the cycle that would have cleared it.
   **No fee, asterisk or shown type can move: `fundER` is called on the NAME and
   never on a symbol**, measured at 0 through the page's own render.
   `docs/accuracy-log.md` 2026-10-02 (03:0xZ).
-- **SHIPPED 2026-10-02 05:1xZ — THE CONTRACT FEE GATE HAD A VOCABULARY WHERE IT
-  NEEDED A WORD: 225 rows / 222 plans / 458,245 participants / $2,443,025,511
-  stop publishing a fabricated expense ratio, 224 of them the generic 0.35.**
+- **THE 05:4xZ DRAW FOUND A GENERIC TYPE NAME DEFEATED BY A KEYSTROKE AND, IN
+  THE SAME SCREEN, A BIGGER DEFECT ITS BUCKET LABEL GOT WRONG — THREE CLASSES,
+  SEPARATELY SIZED, NONE SHIPPED.** Seed 20261002054, pool **58,893 published
+  lineups / 91,511,061 ppl**; **R&L Carriers (22,449 ppl, 31 rows @ 0.957)** and
+  **Soils Engineering Services (161 ppl, 32 rows @ 0.930)**. R&L's otherwise
+  clean menu publishes **`Registered invesmtent company` at 2.7% / $12,028,498
+  with a BLANK type cell** — **hours after the 05:1xZ ship recorded `investment`
+  misspelled seven ways defeating one vocabulary, the same word misspelled
+  defeats a second, unrelated one.**
+  **(A) THE HONESTY CLASS: 141 rows / 124 plans / 97,591 participants /
+  $1,389,531,915**, 95 distinct names, **all read, not one naming a fund**
+  (`Mutuai Fund` 10, `Mututal Fund` 7, `Guranteed Investment Contract` 6,
+  `Pooled Seperate Account` 5, `Common/Coliective Trust` 3, `Commen Stock`),
+  **0 publishing a ticker and 0 a fee**, so the harm is the CLAIM alone.
+  **AND 4 OF THEM WOULD BE WITHDRAWN RATHER THAN RETYPED, WHICH MAKES THIS A
+  CONFIDENCE DEFECT TOO:** `dominanceIsAggregate` needs a single NON-FUND row at
+  ≥90% and learns *non-fund* from `isGenericTypeName`, **so a typo in the label
+  hides the row from the dominance guard as well as from the reader** — The Eby
+  Group **97.4% / $15,475,635**, Electromed 96.3%, Ortho Benefits 95.0%, Skico
+  91.1% (3,373 ppl), every one a v105-shaped asset-class statement published as a
+  menu. Nine more at 50–90% (4,381 ppl / $431,465,850), led by **Buchanan
+  Ingersoll & Rooney at 53.0% / $342,742,907 named `Matual Funds`**.
+  **(B) 22 rows / 11 plans / 35,799 ppl ARE THE SHIPPED DESIGN WORKING AND MUST
+  NOT BE "FIXED":** the name is misspelled and the **ISSUER carries the fund**,
+  so a reader gets the right symbol — Chewy's `Common/colfective trust` [iss
+  `VANGUARD TARGET 2065`] → **VLXVX at 0.08**, Salisbury House's eleven `Common
+  colletctive trust <number>` rows [iss `Trp Ret Blend <year> Trust A`] → TRBLX
+  and siblings at 0.41. `isNamelessFundRow` is asked only where there is NO
+  issuer, so the design already protects them; recorded so a later cycle does not
+  retype them into losing a correct ticker.
+  **(C) AND THE SCREEN'S LARGEST HIT IS NOT A MISSPELLING AT ALL — 2 rows / 2
+  plans / 136,838 PARTICIPANTS / $4,688,879,000. General Motors' two plans
+  publish `Plans Master Trust` at 12.9% and 14.4% with a BLANK type cell.**
+  Asked of the shipped predicate: `isGenericTypeName("Master Trust")` is **true**
+  — v190 shipped exactly that name for exactly this reason — and
+  `isGenericTypeName("Plans Master Trust")` is **false**, because the predicate is
+  anchored `^…$` and **one leading word defeats it.** *A fix for one FORM of a
+  name is not a fix for the name.* My screen reached it only through a
+  plural→singular repair (`Plans` → `plan`), so **the bucket LABEL is wrong and
+  the MEMBERS are not** — *a label being wrong is not the same claim as a member
+  being wrong*, recorded at 01:5xZ and met again the same day, this time with the
+  mislabelled member the largest finding in the cycle. Its own item; never folded
+  into (A).
+  **AND MY FIRST PREDICATE WAS REFUTED BY ITS OWN OUTPUT — DO NOT CARRY 14,911
+  ROWS OR 17,195,958 PPL FORWARD.** A one-edit-per-token test against the
+  vocabulary's 37 words reads 14,911 rows / 12,352 plans / 17.2M ppl whose most
+  frequent members are **REAL FUNDS** (`MFS Mid Cap Value R6` 936, `MFS Value
+  Fund` 678, `Key Guaranteed Portfolio Fund` 472), because a one-edit
+  neighbourhood around `value`, `stock`, `fund`, `portfolio` reaches ordinary fund
+  names; **the implausible size was the tell.** What works is STRUCTURAL and not a
+  vocabulary: **repair each token to its vocabulary neighbour and ask whether the
+  WHOLE NAME is then generic** — `GENERIC_TYPE_ANY` is anchored `^…$`, so a
+  repaired name carrying any identifying word still fails, which keeps real funds
+  out BY CONSTRUCTION and needs no list of misspellings. v189's despaced test one
+  damage kind along, and the same answer the 05:1xZ ship reached one function
+  away. **14,911 → 165.**
+  **TWO HARNESS NOTES, both rules already on this record.** The first run **did
+  not finish**, because it called the full render on all 1,724,078 rows when the
+  predicate reads only the NAME; `clean` alone is an EXACT pre-filter (the same
+  function the render calls for `cleaned`), and the render is then asked only of
+  the 165 hits — *a fast exact measurement must not be chained to a slow one*, two
+  cycles running. **And the draw harness was weighting by the wrong column**,
+  summing `participants` where `build-data` packs `parts = partEOY ||
+  participants` and the page publishes that — the defect that cost a published
+  figure 323,826 against 311,555 on 2026-10-01. Patched, with the cost named in a
+  comment so it is not undone; that is why the pool reads 58,893 / 91,511,061.
+  **ALSO LIVE IN THE TWO MENUS, queued:** R&L's `JPMorgan Large Cap Growth Fund`
+  at 11.0% / $49,615,959 publishing **0.44 with no ticker** (the 91,423-row
+  fee-without-symbol class); five further R&L rows resolving to nothing; eleven
+  `American Funds Target Date <year>` rows at 0.32 with no symbol (the owner-gated
+  R-6 item, 22,449 ppl here alone); and **Soils' whole 32-row menu is recordkeeper
+  abbreviations with every type cell blank** — twelve `NUVN LFCYCIND <year> R6`
+  rows publishing nothing (the TIAA-CREF → Nuveen rename family) and `VNGRD BAL
+  INDX ADML` publishing the generic **0.1** where the name states the house, a
+  named instance of the queued fee pre-emption. `docs/accuracy-log.md` 2026-10-02
+  (05:4xZ).
+- **SHIPPED AND MIRRORED 2026-10-02 05:4xZ (`2adf1fcb → 614f4095`), UNFORCED ON
+  BOTH CHECKS, data gate +0 / −0 BY ACK AND BY PLAN; `site-test` #140 reads
+  `conclusion: success` ON THE EXACT SHIPPED COMMIT — THE CONTRACT FEE GATE HAD
+  A VOCABULARY WHERE IT NEEDED A WORD: 225 rows / 222 plans / 458,245
+  participants / $2,443,025,511 stop publishing a fabricated expense ratio, 224
+  of them the generic 0.35.** No `PARSER_VERSION` bump and no store change, so
+  **the push fired `site-test` and NOT build-data** — the documented
+  intermittent trigger, and immaterial here because an incremental run's whole
+  work list is the 19 dead 403s. Gates reproduced independently on the merged
+  tree before the mirror: `smoke-test` green, `lib-disclose --selftest` 25/25.
   `annuityFeeIsGuaranteeOnly`'s first condition read three wordings — `annuity`,
   `investment`, `insurance` contract — so `TIAA Stable Value Contract`,
   `Guaranteed Income Contract`, `Guaranteed Interest Balance Contract` and `Key

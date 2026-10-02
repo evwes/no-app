@@ -7,6 +7,150 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-02 (05:4xZ) — the contract gate mirrored, and the draw finds a generic type name defeated by a keystroke; plus `Plans Master Trust`, 136,838 readers
+
+**THE 05:1xZ CONTRACT-GATE SHIP IS MIRRORED — `2adf1fcb → 614f4095`, UNFORCED ON
+BOTH CHECKS, data gate +0 / −0 BY ACK AND BY PLAN**, and **`site-test` #140 reads
+`conclusion: success` ON THE EXACT SHIPPED COMMIT**, so CI green covers every
+executable line. 458,245 participants stop being shown a fabricated 0.35. Gates
+reproduced independently on the merged tree before the mirror (`smoke-test`
+green, `lib-disclose --selftest` 25/25). No `PARSER_VERSION` bump and no store
+change, so the push fired `site-test` and **not** build-data — the documented
+intermittent trigger, and immaterial here because an incremental run's whole work
+list is the 19 dead 403s.
+
+---
+
+**THE 05:4xZ DRAW, AND ITS FINDINGS ARE THREE CLASSES THAT MUST NOT BE ONE
+COUNT.** Seed 20261002054, pool **58,893 published lineups / 91,511,061
+participants**. **R&L Carriers (22,449 ppl, $472,619,720, 31 rows @ 0.957)** and
+**Soils Engineering Services (161 ppl, 32 rows @ 0.930)**.
+
+R&L's menu is otherwise clean — FXAIX, FSPSX, FSSNX and FSMDX all resolving with
+their own fees — and it publishes **`Registered invesmtent company` at 2.7% /
+$12,028,498 with a BLANK type cell**, where the correctly spelled sibling is in
+`GENERIC_TYPE_ANY` and would render *"Filing names no specific fund"*. **Hours
+after the contract-gate ship recorded `investment` misspelled seven ways
+defeating one vocabulary, the same word misspelled defeats a second, unrelated
+one.**
+
+### (A) THE HONESTY CLASS — 141 rows / 124 plans / 97,591 participants / $1,389,531,915
+
+95 distinct names, **all read, not one naming a fund**: `Mutuai Fund` (10),
+`Mututal Fund` (7), `Guranteed Investment Contract` (6), `Pooled Seperate
+Account` (5), `Common/Coliective Trust` (3), `Registered Investmnet Companies`,
+`Gauranteed Interest Contract`, `Commen Stock`, `Collectve Trust Funds`,
+`[/tutual Fund`. **0 publish a ticker and 0 publish a fee**, so the harm is the
+CLAIM alone — a reader is shown a holding named by a typo instead of the
+sentence that says the filing names no specific fund.
+
+**AND 4 OF THE 141 WOULD BE WITHDRAWN RATHER THAN RETYPED, WHICH MAKES THIS A
+CONFIDENCE DEFECT AND NOT ONLY A DISPLAY ONE.** `dominanceIsAggregate` needs a
+single NON-FUND row at ≥90% of the menu and it learns *non-fund* from
+`isGenericTypeName` — **so a typo in the label hides the row from the dominance
+guard as well as from the reader**, and these four are v105-shaped asset-class
+statements published as fund menus:
+
+| ppl | share | value | name | plan |
+|---|---|---|---|---|
+| 2,054 | **97.4%** | $15,475,635 | `Mututal fund` | The Eby Group |
+| 570 | 95.0% | $27,488,310 | `Mututal Funds` | Ortho Benefits Corp |
+| 250 | 96.3% | $11,011,194 | `Pooled Separate Acount` | Electromed |
+| 499 | 91.1% | $2,886,238 | `Registered Investmnet Companies` | Skico |
+
+Nine more sit at 50–90% (4,381 ppl / $431,465,850), led by **Buchanan Ingersoll
+& Rooney at 53.0% / $342,742,907 named `Matual Funds`**, then True North Human
+Capital 78.1%, Fairbanks Scales 58.4%, Michael J. Connolly & Sons 86.8%, Staple
+Cotton Cooperative 86.2%, Psi Holdings 82.9%, Buffalo Valley 86.3%. Five at
+25–50% and 123 below.
+
+### (B) 22 rows / 11 plans / 35,799 ppl ARE THE SHIPPED DESIGN WORKING AND MUST NOT BE "FIXED"
+
+The name is misspelled and **the ISSUER carries the fund**, so a reader gets the
+right symbol regardless: Chewy's `Common/colfective trust` [iss `VANGUARD TARGET
+2065`] → **VLXVX at 0.08**, `Mutua§ fund` [iss `VANG TOT BD MKT ADM`] → VBTLX,
+`Cammon/collective trust` [iss `VANGUARD TARGET 2070`] → VSVNX; Salisbury
+House's eleven `Common colletctive trust <number>` rows [iss `Trp Ret Blend
+<year> Trust A`] → TRBLX, TBLYX, TRBQX, TRBSX, TRBOX, TBLWX, TRBNX, TBLVX,
+TSBAX at 0.41. `isNamelessFundRow` is asked only where there is NO issuer, so
+the design already protects them — **recorded so a later cycle does not retype
+them into losing a correct ticker.**
+
+### (C) AND MY SCREEN'S LARGEST HIT IS NOT A MISSPELLING AT ALL — IT IS A DIFFERENT AND BIGGER DEFECT: 2 rows / 2 plans / 136,838 PARTICIPANTS / $4,688,879,000
+
+**General Motors' two plans publish `Plans Master Trust` at 12.9% and 14.4% of
+their menus — $1,264,065,000 and $3,424,814,000 — with a BLANK type cell.**
+Asked of the shipped predicate rather than inferred:
+`isGenericTypeName("Master Trust")` is **true** — v190 shipped exactly that
+name, for exactly this reason — and `isGenericTypeName("Plans Master Trust")` is
+**false**, because the predicate is anchored `^…$` and **one leading word
+defeats it.** *A fix for one FORM of a name is not a fix for the name*, the
+position/column/phrasing/class shape this record keeps meeting, now at a bare
+prefix.
+
+**My screen reached them only through a plural→singular repair (`Plans` →
+`plan`), so the bucket LABEL is wrong and the MEMBERS are not.** *A label being
+wrong is not the same claim as a member being wrong* — recorded this morning at
+01:5xZ, met again the same day, and this time the mislabelled member is **the
+largest finding in the cycle.** It is tracked as its own item and must never be
+folded into (A)'s count.
+
+### AND MY FIRST PREDICATE WAS REFUTED BY ITS OWN OUTPUT — DO NOT CARRY 14,911 ROWS OR 17,195,958 PPL FORWARD
+
+A one-edit-per-token test against the vocabulary's own 37 words of four letters
+or more reads **14,911 rows / 12,352 plans / 17,195,958 ppl / $67,966,524,436**,
+and its most frequent members are **REAL FUNDS** — `MFS Mid Cap Value R6` 936
+rows, `MFS Value R6` 712, `MFS Value Fund` 678, `Key Guaranteed Portfolio Fund`
+472 — because a one-edit neighbourhood around ordinary fund words (`value`,
+`stock`, `fund`, `portfolio`, `company`) reaches ordinary fund names. **The
+implausible size was the tell**, and reading the top of the list is what settled
+it.
+
+**WHAT WORKS IS STRUCTURAL AND NOT A VOCABULARY:** repair each token to its
+vocabulary neighbour and ask whether **the WHOLE NAME is then generic**.
+`GENERIC_TYPE_ANY` is anchored `^…$`, so a repaired name still carrying any
+identifying word fails — which keeps real funds out **by construction** rather
+than by a blocklist, and needs no list of misspellings. That is v189's despaced
+comparison one damage kind along, and it is the same answer the 05:1xZ ship
+reached for the contract gate: *the filing's own word, not a list of the wordings
+it appears in.* 14,911 → 165.
+
+### TWO HARNESS NOTES, BOTH RULES THIS RECORD ALREADY CARRIES
+
+**The first run did not finish**, because it called the full render on all
+1,724,078 published rows when the predicate under test reads only the NAME.
+`clean` alone is an **exact** pre-filter — it is the same function the render
+calls for `cleaned`, so it excludes nothing that could match — and the render is
+then asked only of the 165 hits, for the three columns a reader sees. *A fast
+exact measurement must not be chained to a slow one*, two cycles running.
+
+**And the draw harness was weighting by the wrong column.** It summed
+`participants` where `build-data` packs `parts = partEOY || participants` and the
+page publishes that — the defect that cost a published participant figure
+323,826 against the true 311,555 on 2026-10-01 (20:1xZ). Patched, which is why
+the pool reads 58,893 / 91,511,061; a comment in the harness names the cost so
+it is not undone.
+
+### ALSO LIVE IN THE TWO DRAWN MENUS, ALL OF IT QUEUED
+
+- R&L publishes **`JPMorgan Large Cap Growth Fund` at 11.0% / $49,615,959 with a
+  fee of 0.44 and NO ticker**, and Soils publishes `VNGRD GR INDX ADML` at 0.05
+  with no ticker — the fee-asserts-where-the-ticker-refuses asymmetry, the
+  91,423-row class.
+- `American New Perspective Fund`, `Blackrock Equity Dividend Fund Instl`,
+  `Performance Trust Total Return Bond Instl`, `Principal Mid Cap Fund A` and
+  `Janus Triton Fund CL T` resolve to **nothing** at R&L (the matcher family);
+  eleven `American Funds Target Date <year>` rows publish 0.32 with no symbol
+  (the owner-gated R-6 item, 22,449 ppl in this plan alone).
+- Soils' whole 32-row menu is **recordkeeper abbreviations** (`FID 500 INDX`,
+  `NUVN LFCYCIND 2045 R6`, `VNGRD GR INDX ADML`) with **every type cell blank**,
+  and its twelve `NUVN LFCYCIND <year> R6` rows publish nothing — the
+  TIAA-CREF → Nuveen rename family. `VNGRD BAL INDX ADML` publishes the generic
+  index **0.1** where the name states the house, which is the queued fee
+  pre-emption item with a named instance.
+
+---
+
 ## 2026-10-02 (05:1xZ) — the contract fee gate had a VOCABULARY where it needed a WORD: 225 rows / 222 plans / 458,245 participants / $2,443,025,511 stop publishing a fabricated 0.35
 
 **SHIPPED. `annuityFeeIsGuaranteeOnly` read THREE wordings and the filings
