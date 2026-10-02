@@ -28,6 +28,19 @@ jobs:
       # coverage — half its fixtures are names that must stay blank.
       - name: Fund-name matcher — resolves what it should, blanks what it must
         run: node scripts/fund-er-test.mjs
+      # index.html cache-busts its assets with a query string, and that string
+      # was typed by hand until 2026-10-02 -- when it was found SEVENTEEN DAYS
+      # stale, with app.js and fund-er.js both changed that same day. A
+      # returning browser asks for the URL it already has, so every display-side
+      # fix in that window could be invisible to the people it shipped for while
+      # pages-build-deployment reported success on every mirror. The owner
+      # reported it as "nothing is updated in wampo". The stamp is derived from
+      # each asset's own content hash now, and this gate is what makes deriving
+      # it worth anything: a frontend push with a stale stamp fails here instead
+      # of shipping invisibly. Runs before the five-minute Playwright install,
+      # for the same reason the matcher gate does.
+      - name: Asset stamps match their content — a stale one ships nothing
+        run: node scripts/stamp-assets.mjs --check
       - name: Install Playwright
         run: |
           npm init -y >/dev/null
