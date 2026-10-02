@@ -7,6 +7,273 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-02 (08:0xZ) — TWO QUEUED ITEMS DIED ON THEIR OWN MEASUREMENT, AND BOTH REFUTATIONS ARE RESULTS
+
+**(A) THE LEADING `(continued)` CAPTION IS ALREADY SHIPPED AND THE QUEUE ENTRY
+WAS STALE.** It is carried in `CLAUDE.md` as *"QUEUED, SIZED, READ, NOT SHIPPED
+— 32 rows / 30 entries / 15,636 participants"*. `PAGE_BREAK_LEAD` and
+`isPageBreakCaptionRow` shipped in commit `a4900795`, are twinned verbatim in
+`app.js`, are wired into `build-seo-pages.mjs` and are tethered in
+`smoke-test.mjs`. **Verified by measurement and not by reading the source:**
+over all 1,730,535 published rows, exactly **4** still carry a leading caption
+through the page's own `cleanFiledName`, and all four are the shipped design —
+three are PURE CAPTION and are typed rather than stripped (`(continued)`,
+`Continued from page 10`, `Continued Balance Brought Forward`) and the fourth
+is that entry's own NAMED COST (`Continued Total Intl Stock Index Adm`, 172
+ppl, kept because `Total` is furniture in the shared screen). *A fixed class
+named in a live queue reads as an open defect*, which this record already says
+about gap tables and now says about defect lists too.
+
+**(B) THE CONTRADICTING-CLASS RESIDUE IS NOT SHIPPABLE AS A WITHDRAWAL, AND MY
+PREDICATE WAS REFUTED BY READING ITS OWN MEMBERS — TWICE.** The question: may a
+guard withhold a stored `stk` where the filed name states a share class the
+answer's registered class does not? Carried at *"511 shipped `stk` rows / 339
+names / 395,265 ppl"*.
+
+**My first predicate read 2,298 rows and was wrong on two counts, both found by
+reading the top of its own output.** It asked `hintsRaw` where the shipped
+selector asks **`hintsOf`** (a class word inside parentheses loses to one
+outside), and it omitted the selector's own **`seriesOwns`** filter — a class
+word that is part of the SERIES name cannot discriminate between that series'
+classes. With both corrected the population splits three ways: **7,672 rows /
+12,281,748 ppl excused by `seriesOwns`** (`Federated Hermes Instl High Yield Bd
+R6` -> FIHLX is right, because `Institutional` is the series' own word);
+**1,212 rows / 1,303,924 ppl where the registry's class-name column holds a
+FULL FUND NAME** so there is nothing to contradict (`Fidelity 500 Index
+Institutional Premium` -> FXAIX is right); and **704 rows / 416 names / 361
+plans / 626,504 ppl / $3,417,538,466** of readable contradiction. **Do not carry
+2,298 forward.** I could not reproduce the handoff's 511/339/395,265 under any
+predicate and say so rather than adopt it.
+
+**Of the 704, only 264 reach a reader** — `lookupTicker` reads `stk` LAST, after
+`fund-er.js` and `ftk` — **264 rows / 154 names / 245 plans / 231,257 ppl /
+$626,489,606**, of which 215 publish a fee and 0 are asterisked. The
+stored-versus-published gap a seventh time, 63% here.
+
+**AND READING ALL 47 DISTINCT "OTHER" NAMES PLUS THE TWO LARGE FAMILIES KILLS
+THE WITHDRAWAL.** Of the 264: **168 are iShares**, where the series registers
+exactly ONE class and that class IS the institutional-only Class K, so
+withdrawing loses a correct answer — and v542 refused a guard here BY NAME for
+exactly this reason; **33 are Vanguard funds whose series registers one class**
+and it is the only possible answer (`Vanguard Mid-Cap Growth Fund` has no
+Admiral class; `Vanguard Cash Reserves Federal MM` CONVERTED its Investor class
+to Admiral, so a filing saying `Inv` names a class that no longer exists), plus
+v532's class-rotation debris, where the leading class word came from a
+NEIGHBOURING row; **~50 are `Class I` ≡ `Institutional Class` SYNONYMY** —
+Dimensional registers DFFVX as `U.S. Targeted Value Portfolio - Institutional
+Class` and the filing writes `Class I`, the same class under two names, and
+DoubleLine the same; and **13 are Vanguard Target Retirement `Inst`**, the
+genuine defect — and that is a slice of the OWNER-GATED 2,767-row / 8,441,775-
+participant Institutional item, where this record has already ruled withdrawal
+the wrong remedy and correction the owner's call. **The genuine, non-gated
+residue is about ONE row** (`Principal Real Estate Securities Instl R6` ->
+PIREX).
+
+**SO THE MISSING DISCRIMINATOR IS A CLASS-SYNONYMY FACT, NOT A STRUCTURAL
+TEST** — `i` ≡ `institutional` at Dimensional and DoubleLine, `k` ≡
+institutional-only at iShares — and a synonymy table is SOURCED, never inferred
+from a string. *The one-class arm is right far more often than it is wrong,
+because a series registering one class usually means the others were never
+created or were converted away.* Queued as a sourcing task, not as a guard.
+
+---
+
+## 2026-10-02 (08:0xZ) — MERGE-SIDE, GATED, `[skip ci]` BEHIND #544, NOT YET RUN: an OCR'd `!` where a letter belongs. 393 rows / 280 plans / 365,305 participants / $1,373,992,265
+
+**WHAT IS WRONG.** A scanned filing's lowercase `l` is a bare vertical stroke
+and OCR reads it as `!`, so `Fidelity Freedom Index 2040 Inst! Prem` is
+`Instl`, `Vngrd Tt! Intl Bd Idx Adml` is `Ttl`, `Mutua! Fund` is `Mutual`,
+`accoun!` is `account`, `Mk!` is `Mkt`, `!shares` is `iShares` and `Metrop!tn`
+is `Metropltn`. The damaged token is published as the holding's name, and
+because the name is what every resolver reads, the row also loses its ticker
+and gets priced out of a generic bucket.
+
+**THE RECORDED SIZE WAS 7 ROWS AND IT IS 576 — an 82x re-size, and the
+instruction to re-size is what found it.** Measured whole-store on the pv-196
+store: **576 published rows carry a `!`, 511 distinct names, 405 entries, 405
+plans, 516,218 participants, $1,974,720,429**; of those, 113 publish a ticker,
+215 publish a fee and **463 publish no ticker at all**. The 2026-09-21 figure
+of 7 rows / 7 plans counted ONE spelling of the glyph. *A class sized from a
+remembered example is sized from the example.*
+
+**THE CHANGE.** `bangRepair` in `merge-4i.mjs`, asked last in the repair chain
+after `weldRepair` / `capsRepair` / `rotRepair` / `cipherRepair`. For each
+`!`-bearing token it builds all 26 single-letter candidates and lets a WITNESS
+choose — the store's own published tokens — then writes back ONLY the glyph,
+leaving every other character exactly as filed.
+
+**THE GLYPH IS NOT ONE LETTER, which is why a substitution rule cannot work and
+why this record already measured a naive `!`->`I` rewrite WRONG on 4 of the 7
+rows it was then sized at.** Across the 393 rows the arm repairs, the glyph
+stands for **`l` on 345, `I` on 28, `t` on 11, `i` on 9, and `T`/`X`/`L` once
+each**. No vocabulary of substitutions ships; the letter is chosen by
+attestation on every row.
+
+**FOUR CONDITIONS, AND THE TWO THAT DECIDE THE POPULATION ARE RATIOS RATHER
+THAN FLOORS.**
+
+1. **The floor** — the repaired token must be published at least 3 times. *A
+   floor of one lets a single damaged row license the same damage elsewhere.*
+2. **The letter ratio** — where more than one letter yields a published token
+   the best must beat the runner-up TENFOLD. This is what refuses `Blackrock
+   Gib! Allocation Inst`, where the filing means `Glbl` and no candidate
+   dominates, and `CRLN E MID CAP GR!`.
+3. **The marker refusal, and NO FLOOR CAN REPLACE IT.** A trailing `!` after a
+   COMPLETE word is a marker, not a letter, and appending one FABRICATES a
+   word: `Growth!` -> `GrowthR` (published 6 times, against `growth`'s
+   143,800), `Company!` -> `CompanyT`, `Plus!` -> `Plusb`, `Mutual!` ->
+   `Mutuals`, and ten `T. Rowe Price Retirement <year> Fund!` -> `... Funds`.
+   **A floor cannot separate those from the correct repairs, measured:
+   `Metropltn` is published 4 times and `GrowthR` 6.** What separates them is
+   the BARE token — refuse when deleting the glyph is far better attested than
+   any letter.
+4. **The token must hold a letter and be at least three characters.**
+
+**DELETION WAS BUILT AS A 27th CANDIDATE AND REFUTED BY ITS OWN OUTPUT — the
+most useful measurement in the cycle.** Competing on equal terms, `inst`
+(25,207) and `instl` (22,687) sit within 1.11x, so BOTH lose condition (2) and
+the 183-row bulk dies; and `!shares` loses to the bare `shares` (45,411 against
+12,381). Deletion works only as a DOMINANCE REFUSAL, and its ratio is **five**,
+bounded by reading both sides: **at TEN the eleven fabrications above survive;
+at THREE all eight `!shares` -> `ishares` repairs die.** *An attestation count
+on the bare token says nothing about whether THIS row's glyph is a letter —
+`inst` is published 25,207 times because other rows legitimately say `Inst`.*
+
+**THE REGISTRY BONUS WAS BUILT, MEASURED AND REMOVED.** `capsRepair`'s
+`secWords` witness lets a candidate the store barely publishes through; here it
+changed **0 of 393 rows** while being the only thing that admitted `Mutual!` ->
+`Mutuals` (published twice). *A witness with no measured benefit and a measured
+risk is not carried.*
+
+**WHOLE EFFECT THROUGH THE REAL MERGE, attributed field by field against the
+pv-196 store: `name` on 393 rows across 280 entries and `stk` +28 / -0 / 0
+changed, AND NOTHING ELSE** — 1,730,535 rows both sides, 0 acks added or
+removed, 0 row-count changes, `ftk` on 0, CONFIDENCE DIFF **+0 / -0**,
+`rows-dropped` 0, `swaps-degraded` 0.
+
+**WHAT A READER GAINS: 393 rows / 343 names / 280 entries / 280 plans / 365,305
+participants / $1,373,992,265** — display ticker **+46 / -1 / 3 corrected**,
+display fee **+31 / -1 / 25 corrected**, **+9 asterisks**, 2 typings, and **8
+crawlable pages / 121,203 participants**. BOTH surfaces, because the repair is
+to the STORED name.
+
+**ALL 30 CHANGED CELLS READ AND TRACED ON REAL ROWS THROUGH THE PAGE'S OWN
+RENDER, and the mechanism is one thing: the repaired name resolves to the
+FUND'S OWN ticker and carries that fund's paired figure, replacing a generic
+bucket.** `Vanguard Total Int! Stock Index Admiral` goes 0.06 -> **VTIAX at
+0.04**; `Fidelity Freedom !ndex 2055 Fund` goes **0.5 -> 0.12**, the actively
+managed Freedom fund's estimate replaced by the Freedom INDEX fund's, which is
+what the filing says; `Fidelity Internationa! Index` 0.1 -> 0.035. Both ticker
+corrections are **Institutional Plus reaching its own class** — VINIX ->
+**VIIIX** and VBTLX -> **VBMPX**. The 9 new asterisks are collective-trust rows
+getting their honest label: `Vanguard Inst! 500 Index Trust` goes from an
+unattributed 0.03 to **VFIAX\* at 0.04**, a labelled comparable.
+
+**THE ONE LOSS IS A CORRECT WITHDRAWAL AND WAS READ.** `Dodge & Cox Income Ci!`
+(Dgg Properties, 906 ppl, 6.1% of its menu, $541,478) stops publishing DODIX
+and 0.41, because `Cit` is published 22,500 times against the runner-up `Cif`'s
+373 and the repaired name reads **CIT** — a collective investment trust, which
+`isCollectiveTrustName` then correctly refuses to price as the mutual fund.
+That is the 2026-09-21 demotion's own position.
+
+**THE HEADLINE MEMBER IS THE ONE THE DRAW FOUND.** Aya Healthcare Services
+(**63,406 participants**) publishes `NUVEEN LIFECYCLE !NDEX 2060 INST` at 13.2%
+of its menu / $76,586,960 with no ticker and no fee while six sibling vintages
+read `INDEX`. It is repaired, and it is pinned.
+
+**MY HARNESS SAID 394 ROWS AND +34 STORED `stk`; BOTH DELTAS ARE ACCOUNTED FOR
+AND NEITHER IS THE ARM.** The extra row sits in a NON-CONFIDENT entry (`DFA
+Int! SmCap Vat`), which the merge loop skips; and 6 of the 34 are refused by
+`secTypeAdmits` — **the merge-4i:501 trap, met again**, where an outcome test
+asks `resolveHolding` without the gate the storage line applies. Counting the
+DISPLAY ticker the same way reads 9 too high, and **all 9 carry a filed type
+that contradicts a registered mutual fund** (7 `Pooled separate account`, 2
+ETF). *Measure through the function the caller calls.*
+
+**TWO OF MY OWN PINS WERE WRONG AND THE CONTROLS CAUGHT BOTH.** `PIM RAE US
+SM!` was pinned as repairing to `SML` from an earlier marker-10 prototype and
+the shipped predicate refuses it (`sm` 13,069 >= 5 x `sml`'s 954) — it is now
+pinned as a **named cost**, with `Eaton Vance-At! Cp SMIDCp F R6` its sibling.
+And `Registered investmen! company` was pinned with a capital `I` from a
+prototype that replaced the whole token; the shipped minimal edit preserves the
+filer's lowercase. *Every candidate pin has to be verified against the SHIPPED
+predicate before it is written down.*
+
+**AND THE BASELINE AND ITS CONTROLS HAD TO BE THE SAME FUNCTION — the test's own
+defect, caught by their disagreement.** `make(false)` selects by string prefix,
+so it handed back `weldRepair`, which returns null for every name carrying a `!`
+(it needs a camel seam). That read as **11 of 24 pins passing — all of them the
+must-KEEPs** — while the seven controls, whose keys DO start with `bang`, were
+running the real predicate. A baseline that is the wrong function fails only on
+the half of a two-sided pin list that asserts a change, which looks exactly like
+a predicate that is too strict.
+
+**MERGE-SIDE BY NECESSITY, AND IT CANNOT MOVE A REGION.** The witness is the
+whole store's published names, which neither the browser nor `build-seo-pages`
+can hold — the same reason the three arms above it live here. And a merge repair
+runs AFTER region selection, so unlike a vocabulary change in `lib-4i` it cannot
+change which region wins: the v196 hazard that cost five lineups is closed by
+construction, not by care.
+
+**PREVENTION.** `scripts/merge-name-test.mjs` slices the shipped `bangRepair`
+out of `merge-4i.mjs` rather than restating it, builds the attestation and case
+maps from the live store the way the block does, and asserts **27 pinned cases
+(16 must-repair / 11 must-keep)**, added because **0 of the 42 existing weld and
+caps cases contain a `!`** — a pin set that cannot reach a new arm leaves it
+untested while every gate stays green. **SEVEN NEGATIVE CONTROLS, one per
+condition, each failing BY NAME on exactly its own cases** (1 / 1 / 5 / 1 / 1 /
+4 / 1), every surgical replacement ASSERTED present so a moved target string
+fails loudly instead of passing as the shipped predicate. **The two conditions
+that measure 0 on this store are controlled on CRAFTED witnesses rather than
+labelled and left**: without the letter test `Vanguard Index !!! Fund` becomes
+the fabricated holding `III`, and without #536's junk guard `P!an Name` becomes
+a Form 5500 cover-page line that the ENTRY-level `JUNK_NAME_RE` demotion would
+read as grounds to withdraw the WHOLE lineup — which is how #536 cost five real
+menus 61,261 participants. A third pin fixes that guard's DIRECTION: `Emp!oyer
+Identification Number` already matches `JUNK_NAME_RE`, so making it legible
+creates no new conviction and the guard correctly stands aside.
+
+**NOT DONE, with its measured reason.** The **trailing-marker** sub-family is a
+DIFFERENT defect and is left alone: ten `T. Rowe Price Retirement <year> Fund!`
+rows plus `Growth!`, `Company!`, `Plus!` and `Mutual!` want the glyph DELETED,
+not substituted, and deletion cannot be decided by the same witness (see
+above). **182 of the 576 rows keep their glyph** — the marker family, the
+rows where no letter dominates, and the pure OCR mush (`e0q!CDEFGHIJK!CD…`, 7
+rows, whose candidates are attested nowhere). Refusing a repair is the safe
+direction.
+
+**GATES.** `merge-name-test` 27/27 with every existing set unmoved (20/20 22/22
+25/25 20/20 22/22 15/15), parser-gate green (frozen tether 7/7), smoke green,
+`lib-disclose --selftest` 25/25, fund-er-test 83/26/19/18/28,
+`generic-typo-test` 102 pins / 7 controls green. `PARSER_VERSION` stays 197 and
+`lib-4i` is untouched, so `diff-lineups` is not implicated.
+
+**PRE-REGISTERED for the run that applies it** (merge-side, so the arm is inert
+until a merge runs; dispatched after #544's verdict, and #544 is a v197 FULL
+re-parse whose own store this arm has not seen):
+- the merge log prints **`ocr-bang repair: 393 rows across 280 plans`** — and
+  on a v197 store the count may differ, because v197 withdraws 4 lineups and
+  the attestation maps are built from CONFIDENT entries only. The figure to
+  register is therefore **393 +/- the rows inside those 4 withdrawn lineups**,
+  and a changed count must not be read as a regression: *a correct repair can
+  license a further correct repair on the next run*, already on this record.
+- `sec tickers` **+28 rows / +1 plan** against the run's own baseline;
+  `filed tickers` 2,166 / 75 and the trailing-parenthetical 657 / 53 unchanged
+  (`ftk` moves on 0 rows, measured).
+- **CONFIDENCE DIFF +0 / -0** and `rows-dropped` 0: the arm renames and nothing
+  else, so no sum, ratio or row count moves.
+- `== FABRICATED-HOLDING SHAPES` gains **2 generic-named rows** (`Registered
+  investmen! company` -> `Registered investment company`, at 0.5% and 4.3% of
+  their menus, far under `audit-dominant-row`'s 90% floor) and **0 dominant
+  non-fund**; `audit-generic-names` therefore +2 rows, and
+  `fabricated-name` is STANDING either side so **HIGH holds at 4**.
+- **`tkExact` can only RISE** (46 new display tickers against 1.72M rows, so at
+  most a hair at two decimals); `tkComparable` can only rise by the 9 new
+  asterisks; `tkShare` is a 1-in-20 positional sample and any movement there is
+  phase.
+
+---
+
 ## 2026-10-02 (06:4xZ) — OWNER-GATED, SIZED, NOT SHIPPED: the filing states a share class the registry registers under that exact name, and the page publishes a different class's symbol — and its fee. 5,929 rows / 4,837 plans / 11,144,696 participants
 
 **WHAT IS WRONG.** A filed holding name ENDS in a share-class word, the registry

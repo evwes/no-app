@@ -528,6 +528,27 @@ function stripIssuerLead(iss) {
       }
     }
   const cnt = (w) => tok.get(String(w).toLowerCase()) || 0;
+  /* THE CASE THE STORE ITSELF PUBLISHES for a token, most-frequent spelling
+   * first with a deterministic tie-break. Read only by the `!` arm below, to
+   * decide the CASE of a replacement character it has already chosen by
+   * attestation — never to choose the character. */
+  const caseOf = new Map();
+  for (let i = 0; i < SHARDS; i++)
+    for (const [, e] of Object.entries(buckets[i])) {
+      if (!e || !e.confident || !Array.isArray(e.funds)) continue;
+      for (const f of e.funds)
+        for (const t of String(f.name || "").split(/[^A-Za-z]+/)) {
+          if (t.length < 2) continue;
+          const k = t.toLowerCase();
+          if (!caseOf.has(k)) caseOf.set(k, new Map());
+          const cm = caseOf.get(k); cm.set(t, (cm.get(t) || 0) + 1);
+        }
+    }
+  const bangCase = (w) => {
+    const cm = caseOf.get(String(w).toLowerCase());
+    if (!cm) return null;
+    return [...cm].sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1))[0][0];
+  };
   const weldRepair = (name) => {
     const s = String(name || "").trim();
     SEAM.lastIndex = 0; let m, best = null;
@@ -873,8 +894,159 @@ function stripIssuerLead(iss) {
     if (JUNK_NAME_RE.test(a) && !JUNK_NAME_RE.test(b)) return null;
     return a;
   };
-  let weld = 0, caps = 0, rot = 0, ciph = 0;
-  const weldAcks = new Set(), capsAcks = new Set(), rotAcks = new Set(), ciphAcks = new Set();
+  /* AN OCR'd `!` WHERE A LETTER BELONGS — 2026-10-02.
+   *
+   * A scanned filing's lowercase `l` is a bare vertical stroke and OCR reads it
+   * as `!`, so `Fidelity Freedom Index 2040 Inst! Prem` is `Instl`, `Vngrd Tt!
+   * Intl Bd Idx Adml` is `Ttl`, `Mutua! Fund` is `Mutual`, `accoun!` is
+   * `account`, `Mk!` is `Mkt`, `!shares` is `iShares` and `Metrop!tn` is
+   * `Metropltn`. This project already repairs the SAME GLYPH CLASS one
+   * character along — a trailing column bar is the share-class `I`
+   * (app.js:686, 743 plans / 683k ppl) — and `!` is the other reading of the
+   * same stroke.
+   *
+   * THE GLYPH STANDS FOR A DIFFERENT LETTER IN DIFFERENT ROWS, so a character
+   * substitution cannot work and this record already measured a naive `!`->`I`
+   * rewrite WRONG on 4 of the 7 rows it was then sized at (`Metrop!tn`,
+   * `Smal!Cap` want `l`). Across the 59 token edits a 26-letter candidate set
+   * reaches, the glyph stands for `l` on 345 rows, `I`
+   * on 28, `t` on 11, `i` on 9, and `T`/`X`/`L` once each. So the LETTER is chosen
+   * by a WITNESS and never by a rule: the repaired token must be a word the
+   * store itself publishes.
+   *
+   * THE SIZE WAS 7 ROWS AND IT IS 576, BECAUSE THE RECORDED FIGURE COUNTED ONE
+   * SPELLING. Re-sized whole-store on the pv-196 store: 576 published rows
+   * carry a `!`, 511 distinct names, 516,218 participants; 463 of them publish
+   * no ticker at all. *A class sized from a remembered example is sized from
+   * the example.*
+   *
+   * WHOLE EFFECT THROUGH THE REAL MERGE, attributed field by field against the
+   * pv-196 store: `name` on 393 rows across 280 entries and `stk` +28 / -0 / 0
+   * changed, AND NOTHING ELSE — 1,730,535 rows both sides, 0 acks added or
+   * removed, 0 row-count changes, `ftk` on 0. A READER gains 46 tickers / -1 /
+   * 3 corrected, 31 fees / -1 / 25 corrected, 9 asterisks and 2 typings across
+   * 280 plans / 365,305 participants / $1,373,992,265, plus 8 crawlable pages /
+   * 121,203 participants. Every one of the 30 changed cells was read.
+   *
+   * MY HARNESS SAID 394 ROWS AND +34 STORED `stk`; BOTH DELTAS ARE ACCOUNTED
+   * FOR AND NEITHER IS THE ARM. The extra row sits in a NON-CONFIDENT entry
+   * (`DFA Int! SmCap Vat`), which this loop skips; and 6 of the 34 are refused
+   * by `secTypeAdmits` — the merge-4i:501 trap, where an outcome test asks
+   * `resolveHolding` without the gate the storage line applies. Counting the
+   * DISPLAY ticker the same way is 9 rows too high, and all 9 carry a filed
+   * type that contradicts a registered mutual fund (7 `Pooled separate
+   * account`, 2 ETF). *Measure through the function the caller calls.*
+   *
+   * FOUR CONDITIONS, each negative-controlled by name, and the two that decide
+   * the population are RATIOS rather than floors:
+   *
+   * (1) THE FLOOR. The repaired token must be published at least 3 times. A
+   *     floor of ONE lets a single damaged row license the same damage
+   *     elsewhere, which this record has paid for twice.
+   *
+   * (2) THE LETTER RATIO. Where more than one letter yields a published token
+   *     the best must beat the runner-up TENFOLD, or nothing is known. This is
+   *     what refuses `Blackrock Gib! Allocation` (the filing means `Glbl`; no
+   *     candidate dominates) and `CRLN E MID CAP GR!`.
+   *
+   * (3) THE MARKER REFUSAL, and a FLOOR CANNOT REPLACE IT. A trailing `!`
+   *     after a COMPLETE word is a marker and not a letter, and appending one
+   *     FABRICATES a word: `Growth!` -> `GrowthR` (published 6 times, against
+   *     `growth`'s 143,800), `Company!` -> `CompanyT`, `Plus!` -> `Plusb`,
+   *     `T. Rowe Price Retirement 2015 Fund!` -> `... Funds`. No floor
+   *     separates those from the correct repairs, because `Metropltn` is
+   *     published 4 times and `GrowthR` 6. What separates them is the BARE
+   *     token: refuse when deleting the glyph is far better attested than any
+   *     letter.
+   *     IT IS A REFUSAL AND NOT A 27th CANDIDATE, measured: made to compete on
+   *     equal terms, `inst` (25,207) and `instl` (22,687) sit within 1.11x, so
+   *     both lose condition (2) and the 183-row bulk dies — and `!shares`
+   *     loses to the bare `shares`. Its ratio is FIVE, bounded by reading both
+   *     sides: at TEN the eleven fabrications above survive; at THREE all
+   *     eight `!shares` -> `ishares` repairs die. Cost named, one row: `Eaton
+   *     Vance-At! Cp SMIDCp F R6` keeps its glyph.
+   *
+   * (4) THE TOKEN MUST HOLD A LETTER AND BE AT LEAST THREE CHARACTERS.
+   *     DECORATIVE ON THIS STORE — dropping either changes 0 of the 393 rows —
+   *     and CONTROLLED ON A CRAFTED CASE INSTEAD, because a condition that
+   *     cannot fail is decoration:
+   *     kept because each refuses a shape the witness alone would admit, shown
+   *     on a crafted case rather than claimed: without the length floor
+   *     `Vanguard O! America Fund` becomes `Vanguard OF America Fund`, because
+   *     the English word `of` is published often enough to clear any ratio.
+   *
+   * THE REGISTRY BONUS WAS BUILT, MEASURED AND REMOVED. `capsRepair`'s
+   * `secWords` witness admits a candidate the store barely publishes, and here
+   * it changed 0 of the 393 rows while being the only thing that let `Mutual!` ->
+   * `Mutuals` through (published twice). A witness with no measured benefit and
+   * a measured risk is not carried.
+   *
+   * ONLY THE GLYPH MOVES. Every other character stays exactly as filed, so the
+   * filer's own case survives (`accoun!` -> `account`, not `Account`); the
+   * replacement takes the surrounding case when the token's other letters are
+   * all capitals (`SM!` -> `SML`) and otherwise the case the store's most
+   * published spelling carries at that position (`!ndex` -> `Index`, `!shares`
+   * -> `ishares`). Residue named: `Ci!` -> `CiT` and `Mut!` -> `MutL` get the
+   * right letter in odd case, 2 rows.
+   *
+   * ALL-OR-NOTHING PER NAME. If any glyph in a name cannot be witnessed the
+   * name is left entirely alone, because a PARTIAL repair is worse than none —
+   * it publishes a name that is half ours.
+   *
+   * A REPAIR THAT MAKES A JUNK ROW LEGIBLE IS REFUSED, the guard `cipherRepair`
+   * carries sixty lines above and for its reason: #536 withdrew five real menus
+   * reaching 61,261 participants that way. DECORATIVE on this store — 0 of 393 rows
+   * create a `JUNK_NAME_RE` match — and carried because the cost of being
+   * wrong is a whole plan's menu. Two rows DO newly match
+   * `GENERIC_TYPE_NAME` (`Registered investmen! company` -> `... Investment
+   * ...`) at 0.5% and 4.3% of their menus, far under the dominance guard's 90%
+   * floor, and that is the arm working: the row now admits it names no fund.
+   *
+   * MERGE-SIDE BY NECESSITY. The witness is the whole store's published names,
+   * which neither the browser nor `build-seo-pages` can hold — the same reason
+   * the three arms above it live here. And a merge repair runs AFTER region
+   * selection, so unlike a vocabulary change in `lib-4i` it cannot move which
+   * region wins: the v196 hazard is closed by construction. */
+  const BANG_TOK = /[A-Za-z]*![A-Za-z!]*/g;
+  const BANG_LETTERS = "abcdefghijklmnopqrstuvwxyz".split("");
+  const BANG_FLOOR = 3, BANG_RATIO = 10, BANG_MARKER = 5, BANG_MINLEN = 3;
+  const bangRepair = (name) => {
+    const s = String(name || "");
+    if (!s.includes("!")) return null;
+    let out = "", last = 0, changed = 0;
+    BANG_TOK.lastIndex = 0; let m;
+    while ((m = BANG_TOK.exec(s))) {
+      const t = m[0];
+      if (!/!/.test(t)) continue;
+      if (!/[A-Za-z]/.test(t)) return null;            // (4) a lone glyph
+      if (t.length < BANG_MINLEN) return null;         // (4) see `O!` above
+      const scored = BANG_LETTERS.map((L) => t.replace(/!/g, L))
+        .map((c) => ({ c, n: cnt(c) }))
+        .filter((x) => x.n >= BANG_FLOOR)              // (1)
+        .sort((a, b) => b.n - a.n);
+      if (!scored.length) return null;
+      if (scored.length > 1 && scored[0].n < BANG_RATIO * scored[1].n) return null;  // (2)
+      const bare = t.replace(/!/g, "");
+      if (bare.length > 1 && cnt(bare) >= BANG_MARKER * scored[0].n) return null;    // (3)
+      const allCaps = /[A-Z]/.test(bare) && !/[a-z]/.test(bare);
+      const sp = bangCase(scored[0].c) || scored[0].c;
+      let rep = "";
+      for (let k = 0; k < t.length; k++) {
+        if (t[k] !== "!") { rep += t[k]; continue; }
+        rep += allCaps ? scored[0].c[k].toUpperCase() : (sp[k] || scored[0].c[k]);
+      }
+      out += s.slice(last, m.index) + rep;
+      last = m.index + t.length; changed++;
+    }
+    out += s.slice(last);
+    if (!changed) return null;
+    const a = out.replace(/\s{2,}/g, " ").trim(), b = s.replace(/\s{2,}/g, " ").trim();
+    if (!a || a === b) return null;
+    if (JUNK_NAME_RE.test(a) && !JUNK_NAME_RE.test(b)) return null;   // #536
+    return a;
+  };
+  let weld = 0, caps = 0, rot = 0, ciph = 0, bang = 0;
+  const weldAcks = new Set(), capsAcks = new Set(), rotAcks = new Set(), ciphAcks = new Set(), bangAcks = new Set();
   for (let i = 0; i < SHARDS; i++)
     for (const [ack, e] of Object.entries(buckets[i])) {
       if (!e || !e.confident || !Array.isArray(e.funds)) continue;
@@ -898,13 +1070,23 @@ function stripIssuerLead(iss) {
          * and `tok` key on as a word boundary, so none of them can have fired
          * on one. The `continue` states that rather than relying on it. */
         const xrep = cipherRepair(f.name);
-        if (xrep) { f.name = xrep; ciph++; ciphAcks.add(ack); }
+        if (xrep) { f.name = xrep; ciph++; ciphAcks.add(ack); continue; }
+        /* asked LAST and only of a name no arm above touched. Measured as
+         * disjoint rather than assumed: of the 393 rows this arm repairs, 0
+         * are claimed by any arm above it, because `!` is a non-letter and the
+         * maps key on it as a word boundary — a camel SEAM cannot straddle it,
+         * an all-caps run of eight cannot contain it, and a rotation needs a
+         * class designation this population does not carry. The `continue`
+         * chain states the order rather than relying on it. */
+        const brep = bangRepair(f.name);
+        if (brep) { f.name = brep; bang++; bangAcks.add(ack); }
       }
     }
   if (weld) console.log(`lost-space repair: ${weld} rows across ${weldAcks.size} plans`);
   if (caps) console.log(`all-caps lost-space repair: ${caps} rows across ${capsAcks.size} plans`);
   if (rot) console.log(`class-rotation repair: ${rot} rows across ${rotAcks.size} plans`);
   if (ciph) console.log(`cipher-run repair: ${ciph} rows across ${ciphAcks.size} plans`);
+  if (bang) console.log(`ocr-bang repair: ${bang} rows across ${bangAcks.size} plans`);
 }
 
 /* THE SEC TICKER, RESOLVED ONCE AT MERGE AND STORED ON THE ROW.

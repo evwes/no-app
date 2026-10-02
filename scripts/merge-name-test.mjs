@@ -30,7 +30,7 @@ if (!/weldRepair/.test(body)) throw new Error("slice missed weldRepair");
 if (!/capsRepair/.test(body)) throw new Error("slice missed capsRepair");
 
 // the real store's attestation maps, built the way the block builds them
-const whole = new Map(), tok = new Map();
+const whole = new Map(), tok = new Map(), caseOf = new Map();
 for (let s = 0; s < 64; s++) {
   const E = JSON.parse(fs.readFileSync(`${R}/data/lineups/${String(s).padStart(2,"0")}.json`, "utf8"));
   for (const [, e] of Object.entries(E)) {
@@ -39,7 +39,13 @@ for (let s = 0; s < 64; s++) {
       const n = String(f.name || "").trim(); if (!n) continue;
       const k = n.toLowerCase();
       whole.set(k, (whole.get(k) || 0) + 1);
-      for (const t of n.split(/[^A-Za-z]+/)) if (t.length > 1) tok.set(t.toLowerCase(), (tok.get(t.toLowerCase()) || 0) + 1);
+      for (const t of n.split(/[^A-Za-z]+/)) {
+        if (t.length < 2) continue;
+        tok.set(t.toLowerCase(), (tok.get(t.toLowerCase()) || 0) + 1);
+        const c = t.toLowerCase();
+        if (!caseOf.has(c)) caseOf.set(c, new Map());
+        const cm = caseOf.get(c); cm.set(t, (cm.get(t) || 0) + 1);
+      }
     }
   }
 }
@@ -47,7 +53,10 @@ function make(drop) {
   /* the caps arm loads its registry witness with readFileSync, so the vm
    * context needs it and the path must resolve from the repo root rather than
    * from wherever this test was invoked — never a hardcoded sandbox path */
-  const ctx = { buckets: [], SHARDS: 0, console,
+  /* JUNK_NAME_RE is a module import at merge-4i's top, so the sliced body needs
+   * it in the context — the `!` arm reuses #536's guard and would throw without
+   * it, which is how this control found it rather than by reading. */
+  const ctx = { buckets: [], SHARDS: 0, console, JUNK_NAME_RE,
     readFileSync: (f, enc) => fs.readFileSync(path.isAbsolute(f) ? f : `${R}/${f}`, enc) };
   vm.createContext(ctx);
   let b = body;
@@ -59,9 +68,31 @@ function make(drop) {
    * without it `SMALLCAP WORLD R6 FUND` is split and LOSES RLLGX, because
    * American Funds' own registered spelling of that series is the joined one */
   if (drop === "caps-nowitness") b = b.replace("if (secWords.has(t.toLowerCase())) continue;", "");
-  vm.runInContext(b + "\n; this.__w = weldRepair; this.__c = capsRepair; this.__whole = whole; this.__tok = tok;", ctx);
+  /* THE `!` ARM'S CONDITIONS, one variant each. Surgery on the shipped source,
+   * but every replacement is ASSERTED to have happened — a control whose
+   * target string has moved would otherwise pass as the shipped predicate and
+   * report 0, which is the decorative-control failure this record has paid for
+   * three times. */
+  const cut = (what, from, to) => {
+    if (drop !== what) return;
+    if (!b.includes(from)) throw new Error(`control "${what}": target moved: ${from}`);
+    b = b.replace(from, to);
+  };
+  cut("bang-floor", ".filter((x) => x.n >= BANG_FLOOR)", ".filter((x) => x.n >= 1)");
+  cut("bang-ratio", "if (scored.length > 1 && scored[0].n < BANG_RATIO * scored[1].n) return null;  // (2)", "// (2) dropped");
+  cut("bang-marker", "if (bare.length > 1 && cnt(bare) >= BANG_MARKER * scored[0].n) return null;    // (3)", "// (3) dropped");
+  cut("bang-letter", 'if (!/[A-Za-z]/.test(t)) return null;            // (4) a lone glyph', "// (4a) dropped");
+  cut("bang-minlen", "if (t.length < BANG_MINLEN) return null;         // (4) see `O!` above", "// (4b) dropped");
+  cut("bang-case", "rep += allCaps ? scored[0].c[k].toUpperCase() : (sp[k] || scored[0].c[k]);", "rep += scored[0].c[k];");
+  cut("bang-junk", "if (JUNK_NAME_RE.test(a) && !JUNK_NAME_RE.test(b)) return null;   // #536", "// #536 dropped");
+  vm.runInContext(b + "\n; this.__w = weldRepair; this.__c = capsRepair; this.__b = bangRepair; this.__whole = whole; this.__tok = tok; this.__caseOf = caseOf;", ctx);
   for (const [k, v] of whole) ctx.__whole.set(k, v);
   for (const [k, v] of tok) ctx.__tok.set(k, v);
+  /* `caseOf` is built from `buckets`, which this context stubs empty, so it is
+   * filled here the way `whole`/`tok` are — otherwise the `!` arm would have no
+   * case witness and every control would read the same. */
+  for (const [k, v] of caseOf) ctx.__caseOf.set(k, v);
+  if (String(drop || "").startsWith("bang")) return ctx.__b;
   return String(drop || "").startsWith("caps") ? ctx.__c : ctx.__w;
 }
 const shipped = make(false), drifted = make(true);
@@ -610,4 +641,132 @@ if (capsBad) process.exitCode = 1;
     if (!broke.length) { console.log("  !! a control that cannot fail is decorative"); xbad++; }
   }
   if (xbad) process.exitCode = 1;
+}
+
+/* ---------------------------------------------------------------------- *
+ * CONTROL for merge-4i's OCR `!` REPAIR — 2026-10-02.
+ *
+ * A scanned filing's lowercase `l` is a bare vertical stroke and OCR reads it
+ * as `!`. The glyph stands for a DIFFERENT letter in different rows — measured
+ * across the 393 rows the arm repairs, `l` on 345, `I` on 28, `t` on 11, `i`
+ * on 9 and `T`/`X`/`L` once each — so the letter is chosen by a WITNESS (the
+ * store's own published tokens) and never by a substitution rule. This record
+ * already measured a naive `!`->`I` rewrite wrong on 4 of 7 rows.
+ *
+ * PINS ADDED BECAUSE NOT ONE EXISTING CASE REACHES THE ARM, measured: of the
+ * 20 weld cases and 22 caps cases in this file, 0 contain a `!` and 0 change
+ * verdict under any variant below. A pin set that cannot reach the new arm
+ * leaves it untested while every gate stays green — the v189 failure.
+ *
+ * SEVEN NEGATIVE CONTROLS, one per condition, each failing BY NAME on exactly
+ * its own cases. Three of them are DECORATIVE ON THIS STORE and say so: the
+ * lone-glyph test, the length floor and the junk guard each change 0 of the
+ * 393 rows. They are pinned anyway on CRAFTED witnesses, because each refuses
+ * a shape the witness alone would admit and the cost of being wrong is a
+ * fabricated fund name or, for the junk guard, a whole plan's menu (#536
+ * withdrew five real menus reaching 61,261 participants that way).
+ */
+/* `make("bang")` and NOT `make(false)`: the selector is a string prefix, so
+ * `make(false)` hands back `weldRepair`, which returns null for every name
+ * carrying a `!` (it needs a camel seam). That read as 11 of 24 passing — all
+ * of them the must-KEEPs — while the seven controls, whose keys DO start with
+ * `bang`, ran the real predicate. *A baseline and its controls must be the same
+ * function, and the disagreement between them is what caught this.* */
+const bang = make("bang");
+const BANG_CASES = [
+  // must REPAIR — the glyph is a letter. All 59 token edits were read.
+  ["Fidelity Freedom Index 2040 Inst! Prem", "Fidelity Freedom Index 2040 Instl Prem"],
+  ["Vngrd Tt! Intl Bd Idx Adml", "Vngrd Ttl Intl Bd Idx Adml"],
+  ["Mutua! Fund NIA", "Mutual Fund NIA"],
+  ["Pooled separate accoun! ——_", "Pooled separate account ——_"],
+  ["BlackRock High Yield Bond Ins!", "BlackRock High Yield Bond Inst"],
+  ["Metrop!tn West Total Return", "Metropltn West Total Return"],
+  ["Quant Solutions Internationa! Equity R6", "Quant Solutions International Equity R6"],
+  /* ONLY THE GLYPH MOVES, so the filer's own lowercase survives: the store's
+   * most published spelling is `Investment` 11,360 against `investment` 1,379,
+   * and the arm still writes `investment` because it takes one CHARACTER from
+   * that spelling and not the whole token. Pinned in the lowercase form after
+   * the control caught me writing it from an earlier prototype. */
+  ["Registered investmen! company", "Registered investment company"],
+  /* the ALL-CAPS case arm, and it is the row the 2026-10-02 03:1xZ draw
+   * flagged: Aya Healthcare Services (63,406 ppl) publishes this at 13.2% of
+   * its menu / $76,586,960 while six sibling vintages read `INDEX` */
+  ["NUVEEN LIFECYCLE !NDEX 2060 INST", "NUVEEN LIFECYCLE INDEX 2060 INST"],
+  ["FID MID CAP !DX", "FID MID CAP IDX"],
+  ["3rincipal LifeTime Hybrid 2035 C!T", "3rincipal LifeTime Hybrid 2035 CIT"],
+  // the CASE arm where the token is MIXED: the store's spelling supplies the
+  // character, so `!ndex` is `Index` and `!shares` is `ishares`
+  ["Fidelity Freedom !ndex 2055 Fund", "Fidelity Freedom Index 2055 Fund"],
+  ["!shares S&P 500 Index K", "ishares S&P 500 Index K"],
+  // must KEEP — (3) the marker refusal: the glyph follows a COMPLETE word and
+  // appending a letter would FABRICATE one
+  ["T. Rowe Price Retirement 2015 Fund!", null],
+  ["JPMorgan Large Cap Growth!", null],
+  ["Vanguard Institutional Index Fund Plus!", null],
+  ["Mid Cap Index eo!", null],
+  /* must KEEP, and this one is a NAMED COST rather than a win: `SML` is very
+   * likely the right reading of PIMCO RAE US Small, and the marker refusal
+   * takes it because the bare `SM` is published 13,069 times against `SML`'s
+   * 954. Refusing a repair is the safe direction, so the cost is pinned rather
+   * than engineered around. Sibling cost, same cause: `Eaton Vance-At! Cp
+   * SMIDCp F R6` keeps its glyph. */
+  ["PIM RAE US SM!", null],
+  // must KEEP — (2) no letter dominates, so nothing is known
+  ["Blackrock Gib! Allocation Inst", null],
+  ["CRLN E MID CAP GR!", null],
+  // must KEEP — (4) CRAFTED, and the only thing refusing it is the length
+  // floor: the English word `of` is published often enough to clear any ratio
+  ["Vanguard O! America Fund", null],
+  // must KEEP — (4a) a lone glyph is not a damaged letter
+  ["Vanguard 500 Index Fund !", null],
+  /* must KEEP, CRAFTED, and this is what makes (4a) non-decorative: a run of
+   * glyphs with no letter in it would otherwise become the fabricated holding
+   * `III`, because `t.replace(/!/g, L)` turns `!!!` into a published token. */
+  ["Vanguard Index !!! Fund", null],
+  /* must KEEP, CRAFTED, and the ONLY thing refusing it is #536's junk guard:
+   * `plan` is published often enough to win, and the repaired name is a Form
+   * 5500 cover-page line, which `JUNK_NAME_RE`'s ENTRY-level demotion would
+   * read as grounds to withdraw the WHOLE lineup. That is how #536 cost five
+   * real menus 61,261 participants. */
+  ["P!an Name", null],
+  /* must REPAIR, and it pins the junk guard's DIRECTION rather than its force:
+   * this name ALREADY matches `JUNK_NAME_RE`, so making it legible creates no
+   * new conviction and the guard correctly stands aside. A guard that refused
+   * here would be refusing to read what the filing says. */
+  ["Emp!oyer Identification Number", "Employer Identification Number"],
+  // must KEEP — no `!` at all: the arm must be the identity
+  ["Vanguard 500 Index Fund Admiral Shares", null],
+  ["Fidelity Contrafund K6", null],
+];
+let bbad = 0;
+for (const [inp, want] of BANG_CASES) {
+  const got = bang(inp) || null;
+  if (got !== want) { bbad++; console.log(`  FAIL  ${JSON.stringify(inp)}\n        want ${JSON.stringify(want)}\n        got  ${JSON.stringify(got)}`); }
+}
+console.log(`\nshipped `+"`!`"+` repair: ${BANG_CASES.length - bbad}/${BANG_CASES.length} pinned cases`);
+if (bbad) process.exitCode = 1;
+
+/* not one existing case reaches the new arm — measured, not assumed */
+const reachOld = [...CASES, ...CAPS_CASES].filter(([n]) => String(n).includes("!")).length;
+console.log(`  existing cases reaching the `+"`!`"+` arm: ${reachOld} of ${CASES.length + CAPS_CASES.length}`);
+
+const BANG_CONTROLS = [
+  ["bang-floor",  "(1) the attestation floor of 3"],
+  ["bang-ratio",  "(2) the tenfold letter ratio"],
+  ["bang-marker", "(3) the fivefold marker refusal"],
+  ["bang-letter", "(4a) the token must hold a letter"],
+  ["bang-minlen", "(4b) the three-character floor"],
+  ["bang-case",   "the case witness"],
+  ["bang-junk",   "the #536 junk guard"],
+];
+console.log(`\nNEGATIVE CONTROL, one per condition:`);
+for (const [key, label] of BANG_CONTROLS) {
+  const v = make(key);
+  const broke = [];
+  for (const [inp, want] of BANG_CASES) {
+    const got = v(inp) || null;
+    if (got !== want) broke.push(`${JSON.stringify(inp)} -> ${JSON.stringify(got)}`);
+  }
+  console.log(`  drop ${label}: disagrees on ${broke.length} of ${BANG_CASES.length}`);
+  for (const b of broke) console.log(`      ${b}`);
 }
