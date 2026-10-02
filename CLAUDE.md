@@ -748,6 +748,24 @@ HIGH 4, warn 556, overshoot 372, confident 60,167, entries 65,480, dl 39.
 The issuer arm's own non-convergence: `issuer lost-space repair` should read
 **190**, not 188.
 
+**#551 (in flight, dispatched 19:30Z, prep-side):** the fee-shard log reads
+"N plans and ≤508 master trusts"; MTIA acks with a shard entry **0 of 508 →
+non-zero**; PSEG's trust ack `20251013135637NAL0000680483001` gains a shard-32
+entry carrying `mt: 1`; `i1`-carrying acks **42,385 +** the trusts'; the
+published `recordkeeper` moves on **0** plans; no parser metric moves.
+
+**#550 verdict (success, 9 min): the item-1 capture WORKS — 42,385 acks carry
+`i1`, 1,134 with no item-2 row against a predicted 1,274 — and the PSEG claim
+FAILED**, which is how the real cause was found. `build-data.mjs:1144` falls the
+published recordkeeper back to the **MASTER TRUST's** Schedule C, so PSEG's
+`Invesco Advisors, Inc` comes from its trust and from nothing in its own filing.
+**138 plans / 2,648,558 ppl** have the trust as the only possible source — and
+read largest-first the fallback is mostly RIGHT (Target→Alight, HCA→Conduent,
+Boeing→Fidelity), so this is not 2.6M wrong names but 2.6M whose evidence could
+not be examined. MTIA acks had **0 of 508** fee-shard entries while `acks`
+already added every one, so `scanSchC` scanned each trust and the assembly
+discarded it. ***A pre-registration earns its keep when it fails.***
+
 ### Open, in rough order of people affected
 
 **OWNER-GATED — a session must not start these unasked.** Each moves millions of
@@ -821,26 +839,12 @@ $94,315,803 was written down as a fabricated fee in front of 314,112 readers and
 FUND` typed `Mutual fund` publishing 0.35 on $358,548,781 to 112,414 readers** —
 a named live instance of the owner-gated stable-value item, escaping because
 `gicRow` reads the TYPE cell.
-**CLOSED 2026-10-02 19:2xZ, AND THE REPAIR ALREADY EXISTED.** This entry asked
-for "the full `er` expression behind a named export" and for the file to be
-"promoted to a named test under `scripts/`". Both shipped **2026-10-01**:
-**`scripts/apppath.mjs` is TRACKED and slices the WHOLE PER-ROW BLOCK** of
-`filedLineupTable`, so all eleven suppressors plus `shownType`/`brokRow`/
-`mistypedStock` come out as source text, and it answers all four pins right.
-The defect was a **stale duplicate in gitignored `scratchpad/` being imported in
-preference to the tracked one, under the same basename** — and the 15:3xZ "two
-files called apppath.mjs" trap counted the wrong two, missing the canonical one.
-**Of 197 scratchpad scripts importing an apppath, 32 used the tracked harness
-and 90 a scratchpad copy, 81 of those calling the 2-suppressor `render()`** —
-that is where the fee figures came from. I then nearly shipped
-`scripts/render-path.mjs`, a correct, controlled, pin-proved **FOURTH** slice of
-the same expression whose own prologue warned against duplicate transcription;
-deleted uncommitted. ***Before adding an instrument, ask whether the project
-already has one, and grep the TRACKED tree rather than the directory the last
-script lived in.*** `buildRenderer` now also returns `fns` (lookupTicker,
-fundERRow, fundERFiled, issuerPricedER, cleanFiledName, fundER, fundTickerInfo)
-from INSIDE its context, so needing one cell can never again justify a new
-slice. `docs/accuracy-log.md` 2026-10-02 (19:2xZ).
+**CLOSED 2026-10-02 — THE REPAIR HAD SHIPPED THE DAY BEFORE.** The defective
+file was a stale duplicate in gitignored `scratchpad/`, imported in preference
+to the tracked `scripts/apppath.mjs` under the same basename; 81 of this
+session's measurement scripts used it, 32 used the tracked one. Every fee figure
+from the 81 is an upper bound. See the Open list's apppath entry for the rule
+that replaces this. `docs/accuracy-log.md` 2026-10-02 (19:2xZ).
 
 **SHIPPED 2026-10-02 17:1xZ — THE TRUST'S SCHEDULE D FUND LIST, captured by
 #523 in September and rendered nowhere until the owner asked twice: 61 plans /
@@ -988,14 +992,23 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   measurement can see it and the DOL extracts are unreachable from the sandbox.
   **One prep-run change — store the item-1 name beside the item-2 rows — makes
   the whole class measurable.** No parser bump, no re-parse.
-  **THE BLOCKER IS BEING REMOVED — #550 IN FLIGHT (push on `a34bfe8d`, observed
-  queued 19:11Z).** `build-data` now stores the Schedule C Part I line 1(b)
-  discloser names on the fee shard as `i1`. **It publishes nothing**: the
-  selection is untouched, item 1 still scores below any item-2 pick, and no
-  renderer reads `i1`. **One line would have made it useless** — the shard
-  assembly skipped any plan with neither item-2 rows nor a Schedule A entry,
-  which is PRECISELY PSEG's state (both its acks are verified ABSENT from
-  `data/fees` today), so `i1` alone now keeps the entry.
+  **THE BLOCKER IS GONE — #550 SHIPPED `i1` (42,385 acks, 1,134 with no item-2
+  row) AND #551 ADDS THE TRUSTS.** `build-data` stores the Schedule C Part I
+  line 1(b) discloser names on the fee shard as `i1`, and the shard assembly now
+  iterates master trusts too (`mt: 1`) because MTIA acks had **0 of 508**
+  entries while `scanSchC` already scanned every one. Both publish nothing: the
+  selection at `build-data.mjs:1144` is untouched and no renderer reads either
+  field.
+  **AND ALL FOUR REFUTATIONS ABOVE WERE SCOPED TOO NARROWLY — corrected
+  19:4xZ, each still standing on its own evidence.** They replayed **plan-ack
+  item-2 rows**, so they were blind to the **138 plans / 2,648,558 ppl** whose
+  published name comes from the MASTER TRUST's Schedule C via the `p.mtiaAck`
+  arm — **including PSEG, the motivating case.** *A measurement that cannot see
+  its own motivating example has not been scoped.* Sixth instance on this record
+  of a plan-keyed count being blind to a trust. Read largest-first that fallback
+  is mostly RIGHT (Target→Alight, HCA→Conduent, Boeing→Fidelity,
+  Lockheed→T. Rowe Price), so the class is not wrong names but **unexaminable
+  evidence**, with PSEG a case where it looks wrong.
   **PRE-REGISTERED for #550:** the new `Ingest gate` step passes (schc-item1
   10/10, schd-name 10/10); PSEG's acks `…674275001` (shard 25) and
   `…060242001` (shard 57) gain an entry carrying `i1`; and **the published
@@ -1119,6 +1132,12 @@ These outlived the versions that produced them. The accuracy log has the case.
   short of `f.stk`, reading 0 of 147,835 rows. **There are TWO ticker resolvers
   and TWO display paths** (the report `app.js`, and the crawlable pages via
   `build-seo-pages.mjs`) — a claim about readers must name which.
+- **Before adding a SOURCE, ask what the pipeline already reads and throws
+  away.** Three instances in one day: `cct` was 231,260 of the 406,247 bytes
+  every visitor already downloads, with no consumer; `i1` was read by
+  `build-data` and all but one name discarded; the master trusts' Schedule C was
+  scanned for every one of 508 acks and then dropped by a loop over `universe`.
+  The download, the parse and the memory were already paid for in all three.
 - **A count of a condition is not a measure of a defect**, and the siblings:
   *a count keyed on a VOCABULARY measures the vocabulary*; *a count keyed on
   PLANS is blind to every master-trust row* (resolve a trust row through its
