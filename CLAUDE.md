@@ -727,6 +727,16 @@ from the cycle that would have cleared it.
   trust-aware standalone script — the standalone's single trust is the one lineup
   v196 withdrew. **`matchQuote` 5,397 of which only
   1,785 are SHOWN to readers** — the condition/outcome pair shipped 2026-09-27.
+- **`site-test` #137 READS `conclusion: success` ON `c1eb43be`**, the exact commit
+  carrying BOTH the `(continued)` caption fix and the `ticker-conflict` repair,
+  and the one commit on top of it is verified **docs-only** — so that green
+  covers every executable line shipped in this cycle. **It also settles a flag
+  the agent raised rather than hid: `map-test.mjs` FAILS IN THIS SANDBOX with
+  `ERR_CERT_AUTHORITY_INVALID` on the Google Fonts stylesheet** (the proxy
+  intercepting TLS), and the agent's own control was that it fails identically on
+  HEAD. CI runs the same job and passed, so **the failure is the sandbox and not
+  the test** — recorded because *local red is no more evidence than local green*,
+  and the only thing that settles either is the CI conclusion.
 - **QUEUED, SIZED, THE DESIGN SETTLED, THE OBVIOUS GUARD REFUTED, NOT SHIPPED —
   THE TRAILING-PARENTHETICAL EXTENSION OF v528: 459 rows GAIN a symbol / 47
   entries / 91,455 ppl / $902,640,533, and 14 CORRECT one / 9 entries / 17,090
