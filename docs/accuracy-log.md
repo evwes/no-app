@@ -7,6 +7,95 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-02 (11:4xZ verdict) — #545: the per-arm print passed to the row, the whole-store total did not, and the delta is why
+
+**Mirrored** `34463fb2 → d5e36aa9`, data gate **unforced at +0 / −0 by ack and by
+plan**, `--force` on the git check alone over main's one cron commit with the
+evidence produced first: `plans-all`'s `plans` array **byte-identical**, 0 plans
+and 0 acks either way, 0 acks at a higher pv on main, **0 confident on main that
+the branch lacks**. 286,318 participants are now served the repaired names.
+
+### Passed, exactly
+
+`lost-space repair: 489 rows across 329 plans` — the registered figure, to the
+row. CONFIDENCE DIFF **+0 / −0**; real-menu-shaped losses 0; degraded swaps 0;
+`rows-dropped` **0**. confident **60,167**, lineups **59,819**, entries
+**65,480**, **HIGH 4** = 3 `contrib` + `fabricated-name`, warn **556**, overshoot
+**372**, overshootTrust 12, aggRow 114, **dl 39**, pv 197 covering 69,007 of
+69,046 (99.9%). `ticker-conflict` **3**, #541's three named survivors.
+`filed tickers` 2,166 / 75 and the trailing parenthetical 657 / 53 unchanged.
+**`tkExact` 37.33** — registered as "37.32 at most +0.01", so at the ceiling
+exactly — and `tkComparable` **3.27**.
+
+### Missed, in rows only, and the whole excess is a different arm
+
+`sec tickers: 479694 rows across 48109 plans (113872 on a blank type cell)`
+against the registered **479,691 / 48,109 / 113,870**. ***The PLAN figure — the
+one DERIVED from measured set membership rather than summed, after the #531
+lesson — is exact.*** The row figure is 3 high and the blank-type figure 2 high.
+
+The artifact settles where they come from. Diffing all 64 lineup shards at
+`273cbcd1` against the data commit:
+
+| | |
+|---|---|
+| renames | **497 rows / 337 entries** |
+| `stk` | **+88 / −0 / 0 changed** |
+| `ftk` | 0 moved |
+| acks | +0 / −0 |
+| rows | 1,730,676 → 1,730,676, **0 row-count changes, 0 sums moved** |
+
+Split by SHAPE — a weld is the stored name with exactly one space inserted:
+
+- **489 rows / 329 entries / 85 `stk` gains** are my arm, matching its own print
+  and its registration;
+- **8 rows / 8 entries / 3 `stk` gains** are **#517's OCR tail-residue strip**,
+  which the merge printed ten seconds EARLIER as `ocr tail-residue strip: 8 rows
+  across 8 plans` — `Freedom Index 2030 Instl Prem al`, `PIMCO Rae Plus Small
+  Instl did`, `American Mutual Fund sad`, `Total Market Index ial`.
+
+489 + 8 = 497. 329 + 8 = 337. 85 + 3 = 88. And the three gains are **PCFIX,
+FSKAX and PRRIX**, a repaired name newly resolving a registry symbol — #517's own
+recorded mechanism, which that entry measured at 502 rows when it shipped.
+
+***An incremental merge's delta feeds EVERY rename arm, so a figure measured off
+a STATIC store diff is my arm's CONTRIBUTION and not the run's TOTAL.*** The
+per-arm print was registered correctly and passed to the row; the whole-store
+`sec tickers` figure was registered as though nothing else could move it, and 40
+newly merged entries moved it by three. The fix is not a wider tolerance:
+register the arm's own print, and derive any whole-store total as that plus
+whatever the delta brings.
+
+### A near-miss in the reconcile, worth more than the numbers
+
+`#545`'s merge pushed `273cbcd..d5e36aa` at 10:57:31Z. This session's local ref
+was still at `273cbcd1`, and the cycle's first act — reconciling git — **rebased
+three commits onto MAIN's `34463fb2`, rewriting history on a stale head and
+orphaning the data commit the run had just produced.** Nothing was pushed; it was
+caught by reading the merge job's own push line while looking for the registered
+figures. *Fetch is not adoption: after a fetch, read `origin/<branch>` and not
+the local ref, because the thing a verdict is about may already be on the
+remote.* The hook's own "MAIN IS AHEAD" warning was true and incomplete — the
+BRANCH was ahead of local too, and only one of those was reported.
+
+**And the merge log is readable after all.** `get_job_logs` with
+`return_content: true` returns it through the API; what is `connect_rejected`
+from this sandbox is the raw-log BLOB HOST. Several entries on this record
+computed a figure from the artifact "because the log cannot be read", which was
+true of the blob host and not of the tool — the artifact diff remains the
+stronger evidence, but it is no longer the only evidence available.
+
+### Main's own cron corroborates the HIGH baseline independently
+
+Run #546 (schedule, on main, pre-change code) ran `success` at 11:11Z and its
+coverage line is **byte-identical to #544's except `high` 10 → 4** — the six
+self-clearing `reparse-loss` entries clearing, exactly as #544's verdict
+reconciliation said. Two independent runs now read HIGH 4 = 3 `contrib` +
+`fabricated-name` on this store, which is what settles the baseline this file
+had stated three ways in one block yesterday.
+
+---
+
 ## 2026-10-02 (11:5xZ) — the draw: #545's fix is one COLUMN short, and the evidence source decides the design
 
 Participant-weighted random draw from published lineups, seed 20261002114,

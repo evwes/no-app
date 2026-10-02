@@ -1345,7 +1345,67 @@ from the cycle that would have cleared it.
   guards visibly working: all twelve Principal collective-trust vintages publish
   no fee and no ticker, and `Stable Value Z Fund` publishes no fee.
   `docs/accuracy-log.md` 2026-10-02 (11:5xZ).
-- **IN FLIGHT: #545, fired from the push on `07b304ca` and observed `in_progress`
+- **#545 RAN `success` AND IS MIRRORED — 2026-10-02 11:4xZ (`34463fb2 →
+  d5e36aa9`), DATA GATE UNFORCED AT +0 / −0 BY ACK AND BY PLAN, `--force` ON THE
+  GIT CHECK ALONE WITH THE EVIDENCE FIRST. THE HEADLINE REGISTRATION PASSED TO
+  THE ROW AND THE TWO FIGURES THAT CAME IN HIGH RECONCILE ENTIRELY TO A
+  DIFFERENT ARM.** The merge log prints **`lost-space repair: 489 rows across 329
+  plans`**, exactly as registered; CONFIDENCE DIFF **+0 / −0**, real-menu-shaped
+  losses 0, degraded swaps 0, **`rows-dropped` 0**; confident **60,167**, lineups
+  **59,819**, entries **65,480**, **HIGH 4** (3 `contrib` + `fabricated-name`),
+  warn **556**, overshoot 372, overshootTrust 12, aggRow 114, **dl 39**, pv 197
+  covering 69,007 of 69,046 (99.9%); `ticker-conflict` **3** (#541's three named
+  survivors); `filed tickers` 2,166 / 75 and the trailing parenthetical 657 / 53
+  unchanged; **`tkExact` 37.33, at the registered ceiling of "37.32 at most
+  +0.01" exactly**, `tkComparable` 3.27.
+  **AND THE DERIVED PLAN COUNT PASSED EXACTLY WHILE THE SUMMED ROW COUNT DID
+  NOT, which is the #531 lesson landing on the other side of the same line.**
+  `sec tickers` reads **479,694 rows across 48,109 plans (113,872 on a blank type
+  cell)** against the registered 479,691 / **48,109** / 113,870 — the plan
+  figure, the one DERIVED from measured set membership rather than summed, is
+  exact; the row figure is 3 high.
+  **BOTH EXCESSES ARE ONE OTHER ARM AND THE RECONCILIATION IS TO THE ROW AND TO
+  THE ENTRY.** Diffing all 64 lineup shards at `273cbcd1` against the data
+  commit: **497 renames across 337 entries, `stk` +88 / −0 / 0 changed, `ftk` 0
+  moved, 0 acks added or removed, 0 row-count changes, 0 sums moved**, 1,730,676
+  rows both sides. Split by SHAPE — a weld is the stored name with exactly one
+  space inserted — gives **489 rows / 329 entries / 85 `stk` gains for my arm**
+  and **8 rows / 8 entries / 3 `stk` gains for #517's OCR tail-residue strip**,
+  which the merge printed ten seconds earlier as `ocr tail-residue strip: 8 rows
+  across 8 plans`. 489 + 8 = 497, 329 + 8 = 337, 85 + 3 = 88, and the three
+  gains are PCFIX, FSKAX and PRRIX on `PIMCO Rae Plus Small Instl did`, `Total
+  Market Index ial` and `PIMCO Real Return Instl Fund ae` — #517's own recorded
+  mechanism, a repaired name newly resolving a registry symbol.
+  ***AN INCREMENTAL MERGE'S DELTA FEEDS EVERY RENAME ARM, so a figure measured
+  off a STATIC store diff is my arm's CONTRIBUTION and not the run's TOTAL.***
+  The per-arm print was registered correctly and passed; the whole-store
+  `sec tickers` figure was registered as though no other arm would move it, and
+  40 newly merged entries were enough to move it by three. Register a whole-store
+  total as the arm's own delta PLUS whatever the delta brings, or register the
+  arm's own print and derive the rest.
+  **AND MY LOCAL REF WAS A COMMIT BEHIND THE BRANCH WHEN THIS CYCLE OPENED,
+  WHICH ALMOST COST THE RUN'S OWN STORE.** `#545`'s merge pushed
+  `273cbcd..d5e36aa` at 10:57:31Z; the session's local was still at `273cbcd1`,
+  and the first reconcile rebased three commits onto MAIN's `34463fb2` —
+  rewriting history on a stale head and orphaning the data commit the run had
+  just produced. Caught by reading the merge job's own push line before pushing
+  anything. *Fetch is not adoption: after a fetch, read `origin/<branch>` rather
+  than the local ref, because the thing a verdict is about may already be on the
+  remote.* **And the merge log IS readable after all** — `get_job_logs` with
+  `return_content` returns it through the API, where fetching the raw log URL is
+  `connect_rejected`; several entries on this record computed a figure from the
+  artifact because the log was believed unreachable, which was true of the blob
+  host and not of the tool.
+  **MAIN'S OWN CRON RUN #546 CORROBORATES THE HIGH BASELINE INDEPENDENTLY:** it
+  ran `success` on main at 11:11Z against the pre-change code and its coverage
+  line is byte-identical to #544's **except `high` 10 → 4** — the six
+  self-clearing `reparse-loss` entries clearing, exactly as the #544 verdict's
+  reconciliation said they would. It carried nothing the branch lacked (plans
+  array byte-identical, 0 acks and 0 plans either way, 0 acks at a higher pv, 0
+  confident on main only), so the force discarded one duplicate trail line and a
+  timestamp.
+  `docs/accuracy-log.md` 2026-10-02 (11:4xZ verdict).
+- **WHAT #545 CARRIED — VERDICTED AND MIRRORED, see the bullet above; dispatched by the push on `07b304ca`
   — v529's GUARD PORTED BACK INTO `weldRepair`, WHICH REPAIRS A REGRESSION OF MY
   OWN FROM #544: 488 rows / 329 lineup entries / 329 plans / 286,318
   participants / $696,610,357, stored `stk` +110 / −0 / 0, display ticker +58 /
