@@ -8,3 +8,18 @@ swaps-degraded.txt
 
 # artifact-only: prep writes it, the parse jobs read it, it never belongs in git
 fallbacks.json
+
+# session measurement harnesses, written to the repo root by hand while sizing
+# a class (before/after probes, store diffs, a copy of app.js under test). They
+# are working files, not deliverables: throwaway per cycle, and app.js.bak alone
+# is 268KB, so committing them would grow history for nothing — this repo was
+# squashed once already to drop large blobs.
+#
+# A harness that is worth KEEPING does not belong here either: the rule this
+# record arrived at the hard way is that it becomes a named test under
+# scripts/ (merge-name-test.mjs, generic-typo-test.mjs), because a container
+# restart wipes everything else. scratchpad/apppath.mjs — which slices app.js's
+# own body so a measurement goes through the function the page calls — has now
+# been rebuilt twice after exactly that, and promoting it is QUEUED rather than
+# done here: scripts/** is a build-data trigger path and a run is in flight.
+scratchpad/
