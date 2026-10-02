@@ -773,6 +773,23 @@ pipeline's own log line is the number to believe and can only be larger.*
 *The verdict is still outstanding: nothing has been measured against this
 registration yet.*
 
+**ALSO IN FLIGHT: site-test #148 on `cfc56584`** — the Avg-expense-ratio card
+fix (display only, no registration). Read its `conclusion`, not just that it
+exists.
+
+**SHIPPED 2026-10-02 22:3xZ — the expense-ratio card said "lineup not added" on
+the SAME PAGE that lists the trust's funds: 61 plans / 874,136 ppl** (Albertsons
+236,172, Medtronic 55,692, Nestlé 50,509). The card's fallback chain never knew
+about `trustScheduleDMenu`, so it is **exactly** the 17:1xZ population — the
+card was blind to precisely what that ship added. Now asked through the
+canonical predicate with the body's own arguments. **And the dead-end label, on
+52,334 plans / 15,707,477 ppl, now describes the FILING rather than us**:
+short-form (no schedule of assets by law), `$0` year-end (8,782), else *"No
+readable schedule of assets in this filing"* — which still points at us,
+deliberately, because that is the honest statement when we cannot read a
+schedule that exists. Verified in a real browser on PSEG, stamp re-derived.
+`docs/accuracy-log.md` 2026-10-02 (22:3xZ).
+
 **#552 VERDICT (success 19:57Z, mirrored): every figure hit.** The welded-value
 arm's population is **0** and the cheap screen went **1,229 → 1,195**, which is
 1,229 − 34 to the row, so it hit exactly its 34 and nothing adjacent. **The
