@@ -1295,7 +1295,96 @@ from the cycle that would have cleared it.
   / 2 typings across 280 plans / 365,305 ppl. **Register the SUM of the two, not
   each in turn** — the 00:3xZ/#541 lesson about two reporting changes queueing
   behind one run.
-- **IN FLIGHT: #544 (v197) — ONE PREDICATE, TWO ARMS, AND THE BLAST RADIUS IS ZERO
+- **NOTHING IS IN FLIGHT. #544 RAN `success` AND IS MIRRORED — 2026-10-02 10:5xZ (`96d93309 → 8e66338a`),
+  GIT CHECK UNFORCED, `--force-data` OVER FOUR WITHDRAWALS THE GATE NAMES AS
+  EXACTLY THE PRE-REGISTERED SET. STORE COMPLETE: pv 197 covers 69,006 of 69,046
+  (99.9%), fetch failures 39 (0.06%), reader failures 1.** The designed outcome
+  passed to the digit: `== FABRICATED-HOLDING SHAPES` reads **0 dominant
+  non-fund** — the figure that only exists because v197 repaired
+  `audit-data.mjs:462`, so **the run's own audit watched the four withdrawals it
+  exists to watch** — beside **255 generic-named** against the registered 257.
+  `warn` **556**, `overshoot` **372**, `overshootTrust` 12, and **`tkExact`
+  37.32 / `tkComparable` 3.27 held EXACTLY**, which were registered as
+  structurally unable to move rather than inside a tolerance: the stronger claim
+  was the true one.
+  **THE CEILING HELD AND THE NAMED SET DID NOT, WHICH IS A MISS AND IS REPORTED
+  AS ONE.** `confident` **60,170 → 60,167, net −3** against a registered ceiling
+  of −4 at most / +0 — but the registration also NAMED every loss, and the run
+  produced **6 losses and 3 gains**. The four named ones all landed and the
+  mirror gate names precisely them (The Eby Group 2,054, Ortho Benefits 570,
+  Skico 499, Electromed 250). *A ceiling met by a different set is not a pass*,
+  so all nine were read before the override.
+  **THE TWO UNNAMED LOSSES ARE CORRECT WITHDRAWALS REACHED BY A DIFFERENT
+  MECHANISM: 3,069 participants stop being shown an asset-class statement as a
+  menu.** Central Hudson Gas & Electric (1,600) and Advantagecare Physicians
+  (1,469) both moved OFF a `fb=2023` fallback onto their newest filing's region
+  at ratio **2.815** and **2.682**, refused by the ratio guard — and neither
+  before-state named a single fund, Advantagecare's two largest rows carrying the
+  **identical $128,422,645**, a double render.
+  **THE THREE UNREGISTERED GAINS WERE READ TOO, because a gain is a claim about a
+  filing** (the 2026-09-29 lesson that 80% of one run's gains were menus that are
+  not menus): Coastal Pediatric Associates (206 ppl, **32 real American
+  Funds/Fidelity rows @ 1.018**), Horizon Roofing (217, 18 real Empower/Invesco
+  rows @ 0.879), Elevator Constructors Local 1 (4,276, 92 rows @ 0.849, largely
+  real with one junk `REPORTING INSTRUCTIONS` row at $25,579,723).
+  **ALL FIVE UNREGISTERED MOVEMENTS ARE ONE MECHANISM IN BOTH DIRECTIONS — every
+  one carries `fb=2023`.** A version that changes which regions are CONTESTED
+  moves plans off and onto prior-year fallbacks, and `fallbacks.json` is
+  artifact-only, so **no whole-store scan can predict either direction.** That is
+  precisely why the registration was a ceiling plus a named set; what this run
+  shows is that the ceiling is the half that survives and **the named set should
+  have been registered as "the losses I can see from the store", not as "the
+  losses".**
+  **`dl` 19 → 39 AND THE CODE IS EXONERATED BY MEASUREMENT: all 20 newly-failed
+  acks HEAD-probed — the whole population, not a sample — and 20 of 20 answered
+  403.** The **fourth unanimous run** of the #244/#246 discriminating test
+  (68/68, 78/78, 23/23, now 20/20), so `e=download` is still an honest published
+  claim and the EFAST2 bucket simply grew. All 20 read `pv196→196`, so they were
+  never re-parsed, and **14 keep their confident stored lineup** under the v37
+  protection — nothing is lost, nothing is refreshed.
+  **HIGH 4 → 10 IS AT BASELINE AND THE ARITHMETIC IS EXACT: the local audit on
+  #544's own store reads `HIGH (4)` = 3 `contrib` + `fabricated-name`, and CI's
+  10 is that 4 plus SIX self-clearing `reparse-loss` entries — one per confidence
+  loss** — raised from `losses-triage.txt`, a run ARTIFACT that exists only in
+  CI. 4 + 6 = 10. *A metric that differs between CI and local is a question about
+  the inputs, not the store*, and this is the first instance where the CI-only
+  count IS the loss count, which makes it a reconciliation rather than a puzzle.
+  **AND `aggRow` 113 → 114 IS NOT A SECOND EVENT — IT RECONCILES TO THE PERSON TO
+  ONE OF THE THREE GAINS.** `aggRowPpl` rose by exactly **4,276**, Elevator
+  Constructors' own participant count, and that plan publishes **`Managed account
+  holdings (699 positions)` at 54.2% / $785,288,188** of its 92-row menu. So the
+  movement is a CAVEAT ON A GAIN rather than a finding — under the 120 baseline,
+  so WARN. ***An unregistered figure that reconciles exactly to one you did
+  register is the same event counted twice.*** `entries` 65,479 → 65,480 is the
+  one new status entry; `match` +4, `vesting` +5, `roth` +5, `matchQuote` +1 are
+  the gained plans' features; and **`tkShare` 24.47 → 24.48 with `tkSampled`
+  87,070 → 87,067 is SAMPLING PHASE**, the recorded mechanism — the audit samples
+  every 20th row by position and three fewer rows re-phases the whole sample.
+  **THE SECOND COMMIT'S REGISTRATION MISSED IN THE ONE DIRECTION THAT MATTERS AND
+  THE MISS IS A REGRESSION: `stk` +28 / −2 / 0 CHANGED, where −0 was
+  registered.** `45eb462f` (the OCR `!`-glyph repair, `[skip ci]`,
+  `PARSER_VERSION` unchanged) rode this run because merge-4i checks out the
+  LATEST branch state; its `name` figure came in **406 rows / 291 entries against
+  the registered 393 / 280**, direction good and every sample a correct `!`-glyph
+  repair. **But two rows LOST an SEC ticker — 489 ppl / $226,833 — and both are
+  the OPPOSITE of the shape I predicted.** I expected the 03:0xZ "two wrongs made
+  a right" case, a REPAIRED name losing a ticker the DAMAGED name had matched.
+  These are clean, correct, resolving names that got **damaged**: `Vanguard
+  Equity Income Adm` → `Vanguard EquityIncome Adm`, and `… Ultra Short Term Bond
+  Admiral` → `… Admiral al`. Both are OCR'd with `ov: 8` unchanged on both sides,
+  so only `pv` moved.
+  **AND THE ATTESTATION TEST SPLITS THEM, which is what turns one regression into
+  one named cost and one queued question.** `Ultra Short Term Bond Admiral` is
+  attested **2 times — ONE SHORT of #517's floor of 3** — so that strip correctly
+  REFUSED it: this is the floor's own named cost, not a miss, and *a floor of one
+  lets a single damaged row license the same damage elsewhere* is why the floor
+  may not come down for it. But `Equity Income Adm` is attested **87** against
+  the damaged `EquityIncome Adm` at **1** — a textbook CamelCase seam at 87:1
+  that **v519's weld repair should reach and did not.** QUEUED as a question to
+  be asked of the shipped function rather than guessed at; two wrong diagnoses of
+  this row have already been written down and discarded in one cycle.
+  `docs/accuracy-log.md` 2026-10-02 (10:5xZ).
+- **WHAT #544 (v197) CARRIED — VERDICTED AND MIRRORED, see the bullet above. ONE PREDICATE, TWO ARMS, AND THE BLAST RADIUS IS ZERO
   WHERE IT MATTERS BY CONSTRUCTION: 222 rows / 171 plans / 628,541 participants /
   $7,012,007,386 stop publishing a vehicle-type label as a holding, 0 lost, 0 of
   them publishing a ticker; 70 rows / 69 plans / 261,795 ppl reach a reader; 4

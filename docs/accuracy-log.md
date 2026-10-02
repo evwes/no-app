@@ -7,6 +7,172 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-02 (10:5xZ) — #544 (v197) verdict: a ceiling that held over a named set that did not, and a `stk` regression the registration said could not happen
+
+**Run:** #544, id 36972079138, `push` on `2cecab51`, `conclusion: success`,
+06:07 → 09:51Z (20 shards, the cap — an OCR-heavy work list, the ~3h case).
+**Mirrored** 2026-10-02 10:5xZ, `96d93309 → 8e66338a`, git check **UNFORCED**,
+`--force-data` over four withdrawals the gate names as exactly the
+pre-registered set.
+
+**Store complete.** pv 197 covers **69,006 of 69,046 acks (99.9%)**; fetch
+failures **39 (0.06%)**, under the 1% `download-failures` threshold; reader
+failures 1.
+
+### What passed exactly
+
+| figure | registered | run |
+|---|---|---|
+| `== FABRICATED-HOLDING SHAPES` dominant non-fund | **0** | **0** |
+| generic-named | 257 | 255 |
+| `warn` | 556 | 556 |
+| `overshoot` / `overshootTrust` | 372 / 12 | 372 / 12 |
+| `tkExact` / `tkComparable` | 37.32 / 3.27, *cannot move* | 37.32 / 3.27 |
+
+The `0 dominant non-fund` is the designed outcome and it is only visible because
+v197 repaired `audit-data.mjs:462`, which had tested `NOT_FUND_SHAPED` alone
+while the guard it audits tests `NOT_FUND_SHAPED || isGenericTypeName`. **So the
+run's own audit watched the four withdrawals it exists to watch** — the repair
+and the change it reports on shipped together, deliberately, with the repair
+attributed at 0 on the pre-change store so the four findings are all v197's.
+
+`tkExact` and `tkComparable` were registered as **structurally unable to move**
+(v197 writes no `stk`, no `ftk` and no name; `fundER` is called on the NAME and
+never on a symbol) rather than inside a tolerance, and the stronger claim is the
+one that held.
+
+### The ceiling held and the named set did not
+
+`confident` **60,170 → 60,167, net −3**, against a registered ceiling of −4 at
+most / +0. But the registration also named every loss, and the run produced
+**6 losses and 3 gains**. *A ceiling met by a different set is not a pass*, so
+all nine were read against their stored rows before the override.
+
+**The four named losses all landed** and `mirror-gate` names precisely them:
+The Eby Group 2,054p, Ortho Benefits 570p, Skico 499p, Electromed 250p.
+
+**The two unnamed losses are correct withdrawals reached by a different
+mechanism — 3,069 participants stop being shown an asset-class statement as a
+menu.** Central Hudson Gas & Electric (1,600p) and Advantagecare Physicians
+(1,469p) both moved OFF a `fb=2023` fallback onto their newest filing's region
+at ratio **2.815** and **2.682**, refused by the ratio guard. Neither
+before-state named a single fund, and Advantagecare's two largest rows carried
+the **identical $128,422,645** — a double render.
+
+**The three unregistered gains were read too**, because a gain is a claim about
+a filing (the 2026-09-29 finding that 80% of one run's gains were menus that are
+not menus): Coastal Pediatric Associates (206p, **32 real American
+Funds/Fidelity rows @ 1.018**), Horizon Roofing (217p, 18 real Empower/Invesco
+rows @ 0.879), Elevator Constructors Local 1 (4,276p, 92 rows @ 0.849, largely
+real with one junk `REPORTING INSTRUCTIONS` row at $25,579,723).
+
+**All five unregistered movements are one mechanism in both directions: every
+one carries `fb=2023`.** A version that changes which regions are CONTESTED
+moves plans off and onto prior-year fallbacks, and `fallbacks.json` is
+artifact-only, so **no whole-store scan can predict either direction.** That is
+why the registration was a ceiling plus a named set — and what this run adds is
+that **the ceiling is the half that survives**: the named set should have been
+registered as *"the losses I can see from the store"*, not as *"the losses"*.
+
+### `dl` 19 → 39: the discriminating test, run on the whole population, exonerates the code
+
+All **20** newly-failed acks HEAD-probed against
+`efast2-filings-public.s3.amazonaws.com` — the entire population, not a sample —
+and **20 of 20 answered 403.** The **fourth unanimous run** of the #244/#246
+test (68/68, 78/78, 23/23, now 20/20), so `e=download` remains an honest
+published claim and the bucket simply grew. All 20 read `pv196→196`, so they
+were never re-parsed, and **14 keep their confident stored lineup** under the
+v37 protection: nothing is lost, nothing is refreshed.
+
+The habit is the point. This test has now convicted the code once (v118's null
+deref, where `analyze` was split out of `download` because one code carried two
+meanings) and exonerated it four times, and it costs 20 requests.
+
+### HIGH 4 → 10 is at baseline, and the arithmetic is exact
+
+The local audit on #544's own store reads **`HIGH (4)` = 3 `contrib` +
+`fabricated-name`**. CI's 10 is that 4 plus **six self-clearing `reparse-loss`
+entries — one per confidence loss** — raised from `losses-triage.txt`, a run
+ARTIFACT that exists only in CI. **4 + 6 = 10.**
+
+*A metric that differs between CI and local is a question about the inputs, not
+the store.* This is the first instance where the CI-only count **IS** the loss
+count, which makes it a reconciliation rather than a puzzle — and a cheap check
+on the loss count itself.
+
+### `aggRow` 113 → 114 is not a second event
+
+`aggRowPpl` rose by exactly **4,276**, Elevator Constructors' own participant
+count, and that plan publishes **`Managed account holdings (699 positions)` at
+54.2% / $785,288,188** of its 92-row menu. So the movement is a **caveat on a
+gain**, not a finding — under the 120 baseline, so WARN.
+
+***An unregistered figure that reconciles exactly to one you did register is the
+same event counted twice.***
+
+Everything else in the line reconciles the same way: `entries` 65,479 → 65,480
+is the one new status entry; `match` +4, `vesting` +5, `roth` +5, `matchQuote`
++1 are the gained plans' features; and **`tkShare` 24.47 → 24.48 with
+`tkSampled` 87,070 → 87,067 is sampling phase**, the recorded mechanism — the
+audit samples every 20th row by position, and three fewer rows re-phases the
+whole sample.
+
+### The second commit: `name` 406/291 and a `stk` regression registered as −0
+
+`45eb462f` (the OCR `!`-glyph repair, `[skip ci]`, `PARSER_VERSION` unchanged at
+197) rode this run because **merge-4i checks out the LATEST branch state** — the
+mechanism recorded for `tkShare` on #514 — so the verdict had to cover two
+commits. Measured by a row-for-row whole-store diff of all 64 lineup shards
+against `2cecab51`:
+
+- **`name` on 406 rows across 291 entries**, against the registered 393 / 280.
+  Direction good, every sample a correct `!`-glyph repair.
+- **`stk` +28 / −2 / 0 changed**, against the registered **+28 / −0 / 0.**
+
+**Two rows lost an SEC ticker — 489 ppl / $226,833 — and both are the opposite
+of the shape I predicted.** I expected the 03:0xZ *"two wrongs were making a
+right"* case: a REPAIRED name losing a ticker the DAMAGED name had matched,
+because the registry carried the same damage. These are the reverse — clean,
+correct, resolving names that got **damaged**:
+
+| before | after |
+|---|---|
+| `Vanguard Equity Income Adm` | `Vanguard EquityIncome Adm` |
+| `… Ultra Short Term Bond Admiral` | `… Admiral al` |
+
+Both are OCR'd with `ov: 8` unchanged on both sides, so only `pv` moved.
+
+**And the attestation test splits them, which turns one regression into one named
+cost and one queued question.**
+
+- `Ultra Short Term Bond Admiral` is attested **2 times — one short of #517's
+  floor of 3**, so that strip correctly **REFUSED** it. This is the floor's own
+  named cost, not a miss, and *a floor of one lets a single damaged row license
+  the same damage elsewhere* is exactly why the floor may not come down for it.
+- `Equity Income Adm` is attested **87** against the damaged `EquityIncome Adm`
+  at **1** — a textbook CamelCase seam at **87:1** that **v519's weld repair
+  should reach and did not.**
+
+**QUEUED as a question to be asked of the shipped function rather than guessed
+at.** Two diagnoses of this row have already been written and discarded inside
+one cycle — the first predicted the wrong direction entirely — and *a diagnosis
+that cannot be reproduced is not a diagnosis.*
+
+### The method finding
+
+The registration for v197 was unusually careful: a ceiling, a named set, a
+per-condition negative control, an import assertion, 102 pins, and a repair to
+the instrument it would be measured by. **Six of its figures passed to the digit
+and the two that missed were both about what the store cannot see** — which
+regions a run will CONTEST (the fallback set) and what a *second* commit riding
+the same merge would do to a field the first commit does not touch.
+
+So the transferable rule is narrow and not a relaxation of anything: **register
+the set you can see AS the set you can see.** "Every loss is inside {…}" is a
+claim about the fallback candidates too, and those live only inside a run.
+
+---
+
 ## 2026-10-02 (09:4xZ)
 
 **THE FEE PRE-EMPTION RE-SIZED ON TODAY'S STORE, SPLIT STRUCTURALLY, AND THE
