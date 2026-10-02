@@ -549,18 +549,96 @@ function stripIssuerLead(iss) {
     if (!cm) return null;
     return [...cm].sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1))[0][0];
   };
+  /* v529's own guard, PORTED BACK — 2026-10-02 (11:4xZ).
+   *
+   * `weldRepair` refused `EquityIncome Adm` because `cnt("EquityIncome") = 3`
+   * and the ceiling below cuts at `> 2`: refused by ONE occurrence, and **all
+   * three occurrences feeding it are damage** — this row, `Fidelity VIP
+   * EquityIncome Fund`, and an all-caps address weld. That row then lost an SEC
+   * ticker on #544, which the registration had put at −0.
+   *
+   * This is v529's recorded finding met in the arm v529 did not fix. Its comment
+   * fifty lines below says the ceiling "CANNOT TRANSFER" to the all-caps arm
+   * because *a ceiling that reads repetition as evidence of correctness is fed
+   * by repeated damage*, and it built a RATIO between two WHOLE NAMES plus an
+   * INDEPENDENT REGISTRY WITNESS instead. Both belong here too: the witness is
+   * what protects a CamelCase house name (`BlackRock`, `Contrafund`,
+   * `LifeStrategy`, `SmallCap`) by evidence outside this store, where the
+   * ceiling protects it by its own frequency and so can be bought off by damage.
+   *
+   * SHIPPED AS A DISJUNCTION, so it is STRICTLY ADDITIVE BY CONSTRUCTION: the
+   * old rule is kept as the first disjunct, measured at 0 rows repaired-only-
+   * before over all 1,724,201 confident rows.
+   *
+   * AND THAT DISJUNCT IS SUBSUMED ON THIS STORE — 0 repairs lost across all
+   * 415,221 distinct published names — so it is labelled as what it is rather
+   * than carried as reassurance. It is NOT subsumed STRUCTURALLY: a repaired
+   * name attested exactly 3 beside a damaged one attested 1 satisfies `w >= 3`
+   * and fails `w > joined * 3`. So it stays as the guarantee that the widening
+   * can only ADD, on this store and on any later one, and the test asserts the
+   * 0 so a store that makes it load-bearing surfaces as a surprise.
+   *
+   * AND THE WITNESS ASKS CONTAINMENT, NOT EQUALITY, which that same test
+   * settled: the naive form also lost PCRIX on 3 rows, because `realreturn` is
+   * not a registry word while the registry spells the series
+   * `CommodityRealReturn` — *the damaged token can be a proper SUBSTRING of a
+   * registry word.* The caps arm's own equality test is DELIBERATELY left as it
+   * is: widening it moves a different population (>=8-char all-caps tokens) and
+   * that is a separate measurement.
+   *
+   * `secWords` is initialised ~70 lines below and this closure is first CALLED
+   * ~500 lines below that, so the reference is safe at call time — and the arm
+   * degrades to exactly the shipped rule when the registry is absent, so no
+   * branch is worse than before. A future caller moved above the registry load
+   * loses the widening and keeps the old behaviour; it cannot throw.
+   *
+   * MEASURED whole-store BY SLICING THIS BLOCK OUT OF BOTH REFS and running
+   * the shipped bodies — never by restating the predicate, which is how the
+   * first measurement of this change went wrong: it used its own `nk` (merge-4i
+   * normalises only `trim().toLowerCase()`) and a far looser SEAM, read 1,153
+   * rows, and three pins written off those numbers FAILED against the real
+   * function. DO NOT CARRY 1,153 OR 775,449 FORWARD.
+   *
+   * The true effect, every column positive-controlled first and the two sides
+   * asserted to disagree on the motivating row: **488 rows / 329 lineup entries
+   * / 329 plans / 286,318 participants / $696,610,357**. Stored `stk` **+110 /
+   * -0 / 0 changed**, display ticker **+58 / -0 / 0**, fee **+284 / -0 / 39
+   * changed and 0 lost**, asterisks **+20 / -0** (a labelled comparable is the
+   * weaker claim). ALL 270 DISTINCT TRANSFORMATIONS READ.
+   *
+   * COST NAMED, not rounded away: 16 rows across four strings split
+   * `AllianceBernstein`, whose official spelling is one word and which no
+   * registry word contains, into `Alliance Bernstein`. 0 tickers, 0 fees and 0
+   * asterisks move on them, and the store's own filers write it spaced 72 times
+   * against joined 14, so the row ends up agreeing with the majority filed
+   * spelling. Three further rows move a fee toward the GENERIC estimate
+   * (`Federal MoneyMarket Investor` 0.11 -> 0.2, two `... IndexFund` rows
+   * 0.05 -> 0.1) — both in the OVERSTATING direction. */
+  const regSpellsJoined = (t) => {
+    if (!secWords) return false;
+    const k = String(t).toLowerCase();
+    if (secWords.has(k)) return true;
+    for (const w of secWords) if (w.length > k.length && w.includes(k)) return true;
+    return false;
+  };
   const weldRepair = (name) => {
     const s = String(name || "").trim();
+    const joined = whole.get(nk(s)) || 0;
     SEAM.lastIndex = 0; let m, best = null;
     while ((m = SEAM.exec(s))) {
       const t = m[0];
-      if (cnt(t) > 2) continue;                       // the joined form IS the name
       const sm = /([a-z])([A-Z])/.exec(t);
       const i = t.indexOf(sm[0]) + 1;
       const L = t.slice(0, i), Rt = t.slice(i);
       if (cnt(L) < 3 || cnt(Rt) < 3) continue;        // both halves ordinary published words
       const rep = s.slice(0, m.index) + L + " " + Rt + s.slice(m.index + t.length);
-      if ((whole.get(nk(rep)) || 0) >= 3) best = rep; // the repaired WHOLE NAME stands alone
+      const w = whole.get(nk(rep)) || 0;
+      // (1) the SHIPPED rule, kept verbatim so the widening adds and never removes
+      const shipped = cnt(t) <= 2 && w >= 3;
+      // (2) v529's guard: repaired whole name >> damaged one, and the registry
+      //     does not spell the token joined anywhere inside a fund's own name
+      const widened = !!secWords && w > joined * 3 && !regSpellsJoined(t);
+      if (shipped || widened) best = rep;
     }
     return best;
   };

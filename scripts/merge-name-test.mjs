@@ -60,7 +60,15 @@ function make(drop) {
     readFileSync: (f, enc) => fs.readFileSync(path.isAbsolute(f) ? f : `${R}/${f}`, enc) };
   vm.createContext(ctx);
   let b = body;
-  if (drop === true) b = b.replace("if ((whole.get(nk(rep)) || 0) >= 3) best = rep;", "best = rep;");
+  /* THE DRIFT CONTROL WENT DECORATIVE THE MOMENT weldRepair GREW A DISJUNCTION
+   * — 2026-10-02 (11:4xZ). Its target string moved, `String.replace` silently
+   * did nothing, and the harness printed "disagrees on 0 of 20" as though that
+   * were a result. Asserted now, like every `cut()` below. */
+  if (drop === true) {
+    const from = "const shipped = cnt(t) <= 2 && w >= 3;";
+    if (!b.includes(from)) throw new Error(`control "drift": target moved: ${from}`);
+    b = b.replace(from, "const shipped = true;");
+  }
   /* the caps arm's ONE guard, replaced by the bare floor it looks like it could
    * be — this is the variant that convicts 333 real fund names */
   if (drop === "caps-noratio") b = b.replace("if (w <= joined * 3) continue;", "if (w < 3) continue;");
@@ -85,6 +93,16 @@ function make(drop) {
   cut("bang-minlen", "if (t.length < BANG_MINLEN) return null;         // (4) see `O!` above", "// (4b) dropped");
   cut("bang-case", "rep += allCaps ? scored[0].c[k].toUpperCase() : (sp[k] || scored[0].c[k]);", "rep += scored[0].c[k];");
   cut("bang-junk", "if (JUNK_NAME_RE.test(a) && !JUNK_NAME_RE.test(b)) return null;   // #536", "// #536 dropped");
+  /* v529's GUARD PORTED BACK — one control per condition of the widened
+   * disjunct, each built by surgery on the shipped source and each ASSERTED to
+   * have landed. */
+  cut("weld-noshipped", "const shipped = cnt(t) <= 2 && w >= 3;", "const shipped = false;");
+  cut("weld-nowidened", "const widened = !!secWords && w > joined * 3 && !regSpellsJoined(t);", "const widened = false;");
+  cut("weld-noratio", "const widened = !!secWords && w > joined * 3 && !regSpellsJoined(t);",
+                      "const widened = !!secWords && w >= 3 && !regSpellsJoined(t);");
+  cut("weld-nowitness", "const widened = !!secWords && w > joined * 3 && !regSpellsJoined(t);",
+                        "const widened = !!secWords && w > joined * 3;");
+  cut("weld-nocontain", "    for (const w of secWords) if (w.length > k.length && w.includes(k)) return true;\n", "");
   vm.runInContext(b + "\n; this.__w = weldRepair; this.__c = capsRepair; this.__b = bangRepair; this.__whole = whole; this.__tok = tok; this.__caseOf = caseOf;", ctx);
   for (const [k, v] of whole) ctx.__whole.set(k, v);
   for (const [k, v] of tok) ctx.__tok.set(k, v);
@@ -93,6 +111,7 @@ function make(drop) {
    * case witness and every control would read the same. */
   for (const [k, v] of caseOf) ctx.__caseOf.set(k, v);
   if (String(drop || "").startsWith("bang")) return ctx.__b;
+  if (String(drop || "").startsWith("weld")) return ctx.__w;
   return String(drop || "").startsWith("caps") ? ctx.__c : ctx.__w;
 }
 const shipped = make(false), drifted = make(true);
@@ -123,6 +142,24 @@ const CASES = [
   ["MassMutual Stable Value Diversified", null],
   ["PIMCO RealPath Blend 2030", null],
   ["ClearBridge Select IS", null],
+  /* v529's GUARD PORTED BACK — 2026-10-02 (11:4xZ). Added because NOT ONE of
+   * the 20 cases above reaches the widened disjunct: every must-REPAIR there is
+   * accepted by the shipped rule and every must-KEEP is refused by the halves
+   * floor or by a seam the ratio also refuses, so the whole arm could have been
+   * inert and this table would still have read 20/20. Each pin was run through
+   * the SHIPPED predicate before it was written down. */
+  // must REPAIR — the ceiling refused these because the DAMAGE is attested
+  ["EquityIncome Adm", "Equity Income Adm"],
+  ["Fidelity VIP EquityIncome Fund", "Fidelity VIP Equity Income Fund"],
+  ["JanusHenderson Triton N", "Janus Henderson Triton N"],
+  ["PrinLifeTime Hybrid 2035 CIT", "Prin LifeTime Hybrid 2035 CIT"],
+  ["GoldmanSachs Mid Cap Value", "Goldman Sachs Mid Cap Value"],
+  ["LoomisSayles Growth Portfolio", "Loomis Sayles Growth Portfolio"],
+  /* must KEEP — the registry spells the token joined INSIDE a longer registered
+   * word (`CommodityRealReturn`), so an EQUALITY witness misses it. Pinned
+   * because the naive substitution split it and lost PCRIX on 3 rows, which the
+   * outcome test found and reading 270 transformations did not. */
+  ["PIMCO Commodity RealReturn Strategy Fund Institutional Class", null],
 ];
 let bad = 0;
 for (const [inp, want] of CASES) {
@@ -140,6 +177,41 @@ for (const [inp, want] of CASES) {
 console.log(`  it now disagrees on ${broke.length} of ${CASES.length}:`);
 for (const b of broke) console.log(`    ${b}`);
 if (bad) process.exitCode = 1;
+
+/* ONE CONTROL PER CONDITION of the widened disjunct — 2026-10-02 (11:4xZ).
+ * Each must fail BY NAME on exactly its own cases. `weld-nocontain` is the one
+ * the outcome test bought: without containment the witness misses `RealReturn`
+ * inside the registry's `CommodityRealReturn` and PCRIX is lost on 3 rows. */
+/* DISJUNCT (1) IS SUBSUMED ON THIS STORE AND IS LABELLED SO RATHER THAN
+ * CARRIED AS REASSURANCE — v529's own treatment of its two subsumed
+ * conditions. Measured over all 415,221 distinct published names: dropping the
+ * shipped rule loses 0 repairs and changes 0. It is NOT subsumed structurally —
+ * a repaired name attested exactly 3 beside a damaged one attested 1 satisfies
+ * the old rule (`w >= 3`) and fails the ratio (`w > joined * 3`) — so it stays
+ * as the guarantee that the widening can only ADD, on this store and any
+ * later one. Asserted at 0 so a future store that makes it load-bearing shows
+ * up here as a surprise rather than passing quietly. */
+{
+  const f = make("weld-noshipped"), brk = [];
+  for (const [inp, want] of CASES) if ((f(inp) || null) !== want) brk.push(JSON.stringify(inp));
+  console.log(`\nSUBSUMED-CONDITION CHECK — drop disjunct (1), the shipped rule: disagrees on ${brk.length} of ${CASES.length} (expected 0; whole-store 0 of 415,221 distinct names)`);
+  if (brk.length) { console.log(`  it has become load-bearing: ${brk.join(", ")}`); process.exitCode = 1; }
+}
+for (const [name, label] of [
+  ["weld-nowidened", "drop disjunct (2), the widening — must fail on exactly the new pins"],
+  ["weld-noratio", "replace the ratio with a bare attestation floor"],
+  ["weld-nowitness", "drop the registry witness entirely"],
+  ["weld-nocontain", "witness by EQUALITY only, no containment"],
+]) {
+  const f = make(name), brk = [];
+  for (const [inp, want] of CASES) {
+    const got = f(inp) || null;
+    if (got !== want) brk.push(`${JSON.stringify(inp)} -> ${JSON.stringify(got)}`);
+  }
+  console.log(`\nNEGATIVE CONTROL — ${label}:\n  disagrees on ${brk.length} of ${CASES.length}:`);
+  for (const x of brk) console.log(`    ${x}`);
+  if (!brk.length) { console.log(`  DECORATIVE: this control cannot fail — it is not testing anything`); process.exitCode = 1; }
+}
 
 /* ---------------------------------------------------------------------- *
  * CONTROL for merge-4i's ALL-CAPS LOST-SPACE REPAIR — 2026-10-01 (04:1xZ).
