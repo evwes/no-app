@@ -756,39 +756,25 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
-**#555 IN FLIGHT (dispatched 22:1xZ on `d1ef0504`, prep-side) — THE
-RECORDKEEPER FIX. #553 AND #554 BOTH ENDED `cancelled` AND THE FIX NEVER RAN:**
-my dispatch raced the push trigger (which fired at +90s), concurrency cancelled
-the push run, and cancelling the duplicate left nothing. No partial store — both
-cancels landed in prep. Same registration:
-Registered: `code-64 recordkeeper promotions: N acks` appears with **N ≥ 31**;
-**PSEG (EIN 22-2625848, pn 004 and 006) publishes Fidelity, not Invesco
-Advisors**; **Cornell, Brown, Northwestern and Dana-Farber still publish TIAA**;
-the **121** plans already showing a FIIOC abbreviation now read "Fidelity";
-`rk` coverage rises by **0** (this changes WHICH name, never whether there is
-one); no parser metric moves — confident 60,167, entries 65,480, HIGH 4, warn
-556, dl 39, pv 197, tkExact 37.76, tkComparable 3.41, tkShare 25.02.
-*The 31 is a scratch replica's count over the stored 12-row shards; the
-pipeline's own log line is the number to believe and can only be larger.*
-*The verdict is still outstanding: nothing has been measured against this
-registration yet.*
+**NOTHING IS PRE-REGISTERED.** Register the next change's figures here before
+dispatching it.
 
-**ALSO IN FLIGHT: site-test #148 on `cfc56584`** — the Avg-expense-ratio card
-fix (display only, no registration). Read its `conclusion`, not just that it
-exists.
-
-**SHIPPED 2026-10-02 22:3xZ — the expense-ratio card said "lineup not added" on
-the SAME PAGE that lists the trust's funds: 61 plans / 874,136 ppl** (Albertsons
-236,172, Medtronic 55,692, Nestlé 50,509). The card's fallback chain never knew
-about `trustScheduleDMenu`, so it is **exactly** the 17:1xZ population — the
-card was blind to precisely what that ship added. Now asked through the
-canonical predicate with the body's own arguments. **And the dead-end label, on
-52,334 plans / 15,707,477 ppl, now describes the FILING rather than us**:
-short-form (no schedule of assets by law), `$0` year-end (8,782), else *"No
-readable schedule of assets in this filing"* — which still points at us,
-deliberately, because that is the honest statement when we cannot read a
-schedule that exists. Verified in a real browser on PSEG, stamp re-derived.
-`docs/accuracy-log.md` 2026-10-02 (22:3xZ).
+**#555 VERDICT (success 22:19Z, mirrored) — EVERY REGISTERED FIGURE HIT
+EXACTLY.** Verdicted by DIFFING the published `recordkeeper` column before vs
+after, because a spot check cannot tell *"my change moved it"* from *"it already
+said that"*. **152 plans / 2,432,223 ppl changed, 0 blanked**: display rename
+**121 / 2,020,774** (registered 121) and promotion **31 / 411,449** (registered
+31 / 411,449, to the digit). **The variant-2 test reads 0** — no plan lost a
+real recordkeeper brand. Cornell pn=001 and a Northwestern pn=001 read
+"Fidelity" and looked like exactly the refused swap; **neither is in the change
+set** — different plans of the same universities, already Fidelity. *Absence
+from the diff is the proof.* The scratch replica predicted the promotion count
+exactly despite reading the 12-row shard cap, so no plan in that population
+files more than twelve providers.
+**BOTH OF THE OWNER'S PSEG GAPS ARE LIVE**, verified in a real browser on the
+mirrored tree: recordkeeper **"Fidelity"**, expense-ratio card **"15 funds held
+by its master trust"**, and "lineup not added" appears nowhere on the page.
+`docs/accuracy-log.md` 2026-10-02 (23:1xZ). **site-test #148 green.**
 
 **#552 VERDICT (success 19:57Z, mirrored): every figure hit.** The welded-value
 arm's population is **0** and the cheap screen went **1,229 → 1,195**, which is

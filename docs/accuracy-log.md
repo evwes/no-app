@@ -41222,3 +41222,51 @@ the filing lacks one.
 reads *"15 funds held by its master trust"*, and "lineup not added" appears
 nowhere on it. Cache-buster re-derived and `index.html` committed — *a frontend
 change that skips the stamp ships to nobody.*
+
+## 2026-10-02 (23:1xZ) — #555 VERDICT: every registered figure hit exactly, and both of PSEG's gaps are live
+
+**#555 success, site-test #148 success, mirrored.** The verdict is a diff of the
+published `recordkeeper` column between the store before #555 and the store now
+— not a replica's prediction, and not a spot check, because a spot check cannot
+tell *"my change moved it"* from *"it already said that"*.
+
+**152 plans / 2,432,223 participants changed, 0 blanked**, and the split is
+exactly the two things that were registered:
+
+| | registered | delivered |
+|---|---|---|
+| display rename, same firm | 121 / 2,020,774 ppl | **121 / 2,020,774** |
+| promotion to a different firm | ≥31 / 411,449 ppl | **31 / 411,449** |
+| went blank | 0 | **0** |
+
+**THE VARIANT-2 TEST READS 0:** no plan lost a real recordkeeper brand. The
+guard held. **And the spot check that looked alarming was a false alarm I had to
+disprove rather than explain away** — Cornell pn=001 (27,549 ppl) and a
+Northwestern pn=001 (2,573) both read "Fidelity", which is the exact swap
+variant (2) was refused for. **Neither appears in the change set**: they are
+different plans of the same universities and already said Fidelity. *Absence
+from the diff is the proof; reading the current value could never have settled
+it.*
+
+Every promotion read, all 31: Russell Investments (asset manager) ·
+`STRATEGIC ADVISORS` ×11 (Fidelity's advisory arm where its recordkeeping arm
+belongs) · PricewaterhouseCoopers, Crowe, Pension Assurance LLP (auditors) ·
+Willis Towers Watson ×3 and Towers Watson Delaware (consultants) · MetLife ·
+BlackRock Institutional Trust · Gallagher, Global Retirement Partners, Corient
+×2, Wells Fargo Clearing (advisors and brokers) · Benefits Financial Services ·
+**Invesco Advisors on both PSEG plans.**
+
+**The scratch replica predicted 31 / 411,449 and the pipeline delivered
+31 / 411,449.** I had hedged that the replica could only under-count, because it
+reads the 12-row shard cap while production sees every row. It did not
+under-count — worth recording as a calibration point rather than a lucky guess:
+no plan in the promotion population files more than twelve providers.
+
+**BOTH OF THE OWNER'S GAPS ARE NOW LIVE, verified by rendering the mirrored tree
+in a real browser rather than inferred from the store:** PSEG's recordkeeper
+card reads **"Fidelity"** where it read `Invesco Advisors, Inc`, and its
+expense-ratio card reads **"15 funds held by its master trust"** where it read
+`lineup not added`. The string "lineup not added" appears nowhere on that page.
+
+Mirror gate: 69,046 acks, dominant pv 197 at 99.9%, 39 fetch failures (0.06%),
+**0 plans / 0 participants stop being served**.
