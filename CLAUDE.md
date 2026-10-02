@@ -1438,6 +1438,105 @@ from the cycle that would have cleared it.
   / 2 typings across 280 plans / 365,305 ppl. **Register the SUM of the two, not
   each in turn** — the 00:3xZ/#541 lesson about two reporting changes queueing
   behind one run.
+- **THE VANGUARD TARGET-DATE CHANGE IS VERIFIED INDEPENDENTLY AND MIRRORED —
+  2026-10-02 15:3xZ. THE LOSS COLUMN IS THE WHOLE POINT OF THE EXERCISE AND IT
+  IS SOUND: of 306 ticker losses the residue where a regression could hide is 9
+  rows / 5,541 participants, and reading all nine, EIGHT ARE CORRECT REFUSALS.**
+  `site-test` #143 reads `conclusion: success` on `dbad51a7`, every step green
+  including the fund-name matcher and the map test.
+  **THE LOSSES BUCKET CLEANLY AND THE BIGGEST BUCKET IS A CORRECTION, NOT A
+  COST:** (a) **116 rows / 121 plans / 1,460,779 participants / $1,967,234,388**
+  stop being told `Vanguard Target Retirement Income and Growth Trust` is VTINX
+  — a genuinely DIFFERENT Vanguard fund, so 1.46M readers stop being shown the
+  wrong one; (b) **181 rows / 24 plans / 37,671 ppl** name BOTH `Income` and a
+  vintage in one string and are refused as ambiguous; (c) **9 rows / 5,541 ppl**
+  are everything else, and all nine distinct names were read — `Vanguard Target
+  Retirement 2020-2065 Fund` and two more RANGES naming no single vintage,
+  `2045 Trust II Vanguard Target Retirement 2040` and two more with TWO FUNDS
+  welded into one name, and `Target Retirement 20205 Inv` / `Vanguard Target
+  Retirement 20505` where the new digit fence correctly refuses a year matched
+  INSIDE a five-digit number. **The one genuine cost is a single row**,
+  `Vanguard Target Retirement IncomeMutual Inv`, a CamelCase weld that loses
+  VTINX.
+  **THE FLIP COLUMN AGREES WITH THE AGENT'S TO THE PERSON — 15 rows / 4 entries
+  / 4 plans / 9,969 participants — and all five distinct flips are
+  corrections**: `Vanguard Target Retirement Income 2040` published **VTINX**,
+  the Income fund, because the old ordered sequence matched `…retirement income`
+  before reaching the vintage, and now publishes VFORX. *Two harnesses built
+  independently agreeing to the person on a column neither was tuned for is the
+  strongest corroboration this exercise offers.*
+  **AND THE BRIEF'S OWN NAMED HAZARD IS SAFE FOR A STRUCTURAL REASON, NOT A
+  LUCKY ONE.** The handoff warned that ***`Tr` abbreviates TRUST before it
+  abbreviates Target Retirement***, measured at 1,191 rows resolving to nothing,
+  and the new arm nonetheless admits a bare `tr` as a family token. Measured:
+  **195 gains / 23 plans / 225,835 ppl reach it, and every distinct name is
+  `Vanguard [Inst] TR <vintage>`** — because the arm CONJOINS `tr` with a
+  `vang` lookahead, which excludes every `T Rowe Price … Tr 2030`,
+  `Voya Trgt Solution Tr: 2030` and `STATE ST TR 2050 K` the handoff named. The
+  loose token is safe *because of what it is required to co-occur with*, and
+  that is worth more than the count.
+  **GAINS: 9,190 rows / 1,033 plans / 2,367,837 participants / $114,764,249,076
+  within the new arm's own three lookaheads** (the agent read 9,868 / 1,099 /
+  2,623,042; mine is narrower because my pre-filter is the exact lookahead
+  conjunction asked of `issuer + name`, so rows reached by another ordering sit
+  outside it — same magnitude, and the narrower figure is the one measured
+  here). `target` 5,889, `trgt` 2,956, `tr` 195, `tar` 71, `tgt` 67.
+  **STILL UNVERIFIED AND NAMED AS SUCH:** the 386 rows / 30,686 ppl that newly
+  ASSERT where the issuer names an insurance platform (the agent located the
+  cause — `fundTickerInfo`'s `wrapped` test against `lookupTicker` asking the
+  bare name — and deliberately left it, noting 1,575 rows already assert that
+  way, so it is a pre-existing class rather than a new one), and the 140 rows /
+  $987,688,869 named `Vanguard Target Return <vintage>`, which the agent calls
+  its largest interpretive step. Vanguard registers no "Target Return" fund, so
+  reading it as a garble of Target Retirement beside a stated house and vintage
+  is defensible, but it is an inference and is recorded as one.
+  **PRE-REGISTERED BY THE AGENT FOR THE NEXT RUN THAT MERGES, and these MUST
+  move because `audit-data` re-implements them over `fund-er.js`:** `tkExact`
+  **37.33 → 37.76**, `tkComparable` **3.27 → 3.41**, `tkShare` **24.49 →
+  25.02**. Unchanged: `ticker-conflict` 3, HIGH 4, warn 556, overshoot 372,
+  confident 60,167, entries 65,480, dl 39, pv 197 at 99.9%. **Plus the issuer
+  arm's own non-convergence: `issuer lost-space repair` should read 190, not
+  188.**
+- **AND A CORRECTION OF MY OWN 14:2xZ DRAW, WHICH PUBLISHED A FALSE CLAIM ABOUT
+  ITS METHOD — THE PIN I CALLED "LOAD-BEARING" DID NOTHING.** That entry says
+  the draw's resolver was pinned to the committed `fund-er.js` via
+  `FUNDER_PATH`, and justified it by measuring that the committed copy is 82,742
+  bytes against the worktree's 91,240. **THERE ARE TWO FILES NAMED
+  `apppath.mjs`** — a 4,296-byte copy in the repo's `scratchpad/` that honours
+  `FUNDER_PATH`, and a 14,308-byte copy in the SESSION scratchpad that
+  hardcodes `readFileSync(ROOT + "fund-er.js")` and has its own `ER_PATCH_FROM`
+  mechanism instead. **I grepped the repo copy for `FUNDER_PATH`, found it, and
+  ran the session copy.** So the draw read the WORKING TREE table — the agent's
+  file mid-edit — which is the precise failure the entry congratulated itself
+  for avoiding.
+  ***A COMPARISON OF THE TWO CANDIDATE INPUTS IS NOT A TEST THAT THE CONSUMER
+  READ EITHER OF THEM.*** Comparing byte counts proved only that the two FILES
+  differ. The test that settles it costs one line and cannot be misread: point
+  the pin at a path that does not exist and require a THROW. The session copy
+  resolves `Vangrd Trgt Retire 2055 Fd` → VFFVX with `FUNDER_PATH` set to
+  `/nonexistent/nope.js`; the repo copy exits 1. **And the control I did write
+  could not discriminate** — it asserted the pinned table still answers on
+  `Vanguard 500 Index Fund Admiral Shares`, which both files answer identically,
+  so it passed either way. *A control has to exercise the thing that moved.*
+  **THE CORRECTED FIGURES, and the published one matches NEITHER repo state:**
+  against the resolver that was LIVE the core is **1,188 groups / 2,376 rows /
+  509 entries / $933,208,148**; against the resolver readers have after this
+  mirror it is **1,217 / 2,434 / 515 / $943,251,783**. I published **1,210 /
+  2,420 / 514 / $922,222,685**, which came from an intermediate save of a file
+  under active edit — *a resolver state that never existed in the repo*, sitting
+  between the two and matching neither, with the dollar figure off by $11M and
+  $21M respectively. **Do not carry $922,222,685 forward.**
+  **WHAT SURVIVES UNTOUCHED, and it is the structural half:** the overshoot link
+  re-measures **identically** — 85 entries / 50,458 ppl carry such a duplicate
+  and ratio ≥1.15, 43 / 17,579 drop below the threshold when the extra copy is
+  removed, and the decisive example is still **ratio 1.477 → 1.000**. The
+  contamination screens still refuse 15, and the ratio split is still about 2:1
+  toward 1.0 (386 away at the after state). So the FINDING — that a resolved
+  ticker is the witness the 01:4xZ entry said it lacked, and that this class is
+  partly the open overshoot defect — stands on evidence the bad input could not
+  reach. *A method error does not automatically void a finding, and saying which
+  half it touched is the whole job.*
+  `docs/accuracy-log.md` 2026-10-02 (15:3xZ).
 - **THE 14:2xZ DRAW FOUND THE DOUBLE-RENDER CLASS A WITNESS THE 01:4xZ ENTRY SAID
   IT LACKED, AND IT TIES THAT CLASS TO THE OPEN OVERSHOOT DEFECT — QUEUED, SIZED,
   SCREENED, NOT SHIPPED: 1,210 groups / 2,420 published rows / 514 entries /
