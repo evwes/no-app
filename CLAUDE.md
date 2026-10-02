@@ -820,10 +820,27 @@ $94,315,803 was written down as a fabricated fee in front of 314,112 readers and
 `noPublicPrice` withholds it. What survives is Accenture's **`PIMCO STABLE VALUE
 FUND` typed `Mutual fund` publishing 0.35 on $358,548,781 to 112,414 readers** —
 a named live instance of the owner-gated stable-value item, escaping because
-`gicRow` reads the TYPE cell. **NOT repaired in that cycle because a background
-agent held the file**; the repair is the full `er` expression behind a named
-export, positive-controlled on the two drawn menus (4 of 28 Starbucks rows, 2 of
-34 Accenture rows).
+`gicRow` reads the TYPE cell.
+**CLOSED 2026-10-02 19:2xZ, AND THE REPAIR ALREADY EXISTED.** This entry asked
+for "the full `er` expression behind a named export" and for the file to be
+"promoted to a named test under `scripts/`". Both shipped **2026-10-01**:
+**`scripts/apppath.mjs` is TRACKED and slices the WHOLE PER-ROW BLOCK** of
+`filedLineupTable`, so all eleven suppressors plus `shownType`/`brokRow`/
+`mistypedStock` come out as source text, and it answers all four pins right.
+The defect was a **stale duplicate in gitignored `scratchpad/` being imported in
+preference to the tracked one, under the same basename** — and the 15:3xZ "two
+files called apppath.mjs" trap counted the wrong two, missing the canonical one.
+**Of 197 scratchpad scripts importing an apppath, 32 used the tracked harness
+and 90 a scratchpad copy, 81 of those calling the 2-suppressor `render()`** —
+that is where the fee figures came from. I then nearly shipped
+`scripts/render-path.mjs`, a correct, controlled, pin-proved **FOURTH** slice of
+the same expression whose own prologue warned against duplicate transcription;
+deleted uncommitted. ***Before adding an instrument, ask whether the project
+already has one, and grep the TRACKED tree rather than the directory the last
+script lived in.*** `buildRenderer` now also returns `fns` (lookupTicker,
+fundERRow, fundERFiled, issuerPricedER, cleanFiledName, fundER, fundTickerInfo)
+from INSIDE its context, so needing one cell can never again justify a new
+slice. `docs/accuracy-log.md` 2026-10-02 (19:2xZ).
 
 **SHIPPED 2026-10-02 17:1xZ — THE TRUST'S SCHEDULE D FUND LIST, captured by
 #523 in September and rendered nowhere until the owner asked twice: 61 plans /
@@ -1079,10 +1096,13 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   cell holds `Investments at net asset value` is typed `Collective trust` at
   **66.4% of its menu**, while the other 33 rows of that same name are
   correctly qualified "Filing names no specific fund".
-- `scratchpad/apppath.mjs` should be promoted to a named test under `scripts/`.
-  It has been wiped by a container restart twice, and there are **two files of
-  that name** — a repo copy honouring `FUNDER_PATH` and a session copy that
-  hardcodes the path — which once made a draw read the WORKING TREE table.
+- **CLOSED 2026-10-02 — it was promoted on 2026-10-01 and this entry was written
+  about the superseded copy.** `scripts/apppath.mjs` IS the instrument: tracked,
+  slicing the whole per-row block, and it hands out the individual resolvers via
+  `buildRenderer().fns`. **A measurement script imports THAT path.** Anything
+  named `apppath` under `scratchpad/` is a session artifact — the directory is
+  gitignored and has been wiped twice — and a figure measured through one is
+  worth nothing until re-measured through the tracked harness.
 - The data files the site fetches (`plans-list.json`, `plans-index.json`,
   `mtias.json`, and the on-demand shards) are **deliberately unstamped** by
   `scripts/stamp-assets.mjs`. Stamping them needs app.js to pass the stamp
@@ -1141,8 +1161,14 @@ These outlived the versions that produced them. The accuracy log has the case.
   not only at the first condition. A fast exact measurement must not be chained
   to a slow one.
 - **A re-size is a NEW MEASUREMENT, not a delta against a remembered one**, and
-  a queued class records what was true when it was written. Four queue entries
-  have been found already closed by re-sizing rather than by working them.
+  a queued class records what was true when it was written. FIVE queue entries
+  have now been found already closed by re-reading them rather than by working
+  them — the fifth asked for an instrument that had shipped the day before, and
+  working it would have added a FOURTH slice of one shipped expression.
+  **So before building an instrument, ask whether the project already has one,
+  and grep the TRACKED tree** rather than the directory the last script lived
+  in. A duplicate under the same basename in a gitignored directory outranks the
+  canonical file in every import that names it relatively.
 - **Read the shipped guard before pricing a cost it may already stop**, and ask
   it the question it answers. *A guard's live population is not always the
   population it was written for.*

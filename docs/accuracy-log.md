@@ -40726,3 +40726,72 @@ Transportation** (711 ppl, 30 rows @ 0.928, OCR'd).
   which is true of most published rows, so it rendered 1,311,859 of 1,724,078.
   If this becomes a standing check it needs the nameless arm's SECOND condition
   in the filter too.
+
+## 2026-10-02 (19:2xZ) — the queue asked me to build an instrument the project already had, and I nearly built it
+
+**What was wrong.** The 17:3xZ entry queued a repair: *"`scratchpad/apppath.mjs`
+should be promoted to a named test under `scripts/`"* and *"the repair is the
+full `er` expression behind a named export, positive-controlled on the two drawn
+menus"*. Both had already shipped on **2026-10-01**. `scripts/apppath.mjs` is
+tracked, and it does not slice the `er` expression — it slices **the whole
+per-row block of `filedLineupTable`**, so all eleven suppressors plus
+`shownType`, `brokRow` and `mistypedStock` come out as source text. Asked the
+four pins it withholds `Galliard Stable Return Fund Class E` (`noPublicPrice`),
+keeps `PIMCO STABLE VALUE FUND`'s 0.35, prices `Vanguard 500 Index Fund Admiral
+Shares` at 0.02, and withholds `Participant Loans`.
+
+**So the defect was never a missing instrument.** It was a **stale duplicate in
+a gitignored scratch directory being imported in preference to the tracked one,
+under the same basename.** The 15:3xZ entry had already named "two files called
+apppath.mjs" as a trap and counted the wrong two — the 4,296-byte scratchpad
+copy and a 14,308-byte session copy — while the tracked 5,693-byte
+`scripts/apppath.mjs` was neither of them and was correct. *A count of the
+duplicates that misses the canonical one cannot find that the canonical one is
+fine.*
+
+**And I nearly shipped the duplication I was writing the comment against.** I
+wrote `scripts/render-path.mjs`: a second slice of app.js, taking the suppressor
+block out separately, with a prologue explaining that *two transcriptions of one
+shipped expression is how the first one rotted*. It passed its own seven
+assertions, all three pins threw on a missing path, and it reproduced the queue's
+acceptance criterion **to the digit** — 4 of 28 Starbucks rows, 2 of 34
+Accenture rows, every one `noPublicPrice`. A correct, controlled, well-commented
+**fourth slice of the same expression.** Deleted without ever being committed.
+***Before adding an instrument, ask whether the project already has one*** — and
+grep the TRACKED tree, not the directory the last script happened to live in.
+
+**Scope, measured rather than described.** Of the 197 measurement scripts in this
+session's scratchpad that import an `apppath`, **32 import the tracked
+`scripts/apppath.mjs`** and **90 import a scratchpad copy, of which 81 call
+`render()`** — the two-suppressor function. Those 81 are where every fee figure
+on this record came from, and each was an upper bound: 109,543 of 1,714,404
+published rows (6.4%) across 25,396 plans carry a fee that function printed and
+the page withholds. The 32 were always right.
+
+**The change.** `buildRenderer` additionally returns `fns` — `lookupTicker`,
+`fundERRow`, `fundERFiled`, `issuerPricedER`, `cleanFiledName`, `fundER`,
+`fundTickerInfo` — handed out from **inside** the vm context. That is the
+mechanism and not a convenience: a caller needing one cell rather than a whole
+row previously had to slice app.js again to reach those names, **which is exactly
+how the superseded copy came to exist.** `renderRow`, `clean`, `setPlans` and
+`hooks` are unchanged, nothing is retyped, and no new region of app.js is cut.
+`fundTickerInfo` and `fundER` are fund-er.js's, already evaluated in the same
+context, so they are not a second source; the `(name, type)` signature is noted
+where they are handed out, because calling it with one argument is a fault this
+record carries twice, once in `audit-data`'s own ticker metrics.
+
+**Verified, two-sided so the control can fail in both directions.** Eleven
+assertions: a row that must be WITHHELD (Galliard) and rows that must KEEP their
+fee (`PIMCO STABLE VALUE FUND` typed `Mutual fund` — the live owner-gated
+stable-value instance, which an *over*-suppressing harness would hide, turning a
+real defect invisible). The shim agrees with the tracked harness on `tk` and `er`
+for every pin. The pin is load-bearing and was proved: `buildRenderer({appjs:
+"/nope/x.js"})` must THROW, and does. Four of the 32 existing importers re-run
+clean.
+
+**The durable half.** `scratchpad/` is gitignored, so the shim is session-scoped
+and the next container restart takes it. That directory has been wiped twice
+already. **An instrument the project's published numbers depend on belongs in
+`scripts/`, and a measurement script imports it from there** — which is what the
+2026-10-01 rebuild said in its own prologue, and what the following day's queue
+entry then forgot.

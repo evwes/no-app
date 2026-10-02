@@ -107,6 +107,15 @@ ${rowBlock}
   globalThis.__clean = cleanFiledName;
   globalThis.__setPlans = (ps) => { state.plans = ps; _sponsorTickers = null; };
   globalThis.__hooks = window;
+  /* The individual resolvers, for callers that need one cell rather than a row.
+   * They are handed out from INSIDE this context so such a caller cannot reach
+   * for a second slice of app.js to get them — which is how the superseded
+   * scratchpad copy came to exist and to under-report. fundTickerInfo and
+   * fundER are fund-er.js's, in scope here, and fundTickerInfo takes
+   * (name, type): calling it with ONE argument is a fault this record carries
+   * twice, once in audit-data's own ticker metrics. */
+  globalThis.__fns = { lookupTicker, fundERRow, fundERFiled, issuerPricedER,
+    cleanFiledName, fundER, fundTickerInfo };
 })();
 `;
   const ctx = { console };
@@ -114,6 +123,6 @@ ${rowBlock}
   vm.runInContext(src, ctx, { filename: "apppath:" + appPath });
   return {
     renderRow: ctx.__renderRow, clean: ctx.__clean,
-    setPlans: ctx.__setPlans, hooks: ctx.__hooks,
+    setPlans: ctx.__setPlans, hooks: ctx.__hooks, fns: ctx.__fns,
   };
 }
