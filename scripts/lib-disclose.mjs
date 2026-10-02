@@ -2297,11 +2297,206 @@ for (const [n, re] of [["ANNUITY_CONTRACT_NAME", ANNUITY_CONTRACT_NAME],
  *
  * app.js keeps a twin (browser script, no module system); the generator extracts
  * this VERBATIM and `smoke-test.mjs` runs the browser copy against this one on
- * pinned names and fails on drift. */
+ * pinned names and fails on drift.
+ *
+ * ===========================================================================
+ * WIDENED 2026-10-02 — THE RULE ABOVE WAS A FIX FOR TWO WORDINGS OF THE CLASS,
+ * AND 61 ROWS OF ONE PROGRAM SURVIVED IT.
+ *
+ * THE RESIDUE, re-derived rather than inherited: **61 rows / 61 entries / 61
+ * plans / 50,024 participants / $123,676,563** still published a fabricated
+ * expense ratio on an FDIC-insured deposit, and 60 of them are ONE product —
+ * Charles Schwab Bank Savings, the sweep Schwab's retirement plans hold cash
+ * in. It matched on NEITHER column: `Schwab Bank Savings` contains no `deposit
+ * account` and no `bank deposit`, so `isBankDepositRow("Schwab Bank Savings")`
+ * was false, and the 61st is `{DB&T FDIC-Insured Investment Account} Money
+ * Market Depsoit Account`, where the vocabulary word itself is misspelled.
+ * (The previous cycle recorded this as a COLUMN gap — the bank in the issuer
+ * cell where the predicate reads the name — and that was WRONG; a positive
+ * control written on that premise printed `false` for the bare program name
+ * and refuted it. It is both: the wording is outside the vocabulary AND the
+ * program name sits in the issuer cell for 36 of the 61 rows. A screen built
+ * on the column premise alone reads 3 rows, i.e. it measures the premise.)
+ *
+ * WHY A LONGER LIST OF WORDINGS IS NOT THE ANSWER, and what replaced it. The
+ * 01:5xZ pruning note above says its vocabulary was cut from four arms to two
+ * because two reached 0 rows — but it asked those arms against the names the
+ * gate ALREADY REACHED, so it could never have seen a wording outside all
+ * four. *A per-arm control measures the arms against the population the gate
+ * already has, not against the class.* So this version asks the opposite
+ * question of the WHOLE published store (1,724,201 rows), one candidate arm at
+ * a time, and takes the filing's own NOUN rather than the phrases it appears
+ * in: `\bdep(?:os|so)its?\b` subsumes both removed arms by construction and
+ * reaches 311 further rows. The trailing `\b` is load-bearing — it is what
+ * keeps `SPDR S&P 500 Depository Receipt` and `...in depository receipts` out.
+ *
+ * THE FOUR CONDITIONS, each measured against the whole store and each read:
+ *   1. `deposit`/`deposits` as a NOUN (+ the one live misspelling `depsoit`):
+ *      311 new rows, 26 of which publish a fee. All 238 distinct strings read:
+ *      certificates of deposit, demand deposits, deposit management programs,
+ *      bank deposit programs, insurer deposit administration contracts. Not
+ *      one is a registered fund.
+ *   2. `savings account` — a savings account IS a deposit. 32 rows, 21
+ *      strings, 1 unique fee row (`Wells Fargo Savings Account`, 2,206
+ *      readers, 0.45).
+ *   3. `bank savings` / `money market savings` as ADJACENT words: the deposit
+ *      PROGRAM's own name. 402 rows, 60 of which publish a fee, and all 21
+ *      distinct strings are Charles Schwab Bank Savings. The ORDER is the
+ *      discriminator and it is why this is not a `bank` rule: `bank savings`
+ *      is a product, `savings bank` is an institution, and 1,585 rows carry
+ *      `bank` inside a TRUSTEE's name (`{Charles Schwab Trust Bank} Schwab
+ *      S&P 500 Index Fund`, `{Capital Bank and Trust Company} American Funds
+ *      2030 Target Date Retirement Fund`) whose fees are correct.
+ *   4. `money market account` AND a `bank` word — the only CONJUNCTION,
+ *      because the two halves are each false alone. 9 rows, every one read,
+ *      and 8 are unarguably a bank's deposit account (`El Dorado Savings
+ *      Bank`, `Alliance Bank`, `Paragon Bank`, `Andover Bank`, `Amalgamated
+ *      Bank Enhanced Money Market`). The ninth, `{Charles Schwab Trust Bank}
+ *      Charles Schwab Money Market Account` (134 ppl), could be Schwab's
+ *      retail money FUND rather than the deposit — it is named here as
+ *      ambiguous and withdrawn anyway, because the fee it publishes is
+ *      fund-er.js's Schwab house pattern under either reading and withdrawal
+ *      is the safe direction.
+ *
+ * TWO CANDIDATE ARMS WERE REFUSED AND THE MEASUREMENT IS WHY, not a judgement:
+ *   - `sweep` and `fdic` each reach rows (58 and 65) but **0 that publish a
+ *     fee**, and the single fee row `fdic` touches is already taken by the
+ *     misspelling arm. A guard that cannot fire is decoration — and this time
+ *     the question was asked of the whole store rather than of the gate's own
+ *     population, which is the correction to the 01:5xZ pruning.
+ *   - bare `money market account`, asked WITHOUT the bank conjunct, reaches
+ *     **189 fee-publishing rows / 486,616 participants** and would be a
+ *     catastrophe: 41 of them are `CREF Money Market Account` (197,268
+ *     readers), TIAA's variable-annuity account, plus `Vanguard Prime Money
+ *     Market Account`, `Prudential Government Money Market Account` and `Voya
+ *     Government Money Market Account`. `Account` is the filer's loose word
+ *     for a fund position; those vehicles have real expense ratios. *A fix for
+ *     one phrasing of a class is not a fix for the class — and a phrasing that
+ *     looks like the class can belong to a different one.*
+ *
+ * IT READS THE ROW, NOT THE NAME. A filing splits one program's name across
+ * the issuer and name cells at an arbitrary point — `{Schwab Bank Savings}
+ * Money Market / Cash Equivalent` (36 rows, 27,542 readers), `{Schwab Bank}
+ * Savings Money Market Fund`, `{} MMKT - Schwab Bank Savings`, `{MONEY MARKET
+ * DEPOSIT ACCOUNT} Money Market / Cash Equivalent` — so a rule reading either
+ * cell alone sees a fragment. The string tested is the one the page PRINTS,
+ * `issuer · name`, and the name-only control loses 5 of the 48 distinct pairs
+ * including the largest. Both display paths print the issuer before the name.
+ *
+ * AND IT NORMALISES CONTROL CHARACTERS, which is `cleanFiledName`'s own
+ * treatment and not a new idea: one live row files its issuer as
+ * `Schwab\u0003Bank\u0003Savings`, where 0x03 is a broken font's space. `\s`
+ * does not match it, so `bank\s*savings` fails on the program's own name. The
+ * NAME column already gets this normalisation inside `cleanFiledName`; the
+ * ISSUER column never passes through that function, so it is applied here.
+ * Measured after normalising: a LOOSE `bank\s*savings` (no leading `\b`,
+ * which would also catch an institution called `Burbank Savings`) and the
+ * tight `\bbank\s*savings\b` disagree on 0 of the store's rows, so the tight
+ * form ships.
+ *
+ * WHAT MOVED, measured through app.js's whole `er` expression (all eleven
+ * suppressors, both sides pinned by path, the before side on the HEAD copy of
+ * this file): **90 rows / 90 entries / 90 plans / 81,444 participants /
+ * $179,762,762** stop publishing a fee — 75 at the generic 0.2, 10 at 0.26, 4
+ * at the guarantee 0.35, 1 at 0.45. **0 fees gained, 0 fees changed, 0
+ * tickers, 0 asterisks, 0 shown types, 0 cleaned names**: FEE ONLY, measured
+ * rather than asserted. The predicate's FLAG moves on 714 rows / 1,004,969
+ * participants, and the gap between 714 and 90 is the point — 624 of those
+ * rows were already suppressed by `gicRow`, `annuityRow`, `contractRow` or
+ * `namelessRow`, or were never priced. *A count of a condition is not a
+ * measure of a defect.* All 48 distinct (issuer, name) pairs losing a fee were
+ * read; not one names a registered fund.
+ *
+ * COSTS NAMED, in both directions:
+ *   - 4 insurer rows / 1,411 readers are reached incidentally and lose the
+ *     fabricated 0.35: two `Deposits in guaranteed interest accounts`
+ *     (Principal Life), `{Guaranteed deposit fund Empower} Guaranteed Deposit
+ *     Fund`, and `{Deposit Administration Contract "} SAGIC Diversified Bond
+ *     II`. They belong to the owner-gated stable-value item, not here — the
+ *     same relationship the Ameritas row above already records — and the
+ *     withdrawal is in the same safe direction, so they are named rather than
+ *     engineered around.
+ *   - `Eaton Vance Floating Rate Deposit R` (292 readers) is the one string in
+ *     238 that might be a garbled real fund. It publishes NO fee, so nothing
+ *     a reader sees changes; it is recorded because a future fee would.
+ *   - `Retirement Savings Account` (10,159 readers) is a caption rather than a
+ *     bank product and arm 2 claims it. Also publishes no fee.
+ *   - ONE PINNED EXPECTATION MOVED ON PURPOSE: `smoke-test.mjs` held
+ *     `Fidelity Certificate of Deposit Portfolio Vanguard 500 Index Admiral`
+ *     in its must-be-FALSE half, pinned as "a certificate of deposit inside a
+ *     fund's name". A certificate of deposit IS a bank deposit with no fund
+ *     expenses, so the noun arm calls it one and the case moved to the welded
+ *     group, where `!tk` keeps its fee. Priced first: 0 of the 90 withdrawals
+ *     publish a ticker.
+ *
+ * THE RESIDUE IS NAMED AND IS A DIFFERENT CLASS: **112 rows / 110 plans /
+ * 135,146 participants** still publish a pattern fee where a BANK word sits
+ * beside a bare `money market` — `{} TD BANK INSTITUTIONAL MONEY MARKET`,
+ * `{} Peoples Bank Special Money Market`, `{} Webster Bank Money Market`. It
+ * cannot be split by name: those sit in the same population as `{Charles
+ * Schwab Trust Bank} Schwab Government Money Fund`, `{State Street Bank &
+ * Trust Co.} State Street Instl US Govt Money Market Premier` and `{Capital
+ * Bank and Trust Company} American Funds U.S. Government Money Market Fund`,
+ * which are REGISTERED money funds with real expense ratios. Telling them
+ * apart needs a witness from outside this store (a registry lookup on the
+ * fund name), not a wider vocabulary, so it is left as a sized item.
+ *
+ * Every arm has a negative control written out IN FULL, each required to
+ * disagree with this rule on exactly its own cases (7 of 7 do, including the
+ * conjunction asked without its bank conjunct, which must fire on CREF). The
+ * twin tether was negative-controlled in both drift directions and fails by
+ * name on each: the old vocabulary disagrees on 11 of 41 pinned rows, a
+ * name-only twin on 5 of 41.
+ * =========================================================================== */
 export const BANK_DEPOSIT_NAME =
-  /\bdeposit\s+acc(?:oun)?ts?\b|\bbank\s+deposit\b/i;
-export function isBankDepositRow(cleanedName) {
-  return BANK_DEPOSIT_NAME.test(String(cleanedName || ""));
+  /\bdep(?:os|so)its?\b|\bsavings\s+acc(?:oun)?ts?\b|\b(?:bank|money\s*market)\s*savings\b/i;
+/* ...and the fourth condition is a CONJUNCTION and cannot join the alternation
+ * above, because `money market account` on its own is the filer's loose word
+ * for a FUND position and not a deposit product: asked alone it reaches 189
+ * fee-publishing rows / 486,616 participants, 41 of them `CREF Money Market
+ * Account` (197,268 readers) and others `Vanguard Prime Money Market Account`,
+ * `Prudential Government Money Market Account`, `Voya Government Money Market
+ * Account` — variable-annuity accounts and registered money funds that have a
+ * real expense ratio. Paired with a BANK word it reaches 9 rows, every one of
+ * them read. */
+export const BANK_DEPOSIT_MMA = /\bmoney\s*market\s+acc(?:oun)?ts?\b/i;
+export const BANK_DEPOSIT_BANK = /\bbanks?\b/i;
+export function isBankDepositRow(f, cleanedName) {
+  /* the string the page PRINTS — `issuer · name`. A filing splits one program
+   * name across the two cells at an arbitrary point, and the control-character
+   * normalisation is `cleanFiledName`'s own (a broken font ships 0x03 where
+   * the space belongs), applied here because the ISSUER cell never passes
+   * through that function. */
+  const s = (String((f && f.iss) || "").replace(/\*+/g, "") + " " + String(cleanedName || ""))
+    .replace(/[\u0000-\u001f\u007f]+/g, " ").replace(/\s{2,}/g, " ").trim();
+  return BANK_DEPOSIT_NAME.test(s)
+    || (BANK_DEPOSIT_MMA.test(s) && BANK_DEPOSIT_BANK.test(s));
+}
+/* THE TWO ARMS THIS RULE REPLACED ARE SUBSUMED, AND SOMETHING READS THAT.
+ * `\bdeposit\s+acc(?:oun)?ts?\b` and `\bbank\s+deposit\b` are both strictly
+ * inside `\bdep(?:os|so)its?\b`, so removing them changes no verdict — but the
+ * 01:5xZ pruning made the same claim about two other arms by asking them
+ * against the names the gate already reached, which could never have seen a
+ * wording outside all four. This asserts the subsumption on the removed arms'
+ * own cases, and asserts the decoys that cost the most readers stay OUT. */
+for (const probe of ["deposit account", "deposit accounts", "deposit acct", "deposit accts",
+  "bank deposit", "Merrill Lynch Bank Deposit Program", "Money Market Deposit Account",
+  "Wells Fargo Bank, N.A.-Bank Deposit Sweep", "Demand deposit account"]) {
+  if (!isBankDepositRow(null, probe))
+    throw new Error(`lib-disclose: the widened bank-deposit rule no longer subsumes the two arms`
+      + ` it replaced — ${JSON.stringify(probe)} matched \\bdeposit acc(oun)?ts?\\b or`
+      + " \\bbank deposit\\b and no longer matches. Re-derive the relation rather than"
+      + " shipping a quiet narrowing (2026-10-02).");
+}
+for (const probe of ["CREF Money Market Account", "CREF Money Market Account R2",
+  "Vanguard Prime Money Market Account", "Prudential Government Money Market Account",
+  "P&G Savings Short-Term Invested Unitized Account (money market fund)",
+  "Procter & Gamble Savings Plan – Russell 2000 Index SMA", "SPDR S&P 500 Depository Receipt",
+  "Vanguard Federal Money Market Fund", "Fidelity 500 Index Fund"]) {
+  if (isBankDepositRow(null, probe))
+    throw new Error(`lib-disclose: the bank-deposit rule now calls ${JSON.stringify(probe)} a bank`
+      + " deposit, which would withdraw a real vehicle's expense ratio — the`money market"
+      + " account` conjunction or the `savings` arm has been widened past its measurement.");
 }
 
 /* A POOLED FUND TYPED `Company stock` — 2026-09-29, and it is the first of

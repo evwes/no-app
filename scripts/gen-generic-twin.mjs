@@ -277,7 +277,7 @@ ${loanans.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
 ${loanvocab.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
   window.__wampoLoanVocabRow = isLoanVocabularyRow;  // read by the smoke test only
 ${bankdep.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
-  window.__wampoBankDepositRow = (n) => isBankDepositRow(n);  // read by the smoke test only
+  window.__wampoBankDepositRow = (f) => isBankDepositRow(f, (f && f.name) || "");  // read by the smoke test only
 ${empstock.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
   window.__wampoEmployerStockSymbolOk = employerStockSymbolOk;  // read by the smoke test only
   window.__wampoSponsorNameKey = sponsorNameKey;  // read by the smoke test only
@@ -302,6 +302,11 @@ const MARK_S = "  /* GENERATED FROM scripts/lib-4i.mjs — DO NOT EDIT BY HAND."
 const MARK_ENDS = [
   "  window.__wampoTrustScheduleDMenu = trustScheduleDMenu;  // read by the smoke test only\n",
   "  window.__wampoSponsorNameKey = sponsorNameKey;  // read by the smoke test only\n",
+  /* the bank-deposit hook took a second argument on 2026-10-02 (the predicate
+   * now reads the ISSUER cell too). BOTH spellings stay: this list is what
+   * finds a block written before a later rule was appended, so an older app.js
+   * whose last line is the one-argument form must still be found WHOLE. */
+  "  window.__wampoBankDepositRow = (f) => isBankDepositRow(f, (f && f.name) || \"\");  // read by the smoke test only\n",
   "  window.__wampoBankDepositRow = (n) => isBankDepositRow(n);  // read by the smoke test only\n",
   "  window.__wampoLoanVocabRow = isLoanVocabularyRow;  // read by the smoke test only\n",
   "  window.__wampoLoanAnswerRow = isLoanAnswerRow;  // read by the smoke test only\n",
@@ -367,8 +372,8 @@ vm.runInContext(block
     "globalThis.__la = isLoanAnswerRow;")
   .replace("window.__wampoLoanVocabRow = isLoanVocabularyRow;  // read by the smoke test only",
     "globalThis.__lv = isLoanVocabularyRow;")
-  .replace("window.__wampoBankDepositRow = (n) => isBankDepositRow(n);  // read by the smoke test only",
-    "globalThis.__bd = (n) => isBankDepositRow(n);")
+  .replace("window.__wampoBankDepositRow = (f) => isBankDepositRow(f, (f && f.name) || \"\");  // read by the smoke test only",
+    "globalThis.__bd = (f) => isBankDepositRow(f, (f && f.name) || \"\");")
   .replace("window.__wampoEmployerStockSymbolOk = employerStockSymbolOk;  // read by the smoke test only",
     "globalThis.__es = employerStockSymbolOk;")
   .replace("window.__wampoSponsorNameKey = sponsorNameKey;  // read by the smoke test only",
@@ -820,13 +825,53 @@ const loanVocabNames = ["Outstanding Loan Balance", "Outstanding Plan Loans",
 for (const n of loanVocabNames) if (ctx.__lv(n) !== isLoanVocabularyRow(n)) {
   bad++; console.log(`  LOAN-VOCAB DRIFT ${JSON.stringify(n)} twin=${ctx.__lv(n)} lib=${isLoanVocabularyRow(n)}`);
 }
-const bankDepNames = ["Schwab Bank Savings", "Charles Schwab Trust Bank",
-  "TD Bank USA N.A.", "Merrill Lynch Bank Deposit Program",
-  "Wells Fargo Bank, N.A.-Bank Deposit Sweep",
-  /* must stay FALSE */ "Gabelli U.S. Treasury Money Market Fund Class AAA",
-  "Vanguard Federal Money Market Fund", "Fidelity 500 Index Fund"];
-for (const n of bankDepNames) if (ctx.__bd(n) !== isBankDepositRow(n)) {
-  bad++; console.log(`  BANK-DEPOSIT DRIFT ${JSON.stringify(n)} twin=${ctx.__bd(n)} lib=${isBankDepositRow(n)}`);
+/* THE BANK-DEPOSIT PROBES ARE ROWS AS OF 2026-10-02, not names — the predicate
+ * reads the ISSUER cell as well, and every probe here was a bare string, so
+ * not one of them would have reached the issuer half or the money-market-
+ * account conjunction. A probe that cannot reach an arm lets the arm be inert
+ * while the table still passes, which is this file's own recorded failure at
+ * v189 and v190. One probe PER ARM, in both directions. */
+const bankDepNames = [
+  /* arm 1, the word `deposit` as a noun — wider than the `deposit account` /
+   * `bank deposit` pair it replaced */
+  { name: "Money Market Deposit Account" }, { name: "Money Market Deposit" },
+  { name: "Merrill Lynch Bank Deposit Program" }, { name: "Certificates of deposit" },
+  /* arm 2, a savings ACCOUNT */
+  { name: "Wells Fargo Savings Account" },
+  /* arm 3, the deposit PROGRAM idiom, in the issuer cell and in the name */
+  { iss: "Schwab Bank Savings", name: "Money Market / Cash Equivalent" },
+  { iss: "Charles Schwab Trust Bank", name: "Schwab Bank Money Market Savings" },
+  { iss: "MONEY MARKET DEPOSIT ACCOUNT", name: "Money Market / Cash Equivalent" },
+  /* arm 3 through the control-character normalisation — one live row files the
+   * issuer as `Schwab\u0003Bank\u0003Savings`, where 0x03 is the broken font's
+   * space and `\s` does not match it */
+  { iss: "Schwab\u0003Bank\u0003Savings", name: "Money market fund" },
+  /* arm 4, the CONJUNCTION: a bank's money market account */
+  { iss: "El Dorado Savings Bank", name: "Short-Term Money Market Account" },
+  { iss: "Alliance Bank", name: "Money market account" },
+  /* must stay FALSE from here down */
+  { name: "Gabelli U.S. Treasury Money Market Fund Class AAA" },
+  { name: "Vanguard Federal Money Market Fund" }, { name: "Fidelity 500 Index Fund" },
+  /* ...a money market ACCOUNT with no bank: the conjunction's whole purpose */
+  { name: "CREF Money Market Account" }, { iss: "TIAA-CREF", name: "Money Market Account R2" },
+  { name: "Vanguard Prime Money Market Account" },
+  /* ...the word `savings` inside a PLAN's own name, and a TRUSTEE's bank */
+  { iss: "BlackRock", name: "P&G Savings Short-Term Invested Unitized Account (money market fund)" },
+  { iss: "Charles Schwab Trust Bank", name: "Schwab S&P 500 Index Fund" },
+  { iss: "Capital Bank and Trust Company", name: "American Funds 2030 Target Date Retirement Fund" },
+  /* ...and `deposit` inside a longer word */
+  { name: "SPDR S&P 500 Depository Receipt" }];
+for (const f of bankDepNames) if (ctx.__bd(f) !== isBankDepositRow(f, f.name || "")) {
+  bad++; console.log(`  BANK-DEPOSIT DRIFT ${JSON.stringify(f)} twin=${ctx.__bd(f)} lib=${isBankDepositRow(f, f.name || "")}`);
+}
+/* ...and the table is asserted in BOTH DIRECTIONS here too, not only in the
+ * smoke test: the drift check above compares two copies and would pass if both
+ * were wrong together, which is exactly what a verbatim slice guarantees. */
+for (const f of bankDepNames.slice(0, 11)) if (!isBankDepositRow(f, f.name || "")) {
+  bad++; console.log(`  BANK-DEPOSIT MISSES A DEPOSIT ${JSON.stringify(f)}`);
+}
+for (const f of bankDepNames.slice(11)) if (isBankDepositRow(f, f.name || "")) {
+  bad++; console.log(`  BANK-DEPOSIT CLAIMS A FUND IS A DEPOSIT ${JSON.stringify(f)}`);
 }
 /* THE EMPLOYER-STOCK PROVENANCE ARM, 2026-10-01: all six arguments and both
  * directions, and it needed its own probes for the ninth cycle running —

@@ -858,11 +858,27 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   5 of 349 names, so the cause is UPSTREAM of the brand) and **Spartan**
   (Fidelity's pre-2016 index brand) 835 rows / 2,541,569 ppl, one ticker and 365
   fees. A rename is a FACT that must be SOURCED, never inferred.
-- The bank-deposit fee gate is one wording short: 61 rows / 50,024 ppl publish a
-  fee for a deposit program that charges none. `isBankDepositRow` reads
-  `bank deposit` / `deposit account` and `Schwab Bank Savings` matches neither
-  column. Do NOT widen to the bare word `bank` — 1,585 rows carry it inside a
-  TRUSTEE's name.
+- **SHIPPED 2026-10-02 18:2xZ — the bank-deposit fee gate was one WORDING
+  short: 90 rows / 90 plans / 81,444 ppl / $179,762,762 stop publishing a
+  fabricated expense ratio** (75 at 0.2, 10 at 0.26, 4 at 0.35, 1 at 0.45),
+  the queue's own 61 / 50,024 / $123,676,563 reproduced to the dollar and
+  included. The rule takes the filing's NOUN (`\bdep(?:os|so)its?\b`, which
+  subsumes both arms it replaced), `savings account`, `bank savings` /
+  `money market savings` adjacent, and `money market account` **AND** a bank
+  word as the only conjunction — and it reads the string the page PRINTS
+  (`issuer · name`), because 36 of the 61 carried the program in the ISSUER
+  cell. **Refused by whole-store measurement:** `sweep` and `fdic` reach 0 fee
+  rows each; bare `money market account` reaches 189 fee rows / 486,616 ppl of
+  REAL vehicles (41 are `CREF Money Market Account`, 197,268 readers). FEE
+  ONLY, measured: 0 fees gained/changed, 0 tickers, 0 asterisks, 0 types, 0
+  names, **0 crawlable pages**. **The flag moves on 714 rows and the FEE on
+  90** — the other 624 were already suppressed. **RESIDUE, a different class:
+  112 rows / 135,146 ppl** where a bank word sits beside a bare `money market`
+  (`TD BANK INSTITUTIONAL MONEY MARKET`) — unsplittable by name, since the
+  same shape holds `Schwab Government Money Fund` and `American Funds U.S.
+  Government Money Market Fund`. Needs a registry witness, not a wider
+  vocabulary. Still the reason this is not a `bank` rule: 1,585 rows carry
+  `bank` inside a TRUSTEE's name. `docs/accuracy-log.md` 2026-10-02 (18:2xZ).
 - The bare HOUSE name as a holding: 5,752 rows / 4,585 plans / 8,370,934 ppl.
   93 rows at ≥30% of a menu. PARSER-side: replacing the identity column's own
   text is a claim, not a repair.
@@ -939,12 +955,50 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   in `fundTickerInfo`'s `wrapped` test reading the NAME while `lookupTicker` asks
   the bare name), and 140 rows / $987,688,869 reading `Vanguard Target Return
   <vintage>` as a garble of Target Retirement.
-- Kroger (262,794 readers) publishes `Other United States - USD &&&KROGER LOAN
-  ASSET` at 2.2% / $142,816,695 as a holding. Every loan predicate is anchored
-  on the name BEGINNING with the loan words — the anchor that keeps `Bank Loan
-  Fund` safe — so this is outside all of them by construction. Class unmeasured.
-- `scripts/merge-name-test.mjs` **exits 1 at HEAD**, on the #545 weld arm's own
-  negative control reporting itself DECORATIVE. Verified pre-existing.
+- **THE KROGER LOAN ASSET — MEASURED 2026-10-02, predicate stated.** Published
+  rows whose cleaned name carries loan vocabulary and which NO shipped loan
+  predicate reaches (all are anchored on the name BEGINNING with the loan
+  words, the anchor that keeps `Bank Loan Fund` safe): **722 rows / 625 plans /
+  4,537,997 ppl / $1,651,174,135.** It is NOT one class. 5 rows resolve a REAL
+  fund (`Invesco Senior Loan ETF`) and 160 rows / 746,258 ppl are real
+  SECURITIES wearing the word (ten `FEDERAL HOME LOAN BANK OF …` agency bonds
+  at 45,161 ppl, `LOANS SECURED BY MTGES-RESID.`) — both must be left alone.
+  **The narrow, clean subset is the custodian's country roll-up caption: 11
+  rows / 18 plans / 1,506,159 ppl / $500,411,091** — `Other United States - USD
+  &&&KROGER LOAN ASSET` ($142,816,695, 2.2% of its menu; Kroger's own plan is
+  262,794 of the trust's 674,716), plus Marriott ($125,071,506), HD Supply,
+  Coca-Cola, WK Kellogg, McDonald's, Schlumberger, PaineWebber, UBS PR, Sunchem
+  and `KOHL'S LOAN ACCOUNT` (the one with no `&&&`). A second family is the
+  plan-loan accounting line: **359 rows / 329 plans / 1,219,186 ppl**
+  (`Plan Loan Default Fund` ×194, `Loan Collateral Fund` ×76, `Loan Escrow
+  Fund` ×16). All publish no ticker and no fee, so the harm is the CLAIM alone.
+  `docs/accuracy-log.md` 2026-10-02 (18:2xZ).
+- **CORRECTED 2026-10-02 BY MEASUREMENT: `scripts/merge-name-test.mjs` EXITS
+  0**, not 1. This entry said it "exits 1 at HEAD, verified pre-existing"; run
+  both stashed to HEAD and with a diff applied it exits **0** both times with
+  byte-identical output. The `drop the #536 junk guard: disagrees on 1 of 27`
+  line it prints is informational. *A queue entry records what was true when it
+  was written.*
+- `scripts/map-test.mjs` fails IN THIS SANDBOX at HEAD with
+  `ERR_CERT_AUTHORITY_INVALID` on a page resource — identical with a diff
+  stashed and applied, so it is an outbound-TLS property of the sandbox and not
+  a repo defect. CI is where it settles.
+- **FOUND BY THE 18:2xZ DRAW, SIZED NOT FIXED: `Registed Investment Co.` — 5
+  rows / 3 plans / 280,651 ppl / $1,263,712,991**, published at **60.8%,
+  35.3%, 20.3%, 7.4% and 1.3%** of their menus with a blank type, no ticker
+  and no fee. `isGenericTypeName` and `isNamelessFundRow` both answer FALSE
+  because `Registered` is MISSPELLED (Trinet HR III/IV, Pacific Mobile
+  Structures; one row carries the real fund, `Fidelity Freedom Index 2060 Fund
+  Investor Class`, in its ISSUER cell). **The wider class is UNMEASURED and
+  honestly so:** a `cit|collectiv|mutual fund|regist` screen reads 13,543 rows
+  / 13.5M ppl by matching those tokens inside REAL names (`GQG Partners
+  International Equity CIT`, `American Mutual Fund` = AMRMX) — *a count keyed
+  on a vocabulary measures the vocabulary*, so that figure is discarded.
+- **ALSO FROM THAT DRAW: `namelessRow`'s no-issuer gate reads a Schedule H
+  CAPTION as a house.** 1 row named `Common collective trusts` whose issuer
+  cell holds `Investments at net asset value` is typed `Collective trust` at
+  **66.4% of its menu**, while the other 33 rows of that same name are
+  correctly qualified "Filing names no specific fund".
 - `scratchpad/apppath.mjs` should be promoted to a named test under `scripts/`.
   It has been wiped by a container restart twice, and there are **two files of
   that name** — a repo copy honouring `FUNDER_PATH` and a session copy that

@@ -1422,36 +1422,110 @@ try {
    * charges a real expense ratio, and a CERTIFICATE of deposit inside a fund's
    * name. Both arms of the vocabulary are pinned and negative-controlled
    * separately. */
+  /* THE CASES ARE ROWS AS OF 2026-10-02, NOT NAMES, and that is the whole
+   * point of the change they tether: the predicate reads the ISSUER cell as
+   * well as the name, because a filing splits one deposit PROGRAM's name
+   * across the two cells at an arbitrary point — `{Schwab Bank Savings} Money
+   * Market / Cash Equivalent` (36 rows, 27,542 readers) carried the program in
+   * the issuer and nothing but a category in the name. Every case below was a
+   * bare string before, so NOT ONE of them reached the issuer half or the
+   * money-market-account conjunction, and both arms could have been inert with
+   * the table still green. One case per condition, in both directions. */
   const depCases = [
-    /* must SUPPRESS the fee, down to the marker */
-    "Money Market Deposit Account", "MONEY MARKET DEPOSIT ACCOUNT",
-    "Money market deposit account", "Money Market Deposit Acct",
-    "Money Market-Type Deposit Account", "Money Market Deposit Accounts", "Deposit Accts",
-    "Wells Fargo Bank, N.A.-Bank Deposit Sweep", "Wells Fargo Expanded Bank Deposit",
-    "TD Bank Institutional Money Market Deposit Account", "Demand deposit account",
-    "Raymond James bank deposit program Money Market",
+    /* ARM 1 — the word `deposit` as a NOUN, which subsumes the `deposit
+     * account` / `bank deposit` pair it replaced. The first seven are the
+     * removed arms' own cases, kept so the subsumption is tested and not
+     * asserted. */
+    { name: "Money Market Deposit Account" }, { name: "MONEY MARKET DEPOSIT ACCOUNT" },
+    { name: "Money market deposit account" }, { name: "Money Market Deposit Acct" },
+    { name: "Money Market-Type Deposit Account" }, { name: "Money Market Deposit Accounts" },
+    { name: "Deposit Accts" },
+    { name: "Wells Fargo Bank, N.A.-Bank Deposit Sweep" },
+    { name: "Wells Fargo Expanded Bank Deposit" },
+    { name: "TD Bank Institutional Money Market Deposit Account" },
+    { name: "Demand deposit account" },
+    { name: "Raymond James bank deposit program Money Market" },
+    /* ...and the wordings the pair could not reach: no `account` after the
+     * noun, the plural, a certificate of deposit, and the one misspelling the
+     * store actually carries */
+    { name: "Money Market Deposit" }, { name: "Money Market Deposits" },
+    { name: "Certificates of deposit and money market" },
+    { iss: "DB&T FDIC-Insured Investment Account", name: "Money Market Depsoit Account" },
+    /* ARM 2 — a savings ACCOUNT is a deposit */
+    { name: "Wells Fargo Savings Account" },
+    { iss: "Schwab", name: "Money market account - Bank savings account" },
+    /* ARM 3 — the deposit PROGRAM idiom, in the issuer cell, in the name, and
+     * split across the two */
+    { iss: "SCHWAB BANK SAVINGS", name: "Money Market / Cash Equivalent" },
+    { iss: "Schwab Bank", name: "Savings Money Market Fund" },
+    { iss: "", name: "MMKT - Schwab Bank Savings" },
+    { iss: "Charles Schwab Trust Bank", name: "Schwab Bank Money Market Savings" },
+    { iss: "MONEY MARKET DEPOSIT ACCOUNT", name: "Money Market / Cash Equivalent" },
+    /* ...and arm 3 THROUGH THE CONTROL-CHARACTER NORMALISATION. One live row
+     * files the issuer as `Schwab\u0003Bank\u0003Savings`: 0x03 is the broken
+     * font's space and `\s` does not match it, so without the normalisation
+     * this row alone escapes the program's own name. */
+    { iss: "Schwab\u0003Bank\u0003Savings", name: "Money market fund" },
+    /* ARM 4 — the CONJUNCTION, a bank's money market account */
+    { iss: "El Dorado Savings Bank", name: "Short-Term Money Market Account" },
+    { iss: "", name: "Paragon Bank Money Market Account 86" },
     /* a welded fund is still a deposit row BY NAME — the `!tk` half at the call
      * site is what keeps its fee, not this predicate */
-    "Money Market Deposit Account VANGUARD FEDERAL MONEY MARKET INV",
-    "Banc Master Deposit Account A 4 shares 4 Vanguard 500 Index Admiral",
+    { name: "Money Market Deposit Account VANGUARD FEDERAL MONEY MARKET INV" },
+    { name: "Banc Master Deposit Account A 4 shares 4 Vanguard 500 Index Admiral" },
+    /* AN EXPECTATION THAT MOVED ON PURPOSE, 2026-10-02: this case sat in the
+     * must-FALSE half, pinned as "a CERTIFICATE of deposit inside a fund's
+     * name". A certificate of deposit IS a bank deposit and charges no fund
+     * expenses, so the widened noun arm calls it one — and that is the right
+     * answer, not a regression. It joins the welded pair above because the
+     * `Vanguard 500 Index Admiral` tail resolves VFIAX and `!tk` is what keeps
+     * its fee. Priced before moving it: across the whole published store the
+     * change withdraws a fee from 0 rows that publish a ticker, and the three
+     * live CD rows that do lose one are aggregates — `Certificates of deposit
+     * and money market` (6,346 readers), `Matrix Money Markets and
+     * Certificates of Deposit`, `Interest-bearing cash (include money market
+     * accounts & certificates of deposits) FID GOVT` — none a fund. */
+    { name: "Fidelity Certificate of Deposit Portfolio Vanguard 500 Index Admiral" },
     /* must come back FALSE from here down: not deposits at all */
-    "Vanguard Federal Money Market Fund", "Fidelity Government Money Market Fund",
-    "Fidelity Certificate of Deposit Portfolio Vanguard 500 Index Admiral",
-    "Schwab Value Advantage Money Fund Investor Shares"];
+    { name: "Vanguard Federal Money Market Fund" },
+    { name: "Fidelity Government Money Market Fund" },
+    { name: "Schwab Value Advantage Money Fund Investor Shares" },
+    /* ...a money market ACCOUNT with no bank anywhere: arm 4's whole reason for
+     * being a conjunction. `CREF Money Market Account` is a variable-annuity
+     * account with a real expense ratio and 197,268 readers; asked without the
+     * bank word this family alone would lose 189 rows / 486,616 participants
+     * of fees that are not fabricated. */
+    { name: "CREF Money Market Account" }, { iss: "TIAA-CREF", name: "Money Market Account R2" },
+    { name: "Vanguard Prime Money Market Account" },
+    { name: "Prudential Government Money Market Account" },
+    /* ...the word `savings` inside a PLAN's own name (42,915 readers), and a
+     * TRUSTEE bank in the issuer cell holding a real registered fund — the
+     * 1,585-row trap that is why a bare `bank` can never be the rule */
+    { iss: "BlackRock", name: "P&G Savings Short-Term Invested Unitized Account (money market fund)" },
+    { iss: "Charles Schwab Trust Bank", name: "Schwab S&P 500 Index Fund" },
+    { iss: "Capital Bank and Trust Company", name: "American Funds 2030 Target Date Retirement Fund" },
+    /* ...and `deposit` inside a longer word */
+    { name: "SPDR S&P 500 Depository Receipt" },
+    { name: "ACWI (All Country World Index) ex USA Investable Market Index and in depository receipts" }];
+  const DEP_TRUE = 29;   // index of the first case that must come back FALSE
   const depGot = await page.evaluate((cs) => {
     if (typeof window.__wampoBankDepositRow !== "function") return null;
-    return cs.map((n) => window.__wampoBankDepositRow(n));
+    return cs.map((f) => window.__wampoBankDepositRow(f));
   }, depCases);
   if (!depGot) fail("app.js no longer exposes __wampoBankDepositRow — the bank-deposit fee rule cannot be cross-checked");
-  const depDrift = depCases.filter((n, i) => isBankDepositRow(n) !== depGot[i]);
+  const depMod = depCases.map((f) => isBankDepositRow(f, f.name || ""));
+  const depDrift = depCases.filter((f, i) => depMod[i] !== depGot[i]);
   if (depDrift.length) {
-    for (const n of depDrift) console.error(`  ${JSON.stringify(n)}  app.js=${depGot[depCases.indexOf(n)]}  module=${isBankDepositRow(n)}`);
-    fail(`the bank-deposit fee rule in app.js disagrees with scripts/lib-disclose.mjs on ${depDrift.length} of ${depCases.length} names — regenerate it`);
+    for (const f of depDrift) {
+      const i = depCases.indexOf(f);
+      console.error(`  ${JSON.stringify(f)}  app.js=${depGot[i]}  module=${depMod[i]}`);
+    }
+    fail(`the bank-deposit fee rule in app.js disagrees with scripts/lib-disclose.mjs on ${depDrift.length} of ${depCases.length} rows — regenerate it with scripts/gen-generic-twin.mjs`);
   }
-  for (const n of depCases.slice(0, 14))
-    if (!isBankDepositRow(n)) fail(`bank-deposit rule no longer recognises an FDIC-insured deposit: ${JSON.stringify(n)}`);
-  for (const n of depCases.slice(14))
-    if (isBankDepositRow(n)) fail(`bank-deposit rule would call a real fund a bank deposit: ${JSON.stringify(n)}`);
+  for (const f of depCases.slice(0, DEP_TRUE))
+    if (!isBankDepositRow(f, f.name || "")) fail(`bank-deposit rule no longer recognises an FDIC-insured deposit: ${JSON.stringify(f)}`);
+  for (const f of depCases.slice(DEP_TRUE))
+    if (isBankDepositRow(f, f.name || "")) fail(`bank-deposit rule would call a real fund a bank deposit: ${JSON.stringify(f)}`);
 
   /* THE TRUST'S SCHEDULE D FUND LIST, tethered the same way, 2026-10-02 -- and
    * it needs its OWN cases for the eighth cycle running: every case above is a

@@ -1464,12 +1464,31 @@
 
   window.__wampoLoanVocabRow = isLoanVocabularyRow;  // read by the smoke test only
   const BANK_DEPOSIT_NAME =
-    /\bdeposit\s+acc(?:oun)?ts?\b|\bbank\s+deposit\b/i;
-  function isBankDepositRow(cleanedName) {
-    return BANK_DEPOSIT_NAME.test(String(cleanedName || ""));
+    /\bdep(?:os|so)its?\b|\bsavings\s+acc(?:oun)?ts?\b|\b(?:bank|money\s*market)\s*savings\b/i;
+  /* ...and the fourth condition is a CONJUNCTION and cannot join the alternation
+   * above, because `money market account` on its own is the filer's loose word
+   * for a FUND position and not a deposit product: asked alone it reaches 189
+   * fee-publishing rows / 486,616 participants, 41 of them `CREF Money Market
+   * Account` (197,268 readers) and others `Vanguard Prime Money Market Account`,
+   * `Prudential Government Money Market Account`, `Voya Government Money Market
+   * Account` — variable-annuity accounts and registered money funds that have a
+   * real expense ratio. Paired with a BANK word it reaches 9 rows, every one of
+   * them read. */
+  const BANK_DEPOSIT_MMA = /\bmoney\s*market\s+acc(?:oun)?ts?\b/i;
+  const BANK_DEPOSIT_BANK = /\bbanks?\b/i;
+  function isBankDepositRow(f, cleanedName) {
+    /* the string the page PRINTS — `issuer · name`. A filing splits one program
+     * name across the two cells at an arbitrary point, and the control-character
+     * normalisation is `cleanFiledName`'s own (a broken font ships 0x03 where
+     * the space belongs), applied here because the ISSUER cell never passes
+     * through that function. */
+    const s = (String((f && f.iss) || "").replace(/\*+/g, "") + " " + String(cleanedName || ""))
+      .replace(/[\u0000-\u001f\u007f]+/g, " ").replace(/\s{2,}/g, " ").trim();
+    return BANK_DEPOSIT_NAME.test(s)
+      || (BANK_DEPOSIT_MMA.test(s) && BANK_DEPOSIT_BANK.test(s));
   }
 
-  window.__wampoBankDepositRow = (n) => isBankDepositRow(n);  // read by the smoke test only
+  window.__wampoBankDepositRow = (f) => isBankDepositRow(f, (f && f.name) || "");  // read by the smoke test only
   const ESP_FORM_WORD = new Set(["inc", "incorporated", "corp", "corporation", "co",
     "company", "companies", "holding", "holdings", "group", "llc", "llp", "lp", "plc",
     "ltd", "limited", "sa", "nv", "ag", "se", "the", "and", "of", "its",
@@ -3170,8 +3189,22 @@
        * of those three, because lookupTicker prepends the ISSUER and a bare
        * fundTickerInfo on the name does not. lib-disclose.mjs carries the reading
        * of all 78 names and the one accepted cost. FEE ONLY — the ticker is left
-       * alone, since the rows that publish one are exactly the rows that should. */
-      const bankDepositFee = isBankDepositRow(f.name || "") && !tk;
+       * alone, since the rows that publish one are exactly the rows that should.
+       *
+       * 2026-10-02: THE PREDICATE NOW READS THE ROW, not the name alone, and
+       * takes the filing's own word `deposit` rather than the two wordings it
+       * was first seen in. A further 90 rows / 90 plans / 81,444 participants /
+       * $179,762,762 stop publishing a fabricated expense ratio (75 at the
+       * generic 0.2, 10 at 0.26, 4 at 0.35, 1 at 0.45) — 61 of them the Charles
+       * Schwab Bank Savings sweep, which matched on NEITHER column because the
+       * program's name is `bank savings` and sits in the ISSUER cell for 36 of
+       * them. Measured through this whole expression, before and after: 0 fees
+       * gained, 0 changed, 0 tickers, 0 asterisks, 0 shown types, 0 cleaned
+       * names. The `!tk` conjunct keeps a fee on 4 rows that weld a Vanguard
+       * money fund onto a deposit caption, 1 of them newly reached here.
+       * lib-disclose.mjs carries all four arms, the reading of every distinct
+       * pair, and the residue this leaves. */
+      const bankDepositFee = isBankDepositRow(f, f.name || "") && !tk;
       const er = tab !== "menu" || stockRow || gicRow || subtotalRow || loanRow || annuityRow
         || (guaranteeOnlyFee && !tk) || contractRow || mistypedGuaranteeFee || namelessRow
         || bankDepositFee ? null

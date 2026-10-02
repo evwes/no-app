@@ -7,6 +7,264 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-02 (18:2xZ) — the bank-deposit fee gate was a fix for two WORDINGS, and one deposit program survived it: 90 rows / 81,444 participants / $179,762,762 stop publishing a fabricated expense ratio
+
+**WHAT WAS WRONG.** `isBankDepositRow` shipped at 01:5xZ withdrawing a
+fabricated expense ratio from 105 published rows where the holding is an
+FDIC-insured bank deposit — a deposit pays interest and charges no fund
+expenses, so the number does not describe a cost imprecisely, it describes one
+that does not exist. Its vocabulary was `\bdeposit\s+acc(?:oun)?ts?\b|
+\bbank\s+deposit\b`, and **61 rows / 61 entries / 61 plans / 50,024
+participants / $123,676,563 still published one** — re-derived here through the
+page's own chain, and the figure reproduces to the dollar. 60 of the 61 are ONE
+product: **Charles Schwab Bank Savings**, the sweep Schwab's retirement plans
+hold cash in. It matched **neither column**, because the program is called
+`bank savings` and contains no `deposit account` and no `bank deposit`. The
+61st is `{DB&T FDIC-Insured Investment Account} Money Market Depsoit Account`,
+where the vocabulary word itself is misspelled. 22 distinct (issuer, name)
+pairs, all 22 read, not one a registered fund; 55 published **0.2** (the
+generic unattributed money-market fallback) and 6 **0.26**; **0 published a
+ticker**, so the call site's `!tk` conjunct cost nothing on this population.
+
+**A CORRECTION TO MY OWN PREVIOUS ENTRY, LEFT READABLE.** The previous cycle
+recorded this residue as a **COLUMN** gap — the bank sitting in the ISSUER cell
+where the predicate reads the NAME — and wrote a positive control on that
+premise. The control printed `isBankDepositRow("Schwab Bank Savings") = false`
+and refuted it: reading the issuer column with the old vocabulary changes
+nothing, because the program's own name is outside the vocabulary. A screen
+built on the column premise reads **3 rows**, i.e. it measures the premise. The
+truth is **both at once**: the wording is outside the vocabulary AND the
+program name sits in the issuer cell for 36 of the 61 rows, so a fix needed
+both halves. *A diagnosis that a control refutes is not a diagnosis, and the
+refutation is cheaper than the fix.*
+
+**AND A CORRECTION TO THE PRUNING NOTE THE 01:5xZ ENTRY IS PROUD OF.** That
+entry cut its vocabulary from four arms to two because two "reached 0 rows in
+the store". It asked those arms against **the names the gate already reached**,
+so it could never have seen a wording outside all four. *A per-arm control
+measures the arms against the population the gate already has, not against the
+class.* This version asks the opposite question of the whole published store
+(1,724,201 rows), one candidate arm at a time.
+
+**THE CHANGE.** `scripts/lib-disclose.mjs` — the rule takes the filing's own
+NOUN rather than the phrases it was first seen in, reads the string the page
+PRINTS (`issuer · name`), and normalises control characters the way
+`cleanFiledName` already does for the name column. Four conditions, each
+measured against the whole store and each read in full:
+
+| | reach | publish a fee | |
+|---|---|---|---|
+| 1 `\bdep(?:os\|so)its?\b` the noun (+ the one live misspelling) | 311 new rows | 26 | 238 strings read: CDs, demand deposits, deposit management programs, bank deposit programs, insurer deposit administration contracts. Subsumes both removed arms by construction |
+| 2 `savings account` | 32 | 1 unique | `Wells Fargo Savings Account`, 2,206 readers at 0.45 |
+| 3 `bank savings` / `money market savings` adjacent | 402 | 60 | all 21 distinct strings are Charles Schwab Bank Savings |
+| 4 `money market account` **AND** a `bank` word | 9 | 9 | every one read; 8 unarguable, 1 named as ambiguous |
+
+The trailing `\b` on arm 1 is load-bearing: it is what keeps `SPDR S&P 500
+Depository Receipt` and `…in depository receipts` out. The ORDER in arm 3 is
+the discriminator and is why this is not a `bank` rule — `bank savings` is a
+product, `savings bank` is an institution, and **1,585 rows carry `bank` inside
+a TRUSTEE's name** whose fees are correct (`{Charles Schwab Trust Bank} Schwab
+S&P 500 Index Fund`, `{Capital Bank and Trust Company} American Funds 2030
+Target Date Retirement Fund`). **DO NOT CARRY 1,646 ROWS / 1,255,820 PPL
+FORWARD** from a generous `bank|savings|sweep|fdic|deposit` screen; re-measured
+here it reads 1,672 rows / 1,289,024 ppl and is 95% trustee names.
+
+**TWO CANDIDATE ARMS WERE REFUSED, BY MEASUREMENT AND NOT BY TASTE.**
+`sweep` and `fdic` reach 58 and 65 rows and **0 that publish a fee** — the one
+fee row `fdic` touches is already taken by the misspelling arm, so both would
+be decoration, and this time the question was asked of the whole store. Bare
+`money market account` **without** the bank conjunct reaches **189
+fee-publishing rows / 486,616 participants**, 41 of them `CREF Money Market
+Account` (197,268 readers), plus `Vanguard Prime Money Market Account`,
+`Prudential Government Money Market Account`, `Voya Government Money Market
+Account`. `Account` is the filer's loose word for a fund position and those
+vehicles have real expense ratios. ***A phrasing that looks like the class can
+belong to a different one.***
+
+**ONE LIVE ROW IS REACHED ONLY THROUGH THE CONTROL-CHARACTER NORMALISATION**:
+its issuer is filed as `Schwab\u0003Bank\u0003Savings`, where 0x03 is a broken
+font's space; `\s` does not match it, so `bank\s*savings` fails on the
+program's own name. The NAME column already gets that normalisation inside
+`cleanFiledName`; the ISSUER column never passes through that function. After
+normalising, a LOOSE `bank\s*savings` (no leading `\b`, which would also catch
+an institution called `Burbank Savings`) and the tight `\bbank\s*savings\b`
+**disagree on 0 of the store's rows**, so the tight form ships.
+
+**WHAT MOVED**, measured through app.js's whole `er` expression — all eleven
+suppressors, both sides pinned by path, the before side on the HEAD copy of
+`lib-disclose.mjs`:
+
+| column | before → after |
+|---|---|
+| **fee withdrawn** | **90 rows / 90 entries / 90 plans / 81,444 ppl / $179,762,762** |
+| fee gained | 0 |
+| fee changed | 0 |
+| ticker changed | 0 |
+| asterisk changed | 0 |
+| shown type changed | 0 |
+| cleaned name changed | 0 |
+
+Fees withdrawn by value: **0.2 ×75, 0.26 ×10, 0.35 ×4, 0.45 ×1**. All **48**
+distinct (issuer, name) pairs were printed and read; not one names a registered
+fund. Each column was positive-controlled first by printing the population it
+could have moved in (14,878 rows published a fee before, 14,788 after; 7,268
+published a ticker; 447 were asterisked; 14 distinct shown types).
+
+**THE FLAG MOVES ON 714 ROWS / 663 PLANS / 1,004,969 PARTICIPANTS AND THE FEE
+MOVES ON 90.** The gap is the whole point: 624 of those rows were already
+suppressed by `gicRow`, `annuityRow`, `contractRow` or `namelessRow`, or were
+never priced at all. ***A count of a condition is not a measure of a defect***
+— reported both so neither can be read as the other.
+
+**COSTS NAMED, in both directions.**
+- 4 insurer rows / 1,411 readers are reached incidentally and lose the
+  fabricated **0.35**: two `Deposits in guaranteed interest accounts`
+  (Principal Life), `{Guaranteed deposit fund Empower} Guaranteed Deposit
+  Fund`, `{Deposit Administration Contract "} SAGIC Diversified Bond II`. They
+  belong to the owner-gated stable-value item, which the 01:5xZ entry already
+  records for the Ameritas row; the withdrawal is in the same safe direction,
+  so they are named rather than engineered around.
+- `{Charles Schwab Trust Bank} Charles Schwab Money Market Account` (134
+  readers) may be Schwab's retail money FUND rather than the deposit. Withdrawn
+  anyway: the 0.26 it publishes is a house pattern under either reading.
+- `Eaton Vance Floating Rate Deposit R` (292 readers) is the one string of 238
+  that might be a garbled real fund, and `Retirement Savings Account` (10,159)
+  is a caption rather than a bank product. **Both publish no fee**, so no
+  reader-visible cell changes; recorded because a future fee would.
+- **ONE PINNED EXPECTATION MOVED ON PURPOSE.** `smoke-test.mjs` held `Fidelity
+  Certificate of Deposit Portfolio Vanguard 500 Index Admiral` in its
+  must-be-FALSE half, pinned as "a CERTIFICATE of deposit inside a fund's
+  name". A certificate of deposit IS a bank deposit with no fund expenses, so
+  the noun arm calls it one; the case moved to the welded group where `!tk`
+  keeps its fee. Priced before moving it: **0 of the 90 withdrawals publish a
+  ticker**, and the three live CD rows that do lose a fee are aggregates
+  (`Certificates of deposit and money market`, 6,346 readers; `Matrix Money
+  Markets and Certificates of Deposit`; `Interest-bearing cash (include money
+  market accounts & certificates of deposits) FID GOVT`), none a fund.
+
+**THE RESIDUE IS NAMED AND IS A DIFFERENT CLASS: 112 rows / 110 plans /
+135,146 participants** still publish a pattern fee where a BANK word sits
+beside a bare `money market` — `{} TD BANK INSTITUTIONAL MONEY MARKET`, `{}
+Peoples Bank Special Money Market`, `{} Webster Bank Money Market`, `{} U.S.
+Bank* Money Market`. It **cannot be split by name**: those sit in the same
+population as `{Charles Schwab Trust Bank} Schwab Government Money Fund`,
+`{State Street Bank & Trust Co.} State Street Instl US Govt Money Market
+Premier` and `{Capital Bank and Trust Company} American Funds U.S. Government
+Money Market Fund`, which are REGISTERED money funds with real expense ratios.
+Telling them apart needs a witness from outside this store — a registry lookup
+on the fund name — not a wider vocabulary.
+
+**THE SURFACE, stated as a guarantee rather than an observation.** **0
+crawlable `p/*.html` pages change.** `scripts/build-seo-pages.mjs` does not
+import `fund-er.js` and does not import `isBankDepositRow`, and its holdings
+table is `<th>Fund</th><th class="num">Value</th>` — two columns, no expense
+ratio and no ticker — so no static page can carry this cell. Verified anyway by
+regenerating all 5,000 pages: `git status p` reports **0 changed files**.
+
+**THE PREVENTION.**
+1. **A negative control per condition, each written out in full** rather than
+   by surgery on the shipped source (`scratchpad/bd-controls.mjs`): the noun
+   arm removed, the savings-account arm removed, the program-idiom arm removed,
+   the conjunction removed, **the conjunction asked WITHOUT its bank conjunct**
+   (which must fire on CREF — a control on an arm that widens has to assert a
+   must-be-FALSE case), the issuer cell unread, and the control-character
+   normalisation removed. **7 of 7 disagree with the shipped rule on exactly
+   their own cases and on nothing else.** The "untouched" list first held
+   `Money Market Deposit Account` as "a deposit reached by another arm" and
+   control 1 correctly moved it — the list was wrong, not the control, since
+   that string is precisely what the noun arm subsumes.
+2. **A module-load derivation guard** in `lib-disclose.mjs` asserts the two
+   removed arms' own nine cases still match, and that nine decoys (CREF,
+   Vanguard Prime, Prudential Government, the P&G plan name, the depository
+   receipt, two real funds) still do NOT. Pruning an arm is now checked by the
+   program rather than claimed in a comment.
+3. **The twin tether, negative-controlled in both drift directions.** The
+   browser copy is sliced VERBATIM by `gen-generic-twin.mjs`; drifting it to
+   the old vocabulary fails the smoke test by name on **11 of 41** pinned rows
+   and drifting it to a name-only reading fails on **5 of 41**. app.js was
+   restored from the generator and is byte-identical.
+4. **The probe tables are ROWS, not names.** Every bank-deposit case in
+   `smoke-test.mjs` and `gen-generic-twin.mjs` was a bare string, so **not one
+   reached the issuer half or the conjunction** — both arms could have been
+   inert with the table green, which is this generator's own recorded failure
+   at v189 and v190. One case per condition, in both directions, 41 in the
+   smoke test and 21 in the generator, and the generator now asserts TRUTH as
+   well as agreement (two verbatim copies agree even when both are wrong).
+5. **The measurement did not go through `scratchpad/apppath.mjs`'s `render()`.**
+   `render()` computes `er = star ? info.er : fundERRow(f)` — two of the page's
+   eleven fee suppressors, and `bankDepositFee` is one of the nine it drops, so
+   a before/after through it would have reported a **false zero**. The harness
+   here (`scratchpad/bd-chain.mjs`) rebuilds the whole `er` expression from
+   `lib-disclose` exports, with `annuityFeeIsGuaranteeOnly(name, fundER)`,
+   `isInvestmentContractRow(f, name, namesAFund)`, the `!tk` conjunct from the
+   resolved ticker, and the `star ? info.er : (noPublicPrice ? null :
+   fundERRow(f))` ordering intact. Controlled: over the first 120,000 published
+   rows `render()` prints a fee on **7,937 (6.61%)** that the page suppresses
+   and the chain never under-suppresses relative to it — consistent with the
+   17:4xZ whole-store figure of 6.4%. `apppath.mjs` was deliberately NOT edited
+   (its repair is tracked in that entry).
+6. **Both pins proved load-bearing.** `APPJS_PATH`, `DISCLOSE_PATH` and
+   `LIB4I_PATH` were each pointed at a path that does not exist and each
+   **threw** (3 of 3); the harness also reads `isBankDepositRow.length` and
+   adapts, because calling the new two-argument signature on the old module
+   passes a row object where a string is expected, reads `"[object Object]"`
+   and would report every row unflagged — a false zero in the flattering
+   direction.
+
+Gates: `parser-gate` green (all specimens), `lib-disclose --selftest` 25/25,
+`fund-er-test` 0 failures, `smoke-test` green, `build-seo-pages` 0 page
+changes. `PARSER_VERSION` stays **197** — display-side, no re-parse, nothing to
+pre-register.
+
+**TWO THINGS FOUND OUTSIDE THE ITEM.**
+
+**(a) `scripts/merge-name-test.mjs` EXITS 0, not 1.** `CLAUDE.md`'s open list
+says it "exits 1 at HEAD, on the #545 weld arm's own negative control reporting
+itself DECORATIVE. Verified pre-existing." Measured both ways here — stashed to
+HEAD and with this diff applied — it exits **0** both times with
+**byte-identical** output. The `drop the #536 junk guard: disagrees on 1 of 27`
+line it prints is informational, not a failure. The queue entry is corrected in
+`CLAUDE.md`. *A queue entry records what was true when it was written; a re-size
+is a new measurement.*
+
+**(b) `scripts/map-test.mjs` fails in this sandbox at HEAD** —
+`ERR_CERT_AUTHORITY_INVALID` on a page resource, identical with the diff
+stashed and applied. An outbound-TLS property of the sandbox, not a repo
+defect; CI is the place that settles it.
+
+**SIZED, NOT SHIPPED — THE KROGER LOAN ASSET, with its predicate stated.**
+Published menu rows whose CLEANED name carries loan vocabulary (`\bloans?\b`,
+or `\bnotes?\b`/`\bpromissory\b` with a participant/receivable marker — the two
+tests `isLoanVocabularyRow` opens with) and which **no shipped loan predicate
+reaches**, every one of which is anchored on the name BEGINNING with the loan
+words: **722 rows / 613 entries / 625 plans / 4,537,997 participants /
+$1,651,174,135.** Split by evidence the page already has, not by my reading:
+
+| | rows | plans | ppl | |
+|---|---|---|---|---|
+| resolves a REGISTERED fund | 5 | 5 | 1,939 | `Invesco Senior Loan ETF` (BKLN), `Fidelity VIP ContraFund Portfolio (includes loan collateral fund)` — a real fund wearing a loan caption, correctly left alone |
+| priced, no ticker | 3 | 3 | 11,666 | `AMERICAN FUNDS Loan` at 0.4, `MetLife Guaranteed Fixed Account & Loan Collateral` at 0.35, `Plan Loan Default Fund-Guaranteed annuity` at 0.35 — a fabricated fee on a loan line |
+| **no fund identified** | **714** | **618** | **4,524,704** | |
+| …loan words in the LAST three tokens | 554 | 501 | 3,963,553 | the Kroger shape |
+| …loan words earlier | 160 | 127 | 746,258 | mostly REAL securities: `FEDERAL HOME LOAN BANK OF BOSTON` and nine sister banks (45,161 ppl, $115.7M at 5.6% of the menu), `LOANS SECURED BY MTGES-RESID.` (J&J's mortgages) — these must NOT be typed as participant loans |
+
+**The narrowest and cleanest subset is the custodian's country roll-up caption:
+11 rows / 18 plans / 1,506,159 participants / $500,411,091** — `Other United
+States - USD &&&KROGER LOAN ASSET` ($142,816,695, 2.2% of its published menu,
+in a trust whose member plans total 674,716 participants; Kroger's own plan is
+262,794), plus Marriott ($125,071,506), HD Supply, Coca-Cola, WK Kellogg,
+McDonald's, Schlumberger, PaineWebber, UBS PR, Sunchem and `United States - USD
+KOHL'S LOAN ACCOUNT` (58,746 ppl, $44,362,425, the one member with no `&&&`
+separator). Each names the SPONSOR and the word LOAN after a geography caption.
+**Every one publishes no ticker and no fee, so the harm is the CLAIM alone** —
+the row reads as a menu choice. A second, wider family is the plan-loan
+accounting line: **359 rows / 329 plans / 1,219,186 participants /
+$42,169,025** (`Plan Loan Default Fund` ×194, `Loan Collateral Fund` ×76, `Loan
+Escrow Fund` ×16, `Loan Reserve`, `Lincoln Loan Resrv`). Not shipped here and
+not shipped in the same commit, per the item.
+
+---
+
 ## 2026-10-02 (17:4xZ) — the draw harness applies 2 of app.js's 11 fee suppressors, so every fee a draw has printed is an UPPER BOUND; and the ampersand gap is one house, 228 rows / 443,410 participants shippable
 
 **THE DRAW FOUND A DEFECT IN THE INSTRUMENT THE DRAW IS, AND IT REFUTED A CLAIM
