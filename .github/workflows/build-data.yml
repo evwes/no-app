@@ -73,6 +73,14 @@ jobs:
         run: |
           sudo apt-get install -y -q poppler-utils >/dev/null 2>&1 || true
           node scripts/parser-gate.mjs
+      # The ingest scanners have crafted-fixture tests that need no network and
+      # run in under a second. They were written and never wired, so a
+      # regression in Schedule C or D capture could only have been found by
+      # reading the data afterwards. Fails fast, before the download.
+      - name: Ingest gate (Schedule C item 1, Schedule D names)
+        run: |
+          node scripts/schc-item1-test.mjs
+          node scripts/schd-name-test.mjs
       - name: Download and process DOL Form 5500 datasets
         run: node scripts/build-data.mjs
       - name: Plan parse shards

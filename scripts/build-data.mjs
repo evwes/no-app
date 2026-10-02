@@ -553,7 +553,17 @@ async function scanSchR(csv, year, wantedAcks) {
   return out;
 }
 
-async function scanSchC(year, wantedAcks, feeTables) {
+/* `item1Tables` (optional) collects Schedule C Part I line 1(b) provider names
+ * per ack, so the fee shard can carry them. WHY IT MATTERS: the published
+ * recordkeeper falls back to item 1 when item 2 has no rows, and 1,274 plans
+ * are in exactly that state — PSEG among them, publishing "Invesco Advisors,
+ * Inc" where its own notes say Fidelity is the recordkeeper. Until now the fee
+ * shards stored ONLY item 2, so no store-side measurement could see what item 1
+ * had offered, and the EFAST2 extracts are unreachable from a sandbox. Storing
+ * the names makes that whole class measurable without a download. It changes
+ * nothing the site publishes: the selection below is untouched and nothing
+ * renders `i1`. */
+async function scanSchC(year, wantedAcks, feeTables, item1Tables) {
   const files = [
     `F_SCH_C_PART1_ITEM2_${year}_Latest.zip`,
     `F_SCH_C_PART1_ITEM2_CODES_${year}_Latest.zip`,
@@ -671,6 +681,13 @@ async function scanSchC(year, wantedAcks, feeTables) {
         if (!wantedAcks.has(ack)) continue;
         const name = r[c1.name];
         if (!name) continue;
+        if (item1Tables) {
+          let l1 = item1Tables.get(ack);
+          if (!l1) { l1 = []; item1Tables.set(ack, l1); }
+          // capped and de-duplicated: a few filings list the same discloser on
+          // every line, and the shard is fetched per plan by the browser
+          if (l1.length < 8 && !l1.includes(name)) l1.push(name);
+        }
         const isPlatform = RK_BRANDS.some(([re]) => re.test(name));
         const cur = best.get(ack);
         const score = (isPlatform ? 2 : 0) + 1; // always below any item-2 pick
@@ -1024,6 +1041,7 @@ const schH = new Map();
 const schC = new Map();
 const schR = new Map();
 const feeTables = new Map(); // ack -> Sch C provider fee rows
+const item1Tables = new Map(); // ack -> Sch C Part I line 1(b) discloser names
 const schA = new Map();      // ack -> insurance commissions/fees
 for (const year of YEARS) {
   const acks = new Set(universe.filter((p) => p.year === year).map((p) => p.ack));
@@ -1034,7 +1052,7 @@ for (const year of YEARS) {
     for (const [k, v] of await scanSchH(csv, year, acks)) schH.set(k, v);
   } catch (e) { console.warn(`Sch H ${year}: ${e.message}`); }
   try {
-    for (const [k, v] of await scanSchC(year, acks, feeTables)) schC.set(k, v);
+    for (const [k, v] of await scanSchC(year, acks, feeTables, item1Tables)) schC.set(k, v);
   } catch (e) { console.warn(`Sch C ${year}: ${e.message}`); }
   try {
     const csv = unzip(await download(year, `F_SCH_R_${year}_Latest.zip`));
@@ -1074,7 +1092,13 @@ for (const p of unlinkable.sort((a, b) => ((schH.get(b.ack) || {}).assetsEOY || 
     if (provs && provs.length) entry.p = provs;
     const a = schA.get(p.ack);
     if (a) entry.a = a;
-    if (!entry.p && !entry.a) continue;
+    const i1 = item1Tables.get(p.ack);
+    if (i1 && i1.length) entry.i1 = i1;
+    /* `i1` alone is enough to keep the entry. Without this a plan with no
+     * item-2 rows and no Schedule A gets NO shard at all -- which is exactly
+     * PSEG's state, and would have left the class this field exists to measure
+     * still invisible. */
+    if (!entry.p && !entry.a && !entry.i1) continue;
     buckets[shardOf(p.ack)][p.ack] = entry;
     plansWithFees++;
   }
