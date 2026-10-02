@@ -971,9 +971,31 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   measurement can see it and the DOL extracts are unreachable from the sandbox.
   **One prep-run change — store the item-1 name beside the item-2 rows — makes
   the whole class measurable.** No parser bump, no re-parse.
-  **SAFE AND SEPARABLE:** adding VALIC to `RK_BRANDS` changes 0 published names
-  today (it already wins) but protects ~200,000 participants from any future
-  veto. **PSEG is the motivating case and is unarguable**: its filing says
+  **THE BLOCKER IS BEING REMOVED — #550 IN FLIGHT (push on `a34bfe8d`, observed
+  queued 19:11Z).** `build-data` now stores the Schedule C Part I line 1(b)
+  discloser names on the fee shard as `i1`. **It publishes nothing**: the
+  selection is untouched, item 1 still scores below any item-2 pick, and no
+  renderer reads `i1`. **One line would have made it useless** — the shard
+  assembly skipped any plan with neither item-2 rows nor a Schedule A entry,
+  which is PRECISELY PSEG's state (both its acks are verified ABSENT from
+  `data/fees` today), so `i1` alone now keeps the entry.
+  **PRE-REGISTERED for #550:** the new `Ingest gate` step passes (schc-item1
+  10/10, schd-name 10/10); PSEG's acks `…674275001` (shard 25) and
+  `…060242001` (shard 57) gain an entry carrying `i1`; and **the published
+  recordkeeper moves on 0 plans**, which is the safety claim — if `rk` coverage
+  moves at all, the selection was not as independent as the test asserts.
+  No `PARSER_VERSION` bump, so confident/HIGH/warn and the rest of the coverage
+  line must be unchanged.
+  **AND `schd-name-test.mjs` HAD NEVER RUN IN CI** — written during the Schedule
+  D work and wired into no workflow, so an ingest regression could only have
+  been found by reading the data afterwards. Both ingest tests now run in prep
+  before the download, on crafted fixtures with no network.
+  **SAFE AND SEPARABLE, AND ITS "CHANGES 0" IS UNVERIFIED:** adding VALIC to
+  `RK_BRANDS` would protect ~200,000 participants from any future veto — but a
+  platform brand scores **2e15**, ABOVE the 1e15 a coded-15 row gets, so it
+  could OUTRANK a correctly-coded recordkeeper on a plan that has both. Measure
+  before shipping it; the claim that it changes nothing was read off the 199
+  blanks alone. **PSEG is the motivating case and is unarguable**: its filing says
   *"Fidelity Investments is the recordkeeper"*, it files NO item-2 rows (a
   1,274-plan bucket), and we publish `Invesco Advisors, Inc` — a string that
   appears NOWHERE in the filing, whose only Invesco mentions are holdings
