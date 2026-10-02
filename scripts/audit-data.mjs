@@ -459,7 +459,26 @@ try {
       const genericShare = e.funds.filter((x) => isGenericTypeName(String(x.name).trim()))
         .reduce((a, x) => a + (+x.value || 0), 0) / sum;
       if (genericShare >= 0.25) { genericPlans++; if (worstGeneric.length < 6) worstGeneric.push(ack); }
-      if (top && (+top.value || 0) / sum >= 0.9 && NOT_FUND_SHAPED.test(String(top.name).trim())) {
+      /* v197: THIS CHECK ASKED A NARROWER QUESTION THAN THE GUARD IT AUDITS,
+       * and had done since v105. `dominanceIsAggregate` in lib-4i refuses a
+       * lineup when the top row is `NOT_FUND_SHAPED.test(n) ||
+       * isGenericTypeName(n)`; this line tested NOT_FUND_SHAPED alone, so the
+       * whole `isGenericTypeName` half was invisible to it — every widening
+       * of that vocabulary since (v137's plurals, v187's commingled funds,
+       * v189's kerning, v190's bare trust, v192's preferred stock, v196's
+       * measurement basis, v197's misspellings) moved the guard and could not
+       * move this metric. It published `0 dominant non-fund` into the coverage
+       * line and the auto-managed issue while the standalone
+       * `audit-dominant-row.mjs` and the guard itself both read 4.
+       *
+       * A CHECK PUBLISHES A CLAIM, and this is the same shape as the
+       * `diff-lineups` failure lib-4i's own comment records — a check policing
+       * a rule that reads ANY while testing NAME. Now it asks the guard's own
+       * question. REPORTING ONLY: nothing here changes a parse, and the
+       * threshold below is untouched at 60. */
+      const topName = String(top && top.name || "").trim();
+      if (top && (+top.value || 0) / sum >= 0.9 &&
+          (NOT_FUND_SHAPED.test(topName) || isGenericTypeName(topName))) {
         dominantPlans++; if (worstDominant.length < 6) worstDominant.push(`${ack} ("${String(top.name).slice(0, 34)}")`);
       }
       /* the filing states a symbol and we publish a DIFFERENT one.

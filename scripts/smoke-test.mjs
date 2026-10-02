@@ -558,11 +558,33 @@ try {
      * arm from the generated twin must fail HERE. */
     "M utual Fund", "Mutua l Fund", "Regi s tered i nves tment compa ni es",
     "Colle ctive Trust", "Registered Investm ent Com pany", "Group Annuity C ontrac t",
+    /* v197's TWO ARMS, pinned for the same reason the v189 cases were and this
+     * time with the reason MEASURED: of the 64 probes in the generator exactly
+     * two reach these arms and NEITHER changes verdict, so the tether would
+     * have been decorative for the newest rules in it. Arm A is one edit from
+     * the vocabulary's own enumerated language; arm B is a leading `Plan`. */
+    "Registered invesmtent company", "Mutuai Fund", "Mututal Fund", "Matual Funds",
+    "Guranteed Investment Contract", "Pooled Seperate Account", "Common/Coliective Trust",
+    "Commen Stock", "Collectve Trust Funds", "Registered Investmnet Companies",
+    "TUTUAL FUNDS", "Group Annuity Contact", "Plans Master Trust",
+    "Plan's Interest in Master Trust", "Plan Assets",
     /* must NOT be generic — real funds, including v188's pinned controls */
     "Fidelity 500 Index Fund", "Vanguard Target Retirement 2030",
     "AMERICAN FUNDS BLANC MUTUAL FUND", "Mutual of America MUTUAL FUND",
     "Separate Account A, at fair value", "Fidelity Government Money Market Fund",
-    "Vanguard tax-Managed Balanced Fund Admiral Shares Registered Investment Company"];
+    "Vanguard tax-Managed Balanced Fund Admiral Shares Registered Investment Company",
+    /* v197's must-KEEPs, and these ARE the safety argument. `Truist` is a BANK
+     * one edit from `trust`, refused by the ten-letter floor. `Common Stock B`
+     * and `Class E Common Stock` are real employer-stock designations (QuikTrip
+     * files the latter at $3,535,256,080), refused by the single-character last
+     * token. `Plan Loan Default Fund` is a real TIAA fund and stands for the
+     * 155 of 160 leading-plan names arm B leaves alone; the four funds and two
+     * firms after it stand for the 3,296-row leading-word population that a
+     * general one-word strip would have destroyed. */
+    "Truist", "Tru ist", "Common Stock B", "Class E Common Stock",
+    "Plan Loan Default Fund", "Plan Fidelity 500 Index",
+    "Target Retirement 2035 Trust", "American Mutual Fund", "INVESCO QQQ TRUST",
+    "iShares Gold Trust", "Northern Trust", "Wilmington Trust"];
   const genGot = await page.evaluate((cs) => {
     if (typeof window.__wampoGenericName !== "function") return null;
     return cs.map((n) => window.__wampoGenericName(n));
@@ -573,9 +595,19 @@ try {
     for (const n of genDrift) console.error(`  ${JSON.stringify(n)}  app.js=${genGot[genCases.indexOf(n)]}  lib-4i=${isGenericTypeName(n)}`);
     fail(`the generated generic-name twin in app.js disagrees with scripts/lib-4i.mjs on ${genDrift.length} of ${genCases.length} names — regenerate it`);
   }
-  for (const n of genCases.slice(0, 22))
+  /* THE SPLIT IS DERIVED, NOT TYPED. It was `slice(0, 22)` / `slice(22)`, and
+   * a hardcoded boundary in a two-sided pin list is a rule waiting to be
+   * asserted BACKWARDS: insert a must-FLAG case below the line and it is
+   * pinned as a real fund, which passes until the arm that should catch it is
+   * added. v197 added fifteen cases above the line and twelve below, so the
+   * numbers would have had to move by hand in the same commit. Anchored on the
+   * first must-KEEP name instead, and asserted — if that name is renamed the
+   * test says so rather than silently pinning everything one way. */
+  const genKeepFrom = genCases.indexOf("Fidelity 500 Index Fund");
+  if (genKeepFrom < 1) fail("smoke-test: the generic-name must-KEEP anchor is gone from genCases — the two halves of the pin list can no longer be told apart");
+  for (const n of genCases.slice(0, genKeepFrom))
     if (!isGenericTypeName(n)) fail(`generic-name predicate no longer recognises an asset-class label: ${JSON.stringify(n)}`);
-  for (const n of genCases.slice(22))
+  for (const n of genCases.slice(genKeepFrom))
     if (isGenericTypeName(n)) fail(`generic-name predicate now calls a REAL FUND generic: ${JSON.stringify(n)}`);
 
   /* AND THE ROW DECISION, which is the half the name test cannot see. Whether

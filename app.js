@@ -1013,7 +1013,36 @@
     [/^(?:sub[- ]?total|total)\s*[:.]?\s+/i, ""],
     [/^description\s*:\s*/i, ""],
     [/^shares\s+(?:of|in)\s+/i, ""],
-    [/^(?:individual|managed|master|annuity|variable annuity in)\s+/i, ""],
+    /* v197 ARM B — ONE LEADING WORD DEFEATED THE ANCHOR, and the word is the
+     * filing's own `Plan`. `isGenericTypeName("Master Trust")` is TRUE (v190
+     * shipped exactly that name, for exactly this reason) and
+     * `isGenericTypeName("Plans Master Trust")` is FALSE, so General Motors'
+     * two plans publish `Plans Master Trust` at 12.9% and 14.4% of their menus
+     * — $1,264,065,000 and $3,424,814,000 — with a blank type cell, read by
+     * 136,838 participants. A fix for one FORM of a name is not a fix for the
+     * name.
+     *
+     * IT IS A DECORATION AND NOT A VOCABULARY ENTRY, and the measurement is
+     * what decided that. A general "strip one leading word" rule reaches 3,296
+     * published rows and is dominated by REAL FUNDS — `Target Retirement 2035
+     * Trust` (Vanguard, 222 rows), `American Mutual Fund` (216), `INVESCO QQQ
+     * TRUST` (123), `Washington Mutual Fund` (67), `iShares Gold Trust` (32),
+     * plus the firms `Northern Trust`, `Wilmington Trust`, `First Bank &
+     * Trust`. So the leading word has to come from a CLOSED set of words that
+     * cannot identify anything, which is what this arm already is.
+     *
+     * WHOLE-POPULATION COST, not a sample: of the 160 distinct published names
+     * beginning with plan/plans/plan's, this reaches 5 and KEEPS 155 — among
+     * them `Plan Loan Default Fund` (194 rows, a real TIAA fund), `Plan's
+     * interest in the Hilton Stable Value Fund`, every `Plans Participating In
+     * Master Trust: <numbers>` roster line and all the participant-loan prose.
+     * The anchor is what does that: the remainder must be the WHOLE vocabulary
+     * term, so `Plan Fidelity 500 Index` is untouched.
+     *
+     * The sibling candidate leads were measured and are NOT added: `other`
+     * reaches 121 rows and all 121 are ALREADY `NOT_FUND_SHAPED`, so the guard
+     * sees them today and nothing is gained. */
+    [/^(?:individual|managed|master|annuity|variable annuity in|plan(?:'|’)?s?)\s+/i, ""],
     [/\s*[:;.]+$/, ""],
     [/[,;]?\s*at fair value$/i, ""],
     /* v196 — the MEASUREMENT BASIS in every spelling the store uses, and a
@@ -1042,6 +1071,43 @@
     }
     return s;
   }
+  const GTA_MIN_TYPO_LEN = 10;
+  const GTA_TERMS = ["totalregisteredinvestmentcompany","totalregisteredinvestmentcompanies","totalcommoncollectiveinvestmenttrustsfunds","totalcommoncollectiveinvestmenttrustsfund","totalcommoncollectiveinvestmenttrustsportfolios","totalcommoncollectiveinvestmenttrustsportfolio","totalcommoncollectiveinvestmenttrusts","totalcommoncollectiveinvestmenttrustfunds","totalcommoncollectiveinvestmenttrustfund","totalcommoncollectiveinvestmenttrustportfolios","totalcommoncollectiveinvestmenttrustportfolio","totalcommoncollectiveinvestmenttrust","totalcommoncollectivetrustsfunds","totalcommoncollectivetrustsfund","totalcommoncollectivetrustsportfolios","totalcommoncollectivetrustsportfolio","totalcommoncollectivetrusts","totalcommoncollectivetrustfunds","totalcommoncollectivetrustfund","totalcommoncollectivetrustportfolios","totalcommoncollectivetrustportfolio","totalcommoncollectivetrust","totalcollectiveinvestmenttrustsfunds","totalcollectiveinvestmenttrustsfund","totalcollectiveinvestmenttrustsportfolios","totalcollectiveinvestmenttrustsportfolio","totalcollectiveinvestmenttrusts","totalcollectiveinvestmenttrustfunds","totalcollectiveinvestmenttrustfund","totalcollectiveinvestmenttrustportfolios","totalcollectiveinvestmenttrustportfolio","totalcollectiveinvestmenttrust","totalcollectivetrustsfunds","totalcollectivetrustsfund","totalcollectivetrustsportfolios","totalcollectivetrustsportfolio","totalcollectivetrusts","totalcollectivetrustfunds","totalcollectivetrustfund","totalcollectivetrustportfolios","totalcollectivetrustportfolio","totalcollectivetrust","totalmutualfunds","totalmutualfund","totalcommonandpreferredstocks","totalcommonandpreferredstock","totalcommonstocks","totalcommonstock","totalcorporatestocks","totalcorporatestock","totalpooledseparateaccounts","totalpooledseparateaccount","totalseparateaccounts","totalseparateaccount","totalguaranteedinvestmentcontracts","totalguaranteedinvestmentcontract","totalguaranteedinterestcontracts","totalguaranteedinterestcontract","totalgroupannuitycontracts","totalgroupannuitycontract","totalcommingledtrustfunds","totalcommingledtrustfund","totalcommingledinvestmentfunds","totalcommingledinvestmentfund","totalcommingledfunds","totalcommingledfund","totalpooledseparateaccountfunds","totalpooledseparateaccountfund","totalplaninterestinmastertrustsfunds","totalplaninterestinmastertrustsfund","totalplaninterestinmastertrusts","totalplaninterestinmastertrustfunds","totalplaninterestinmastertrustfund","totalplaninterestinmastertrust","totalplanmastertrustsfunds","totalplanmastertrustsfund","totalplanmastertrusts","totalplanmastertrustfunds","totalplanmastertrustfund","totalplanmastertrust","totalinterestinmastertrustsfunds","totalinterestinmastertrustsfund","totalinterestinmastertrusts","totalinterestinmastertrustfunds","totalinterestinmastertrustfund","totalinterestinmastertrust","totalmastertrustsfunds","totalmastertrustsfund","totalmastertrusts","totalmastertrustfunds","totalmastertrustfund","totalmastertrust","totaltrusts","totaltrust","totalstatements","totalstatement","totalpreferredstocks","totalpreferredstock","totalinvestments","totalinvestment","totalassets","totalbeginningfairvalues","totalbeginningfairvalue","totalbeginningcontractvalues","totalbeginningcontractvalue","totalbeginningmarketvalues","totalbeginningmarketvalue","totalbeginningnetassetvalues","totalbeginningnetassetvalue","totalbeginningbookvalues","totalbeginningbookvalue","totalendingfairvalues","totalendingfairvalue","totalendingcontractvalues","totalendingcontractvalue","totalendingmarketvalues","totalendingmarketvalue","totalendingnetassetvalues","totalendingnetassetvalue","totalendingbookvalues","totalendingbookvalue","totalfairvalues","totalfairvalue","totalcontractvalues","totalcontractvalue","totalmarketvalues","totalmarketvalue","totalnetassetvalues","totalnetassetvalue","totalbookvalues","totalbookvalue","registeredinvestmentcompany","registeredinvestmentcompanies","commoncollectiveinvestmenttrustsfunds","commoncollectiveinvestmenttrustsfund","commoncollectiveinvestmenttrustsportfolios","commoncollectiveinvestmenttrustsportfolio","commoncollectiveinvestmenttrusts","commoncollectiveinvestmenttrustfunds","commoncollectiveinvestmenttrustfund","commoncollectiveinvestmenttrustportfolios","commoncollectiveinvestmenttrustportfolio","commoncollectiveinvestmenttrust","commoncollectivetrustsfunds","commoncollectivetrustsfund","commoncollectivetrustsportfolios","commoncollectivetrustsportfolio","commoncollectivetrusts","commoncollectivetrustfunds","commoncollectivetrustfund","commoncollectivetrustportfolios","commoncollectivetrustportfolio","commoncollectivetrust","collectiveinvestmenttrustsfunds","collectiveinvestmenttrustsfund","collectiveinvestmenttrustsportfolios","collectiveinvestmenttrustsportfolio","collectiveinvestmenttrusts","collectiveinvestmenttrustfunds","collectiveinvestmenttrustfund","collectiveinvestmenttrustportfolios","collectiveinvestmenttrustportfolio","collectiveinvestmenttrust","collectivetrustsfunds","collectivetrustsfund","collectivetrustsportfolios","collectivetrustsportfolio","collectivetrusts","collectivetrustfunds","collectivetrustfund","collectivetrustportfolios","collectivetrustportfolio","collectivetrust","mutualfunds","mutualfund","commonandpreferredstocks","commonandpreferredstock","commonstocks","commonstock","corporatestocks","corporatestock","pooledseparateaccounts","pooledseparateaccount","separateaccounts","separateaccount","guaranteedinvestmentcontracts","guaranteedinvestmentcontract","guaranteedinterestcontracts","guaranteedinterestcontract","groupannuitycontracts","groupannuitycontract","commingledtrustfunds","commingledtrustfund","commingledinvestmentfunds","commingledinvestmentfund","commingledfunds","commingledfund","pooledseparateaccountfunds","pooledseparateaccountfund","planinterestinmastertrustsfunds","planinterestinmastertrustsfund","planinterestinmastertrusts","planinterestinmastertrustfunds","planinterestinmastertrustfund","planinterestinmastertrust","planmastertrustsfunds","planmastertrustsfund","planmastertrusts","planmastertrustfunds","planmastertrustfund","planmastertrust","interestinmastertrustsfunds","interestinmastertrustsfund","interestinmastertrusts","interestinmastertrustfunds","interestinmastertrustfund","interestinmastertrust","mastertrustsfunds","mastertrustsfund","mastertrusts","mastertrustfunds","mastertrustfund","mastertrust","statements","preferredstocks","preferredstock","investments","investment","beginningfairvalues","beginningfairvalue","beginningcontractvalues","beginningcontractvalue","beginningmarketvalues","beginningmarketvalue","beginningnetassetvalues","beginningnetassetvalue","beginningbookvalues","beginningbookvalue","endingfairvalues","endingfairvalue","endingcontractvalues","endingcontractvalue","endingmarketvalues","endingmarketvalue","endingnetassetvalues","endingnetassetvalue","endingbookvalues","endingbookvalue","fairvalues","contractvalues","contractvalue","marketvalues","marketvalue","netassetvalues","netassetvalue","bookvalues"];
+  const GTA_TERM_SET = new Set(GTA_TERMS);
+  function oneEdit(a, b) {
+    if (a === b) return false;
+    const la = a.length, lb = b.length;
+    if (Math.abs(la - lb) > 1) return false;
+    if (la === lb) {
+      const d = [];
+      for (let i = 0; i < la; i++) if (a[i] !== b[i]) { d.push(i); if (d.length > 2) return false; }
+      if (d.length === 1) return true;
+      return d.length === 2 && d[1] === d[0] + 1 && a[d[0]] === b[d[1]] && a[d[1]] === b[d[0]];
+    }
+    const s = la < lb ? a : b, l = la < lb ? b : a;
+    let i = 0, j = 0, skipped = false;
+    while (i < s.length && j < l.length) {
+      if (s[i] === l[j]) { i++; j++; continue; }
+      if (skipped) return false;
+      skipped = true; j++;
+    }
+    return true;
+  }
+
+  function isTypoGenericTypeName(n) {
+    const s = String(n || "").trim();
+    if (!s) return false;
+    for (const cand of [s, stripGenericDecoration(s)]) {
+      const tk = cand.split(/\s+/);
+      if (tk.length > 1 && tk[tk.length - 1].replace(/[^A-Za-z0-9]/g, "").length <= 1) continue;
+      const k = cand.toLowerCase().replace(/[^a-z]/g, "");
+      if (k.length < GTA_MIN_TYPO_LEN) continue;
+      if (GTA_TERM_SET.has(k)) continue;
+      for (const t of GTA_TERMS) if (oneEdit(k, t)) return true;
+    }
+    return false;
+  }
+
   function isGenericTypeName(n) {
     const s = String(n || "").trim();
     if (!s) return false;
@@ -1061,8 +1127,14 @@
      * read, which is why this arm is stated structurally. */
     const bare = stripGenericDecoration(s);
     if (!bare) return true;
+    /* v197: the fourth arm asks the SAME question of a name one KEYSTROKE away
+     * from the vocabulary's own language. It lives here, beside the despaced
+     * arm, rather than in GENERIC_TYPE_ANY — see isTypoGenericTypeName: putting
+     * it in the vocabulary would move `isClassLabel` and so the region contest,
+     * which is what cost v196 two lineups on a +0/-0 registration. */
     return GENERIC_TYPE_ANY.test(s) || GENERIC_TYPE_ANY.test(bare)
-        || GENERIC_TYPE_DESPACED.test(s.toLowerCase().replace(/[^a-z]/g, ""));
+        || GENERIC_TYPE_DESPACED.test(s.toLowerCase().replace(/[^a-z]/g, ""))
+        || isTypoGenericTypeName(s);
   }
 
   const isGenericName = isGenericTypeName;

@@ -1064,6 +1064,132 @@ from the cycle that would have cleared it.
   green printing `strip/pricer cross-check: 5 witnesses`, fund-er-test
   83/26/19/18/28, merge-name-test 20/20 22/22 25/25 20/20 22/22 15/15.
   `docs/accuracy-log.md` 2026-10-02 (05:5xZ).
+- **IN FLIGHT: #544 (v197) — ONE PREDICATE, TWO ARMS, AND THE BLAST RADIUS IS ZERO
+  WHERE IT MATTERS BY CONSTRUCTION: 222 rows / 171 plans / 628,541 participants /
+  $7,012,007,386 stop publishing a vehicle-type label as a holding, 0 lost, 0 of
+  them publishing a ticker; 70 rows / 69 plans / 261,795 ppl reach a reader; 4
+  lineups / 3,373 ppl are WITHDRAWN.** `isGenericTypeName` is anchored `^…$`
+  deliberately, and two populations sat just outside it. **ARM A, a misspelling:**
+  R&L Carriers (22,449 ppl) publishes `Registered invesmtent company` at 2.7% of
+  an otherwise clean 31-row menu — **hours after the contract fee gate recorded
+  `investment` misspelled SEVEN ways defeating one vocabulary, the same word
+  misspelled defeats a second, unrelated one.** **ARM B, one leading word:**
+  General Motors' two plans publish `Plans Master Trust` at 12.9% and 14.4%
+  ($1,264,065,000 and $3,424,814,000, blank type cell, 136,838 readers), where
+  `isGenericTypeName("Master Trust")` is TRUE — v190 shipped exactly that name —
+  and one leading word defeats the anchor. *A fix for one FORM of a name is not a
+  fix for the name.*
+  **ARM A IS DERIVED FROM THE VOCABULARY'S OWN LANGUAGE AND IS NOT A LIST OF
+  MISSPELLINGS.** `GTA_SOURCE` is alternation and `?` optionals with no `*` or
+  `+`, so its language is **FINITE**: `gtaLanguage()` enumerates it (342 strings,
+  256 despaced terms ≥10 letters, **every one asserted to be accepted by the regex
+  it came from**) and the test is ONE EDIT — including a **TRANSPOSITION**, which
+  is what `invesmtent` is — from a member.
+  **MY FIRST PREDICATE WAS REFUTED BY ITS OWN OUTPUT AND THE SIZE WAS THE TELL:
+  do not carry 14,911 rows or 17,195,958 ppl forward.** A one-edit-per-TOKEN test
+  against a word set reads 14,911 rows whose commonest members are **REAL FUNDS**
+  (`MFS Mid Cap Value R6` 936, `Key Guaranteed Portfolio Fund` 472), because a
+  one-edit neighbourhood around `value`/`stock`/`fund`/`portfolio` reaches
+  ordinary fund names. Asking whether the WHOLE NAME is then a term gives
+  **14,911 → 220.**
+  **AND A GENERAL LEADING-WORD STRIP IS CATASTROPHIC, measured before it was
+  written: 3,296 rows / 887 leads, dominated by REAL FUNDS** — `Target Retirement
+  2035 Trust` 222, `American Mutual Fund` 216, `INVESCO QQQ TRUST` 123, `iShares
+  Gold Trust` 32, plus the firms `Northern Trust`, `Wilmington Trust`, `FIRST BANK
+  & TRUST`. **Do not carry 3,296 forward.** So arm B is a `GENERIC_DECO` entry and
+  not a vocabulary one; whole-population, of the **160** names beginning with
+  plan/plans/plan's it reaches **5** and KEEPS **155**, including `Plan Loan
+  Default Fund` (194 rows, a real TIAA fund). The sibling lead `other` was
+  measured and REFUSED — 121 rows, **all 121 already `NOT_FUND_SHAPED`**.
+  **THE REGION-CONTEST HAZARD IS CLOSED BY CONSTRUCTION, NOT BY LUCK.** v196
+  widened `GENERIC_TYPE_ANY_EXTRA`, and `GENERIC_TYPE_ANY` feeds `isClassLabel` →
+  `isStatement`'s label-share arm → **the REGION CONTEST**, which demoted two
+  whole regions and cost two lineups on a +0/−0 registration. Every consumer was
+  enumerated from source first; both v197 arms live inside `isGenericTypeName`, as
+  v189's despaced arm does, and **`GENERIC_TYPE_ANY`, `GENERIC_TYPE_NAME` and
+  `GENERIC_TYPE_DESPACED` are all byte-identical to HEAD**, so `isClassLabel` is
+  the IDENTITY. Corroborated rather than argued: over **415,346 distinct published
+  row names `isClassLabel` changed on 0**, and **`labely` moved on 0 of 60,170
+  entries.**
+  **THE CONDITION THAT MATTERS MOST WAS FOUND BY READING THE POPULATION:**
+  v188 leaves `Separate Account A, at fair value` uncaught ON PURPOSE (a capital
+  `A` may be a real designation, case being the only signal), the decoration strip
+  reduces it to `Separate Account A` — one edit from the vocabulary — and **it is
+  published at 90.3% of its menu**, so the arm would WITHDRAW a lineup a pinned
+  must-KEEP exists to protect, **by a side door that never touches the
+  case-sensitive footnote arm**. The single-character last-token guard is
+  therefore asked **PER CANDIDATE** and not of the filed name; it also refuses
+  `Common Stock B` and `Class E Common Stock` (QuikTrip files the latter at
+  $3,535,256,080). The other two conditions: a **ten-letter floor**, because
+  `truist` is one edit from `trust` and a bank would become an asset-class label;
+  and **the letters-only form must not already BE a term**, because letters-only
+  strips digits so `22,782.2669 mutual fund shares` reduces to `mutualfund`, one
+  edit from its own plural — a welded SHARE-COUNT row, **a different class, not
+  folded in**.
+  **ALL 165 DISTINCT NAMES READ, not sampled, not one naming a fund.**
+  **ARM B'S OWN CONTRIBUTION IS 3 ROWS / 3,573 PPL AND NOT GM'S 136,838 — THE
+  HANDOFF'S ATTRIBUTION WAS WRONG.** Arm A reaches GM by itself
+  (`plansmastertrust` is one insertion from `planmastertrust`, already in the
+  language): arm A alone 216 rows, both arms 3 rows / 141,497 ppl / $4,782,194,617,
+  arm B alone 3 rows. *A population an arm COVERS is not what it CONTRIBUTES*, and
+  **the two arms are not independent — arm B's strip can remove the very
+  difference arm A would have measured.**
+  **A DEFECT IN THE INSTRUMENT I WAS ABOUT TO REGISTER A NUMBER FROM, fixed in the
+  same commit: `audit-data.mjs:462` tested `NOT_FUND_SHAPED` ALONE while the guard
+  it audits tests `NOT_FUND_SHAPED || isGenericTypeName`**, so the in-pipeline
+  dominant-row metric has been **blind to that whole half of the guard since
+  v105** — through v137, v187, v189, v190, v192 and v196 — printing `0 dominant
+  non-fund` into the coverage line while the standalone and the guard both read 4.
+  *A CHECK PUBLISHES A CLAIM.* **Attributed: the repair contributes 0 on the
+  pre-change store**, so all 4 findings are v197's, and **the repair is what lets
+  the run's own audit SEE the four withdrawals it exists to watch.** Threshold
+  untouched at 60.
+  **`audit-generic-names` 237 → 261 plans / 508 → 565 rows and THE 230 THRESHOLD
+  IS NOT MOVED** — already exceeded, so `fabricated-name` is STANDING either side
+  and **HIGH holds at 4** (3 `contrib` + `fabricated-name`): at baseline, not
+  above.
+  **GATES: `scripts/generic-typo-test.mjs`, IN THE REPO** because the harnesses
+  that sized this item were wiped by a container restart — **102 pins and SEVEN
+  NEGATIVE CONTROLS, one per condition**, each written out in full rather than by
+  surgery and each failing BY NAME on exactly its own cases (61 / 3 / **0,
+  labelled DECORATIVE on the pins and controlled on the STORE instead** / 3 / 7 /
+  66 / 3). **TWO OF MY OWN EXPECTATIONS WERE WRONG AND THE CONTROLS CAUGHT BOTH:**
+  `Assset` was pinned from memory as one edit from `assets` and differs in THREE
+  positions (decorative, removed); and the transposition control is **7 cases, not
+  the 2 I registered** — `Gauranteed`, `Mutula`, `acocunt`, `Investmnet` and
+  `invesmtent` are all transpositions, so **plain Levenshtein would miss 7 of the
+  66 flagged pins.**
+  **THE TWIN FAILED CLOSED on the first regeneration** rather than emitting a copy
+  missing the arm; `oneEdit` and `isTypoGenericTypeName` are sliced VERBATIM and
+  the 256 terms emitted as data (the compiled-regex precedent). Probes 64 → 95,
+  **added after measuring that only 2 of the 64 existing probes reach the new arms
+  and NEITHER changes verdict.** Drifting the twin fails by name on exactly the 12
+  arm-A cases; drifting the leading-plan alternative on exactly `Plan Assets`.
+  **AND A HARDCODED `slice(0, 22)` BOUNDARY IN A TWO-SIDED PIN LIST IS GONE** —
+  insert a must-FLAG case below that line and it is pinned as a REAL FUND; the
+  split is now derived from the first must-KEEP name and asserted.
+  **I ALSO WALKED INTO A TRAP THIS FILE ALREADY NAMES:** my first twin-drift
+  control called `gen-generic-twin.mjs --check`, there is no such mode, so it
+  **REGENERATED the twin and erased the drift**, reporting 0 of 6 — verbatim the
+  2026-09-30 failure, repeated by the person who had read it. Redone read-only.
+  **8 crawlable pages / 186,394 ppl**, every changed cell read (GM ×2, Permanente
+  30,066, Garmin 9,892, Mack Trucks 4,659, NYU Langone 2,804, Buchanan 1,326,
+  Tighe & Bond 809). `diff-lineups HEAD`: **CONFIDENCE LOST 1** (The Eby Group,
+  **3→3 rows, ratio 0.99→0.99** — the rows do not move, only the classification),
+  **0 fabricated rows introduced**; 3 specimens pinned. parser-gate, smoke,
+  `lib-disclose --selftest` 25/25, fund-er-test 83/26/19/18/28, merge-name-test
+  all green.
+  **PRE-REGISTERED, a CEILING plus a NAMED SET** (a withdrawn region may be
+  rescued by a prior-year fallback and `fallbacks.json` is artifact-only, so no
+  whole-store scan can predict it): `confident` **60,170 → 60,166, −4 at most /
+  +0**, every loss inside {The Eby Group 2,054, Ortho Benefits 570, Skico 499,
+  Electromed 250}; `== FABRICATED-HOLDING SHAPES` **257 generic-named, 0 dominant
+  non-fund**; **HIGH 4**; warn **556**; overshoot **372**, overshootTrust 12,
+  aggRow 113, dl **19**, pv 197 at ~100%; lineups 59,822 → 59,818, entries 65,479
+  unchanged. **`tkExact` 37.32, `tkComparable` 3.27 and `tkShare` 24.47 CANNOT
+  move** — v197 writes no `stk`, no `ftk` and no name, and `fundER` is called on
+  the NAME and never on a symbol, which is a stronger claim than a tolerance.
+  `docs/accuracy-log.md` 2026-10-02 (06:3xZ).
 - **THE 05:5xZ DRAW, TWO CLEAN MENUS AND NO NEW CLASS.** Seed 20261002055, pool
   **60,312 published lineups / 100,136,907 ppl**. **Walmart (1,996,659 ppl, 42
   rows @ 0.952) reads clean end to end on a NEWER ack

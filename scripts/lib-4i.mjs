@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 196;
+export const PARSER_VERSION = 197;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -450,6 +450,209 @@ export const GENERIC_TYPE_DESPACED = new RegExp(GTD_SOURCE, "i");
 if (!GENERIC_TYPE_DESPACED.test("registeredinvestmentcompanies") || GENERIC_TYPE_DESPACED.test("americanfundsblancmutualfund")) {
   throw new Error("lib-4i: GENERIC_TYPE_DESPACED no longer agrees with its probes — it must match a despaced asset-class label and refuse a real fund");
 }
+/* v197 ARM A — THE VOCABULARY WAS RIGHT AND A KEYSTROKE WAS THE HOLE.
+ *
+ * R&L Carriers (22,449 participants) publishes `Registered invesmtent company`
+ * at 2.7% of an otherwise clean 31-row menu with a BLANK type cell. Hours
+ * after the contract fee gate recorded `investment` misspelled SEVEN ways
+ * defeating one vocabulary, the same word misspelled defeats a second,
+ * unrelated one. 220 rows / 169 plans / 627,678 participants publish such a
+ * label, 0 of them with a ticker, so the harm is the CLAIM alone — and FOUR
+ * of them dominate their own menu at >=90%, which makes this a CONFIDENCE
+ * defect too: `dominanceIsAggregate` learns *non-fund* from this predicate,
+ * so a typo in the label hides the row from the guard as well as from the
+ * reader.
+ *
+ * IT IS DERIVED FROM THE VOCABULARY'S OWN LANGUAGE AND IS NOT A LIST OF
+ * MISSPELLINGS. GTA_SOURCE is alternation and `?` optionals with no `*` or
+ * `+`, so its language is FINITE: `gtaLanguage` enumerates it (342 strings)
+ * and the test is one edit — substitution, insertion, deletion or
+ * TRANSPOSITION — from a member, on the letters-only form. Transposition is
+ * load-bearing and plain Levenshtein would miss the row that found the arm:
+ * `invesmtent` vs `investment` is `tm` -> `mt`, distance 1 under
+ * Damerau-Levenshtein and 2 without it.
+ *
+ * MY FIRST PREDICATE WAS REFUTED BY ITS OWN OUTPUT AND THE SIZE WAS THE TELL.
+ * A one-edit-per-TOKEN test against a word set split out of GTA_SOURCE reads
+ * 14,911 rows / 12,352 plans / 17.2M participants whose most frequent members
+ * are REAL FUNDS — `MFS Mid Cap Value R6` 936, `MFS Value Fund` 678, `Key
+ * Guaranteed Portfolio Fund` 472 — because a one-edit neighbourhood around
+ * `value`, `stock`, `fund` and `portfolio` reaches ordinary fund names. What
+ * works is asking whether the WHOLE NAME is then a vocabulary term, which the
+ * `^…$` anchor already enforces: a repaired name carrying any identifying word
+ * still fails, so real funds are refused BY CONSTRUCTION. 14,911 -> 220.
+ *
+ * THREE CONDITIONS, each measured and each costing something named.
+ *
+ * (1) A FLOOR OF TEN LETTERS. The 1-edit neighbourhood of a SHORT label holds
+ *     real words: `trust` is five letters and `truist` is one edit away, so
+ *     without the floor Truist Financial becomes an asset-class label. The
+ *     floor is on the string COMPARED, and it costs the short terms — a
+ *     misspelled bare `Assets` (6) or `Fair Value` (9) is not reached.
+ *
+ * (2) THE LETTERS-ONLY FORM MUST NOT ALREADY BE A TERM. Letters-only strips
+ *     DIGITS, so `22,782.2669 mutual fund shares` reduces to `mutualfund` —
+ *     which sits one edit from its own plural `mutualfunds` and would have
+ *     flagged. That is a welded SHARE-COUNT row, a different class with its
+ *     own cause, and folding it in here would have put 18 rows under a label
+ *     that does not describe them.
+ *
+ * (3) THE LAST TOKEN MUST NOT BE A SINGLE CHARACTER, asked PER CANDIDATE and
+ *     not once of the filed name. v188 leaves `Separate Account A, at fair
+ *     value` uncaught ON PURPOSE — a capital `A` may be a real separate-
+ *     account designation and case is the only signal — and the decoration
+ *     strip reduces it to `Separate Account A`, one edit from the vocabulary.
+ *     It is published at 90.3% of its menu, so without this condition the arm
+ *     withdraws a lineup that a pinned must-KEEP exists to protect, by a side
+ *     door that never touches the case-sensitive footnote arm. It costs
+ *     `Individual Mutual Fund, 9, 74 I shares` and `Mutuat Fund; 6% shares`,
+ *     which reduce to a trailing `I` and are refused with it. Trailing only:
+ *     a share class sits at the END of a name, and `i Mutual funds` is OCR
+ *     debris rather than a designation.
+ *
+ * ALL 165 DISTINCT NAMES THE ARM REACHES WERE READ, not sampled, and not one
+ * names a fund: `Mutuai Fund` 10, `Mututal Fund` 7, `Guranteed Investment
+ * Contract` 6, `Pooled Seperate Account` 5, `Registered Investmnet Companies`,
+ * `Commen Stock`, `Collectve Trust Funds`, `TUTUAL FUNDS`, `[/tutual Fund`,
+ * `“otalMutualFunds`, `Registered Investment Co1npany`.
+ *
+ * IT DOES NOT TOUCH GENERIC_TYPE_ANY, AND THAT BOUNDS THE BLAST RADIUS TO
+ * ZERO WHERE IT MATTERS. v196 widened `GENERIC_TYPE_ANY_EXTRA` and so moved
+ * `isClassLabel` -> `isStatement`'s label-share arm -> the REGION CONTEST,
+ * which demoted two whole regions from menu to statement and cost a
+ * pre-registration that said +0/-0. `isClassLabel` reads GENERIC_TYPE_ANY,
+ * GENERIC_TYPE_NAME and CLASS_ONLY_NAME and NONE of them changes here — this
+ * arm lives inside `isGenericTypeName`, exactly as v189's despaced arm does,
+ * so `subtotalIndices`, the v149 class-subtotal run, the v147 house+product
+ * compose and the region contest are all untouched BY CONSTRUCTION. */
+export function gtaLanguage(src = GTA_SOURCE) {
+  let s = src;
+  if (s.startsWith("^")) s = s.slice(1);
+  if (s.endsWith("$")) s = s.slice(0, -1);
+  const out = [];
+  for (const alt of gtaSplit(s)) gtaWalk(alt, 0, "", out);
+  return [...new Set(out)];
+}
+function gtaSplit(s) {
+  const parts = [];
+  let depth = 0, start = 0;
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    if (c === "\\") { i++; continue; }
+    if (c === "[") { while (i < s.length && s[i] !== "]") i++; continue; }
+    if (c === "(") depth++;
+    else if (c === ")") depth--;
+    else if (c === "|" && !depth) { parts.push(s.slice(start, i)); start = i + 1; }
+  }
+  parts.push(s.slice(start));
+  return parts;
+}
+/* Recursive descent over the subset of syntax GTA_SOURCE uses. It THROWS on
+ * anything else rather than enumerating the wrong language quietly — an
+ * unbounded quantifier would make the language infinite and this test
+ * meaningless, and a silent wrong enumeration is the computed-and-discarded
+ * shape this project has paid for five times. */
+function gtaWalk(re, i, acc, out) {
+  if (i >= re.length) { out.push(acc); return; }
+  const c = re[i];
+  if (c === "(") {
+    if (re.slice(i, i + 3) !== "(?:") throw new Error(`lib-4i: gtaLanguage met an unsupported group at ${i}: ${re.slice(i, i + 8)}`);
+    let depth = 0, j = i;
+    for (; j < re.length; j++) {
+      if (re[j] === "[") { while (j < re.length && re[j] !== "]") j++; continue; }
+      if (re[j] === "\\") { j++; continue; }
+      if (re[j] === "(") depth++;
+      else if (re[j] === ")") { depth--; if (!depth) break; }
+    }
+    if (depth) throw new Error("lib-4i: gtaLanguage met an unbalanced group");
+    const inner = re.slice(i + 3, j);
+    const opt = re[j + 1] === "?";
+    const next = j + 1 + (opt ? 1 : 0);
+    for (const alt of gtaSplit(inner)) {
+      const sub = [];
+      gtaWalk(alt, 0, "", sub);
+      for (const piece of sub) gtaWalk(re, next, acc + piece, out);
+    }
+    if (opt) gtaWalk(re, next, acc, out);
+    return;
+  }
+  if (c === "[") {
+    let j = i + 1; const chars = [];
+    for (; j < re.length && re[j] !== "]"; j++) {
+      if (re[j] === "\\") { chars.push(re[++j]); continue; }
+      chars.push(re[j]);
+    }
+    const opt = re[j + 1] === "?";
+    const next = j + 1 + (opt ? 1 : 0);
+    for (const ch of chars) gtaWalk(re, next, acc + ch, out);
+    if (opt) gtaWalk(re, next, acc, out);
+    return;
+  }
+  if (c === "\\") {
+    const opt = re[i + 2] === "?";
+    gtaWalk(re, i + 2 + (opt ? 1 : 0), acc + re[i + 1], out);
+    if (opt) gtaWalk(re, i + 3, acc, out);
+    return;
+  }
+  if (c === "*" || c === "+") throw new Error("lib-4i: gtaLanguage met an unbounded quantifier — GTA_SOURCE's language is no longer finite and the one-edit test is meaningless");
+  if (c === ")") throw new Error("lib-4i: gtaLanguage met a stray )");
+  const opt = re[i + 1] === "?";
+  gtaWalk(re, i + 1 + (opt ? 1 : 0), acc + c, out);
+  if (opt) gtaWalk(re, i + 2, acc, out);
+}
+export const GTA_MIN_TYPO_LEN = 10;
+const GTA_TERMS = [...new Set(gtaLanguage().map((t) => t.toLowerCase().replace(/[^a-z]/g, "")))]
+  .filter((t) => t.length >= GTA_MIN_TYPO_LEN);
+const GTA_TERM_SET = new Set(GTA_TERMS);
+/* ASSERTED AT IMPORT, in this file's own style: the enumeration is derived, so
+ * a later edit to GENERIC_TYPE_NAME or GENERIC_TYPE_ANY_EXTRA could silently
+ * produce a different language — or none — and every count built on this arm
+ * would keep printing a plausible number. Both halves are pinned: the
+ * enumeration must be non-trivial, and EVERY string it produces must be
+ * accepted by the regex it came from. */
+if (GTA_TERMS.length < 100) {
+  throw new Error(`lib-4i: gtaLanguage enumerated only ${GTA_TERMS.length} terms of ${GTA_MIN_TYPO_LEN}+ letters — the derivation is a silent no-op, fix it rather than shipping a quiet guard`);
+}
+for (const t of gtaLanguage()) {
+  if (!GENERIC_TYPE_ANY.test(t)) {
+    throw new Error(`lib-4i: gtaLanguage produced ${JSON.stringify(t)}, which GENERIC_TYPE_ANY itself rejects — the enumeration no longer describes the vocabulary`);
+  }
+}
+/* Damerau-Levenshtein (optimal string alignment) capped at 1. Capped on
+ * purpose: nothing here needs a distance, only the question "is this one edit
+ * away", and the cap makes the whole-store scan cheap. */
+export function oneEdit(a, b) {
+  if (a === b) return false;
+  const la = a.length, lb = b.length;
+  if (Math.abs(la - lb) > 1) return false;
+  if (la === lb) {
+    const d = [];
+    for (let i = 0; i < la; i++) if (a[i] !== b[i]) { d.push(i); if (d.length > 2) return false; }
+    if (d.length === 1) return true;
+    return d.length === 2 && d[1] === d[0] + 1 && a[d[0]] === b[d[1]] && a[d[1]] === b[d[0]];
+  }
+  const s = la < lb ? a : b, l = la < lb ? b : a;
+  let i = 0, j = 0, skipped = false;
+  while (i < s.length && j < l.length) {
+    if (s[i] === l[j]) { i++; j++; continue; }
+    if (skipped) return false;
+    skipped = true; j++;
+  }
+  return true;
+}
+export function isTypoGenericTypeName(n) {
+  const s = String(n || "").trim();
+  if (!s) return false;
+  for (const cand of [s, stripGenericDecoration(s)]) {
+    const tk = cand.split(/\s+/);
+    if (tk.length > 1 && tk[tk.length - 1].replace(/[^A-Za-z0-9]/g, "").length <= 1) continue;
+    const k = cand.toLowerCase().replace(/[^a-z]/g, "");
+    if (k.length < GTA_MIN_TYPO_LEN) continue;
+    if (GTA_TERM_SET.has(k)) continue;
+    for (const t of GTA_TERMS) if (oneEdit(k, t)) return true;
+  }
+  return false;
+}
 /* v188 — THE VOCABULARY WAS RIGHT AND THE DECORATION WAS THE HOLE.
  *
  * `GENERIC_TYPE_ANY` is anchored `^…$`, deliberately: an unanchored version
@@ -499,7 +702,36 @@ const GENERIC_DECO = [
   [/^(?:sub[- ]?total|total)\s*[:.]?\s+/i, ""],
   [/^description\s*:\s*/i, ""],
   [/^shares\s+(?:of|in)\s+/i, ""],
-  [/^(?:individual|managed|master|annuity|variable annuity in)\s+/i, ""],
+  /* v197 ARM B — ONE LEADING WORD DEFEATED THE ANCHOR, and the word is the
+   * filing's own `Plan`. `isGenericTypeName("Master Trust")` is TRUE (v190
+   * shipped exactly that name, for exactly this reason) and
+   * `isGenericTypeName("Plans Master Trust")` is FALSE, so General Motors'
+   * two plans publish `Plans Master Trust` at 12.9% and 14.4% of their menus
+   * — $1,264,065,000 and $3,424,814,000 — with a blank type cell, read by
+   * 136,838 participants. A fix for one FORM of a name is not a fix for the
+   * name.
+   *
+   * IT IS A DECORATION AND NOT A VOCABULARY ENTRY, and the measurement is
+   * what decided that. A general "strip one leading word" rule reaches 3,296
+   * published rows and is dominated by REAL FUNDS — `Target Retirement 2035
+   * Trust` (Vanguard, 222 rows), `American Mutual Fund` (216), `INVESCO QQQ
+   * TRUST` (123), `Washington Mutual Fund` (67), `iShares Gold Trust` (32),
+   * plus the firms `Northern Trust`, `Wilmington Trust`, `First Bank &
+   * Trust`. So the leading word has to come from a CLOSED set of words that
+   * cannot identify anything, which is what this arm already is.
+   *
+   * WHOLE-POPULATION COST, not a sample: of the 160 distinct published names
+   * beginning with plan/plans/plan's, this reaches 5 and KEEPS 155 — among
+   * them `Plan Loan Default Fund` (194 rows, a real TIAA fund), `Plan's
+   * interest in the Hilton Stable Value Fund`, every `Plans Participating In
+   * Master Trust: <numbers>` roster line and all the participant-loan prose.
+   * The anchor is what does that: the remainder must be the WHOLE vocabulary
+   * term, so `Plan Fidelity 500 Index` is untouched.
+   *
+   * The sibling candidate leads were measured and are NOT added: `other`
+   * reaches 121 rows and all 121 are ALREADY `NOT_FUND_SHAPED`, so the guard
+   * sees them today and nothing is gained. */
+  [/^(?:individual|managed|master|annuity|variable annuity in|plan(?:'|’)?s?)\s+/i, ""],
   [/\s*[:;.]+$/, ""],
   [/[,;]?\s*at fair value$/i, ""],
   /* v196 — the MEASUREMENT BASIS in every spelling the store uses, and a
@@ -553,8 +785,14 @@ export function isGenericTypeName(n) {
    * read, which is why this arm is stated structurally. */
   const bare = stripGenericDecoration(s);
   if (!bare) return true;
+  /* v197: the fourth arm asks the SAME question of a name one KEYSTROKE away
+   * from the vocabulary's own language. It lives here, beside the despaced
+   * arm, rather than in GENERIC_TYPE_ANY — see isTypoGenericTypeName: putting
+   * it in the vocabulary would move `isClassLabel` and so the region contest,
+   * which is what cost v196 two lineups on a +0/-0 registration. */
   return GENERIC_TYPE_ANY.test(s) || GENERIC_TYPE_ANY.test(bare)
-      || GENERIC_TYPE_DESPACED.test(s.toLowerCase().replace(/[^a-z]/g, ""));
+      || GENERIC_TYPE_DESPACED.test(s.toLowerCase().replace(/[^a-z]/g, ""))
+      || isTypoGenericTypeName(s);
 }
 /* ASSERTED AT IMPORT, in this file's own style: a strip whose patterns stop
  * matching returns its input unchanged and reports nothing, so the widening
@@ -573,7 +811,21 @@ for (const s of ["Shares of Registered Investment Companies", "Mutual fund share
   "Investments using NAV practical expedient", "Investment measured at NAV(A)",
   "measured at net asset value (a)", "measured at NAV 1", "Collective Trusts(1) at NAV",
   "Common Collective Trust Measured at NAV", "Investments Mutual funds, at fair value",
-  "Beginning Market Value", "dividends/interest reinvested"]) {
+  "Beginning Market Value", "dividends/interest reinvested",
+  /* v197 ARM A — a keystroke away from the vocabulary's own language. Added
+   * BECAUSE NOT ONE of the cases above reaches the new arm and none of them
+   * changes verdict (measured: 0 of 25 must-catch and 0 of 19 must-keep move).
+   * Every one verified against the SHIPPED predicate before being written
+   * down, and `Group Annuity Contact` is here because the missing `r` is in a
+   * structural word rather than in `investment`. */
+  "Registered invesmtent company", "Mutuai Fund", "Mututal Fund", "Matual Funds",
+  "Guranteed Investment Contract", "Pooled Seperate Account", "Common/Coliective Trust",
+  "Commen Stock", "Collectve Trust Funds", "Registered Investmnet Companies",
+  "TUTUAL FUNDS", "[/tutual Fund", "Group Annuity Contact", "Registered Investment Co1npany",
+  "“otalMutualFunds", "lnvestments, At Fair Value", "Pooled Separate Accountb",
+  /* v197 ARM B — one leading word, the filing's own `Plan`. */
+  "Plans Master Trust", "Plan's Interest in Master Trust", "Plan Assets",
+  "Plan’s interest in Master Trust at fair value"]) {
   if (!isGenericTypeName(s)) {
     throw new Error(`lib-4i: v188's decoration strip no longer reaches ${JSON.stringify(s)} — the widening is silent, fix it rather than shipping a quiet guard`);
   }
@@ -591,7 +843,25 @@ for (const s of ["Fidelity Government Money Market Fund", "AMERICAN FUNDS BLANC 
   "Guaranteed Income Fund (at contract value)", "Acuity DC Trust at fair value",
   "Fidelity MIP CL 1 (Fair Value)", "PIMCO Short-Term Floating NAV Portfolio II",
   "Investment Company Of America", "Stable value fund, at contract value",
-  "Separate Account A, at fair value"]) {
+  "Separate Account A, at fair value",
+  /* v197 — the must-KEEPs the new arms are measured against, every one of
+   * them a case the arm REACHES and REFUSES rather than one it never sees.
+   * `Truist` is a BANK one edit from `trust` and is refused by the ten-letter
+   * floor; `Common Stock B` and `Class E Common Stock` are real employer-stock
+   * designations (QuikTrip files the latter at $3,535,256,080) refused by the
+   * single-character last token; `Separate Account A, at fair value` above is
+   * v188's own named cost and the condition that keeps it is asked PER
+   * CANDIDATE for that reason. The leading-plan keeps are the whole-population
+   * evidence for arm B: 155 of 160 such names are untouched. */
+  "Truist", "Tru ist", "Truist, at fair value", "Truist Fund",
+  "Common Stock B", "Class B Common Stock", "Class E Common Stock",
+  "Plan Loan Default Fund", "Plan's interest in the Hilton Stable Value Fund",
+  "Plans Participating In Master Trust: 35497 75441", "Plan Fidelity 500 Index",
+  "Spartan 500 Index Plus Fund", "Invesco Stable Value Trust B1",
+  "MFS Mid Cap Value R6", "Key Guaranteed Portfolio Fund", "MFS Value Fund",
+  "Target Retirement 2035 Trust", "American Mutual Fund", "INVESCO QQQ TRUST",
+  "Washington Mutual Fund", "iShares Gold Trust", "Northern Trust",
+  "Wilmington Trust", "FIRST BANK & TRUST", "American High-Income Trust"]) {
   if (isGenericTypeName(s)) {
     throw new Error(`lib-4i: v188's decoration strip now swallows the real fund ${JSON.stringify(s)} — narrow it rather than deleting a holding`);
   }

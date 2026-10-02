@@ -33,7 +33,8 @@
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import vm from "node:vm";
-import { GENERIC_TYPE_ANY, GENERIC_TYPE_DESPACED, isGenericTypeName } from "./lib-4i.mjs";
+import { GENERIC_TYPE_ANY, GENERIC_TYPE_DESPACED, isGenericTypeName,
+  isTypoGenericTypeName, gtaLanguage, GTA_MIN_TYPO_LEN } from "./lib-4i.mjs";
 import { isNamelessFundRow, isLoanDescriptionRow, isAnnuityContractRow,
   annuityFeeIsGuaranteeOnly, isInvestmentContractRow, isMistypedStockRow,
   mistypedStockFeeIsGuaranteeOnly, issuerPricedER, isCollectiveTrustName,
@@ -61,6 +62,28 @@ if (gs < 0) throw new Error("gen-generic-twin: isGenericTypeName moved in lib-4i
 const ge = lib.indexOf("\n}\n", gs) + 3;
 if (ge < 3) throw new Error("gen-generic-twin: isGenericTypeName's body has no closing brace in lib-4i");
 const genericfn = lib.slice(gs, ge).replace(/^export /, "");
+
+/* v197: the one-edit arm, and it travels as TWO verbatim function bodies plus
+ * ONE derived literal — the same split the compiled regex sources above
+ * already use. `gtaLanguage` enumerates GTA_SOURCE's finite language by
+ * recursive descent over regex syntax; shipping that enumerator to the browser
+ * would put a parser in the page to rebuild a list that cannot change without
+ * a regeneration, so the TERMS are emitted as data and the drift check is what
+ * polices them. `oneEdit` and `isTypoGenericTypeName` are sliced, because they
+ * are the rule. */
+const oes = lib.indexOf("export function oneEdit(");
+if (oes < 0) throw new Error("gen-generic-twin: oneEdit moved in lib-4i");
+const oneedit = lib.slice(oes, lib.indexOf("\n}\n", oes) + 3).replace(/^export /, "");
+const tgs = lib.indexOf("export function isTypoGenericTypeName(");
+if (tgs < 0) throw new Error("gen-generic-twin: isTypoGenericTypeName moved in lib-4i");
+const typofn = lib.slice(tgs, lib.indexOf("\n}\n", tgs) + 3).replace(/^export /, "");
+/* derived HERE from the same enumerator lib-4i uses, so the emitted list is
+ * never a hand-kept copy; it is asserted non-trivial for the same reason every
+ * other derivation in lib-4i is — a silent empty list would make the arm inert
+ * in the browser while the module-side tests all passed. */
+const GTA_TYPO_TERMS = [...new Set(gtaLanguage().map((t) => t.toLowerCase().replace(/[^a-z]/g, "")))]
+  .filter((t) => t.length >= GTA_MIN_TYPO_LEN);
+if (GTA_TYPO_TERMS.length < 100) throw new Error(`gen-generic-twin: only ${GTA_TYPO_TERMS.length} typo terms — the enumeration is a silent no-op`);
 
 /* `isNamelessFundRow` extracted VERBATIM from lib-disclose, body and all */
 const ns = dis.indexOf("export function isNamelessFundRow(");
@@ -211,6 +234,11 @@ ${deco.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
     }
     return s;
   }
+  const GTA_MIN_TYPO_LEN = ${GTA_MIN_TYPO_LEN};
+  const GTA_TERMS = ${JSON.stringify(GTA_TYPO_TERMS)};
+  const GTA_TERM_SET = new Set(GTA_TERMS);
+${oneedit.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
+${typofn.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
 ${genericfn.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
   const isGenericName = isGenericTypeName;
   window.__wampoGenericName = isGenericName;  // read by the smoke test only
@@ -376,7 +404,34 @@ const names = ["Mutual funds", "Mutual Fund Shares", "Sub-total: Registered Inve
   /* must stay real */ "Managed Income Portfolio, at fair value",
   "Voya Fixed Account, at contract value", "TIAA Traditional (contract value)",
   "PIMCO Short-Term Floating NAV Portfolio II", "Acuity DC Trust at fair value",
-  "Investment Company Of America", "Fidelity MIP CL 1 (Fair Value)"];
+  "Investment Company Of America", "Fidelity MIP CL 1 (Fair Value)",
+  /* v197 — ONE KEYSTROKE FROM THE VOCABULARY, and ONE LEADING WORD. Added for
+   * the sixth cycle running for the same reason, and this time MEASURED rather
+   * than assumed: of the 64 probes above, exactly TWO reach the new arms
+   * (`Group Annuity C ontrac t` via the bare form, `Plan interest in master
+   * trust` via the leading strip) and NEITHER changes verdict, because both
+   * were already true through an older arm. So the existing set cannot
+   * discriminate either rule and the twin would agree whether or not it
+   * carried them.
+   *
+   * The must-KEEP half is where the whole safety argument lives: `Truist` is a
+   * BANK one edit from `trust`; `Common Stock B` and `Class E Common Stock`
+   * are real employer-stock designations; `Separate Account A, at fair value`
+   * is v188's own named cost, which this arm reaches by a side door that never
+   * touches the case-sensitive footnote arm; and the four real funds and three
+   * firms below stand for the 3,296-row leading-word population a general
+   * strip would have destroyed. */
+  "Registered invesmtent company", "Mutuai Fund", "Mututal Fund", "Matual Funds",
+  "Guranteed Investment Contract", "Pooled Seperate Account", "Common/Coliective Trust",
+  "Commen Stock", "Collectve Trust Funds", "Registered Investmnet Companies",
+  "TUTUAL FUNDS", "Group Annuity Contact", "“otalMutualFunds",
+  "Plans Master Trust", "Plan's Interest in Master Trust", "Plan Assets",
+  /* must stay real */ "Truist", "Tru ist", "Truist, at fair value",
+  "Common Stock B", "Class E Common Stock", "Plan Loan Default Fund",
+  "Plan's interest in the Hilton Stable Value Fund", "Plan Fidelity 500 Index",
+  "Target Retirement 2035 Trust", "American Mutual Fund", "INVESCO QQQ TRUST",
+  "iShares Gold Trust", "Northern Trust", "Wilmington Trust",
+  "Plans Participating In Master Trust: 35497 75441"];
 const rows = [
   { name: "Mutual funds", type: "Mutual fund" }, { name: "M utual Fund", type: "" },
   { name: "COMMON STOCK", type: "Employer security" },
