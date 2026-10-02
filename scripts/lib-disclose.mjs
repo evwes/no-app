@@ -2833,3 +2833,73 @@ export function issuerPricedER(priceOf, cleanedName, issuer) {
   if (less && priceOf(iss + " " + less) === er) return null;
   return er;
 }
+
+/* ---------------------------------------------------------------------------
+ * THE TRUST'S OWN SCHEDULE D IS A FILED FUND LIST, AND IT WAS CAPTURED IN
+ * SEPTEMBER AND RENDERED NOWHERE (2026-10-02). Run #523 made `scanSchD` ingest
+ * MTIA acks so a master trust's Schedule D collective-trust interests are
+ * stored on the trust record as `cct` = [{n, v}]. 379 of 508 trusts carry one:
+ * 4,334 rows, $936.6B. It has had ZERO consumers outside the line that writes
+ * it, and `cct` is 231,260 of the 406,247 bytes of `mtias.json` -- a file every
+ * visitor already downloads at boot -- so MORE THAN HALF of that download has
+ * been an unused fund list. The cost was already paid; only the render was
+ * missing. The owner sent his own filing twice asking whether it had been acted
+ * on, and CLAUDE.md's #523 entry said "the owner's own filing is served" four
+ * lines above its own "nothing is published".
+ *
+ * WHO GAINS: 61 plans / 874,136 participants / $105.6B across 29 trusts --
+ * plans that publish NO menu of their own, whose trust publishes none either,
+ * and whose trust's Schedule D names at least three funds.
+ *
+ * THREE CONDITIONS, EACH PRICED:
+ *
+ * (1) A FLOOR OF THREE. Northrop Grumman's trust lists ONE fund at $11.4B -- a
+ *     trust holding a single collective trust, which is not a menu. Measured:
+ *     28 further plans / 235,635 ppl sit behind a trust listing 1-2 funds and
+ *     are deliberately left with the sentence they have.
+ *
+ * (2) A WOUND-DOWN PLAN IS EXCLUDED. 4 plans / 14,514 ppl report $0 year-end
+ *     assets, and this record's own rule is that a fund list for a plan nobody
+ *     is in anymore is fabrication risk for no user value -- the money has
+ *     already left, and the wind-down sentence is the better answer.
+ *
+ * (3) IT NEVER OVERRIDES A MENU. Asked only where the plan has no rows of its
+ *     own; measured at 0 of the 61 having a notes-derived option list either,
+ *     so there is no contest with the more plan-specific sentence.
+ *
+ * AND THE SHARE IS WHAT MAKES IT HONEST, which is the design finding rather
+ * than a caveat. Schedule D reports interests in COLLECTIVE TRUSTS and nothing
+ * else, so a trust also holding mutual funds, separate accounts or employer
+ * stock directly lists none of that. Across the 29 trusts the list accounts for
+ * 39.6% to 100.0% of the trust's own assets, median about 85% -- PSEG's is
+ * $2,006,425,398 of $4,417,985,729, so MORE THAN HALF ITS TRUST IS OUTSIDE THE
+ * LIST. Publishing this as "the funds" would be a false claim about every one
+ * of the 29. The caller must render `share` and must never present these as the
+ * plan's own per-fund balances: they are the TRUST's totals, shared with every
+ * sister plan.
+ *
+ * The contract is DATA, not a plan object, deliberately: `app.js` carries
+ * `plan.zeroEOY` where `build-seo-pages.mjs` reads `assetsEOY`, and a function
+ * reaching for a field name that differs between its two callers is the
+ * recorded way a measurement reports on itself. The caller states the facts. */
+export const TRUST_MENU_MIN_FUNDS = 3;
+export function trustScheduleDMenu(trust, hasOwnMenu, zeroEOY) {
+  if (hasOwnMenu || zeroEOY) return null;
+  const cct = trust && Array.isArray(trust.cct) ? trust.cct : [];
+  if (cct.length < TRUST_MENU_MIN_FUNDS) return null;
+  const rows = [];
+  for (const x of cct) {
+    const name = String((x && x.n) || "").replace(/\s+/g, " ").trim();
+    const value = Number((x && x.v) || 0);
+    if (name) rows.push({ name, value: value > 0 ? value : 0 });
+  }
+  if (rows.length < TRUST_MENU_MIN_FUNDS) return null;
+  rows.sort((a, b) => b.value - a.value || a.name.localeCompare(b.name));
+  const total = rows.reduce((a, x) => a + x.value, 0);
+  const assets = Number((trust && trust.assetsEOY) || 0);
+  /* a share over 1 is rounding in the filing (one trust reports the list $2
+   * above its own total), not a reason to withhold the list; clamp the CLAIM
+   * at 100% rather than print an impossible number */
+  const share = assets > 0 && total > 0 ? Math.min(1, total / assets) : null;
+  return { rows, total, trustAssets: assets > 0 ? assets : 0, share };
+}

@@ -7,6 +7,203 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-02 (17:1xZ) — the trust's own Schedule D was captured in September and rendered nowhere: 61 plans / 874,136 participants / $105.6B gain a named fund list, and the SHARE is what makes it publishable
+
+**THE OWNER ASKED TWICE AND THE SECOND TIME WAS THE ONE THAT LANDED.** At 16:0xZ
+I corrected CLAUDE.md's #523 entry, which opened its PSEG sentence with *"the
+owner's own filing is served"* four lines above its own *"nothing is
+published"*. That correction told the truth and shipped nothing. The owner then
+asked **"why is PSEG not updated on wampo"**, which is the same question with
+the documentation excuse removed, and the answer is that **a render was
+missing** — not a parse, not a source, not a run.
+
+**IT IS NOT STALENESS, AND THAT WAS THE FIRST THING CHECKED.** Both PSEG acks
+read `pv=197`, the same version as Walmart's, so they were re-parsed on the
+latest run. Three separate reasons produce an empty page and only the third is
+ours to fix:
+
+| | |
+|---|---|
+| PN 004 / PN 006's own schedule | `dx=band-lo`, 14 and 10 rows, **`rt=0`** — the rows account for essentially nothing against $2,277,238,892 and $2,176,615,313. A correct refusal: the money is in the trust. |
+| the trust's own 4i | `dx=few rw=1` — the trust files ONE aggregate line, so the trust route is empty too. |
+| **the 15 Vanguard funds the owner highlighted** | **captured and never rendered.** |
+
+**RUN #523 DID ITS JOB AND NOTHING READ THE RESULT.** That run made `scanSchD`
+ingest MTIA acks so a master trust's own Schedule D collective-trust interests
+are stored on the trust record as `cct` = `[{n, v}]`. **379 of 508 trusts carry
+one: 4,334 rows, $936,597,264,187.** Re-grepped: `cct` had **0 consumers**
+outside `build-data.mjs`'s own write and count lines; `app.js` and
+`build-seo-pages.mjs` referenced it **0 times**.
+
+**AND THE DOWNLOAD COST WAS ALREADY BEING PAID. `cct` is 231,260 of the 406,247
+bytes of `mtias.json`, a file every visitor fetches at boot** (`app.js:317`), so
+**more than half of that download has been an unused fund list.** There was no
+new fetch to justify, no new boot payload and no new source — only a render.
+*A capture with no consumer is indistinguishable from a missing feature, and it
+costs bandwidth to be invisible.*
+
+### Who gains, measured before anything was written
+
+```
+379 of 508 trusts carry a Schedule D fund list (4,334 rows, $936.6B)
+  61 plans / 874,136 participants / $105,553,150,641 across 29 trusts
+     publish NO menu of their own, their trust publishes none either,
+     and the trust's Schedule D names >=3 funds
+```
+
+Albertsons 236,172 · Mars PN 008 66,642 · Medtronic 55,692 · Nestlé 50,509 ·
+Johnson Controls 49,004 · Lumen 35,683 · Medical Management International
+26,723 · GXO 23,880 · Georgia-Pacific 22,298 · XPO 21,537 · Siemens Medical
+20,091 · Koch 18,027 · First American 17,155 · Fluor 16,213 · **PSEG PN 006
+8,667 and PN 004 4,114**.
+
+**WHAT THEY ARE SHOWN TODAY, read out of the store rather than assumed:** 39 get
+the trust-linked-opaque sentence, 12 the `mtiaName`/docShape sentence, 10 the
+filed-aggregate sentence. All three say no fund-by-fund detail is public, and
+for these 61 that is now **false** — the trust's own filing names between 3 and
+25 funds with values.
+
+### Three conditions, each priced, and the floor is the one that needed a case
+
+**(1) A FLOOR OF THREE.** Northrop Grumman's trust lists **ONE** fund at
+$11.4B — a trust holding a single collective trust, which is not a menu.
+Measured: **28 further plans / 235,635 ppl** sit behind a trust listing 1–2
+funds and are deliberately left with the sentence they have.
+
+**(2) A WOUND-DOWN PLAN IS EXCLUDED.** 4 plans / 14,514 ppl report $0 year-end
+assets, and this record's own rule is that a fund list for a plan nobody is in
+anymore is fabrication risk for no user value. The wind-down sentence is the
+better answer and keeps it.
+
+**(3) IT NEVER OVERRIDES A MENU, AND IT YIELDS TO THE NOTES.** Asked only where
+the plan has no rows of its own, and gated behind the audited-notes option list,
+which is about THIS PLAN rather than about the trust. **Measured at 0 of the 61
+having a notes menu**, so there is no contest today and the yield exists for the
+next filing that has both. *A precedence decision measured at zero is still a
+decision; recording that it is currently inert is what stops a later cycle
+reading the order as arbitrary.*
+
+### THE SHARE IS NOT A CAVEAT, IT IS THE CLAIM
+
+Schedule D reports interests in **COLLECTIVE TRUSTS and nothing else**, so a
+trust that also holds mutual funds, separate accounts or employer stock directly
+lists none of it. Across the 29 trusts the list accounts for **39.6% to 100.0%**
+of the trust's own assets, median about 85%:
+
+```
+100.0%  TARGET DATE FUNDS MTIA                 $294,275,603 of $294,275,601
+ 97.4%  KOCH COMPANIES DC MASTER TRUST       $13,062,078,239 of $13,404,413,873
+ 85.2%  MEDTRONIC, INC. MASTER TRUST FUND    $11,742,269,818 of $13,784,635,349
+ 84.6%  ALBERTSONS COMPANIES MASTER TRUST     $6,757,822,613 of $7,984,958,479
+ 56.2%  MASTER TRUST FOR SIEMENS MEDICAL      $4,385,647,205 of $7,806,952,571
+ 45.4%  PUBLIC SERVICE ENTERPRISE GROUP       $2,006,425,398 of $4,417,985,729
+ 39.6%  WELLPOWER 401(K) SAVINGS                 $91,469,498 of $230,770,754
+```
+
+**MORE THAN HALF OF THE OWNER'S OWN TRUST IS OUTSIDE ITS OWN LIST.** Rendering
+this as "the funds" would be a false claim about all 29, so both surfaces state
+the percentage and the denominator, say the amounts are **the trust's and not
+this plan's**, and say that no per-plan or per-participant balance is public for
+these funds. *The measurement that decides the wording is worth more than the
+feature.*
+
+One trust reports its list **$2 above** its own total (TARGET DATE FUNDS MTIA,
+$294,275,603 of $294,275,601) — filing rounding, not a reason to withhold the
+list. The claim is clamped at 100% rather than printing an impossible number,
+and that clamp has its own pinned control.
+
+### BOTH SURFACES, because this record carries four instances of one path
+
+The report (`app.js`) and the crawlable pages (`build-seo-pages.mjs`) are two
+display paths, and the largest instance on this record is that **the pages had
+never run `cleanFiledName` at all** while every repair was described as reaching
+readers. So one predicate, `trustScheduleDMenu` in `scripts/lib-disclose.mjs`,
+is imported by the generator and **SLICED VERBATIM** into app.js by
+`gen-generic-twin.mjs` — not typed into app.js, because four browser twins have
+been lost to three regenerations of that block and the tether caught every one.
+
+**THE CONTRACT IS DATA, NOT A PLAN OBJECT, DELIBERATELY:** `app.js` carries
+`plan.zeroEOY` where `build-seo-pages.mjs` reads `assetsEOY`, and a function
+reaching for a field name that differs between its two callers is the recorded
+way a measurement reports on itself. The caller states the facts
+(`hasOwnMenu`, `zeroEOY`) and the function judges.
+
+**SURFACE OUTCOME, from the regenerated files rather than a proxy** — *the page
+is the artifact*: **42 crawlable pages / 827,790 participants, 252 insertions
+and ZERO deletions.** Strictly additive. The 19 remaining plans of the 61 reach
+the report but sit outside the generator's `TOP_N = 5000`, which is the orphaned-
+page item this record already carries as the owner's call. PSEG's own page reads
+*"They account for 45.4% of the trust's $4.4 billion"* above its 15 funds, led
+by VFTC Institutional 500 Index Trust at $1,216,710,409.
+
+### A CALL THAT WOULD HAVE THROWN, AND IT WAS A GREP THAT CAUGHT IT
+
+My first draft of the app.js render called **`titleCase`**, which exists in
+`build-seo-pages.mjs` and **does not exist in `app.js`**. `fundTable` would have
+thrown `ReferenceError` and **blanked every row on every plan page** — far worse
+than the gap being fixed. Found by grepping for the helper before running
+anything, because `app.js` parses fine with an undefined call in a template
+literal that is only evaluated on the trust-held path, and the smoke test's
+trust-held specimens are the only place it would have surfaced. The report
+renders filed text AS FILED everywhere else (the `mtiaName` branch directly
+above uses `esc(plan.mtiaName)`), so matching that was also the right answer on
+the merits. *A helper that exists on one display path is not a helper.*
+
+### FOUR NEGATIVE CONTROLS, AND THE FIRST RUN OF ONE OF THEM WAS DECORATIVE
+
+Each variant written out in full, each required to fail BY NAME on exactly its
+own case:
+
+| control | fails on |
+|---|---|
+| floor 3 → 1 | the Northrop-shaped single-fund trust, by name |
+| drop the wound-down guard | the `zeroEOY` case, by name |
+| drop the share clamp | prints `1.0000000067963501`, by name |
+| drift the app.js twin only | the smoke tether, naming case 4 and printing both answers |
+
+**AND THE FOURTH PASSED SILENTLY ON ITS FIRST RUN, WHICH IS THE FINDING.**
+Drifting the floor from 3 to **2** changed no verdict, because my pins were a
+**3-fund** case and a **1-fund** case: 3 passes either way and 1 fails either
+way, so **the boundary itself was untested.** The generator's control A had the
+same hole and had looked like a pass for the same reason — it drifted the floor
+to 1, which the 1-fund case does reach. ***A floor of three is only tested by a
+case of exactly two.*** A two-fund must-be-null case was added to both tables,
+and both controls now fail by name. *A control that cannot fail is decorative,
+met for at least the sixth time on this record and the first time at a
+threshold's BOUNDARY rather than at a whole condition.*
+
+### GATES
+
+`parser-gate` green (frozen tether 7/7, the shape contract holding),
+`smoke-test` green printing both trust-held pages,
+`fund-er-test` 102/37/19/18/28 with 0 failures, `lib-disclose --selftest` 25/25,
+`gen-generic-twin` regenerating with 0 drift across every existing probe set.
+`scripts/merge-name-test.mjs` **exits 1 at HEAD** on the #545 weld arm's own
+control reporting itself decorative — verified pre-existing and untouched here.
+`map-test.mjs` fails in this sandbox on `ERR_CERT_AUTHORITY_INVALID` against the
+Google Fonts stylesheet, which is the proxy and not the test; CI runs the same
+job and is what settles it.
+
+**DISPLAY-SIDE: `PARSER_VERSION` stays 197, no store field moves, no run is
+needed, so there is nothing to pre-register.** The data has been in
+`mtias.json` since #523; what shipped is the reader.
+
+### Not done, with its reason
+
+- **The 28 plans / 235,635 ppl behind a 1–2 fund trust** keep the sentence they
+  have. Two funds is not a menu, and the floor is the guard.
+- **The 32 plans / 251,764 ppl whose trust carries no Schedule D capture at
+  all** are a separate question: whether those trusts filed no Schedule D, or
+  filed one `scanSchD` does not reach, is unmeasured and needs a prep run
+  because the EFAST2 extracts come from the DOL site, unreachable from here.
+- **The 19 of 61 with no crawlable page** are the `TOP_N = 5000` orphan item,
+  owner-gated because fixing it changes which URLs exist.
+- **No fee and no ticker is attached to these rows.** A collective trust has no
+  registered symbol by design, and a fee here would be derived rather than
+  sourced. The names are the claim.
+
+---
+
 ## 2026-10-02 (16:0xZ) — the owner asked whether his own filing had been acted on, and CLAUDE.md answered "served" four lines above its own "nothing is published"
 
 **NO CODE SHIPPED. WHAT CHANGED IS THE RECORD, AND THE DEFECT WAS IN THE RECORD

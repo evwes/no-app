@@ -763,18 +763,40 @@ published cells:
   files against the generator's `TOP_N = 5000`, so 62 pages / 169,447 ppl are
   served and outside every regeneration. Fixing it changes which URLs exist.
 
+**SHIPPED 2026-10-02 17:1xZ — THE TRUST'S SCHEDULE D FUND LIST, captured by
+#523 in September and rendered nowhere until the owner asked twice: 61 plans /
+874,136 participants / $105.6B across 29 trusts gain a named fund list, on BOTH
+surfaces, 42 crawlable pages / 827,790 ppl with 252 insertions and 0
+deletions.** `cct` had 0 consumers while being 231,260 of the 406,247 bytes of
+`mtias.json` that every visitor already downloads — more than half that
+download was an unused fund list, so the cost was paid and only the render was
+missing. **THE SHARE IS THE CLAIM, not a caveat:** Schedule D reports interests
+in COLLECTIVE TRUSTS and nothing else, so across the 29 trusts the list
+accounts for **39.6% to 100.0%** of the trust's own assets — PSEG's is
+$2,006,425,398 of $4,417,985,729, so more than half of the owner's own trust is
+OUTSIDE its own list. Both surfaces print the percentage and the denominator and
+say the amounts are the TRUST's, shared with every sister plan, with no per-plan
+or per-participant balance public. Three conditions, each priced: a floor of 3
+(Northrop's trust lists ONE fund at $11.4B — 28 plans / 235,635 ppl are left
+alone), wound-down plans excluded (4 / 14,514), and it never overrides a menu
+and yields to the audited-notes option list (measured at 0 of 61, so the
+precedence is currently inert and recorded as such). **`trustScheduleDMenu` is
+canonical in `lib-disclose`, SLICED VERBATIM into app.js, and tethered — and
+its contract is DATA (`hasOwnMenu`, `zeroEOY`) because app.js carries
+`plan.zeroEOY` where `build-seo-pages` reads `assetsEOY`.** My first app.js
+draft called `titleCase`, which exists only in `build-seo-pages.mjs` and would
+have thrown and blanked every row on every plan page; a grep caught it.
+**AND THE TWIN CONTROL PASSED SILENTLY ON ITS FIRST RUN:** my pins were a
+3-fund and a 1-fund case, so drifting the floor to **2** changed no verdict —
+*a floor of three is only tested by a case of exactly two.* Display-side,
+`PARSER_VERSION` stays 197, nothing to pre-register.
+**STILL OPEN from it:** 32 plans / 251,764 ppl whose trust carries NO Schedule D
+capture — whether those trusts filed none or filed one `scanSchD` cannot reach
+is unmeasured and needs a prep run (the extracts come from the DOL site,
+unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
+the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
+
 **QUEUED, SIZED, NOT SHIPPED:**
-- **The trust's Schedule D fund list is captured and never rendered: 65 plans /
-  888,650 ppl.** 379 of 508 trusts carry `cct` (4,334 rows, $936.6B) and `cct`
-  has ZERO consumers outside the line that writes it. These plans publish no
-  menu of their own (`band-lo`/`few`) AND their trust publishes none, while the
-  trust's own Schedule D names ≥3 funds. Albertsons 236,172 · Mars 66,642 ·
-  Medtronic 55,692 · Nestlé 50,509 · Johnson Controls 49,004 · Georgia-Pacific
-  22,298 · **PSEG PN 006 8,667 + PN 004 4,114, the owner's own filing**. The ≥3
-  floor is load-bearing: Northrop Grumman's trust lists ONE fund at $11.4B,
-  which is not a menu. Publishing it is a SEPARATE LABELLED CLAIM — a Schedule D
-  list is the TRUST's holdings, not the plan's 4i slice, so the wording must say
-  so and must not imply per-fund balances for this plan.
 - Double render: one holding published TWICE at an identical value under two
   spellings where BOTH rows resolve to the same ticker — 1,217 groups / 2,434
   rows / 515 entries / $943,251,783. 85 `lineup-overshoot` menus carry one and

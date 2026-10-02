@@ -10,7 +10,7 @@
  * EIN-PN (stable forever, no orphans when a sponsor renames). */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { matchQuoteOk } from "./lib-quote.mjs";
-import { coverageBand, filedUnit, cleanFiledName, isParticipantLoanRow, isNamelessFundRow, isLoanDescriptionRow, isLoanAnswerRow, isLoanMaturityRow, isLoanVocabularyRow, isDirectionCaptionRow, isOfficeListRow, isPageBreakCaptionRow } from "./lib-disclose.mjs";
+import { coverageBand, filedUnit, cleanFiledName, isParticipantLoanRow, isNamelessFundRow, isLoanDescriptionRow, isLoanAnswerRow, isLoanMaturityRow, isLoanVocabularyRow, isDirectionCaptionRow, isOfficeListRow, isPageBreakCaptionRow, trustScheduleDMenu } from "./lib-disclose.mjs";
 import { isGenericTypeName } from "./lib-4i.mjs";
 
 const BASE = "https://evwes.github.io/no-app"; // becomes the custom domain when DNS lands
@@ -116,6 +116,14 @@ for (const r of d.plans.slice(0, TOP_N)) {
   const adminRaw = g(r, "adminExpenses") || 0;
   const planYear = g(r, "planYear");
   const funds = entry && entry.confident && entry.funds ? entry.funds.slice(0, 12) : null;
+  /* THE TRUST'S OWN SCHEDULE D, ON THE CRAWLABLE SURFACE TOO. The report and
+   * these pages are TWO DISPLAY PATHS, and this record carries four instances
+   * of a fix reaching one of them and being described as reaching readers --
+   * the largest being that these pages had never run `cleanFiledName` at all.
+   * So the predicate is the SAME function app.js twins, asked with the facts
+   * this generator has: `funds` is non-null only for a confident lineup, and a
+   * $0 year-end filing is the wound-down case the gate excludes. */
+  const trustMenuSeo = trustScheduleDMenu(mtia ? trusts[mtia] : null, !!(funds && funds.length), assets === 0);
   /* WHICH YEAR'S MENU IS THIS? The page opens by asserting "Everything below
    * comes from the plan's own Form 5500 filing (plan year N)", and "everything
    * below" includes the fund table. For 54 pages / 919,537 participants that
@@ -328,7 +336,16 @@ This filing prints its schedule of assets in ${unit.word}, so every figure here 
 filing's own — the trailing zeros are its rounding, not digits it reported. Two holdings less than
 ${unit.money} apart are not distinguishable in this filing.</p>\n` : ""}<table><tr><th>Fund</th><th class="num">Value</th></tr>${fundRows}</table>
 ${entry.funds.length > 12 ? `<p class="muted">${entry.funds.length - 12} more holdings in the interactive report.</p>` : ""}` : ""}
-${adminRaw > 0 || peers ? `<h2>Plan fees</h2>
+${trustMenuSeo ? `<h2>Funds held by the master trust</h2>
+<p>This plan's money is pooled in <strong>${esc(titleCase(trusts[mtia].name))}</strong>. That trust files no
+fund-by-fund schedule of assets, but it does report its <strong>collective trust interests on Schedule D</strong>,
+and those are the funds below. <strong>The amounts are the trust's, not this plan's</strong> \u2014 every member plan
+shares them, so no per-plan or per-participant balance is public for these funds.${trustMenuSeo.share != null
+  ? ` They account for <strong>${(trustMenuSeo.share * 100).toFixed(1)}%</strong> of the trust's ${usdB(trustMenuSeo.trustAssets)}; the rest is held in vehicles the trust does not itemise in its filing.`
+  : ""}</p>
+<table><tr><th>Fund (as filed on Schedule D)</th><th class="num">Held by the trust</th></tr>${trustMenuSeo.rows
+  .map((f) => `<tr><td>${esc(titleCase(f.name))}</td><td class="num">${f.value > 0 ? usd(f.value) : "\u2014"}</td></tr>`).join("")}</table>
+` : ""}${adminRaw > 0 || peers ? `<h2>Plan fees</h2>
 ${adminRaw > 0 ? `<p>Administrative expenses paid from plan assets: <strong>${usd(adminRaw)}</strong>.</p>` : ""}
 ${peers ? `<p>${peers}</p>` : ""}` : ""}
 ${provRows ? `<h2>Service providers (Schedule C, as filed)</h2>

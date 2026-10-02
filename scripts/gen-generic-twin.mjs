@@ -39,7 +39,7 @@ import { isNamelessFundRow, isLoanDescriptionRow, isAnnuityContractRow,
   annuityFeeIsGuaranteeOnly, isInvestmentContractRow, isMistypedStockRow,
   mistypedStockFeeIsGuaranteeOnly, issuerPricedER, isCollectiveTrustName,
   isLoanAnswerRow, isLoanVocabularyRow, isBankDepositRow,
-  employerStockSymbolOk, sponsorNameKey } from "./lib-disclose.mjs";
+  employerStockSymbolOk, sponsorNameKey, trustScheduleDMenu } from "./lib-disclose.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const lib = readFileSync(ROOT + "scripts/lib-4i.mjs", "utf8");
@@ -213,6 +213,19 @@ const ese = dis.indexOf("\n}\n", dis.indexOf("export function employerStockSymbo
 if (ese < 3) throw new Error("gen-generic-twin: employerStockSymbolOk moved in lib-disclose");
 const empstock = dis.slice(ess, ese).replace(/^export /gm, "");
 
+/* AND A SIXTH, SLICED ON THE DAY IT SHIPS: the trust's Schedule D fund list
+ * (2026-10-02). It is not a row-name predicate like its neighbours -- it reads
+ * a TRUST record -- but it is twinned here for the same reason they are: four
+ * browser twins have been lost to three regenerations of this block because
+ * they were typed into app.js by hand, and the tether is what caught every
+ * one. The `share` it returns is the honesty of the whole section, so a drifted
+ * copy would mis-state how much of a trust the list accounts for. */
+const tms = dis.indexOf("export const TRUST_MENU_MIN_FUNDS =");
+if (tms < 0) throw new Error("gen-generic-twin: TRUST_MENU_MIN_FUNDS moved in lib-disclose");
+const tme = dis.indexOf("\n}\n", dis.indexOf("export function trustScheduleDMenu(")) + 3;
+if (tme < 3) throw new Error("gen-generic-twin: trustScheduleDMenu moved in lib-disclose");
+const trustmenu = dis.slice(tms, tme).replace(/^export /gm, "");
+
 const block = `  /* GENERATED FROM scripts/lib-4i.mjs — DO NOT EDIT BY HAND.
    * lib-4i derives these patterns from GENERIC_TYPE_NAME by asserted
    * replacements, so they are DERIVED and transcribing one is the move this
@@ -268,6 +281,8 @@ ${bankdep.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
 ${empstock.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
   window.__wampoEmployerStockSymbolOk = employerStockSymbolOk;  // read by the smoke test only
   window.__wampoSponsorNameKey = sponsorNameKey;  // read by the smoke test only
+${trustmenu.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
+  window.__wampoTrustScheduleDMenu = trustScheduleDMenu;  // read by the smoke test only
 `;
 
 /* THE END MARKER MUST BE THE BLOCK'S LAST LINE. It was `__wampoGenericName`
@@ -285,6 +300,7 @@ const MARK_S = "  /* GENERATED FROM scripts/lib-4i.mjs — DO NOT EDIT BY HAND."
  * moved and the old tail stayed — so the list only ever grows, and the cut must
  * be made at the LAST marker present, not the first one found. */
 const MARK_ENDS = [
+  "  window.__wampoTrustScheduleDMenu = trustScheduleDMenu;  // read by the smoke test only\n",
   "  window.__wampoSponsorNameKey = sponsorNameKey;  // read by the smoke test only\n",
   "  window.__wampoBankDepositRow = (n) => isBankDepositRow(n);  // read by the smoke test only\n",
   "  window.__wampoLoanVocabRow = isLoanVocabularyRow;  // read by the smoke test only\n",
@@ -357,6 +373,8 @@ vm.runInContext(block
     "globalThis.__es = employerStockSymbolOk;")
   .replace("window.__wampoSponsorNameKey = sponsorNameKey;  // read by the smoke test only",
     "globalThis.__sk = sponsorNameKey;")
+  .replace("window.__wampoTrustScheduleDMenu = trustScheduleDMenu;  // read by the smoke test only",
+    "globalThis.__td = trustScheduleDMenu;")
   .replace(/^\s{2}/gm, ""), ctx);
 const names = ["Mutual funds", "Mutual Fund Shares", "Sub-total: Registered Investment Companies",
   "Commingled funds", "Pooled separate account funds", "Collective trust funds",
@@ -909,6 +927,53 @@ for (const sp of ["Uber Technologies Inc", "Murphy Usa Inc.", "Coca-Cola Consoli
   if (ctx.__sk(sp) !== sponsorNameKey(sp)) {
     bad++; console.log(`  SPONSOR-KEY DRIFT ${JSON.stringify(sp)} twin=${ctx.__sk(sp)} lib=${sponsorNameKey(sp)}`);
   }
+}
+/* THE TRUST'S SCHEDULE D LIST. Four cases and not one of them is reached by any
+ * probe above, so the twin would have agreed whether or not it carried this
+ * function — the v189 decorative failure, which this file has now recorded
+ * three times. The SHARE is pinned as well as the gate, because the share is
+ * what makes the section honest: a drifted copy that mis-states how much of a
+ * trust the list accounts for publishes a false claim while every count holds.
+ * `psegCct` is the owner's own filing, values as filed. */
+const psegCct = [
+  { n: "VFTC INSTITUTIONAL 500 INDEX TRUST", v: 1216710409 },
+  { n: "VANGUARD FID TR CO RET 2050 TR INST", v: 120938037 },
+  { n: "VANGUARD FID TR CO TGT RET 2045 TR", v: 102505829 },
+];
+const trustMenuCases = [
+  [{ name: "PSEG", assetsEOY: 4417985729, cct: psegCct }, false, false, 3,
+    "three funds, a live plan with no menu of its own — the shipped case"],
+  [{ name: "PSEG", assetsEOY: 4417985729, cct: psegCct }, true, false, 0,
+    "the plan publishes its own rows — the trust list must never override a menu"],
+  [{ name: "PSEG", assetsEOY: 4417985729, cct: psegCct }, false, true, 0,
+    "$0 year-end: 4 plans / 14,514 ppl, where the money has already left"],
+  [{ name: "Northrop-shaped", assetsEOY: 11400000000, cct: [{ n: "ONE FUND", v: 11400000000 }] }, false, false, 0,
+    "a trust holding a single collective trust is not a menu — 28 plans / 235,635 ppl"],
+  /* EXACTLY TWO is the only case that tests the floor ITSELF. Without it,
+   * drifting 3 -> 2 changes no verdict here and the control passes while
+   * testing nothing -- measured, not assumed. */
+  [{ name: "two funds", assetsEOY: 1e9, cct: [{ n: "A", v: 6e8 }, { n: "B", v: 3e8 }] }, false, false, 0,
+    "two funds is still not a menu, and it is what makes the floor testable"],
+  [{ name: "no cct", assetsEOY: 1e9, cct: [] }, false, false, 0, "379 of 508 trusts carry a list; 129 do not"],
+];
+for (const [t, own, zero, wantN, why] of trustMenuCases) {
+  const twin = ctx.__td(t, own, zero), lib = trustScheduleDMenu(t, own, zero);
+  if (JSON.stringify(twin) !== JSON.stringify(lib)) {
+    bad++; console.log(`  TRUST-MENU DRIFT ${t.name} own=${own} zero=${zero}`);
+  }
+  const got = lib ? lib.rows.length : 0;
+  if (got !== wantN) { bad++; console.log(`  TRUST-MENU rule moved: ${t.name} want ${wantN} rows, got ${got} — ${why}`); }
+}
+/* the share, to the digit, on the owner's own trust and on a filing that
+ * reports its list $2 ABOVE the trust's own total (one of the 29 does) */
+{
+  const m = trustScheduleDMenu({ assetsEOY: 4417985729, cct: psegCct }, false, false);
+  if (!m || Math.abs(m.share - 1440154275 / 4417985729) > 1e-12) {
+    bad++; console.log(`  TRUST-MENU share wrong: ${m && m.share}`);
+  }
+  const over = trustScheduleDMenu({ assetsEOY: 294275601,
+    cct: [{ n: "A", v: 294275601 }, { n: "B", v: 1 }, { n: "C", v: 1 }] }, false, false);
+  if (!over || over.share !== 1) { bad++; console.log(`  TRUST-MENU share must clamp at 1, got ${over && over.share}`); }
 }
 if (bad) { console.error(`generated with ${bad} DRIFT — do not commit`); process.exit(1); }
 console.log(`generated; twin agrees with lib-4i on ${names.length} names, with lib-disclose on ${rows.length} rows, ${loans.length} loan-description names, ${annuityRows.length} annuity-contract rows, ${guarFeeNames.length} guarantee-only fee names, ${investmentContractRows.length} investment-contract rows, ${mistypedStockRows.length} mistyped-employer-stock rows and ${mistypedStockFeeNames.length} mistyped-stock fee names and ${issuerFeeCases.length} issuer-priced fee cases, ${citNames.length} collective-trust names and ${loanAnsNames.length} loan-answer names and ${loanVocabNames.length} loan-vocabulary names and ${bankDepNames.length} bank-deposit names and ${espCases.length} employer-stock provenance cases`);

@@ -217,7 +217,7 @@ try {
     isOfficeListRow, isPageBreakCaptionRow,
     isInvestmentContractRow, isMistypedStockRow, isBankDepositRow,
     mistypedStockFeeIsGuaranteeOnly, issuerPricedER, leadingHouse,
-    employerStockSymbolOk, sponsorNameKey,
+    employerStockSymbolOk, sponsorNameKey, trustScheduleDMenu,
     GUARANTEE_PRICED_WORDS } = await import("./lib-disclose.mjs");
   const frozCases = [
     [true, "The Plan was terminated effective December 31, 2023.", "Capital Region Medical"],
@@ -1452,6 +1452,52 @@ try {
     if (!isBankDepositRow(n)) fail(`bank-deposit rule no longer recognises an FDIC-insured deposit: ${JSON.stringify(n)}`);
   for (const n of depCases.slice(14))
     if (isBankDepositRow(n)) fail(`bank-deposit rule would call a real fund a bank deposit: ${JSON.stringify(n)}`);
+
+  /* THE TRUST'S SCHEDULE D FUND LIST, tethered the same way, 2026-10-02 -- and
+   * it needs its OWN cases for the eighth cycle running: every case above is a
+   * row NAME and this function reads a TRUST RECORD, so not one of them reaches
+   * it, and without these the twin would agree whether or not it carried the
+   * rule. The SHARE is tethered as well as the gate, because the share is the
+   * section's honesty: PSEG's list is $2,006,425,398 of a $4,417,985,729 trust,
+   * so a drifted copy that mis-states 45.4% publishes a false claim about how
+   * much of the trust the reader is being shown. */
+  const tdPseg = [{ n: "VFTC INSTITUTIONAL 500 INDEX TRUST", v: 1216710409 },
+    { n: "VANGUARD FID TR CO RET 2050 TR INST", v: 120938037 },
+    { n: "VANGUARD FID TR CO TGT RET 2045 TR", v: 102505829 }];
+  const tdCases = [
+    /* [trust, hasOwnMenu, zeroEOY, expected row count] */
+    [{ assetsEOY: 4417985729, cct: tdPseg }, false, false, 3],
+    [{ assetsEOY: 4417985729, cct: tdPseg }, true, false, 0],
+    [{ assetsEOY: 4417985729, cct: tdPseg }, false, true, 0],
+    [{ assetsEOY: 11400000000, cct: [{ n: "ONE FUND", v: 11400000000 }] }, false, false, 0],
+    /* exactly TWO: the only case that tests the floor itself -- with 3 and 1
+     * alone, drifting the floor to 2 changes no verdict and this tether passes
+     * while testing nothing */
+    [{ assetsEOY: 1e9, cct: [{ n: "A", v: 6e8 }, { n: "B", v: 3e8 }] }, false, false, 0],
+    [{ assetsEOY: 1e9, cct: [] }, false, false, 0],
+    [null, false, false, 0],
+  ];
+  const tdGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoTrustScheduleDMenu !== "function") return null;
+    return cs.map((c) => {
+      const m = window.__wampoTrustScheduleDMenu(c[0], c[1], c[2]);
+      return m ? { n: m.rows.length, share: m.share, total: m.total } : null;
+    });
+  }, tdCases);
+  if (!tdGot) fail("app.js no longer exposes __wampoTrustScheduleDMenu — the trust Schedule D fund list cannot be cross-checked");
+  for (let i = 0; i < tdCases.length; i++) {
+    const lib = trustScheduleDMenu(tdCases[i][0], tdCases[i][1], tdCases[i][2]);
+    const want = tdCases[i][3];
+    const libN = lib ? lib.rows.length : 0, gotN = tdGot[i] ? tdGot[i].n : 0;
+    if (libN !== gotN || (lib && tdGot[i] && lib.share !== tdGot[i].share))
+      fail(`the trust Schedule D rule in app.js disagrees with scripts/lib-disclose.mjs on case ${i} (app.js=${JSON.stringify(tdGot[i])} module=${JSON.stringify(lib && { n: libN, share: lib.share })}) — regenerate it`);
+    if (libN !== want) fail(`trust Schedule D rule moved on case ${i}: want ${want} rows, got ${libN}`);
+  }
+  {
+    const m = trustScheduleDMenu({ assetsEOY: 4417985729, cct: tdPseg }, false, false);
+    if (!m || Math.abs(m.share - 1440154275 / 4417985729) > 1e-12)
+      fail(`trust Schedule D share is no longer the filed ratio: ${m && m.share}`);
+  }
 
   /* THE MISTYPED-EMPLOYER-STOCK PREDICATE, tethered the same way, 2026-09-29.
    * It needed its OWN cases for the seventh cycle running: every case above is

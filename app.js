@@ -1568,6 +1568,29 @@
 
   window.__wampoEmployerStockSymbolOk = employerStockSymbolOk;  // read by the smoke test only
   window.__wampoSponsorNameKey = sponsorNameKey;  // read by the smoke test only
+  const TRUST_MENU_MIN_FUNDS = 3;
+  function trustScheduleDMenu(trust, hasOwnMenu, zeroEOY) {
+    if (hasOwnMenu || zeroEOY) return null;
+    const cct = trust && Array.isArray(trust.cct) ? trust.cct : [];
+    if (cct.length < TRUST_MENU_MIN_FUNDS) return null;
+    const rows = [];
+    for (const x of cct) {
+      const name = String((x && x.n) || "").replace(/\s+/g, " ").trim();
+      const value = Number((x && x.v) || 0);
+      if (name) rows.push({ name, value: value > 0 ? value : 0 });
+    }
+    if (rows.length < TRUST_MENU_MIN_FUNDS) return null;
+    rows.sort((a, b) => b.value - a.value || a.name.localeCompare(b.name));
+    const total = rows.reduce((a, x) => a + x.value, 0);
+    const assets = Number((trust && trust.assetsEOY) || 0);
+    /* a share over 1 is rounding in the filing (one trust reports the list $2
+     * above its own total), not a reason to withhold the list; clamp the CLAIM
+     * at 100% rather than print an impossible number */
+    const share = assets > 0 && total > 0 ? Math.min(1, total / assets) : null;
+    return { rows, total, trustAssets: assets > 0 ? assets : 0, share };
+  }
+
+  window.__wampoTrustScheduleDMenu = trustScheduleDMenu;  // read by the smoke test only
 
   /* A SCHEDULE H PARTICIPANT-DIRECTION CAPTION IS NOT A HOLDING — the rule,
    * the Microsoft row that found it ($6,602,388,247 = 8.6% of a 50-row menu),
@@ -3374,6 +3397,57 @@
        * the link. Shipping this bit without the guard silently downgraded
        * Genentech, Conagra and six others from the named sentence to the
        * generic one. */
+      /* THE TRUST'S OWN SCHEDULE D NAMES FUNDS, AND IT WAS CAPTURED IN
+       * SEPTEMBER AND RENDERED NOWHERE. Run #523 made prep scan a master
+       * trust's own Schedule D; 379 of 508 trusts carry the resulting list on
+       * `cct`, 231,260 of the 406,247 bytes of `mtias.json` that every visitor
+       * already downloads at boot. It had ZERO readers. 61 plans / 874,136
+       * participants / $105.6B were being told no fund-by-fund detail is
+       * public by one of the three sentences below, while their trust's own
+       * filing named between 3 and 25 funds with values.
+       *
+       * IT IS PLACED HERE ON PURPOSE, and the ordering is the same "yield to
+       * the more specific sentence" rule that the trust-unlinked branch below
+       * already follows: naming the funds beats every sentence beneath it,
+       * and it YIELDS to the audited-notes option list, which is about THIS
+       * PLAN rather than about the trust. Measured: 0 of the 61 have a notes
+       * menu, so there is no contest today and the yield is for the next
+       * filing that has both.
+       *
+       * AND THE SHARE IS NOT A CAVEAT, IT IS THE CLAIM. Schedule D reports
+       * interests in COLLECTIVE TRUSTS and nothing else, so a trust that also
+       * holds mutual funds, separate accounts or employer stock directly lists
+       * none of it. Across the 29 trusts this reaches, the list accounts for
+       * 39.6% to 100.0% of the trust's own assets — PSEG's is $2,006,425,398
+       * of $4,417,985,729, so MORE THAN HALF of that trust is outside its own
+       * list. Rendering this as "the funds" would be false for all 29. */
+      const trustRec = plan.mtiaAck && state.trusts ? state.trusts[plan.mtiaAck] : null;
+      const trustMenu = (menu && menu.length) ? null
+        : trustScheduleDMenu(trustRec, !!(plan.funds && plan.funds.length), !!(plan.zeroEOY && plan.detailLoaded));
+      if (trustMenu) {
+        const sisters = state.plans.filter((p) => p.mtiaAck === plan.mtiaAck).length;
+        const shareTxt = trustMenu.share == null ? null : (trustMenu.share * 100).toFixed(1) + "%";
+        return `
+      <div class="section-label">FUNDS HELD BY THE MASTER TRUST</div>
+      <p class="max-benefit">This plan's money is pooled in <strong>${esc(trustRec.name)}</strong>${sisters > 1
+        ? `, shared with ${sisters - 1} other plan${sisters - 1 === 1 ? "" : "s"} of the same employer` : ""}.
+      That trust files no fund-by-fund schedule of assets, but it does report its
+      <strong>collective&nbsp;trust interests on Schedule&nbsp;D</strong>, and those are the funds below.
+      <strong>The amounts are the trust's, not this plan's</strong> — every member plan shares them, so no
+      per-plan or per-participant balance is public for these funds.${shareTxt
+        ? ` They account for <strong>${shareTxt}</strong> of the trust's ${money(trustMenu.trustAssets / 1e6)}; the rest is held
+      in vehicles the trust does not itemize in its filing.` : ""}</p>
+      <div class="fund-scroll">
+        <table class="fund-table">
+          <thead><tr><th class="fund-name-col">Fund (as filed on Schedule D)</th><th>Held by the trust</th><th>% of trust</th></tr></thead>
+          <tbody>${trustMenu.rows.map((f) => `<tr>
+            <td class="fund-name-col">${esc(f.name)}</td>
+            <td>${f.value > 0 ? money(f.value / 1e6) : "—"}</td>
+            <td>${trustMenu.trustAssets > 0 && f.value > 0 ? (f.value / trustMenu.trustAssets * 100).toFixed(1) + "%" : "—"}</td>
+          </tr>`).join("")}</tbody>
+        </table>
+      </div>`;
+      }
       if (plan.trustUnlinked && !(menu && menu.length) && !(plan.mtiaName && plan.detailLoaded)) {
         // the filing is fine and we read it; the fund detail lives in a
         // SEPARATE return that we could not follow. Saying "we could not read
