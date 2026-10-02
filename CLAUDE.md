@@ -823,19 +823,39 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   not one version: a firm-vs-product discriminator (neither `isHouseName` nor
   `identityIsProductName` answers it), a double-render-safe split, and a name
   swap whose effect on REGION SELECTION must be measured first.
-- **The recordkeeper is WRONG, not blank, on 2,190 plans / 2,070,795 ppl.**
-  58,194 plans carry an item-2 row the filing codes 15/64 (Recordkeeping);
-  the published name agrees on 56,004. Apple publishes "Russell Investments
-  Capital" (147,655 ppl), AstraZeneca "Pricewaterhousecoopers Llp" (27,192),
-  Beth Israel "Willis Towers Watson" (20,359). **The residue is NOT yet split**
-  and must be before any figure is published: it still mixes my own acronym
-  false positives (NWPS = NorthWest Plan Services), same-corporate-family brands
-  (Strategic Advisors IS Fidelity's advisory arm), and brokerage PLATFORM vs its
-  TPA, which is a judgment about bundled service rather than an error. The
-  discriminator for the fix is already in our data: prefer a row coded 15 or 64,
-  then the line-1b platform or the Schedule A carrier, then top-fee, and NEVER
-  publish a provider coded 10 (auditor) or 29 (legal). Pipeline change, needs a
-  prep run. **A blank is honest; a name reads as knowledge.**
+- **THE RECORDKEEPER IS WRONG, NOT BLANK — SPLIT 2026-10-02, and the splitting
+  is the whole value of the measurement.** 58,194 full-form plans carry an
+  item-2 row the filing itself codes **15 or 64 (Recordkeeping)**, and the
+  published name agrees on 56,004. **Do not carry 2,322 / 2,734,971 or
+  2,190 / 2,070,795 forward** — both are loose screens, the first containing my
+  own tokenizer's false positives at the top of its own frequency table
+  (`Slavic401k` ~> `SLAVIC INTEGRATED ADMINISTRATION` carrying Justworks
+  163,323, `NWPS` ~> `NORTHWEST PLAN SERVICES` carrying Exelon 26,632 — the
+  SAME FIRM both times). Graded by the filing's own code on the row **we**
+  publish, which is the strongest evidence available and is already in our data:
+
+  | | plans | ppl | |
+  |---|---|---|---|
+  | **auditor or legal** | **39** | **49,793** | unarguable: an accountant is never a recordkeeper. AstraZeneca 27,192 is 55% of it |
+  | another profession coded | 1,805 | 1,789,790 | investment management 641, custodial 463, consulting 392, investment advisory 158 |
+  | no code filed on it | 344 | 207,726 | the filer left item 2's code cell empty |
+  | published from no item-2 row | 57 | 81,615 | another source entirely |
+
+  **AND MY OWN ACRONYM AND FAMILY BUCKETS ARE NAMED RATHER THAN COUNTED IN:**
+  127 plans / 133,116 ppl are my acronym test failing (it takes one letter per
+  word, and `NWPS` takes two from `NorthWest`), 11 / 127,572 are the same
+  corporate family under another brand (`Strategic Advisors` IS Fidelity's
+  advisory arm — a disclosure defect, not a different firm), and **974 plans /
+  663,426 ppl are a brokerage PLATFORM published where the filing codes its
+  TPA**, which is a judgment about bundled service rather than an error and must
+  not be counted with one. **THREE OF THE 39 LOOK LIKE THE FILER MIS-CODED
+  RATHER THAN US** (`Schwab`, `Ascensus` and `Milliman` carrying code 10), so
+  the code is the FILER's claim and not ours — the unarguable core is ~36.
+  **THE FIX NEEDS NO NEW SOURCE:** prefer a row coded 15 or 64, then the line-1b
+  platform or the Schedule A carrier, then top-fee, and NEVER publish a provider
+  coded 10 or 29. Pipeline change, needs a prep run, and it moves up to ~2,200
+  published provider names, so it is the owner's call.
+  **A blank is honest; a name reads as knowledge.**
 - Recordkeeper BLANK where Schedule A names a carrier — `build-data` resolves
   `INS_CARRIER_NAME` and never reads it, and drops a Schedule A with 0
   commissions and 0 fees before it could be used. **UNSIZED and honestly so:**
