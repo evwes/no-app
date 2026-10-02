@@ -7,6 +7,110 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-02 (16:0xZ) — the owner asked whether his own filing had been acted on, and CLAUDE.md answered "served" four lines above its own "nothing is published"
+
+**NO CODE SHIPPED. WHAT CHANGED IS THE RECORD, AND THE DEFECT WAS IN THE RECORD
+AND IN MY OWN TWO MEASUREMENTS — NOT IN THE STORE.** The owner asked *"did i not
+upload PSEG (public service enterprise group)"*. The #523 entry in CLAUDE.md
+opens its PSEG sentence with **"The owner's own filing is served"** and then, two
+lines later, states **"Nothing is published: `cct` is read only by build-data's
+own reporting line, verified by grep."** Both sentences were written in the same
+cycle. I read the first.
+
+**THE STORE HALF IS EXACTLY AS RECORDED AND #523 DID ITS JOB.** `mtias.json` key
+**307** holds `PUBLIC SERVICE ENTERPRISE GROUP INC. MASTER DEFINED CONTRIBUTION
+RETIREMENT TRUST`, ack `20251013135637NAL0000680483001`, planYear 2024,
+assetsEOY **$4,417,985,729**, carrying all **15 named Vanguard collective
+trusts** with values summing **$2,006,425,398** — ratio **0.454** of the trust's
+own assets — led by `VFTC INSTITUTIONAL 500 INDEX TRUST` $1,216,710,409 and the
+eleven `VANGUARD FID TR CO TGT RET <vintage> TR` vintages. The funds the owner
+highlighted in what he sent are in the store, named, with dollar figures.
+
+**AND NOTHING PUBLISHES THEM. Re-grepped today: `cct` has 0 consumers outside
+`build-data.mjs`'s own write and count lines** (1266 writes it, 1278/1279 count
+it); `app.js` and `build-seo-pages.mjs` reference it **0 times** on either
+display path. So PSEG PN 004 (**4,114 ppl**) and PN 006 (**8,667 ppl**) —
+**12,781 between them** — publish **no fund menu at all**: both read `c=0
+dx=band-lo` with rw 14 and 10, and the trust's own 4i parse is `c=0 dx=few
+rw=1`, so the trust-lineup route that serves 488 other plans is empty here too.
+*A line that says SERVED four lines above a line that says NOTHING IS PUBLISHED
+will be read as the first one*, and the fix is to rewrite the first one rather
+than to trust the reader to reach the second.
+
+**THEN, HAVING FOUND THE PAGE EMPTY, I MANUFACTURED TWO CAUSES AND BOTH WERE MY
+OWN HARNESS.** I reported them to the owner before checking either, which is the
+expensive part.
+
+**(1) "The trust is absent from `mtias.json` entirely" — FALSE. It is present.**
+My lookup was `trusts[plan.mtiaAck]`, and **`mtias.json` is keyed by INDEX** —
+`0` … `507`, 508 entries — with the ack a FIELD of each record. So that
+expression could only ever be `undefined`, for every trust in the file, and it
+read back to me as a missing population. ***A lookup keyed on something the map
+is not keyed by is not a lookup; it is a constant `undefined`.*** This is the
+recorded shard-hash error in a new dress — `sum(c*31) % 64` where the real hash
+is `h = (h*31 + c) >>> 0`, which filed one ack in shard 34 when it lives in 00
+and read 0 rows for every plan in a sizing script — and the second time on this
+record that a wrong key was published as an absence. The tell was available and
+I missed it: a *clean, total* absence of one named thing from a 508-entry file is
+the same shape as this record's own *"a suspiciously clean zero reports on the
+query"*.
+
+**(2) "`cctVals` is null on both plans" — TRUE AND IRRELEVANT, which is worse
+than wrong.** `cctVals` is a space-joined list of **VALUES WITH NO NAMES**: the
+control plan, Microsoft PN 001, reads `"4441579663 8249634806 1104316 …"` and
+carries **no `mtiaAck` at all**. Its sole consumer is `merge-4i:101`, whose own
+comment says what it is for — a filer describes a collective trust as "Mutual
+Fund" in the description column, Schedule D reports the same trust at an exact
+value, so an exact VALUE match **retypes an already-parsed row** as `Collective
+trust` and sets `cit` so the site stops pricing it off a share class the plan
+does not hold. It is a TYPING input, not a menu source. PSEG has no confident
+lineup, therefore no rows to retype, therefore an empty `cctVals` costs it
+nothing. ***I cited a field whose whole function is typing rows as evidence
+about whether a menu is published*** — the fourth recorded instance of reading
+the wrong field, and the first where the number I quoted was correct and only the
+inference was false. A correct number attached to the wrong question is harder to
+catch than a wrong number, because re-measuring it reproduces it.
+
+**THE CONTROL IS WHAT CAUGHT BOTH, and it was in the script before either claim
+was published a second time: 28,628 plans / 63,021,200 participants carry a
+non-empty `cctVals`.** A field that works for 28,628 plans is not broken, so
+PSEG being empty in it had to mean something other than what I had said — which
+is the whole point of putting a whole-population control beside a single-case
+reading. *Had I run it the first time, neither false cause would have reached
+the owner.*
+
+**AND `lib-schema` REFUSED MY FIRST SCRIPT, correctly.** I asked `plans-all` for
+`matchText` and it threw, naming the real 39 fields — the features live in the
+lineup shard entry, not in `plans-all`. That is the guard working exactly as its
+own entry on this record describes, and it is why the second script read the
+shard (keyed by the Java-style `shardOf`, not the retired `sum(c*31)` form).
+
+**WHAT IS ACTUALLY STILL OPEN FOR PSEG, unchanged by any of the above and all
+three verified against the live store today:** the plans publish
+`recordkeeper: "Invesco Advisors, Inc"` where the filing names Fidelity four
+times and our own `sdbaBrand` independently says Fidelity BrokerageLink (a named
+instance of the 1,509-plan / 1,482,658-ppl wrong-provider class); `matchText`
+stores `"…an amount equal to 50% of each Participant's first 8% of eligible
+compensation…"` on PN 004 and `7%` on PN 006, both unparsed, the WORD-ORDER
+family already sized at 1,011 plans / 1,464,750 ppl; and `vestingText` stores
+the 24-month withdrawal-suspension sentence rather than the filing's own
+*"100% vested from the first date of hire"*, the ADJACENCY family. Features
+present on PN 004: matchText, vestingText, roth, rothText, inPlanRoth,
+sdbaBrand, autoEnroll, autoEnrollText — so the notes were read; what failed is
+three extractors, not the attachment.
+
+**PREVENTION.** (a) The CLAUDE.md line is rewritten in place to say **CAPTURED
+AND NOT SERVED** and to carry its own cost, because a contradicted claim in that
+file is asserted again every time it is read and the reader cannot tell which
+copy is live — the same treatment the HIGH-baseline line got when it cost a
+pre-registration. (b) The index-vs-ack key error is named here as the lookup rule
+rather than as a PSEG fact, because the next map keyed by index will not be
+`mtias.json`. (c) The standing habit this earns: **before reporting a cause to
+the owner, run the whole-population control for the field being blamed** — one
+line, and it refutes a false cause before it is spoken rather than after.
+
+---
+
 ## 2026-10-02 (15:0xZ) — the Vanguard target-date family: the FEE half of this rule was converted to lookaheads on 2026-08-31 and the TICKER half was not
 
 **SHIPPED, DISPLAY-SIDE, NO `PARSER_VERSION` BUMP AND NO RUN — 9,868 rows / 1,095

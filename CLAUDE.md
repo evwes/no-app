@@ -5141,10 +5141,46 @@ from the cycle that would have cleared it.
   of which **65 plans / 888,650 sit behind a trust listing THREE OR MORE funds**.
   That split is load-bearing: **Northrop Grumman's trust lists ONE fund at
   $11.4B**, a trust holding a single collective trust, which is not a menu.
-  **The owner's own filing is served** — PSEG PN 004 and PN 006, 12,781 ppl, 15
-  named Vanguard collective trusts, the funds highlighted in what they sent.
-  **Nothing is published**: `cct` is read only by build-data's own reporting
-  line, verified by grep. Publishing it is a separate labelled claim.
+  **THE OWNER'S OWN FILING IS CAPTURED AND NOT SERVED, AND THIS LINE SAID
+  "SERVED" UNTIL 2026-10-02 16:0xZ — WHEN IT COST THE OWNER A WRONG ANSWER TO A
+  DIRECT QUESTION.** The store half is exactly as recorded: `mtias.json` key
+  **307** holds `PUBLIC SERVICE ENTERPRISE GROUP INC. MASTER DEFINED
+  CONTRIBUTION RETIREMENT TRUST`, ack `20251013135637NAL0000680483001`, with all
+  **15 named Vanguard collective trusts** and their values — $2,006,425,398 of
+  the trust's $4,417,985,729 (ratio 0.454), led by `VFTC INSTITUTIONAL 500 INDEX
+  TRUST` $1,216,710,409. The funds the owner highlighted are in the store.
+  **BUT NOTHING PUBLISHES THEM, which the next sentence of this very entry
+  already said**, and the two readings sat four lines apart: `cct` has **0
+  consumers** outside `build-data.mjs`'s own write and count lines (1266, 1278,
+  1279) — `app.js` and `build-seo-pages.mjs` reference it **0 times**, grepped
+  again today. So PSEG PN 004 (4,114 ppl) and PN 006 (8,667 ppl), **12,781
+  between them, publish NO fund menu**: both plans read `c=0 dx=band-lo` (rw 14
+  and 10) and the trust's own 4i parse is `c=0 dx=few rw=1`, so the trust-lineup
+  route is empty too. *A line that says SERVED four lines above a line that says
+  NOTHING IS PUBLISHED will be read as the first one.*
+  **AND WHEN THE OWNER ASKED, I READ THE "SERVED" HALF, FOUND THE PAGE EMPTY,
+  AND MANUFACTURED TWO FALSE CAUSES — BOTH MY OWN HARNESS, NEITHER THE DATA.**
+  (1) *"the trust is absent from `mtias.json` entirely"*: **it is present**, and
+  my lookup was `trusts[mtiaAck]` where **the map is keyed by INDEX** (`0`…`507`,
+  508 entries) and the ack is a FIELD of each record. ***A lookup keyed on
+  something the map is not keyed by is not a lookup, it is a constant
+  `undefined`*** — the shard-hash error (`sum(c*31)` for `h*31+c`) in a new
+  dress, and the second time on this record that a wrong key read as a missing
+  population. (2) *"`cctVals` is null on both plans"*: **true and irrelevant.**
+  `cctVals` is a space-joined list of **VALUES with no names** (the Microsoft
+  control reads `"4441579663 8249634806 …"` and that plan has **no `mtiaAck` at
+  all**), and its only consumer is `merge-4i:101`, which RETYPES rows of an
+  already-parsed lineup as `Collective trust`. PSEG has no confident lineup, so
+  it has no rows to retype and an empty `cctVals` costs it nothing. ***I cited a
+  field whose whole function is typing rows as evidence about publishing a
+  menu*** — the fourth recorded instance of reading the wrong field and the
+  first where the number quoted was correct and the inference was not.
+  The CONTROL is what caught both: 28,628 plans / 63,021,200 ppl carry a
+  non-empty `cctVals`, so the field works everywhere and PSEG is not an
+  exception in it. **Publishing the trust's named list is still a separate
+  labelled claim** — the honest statement to a reader is that the trust holds
+  these 15 funds, not that the plan offers them, and $2.0B of $4.4B is 45% of
+  the trust, so the list is not the whole of it either.
   **TWO HARNESS CATCHES:** a guessed `sponsor` printed blank for ten plans and
   `loadPlans` named `sponsorName`; and an overshoot proxy keyed on a stored `rt`
   read **0 on both sides** — *a clean zero reports on the query* — so the
