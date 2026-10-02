@@ -7,6 +7,123 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-02 (00:3xZ) — 65% of a CHECK's published findings were false: `ticker-conflict` computed its answer from one resolver and never read the two stored fields the page returns first and last
+
+**SHIPPED, `[skip ci]`. It changes no published number — `audit-data` is a
+reporting step — and it changes a WARN the accuracy trail has carried on every
+run since the check shipped: `ticker-conflict` 48 → 15, `warn` 601 → 568.**
+
+**WRONG:** the check exists to find rows where *we* publish a symbol *the filing
+itself contradicts*, and it computed what we publish as
+
+```js
+const got = (iss ? fundTk(iss + nm, fd.type) : null) || fundTk(nm, fd.type) || null;
+```
+
+— the three `fund-er.js` attempts and nothing else. **`lookupTicker` returns
+`f.ftk` FIRST** (v528's filed-symbol rule, shipped 2026-10-01) **and `f.stk`
+LAST**, so the check was reporting what one resolver would say rather than what a
+reader sees.
+
+**MEASURED, WHOLE-POPULATION, THROUGH THE PAGE'S OWN RENDER: of the check's 48
+findings, 31 WERE FALSE** — the page already published the filed symbol on every
+one of them, **through the very `ftk` that `FILED_TK` had just re-extracted from
+the same name.** `VITSX - Vanguard Total Stock Market Index Inst` was reported as
+"publishes VTSAX where the filing states VITSX" while the row carries
+`ftk: "VITSX"` and the page prints VITSX. Three Vanguard rows in one entry, the
+`MWTSX`/`MEIJX`/`HNACX`/`VBMPX` families, and the whole of v528's own population
+seen from behind.
+
+**THIS IS THE 2026-09-30 `tkExact` DEFECT IN A SECOND PLACE, AND WORSE IN KIND.**
+That one re-implemented `lookupTicker` and stopped one stage short of `f.stk`,
+reading **0** of the 147,835 rows the field already carried — a coverage metric
+wrong in private. ***A check PUBLISHES A CLAIM***, into
+`docs/coverage-history.jsonl` and into the auto-managed issue, and **a false
+alarm in a watched metric is not noise: it teaches the operator to skip the
+line**, which is exactly how `site-test` stayed red for ten consecutive runs.
+The same transcription rots in the same direction every time a resolver gains a
+stage, and `ftk` was two weeks old.
+
+**AND THE FIX BOTH REMOVED AND ADDED, which is the half a count would have
+hidden.** The chain is now `ftk` → the three fund-er attempts → `stk`, the page's
+own order, and it **exposed two findings the old chain was blind to** — rows
+where only `stk` answers, so `got` was null and the row was skipped. Reconciled
+to the row: **48 − 31 + 2 = 19.**
+
+**THE 2 IT ADDED ARE NOT CONFLICTS EITHER, AND THAT IS v528's DISCOVERY ONE
+LEVEL UP.** They are `IMPAX US SUSTAINABLE ECONOMY INST` and `IMPAX
+International Sustainable Economy Inst` — **`IMPAX` is the HOUSE's own name**,
+and `FILED_TK` reads any leading all-caps five-letter token ending in X as a
+symbol. v528 found `INDEX` to be a registered ticker (CYBER HORNET S&P 500) and
+answered it with CORROBORATION conditions, which is why `ftk` is safe and this
+bare extraction is not.
+
+**SO A SECOND GATE SHIPS WITH IT, AND ITS WHOLE COST WAS MEASURED BEFORE IT
+DID: the extracted token must be a REGISTERED symbol.** Of the 19, **4 extract
+an unregistered string and in all four OUR ANSWER IS THE RIGHT ONE** —
+`Vanguard Small Cap Index Admiral(VXMAX)` where we publish **VSMAX** and
+`Fidelity 500 Index Fund (FXALX)` where we publish **FXAIX**, the filer's typo
+in both, plus the two IMPAX rows. There was nothing to contradict. Across every
+row `FILED_TK` matches — **3,152** published rows — **224 (7.11%)** extract an
+unregistered token, so the gate's reach is known and not guessed.
+**The registry is NOT a general answer to the `INDEX` trap and the source says
+so: INDEX is in it.** It answers only *is this string a symbol at all*.
+
+**FINAL RECONCILIATION, 48 → 15:** 31 removed because the page already published
+the filed symbol, 2 removed because the filed string is a typo, 2 added by the
+`stk` stage and then removed by the registry gate (`IMPAX` twice), net 0.
+**All 15 survivors were re-asked through the page's render and all 15 agree with
+it** — `check == page` on every row, which is the property the check was always
+supposed to have.
+
+**THE 15 ARE A CLEAN CLASS AND NOT A RESIDUE, which makes them worth something:
+every one carries the symbol in a TRAILING PARENTHETICAL** — `Vanguard Extended
+Market Index Fund Institutional (VIEIX)`, `Fidelity Contrafund K6 (FLCNX)`,
+`JPMorgan Mid Cap Growth Fund Class R6 (JMGZX)`, `VANGUARD TOTAL BOND MARKET
+INDEX FUND (VBTIX)` — **outside v528's LEADING anchor by construction**, so none
+of them has an `ftk` to consult. That is a named, sized extension of v528 with
+the filing's own symbol as its corroboration: *a fix for one POSITION of a class
+is not a fix for the class*, now recorded for the third surface.
+
+**FAILS OPEN AND SAYS SO.** The registry gate only ever REMOVES findings, so a
+missing or empty `sec-funds.json` must not silently drop all of them; it is
+skipped with a log line instead. *An arm that cannot fire is worse than an
+absent one*, pointed at a check.
+
+**TWO DISAGREEING COUNTS WERE THE TELL AND NEITHER WAS PUBLISHED UNTIL THE GAP
+WAS NAMED.** My harness said 17 genuine and the edited check said 19; the gap is
+the `stk` stage adding the two IMPAX rows, which the harness could not see
+because it classified rows by the OLD chain's verdict. **A third count disagreed
+en route for a reason worth recording on its own: a scratchpad script with
+`"./head/fund-er.js"` resolved that path against the SHELL's cwd rather than the
+script's and died `ENOENT`** — the `map-test.mjs` lesson (`cwd` hardcoded, Node
+reporting `spawn python3 ENOENT`) in the opposite direction, and the reason
+nothing in this repo may carry a relative data path.
+
+**HOW IT WAS FOUND: by chasing a 2-WARN drop I could not explain.** #540's
+coverage line was byte-identical to #539's except `warn` 603 → 601, and the
+project's rule is to name such a move rather than wave it through. The stores
+are **byte-identical** — `plans`, `fields` and `count` in `plans-all.json` and
+`plans` in `lineups-status.json` all compare equal, and `fee-percentiles`,
+`mtias`, `lineups-index`, `plans-index` and `map-points` hash identically once
+their `generated` stamp is removed — so the drop was not in the store, and a
+local audit on that store reads **601**, matching #540. Therefore the two WARNs
+in #537–#539 came from a CI-only run artifact and **601 is the store's own
+number**; *a metric that differs between CI and local is a question about the
+inputs, not the store*, which this record already states for HIGH and now has
+its WARN-side instance. **And the one-line `git diff` stat was no evidence in
+either direction: these are single-line JSON stores, so "9 files changed, 9
+insertions, 8 deletions" is what a timestamp-only change looks like AND what a
+total rewrite looks like.**
+
+**COST NAMED: `warn` falls 601 → 568 and that is a loss of FALSE findings, not of
+coverage** — 33 fewer lines in the trail, 0 fewer real defects, and the 15 that
+remain are the ones a reader is actually shown wrong. The baseline in
+`docs/coverage-history.jsonl` steps down once and must not be read as an
+improvement in the data.
+
+---
+
 ## 2026-10-02 — A PAGE-BREAK CAPTION LEADING A FUND'S NAME, and the page-carry subtotal that travels with it: 41 rows / 38 entries / 37 plans / 25,311 participants directly plus 16,567 through a master trust / $1,352,765,331
 
 **WHAT WAS WRONG.** An auditor repeats a caption at the top of the next page and

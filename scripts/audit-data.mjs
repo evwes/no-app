@@ -37,6 +37,32 @@ import { cleanFiledName } from "./lib-disclose.mjs";
  * Node would not load the copy under a `.headtmp` extension — an implausible
  * number reporting on the harness, for the sixth time in this session.) */
 const FILED_TK = /^([A-Z]{4}X)\b\s*[-–—:]?\s+(?=\S)|\(([A-Z]{4}X)\)/;
+/* AND AN ALL-CAPS FIVE-LETTER TOKEN ENDING IN X IS NOT NECESSARILY A SYMBOL.
+ * `IMPAX US SUSTAINABLE ECONOMY INST` leads with the HOUSE's own name, and
+ * `Vanguard Small Cap Index Admiral(VXMAX)` and `Fidelity 500 Index Fund
+ * (FXALX)` print a string the SEC registers to nobody — the filer's typo for
+ * VSMAX and FXAIX, which is what we already publish. MEASURED on the v196
+ * store: of the check's findings 4 extract an unregistered token and in all
+ * four OUR answer is the right one, so there was nothing to contradict; across
+ * every row FILED_TK matches (3,152) 224 (7.11%) extract one.
+ *
+ * This is v528's own discovery one level up — that rule found `INDEX` to be a
+ * registered ticker (CYBER HORNET S&P 500) and answered it with CORROBORATION
+ * conditions, which is why `ftk` is safe and this bare extraction is not. Note
+ * the registry is therefore NOT a general answer to that trap: INDEX is in it.
+ * It is only an answer to "is this string a symbol at all".
+ *
+ * FAILS OPEN AND SAYS SO. The gate only ever REMOVES findings, so a missing
+ * registry must not silently drop all of them — that is the "an arm that
+ * cannot fire is worse than an absent one" trap pointed at a check. */
+let REGISTERED_TK = null;
+try {
+  const secPath = new URL("../sec-funds.json", import.meta.url);
+  REGISTERED_TK = new Set(JSON.parse(readFileSync(secPath, "utf8")).funds
+    .map((f) => String(f[1] || "").toUpperCase()).filter(Boolean));
+  if (!REGISTERED_TK.size) REGISTERED_TK = null;
+} catch { REGISTERED_TK = null; }
+if (!REGISTERED_TK) console.log("ticker-conflict: sec-funds.json unreadable — the filed-symbol registry gate is OFF for this run");
 let __fundTk = null;
 const fundTk = (name, type) => {
   if (__fundTk === null) {
@@ -436,13 +462,41 @@ try {
       if (top && (+top.value || 0) / sum >= 0.9 && NOT_FUND_SHAPED.test(String(top.name).trim())) {
         dominantPlans++; if (worstDominant.length < 6) worstDominant.push(`${ack} ("${String(top.name).slice(0, 34)}")`);
       }
-      /* the filing states a symbol and we publish a DIFFERENT one */
+      /* the filing states a symbol and we publish a DIFFERENT one.
+       *
+       * `got` MUST be computed the way `lookupTicker` computes it, and until
+       * 2026-10-02 it was not: the three fund-er.js attempts alone, with
+       * neither of the two STORED fields the page consults. `lookupTicker`
+       * returns `f.ftk` FIRST (v528's filed-symbol rule) and `f.stk` LAST, so
+       * the check was reporting what one resolver would say rather than what a
+       * reader sees. MEASURED on the v196 store: of its 48 findings **31 were
+       * false** — the page already published the filed symbol on every one of
+       * them, through the very `ftk` that FILED_TK had just re-extracted from
+       * the same name — and only 17 were real. 65% of a check's output, written
+       * into `docs/coverage-history.jsonl` as `warn` on every run since it
+       * shipped.
+       *
+       * This is the 2026-09-30 `tkExact` defect (which re-implemented
+       * `lookupTicker` and stopped one stage short of `f.stk`, reading 0 of
+       * 147,835 rows) in a second place — and worse in kind, because a coverage
+       * metric that under-counts is wrong in private while *a check PUBLISHES A
+       * CLAIM*. A false alarm in a watched metric is not noise: it teaches the
+       * operator to skip the line, which is how `site-test` stayed red for ten
+       * consecutive runs.
+       *
+       * The 17 survivors are a clean class and not a residue: every one carries
+       * the symbol in a TRAILING PARENTHETICAL (`… Fund Institutional (VIEIX)`,
+       * `Fidelity 500 Index Fund (FXALX)`), which is outside v528's LEADING
+       * anchor by construction, so none of them has an `ftk` to consult. */
       for (const fd of e.funds) {
         const nm = cleanFiledName(String(fd.name || "")).trim();
         const m = FILED_TK.exec(nm); if (!m) continue;
         const filed = m[1] || m[2];
+        if (REGISTERED_TK && !REGISTERED_TK.has(filed)) continue;  // not a symbol, so nothing is contradicted
         const iss = fd.iss ? String(fd.iss).replace(/\*+/g, "").trim() + " " : "";
-        const got = (iss ? fundTk(iss + nm, fd.type) : null) || fundTk(nm, fd.type) || null;
+        const got = (typeof fd.ftk === "string" && fd.ftk ? { tk: fd.ftk } : null)
+          || (iss ? fundTk(iss + nm, fd.type) : null) || fundTk(nm, fd.type)
+          || (typeof fd.stk === "string" && fd.stk ? { tk: fd.stk } : null) || null;
         if (!got || !got.tk || got.comparable) continue;   // a labelled analogue is a different claim
         if (got.tk === filed) continue;
         tickerConflicts.push(`[ticker-conflict] ${ack} publishes ${got.tk} where the filing states ${filed} — "${nm.slice(0, 48)}"`);

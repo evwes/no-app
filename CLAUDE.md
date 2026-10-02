@@ -727,6 +727,67 @@ from the cycle that would have cleared it.
   trust-aware standalone script — the standalone's single trust is the one lineup
   v196 withdrew. **`matchQuote` 5,397 of which only
   1,785 are SHOWN to readers** — the condition/outcome pair shipped 2026-09-27.
+- **SHIPPED 2026-10-02 00:3xZ, `[skip ci]` — 65% OF A CHECK'S PUBLISHED FINDINGS
+  WERE FALSE: `ticker-conflict` 48 → 15, `warn` 601 → 568.** The check looks for
+  rows where we publish a symbol *the filing itself contradicts*, and it computed
+  what we publish from **the three `fund-er.js` attempts and nothing else** —
+  while `lookupTicker` returns **`f.ftk` FIRST** (v528's filed-symbol rule) **and
+  `f.stk` LAST**. Measured whole-population through the page's own render: **31
+  of its 48 findings were FALSE**, the page already publishing the filed symbol
+  **through the very `ftk` that `FILED_TK` had just re-extracted from the same
+  name** (`VITSX - Vanguard Total Stock Market Index Inst` reported as publishing
+  VTSAX while the row carries `ftk: "VITSX"`).
+  **THE 2026-09-30 `tkExact` DEFECT IN A SECOND PLACE AND WORSE IN KIND.** That
+  one re-implemented `lookupTicker`, stopped one stage short of `f.stk` and read
+  **0** of 147,835 rows — a coverage metric wrong in private. ***A check
+  PUBLISHES A CLAIM***, into `coverage-history.jsonl` and the auto-managed issue,
+  and **a false alarm in a watched metric teaches the operator to skip the
+  line** — which is how `site-test` stayed red for ten consecutive runs.
+  **THE FIX BOTH REMOVED AND ADDED, the half a count would hide:** the chain is
+  now the page's own order, and it **exposed 2 findings the old chain was blind
+  to** (only `stk` answers, so `got` was null and the row was skipped) —
+  reconciled to the row, **48 − 31 + 2 = 19**.
+  **AND THOSE 2 ARE v528's DISCOVERY ONE LEVEL UP:** `IMPAX US SUSTAINABLE
+  ECONOMY INST` — **`IMPAX` is the HOUSE's own name**, and `FILED_TK` reads any
+  leading all-caps five-letter token ending in X as a symbol. So a **registry
+  gate** ships with it, whole cost measured first: of the 19, **4 extract an
+  unregistered string and in all four OUR ANSWER IS RIGHT** (`…Admiral(VXMAX)`
+  where we publish VSMAX, `Fidelity 500 Index Fund (FXALX)` where we publish
+  FXAIX — the filer's typo both times), and across all **3,152** rows `FILED_TK`
+  matches, **224 (7.11%)** extract one. **The registry is NOT a general answer to
+  the `INDEX` trap and the source says so — INDEX is registered**; it answers only
+  *is this string a symbol at all*. **FAILS OPEN AND SAYS SO**, because the gate
+  only removes findings.
+  **FINAL: 48 → 15** (31 removed as already-correct, 2 as typos, 2 added by `stk`
+  then gated out), **and all 15 agree with the page's render** — the property the
+  check was always meant to have. **A NEGATIVE CONTROL PER CONDITION, each
+  failing by name: dropping the `ftk`/`stk` stages reads 46** (the 31 return)
+  **and dropping the registry gate reads 19** (the 4 return); HIGH holds at 4.
+  **THE 15 ARE A CLEAN CLASS, NOT A RESIDUE: every one carries the symbol in a
+  TRAILING PARENTHETICAL** (`… Institutional (VIEIX)`, `Fidelity Contrafund K6
+  (FLCNX)`, `JPMorgan Mid Cap Growth Fund Class R6 (JMGZX)`) — **outside v528's
+  LEADING anchor by construction**, so none has an `ftk` to consult. A sized
+  extension of v528 whose corroboration is the filing's own printed symbol;
+  *a fix for one POSITION of a class is not a fix for the class*, third surface.
+  **`warn` 601 → 568 IS A LOSS OF FALSE FINDINGS, NOT OF COVERAGE** — 33 fewer
+  lines, 0 fewer real defects. The trail steps down once and **must not be read
+  as the data improving.** No published number moves; `audit-data` is a reporting
+  step. `docs/accuracy-log.md` 2026-10-02 (00:3xZ).
+- **#540 (cron, on MAIN) RAN `success` AND ITS ONE MOVING FIGURE WAS CHASED TO A
+  CAUSE: `warn` 603 → 601 IS NOT IN THE STORE.** Everything else byte-identical
+  to #539 — confident 60,170, lineups 59,822, entries 65,479, HIGH **4 =
+  baseline**, overshoot 372, dl 19, pv 100, tkExact 37.2. The stores compare
+  **byte-identical** (`plans`/`fields`/`count` in plans-all, `plans` in
+  lineups-status, and `fee-percentiles`/`mtias`/`lineups-index`/`plans-index`/
+  `map-points` hash equal once `generated` is removed), and **a local audit on
+  that store reads 601**, matching #540 — so the two WARNs in #537–#539 came from
+  a **CI-only run artifact** and 601 is the store's own number. *A metric that
+  differs between CI and local is a question about the inputs, not the store*,
+  already recorded for HIGH and now with its WARN-side instance.
+  **AND THE `git diff` STAT WAS NO EVIDENCE IN EITHER DIRECTION:** these are
+  single-line JSON stores, so *"9 files changed, 9 insertions, 8 deletions"* is
+  what a timestamp-only change looks like **and what a total rewrite looks
+  like.** The branch adopted main's data commit by fast-forward.
 - **THE 23:2xZ DRAW, AND IT FOUND THE 05:4xZ SHIP'S DEFECT ONE SHARE CLASS ALONG
   — QUEUED, SIZED, SPLIT, OWNER-GATED, NOT SHIPPED: a filing stating the plain
   INSTITUTIONAL class publishes the ADMIRAL retail symbol, 2,767 rows / 1,571
