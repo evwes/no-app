@@ -934,6 +934,51 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   coded 10 or 29. Pipeline change, needs a prep run, and it moves up to ~2,200
   published provider names, so it is the owner's call.
   **A blank is honest; a name reads as knowledge.**
+- **THE RECORDKEEPER FIX WAS APPROVED, MEASURED AND REFUSED 2026-10-02 — FOUR
+  VARIANTS, FOUR REFUTATIONS, NOTHING SHIPPED. Do not retry any of them.**
+  (1) **Reading it out of the NOTES**: 30 filings drawn RANDOMLY from the
+  5,722-plan suspect pool — 29 mention "recordkeep", **2 state it unambiguously
+  (6.7%), and BOTH already agree with what we publish**, so the correction yield
+  is **0 of 30** against a full re-parse. One of the two would have CORRUPTED
+  **Target (495,482 ppl)**: the backward capture crossed a SENTENCE BOUNDARY and
+  read `"State Street Bank and Trust Company. Alight"` where the answer is
+  `Alight Solutions, LLC`, which we already publish. ***A regex that captures
+  backwards must be bounded by the sentence, not by the character class.***
+  (2) **Counting code 64 as recordkeeping**: **2,395 plans / 2,410,330 ppl**
+  change and the changes are WRONG — Notre Dame `FID INV INST OPS CO` →
+  **`AON INVESTMENTS`** (a consultant), Cornell/Brown/Northwestern/Dana-Farber
+  all `TIAA` → `Fidelity` (a coin toss in a 403(b) using both). **Code 64 sits
+  on consultants billing pass-through recordkeeping fees.**
+  (3) **Vetoing a row coded 10/29**: 336 plans / 586,780 ppl, **199 going BLANK
+  — and all 199 read, they are overwhelmingly `VALIC RETIREMENT SERVICES`**, a
+  real 403(b) recordkeeper filers routinely code 10 (Thomas Jefferson 29,087,
+  Lehigh Valley 27,887, Moses Cone 15,799 …). It would delete the CORRECT name
+  for ~200,000 participants. VALIC is a FOURTH filer mis-coding beside the
+  recorded Schwab/Ascensus/Milliman, and much the largest.
+  (4) **Veto but never blank**: the removal is sound and the promotion is not —
+  `SMITH & HOWARD PC → CAPTRUST`, `KCOE ISOM → MORGAN STANLEY`,
+  `CARON BLETZER → NYLINK INSURANCE AGENCY`. *Swapping a known-wrong name for an
+  unverified one is not an improvement.*
+  **THE STRUCTURAL REASON, derivable from the shipped expression in one line and
+  worth more than the four measurements:** `score = plat*2e15 + isRk*1e15 +
+  comp` and `comp` maxes near 1e8, **so a row coded 15 ALREADY outranks an
+  uncoded auditor** — the auditor can only win where NO row is coded 15, so a
+  veto can only ever promote another UNCODED row and can never find a credible
+  replacement. ***Read the shipped scoring before designing a change to it.***
+  **WHAT WOULD ACTUALLY SETTLE IT, and it is cheap:** the evidence is **Schedule
+  C ITEM 1** (who the filer named as the eligible-indirect-comp discloser).
+  `build-data` reads it; the fee shards store **only item 2**, so no store-side
+  measurement can see it and the DOL extracts are unreachable from the sandbox.
+  **One prep-run change — store the item-1 name beside the item-2 rows — makes
+  the whole class measurable.** No parser bump, no re-parse.
+  **SAFE AND SEPARABLE:** adding VALIC to `RK_BRANDS` changes 0 published names
+  today (it already wins) but protects ~200,000 participants from any future
+  veto. **PSEG is the motivating case and is unarguable**: its filing says
+  *"Fidelity Investments is the recordkeeper"*, it files NO item-2 rows (a
+  1,274-plan bucket), and we publish `Invesco Advisors, Inc` — a string that
+  appears NOWHERE in the filing, whose only Invesco mentions are holdings
+  footnotes naming the manager of one investment.
+  `docs/accuracy-log.md` 2026-10-02 (19:3xZ).
 - Recordkeeper BLANK where Schedule A names a carrier — `build-data` resolves
   `INS_CARRIER_NAME` and never reads it, and drops a Schedule A with 0
   commissions and 0 fees before it could be used. **UNSIZED and honestly so:**

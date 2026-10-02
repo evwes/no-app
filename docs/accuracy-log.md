@@ -7,6 +7,126 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-02 (19:3xZ) — the recordkeeper fix was approved, measured, and REFUSED: every variant either corrupts 2.4M participants, deletes a real recordkeeper from 200k, or substitutes an unverified name
+
+**THE OWNER APPROVED IT WITH A CONDITION — "as long as this does not provide
+inaccurate data" — AND THE CONDITION BOUND.** Four designs were built and
+measured against the store; all four fail it. Nothing shipped. The value of the
+cycle is the four refutations and the structural reason underneath them.
+
+### What prompted it, and it is a real defect
+
+PSEG (the owner's own plans, 4,114 + 8,667 participants) publishes **`Invesco
+Advisors, Inc`** as recordkeeper, four rows above **`Self-Directed Brokerage:
+Fidelity BrokerageLink`** on the same page. Its filing, read directly
+(`20251013134813NAL0003060242001`, line 1054):
+
+> *"Plan's assets and **Fidelity Investments is the recordkeeper**."*
+
+The only two Invesco mentions in the document are holdings footnotes — *"(A)
+Managed by INVESCO Institutional, Inc."* — the manager of one investment, not a
+service provider. **And the string we publish appears NOWHERE in the filing**
+("Invesco Advisors, Inc" vs the filing's "INVESCO Institutional"), so it came
+from the Schedule C item-1 extract. Both PSEG plans file **no Schedule C item-2
+provider rows at all**, which is why the item-1 fallback ran. That bucket is
+**1,274 plans**.
+
+### PHASE B — read the recordkeeper out of the notes — REFUSED ON YIELD AND ON SAFETY
+
+30 filings drawn RANDOMLY (not top-N) from the 5,722-plan suspect population
+(no item-2 row coded 15/64), downloaded and read:
+
+```
+mention "recordkeep" at all        : 29 of 30
+UNAMBIGUOUS present-tense statement:  2 of 30   = 6.7% yield
+no mention                         :  1
+```
+
+**And both hits already agree with what we publish, so the yield of
+CORRECTIONS is 0 of 30** — against a full re-parse, which this record says only
+a version bump justifies.
+
+**WORSE, ONE OF THE TWO WOULD HAVE INTRODUCED AN ERROR ON 495,482 PEOPLE.**
+
+```
+Target Corporation   notes -> "State Street Bank and Trust Company. Alight"
+                     we publish -> Alight          (correct today)
+  "State Street Bank and Trust Company. Alight Solutions, LLC is the
+   recordkeeper for the Plan."
+```
+
+The backward capture crossed a SENTENCE BOUNDARY and swallowed the previous
+sentence's tail, because the character class admitted `.`. Fixable by splitting
+on sentences first — but with a 0-of-30 correction yield there is nothing left
+to buy. ***A regex that captures backwards must be bounded by the sentence, not
+by the character class***, and a 6.7% statement rate is the reason this
+extractor is not worth a parser version.
+
+### PHASE A — fix the Schedule C selection — THREE VARIANTS, THREE REFUTATIONS
+
+The shipped rule (`build-data.mjs`) is
+`score = (isPlatform ? 2e15 : 0) + (isRk ? 1e15 : 0) + comp`, with
+`isRk = code 15 || /RECORDKEEP/i.test(name)` and item 1 as a fallback.
+
+**(a) ALSO COUNT CODE 64 ("Recordkeeping fees"). REFUTED: 2,395 plans /
+2,410,330 participants change, and the changes are wrong.** University of Notre
+Dame goes `FID INV INST OPS CO` → **`AON INVESTMENTS USA INC.`**, i.e. from the
+actual recordkeeper TO a consultant; Cornell, Brown, Northwestern and
+Dana-Farber all flip `TIAA` → `Fidelity`, which in a 403(b) using both is a coin
+toss rather than a correction; Auto Club goes `VANGUARD` → `FIDELITY`. **Code 64
+sits on consultants who bill recordkeeping fees they pass through**, so it is
+not evidence about who the recordkeeper is.
+
+**(b) VETO A ROW CODED 10 (accountant) OR 29 (legal). REFUTED: 336 plans /
+586,780 ppl, of which 199 / 314,715 go BLANK — and reading all 199, they are
+overwhelmingly `VALIC RETIREMENT SERVICES`**, a genuine 403(b) recordkeeper that
+filers routinely code 10 (Thomas Jefferson 29,087, Lehigh Valley 27,887, Florida
+Health Sciences 17,449, Moses Cone 15,799, and dozens of hospitals). The veto
+would delete the CORRECT recordkeeper for ~200,000 participants. The platform
+exemption did not save them because VALIC is not among the 28 `RK_BRANDS`.
+*This record already names 3 such filer mis-codings (Schwab, Ascensus,
+Milliman); VALIC is a fourth and much the largest.*
+
+**(c) VETO BUT NEVER BLANK (promote the next row instead). REFUTED by reading
+the promotions:** `KCOE ISOM, LLP → MORGAN STANLEY`, `SMITH & HOWARD PC →
+CAPTRUST` (an advisor), `CARON BLETZER → NYLINK INSURANCE AGENCY`, `BOYER &
+RITTER → ASSURED PARTNERS CAPITAL`. The removal is sound — an accountant is
+never the recordkeeper — but the replacement is another profession. **Swapping a
+known-wrong name for an unverified one is not an improvement**, and under the
+owner's condition it is a regression.
+
+### THE STRUCTURAL REASON, which should have been derived before any of it
+
+`comp` is at most ~1e8 and `isRk` contributes 1e15, so **a row the filer coded
+15 ALWAYS outranks an uncoded auditor under the EXISTING rule.** Therefore the
+auditor can only ever win when NO row is coded 15 — which means **a veto can
+only ever promote another UNCODED row, and can never find a credible
+replacement.** The design cannot work as conceived, and one line of arithmetic
+on the shipped expression says so. ***Read the shipped scoring before designing
+a change to it*** — three variants and ~40 minutes of measurement restated what
+the formula already implied.
+
+### What is actually needed, and why it is not startable from the sandbox
+
+The evidence that would settle PSEG and the 1,274 no-item-2 plans is **Schedule
+C item 1** — who the filer named as the eligible-indirect-compensation
+discloser, and whether that is a platform or an asset manager. `build-data`
+reads item 1 but the fee shards store **only item 2**, so no store-side
+measurement can see it, and the EFAST2 extracts come from the DOL site, which is
+unreachable from this sandbox. **One prep-run change — store the item-1 name
+beside the item-2 rows — makes the whole class measurable.** That is the next
+step, and it is cheap: a prep run, no parser bump, no re-parse.
+
+### Not done, with its reason
+
+- **Nothing shipped.** Every variant fails the stated condition.
+- **The VALIC finding is worth acting on independently**: adding VALIC to
+  `RK_BRANDS` changes 0 published names today (it already wins) but protects
+  ~200,000 participants' correct name from any future veto. Purely additive.
+- The sizing replay is approximate for **221 plans at the 12-row shard cap**,
+  and cannot see the **1,274 plans with no item-2 rows at all** — PSEG's own
+  bucket — which is stated rather than papered over.
+
 ## 2026-10-02 (18:2xZ) — the bank-deposit fee gate was a fix for two WORDINGS, and one deposit program survived it: 90 rows / 81,444 participants / $179,762,762 stop publishing a fabricated expense ratio
 
 **WHAT WAS WRONG.** `isBankDepositRow` shipped at 01:5xZ withdrawing a
