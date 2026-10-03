@@ -808,7 +808,9 @@ EFAST2 bucket grew, not that our code broke.
 
 **NOTHING IS PRE-REGISTERED** for a parser run — `PARSER_VERSION` stays 199.
 **Nothing is in flight.** Newest build-data run is **#567 (schedule, main,
-`26fcda74`, 13:28:42-13:37:53Z) SUCCESS**, already verdicted. Every change since
+`26fcda74`, 13:28:42-13:37:53Z) SUCCESS**, already verdicted — and note it is
+~3h old at 16:4xZ, consistent with the measured ~3.6h delivered cadence rather
+than the configured hourly one. Every change since
 #563 is display-side or documentation, so a session dispatch would re-run the
 same ~96-ack incremental work list that has now produced six identical coverage
 lines; the hourly cron on main is the right mechanism for new DOL filings.
@@ -1132,23 +1134,53 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
-- **FOUND BY THE 15:0xZ DRAW — TABLE DEBRIS LEADING A PUBLISHED QUOTE: 65
-  quotes / 65 plans / 130,078 ppl.** Lithia Motors (30,021 ppl) publishes its
-  match quote as `| Contributions — The Plan provides for employee
-  contributions…`; Crh (55,484) `: Vesting: Participants are immediately
-  vested…`; Aaron's (8,615) `) Vesting Participants are…`. `cleanFiledName`
-  cleans the NAME column and **nothing cleans the QUOTES**, so whatever glyph the
-  sentence window opened on is published. Display-side, no run needed.
-  **DO NOT CARRY 157 quotes / 428,797 ppl** — that bucket is quotes opening on a
-  BULLET, which is the audited notes' own list formatting (United Airlines,
-  88,204 ppl) and not a defect. **The refusal set is load-bearing: 9 quotes /
-  9,434 ppl** each name a larger defect — Soo Line's `) are immediately vested…`
-  opened MID-SENTENCE, Steak N Shake's `| | -6- 1 | | ) | | |` is a page-furniture
-  run with a PAGE NUMBER in it, and Yusen's `,000 (indexed) or 150%…` has a comma
-  that is **the inside of `$23,000`**, not leading punctuation. *A leading-glyph
-  repair and a mid-sentence truncation look identical from the first character;
-  only what REMAINS tells them apart*, so the gate is "a sentence must remain".
-  `docs/accuracy-log.md` 2026-10-03 (15:4xZ).
+- **SHIPPED 2026-10-03 16:2xZ (`23b4fa32`) — `quoteTrim`: table debris stops
+  leading a published quote, 64 quotes / 64 plans / 129,653 ppl**, 5 crawlable
+  pages. The queue's own figure was 65 / 130,078; the 65th is already suppressed
+  by `matchQuoteOk` and reaches no reader. Measured over all 105,220 published
+  quotes, trimming changes NEITHER guard's verdict, so it cannot change which
+  plans publish a quote. **DO NOT CARRY 157 quotes / 428,797 ppl** — that bucket
+  is quotes opening on a BULLET, the audited notes' own list formatting.
+  Canonical in `lib-quote.mjs` beside the two guards, twin sliced into app.js,
+  16 `trimCases`, `__wampoQuoteTrim` cross-checked by smoke-test.
+  **Two control lessons:** a `-6-` page-number arm was DROPPED for changing 0 of
+  105,220 quotes (*an arm real in principle and inert on the data is untested
+  machinery* — its negative control could only print "breaks NOTHING"), and
+  Yusen's `,000` is protected TWICE so its fixture could not fail — each
+  protection now has its own real single-protection case (comma 10 quotes /
+  4,551 ppl, sentence gate 8 / 8,856). `docs/accuracy-log.md` 2026-10-03 (16:2xZ).
+- **FOUND BY THE 16:1xZ DRAW, UNSIZED AND HONESTLY SO — A RECORDKEEPER NAME
+  WELDED ONTO THE FUND NAME.** Duke University (**71,641 ppl**) publishes
+  `Fidelity JPM Large Cap Growth R6` ($172,635,812) and `Fidelity PIMCO Income
+  Inst` ($160,545,756): the SYMBOLS are right (JLGMX, PIMIX) and the NAMES tell
+  71,641 readers the funds are Fidelity products when they are JPMorgan's and
+  PIMCO's. Same shape at Crestron, Central Virginia Dental (`Charles Schwab &
+  Company DFA U.S. Targeted Value Portf`), Alexander Thompson (`Vanguard
+  American Funds Trgt Date Ret 2040 R6`), and welded at the END at Jasco
+  (`… Class I Vngr`) and Future Ford (`… Class R6 Capital Group`). **The 31 rows
+  it was spotted in are a BY-PRODUCT of a refuted test, not a measurement of
+  this shape** — the right screen is "the name opens or closes on a HOUSE token
+  the rest of the name contradicts", and it must be sized on its own first.
+- **AND THE DRAW'S MOTIVATING ROW COULD NOT BE CONVICTED — recorded so nobody
+  re-derives the three refuted screens.** PPC Retirement Plan publishes
+  `JP Morgan US Value R6 Fund` with **VGINX** ASSERTED, out of the stored `stk`
+  (both resolvers return null for that name, and VGINX is in neither `fund-er.js`
+  nor `data.js`) — the INVERSE of the owner-gated store-vs-page item: the page is
+  faithful and the question is about the store. **Do not retry:** (1)
+  `TICKER_NAME` is the **EMPLOYER STOCK** map, not a fund registry; (2) a
+  house-majority witness keyed on the ISSUER cell reads **246 rows / 139,854
+  ppl** of false positives because ***the issuer cell routinely holds the
+  CUSTODIAN*** (`Fidelity Emerging Markets Index Fund` / `iss: Vanguard
+  Fiduciary Trust Co` → FPADX, symbol RIGHT); (3) "one symbol, many funds" reads
+  **1,463 symbols / 469,549 rows / $1.25T** of pure SPELLING VARIANCE — `VTHRX`
+  has 222 distinct names and all are Vanguard Target Retirement 2030. VGINX's own
+  41 names are all one fund, so the store is internally consistent and a majority
+  witness cannot see a consistent error (*a ceiling that reads repetition as
+  evidence of correctness is fed by repeated damage*). **What remains is bounded,
+  not concluded: one stored symbol stands on 466 rows / 576,600 participants of a
+  single named fund and is UNVERIFIED.** Settling it needs a registry witness —
+  `data/fund-facts.json` and the `fund-facts` agent — because *a ticker is a FACT
+  that must be SOURCED, never inferred.* `docs/accuracy-log.md` 2026-10-03 (16:4xZ).
 - **SHIPPED 2026-10-03 12:4xZ (#566) — THE WELDED SHARE COUNT: 18 stored names
   repaired, of which 9 rows / 8 plans / 3,869 ppl / $7,252,820 are
   READER-FACING** and 9 were already clean on the page. **The queue's own figure
@@ -1707,6 +1739,16 @@ These outlived the versions that produced them. The accuracy log has the case.
   CONDITION, in full rather than by surgery on the shipped source, and assert it
   fails BY NAME on exactly its own cases. Check that new pins REACH the new arm:
   an arm can be inert while every existing case still passes.
+  **TWO CONVERSES, both earned 2026-10-03 on `quoteTrim`.** (i) **Check that
+  each ARM reaches the DATA**, not only that each pin reaches an arm: a `-6-`
+  page-number stripper passed every fixture and changed **0 of 105,220 published
+  quotes**, so it was dropped — *an arm real in principle and inert on the data
+  is untested machinery*, and the tell is a negative control that can only ever
+  print "breaks NOTHING". (ii) **A case protected by TWO conditions cannot fail
+  for either**, so it proves neither: Yusen's `,000 (indexed)` is covered both by
+  a comma's absence from the vocabulary and by the output gate. Give every
+  condition a case where it is the ONLY protection, and find that case by
+  measuring each condition's population separately.
 - **A clean zero, a round number or an implausibly large one reports on the
   QUERY.** So does a both-sided zero across a whole population.
 - **RANK to pick what to READ; draw RANDOMLY to estimate a RATE.** Top-N samples

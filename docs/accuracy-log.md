@@ -42952,3 +42952,135 @@ rows); `Windsor || Fund Inv` on that same page is outside the arm's reach for an
 independent reason — its stored tail is `Fund Inv Registered Investment Company`,
 which no single branch matches — so that row's safety is not evidence for the
 bar count and is recorded as such.
+
+## 2026-10-03 (16:2xZ) — quoteTrim SHIPPED: table debris stops leading a published quote, 64 quotes / 64 plans / 129,653 ppl
+
+Taken from the queue entry written at 15:4xZ by the previous cycle's draw.
+Lithia Motors (30,021 participants) published its match quote as
+`| Contributions — The Plan provides for employee contributions, …`: a leading
+Schedule-H COLUMN BAR, verbatim. `matchQuoteOk` and `vestingQuoteOk` decide
+WHETHER a quote may be published and nothing decided what its first character
+is, so whatever glyph the extractor's sentence window opened on went out with
+it. `cleanFiledName` does this work for the NAME column and had no counterpart.
+
+**THE PUBLISHED FIGURE, NOT THE STORED ONE** — and that distinction is the
+15:3xZ rule applied to its own next measurement, one cycle later. The raw store
+holds 65; the 65th (Mike Albert Leasing, 425 ppl) is already suppressed by
+`matchQuoteOk`, so trimming it would reach no reader.
+
+**SAFETY, measured over all 105,220 published quotes: trimming changes NEITHER
+guard's verdict on any of the 64**, so it cannot change which plans publish a
+quote. That is also why it is applied at the render site rather than inside the
+guards. 5 crawlable pages changed, 5 insertions / 5 deletions, each exactly one
+leading glyph; the other 59 plans have no page. site-test #157 SUCCESS. The
+mirrored tree carries its own positive control: **13 pages still publish a
+bullet-led quote untouched**, and 5,118 still carry blockquotes, so the removal
+was targeted rather than a blanket strip.
+
+### Two things the negative controls found, and they are the reusable part
+
+**(1) ONE ARM WAS DROPPED FOR TOUCHING NOTHING.** A `-6-` page-number stripper
+was written first and ran ahead of `Q_LEAD`. Measured, it changed the published
+text of **0 of 105,220 quotes**, and the Steak N Shake case it was written for
+(`| | -6- 1 | | ) | | | Vesting — …`) is refused by the sentence gate anyway.
+***An arm that is real in principle and inert on the data is untested
+machinery*** — and the way it was caught is the point: its own negative control
+could only ever print "breaks NOTHING", which is the signature of a condition
+that is not a condition. The existing rule says *check that new pins REACH the
+new arm*; this is its converse, *check that each ARM reaches the data*.
+
+**(2) A FIXTURE PROTECTED TWICE CANNOT FAIL.** Yusen Logistics' `,000 (indexed)
+or 150% …` — where the comma is **the inside of `$23,000`** — is covered BOTH by
+the comma's absence from `Q_LEAD` and by the sentence gate, so neither single
+drift exposes it and a fixture for it alone is decorative. Measured separately
+over the published quotes, each protection has a population of its own: the
+comma's absence is the ONLY protection on **10 quotes / 10 plans / 4,551 ppl**
+(Pentegra's `, CONTINUED Note 1 – Description of Plan, Continued Vesting …`,
+where trimming the comma merely uncovers a page-header run — a different
+defect), and the sentence gate is the only protection on **8 / 8 / 8,856**
+(Soo Line's mid-sentence `) are immediately vested…`, Union Avenue's
+`; ; ' The Company…` and Revela Foods' `| £ a a The Company…`, where stripping
+the punctuation leaves MORE debris, OCR noise rather than punctuation). Each now
+has a real fixture, so all four drifts break exactly their own cases by name.
+
+16 `trimCases` in `docs/quote-guard-cases.json`, every one a real filed quote,
+passing in BOTH copies; `--selftest` now runs 54 fixtures; smoke-test
+cross-checks the browser twin through `__wampoQuoteTrim`, the protection the two
+guards already had. Display-side, `PARSER_VERSION` stays 199. `23b4fa32`.
+
+## 2026-10-03 (16:4xZ) — THE 16:1xZ DRAW: A STORED SYMBOL I COULD NOT CONVICT, AND TWO SCREENS THAT REFUTED THEMSELVES
+
+PPC Retirement Plan (1,581 participants) publishes `JP Morgan US Value R6 Fund`
+at $3,169,802 (3.2% of its menu) with the ticker **VGINX**, ASSERTED — `star` is
+false, so the page prints no asterisk and makes the full identification claim.
+Resolved in isolation the name yields **null** from both `lookupTicker` and
+`fundTickerInfo`, and VGINX appears in neither `fund-er.js` nor `data.js`: the
+symbol comes from the **stored `stk`**, written by the parser, surfacing through
+the display's last-resort `f.stk` arm. The stored row is
+`{"name":"JP Morgan US Value R6 Fund","iss":"JP Morgan Funds","stk":"VGINX"}`.
+
+**This is the INVERSE of the standing owner-gated item.** There the store holds
+the share-class-correct symbol and the page prefers its own resolver; here the
+page is faithful and the question is about the STORE.
+
+**AND I COULD NOT CONVICT IT FROM OUR OWN DATA — three screens, each refuted by
+its own output.**
+
+**(a) `TICKER_NAME` is not a fund registry.** My first harness read it as
+symbol → fund name; it is the **EMPLOYER STOCK** map (`AAPL` → Apple, `JPM` →
+JPMorgan Chase), so it cannot say what VGINX is. The premise died before the
+first number. *Read what a table IS, not what its name suggests.*
+
+**(b) A HOUSE-MAJORITY WITNESS keyed on the ISSUER cell manufactured 246 false
+positives**, because ***the issuer cell routinely holds the CUSTODIAN***:
+`Fidelity Emerging Markets Index Fund` with `iss: "Vanguard Fiduciary Trust Co"`
+→ FPADX, where the symbol is RIGHT and only my column was wrong. Also
+`PIMCO Total Return Instl` / `iss: Vanguard` → PTTRX, and
+`American Century Inflation-Adjusted Bond … R6` / `iss: Fidelity Management
+Trust` → AIADX. **DO NOT CARRY 246 rows / 170 plans / 139,854 ppl.** Re-keyed on
+the NAME column it reads **31 rows / 20 plans / 89,282 ppl** — and those are a
+DIFFERENT defect, below.
+
+**(c) THE CONTROL FAILED, AND ITS FAILURE WAS THE MOST USEFUL RESULT.** The
+house-majority test cannot see the PPC row at all: **VGINX is carried on 466
+rows and the store's house for every one of them is JPMorgan**, so majority and
+row AGREE and the row passes. ***A ceiling that reads repetition as evidence of
+correctness is fed by repeated damage*** — already on the record, met here in its
+ceiling half rather than its floor half. *A measurement that cannot see its own
+motivating example has not been scoped*, and a count that omits the case looks
+exactly like a count that includes it.
+
+**(d) SO I ASKED "ONE SYMBOL, MANY FUNDS?" AND THAT REFUTED ITSELF TOO.** VGINX
+carries **41 distinct filed names / 466 rows / 576,600 participants** — and all
+41 are spelling variants of ONE fund: `JPMorgan U.S. Value R6`,
+`JP Morgan Us Value R6`, `JPM US Value R6`, `U.S. Value Fund - R6`,
+`US Value R6`. The store is internally CONSISTENT. **DO NOT CARRY 1,463 symbols
+/ 469,549 rows / $1,250,510,820,867** — that screen measures SPELLING VARIANCE,
+not defects: `VTHRX` has 222 distinct names and every one is Vanguard Target
+Retirement 2030, `VTTHX` 221 all 2035. *A count keyed on name variety measures
+name variety.*
+
+**WHAT HONESTLY REMAINS, and it is bounded rather than concluded:** whether
+VGINX is the correct symbol for JPMorgan U.S. Value R6 **cannot be answered from
+this store at all** — it needs a registry witness, which is what
+`data/fund-facts.json` and the `fund-facts` agent exist for. ***A ticker is a
+FACT that must be SOURCED, never inferred***, so no claim is published here
+either way; my own recollection of what VGINX denotes is training knowledge and
+is not evidence. What is recorded is the exposure: **one stored symbol stands on
+466 rows / 576,600 participants of a single named fund, and it is unverified.**
+
+**AND ONE REAL DEFECT SURVIVED THE WRECKAGE, found only because screen (b)
+failed informatively: A RECORDKEEPER NAME WELDED ONTO THE FUND NAME.** Duke
+University (**71,641 participants**) publishes `Fidelity JPM Large Cap Growth R6`
+($172,635,812) and `Fidelity PIMCO Income Inst` ($160,545,756) — the SYMBOLS are
+right (JLGMX, PIMIX) and the NAMES tell 71,641 readers the funds are Fidelity
+products when they are JPMorgan's and PIMCO's. Same shape at Crestron
+(`Fidelity American Funds The Income Fund of America Cla`), Central Virginia
+Dental (`Charles Schwab & Company DFA U.S. Targeted Value Portf`), Alexander
+Thompson (`Vanguard American Funds Trgt Date Ret 2040 R6`), and welded at the
+END at Jasco (`Victory Sycamore Established Value Fund - Class I Vngr`) and
+Future Ford (`Victory RS Global Fund Class R6 Capital Group`). **UNSIZED as a
+class** — the 31 rows are a by-product of a refuted test and not a measurement
+of this shape, and the right screen is "the name opens or closes on a HOUSE
+token that the rest of the name contradicts", which must be sized on its own
+before anything is built. Queued.
