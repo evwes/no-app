@@ -42382,3 +42382,60 @@ of `curl | grep` has no way to report its own failure.
 The invariant block now says the live site joins the DOL website as unreachable
 from here, and names both checks. The sandbox CAN reach the EFAST2 S3 bucket, so
 "the network works" is true and useless; reachability is per-host.
+
+## 2026-10-03 (09:2xZ) — the draw's find was my own instrument: a labelled comparable printed identically to an asserted symbol
+
+**The participant-weighted draw (Sabine Oil & Gas 162, Intel 80,916, Advocate
+Aurora 103,145) looked like it had found a wrong published ticker, and the
+trace killed the claim before it was written down.**
+
+Intel publishes two BlackRock CITs that resolve to the same symbol:
+
+| | value | resolves to |
+|---|---|---|
+| `BlackRock Equity Index Fund F` | $3,854,734,158 | WFSPX |
+| `BlackRock 2500 Index Fund F` | $940,955,432 | WFSPX |
+
+WFSPX is an S&P 500 fund and a "2500 Index" fund is a completion /
+extended-market fund, so this was about to be written up as **a wrong symbol on
+$940,955,432 in front of 80,916 readers.** It is not. `fundTickerInfo` answers
+`{"tk":"WFSPX","comparable":true}`, app.js sets `star = info.comparable`
+(`app.js:3214`), and the page prints an asterisk and a footnote: **the row is
+already labelled an approximation, not an identification.**
+
+***MY DRAW SCRIPT PRINTED `r.tk` AND DROPPED `r.star`, WHICH THE HARNESS DOES
+RETURN.*** The tracked `apppath.mjs` is sound — `renderRow` hands back `star`
+beside `tk` — and the reading went wrong one layer above it. This is the
+standing rule *measure through the function the page calls, with the argument
+the page passes*, met on a new edge: **it is not enough to call the right
+function; the print has to carry every field of its answer that the page acts
+on.** An asterisk is a whole category of claim. Both scripts now print `=TK`
+for an assertion and `~TK` for a comparable, and the sizing run excludes
+groups where every member is a comparable.
+
+### What survives, and it is narrower and real
+
+The resolver **proves it knows the right answer**: `BlackRock Russell 2500 Index
+Fund` resolves to **SMMD** (`er` 0.15), the correct asset class. The name
+*without* the word `Russell` falls through to a generic equity-index comparable
+and lands on the S&P 500. So the defect is a **matcher arm keyed on `Russell`**
+where the filed name often omits it — a bad comparison rather than a false
+identification, which is a smaller harm but still a published number. Unsized.
+
+### Two other readings from the same draw, each checked rather than assumed
+
+- **Sabine Oil & Gas (162 ppl) publishes `Fidelity` as a holding at 9.8% of its
+  menu, $3,165,492.** Traced: `fundTickerInfo` → `null`, `fundER` → `null`, so
+  the row publishes **no ticker and no fee** and the harm is the bare house name
+  alone. That is the queued bare-HOUSE-name class, confirmed to carry nothing
+  else — not a new item.
+- **Advocate Aurora Health (103,145 ppl) publishes `Dodge & Cox Stock X` →
+  `DODGX` with `comparable: FALSE` — an assertion — plus fee `0.51`, on
+  $519,523,405.** The filed name states **Class X** and the page asserts the
+  symbol and a fee for a different class. This is a named live instance of the
+  OWNER-GATED stated-share-class item (5,929 rows / 11.1M ppl), and the trace
+  settles the part that matters for that decision: the page is **asserting**,
+  not comparing, so the asterisk does not cover it. Whether DODGX is the wrong
+  class needs a registry witness, which this sandbox cannot fetch — *a ticker is
+  SOURCED, never inferred* — so that is stated as the filing's claim versus
+  ours, and no correction is proposed here.

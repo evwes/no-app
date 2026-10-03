@@ -1130,6 +1130,20 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   Government Money Market Fund`. Needs a registry witness, not a wider
   vocabulary. Still the reason this is not a `bank` rule: 1,585 rows carry
   `bank` inside a TRUSTEE's name. `docs/accuracy-log.md` 2026-10-02 (18:2xZ).
+- **FOUND BY THE 09:1xZ DRAW — A COMPARABLE OF THE WRONG ASSET CLASS, and the
+  resolver proves it knows better. UNSIZED, honestly so.** Intel (80,916 ppl)
+  publishes `BlackRock 2500 Index Fund F` at $940,955,432 with a comparable of
+  **WFSPX**, an S&P 500 fund, where a "2500 Index" fund is a completion /
+  extended-market fund. `BlackRock Russell 2500 Index Fund` — the SAME product
+  with the word `Russell` present — resolves to **SMMD** at `er` 0.15, the right
+  asset class. So the 2500 arm is keyed on `Russell` and a filed name omitting
+  it falls through to a generic equity-index comparable. **It is a labelled
+  approximation (`star`/asterisk), not a false identification**, which is the
+  smaller harm — but a comparable is still a published number and this one is
+  the wrong asset class. Size the arm before touching it: the general shape is
+  *a filed index name whose index is identifiable but whose matcher arm needs a
+  token the filer omitted*, and the measurement must separate ASSERTED from
+  comparable (`r.star`) or it counts the design as the defect.
 - The bare HOUSE name as a holding: 5,752 rows / 4,585 plans / 8,370,934 ppl.
   93 rows at ≥30% of a menu. PARSER-side: replacing the identity column's own
   text is a claim, not a repair.
@@ -1503,6 +1517,16 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 These outlived the versions that produced them. The accuracy log has the case.
 
+- **AND PRINT EVERY FIELD OF ITS ANSWER THAT THE PAGE ACTS ON (2026-10-03).**
+  Calling the right function is not enough. `renderRow` returns `star`
+  (= `info.comparable`) beside `tk`, and app.js prints an asterisk and a
+  footnote on a comparable — *the row is labelled an approximation, not an
+  identification.* A draw script that printed `tk` and dropped `star` was one
+  paragraph from publishing "Intel's `BlackRock 2500 Index Fund F` publishes a
+  wrong symbol on $940,955,432 to 80,916 readers", which the page does not
+  claim. **An asterisk is a whole category of claim.** The tracked harness was
+  sound; the reading went wrong one layer above it, so *a sound instrument read
+  through a lossy print is a lossy measurement.*
 - **Measure through the function the page calls, WITH THE ARGUMENT THE PAGE
   PASSES.** Met at least six times: a fee asked of the raw name where the page
   prices the cleaned one; `fundTickerInfo` called with one argument where the
