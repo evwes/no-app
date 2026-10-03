@@ -765,18 +765,11 @@ EFAST2 bucket grew, not that our code broke.
 
 **NOTHING IS PRE-REGISTERED** for a parser run — `PARSER_VERSION` stays 199.
 
-**TWO RUNS IN FLIGHT AS OF 05:4xZ, BOTH NEEDING THEIR `conclusion` READ BEFORE
-ANY MIRROR** (the rule that cost three days of red site-test):
-- **build-data #561** (dispatch, `fca3f5c5`, started 05:08:13Z) — incremental,
-  so the work list is the 48 permanently-403 acks plus the ~49-ack old-pv tail.
-  Expect the coverage line UNCHANGED; `dl` may tick if the EFAST2 bucket grew.
-- **site-test #150** (`f9d646f6`, started 05:4xZ) — the empty-parenthetical
-  display fix. Dispatched EXPLICITLY because the commit carries `[skip ci]` to
-  protect #561 (`lib-disclose.mjs` matches the pipeline's path filter), and
-  `[skip ci]` suppresses every workflow including the one that verifies it.
-  **Local gates were green; CI is what settles it.**
-**Then mirror the pair.** The display fix is on the branch only, so no reader
-sees it until that mirror.
+**#561 and site-test #150/#151 all SUCCESS.** #561's two coverage lines are
+BYTE-IDENTICAL — exactly what an incremental run should produce. The
+empty-parenthetical fix and `hasNoFundIdentity` are both CI-verified.
+**build-data #562 is in flight on the dev branch** (`e0dd7a7a`, incremental);
+read its `conclusion` before the next mirror.
 
 **LIVE ON MAIN as of 2026-10-03 04:2xZ: v199 + its own pv-199 store, mirrored as
 a MATCHED pair** (`ea825dcb`), Pages build #834/#835 green. v198 and v199 both
@@ -1221,23 +1214,38 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   written for exactly this failure cannot see it. 104 plans / 30,897 ppl lose a
   menu on supersession (171 / 149,049 more are correct wind-downs, split by
   `assetsEOY == 0`).
-- **FOUND BY THE 04:2xZ DRAW — A PUBLISHED NAME WITH NOTHING IDENTIFYING IN
-  IT: 929 rows / 586 plans / 2,340,373 ppl / $82,379,952,547**, measured through
-  the tracked `scripts/apppath.mjs` so these are the strings the PAGE prints.
-  Predicate: strip every token that is never a fund's identity (class / series /
-  unit / share / institutional / common / collective / trust / fund / portfolio
-  / nav / bare letters and digits) and nothing identifying survives. **Ranked by
-  share of their own menu, because a row naming no fund matters in proportion to
-  how much of the plan it hides.** THREE sub-families, not one fix: a bare
-  vehicle word (`shares` 69.4% of Avi Systems' $304M menu, `Fund`, `Portfolio`);
-  a Schedule H CAPTION — **Cisco Systems `Collective Trusts(1) at NAV` at 77.9%
-  of its menu, $25,144,872,000, 70,957 ppl, the largest instance of the queued
-  category-table class yet recorded**; and OCR form-field wreckage, where
-  `E.I.N. 20-` / `E.LN. 81-` are employer-ID fragments published as holdings and
-  Tnn Guam's name contains three dollar amounts including a mis-OCR'd
-  `$i.278'402`. **DO NOT CARRY 1,184 rows / 1,937,736 ppl** — that was the same
-  screen firing on `Class I Vanguard Target Retirement Income Trust Select`,
-  where the fund IS named; a class PREFIX is not a missing head.
+- **SHIPPED 2026-10-03 06:3xZ — A PUBLISHED NAME WITH NO FUND IN IT: 486 rows /
+  325 plans / 1,131,917 ppl / $5,934,254,604 now qualified** "the filing names
+  no specific fund". Behavioral Connections `Portfolio` at 96.0% of its menu,
+  Hui Manufacturing `Fund` at 80.8%, Avi Systems `shares` at 69.4% of a $304M
+  menu, Eldercare of Minnesota `E.I.N. 20-` at 87.6%.
+  **THE DIAGNOSIS IS THE REUSABLE PART:** `isGenericTypeName` is a CLOSED
+  vocabulary of Schedule H TYPE LABELS, so it reaches `Collective investment
+  trusts` and is blind to a FRAGMENT — and widening it is refused by its own
+  comment because the parser's region selection and `audit-dominant-row` read
+  it (widening once made 3M's note confident and moved Lam Research by $453M).
+  `hasNoFundIdentity` is therefore DISPLAY-ONLY, composed into the injected
+  name test at the two render call sites. **DO NOT CARRY 929 rows / 2,340,373
+  ppl** — that screen imposed neither of the shipped call site's gates: 343 rows
+  / 820,836 ppl carry an ISSUER and are deliberately untouched, 103 / 565,787
+  were already qualified. 24 crawlable pages changed. `docs/accuracy-log.md`
+  2026-10-03 (06:3xZ).
+- **STILL OPEN from it, and owner-gated by overlap:** the Schedule H CAPTION
+  sub-family — **Cisco Systems `Collective Trusts(1) at NAV` at 77.9% of its
+  menu, $25,144,872,000, 70,957 ppl**, the largest instance of the
+  category-table class. It carries an issuer or is otherwise outside the 486, so
+  the shipped guard does not reach it, and the category-table item above is the
+  owner's call.
+- **`cleanFiledName` IS NOT IDEMPOTENT — 6 of 253,112 real names, found
+  2026-10-03 by asserting it.** `Equity Income Separate Account Pooled se` →
+  `Equity Income Separate Account` → **`Equity Income`**: one arm removes a
+  trailing type label and the next then sees a new trailing type label, so a
+  second pass erodes the name further. **Harmless today** — every caller cleans
+  once, and `hasNoFundIdentity` uses the cleaned form only for a BOOLEAN — and
+  `scripts/no-identity-test.mjs` asserts the weaker property the code actually
+  depends on (a second pass never changes the verdict: 0 of 253,112). Worth
+  fixing as a loop-to-fixpoint or an explicit single-pass contract; UNSIZED as a
+  reader-facing defect because no surface cleans twice.
 - **THE TRUNCATED-NAME CLASS — REWRITTEN 05:2xZ, AND MY 04:3xZ MECHANISM WAS
   WRONG.** That entry read "190 rows / 115 plans / 323,680 ppl /
   $4,981,039,061 … a `Common / Collective` column heading bleeding into the

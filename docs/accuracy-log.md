@@ -41953,3 +41953,97 @@ same class as the `iShares` and `VANG …` abbreviation families already queued.
   because `[skip ci]` suppresses the verifying workflow along with the dangerous
   one. Its `conclusion` is unread as of this entry and must be read before the
   mirror.
+
+## 2026-10-03 (06:3xZ) — SHIPPED: a published name with no fund in it. 486 rows / 325 plans / 1,131,917 ppl / $5,934,254,604 — and the diagnosis is that the guard for this already shipped and was blind to it
+
+**#561 VERDICT (success): the two coverage lines are BYTE-IDENTICAL**, which is
+exactly what was registered for an incremental run (work list = the 48
+permanently-403 acks plus the ~49-ack old-pv tail); `dl` held at 48.
+**site-test #150 (success)** settles the empty-parenthetical fix, whose
+`conclusion` the 05:4xZ entry recorded as unread. Mirrored `fca3f5c5 →
+c18e2360`, and **verified in the file a reader fetches**: main's `app.js`
+carries the arm and `index.html`'s stamp `?v=b2c23c81` equals main's app.js
+content hash, so a returning browser takes the new file rather than its cache.
+No staleness note fired — correct, and the first live confirmation that the
+04:2xZ note fix behaves.
+
+### The queue item, and the diagnosis is worth more than the fix
+
+Behavioral Connections publishes **`Portfolio` at 96.0% of its menu**, Hui
+Manufacturing **`Fund` at 80.8%** ($11,041,885), Avi Systems **`shares` at
+69.4%** of a $303,975,100 menu, Eldercare of Minnesota **`E.I.N. 20-` at
+87.6%** — an employer-identification number published as a holding.
+
+**A GUARD FOR EXACTLY THIS ALREADY SHIPS, AND READING IT IS WHAT LOCATED THE
+GAP.** `isNamelessFundRow` delegates its name test to `isGenericTypeName`,
+which is a **closed vocabulary of Schedule H TYPE LABELS** — registered
+investment company, collective trust, mutual funds, pooled separate accounts,
+guaranteed investment contracts. It reaches `Collective investment trusts` and
+cannot reach `shares`, because that is a **fragment, not a type label**. That is
+why 33 of 34 `Common collective trusts` rows are already qualified and these 486
+are not.
+
+**AND WIDENING THAT CONSTANT IS REFUSED BY ITS OWN COMMENT** — the parser's
+region selection and `audit-dominant-row` read it, and widening it once made 3M's
+fair-value note CONFIDENT by deleting its $18.4B `Common/collective trusts` row
+and moved Lam Research's sum by $453M. ***Read the shipped guard before pricing
+a change to it, and read what else reads the constant you want to widen.*** So
+`hasNoFundIdentity` is display-only, composed into the **injected** name test at
+the two render call sites and nowhere else: no version bump, no re-parse, no
+effect on which region wins.
+
+### The size is what the shipped call site allows, not what my screen counted
+
+| | rows | ppl | |
+|---|---|---|---|
+| carry an ISSUER | 343 | 820,836 | deliberately untouched — `Vanguard Target Retirement 2030 · Mutual Fund Shares` reads as named |
+| already qualified | 103 | 565,787 | the existing guard reaches these |
+| **NEWLY qualified** | **486** | **1,131,917** | **$5,934,254,604** |
+
+My first screen said **929** and imposed neither condition. *A count that
+ignores the guard's own gates is not a measure of what will change.*
+
+### A real inconsistency found on the way, and fixed rather than worked around
+
+**`app.js:3148` passes `f.name` RAW into the parameter the definition calls
+`cleanedName`; `build-seo-pages.mjs:257` passes the CLEANED string.** Measured:
+the two agree on 467 rows and differ on **16**, and in all 16 it is the cleaned
+name that has no identity (`Mutual fund, 102,311.9 shares` → `102,311.9
+shares`) — **0 go the other way.** So the predicate tests both forms, which
+makes the report and the crawlable pages agree without changing what either
+passes; changing that would move the EXISTING guard's population and needs its
+own measurement.
+
+### What the test found, both recorded rather than papered over
+
+- **The EIN fragment needed its own arm.** `E.I.N. 20-` falls to the filler
+  strip; the OCR'd I/L variant **`E.LN. 81-` does not**, because `LN` survives
+  as a two-letter token and reads as an identity. 3 rows / 559 ppl (Bblbc at
+  56.5% of its own menu). A form-field fragment is never a fund under any
+  spelling.
+- **`cleanFiledName` IS NOT IDEMPOTENT — 6 of 253,112 real names.** `Equity
+  Income Separate Account Pooled se` → `Equity Income Separate Account` →
+  **`Equity Income`**: one arm removes a trailing type label and the next then
+  sees a new trailing type label. My first assertion demanded full idempotence
+  and failed on it. ***But an assertion wider than its dependency fails on
+  things that do not matter and teaches the operator to loosen it.*** This
+  predicate uses the cleaned form for a BOOLEAN and never for display, so it
+  cannot erode a published name; the assertion now tests that a second pass
+  never changes the **verdict**, which reads **0** over all 253,112. The
+  non-idempotence itself is QUEUED as its own finding.
+
+### Gates
+
+All **309 distinct names read** — not one identifies a fund. 14 pinned as
+must-qualify with the share of their own menu named; **14 REAL names pinned as
+must-never-qualify**, including the largest holdings of Amazon
+(`VANG FTSE SOC IDX IS`), Cigna (`BLACKROCK SP 500 IDX (IS)`, $3.4B, 24.5% of
+its menu) and Mayo Clinic — because the entire risk of this change runs the
+other way. Twins agree on **1,730,676 names, raw and cleaned**. Two negative
+controls, both firing. **Crawlable pages regenerated and diffed: 24 change,
+every one identically** — `Class` becomes `Class — the filing names no specific
+fund`. Restamped (`?v=b2c23c81 → ?v=7f016bb0`), `--check` green, smoke /
+generic-typo / fund-er green. `no-identity-test.mjs` wired into `site-test`
+before the Playwright install, and **`lib-disclose.mjs` and
+`build-seo-pages.mjs` added to that workflow's path filter — both can change
+what a page says and neither triggered it until now.**
