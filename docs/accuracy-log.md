@@ -42774,3 +42774,137 @@ time rather than a greedy quantifier; and the 17 `; N shares` rows are one
 plan. ***The queue's single line asked for two arms to be made greedy; the
 measurement says one of them is worth 61% of the people and the other is worth
 one plan.***
+
+## 2026-10-03 (15:3xZ) — THE 4i COLUMN RULE PUBLISHED AS A SHARE CLASS: 126 rows / 74 plans / 47,269 ppl / $156,900,889, NAME-ONLY
+
+Taken from the queue's "58 non-suffix-strip rows / 18,750 ppl" residue, which
+the 14:3xZ entry called "the interesting residue … each a repair the first pass
+misses for a DIFFERENT reason". Reading all 58 collapsed that framing: the
+dominant shape is ONE mechanism, and it is an ORDERING defect rather than a
+missing rule. `lib-disclose.mjs:690` reads a trailing bar as the letter `I`, is
+anchored at end-of-string, and runs 436 lines before `TYPE_SUFFIX` strips a
+trailing vehicle label — so a bar with the type column's own label behind it is
+never reached and the bar itself is published.
+
+**I FIRST GUESSED THAT ARM WAS INVENTING SHARE CLASSES, AND READING ITS OWN
+POPULATION REFUTED IT.** Of the 1,737 rows where its `" I"` reaches the page,
+293 have a designation word before the bar and **1,444 do not** — and those
+1,444 are overwhelmingly REAL bare-`I` classes: `THE VANGUARD TARGET RETIRE
+2045 TRUST I` (a genuine CIT series name, 12 rows at City National Bank),
+`Dodge & Cox Stock Fund - I`, `MassMutual Mid Cap Growth I` (22,720 ppl),
+`EV Small Cap Fund I`, `T. Rowe Price US Equity Research Fund I`. Houses do name
+a class bare, so the discriminator I proposed — require the word `Class` —
+would have WITHDRAWN 1,444 correct resolutions. The arm stays and this change
+does not widen its claim. *A predicate that is right for one class is not
+thereby right for its neighbour,* and the neighbour here was the shipped code.
+
+**WHAT THIS POPULATION HAS THAT THE ARM'S DOES NOT IS A POSITIONAL WITNESS.**
+The 4i schedule is a TABLE; a bar with a vehicle type label behind it is the
+rule between the name column and the type column. Lifespark's `Principal
+LargeCap Growth | Separate Account-Z` is the proof by sibling — the designation
+sits in the TYPE cell and the bar is unmistakably the rule.
+
+**JOIN, NOT TRUNCATE, AND THE DATA CHOSE IT.** 87 of the 126 tails are the
+single word `Fund`, which is the FUND'S OWN last word (`JPMorgan US Equity
+Fund`, `DFA US Targeted Value Fund`, `T.Rowe Blue Chip Growth Fund`), and four
+more carry `Separate Account-Z` where `-Z` is the share class. Cutting at the
+bar would have taken both — *a dangling remainder is worse than the name it
+replaced.* The bar becomes a space and the tail is left to `TYPE_SUFFIX`'s own
+tested vocabulary rather than to a second judgement at this site. The two rows
+whose head ends in a designation word keep the letter reading, because that is
+what the trailing-bar arm already does on the 293 rows it can reach.
+
+**VERDICT, measured through the page's REAL path:** 126 rows / 74 plans /
+47,269 ppl / $156,900,889 change their published name; **0 tickers, 0 fees,
+0 types, 0 flags, and 0 rows cross the `ID_ONLY` drop.** 120 of the 126 now read
+as clean names; the 6 that keep a residue are the 4 Michelin `… Trust Select
+Common /` rows (3,030 ppl — the queued truncated-caption class) and two OCR
+tails (`… Separate Account lel`, `… Separate Account il`).
+
+### Three defects of my own in one measurement, each caught by an instrument and none by reading
+
+**(1) A REGEX ASSEMBLED FROM STRING FRAGMENTS HAS NO SYNTAX CHECK UNTIL IT
+RUNS.** Group 2 opened before the alternation and closed before the decoration
+group, leaving one `)` extra. `node --check` passed on both files; the first
+line of the diff harness threw `Unmatched ')'`. The sibling of *`node --check`
+is the syntax check; importing a script executes it* — here the file was
+syntactically perfect and the STRING inside it was not.
+
+**(2) MEASURE WITH THE ARGUMENT THE PAGE PASSES — met for the seventh time, and
+this is the specific value to remember.** My decision harness called
+`renderRow(plan, f, "all", total)`. `app.js:3166` gates the WHOLE ticker/fee
+resolver on `tab === "menu"`, and `filedLineupTable` computes
+`tab = hasSma ? (state.lineupTab[plan.id] || "menu") : "menu"` — so **`"menu"`
+is the only value a first render ever sees**. Every row read `tk —`, `er —`, and
+the comparison returned a tidy `126 identical / 0 / 0`. **A POSITIVE CONTROL
+caught it and the count never would have:** `Vanguard 500 Index Fund Admiral
+Shares` also read `—`. *A both-sided zero across a whole population reports on
+the query.*
+
+**(3) AND THE HARNESS DOES NOT CLEAN — THE PAGE CLEANS UPSTREAM OF THE SLICE.**
+With the tab fixed, the diff reported `NAME changed: 0` while its own probe
+showed the two renderers disagreeing on the motivating case. `renderRow`'s
+sliced block never calls `cleanFiledName`; `cleanCostMarkers` (app.js:2084) does,
+over the whole entry, BEFORE rendering — and then **drops any row whose cleaned
+name matches `ID_ONLY`** (app.js:518), so a name change can change ROW
+MEMBERSHIP. The harness's field is named `nameClean` and holds **the name it was
+GIVEN**. So the page's path is clean-then-render, the ticker and fee are computed
+from the CLEANED name, and the "0 tickers, 0 fees" first reported was measured on
+an uncleaned input and was withdrawn before it reached a commit. ***Measuring
+through the function the page calls is not enough when the page calls something
+else FIRST*** — the rule needs its upstream half: *ask what the caller did to
+the argument before it passed it.*
+
+### And the narrowing earned its keep
+
+The unnarrowed diff renders 1.7M rows through two `vm` contexts, and this
+container gives a background process CPU only while a turn is active, so it ran
+25 minutes of wall clock for 8 minutes of CPU and never finished. The narrowing
+is sound rather than convenient — the arm's regex REQUIRES `\|+`, so a bar-free
+name cannot match — and it is DISCHARGED rather than asserted: 60,000 sampled
+bar-free names clean identically under both renderers, and the script exits 1 if
+any differs. 2,896 of 1,730,415 rows carry a bar.
+
+Gated: 8 smoke-test pins (both live cases by their real filed names, a doubled
+bar, the designation case, and two MUST-NOT-FIRE controls — a trailing bar with
+nothing behind it still reads as the letter, and a bar with ordinary words behind
+it is left exactly as filed), passing in BOTH copies. Four negative controls,
+each written in full rather than by surgery on the shipped source, each breaking
+exactly its own pins. site-test #155 SUCCESS. `db7b3370`.
+
+## 2026-10-03 (15:4xZ) — FOUND BY THE 15:0xZ DRAW: TABLE DEBRIS LEADING A PUBLISHED QUOTE, 65 quotes / 65 plans / 130,078 ppl. SIZED, NOT SHIPPED
+
+Lithia Motors (30,021 participants) publishes its match quote as
+`| Contributions — The Plan provides for employee contributions, discretionary
+matching contributions, and discretionary profit sharing contributions.` A
+leading Schedule-H COLUMN BAR, verbatim, in front of 30,021 readers.
+`cleanFiledName` cleans the NAME column and **nothing cleans the QUOTES**, so
+whatever glyph the extractor's sentence window opened on is published.
+
+**DO NOT CARRY 157 quotes / 428,797 ppl.** That was this measurement's own first
+bucket, "a stray BULLET or dash run", and it is NOT a defect: United Airlines
+(88,204 ppl) files `• Management and Administrative Participants and UAFC
+Participants - …` and the bullet is the audited notes' own list formatting,
+telling the reader this is one item of several. *A count keyed on a character
+measures the character.*
+
+What survives is debris no filer wrote as prose, **and only where trimming it
+leaves a SENTENCE**: 65 quotes / 65 plans / 130,078 ppl. Crh (55,484 ppl)
+`: Vesting: Participants are immediately vested …`, Lithia (30,021), Aaron's
+(8,615) `) Vesting Participants are immediately vested …`, Sappi North America
+`_________ For all hourly employees …`.
+
+**THE REFUSAL SET IS DOING REAL WORK — 9 quotes / 9,434 ppl**, and each names a
+different and larger defect. Soo Line Railroad (5,584 ppl) reads `) are
+immediately vested in their employer matching contributions` — the window opened
+MID-SENTENCE, so trimming the paren leaves `are immediately vested…`, a
+fragment. Steak N Shake (1,281) reads `| | -6- 1 | | ) | | | Vesting — …`, a
+page-furniture run carrying a PAGE NUMBER. Yusen Logistics (2,617) opens
+`,000 (indexed) or 150% of the regular age-50 catch-up limit` — **the comma is
+not leading punctuation, it is the inside of `$23,000`**, and trimming it leaves
+`000 (indexed)`. *A leading-glyph repair and a mid-sentence truncation look
+identical from the first character; only what REMAINS tells them apart.*
+
+Display-side and shippable on its own; queued rather than shipped because this
+cycle already shipped a name-column change and the two should be verdicted
+separately.

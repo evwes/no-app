@@ -807,6 +807,13 @@ EFAST2 bucket grew, not that our code broke.
 ### Pre-registered for the next run that merges
 
 **NOTHING IS PRE-REGISTERED** for a parser run — `PARSER_VERSION` stays 199.
+**Nothing is in flight.** Newest build-data run is **#567 (schedule, main,
+`26fcda74`, 13:28:42-13:37:53Z) SUCCESS**, already verdicted. Every change since
+#563 is display-side or documentation, so a session dispatch would re-run the
+same ~96-ack incremental work list that has now produced six identical coverage
+lines; the hourly cron on main is the right mechanism for new DOL filings.
+**CLEAR THIS PARAGRAPH the moment a run is dispatched or verdicted** — a stale
+in-flight line has been left up seven times.
 
 **#566 SUCCESS (push, dev, `a8cb81d1`, 12:21:01-12:30:11Z), verdicted, adopted,
 mirrored — EVERY REGISTERED FIGURE HIT.** 18 name changes committed, 0
@@ -1125,6 +1132,23 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
+- **FOUND BY THE 15:0xZ DRAW — TABLE DEBRIS LEADING A PUBLISHED QUOTE: 65
+  quotes / 65 plans / 130,078 ppl.** Lithia Motors (30,021 ppl) publishes its
+  match quote as `| Contributions — The Plan provides for employee
+  contributions…`; Crh (55,484) `: Vesting: Participants are immediately
+  vested…`; Aaron's (8,615) `) Vesting Participants are…`. `cleanFiledName`
+  cleans the NAME column and **nothing cleans the QUOTES**, so whatever glyph the
+  sentence window opened on is published. Display-side, no run needed.
+  **DO NOT CARRY 157 quotes / 428,797 ppl** — that bucket is quotes opening on a
+  BULLET, which is the audited notes' own list formatting (United Airlines,
+  88,204 ppl) and not a defect. **The refusal set is load-bearing: 9 quotes /
+  9,434 ppl** each name a larger defect — Soo Line's `) are immediately vested…`
+  opened MID-SENTENCE, Steak N Shake's `| | -6- 1 | | ) | | |` is a page-furniture
+  run with a PAGE NUMBER in it, and Yusen's `,000 (indexed) or 150%…` has a comma
+  that is **the inside of `$23,000`**, not leading punctuation. *A leading-glyph
+  repair and a mid-sentence truncation look identical from the first character;
+  only what REMAINS tells them apart*, so the gate is "a sentence must remain".
+  `docs/accuracy-log.md` 2026-10-03 (15:4xZ).
 - **SHIPPED 2026-10-03 12:4xZ (#566) — THE WELDED SHARE COUNT: 18 stored names
   repaired, of which 9 rows / 8 plans / 3,869 ppl / $7,252,820 are
   READER-FACING** and 9 were already clean on the page. **The queue's own figure
@@ -1374,12 +1398,22 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   Company` — these MUST stay single-pass, because a loop turns `Equity Income
   Separate Account` into `Equity Income`;
   **(b) 58 rows / 18,750 ppl where a second pass is NOT a suffix strip** —
-  a leading caption (`MUTUAL FUND - FIXED INCOME` → `FIXED INCOME`), a
-  duplication (`Master Trust Master Trust Balances…`), a page-break caption
-  (`Mutual Funds (Continued) Fidelity Mid Cap Sto`), an OCR pipe (`Class |` →
-  `Class I`). **This is the interesting residue**: each is a repair the first
-  pass misses for a DIFFERENT reason, so it needs reading one shape at a time
-  and never a greedy quantifier;
+  **ITS DOMINANT ARM SHIPPED 2026-10-03 15:3xZ and the "different reason for
+  each" framing was WRONG.** Reading all 58 found ONE mechanism behind the bulk
+  of them, an ORDERING defect: the trailing-bar arm at `lib-disclose.mjs:690` is
+  anchored at end-of-string and runs 436 lines before `TYPE_SUFFIX`, so a bar
+  with the TYPE column's own label behind it is never reached. Asking the
+  PUBLISHED question instead of the idempotence one sized it at **126 rows / 74
+  plans / 47,269 ppl / $156,900,889, name-only — 0 tickers, 0 fees, 0 types, 0
+  flags, 0 rows crossing the `ID_ONLY` drop** (120 of 126 now read clean).
+  **Do NOT retry the discriminator I proposed first**: requiring the word
+  `Class` before the bar would have withdrawn **1,444 correct** bare-`I` classes
+  (`THE VANGUARD TARGET RETIRE 2045 TRUST I` is a genuine CIT series name).
+  STILL OPEN from (b): the head-duplication rows (`Master Trust Master Trust
+  Balances…`, `b b b *`, `SSS SSS SSS SS`), which a second pass does NOT fix —
+  one more repetition leaves junk, so the frame is full de-duplication, not
+  idempotence — and `MUTUAL FUND - FIXED INCOME` → `FIXED INCOME`, where the
+  second pass is **WORSE** and the loop must never run;
   **(c) 17 rows / 2,870 ppl** of `; N shares`, ALL IN ONE PLAN;
   **(d) ~19 rows** of stray glyphs `+`, `©`, `‘`, `®` and OCR debris
   (`NIA`, `te`, `iad`).
@@ -1597,6 +1631,36 @@ These outlived the versions that produced them. The accuracy log has the case.
   short of `f.stk`, reading 0 of 147,835 rows. **There are TWO ticker resolvers
   and TWO display paths** (the report `app.js`, and the crawlable pages via
   `build-seo-pages.mjs`) — a claim about readers must name which.
+  **THE TWO SPECIFIC VALUES, both met on 2026-10-03 in one measurement.**
+  `renderRow`'s `tab` must be **`"menu"`**: `app.js:3166` gates the WHOLE
+  ticker/fee resolver on `tab === "menu"`, and `filedLineupTable` computes
+  `tab = hasSma ? (state.lineupTab[plan.id] || "menu") : "menu"`, so that is the
+  only value a first render ever sees. Passing `"all"` made every row read
+  `tk —`/`er —` and returned a tidy `126 identical / 0 / 0`; a POSITIVE CONTROL
+  caught it (`Vanguard 500 Index Fund Admiral Shares` also read `—`) and the
+  count never would have. And **`renderRow` does NOT clean — the page cleans
+  UPSTREAM of the slice.** `cleanCostMarkers` (`app.js:2084`) sets
+  `f.name = cleanFiledName(f.nameRaw)` over the whole entry and then **drops any
+  row whose cleaned name matches `ID_ONLY`** (`app.js:518`), so a name change can
+  change ROW MEMBERSHIP. The harness's field is called `nameClean` and holds
+  **the name it was GIVEN**. ***Measuring through the function the page calls is
+  not enough when the page calls something else FIRST*** — ask what the caller
+  did to the argument before it passed it.
+- **A REGEX ASSEMBLED FROM STRING FRAGMENTS HAS NO SYNTAX CHECK UNTIL IT RUNS**
+  (2026-10-03). `node --check` passed on both copies of a `new RegExp(...)` built
+  from nine concatenated strings whose group 2 closed one `)` early; the first
+  line of the diff harness threw `Unmatched ')'`. Sibling of *`node --check` is
+  the syntax check; importing a script executes it* — there the file ran when it
+  should not have, here the file was syntactically perfect and the STRING inside
+  it was not. Exercise an assembled pattern on a pin before believing it loads.
+- **NARROW A MEASUREMENT BY A PROPERTY OF THE CHANGE, AND DISCHARGE THE
+  NARROWING** (2026-10-03). A 1.7M-row two-renderer diff never finished, because
+  this container gives a background process CPU only while a turn is active — 25
+  minutes of wall clock bought 8 minutes of CPU. The fix is not patience: the
+  arm's regex REQUIRES `\|+`, so a bar-free name cannot match, which cut the diff
+  to 2,896 rows. **A narrowing is a claim and must be tested, not asserted** —
+  60,000 sampled bar-free names were required to clean identically under both
+  renderers, with the script exiting 1 if any differed.
 - **Before adding a SOURCE, ask what the pipeline already reads and throws
   away.** Three instances in one day: `cct` was 231,260 of the 406,247 bytes
   every visitor already downloads, with no consumer; `i1` was read by
