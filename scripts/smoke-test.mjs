@@ -2219,7 +2219,31 @@ try {
      * and a vintage year is not a marker (two digits max is what keeps
      * `(2030)` safe, and this control says so by example). */
     ["Vanguard Target Retirement (2030) Fund", "Vanguard Target Retirement (2030) Fund"],
-    ["T. Rowe Price Retirement 2035 Trust (Class A)", "T. Rowe Price Retirement 2035 Trust (Class A)"]]) {
+    ["T. Rowe Price Retirement 2035 Trust (Class A)", "T. Rowe Price Retirement 2035 Trust (Class A)"],
+    /* THE 4i COLUMN RULE, 2026-10-03. A bar with the TYPE column's own label
+     * behind it is the table's rule, not a glyph in the name, so it becomes a
+     * SPACE and the tail is left to TYPE_SUFFIX. Both of the two largest live
+     * cases are pinned by their real filed names. */
+    ["T.Rowe Blue Chip Growth | Fund", "T.Rowe Blue Chip Growth Fund"],
+    ["Principal LargeCap Growth | Separate Account-Z", "Principal LargeCap Growth Separate Account-Z"],
+    /* JOIN, NOT TRUNCATE, is what these two assert: 87 of the 126 live tails
+     * are the single word `Fund`, which is the FUND'S OWN last word, and four
+     * more carry `Separate Account-Z` where `-Z` is the share class. A control
+     * that cut at the bar would pass a truncating implementation. */
+    ["DFA US Targeted Value | Fund", "DFA US Targeted Value Fund"],
+    /* a doubled bar is still one rule */
+    ["Principal SmallCap Value || Separate Account-Z", "Principal SmallCap Value Separate Account-Z"],
+    /* a head ENDING in a designation word keeps the letter reading, because
+     * that is what the trailing-bar arm already does on the 293 rows of that
+     * shape it can reach -- otherwise this cleans to a dangling `… Class`. */
+    ["Fidelity Advisor Strategic Income Fund Class | Mutual fund", "Fidelity Advisor Strategic Income Fund Class I"],
+    /* AND THE MUST-NOT-FIRE SIDE. A trailing bar with NOTHING behind it is the
+     * other arm's, and must still read as the letter -- 1,737 rows depend on
+     * it, among them real bare-`I` classes like the Vanguard CIT series. */
+    ["THE VANGUARD TARGET RETIRE 2045 TRUST |", "THE VANGUARD TARGET RETIRE 2045 TRUST I"],
+    /* a bar with ordinary words behind it is not a type label and is left
+     * exactly as filed: no vocabulary match, no repair, no invention. */
+    ["Vanguard Emerging Markets Stock Index | Shares", "Vanguard Emerging Markets Stock Index | Shares"]]) {
     if (cleanFiledName(n) !== want) fail(`the filed-name cleaner now damages a control: ${JSON.stringify(n)} -> ${JSON.stringify(cleanFiledName(n))}`);
   }
 

@@ -687,6 +687,62 @@ export function cleanFiledName(name) {
    * than by any count: 861 rows changed and this one was inside them. */
   s = s.replace(/\s+\+{1,3}\s*[a-z]?\s*$/i, "").trim();
   s = s.replace(/((?:sep(?:arate)?\s*acc?t|separate\s+accounts?|\bSA|funds?|trusts?|accounts?|portfolios?))\+{1,3}\s*$/i, "$1").trim();
+  /* THE COLUMN RULE, WITNESSED BY THE TYPE LABEL BEHIND IT — 2026-10-03.
+   *
+   * The arm below reads a TRAILING bar as the letter I and publishes a share
+   * class. It cannot reach a bar that has a vehicle type label behind it, so
+   * 126 rows / 74 plans / 47,289 participants / $156,499,306 publish the bar
+   * itself: `T.Rowe Blue Chip Growth | Fund`, `Principal LargeCap Growth |
+   * Separate Account-Z`, `DFA US Targeted Value | Fund`.
+   *
+   * I FIRST GUESSED THE SHIPPED ARM WAS INVENTING SHARE CLASSES HERE, AND
+   * READING ITS OWN POPULATION REFUTED THAT. Of the 1,737 rows where its " I"
+   * reaches the page, 1,444 have no designation word before the bar — and they
+   * are overwhelmingly REAL bare-`I` classes: `THE VANGUARD TARGET RETIRE 2045
+   * TRUST I` (a genuine CIT series name), `Dodge & Cox Stock Fund - I`,
+   * `MassMutual Mid Cap Growth I`, `EV Small Cap Fund I`, `T. Rowe Price US
+   * Equity Research Fund I`. Houses do name a class bare. So the arm stays and
+   * this one does not widen its claim.
+   *
+   * WHAT THIS POPULATION HAS THAT THE ARM'S DOES NOT IS A POSITIONAL WITNESS.
+   * The 4i schedule is a TABLE; a bar with the TYPE column's own label behind
+   * it is the rule between the two columns, not a glyph in the name. So the
+   * bar becomes a SPACE and the tail is left for TYPE_SUFFIX below to judge
+   * with its own tested vocabulary — using the shipped guard rather than
+   * duplicating its judgement.
+   *
+   * JOIN, NOT TRUNCATE, AND THE DATA CHOSE IT: 87 of the 126 tails are the
+   * single word `Fund`, which is the FUND'S OWN last word (`JPMorgan US Equity
+   * Fund`, `DFA US Targeted Value Fund`), and cutting at the bar would have
+   * taken it. Four more carry `Separate Account-Z`, where `-Z` is the share
+   * class. *A dangling remainder is worse than the name it replaced.*
+   *
+   * NAME-ONLY, measured through renderRow on all 126 with the argument the page
+   * passes: 0 tickers and 0 fees move under either candidate. (The first run of
+   * that measurement passed tab `"all"` where the page passes `"menu"`, which
+   * gates the resolver, so every row read `tk —` — a both-sided zero across a
+   * whole population, caught by a positive control and not by the count.)
+   *
+   * The two rows whose head ENDS in a designation word keep the letter reading,
+   * because that is what the arm below already does for the 293 rows of that
+   * exact shape it can reach (`Dodge & Cox Stock Fund Class I`): Mubea's
+   * `Fidelity Advisor Strategic Income Fund Class | Mutual fund` would
+   * otherwise clean to a dangling `... Fund Class`. */
+  {
+    const cr = s.match(new RegExp("^([\\s\\S]*[A-Za-z0-9)])\\s*\\|+\\s*((?:"
+      + "(?:pooled\\s+)?(?:common[\\s/]*)?(?:collective\\s+)?(?:investment\\s+)?"
+      + "(?:trusts?|funds?|accounts?|compan(?:y|ies))"
+      + "|mutual\\s+funds?(?:\\s+shares?)?|(?:pooled\\s+)?separate\\s+accounts?"
+      + "|common[\\s/]*collective\\s+trusts?|collective\\s+(?:investment\\s+)?trusts?"
+      + "|registered\\s+investment\\s+compan(?:y|ies)|variable\\s+annuity\\s+contracts?"
+      + "|money\\s+market\\s+funds?|stable\\s+value\\s+funds?|insurance\\s+general\\s+accounts?"
+      + "|guaranteed\\s+investment\\s+contracts?|common\\s*/"
+      + ")(?:[\\s\\-–]*[A-Za-z0-9™“”]{1,3})?)\\s*$", "i"));
+    if (cr) {
+      const head = cr[1].trim();
+      s = (/\b(?:class|cl|cls|series)$/i.test(head) ? head + " I " : head + " ") + cr[2].trim();
+    }
+  }
   s = s.replace(/\s+\|+\s*$/, " I");
   // the 4i column caption's wrapped tail glued to the FRONT of a page's
   // first holding ("maturity date American Funds EuroPacific R6", "Par or

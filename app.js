@@ -774,6 +774,31 @@
     // `… Idx | +e` ends at `… Idx |` instead of recovering its class.
     s = s.replace(/\s+\+{1,3}\s*[a-z]?\s*$/i, "").trim();
     s = s.replace(/((?:sep(?:arate)?\s*acc?t|separate\s+accounts?|\bSA|funds?|trusts?|accounts?|portfolios?))\+{1,3}\s*$/i, "$1").trim();
+    // THE COLUMN RULE, WITNESSED BY THE TYPE LABEL BEHIND IT. The arm below
+    // reads a TRAILING bar as the letter I; it cannot reach a bar with the
+    // type column's own label behind it, so 126 rows / 47,289 ppl publish the
+    // bar (`T.Rowe Blue Chip Growth | Fund`). A type label behind the bar
+    // witnesses it as the table's column rule, so it becomes a SPACE and
+    // TYPE_SUFFIX below judges the tail. JOIN not truncate: 87 of the 126
+    // tails are the fund's own last word `Fund`. Name-only — 0 tickers and 0
+    // fees move. A designation-ending head keeps the letter reading, as the
+    // arm below already does on the 293 rows of that shape it can reach.
+    // Canonical, with the full case: scripts/lib-disclose.mjs.
+    {
+      const cr = s.match(new RegExp("^([\\s\\S]*[A-Za-z0-9)])\\s*\\|+\\s*((?:"
+        + "(?:pooled\\s+)?(?:common[\\s/]*)?(?:collective\\s+)?(?:investment\\s+)?"
+        + "(?:trusts?|funds?|accounts?|compan(?:y|ies))"
+        + "|mutual\\s+funds?(?:\\s+shares?)?|(?:pooled\\s+)?separate\\s+accounts?"
+        + "|common[\\s/]*collective\\s+trusts?|collective\\s+(?:investment\\s+)?trusts?"
+        + "|registered\\s+investment\\s+compan(?:y|ies)|variable\\s+annuity\\s+contracts?"
+        + "|money\\s+market\\s+funds?|stable\\s+value\\s+funds?|insurance\\s+general\\s+accounts?"
+        + "|guaranteed\\s+investment\\s+contracts?|common\\s*/"
+        + ")(?:[\\s\\-–]*[A-Za-z0-9™“”]{1,3})?)\\s*$", "i"));
+      if (cr) {
+        const head = cr[1].trim();
+        s = (/\b(?:class|cl|cls|series)$/i.test(head) ? head + " I " : head + " ") + cr[2].trim();
+      }
+    }
     s = s.replace(/\s+\|+\s*$/, " I");
     // the 4i column caption's wrapped tail glued to the FRONT of a page's
     // first holding ("maturity date American Funds EuroPacific R6", "Par or
