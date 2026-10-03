@@ -756,8 +756,22 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
-**NOTHING IS PRE-REGISTERED.** Register the next change's figures here before
-dispatching it.
+**v198 (#558, push 01:15:27Z, full re-parse ~1.5h) — the match formula a
+possessive hid.** `mfWidened` is appended LAST in the `mf` chain, so it can only
+fire where every existing arm returned null.
+- `match` **43,218 → 43,340** (+122 plans / 197,324 ppl). **A CEILING, not a
+  prediction:** measured over STORED `matchText` while the run re-reads every
+  filing, so moved text can carry it either way.
+- PSEG pn=004 publishes **"50% of the first 8% of pay"**, pn=006 **"50% of the
+  first 7% of pay"**.
+- BAE Systems pn=003 publishes **NO formula line** — the range/cap refusal
+  (7 plans / 70,794 ppl), verified on the live store, not just in the test.
+- Cornell / Brown / Northwestern / Dana-Farber recordkeeper **unchanged** (TIAA):
+  the standing control on the refused code-64 variant.
+- confident 60,167 · entries 65,480 · dl 39 · HIGH 4 · warn 556 — **no material
+  move.** A full re-parse re-reads everything, so an unexplained drop here is
+  the regression this registration exists to catch.
+`docs/accuracy-log.md` 2026-10-03 (01:3xZ).
 
 **VERIFY `plans-list.json`, NOT `plans-all.json`.** The site NEVER fetches
 plans-all; `plans-list.json` is the columnar boot payload and carries the `rk`
@@ -1175,6 +1189,17 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   written for exactly this failure cannot see it. 104 plans / 30,897 ppl lose a
   menu on supersession (171 / 149,049 more are correct wind-downs, split by
   `assetsEOY == 0`).
+- **THE VESTING SENTENCE SELECTED ON THE WORD `eligible` — found while reading
+  PSEG for v198, UNSIZED and honestly so.** PSEG's stored `vestingText` is not a
+  vesting schedule: it is a withdrawal-suspension sentence (*"If a Participant
+  withdraws certain post-income tax Deposits … will not be eligible to receive
+  matching Employer Matching Contributions during the subsequent six months"*),
+  so the extractor filed a sentence about losing FUTURE MATCH eligibility under
+  vesting. The page prints it as the plan's vesting quote. Needs the same
+  whole-store measurement v198's fix got — and note the shape of that
+  measurement: the question is not "how many quotes contain `eligible`" (a count
+  keyed on a vocabulary measures the vocabulary) but how many selected sentences
+  carry NO vesting arithmetic at all.
 - The wind-down explanation gates on exactly $0 assets, so a plan that collapsed
   to $2,094 escapes it and publishes three $1 rows instead. Trigger on a
   COLLAPSE, not only on zero.

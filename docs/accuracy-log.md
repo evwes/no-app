@@ -41354,3 +41354,111 @@ outside this sandbox's network allowlist, so I cannot fetch the deployed page.
 What is proven is that main — the branch GitHub Pages serves — holds the correct
 value in the file the page reads. GitHub Pages deploy timing and the reader's
 own browser cache are outside what I can observe from here.
+
+## 2026-10-03 (01:3xZ) — v198: THE MATCH FORMULA A POSSESSIVE HID. 122 plans / 197,324 participants gain a Formula line; 7 plans / 70,794 are REFUSED, and the refusal is the half worth reading
+
+**The owner asked it, looking at the page:** *"why does PSEG not show the
+formula section when showing the matching contribution (what other filings are
+missing the match formula section)"*. Both halves are answerable, and the second
+one is the version that ships.
+
+**PSEG's sentence defeats the chain TWICE:**
+
+> "The Participant's Employer contributes an amount equal to **50% of each
+> Participant's first 8%** of eligible compensation made as Deferred Deposits
+> and/or Nondeferred Deposits **as its matching contribution** to the Plan."
+
+Every arm of `extractPlanFeatures`'s `mf` chain anchors on the word *match*
+arriving **before** the numbers, and every arm expects `of` to be followed
+immediately by `first`. PSEG puts *matching* at the END of the sentence and a
+possessive (`each Participant's`) between them. So the quote is stored, the page
+prints the quote, and the Formula line — the thing a reader actually uses — is
+absent.
+
+**WHERE THE GAP IS, MEASURED BEFORE WRITING A PATTERN.** 6,061 plans store a
+`matchText` and publish no formula. The shipped chain extracts a pair from
+**0 of them** — so the gap is in the patterns and nothing downstream, which is
+what justified touching the parser at all rather than the renderer.
+
+**THE FIX IS TWO ARMS, because the class has two shapes and a fix for one
+phrasing is not a fix for the class.** `mfWidened` allows a short possessive or
+qualifier between `of` and `first`, and handles *match* on either side of the
+pair: arm (a) *match* first (Michelin, 19,906 ppl), arm (b) the pair first
+(PSEG). It is appended **LAST** in the chain, so by construction it can only
+fire where every existing arm returned null — and that is the safety claim, not
+a hope: measured over every stored `matchText`, **0 existing formulas change.**
+
+**GAINED 122 plans / 197,324 ppl** — Rentokil 28,927, Michelin 19,906, UniFirst
+13,504, PSEG's two plans among them.
+
+**THE REFUSAL IS THE RISKY HALF AND IT COST A SECOND ITERATION.** A range or a
+cap yields a *tidier* pair than a flat rate does, and publishing it OVERSTATES
+the filing to the reader:
+
+- BAE Systems, **58,830 ppl** — "contributes **between 50% and 100%** of the
+  first 6%". A flat "100% of the first 6%" would be a promise the filing does
+  not make.
+- TRC Companies, **9,355 ppl** — "a basic match of **up to 50%** of each
+  participant's first 6%".
+- Rose-Hulman 1,076, LeasePlan 878, Red Bud 237, Precision 232, Liaison 186.
+
+**7 plans / 70,794 participants refused, every one printed and read.** And the
+first guard let TRC through: ***the window was measured from the start of the
+MATCH, not from the start of the captured RATE.*** Arm (a) begins at `match…`,
+which can sit far to the LEFT of the number, so slicing backwards from the match
+index looked at text that had nothing to do with the rate. The guard now reads
+the 40 characters immediately before the captured rate. *A guard aimed at the
+wrong index is not a weak guard, it is an absent one* — and this one would have
+published a cap as a flat rate to 9,355 readers.
+
+**THE SIZING WAS WRONG BY 4.5x AND THE REAL CHAIN IS WHAT CORRECTED IT.** A
+standalone regex over stored text sized this at 91 plans. Run through the
+chain **sliced from `lib-4i.mjs`**, my first candidate delivered **20** — it
+handled only *match-before*. Adding arm (b) gave the honest 122. *A pattern
+measured outside the chain it joins is measuring a different program.*
+
+**GATE.** `scripts/match-formula-test.mjs`, new, runs the **shipped**
+`mfWidened` on 10 cases: 4 real filings that must extract, 3 real
+range/cap sentences that must refuse (each named with its participant count,
+because that is the cost of getting it wrong), 3 that must stay silent. Two
+negative controls, **one per condition**, each built by slicing the v198 block
+from source and mutating it, each asserted to have LANDED and required to change
+at least one verdict — dropping the range/cap guard breaks all 3 refusals,
+narrowing the possessive breaks all 4 extractions. Wired into the workflow's
+**Ingest gate**, which now runs all three ingest tests before the download.
+
+Two specimens added to `docs/defect-specimens.json` (162): PSEG
+`20251013135043NAL0000674275001` positive, BAE `20260709065957NAL0017766435001`
+**negative — must refuse**. *The must-refuse specimen is the one that will catch
+the next person widening this.* And that BAE ack was **fabricated in my first
+draft** and caught by reading it out of the store before the commit; the
+specimen carries a note saying so.
+
+`PARSER_VERSION` 197 → 198, so this is a full-universe re-parse. #558 started
+itself from the push at 01:15:27Z; no dispatch was issued, per the 2026-10-02
+rule.
+
+**PRE-REGISTERED, before the run merges:**
+- `match` **43,218 → 43,340** (+122). **This is a CEILING, not a prediction**:
+  it is measured over *stored* `matchText`, while the run re-reads every filing,
+  so a filing whose extracted text moves could carry it either way.
+- PSEG pn=004 publishes **"50% of the first 8% of pay"**, pn=006 **"50% of the
+  first 7% of pay"**.
+- BAE Systems pn=003 still publishes **NO formula line** — the refusal, verified
+  on the live store rather than in the test.
+- Cornell / Brown / Northwestern / Dana-Farber recordkeeper **unchanged**
+  (TIAA) — v198 touches no recordkeeper code, and these are the four plans the
+  refused code-64 variant would have flipped, so they are the standing control
+  on that whole class.
+- confident 60,167 · entries 65,480 · dl 39 · HIGH 4 · warn 556: **no material
+  move**. A full re-parse re-reads everything, so an unexplained drop here is
+  the regression this registration exists to catch.
+
+**STILL OPEN, FOUND WHILE READING PSEG AND NOT FIXED:** PSEG's stored
+`vestingText` is not a vesting schedule at all. It is a withdrawal-suspension
+sentence — *"If a Participant withdraws certain post-income tax Deposits … will
+not be eligible to receive matching Employer Matching Contributions during the
+subsequent six months"* — so the extractor selected a sentence about losing
+future match eligibility and filed it under vesting. Unsized; the class is
+"vesting sentence selected on the word *eligible*", and it needs the same
+whole-store measurement this entry's fix got before anything is written.
