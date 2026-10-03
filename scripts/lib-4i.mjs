@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 198;
+export const PARSER_VERSION = 199;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -5922,6 +5922,141 @@ export function mfWidened(t) {
   return m;
 }
 
+/* v199 — A MIXED FRACTION IS ONE NUMBER AND THE GENERIC ARMS READ ITS
+ * DENOMINATOR AS THE RATE. CBRE Services (55,809 participants) files
+ *   "The Company matches its employee's contributions up to 66-2/3% of the
+ *    first 6% of the employee's annual compensation"
+ * and the page publishes "3% of the first 6% of pay", because "3%" is exactly
+ * what sits at the end of "66-2/3%". Daimler Truck North America (8,508) files
+ * "66 2/3%" and lands the same way. The published promise is a twentieth of
+ * the real one.
+ *
+ * This is a NOTATION defect, not an inference, and the arm is FIRST in the
+ * chain because it is the most SPECIFIC shape — a general arm placed ahead of
+ * it keeps winning with the wrong number, which is how this got shipped. */
+const MF_FRAC_A = new RegExp(`match(?:es|ing|ed)?[^.]{0,120}?(\\d{1,3})[- ](\\d)/(\\d) ?(?:percent|%) (?:of|on) (?:the )?first (\\d{1,2}(?:\\.\\d+)?) ?(?:percent|%)`, "i");
+const MF_FRAC_B = new RegExp(`match(?:es|ing|ed)?[^.]{0,120}?(\\d{1,3})[- ](\\d)/(\\d) ?(?:percent|%)[^.]{0,80}?(?:up to|not to exceed|not exceeding|to a maximum of)(?: an?| the first| the)? (\\d{1,2}(?:\\.\\d+)?) ?(?:percent|%)`, "i");
+export function mfMixedFraction(t) {
+  const m = t.match(MF_FRAC_A) || t.match(MF_FRAC_B);
+  if (!m) return null;
+  const denom = +m[3];
+  if (!denom) return null;
+  const rate = +m[1] + +m[2] / denom;
+  if (!(rate > 0) || rate > 300) return null;
+  const out = [m[0], String(Math.round(rate * 100) / 100), m[4]];
+  out.index = m.index;
+  return out;
+}
+
+/* v199 — TWO MORE CONNECTORS THE FILERS USE AND THE CHAIN DOES NOT ACCEPT.
+ * Both are anchored on "equal to", which is why they are safe to add: that
+ * phrase names the match's own size and leaves no room for a neighbouring
+ * number to be mistaken for it.
+ *
+ * VALIDATED AGAINST THE SHIPPED CHAIN AS AN ORACLE. Run on the 46,198 plans
+ * that already have a reviewed formula, mfEqualTo agrees with it 4,426 times
+ * and differs 6, and FOUR of those six are shipped defects of the kind the
+ * mixed-fraction arm above fixes (Beacon Mobility, 10,183 participants,
+ * publishes "3% of the first 4%" where its filing says "equal to 100% up to
+ * the first 3%"). mfEqualToWords differs on all ten plans where both fire and
+ * is right on at least nine. A 0% agreement rate looked damning and was the
+ * opposite — it reported on which program was correct.
+ *
+ * A THIRD ARM WAS MEASURED AND DROPPED, deliberately and on the record: an arm
+ * for the rate sitting BEFORE the word "match" with words in between
+ * ("receive 100% company matching contributions of up to 4%", American
+ * Airlines, 114,149 ppl) agreed with the oracle only 93.1%, and its failures
+ * were grabbing a NEIGHBOURING nonelective rate (Wellesley College, Cass
+ * Information Systems) or a SECOND tier (Eight Eleven Group). 93% is not good
+ * enough for a number this size. It is queued with that cause named. */
+const MF_LEAD = String.raw`(?:up to|on the first|of the first|not to exceed|not exceeding|not in excess of|that do(?:es)? not exceed|do(?:es)? not exceed|to a maximum of|limited to)`;
+const MF_ART = String.raw`(?:\s+(?:a|the|the first|an additional))?`;
+const MF_D = new RegExp(`match(?:ing|ed)?[^.]{0,120}?equal to\\s+${MF_RATE}\\s*[,;]?\\s*${MF_LEAD}${MF_ART}\\s+${MF_CAP}\\s+of`, "i");
+const MF_DEFNOUN = String.raw`(?:elective\s+)?(?:deferral|elective\s+contribution|salary\s+deferral|salary\s+reduction\s+contribution|pre-?tax\s+contribution|contribution)s?`;
+const MF_E = new RegExp(`match(?:ing|ed)?[^.]{0,90}?equal to\\s+(?:the\\s+|each\\s+)?(?:[A-Za-z’'()-]+\\s+){0,4}${MF_DEFNOUN}\\b([^.]{0,70}?)${MF_LEAD}${MF_ART}\\s+${MF_CAP}`, "i");
+/* A FRACTION IN WORDS IS A RATE, and mfEqualToWords would replace it with
+ * 100%. Hebrew Home at Riverdale files "equal to half of the employee elective
+ * deferrals, not to exceed 2%" — a 50% match, and publishing 100% would
+ * overstate it to 2,084 participants. Refuse rather than infer: reading "half"
+ * is a SECOND inference and this arm only owns the first one, that a match
+ * equal to the deferrals is a 100% match. */
+const MF_FRACWORD = /\b(?:half|one[- ]half|one[- ]third|a third|two[- ]thirds|a quarter|one[- ]quarter|a portion|a percentage|a specified percentage|a fraction|a part)\b/i;
+const MF_EXPLICIT = /\d{1,3}(?:\.\d+)?\s?(?:percent|%)|\b(?:one hundred|fifty|seventy[- ]five|twenty[- ]five)\s?(?:percent|%)/i;
+/* A BAND GUARD WAS WRITTEN HERE AND THEN REMOVED AS UNREACHABLE.
+ *
+ * It refused any sentence containing "from N% up to M%", because American Rock
+ * Salt's "60% matching contribution on salary deferrals from 2% up to the
+ * first 10%" covers the 2-10% BAND and "60% of the first 10%" would overstate
+ * the first two points. That reasoning was sound for the arm it was written
+ * for — the dropped arm (c), which anchored loosely on the word "match".
+ *
+ * Asked of the store after arm (c) was dropped, it blocked SIX plans / 68,263
+ * participants — and ALL SIX ALREADY PUBLISH A CORRECT FORMULA from an earlier
+ * arm (Mars, Incorporated, 66,642 ppl: "100% of the first 1% of pay"). The two
+ * arms below are APPENDED LAST, so they never reach a plan that already has a
+ * formula, and the guard therefore changed nothing published either way.
+ *
+ * It was first written up here as HARMFUL, on the strength of the 68,263 alone.
+ * That was wrong: a count of the plans a guard BLOCKS is not a count of cells
+ * it CHANGES, and the difference is the whole of the arms' position in the
+ * chain. Removed because an unreachable guard is a claim that cannot be tested,
+ * not because it was costing anything.
+ *
+ * Rock Salt and Lockheed are refused by the arms' SHAPE — neither sentence
+ * contains "equal to" — and scripts/match-formula-test.mjs still asserts both
+ * refusals, which is what makes the removal safe rather than merely tidy. */
+export function mfEqualTo(t) {
+  const m = t.match(MF_D);
+  return m ? m : null;
+}
+export function mfEqualToWords(t) {
+  const m = t.match(MF_E);
+  if (!m) return null;
+  const eq = t.toLowerCase().indexOf("equal to", Math.max(0, m.index));
+  if (eq < 0) return null;
+  const between = t.slice(eq, m.index + m[0].length);
+  if (MF_FRACWORD.test(between)) return null;
+  if (MF_EXPLICIT.test(between.replace(new RegExp(`${m[2]}\\s?(?:percent|%)\\s*$`, "i"), ""))) return null;
+  const out = [m[0], "100", m[2]];
+  out.index = m.index;
+  return out;
+}
+
+/* v199 — PUBLISHING A MISREAD FORMULA IS WORSE THAN PUBLISHING NONE.
+ *
+ * Found by diffing the two arms above against the shipped chain: 398 plans /
+ * 773,978 participants publish "N% of the first M% of pay" with N BELOW M, and
+ * in ALL 398 the filing's own sentence states a larger percentage. A rate under
+ * the cap is not impossible, so the test is NOT "rate < cap": it is that the
+ * sentence holds a percentage which is a BETTER CANDIDATE FOR THE RATE than
+ * the one published — larger than it, and not the cap. Reading them bears that
+ * out:
+ *   CommonSpirit Health  127,392  publishes "1% of the first 6%" from
+ *                                 "100% up to 1%, plus 50% in excess of 1%
+ *                                  up to 6%" — tier one's CAP as the rate
+ *   Jones Lang LaSalle    47,898  "$1.00 per dollar on the first 3% and
+ *                                  $0.50 ... up to 5%" -> "3% of the first 5%"
+ *   Boston Scientific     34,105  "200% for the first 2%" -> "2% of the first 6%"
+ *   DPR Construction      11,689  an AUTO-ESCALATION sentence, no match at all
+ * The quote survives the withholding, so the reader still sees what the filing
+ * says — in the filer's words rather than in our arithmetic. The count is
+ * reported so a future version can watch it fall rather than rediscover it. */
+export function mfMisreadRateUnderCap(formula, text) {
+  const m = /^(\d+(?:\.\d+)?)% of the first (\d+(?:\.\d+)?)% of pay$/.exec(String(formula || ""));
+  if (!m) return false;
+  const rate = +m[1], cap = +m[2];
+  if (!(rate < cap)) return false;
+  /* The CAP is always larger than the rate here, so counting it would make
+   * this condition vacuous — and it did: an early measurement reported that
+   * 398 of 398 suspect plans "state a larger percentage", a both-sided 100%
+   * that was reporting on the query rather than on the filings. Exclude it. */
+  for (const q of String(text || "").matchAll(/(\d{1,3}(?:\.\d+)?)\s?(?:percent|%)/g)) {
+    const n = +q[1];
+    if (n > rate && n !== cap && n <= 300) return true;
+  }
+  return false;
+}
+
 export function extractPlanFeatures(text, sponsorName = "") {
   // zero-width characters survive \s normalization and shipped inside quotes
   // (R.H. White's eligibility quote began with U+200B); strip them first so
@@ -5967,6 +6102,9 @@ export function extractPlanFeatures(text, sponsorName = "") {
   // and W() renders them as digits; quotes stay verbatim from the filing.
   const W = (x) => ({ "one hundred": 100, "seventy five": 75, "twenty five": 25, fifteen: 15, fifty: 50, forty: 40, thirty: 30, twenty: 20, sixty: 60, ten: 10, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9 }[String(x).toLowerCase().replace(/-/g, " ")] ?? +x);
   const mf =
+    // v199 FIRST, because it is the most SPECIFIC shape: a mixed fraction is
+    // one number and every arm below reads its denominator as the rate.
+    mfMixedFraction(t) ||
     // "safe harbor matching contribution equal to 100% up to 3% and 50%
     // up to an additional 2%" — QACA phrasing with no "of <deferrals>"
     t.match(/match(?:ing|ed)?[^.]{0,120}?equal to (\d{1,3}(?:\.\d+)?) ?(?:percent|%) up to (\d{1,2}(?:\.\d+)?) ?(?:percent|%)/i) ||
@@ -6019,7 +6157,13 @@ export function extractPlanFeatures(text, sponsorName = "") {
     // matchText, 0 existing formulas change and 122 plans / 197,324
     // participants gain one. A fix for one phrasing is not a fix for the class,
     // so BOTH directions are here.
-    mfWidened(t);
+    mfWidened(t) ||
+    // v199, APPENDED LAST and therefore provably additive: two connectors the
+    // filers use that the chain above does not accept. Both anchored on
+    // "equal to". Validated against the shipped chain as an oracle — see the
+    // comment on mfEqualTo.
+    mfEqualTo(t) ||
+    mfEqualToWords(t);
   // spelled-out fraction rates: "one-half of the first 8% of base
   // compensation" (Opus Inspection) — map to a percentage
   const FRAC = { "one-half": 50, "one half": 50, "one-third": 33, "one third": 33, "one-quarter": 25, "one quarter": 25, "two-thirds": 67, "two thirds": 67 };
@@ -6472,6 +6616,30 @@ export function extractPlanFeatures(text, sponsorName = "") {
     const neg = t.match(/(?:there (?:were|was)|made) no [^.]{0,80}?match(?:ing)? contributions? [^.]{0,60}?(?:for|in|during) the (\d{4}) plan year/i);
     const dur = out.matchText.match(/\bDuring (20\d\d)\b/i);
     if (neg && dur && +dur[1] < +neg[1]) out.match += ` (none made for plan year ${neg[1]} per the filing)`;
+  }
+
+  /* v199 — THE LAST GATE: withhold a formula whose rate sits below its cap
+   * while the filing states a larger percentage. See mfMisreadRateUnderCap for
+   * the measurement and the read cases. This runs AFTER every path that can
+   * set out.match, so it covers all of them rather than the one arm that
+   * happened to be diagnosed, and it only ever REMOVES a claim — the quote
+   * stays, so the reader loses our arithmetic and keeps the filing's words. */
+  if (out.match && mfMisreadRateUnderCap(out.match, out.matchText || t)) {
+    out.matchMisread = out.match;
+    delete out.match;
+    /* ONCE THE GATE HAS RULED THE FIRST ANSWER A MISREAD, A LATER ARM CANNOT
+     * BE WORSE. The v199 arms are APPENDED, so on exactly these plans they
+     * never ran: Beacon Mobility's correct "100% of the first 3%" sits behind
+     * an earlier arm that matched wrongly and won by position. Retry them here
+     * and keep a result only if it passes the same gate. Plain head formula —
+     * no tier suffix, because this bypasses the tier assembly above — which is
+     * incomplete rather than wrong, and the quote is still shown beside it. */
+    const q = out.matchText || t;
+    const retry = mfMixedFraction(q) || mfEqualTo(q) || mfEqualToWords(q);
+    if (retry) {
+      const f = `${W(retry[1])}% of the first ${W(retry[2])}% of pay`;
+      if (!mfMisreadRateUnderCap(f, q)) out.match = f;
+    }
   }
 
   /* v90: whether a "prior to <date>" sentence states a REPLACED rule turns on

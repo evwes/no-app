@@ -1145,6 +1145,34 @@
    "fixed": "v198",
    "sponsor": "BAE Systems",
    "was": "the NEGATIVE case for the arm above: 'contributes between 50% and 100% of the first 6%' yields a tidy pair and publishing it states a RANGE as a flat rate to 58,830 participants. mfWidened must return null [ack corrected 2026-10-03: the first value written here was from memory and did not exist; read from the store]"
+  },
+  {
+   "ack": "20260715205503NAL0004902306001",
+   "class": "match-formula-mixed-fraction",
+   "fixed": "v199",
+   "sponsor": "CBRE Services",
+   "was": "published '3% of the first 6% of pay' to 55,809 participants because '3%' is exactly what sits at the end of '66-2/3%'. A mixed fraction is ONE number and every generic arm read its denominator as the rate. mfMixedFraction is FIRST in the chain because it is the most specific shape; a general arm ahead of it keeps winning with the wrong number."
+  },
+  {
+   "ack": "20251010135955NAL0018181538001",
+   "class": "match-formula-misread-rate-under-cap",
+   "fixed": "v199",
+   "sponsor": "CommonSpirit Health",
+   "was": "published '1% of the first 6% of pay' to 127,392 participants from 'a match of 100% up to 1% of compensation, plus 50% in excess of 1% up to 6%' - tier one's CAP read as the rate and tier two's cap as the cap. mfMisreadRateUnderCap must WITHHOLD it: the quote survives, so the reader keeps the filing's words instead of our arithmetic. No replacement is available for this one."
+  },
+  {
+   "ack": "20251014090122NAL0002366993001",
+   "class": "match-formula-gate-retry",
+   "fixed": "v199",
+   "sponsor": "Beacon Mobility",
+   "was": "published '3% of the first 4% of pay' to 10,183 participants where the filing says 'equal to 100% up to the first 3% of employee deferrals'. The CORRECT answer was available from an appended arm that never ran, because an earlier arm had already matched wrongly and won by POSITION. Once the gate rules the first answer a misread, the retry must reach 100% of the first 3%."
+  },
+  {
+   "ack": "20251002084245NAL0000752130001",
+   "class": "match-formula-band-guard-removed",
+   "fixed": "v199",
+   "sponsor": "Mars, Incorporated",
+   "was": "the control on a REMOVAL. A sentence-wide band guard ('from N% up to M%') blocked this filing's correct 'equal to 100% of the first 1%' because a tier description later in the same sentence reads 'from 1% up to 6%'. It was first written up as harmful on that basis, which was wrong: all six blocked plans ALREADY publish a correct formula from an earlier arm, so the guard changed nothing published. A count of what a guard BLOCKS is not a count of cells it CHANGES. Must keep publishing 100% of the first 1% of pay."
   }
  ]
 }

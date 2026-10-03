@@ -18,7 +18,7 @@
  * below is a real sentence from a real plan, named with its participant count,
  * because the cost of getting this wrong is a wrong number in front of them.
  */
-import { mfWidened } from "./lib-4i.mjs";
+import { mfWidened, mfMixedFraction, mfEqualTo, mfEqualToWords, mfMisreadRateUnderCap } from "./lib-4i.mjs";
 
 const fails = [];
 const ok = (c, m) => { if (!c) fails.push(m); };
@@ -102,6 +102,132 @@ for (const [label, mutate, cases] of CONTROLS) {
   if (!broke.length) fails.push(`the control for ${label} changed NOTHING — it is decorative`);
 }
 
+/* ======================================================================
+ * v199. Three arms and a gate, every case a real filing with its
+ * participant count, because each one is a number in front of those people.
+ * ====================================================================== */
+let n199 = 0;
+const is = (c, m) => { n199++; if (!c) fails.push(m); };
+const pair = (f, t) => { const m = f(t); return m ? `${m[1]}/${m[2]}` : null; };
+
+/* ---- MIXED FRACTIONS. The generic arms read the DENOMINATOR as the rate,
+ * so CBRE published a twentieth of its real match to 55,809 people. ----- */
+const FRAC = [
+  ["The Company matches its employee’s contributions up to 66-2/3% of the first 6% of the employee’s annual compensation (up to a maximum annual matching contribution of $6,000).", "66.67/6", "CBRE Services, 55,809 ppl"],
+  ["Employer matching contributions – The Company matches 66 2/3% of participant contributions, up to 6% of eligible compensation deferred to the Plan.", "66.67/6", "Daimler Truck, 8,508 ppl — the space-separated spelling"],
+  ["The matching contribution for management employees is equal to 133 1/3% of the first 3% of the employee’s compensation the employee elected to defer.", "133.33/3", "DirecTV, 8,330 ppl — a rate ABOVE 100%"],
+  ["The Company may make a discretionary match of 33-1/3% of each participant’s contribution, up to a maximum of 6% of the participant’s total compensation.", "33.33/6", "JAC Products, 1,234 ppl"],
+];
+for (const [t, want, who] of FRAC) is(pair(mfMixedFraction, t) === want, `mixed fraction MUST read ${want} (${who}), got ${pair(mfMixedFraction, t)}`);
+is(mfMixedFraction("The Company matches 50% of the first 6% of eligible compensation.") === null,
+  "mfMixedFraction MUST stay silent on a plain formula — it is first in the chain and must not shadow it");
+
+/* ---- THE "equal to" CONNECTORS ---------------------------------------- */
+const EQ = [
+  ["Company matching contributions is equal to 100%, up to 6% of each participants’ eligible compensation.", "100/6", "Universal City, 24,228 ppl — a COMMA where the shipped arm demands 'of'"],
+  ["The Company matched the participant’s contribution in an amount equal to 50% up to the first 5% of employee elective deferrals.", "50/5", "Alro Steel, 5,327 ppl"],
+];
+for (const [t, want, who] of EQ) is(pair(mfEqualTo, t) === want, `mfEqualTo MUST read ${want} (${who}), got ${pair(mfEqualTo, t)}`);
+
+/* ---- THE RATE IN WORDS. "equal to the deferrals" IS 100%, and that single
+ * inference is all this arm owns. ------------------------------------- */
+const WORDS = [
+  ["The CHP and NYEEI Sponsors will make matching contributions equal to the employees’ salary deferral contributions up to 3% of eligible compensation.", "100/3", "Mount Sinai, 75,936 ppl"],
+  ["The matching contribution is in an amount equal to the employee’s elective deferrals that do not exceed 4% of the employee’s compensation for the Plan year.", "100/4", "ON Semiconductor, 6,525 ppl"],
+];
+for (const [t, want, who] of WORDS) is(pair(mfEqualToWords, t) === want, `mfEqualToWords MUST read ${want} (${who}), got ${pair(mfEqualToWords, t)}`);
+const WORDS_REFUSE = [
+  ["The Sponsors may contribute a matching contribution equal to half of the employee elective deferrals, not to exceed 2% of compensation.", "Hebrew Home at Riverdale, 2,084 ppl — HALF is a rate, and 100% would overstate it"],
+  ["The employer’s discretionary matching contribution is an amount equal to one-half of the employees’ contributions, up to 6% of compensation.", "Loffler Companies, 683 ppl"],
+  /* These two were the reason a sentence-wide band guard existed. It was
+   * removed for blocking six CORRECT extractions (Mars, 66,642 ppl) and
+   * protecting none — see the comment in lib-4i.mjs. Both must still be
+   * refused, now by the arms' own "equal to" anchor, and these assertions are
+   * what proves that removal was safe rather than merely convenient. */
+  ["Union participants receive a 60% employer matching contribution on salary deferrals from 2% up to the first 10% of the participant’s compensation.", "American Rock Salt, 463 ppl — a BAND, refused by shape now that the guard is gone"],
+  ["In general, participant contributions eligible for an employer matching contribution range from 0% to 8% of base pay.", "Lockheed Martin, 22,570 ppl — a range and no rate at all"],
+];
+for (const [t, who] of WORDS_REFUSE) is(mfEqualToWords(t) === null && mfEqualTo(t) === null, `the v199 arms MUST BOTH refuse: ${who}`);
+
+/* ---- THE MISREAD GATE. Publishing a wrong formula is worse than
+ * publishing none, and the quote survives either way. ------------------ */
+const GATE_TRUE = [
+  ["1% of the first 6% of pay", "Certain participating employers provide a match of 100% up to 1% of compensation, plus 50% in excess of 1% up to 6% of compensation.", "CommonSpirit Health, 127,392 ppl"],
+  ["2% of the first 6% of pay", "The Company matches Elective Deferrals at a rate of 200% for the first 2% of the Participant's Eligible Compensation during the Plan year and 50% of the Elective Deferrals thereafter up to a maximum of 6%.", "Boston Scientific, 34,105 ppl"],
+  ["1% of the first 10% of pay", "Participants are automatically enrolled in the Plan at 4% of eligible compensation, increased each year by 1% up to 10%, unless the participant opts out.", "DPR Construction, 11,689 ppl — an AUTO-ESCALATION sentence, no match in it"],
+];
+for (const [f, t, who] of GATE_TRUE) is(mfMisreadRateUnderCap(f, t) === true, `the gate MUST withhold "${f}" (${who})`);
+const GATE_FALSE = [
+  ["50% of the first 6% of pay", "The Company matches 50% of the first 6% of eligible compensation.", "the commonest real formula in the country"],
+  ["100% of the first 3% of pay", "equal to 100% up to the first 3% of employee deferrals and 50% on the next 2%.", "a safe-harbor basic match"],
+  ["66.67% of the first 6% of pay", "The Company matches 66-2/3% of the first 6% of compensation.", "the mixed-fraction arm's own output must survive the gate"],
+  ["3% of the first 6% of pay", "The Company matches 3% of the first 6% of compensation.", "rate under cap but NO larger number in the sentence — an unusual design, not a misread"],
+  ["Varies by employer group", "whatever", "a non-numeric formula string"],
+];
+for (const [f, t, who] of GATE_FALSE) is(mfMisreadRateUnderCap(f, t) === false, `the gate MUST NOT withhold "${f}" (${who})`);
+
+/* A KNOWN LIMIT, ASSERTED SO IT CANNOT BE FORGOTTEN RATHER THAN GLOSSED.
+ * Jones Lang LaSalle (47,898 ppl) publishes "3% of the first 5% of pay" from
+ *   "$1.00 per dollar on the first 3% deferred and $0.50 per dollar on
+ *    deferrals in excess of 3% up to 5%"
+ * where the answer is 100% of the first 3%. The gate does NOT catch it, and
+ * cannot: the only percentages in the sentence are 3 and 5, and 5 is the cap,
+ * so nothing in it is a better candidate for the rate. The rate lives in the
+ * DOLLAR ratios. Widening the gate to reach this one case would mean dropping
+ * the cap exclusion, which is the vacuous version this test already fails on.
+ * It is a dollar-ratio tier misread — a different class, queued as such. */
+is(mfMisreadRateUnderCap("3% of the first 5% of pay",
+  "The Company matches pretax deferrals at a rate of $1.00 per dollar on the first 3% deferred and $0.50 per dollar on deferrals in excess of 3% up to 5% of the participants’ compensation.") === false,
+  "the Jones Lang LaSalle limit is documented as NOT caught — if this now passes, the gate widened and that needs its own measurement");
+
+/* ---- NEGATIVE CONTROLS for v199, one per guard, each required to flip a
+ * verdict. Built by slicing the shipped source and mutating it. -------- */
+const V199 = [
+  ["the fraction-word guard", /const MF_FRACWORD = \/[^\n]*\/i;/,
+   "const MF_FRACWORD = /(?!)/;", () => mfEqualToWords(WORDS_REFUSE[0][0]) !== null],
+  ["the cap exclusion in the misread gate", /if \(n > rate && n !== cap && n <= 300\) return true;/,
+   "if (n > rate && n <= 300) return true;", null],
+  ["the rate-under-cap test", /if \(!\(rate < cap\)\) return false;/,
+   "if (false) return false;", () => mfMisreadRateUnderCap(GATE_FALSE[0][0], GATE_FALSE[0][1]) === true],
+];
+console.log("\nNEGATIVE CONTROL for v199, one per guard:");
+for (const [label, find, repl, probe] of V199) {
+  if (!find.test(SRC)) { fails.push(`the control for ${label} could not find its target — the source moved`); continue; }
+  const mutated = SRC.replace(find, repl);
+  if (mutated === SRC) { fails.push(`the control for ${label} did not land`); continue; }
+  // Load the mutated module from memory, so the shipped file is never touched.
+  const mod = await import("data:text/javascript;base64," + Buffer.from(mutated).toString("base64"));
+  const saved = { mfEqualToWords, mfMisreadRateUnderCap };
+  const flipped = (() => {
+    const g = globalThis;
+    g.__probe = { mfEqualToWords: mod.mfEqualToWords, mfMisreadRateUnderCap: mod.mfMisreadRateUnderCap };
+    try {
+      /* The probe must be a case the rate<cap test is the ONLY thing refusing:
+       * a rate ABOVE its cap (the ordinary shape of every real formula) in a
+       * sentence that also holds a larger number. Probing with "50% of the
+       * first 6%" and a sentence containing nothing above 50 proved nothing,
+       * because the cap-exclusion test refused it too — a control has to be
+       * reached by the condition it is testing. */
+      if (label === "the rate-under-cap test")
+        return mod.mfMisreadRateUnderCap("50% of the first 6% of pay",
+          "The Company matches 100% of the first 3% of pay and 50% of the next 3%.") === true;
+      /* Dropping the cap exclusion makes the second condition vacuous, which
+       * is exactly the defect this gate shipped with for one iteration: the
+       * cap is always larger than the rate, so every rate<cap case passed.
+       * The honest design — "3% of the first 6%" with nothing larger in the
+       * sentence is an unusual design, not a misread — is what detects it. */
+      if (label === "the cap exclusion in the misread gate")
+        return mod.mfMisreadRateUnderCap(GATE_FALSE[3][0], GATE_FALSE[3][1]) === true;
+      return mod.mfEqualToWords(WORDS_REFUSE[0][0]) !== null;
+    } finally { void saved; void probe; }
+  })();
+  console.log(`  drop ${label}: ${flipped ? "a verdict FLIPS (control fires)" : "NOTHING changes"}`);
+  if (!flipped) fails.push(`the control for ${label} changed NOTHING — it is decorative`);
+}
+
 if (fails.length) { for (const f of fails) console.error("FAIL " + f); process.exit(1); }
-console.log(`\nmatch-formula: ${EXTRACT.length + REFUSE.length + SILENT.length} assertions, 0 failures `
+console.log(`\nmatch-formula: ${EXTRACT.length + REFUSE.length + SILENT.length} v198 assertions `
   + `(${EXTRACT.length} extract, ${REFUSE.length} range/cap refused, ${SILENT.length} silent; both controls fire)`);
+console.log(`match-formula: ${n199} v199 assertions, 0 failures `
+  + `(${FRAC.length} mixed fractions, ${EQ.length + WORDS.length} connectors, ${WORDS_REFUSE.length} refused, `
+  + `${GATE_TRUE.length} withheld, ${GATE_FALSE.length} kept; all three controls fire)`);
