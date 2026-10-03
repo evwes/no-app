@@ -544,6 +544,31 @@ export function cleanFiledName(name) {
    * knows, and `… Fund<0x02>2050 Mutual funds` loses its vehicle caption. */
   s = s.replace(/[\u0000-\u001f\u007f]+/g, " ").replace(/\s{2,}/g, " ").trim();
   s = s.replace(/^[—–-]+\s*/, "");
+  /* AN EMPTY PARENTHETICAL — a column that held nothing, captured as bare
+   * parens and welded to the name. 2026-10-03 (05:3xZ draw).
+   *
+   * Parker Hannifin (42,434 ppl) publishes `Parker Stock Match Fund ( )` at
+   * 23.4% of its menu — $2,054,809,000 — and `Parker Stock Fund ( )` at 7.3%.
+   * Zions Bancorporation (14,957 ppl) carries it on fourteen rows at once:
+   * `500 INDEX INSTITUTIONAL ( )`, `TARGET RETIREMENT 2040 ( )`. Whole class:
+   * 1,161 rows / 63 plans / 138,083 participants / $8,915,691,142.
+   *
+   * PURELY LEGIBILITY, AND PRICED AS SUCH: measured through
+   * fundTickerInfo(name, type) and fundER(name) — the calls app.js:1897 makes —
+   * stripping it gains 0 tickers, loses 0, changes 0, and the same three zeros
+   * for fees, across all 1,161 rows. The resolvers already normalise the
+   * punctuation away, so the parens were never the reason these rows carry no
+   * symbol; the abbreviated names are. The row reads as a fund instead of as
+   * something broken, and nothing else about it moves.
+   *
+   * THE PRICE TOOK THREE ATTEMPTS AND EVERY ONE REPORTED ON THE QUERY, which
+   * is why the control is written into the harness rather than trusted:
+   * `lookupTicker(name)` with one argument returns null for EVERY name,
+   * `Fidelity 500 Index Fund` included; then the field was read as `.ticker`
+   * where fundTickerInfo returns `{tk}`. Both produced a tidy 0/0/0 that meant
+   * nothing. A positive control that PRINTS what it got — `{"tk":"FXAIX"}`,
+   * `0.015` — is what caught both. */
+  s = s.replace(/\s*\(\s*\)\s*/g, " ").replace(/\s{2,}/g, " ").trim();
   // OCR noise glued to the END: stray quote / trademark glyphs ("Trust II
   // CIT ”", "R6 ™", "…Fund®" — 674 plans / 1.08M ppl / 4,454 rows on the
   // v138 store) and a footnote letter or fragment after a share-class or

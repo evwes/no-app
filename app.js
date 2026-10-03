@@ -631,6 +631,14 @@
      * whole-population check that no control character sits inside a word. */
     s = s.replace(/[\u0000-\u001f\u007f]+/g, " ").replace(/\s{2,}/g, " ").trim();
     s = s.replace(/^[—–-]+\s*/, "");
+    /* AN EMPTY PARENTHETICAL — a column that held nothing, captured as bare
+     * parens and welded to the name: Parker Hannifin publishes `Parker Stock
+     * Match Fund ( )` at 23.4% of its menu. 1,161 rows / 63 plans / 138,083
+     * ppl / $8.9B. Legibility only — priced through fundTickerInfo and
+     * fundER at 0 tickers and 0 fees gained, lost or changed.
+     * scripts/lib-disclose.mjs holds the measurement and how three earlier
+     * attempts at that price each reported on the query. */
+    s = s.replace(/\s*\(\s*\)\s*/g, " ").replace(/\s{2,}/g, " ").trim();
     // OCR noise glued to the END: stray quote / trademark glyphs ("Trust II
     // CIT ”", "R6 ™", "…Fund®" — 674 plans / 1.08M ppl / 4,454 rows on the
     // v138 store) and a footnote letter or fragment after a share-class or
