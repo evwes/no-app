@@ -1358,22 +1358,37 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   category-table class. It carries an issuer or is otherwise outside the 486, so
   the shipped guard does not reach it, and the category-table item above is the
   owner's call.
-- **`cleanFiledName` IS NOT IDEMPOTENT — 154 rows / 38 plans / 97,563 ppl,
-  CORRECTED 07:4xZ from my own "6 of 253,112", which was an 8-SHARD SAMPLE
-  reported as the population.** A second clean pass changes the published name,
-  and **it is usually a REPAIR**: Procter & Gamble (42,915 ppl) publishes
-  `…Russell 2000 Index SMA(2)` from `…SMA(2)(4)` because the trailing-marker arm
-  strips ONE marker where the filing has two; Santander (19,451 ppl) publishes
-  `…Class Q(2)`; one plan publishes `Vanguard Russell 1000 Growth Index I;
-  56,772 shares`, a welded share count.
-  **THE FIX IS PER-ARM, NOT A LOOP:** make the footnote-marker and welded-count
-  arms GREEDY, and leave the trailing-TYPE-LABEL arm single-pass or
-  `Equity Income Separate Account` becomes `Equity Income`.
-  **DO NOT CARRY ANY better/erosion SPLIT** — my `MARKER_ONLY` classifier
-  reported 81,143 + 239,330 participants against a 97,563 total, because the
-  buckets summed PER ROW and the total PER PLAN. *A partition whose parts
-  outweigh the whole is not a measurement.* Re-measure before shipping.
-  `docs/accuracy-log.md` 2026-10-03 (07:4xZ).
+- **SHIPPED 2026-10-03 14:3xZ — ONE OF TWO FOOTNOTE MARKERS READS AS A SHARE
+  CLASS: 2 rows / 62,366 ppl / $496,636,334.** Procter & Gamble (42,915 ppl,
+  $364,753,511, 6.7% of its menu) files `… Russell 2000 Index SMA(2)(4)` and
+  published `… SMA(2)`; Santander (19,451 ppl, 10.3%) files `… Common Class
+  Q(2)(3)` and published `… Class Q(2)`, which is indistinguishable from a
+  designation. The trailing-marker arm is now GREEDY in `lib-disclose` and its
+  app.js twin. 2 crawlable pages changed; ticker/fee/asterisk/type/flags
+  unchanged on both rows. *One of two markers is worse than none or both.*
+- **AND THE NON-IDEMPOTENCE ITEM IS NOW SPLIT FOUR WAYS — re-measured at 156
+  rows / 40 plans / 102,608 ppl, and its single queued line asked for two arms
+  to be made greedy where one is worth 61% of the people and the other is worth
+  one plan.** What remains, none of it shipped:
+  **(a) 60 rows / 2,570 ppl** ending in the type label `Registered Investment
+  Company` — these MUST stay single-pass, because a loop turns `Equity Income
+  Separate Account` into `Equity Income`;
+  **(b) 58 rows / 18,750 ppl where a second pass is NOT a suffix strip** —
+  a leading caption (`MUTUAL FUND - FIXED INCOME` → `FIXED INCOME`), a
+  duplication (`Master Trust Master Trust Balances…`), a page-break caption
+  (`Mutual Funds (Continued) Fidelity Mid Cap Sto`), an OCR pipe (`Class |` →
+  `Class I`). **This is the interesting residue**: each is a repair the first
+  pass misses for a DIFFERENT reason, so it needs reading one shape at a time
+  and never a greedy quantifier;
+  **(c) 17 rows / 2,870 ppl** of `; N shares`, ALL IN ONE PLAN;
+  **(d) ~19 rows** of stray glyphs `+`, `©`, `‘`, `®` and OCR debris
+  (`NIA`, `te`, `iad`).
+  **DO NOT CARRY the queue's old better/erosion split** — it summed per ROW
+  against a per-PLAN total. **And prefer the PUBLISHED question to the
+  idempotence one:** "does the name a reader sees still end in a marker" has a
+  flat answer (3 rows store-wide, one already qualified by `hasNoFundIdentity`)
+  where idempotence is a proxy that mixes four causes.
+  `docs/accuracy-log.md` 2026-10-03 (14:3xZ).
 - **THE TRUNCATED-NAME CLASS — REWRITTEN 05:2xZ, AND MY 04:3xZ MECHANISM WAS
   WRONG.** That entry read "190 rows / 115 plans / 323,680 ppl /
   $4,981,039,061 … a `Common / Collective` column heading bleeding into the
