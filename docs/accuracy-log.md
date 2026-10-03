@@ -43084,3 +43084,87 @@ class** — the 31 rows are a by-product of a refuted test and not a measurement
 of this shape, and the right screen is "the name opens or closes on a HOUSE
 token that the rest of the name contradicts", which must be sized on its own
 before anything is built. Queued.
+
+## 2026-10-03 (18:1xZ) — A TRUSTEE'S CORPORATE NAME WELDED ONTO A FUND NAME: 5,168 rows / 1,348 plans / 3,744,810 ppl / $35,453,136,903. SIZED, DELIBERATELY NOT SHIPPED
+
+Working the item the 16:1xZ draw queued as UNSIZED, whose screen I had named as
+"the name opens or closes on a HOUSE token the rest of the name contradicts".
+
+**THE FIRST SCREEN WAS TOO WIDE AND ITS OWN FREQUENCY TABLE SAID SO.** "Two
+distinct houses in one published name" reads **6,059 rows / 1,456 plans /
+2,241,071 ppl / $18.8B**, and reading the table shows most are **CORRECT AS
+FILED**: `Principal/BlackRock S&P 500 Index Fund` (339 rows / 476,031 ppl),
+`Principal/T. Rowe Price - Instl LCG Mgd CIT Class N`, `MassMutual Select TRP
+Retirement 2040 M4` (927 rows), `Empower Columbia Dividend Value Fund`,
+`Voya T. Rowe Price Capital Appreciation Portfolio`, `Transamerica LifeGoal Ret
+with BlackRock RetOpt` — real SUB-ADVISED product names, where the second firm
+is part of what the fund is called. And `iShares Russ MC Index K Fund BlackRock
+Advisors, LLC` is **one firm named twice**, not a contradiction. ***DO NOT CARRY
+6,059 / 2,241,071.***
+
+**WHAT SEPARATES THE DEFECT IS NOT A SECOND HOUSE BUT A CORPORATE ENTITY
+DESIGNATION** — `Trust Company`, `Advisors, LLC`, `Investment Mgmt Inc.`,
+`Management & Research`, `Insurance and Annuity Company`. A fund's registered
+name does not carry another firm's corporate suffix, and the sub-advised
+products above carry none at all. The entity is the 4i *identity of issuer*
+column bleeding into the description column. **5,168 rows / 1,348 plans /
+3,744,810 ppl / $35,453,136,903**, the largest being **Target Corporation at
+495,482 participants**: `State Street Bank & Trust Company SSGA S+P 500 INDEX
+SER A S+P 500 FLAGSHIP NON LENDING` at 21.1% of its menu ($2,995,363,626), and
+`BlackRock Institutional Trust Company, . LIFEPATH INDEX 2050 NL FUND F` at
+7.6%.
+
+Split by whether the reader is misled about the FIRM or merely given a verbose
+name: **same house on both sides 826 rows / 204 plans / 1,022,423 ppl** (State
+Street's trustee arm in front of its own SSGA fund — verbose, not
+contradictory), **different house 785 rows / 84 plans / 185,141 ppl** (the
+reader is told the wrong firm). **195 rows / 175 plans / 2,063,716 ppl are
+REFUSED** because nothing usable would remain.
+
+**AND THE SHIPPED GUARD IS NOT THIS, WHICH I CHECKED RATHER THAN ASSUMED.**
+`leadingHouse` exists in `lib-disclose` and its comment names `Fidelity
+Management Trust Company` explicitly — but its only consumer (`app.js:2030`)
+compares the NAME's house against the ISSUER cell's and blocks an issuer-driven
+TICKER assertion, report-path only. The NAME is untouched.
+
+### TWO DEFECTS IN MY OWN SCREEN, BOTH FOUND BEFORE SHIPPING, AND THE SECOND IS A NEW METHOD RULE
+
+**(1) The lead strip leaves a dangling glyph.** `BlackRock Institutional Trust
+Company, . LIFEPATH INDEX 2050 NL FUND F` becomes **`. LIFEPATH INDEX 2050 NL
+FUND F`** — the orphaned comma-period survives, and my "a name must remain"
+gate passes it because `[A-Za-z]{3}` is satisfied by `LIFEPATH`. On **495,482
+participants**. The gate tested that letters remain, not that the string starts
+like a name.
+
+**(2) THE TAIL ARM READ 0 AND IS BROKEN, NOT INERT — AND THOSE TWO READ THE
+SAME ZERO.** `ENTITY TRAILS: 0 rows` while `Fidelity 500 Index Fund JP Morgan
+Investment Mgmt Inc.`, `iShares Russ MC Index K Fund BlackRock Advisors, LLC`,
+`MFS Mid-Cap Growth R6 Fund Fidelity Management & Research` and `Fidelity
+Extended Mkt Index Fd MFS Investment Management` all sit in the data — the
+first two were quoted in my own previous entry. Tested directly, the arm fires
+on **none of its five known members**: its `[^,]{0,40}?` class forbids the comma
+in `Advisors, LLC` and the lazy quantifier cannot span the rest.
+
+***ONE CYCLE AGO I DROPPED AN ARM FOR REACHING 0 OF 105,220 ROWS AND CALLED IT
+UNTESTED MACHINERY. THAT WAS RIGHT. THIS ZERO LOOKS IDENTICAL AND MEANS THE
+OPPOSITE.*** A count cannot tell "this shape is absent from the data" from "my
+regex is wrong", and both print `0`. **The discriminator is a PINNED POSITIVE
+FIXTURE: pin a case the arm MUST fire on, from the data, before believing any
+zero it reports** — then an empty result is a FAILING TEST rather than a
+finding. The 15:3xZ "narrowing is a claim and must be tested" rule is the same
+instinct applied to a filter; this applies it to an arm. What caught it was
+re-reading my own previous entry and noticing it had quoted two members of a
+bucket I had just measured at zero.
+
+**NOT SHIPPED, AND THAT IS THE DECISION RATHER THAN AN OMISSION.** A
+3,744,810-participant name change with a residue bug on its single largest row
+and a dead second arm is exactly where to stop — one cycle after shipping a
+wrong fund name (`Vanguard Windsor Fund` for Windsor **II**) on a 126-row change
+by moving fast through green gates. *Refusing a repair is the safe direction.*
+Queued with both defects named, the refusals priced, and the fixtures that must
+exist before it ships.
+
+**Nothing was mirrored this cycle: #568 is IN PROGRESS on main** (schedule,
+18:01:45Z), and a run in flight on main is a reason not to mirror — it will
+leave main a data commit the branch lacks. Pushing to dev is safe and
+unaffected: concurrency is ref-scoped and no build-data path file is touched.

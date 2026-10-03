@@ -807,10 +807,14 @@ EFAST2 bucket grew, not that our code broke.
 ### Pre-registered for the next run that merges
 
 **NOTHING IS PRE-REGISTERED** for a parser run — `PARSER_VERSION` stays 199.
-**Nothing is in flight.** Newest build-data run is **#567 (schedule, main,
-`26fcda74`, 13:28:42-13:37:53Z) SUCCESS**, already verdicted — and note it is
-~3h old at 16:4xZ, consistent with the measured ~3.6h delivered cadence rather
-than the configured hourly one. Every change since
+**#568 IS IN PROGRESS on main (schedule, started 18:01:45Z) — so DO NOT MIRROR
+until it finishes and the branch adopts its data commit.** Pushing to dev is
+safe and unaffected (concurrency is ref-scoped, and no build-data path file is
+touched). The next cycle verdicts it: expect a byte-identical incremental line
+apart from the date, `pv` 199, since no parser change has shipped. #567
+(`26fcda74`, 13:28:42-13:37:53Z) was the previous one, verdicted, and the
+4.5-hour gap to #568 is the measured ~3.6h delivered cadence rather than the
+configured hourly one. Every change since
 #563 is display-side or documentation, so a session dispatch would re-run the
 same ~96-ack incremental work list that has now produced six identical coverage
 lines; the hourly cron on main is the right mechanism for new DOL filings.
@@ -1149,18 +1153,30 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   Yusen's `,000` is protected TWICE so its fixture could not fail — each
   protection now has its own real single-protection case (comma 10 quotes /
   4,551 ppl, sentence gate 8 / 8,856). `docs/accuracy-log.md` 2026-10-03 (16:2xZ).
-- **FOUND BY THE 16:1xZ DRAW, UNSIZED AND HONESTLY SO — A RECORDKEEPER NAME
-  WELDED ONTO THE FUND NAME.** Duke University (**71,641 ppl**) publishes
-  `Fidelity JPM Large Cap Growth R6` ($172,635,812) and `Fidelity PIMCO Income
-  Inst` ($160,545,756): the SYMBOLS are right (JLGMX, PIMIX) and the NAMES tell
-  71,641 readers the funds are Fidelity products when they are JPMorgan's and
-  PIMCO's. Same shape at Crestron, Central Virginia Dental (`Charles Schwab &
-  Company DFA U.S. Targeted Value Portf`), Alexander Thompson (`Vanguard
-  American Funds Trgt Date Ret 2040 R6`), and welded at the END at Jasco
-  (`… Class I Vngr`) and Future Ford (`… Class R6 Capital Group`). **The 31 rows
-  it was spotted in are a BY-PRODUCT of a refuted test, not a measurement of
-  this shape** — the right screen is "the name opens or closes on a HOUSE token
-  the rest of the name contradicts", and it must be sized on its own first.
+- **SIZED 2026-10-03 18:1xZ, DELIBERATELY NOT SHIPPED — A TRUSTEE'S CORPORATE
+  NAME WELDED ONTO A FUND NAME: 5,168 rows / 1,348 plans / 3,744,810 ppl /
+  $35,453,136,903.** Largest is **Target Corporation, 495,482 participants**:
+  `State Street Bank & Trust Company SSGA S+P 500 INDEX SER A S+P 500 FLAGSHIP
+  NON LENDING` at 21.1% of its menu ($2,995,363,626). Duke University (71,641)
+  publishes `Fidelity JPM Large Cap Growth R6` with JLGMX correct.
+  **THE SCREEN IS A CORPORATE ENTITY DESIGNATION, NOT A SECOND HOUSE** —
+  `Trust Company`, `Advisors, LLC`, `Investment Mgmt Inc.`, `Management &
+  Research`, `Insurance and Annuity Company`. **DO NOT CARRY the two-house
+  screen's 6,059 rows / 2,241,071 ppl**: most are CORRECT AS FILED, because a
+  SUB-ADVISED fund legitimately names two firms (`Principal/BlackRock S&P 500
+  Index Fund`, `MassMutual Select TRP Retirement 2040 M4`, `Empower Columbia
+  Dividend Value Fund`), and `iShares … BlackRock Advisors, LLC` is one firm
+  twice. Split: **same house both sides 826 rows / 1,022,423 ppl** (verbose, not
+  contradictory), **different house 785 / 185,141** (wrong firm named), **195 /
+  2,063,716 REFUSED** (nothing usable remains). The shipped `leadingHouse` guard
+  is NOT this — checked, not assumed: its only consumer (`app.js:2030`) blocks
+  an issuer-driven TICKER assertion, report-path only, and leaves the NAME.
+  **TWO DEFECTS IN MY OWN SCREEN MUST BE FIXED FIRST:** the lead strip leaves
+  `. LIFEPATH INDEX 2050 NL FUND F` on Target's row (the gate tested that
+  letters remain, not that the string starts like a name), and **the TAIL arm
+  reads 0 because it is BROKEN** — its `[^,]` class forbids the comma in
+  `Advisors, LLC` and it fires on none of its five known members.
+  `docs/accuracy-log.md` 2026-10-03 (18:1xZ).
 - **AND THE DRAW'S MOTIVATING ROW COULD NOT BE CONVICTED — recorded so nobody
   re-derives the three refuted screens.** PPC Retirement Plan publishes
   `JP Morgan US Value R6 Fund` with **VGINX** ASSERTED, out of the stored `stk`
@@ -1749,6 +1765,16 @@ These outlived the versions that produced them. The accuracy log has the case.
   a comma's absence from the vocabulary and by the output gate. Give every
   condition a case where it is the ONLY protection, and find that case by
   measuring each condition's population separately.
+  **AND THE TRAP IN (i), MET ONE CYCLE LATER: A BROKEN ARM AND AN INERT ARM READ
+  THE SAME ZERO.** An entity-TAIL arm reported 0 rows while four of its members
+  sat in the data and two were quoted in my own previous entry; it fires on none
+  of its five known members because a `[^,]` class forbids the comma in
+  `Advisors, LLC`. Dropping the `-6-` arm for a zero was right; accepting this
+  zero would have been wrong, and **a count cannot tell the two apart**.
+  ***PIN A POSITIVE FIXTURE THE ARM MUST FIRE ON, from the data, before
+  believing any zero it reports*** — then an empty result is a FAILING TEST
+  rather than a finding. Same instinct as *a narrowing is a claim and must be
+  tested*, applied to an arm instead of a filter.
 - **A clean zero, a round number or an implausibly large one reports on the
   QUERY.** So does a both-sided zero across a whole population.
 - **RANK to pick what to READ; draw RANDOMLY to estimate a RATE.** Top-N samples
