@@ -765,11 +765,19 @@ EFAST2 bucket grew, not that our code broke.
 
 **NOTHING IS PRE-REGISTERED** for a parser run — `PARSER_VERSION` stays 199.
 
-**#561 and site-test #150/#151 all SUCCESS.** #561's two coverage lines are
-BYTE-IDENTICAL — exactly what an incremental run should produce. The
-empty-parenthetical fix and `hasNoFundIdentity` are both CI-verified.
-**build-data #562 is in flight on the dev branch** (`e0dd7a7a`, incremental);
-read its `conclusion` before the next mirror.
+**NO RUN IS IN FLIGHT as of 08:1xZ.** #561, #562 and #563 all SUCCESS and all
+verdicted; site-test #150 and #151 SUCCESS. **Three consecutive incremental runs
+produced BYTE-IDENTICAL coverage lines**, which is what an incremental run
+should do when the work list is only the 48 permanently-403 acks plus the
+~48-ack old-pv tail.
+
+**AND THE PREVIOUS COPY OF THIS PARAGRAPH SAT HERE FOR AN HOUR SAYING "#562 is
+in flight — read its conclusion before the next mirror" AFTER #562 had been
+verdicted and mirrored.** That is the sixth time this block has gone stale and
+the second time specifically with an IN-FLIGHT line left standing. *An
+in-flight line is the most dangerous kind of staleness here, because it tells
+the next cycle to wait for something that has already finished.* Clear it in
+the same cycle that reads the conclusion.
 
 **LIVE ON MAIN as of 2026-10-03 04:2xZ: v199 + its own pv-199 store, mirrored as
 a MATCHED pair** (`ea825dcb`), Pages build #834/#835 green. v198 and v199 both
