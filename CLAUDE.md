@@ -1236,16 +1236,22 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   category-table class. It carries an issuer or is otherwise outside the 486, so
   the shipped guard does not reach it, and the category-table item above is the
   owner's call.
-- **`cleanFiledName` IS NOT IDEMPOTENT — 6 of 253,112 real names, found
-  2026-10-03 by asserting it.** `Equity Income Separate Account Pooled se` →
-  `Equity Income Separate Account` → **`Equity Income`**: one arm removes a
-  trailing type label and the next then sees a new trailing type label, so a
-  second pass erodes the name further. **Harmless today** — every caller cleans
-  once, and `hasNoFundIdentity` uses the cleaned form only for a BOOLEAN — and
-  `scripts/no-identity-test.mjs` asserts the weaker property the code actually
-  depends on (a second pass never changes the verdict: 0 of 253,112). Worth
-  fixing as a loop-to-fixpoint or an explicit single-pass contract; UNSIZED as a
-  reader-facing defect because no surface cleans twice.
+- **`cleanFiledName` IS NOT IDEMPOTENT — 154 rows / 38 plans / 97,563 ppl,
+  CORRECTED 07:4xZ from my own "6 of 253,112", which was an 8-SHARD SAMPLE
+  reported as the population.** A second clean pass changes the published name,
+  and **it is usually a REPAIR**: Procter & Gamble (42,915 ppl) publishes
+  `…Russell 2000 Index SMA(2)` from `…SMA(2)(4)` because the trailing-marker arm
+  strips ONE marker where the filing has two; Santander (19,451 ppl) publishes
+  `…Class Q(2)`; one plan publishes `Vanguard Russell 1000 Growth Index I;
+  56,772 shares`, a welded share count.
+  **THE FIX IS PER-ARM, NOT A LOOP:** make the footnote-marker and welded-count
+  arms GREEDY, and leave the trailing-TYPE-LABEL arm single-pass or
+  `Equity Income Separate Account` becomes `Equity Income`.
+  **DO NOT CARRY ANY better/erosion SPLIT** — my `MARKER_ONLY` classifier
+  reported 81,143 + 239,330 participants against a 97,563 total, because the
+  buckets summed PER ROW and the total PER PLAN. *A partition whose parts
+  outweigh the whole is not a measurement.* Re-measure before shipping.
+  `docs/accuracy-log.md` 2026-10-03 (07:4xZ).
 - **THE TRUNCATED-NAME CLASS — REWRITTEN 05:2xZ, AND MY 04:3xZ MECHANISM WAS
   WRONG.** That entry read "190 rows / 115 plans / 323,680 ppl /
   $4,981,039,061 … a `Common / Collective` column heading bleeding into the

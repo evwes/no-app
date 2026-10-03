@@ -42087,3 +42087,56 @@ clean — every row a named fund, ratios 0.984 and 0.983.
 Recorded as nothing** rather than written up as a marginal find, because a draw
 that comes up clean is evidence about the common case and a draw written up
 anyway is noise in the queue.
+
+## 2026-10-03 (07:4xZ) — THE NON-IDEMPOTENCE IS 154 ROWS, NOT 6: my own queue entry reported an 8-shard SAMPLE as the population, and then my classifier for it was wrong in the opposite direction
+
+Took the `cleanFiledName` non-idempotence queued two hours ago as "6 of 253,112
+real names" and went to fix it. **Both of my own numbers about it were wrong.**
+
+**THE POPULATION IS 154 ROWS / 38 PLANS / 97,563 PARTICIPANTS.** The 06:3xZ test
+read **8 shards of 64** — it says so in its own comment ("eight shards is ~200k
+names, enough") — and I wrote its 6 into the queue as a fact about the store.
+***A SAMPLE REPORTED AS A POPULATION***, and the giveaway was there to read: the
+test printed "over 253,112 real names" where the store holds 1.73 million.
+
+**AND THE DIRECTION IS THE OPPOSITE OF WHAT I ASSUMED.** I queued it as
+"harmless, and looping to a fixpoint would erode names", on the strength of one
+example. Reading all 154, the second pass is usually a REPAIR:
+
+- **Procter & Gamble, 42,915 ppl, 6.7% of its menu** — files
+  `Procter & Gamble Savings Plan – Russell 2000 Index SMA(2)(4)` and **publishes
+  `…SMA(2)`**: the trailing-marker arm strips ONE footnote marker where the
+  filing carries two.
+- **Santander Holdings USA, 19,451 ppl, 10.3%** — publishes
+  **`T. Rowe Price Stable Value Common Class Q(2)`** from `…Class Q(2)(3)`.
+- A plan publishes **`Vanguard Russell 1000 Growth Index I; 56,772 shares`** —
+  a WELDED SHARE COUNT, which is its own queued defect class, and a second pass
+  removes it.
+- Spire publishes `American Funds EuroPacific Growth Fund®`; a second pass drops
+  the glyph.
+
+**SO A BLANKET LOOP TO A FIXPOINT IS STILL THE WRONG FIX, FOR A DIFFERENT
+REASON THAN I GAVE.** Not because it mostly erodes — it mostly repairs — but
+because the arms differ: the footnote-marker and welded-count arms should be
+GREEDY (strip all markers in one pass), while the trailing-TYPE-LABEL arm must
+stay single-pass, or `Equity Income Separate Account` becomes `Equity Income`.
+**The fix is per-arm, not per-function.**
+
+**AND MY CLASSIFIER FOR THE SPLIT WAS WRONG AND ANNOUNCED IT ARITHMETICALLY.**
+I wrote a `MARKER_ONLY` test to sort pass-2 changes into "repair" and "erosion",
+and it reported **10 rows / 81,143 ppl better and 144 rows / 239,330 ppl
+eroded** — against a stated total of **97,563**. ***81,143 + 239,330 = 320,473,
+which exceeds the total it was partitioning***, because the buckets summed
+participants PER ROW while the total summed PER PLAN, and these plans carry many
+affected rows each. A partition whose parts outweigh the whole is not a
+measurement. The labels were wrong too: `; 56,772 shares` was filed under
+"erosion" because my marker vocabulary did not include a welded share count.
+
+**NOTHING SHIPPED, DELIBERATELY.** The arm-level fix is cheap and probably
+right, but it would have been built on a split I had already shown to be
+self-contradicting, and the shipped behaviour harms at most a dangling `(2)` on
+a name that is otherwise correct. ***Two wrong numbers about the same defect in
+two hours is a reason to stop measuring and re-measure, not to ship on the
+second one.*** Queued with the real population, the named instances, and the
+per-arm direction, so the next session starts from evidence rather than from my
+summary of it.
