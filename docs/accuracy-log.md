@@ -41462,3 +41462,142 @@ subsequent six months"* — so the extractor selected a sentence about losing
 future match eligibility and filed it under vesting. Unsized; the class is
 "vesting sentence selected on the word *eligible*", and it needs the same
 whole-store measurement this entry's fix got before anything is written.
+
+## 2026-10-03 (02:0xZ) — v199: THE MATCH FORMULA WAS READ WRONG, NOT MERELY MISSED. 205 misreads withheld / 406,135 ppl, 14 corrected / 87,063, 92 gained / 175,951 — and a coverage DROP is the success criterion
+
+The owner's second half — *"what other filings are missing the match formula
+section"* — was meant to be a coverage census. It found a correctness class
+instead, and that class is bigger than the gap.
+
+**FIRST, THE CENSUS, AND IT HAD TO BE TAKEN FOUR TIMES.** 6,061 plans store a
+match quote and publish no Formula line. That is **not** the reader's
+population: `matchQuoteOk` (app.js:2490, canonical `scripts/lib-quote.mjs`)
+suppresses the quote on **4,208 / 9,323,999 ppl** and the page honestly prints
+*"no formula stated in the audited notes — check the plan's SPD."* ***A stored
+field is not a published one***, met again. The real class is **1,853 plans /
+3,288,250 ppl** where a reader sees a magnitude claim with no formula beside
+it — the shape of the owner's screenshot. v198 covers 97 of those.
+
+Passes two and three were my own errors, both the same error:
+- `RANGE_CAP` called **"up to 6% of compensation"** a cap on the RATE. It is the
+  ordinary cap on the deferral BASE. Universal City (24,228 ppl) and Mount Sinai
+  (75,936) were filed as "correct to withhold" while both state a plain formula.
+  ***A count keyed on a VOCABULARY measures the vocabulary.***
+- PepsiCo (161,067) and NYU (23,961) describe **non-matching** money and were
+  being graded as failed match extractions. The class has a POSITION.
+
+**THEN THE SHIPPED CHAIN TURNED OUT TO BE A FREE ORACLE, AND ASKING IT CHANGED
+THE VERSION COMPLETELY.** 46,198 plans already carry a formula produced by nine
+gated arms over 198 versions. Running candidate arms over *those* plans makes
+every disagreement a case where my arm reads a sentence differently from a
+reading already reviewed — tens of thousands of sentences for one pass, on the
+population an arm is most likely to be loose on.
+
+| candidate | agrees | differs | verdict |
+|---|---|---|---|
+| `mfEqualTo` | 4,426 | 6 | **ship** |
+| `mfEqualToWords` | 0 | 10 | **ship** |
+| rate-before-"match" | 365 | 27 | **DROPPED** |
+
+**The 0% looked damning and was the exact opposite.** `mfEqualToWords` is right
+on at least nine of its ten: Sotera Health's *"equal to each participant's
+deferral to the extent that the deferral does not exceed 3%"* is published as
+**"3% of the first 6%"** and the filing says 100% of 3%. ***A clean zero reports
+on the query*** — this one reported on which program was correct. And four of
+`mfEqualTo`'s six disagreements are **shipped defects**.
+
+**THE FIND, pulled from that thread: 398 plans publish `N% of the first M%` with
+N BELOW M.**
+- **CommonSpirit Health, 127,392 ppl** — publishes *"1% of the first 6%"* from
+  *"100% up to 1% of compensation, plus 50% in excess of 1% up to 6%"*: tier
+  one's CAP read as the rate, tier two's cap as the cap.
+- **Boston Scientific, 34,105** — *"200% for the first 2%"* → *"2% of the first 6%"*.
+- **DPR Construction, 11,689** — the sentence is about **auto-escalation** and
+  contains no match at all.
+
+### What ships, measured through the shipped functions over every stored quote
+
+| | plans | ppl |
+|---|---|---|
+| **CORRECTED** (mixed fractions) | 14 | 87,063 |
+| **WITHHELD** (misreads) | 205 | 406,135 |
+|  …of which rescued with a correct formula | 15 | 26,412 |
+| **GAINED** (the two `equal to` connectors) | 92 | 175,951 |
+
+1. **`mfMixedFraction`, FIRST in the chain because it is the most SPECIFIC
+   shape.** CBRE Services (55,809 ppl) published *"3% of the first 6%"* because
+   **"3%" is exactly what sits at the end of "66-2/3%"**. All 14 corrections
+   read individually; 66.67, 33.33 and DirecTV's 133.33 all land, and the arm
+   touches nothing else. ***A general arm ahead of a specific one keeps winning
+   with the wrong number***, which is how this shipped in the first place.
+2. **`mfMisreadRateUnderCap`, the LAST gate**, placed after every path that can
+   set `out.match` so it covers all of them rather than the one arm diagnosed.
+   It only ever REMOVES a claim — the quote stays, so the reader loses our
+   arithmetic and keeps the filer's words. And once it has ruled an answer a
+   misread, **a retry with the appended arms cannot be worse**: that rescues 15,
+   including Beacon Mobility's correct *"100% of the first 3%"*, which existed
+   all along behind an earlier arm that matched wrongly and **won by POSITION**.
+3. **`mfEqualTo` / `mfEqualToWords`, appended LAST and provably additive.** The
+   second owns exactly one inference — a match *equal to the participant's
+   deferrals* is a 100% match — and refuses a fraction in words, because *"equal
+   to half of the deferrals"* is 50% and publishing 100% would overstate it to
+   Hebrew Home at Riverdale's 2,084 participants.
+
+### Three things I got wrong, and the measurement that caught each
+
+- **THE GATE'S SECOND CONDITION WAS VACUOUS.** When `rate < cap`, the cap is
+  itself a percentage larger than the rate, so *"the filing states a larger
+  percentage"* was satisfied by the cap in every case. The measurement printed
+  **398 of 398** and I printed it without reading it. ***A both-sided 100%
+  across a whole population reports on the query.*** Excluding the cap took the
+  withheld set 377 → **205**, and the test now asserts that *"3% of the first
+  6%"* with nothing larger in its sentence is an unusual design, NOT a misread.
+- **A BAND GUARD I WROTE WAS RECORDED AS "HARMFUL" ON A NUMBER THAT MEASURED
+  SOMETHING ELSE.** It blocked 6 plans / 68,263 ppl, so I wrote it up as costing
+  68,263 readers a correct formula. **All six already publish a correct formula
+  from an earlier arm**, and the arms it guarded are appended last, so it
+  changed **nothing published**. ***A count of what a guard BLOCKS is not a
+  count of cells it CHANGES*** — the difference is entirely the arm's position
+  in the chain. Removed as *unreachable*, not harmful, with the two refusals it
+  existed for still asserted; that is what makes the removal safe rather than
+  tidy. The wrong claim had already been written into the source comment and was
+  corrected there.
+- The two census errors above.
+
+### A known limit, asserted in the test so it cannot be quietly forgotten
+
+**Jones Lang LaSalle, 47,898 ppl**, publishes *"3% of the first 5%"* where the
+answer is 100% of the first 3%, and the gate **cannot** catch it: the only
+percentages in its sentence are 3 and 5, and 5 is the cap. The rate lives in the
+**dollar ratios**. Widening the gate to reach it means dropping the cap
+exclusion — the vacuous version the test now fails on. A dollar-ratio tier
+misread; queued as its own class.
+
+### Gates and pre-registration
+
+Parser gate all specimens green (ten live specimens, frozen tether 7/7, shape
+contract); match-formula **10 v198 + 22 v199** assertions with **all five**
+negative controls firing; schc-item1 26/26; schd-name 10/10; fund-er and
+generic-typo unchanged. Four specimens added (**166**), every ack read out of
+the store rather than typed — the v198 lesson applied without being re-learned.
+
+`PARSER_VERSION` 198 → 199. Committed `[skip ci]` at 44baaaeb while #558 (v198)
+was in flight; verified no run was created and #558 survives. **To dispatch
+after #558's verdict**, per the one-re-parse-at-a-time rule.
+
+**PRE-REGISTERED:**
+- `match` **43,340 → 43,227** (+92 gained, −205 withheld, +15 rescued = **−98
+  net** against the v198 figure). **This is the first version here whose
+  coverage is MEANT to fall: a withheld misread IS the improvement, so a drop of
+  roughly this size is the success criterion and a flat line would mean the gate
+  never fired.**
+- CommonSpirit `470617373|002` publishes NO formula and keeps its quote; CBRE
+  `521616016|001` **"66.67% of the first 6% of pay"**; Beacon Mobility
+  `465084167|001` **"100% of the first 3% of pay"**; Mars `221594774|008` still
+  **"100% of the first 1% of pay"** (the control on the guard removal).
+- PSEG pn=004 keeps v198's **"50% of the first 8% of pay"**.
+- confident 60,167 / entries 65,480 / lineups 59,819 / dl 39 — **no material
+  move.** v199 touches only the match formula, so a lineup number moving is the
+  regression this registration exists to catch.
+- 205 plans gain `features.matchMisread` holding the withdrawn string, so the
+  class stays measurable next run without re-deriving it.

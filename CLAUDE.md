@@ -756,9 +756,26 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
-**v198 (#558, push 01:15:27Z, full re-parse ~1.5h) — the match formula a
-possessive hid.** `mfWidened` is appended LAST in the `mf` chain, so it can only
-fire where every existing arm returned null.
+**v199 (44baaaeb, `[skip ci]`, QUEUED — dispatch after #558's verdict) — the
+match formula read WRONG, not merely missed.** CORRECTED 14 / 87,063 ppl (mixed
+fractions: CBRE published `3% of the first 6%` because `3%` ends `66-2/3%`),
+WITHHELD 205 / 406,135 (misreads, 15 rescued by retry), GAINED 92 / 175,951.
+- `match` **43,340 → 43,227** (−98 net). **THE FIRST VERSION HERE WHOSE COVERAGE
+  IS MEANT TO FALL** — a withheld misread IS the improvement, so a drop of
+  roughly this size is the success criterion and a FLAT line means the gate
+  never fired.
+- CommonSpirit `470617373|002` publishes NO formula, keeps its quote; CBRE
+  `521616016|001` **66.67% of the first 6%**; Beacon Mobility `465084167|001`
+  **100% of the first 3%**; Mars `221594774|008` still **100% of the first 1%**
+  (the control on a guard REMOVAL).
+- confident / entries / lineups / dl unchanged — v199 touches only the match
+  formula, so a lineup number moving is the regression this catches.
+- 205 plans gain `features.matchMisread`, so the class stays measurable.
+`docs/accuracy-log.md` 2026-10-03 (02:0xZ).
+
+**v198 (#558, push 01:15:27Z, full re-parse ~1.5h, IN FLIGHT) — the match
+formula a possessive hid.** `mfWidened` is appended LAST in the `mf` chain, so
+it can only fire where every existing arm returned null.
 - `match` **43,218 → 43,340** (+122 plans / 197,324 ppl). **A CEILING, not a
   prediction:** measured over STORED `matchText` while the run re-reads every
   filing, so moved text can carry it either way.
@@ -1189,6 +1206,38 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   written for exactly this failure cannot see it. 104 plans / 30,897 ppl lose a
   menu on supersession (171 / 149,049 more are correct wind-downs, split by
   `assetsEOY == 0`).
+- **THE MATCH-FORMULA RESIDUE AFTER v198/v199, census taken through
+  `matchQuoteOk` and not through the store.** 1,853 plans / 3,288,250 ppl show a
+  magnitude claim with no Formula line (the other 4,208 / 9,323,999 have their
+  quote SUPPRESSED and the page says "no formula stated in the audited notes" —
+  not a defect). After v198's 97, the OURS buckets are: a rate and a base cap
+  and no arm fires **882 / 1,134,437**; the rate in words **322 / 285,430** (now
+  v199's `mfEqualToWords`); tiered, where the render has room for one pair and
+  the filing states two **93 / 109,214**; a dollar ratio no arm reads **38 /
+  136,337**. Correct to withhold: a cap or range on the RATE 90 / 210,709, a
+  rate that VARIES by service or age 72 / 545,262, a base cap with NO rate 253 /
+  335,964. **Re-measure, never read**: the first three passes of this census
+  were wrong in my own favour twice.
+- **THE DROPPED ARM, with its failure modes named so nobody retries it blind:**
+  an arm for the rate sitting BEFORE the word "match" with words between
+  ("receive 100% company matching contributions of up to 4%", American Airlines,
+  **114,149 ppl**) agreed with the shipped oracle only **93.1%**, and its
+  failures were grabbing a neighbouring NONELECTIVE rate (Wellesley College,
+  Cass Information Systems) or a SECOND tier (Eight Eleven Group). The gain is
+  large and real; the error rate is not acceptable for a number that size. Needs
+  an NEC-adjacency test and a lead-tier anchor before it can ship.
+- **THE DOLLAR-RATIO TIER MISREAD — Jones Lang LaSalle, 47,898 ppl**, publishes
+  `3% of the first 5% of pay` where the filing says `$1.00 per dollar on the
+  first 3% deferred and $0.50 per dollar on deferrals in excess of 3% up to 5%`.
+  The answer is 100% of the first 3%. v199's gate **cannot** reach it (the only
+  percentages are 3 and 5, and 5 is the cap) and `scripts/match-formula-test.mjs`
+  asserts that limit so widening the gate trips the test. The rate lives in the
+  dollar ratios; UNSIZED as a class.
+- **A PUBLISHED FORMULA WHOSE RATE EQUALS ITS CAP: 79 plans, UNREAD.** v199's
+  gate tests `rate < cap`, so DirecTV's old `3% of the first 3%` was corrected by
+  the mixed-fraction arm and would NOT have been caught by the gate. Whether
+  `rate == cap` is a real design or a second misread shape is one measurement,
+  not a quiet widening of the gate.
 - **THE VESTING SENTENCE SELECTED ON THE WORD `eligible` — found while reading
   PSEG for v198, UNSIZED and honestly so.** PSEG's stored `vestingText` is not a
   vesting schedule: it is a withdrawal-suspension sentence (*"If a Participant
