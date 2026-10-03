@@ -225,6 +225,79 @@ export function vestingQuoteOk(text) {
   return !VQ_OTHER_RULE.test(t);              /* (a) states another one */
 }
 
+/* TABLE DEBRIS LEADING A PUBLISHED QUOTE — 2026-10-03, found by the 15:0xZ
+ * participant-weighted draw.
+ *
+ * Lithia Motors (30,021 participants) publishes its match quote as
+ *   "| Contributions — The Plan provides for employee contributions, …"
+ * A leading Schedule-H COLUMN BAR, verbatim, in front of 30,021 readers. The
+ * two guards above decide WHETHER a quote may be published; nothing decides
+ * what its first character is, so whatever glyph the extractor's sentence
+ * window opened on goes out with it. `cleanFiledName` does this work for the
+ * NAME column and had no counterpart here.
+ *
+ * 64 quotes / 64 plans / 129,653 participants, which is the PUBLISHED figure
+ * and not the stored one: the raw store holds 65, and the 65th
+ * (Mike Albert Leasing, 425 ppl) is already suppressed by `matchQuoteOk`, so
+ * trimming it would reach no reader. *A STORED field is not a PUBLISHED one.*
+ *
+ * THE GATE IS "A SENTENCE MUST REMAIN", and it is what separates a repair from
+ * a truncation. Measured, the refusals are load-bearing — 9 quotes / 9,434 ppl
+ * whose debris cannot be trimmed because what is behind it is not a sentence:
+ *   - Soo Line Railroad (5,584 ppl) "`) are immediately vested in their
+ *     employer matching contributions`" — the window opened MID-SENTENCE, so
+ *     trimming the paren leaves "are immediately vested…", a fragment.
+ *   - Steak N Shake (1,281) "`| | -6- 1 | | ) | | | Vesting — …`" — a
+ *     page-furniture run carrying a PAGE NUMBER; the residue fails the
+ *     sentence test, so it is left alone.
+ *   - Union Avenue Healthcare (598) "`; ; ' The Company contributions …`" and
+ *     Revela Foods (384) "`| £ a a The Company contributes …`" — stripping the
+ *     punctuation leaves MORE debris (`' The`, `£ a a The`), which is OCR
+ *     noise and not punctuation, so a wider vocabulary is the wrong answer.
+ *   - Yusen Logistics (2,617) "`,000 (indexed) or 150% of the regular age-50
+ *     catch-up limit`" — ***the comma is not leading punctuation, it is the
+ *     inside of `$23,000`***, and trimming it leaves "000 (indexed)". A COMMA
+ *     IS THEREFORE NOT IN `LEAD` AT ALL: a leading-glyph repair and a
+ *     mid-sentence truncation look identical from the first character, and only
+ *     what REMAINS tells them apart.
+ *
+ * THE TWO PROTECTIONS WERE MEASURED SEPARATELY, because Yusen is covered by
+ * BOTH (the comma is absent from LEAD *and* the sentence gate would refuse it),
+ * so no single drift can expose it and a fixture for it alone cannot fail.
+ * Over the 105,220 published quotes: the comma's absence from LEAD is the only
+ * protection on **10 quotes / 10 plans / 4,551 ppl** (Pentegra's
+ * "`, CONTINUED Note 1 – Description of Plan, Continued Vesting …`", where
+ * trimming the comma merely uncovers a page-header run — a different defect),
+ * and the sentence gate is the only protection on **8 / 8 / 8,856**. Each now
+ * has a real fixture of its own.
+ *
+ * AND ONE ARM WAS DROPPED FOR TOUCHING NOTHING. A `-6-` page-number stripper
+ * was written first and ran ahead of LEAD; measured, it changed the published
+ * text of **0 of 105,220 quotes**, and the Steak N Shake case it was written
+ * for is refused by the sentence gate regardless. *An arm that is real in
+ * principle and inert on the data is untested machinery* — its own negative
+ * control could only ever read "breaks NOTHING".
+ *
+ * AND THE BULLET IS DELIBERATELY ABSENT. A first screen counted 157 quotes /
+ * 428,797 ppl opening on "a stray bullet or dash run" and that is NOT a defect:
+ * United Airlines (88,204 ppl) files "• Management and Administrative
+ * Participants and UAFC Participants - …", which is the audited notes' own
+ * bulleted list, and the bullet tells the reader this is one item of several.
+ * *A count keyed on a character measures the character.*
+ *
+ * SAFETY, measured over the whole store: trimming changes NEITHER guard's
+ * verdict on any of the 64 — 0 quotes move between shown and suppressed — so
+ * this cannot change which plans publish a quote, only how one reads. That is
+ * also why it is applied at the render site rather than inside the guards. */
+const Q_LEAD = /^(?:[|│┃]|[)\]}]|[;:]|_)+[\s|)\]};:_.\-–]*/;
+const Q_SENTENCE = /^(?:[A-Z]|\d+(?:\.\d+)?\s*%|["“(])/;
+export function quoteTrim(text) {
+  const t = String(text || "").trim();
+  if (!Q_LEAD.test(t)) return t;
+  const rest = t.replace(Q_LEAD, "").trim();
+  return Q_SENTENCE.test(rest) ? rest : t;
+}
+
 /* `node scripts/lib-quote.mjs --selftest` — the same convention lib-schema.mjs
  * uses. Runs the pinned fixtures; the browser twin is checked against the very
  * same file by scripts/smoke-test.mjs. */
@@ -247,7 +320,15 @@ if (process.argv[1] && process.argv[1].endsWith("lib-quote.mjs") && process.argv
       console.log(`FAIL vesting expected ${c.expect} got ${got} [${c.why}]\n     "${c.text.slice(0, 120)}"`);
     }
   }
-  const n = cases.length + (vestingCases || []).length;
+  const { trimCases } = JSON.parse(readFileSync(url, "utf8"));
+  for (const c of trimCases || []) {
+    const got = quoteTrim(c.text);
+    if (got !== c.expect) {
+      bad++;
+      console.log(`FAIL trim [${c.why}]\n     in   "${c.text.slice(0, 110)}"\n     want "${c.expect.slice(0, 110)}"\n     got  "${got.slice(0, 110)}"`);
+    }
+  }
+  const n = cases.length + (vestingCases || []).length + (trimCases || []).length;
   console.log(bad ? `\n${bad} of ${n} fixtures FAILED` : `all ${n} quote-guard fixtures pass`);
   process.exit(bad ? 1 : 0);
 }

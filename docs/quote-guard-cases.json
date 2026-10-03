@@ -225,5 +225,87 @@
       "expect": true,
       "text": "The vesting period for the Company-matching contributions varies in accordance with the Plan document based on the client sites at which the employees are contracted to work."
     }
+  ],
+  "trimCases": [
+    {
+      "why": "Crh 55,484 ppl: a leading colon before the section word",
+      "text": ": Vesting: Participants are immediately vested in their contributions and the matching contributions plus actual earnings thereon.",
+      "expect": "Vesting: Participants are immediately vested in their contributions and the matching contributions plus actual earnings thereon."
+    },
+    {
+      "why": "Lithia Motors 30,021 ppl: THE MOTIVATING CASE, a Schedule-H column bar",
+      "text": "| Contributions — The Plan provides for employee contributions, discretionary matching contributions, and discretionary profit sharing contributions.",
+      "expect": "Contributions — The Plan provides for employee contributions, discretionary matching contributions, and discretionary profit sharing contributions."
+    },
+    {
+      "why": "Aaron's 8,615 ppl: a lone closing paren left by a (d) list marker",
+      "text": ") Vesting Participants are immediately vested in the value of their salary deferrals.",
+      "expect": "Vesting Participants are immediately vested in the value of their salary deferrals."
+    },
+    {
+      "why": "Sappi North America 1,589 ppl: an OCR underscore rule",
+      "text": "_________ For all hourly employees, the Company makes a matching contribution to the Plan.",
+      "expect": "For all hourly employees, the Company makes a matching contribution to the Plan."
+    },
+    {
+      "why": "Pitman Farms 2,137 ppl: a leading colon before a ladder that opens on a WORD",
+      "text": ": Less than 2 years credited service 0% After 2 years credited service 20%",
+      "expect": "Less than 2 years credited service 0% After 2 years credited service 20%"
+    },
+    {
+      "why": "REFUSE Soo Line 5,584 ppl: the window opened MID-SENTENCE, so trimming leaves a fragment",
+      "text": ") are immediately vested in their employer matching contributions, plus earnings and losses thereon.",
+      "expect": ") are immediately vested in their employer matching contributions, plus earnings and losses thereon."
+    },
+    {
+      "why": "REFUSE Steak N Shake 1,281 ppl: a page-furniture run whose residue is not a sentence (the -6- stripper was dropped for touching 0 of 105,220 quotes; the sentence gate refuses this anyway)",
+      "text": "| | -6- 1 | | ) | | | Vesting — Participants are immediately vested in their contributions",
+      "expect": "| | -6- 1 | | ) | | | Vesting — Participants are immediately vested in their contributions"
+    },
+    {
+      "why": "REFUSE Yusen Logistics 2,617 ppl: the comma is the INSIDE of $23,000, not leading punctuation -- a comma is not in LEAD at all",
+      "text": ",000 (indexed) or 150% of the regular age-50 catch-up limit; participants may elect to designate all or a portion.",
+      "expect": ",000 (indexed) or 150% of the regular age-50 catch-up limit; participants may elect to designate all or a portion."
+    },
+    {
+      "why": "CONTROL United Airlines 88,204 ppl: a BULLET is the audited notes' own list formatting, not debris",
+      "text": "• Management and Administrative Participants and UAFC Participants - Participants are always 100% vested in their Employer contributions.",
+      "expect": "• Management and Administrative Participants and UAFC Participants - Participants are always 100% vested in their Employer contributions."
+    },
+    {
+      "why": "CONTROL an ordinary sentence is untouched",
+      "text": "The Company contributes 50% of the first 6% of eligible compensation.",
+      "expect": "The Company contributes 50% of the first 6% of eligible compensation."
+    },
+    {
+      "why": "CONTROL a quote that legitimately OPENS on a quotation mark keeps it",
+      "text": "“Vesting” means the portion of a participant's account that is nonforfeitable.",
+      "expect": "“Vesting” means the portion of a participant's account that is nonforfeitable."
+    },
+    {
+      "why": "CONTROL a leading parenthetical the filer wrote is a sentence opener, not a stray closer",
+      "text": "(a) Participants are immediately vested in their elective deferrals.",
+      "expect": "(a) Participants are immediately vested in their elective deferrals."
+    },
+    {
+      "why": "CONTROL a bar whose remainder opens on a PERCENTAGE is still a sentence",
+      "text": "| 100% of the first 3% of eligible pay is matched.",
+      "expect": "100% of the first 3% of eligible pay is matched."
+    },
+    {
+      "why": "CONTROL Pentegra Services 1,800 ppl: protected ONLY by the comma's absence from LEAD -- trimming the comma merely uncovers a page-header run",
+      "text": ", CONTINUED Note 1 – Description of Plan, Continued Vesting Participants are immediately vested in their individual contributions.",
+      "expect": ", CONTINUED Note 1 – Description of Plan, Continued Vesting Participants are immediately vested in their individual contributions."
+    },
+    {
+      "why": "CONTROL Union Avenue Healthcare 598 ppl: protected ONLY by the SENTENCE gate -- stripping the punctuation leaves MORE debris (' The)",
+      "text": "; ; ' The Company contributions consist of (a) safe harbor matching contributions based on compensation.",
+      "expect": "; ; ' The Company contributions consist of (a) safe harbor matching contributions based on compensation."
+    },
+    {
+      "why": "CONTROL Revela Foods 384 ppl: a bar followed by OCR noise, not punctuation -- a wider vocabulary is the wrong answer",
+      "text": "| £ a a The Company contributes a safe harbor match of 100% of the first 3% of base compensation.",
+      "expect": "| £ a a The Company contributes a safe harbor match of 100% of the first 3% of base compensation."
+    }
   ]
 }

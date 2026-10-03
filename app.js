@@ -98,6 +98,27 @@
   }
   window.__wampoVestingQuoteOk = vestingQuoteOk;   // read by the smoke test only
 
+  /* TABLE DEBRIS LEADING A PUBLISHED QUOTE. The two guards above decide WHETHER
+   * a quote may be published; nothing decided what its first character is, so
+   * Lithia Motors (30,021 ppl) published "| Contributions — The Plan provides
+   * for employee contributions…" with the Schedule-H column bar intact. 64
+   * quotes / 64 plans / 129,653 participants. The gate is "a sentence must
+   * remain": a leading-glyph repair and a mid-sentence truncation look
+   * identical from the first character. A COMMA is deliberately absent from
+   * Q_LEAD (Yusen's ",000 (indexed)" is the inside of $23,000) and so is the
+   * BULLET (the audited notes' own list formatting). Trimming changes NEITHER
+   * guard's verdict on any of the 64, measured store-wide.
+   * CANONICAL COPY, with the case and the refusals: scripts/lib-quote.mjs. */
+  const Q_LEAD = /^(?:[|│┃]|[)\]}]|[;:]|_)+[\s|)\]};:_.\-–]*/;
+  const Q_SENTENCE = /^(?:[A-Z]|\d+(?:\.\d+)?\s*%|["“(])/;
+  function quoteTrim(text) {
+    const t = String(text || "").trim();
+    if (!Q_LEAD.test(t)) return t;
+    const rest = t.replace(Q_LEAD, "").trim();
+    return Q_SENTENCE.test(rest) ? rest : t;
+  }
+  window.__wampoQuoteTrim = quoteTrim;             // read by the smoke test only
+
   /* Coverage band — canonical copy in scripts/lib-disclose.mjs, which carries
    * the measurements. Same drift risk as the quote guard, same protection:
    * the smoke test runs this copy against the module's own boundary cases.
@@ -2617,7 +2638,7 @@
      * Suppressed rather than hedged: a quote with no formula in it cannot be
      * made true by a caveat. Where nothing survives, the card says so, which is
      * the same three-state honesty the vesting line below already uses. */
-    const matchQuote = matchQuoteOk(ff.matchText, !!ff.match) ? ff.matchText : null;
+    const matchQuote = matchQuoteOk(ff.matchText, !!ff.match) ? quoteTrim(ff.matchText) : null;
     /* Same disease on the vesting line, same treatment. `vestingText` is picked
      * by proximity to vesting language, so 41 plans / 226,729 participants
      * publish a sentence stating some OTHER rule under "Employer-money
@@ -2629,7 +2650,7 @@
      * line below. The graded-label enrichment above reads vestingText too and
      * is deliberately NOT gated: it only runs when a graded label exists, and
      * the measurement says 0 of the 41 carry one. */
-    const vestingQuote = vestingQuoteOk(ff.vestingText) ? ff.vestingText : null;
+    const vestingQuote = vestingQuoteOk(ff.vestingText) ? quoteTrim(ff.vestingText) : null;
     // Schedule H 2a(1)(A) is ALL employer money — match plus profit sharing,
     // prevailing-wage QNECs, safe harbor. Labelling it "total" inside a card
     // headed "Employer Match" read as the match total: R.H. White's $3.2M is

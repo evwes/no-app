@@ -226,6 +226,26 @@ try {
     fail(`vesting-quote guard in app.js disagrees with docs/quote-guard-cases.json on ${vDrift.length} of ${vCases.length} filings`);
   }
 
+  /* And the same for the quote TRIM, which has the same two homes as the two
+   * guards above and is the thing that decides a published quote's FIRST
+   * CHARACTER. Lithia Motors (30,021 participants) published its match quote
+   * with the Schedule-H column bar still on the front. The browser copy is
+   * SLICED verbatim from scripts/lib-quote.mjs, so a disagreement here means
+   * the slice was edited by hand. The fixtures carry the refusals too: a comma
+   * is NOT debris (it is the inside of `$23,000`) and neither is a bullet. */
+  const tCases = JSON.parse(readFileSync("docs/quote-guard-cases.json", "utf8")).trimCases || [];
+  if (!tCases.length) fail("docs/quote-guard-cases.json carries no trimCases — the quote trim is unchecked");
+  const tGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoQuoteTrim !== "function") return null;
+    return cs.map((c) => window.__wampoQuoteTrim(c.text));
+  }, tCases);
+  if (!tGot) fail("app.js no longer exposes __wampoQuoteTrim — the quote trim cannot be cross-checked");
+  const tDrift = tCases.map((c, i) => [c, tGot[i]]).filter(([c, got]) => got !== c.expect);
+  if (tDrift.length) {
+    for (const [c, got] of tDrift) console.error(`  app.js quoteTrim: ${c.why}\n    want ${JSON.stringify(c.expect.slice(0, 100))}\n    got  ${JSON.stringify(String(got).slice(0, 100))}`);
+    fail(`quote trim in app.js disagrees with docs/quote-guard-cases.json on ${tDrift.length} of ${tCases.length} fixtures`);
+  }
+
   /* Same drift protection for the coverage band: scripts/lib-disclose.mjs is
    * canonical, app.js carries a twin because it is a plain browser script.
    * Run the BROWSER copy against the module's own boundary cases. */
