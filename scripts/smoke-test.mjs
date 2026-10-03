@@ -328,6 +328,15 @@ try {
     "Investments measure at NAV",
     "Mutual Fund that invests at least 80% of",
     "Mutual Fund investing in the domestic",
+    /* THE TRUSTEE'S CORPORATE STYLE, 2026-10-03. Added for the same reason:
+     * no case above reaches the entity arm, so the browser twin would agree
+     * whether or not it carried it. The first two must STRIP to the fund; the
+     * last two must come back WHOLE, and those are the ones a previous version
+     * of this arm got wrong — each leaves a remainder with no house in it. */
+    "State Street Bank & Trust Company SSGA S+P 500 INDEX SER A",
+    "Nationwide Trust Company, FSB Vanguard Target Retirement 2030",
+    "JP Morgan Investment Management Large Cap Growth",
+    "Geode Capital Management Trust Company Fidelity Investments",
     /* 2026-09-29, added for the reason every previous cycle's were: not one
      * case above reaches the `investments` caption or the initial guard, so
      * the twin would agree whether or not it carried them. */
@@ -2269,7 +2278,36 @@ try {
     ["THE VANGUARD TARGET RETIRE 2045 TRUST |", "THE VANGUARD TARGET RETIRE 2045 TRUST I"],
     /* a bar with ordinary words behind it is not a type label and is left
      * exactly as filed: no vocabulary match, no repair, no invention. */
-    ["Vanguard Emerging Markets Stock Index | Shares", "Vanguard Emerging Markets Stock Index | Shares"]]) {
+    ["Vanguard Emerging Markets Stock Index | Shares", "Vanguard Emerging Markets Stock Index | Shares"],
+    /* THE TRUSTEE'S CORPORATE STYLE, 2026-10-03. 2,798 rows / 432 plans /
+     * 1,410,427 participants. Target Corporation's four rows are 495,482 of
+     * them; Helen of Troy's menu witnesses the strip inside one plan by
+     * publishing `FID FDM IDX 2035 IPR` bare beside the prefixed 2045. */
+    ["State Street Bank & Trust Company SSGA S+P 500 INDEX SER A", "SSGA S+P 500 INDEX SER A"],
+    ["Fidelity Management Trust Company FID FDM IDX 2045 IPR", "FID FDM IDX 2045 IPR"],
+    ["Nationwide Trust Company, FSB Vanguard Target Retirement 2030", "Vanguard Target Retirement 2030"],
+    ["Fidelity 500 Index Fund Fidelity Management Trust Company", "Fidelity 500 Index Fund"],
+    /* AND THE MUST-NOT-FIRE SIDE, which is where this arm's value is. A
+     * previous version was REVERTED for dropping 23 fees, and every one left a
+     * remainder with no house in it. D.R. Horton (17,416 ppl) must keep its
+     * 0.44, Bread Financial (9,012) its nine correct tickers, and Blue Cross
+     * Blue Shield (8,058) its 0.05 -- the last because `Fidelity Investments`
+     * passes a house test and still names no fund. */
+    ["JP Morgan Investment Management Large Cap Growth", "JP Morgan Investment Management Large Cap Growth"],
+    ["Target Retirement 2035 Trust I Vanguard Fiduciary Trust Company", "Target Retirement 2035 Trust I Vanguard Fiduciary Trust Company"],
+    ["Geode Capital Management Trust Company Fidelity Investments", "Geode Capital Management Trust Company Fidelity Investments"],
+    /* a sub-advised name legitimately carries two firms, and a CIT's own
+     * vehicle words are not a corporate style. `GQG Partners … Collective
+     * Investment Trust` was tried here first and is NOT a control for this
+     * arm: a pre-existing type-suffix arm already strips those three words,
+     * so the expectation was wrong rather than the code -- which is exactly
+     * what a HEAD-vs-new comparison says and a hand-written `want` cannot. */
+    ["Principal/BlackRock S&P 500 Index Fund", "Principal/BlackRock S&P 500 Index Fund"],
+    ["Vanguard Institutional Index Fund Group Trust", "Vanguard Institutional Index Fund Group Trust"],
+    /* the regression only the PAGE found: this row is itself a welded name, so
+     * removing the trailing entity left `Vanguard Fiduciary` on $70,452,841 --
+     * a word no fund is named after. It is left exactly as filed. */
+    ["Vanguard Fiduciary Vanguard Retirement Savings Trust Company", "Vanguard Fiduciary Vanguard Retirement Savings Trust Company"]]) {
     if (cleanFiledName(n) !== want) fail(`the filed-name cleaner now damages a control: ${JSON.stringify(n)} -> ${JSON.stringify(cleanFiledName(n))}`);
   }
 

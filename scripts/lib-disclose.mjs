@@ -384,6 +384,77 @@ export function leadingHouse(s) {
   return null;
 }
 
+/* A TRUSTEE'S CORPORATE STYLE, at either end of a welded name. See the arm in
+ * cleanFiledName for the measurement and for why the remainder must keep its
+ * house. Built from string fragments, so it is exercised on fixtures before it
+ * is believed: a regex assembled from concatenated strings has no syntax check
+ * until it runs.
+ *
+ * A HOUSE TOKEN IS REQUIRED IN FRONT OF THE DESIGNATOR. Without one the
+ * designator alone matches the tail of real fund names — `… Collective
+ * Investment Trust`, `… Group Trust` — and a bare `Trust` is a vehicle word
+ * every CIT carries. The firm's name is what makes it a corporate style.
+ *
+ * The charter abbreviations (`FSB`, `N.A.`, `NA`, `FA`) are consumed as part of
+ * the entity, because an earlier gate that stopped at the designator left `FSB`
+ * standing in front of the fund. */
+const ENTITY_STYLE_SRC = "(?:"
+  + "(?:fiduciary|management|investment|institutional|national|savings|personal)?\\s*"
+  + "(?:bank(?:ing)?(?:\\s*(?:&|and)\\s*trust)?|trust)\\s+(?:compan(?:y|ies)|co\\.?|n\\.?a\\.?)"
+  + "|trust\\s+compan(?:y|ies)"
+  + "|(?:investment\\s+)?(?:advisors?|advisers?|management|mgmt)\\s*,?\\s*(?:l\\.?l\\.?c\\.?|inc\\.?|llp|lp|ltd\\.?|plc)"
+  + "|(?:insurance|annuity)\\s+(?:and\\s+annuity\\s+)?compan(?:y|ies)"
+  + "|life\\s+insurance\\s+compan(?:y|ies)"
+  + ")";
+const ENTITY_TRAIL = "(?:\\s*,?\\s*(?:f\\.?s\\.?b\\.?|n\\.?a\\.?|f\\.?a\\.?))?";
+/* THE STYLE ALONE, found anywhere; the SPAN is then grown leftward to a start
+ * where `leadingHouse` answers. That is deliberate and replaces a single
+ * assembled pattern whose firm clause was a 1-to-5-token wildcard: with the `i`
+ * flag its `[A-Z]` matched lowercase too, so on `Fidelity 500 Index Fund
+ * Fidelity Management Trust Company` the leftmost match ate `Index Fund` and
+ * published `Fidelity 500`. A pin caught it.
+ *
+ * SO THE CONDITION IS SYMMETRIC: the entity span must LEAD with a house and
+ * the remainder must LEAD with a house. The same shipped, anchored predicate
+ * answers both, and requiring the firm's own name is what distinguishes a
+ * trustee's corporate style from a CIT's vehicle words (`… Collective
+ * Investment Trust`, `… Group Trust`). */
+const ENTITY_STYLE_AT = new RegExp("\\b" + ENTITY_STYLE_SRC + ENTITY_TRAIL + "(?=\\s|$|[,;:.])", "gi");
+const WORD_START = /(?:^|\s)\S/g;
+/* LEADING WITH A HOUSE IS NOT THE SAME AS NAMING A FUND, and the whole-store
+ * diff is what found the difference. Blue Cross Blue Shield (8,058 ppl) files
+ * `Geode Capital Management Trust Company Fidelity Investments`, and stripping
+ * the trustee leaves `Fidelity Investments` — a bare firm, which passes
+ * `leadingHouse`, carries no fund, and dropped the row's 0.05. Linklaters' two
+ * rows leave `Charles Schwab Investment` the same way. No shipped predicate
+ * separates these: `hasNoFundIdentity` answers false on all of them, because
+ * its filler vocabulary was built for rows with no house at all.
+ *
+ * So: beyond its own house the remainder must keep at least one word that is
+ * not firm boilerplate. `VANGUARD FEDERAL` keeps `FEDERAL`, a product word, and
+ * is a real fund (=VMFXX); `Fidelity Investments` keeps only `Investments`.
+ * The vocabulary is deliberately tiny and closed — a wider one would start
+ * refusing product words — and its live population is 3 rows / 8,390 ppl, all
+ * of them real fee losses this arm would otherwise cause. */
+/* `fiduciary` IS BOILERPLATE AND ONLY THE PAGE SAID SO. Every other gate
+ * passed — 16 pins, five measured guards, a whole-store diff reading 0 tickers
+ * lost and 0 swapped, the twin agreeing on all 1.73M rows, smoke-test green —
+ * and regenerating the crawlable pages showed one row publishing `Vanguard
+ * Fiduciary` on $70,452,841 where the filing says `Vanguard Fiduciary Vanguard
+ * Retirement Savings Trust Company`. That row is ITSELF a welded name, so the
+ * arm removed the trailing entity and left the leading fragment of one.
+ * `Fiduciary` is a word no fund is named after. A diff cannot tell a wanted
+ * change from an unwanted one; only reading the output can. */
+const FIRM_GENERIC = /^(?:investments?|advisors?|advisers?|management|mgmt|fiduciary|capital|group|company|co|companies|trust|trustee|asset|assets|financial|services|service|institutional|inc|llc|na|fsb|the|of|and|&)$/i;
+function beyondHouse(rest) {
+  const t = String(rest || "").replace(/\*+/g, " ").replace(/\s+/g, " ").trim();
+  for (const [, re] of LEADING_HOUSE) {
+    const m = re.exec(t);
+    if (!m) continue;
+    return t.slice(m[0].length).split(/[\s,;:.()\-–—/]+/).filter(Boolean).some((w) => !FIRM_GENERIC.test(w));
+  }
+  return false;
+}
 const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1,2}|r-?[1-9])|(r-?[1-9]))\b[\s.,()\-]+(?=[A-Za-z])/i;
 const DOUBLED_CLASS_TAIL = /(?:\b(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1,2}|r-?[1-9])|\b(r-?[1-9]))\s*$/i;
 const classCode = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -844,6 +915,120 @@ export function cleanFiledName(name) {
       const t = hc && rest.length >= 12 && rest.split(/\s+/).length >= 2
         ? DOUBLED_CLASS_TAIL.exec(rest) : null;
       if (t && hc === classCode(t[1] || t[2]) && !isGenericTypeName(rest)) s = rest;
+    }
+  }
+  /* A TRUSTEE'S CORPORATE STYLE WELDED ONTO A FUND NAME, 2026-10-03.
+   *
+   * Target Corporation (495,482 participants) publishes `State Street Bank &
+   * Trust Company SSGA S+P 500 INDEX SER A S+P 500 FLAGSHIP NON LENDING` at
+   * 21.1% of its menu; Helen of Troy `Fidelity Management Trust Company FID
+   * FDM IDX 2045 IPR`; JetBlue `VANGUARD FIDUCIARY TRUST COMPANY VANGUARD
+   * FEDERAL`. The 4i identity column holds the TRUSTEE and the parser welds it
+   * to the description column's fund name. 5,168 rows / 1,348 plans /
+   * 3,744,810 ppl on the pv-199 store.
+   *
+   * THE SCREEN IS A CORPORATE ENTITY DESIGNATION, NOT A SECOND HOUSE. A
+   * sub-advised fund legitimately names two firms (`Principal/BlackRock S&P
+   * 500 Index Fund`, `Empower Columbia Dividend Value Fund`), so a two-house
+   * screen reads 6,059 rows that are mostly CORRECT AS FILED. What no fund's
+   * registered name carries is the trustee's corporate style — `Trust
+   * Company`, `Fiduciary Trust Company`, `Bank & Trust Company`, `Advisors,
+   * LLC`, `Investment Management Inc.`
+   *
+   * THE GATE IS THE FEE, AND IT IS WHY A PREVIOUS VERSION OF THIS ARM WAS
+   * REVERTED RATHER THAN SHIPPED. `fundER` is a NAME-pattern table, so the
+   * house token inside the trustee's name is part of what priced the row. The
+   * reverted arm's ticker outcome was ideal — 308 rows gained a symbol, 0 lost,
+   * 0 swapped — beside 23 rows / 41,582 ppl LOSING a fee and 42 / 18,480
+   * SWAPPING one. Reading the losses named the mechanism exactly: every one
+   * leaves a remainder with NO HOUSE IN IT. D.R. Horton (17,416 ppl) files
+   * `JP Morgan Investment Management Large Cap Growth`, and `Large Cap Growth`
+   * alone is a bare strategy label that prices to nothing.
+   *
+   * SO THE CONDITION IS THAT THE REMAINDER MUST STILL LEAD WITH A HOUSE.
+   * `leadingHouse` is the shipped, anchored test for exactly that, and it is
+   * the fee's own witness: keep the house and the fee that was matched on the
+   * house survives the strip. It is NOT "the two houses must differ" — that
+   * version would refuse JetBlue's `VANGUARD FIDUCIARY TRUST COMPANY VANGUARD
+   * FEDERAL`, whose remainder keeps Vanguard and whose =VMFXX gain is real.
+   * And the condition earns its place twice over, because a remainder with no
+   * house is a WORSE published name than the verbose one it replaced: `Large
+   * Cap Growth` tells a reader less than `JP Morgan … Large Cap Growth` does.
+   *
+   * ORIENTATION IS SETTLED FOR THIS FAMILY AND UNSETTLED FOR ITS NEIGHBOUR.
+   * Here the entity side is stray by construction — a corporate style is never
+   * part of a fund's name — and Helen of Troy's menu witnesses it directly, in
+   * one plan, by publishing `FID FDM IDX 2035 IPR` bare beside `Fidelity
+   * Management Trust Company FID FDM IDX 2045 IPR`. The mid-name-HOUSE class is
+   * a different problem with three orientations and no such witness, and this
+   * arm must not be widened toward it.
+   *
+   * `FSB`, `N.A.` AND THE OTHER CHARTER ABBREVIATIONS ARE PART OF THE ENTITY.
+   * An earlier gate anchored on the first character after the designation, and
+   * `Nationwide Trust Company, FSB Vanguard …` satisfied it while leaving
+   * `FSB` behind — a residue of the same defect wearing the repair's clothes. */
+  {
+    /* FOUR CONDITIONS WERE REMOVED HERE BECAUSE THE STORE SAID THEY WERE
+     * SUBSUMED, not because they looked redundant. `beyondHouse` runs
+     * LEADING_HOUSE itself and returns false when no house matches, so it
+     * implies `leadingHouse(rest)`; and a remainder that keeps a
+     * non-boilerplate word beyond its house necessarily has two tokens and
+     * three letters. Measured one at a time against all 1.73M rows, each of
+     * `leadingHouse(rest)`, the two-token floor and the three-letter test
+     * blocked ZERO rows that `beyondHouse` did not already block — and a
+     * condition that can never be the only protection proves nothing, which is
+     * the same trap as a fixture protected twice, met here at store scale.
+     * `isGenericTypeName` is kept and labelled: its live population is also 0,
+     * but it is the display's own composition at the two render call sites and
+     * costs one call. */
+    const ok = (rest) => rest && beyondHouse(rest) && !isGenericTypeName(rest);
+    ENTITY_STYLE_AT.lastIndex = 0;
+    let m;
+    while ((m = ENTITY_STYLE_AT.exec(s))) {
+      const styleEnd = m.index + m[0].length;
+      const firmLen = (a, b) => s.slice(a, b).split(/\s+/).filter((t) => /[A-Za-z]{2}/.test(t)).length;
+      /* THE FIRM'S BOUNDARY NEEDS A DIFFERENT WITNESS IN EACH POSITION, and
+       * each position supplies one. Two earlier versions failed here and the
+       * arm's own printed loop state is what settled it, not a theory:
+       *
+       *   LEAD — there is no boundary question at all. The firm is everything
+       *     before the style, so the span starts at 0. `Nationwide Trust
+       *     Company, FSB` works here and would fail any house test, because a
+       *     BANK trustee is not a fund house, and bank trustees (Reliance,
+       *     Matrix, Great Gray, Wells Fargo N.A.) are much of the class.
+       *
+       *   TAIL — the boundary is genuinely ambiguous and `leadingHouse` is the
+       *     only thing that locates it. On `Fidelity 500 Index Fund Fidelity
+       *     Management Trust Company` a nearest-token rule takes `Street`-style
+       *     fragments and published `Fidelity 500`; the nearest start at which
+       *     a HOUSE begins is the second `Fidelity`, which is right.
+       *
+       * A candidate start must also lie strictly before the style's own first
+       * token — including it gave an EMPTY firm span and chose the boundary one
+       * word into the firm (`State Street …` → span `Street Bank & Trust
+       * Company`, remainder `State`). */
+      let rest = null;
+      if (m.index > 0 && firmLen(0, m.index) >= 1 && firmLen(0, m.index) <= 4) {
+        rest = s.slice(styleEnd).replace(/^[\s,;:.\-–—]+/, "").trim();
+        if (!ok(rest)) rest = null;
+      }
+      if (rest === null && styleEnd >= s.trimEnd().length) {
+        const starts = [];
+        WORD_START.lastIndex = 0;
+        let w;
+        while ((w = WORD_START.exec(s))) {
+          const p = w.index === 0 ? 0 : w.index + 1;
+          if (p >= m.index) break;
+          starts.push(p);
+        }
+        const p = starts.reverse().find((q) => leadingHouse(s.slice(q, m.index)) && firmLen(q, m.index) <= 4);
+        if (p !== undefined && p > 0) {
+          const cand = s.slice(0, p).trim();
+          if (ok(cand)) rest = cand;
+        }
+      }
+      if (rest !== null) s = rest;
+      break;
     }
   }
   const pm = s.match(TYPE_PREFIX);
