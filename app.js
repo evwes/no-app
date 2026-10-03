@@ -783,9 +783,14 @@
     // tails are the fund's own last word `Fund`. Name-only — 0 tickers and 0
     // fees move. A designation-ending head keeps the letter reading, as the
     // arm below already does on the 293 rows of that shape it can reach.
+    // EXACTLY ONE BAR: a column rule is one vertical line, and a DOUBLED bar is
+    // the Roman numeral II -- `… Vanguard Windsor || Fund` is Windsor II
+    // (VWNFX), a DIFFERENT FUND from Windsor (VWNDX), and the greedy version
+    // published the wrong one. Witnessed by our own store, which also holds
+    // `… Co. | Vanguard Windsor II` with ONE bar as the real column rule.
     // Canonical, with the full case: scripts/lib-disclose.mjs.
     {
-      const cr = s.match(new RegExp("^([\\s\\S]*[A-Za-z0-9)])\\s*\\|+\\s*((?:"
+      const cr = s.match(new RegExp("^([\\s\\S]*[A-Za-z0-9)])\\s*\\|\\s*((?:"
         + "(?:pooled\\s+)?(?:common[\\s/]*)?(?:collective\\s+)?(?:investment\\s+)?"
         + "(?:trusts?|funds?|accounts?|compan(?:y|ies))"
         + "|mutual\\s+funds?(?:\\s+shares?)?|(?:pooled\\s+)?separate\\s+accounts?"

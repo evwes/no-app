@@ -42908,3 +42908,47 @@ identical from the first character; only what REMAINS tells them apart.*
 Display-side and shippable on its own; queued rather than shipped because this
 cycle already shipped a name-column change and the two should be verdicted
 separately.
+
+## 2026-10-03 (16:0xZ) — CORRECTION TO THE 15:3xZ ENTRY: THE GREEDY BAR QUANTIFIER PUBLISHED A WRONG FUND, AND REGENERATING THE PAGES IS WHAT FOUND IT
+
+The arm shipped in `db7b3370` accepted `\|+`. **A column rule is ONE vertical
+line; a DOUBLED bar is the Roman numeral II.** Lacroix Precision Optics (117
+participants) files `9,186.596 shares Vanguard Windsor || Fund`, and the greedy
+version published **`Vanguard Windsor Fund`** — VWNDX, where the filing says
+Windsor **II**, VWNFX. ***A different fund, not a different share class***, and
+it was live on main for roughly twenty minutes.
+
+**THE STORE WITNESSES THE DISCRIMINATOR ITSELF, which is why this needed no
+registry lookup.** Seven Windsor rows carry `||` or `I|` for that numeral, and
+one of them is the perfect control: `Variable Annuity Life Insurance Co. |
+Vanguard Windsor II` has a **SINGLE** bar — the genuine column rule between the
+issuer and the name — and spells the `II` out. One bar is the rule; two bars are
+the numeral, attested in our own data on the same product.
+
+**Corrected figures, re-measured and replacing the 15:3xZ entry's: 122 rows /
+72 plans / 44,651 ppl / $155,471,281**, still name-only with 0 tickers, 0 fees,
+0 types, 0 flags and 0 rows crossing the `ID_ONLY` drop. The 4 doubled-bar rows
+now in the change set's place (Lifespark, Sti Holdings ×2, Lacroix) are left
+exactly as filed and still show a bar — ***a visible artifact is a reader's
+warning; a wrong fund name reads as knowledge.*** Reading those four AS `II` is
+an inference, not a sourced fact, and is queued for a registry witness.
+
+**WHAT FOUND IT IS THE PART WORTH KEEPING, because every gate passed.** The 8
+pins passed in both copies, four negative controls were each load-bearing, the
+whole-store diff reported 0 tickers / 0 fees / 0 types / 0 flags, and site-test
+#155 was green. None of them could see it: the diff compares before against
+after and the row changed in exactly the way the arm intended, so **a diff
+cannot tell a wanted change from an unwanted one** — only reading the output
+can. It surfaced when I regenerated the crawlable pages (which I had initially
+skipped, the #566 "half the ship reaches no reader" lesson) and read the ONE
+page that changed: `Vanguard Windsor || Fund Inv` sat two rows above the change,
+untouched, and asking *why that one was untouched* is what exposed the rows that
+were not. ***The row that did NOT change is evidence about the rows that did.***
+
+A fifth negative control now exists for exactly this: drifting the quantifier
+back to `\|+` must break the `double-bar-left` and `windsor-II` pins by name,
+and it does. 1 crawlable page changed (Michelin's two `… Trust Select Common /`
+rows); `Windsor || Fund Inv` on that same page is outside the arm's reach for an
+independent reason — its stored tail is `Fund Inv Registered Investment Company`,
+which no single branch matches — so that row's safety is not evidence for the
+bar count and is recorded as such.

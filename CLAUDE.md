@@ -1403,9 +1403,17 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   of them, an ORDERING defect: the trailing-bar arm at `lib-disclose.mjs:690` is
   anchored at end-of-string and runs 436 lines before `TYPE_SUFFIX`, so a bar
   with the TYPE column's own label behind it is never reached. Asking the
-  PUBLISHED question instead of the idempotence one sized it at **126 rows / 74
-  plans / 47,269 ppl / $156,900,889, name-only — 0 tickers, 0 fees, 0 types, 0
-  flags, 0 rows crossing the `ID_ONLY` drop** (120 of 126 now read clean).
+  PUBLISHED question instead of the idempotence one sized it at **122 rows / 72
+  plans / 44,651 ppl / $155,471,281, name-only — 0 tickers, 0 fees, 0 types, 0
+  flags, 0 rows crossing the `ID_ONLY` drop**, 1 crawlable page.
+  **CORRECTED 16:0xZ, AFTER THE FIRST VERSION SHIPPED A WRONG FUND:** the arm
+  first accepted `\|+`, and a DOUBLED bar is the Roman numeral **II**, not a
+  column rule — Lacroix's `… Vanguard Windsor || Fund` published `Vanguard
+  Windsor Fund` (VWNDX) where the filing says Windsor **II** (VWNFX), *a
+  different fund*. Our own store witnesses the discriminator: `… Co. | Vanguard
+  Windsor II` has ONE bar as the real rule and spells the numeral. 4 doubled-bar
+  rows are now left exactly as filed, still showing a bar — *a visible artifact
+  warns the reader; a wrong fund name reads as knowledge.*
   **Do NOT retry the discriminator I proposed first**: requiring the word
   `Class` before the bar would have withdrawn **1,444 correct** bare-`I` classes
   (`THE VANGUARD TARGET RETIRE 2045 TRUST I` is a genuine CIT series name).
@@ -1757,6 +1765,19 @@ These outlived the versions that produced them. The accuracy log has the case.
 - **A legibility fix must be priced against the guards that READ names**, not
   only against readers — making three caption rows legible handed five whole
   menus to an entry-level junk demotion.
+- **A DIFF CANNOT TELL A WANTED CHANGE FROM AN UNWANTED ONE — ONLY READING THE
+  OUTPUT CAN** (2026-10-03, after shipping a wrong fund name past every gate).
+  8 pins passed in both copies, four negative controls were each load-bearing,
+  the whole-store diff read 0 tickers / 0 fees / 0 types / 0 flags, and site-test
+  was green — and the arm was publishing `Vanguard Windsor Fund` where the filing
+  said Windsor **II**, because the row changed in exactly the way the arm
+  intended. It surfaced only on regenerating the crawlable pages and reading the
+  one page that moved. **And the specific move is reusable: the row that did NOT
+  change is evidence about the rows that did.** `Vanguard Windsor || Fund Inv`
+  sat two rows above the change, untouched, and asking *why that one was spared*
+  exposed the ones that were not. *A greedy quantifier is how a repair licenses a
+  wrong claim* — prefer the narrowest run length the mechanism allows, and look
+  for a witness to the distinction inside the store before inferring one.
 - **A floor of ONE lets a single damaged row license the same damage elsewhere**,
   and a CEILING that reads repetition as evidence of correctness is fed by
   repeated damage. Prefer a RATIO between two whole names, plus an independent

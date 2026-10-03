@@ -2231,8 +2231,14 @@ try {
      * more carry `Separate Account-Z` where `-Z` is the share class. A control
      * that cut at the bar would pass a truncating implementation. */
     ["DFA US Targeted Value | Fund", "DFA US Targeted Value Fund"],
-    /* a doubled bar is still one rule */
-    ["Principal SmallCap Value || Separate Account-Z", "Principal SmallCap Value Separate Account-Z"],
+    /* A DOUBLED BAR IS THE ROMAN NUMERAL II, NOT A COLUMN RULE, and these two
+     * are the controls that say so. The first draft of this arm accepted `\|+`
+     * and published `Vanguard Windsor Fund` (VWNDX) where Lacroix Precision
+     * Optics' filing says Windsor **II** (VWNFX) -- a DIFFERENT FUND. Both are
+     * left exactly as filed: a visible bar is an artifact a reader can see,
+     * where a wrong fund name reads as knowledge. */
+    ["9,186.596 shares Vanguard Windsor || Fund", "9,186.596 shares Vanguard Windsor || Fund"],
+    ["Principal SmallCap Value || Separate Account-Z", "Principal SmallCap Value || Separate Account-Z"],
     /* a head ENDING in a designation word keeps the letter reading, because
      * that is what the trailing-bar arm already does on the 293 rows of that
      * shape it can reach -- otherwise this cleans to a dangling `… Class`. */

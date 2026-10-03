@@ -727,9 +727,26 @@ export function cleanFiledName(name) {
    * because that is what the arm below already does for the 293 rows of that
    * exact shape it can reach (`Dodge & Cox Stock Fund Class I`): Mubea's
    * `Fidelity Advisor Strategic Income Fund Class | Mutual fund` would
-   * otherwise clean to a dangling `... Fund Class`. */
+   * otherwise clean to a dangling `... Fund Class`.
+   *
+   * EXACTLY ONE BAR, AND THE SECOND BAR IS WHY — caught after this shipped, by
+   * regenerating the crawlable pages and reading a row the diff had not
+   * flagged. A column rule is ONE vertical line. A DOUBLED bar is the Roman
+   * numeral **II**: Lacroix Precision Optics files `9,186.596 shares Vanguard
+   * Windsor || Fund` and the greedy version published `Vanguard Windsor Fund` —
+   * VWNDX, where the filing says Windsor **II**, VWNFX, a DIFFERENT FUND. Seven
+   * Windsor rows in this store carry `||` or `I|` for that numeral, and the
+   * discriminator is witnessed by our own data: `Variable Annuity Life
+   * Insurance Co. | Vanguard Windsor II` has a SINGLE bar as the genuine column
+   * rule and spells the `II` out. Requiring one bar keeps 123 of the 128 rows
+   * and leaves 5 (4 plans / 6,697 ppl / $1,448,016) exactly as filed — still
+   * showing a bar, which is visibly an artifact rather than a false fund name.
+   * Reading those five AS `II` is an inference, not a sourced fact, so it is
+   * queued for a registry witness and not taken here. *A floor of one lets a
+   * single damaged row license the same damage elsewhere* — here a greedy
+   * quantifier would have licensed a wrong fund name. */
   {
-    const cr = s.match(new RegExp("^([\\s\\S]*[A-Za-z0-9)])\\s*\\|+\\s*((?:"
+    const cr = s.match(new RegExp("^([\\s\\S]*[A-Za-z0-9)])\\s*\\|\\s*((?:"
       + "(?:pooled\\s+)?(?:common[\\s/]*)?(?:collective\\s+)?(?:investment\\s+)?"
       + "(?:trusts?|funds?|accounts?|compan(?:y|ies))"
       + "|mutual\\s+funds?(?:\\s+shares?)?|(?:pooled\\s+)?separate\\s+accounts?"
