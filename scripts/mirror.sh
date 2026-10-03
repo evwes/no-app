@@ -142,11 +142,34 @@ echo "mirrored: $BEFORE -> $(git rev-parse --short origin/main)"
 # main's DATA was produced by the previous code. The store is only correct once
 # a run regenerates it, so say so rather than leaving the operator to assume
 # the mirror finished the job.
+#
+# AND IT MUST NOT CRY WOLF ON THE NORMAL PATH. Until 2026-10-03 this warned
+# after EVERY mirror that touched data-producing code, comparing the CODE on
+# the two branches and never asking what produced the store it was shipping.
+# The documented procedure is: dispatch on dev, verdict, mirror the matched
+# pair — so the usual mirror ships code and the store that code produced, and
+# the warning was wrong on exactly the case that happens every time. It fired
+# on a mirror that left main with PARSER_VERSION 199 and a pv-199 store at
+# 99.93%, advising a run that would have been a no-op.
+#
+# A check that is wrong on the normal path is worse than no check: an operator
+# who has dismissed it four times dismisses the fifth, when it is right. So
+# compare the mirrored code's PARSER_VERSION to the mirrored store's dominant
+# pv, and warn only when the store really is behind.
 if [ -n "$CHANGED" ]; then
+  PV_CODE=$(sed -n 's/^export const PARSER_VERSION = \([0-9]*\);.*/\1/p' scripts/lib-4i.mjs | head -1)
+  PV_STORE=$(node scripts/store-pv.mjs 2>/dev/null | cut -d' ' -f1)
   echo
   echo "  NOTE: this mirror changed data-producing code:"
   echo "$CHANGED" | sed 's/^/      /'
-  echo "  main's DATA was produced by the PREVIOUS code and is now stale."
-  echo "  Dispatch a run on main and verify it, or the site keeps serving the"
-  echo "  old values with the new source sitting beside them."
+  if [ -n "$PV_CODE" ] && [ "$PV_CODE" = "$PV_STORE" ]; then
+    echo "  The store mirrored alongside it was produced BY that code"
+    echo "  (PARSER_VERSION $PV_CODE, dominant store pv $PV_STORE), so main holds a"
+    echo "  MATCHED pair and its data is NOT stale. No run on main is needed."
+  else
+    echo "  main's DATA was produced by DIFFERENT code — PARSER_VERSION is"
+    echo "  ${PV_CODE:-unknown} and the store's dominant pv is ${PV_STORE:-unknown} — so it is stale."
+    echo "  Dispatch a run and verify it, or the site keeps serving the old"
+    echo "  values with the new source sitting beside them."
+  fi
 fi
