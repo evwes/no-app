@@ -808,24 +808,30 @@ EFAST2 bucket grew, not that our code broke.
 
 **NOTHING IS PRE-REGISTERED** for a parser run — `PARSER_VERSION` stays 199.
 
-**#566 IS IN FLIGHT ON THE DEV BRANCH** (push, `a8cb81d1`, started 12:21:01Z) —
-the welded-share-count arm. **The next cycle must read its `conclusion`, verdict
-it against the pre-registration below, adopt it, REGENERATE THE CRAWLABLE PAGES
-BY HAND (the pipeline never runs `build-seo-pages`), then mirror — and CLEAR
-THIS PARAGRAPH in the same cycle.** An in-flight line left standing is the most
-dangerous kind of staleness in this file and has happened twice.
+**#566 SUCCESS (push, dev, `a8cb81d1`, 12:21:01-12:30:11Z), verdicted, adopted,
+mirrored — EVERY REGISTERED FIGURE HIT.** 18 name changes committed, 0
+row-count changes, the three L Brands rows absent (the identity guard held in
+production), and the coverage line byte-identical apart from the date: pv 199 ·
+confident 60,167 · entries 65,480 · match 43,338 · HIGH 4 · warn 556 · dl 48.
+**Nothing is in flight.**
 
-**PRE-REGISTERED for #566:** the merge log prints `welded-share-count repair: 18
-rows across 16 plans`; 18 names change and ticker / fee / asterisk / shown type
-/ every suppressor flag move on **0** rows; the other seven repair arms are
-unchanged; and with no `PARSER_VERSION` bump (199) the coverage line must hold
-confident 60,167 · entries 65,480 · match 43,338 · HIGH 4 · warn 556 · dl 48 ·
-pv 199. `docs/accuracy-log.md` 2026-10-03 (12:4xZ).
-
-**The push trigger fired this time and a dispatch was correctly WITHHELD** — the
-listing showed #566 two minutes after the push, which is the amended rule
-working as written (a `workflow_dispatch` on the same SHA would have been a
-second run that concurrency resolves by killing the first).
+**BUT HALF THE SHIP REACHES NO READER, and that is the correction to carry
+forward.** 0 crawlable pages changed, and asking why — rather than accepting a
+clean zero — found that 15 of the 16 plans have no page and the one that does
+was ALREADY correct. Measured through the harness against the previous data
+commit: **the SHOWN name changes on 9 of the 18 rows (8 plans / 3,869 ppl /
+$7,252,820); the other 9 (8 plans / 7,799 ppl / $103,042,677) were already clean
+on the page** because `cleanFiledName` strips `name N shares` lowercase-plural
+on the display side. ***So the reader-facing figure is 3,869, not the 11,668 the
+commit headlined*** — *a STORED field is not a PUBLISHED one*, met on my own
+ship one hour after shipping it.
+**THE RULE THAT FOLLOWS: before shipping a merge-side NAME repair, ask what
+`cleanFiledName` already strips.** The display predicate runs on every render
+for free; a merge arm runs once and needs a pipeline run. The half the display
+MISSES is the only part a reader gains, and it is the half to measure first —
+here, `Units` capitalised, `shares of` with a trailing preposition, `– N Shares`
+on an en dash, and `.886 share` singular with decimals.
+`docs/accuracy-log.md` 2026-10-03 (13:2xZ).
 
 **#565 SUCCESS (schedule, main, `e7730a25`, 10:21:14-10:30:05Z) — THE `pv`
 SHIP'S PRODUCTION VERDICT.** Its coverage line is the first to carry `pv: 199`
@@ -1119,23 +1125,15 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
-- **THE WELDED SHARE COUNT — 29 rows / 24 plans / 170,735 ppl / $200,736,656, 4
-  publishing a ticker. PREDICATE STATED, ready to ship without re-deriving:**
-  sibling of the 20:0xZ welded-value arm with the number in the MIDDLE rather
-  than at the end — it must be followed by `shares` / `Units` / a dash and must
-  EQUAL the row's own value EXACTLY. **No thousands arm** (see below). The class
-  is almost all cash because **the welded number is a SHARE COUNT and equals the
-  dollar value only at a $1.00 NAV.** **The motivating case is a withdrawal, not
-  an assertion:** L Brands (30,989 ppl) publishes `Mutual Fund – 85,408,028 -
-  shares` at $85,408,028 resolving to **VMFXX** — the resolver matched the
-  caption `Mutual Fund`. Stripping the count leaves no fund name, so the row
-  correctly publishes NO ticker.
-  ***A TOLERANCE WIDE ENOUGH TO CATCH AN IMAGINED SHAPE IS WIDE ENOUGH TO
-  MANUFACTURE ONE.*** Allowing "the value in thousands" read **117** rows, and
-  most were arithmetic coincidences — a vintage year × 1,000 lands between $2.0M
-  and $2.07M, so `T. ROWE PRICE RET 2005 ACT B` at $2,005,350 and `Freedom 2020
-  K6` at $2,019,207 matched. Aimed squarely at the commonest fund family in the
-  store. `docs/accuracy-log.md` 2026-10-02 (20:3xZ).
+- **SHIPPED 2026-10-03 12:4xZ (#566) — THE WELDED SHARE COUNT: 18 stored names
+  repaired, of which 9 rows / 8 plans / 3,869 ppl / $7,252,820 are
+  READER-FACING** and 9 were already clean on the page. **The queue's own figure
+  was 29 rows / 170,735 ppl and its motivating case was described BACKWARDS** —
+  L Brands' ticker does not change on the strip and the row is already qualified
+  "names no specific fund", so the repair as queued would have made three rows
+  worse on $86.8M. The guard that stops that is `isGenericTypeName(head) ||
+  hasNoFundIdentity(head)`, the display's own composition. `docs/accuracy-log.md`
+  2026-10-03 (12:4xZ) and (13:2xZ).
 - **ONE TICKER, TWO FEES — 231 of 1,280 published tickers / 354,753 rows /
   $1.91T**, over all 599,250 rows publishing both a symbol and a fee. The ticker
   comes from a resolver and the fee from a NAME-pattern table, so one fund
