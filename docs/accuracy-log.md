@@ -42199,3 +42199,46 @@ unchanged at 43,338 / 4 / 556**), then `git checkout` the file and confirm the
 sha256 matches byte for byte with a clean tree. The local-write hazard this
 dances around is on this record already: five junk lines from development runs
 reached the trail before `WAMPO_RECORD` existed.
+
+## 2026-10-03 (08:2xZ) — the `[skip ci]` rule is stated more broadly than its own mechanism, and the overstatement costs hours
+
+**Not a data defect — a PROCEDURE defect, recorded because it has been silently
+expensive and the cost of a too-broad rule never announces itself.**
+
+The rule reads: *`[skip ci]` on EVERY `scripts/**` commit made while a run is in
+flight.* It was earned honestly — run #239 lost a v117 parse to exactly this.
+But the hazard it guards is **cancellation**, and cancellation is narrower than
+the rule in two independent ways:
+
+1. **REF-SCOPED.** `concurrency: group: build-data-${{ github.ref }}` with
+   `cancel-in-progress: true`. A dev-branch push and a scheduled main run are in
+   **different groups**, so a dev push can never cancel a main run. The main
+   cron is configured hourly and delivers about every 3.6 hours, so a literal
+   reading of the rule holds dev work for most of the day.
+2. **PATH-SCOPED.** The push trigger's `paths:` filter is **six files** —
+   `scripts/build-data.mjs`, `fetch-4i.mjs`, `lib-4i.mjs`, `merge-4i.mjs`,
+   `scripts/.kick`, `.github/workflows/build-data.yml`. `scripts/**` in the rule
+   covers roughly a hundred files that create no build-data run at all.
+
+**Measured, not reasoned:** I pushed `scripts/audit-data.mjs` to the dev branch
+while **#564 was mid-run on main** (schedule, `15bff5ff`, started 08:14:56Z),
+which the rule as written forbids. **No run was created for `e4769ea4`** and
+#564 ran on. Both gates were in play at once — the wrong ref *and* a path
+outside the filter — so this one push cannot discriminate between them; the ref
+gate is read from the workflow file and the path gate from its `paths:` list,
+both verbatim.
+
+**WHAT DOES NOT RELAX, and it is the half that matters.** A run in flight on
+main is still a reason not to **MIRROR**: #556 committed stale-code data eight
+minutes *after* a mirror (`mirror.sh` refuses on exactly that now), and every
+scheduled run leaves main a data commit the branch lacks, which `mirror-gate`
+refuses until the branch adopts it. **Pushing to dev during a main run is safe;
+mirroring during one is not.** The rule conflated the two because both were
+learned in the same week.
+
+***A rule stated more broadly than its mechanism costs real hours, and the cost
+is invisible because nothing fails.*** It is the mirror image of the entry three
+hours above this one, where `mirror.sh`'s staleness note fired on the only path
+the procedure ever takes: a check that is wrong on the normal path gets
+dismissed, and a rule that is broader than its hazard gets obeyed — and the
+second is more expensive, because obeying it looks like diligence.

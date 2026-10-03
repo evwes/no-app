@@ -404,6 +404,28 @@ that changing visibility also unpublishes GitHub Pages.
   documents.
 - **`[skip ci]` on every parser commit made outside the 1–7 AM window**, so
   work batches into one nightly re-parse instead of firing several.
+- **BUT THE HAZARD IS CANCELLATION, AND CANCELLATION IS BOTH REF-SCOPED AND
+  PATH-SCOPED (2026-10-03).** `[skip ci]` is written here as "every `scripts/**`
+  commit while a run is in flight", which is broader than its own mechanism in
+  two independent ways, and the rule as written would stall the cycle for hours
+  at a time: **(a)** concurrency is `group: build-data-${{ github.ref }}`, so a
+  dev-branch push **cannot** cancel a run on `main` — and the main cron fires
+  roughly every 3.6 hours, so a literal reading holds dev work most of the day;
+  **(b)** the push trigger's path filter is **six files**
+  (`build-data.mjs`, `fetch-4i.mjs`, `lib-4i.mjs`, `merge-4i.mjs`,
+  `scripts/.kick`, `build-data.yml`) — `audit-data.mjs`, `merge-4i`'s tests,
+  `lib-disclose.mjs` and every other script create no build-data run at all.
+  Measured: `audit-data.mjs` was pushed to the dev branch while **#564 was
+  mid-run on main**, no run was created, and #564 ran on. So hold `[skip ci]`
+  for a commit touching one of those six files while a run is in flight **on
+  the same ref**, and do not hold anything else.
+  **WHAT DOES NOT RELAX: a run in flight on main is still a reason not to
+  MIRROR.** #556 committed stale-code data eight minutes after a mirror
+  (`mirror.sh` now refuses on exactly that), and a scheduled run always leaves
+  main a data commit the branch lacks, which `mirror-gate` refuses until the
+  branch adopts it. **Pushing to dev is safe during a main run; mirroring is
+  not.** *A rule stated more broadly than its mechanism costs real hours, and
+  the cost is invisible because nothing fails.*
 - **One re-parse in flight at a time**, and every scheduled cycle
   de-duplicates by checking for an in-flight run before dispatching.
 - **Only a `PARSER_VERSION`/`OCR_VERSION` bump justifies a full re-parse.**
