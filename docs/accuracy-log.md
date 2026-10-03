@@ -43352,3 +43352,199 @@ count where no other field supports it, exactly as `hasNoFundIdentity` qualifies
 a name rather than inventing one. **A blank is honest; a number reads as
 knowledge.** Queued, unshipped: the weighting question has to be settled first,
 because every size in the queue is denominated in this field.
+
+---
+
+## 2026-10-03 (20:4xZ) — THE WELDED-ROW TEST WAS RUN. IT FOUND TWO WITNESSES, REFUTED A CLAIM IN CLAUDE.md, AND KILLED ITS OWN REPAIR: BOTH WITNESSES DETECT DAMAGE AND NEITHER DETERMINES ORIENTATION
+
+The 18:3xZ entry queued one named test for the mid-name-house class and said
+"run it before pricing the class". It is run. The class is **not** shippable as
+any single rule, and the reason is a general one worth more than the class.
+
+### The test as named was the wrong direction, twice over
+
+The queued wording was *"does the text before the house match the TAIL of a
+SIBLING ROW in the same plan's menu?"* Reading Gate Gourmet's two menus whole —
+which the queue entry had not done, having been written from three strings —
+shows both halves of that are wrong:
+
+- In a shift the lead fragment is the **continuation** of another fund, so the
+  sibling carries that fund's **head**. The reconstruction is
+  `sibling + " " + lead`, not `lead == sibling's tail`.
+- And in a shifted menu **every** row is damaged, so the sibling's usable part
+  is its own tail-from-its-house, not its whole published name. The first
+  version of the script failed its own bond-index pin for exactly that reason,
+  and the pin is what found it.
+
+Gate Gourmet 002, all nine rows, reconstructs completely once the direction is
+fixed. Every dangling lead finds a home, and the store attests each
+reconstruction at high multiplicity:
+
+| reconstruction | copies in our own store |
+|---|---|
+| `Vanguard Intermediate Term` + `Bond Index Instl` | 257 |
+| `Vanguard High-Yield Corporate` + `Adm` | 169 |
+| `Fidelity 500 Index Institutional` + `Premier` | 54 |
+| `State Street Institutional US` + `Government Money Market` | 7 |
+
+### Two witnesses, not one — which is why the class could not be priced before
+
+**R (rotation).** Move the mid-name house to the front; does that string exist
+verbatim in the store under a different ack? Costco pn=002 files `S&P 500 Index
+Securities Lending Series State Street Fund Class X` and Costco pn=005 files
+`State Street S&P 500 Index Securities Lending Series Fund Class X`. Same fund,
+same sponsor, two spellings.
+
+**W (shift).** `sibling-usable-tail + this row's lead`, matched bidirectionally
+on a long prefix because the store spells one fund 48 ways (`...bond index
+fund`, `...bond index admiral`, `...bond index`). The guard that makes it mean
+anything is that the agreement must extend **past the sibling and into the
+lead**, or the sibling witnesses itself.
+
+Both are store-internal: no registry, no network, no inference. Final split of
+the bare condition, 26,553 rows / 6,022 plans / 16,032,030 ppl / $153,588,648,856:
+
+| | rows | plans | ppl | of which publish a FEE | of which ASSERT a ticker |
+|---|---|---|---|---|---|
+| **W** | 4,056 | 994 | 2,263,399 | 2,525 rows / 1,671,594 ppl | 1,385 rows / 739,960 ppl |
+| both | 63 | 34 | 78,849 | 30 | 15 |
+| **R** | 243 | 131 | 508,322 | 98 | 60 |
+| none | 22,191 | 5,236 | 14,146,689 | — | — |
+
+W reads **23 of 23 genuine shifts** on a uniform draw after the guards below
+(28 of 30 before them). Ranked listings chose what to read; the rate came from
+the uniform draw.
+
+### CLAUDE.md's claim that Costco's row is correct-as-filed is REFUTED
+
+The 18:3xZ entry listed Costco's `Global All Cap Equity Ex-U.S. Index State
+Street Securities Lending Series` as "one State Street product whose house sits
+mid-string" and used it as the reason the class contains a correct shape. The
+rotation witness answers **exact**: `state street global all cap equity ex u s
+index securities lending...` exists under a different ack. Four Costco rows in
+front of **279,798 participants** publish a name whose token order our own store
+contradicts. The family is real; this member of it is not.
+
+### THE REPAIR IS NET HARMFUL, AND THAT IS THE RESULT
+
+In a shift the row's own fund is the **tail**, so the repair looks obvious: drop
+the lead. Priced through the tracked harness on every published cell of all
+4,119 rows, with the page's own `tab: "menu"` and a positive control asserting
+the strip actually fires:
+
+| | rows | plans | ppl | $ |
+|---|---|---|---|---|
+| name changed | 4,119 | 1,008 | 2,305,506 | $20,446,615,333 |
+| ticker gained | 65 | 22 | 94,401 | $312,640,069 |
+| **ticker LOST** | **37** | 13 | **79,562** | $1,093,478,379 |
+| ticker swapped | 3 | 3 | 3,157 | — |
+| fee gained | 63 | 16 | 74,996 | — |
+| **fee LOST** | **73** | 45 | **125,307** | $1,176,784,342 |
+| **fee swapped** | **13** | 9 | 14,191 | — |
+
+**THE CONDITION HOLDS THREE OPPOSITE ORIENTATIONS AND NEITHER WITNESS CAN TELL
+THEM APART.** Reading the losses names all three:
+
+1. **lead is debris, tail is the fund** — Gate Gourmet's `Government Money
+   Market` ‖ `Vanguard High-Yield Corporate`. Strip the lead.
+2. **lead is the fund, tail is a TRUSTEE** — Bread Financial, **9,012
+   participants**, files nine rows shaped `Target Retirement 2035 Trust I
+   Vanguard Fiduciary Trust Company`. Stripping the lead keeps the trustee and
+   throws the fund away: nine correct tickers (VTTHX, VTHRX, VFORX, VTIVX,
+   VTTVX, VFIFX, VTWNX, VFFVX …) and nine correct fees destroyed. Booz Allen's
+   `S&P 500 Index Series A State Street Bank and Trust` loses SSSYX in front of
+   **56,540 readers**. This is the 18:1xZ trustee class reached from the other
+   side — strip the TAIL, which is exactly the arm reverted at 19:3xZ.
+3. **lead is this fund's OWN class, written before the house** — Matheny
+   School's `Advantage T. Rowe Price Retirement 2045`. `Advantage` is a T. Rowe
+   CIT fee class, so stripping it swaps the correct class-specific 0.49 for the
+   mutual fund's 0.6. A rotation, not a weld.
+
+### What this is a case of, and it generalises past this class
+
+***A WITNESS THAT A ROW IS DAMAGED IS NOT A WITNESS TO WHICH SIDE THE DAMAGE IS
+ON.*** Met twice in one cycle on two independent witnesses:
+
+- **R** proves two orderings of the same tokens coexist in the store; it says
+  nothing about which is right. Its uniform draw was **18 of 30 `MyCompass
+  American Funds <year>`** — a Great Gray collective-trust series whose
+  registered name really does lead with the wrapper, so there the *rotation* is
+  the damaged spelling and the filed name is correct. Had the top-N listing been
+  trusted (Costco, Philips, Dycom, Kforce, all clean rotations) the repair would
+  have shipped backwards for the bulk of the bucket. **Rank to pick what to
+  read; draw randomly to estimate a rate** — paid for again.
+- **W** proves a reconstruction exists; it cannot say whether the lead or the
+  tail is the stray text, because for Bread Financial the sibling vintages share
+  enough text to reconstruct either way.
+
+So the class needs a **third** ingredient neither witness supplies: an
+orientation test, per row. The natural one is already in the codebase — build
+both candidates (`house + tail` and `house + lead`) and ask which resolves to a
+fund — and it is cheap to try, but it is undecided on rows where both resolve
+(`Vanguard High-Yield Corporate` and `Vanguard Government Money Market` both
+do), so it will have to abstain rather than guess.
+
+And it retroactively explains the 19:3xZ revert. That arm stripped the **tail**
+and lost 23 fees / swapped 42; this one strips the **lead** and loses 73 /
+swaps 13. Two arms, opposite directions, both net harmful — because each was
+right for one orientation of a population containing three.
+
+### The guards, and the controls that earned them
+
+Three live false positives were produced and each is now a negative control
+asserted over **every copy** of its name, not the first copy found:
+
+- `Nationwide Loomis All Cap Growth R6` (0/21) and `Voya T. Rowe Price Capital
+  Appreciation Portfolio` (0/18) — a **wrapper brand** in front of a
+  sub-adviser is the product's own registered name. Before the guard, 4 of 21
+  Nationwide copies and 13 of 18 Voya copies were convicted, purely because a
+  brand word recurs (`Nationwide Life Insurance Company` + `Nationwide`).
+- `LVIP SSGA S&P 500 INDEX` (0/51) and `LVIP JPMorgan Retirement Income Fund`
+  (0/53) — the same mechanism escaping on a string edge, because `LVIP` does
+  not start with `VIP`.
+- `VANG WELLINGTON ADM` (0/24), Mayo Clinic, **112,693 participants**, =VWENX
+  and 0.17 both correct — convicted because the 4-character lead `VANG` aligned
+  with the start of `vanguard` inside `stock index fund vanguard growth index
+  fund`. ***A lead that is an abbreviation of a house is not a dangling
+  fragment***, since a shift's lead begins mid-name.
+- `MyCompass American Funds 20…` (0/608) for R's wrapper guard.
+
+**AND MY FIRST NEGATIVE CONTROL WAS REFUTED BY THE TEST IT WAS GUARDING.**
+`Index CIT N Fund Principal/BlackRock S&P MidCap` was chosen as a known-correct
+sub-advised name on the strength of CLAUDE.md listing that family as correct —
+and W convicted it, rightly: its sibling `Principal/BlackRock S&P 500` plus this
+row's lead is a name the store holds 13 times. The row is a shift. *A predicate
+that is right for one class is not thereby right for its neighbour*, met from
+the control's side for the first time — and the fix was to pick controls that
+are **independently** known correct rather than ones the test happens to spare,
+because a control drawn from the spared set is circular.
+
+### Status
+
+Nothing shipped; no `PARSER_VERSION` bump (199). Both witnesses, their guards
+and all 13 pins live in the measurement script and are recorded here. The class
+stays queued with its orientation problem named, its three sub-families named,
+and the exact cost of getting the orientation wrong in either direction.
+
+### The 20:5xZ draw, same cycle — a cheaper orientation witness, inside one menu
+
+Helen of Troy (1,813 participants, $158,004,629, 29 rows, ratio 0.99) publishes
+its Fidelity Freedom Index vintages **both ways in the same menu**: `FID FDM IDX
+2035 IPR` and `FID FDM IDX 2055 IPR` bare, beside `Fidelity Management Trust
+Company FID FDM IDX 2045 IPR` and `…2040 IPR`. One plan, one fund family, the
+trustee's corporate name present on some rows and absent on others.
+
+That is the orientation evidence the class needs, and it is cheaper than either
+witness above: **a sibling row in the same menu carrying the same fund-name core
+WITHOUT the entity prefix proves the prefix is the stray side** — no resolver, no
+store-wide index, no registry. Queued as the first thing to size on the retry.
+
+On this plan the prefix costs a reader nothing: the bare and prefixed `FID FDM
+IDX` rows both price at 0.1, and `Fidelity Management Trust Company FID BLUE
+CHIP GR K6` carries ~FBGRX **labelled a comparable**, not an identification.
+That is consistent with the tail-strip's measured harm being 23 fees rather than
+thousands — the damage is concentrated, not diffuse, which is why an orientation
+test that abstains is affordable.
+
+Draw 2 (Xprize Foundation, 136 participants) has no lineup and no recordkeeper
+published — nothing found, recorded as nothing rather than written up.

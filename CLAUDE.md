@@ -1228,25 +1228,69 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   `Nationwide Trust Company, FSB Vanguard …` leaves **`FSB`** behind, because
   the 18:1xZ gate anchors on the first CHARACTER and `FSB` satisfies it; then
   re-diff and require FEE lost = 0 and swapped = 0, as the ticker already is.
+  **AND THIS CLASS OVERLAPS THE MID-NAME-HOUSE CLASS BELOW, measured 20:4xZ —
+  they are two ORIENTATIONS of one condition, not two classes.** That cycle's
+  lead-strip destroyed nine correct tickers at Bread Financial and SSSYX at Booz
+  Allen precisely because those rows are trustee-tail rows, which is what THIS
+  arm strips; and its uniform draw surfaced the `FSB` row above independently.
+  So the retry is not two arms but ONE orientation test that decides per row
+  which side names the fund and abstains when both do.
   `docs/accuracy-log.md` 2026-10-03 (18:1xZ) and (19:3xZ).
-- **FOUND BY THE 18:1xZ DRAW — TWO FUNDS WELDED INTO ONE ROW, and the decisive
-  test is named but NOT YET RUN.** Gate Gourmet (2,038 ppl) publishes
-  `Bond Index Instl Vanguard Mid Cap Index Instl`, `Adm Vanguard Intermediate
-  Term` and `Government Money Market Vanguard High-Yield Corporate` — the last
-  with **er 0.12 on a COMPOSITE OF TWO FUNDS**. Genuine Parts (42,220 ppl)
-  publishes `SMID-Cap R6 Fidelity Puritan Balanced Fund K6` with **=FPURX at
-  0.47 ASSERTED** on the composite. **DO NOT CARRY 5,571 rows / 2,576,133 ppl**
-  (nor its 2,339 priced rows): the screen keys on a CONDITION three shapes
-  satisfy, and one is CORRECT — Costco's `Global All Cap Equity Ex-U.S. Index
-  State Street Securities Lending Series` (279,798 ppl) is one State Street
-  product whose house sits mid-string, and Booz Allen's `Company Russell 1000
-  Value Index Fund State Street Global Advisors` ($1,888,041,270, 20.8%) is one
-  fund wearing a TRUSTEE fragment, which is the entity item above reached from
-  the other side. **THE TEST THAT SEPARATES THEM, store-internal and needing no
-  registry: does the text before the house match the TAIL of a SIBLING ROW in
-  the same plan's menu?** Only a weld leaves its other half behind as a
-  neighbour — the same witness shape that settled `||` as the numeral II. Run it
-  before pricing the class. `docs/accuracy-log.md` 2026-10-03 (18:3xZ).
+- **THE MID-NAME-HOUSE CLASS — TEST RUN 2026-10-03 20:4xZ, AND IT KILLED ITS OWN
+  REPAIR IN BOTH DIRECTIONS. The queued test was the WRONG DIRECTION and one of
+  the "correct" shapes it rested on is REFUTED.** Reading Gate Gourmet's menus
+  whole (the queue entry had been written from three strings) the lead fragment
+  is the CONTINUATION of another fund, so the sibling carries that fund's HEAD
+  and the reconstruction is `sibling + " " + lead` — and in a shifted menu EVERY
+  row is damaged, so the sibling's usable part is its own tail-from-its-house.
+  All nine Gate Gourmet rows then reconstruct, each attested by our own store:
+  `Vanguard Intermediate Term`+`Bond Index Instl` 257 copies,
+  `Vanguard High-Yield Corporate`+`Adm` 169, `Fidelity 500 Index
+  Institutional`+`Premier` 54, `State Street Institutional US`+`Government Money
+  Market` 7. **TWO witnesses exist, both store-internal:** R rotates the house to
+  the front and asks whether that string exists verbatim under another ack; W
+  reconstructs from a sibling. Split of the bare condition (26,553 rows / 6,022
+  plans / 16,032,030 ppl / $153.6B): **W 4,056 rows / 994 plans / 2,263,399 ppl**
+  (2,525 publishing a fee, 1,385 asserting a ticker), both 63, **R 243 / 131 /
+  508,322**, none 22,191 / 14,146,689. W reads **23 of 23 genuine** on a uniform
+  draw.
+  **COSTCO IS NOT CORRECT-AS-FILED — the 18:3xZ claim is refuted by an EXACT
+  witness.** Four rows / **279,798 ppl** publish a token order our own store
+  contradicts (pn=005 files the same fund with the house in front).
+  **DO NOT SHIP EITHER STRIP. Priced on every published cell of all 4,119 W rows
+  through the tracked harness: lead-strip loses 73 FEES / 125,307 ppl / $1.18B
+  and 37 TICKERS / 79,562 ppl, swaps 13 fees, against 65 ticker and 63 fee
+  gains — net harmful**, and the 19:3xZ tail-strip lost 23 fees / swapped 42.
+  **THE CONDITION HOLDS THREE ORIENTATIONS AND NEITHER WITNESS DISTINGUISHES
+  THEM:** (1) lead is debris, tail is the fund (Gate Gourmet); (2) **lead is the
+  fund, tail is a TRUSTEE** — Bread Financial, 9,012 ppl, nine rows shaped
+  `Target Retirement 2035 Trust I Vanguard Fiduciary Trust Company`, where
+  stripping the lead throws away nine correct tickers and fees, and Booz Allen
+  loses SSSYX for 56,540 readers; (3) lead is this fund's OWN class before the
+  house — Matheny's `Advantage T. Rowe Price Retirement 2045`, where the strip
+  swaps a correct 0.49 for a mutual fund's 0.6.
+  **NEXT STEP IS THE ORIENTATION TEST, NOT A WIDER SCREEN:** build both
+  candidates (`house + tail`, `house + lead`) and let the shipped resolver say
+  which is the fund — and it must ABSTAIN where both resolve, which they do
+  (`Vanguard High-Yield Corporate` and `Vanguard Government Money Market` both
+  answer).
+  **AND THE 20:5xZ DRAW HANDED IT A SECOND, STRONGER WITNESS, FREE AND
+  SAME-MENU:** Helen of Troy (1,813 ppl) publishes `FID FDM IDX 2035 IPR` and
+  `FID FDM IDX 2055 IPR` bare, beside `Fidelity Management Trust Company FID FDM
+  IDX 2045 IPR` and `…2040 IPR` — **one menu, one fund family, the entity prefix
+  present on some rows and absent on others.** An unprefixed sibling of the same
+  core is proof that the prefix is the stray side, needing no resolver and no
+  store-wide index. Size this witness first: it is the cheapest orientation
+  evidence found so far, and on this plan the prefix costs nothing (both the
+  prefixed and bare `FID FDM IDX` rows price at 0.1), which is consistent with
+  the tail-strip's measured harm being 23 fees rather than thousands. Guards already earned, each a negative control over every copy of its
+  name: a WRAPPER lead is correct as filed (`Nationwide Loomis…` 0/21, `Voya
+  T. Rowe…` 0/18, `LVIP…` 0/51 and 0/53, `MyCompass American Funds…` 0/608 — and
+  MyCompass was **18 of R's 30-row uniform draw**, so there the ROTATION is the
+  damaged spelling and R's top-N listing would have shipped the bulk backwards);
+  and a lead that ABBREVIATES a house is not a fragment (Mayo's `VANG WELLINGTON
+  ADM`, 112,693 ppl, =VWENX and 0.17 both correct, 0/24).
+  `docs/accuracy-log.md` 2026-10-03 (20:4xZ).
 - **AND THE DRAW'S MOTIVATING ROW COULD NOT BE CONVICTED — recorded so nobody
   re-derives the three refuted screens.** PPC Retirement Plan publishes
   `JP Morgan US Value R6 Fund` with **VGINX** ASSERTED, out of the stored `stk`
@@ -1806,6 +1850,27 @@ These outlived the versions that produced them. The accuracy log has the case.
   PLANS is blind to every master-trust row* (resolve a trust row through its
   MEMBER plans — met seven times); *a STORED field is not a PUBLISHED one*
   (cost one class size a factor of 3.9).
+- **A WITNESS THAT A ROW IS DAMAGED IS NOT A WITNESS TO WHICH SIDE THE DAMAGE IS
+  ON** (2026-10-03, met twice in one cycle on two INDEPENDENT witnesses, and it
+  retroactively explains a revert from the cycle before). A rotation witness
+  proves two orderings of the same tokens coexist in the store and says nothing
+  about which is right — its uniform draw was 18 of 30 rows where the FILED
+  order was correct and the rotation was the damage. A reconstruction witness
+  proves a sibling's text plus this row's lead is a real name and still cannot
+  say whether the LEAD or the TAIL is the stray text. So a repair needs a THIRD
+  ingredient the detector does not supply — an orientation test, per row, that
+  ABSTAINS when both sides answer. Priced: stripping the lead costs 73 fees and
+  37 tickers; stripping the tail cost 23 fees and swapped 42. **Two arms,
+  opposite directions, both net harmful, because each was right for one
+  orientation of a population holding three.** Before building a repair on a
+  detector, ask what the detector is silent about.
+- **PICK A NEGATIVE CONTROL THAT IS INDEPENDENTLY KNOWN CORRECT, NEVER ONE THE
+  TEST ALREADY SPARES** (2026-10-03) — the latter is circular. And a control
+  must hold on EVERY copy of its name, not the first copy found: one convicted
+  copy in nineteen is the false positive the control exists to catch, and three
+  live ones were found that way. My first control here was itself REFUTED by the
+  test it was guarding, because I chose it from a family this file calls
+  correct-as-filed and that member of the family was not.
 - **PIN THE MOTIVATING CASE AS A FIXTURE BEFORE MEASURING THE CLASS** (2026-10-03,
   after the same case escaped twice in one investigation). "A measurement that
   cannot see its own motivating example has not been scoped" says what went
