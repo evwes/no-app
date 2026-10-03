@@ -820,20 +820,33 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
-**NOTHING IS PRE-REGISTERED** for a parser run — `PARSER_VERSION` stays 199.
-**#568 IS IN PROGRESS on main (schedule, started 18:01:45Z) — so DO NOT MIRROR
-until it finishes and the branch adopts its data commit.** Pushing to dev is
-safe and unaffected (concurrency is ref-scoped, and no build-data path file is
-touched). The next cycle verdicts it: expect a byte-identical incremental line
-apart from the date, `pv` 199, since no parser change has shipped. #567
-(`26fcda74`, 13:28:42-13:37:53Z) was the previous one, verdicted, and the
-4.5-hour gap to #568 is the measured ~3.6h delivered cadence rather than the
-configured hourly one. Every change since
-#563 is display-side or documentation, so a session dispatch would re-run the
-same ~96-ack incremental work list that has now produced six identical coverage
-lines; the hourly cron on main is the right mechanism for new DOL filings.
-**CLEAR THIS PARAGRAPH the moment a run is dispatched or verdicted** — a stale
-in-flight line has been left up seven times.
+**NOTHING IS PRE-REGISTERED** for a parser run — `PARSER_VERSION` stays 199, and
+**no build-data run is in flight.** #568 and #569 are both verdicted: #569
+(schedule, main, data commit `cff269ec`) produced a coverage line
+**byte-identical** to #568's — pv 199 · confident 60,167 · entries 65,480 ·
+match 43,338 · HIGH 4 · warn 556 · dl 48 — which is the seventh consecutive
+identical incremental line and the correct result when the work list is the 48
+permanently-403 acks plus the old-pv tail. `cff269ec` landed on **both** refs,
+so the dev push was rejected non-fast-forward (the documented #565 hazard, met a
+second time); reconciled by rebasing the display commit onto it, and
+regenerating the crawlable pages against the NEW store changed **0** files, so
+the committed pages are correct for it.
+
+**WHAT IS ACTUALLY PENDING IS A MIRROR, NOT A RUN. `site-test #159` was
+`in_progress` on `60a79f20` when this was written, and the entity-weld ship is
+NOT yet on main.** The next cycle's first job: read `conclusion` on
+<https://github.com/evwes/no-app/actions/runs/37155662802> and, if green,
+`bash scripts/mirror.sh`. **Verify on main by reading `plans-list.json`'s
+neighbours and the PAGE, not the store:** `git show origin/main:p/410215170-002.html`
+must open its holdings table on `Ssga S+P 500 Index Ser A …` with no
+`State Street Bank & Trust Company` in front of it, and
+`git show origin/main:index.html` must carry `app.js?v=` matching app.js's own
+sha256 (`node scripts/stamp-assets.mjs --check`). A POSITIVE control for the
+refusal half: the page must still show `Blackrock Institutional Trust Company, .
+Lifepath Index 2050` untouched, because its remainder leads with no known house
+— if that one moved too, the remainder gate did not ship with the arm.
+**CLEAR THIS PARAGRAPH the moment the mirror lands** — a stale in-flight line
+has been left up seven times.
 
 **#566 SUCCESS (push, dev, `a8cb81d1`, 12:21:01-12:30:11Z), verdicted, adopted,
 mirrored — EVERY REGISTERED FIGURE HIT.** 18 name changes committed, 0
@@ -1190,52 +1203,48 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   Yusen's `,000` is protected TWICE so its fixture could not fail — each
   protection now has its own real single-protection case (comma 10 quotes /
   4,551 ppl, sentence gate 8 / 8,856). `docs/accuracy-log.md` 2026-10-03 (16:2xZ).
-- **SIZED 2026-10-03 18:1xZ, DELIBERATELY NOT SHIPPED — A TRUSTEE'S CORPORATE
-  NAME WELDED ONTO A FUND NAME: 5,168 rows / 1,348 plans / 3,744,810 ppl /
-  $35,453,136,903.** Largest is **Target Corporation, 495,482 participants**:
-  `State Street Bank & Trust Company SSGA S+P 500 INDEX SER A S+P 500 FLAGSHIP
-  NON LENDING` at 21.1% of its menu ($2,995,363,626). Duke University (71,641)
-  publishes `Fidelity JPM Large Cap Growth R6` with JLGMX correct.
-  **THE SCREEN IS A CORPORATE ENTITY DESIGNATION, NOT A SECOND HOUSE** —
-  `Trust Company`, `Advisors, LLC`, `Investment Mgmt Inc.`, `Management &
-  Research`, `Insurance and Annuity Company`. **DO NOT CARRY the two-house
-  screen's 6,059 rows / 2,241,071 ppl**: most are CORRECT AS FILED, because a
-  SUB-ADVISED fund legitimately names two firms (`Principal/BlackRock S&P 500
-  Index Fund`, `MassMutual Select TRP Retirement 2040 M4`, `Empower Columbia
-  Dividend Value Fund`), and `iShares … BlackRock Advisors, LLC` is one firm
-  twice. Split: **same house both sides 826 rows / 1,022,423 ppl** (verbose, not
-  contradictory), **different house 785 / 185,141** (wrong firm named), **195 /
-  2,063,716 REFUSED** (nothing usable remains). The shipped `leadingHouse` guard
-  is NOT this — checked, not assumed: its only consumer (`app.js:2030`) blocks
-  an issuer-driven TICKER assertion, report-path only, and leaves the NAME.
-  **BOTH DEFECTS FIXED AND IT STILL DID NOT SHIP — 19:3xZ, reverted on its own
-  whole-store diff, nothing half-shipped.** Re-measured through the page's path:
-  **2,779 rows / 782 plans / 3,235,438 ppl / $33,562,778,907**. **The TICKER is
-  exactly right: 308 rows / 123,904 ppl GAINED a symbol, 0 lost, 0 swapped, 0
-  crossing the comparable/asserted line** — the trustee prefix was BLOCKING the
-  resolver (JetBlue's `VANGUARD FIDUCIARY TRUST COMPANY VANGUARD FEDERAL` →
-  **=VMFXX**). **THE FEE IS THE BLOCKER: 23 rows / 41,582 ppl LOSE a fee** (D.R.
-  Horton, 17,416 ppl: `JP Morgan Investment Management Large Cap Growth` drops
-  0.44) **and 42 rows / 18,480 ppl SWAP one** (0.42→0.2, 0.05→0.1).
-  ***`fundER` is a NAME-pattern table, so the house token inside the TRUSTEE's
-  name is what the fee matched on — the gain and the harm come from the same
-  strip***, and a fee is SOURCED, never derived.
-  **THIS IS THE THIRD ITEM BLOCKING ON THAT ONE PROPERTY** (with the owner-gated
-  store-vs-page item and one-ticker-two-fees), together ~11.6M readers: making
-  `fundER` answer on a SYMBOL where one is resolved is the unlock for all three,
-  and it is the owner's call because it moves fee cells.
-  **STILL TO FIX before a retry:** a NEW residue of the same family —
-  `Nationwide Trust Company, FSB Vanguard …` leaves **`FSB`** behind, because
-  the 18:1xZ gate anchors on the first CHARACTER and `FSB` satisfies it; then
-  re-diff and require FEE lost = 0 and swapped = 0, as the ticker already is.
-  **AND THIS CLASS OVERLAPS THE MID-NAME-HOUSE CLASS BELOW, measured 20:4xZ —
-  they are two ORIENTATIONS of one condition, not two classes.** That cycle's
-  lead-strip destroyed nine correct tickers at Bread Financial and SSSYX at Booz
-  Allen precisely because those rows are trustee-tail rows, which is what THIS
-  arm strips; and its uniform draw surfaced the `FSB` row above independently.
-  So the retry is not two arms but ONE orientation test that decides per row
-  which side names the fund and abstains when both do.
-  `docs/accuracy-log.md` 2026-10-03 (18:1xZ) and (19:3xZ).
+- **SHIPPED 2026-10-03 21:5xZ — A TRUSTEE'S CORPORATE NAME WELDED ONTO A FUND
+  NAME: 2,795 rows / 430 plans / 1,406,886 ppl / $15,998,074,728, name-only
+  with 359 TICKERS GAINED and 0 lost, 0 swapped, 0 crossing the
+  comparable/asserted line; 18 crawlable pages.** Target Corporation (495,482
+  ppl) stops publishing `State Street Bank & Trust Company SSGA S+P 500 INDEX
+  SER A …` at 21.1% of its menu; Cornell's $545,751,747 row stops leading with
+  `GUARANTEED INVESTMENT CONTRACTS WITH INSURANCE COMPANIES`.
+  **THE 19:3xZ REVERT'S BLOCKER IS SOLVED BY THE FEE'S OWN WITNESS, not by a new
+  source.** `fundER` is a NAME-pattern table, so the house token inside the
+  trustee's name is part of what priced the row — and every one of that arm's 23
+  lost fees left a remainder with NO HOUSE IN IT (D.R. Horton's `JP Morgan
+  Investment Management Large Cap Growth` → `Large Cap Growth`, which prices to
+  nothing). So the gate is **the remainder must keep its house**, and fee LOST
+  fell 23 → **2 rows / 290 ppl**, both of which are improvements (a 0.1 priced
+  off `Index Admiral`, a fragment of a different fund; and a row that GAINS EFA
+  as it drops a 0.06 priced off `Transamerica Financial Life Insurance
+  Company`). All 20 fee SWAPS move onto the correctly-named fund. It is **NOT**
+  "the two houses must differ" — that refuses JetBlue's $649,443,748 row, whose
+  remainder keeps Vanguard.
+  **STILL OPEN from it, COVERAGE and not a false claim:** the gate refuses every
+  row whose remainder leads with no house `LEADING_HOUSE` knows, so `Fidelity
+  Management Trust Company Fimm Treasury Only Portfolio Cl I` and BlackRock's
+  `Institutional Trust Company, . Lifepath Index …` rows keep their prefixes.
+  Growing `LEADING_HOUSE` is additive by construction and each addition must
+  re-run the whole-store diff. **What must never be relaxed is the remainder
+  condition** — it is the only thing between this arm and the 23 fees that
+  reverted its predecessor.
+  **AND THE `fiduciary` CASE IS THE ONE TO REMEMBER: every gate passed and only
+  the PAGE caught it.** 16 pins, five guards each with a measured blocking
+  population, 0 tickers lost, the app.js twin agreeing on all 1,730,676 rows and
+  smoke-test green — and one row published `Vanguard Fiduciary` on $70,452,841,
+  because that row is ITSELF a welded name and the arm removed its trailing
+  entity while leaving the leading fragment of one. Confirmed fixed BY ABSENCE:
+  19 changed pages became 18.
+  **THE GUARD SET WAS CHOSEN BY MEASUREMENT: four conditions were REMOVED
+  because neutering them one at a time over the whole store showed they blocked
+  ZERO rows `beyondHouse` did not already block.** *A condition that can never
+  be the only protection proves nothing* — the fixture-protected-twice trap, met
+  at store scale. Live populations: beyondHouse 4,401 rows, tail-house-boundary
+  71, firm-length-bound 18, firm-generic vocabulary 7, `isGenericTypeName` 0
+  (kept and labelled; it is the display's own composition at the two call sites).
+  `docs/accuracy-log.md` 2026-10-03 (18:1xZ), (19:3xZ) and (21:5xZ).
 - **THE MID-NAME-HOUSE CLASS — TEST RUN 2026-10-03 20:4xZ, AND IT KILLED ITS OWN
   REPAIR IN BOTH DIRECTIONS. The queued test was the WRONG DIRECTION and one of
   the "correct" shapes it rested on is REFUTED.** Reading Gate Gourmet's menus

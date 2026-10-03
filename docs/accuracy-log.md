@@ -43548,3 +43548,171 @@ test that abstains is affordable.
 
 Draw 2 (Xprize Foundation, 136 participants) has no lineup and no recordkeeper
 published — nothing found, recorded as nothing rather than written up.
+
+---
+
+## 2026-10-03 (21:5xZ) — THE TRUSTEE'S CORPORATE STYLE SHIPPED: 2,795 rows / 430 plans / 1,406,886 participants / $15,998,074,728, and the gate that made it shippable was the FEE'S OWN WITNESS
+
+The 18:1xZ sizing and the 19:3xZ revert are this entry's two parents. That arm's
+ticker outcome was already ideal — 308 rows gained a symbol, 0 lost, 0 swapped —
+and it was reverted anyway, for **23 rows / 41,582 ppl LOSING a fee and 42 /
+18,480 SWAPPING one**. This version ships because reading those losses named the
+mechanism instead of restating the problem.
+
+### What was wrong
+
+The 4i identity column holds the TRUSTEE and the parser welds it to the
+description column's fund name:
+
+| | |
+|---|---|
+| Target Corporation, **495,482 ppl** | `State Street Bank & Trust Company SSGA S+P 500 INDEX SER A S+P 500 FLAGSHIP NON LENDING`, 21.1% of its menu, $2,995,363,626 |
+| Cornell, 27,549 ppl | `GUARANTEED INVESTMENT CONTRACTS WITH INSURANCE COMPANIES TIAA Traditional Non Benefit Resp`, **$545,751,747** |
+| JetBlue, 27,448 ppl | `VANGUARD FIDUCIARY TRUST COMPANY VANGUARD INSTITUTIONAL 500 INDEX TRUST`, $649,443,748 |
+| Helen of Troy, 1,813 ppl | `Fidelity Management Trust Company FID FDM IDX 2045 IPR` |
+
+### The change, and why this gate and not the one I proposed first
+
+`fundER` is a NAME-pattern table, so the house token inside the trustee's name
+is part of what priced the row. Every one of the reverted arm's 23 lost fees
+leaves a remainder with **no house in it** — D.R. Horton (17,416 ppl) files
+`JP Morgan Investment Management Large Cap Growth`, and `Large Cap Growth` alone
+prices to nothing. So the condition is that **the remainder must keep its
+house**, which is not a new rule but the fee's own witness: keep the house and
+the fee matched on the house survives the strip.
+
+It is **not** "the two houses must differ", which was my first idea. That
+version refuses JetBlue, whose remainder keeps Vanguard and whose symbol gain is
+real. And the shipped condition earns its place twice over, because a remainder
+with no house is a WORSE published name than the verbose one it replaced:
+`Large Cap Growth` tells a reader less than `JP Morgan … Large Cap Growth` does.
+
+### Measured on every published cell of all 1,730,415 store rows
+
+| | rows | plans | ppl | $ |
+|---|---|---|---|---|
+| **name** | **2,795** | **430** | **1,406,886** | **$15,998,074,728** |
+| ticker gained | 359 | 111 | 125,516 | $982,506,857 |
+| **ticker LOST / SWAPPED / star-flipped** | **0 / 0 / 0** | | | |
+| fee gained | 69 | 23 | 11,951 | — |
+| fee lost | 2 | 2 | 290 | $578,482 |
+| fee swapped | 20 | 4 | 4,894 | — |
+| shown type | 0 | | | |
+| crawlable pages | 18 | | | |
+
+The two lost fees are improvements: Panopto's `LLC Index Admiral Empower Trust
+Company, Vanguard Emerging Mkts Stock` was priced 0.1 off `Index Admiral`, a
+fragment of a DIFFERENT fund, and Dermatology Consultants' row **gains the
+ticker EFA** as it drops a 0.06 priced off `Transamerica Financial Life
+Insurance Company`. All 20 swaps move onto the correctly-named fund: TSG
+Resources' `Nationwide Trust Company, FSB Vanguard Target Retirement 2035 Common
+Trust` goes 0.045 → **0.08** and gains **VTTHX**.
+
+### THE REGRESSION ONLY THE PAGE FOUND
+
+Every other gate passed — 16 pins, five guards each with a measured population,
+0 tickers lost, the app.js twin agreeing on all 1,730,676 rows, smoke-test green
+— and regenerating the crawlable pages showed one row publishing **`Vanguard
+Fiduciary`** on **$70,452,841** where the filing says `Vanguard Fiduciary
+Vanguard Retirement Savings Trust Company`. **That row is itself a welded name**,
+so the arm removed the trailing entity and left the leading fragment of one.
+`fiduciary` is now firm boilerplate, the row is left exactly as filed, and the
+fix is confirmed **by absence**: 19 pages changed became 18. *A diff cannot tell
+a wanted change from an unwanted one; only reading the output can* — second
+instance in two days, and the first was also a name arm.
+
+### HOW THE GUARDS WERE CHOSEN, which is measurement and not taste
+
+Each guard was neutered in turn in a full copy of the source and its live
+blocking population counted over the whole store:
+
+| guard | rows it alone keeps unchanged |
+|---|---|
+| beyond-house | **4,401** |
+| tail-house-boundary | 71 |
+| firm-length-bound | 18 |
+| firm-generic vocabulary | 7 |
+| isGenericTypeName | 0 — kept, labelled, and it is the display's own composition at the two render call sites |
+
+**FOUR CONDITIONS WERE REMOVED BECAUSE THAT TABLE SAID THEY WERE SUBSUMED, not
+because they looked redundant.** `leadingHouse(rest)`, a two-token floor and a
+three-letter test each blocked **zero** rows that `beyondHouse` did not already
+block, because `beyondHouse` runs LEADING_HOUSE itself and returns false when no
+house matches. ***A condition that can never be the only protection proves
+nothing*** — the same trap as a fixture protected twice, met here at store scale
+rather than on a fixture, which is a cheaper place to find it than the next
+reader-facing claim.
+
+And one guard exists only because the store said so: `Fidelity Investments`
+passes any house test and names no fund. Blue Cross Blue Shield (8,058 ppl)
+files `Geode Capital Management Trust Company Fidelity Investments` and the arm
+dropped its 0.05; Linklaters' two rows left `Charles Schwab Investment` the same
+way. **No shipped predicate separates these** — `hasNoFundIdentity` answers
+false on all three, because its filler vocabulary was built for rows with no
+house at all.
+
+### Three defects the pins caught before any counting
+
+Each came from printing the arm's own loop state rather than reasoning about it,
+which is the standing lesson from the hardest bug on this record:
+
+1. A firm clause written as a 1-to-5-token wildcard had its `[A-Z]` **matched
+   lowercase under the `i` flag**, so the leftmost match ate `Index Fund` and
+   published `Fidelity 500`.
+2. Candidate starts included the style's own first token, giving an **empty firm
+   span** and a boundary one word inside the firm (`State Street …` → remainder
+   `State`).
+3. **The firm boundary needs a different witness at each end, and each end
+   supplies one.** At the LEAD there is no boundary question at all — the firm is
+   simply everything before the style — which is what lets `Nationwide Trust
+   Company, FSB` work where any house test fails it, because a BANK trustee is
+   not a fund house and bank trustees are much of the class. At the TAIL the
+   boundary is genuinely ambiguous and `leadingHouse` is the only thing that
+   locates it.
+
+### And my first negative control was unsound in its ASSERTION
+
+It tested whether entity TEXT survived the output, and reported FAIL on four
+rows the arm correctly left alone — once because `Investment Management` is not
+in the vocabulary I was grepping for, and three times because other shipped arms
+touch those strings. **A refusal control has to compare against the arm being
+ABSENT**, so the harness loads the committed copy of the module beside the
+working one. One smoke-test fixture was wrong for exactly the same reason: `GQG
+Partners … Collective Investment Trust` is moved by a pre-existing type-suffix
+arm, not by this one, so the expectation was wrong rather than the code — which
+is what a HEAD-vs-new comparison says and a hand-written `want` cannot.
+
+### The whole no-house LEAD population was READ, by prefix, not sampled
+
+The LEAD branch deliberately has no house test, so it will strip any ≤4-token
+prefix in front of a corporate style. That subset is **1,181 rows / 207 plans /
+288,812 ppl / $2,095,179,908 across 37 distinct stripped prefixes**, and every
+one is a real trustee or insurer: John Hancock (229 rows), Reliance Trust
+Company (93), Matrix Trust Company (89), Minnesota Life (81), The Standard (67),
+Lincoln National (59), Mutual of America (85 across two spellings), Empower
+Trust Company (48), Nationwide Trust Company FSB (46 across three), Capital Bank
+and Trust Company (30), Mid Atlantic Trust Company (65 across four spellings),
+SEI Trust Company (23), Benefit Trust Company (21), Great Gray (25 across
+three), American United Life (17), Principal Global Investors Trust Co (13),
+Broadridge Matrix (12), Ascensus (7), MassMutual (5), VALIC (2) — plus 13 rows
+of Schedule H captions (`INVESTMENT CONTRACT WITH INSURANCE COMPANY`) that are
+also correct to strip, and 13 where the prefix is a trustee PLUS the previous
+row's dangling tail (`TRUST II VANGUARD FIDUCIARY TRUST COMPANY`), where the
+strip removes both and keeps the fund.
+
+### Status
+
+Display-side; `lib-disclose` is canonical, the arm and its helpers are SLICED
+VERBATIM into app.js with both landings asserted, `index.html` restamped,
+`PARSER_VERSION` stays 199 and no build-data path file is touched. Ten fixtures
+added to smoke-test, four of them to the browser-twin drift list because no
+existing case reached the new arm.
+
+**STILL OPEN from it, and it is coverage rather than a false claim:** the gate
+refuses every row whose remainder leads with no house `LEADING_HOUSE` knows, so
+`Fidelity Management Trust Company Fimm Treasury Only Portfolio Cl I` and
+BlackRock's `Institutional Trust Company, . Lifepath Index …` rows keep their
+prefixes. Growing `LEADING_HOUSE` is additive by construction and each addition
+re-runs this diff; what must not happen is relaxing the remainder condition,
+which is the only thing standing between this arm and the 23 fees that reverted
+its predecessor.
