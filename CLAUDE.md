@@ -1171,12 +1171,27 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   2,063,716 REFUSED** (nothing usable remains). The shipped `leadingHouse` guard
   is NOT this — checked, not assumed: its only consumer (`app.js:2030`) blocks
   an issuer-driven TICKER assertion, report-path only, and leaves the NAME.
-  **TWO DEFECTS IN MY OWN SCREEN MUST BE FIXED FIRST:** the lead strip leaves
-  `. LIFEPATH INDEX 2050 NL FUND F` on Target's row (the gate tested that
-  letters remain, not that the string starts like a name), and **the TAIL arm
-  reads 0 because it is BROKEN** — its `[^,]` class forbids the comma in
-  `Advisors, LLC` and it fires on none of its five known members.
-  `docs/accuracy-log.md` 2026-10-03 (18:1xZ).
+  **BOTH DEFECTS FIXED AND IT STILL DID NOT SHIP — 19:3xZ, reverted on its own
+  whole-store diff, nothing half-shipped.** Re-measured through the page's path:
+  **2,779 rows / 782 plans / 3,235,438 ppl / $33,562,778,907**. **The TICKER is
+  exactly right: 308 rows / 123,904 ppl GAINED a symbol, 0 lost, 0 swapped, 0
+  crossing the comparable/asserted line** — the trustee prefix was BLOCKING the
+  resolver (JetBlue's `VANGUARD FIDUCIARY TRUST COMPANY VANGUARD FEDERAL` →
+  **=VMFXX**). **THE FEE IS THE BLOCKER: 23 rows / 41,582 ppl LOSE a fee** (D.R.
+  Horton, 17,416 ppl: `JP Morgan Investment Management Large Cap Growth` drops
+  0.44) **and 42 rows / 18,480 ppl SWAP one** (0.42→0.2, 0.05→0.1).
+  ***`fundER` is a NAME-pattern table, so the house token inside the TRUSTEE's
+  name is what the fee matched on — the gain and the harm come from the same
+  strip***, and a fee is SOURCED, never derived.
+  **THIS IS THE THIRD ITEM BLOCKING ON THAT ONE PROPERTY** (with the owner-gated
+  store-vs-page item and one-ticker-two-fees), together ~11.6M readers: making
+  `fundER` answer on a SYMBOL where one is resolved is the unlock for all three,
+  and it is the owner's call because it moves fee cells.
+  **STILL TO FIX before a retry:** a NEW residue of the same family —
+  `Nationwide Trust Company, FSB Vanguard …` leaves **`FSB`** behind, because
+  the 18:1xZ gate anchors on the first CHARACTER and `FSB` satisfies it; then
+  re-diff and require FEE lost = 0 and swapped = 0, as the ticker already is.
+  `docs/accuracy-log.md` 2026-10-03 (18:1xZ) and (19:3xZ).
 - **FOUND BY THE 18:1xZ DRAW — TWO FUNDS WELDED INTO ONE ROW, and the decisive
   test is named but NOT YET RUN.** Gate Gourmet (2,038 ppl) publishes
   `Bond Index Instl Vanguard Mid Cap Index Instl`, `Adm Vanguard Intermediate
@@ -1735,6 +1750,14 @@ These outlived the versions that produced them. The accuracy log has the case.
   to 2,896 rows. **A narrowing is a claim and must be tested, not asserted** —
   60,000 sampled bar-free names were required to clean identically under both
   renderers, with the script exiting 1 if any differed.
+  **AND SHARPER, 19:3xZ: SAMPLING CANNOT ESTABLISH A SUPERSET.** A narrowing that
+  approximated a designator vocabulary and omitted `L.L.C.` had its 60,000-name
+  discharge **FAIL on one run and PASS on the next** — the reservoir is random,
+  so the sample told the truth once and lied once. ***A narrowing must superset
+  what the change can touch BY CONSTRUCTION***; the discharge test can only fail
+  to refute one, never prove it. Widening to tokens that superset every branch
+  took the candidate set from 6,896 to 30,143 rows and made the discharge mean
+  something.
 - **Before adding a SOURCE, ask what the pipeline already reads and throws
   away.** Three instances in one day: `cct` was 231,260 of the 406,247 bytes
   every visitor already downloads, with no consumer; `i1` was read by

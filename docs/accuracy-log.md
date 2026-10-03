@@ -43218,3 +43218,75 @@ store. That test separates (a) from (b) and (c) exactly, because only a weld
 leaves its other half behind as a neighbour. Run it before pricing this class.
 
 Nothing shipped from this draw; sized, split, and queued with the test named.
+
+## 2026-10-03 (19:3xZ) — THE TRUSTEE-WELDED NAME: BOTH DEFECTS FIXED, THE TICKER IS PERFECT, AND THE FEE IS WHY IT DID NOT SHIP
+
+Second cycle on the item. Both 18:1xZ defects fixed, implemented canonically in
+`lib-disclose` with the twin sliced into app.js, 16 pins passing in BOTH copies
+— **and then reverted on the evidence of its own whole-store diff.** Nothing is
+half-shipped; `git status` is clean at HEAD.
+
+**THE POPULATION, measured through the page's clean-then-render path against the
+previous data commit: 2,779 rows / 782 plans / 3,235,438 ppl / $33,562,778,907**
+(LEAD 2,707, TAIL 72 — the arm that read 0 and was broken). 0 rows cross the
+`ID_ONLY` drop.
+
+**THE TICKER IS EXACTLY WHAT A REPAIR SHOULD LOOK LIKE: 308 rows / 74 plans /
+123,904 ppl GAINED a symbol, 0 LOST, 0 SWAPPED, and 0 crossed the
+comparable/asserted line.** The trustee prefix was *blocking* the resolver, so
+removing it recovers the right answer: JetBlue (27,448 ppl) `VANGUARD FIDUCIARY
+TRUST COMPANY VANGUARD FEDERAL` → `VANGUARD FEDERAL` → **=VMFXX**; George
+Washington University (15,310) → **=VFTAX**; Foster Poultry Farms (14,669) →
+**=BCOIX**, **=VEIRX**, **=FXNAX**, **=FIPDX**; United Fashions → **=FXAIX**.
+
+**THE FEE MOVES IN BOTH DIRECTIONS AND THAT IS THE BLOCKER: 23 rows / 41,582 ppl
+LOSE a fee and 42 rows / 18,480 ppl SWAP one.** D.R. Horton (**17,416 ppl**)
+`JP Morgan Investment Management Large Cap Growth` → `Large Cap Growth` drops
+**0.44**; Univision (5,797) `Fidelity Management Trust Co. Government Money
+Market Fund` goes **0.42 → 0.2**; the Elevator Constructors' annuity fund
+(4,276) goes **0.05 → 0.1**, doubling.
+
+***THE CAUSE IS THAT `fundER` IS A NAME-PATTERN TABLE, SO THE HOUSE TOKEN INSIDE
+THE TRUSTEE'S NAME IS WHAT THE FEE WAS MATCHING ON.*** The gain and the harm
+come from the SAME strip: remove the firm and the ticker resolves, remove the
+firm and the fee loses its pattern. And the direction is unknowable without a
+source — `Fidelity Management Trust Co. Government Money Market Fund` priced at
+0.42 because "Fidelity" sat in the TRUSTEE's name is arguably the pre-existing
+defect, and 0.2 as a generic government money market is arguably the right
+answer, but **a fee is SOURCED, never derived**, so neither reading may be
+published on 60,062 readers on my say-so.
+
+**AND THIS IS THE THIRD ITEM TO BLOCK ON THE SAME THING, which is the finding
+worth more than the measurement.** The owner-gated store-vs-page item
+(8,197,880 ppl) records "the blocker is the FEE: `fundER` is called on the NAME
+and never on a symbol". The queued one-ticker-two-fees item (354,753 rows) is
+the same coupling seen from the fee side. This is the third. ***A name repair
+cannot be separated from a fee claim while the fee is priced off the name***,
+and that single property now gates roughly 11.6 million readers across three
+independent items. Making `fundER` answer on a SYMBOL where one is resolved is
+the unlock for all three, and it is an owner decision because it moves fee cells.
+
+**ALSO FOUND, a new defect of my own, same family as the 18:1xZ residue:**
+`Nationwide Trust Company, FSB Vanguard Target Retirement 2050 Common Trust`
+becomes **`FSB Vanguard Target Retirement 2050 Common Trust`** — the `FSB` is
+part of the trustee's name and my separator run does not eat it. The 18:1xZ fix
+anchored the gate on the first CHARACTER, which `FSB` satisfies. *A gate that
+tests the shape of the first character cannot tell a fund's name from another
+fragment of the firm's.*
+
+**THE NARROWING LESSON IS SHARPER THAN THE ONE I WROTE AT 15:3xZ.** My first
+`NARROW` approximated the designator vocabulary and omitted `L.L.C.`. The
+60,000-name discharge **FAILED on one run and PASSED on the next**, because the
+reservoir sample is random — so the sample told me the truth once and lied once.
+***A narrowing must be a provable SUPERSET of what the change can touch, and
+sampling cannot establish a superset*** — it can only fail to refute one. Fixed
+by widening to tokens that superset every branch by construction (30,143 rows
+rather than 6,896), after which the discharge means something.
+
+**WHAT WOULD MAKE IT SHIPPABLE, in order:** (1) eat the firm's trailing
+fragments (`FSB`, `N.A.`) or require the remainder to open on a FUND-shaped
+token rather than any character; (2) decide the fee question — the clean split
+is that the 365 rows / 170,932 ppl where the two houses DIFFER cannot have the
+fee priced off the trustee, while the 607 rows / 1,002,785 ppl where they are
+the SAME firm are exactly where the fee legitimately matched; (3) re-diff and
+require FEE lost = 0 and FEE swapped = 0, as the ticker already is.
