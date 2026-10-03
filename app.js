@@ -35,6 +35,69 @@
   }
   window.__wampoMatchQuoteOk = matchQuoteOk;   // read by the smoke test only
 
+  /* ---- vesting-quote guard ------------------------------------------------
+   * CANONICAL COPY: scripts/lib-quote.mjs, which carries the six measurement
+   * passes and the five refutations. This is the browser twin, SLICED VERBATIM
+   * from that file by scratchpad/slice-vq.mjs and never typed by hand;
+   * scripts/smoke-test.mjs runs both against docs/quote-guard-cases.json and
+   * fails when they disagree. */
+  const VQ_RULE_WORD = String.raw`(?:based upon|based on|dependent upon|dependent on|determined by|determined based|according to|as follows|following (?:table|schedule)|years of (?:credited |vesting |continuous )?service|increments of|anniversar|cliff|graded)`;
+  /* (b) ANY vesting rule. Generous on purpose — see the note above. */
+  const VQ_VESTS = new RegExp([
+    String.raw`\bvests?\b`,
+    String.raw`\bvesting\b`,
+    String.raw`\bforfeit`,
+    /* a copula before the participle, with anything in the gap: "are 100%
+     * immediately vested", "is one hundred percent (100%) vested" */
+    String.raw`\b(?:are|is|was|were|be|become|becomes|became|been|have|has|had)\b[^.]{0,40}?\bvested\b`,
+    String.raw`\bvested\s+(?:in|after|upon|at|according|based|immediately|when|once|following)\b`,
+    String.raw`\bvested\s*(?:\d{1,3}\s?%|percent)`,
+    String.raw`(?:\d{1,3}\s?%|percent)\s*\)?\s*vested\b`,
+    String.raw`\bvested\s+(?:interest|percentage|portion|percent|value|service)\b[\s\S]{0,200}?${VQ_RULE_WORD}`,
+    String.raw`${VQ_RULE_WORD}[\s\S]{0,200}?\bvested\s+(?:interest|percentage|portion|percent|value)\b`,
+    /* a ladder, with or without percent signs */
+    String.raw`\d{1,3}\s?%[\s\S]{0,40}?(?:year|anniversar)`,
+    String.raw`(?:year|anniversar)[\s\S]{0,40}?\d{1,3}\s?%`,
+    String.raw`\d\s+years?\b[\s\S]{0,8}\d{2,3}\b[\s\S]{0,40}?\d\s+years?\b`,
+  ].join("|"), "i");
+
+  /* (a) the other named rule. Each arm is anchored on vocabulary that rule owns,
+   * not on a word it merely contains: "loan" alone would catch "one-half of the
+   * participant's vested balance" inside a real vesting sentence. */
+  const VQ_OTHER_RULE = new RegExp([
+    /* loan limit */
+    String.raw`\b(?:participant loans?|loans? (?:are|from|under|permitted|secured)|may borrow|minimum loan|maximum loan|outstanding (?:loan|balance of any previous loan))\b`,
+    /* raw Form 5500 table text bled into the notes */
+    String.raw`\b2[a-d]\b[\s\S]{0,60}\bEIN\b`,
+    String.raw`Name of Participating`,
+    /* a merger or an amendment */
+    String.raw`\b(?:was|been) (?:amended|merged)`,
+    String.raw`merged into the Plan`,
+    String.raw`transferred in full to the receiving plan`,
+    String.raw`In-Plan Roth Conversions`,
+    /* an in-service withdrawal or a distribution.
+     * `withdraws` is here because without it THE MOTIVATING CASE ESCAPED. The
+     * first store-wide count of this class — 39 entries — did not contain PSEG,
+     * whose sentence opens "If a Participant WITHDRAWS", third person singular,
+     * where every arm written from the sample said "may withdraw". That is the
+     * SECOND time in this one investigation that a measurement could not see its
+     * own motivating example, and it was caught by a pinned fixture failing
+     * rather than by re-reading the count. */
+    String.raw`\b(?:may (?:elect to )?withdraw|may withdrawal|withdraws|in-service (?:withdrawal|distribution)|allows for in-service|available for distribution|must take a distribution|may (?:elect to )?receive (?:a |all|either|the )|entitled to (?:receive|the (?:full|total) value)|Payments of Benefits|payable upon|reallocated to supplement)\b`,
+  ].join("|"), "i");
+
+  /**
+   * True when `text` may be shown to a reader under a vesting heading.
+   * @param {string} text the stored vestingText
+   */
+  function vestingQuoteOk(text) {
+    const t = String(text || "").replace(/\s+/g, " ").trim();
+    if (!t) return false;
+    if (VQ_VESTS.test(t)) return true;          /* (b) states a vesting rule */
+    return !VQ_OTHER_RULE.test(t);              /* (a) states another one */
+  }
+  window.__wampoVestingQuoteOk = vestingQuoteOk;   // read by the smoke test only
+
   /* Coverage band — canonical copy in scripts/lib-disclose.mjs, which carries
    * the measurements. Same drift risk as the quote guard, same protection:
    * the smoke test runs this copy against the module's own boundary cases.
@@ -2521,6 +2584,18 @@
      * made true by a caveat. Where nothing survives, the card says so, which is
      * the same three-state honesty the vesting line below already uses. */
     const matchQuote = matchQuoteOk(ff.matchText, !!ff.match) ? ff.matchText : null;
+    /* Same disease on the vesting line, same treatment. `vestingText` is picked
+     * by proximity to vesting language, so 41 plans / 226,729 participants
+     * publish a sentence stating some OTHER rule under "Employer-money
+     * vesting": Charter Communications a loan limit (120,688 ppl), PSEG a
+     * withdrawal-suspension rule, Vensure raw Form 5500 table text whose only
+     * vest-word is inside VESTED METALS INTERNATIONAL LLC. All 41 publish the
+     * quote with NO label above it, so the quote IS the whole answer, and
+     * withholding falls back to the honest "not stated in the audited notes"
+     * line below. The graded-label enrichment above reads vestingText too and
+     * is deliberately NOT gated: it only runs when a graded label exists, and
+     * the measurement says 0 of the 41 carry one. */
+    const vestingQuote = vestingQuoteOk(ff.vestingText) ? ff.vestingText : null;
     // Schedule H 2a(1)(A) is ALL employer money — match plus profit sharing,
     // prevailing-wage QNECs, safe harbor. Labelling it "total" inside a card
     // headed "Employer Match" read as the match total: R.H. White's $3.2M is
@@ -2543,8 +2618,8 @@
       ${ff.necText ? `<blockquote class="quote">“${esc(ff.necText)}”</blockquote>` : ""}
       ${schRLine(plan)}
       ${ff.vesting ? `<p class="max-benefit">Employer-money vesting: <strong>${esc(ff.vesting)}</strong></p>` : ""}
-      ${ff.vestingText ? `<blockquote class="quote">“${esc(ff.vestingText)}”</blockquote>` : ""}
-      ${!ff.vesting && !ff.vestingText ? (
+      ${vestingQuote ? `<blockquote class="quote">“${esc(vestingQuote)}”</blockquote>` : ""}
+      ${!ff.vesting && !vestingQuote ? (
         ff.safeHarbor && !/QACA|qualified automatic/i.test((ff.matchText || "") + (ff.necText || ""))
           ? `<p class="max-benefit">Employer-money vesting: <strong>immediate for the safe-harbor contribution</strong> — required by law (IRC §401(k)(12)); the audited notes don't state a schedule for any other employer money.</p>`
           : `<p class="max-benefit">Employer-money vesting: <span class="feat-unknown">not stated in the audited notes</span> — check the plan's SPD.</p>`) : ""}

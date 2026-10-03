@@ -208,6 +208,24 @@ try {
     fail(`match-quote guard in app.js disagrees with docs/quote-guard-cases.json on ${drift.length} of ${cases.length} filings`);
   }
 
+  /* Same drift protection for the VESTING quote guard, which has the same two
+   * homes and the same disease: 41 plans / 226,729 participants published a
+   * loan limit, a withdrawal rule or raw form-table text under "Employer-money
+   * vesting". The browser twin is SLICED verbatim from scripts/lib-quote.mjs,
+   * so a disagreement here means the slice was edited by hand. */
+  const vCases = JSON.parse(readFileSync("docs/quote-guard-cases.json", "utf8")).vestingCases || [];
+  if (!vCases.length) fail("docs/quote-guard-cases.json carries no vestingCases — the vesting twin is unchecked");
+  const vVerdicts = await page.evaluate((cs) => {
+    if (typeof window.__wampoVestingQuoteOk !== "function") return null;
+    return cs.map((c) => window.__wampoVestingQuoteOk(c.text));
+  }, vCases);
+  if (!vVerdicts) fail("app.js no longer exposes __wampoVestingQuoteOk — the guard cannot be cross-checked");
+  const vDrift = vCases.map((c, i) => [c, vVerdicts?.[i]]).filter(([c, got]) => got !== c.expect);
+  if (vDrift.length) {
+    for (const [c, got] of vDrift) console.error(`  app.js vesting guard: expected ${c.expect}, got ${got} — ${c.why}`);
+    fail(`vesting-quote guard in app.js disagrees with docs/quote-guard-cases.json on ${vDrift.length} of ${vCases.length} filings`);
+  }
+
   /* Same drift protection for the coverage band: scripts/lib-disclose.mjs is
    * canonical, app.js carries a twin because it is a plain browser script.
    * Run the BROWSER copy against the module's own boundary cases. */

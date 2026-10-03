@@ -42242,3 +42242,106 @@ hours above this one, where `mirror.sh`'s staleness note fired on the only path
 the procedure ever takes: a check that is wrong on the normal path gets
 dismissed, and a rule that is broader than its hazard gets obeyed — and the
 second is more expensive, because obeying it looks like diligence.
+
+## 2026-10-03 (09:0xZ) — the vesting quote states a DIFFERENT plan rule: 41 plans / 226,729 ppl withheld, and five screens were refuted on the way
+
+**Found while reading PSEG for v198 and queued then as "UNSIZED and honestly
+so". It is now sized, and the sizing is most of the value of the entry.**
+
+The page prints `vestingText` under **"Employer-money vesting"** above the line
+*"Quoted from the audited financial statements"*, and the crawlable pages print
+it under its own heading **"Vesting, as filed"**. `vestingText` is selected by
+proximity to vesting language, so it is frequently a sentence that MENTIONS
+vested money while stating some other rule entirely:
+
+| | ppl | what it actually states |
+|---|---|---|
+| Charter Communications | **120,688** | a **loan limit** — "$1 thousand up to … one-half of the total value of their vested account balance" |
+| Vensure Employer Services | **42,571** | **raw Form 5500 table text**; the only vest-word is inside the company name **VESTED METALS INTERNATIONAL LLC** |
+| Brown University | **12,356** | a **plan amendment** about Basic and Matching contribution formulas |
+| **PSEG pn=006 + pn=004** | **12,781** | a **withdrawal-suspension** rule: withdraw within 24 months and match stops for six |
+| Long Island Univ., Hofstra, UCB, Inova, Atos Syntel, + 32 more | | in-service withdrawals, distributions, loan minimums, mergers |
+
+**41 entries / 41 plans / 226,729 participants, and all 41 publish the quote
+with NO vesting label above it** — so in every case the sentence IS the whole
+answer. Withholding falls back to the existing honest line, *"not stated in the
+audited notes — check the plan's SPD"*.
+
+### Five screens, each refuted by reading its own members
+
+This is the part worth keeping, because none of the five failed for the same
+reason twice:
+
+1. **"no vesting ARITHMETIC"** → 2,433 entries / **3.9M ppl**. Reading the top
+   25 killed it: almost every one states a real rule without numbers ("fully
+   vested at all times", "based on years of continuous service"). ***A count
+   keyed on arithmetic measures the arithmetic.***
+2. **"no vesting VOCABULARY"** → **2 entries**, and **PSEG was not among them**,
+   because its sentence does say "vested". ***A measurement that cannot see its
+   own motivating example has not been scoped.***
+3. **"no vesting PREDICATE"** → 181. Missed *"a participant's vested interest …
+   is based upon years of continuous service"* (Alorica, Atos, 2u, Kimball,
+   M.D.C.) — all correct quotes.
+4. **the widened predicate** → 100. `(?:are|is)\s+(?:\w+\s+){0,3}vested` cannot
+   match **"are 100% immediately vested"**, because `\w` excludes `%`. Six
+   correct immediate-vesting quotes mis-filed on that one character class.
+5. **the re-widened predicate** → 80. Still admitted *"one hundred percent
+   (100%) vested"* and ladders written with **no percent sign at all**
+   ("3 years 25  4 years 50", Church & Dwight, twice).
+
+The pattern is that **"is this sentence about vesting" is a semantic judgment,
+and every syntactic screen for its ABSENCE leaks.** So the shipped predicate
+does not screen for absence. It requires BOTH **(a)** the sentence states a
+different named rule, each arm anchored on that rule's own vocabulary, AND
+**(b)** no vesting rule anywhere in it, under a deliberately generous test —
+the same conjunction shape that made v199's gate safe.
+
+### The one general thing six passes taught
+
+**A vesting RULE needs a copula or a verb form, an explicit percentage-vested, a
+ladder, or "vested interest/portion … based upon".** An **adjectival** "vested
+Employer Matching Contributions" is a noun phrase that some *other* rule acts
+on, and is never itself a rule. That is exactly the PSEG shape, and it is why
+(b) can be generous without swallowing the class.
+
+### AND THE MOTIVATING CASE ESCAPED A SECOND TIME
+
+The first store-wide count through the anchored conjunction read **39 entries /
+213,948 ppl** — and PSEG was **not in it**. Every withdrawal arm had been
+written from the sample as `may withdraw`, and PSEG's sentence opens *"If a
+Participant **withdraws**"*, third person singular. **It was caught by a pinned
+fixture failing, not by re-reading the count**, which is the argument for
+pinning the motivating case as a fixture before measuring the class. Adding
+`withdraws` moved the population 39 → 41 and the participants by exactly
+12,781 = 8,667 + 4,114, PSEG's two plans to the digit and nothing else.
+
+### Gates
+
+- `vestingQuoteOk` is canonical in `scripts/lib-quote.mjs` beside
+  `matchQuoteOk`, which has the same disease; the app.js twin is **SLICED
+  VERBATIM** by a scratchpad slicer that asserts the slice carries all three
+  constants and reaches nothing executable, and the smoke test runs the BROWSER
+  copy against the same fixtures.
+- 22 fixtures: 8 must-withhold (every large member, each read) and **14
+  must-keep, every one a real vesting quote that one of the five refuted screens
+  wrongly caught**, with the screen named in each `why`.
+- 6 negative controls, one PER CONDITION — (a) alone, (b) alone, neither, the
+  adjectival shape, the adjectival shape with a schedule added so (b) wins, and
+  empty input — plus an inertness check on an unseen (a)-only sentence.
+- The gate was run with the guard disabled: **12 checks fail by name**,
+  including all 8 must-withhold fixtures, both one-sided controls, the
+  inertness check and the store ceiling. *A control that cannot fail is
+  decorative.*
+- Whole-store ceilings in the gate (41 entries, 226,729 ppl against 80 /
+  400,000), because a predicate that silently grows to 4,100 entries is a
+  different predicate — and a floor too: withholding **0** on a store holding
+  Charter's loan limit reports on the query.
+- **Crawlable pages regenerated and diffed: 11 pages change, each removing
+  exactly the false "Vesting, as filed" section**, PSEG pn=004 and pn=006 among
+  them. Only 11 of the 41 have a page, which is the `TOP_N` item.
+- `index.html` restamped (app.js `?v=7f016bb0 → ?v=107d67c5`), `--check`
+  passes, smoke / no-identity / fund-er / quote-guard all green.
+- **Display-only.** `PARSER_VERSION` stays 199, no re-parse, nothing
+  pre-registered. The graded-label enrichment at `app.js:2314` also reads
+  `vestingText` and is deliberately NOT gated: it runs only when a graded label
+  exists, and the measurement says **0 of the 41 carry one**.

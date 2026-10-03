@@ -9,6 +9,7 @@ on:
     paths: ["app.js", "index.html", "styles.css", "data.js", "fund-er.js",
             "scripts/smoke-test.mjs", "scripts/map-test.mjs",
             "scripts/fund-er-test.mjs", "scripts/no-identity-test.mjs",
+            "scripts/vesting-quote-test.mjs", "scripts/lib-quote.mjs",
             "scripts/lib-disclose.mjs", "scripts/build-seo-pages.mjs",
             "plans-list.json", "plans-index.json", "map-points.json"]
   workflow_dispatch:
@@ -39,6 +40,19 @@ jobs:
       # network, runs before the Playwright install like its neighbours.
       - name: No-identity names — qualifies fragments, never a real fund
         run: node scripts/no-identity-test.mjs
+      # The vesting-quote guard withholds a sentence published under
+      # "Employer-money vesting" that states a DIFFERENT plan rule — Charter
+      # Communications a loan limit (120,688 ppl), PSEG a withdrawal-suspension
+      # rule, Vensure raw Form 5500 table text whose only vest-word sits inside
+      # VESTED METALS INTERNATIONAL LLC. 41 entries / 226,729 participants, all
+      # of which publish the quote as their WHOLE answer. Five screens for this
+      # class were refuted by reading their own members before the shipped
+      # conjunction was written, so 14 of the 22 fixtures are REAL vesting
+      # quotes those screens wrongly caught, and the gate holds the withheld
+      # population to a ceiling: a predicate that grows to 4,100 entries is a
+      # different predicate.
+      - name: Vesting quote — withholds another rule, never a real schedule
+        run: node scripts/vesting-quote-test.mjs
       # index.html cache-busts its assets with a query string, and that string
       # was typed by hand until 2026-10-02 -- when it was found SEVENTEEN DAYS
       # stale, with app.js and fund-er.js both changed that same day. A

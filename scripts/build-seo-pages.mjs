@@ -9,7 +9,7 @@
  * "not stated in the public filings" — never a guess. Filenames are
  * EIN-PN (stable forever, no orphans when a sponsor renames). */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
-import { matchQuoteOk } from "./lib-quote.mjs";
+import { matchQuoteOk, vestingQuoteOk } from "./lib-quote.mjs";
 import { coverageBand, filedUnit, cleanFiledName, isParticipantLoanRow, isNamelessFundRow, hasNoFundIdentity, isLoanDescriptionRow, isLoanAnswerRow, isLoanMaturityRow, isLoanVocabularyRow, isDirectionCaptionRow, isOfficeListRow, isPageBreakCaptionRow, trustScheduleDMenu } from "./lib-disclose.mjs";
 import { isGenericTypeName } from "./lib-4i.mjs";
 
@@ -316,7 +316,7 @@ ${matchQuote ? `<h2>Match formula, as filed</h2><blockquote>${esc(matchQuote)}</
 ${ff.nec ? `<h2>Employer nonelective contribution, as filed</h2>
 <p>This plan contributes <strong>${esc(ff.nec)}</strong> regardless of what a participant puts in — separate from any matching contribution.</p>
 ${ff.necText ? `<blockquote>${esc(ff.necText)}</blockquote>` : ""}` : ""}
-${ff.vestingText ? `<h2>Vesting, as filed</h2><blockquote>${esc(ff.vestingText)}</blockquote>` : ""}
+${vestingQuoteOk(ff.vestingText) ? `<h2>Vesting, as filed</h2><blockquote>${esc(ff.vestingText)}</blockquote>` : ""}
 ${funds ? `<h2>Fund lineup${lineupVia ? ` (via ${esc(lineupVia)})` : ""} — top holdings</h2>
 ${/* THE NEWLINE LIVES INSIDE THE CONDITIONAL, and the block six lines down
      already says why: an unconditionally emitted newline adds a blank line to

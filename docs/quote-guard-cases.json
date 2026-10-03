@@ -8,42 +8,222 @@
     "evaluates the second in the real page. The rule drifted between its two homes",
     "once already, which is the whole reason this file exists.",
     "hasFormula = whether an extracted formula is displayed above the quote, which",
-    "changes the question from 'is this the formula?' to 'is this about the match?'"
+    "changes the question from 'is this the formula?' to 'is this about the match?'",
+    "vestingCases = fixtures for vestingQuoteOk, which answers 'may this quote be",
+    "published under a VESTING heading?'. expect=false means the sentence states a",
+    "DIFFERENT named plan rule and no vesting rule; expect=true means publish. The",
+    "must-keep half is not decorative: every one of those sentences was WRONGLY",
+    "caught by one of the five measurement screens that were refuted before this",
+    "predicate was written, and the comment on each names which."
   ],
   "cases": [
-    { "why": "plain tiered formula", "hasFormula": false, "expect": true,
-      "text": "The Company makes safe-harbor matching contributions equal to 100% of deferrals of the first 3% of eligible compensation, then 50% of deferrals on the next 2% of eligible compensation." },
-    { "why": "rate and connector NOT adjacent: '(50%) of'", "hasFormula": false, "expect": true,
-      "text": "The Company makes matching contributions equal to fifty percent (50%) of eligible compensation that a participant contributes, with a maximum matching contribution of $2,400 per year." },
-    { "why": "lead-in phrasing, 'equal to a 100% match on'", "hasFormula": false, "expect": true,
-      "text": "The Company provides a safe harbor matching contribution equal to a 100% match on the participant's contributions with an elective deferral percentage less than or equal to 1%." },
-    { "why": "percentage spelled out", "hasFormula": false, "expect": true,
-      "text": "During the year ended December 31, 2024, the Plan Documents required Company safe harbor matching contributions up to four percent of eligible compensation for non-highly compensated employees." },
-    { "why": "dollar cap made a rate by a period", "hasFormula": false, "expect": true,
-      "text": "The Company makes a dollar-per-dollar matching contribution of up to a maximum of $500 per year for each participant." },
-
-    { "why": "no number at all — cannot be a formula", "hasFormula": false, "expect": false,
-      "text": "They may select from among several funds in which to invest their contributions, employer matching contributions and profit-sharing contributions." },
-    { "why": "the number belongs to 'vested', not to the match", "hasFormula": false, "expect": false,
-      "text": "The Company matching contributions vest 20% annually until the participant is 100% vested at the end of five years." },
-    { "why": "bare 'each' must not turn a vesting rate into a match rate", "hasFormula": false, "expect": false,
-      "text": "Employer matching contributions and employer profit sharing contributions, plus any earnings they generate, vest at 20% each year starting year one and are fully vested after five years." },
-    { "why": "account mechanics boilerplate", "hasFormula": false, "expect": false,
-      "text": "Each participant's account is credited with the participant's contributions, the Company's matching contributions, and the allocation of Plan earnings." },
-    { "why": "eligibility, not amount", "hasFormula": false, "expect": false,
-      "text": "Any pre-tax and/or Roth (after-tax) contributions made prior to completing 12 months of service are not eligible for the company matching contribution." },
-    { "why": "a YEAR'S TOTAL in dollars is not a rate — El Valor published this as a formula", "hasFormula": false, "expect": false,
-      "text": "There were $29,342 and $23,639 of employer matching contributions for the years ended December 31, 2024 and 2023, respectively." },
-    { "why": "one sentence used as evidence for both; leading word settles it", "hasFormula": false, "expect": false,
-      "text": "Vesting - At any time, participants are 100% vested in their contributions, the Company's matching contributions and any amounts rolled over to the Plan." },
-
-    { "why": "discretionary match states no number; it is still the right evidence", "hasFormula": true, "expect": true,
-      "text": "The Company may make a discretionary matching contribution." },
-    { "why": "same sentence cannot STAND ALONE as the formula", "hasFormula": false, "expect": false,
-      "text": "The Company may make a discretionary matching contribution." },
-    { "why": "supports a parsed discretionary formula", "hasFormula": true, "expect": true,
-      "text": "Company contributions are discretionary." },
-    { "why": "off-subject even beneath a parsed formula", "hasFormula": true, "expect": false,
-      "text": "Participants become 100% vested in employer matching contributions after six years and employer discretionary contributions after three years of service." }
+    {
+      "why": "plain tiered formula",
+      "hasFormula": false,
+      "expect": true,
+      "text": "The Company makes safe-harbor matching contributions equal to 100% of deferrals of the first 3% of eligible compensation, then 50% of deferrals on the next 2% of eligible compensation."
+    },
+    {
+      "why": "rate and connector NOT adjacent: '(50%) of'",
+      "hasFormula": false,
+      "expect": true,
+      "text": "The Company makes matching contributions equal to fifty percent (50%) of eligible compensation that a participant contributes, with a maximum matching contribution of $2,400 per year."
+    },
+    {
+      "why": "lead-in phrasing, 'equal to a 100% match on'",
+      "hasFormula": false,
+      "expect": true,
+      "text": "The Company provides a safe harbor matching contribution equal to a 100% match on the participant's contributions with an elective deferral percentage less than or equal to 1%."
+    },
+    {
+      "why": "percentage spelled out",
+      "hasFormula": false,
+      "expect": true,
+      "text": "During the year ended December 31, 2024, the Plan Documents required Company safe harbor matching contributions up to four percent of eligible compensation for non-highly compensated employees."
+    },
+    {
+      "why": "dollar cap made a rate by a period",
+      "hasFormula": false,
+      "expect": true,
+      "text": "The Company makes a dollar-per-dollar matching contribution of up to a maximum of $500 per year for each participant."
+    },
+    {
+      "why": "no number at all — cannot be a formula",
+      "hasFormula": false,
+      "expect": false,
+      "text": "They may select from among several funds in which to invest their contributions, employer matching contributions and profit-sharing contributions."
+    },
+    {
+      "why": "the number belongs to 'vested', not to the match",
+      "hasFormula": false,
+      "expect": false,
+      "text": "The Company matching contributions vest 20% annually until the participant is 100% vested at the end of five years."
+    },
+    {
+      "why": "bare 'each' must not turn a vesting rate into a match rate",
+      "hasFormula": false,
+      "expect": false,
+      "text": "Employer matching contributions and employer profit sharing contributions, plus any earnings they generate, vest at 20% each year starting year one and are fully vested after five years."
+    },
+    {
+      "why": "account mechanics boilerplate",
+      "hasFormula": false,
+      "expect": false,
+      "text": "Each participant's account is credited with the participant's contributions, the Company's matching contributions, and the allocation of Plan earnings."
+    },
+    {
+      "why": "eligibility, not amount",
+      "hasFormula": false,
+      "expect": false,
+      "text": "Any pre-tax and/or Roth (after-tax) contributions made prior to completing 12 months of service are not eligible for the company matching contribution."
+    },
+    {
+      "why": "a YEAR'S TOTAL in dollars is not a rate — El Valor published this as a formula",
+      "hasFormula": false,
+      "expect": false,
+      "text": "There were $29,342 and $23,639 of employer matching contributions for the years ended December 31, 2024 and 2023, respectively."
+    },
+    {
+      "why": "one sentence used as evidence for both; leading word settles it",
+      "hasFormula": false,
+      "expect": false,
+      "text": "Vesting - At any time, participants are 100% vested in their contributions, the Company's matching contributions and any amounts rolled over to the Plan."
+    },
+    {
+      "why": "discretionary match states no number; it is still the right evidence",
+      "hasFormula": true,
+      "expect": true,
+      "text": "The Company may make a discretionary matching contribution."
+    },
+    {
+      "why": "same sentence cannot STAND ALONE as the formula",
+      "hasFormula": false,
+      "expect": false,
+      "text": "The Company may make a discretionary matching contribution."
+    },
+    {
+      "why": "supports a parsed discretionary formula",
+      "hasFormula": true,
+      "expect": true,
+      "text": "Company contributions are discretionary."
+    },
+    {
+      "why": "off-subject even beneath a parsed formula",
+      "hasFormula": true,
+      "expect": false,
+      "text": "Participants become 100% vested in employer matching contributions after six years and employer discretionary contributions after three years of service."
+    }
+  ],
+  "vestingCases": [
+    {
+      "why": "PSEG pn=004 -- a WITHDRAWAL-SUSPENSION rule; the only vest-stem is adjectival, on the noun phrase the rule acts upon. The plan the owner asked about.",
+      "expect": false,
+      "text": "If a Participant withdraws certain post-income tax Deposits and/or vested Employer Matching Contributions before such amounts have been in the Plan for twenty-four months, the Participant will not be eligible to receive matching Employer Matching Contributions during the subsequent six months."
+    },
+    {
+      "why": "Charter Communications, 120,688 participants -- a LOAN LIMIT published under the vesting heading",
+      "expect": false,
+      "text": "fund accounts a minimum of $1 thousand up to a maximum equal to the lesser of $50 thousand, adjusted for the highest outstanding loan balance during the prior twelve month period, or one-half of the total value of their vested account balance."
+    },
+    {
+      "why": "Vensure, 42,571 participants -- raw Form 5500 table text; the only vest-stem is part of a COMPANY NAME",
+      "expect": false,
+      "text": "23 3607881 2a Name of Participating 2b EIN 2c Percentage of Total 2d Aggregate Account Balances Employer Contributions for the Plan Year Attributable to Participating Employer VESTED METALS INTERNATIONAL LLC 35-2490777 0."
+    },
+    {
+      "why": "Brown University, 12,356 participants -- a plan AMENDMENT about contribution formulas, no vest-stem at all",
+      "expect": false,
+      "text": "5 (Continued) BROWN UNIVERSITY Effective January 1, 2023, the Plan has been amended to reinstate the prior required formulas for Basic and Matching Contributions."
+    },
+    {
+      "why": "Long Island University -- a DISTRIBUTION-TIMING rule; adjectival 'vested account balances'",
+      "expect": false,
+      "text": "Participants may receive all or a portion of their vested account balances resulting from Plan Sponsor contributions only upon termination of employment."
+    },
+    {
+      "why": "UCB Holdings -- an IN-SERVICE WITHDRAWAL rule at 59 1/2",
+      "expect": false,
+      "text": "Upon attainment of age 59 1/2, a participant may elect to withdraw all or part of their pre-tax, Roth, and vested employer matching contributions balances."
+    },
+    {
+      "why": "Inova Health System -- a loan MINIMUM and MAXIMUM, which mentions the vested portion only as the base",
+      "expect": false,
+      "text": "The minimum loan amount permitted is $500; the maximum loan amount permitted is the lesser of one-half of the current value of the vested portion of the participant's account or $50,000 (exclusive of employer contributions)."
+    },
+    {
+      "why": "Atos Syntel -- an AMENDMENT adding In-Plan Roth Conversions",
+      "expect": false,
+      "text": "Effective January 1, 2024, the Plan was amended to allow “In-Plan Roth Conversions,” which allow the conversion of existing participant account balances that are considered pre-tax, including pre-tax contributions, and vested employer contributions."
+    },
+    {
+      "why": "a rule stated with no arithmetic at all -- refuted screen 1",
+      "expect": true,
+      "text": "Vesting Participants are fully vested in all contributions and earnings thereon."
+    },
+    {
+      "why": "'are 100% immediately vested' -- refuted screen 4, where \\w could not match %",
+      "expect": true,
+      "text": "All Safe Harbor Matching Contributions are 100% immediately vested."
+    },
+    {
+      "why": "'one hundred percent (100%) vested' -- refuted screen 5",
+      "expect": true,
+      "text": "This safe harbor matching contribution is one hundred percent (100%) vested."
+    },
+    {
+      "why": "'vested interest ... is based upon years of continuous service' -- refuted screen 3",
+      "expect": true,
+      "text": "A participant's vested interest in the employer matching and non-elective discretionary contributions are based upon the participant's years of continuous service."
+    },
+    {
+      "why": "'dependent upon the years of credited service' -- refuted screen 4",
+      "expect": true,
+      "text": "If a participant ceases participation except by retirement, death or permanent disability, the vested interest in employer contributions and earnings thereon is dependent upon the years of credited service."
+    },
+    {
+      "why": "a ladder written with NO percent signs -- refuted screen 4 (Church & Dwight)",
+      "expect": true,
+      "text": "3 years 25 3 years but less than 4 years 50 4 years but less than 5 years 75 5 years or more 100 Upon termination of employment for any reason, other than death, a participant shall be entitled to a benefit equal to the vested portion, if any, of Company contributions."
+    },
+    {
+      "why": "a cliff stated in words, with the word 'determined based' -- refuted screen 5",
+      "expect": true,
+      "text": "The vested value of the Company's safe harbor matching contributions is determined based on a two-year cliff."
+    },
+    {
+      "why": "'vested interest is 0% until ... three (3) years' -- refuted screen 5",
+      "expect": true,
+      "text": "A participant's vested interest is 0% until the participant has completed three (3) years of vested service at which time his vested interest is 100% in all company contributions."
+    },
+    {
+      "why": "a real graded schedule that ALSO describes a distribution, so condition (a) fires and (b) must save it",
+      "expect": true,
+      "text": "A participant's vested interest in the Company's matching contributions is based upon the participant's years of service as follows: Years of Service Vested % Less than 1 Year 0% After 1 year 20% After 2 years 40% After 3 years 60% After 4 years 80% After 5 years 100%. Benefits are payable upon retirement."
+    },
+    {
+      "why": "a real ladder sitting next to LOAN text -- both conditions in one sentence, (b) must win (Donia)",
+      "expect": true,
+      "text": "Years of service 1 2 3 4 5 6 Employer Contribution % vested 0% 20% 40% 60% 80% 100% Loans - Participants may borrow from their fund accounts a minimum of $500 up to a maximum equal to the lesser of $50,000 or 50% of the vested balance."
+    },
+    {
+      "why": "graded vesting stated with the verb form",
+      "expect": true,
+      "text": "Discretionary matching contributions vested 20% after one year of service, 40% after two years of service, and 100% after three years of service."
+    },
+    {
+      "why": "immediacy with no copula pattern but the word vested as a participle after 'contributions'",
+      "expect": true,
+      "text": "Employer matching contributions immediately vested as well."
+    },
+    {
+      "why": "a forfeiture rule -- about vesting by implication and kept on the forfeit arm",
+      "expect": true,
+      "text": "Terminated participants' non-vested account balances are used to reduce Company contributions."
+    },
+    {
+      "why": "mentions no other rule at all, so (a) does not fire even though it states no schedule",
+      "expect": true,
+      "text": "The vesting period for the Company-matching contributions varies in accordance with the Plan document based on the client sites at which the employees are contracted to work."
+    }
   ]
 }
