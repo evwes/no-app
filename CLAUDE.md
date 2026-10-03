@@ -820,33 +820,32 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
-**NOTHING IS PRE-REGISTERED** for a parser run — `PARSER_VERSION` stays 199, and
-**no build-data run is in flight.** #568 and #569 are both verdicted: #569
-(schedule, main, data commit `cff269ec`) produced a coverage line
-**byte-identical** to #568's — pv 199 · confident 60,167 · entries 65,480 ·
-match 43,338 · HIGH 4 · warn 556 · dl 48 — which is the seventh consecutive
-identical incremental line and the correct result when the work list is the 48
-permanently-403 acks plus the old-pv tail. `cff269ec` landed on **both** refs,
-so the dev push was rejected non-fast-forward (the documented #565 hazard, met a
-second time); reconciled by rebasing the display commit onto it, and
-regenerating the crawlable pages against the NEW store changed **0** files, so
-the committed pages are correct for it.
+**NOTHING IS PRE-REGISTERED** and **nothing is in flight** — `PARSER_VERSION`
+stays 199, no build-data run is queued or running, and the branch and main are
+the same commit. #568 and #569 are both verdicted: #569 (schedule, main, data
+commit `cff269ec`) produced a coverage line **byte-identical** to #568's — pv
+199 · confident 60,167 · entries 65,480 · match 43,338 · HIGH 4 · warn 556 ·
+dl 48 — the seventh consecutive identical incremental line, which is correct
+when the work list is the 48 permanently-403 acks plus the old-pv tail.
 
-**WHAT IS ACTUALLY PENDING IS A MIRROR, NOT A RUN. `site-test #159` was
-`in_progress` on `60a79f20` when this was written, and the entity-weld ship is
-NOT yet on main.** The next cycle's first job: read `conclusion` on
-<https://github.com/evwes/no-app/actions/runs/37155662802> and, if green,
-`bash scripts/mirror.sh`. **Verify on main by reading `plans-list.json`'s
-neighbours and the PAGE, not the store:** `git show origin/main:p/410215170-002.html`
-must open its holdings table on `Ssga S+P 500 Index Ser A …` with no
-`State Street Bank & Trust Company` in front of it, and
-`git show origin/main:index.html` must carry `app.js?v=` matching app.js's own
-sha256 (`node scripts/stamp-assets.mjs --check`). A POSITIVE control for the
-refusal half: the page must still show `Blackrock Institutional Trust Company, .
-Lifepath Index 2050` untouched, because its remainder leads with no known house
-— if that one moved too, the remainder gate did not ship with the arm.
-**CLEAR THIS PARAGRAPH the moment the mirror lands** — a stale in-flight line
-has been left up seven times.
+**THE ENTITY-WELD SHIP IS LIVE ON MAIN (`cc2795a6`), site-test #159 green,
+Pages #863 building, and every pre-registered check hit.** Verified by reading
+main's own tree rather than the store: Target's page (`p/410215170-002.html`)
+opens its holdings table on `Ssga S+P 500 Index Ser A …` with **0** rows still
+carrying `State Street Bank &amp; Trust Company Ssga`; `index.html` carries
+`app.js?v=da8d700b`, which **is** app.js's own sha256 on main; and the arm is
+present in both main's `app.js` and main's `lib-disclose.mjs`.
+**THE POSITIVE CONTROL IS THE HALF THAT MATTERS: 9 `Blackrock Institutional
+Trust Company` rows on that same page are UNTOUCHED**, because their remainder
+leads with no house `LEADING_HOUSE` knows — so the remainder gate shipped with
+the arm rather than the arm shipping alone. A strip that had moved those too
+would have looked identical in every count.
+
+`cff269ec` had landed on **both** refs, so the dev push was rejected
+non-fast-forward (the documented #565 hazard, met a second time); reconciled by
+rebasing the display commit onto it, and regenerating the crawlable pages
+against the NEW store changed **0** files, so the committed pages are correct
+for it.
 
 **#566 SUCCESS (push, dev, `a8cb81d1`, 12:21:01-12:30:11Z), verdicted, adopted,
 mirrored — EVERY REGISTERED FIGURE HIT.** 18 name changes committed, 0

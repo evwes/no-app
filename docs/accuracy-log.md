@@ -43716,3 +43716,46 @@ prefixes. Growing `LEADING_HOUSE` is additive by construction and each addition
 re-runs this diff; what must not happen is relaxing the remainder condition,
 which is the only thing standing between this arm and the 23 fees that reverted
 its predecessor.
+
+### 2026-10-03 (22:1xZ) — the entity-weld ship's production verdict, and the draw
+
+**LIVE ON MAIN (`cc2795a6`), site-test #159 green, Pages #863 building.** Every
+pre-registered check hit, read off main's own tree:
+
+- Target's page opens its holdings table on `Ssga S+P 500 Index Ser A …` and
+  carries **0** rows still prefixed `State Street Bank &amp; Trust Company Ssga`.
+- `index.html` carries `app.js?v=da8d700b`, which **is** app.js's own sha256 on
+  main — so a returning browser fetches the new file.
+- The arm is present in both main's `app.js` and main's `lib-disclose.mjs`.
+
+**THE POSITIVE CONTROL IS THE HALF THAT MATTERS, and it is the reason this
+verdict says anything.** Nine `Blackrock Institutional Trust Company` rows on
+that same page are **untouched**, because their remainder leads with no house
+`LEADING_HOUSE` knows. An arm that had shipped without its remainder gate would
+have stripped those as well and produced an identical count of changed pages —
+*absence from the diff is the proof*, met here on the refusal half rather than
+on the repair half.
+
+### The draw: nothing found, recorded as nothing
+
+National Veterinary Associates (**52,955 participants**, $809,155,371, 28 rows,
+ratio 0.99) and M. A. Mortenson's trade-employee plan (5,626, 24 rows, ratio
+0.99). Both formulas agree with their own quotes — `50% of the first 6% of pay`
+against *"the Company contributed 50% of the first 6% of base compensation"*,
+and `100% of the first 4%` against its quote — and both vesting labels match
+their sentences, including Mortenson's 3-year cliff with the match vesting
+immediately.
+
+The one row worth opening was NVA's `Blue Chip Growth Fund`, typed `Pooled
+separate account`, publishing **`~TRBCX`**: a bare strategy name with no house,
+which is correct as filed because it is a MassMutual separate account
+sub-advised by T. Rowe Price (eight sibling rows read `MassMutual Select TRP
+Retirement …`). The symbol is a **comparable** — the asterisk is on it — and
+`noPublicPrice` withholds the 0.7, so the page claims an approximation and no
+price. That is the designed behaviour and not a defect, and the harness printing
+`0.7` beside `<<noPublicPrice>>` is exactly why the suppressor flags are printed
+at all.
+
+Coverage gap, not a false claim: Mortenson's `New York Life Investment Winslow
+Large Cap Growth Fund Class A` publishes neither symbol nor fee though it is a
+registered fund. Left alone; a ticker is a fact that must be sourced.
