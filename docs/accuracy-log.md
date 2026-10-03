@@ -43168,3 +43168,53 @@ exist before it ships.
 18:01:45Z), and a run in flight on main is a reason not to mirror — it will
 leave main a data commit the branch lacks. Pushing to dev is safe and
 unaffected: concurrency is ref-scoped and no build-data path file is touched.
+
+## 2026-10-03 (18:3xZ) — THE 18:1xZ DRAW: TWO FUNDS WELDED INTO ONE ROW. REAL, AND MY SCREEN MEASURES A UNION OF THREE SHAPES
+
+Gate Gourmet (2,038 participants) publishes a menu whose rows are
+mis-segmented — the TAIL of one fund's name welded to the HEAD of the next:
+`Bond Index Instl Vanguard Mid Cap Index Instl` ($8,127,496, 7.3%),
+`Adm Vanguard Intermediate Term` ($8,971,958, 8.0%), and
+`Government Money Market Vanguard High-Yield Corporate` ($3,259,083) — which
+publishes **er 0.12 on a COMPOSITE OF TWO FUNDS**, a fabricated number by
+construction. Its `Fully benefit-responsive` row carries 22.4% of the menu
+($25,030,915) and names no fund at all.
+
+**THE PIN WORKED, AND IT IS THE FIRST USE OF THE RULE WRITTEN THIS HOUR.** All
+three strings were asserted as fixtures before any counting, with the script
+exiting 1 if the screen could not see them. It fired on all three — so the zero
+trap that cost the entity-TAIL arm could not recur here.
+
+**BUT THE COUNT IS A UNION, NOT A DEFECT MEASURE. DO NOT CARRY 5,571 rows /
+1,169 plans / 2,576,133 ppl / $19,276,805,475** (nor the 2,339 rows /
+1,154,994 ppl of it that also publish a fee). Reading the largest members
+separates at least three shapes, and one is CORRECT:
+
+  (a) **Genuinely two funds welded** — Genuine Parts (42,220 ppl)
+      `SMID-Cap R6 Fidelity Puritan Balanced Fund K6`, publishing **=FPURX at
+      0.47 ASSERTED** on the composite, and the three Gate Gourmet rows.
+  (b) **One fund wearing a TRUSTEE or CAPTION fragment** — Booz Allen (56,540
+      ppl) `Company Russell 1000 Value Index Fund State Street Global Advisors`
+      at **20.8% of its menu / $1,888,041,270**, where `Company` is the tail of
+      `State Street Bank and Trust Company`; `At Contract Value Prudential
+      Stable Value Fund`; Meta (93,515) `Class I Vanguard Target Retirement
+      Income Trust Select`. This is the 18:1xZ entity class and the
+      leading-caption class, reached from the other side.
+  (c) **Correct as filed** — Costco (279,798 ppl) `Global All Cap Equity Ex-U.S.
+      Index State Street Securities Lending Series` is one State Street product
+      whose house simply sits mid-string.
+
+So the screen keys on a CONDITION (a house behind a class word) that all three
+shapes satisfy. *A count of a condition is not a measure of a defect* — third
+time in this cycle, and the first two were the two-house screen and the
+issuer-house screen.
+
+**THE DECISIVE TEST IS STORE-INTERNAL AND NOT YET RUN: does the text before the
+house, on its own, match the TAIL of a SIBLING ROW in the same plan's menu?**
+If `Bond Index Instl` ends another row of the same entry, the weld is proven
+from our own data with no registry and no judgment — the same shape of witness
+that settled `||` as the numeral II by finding `| Vanguard Windsor II` in the
+store. That test separates (a) from (b) and (c) exactly, because only a weld
+leaves its other half behind as a neighbour. Run it before pricing this class.
+
+Nothing shipped from this draw; sized, split, and queued with the test named.

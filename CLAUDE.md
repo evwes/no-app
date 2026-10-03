@@ -1177,6 +1177,24 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   reads 0 because it is BROKEN** — its `[^,]` class forbids the comma in
   `Advisors, LLC` and it fires on none of its five known members.
   `docs/accuracy-log.md` 2026-10-03 (18:1xZ).
+- **FOUND BY THE 18:1xZ DRAW — TWO FUNDS WELDED INTO ONE ROW, and the decisive
+  test is named but NOT YET RUN.** Gate Gourmet (2,038 ppl) publishes
+  `Bond Index Instl Vanguard Mid Cap Index Instl`, `Adm Vanguard Intermediate
+  Term` and `Government Money Market Vanguard High-Yield Corporate` — the last
+  with **er 0.12 on a COMPOSITE OF TWO FUNDS**. Genuine Parts (42,220 ppl)
+  publishes `SMID-Cap R6 Fidelity Puritan Balanced Fund K6` with **=FPURX at
+  0.47 ASSERTED** on the composite. **DO NOT CARRY 5,571 rows / 2,576,133 ppl**
+  (nor its 2,339 priced rows): the screen keys on a CONDITION three shapes
+  satisfy, and one is CORRECT — Costco's `Global All Cap Equity Ex-U.S. Index
+  State Street Securities Lending Series` (279,798 ppl) is one State Street
+  product whose house sits mid-string, and Booz Allen's `Company Russell 1000
+  Value Index Fund State Street Global Advisors` ($1,888,041,270, 20.8%) is one
+  fund wearing a TRUSTEE fragment, which is the entity item above reached from
+  the other side. **THE TEST THAT SEPARATES THEM, store-internal and needing no
+  registry: does the text before the house match the TAIL of a SIBLING ROW in
+  the same plan's menu?** Only a weld leaves its other half behind as a
+  neighbour — the same witness shape that settled `||` as the numeral II. Run it
+  before pricing the class. `docs/accuracy-log.md` 2026-10-03 (18:3xZ).
 - **AND THE DRAW'S MOTIVATING ROW COULD NOT BE CONVICTED — recorded so nobody
   re-derives the three refuted screens.** PPC Retirement Plan publishes
   `JP Morgan US Value R6 Fund` with **VGINX** ASSERTED, out of the stored `stk`
