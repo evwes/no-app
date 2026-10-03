@@ -763,8 +763,20 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
-**NOTHING IS PRE-REGISTERED.** Register the next change's figures here before
-dispatching it.
+**NOTHING IS PRE-REGISTERED** for a parser run — `PARSER_VERSION` stays 199.
+
+**TWO RUNS IN FLIGHT AS OF 05:4xZ, BOTH NEEDING THEIR `conclusion` READ BEFORE
+ANY MIRROR** (the rule that cost three days of red site-test):
+- **build-data #561** (dispatch, `fca3f5c5`, started 05:08:13Z) — incremental,
+  so the work list is the 48 permanently-403 acks plus the ~49-ack old-pv tail.
+  Expect the coverage line UNCHANGED; `dl` may tick if the EFAST2 bucket grew.
+- **site-test #150** (`f9d646f6`, started 05:4xZ) — the empty-parenthetical
+  display fix. Dispatched EXPLICITLY because the commit carries `[skip ci]` to
+  protect #561 (`lib-disclose.mjs` matches the pipeline's path filter), and
+  `[skip ci]` suppresses every workflow including the one that verifies it.
+  **Local gates were green; CI is what settles it.**
+**Then mirror the pair.** The display fix is on the branch only, so no reader
+sees it until that mirror.
 
 **LIVE ON MAIN as of 2026-10-03 04:2xZ: v199 + its own pv-199 store, mirrored as
 a MATCHED pair** (`ea825dcb`), Pages build #834/#835 green. v198 and v199 both

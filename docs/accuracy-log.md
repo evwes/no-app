@@ -41894,3 +41894,62 @@ neither was caught by a check — both were caught by looking at the members. Th
 04:3xZ queue entry has been rewritten in `CLAUDE.md`; the figure that survives
 unchanged from that entry is the 929-row "nothing identifying in the name" class,
 whose own loose version (1,184 rows) was already discarded when it was written.
+
+## 2026-10-03 (05:4xZ) — SHIPPED: the empty parenthetical. 1,161 rows / 63 plans / 138,083 ppl / $8,915,691,142 stop reading as broken — and the PRICE took three attempts, each of which reported on the query
+
+Found by the 05:3xZ draw. **Parker Hannifin (42,434 ppl) publishes `Parker Stock
+Match Fund ( )` at 23.4% of its menu — $2,054,809,000 — and `Parker Stock Fund
+( )` at 7.3%.** Zions Bancorporation (14,957 ppl) carries it on **fourteen rows
+at once**: `500 INDEX INSTITUTIONAL ( )`, `FID CONTRA POOL CL A ( )`, `TARGET
+RETIREMENT 2040 ( )`. A column that held nothing was captured as bare parens and
+welded onto the name.
+
+**Display-side** (`cleanFiledName`, canonical in `lib-disclose.mjs`, twin sliced
+verbatim into app.js), so it ships with **no re-parse**.
+
+### The price, and why its first two readings were worthless
+
+A legibility fix must be priced against the guards that READ names, so the
+question is whether stripping `( )` moves any ticker or fee. Three answers:
+
+1. `lookupTicker(name)` → **0 gained, 0 lost**. But the probe showed
+   `lookupTicker("Fidelity 500 Index Fund")` returns **null**, and so does every
+   other name: the page passes the whole ROW, not a bare name. The zeros were
+   the function declining to answer.
+2. `fundTickerInfo(name, type)` reading `.ticker` → **0/0/0 again**. The control
+   printed the object: `{"tk":"FXAIX","comparable":false}`. **The field is `tk`.**
+   A guessed field name produced the identical tidy zeros.
+3. `fundTickerInfo(name, type).tk` and `fundER(name)`, both with a control that
+   PRINTS what it got (`{"tk":"FXAIX"}`, `0.015`) → **0 tickers gained, lost or
+   changed; 0 fees gained, lost or changed, across all 1,161 rows.**
+
+So the third zero is real and the first two were not, and nothing about the
+printed numbers distinguished them. ***A POSITIVE CONTROL THAT ASSERTS
+TRUTHINESS CAN PASS ON A DEAD INSTRUMENT; ONE THAT PRINTS ITS RESULT CANNOT.***
+This is the fourth, fifth and sixth instance in one session of a clean zero
+reporting on the query — and the only reason any of them was caught is that the
+rule is written down and the control was made to speak.
+
+The finding inside the finding: the parens were never why these rows publish no
+symbol. `500 INDEX INSTITUTIONAL` resolves to nothing with or without them.
+**The abbreviated names are the blocker**, which puts these 63 plans in the
+same class as the `iShares` and `VANG …` abbreviation families already queued.
+
+### Gates
+
+- **Twins agree on 0 of 1,714,404 names**, run through the app.js copy (sliced
+  via `scripts/apppath.mjs`) and the canonical `lib-disclose` export side by side.
+- **Positive control, 4 assertions:** with the arm removed the parens survive on
+  three real filings — so the arm is what does the work, not some neighbouring
+  strip — and `PIMCO International Bond Fund (U.S. Dollar-Hedged) Ins` is
+  unchanged, so a genuine parenthetical is safe. The control writes its mutated
+  copy BESIDE the real module (a data-URL import cannot resolve lib-disclose's
+  own relative imports) and deletes it in a `finally`.
+- Local smoke test green. `index.html` restamped (`app.js ?v=2d366509 →
+  ?v=b2c23c81`), `--check` passes — without which the change ships and no
+  returning reader sees it.
+- Committed `[skip ci]` because #561 was in flight and `lib-disclose.mjs` matches
+  the pipeline's path filter; **site-test #150 was then dispatched explicitly**,
+  because `[skip ci]` suppresses the verifying workflow along with the dangerous
+  one. Its `conclusion` is unread as of this entry and must be read before the
+  mirror.
