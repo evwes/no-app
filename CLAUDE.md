@@ -1371,17 +1371,27 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   the mixed-fraction arm and would NOT have been caught by the gate. Whether
   `rate == cap` is a real design or a second misread shape is one measurement,
   not a quiet widening of the gate.
-- **THE VESTING SENTENCE SELECTED ON THE WORD `eligible` — found while reading
-  PSEG for v198, UNSIZED and honestly so.** PSEG's stored `vestingText` is not a
-  vesting schedule: it is a withdrawal-suspension sentence (*"If a Participant
-  withdraws certain post-income tax Deposits … will not be eligible to receive
-  matching Employer Matching Contributions during the subsequent six months"*),
-  so the extractor filed a sentence about losing FUTURE MATCH eligibility under
-  vesting. The page prints it as the plan's vesting quote. Needs the same
-  whole-store measurement v198's fix got — and note the shape of that
-  measurement: the question is not "how many quotes contain `eligible`" (a count
-  keyed on a vocabulary measures the vocabulary) but how many selected sentences
-  carry NO vesting arithmetic at all.
+- **SHIPPED 2026-10-03 09:0xZ — THE VESTING QUOTE STATES A DIFFERENT PLAN RULE:
+  41 entries / 41 plans / 226,729 ppl withheld, all of which published the quote
+  as their WHOLE answer (0 carry a vesting label).** Charter Communications
+  (120,688 ppl) a LOAN LIMIT, Vensure (42,571) raw Form 5500 table text whose
+  only vest-word sits inside **VESTED METALS INTERNATIONAL LLC**, Brown
+  University (12,356) a plan amendment, **PSEG ×2 (12,781) the
+  withdrawal-suspension rule that motivated it.** `vestingQuoteOk` is canonical
+  in `lib-quote.mjs` beside `matchQuoteOk`; 11 crawlable pages changed.
+  **THIS ENTRY'S OWN SUGGESTED MEASUREMENT WAS THE FIRST THING REFUTED** — it
+  asked for "how many selected sentences carry NO vesting arithmetic", which
+  reads **2,433 entries / 3.9M ppl**, almost all honest rules stated without
+  numbers ("fully vested at all times"). Four more screens fell after it, none
+  twice for the same reason, and the two rules that survive them are in the
+  method list below. `docs/accuracy-log.md` 2026-10-03 (09:0xZ).
+- **STILL OPEN from it, and it is a PARSER question rather than a display one:**
+  withholding is honest but the filing usually DOES state a schedule somewhere —
+  the extractor simply selected the wrong sentence. Those 41 plans now show "not
+  stated in the audited notes" where a better selection would show the rule. The
+  fix is in `extractPlanFeatures`' vesting arms and needs a `PARSER_VERSION`
+  bump; the shipped guard gives it a ready-made oracle, because any candidate
+  sentence it rejects is one the new selection must not pick.
 - The wind-down explanation gates on exactly $0 assets, so a plan that collapsed
   to $2,094 escapes it and publishes three $1 rows instead. Trigger on a
   COLLAPSE, not only on zero.
@@ -1494,6 +1504,26 @@ These outlived the versions that produced them. The accuracy log has the case.
   PLANS is blind to every master-trust row* (resolve a trust row through its
   MEMBER plans — met seven times); *a STORED field is not a PUBLISHED one*
   (cost one class size a factor of 3.9).
+- **PIN THE MOTIVATING CASE AS A FIXTURE BEFORE MEASURING THE CLASS** (2026-10-03,
+  after the same case escaped twice in one investigation). "A measurement that
+  cannot see its own motivating example has not been scoped" says what went
+  wrong; this says how to catch it. On the vesting-quote class PSEG escaped the
+  vocabulary screen AND then escaped the shipped conjunction's first store-wide
+  count (39 entries, PSEG absent, because every withdrawal arm was written from
+  the sample as `may withdraw` where PSEG files `withdraws`). **A pinned fixture
+  failing is what found it — not re-reading the count**, and a count that omits
+  the case looks exactly like a count that includes it.
+- **WHEN A CLASS IS A SEMANTIC JUDGMENT, DO NOT SCREEN FOR THE ABSENCE OF THE
+  GOOD CASE; REQUIRE THE PRESENCE OF THE BAD ONE.** Five screens for "this
+  sentence is not about vesting" were each refuted by reading their own members
+  (3.9M ppl → 2 → 181 → 100 → 80), because every syntactic proxy for an absence
+  leaks. What shipped is a CONJUNCTION: the sentence states a different NAMED
+  rule, each arm anchored on that rule's own vocabulary, AND no rule of the
+  wanted kind anywhere in it under a deliberately generous test. Same shape as
+  v199's gate. And the grammatical half generalises: **an ADJECTIVAL mention
+  ("vested Employer Matching Contributions") is a noun phrase some other rule
+  acts on, never a rule itself** — a rule needs a copula, a verb form, an
+  explicit percentage, or a ladder.
 - **A fix for one phrasing of a class is not a fix for the class** — and the
   class also has a POSITION, a COLUMN, a SHARE CLASS and a FORM. Recorded nine
   times, twice inside the same function.
