@@ -42439,3 +42439,79 @@ identification, which is a smaller harm but still a published number. Unsized.
   class needs a registry witness, which this sandbox cannot fetch — *a ticker is
   SOURCED, never inferred* — so that is stated as the filing's claim versus
   ours, and no correction is proposed here.
+
+## 2026-10-03 (11:3xZ) — OUR OWN STORE CONTRADICTS OUR OWN PAGE on 5,692 rows / 8,197,880 ppl, and every row read favours the store
+
+**Found by following the 09:1xZ draw's thread rather than by working the queue.
+OWNER-GATED and NOT shipped: it would move millions of published symbol cells.
+But it changes the premise of the owner's item 2, so it is reported now.**
+
+The parser stores a ticker on each fund row (`stk`/`ftk`). The display chain
+resolves its own ticker from the name and **prefers the resolver**; `f.stk` is
+the LAST resort inside `lookupTicker`, reached only when nothing earlier
+matched. On **5,692 rows / 3,860 plans / 8,197,880 participants /
+$50,726,748,854** the two disagree — and the disagreement is almost always a
+**share class**:
+
+| | ppl | stored | published |
+|---|---|---|---|
+| Bank of America, `WELLINGTON FUND INVESTOR SHARES` | **246,394** | `VWELX` (Investor) | `VWENX` (Admiral) |
+| Kelly Services, `FIDELITY TOTAL BOND K6` | 147,070 | `FTKFX` (K6) | `FTBFX` (retail) |
+| FMR LLC, `FID BALANCED K6` ($270.2M) | 93,003 | `FBKFX` | `FBALX` |
+| Cleveland Clinic, `FID CONTRAFUND K6 A` ($619.0M) | 86,817 | `FLCNX` | `FCNTX` |
+| Methodist Hospital, `FID CONTRAFUND K6` ($283.7M) | 46,570 | `FLCNX` | `FCNTX` |
+| Sentara Health, `Fidelity Growth Company Class K6` ($259.9M) | 43,573 | `FGKFX` | `FDGRX` |
+| Visa, `Balanced Fund Class K` ($421.0M) | 20,365 | `FBAKX` | `FBALX` |
+
+**DIRECTION, measured the right way round: 22 drawn PARTICIPANT-WEIGHTED AT
+RANDOM from the dominant bucket, plus 20 read top-down from the other two —
+0 of 42 favour the page.** Every one has the stored symbol naming the class the
+filing states. One is not even a class but a different fund: Bayada Home Health
+(50,157 ppl) files `PIMCO Total Return II Fund Institutional Class`, stored
+`PMBIX`, published **`PTTRX`** — Total Return, not Total Return II.
+
+### Three things that stop this being a new discovery, all of which matter
+
+1. ***THE SHIPPED CODE ALREADY SAYS IT.*** `app.js:2035` names **both** of my
+   examples verbatim — *"`Fidelity Total Bond K6` -> FTBFX where the K6 fund is
+   FTKFX; `Vanguard 500 Index Fund Investor Shares` -> VFIAX, the ADMIRAL
+   class"* — and defers it: *"Overriding a published ticker is a larger claim
+   than filling a blank, so it is recorded with its numbers and left to its own
+   cycle."* **Read the shipped COMMENT, not only the shipped guard.** What is
+   new here is the number and the direction, which that note did not have.
+2. **It is NOT the owner's item 2**, and the difference is the whole value. That
+   item is keyed on *the registry registering the stated class* — 5,929 rows /
+   11,144,696 ppl — and is blocked because it *"errs in BOTH directions, so no
+   blanket correction is available."* **This population is keyed on our own two
+   fields disagreeing, needs no registry witness at all, and is one-directional
+   on every row read.** The blocker on item 2 does not apply to it.
+3. **The FEE does not follow the ticker.** `fundER` is called on the NAME, never
+   on a symbol, so correcting the symbol leaves the expense ratio priced to the
+   wrong class — `FTBFX`'s 0.45 stays on a K6 row. A symbol fix alone would make
+   the two cells disagree with each other, which is why this is the owner's call
+   and not a cycle's.
+
+### And my own mechanism was wrong before it was right
+
+I diagnosed this from Rush Copley Medical Center (3,426 ppl), which publishes
+**VTINX on five different funds** — Growth Index, Value Index,
+Intermediate-Term Bond Index among them — and traced it to a real defect: eight
+of its nineteen rows carry `iss="Vanguard Target Retirement Income"`, **a fund
+name in the issuer column**, and `issHit = fundTickerInfo(iss + name)` is
+preferred unless `issContradicts`, which is true only when the two
+`leadingHouse` values DIFFER. Both are "Vanguard", so the guard passes.
+***The guard asks about a different HOUSE where the corruption is a different
+PRODUCT of the same house*** — a predicate right for one class and not for its
+neighbour.
+
+**That mechanism explains FOURTEEN of the 5,692.** The dominant bucket — 4,086
+rows / 5,940,811 ppl — carries **no issuer cell at all**, so the issuer arm
+cannot be its cause. ***A mechanism inferred from one case is a guess with a
+citation***, and the only reason it did not get published as the cause of 8.2M
+participants' worth of rows is that the split was measured before it was
+written down.
+
+**Method note worth keeping:** this measurement was chunked into eight
+shard-ranges appending to a JSONL, after two container restarts killed a
+ten-minute background render. A long measurement that cannot resume is a
+measurement that will be run three times.

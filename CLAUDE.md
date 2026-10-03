@@ -956,6 +956,26 @@ published cells:
   no blanket correction is available. Recommendation: correct the symbol on the
   exact-match population and WITHDRAW the fee rather than carry the other
   class's, with `fund-facts` filling per-class figures as they are sourced.
+- **OUR OWN STORE CONTRADICTS OUR OWN PAGE — 5,692 rows / 3,860 plans /
+  8,197,880 ppl / $50.7B, and 0 of 42 rows read favour the page (22 of them
+  drawn PARTICIPANT-WEIGHTED AT RANDOM).** The parser stores a share-class-
+  correct symbol in `stk`/`ftk`; the display chain prefers its own resolver and
+  reaches `f.stk` only as a last resort, so the page publishes a DIFFERENT class
+  of the same fund. Bank of America's `WELLINGTON FUND INVESTOR SHARES`
+  (**246,394 ppl**) is stored `VWELX` and published `VWENX`; Cleveland Clinic's
+  `FID CONTRAFUND K6 A` ($619.0M) is stored `FLCNX` and published `FCNTX`;
+  Bayada (50,157 ppl) files `PIMCO Total Return II Institutional`, stored
+  `PMBIX`, published **`PTTRX`** — a different FUND, not a class.
+  **THIS IS NOT THE ITEM ABOVE IT and the difference is the point:** that one is
+  keyed on the REGISTRY registering the stated class and is blocked because it
+  *errs in both directions*; **this one is keyed on two of our own fields
+  disagreeing, needs no registry witness, and is one-directional on every row
+  read.** `app.js:2035` already names both of the examples and defers the fix —
+  *read the shipped COMMENT, not only the shipped guard* — so what is new is the
+  number and the direction. **The blocker is the FEE: `fundER` is called on the
+  NAME and never on a symbol**, so correcting the symbol alone leaves the
+  expense ratio priced to the wrong class and the two cells disagreeing.
+  Owner's call. `docs/accuracy-log.md` 2026-10-03 (11:3xZ).
 - The fee pre-emption: a generic estimate published where the ISSUER cell
   supplies a house-specific one — 40,229 rows / 8,330 plans / **13,274,448
   ppl**. Errs both ways (issuer higher on 8,723, lower on 31,506). 7,116
