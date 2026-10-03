@@ -41601,3 +41601,145 @@ after #558's verdict**, per the one-re-parse-at-a-time rule.
   regression this registration exists to catch.
 - 205 plans gain `features.matchMisread` holding the withdrawn string, so the
   class stays measurable next run without re-deriving it.
+
+## 2026-10-03 (04:1xZ) — #558 VERDICT (v198, success 02:13Z): LOSSES 0, and the registered CEILING WAS BREACHED — 345 formulas where I predicted 122, because the pre-measurement read a DERIVED field the change itself rewrites
+
+**Store complete:** pv **198 at 99.93%** of 69,046 acks (threshold 97%), tail
+pv 196/197/192/189 at 44 acks between them.
+
+| registered | actual | |
+|---|---|---|
+| `match` 43,340 (+122, called a CEILING) | **43,441 (+223)** | **breached** |
+| `dl` 39, no move | **48** (+9) | probed, honest |
+| confident 60,167 · entries 65,480 · lineups 59,819 · vesting 53,100 · HIGH 4 · warn 556 · overshoot 372 | all unchanged | ✓ |
+| PSEG pn=004 `50% of the first 8% of pay` | exact | ✓ |
+| PSEG pn=006 `50% of the first 7% of pay` | exact | ✓ |
+| BAE pn=003 NO formula (the range refusal) | `match=null` | ✓ |
+| recordkeeper controls unchanged | `rk` 63,916 → 63,916 | ✓ |
+
+**WHY THE CEILING BROKE, and it is a method finding rather than an excuse.**
+Measured by running v198's chain over every published formula's own sentence
+with `mfWidened` neutered: **345 plans / 422,623 ppl publish a formula
+reachable ONLY through mfWidened**, against 122 / 197,324 registered. Diffed
+ack-by-ack against the previous data commit `3266af3d`, that resolves exactly:
+
+- **GAINED 226** acks / 226 plans / **298,784 ppl** — had no formula at all
+- **CHANGED 117** / 117 plans / **120,675 ppl** — had one, and it was replaced
+- **LOST 0** — nothing stopped publishing a formula
+- 226 + 117 = 343, which is the 345 to within two multi-plan acks
+
+**My pre-measurement counted only plans with NO stored formula, so it could not
+see the 117.** Those are overwhelmingly `Discretionary — set year to year`
+becoming the actual rate — Life Care Centers of America, **32,465 ppl**,
+`25% of the first 6% of pay` with the quote stating exactly that. And one of
+them is a MISREAD repaired: **CSX, 5,563 ppl, `2% of the first 6%` →
+`100% of the first 1%`**, which is v199's whole class arriving a version early.
+
+***A PRE-REGISTRATION MEASURED OVER A STORED DERIVED FIELD UNDER-PREDICTS
+WHENEVER THE CHANGE ALTERS WHAT THAT FIELD HOLDS.*** `matchText` is not input,
+it is output: the extractor stores the sentence it selected, and selection
+follows wherever `mf` matched. So the harness asked *"does the new arm fire on
+the sentence the OLD chain chose?"* where production asks *"does it fire
+anywhere in the filing?"* The old sentence is a strict subset of the document.
+Corroborated by the two quote metrics moving the right way: `matchQuote`
+5,394 → 5,241 and `matchQuoteShown` 1,785 → 1,687, because a quote stops
+standing alone once a formula appears beside it.
+
+**`dl` 39 → 48, HEAD-PROBED WHOLE FOR THE FIFTH TIME: 48 of 48 answered 403.**
+`e=download` remains an honest published claim and the rise is the EFAST2
+bucket growing by nine withdrawn filings. 48/69,046 = 0.07%, far under the 1%
+`download-failures` threshold.
+
+### Found by the verdict and REFUTED by sizing it: "not to exceed" before the rate
+
+Reading the 117 CHANGED cases turned up **Susquehanna International (2,830
+ppl)**, which publishes a flat `50% of the first 8% of pay` from
+
+> "a discretionary matching 401(k) contribution equal to the **minimum of an
+> amount not to exceed 50%** of each participant's first 8% … **or** 50% of
+> each participant's elective deferrals"
+
+That is a cap on the RATE, and v198's `MF_RANGE` guard exists to refuse exactly
+it — but the guard covers `between N% and` and `up to` and **not** `not to
+exceed`. The obvious fix is to widen the vocabulary. **Sized store-wide first,
+and the widening is REFUSED:**
+
+- `not to exceed` immediately before the rate: **44 plans / 71,188 ppl**
+- `a maximum of`: **30 plans / 45,408 ppl**
+- `no more than`, `as much as`: **0 each**
+
+**And reading the members kills it.** In most of the 44 the phrase is cautious
+auditor wording for a formula that IS the ceiling: National Mentor Holdings
+(**41,694 ppl**, 59% of the class on its own) files *"50 cents of every dollar
+contributed not to exceed 50% of the first 3%"* — and 50¢ per dollar **is** 50%,
+so the published formula is right. dormakaba's *"not to exceed 100% of the first
+3%, 50% of the next 2%"* is a textbook safe-harbor formula; so are Southern Ute,
+Giant Eagle (`up to a maximum of 100% of the first 4.5%`) and B.F. Saul
+(`300% of the first 2%`). **A blanket guard would withdraw about seventy correct
+formulas to fix two.**
+
+***THE VOCABULARY DOES NOT IDENTIFY THE CLASS.*** Susquehanna's actual tell is
+the **lesser-of construction with two DIFFERENT arms** — "the minimum of (an
+amount not to exceed 50% of the first 8%) or (50% of deferrals)". Jones Day
+(3,978 ppl) has the same construction and is CORRECT as published, because its
+two arms agree: *"the lesser of (1) 20 percent of the elective deferrals or (2)
+20 percent of the first 4 percent"* — clause (2) is precisely what we publish.
+So the discriminator is whether the arms differ, not which words introduce them.
+UNSIZED as such; queued.
+
+**AND MY OWN INSTRUMENT PRINTED A TELL I ALMOST SKIPPED.** The sizing script
+reported each phrase as "present anywhere in the quote: **0**" beside 44 hits
+immediately before the rate — arithmetically impossible. The "anywhere" column
+reused the anchored (`…$`) regex against the whole string, so it only matched a
+quote ENDING in the phrase. The primary measurement was sound; the corroborating
+column was meaningless. ***A clean zero reports on the query*** — fifth instance
+on this record, and the only reason it got caught is that the rule is written
+down.
+
+**NOT MIRRORED, deliberately.** The branch head carries `PARSER_VERSION` 199
+while this store is pv 198, and mirroring code ahead of its store makes main's
+own cron run a duplicate full re-parse on main. #560 (v199) was dispatched on
+the dev branch at 03:11:53Z instead; the mirror goes to the matched v199 pair.
+Main also carries `2f2053fc` from scheduled run #559, to be settled by
+`mirror-gate` at that time.
+
+## 2026-10-03 (04:1xZ) — #560 VERDICT (v199, success 04:09Z): THE COVERAGE FELL ON PURPOSE AND EVERY NAMED PLAN HIT EXACTLY
+
+**Store complete:** pv **199 at 99.93%** of 69,046 acks.
+
+**`match` 43,441 → 43,338 = −103, against a registered −98.** This is the first
+version on this record whose success criterion was a FALL, because a withheld
+misread is the improvement; a flat line would have meant the gate never fired.
+
+**The confirming signature is in the quote metrics, not the match metric.**
+`matchQuote` 5,241 → **5,364** (+123) and `matchQuoteShown` 1,687 → **1,818**
+(+131): quotes standing alone again, which is exactly what withholding a formula
+while keeping the filer's own words produces. A withheld plan does not go blank,
+it reverts to quoting the filing.
+
+| registered | actual | |
+|---|---|---|
+| CommonSpirit `470617373\|002` no formula, keeps quote | `match=null`, `matchMisread="1% of the first 6% of pay"`, quote intact | ✓ |
+| CBRE `521616016\|001` `66.67% of the first 6% of pay` | exact | ✓ |
+| Beacon Mobility `465084167\|001` `100% of the first 3% of pay` | exact, with `matchMisread="3% of the first 4% of pay"` | ✓ |
+| Mars `221594774\|008` UNCHANGED `100% of the first 1% of pay` | exact | ✓ |
+| confident 60,167 · entries 65,480 · lineups 59,819 · vesting 53,100 · dl 48 · HIGH 4 · warn 556 · overshoot 372 | all unchanged | ✓ |
+| `matchMisread` on 205 plans | **199 acks / 389,974 ppl** | within 6 |
+| retry rescues 15 | **11** | within 4 |
+
+**Mars is the one that matters most**, because it is the control on a REMOVAL:
+the band guard was deleted and this filing — whose sentence contains the
+"from 1% up to 6%" that guard fired on — still publishes `100% of the first 1%
+of pay`. A removal verified by a plan that keeps its answer.
+
+**Beacon Mobility is the retry working end to end**: the gate ruled `3% of the
+first 4%` a misread, the appended arm that had never run on it produced
+`100% up to the first 3%`, and the replacement passed the same gate. The store
+now carries both the published formula and the withdrawn one.
+
+**The two small misses (199 vs 205, 11 vs 15) are the SAME derived-field effect
+the #558 verdict named an hour earlier**, and naming it there is why they need
+no investigation here: both figures were measured over stored `matchText`, the
+run re-reads every filing and re-selects sentences, so the population shifts by
+a few either way. The registration was a prediction about a moving frame and it
+landed within 3%.
