@@ -1226,17 +1226,41 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   `$i.278'402`. **DO NOT CARRY 1,184 rows / 1,937,736 ppl** — that was the same
   screen firing on `Class I Vanguard Target Retirement Income Trust Select`,
   where the fund IS named; a class PREFIX is not a missing head.
-- **FROM THE SAME DRAW — A PUBLISHED NAME TRUNCATED ON A JOINER: 190 rows / 115
-  plans / 323,680 ppl / $4,981,039,061.** Barclays Services publishes
-  `BLACKROCK EQUITY INDEX FUND Common /` at **22.3% of its menu / $785,330,815 /
-  19,531 ppl**, and Spire Services publishes `Class R6 Common /` — **the same
-  defect in two independent plans out of a draw of three**, so a
-  `Common / Collective` column heading is bleeding into the description column
-  and severing the rest. Same cut mid-token in `State Street SPDR Portfolio S&`
-  (a severed `S&P`), `FID CONTRAFUND K6&`, `AMERICAN FUNDS 2035 TRGT DATE RETIRE
-  R&`. `*` and `+` are party-in-interest markers and must NOT count as joiners —
+- **THE TRUNCATED-NAME CLASS — REWRITTEN 05:2xZ, AND MY 04:3xZ MECHANISM WAS
+  WRONG.** That entry read "190 rows / 115 plans / 323,680 ppl /
+  $4,981,039,061 … a `Common / Collective` column heading bleeding into the
+  description column", **asserted from two examples.** Fingerprinting the
+  ENDINGS of all 1,526 raw-name rows that end on a joiner refutes it: the
+  `Common /` shape is **10 rows**, and the dominant endings are a trailing dash
+  on an otherwise COMPLETE name (143 + 116 + …) and a **contract-number
+  prefix** — Travelers' `…Prudential Insurance Company of America, GA-` and
+  `…Voya Retirement Insurance and Annuity Company, MCA-`, where `GA-`/`MCA-`
+  are group-annuity prefixes whose number is simply absent (86 rows).
+  ***A MECHANISM INFERRED FROM TWO CASES IS A GUESS WITH A CITATION.*** Note
+  also that the 190 was measured on CLEANED names and the fingerprint on RAW
+  ones — **not the same set**, which is a second reason the mechanism could not
+  be read off that count. The 10 `Common /` rows are real (Spire, Envista,
+  Michelin ×2, Toledo Clinic, KTGY, ePromos, ESG Architecture) and small.
+  `*` and `+` are party-in-interest markers and must NOT count as joiners —
   including them counted Darden's complete `Principal Fixed Income Guaranteed
-  Option*+`. Parser-side, needs a version bump.
+  Option*+`.
+- **A SENTENCE PUBLISHED AS A HOLDING — 2 rows / 288,416 ppl / $2,603,313, and
+  the honest size is two.** Kaiser Foundation Health Plan publishes `Loan
+  Repayments are included` in its fund table with a blank type: $1,753,508 on
+  the plan with **182,954 participants** and $849,805 on one with **105,462**.
+  **DO NOT CARRY 3,328 rows / 6,382,769 ppl** — that screen's `\bis\b` matched
+  **`IS`, the abbreviation for Institutional Shares**, so its top members were
+  correct abbreviated names: Amazon's `VANG FTSE SOC IDX IS` ($873,714,000),
+  Mayo's `VANG IS TL STK MK IP` ($1.6B, 10.68% of its menu) and Cigna's
+  `BLACKROCK SP 500 IDX (IS)` ($3.4B, 24.49%). ***A count keyed on a vocabulary
+  measures the vocabulary*** — and this is the first instance where the
+  collision was with a SHARE CLASS rather than an English word.
+  **THE MEASUREMENT KILLED THE FIX, deliberately:** a display-side predicate
+  would ship with no re-parse, but a two-member class cannot justify a
+  name-shape predicate in the same hour that one such predicate produced 3,328
+  false positives including a $3.4B row in front of 91,385 readers. Batch it
+  with the other name-column repairs as a plan-specific pin; do not build a
+  general predicate for it.
 - **DISCARDED, and recorded so it is not re-derived: the "welded name" count of
   2,720 rows / 5,565,186 ppl / $45.2B.** The predicate was "a closing paren with
   two words after it", which is the shape of every ordinary parenthetical —

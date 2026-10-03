@@ -41826,3 +41826,71 @@ bump; v199 was this cycle's shipping slot and is already live. Queued with the
 predicates above so the next session does not re-derive them — and with the
 warning that **a re-size is a new measurement**, since these counts were taken
 on the v199 store and both of my first attempts at them were wrong.
+
+## 2026-10-03 (05:2xZ) — THE QUEUE ITEM KILLED ITSELF TWICE, AND BOTH CORRECTIONS ARE OF MY OWN WORK FROM THE PREVIOUS HOUR
+
+Took the truncated-name class (recorded 04:3xZ as **190 rows / 115 plans /
+323,680 ppl / $4,981,039,061**, attributed to "a `Common / Collective` column
+heading bleeding into the description column"). Fingerprinted the ENDINGS of
+every published row ending on a joiner, which is the cause's signature.
+
+**THE MECHANISM I ASSERTED IS WRONG, AND I ASSERTED IT FROM TWO EXAMPLES.**
+The `Common /` shape is **10 rows**, not the class. Across 1,526 raw-name rows
+ending on a joiner, the dominant endings are:
+
+| count | shape | what it actually is |
+|---|---|---|
+| 143 | `…xx xxx xxxxx -` | a trailing dash on an otherwise COMPLETE name |
+| 116 | `…xx xxxx xxxx –` | the same with an en-dash |
+| 86 | `…x.x.x. xx-` | a CONTRACT-NUMBER prefix — Travelers' `The Prudential Insurance Company of America, GA-` and `Voya Retirement Insurance and Annuity Company, MCA-`, where `GA-`/`MCA-` are group-annuity contract prefixes whose number is simply absent |
+| 49 | `…xxxxxxx xxxxx:` | a colon — the real find, below |
+
+***A MECHANISM INFERRED FROM TWO CASES IS A GUESS WITH A CITATION.*** The two
+cases (Barclays and Spire) are real and both do end in `Common /`, which is
+exactly why they were persuasive. Ten rows is still a defect; it is not a
+323,680-participant defect, and the 190-row figure was additionally measured on
+CLEANED names while this fingerprint reads the RAW ones — **the two populations
+are not the same set**, which is its own reason the mechanism could not be read
+off the first count.
+
+### Then the replacement finding contaminated itself, on the oldest trap here
+
+The colon rows pointed at a sentence fragment in the holdings table, so I
+screened for a CLAUSE rather than a noun phrase — a finite verb, no fund-shaped
+noun. It read **3,328 rows / 2,757 plans / 6,382,769 ppl / $13.1B**, and the
+largest members are:
+
+- Amazon.com Services, **1,343,800 ppl**, `VANG FTSE SOC IDX IS` — $873,714,000
+- Mayo Clinic, `VANG IS TL STK MK IP` — $1,604,552,647, 10.68% of its menu
+- The Cigna Group, `BLACKROCK SP 500 IDX (IS)` — $3,420,262,000, 24.49%
+
+**`\bis\b` MATCHED `IS`, THE ABBREVIATION FOR INSTITUTIONAL SHARES.** Every one
+of those is a correct, abbreviated fund name. ***A count keyed on a vocabulary
+measures the vocabulary*** — the fourth instance in this session alone, and the
+first where the collision was with a SHARE CLASS rather than an English word.
+The 3,328 figure is discarded entirely.
+
+### What is left is two rows, and that is the honest size
+
+**Kaiser Foundation Health Plan publishes `Loan Repayments are included` as a
+holding** — $1,753,508 (0.01% of its menu) on the plan with **182,954
+participants**, and $849,805 on a second with **105,462**. A Schedule H note
+sentence standing in the fund table with a blank type. **2 rows / 288,416
+participants / $2,603,313.** Nothing else in the store survives the screen.
+
+**AND THE MEASUREMENT KILLED THE FIX, WHICH IS THE RIGHT OUTCOME.** A
+display-side predicate would ship without a re-parse and would qualify the row
+honestly — but a two-member class cannot justify a name-shape predicate when
+*this same hour* produced a 3,328-row false-positive set from one such
+predicate, including a $3.4B row in front of 91,385 readers. The false-positive
+risk dominates the true population by three orders of magnitude.
+**Recorded, not fixed: it batches with the other name-column repairs when one
+version ships, where a plan-specific pin costs nothing and a general predicate
+is not needed.**
+
+**So this cycle shipped no parser change and that is the finding.** Two figures
+I published an hour ago are corrected here rather than left standing, and
+neither was caught by a check — both were caught by looking at the members. The
+04:3xZ queue entry has been rewritten in `CLAUDE.md`; the figure that survives
+unchanged from that entry is the 929-row "nothing identifying in the name" class,
+whose own loose version (1,184 rows) was already discarded when it was written.
