@@ -808,24 +808,49 @@ EFAST2 bucket grew, not that our code broke.
 
 **NOTHING IS PRE-REGISTERED** for a parser run — `PARSER_VERSION` stays 199.
 
-**#565 SUCCESS (schedule, main, `e7730a25`, 10:21:14-10:30:05Z) — AND IT IS THE
-`pv` SHIP'S PRODUCTION VERDICT.** Its coverage line is the first to carry
-`pv: 199`, and **`pv` is the ONLY field that moved** — everything else is
-byte-identical to #564's, which is the fifth consecutive identical incremental
-line. The field was verified locally with `WAMPO_RECORD=1`; this is the real
-merge job writing it. #564 before it: success, byte-identical, verdicted,
-adopted, mirrored. **Nothing is in flight.**
+**#566 IS IN FLIGHT ON THE DEV BRANCH** (push, `a8cb81d1`, started 12:21:01Z) —
+the welded-share-count arm. **The next cycle must read its `conclusion`, verdict
+it against the pre-registration below, adopt it, REGENERATE THE CRAWLABLE PAGES
+BY HAND (the pipeline never runs `build-seo-pages`), then mirror — and CLEAR
+THIS PARAGRAPH in the same cycle.** An in-flight line left standing is the most
+dangerous kind of staleness in this file and has happened twice.
+
+**PRE-REGISTERED for #566:** the merge log prints `welded-share-count repair: 18
+rows across 16 plans`; 18 names change and ticker / fee / asterisk / shown type
+/ every suppressor flag move on **0** rows; the other seven repair arms are
+unchanged; and with no `PARSER_VERSION` bump (199) the coverage line must hold
+confident 60,167 · entries 65,480 · match 43,338 · HIGH 4 · warn 556 · dl 48 ·
+pv 199. `docs/accuracy-log.md` 2026-10-03 (12:4xZ).
+
+**The push trigger fired this time and a dispatch was correctly WITHHELD** — the
+listing showed #566 two minutes after the push, which is the amended rule
+working as written (a `workflow_dispatch` on the same SHA would have been a
+second run that concurrency resolves by killing the first).
+
+**#565 SUCCESS (schedule, main, `e7730a25`, 10:21:14-10:30:05Z) — THE `pv`
+SHIP'S PRODUCTION VERDICT.** Its coverage line is the first to carry `pv: 199`
+and **`pv` is the ONLY field that moved**, everything else byte-identical to
+#564's — the fifth consecutive identical incremental line. Verified locally with
+`WAMPO_RECORD=1` beforehand; this is the real merge job writing it.
 
 **A DATA COMMIT CAN LAND ON THE DEV BRANCH REMOTE, NOT ONLY ON MAIN.** #565 ran
 on main and its commit `7c3fdee2` appeared on **both** refs, so a `git push` of
-dev work was rejected **non-fast-forward** — the branch was BEHIND its own
-remote, which is the opposite of the documented hazard (main ahead of the
-branch). Reconcile is the same: fetch, merge the data commit, push, mirror.
-**And my retry loop retried that rejection FOUR TIMES.** The git rule says retry
-*only* network errors; a loop that retries any failure turns a legitimate
-refusal into four identical refusals, and the next step after "push keeps
-failing" is reaching for `--force`. A retry loop must READ the error: retry on a
-network message, stop and report on `rejected`/`non-fast-forward`.
+dev work was rejected **non-fast-forward** — the branch BEHIND its own remote,
+the opposite of the documented hazard. Reconcile is the same: fetch, merge the
+data commit, push, mirror. **And my retry loop retried that rejection FOUR
+TIMES.** The git rule says retry *only* network errors; a loop that retries any
+failure turns a legitimate refusal into four identical refusals, and the step
+after "push keeps failing" is reaching for `--force`. A retry loop must READ the
+error: retry on a network message, stop and report on
+`rejected`/`non-fast-forward`.
+
+**AND A SYNTAX CHECK CAN RUN A MERGE.** `node -e "import('./scripts/merge-4i.mjs')"`
+executed a full merge and rewrote fourteen shards plus three index files —
+merge-4i is a script with no import guard, and this file documents
+`node scripts/merge-4i.mjs` as the way to regenerate the index. Reverted; data
+must come from a pipeline run, which is what carries the audit, the loss triage
+and the coverage trail. ***`node --check <file>` is the syntax check; importing
+a script executes it.***
 
 **MIRRORED since the brief: the store-vs-page finding and the `[skip ci]`
 scoping note** — main is at `dfa6ba7a`.
