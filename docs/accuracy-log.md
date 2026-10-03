@@ -42515,3 +42515,116 @@ written down.
 shard-ranges appending to a JSONL, after two container restarts killed a
 ten-minute background render. A long measurement that cannot resume is a
 measurement that will be run three times.
+
+## 2026-10-03 (12:4xZ) — the welded SHARE COUNT: 18 rows / 11,668 ppl, and the queue's own figure was 14.6x too big in people
+
+**Queued 2026-10-02 (20:3xZ) as "29 rows / 24 plans / 170,735 ppl /
+$200,736,656 — PREDICATE STATED, ready to ship without re-deriving." Re-measured
+first, and that was not a formality.**
+
+The sibling of the shipped `valueRepair`, with the number in the MIDDLE. W.R.
+Grace (4,138 ppl) publishes `Invesco Stable Value Trust, 91,398,409 shares` on a
+row whose value IS $91,398,409. The count must be followed by `shares`/`units`
+and must **EQUAL the row's own value** — the same self-evidence, and the only
+reason it is safe: the cheap screen reads **1,606** rows and the equality test
+keeps **18**. The class is almost all cash because a share count equals the
+dollar value only at a **$1.00 NAV**.
+
+**HONEST SIZE: 18 rows / 16 plans / 11,668 participants / $110,295,497** against
+the queued 29 / 24 / 170,735 / $200.7M. The dollars are close; **the people are
+14.6x smaller.** Two causes, and both are the queue entry's, not the store's:
+the remembered count came from a different screen, and three of its largest rows
+are ones this version deliberately REFUSES. ***A re-size is a new measurement,
+not a delta against a remembered one*** — the sixth queue entry to come out
+different when re-measured rather than worked.
+
+### The queue entry described its own motivating case BACKWARDS
+
+It says: *"L Brands (30,989 ppl) publishes `Mutual Fund – 85,408,028 - shares` at
+$85,408,028 resolving to **VMFXX** — the resolver matched the caption. Stripping
+the count leaves no fund name, so the row correctly publishes NO ticker."*
+
+Measured through the tracked harness, **both halves are wrong**:
+- **The ticker does not change.** `tk=VMFXX` before AND after. It is not coming
+  from the name at all — `fundTickerInfo("Mutual Fund")` is `null` — so the
+  strip cannot withdraw it.
+- **The row is not asserting today; it is already qualified.** `cleanFiledName`
+  strips the caption, so the page currently shows **`85,408,028 - shares`**, and
+  `hasNoFundIdentity` already answers TRUE on that — the reader sees "the filing
+  names no specific fund".
+
+**So the repair as queued would have made those three rows WORSE**, replacing an
+honestly-qualified non-name with the unqualified caption `Mutual Fund`, on
+$86.8M in front of 30,989 readers. ***A repair that leaves a name with no fund
+in it is not a repair.***
+
+### The guard, and why it is `isGenericTypeName` and not the obvious one
+
+`hasNoFundIdentity("Mutual Fund")` is **false** — its filler list carries `fund`
+but not `mutual` — so the predicate that qualifies the row *today* cannot refuse
+the head *tomorrow*. `isGenericTypeName` answers **TRUE** on `Mutual Fund` and
+**FALSE** on all seven heads that must be kept (Invesco Stable Value Trust,
+Fidelity Cash Reserves, Putnam Stable Value, Vanguard Retirement Savings Trust,
+American Funds US Government Money, `1 T. Rowe Price Stable Value K`, Synthetic
+Cash Account). A clean 1-of-8 against 0-of-8. The shipped guard is the
+**display's own composition**, `isGenericTypeName(head) || hasNoFundIdentity(head)`
+— the same expression `app.js` and `build-seo-pages` pass into
+`isNamelessFundRow`, so merge and display answer the question the same way.
+
+### Gates
+
+- **End-to-end through a REAL merge, not a replica**: running `merge-4i` wrote
+  **exactly 18 name changes across 14 shards and changed nothing else**, and the
+  three L Brands rows are absent from that diff. The identity guard holds in
+  production code.
+- **Priced on every published cell** across all 18 rows via the tracked harness:
+  ticker 0, fee 0, asterisk 0, shown type 0, every suppressor flag 0, and
+  **0 rows gain a fee they did not have** — the hazard that mattered, because
+  trading a bogus ticker for a fabricated expense ratio is not a win.
+- **20 pins** in `merge-name-test.mjs`, SLICED from the shipped source with the
+  slice's landing asserted (and the real `isGenericTypeName` /
+  `hasNoFundIdentity` injected, since a stub would make the identity control
+  meaningless). **Four negative controls, one per condition, all firing by
+  name**: equality (3 of 20), the identity guard (3 of 20 — exactly the L Brands
+  rows), the unit-word anchor (1), the three-letter floor (1).
+- **THE FLOOR'S CONTROL WAS DECORATIVE AND THE HARNESS SAID SO.** My pin
+  `42 1,000 shares` is refused by the **anchor** — the head must end in a letter
+  — so it never REACHED the floor, and the control read "disagrees on 0 of 19".
+  *An arm can be inert while every existing case still passes*, the same trap
+  the sibling arm hit when it shipped. I then assumed the floor was SUBSUMED by
+  the identity guard and measured instead of asserting: `AB CD`, `Xy Zw` and
+  `AB` all fail the floor and **pass** the identity guard (two-letter tokens are
+  not in its filler list), so the floor is load-bearing. Pinned with a reaching
+  case and labelled DEFENSIVE, since no live store row has that shape.
+- **NO THOUSANDS ARM**, carried from the queue and still right: it read 117 rows,
+  mostly arithmetic coincidences — a vintage year × 1,000 lands between $2.0M
+  and $2.07M, so `T. ROWE PRICE RET 2005 ACT B` at $2,005,350 matched.
+- `merge-name-test.mjs` still exits 1 for the **pre-existing** reason on record
+  (the ISSUER arm's `iss-noshipped` control gone decorative after #547 removed
+  its evidence from the store). My block is 20/20; that failure is unrelated and
+  stays queued.
+
+### And a foot-gun fired in the course of this
+
+`node -e "import('./scripts/merge-4i.mjs')"` as a syntax check **ran a full
+merge** and rewrote fourteen shards plus three index files, because merge-4i is
+a script with no import guard — `CLAUDE.md` even documents `node
+scripts/merge-4i.mjs` as the way to regenerate the index. Reverted; the data
+must come from a pipeline run, which is what carries the audit, the loss triage
+and the coverage trail. **`node --check <file>` is the syntax check; importing a
+script executes it.**
+
+MERGE-SIDE, no `PARSER_VERSION` bump (199), so the work list stays the stale acks.
+
+**PRE-REGISTERED:**
+- merge log prints `welded-share-count repair: 18 rows across 16 plans`, plus
+  whatever the delta's own hits add
+- 18 names change; ticker, fee, asterisk, shown type and every suppressor flag
+  move on **0** rows
+- `welded-value repair`, issuer, lost-space, all-caps, rotation, cipher and
+  ocr-bang arms: unchanged by this arm
+- confident 60,167 · entries 65,480 · match 43,338 · HIGH 4 · warn 556 · dl 48 ·
+  pv 199 at ~99.93%
+- crawlable pages: the pipeline does NOT run `build-seo-pages`, so the pages for
+  whichever of the 16 plans have one must be regenerated BY HAND after the run
+  lands and is adopted

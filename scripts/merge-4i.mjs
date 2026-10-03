@@ -3,6 +3,8 @@
  * lineups-status.json, data/lineups/ shards, lineups-index.json. */
 import { readFileSync, writeFileSync, mkdirSync, readdirSync } from "node:fs";
 import { indexFlags, JUNK_NAME_RE, AGG_DISCLOSURE, GENERIC_TYPE_NAME } from "./lib-4i.mjs";
+import { isGenericTypeName } from "./lib-4i.mjs";
+import { hasNoFundIdentity } from "./lib-disclose.mjs";
 
 const SHARDS = 64;
 const shardOf = (ack) => {
@@ -1337,9 +1339,64 @@ function stripIssuerLead(iss) {
     if (!/[A-Za-z]{3}/.test(head)) return null;
     return head;
   };
-  let weld = 0, caps = 0, rot = 0, ciph = 0, bang = 0, iweld = 0, vrep = 0;
+  /* THE SAME EVIDENCE, WITH THE NUMBER IN THE MIDDLE — a welded SHARE COUNT.
+   * Sibling of `valueRepair` above: W.R. Grace (4,138 ppl) publishes
+   * `Invesco Stable Value Trust, 91,398,409 shares` on a row whose value IS
+   * $91,398,409. 18 rows / 16 plans / 11,668 participants / $110,295,497.
+   *
+   * The count must be FOLLOWED by `shares` or `units`, so a bare trailing
+   * number is left to `valueRepair` and a mid-name contract number is never
+   * touched. It must EQUAL the row's own value, which is the same
+   * self-evidence `valueRepair` uses and the only reason this is safe: the
+   * cheap screen — any number followed by shares/units — reads **1,606** rows
+   * and the equality test keeps 18. The class is almost all CASH because a
+   * share count equals the dollar value only at a $1.00 NAV.
+   *
+   * NO THOUSANDS ARM. Allowing "the value in thousands" read 117 rows, and
+   * most were arithmetic coincidences: a vintage year x 1,000 lands between
+   * $2.0M and $2.07M, so `T. ROWE PRICE RET 2005 ACT B` at $2,005,350 matched.
+   * *A tolerance wide enough to catch an imagined shape is wide enough to
+   * manufacture one*, and that one was aimed at the commonest family in the
+   * store.
+   *
+   * THE IDENTITY GUARD IS NOT CAUTION — WITHOUT IT THIS ARM MAKES THREE ROWS
+   * WORSE. L Brands (30,989 ppl) files `Mutual Fund - 85,408,028 - shares` at
+   * $85,408,028. Today `cleanFiledName` strips the caption and the page shows
+   * `85,408,028 - shares`, which `hasNoFundIdentity` already qualifies as "the
+   * filing names no specific fund". Strip the count instead and the name
+   * becomes `Mutual Fund` — a caption published as though it were a fund, with
+   * the qualifier gone, on $85.4M. `hasNoFundIdentity` cannot see it (its
+   * filler list has `fund` but not `mutual`); `isGenericTypeName` answers TRUE
+   * on it and FALSE on all seven heads that must be kept, which is why the
+   * guard is the display's own composition of the two.
+   * ***A REPAIR THAT LEAVES A NAME WITH NO FUND IN IT IS NOT A REPAIR.***
+   *
+   * PRICED ON EVERY PUBLISHED CELL through the tracked harness, across all 18
+   * rows: ticker 0, fee 0, asterisk 0, shown type 0, every suppressor flag 0,
+   * and **0 rows gain a fee they did not have** — the hazard that mattered,
+   * since trading a bogus ticker for a fabricated expense ratio is not a win.
+   * Only the name moves.
+   *
+   * RESIDUE, named rather than swept in: H. Eikenhout files
+   * `26,911 shares Key Guaranteed Portfolio Fund 1,400,750 shares` and the head
+   * keeps a SECOND count at the front, which this arm does not reach; three
+   * heads retain a leading enumerator (`11 Charles Schwab ...`). Both are
+   * improvements on what ships today and neither is made worse. */
+  const shareRepair = (f) => {
+    const m = /^(.*?[A-Za-z)])\s*[-\u2013\u2014\u2212,;:]?\s*([\d,]{3,}(?:\.\d+)?)\s*(?:[-\u2013\u2014\u2212]\s*)?(?:shares?|units?)\b/i
+      .exec(String(f.name || ""));
+    if (!m) return null;
+    const num = Number(m[2].replace(/,/g, ""));
+    const v = Math.abs(Number(f.value) || 0);
+    if (!(num > 0 && Math.abs(num - v) <= 1)) return null;     // the self-evidence
+    const head = m[1].trim().replace(/[-\u2013\u2014\u2212,;:]+$/, "").trim();
+    if (!/[A-Za-z]{3}/.test(head)) return null;                // leave something readable
+    if (isGenericTypeName(head) || hasNoFundIdentity(head)) return null;   // and it must name a fund
+    return head;
+  };
+  let weld = 0, caps = 0, rot = 0, ciph = 0, bang = 0, iweld = 0, vrep = 0, srep = 0;
   const weldAcks = new Set(), capsAcks = new Set(), rotAcks = new Set(), ciphAcks = new Set(), bangAcks = new Set();
-  const iweldAcks = new Set(), vrepAcks = new Set();
+  const iweldAcks = new Set(), vrepAcks = new Set(), srepAcks = new Set();
   for (let i = 0; i < SHARDS; i++)
     for (const [ack, e] of Object.entries(buckets[i])) {
       if (!e || !e.confident || !Array.isArray(e.funds)) continue;
@@ -1359,6 +1416,14 @@ function stripIssuerLead(iss) {
          * because the strip can only make the remaining name more repairable */
         const vr = valueRepair(f);
         if (vr) { f.name = vr; vrep++; vrepAcks.add(ack); }
+        /* the welded SHARE COUNT, asked beside its sibling and outside the
+         * chain for the same reason: its evidence is `f.value`, and stripping
+         * the count can only make the remaining name more repairable. Asked
+         * AFTER valueRepair so a row carrying both shapes loses the trailing
+         * figure first; the two regexes are disjoint, since this one requires a
+         * unit word after the number and that one requires end-of-string. */
+        const sr = shareRepair(f);
+        if (sr) { f.name = sr; srep++; srepAcks.add(ack); }
         const rep = weldRepair(f.name);
         if (rep) { f.name = rep; weld++; weldAcks.add(ack); continue; }
         /* disjoint from the arm above by construction — an all-caps token has
@@ -1391,6 +1456,7 @@ function stripIssuerLead(iss) {
       }
     }
   if (vrep) console.log(`welded-value repair: ${vrep} rows across ${vrepAcks.size} plans`);
+  if (srep) console.log(`welded-share-count repair: ${srep} rows across ${srepAcks.size} plans`);
   if (iweld) console.log(`issuer lost-space repair: ${iweld} rows across ${iweldAcks.size} plans`);
   if (weld) console.log(`lost-space repair: ${weld} rows across ${weldAcks.size} plans`);
   if (caps) console.log(`all-caps lost-space repair: ${caps} rows across ${capsAcks.size} plans`);

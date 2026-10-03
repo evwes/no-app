@@ -16,6 +16,8 @@ import fs from "node:fs";
 import vm from "node:vm";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { isGenericTypeName } from "./lib-4i.mjs";
+import { hasNoFundIdentity } from "./lib-disclose.mjs";
 /* NEVER a hardcoded sandbox path: `cwd: "/home/user/no-app"` in map-test.mjs
  * made Node report `spawn python3 ENOENT` on the runner and sent the first
  * reading of that failure at the runner image. */
@@ -1225,6 +1227,132 @@ for (const [key, label] of BANG_CONTROLS) {
     }
     console.log(`  drop ${label}: disagrees on ${broke.length} of ${V_CASES.length}`);
     for (const b of broke.slice(0, 4)) console.log(`      ${b}`);
+    if (!broke.length) { console.error(`FAIL the control for ${label} changed NOTHING -- it is decorative`); process.exitCode = 1; }
+  }
+}
+
+/* ---- THE WELDED SHARE COUNT, sibling of the arm above ------------------
+ * Same self-evidence with the number in the MIDDLE: the count must be followed
+ * by `shares`/`units` and must EQUAL the row's own value. 18 rows / 16 plans /
+ * 11,668 participants / $110,295,497, verified end-to-end through a real merge
+ * (18 name changes, nothing else moved).
+ *
+ * SLICED from the shipped source, not restated, and the slice's landing is
+ * asserted -- but this arm calls TWO MODULE IMPORTS (`isGenericTypeName`,
+ * `hasNoFundIdentity`), so the wrapper injects them, exactly as the JUNK_NAME_RE
+ * note above does for weldRepair. Injecting the REAL ones matters: the identity
+ * guard is the condition that stops this arm damaging three rows, so a stub
+ * would make the control for it meaningless. */
+{
+  const MSRC = src;   // merge-4i.mjs, already read at the top of this file
+  const H = "  const shareRepair = (f) => {";
+  const T = "\n  };";
+  const h = MSRC.indexOf(H);
+  if (h < 0) throw new Error("merge-name-test: shareRepair moved in merge-4i.mjs");
+  const t = MSRC.indexOf(T, h);
+  const ssrc = MSRC.slice(h, t + T.length).replace(/^\s*const shareRepair =/, "shareRepair =");
+  if (!/shares\?\|units\?/.test(ssrc)) throw new Error("slice missed the unit anchor");
+  if (!/isGenericTypeName/.test(ssrc)) throw new Error("slice missed the identity guard");
+
+  const smk = (drop) => {
+    let z = ssrc;
+    if (drop === "s-equality") {
+      z = z.replace("if (!(num > 0 && Math.abs(num - v) <= 1)) return null;", "if (!(num > 0)) return null;");
+      if (z === ssrc) throw new Error("control s-equality did not land");
+    } else if (drop === "s-identity") {
+      z = z.replace("if (isGenericTypeName(head) || hasNoFundIdentity(head)) return null;", "");
+      if (z === ssrc) throw new Error("control s-identity did not land");
+    } else if (drop === "s-head") {
+      z = z.replace("if (!/[A-Za-z]{3}/.test(head)) return null;", "");
+      if (z === ssrc) throw new Error("control s-head did not land");
+    } else if (drop === "s-unit") {
+      /* ASCII-only target: drop the requirement that a unit word follow */
+      z = z.replace("(?:shares?|units?)\\b", "(?:shares?|units?)?");
+      if (z === ssrc) throw new Error("control s-unit did not land");
+    }
+    // eslint-disable-next-line no-new-func
+    return new Function("isGenericTypeName", "hasNoFundIdentity",
+      `let shareRepair; ${z}; return shareRepair;`)(isGenericTypeName, hasNoFundIdentity);
+  };
+
+  /* Every MUST-REPAIR case is a real store row. */
+  const S_CASES = [
+    ["Invesco Stable Value Trust, 91,398,409 shares", 91398409, "Invesco Stable Value Trust"],   // W.R. Grace
+    ["Putnam Stable Value 384,141 Units", 384141, "Putnam Stable Value"],
+    ["Vanguard Retirement Savings Trust 891,385 shares", 891385, "Vanguard Retirement Savings Trust"],
+    ["Fidelity Cash Reserves 23,148 shares", 23148, "Fidelity Cash Reserves"],
+    ["Invesco Stable Value III 1,465,244 units", 1465244, "Invesco Stable Value III"],
+    ["Synthetic Cash Account – 534 Shares", 534, "Synthetic Cash Account"],                 // en dash
+    /* the count carries DECIMALS and the value is the rounded dollar */
+    ["Federated Government Obligations Tax- Managed Fund Institutional Shares, 281,253.886 share", 281254,
+      "Federated Government Obligations Tax- Managed Fund Institutional Shares"],
+    /* a trailing `of` -- the filed name was already truncated; the head is
+     * still the best available and is not made worse */
+    ["American Funds US Government Money 117,943 shares of", 117943, "American Funds US Government Money"],
+
+    /* ---- THE IDENTITY GUARD, which is why this arm is safe ----
+     * L Brands (30,989 ppl, $85,408,028). TODAY the page shows
+     * `85,408,028 - shares` and hasNoFundIdentity QUALIFIES it. Stripping the
+     * count would publish `Mutual Fund` unqualified, so the arm must REFUSE.
+     * A REPAIR THAT LEAVES A NAME WITH NO FUND IN IT IS NOT A REPAIR. */
+    ["Mutual Fund – 85,408,028 - shares", 85408028, null],
+    ["Mutual Fund – 1,401,913 - shares", 1401913, null],
+    ["Mutual fund, 102,311 shares", 102311, null],
+
+    /* ---- the equality is what decides it ---- */
+    ["Putnam Stable Value 384,141 Units", 999999, null],        // right shape, wrong number
+    ["Putnam Stable Value 384,141 Units", 384142, "Putnam Stable Value"],   // off by one, accepted
+    ["Putnam Stable Value 384,141 Units", 384143, null],        // off by two, refused
+
+    /* ---- a SHARE COUNT that is not the value: the commonest real shape, and
+     * the whole reason the equality test exists. A $12.34 NAV fund holds
+     * 81,000 shares worth $1,000,000 and must never be touched here. */
+    ["Vanguard Russell 1000 Growth Index I; 56,772 shares", 1000000, null],
+
+    /* ---- the unit word is the anchor: a bare trailing number belongs to
+     * valueRepair, and a contract or maturity figure to neither ---- */
+    ["Citibank N.A. Contract #TR24-100", 102363000, null],
+    ["MONEY MARKET -415,027", 415027, null],                   // valueRepair's own case
+    /* fewer than three digits is below the screen */
+    ["Some Fund 50 shares", 50, null],
+    /* ---- nothing readable left behind. The FIRST of these is refused by the
+     * ANCHOR (the head must end in a letter or paren, and "42 " does not), so
+     * it never REACHES the floor -- my first pin was exactly that shape and the
+     * harness reported the floor's control as changing 0 of 19. *An arm can be
+     * inert while every existing case still passes.* The second reaches it:
+     * `AB CD` has no three consecutive letters, and the identity guard does NOT
+     * refuse it (two-letter tokens are not in its filler list), so the floor is
+     * LOAD-BEARING and not subsumed -- measured, after assuming the opposite.
+     * No live store row has that shape, so it is DEFENSIVE. */
+    ["42 1,000 shares", 1000, null],
+    ["AB CD 1,000 shares", 1000, null],
+  ];
+  const sr = smk(null);
+  let sFails = 0;
+  for (const [name, value, want] of S_CASES) {
+    const got = sr({ name, value }) || null;
+    if (got !== want) { sFails++; console.error(`FAIL shareRepair(${JSON.stringify(name)}, ${value}) -> ${JSON.stringify(got)}, want ${JSON.stringify(want)}`); }
+  }
+  console.log(`\nwelded-share-count repair: ${S_CASES.length - sFails}/${S_CASES.length} passed`);
+  if (sFails) process.exitCode = 1;
+
+  const S_CONTROLS = [
+    ["s-equality", "the equality with the row's own value"],
+    ["s-identity", "the identity guard that refuses a head naming no fund"],
+    ["s-unit",     "the unit-word anchor"],
+    ["s-head",     "the three-letter floor on the remaining head"],
+  ];
+  console.log(`NEGATIVE CONTROL, one per condition:`);
+  for (const [key, label] of S_CONTROLS) {
+    const v = smk(key);
+    const broke = [];
+    for (const [name, value, want] of S_CASES) {
+      let got;
+      try { got = v({ name, value }) || null; } catch (e) { got = `THREW ${e.message}`; }
+      if (got !== want) broke.push(`${JSON.stringify(name)} @${value} -> ${JSON.stringify(got)}`);
+    }
+    console.log(`  drop ${label}: disagrees on ${broke.length} of ${S_CASES.length}`);
+    for (const b of broke.slice(0, 3)) console.log(`      ${b}`);
     if (!broke.length) { console.error(`FAIL the control for ${label} changed NOTHING -- it is decorative`); process.exitCode = 1; }
   }
 }
