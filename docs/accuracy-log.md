@@ -43290,3 +43290,65 @@ is that the 365 rows / 170,932 ppl where the two houses DIFFER cannot have the
 fee priced off the trustee, while the 607 rows / 1,002,785 ppl where they are
 the SAME firm are exactly where the fee legitimately matched; (3) re-diff and
 require FEE lost = 0 and FEE swapped = 0, as the ticker already is.
+
+## 2026-10-03 (19:5xZ) — FOUND BY THE DRAW: AN UNCORROBORATED PARTICIPANT COUNT, WHICH IS THE WEIGHT ON EVERY FIGURE THIS PROJECT PUBLISHES
+
+The participant-weighted draw landed on **Avalon Capital Management** (EIN
+943158692 pn 001), which publishes **1,955,672 participants** against
+**$6,087,098** of year-end assets — **$3.11 each**, for a small firm's 401(k)
+profit sharing plan. That is the SECOND-LARGEST claimed participant count in the
+whole universe, above Amazon's.
+
+**IT MATTERS TWICE OVER, and the second way is the reason to care.** It is a
+wrong number on that plan's own page — and participant counts are the WEIGHT
+behind every class size in `CLAUDE.md` and every figure in this log, and the
+SAMPLING WEIGHT of this draw, which is the only reason it surfaced at all. *An
+instrument weighted by a field cannot see an error in that field except by
+landing on it.*
+
+**THE DECISIVE WITNESS IS UNIQUE STORE-WIDE AND NEEDS NO EXTERNAL SOURCE:
+Avalon's `assetsBOY` is $1,955,672 — the same number as its participant count.**
+Asked of every plan claiming ≥1,000 participants against all seven money fields,
+**exactly 1 of 112,652 plans** has its count equal a dollar figure on its own
+row. A coincidence that exact, and that singular, is a COLUMN rather than a
+plan: a dollar figure sits in the participants box. `partBalances` is **3** and
+`activeParticipants` is **3**.
+
+**THE CLASS, after two screens of mine were refuted by their own output:**
+
+**(c) THE FIRST SCREEN WAS WRONG AND THE WIND-DOWNS ARE WHY. DO NOT CARRY 504
+plans / 5,191,508 claimed participants.** That screen gated on EOY assets per
+participant, and ***EOY assets are $0 for a wind-down BY DEFINITION*** — so it
+swept in real terminated plans whose counts are CORRECT: **Kroger pn=004 claims
+262,794 with EOY $0 and BOY assets of $2,299,591,000** ($8,750 each), and Kaiser
+pn=037 ($5.7B BOY), VMware ($4.1B), Neiman Marcus ($1.39B), Johnson Controls,
+Lahey Clinic and Speedway are the same shape. A plan that really had those
+participants had their money at the START of the year, so the witness must be
+**BOY** assets. All three are now pinned as must-NOT-see. *A count of a
+condition is not a measure of a defect*, met on the participant column.
+
+**(a)+(b) WHAT SURVIVES: 49 plans claiming 3,469,170 participants — 2.99% of the
+116,001,210 participant-weighted universe**, and **3.27% sits in the ten largest
+rows**, so the class is dominated by a handful and the expensive half is cheap
+to fix. 40 of the 49 are SHORT FORM. Pins: both suspects seen, Walmart, Amazon
+and Target spared (Walmart's BOY 1,970,230 / EOY 1,996,659 / with-balances
+1,197,800 / $59.1B corroborates itself three ways).
+
+**AND (b) IS PROBABLY NOT A PARSE DEFECT AT ALL, which is worth saying plainly.**
+The 48 beyond Avalon are overwhelmingly STAFFING and PEO firms — Paragon
+Personnel, Skillset Group, Riven Rock Staffing, On Point Personnel, Premier
+Personnel Groups, Barracuda Staffing, Tee-Off Temps — where `activeParticipants`
+≈ the claimed count while `partBalances` is **3 to 8** and assets are tens of
+thousands. Form 5500's participant count includes employees ELIGIBLE but not
+enrolled, so these figures are plausibly AS FILED and correct in form. They are
+still unusable as a reader-facing "participants" number and actively harmful as
+a weight: Dingo Doggies Campus claims **327,660** participants with **2**
+balances and **$14,694** of assets.
+
+**SO THE FIX IS A DISCLOSURE, NOT A CORRECTION — and that is the shape the
+project already prefers.** The honest move is not to overwrite a filed figure
+but to publish the corroborating one beside it, or to withhold the headline
+count where no other field supports it, exactly as `hasNoFundIdentity` qualifies
+a name rather than inventing one. **A blank is honest; a number reads as
+knowledge.** Queued, unshipped: the weighting question has to be settled first,
+because every size in the queue is denominated in this field.

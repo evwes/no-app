@@ -778,6 +778,20 @@ parse-status entries) — 401(k)-type 2J + ERISA 403(b) 2L/2M, ≥100 participan
 at either end of the plan year. A DOL refresh on 2026-09-30 moved it from
 111,782; do not carry an older figure forward.
 
+**AND READ EVERY PARTICIPANT-WEIGHTED FIGURE IN THIS FILE WITH A ~3% CAVEAT,
+found 2026-10-03 19:5xZ.** The participant-weighted universe is **116,001,210**,
+and **49 plans claiming 3,469,170 of them (2.99%) have a count NO OTHER FIELD
+SUPPORTS** — EOY 0, `partBalances` ≤10, BOY assets trivial. 3.27% sits in the
+ten largest rows. Avalon Capital Management claims **1,955,672** (second-largest
+in the universe, above Amazon) and its `assetsBOY` is **$1,955,672** — the same
+number, and the ONLY plan of 112,652 whose count equals a dollar figure on its
+own row. Most of the other 48 are staffing/PEO firms whose count is plausibly
+the ELIGIBLE population as filed. **DO NOT CARRY the first screen's 504 plans /
+5,191,508** — it gated on EOY assets, which are $0 for a WIND-DOWN by
+definition, so it swept in Kroger pn=004 (262,794 real ppl, BOY $2.3B), Kaiser
+pn=037, VMware and Neiman Marcus, whose counts are correct. The witness must be
+**BOY** assets. `docs/accuracy-log.md` 2026-10-03 (19:5xZ).
+
 `confident` **60,167** · lineups 59,819 · entries 65,480 · match **43,338** ·
 vesting 53,100 · roth 38,350 · **HIGH 4** · warn **556** · overshoot 372 /
 436,224 ppl · overshootTrust 12 · aggRow 114 · dl **48** · pvTopShare **99.93**
@@ -1138,6 +1152,29 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
+- **FOUND BY THE 19:4xZ DRAW, SIZED NOT SHIPPED — AN UNCORROBORATED PARTICIPANT
+  COUNT, AND IT IS THE WEIGHT ON EVERY FIGURE IN THIS FILE: 49 plans claiming
+  3,469,170 participants, 2.99% of the weighted universe**, 3.27% of it in the
+  ten largest rows, 40 of 49 SHORT FORM. **Avalon Capital Management** publishes
+  **1,955,672** participants (second-largest in the universe, above Amazon)
+  against $6,087,098 — $3.11 each — and its `assetsBOY` is **$1,955,672**, the
+  same number and the ONLY plan of 112,652 whose count equals a dollar figure on
+  its own row, with `partBalances` 3. Dingo Doggies Campus claims **327,660**
+  with **2** balances and $14,694.
+  **DO NOT CARRY 504 plans / 5,191,508** — the first screen gated on EOY assets,
+  which are **$0 for a WIND-DOWN by definition**, so it swept in real terminated
+  plans with correct counts (Kroger pn=004: 262,794 ppl, BOY **$2,299,591,000**;
+  also Kaiser pn=037, VMware, Neiman Marcus, Johnson Controls, Lahey Clinic).
+  The witness must be **BOY** assets, and those three are pinned must-NOT-see.
+  **The 48 beyond Avalon are probably NOT a parse defect:** they are staffing
+  and PEO firms where `activeParticipants` ≈ the claim, so the figure is
+  plausibly the ELIGIBLE population AS FILED — unusable as a reader-facing
+  "participants" number and harmful as a weight, but not wrong in form.
+  **So the fix is a DISCLOSURE, not a correction** — publish the corroborating
+  field beside it or withhold the headline where nothing supports it, the
+  `hasNoFundIdentity` shape. *A blank is honest; a number reads as knowledge.*
+  Settle the weighting first: every size in this queue is denominated in this
+  field. `docs/accuracy-log.md` 2026-10-03 (19:5xZ).
 - **SHIPPED 2026-10-03 16:2xZ (`23b4fa32`) — `quoteTrim`: table debris stops
   leading a published quote, 64 quotes / 64 plans / 129,653 ppl**, 5 crawlable
   pages. The queue's own figure was 65 / 130,078; the 65th is already suppressed
