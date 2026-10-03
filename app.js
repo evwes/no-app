@@ -1145,7 +1145,32 @@
         || isTypoGenericTypeName(s);
   }
 
-  const isGenericName = isGenericTypeName;
+  /* A NAME WITH NO FUND IDENTITY IN IT — `shares`, `Fund`, `UNIT`,
+   * `Institutional Class`, `E.I.N. 23-`. isGenericTypeName is a closed
+   * vocabulary of Schedule H TYPE LABELS and is blind to a FRAGMENT, and
+   * widening that constant is refused because the parser's region selection
+   * reads it. Display-only, composed into isGenericName below. 486 rows /
+   * 325 plans / 1,131,917 ppl / $5.93B newly qualified; 343 rows carrying an
+   * ISSUER are deliberately untouched. It tests the CLEANED form too because
+   * this file passes f.name RAW where build-seo-pages passes the cleaned
+   * string, and they differ on 16 rows. scripts/lib-disclose.mjs holds the
+   * measurement and the list of all 309 distinct names, every one read. */
+  const NO_IDENTITY_FILLER = /\b(?:class|cl|cls|series|ser|unit|units|share|shares|shs|institutional|instl|inst|investor|inv|adv|advisor|advisors|retirement|r[1-6]|[a-z]|\d{1,3}|common|collective|trust|trusts|fund|funds|the|at|nav|portfolio)\b/gi;
+  const stripsToNothing = (s) =>
+    String(s).replace(NO_IDENTITY_FILLER, " ").replace(/[^A-Za-z0-9]+/g, " ").trim().length === 0;
+  /* An EMPLOYER-IDENTIFICATION NUMBER published as a holding. `E.I.N. 20-` is
+   * caught by the filler strip, but the OCR'd I/L variant `E.LN. 81-` is NOT —
+   * "LN" survives as a two-letter token and reads as an identity. Three rows /
+   * 559 participants (The Alexander Group, St Henry Tile, Bblbc at 56.5% of its
+   * own menu), and a form-field fragment is never a fund under any spelling. */
+  const EIN_FRAGMENT = /^e\.?\s?[il]\.?\s?n\.?\s*[\d\s\-‐–—]*$/i;
+  function hasNoFundIdentity(name) {
+    const s = String(name || "").trim();
+    if (!s) return false;              /* an empty name is a different case */
+    if (EIN_FRAGMENT.test(s)) return true;
+    return stripsToNothing(s) || stripsToNothing(cleanFiledName(s));
+  }
+  const isGenericName = (n) => isGenericTypeName(n) || hasNoFundIdentity(n);
   window.__wampoGenericName = isGenericName;  // read by the smoke test only
   function isNamelessFundRow(f, cleanedName, isGenericName) {
     const type = String((f && f.type) || "");

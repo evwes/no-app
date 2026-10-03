@@ -8,7 +8,8 @@ on:
     # how a broken map reached the live site unnoticed.
     paths: ["app.js", "index.html", "styles.css", "data.js", "fund-er.js",
             "scripts/smoke-test.mjs", "scripts/map-test.mjs",
-            "scripts/fund-er-test.mjs",
+            "scripts/fund-er-test.mjs", "scripts/no-identity-test.mjs",
+            "scripts/lib-disclose.mjs", "scripts/build-seo-pages.mjs",
             "plans-list.json", "plans-index.json", "map-points.json"]
   workflow_dispatch:
 
@@ -28,6 +29,16 @@ jobs:
       # coverage — half its fixtures are names that must stay blank.
       - name: Fund-name matcher — resolves what it should, blanks what it must
         run: node scripts/fund-er-test.mjs
+      # The no-identity predicate qualifies a row whose name carries no fund in
+      # it at all (`shares`, `Fund`, `UNIT`, `E.I.N. 23-`) — 486 rows / 325
+      # plans / 1,131,917 participants. Its whole risk is the other direction,
+      # so half the fixtures are REAL names that must never be qualified,
+      # including the largest holdings of Amazon, Cigna and Mayo Clinic. It also
+      # asserts that the two display surfaces agree, because app.js passes the
+      # RAW name where build-seo-pages passes the CLEANED one. Cheap, no
+      # network, runs before the Playwright install like its neighbours.
+      - name: No-identity names — qualifies fragments, never a real fund
+        run: node scripts/no-identity-test.mjs
       # index.html cache-busts its assets with a query string, and that string
       # was typed by hand until 2026-10-02 -- when it was found SEVENTEEN DAYS
       # stale, with app.js and fund-er.js both changed that same day. A

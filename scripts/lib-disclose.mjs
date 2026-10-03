@@ -1453,6 +1453,63 @@ export function isLoanVocabularyRow(name) {
  * Takes the row and its already-cleaned display name, because the two callers
  * clean at different points. app.js keeps a twin (browser script, no modules);
  * `smoke-test.mjs` runs the browser copy against this one and fails on drift. */
+/* A NAME WITH NO FUND IDENTITY IN IT AT ALL — 2026-10-03 (06:2xZ).
+ *
+ * Found by the 04:2xZ draw and sized through the shipped guard's own
+ * conditions. `isGenericTypeName` is a CLOSED vocabulary of Schedule H type
+ * labels — "registered investment company", "collective trust", "mutual
+ * funds", "pooled separate accounts" — so it reaches a row named
+ * `Collective investment trusts` and is blind to one named `shares`, `Fund`,
+ * `UNIT`, `Institutional Class` or `E.I.N. 23-`. Those are not type labels,
+ * they are FRAGMENTS, and no guard reaches them.
+ *
+ * WIDENING `GENERIC_TYPE_NAME` IS THE WRONG FIX AND ITS OWN COMMENT SAYS SO:
+ * the parser's region selection and the dominant-row audit read that constant,
+ * and widening it made 3M's fair-value note CONFIDENT by deleting its $18.4B
+ * `Common/collective trusts` row and moved Lam Research's sum by $453M. So
+ * this is a DISPLAY-ONLY predicate, composed into `isNamelessFundRow`'s
+ * injected name test at the two render call sites and nowhere else. No
+ * re-parse, no effect on which region wins.
+ *
+ * SIZE, measured with the issuer gate and the already-qualified set removed,
+ * because the shipped call site imposes both: **486 rows / 325 plans /
+ * 1,131,917 participants / $5,934,254,604** would be newly qualified. A
+ * further 343 rows / 820,836 ppl carry an ISSUER and are deliberately left
+ * alone (`Vanguard Target Retirement 2030 · Mutual Fund Shares` reads as a
+ * named holding), and 103 rows / 565,787 ppl are already qualified today.
+ *
+ * These are small plans where the unnamed row is the MAJORITY of the menu:
+ * Behavioral Connections publishes `Portfolio` at 96.0%, Hui Manufacturing
+ * `Fund` at 80.8%, Avi Systems `shares` at 69.4% of a $303,975,100 menu,
+ * Eldercare of Minnesota `E.I.N. 20-` at 87.6% — an employer-identification
+ * number published as a holding. All 309 distinct names were read: not one
+ * identifies a fund.
+ *
+ * IT TESTS THE CLEANED FORM TOO, AND THAT IS NOT BELT-AND-BRACES. app.js:3148
+ * passes `f.name` (RAW) into the parameter the definition calls `cleanedName`,
+ * while build-seo-pages.mjs:257 passes the cleaned string. Measured: the two
+ * agree on 467 rows and differ on 16, and in all 16 it is the CLEANED name
+ * that has no identity (`Mutual fund, 102,311.9 shares` cleans to
+ * `102,311.9 shares`) — 0 go the other way. Testing both forms makes the
+ * report and the crawlable pages agree without changing what either passes,
+ * which would move the EXISTING guard's population and needs its own
+ * measurement. */
+const NO_IDENTITY_FILLER = /\b(?:class|cl|cls|series|ser|unit|units|share|shares|shs|institutional|instl|inst|investor|inv|adv|advisor|advisors|retirement|r[1-6]|[a-z]|\d{1,3}|common|collective|trust|trusts|fund|funds|the|at|nav|portfolio)\b/gi;
+const stripsToNothing = (s) =>
+  String(s).replace(NO_IDENTITY_FILLER, " ").replace(/[^A-Za-z0-9]+/g, " ").trim().length === 0;
+/* An EMPLOYER-IDENTIFICATION NUMBER published as a holding. `E.I.N. 20-` is
+ * caught by the filler strip, but the OCR'd I/L variant `E.LN. 81-` is NOT —
+ * "LN" survives as a two-letter token and reads as an identity. Three rows /
+ * 559 participants (The Alexander Group, St Henry Tile, Bblbc at 56.5% of its
+ * own menu), and a form-field fragment is never a fund under any spelling. */
+const EIN_FRAGMENT = /^e\.?\s?[il]\.?\s?n\.?\s*[\d\s\-‐–—]*$/i;
+export function hasNoFundIdentity(name) {
+  const s = String(name || "").trim();
+  if (!s) return false;              /* an empty name is a different case */
+  if (EIN_FRAGMENT.test(s)) return true;
+  return stripsToNothing(s) || stripsToNothing(cleanFiledName(s));
+}
+
 export function isNamelessFundRow(f, cleanedName, isGenericName) {
   const type = String((f && f.type) || "");
   const name = String(cleanedName || (f && f.name) || "");
