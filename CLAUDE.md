@@ -774,19 +774,23 @@ EFAST2 bucket grew, not that our code broke.
 
 **NOTHING IS PRE-REGISTERED** for a parser run — `PARSER_VERSION` stays 199.
 
-**NO RUN IS IN FLIGHT as of 08:1xZ.** #561, #562 and #563 all SUCCESS and all
-verdicted; site-test #150 and #151 SUCCESS. **Three consecutive incremental runs
-produced BYTE-IDENTICAL coverage lines**, which is what an incremental run
-should do when the work list is only the 48 permanently-403 acks plus the
-~48-ack old-pv tail.
+**#564 IS IN FLIGHT ON MAIN** (schedule, `15bff5ff`, started 08:14:56Z — the
+hourly cron). #561/#562/#563 all SUCCESS and verdicted; site-test #150/#151
+SUCCESS. **Three consecutive incremental runs produced BYTE-IDENTICAL coverage
+lines**, which is correct when the work list is only the 48 permanently-403 acks
+plus the ~48-ack old-pv tail.
 
-**AND THE PREVIOUS COPY OF THIS PARAGRAPH SAT HERE FOR AN HOUR SAYING "#562 is
-in flight — read its conclusion before the next mirror" AFTER #562 had been
-verdicted and mirrored.** That is the sixth time this block has gone stale and
-the second time specifically with an IN-FLIGHT line left standing. *An
-in-flight line is the most dangerous kind of staleness here, because it tells
-the next cycle to wait for something that has already finished.* Clear it in
-the same cycle that reads the conclusion.
+**DO NOT MIRROR UNTIL #564 FINISHES AND ITS COMMIT IS ADOPTED INTO THE BRANCH.**
+It will commit data AND append a coverage line to main's trail. `mirror.sh`'s
+main-ahead check catches this, but the reason is worth stating: a force mirror
+would replace main's `coverage-history.jsonl` with the branch's and **discard
+#564's appended line** — and `mirror-gate` compares LINEUPS, not the trail, so
+it would pass. *The data gate does not guard every file the mirror overwrites.*
+
+**UNMIRRORED ON THE BRANCH:** `pv: PARSER_VERSION` in the coverage line
+(`e4769ea4`). `audit-data.mjs` is deliberately NOT in `mirror.sh`'s `DATA_CODE`
+list — it writes the trail, not the stores — so the in-flight refusal does not
+apply to it, and the main-ahead refusal is what serialises this instead.
 
 **LIVE ON MAIN as of 2026-10-03 04:2xZ: v199 + its own pv-199 store, mirrored as
 a MATCHED pair** (`ea825dcb`), Pages build #834/#835 green. v198 and v199 both
