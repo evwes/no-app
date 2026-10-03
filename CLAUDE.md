@@ -808,28 +808,33 @@ EFAST2 bucket grew, not that our code broke.
 
 **NOTHING IS PRE-REGISTERED** for a parser run — `PARSER_VERSION` stays 199.
 
-**#564 SUCCESS (schedule, main, `15bff5ff`, 08:14:56–08:24:34Z), verdicted,
-adopted into the branch and mirrored.** Its coverage line is BYTE-IDENTICAL to
-#563's apart from the date — the FOURTH consecutive identical incremental line,
-which is correct when the work list is only the 48 permanently-403 acks plus the
-old-pv tail. It carries no `pv` field because it ran on main at the pre-`pv`
-commit. **Nothing is in flight.**
+**#565 SUCCESS (schedule, main, `e7730a25`, 10:21:14-10:30:05Z) — AND IT IS THE
+`pv` SHIP'S PRODUCTION VERDICT.** Its coverage line is the first to carry
+`pv: 199`, and **`pv` is the ONLY field that moved** — everything else is
+byte-identical to #564's, which is the fifth consecutive identical incremental
+line. The field was verified locally with `WAMPO_RECORD=1`; this is the real
+merge job writing it. #564 before it: success, byte-identical, verdicted,
+adopted, mirrored. **Nothing is in flight.**
 
-**MIRRORED since: `pv` in the coverage line, the `[skip ci]` scoping finding,
-and `vestingQuoteOk`** — main is at `b00aa561`, verified on the mirrored tree
-rather than locally: 11 crawlable pages lost their false "Vesting, as filed"
-section (PSEG pn=004 and pn=006 among them), **4,400 of 5,000 keep theirs**,
-`app.js` on main carries `__wampoVestingQuoteOk`, and `index.html` on main reads
-`app.js?v=107d67c5`, the stamp of the mirrored `app.js`. **site-test #153
-SUCCESS**, which is what verified the browser twin.
+**A DATA COMMIT CAN LAND ON THE DEV BRANCH REMOTE, NOT ONLY ON MAIN.** #565 ran
+on main and its commit `7c3fdee2` appeared on **both** refs, so a `git push` of
+dev work was rejected **non-fast-forward** — the branch was BEHIND its own
+remote, which is the opposite of the documented hazard (main ahead of the
+branch). Reconcile is the same: fetch, merge the data commit, push, mirror.
+**And my retry loop retried that rejection FOUR TIMES.** The git rule says retry
+*only* network errors; a loop that retries any failure turns a legitimate
+refusal into four identical refusals, and the next step after "push keeps
+failing" is reaching for `--force`. A retry loop must READ the error: retry on a
+network message, stop and report on `rejected`/`non-fast-forward`.
 
-**WHY NO DISPATCH THIS CYCLE, stated rather than left to inference:** every
-change shipped since #563 is DISPLAY-side, `PARSER_VERSION` is unchanged at 199,
-and an incremental run's work list is therefore the same ~96 acks that produced
-four identical lines in a row. A dispatch would cost ten minutes of wall clock
-and 48 doomed S3 requests to re-assert a store nobody changed. **The hourly cron
-on main is the right mechanism for picking up new DOL filings**; a session
-dispatch is for a parser change.
+**MIRRORED since the brief: the store-vs-page finding and the `[skip ci]`
+scoping note** — main is at `dfa6ba7a`.
+
+**WHY NO DISPATCH THIS CYCLE:** every change since #563 is DISPLAY-side or
+documentation, `PARSER_VERSION` stays 199, so an incremental work list is the
+same ~96 acks that have now produced five identical lines. The hourly cron on
+main is the right mechanism for new DOL filings; a session dispatch is for a
+parser change.
 
 **LIVE ON MAIN as of 2026-10-03 04:2xZ: v199 + its own pv-199 store, mirrored as
 a MATCHED pair** (`ea825dcb`), Pages build #834/#835 green. v198 and v199 both
