@@ -1131,6 +1131,20 @@
    "fixed": "v197",
    "sponsor": "General Motors Llc (71,495 ppl; its sister plan 270383222|002 is 65,343)",
    "was": "`Plans Master Trust` at 14.4% of the menu ($3,424,814,000) with a BLANK type cell, and 12.9% ($1,264,065,000) in the sister plan. `isGenericTypeName('Master Trust')` is TRUE -- v190 shipped exactly that name for exactly this reason -- and `isGenericTypeName('Plans Master Trust')` is FALSE, because the anchor means ONE LEADING WORD defeats it. A fix for one FORM of a name is not a fix for the name. Pinned under arm B although arm A reaches these two rows by itself (`plansmastertrust` is one insertion from `planmastertrust`): arm B's own marginal contribution is 3 rows / 3,573 ppl, NOT GM's 136,838, and the specimen records which arm is load-bearing for which row"
+  },
+  {
+   "ack": "20251013135043NAL0000674275001",
+   "class": "match-formula-possessive-and-trailing-keyword",
+   "fixed": "v198",
+   "sponsor": "Public Service Enterprise Group",
+   "was": "quotes an employer match and shows no Formula line: 'equal to 50% of each Participant's first 8% ... as its matching contribution' defeats every arm twice -- 'match' arrives AFTER the numbers and a possessive sits between 'of' and 'first'. 122 plans / 197,324 participants"
+  },
+  {
+   "ack": "20260709065957NAL0017766435001",
+   "class": "match-formula-range-must-refuse",
+   "fixed": "v198",
+   "sponsor": "BAE Systems",
+   "was": "the NEGATIVE case for the arm above: 'contributes between 50% and 100% of the first 6%' yields a tidy pair and publishing it states a RANGE as a flat rate to 58,830 participants. mfWidened must return null [ack corrected 2026-10-03: the first value written here was from memory and did not exist; read from the store]"
   }
  ]
 }

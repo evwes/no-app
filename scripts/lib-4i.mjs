@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 197;
+export const PARSER_VERSION = 198;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -5889,6 +5889,39 @@ export function frozenClaimIsAboutThisPlan(text, sponsorName = "") {
   return frozenSubjectName(t, sponsorName) === null;
 }
 
+/* v198 — the two match-formula shapes the chain in extractPlanFeatures misses,
+ * kept in one function so the REFUSAL below is scoped to them BY CONSTRUCTION
+ * and can never withdraw a formula an existing arm already produces.
+ *
+ *   (a) "match" BEFORE the pair, blocked today only by a possessive or
+ *       qualifier between "of" and "first"  — Michelin 19,906 ppl,
+ *       "...equal to 100% of each participant's first 3%"
+ *   (b) "match" AFTER the pair, which every existing arm misses because they
+ *       all anchor on "match" first — PSEG, "...50% of each Participant's
+ *       first 8% ... as its matching contribution"
+ *
+ * A RANGE OR A CAP IS NOT A FLAT RATE, and this is the whole reason the arms
+ * are not simply widened in place. Measured: 7 plans / 70,794 participants
+ * state one, and publishing the captured number would OVERSTATE what the filing
+ * says — BAE Systems (58,830 ppl) "contributes BETWEEN 50% AND 100% of the
+ * first 6%", TRC "a basic match of UP TO 50% of each participant's first 6%".
+ * The window is the 40 characters immediately before the RATE, not before the
+ * whole match: arm (a) starts at "match...", which can sit far to the left, and
+ * testing from there let TRC through on the first attempt. */
+const MF_RATE = String.raw`(\d{1,3}(?:\.\d+)?|one hundred|seventy[- ]five|twenty[- ]five|fifty|forty|thirty|twenty) ?(?:percent|%)`;
+const MF_POSS = String.raw`(?:the |each |a |an )?(?:[A-Za-z’'()]+ ){0,3}`;
+const MF_CAP = String.raw`(\d{1,2}(?:\.\d+)?|ten|one|two|three|four|five|six|seven|eight|nine) ?(?:percent|%)`;
+const MF_A = new RegExp(`match(?:ing|ed)?[^.]{0,160}?${MF_RATE} (?:of|on) ${MF_POSS}first ${MF_CAP}`, "i");
+const MF_B = new RegExp(`${MF_RATE} of ${MF_POSS}first ${MF_CAP}[^.]{0,160}?match`, "i");
+const MF_RANGE = /(?:between\s+\d{1,3}(?:\.\d+)?\s*(?:percent|%)?\s*and\s*|up to\s+(?:a\s+)?)$/i;
+export function mfWidened(t) {
+  const m = t.match(MF_A) || t.match(MF_B);
+  if (!m) return null;
+  const rateAt = t.indexOf(m[1], m.index);
+  if (rateAt > 0 && MF_RANGE.test(t.slice(Math.max(0, rateAt - 40), rateAt))) return null;
+  return m;
+}
+
 export function extractPlanFeatures(text, sponsorName = "") {
   // zero-width characters survive \s normalization and shipped inside quotes
   // (R.H. White's eligibility quote began with U+200B); strip them first so
@@ -5973,7 +6006,20 @@ export function extractPlanFeatures(text, sponsorName = "") {
     // participant contributes to the Plan" — a filer typo that hid a plain
     // 50%-of-6% match behind subject-verb disagreement. The participant-
     // deferral anchor still does the work of proving it is a match.
-    t.match(/(?:company|employer|school|organization|foundation|sponsor)[^.]{0,40}?contribut(?:es|ed|e) (\d{1,3}(?:\.\d+)?) ?(?:percent|%) of (?:the )?first (\d{1,2}(?:\.\d+)?) ?(?:percent|%) of [^.]{0,90}?(?:that (?:a|the|each) participant contribut|compensation|pay|wages)/i);
+    t.match(/(?:company|employer|school|organization|foundation|sponsor)[^.]{0,40}?contribut(?:es|ed|e) (\d{1,3}(?:\.\d+)?) ?(?:percent|%) of (?:the )?first (\d{1,2}(?:\.\d+)?) ?(?:percent|%) of [^.]{0,90}?(?:that (?:a|the|each) participant contribut|compensation|pay|wages)/i) ||
+    // v198 — THE POSSESSIVE AND THE TRAILING KEYWORD. The owner asked why PSEG
+    // quotes a match and shows no Formula line. Its sentence is
+    //   "...contributes an amount equal to 50% of each Participant's first 8%
+    //    of eligible compensation ... as its matching contribution"
+    // and it defeats every arm above TWICE: the word "match" arrives AFTER the
+    // numbers (all of them anchor on it BEFORE), and the possessive sits
+    // between "of" and "first" (all of them allow only "the").
+    //
+    // Appended LAST and therefore provably additive: measured over every stored
+    // matchText, 0 existing formulas change and 122 plans / 197,324
+    // participants gain one. A fix for one phrasing is not a fix for the class,
+    // so BOTH directions are here.
+    mfWidened(t);
   // spelled-out fraction rates: "one-half of the first 8% of base
   // compensation" (Opus Inspection) — map to a percentage
   const FRAC = { "one-half": 50, "one half": 50, "one-third": 33, "one third": 33, "one-quarter": 25, "one quarter": 25, "two-thirds": 67, "two thirds": 67 };

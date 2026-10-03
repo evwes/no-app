@@ -77,10 +77,11 @@ jobs:
       # run in under a second. They were written and never wired, so a
       # regression in Schedule C or D capture could only have been found by
       # reading the data afterwards. Fails fast, before the download.
-      - name: Ingest gate (Schedule C item 1, Schedule D names)
+      - name: Ingest gate (Schedule C item 1, Schedule D names, match formula)
         run: |
           node scripts/schc-item1-test.mjs
           node scripts/schd-name-test.mjs
+          node scripts/match-formula-test.mjs
       - name: Download and process DOL Form 5500 datasets
         run: node scripts/build-data.mjs
       - name: Plan parse shards
