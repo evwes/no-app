@@ -41323,3 +41323,34 @@ lesson — mirroring code that produces data is half a deployment.**
 cannot cancel a run on main. I had been treating the group as global.
 
 #557 dispatched on main at `cd3fec8d`, which carries the fix.
+
+## 2026-10-03 (00:1xZ) — #557 VERDICT: main's BOOT FILE reads Fidelity, verified in the file the site actually fetches
+
+**`plans-list.json` on `origin/main`, generated 00:02:14Z: PSEG pn=004 and
+pn=006 both read `"Fidelity"`.** 11,991 rows read exactly "Fidelity" and **0**
+still read a FIIOC abbreviation. Main HEAD `942d3aa3`, 0 runs in flight.
+
+**THIS IS THE CHECK I SHOULD HAVE RUN THREE HOURS AGO.** Every earlier
+"verified" was `plans-all.json` — the file the site **never fetches** — or a
+local server with the branch's data and an empty cache. `plans-list.json` is the
+columnar boot payload, it carries the `rk` column, and it is what a reader
+loads. *A verification that reads a different file than the reader is not a
+verification.* The project's own notes say plans-all is PIPELINE-INTERNAL; I
+read that line many times and still measured against it.
+
+**The git reconciliation took three attempts and the gate caught every one.**
+The workflow levels the dev branch with main, so origin moved under me twice;
+rebasing onto the dev branch then DROPPED main's data commit, and
+`mirror.sh`'s main-ahead check refused by name. Rebasing onto `origin/main`
+instead put the branch on top of the correct store. *The gate that refused is
+the one I wrote the morning after force-pushing over a scheduled run; it earned
+its keep three times in five minutes.*
+
+Mirror gate on the final push: 69,046 acks, pv 197 at 99.9%, 39 fetch failures
+(0.06%), **0 plans / 0 participants stop being served**.
+
+**Still not verified and stated as such:** the live host `evwes.github.io` is
+outside this sandbox's network allowlist, so I cannot fetch the deployed page.
+What is proven is that main — the branch GitHub Pages serves — holds the correct
+value in the file the page reads. GitHub Pages deploy timing and the reader's
+own browser cache are outside what I can observe from here.

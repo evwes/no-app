@@ -759,6 +759,29 @@ EFAST2 bucket grew, not that our code broke.
 **NOTHING IS PRE-REGISTERED.** Register the next change's figures here before
 dispatching it.
 
+**VERIFY `plans-list.json`, NOT `plans-all.json`.** The site NEVER fetches
+plans-all; `plans-list.json` is the columnar boot payload and carries the `rk`
+column the page prints. On 2026-10-02 a recordkeeper fix was reported shipped
+three times while main's boot file still said `Invesco Advisors, Inc` — every
+check had read plans-all or a local server with the branch's data and an empty
+cache. ***A verification that reads a different file than the reader is not a
+verification.***
+
+**AND A SCHEDULED RUN ON MAIN CAN REVERT A SHIPPED FIX AFTER EVERY CHECK
+PASSES.** #556 started 23:02:03 on main at the pre-fix commit, the mirror landed
+the fix at 23:10:34, and #556 committed its stale-code data at 23:15:23 — main
+ended with the new source and the old data. *A force push cannot protect against
+a writer that has not written yet.* `mirror.sh` now refuses when the mirror
+changes `build-data.mjs`/`merge-4i.mjs`/`lib-4i.mjs`/`fetch-4i.mjs` while a run
+is queued or in progress on main, and warns after ANY such mirror that main's
+data is stale until a run regenerates it. ***Mirroring code that produces data
+is half a deployment.*** Concurrency is `build-data-${{ github.ref }}` —
+BRANCH-SCOPED — so a dev push cannot cancel a main run.
+
+**#557 VERDICT (success, mirrored): `plans-list.json` on main reads `Fidelity`
+for PSEG pn=004 and pn=006**, 11,991 rows exactly "Fidelity", **0** FIIOC
+abbreviations. `docs/accuracy-log.md` 2026-10-03 (00:1xZ).
+
 **#555 VERDICT (success 22:19Z, mirrored) — EVERY REGISTERED FIGURE HIT
 EXACTLY.** Verdicted by DIFFING the published `recordkeeper` column before vs
 after, because a spot check cannot tell *"my change moved it"* from *"it already
