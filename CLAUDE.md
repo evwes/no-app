@@ -131,6 +131,18 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   the assets sort and once silently dropped 11.5k plans from the queue.
 - **PDF source**: `https://efast2-filings-public.s3.amazonaws.com/prd/YYYY/MM/DD/{ACK}.pdf`
   (date from ACK prefix). Reachable from the CCR sandbox (DOL website is NOT).
+  **NOR IS THE LIVE SITE: `evwes.github.io` is denied by the egress proxy
+  (`connect_rejected`), measured 2026-10-03.** A `curl` of a live page returns
+  **HTTP 000 and ZERO BYTES**, so `curl … | grep -c` prints a perfectly
+  plausible `0` and `grep -o` prints nothing — *a clean zero reports on the
+  query*, and here the query reached no server at all. **A cycle must never
+  claim it verified the live site from this sandbox.** What does verify a
+  deployment, and both are cheap: read the mirrored tree through
+  `git show origin/main:<path>` (with a POSITIVE control — 4,400 of 5,000 pages
+  still carrying the section is what proves the 11 removals were targeted), and
+  read `conclusion` on the `pages build and deployment` run whose `head_sha` IS
+  main's HEAD. Checking `-w "http=%{http_code} bytes=%{size_download}"` is what
+  caught this; a grep's exit status never would.
   One composite PDF per filing; ~9k filings render form pages only (no audit
   attachment) — verified: no public attachment endpoint exists, documented
   limitation in methodology.
@@ -796,23 +808,28 @@ EFAST2 bucket grew, not that our code broke.
 
 **NOTHING IS PRE-REGISTERED** for a parser run — `PARSER_VERSION` stays 199.
 
-**#564 IS IN FLIGHT ON MAIN** (schedule, `15bff5ff`, started 08:14:56Z — the
-hourly cron). #561/#562/#563 all SUCCESS and verdicted; site-test #150/#151
-SUCCESS. **Three consecutive incremental runs produced BYTE-IDENTICAL coverage
-lines**, which is correct when the work list is only the 48 permanently-403 acks
-plus the ~48-ack old-pv tail.
+**#564 SUCCESS (schedule, main, `15bff5ff`, 08:14:56–08:24:34Z), verdicted,
+adopted into the branch and mirrored.** Its coverage line is BYTE-IDENTICAL to
+#563's apart from the date — the FOURTH consecutive identical incremental line,
+which is correct when the work list is only the 48 permanently-403 acks plus the
+old-pv tail. It carries no `pv` field because it ran on main at the pre-`pv`
+commit. **Nothing is in flight.**
 
-**DO NOT MIRROR UNTIL #564 FINISHES AND ITS COMMIT IS ADOPTED INTO THE BRANCH.**
-It will commit data AND append a coverage line to main's trail. `mirror.sh`'s
-main-ahead check catches this, but the reason is worth stating: a force mirror
-would replace main's `coverage-history.jsonl` with the branch's and **discard
-#564's appended line** — and `mirror-gate` compares LINEUPS, not the trail, so
-it would pass. *The data gate does not guard every file the mirror overwrites.*
+**MIRRORED since: `pv` in the coverage line, the `[skip ci]` scoping finding,
+and `vestingQuoteOk`** — main is at `b00aa561`, verified on the mirrored tree
+rather than locally: 11 crawlable pages lost their false "Vesting, as filed"
+section (PSEG pn=004 and pn=006 among them), **4,400 of 5,000 keep theirs**,
+`app.js` on main carries `__wampoVestingQuoteOk`, and `index.html` on main reads
+`app.js?v=107d67c5`, the stamp of the mirrored `app.js`. **site-test #153
+SUCCESS**, which is what verified the browser twin.
 
-**UNMIRRORED ON THE BRANCH:** `pv: PARSER_VERSION` in the coverage line
-(`e4769ea4`). `audit-data.mjs` is deliberately NOT in `mirror.sh`'s `DATA_CODE`
-list — it writes the trail, not the stores — so the in-flight refusal does not
-apply to it, and the main-ahead refusal is what serialises this instead.
+**WHY NO DISPATCH THIS CYCLE, stated rather than left to inference:** every
+change shipped since #563 is DISPLAY-side, `PARSER_VERSION` is unchanged at 199,
+and an incremental run's work list is therefore the same ~96 acks that produced
+four identical lines in a row. A dispatch would cost ten minutes of wall clock
+and 48 doomed S3 requests to re-assert a store nobody changed. **The hourly cron
+on main is the right mechanism for picking up new DOL filings**; a session
+dispatch is for a parser change.
 
 **LIVE ON MAIN as of 2026-10-03 04:2xZ: v199 + its own pv-199 store, mirrored as
 a MATCHED pair** (`ea825dcb`), Pages build #834/#835 green. v198 and v199 both

@@ -42345,3 +42345,40 @@ pinning the motivating case as a fixture before measuring the class. Adding
   pre-registered. The graded-label enrichment at `app.js:2314` also reads
   `vestingText` and is deliberately NOT gated: it runs only when a graded label
   exists, and the measurement says **0 of the 41 carry one**.
+
+## 2026-10-03 (09:1xZ) — the live site is unreachable from this sandbox, and a curl of it reports a plausible zero
+
+**Not a shipped defect — a VERIFICATION defect, caught before it was published,
+and recorded because the failure is indistinguishable from success.**
+
+Verifying the `vestingQuoteOk` mirror, I ran two checks against
+`https://evwes.github.io/no-app/`: the `index.html` asset stamp and PSEG's
+crawlable page. Both came back clean — `grep -o` printed nothing for the stamp,
+`grep -c "Vesting, as filed"` printed **0** for the section that should now be
+gone. **Both readings were worthless.** `evwes.github.io` is denied by the
+egress proxy (`connect_rejected`), so each request returned **HTTP 000 and zero
+bytes**, and a grep of an empty string prints exactly what a successful removal
+prints.
+
+***A clean zero reports on the query*** — already a standing rule here, now met
+on a new surface: the empty-response case, where the query reached no server at
+all. What caught it was not re-reading the greps but re-running the same two
+URLs with `-w "http=%{http_code} bytes=%{size_download}"`. **A grep's exit
+status can never distinguish an empty body from an absent match**, so a pipeline
+of `curl | grep` has no way to report its own failure.
+
+### What actually verifies a deployment, both run and both passed
+
+1. **The mirrored tree, through `git show origin/main:<path>`, WITH A POSITIVE
+   CONTROL.** 11 pages lost the section; **4,400 of 5,000 still carry one.** The
+   4,400 is what makes the 11 a targeted removal rather than a blanket one — a
+   check without that control reads identically whether the guard withheld 11
+   sections or all 4,411.
+2. **`conclusion` on the `pages build and deployment` run whose `head_sha` IS
+   main's HEAD.** #845 success on `b00aa561`. Note #843, on the preceding data
+   commit, was **cancelled** and superseded — which is why the SHA must be
+   matched rather than the newest run taken.
+
+The invariant block now says the live site joins the DOL website as unreachable
+from here, and names both checks. The sandbox CAN reach the EFAST2 S3 bucket, so
+"the network works" is true and useless; reachability is per-host.
