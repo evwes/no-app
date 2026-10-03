@@ -758,7 +758,11 @@
     // reading of a share-class "I" ("PGI CIT US REIT Tier |", "TRP BLUE CIP
     // GRTH |" — 743 plans / 683k ppl / 1,723 rows), repaired to the letter
     // rather than deleted so the class survives. 15:1xZ draw 2026-09-18.
-    s = s.replace(/\s*\(\s*\d{1,2}\s*\)\s*$/, "").trim();
+    /* GREEDY as of 2026-10-03 — a filing can carry TWO markers and stripping
+     * one leaves the other reading as a SHARE CLASS. Reasoning, the whole-store
+     * population and the two live cases are in scripts/lib-disclose.mjs, which
+     * is canonical; the smoke test compares this twin against it. */
+    s = s.replace(/(?:\s*\(\s*\d{1,2}\s*\))+\s*$/, "").trim();
     // a trailing footnote marker spelled with a PLUS — `Vanguard Extended
     // Market Idx | +e`, `Vngrd Wlsly Inc Adml +`, `LgCap S&P 500 Index Sep
     // Acct+`. 861 rows / 289 lineups / 195,234 ppl, +0 tickers gained and −0

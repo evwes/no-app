@@ -42695,3 +42695,82 @@ the benefit — and the half the display misses is the half worth measuring
 FIRST, because it is the only part a reader gains. Had I asked that before
 shipping, the registration would have read "9 rows / 3,869 ppl reader-facing,
 9 rows store-only" and been right.
+
+## 2026-10-03 (14:3xZ) — one of two footnote markers reads as a SHARE CLASS: 2 rows / 62,366 ppl / $496,636,334
+
+**The `cleanFiledName` non-idempotence item, worked — and re-framing it is most
+of the work.** The queue said "154 rows / 38 plans / 97,563 ppl … make the
+footnote-marker and welded-count arms GREEDY". Re-measured: **156 rows / 40
+plans / 102,608 ppl / $1.28B**, and the breakdown shows the item is four
+different things, not one:
+
+| rows | ppl | what a second pass removes |
+|---|---|---|
+| 60 | 2,570 | a trailing TYPE LABEL `Registered Investment Company` — **the arm the queue says to leave single-pass**, so a loop would ERODE these |
+| 58 | 18,750 | **not a suffix strip at all** — a leading caption (`MUTUAL FUND - FIXED INCOME` → `FIXED INCOME`), a duplication (`Master Trust Master Trust Balances…`), a page-break caption (`Mutual Funds (Continued) Fidelity Mid Cap Sto`), an OCR pipe (`Class |` → `Class I`) |
+| 17 | 2,870 | `; N shares` after a semicolon, **all in one plan** |
+| **2** | **62,366** | **one more FOOTNOTE MARKER — 61% of the people in two rows** |
+| ~19 | | stray glyphs `+`, `©`, `‘`, `®`, and OCR debris `NIA`, `te`, `iad` |
+
+### Asking the PUBLISHED question instead of the idempotence one
+
+Idempotence is a proxy. The direct question is *does the name a reader sees
+still end in a marker*, and it has a flat answer: **3 rows store-wide**, of
+which the third — George Industries' `) (1)` (154 ppl) — is already qualified by
+`hasNoFundIdentity` as naming no specific fund. **So the shippable set is two
+rows**, and they carry 62,366 of the item's 102,608 participants:
+
+- **Procter & Gamble, 42,915 ppl, $364,753,511, 6.7% of its menu.** Files
+  `Procter & Gamble Savings Plan – Russell 2000 Index SMA(2)(4)`; the page
+  published `… SMA(2)`.
+- **Santander, 19,451 ppl, $131,882,823, 10.3% of its menu.** Files
+  `T. Rowe Price Stable Value Common Class Q(2)(3)`; the page published
+  `… Class Q(2)`.
+
+***ONE OF TWO MARKERS IS WORSE THAN NONE OR BOTH***, and Santander is why: a
+lone `(2)` after `Class Q` is indistinguishable from a share-class designation.
+Stripping both is not merely tidier, it removes a false reading.
+
+### The change and its gates
+
+`s.replace(/\s*\(\s*\d{1,2}\s*\)\s*$/, "")` → `/(?:\s*\(\s*\d{1,2}\s*\))+\s*$/`,
+in `lib-disclose` **and** its hand-maintained app.js twin, which the smoke test
+compares over the whole store.
+
+- **WHOLE-STORE DIFF through the tracked harness with HEAD loaded on the BEFORE
+  side**: the published name moves on **exactly 2 rows / 2 plans / 62,366 ppl /
+  $496,636,334** and nothing else, over 1,730,676 rows.
+- **The before side is PINNED and the pin is tested**: pointing `buildRenderer`
+  at a path that does not exist must THROW, and the run aborts if it does not.
+  A positive control prints both sides disagreeing on a crafted case.
+- **PRICED ON EVERY CELL**, because *a legibility fix must be priced against the
+  guards that READ names*: ticker, asterisk, fee, shown type and every
+  suppressor flag are **unchanged on both rows** (Santander keeps `null` /
+  `noPublicPrice`, P&G keeps `er` 0.06 / `Separate account`). Only the name
+  moves — which mattered to check, since `Class Q` and `Class Q(2)` are
+  different strings to a resolver.
+- **6 pins** added to the cleaner's control list, **3 of which DISCRIMINATE**
+  between HEAD and the change (both live cases plus a synthetic three-marker
+  name, proving the quantifier is `+` and not a second pass) and **3 of which
+  guard over-reach** — a single marker still goes, and `Vanguard Target
+  Retirement (2030) Fund` and `… Trust (Class A)` are untouched. The two-digit
+  cap is what keeps a vintage year safe, and a control now says so by example.
+- **2 crawlable pages regenerated and diffed** — Santander's holdings table
+  reads `Class Q` where it read `Class Q(2)`. *The page is the artifact.*
+- `index.html` restamped (app.js `?v=107d67c5 → ?v=21c4a29c`), `--check` passes;
+  smoke, no-identity, vesting-quote, fund-er and quote-guard all green.
+- **DISPLAY-ONLY**: `PARSER_VERSION` stays 199, no run needed, nothing
+  pre-registered.
+
+### What stays open from the item, now that it is split
+
+The other three buckets are each a separate decision and none is shipped: the
+60 type-label rows must stay single-pass (the queue is right — a loop turns
+`Equity Income Separate Account` into `Equity Income`); the **58 non-suffix
+rows / 18,750 ppl are the interesting residue**, since a second pass there
+performs a repair the first pass misses for a *different* reason each time
+(leading caption, duplication, OCR glyph), so they need reading one shape at a
+time rather than a greedy quantifier; and the 17 `; N shares` rows are one
+plan. ***The queue's single line asked for two arms to be made greedy; the
+measurement says one of them is worth 61% of the people and the other is worth
+one plan.***

@@ -2201,7 +2201,25 @@ try {
     ["PAYROLL MADE EASY, INC DBA CONTINUUM RETIREMENT SAVINGS PLAN", "PAYROLL MADE EASY, INC DBA CONTINUUM RETIREMENT SAVINGS PLAN"],
     ["Co-op Stable Asset Fund (continued)", "Co-op Stable Asset Fund (continued)"],
     ["Common/Collective Trust Funds (Continued) T. Rowe Price Retire 2030 Trust Fund", "Common/Collective Trust Funds (Continued) T. Rowe Price Retire 2030 Trust Fund"],
-    ["Continued from previous page", "Continued from previous page"]]) {
+    ["Continued from previous page", "Continued from previous page"],
+    /* THE TRAILING FOOTNOTE MARKER IS GREEDY as of 2026-10-03. Both live cases
+     * are pinned by their real filed names, and the reason the first was worth
+     * fixing is that a LONE surviving marker reads as a share class: the page
+     * published `… Common Class Q(2)`, which is indistinguishable from a
+     * designation. */
+    ["Procter & Gamble Savings Plan – Russell 2000 Index SMA(2)(4)", "Procter & Gamble Savings Plan – Russell 2000 Index SMA"],
+    ["T. Rowe Price Stable Value Common Class Q(2)(3)", "T. Rowe Price Stable Value Common Class Q"],
+    /* one marker still goes, as it always did -- the greedy change must not be
+     * mistaken for the arm's whole job */
+    ["Vanguard Institutional Index Fund(1)", "Vanguard Institutional Index Fund"],
+    /* three go too: the quantifier is `+`, not a second pass */
+    ["Some Index Fund(1)(2)(3)", "Some Index Fund"],
+    /* AND THE MUST-NOT-STRIP SIDE, which is the whole risk of a greedy
+     * quantifier: a parenthesised number that is NOT trailing is untouched,
+     * and a vintage year is not a marker (two digits max is what keeps
+     * `(2030)` safe, and this control says so by example). */
+    ["Vanguard Target Retirement (2030) Fund", "Vanguard Target Retirement (2030) Fund"],
+    ["T. Rowe Price Retirement 2035 Trust (Class A)", "T. Rowe Price Retirement 2035 Trust (Class A)"]]) {
     if (cleanFiledName(n) !== want) fail(`the filed-name cleaner now damages a control: ${JSON.stringify(n)} -> ${JSON.stringify(cleanFiledName(n))}`);
   }
 

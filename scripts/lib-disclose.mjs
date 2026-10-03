@@ -639,7 +639,19 @@ export function cleanFiledName(name) {
   // reading of a share-class "I" ("PGI CIT US REIT Tier |", "TRP BLUE CIP
   // GRTH |" — 743 plans / 683k ppl / 1,723 rows), repaired to the letter
   // rather than deleted so the class survives. 15:1xZ draw 2026-09-18.
-  s = s.replace(/\s*\(\s*\d{1,2}\s*\)\s*$/, "").trim();
+  /* GREEDY as of 2026-10-03, because a filing can carry TWO markers and
+   * stripping one leaves the other reading as a SHARE CLASS. Procter & Gamble
+   * (42,915 ppl, $364,753,511, 6.7% of its menu) files
+   * `… Russell 2000 Index SMA(2)(4)` and the page published `… SMA(2)`;
+   * Santander (19,451 ppl, $131,882,823, 10.3%) files
+   * `… Common Class Q(2)(3)` and published `… Class Q(2)`, which is
+   * indistinguishable from a designation. *One of two markers is worse than
+   * none or both.*
+   * Whole-store population of published names still ending in a marker after
+   * the full clean: THREE. The third is George Industries' `) (1)` (154 ppl),
+   * already qualified by `hasNoFundIdentity` as naming no specific fund, so
+   * the shippable set is those two. */
+  s = s.replace(/(?:\s*\(\s*\d{1,2}\s*\))+\s*$/, "").trim();
   /* a trailing footnote marker spelled with a PLUS, optionally carrying the
    * footnote's letter — `Vanguard Extended Market Idx | +e`, `Vngrd Wlsly Inc
    * Adml +`, `Fidelity 500 Index +a`. Found by the 23:5xZ participant-weighted
