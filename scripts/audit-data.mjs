@@ -6,7 +6,7 @@
  * human noticed it on the site. This prints violations after each merge so
  * the run log surfaces them. Informational: it never fails the build. */
 import { readFileSync, writeFileSync, appendFileSync, readdirSync } from "fs";
-import { JUNK_NAME_RE, isGenericTypeName, NOT_FUND_SHAPED } from "./lib-4i.mjs";
+import { JUNK_NAME_RE, isGenericTypeName, NOT_FUND_SHAPED, PARSER_VERSION } from "./lib-4i.mjs";
 /* the canonical "may this quote be published under a MATCH heading?" test.
  * Imported rather than reimplemented: this rule living in two places is what
  * printed "Match formula, as filed" over 615 static pages, 269 of them over a
@@ -1050,6 +1050,25 @@ try {
      * instead of the console output. */
     cust: covTot.custody, custPpl: covTot.custodyPpl,
     high: findings.high.length, warn: findings.warn.length,
+    /* WHICH PARSER WROTE THIS LINE — added 2026-10-03, because a recurring
+     * question about this project's own cadence turned out to be unanswerable
+     * from 374 lines of its own record.
+     *
+     * Three consecutive dispatches produced byte-identical lines, which raised
+     * the obvious question: does an INCREMENTAL run (no version bump) ever move
+     * a published number, or is hourly dispatch spending ~10 runner-minutes and
+     * 48 doomed S3 requests for nothing? Measured over all 373 consecutive
+     * pairs: 51.2% identical, 48.8% moved something, longest identical streak
+     * 34 — so a 3-streak is unremarkable and the premise was wrong. **But the
+     * measurement cannot answer the question it was built for**, because a
+     * PARSER run obviously moves numbers and the line does not say whether one
+     * ran. Mixing the two populations is the whole limitation.
+     *
+     * One field ends that permanently. `pv` is already the completeness test
+     * everywhere else in this file; writing it into the trail makes "did an
+     * incremental run change anything" a one-pass query over history instead of
+     * an unanswerable one. Costs ~10 bytes a run. */
+    pv: PARSER_VERSION,
     // dl / pvTopShare: how much of the universe this run actually read.
     // Without them a partial store is indistinguishable from a complete one
     // in the trail, which is how #244's 16.7% download failures read as a

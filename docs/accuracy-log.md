@@ -42140,3 +42140,62 @@ two hours is a reason to stop measuring and re-measure, not to ship on the
 second one.*** Queued with the real population, the named instances, and the
 per-arm direction, so the next session starts from evidence rather than from my
 summary of it.
+
+## 2026-10-03 (08:2xZ) — #563 VERDICT, and a cadence question that REFUTED MY PREMISE and then exposed that 374 lines of our own record cannot answer it
+
+**#563 (success): byte-identical to #562, which was byte-identical to #561.**
+Three consecutive incremental dispatches moved no published number. pv 199 at
+99.93%. Mirrored `84885f2a → 15bff5ff`.
+
+**AND THE PREVIOUS CYCLE LEFT AN IN-FLIGHT LINE STANDING FOR AN HOUR.**
+CLAUDE.md's pre-registration block said *"build-data #562 is in flight — read
+its conclusion before the next mirror"* after #562 had been verdicted AND
+mirrored. Sixth staleness in that block, second specifically an in-flight line.
+***An in-flight line is the most dangerous kind of staleness here, because it
+tells the next cycle to wait for something that has already finished.*** Clear
+it in the same cycle that reads the conclusion.
+
+### The question three identical runs raised, and the answer
+
+The cycle skill says dispatch every hour. Each dispatch costs ~10 runner-minutes
+and 48 doomed S3 requests against permanently-403 acks. So: **does an
+incremental run ever move a published number?** Measured over every consecutive
+pair in `docs/coverage-history.jsonl` — the project's own record of its own runs,
+374 lines:
+
+| | |
+|---|---|
+| consecutive pairs | **373** |
+| identical (the run changed nothing) | **191 — 51.2%** |
+| moved at least one number | **182 — 48.8%** |
+| **longest identical streak on record** | **34** |
+| current streak | 3 |
+
+**MY PREMISE WAS WRONG.** A 3-streak is unremarkable against a record of 34, and
+nearly half of all runs move something, so three identical lines is evidence of
+nothing and hourly dispatch is not self-evidently waste. The fields that move
+most are `high` (26.0% of pairs), `confident` (24.9%) and `lineups` (24.4%).
+
+**BUT THE MEASUREMENT CANNOT ANSWER THE QUESTION IT WAS BUILT FOR, and saying so
+is the point.** A PARSER run obviously moves numbers; the coverage line does not
+record whether one ran, so the 48.8% mixes two populations and tells us nothing
+about incremental runs specifically. ***A measurement that answers a different
+question than the one asked is not a partial answer, it is a different fact.***
+
+### What shipped: one field, so the question is answerable from now on
+
+`audit-data.mjs` now writes **`pv: PARSER_VERSION`** into every coverage line.
+`pv` is already the completeness test everywhere else in that file; in the trail
+it makes "did an incremental run change anything" a one-pass query over history
+instead of an unanswerable one. ~10 bytes a run.
+
+**VERIFIED BY LETTING IT WRITE, NOT BY READING THE PREVIEW.** The audit's own
+console preview truncates at ten keys, so `pv` was invisible in it and my first
+check reported `pv present? False` — ***a verification that reads a truncated
+string is not a verification.*** The honest check: confirm the trail file is
+committed and clean, run with `WAMPO_RECORD=1`, parse the line that was actually
+appended (**`pv: 199`, `pvTopShare: 99.9` intact, 34 keys, match/high/warn
+unchanged at 43,338 / 4 / 556**), then `git checkout` the file and confirm the
+sha256 matches byte for byte with a clean tree. The local-write hazard this
+dances around is on this record already: five junk lines from development runs
+reached the trail before `WAMPO_RECORD` existed.
