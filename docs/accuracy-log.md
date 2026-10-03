@@ -41743,3 +41743,86 @@ no investigation here: both figures were measured over stored `matchText`, the
 run re-reads every filing and re-selects sentences, so the population shifts by
 a few either way. The registration was a prediction about a moving frame and it
 landed within 3%.
+
+## 2026-10-03 (04:3xZ) — THE DRAW: two name-column classes, 929 rows / $82.4B and 190 rows / $4.98B — and TWO of my own loose counts discarded on their own output first
+
+Participant-weighted random draw from the 59,819 published lineups (91,579,897
+participants in frame). Spire Services (4,063 ppl, 26 rows) publishes two
+broken names in one menu:
+
+- **`BlackRock Money Market Fund W units) JP Morgan Large Cap Growt`** at
+  **$57,706,256 — 9.0% of the menu.** Two funds welded into one row, with the
+  second name truncated mid-word.
+- **`Class R6 Common /`** at **$22,742,613 — 3.6%.** A share class and a
+  dangling slash. The reader cannot tell which fund holds the money.
+
+### Both of my first predicates measured themselves, and the members said so
+
+- **"welded" — DISCARDED ENTIRELY.** Defined as a closing paren with two words
+  after it, it read **2,720 rows / 5,565,186 ppl / $45.2B** — and that is the
+  shape of every ordinary parenthetical. Walmart's `The Collective LSV
+  International (ACWI EX US) Value Eq`, `PIMCO International Bond Fund (U.S.
+  Dollar-Hedged) Ins`, `Nasdaq-100(R) Index Fund` and `Capital Group
+  EuroPacific Growth TrustSM (US) Class U4` are all CORRECT names. ***A count
+  keyed on a character measures the character.***
+- **"headless" — 1,184 / 1,937,736 ppl, WRONG.** A class PREFIX is not a
+  missing head: it fired on `Class I Vanguard Target Retirement Income Trust
+  Select`, where the fund is fully named. Repaired to strip every token that is
+  never a fund's identity (class/series/unit/share/institutional/common/
+  collective/trust/fund/portfolio/nav/bare letters and digits) and ask whether
+  anything identifying survives.
+- **"dangling" counted a COMPLETE name.** Darden's `Principal Fixed Income
+  Guaranteed Option*+` ends in `+` because `*` and `+` are the filing's
+  party-in-interest markers — a 4i trap this file already documents for the
+  LEADING `*`. Excluded from the joiner test.
+
+### What survives, measured through the TRACKED harness (`scripts/apppath.mjs`), so these are the strings the PAGE prints
+
+**NOTHING IDENTIFYING IN THE NAME AT ALL — 929 rows / 586 plans / 2,340,373
+ppl / $82,379,952,547.** Ranked by share of their own menu, not by size, because
+a row naming no fund matters in proportion to how much of the plan it hides:
+
+| share | ppl | plan | value | published name |
+|---|---|---|---|---|
+| **77.9%** | **70,957** | **Cisco Systems** | **$25,144,872,000** | `Collective Trusts(1) at NAV` |
+| 69.4% | 2,048 | Avi Systems | $303,975,100 | `shares` |
+| 96.0% | 154 | Behavioral Connections | $2,114,757 | `Portfolio` |
+| 87.6% | 367 | Eldercare of Minnesota | $3,549,819 | `E.I.N. 20-` |
+| 80.8% | 178 | Hui Manufacturing | $11,041,885 | `Fund` |
+| 75.9% | 171 | Tnn Guam | $2,856,342 | `fund $3,278,402 $i.278'402 92.856,342` |
+
+**Cisco's single row is the largest instance of the queued "category table
+published as a fund menu" class yet recorded — $25.1B, 77.9% of the menu, in
+front of 70,957 participants** — and `Collective Trusts(1) at NAV` is a
+Schedule H caption complete with its footnote marker. **Three sub-families are
+distinct and should not be fixed as one:** a bare vehicle word
+(`shares`, `Fund`, `Portfolio`, `Common collective trusts`), a Schedule H
+CAPTION, and **OCR form-field wreckage** — `E.I.N. 20-`, `E.LN. 81-`,
+`E.LN. 34-` are employer-identification-number fragments published as holdings,
+and Tnn Guam's name contains three dollar amounts including a mis-OCR'd
+`$i.278'402`.
+
+**TRUNCATED ON A REAL JOINER — 190 rows / 115 plans / 323,680 ppl /
+$4,981,039,061.**
+
+| share | ppl | plan | value | published name |
+|---|---|---|---|---|
+| **22.3%** | **19,531** | **Barclays Services** | **$785,330,815** | `BLACKROCK EQUITY INDEX FUND Common /` |
+| 30.7% | 186 | Contractors Materials | $2,251,075 | `JH Multimanager 2030 Lifetime —` |
+| 25.1% | 266 | Financial Independence Group | $6,119,058 | `State Street SPDR Portfolio S&` |
+| 25.1% | 881 | Harbor Retirement Associates | $1,869,748 | `AMERICAN FUNDS 2035 TRGT DATE RETIRE R&` |
+| 19.8% | 419 | Presidential Bank | $9,365,648 | `FID CONTRAFUND K6&` |
+
+**Barclays' row is Spire's defect in a second, independent plan**: a real fund
+name with `Common /` glued to its tail and everything after it cut — almost
+certainly a `Common / Collective` column heading bleeding into the description
+column. Two instances from one draw of three means the shape is systematic, not
+a one-off, and `State Street SPDR Portfolio S&` (a severed `S&P`),
+`FID CONTRAFUND K6&` and `AMERICAN FUNDS … RETIRE R&` are the same cut landing
+mid-token.
+
+**Neither class is fixed.** Both are parser-side and need a `PARSER_VERSION`
+bump; v199 was this cycle's shipping slot and is already live. Queued with the
+predicates above so the next session does not re-derive them — and with the
+warning that **a re-size is a new measurement**, since these counts were taken
+on the v199 store and both of my first attempts at them were wrong.

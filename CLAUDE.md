@@ -735,10 +735,17 @@ parse-status entries) — 401(k)-type 2J + ERISA 403(b) 2L/2M, ≥100 participan
 at either end of the plan year. A DOL refresh on 2026-09-30 moved it from
 111,782; do not carry an older figure forward.
 
-`confident` **60,167** · lineups 59,819 · entries 65,480 · match 43,218 ·
+`confident` **60,167** · lineups 59,819 · entries 65,480 · match **43,338** ·
 vesting 53,100 · roth 38,350 · **HIGH 4** · warn **556** · overshoot 372 /
-436,224 ppl · overshootTrust 12 · aggRow 114 · dl **39** · pvTopShare **99.9**
-(pv 197) · tkExact **37.33** · tkComparable **3.27** · tkShare **24.49**.
+436,224 ppl · overshootTrust 12 · aggRow 114 · dl **48** · pvTopShare **99.93**
+(pv **199**) · tkExact **37.76** · tkComparable **3.41** · tkShare **25.02**.
+
+**`match` FELL from 43,441 to 43,338 ON PURPOSE** — v199 withholds a misread
+formula rather than publishing it, so the fall IS the improvement. Read it
+together with `matchQuote` 5,364 and `matchQuoteShown` 1,818, both of which
+ROSE: a withheld plan reverts to quoting its filing, it does not go blank.
+`features.matchMisread` on 199 acks / 389,974 ppl holds every withdrawn string,
+so the class is measurable without re-deriving it.
 
 **THE HIGH BASELINE IS 4 = 3 `contrib` outliers + `fabricated-name`.**
 `audit-generic-names` sits above its 230 escalation threshold, so that HIGH is
@@ -756,39 +763,26 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
-**v199 (44baaaeb, `[skip ci]`, QUEUED — dispatch after #558's verdict) — the
-match formula read WRONG, not merely missed.** CORRECTED 14 / 87,063 ppl (mixed
-fractions: CBRE published `3% of the first 6%` because `3%` ends `66-2/3%`),
-WITHHELD 205 / 406,135 (misreads, 15 rescued by retry), GAINED 92 / 175,951.
-- `match` **43,340 → 43,227** (−98 net). **THE FIRST VERSION HERE WHOSE COVERAGE
-  IS MEANT TO FALL** — a withheld misread IS the improvement, so a drop of
-  roughly this size is the success criterion and a FLAT line means the gate
-  never fired.
-- CommonSpirit `470617373|002` publishes NO formula, keeps its quote; CBRE
-  `521616016|001` **66.67% of the first 6%**; Beacon Mobility `465084167|001`
-  **100% of the first 3%**; Mars `221594774|008` still **100% of the first 1%**
-  (the control on a guard REMOVAL).
-- confident / entries / lineups / dl unchanged — v199 touches only the match
-  formula, so a lineup number moving is the regression this catches.
-- 205 plans gain `features.matchMisread`, so the class stays measurable.
-`docs/accuracy-log.md` 2026-10-03 (02:0xZ).
+**NOTHING IS PRE-REGISTERED.** Register the next change's figures here before
+dispatching it.
 
-**v198 (#558, push 01:15:27Z, full re-parse ~1.5h, IN FLIGHT) — the match
-formula a possessive hid.** `mfWidened` is appended LAST in the `mf` chain, so
-it can only fire where every existing arm returned null.
-- `match` **43,218 → 43,340** (+122 plans / 197,324 ppl). **A CEILING, not a
-  prediction:** measured over STORED `matchText` while the run re-reads every
-  filing, so moved text can carry it either way.
-- PSEG pn=004 publishes **"50% of the first 8% of pay"**, pn=006 **"50% of the
-  first 7% of pay"**.
-- BAE Systems pn=003 publishes **NO formula line** — the range/cap refusal
-  (7 plans / 70,794 ppl), verified on the live store, not just in the test.
-- Cornell / Brown / Northwestern / Dana-Farber recordkeeper **unchanged** (TIAA):
-  the standing control on the refused code-64 variant.
-- confident 60,167 · entries 65,480 · dl 39 · HIGH 4 · warn 556 — **no material
-  move.** A full re-parse re-reads everything, so an unexplained drop here is
-  the regression this registration exists to catch.
-`docs/accuracy-log.md` 2026-10-03 (01:3xZ).
+**LIVE ON MAIN as of 2026-10-03 04:2xZ: v199 + its own pv-199 store, mirrored as
+a MATCHED pair** (`ea825dcb`), Pages build #834/#835 green. v198 and v199 both
+verdicted clean — `docs/accuracy-log.md` 2026-10-03 (04:1xZ) for both, and read
+them together, because the pair is the cautionary tale:
+
+**v198 BREACHED ITS OWN "CEILING" UPWARD — 345 plans / 422,623 ppl where 122
+was registered — and the cause is a method trap, not a lucky break.** The
+pre-measurement ran over STORED `matchText`, which is an OUTPUT of the very
+extractor being changed: it stores the sentence it selected, and selection
+follows wherever the chain matched. So the harness asked *"does the new arm fire
+on the sentence the OLD chain chose?"* where production asks *"does it fire
+anywhere in the filing?"* Reconciled ack-by-ack against the prior data commit:
+226 GAINED a formula, **117 had one REPLACED** (mostly `Discretionary — set year
+to year` becoming the real rate; Life Care Centers, 32,465 ppl), **0 LOST**.
+***A PRE-REGISTRATION MEASURED OVER A STORED DERIVED FIELD UNDER-PREDICTS
+WHENEVER THE CHANGE ALTERS WHAT THAT FIELD HOLDS*** — and my harness counted
+only plans with NO stored formula, so it could not see the 117 at all.
 
 **VERIFY `plans-list.json`, NOT `plans-all.json`.** The site NEVER fetches
 plans-all; `plans-list.json` is the columnar boot payload and carries the `rk`
@@ -804,9 +798,18 @@ the fix at 23:10:34, and #556 committed its stale-code data at 23:15:23 — main
 ended with the new source and the old data. *A force push cannot protect against
 a writer that has not written yet.* `mirror.sh` now refuses when the mirror
 changes `build-data.mjs`/`merge-4i.mjs`/`lib-4i.mjs`/`fetch-4i.mjs` while a run
-is queued or in progress on main, and warns after ANY such mirror that main's
-data is stale until a run regenerates it. ***Mirroring code that produces data
-is half a deployment.*** Concurrency is `build-data-${{ github.ref }}` —
+is queued or in progress on main. ***Mirroring code that produces data is half a
+deployment.*** **CORRECTED 2026-10-03: the companion staleness NOTE used to fire
+after EVERY such mirror and was wrong on the only path we ever take.** The
+documented order is dispatch on dev → verdict → mirror the matched pair, so the
+usual mirror ships code together with the store that code produced; the note
+compared CODE between branches and never asked what produced the store it was
+shipping. It now compares the mirrored `PARSER_VERSION` to the mirrored store's
+dominant `pv` (`scripts/store-pv.mjs`) and warns only when the store really is
+behind. ***A check that is wrong on the normal path is worse than no check*** —
+an operator who has dismissed it four times dismisses the fifth, when it is
+right. Both branches tested, and an UNREADABLE version reads stale rather than
+matched, because a failed read must never be reported as a matched pair. Concurrency is `build-data-${{ github.ref }}` —
 BRANCH-SCOPED — so a dev push cannot cancel a main run.
 
 **#557 VERDICT (success, mirrored): `plans-list.json` on main reads `Fidelity`
@@ -1206,6 +1209,43 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   written for exactly this failure cannot see it. 104 plans / 30,897 ppl lose a
   menu on supersession (171 / 149,049 more are correct wind-downs, split by
   `assetsEOY == 0`).
+- **FOUND BY THE 04:2xZ DRAW — A PUBLISHED NAME WITH NOTHING IDENTIFYING IN
+  IT: 929 rows / 586 plans / 2,340,373 ppl / $82,379,952,547**, measured through
+  the tracked `scripts/apppath.mjs` so these are the strings the PAGE prints.
+  Predicate: strip every token that is never a fund's identity (class / series /
+  unit / share / institutional / common / collective / trust / fund / portfolio
+  / nav / bare letters and digits) and nothing identifying survives. **Ranked by
+  share of their own menu, because a row naming no fund matters in proportion to
+  how much of the plan it hides.** THREE sub-families, not one fix: a bare
+  vehicle word (`shares` 69.4% of Avi Systems' $304M menu, `Fund`, `Portfolio`);
+  a Schedule H CAPTION — **Cisco Systems `Collective Trusts(1) at NAV` at 77.9%
+  of its menu, $25,144,872,000, 70,957 ppl, the largest instance of the queued
+  category-table class yet recorded**; and OCR form-field wreckage, where
+  `E.I.N. 20-` / `E.LN. 81-` are employer-ID fragments published as holdings and
+  Tnn Guam's name contains three dollar amounts including a mis-OCR'd
+  `$i.278'402`. **DO NOT CARRY 1,184 rows / 1,937,736 ppl** — that was the same
+  screen firing on `Class I Vanguard Target Retirement Income Trust Select`,
+  where the fund IS named; a class PREFIX is not a missing head.
+- **FROM THE SAME DRAW — A PUBLISHED NAME TRUNCATED ON A JOINER: 190 rows / 115
+  plans / 323,680 ppl / $4,981,039,061.** Barclays Services publishes
+  `BLACKROCK EQUITY INDEX FUND Common /` at **22.3% of its menu / $785,330,815 /
+  19,531 ppl**, and Spire Services publishes `Class R6 Common /` — **the same
+  defect in two independent plans out of a draw of three**, so a
+  `Common / Collective` column heading is bleeding into the description column
+  and severing the rest. Same cut mid-token in `State Street SPDR Portfolio S&`
+  (a severed `S&P`), `FID CONTRAFUND K6&`, `AMERICAN FUNDS 2035 TRGT DATE RETIRE
+  R&`. `*` and `+` are party-in-interest markers and must NOT count as joiners —
+  including them counted Darden's complete `Principal Fixed Income Guaranteed
+  Option*+`. Parser-side, needs a version bump.
+- **DISCARDED, and recorded so it is not re-derived: the "welded name" count of
+  2,720 rows / 5,565,186 ppl / $45.2B.** The predicate was "a closing paren with
+  two words after it", which is the shape of every ordinary parenthetical —
+  Walmart's `The Collective LSV International (ACWI EX US) Value Eq` and
+  `PIMCO International Bond Fund (U.S. Dollar-Hedged) Ins` are CORRECT. The real
+  welded case exists (Spire's `BlackRock Money Market Fund W units) JP Morgan
+  Large Cap Growt`, $57,706,256, 9.0% of its menu) and is UNSIZED, because no
+  predicate yet separates it from a parenthetical. ***A count keyed on a
+  character measures the character.***
 - **THE MATCH-FORMULA RESIDUE AFTER v198/v199, census taken through
   `matchQuoteOk` and not through the store.** 1,853 plans / 3,288,250 ppl show a
   magnitude claim with no Formula line (the other 4,208 / 9,323,999 have their
@@ -1380,6 +1420,16 @@ These outlived the versions that produced them. The accuracy log has the case.
   whole-store total is the arm's own delta PLUS whatever the incremental delta
   brings — register the per-arm print and DERIVE the rest; a row delta is
   additive, a PLAN count SATURATES.
+- **A PRE-REGISTRATION MEASURED OVER A STORED DERIVED FIELD UNDER-PREDICTS
+  WHENEVER THE CHANGE ALTERS WHAT THAT FIELD HOLDS** (v198, 2026-10-03: 345
+  plans delivered against 122 registered as a *ceiling*). `matchText` is an
+  OUTPUT of the extractor being changed — it stores the sentence that was
+  selected, and selection follows wherever the chain matched — so a harness over
+  it asks *"does the new arm fire on the sentence the OLD chain chose?"* where
+  production asks *"does it fire anywhere in the filing?"* The sibling error in
+  the same harness: it counted only rows where the field was EMPTY, so it was
+  blind to 117 plans whose value was REPLACED rather than added. Ask which of
+  the fields a harness reads are inputs and which the change rewrites.
 - **A before/after harness that cannot express a LOSS has not measured one**,
   and a harness is only as honest as its "before" — pin every input it reads
   that an agent may hold, and test the pin by pointing it at a path that does
