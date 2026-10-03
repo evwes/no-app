@@ -505,8 +505,17 @@ costs a night.
 - **Always-on accuracy machinery (2026-08-09, owner directive: constant
   checking/updating/improving)**: (1) every merge run appends a line to
   `docs/coverage-history.jsonl` (universe, confident lineups, match/vesting/
-  rk coverage, fee-codes %, HIGH/WARN counts) — trends are diffable, dips
-  are regressions; (2) the merge job maintains an auto-managed GitHub issue
+  rk coverage, fee-codes %, HIGH/WARN counts, and as of 2026-10-03 **`pv`, the
+  PARSER_VERSION that wrote the line**) — trends are diffable, dips are
+  regressions. **`pv` was added because a question about our own cadence was
+  unanswerable from 374 lines of our own record:** measured over all 373
+  consecutive pairs, 51.2% are identical and 48.8% move a number, longest
+  identical streak **34** — so three identical runs is evidence of nothing — but
+  the line did not say whether a PARSER run had occurred, so that 48.8% mixes
+  two populations and says nothing about INCREMENTAL runs specifically. *A
+  measurement that answers a different question than the one asked is not a
+  partial answer, it is a different fact.* `docs/accuracy-log.md` 2026-10-03
+  (08:2xZ); (2) the merge job maintains an auto-managed GitHub issue
   "Data audit: HIGH findings (auto)" from audit-high.txt — updated every
   run, self-closing when clear; (3) a daily 13:00 UTC scheduled session
   ("wampo daily accuracy cycle" Routine) reviews runs, checks the trail,
