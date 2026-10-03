@@ -43759,3 +43759,159 @@ at all.
 Coverage gap, not a false claim: Mortenson's `New York Life Investment Winslow
 Large Cap Growth Fund Class A` publishes neither symbol nor fee though it is a
 registered fund. Left alone; a ticker is a fact that must be sourced.
+
+---
+
+## 2026-10-03 (23:3xZ) — THE SAME-MENU ORIENTATION WITNESS IS UNSOUND IN BOTH DIRECTIONS, AND SO IS THE CLEAN-LOOKING SUB-FAMILY IT SURFACED. NOTHING SHIPPED, AND THAT IS THE RESULT
+
+The 20:4xZ entry proved the mid-name-house class holds three orientations and
+that neither store-wide witness distinguishes them. The 20:5xZ draw then handed
+what looked like a cheaper and stronger one, from Helen of Troy's menu: an
+**unprefixed sibling of the same core**, needing no resolver, no registry and no
+store-wide index. The queue said to size it first. Sized, it fails.
+
+### What it reads, and the sides named so the result cannot be read backwards
+
+Over the mid-name-house condition, with the sibling required to BE the side
+(near-equality) rather than merely start with it:
+
+| | rows | plans | ppl | $ |
+|---|---|---|---|---|
+| **LEAD-STRAY** (a sibling carries the TAIL bare) | 1,409 | 304 | 808,079 | $4,812,658,347 |
+| **TAIL-STRAY** (a sibling carries the LEAD bare) | 2,107 | 231 | 489,097 | $2,787,014,476 |
+| BOTH — must abstain | 16 | 7 | 7,531 | — |
+| no witness | 24,946 | 6,221 | 16,934,870 | — |
+
+**A PREFIX TEST READ 7,315 ROWS FOR TAIL-STRAY AND WAS ALMOST ALL ARTIFACT.** A
+menu's rows routinely share a correct leading phrase — `Shares Mutual Funds …`
+×N, `Cash & Cash Equivalents …` ×N, `Pacific Investment Management Company
+PIMCO …` ×N — so "a sibling starts with this side" is satisfied by the NORMAL
+structure of a menu. Same mechanism as the 20:4xZ `Nationwide Life Insurance
+Company` + `Nationwide` false positive: *a repeated affix within one menu is
+ordinary, not stray.*
+
+### TAIL-STRAY is 0 of 18 correct on a uniform draw, and every failure is INVERTED
+
+Drawn uniformly, not from the top. Every one would keep the insurer, trustee or
+caption and throw the fund away:
+
+- `Registered Investment Company American Funds 2060 Trgt Date Re` → keep
+  **`Registered Investment Company`**
+- `Voya Retirement Insurance and Annuity Co. Vanguard Target Reti…` → keep Voya
+- `John Hancock Life Insurance Company American Funds Capital Wo…` → keep
+  John Hancock
+- `Reliance Trust Company iShares S & P 500 Index` → keep Reliance Trust Company
+- `Minnesota Life Insurance Company Vanguard Target 2045` → keep Minnesota Life
+
+**THE REASON IS STRUCTURAL AND IT INVERTS THE WITNESS AS QUEUED.** In exactly
+this population the stray text is an IDENTITY or CAPTION COLUMN, which is
+constant down the menu — so "a sibling carries the lead" is *guaranteed*
+precisely where the lead is the stray side. The repetition is evidence OF
+strayness, and the witness reads it as evidence against. This bucket is the
+class the 21:5xZ entity arm already ships for, re-found with its sign flipped.
+
+### LEAD-STRAY reads 15 of 18, and the three failures name their own shapes
+
+Mostly right: `GM iShares U.S. Aggregate Bond Index K`, `Stable Value Funds
+INVESCO STABLE ASSET - ADP59`, `Fund - Class N Shares JPMorgan Emrg Mkts Eqty Fd
+R6`, `2065 CIT Z Fund Principal LifeTime Hybrid`. The failures:
+
+- **the lead is the row's OWN tail, rotated** — `2020 Inv Vanguard Target
+  Retirement` keeps `Vanguard Target Retirement` and loses the **vintage**;
+  `Income Fund Vanguard Target Retirement` loses `Income`.
+- **inverted** — `Prin Core Plus Bond SA-Z … Principal Life Insurance Company`
+  would keep the INSURER and drop the fund.
+
+And its top rows are worse than its uniform draw, for a reason that matters:
+**the "bare sibling" may itself be damaged.** Booz Allen's witness is a bare
+`State Street Bank and Trust` row — the queue's own bare-HOUSE junk class — and
+Genuine Parts' witness is `Northern Trust Collective Russell`, *the truncated
+other half of the very shift being oriented*. ***A witness drawn from the same
+menu as the damaged row is not independent of the damage***: in a shifted menu
+the tail appears bare elsewhere BECAUSE the shift left it bare. The whole appeal
+of this witness was that it needed nothing from outside the menu, and that is
+exactly why it cannot work.
+
+### The sub-family it surfaced looked clean and is also refuted
+
+Seven of the eighteen LEAD-STRAY draws are a bare two-letter token in front of a
+complete fund name. Sized on its own: **1,128 rows / 157 plans / 163,199 ppl /
+$1,170,327,750**, with ticker LOST **0**, SWAPPED **0**, star-flipped **0**, fee
+lost 3 — the cleanest numbers of anything this cycle.
+
+**Two queries killed it.**
+
+1. **The witness GUARANTEES a duplicate**, because it requires a sibling whose
+   name equals the stripped remainder. That is harmless only if the prefix is
+   meaningless — and **1,122 of the 1,128 pairs carry DIFFERENT VALUES**. They
+   are two distinct holdings. The Brewer-Garrett plan files `SS Vanguard Mid Cap
+   Index Adm` at $1,230,766 beside `Vanguard Mid Cap Index Adm` at $527,878;
+   ADT files `US Small Cap Index Fund` at $8,468,622 beside `Small Cap Index
+   Fund` at $30,028,341. Stripping merges two real holdings into two
+   identically-named rows.
+2. **The lead distribution is not one class.** `GM` 886 and `SS` 212 are 97% of
+   it, but the tail is `US` 9, `TA` 6, `AF` 3, `JH` 3, `AB` 3 — **house
+   abbreviations**, where the PREFIXED row is the correct one and the bare
+   sibling is the damaged one: `AF Capital Income Builder` (American Funds),
+   `JH Fundamental Large Cap Core` (John Hancock), `TA Vanguard Small-Cap Index
+   Ret Acct` (Transamerica wrapper), `US Aggregate Bond Index K` (the filed name
+   really is *U.S.* Aggregate Bond Index). The witness points backwards on every
+   one.
+
+### What to carry forward
+
+***A WITNESS THAT REQUIRES A SIBLING TO EQUAL PART OF THE DAMAGED ROW CANNOT
+DISTINGUISH "THE PREFIX IS STRAY" FROM "THESE ARE TWO DIFFERENT HOLDINGS" — and
+the VALUE column settles it in one query.*** That query is now the first thing to
+run on any name-strip whose evidence is an in-menu sibling.
+
+The orientation test therefore still needs evidence from OUTSIDE the damaged
+region, which is where the 20:4xZ entry already pointed: the shipped resolver on
+both candidates, abstaining when both answer. The same-menu shortcut is closed,
+and the two-letter sub-family is closed with it. `PARSER_VERSION` stays 199;
+nothing was shipped and nothing is pre-registered.
+
+### The 23:4xZ draw — a UNIT COUNT published inside a fund name: 432 rows / 48 plans / 539,222 participants / $12,025,773,574
+
+JPMorgan Chase's own plan (**300,272 participants, $52.9B**) publishes
+`JPMCINTERMEDT AGGREGATE SEP ACCT — SEPARATE ACCT 2,271,585,254 UNITS` at
+$2,111,418,899, 6.0% of its menu. Ford Motor (**140,681 participants**) does it
+on thirteen rows, all of them real funds wearing a count: `BlackRock MSCI ACWI
+Ex-US IMI Index, 92,383,792 units` ($1,521,745,824), `Blackrock Lifepath NL Ret
+2055, 20,630,878 units`, `Extended Market, 5,680,080 units`.
+
+**SIBLING OF THE 12:4xZ SHARE-COUNT SHIP WITH ITS SAFETY PROPERTY MISSING.**
+That arm required the count to EQUAL the row's own value — self-evidence per
+row, and the only reason it was safe. Here 2,271,585,254 units sit against
+$2,111,418,899, so the shipped equality guard correctly refuses the whole class:
+of 439 rows matching the shape, **4 are equal** (Ford's money-market rows, where
+NAV is $1.00) and 435 are not.
+
+**AND THE SIZE HAD TO BE TAKEN THROUGH THE DISPLAY, WHICH MOVED IT.** AT&T
+(27,558 ppl) publishes rows whose name is **nothing but** a count —
+`5,405,466 UNITS` at **30.7% of its menu, $670,371,000** — and those are
+**already qualified** by the 06:3xZ `hasNoFundIdentity` ship, so they reach
+readers labelled "the filing names no specific fund". 3 rows / 27,558 ppl /
+$1,065,089,000 are therefore honest already and must not be counted as a defect.
+*A stored field is not a published one*, applied before publishing the number
+rather than after.
+
+So the class splits cleanly and the two halves need **different** fixes:
+
+| | rows | plans | ppl | $ | fix |
+|---|---|---|---|---|---|
+| a real fund name + `, N units` | **432** | 48 | **539,222** | $12,025,773,574 | strip the count — the name underneath is good |
+| the name IS only a count | 3 | 1 | 27,558 | $1,065,089,000 | **already shipped** (qualified, not stripped) |
+
+**THE WITNESS THE SHIP WILL NEED, since equality is unavailable:** a run of ≥7
+digits immediately followed by a unit noun at the END of the name. No fund is
+named after a ten-digit number, so this is close to self-evident per row — but
+it must be measured on every published cell first, and the standing hazard is
+the one that reverted two arms this week: the count sits where `fundER` and the
+resolvers read, so the strip can move a fee. Queued, not shipped;
+`PARSER_VERSION` stays 199 and this is display-side.
+
+Also seen on that plan and left alone: `BLCKRCK U.S, DEBT` (a comma for a
+period, $2.5B) and a menu-to-assets ratio of 0.66, which is not by itself a
+defect. The one comparable on the page, `~MDY` at 0.23 for `SSGA S&P MIDCAP
+INDEX`, is the right asset class and correctly asterisked.

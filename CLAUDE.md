@@ -1282,16 +1282,39 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   which is the fund — and it must ABSTAIN where both resolve, which they do
   (`Vanguard High-Yield Corporate` and `Vanguard Government Money Market` both
   answer).
-  **AND THE 20:5xZ DRAW HANDED IT A SECOND, STRONGER WITNESS, FREE AND
-  SAME-MENU:** Helen of Troy (1,813 ppl) publishes `FID FDM IDX 2035 IPR` and
-  `FID FDM IDX 2055 IPR` bare, beside `Fidelity Management Trust Company FID FDM
-  IDX 2045 IPR` and `…2040 IPR` — **one menu, one fund family, the entity prefix
-  present on some rows and absent on others.** An unprefixed sibling of the same
-  core is proof that the prefix is the stray side, needing no resolver and no
-  store-wide index. Size this witness first: it is the cheapest orientation
-  evidence found so far, and on this plan the prefix costs nothing (both the
-  prefixed and bare `FID FDM IDX` rows price at 0.1), which is consistent with
-  the tail-strip's measured harm being 23 fees rather than thousands. Guards already earned, each a negative control over every copy of its
+  **THE SAME-MENU WITNESS WAS SIZED 2026-10-03 23:3xZ AND IS CLOSED — UNSOUND IN
+  BOTH DIRECTIONS.** The 20:5xZ draw proposed it (Helen of Troy publishes
+  `FID FDM IDX 2035 IPR` bare beside the prefixed 2045) and the queue said to
+  size it first. Sized: **LEAD-STRAY 1,409 rows / 304 plans / 808,079 ppl**
+  reads 15 of 18 on a uniform draw; **TAIL-STRAY 2,107 rows / 231 plans /
+  489,097 ppl reads 0 of 18, every failure INVERTED** — it would keep
+  `Registered Investment Company`, Voya, John Hancock, Reliance Trust Company
+  and drop the fund. **The reason is structural: in that population the stray
+  text is an IDENTITY or CAPTION COLUMN, constant down the menu, so "a sibling
+  carries the lead" is GUARANTEED exactly where the lead is stray.** The
+  repetition is evidence OF strayness and the witness read it as evidence
+  against. (A prefix test instead of near-equality read 7,315 — artifact, the
+  same mechanism as the `Nationwide Life Insurance Company` + `Nationwide` false
+  positive.) And LEAD-STRAY's top rows are worse than its draw because **the
+  bare sibling may itself be damaged**: Booz Allen's is a bare-HOUSE junk row
+  and Genuine Parts' is the truncated other half of the very shift being
+  oriented. ***A witness drawn from the same menu as the damaged row is not
+  independent of the damage*** — in a shifted menu the tail appears bare
+  elsewhere BECAUSE the shift left it bare, which is the whole reason the
+  no-outside-information shortcut cannot work.
+  **THE SUB-FAMILY IT SURFACED LOOKED CLEANEST OF ALL AND IS ALSO CLOSED:** a
+  bare two-letter lead with a bare in-menu sibling, 1,128 rows / 157 plans /
+  163,199 ppl / $1,170,327,750, ticker lost 0 / swapped 0 / star 0. Two queries
+  killed it. (1) The witness GUARANTEES a duplicate, and **1,122 of the 1,128
+  pairs carry DIFFERENT VALUES** — two distinct holdings, so the prefix carries
+  information (Brewer-Garrett files `SS Vanguard Mid Cap Index Adm` $1,230,766
+  beside `Vanguard Mid Cap Index Adm` $527,878). (2) The leads are not one
+  class: `GM` 886 and `SS` 212 are 97%, but the tail `US`/`TA`/`AF`/`JH`/`AB`
+  are HOUSE ABBREVIATIONS where the PREFIXED row is correct and the bare sibling
+  is the damaged one (`AF Capital Income Builder`, `JH Fundamental Large Cap
+  Core`, `US Aggregate Bond Index K`). **So the orientation test still needs
+  evidence from OUTSIDE the damaged region** — the shipped resolver on both
+  candidates, abstaining when both answer, as this entry already said. Guards already earned, each a negative control over every copy of its
   name: a WRAPPER lead is correct as filed (`Nationwide Loomis…` 0/21, `Voya
   T. Rowe…` 0/18, `LVIP…` 0/51 and 0/53, `MyCompass American Funds…` 0/608 — and
   MyCompass was **18 of R's 30-row uniform draw**, so there the ROTATION is the
@@ -1872,6 +1895,18 @@ These outlived the versions that produced them. The accuracy log has the case.
   opposite directions, both net harmful, because each was right for one
   orientation of a population holding three.** Before building a repair on a
   detector, ask what the detector is silent about.
+- **A WITNESS DRAWN FROM THE SAME DAMAGED REGION IS NOT INDEPENDENT OF THE
+  DAMAGE** (2026-10-03). An in-menu sibling was proposed as a cheap orientation
+  witness precisely because it needed nothing from outside the menu — and that
+  is why it failed: in a shifted menu the tail appears bare elsewhere BECAUSE
+  the shift left it bare, and where the stray text is an identity COLUMN it
+  repeats on every row, so the witness fires hardest exactly where it is most
+  wrong (0 of 18 correct, all inverted). ***And a witness that requires a
+  sibling to EQUAL part of the damaged row cannot distinguish "the prefix is
+  stray" from "these are two different holdings" — the VALUE column settles it
+  in one query***: 1,122 of 1,128 such pairs carried different values and were
+  two real holdings. Run that query first on any name-strip whose evidence is an
+  in-menu sibling.
 - **PICK A NEGATIVE CONTROL THAT IS INDEPENDENTLY KNOWN CORRECT, NEVER ONE THE
   TEST ALREADY SPARES** (2026-10-03) — the latter is circular. And a control
   must hold on EVERY copy of its name, not the first copy found: one convicted
