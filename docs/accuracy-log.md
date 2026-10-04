@@ -44276,3 +44276,60 @@ named instances:**
 - State Farm (101,896 ppl, $19.0B) read clean: 58.7% in `Vanguard Employee
   Benefit Index Fund` with no ticker and no fee under `noPublicPrice`, every
   target-date trust correctly asterisked, immediate vesting matching its quote.
+
+## 2026-10-04 (02:1xZ) — the field added to make the trail answerable truncates the comparison across its own introduction: "seventh", "eighth", 6 and 11 were four answers to one question
+
+**No defect in the data and nothing shipped. This is a correction to a number
+this project has been asserting in its own documents for six runs, and the cause
+is worth more than the number.**
+
+Writing the morning brief I claimed **"eight consecutive byte-identical coverage
+lines"**. `CLAUDE.md` says **"the seventh consecutive identical incremental
+line"**. Neither had been measured. Measured two ways over all 381 lines of
+`docs/coverage-history.jsonl`:
+
+| comparison | answer |
+|---|---|
+| every key except the date | **6** |
+| the keys each PAIR shares | **11** |
+
+**Both are right, and the 6 is an ARTIFACT OF OUR OWN SCHEMA CHANGE.** `pv` was
+added to the coverage line on 2026-10-03 (#565) — deliberately, and the entry
+that shipped it says why: *a question about our own cadence was unanswerable from
+374 lines of our own record.* But a line without `pv` differs from a line with
+`pv` by one KEY regardless of whether any metric moved, so a strict comparison
+**cannot see across the boundary** and reports the run as starting exactly where
+the field was introduced. ***The field added to make the trail answerable
+truncates the naive comparison across its own introduction*** — and it does so
+invisibly, because 6 is a perfectly plausible answer.
+
+On the shared keys the real run is **11**: every line from the one carrying
+`match 43338` onward is identical in confident, entries, match, vesting, high,
+warn and dl. The line before it reads `match 43441`, which is v199's deliberate
+withholding of a misread formula — so the run begins at a real event and not at a
+schema edit.
+
+**WHY IT MATTERS BEYOND THE DIGIT.** The identical-line count is the project's
+completeness signal for an incremental run: a run whose work list is the 48
+permanently-403 acks *should* produce an identical line, and a run that moves a
+number when nothing was dispatched is a question. A count that is quietly wrong
+in either direction degrades that signal, and this one was being incremented by
+hand each cycle — **"the seventh" became "the eighth" by addition, not by
+measurement.** That is the same failure as a stale snapshot asserting itself on
+every read, which this file's own Current-state block carries a warning about.
+
+**THE RULES THIS EARNS, both specialisations of ones already on the record:**
+- ***A COUNT CARRIED FORWARD BY INCREMENT IS NOT A MEASUREMENT.*** If a number
+  in a document advances every cycle, the cycle must re-derive it, not add one.
+  Sibling of *a re-size is a new measurement, not a delta against a remembered
+  one* — met here on a count of our own runs rather than a defect class.
+- ***WHEN A TRAIL'S SCHEMA CHANGES, EVERY COMPARISON ACROSS THE CHANGE SILENTLY
+  ANSWERS A NARROWER QUESTION.*** Compare on the intersection of the keys, or
+  state which schema the answer belongs to. The `pv` entry already recorded that
+  *a measurement that answers a different question than the one asked is not a
+  partial answer, it is a different fact*; this is that rule applied to the field
+  that entry introduced, one day later.
+
+Fixed in `docs/morning-brief.md` (11, with the 6 and its cause named) and in
+`CLAUDE.md`, whose "seventh consecutive" line is replaced by the measurement and
+by the instruction to re-derive it rather than increment it.

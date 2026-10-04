@@ -1,104 +1,147 @@
-# wampo morning brief — 2026-10-03, 10:3xZ (6:3x AM ET)
+# wampo morning brief — 2026-10-04, 02:1xZ (10:1x PM ET Oct 3)
 
-The night started with your question — *why does PSEG not show the formula
-section, and what other filings are missing it* — and it turned out the page was
-not only **missing** match formulas but **publishing wrong ones**, and then that
-PSEG's **vesting** quote was wrong too. Five things shipped and all five are
-live on main. Every run is green and nothing is held.
+Overnight was **six display-side ships and five classes closed by evidence**, and
+the closures are the more useful half: four separate repairs were measured, found
+net harmful or unfounded, and *not* shipped. Nothing is in flight, nothing is
+pre-registered, `PARSER_VERSION` stays **199**, and main is at `7c5f3d41` with
+Pages build #869 green.
 
-## Shipped and LIVE on main (`b00aa561`, Pages #845 green)
+**READ EVERY PARTICIPANT FIGURE BELOW WITH A ~3% CAVEAT.** Found last evening and
+not yet fixed: **49 plans claim 3,469,170 participants (2.99% of the weighted
+universe of 116,001,210) with no other field supporting the count** — 40 of them
+short-form, EOY 0, ≤10 balances. Avalon Capital Management publishes **1,955,672**
+participants (second-largest in the universe, above Amazon) against $6,087,098,
+and its `assetsBOY` is **$1,955,672** — the same number, the only plan of 112,652
+whose count equals a dollar figure on its own row. The other 48 are mostly
+staffing and PEO firms where the figure is plausibly the *eligible* population as
+filed, so it is unusable as a reader-facing number and harmful as a weight, but
+not wrong in form. **The fix is a disclosure, not a correction**, and it should be
+settled before the queue's other sizes are trusted, because every one of them is
+denominated in this field.
 
-| what | who it reaches |
-|---|---|
-| **v198 — the formula a possessive hid.** PSEG writes *"an amount equal to 50% of each Participant's first 8% … as its matching contribution"*: the word *matching* arrives AFTER the numbers and a possessive sits between "of" and "first", which defeated all nine existing patterns at once | **345 plans / 422,623 ppl** — 226 that had no Formula line, and **117 whose placeholder became the real rate** (Life Care Centers, 32,465 ppl: `Discretionary — set year to year` → `25% of the first 6% of pay`) |
-| **PSEG's match** | pn=004 reads **"50% of the first 8% of pay"**, pn=006 **"50% of the first 7% of pay"** |
-| **v199 — 199 wrong formulas withheld rather than published.** A rate below its cap, with a better candidate for the rate in the same sentence, is a misread | **199 plans / 389,974 ppl** stop seeing a wrong number. They do not go blank — the filing's own quote stays |
-| **v199 — mixed fractions.** CBRE files *"66-2/3% of the first 6%"* and the page published **"3% of the first 6%"**, because `3%` is literally the end of `66-2/3%` | **14 plans / 87,063 ppl**. CBRE alone is 55,809 people told their match was a twentieth of its real size |
-| **NEW — PSEG's VESTING quote was a withdrawal rule.** Under "Employer-money vesting", above the line *"Quoted from the audited financial statements"*, PSEG published a sentence about losing future match if you withdraw within 24 months. Now withheld | **41 plans / 226,729 ppl**, every one of which published that quote as its **whole** answer. Charter Communications (120,688) published a **loan limit**; Vensure (42,571) published raw Form 5500 table text whose only vest-word sits inside the company name **VESTED METALS INTERNATIONAL LLC** |
-| **A published name with no fund in it** — `Portfolio`, `Fund`, `shares`, `E.I.N. 20-` — now says "the filing names no specific fund" | **486 rows / 325 plans / 1,131,917 ppl / $5.93B**, plus 24 crawlable pages |
-| **An empty parenthetical welded to a name.** Parker Hannifin published `Parker Stock Match Fund ( )` at 23.4% of its menu, $2,054,809,000 | **1,161 rows / 63 plans / 138,083 ppl / $8.9B** read as funds instead of as something broken |
+## Shipped and live on main
 
-**The clearest single case:** CommonSpirit Health, **127,392 participants**,
-published `1% of the first 6% of pay` from a filing that says *"100% up to 1% of
-compensation, plus 50% in excess of 1% up to 6%"*. Tier one's cap had been read
-as the rate. It now shows the filing's words and no formula, which is the honest
-answer until the tiered case is built.
+All display-side, all name-or-quote-only, each with the whole-store price taken
+through the page's own renderer:
 
-## What was found wrong and is NOT fixed
+| | reader-facing | what stops being published |
+|---|---|---|
+| trustee's corporate style (21:5xZ) | **2,795 rows / 430 plans / 1,406,886 ppl / $16.0B** | Target's `State Street Bank & Trust Company SSGA S+P 500 INDEX SER A …` at 21.1% of its menu. **359 tickers GAINED, 0 lost** |
+| unit count inside a fund name (00:3xZ) | 310 rows / 28 plans / **491,936 ppl** / $11.7B | JPMorgan Chase's own plan: `… SEPARATE ACCT 2,271,585,254 UNITS` at 6.0% of its menu |
+| a name containing itself twice (01:5xZ) | 224 rows / 129 plans / **232,595 ppl** / $5.0B | ADP's `Northern Trust S&P 500 Index Fund NORTHERN TRUST S&P 500 INDEX FUND`, $1.51B, 21.3% of its menu, plus six more rows on one page |
+| 4i column rule as a share class (15:3xZ) | 126 rows / 74 plans / 47,269 ppl | a column bar published as a class designation |
+| `quoteTrim` (16:2xZ) | 64 quotes / 64 plans / **129,653 ppl** | table debris leading a published match quote |
+| welded share count, merge-side (#566) | 9 rows / 8 plans / 3,869 ppl | `Invesco Stable Value Trust, 91,398,409 shares` |
 
-- **Cisco Systems publishes `Collective Trusts(1) at NAV` at 77.9% of its menu —
-  $25,144,872,000 in one row, 70,957 participants.** A Schedule H caption with
-  its footnote marker, published as a fund. The largest instance of the
-  category-table class, which is **on your list below**.
-- **The 41 vesting plans now read "not stated in the audited notes"** — honest,
-  but the filing usually *does* state a schedule and the extractor picked the
-  wrong sentence. Fixing the selection is a parser change; the guard that
-  shipped gives it a ready-made oracle.
-- **Kaiser Foundation Health Plan publishes `Loan Repayments are included` as a
-  holding** — a note sentence in the fund table, on plans with 182,954 and
-  105,462 participants. Two rows, deliberately not fixed with a general
-  predicate: in the same hour one such predicate produced 3,328 false positives
-  including a $3.4B row in front of 91,385 readers.
+Every one moved ticker, fee and asterisk on **0** rows except the trustee ship,
+which gained 359 symbols and lost none, and the self-repeat ship, which moved one
+shown type — and that one is a **promotion**: SRG LLC's doubled
+`Guaranteed Investment Contract` gains "Filing names no specific fund", because
+the duplication had been *defeating* `isNamelessFundRow` and making a generic
+non-name look specific.
 
-## What was HELD, and why
+**Mirrored:** `23b4fa32` → `cc2795a6` → `b7e3676c` → `330e38cd` → `7c5f3d41`,
+site-test #157/#159/#160/#161 all green, Pages #869 success on main's HEAD.
 
-- **An arm worth 114,149 participants was measured, then dropped.** It would have
-  read American Airlines' *"receive 100% company matching contributions of up to
-  4%"*. Validated against the 46,198 formulas the shipped parser already
-  produces, it agreed only **93.1%** of the time, and its failures grabbed a
-  neighbouring *non-elective* rate or a second tier. Not good enough for a number
-  that size.
-- **A guard against "not to exceed 50% of the first 8%" was designed and
-  refused.** Widening the vocabulary reaches 44 plans / 71,188 ppl and reading
-  them kills it: National Mentor Holdings is 41,694 of those and is **correct**.
-  Seventy correct formulas withdrawn to fix two.
+## Found wrong and fixed the same night
 
-## Waiting on you (ranked by people, unchanged)
+**A ship published a wrong fund name past every gate, and only the page caught
+it.** The 15:3xZ column-bar arm first accepted a doubled bar — which is the Roman
+numeral **II**, not a column rule — so Lacroix's `… Vanguard Windsor || Fund`
+published `Vanguard Windsor Fund` (VWNDX) where the filing says Windsor **II**
+(VWNFX), *a different fund*. Eight pins passed, four negative controls were each
+load-bearing, the whole-store diff read 0 tickers / 0 fees / 0 types, and
+site-test was green. It surfaced only on regenerating the crawlable pages and
+reading the one page that moved. Corrected within the hour; four doubled-bar rows
+now ship exactly as filed, still showing a bar, because *a visible artifact warns
+the reader where a wrong fund name reads as knowledge*.
 
-1. **13,274,448 ppl** — a generic fee estimate published where the fund's own
-   issuer supplies a house-specific one. Errs both ways.
-2. **11,144,696 ppl** — a filing states a share class, the page publishes a
-   different class's symbol *and its fee*. **New evidence this morning makes
-   this provable without any outside source:** Justworks (163,323 ppl) publishes
-   *Total Stock Market Index **Institutional*** and *…**Admiral*** as two
-   separate holdings and we print **VTSAX for both**. The plan's own two rows
-   contradict each other, so at least one symbol is wrong by construction.
-3. **10.5M ppl** — American Funds rows naming no share class keep the R-6 fee,
-   while the ticker column already refuses that same inference.
-4. **7,389,704 ppl** — stable-value accounts publishing a fabricated expense
-   ratio, 4,571 of them at exactly 0.35.
-5. **The category table published as a fund menu** — Cisco's $25.1B row above,
-   Bayer's $4.87B, Paramount's 59.5%.
+The same shape nearly repeated on the trustee ship: every gate passed and one row
+published `Vanguard Fiduciary` on $70,452,841. Caught by regenerating the pages,
+fixed, and confirmed **by absence** — 19 changed pages became 18.
 
-## What I got wrong overnight, named rather than dropped
+## Closed by evidence, nothing shipped — the night's real output
 
-- **I registered v198 at "+122, a ceiling" and it delivered 345.** The harness
-  measured over the stored quote — an *output* of the extractor I was changing —
-  so it asked whether the new pattern fires on the sentence the *old* one chose,
-  and it counted only plans with no formula, missing the 117 whose formula was
-  replaced.
-- **Five screens for the vesting class were each refuted by reading their own
-  members** — 3.9M participants, then 2, then 181, then 100, then 80. The first
-  counted "no vesting arithmetic" and caught honest rules stated without numbers;
-  the second missed PSEG itself; the rest kept admitting real quotes, one of them
-  because `\w` cannot match a `%` sign.
-- **A draw was one paragraph from publishing a wrong-ticker claim the page never
-  made.** Intel's `BlackRock 2500 Index Fund F` resolves to an S&P 500 symbol,
-  but the page labels that row an **approximation** with an asterisk. My script
-  printed the symbol and dropped the asterisk flag.
-- **Two "live site" checks returned zero bytes, not zero matches.** The sandbox
-  cannot reach `evwes.github.io`, so `curl | grep -c` printed a plausible `0`.
-  Deployment is now verified from the mirrored tree plus the Pages run.
-- **`mirror.sh` told me main's data was stale right after I mirrored a matched
-  pair.** The check compared code between branches and never asked what produced
-  the store it was shipping. Fixed.
+- **The mid-name-house class.** Two store-internal witnesses were built and both
+  work as detectors. Both repairs are **net harmful**: stripping the lead loses
+  73 fees / 125,307 ppl and 37 tickers; stripping the tail lost 23 fees and
+  swapped 42. The condition holds **three** orientations and neither witness
+  distinguishes them. *A witness that a row is damaged is not a witness to which
+  side the damage is on.*
+- **The same-menu orientation witness**, proposed as the cheap way round that.
+  Sized: one direction reads 15 of 18, the other **0 of 18 with every failure
+  inverted** — because where the stray text is an identity column it repeats
+  down the menu, so the witness fires hardest exactly where it is most wrong.
+- **The CVS two-fund class** (a row naming two complete funds with one's symbol
+  asserted). Three screens, each refuted on its own output; the strongest
+  available evidence **cannot see the motivating row at all**. Closed at two
+  named instances and no number. Working it is what found the self-repeat ship.
+- **Last night's draw finding dissolved**, and the cause was my own instrument:
+  Amedisys's `Income Fund` → `=DODIX` looked like an identification made from a
+  name that cannot support one, and **the filing names the house in the issuer
+  column** (`Income Fund` / `Dodge & Cox`). The draw script printed the name and
+  not the issuer. *An omitted answer field makes a hedged page look confident;
+  an omitted input field makes a correct page look wrong.* A 45,976-row /
+  40.4M-ppl screen was refused by its own positive fixture before its number was
+  read.
 
-## Continuing without you
+## Held, and why
 
-The hourly Routine fired on every hour through the night with no gaps. Seven
-pipeline runs, all green; the last **four** incremental coverage lines are
-byte-identical, which is correct when the work list is only the 48
-permanently-403 acks. `dl` 48, all HEAD-probed **48 of 48 → 403**, so "withdrawn
-from the EFAST2 bucket" remains an honest claim. Store complete at pv 199 over
-99.93% of 69,046 acks; HIGH 4 and warn 556, both at baseline. The coverage trail
-now records which parser version wrote each line, which it never did before.
+- **No pipeline dispatch.** Every change since #563 is display-side or
+  documentation, so an incremental work list is the same ~48 permanently-403
+  acks. **Eleven consecutive coverage lines with no metric moved** — correct
+  rather than a stall, since that work list is the permanently-withdrawn
+  filings; the hourly cron on main remains the mechanism for new DOL filings.
+  (I first wrote "eight" here and `CLAUDE.md` says "seventh". Both were
+  unmeasured. A strict all-keys comparison answers **6**, because `pv` was added
+  to the coverage line at #565 and every line before that differs from every
+  line after it by one key whether or not a number moved — *so the field added
+  to make this trail answerable truncates the naive comparison across its own
+  introduction.* On the keys each pair shares the run is 11. Three answers to
+  one question, which is the standing rule landing on our own record.)
+- **Two floors on the self-repeat arm**, holding back 33 rows / ~50,000 ppl that
+  would probably improve if collapsed. Lowering either is a measurement, not a
+  free widening, and one member produced an output I could not read as clearly
+  better.
+- **The trustee arm's residue** — rows whose remainder leads with no house the
+  shipped list knows (`Fidelity Management Trust Company Fimm Treasury Only
+  Portfolio Cl I`). Coverage, not a false claim. Growing the list is additive but
+  each addition must re-run the whole-store diff, and the remainder condition is
+  the only thing standing between that arm and the 23 fees that reverted its
+  predecessor.
+
+## Waiting on you
+
+Unchanged from yesterday, each moving millions of published cells:
+
+1. **Our own store contradicts our own page — 5,692 rows / 3,860 plans /
+   8,197,880 ppl / $50.7B, and 0 of 42 rows read favour the page.** The parser
+   stores a share-class-correct symbol; the display chain prefers its own
+   resolver. Bank of America's `WELLINGTON FUND INVESTOR SHARES` (246,394 ppl) is
+   stored `VWELX` and published `VWENX`. **The blocker is the fee**, which is
+   priced off the name and never off a symbol, so correcting the symbol alone
+   leaves the two cells disagreeing.
+2. A filing stating a share class the registry registers under that exact name
+   where we publish a different class's symbol **and its fee** — 11,144,696 ppl.
+   Errs both ways; recommendation is to correct the symbol and *withdraw* the fee.
+3. The fee pre-emption (13,274,448 ppl), the stable-value fabricated ER
+   (7,389,704), the American Funds no-class fee (10.5M), and one ticker carrying
+   two different fees (354,753 rows / $1.91T).
+4. The recordkeeper that is wrong rather than blank — ~2,200 published provider
+   names, needs a prep run.
+
+## Store, and what continues
+
+Universe **112,652 plans** (68,538 full-form). `confident` 60,167 · entries
+65,480 · match 43,338 · vesting 53,100 · **HIGH 4** (the known baseline: 3
+`contrib` outliers plus `fabricated-name`) · warn 556 · `dl` 48 · pv 199 at
+99.93%. The `dl` population has now been HEAD-probed whole four times and
+answered 403 every time, so that code remains an honest published claim.
+
+Hourly cycles continue around the clock. Next in the queue: the `rate == cap`
+formula population (79 plans, unread — whether it is a real design or a second
+misread shape), the interleaved-duplication residue the self-repeat floor leaves,
+and the parser-side vesting-sentence selection, which needs a `PARSER_VERSION`
+bump and now has a ready-made oracle in the shipped guard plus a named instance
+(Flex, 16,483 ppl, publishing as its whole vesting answer a rule for participants
+who left before January 1, 2001).

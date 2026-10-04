@@ -821,12 +821,25 @@ EFAST2 bucket grew, not that our code broke.
 ### Pre-registered for the next run that merges
 
 **NOTHING IS PRE-REGISTERED** and **nothing is in flight** — `PARSER_VERSION`
-stays 199, no build-data run is queued or running, and the branch and main are
-the same commit. #568 and #569 are both verdicted: #569 (schedule, main, data
-commit `cff269ec`) produced a coverage line **byte-identical** to #568's — pv
-199 · confident 60,167 · entries 65,480 · match 43,338 · HIGH 4 · warn 556 ·
-dl 48 — the seventh consecutive identical incremental line, which is correct
-when the work list is the 48 permanently-403 acks plus the old-pv tail.
+stays 199, no build-data run is queued or running, and all three refs are the
+same commit. #568, #569 and #570 are all verdicted, each producing a coverage
+line identical to its predecessor: pv 199 · confident 60,167 · entries 65,480 ·
+match 43,338 · HIGH 4 · warn 556 · dl 48 — which is correct when the work list
+is the 48 permanently-403 acks plus the old-pv tail.
+
+**THE LENGTH OF THAT IDENTICAL RUN MUST BE RE-DERIVED, NEVER INCREMENTED
+(2026-10-04 02:1xZ).** This line used to say "the seventh consecutive identical
+incremental line" and the morning brief was about to say "eight"; **neither had
+been measured, and the answer is 6 or 11 depending on the comparison.** A strict
+all-keys comparison reads **6**, because `pv` was added to the line at #565 and
+a line without it differs from a line with it by one KEY whether or not a metric
+moved — ***the field added to make this trail answerable truncates the naive
+comparison across its own introduction***, invisibly, since 6 is plausible. On
+the keys each pair shares the real run is **11**, beginning where v199 withheld
+a misread formula (`match` 43,441 → 43,338), so it starts at a real event.
+**A count carried forward by increment is not a measurement** — if a number in a
+document advances every cycle, re-derive it. `docs/accuracy-log.md` 2026-10-04
+(02:1xZ).
 
 **THE ENTITY-WELD SHIP IS LIVE ON MAIN (`cc2795a6`), site-test #159 green,
 Pages #863 building, and every pre-registered check hit.** Verified by reading
