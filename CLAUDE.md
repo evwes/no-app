@@ -860,6 +860,20 @@ count must read **36, not 41**; or read the five pages. Named set:
 Employer Services is 42,571.** A coverage line that moves anything else is the
 thing to investigate. `docs/accuracy-log.md` 2026-10-04 (21:0xZ).
 
+**AND v202 IS COMMITTED `[skip ci]` BEHIND IT, NOT YET DISPATCHED.**
+`PARSER_VERSION` is **202**: `lib-4i:7417`, the guard that stops a GRADED
+schedule being labelled "Immediate", was a bare `continue` and discarded the
+SENTENCE with the label — the FIFTH instance of *blocking a wrong ANSWER must
+never suppress the honest EVIDENCE* (v82, v83, v84, v86/87), where every sibling
+guard in that loop sets `blockedButQuotable` for exactly this reason. Same
+registration shape: **coverage line unchanged except `pv` 201 -> 202**, and
+`vesting-quote-test`'s WITHHELD count must read **34, not 41**. Total delivery
+**7 plans / 50,904 ppl** (v201's 5 plus Polsinelli Pc ×2 / 3,442), 0 published
+quotes changed, 0 lost, 0 labels moved; corpus control 265 identical.
+**Dispatch is HELD because #577 is mid-flight with v201** — cancelling a run does
+not stop it committing a partial store, so v202 goes out the moment #577 lands
+and its verdict is read. `docs/accuracy-log.md` 2026-10-04 (21:4xZ).
+
 **VERDICTS are in `docs/accuracy-log.md`, not here.** This block went stale five
 times by accumulating them; the log holds 700 dated entries and every
 bullet in the Open list points into it.
@@ -1903,11 +1917,23 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   one dropped before any fallback** — so Charter's cliff table and Brown's
   ladder are lost to a `continue` INSIDE the loop, not to a bad tie-break. The
   naive rule this entry warned would be "wrong on the two largest plans" is in
-  fact SILENT on them, for the same reason it is limited. **The remaining work is
-  to find which `continue` drops them and whether it may be narrowed — a
-  different change from the ranking.** The four rules stay recorded because they
-  are the right ranking ONCE the candidates arrive.
-  `docs/accuracy-log.md` 2026-10-04 (21:0xZ).
+  fact SILENT on them, for the same reason it is limited. The four rules stay
+  recorded because they are the right ranking ONCE the candidates arrive.
+  **CLOSED 2026-10-04 21:4xZ — "which `continue`" IS ANSWERED, and the answer is
+  that the bulk of the residue is the parser being RIGHT.** Attributed per
+  candidate over all 142 guard-accepted candidates in the 30 filings, every
+  condition sliced from the source: **the scope gate
+  `if (!strictGate && !employerMoney && !universal) continue;` (`lib-4i:7333`)
+  drops 127 of 142 and is the ONLY condition firing on 78.** It is ranking rule
+  (2) of this very entry — demote employee-money scope — already enforced
+  earlier and harder, so **relaxing it is exactly what would publish Charter's
+  "immediately vested in their voluntary contributions" and Brown's "vested in
+  the portion attributable to their employee contributions" to 133,044 readers.**
+  The 9 unexplained candidates are FORFEITURE ACCOUNTING, dropped by the
+  `!/forfeit/` condition on the fallback sites, correctly.
+  **DO NOT MIX 142 WITH 197:** the authoritative count builds candidates through
+  the real construction (`BOILER` + the exclusion chain); a bare-regex screen
+  reads 197. `docs/accuracy-log.md` 2026-10-04 (21:0xZ) and (21:4xZ).
 - **SHIPPED 2026-10-04 21:2xZ — THE FORM'S OWN PRINTED QUESTION WAS PUBLISHABLE
   AND ONLY AN UNRELATED `continue` KEPT IT OFF THE PAGE. One arm, price ZERO:**
   `vestingQuoteOk` now vetoes Form 5500 line 6g(2) before (b) is consulted.
@@ -2466,6 +2492,14 @@ These outlived the versions that produced them. The accuracy log has the case.
   wrong. *A prescription written from the symptom can be right about the remedy
   and wrong about where it belongs* — second instance after `fb-vanished`, whose
   prescription was not merely misplaced but impossible.
+- **A GUARD THAT BLOCKS A WRONG ANSWER MUST NOT DISCARD THE EVIDENCE — FIFTH
+  INSTANCE (2026-10-04).** `lib-4i:7417` stops a spelled-out GRADED schedule
+  being labelled "Immediate" and did it with a bare `continue`, so the sentence
+  went with the label. Its sibling guards in the same loop all set
+  `blockedButQuotable = true`, and this one was added later without it. The file
+  already records the same miss at v82, v83, v84 and v86/87 — *so when adding a
+  guard to a loop that has a quote fallback, ask what the SIBLING guards do with
+  the quote, not only what the new guard does with the label.*
 - **A count of a condition is not a measure of a defect**, and the siblings:
   *a count keyed on a VOCABULARY measures the vocabulary*; *a count keyed on
   PLANS is blind to every master-trust row* (resolve a trust row through its

@@ -7,6 +7,124 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-04 (21:4xZ) — v202: which `continue` drops the 30, answered — and the answer is one gate that is CORRECT and one that ate the evidence
+
+**v201's residue was 30 plans whose better vesting sentence is in the
+extractor's own candidate set and never reaches a fallback.** The queue said the
+remaining work was "find which `continue` drops them". Attributed per candidate,
+every condition SLICED from `lib-4i.mjs` rather than retyped, over all 142
+guard-accepted candidates in those 30 filings:
+
+```
+  78  the scope gate alone (lib-4i:7333)
+  37  the scope gate + remainderGraded/carveOut
+   9  NOTHING in the hypothesis list fires
+   9  offTopic + the scope gate
+   4  remainderGraded/carveOut alone
+   3  offTopic + the scope gate + remainderGraded/carveOut
+   2  offTopic alone
+```
+
+### The dominant cause is a gate that must NOT be relaxed, and that closes the item
+
+**`if (!strictGate && !employerMoney && !universal) continue;` (`lib-4i:7333`)
+drops 127 of the 142** and is the only condition firing on 78. It is a
+no-fallback drop on the SCOPE of the sentence — and it is **exactly ranking rule
+(2) from the 20:1xZ queue entry**, "demote EMPLOYEE/voluntary/elective/Roth/
+after-tax scope", which that entry prescribed applying *later*, at a tie-break.
+**The parser already enforces it, earlier and harder.**
+
+So the queue's warning was right about the harm and wrong about the remedy's
+place: relaxing this gate is precisely what would publish Charter's
+*"immediately vested in their voluntary contributions"* and Brown's
+*"vested in the portion attributable to their employee contributions"* — employee
+money, which is vested by law — as those plans' whole vesting answer for 133,044
+readers. **The bulk of the residue is the parser being right.** That is the
+measured answer to "which `continue`", and the item closes on it rather than
+staying open.
+
+### But the attribution found one that is NOT right, and it is the fifth instance of a class this file already records four times
+
+**`lib-4i:7417` — `if (/\b[1-9]\d?\s?(?:%|percent\b)[^.]{0,40}?\bafter\b[^.]{0,30}?\byears?\b/i.test(s)) continue;`**
+
+Its own comment says what it is for: *"a sentence that spells out a GRADED
+schedule is not describing immediate vesting"*. It blocks a wrong LABEL — and as
+a bare `continue` it discarded the **sentence** with it. **Every sibling guard in
+that loop sets `blockedButQuotable = true` for exactly this reason**, and this
+one, added later, did not carry it across.
+
+***That is the FIFTH instance of the defect this file records four times — v82,
+v83, v84, v86/87: "Blocking a wrong ANSWER must never suppress the honest
+EVIDENCE."*** And the sentence it throws away is the most informative thing a
+filing can say about vesting: a spelled-out ladder.
+
+v202 stores the quote there, in the same idiom the two `supersededRule` paths
+use, and adds no judgment — `vestingQuoteUpgrade` still requires the guard to
+accept the sentence and the stored quote to be one no reader sees.
+
+**Delivered: 7 plans / 50,904 participants in total (v201's 5 / 47,462 plus 2 /
+3,442), 0 published quotes changed, 0 lost, 0 labels moved**, replayed through
+the real extractor over the whole 41. Control: the 323-filing general corpus,
+**265 published quotes identical and 0 of everything else** — because a plan
+whose filing spells out a ladder gets a graded LABEL from the first loop, which
+`break`s, so this arm is only ever reached by plans that end up with no label at
+all.
+
+**THE TWO NEW PLANS PUBLISH A COHORT-SCOPED HISTORICAL RULE, and that is
+defensible on this project's own recorded precedent rather than on a new
+judgment.** Polsinelli Pc ×2 now read *"For employees terminated prior to
+February 1, 2023, the employer profit sharing contributions vested in 20%
+increments…"*. `lib-4i`'s own v87 comment settles it: *"a superseded sentence is
+still the only thing the filing says about vesting, it is verbatim, and it dates
+itself so a reader can see what it is"* — against the alternative, which is the
+page asserting the filing says nothing.
+
+### Two corrections to my own instruments, both caught by their own fixtures
+
+1. **My hypothesis list was incomplete and the POSITIVE FIXTURE is what said
+   so.** It named three no-fallback conditions; the probe condemned a plain
+   employer ladder, which sent me back to the source to find **two more**
+   (`:7408` planTermCond and `:7417`). *Put the must-pass fixture ahead of the
+   measurement and a wrong instrument refuses to report.*
+2. **Then the fixture itself was wrong.** It pinned `vestSentences[0]`, and the
+   candidate regex cannot cross a period — so a bare `Vesting.` heading is its
+   own candidate and legitimately names no employer money. The probe was right
+   and the pin was sloppy; it now pins the candidate that carries the ladder and
+   adds a NEGATIVE fixture requiring an employee-money sentence to trip the scope
+   gate, so a probe that condemns nothing cannot pass.
+
+**And one count must not be mixed with another: 142 vs 197.** The attribution
+built its candidates through the real construction (`BOILER` + the exclusion
+chain); a second script used the bare candidate regex and read 197. Both are
+right about different questions. **142 is the authoritative one**, and the third
+`:7417` candidate — `20251014130955`, *"Participants vest 20% annually after one
+year of service with full vesting after five years"* — does NOT gain, because the
+**scope gate drops it first**: that sentence names no employer money. The two
+conditions compose, which is the attribution working.
+
+### Residue, attributed and not left unknown
+
+The 9 candidates where nothing in the hypothesis list fires are **forfeiture
+accounting** — *"forfeited non-vested accounts totaling $38,972 were used to
+reduce employer contributions"* — dropped by the `!/forfeit/i.test(s)` condition
+carried on the fallback sites themselves, correctly: a forfeiture-accounting
+sentence is not a vesting rule.
+
+### PRE-REGISTERED for the run that merges v202
+
+`PARSER_VERSION` **202**. Same shape as v201's registration: the upgrade cannot
+set a label and never blanks a quote, so **the coverage line should be unchanged
+except `pv` 201 -> 202 at ~99.9%**. `vesting-quote-test`'s WITHHELD count must
+read **34, not 41**. Named set is v201's five plus
+`20260817113505NAL0013879185001` and `20260817113942NAL0016303056001`.
+
+**Dispatch is HELD, not skipped:** #577 is mid-flight with v201, and the record
+is explicit that cancelling a run does not stop it committing a partial store.
+v202 is committed `[skip ci]` and dispatches the moment #577 lands and its
+verdict is read — one re-parse in flight at a time.
+
+`docs/accuracy-log.md` 2026-10-04 (21:4xZ).
+
 ## 2026-10-04 (21:2xZ) — the blank form was PUBLISHABLE as a plan's vesting rule, and only an unrelated `continue` kept it off the page
 
 **Form 5500 line 6g(2) prints the question *"Number of participants who

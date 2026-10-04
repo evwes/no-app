@@ -1180,6 +1180,13 @@
    "fixed": "v201",
    "sponsor": "Vensure Employer Services",
    "was": "the vesting quote was raw Form 5500 table text ('23 3607881 2a Name of Participating 2b EIN ...') whose only vest-word sits inside VESTED METALS INTERNATIONAL LLC; the display guard withheld it, so 42,571 readers read 'not stated in the audited notes' while the filing states the rule. v201 lets a guard-ACCEPTED sentence displace a guard-REJECTED stored one"
+  },
+  {
+   "ack": "20260817113505NAL0013879185001",
+   "class": "graded-guard-ate-the-quote",
+   "fixed": "v202",
+   "sponsor": "Polsinelli Pc",
+   "was": "the guard that stops a GRADED schedule being labelled 'Immediate' (lib-4i :7417) was a bare continue, so it discarded the sentence along with the label; every sibling guard in that loop sets blockedButQuotable for exactly this reason. Fifth instance of 'blocking a wrong ANSWER must never suppress the honest EVIDENCE' (v82, v83, v84, v86/87)"
   }
  ]
 }

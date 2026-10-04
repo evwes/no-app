@@ -11,7 +11,7 @@ import { dirname, join } from "node:path";
 import { vestingQuoteOk } from "./lib-quote.mjs";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 201;
+export const PARSER_VERSION = 202;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -7414,7 +7414,28 @@ export function extractPlanFeatures(text, sponsorName = "") {
        * matched the six-year end of a 2-to-6-year ladder. */
       // no \b after the percent sign — "20% vested" has no word boundary there,
       // which is why the first version of this let a 2-to-6-year ladder through
-      if (/\b[1-9]\d?\s?(?:%|percent\b)[^.]{0,40}?\bafter\b[^.]{0,30}?\byears?\b/i.test(s)) continue;
+      /* v202: AND IT MUST KEEP THE QUOTE. This arm was a bare `continue`, so it
+       * threw away the SENTENCE along with the label — and the sentence it fires
+       * on is a spelled-out GRADED SCHEDULE, which is the most informative thing
+       * a filing can say about vesting. That is the FIFTH instance of the defect
+       * this file already records four times (v82, v83, v84, v86/87): *blocking a
+       * wrong ANSWER must never suppress the honest EVIDENCE.* Every sibling
+       * guard in this loop sets `blockedButQuotable = true` for exactly this
+       * reason; this one, added later, did not carry it across.
+       *
+       * `blockedButQuotable` is declared BELOW, so the quote is stored here in
+       * the same idiom the two `supersededRule` paths use. No judgment is added:
+       * `vestingQuoteUpgrade` still requires the guard to accept the sentence and
+       * the stored quote to be one no reader sees.
+       *
+       * Measured on the 30 filings still withheld after v201: this arm drops 3
+       * guard-accepted candidates across 3 plans, one of them the textbook
+       * `Participants vest 20% annually after one year of service with full
+       * vesting after five years.` `docs/accuracy-log.md` 2026-10-04 (21:4xZ). */
+      if (/\b[1-9]\d?\s?(?:%|percent\b)[^.]{0,40}?\bafter\b[^.]{0,30}?\byears?\b/i.test(s)) {
+        if ((!out.vestingText || vestingQuoteUpgrade(out, cap(s))) && !/forfeit/i.test(s)) out.vestingText = cap(s);
+        continue;
+      }
       /* v83: four gaps in the guards above, found by self-checking all 3,907
        * new Immediate labels v81 produced against their own quotes. 4 were
        * wrong — 0.10%, and the false-Immediate RATE across the whole stock
