@@ -337,6 +337,13 @@ try {
     "Nationwide Trust Company, FSB Vanguard Target Retirement 2030",
     "JP Morgan Investment Management Large Cap Growth",
     "Geode Capital Management Trust Company Fidelity Investments",
+    /* the unit-count arm, 2026-10-04: no case above reaches it, so the twin
+     * would agree whether or not it carried it. The last two must come back
+     * WHOLE -- a bare four-digit number is a vintage. */
+    "BlackRock MSCI ACWI Ex-US IMI Index, 92,383,792 units",
+    "Blackrock Lifepath NL Ret 2055, 20,630,878 units",
+    "Mfo Depot Lifepath 2030 Unit",
+    "Lifestyle Fund Aggressive Portfolio (3897 units)",
     /* 2026-09-29, added for the reason every previous cycle's were: not one
      * case above reaches the `investments` caption or the initial guard, so
      * the twin would agree whether or not it carried them. */
@@ -2307,7 +2314,20 @@ try {
     /* the regression only the PAGE found: this row is itself a welded name, so
      * removing the trailing entity left `Vanguard Fiduciary` on $70,452,841 --
      * a word no fund is named after. It is left exactly as filed. */
-    ["Vanguard Fiduciary Vanguard Retirement Savings Trust Company", "Vanguard Fiduciary Vanguard Retirement Savings Trust Company"]]) {
+    ["Vanguard Fiduciary Vanguard Retirement Savings Trust Company", "Vanguard Fiduciary Vanguard Retirement Savings Trust Company"],
+    /* A UNIT COUNT PUBLISHED INSIDE A FUND NAME, 2026-10-04. The shipped
+     * share-count line was one NOUN short: 310 rows / 28 plans / 491,936
+     * participants / $11.66B, JPMorgan Chase's own plan (300,272 ppl) and
+     * thirteen Ford Motor rows among them. */
+    ["BlackRock MSCI ACWI Ex-US IMI Index, 92,383,792 units", "BlackRock MSCI ACWI Ex-US IMI Index"],
+    ["Blackrock Lifepath NL Ret 2055, 20,630,878 units", "Blackrock Lifepath NL Ret 2055"],
+    /* AND THE DIGIT FLOOR, which is the only reason this is safe: a BARE
+     * four-digit number before the noun is a target-date VINTAGE, live on nine
+     * rows / $376,844,450 (HD Supply's seven-rung ladder). A `\\d{4,}` form
+     * would publish all seven as `Mfo Depot Lifepath`. */
+    ["Mfo Depot Lifepath 2030 Unit", "Mfo Depot Lifepath 2030 Unit"],
+    ["Mfo Depot Lifepath 2045 Unit", "Mfo Depot Lifepath 2045 Unit"],
+    ["Vanguard Institutional Index Trust Class K Units", "Vanguard Institutional Index Trust Class K Units"]]) {
     if (cleanFiledName(n) !== want) fail(`the filed-name cleaner now damages a control: ${JSON.stringify(n)} -> ${JSON.stringify(cleanFiledName(n))}`);
   }
 

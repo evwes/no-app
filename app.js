@@ -1259,6 +1259,29 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
     // is a share CLASS and must survive — the first draft of this cut it to
     // "Class R", measured as 26 lost tickers before it shipped
     s = s.replace(/(?:^|[\s,(-])[\s,(-]*(?:\d{1,3}(?:,\d{3})+|\d{4,})\s+shares?\)?\s*$/i, "").trim();
+  /* AND THE SAME COUNT BEFORE `units`, WHICH THE LINE ABOVE WAS ONE NOUN SHORT
+   * OF — 330 rows / 33 plans / 528,207 participants / $12,760,648,303.
+   * JPMorgan Chase's own plan (300,272 ppl) publishes `JPMCINTERMEDT AGGREGATE
+   * SEP ACCT — SEPARATE ACCT 2,271,585,254 UNITS` at 6.0% of its menu; Ford
+   * Motor (140,681) does it on thirteen rows, every one a real fund wearing a
+   * count (`BlackRock MSCI ACWI Ex-US IMI Index, 92,383,792 units`).
+   *
+   * IT IS A SEPARATE LINE WITH A HIGHER DIGIT FLOOR, AND THAT ASYMMETRY IS
+   * MEASURED RATHER THAN cautious. The line above accepts a bare `\d{4,}`,
+   * which at the TAIL is the VINTAGE exposure the LEADING-count arm below
+   * already records ("a four-digit lead is a target-date VINTAGE and stays —
+   * the first draft took 13,000 vintage-led rows"). Before `shares` that
+   * exposure is live on **0 rows**, so the shipped line is clean and stays as
+   * it is. Before `units` it is live on **NINE**, and all nine are the hazard:
+   * HD Supply (14,491 ppl) files `Mfo Depot Lifepath 2030 Unit` and six more
+   * vintages, $376,844,450, which a `\d{4,}` form would publish as `Mfo Depot
+   * Lifepath` — the ladder collapsed to one name repeated seven times.
+   *
+   * So a unit count must be comma-grouped or seven digits. The cost of the
+   * floor is 2 rows / 345 ppl / $694,054 of real bare counts left in place
+   * (`Lifestyle Fund Aggressive Portfolio (3897 units)`, `Common Trust Fund;
+   * 10381 units`) — 7 vintages against 2 counts, and $376.8M against $0.7M. */
+  s = s.replace(/(?:^|[\s,(-])[\s,(-]*(?:\d{1,3}(?:,\d{3})+|\d{7,})\s+units?\)?\s*$/i, "").trim();
     // a leading count is comma-grouped or five-plus digits; a four-digit lead
     // is a target-date VINTAGE ("2045 Fund") and stays — the first draft took
     // 13,000 vintage-led rows with it, caught by the store-wide count
