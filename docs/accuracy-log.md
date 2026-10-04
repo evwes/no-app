@@ -44764,3 +44764,39 @@ carries the qualifier three times. `index.html` reads `app.js?v=f4e797f8`, which
 (`Collective trust` where the pages say `Collective Trust`). *A clean zero
 reports on the query* — met twice in one verification, on the check rather than
 on the data.
+
+## 2026-10-04 (05:0xZ) — the draw read clean, and the issuer column added at 02:0xZ is why it could be read at all
+
+**Nothing found, nothing shipped — and the draw is worth twelve lines rather
+than none, because the clean reading now rests on evidence the script was
+omitting two cycles ago.**
+
+**Averitt Express (13,016 ppl, $775,233,670)** publishes a CIT-heavy menu and
+every cell checks out: `{JP Morgan Funds} JP Morgan Equity Income R6 Fd` →
+**=OIEJX** 0.45 and `{JP Morgan Funds} JP Morgan Large Cap Gr R6 Fd` →
+**=JLGMX** 0.44 are both the correct R6 class; `{STATE STREET GLOBAL ADVISORS}
+SSgA SP 500 Idx Sec Lnd Ser II` → **~SSSYX** 0.02 is correctly ASTERISKED as a
+comparable for a CIT; and **eight collective trusts are suppressed under
+`noPublicPrice`** with no ticker and no fee. Only 4 of 23 rows resolve anything,
+which on this menu is the right answer rather than a coverage gap.
+***And the issuer prefixes are what make that readable*** — `{GREAT GRAY TRUST
+COMPANY}`, `{MFS Heritage Trust Company}`, `{Principal Global Investors Trust
+Co}` are CIT trustees, and two cycles ago this draw printed the name alone and
+would have shown `Western Asset Cr Pl Bd CIT P1` with no sign of who holds it.
+
+One coverage instance, not a false claim: `{MFS Investment Management} MFS Intl
+Diversification R3 Fd` publishes **0.6 with no ticker** (the class is MDIJX) —
+the standing 91,423-row symbol/fee asymmetry, seen from the fee side.
+
+`Averitt Balanced` at **27.1% of the menu, $209,301,810**, carries no issuer, no
+ticker and no fee, typed `Mutual fund`. A sponsor-named custom vehicle with no
+public identity is exactly the case where claiming nothing is right, and nothing
+is claimed.
+
+**Argos North America (2,402 ppl) is a WIND-DOWN** — `assetsEOY` exactly $0 and
+**0 fund rows** — while still publishing `100% of the first 4% of pay + 50% of
+the next 2%` and immediate vesting from its filing's own notes. Both are what
+the filing says. Worth a queue note rather than a fix: the wind-down
+explanation's trigger is exactly $0, which this plan meets, so it should fire
+here; what the queue already records as broken is the plan that collapsed to
+$2,094 and escapes the gate. Nothing to change from this draw.
