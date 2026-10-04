@@ -43915,3 +43915,94 @@ Also seen on that plan and left alone: `BLCKRCK U.S, DEBT` (a comma for a
 period, $2.5B) and a menu-to-assets ratio of 0.66, which is not by itself a
 defect. The one comparable on the page, `~MDY` at 0.23 for `SSGA S&P MIDCAP
 INDEX`, is the right asset class and correctly asterisked.
+
+---
+
+## 2026-10-04 (00:3xZ) — THE SHARE-COUNT LINE WAS ONE NOUN SHORT: a unit count stops being published inside a fund name, 310 rows / 28 plans / 491,936 participants / $11,661,189,381
+
+The 23:4xZ draw found it on JPMorgan Chase's own plan (**300,272 participants,
+$52.9B**), which publishes `JPMCINTERMEDT AGGREGATE SEP ACCT — SEPARATE ACCT
+2,271,585,254 UNITS` at 6.0% of its menu. Ford Motor (**140,681**) does it on
+thirteen rows, every one a real fund wearing a count: `BlackRock MSCI ACWI Ex-US
+IMI Index, 92,383,792 units` at $1,521,745,824, `Extended Market, 5,680,080
+units`, and the whole `Blackrock Lifepath NL Ret <vintage>` ladder.
+
+### The fix is one line, because the arm already existed
+
+`lib-disclose.mjs:1380` has stripped a trailing count before `shares` for weeks
+and takes no `units`. Same shape as the 18:2xZ bank-deposit gate being one
+WORDING short — and finding that **first** is what kept this from becoming a new
+name-shape predicate. *Before building an instrument, ask whether the project
+already has one*, applied to a rule rather than to a script.
+
+### The digit floor is why it is safe, and it is measured rather than cautious
+
+The shipped line accepts a bare `\d{4,}`. At the TAIL that is the VINTAGE
+exposure which the LEADING-count arm four lines below already records in its own
+comment — *"a four-digit lead is a target-date VINTAGE (`2045 Fund`) and stays —
+the first draft took 13,000 vintage-led rows with it"*. So both nouns were
+measured before a character was written:
+
+| | live population |
+|---|---|
+| bare four-digit number before **`shares`** | **0 rows** — the shipped line is clean and was left exactly as it is |
+| bare four-digit number before **`units`** | **9 rows / 3 plans / 14,836 ppl / $377,480,504** |
+
+And all nine are the hazard. HD Supply (14,491 ppl) files `Mfo Depot Lifepath
+2030 Unit` and six more rungs, $376,844,450; a `\d{4,}` form would publish every
+one as **`Mfo Depot Lifepath`** — a seven-rung target-date ladder collapsed to
+one name repeated seven times, which is worse than the count it removed.
+
+So the unit arm is a **separate line with a higher floor** (comma-grouped or
+seven digits), not one widened regex. The floor's cost is named and accepted: 2
+rows / 345 ppl / $694,054 of genuine bare counts left in place (`Lifestyle Fund
+Aggressive Portfolio (3897 units)`, `Common Trust Fund; 10381 units`). Seven
+vintages against two counts, $376.8M against $0.7M.
+
+### Measured on every published cell of all 1,730,415 store rows
+
+| | rows | plans | ppl | $ |
+|---|---|---|---|---|
+| **name** | **310** | **28** | **491,936** | **$11,661,189,381** |
+| ticker gained / lost / swapped / star | 0 / 0 / 0 / 0 | | | |
+| fee gained / lost / swapped | 0 / 0 / 0 | | | |
+| shown type | 0 | | | |
+| crawlable pages | 5 | | | |
+
+Name-only in the strictest sense, and that is the point rather than a footnote:
+**the fee is what reverted two arms this week**, and "a count sits where
+`fundER` and the resolvers read" was the flagged hazard when this class was
+queued four hours ago. It moves nothing.
+
+### The queued figure was 432 rows / 539,222 ppl, and re-measuring was not a formality
+
+That screen counted `shares` as well — which the existing line already handles —
+and counted the STORED name where the page composes several arms in sequence.
+The reader-facing figure is **310 / 491,936**. *A re-size is a new measurement,
+not a delta against a remembered one*, met on a figure four hours old.
+
+### Gates
+
+- **11 pins, controlled against the committed copy**, so a refusal means the arm
+  did nothing rather than that some text survived — the unsound-assertion lesson
+  from the entity arm two cycles ago. 5 reach the new arm and change the output;
+  6 are refusals with one case per real member of the floor.
+- The whole-store narrowing is a superset **by construction**: the arm requires a
+  digit run, so a digit-free name cannot match it.
+- The digit floor's live blocking population is **9 rows** — load-bearing, not
+  decorative.
+- The app.js twin is SLICED VERBATIM and agrees with the canonical copy on all
+  **1,730,676** rows.
+- The crawlable pages were regenerated and **read**, and the vintage survives as
+  a POSITIVE control: HD Supply's `p/752007383-001.html` still shows `Mfo Depot
+  Lifepath 2030 Unit` intact, with **0** bare occurrences. *A clean zero reports
+  on the query* — so the check was written as "is the correct string still
+  there", not "is the wrong string absent".
+
+Display-side; `PARSER_VERSION` stays 199, nothing to pre-register.
+
+**STILL OPEN from it, and already honest:** AT&T (27,558 ppl) publishes rows
+whose name is **nothing but** a count — `5,405,466 UNITS` at **30.7% of its
+menu, $670,371,000** — and those are left alone because the 06:3xZ
+`hasNoFundIdentity` ship already qualifies them as "the filing names no specific
+fund". There is nothing to strip; the honest answer is the one already shipped.

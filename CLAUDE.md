@@ -1164,6 +1164,29 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
+- **SHIPPED 2026-10-04 00:3xZ — A UNIT COUNT PUBLISHED INSIDE A FUND NAME: 310
+  rows / 28 plans / 491,936 ppl / $11,661,189,381, NAME-ONLY (ticker gained 0 /
+  lost 0 / swapped 0 / star 0; fee gained 0 / lost 0 / swapped 0; type 0), 5
+  crawlable pages.** JPMorgan Chase's own plan (300,272 ppl) stops publishing
+  `… SEPARATE ACCT 2,271,585,254 UNITS` at 6.0% of its menu; Ford Motor
+  (140,681) on thirteen rows.
+  **THE FIX WAS ONE LINE BECAUSE THE ARM ALREADY EXISTED** — `lib-disclose:1380`
+  had stripped a trailing count before `shares` for weeks and took no `units`,
+  the same shape as the bank-deposit gate being one WORDING short.
+  **THE DIGIT FLOOR IS THE WHOLE SAFETY AND IT IS MEASURED:** the shipped line
+  accepts a bare `\d{4,}`, which at the TAIL is the VINTAGE exposure the
+  leading-count arm already records. Before `shares` that exposure is live on
+  **0** rows (so the shipped line is clean and untouched); before `units` on
+  **NINE**, all of them HD Supply's `Mfo Depot Lifepath 2030 Unit` ladder,
+  $376,844,450, which a wide form would publish as `Mfo Depot Lifepath` seven
+  times. So the unit arm is a SEPARATE line requiring comma-grouping or seven
+  digits, and its named cost is 2 rows / 345 ppl of genuine bare counts left in
+  place. **DO NOT CARRY the queue's own 432 rows / 539,222 ppl** — that screen
+  counted `shares` too and read the STORED name.
+  **STILL OPEN and already honest:** AT&T (27,558 ppl) publishes rows whose name
+  is NOTHING BUT a count — `5,405,466 UNITS` at 30.7% of its menu,
+  $670,371,000 — and `hasNoFundIdentity` already qualifies them, so there is
+  nothing to strip. `docs/accuracy-log.md` 2026-10-04 (00:3xZ).
 - **FOUND BY THE 19:4xZ DRAW, SIZED NOT SHIPPED — AN UNCORROBORATED PARTICIPANT
   COUNT, AND IT IS THE WEIGHT ON EVERY FIGURE IN THIS FILE: 49 plans claiming
   3,469,170 participants, 2.99% of the weighted universe**, 3.27% of it in the
