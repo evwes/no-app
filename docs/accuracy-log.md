@@ -7,6 +7,186 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-04 (21:0xZ) — v201: the vesting quote fallback was FIRST-WINS, and the display guard is the oracle that fixes it — 5 plans / 47,462 participants
+
+**The 09:0xZ ship gave the display a guard (`vestingQuoteOk`) that withholds a
+quote stating a DIFFERENT plan rule under a vesting heading. 41 plans / 226,729
+participants are withheld by it and NONE carries a vesting label, so those
+readers see "not stated in the audited notes".** The 20:1xZ measurement read all
+41 filings and found that the filing usually DOES state a rule — the extractor
+selected the wrong sentence, because all four quote fallbacks are
+`if (!out.vestingText)`: whichever candidate the loop reaches FIRST wins and
+nothing afterwards can displace it however much better it is.
+
+**v201 makes the fallback ask the SHIPPED DISPLAY GUARD.** A sentence the guard
+REJECTS reaches no reader, so replacing it costs nothing; a sentence it ACCEPTS
+is one the display has already agreed may be published. No new judgment is
+invented, which is the whole reason this is a two-line change.
+
+### The delivery, measured through the REAL extractor over the WHOLE population
+
+**5 plans / 47,462 participants**, replayed with `extractPlanFeatures` from
+`origin/main` and from the working tree over all 41 cached filings:
+
+```
+PUBLISHED quote gained (withheld -> shown): 5
+published quote CHANGED:                    0
+published quote LOST:                       0
+vesting LABEL moved:                        0
+```
+
+**Vensure Employer Services (42,571 ppl) is 90% of it, and it is the case the
+09:0xZ entry named**: its quote was raw Form 5500 table text whose only
+vest-word sits inside `VESTED METALS INTERNATIONAL LLC`. It now reads
+*"Employer contributions are based on years of continuous service in the
+specific worksite employers; vesting schedules vary."* — honest for a PEO, and
+the plain truth where the page previously claimed the filing was silent. Olean
+General Hospital (2,645) gains a 25/50/75% ladder; the two iAero plans (969
+each) gain "100% vested after one full year of credited service"; WS97 Capital
+(308) gains its own sentence in place of an in-service-distribution rule.
+
+**AND THE 20:1xZ PROJECTION OF 24 PLANS / 172,406 PPL WAS WRONG BY 3.6x — the
+instrument, not the arithmetic.** That projection split the WHOLE filing text on
+sentence boundaries; the extractor builds `vestSentences` from one regex over
+whitespace-collapsed text, filtered by `BOILER` and a long exclusion chain. ***A
+projection measured with a more generous instrument than production over-states
+what production can reach*** — the mirror image of v198's under-prediction, and
+the same root cause: the harness asked a different question.
+
+### Why it cannot harm, structurally rather than by sampling
+
+Three conditions, and the population they leave is exactly the 41:
+
+1. **`!out.vesting`** — no label was settled. Every other consumer of
+   `vestingText` gates on a label (`app.js:2845`'s graded-rate enrichment needs
+   `isGraded`, `audit-data:296`'s cliff cross-check needs an `N-year cliff`,
+   `audit-data:259`'s Immediate check needs `Immediate`), so this puts the
+   upgrade beyond all of them.
+2. **the stored quote must be guard-REJECTED** and **the candidate ACCEPTED**.
+   So a published quote can never change: the only quotes reachable are the ones
+   currently reaching nobody. **The change can only ADD a published quote.**
+
+Under v200 the first non-blocked sentence is stored unconditionally, so a plan
+whose final stored quote is ACCEPTED had an accepted first sentence and the
+upgrade never fires on it. **The touchable population is therefore exactly
+{rejected quote, no label} = the 41, every one of which was replayed.** Control:
+the 323-filing general corpus, **265 published quotes identical, 0 changed, 0
+lost, 0 labels moved.**
+
+**A FOURTH CONDITION WAS WRITTEN AND DELETED.** `!!out.vestingText` can never be
+the only protection — every call site reads
+`(!out.vestingText || vestingQuoteUpgrade(out, cap(s)))`, so the disjunct
+short-circuits and the function is never reached with an empty quote. *A
+condition that can never be the only protection proves nothing.*
+
+**And the guard is asked of `cap(s)`, not `s`** — the 300-character truncation is
+what the page receives, and a truncated sentence can lose the clause the guard
+accepted it for.
+
+### The three conditions are proved load-bearing by SLICED MUTANTS
+
+`vesting-quote-test.mjs` gains a section that cuts each conjunct out of the
+shipped source text and requires the mutant to ADMIT its own case. So a control
+cannot pass by restating the predicate, and moving the source makes it report
+"the source moved" rather than passing quietly. Plus an inertness test on the
+shape all five plans share — *a guard set that refuses everything is safe and
+useless.*
+
+**`scripts/lib-4i.mjs` is added to `site-test`'s path filter** and deliberately
+NOT to `build-data`'s prep gate: that test holds the withheld population to a
+CEILING, which is a DATA condition, and **a data condition must never be able to
+stop the pipeline ingesting new filings.** A red site-test blocks nothing but
+the verdict.
+
+### THE RESIDUE IS ATTRIBUTED, AND MY FIRST ATTRIBUTION WAS REFUTED
+
+The other 30 plans do not move. Running the extractor's OWN candidate
+construction — sliced out of `lib-4i.mjs` and evaluated, not retyped — says
+**0 of 30 lack an acceptable candidate and 30 of 30 have one dropped before any
+fallback**, so the cause is a `continue` inside the loop and NOT the candidate
+set nor its 40-window cap.
+
+***AND THAT KILLS THE QUEUE'S OWN PRESCRIPTION, which was four RANKING rules.***
+The 20:1xZ entry prescribed "prefer a ladder/cliff over a bare immediately
+vested; demote employee-money scope; demote another named rule" and warned that
+a naive "first sentence the guard accepts" would be **wrong on the two largest
+plans** — Charter's best acceptance-ranked candidate is *"immediately vested in
+their voluntary contributions"*, Brown's *"vested in the portion attributable to
+their employee contributions"*, both employee money, which is vested by law.
+**The naive rule is in fact SILENT on both, for exactly the reason it is
+limited: their candidates never reach the point where a ranking would apply.**
+So a ranking could not have delivered them either. *A prescription written from
+the symptom can be right about the remedy and wrong about where it belongs* —
+the second instance after `fb-vanished`, whose prescription was not merely
+misplaced but impossible. The four rules stay recorded; they are the right
+ranking once the candidates arrive.
+
+**My first attribution harness said the same thing for the wrong reason and was
+refuted by its own output**: it rebuilt the candidate windows over the RAW file
+text and applied neither `BOILER` nor the exclusion chain, so its "visited" set
+was not the extractor's. *A harness that reproduces a shipped construction from
+memory measures the memory* — slicing the block and running it is both cheaper
+and correct.
+
+### AND IT EXPOSED A LATENT HAZARD WORTH MORE THAN THE SHIP
+
+For all 30, the LEADING guard-accepted candidate in the extractor's own set is
+**the Form 5500's own printed line 6g(2) question** —
+*"Number of participants who terminated employment during the plan year with
+accrued benefits that were less than 100% vested"*. It carries a vest word and a
+percentage, it is identical on every filing, and:
+
+- **`vestingQuoteOk` ACCEPTS it** (the `100% vested` arm of `VQ_VESTS`),
+- **`BOILER` does not block it** (no underscore run, no `part IV`, no `2[01][abc]`),
+- **`audit-data`'s form-question check reads `matchText` ONLY** — nothing
+  anywhere tests a VESTING quote for form text.
+
+So the only thing keeping the blank form off 30+ plan pages is an incidental
+`continue`. Nothing publishes it today, and that is luck rather than design.
+**QUEUED, display-side and separable: veto form-question text inside
+`vestingQuoteOk`.** Note that a first attempt to size it store-wide read **0
+among published AND 0 among withheld quotes — a both-sided zero across the whole
+population, which reports on the QUERY**: my five arms do not match the form
+text that actually reaches the store (Vensure's `23 3607881 2a Name of
+Participating 2b EIN`), so that screen measured nothing and the veto must be
+written from the candidate sets, not from the stored quotes.
+
+### PRE-REGISTERED for the run that merges v201
+
+**The coverage line should be UNCHANGED except `pv`.** The upgrade cannot set a
+label and never blanks a quote, and `audit-data`'s `vestQuote` counter counts
+STORED quotes without a label — which is the same 41 plans before and after.
+
+```
+pv            200 -> 201 at ~99.9%
+vesting       53,115   unchanged (the upgrade cannot set a label)
+confident     60,182   unchanged   lineups 59,833   entries 65,495
+match         43,312   unchanged   roth 38,369   HIGH 4   warn 556
+dl            48 or higher — a rise means the EFAST2 bucket grew
+```
+
+**The delta is observable only two ways**, which is deliberate: run
+`node scripts/vesting-quote-test.mjs` against the new store and the WITHHELD
+count must read **36, not 41**; or read the five pages. The named set is
+`20240929141849NAL0004592849001`, `20250109085944NAL0020210736001`,
+`20251001091207NAL0012969233001`, `20251010070201NAL0007739473001`,
+`20251015161406NAL0002733715002`.
+
+**One of the five is marginal and is named rather than hidden.**
+`20251015161406` (Olean General, 2,645 ppl) gains *"Participants are vested in
+employer fixed Purchases and sales of securities are recorded on a trade-date
+contributions and employer discretionary contributions after basis."* — two PDF
+columns interleaved. It replaces an equally garbled truncation
+(`"lan Sponsor contributes a matching contribution of 50% of retirement, "`) and
+it is at least about vesting, and a visibly garbled sentence warns the reader
+where "not stated in the audited notes" makes a false claim about the filing.
+A column-interleave repair is a separate class.
+
+Vensure is pinned in `docs/defect-specimens.json` as class
+`vesting-quote-first-wins`.
+
+`docs/accuracy-log.md` 2026-10-04 (21:0xZ).
+
 ## 2026-10-04 (20:4xZ) — the 20:07 draw: the largest named instance yet of the stated-share-class item, with its own control one row away
 
 **The draw** (`--seed 20082026`, participant-weighted over 60,163 published

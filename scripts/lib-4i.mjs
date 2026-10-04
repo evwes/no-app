@@ -5,9 +5,13 @@
 import { readFileSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+/* v201: the vesting QUOTE fallback asks the SHIPPED DISPLAY GUARD whether the
+ * sentence it is about to store would ever reach a reader. `lib-quote.mjs`
+ * imports nothing, so this cannot cycle, and the guard is pure. */
+import { vestingQuoteOk } from "./lib-quote.mjs";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 200;
+export const PARSER_VERSION = 201;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -6122,6 +6126,61 @@ export function mfMisreadCompoundCap(formula, text) {
   return false;
 }
 
+/* v201 — THE VESTING QUOTE FALLBACK WAS FIRST-WINS, AND THE FIRST SENTENCE IN
+ * THE DOCUMENT IS OFTEN NOT THE RULE.
+ *
+ * The 09:0xZ ship gave the display a guard, `vestingQuoteOk`, that withholds a
+ * quote stating a DIFFERENT plan rule under a vesting heading — a loan limit, a
+ * plan amendment, a withdrawal suspension. 41 plans / 226,729 participants are
+ * withheld by it and NONE of them carries a vesting label, so for those readers
+ * the page now says "not stated in the audited notes".
+ *
+ * Reading all 41 filings (20:1xZ: the whole population, not a sample) found
+ * that **24 plans / 172,406 participants DO state a publishable rule somewhere
+ * in the filing** — the extractor simply selected the wrong sentence, because
+ * all four quote fallbacks below are `if (!out.vestingText)`: whichever
+ * candidate the loop reaches FIRST wins, and nothing afterwards can displace it
+ * however much better it is.
+ *
+ * THE ORACLE IS THE SHIPPED GUARD ITSELF, which is why this needs no new
+ * judgment: a sentence the guard REJECTS is one no reader will ever see, so
+ * replacing it costs nothing; a sentence it ACCEPTS is one the display has
+ * already agreed may be published.
+ *
+ * TWO CONDITIONS, AND BOTH ARE WHAT MAKES THE CHANGE UNABLE TO HARM:
+ *   (1) `!out.vesting` — no label was settled. Every other consumer of
+ *       `vestingText` gates on a label being present (app.js:2845's graded-rate
+ *       enrichment needs `isGraded`; audit-data:296's cliff cross-check needs a
+ *       `N-year cliff`; audit-data:259's Immediate check needs `Immediate`), so
+ *       restricting the upgrade to the no-label class puts it beyond all of
+ *       them and leaves exactly the measured population.
+ *   (2) the stored quote must be guard-REJECTED and the candidate ACCEPTED.
+ *       So a published quote can never change: the only quotes this can touch
+ *       are the ones currently reaching nobody. **The change can only ADD a
+ *       published quote. It cannot alter or remove one.** That is structural,
+ *       not sampled.
+ *
+ * AND THE GUARD IS ASKED OF `cap(s)`, NOT `s` — the 300-character truncation is
+ * what the page receives, and a truncated sentence can lose the clause the
+ * guard accepted it for. *Measure through the function the page calls, with the
+ * argument the page passes.*
+ *
+ * It stays first-wins WITHIN the accepted set: once an accepted quote is
+ * stored the predicate is false forever after, so the earliest acceptable
+ * sentence wins and the selection is deterministic.
+ *
+ * A FOURTH CONDITION WAS WRITTEN AND THEN DELETED, by the rule that a condition
+ * which can never be the only protection proves nothing: `!!out.vestingText`.
+ * Every call site reads `(!out.vestingText || vestingQuoteUpgrade(out, cap(s)))`,
+ * so the disjunct SHORT-CIRCUITS and this function is never reached with an
+ * empty stored quote. It would have been three lines of untestable machinery.
+ *
+ * `docs/accuracy-log.md` 2026-10-04 (20:1xZ). */
+export function vestingQuoteUpgrade(out, candidate) {
+  return !out.vesting
+    && !vestingQuoteOk(out.vestingText) && vestingQuoteOk(candidate);
+}
+
 export function extractPlanFeatures(text, sponsorName = "") {
   // zero-width characters survive \s normalization and shipped inside quotes
   // (R.H. White's eligibility quote began with U+200B); strip them first so
@@ -7005,7 +7064,7 @@ export function extractPlanFeatures(text, sponsorName = "") {
        * suppressed — the FOURTH time a new guard has taken the evidence with
        * the answer (v82, v83, v84, now v86/87). */
       if (supersededRule(s)) {
-        if (!out.vestingText && !/forfeit/i.test(s)) out.vestingText = cap(s);
+        if ((!out.vestingText || vestingQuoteUpgrade(out, cap(s))) && !/forfeit/i.test(s)) out.vestingText = cap(s);
         continue;
       }
       if (isLadder && (gi >= 6 || pctTable)) { out.vesting = "Graded schedule"; out.vestingText = cap(s); break; }
@@ -7321,7 +7380,7 @@ export function extractPlanFeatures(text, sponsorName = "") {
        * miss v84 made with the loan hatch. Cohorts are exempt: "participants
        * HIRED BEFORE July 1, 2009" is a group, not a replaced rule. */
       if (supersededRule(s)) {
-        if (!out.vestingText && !/forfeit/i.test(s)) out.vestingText = cap(s);
+        if ((!out.vestingText || vestingQuoteUpgrade(out, cap(s))) && !/forfeit/i.test(s)) out.vestingText = cap(s);
         continue;
       }
       /* v78: vesting accelerated BY PLAN TERMINATION is not the plan's vesting
@@ -7434,7 +7493,7 @@ export function extractPlanFeatures(text, sponsorName = "") {
         if (/years? of (?:vesting |credited |continuous )?service|vesting schedule|\bgraded\b|\bcliff\b|\d{1,2} ?% vested|percentage vested|vested percentage|schedule below|as follows|following schedule/i.test(s)) blockedButQuotable = true;
       }
       if (labelBlocked) {
-        if (blockedButQuotable && !out.vestingText && !/forfeit/i.test(s)) out.vestingText = cap(s);
+        if (blockedButQuotable && (!out.vestingText || vestingQuoteUpgrade(out, cap(s))) && !/forfeit/i.test(s)) out.vestingText = cap(s);
         continue;
       }
       if (IMMED.test(s)) {
@@ -7455,7 +7514,7 @@ export function extractPlanFeatures(text, sponsorName = "") {
        * alone would have deleted them. */
       const offTopic = /notes receivable from participants|\bborrow\b|obtain loans|in.?service withdrawal|available for withdrawal|\bhardship|refer to the (?:basic )?plan document|reference should be made to|summary plan description|eligibility (?:requirements|rules)|payment of benefits|lump.?sum distribution|may be withdrawn/i.test(s)
         && !/years? of (?:vesting |credited |continuous )?service|vesting schedule|\bgraded\b|\bcliff\b|\d{1,2} ?% vested|percentage vested|vested percentage|immediately vested|vested immediately|fully vested (?:at all times|immediately|in all)|100 ?% vested (?:at all times|immediately|in all)|at all times|schedule below|as follows|following schedule/i.test(s);
-      if (!out.vestingText && !/forfeit/i.test(s) && !offTopic) out.vestingText = cap(s);
+      if ((!out.vestingText || vestingQuoteUpgrade(out, cap(s))) && !/forfeit/i.test(s) && !offTopic) out.vestingText = cap(s);
     }
   }
   // LAST of the vesting readers: a 4-6yr full-vesting horizon fills a gap

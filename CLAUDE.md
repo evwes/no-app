@@ -842,14 +842,23 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
-**NOTHING IS PRE-REGISTERED and nothing is in flight.** `PARSER_VERSION` is
-**200**, the store is pv-200 at `pvTopShare` **99.9**, and the
-branch carries v200 plus its own store as a MATCHED PAIR. Every change since
-#571 is DISPLAY-side or documentation, so an incremental work list is the 48
-permanently-403 acks plus the old-pv tail — which is why recent scheduled runs
-produce an identical coverage line and why **a session dispatch is for a parser
-change, not for new filings** (the hourly cron on main is the mechanism for
-those).
+**v201 IS PRE-REGISTERED AND THE PREDICTION IS "NOTHING MOVES BUT `pv`".**
+`PARSER_VERSION` is **201**: the vesting quote fallback now asks the shipped
+display guard, so a guard-ACCEPTED sentence may displace a guard-REJECTED stored
+one. The upgrade cannot set a label and never blanks a quote, and
+`audit-data`'s `vestQuote` counter counts STORED quotes without a label — the
+same 41 plans before and after — so **every figure on the coverage line should be
+unchanged except `pv` 200 -> 201 at ~99.9%** (`dl` 48 or higher; a rise means the
+EFAST2 bucket grew).
+
+**The delta is observable only two ways, deliberately:** run
+`node scripts/vesting-quote-test.mjs` against the new store and the WITHHELD
+count must read **36, not 41**; or read the five pages. Named set:
+`20240929141849NAL0004592849001`, `20250109085944NAL0020210736001`,
+`20251001091207NAL0012969233001`, `20251010070201NAL0007739473001`,
+`20251015161406NAL0002733715002` — **5 plans / 47,462 ppl, of which Vensure
+Employer Services is 42,571.** A coverage line that moves anything else is the
+thing to investigate. `docs/accuracy-log.md` 2026-10-04 (21:0xZ).
 
 **VERDICTS are in `docs/accuracy-log.md`, not here.** This block went stale five
 times by accumulating them; the log holds 700 dated entries and every
@@ -1875,6 +1884,48 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   `vestingQuoteOk` is the ready-made oracle for what must NOT be picked.
   Needs a `PARSER_VERSION` bump and a re-parse. `docs/accuracy-log.md`
   2026-10-04 (20:1xZ).
+  **PART OF IT SHIPPED 2026-10-04 21:0xZ AS v201, AND THE REST OF THIS ENTRY'S
+  PRESCRIPTION IS AIMED AT THE WRONG STAGE.** What shipped is the smallest
+  possible version — all four quote fallbacks were `if (!out.vestingText)`,
+  FIRST-WINS, and now a guard-ACCEPTED candidate may displace a guard-REJECTED
+  stored one, with the shipped display guard as the oracle. Delivered **5 plans /
+  47,462 ppl** (Vensure 42,571, the case the 09:0xZ entry named), replayed
+  through the real extractor over the whole 41 with **0 published quotes changed
+  and 0 lost**, and a 323-filing control at 265 identical.
+  **DO NOT CARRY THE 24 PLANS / 172,406 PPL ABOVE: it over-states production by
+  3.6x.** That sizing split the WHOLE filing text on sentence boundaries where
+  the extractor builds `vestSentences` from one regex over whitespace-collapsed
+  text, filtered by `BOILER` and a long exclusion chain.
+  ***AND THE FOUR RANKING RULES CANNOT DELIVER THE REST, because the candidates
+  never reach the point where a ranking would apply.*** Measured by slicing the
+  extractor's own candidate construction out of `lib-4i.mjs` and running it:
+  of the 30 plans that do not move, **0 lack an acceptable candidate and 30 have
+  one dropped before any fallback** — so Charter's cliff table and Brown's
+  ladder are lost to a `continue` INSIDE the loop, not to a bad tie-break. The
+  naive rule this entry warned would be "wrong on the two largest plans" is in
+  fact SILENT on them, for the same reason it is limited. **The remaining work is
+  to find which `continue` drops them and whether it may be narrowed — a
+  different change from the ranking.** The four rules stay recorded because they
+  are the right ranking ONCE the candidates arrive.
+  `docs/accuracy-log.md` 2026-10-04 (21:0xZ).
+- **QUEUED BY THAT ATTRIBUTION, display-side and separable — THE FORM'S OWN
+  PRINTED QUESTION IS PUBLISHABLE AND ONLY LUCK KEEPS IT OFF THE PAGE.** For all
+  30 residue plans the LEADING guard-accepted candidate in the extractor's own
+  set is Form 5500 line 6g(2), *"Number of participants who terminated
+  employment during the plan year with accrued benefits that were less than 100%
+  vested"* — identical on every filing and therefore saying nothing about any
+  plan. **`vestingQuoteOk` ACCEPTS it** (the `100% vested` arm of `VQ_VESTS`),
+  **`BOILER` does not block it**, and **`audit-data`'s form-question check reads
+  `matchText` ONLY**, so nothing anywhere tests a VESTING quote for form text.
+  Nothing publishes it today; that is an incidental `continue`, not a design, and
+  it is the same `continue` the item above must narrow — **so the veto must ship
+  BEFORE that narrowing, or the narrowing publishes the blank form on 30 pages.**
+  **DO NOT SIZE IT FROM THE STORED QUOTES:** a first screen read **0 among
+  published AND 0 among withheld — a both-sided zero across the whole
+  population, which reports on the QUERY**, because the form text that actually
+  reaches the store is a different shape (Vensure's `23 3607881 2a Name of
+  Participating 2b EIN`). Write the veto from the CANDIDATE SETS.
+  `docs/accuracy-log.md` 2026-10-04 (21:0xZ).
   **AND THE "OCR-DAMAGED LOAN VERB" WORRY FROM THAT READING IS REFUTED — do not
   retry it.** PSEG's filing OCRs `borrow` as `bo1Tow`, which looked like it would
   defeat the guard's `may borrow` arm. Measured over all 58,257 accepted quotes:
@@ -2366,6 +2417,35 @@ These outlived the versions that produced them. The accuracy log has the case.
   `build-data` and all but one name discarded; the master trusts' Schedule C was
   scanned for every one of 508 acks and then dropped by a loop over `universe`.
   The download, the parse and the memory were already paid for in all three.
+- **A PROJECTION MEASURED WITH A MORE GENEROUS INSTRUMENT THAN PRODUCTION
+  OVER-STATES WHAT PRODUCTION CAN REACH (2026-10-04, by 3.6x).** The vesting
+  class was projected at 24 plans / 172,406 ppl by splitting the WHOLE filing
+  text on sentence boundaries; the extractor builds its candidate set from one
+  regex over whitespace-collapsed text, filtered by a boilerplate test and a
+  long exclusion chain, and delivered **5 plans / 47,462 ppl**. This is the
+  MIRROR IMAGE of v198's under-prediction and has the same root cause — the
+  harness asked a different question — so the rule is two-sided: *before
+  believing a projection, ask whether its candidate set is the one production
+  builds.* The cure is the same in both directions: replay the REAL function
+  over real inputs.
+- **SLICE A SHIPPED CONSTRUCTION, NEVER REPRODUCE IT FROM MEMORY (2026-10-04).**
+  A residue attribution that rebuilt the extractor's candidate loop by hand ran
+  the regex over RAW text where production runs it over whitespace-collapsed
+  text, and applied neither `BOILER` nor the exclusion chain — so its "visited"
+  set was not the extractor's and it reported the Form 5500 line 6g(2) question
+  as a visited candidate on 25 of 30 filings. ***A harness that reproduces a
+  shipped construction from memory measures the memory.*** Slicing the block out
+  of the source and evaluating it was both cheaper and correct, and it gave the
+  OPPOSITE attribution. Sibling of *measure through the function the page calls*,
+  for code that is not a function.
+- **AND A QUEUED PRESCRIPTION NAMES A STAGE AS WELL AS A FIX — CHECK THE STAGE
+  (2026-10-04).** The vesting entry prescribed four RANKING rules and warned a
+  naive tie-break would be wrong on its two largest plans. Attribution showed
+  the candidates are dropped BEFORE any tie-break on 30 of 30 plans, so the
+  ranking could not have delivered them and the naive rule is silent rather than
+  wrong. *A prescription written from the symptom can be right about the remedy
+  and wrong about where it belongs* — second instance after `fb-vanished`, whose
+  prescription was not merely misplaced but impossible.
 - **A count of a condition is not a measure of a defect**, and the siblings:
   *a count keyed on a VOCABULARY measures the vocabulary*; *a count keyed on
   PLANS is blind to every master-trust row* (resolve a trust row through its

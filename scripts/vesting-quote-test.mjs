@@ -18,6 +18,7 @@
  */
 import { readFileSync, existsSync } from "node:fs";
 import { vestingQuoteOk } from "./lib-quote.mjs";
+import { vestingQuoteUpgrade } from "./lib-4i.mjs";
 import { loadPlans } from "./lib-schema.mjs";
 
 let bad = 0;
@@ -106,6 +107,54 @@ if (!/vestingQuoteOk\(ff\.vestingText\)/.test(appjs))
 const seo = readFileSync(`${R}/scripts/build-seo-pages.mjs`, "utf8");
 if (!/vestingQuoteOk/.test(seo))
   fail("scripts/build-seo-pages.mjs renders the vesting quote without the guard — the crawlable pages are the other surface");
+
+/* ---- 5. the v201 UPGRADE predicate, which makes this guard an ORACLE ----
+ * `vestingQuoteUpgrade` lets a guard-ACCEPTED sentence displace a stored quote
+ * this guard REJECTS, so the two now move together: a change to `vestingQuoteOk`
+ * changes which sentence the PARSER stores, not only what the page shows. The
+ * three conditions are what make the upgrade unable to harm, so each gets a
+ * control where it is the ONLY protection — and each control is built by
+ * SLICING the condition out of the shipped source, so moving the source makes
+ * this report "the source moved" rather than passing quietly. */
+const libSrc = readFileSync(`${R}/scripts/lib-4i.mjs`, "utf8");
+const fnSrc = (libSrc.match(/export function vestingQuoteUpgrade\(out, candidate\) \{[\s\S]*?\n\}/) || [])[0];
+if (!fnSrc) fail("vestingQuoteUpgrade is not where this test slices it out of lib-4i.mjs");
+const CONDS = [
+  { name: "no label was settled", cut: "!out.vesting\n    && ",
+    out: { vesting: "3-year cliff", vestingText: "Participant loans are permitted up to $50,000." },
+    cand: "Employer contributions are 100% vested after two years of service.",
+    /* the label consumers (app.js's graded-rate enrichment, audit-data's cliff
+     * cross-check) all read vestingText only when a LABEL exists, so this is
+     * the condition that keeps the upgrade out of their way */
+    why: "a plan WITH a label must never have its quote displaced" },
+  { name: "the stored quote is withheld", cut: "!vestingQuoteOk(out.vestingText) && ",
+    out: { vesting: "", vestingText: "Employer contributions vest 20% per year and are fully vested after five years." },
+    cand: "Participants become 100% vested after three years of service.",
+    why: "a PUBLISHED quote must never change — this is the whole safety claim" },
+  { name: "the candidate is publishable", cut: "&& vestingQuoteOk(candidate)",
+    out: { vesting: "", vestingText: "Participant loans are permitted up to $50,000." },
+    cand: "A participant may withdraw the vested portion of employer contributions at age 59 1/2.",
+    why: "one withheld sentence must never be swapped for another withheld sentence" },
+];
+for (const c of CONDS) {
+  if (vestingQuoteUpgrade(c.out, c.cand) !== false)
+    fail(`upgrade: the shipped predicate allows a case it must refuse — ${c.why}`);
+  if (!fnSrc.includes(c.cut))
+    fail(`upgrade control "${c.name}": the source moved — ${JSON.stringify(c.cut)} is no longer in vestingQuoteUpgrade, so this control proves nothing`);
+  else {
+    const mutant = new Function("vestingQuoteOk", "return " + fnSrc
+      .replace("export function", "function").replace(c.cut, "")
+      + "; return vestingQuoteUpgrade;")(vestingQuoteOk);
+    if (mutant(c.out, c.cand) !== true)
+      fail(`upgrade control "${c.name}" is DECORATIVE: removing it does not admit its own case, so nothing proves the condition is load-bearing`);
+  }
+}
+/* and the predicate must FIRE — a guard set that refuses everything is safe and
+ * useless. This is the shape of all five plans v201 moves. */
+if (vestingQuoteUpgrade({ vesting: "", vestingText: "The Plan allows for in-service distributions upon attainment of age 59 1/2." },
+  "Vesting in Company matching contributions is based on years of continuous service and becomes 100% vested after one full year of credited service.") !== true)
+  fail("upgrade: the predicate does not fire on the shape it was built for — it is inert");
+console.log(`upgrade: ${CONDS.length} conditions, each the ONLY protection on its own case and each proved load-bearing by a sliced mutant`);
 
 console.log(bad ? `\n${bad} check(s) FAILED` : `\nall vesting-quote checks pass`);
 process.exit(bad ? 1 : 0);

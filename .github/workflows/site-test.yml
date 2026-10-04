@@ -10,6 +10,13 @@ on:
             "scripts/smoke-test.mjs", "scripts/map-test.mjs",
             "scripts/fund-er-test.mjs", "scripts/no-identity-test.mjs",
             "scripts/vesting-quote-test.mjs", "scripts/lib-quote.mjs",
+            # v201 put `vestingQuoteUpgrade` in the PARSER, so a lib-4i change
+            # can now break the vesting-quote gate's sliced controls. It belongs
+            # here and NOT in build-data's prep gate: that test holds the
+            # withheld population to a ceiling, which is a DATA condition, and a
+            # data condition must never be able to stop the pipeline ingesting
+            # new filings. A red site-test blocks nothing but the verdict.
+            "scripts/lib-4i.mjs",
             "scripts/lib-disclose.mjs", "scripts/build-seo-pages.mjs",
             "plans-list.json", "plans-index.json", "map-points.json"]
   workflow_dispatch:
