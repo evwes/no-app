@@ -771,38 +771,40 @@ bullet here ended with an explicit pointer into it). **Per-version history goes
 in the accuracy log. What belongs here is the state a new session needs before it
 acts, plus rules that outlive the version that earned them.**
 
-### Store, read from the newest coverage line 2026-10-02
+### Store, re-derived from the newest coverage line 2026-10-04
 
-Universe **112,652 plans** (68,538 full-form, 44,114 short-form, 69,046
-parse-status entries) — 401(k)-type 2J + ERISA 403(b) 2L/2M, ≥100 participants
-at either end of the plan year. A DOL refresh on 2026-09-30 moved it from
-111,782; do not carry an older figure forward.
+Universe **112,652 plans** — 68,538 full-form and **44,114 short-form**
+(derived: `plans` − `fullForm`, both from the trail; the coverage line's
+`entries` is LINEUP entries and is not the parse-status count, which this line
+used to conflate) — 401(k)-type 2J + ERISA 403(b) 2L/2M, ≥100 participants at either end of the
+plan year. A DOL refresh on 2026-09-30 moved it from 111,782; do not carry an
+older figure forward.
 
-**AND READ EVERY PARTICIPANT-WEIGHTED FIGURE IN THIS FILE WITH A ~3% CAVEAT,
-found 2026-10-03 19:5xZ.** The participant-weighted universe is **116,001,210**,
-and **49 plans claiming 3,469,170 of them (2.99%) have a count NO OTHER FIELD
-SUPPORTS** — EOY 0, `partBalances` ≤10, BOY assets trivial. 3.27% sits in the
-ten largest rows. Avalon Capital Management claims **1,955,672** (second-largest
-in the universe, above Amazon) and its `assetsBOY` is **$1,955,672** — the same
-number, and the ONLY plan of 112,652 whose count equals a dollar figure on its
-own row. Most of the other 48 are staffing/PEO firms whose count is plausibly
-the ELIGIBLE population as filed. **DO NOT CARRY the first screen's 504 plans /
-5,191,508** — it gated on EOY assets, which are $0 for a WIND-DOWN by
-definition, so it swept in Kroger pn=004 (262,794 real ppl, BOY $2.3B), Kaiser
-pn=037, VMware and Neiman Marcus, whose counts are correct. The witness must be
-**BOY** assets. `docs/accuracy-log.md` 2026-10-03 (19:5xZ).
+**AND READ EVERY PARTICIPANT-WEIGHTED FIGURE IN THIS FILE WITH A ~3% CAVEAT.**
+The participant-weighted universe is **116,001,210**, and **28 plans claiming
+3,413,761 of them (2.94%) have a count no other field supports** at
+beginning-of-year assets under $10 a head. Avalon Capital Management claims
+**1,955,672** (second-largest in the universe, above Amazon) and is the only
+plan of 112,652 whose claim equals a dollar figure on its own row. `activeParticipants`
+corroborates 20 of the 28; the ~8 that nothing supports carry 89% of the weight.
+**DO NOT CARRY 49 plans / 3,469,170, nor the first screen's 504 / 5,191,508** —
+that one gated on END-of-year assets, which are $0 for a wind-down by
+definition, so it swept in Kroger pn=004 (262,794 real ppl), Kaiser pn=037,
+VMware and Neiman Marcus. The witness must be **BOY** assets.
+`docs/accuracy-log.md` 2026-10-03 (19:5xZ) and 2026-10-04 (10:4xZ).
 
-`confident` **60,167** · lineups 59,819 · entries 65,480 · match **43,338** ·
-vesting 53,100 · roth 38,350 · **HIGH 4** · warn **556** · overshoot 372 /
-436,224 ppl · overshootTrust 12 · aggRow 114 · dl **48** · pvTopShare **99.93**
-(pv **199**) · tkExact **37.76** · tkComparable **3.41** · tkShare **25.02**.
+`confident` **60,182** · lineups 59,833 · entries 65,495 ·
+match **43,312** · vesting 53,115 · roth 38,369 · **HIGH 4** ·
+warn **556** · overshoot 370 · overshootTrust 12 ·
+aggRow 114 · dl **48** · pvTopShare **99.9** (pv **200**) ·
+tkExact **37.76** · tkComparable **3.41**.
 
-**`match` FELL from 43,441 to 43,338 ON PURPOSE** — v199 withholds a misread
-formula rather than publishing it, so the fall IS the improvement. Read it
-together with `matchQuote` 5,364 and `matchQuoteShown` 1,818, both of which
-ROSE: a withheld plan reverts to quoting its filing, it does not go blank.
-`features.matchMisread` on 199 acks / 389,974 ppl holds every withdrawn string,
-so the class is measurable without re-deriving it.
+**`match` 43,312 IS LOWER THAN v199's 43,441 ON PURPOSE** — v199 and v200
+withhold a misread formula rather than publishing it, so the fall IS the
+improvement. Read it with `matchQuote` 5,396 and `matchQuoteShown`
+1,849, both of which ROSE: a withheld plan reverts to quoting its
+filing, it does not go blank. `features.matchMisread` holds every withdrawn
+string, so the class stays measurable without re-deriving it.
 
 **THE HIGH BASELINE IS 4 = 3 `contrib` outliers + `fabricated-name`.**
 `audit-generic-names` sits above its 230 escalation threshold, so that HIGH is
@@ -810,6 +812,13 @@ STANDING rather than absent. **CI can report MORE than the local audit** — the
 extra entries are self-clearing `reparse-loss` findings raised from
 `losses-triage.txt`, a run ARTIFACT that exists only in CI. *A metric that
 differs between CI and local is a question about the inputs, not the store.*
+
+**THE IDENTICAL-LINE RUN, RE-DERIVED THIS CYCLE AND NEVER INCREMENTED: 2 on
+all keys, 2 on shared keys.** The last transition moved nothing. *A
+count carried forward by increment is not a measurement* — if a number in this
+file advances every cycle, re-derive it (`scratchpad` harness: compare the trail
+tail under BOTH key sets, because the `pv` field added at #565 breaks a naive
+all-keys comparison across its own introduction).
 
 **COMPLETENESS TEST:** one dominant pv covering ≥97% of acks plus a small
 old-version tail. A second large pv cohort means a PARTIAL store (`audit-data`
@@ -821,264 +830,17 @@ EFAST2 bucket grew, not that our code broke.
 ### Pre-registered for the next run that merges
 
 **NOTHING IS PRE-REGISTERED and nothing is in flight.** `PARSER_VERSION` is
-**200**, the store is pv-200 at `pvTopShare` **99.9**, and the branch carries
-v200 plus its own store as a MATCHED PAIR.
+**200**, the store is pv-200 at `pvTopShare` **99.9**, and the
+branch carries v200 plus its own store as a MATCHED PAIR. Every change since
+#571 is DISPLAY-side or documentation, so an incremental work list is the 48
+permanently-403 acks plus the old-pv tail — which is why recent scheduled runs
+produce an identical coverage line and why **a session dispatch is for a parser
+change, not for new filings** (the hourly cron on main is the mechanism for
+those).
 
-**#571 VERDICT (push, dev, `52191aae`, 02:19:52-03:18:16Z, 58 min, data commit
-`183b6590`): v200 LANDED AND HIT ITS REGISTERED FLOOR.** `features.matchMisread`
-**199 -> 233 acks: 34 newly withheld, 0 un-withheld**, 34 plans / 55,182 ppl,
-against a registered **floor** of +33 — one above, from the full-text path
-exactly as the caveat predicted. Every one of the twelve largest is a case read
-before dispatch (Teledyne, Appalachian Regional, Morningstar, Alliance Laundry,
-World Kinect, Winchester, Kent, Cheshire, VT Services, Relation, Engagesmart,
-Lyons Magnus). `matchQuote` 5,364 -> **5,396**, `matchQuoteShown` 1,818 ->
-**1,849** — the withheld plans reverted to quoting, they did not go blank.
-
-**BUT `match` FELL 26 WHERE I REGISTERED 33, AND THE LESSON IS THE METRIC.**
-My first explanation — `covTot.match` is gated on non-zero employer
-contributions (`audit-data.mjs:336-345`) so $0-employer acks cannot move it —
-was read off the shipped definition and then **REFUTED by measurement: only 3
-of the 34 filed $0 employer money**, predicting −31. ***The actual answer is
-that a NET DELTA ON A SHARED METRIC CANNOT VERDICT ONE ARM OF A FULL
-RE-PARSE*** — a pv bump re-extracts all 69,046 acks, so every other match arm
-re-runs and `match` moves independently (−31 from the gate, ~+5 elsewhere, net
-−26). **REGISTER A GATE AGAINST ITS OWN OUTPUT FIELD, NOT A COVERAGE METRIC IT
-SHARES.**
-
-**AND REGISTERING "UNCHANGED" FOR A FULL RE-PARSE IS WRONG BY CONSTRUCTION.**
-confident **60,182** (+15), lineups **59,833** (+14), entries **65,495** (+15),
-vesting **53,115** (+15), roth **38,369** (+19) — all registered unchanged, an
-assumption carried over from eleven consecutive incremental runs whose work list
-was 48 acks. **All 15 gains READ, 0 losses: Levi Strauss & Co. (8,288 ppl) gains
-a 30-row menu from its own 2025 4i attachment** — a plan this file names as
-served by its TRUST and never by its own ack — and the other fourteen (900 down
-to 21 ppl) each cite a 4i attachment with a menu-shaped row count. Fresh
-downloads succeeding, not a loosened parser. `HIGH` **4** (baseline), `warn`
-**558**, `dl` **48**. `docs/accuracy-log.md` 2026-10-04 (03:5xZ).
-
-**#572 VERDICT (schedule, main, `c349b204`, 07:00:11Z, data commit `a3d37f56`,
-Pages #878 green): pv stays 200 and `warn` 558 -> 556 is the ONLY field that
-moved**, everything else byte-identical — the two transient warns #571's fifteen
-new lineups introduced have cleared. Its commit landed on BOTH refs again (the
-documented #565 hazard, met a third time), so the branch adopted it by
-fast-forward rather than by mirror.
-
-**AND THE IDENTICAL-LINE RUN IS NOW 0, RE-DERIVED AND NOT INCREMENTED.** #572's
-`warn` move ended the run that read 11 on shared keys at 02:1xZ. This is the
-field the 02:1xZ entry demanded be re-derived every cycle, and it is: the trail
-holds 383 lines and the current tail streak is zero.
-
-#568, #569 and #570 are all verdicted, each producing a coverage line identical
-to its predecessor: pv 199 · confident 60,167 · entries 65,480 · match 43,338 ·
-HIGH 4 · warn 556 · dl 48 — correct when the work list is the 48
-permanently-403 acks plus the old-pv tail.
-
-**THE LENGTH OF THAT IDENTICAL RUN MUST BE RE-DERIVED, NEVER INCREMENTED
-(2026-10-04 02:1xZ).** This line used to say "the seventh consecutive identical
-incremental line" and the morning brief was about to say "eight"; **neither had
-been measured, and the answer is 6 or 11 depending on the comparison.** A strict
-all-keys comparison reads **6**, because `pv` was added to the line at #565 and
-a line without it differs from a line with it by one KEY whether or not a metric
-moved — ***the field added to make this trail answerable truncates the naive
-comparison across its own introduction***, invisibly, since 6 is plausible. On
-the keys each pair shares the real run is **11**, beginning where v199 withheld
-a misread formula (`match` 43,441 → 43,338), so it starts at a real event.
-**A count carried forward by increment is not a measurement** — if a number in a
-document advances every cycle, re-derive it. `docs/accuracy-log.md` 2026-10-04
-(02:1xZ).
-
-**THE ENTITY-WELD SHIP IS LIVE ON MAIN (`cc2795a6`), site-test #159 green,
-Pages #863 building, and every pre-registered check hit.** Verified by reading
-main's own tree rather than the store: Target's page (`p/410215170-002.html`)
-opens its holdings table on `Ssga S+P 500 Index Ser A …` with **0** rows still
-carrying `State Street Bank &amp; Trust Company Ssga`; `index.html` carries
-`app.js?v=da8d700b`, which **is** app.js's own sha256 on main; and the arm is
-present in both main's `app.js` and main's `lib-disclose.mjs`.
-**THE POSITIVE CONTROL IS THE HALF THAT MATTERS: 9 `Blackrock Institutional
-Trust Company` rows on that same page are UNTOUCHED**, because their remainder
-leads with no house `LEADING_HOUSE` knows — so the remainder gate shipped with
-the arm rather than the arm shipping alone. A strip that had moved those too
-would have looked identical in every count.
-
-`cff269ec` had landed on **both** refs, so the dev push was rejected
-non-fast-forward (the documented #565 hazard, met a second time); reconciled by
-rebasing the display commit onto it, and regenerating the crawlable pages
-against the NEW store changed **0** files, so the committed pages are correct
-for it.
-
-**#566 SUCCESS (push, dev, `a8cb81d1`, 12:21:01-12:30:11Z), verdicted, adopted,
-mirrored — EVERY REGISTERED FIGURE HIT.** 18 name changes committed, 0
-row-count changes, the three L Brands rows absent (the identity guard held in
-production), and the coverage line byte-identical apart from the date: pv 199 ·
-confident 60,167 · entries 65,480 · match 43,338 · HIGH 4 · warn 556 · dl 48.
-**Nothing is in flight.**
-
-**BUT HALF THE SHIP REACHES NO READER, and that is the correction to carry
-forward.** 0 crawlable pages changed, and asking why — rather than accepting a
-clean zero — found that 15 of the 16 plans have no page and the one that does
-was ALREADY correct. Measured through the harness against the previous data
-commit: **the SHOWN name changes on 9 of the 18 rows (8 plans / 3,869 ppl /
-$7,252,820); the other 9 (8 plans / 7,799 ppl / $103,042,677) were already clean
-on the page** because `cleanFiledName` strips `name N shares` lowercase-plural
-on the display side. ***So the reader-facing figure is 3,869, not the 11,668 the
-commit headlined*** — *a STORED field is not a PUBLISHED one*, met on my own
-ship one hour after shipping it.
-**THE RULE THAT FOLLOWS: before shipping a merge-side NAME repair, ask what
-`cleanFiledName` already strips.** The display predicate runs on every render
-for free; a merge arm runs once and needs a pipeline run. The half the display
-MISSES is the only part a reader gains, and it is the half to measure first —
-here, `Units` capitalised, `shares of` with a trailing preposition, `– N Shares`
-on an en dash, and `.886 share` singular with decimals.
-`docs/accuracy-log.md` 2026-10-03 (13:2xZ).
-
-**#565 SUCCESS (schedule, main, `e7730a25`, 10:21:14-10:30:05Z) — THE `pv`
-SHIP'S PRODUCTION VERDICT.** Its coverage line is the first to carry `pv: 199`
-and **`pv` is the ONLY field that moved**, everything else byte-identical to
-#564's — the fifth consecutive identical incremental line. Verified locally with
-`WAMPO_RECORD=1` beforehand; this is the real merge job writing it.
-
-**A DATA COMMIT CAN LAND ON THE DEV BRANCH REMOTE, NOT ONLY ON MAIN.** #565 ran
-on main and its commit `7c3fdee2` appeared on **both** refs, so a `git push` of
-dev work was rejected **non-fast-forward** — the branch BEHIND its own remote,
-the opposite of the documented hazard. Reconcile is the same: fetch, merge the
-data commit, push, mirror. **And my retry loop retried that rejection FOUR
-TIMES.** The git rule says retry *only* network errors; a loop that retries any
-failure turns a legitimate refusal into four identical refusals, and the step
-after "push keeps failing" is reaching for `--force`. A retry loop must READ the
-error: retry on a network message, stop and report on
-`rejected`/`non-fast-forward`.
-
-**AND A SYNTAX CHECK CAN RUN A MERGE.** `node -e "import('./scripts/merge-4i.mjs')"`
-executed a full merge and rewrote fourteen shards plus three index files —
-merge-4i is a script with no import guard, and this file documents
-`node scripts/merge-4i.mjs` as the way to regenerate the index. Reverted; data
-must come from a pipeline run, which is what carries the audit, the loss triage
-and the coverage trail. ***`node --check <file>` is the syntax check; importing
-a script executes it.***
-
-**MIRRORED since the brief: the store-vs-page finding and the `[skip ci]`
-scoping note** — main is at `dfa6ba7a`.
-
-**WHY NO DISPATCH THIS CYCLE:** every change since #563 is DISPLAY-side or
-documentation, `PARSER_VERSION` stays 199, so an incremental work list is the
-same ~96 acks that have now produced five identical lines. The hourly cron on
-main is the right mechanism for new DOL filings; a session dispatch is for a
-parser change.
-
-**LIVE ON MAIN as of 2026-10-03 04:2xZ: v199 + its own pv-199 store, mirrored as
-a MATCHED pair** (`ea825dcb`), Pages build #834/#835 green. v198 and v199 both
-verdicted clean — `docs/accuracy-log.md` 2026-10-03 (04:1xZ) for both, and read
-them together, because the pair is the cautionary tale:
-
-**v198 BREACHED ITS OWN "CEILING" UPWARD — 345 plans / 422,623 ppl where 122
-was registered — and the cause is a method trap, not a lucky break.** The
-pre-measurement ran over STORED `matchText`, which is an OUTPUT of the very
-extractor being changed: it stores the sentence it selected, and selection
-follows wherever the chain matched. So the harness asked *"does the new arm fire
-on the sentence the OLD chain chose?"* where production asks *"does it fire
-anywhere in the filing?"* Reconciled ack-by-ack against the prior data commit:
-226 GAINED a formula, **117 had one REPLACED** (mostly `Discretionary — set year
-to year` becoming the real rate; Life Care Centers, 32,465 ppl), **0 LOST**.
-***A PRE-REGISTRATION MEASURED OVER A STORED DERIVED FIELD UNDER-PREDICTS
-WHENEVER THE CHANGE ALTERS WHAT THAT FIELD HOLDS*** — and my harness counted
-only plans with NO stored formula, so it could not see the 117 at all.
-
-**VERIFY `plans-list.json`, NOT `plans-all.json`.** The site NEVER fetches
-plans-all; `plans-list.json` is the columnar boot payload and carries the `rk`
-column the page prints. On 2026-10-02 a recordkeeper fix was reported shipped
-three times while main's boot file still said `Invesco Advisors, Inc` — every
-check had read plans-all or a local server with the branch's data and an empty
-cache. ***A verification that reads a different file than the reader is not a
-verification.***
-
-**AND A SCHEDULED RUN ON MAIN CAN REVERT A SHIPPED FIX AFTER EVERY CHECK
-PASSES.** #556 started 23:02:03 on main at the pre-fix commit, the mirror landed
-the fix at 23:10:34, and #556 committed its stale-code data at 23:15:23 — main
-ended with the new source and the old data. *A force push cannot protect against
-a writer that has not written yet.* `mirror.sh` now refuses when the mirror
-changes `build-data.mjs`/`merge-4i.mjs`/`lib-4i.mjs`/`fetch-4i.mjs` while a run
-is queued or in progress on main. ***Mirroring code that produces data is half a
-deployment.*** **CORRECTED 2026-10-03: the companion staleness NOTE used to fire
-after EVERY such mirror and was wrong on the only path we ever take.** The
-documented order is dispatch on dev → verdict → mirror the matched pair, so the
-usual mirror ships code together with the store that code produced; the note
-compared CODE between branches and never asked what produced the store it was
-shipping. It now compares the mirrored `PARSER_VERSION` to the mirrored store's
-dominant `pv` (`scripts/store-pv.mjs`) and warns only when the store really is
-behind. ***A check that is wrong on the normal path is worse than no check*** —
-an operator who has dismissed it four times dismisses the fifth, when it is
-right. Both branches tested, and an UNREADABLE version reads stale rather than
-matched, because a failed read must never be reported as a matched pair. Concurrency is `build-data-${{ github.ref }}` —
-BRANCH-SCOPED — so a dev push cannot cancel a main run.
-
-**#557 VERDICT (success, mirrored): `plans-list.json` on main reads `Fidelity`
-for PSEG pn=004 and pn=006**, 11,991 rows exactly "Fidelity", **0** FIIOC
-abbreviations. `docs/accuracy-log.md` 2026-10-03 (00:1xZ).
-
-**#555 VERDICT (success 22:19Z, mirrored) — EVERY REGISTERED FIGURE HIT
-EXACTLY.** Verdicted by DIFFING the published `recordkeeper` column before vs
-after, because a spot check cannot tell *"my change moved it"* from *"it already
-said that"*. **152 plans / 2,432,223 ppl changed, 0 blanked**: display rename
-**121 / 2,020,774** (registered 121) and promotion **31 / 411,449** (registered
-31 / 411,449, to the digit). **The variant-2 test reads 0** — no plan lost a
-real recordkeeper brand. Cornell pn=001 and a Northwestern pn=001 read
-"Fidelity" and looked like exactly the refused swap; **neither is in the change
-set** — different plans of the same universities, already Fidelity. *Absence
-from the diff is the proof.* The scratch replica predicted the promotion count
-exactly despite reading the 12-row shard cap, so no plan in that population
-files more than twelve providers.
-**BOTH OF THE OWNER'S PSEG GAPS ARE LIVE**, verified in a real browser on the
-mirrored tree: recordkeeper **"Fidelity"**, expense-ratio card **"15 funds held
-by its master trust"**, and "lineup not added" appears nowhere on the page.
-`docs/accuracy-log.md` 2026-10-02 (23:1xZ). **site-test #148 green.**
-
-**#552 VERDICT (success 19:57Z, mirrored): every figure hit.** The welded-value
-arm's population is **0** and the cheap screen went **1,229 → 1,195**, which is
-1,229 − 34 to the row, so it hit exactly its 34 and nothing adjacent. **The
-three figures carried unsettled since 15:0xZ are settled to the digit:**
-`tkExact` **37.76**, `tkComparable` **3.41**, `tkShare` **25.02**.
-**The "0 crawlable pages" claim was TRUE and my reason for it was WRONG** — a
-grep proves nothing when the page renders no holdings table (ABM's is 4,818
-bytes and has none). Measured against the previous store via `git show`: 0 of 34
-sat inside the page's rendered twelve, earliest at filed index 18 of 28, because
-cash and deposit lines sit at the END of a 4i schedule. *A clean zero reports on
-the query.* And a hypothesis fell in one query: `funds.slice(0, 12)` is NOT
-"filed order, not value order" — **all 4,625 pages with >12 rows are stored
-value-sorted descending, so 0 pages omit their largest holding.**
-
-**#551 VERDICT (success 19:39Z): every claim held.** MTIA acks with a fee-shard
-entry **0 of 508 → 395**, 300 carrying `i1`; PSEG's trust ack gained its shard-32
-entry; the published `recordkeeper` moved on **0** plans.
-
-**AND IT SETTLES PSEG — the owner asked three times, and the filing's own codes
-answer it.** Trust ack `20251013135637NAL0000680483001` files six item-2 rows:
-`INVESCO ADVISORS, INC` codes **28 99 50** at **$534,926** (*what we publish*),
-`FID INV INST OPS CO` codes **65 99 64 50** at **$442,941**, BlackRock 28,
-BNY Mellon 18/19, `KRONICK KALADA BERDY & CO` **10** (the auditor), Willis Towers
-Watson 16. **No row is coded 15, so `isRk` is false for all six and
-`FID INV INST OPS CO` matches no `RK_BRANDS` pattern — so the winner is decided
-by COMPENSATION ALONE.** The filing's notes say *"Fidelity Investments is the
-recordkeeper"* and **the filing's own code 64 agrees with its notes.** The
-published name is an artifact of a tie-break, not a claim anyone filed.
-**NEXT, AND IT IS THE FIRST RECORDKEEPER VARIANT WITH DIRECT EVIDENCE:** prefer
-a row coded **64** over top-comp *only when* its name carries a recordkeeper
-brand witness — the bare code-64 rule was refused because it moved 2,395 plans
-onto consultants, and the brand witness is what the four refuted variants all
-lacked. **Must be measured store-wide before any claim**, and `FID INV INST OPS
-CO` is already a published recordkeeper string elsewhere (Charter
-Communications), so the witness exists in our own data.
-
-**#550 verdict (success, 9 min): the item-1 capture WORKS — 42,385 acks carry
-`i1`, 1,134 with no item-2 row against a predicted 1,274 — and the PSEG claim
-FAILED**, which is how the real cause was found. `build-data.mjs:1144` falls the
-published recordkeeper back to the **MASTER TRUST's** Schedule C, so PSEG's
-`Invesco Advisors, Inc` comes from its trust and from nothing in its own filing.
-**138 plans / 2,648,558 ppl** have the trust as the only possible source — and
-read largest-first the fallback is mostly RIGHT (Target→Alight, HCA→Conduent,
-Boeing→Fidelity), so this is not 2.6M wrong names but 2.6M whose evidence could
-not be examined. MTIA acks had **0 of 508** fee-shard entries while `acks`
-already added every one, so `scanSchC` scanned each trust and the assembly
-discarded it. ***A pre-registration earns its keep when it fails.***
+**VERDICTS are in `docs/accuracy-log.md`, not here.** This block went stale five
+times by accumulating them; the log holds 700 dated entries and every
+bullet in the Open list points into it.
 
 ### Open, in rough order of people affected
 
@@ -1890,11 +1652,15 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   percentages are 3 and 5, and 5 is the cap) and `scripts/match-formula-test.mjs`
   asserts that limit so widening the gate trips the test. The rate lives in the
   dollar ratios; UNSIZED as a class.
-- **A PUBLISHED FORMULA WHOSE RATE EQUALS ITS CAP: 79 plans, UNREAD.** v199's
-  gate tests `rate < cap`, so DirecTV's old `3% of the first 3%` was corrected by
-  the mixed-fraction arm and would NOT have been caught by the gate. Whether
-  `rate == cap` is a real design or a second misread shape is one measurement,
-  not a quiet widening of the gate.
+- **CLOSED — THIS WAS v200's OWN QUESTION AND #571 ANSWERED IT.** The entry
+  asked whether `rate == cap` is a real design or a second misread shape, and
+  said it was one measurement rather than a quiet widening. v200 took the
+  measurement (75 published `N% of the first N%` plans: **13 hold a better
+  candidate for the rate in their own sentence, 62 do not**), moved the gate to
+  `rate <= cap`, and `lib-4i.mjs:6068` now reads exactly that. **SIXTH queue
+  entry found already closed by re-reading it rather than working it** — the
+  habit that catches these is reading the SHIPPED SURFACE (`grep` the gate) before
+  starting, not reading the entry.
 - **SHIPPED 2026-10-03 09:0xZ — THE VESTING QUOTE STATES A DIFFERENT PLAN RULE:
   41 entries / 41 plans / 226,729 ppl withheld, all of which published the quote
   as their WHOLE answer (0 carry a vesting label).** Charter Communications
@@ -2096,10 +1862,36 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   `docs/accuracy-log.md` 2026-10-04 (08:1xZ).
   **AND NAMED RESIDUE from (a):** `Investment in`/`Investments in` (New York
   Life, 14 rows / ~71,000 ppl) are truncation fragments blocked by the
-  every-word condition — adding `in` is a measurement, not a free widening; and
-  whether a label-only string in the ISSUER cell should also stop a row reading
-  as named is unmeasured, the issuer gate having been deliberately left on the
-  narrower `isGenericName`.
+  every-word condition — adding `in` is a measurement, not a free widening.
+  **THE ISSUER-CELL QUESTION IS ANSWERED 2026-10-04 13:4xZ, AND THE ANSWER IS
+  NO: 396 candidate rows / 36 plans / 47,885 ppl, verdict moves on 0.** Measured
+  as a superset by construction (widening the gate's issuer disjunct can only
+  qualify MORE rows), and it moves nothing because **wherever the issuer is
+  empty of meaning the NAME is a real fund**, so the name test correctly
+  refuses. The gate stays on the narrower `isGenericName` by measurement rather
+  than deferral.
+  **BUT READING THE ROWS THAT "NO" LEFT BEHIND FOUND A REAL DEFECT, NOW SHIPPED
+  — a DANGLING PREPOSITION published as a fund's ISSUER: 448 rows / 42 plans /
+  167,416 ppl / $1,154,493,048**, 4 crawlable pages. Both surfaces compose
+  `issuer · name`, so Ashland published `Shares of · VANG WINDSOR II ADM` on
+  **$98,806,045, 6.6% of its menu**, while that row's own VWNAX and 0.3 fee were
+  correct; **283 of the 448 publish a ticker and 333 a fee**, which is the proof
+  only the attribution was noise, and **0 were already qualified**.
+  `isNonIssuerCell` is case-insensitive and ANCHORED AT BOTH ENDS — seven
+  furniture strings of the store's 15,683 — and ticker/fee cannot move BY
+  CONSTRUCTION because `lookupTicker` reads `f.iss` at its own call site 1,500
+  lines earlier.
+  **DO NOT CARRY MY FIRST SCREEN'S 1,199 ROWS:** it used `/i` on the
+  trailing-joiner test, so a trailing capital `A` read as the article and it
+  swept in `Leidos Stable Value, A` ($650,763,893), `SSGA S+P 500 INDEX SER A`
+  (=SSSYX, $606,941,903), `Corebridge Separate Account A` and `Wilmington
+  Trust, N.A` — the trap `DANGLING_TAIL` documents forty lines above where I
+  was working. **STILL OPEN, and it must NOT be suppressed: the TRUNCATED
+  bucket, 388 rows / 103,689 ppl** (`Voya Retirement Insurance and`, `Capital
+  Bank and`, `The Vanguard Group of` on =VIIIX / $232,941,827) — a real entity
+  cut off mid-name, where suppression would LOSE an identifiable insurer and the
+  remedy would have to be reconstruction. `docs/accuracy-log.md` 2026-10-04
+  (13:4xZ).
   **AND TWO ORACLES OF MINE WERE REFUTED THERE — do not rebuild either.** (1) A
   generate-and-test repair oracle is **intractable** (~670,000 candidates per
   30-char name × 241,113 names ≈ 1.6e11 predicate calls); the right instrument
@@ -2218,6 +2010,30 @@ These outlived the versions that produced them. The accuracy log has the case.
   reports on the query*, and `lineups-index.json` has no `lib-schema` loader,
   which is exactly why a guessed field name was possible.
   `docs/accuracy-log.md` 2026-10-04 (08:3xZ).
+- **ASK WHETHER THE HARNESS CAN OBSERVE THE CHANGE AT ALL, BEFORE RUNNING IT
+  (2026-10-04).** I launched a two-copy, 1.7M-row `apppath` diff for a change
+  the harness **cannot see by construction**: its slice ends at
+  `const shownName = …` and the edit was in the row's TEMPLATE LITERAL, where
+  the `issuer · name` span is composed, after that boundary. So every cell
+  `renderRow` returns was guaranteed identical and the run was pure cost.
+  *`renderRow` is the instrument for the cells it RETURNS — name, tk, er, star,
+  shownType, flags — and for nothing the template does with them.* For a
+  template-level change the evidence is the one-line source diff plus the PAGE.
+  Sibling of *narrow a measurement by a property of the change*: there the
+  narrowing made a diff affordable, here the right narrowing was to zero.
+- **MEASURE A GUARD'S BLOCKING POPULATION OVER THE LIVE DATA, NOT OVER THE
+  EXAMPLES THAT COME TO MIND (2026-10-04).** *A hand-built control table tests
+  the cases its author already imagined* is already recorded; this is the
+  operational form. My per-condition control for a new predicate's START anchor
+  listed six strings I expected it to protect and reported **0 of 6**, failing
+  the test as decorative — and it was right to fail and wrong about why: none of
+  those six could match the arm anyway, because the END structure already
+  excluded them. Measured over all **15,683** distinct issuer strings, the anchor
+  blocks exactly **three**, each naming a real trustee. **A control that fails
+  for the wrong reason still earns its keep, because it sends you to measure** —
+  and the fix is to build every single-protection case FROM the population,
+  which is also what the trustee ship did when it deleted four conditions that
+  blocked zero rows.
 - **A FLAG THAT FLIPS IS NOT A CELL THAT CHANGES — ASK WHAT THE RENDER CHAIN
   ALREADY PRINTS (2026-10-04).** A qualification arm moved `namelessRow` on 53
   rows and the shown type on **7**, because an arm AHEAD of it in the same chain
