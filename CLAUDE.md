@@ -1906,22 +1906,56 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   `ERR_CERT_AUTHORITY_INVALID` on a page resource — identical with a diff
   stashed and applied, so it is an outbound-TLS property of the sandbox and not
   a repo defect. CI is where it settles.
-- **FOUND BY THE 18:2xZ DRAW, SIZED NOT FIXED: `Registed Investment Co.` — 5
-  rows / 3 plans / 280,651 ppl / $1,263,712,991**, published at **60.8%,
-  35.3%, 20.3%, 7.4% and 1.3%** of their menus with a blank type, no ticker
-  and no fee. `isGenericTypeName` and `isNamelessFundRow` both answer FALSE
-  because `Registered` is MISSPELLED (Trinet HR III/IV, Pacific Mobile
-  Structures; one row carries the real fund, `Fidelity Freedom Index 2060 Fund
-  Investor Class`, in its ISSUER cell). **The wider class is UNMEASURED and
-  honestly so:** a `cit|collectiv|mutual fund|regist` screen reads 13,543 rows
-  / 13.5M ppl by matching those tokens inside REAL names (`GQG Partners
-  International Equity CIT`, `American Mutual Fund` = AMRMX) — *a count keyed
-  on a vocabulary measures the vocabulary*, so that figure is discarded.
-- **ALSO FROM THAT DRAW: `namelessRow`'s no-issuer gate reads a Schedule H
-  CAPTION as a house.** 1 row named `Common collective trusts` whose issuer
-  cell holds `Investments at net asset value` is typed `Collective trust` at
-  **66.4% of its menu**, while the other 33 rows of that same name are
-  correctly qualified "Filing names no specific fund".
+- **RE-MEASURED 2026-10-04 03:3xZ AND IT IS A HUNDRED TIMES THE QUEUED SIZE
+  WITH A DIFFERENT CAUSE. The two entries that used to sit here — `Registed
+  Investment Co.` "5 rows / 280,651 ppl, a MISSPELLING" and the issuer gate as
+  "1 row" — are both superseded.** Store-wide: **961 rows / 515 plans /
+  3,682,118 ppl / $105.2B are called GENERIC BY OUR OWN PARSER and still
+  presented as a fund by our own display.** Attributed: employer stock 181 rows
+  / 2,275,545 ppl **CORRECT** (`Common stock` typed `Company stock` IS the
+  employer stock), subtotal 2 rows **CORRECT**, and **778 rows / 352 plans /
+  1,524,943 ppl / $81.4B blocked by the ISSUER GATE** at the two display call
+  sites (`app.js:3606`, `build-seo-pages.mjs:257`).
+  **THE GATE IS DELIBERATE AND ITS DEFECT IS THAT IT NEVER TESTS ITS OWN
+  PREMISE** — the shipped comment explains it prints `issuer · name`, so
+  `Vanguard Target Retirement 2030 · Mutual Fund Shares` must not be qualified;
+  but it asks whether an issuer is PRESENT, never whether the issuer NAMES A
+  FUND. **General Motors publishes `Common collective trusts` at 66.4% of its
+  menu, $15,829,825,000, 65,343 ppl** (and again at 63.6% / $6.2B) with its
+  issuer cell holding `Investments at net asset value`, a Schedule H caption.
+  Bank of America (246,394 ppl) publishes `GUARANTEED INVESTMENT CONTRACT
+  G26920.01` at 10.0%.
+  **NEXT STEP IS A PREMISE TEST, NOT A WIDER SCREEN:** qualify a generic-named
+  row when its ISSUER names no fund either. **Must NOT use `leadingHouse`** —
+  35 anchored patterns that call 209,225 of 405,738 distinct strings house-free
+  with house ABBREVIATIONS and EMPLOYER STOCK atop its output. The shipped
+  comment hands over a ready-made negative control.
+  **THE `regist` SUB-CLASS SPLITS THREE WAYS BY REMEDY** (620 escaping rows /
+  1,310,697 ppl of 1,351 carrying the word): **(a) the whole name IS a type
+  designation, 88 rows / 707,208 ppl / $19.6B** — Providence Health's
+  `Registered investment company funds` at **48.0% of its menu /
+  $12,474,349,571**, Trinet HR III's `Registed Investment Co.` at 238,170 ppl,
+  National Rural Electric's `Registered investment companies (page 166)` (*a
+  page reference*) → qualify; **(b) a label PREFIXING a real fund, 235 rows /
+  390,978 ppl** — CHS/Community Health's seven `Registered Inv estment Company
+  PRIN SHORT-TERM INCOME` rows, issuer `Principal Funds Inc` → STRIP, the
+  opposite action, which GAINS a name; **(c) 297 rows / 252,235 ppl** not
+  starting with a label (Touro carries it as a SUFFIX; Pfizer's `New York
+  registry shares` is a false positive of the screen itself).
+  **AND TWO ORACLES OF MINE WERE REFUTED — do not rebuild either.** (1) A
+  generate-and-test repair oracle ("a name the predicate rejects whose ≤2-char
+  repair it accepts") is **intractable**: ~670,000 candidates per 30-char name
+  × 241,113 undecided names ≈ 1.6e11 predicate calls; the right instrument is
+  edit distance against the vocabulary's own PHRASES, unreachable while
+  `isGenericTypeName` is a compiled regex. (2) Expanding `inv.` → `Investment`
+  produced **9 false positives of 21 rows** — `2040 INV` is a target-date
+  fund's INVESTOR share class. The abbreviation stage's honest yield is 12 rows
+  / ~4,500 ppl (`Pooled Sep Acct` at 98.8% of its menu).
+  **AND THE PREDICATE IS NOT EXACT-PHRASE as the old entry assumed:**
+  `Registeed Investment Company` is ACCEPTED (a stemmed `regist` arm exists),
+  `Registered Investment Co.` is REJECTED — so the queue's row trips the
+  ABBREVIATION, not the spelling. ***Read the shipped guard's SURFACE, not its
+  description — including your own.*** `docs/accuracy-log.md` 2026-10-04 (03:3xZ).
 - **CLOSED 2026-10-02 — it was promoted on 2026-10-01 and this entry was written
   about the superseded copy.** `scripts/apppath.mjs` IS the instrument: tracked,
   slicing the whole per-row block, and it hands out the individual resolvers via

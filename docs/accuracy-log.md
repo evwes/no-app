@@ -44445,3 +44445,120 @@ concurrency resolves by killing the first. **v200's code is NOT mirrored**: the
 documented order is dispatch on dev → verdict → mirror the matched pair, since
 mirroring code that produces data without the store it produced is half a
 deployment.
+
+## 2026-10-04 (03:3xZ) — the queue said "5 rows / 280,651 ppl, a MISSPELLING". It is 961 rows / 3,682,118 ppl, the mechanism is not a misspelling, and the cause is a deliberate gate whose premise is never tested
+
+**Nothing shipped. #571 (v200) was mid-flight, so this cycle took a
+display-side item and the item turned out to be a hundred times its queued
+size with a different cause.** Two of my own oracles were refuted on the way
+and both are recorded so they are not rebuilt.
+
+### The queue's framing was wrong in mechanism
+
+It read: *`Registed Investment Co.` — 5 rows / 3 plans / 280,651 ppl /
+$1,263,712,991 … `isGenericTypeName` and `isNamelessFundRow` both answer FALSE
+because `Registered` is MISSPELLED.* Probing the shipped predicate's actual
+surface instead of assuming it:
+
+| | |
+|---|---|
+| `isGenericTypeName("Registered Investment Company")` | **true** |
+| `isGenericTypeName("Registered Investment Co.")` | **false** ← the ABBREVIATION alone |
+| `isGenericTypeName("Registed Investment Company")` | **false** ← the typo alone |
+| `isGenericTypeName("Registeed Investment Company")` | **true** ← so there IS a stemmed `regist` arm |
+
+So the predicate is not exact-phrase as I first read it, the queue's row trips
+**two independent deviations each of which is sufficient**, and the one that
+matters is the abbreviation rather than the spelling. ***Read the shipped
+guard's SURFACE, not its description — including your own description of it.***
+
+### Both of my oracles were refuted, one by arithmetic and one by its output
+
+**(1) GENERATE-AND-TEST IS THE WRONG INSTRUMENT FOR A TYPO.** I built "a name
+the shipped predicate rejects whose one- or two-character repair it accepts",
+which is a principled, vocabulary-free oracle — and **its positive fixture
+refused it in one line**, because `Co.` → `Company` is five characters, not
+two. Widened to a staged repair it then refused itself on cost: a depth-2
+insertion set over a 30-character name is ~670,000 candidates and 241,113
+names were undecided, about **1.6e11 predicate calls**. The right instrument is
+a bounded edit distance against the vocabulary's own PHRASES, which no screen
+can reach while `isGenericTypeName` is a compiled regex rather than a list.
+*Abandoned for arithmetic, not for patience.*
+
+**(2) MY ABBREVIATION EXPANSION PRODUCED ITS OWN FALSE POSITIVES, 9 of 21
+rows.** Expanding `inv.` → `Investment` turned `2040 INV` into `2040
+Investment`, which the predicate accepts — but **`INV` there is the INVESTOR
+share class of a target-date fund**, not the word "investment". The
+abbreviation stage's honest yield is **12 rows / 12 plans / ~4,500 ppl**:
+`Pooled Sep Acct` (1,361 ppl, **98.8% of its menu**, $18.3M), `Shares of
+registered investment co.` (887 ppl, 98.8%, $11.9M), `Common Collective Trust
+Fds`, `Registered [nvestment Co.` (an OCR'd `I`). Small, real, and 60x smaller
+than the queue's figure for a class the queue thought it had measured.
+
+### Asking the PUBLISHED question instead found the real class
+
+Dropping the repair framing and asking *"what does the page publish for a row
+whose name carries a `regist` word"* reads **1,351 rows / 450 plans /
+2,938,528 ppl**, and the split is the finding:
+
+| | rows | ppl | |
+|---|---|---|---|
+| publishes a ticker or a fee | 553 | 246,201 | a real fund, left alone |
+| already qualified on the page | 178 | 1,458,515 | working as intended |
+| **ESCAPING — no ticker, no fee, not qualified** | **620** | **1,310,697** | $30.5B |
+
+and the escaping 620 split three ways by **remedy**, which is why counting them
+as one class would prescribe one fix for three problems:
+
+- **(a) the whole name IS a type designation — 88 rows / 68 plans / 707,208
+  ppl / $19,627,079,543.** Providence Health publishes `Registered investment
+  company funds` at **48.0% of its menu, $12,474,349,571**; Trinet HR III
+  publishes `Registed Investment Co.` to **238,170 participants**; National
+  Rural Electric publishes `Registered investment companies (page 166)` — *a
+  page reference*. Remedy: qualify, the shipped `hasNoFundIdentity` shape.
+- **(b) a type label PREFIXING a real fund — 235 rows / 91 plans / 390,978
+  ppl.** CHS/Community Health (90,476 ppl) publishes `Registered Inv estment
+  Company PRIN SHORT-TERM INCOME` on seven rows, issuer `Principal Funds Inc`,
+  the label's own word broken by a stray space. Remedy: STRIP the prefix — the
+  opposite action, and it would GAIN a fund name.
+- **(c) does not start with a label — 297 rows / 96 plans / 252,235 ppl.**
+  Touro University carries the label as a SUFFIX (`FID SEL UTILITIES Registered
+  investment compan…`); Pfizer's `New York registry shares` is a false positive
+  of my own screen (`registry` ≠ `registered`) and is a real instrument.
+
+### And the store-wide version, with a DIAGNOSED cause
+
+Asked of the whole store rather than the `regist` subset: **961 rows / 515
+plans / 3,682,118 ppl / $105.2B are called GENERIC BY OUR OWN PARSER and still
+presented as a fund by our own display.** Attributed, because no unknown is
+allowed to rest:
+
+- **employer stock, 181 rows / 2,275,545 ppl — CORRECT.** `Common stock` typed
+  `Company stock` is the employer stock, properly identified.
+- **subtotal type, 2 rows — CORRECT.**
+- **778 rows / 352 plans / 1,524,943 ppl / $81.4B — the ISSUER GATE**, and my
+  first attribution script called them UNEXPLAINED because I diagnosed the
+  wrong function. The gate is not in `isNamelessFundRow`; it is at the two
+  display CALL SITES (`app.js:3606`, `build-seo-pages.mjs:257`) and it is
+  **deliberate**, with the reasoning in the shipped comment: the page prints
+  `issuer · name`, so `Vanguard Target Retirement 2030 · Mutual Fund Shares`
+  reads as a named holding and must not be qualified.
+
+***THE DEFECT IS THAT THE GATE NEVER TESTS ITS OWN PREMISE.*** It asks whether
+an issuer is PRESENT, never whether the issuer NAMES A FUND. General Motors
+publishes `Common collective trusts` at **66.4% of its menu,
+$15,829,825,000, 65,343 participants** and again at 63.6% / $6,217,882,000,
+with its issuer cell holding `Investments at net asset value` — a Schedule H
+caption. Bank of America (246,394 ppl) publishes `GUARANTEED INVESTMENT
+CONTRACT G26920.01` at 10.0% and `PREFERRED STOCK 795`. The queue carried this
+as **"1 row"**; it is 778.
+
+**NEXT STEP, and it is a premise test rather than a wider screen:** qualify a
+generic-named row when its ISSUER does not name a fund either. The instrument
+must not be `leadingHouse` — measured two cycles ago at 35 anchored patterns
+that call 209,225 of 405,738 distinct strings house-free, with house
+ABBREVIATIONS and EMPLOYER STOCK at the top of its output. Likely the shipped
+generic predicates asked of the issuer string, plus the Schedule H caption
+vocabulary; it must be measured against the gate's own motivating case
+(`Vanguard Target Retirement 2030 · Mutual Fund Shares` must stay unqualified),
+which is a ready-made negative control the shipped comment hands over.
