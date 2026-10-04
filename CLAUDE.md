@@ -1840,17 +1840,40 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   numbers ("fully vested at all times"). Four more screens fell after it, none
   twice for the same reason, and the two rules that survive them are in the
   method list below. `docs/accuracy-log.md` 2026-10-03 (09:0xZ).
-- **STILL OPEN from it, and it is a PARSER question rather than a display one**
-  (named instance from the 02:0xZ draw: **Flex, 16,483 ppl, $1.32B**, has no
-  vesting label and publishes as its whole vesting answer a rule for
-  *"Participants who separated from service prior to January 1, 2001"* — a real
-  vesting rule that applies to almost nobody): withholding is honest but the
-  filing usually DOES state a schedule somewhere —
-  the extractor simply selected the wrong sentence. Those 41 plans now show "not
-  stated in the audited notes" where a better selection would show the rule. The
-  fix is in `extractPlanFeatures`' vesting arms and needs a `PARSER_VERSION`
-  bump; the shipped guard gives it a ready-made oracle, because any candidate
-  sentence it rejects is one the new selection must not pick.
+- **STILL OPEN and NOW SIZED BY READING ALL 41 FILINGS (2026-10-04 20:1xZ) — a
+  PARSER item, ready to write: 24 of the 41 plans / 172,406 of the 226,729 ppl
+  (76.0% of the class's readers) have a PUBLISHABLE rule the extractor failed to
+  select.** 41 filings downloaded, 41 readable, 0 failures. Split, and the three
+  buckets reconcile to 41 / 226,729 exactly: a LADDER or CLIFF available **14
+  plans / 144,152 ppl**; unqualified IMMEDIATE vesting available **10 / 28,254**;
+  accepted but says nothing useful **11 / 50,128** (forfeiture accounting, a
+  truncated "vesting sc…"); no candidate at all **6 / 4,195**, where
+  withholding is complete. Charter Communications (**120,688 ppl**) files a
+  textbook 3-year cliff table and publishes nothing; Brown files a full
+  20/50/75/100 ladder; PSEG ×2 file *"All Participants are 100% vested in the
+  Plan from the first date of hire."*
+  **THE SELECTION RULES ARE READ OFF THE EVIDENCE, and a naive "first sentence
+  the guard accepts" would be WRONG ON THE TWO LARGEST PLANS:** ranked by
+  acceptance alone, Charter's best candidate is *"immediately vested in their
+  voluntary contributions"* and Brown's is *"vested in the portion attributable
+  to their employee contributions"* — **employee money is vested by law**, so
+  that would publish a true, useless sentence as the plan's answer for 133,044
+  readers. So: (1) prefer a ladder/cliff over a bare "immediately vested";
+  (2) demote EMPLOYEE/voluntary/elective/Roth/after-tax scope — the
+  employer-scope rule the existing arms carry, applied to the RANKING;
+  (3) demote another named rule even where the guard accepts it (a loan clause
+  trailing a ladder; UCB's `21-24 3.5% / 25-34 4.0%` is a contribution-by-AGE
+  table, not vesting); (4) leave the 13 reading "not stated".
+  `vestingQuoteOk` is the ready-made oracle for what must NOT be picked.
+  Needs a `PARSER_VERSION` bump and a re-parse. `docs/accuracy-log.md`
+  2026-10-04 (20:1xZ).
+  **AND THE "OCR-DAMAGED LOAN VERB" WORRY FROM THAT READING IS REFUTED — do not
+  retry it.** PSEG's filing OCRs `borrow` as `bo1Tow`, which looked like it would
+  defeat the guard's `may borrow` arm. Measured over all 58,257 accepted quotes:
+  3 entries / 907 ppl, **none of them the defect** — the pattern matched the
+  CLEAN word too, all three are a loan clause trailing a real ladder, and two
+  already publish a correct vesting label. PSEG's sentence is withheld today and
+  was never published.
 - **CLOSED 2026-10-04 09:2xZ — the wind-down trigger must NOT widen to a
   collapse, and the prescription would have published a false number.** The
   shipped sentence asserts *"Schedule H reports **$0 in year-end assets**"*, a
@@ -2260,6 +2283,27 @@ These outlived the versions that produced them. The accuracy log has the case.
   class, it was handed a different SHAPE OF INPUT than its whole fixture set
   covers. **Before reusing a shipped predicate on a substring, look at what its
   own fixtures are.**
+- **A PYTHON NON-RAW STRING TURNS EVERY `\b` INTO A BACKSPACE, AND THE REGEX
+  THEN MATCHES NOTHING (2026-10-04 20:1xZ).** Patching a measurement script
+  through a `python3 - <<'PYEOF'` heredoc with an ordinary triple-quoted string
+  wrote `\x08Form 5500\x08` to disk: four of seven exclusion arms could never
+  match, and nothing errored. ***Both fixtures I wrote for it PASSED***, because
+  the case they pinned was caught by the one arm with no `\b` in it — *a case
+  protected twice proves neither*, met on my own control. Use a RAW string
+  (`r"""…"""`) or the Write tool, and give every arm a case where it is the
+  ONLY protection: doing that here immediately deleted an eighth arm that could
+  not reach its own case. Sibling of the `` $` `` rule below — there the
+  substitution rewrote a perfect string, here the LITERAL was mangled before it
+  was ever written.
+- **AND THE FORM'S OWN PRINTED QUESTIONS ARE IN THE FILING TEXT (2026-10-04).**
+  A composite EFAST2 PDF carries the blank Form 5500 pages ahead of the audited
+  attachment, and line **6g(2)** reads *"Number of participants who terminated
+  employment … less than 100% vested"* — a vest word and a percentage. A search
+  for "does this filing state a vesting rule" found one in **41 of 41** filings,
+  the same string every time. *A clean 100% reports on the query.* Production
+  reads those pages too, which is why the shipped quote guards already reject the
+  raw-table shape; any text-level measurement over a filing must exclude the
+  form before counting.
 - **`String.replace` WITH A STRING REPLACEMENT REWRITES YOUR TEXT, AND `` $` ``
   IS THE ONE THAT BITES** (2026-10-04). A slicer injecting a code block whose
   comment contained ``anchored `^...$`,`` had the backtick-after-`$` read as the

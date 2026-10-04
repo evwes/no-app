@@ -7,6 +7,120 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-04 (20:1xZ) — the withheld vesting class, SIZED by reading all 41 filings: 24 plans / 172,406 participants have a publishable rule the extractor failed to select
+
+**The 09:0xZ ship withholds 41 vesting quotes that state a different plan rule.
+The queue recorded the open half — that the filing usually DOES state a schedule
+and the extractor simply picked the wrong sentence — and that is a claim about
+the FILINGS, so it is settled by reading them. All 41 were downloaded and read:
+41 readable, 0 download failures, 0 scanned.**
+
+**THE ORACLE IS THE SHIPPED GUARD**, which is why this needed no new judgment: a
+sentence `vestingQuoteOk` ACCEPTS that carries a vest word is a candidate a
+better selection could legitimately publish, and one it REJECTS is one the
+selection must not pick.
+
+| | plans | ppl | |
+|---|---|---|---|
+| a LADDER or CLIFF is available | 14 | 144,152 | Charter, Brown, UCB, Wood Mackenzie, Intricon, IQ Solutions, Polsinelli ×2, Swift Air, Aero Thrust, Associated Space Design, American Income Life, Ws97 |
+| unqualified IMMEDIATE vesting is available | 10 | 28,254 | PSEG ×2, Long Island University ×2, Hofstra, Vista Life, Janus Youth, Collins Medical, Menufy |
+| **publishable, total** | **24** | **172,406** | **76.0% of the class's readers** |
+| accepted but says nothing useful | 11 | 50,128 | forfeiture accounting, "the benefit that can be provided from the vested account", a truncated "vesting sc…" |
+| no candidate at all — withholding is complete | 6 | 4,195 | |
+
+41 and 226,729 both reconcile exactly (172,406 + 50,128 + 4,195), which is the
+arithmetic check that the buckets partition the class.
+
+**These are the TRACKED instrument's figures (`scripts/vesting-candidates.mjs`,
+promoted this cycle), and they differ from my scratch pass's 22 / 171,741 by
+two plans / 665 ppl.** The scratch classifier demoted a candidate on a broader
+`\bdistribution\b` vocabulary, which is too wide — a real vesting sentence may
+mention a distribution. The tracked, narrower version is what anyone can
+re-derive, so it is the figure of record; the scratch one is gone and must not
+be quoted. *A figure measured through a script nobody else can run is not a
+figure of record* — the same reason `apppath` and the draw were promoted.
+
+**The named cases are unambiguous.** Charter Communications (**120,688 ppl**)
+files `Vested Number of Full Years within Period of Service Percentage Less than
+3 —% 3 or more 100% Nonvested amounts are forfeited if an employee terminates
+prior to fully vesting` — a textbook 3-year cliff — and publishes nothing.
+Brown University files a full `Less than 2 years None / 2 years 20% / 3 years 50
+/ 4 years 75 / 5 years 100` ladder. PSEG's two plans file *"All Participants are
+100% vested in the Plan from the first date of hire."*
+
+### The design the parser change must follow, read off the evidence
+
+**A naive "publish the first sentence the guard accepts" selection would be
+WRONG on the two largest plans in the class.** Ranked only by acceptance,
+Charter's best candidate is *"Participants are immediately vested in their
+voluntary contributions"* and Brown's is *"fully vested in the portion of their
+account attributable to their employee contributions"*. **Employee money is
+vested by law in every 401(k)**, so those sentences are true, useless, and would
+be published as the plan's vesting answer to 133,044 readers. So the selection
+must:
+
+1. **prefer a LADDER or CLIFF** over a bare "immediately vested";
+2. **demote a sentence scoped to EMPLOYEE / voluntary / elective / Roth /
+   after-tax contributions** — this is the employer-scope rule the existing arms
+   already carry, and this class is what happens when it is not applied to the
+   candidate RANKING;
+3. **demote a sentence stating another rule even where the guard accepts it** —
+   a loan clause trailing a real ladder, a contribution-by-AGE table (UCB's
+   `21-24 3.5% / 25-34 4.0% …` is a contribution schedule, not vesting),
+   forfeiture accounting;
+4. leave the 13 "nothing useful" plans reading "not stated in the audited
+   notes", which is already the honest answer for them.
+
+**NOT SHIPPED THIS CYCLE, on purpose.** This is a `PARSER_VERSION` bump and a
+1.5-hour re-parse; the measurement is the hard part and it is done, with the
+oracle, the ranking rules and the named must-see cases all recorded. A rushed
+display ship costs a page diff — a rushed parser ship costs the re-parse and can
+regress 58,257 quotes that are correct today.
+
+### Three instrument failures, and the second is a new trap
+
+**(1) A CLEAN 41 OF 41, and it reported on the query.** My first pass found a
+candidate in every single filing, with the *same* "best" string on all of them:
+Form 5500 **line 6g(2)**'s own printed question — *"Number of participants who
+terminated employment during the plan year with accrued benefits that were less
+than 100% vested"* — complete with dotted leaders. The composite PDF carries the
+blank FORM ahead of the audited attachment, so the form's own questions are in
+the text, and one of them contains a vest word and a percentage. *A clean 100%
+reports on the query.* Production sees those pages too, which is exactly why the
+shipped guard already rejects the raw-table shape.
+
+**(2) A PYTHON NON-RAW STRING TURNED EVERY `\b` INTO A BACKSPACE, and the
+fixtures passed anyway.** I added the form-boilerplate exclusion by patching the
+script through a `python3 - <<'PYEOF'` heredoc using an ordinary triple-quoted
+string, where **`\b` is the BACKSPACE character**. Four of seven arms were
+written to disk as `\x08Form 5500\x08` and could never match, so Schedule R's
+line-14 text kept arriving as a "candidate". ***The two fixtures I wrote for it
+both PASSED*** — because the case they pinned (line 6g(2)) was caught by the
+DOTTED-LEADER arm, which has no `\b` and survived. *A case protected twice
+proves neither*, met on my own control, one cycle after writing that rule down.
+The repair was to rewrite the file with the Write tool and give **every arm a
+case where it is the ONLY protection**, which immediately **deleted an eighth
+arm**: a checkbox-run test could not reach its own case (Schedule R separates
+the X's with words) and the real string was already caught by the line-14 arm.
+
+**(3) AND MY OWN "OCR-DAMAGED LOAN VERB" FINDING IS REFUTED.** Reading PSEG's
+filing I saw the loan sentence `Participants may bo1Tow from their Plan
+accounts…` and wrote down that `vestingQuoteOk`'s loan arm, anchored on
+`may borrow`, is defeated by OCR damage. Measured over all **58,257** accepted
+quotes: **3 entries / 907 ppl**, and **none of them is the defect**. All three
+match because my "OCR family" pattern `\bb[o0]\w{0,2}[rt]{1,2}[o0]w\b`
+**also matches the clean word `borrow`**, and all three are a clean loan clause
+*trailing a real vesting ladder* — two of the three already publish a correct
+vesting LABEL (`Graded schedule`, `6-year schedule`). PSEG's `bo1Tow` sentence
+is WITHHELD today and was never a published quote; it surfaced only as a
+candidate in my own ranking, which demoted it correctly. **My must-KEEP fixture
+could not have caught this**: it was a vesting sentence containing no borrow
+word at all, so it never tested the clean word against the damaged one. *A
+pattern that claims to find damage and matches the undamaged word is a count
+keyed on its own vocabulary.* The guard is sound; nothing to ship.
+
+`docs/accuracy-log.md` 2026-10-04 (20:1xZ).
+
 ## 2026-10-04 (19:1xZ) — the draw was not slow, it was drawing nineteen million plans: `--seed` was being read as the draw SIZE
 
 **`scripts/draw-published.mjs` took 4 seconds after a one-line fix, having
