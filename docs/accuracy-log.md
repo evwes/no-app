@@ -7,6 +7,68 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-04 (16:0xZ) — the 15:07 draw: one row of a category table is qualified and the adjacent $9.7B row is not, because the vocabulary is whole-string
+
+**Found by the draw.** Verizon Communications (**146,572 participants** across 4
+member plans) publishes a twelve-row CATEGORY TABLE as its fund menu, and the
+shipped guards split it down the middle:
+
+| row | share | value | verdict |
+|---|---|---|---|
+| `COMMON/COLLECTIVE TRUST` | 41.9% | $16,315,773,219 | **qualified** — "the filing names no specific fund" |
+| `CORPORATE STOCK - COMMON` | 24.9% | **$9,699,087,087** | **not qualified**, type cell `—` |
+
+**THE MECHANISM, probed rather than inferred:** `isGenericTypeName` reaches
+`CORPORATE STOCK` and `COMMON STOCK` and `CORPORATE STOCKS` — and **not**
+`CORPORATE STOCK - COMMON`. It is a CLOSED, WHOLE-STRING vocabulary, so a
+COMPOUND of two captions it already knows escapes it. *A fix for one phrasing of
+a class is not a fix for the class*, met on a hyphen.
+
+**SIZED, and the split by TYPE is the measurement rather than a caveat.** A
+caption whose TYPE cell describes it is not a false fund claim — Verizon's
+`INTEREST-BEARING CASH` is typed `Cash / short-term`, so the reader sees a
+category labelled as one. The defect is a caption with **no type at all**:
+
+| | rows | plans | ppl | value |
+|---|---|---|---|---|
+| caption-shaped, already reached by a shipped guard | 313 | 300 | 2,006,267 | $81.1B |
+| caption-shaped, **TYPED** — correctly left alone | 1,171 | 1,155 | 3,627,025 | $14.2B |
+| **caption-shaped with NO TYPE — the class** | **780** | **783** | **4,950,732** | **$29,801,906,649** |
+
+Largest: **Johnson & Johnson `CORPORATE STOCKS - COMMON` at 41.6% of its menu,
+$9,996,789,597, 80,884 readers**; Verizon's $9.7B row; Exelon `Corporate stock -
+common` **44.5%**; Eaton 24.8%; PepsiCo 11.4%; **Continental Automotive
+`Government Bond` at 50.0% of its whole menu**; Comcast, Unilever, Becton
+Dickinson and Deere on the same `CORPORATE STOCKS COMMON` shape.
+
+**DO NOT CARRY MY OWN FIRST FIGURE OF 1,951 rows / 7,599,688 ppl / $44.0B.** It
+is the pre-split number and 1,171 of those rows are the guards WORKING. *A count
+keyed on a vocabulary measures the vocabulary* — and mine, built to catch
+`CORPORATE STOCK - COMMON`, also swept in `Cash` ×466, `Real Estate` ×229,
+`Real Estate Securities` ×198 and `Loan` ×38, most of them typed.
+
+**THIS IS A BIGGER INSTANCE OF A RECORDED OWNER-GATED ITEM THAN THE ONES IT
+NAMES.** The "whole-table generic test beside the one-row test" entry cites
+Morgan Stanley (81,090 ppl) and Cummins (38,567) as invisible to
+`audit-dominant-row`'s 90%-on-a-single-row threshold. Verizon is **146,572
+participants** and its two unnamed rows are **66.8% of the menu value** with the
+largest at 41.9% — so it is invisible for the same reason and is the largest
+known case.
+
+**THE REMEDY IS DISPLAY-SIDE AND THE REFUSAL IS ALREADY ON THE RECORD:**
+widening `isGenericTypeName` is refused by its own comment because the PARSER
+reads it for region selection and `audit-dominant-row` reads it too — widening
+it once made 3M's fair-value note confident and moved Lam Research by $453M. So
+this wants a FOURTH display-only predicate, composed into `isNamelessFundRow`
+the way `isLabelOnlyName`, `isSentenceRow` and `isNonIssuerCell` already are,
+keyed on *every token coming from the caption vocabulary* AND *no type cell*.
+**NOT SHIPPED THIS CYCLE on purpose:** three of today's four display ships each
+needed a measured single-protection control per condition, and the one that was
+rushed (the unconditional newline) cost a 4,896-page diff. Queued with the
+split, the named instances and the refusal, which is what the next cycle needs.
+
+`docs/accuracy-log.md` 2026-10-04 (16:0xZ).
+
 ## 2026-10-04 (15:3xZ) — the `fb-vanished` queue item: the DIAGNOSIS was right, the PRESCRIPTION was impossible, and the real gap was that the gate could not be tested
 
 **Worked the queue's `fb-vanished` item — "keyed on the ACK and must be keyed on

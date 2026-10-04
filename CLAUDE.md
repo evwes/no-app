@@ -889,6 +889,31 @@ published cells:
   largest 62.1%) and Cummins (38,567 ppl, 65.1% of menu value naming no fund)
   are invisible. Widening the vocabulary also moves `audit-generic-names`, which
   is already past 230.
+  **AND THE LARGEST KNOWN INSTANCE IS BIGGER THAN EITHER, FOUND BY THE 15:07
+  DRAW: Verizon Communications, 146,572 ppl, whose twelve-row category table has
+  66.8% of its menu value in two UNNAMED rows** — and the guards split it, which
+  is the diagnosis. `COMMON/COLLECTIVE TRUST` at 41.9% / $16,315,773,219 IS
+  qualified; `CORPORATE STOCK - COMMON` at 24.9% / **$9,699,087,087**, type cell
+  `—`, is NOT, because **`isGenericTypeName` is a CLOSED WHOLE-STRING vocabulary
+  that reaches `CORPORATE STOCK` and `COMMON STOCK` separately and misses their
+  COMPOUND.** *A fix for one phrasing of a class is not a fix for the class*,
+  met on a hyphen.
+  **SIZED 2026-10-04 16:0xZ, and the split by TYPE is the measurement: 780 rows
+  / 783 plans / 4,950,732 ppl / $29,801,906,649** are caption-shaped with NO
+  type cell to describe them (Johnson & Johnson `CORPORATE STOCKS - COMMON`
+  **41.6% / $9,996,789,597 / 80,884 ppl**; Exelon 44.5%; Eaton 24.8%; PepsiCo
+  11.4%; Continental Automotive `Government Bond` at **50.0%** of its whole
+  menu), while **1,171 rows / 3,627,025 ppl ARE typed and must be left alone** —
+  Verizon's `INTEREST-BEARING CASH` is typed `Cash / short-term`, a category
+  labelled as one. **DO NOT CARRY the pre-split 1,951 rows / 7,599,688 ppl /
+  $44.0B**, of which 1,171 are the guards working and whose vocabulary also
+  swept in `Cash` ×466 and `Real Estate` ×229.
+  **The remedy is a FOURTH display-only predicate** composed into
+  `isNamelessFundRow` beside `isLabelOnlyName` / `isSentenceRow` /
+  `isNonIssuerCell`, keyed on every token coming from the caption vocabulary AND
+  an empty type cell — never on widening `isGenericTypeName`, which the parser
+  reads for region selection ($453M on Lam Research when it was last widened).
+  `docs/accuracy-log.md` 2026-10-04 (16:0xZ).
 - **Crawlable pages no run can ever repair — RE-SIZED 2026-10-02 and NEARLY
   DOUBLED: 62 → 118 pages / 169,447 → 324,028 ppl**, plus **1 serving a plan no
   longer in the universe at all.** `p/` holds **5,118** committed files against
