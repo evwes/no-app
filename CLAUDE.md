@@ -1870,9 +1870,22 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   fix is in `extractPlanFeatures`' vesting arms and needs a `PARSER_VERSION`
   bump; the shipped guard gives it a ready-made oracle, because any candidate
   sentence it rejects is one the new selection must not pick.
-- The wind-down explanation gates on exactly $0 assets, so a plan that collapsed
-  to $2,094 escapes it and publishes three $1 rows instead. Trigger on a
-  COLLAPSE, not only on zero.
+- **CLOSED 2026-10-04 09:2xZ — the wind-down trigger must NOT widen to a
+  collapse, and the prescription would have published a false number.** The
+  shipped sentence asserts *"Schedule H reports **$0 in year-end assets**"*, a
+  FIGURE, so widening the trigger without rewriting the sentence is a false
+  claim on every newly-reached plan — *a guard and the claim it licenses are one
+  change, not two.* Measured: the collapse class (`eoy > 0`, `boy >= $1M`,
+  `eoy/boy < 0.01`) is 304 plans / 102,103 ppl, of which **44 / 6,381 ppl publish
+  a menu — and 42 of the 44 have a menu within 0.5x-2x of their own tiny EOY**,
+  so the published rows are TRUE statements about a residual (Gerald Champion
+  collapsed $57,293,963 -> $259,943 and its three rows sum to exactly $259,943;
+  Venable LLP $164,142,404 -> $703,671, four rows summing exactly that).
+  Suppressing them would trade 42 accurate answers for a wrong one. **And the
+  missing-context half is already shipped:** `flowsTable` (`app.js:3386`) prints
+  "Prior Year Assets" unconditionally for every filed plan. Residue: the 2
+  inconsistent plans (Mobex Global, 452 ppl, EOY $12,252 vs a 17-row menu
+  summing $1,723). `docs/accuracy-log.md` 2026-10-04 (09:2xZ).
 - Ticker/fee asymmetry, both large and mostly coverage: **91,423 rows publish a
   symbol with no fee**; 314,299 publish a fee with no symbol (**not** a defect
   class — its commonest members are full house-and-product names whose pattern
@@ -2110,6 +2123,18 @@ These outlived the versions that produced them. The accuracy log has the case.
   TRUST's 33-fund **$14.02B** menu. The three largest unpublished-but-drawable
   entries are all the same documented shape, a non-confident plan ack beside a
   confident trust: Target 495,482, Home Depot 468,817, Kroger 411,922.
+  **AND IT HAD A SECOND DEFECT, FOUND ON ITS SECOND USE: the overshoot ratio
+  divided a TRUST's menu by ONE member plan.** It reported Meijer at **ratio
+  3.345** ($2,207,941,026 against $660,140,564), which reads as a textbook
+  `lineup-overshoot`; summed over both member plans the denominator is
+  $2,283,572,835 and **the ratio is 0.967**. ***The most repeated error on this
+  record — a count keyed on PLANS is blind to a TRUST, now NINE times —
+  reappeared inside the fix for a different defect in the same file, one hour
+  after that rule was written into the file's own header.*** The member list was
+  already built and already used for the participant count; only the denominator
+  read `lead.assets`. Fixed, with the lead plan's figure printed beside the sum
+  and a single-plan entry reading identically (controlled: Premier Healthcare
+  0.993 under both).
   **FIXED BY PROMOTING THE INSTRUMENT: `scripts/draw-published.mjs` is now
   TRACKED**, gates on `lineups-index`'s bit 1, asserts that gate in BOTH
   directions against Home Depot's two acks, and takes `--seed` so a draw can be

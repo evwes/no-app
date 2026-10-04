@@ -7,6 +7,84 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-04 (09:2xZ) — the wind-down trigger is CLOSED (its prescription would publish a false $0 on 42 accurate menus), and the draw's one finding was my own denominator
+
+**TWO CLOSURES, NOTHING SHIPPED TO THE PRODUCT, one small fix to the instrument
+promoted an hour earlier.**
+
+### 1. "Trigger the wind-down sentence on a COLLAPSE, not only on zero" — REFUTED
+
+The queue carried: *"The wind-down explanation gates on exactly $0 assets, so a
+plan that collapsed to $2,094 escapes it and publishes three $1 rows instead.
+Trigger on a COLLAPSE, not only on zero."*
+
+**Reading the shipped sentence changed the job before any measurement.** It
+asserts *"Schedule H reports **$0 in year-end assets**"* — a figure, not a
+characterisation — so widening the TRIGGER without rewriting the SENTENCE
+publishes a false number on every plan the widening newly reaches. *A guard and
+the claim it licenses are one change, not two.*
+
+**Then the measurement killed it outright.** The collapse class (`assetsEOY > 0`,
+`assetsBOY >= $1,000,000`, `eoy/boy < 0.01`) is **304 plans / 102,103 ppl**, of
+which **44 plans / 6,381 ppl** actually publish a menu a reader sees. And of
+those 44:
+
+| | |
+|---|---|
+| menu sum within 0.5x–2x of the plan's own tiny EOY — **the sentence would be WRONG** | **42** |
+| menu wildly inconsistent with EOY — the sentence is the honest answer | 2 |
+
+Gerald Champion Regional Medical (1,291 ppl) collapsed from $57,293,963 to
+**$259,943** and its three published rows sum to **exactly $259,943**. Venable
+LLP (1,076 ppl) went $164,142,404 → **$703,671** and its four rows sum to
+exactly $703,671. These menus are *true statements about a residual*. Suppressing
+them to print "$0 in year-end assets" would replace 42 accurate answers with a
+wrong one.
+
+**And the missing-context argument is answered too, by the shipped page.**
+`flowsTable` (`app.js:3386`) prints **"Prior Year Assets"** unconditionally for
+every filed plan, under the contributions section — so a reader on Gerald
+Champion's page already sees $57.3M prior against $259,943 now. There is no
+disclosure to add. **The sixth queue entry found already closed by re-reading it
+rather than by working it.**
+
+Residue, named: the 2 inconsistent plans (Mobex Global, 452 ppl, EOY $12,252
+against a 17-row menu summing $1,723) are a separate and very small class.
+
+### 2. THE DRAW'S ONE FINDING WAS THE INSTRUMENT, ON ITS SECOND USE
+
+`scripts/draw-published.mjs` — promoted to tracked one hour earlier precisely
+because its scratch predecessor had a measurement defect — reported **Meijer,
+Inc. at ratio 3.345**, a menu of $2,207,941,026 against $660,140,564 of plan
+assets. That reads as a textbook `lineup-overshoot`.
+
+It is not. The entry serves **2 member plans** and I divided a TRUST's menu by
+ONE of them. Summed over both member plans the denominator is $2,283,572,835 and
+**the ratio is 0.967** — a healthy menu.
+
+***This record's most repeated error — a count keyed on PLANS is blind to a
+TRUST, now met nine times — reappeared inside the fix for a different defect in
+the same file, one hour after writing "resolve a trust row through its MEMBER
+plans" into that file's own header comment.*** The member list was already being
+built and already used for the participant count; only the assets denominator
+read `lead.assets`.
+
+Fixed: the denominator sums `assetsEOY` across every member plan, the lead
+plan's own figure is printed beside it whenever there is more than one, and a
+single-plan entry reads identically — verified as the control, Premier
+Healthcare Solutions unchanged at 0.993 under both versions.
+
+### Also from the draw, both already-known and both correctly labelled
+
+- Meijer publishes `Putnam Stable Value Fund` at **0.35** on $126,516,209 — the
+  owner-gated stable-value fabricated-ER item (4,669 rows / 7.39M ppl, 4,571 at
+  exactly 0.35), a second named live instance after EzCorp's.
+- Premier Healthcare's menu is Fidelity's abbreviated collective-trust family
+  (`FID CONTRA POOL CL A`, `FID FRDM 2040 CP D`) publishing no ticker — the
+  documented coverage gap, not a false claim. `FXAIX` 0.015 is correct.
+
+---
+
 ## 2026-10-04 (08:3xZ) — THE DRAW WAS DRAWING FROM MENUS NO READER SEES: 9.1% of its own participant weight, found because it drew one
 
 **THE INSTRUMENT WAS THE DEFECT, and it was found by the instrument.** The

@@ -163,11 +163,20 @@ for (const p of picks) {
   const lead = p.mem.slice().sort((a, b) => b.ppl - a.ppl)[0];
   const sum = p.e.funds.reduce((a, x) => a + (+x.value || 0), 0);
   const sorted = p.e.funds.slice().sort((a, b) => (+b.value || 0) - (+a.value || 0));
-  const ratio = Number(lead.assets) ? sum / Number(lead.assets) : null;
+  /* THE DENOMINATOR IS THE SUM OVER EVERY MEMBER PLAN, NOT THE LEAD PLAN'S
+   * ASSETS. Found on this script's second use: Meijer drew `ratio 3.345`
+   * because a TRUST menu shared by two member plans was compared against one
+   * of them. That is this record's most repeated error — a count keyed on
+   * plans is blind to a trust, met eight times — reappearing inside the fix
+   * for a different instrument defect. The lead plan's own figure is printed
+   * beside it so a single-plan entry reads identically. */
+  const memAssets = p.mem.reduce((a, m) => a + Number(m.assets || 0), 0);
+  const ratio = memAssets ? sum / memAssets : null;
   console.log(`\n${"=".repeat(96)}`);
   console.log(`${lead.sponsorName}  ein=${lead.ein} pn=${lead.pn}  ${p.ppl.toLocaleString()} ppl across ${p.mem.length} member plan(s)`);
   console.log(`ack ${p.ack}${p.published ? "" : "   [NOT PUBLISHED]"}  ${p.e.funds.length} funds`);
-  console.log(`menu sum $${Math.round(sum).toLocaleString()} vs lead plan assetsEOY $${Number(lead.assets).toLocaleString()}`
+  console.log(`menu sum $${Math.round(sum).toLocaleString()} vs assetsEOY $${Math.round(memAssets).toLocaleString()}`
+    + (p.mem.length > 1 ? ` summed over ${p.mem.length} member plans (lead alone: $${Number(lead.assets).toLocaleString()})` : "")
     + (ratio === null ? "" : `  ratio ${ratio.toFixed(3)}`));
   console.log(`source: ${JSON.stringify(String(p.e.source || "").slice(0, 110))}`);
   console.log("-".repeat(96));
