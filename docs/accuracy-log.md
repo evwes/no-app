@@ -7,6 +7,203 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-04 (08:3xZ) — THE DRAW WAS DRAWING FROM MENUS NO READER SEES: 9.1% of its own participant weight, found because it drew one
+
+**THE INSTRUMENT WAS THE DEFECT, and it was found by the instrument.** The
+hourly participant-weighted draw read every stored entry in
+`data/lineups/*.json`. The site renders a lineup only when the entry is
+CONFIDENT, so **1,265 entries / 10,317,233 participants — 9.1% of the pool's
+weight — were drawable and published to nobody.**
+
+**IT DREW ONE, AND IT LOOKED LIKE THE WORST DEFECT ON THE RECORD.** The Home
+Depot, Inc. (**468,817 participants**, plan assets **$15,698,707,253**)
+appeared to publish a four-row fund menu totalling **$3,544,514** — 0.023% of
+the plan — of which three rows are Form 5500 FORM ARTIFACTS rather than
+holdings:
+
+```
+92.0%  $3,261,426  ADMINISTRATIVE COMMITTEE OF THE HOME DEPOT FUTUREBUILDER
+ 6.2%  $  221,237  g(1) complete this item)
+ 1.3%  $   46,400  Other retired or separated participants entitled to futu...
+ 0.4%  $   15,451  Plan's interest in Master Trust      [correctly qualified]
+```
+
+**No reader sees it.** The entry is `confident: false`, `lineups-index` does not
+carry its bit, and Home Depot's page serves its MASTER TRUST's 33-fund
+**$14,020,582,839** menu instead — `MFO EQUITY INDEX FUND F` 21.4%, `HOME DEPOT
+INC COM` 10.6%, the BlackRock LifePath ladder — which is correct and good.
+
+***A STORED FIELD IS NOT A PUBLISHED ONE — INCLUDING IN THE THING DOING THE
+MEASURING.*** That rule is already on this record, earned twice on product
+measurements. This is the first time it landed on the measuring apparatus, and
+it had been true of every draw made this session.
+
+The three largest unpublished-but-drawable entries are all one documented shape,
+a non-confident plan ack beside a confident trust: **Target 495,482** (`Plan's
+interest in Master Trust investments`, 1 row), **Home Depot 468,817**, **Kroger
+411,922** (`Interest in Master Trust`, 2 rows).
+
+### Fixed by promoting the instrument, not by patching the scratch copy
+
+`scripts/draw-published.mjs` is now **tracked**. It gates on `lineups-index`'s
+bit 1, and the gate is **asserted in both directions** against the two acks that
+exposed it — Home Depot's plan ack must be excluded, its trust ack must be
+admitted — so neither assertion can pass vacuously. Verified: plan ack bit1=0,
+trust ack bit1=1.
+
+**The precedent is explicit and was already paid for:** `scratchpad/apppath.mjs`
+shadowed the tracked `scripts/apppath.mjs` under the same basename and 81
+measurement scripts imported the wrong one, making every fee figure from them an
+upper bound. A scratchpad instrument is wiped, unversioned and unreviewable;
+this one is none of those now.
+
+It also takes **`--seed`**, which is not a convenience: this same cycle a drawn
+plan was lost because re-running the script to read the rest of its output drew
+a different plan, so the second half of a hands-on review simply vanished.
+`--all` lifts the gate for auditing the gate and prints a banner saying a figure
+taken that way is not a statement about readers.
+
+### And the first read of the index was wrong, in the way the record predicts
+
+`idx[ack]` returned **undefined for all 61,428 acks, including confident ones**,
+because the map lives under `.plans`. The verdict printed `lineups-index bit 1
+SET: 0 (0.0%)` — and *a clean zero across a whole population reports on the
+query*, which is what caught it. `lineups-index.json` has no `lib-schema`
+loader, which is exactly why a guessed field name was possible here; the shape
+is now asserted at the top of the tracked script, with a positive control (Home
+Depot's confident trust ack must carry bit 1) rather than a bare type check.
+
+**The corrected read has its own control: `entry.confident` and the index bit
+agree on all 60,163 entries / 103,501,088 participants.** Two independent fields
+agreeing is the evidence that both reads are right; the broken read agreed with
+nothing.
+
+### What this does NOT say
+
+It does not say the Home Depot rows are harmless. They are junk in the store,
+`confident: false` is doing its job, and the plan is served by its trust — so
+there is nothing for a reader to be misled by and nothing to fix on the display
+side. Whether `parse4i` should have located the 4i attachment at all for that
+ack is a separate, parser-side question and is not sized here.
+
+---
+
+## 2026-10-04 (08:1xZ) — remedy (b) is CLOSED: a type label PREFIXING a real fund cannot be stripped from our own data, and the reason is that a predicate written for a WHOLE name is not a predicate about its PREFIXES
+
+**NOTHING SHIPPED, and the closure is the output.** The queue carried this as
+*"235 rows / 390,978 ppl where a label PREFIXES a real fund (CHS/Community
+Health's seven `Registered Inv estment Company PRIN SHORT-TERM INCOME` rows,
+issuer `Principal Funds Inc`) → STRIP, which GAINS a name"*, and said to
+re-measure rather than read. Re-measured: **the strip loses ten tickers for
+every one it gains and twelve fees for every one it gains**, it cannot see its
+own motivating row, and it publishes a real American Funds fund as `America`.
+
+### Three instruments, each refuted by its own output
+
+**v1 did not finish.** Three predicates per WORD over 1,730,670 rows, and
+`hasNoFundIdentity` calls `cleanFiledName` internally. Memoising per distinct
+cleaned name (343,767 of them) is what fixed the cost — not patience.
+
+**v2 added a lead-word pre-filter and ITS OWN DISCHARGE REFUTED IT:** 311 of
+4,000 sampled excluded names split after all, because `hasNoFundIdentity`'s
+filler list holds `retirement`, `class` and single letters, so `Retirement 2010
+Class` is a "complete label" whose lead word was not in my list. *A narrowing is
+a claim and must be tested* — and this one was testable precisely because the
+discharge was written to exit 1.
+
+**v2 also refuted the whole approach, through two controls that FIRED:**
+
+```
+Common Stock Fund                 -> head "Common Stock"              | rest "Fund"
+The Investment Company of America -> head "The Investment Company of" | rest "America"
+```
+
+`common stocks?` **is** a Schedule H type label and `The Investment Company of`
+is all label words, so both splits are correct string matches and false claims.
+***A REAL FUND'S NAME CAN BEGIN WITH A COMPLETE TYPE DESIGNATION.***
+
+**v3 demoted the split to a candidate generator** and added the two witnesses
+the record says a repair needs: (A) the remainder must not itself be generic,
+(B) the remainder must be ATTESTED — resolving to a ticker through the shipped
+resolver, or appearing as some other plan's whole filed name. **Three of its
+seven controls still failed, in both directions:**
+
+- **The motivating row is BLOCKED.** `PRIN SHORT-TERM INCOME` resolves to no
+  ticker and appears as no other plan's whole name, so condition (B) refuses
+  CHS. *A class whose best witness cannot see its motivating row is closed, not
+  paused* — the same closure shape as the CVS two-fund class seven hours
+  earlier, and the second time in one night.
+- **`The Investment Company of America` SHIPS, as `America`** — attested **5
+  times** as another plan's whole filed name. The attestation witness is
+  satisfied by junk, so it cannot defend a real fund.
+
+### The price, measured on every published cell
+
+Of 31,041 rows / 14,752 plans / 29,191,199 ppl that survive both conditions:
+
+| | rows | participants |
+|---|---|---|
+| ticker **LOST** | **6,809** | **6,563,659** |
+| fee **LOST** | **7,073** | **5,946,601** |
+| ticker swapped | 857 | 1,611,028 |
+| ticker gained | 686 | 1,622,986 |
+| fee gained | 567 | 302,096 |
+
+**Read largest-first, the survivors are real funds cut through the middle, and
+the cutting token is always a predicate answering a question it was not asked:**
+
+- **`T.` is a complete label by `hasNoFundIdentity`** — a single letter plus
+  punctuation names no fund, which is *true of a whole row* and catastrophic as
+  "the prefix `T.` is a type label". So `T. Rowe Price Small Cap Value Fund I`
+  splits at `T.`: Paychex (**661,036 ppl**), and **Costco (279,798 ppl) on
+  thirteen rows**, every one of them a correctly-asterisked `~TRR*X` comparable.
+- **`Retirement` is one too**, so Express Services (**400,441 ppl**) loses the
+  ticker AND the fee on five target-date rows at once — `Retirement 2030 Fund`
+  TRRCX 0.55 → nothing, 2050 TRRMX 0.62 → nothing, 2040, 2020, 2060 likewise.
+- **`500` is one too** (`\d{1,3}` is filler), so `500 Index Fund` keeps FXAIX
+  but its fee goes **0.03 → 0.1** — the one-ticker-two-fees defect, manufactured
+  by the repair.
+- The one survivor that looks right gains nothing: Walmart's `Collective
+  Government Short Term Investment Fund` (1,996,659 ppl) publishes no ticker
+  either way.
+
+### The reusable rule, and it is new
+
+***A PREDICATE WRITTEN TO JUDGE A WHOLE STRING IS NOT A PREDICATE ABOUT ITS
+PREFIXES.*** All three predicates here are correct and well-tested *for the
+question they were built for* — "does this published name identify a fund?" —
+and `isCompleteLabel` asked them "is this fragment a type label?", which none of
+them answers. `hasNoFundIdentity("T.")` is right as an answer to the first
+question and absurd as an answer to the second. This is the sibling of *read the
+shipped guard's SURFACE, not its description* and of *a predicate that is right
+for one class is not thereby right for its neighbour*, and it is sharper than
+both: the guard was not misread and was not applied to a neighbouring class —
+it was applied to a different SHAPE OF INPUT than its whole test suite covers.
+Before reusing a shipped predicate on a substring, ask what its own fixtures
+look like.
+
+**And the direction of the evidence is worth noting.** The CVS closure and this
+one were both found by the same move: pin the motivating case as a fixture and
+run it FIRST. Both times the fixture failing is what ended the class, and both
+times a plausible-looking whole-store count (4,683 rows there, 31,041 here) was
+sitting right behind it, ready to be published.
+
+### What is NOT closed
+
+The CHS rows are a real defect and remain open with **no instrument**: seven
+rows, 90,476 participants, where `Registered Inv estment Company PRIN
+SHORT-TERM INCOME` has a real fund behind a label whose own word is broken by a
+stray space. Their remainder (`PRIN …`, Principal's own abbreviation) is
+unattested anywhere in our store, so settling them needs a registry witness —
+`data/fund-facts.json` and the `fund-facts` agent — not a wider screen. *A
+ticker is a FACT that must be SOURCED, never inferred*, and the same is now true
+of the boundary.
+
+Queue remedy **(c)** (297 rows / 252,235 ppl not starting with a label) is
+untouched by this and predates it, so it must be re-measured rather than read.
+
+---
+
 ## 2026-10-04 (06:0xZ) — a published fund name built ENTIRELY of type-label words: 147 rows / 126 plans / 1,082,596 participants / $52,004,779,703 qualified, and the instrument was narrowed TWICE by reading its own output
 
 **SHIPPED.** `isLabelOnlyName`, a third display-only predicate, canonical in

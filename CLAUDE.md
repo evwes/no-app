@@ -856,6 +856,18 @@ to 21 ppl) each cite a 4i attachment with a menu-shaped row count. Fresh
 downloads succeeding, not a loosened parser. `HIGH` **4** (baseline), `warn`
 **558**, `dl` **48**. `docs/accuracy-log.md` 2026-10-04 (03:5xZ).
 
+**#572 VERDICT (schedule, main, `c349b204`, 07:00:11Z, data commit `a3d37f56`,
+Pages #878 green): pv stays 200 and `warn` 558 -> 556 is the ONLY field that
+moved**, everything else byte-identical — the two transient warns #571's fifteen
+new lineups introduced have cleared. Its commit landed on BOTH refs again (the
+documented #565 hazard, met a third time), so the branch adopted it by
+fast-forward rather than by mirror.
+
+**AND THE IDENTICAL-LINE RUN IS NOW 0, RE-DERIVED AND NOT INCREMENTED.** #572's
+`warn` move ended the run that read 11 on shared keys at 02:1xZ. This is the
+field the 02:1xZ entry demanded be re-derived every cycle, and it is: the trail
+holds 383 lines and the current tail streak is zero.
+
 #568, #569 and #570 are all verdicted, each producing a coverage line identical
 to its predecessor: pv 199 · confident 60,167 · entries 65,480 · match 43,338 ·
 HIGH 4 · warn 556 · dl 48 — correct when the work list is the 48
@@ -1979,11 +1991,28 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   one row and leaves three sibling captions out (`Stocks`/`Securities` by the
   label condition; a POSITION count is not a pointer). *One of two spellings of
   a caption family is worse than neither.*
-  **STILL OPEN: (b) 235 rows / 390,978 ppl** where a label PREFIXES a real fund
-  (CHS/Community Health's seven `Registered Inv estment Company PRIN SHORT-TERM
-  INCOME` rows, issuer `Principal Funds Inc`) → STRIP, which GAINS a name;
-  **(c) 297 rows / 252,235 ppl** not starting with a label. Both predate this
-  ship and must be re-measured, not read.
+  **REMEDY (b) IS CLOSED 2026-10-04 08:1xZ — THE STRIP IS ~10x HARMFUL AND
+  CANNOT SEE ITS OWN MOTIVATING ROW. Do not retry it.** Of 31,041 rows / 14,752
+  plans / 29,191,199 ppl surviving both witnesses: **ticker LOST 6,809 rows /
+  6,563,659 ppl and fee LOST 7,073 / 5,946,601**, against ticker gained 686 and
+  fee gained 567. **DO NOT CARRY the queue's own 235 rows / 390,978 ppl.**
+  Read largest-first the survivors are real funds cut through the middle, because
+  **`T.`, `Retirement` and `500` are all "complete labels" to
+  `hasNoFundIdentity`** (its filler list holds single letters, `retirement` and
+  `\d{1,3}`): `T. Rowe Price Small Cap Value Fund I` splits at `T.` for Paychex
+  (661,036 ppl) and **Costco (279,798 ppl) on thirteen correctly-asterisked
+  `~TRR*X` rows**; Express Services (400,441 ppl) loses ticker AND fee on five
+  target-date rows (`Retirement 2030 Fund` TRRCX 0.55 → nothing); `500 Index
+  Fund` keeps FXAIX but its fee goes **0.03 → 0.1**, manufacturing the
+  one-ticker-two-fees defect. Two controls fired in opposite directions: **CHS,
+  the motivating row, is BLOCKED** (`PRIN SHORT-TERM INCOME` resolves to nothing
+  and is no other plan's whole name) while **`The Investment Company of America`
+  SHIPS as `America`** (attested 5× by junk rows).
+  **THE CHS ROWS REMAIN A REAL DEFECT WITH NO INSTRUMENT** — 7 rows / 90,476 ppl
+  needing a REGISTRY witness (`fund-facts`), not a wider screen.
+  **(c) 297 rows / 252,235 ppl** not starting with a label is untouched by this,
+  predates it, and must be re-measured rather than read.
+  `docs/accuracy-log.md` 2026-10-04 (08:1xZ).
   **AND NAMED RESIDUE from (a):** `Investment in`/`Investments in` (New York
   Life, 14 rows / ~71,000 ppl) are truncation fragments blocked by the
   every-word condition — adding `in` is a measurement, not a free widening; and
@@ -2069,6 +2098,46 @@ These outlived the versions that produced them. The accuracy log has the case.
   **the name it was GIVEN**. ***Measuring through the function the page calls is
   not enough when the page calls something else FIRST*** — ask what the caller
   did to the argument before it passed it.
+- **THE DRAW ITSELF WAS DRAWING FROM UNPUBLISHED MENUS — 9.1% OF ITS WEIGHT
+  (2026-10-04, found by the draw drawing one).** The hourly draw read every
+  stored entry in `data/lineups/*.json`, but the site renders a lineup only
+  when the entry is CONFIDENT, so **1,265 entries / 10,317,233 participants**
+  were drawable and published to nobody. It drew The Home Depot's own ack
+  (468,817 ppl), whose four-row $3,544,514 "menu" is three Form 5500 FORM
+  ARTIFACTS — the plan administrator's name at 92%, `g(1) complete this item)`,
+  a participant-count caption — beside **$15,698,707,253** of plan assets. That
+  entry is `confident: false` and reaches no reader: the page serves the MASTER
+  TRUST's 33-fund **$14.02B** menu. The three largest unpublished-but-drawable
+  entries are all the same documented shape, a non-confident plan ack beside a
+  confident trust: Target 495,482, Home Depot 468,817, Kroger 411,922.
+  **FIXED BY PROMOTING THE INSTRUMENT: `scripts/draw-published.mjs` is now
+  TRACKED**, gates on `lineups-index`'s bit 1, asserts that gate in BOTH
+  directions against Home Depot's two acks, and takes `--seed` so a draw can be
+  re-read instead of re-rolled (a drawn plan was lost this cycle to exactly
+  that). `--all` lifts the gate for auditing it and prints a banner. The
+  precedent is explicit: `scratchpad/apppath.mjs` shadowed the tracked harness
+  and 81 measurement scripts imported the wrong one. ***A STORED field is not a
+  PUBLISHED one — including in the thing doing the measuring.***
+  **And `entry.confident` agrees with the index bit on all 60,163, which is the
+  control that both reads are right** — the first read of that file used
+  `idx[ack]` where the map lives under `.plans`, returning undefined for all
+  61,428 acks including confident ones. *A clean zero across a whole population
+  reports on the query*, and `lineups-index.json` has no `lib-schema` loader,
+  which is exactly why a guessed field name was possible.
+  `docs/accuracy-log.md` 2026-10-04 (08:3xZ).
+- **A PREDICATE WRITTEN TO JUDGE A WHOLE STRING IS NOT A PREDICATE ABOUT ITS
+  PREFIXES** (2026-10-04, and it closed a 29M-participant class). Remedy (b)'s
+  split asked `isGenericTypeName`/`isLabelOnlyName`/`hasNoFundIdentity` "is this
+  FRAGMENT a type label?" where all three answer "does this PUBLISHED NAME
+  identify a fund?". `hasNoFundIdentity("T.")` is correct for the question it
+  was built for — a row named `T.` names no fund — and absurd as "the prefix
+  `T.` is a label", so the split cut `T. Rowe Price …` for 941,000 readers and
+  `Retirement 2030 Fund` off its own ticker. Sharper than *read the shipped
+  guard's SURFACE* and than *a predicate right for one class is not right for
+  its neighbour*: the guard was neither misread nor moved to a neighbouring
+  class, it was handed a different SHAPE OF INPUT than its whole fixture set
+  covers. **Before reusing a shipped predicate on a substring, look at what its
+  own fixtures are.**
 - **`String.replace` WITH A STRING REPLACEMENT REWRITES YOUR TEXT, AND `` $` ``
   IS THE ONE THAT BITES** (2026-10-04). A slicer injecting a code block whose
   comment contained ``anchored `^...$`,`` had the backtick-after-`$` read as the
