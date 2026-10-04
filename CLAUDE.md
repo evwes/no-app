@@ -1750,9 +1750,21 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   rows / 40 plans / 102,608 ppl, and its single queued line asked for two arms
   to be made greedy where one is worth 61% of the people and the other is worth
   one plan.** What remains, none of it shipped:
-  **(a) 60 rows / 2,570 ppl** ending in the type label `Registered Investment
-  Company` — these MUST stay single-pass, because a loop turns `Equity Income
-  Separate Account` into `Equity Income`;
+  **(a) ending in the type label `Registered Investment Company` — THE REFUSAL
+  NOW HAS A PRICE, AND MY MOTIVATING HYPOTHESIS FOR LIFTING IT IS REFUTED
+  (2026-10-04 12:2xZ).** Re-measured, the whole non-idempotent population is
+  **138 rows**, not the 156 recorded here; priced through the page's own
+  renderer, a second pass **gains 0 tickers and 0 fees**, loses **1** fee
+  (`Admiral(TM) Shares Account Nationwide Trust Company, FSB Vanguard Target
+  Reti` → the truncated `Vanguard Target Reti`, 3,969 ppl), and leaves 137 rows
+  / 30,946 ppl / $597,413,555 of NAME-ONLY change. **I reached this class from
+  the other direction** — Colsa files `… Registered Investment Company – Mutual
+  Fund`, two STACKED type labels, and single-pass `TYPE_SUFFIX` removes only the
+  outer one, so `Columbia Seligman Tech&Info Inst Registered Investment Company`
+  survives — and assumed the residual label was costing the row its ticker.
+  **It is not: that row resolves to nothing under BOTH spellings.** So the loop
+  buys legibility alone and costs one fee, and the recorded refusal stands on
+  measured grounds rather than on the `Equity Income Separate Account` worry;
   **(b) 58 rows / 18,750 ppl where a second pass is NOT a suffix strip** —
   **ITS DOMINANT ARM SHIPPED 2026-10-03 15:3xZ and the "different reason for
   each" framing was WRONG.** Reading all 58 found ONE mechanism behind the bulk
@@ -1805,23 +1817,43 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   `*` and `+` are party-in-interest markers and must NOT count as joiners —
   including them counted Darden's complete `Principal Fixed Income Guaranteed
   Option*+`.
-- **A SENTENCE PUBLISHED AS A HOLDING — 2 rows / 288,416 ppl / $2,603,313, and
-  the honest size is two.** Kaiser Foundation Health Plan publishes `Loan
-  Repayments are included` in its fund table with a blank type: $1,753,508 on
-  the plan with **182,954 participants** and $849,805 on one with **105,462**.
-  **DO NOT CARRY 3,328 rows / 6,382,769 ppl** — that screen's `\bis\b` matched
-  **`IS`, the abbreviation for Institutional Shares**, so its top members were
-  correct abbreviated names: Amazon's `VANG FTSE SOC IDX IS` ($873,714,000),
-  Mayo's `VANG IS TL STK MK IP` ($1.6B, 10.68% of its menu) and Cigna's
-  `BLACKROCK SP 500 IDX (IS)` ($3.4B, 24.49%). ***A count keyed on a vocabulary
-  measures the vocabulary*** — and this is the first instance where the
-  collision was with a SHARE CLASS rather than an English word.
-  **THE MEASUREMENT KILLED THE FIX, deliberately:** a display-side predicate
-  would ship with no re-parse, but a two-member class cannot justify a
-  name-shape predicate in the same hour that one such predicate produced 3,328
-  false positives including a $3.4B row in front of 91,385 readers. Batch it
-  with the other name-column repairs as a plan-specific pin; do not build a
-  general predicate for it.
+- **SHIPPED 2026-10-04 12:3xZ — A SENTENCE IS NOT A NAME: 7 reader-facing rows
+  / 157,807 ppl / $9,489,072,912, one fabricated fee withdrawn, 3 crawlable
+  pages.** American Airlines (132,820 ppl) stops publishing `Separately managed
+  account which includes: Corporate Common Stocks, Registered Investment` —
+  **$9,448,603,045, 38.2% of its whole $24.76B menu** — as a named holding
+  typed `Collective trust`; Indeed, Inc. (10,050 ppl) stops publishing
+  `consisting of Cash, Money Market and` typed `Mutual fund` **and priced at a
+  fabricated 0.2%**; Lerner Corporation stops publishing the attachment's own
+  FOOTER at 2.1% of its menu.
+  **THIS ENTRY USED TO SAY "2 rows / 288,416 ppl, and the honest size is two",
+  with an explicit refusal to build a predicate. The refusal was right about its
+  own evidence and wrong about the class.** The screen that sized it keyed on a
+  VOCABULARY (`\bis\b`) and matched **`IS`, Institutional Shares**, reading
+  3,328 rows whose largest members are correct abbreviated names (Cigna's
+  `BLACKROCK SP 500 IDX (IS)`, $3.4B / 91,385 readers; Mayo's $1.6B). With 3,328
+  false positives in front of it only two real members could be dug out by hand.
+  **DO NOT CARRY 3,328 rows / 6,382,769 ppl.**
+  **THE INSTRUMENT IS GRAMMATICAL RATHER THAN LEXICAL, and that is the part to
+  reuse:** a FINITE VERB followed by a FUNCTION WORD is a *predicate*, which is
+  what makes a string a sentence ABOUT a holding rather than a name FOR one. A
+  share class is never followed by `included`/`of`/`a`/`the`, so the
+  abbreviation cannot match — all three of those rows are pinned as must-KEEP
+  cases where the following function word is the ONLY protection. 53 of
+  1,724,192 published rows match and **all 53 were read**; there is no
+  false-positive population to trade against, which is why this ships where the
+  vocabulary version could not.
+  **THE STORED FLAG MOVES ON 53 ROWS AND THE READER SEES 7 — DO NOT CARRY 53
+  rows / 484,457 ppl as a reader-facing figure (wrong by 3.1x).** `namelessRow`
+  flips on all 53, but **46 already publish `Participant loans — not a menu
+  choice`** from an arm AHEAD of the nameless label in the same type chain, so
+  Kaiser's two rows (288,416 ppl between them) see no change at all.
+  **The claim is deliberately the WEAKER one:** ~40 of the 53 are loan-repayment
+  NOTES, often checkbox answers (`Repayments are Included Yes`, `repayments are
+  included : X`, Desotec's `Repyaments are Included: o $17,160`), and whether the
+  dollars beside them ARE the loans is not stated — so "names no specific fund"
+  is published rather than "Participant loans". `docs/accuracy-log.md`
+  2026-10-04 (12:3xZ).
 - **DISCARDED, and recorded so it is not re-derived: the "welded name" count of
   2,720 rows / 5,565,186 ppl / $45.2B.** The predicate was "a closing paren with
   two words after it", which is the shape of every ordinary parenthetical —
@@ -2041,8 +2073,26 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   SHIPS as `America`** (attested 5× by junk rows).
   **THE CHS ROWS REMAIN A REAL DEFECT WITH NO INSTRUMENT** — 7 rows / 90,476 ppl
   needing a REGISTRY witness (`fund-facts`), not a wider screen.
-  **(c) 297 rows / 252,235 ppl** not starting with a label is untouched by this,
-  predates it, and must be re-measured rather than read.
+  **(c) RE-MEASURED 2026-10-04 12:2xZ, AND THE RECORDED FIGURE IS SUPERSEDED:
+  572 escaping rows / 199 plans / 518,131 ppl, not 297 / 96 / 252,235.** Of the
+  1,228 published rows whose SHOWN name carries a `regist` string, 656 publish a
+  ticker or a fee or are already qualified. The 572 that escape are attributed,
+  no unknown left to rest: **405 rows / 164 plans / 304,355 ppl** START with the
+  label (that is remedy **(b)**, CLOSED as ~10x harmful — CHS's ten rows at
+  90,476 ppl are its bulk); **163 rows / 37 plans / 155,819 ppl** carry a
+  trailing label run the shipped vocabulary cannot reach, of which the real
+  members are Touro's `… companies 693` (a trailing NUMBER defeats the
+  end-anchor) and True Mfg's parenthesised `(Registered Investment Company)`;
+  2 rows are Pfizer's `New York registry shares`, a REAL instrument and a false
+  positive of the screen's own vocabulary; 2 are employer stock, correct.
+  **MY FIRST RE-MEASUREMENT WAS WRONG AND SAID 630** — it screened the STORED
+  name and classified the string `renderRow` was handed, but **the page cleans
+  UPSTREAM of the slice** (`cleanCostMarkers`, app.js:2555) and shipped
+  `TYPE_SUFFIX` already strips a complete `Registered investment companies`
+  suffix. *Asking the shipped cleaner directly is what exposed it.* And the
+  bucket's single largest member turned out to belong to no suffix class at all
+  — it is American Airlines' $9.4B sentence row, now shipped.
+  `docs/accuracy-log.md` 2026-10-04 (12:3xZ).
   `docs/accuracy-log.md` 2026-10-04 (08:1xZ).
   **AND NAMED RESIDUE from (a):** `Investment in`/`Investments in` (New York
   Life, 14 rows / ~71,000 ppl) are truncation fragments blocked by the
@@ -2168,6 +2218,18 @@ These outlived the versions that produced them. The accuracy log has the case.
   reports on the query*, and `lineups-index.json` has no `lib-schema` loader,
   which is exactly why a guessed field name was possible.
   `docs/accuracy-log.md` 2026-10-04 (08:3xZ).
+- **A FLAG THAT FLIPS IS NOT A CELL THAT CHANGES — ASK WHAT THE RENDER CHAIN
+  ALREADY PRINTS (2026-10-04).** A qualification arm moved `namelessRow` on 53
+  rows and the shown type on **7**, because an arm AHEAD of it in the same chain
+  already printed a better label for 46 of them (`Participant loans — not a
+  menu choice`), including the two rows carrying 288,416 of the class's
+  participants. Sharper than *a STORED field is not a PUBLISHED one*, which is
+  about the store: here the field was computed by the display itself, in the
+  same function, and was still not what the reader saw. **Before sizing a
+  display change, render the cell — not the predicate** — and read the chain
+  ABOVE your arm, because whatever already wins there is a population your
+  change cannot claim. The headline figure would otherwise have been wrong by
+  3.1x on my own ship, one hour after the same lesson in its store-side form.
 - **A FORMATTER'S FLOOR IS A PUBLISHED CLAIM — "$0" IS NOT A MEASUREMENT
   (2026-10-04, SHIPPED).** `money()`'s last branch was
   `Math.round(a * 1000) + "K"` with the argument in MILLIONS, so **every amount
