@@ -7,6 +7,81 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-04 (23:2xZ) — the `Investment in` residue: the measurement was clean, the ship was WRONG, and a shipped fixture caught it before anything left the machine
+
+The queue's residue item said adding `in` to `LABEL_ONLY_WORD` was "a
+measurement, not a free widening". I took the measurement, it came back clean,
+I shipped it — **and `lib-disclose`'s own import-time control threw:**
+
+```
+lib-disclose: isLabelOnlyName would qualify "Investment in"
+  (a trailing joiner — the truncated-name class)
+  — it names something, fix the predicate rather than the control
+```
+
+**That string is a must-KEEP pin in the shipped fixture set.** The queue entry
+and the shipped guard disagreed, and the guard is right. Reverted.
+
+### Why the pin wins, and it is not a technicality
+
+`Investments in` at $62,474,498 is a TRUNCATED name, not an absent one. The
+recorded position for that whole bucket (388 rows / 103,689 ppl, 13:4xZ) is
+explicit: *it must NOT be suppressed — suppression would LOSE an identifiable
+entity and the remedy would have to be reconstruction.*
+
+And the claim the arm would have published is the wrong claim. Qualifying the
+row prints **"the filing names no specific fund"** about a filing that almost
+certainly DID name one — our parse lost it. The honest label for a truncation is
+a different sentence from the honest label for a caption, and this predicate
+only knows how to say the second. ***A row that names nothing and a row whose
+name we cut in half are two classes, and one label cannot serve both.***
+
+### The measurement itself was sound and is worth keeping
+
+Done properly, so nobody repeats it: adding a word to the vocabulary can only
+let the while-loop consume MORE tokens, so a verdict can only move
+false -> true and only on a name containing `in` as a whole token — a **superset
+by construction, 3,528 published rows**. Measured through `isNamelessFundRow`
+with the call-site issuer gate, the verdict moves on **8 rows / 3,901 ppl /
+$76,566,403**, and all three distinct names were read: `Investments in` ×5
+(Beauchamp Distributing), `Investment in` ×2 (Elo, Incorporated), `Shares in`
+×1 (Fiber Instrument Sales). No false positives in the superset.
+
+**DO NOT CARRY THE QUEUE'S OWN FIGURE — "14 rows / ~71,000 ppl (New York
+Life)".** No New York Life row is in the moved set and the published count is 8.
+Arms that shipped AFTER that entry was written already reach part of what it was
+counting. *A queue entry records what was true when it was written* — ninth
+instance.
+
+### Two of my own errors on the way, both caught by the thing they should be
+
+1. **I called `isNamelessFundRow(name, type, iss)` — three strings.** The real
+   signature is **`isNamelessFundRow(f, cleanedName, isGenericName)`**: the ROW
+   OBJECT, the cleaned name, and the composed predicate as a **CALLBACK**. It
+   surfaced only because the third argument was not callable; had I passed three
+   plausible strings in a different order it would have returned a number. *Read
+   the signature from the source before measuring through a function* — and the
+   call site also applies an ISSUER gate (`(!iss || issGeneric(iss)) && …`)
+   that is half the published verdict.
+2. **I imported `isGenericTypeName` from `lib-disclose`.** It lives in
+   **`lib-4i`** — it is the PARSER's closed vocabulary, which is the entire
+   reason the display predicates exist beside it rather than inside it. The seo
+   call site imports it from lib-4i and that is the pattern to copy.
+
+### The reusable lesson
+
+**A queue entry that prescribes a change is not authority to make it when the
+shipped code pins the opposite.** The pin is newer evidence than the entry in
+one specific way: somebody already considered this exact string and decided
+against it, with a reason attached. So before acting on a queued prescription,
+**grep the fixtures for the motivating string** — not just the guard's
+behaviour, but whether the string is already pinned on the other side. That
+check costs one grep and would have saved this whole ship.
+
+Nothing was pushed. `lib-disclose.mjs` is reverted and imports clean.
+
+`docs/accuracy-log.md` 2026-10-04 (23:2xZ).
+
 ## 2026-10-04 (22:0xZ) — v201's verdict PASSES as registered, its reader-facing figure UNDER-predicted by two, and the trail's `pv` field was labelling data with a version that never touched it
 
 **Run #577 (v201) concluded `success`, and the pre-registration holds on every

@@ -2189,9 +2189,27 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   — it is American Airlines' $9.4B sentence row, now shipped.
   `docs/accuracy-log.md` 2026-10-04 (12:3xZ).
   `docs/accuracy-log.md` 2026-10-04 (08:1xZ).
-  **AND NAMED RESIDUE from (a):** `Investment in`/`Investments in` (New York
-  Life, 14 rows / ~71,000 ppl) are truncation fragments blocked by the
-  every-word condition — adding `in` is a measurement, not a free widening.
+  **AND NAMED RESIDUE from (a) — CLOSED 2026-10-04 23:2xZ, AND THE PRESCRIPTION
+  WAS WRONG.** The entry read "`Investment in`/`Investments in` (New York Life,
+  14 rows / ~71,000 ppl) are truncation fragments blocked by the every-word
+  condition — adding `in` is a measurement, not a free widening." The
+  measurement was taken and came back clean (**superset by construction, 3,528
+  published rows containing `in` as a token; verdict moves on 8 rows / 3,901 ppl
+  / $76,566,403**, all three names read: `Investments in` ×5 Beauchamp
+  Distributing, `Investment in` ×2 Elo, `Shares in` ×1 Fiber Instrument Sales)
+  — **and shipping it threw `lib-disclose`'s own import-time control, because
+  `Investment in` is a must-KEEP PIN.** The pin wins: these are TRUNCATED names,
+  and the recorded position for that bucket is **reconstruction, not
+  suppression**, because qualifying the row publishes *"the filing names no
+  specific fund"* about a filing that DID name one. ***A row that names nothing
+  and a row whose name we cut in half are two classes, and one label cannot
+  serve both.*** Reverted, nothing pushed. **DO NOT CARRY 14 rows / ~71,000 ppl
+  (New York Life)** — no New York Life row is in the moved set.
+  **THE RULE THIS EARNS: before acting on a queued prescription, GREP THE
+  FIXTURES FOR THE MOTIVATING STRING.** A pin is newer evidence than the entry
+  in one specific way — somebody already considered this exact string and
+  decided against it, with a reason attached. One grep would have saved the
+  whole ship. `docs/accuracy-log.md` 2026-10-04 (23:2xZ).
   **THE ISSUER-CELL QUESTION IS ANSWERED 2026-10-04 13:4xZ, AND THE ANSWER IS
   NO: 396 candidate rows / 36 plans / 47,885 ppl, verdict moves on 0.** Measured
   as a superset by construction (widening the gate's issuer disjunct can only
@@ -2562,6 +2580,26 @@ These outlived the versions that produced them. The accuracy log has the case.
   caller who reaches `.plans` and cannot protect one who never does. *A loader
   built against guessed field NAMES does not catch a guessed SHAPE* — and what
   caught it was the pair "3" and "100%" being implausible on sight.
+- **A QUEUED PRESCRIPTION IS NOT AUTHORITY WHEN THE SHIPPED CODE PINS THE
+  OPPOSITE — GREP THE FIXTURES FOR THE MOTIVATING STRING (2026-10-04).** The
+  queue said adding `in` to the label vocabulary was "a measurement, not a free
+  widening"; the measurement was clean and the ship threw, because
+  `Investment in` is a must-KEEP pin whose comment names the class and the
+  reason. ***A pin is newer evidence than the entry that contradicts it*** —
+  somebody already considered that exact string and decided against it. And the
+  substance generalises past this one arm: *a row that names nothing and a row
+  whose name we CUT IN HALF are two classes, and "the filing names no specific
+  fund" is a false claim about the second.* Before acting on a queued
+  prescription, grep the fixture set for its motivating string — one grep.
+- **AND READ A FUNCTION'S SIGNATURE FROM THE SOURCE BEFORE MEASURING THROUGH IT
+  (2026-10-04).** I called `isNamelessFundRow(name, type, iss)` where the real
+  shape is `isNamelessFundRow(f, cleanedName, isGenericName)` — the ROW OBJECT,
+  the cleaned name, and the composed predicate as a **CALLBACK**. It surfaced
+  only because the third argument was not callable; three plausible strings in
+  the wrong order would have returned a number instead. The call site also
+  applies an ISSUER gate that is half the published verdict, and
+  `isGenericTypeName` is imported from **lib-4i**, not lib-disclose — it is the
+  PARSER's closed vocabulary, which is why the display predicates sit beside it.
 - **A count of a condition is not a measure of a defect**, and the siblings:
   *a count keyed on a VOCABULARY measures the vocabulary*; *a count keyed on
   PLANS is blind to every master-trust row* (resolve a trust row through its
