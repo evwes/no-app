@@ -816,12 +816,22 @@ extra entries are self-clearing `reparse-loss` findings raised from
 `losses-triage.txt`, a run ARTIFACT that exists only in CI. *A metric that
 differs between CI and local is a question about the inputs, not the store.*
 
-**THE IDENTICAL-LINE RUN, RE-DERIVED THIS CYCLE AND NEVER INCREMENTED: 2 on
-all keys, 2 on shared keys.** The last transition moved nothing. *A
-count carried forward by increment is not a measurement* — if a number in this
-file advances every cycle, re-derive it (`scratchpad` harness: compare the trail
-tail under BOTH key sets, because the `pv` field added at #565 breaks a naive
-all-keys comparison across its own introduction).
+**THE IDENTICAL-LINE RUN, RE-DERIVED 2026-10-04 18:4xZ AND NEVER INCREMENTED: 3
+on all keys, 3 on shared keys**, over 386 trail lines. *A count carried forward
+by increment is not a measurement* — if a number in this file advances every
+cycle, re-derive it (compare the trail tail under BOTH key sets, because the
+`pv` field added at #565 breaks a naive all-keys comparison across its own
+introduction).
+**AND THE "longest identical streak 34 / 51.2% of pairs identical" RECORDED IN
+THE ALWAYS-ON MACHINERY SECTION COULD NOT BE REPRODUCED — do not quote it.**
+Measured over the record's own 373-pair window, four key-set definitions give
+**44.8% to 75.1% identical and longest streaks of 13 to 66**: all keys 44.8% /
+13, shared keys 45.6% / 14, confident+match+vesting 67.8% / 66, `confident`
+alone 75.1% / 66. Nothing lands on 51.2% / 34. ***The statistic is dominated by
+WHICH KEYS are compared — a 5x spread in the streak — so quoting it without
+naming the key set is meaningless***, which is the reusable part and why the
+current run above names both sets. The 48.8%-move claim built on it inherits the
+same problem.
 
 **COMPLETENESS TEST:** one dominant pv covering ≥97% of acks plus a small
 old-version tail. A second large pv cohort means a PARTIAL store (`audit-data`
