@@ -3602,7 +3602,39 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
        * as a named holding and must not be qualified. The generator prints the
        * issuer too as of this change, so the two agree; if one ever stopped,
        * the shared rule would still be right and only this line would move. */
-      const namelessRow = !String(f.iss || "").replace(/\*+/g, "").trim()
+      /* THE ISSUER GATE NOW TESTS ITS OWN PREMISE — 2026-10-04.
+       *
+       * The gate below asked whether an issuer is PRESENT and never whether
+       * the issuer NAMES A FUND. Measured: 781 rows / 1,526,288 participants
+       * sit behind it, and asking the SAME composed predicate of the ISSUER
+       * separates them cleanly. **20 rows / 18 plans / 245,810 participants /
+       * $51,048,548,123** have a generic name AND a generic issuer, so
+       * `issuer · name` reads as nothing twice over:
+       *   3M Company        40,574 ppl  74.7% of its menu  $18,418,583,395
+       *                     `Common/collective trusts` · `Investments measured at NAV`
+       *   General Motors    65,343 ppl  66.4%  $15,829,825,000  (and 63.6% / $6.2B)
+       *   Union Pacific      8,460 ppl  60.9%  $8,096,901,069
+       *   Baker Hughes      21,995 ppl  15.5%  $1,857,061,000
+       *   Goodyear / Cooper Tire: seven rows at 52.1% to 90.4% of their menus
+       * On every one the TYPE column says `Collective trust` as well, so the
+       * reader is shown the same empty answer three times.
+       *
+       * THE OTHER 762 ARE THE GATE WORKING, and reading them is what kept this
+       * change to one token: the issuer holds a real fund (`Vanguard Mid Cap
+       * Index Admiral`, `Longview Core Bond Fund`, `UBC Russell 3000 Index
+       * Trust`, `BNYM Mellon SL SmartPath 1D2050 Fd`) or a real insurer
+       * (`PACIFIC LIFE`, `Voya Institutional Trust Company`). A wider
+       * instrument than the shipped predicate would have qualified those too.
+       * The gate's own comment handed over the negative control and it holds:
+       * `isGenericName("Vanguard Target Retirement 2030")` is false, so
+       * `Vanguard Target Retirement 2030 · Mutual Fund Shares` stays unqualified.
+       *
+       * Of the composition's two halves only `isGenericTypeName` fires here —
+       * `hasNoFundIdentity(iss)` reaches 0 of the 781 — but the call site
+       * already builds `isGenericName`, so reusing it is one token where
+       * splitting it would be a new arm. Ticker and fee move on 0 rows. */
+      const issuerText = String(f.iss || "").replace(/\*+/g, "").trim();
+      const namelessRow = (!issuerText || isGenericName(issuerText))
         && (isNamelessFundRow(f, f.name, isGenericName)
           /* ...or the row is a Schedule H PARTICIPANT-DIRECTION caption, which
            * `isNamelessFundRow` is blind to by construction because a caption

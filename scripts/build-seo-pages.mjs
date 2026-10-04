@@ -254,7 +254,13 @@ for (const r of d.plans.slice(0, TOP_N)) {
     /* ...or a page break's own caption / the page-carry subtotal that travels
      * with it, which neither the vehicle-type test nor the direction-caption
      * test can reach. lib-disclose.mjs. */
-    const nameless = !iss && (isNamelessFundRow(f, nm, (n) => isGenericTypeName(n) || hasNoFundIdentity(n)) || isDirectionCaptionRow(nm) || isOfficeListRow(nm) || isPageBreakCaptionRow(nm));
+    /* THE ISSUER GATE TESTS ITS OWN PREMISE — 2026-10-04, and this surface
+     * must match app.js's, whose comment carries the measurement: an issuer
+     * that is ITSELF generic ("Investments measured at NAV", a Schedule H
+     * caption) cannot make `issuer · name` read as a named holding. 20 rows /
+     * 245,810 participants / $51.0B, led by 3M's $18.4B at 74.7% of its menu. */
+    const issGeneric = (n) => isGenericTypeName(n) || hasNoFundIdentity(n);
+    const nameless = (!iss || issGeneric(iss)) && (isNamelessFundRow(f, nm, issGeneric) || isDirectionCaptionRow(nm) || isOfficeListRow(nm) || isPageBreakCaptionRow(nm));
     /* a wrapped loan DESCRIPTION's continuation line, which names nothing at
      * all — `at rates of interest ranging from 4.25% to`. This page has no
      * type column, so the report's qualifier cannot be copied across: the row
