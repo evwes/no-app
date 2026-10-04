@@ -44672,3 +44672,95 @@ guards at once: three Vanguard CIT rows publish no ticker and no fee under
 resolve exactly (=VWENX 0.17, =VPMAX 0.31). The one gap is `VANGUARD US GROWTH
 ADMIRAL` =VWUAX with no fee — the 91,423-row ticker/fee asymmetry, correct as
 far as it goes.
+
+## 2026-10-04 (04:4xZ) — the issuer gate now tests its own premise: 20 rows / 245,810 participants / $51,048,548,123, and READING THE DATA shrank my own planned instrument to one token
+
+**SHIPPED and live on main (`bf3d2132`), site-test #162 green.** Name 0, ticker
+0, fee 0 — nothing is withdrawn; the rows gain the qualifier they always
+deserved. 2 crawlable pages.
+
+**3M Company publishes `Common/collective trusts`, issuer `Investments measured
+at NAV`, type `Collective trust`, at 74.7% of its menu — $18,418,583,395, to
+40,574 participants.** The same empty answer three times, in three columns.
+General Motors does it at **66.4% / $15,829,825,000** (65,343 ppl) and again at
+63.6% / $6,217,882,000 (71,495 ppl); Union Pacific at 60.9% / $8,096,901,069;
+Baker Hughes at 15.5% / $1,857,061,000; Goodyear and Cooper Tire on seven rows
+between **52.1% and 90.4%** of their menus.
+
+### The gate was deliberate and its premise was never tested
+
+`isNamelessFundRow` is reached only when the issuer cell is EMPTY, and the
+shipped comment at `app.js:3606` gives the reason: the page prints `issuer ·
+name`, so `Vanguard Target Retirement 2030 · Mutual Fund Shares` reads as a
+named holding and must not be qualified. **That reasoning is right. The gate
+simply asks whether an issuer is PRESENT and never whether the issuer NAMES A
+FUND**, and an issuer that is itself a Schedule H caption cannot make a row
+read as anything.
+
+### Reading the data refuted MY OWN planned instrument
+
+Last cycle I queued *"the shipped generic predicates plus the Schedule H
+caption vocabulary"* — something WIDER than what ships. Reading all 671
+distinct issuer strings behind the gate killed the wider half:
+
+| | rows | ppl | |
+|---|---|---|---|
+| issuer is generic by the shipped predicate | **19** | 245,484 | **$51.0B of the $81.4B**, because these rows are 66–100% of their own menus |
+| issuer names something real | 762 | 1,280,804 | **the gate WORKING** |
+
+The 762 hold `Vanguard Mid Cap Index Admiral`, `Longview Core Bond Fund`, `UBC
+Russell 3000 Index Trust`, `BNYM Mellon SL SmartPath 1D2050 Fd`, `PACIFIC LIFE`,
+`Voya Institutional Trust Company` — real funds and real insurers in the issuer
+cell, exactly as the gate's comment anticipated. **A wider instrument would have
+qualified all of them.** So the change is the predicate the call site ALREADY
+BUILDS, asked of the issuer: one token, no new vocabulary.
+***The queue asked for a wider net and the data asked for a narrower one.***
+
+**Of the composition's two halves only `isGenericTypeName` fires here** —
+`hasNoFundIdentity(iss)` reaches **0** of the 781. Recorded rather than split
+out: the call site already builds `isGenericName`, so reuse is one token where
+splitting it would be a new arm with an inert half.
+
+### Gates
+
+Seven controls, including the one the shipped comment hands over:
+`isGenericName("Vanguard Target Retirement 2030")` is **false**, so the gate's
+own motivating case stays unqualified; also false for `PACIFIC LIFE`, `Vanguard
+Mid Cap Index Admiral`, `UBC Russell 3000 Index Trust`; **true** for all three
+spellings of the NAV caption. **All 20 rows read, not sampled.**
+
+**THE NARROWING IS A SUPERSET BY CONSTRUCTION rather than a sample**, which is
+what the standing rule demands. Old gate `!iss`, new `!iss ||
+isGenericName(iss)`: where `iss` is empty both yield true, and where `iss` is
+non-empty the old yields false — so a verdict can move ONLY where
+`isGenericName(iss)` is true. 195 candidates store-wide, 20 move. Discharged on
+the **1,730,475 excluded rows** at 1-in-400 under both renderers: **0 differ**.
+My first attempt rendered every issuer-carrying row under both copies and did
+not finish — *not patience-limited but unnecessary*, which the narrowing
+argument made obvious once written down.
+
+### The 2-page near-zero is EXPLAINED, and explaining it corrected my own count
+
+Both page edits are a pure insertion of `" — the filing names no specific
+fund"`. Only 2 changed where 18 plans moved, and the reason is that **the
+qualified rows sit overwhelmingly on TRUST acks** — 3M's trust is shared by 2
+plans, Goodyear's by 7, Union Pacific's by 2 — so a trust's holdings reach a
+crawlable page only for the member plan whose page renders that lineup.
+Goodyear's `p/340253240-013.html` has **no holdings table at all** (3,287 bytes).
+
+**My first attribution script reported "9 rows on a page and inside its top
+12", and that was wrong**: it resolved each trust ack to ONE arbitrary member
+plan via a first-wins map. ***Eighth instance on this record of a count keyed on
+plans being blind to a trust*** — and the first where it inflated a
+page-reach figure rather than a defect size.
+
+**POSITIVE CONTROL on main's own tree:** `Nt Collective Short Term Invt Fd`
+still prints UNQUALIFIED on Baker Hughes' page — a NAMED collective trust
+untouched — so this is a targeted qualification and not a blanket one. GM's page
+carries the qualifier three times. `index.html` reads `app.js?v=f4e797f8`, which
+**is** app.js's own sha256 on main.
+
+**And two of my own verification greps read 0 from CASE SENSITIVITY alone**
+(`Collective trust` where the pages say `Collective Trust`). *A clean zero
+reports on the query* — met twice in one verification, on the check rather than
+on the data.
