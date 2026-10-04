@@ -7,6 +7,88 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-04 (19:1xZ) — the draw was not slow, it was drawing nineteen million plans: `--seed` was being read as the draw SIZE
+
+**`scripts/draw-published.mjs` took 4 seconds after a one-line fix, having
+consumed roughly twenty-five minutes of wall clock across three cycles.**
+
+```
+const N = Number(argv.find((a) => /^\d+$/.test(a)) || 2);
+```
+
+`N` is a POSITIONAL argument, found as "the first all-digit argv entry" — and
+`--seed 19082026` puts an all-digit entry in argv. **So N became 19,082,026**,
+the picker looped until it had drawn every one of the 60,163 pool entries, and
+the script then rendered every menu in the store. From the outside that is
+indistinguishable from a hang: the pool header prints, then nothing for ten
+minutes.
+
+### How it survived three cycles, which is the part worth keeping
+
+1. **The one seeded draw that appeared to work had simply printed pick 1 of
+   nineteen million** before the timeout killed it. Love's Travel Stops was a
+   correct participant-weighted first pick, so **the 17:2xZ draw record stands
+   on its own evidence** — what was lost was every later pick, not the finding.
+2. **Every diagnosis I tried first was wrong, and each was plausible.** I blamed
+   container CPU starvation (the record does say a background process gets CPU
+   only while a turn is active, and two draw processes WERE competing at one
+   point), then killed the competitors and it still "hung"; then I suspected the
+   picker's `if (used.has(i)) continue;`, which really does retry without
+   removing the used weight — a genuine latent defect, but harmless at N=2 and
+   not the cause. **What ended it was reading the argument parser instead of the
+   hot loop**, because the hot loop cannot be slow for two picks.
+   *A hang whose cause is in the arguments looks exactly like a hang whose cause
+   is in the algorithm.*
+3. **And the instrument never complained**, because drawing the whole pool is a
+   legal request. The fix adds the sanity bound that was missing: N outside 1-50
+   now THROWS and says a flag value was probably read as the count.
+
+**The fix excludes flag VALUES BY NAME (`--seed`, `--rows`) rather than by
+shape**, because "looks like a number" is exactly what broke it. Four edges
+checked: default 2, explicit `3 --seed …` 3, `--rows 20 --seed 7` 2, and
+`--seed 19082026` **2** — that last one is the decisive case, and
+`--seed 2` is NOT a test of anything because it reads the same either way.
+
+**STILL OPEN, named rather than fixed:** the picker's rejection branch retries
+on a used index without removing its weight, so it has no progress guarantee.
+At N<=50 against a 60,163-entry pool the collision probability makes it
+irrelevant, and I am not rewriting a sampler on a hypothetical — recorded so
+the next person who raises N knows.
+
+### The 19:08 draw itself, now that it finishes
+
+Barnhart Crane & Rigging Co. (ein 621269879 pn 002, **1,272 ppl**, 32 funds,
+ratio 0.994, menu $161,024,008 against $161,956,820 of plan assets).
+
+**It carries a live named instance of the FIRST owner-gated item** — a filing
+stating a share class where the page publishes a different class's symbol and
+its fee. `Vanguard Small Cap Index Fund Institutional` publishes **VSMAX
+ASSERTED** (no asterisk) at **0.05**. VSMAX is the ADMIRAL class; Vanguard
+registers the Institutional class the filing names as **VSCIX**, and 0.05 is
+Admiral's expense ratio rather than Institutional's. **Checked against the
+store, which is what separates the two gated items: the store holds NOTHING for
+that row**, so this is the registry-witness item and not the "our own two
+fields disagree" one. On every other class-stating row in the menu the store
+and the page AGREE (VFIAX, VBTLX, VIMAX, VIGAX, MAMPX, MACQX, PIGIX, MAGQX,
+AGGPX) — *that agreement is the control, and it is what makes the one
+disagreement worth naming.*
+
+**And it independently reproduces the 17:2xZ measurement:** 8 of its 32 rows
+are `American Funds 20XX Target Date Retirement Fund` publishing **0.32 with no
+ticker**, the gated R-6-fee-without-a-share-class item, on a plan drawn with no
+knowledge of that class.
+
+**A guard confirmed WORKING, which is the other half of reading a draw:**
+`Great Gray CIT III for Metlife Group Annuity Contract` at 6.5% of the menu
+publishes neither a ticker nor a fee, flagged `noPublicPrice,guaranteeOnlyFee`
+— a collective trust holding an annuity contract has no public price, and both
+cells are correctly empty rather than estimated.
+
+Nothing convictable and nothing new to ship: both findings are owner-gated
+items, now each with one more named instance.
+
+`docs/accuracy-log.md` 2026-10-04 (19:1xZ).
+
 ## 2026-10-04 (18:3xZ) — the caption vocabulary was spelled out in full, so an abbreviating filer escaped it; and a CORRECTION to the figure I published two hours ago
 
 **SHIPPED: four tokens added to `isScheduleHCaption` — 21 reader-facing rows /

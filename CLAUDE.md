@@ -2164,7 +2164,21 @@ These outlived the versions that produced them. The accuracy log has the case.
   TRACKED**, gates on `lineups-index`'s bit 1, asserts that gate in BOTH
   directions against Home Depot's two acks, and takes `--seed` so a draw can be
   re-read instead of re-rolled (a drawn plan was lost this cycle to exactly
-  that). `--all` lifts the gate for auditing it and prints a banner. The
+  that).
+  **AND `--seed` WAS BEING READ AS THE DRAW SIZE — fixed 2026-10-04 19:1xZ after
+  it cost ~25 minutes across three cycles.** `N` was "the first all-digit argv
+  entry", so `--seed 19082026` set **N = 19,082,026**: the draw walked all
+  60,163 pool entries and rendered every menu, which from outside is
+  indistinguishable from a hang. The seeded draw that looked like it worked had
+  printed **pick 1 of nineteen million**, so its finding stands and everything
+  after it was lost. Flag values are now excluded BY NAME (`--seed`, `--rows`)
+  rather than by shape, and N outside 1-50 THROWS. ***A hang whose cause is in
+  the ARGUMENTS looks exactly like a hang whose cause is in the algorithm*** —
+  CPU starvation and the picker's retry branch were both diagnosed first and
+  both wrong. **Still open, named not fixed:** that retry branch (`if
+  (used.has(i)) continue;`) re-draws without removing the used weight, so it has
+  no progress guarantee — irrelevant at N<=50 against 60,163 entries, and a
+  hazard for anyone raising N. `docs/accuracy-log.md` 2026-10-04 (19:1xZ). `--all` lifts the gate for auditing it and prints a banner. The
   precedent is explicit: `scratchpad/apppath.mjs` shadowed the tracked harness
   and 81 measurement scripts imported the wrong one. ***A STORED field is not a
   PUBLISHED one — including in the thing doing the measuring.***

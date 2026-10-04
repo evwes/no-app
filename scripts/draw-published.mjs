@@ -64,7 +64,24 @@ const flag = (name, def) => {
   const i = argv.indexOf(name);
   return i >= 0 && argv[i + 1] !== undefined ? argv[i + 1] : def;
 };
-const N = Number(argv.find((a) => /^\d+$/.test(a)) || 2);
+/* N IS A POSITIONAL ARGUMENT AND MUST NOT BE READ OUT OF A FLAG'S VALUE.
+ * Found 2026-10-04 19:1xZ: this line was `argv.find(a => /^\d+$/.test(a))`,
+ * and `--seed 19082026` is an all-digit argv entry, so N became **19,082,026**.
+ * The draw then walked the ENTIRE 60,163-entry pool and rendered every menu in
+ * it, which looks exactly like a hang — and the one seeded draw that appeared
+ * to work had simply printed pick 1 of nineteen million before being killed.
+ * Its drawn plan was still a correct participant-weighted first pick, so the
+ * record from it stands; what was lost was every later pick and ten minutes a
+ * cycle. Flag VALUES are excluded by name here rather than by shape, because
+ * "looks like a number" is what broke it. */
+const FLAGS_WITH_VALUES = ["--seed", "--rows"];
+const positional = argv.filter((a, i) => {
+  if (a.startsWith("--")) return false;
+  const prev = argv[i - 1];
+  return !(prev && FLAGS_WITH_VALUES.includes(prev));
+});
+const N = Number(positional.find((a) => /^\d+$/.test(a)) || 2);
+if (!(N >= 1 && N <= 50)) throw new Error(`draw-published: N=${N} is not a sane draw size (1-50) — a flag value was probably read as the count`);
 const ROWS = Number(flag("--rows", 14));
 const ALL = argv.includes("--all");
 const SEED = flag("--seed", null);
