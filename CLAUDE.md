@@ -1164,6 +1164,25 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
+- **FOUND BY THE 00:4xZ DRAW — TWO COMPLETE FUNDS IN ONE ROW WITH ONE'S SYMBOL
+  ASSERTED. ONE NAMED INSTANCE, NO NUMBER, and the screen for it is REFUTED.**
+  CVS Health (**385,927 ppl**, $30.1B) publishes `Vanguard International Growth
+  Fund Admiral International Equity Index Fund` at **$2,842,314,805, 13.3% of
+  its menu**, with **=VWILX ASSERTED** and a 0.26 fee — two different funds, one
+  of them's identity and price claimed for the pair. **NOT the mid-name-house
+  class:** the second half carries no house, so that condition cannot see it.
+  **THE FIX IS A WITHHOLDING, NOT A REPAIR** — both halves are real funds and
+  nothing says which holds the money, so the honest move is to drop the symbol
+  and the fee, the `hasNoFundIdentity` shape.
+  **DO NOT CARRY 4,683 rows / 1,654 plans / 10,095,461 ppl / $207.6B** — that
+  interior-class screen is refuted by its own nine largest members, all
+  `BlackRock Institutional Trust Company, . LIFEPATH INDEX <vintage> NL FUND F`
+  (Target, 495,482 ppl), where `Institutional` is part of the TRUSTEE's
+  corporate style and not a share class. Those are the rows the 21:5xZ entity
+  arm deliberately refuses. **A usable screen must require the designation NOT
+  to be followed by a corporate style, and the HEAD alone to resolve through the
+  shipped resolver** — that is the evidence it is a complete name rather than a
+  fragment. `docs/accuracy-log.md` 2026-10-04 (00:4xZ).
 - **SHIPPED 2026-10-04 00:3xZ — A UNIT COUNT PUBLISHED INSIDE A FUND NAME: 310
   rows / 28 plans / 491,936 ppl / $11,661,189,381, NAME-ONLY (ticker gained 0 /
   lost 0 / swapped 0 / star 0; fee gained 0 / lost 0 / swapped 0; type 0), 5

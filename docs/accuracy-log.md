@@ -44006,3 +44006,51 @@ whose name is **nothing but** a count — `5,405,466 UNITS` at **30.7% of its
 menu, $670,371,000** — and those are left alone because the 06:3xZ
 `hasNoFundIdentity` ship already qualifies them as "the filing names no specific
 fund". There is nothing to strip; the honest answer is the one already shipped.
+
+### The 00:4xZ draw — TWO COMPLETE FUNDS IN ONE ROW WITH ONE'S SYMBOL ASSERTED, named and deliberately UNSIZED
+
+**CVS Health (385,927 participants, $30.1B) publishes `Vanguard International
+Growth Fund Admiral International Equity Index Fund` at $2,842,314,805 — 13.3%
+of its menu — with `=VWILX` ASSERTED (no asterisk) and a 0.26 fee.** Those are
+two different funds, an active international growth fund and an international
+index fund, and the row claims the first one's identity and price for the pair in
+front of 385,927 readers.
+
+**IT IS NOT THE MID-NAME-HOUSE CLASS**, which is why it needs its own treatment:
+the second half carries no house at all, so the 20:4xZ condition cannot see it.
+The signature is a SHARE-CLASS DESIGNATION in the INTERIOR of the name — a fund
+name ends at `Admiral`, so whatever follows began a new one.
+
+**AND THE FIX IS NOT A REPAIR.** Both halves are real funds and nothing in the
+row says which one holds the money, so splitting or truncating would be a guess
+wearing a repair's clothes. The honest move is to WITHHOLD the symbol and the
+fee, the `hasNoFundIdentity` shape: state what is not known rather than invent
+what is.
+
+**MY SCREEN FOR IT WAS REFUTED BY ITS OWN TOP ROWS AND THE FIGURE IS DISCARDED.**
+An interior-class-designation + fund-shaped-tail screen reads 4,683 rows / 1,654
+plans / 10,095,461 ppl / $207.6B — and **all nine of its largest members are
+`BlackRock Institutional Trust Company, . LIFEPATH INDEX <vintage> NL FUND F`**
+(Target Corporation, 495,482 ppl), where `Institutional` is part of the
+TRUSTEE's corporate style and not a share class. The screen split those names in
+entirely the wrong place, and they are a class already on the record: the
+21:5xZ entity arm deliberately refuses them because the remainder leads with no
+house `LEADING_HOUSE` knows. ***A count keyed on a vocabulary measures the
+vocabulary*** — met here on a word that is genuinely both a share class and part
+of a corporate name, which is a new reason for an old failure.
+
+**What a usable screen needs, stated so the next attempt does not start from
+the refuted one:** the class designation must not be followed by a corporate
+style (`Trust Company`, `Advisors, LLC` — the vocabulary the shipped entity arm
+already owns), and the HEAD alone should resolve to a fund through the shipped
+resolver, which is the evidence that it is a complete name rather than a
+fragment. Until that is measured the class is **one named instance**, CVS
+Health's $2.84B row, and no number.
+
+Also on CVS's page and left alone: `Vanguard Small Cap Index Fund Mutual Fund S`
+(=VSMAX, $1.23B) carries a welded TYPE label and a stray `S`; `Stable Value Fund
+Subtotal` is correctly typed `Subtotal (not a holding)` and suppressed;
+`Class A Common Collective Trust Fund` is correctly qualified "Filing names no
+specific fund". FedEx's plan (290,909 ppl, ratio 0.96) read clean — its
+`200% of the first 2%` formula matches its quote exactly, and its eleven
+comparables are all correctly asterisked.
