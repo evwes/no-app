@@ -38,9 +38,10 @@
   /* ---- vesting-quote guard ------------------------------------------------
    * CANONICAL COPY: scripts/lib-quote.mjs, which carries the six measurement
    * passes and the five refutations. This is the browser twin, SLICED VERBATIM
-   * from that file by scratchpad/slice-vq.mjs and never typed by hand;
+   * from that file by scripts/slice-vq.mjs and never typed by hand;
    * scripts/smoke-test.mjs runs both against docs/quote-guard-cases.json and
-   * fails when they disagree. */
+   * fails when they disagree. Re-slice with `node scripts/slice-vq.mjs`;
+   * `--check` fails when the committed twin has drifted. */
   const VQ_RULE_WORD = String.raw`(?:based upon|based on|dependent upon|dependent on|determined by|determined based|according to|as follows|following (?:table|schedule)|years of (?:credited |vesting |continuous )?service|increments of|anniversar|cliff|graded)`;
   /* (b) ANY vesting rule. Generous on purpose — see the note above. */
   const VQ_VESTS = new RegExp([
@@ -61,9 +62,6 @@
     String.raw`\d\s+years?\b[\s\S]{0,8}\d{2,3}\b[\s\S]{0,40}?\d\s+years?\b`,
   ].join("|"), "i");
 
-  /* (a) the other named rule. Each arm is anchored on vocabulary that rule owns,
-   * not on a word it merely contains: "loan" alone would catch "one-half of the
-   * participant's vested balance" inside a real vesting sentence. */
   const VQ_OTHER_RULE = new RegExp([
     /* loan limit */
     String.raw`\b(?:participant loans?|loans? (?:are|from|under|permitted|secured)|may borrow|minimum loan|maximum loan|outstanding (?:loan|balance of any previous loan))\b`,
@@ -75,40 +73,19 @@
     String.raw`merged into the Plan`,
     String.raw`transferred in full to the receiving plan`,
     String.raw`In-Plan Roth Conversions`,
-    /* an in-service withdrawal or a distribution.
-     * `withdraws` is here because without it THE MOTIVATING CASE ESCAPED. The
-     * first store-wide count of this class — 39 entries — did not contain PSEG,
-     * whose sentence opens "If a Participant WITHDRAWS", third person singular,
-     * where every arm written from the sample said "may withdraw". That is the
-     * SECOND time in this one investigation that a measurement could not see its
-     * own motivating example, and it was caught by a pinned fixture failing
-     * rather than by re-reading the count. */
     String.raw`\b(?:may (?:elect to )?withdraw|may withdrawal|withdraws|in-service (?:withdrawal|distribution)|allows for in-service|available for distribution|must take a distribution|may (?:elect to )?receive (?:a |all|either|the )|entitled to (?:receive|the (?:full|total) value)|Payments of Benefits|payable upon|reallocated to supplement)\b`,
   ].join("|"), "i");
 
-  /**
-   * True when `text` may be shown to a reader under a vesting heading.
-   * @param {string} text the stored vestingText
-   */
+  const VQ_FORM_TEXT = /\bNumber of participants who terminated employment during the plan year\b/i;
+
   function vestingQuoteOk(text) {
     const t = String(text || "").replace(/\s+/g, " ").trim();
     if (!t) return false;
+    if (VQ_FORM_TEXT.test(t)) return false;     /* (c) is the blank form's own question */
     if (VQ_VESTS.test(t)) return true;          /* (b) states a vesting rule */
     return !VQ_OTHER_RULE.test(t);              /* (a) states another one */
   }
-  window.__wampoVestingQuoteOk = vestingQuoteOk;   // read by the smoke test only
 
-  /* TABLE DEBRIS LEADING A PUBLISHED QUOTE. The two guards above decide WHETHER
-   * a quote may be published; nothing decided what its first character is, so
-   * Lithia Motors (30,021 ppl) published "| Contributions — The Plan provides
-   * for employee contributions…" with the Schedule-H column bar intact. 64
-   * quotes / 64 plans / 129,653 participants. The gate is "a sentence must
-   * remain": a leading-glyph repair and a mid-sentence truncation look
-   * identical from the first character. A COMMA is deliberately absent from
-   * Q_LEAD (Yusen's ",000 (indexed)" is the inside of $23,000) and so is the
-   * BULLET (the audited notes' own list formatting). Trimming changes NEITHER
-   * guard's verdict on any of the 64, measured store-wide.
-   * CANONICAL COPY, with the case and the refusals: scripts/lib-quote.mjs. */
   const Q_LEAD = /^(?:[|│┃]|[)\]}]|[;:]|_)+[\s|)\]};:_.\-–]*/;
   const Q_SENTENCE = /^(?:[A-Z]|\d+(?:\.\d+)?\s*%|["“(])/;
   function quoteTrim(text) {
@@ -117,6 +94,7 @@
     const rest = t.replace(Q_LEAD, "").trim();
     return Q_SENTENCE.test(rest) ? rest : t;
   }
+  window.__wampoVestingQuoteOk = vestingQuoteOk;   // read by the smoke test only
   window.__wampoQuoteTrim = quoteTrim;             // read by the smoke test only
 
   /* Coverage band — canonical copy in scripts/lib-disclose.mjs, which carries

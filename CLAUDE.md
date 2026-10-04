@@ -1908,7 +1908,27 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   different change from the ranking.** The four rules stay recorded because they
   are the right ranking ONCE the candidates arrive.
   `docs/accuracy-log.md` 2026-10-04 (21:0xZ).
-- **QUEUED BY THAT ATTRIBUTION, display-side and separable — THE FORM'S OWN
+- **SHIPPED 2026-10-04 21:2xZ — THE FORM'S OWN PRINTED QUESTION WAS PUBLISHABLE
+  AND ONLY AN UNRELATED `continue` KEPT IT OFF THE PAGE. One arm, price ZERO:**
+  `vestingQuoteOk` now vetoes Form 5500 line 6g(2) before (b) is consulted.
+  Measured over the extractor's own candidate sets, **364 filings / 2,361
+  accepted candidates / the sentence is accepted in ALL 364**; of 58,257
+  PUBLISHED quotes it withholds **0**, the withheld count stays 41, and
+  regenerating all 5,000 crawlable pages changes **0 files**. **Two of three
+  arms were REFUSED by leave-one-out** — the digit-box filler is alone on 304
+  and necessary for 0, `deferred vested` fires on 0.
+  **AND THE TWIN SLICER IS NOW TRACKED AS `scripts/slice-vq.mjs`**, replacing in
+  place with a `--check` wired into `site-test`; the old one lived in gitignored
+  `scratchpad/` and could only INSERT, so the only way to change the twin was to
+  hand-edit app.js. **Promoting it caught a near-miss: the slice reaches
+  `quoteTrim`, a by-name export rewrite left `export function quoteTrim` inside
+  app.js's IIFE, `node --check` PASSED (it parses as a module) and every browser
+  would have loaded NO app.js at all.** *A named rewrite is a rewrite for the
+  exports you remembered.* **STILL OPEN:** `audit-data`'s form-question check
+  reads `matchText` only, so the MATCH side is guarded in a different place by a
+  different mechanism — making it symmetric is a small separate change.
+  `docs/accuracy-log.md` 2026-10-04 (21:2xZ).
+- **ORIGINAL ENTRY, kept for the measurement that found it — THE FORM'S OWN
   PRINTED QUESTION IS PUBLISHABLE AND ONLY LUCK KEEPS IT OFF THE PAGE.** For all
   30 residue plans the LEADING guard-accepted candidate in the extractor's own
   set is Form 5500 line 6g(2), *"Number of participants who terminated
@@ -2609,6 +2629,25 @@ These outlived the versions that produced them. The accuracy log has the case.
 - **A predicate that is right for one class is not thereby right for its
   neighbour**, and a hand-built control table tests the cases its author already
   imagined. The whole-store diff is not a formality after the controls pass.
+- **`node --check` CANNOT SEE A MODULE/SCRIPT MISMATCH, AND app.js IS A CLASSIC
+  SCRIPT (2026-10-04).** A slicer that rewrote `export function X` BY NAME left a
+  second `export` in app.js's IIFE, because the slice carried two exported
+  functions and only one was named. `node --check` **passed** — it parses the
+  file as a module — while every browser rejects an `export` in a classic
+  `<script>` as a SyntaxError and loads **no app.js at all**, so the whole site
+  goes, not one feature. Strip EVERY export and assert none survives: *a named
+  rewrite is a rewrite for the exports you remembered.* The only local gate that
+  catches this is `smoke-test`, which boots the page. Sibling of *`node --check`
+  is the syntax check; importing a script executes it* — there the file ran when
+  it should not have, here it was syntactically perfect under the wrong module
+  goal.
+- **A SLICER THAT CAN ONLY INSERT FORCES THE HAND-EDIT IT EXISTS TO PREVENT
+  (2026-10-04).** `scratchpad/slice-vq.mjs` threw if app.js already carried the
+  twin, so it could create the block once and never update it — and the only
+  remaining way to change the twin was to hand-edit app.js, which is exactly
+  what four lost browser twins came from. A twin generator must REPLACE in
+  place, be TRACKED (a gitignored directory has been wiped twice), and carry a
+  `--check` mode so CI fails on drift rather than a reader finding it.
 - **A generator that edits a block in place deletes anything a later hand-edit
   puts inside its boundaries.** Four browser twins were lost to three
   regenerations; a predicate app.js twins is SLICED VERBATIM on the day it ships

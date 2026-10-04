@@ -7,6 +7,91 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-04 (21:2xZ) — the blank form was PUBLISHABLE as a plan's vesting rule, and only an unrelated `continue` kept it off the page
+
+**Form 5500 line 6g(2) prints the question *"Number of participants who
+terminated employment during the plan year with accrued benefits that were less
+than 100% vested"*.** The composite PDF carries the form pages ahead of the
+audited attachment, so that sentence is in EVERY filing's text — and it carries
+a vest word and a percentage, so **`VQ_VESTS` accepts it and (b) returns true
+before (a) is ever consulted.** `BOILER` does not block it (no underscore run,
+no `part IV`, no `2[01][abc]`), and **`audit-data`'s form-question check reads
+`matchText` ONLY**. Nothing anywhere tested a VESTING quote for form text.
+
+**MEASURED over the extractor's OWN candidate sets — 364 filings, 2,361
+guard-accepted candidates, and this sentence is an accepted candidate in ALL
+364.** It is published on none of them, because an unrelated `continue` inside
+the vesting loop happens to drop it first. *That is luck, not design* — and
+v201, one hour earlier, made this guard an ORACLE THE PARSER CONSULTS, so the
+next change to that `continue`, which is precisely the queued residue work,
+would promote the blank form onto 30+ plan pages.
+
+### One arm, by leave-one-out rather than by taste
+
+Three were written. The digit-box filler `123456789012` fires **alone on 304**
+candidates and is **NECESSARY for 0** — every one is also caught by the printed
+question — and a `number of deferred vested` arm (Schedule SSA) fires on **0**.
+*Sufficiency is not necessity*, so only the printed question ships: alone 386,
+necessary for 82.
+
+**THE PRICE IS ZERO AND THAT IS THE WHOLE SAFETY CASE.** Of all **58,257
+PUBLISHED** vesting quotes the veto withholds **0**; the store's withheld count
+stays at **41**; and regenerating all **5,000 crawlable pages changes 0 files**.
+It cannot take a quote off a page, only stop one arriving.
+
+**A first attempt to size the class from the STORED quotes read 0 among
+published AND 0 among withheld.** *A both-sided zero across a whole population
+reports on the QUERY* — my arms did not match the form text that actually
+reaches the store (Vensure's `23 3607881 2a Name of Participating 2b EIN`,
+which `VQ_OTHER_RULE` already rejects for a different reason). That is why the
+vocabulary comes from the CANDIDATE SETS, and why the queue entry written an
+hour earlier said so explicitly.
+
+### AND THE TWIN SLICER IS NOW TRACKED — the change needed it and it did not exist
+
+app.js's copy of the quote guards was built by `scratchpad/slice-vq.mjs`, which
+**threw if the twin already existed**, so it could create the block once and
+never update it. Two hazards from one file: the directory is a session artifact
+and **has been wiped twice**, and with no re-slice available **the only way to
+change the twin was to hand-edit app.js** — which is how this project has lost
+four browser twins. `scripts/slice-vq.mjs` replaces in place, asserts the
+slice's SHAPE rather than trusting offsets (including that every `VQ_*`
+identifier the slice READS is one it DEFINES — the `ReferenceError` check the
+generic-twin failure wanted and did not have), and `--check` fails on drift. It
+is a `site-test` step now.
+
+**PROMOTING IT CAUGHT A REAL NEAR-MISS ON ITS FIRST RUN, and this is the part
+worth keeping.** The slice reaches past `vestingQuoteOk` to `quoteTrim`, which
+app.js twins too, and the old slicer rewrote one export BY NAME — so app.js came
+out carrying **`export function quoteTrim` inside its IIFE**. ***`node --check`
+PASSED***, because it parses as a module; every browser rejects an `export` in a
+classic `<script>` as a SyntaxError and **loads no app.js at all — the whole
+site, not one feature.** The strip is general now and asserts that no `export`
+survives. *A named rewrite is a rewrite for the exports you remembered.*
+
+Sibling of *`node --check` is the syntax check; importing a script executes it*:
+there the file ran when it should not have, here the file was syntactically
+perfect **under the wrong module goal**. The only local check that would have
+caught it is `smoke-test`, which boots the page.
+
+**And prose does not ship to browsers.** Verbatim-slicing lib-quote's
+measurement notes put **3,571 bytes** of commentary into every visitor's
+download for zero behavioural change, so the slicer strips multi-line block
+comments as `gen-generic-twin` does — keeping trailing one-line comments, which
+are often the only thing naming which half of a conjunction a line belongs to,
+and **asserting the non-comment lines are identical before and after**. Net
+app.js is **1,690 bytes smaller** and its twin code is byte-identical to the
+committed version — verified by reading the diff, not asserted.
+
+### What this does NOT fix
+
+`audit-data`'s form-question check still reads `matchText` only. A MATCH quote
+carrying form text would be caught there; a VESTING quote is now caught by the
+guard instead, which is a different mechanism in a different place. Making that
+check symmetric is a smaller, separate change and is not done here.
+
+`docs/accuracy-log.md` 2026-10-04 (21:2xZ).
+
 ## 2026-10-04 (21:0xZ) — v201: the vesting quote fallback was FIRST-WINS, and the display guard is the oracle that fixes it — 5 plans / 47,462 participants
 
 **The 09:0xZ ship gave the display a guard (`vestingQuoteOk`) that withholds a

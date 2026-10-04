@@ -218,9 +218,47 @@ const VQ_OTHER_RULE = new RegExp([
  * True when `text` may be shown to a reader under a vesting heading.
  * @param {string} text the stored vestingText
  */
+/* (c) THE BLANK FORM IS NOT A PLAN'S RULE — 2026-10-04, found while gating v201.
+ *
+ * Form 5500 line 6g(2) prints the question *"Number of participants who
+ * terminated employment during the plan year with accrued benefits that were
+ * less than 100% vested"*. The composite PDF carries the form pages ahead of
+ * the audited attachment, so that sentence is in EVERY filing's text — and it
+ * carries a vest word and a percentage, so **`VQ_VESTS` accepts it and (b)
+ * returns true before (a) is ever consulted.** The extractor's own `BOILER`
+ * filter does not block it either (no underscore run, no `part IV`, no
+ * `2[01][abc]`), and `audit-data`'s form-question check reads `matchText` ONLY.
+ * So nothing anywhere tested a VESTING quote for form text.
+ *
+ * MEASURED over the extractor's OWN candidate sets (sliced out of lib-4i.mjs
+ * and run, not retyped) across both local corpora — **364 filings, 2,361
+ * guard-accepted candidates, and this sentence is an accepted candidate in ALL
+ * 364.** It is published on none of them today, because an unrelated `continue`
+ * inside the vesting loop happens to drop it first. That is luck, not design,
+ * and v201 made the guard an ORACLE THE PARSER CONSULTS — so the next change to
+ * that `continue` would promote the blank form onto 30+ plan pages.
+ *
+ * ONE ARM, BY LEAVE-ONE-OUT RATHER THAN BY TASTE. Three were written. The
+ * digit-box filler `123456789012` fires ALONE on 304 candidates and is
+ * **NECESSARY for 0** — every one is also caught by the printed question — and
+ * a `number of deferred vested` arm (Schedule SSA) fires on **0**. Sufficiency
+ * is not necessity: only the printed question is load-bearing (alone 386,
+ * necessary for 82), so only it ships.
+ *
+ * THE PRICE IS ZERO AND THAT IS THE WHOLE SAFETY CASE: of all **58,257
+ * PUBLISHED** vesting quotes in the store, this veto withholds **0**. It cannot
+ * take a quote off a page; it can only stop one arriving. (A first attempt to
+ * size the class from the STORED quotes read 0 among published AND 0 among
+ * withheld — *a both-sided zero across a whole population reports on the
+ * query* — which is why the vocabulary comes from the candidate sets.)
+ *
+ * It is checked BEFORE (b), because (b) is what accepts it. */
+const VQ_FORM_TEXT = /\bNumber of participants who terminated employment during the plan year\b/i;
+
 export function vestingQuoteOk(text) {
   const t = String(text || "").replace(/\s+/g, " ").trim();
   if (!t) return false;
+  if (VQ_FORM_TEXT.test(t)) return false;     /* (c) is the blank form's own question */
   if (VQ_VESTS.test(t)) return true;          /* (b) states a vesting rule */
   return !VQ_OTHER_RULE.test(t);              /* (a) states another one */
 }

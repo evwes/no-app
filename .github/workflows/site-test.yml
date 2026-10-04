@@ -16,7 +16,7 @@ on:
             # withheld population to a ceiling, which is a DATA condition, and a
             # data condition must never be able to stop the pipeline ingesting
             # new filings. A red site-test blocks nothing but the verdict.
-            "scripts/lib-4i.mjs",
+            "scripts/lib-4i.mjs", "scripts/slice-vq.mjs",
             "scripts/lib-disclose.mjs", "scripts/build-seo-pages.mjs",
             "plans-list.json", "plans-index.json", "map-points.json"]
   workflow_dispatch:
@@ -60,6 +60,18 @@ jobs:
       # different predicate.
       - name: Vesting quote — withholds another rule, never a real schedule
         run: node scripts/vesting-quote-test.mjs
+      # app.js's copy of the two quote guards is SLICED from lib-quote.mjs, and
+      # the slicer that built it lived in gitignored scratchpad/ and could only
+      # INSERT -- so the only way to change the twin was to hand-edit app.js,
+      # which is how this project has lost four browser twins. The slicer is
+      # tracked and replaces in place now, and this is what makes that worth
+      # anything: a hand-edited or drifted twin fails here. Promoting it caught
+      # a real near-miss on its first run -- the slice reaches `quoteTrim`, so a
+      # by-name export rewrite left `export function quoteTrim` inside app.js's
+      # IIFE, which `node --check` PASSES (it parses as a module) and every
+      # browser rejects as a SyntaxError, loading no app.js at all.
+      - name: Quote-guard twin — app.js must be a verbatim slice of lib-quote
+        run: node scripts/slice-vq.mjs --check
       # index.html cache-busts its assets with a query string, and that string
       # was typed by hand until 2026-10-02 -- when it was found SEVENTEEN DAYS
       # stale, with app.js and fund-er.js both changed that same day. A
