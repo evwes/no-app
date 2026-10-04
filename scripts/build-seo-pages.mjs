@@ -10,7 +10,7 @@
  * EIN-PN (stable forever, no orphans when a sponsor renames). */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { matchQuoteOk, vestingQuoteOk, quoteTrim } from "./lib-quote.mjs";
-import { coverageBand, filedUnit, cleanFiledName, isParticipantLoanRow, isNamelessFundRow, hasNoFundIdentity, isLoanDescriptionRow, isLoanAnswerRow, isLoanMaturityRow, isLoanVocabularyRow, isDirectionCaptionRow, isOfficeListRow, isPageBreakCaptionRow, isLabelOnlyName, trustScheduleDMenu } from "./lib-disclose.mjs";
+import { coverageBand, filedUnit, cleanFiledName, isParticipantLoanRow, isNamelessFundRow, hasNoFundIdentity, isLoanDescriptionRow, isLoanAnswerRow, isLoanMaturityRow, isLoanVocabularyRow, isDirectionCaptionRow, isOfficeListRow, isPageBreakCaptionRow, isLabelOnlyName, isSentenceRow, trustScheduleDMenu } from "./lib-disclose.mjs";
 import { isGenericTypeName } from "./lib-4i.mjs";
 
 const BASE = "https://evwes.github.io/no-app"; // becomes the custom domain when DNS lands
@@ -266,7 +266,7 @@ for (const r of d.plans.slice(0, TOP_N)) {
      * carries ticker MO on $1,456,691,207 and is typed `Company stock`.
      * lib-disclose.mjs carries the measurement — 152 rows / 132 plans /
      * 1,232,895 participants / $42,859,386,021 across 43 names, all read. */
-    const nameGeneric = (n) => issGeneric(n) || isLabelOnlyName(n);
+    const nameGeneric = (n) => issGeneric(n) || isLabelOnlyName(n) || isSentenceRow(n);
     const nameless = (!iss || issGeneric(iss)) && (isNamelessFundRow(f, nm, nameGeneric) || isDirectionCaptionRow(nm) || isOfficeListRow(nm) || isPageBreakCaptionRow(nm));
     /* a wrapped loan DESCRIPTION's continuation line, which names nothing at
      * all — `at rates of interest ranging from 4.25% to`. This page has no

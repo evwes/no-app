@@ -2041,6 +2041,96 @@ for (const [s, why] of [
   throw new Error(`lib-disclose: isLabelOnlyName would qualify ${JSON.stringify(s)} (${why}) — it names something, fix the predicate rather than the control`);
 }
 
+/* A SENTENCE IS NOT A NAME — 2026-10-04 (12:2xZ).
+ *
+ * 53 published rows / 54 plans / 484,457 participants / $9,498,704,315 publish,
+ * as a holding's name, a SENTENCE ABOUT the holding or a caption listing an
+ * account's contents. American Airlines (132,820 ppl) publishes `Separately
+ * managed account which includes: Corporate Common Stocks, Registered
+ * Investment` on **$9,448,603,045, 38.2% of its $24.76B menu**; Kaiser
+ * Foundation Health Plan publishes `Loan Repayments are included` on two plans
+ * holding 288,416 people between them; Lerner Corporation publishes `The
+ * accompanying notes are an integral part of this schedule. LERNER
+ * CORPORATION…` — the attachment's own footer — at 2.1% of its menu.
+ *
+ * THE REGISTER RECORDED THIS CLASS AS "2 rows / 288,416 ppl, and the honest
+ * size is two", together with an explicit refusal to build a name-shape
+ * predicate for a two-member class. That refusal was right about its own
+ * evidence and wrong about the class, and the reason is the instrument: the
+ * screen that sized it keyed on a VOCABULARY (`\bis\b`) and matched **`IS`,
+ * the abbreviation for Institutional Shares**, so it read 3,328 rows whose top
+ * members were correct abbreviated names (Cigna's `BLACKROCK SP 500 IDX (IS)`,
+ * $3.4B, 91,385 readers) and the real members had to be dug out by hand.
+ *
+ * SO THIS SCREEN IS NOT KEYED ON A VOCABULARY. It requires a FINITE VERB
+ * followed by a function word — a PREDICATE, which is the grammatical thing
+ * that makes a string a sentence about the holding rather than a name for it.
+ * `IS` the share class cannot match, because a share class is never followed
+ * by `included`, `of`, `a` or `the`. Measured over all 1,724,192 published
+ * rows: **53 match, and all 53 were read.** There is no false-positive
+ * population to trade off, which is why this ships where the vocabulary
+ * version could not.
+ *
+ * THE CLAIM IS DELIBERATELY THE WEAKER ONE. ~40 of the 53 are loan-repayment
+ * notes carrying real dollars, and "Participant loans" would be a more
+ * informative label — but the filed string is a NOTE, often a checkbox answer
+ * (`Repayments are Included Yes`, `repayments are included : X`, `Loan
+ * Repayments are included: @`), and whether the dollars beside it ARE the
+ * loans or are merely noted as included elsewhere is not stated. Qualifying
+ * the row says only that the filing names no specific fund, which is
+ * unarguably true of every one of the 53. *A weaker claim that is certainly
+ * true beats a stronger one that is probably true.*
+ *
+ * ONE ROW GAINS MORE THAN A LABEL: Indeed, Inc.'s `consisting of Cash, Money
+ * Market and` publishes a fabricated **0.2%** expense ratio, because the fee
+ * comes from a NAME-pattern table that priced a caption. `namelessRow` joins
+ * the fee suppressors (app.js), so qualifying the row withdraws the fee too.
+ *
+ * DISPLAY-ONLY, and composed into `isNamelessFundRow` rather than added beside
+ * it, for the reason that function's early returns exist: employer stock and
+ * brokerage windows must be spared. None of the 53 is stock today — the
+ * composition is what keeps that true of the 54th.
+ * docs/accuracy-log.md 2026-10-04 (12:2xZ). */
+const SENTENCE_PREDICATE = /\b(?:are|were|was|includes?|represents?|consists?|contains?|holds?|comprises?)\s+(?:included|a|an|the|of|in|by)\b/i;
+const CONTENTS_CAPTION = /\b(?:which\s+includes?|consist(?:s|ing)\s+of|compris(?:ed|ing)\s+of|made\s+up\s+of|invested\s+in\s+the\s+following)\b/i;
+export function isSentenceRow(name) {
+  const s = String(name == null ? "" : name);
+  return SENTENCE_PREDICATE.test(s) || CONTENTS_CAPTION.test(s);
+}
+/* Asserted at import, both directions, each must-KEEP a case where the named
+ * condition is the ONLY protection. The must-SEE cases are the real filed
+ * strings, because an arm that is broken and an arm that is inert read the
+ * same zero — and the whole-store count here is 53, small enough that a silent
+ * regression to 0 would look like a quiet store rather than a dead predicate. */
+for (const [s, why] of [
+  ["Separately managed account which includes: Corporate Common Stocks, Registered Investment",
+    "American Airlines, $9,448,603,045 at 38.2% of its menu, 132,820 readers"],
+  ["Loan Repayments are included", "Kaiser Foundation Health Plan ×2, 288,416 ppl"],
+  ["Repayments are Included Yes", "a checkbox answer, 8 plans"],
+  ["repayments are included : X", "Access Clinical Partners"],
+  ["The accompanying notes are an integral part of this schedule. LERNER CORPORATION",
+    "Lerner Corporation — the attachment's own footer"],
+  ["Consists of short term investments", "W.R. Berkley"],
+  ["consisting of Cash, Money Market and", "Indeed, Inc. — the one member publishing a fabricated 0.2 fee"],
+  ["are Included", "Imagine Schools, $2,644,172 at 2.4%"],
+]) if (!isSentenceRow(s)) {
+  throw new Error(`lib-disclose: isSentenceRow no longer reaches ${JSON.stringify(s)} (${why}) — the arm is inert, fix it rather than shipping a quiet guard`);
+}
+for (const [s, why] of [
+  ["BLACKROCK SP 500 IDX (IS)", "Cigna, $3.4B / 91,385 readers — `IS` is Institutional Shares; the FUNCTION WORD is the only protection"],
+  ["VANG FTSE SOC IDX IS", "Amazon, $873,714,000 — same abbreviation, no following function word"],
+  ["VANG IS TL STK MK IP", "Mayo, $1.6B at 10.68% of its menu — `IS` in the MIDDLE"],
+  ["Income Fund", "a bare product name — no verb at all"],
+  ["American Funds The Income Fund of America R6", "`of` follows a NOUN, not a verb — the verb list is the only protection"],
+  ["Vanguard Institutional Index Fund", "a real fund"],
+  ["Holdings in Transition", "`in` follows a noun"],
+  ["T. Rowe Price Retirement Balanced Fund", "a real fund"],
+  ["Hold Co A Stock Fund", "`Hold` is not `holds`/`held` as a finite verb here — `Co` follows, not a function word"],
+  ["Separately Managed Account", "the bare vehicle name, with no contents listed, is a different class and a different remedy"],
+]) if (isSentenceRow(s)) {
+  throw new Error(`lib-disclose: isSentenceRow would qualify ${JSON.stringify(s)} (${why}) — it names something, fix the predicate rather than the control`);
+}
+
 export function isNamelessFundRow(f, cleanedName, isGenericName) {
   const type = String((f && f.type) || "");
   const name = String(cleanedName || (f && f.name) || "");

@@ -16,7 +16,7 @@
  *   4. a negative control per condition
  */
 import { readFileSync } from "node:fs";
-import { hasNoFundIdentity, cleanFiledName, isLabelOnlyName, isNamelessFundRow } from "./lib-disclose.mjs";
+import { hasNoFundIdentity, cleanFiledName, isLabelOnlyName, isSentenceRow, isNamelessFundRow } from "./lib-disclose.mjs";
 import { isGenericTypeName } from "./lib-4i.mjs";
 
 const fails = [];
@@ -217,8 +217,99 @@ for (const [r, who] of STOCK_ROWS) {
   ok(isNamelessFundRow(r, r.name, lblGeneric) === false, `EMPLOYER STOCK would be qualified "names no specific fund": ${who}`);
 }
 
+/* ===== 8. A SENTENCE IS NOT A NAME =====================================
+ *
+ * 53 published rows / 484,457 participants / $9,498,704,315 publish a sentence
+ * ABOUT the holding, or a caption listing an account's contents, as the
+ * holding's NAME. American Airlines' is $9,448,603,045 at 38.2% of its menu in
+ * front of 132,820 readers.
+ *
+ * THE MUST-KEEP CASES ARE THE WHOLE POINT, because the register's earlier
+ * screen for this class keyed on a VOCABULARY and matched `IS`, the
+ * Institutional Shares abbreviation, on 3,328 rows. Three of those rows are
+ * pinned below BY VALUE, and in each the FOLLOWING FUNCTION WORD is the only
+ * protection. */
+const SENT_QUALIFY = [
+  ["Separately managed account which includes: Corporate Common Stocks, Registered Investment",
+    "American Airlines — $9,448,603,045, 38.2% of its menu, 132,820 readers"],
+  ["Loan Repayments are included", "Kaiser Foundation Health Plan x2, 288,416 ppl between them"],
+  ["Repayments are Included Yes", "a checkbox answer, 8 plans"],
+  ["repayments are included : X", "Access Clinical Partners"],
+  ["Loan Repayments are included: @", "Step Forward — and an OCR'd checkbox"],
+  ["Repyaments are Included: o $17,160", "Desotec US — the filer's own typo must not matter"],
+  ["The accompanying notes are an integral part of this schedule. LERNER CORPORATION",
+    "Lerner Corporation — the attachment's own FOOTER, 2.1% of its menu"],
+  ["Consists of short term investments", "W.R. Berkley"],
+  ["consisting of Cash, Money Market and", "Indeed, Inc. — the one member publishing a fabricated 0.2 fee"],
+  ["are Included", "Imagine Schools — $2,644,172 at 2.4%"],
+  ["N/A. Participant-directed investment Empower fixed account includes the forfeiture account",
+    "Three Way Logistics"],
+];
+const SENT_KEEP = [
+  ["BLACKROCK SP 500 IDX (IS)", "Cigna, $3.4B / 91,385 readers — `IS` is Institutional Shares and the FOLLOWING FUNCTION WORD is the only protection"],
+  ["VANG FTSE SOC IDX IS", "Amazon, $873,714,000 — the same abbreviation, trailing"],
+  ["VANG IS TL STK MK IP", "Mayo, $1.6B at 10.68% of its menu — the abbreviation MID-NAME"],
+  ["American Funds The Income Fund of America R6", "`of` follows a NOUN — the finite-VERB condition is the only protection"],
+  ["Holdings in Transition", "`in` follows a noun"],
+  ["Hold Co A Stock Fund", "`Hold` is not a finite verb here and `Co` is not a function word"],
+  ["Income Fund", "a bare product name — no verb at all"],
+  ["Vanguard Institutional Index Fund", "a real fund"],
+  ["T. Rowe Price Retirement Balanced Fund", "a real fund"],
+  ["Separately Managed Account", "the bare vehicle name with NO contents listed — a different class and a different remedy"],
+  ["Contains Fund", "a verb with no function word after it"],
+];
+for (const [n, who] of SENT_QUALIFY) ok(isSentenceRow(n) === true, `isSentenceRow MUST reach ${JSON.stringify(n)} (${who}) — the arm is inert`);
+for (const [n, why] of SENT_KEEP) ok(isSentenceRow(n) === false, `isSentenceRow would qualify ${JSON.stringify(n)} — ${why}`);
+
+/* A CONTROL THAT CANNOT FAIL IS DECORATIVE, and a case protected by TWO
+ * conditions proves NEITHER. isSentenceRow has exactly two conditions, so each
+ * is neutered in full here and must break a case where it is the ONLY
+ * protection — found by asking which cases the OTHER condition misses, not by
+ * assuming.
+ *
+ * `Consists of short term investments` is deliberately NOT used: both
+ * conditions reach it (`consists of` is in each vocabulary), so it could not
+ * fail for either. The single-protection cases are:
+ *   finite predicate  `Loan Repayments are included`  — `are included` is in no
+ *                     contents-caption spelling
+ *   contents caption  `Separately managed account which includes: Corporate` —
+ *                     `includes` is followed by a COLON, not a function word,
+ *                     so the predicate arm cannot see it */
+{
+  const PRED = /\b(?:are|were|was|includes?|represents?|consists?|contains?|holds?|comprises?)\s+(?:included|a|an|the|of|in|by)\b/i;
+  const CAPT = /\b(?:which\s+includes?|consist(?:s|ing)\s+of|compris(?:ed|ing)\s+of|made\s+up\s+of|invested\s+in\s+the\s+following)\b/i;
+  const predOnly = "Loan Repayments are included";
+  const captOnly = "Separately managed account which includes: Corporate Common Stocks";
+  /* the shipped predicate must agree with this transcription on both, or the
+   * control is testing a copy that has drifted from the source */
+  ok(isSentenceRow(predOnly) === true && isSentenceRow(captOnly) === true,
+    "the control's transcription has drifted from the shipped isSentenceRow");
+  const withoutPred = (n) => CAPT.test(n);
+  const withoutCapt = (n) => PRED.test(n);
+  ok(withoutPred(predOnly) === false,
+    `CONTROL IS DECORATIVE: dropping the finite-predicate arm still reaches ${JSON.stringify(predOnly)} — it is protected twice, pick another case`);
+  ok(withoutCapt(captOnly) === false,
+    `CONTROL IS DECORATIVE: dropping the contents-caption arm still reaches ${JSON.stringify(captOnly)} — it is protected twice, pick another case`);
+  console.log("\nNEGATIVE CONTROL, one per isSentenceRow condition:");
+  console.log("  drop the finite-predicate arm: Kaiser's loan caption stops being reached (control fires)");
+  console.log("  drop the contents-caption arm: American Airlines' $9.4B row stops being reached (control fires)");
+}
+
+/* and the SAME composition guard: none of the 53 is employer stock today, and
+ * the injection into isNamelessFundRow is what keeps that true of the 54th. */
+const sentGeneric = (n) => isGenericTypeName(n) || hasNoFundIdentity(n) || isLabelOnlyName(n) || isSentenceRow(n);
+const SENT_STOCK = [
+  [{ name: "Loan Repayments are included", type: "Company stock" }, "a hypothetical stock row carrying the caption"],
+  [{ name: "consisting of Cash, Money Market and", type: "Company stock" }, "and another"],
+];
+for (const [r, who] of SENT_STOCK) {
+  ok(isSentenceRow(r.name) === true, `the employer-stock control is decorative: isSentenceRow does not reach ${JSON.stringify(r.name)} (${who})`);
+  ok(isNamelessFundRow(r, r.name, sentGeneric) === false, `EMPLOYER STOCK would be qualified "names no specific fund": ${who}`);
+}
+
 if (fails.length) { for (const f of fails) console.error("FAIL " + f); process.exit(1); }
 console.log(`\nno-identity: ${KEEP.length} real names kept, ${QUALIFY.length} qualified, `
   + `${BOTH_FORMS.length * 2} surface-agreement, idempotence over ${checked.toLocaleString()} names, `
   + `${STILL.length * 2} baseline, both controls fire, `
-  + `label-only ${LBL_QUALIFY.length} qualified / ${LBL_KEEP.length} kept / ${STOCK_ROWS.length * 2} employer-stock — 0 failures`);
+  + `label-only ${LBL_QUALIFY.length} qualified / ${LBL_KEEP.length} kept / ${STOCK_ROWS.length * 2} employer-stock, `
+  + `sentence ${SENT_QUALIFY.length} qualified / ${SENT_KEEP.length} kept / ${SENT_STOCK.length * 2} employer-stock — 0 failures`);

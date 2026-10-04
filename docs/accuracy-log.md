@@ -7,6 +7,122 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-04 (12:3xZ) — A SENTENCE IS NOT A NAME: 7 reader-facing rows / 157,807 ppl / $9,489,072,912, and one fabricated fee withdrawn
+
+**What was wrong.** American Airlines' retirement plan (132,820 participants,
+$24.76B menu) published, as the name of its largest holding, the sentence
+`Separately managed account which includes: Corporate Common Stocks, Registered
+Investment` — **$9,448,603,045, 38.2% of its whole menu** — typed
+`Collective trust`, as though a fund had been identified. Indeed, Inc. (10,050
+ppl) published `consisting of Cash, Money Market and` at $36,794,098 typed
+`Mutual fund` **and priced it at a 0.2% expense ratio**, a fee a NAME-pattern
+table computed for a caption. Lerner Corporation published `The accompanying
+notes are an integral part of this schedule. LERNER CORPORATION…` — the
+attachment's own footer — at 2.1% of its menu.
+
+**The change.** `isSentenceRow` in `lib-disclose.mjs`, display-only, sliced
+verbatim into app.js and composed into both surfaces' name test. A row whose
+published name is a sentence about the holding, or a caption listing an
+account's contents, is qualified "the filing names no specific fund".
+
+**THE CLASS WAS RECORDED AS "2 rows / 288,416 ppl, and the honest size is two",
+WITH AN EXPLICIT REFUSAL TO BUILD A PREDICATE FOR IT — and that refusal was
+right about its own evidence and wrong about the class.** The screen that sized
+it keyed on a VOCABULARY (`\bis\b`) and matched **`IS`, the abbreviation for
+Institutional Shares**, reading 3,328 rows whose largest members were correct
+abbreviated names (Cigna's `BLACKROCK SP 500 IDX (IS)`, $3.4B, 91,385 readers;
+Mayo's `VANG IS TL STK MK IP`, $1.6B). With 3,328 false positives in front of
+it, two real members were all that could be dug out by hand.
+
+**SO THE INSTRUMENT IS GRAMMATICAL RATHER THAN LEXICAL, and that is the
+transferable part.** The screen requires a FINITE VERB followed by a FUNCTION
+WORD — a predicate, which is the thing that makes a string a sentence *about*
+a holding rather than a name *for* one. A share class is never followed by
+`included`, `of`, `a` or `the`, so the abbreviation cannot match: all three
+Cigna/Amazon/Mayo rows are pinned as must-KEEP cases where that following
+function word is the ONLY protection. Over all **1,724,192** published rows the
+screen matches **53, and all 53 were read.** There is no false-positive
+population to trade against, which is why this ships where the vocabulary
+version could not. *When a class is a semantic judgment, requiring the presence
+of the bad thing beats screening for the absence of the good thing* — and when
+the bad thing is "this is a sentence", the test is a predicate, not a word list.
+
+**THE STORED FLAG MOVES ON 53 ROWS AND THE READER SEES 7, which is the figure
+this entry leads with.** `namelessRow` flips on all 53, but **46 of them already
+publish `Participant loans — not a menu choice`**, because the loan predicate
+already won and sits ahead of the nameless label in the type chain. Kaiser
+Foundation Health Plan's two rows carry 288,416 participants between them and
+see no change at all. So the honest reader-facing count is:
+
+| | ppl | shown type |
+|---|---|---|
+| American Airlines (2 plans) | **132,820** | `Collective trust` → qualified, $9,448,603,045 at **38.2%** |
+| Indeed, Inc. | 10,050 | `Mutual fund` → qualified, **and er 0.2 → none** |
+| W.R. Berkley | 9,194 | `Cash / short-term` → qualified |
+| Imagine Schools | 4,588 | `—` → qualified, $2,644,172 at 2.4% |
+| Three Way Logistics | 603 | `Collective trust` → qualified |
+| Lerner Corporation | 417 | `Pooled separate account` → qualified |
+| Desotec US | 135 | `—` → qualified |
+
+***A STORED FIELD IS NOT A PUBLISHED ONE***, met for the second time in two
+days on my own ship — and the headline figure 484,457 would have been wrong by
+3.1x. **DO NOT CARRY 53 rows / 484,457 ppl as a reader-facing number.**
+
+**THE CLAIM IS DELIBERATELY THE WEAKER ONE.** About 40 of the 53 are
+loan-repayment notes carrying real dollars, and "Participant loans" would be
+more informative — but the filed string is a NOTE, often a checkbox answer
+(`Repayments are Included Yes`, `repayments are included : X`, `Loan Repayments
+are included: @`, and Desotec's `Repyaments are Included: o $17,160` with the
+filer's own typo), and whether the dollars beside it ARE the loans or are merely
+noted as included elsewhere is not stated. "The filing names no specific fund"
+is unarguably true of all 53. *A weaker claim that is certainly true beats a
+stronger one that is probably true.*
+
+**GATES.** The narrowing is a superset BY CONSTRUCTION, not a sampled guess:
+`git diff app.js` is exactly two regex constants plus a pure function, ONE added
+disjunct in `nameIsGeneric`, and a window tether — no other line changed, and
+`nameIsGeneric` has exactly one consumer (app.js:3843) — so a row failing
+`isSentenceRow` evaluates identically in both copies. The sampled discharge is a
+check on my READING of that diff rather than its basis: **~40,000 non-matching
+rows rendered under both copies, 0 differing**, with the script exiting 1 on any
+difference. Cleaner drift between the copies **0** (row membership cannot move);
+the app.js twin agrees with lib-disclose on **every one of the 1,724,192**
+published names. 11 must-reach and 11 must-keep pins in `no-identity-test.mjs`,
+18 in the smoke-test tether, and import-time assertions in both directions.
+**3 crawlable pages changed**, each gaining the qualification on exactly its one
+offending row with every sibling untouched — Indeed's T. Rowe and Vanguard rows
+stay named, which is the positive control that matters.
+
+**A CASE PROTECTED TWICE PROVES NEITHER, and the single-protection cases had to
+be found rather than assumed.** `Consists of short term investments` is reached
+by BOTH conditions (`consists of` is in each vocabulary), so it is deliberately
+NOT the control for either. The negative controls neuter each condition in full
+against the case the OTHER misses: Kaiser's `Loan Repayments are included` for
+the finite-predicate arm, and American Airlines' row for the contents-caption
+arm — where `includes` is followed by a COLON, so the predicate arm cannot see
+it. Both fire.
+
+**Composed into `isNamelessFundRow` rather than placed beside it**, so its
+subtotal / brokerage-window / EMPLOYER-STOCK early returns guard the new arm.
+None of the 53 is stock today; the composition is what keeps that true of the
+54th, and two hypothetical stock rows carrying these captions are asserted
+spared.
+
+**HOW IT WAS FOUND, which is a lesson about the queue rather than about names.**
+Working queue remedy **(c)** — "297 rows / 96 plans / 252,235 ppl not starting
+with a label", which `CLAUDE.md` says must be re-measured rather than read. The
+first re-measurement was WRONG and said 630 rows, because it screened the
+STORED name and classified the string `renderRow` was handed: **the page cleans
+UPSTREAM of the slice** (`cleanCostMarkers`, app.js:2555) and the shipped
+`TYPE_SUFFIX` arm already strips a complete `Registered investment companies`
+suffix. Asking the shipped cleaner directly is what exposed it — *measuring
+through the function the page calls is not enough when the page calls something
+else FIRST.* Corrected, remedy (c) is **572 escaping rows / 199 plans / 518,131
+ppl**, every bucket attributed, and its single largest member is this American
+Airlines row, which belongs to no suffix class at all.
+
+`docs/accuracy-log.md` 2026-10-04 (12:3xZ).
+
 ## 2026-10-04 (10:4xZ) — "$0K" published for a nonzero amount: the formatter's FLOOR, on 16,497 holding rows / 8,069,421 participants, found by working a different queue item
 
 **SHIPPED.** One branch of `money()` in `app.js`. Below the K floor it now

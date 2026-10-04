@@ -1732,14 +1732,71 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
     const rest = w.slice(i).join(" ");
     return !rest || LABEL_ONLY_PAGE_REF.test(rest);
   }
+  /* A SENTENCE IS NOT A NAME — 2026-10-04 (12:2xZ).
+   *
+   * 53 published rows / 54 plans / 484,457 participants / $9,498,704,315 publish,
+   * as a holding's name, a SENTENCE ABOUT the holding or a caption listing an
+   * account's contents. American Airlines (132,820 ppl) publishes `Separately
+   * managed account which includes: Corporate Common Stocks, Registered
+   * Investment` on **$9,448,603,045, 38.2% of its $24.76B menu**; Kaiser
+   * Foundation Health Plan publishes `Loan Repayments are included` on two plans
+   * holding 288,416 people between them; Lerner Corporation publishes `The
+   * accompanying notes are an integral part of this schedule. LERNER
+   * CORPORATION…` — the attachment's own footer — at 2.1% of its menu.
+   *
+   * THE REGISTER RECORDED THIS CLASS AS "2 rows / 288,416 ppl, and the honest
+   * size is two", together with an explicit refusal to build a name-shape
+   * predicate for a two-member class. That refusal was right about its own
+   * evidence and wrong about the class, and the reason is the instrument: the
+   * screen that sized it keyed on a VOCABULARY (`\bis\b`) and matched **`IS`,
+   * the abbreviation for Institutional Shares**, so it read 3,328 rows whose top
+   * members were correct abbreviated names (Cigna's `BLACKROCK SP 500 IDX (IS)`,
+   * $3.4B, 91,385 readers) and the real members had to be dug out by hand.
+   *
+   * SO THIS SCREEN IS NOT KEYED ON A VOCABULARY. It requires a FINITE VERB
+   * followed by a function word — a PREDICATE, which is the grammatical thing
+   * that makes a string a sentence about the holding rather than a name for it.
+   * `IS` the share class cannot match, because a share class is never followed
+   * by `included`, `of`, `a` or `the`. Measured over all 1,724,192 published
+   * rows: **53 match, and all 53 were read.** There is no false-positive
+   * population to trade off, which is why this ships where the vocabulary
+   * version could not.
+   *
+   * THE CLAIM IS DELIBERATELY THE WEAKER ONE. ~40 of the 53 are loan-repayment
+   * notes carrying real dollars, and "Participant loans" would be a more
+   * informative label — but the filed string is a NOTE, often a checkbox answer
+   * (`Repayments are Included Yes`, `repayments are included : X`, `Loan
+   * Repayments are included: @`), and whether the dollars beside it ARE the
+   * loans or are merely noted as included elsewhere is not stated. Qualifying
+   * the row says only that the filing names no specific fund, which is
+   * unarguably true of every one of the 53. *A weaker claim that is certainly
+   * true beats a stronger one that is probably true.*
+   *
+   * ONE ROW GAINS MORE THAN A LABEL: Indeed, Inc.'s `consisting of Cash, Money
+   * Market and` publishes a fabricated **0.2%** expense ratio, because the fee
+   * comes from a NAME-pattern table that priced a caption. `namelessRow` joins
+   * the fee suppressors (app.js), so qualifying the row withdraws the fee too.
+   *
+   * DISPLAY-ONLY, and composed into `isNamelessFundRow` rather than added beside
+   * it, for the reason that function's early returns exist: employer stock and
+   * brokerage windows must be spared. None of the 53 is stock today — the
+   * composition is what keeps that true of the 54th.
+   * docs/accuracy-log.md 2026-10-04 (12:2xZ). */
+  const SENTENCE_PREDICATE = /\b(?:are|were|was|includes?|represents?|consists?|contains?|holds?|comprises?)\s+(?:included|a|an|the|of|in|by)\b/i;
+  const CONTENTS_CAPTION = /\b(?:which\s+includes?|consist(?:s|ing)\s+of|compris(?:ed|ing)\s+of|made\s+up\s+of|invested\s+in\s+the\s+following)\b/i;
+  function isSentenceRow(name) {
+    const s = String(name == null ? "" : name);
+    return SENTENCE_PREDICATE.test(s) || CONTENTS_CAPTION.test(s);
+  }
   const isGenericName = (n) => isGenericTypeName(n) || hasNoFundIdentity(n);
   /* the NAME half of the call-site gate, widened by the predicate above.
    * Injected into `isNamelessFundRow` rather than added beside it so that
    * its subtotal / brokerage-window / EMPLOYER-STOCK early returns guard the
    * new arm too — Altria's bare `Shares` carries ticker MO on $1.46B and is
    * typed `Company stock`. The ISSUER half stays on `isGenericName`. */
-  const nameIsGeneric = (n) => isGenericName(n) || isLabelOnlyName(n);
+  const nameIsGeneric = (n) => isGenericName(n) || isLabelOnlyName(n) || isSentenceRow(n);
   window.__wampoLabelOnly = isLabelOnlyName;  // read by the smoke test only
+  window.__wampoSentenceRow = isSentenceRow;  // read by the smoke test only
   window.__wampoGenericName = isGenericName;  // read by the smoke test only
   function isNamelessFundRow(f, cleanedName, isGenericName) {
     const type = String((f && f.type) || "");

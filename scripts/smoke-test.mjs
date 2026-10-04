@@ -796,6 +796,44 @@ try {
   for (const n of lblCases.slice(7))
     if (isLabelOnlyName(n)) fail(`the label-only arm would tell a reader "no specific fund" about a name that identifies something: ${JSON.stringify(n)}`);
 
+  /* A SENTENCE IS NOT A NAME, tethered 2026-10-04. Same arrangement as the
+   * label-only tether above and for the same reason: the predicate lives twice,
+   * canonical in lib-disclose for the crawlable pages and sliced into app.js
+   * for the report, so the browser copy is cross-checked against the source on
+   * every frontend push.
+   *
+   * The must-KEEP half carries three rows the register's EARLIER screen for
+   * this class matched wrongly — `IS` is the Institutional Shares abbreviation,
+   * and Cigna's row is $3.4B in front of 91,385 readers. If this tether ever
+   * reports drift on those three, the browser is qualifying real funds. */
+  const sentCases = [
+    "Separately managed account which includes: Corporate Common Stocks, Registered Investment",
+    "Loan Repayments are included", "Repayments are Included Yes",
+    "repayments are included : X", "Consists of short term investments",
+    "consisting of Cash, Money Market and", "are Included",
+    "The accompanying notes are an integral part of this schedule. LERNER CORPORATION",
+    "BLACKROCK SP 500 IDX (IS)", "VANG FTSE SOC IDX IS", "VANG IS TL STK MK IP",
+    "American Funds The Income Fund of America R6", "Holdings in Transition",
+    "Hold Co A Stock Fund", "Income Fund", "Vanguard Institutional Index Fund",
+    "Separately Managed Account", "Contains Fund",
+  ];
+  const SENT_TRUE = 8;   /* the first N must be reached; the rest must be kept */
+  const { isSentenceRow } = await import("./lib-disclose.mjs");
+  const sentGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoSentenceRow !== "function") return null;
+    return cs.map((n) => window.__wampoSentenceRow(n));
+  }, sentCases);
+  if (!sentGot) fail("app.js no longer exposes __wampoSentenceRow — the sentence twin cannot be cross-checked");
+  const sentDrift = sentCases.filter((n, i) => isSentenceRow(n) !== sentGot[i]);
+  if (sentDrift.length) {
+    for (const n of sentDrift) console.error(`  ${JSON.stringify(n)}  app.js=${sentGot[sentCases.indexOf(n)]}  lib-disclose=${isSentenceRow(n)}`);
+    fail(`the sentence twin in app.js disagrees with scripts/lib-disclose.mjs on ${sentDrift.length} of ${sentCases.length} names — re-slice it`);
+  }
+  for (const n of sentCases.slice(0, SENT_TRUE))
+    if (!isSentenceRow(n)) fail(`the sentence arm went INERT on a live published row: ${JSON.stringify(n)}`);
+  for (const n of sentCases.slice(SENT_TRUE))
+    if (isSentenceRow(n)) fail(`the sentence arm would tell a reader "no specific fund" about a name that identifies something: ${JSON.stringify(n)}`);
+
   /* THE PARTICIPANT-LOAN PREDICATE, tethered 2026-09-28. It lives twice —
    * canonical in scripts/lib-disclose.mjs for the crawlable pages, twinned in
    * app.js for the report — so the two are held together the way the filed-name
