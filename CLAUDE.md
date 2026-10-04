@@ -820,27 +820,41 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
-**IN FLIGHT: #571, v200, a FULL RE-PARSE on the dev branch (`52191aae`, push,
-started 02:4xZ).** `PARSER_VERSION` **199 → 200**. It fired FROM THE PUSH, so no
-dispatch was issued — a `workflow_dispatch` on the same SHA is a second run that
-concurrency resolves by killing the first. **Do not push any of the six
-path-filtered files to the dev branch until it concludes, and do NOT mirror
-v200's code until its store exists** (mirroring code that produces data without
-that data is half a deployment).
+**NOTHING IS PRE-REGISTERED and nothing is in flight.** `PARSER_VERSION` is
+**200**, the store is pv-200 at `pvTopShare` **99.9**, and the branch carries
+v200 plus its own store as a MATCHED PAIR.
 
-**PRE-REGISTERED for #571** — v200 withholds a misread match formula in two
-shapes, 33 plans / 54,537 ppl, disjoint (13 + 20, asserted in
-`match-formula-test`):
-`match` **43,338 → 43,305** (the fall IS the improvement) · `matchMisread` 199
-acks → **232** · `matchQuote` and `matchQuoteShown` both **RISE** by up to 33
-(a withheld plan reverts to quoting, it does not go blank) · `pv` → **200** at
-~99.9% · unchanged: confident 60,167 · lineups 59,819 · entries 65,480 ·
-vesting 53,100 · roth 38,350 · HIGH 4 · warn 556 · `dl` 48 or higher.
-***THE 33 IS A FLOOR, NOT A CEILING*** — the gate reads `out.matchText || t`,
-every one of the 33 has a stored quote so those predictions are exact, but a
-plan with NO stored quote is judged against full text the sandbox lacks, so the
-full-text path can only ADD. A delta above 33 is that, not a regression.
-`docs/accuracy-log.md` 2026-10-04 (02:4xZ).
+**#571 VERDICT (push, dev, `52191aae`, 02:19:52-03:18:16Z, 58 min, data commit
+`183b6590`): v200 LANDED AND HIT ITS REGISTERED FLOOR.** `features.matchMisread`
+**199 -> 233 acks: 34 newly withheld, 0 un-withheld**, 34 plans / 55,182 ppl,
+against a registered **floor** of +33 — one above, from the full-text path
+exactly as the caveat predicted. Every one of the twelve largest is a case read
+before dispatch (Teledyne, Appalachian Regional, Morningstar, Alliance Laundry,
+World Kinect, Winchester, Kent, Cheshire, VT Services, Relation, Engagesmart,
+Lyons Magnus). `matchQuote` 5,364 -> **5,396**, `matchQuoteShown` 1,818 ->
+**1,849** — the withheld plans reverted to quoting, they did not go blank.
+
+**BUT `match` FELL 26 WHERE I REGISTERED 33, AND THE LESSON IS THE METRIC.**
+My first explanation — `covTot.match` is gated on non-zero employer
+contributions (`audit-data.mjs:336-345`) so $0-employer acks cannot move it —
+was read off the shipped definition and then **REFUTED by measurement: only 3
+of the 34 filed $0 employer money**, predicting −31. ***The actual answer is
+that a NET DELTA ON A SHARED METRIC CANNOT VERDICT ONE ARM OF A FULL
+RE-PARSE*** — a pv bump re-extracts all 69,046 acks, so every other match arm
+re-runs and `match` moves independently (−31 from the gate, ~+5 elsewhere, net
+−26). **REGISTER A GATE AGAINST ITS OWN OUTPUT FIELD, NOT A COVERAGE METRIC IT
+SHARES.**
+
+**AND REGISTERING "UNCHANGED" FOR A FULL RE-PARSE IS WRONG BY CONSTRUCTION.**
+confident **60,182** (+15), lineups **59,833** (+14), entries **65,495** (+15),
+vesting **53,115** (+15), roth **38,369** (+19) — all registered unchanged, an
+assumption carried over from eleven consecutive incremental runs whose work list
+was 48 acks. **All 15 gains READ, 0 losses: Levi Strauss & Co. (8,288 ppl) gains
+a 30-row menu from its own 2025 4i attachment** — a plan this file names as
+served by its TRUST and never by its own ack — and the other fourteen (900 down
+to 21 ppl) each cite a 4i attachment with a menu-shaped row count. Fresh
+downloads succeeding, not a loosened parser. `HIGH` **4** (baseline), `warn`
+**558**, `dl` **48**. `docs/accuracy-log.md` 2026-10-04 (03:5xZ).
 
 #568, #569 and #570 are all verdicted, each producing a coverage line identical
 to its predecessor: pv 199 · confident 60,167 · entries 65,480 · match 43,338 ·

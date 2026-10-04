@@ -44562,3 +44562,74 @@ generic predicates asked of the issuer string, plus the Schedule H caption
 vocabulary; it must be measured against the gate's own motivating case
 (`Vanguard Target Retirement 2030 · Mutual Fund Shares` must stay unqualified),
 which is a ready-made negative control the shipped comment hands over.
+
+## 2026-10-04 (03:5xZ) — #571 VERDICT: v200 landed and hit its registered FLOOR, and the metric I registered against cannot verdict it
+
+**#571 SUCCESS (push, dev, `52191aae`, 02:19:52–03:18:16Z, 58 min), data commit
+`183b6590`, adopted.** `PARSER_VERSION` 199 → 200.
+
+### The gate's own output is the only clean measure, and it hit the floor
+
+`features.matchMisread` **199 → 233 acks: 34 newly withheld, 0 un-withheld**,
+34 acks / 34 plans / 55,182 participants. Registered: 232, i.e. **+33 as a
+FLOOR, not a ceiling**, because the gate reads `out.matchText || t` and a plan
+with no stored quote is judged against full text the sandbox does not hold.
+**It came in at +34 — one above the floor, which is the caveat delivering
+exactly what it predicted.** Every one of the twelve largest is a case read and
+named before dispatch: Teledyne `50% of the first 4%`, Appalachian Regional
+`0.5% of the first 0.5%`, Morningstar `75% of the first 75%`, Alliance Laundry,
+World Kinect, Winchester, Kent, Cheshire, VT Services, Relation, Engagesmart,
+Lyons Magnus. `matchQuote` 5,364 → **5,396** and `matchQuoteShown` 1,818 →
+**1,849**, so the withheld plans reverted to quoting their filings rather than
+going blank, as registered.
+
+### `match` FELL 26 WHERE I REGISTERED 33, AND THE METRIC IS THE WRONG WITNESS
+
+My first explanation was that `covTot.match` is gated on non-zero employer
+contributions — `audit-data.mjs:336-345` sends a $0-employer plan to
+`noEmployerMoney` and never reaches the `else if (f.match)` branch — so acks
+outside that denominator could not move it. **Read off the shipped definition
+rather than theorised, and then REFUTED by measurement: only 3 of the 34 filed
+$0 employer money**, which predicts −31, not −26.
+
+***THE ACTUAL ANSWER IS THAT A NET DELTA ON A SHARED METRIC CANNOT VERDICT ONE
+ARM OF A FULL RE-PARSE.*** A pv bump re-extracts all 69,046 acks, so every
+other match arm re-runs too and `match` moves for reasons that have nothing to
+do with this gate: −31 from the gate's non-zero-employer members, about +5
+gained elsewhere, net −26. **I registered `match` 43,338 → 43,305 as though my
+gate were the only thing touching it.** On an INCREMENTAL run that assumption is
+nearly safe, because the work list is 48 acks; on a full re-parse it is wrong by
+construction, and the eleven identical incremental lines before this one are
+exactly what made it feel safe.
+
+**THE RULE: REGISTER A GATE AGAINST ITS OWN OUTPUT FIELD, NOT AGAINST A
+COVERAGE METRIC IT SHARES.** `matchMisread` is the gate's own field, it is
+exact, and it hit the floor to the digit-plus-one. `match` is a shared metric
+with its own denominator rule and its own independent movers, so it can only
+ever corroborate loosely. Sibling of *a measurement that answers a different
+question than the one asked is not a partial answer, it is a different fact* —
+and of the 02:1xZ entry about `pv`, which is the same mistake in the opposite
+direction: there a schema change truncated a comparison, here a shared
+denominator diluted one.
+
+### The five "unchanged" registrations were wrong, and the gains are real
+
+I registered confident 60,167 · lineups 59,819 · entries 65,480 · vesting
+53,100 · roth 38,350 as **unchanged**. Delivered: **60,182 (+15) · 59,833 (+14)
+· 65,495 (+15) · 53,115 (+15) · 38,369 (+19)**. Same cause as above — a full
+re-parse re-reads the universe — and **registering "unchanged" for a full
+re-parse is wrong by construction**, carried over from eleven consecutive
+incremental runs whose work list was 48 permanently-403 acks.
+
+**A GAIN IS A CLAIM ABOUT A FILING, so all 15 were read: confident GAINED 15,
+LOST 0.** **Levi Strauss & Co. (8,288 participants) gains a 30-row menu from
+its own plan-year-2025 Schedule H 4i attachment** — a plan this file names
+specifically as one "served by their TRUST and never by their own ack". The
+other fourteen are small (900 down to 21 participants) and every one cites a 4i
+attachment with a menu-shaped row count (36, 30, 27, 27, 25, 23, 22, 18, 17,
+17, 15, 10, 8, 3). No junk shapes, no losses, so these are fresh downloads
+succeeding where they previously failed rather than a loosened parser.
+
+`HIGH` **4** — the baseline, as registered. `warn` 556 → **558**. `dl` **48**,
+unchanged. `pv` **200** at `pvTopShare` **99.9**, so the store is complete by
+the standing test (one dominant pv over 97% plus a small tail).
