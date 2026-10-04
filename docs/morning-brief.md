@@ -1,10 +1,15 @@
-# wampo morning brief — 2026-10-04, 02:1xZ (10:1x PM ET Oct 3)
+# wampo morning brief — 2026-10-04, 04:5xZ (12:5x AM ET)
 
-Overnight was **six display-side ships and five classes closed by evidence**, and
-the closures are the more useful half: four separate repairs were measured, found
-net harmful or unfounded, and *not* shipped. Nothing is in flight, nothing is
-pre-registered, `PARSER_VERSION` stays **199**, and main is at `7c5f3d41` with
-Pages build #869 green.
+Overnight was **eight ships and five classes closed by evidence**, and the
+closures are the more useful half: four separate repairs were measured, found net
+harmful or unfounded, and *not* shipped. Nothing is in flight, nothing is
+pre-registered, **`PARSER_VERSION` is now 200**, and main is at `cf1856be`.
+
+**The two biggest arrived after midnight.** A parser change (v200) stopped
+publishing a misread match formula for 33 plans, and a one-token display change
+stopped **$51.0 billion** of holdings from reading as named funds when neither
+the name nor the issuer names anything — **3M alone is $18.4B at 74.7% of its
+published menu.**
 
 **READ EVERY PARTICIPANT FIGURE BELOW WITH A ~3% CAVEAT.** Found last evening and
 not yet fixed: **49 plans claim 3,469,170 participants (2.99% of the weighted
@@ -26,6 +31,8 @@ through the page's own renderer:
 
 | | reader-facing | what stops being published |
 |---|---|---|
+| **the issuer gate's untested premise (04:4xZ)** | **20 rows / 18 plans / 245,810 ppl / $51,048,548,123** | **3M's `Common/collective trusts` · `Investments measured at NAV` · `Collective trust` at 74.7% of its menu, $18.4B** — the same empty answer in three columns. GM $15.8B at 66.4%; Union Pacific $8.1B at 60.9% |
+| **v200: a misread match formula (02:4xZ, parser)** | **34 plans / 55,182 ppl** | Teledyne's `50% of the first 4% of pay` where the filing says `50% of 8% … not to exceed 4%` — we were **understating the benefit by half** to 12,959 readers |
 | trustee's corporate style (21:5xZ) | **2,795 rows / 430 plans / 1,406,886 ppl / $16.0B** | Target's `State Street Bank & Trust Company SSGA S+P 500 INDEX SER A …` at 21.1% of its menu. **359 tickers GAINED, 0 lost** |
 | unit count inside a fund name (00:3xZ) | 310 rows / 28 plans / **491,936 ppl** / $11.7B | JPMorgan Chase's own plan: `… SEPARATE ACCT 2,271,585,254 UNITS` at 6.0% of its menu |
 | a name containing itself twice (01:5xZ) | 224 rows / 129 plans / **232,595 ppl** / $5.0B | ADP's `Northern Trust S&P 500 Index Fund NORTHERN TRUST S&P 500 INDEX FUND`, $1.51B, 21.3% of its menu, plus six more rows on one page |
@@ -40,8 +47,20 @@ shown type — and that one is a **promotion**: SRG LLC's doubled
 the duplication had been *defeating* `isNamelessFundRow` and making a generic
 non-name look specific.
 
-**Mirrored:** `23b4fa32` → `cc2795a6` → `b7e3676c` → `330e38cd` → `7c5f3d41`,
-site-test #157/#159/#160/#161 all green, Pages #869 success on main's HEAD.
+**Mirrored:** `23b4fa32` → `cc2795a6` → `b7e3676c` → `330e38cd` → `7c5f3d41` →
+`280359f3` → `f2f859f8` (v200 and its own store, a **matched pair**) →
+`bf3d2132` → `cf1856be`. site-test #157/#159/#160/#161/#162 all green; Pages
+green through #869 and building since.
+
+**v200's verdict corrected two of my own registrations, which is the more useful
+half of it.** The gate's own field hit its registered **floor** exactly
+(`matchMisread` 199 → 233, +34 against +33, the one extra arriving by the
+full-text path the caveat named). But `match` fell 26 where I registered 33, and
+my first explanation was **refuted by measurement**: ***a net delta on a shared
+metric cannot verdict one arm of a full re-parse***, because a pv bump re-runs
+every other arm too. Registering five fields as "unchanged" was wrong by
+construction for the same reason — all 15 gains were read, 0 losses, and **Levi
+Strauss (8,288 ppl) gained a 30-row menu** from its own 4i attachment.
 
 ## Found wrong and fixed the same night
 
@@ -87,11 +106,10 @@ fixed, and confirmed **by absence** — 19 changed pages became 18.
 
 ## Held, and why
 
-- **No pipeline dispatch.** Every change since #563 is display-side or
-  documentation, so an incremental work list is the same ~48 permanently-403
-  acks. **Eleven consecutive coverage lines with no metric moved** — correct
-  rather than a stall, since that work list is the permanently-withdrawn
-  filings; the hourly cron on main remains the mechanism for new DOL filings.
+- **Nothing now.** v200 was dispatched, verdicted and mirrored as a matched
+  pair, so the hold that ran for eleven consecutive identical coverage lines is
+  over. Before it: those eleven lines were correct rather than a stall, since
+  the work list was the 48 permanently-withdrawn filings.
   (I first wrote "eight" here and `CLAUDE.md` says "seventh". Both were
   unmeasured. A strict all-keys comparison answers **6**, because `pv` was added
   to the coverage line at #565 and every line before that differs from every
@@ -132,16 +150,21 @@ Unchanged from yesterday, each moving millions of published cells:
 
 ## Store, and what continues
 
-Universe **112,652 plans** (68,538 full-form). `confident` 60,167 · entries
-65,480 · match 43,338 · vesting 53,100 · **HIGH 4** (the known baseline: 3
-`contrib` outliers plus `fabricated-name`) · warn 556 · `dl` 48 · pv 199 at
-99.93%. The `dl` population has now been HEAD-probed whole four times and
-answered 403 every time, so that code remains an honest published claim.
+Universe **112,652 plans** (68,538 full-form). `confident` **60,182** · entries
+**65,495** · match **43,312** · vesting **53,115** · **HIGH 4** (the known
+baseline: 3 `contrib` outliers plus `fabricated-name`) · warn 558 · `dl` 48 ·
+**pv 200 at 99.9%**. The `dl` population has now been HEAD-probed whole four
+times and answered 403 every time, so that code remains an honest published
+claim.
 
-Hourly cycles continue around the clock. Next in the queue: the `rate == cap`
-formula population (79 plans, unread — whether it is a real design or a second
-misread shape), the interleaved-duplication residue the self-repeat floor leaves,
-and the parser-side vesting-sentence selection, which needs a `PARSER_VERSION`
-bump and now has a ready-made oracle in the shipped guard plus a named instance
-(Flex, 16,483 ppl, publishing as its whole vesting answer a rule for participants
-who left before January 1, 2001).
+Hourly cycles continue around the clock. Next in the queue, now that the
+`rate == cap` question is answered and shipped: the three remedies the
+generic-name re-measurement separated — **88 rows / 707,208 ppl whose whole name
+is a type designation** (Providence Health publishes `Registered investment
+company funds` at **48.0% of its menu, $12.5B**) to qualify, **235 rows /
+390,978 ppl where a label PREFIXES a real fund** to strip (which would *gain* a
+name), and 297 rows that start with no label; then the parser-side
+vesting-sentence selection, which needs a `PARSER_VERSION` bump and has a
+ready-made oracle in the shipped guard plus a named instance (Flex, 16,483 ppl,
+publishing as its whole vesting answer a rule for participants who left before
+January 1, 2001).
