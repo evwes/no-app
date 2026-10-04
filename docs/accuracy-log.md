@@ -44333,3 +44333,115 @@ every read, which this file's own Current-state block carries a warning about.
 Fixed in `docs/morning-brief.md` (11, with the 6 and its cause named) and in
 `CLAUDE.md`, whose "seventh consecutive" line is replaced by the measurement and
 by the instruction to re-derive it rather than increment it.
+
+## 2026-10-04 (02:4xZ) — v200: the match gate was one COMPARISON too narrow, and blind to the OTHER number. 33 plans / 54,537 participants. IN FLIGHT as #571
+
+**The queue asked one question and the answer is three.** v199's gate opens
+`if (!(rate < cap)) return false`, so a published `N% of the first N% of pay`
+passes untouched; the queue asked whether that is a real plan design or a second
+misread shape, and warned that settling it was *one measurement, not a quiet
+widening of the gate*.
+
+### (A) The rate — 13 plans / 19,959 ppl
+
+Measured over all **75** published `N% of the first N%` plans (the queue said
+79; *a re-size is a new measurement*): **13 hold a better candidate for the rate
+in their own sentence and 62 do not.** So the guard becomes `rate <= cap` and
+**the discriminator is untouched** — these plans are withheld by exactly the
+evidence v199 used, not by a rule invented for them.
+
+| | ppl | files | published |
+|---|---|---|---|
+| Appalachian Regional Healthcare | 7,523 | `100% up to 0.50% of eligible compensation` | `0.5% of the first 0.5%` |
+| Alliance Laundry Systems | 3,527 | `50% up to the first 6% … and 100% up to the first 6%` | `6% of the first 6%` |
+| Kent Corporation | 2,563 | `200% up to 4% of participant deferral` | `4% of the first 4%` |
+| VT Services | 2,157 | `Group 1 50% up to 6% of compensation` | `6% of the first 6%` |
+
+**`rate == cap` IS a legal design, which is exactly why the test could not be the
+equality.** The 62 spared state their formula verbatim — The All Roads Company
+files `10% of the first 10% of the eligible employee's compensation`, Steel
+Warehouse `10% of deferrals on the first 10% of compensation`, Metz Culinary
+`10% of participant elective deferral contributions not to exceed 10% of
+participant elective deferral contributions` (odd, and as filed). Three are
+pinned as must-not-withhold.
+
+### (B) The cap — 20 plans / 34,578 ppl, and the question could not reach it
+
+**Reading the 62 the rate gate correctly spares is what found it.** Morningstar
+(5,250) files `75% of employee contributions, NOT TO EXCEED 75% OF 7% of
+eligible compensation` and publishes `75% of the first 75% of pay`. The RATE is
+right, so no better candidate for it exists and the rate gate is correctly
+silent. **The CAP is wrong**, taken from the rate's own compound.
+
+**THE LARGEST MEMBER IS WORSE AND IS NOT A `rate == cap` ROW AT ALL.** Teledyne
+Technologies (**12,959 ppl**) files `match 50% OF 8% of qualifying wages the
+employee defers, provided that total matching contributions do not exceed 4% of
+the employee's compensation` and publishes **`50% of the first 4% of pay`** — the
+4% is the resulting MATCH AMOUNT (50% of 8%), not the deferral cap, so the
+published formula ***understates the benefit by half*** in front of 12,959
+readers. World Kinect (3,294), Winchester Hospital (3,178), Cheshire Medical
+Center (2,444) and Relation Insurance (1,600) file the same sentence shape.
+
+**8 of the 20 have a rate BELOW their cap**, which is why this needed its own
+predicate rather than a wider version of the first. ***The queue's question was
+about one number and the defect was in the other*** — a sibling of *a fix for
+one phrasing of a class is not a fix for the class*, now extended: **a gate
+keyed on one FIELD of a published claim is blind to the other field by
+construction.**
+
+### What the controls did, and the two that earned their keep
+
+- **The existing sliced control FAILED LOUDLY, which is the whole reason it
+  slices the source instead of restating it.** `match-formula-test` cuts
+  `if (!(rate < cap)) return false;` out of the shipped file to prove that guard
+  is load-bearing; moving the comparison to `<=` made it report **"the source
+  moved"** rather than passing quietly. A restated control would have gone on
+  reporting green about a line that no longer existed.
+- **A CASE PROTECTED TWICE PROVES NEITHER — met again, and caught by a failing
+  fixture.** My first negative control for the cap gate's backwards-compound
+  guard was a sentence holding a larger percentage, which the RATE gate
+  withholds, *correctly*. The two conditions live in two different FUNCTIONS, so
+  the lesson's usual form (give each condition a case where it is the only
+  protection) needed the extra step of **asking each guard of the function that
+  owns it**. Both of (B)'s guards now have their own sliced control and both
+  fire.
+- **Disjointness is asserted, not inferred.** 13 + 20 = 33 with no plan counted
+  twice, and the test asserts on both shapes that each is reached by exactly one
+  gate — otherwise the two counts would silently double-count.
+
+### Pre-registered for #571, with the direction of the error named
+
+`match` **43,338 → 43,305** (falls by 33, or less if any of the 33 acks sit
+outside the `match` population) — **the fall IS the improvement**;
+`matchMisread` 199 acks → **232**; `matchQuote` and `matchQuoteShown` both
+**RISE** by up to 33, gated by `matchQuoteOk`, because a withheld plan reverts
+to quoting its filing rather than going blank; `pv` 199 → **200** at ~99.9%;
+unchanged: confident 60,167 · lineups 59,819 · entries 65,480 · vesting 53,100 ·
+roth 38,350 · HIGH 4 · warn 556; `dl` 48 or higher, where a rise means the
+EFAST2 bucket grew.
+
+***THE 33 IS A FLOOR, NOT A CEILING, AND THAT IS v198's LESSON POINTING THE
+OTHER WAY.*** The gate reads `out.matchText || t` — the stored quote when there
+is one, the whole filing text otherwise. Neither predicate ALTERS `matchText`,
+so for a plan with a stored quote the replay saw the identical input production
+will see and the prediction is exact; **every one of the 33 has one, and 0
+affected plans lack one.** But a plan whose formula has no stored quote is judged
+against full text this sandbox does not hold, so the full-text path can only
+ADD. If the delta lands above 33, that is the explanation to check first rather
+than a regression.
+
+Replayed whole-store against `origin/main`'s `lib-4i`: 46,283 published formulas
+unchanged, **0** already withheld by the committed gate (so production matches
+the committed source, a positive control on the replay itself), 33 changed, and
+**0 RECOVERIES** — the call site's retry chain (`mfMixedFraction`, `mfEqualTo`,
+`mfEqualToWords`) finds nothing that survives the wider gate on any of the 33,
+because none of these sentences uses a connector those arms read. So all 33 fall
+back to the quote, which is the accepted trade and not a surprise.
+
+Parser gate green on all ten live specimens. **#571 fired FROM THE PUSH** —
+`52191aae`, `in_progress` — so no dispatch was issued, because a
+`workflow_dispatch` on the same SHA is not a safety net but a second run that
+concurrency resolves by killing the first. **v200's code is NOT mirrored**: the
+documented order is dispatch on dev → verdict → mirror the matched pair, since
+mirroring code that produces data without the store it produced is half a
+deployment.

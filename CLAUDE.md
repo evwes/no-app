@@ -820,12 +820,32 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
-**NOTHING IS PRE-REGISTERED** and **nothing is in flight** — `PARSER_VERSION`
-stays 199, no build-data run is queued or running, and all three refs are the
-same commit. #568, #569 and #570 are all verdicted, each producing a coverage
-line identical to its predecessor: pv 199 · confident 60,167 · entries 65,480 ·
-match 43,338 · HIGH 4 · warn 556 · dl 48 — which is correct when the work list
-is the 48 permanently-403 acks plus the old-pv tail.
+**IN FLIGHT: #571, v200, a FULL RE-PARSE on the dev branch (`52191aae`, push,
+started 02:4xZ).** `PARSER_VERSION` **199 → 200**. It fired FROM THE PUSH, so no
+dispatch was issued — a `workflow_dispatch` on the same SHA is a second run that
+concurrency resolves by killing the first. **Do not push any of the six
+path-filtered files to the dev branch until it concludes, and do NOT mirror
+v200's code until its store exists** (mirroring code that produces data without
+that data is half a deployment).
+
+**PRE-REGISTERED for #571** — v200 withholds a misread match formula in two
+shapes, 33 plans / 54,537 ppl, disjoint (13 + 20, asserted in
+`match-formula-test`):
+`match` **43,338 → 43,305** (the fall IS the improvement) · `matchMisread` 199
+acks → **232** · `matchQuote` and `matchQuoteShown` both **RISE** by up to 33
+(a withheld plan reverts to quoting, it does not go blank) · `pv` → **200** at
+~99.9% · unchanged: confident 60,167 · lineups 59,819 · entries 65,480 ·
+vesting 53,100 · roth 38,350 · HIGH 4 · warn 556 · `dl` 48 or higher.
+***THE 33 IS A FLOOR, NOT A CEILING*** — the gate reads `out.matchText || t`,
+every one of the 33 has a stored quote so those predictions are exact, but a
+plan with NO stored quote is judged against full text the sandbox lacks, so the
+full-text path can only ADD. A delta above 33 is that, not a regression.
+`docs/accuracy-log.md` 2026-10-04 (02:4xZ).
+
+#568, #569 and #570 are all verdicted, each producing a coverage line identical
+to its predecessor: pv 199 · confident 60,167 · entries 65,480 · match 43,338 ·
+HIGH 4 · warn 556 · dl 48 — correct when the work list is the 48
+permanently-403 acks plus the old-pv tail.
 
 **THE LENGTH OF THAT IDENTICAL RUN MUST BE RE-DERIVED, NEVER INCREMENTED
 (2026-10-04 02:1xZ).** This line used to say "the seventh consecutive identical
