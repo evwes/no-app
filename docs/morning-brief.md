@@ -1,10 +1,16 @@
-# wampo morning brief — 2026-10-04, 06:1xZ (2:1x AM ET)
+# wampo morning brief — 2026-10-04, 11:1xZ (7:1x AM ET)
 
-Overnight was **nine ships and five classes closed by evidence**, and the
-closures are the more useful half: four separate repairs were measured, found net
-harmful or unfounded, and *not* shipped. Nothing is in flight, nothing is
-pre-registered, **`PARSER_VERSION` is 200**, and main is at `aa1836d2` with one
-ship pushed to the dev branch awaiting its CI conclusion.
+Overnight and through the morning: **eleven ships and seven classes closed by
+evidence**, and the closures are still the more useful half — six separate
+repairs were measured, found net harmful or unfounded, and *not* shipped.
+**`PARSER_VERSION` is 200**, main is at `50d42818`, Pages green on it, and a
+scheduled pipeline run (#573) is in flight on main, so nothing mirrors until it
+lands and the branch adopts its data commit.
+
+**Two of this morning's three findings were defects in MY OWN measuring
+instruments rather than in the product**, which is worth your attention because
+it means some earlier figures were taken through a tool that was quietly wrong.
+Both are fixed and the tool is now tracked and tested. Details below.
 
 **The three biggest arrived after midnight, and together they stop $103 billion
 of holdings from reading as named funds.** A parser change (v200) stopped
@@ -17,15 +23,20 @@ investment company funds` at 48.0% of a menu, 3M's bare `companies` on 25 rows,
 Action Safety Supply's entire menu reading `accounts`.
 
 **READ EVERY PARTICIPANT FIGURE BELOW WITH A ~3% CAVEAT.** Found last evening and
-not yet fixed: **49 plans claim 3,469,170 participants (2.99% of the weighted
-universe of 116,001,210) with no other field supporting the count** — 40 of them
-short-form, EOY 0, ≤10 balances. Avalon Capital Management publishes **1,955,672**
+not yet fixed: **28 plans claim 3,413,761 participants (2.94% of the weighted
+universe of 116,001,210) against beginning-of-year assets under $10 a head** —
+mostly short-form, EOY 0, a handful of balances. *The 49 plans / 3,469,170 this
+brief carried an hour ago is superseded: the first screen gated on END-of-year
+assets, which are $0 for a wind-down by definition, so it swept in real
+terminated plans whose counts are correct.* Avalon Capital Management publishes **1,955,672**
 participants (second-largest in the universe, above Amazon) against $6,087,098,
-and its `assetsBOY` is **$1,955,672** — the same number, the only plan of 112,652
-whose count equals a dollar figure on its own row. The other 48 are mostly
-staffing and PEO firms where the figure is plausibly the *eligible* population as
-filed, so it is unusable as a reader-facing number and harmful as a weight, but
-not wrong in form. **The fix is a disclosure, not a correction**, and it should be
+and its `assetsBOY` is **$1,955,672** — the same number, and checked against the
+whole universe rather than asserted: **exactly 1 of 112,652** plans has its claim
+equal a dollar figure on its own row. Most of the rest are staffing and PEO firms
+where the figure is plausibly the *eligible* population as filed — **tested, and
+on 20 of the 28 `activeParticipants` is at least half the claim**, so only ~8
+have nothing supporting them, and those 8 carry 89% of the weight. Unusable as a
+reader-facing number and harmful as a weight, but not wrong in form. **The fix is a disclosure, not a correction**, and it should be
 settled before the queue's other sizes are trusted, because every one of them is
 denominated in this field.
 
@@ -36,6 +47,7 @@ through the page's own renderer:
 
 | | reader-facing | what stops being published |
 |---|---|---|
+| **"$0K" for a nonzero amount (10:4xZ)** | **16,497 holding rows / 8,103 plans / 8,069,421 ppl**, plus 1,810 average-balance cells and 185 plan-asset cells | `money()`'s floor printed **"$0K" for every amount under $500**. FedEx's `Cash Reserves Federal Money Market Fund Admiral` at **$34**, Fisher Sand & Gravel's three rows at **$2**, Tokai Carbon's **$1**. ***$0 is not a measurement; it is the formatter's floor*** |
 | **a name built ENTIRELY of type-label words (06:0xZ)** | **147 rows / 126 plans / 1,082,596 ppl / $52,004,779,703** | Providence Health's `Registered investment company funds` at **48.0% of a menu, $12.47B**; Trinet HR III/IV's `Registed Investment Co.` to **280,299 readers**; 3M's bare `companies` on 25 rows, $14.37B; National Rural Electric's `Common Collective Trusts (Pages 165-166)`, **$9.28B and the largest row on its page** |
 | **the issuer gate's untested premise (04:4xZ)** | **20 rows / 18 plans / 245,810 ppl / $51,048,548,123** | **3M's `Common/collective trusts` · `Investments measured at NAV` · `Collective trust` at 74.7% of its menu, $18.4B** — the same empty answer in three columns. GM $15.8B at 66.4%; Union Pacific $8.1B at 60.9% |
 | **v200: a misread match formula (02:4xZ, parser)** | **34 plans / 55,182 ppl** | Teledyne's `50% of the first 4% of pay` where the filing says `50% of 8% … not to exceed 4%` — we were **understating the benefit by half** to 12,959 readers |
@@ -113,8 +125,65 @@ predicate already shipped: `isGenericTypeName("Common Collective Trusts")` was
 already true, so only the page pointer defeated it. **Three times now the page
 has caught what every count passed.**
 
+## The measuring instruments, which is where two of three morning findings landed
+
+**The hourly draw had been drawing from menus no reader sees — 9.1% of its own
+participant weight (08:3xZ).** It read every stored lineup, but the site renders
+one only when the entry is CONFIDENT, so **1,265 entries / 10,317,233
+participants** were drawable and published to nobody. It drew one, and it looked
+like the worst defect on the record: The Home Depot (**468,817 participants**,
+**$15.7B** of plan assets) appearing to publish a four-row **$3,544,514** menu
+of which three rows are Form 5500 **form artifacts** — the plan administrator's
+name at 92%, a form-field fragment, a participant-count caption. **No reader
+sees it.** The entry is `confident: false` and the page serves the master
+trust's 33-fund **$14.0B** menu, which is correct and good.
+
+*A stored field is not a published one* — a rule already on the record, earned
+twice on product measurements, landing for the first time on the apparatus. It
+had been true of every draw this session.
+
+**Fixed by promoting the instrument rather than patching the scratch copy.**
+`scripts/draw-published.mjs` is now tracked, gates on the published-lineup bit,
+asserts that gate in **both** directions against Home Depot's two acks so
+neither assertion can pass vacuously, and takes a `--seed` so a draw can be
+re-read instead of re-rolled. The precedent was already paid for: a stale
+scratchpad copy of the fee harness once shadowed the tracked one and 81
+measurement scripts imported the wrong file.
+
+**And on its second use it had a second defect, in the fix for the first.** It
+reported Meijer at **ratio 3.345** — a menu of $2.21B against $660M of plan
+assets, which reads as a textbook overshoot. It is not: the entry serves **two**
+member plans and I divided a trust's menu by one of them. Summed over both, the
+ratio is **0.967** and the plan is fine. ***This is the most repeated error on
+this whole record — a count keyed on plans being blind to a trust, now the ninth
+time — reappearing inside the fix for a different defect in the same file, one
+hour after I wrote that very rule into the file's own header.*** Fixed, with a
+control: a single-plan entry reads identically under both versions.
+
+**The third finding is the one with real reach**, and it was found by working a
+different queue item honestly: the `money()` floor above, 8 million readers.
+
 ## Closed by evidence, nothing shipped — the night's real output
 
+- **The label-prefix strip (08:1xZ) — ~10x harmful.** Of 31,041 rows /
+  29,191,199 ppl surviving both witnesses, stripping a type label off the front
+  of a fund name **loses 6,809 tickers and 7,073 fees** against 686 and 567
+  gained. `T.`, `Retirement` and `500` all count as "complete type labels" to a
+  shipped predicate, so the split cut **`T. Rowe Price Small Cap Value Fund I`**
+  for Paychex (661,036 ppl) and Costco (279,798, thirteen rows), and took
+  Express Services' five target-date rows off their own tickers. Two controls
+  fired in opposite directions: the motivating row was blocked while a real
+  American Funds fund shipped as **`America`**. ***A predicate written to judge
+  a whole string is not a predicate about its prefixes.***
+- **Widening the wind-down sentence (09:2xZ).** The queue asked to trigger it on
+  a *collapse* rather than only on $0. Measured: 44 plans publish a menu, and
+  **42 of them have a menu consistent with their own tiny year-end assets** —
+  Gerald Champion collapsed $57.3M → **$259,943** and its three rows sum to
+  exactly that. The shipped sentence asserts "**$0** in year-end assets", so
+  widening it would trade 42 accurate answers for a wrong number. And the
+  missing-context half is already shipped: the page prints "Prior Year Assets"
+  for every filed plan. *A guard and the claim it licenses are one change, not
+  two.*
 - **The mid-name-house class.** Two store-internal witnesses were built and both
   work as detectors. Both repairs are **net harmful**: stripping the lead loses
   73 fees / 125,307 ppl and 37 tickers; stripping the tail lost 23 fees and
@@ -140,11 +209,15 @@ has caught what every count passed.**
 
 ## Held, and why
 
-- **One ship, for minutes not hours:** the 06:0xZ label-only predicate is
-  pushed to the dev branch and mirrors as soon as site-test #163 reports its
-  conclusion. *A red gate is worse than no gate*, and a local green is not a CI
-  green — ten consecutive red site-test runs went unnoticed in September because
-  commit messages said "green" and meant locally.
+- **Nothing is held.** All eleven ships are live on main with their CI
+  conclusions READ, not assumed: site-test #161/#162/#164 green, Pages green
+  through #881 on main's current HEAD. *A red gate is worse than no gate*, and a
+  local green is not a CI green — ten consecutive red site-test runs went
+  unnoticed in September because commit messages said "green" and meant locally.
+- **The only thing waiting is a pipeline run:** #573 is in flight on main. A
+  scheduled run always leaves main a data commit the branch lacks, so the branch
+  adopts it and the next cycle mirrors. Pushing to dev during a main run is
+  safe; mirroring is not.
 - **No dispatch this cycle, and that is correct:** every change is display-side,
   `PARSER_VERSION` stays 200, so an incremental work list would be the same 48
   permanently-withdrawn filings. v200 was dispatched, verdicted and mirrored as
@@ -193,23 +266,42 @@ Unchanged from yesterday, each moving millions of published cells:
 
 Universe **112,652 plans** (68,538 full-form). `confident` **60,182** · entries
 **65,495** · match **43,312** · vesting **53,115** · **HIGH 4** (the known
-baseline: 3 `contrib` outliers plus `fabricated-name`) · warn 558 · `dl` 48 ·
-**pv 200 at 99.9%**. The `dl` population has now been HEAD-probed whole four
+baseline: 3 `contrib` outliers plus `fabricated-name`) · warn **556** · `dl` 48 ·
+**pv 200 at 99.9%**. #572's verdict moved exactly one field — `warn` 558 → 556,
+the two transient warns from #571's fifteen new lineups clearing — and the run
+of identical coverage lines is now **0**, re-derived rather than incremented, as
+the standing rule demands. The `dl` population has been HEAD-probed whole four
 times and answered 403 every time, so that code remains an honest published
 claim.
 
-Hourly cycles continue around the clock. Remedy (a) of the generic-name split
-shipped this cycle. Next: **235 rows / 390,978 ppl where a label PREFIXES a real
-fund** — CHS/Community Health's seven `Registered Inv estment Company PRIN
-SHORT-TERM INCOME` rows, issuer `Principal Funds Inc` — which is the opposite
-remedy, a STRIP that *gains* a name; then 297 rows that start with no label;
-then the parser-side vesting-sentence selection, which needs a `PARSER_VERSION`
-bump and has a ready-made oracle in the shipped guard plus a named instance
-(Flex, 16,483 ppl, publishing as its whole vesting answer a rule for
-participants who left before January 1, 2001). Both of the first two predate
-this ship and must be re-measured rather than read.
+Hourly cycles continue around the clock. The label-prefix strip that stood next
+in this queue is now **closed** rather than next — see the closures above. What
+remains, in order: **297 rows / 252,235 ppl** of the generic-name split that
+start with no label (predates today, must be re-measured rather than read); the
+parser-side vesting-sentence selection, which needs a `PARSER_VERSION` bump and
+has a ready-made oracle in the shipped guard plus a named instance (Flex, 16,483
+ppl, publishing as its whole vesting answer a rule for participants who left
+before January 1, 2001); and the `fb-vanished` check, which is keyed on the ack
+and must be keyed on the plan, so the check written for exactly that failure
+cannot currently see its own 104 plans.
 
-**This cycle's draw read clean**, and two shipped designs were confirmed working
+**One open judgment that is yours rather than mine**, surfaced by this morning's
+work and deliberately not acted on: `derive()` distrusts the *balance* count and
+never the *participant* count, so when both are filer-entered and absurd it
+divides by the larger. Avalon Capital Management's average balance is
+$6,087,098 ÷ **1,955,672 claimed participants** when **3 people** hold it. The
+cell now reads "$3" instead of the old "$0K" — honest about the arithmetic — but
+whether an average should be computed from a claim no other field supports is a
+design call. The page does already print "Participants 1,955,672 / 3 active", so
+the claim is labelled. The class is **28 plans / 2.94% of weighted universe**,
+and 20 of the 28 have an `activeParticipants` figure that corroborates the
+claim, so it is smaller and better supported than the first screen suggested.
+
+**The draws read clean all morning.** State Farm — the plan this project's own
+notes hold up as the cautionary tale of a filing once marked a gap while its
+Vanguard menu sat on page 3 — now publishes 20 funds at **menu/assets 0.99**
+with correct asterisked comparables. Meijer reads 0.967 once the denominator is
+right, and Premier Healthcare 0.993. Earlier, two shipped designs were confirmed working
 rather than merely unbroken: Roper Technologies (14,999 ppl, menu/assets 0.99)
 correctly *asterisks* its Vanguard Target Retirement collective trusts as
 comparables and withholds their fees, and EzCorp's Empower `Day One` pooled
