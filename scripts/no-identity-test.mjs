@@ -16,7 +16,7 @@
  *   4. a negative control per condition
  */
 import { readFileSync } from "node:fs";
-import { hasNoFundIdentity, cleanFiledName } from "./lib-disclose.mjs";
+import { hasNoFundIdentity, cleanFiledName, isLabelOnlyName, isNamelessFundRow } from "./lib-disclose.mjs";
 import { isGenericTypeName } from "./lib-4i.mjs";
 
 const fails = [];
@@ -152,7 +152,73 @@ for (const n of STILL) {
   ok((isGenericTypeName(n) || hasNoFundIdentity(n)) === true, `the composition drops ${JSON.stringify(n)}`);
 }
 
+/* ---- 7. `isLabelOnlyName` — the THIRD display-only predicate, 2026-10-04.
+ *
+ * It is kept out of both `hasNoFundIdentity` and `isGenericTypeName` for a
+ * measured reason: `merge-4i.mjs:1394` guards its share-count repair with
+ * `isGenericTypeName(head) || hasNoFundIdentity(head)`, so widening either
+ * would silently refuse more NAME REPAIRS. Guarded here because it ships
+ * alongside them and breaks the same way.
+ *
+ * Each MUST-KEEP below is a case where the NAMED condition is the ONLY
+ * protection — a case protected twice cannot fail for either and proves
+ * neither. Found by measuring each condition's blocking population separately
+ * over all 1,730,670 published rows. ------------------------------------- */
+const LBL_QUALIFY = [
+  ["Registered investment company funds", "Providence Health — 48.0% of its menu, $12,474,349,571"],
+  ["Registed Investment Co.", "Trinet HR III/IV — 280,299 readers, $1,239,771,549"],
+  ["Registered investment companies (page 166)", "National Rural Electric — $225,158,578, 80,475 ppl"],
+  ["Common Collective Trusts (Pages 165-166)", "the SAME page's LARGEST row — $9,284,475,171 at 48.6% of its menu. Found by reading the regenerated page, not by a count: the first spelling took singular `(page N)` only and left this one reading as a named holding two rows above its qualified sibling"],
+  ["companies", "3M — 25 rows / $14,372,175,818; also Blue Cross Blue Shield at 59.9%"],
+  ["accounts", "Providence — 26 rows; Action Safety Supply at 100.0% of its menu"],
+  ["Separate Account", "Ford Motor"],
+  ["shares of", "American Financial Group — 23 rows"],
+  ["Pooled Sep Acct", "Kenect — 98.8% of its menu"],
+  ["Trust Company", "Nacco Natural Resources 42.5%, Hyster-Yale 29.8%"],
+  ["REGISTER INVESTMENT COMPANY", "Systems Automotive — 76.0%"],
+  ["Mutual shares", "SETI Institute — 47.3%"],
+];
+const LBL_KEEP = [
+  ["Separate Account A", "the v188 pin, respected BY CONSTRUCTION: a single capital may be a real designation, and Four Seasons publishes it at 91.5% of its menu. The capital is the ONLY protection"],
+  ["The Investment Company of America", "a real American Funds fund — the PLACE NAME is the only protection"],
+  ["New York registry shares", "Pfizer — `registry` is not `registered`, and `New`/`York` are the only protection"],
+  ["Fund 2030", "a welded VINTAGE is identifying information — Capital Manor files a whole 2020-2065 ladder. The DIGITS are the only protection"],
+  ["Investments VG 2030", "the same shape with a house abbreviation"],
+  ["SEPARATE ACCOUNT II", "a real designation"],
+  ["Separate Account - Z", "and another"],
+  ["Pooled Separate Acct ia", "OCR debris — the welded-count class's remedy, not this one"],
+  ["Investment in", "a trailing joiner — the truncated-name class"],
+  ["Mutual funds - U.S", "a region is identifying"],
+  ["Corporate Stocks (Pages 56-155)", "the same page and the same pointer — `Stocks` identifies a vehicle, so the LABEL condition is the only protection"],
+  ["U.S. Government Securities (Pages 23-27)", "and `Securities` likewise"],
+  ["Managed Account Holdings (985 Positions)", "a POSITION count must not read as a page pointer"],
+  ["Vanguard Total Stock Market Index Fund", "a real fund"],
+  ["Costco Wholesale Corporation", "employer stock"],
+  ["Common Stock Fund", "`stock` identifies a vehicle"],
+];
+for (const [n, who] of LBL_QUALIFY) ok(isLabelOnlyName(n) === true, `isLabelOnlyName MUST qualify ${JSON.stringify(n)} (${who}) — the arm is inert`);
+for (const [n, why] of LBL_KEEP) ok(isLabelOnlyName(n) === false, `isLabelOnlyName would qualify ${JSON.stringify(n)} — ${why}`);
+
+/* THE COMPOSITION IS WHAT PROTECTS EMPLOYER STOCK, and that is the reason the
+ * predicate is INJECTED into isNamelessFundRow rather than added beside it.
+ * Seven live rows are label-only AND typed `Company stock`; a parallel
+ * disjunct would have told their readers the filing names no specific fund,
+ * Altria's on $1,456,691,207 with a correct ticker. Asserted both ways so the
+ * protection cannot quietly move. */
+const STOCK_ROWS = [
+  [{ name: "Shares", type: "Company stock" }, "Altria Client Services — $1,456,691,207, 26.6%, ticker MO"],
+  [{ name: "Shares of", type: "Company stock" }, "Sealed Air — $136,743,941, 9.0%"],
+  [{ name: "Separate Account", type: "Company stock" }, "Ford Motor, two plans"],
+  [{ name: "REGISTERED COMPANIES", type: "Company stock" }, "Gardiner Service Co — 3.9%"],
+];
+const lblGeneric = (n) => isGenericTypeName(n) || hasNoFundIdentity(n) || isLabelOnlyName(n);
+for (const [r, who] of STOCK_ROWS) {
+  ok(isLabelOnlyName(r.name) === true, `the employer-stock control is decorative: isLabelOnlyName does not even reach ${JSON.stringify(r.name)} (${who})`);
+  ok(isNamelessFundRow(r, r.name, lblGeneric) === false, `EMPLOYER STOCK would be qualified "names no specific fund": ${who}`);
+}
+
 if (fails.length) { for (const f of fails) console.error("FAIL " + f); process.exit(1); }
 console.log(`\nno-identity: ${KEEP.length} real names kept, ${QUALIFY.length} qualified, `
   + `${BOTH_FORMS.length * 2} surface-agreement, idempotence over ${checked.toLocaleString()} names, `
-  + `${STILL.length * 2} baseline, both controls fire — 0 failures`);
+  + `${STILL.length * 2} baseline, both controls fire, `
+  + `label-only ${LBL_QUALIFY.length} qualified / ${LBL_KEEP.length} kept / ${STOCK_ROWS.length * 2} employer-stock — 0 failures`);

@@ -7,6 +7,178 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-04 (06:0xZ) — a published fund name built ENTIRELY of type-label words: 147 rows / 126 plans / 1,082,596 participants / $52,004,779,703 qualified, and the instrument was narrowed TWICE by reading its own output
+
+**SHIPPED.** `isLabelOnlyName`, a third display-only predicate, canonical in
+`lib-disclose.mjs`, sliced verbatim into `app.js`, matched in
+`build-seo-pages.mjs`. Name 0 / ticker 0 / fee 0 / row membership 0 — the
+`type` column moves on exactly the same 147 rows, which *is* the qualifier.
+13 crawlable pages / **387,628 participants**. site-test green locally;
+`PARSER_VERSION` stays 200, nothing to pre-register.
+
+**What was wrong.** Providence Health published `Registered investment company
+funds` at **48.0% of one plan's menu, $12,474,349,571** (and on three more
+plans); Trinet HR III and IV published `Registed Investment Co.` to **280,299
+readers** on $1,239,771,549; 3M published a bare `companies` on 25 rows
+totalling $14,372,175,818; Cigna a bare `account` on 15; Ford `Separate
+Account`; Nacco and Hyster-Yale `Trust Company` at 42.5% and 29.8% of their
+menus. Action Safety Supply's whole published menu was one row reading
+`accounts`.
+
+**Why neither shipped predicate could reach them, and why neither may be
+widened.** `GENERIC_TYPE_NAME` is a CLOSED list of Schedule H type labels
+anchored `^…$`, so it answers `registered investment companies` and not
+`registered investment company funds` — one trailing noun away — and its own
+comment refuses widening because the PARSER reads it (`isClassLabel` →
+`isStatement` → the region contest, which cost v196 two whole lineups on a
++0/−0 registration). `hasNoFundIdentity` cannot reach them either: its filler
+list holds `common|collective|trust|fund|the|at|nav` but **not** `regist*`,
+`investment`, `company` or `account`, which is exactly why `Collective trust
+fund` was already covered and these were not.
+
+**AND A THIRD REASON THAT DECIDED THE ARCHITECTURE: `merge-4i.mjs:1394` guards
+its share-count repair with `isGenericTypeName(head) || hasNoFundIdentity(head)`.**
+Widening either would make more heads read as generic and **silently refuse
+more NAME REPAIRS** — a legibility fix priced against a guard that reads names,
+the standing rule. A separate export bounds the blast radius to the two display
+call sites BY CONSTRUCTION.
+
+### The instrument was narrowed twice by reading its own output, and that is the whole safety argument
+
+The queue sized this class at **88 rows** inside a `/regist/` screen — *a count
+keyed on a vocabulary measures the vocabulary*. The general form of the
+discriminator ("remove the leading run of label words, ask whether anything of
+substance remains") reads **611 rows / 1,991,593 ppl**, and reading THAT refused
+it as one class: it merges genuine label-only names with four other remedies.
+**So the shipped form demands that EVERY word be a label word**, with one
+tolerated exception. *The queue asked for a wider instrument and the data asked
+for a narrower one* — second cycle running.
+
+**Both conditions have a live blocking population, measured by neutering each
+separately over all 1,730,670 published rows.** Requiring every word to be a
+label BLOCKS **57 rows / 174,038 ppl**, and all 43 blocked names were read:
+each is a DIFFERENT remedy. A welded VINTAGE is identifying information (`Fund
+2030` through `Fund 2065`, a whole Capital Manor ladder; `Investments VG 2030`);
+a real designation must stand (`SEPARATE ACCOUNT II`, `Separate Account - Z`);
+OCR debris belongs to the welded-count class (`Pooled Separate Acct Ae`,
+`Company ba`, `Mutual fund ae`); a trailing joiner belongs to the
+truncated-name class (`Investment in`, `Shares in`).
+
+**THE v188 PIN IS NOW RESPECTED BY CONSTRUCTION RATHER THAN BY EXCEPTION.**
+lib-4i deliberately leaves `Separate Account A` uncaught because a capital `A`
+may be a real separate-account designation and case is the only signal — Four
+Seasons Heating publishes it at **91.5% of its menu**. `A` is not a label word,
+so this predicate spares it without being told to, which makes it a genuine
+single-protection negative control instead of a hand-written exemption.
+
+### WHERE A PREDICATE IS COMPOSED DECIDES WHAT PROTECTS IT
+
+**Seven rows it reaches are EMPLOYER STOCK**, and the composition is the only
+thing standing between them and a false qualification:
+
+| | | |
+|---|---|---|
+| Altria Client Services | `Shares` | $1,456,691,207, 26.6% of its menu, **ticker MO**, 11,893 readers |
+| Sealed Air Corporation | `Shares of` | $136,743,941, 9.0% |
+| Ford Motor Company ×2 | `Separate Account` | 0.6% / 0.3% |
+| Gardiner Service Co. | `REGISTERED COMPANIES` | 3.9% |
+| Integrated Mill Systems | `Registered Companies` | 1.0% |
+| Manganaro North America | `Shares` | 0.2% |
+
+Every one is typed `Company stock`. The predicate is therefore **INJECTED INTO
+`isNamelessFundRow`** as part of its generic-name test, never added as a
+parallel disjunct at the call site, so all three of that function's early
+returns — subtotal, brokerage window, employer stock — guard the new arm. As a
+sibling disjunct it would have told Altria's readers that the filing names no
+specific fund, on $1.46B with a correct symbol already published.
+
+**And this is why the renderer diff reading 147 where my flat screen read 152 is
+the protection working rather than a number to reconcile away.** The flat screen
+counted six of those seven. The gap was explained before shipping, not after:
+of 1,700 candidates, **1,238 were already qualified** by `isGenericTypeName`,
+308 are spared by the issuer gate shipped at 04:4xZ, 7 by the employer-stock
+early return, and 147 move. *A discrepancy gets a cause, not a shrug.*
+
+### THE PAGE IS THE ARTIFACT, AND IT CAUGHT A HALF-SHIPPED ARM A COUNT COULD NOT
+
+The first version's page-reference arm took a SINGULAR `(page 166)`. The
+regenerated pages then showed National Rural Electric qualifying `Registered
+Investment Companies (Page 166)` ($225,158,578) while leaving **`Common
+Collective Trusts (Pages 165-166)` — $9,284,475,171, 48.6% of that plan's menu
+and the LARGEST row on the page** — reading as a named holding two rows above
+its qualified sibling. **One of two spellings of one caption family is worse
+than neither**, the same shape as the 14:3xZ footnote-marker finding.
+
+The argument for the wider spelling is not symmetry but **consistency with a
+predicate already shipped**: `isGenericTypeName("Common Collective Trusts")` is
+TRUE, so the bare caption was qualified already and only the page pointer
+defeated it. Measured: the widening adds **exactly that one row** (+$9.28B,
+reconciling $42,720,304,532 → $52,004,779,703 to the dollar), and the three
+sibling captions on the same page all stay out — `Corporate Stocks (Pages
+56-155)` and `U.S. Government Securities (Pages 23-27)` by the LABEL condition,
+and `Managed Account Holdings (985 Positions)` because **a POSITION count is not
+a pointer**. All four are now pinned, in both directions, in
+`no-identity-test.mjs` and `smoke-test.mjs`.
+
+### Three method findings, each paid for in this cycle
+
+**(1) `String.replace` WITH A STRING REPLACEMENT INTERPRETS `` $` ``, AND A
+SLICED COMMENT CONTAINED ONE.** The slicer's comment carries ``anchored `^…$`,``
+so the backtick after the `$` became the "text before the match" pattern: it
+prepended half of app.js and ATE the block's opening, producing a syntax error
+**1,600 lines from the edit** and nothing resembling the cause. A replacer
+function disables every one of those patterns. Sibling of *a regex assembled
+from string fragments has no syntax check until it runs* — there the string was
+the problem, here the string was fine and the SUBSTITUTION rewrote it.
+
+**(2) DO NOT RE-DERIVE A VERDICT YOU ALREADY MEASURED PROPERLY.** Asked which
+crawlable pages would move, I hand-rolled the nameless verdict instead of
+calling `isNamelessFundRow`, skipped its early returns, and got an answer naming
+**Ford and Altria as moving** — the exact rows the composition exists to spare.
+The same question asked through the two real renderers answered 31 pages where
+`git` reports **13**, and that one is wrong for a structural reason worth
+keeping: **the crawlable pages are a SEPARATE DISPLAY PATH with their own
+nameless computation**, so predicting page changes from app.js's renderer is a
+different instrument, not a cheaper one. *A claim about readers must name which
+surface* — and the only honest page figure is the one from regenerating and
+diffing the files.
+
+**(3) A VERIFICATION GREP READ 0 FROM CASE ALONE, AGAIN.** `grep -oE
+"Common collective trusts \(pages 165-166\)"` printed nothing on a page that
+carries the row title-cased. Third instance on this record. *A clean zero
+reports on the query.*
+
+### What prevents recurrence
+
+- `isLabelOnlyName` asserts at import, in both directions, on six live rows it
+  must reach and sixteen it must not — each must-KEEP a case where the named
+  condition is the ONLY protection, chosen by measuring each condition's
+  blocking population separately rather than by imagination.
+- `scripts/no-identity-test.mjs` carries 12 qualify / 16 keep / 8 employer-stock
+  assertions, the last of which assert BOTH that `isLabelOnlyName` reaches the
+  row and that `isNamelessFundRow` still spares it — so the protection cannot
+  quietly move and the control cannot go decorative.
+- `scripts/smoke-test.mjs` cross-checks the app.js twin against the canonical
+  copy on 20 names, tethered the day it shipped, and fails on drift in either
+  direction.
+- The slicer asserts six separate landings in app.js and refuses if the old
+  injected argument survives, so a re-slice cannot leave the twin inert.
+
+### Residue, named rather than left implied
+
+- **`Investment in` / `Investments in` (New York Life, 14 rows / ~71,000 ppl)**
+  are truncation fragments naming no fund, blocked by the every-word condition.
+  Conservatism whose cost is named; adding `in` to the vocabulary is a
+  measurement, not a free widening.
+- The 515 rows the issuer gate spares are the gate working — `UBC Russell 3000
+  Index`, `Vanguard Explorer VL I` in the issuer cell — and last cycle read 762
+  of them. Whether a label-only string in the ISSUER cell should also stop a row
+  reading as named is a separate measurement, recorded rather than assumed.
+- 100 of the 147 rows reach no crawlable page at all, which is the `TOP_N`
+  orphan item already in the queue.
+
+---
+
 ## 2026-10-02 (19:3xZ) — the recordkeeper fix was approved, measured, and REFUSED: every variant either corrupts 2.4M participants, deletes a real recordkeeper from 200k, or substitutes an unverified name
 
 **THE OWNER APPROVED IT WITH A CONDITION — "as long as this does not provide

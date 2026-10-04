@@ -1591,7 +1591,126 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
     if (EIN_FRAGMENT.test(s)) return true;
     return stripsToNothing(s) || stripsToNothing(cleanFiledName(s));
   }
+  /* A NAME BUILT ENTIRELY OF TYPE-LABEL WORDS — canonical copy, 2026-10-04.
+   *
+   * 152 rows / 132 plans / 1,232,895 participants / $42,859,386,021, across 43
+   * distinct names, EVERY ONE OF WHICH WAS READ rather than sampled. Providence
+   * Health publishes `Registered investment company funds` at 48.0% of one
+   * plan's menu ($12,474,349,571) and on three more plans; Trinet HR III and IV
+   * publish `Registed Investment Co.` to 280,299 readers ($1,239,771,549); 3M
+   * publishes a bare `companies` on 25 rows totalling $14,372,175,818; Ford
+   * publishes `Separate Account`; Cigna a bare `account` on 15 rows.
+   *
+   * WHY `isGenericTypeName` CANNOT REACH THEM, and why the vocabulary must not be
+   * widened to try: GENERIC_TYPE_NAME is a CLOSED list of Schedule H type labels
+   * anchored `^...$`, so it answers `registered investment companies` and not
+   * `registered investment company funds` — one trailing noun away. Its own
+   * comment refuses widening because the PARSER reads it: `isClassLabel` ->
+   * `isStatement` -> the region contest, which is what cost v196 two whole
+   * lineups on a +0/-0 registration. And `hasNoFundIdentity` cannot reach them
+   * either: its filler list holds `common|collective|trust|fund|the|at|nav` but
+   * not `regist*`, `investment`, `company` or `account`, which is exactly why
+   * `Collective trust fund` is already covered and these are not.
+   *
+   * SO THIS IS A THIRD DISPLAY-ONLY PREDICATE, kept OUT of both of those for a
+   * measured reason rather than a stylistic one: `merge-4i.mjs:1394` guards its
+   * share-count repair with `isGenericTypeName(head) || hasNoFundIdentity(head)`,
+   * so widening either would make more heads read as generic and SILENTLY REFUSE
+   * MORE NAME REPAIRS — a legibility fix priced against a guard that reads names.
+   * Being a separate export, it bounds the blast radius to the two display call
+   * sites BY CONSTRUCTION.
+   *
+   * THE INSTRUMENT WAS NARROWED TWICE BY READING ITS OWN OUTPUT, and that is the
+   * whole of the safety argument. The queue sized this class at 88 rows inside a
+   * `/regist/` screen — a count keyed on a vocabulary, which measures the
+   * vocabulary. The general form of the discriminator ("remove the leading run of
+   * label words and ask whether anything of substance remains") reads 611 rows /
+   * 1,991,593 ppl, and reading THAT refused it as one class: it merges genuine
+   * label-only names with four other remedies. So the shipped form demands that
+   * EVERY word be a label word, with one tolerated exception.
+   *
+   * BOTH CONDITIONS HAVE A LIVE BLOCKING POPULATION, measured by neutering each
+   * one separately over all 1,730,670 published rows:
+   *
+   *   - THE PAGE-REFERENCE TOLERANCE ADDS 2 rows / 80,475 ppl, both National
+   *     Rural Electric's and both on its one crawlable page. A pointer into the
+   *     filing is not a fund, and without this arm both rows are missed.
+   *     ITS PLURAL/RANGE SPELLING WAS FOUND BY READING THE PAGE AND NOT BY A
+   *     COUNT. The first version took a singular `(page 166)` only, so the
+   *     regenerated page qualified `Registered Investment Companies (Page 166)`
+   *     ($225,158,578) and left `Common Collective Trusts (Pages 165-166)` —
+   *     **$9,284,475,171, 48.6% of that plan's menu and the LARGEST row on the
+   *     page** — reading as a named holding two rows above it. The argument for
+   *     the wider spelling is not symmetry but consistency with a predicate
+   *     already shipped: `isGenericTypeName("Common Collective Trusts")` is
+   *     TRUE, so the bare caption is qualified already and only the page pointer
+   *     defeated it. Measured: the widening adds exactly that one row, and
+   *     `Corporate Stocks (Pages 56-155)`, `U.S. Government Securities (Pages
+   *     23-27)` and `Managed Account Holdings (985 Positions)` on the same page
+   *     all stay out — the first two by the LABEL condition (`Stocks`,
+   *     `Securities`) and the third because a POSITION count is not a pointer.
+   *     *The page is the artifact: a diff of 13 files showed both halves of one
+   *     caption family and a row count could not.*
+   *   - REQUIRING EVERY WORD TO BE A LABEL BLOCKS 57 rows / 174,038 ppl, and all
+   *     43 blocked names were read: each is a DIFFERENT remedy. A welded VINTAGE
+   *     is identifying information (`Fund 2030` through `Fund 2065`, a whole
+   *     Capital Manor ladder; `Investments VG 2030`); a real designation must
+   *     stand (`SEPARATE ACCOUNT II`, `Separate Account - Z`); OCR debris is the
+   *     welded-count class's business (`Pooled Separate Acct Ae`, `Company ba`,
+   *     `Mutual fund ae`); and a trailing joiner is the truncated-name class
+   *     (`Investment in`, `Shares in`).
+   *
+   * THE v188 PIN IS NOW RESPECTED BY CONSTRUCTION RATHER THAN BY EXCEPTION.
+   * lib-4i deliberately leaves `Separate Account A` uncaught because a capital
+   * `A` may be a real separate-account designation and case is the only signal —
+   * Four Seasons Heating publishes it at 91.5% of its menu. `A` is not a label
+   * word, so this predicate spares it without being told to, and that is a
+   * single-protection negative control rather than a hand-written exemption.
+   *
+   * SEVEN ROWS IT REACHES ARE EMPLOYER STOCK, and the COMPOSITION is the only
+   * thing that protects them — measured, not supposed. This predicate is
+   * INJECTED INTO `isNamelessFundRow` as part of its generic-name test, never
+   * added as a parallel disjunct at the call site, so all three of that
+   * function's early returns — subtotal, brokerage window, employer stock —
+   * guard the new arm. As a sibling disjunct it would have told readers that
+   * these seven rows name no specific fund:
+   *
+   *     Altria Client Services  `Shares`      $1,456,691,207  26.6%  ticker MO
+   *     Sealed Air Corporation  `Shares of`   $  136,743,941   9.0%
+   *     Ford Motor Company x2   `Separate Account`             0.6% / 0.3%
+   *     Gardiner Service Co.    `REGISTERED COMPANIES`         3.9%
+   *     Integrated Mill Systems `Registered Companies`         1.0%
+   *     Manganaro North America `Shares`                       0.2%
+   *
+   * Every one is typed `Company stock`, and Altria's carries a correct symbol on
+   * $1.46B in front of 11,893 readers. *Where a predicate is composed decides
+   * what protects it* — and the flat screen that sized this class counted six of
+   * these seven, so the renderer diff reading 146 where the screen read 152 is
+   * the protection working rather than a number to reconcile away.
+   *
+   * The ISSUER half of the call-site gate is left on the narrower
+   * `isGenericName` on purpose: whether a label-only string in the ISSUER cell
+   * should also stop a row reading as named is a separate measurement, recorded
+   * rather than assumed. docs/accuracy-log.md 2026-10-04. */
+  const LABEL_ONLY_WORD = /^(?:regist\w*|inv\s?estment|investments?|compan(?:y|ies)|co\.?|funds?|fds?\.?|mutual|common|collective|pooled|separate|sep\.?|account|accounts?|acct\.?s?|trust|trusts?|tr\.?|shares?|of|the|at|nav|[\(\)\[\],.:;-]+)$/i;
+  const LABEL_ONLY_PAGE_REF = /^\(?(?:pages?|pgs?\.?|pp\.?|p\.?|notes?|lines?|items?)\s*\d+\s*(?:(?:[-–—]|to)\s*\d+\s*)?\)?$/i;
+  function isLabelOnlyName(name) {
+    const w = String(name == null ? "" : name).trim().split(/\s+/).filter(Boolean);
+    if (!w.length) return false;
+    let i = 0;
+    while (i < w.length && LABEL_ONLY_WORD.test(w[i])) i++;
+    if (!i) return false;                      /* does not even START with a label */
+    const rest = w.slice(i).join(" ");
+    return !rest || LABEL_ONLY_PAGE_REF.test(rest);
+  }
   const isGenericName = (n) => isGenericTypeName(n) || hasNoFundIdentity(n);
+  /* the NAME half of the call-site gate, widened by the predicate above.
+   * Injected into `isNamelessFundRow` rather than added beside it so that
+   * its subtotal / brokerage-window / EMPLOYER-STOCK early returns guard the
+   * new arm too — Altria's bare `Shares` carries ticker MO on $1.46B and is
+   * typed `Company stock`. The ISSUER half stays on `isGenericName`. */
+  const nameIsGeneric = (n) => isGenericName(n) || isLabelOnlyName(n);
+  window.__wampoLabelOnly = isLabelOnlyName;  // read by the smoke test only
   window.__wampoGenericName = isGenericName;  // read by the smoke test only
   function isNamelessFundRow(f, cleanedName, isGenericName) {
     const type = String((f && f.type) || "");
@@ -3635,7 +3754,7 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
        * splitting it would be a new arm. Ticker and fee move on 0 rows. */
       const issuerText = String(f.iss || "").replace(/\*+/g, "").trim();
       const namelessRow = (!issuerText || isGenericName(issuerText))
-        && (isNamelessFundRow(f, f.name, isGenericName)
+        && (isNamelessFundRow(f, f.name, nameIsGeneric)
           /* ...or the row is a Schedule H PARTICIPANT-DIRECTION caption, which
            * `isNamelessFundRow` is blind to by construction because a caption
            * is not a vehicle type: 0 of the 18 candidates were already typed.

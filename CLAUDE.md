@@ -1951,14 +1951,45 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   **STILL OPEN, and the 03:3xZ measurement stands for it:** of the 961 rows
   called generic by our own parser yet presented as a fund, these 20 are fixed;
   **762 are correct**; 181 employer-stock and 2 subtotal rows are correct; and
-  the `regist` family's three remedies remain — **(a) 88 rows / 707,208 ppl**
-  whose whole name is a type designation (Providence Health's `Registered
-  investment company funds` at **48.0% of its menu / $12,474,349,571**, Trinet
-  HR III at 238,170 ppl, National Rural Electric's `… (page 166)`) → qualify;
-  **(b) 235 rows / 390,978 ppl** where a label PREFIXES a real fund
+  **REMEDY (a) SHIPPED 2026-10-04 06:0xZ as `isLabelOnlyName` — 147 rows / 126
+  plans / 1,232,895 stored → 1,082,596 reader-facing ppl / $52,004,779,703,
+  name 0 / ticker 0 / fee 0 / row membership 0, 13 crawlable pages / 387,628
+  ppl.** Providence Health stops publishing `Registered investment company
+  funds` at 48.0% of a menu ($12,474,349,571); Trinet HR III/IV `Registed
+  Investment Co.` to 280,299 readers; 3M a bare `companies` on 25 rows
+  ($14,372,175,818); Nacco and Hyster-Yale `Trust Company` at 42.5% / 29.8%.
+  **DO NOT CARRY the queue's own 88 rows / 707,208 ppl** — that was a
+  `/regist/` screen, and *a count keyed on a vocabulary measures the
+  vocabulary*. **NOR the general form's 611 rows / 1,991,593 ppl**, which merges
+  five remedies; requiring EVERY word to be a label blocks 57 rows / 174,038 ppl
+  of welded vintages, real designations, OCR debris and trailing joiners, all 43
+  blocked names read. **A THIRD display-only predicate on purpose:
+  `merge-4i.mjs:1394` guards its share repair with `isGenericTypeName(head) ||
+  hasNoFundIdentity(head)`, so widening either would silently refuse more NAME
+  REPAIRS.** It is **INJECTED INTO `isNamelessFundRow`**, never a parallel
+  disjunct, because seven of the rows it reaches are EMPLOYER STOCK — Altria's
+  bare `Shares` carries ticker MO on $1,456,691,207 — and only that function's
+  early returns spare them; *where a predicate is composed decides what protects
+  it*, and the flat screen counted six of the seven.
+  **THE PAGE CAUGHT A HALF-SHIPPED ARM:** the first page-reference spelling took
+  singular `(page 166)` only, so the regenerated page qualified National Rural
+  Electric's $225,158,578 row and left `Common Collective Trusts (Pages
+  165-166)` — **$9,284,475,171, 48.6% of its menu, the LARGEST row on the same
+  page** — unqualified two rows above it. The wide spelling adds exactly that
+  one row and leaves three sibling captions out (`Stocks`/`Securities` by the
+  label condition; a POSITION count is not a pointer). *One of two spellings of
+  a caption family is worse than neither.*
+  **STILL OPEN: (b) 235 rows / 390,978 ppl** where a label PREFIXES a real fund
   (CHS/Community Health's seven `Registered Inv estment Company PRIN SHORT-TERM
   INCOME` rows, issuer `Principal Funds Inc`) → STRIP, which GAINS a name;
-  **(c) 297 rows / 252,235 ppl** not starting with a label.
+  **(c) 297 rows / 252,235 ppl** not starting with a label. Both predate this
+  ship and must be re-measured, not read.
+  **AND NAMED RESIDUE from (a):** `Investment in`/`Investments in` (New York
+  Life, 14 rows / ~71,000 ppl) are truncation fragments blocked by the
+  every-word condition — adding `in` is a measurement, not a free widening; and
+  whether a label-only string in the ISSUER cell should also stop a row reading
+  as named is unmeasured, the issuer gate having been deliberately left on the
+  narrower `isGenericName`.
   **AND TWO ORACLES OF MINE WERE REFUTED THERE — do not rebuild either.** (1) A
   generate-and-test repair oracle is **intractable** (~670,000 candidates per
   30-char name × 241,113 names ≈ 1.6e11 predicate calls); the right instrument
@@ -1970,7 +2001,7 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   Investment Co.` REJECTED — so the old queue entry's row tripped the
   ABBREVIATION, not the spelling it was filed under. ***Read the shipped
   guard's SURFACE, not its description — including your own.***
-  `docs/accuracy-log.md` 2026-10-04 (03:3xZ) and (04:4xZ).
+  `docs/accuracy-log.md` 2026-10-04 (03:3xZ), (04:4xZ) and (06:0xZ).
 - **CLOSED 2026-10-02 — it was promoted on 2026-10-01 and this entry was written
   about the superseded copy.** `scripts/apppath.mjs` IS the instrument: tracked,
   slicing the whole per-row block, and it hands out the individual resolvers via
@@ -2038,6 +2069,24 @@ These outlived the versions that produced them. The accuracy log has the case.
   **the name it was GIVEN**. ***Measuring through the function the page calls is
   not enough when the page calls something else FIRST*** — ask what the caller
   did to the argument before it passed it.
+- **`String.replace` WITH A STRING REPLACEMENT REWRITES YOUR TEXT, AND `` $` ``
+  IS THE ONE THAT BITES** (2026-10-04). A slicer injecting a code block whose
+  comment contained ``anchored `^...$`,`` had the backtick-after-`$` read as the
+  "text before the match" pattern: it prepended half of app.js and ATE the
+  block's opening, producing a syntax error **1,600 lines from the edit** and
+  naming nothing like the cause. Pass a replacer FUNCTION, which disables `$&`,
+  `` $` ``, `$'` and `$n` alike. Sibling of the assembled-regex rule — there the
+  string was wrong, here the string was perfect and the SUBSTITUTION rewrote it.
+- **DO NOT RE-DERIVE A VERDICT YOU HAVE ALREADY MEASURED PROPERLY** (2026-10-04).
+  Asked which crawlable pages a shipped qualification would move, I hand-rolled
+  the nameless verdict instead of calling `isNamelessFundRow`, skipped its early
+  returns, and got an answer naming **the exact rows the composition exists to
+  spare**. Asked through the two real renderers it answered 31 pages where `git`
+  reports **13** — and that is wrong for a structural reason: **the crawlable
+  pages are a SEPARATE DISPLAY PATH with their own nameless computation**, so
+  predicting page changes from app.js's renderer is a different instrument, not
+  a cheaper one. The only honest page figure comes from regenerating and
+  diffing the files.
 - **A REGEX ASSEMBLED FROM STRING FRAGMENTS HAS NO SYNTAX CHECK UNTIL IT RUNS**
   (2026-10-03). `node --check` passed on both copies of a `new RegExp(...)` built
   from nine concatenated strings whose group 2 closed one `)` early; the first

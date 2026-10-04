@@ -10,7 +10,7 @@
  * EIN-PN (stable forever, no orphans when a sponsor renames). */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { matchQuoteOk, vestingQuoteOk, quoteTrim } from "./lib-quote.mjs";
-import { coverageBand, filedUnit, cleanFiledName, isParticipantLoanRow, isNamelessFundRow, hasNoFundIdentity, isLoanDescriptionRow, isLoanAnswerRow, isLoanMaturityRow, isLoanVocabularyRow, isDirectionCaptionRow, isOfficeListRow, isPageBreakCaptionRow, trustScheduleDMenu } from "./lib-disclose.mjs";
+import { coverageBand, filedUnit, cleanFiledName, isParticipantLoanRow, isNamelessFundRow, hasNoFundIdentity, isLoanDescriptionRow, isLoanAnswerRow, isLoanMaturityRow, isLoanVocabularyRow, isDirectionCaptionRow, isOfficeListRow, isPageBreakCaptionRow, isLabelOnlyName, trustScheduleDMenu } from "./lib-disclose.mjs";
 import { isGenericTypeName } from "./lib-4i.mjs";
 
 const BASE = "https://evwes.github.io/no-app"; // becomes the custom domain when DNS lands
@@ -260,7 +260,14 @@ for (const r of d.plans.slice(0, TOP_N)) {
      * caption) cannot make `issuer · name` read as a named holding. 20 rows /
      * 245,810 participants / $51.0B, led by 3M's $18.4B at 74.7% of its menu. */
     const issGeneric = (n) => isGenericTypeName(n) || hasNoFundIdentity(n);
-    const nameless = (!iss || issGeneric(iss)) && (isNamelessFundRow(f, nm, issGeneric) || isDirectionCaptionRow(nm) || isOfficeListRow(nm) || isPageBreakCaptionRow(nm));
+    /* the NAME half is widened by `isLabelOnlyName` and the ISSUER half is not,
+     * matching app.js exactly. It is INJECTED into `isNamelessFundRow` so that
+     * function's employer-stock early return guards it: Altria's bare `Shares`
+     * carries ticker MO on $1,456,691,207 and is typed `Company stock`.
+     * lib-disclose.mjs carries the measurement — 152 rows / 132 plans /
+     * 1,232,895 participants / $42,859,386,021 across 43 names, all read. */
+    const nameGeneric = (n) => issGeneric(n) || isLabelOnlyName(n);
+    const nameless = (!iss || issGeneric(iss)) && (isNamelessFundRow(f, nm, nameGeneric) || isDirectionCaptionRow(nm) || isOfficeListRow(nm) || isPageBreakCaptionRow(nm));
     /* a wrapped loan DESCRIPTION's continuation line, which names nothing at
      * all — `at rates of interest ranging from 4.25% to`. This page has no
      * type column, so the report's qualifier cannot be copied across: the row

@@ -721,6 +721,44 @@ try {
   for (const r of rowCases.slice(4))
     if (isNamelessFundRow(r, r.name, isGenericTypeName)) fail(`nameless-row rule would tell a reader "no specific fund" about a row that IS identified: ${JSON.stringify(r)}`);
 
+  /* `isLabelOnlyName`, tethered THE DAY IT SHIPPED (2026-10-04). A name built
+   * entirely of type-label words: 146 rows / 126 plans / 1,082,596 participants
+   * / $42,720,304,532, measured through both renderers. Canonical in
+   * lib-disclose.mjs, SLICED VERBATIM into app.js, so the two surfaces are held
+   * together the way the filed-name cleaner and quoteTrim are.
+   *
+   * The first six MUST come back true and the rest false. Every must-KEEP is a
+   * case where ONE condition is the only protection — `Separate Account A` is
+   * lib-4i's own v188 pin (Four Seasons publishes it at 91.5% of its menu) and
+   * only the single capital spares it; `Fund 2030` only the digits; `New York
+   * registry shares` only the place name. A case protected twice proves
+   * nothing, which is why they were chosen by measuring each condition's
+   * blocking population separately. */
+  const lblCases = [
+    "Registered investment company funds", "Registed Investment Co.",
+    "Registered investment companies (page 166)", "Common Collective Trusts (Pages 165-166)",
+    "companies", "accounts", "shares of",
+    "Separate Account A", "The Investment Company of America", "New York registry shares",
+    "Fund 2030", "SEPARATE ACCOUNT II", "Pooled Separate Acct ia", "Investment in",
+    "Mutual funds - U.S", "Vanguard Total Stock Market Index Fund", "Common Stock Fund",
+    "Corporate Stocks (Pages 56-155)", "Managed Account Holdings (985 Positions)",
+  ];
+  const { isLabelOnlyName } = await import("./lib-disclose.mjs");
+  const lblGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoLabelOnly !== "function") return null;
+    return cs.map((n) => window.__wampoLabelOnly(n));
+  }, lblCases);
+  if (!lblGot) fail("app.js no longer exposes __wampoLabelOnly — the label-only twin cannot be cross-checked");
+  const lblDrift = lblCases.filter((n, i) => isLabelOnlyName(n) !== lblGot[i]);
+  if (lblDrift.length) {
+    for (const n of lblDrift) console.error(`  ${JSON.stringify(n)}  app.js=${lblGot[lblCases.indexOf(n)]}  lib-disclose=${isLabelOnlyName(n)}`);
+    fail(`the label-only twin in app.js disagrees with scripts/lib-disclose.mjs on ${lblDrift.length} of ${lblCases.length} names — re-slice it`);
+  }
+  for (const n of lblCases.slice(0, 7))
+    if (!isLabelOnlyName(n)) fail(`the label-only arm went INERT on a live published row: ${JSON.stringify(n)}`);
+  for (const n of lblCases.slice(7))
+    if (isLabelOnlyName(n)) fail(`the label-only arm would tell a reader "no specific fund" about a name that identifies something: ${JSON.stringify(n)}`);
+
   /* THE PARTICIPANT-LOAN PREDICATE, tethered 2026-09-28. It lives twice —
    * canonical in scripts/lib-disclose.mjs for the crawlable pages, twinned in
    * app.js for the report — so the two are held together the way the filed-name
