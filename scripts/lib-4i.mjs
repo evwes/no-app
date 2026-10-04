@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 199;
+export const PARSER_VERSION = 200;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -6045,14 +6045,79 @@ export function mfMisreadRateUnderCap(formula, text) {
   const m = /^(\d+(?:\.\d+)?)% of the first (\d+(?:\.\d+)?)% of pay$/.exec(String(formula || ""));
   if (!m) return false;
   const rate = +m[1], cap = +m[2];
-  if (!(rate < cap)) return false;
-  /* The CAP is always larger than the rate here, so counting it would make
-   * this condition vacuous — and it did: an early measurement reported that
+  /* v200 — `<=`, NOT `<`, AND THE WIDENING IS ONE CHARACTER WITH A MEASURED
+   * SAFETY. v199 wrote `rate < cap` because its 398 all had a rate below the
+   * cap, and the queue then asked whether `rate == cap` is a real design or a
+   * second misread shape, warning that it is one measurement and not a quiet
+   * widening. Measured 2026-10-04 over all 75 published `N% of the first N%`
+   * plans: **13 plans / 19,959 participants hold a BETTER CANDIDATE for the
+   * rate in their own sentence and 62 do not**, so the discriminator below
+   * separates them without being told about this population at all.
+   *   Alliance Laundry    3,527  files "50% up to the first 6% ... and 100%
+   *                              up to the first 6%" -> `6% of the first 6%`
+   *   Kent Corporation    2,563  "200% up to 4% of participant deferral"
+   *   Appalachian Regional 7,523 "100% up to 0.50% of eligible compensation"
+   *   Accelalpha            258  "100 percent up to 6 percent"
+   * and the 62 spared are genuinely as filed — The All Roads Company states
+   * "10% of the first 10% of the eligible employee's compensation" verbatim,
+   * Steel Warehouse "10% of deferrals on the first 10% of compensation".
+   * `rate == cap` is a legal design, which is exactly why the test cannot be
+   * the equality: it has to be the same evidence v199 used.
+   *
+   * A rate ABOVE its cap stays out, as before. */
+  if (!(rate <= cap)) return false;
+  /* The CAP is never below the rate here, so counting it would make this
+   * condition vacuous — and it did: an early measurement reported that
    * 398 of 398 suspect plans "state a larger percentage", a both-sided 100%
-   * that was reporting on the query rather than on the filings. Exclude it. */
+   * that was reporting on the query rather than on the filings. Exclude it.
+   * With `<=` it also excludes the RATE whenever the two are equal, which is
+   * what keeps the 62 correct-as-filed plans publishing. */
   for (const q of String(text || "").matchAll(/(\d{1,3}(?:\.\d+)?)\s?(?:percent|%)/g)) {
     const n = +q[1];
     if (n > rate && n !== cap && n <= 300) return true;
+  }
+  return false;
+}
+
+/* v200 — THE OTHER NUMBER CAN BE THE WRONG ONE, AND THE RATE TEST IS BLIND TO
+ * IT BY CONSTRUCTION.
+ *
+ * Found by reading the 62 plans the gate above correctly spares. Morningstar
+ * (5,250 participants) files "75% of employee contributions, NOT TO EXCEED 75%
+ * OF 7% of eligible compensation" and publishes `75% of the first 75% of pay`.
+ * The RATE is right — 75% genuinely is the match rate — so no better candidate
+ * for it exists and `mfMisreadRateUnderCap` is correctly silent. The CAP is
+ * wrong: it is 7%, and the extractor took the rate's own percentage out of the
+ * compound `75% of 7%`.
+ *
+ * THE LARGEST MEMBER IS WORSE AND IS NOT A rate==cap ROW AT ALL. Teledyne
+ * Technologies (12,959 participants) files "match 50% OF 8% of qualifying wages
+ * the employee defers, provided that total matching contributions do not exceed
+ * 4% of the employee's compensation" and publishes `50% of the first 4% of
+ * pay` — the 4% is the resulting MATCH AMOUNT (50% of 8%), not the deferral
+ * cap, so the published formula **understates the benefit by half** to 12,959
+ * readers. World Kinect (3,294), Winchester Hospital (3,178), Cheshire Medical
+ * Center (2,444) and Relation Insurance (1,600) are the same sentence shape.
+ * 8 of the 20 have a rate BELOW their cap, which is why this needed its own
+ * predicate rather than a wider version of the one above: *the queue's question
+ * was about one number and the defect was in the other.*
+ *
+ * MEASURED: 20 plans / 34,578 participants, 12 of them rate==cap and 8
+ * rate<cap. The condition is self-evident and carries no vocabulary — the
+ * filing states `<published rate>% of <smaller>%` and the published cap is not
+ * that smaller number. It only ever REMOVES a claim; the call site's retry may
+ * then recover a correct formula, and the quote survives either way. */
+export function mfMisreadCompoundCap(formula, text) {
+  const m = /^(\d+(?:\.\d+)?)% of the first (\d+(?:\.\d+)?)% of pay$/.exec(String(formula || ""));
+  if (!m) return false;
+  const rate = +m[1], cap = +m[2];
+  const re = new RegExp(`\\b${String(rate).replace(".", "\\.")}\\s?(?:percent|%)\\s+of\\s+(\\d{1,3}(?:\\.\\d+)?)\\s?(?:percent|%)`, "gi");
+  for (const q of String(text || "").matchAll(re)) {
+    const inner = +q[1];
+    /* the compound's second number must be SMALLER than the rate — otherwise
+     * `6% of 75% of something` reads backwards — and it must not already be
+     * what we published, or there is nothing wrong to withhold. */
+    if (inner < rate && inner !== cap) return true;
   }
   return false;
 }
@@ -6624,7 +6689,13 @@ export function extractPlanFeatures(text, sponsorName = "") {
    * set out.match, so it covers all of them rather than the one arm that
    * happened to be diagnosed, and it only ever REMOVES a claim — the quote
    * stays, so the reader loses our arithmetic and keeps the filing's words. */
-  if (out.match && mfMisreadRateUnderCap(out.match, out.matchText || t)) {
+  /* v200 adds a SECOND gate at the same point, because the defect can be in
+   * either number: mfMisreadRateUnderCap reads the rate, mfMisreadCompoundCap
+   * reads the cap, and 8 of the latter's 20 plans have a rate BELOW their cap
+   * so no widening of the first could ever reach them. Both only REMOVE a
+   * claim, so the retry below and the surviving quote serve them identically. */
+  const misread = (f, q) => mfMisreadRateUnderCap(f, q) || mfMisreadCompoundCap(f, q);
+  if (out.match && misread(out.match, out.matchText || t)) {
     out.matchMisread = out.match;
     delete out.match;
     /* ONCE THE GATE HAS RULED THE FIRST ANSWER A MISREAD, A LATER ARM CANNOT
@@ -6638,7 +6709,7 @@ export function extractPlanFeatures(text, sponsorName = "") {
     const retry = mfMixedFraction(q) || mfEqualTo(q) || mfEqualToWords(q);
     if (retry) {
       const f = `${W(retry[1])}% of the first ${W(retry[2])}% of pay`;
-      if (!mfMisreadRateUnderCap(f, q)) out.match = f;
+      if (!misread(f, q)) out.match = f;
     }
   }
 

@@ -18,7 +18,8 @@
  * below is a real sentence from a real plan, named with its participant count,
  * because the cost of getting this wrong is a wrong number in front of them.
  */
-import { mfWidened, mfMixedFraction, mfEqualTo, mfEqualToWords, mfMisreadRateUnderCap } from "./lib-4i.mjs";
+import { mfWidened, mfMixedFraction, mfEqualTo, mfEqualToWords, mfMisreadRateUnderCap,
+  mfMisreadCompoundCap } from "./lib-4i.mjs";
 
 const fails = [];
 const ok = (c, m) => { if (!c) fails.push(m); };
@@ -156,6 +157,17 @@ const GATE_TRUE = [
   ["2% of the first 6% of pay", "The Company matches Elective Deferrals at a rate of 200% for the first 2% of the Participant's Eligible Compensation during the Plan year and 50% of the Elective Deferrals thereafter up to a maximum of 6%.", "Boston Scientific, 34,105 ppl"],
   ["1% of the first 10% of pay", "Participants are automatically enrolled in the Plan at 4% of eligible compensation, increased each year by 1% up to 10%, unless the participant opts out.", "DPR Construction, 11,689 ppl — an AUTO-ESCALATION sentence, no match in it"],
 ];
+/* v200 — rate == cap. The queue asked whether that is a real design or a
+ * second misread shape and warned it was one measurement, not a quiet
+ * widening. Measured over all 75 published `N% of the first N%` plans: 13 hold
+ * a better candidate for the rate in their own sentence, 62 do not. So the
+ * guard became `rate <= cap` and the DISCRIMINATOR is unchanged — these three
+ * are withheld by the same evidence as the three above them. */
+GATE_TRUE.push(
+  ["6% of the first 6% of pay", "The Company will make a matching contribution of 50% up to the first 6% of eligible compensation that a participant contributes to the Plan for union employees and 100% up to the first 6% for all others.", "Alliance Laundry Systems, 3,527 ppl — the CAP published as the rate"],
+  ["0.5% of the first 0.5% of pay", "Years of Eligible Service Employer Match to Employee Contributions After 1 year 100% up to 0.50% of eligible compensation", "Appalachian Regional Healthcare, 7,523 ppl"],
+  ["4% of the first 4% of pay", "eligible participants receive the following Company discretionary match: Rule 60 Salaried 200% up to 4% of participant deferral", "Kent Corporation, 2,563 ppl"],
+);
 for (const [f, t, who] of GATE_TRUE) is(mfMisreadRateUnderCap(f, t) === true, `the gate MUST withhold "${f}" (${who})`);
 const GATE_FALSE = [
   ["50% of the first 6% of pay", "The Company matches 50% of the first 6% of eligible compensation.", "the commonest real formula in the country"],
@@ -164,7 +176,45 @@ const GATE_FALSE = [
   ["3% of the first 6% of pay", "The Company matches 3% of the first 6% of compensation.", "rate under cap but NO larger number in the sentence — an unusual design, not a misread"],
   ["Varies by employer group", "whatever", "a non-numeric formula string"],
 ];
+/* v200 — and the 62 that must keep publishing. `rate == cap` IS a legal
+ * design, which is exactly why the test could not be the equality: it has to
+ * be the same evidence. Each of these states its formula verbatim. */
+GATE_FALSE.push(
+  ["10% of the first 10% of pay", "a non-discretionary matching contribution equal to 10% of the first 10% of the eligible employee's compensation contributed to the Plan.", "The All Roads Company, 1,217 ppl — rate==cap stated VERBATIM"],
+  ["10% of the first 10% of pay", "For 2025, the Company made a matching contribution of 10% of deferrals on the first 10% of compensation.", "Steel Warehouse, 1,964 ppl"],
+  ["10% of the first 10% of pay", "The Company's matching policy is equal to 10% of participant elective deferral contributions not to exceed 10% of participant elective deferral contributions.", "Metz Culinary Management, 8,274 ppl — odd but as filed"],
+);
 for (const [f, t, who] of GATE_FALSE) is(mfMisreadRateUnderCap(f, t) === false, `the gate MUST NOT withhold "${f}" (${who})`);
+
+/* ---- v200's SECOND GATE: the defect can be in the CAP, and the rate test is
+ * blind to it by construction. 20 plans / 34,578 ppl, and 8 of them have a
+ * rate BELOW their cap so no widening of the first gate could reach them.
+ * Teledyne Technologies is the largest and the clearest: the published cap is
+ * the resulting MATCH AMOUNT, so the formula understates the benefit by half
+ * in front of 12,959 readers. ------------------------------------------- */
+const CAP_TRUE = [
+  ["50% of the first 4% of pay", "Generally, the Company will match 50% of 8% of qualifying wages the employee defers to the Plan, provided that total matching contributions do not exceed 4% of the employee's compensation.", "Teledyne Technologies, 12,959 ppl — the cap published is the MATCH AMOUNT, not the deferral cap"],
+  ["75% of the first 75% of pay", "The discretionary employer match was 75% of employee contributions, not to exceed 75% of 7% of eligible compensation.", "Morningstar, 5,250 ppl — rate right, cap taken from the rate's own compound"],
+  ["50% of the first 3% of pay", "The Company provides a matching contribution equal to 50% of 6% of the participants' compensation deferred, for a maximum match of 3% of compensation.", "World Kinect, 3,294 ppl"],
+  ["50% of the first 2% of pay", "During 2023, the Company matched 50% of 4% of each participant's deferred compensation, up to a maximum of 2% of compensation.", "Winchester Hospital, 3,178 ppl"],
+  ["30% of the first 30% of pay", "the employer matching contribution was equal to 30 percent of deferred compensation, not to exceed 30 percent of 5 percent of compensation.", "ABC Appliance, 878 ppl — spelled out rather than signed"],
+];
+for (const [f, t, who] of CAP_TRUE) is(mfMisreadCompoundCap(f, t) === true, `the CAP gate MUST withhold "${f}" (${who})`);
+const CAP_FALSE = [
+  ["50% of the first 6% of pay", "The Company matches 50% of 6% of compensation.", "the compound AGREES with the published cap — nothing to withhold"],
+  ["6% of the first 6% of pay", "a contribution of 6% of 75% of something unrelated", "the compound's second number is LARGER, so it reads backwards"],
+  ["10% of the first 10% of pay", "a matching contribution of 10% of deferrals on the first 10% of compensation", "no compound in the sentence at all"],
+  ["50% of the first 6% of pay", "The Company matches 50% of the first 6% of eligible compensation.", "the commonest real formula in the country"],
+  ["Varies by employer group", "whatever", "a non-numeric formula string"],
+];
+for (const [f, t, who] of CAP_FALSE) is(mfMisreadCompoundCap(f, t) === false, `the CAP gate MUST NOT withhold "${f}" (${who})`);
+/* The two gates are DISJOINT on the live store — 13 + 20 = 33 withheld, with
+ * no plan counted twice — and that is asserted here on the two shapes rather
+ * than left as a property of one measurement. */
+is(mfMisreadRateUnderCap(CAP_TRUE[0][0], CAP_TRUE[0][1]) === false,
+  "Teledyne is reached ONLY by the cap gate — if the rate gate also catches it the two are not disjoint and the counts double-count");
+is(mfMisreadCompoundCap(GATE_TRUE[3][0], GATE_TRUE[3][1]) === false,
+  "Alliance Laundry is reached ONLY by the rate gate");
 
 /* A KNOWN LIMIT, ASSERTED SO IT CANNOT BE FORGOTTEN RATHER THAN GLOSSED.
  * Jones Lang LaSalle (47,898 ppl) publishes "3% of the first 5% of pay" from
@@ -187,8 +237,16 @@ const V199 = [
    "const MF_FRACWORD = /(?!)/;", () => mfEqualToWords(WORDS_REFUSE[0][0]) !== null],
   ["the cap exclusion in the misread gate", /if \(n > rate && n !== cap && n <= 300\) return true;/,
    "if (n > rate && n <= 300) return true;", null],
-  ["the rate-under-cap test", /if \(!\(rate < cap\)\) return false;/,
+  ["the rate-under-cap test", /if \(!\(rate <= cap\)\) return false;/,
    "if (false) return false;", () => mfMisreadRateUnderCap(GATE_FALSE[0][0], GATE_FALSE[0][1]) === true],
+  /* v200's two new guards, each sliced and each required to flip. The target
+   * regex matches `rate <= cap` as shipped — this control FAILED LOUDLY when
+   * the comparison moved from `<` to `<=`, which is the whole point of
+   * slicing the source rather than restating it. */
+  ["the compound's smaller-than-rate guard", /if \(inner < rate && inner !== cap\) return true;/,
+   "if (inner !== cap) return true;", null],
+  ["the compound's not-already-published guard", /if \(inner < rate && inner !== cap\) return true;/,
+   "if (inner < rate) return true;", null],
 ];
 console.log("\nNEGATIVE CONTROL for v199, one per guard:");
 for (const [label, find, repl, probe] of V199) {
@@ -218,6 +276,13 @@ for (const [label, find, repl, probe] of V199) {
        * sentence is an unusual design, not a misread — is what detects it. */
       if (label === "the cap exclusion in the misread gate")
         return mod.mfMisreadRateUnderCap(GATE_FALSE[3][0], GATE_FALSE[3][1]) === true;
+      /* Each v200 guard is probed with the case where it is the ONLY
+       * protection, found by asking the two guards separately rather than by
+       * reusing one case for both — a case protected twice proves neither. */
+      if (label === "the compound's smaller-than-rate guard")
+        return mod.mfMisreadCompoundCap(CAP_FALSE[1][0], CAP_FALSE[1][1]) === true;
+      if (label === "the compound's not-already-published guard")
+        return mod.mfMisreadCompoundCap(CAP_FALSE[0][0], CAP_FALSE[0][1]) === true;
       return mod.mfEqualToWords(WORDS_REFUSE[0][0]) !== null;
     } finally { void saved; void probe; }
   })();
@@ -230,4 +295,6 @@ console.log(`\nmatch-formula: ${EXTRACT.length + REFUSE.length + SILENT.length} 
   + `(${EXTRACT.length} extract, ${REFUSE.length} range/cap refused, ${SILENT.length} silent; both controls fire)`);
 console.log(`match-formula: ${n199} v199 assertions, 0 failures `
   + `(${FRAC.length} mixed fractions, ${EQ.length + WORDS.length} connectors, ${WORDS_REFUSE.length} refused, `
-  + `${GATE_TRUE.length} withheld, ${GATE_FALSE.length} kept; all three controls fire)`);
+  + `${GATE_TRUE.length} withheld, ${GATE_FALSE.length} kept; all controls fire)`);
+console.log(`match-formula: v200 — ${CAP_TRUE.length} cap-gate withheld, ${CAP_FALSE.length} kept, `
+  + `2 disjointness assertions, 2 new sliced controls`);
