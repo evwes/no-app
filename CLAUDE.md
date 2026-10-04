@@ -920,6 +920,23 @@ published cells:
   supplies a house-specific one — 40,229 rows / 8,330 plans / **13,274,448
   ppl**. Errs both ways (issuer higher on 8,723, lower on 31,506). 7,116
   distinct (issuer, name) pairs unread.
+  **RE-DERIVED BY THE 21:07 DRAW AND IT IS THE SAME CLASS — eighth queue entry
+  re-measured rather than read.** Asking the resolver for the string the page
+  PRINTS reads 68,762 rows (composed LOWER 34,291, HIGHER 9,090, plus 22,904
+  blank -> priced and 2,477 priced -> blank the recorded screen did not count);
+  the directional split matches to within a few percent. **DO NOT CARRY THAT
+  SCREEN'S 108,030,524 ppl — it is wrong by ~8x**, having summed a plan's
+  participants once per ROW; 93% of the weighted universe should have been
+  refused on sight.
+  **LARGEST NAMED INSTANCE, and a SHARPER sub-case needing no house judgment:
+  Boeing (209,633 ppl)** publishes `iss "MFB NT COLLECTIVE LONG-TERM GOVT B"` ·
+  `name "INDEX FUND-NON-LENDING"` at **0.1 on $159,373,222** — ONE fund name cut
+  mid-word across the two columns — while rows 3, 5 and 8 of the same menu carry
+  the undamaged name and publish **0.05**. `fundERRow` (`app.js:2356`) prices
+  `f.name` alone and passes the issuer to `issuerPricedER` SEPARATELY, so the fee
+  comes off the fragment. Composing the two cells here is not a judgment about
+  house-specific pricing, it is reading the name the filing gives.
+  `docs/accuracy-log.md` 2026-10-04 (21:5xZ).
 - Stable value / guaranteed accounts publishing a fabricated ER: 4,669 rows /
   **7,389,704 ppl**, 4,571 of them at exactly 0.35.
 - American Funds rows stating NO share class keeping the R-6 fee: **10.5M ppl**.

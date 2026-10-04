@@ -7,6 +7,82 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-04 (21:5xZ) — the 21:07 draw lands on an owner-gated item ALREADY RECORDED WITH NUMBERS, and my own screen inflated its readership 8x
+
+**The draw** (`--seed 21072026`, participant-weighted over 60,163 published
+menus) drew **The Boeing Co. (209,633 ppl**, 48 funds, ratio 0.980, menu
+$78,793,401,727) and Best Buy (109,038 ppl, 26 funds, ratio 0.998).
+
+### The named instance, and it is sharper than the general class
+
+Boeing's row 12 publishes
+
+```
+iss "MFB NT COLLECTIVE LONG-TERM GOVT B" · name "INDEX FUND-NON-LENDING"   er 0.1   $159,373,222
+```
+
+**One fund name split across the two columns, cut mid-word** — and rows 3, 5 and
+8 of the same menu are the same product family under an undamaged name and
+publish **0.05**. So the page prints the composed name to the reader while
+`fundERRow` prices `f.name` alone (`app.js:2356` → `fundERFiled(f.name)`, then
+`issuerPricedER(fundER, f.name, f.iss)` with the issuer as a SEPARATE argument),
+and the fee comes off the fragment. Pinned and reproduced through the tracked
+harness: **published 0.1, composed-name price 0.05.**
+
+That is sharper than the recorded fee-pre-emption item, because composing these
+two cells is not a judgment about house-specific pricing — *it is reading the
+name the filing actually gives.*
+
+### But the SIZING re-derived a gated item this register already holds, with numbers
+
+Measured over all 1,724,453 published rows, 539,118 of which carry an issuer:
+**68,762 rows** price differently on the string the page prints, composed LOWER
+on 34,291 and HIGHER on 9,090.
+
+**The register already says: "The fee pre-emption: a generic estimate published
+where the ISSUER cell supplies a house-specific one — 40,229 rows / 8,330 plans
+/ 13,274,448 ppl. Errs both ways (issuer higher on 8,723, lower on 31,506)."**
+My directional split — 9,090 / 34,291 — is the same class to within a few
+percent, plus 22,904 blank→priced and 2,477 priced→blank that the recorded
+screen did not count. **EIGHTH queue entry re-derived rather than read.** The
+habit that catches these is reading the Open list before sizing, not after.
+
+And the top rows prove the screen is the general class rather than the split-name
+one: `"Vanguard" · "Treasury Money Market Fund"` (0.2 → 0.07),
+`"Fidelity" · "500 Index Fund"` (0.03 → 0.015),
+`"BlackRock" · "Equity Index Fund"` (0.06 → 0.03) are ordinary issuer+name rows,
+not names cut in half.
+
+### MY PARTICIPANT TOTAL WAS WRONG BY ~8x AND MUST NOT BE CARRIED
+
+The screen printed **108,030,524 ppl**, which is 93% of the entire
+participant-weighted universe and should have been refused on sight. It summed
+`reach.get(ack)` **once per ROW**, so a plan with forty affected rows was counted
+forty times. The de-duplicated figure for this class is the register's
+**13,274,448**. ***A count over rows is not a count of people, and an
+implausibly large number reports on the query*** — the ninth instance of that
+rule on this record, met in the very script that re-derived a gated item.
+
+### What the draw confirms WORKING, which is the other half of reading one
+
+Boeing: row 1 `Managed account holdings (7831 positions)` at 28.1% / $22.2B
+publishes no ticker and no fee under type `Managed account` — the SMA handling
+doing its job on the second-largest row of a $78.8B menu; row 0 `~NOSIX` is
+correctly asterisked as a comparable; row 13 `Voya (wrap contract)` carries
+`guaranteeOnlyFee` and publishes no fee. Best Buy's menu is 26 collective trusts
+where every asterisked row carries `noPublicPrice` and nine publish no fee at
+all.
+
+**Coverage, not a false claim:** Boeing's own stock row, `BOEING CO COM USD5.00`
+at 8.1% / $6,401,994,458, publishes no ticker — the employer-stock map does not
+reach that spelling.
+
+Nothing shipped from this draw: the class is owner-gated, and a fee is SOURCED
+and never derived. What is new is Boeing as the largest named instance and the
+split-name sub-case, which needs no house judgment.
+
+`docs/accuracy-log.md` 2026-10-04 (21:5xZ).
+
 ## 2026-10-04 (21:4xZ) — v202: which `continue` drops the 30, answered — and the answer is one gate that is CORRECT and one that ate the evidence
 
 **v201's residue was 30 plans whose better vesting sentence is in the
