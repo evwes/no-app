@@ -842,7 +842,17 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
-**v201 IS PRE-REGISTERED AND THE PREDICTION IS "NOTHING MOVES BUT `pv`".**
+**v201 LANDED (#577, `success`) AND ITS REGISTRATION HELD — every coverage
+figure identical, `pv` the only move. Its reader-facing figure UNDER-predicted:
+WITHHELD came in at 34 where 36 was registered, because production's OCR path
+read candidate sentences my local `pdftotext` cache did not contain** (Pacific
+Coast's new quote carries the OCR garble `Oahwhn =`, which is the evidence).
+Delivered **7 plans / 49,307 ppl**, not 5 / 47,462: the named five plus Atos
+Syntel (1,596, a 50%/2yr -> 100%/3yr schedule) and Pacific Coast (249, a
+0/20/40/60/80/100 ladder), both read and both genuine. 7 left the withheld set
+and **0 joined**. `docs/accuracy-log.md` 2026-10-04 (22:0xZ).
+
+**ORIGINAL REGISTRATION, kept because it is what was predicted:**
 `PARSER_VERSION` is **201**: the vesting quote fallback now asks the shipped
 display guard, so a guard-ACCEPTED sentence may displace a guard-REJECTED stored
 one. The upgrade cannot set a label and never blanks a quote, and
@@ -870,9 +880,18 @@ registration shape: **coverage line unchanged except `pv` 201 -> 202**, and
 `vesting-quote-test`'s WITHHELD count must read **34, not 41**. Total delivery
 **7 plans / 50,904 ppl** (v201's 5 plus Polsinelli Pc ×2 / 3,442), 0 published
 quotes changed, 0 lost, 0 labels moved; corpus control 265 identical.
-**Dispatch is HELD because #577 is mid-flight with v201** — cancelling a run does
-not stop it committing a partial store, so v202 goes out the moment #577 lands
-and its verdict is read. `docs/accuracy-log.md` 2026-10-04 (21:4xZ).
+**#577 HAS LANDED, so v202 is dispatched.** The work list is **69,046 acks**:
+the per-ack `pv` is 201 (`fetch-4i:441` writes each shard's own constant), so
+the tree's 202 re-parses everything.
+**AND DO NOT READ THE TRAIL'S `pv` AS THE STORE'S VERSION FOR #577 — it says
+202 for data v201 produced.** The merge job resets to the latest branch tip, so
+the `[skip ci]` v202 commit that landed 24 minutes before #577's merge was in
+the tree it read. **`[skip ci]` is not the defect — it is what kept #577
+alive** — the defect was a summary field reading a mutable tree, and
+`audit-data` now writes the dominant PER-ACK pv instead.
+***And my first reading of that was wrong and alarmist: I concluded the work
+list was EMPTY and v202 a no-op.*** A version label on a derived summary is not
+the version in the data. `docs/accuracy-log.md` 2026-10-04 (21:4xZ) and (22:0xZ).
 
 **VERDICTS are in `docs/accuracy-log.md`, not here.** This block went stale five
 times by accumulating them; the log holds 700 dated entries and every
@@ -2517,6 +2536,32 @@ These outlived the versions that produced them. The accuracy log has the case.
   already records the same miss at v82, v83, v84 and v86/87 — *so when adding a
   guard to a loop that has a quote fallback, ask what the SIBLING guards do with
   the quote, not only what the new guard does with the label.*
+- **ASK WHETHER THE HARNESS'S INPUTS ARE PRODUCTION'S INPUTS — THE THIRD FACE OF
+  ONE RULE (2026-10-04).** v201 was registered at 5 plans from a replay over 41
+  filings read from a LOCAL `pdftotext` cache, and production delivered **7**,
+  because the OCR fallback reads pages text extraction cannot — and the proof is
+  in the gained text (`Oahwhn =`, OCR garble). With v198's under-prediction (a
+  harness over a field the change rewrites) and the 20:1xZ over-prediction (a
+  more generous candidate set than production builds), that is the same rule
+  three times in two directions: *a replay is only as honest as its inputs, and
+  cached extraction is not the production read.*
+- **A VERSION LABEL ON A DERIVED SUMMARY IS NOT THE VERSION IN THE DATA
+  (2026-10-04).** The accuracy trail's `pv` read 202 for a store v201 produced,
+  because the merge job resets to the branch tip and reads `PARSER_VERSION` from
+  the TREE — and a `[skip ci]` bump mid-run is in that tree. I then drew a
+  conclusion about the STORE from that SUMMARY: that the work list was empty and
+  the next dispatch a no-op. Both wrong — `fetch-4i:441` writes each shard's own
+  constant into every ack's `meta`, so the store was honest at 201 and the work
+  list was 69,046. **Read the per-ack field, never the run summary, for what
+  produced the data** — and when a summary and a store disagree, the store is
+  the artifact.
+- **AND `lib-schema` VALIDATES FIELDS, NOT THE SHAPE OF ITS OWN RETURN
+  (2026-10-04).** `loadStatus()` returns `{plans, generated, at}`; a script did
+  `Object.values(st)` and reported **3 status entries, 100% at pv 0**, with a
+  confident wrong verdict attached. The throw-on-unknown-field Proxy protects a
+  caller who reaches `.plans` and cannot protect one who never does. *A loader
+  built against guessed field NAMES does not catch a guessed SHAPE* — and what
+  caught it was the pair "3" and "100%" being implausible on sight.
 - **A count of a condition is not a measure of a defect**, and the siblings:
   *a count keyed on a VOCABULARY measures the vocabulary*; *a count keyed on
   PLANS is blind to every master-trust row* (resolve a trust row through its

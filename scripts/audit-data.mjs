@@ -856,6 +856,28 @@ try {
   }
   auditCoverage.dl = dlFail;
   auditCoverage.pvTopShare = +(topShare * 100).toFixed(1);
+  /* AND `pv` IS THE DOMINANT PER-ACK VERSION, NOT THE ONE IN THIS TREE —
+   * measured wrong on run #577, 2026-10-04.
+   *
+   * The merge job resets to the LATEST fetched branch state before it runs, so
+   * a `[skip ci]` PARSER_VERSION bump committed WHILE a run is in flight is in
+   * the tree the merge reads. #577's parse shards ran v201 and its merge
+   * stamped the trail `pv: 202`, because v202 had landed 24 minutes earlier
+   * under `[skip ci]` — the very practice the cadence prescribes for a run in
+   * flight. The store itself was honest (68,996 of 69,046 acks at pv 201); only
+   * this field lied.
+   *
+   * That matters because of why the field exists: it was added so a reader
+   * could tell whether a PARSER run had occurred. A version number it reports
+   * from the TREE answers "what was committed", and the question is "what
+   * produced this data". `topPv` already answers the second — it is computed
+   * four lines up from the per-ack `pv` the shards write (fetch-4i:441) and is
+   * what every completeness test in this file already uses.
+   *
+   * `...auditCoverage` is spread AFTER the `pv: PARSER_VERSION` default below,
+   * so this overrides it, and the default still covers the case where this
+   * whole block is skipped. */
+  auditCoverage.pv = topPv;
 } catch (e) { console.warn("run-completeness audit skipped: " + e.message); }
 
 
@@ -1068,6 +1090,9 @@ try {
      * everywhere else in this file; writing it into the trail makes "did an
      * incremental run change anything" a one-pass query over history instead of
      * an unanswerable one. Costs ~10 bytes a run. */
+    /* the TREE's version, as a fallback only: the run-completeness block above
+     * overrides this with the dominant PER-ACK pv, which is what actually
+     * produced the data. See its comment for the #577 case. */
     pv: PARSER_VERSION,
     // dl / pvTopShare: how much of the universe this run actually read.
     // Without them a partial store is indistinguishable from a complete one
@@ -1076,6 +1101,13 @@ try {
     ...auditCoverage,
   }) + "\n";
   if (recordTrail) appendFileSync("docs/coverage-history.jsonl", line);
+  /* `pv` and `pvTopShare` printed OUTSIDE the truncated preview below, because
+   * the preview cuts at 160 characters and both sit past it — so the field that
+   * says WHICH PARSER produced this store was unreadable from a local run, and
+   * the #577 mislabelling could only be found by reading committed JSON.
+   * A completeness field nobody can see locally is a field nobody checks. */
+  console.log(`  store version: pv ${JSON.parse(line).pv} at ${JSON.parse(line).pvTopShare}% of acks`
+    + ` (the dominant PER-ACK pv, not this tree's PARSER_VERSION ${PARSER_VERSION})`);
   /* Say which way it went, every run and in both directions. A guard that is
    * silent when it suppresses is how someone later concludes the trail has
    * stopped working; a guard that is silent when it writes is how the write

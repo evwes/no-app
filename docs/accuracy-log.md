@@ -7,6 +7,98 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-04 (22:0xZ) — v201's verdict PASSES as registered, its reader-facing figure UNDER-predicted by two, and the trail's `pv` field was labelling data with a version that never touched it
+
+**Run #577 (v201) concluded `success`, and the pre-registration holds on every
+coverage figure.** `plans` 112,652 · `fullForm` 68,538 · `entries` 65,495 ·
+`confident` 60,182 · `lineups` 59,833 · `match` 43,312 · `vesting` 53,115 ·
+`roth` 38,369 · `HIGH` 4 · `warn` 556 · `dl` 48 · `pvTopShare` 99.9 — all
+identical to the line before it, exactly as "nothing moves but `pv`" predicted.
+The store is **pv 201 on 68,996 of 69,046 acks (99.93%)** with the documented
+old-version tail (pv 196 ×20, 192 ×11, 197 ×9, …). site-test #171 and #172 are
+both green.
+
+### The registered reader-facing observable came in at 34, not 36 — and the two extra are REAL
+
+`vesting-quote-test`'s WITHHELD count was registered at **36** (41 − 5). It reads
+**34**. Diffed against the pre-v201 store through `git show`: **7 left the
+withheld set and 0 joined.** Five are the named set; two were unpredicted:
+
+- **Atos Syntel Inc. (1,596 ppl)** was publishing nothing where its filing says
+  *"Vesting of 50% of employer discretionary matching contributions,
+  non-elective employer contributions and related earnings occurs upon two years
+  of service, and 100% upon three years of service."*
+- **Pacific Coast Sales And Service (249 ppl)** gains a
+  `0% 20% 40% 60% 80% 100%` ladder.
+
+So v201 delivered **7 plans / 49,307 participants**, not 5 / 47,462.
+
+**THE CAUSE IS IN THE GAINED TEXT ITSELF, which is why it is worth recording
+rather than shrugging at.** Pacific Coast's new quote contains `Oahwhn =` — OCR
+garble. My replay read 41 filings from a LOCAL `pdftotext` cache; production
+runs the OCR fallback on pages text extraction cannot read, so **production saw
+candidate sentences my cache did not contain.** ***A replay over locally cached
+`pdftotext` output under-predicts any change whose candidates can come from
+OCR*** — the same shape as v198's under-prediction and the mirror image of the
+20:1xZ over-prediction, and all three are the one rule: *ask whether the
+harness's inputs are production's inputs.*
+
+Both gains were READ, because a gain is a claim: both are genuine employer-money
+schedules. Pacific Coast's carries OCR debris and a loan-note tail, which this
+record's own v85/v87 position already settles — a schedule-bearing sentence
+survives with a loan heading glued on, and visible debris warns a reader where
+"not stated in the audited notes" makes a false claim about the filing.
+
+### The trail's `pv` field said 202 for data that v201 produced — FIXED
+
+#577's parse shards ran **v201**. Its merge job stamped the accuracy trail
+**`pv: 202`**.
+
+**Mechanism:** the merge job resets to the LATEST fetched branch state before it
+runs (a measured necessity — a plain rebase transplant once killed a finished
+run), so it reads `PARSER_VERSION` from whatever is at the branch tip. v202 was
+committed at 21:17:44 under **`[skip ci]`** — *the very practice the cadence
+prescribes for a parser change while a run is in flight* — and #577's merge
+committed at 21:41:36, parented on it. `git show 4725429d:scripts/lib-4i.mjs`
+exports 202.
+
+**Why it matters is the field's own purpose.** `pv` was added to the trail on
+2026-10-03 so a reader could tell whether a PARSER run had occurred. Read from
+the TREE it answers *"what was committed"*; the question is *"what produced this
+data"*. The fix sets `auditCoverage.pv = topPv` — the dominant per-ack version,
+already computed four lines above for `pvTopShare`, already what every
+completeness test in that file uses. The tree's constant stays as the fallback
+for when the completeness block is skipped.
+
+**`[skip ci]` is not the defect and must not be dropped** — it is what kept #577
+alive. The defect was a summary field reading a mutable tree.
+
+### MY FIRST READING OF THIS WAS WRONG, ALARMIST, AND THE CORRECTION IS THE PART TO KEEP
+
+I concluded that the store was labelled 202, that the work list "pv ≠ current"
+was therefore **EMPTY**, that a v202 dispatch would be a **no-op**, and that the
+whole store carried a version promising an arm that never ran. Every part of
+that was wrong, and the thing that refuted it was reading `fetch-4i:441`:
+**each delta's per-ack `meta` carries `pv: PARSER_VERSION` as the SHARD saw it**,
+so the status store is honest at 201 and the work list is **69,046 acks**.
+***A version label on a derived summary is not the version in the data*** — and
+a conclusion about the DATA drawn from the SUMMARY is a conclusion about the
+wrong artifact.
+
+### And the measurement that settled it first read "3 status entries at pv 0"
+
+`loadStatus()` returns `{plans, generated, at}`, so `Object.values` of the
+RETURN is three things. The script reported `3 entries, 100% at pv 0` and a
+confident "they DISAGREE: the data was produced by v0".
+
+That is not the guessed-field-name trap `lib-schema` was built for — **its
+throw-on-unknown-field Proxy protects a caller who reaches `.plans` and cannot
+protect one who never does.** *A loader that validates FIELDS does not validate
+the SHAPE of its own return*, and the tell was the same as always: 3 and 100%
+are an implausible pair, refused on sight rather than published.
+
+`docs/accuracy-log.md` 2026-10-04 (22:0xZ).
+
 ## 2026-10-04 (21:5xZ) — the 21:07 draw lands on an owner-gated item ALREADY RECORDED WITH NUMBERS, and my own screen inflated its readership 8x
 
 **The draw** (`--seed 21072026`, participant-weighted over 60,163 published
