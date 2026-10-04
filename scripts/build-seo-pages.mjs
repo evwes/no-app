@@ -10,7 +10,7 @@
  * EIN-PN (stable forever, no orphans when a sponsor renames). */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { matchQuoteOk, vestingQuoteOk, quoteTrim } from "./lib-quote.mjs";
-import { coverageBand, filedUnit, cleanFiledName, isParticipantLoanRow, isNamelessFundRow, hasNoFundIdentity, isLoanDescriptionRow, isLoanAnswerRow, isLoanMaturityRow, isLoanVocabularyRow, isDirectionCaptionRow, isOfficeListRow, isPageBreakCaptionRow, isLabelOnlyName, isSentenceRow, isNonIssuerCell, trustScheduleDMenu } from "./lib-disclose.mjs";
+import { coverageBand, filedUnit, cleanFiledName, isParticipantLoanRow, isNamelessFundRow, hasNoFundIdentity, isLoanDescriptionRow, isLoanAnswerRow, isLoanMaturityRow, isLoanVocabularyRow, isDirectionCaptionRow, isOfficeListRow, isPageBreakCaptionRow, isLabelOnlyName, isSentenceRow, isNonIssuerCell, trustShareBound, trustScheduleDMenu } from "./lib-disclose.mjs";
 import { isGenericTypeName } from "./lib-4i.mjs";
 
 const BASE = "https://evwes.github.io/no-app"; // becomes the custom domain when DNS lands
@@ -164,6 +164,14 @@ for (const r of d.plans.slice(0, TOP_N)) {
    * twelve-row cap is disclosed separately below the table. */
   const lineupTotal = funds ? entry.funds.reduce((s, f) => s + (f.value || 0), 0) : 0;
   const cov = funds ? coverageBand(lineupTotal, assets, !!lineupVia) : null;
+  /* HOW MUCH OF THIS PLAN IS EVEN IN THE TRUST. `coverageBand` returns null for
+   * a trust lineup and its comment says why: the trust's MENU against one
+   * plan's assets is a meaningless pair. This is the other pair — the trust's
+   * OWN Schedule H total against this plan's own, both whole-entity filed
+   * figures — which licenses an UPPER BOUND, because a shared trust can hold at
+   * most all of it. Mutually exclusive with `cov` by construction, asserted in
+   * no-identity-test. lib-disclose.mjs carries the distribution and the 90% cut. */
+  const tShare = funds && lineupVia ? trustShareBound(trusts[mtia] ? trusts[mtia].assetsEOY : 0, assets) : null;
   /* The unit of account the filing declared. `usd()` below prints every value
    * to the dollar; where the schedule was filed in thousands or millions those
    * trailing zeros are scaling, not digits, and the reader is owed that. Judged
@@ -345,7 +353,8 @@ ${/* THE NEWLINE LIVES INSIDE THE CONDITIONAL, and the block six lines down
   }${luYear ? `<p class="muted"><strong>Note: these holdings are from the ${luYear} filing, not the ${planYear} one.</strong>${luCause ? ` ${esc(luCause.charAt(0).toUpperCase() + luCause.slice(1))}${/[.!?]$/.test(luCause) ? "" : "."}` : ""} A plan's investment menu can change between years, so verify against your current statement. Participants, assets and fees above are from the ${planYear} filing.</p>\n` : ""}${!lineupVia && ff.nonPartDirected ? `<p class="muted"><strong>Part of these holdings is employer-directed.</strong> The filing states some of this plan's assets are not participant-directed, and those holdings are listed here alongside the menu — so a holding's share of the table is not a share of what participants chose.</p>${ff.nonPartDirectedText ? `<blockquote>${esc(ff.nonPartDirectedText)}</blockquote>` : ""}` : ""}
 ${cov ? `<p class="muted">${cov.kind === "under"
   ? `<strong>This lineup is not all of the plan.</strong> Its schedule of assets itemises ${usdB(lineupTotal)} across ${entry.funds.length} holdings, about ${cov.pct.toFixed(0)}% of the ${usdB(assets)} the plan reports on its Schedule H. The rest is money the filing accounts for that the schedule does not itemise.`
-  : `<strong>These holdings exceed the plan's reported assets.</strong> They total ${usdB(lineupTotal)} against ${usdB(assets)} reported on Schedule H — about ${cov.pct.toFixed(0)}%. Treat the table as unreconciled.`}</p>` : ""}
+  : `<strong>These holdings exceed the plan's reported assets.</strong> They total ${usdB(lineupTotal)} against ${usdB(assets)} reported on Schedule H — about ${cov.pct.toFixed(0)}%. Treat the table as unreconciled.`}</p>` : ""}${tShare ? `
+<p class="muted"><strong>${tShare.severe ? "Most of this plan is invested outside this trust." : "Part of this plan is invested outside this trust."}</strong> The whole trust holds ${usdB(trusts[mtia].assetsEOY)} against the ${usdB(assets)} this plan reports on its Schedule H, so <strong>at most ${tShare.pctText}</strong> of the plan is invested through it. The holdings above are the trust's, shared with every member plan.</p>` : ""}
 ${/* the note carries its OWN trailing newline: emitting one unconditionally added
      a blank line to all 4,733 pages that have a fund table, which is harmless to
      a reader and destroys the before/after diff this change has to be judged by */

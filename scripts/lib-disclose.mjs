@@ -42,6 +42,97 @@
  * imports nothing from this file, so there is no cycle. */
 import { isGenericTypeName } from "./lib-4i.mjs";
 
+/* HOW MUCH OF THIS PLAN IS EVEN IN THE TRUST — 2026-10-04 (14:4xZ).
+ *
+ * `coverageBand` below returns null for a trust lineup, and its comment says
+ * why, correctly: *a trust's holdings are a different pool from one member
+ * plan's assets, so the ratio is meaningless and a note built on it would be
+ * false.* That is right about the pair IT compares — the trust's MENU total
+ * against one plan's assets. **But the guard that suppressed the meaningless
+ * ratio also left the meaningful one unwritten**, and it is the reader's actual
+ * question.
+ *
+ * The meaningful pair is two WHOLE-ENTITY Schedule H totals: the trust's own
+ * year-end assets against this plan's own. Both are filed figures for a whole
+ * pool, so the comparison is sound, and because a master trust is SHARED the
+ * plan's interest in it is at most the entire trust:
+ *
+ *     this plan's assets held through the trust  <=  trustAssets / planAssets
+ *
+ * So the note is an UPPER BOUND and must say so. Measured over all 633 plans
+ * the page serves a trust menu to:
+ *
+ *   under 5%   13 plans /   625,572 ppl   the trust is a SLIVER of the plan
+ *   5-25%      22 plans /   942,532 ppl
+ *   25-50%     28 plans /   490,841 ppl
+ *   50-90%     36 plans / 1,217,104 ppl
+ *   90-110%   109 plans / 4,738,277 ppl   the trust IS essentially the plan
+ *   over 110% 425 plans / 3,580,507 ppl   shared trust bigger than this plan
+ *
+ * **IBM's trust holds $14,615,628 against a $64,476,933,873 plan — 0.02% — and
+ * the page serves its three-row menu as IBM's fund lineup to 144,897 readers.**
+ * FedEx 1.7% on a $25.4B plan, GE 0.1%, Sherwin-Williams 1.4%, CHS 1.4%.
+ * Grand Trunk / Canadian National, the case the hourly draw surfaced, is 16.7%.
+ *
+ * THE 90% CUT COMES FROM THAT DISTRIBUTION, not from taste: above it the trust
+ * is essentially the whole plan and the sentence would be noise on 534 plans /
+ * 8.3M participants, and above 110% the bound is vacuous. Named cost of the
+ * cut: the 50-90% band is included, so a plan at 88% gains a marginal note.
+ * Returning DATA rather than a sentence, like `trustScheduleDMenu`, because the
+ * two surfaces word it differently and app.js carries `money()` where
+ * `build-seo-pages` carries `usdB()`.
+ * docs/accuracy-log.md 2026-10-04 (14:4xZ). */
+export function trustShareBound(trustAssets, planAssets) {
+  const t = Number(trustAssets), p = Number(planAssets);
+  if (!(t > 0) || !(p > 0)) return null;
+  const pct = (t / p) * 100;
+  if (pct >= 90) return null;        /* the trust is essentially the plan, or larger */
+  /* THE PERCENTAGE'S OWN FLOOR IS PART OF THE CLAIM, so it is formatted HERE
+   * rather than at each surface. IBM's bound is 0.0227%, which `toFixed(0)`
+   * renders as **"0%"** — the identical defect to `money()`'s "$0K" for a
+   * nonzero amount, shipped as a fix four hours before this function was
+   * written, and it would have reappeared in my own new sentence. A bound that
+   * is real but tiny says "less than 1%", never "0%"; and a single decimal is
+   * kept below 10% so 1.7% does not round to 2%. */
+  const pctText = pct < 1 ? "less than 1%" : pct < 10 ? pct.toFixed(1) + "%" : pct.toFixed(0) + "%";
+  return { pct, severe: pct < 50, pctText };
+}
+/* Asserted at import, both directions, each must-KEEP a case where the named
+ * condition is the only protection. */
+for (const [t, p, why] of [
+  [14615628, 64476933873, "IBM — 0.02%, three rows served to 144,897 readers"],
+  [430067751, 25378065969, "FedEx — 1.7% on a $25.4B plan"],
+  [128134058, 767383565, "Grand Trunk — 16.7%, the case the draw surfaced"],
+  [8451913312, 18488465000, "Abbott — 45.7%, the severe boundary's upper side"],
+  [1, 2, "50% exactly — informative and NOT severe"],
+]) if (!trustShareBound(t, p)) {
+  throw new Error(`lib-disclose: trustShareBound no longer fires for ${why} — the arm is inert`);
+}
+for (const [t, p, why] of [
+  [1000, 1000, "the trust IS the plan — the 90% cut is the only protection"],
+  [1100, 1000, "a shared trust LARGER than this plan — the bound is vacuous"],
+  [900, 1000, "90% exactly — the cut is inclusive at the top"],
+  [0, 1000, "no trust assets stored — nothing to claim"],
+  [1000, 0, "no plan assets — division by zero"],
+]) if (trustShareBound(t, p)) {
+  throw new Error(`lib-disclose: trustShareBound would publish a bound for ${why} — fix the predicate rather than the control`);
+}
+if (trustShareBound(1, 2).severe !== false) throw new Error("lib-disclose: 50% must NOT be severe");
+if (trustShareBound(49, 100).severe !== true) throw new Error("lib-disclose: 49% must be severe");
+/* and the FLOOR, pinned in both directions because "0%" for a real bound is
+ * the same false claim as "$0K" for a real amount */
+for (const [t, p, want, why] of [
+  [14615628, 64476933873, "less than 1%", "IBM \u2014 0.0227% must NOT print as 0%"],
+  [430067751, 25378065969, "1.7%", "FedEx \u2014 one decimal below 10%, not 2%"],
+  [128134058, 767383565, "17%", "Grand Trunk \u2014 no decimal at or above 10%"],
+  [1, 100, "1.0%", "EXACTLY 1% is not LESS than 1% \u2014 my own fixture expected the floor text here and was wrong; the predicate was right"],
+  [99, 10000, "less than 1%", "0.99% \u2014 genuinely below the floor"],
+  [10, 100, "10%", "exactly 10% takes the no-decimal form"],
+]) {
+  const got = trustShareBound(t, p).pctText;
+  if (got !== want) throw new Error(`lib-disclose: trustShareBound pctText = ${JSON.stringify(got)}, want ${JSON.stringify(want)} (${why})`);
+}
+
 export function coverageBand(total, planAssets, fromTrust = false) {
   if (fromTrust) return null;
   if (!total || !planAssets || total <= 0 || planAssets <= 0) return null;

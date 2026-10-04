@@ -985,14 +985,28 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
-- **FOUND BY THE 13:07 DRAW — THE TRUST MENU IS A SLIVER OF THE PLAN, AND NO
-  CHECK CAN SEE IT: 57 trusts / 98 plans / 2,062,910 ppl / $306,439,109,070 of
-  plan assets outside the menu we publish.** FedEx (456,366 ppl) publishes a
-  **3-row** menu summing **$429,944,360** for plans holding **$30,370,260,526**
-  — ratio **0.014**; IBM 144,897 ppl, 3 rows, $15,599,911 against
-  $64,476,933,873; GE 68,934 ppl, 19 rows, ratio 0.001; Bank of America 246,394
-  ppl at 0.064. Motivating case: Grand Trunk / Canadian National (8,142 ppl),
-  $117,166,724 against $767,383,565.
+- **SHIPPED 2026-10-04 14:4xZ — HOW MUCH OF THIS PLAN IS EVEN IN THE TRUST:
+  21 plans / 1,038,102 ppl, 10 of them under 50%, 20 crawlable pages.** Kroger
+  (**411,922 ppl**) now reads that the whole trust holds $10.1B against the
+  $11.8B its plan reports on Schedule H, so at most **85%** of the plan is
+  invested through it; PepsiCo 161,067 at 87%; Macy's 155,776 at 86%; **Idex
+  Corporation's trust holds $3,929,147 against a $962,220,199 plan — under 1%**.
+  **DO NOT CARRY THIS ENTRY'S OWN FIRST FIGURE — 57 trusts / 98 plans /
+  2,062,910 ppl / $306,439,109,070 — NOR ITS THREE HEADLINE CASES.** It screened
+  on "the plan's `mtiaAck` has a confident published entry" and never applied
+  the condition both surfaces apply FIRST: the plan's OWN lineup must be
+  unusable before a trust menu is served (`build-seo-pages.mjs:111`,
+  `app.js:2898`). **IBM, FedEx and GE all have `own usable=true`, so none of
+  them is ever served a trust menu** — IBM's page shows IBM's own lineup, not
+  its $14.6M trust's three rows. Re-derived: 672 plans whose trust has a usable
+  menu, **178 where the plan's own menu WINS**, 494 actually served, 21 below
+  the 90% cut. ***A measurement of what a page PUBLISHES must apply every
+  condition the page applies, in order.***
+  **THE MECHANISM FROM THAT ENTRY STANDS and is why the class was worth
+  finding:** the parser judges a trust's menu against the TRUST, so these
+  entries carry a `coverageRatio` near 1.0 and no check can see the plan-level
+  gap. Grand Trunk / Canadian National (8,142 ppl, 16.7%) is the case the draw
+  surfaced.
   **WHY NOTHING CATCHES IT, and this is the reusable part:** the parser judges a
   TRUST's menu against the **TRUST's** assets, so every one of these entries
   carries a `coverageRatio` near 1.0 — FedEx **1.00**, IBM **1.07**, GE
@@ -1002,18 +1016,24 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   gate with a coverage metric that reads perfect. ***A ratio is only as
   meaningful as its denominator, and the denominator here answers a different
   question than the reader's.***
-  **BUT READ THE SHIPPED DISCLOSURE BEFORE CALLING IT A FALSE CLAIM — I nearly
-  did.** `app.js:4049` already prints *"Holdings of ‹trust› — this plan invests
-  through the master trust … · trust total ‹X› · **percentages are of the trust,
-  not this plan**"*, and the plan's own assets are on the same page. So both
-  numbers are published and the page never claims the menu is the plan's; what
-  is missing is the RELATIONSHIP between them. **This is disclosure
-  completeness, not a fabrication**, and the remedy is one clause stating the
-  share of THIS plan's assets the trust accounts for — display-side, no
-  re-parse. Size the clause against the honest cases first: a trust that IS
-  essentially the whole plan must not gain noise.
-  **Measured against the SUM over every member plan**, which is the
-  conservative denominator in this direction, and pinned on Grand Trunk.
+  **AND THE GUARD THAT SUPPRESSED A MEANINGLESS RATIO LEFT THE MEANINGFUL ONE
+  UNWRITTEN.** `coverageBand` opens `if (fromTrust) return null;` and its
+  comment is right about why — the trust's MENU against one plan's assets is a
+  meaningless pair. `trustShareBound` compares the other pair: the trust's OWN
+  Schedule H total against this plan's own, two whole-entity filed figures,
+  which licenses an UPPER BOUND because a shared trust can hold at most all of
+  it. The two are **mutually exclusive by construction**, asserted over eight
+  pairs with a control showing all four would trip `coverageBand` were
+  `fromTrust` false. **THE PAGE CONTROL IS THE HALF THAT MATTERS: 305 pages
+  serve a trust lineup, 20 gain the sentence, 285 are left alone because the
+  trust IS essentially the whole plan, and 0 carry it without a trust lineup** —
+  a cut that fired on all 305 would be noise and "20 pages changed" would not
+  show it. Named cost of the 90% cut: Avery Dennison at 89.7% gains a marginal
+  note. **STILL OPEN: the two surfaces disagree about WHEN a trust menu is
+  served** — app.js's `ownUsable` also demotes a trust-POINTER menu, which the
+  seo rule does not, so their served populations differ and only the page diff
+  is authoritative for the static surface.
+  `docs/accuracy-log.md` 2026-10-04 (14:4xZ).
 - **CLOSED 2026-10-04 01:5xZ — THE CVS TWO-FUND CLASS IS TWO NAMED INSTANCES AND
   NO NUMBER, after THREE screens each refuted themselves on their own output.**
   CVS Health (**385,927 ppl**) publishes `Vanguard International Growth Fund

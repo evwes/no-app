@@ -16,7 +16,7 @@
  *   4. a negative control per condition
  */
 import { readFileSync } from "node:fs";
-import { hasNoFundIdentity, cleanFiledName, isLabelOnlyName, isSentenceRow, isNonIssuerCell, isNamelessFundRow } from "./lib-disclose.mjs";
+import { hasNoFundIdentity, cleanFiledName, isLabelOnlyName, isSentenceRow, isNonIssuerCell, isNamelessFundRow, coverageBand, trustShareBound } from "./lib-disclose.mjs";
 import { isGenericTypeName } from "./lib-4i.mjs";
 
 const fails = [];
@@ -400,10 +400,70 @@ for (const [n, why] of ISS_KEEP) ok(isNonIssuerCell(n) === false, `isNonIssuerCe
   console.log(`  drop the START anchor: all ${wouldBreak} measured trustee strings would lose their attribution (control fires)`);
 }
 
+/* ===== 10. HOW MUCH OF THIS PLAN IS EVEN IN THE TRUST =================
+ *
+ * coverageBand returns null for a trust lineup, correctly: the trust's MENU
+ * against one plan's assets is a meaningless pair. trustShareBound compares
+ * the other pair - the trust's OWN Schedule H total against this plan's own -
+ * which licenses an UPPER BOUND, because a shared trust can hold at most all
+ * of it.
+ *
+ * IBM's trust holds $14,615,628 against a $64,476,933,873 plan and the page
+ * serves its three-row menu as IBM's lineup to 144,897 readers. */
+const TS_FIRE = [
+  [14615628, 64476933873, "less than 1%", true, "IBM - 0.02%, 144,897 readers"],
+  [430067751, 25378065969, "1.7%", true, "FedEx - 1.7% of a $25.4B plan"],
+  [128134058, 767383565, "17%", true, "Grand Trunk - the case the hourly draw surfaced"],
+  [8451913312, 18488465000, "46%", true, "Abbott - 45.7%, just inside severe"],
+  [1, 2, "50%", false, "exactly 50% - informative and NOT severe"],
+  [89, 100, "89%", false, "just under the 90% cut"],
+];
+const TS_KEEP = [
+  [1000, 1000, "the trust IS the plan - the 90% cut is the ONLY protection here"],
+  [1100, 1000, "a shared trust LARGER than this plan - the bound is vacuous"],
+  [900, 1000, "exactly 90% - the cut is inclusive at the top"],
+  [0, 1000, "no trust assets stored - nothing to claim"],
+  [1000, 0, "no plan assets - division by zero"],
+  [-5, 1000, "a negative figure must not produce a bound"],
+];
+for (const [t, p, text, sev, who] of TS_FIRE) {
+  const r = trustShareBound(t, p);
+  ok(!!r, `trustShareBound MUST fire for ${who} - the arm is inert`);
+  if (r) {
+    ok(r.pctText === text, `trustShareBound pctText for ${who} = ${JSON.stringify(r && r.pctText)}, want ${JSON.stringify(text)}`);
+    ok(r.severe === sev, `trustShareBound severe for ${who} = ${r.severe}, want ${sev}`);
+  }
+}
+for (const [t, p, why] of TS_KEEP)
+  ok(trustShareBound(t, p) === null, `trustShareBound would publish a bound: ${why}`);
+
+/* THE TWO NOTES ARE MUTUALLY EXCLUSIVE BY CONSTRUCTION, and both surfaces rely
+ * on it: each renders its own paragraph with no check that the other is absent,
+ * so if they could ever both fire a plan would be told two different things
+ * about the same table. coverageBand's `fromTrust` early return is what makes
+ * it impossible, and trustShareBound is computed only when fromTrust is true.
+ * Asserted rather than assumed, over the real shapes AND over a grid. */
+for (const [t, p] of [[14615628, 64476933873], [430067751, 25378065969], [128134058, 767383565],
+                      [1000, 1000], [1100, 1000], [400, 1000], [900, 1000], [1, 2]]) {
+  const bothFire = coverageBand(t, p, true) !== null && trustShareBound(t, p) !== null;
+  ok(!bothFire, `BOTH the coverage caveat and the trust bound fire for (${t}, ${p}) - a reader would be told two things about one table`);
+}
+/* and the control: coverageBand WOULD fire on these pairs if fromTrust were
+ * false, so the exclusivity comes from that flag and not from the numbers
+ * happening to miss both bands. A control that cannot fail is decorative. */
+{
+  let wouldFire = 0;
+  for (const [t, p] of [[14615628, 64476933873], [430067751, 25378065969], [128134058, 767383565], [400, 1000]])
+    if (coverageBand(t, p, false) !== null) wouldFire++;
+  ok(wouldFire === 4, `CONTROL IS DECORATIVE: only ${wouldFire} of 4 pairs would trip coverageBand with fromTrust=false, so the exclusivity test proves nothing about the flag`);
+  console.log("\nEXCLUSIVITY CONTROL: all 4 pairs DO trip coverageBand when fromTrust=false, so the `fromTrust` early return is what separates the two notes (control fires)");
+}
+
 if (fails.length) { for (const f of fails) console.error("FAIL " + f); process.exit(1); }
 console.log(`\nno-identity: ${KEEP.length} real names kept, ${QUALIFY.length} qualified, `
   + `${BOTH_FORMS.length * 2} surface-agreement, idempotence over ${checked.toLocaleString()} names, `
   + `${STILL.length * 2} baseline, both controls fire, `
   + `label-only ${LBL_QUALIFY.length} qualified / ${LBL_KEEP.length} kept / ${STOCK_ROWS.length * 2} employer-stock, `
   + `sentence ${SENT_QUALIFY.length} qualified / ${SENT_KEEP.length} kept / ${SENT_STOCK.length * 2} employer-stock, `
-  + `non-issuer ${ISS_SUPPRESS.length} suppressed / ${ISS_KEEP.length} kept, 3 controls fire — 0 failures`);
+  + `non-issuer ${ISS_SUPPRESS.length} suppressed / ${ISS_KEEP.length} kept, 3 controls fire, `
+  + `trust-bound ${TS_FIRE.length} fire / ${TS_KEEP.length} kept / 8 exclusivity — 0 failures`);

@@ -7,6 +7,111 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-04 (14:4xZ) — how much of this plan is even in the trust: 21 plans / 1,038,102 participants, AND A CORRECTION TO THE 14:0xZ ENTRY
+
+**Shipped.** A plan whose fund lineup comes from a MASTER TRUST now reads, on
+both surfaces, how much of ITS OWN assets can be in that trust at all. Kroger
+(**411,922 participants**) is told the whole trust holds $10.1B against the
+$11.8B its plan reports on Schedule H, so at most **85%** of the plan is
+invested through it; PepsiCo 161,067 ppl at 87%; Macy's 155,776 at 86%; and
+**Idex Corporation's trust holds $3,929,147 against a $962,220,199 plan — under
+1%**. 10 of the 21 are under 50% and read "Most of this plan is invested outside
+this trust." 20 crawlable pages.
+
+**THE GUARD THAT SUPPRESSED A MEANINGLESS RATIO LEFT THE MEANINGFUL ONE
+UNWRITTEN, and that is the whole diagnosis.** `coverageBand` opens with
+`if (fromTrust) return null;` and its comment is right about why: *a trust's
+holdings are a different pool from one member plan's assets, so the ratio is
+meaningless and a note built on it would be false.* True — of the pair IT
+compares, the trust's MENU against one plan's assets. The other pair is sound:
+the trust's OWN Schedule H total against this plan's own, two whole-entity filed
+figures, and because a master trust is SHARED it licenses an UPPER BOUND (this
+plan's interest is at most the entire trust). So the fix is a separate note with
+the right denominator, never a relaxation of that guard — and the two are
+**mutually exclusive by construction**, which `no-identity-test` now asserts
+over eight pairs with a control proving all four would trip `coverageBand` if
+`fromTrust` were false.
+
+### THE CORRECTION, and it is the substance of this entry
+
+**The 14:0xZ entry's headline population is WRONG: "57 trusts / 98 plans /
+2,062,910 ppl / $306,439,109,070" and its three most dramatic examples do not
+belong to the class at all.** It screened on *"the plan's `mtiaAck` has a
+confident published entry"* and never applied the condition both surfaces apply
+FIRST — the plan's OWN lineup must be unusable before a trust menu is served
+(`build-seo-pages.mjs:111`, `app.js:2898`). Re-derived with that condition:
+
+| | |
+|---|---|
+| plans whose trust has a usable published menu | 672 |
+| of those, the plan's OWN menu is usable and WINS | 178 |
+| **actually served the trust's menu** | **494** |
+| of those, the bound fires (under 90%) | **21 plans / 1,038,102 ppl** |
+
+**IBM, FedEx and GE — the entry's three headline cases — all have `own
+usable=true`, so none of them is ever served a trust menu.** IBM's page shows
+IBM's own lineup, not the $14.6M trust's three rows. *A measurement of what a
+page PUBLISHES must apply every condition the page applies, in order* — this is
+the same failure as *a STORED field is not a PUBLISHED one*, one layer further
+out: the entry was measuring a store relationship and reporting it as a reader's
+experience. **DO NOT CARRY 98 plans / 2,062,910 ppl / $306.4B.**
+
+The 14:0xZ entry's *mechanism* stands unchanged and is why the class was worth
+finding: the parser judges a trust's menu against the TRUST, so these entries
+carry a `coverageRatio` near 1.0 and no check can see the plan-level gap.
+
+### Three instrument failures, each caught by its own assertion
+
+1. **`loadTrusts()` returns `{trusts, count, byAck, strict}`, not a map**, so my
+   first lookup missed every ack and printed a **both-sided zero across all 633
+   plans**. *A clean zero across a whole population reports on the query.*
+2. **The loader already ships the accessor I then built by hand, twice.**
+   `byAck` is a FACTORY — `byAck()` returns the Map — used exactly that way by
+   `gap-list.mjs:27` and `trace-filing.mjs:60`. My probe called `byAck(ack)`,
+   passing the key to the factory, which ignores it and returns a fresh empty
+   Map; **`JSON.stringify` prints a Map as `{}`**, so an empty Map and a missing
+   record are indistinguishable in a debug print, and I nearly filed a defect
+   against a sound loader. *Before building an instrument, ask whether the
+   project already has one* — and print `.size`, not the stringified object.
+3. **The unconditional newline, from the warning written in the same function
+   about the same mistake.** My first render put `\n` OUTSIDE the conditional and
+   the regenerated diff came back at **4,896 pages**; the comment forty lines
+   above records the identical error at **4,892 against 54 predicted**. Moved
+   inside: **20 pages**. *An implausibly large number reports on the harness* —
+   eighth instance, and the warning being present and in scope did not stop it.
+
+### The formatter floor, met again four hours after shipping its fix
+
+IBM-shaped bounds are fractions of a percent: **0.0227%**, which `toFixed(0)`
+renders as **"0%"** — the identical false claim to `money()`'s "$0K" for a
+nonzero amount, shipped this morning. So `pctText` lives in the shared helper
+rather than at each surface: under 1% reads "less than 1%", under 10% keeps one
+decimal so 1.7% does not become 2%, and both boundaries are pinned. **And the
+pin caught my own expectation rather than the code:** I asserted that exactly
+1.0% should print "less than 1%", which is false — 1% is not less than 1% — so
+the fixture failed, the predicate was right, and the case was replaced with a
+genuine 0.99%.
+
+### Gates
+
+9 fire / 6 keep pins plus 8 exclusivity assertions in `no-identity-test.mjs`,
+a 9-pair smoke tether cross-checking the app.js twin against lib-disclose
+(including an explicit "must not print 0%" check), import-time assertions both
+directions, twin SLICED VERBATIM. **The page control is the half that matters:
+305 pages serve a trust lineup, 20 gain the sentence, 285 are left alone because
+the trust IS essentially the whole plan, and 0 pages carry the sentence without
+serving a trust lineup.** A cut that had fired on all 305 would have been noise
+and a bare "20 pages changed" would not have shown it.
+
+**Named cost of the 90% cut:** the 50-90% band is included, so Avery Dennison at
+89.7% gains a note saying at most 90% of the plan is in its trust — true, and
+marginal. **Still open:** the two surfaces disagree about WHEN a trust menu is
+served (app.js's `ownUsable` also demotes a trust-POINTER menu, which the seo
+rule does not), so the served populations differ and only the page diff is
+authoritative for the static surface.
+
+`docs/accuracy-log.md` 2026-10-04 (14:4xZ).
+
 ## 2026-10-04 (14:0xZ) — the 13:07 draw: a TRUST menu that is a sliver of the plan, and a coverage metric that reads PERFECT on every one
 
 **Found by the participant-weighted draw.** Grand Trunk / Canadian National

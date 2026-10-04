@@ -870,6 +870,43 @@ try {
   for (const n of issCases.slice(ISS_TRUE))
     if (isNonIssuerCell(n)) fail(`the non-issuer arm would delete an issuer attribution that names an entity: ${JSON.stringify(n)}`);
 
+  /* HOW MUCH OF THIS PLAN IS EVEN IN THE TRUST, tethered 2026-10-04. Same
+   * arrangement as the tethers above. The pairs are the REAL filed figures of
+   * plans the page actually serves a trust menu to, plus the two boundaries
+   * that decide whether anything is said at all.
+   *
+   * The pctText cases exist because a bound of 0.0227% rendered with
+   * toFixed(0) prints "0%" — the identical false claim to money()'s "$0K" for
+   * a nonzero amount, fixed four hours before this function was written. */
+  const tsCases = [
+    [3929147, 962220199],        // Idex — under 1%, must not print 0%
+    [90805305, 4883162000],      // Halliburton — 1.9%, one decimal
+    [202046429, 4922356402],     // International Paper — 4.1%
+    [10088757000, 11809161000],  // Kroger, 411,922 readers — 85%
+    [14599872000, 16707501000],  // PepsiCo — 87%
+    [1000, 1000],                // the trust IS the plan — must be null
+    [1100, 1000],                // shared trust larger than the plan — null
+    [900, 1000],                 // exactly 90% — null, the cut is inclusive
+    [0, 1000],                   // no trust assets — null
+  ];
+  const { trustShareBound } = await import("./lib-disclose.mjs");
+  const tsGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoTrustShare !== "function") return null;
+    return cs.map(([t, p]) => { const r = window.__wampoTrustShare(t, p); return r ? [r.pctText, r.severe] : null; });
+  }, tsCases);
+  if (!tsGot) fail("app.js no longer exposes __wampoTrustShare — the trust-bound twin cannot be cross-checked");
+  for (let i = 0; i < tsCases.length; i++) {
+    const [t, p] = tsCases[i];
+    const mine = trustShareBound(t, p);
+    const want = mine ? [mine.pctText, mine.severe] : null;
+    const got = tsGot[i];
+    const same = JSON.stringify(want) === JSON.stringify(got);
+    if (!same) fail(`the trust-bound twin in app.js disagrees with lib-disclose on (${t}, ${p}): app.js=${JSON.stringify(got)} lib-disclose=${JSON.stringify(want)} — re-slice it`);
+  }
+  if (trustShareBound(1000, 1000) !== null) fail("the trust bound would be published where the trust IS the plan");
+  if (!trustShareBound(3929147, 962220199)) fail("the trust-bound arm went INERT on Idex's real filed pair");
+  if (trustShareBound(3929147, 962220199).pctText === "0%") fail('the trust bound prints "0%" for a real nonzero share — the formatter floor is a published claim');
+
   /* THE PARTICIPANT-LOAN PREDICATE, tethered 2026-09-28. It lives twice —
    * canonical in scripts/lib-disclose.mjs for the crawlable pages, twinned in
    * app.js for the report — so the two are held together the way the filed-name

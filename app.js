@@ -124,6 +124,61 @@
    * the smoke test runs this copy against the module's own boundary cases.
    * The static pages went without this note on 533 of 5,000 pages until
    * 2026-09-10, JPMorgan Chase's among them at 66% of the plan. */
+  /* HOW MUCH OF THIS PLAN IS EVEN IN THE TRUST — 2026-10-04 (14:4xZ).
+   *
+   * `coverageBand` below returns null for a trust lineup, and its comment says
+   * why, correctly: *a trust's holdings are a different pool from one member
+   * plan's assets, so the ratio is meaningless and a note built on it would be
+   * false.* That is right about the pair IT compares — the trust's MENU total
+   * against one plan's assets. **But the guard that suppressed the meaningless
+   * ratio also left the meaningful one unwritten**, and it is the reader's actual
+   * question.
+   *
+   * The meaningful pair is two WHOLE-ENTITY Schedule H totals: the trust's own
+   * year-end assets against this plan's own. Both are filed figures for a whole
+   * pool, so the comparison is sound, and because a master trust is SHARED the
+   * plan's interest in it is at most the entire trust:
+   *
+   *     this plan's assets held through the trust  <=  trustAssets / planAssets
+   *
+   * So the note is an UPPER BOUND and must say so. Measured over all 633 plans
+   * the page serves a trust menu to:
+   *
+   *   under 5%   13 plans /   625,572 ppl   the trust is a SLIVER of the plan
+   *   5-25%      22 plans /   942,532 ppl
+   *   25-50%     28 plans /   490,841 ppl
+   *   50-90%     36 plans / 1,217,104 ppl
+   *   90-110%   109 plans / 4,738,277 ppl   the trust IS essentially the plan
+   *   over 110% 425 plans / 3,580,507 ppl   shared trust bigger than this plan
+   *
+   * **IBM's trust holds $14,615,628 against a $64,476,933,873 plan — 0.02% — and
+   * the page serves its three-row menu as IBM's fund lineup to 144,897 readers.**
+   * FedEx 1.7% on a $25.4B plan, GE 0.1%, Sherwin-Williams 1.4%, CHS 1.4%.
+   * Grand Trunk / Canadian National, the case the hourly draw surfaced, is 16.7%.
+   *
+   * THE 90% CUT COMES FROM THAT DISTRIBUTION, not from taste: above it the trust
+   * is essentially the whole plan and the sentence would be noise on 534 plans /
+   * 8.3M participants, and above 110% the bound is vacuous. Named cost of the
+   * cut: the 50-90% band is included, so a plan at 88% gains a marginal note.
+   * Returning DATA rather than a sentence, like `trustScheduleDMenu`, because the
+   * two surfaces word it differently and app.js carries `money()` where
+   * `build-seo-pages` carries `usdB()`.
+   * docs/accuracy-log.md 2026-10-04 (14:4xZ). */
+  function trustShareBound(trustAssets, planAssets) {
+    const t = Number(trustAssets), p = Number(planAssets);
+    if (!(t > 0) || !(p > 0)) return null;
+    const pct = (t / p) * 100;
+    if (pct >= 90) return null;        /* the trust is essentially the plan, or larger */
+    /* THE PERCENTAGE'S OWN FLOOR IS PART OF THE CLAIM, so it is formatted HERE
+     * rather than at each surface. IBM's bound is 0.0227%, which `toFixed(0)`
+     * renders as **"0%"** — the identical defect to `money()`'s "$0K" for a
+     * nonzero amount, shipped as a fix four hours before this function was
+     * written, and it would have reappeared in my own new sentence. A bound that
+     * is real but tiny says "less than 1%", never "0%"; and a single decimal is
+     * kept below 10% so 1.7% does not round to 2%. */
+    const pctText = pct < 1 ? "less than 1%" : pct < 10 ? pct.toFixed(1) + "%" : pct.toFixed(0) + "%";
+    return { pct, severe: pct < 50, pctText };
+  }
   function coverageBand(total, planAssets, fromTrust = false) {
     if (fromTrust) return null;
     if (!total || !planAssets || total <= 0 || planAssets <= 0) return null;
@@ -1857,6 +1912,7 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
   window.__wampoLabelOnly = isLabelOnlyName;  // read by the smoke test only
   window.__wampoSentenceRow = isSentenceRow;  // read by the smoke test only
   window.__wampoNonIssuer = isNonIssuerCell;  // read by the smoke test only
+  window.__wampoTrustShare = trustShareBound;  // read by the smoke test only
   window.__wampoGenericName = isGenericName;  // read by the smoke test only
   function isNamelessFundRow(f, cleanedName, isGenericName) {
     const type = String((f && f.type) || "");
@@ -4115,6 +4171,14 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
     ${classRows.slice(0, 2).map((f) => `\u201c${esc(f.name)}\u201d`).join(" and ")} \u2014 categories, not choices a participant can pick.
     The plan's actual fund lineup is not public in this filing; the schedule of assets its auditor attached goes no deeper.</p>` : "";
     const covBand = tab === "menu" ? coverageBand(total, planAssets, lu.fromTrust) : null;
+    /* HOW MUCH OF THIS PLAN IS EVEN IN THE TRUST. coverageBand above returns
+     * null for a trust lineup and its comment says why — the trust's MENU
+     * against one plan's assets is a meaningless pair. This is a different
+     * pair: the trust's OWN Schedule H total against this plan's own, two
+     * whole-entity filed figures, which licenses an UPPER BOUND because a
+     * shared trust can hold at most all of it. lib-disclose.mjs carries the
+     * distribution and the 90% cut. */
+    const tShare = tab === "menu" && lu.fromTrust ? trustShareBound(lu.trustAssets, planAssets) : null;
     const covPct = covBand ? covBand.pct : null;
     const coverage = covBand == null ? "" : `
     <p class="max-benefit">${covPct < 95
@@ -4135,6 +4199,7 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
       <span class="section-sub">${sub}</span></div>
     ${tabs}
     ${coverage}
+    ${tShare ? `<p class="max-benefit"><strong>${tShare.severe ? "Most of this plan is invested outside this trust." : "Part of this plan is invested outside this trust."}</strong> The whole trust holds ${money(lu.trustAssets / 1e6)} against the ${money(planAssets / 1e6)} this plan reports on its Schedule H, so <strong>at most ${tShare.pctText}</strong> of the plan is invested through it. The holdings above are the trust's, shared with every member plan.</p>` : ""}
     ${cutNote}
     ${npd}
     <div class="fund-scroll">
