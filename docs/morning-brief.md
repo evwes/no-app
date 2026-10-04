@@ -1,15 +1,20 @@
-# wampo morning brief — 2026-10-04, 04:5xZ (12:5x AM ET)
+# wampo morning brief — 2026-10-04, 06:1xZ (2:1x AM ET)
 
-Overnight was **eight ships and five classes closed by evidence**, and the
+Overnight was **nine ships and five classes closed by evidence**, and the
 closures are the more useful half: four separate repairs were measured, found net
 harmful or unfounded, and *not* shipped. Nothing is in flight, nothing is
-pre-registered, **`PARSER_VERSION` is now 200**, and main is at `cf1856be`.
+pre-registered, **`PARSER_VERSION` is 200**, and main is at `aa1836d2` with one
+ship pushed to the dev branch awaiting its CI conclusion.
 
-**The two biggest arrived after midnight.** A parser change (v200) stopped
-publishing a misread match formula for 33 plans, and a one-token display change
-stopped **$51.0 billion** of holdings from reading as named funds when neither
-the name nor the issuer names anything — **3M alone is $18.4B at 74.7% of its
-published menu.**
+**The three biggest arrived after midnight, and together they stop $103 billion
+of holdings from reading as named funds.** A parser change (v200) stopped
+publishing a misread match formula for 34 plans; a one-token display change
+stopped **$51.0B** reading as named when neither the name nor the issuer names
+anything (**3M alone is $18.4B at 74.7% of its published menu**); and a third
+stopped **$52.0B** across **1,082,596 participants** whose published "fund name"
+was built entirely of type-label words — Providence Health's `Registered
+investment company funds` at 48.0% of a menu, 3M's bare `companies` on 25 rows,
+Action Safety Supply's entire menu reading `accounts`.
 
 **READ EVERY PARTICIPANT FIGURE BELOW WITH A ~3% CAVEAT.** Found last evening and
 not yet fixed: **49 plans claim 3,469,170 participants (2.99% of the weighted
@@ -31,6 +36,7 @@ through the page's own renderer:
 
 | | reader-facing | what stops being published |
 |---|---|---|
+| **a name built ENTIRELY of type-label words (06:0xZ)** | **147 rows / 126 plans / 1,082,596 ppl / $52,004,779,703** | Providence Health's `Registered investment company funds` at **48.0% of a menu, $12.47B**; Trinet HR III/IV's `Registed Investment Co.` to **280,299 readers**; 3M's bare `companies` on 25 rows, $14.37B; National Rural Electric's `Common Collective Trusts (Pages 165-166)`, **$9.28B and the largest row on its page** |
 | **the issuer gate's untested premise (04:4xZ)** | **20 rows / 18 plans / 245,810 ppl / $51,048,548,123** | **3M's `Common/collective trusts` · `Investments measured at NAV` · `Collective trust` at 74.7% of its menu, $18.4B** — the same empty answer in three columns. GM $15.8B at 66.4%; Union Pacific $8.1B at 60.9% |
 | **v200: a misread match formula (02:4xZ, parser)** | **34 plans / 55,182 ppl** | Teledyne's `50% of the first 4% of pay` where the filing says `50% of 8% … not to exceed 4%` — we were **understating the benefit by half** to 12,959 readers |
 | trustee's corporate style (21:5xZ) | **2,795 rows / 430 plans / 1,406,886 ppl / $16.0B** | Target's `State Street Bank & Trust Company SSGA S+P 500 INDEX SER A …` at 21.1% of its menu. **359 tickers GAINED, 0 lost** |
@@ -49,8 +55,10 @@ non-name look specific.
 
 **Mirrored:** `23b4fa32` → `cc2795a6` → `b7e3676c` → `330e38cd` → `7c5f3d41` →
 `280359f3` → `f2f859f8` (v200 and its own store, a **matched pair**) →
-`bf3d2132` → `cf1856be`. site-test #157/#159/#160/#161/#162 all green; Pages
-green through #869 and building since.
+`bf3d2132` → `cf1856be` → `25880065` → `aa1836d2`. site-test
+#157/#159/#160/#161/#162 all green and **#163 running on the newest ship**;
+**Pages #876 on main's HEAD is green** — read rather than assumed, since the
+cycle before left it pending.
 
 **v200's verdict corrected two of my own registrations, which is the more useful
 half of it.** The gate's own field hit its registered **floor** exactly
@@ -61,6 +69,20 @@ metric cannot verdict one arm of a full re-parse***, because a pv bump re-runs
 every other arm too. Registering five fields as "unchanged" was wrong by
 construction for the same reason — all 15 gains were read, 0 losses, and **Levi
 Strauss (8,288 ppl) gained a 30-row menu** from its own 4i attachment.
+
+**The newest ship is also the clearest case of the method paying for itself.**
+The queue had sized that class at **88 rows** from a `/regist/` screen; the
+general form of the discriminator reads **611**; what shipped is **147**,
+because reading the 611 showed they were five different remedies wearing one
+shape — a welded vintage (`Fund 2030` through `Fund 2065`, a whole ladder),
+a real designation (`SEPARATE ACCOUNT II`), OCR debris, trailing joiners. *The
+queue asked for a wider instrument and the data asked for a narrower one*, two
+cycles running. And **seven of the rows it reaches are employer stock** —
+Altria's bare `Shares` carries ticker MO on **$1,456,691,207** — so the
+predicate is injected into `isNamelessFundRow` rather than added beside it, and
+that function's employer-stock early return is the only thing standing between
+those seven and a false qualification. *Where a predicate is composed decides
+what protects it.*
 
 ## Found wrong and fixed the same night
 
@@ -78,6 +100,18 @@ the reader where a wrong fund name reads as knowledge*.
 The same shape nearly repeated on the trustee ship: every gate passed and one row
 published `Vanguard Fiduciary` on $70,452,841. Caught by regenerating the pages,
 fixed, and confirmed **by absence** — 19 changed pages became 18.
+
+**And a third time, two hours ago, on the newest ship.** Its page-reference arm
+first took a singular `(page 166)`, so the regenerated page qualified National
+Rural Electric's `Registered Investment Companies (Page 166)` and left
+`Common Collective Trusts (Pages 165-166)` — **$9,284,475,171, 48.6% of that
+plan's menu and the largest row on the page** — reading as a named holding two
+rows above its qualified sibling. Nothing in 1.7M rows of diff showed it; the
+13-file page diff did. *One of two spellings of a caption family is worse than
+neither*, and the argument for the fix was not symmetry but consistency with a
+predicate already shipped: `isGenericTypeName("Common Collective Trusts")` was
+already true, so only the page pointer defeated it. **Three times now the page
+has caught what every count passed.**
 
 ## Closed by evidence, nothing shipped — the night's real output
 
@@ -106,9 +140,16 @@ fixed, and confirmed **by absence** — 19 changed pages became 18.
 
 ## Held, and why
 
-- **Nothing now.** v200 was dispatched, verdicted and mirrored as a matched
-  pair, so the hold that ran for eleven consecutive identical coverage lines is
-  over. Before it: those eleven lines were correct rather than a stall, since
+- **One ship, for minutes not hours:** the 06:0xZ label-only predicate is
+  pushed to the dev branch and mirrors as soon as site-test #163 reports its
+  conclusion. *A red gate is worse than no gate*, and a local green is not a CI
+  green — ten consecutive red site-test runs went unnoticed in September because
+  commit messages said "green" and meant locally.
+- **No dispatch this cycle, and that is correct:** every change is display-side,
+  `PARSER_VERSION` stays 200, so an incremental work list would be the same 48
+  permanently-withdrawn filings. v200 was dispatched, verdicted and mirrored as
+  a matched pair, so the hold that ran for eleven consecutive identical coverage
+  lines is over. Before it: those eleven lines were correct rather than a stall, since
   the work list was the 48 permanently-withdrawn filings.
   (I first wrote "eight" here and `CLAUDE.md` says "seventh". Both were
   unmeasured. A strict all-keys comparison answers **6**, because `pv` was added
@@ -157,14 +198,25 @@ baseline: 3 `contrib` outliers plus `fabricated-name`) · warn 558 · `dl` 48 ·
 times and answered 403 every time, so that code remains an honest published
 claim.
 
-Hourly cycles continue around the clock. Next in the queue, now that the
-`rate == cap` question is answered and shipped: the three remedies the
-generic-name re-measurement separated — **88 rows / 707,208 ppl whose whole name
-is a type designation** (Providence Health publishes `Registered investment
-company funds` at **48.0% of its menu, $12.5B**) to qualify, **235 rows /
-390,978 ppl where a label PREFIXES a real fund** to strip (which would *gain* a
-name), and 297 rows that start with no label; then the parser-side
-vesting-sentence selection, which needs a `PARSER_VERSION` bump and has a
-ready-made oracle in the shipped guard plus a named instance (Flex, 16,483 ppl,
-publishing as its whole vesting answer a rule for participants who left before
-January 1, 2001).
+Hourly cycles continue around the clock. Remedy (a) of the generic-name split
+shipped this cycle. Next: **235 rows / 390,978 ppl where a label PREFIXES a real
+fund** — CHS/Community Health's seven `Registered Inv estment Company PRIN
+SHORT-TERM INCOME` rows, issuer `Principal Funds Inc` — which is the opposite
+remedy, a STRIP that *gains* a name; then 297 rows that start with no label;
+then the parser-side vesting-sentence selection, which needs a `PARSER_VERSION`
+bump and has a ready-made oracle in the shipped guard plus a named instance
+(Flex, 16,483 ppl, publishing as its whole vesting answer a rule for
+participants who left before January 1, 2001). Both of the first two predate
+this ship and must be re-measured rather than read.
+
+**This cycle's draw read clean**, and two shipped designs were confirmed working
+rather than merely unbroken: Roper Technologies (14,999 ppl, menu/assets 0.99)
+correctly *asterisks* its Vanguard Target Retirement collective trusts as
+comparables and withholds their fees, and EzCorp's Empower `Day One` pooled
+separate accounts correctly publish no price. EzCorp's `Empower Guaranteed
+Income Fund` does publish the fabricated **0.35** on $857,280 — but that is a
+named live instance of the **owner-gated** stable-value item (4,669 rows /
+7.39M ppl, 4,571 at exactly 0.35), not a new defect: the shipped gate requires
+the filing's own word `contract`, and its own comment says so. Worth one note —
+this row's type cell is **blank** where the previously-named instance was typed
+`Mutual fund`, so `gicRow` escapes for a second reason as well as a first.
