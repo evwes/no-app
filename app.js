@@ -198,6 +198,32 @@
       ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   }
 
+  /* `m` is in MILLIONS. The compact K/M/B/T scale is deliberate; its FLOOR was
+   * not. The old last line was `Math.round(a * 1000) + "K"`, so **every amount
+   * under $500 printed "$0K"** — and $0 is not a measurement, it is the
+   * formatter's floor. Measured 2026-10-04 over the published store, three
+   * surfaces, every one of them a nonzero amount rendered as zero:
+   *
+   *   per-row HOLDING value (app.js:3884, :4095)
+   *       16,497 published rows / 8,103 plans / 8,069,421 participants
+   *       — FedEx's `Cash Reserves Federal Money Market Fund Admiral` at $34,
+   *         Fisher Sand & Gravel's three $2 rows, Tokai Carbon's $1,
+   *         Kennedys CMK's $485 and $121
+   *   the AVERAGE BALANCE cell (app.js:4343)
+   *       1,810 plans / 3,731,830 claimed participants / $181,806,889
+   *       — Caring Professionals files 4,806 participants and 4,806 balances,
+   *         which AGREE, holding $1,475,927: the average really is $307 and the
+   *         page said "$0K". Avalon Capital Management's row reads "$0K" while
+   *         3 people hold $6,087,098, about $2.03M each.
+   *   plan ASSETS (app.js:4254, :4342)   185 plans holding more than $0
+   *
+   * So below the K floor, print the DOLLARS. Nothing above it moves: $500 still
+   * rounds to "$1K" exactly as before, and the three upper branches are
+   * untouched. The crawlable pages are NOT affected — `build-seo-pages.mjs`
+   * uses its own `usd()`, which already prints exact dollars, which is why that
+   * surface was already honest and this one was not.
+   *
+   * `window.__wampoMoney` is read by the smoke test only. */
   function money(m) {
     if (m == null) return "—";
     const sign = m < 0 ? "−" : "";
@@ -205,8 +231,11 @@
     if (a >= 1e6) return sign + "$" + (a / 1e6).toFixed(2) + "T";
     if (a >= 1000) return sign + "$" + (a / 1000).toFixed(1) + "B";
     if (a >= 1) return sign + "$" + a.toFixed(1) + "M";
-    return sign + "$" + Math.round(a * 1000) + "K";
+    const k = Math.round(a * 1000);
+    if (k >= 1) return sign + "$" + k + "K";
+    return sign + "$" + Math.round(a * 1e6).toLocaleString("en-US");
   }
+  window.__wampoMoney = money;  // read by the smoke test only
 
   function titlePlanName(s) {
     return String(s || "").toLowerCase()

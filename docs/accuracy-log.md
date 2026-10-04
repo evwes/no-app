@@ -7,6 +7,107 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-04 (10:4xZ) — "$0K" published for a nonzero amount: the formatter's FLOOR, on 16,497 holding rows / 8,069,421 participants, found by working a different queue item
+
+**SHIPPED.** One branch of `money()` in `app.js`. Below the K floor it now
+prints the DOLLARS. Nothing at or above the floor moves: $500 still rounds to
+"$1K" exactly as before, and the M/B/T branches are untouched. 15 pins in
+`smoke-test.mjs` via `window.__wampoMoney`, both directions, with the boundary
+pinned because this formatter is called at 25 sites. **0 crawlable pages
+changed**, which is the control, not an accident: `build-seo-pages.mjs` uses its
+own `usd()` and already printed exact dollars.
+
+### What was wrong
+
+`money(m)` takes MILLIONS and its last line was `Math.round(a * 1000) + "K"`,
+so **every amount under $500 printed "$0K"**. Measured over the published
+store, three surfaces, every one a nonzero amount rendered as zero:
+
+| surface | population |
+|---|---|
+| per-row **HOLDING** value (`app.js:3884`, `:4095`) | **16,497 published rows / 8,103 plans / 8,069,421 participants** |
+| the **AVERAGE BALANCE** cell (`app.js:4343`) | 1,810 plans / 3,731,830 claimed ppl / $181,806,889 |
+| plan **ASSETS** (`:4254`, `:4342`) | 185 plans holding more than $0 |
+
+FedEx's `Cash Reserves Federal Money Market Fund Admiral` at **$34**, Fisher
+Sand & Gravel's three rows at **$2**, Tokai Carbon's `INVESCO STABLE VALUE RET
+CL 3` at **$1**, Kennedys CMK's $485 and $121. Avalon Capital Management's
+average-balance cell read **"$0K"** while 3 people hold $6,087,098 — verified in
+a real browser before and after: `["…","Finance & Insurance","2M","$6.1M","$0K","—"]`
+became `[…,"$3","—"]`.
+
+***$0 is not a measurement; it is the formatter's floor.***
+
+### How it was found, which is the part worth keeping
+
+**I was working a different item and the chain of reasoning was wrong twice
+before it was right.** The queue said to settle the uncorroborated participant
+count first, because every size in the register is denominated in that field.
+
+**Step 1 — re-measured the class and it got SMALLER and better-pinned.** 28
+plans / 3,413,761 ppl / 2.94% of weight at BOY < $10/head, with both must-see
+pins caught (Avalon, Dingo Doggies) and **none of the four pinned must-NOT-sees**
+(Kroger pn=004, Kaiser pn=037, VMware, Neiman Marcus). The queue's own 49 plans
+/ 3,469,170 is superseded. Avalon's uniqueness was checked against the whole
+universe rather than asserted: **exactly 1 plan of 112,652** has its claim equal
+a dollar figure on its own row.
+
+**Step 2 — the queue's PEO hypothesis is TESTED and mostly holds**, which splits
+the class: `activeParticipants` is at least half the claim on **20 of 28**, so
+for those the figure is an eligible population consistent with another filed
+field. Only ~8 have nothing supporting them at all, and they carry 89% of the
+weight.
+
+**Step 3 — READING `derive()` REFRAMED THE WHOLE ITEM.** It already carries a
+distrust rule, and it distrusts **`partBalances`, never the participant count**.
+Its own comment's examples run the other way (Union Savings Bank filed 3
+balances against 500 participants), so when BOTH fields are filer-entered and
+absurd the shipped rule resolves in favour of the LARGER one. Avalon fails
+`pb >= pt*0.05`, the denominator becomes 1,955,672, and the average is $3.11.
+
+**Step 4 — MY OWN HYPOTHESIS WAS THEN REFUTED BY THE BOOT FILE.** I expected the
+page to publish "$3.11". It does not: `plans-list.json` ships `ab: 0` for 26 of
+the 28, `app.js:373` turns `0` into `null`, and the list renders the honest
+"—". *A STORED field is not a PUBLISHED one*, met again, on my own prediction.
+What publishes the bad cell is the DETAIL shard arriving and `derive()`
+recomputing — so the honest "—" is **replaced** by a worse answer on expand.
+
+**Step 5 — and the real cause was neither the count nor the denominator.** Of
+the 1,810 plans whose average-balance cell prints "$0K", only **42** are the
+uncorroborated-count shape. The other **1,768** are the formatter: Caring
+Professionals files 4,806 participants and **4,806 balances, which AGREE**,
+holding $1,475,927 — the average genuinely IS **$307**, and the page said "$0K".
+That is what turned a 3%-of-weight disclosure question into a one-line fix
+reaching 8 million readers.
+
+***A queue item worked honestly can hand back a different and larger defect than
+the one it names*** — and each of the five steps above was a measurement that
+could have ended the investigation, including the two that refuted me.
+
+### Scope discipline
+
+The formatter is called at 25 sites, so the K floor was the only thing touched
+and the boundary is pinned. `usd()` in both `app.js:3312` and
+`build-seo-pages.mjs:43` already prints exact dollars, so neither the fee
+section nor the crawlable pages were ever affected — verified by regenerating
+all 5,000 pages and getting **0 changed files**. Zero now prints "$0" rather
+than "$0K", which is pinned and is the only change above the defect population.
+
+### Still open, and NOT fixed by this
+
+**The denominator question remains for the 42.** Avalon's cell now reads "$3"
+instead of "$0K" — honest about the arithmetic, but the arithmetic still divides
+$6,087,098 by a participant count that no other field on the row supports, when
+3 people hold it. The page already prints **"Participants 1,955,672 / 3 active ·
+at plan year end"**, so the claim is labelled and the active count sits beside
+it; what is unresolved is whether an average balance should be computed from a
+claim like that at all. That is the original queue item, now correctly sized at
+**28 plans** and split 20 / 8 by whether `activeParticipants` corroborates, and
+it is a judgment about `derive()`'s distrust direction rather than a formatter
+bug.
+
+---
+
 ## 2026-10-04 (09:2xZ) — the wind-down trigger is CLOSED (its prescription would publish a false $0 on 42 accurate menus), and the draw's one finding was my own denominator
 
 **TWO CLOSURES, NOTHING SHIPPED TO THE PRODUCT, one small fix to the instrument

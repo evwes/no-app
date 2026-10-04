@@ -1327,11 +1327,29 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   and PEO firms where `activeParticipants` ≈ the claim, so the figure is
   plausibly the ELIGIBLE population AS FILED — unusable as a reader-facing
   "participants" number and harmful as a weight, but not wrong in form.
-  **So the fix is a DISCLOSURE, not a correction** — publish the corroborating
-  field beside it or withhold the headline where nothing supports it, the
-  `hasNoFundIdentity` shape. *A blank is honest; a number reads as knowledge.*
-  Settle the weighting first: every size in this queue is denominated in this
-  field. `docs/accuracy-log.md` 2026-10-03 (19:5xZ).
+  **RE-MEASURED 2026-10-04 10:2xZ AND THE CLASS IS SMALLER AND SPLIT: 28 plans /
+  3,413,761 ppl / 2.94% of weight** at BOY < $10/head, both must-see pins caught
+  (Avalon, Dingo Doggies) and **none of the four pinned must-NOT-sees** (Kroger
+  pn=004, Kaiser pn=037, VMware, Neiman Marcus). **DO NOT CARRY 49 plans /
+  3,469,170.** Avalon's uniqueness is now checked against the whole universe
+  rather than asserted: **exactly 1 of 112,652** has its claim equal a dollar
+  figure on its own row. **AND THE PEO HYPOTHESIS IS TESTED AND MOSTLY HOLDS:**
+  `activeParticipants` is at least half the claim on **20 of 28**, so those are
+  an eligible population consistent with another filed field; only ~8 have
+  nothing supporting them, and they carry 89% of the weight.
+  **THE PAGE ALREADY DISCLOSES MORE THAN THIS ENTRY ASSUMED** — read in a real
+  browser, Avalon's report prints *"Participants 1,955,672 / 3 active · at plan
+  year end"*, so the claim is labelled and the active count sits beside it.
+  **WHAT REMAINS IS A JUDGMENT ABOUT `derive()`'s DISTRUST DIRECTION, not a
+  disclosure:** `derive()` (app.js:252) distrusts `partBalances` and NEVER the
+  participant count — its own comment's examples run the other way — so when
+  both are filer-entered and absurd it resolves in favour of the LARGER one, and
+  Avalon's average balance is $6,087,098 / 1,955,672. Whether an average should
+  be computed from a claim no other field supports is the open question.
+  **AND WORKING THIS ITEM HANDED BACK A LARGER ONE THAT IS NOW SHIPPED** — see
+  the `money()` K-floor entry: only 42 of the 1,810 "$0K" average-balance cells
+  were this class at all. `docs/accuracy-log.md` 2026-10-03 (19:5xZ) and
+  2026-10-04 (10:4xZ).
 - **SHIPPED 2026-10-03 16:2xZ (`23b4fa32`) — `quoteTrim`: table debris stops
   leading a published quote, 64 quotes / 64 plans / 129,653 ppl**, 5 crawlable
   pages. The queue's own figure was 65 / 130,078; the 65th is already suppressed
@@ -2150,6 +2168,28 @@ These outlived the versions that produced them. The accuracy log has the case.
   reports on the query*, and `lineups-index.json` has no `lib-schema` loader,
   which is exactly why a guessed field name was possible.
   `docs/accuracy-log.md` 2026-10-04 (08:3xZ).
+- **A FORMATTER'S FLOOR IS A PUBLISHED CLAIM — "$0" IS NOT A MEASUREMENT
+  (2026-10-04, SHIPPED).** `money()`'s last branch was
+  `Math.round(a * 1000) + "K"` with the argument in MILLIONS, so **every amount
+  under $500 printed "$0K"**: 16,497 published HOLDING rows across 8,103 plans /
+  **8,069,421 participants** (FedEx's $34 money-market row, Fisher Sand &
+  Gravel's three $2 rows, Tokai Carbon's $1), 1,810 average-balance cells, and
+  185 plan-asset cells. A compact K/M/B/T scale is a deliberate design; its
+  FLOOR rendering a nonzero amount as zero is not. Below the floor it now prints
+  the dollars, the boundary ($500 -> "$1K") is pinned, and the crawlable pages
+  were never affected because `usd()` already printed exact dollars — verified
+  by regenerating all 5,000 pages for **0 changed files**.
+  **FOUND BY WORKING A DIFFERENT QUEUE ITEM, through five measurements of which
+  two refuted me:** the uncorroborated-participant-count class re-sized smaller
+  (28 plans, PEO hypothesis tested), `derive()`'s distrust rule turned out to
+  point at `partBalances` rather than the count, my prediction that the page
+  published "$3.11" was **refuted by the boot file** (`ab: 0` -> `null` -> the
+  honest "—", replaced by the bad cell only when the detail shard lands), and
+  then only **42 of 1,810** "$0K" cells belonged to the class at all — Caring
+  Professionals files 4,806 participants and 4,806 balances that AGREE, holding
+  $1,475,927, so its average really is **$307**. ***A queue item worked honestly
+  can hand back a different and larger defect than the one it names.***
+  `docs/accuracy-log.md` 2026-10-04 (10:4xZ).
 - **A PREDICATE WRITTEN TO JUDGE A WHOLE STRING IS NOT A PREDICATE ABOUT ITS
   PREFIXES** (2026-10-04, and it closed a 29M-participant class). Remedy (b)'s
   split asked `isGenericTypeName`/`isLabelOnlyName`/`hasNoFundIdentity` "is this

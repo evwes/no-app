@@ -721,6 +721,43 @@ try {
   for (const r of rowCases.slice(4))
     if (isNamelessFundRow(r, r.name, isGenericTypeName)) fail(`nameless-row rule would tell a reader "no specific fund" about a row that IS identified: ${JSON.stringify(r)}`);
 
+  /* `money()`'s K FLOOR, tethered the day it shipped (2026-10-04). The old
+   * last branch printed "$0K" for every amount under $500 — a nonzero amount
+   * rendered as zero on 16,497 published holding rows (8,103 plans /
+   * 8,069,421 participants), 1,810 average-balance cells and 185 plan-asset
+   * cells. The argument is in MILLIONS.
+   *
+   * The pins run in BOTH directions and the boundary is the point: nothing at
+   * or above the K floor may move, because this formatter is called at 25
+   * sites and a shift there would be a site-wide change rather than a fix. */
+  const moneyCases = [
+    [null, "—", "null stays an em dash"],
+    [0, "$0", "exactly zero: honest, and no longer dressed as a K figure"],
+    [2 / 1e6, "$2", "Fisher Sand & Gravel files three holdings at $2"],
+    [34 / 1e6, "$34", "FedEx's Cash Reserves Federal Money Market row"],
+    [307 / 1e6, "$307", "Caring Professionals' real average balance, 4,806 balances agreeing with 4,806 participants"],
+    [485 / 1e6, "$485", "Kennedys CMK's Fidelity Index row"],
+    [499 / 1e6, "$499", "the last dollar below the K floor"],
+    [500 / 1e6, "$1K", "THE BOUNDARY — must still round up, exactly as before"],
+    [501 / 1e6, "$1K", "and just above it"],
+    [1234 / 1e6, "$1K", "unchanged inside the K branch"],
+    [0.5, "$500K", "unchanged inside the K branch"],
+    [2.03, "$2.0M", "unchanged in the M branch"],
+    [1500, "$1.5B", "unchanged in the B branch"],
+    [2e6, "$2.00T", "unchanged in the T branch"],
+    [-307 / 1e6, "\u2212$307", "the sign survives the new branch"],
+  ];
+  const moneyGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoMoney !== "function") return null;
+    return cs.map(([m]) => window.__wampoMoney(m));
+  }, moneyCases);
+  if (!moneyGot) fail("app.js no longer exposes __wampoMoney — the money formatter cannot be checked");
+  const moneyBad = moneyCases.filter(([, want], i) => moneyGot[i] !== want);
+  if (moneyBad.length) {
+    for (const [m, want, why] of moneyBad) console.error(`  money(${m}) = ${JSON.stringify(moneyGot[moneyCases.findIndex((c) => c[0] === m)])}, want ${JSON.stringify(want)}  (${why})`);
+    fail(`the money formatter disagrees with its pins on ${moneyBad.length} of ${moneyCases.length} cases`);
+  }
+
   /* `isLabelOnlyName`, tethered THE DAY IT SHIPPED (2026-10-04). A name built
    * entirely of type-label words: 146 rows / 126 plans / 1,082,596 participants
    * / $42,720,304,532, measured through both renderers. Canonical in
