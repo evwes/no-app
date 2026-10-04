@@ -1164,25 +1164,69 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
-- **FOUND BY THE 00:4xZ DRAW — TWO COMPLETE FUNDS IN ONE ROW WITH ONE'S SYMBOL
-  ASSERTED. ONE NAMED INSTANCE, NO NUMBER, and the screen for it is REFUTED.**
-  CVS Health (**385,927 ppl**, $30.1B) publishes `Vanguard International Growth
-  Fund Admiral International Equity Index Fund` at **$2,842,314,805, 13.3% of
-  its menu**, with **=VWILX ASSERTED** and a 0.26 fee — two different funds, one
-  of them's identity and price claimed for the pair. **NOT the mid-name-house
-  class:** the second half carries no house, so that condition cannot see it.
-  **THE FIX IS A WITHHOLDING, NOT A REPAIR** — both halves are real funds and
-  nothing says which holds the money, so the honest move is to drop the symbol
-  and the fee, the `hasNoFundIdentity` shape.
-  **DO NOT CARRY 4,683 rows / 1,654 plans / 10,095,461 ppl / $207.6B** — that
-  interior-class screen is refuted by its own nine largest members, all
-  `BlackRock Institutional Trust Company, . LIFEPATH INDEX <vintage> NL FUND F`
-  (Target, 495,482 ppl), where `Institutional` is part of the TRUSTEE's
-  corporate style and not a share class. Those are the rows the 21:5xZ entity
-  arm deliberately refuses. **A usable screen must require the designation NOT
-  to be followed by a corporate style, and the HEAD alone to resolve through the
-  shipped resolver** — that is the evidence it is a complete name rather than a
-  fragment. `docs/accuracy-log.md` 2026-10-04 (00:4xZ).
+- **CLOSED 2026-10-04 01:5xZ — THE CVS TWO-FUND CLASS IS TWO NAMED INSTANCES AND
+  NO NUMBER, after THREE screens each refuted themselves on their own output.**
+  CVS Health (**385,927 ppl**) publishes `Vanguard International Growth Fund
+  Admiral International Equity Index Fund` at **$2,842,314,805, 13.3% of its
+  menu**, =VWILX asserted and a 0.26 fee; Bright Wood Corporation (1,254 ppl)
+  publishes `GROWTH IS JPMORGAN MID CAP GROWTH R6 PIMCO RAE US SMALL INSTL` at
+  $154,057. The fix remains a WITHHOLDING, not a repair.
+  **DO NOT RETRY ANY OF THE THREE.** (1) An interior designation + a fund-shaped
+  tail: 4,683 rows / 10,095,461 ppl, nine largest all `BlackRock Institutional
+  Trust Company …` where `Institutional` is corporate style. (2) Add the
+  corporate-style refusal AND require the head to resolve — the queue's own
+  prescription, both conditions built and working: **359 rows / 683,810 ppl, one
+  genuine member in its 20 largest.** The rest are my designation regex splitting
+  a MULTI-WORD class (`PIMCO Total Return Institutional | Class Fund`) and a type
+  caption in the tail (`… Admiral Shares | Interest-bearing cash account`) — and
+  the first is harmful in the OTHER direction, since On Semiconductor's head
+  resolves VINIX where the whole row resolves **VIIIX**, so the published row is
+  the more precise answer. (3) Require the tail to appear verbatim as another
+  plan's WHOLE filed name: 84 rows / 483,848 ppl, two genuine in 24, because
+  `Interest-bearing cash account` ×7, `- Asset allocation fund` ×46,
+  `- Foreign Large Blend` ×11 and `Money Market Fund` ×308 **are** other plans'
+  whole filed names while being captions and a Morningstar category.
+  **THE CLOSURE IS WHAT THE STRONGEST EVIDENCE SAYS:** a resolver-attested
+  version — split at every word boundary, both sides resolving, different
+  tickers — reads 73 rows / 18,329 ppl and **does not contain CVS**, whose tail
+  resolves to nothing. *A class whose best witness cannot see its motivating row
+  is closed, not paused.* `docs/accuracy-log.md` 2026-10-04 (01:5xZ).
+- **SHIPPED 2026-10-04 01:5xZ, FOUND BY THAT CLOSURE — A PUBLISHED NAME THAT
+  CONTAINS ITSELF TWICE: 224 rows / 129 plans / 232,595 ppl / $5,036,058,631,
+  name-only (ticker 0 / asterisk 0 / fee 0 / row membership 0), 6 crawlable
+  pages and 14 duplicate copies removed.** Automatic Data Processing (46,258
+  ppl) stops publishing `Northern Trust S&P 500 Index Fund NORTHERN TRUST S&P
+  500 INDEX FUND` on $1,512,757,156, 21.3% of its menu, plus six more rows on
+  the same page; International Multifoods' $935,152,130 row; SAP's
+  $215,176,354.
+  **NOT MERELY LEGIBILITY, which is why it is a repair:** the resolvers read the
+  NAME, so which half they reach decides the published share class. Redlands
+  Christian's `… Retirement 2030 Fund … Retirement 2030 Fund-I Class` publishes
+  **TRFHX** out of the second copy while Giorgio Armani's identically-shaped
+  2045 row publishes **~TRRKX**, a *comparable of the investor class*, out of
+  the first.
+  **WHICH COPY SURVIVES IS DECIDED BY EVIDENCE:** a boundary falling INSIDE a
+  token means the second copy carries more characters and is the specific
+  spelling (`Fund-I Class`); a clean boundary with exactly one ALL-CAPS copy
+  keeps the mixed-case one (ADP's second column is upper-cased boilerplate);
+  otherwise the second copy plus its trail, where a share class sits.
+  **ALL THREE CONDITIONS ARE LOAD-BEARING, measured by neutering each one in
+  full over all 1,730,415 rows** — forward-prefix **419 rows / 831,106 ppl**
+  (Motiva's `BR LifePath Index 2050 W BR Life Path Index 2055 W` is two
+  VINTAGES; Baystate 17,769 ppl), three-word floor 20 / 17,907, ten-character
+  floor 13 / 32,628. **The last two are conservatism whose COST is named, not
+  protections** — most of those 33 rows would improve if collapsed, so lowering
+  either floor is a measurement and not a free widening. **And the matrix caught
+  my own label:** `Class A Class A Shares` tests the CHARACTER floor, not the
+  word floor (`classa` is six), so it was protected twice and proved neither;
+  the word-floor-only case is `Alerus Mmkt Alerus Mmkt` at exactly ten.
+  **THE ONE MOVED CELL IS A PROMOTION:** SRG LLC's `Guaranteed Investment
+  Contract Guaranteed Investment Contract` gains "Filing names no specific fund"
+  — *the doubled string had been DEFEATING `isNamelessFundRow`*, so a generic
+  non-name looked specific. **RESIDUE, named:** an INTERLEAVED duplication keeps
+  its trailing repeat (Lubrizol's `… All Cap Equity Equity`), below the
+  three-word floor; the fixed-point loop is already in place for when that floor
+  moves. `docs/accuracy-log.md` 2026-10-04 (01:5xZ).
 - **SHIPPED 2026-10-04 00:3xZ — A UNIT COUNT PUBLISHED INSIDE A FUND NAME: 310
   rows / 28 plans / 491,936 ppl / $11,661,189,381, NAME-ONLY (ticker gained 0 /
   lost 0 / swapped 0 / star 0; fee gained 0 / lost 0 / swapped 0; type 0), 5

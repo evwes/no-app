@@ -297,6 +297,20 @@ try {
    * drifting: every case below is a real filed name from the store, plus the
    * three controls that must come back UNCHANGED. */
   const nameCases = [
+    /* 2026-10-04, THE SELF-REPEAT COLLAPSE. Checked before adding, for the
+     * reason this comment keeps being written: not one case below reaches the
+     * collapse, so the twin would agree whether or not it carried it. The
+     * first four must COLLAPSE — ADP's all-caps second column, a doubling
+     * whose second copy carries the share class, a doubling with a trailing
+     * noun, and an exact one — and the last three must come back WHOLE,
+     * because they are two DIFFERENT members of one series and not a copy. */
+    "Northern Trust S&P 500 Index Fund NORTHERN TRUST S&P 500 INDEX FUND",
+    "T. Rowe Price Retirement 2045 Fund T. Rowe Price Retirement 2045 Fund-I Class",
+    "Vanguard Real Estate Index Admiral Vanguard Real Estate Index Admiral Fund",
+    "Vanguard Target Retirement 2045 Vanguard Target Retirement 2045",
+    "Mfo Depot Lifepath 2030 Mfo Depot Lifepath 2045",
+    "BR LifePath Index 2050 W BR Life Path Index 2055 W",
+    "Alerus Mmkt Alerus Mmkt",
     /* 2026-09-30, the TRAILING PLUS MARKER. Checked before adding, for the
      * reason this comment keeps being written: not one case below reaches
      * either plus arm, so the twin would agree whether or not it carried

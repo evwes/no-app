@@ -726,6 +726,88 @@ function beyondHouse(rest) {
   }
   return false;
 }
+/* A PUBLISHED NAME THAT CONTAINS ITSELF TWICE — 2026-10-04.
+ *
+ * Automatic Data Processing (46,258 participants) publishes `Northern Trust
+ * S&P 500 Index Fund NORTHERN TRUST S&P 500 INDEX FUND` on $1,512,757,156,
+ * 21.3% of its menu, and six more rows of the same shape; Illinois Auto Truck
+ * publishes `Vanguard Target Retirement 2045 Vanguard Target Retirement 2045`.
+ * The auditor's schedule carries the holding's name in two columns and the
+ * parser reads the row as one string.
+ *
+ * THIS IS MORE THAN LEGIBILITY, which is why it is a repair and not a shrug:
+ * the resolvers read the NAME, so which half they reach decides the published
+ * share class. Redlands Christian's `T. Rowe Price Retirement 2030 Fund T. Rowe
+ * Price Retirement 2030 Fund-I Class` publishes TRFHX, the I class, out of the
+ * second copy, while Giorgio Armani's identically-shaped 2045 row publishes
+ * ~TRRKX — a COMPARABLE of the investor class — out of the first. One filed
+ * shape, two answers, one of them an approximation where the filing states the
+ * class exactly.
+ *
+ * THE CONDITION IS SELF-EVIDENCE AND NOTHING ELSE: the name must OPEN on a
+ * phrase whose normalised form is a prefix of everything after it. No
+ * vocabulary, no resolver, no registry. Three protections, each with a case
+ * where it is the only one:
+ *   - at least THREE words and TEN normalised characters, so `Class A Class A
+ *     Shares` and a repeated single word are refused;
+ *   - the repeat runs FORWARD from the start of the remainder, so two members
+ *     of one series cannot match — the vintage or class characters fall inside
+ *     the compared span (`…2045` vs `…2050`), which is what keeps `Mfo Depot
+ *     Lifepath 2030 Mfo Depot Lifepath 2045` intact;
+ *   - the longest candidate is tried first, so the split lands between the two
+ *     copies rather than inside one.
+ * A PREFIX TEST IS THE SHAPE THIS RECORD WAS BURNED BY ONCE (it read 7,315
+ * artifacts as the same-menu orientation witness). What is different here is
+ * that both halves are inside ONE name: the evidence is not drawn from a
+ * sibling row that the same damage could have produced.
+ *
+ * WHICH COPY SURVIVES IS DECIDED BY EVIDENCE, NOT BY POSITION. When the
+ * boundary falls INSIDE a token the second copy carries more characters than
+ * the first, so it is the more specific spelling and it wins — that is the
+ * T. Rowe `Fund-I Class` case, and taking the first copy there would publish
+ * the investor class's comparable in place of the stated class. When the
+ * boundary is clean and exactly one copy is ALL CAPS, the mixed-case copy wins,
+ * because the schedule's second column is upper-cased boilerplate — that is
+ * ADP, where keeping the second copy would shout `NORTHERN TRUST S&P 500 INDEX
+ * FUND` at 46,258 readers. Otherwise the second copy plus whatever trails it
+ * wins, which is where a share class sits when one is present.
+ *
+ * ACCEPTED RESIDUE, named rather than rounded away: an INTERLEAVED duplication
+ * (`State Street Global All Cap State Street Global All Cap Equity Equity`,
+ * Lubrizol) collapses its leading phrase and leaves `Equity Equity`, because
+ * the trailing repeat is below the three-word floor. Lowering the floor to
+ * reach it is a separate measurement, not a free widening.
+ *
+ * MEASURED whole-store before shipping, through the page's own renderer: 224
+ * rows / 129 plans / 232,595 participants / $5,036,058,631, with ticker,
+ * asterisk and fee moving on ZERO rows and the shown type on one. */
+const REPEAT_NORM = (t) => String(t).toLowerCase().replace(/[^a-z0-9]+/g, "");
+const ALL_CAPS = (t) => /[A-Z]/.test(t) && t === t.toUpperCase();
+function collapseSelfRepeat(name) {
+  const s = String(name == null ? "" : name).trim();
+  const w = s.split(/\s+/).filter(Boolean);
+  for (let k = Math.floor(w.length / 2); k >= 3; k--) {
+    const first = w.slice(0, k).join(" ");
+    const a = REPEAT_NORM(first);
+    if (a.length < 10) continue;
+    const rest = w.slice(k);
+    if (!REPEAT_NORM(rest.join(" ")).startsWith(a)) continue;
+    let acc = 0, j = 0;
+    for (; j < rest.length; j++) {
+      const n = REPEAT_NORM(rest[j]);
+      if (acc + n.length > a.length) break;
+      acc += n.length;
+      if (acc === a.length) { j++; break; }
+    }
+    if (acc !== a.length) return rest.join(" ");
+    const second = rest.slice(0, j).join(" ");
+    const trail = rest.slice(j).join(" ");
+    const keep = ALL_CAPS(second) && !ALL_CAPS(first) ? first : second;
+    return (keep + (trail ? " " + trail : "")).trim();
+  }
+  return null;
+}
+
 const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1,2}|r-?[1-9])|(r-?[1-9]))\b[\s.,()\-]+(?=[A-Za-z])/i;
   const DOUBLED_CLASS_TAIL = /(?:\b(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1,2}|r-?[1-9])|\b(r-?[1-9]))\s*$/i;
   /* A PAGE BREAK'S CAPTION IN THE LEADING POSITION, and the page-carry
@@ -1332,7 +1414,18 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
         }
       }
     }
-    s = s.replace(/[\s\-–,;:]+$/, "").trim();
+    /* THE SELF-REPEAT COLLAPSE RUNS LAST and runs to a FIXED POINT. Last,
+     * because every arm above it may change the string and a repeat is only
+     * visible once both copies are in their final spelling; to a fixed point
+     * because an interleaved duplication needs more than one pass, and this
+     * record's own non-idempotence item is the standing warning that one pass is
+     * a proxy for the question rather than the question. The bound is four
+     * passes, which is three more than any live row needs. */
+    for (let pass = 0; pass < 4; pass++) {
+      const c = collapseSelfRepeat(s);
+      if (c === null || c === s) break;
+      s = c;
+    }    s = s.replace(/[\s\-–,;:]+$/, "").trim();
     return /[A-Za-z]{3}/.test(s) ? s : String(name).trim();
   }
   /* GENERATED FROM scripts/lib-4i.mjs — DO NOT EDIT BY HAND.

@@ -44054,3 +44054,136 @@ Subtotal` is correctly typed `Subtotal (not a holding)` and suppressed;
 specific fund". FedEx's plan (290,909 ppl, ratio 0.96) read clean — its
 `200% of the first 2%` formula matches its quote exactly, and its eleven
 comparables are all correctly asterisked.
+
+## 2026-10-04 (01:5xZ) — the CVS two-fund screen refuted three times, and the class it found instead: a published name that contains itself twice
+
+**SHIPPED: 224 rows / 129 plans / 232,595 participants / $5,036,058,631, name-only
+— ticker 0, asterisk 0, fee 0, row membership 0 — plus ONE shown type that is a
+promotion. 6 crawlable pages, 14 duplicate copies removed.** Automatic Data
+Processing (46,258 participants) stops publishing `Northern Trust S&P 500 Index
+Fund NORTHERN TRUST S&P 500 INDEX FUND` on $1,512,757,156, 21.3% of its menu,
+and six more rows of the same shape on the same page; International Multifoods'
+$935,152,130 row, SAP's $215,176,354 brokerage row, Hawaii Carpenters' 18.3%
+row.
+
+**THE ROUTE HERE IS THE POINT: THREE SCREENS FOR THE QUEUED CLASS EACH REFUTED
+THEMSELVES ON THEIR OWN OUTPUT, AND THE THIRD HANDED OVER A DIFFERENT DEFECT.**
+The queue asked for a screen requiring the class designation not to be followed
+by a corporate style and the HEAD alone to resolve. Both conditions were built
+and both work — and the population they leave is still almost entirely correct.
+
+- **Screen 1** (00:4xZ, already on record): an interior designation plus a
+  fund-shaped tail, 4,683 rows / 10,095,461 ppl, nine largest all
+  `BlackRock Institutional Trust Company …` where `Institutional` is corporate
+  style.
+- **Screen 2**: add the corporate-style refusal and require the head to resolve.
+  **359 rows / 247 plans / 683,810 ppl**, and of its 20 largest **exactly one**
+  is the class. The other nineteen are two populations: *my own designation
+  regex splitting a MULTI-WORD class name* (`PIMCO Total Return Institutional |
+  Class Fund`, `Vanguard Institutional Index Fund Instl | Plus Shares`, `Baird
+  Aggregate Bond Institutional | Fund Class`) and *a type caption or column
+  heading in the tail* (`… Admiral Shares | Interest-bearing cash account`,
+  `… Admiral Shares | - Asset allocation fund`, `… Total Bond K6 | Fund Stock
+  Price`). **And the first population is harmful in the other direction:** On
+  Semiconductor's head resolves VINIX where the WHOLE row resolves **VIIIX**, so
+  the row as published is the MORE precise answer and my head is the degraded
+  one.
+- **Screen 3**: exclude a class-continuation tail, exclude `isGenericTypeName`
+  and `hasNoFundIdentity` tails, and require the tail to appear VERBATIM as some
+  other plan's whole filed name — a store-wide witness, deliberately not drawn
+  from the same menu, because this record had just learned that a witness from
+  the damaged region is not independent of the damage. **84 rows / 483,848 ppl**
+  at a floor of one ack, and reading its 24 largest: **two genuine members.**
+  The witness fires on exactly the wrong things, because `Interest-bearing cash
+  account` (×7), `- Asset allocation fund` (×46), `- Foreign Large Blend` (×11)
+  and `Money Market Fund` (×308) **are** other plans' whole filed names while
+  being captions and a Morningstar category.
+
+**SO THE QUEUED CLASS IS CLOSED AT TWO NAMED INSTANCES AND NO NUMBER:** CVS
+Health's `Vanguard International Growth Fund Admiral International Equity Index
+Fund` ($2,842,314,805, =VWILX asserted, 385,927 ppl) and Bright Wood
+Corporation's `GROWTH IS JPMORGAN MID CAP GROWTH R6 PIMCO RAE US SMALL INSTL`
+($154,057, 1,254 ppl). A resolver-attested version — split at every word
+boundary, both sides resolving, different tickers — reads **73 rows / 18,329
+ppl** and **does not contain CVS at all**, because its tail resolves to nothing.
+***The strongest available evidence cannot see the motivating row, which is what
+makes this a closure rather than a pause.***
+
+**WHAT THE SAME INSTRUMENT DID FIND, by asking for the SAME ticker on both sides
+instead of different ones: 14 rows / 8 plans / 59,158 ppl / $1,525,485,401 where
+one fund is spelled twice in one name.** That reframed as a pure string test —
+no resolver, no vocabulary — is the shipped arm.
+
+**IT IS NOT MERELY LEGIBILITY, AND THAT IS WHY IT IS A REPAIR.** The resolvers
+read the name, so which half they reach decides the published share class.
+Redlands Christian's `T. Rowe Price Retirement 2030 Fund T. Rowe Price
+Retirement 2030 Fund-I Class` publishes **TRFHX**, the I class, out of the
+second copy; Giorgio Armani's identically-shaped 2045 row publishes **~TRRKX**,
+a *comparable* of the investor class, out of the first. One filed shape, two
+answers, one of them an approximation where the filing states the class exactly.
+
+**WHICH COPY SURVIVES IS DECIDED BY EVIDENCE, NOT POSITION.** When the boundary
+falls INSIDE a token the second copy carries more characters and is the more
+specific spelling, so it wins — the `Fund-I Class` case, where taking the first
+copy would publish the comparable. When the boundary is clean and exactly one
+copy is ALL CAPS the mixed-case copy wins, because the schedule's second column
+is upper-cased boilerplate — ADP, where keeping the second copy would shout at
+46,258 readers. Otherwise the second copy plus its trail wins, which is where a
+share class sits when there is one.
+
+**A FIXTURE CAUGHT THE WORD-ALIGNED VERSION AND A MATRIX CAUGHT MY OWN LABEL.**
+Comparing halves word by word fails Giorgio Armani, because `Fund-I` is ONE
+token so the second copy's words can never equal the first's; the comparison had
+to be character-level on the normalised string. And the neutering matrix, run
+over all 1,730,415 rows with each condition rewritten in full rather than by
+surgery, showed my `Class A Class A Shares` pin was a test of the CHARACTER
+floor and not the WORD floor — `classa` is six characters, so it was protected
+twice and proved neither. The matrix named a word-floor-only case: Regal
+Research's `Alerus Mmkt Alerus Mmkt` normalises to exactly ten characters.
+**All three conditions are load-bearing, with populations:**
+
+| condition | rows it holds back | ppl |
+|---|---|---|
+| the repeat must be a FORWARD prefix | **419** rows / 296 plans | **831,106** |
+| at least three words | 20 rows / 20 plans | 17,907 |
+| at least ten normalised characters | 13 rows / 11 plans | 32,628 |
+
+The forward-prefix condition is the one preventing false positives, and every
+example of its population is a genuine one: Motiva's `BR LifePath Index 2050 W
+BR Life Path Index 2055 W` (two different **vintages**), Baystate Health's `New
+York Life Insurance Company New York Life Guaranteed Interest Account` (17,769
+ppl), Cochlear's `Money market fund - Government Money Market Fund`. **The other
+two are conservatism whose COST is named rather than protections against known
+harm** — most of the 20 and 13 rows they hold back would improve if collapsed
+(`Alerus Mmkt Alerus Mmkt`, `Cash Equivalents Cash Equivalents`, `Dodge & Cox -
+Dodge & Cox Stock Fund`). Lowering either floor is a separate measurement, not a
+free widening, and one member of the 20 (`Investment Contract Investment
+contract, EI Fixed Account – Series C`) produced an output I could not read as
+clearly better.
+
+**THE ONE MOVED CELL IS A PROMOTION, read in full rather than counted.** SRG
+LLC's `Guaranteed Investment Contract Guaranteed Investment Contract` (284 ppl,
+$61,209) gains `Filing names no specific fund` and flips `namelessRow` true —
+***the doubled string had been DEFEATING `isNamelessFundRow`***, making a
+generic non-name look like a specific one. So the collapse does not only tidy;
+it lets the honest qualifiers reach rows that were hiding behind their own
+repetition.
+
+**GATES.** 18 pins against the COMMITTED copy, so a refusal means the arm did
+nothing rather than that some text survived; 8 reach the new arm. The app.js
+twin was SLICED verbatim with both landings asserted and agrees with
+lib-disclose on all **1,730,415** rows. The whole-store price was taken through
+the page's own renderer with the page's own `tab: "menu"`, against
+`origin/main:app.js`. The pages were regenerated and **every one of the 14
+changes is a pure deletion of one duplicate copy** — and the positive control is
+the half that matters: four refused shapes (`Life Path Index 2055 W`, `Equity
+Equity`, `Growth I Growth I`, `Master Trust Master Trust`) are **still printed**
+on their pages, so this is a targeted removal and not a blanket collapse.
+
+**ACCEPTED RESIDUE, named:** an INTERLEAVED duplication collapses its leading
+phrase and leaves the trailing one — Lubrizol's `State Street Global All Cap
+State Street Global All Cap Equity Equity` becomes `State Street Global All Cap
+Equity Equity`, because `Equity Equity` is below the three-word floor. The
+fixed-point loop is in place for when that floor is measured and moved.
+
+Display-side; `PARSER_VERSION` stays 199 and there is nothing to pre-register.
