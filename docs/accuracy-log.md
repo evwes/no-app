@@ -7,6 +7,155 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-04 (16:5xZ) — a Schedule H caption with no type cell, 574 rows / 4,564,065 readers; and the generated block had stopped being generated
+
+**SHIPPED: `isScheduleHCaption`. 574 published rows / 577 plans / 4,564,065
+participants / $32,614,134,068 stop reading as named holdings**, measured
+through the page's own per-row block: the shown TYPE moves on all 574 and the
+**name, ticker, fee and asterisk move on NONE**. 22 crawlable pages. Verified in
+a real browser on both pinned plans.
+
+| | share | value | |
+|---|---|---|---|
+| Johnson & Johnson `CORPORATE STOCKS - COMMON` | 41.6% | $9,996,789,597 | 80,884 ppl |
+| Verizon `CORPORATE STOCK - COMMON` | 24.9% | **$9,699,087,087** | 146,572 ppl |
+| Exelon `Corporate stock - common` | 44.5% | $2,335,657,903 | |
+| Deere `PARTNERSHIP/JOINT VENTURE INTEREST` | 13.5% | $2,263,409,173 | |
+| Continental Automotive `Government Bond` | **50.0%** of its whole menu | | |
+
+Eaton 24.8%, PepsiCo 11.4%, Comcast, Unilever, Becton Dickinson on the same
+shape. **Verizon's report now qualifies BOTH of its two unnamed rows** — the
+41.9% `COMMON/COLLECTIVE TRUST` was already qualified and the adjacent $9.7B row
+was not, which was the whole finding — while `EMPLOYER RELATED SECURITIES VZ`
+keeps its `Company stock` type and its ticker, and the typed captions keep their
+types.
+
+**DO NOT CARRY THE QUEUE'S OWN 780 rows / 783 plans / 4,950,732 ppl / $29.8B,
+NOR THIS CYCLE'S OWN 767 / 780 / 4,977,804 / $33.1B.** Both are NAME-verdict
+screens. The reader-facing figure is 574 because of the two gates the page
+applies and a screen does not: **200 rows / 551,342 ppl are held by the
+CALL-SITE ISSUER GATE and held CORRECTLY** — `Common shares · Cardinal Health,
+Inc.` ($403,391,773), `Common Shares · Lincoln Electric Stock`, `Common Shares ·
+The J. M. Smucker Company` are employer stock that the ISSUER cell names and the
+employer-stock early return misses — and 58 were already qualified by another
+arm. *A flag that flips is not a cell that changes*, met for the second
+consecutive cycle, and this time the gate that absorbed the difference is one
+that protects employer stock.
+
+### The vocabulary is Schedule H's own words, and every exclusion is priced
+
+Every token of the name must come from the form's caption vocabulary, which is
+what makes a real fund unreachable: a product name carries a house, a series or
+a vehicle word the form never uses. The exclusions were not chosen by taste —
+each was measured as the set of published names that are caption vocabulary
+**except for exactly one token**, so that token is the only protection:
+
+| excluded | the single-protection case it buys |
+|---|---|
+| `fund`/`funds` | `Real Estate Securities Fund` =DFREX, 433 rows / **581,803 ppl** |
+| `index` | `US Bond Index`, 488 rows / **947,172 ppl** |
+| `assets` | `OTHER ASSETS`, 100 rows / 317,547 ppl / $2,575,635,840 |
+| `employer` | `Employer Common Stock`, 12 rows / 38,114 ppl / $230,268,669 |
+| `total` | `Total Bond`, 95 rows / 141,814 ppl — possibly a truncated `Total Bond Market` |
+| `general`/`account`/`insurance` | the insurer's general account, a different class |
+| `loan`/`loans`/`mortgage` | the loan label is appended by a DIFFERENT arm on the same cell, so including them would DOUBLE-LABEL a row |
+| `stable`/`income`/`equity`/`fixed` | `Stable Value` 171,652 ppl; `Wellesley Income` |
+| the article `a` | 41 rows ending in a capital `A` — a SERIES letter, `Government Bond A` $74,802,818 at Toll Bros. The DANGLING_TAIL trap, and conservatism rather than correction: none of the 41 carries a ticker |
+
+Houses are outside by construction and that is measured too: `Fidelity
+Government` (2,123 rows / **3,420,361 ppl**) is protected by one token.
+
+**NO TYPE CELL is the second condition and the split BY TYPE is the
+measurement.** A caption whose type column describes it is not a false fund
+claim — Verizon's `INTEREST-BEARING CASH` at $1,767,488,802 is typed `Cash /
+short-term`, so the reader sees a category labelled as one. 1,294 such rows are
+left alone. **Zero of 1,730,931 stored rows carry a dash-only type**, so the `—`
+the draw wrote down as Verizon's type cell is the RENDERED form of an empty
+cell, and no dash arm exists or is needed. *An arm real in principle and inert
+on the data is untested machinery.*
+
+### AND THE LARGER FINDING, WHICH I FOUND BY ACCIDENT
+
+`app.js`'s copy of the predicate had to be sliced by
+`scripts/gen-generic-twin.mjs`, whose own header records **four twins lost to
+three regenerations** because they were hand-written into the generated block.
+Checking whether my hand-slice was inside those boundaries showed it was — and
+showed that **four more twins already were, and had been for two days**:
+`hasNoFundIdentity` (2026-10-03), `isLabelOnlyName`, `isSentenceRow` and
+`isNonIssuerCell` (all 2026-10-04, all mine). **Any run of the generator deleted
+all four, plus BOTH compositions — replacing the composed `isGenericName` with
+the bare `isGenericTypeName` and removing `nameIsGeneric` outright. Measured on
+the tree of the day: 263 deletions, 7 insertions**, un-publishing four
+suppressors covering roughly 1,088 rows and 2.5M participants.
+
+It would not have been silent — `nameIsGeneric` is called from the row block, so
+the page would throw and `site-test` would go red — but **a generator that
+breaks the page on every run is a landmine, not a guard**, and the next person
+to regenerate after a lib-4i change would have had to diagnose four unrelated
+deletions.
+
+**Fixed properly rather than worked around:** the five predicates are now
+SLICED, both compositions are EMITTED, and the block is genuinely generated. The
+regeneration is proved behaviour-preserving by the render diff — re-run against
+`origin/main`'s app.js it returns **the same 574 rows, type-only, 0/0/0**,
+byte-identical to the hand-sliced result. Five drift probe sets were added, each
+reaching its own arm in both directions (the v189/v190/v191/v192/v196/v197
+lesson), and `rows` gained five caption cases.
+
+***THE UNCOMFORTABLE PART IS HOW IT SURFACED: by my new arm referencing an
+undefined symbol.*** Nothing in the repo tested that the generated block was
+still generated. Each tether checks its OWN predicate, and **no tether could see
+the composition they are composed into** — so the one change that mattered most,
+`isGenericName` losing `hasNoFundIdentity`, was invisible to every one of them.
+`smoke-test.mjs` now cross-checks the COMPOSED gate through
+`__wampoGenericName` with a case that only `hasNoFundIdentity` can answer
+(`shares`, `E.I.N. 23-`). **A tether per predicate is not a tether on the
+expression the page evaluates.**
+
+### Residue, named — and the third one was found by READING THE PAGE
+
+Opening J&J's report after the ship showed **three untyped captions still
+unqualified on a pinned must-SEE plan**: `INSURANCE CO. GENERAL ACCOUNT` at
+$1,764,861,619 / 7.3%, `CORP. DEBT INSTR. - ALL OTHER`, `LOANS SECURED BY
+MTGES-RESID.`. Sized through both shipped gates: **300 rows / 307 plans /
+1,175,906 ppl / $26,834,718,172, 0 carrying a ticker**, and it is THREE families
+rather than one:
+
+- **An ACRONYM, and it is the largest single string in the whole class:
+  `INTEREST IN CCT` — 9 rows / 320,657 ppl / $23,480,896,904**, at **60.6%** of
+  Novartis's menu, **93.1%** of Alcon's, **91.3%** of Mondelez's, 66.8% of
+  Unilever's, 47.5% of Becton Dickinson's. `CCT` is common/collective trust.
+- An ABBREVIATION of a caption the predicate already spells out: `CORP. DEBT
+  INSTR. - PREFERRED` (Henkel, **50.3%** of its menu), `Ins Co General Accts`,
+  `Real Estate Secs`, `CORP DEBT INSTRUMENTS; ALL OTHER`.
+- The deliberate `general account` and `loan` exclusions, now visible as a
+  published consequence rather than as a note: `General Account` ×95 + ×43,
+  `Loan`/`Loans` ×77.
+
+***A fix for one phrasing of a class is not a fix for the class*** — recorded ten
+times, and met here on a hyphen, then on an ABBREVIATION and an ACRONYM, inside
+one cycle, on my own pinned page. Each needs its own safety argument: an acronym
+vocabulary can collide with a ticker or a brand, so it is queued with its number
+and NOT widened now.
+
+**And a surface asymmetry, deliberately not split:** the crawlable pages have no
+type column, so the 1,294 typed captions print there with nothing describing
+them — Hallmark's `U.S. Government Securities $312,377,367` sits unqualified on
+its own page. Two copies of a rule is how two surfaces drift, so the predicate
+stays single and the asymmetry is recorded instead.
+
+### One more trap, paid for in one run
+
+`CAPTION_SEP + "?"` turns the character class's own `+` into a **LAZY `+?`** and
+so REQUIRES a separator at both ends, which made the first draft miss its own
+motivating row. *A regex assembled from string fragments has no syntax check
+until it runs — and none at all for a quantifier that is merely wrong.* It cost
+nothing because **the positive fixtures run before the count**, so an
+implausible answer was refused before it was read, which is the same mechanism
+that caught the 45,976-row screen two cycles ago.
+
+`docs/accuracy-log.md` 2026-10-04 (16:5xZ).
+
 ## 2026-10-04 (16:0xZ) — the 15:07 draw: one row of a category table is qualified and the adjacent $9.7B row is not, because the vocabulary is whole-string
 
 **Found by the draw.** Verizon Communications (**146,572 participants** across 4

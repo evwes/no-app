@@ -1650,16 +1650,6 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
         || isTypoGenericTypeName(s);
   }
 
-  /* A NAME WITH NO FUND IDENTITY IN IT — `shares`, `Fund`, `UNIT`,
-   * `Institutional Class`, `E.I.N. 23-`. isGenericTypeName is a closed
-   * vocabulary of Schedule H TYPE LABELS and is blind to a FRAGMENT, and
-   * widening that constant is refused because the parser's region selection
-   * reads it. Display-only, composed into isGenericName below. 486 rows /
-   * 325 plans / 1,131,917 ppl / $5.93B newly qualified; 343 rows carrying an
-   * ISSUER are deliberately untouched. It tests the CLEANED form too because
-   * this file passes f.name RAW where build-seo-pages passes the cleaned
-   * string, and they differ on 16 rows. scripts/lib-disclose.mjs holds the
-   * measurement and the list of all 309 distinct names, every one read. */
   const NO_IDENTITY_FILLER = /\b(?:class|cl|cls|series|ser|unit|units|share|shares|shs|institutional|instl|inst|investor|inv|adv|advisor|advisors|retirement|r[1-6]|[a-z]|\d{1,3}|common|collective|trust|trusts|fund|funds|the|at|nav|portfolio)\b/gi;
   const stripsToNothing = (s) =>
     String(s).replace(NO_IDENTITY_FILLER, " ").replace(/[^A-Za-z0-9]+/g, " ").trim().length === 0;
@@ -1675,107 +1665,7 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
     if (EIN_FRAGMENT.test(s)) return true;
     return stripsToNothing(s) || stripsToNothing(cleanFiledName(s));
   }
-  /* A NAME BUILT ENTIRELY OF TYPE-LABEL WORDS — canonical copy, 2026-10-04.
-   *
-   * 152 rows / 132 plans / 1,232,895 participants / $42,859,386,021, across 43
-   * distinct names, EVERY ONE OF WHICH WAS READ rather than sampled. Providence
-   * Health publishes `Registered investment company funds` at 48.0% of one
-   * plan's menu ($12,474,349,571) and on three more plans; Trinet HR III and IV
-   * publish `Registed Investment Co.` to 280,299 readers ($1,239,771,549); 3M
-   * publishes a bare `companies` on 25 rows totalling $14,372,175,818; Ford
-   * publishes `Separate Account`; Cigna a bare `account` on 15 rows.
-   *
-   * WHY `isGenericTypeName` CANNOT REACH THEM, and why the vocabulary must not be
-   * widened to try: GENERIC_TYPE_NAME is a CLOSED list of Schedule H type labels
-   * anchored `^...$`, so it answers `registered investment companies` and not
-   * `registered investment company funds` — one trailing noun away. Its own
-   * comment refuses widening because the PARSER reads it: `isClassLabel` ->
-   * `isStatement` -> the region contest, which is what cost v196 two whole
-   * lineups on a +0/-0 registration. And `hasNoFundIdentity` cannot reach them
-   * either: its filler list holds `common|collective|trust|fund|the|at|nav` but
-   * not `regist*`, `investment`, `company` or `account`, which is exactly why
-   * `Collective trust fund` is already covered and these are not.
-   *
-   * SO THIS IS A THIRD DISPLAY-ONLY PREDICATE, kept OUT of both of those for a
-   * measured reason rather than a stylistic one: `merge-4i.mjs:1394` guards its
-   * share-count repair with `isGenericTypeName(head) || hasNoFundIdentity(head)`,
-   * so widening either would make more heads read as generic and SILENTLY REFUSE
-   * MORE NAME REPAIRS — a legibility fix priced against a guard that reads names.
-   * Being a separate export, it bounds the blast radius to the two display call
-   * sites BY CONSTRUCTION.
-   *
-   * THE INSTRUMENT WAS NARROWED TWICE BY READING ITS OWN OUTPUT, and that is the
-   * whole of the safety argument. The queue sized this class at 88 rows inside a
-   * `/regist/` screen — a count keyed on a vocabulary, which measures the
-   * vocabulary. The general form of the discriminator ("remove the leading run of
-   * label words and ask whether anything of substance remains") reads 611 rows /
-   * 1,991,593 ppl, and reading THAT refused it as one class: it merges genuine
-   * label-only names with four other remedies. So the shipped form demands that
-   * EVERY word be a label word, with one tolerated exception.
-   *
-   * BOTH CONDITIONS HAVE A LIVE BLOCKING POPULATION, measured by neutering each
-   * one separately over all 1,730,670 published rows:
-   *
-   *   - THE PAGE-REFERENCE TOLERANCE ADDS 2 rows / 80,475 ppl, both National
-   *     Rural Electric's and both on its one crawlable page. A pointer into the
-   *     filing is not a fund, and without this arm both rows are missed.
-   *     ITS PLURAL/RANGE SPELLING WAS FOUND BY READING THE PAGE AND NOT BY A
-   *     COUNT. The first version took a singular `(page 166)` only, so the
-   *     regenerated page qualified `Registered Investment Companies (Page 166)`
-   *     ($225,158,578) and left `Common Collective Trusts (Pages 165-166)` —
-   *     **$9,284,475,171, 48.6% of that plan's menu and the LARGEST row on the
-   *     page** — reading as a named holding two rows above it. The argument for
-   *     the wider spelling is not symmetry but consistency with a predicate
-   *     already shipped: `isGenericTypeName("Common Collective Trusts")` is
-   *     TRUE, so the bare caption is qualified already and only the page pointer
-   *     defeated it. Measured: the widening adds exactly that one row, and
-   *     `Corporate Stocks (Pages 56-155)`, `U.S. Government Securities (Pages
-   *     23-27)` and `Managed Account Holdings (985 Positions)` on the same page
-   *     all stay out — the first two by the LABEL condition (`Stocks`,
-   *     `Securities`) and the third because a POSITION count is not a pointer.
-   *     *The page is the artifact: a diff of 13 files showed both halves of one
-   *     caption family and a row count could not.*
-   *   - REQUIRING EVERY WORD TO BE A LABEL BLOCKS 57 rows / 174,038 ppl, and all
-   *     43 blocked names were read: each is a DIFFERENT remedy. A welded VINTAGE
-   *     is identifying information (`Fund 2030` through `Fund 2065`, a whole
-   *     Capital Manor ladder; `Investments VG 2030`); a real designation must
-   *     stand (`SEPARATE ACCOUNT II`, `Separate Account - Z`); OCR debris is the
-   *     welded-count class's business (`Pooled Separate Acct Ae`, `Company ba`,
-   *     `Mutual fund ae`); and a trailing joiner is the truncated-name class
-   *     (`Investment in`, `Shares in`).
-   *
-   * THE v188 PIN IS NOW RESPECTED BY CONSTRUCTION RATHER THAN BY EXCEPTION.
-   * lib-4i deliberately leaves `Separate Account A` uncaught because a capital
-   * `A` may be a real separate-account designation and case is the only signal —
-   * Four Seasons Heating publishes it at 91.5% of its menu. `A` is not a label
-   * word, so this predicate spares it without being told to, and that is a
-   * single-protection negative control rather than a hand-written exemption.
-   *
-   * SEVEN ROWS IT REACHES ARE EMPLOYER STOCK, and the COMPOSITION is the only
-   * thing that protects them — measured, not supposed. This predicate is
-   * INJECTED INTO `isNamelessFundRow` as part of its generic-name test, never
-   * added as a parallel disjunct at the call site, so all three of that
-   * function's early returns — subtotal, brokerage window, employer stock —
-   * guard the new arm. As a sibling disjunct it would have told readers that
-   * these seven rows name no specific fund:
-   *
-   *     Altria Client Services  `Shares`      $1,456,691,207  26.6%  ticker MO
-   *     Sealed Air Corporation  `Shares of`   $  136,743,941   9.0%
-   *     Ford Motor Company x2   `Separate Account`             0.6% / 0.3%
-   *     Gardiner Service Co.    `REGISTERED COMPANIES`         3.9%
-   *     Integrated Mill Systems `Registered Companies`         1.0%
-   *     Manganaro North America `Shares`                       0.2%
-   *
-   * Every one is typed `Company stock`, and Altria's carries a correct symbol on
-   * $1.46B in front of 11,893 readers. *Where a predicate is composed decides
-   * what protects it* — and the flat screen that sized this class counted six of
-   * these seven, so the renderer diff reading 146 where the screen read 152 is
-   * the protection working rather than a number to reconcile away.
-   *
-   * The ISSUER half of the call-site gate is left on the narrower
-   * `isGenericName` on purpose: whether a label-only string in the ISSUER cell
-   * should also stop a row reading as named is a separate measurement, recorded
-   * rather than assumed. docs/accuracy-log.md 2026-10-04. */
+
   const LABEL_ONLY_WORD = /^(?:regist\w*|inv\s?estment|investments?|compan(?:y|ies)|co\.?|funds?|fds?\.?|mutual|common|collective|pooled|separate|sep\.?|account|accounts?|acct\.?s?|trust|trusts?|tr\.?|shares?|of|the|at|nav|[\(\)\[\],.:;-]+)$/i;
   const LABEL_ONLY_PAGE_REF = /^\(?(?:pages?|pgs?\.?|pp\.?|p\.?|notes?|lines?|items?)\s*\d+\s*(?:(?:[-–—]|to)\s*\d+\s*)?\)?$/i;
   function isLabelOnlyName(name) {
@@ -1787,132 +1677,53 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
     const rest = w.slice(i).join(" ");
     return !rest || LABEL_ONLY_PAGE_REF.test(rest);
   }
-  /* A SENTENCE IS NOT A NAME — 2026-10-04 (12:2xZ).
-   *
-   * 53 published rows / 54 plans / 484,457 participants / $9,498,704,315 publish,
-   * as a holding's name, a SENTENCE ABOUT the holding or a caption listing an
-   * account's contents. American Airlines (132,820 ppl) publishes `Separately
-   * managed account which includes: Corporate Common Stocks, Registered
-   * Investment` on **$9,448,603,045, 38.2% of its $24.76B menu**; Kaiser
-   * Foundation Health Plan publishes `Loan Repayments are included` on two plans
-   * holding 288,416 people between them; Lerner Corporation publishes `The
-   * accompanying notes are an integral part of this schedule. LERNER
-   * CORPORATION…` — the attachment's own footer — at 2.1% of its menu.
-   *
-   * THE REGISTER RECORDED THIS CLASS AS "2 rows / 288,416 ppl, and the honest
-   * size is two", together with an explicit refusal to build a name-shape
-   * predicate for a two-member class. That refusal was right about its own
-   * evidence and wrong about the class, and the reason is the instrument: the
-   * screen that sized it keyed on a VOCABULARY (`\bis\b`) and matched **`IS`,
-   * the abbreviation for Institutional Shares**, so it read 3,328 rows whose top
-   * members were correct abbreviated names (Cigna's `BLACKROCK SP 500 IDX (IS)`,
-   * $3.4B, 91,385 readers) and the real members had to be dug out by hand.
-   *
-   * SO THIS SCREEN IS NOT KEYED ON A VOCABULARY. It requires a FINITE VERB
-   * followed by a function word — a PREDICATE, which is the grammatical thing
-   * that makes a string a sentence about the holding rather than a name for it.
-   * `IS` the share class cannot match, because a share class is never followed
-   * by `included`, `of`, `a` or `the`. Measured over all 1,724,192 published
-   * rows: **53 match, and all 53 were read.** There is no false-positive
-   * population to trade off, which is why this ships where the vocabulary
-   * version could not.
-   *
-   * THE CLAIM IS DELIBERATELY THE WEAKER ONE. ~40 of the 53 are loan-repayment
-   * notes carrying real dollars, and "Participant loans" would be a more
-   * informative label — but the filed string is a NOTE, often a checkbox answer
-   * (`Repayments are Included Yes`, `repayments are included : X`, `Loan
-   * Repayments are included: @`), and whether the dollars beside it ARE the
-   * loans or are merely noted as included elsewhere is not stated. Qualifying
-   * the row says only that the filing names no specific fund, which is
-   * unarguably true of every one of the 53. *A weaker claim that is certainly
-   * true beats a stronger one that is probably true.*
-   *
-   * ONE ROW GAINS MORE THAN A LABEL: Indeed, Inc.'s `consisting of Cash, Money
-   * Market and` publishes a fabricated **0.2%** expense ratio, because the fee
-   * comes from a NAME-pattern table that priced a caption. `namelessRow` joins
-   * the fee suppressors (app.js), so qualifying the row withdraws the fee too.
-   *
-   * DISPLAY-ONLY, and composed into `isNamelessFundRow` rather than added beside
-   * it, for the reason that function's early returns exist: employer stock and
-   * brokerage windows must be spared. None of the 53 is stock today — the
-   * composition is what keeps that true of the 54th.
-   * docs/accuracy-log.md 2026-10-04 (12:2xZ). */
+
   const SENTENCE_PREDICATE = /\b(?:are|were|was|includes?|represents?|consists?|contains?|holds?|comprises?)\s+(?:included|a|an|the|of|in|by)\b/i;
   const CONTENTS_CAPTION = /\b(?:which\s+includes?|consist(?:s|ing)\s+of|compris(?:ed|ing)\s+of|made\s+up\s+of|invested\s+in\s+the\s+following)\b/i;
   function isSentenceRow(name) {
     const s = String(name == null ? "" : name);
     return SENTENCE_PREDICATE.test(s) || CONTENTS_CAPTION.test(s);
   }
-  /* A DANGLING PREPOSITION IS NOT AN ISSUER — 2026-10-04 (13:4xZ).
-   *
-   * The page composes a holding as `issuer · name`, so the 4i identity column is
-   * published as an attribution. **422 published rows / 41 plans / 167,240
-   * participants / $1,111,872,870 attribute their holding to a fragment** —
-   * Ashland publishes `Shares of · VANG WINDSOR II ADM` on $98,806,045, 6.6% of
-   * its menu, where the row's own ticker (VWNAX) and fee are both correct;
-   * United Health Services on seven rows; Henry Schein on $89,744,575. **259 of
-   * the 422 publish a ticker**, which is the proof that the NAME is a real fund
-   * and only the attribution is noise.
-   *
-   * Seven distinct strings of the store's **15,683**: `Shares of` 366,
-   * `SHARES OF` 26, `Investments in shares of` 26, `Shares in` 12, `Investments
-   * in` 9, `Investment in` 8, `Interests in` 8. Each is a 4i identity column
-   * describing the FORM of the holding, with its continuation in the description
-   * column — so suppressing the cell loses nothing and the name keeps the fund.
-   *
-   * THIS IS A PRINT-SITE SUPPRESSION AND NOTHING ELSE, which is why ticker and
-   * fee cannot move. `lookupTicker` reads `f.iss` at its own call site
-   * (app.js:2471) and prepends it before asking the resolver; this predicate is
-   * applied only where the issuer SPAN is composed, so resolution sees exactly
-   * what it saw before. Ticker, fee, asterisk, name, type and the nameless
-   * verdict are all unchanged BY CONSTRUCTION.
-   *
-   * ANCHORED AT BOTH ENDS, which is the whole safety: a run of holding furniture
-   * joined by prepositions and ending on one, with no room for a proper name.
-   * Exercised against **every distinct issuer string in the store** — 7 reached,
-   * and the 264 strings that also end on a joiner are all KEPT, because they
-   * name an entity: `Alerus Financial, N.A.` 274, `Wilmington Trust, N.A.` 224,
-   * `John Hancock U.S.A.` 210, `JPMorgan Chase Bank, N.A.` 49.
-   *
-   * THE QUEUE ASKED A DIFFERENT QUESTION AND THE ANSWER TO THAT ONE IS NO. It
-   * asked whether a label-only issuer should stop a row reading as NAMED, i.e.
-   * whether to widen the call-site gate's issuer disjunct. Measured as a superset
-   * by construction: **396 candidate rows / 36 plans / 47,885 ppl, and the
-   * verdict moves on 0** — because wherever the issuer is empty of meaning the
-   * NAME is a real fund, so the name test correctly refuses. The gate stays on
-   * the narrower `isGenericName`, now by measurement rather than by deferral.
-   * *Reading the rows a NO answer leaves behind is what found the real defect.*
-   *
-   * AND MY FIRST SCREEN FOR THIS READ 1,199 ROWS, inflated by the exact trap
-   * `DANGLING_TAIL` above documents. I wrote the trailing-joiner test `/i`, so a
-   * trailing capital `A` counted as the article: `Leidos Stable Value, A`
-   * ($650,763,893), `SSGA S+P 500 INDEX SER A` (=SSSYX, $606,941,903),
-   * `Corebridge Separate Account A` and `Wilmington Trust, N.A` are a share
-   * class, a series letter, a separate-account designation and a trustee. *The
-   * shipped code already knew the discriminator and I did not read it.*
-   * **But case is the wrong guard for THIS predicate, and a fixture is what
-   * showed that too:** `SHARES OF` fails a lowercase test while being incapable
-   * of naming anything, because the case rule protects a trailing capital AFTER
-   * A REAL NAME and here the whole string is furniture with no name for a
-   * designation to attach to. So this one is case-insensitive and anchored
-   * instead. docs/accuracy-log.md 2026-10-04 (13:4xZ). */
+
   const NON_ISSUER_FURNITURE = "(?:shares?|units?|interests?|holdings?|investments?|amounts?|balances?|participations?|value)";
   const NON_ISSUER_CELL = new RegExp("^" + NON_ISSUER_FURNITURE
     + "(?:\\s+(?:of|in)\\s+" + NON_ISSUER_FURNITURE + ")*\\s+(?:of|in)[\\s.,;:]*$", "i");
   function isNonIssuerCell(iss) {
     return NON_ISSUER_CELL.test(String(iss == null ? "" : iss).trim());
   }
+
+  const CAPTION_WORD = "(?:interest|interests|bearing|cash|equivalent|equivalents|u\\.?s\\.?a?|united|states"
+    + "|government|governmental|securities|security|corporate|corporation|debt|instrument|instruments"
+    + "|preferred|common|stock|stocks|share|shares|partnership|partnerships|joint|venture|ventures"
+    + "|real|estate|properties|property|buildings|municipal|bond|bonds|note|notes|collective|trust|trusts"
+    + "|pooled|separate|master|registered|investment|investments|company|companies|nav"
+    + "|value|other|all|and|or|the|at|of|in)";
+  const CAPTION_SEP = "[\\s\\-\\u2010-\\u2015\\/,.:;()&*]+";
+  /* NOTE the non-capturing wrappers on the optional leading and trailing
+   * separator. `CAPTION_SEP + "?"` turns the character class's own `+` into a
+   * LAZY `+?` and so REQUIRES a separator at both ends, which makes the predicate
+   * miss its own motivating row. A regex assembled from string fragments has no
+   * syntax check until it runs, and none at all for a quantifier that is merely
+   * wrong — the positive fixtures below are what caught it. */
+  const SCHEDULE_H_CAPTION = new RegExp("^(?:" + CAPTION_SEP + ")?" + CAPTION_WORD
+    + "(?:" + CAPTION_SEP + CAPTION_WORD + ")*(?:" + CAPTION_SEP + ")?$", "i");
+  function isScheduleHCaption(name) {
+    return SCHEDULE_H_CAPTION.test(String(name == null ? "" : name));
+  }
+
+  /* THE TWO COMPOSITIONS, which are part of the rule and not of the call site.
+   * `isGenericName` is the ISSUER half of the row gate and the NAME half is
+   * widened further — the asymmetry is deliberate and measured (the issuer
+   * half reaches 0 extra rows). They are emitted HERE because the bare
+   * `isGenericTypeName` was what this generator used to write, and that alone
+   * would un-publish the whole `hasNoFundIdentity` family. */
   const isGenericName = (n) => isGenericTypeName(n) || hasNoFundIdentity(n);
-  /* the NAME half of the call-site gate, widened by the predicate above.
-   * Injected into `isNamelessFundRow` rather than added beside it so that
-   * its subtotal / brokerage-window / EMPLOYER-STOCK early returns guard the
-   * new arm too — Altria's bare `Shares` carries ticker MO on $1.46B and is
-   * typed `Company stock`. The ISSUER half stays on `isGenericName`. */
   const nameIsGeneric = (n) => isGenericName(n) || isLabelOnlyName(n) || isSentenceRow(n);
   window.__wampoLabelOnly = isLabelOnlyName;  // read by the smoke test only
   window.__wampoSentenceRow = isSentenceRow;  // read by the smoke test only
   window.__wampoNonIssuer = isNonIssuerCell;  // read by the smoke test only
   window.__wampoTrustShare = trustShareBound;  // read by the smoke test only
+  window.__wampoCaption = isScheduleHCaption;  // read by the smoke test only
   window.__wampoGenericName = isGenericName;  // read by the smoke test only
   function isNamelessFundRow(f, cleanedName, isGenericName) {
     const type = String((f && f.type) || "");
@@ -1920,6 +1731,12 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
     if (/^subtotal \(not a holding\)$/i.test(type)) return false;
     if (/brokerage window/i.test(type)) return false;
     if (/company stock|employer (security|stock)/i.test(type + " " + name)) return false;
+    /* ...or the row is a SCHEDULE H ASSET-CLASS CAPTION with no type cell to
+     * describe it. Injected here rather than into the caller's `isGenericName`
+     * composition because the condition is a property of the ROW and not of the
+     * name: the type cell is what decides it, and reading `f.type` inside the
+     * shared function is what lets the static generator inherit this unchanged. */
+    if (!type.trim() && isScheduleHCaption(name)) return true;
     return !!isGenericName(name);
   }
 

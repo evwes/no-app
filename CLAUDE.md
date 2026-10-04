@@ -908,12 +908,32 @@ published cells:
   labelled as one. **DO NOT CARRY the pre-split 1,951 rows / 7,599,688 ppl /
   $44.0B**, of which 1,171 are the guards working and whose vocabulary also
   swept in `Cash` ×466 and `Real Estate` ×229.
-  **The remedy is a FOURTH display-only predicate** composed into
-  `isNamelessFundRow` beside `isLabelOnlyName` / `isSentenceRow` /
-  `isNonIssuerCell`, keyed on every token coming from the caption vocabulary AND
-  an empty type cell — never on widening `isGenericTypeName`, which the parser
-  reads for region selection ($453M on Lam Research when it was last widened).
-  `docs/accuracy-log.md` 2026-10-04 (16:0xZ).
+  **SHIPPED 2026-10-04 16:5xZ as `isScheduleHCaption` — 574 rows / 577 plans /
+  4,564,065 ppl / $32,614,134,068, shown-TYPE only (name 0 / ticker 0 / fee 0 /
+  asterisk 0), 22 crawlable pages, browser-verified on both pins.** Verizon now
+  qualifies BOTH unnamed rows. **DO NOT CARRY the 780 / 4,950,732 above, nor the
+  767 / 4,977,804 the ship's own screen read:** both are NAME-verdict counts,
+  and **200 rows / 551,342 ppl are held by the CALL-SITE ISSUER GATE, correctly**
+  — `Common shares · Cardinal Health, Inc.` is employer stock the issuer cell
+  names and the early return misses. Every excluded token is a measured
+  single-protection case (`fund` keeps =DFREX for 581,803 readers, `index` keeps
+  `US Bond Index` for 947,172, `assets` keeps `OTHER ASSETS` / $2.58B,
+  `employer` keeps `Employer Common Stock`, the article `a` keeps 41 SERIES
+  letters). `isGenericTypeName` was NOT widened.
+  **STILL OPEN, and the THIRD phrasing was found by READING THE PAGE rather than
+  the predicate: 300 rows / 307 plans / 1,175,906 ppl / $26,834,718,172, 0 with a
+  ticker**, in three families. **The largest single string in the entire class is
+  an ACRONYM: `INTEREST IN CCT`, 9 rows / 320,657 ppl / $23,480,896,904** at
+  60.6% of Novartis's menu, 93.1% of Alcon's, 91.3% of Mondelez's, 66.8% of
+  Unilever's. Then an ABBREVIATION of a caption already spelled out (`CORP. DEBT
+  INSTR. - PREFERRED`, Henkel 50.3%; `Ins Co General Accts`; `Real Estate
+  Secs`), then the deliberate `general account` / `loan` exclusions. **Each needs
+  its OWN safety argument — an acronym vocabulary can collide with a ticker or a
+  brand — so none of the three is a widening of the shipped vocabulary.**
+  Also open and deliberately not split: the crawlable pages have no type column,
+  so the 1,294 TYPED captions print there unqualified (Hallmark's
+  `U.S. Government Securities $312,377,367`). Two copies of a rule is how two
+  surfaces drift. `docs/accuracy-log.md` 2026-10-04 (16:0xZ) and (16:5xZ).
 - **Crawlable pages no run can ever repair — RE-SIZED 2026-10-02 and NEARLY
   DOUBLED: 62 → 118 pages / 169,447 → 324,028 ppl**, plus **1 serving a plan no
   longer in the universe at all.** `p/` holds **5,118** committed files against
@@ -2205,6 +2225,13 @@ These outlived the versions that produced them. The accuracy log has the case.
   predicting page changes from app.js's renderer is a different instrument, not
   a cheaper one. The only honest page figure comes from regenerating and
   diffing the files.
+- **AND A QUANTIFIER THAT IS MERELY WRONG HAS NO CHECK AT ALL** (2026-10-04).
+  `SEP + "?"`, meant as "an optional separator run", turns the character class's
+  own `+` into a **LAZY `+?`** and so REQUIRES a separator at both ends — the
+  predicate then missed its own motivating row. It cost one run because **the
+  positive fixtures execute before the count**, the same mechanism that refused
+  an implausible 45,976-row screen two cycles earlier. *Put the must-SEE fixture
+  ahead of the measurement, always: it turns a wrong answer into a refusal.*
 - **A REGEX ASSEMBLED FROM STRING FRAGMENTS HAS NO SYNTAX CHECK UNTIL IT RUNS**
   (2026-10-03). `node --check` passed on both copies of a `new RegExp(...)` built
   from nine concatenated strings whose group 2 closed one `)` early; the first
@@ -2401,6 +2428,23 @@ These outlived the versions that produced them. The accuracy log has the case.
   puts inside its boundaries.** Four browser twins were lost to three
   regenerations; a predicate app.js twins is SLICED VERBATIM on the day it ships
   and never typed into app.js.
+  **AND IT HAD BECOME SYSTEMATIC RATHER THAN INCIDENTAL, FOUND 2026-10-04 BY
+  ACCIDENT.** FOUR MORE twins were sitting inside those boundaries unsliced —
+  `hasNoFundIdentity`, `isLabelOnlyName`, `isSentenceRow`, `isNonIssuerCell` —
+  so any run of `gen-generic-twin` deleted all four **plus BOTH compositions**,
+  replacing the composed `isGenericName` with the bare `isGenericTypeName`: 263
+  deletions, 7 insertions, un-publishing ~1,088 rows / 2.5M participants of
+  suppression. All five are now sliced and both compositions emitted, proved
+  behaviour-preserving by the render diff returning the identical 574 rows.
+  ***The uncomfortable part is how it surfaced — a new arm referencing an
+  undefined symbol. Nothing tested that the generated block was still
+  generated.*** **And no per-predicate tether could have: each checks its OWN
+  function, and the change that mattered most was to the EXPRESSION they are
+  composed into.** `smoke-test` now cross-checks the COMPOSED gate with a case
+  only `hasNoFundIdentity` can answer. *A tether per predicate is not a tether
+  on the expression the page evaluates* — so after touching anything inside a
+  generated block, RUN the generator and diff, and ask what tests the
+  composition rather than its parts.
 - **The page is the artifact.** A store-side proxy for what changed is not the
   page; regenerate and diff the files.
 - **DIAGNOSE a refusal before reporting it** — call the most harmless tool on the

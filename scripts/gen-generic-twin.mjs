@@ -39,7 +39,9 @@ import { isNamelessFundRow, isLoanDescriptionRow, isAnnuityContractRow,
   annuityFeeIsGuaranteeOnly, isInvestmentContractRow, isMistypedStockRow,
   mistypedStockFeeIsGuaranteeOnly, issuerPricedER, isCollectiveTrustName,
   isLoanAnswerRow, isLoanVocabularyRow, isBankDepositRow,
-  employerStockSymbolOk, sponsorNameKey, trustScheduleDMenu } from "./lib-disclose.mjs";
+  employerStockSymbolOk, sponsorNameKey, trustScheduleDMenu,
+  hasNoFundIdentity, isLabelOnlyName, isSentenceRow, isNonIssuerCell,
+  isScheduleHCaption, cleanFiledName } from "./lib-disclose.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const lib = readFileSync(ROOT + "scripts/lib-4i.mjs", "utf8");
@@ -84,6 +86,68 @@ const typofn = lib.slice(tgs, lib.indexOf("\n}\n", tgs) + 3).replace(/^export /,
 const GTA_TYPO_TERMS = [...new Set(gtaLanguage().map((t) => t.toLowerCase().replace(/[^a-z]/g, "")))]
   .filter((t) => t.length >= GTA_MIN_TYPO_LEN);
 if (GTA_TYPO_TERMS.length < 100) throw new Error(`gen-generic-twin: only ${GTA_TYPO_TERMS.length} typo terms — the enumeration is a silent no-op`);
+
+/* AND THE FOUR TWINS THAT WERE INSIDE THIS BLOCK'S BOUNDARIES WITHOUT BEING
+ * SLICED HERE — found 2026-10-04 while adding the fifth, and this is the same
+ * failure this file's header records four times, except that it had become
+ * SYSTEMATIC rather than incidental: `hasNoFundIdentity` (2026-10-03),
+ * `isLabelOnlyName`, `isSentenceRow` and `isNonIssuerCell` (all 2026-10-04)
+ * were each hand-written into app.js between MARK_S and the end marker, so
+ * ANY run of this generator deleted all four — together with BOTH
+ * compositions, replacing the composed `isGenericName` with the bare
+ * `isGenericTypeName` and removing `nameIsGeneric` outright. Measured on the
+ * tree of the day: 263 deletions, 7 insertions. That un-publishes four
+ * suppressors covering roughly 1,088 published rows and 2.5M participants.
+ *
+ * It would not have been silent — `nameIsGeneric` and `isNonIssuerCell` are
+ * called from the row block, so the page would throw and smoke-test would go
+ * red — but a generator that breaks the page on every run is a landmine, not
+ * a guard, and the next person to regenerate after a lib-4i change would have
+ * had to diagnose four unrelated deletions. The durable answer is the one the
+ * header already states: slice it HERE.
+ *
+ * They travel as the existing slices do, from the CONSTANT that is the rule to
+ * the end of the exported function, so a vocabulary can never be retyped. The
+ * prose above each constant stays in lib-disclose and no longer ships to the
+ * browser, which is why this regeneration shrinks app.js. */
+const nis = dis.indexOf("const NO_IDENTITY_FILLER = ");
+if (nis < 0) throw new Error("gen-generic-twin: NO_IDENTITY_FILLER moved in lib-disclose");
+const nie = dis.indexOf("\n}\n", dis.indexOf("export function hasNoFundIdentity(")) + 3;
+if (nie < 3) throw new Error("gen-generic-twin: hasNoFundIdentity moved in lib-disclose");
+const noidentity = dis.slice(nis, nie).replace(/^export /gm, "");
+
+const los = dis.indexOf("const LABEL_ONLY_WORD = ");
+if (los < 0) throw new Error("gen-generic-twin: LABEL_ONLY_WORD moved in lib-disclose");
+const loe = dis.indexOf("\n}\n", dis.indexOf("export function isLabelOnlyName(")) + 3;
+if (loe < 3) throw new Error("gen-generic-twin: isLabelOnlyName moved in lib-disclose");
+const labelonly = dis.slice(los, loe).replace(/^export /gm, "");
+
+const ses = dis.indexOf("const SENTENCE_PREDICATE = ");
+if (ses < 0) throw new Error("gen-generic-twin: SENTENCE_PREDICATE moved in lib-disclose");
+const see = dis.indexOf("\n}\n", dis.indexOf("export function isSentenceRow(")) + 3;
+if (see < 3) throw new Error("gen-generic-twin: isSentenceRow moved in lib-disclose");
+const sentence = dis.slice(ses, see).replace(/^export /gm, "");
+
+const nos = dis.indexOf("const NON_ISSUER_FURNITURE = ");
+if (nos < 0) throw new Error("gen-generic-twin: NON_ISSUER_FURNITURE moved in lib-disclose");
+const noe = dis.indexOf("\n}\n", dis.indexOf("export function isNonIssuerCell(")) + 3;
+if (noe < 3) throw new Error("gen-generic-twin: isNonIssuerCell moved in lib-disclose");
+const nonissuer = dis.slice(nos, noe).replace(/^export /gm, "");
+
+/* AND THE FIFTH, SLICED ON THE DAY IT SHIPS: the Schedule H asset-class
+ * caption with no type cell (2026-10-04). The VOCABULARY is the rule — every
+ * token of the name must come from Schedule H's own caption words, and every
+ * token left OUT is a measured protection (`fund` keeps =DFREX on 581,803
+ * readers, `assets` keeps `OTHER ASSETS` on 317,547, `index` keeps `US Bond
+ * Index` on 947,172) — so a retyped alternation would change which rows the
+ * page qualifies and nowhere else. The assembled-regex NOTE travels with it
+ * because the quantifier it warns about is what made the first draft miss its
+ * own motivating row. */
+const cps = dis.indexOf("const CAPTION_WORD = ");
+if (cps < 0) throw new Error("gen-generic-twin: CAPTION_WORD moved in lib-disclose");
+const cpe = dis.indexOf("\n}\n", dis.indexOf("export function isScheduleHCaption(")) + 3;
+if (cpe < 3) throw new Error("gen-generic-twin: isScheduleHCaption moved in lib-disclose");
+const caption = dis.slice(cps, cpe).replace(/^export /gm, "");
 
 /* `isNamelessFundRow` extracted VERBATIM from lib-disclose, body and all */
 const ns = dis.indexOf("export function isNamelessFundRow(");
@@ -253,7 +317,24 @@ ${deco.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
 ${oneedit.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
 ${typofn.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
 ${genericfn.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
-  const isGenericName = isGenericTypeName;
+${noidentity.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
+${labelonly.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
+${sentence.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
+${nonissuer.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
+${caption.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
+  /* THE TWO COMPOSITIONS, which are part of the rule and not of the call site.
+   * \`isGenericName\` is the ISSUER half of the row gate and the NAME half is
+   * widened further — the asymmetry is deliberate and measured (the issuer
+   * half reaches 0 extra rows). They are emitted HERE because the bare
+   * \`isGenericTypeName\` was what this generator used to write, and that alone
+   * would un-publish the whole \`hasNoFundIdentity\` family. */
+  const isGenericName = (n) => isGenericTypeName(n) || hasNoFundIdentity(n);
+  const nameIsGeneric = (n) => isGenericName(n) || isLabelOnlyName(n) || isSentenceRow(n);
+  window.__wampoLabelOnly = isLabelOnlyName;  // read by the smoke test only
+  window.__wampoSentenceRow = isSentenceRow;  // read by the smoke test only
+  window.__wampoNonIssuer = isNonIssuerCell;  // read by the smoke test only
+  window.__wampoTrustShare = trustShareBound;  // read by the smoke test only
+  window.__wampoCaption = isScheduleHCaption;  // read by the smoke test only
   window.__wampoGenericName = isGenericName;  // read by the smoke test only
 ${nameless.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
   window.__wampoNamelessRow = isNamelessFundRow;  // read by the smoke test only
@@ -340,7 +421,13 @@ writeFileSync(ROOT + "app.js", out);
  * The row cases exercise every exclusion; the name cases exercise every arm,
  * INCLUDING the v189 despaced one — a probe set that cannot reach an arm is
  * how a guard passes while doing nothing. */
-const ctx = { console }; vm.createContext(ctx);
+/* `cleanFiledName` is handed to the drift context from the MODULE rather than
+ * sliced: `hasNoFundIdentity` calls it, app.js carries its own twin OUTSIDE
+ * this block, and that twin is tethered separately as `__wampoCleanFiledName`.
+ * Feeding the module's copy here isolates the slice under test — a drift in the
+ * cleaner is a different check's job, and without this the context holds a
+ * function it cannot call, which is the v189 failure in another costume. */
+const ctx = { console, cleanFiledName }; vm.createContext(ctx);
 /* fund-er.js goes into the same context FIRST: the guarantee-only fee rule
  * takes the fee table as an argument, so a context without it can hold the
  * generated function and never be able to call it — a self-check that cannot
@@ -352,7 +439,12 @@ vm.runInContext(readFileSync(ROOT + "fund-er.js", "utf8"), ctx);
  * IS priced by name, so a ticker-only probe would delete a real fund's fee. */
 vm.runInContext("globalThis.__namesAFund = (n) => fundER(n) != null || !!fundTickerInfo(n);", ctx);
 vm.runInContext(block
-  .replace("window.__wampoGenericName = isGenericName;  // read by the smoke test only", "globalThis.__g = isGenericName;")
+  .replace("window.__wampoGenericName = isGenericName;  // read by the smoke test only", "globalThis.__g = isGenericName; globalThis.__gt = isGenericTypeName; globalThis.__ng = nameIsGeneric;")
+  .replace("window.__wampoLabelOnly = isLabelOnlyName;  // read by the smoke test only", "globalThis.__lo = isLabelOnlyName;")
+  .replace("window.__wampoSentenceRow = isSentenceRow;  // read by the smoke test only", "globalThis.__sr = isSentenceRow;")
+  .replace("window.__wampoNonIssuer = isNonIssuerCell;  // read by the smoke test only", "globalThis.__ni = isNonIssuerCell;")
+  .replace("window.__wampoTrustShare = trustShareBound;  // read by the smoke test only", "globalThis.__ts = 1;")
+  .replace("window.__wampoCaption = isScheduleHCaption;  // read by the smoke test only", "globalThis.__cp = isScheduleHCaption;")
   .replace("window.__wampoNamelessRow = isNamelessFundRow;  // read by the smoke test only", "globalThis.__n = isNamelessFundRow;")
   .replace("window.__wampoLoanDescRow = isLoanDescriptionRow;  // read by the smoke test only", "globalThis.__l = isLoanDescriptionRow;")
   .replace("window.__wampoAnnuityRow = isAnnuityContractRow;  // read by the smoke test only", "globalThis.__a = isAnnuityContractRow;")
@@ -460,7 +552,13 @@ const rows = [
   { name: "COMMON STOCK", type: "Employer security" },
   { name: "Mutual funds", type: "Subtotal (not a holding)" },
   { name: "Mutual funds", type: "Brokerage window" },
-  { name: "Fidelity 500 Index Fund", type: "Mutual fund" }];
+  { name: "Fidelity 500 Index Fund", type: "Mutual fund" },
+  /* the caption arm, both directions and every exclusion it rides on */
+  { name: "CORPORATE STOCK - COMMON", type: "" },
+  { name: "CORPORATE STOCK - COMMON", type: "subtotal (not a holding)" },
+  { name: "INTEREST-BEARING CASH (CASH & CASH EQUIVALENT)", type: "Cash / short-term" },
+  { name: "Company Stock", type: "" },
+  { name: "Real Estate Securities Fund", type: "" }];
 /* the loan-description arm, both directions — a probe set that cannot reach an
  * arm is how a guard passes while doing nothing, and the must-KEEP half is
  * where the cost of this rule being wrong lives */
@@ -780,11 +878,66 @@ for (const n of guarFeeNames.slice(21)) if (annuityFeeIsGuaranteeOnly(n, ctx.fun
 for (const n of loans) if (ctx.__l(n) !== isLoanDescriptionRow(n)) {
   bad++; console.log(`  LOAN DRIFT ${JSON.stringify(n)} twin=${ctx.__l(n)} lib=${isLoanDescriptionRow(n)}`);
 }
-for (const n of names) if (ctx.__g(n) !== isGenericTypeName(n)) {
-  bad++; console.log(`  NAME DRIFT ${JSON.stringify(n)} twin=${ctx.__g(n)} lib4i=${isGenericTypeName(n)}`);
+for (const n of names) if (ctx.__gt(n) !== isGenericTypeName(n)) {
+  bad++; console.log(`  NAME DRIFT ${JSON.stringify(n)} twin=${ctx.__gt(n)} lib4i=${isGenericTypeName(n)}`);
 }
-for (const r of rows) if (ctx.__n(r, r.name, ctx.__g) !== isNamelessFundRow(r, r.name, isGenericTypeName)) {
-  bad++; console.log(`  ROW DRIFT ${JSON.stringify(r)}`);
+/* the COMPOSED gates, each compared against the module's own composition. The
+ * bare `isGenericTypeName` is checked above through `__gt`; these two are what
+ * the row block actually passes, and the block used to emit the bare function
+ * for the first of them. */
+const modGenericName = (n) => isGenericTypeName(n) || hasNoFundIdentity(n);
+const modNameGeneric = (n) => modGenericName(n) || isLabelOnlyName(n) || isSentenceRow(n);
+for (const n of names) {
+  if (ctx.__g(n) !== modGenericName(n)) {
+    bad++; console.log(`  ISSUER-GATE DRIFT ${JSON.stringify(n)} twin=${ctx.__g(n)} lib=${modGenericName(n)}`);
+  }
+  if (ctx.__ng(n) !== modNameGeneric(n)) {
+    bad++; console.log(`  NAME-GATE DRIFT ${JSON.stringify(n)} twin=${ctx.__ng(n)} lib=${modNameGeneric(n)}`);
+  }
+}
+for (const r of rows) if (ctx.__n(r, r.name, ctx.__ng) !== isNamelessFundRow(r, r.name, modNameGeneric)) {
+  bad++; console.log(`  ROW DRIFT ${JSON.stringify(r)} twin=${ctx.__n(r, r.name, ctx.__ng)} lib=${isNamelessFundRow(r, r.name, modNameGeneric)}`);
+}
+/* 2026-10-04: a probe set per newly-sliced twin, because a probe set that
+ * cannot reach an arm is how a guard passes while doing nothing — this file
+ * has paid for that at v189, v190, v191, v192, v196 and v197. Each list is
+ * both directions, and the must-KEEP halves are the measured single-protection
+ * cases rather than cases that came to mind. */
+const noIdNames = ["shares", "Fund", "UNIT", "Institutional Class", "E.I.N. 23-", "E.LN. 81-",
+  /* must stay real */ "Fidelity 500 Index Fund", "Vanguard Wellington Fund Admiral", "Dodge & Cox Income"];
+for (const n of noIdNames) if (ctx.__g(n) !== modGenericName(n)) {
+  bad++; console.log(`  NO-IDENTITY DRIFT ${JSON.stringify(n)}`);
+}
+const labelNames = ["Registered investment company funds", "Registed Investment Co.", "companies",
+  "Trust Company", "Common Collective Trusts (Pages 165-166)", "(page 166)",
+  /* must stay real */ "Vanguard Institutional Index Fund", "Shares", "Investment in", "T. Rowe Price"];
+for (const n of labelNames) if (ctx.__lo(n) !== isLabelOnlyName(n)) {
+  bad++; console.log(`  LABEL-ONLY DRIFT ${JSON.stringify(n)} twin=${ctx.__lo(n)} lib=${isLabelOnlyName(n)}`);
+}
+const sentNames = ["Separately managed account which includes: Corporate Common Stocks, Registered Investment",
+  "Loan Repayments are included", "Repayments are Included Yes", "consisting of Cash, Money Market and",
+  /* must stay real */ "BLACKROCK SP 500 IDX (IS)", "VANG IS TL STK MK IP", "Income Fund",
+  "American Funds The Income Fund of America R6"];
+for (const n of sentNames) if (ctx.__sr(n) !== isSentenceRow(n)) {
+  bad++; console.log(`  SENTENCE DRIFT ${JSON.stringify(n)} twin=${ctx.__sr(n)} lib=${isSentenceRow(n)}`);
+}
+const issCells = ["Shares of", "SHARES OF", "Investments in shares of", "Shares in", "Interests in",
+  /* must stay real */ "Alerus Financial, N.A.", "Leidos Stable Value, A", "Shares", "Dodge & Cox",
+  "Voya Retirement Insurance and"];
+for (const n of issCells) if (ctx.__ni(n) !== isNonIssuerCell(n)) {
+  bad++; console.log(`  NON-ISSUER DRIFT ${JSON.stringify(n)} twin=${ctx.__ni(n)} lib=${isNonIssuerCell(n)}`);
+}
+const capNames = ["CORPORATE STOCK - COMMON", "CORPORATE STOCKS COMMON", "Government Bond", "CASH",
+  "PARTNERSHIP/JOINT VENTURE INTEREST", "Corporate Stock : Common",
+  /* must stay real — each the measured SINGLE protection for one excluded token */
+  "Real Estate Securities Fund", "US Bond Index", "OTHER ASSETS", "Employer Common Stock",
+  "Total Bond", "Stable Value", "Government Bond A", "Investment Company of America",
+  "Fidelity Government", "Vanguard Institutional Index Plus"];
+for (const n of capNames) if (ctx.__cp(n) !== isScheduleHCaption(n)) {
+  bad++; console.log(`  CAPTION DRIFT ${JSON.stringify(n)} twin=${ctx.__cp(n)} lib=${isScheduleHCaption(n)}`);
+}
+if (!ctx.__cp("CORPORATE STOCK - COMMON") || ctx.__cp("Vanguard Institutional Index Plus")) {
+  bad++; console.log("  CAPTION PROBE INERT — the twin reaches neither direction");
 }
 /* v196: the two twins a regeneration had deleted now carry drift checks of
  * their own, with cases that REACH both arms of each rule. Without these the
@@ -1021,4 +1174,4 @@ for (const [t, own, zero, wantN, why] of trustMenuCases) {
   if (!over || over.share !== 1) { bad++; console.log(`  TRUST-MENU share must clamp at 1, got ${over && over.share}`); }
 }
 if (bad) { console.error(`generated with ${bad} DRIFT — do not commit`); process.exit(1); }
-console.log(`generated; twin agrees with lib-4i on ${names.length} names, with lib-disclose on ${rows.length} rows, ${loans.length} loan-description names, ${annuityRows.length} annuity-contract rows, ${guarFeeNames.length} guarantee-only fee names, ${investmentContractRows.length} investment-contract rows, ${mistypedStockRows.length} mistyped-employer-stock rows and ${mistypedStockFeeNames.length} mistyped-stock fee names and ${issuerFeeCases.length} issuer-priced fee cases, ${citNames.length} collective-trust names and ${loanAnsNames.length} loan-answer names and ${loanVocabNames.length} loan-vocabulary names and ${bankDepNames.length} bank-deposit names and ${espCases.length} employer-stock provenance cases`);
+console.log(`generated; twin agrees with lib-4i on ${names.length} names, with lib-disclose on ${rows.length} rows, ${loans.length} loan-description names, ${annuityRows.length} annuity-contract rows, ${guarFeeNames.length} guarantee-only fee names, ${investmentContractRows.length} investment-contract rows, ${mistypedStockRows.length} mistyped-employer-stock rows and ${mistypedStockFeeNames.length} mistyped-stock fee names and ${issuerFeeCases.length} issuer-priced fee cases, ${citNames.length} collective-trust names and ${loanAnsNames.length} loan-answer names and ${loanVocabNames.length} loan-vocabulary names and ${bankDepNames.length} bank-deposit names and ${espCases.length} employer-stock provenance cases, ${noIdNames.length} no-identity names and ${labelNames.length} label-only names and ${sentNames.length} sentence names and ${issCells.length} issuer-cell strings and ${capNames.length} caption names, and both composed gates over all ${names.length} names`);

@@ -16,7 +16,7 @@
  *   4. a negative control per condition
  */
 import { readFileSync } from "node:fs";
-import { hasNoFundIdentity, cleanFiledName, isLabelOnlyName, isSentenceRow, isNonIssuerCell, isNamelessFundRow, coverageBand, trustShareBound } from "./lib-disclose.mjs";
+import { hasNoFundIdentity, cleanFiledName, isLabelOnlyName, isSentenceRow, isNonIssuerCell, isNamelessFundRow, coverageBand, trustShareBound, isScheduleHCaption } from "./lib-disclose.mjs";
 import { isGenericTypeName } from "./lib-4i.mjs";
 
 const fails = [];
@@ -459,6 +459,135 @@ for (const [t, p] of [[14615628, 64476933873], [430067751, 25378065969], [128134
   console.log("\nEXCLUSIVITY CONTROL: all 4 pairs DO trip coverageBand when fromTrust=false, so the `fromTrust` early return is what separates the two notes (control fires)");
 }
 
+/* ---- 11. A SCHEDULE H ASSET-CLASS CAPTION WITH NO TYPE CELL (2026-10-04) ---
+ *
+ * 574 published rows / 577 plans / 4,564,065 participants / $32,614,134,068
+ * stop reading as named holdings, measured through the page's own per-row
+ * block: the shown TYPE moves on all 574 and the name, ticker, fee and
+ * asterisk move on NONE.
+ *
+ * The predicate is a WHOLE-STRING test over Schedule H's own caption words, so
+ * the cases below are organised by WHICH CONDITION IS THE ONLY PROTECTION,
+ * each found by asking the live store which published names are caption
+ * vocabulary except for exactly one token. A case protected twice proves
+ * neither condition. */
+const CAP_QUALIFY = [
+  ["CORPORATE STOCK - COMMON", "Verizon, $9,699,087,087 at 24.9%, 146,572 ppl — the motivating row"],
+  ["CORPORATE STOCKS - COMMON", "Johnson & Johnson, $9,996,789,597 at 41.6%, 80,884 ppl"],
+  ["CORPORATE STOCKS COMMON", "Eaton / PepsiCo / Comcast / Unilever / Becton Dickinson / Deere"],
+  ["Corporate stock - common", "Exelon, 44.5% of its menu"],
+  ["Government Bond", "Continental Automotive, 50.0% of its whole menu"],
+  ["PARTNERSHIP/JOINT VENTURE INTEREST", "Deere, $2,263,409,173 at 13.5%"],
+  ["OTHER INVESTMENTS", "Verizon, $941,840,374"],
+  ["CASH", "77 rows / 762,812 ppl — the commonest member"],
+  ["Real Estate", "65 rows"],
+  ["Corporate Stock : Common", "84.2% of one plan's menu — a colon is a separator, not a word"],
+  ["SECURITIES", "Nordson, $88,353,968 at 15.4%"],
+  ["CASH/CASH EQUIVALENTS", "UnitedHealth Group"],
+];
+const CAP_KEEP = [
+  ["Real Estate Securities Fund", "=DFREX, 433 rows / 581,803 ppl — `fund` excluded is the ONLY protection"],
+  ["Real Estate Fund", "115 rows / 233,881 ppl — likewise"],
+  ["US Bond Index", "488 rows / 947,172 ppl — `index` excluded is the ONLY protection"],
+  ["OTHER ASSETS", "100 rows / 317,547 ppl / $2,575,635,840 — `assets` excluded is the ONLY protection"],
+  ["Employer Common Stock", "12 rows / 38,114 ppl / $230,268,669 — `employer` excluded is the ONLY protection"],
+  ["Total Bond", "95 rows / 141,814 ppl — `total` excluded; it may be a truncated `Total Bond Market`"],
+  ["Stable Value", "54 rows / 171,652 ppl — `stable` excluded"],
+  ["Real Estate Securities R6", "=PFRSX — the share class is the ONLY protection"],
+  ["Government Bond A", "$74,802,818 at Toll Bros. — a trailing capital is a SERIES letter; excluding the article `a` is the ONLY protection"],
+  ["Investment Company of America", "254 rows / 110,724 ppl, a REAL FUND — `America` is the ONLY protection"],
+  ["Fidelity Government", "2,123 rows / 3,420,361 ppl — the house token is the ONLY protection"],
+  ["Cash Surrender Value", "an insurance figure, not a caption — `surrender` is the ONLY protection"],
+  ["General Account", "119 rows — `general`/`account` excluded: the insurer's general account is a different class"],
+  ["Loans", "`loan` excluded because the LOAN label is appended by a different arm on the same cell"],
+  ["Vanguard Institutional Index Plus", "a real fund"],
+  ["Principal Real Estate Securities Fund", "four caption words plus a house and a vehicle word"],
+  ["General Motors Common Stock", "employer stock wearing three caption words"],
+];
+for (const [n, why] of CAP_QUALIFY)
+  ok(isScheduleHCaption(n), `CAPTION: ${JSON.stringify(n)} is not reached (${why}) — the arm is inert`);
+for (const [n, why] of CAP_KEEP)
+  ok(!isScheduleHCaption(n), `CAPTION: ${JSON.stringify(n)} would be qualified (${why})`);
+
+/* THE TYPE CELL IS THE SECOND CONDITION and the predicate cannot express it, so
+ * it is asserted through the function that owns it, with a stub `isGenericName`
+ * that never fires — a true verdict can then only have come from the new arm. */
+const CAP_TYPED = [
+  [{ type: "Cash / short-term" }, "INTEREST-BEARING CASH (CASH & CASH EQUIVALENT)",
+    "Verizon, $1,767,488,802 — the TYPE CELL is the ONLY protection"],
+  [{ type: "Corporate debt" }, "CORPORATE DEBT INSTRUMENTS - ALL OTHER",
+    "Verizon, $1,060,409,593 — the same filing as the row above"],
+  [{ type: "Government securities" }, "U.S. GOVERNMENT SECURITIES",
+    "Exelon / Delta / Johnson & Johnson / Hallmark"],
+  [{ type: "Cash / short-term" }, "INTEREST BEARING CASH", "Johnson & Johnson, $716,811,735"],
+];
+for (const [f, n, why] of CAP_TYPED) {
+  ok(isNamelessFundRow({ ...f }, n, () => false) === false,
+    `CAPTION TYPE GATE: ${JSON.stringify(n)} typed ${JSON.stringify(f.type)} would be qualified (${why})`);
+  ok(isNamelessFundRow({ type: "" }, n, () => false) === true,
+    `CAPTION TYPE GATE IS DECORATIVE: ${JSON.stringify(n)} is not reached with an EMPTY type, so the typed case above proves nothing about the type cell (${why})`);
+}
+/* and the row-level exclusions, each asked with no type so it is the only
+ * protection. `Company Stock` has a live population of 0 — all 25 caption-shaped
+ * rows the employer-stock early return catches are typed `Company stock`, so it
+ * blocks nothing the type condition does not already block. Kept and labelled:
+ * where a predicate is COMPOSED decides what protects it. */
+for (const [type, n, want, why] of [
+  ["", "CORPORATE STOCK - COMMON", true, "the arm fires on its own"],
+  ["subtotal (not a holding)", "CORPORATE STOCK - COMMON", false, "a subtotal is not a holding"],
+  ["Brokerage window", "CASH", false, "a brokerage window is a real choice"],
+  ["", "Company Stock", false, "the employer-stock early return, live population 0"],
+])
+  ok(isNamelessFundRow({ type }, n, () => false) === want,
+    `CAPTION ROW GATE: ${JSON.stringify(n)} typed ${JSON.stringify(type)} should be ${want} (${why})`);
+
+/* BOTH SURFACES MUST AGREE, and they do by construction rather than by a second
+ * copy: the arm reads `f.type` inside the shared `isNamelessFundRow`, so
+ * build-seo-pages inherits it with no change at all. Asserted anyway, because
+ * "by construction" is a claim. */
+for (const [n, why] of CAP_QUALIFY.slice(0, 6)) {
+  const a = isNamelessFundRow({ type: "" }, n, () => false);
+  const b = isNamelessFundRow({ type: "" }, cleanFiledName(n), () => false);
+  ok(a === b, `CAPTION: raw and cleaned forms disagree for ${JSON.stringify(n)} (${why})`);
+}
+
+/* NEGATIVE CONTROL, ONE PER CAPTION CONDITION, built by SLICING the shipped
+ * vocabulary out of lib-disclose rather than by restating it — a control that
+ * restates the rule drifts away from it, and a control that cannot fail is
+ * decorative. Each neutered copy must CONVICT a name the shipped predicate
+ * keeps, by name. */
+{
+  const src = readFileSync(new URL("./lib-disclose.mjs", import.meta.url), "utf8");
+  const cw = src.slice(src.indexOf("const CAPTION_WORD = "), src.indexOf("const CAPTION_SEP = "));
+  ok(/interest\|interests\|bearing/.test(cw), "CONTROL CANNOT BE BUILT: the CAPTION_WORD slice is not the vocabulary — re-point it");
+  /* eslint-disable no-new-func */
+  const WORD = new Function("return " + cw.slice(cw.indexOf("=") + 1).trim().replace(/;\s*$/, ""))();
+  const SEP = "[\\s\\-\\u2010-\\u2015\\/,.:;()&*]+";
+  const unanchored = new RegExp(WORD + "(?:" + SEP + WORD + ")*", "i");
+  const noWholeString = new RegExp("^(?:" + SEP + ")?" + WORD, "i");
+  let a = 0, b = 0;
+  /* (i) drop the END anchor and the "every token" requirement: a real fund that
+   * merely STARTS with caption words would be qualified. */
+  for (const n of ["Common Stock B", "Corporate Bond Fund of America", "Real Estate Securities Fund"])
+    if (noWholeString.test(n)) a++;
+  ok(a === 3, `CONTROL IS DECORATIVE: dropping the whole-string requirement convicts only ${a} of 3 real names, so the anchors prove nothing`);
+  /* (ii) drop BOTH anchors: any name CONTAINING a caption run is qualified. */
+  for (const n of ["Vanguard Total Stock Market Index Fund", "T. Rowe Price Real Estate Fund",
+                   "Principal Real Estate Securities Fund", "Fidelity Government Cash Reserves"])
+    if (unanchored.test(n)) b++;
+  ok(b === 4, `CONTROL IS DECORATIVE: dropping both anchors convicts only ${b} of 4 real funds`);
+  /* (iii) the TYPE condition, neutered in the only place it lives. */
+  let c = 0;
+  for (const n of ["INTEREST-BEARING CASH (CASH & CASH EQUIVALENT)", "CORPORATE DEBT INSTRUMENTS - ALL OTHER",
+                   "U.S. GOVERNMENT SECURITIES"])
+    if (isScheduleHCaption(n)) c++;   /* the predicate alone, i.e. the type gate removed */
+  ok(c === 3, `CONTROL IS DECORATIVE: with the type gate removed only ${c} of 3 TYPED Verizon/Exelon captions are reached`);
+  console.log("\nNEGATIVE CONTROL, one per caption condition:");
+  console.log(`  drop the whole-string requirement: all ${a} real names that merely START with caption words would be qualified (control fires)`);
+  console.log(`  drop both anchors: all ${b} real funds containing a caption run would be qualified (control fires)`);
+  console.log(`  drop the TYPE gate: all ${c} typed Schedule H captions would be qualified, $3.5B at Verizon alone (control fires)`);
+}
+
 if (fails.length) { for (const f of fails) console.error("FAIL " + f); process.exit(1); }
 console.log(`\nno-identity: ${KEEP.length} real names kept, ${QUALIFY.length} qualified, `
   + `${BOTH_FORMS.length * 2} surface-agreement, idempotence over ${checked.toLocaleString()} names, `
@@ -466,4 +595,5 @@ console.log(`\nno-identity: ${KEEP.length} real names kept, ${QUALIFY.length} qu
   + `label-only ${LBL_QUALIFY.length} qualified / ${LBL_KEEP.length} kept / ${STOCK_ROWS.length * 2} employer-stock, `
   + `sentence ${SENT_QUALIFY.length} qualified / ${SENT_KEEP.length} kept / ${SENT_STOCK.length * 2} employer-stock, `
   + `non-issuer ${ISS_SUPPRESS.length} suppressed / ${ISS_KEEP.length} kept, 3 controls fire, `
-  + `trust-bound ${TS_FIRE.length} fire / ${TS_KEEP.length} kept / 8 exclusivity — 0 failures`);
+  + `trust-bound ${TS_FIRE.length} fire / ${TS_KEEP.length} kept / 8 exclusivity, `
+  + `caption ${CAP_QUALIFY.length} qualified / ${CAP_KEEP.length} kept / ${CAP_TYPED.length * 2} type-gate / 4 row-gate / ${CAP_QUALIFY.slice(0, 6).length} surface-agreement / 3 controls fire — 0 failures`);

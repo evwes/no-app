@@ -2315,13 +2315,173 @@ for (const [s, why] of [
   throw new Error(`lib-disclose: isNonIssuerCell would suppress ${JSON.stringify(s)} (${why}) — it names something, fix the predicate rather than the control`);
 }
 
+/* A SCHEDULE H ASSET-CLASS CAPTION WITH NO TYPE CELL TO DESCRIBE IT — canonical
+ * copy, 2026-10-04 (16:5xZ).
+ *
+ * Found by the 15:07 draw. Verizon Communications (146,572 participants)
+ * publishes a twelve-row CATEGORY TABLE as its fund menu, and the shipped
+ * guards split it down the middle:
+ *
+ *   `COMMON/COLLECTIVE TRUST`   41.9%  $16,315,773,219  QUALIFIED
+ *   `CORPORATE STOCK - COMMON`  24.9%  $ 9,699,087,087  NOT qualified, type `—`
+ *
+ * THE MECHANISM: `isGenericTypeName` reaches `CORPORATE STOCK`, `COMMON STOCK`
+ * and `CORPORATE STOCKS` — and not `CORPORATE STOCK - COMMON`. It is a CLOSED,
+ * WHOLE-STRING vocabulary, so a COMPOUND of two captions it already knows
+ * escapes it. *A fix for one phrasing of a class is not a fix for the class*,
+ * met on a hyphen. Widening it is refused by its own comment, because the
+ * PARSER reads it for region selection and `audit-dominant-row` reads it too —
+ * widening it once moved Lam Research by $453M. Hence a FOURTH display-only
+ * predicate rather than a wider vocabulary.
+ *
+ * 767 rows / 780 plans / 4,977,804 participants / $33,050,283,650, across 140
+ * distinct strings, EVERY ONE OF WHICH WAS READ. Largest:
+ *
+ *   Johnson & Johnson  `CORPORATE STOCKS - COMMON`  41.6%  $9,996,789,597  80,884 ppl
+ *   Verizon            `CORPORATE STOCK - COMMON`   24.9%  $9,699,087,087 146,572 ppl
+ *   Exelon             `Corporate stock - common`   44.5%  $2,335,879,293
+ *   Eaton / PepsiCo / Comcast / Unilever / Becton Dickinson / Deere, same shape
+ *   Continental Automotive `Government Bond`        50.0% of its whole menu
+ *
+ * THE VOCABULARY IS SCHEDULE H'S OWN CAPTION WORDS and nothing else — what a
+ * filer is copying when they file the form's categories as a menu. Every token
+ * of the name must come from it, which is what makes a real fund unreachable:
+ * a product name carries a house, a series or a vehicle word that the form
+ * never uses. EVERY EXCLUSION BELOW IS PRICED, measured as the set of published
+ * names that are caption vocabulary except for exactly ONE token — so that
+ * token is the only thing keeping the row named:
+ *
+ *   `fund`/`funds`  `Real Estate Securities Fund` =DFREX 581,803 ppl; `Stock Fund`
+ *   `index`         `US Bond Index` 947,172 ppl / 488 rows
+ *   `assets`        `OTHER ASSETS` 317,547 ppl / $2,575,635,840
+ *   `employer`      `Employer Common Stock` 38,114 ppl / $230,268,669
+ *   `total`         `Total Bond` 141,814 ppl — possibly a truncated `Total Bond Market`
+ *   `general`/`account`/`insurance`  the insurer's general account, a different
+ *                   class with its own recorded machinery
+ *   `loan`/`loans`/`mortgage`  the loan label is appended by a DIFFERENT arm on
+ *                   the same cell, so including them would double-label a row
+ *   `income`/`equity`/`fixed`/`stable`  `Wellesley Income`, `Stable Value` 171,652 ppl
+ *   the article `a`  41 rows ending in a capital `A`, which is a SHARE CLASS or
+ *                   SERIES letter — `Government Bond A` $74,802,818 (Toll Bros).
+ *                   This is the DANGLING_TAIL trap forty lines above, and it is
+ *                   conservatism rather than a correction: none of the 41 carries
+ *                   a ticker.
+ *
+ * Houses are outside by construction and that is measured too: `Fidelity
+ * Government` (3,420,361 ppl, 2,123 rows) is protected by one token.
+ *
+ * NO TYPE CELL IS THE SECOND CONDITION, and it is the measurement rather than a
+ * caveat. A caption whose TYPE column describes it is not a false fund claim —
+ * Verizon's `INTEREST-BEARING CASH` at $1,767,488,802 is typed
+ * `Cash / short-term`, so the reader is shown a category labelled as one. 1,294
+ * caption-shaped rows are typed that way (Verizon's `CORPORATE DEBT INSTRUMENTS
+ * - ALL OTHER` $1,060,409,593 typed `Corporate debt`; Exelon's and Delta's
+ * `U.S. GOVERNMENT SECURITIES` typed `Government securities`) and are left alone.
+ *
+ * NAMED RESIDUE, because this condition is a property of ONE surface: the
+ * crawlable pages have no type column, so those 1,294 rows print there with
+ * nothing describing them. The predicate is deliberately not split per surface
+ * — two copies of a rule is how two surfaces drift — so the typed rows stay
+ * unqualified on both. Also left out: `Other Assets` (the token exclusion
+ * above), and the Schedule H CAPTION sub-family that carries an ISSUER, which
+ * the call-site gate decides and which the owner-gated category-table item
+ * covers (Cisco's `Collective Trusts(1) at NAV`, $25,144,872,000).
+ *
+ * DISPLAY-ONLY, and INJECTED INTO `isNamelessFundRow` rather than placed beside
+ * it, for the reason that function's early returns exist: `Corporate common
+ * stock` is typed `Company stock` at Capital One ($601,782,789) and
+ * `Corporate Stock : Common` is 84.2% of one plan's menu. Reading the type cell
+ * from `f` inside the shared function is also why the static generator needs no
+ * change at all. docs/accuracy-log.md 2026-10-04 (16:5xZ). */
+const CAPTION_WORD = "(?:interest|interests|bearing|cash|equivalent|equivalents|u\\.?s\\.?a?|united|states"
+  + "|government|governmental|securities|security|corporate|corporation|debt|instrument|instruments"
+  + "|preferred|common|stock|stocks|share|shares|partnership|partnerships|joint|venture|ventures"
+  + "|real|estate|properties|property|buildings|municipal|bond|bonds|note|notes|collective|trust|trusts"
+  + "|pooled|separate|master|registered|investment|investments|company|companies|nav"
+  + "|value|other|all|and|or|the|at|of|in)";
+const CAPTION_SEP = "[\\s\\-\\u2010-\\u2015\\/,.:;()&*]+";
+/* NOTE the non-capturing wrappers on the optional leading and trailing
+ * separator. `CAPTION_SEP + "?"` turns the character class's own `+` into a
+ * LAZY `+?` and so REQUIRES a separator at both ends, which makes the predicate
+ * miss its own motivating row. A regex assembled from string fragments has no
+ * syntax check until it runs, and none at all for a quantifier that is merely
+ * wrong — the positive fixtures below are what caught it. */
+const SCHEDULE_H_CAPTION = new RegExp("^(?:" + CAPTION_SEP + ")?" + CAPTION_WORD
+  + "(?:" + CAPTION_SEP + CAPTION_WORD + ")*(?:" + CAPTION_SEP + ")?$", "i");
+export function isScheduleHCaption(name) {
+  return SCHEDULE_H_CAPTION.test(String(name == null ? "" : name));
+}
+/* Asserted at import, both directions. The must-SEE cases are real filed
+ * strings, because an arm that is BROKEN and an arm that is INERT report the
+ * same zero; the must-KEEP cases are each a measured SINGLE-PROTECTION case,
+ * found by asking the live store which published names are caption vocabulary
+ * except for exactly one token rather than by listing the ones that came to
+ * mind. */
+for (const [s, why] of [
+  ["CORPORATE STOCK - COMMON", "Verizon, $9,699,087,087 at 24.9% of its menu, 146,572 ppl — the motivating row"],
+  ["CORPORATE STOCKS - COMMON", "Johnson & Johnson, $9,996,789,597 at 41.6%, 80,884 ppl"],
+  ["CORPORATE STOCKS COMMON", "Comcast / Unilever / Becton Dickinson / Deere, 9 rows / 445,027 ppl"],
+  ["Corporate stock - common", "Exelon, 44.5% of its menu"],
+  ["Government Bond", "Continental Automotive, 50.0% of its whole menu"],
+  ["PARTNERSHIP/JOINT VENTURE INTEREST", "$2,263,409,173 at 13.5%"],
+  ["OTHER INVESTMENTS", "Verizon again, $941,840,374"],
+  ["CASH", "77 rows / 762,812 ppl — the commonest member, so a regression to 0 would look quiet"],
+  ["Real Estate", "65 rows"],
+  ["Corporate Stock : Common", "84.2% of one plan's menu — a colon is a separator, not a word"],
+]) if (!isScheduleHCaption(s)) {
+  throw new Error(`lib-disclose: isScheduleHCaption no longer reaches ${JSON.stringify(s)} (${why}) — the arm is inert, fix it rather than shipping a quiet guard`);
+}
+for (const [s, why] of [
+  ["Real Estate Securities Fund", "=DFREX, 433 rows / 581,803 ppl — `fund` is the ONLY protection"],
+  ["Real Estate Fund", "115 rows / 233,881 ppl — likewise"],
+  ["US Bond Index", "488 rows / 947,172 ppl — `index` is the ONLY protection"],
+  ["OTHER ASSETS", "100 rows / 317,547 ppl / $2,575,635,840 — `assets` is the ONLY protection"],
+  ["Employer Common Stock", "12 rows / 38,114 ppl / $230,268,669 — `employer` is the ONLY protection"],
+  ["Total Bond", "95 rows / 141,814 ppl — `total` is the ONLY protection, and this may be a truncated `Total Bond Market`"],
+  ["Stable Value", "54 rows / 171,652 ppl — `stable` is the ONLY protection"],
+  ["Real Estate Securities R6", "=PFRSX — the share class is the ONLY protection"],
+  ["Government Bond A", "$74,802,818 at Toll Bros. — a trailing capital is a SERIES letter; excluding the article `a` is the ONLY protection"],
+  ["Investment Company of America", "254 rows / 110,724 ppl — a REAL FUND; `America` is the ONLY protection"],
+  ["Fidelity Government", "2,123 rows / 3,420,361 ppl — the house token is the ONLY protection"],
+  ["Cash Surrender Value", "an insurance figure, not a caption — `surrender` is the ONLY protection"],
+  ["Vanguard Institutional Index Plus", "a real fund"],
+  ["Principal Real Estate Securities Fund", "a real fund that is four caption words plus a house and a vehicle word"],
+  ["General Motors Common Stock", "employer stock wearing three caption words"],
+]) if (isScheduleHCaption(s)) {
+  throw new Error(`lib-disclose: isScheduleHCaption would qualify ${JSON.stringify(s)} (${why}) — it names something, fix the predicate rather than the control`);
+}
+
 export function isNamelessFundRow(f, cleanedName, isGenericName) {
   const type = String((f && f.type) || "");
   const name = String(cleanedName || (f && f.name) || "");
   if (/^subtotal \(not a holding\)$/i.test(type)) return false;
   if (/brokerage window/i.test(type)) return false;
   if (/company stock|employer (security|stock)/i.test(type + " " + name)) return false;
+  /* ...or the row is a SCHEDULE H ASSET-CLASS CAPTION with no type cell to
+   * describe it. Injected here rather than into the caller's `isGenericName`
+   * composition because the condition is a property of the ROW and not of the
+   * name: the type cell is what decides it, and reading `f.type` inside the
+   * shared function is what lets the static generator inherit this unchanged. */
+  if (!type.trim() && isScheduleHCaption(name)) return true;
   return !!isGenericName(name);
+}
+/* and the two conditions the predicate itself cannot express, asserted through
+ * the function that owns them with a stub `isGenericName` that never fires —
+ * so a true verdict can only have come from the new arm. */
+for (const [f, name, want, why] of [
+  [{ type: "" }, "CORPORATE STOCK - COMMON", true, "the arm fires on its own, with nothing else returning true"],
+  [{ type: "Cash / short-term" }, "INTEREST-BEARING CASH (CASH & CASH EQUIVALENT)", false,
+    "Verizon, $1,767,488,802 — the TYPE CELL is the ONLY protection"],
+  [{ type: "Corporate debt" }, "CORPORATE DEBT INSTRUMENTS - ALL OTHER", false,
+    "Verizon, $1,060,409,593 — likewise, and it is the same filing as the row above"],
+  [{ type: "Government securities" }, "U.S. GOVERNMENT SECURITIES", false,
+    "Exelon / Delta / Johnson & Johnson / Hallmark — likewise"],
+  [{ type: "" }, "Company Stock", false,
+    "the EMPLOYER-STOCK early return, asked with no type so it is the only protection. Live population 0: all 25 caption-shaped rows it catches are typed `Company stock`, so it blocks nothing the no-type condition does not already block. Kept and labelled, because where a predicate is COMPOSED decides what protects it and the 26th row may file no type"],
+  [{ type: "subtotal (not a holding)" }, "CORPORATE STOCK - COMMON", false, "a subtotal is not a holding"],
+  [{ type: "Brokerage window" }, "CASH", false, "a brokerage window is a real choice"],
+]) if (isNamelessFundRow(f, name, () => false) !== want) {
+  throw new Error(`lib-disclose: isNamelessFundRow(${JSON.stringify(f.type)}, ${JSON.stringify(name)}) should be ${want} (${why})`);
 }
 
 /* AN INSURANCE ANNUITY CONTRACT TYPED `Mutual fund` — canonical copy, 2026-09-29.

@@ -870,6 +870,52 @@ try {
   for (const n of issCases.slice(ISS_TRUE))
     if (isNonIssuerCell(n)) fail(`the non-issuer arm would delete an issuer attribution that names an entity: ${JSON.stringify(n)}`);
 
+  /* A SCHEDULE H ASSET-CLASS CAPTION, tethered 2026-10-04. Same arrangement as
+   * the tethers above, and this one matters more than most: the predicate is
+   * now SLICED by gen-generic-twin rather than hand-written, and the reason it
+   * is sliced is that four twins before it were hand-written INTO the generated
+   * block and would have been deleted by the next regeneration. This tether is
+   * what turns that into a red test instead of a silent loss. */
+  const shCapCases = [
+    "CORPORATE STOCK - COMMON", "CORPORATE STOCKS - COMMON", "CORPORATE STOCKS COMMON",
+    "Corporate stock - common", "Government Bond", "PARTNERSHIP/JOINT VENTURE INTEREST",
+    "OTHER INVESTMENTS", "CASH", "Real Estate", "Corporate Stock : Common",
+    "SECURITIES", "CASH/CASH EQUIVALENTS",
+    "Real Estate Securities Fund", "US Bond Index", "OTHER ASSETS", "Employer Common Stock",
+    "Total Bond", "Stable Value", "Government Bond A", "Investment Company of America",
+    "Fidelity Government", "Cash Surrender Value", "General Account", "Loans",
+    "Vanguard Institutional Index Plus", "Principal Real Estate Securities Fund",
+    "General Motors Common Stock",
+  ];
+  const SHCAP_TRUE = 12;   /* the first N must be reached; the rest must be kept */
+  const { isScheduleHCaption } = await import("./lib-disclose.mjs");
+  const shCapGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoCaption !== "function") return null;
+    return cs.map((n) => window.__wampoCaption(n));
+  }, shCapCases);
+  if (!shCapGot) fail("app.js no longer exposes __wampoCaption — the caption twin cannot be cross-checked");
+  const shCapDrift = shCapCases.filter((n, i) => isScheduleHCaption(n) !== shCapGot[i]);
+  if (shCapDrift.length) {
+    for (const n of shCapDrift) console.error(`  ${JSON.stringify(n)}  app.js=${shCapGot[shCapCases.indexOf(n)]}  lib-disclose=${isScheduleHCaption(n)}`);
+    fail(`the caption twin in app.js disagrees with scripts/lib-disclose.mjs on ${shCapDrift.length} of ${shCapCases.length} names — re-run node scripts/gen-generic-twin.mjs`);
+  }
+  for (const n of shCapCases.slice(0, SHCAP_TRUE))
+    if (!isScheduleHCaption(n)) fail(`the caption arm went INERT on a live published name: ${JSON.stringify(n)}`);
+  for (const n of shCapCases.slice(SHCAP_TRUE))
+    if (isScheduleHCaption(n)) fail(`the caption arm would qualify a name that identifies a fund: ${JSON.stringify(n)}`);
+  /* and the COMPOSITIONS, which the generator used to emit as the bare
+   * `isGenericTypeName`: a regeneration that lost `hasNoFundIdentity` from the
+   * issuer gate would be invisible to every tether above, because each checks
+   * its own predicate and none checks the gate they are composed into. */
+  const gateGot = await page.evaluate(() => {
+    if (typeof window.__wampoGenericName !== "function") return null;
+    return ["shares", "E.I.N. 23-", "Mutual funds", "Fidelity 500 Index Fund"].map((n) => window.__wampoGenericName(n));
+  });
+  if (!gateGot) fail("app.js no longer exposes __wampoGenericName — the issuer gate cannot be cross-checked");
+  if (!gateGot[0] || !gateGot[1]) fail("the ISSUER GATE in app.js no longer includes hasNoFundIdentity — it has been regenerated as the bare isGenericTypeName");
+  if (!gateGot[2]) fail("the ISSUER GATE in app.js no longer includes isGenericTypeName");
+  if (gateGot[3]) fail("the ISSUER GATE in app.js qualifies a real fund");
+
   /* HOW MUCH OF THIS PLAN IS EVEN IN THE TRUST, tethered 2026-10-04. Same
    * arrangement as the tethers above. The pairs are the REAL filed figures of
    * plans the page actually serves a trust menu to, plus the two boundaries
