@@ -44187,3 +44187,92 @@ Equity Equity`, because `Equity Equity` is below the three-word floor. The
 fixed-point loop is in place for when that floor is measured and moved.
 
 Display-side; `PARSER_VERSION` stays 199 and there is nothing to pre-register.
+
+## 2026-10-04 (02:0xZ) — the draw's finding DISSOLVED, and the instrument is why: a column the resolver reads was not printed
+
+**NOTHING SHIPPED AND NOTHING IS QUEUED FROM THIS DRAW. The finding was not a
+defect, and the way it looked like one is the reusable part.**
+
+The 02:0xZ participant-weighted draw (State Farm 101,896 ppl, Amedisys 24,456,
+Flex 16,483) showed Amedisys Holding publishing a menu whose fund houses the
+filer had stripped — `Income Fund`, `Global Allocation Fund`, `Large Cap Growth
+Fund`, `Target Retirement 2035 Fund` — with the page **ASSERTING** a specific
+house's symbol anyway: `Income Fund` → **=DODIX** at 0.41, `Target Retirement
+2035 Fund` → **=VTTHX**. DODIX is Dodge & Cox's Income Fund, and `Income Fund`
+is a product name a dozen houses register. That read as an identification made
+from a name that cannot support one — a new class, distinct from the queue's
+one-ticker-two-fees item (a FEE question) and from the store-vs-page item (two
+of our own fields disagreeing).
+
+**IT IS NONE OF THOSE, BECAUSE THE FILING NAMES THE HOUSE — IN THE ISSUER
+COLUMN.** Printing the whole row as filed:
+
+| name | issuer | published |
+|---|---|---|
+| `Income Fund` | **Dodge & Cox** | =DODIX 0.41 |
+| `Target Retirement 2035 Fund` | **Vanguard** | =VTTHX 0.08 |
+| `S&P 500 Index` | **State Street** | ~SSSYX 0.02 (correctly asterisked) |
+| `Global Allocation Fund` | **BlackRock** | — — |
+
+`lookupTicker` prepends the issuer before asking the resolver, and the page
+composes `issuer · name`, so every one of those assertions is supported by the
+filing. **My draw script printed the name column and not the issuer** — so a
+well-founded claim read as a guess.
+
+***PRINT EVERY FIELD OF THE ARGUMENT THE RESOLVER READS, not only every field of
+its answer.*** This is the input half of the rule earned on 2026-10-03, when a
+draw that dropped `star` nearly published "Intel's row shows a wrong symbol"
+about a labelled approximation. That rule was about the ANSWER; this one is
+about the INPUT, and it is the more expensive direction, because an omitted
+input makes a correct page look wrong rather than a hedged page look confident.
+The draw script now prints `{issuer} name`.
+
+**AND THE SCREEN I BUILT BEFORE CHECKING REFUTED ITSELF IN ONE LINE, because the
+positive fixture ran first.** The screen was "no house in the name, no house in
+the issuer, a symbol asserted", and its pin required Amedisys's `Income Fund` to
+appear. The harness printed **"THE SCREEN DOES NOT SEE ITS MOTIVATING ROW — any
+number below is refused"** above a count of **45,976 rows / 19,243 plans /
+40,423,042 ppl / $303.4B**. Without the pin that number would have been read as
+a finding; with it, it was refused before it was read. *Pinning the motivating
+case as a fixture before measuring the class* has now paid for itself twice in
+two days, and this time it caught an implausibly LARGE number rather than a
+zero.
+
+**WHY THE NUMBER WAS MEANINGLESS, recorded so it is not re-derived:
+`LEADING_HOUSE` CARRIES 35 HOUSES AND IS AN ANCHORED LEAD TEST BUILT FOR A
+DIFFERENT JOB** (the 21:5xZ trustee arm's remainder gate). Asked "does this name
+identify its house", it reads **209,225 of 405,738 distinct strings** as
+house-free, and its top members are:
+- **house ABBREVIATIONS** — `VANG EXPLORER ADM` (1,574,256 ppl), `AF EUROPAC
+  GROWTH R6` (2,123,101), `VANG TARGET RET 2030` — where the house IS named and
+  the record already carries Mayo's `VANG WELLINGTON ADM` as a correct-as-filed
+  guard for exactly this;
+- **EMPLOYER STOCK** resolved by the sponsor map, not a fund at all — `Costco
+  Wholesale Corporation` =COST ($18.3B), `Walmart Inc. Equity Securities` =WMT,
+  `Lowe's Companies, Inc.` =LOW, `CVS Health Common Stock Stock` =CVS;
+- **houses simply absent from the 35** — Baird (`Baird Core Plus Bond Fund` →
+  BCOIX, correct), iShares, Carillon Eagle.
+
+***A count keyed on a vocabulary measures the vocabulary*** — met here on a list
+whose length I printed in the same run and used anyway. A usable version of this
+question needs a house witness that covers abbreviations and excludes the
+employer-stock path, which is a different instrument and not a wider list.
+
+**WHAT DOES SURVIVE FROM THE DRAW, both already-queued coverage items with new
+named instances:**
+- Amedisys's `Large Cap Growth Fund` / iss **JPMorgan** publishes **0.44 with no
+  ticker** and `Global Allocation Fund` / iss **BlackRock** publishes neither —
+  so the issuer-prefixed resolve works for Vanguard and Dodge & Cox and not for
+  these two. The 0.44 on a JPMorgan row is the owner-gated **fee pre-emption**
+  item (a generic estimate where the issuer supplies a house-specific one),
+  with a named live instance at 24,456 participants.
+- Flex (16,483 ppl, $1.32B) has **no vesting label** and publishes as its whole
+  vesting answer a rule for *"Participants who separated from service prior to
+  January 1, 2001"* — a live instance of the open parser item (better
+  vesting-sentence selection for the plans the 09:0xZ guard left showing "not
+  stated"), where the selected sentence is a real vesting rule that applies to
+  almost nobody. Also `Spartan 500 Index Pool` at 14.1% / $184,434,851 with no
+  ticker, the queued retired-brand item.
+- State Farm (101,896 ppl, $19.0B) read clean: 58.7% in `Vanguard Employee
+  Benefit Index Fund` with no ticker and no fee under `noPublicPrice`, every
+  target-date trust correctly asterisked, immediate vesting matching its quote.

@@ -1800,8 +1800,12 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   numbers ("fully vested at all times"). Four more screens fell after it, none
   twice for the same reason, and the two rules that survive them are in the
   method list below. `docs/accuracy-log.md` 2026-10-03 (09:0xZ).
-- **STILL OPEN from it, and it is a PARSER question rather than a display one:**
-  withholding is honest but the filing usually DOES state a schedule somewhere —
+- **STILL OPEN from it, and it is a PARSER question rather than a display one**
+  (named instance from the 02:0xZ draw: **Flex, 16,483 ppl, $1.32B**, has no
+  vesting label and publishes as its whole vesting answer a rule for
+  *"Participants who separated from service prior to January 1, 2001"* — a real
+  vesting rule that applies to almost nobody): withholding is honest but the
+  filing usually DOES state a schedule somewhere —
   the extractor simply selected the wrong sentence. Those 41 plans now show "not
   stated in the audited notes" where a better selection would show the rule. The
   fix is in `extractPlanFeatures`' vesting arms and needs a `PARSER_VERSION`
@@ -1901,6 +1905,25 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 These outlived the versions that produced them. The accuracy log has the case.
 
+- **AND PRINT EVERY FIELD OF THE ARGUMENT THE RESOLVER READS — the INPUT half,
+  and the more expensive direction (2026-10-04).** The 02:0xZ draw read
+  Amedisys's `Income Fund` → **=DODIX** as a bare product name resolved to one
+  house's fund on no evidence, and a 45,976-row / 40.4M-ppl class was sized
+  around that reading. **The filing names the house in the ISSUER column**
+  (`Income Fund` / `Dodge & Cox`, `Target Retirement 2035 Fund` / `Vanguard`,
+  `S&P 500 Index` / `State Street` → correctly asterisked `~SSSYX`), and
+  `lookupTicker` prepends the issuer before asking the resolver — so every
+  assertion was supported and my draw script simply did not print that column.
+  *An omitted ANSWER field makes a hedged page look confident; an omitted INPUT
+  field makes a correct page look wrong.* The screen refuted itself in one line
+  because its **positive fixture ran first** — "THE SCREEN DOES NOT SEE ITS
+  MOTIVATING ROW" printed above the 45,976, so an implausibly LARGE number was
+  refused before it was read. **And `LEADING_HOUSE` is 35 anchored LEAD patterns
+  built for the trustee arm's remainder gate:** asked "does this name identify
+  its house" it calls 209,225 of 405,738 distinct strings house-free, its top
+  members being house ABBREVIATIONS (`VANG EXPLORER ADM`, `AF EUROPAC GROWTH
+  R6`) and EMPLOYER STOCK (`Costco Wholesale Corporation` =COST, $18.3B).
+  `docs/accuracy-log.md` 2026-10-04 (02:0xZ).
 - **AND PRINT EVERY FIELD OF ITS ANSWER THAT THE PAGE ACTS ON (2026-10-03).**
   Calling the right function is not enough. `renderRow` returns `star`
   (= `info.comparable`) beside `tk`, and app.js prints an asterisk and a
