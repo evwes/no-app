@@ -44633,3 +44633,42 @@ succeeding where they previously failed rather than a loosened parser.
 `HIGH` **4** — the baseline, as registered. `warn` 556 → **558**. `dl` **48**,
 unchanged. `pv` **200** at `pvTopShare` **99.9**, so the store is complete by
 the standing test (one dominant pv over 97% plus a small tail).
+
+## 2026-10-04 (04:0xZ) — the draw corroborated an OWNER-GATED item at a new sponsor, exactly, and read clean otherwise
+
+**Nothing shipped; the gated item was not started.** Recorded because an
+unprompted hit is evidence about a class's FREQUENCY that a targeted
+measurement cannot give.
+
+**American Public Education (7,134 ppl, $303.2M)** publishes two K6 rows whose
+share-class-correct symbol is sitting in our own store:
+
+| filed name | STORED | PUBLISHED | value |
+|---|---|---|---|
+| `Fidelity Growth Company K6 Fund` | **FGKFX** | **=FDGRX** (retail) | $29,932,452 |
+| `Fidelity Contrafund K6 Fund` | **FLCNX** | **=FCNTX** (retail) | $19,396,485 |
+
+That is the owner-gated *"our own store contradicts our own page"* item — 5,692
+rows / 8,197,880 ppl — and the second row is the **same fund family as the
+item's own named example** (Cleveland Clinic's `FID CONTRAFUND K6 A`, stored
+FLCNX, published FCNTX). Both asserted with no asterisk, both one-directional,
+and the fee follows the published class rather than the filed one. *An item
+whose named example recurs at an unrelated sponsor on a two-plan draw is not a
+tail case.*
+
+**Separately from the same plan, a coverage instance rather than a false claim:
+twelve `Fidelity Freedom K <vintage>` rows publish a 0.5 fee with NO ticker and
+nothing stored** ($37.3M on the 2045 alone, 12.5% of the menu). The K class
+registers its own symbols, so the blank is a matcher gap; the 0.5 is a category
+estimate on a class whose real ER varies by vintage, which is the queued
+one-ticker-two-fees direction seen from the no-ticker side.
+
+**Southern California Permanente Medical Group (23,286 ppl, $6.54B) read
+clean** — and the clean reading is worth a line because it exercises four
+guards at once: three Vanguard CIT rows publish no ticker and no fee under
+`noPublicPrice`, five target-date TRUST rows are correctly asterisked (`~VFORX`,
+`~VTIVX`, `~VTTHX`, `~VFIFX` at 0.08), `STABLE INCOME FUND` is withheld by
+`gicRow`, the brokerage window by `brokRow`, and the two Admiral mutual funds
+resolve exactly (=VWENX 0.17, =VPMAX 0.31). The one gap is `VANGUARD US GROWTH
+ADMIRAL` =VWUAX with no fee — the 91,423-row ticker/fee asymmetry, correct as
+far as it goes.
