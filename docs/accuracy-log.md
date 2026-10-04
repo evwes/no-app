@@ -7,6 +7,107 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-04 (13:4xZ) — a DANGLING PREPOSITION published as a fund's issuer: 448 rows / 42 plans / 167,416 participants / $1,154,493,048
+
+**What was wrong.** The report and the crawlable pages both compose a holding as
+`issuer · name`, so the 4i identity column is published as an ATTRIBUTION.
+Ashland published `Shares of · VANG WINDSOR II ADM` on **$98,806,045, 6.6% of
+its menu**, while that row's own ticker (VWNAX) and fee (0.3) were both correct;
+United Health Services on seven rows; Squire Patton Boggs on `Shares of ·
+T. Rowe Price Retirement 2030 Trust Cl. F` at $30,118,195; Henry Schein on
+$89,744,575. **283 of the 448 publish a ticker and 333 publish a fee**, which is
+the proof that the NAME is a real fund and only the attribution was noise. **0
+were already qualified**, so every one of the 448 reached a reader.
+
+**The change.** `isNonIssuerCell` in `lib-disclose.mjs`, sliced verbatim into
+app.js, applied at BOTH surfaces' print site: an identity cell that is nothing
+but a run of holding FURNITURE joined by prepositions and ending on one
+(`Shares of`, `Investments in shares of`) names no issuer, so the span is not
+composed. Seven distinct strings of the store's **15,683**.
+
+**TICKER AND FEE CANNOT MOVE, BY CONSTRUCTION RATHER THAN BY MEASUREMENT.**
+`lookupTicker` reads `f.iss` at its own call site (app.js:2471) and prepends it
+before asking the resolver; this predicate is applied only where the issuer SPAN
+is composed, 1,500 lines later. The whole app.js diff is two string constants, a
+pure function, a tether, and ONE added conjunct inside the row's template
+literal — nothing in the name, ticker, fee, asterisk, type or nameless path.
+
+**THE QUEUE ASKED A DIFFERENT QUESTION, AND READING THE ROWS ITS "NO" LEFT
+BEHIND IS WHAT FOUND THIS.** Both of today's earlier ships widened the NAME half
+of the call-site gate and recorded, as unmeasured, whether a label-only ISSUER
+should also stop a row reading as NAMED. Measured as a superset by construction:
+**396 candidate rows / 36 plans / 47,885 ppl, and the verdict moves on 0** —
+because wherever the issuer is empty of meaning, the NAME is a real fund, so the
+name test correctly refuses. The gate stays on the narrower `isGenericName`, now
+by measurement rather than deferral. *A measured NO is not a dead end: the
+population it leaves behind is a different question about the same rows.*
+
+**AND MY FIRST SCREEN FOR IT READ 1,199 ROWS — INFLATED BY THE EXACT TRAP THE
+SHIPPED CODE DOCUMENTS.** I wrote the trailing-joiner test `/i`, so a trailing
+capital `A` counted as the article. `DANGLING_TAIL`, forty lines above where I
+was working, is deliberately CASE-SENSITIVE and lowercase-only, and its own
+comment says why: *a capital `A` may be a real designation and case is the only
+signal.* My screen swept in `Leidos Stable Value, A` (**$650,763,893**),
+`SSGA S+P 500 INDEX SER A` (=SSSYX, **$606,941,903**), `Corebridge Separate
+Account A` and `Wilmington Trust, N.A` — a share class, a series letter, a
+separate-account designation and a trustee. ***The shipped code already knew the
+discriminator and I did not read it.***
+
+**BUT CASE IS THE WRONG GUARD FOR THIS PREDICATE, AND A FIXTURE IS WHAT SHOWED
+THAT TOO.** `SHARES OF` (26 rows) fails a lowercase test while being incapable
+of naming anything. The case rule protects a trailing capital **after a real
+name**; where the whole string is furniture there is no name for a designation
+to attach to. So this predicate is case-insensitive and ANCHORED AT BOTH ENDS
+instead — a different discriminator for a neighbouring class, which is the
+`predicate right for one class is not right for its neighbour` rule arriving as
+a design choice rather than as a defect.
+
+**THE SPLIT BY REMEDY IS THE MEASUREMENT'S REAL OUTPUT, because two of the three
+buckets must NOT be touched:**
+
+| | rows | ppl | |
+|---|---|---|---|
+| **MEANINGLESS** — furniture plus a preposition | **448** | **167,416** | shipped: the fragment belongs to the NAME |
+| TRUNCATED — a real entity cut off mid-name | 388 | 103,689 | `Voya Retirement Insurance and`, `Capital Bank and`, `The Vanguard Group of` (=VIIIX on $232,941,827). **Suppressing these would LOSE an identifiable insurer** |
+| my own `/i` artifact | 393 | 383,125 | a trailing capital is a DESIGNATION |
+
+**GATES.** 9 must-reach and 18 must-keep pins in `no-identity-test.mjs`, 25 in
+the smoke-test tether, import-time assertions both directions. The must-keep
+lists are weighted toward the `N.A.` family on purpose — `Alerus Financial,
+N.A.` alone is 274 rows, `Wilmington Trust, N.A.` 224, `John Hancock U.S.A.`
+210 — because those 264 strings are the live population this must never reach.
+Exercised against **every distinct issuer string in the store**: 7 reached, and
+all 264 joiner-ending strings kept.
+
+**A HAND-BUILT CONTROL TABLE TESTS THE CASES ITS AUTHOR ALREADY IMAGINED, and
+mine FAILED on exactly that.** My per-condition control for the START anchor
+listed six strings I expected it to protect (`Alerus Financial, N.A.`, `Voya
+Retirement Insurance and`, …) and reported **0 of 6** — so the test exited 1
+saying the control was decorative. It was not: none of those six ENDS in
+furniture plus a preposition, so the END structure already excludes them.
+Measured over all 15,683 distinct strings, the anchor blocks **exactly three**,
+and each names a real trustee: `Fidelity Management Trust Company Interest in`,
+`The Vanguard Group, Inc. 68,551,673 units of`, `Vanguard Fiduciary Trust Units
+of`. The control now uses those. ***A guard's value is in the live population,
+not in the examples that come to mind*** — and a control that fails for the
+wrong reason still earns its keep, because it sent me to measure.
+
+**AND I LAUNCHED A TWO-RENDERER DIFF THAT COULD NOT OBSERVE THE CHANGE AT ALL.**
+`apppath`'s slice ends at `const shownName = …` and the issuer span is composed
+after it, so `renderRow` cannot see this edit by construction; the diff was pure
+cost and was stopped. The honest verification is the predicate's population, the
+one-line app.js diff, and **the page**: 4 crawlable pages changed, and on the one
+page that also carries real issuers the attribution count goes **14 → 13** with
+`Spartan®`, `American Funds` and `Fidelity Investments` all surviving. *A
+suppression that had taken those too would look identical in a row count.*
+
+**RESIDUE, named and belonging to other recorded classes:** Henry Schein's row
+now reads a bare `Dodge & Cox` — more honest than attributing it to a
+preposition, and still a member of the bare-HOUSE-name class; and Squire Patton
+Boggs' `Dodge And Cox Stock Fund` is the owner-gated `and`/`&` item.
+
+`docs/accuracy-log.md` 2026-10-04 (13:4xZ).
+
 ## 2026-10-04 (12:3xZ) — A SENTENCE IS NOT A NAME: 7 reader-facing rows / 157,807 ppl / $9,489,072,912, and one fabricated fee withdrawn
 
 **What was wrong.** American Airlines' retirement plan (132,820 participants,

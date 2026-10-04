@@ -10,7 +10,7 @@
  * EIN-PN (stable forever, no orphans when a sponsor renames). */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { matchQuoteOk, vestingQuoteOk, quoteTrim } from "./lib-quote.mjs";
-import { coverageBand, filedUnit, cleanFiledName, isParticipantLoanRow, isNamelessFundRow, hasNoFundIdentity, isLoanDescriptionRow, isLoanAnswerRow, isLoanMaturityRow, isLoanVocabularyRow, isDirectionCaptionRow, isOfficeListRow, isPageBreakCaptionRow, isLabelOnlyName, isSentenceRow, trustScheduleDMenu } from "./lib-disclose.mjs";
+import { coverageBand, filedUnit, cleanFiledName, isParticipantLoanRow, isNamelessFundRow, hasNoFundIdentity, isLoanDescriptionRow, isLoanAnswerRow, isLoanMaturityRow, isLoanVocabularyRow, isDirectionCaptionRow, isOfficeListRow, isPageBreakCaptionRow, isLabelOnlyName, isSentenceRow, isNonIssuerCell, trustScheduleDMenu } from "./lib-disclose.mjs";
 import { isGenericTypeName } from "./lib-4i.mjs";
 
 const BASE = "https://evwes.github.io/no-app"; // becomes the custom domain when DNS lands
@@ -276,7 +276,12 @@ for (const r of d.plans.slice(0, TOP_N)) {
      * not something the filing calls this holding. */
     const descLoan = isLoanDescriptionRow(nm);
     const label = descLoan ? "Participant loans — not a menu choice"
-      : (iss ? titleCase(iss) + " · " : "") + titleCase(nm)
+      /* A DANGLING PREPOSITION IS NOT AN ISSUER — 2026-10-04. This surface
+       * composes the same `issuer · name` attribution the report does, so it
+       * suppresses the same seven furniture strings. lib-disclose.mjs carries
+       * the measurement: 422 rows / 167,240 participants, 259 of them
+       * publishing a ticker, which is the proof the NAME is a real fund. */
+      : (iss && !isNonIssuerCell(iss) ? titleCase(iss) + " · " : "") + titleCase(nm)
       + (isParticipantLoanRow(nm) || isLoanAnswerRow(nm) || isLoanMaturityRow(nm) || isLoanVocabularyRow(nm) ? " — participant loans, not a menu choice" : "")
       + (nameless ? " — the filing names no specific fund" : "");
     return `<tr><td>${esc(label)}</td><td class="num">${usd(f.value || 0)}</td></tr>`;

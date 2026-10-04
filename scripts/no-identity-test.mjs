@@ -16,7 +16,7 @@
  *   4. a negative control per condition
  */
 import { readFileSync } from "node:fs";
-import { hasNoFundIdentity, cleanFiledName, isLabelOnlyName, isSentenceRow, isNamelessFundRow } from "./lib-disclose.mjs";
+import { hasNoFundIdentity, cleanFiledName, isLabelOnlyName, isSentenceRow, isNonIssuerCell, isNamelessFundRow } from "./lib-disclose.mjs";
 import { isGenericTypeName } from "./lib-4i.mjs";
 
 const fails = [];
@@ -307,9 +307,103 @@ for (const [r, who] of SENT_STOCK) {
   ok(isNamelessFundRow(r, r.name, sentGeneric) === false, `EMPLOYER STOCK would be qualified "names no specific fund": ${who}`);
 }
 
+/* ===== 9. A DANGLING PREPOSITION IS NOT AN ISSUER ======================
+ *
+ * The page composes `issuer - name`, so 422 published rows / 167,240
+ * participants attribute a holding to a fragment: Ashland publishes
+ * `Shares of - VANG WINDSOR II ADM` on $98,806,045 while the row's own VWNAX
+ * and fee are correct. 259 of the 422 publish a ticker, which is the proof
+ * that only the attribution is noise.
+ *
+ * THE MUST-KEEP LIST IS WEIGHTED TOWARD THE `N.A.` FAMILY ON PURPOSE. Those
+ * 264 strings are the live population this must never reach, and three of
+ * them were false positives of my own first screen, which used `/i` on a
+ * trailing-joiner test and so read a trailing capital `A` as the article:
+ * a SHARE CLASS, a SERIES letter and a separate-account DESIGNATION. The
+ * anchoring at both ends is what protects them now. */
+const ISS_SUPPRESS = [
+  ["Shares of", "366 rows - the largest member"],
+  ["SHARES OF", "26 rows - an all-caps filing, where case carries NO signal, which is why this predicate is not case-sensitive"],
+  ["Investments in shares of", "26 rows - a THREE-word furniture run, so the repetition group is load-bearing"],
+  ["Shares in", "12 rows"],
+  ["Investments in", "9 rows"],
+  ["Investment in", "8 rows - also the named residue of the label-only ship"],
+  ["Interests in", "8 rows"],
+  ["Units of", "the form generalises past the live strings"],
+  ["Holdings in", "likewise"],
+];
+const ISS_KEEP = [
+  ["Alerus Financial, N.A.", "274 rows - the largest kept string in the store; the END ANCHOR is the only protection"],
+  ["Wilmington Trust, N.A.", "224 rows"],
+  ["John Hancock U.S.A.", "210 rows"],
+  ["JPMorgan Chase Bank, N.A.", "49 rows"],
+  ["BlackRock Institutional Trust Company, N.A.", "77 rows"],
+  ["Voya Retirement Insurance and", "59 rows - TRUNCATED, so suppressing it would LOSE an identifiable insurer"],
+  ["Capital Bank and", "50 rows - likewise truncated"],
+  ["Empower Trust Company, LLC and", "32 rows"],
+  ["The Vanguard Group of", "truncated; that row publishes =VIIIX on $232,941,827"],
+  ["Leidos Stable Value, A", "$650,763,893 - a trailing capital is a SHARE CLASS"],
+  ["SSGA S+P 500 INDEX SER A", "=SSSYX on $606,941,903 - a SERIES letter"],
+  ["Corebridge Separate Account A", "41 rows - a separate-account designation"],
+  ["Shares of registered investment companies", "a TYPE LABEL - a different class with a different remedy"],
+  ["Investments measured at NAV", "the NAV-caption family, handled by the issuer GATE and not by suppression"],
+  ["Shares", "a bare furniture word with NO preposition is not this class"],
+  ["Investments", "likewise - the trailing preposition is the only protection here"],
+  ["Dodge & Cox", "a real house"],
+  ["Vanguard Fiduciary Trust Company", "a real trustee"],
+];
+for (const [n, who] of ISS_SUPPRESS) ok(isNonIssuerCell(n) === true, `isNonIssuerCell MUST reach ${JSON.stringify(n)} (${who}) - the arm is inert`);
+for (const [n, why] of ISS_KEEP) ok(isNonIssuerCell(n) === false, `isNonIssuerCell would suppress ${JSON.stringify(n)} - ${why}`);
+
+/* NEGATIVE CONTROL, one per condition, each against a case where it is the
+ * ONLY protection - found by asking which case the other conditions miss.
+ *   the END anchor        `Alerus Financial, N.A.` ends on a furniture-free
+ *                         token; without the anchor the trailing `N.A.` alone
+ *                         could satisfy a floating match
+ *   the trailing PREP     `Shares` is pure furniture and must be KEPT
+ *   the repetition group  `Investments in shares of` needs the inner run */
+{
+  const FURN = "(?:shares?|units?|interests?|holdings?|investments?|amounts?|balances?|participations?|value)";
+  const anchored = new RegExp("^" + FURN + "(?:\\s+(?:of|in)\\s+" + FURN + ")*\\s+(?:of|in)[\\s.,;:]*$", "i");
+  const noAnchor = new RegExp(FURN + "(?:\\s+(?:of|in)\\s+" + FURN + ")*\\s+(?:of|in)[\\s.,;:]*$", "i");
+  const noPrep = new RegExp("^" + FURN + "(?:\\s+(?:of|in)\\s+" + FURN + ")*[\\s.,;:]*$", "i");
+  const noRepeat = new RegExp("^" + FURN + "\\s+(?:of|in)[\\s.,;:]*$", "i");
+  ok(anchored.test("Shares of") && !anchored.test("Alerus Financial, N.A."),
+    "the control's transcription has drifted from the shipped isNonIssuerCell");
+  ok(noAnchor.test("Investments in shares of") === true, "control setup wrong");
+  ok(noPrep.test("Shares") === true,
+    "CONTROL IS DECORATIVE: dropping the trailing-preposition requirement does not even reach `Shares`");
+  ok(noRepeat.test("Investments in shares of") === false,
+    "CONTROL IS DECORATIVE: dropping the repetition group still reaches the three-word run - it is protected twice");
+  console.log("\nNEGATIVE CONTROL, one per isNonIssuerCell condition:");
+  console.log("  drop the trailing preposition: the bare furniture word `Shares` would be suppressed (control fires)");
+  console.log("  drop the repetition group: `Investments in shares of` stops being reached (control fires)");
+  /* THE START ANCHOR'S CASES HAD TO BE MEASURED, NOT IMAGINED. My first
+   * version of this control listed six strings I expected it to protect
+   * (`Alerus Financial, N.A.`, `Voya Retirement Insurance and`, ...) and it
+   * reported 0 of 6 and FAILED, because none of those ENDS in furniture plus a
+   * preposition, so the end structure alone already excludes them. Measured
+   * over all 15,683 distinct issuer strings in the store, the anchor blocks
+   * exactly THREE, and each names a real trustee whose attribution would be
+   * lost. *A hand-built control table tests the cases its author already
+   * imagined* - the live population is where a guard's value is. */
+  const ANCHOR_CASES = [
+    "Fidelity Management Trust Company Interest in",
+    "The Vanguard Group, Inc. 68,551,673 units of",
+    "Vanguard Fiduciary Trust Units of",
+  ];
+  for (const c of ANCHOR_CASES) ok(anchored.test(c) === false, `the START anchor no longer keeps ${JSON.stringify(c)}`);
+  let wouldBreak = 0;
+  for (const c of ANCHOR_CASES) if (noAnchor.test(c)) wouldBreak++;
+  ok(wouldBreak === ANCHOR_CASES.length,
+    `CONTROL IS DECORATIVE: dropping the START anchor breaks only ${wouldBreak} of ${ANCHOR_CASES.length} measured cases`);
+  console.log(`  drop the START anchor: all ${wouldBreak} measured trustee strings would lose their attribution (control fires)`);
+}
+
 if (fails.length) { for (const f of fails) console.error("FAIL " + f); process.exit(1); }
 console.log(`\nno-identity: ${KEEP.length} real names kept, ${QUALIFY.length} qualified, `
   + `${BOTH_FORMS.length * 2} surface-agreement, idempotence over ${checked.toLocaleString()} names, `
   + `${STILL.length * 2} baseline, both controls fire, `
   + `label-only ${LBL_QUALIFY.length} qualified / ${LBL_KEEP.length} kept / ${STOCK_ROWS.length * 2} employer-stock, `
-  + `sentence ${SENT_QUALIFY.length} qualified / ${SENT_KEEP.length} kept / ${SENT_STOCK.length * 2} employer-stock — 0 failures`);
+  + `sentence ${SENT_QUALIFY.length} qualified / ${SENT_KEEP.length} kept / ${SENT_STOCK.length * 2} employer-stock, `
+  + `non-issuer ${ISS_SUPPRESS.length} suppressed / ${ISS_KEEP.length} kept, 3 controls fire — 0 failures`);

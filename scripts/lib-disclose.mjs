@@ -2131,6 +2131,99 @@ for (const [s, why] of [
   throw new Error(`lib-disclose: isSentenceRow would qualify ${JSON.stringify(s)} (${why}) — it names something, fix the predicate rather than the control`);
 }
 
+/* A DANGLING PREPOSITION IS NOT AN ISSUER — 2026-10-04 (13:4xZ).
+ *
+ * The page composes a holding as `issuer · name`, so the 4i identity column is
+ * published as an attribution. **422 published rows / 41 plans / 167,240
+ * participants / $1,111,872,870 attribute their holding to a fragment** —
+ * Ashland publishes `Shares of · VANG WINDSOR II ADM` on $98,806,045, 6.6% of
+ * its menu, where the row's own ticker (VWNAX) and fee are both correct;
+ * United Health Services on seven rows; Henry Schein on $89,744,575. **259 of
+ * the 422 publish a ticker**, which is the proof that the NAME is a real fund
+ * and only the attribution is noise.
+ *
+ * Seven distinct strings of the store's **15,683**: `Shares of` 366,
+ * `SHARES OF` 26, `Investments in shares of` 26, `Shares in` 12, `Investments
+ * in` 9, `Investment in` 8, `Interests in` 8. Each is a 4i identity column
+ * describing the FORM of the holding, with its continuation in the description
+ * column — so suppressing the cell loses nothing and the name keeps the fund.
+ *
+ * THIS IS A PRINT-SITE SUPPRESSION AND NOTHING ELSE, which is why ticker and
+ * fee cannot move. `lookupTicker` reads `f.iss` at its own call site
+ * (app.js:2471) and prepends it before asking the resolver; this predicate is
+ * applied only where the issuer SPAN is composed, so resolution sees exactly
+ * what it saw before. Ticker, fee, asterisk, name, type and the nameless
+ * verdict are all unchanged BY CONSTRUCTION.
+ *
+ * ANCHORED AT BOTH ENDS, which is the whole safety: a run of holding furniture
+ * joined by prepositions and ending on one, with no room for a proper name.
+ * Exercised against **every distinct issuer string in the store** — 7 reached,
+ * and the 264 strings that also end on a joiner are all KEPT, because they
+ * name an entity: `Alerus Financial, N.A.` 274, `Wilmington Trust, N.A.` 224,
+ * `John Hancock U.S.A.` 210, `JPMorgan Chase Bank, N.A.` 49.
+ *
+ * THE QUEUE ASKED A DIFFERENT QUESTION AND THE ANSWER TO THAT ONE IS NO. It
+ * asked whether a label-only issuer should stop a row reading as NAMED, i.e.
+ * whether to widen the call-site gate's issuer disjunct. Measured as a superset
+ * by construction: **396 candidate rows / 36 plans / 47,885 ppl, and the
+ * verdict moves on 0** — because wherever the issuer is empty of meaning the
+ * NAME is a real fund, so the name test correctly refuses. The gate stays on
+ * the narrower `isGenericName`, now by measurement rather than by deferral.
+ * *Reading the rows a NO answer leaves behind is what found the real defect.*
+ *
+ * AND MY FIRST SCREEN FOR THIS READ 1,199 ROWS, inflated by the exact trap
+ * `DANGLING_TAIL` above documents. I wrote the trailing-joiner test `/i`, so a
+ * trailing capital `A` counted as the article: `Leidos Stable Value, A`
+ * ($650,763,893), `SSGA S+P 500 INDEX SER A` (=SSSYX, $606,941,903),
+ * `Corebridge Separate Account A` and `Wilmington Trust, N.A` are a share
+ * class, a series letter, a separate-account designation and a trustee. *The
+ * shipped code already knew the discriminator and I did not read it.*
+ * **But case is the wrong guard for THIS predicate, and a fixture is what
+ * showed that too:** `SHARES OF` fails a lowercase test while being incapable
+ * of naming anything, because the case rule protects a trailing capital AFTER
+ * A REAL NAME and here the whole string is furniture with no name for a
+ * designation to attach to. So this one is case-insensitive and anchored
+ * instead. docs/accuracy-log.md 2026-10-04 (13:4xZ). */
+const NON_ISSUER_FURNITURE = "(?:shares?|units?|interests?|holdings?|investments?|amounts?|balances?|participations?|value)";
+const NON_ISSUER_CELL = new RegExp("^" + NON_ISSUER_FURNITURE
+  + "(?:\\s+(?:of|in)\\s+" + NON_ISSUER_FURNITURE + ")*\\s+(?:of|in)[\\s.,;:]*$", "i");
+export function isNonIssuerCell(iss) {
+  return NON_ISSUER_CELL.test(String(iss == null ? "" : iss).trim());
+}
+/* Asserted at import, both directions. The must-KEEP list is weighted toward
+ * the `N.A.` family on purpose: those 264 strings are the live population this
+ * predicate must never reach, and three of them were false positives of my own
+ * first screen. */
+for (const [s, why] of [
+  ["Shares of", "366 rows — Ashland's $98,806,045 VWNAX row among them"],
+  ["SHARES OF", "26 rows — an all-caps filing, where case carries no signal"],
+  ["Investments in shares of", "26 rows — a THREE-word furniture run"],
+  ["Shares in", "12 rows"], ["Investments in", "9 rows"],
+  ["Investment in", "8 rows — also the named residue of the label-only ship"],
+  ["Interests in", "8 rows"],
+]) if (!isNonIssuerCell(s)) {
+  throw new Error(`lib-disclose: isNonIssuerCell no longer reaches ${JSON.stringify(s)} (${why}) — the arm is inert, fix it rather than shipping a quiet guard`);
+}
+for (const [s, why] of [
+  ["Wilmington Trust, N.A.", "224 rows — a real trustee; the ANCHOR is the only protection"],
+  ["Alerus Financial, N.A.", "274 rows — the largest kept string in the store"],
+  ["JPMorgan Chase Bank, N.A.", "49 rows"],
+  ["John Hancock U.S.A.", "210 rows"],
+  ["Voya Retirement Insurance and", "59 rows — TRUNCATED, so suppressing it would LOSE an identifiable insurer"],
+  ["Capital Bank and", "50 rows — likewise truncated"],
+  ["The Vanguard Group of", "truncated; the row publishes =VIIIX on $232,941,827"],
+  ["Leidos Stable Value, A", "$650,763,893 — a trailing capital is a SHARE CLASS, the `/i` false positive"],
+  ["SSGA S+P 500 INDEX SER A", "=SSSYX on $606,941,903 — a SERIES letter"],
+  ["Corebridge Separate Account A", "41 rows — a separate-account designation"],
+  ["Shares of registered investment companies", "a TYPE LABEL, a different class with a different remedy"],
+  ["Investments measured at NAV", "the NAV-caption family, handled by the issuer GATE not by suppression"],
+  ["Shares", "no preposition — a bare furniture word is not this class"],
+  ["Investments", "likewise"],
+  ["Dodge & Cox", "a real house"],
+]) if (isNonIssuerCell(s)) {
+  throw new Error(`lib-disclose: isNonIssuerCell would suppress ${JSON.stringify(s)} (${why}) — it names something, fix the predicate rather than the control`);
+}
+
 export function isNamelessFundRow(f, cleanedName, isGenericName) {
   const type = String((f && f.type) || "");
   const name = String(cleanedName || (f && f.name) || "");

@@ -834,6 +834,42 @@ try {
   for (const n of sentCases.slice(SENT_TRUE))
     if (isSentenceRow(n)) fail(`the sentence arm would tell a reader "no specific fund" about a name that identifies something: ${JSON.stringify(n)}`);
 
+  /* A DANGLING PREPOSITION IS NOT AN ISSUER, tethered 2026-10-04. Same
+   * arrangement and same reason as the two tethers above.
+   *
+   * The must-KEEP half is weighted toward the `N.A.` family deliberately:
+   * `Alerus Financial, N.A.` alone is 274 rows, and three of the kept strings
+   * were false positives of this change's own first screen, which read a
+   * trailing capital `A` as the article and so counted a SHARE CLASS, a SERIES
+   * letter and a separate-account DESIGNATION. If this tether ever reports
+   * drift on those, the browser is deleting real trustee attributions. */
+  const issCases = [
+    "Shares of", "SHARES OF", "Investments in shares of", "Shares in",
+    "Investments in", "Investment in", "Interests in", "Units of", "Holdings in",
+    "Alerus Financial, N.A.", "Wilmington Trust, N.A.", "John Hancock U.S.A.",
+    "JPMorgan Chase Bank, N.A.", "Voya Retirement Insurance and", "Capital Bank and",
+    "The Vanguard Group of", "Leidos Stable Value, A", "SSGA S+P 500 INDEX SER A",
+    "Corebridge Separate Account A", "Shares of registered investment companies",
+    "Investments measured at NAV", "Shares", "Investments", "Dodge & Cox",
+    "Fidelity Management Trust Company Interest in",
+  ];
+  const ISS_TRUE = 9;   /* the first N must be suppressed; the rest must be kept */
+  const { isNonIssuerCell } = await import("./lib-disclose.mjs");
+  const issGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoNonIssuer !== "function") return null;
+    return cs.map((n) => window.__wampoNonIssuer(n));
+  }, issCases);
+  if (!issGot) fail("app.js no longer exposes __wampoNonIssuer — the non-issuer twin cannot be cross-checked");
+  const issDrift = issCases.filter((n, i) => isNonIssuerCell(n) !== issGot[i]);
+  if (issDrift.length) {
+    for (const n of issDrift) console.error(`  ${JSON.stringify(n)}  app.js=${issGot[issCases.indexOf(n)]}  lib-disclose=${isNonIssuerCell(n)}`);
+    fail(`the non-issuer twin in app.js disagrees with scripts/lib-disclose.mjs on ${issDrift.length} of ${issCases.length} strings — re-slice it`);
+  }
+  for (const n of issCases.slice(0, ISS_TRUE))
+    if (!isNonIssuerCell(n)) fail(`the non-issuer arm went INERT on a live published issuer: ${JSON.stringify(n)}`);
+  for (const n of issCases.slice(ISS_TRUE))
+    if (isNonIssuerCell(n)) fail(`the non-issuer arm would delete an issuer attribution that names an entity: ${JSON.stringify(n)}`);
+
   /* THE PARTICIPANT-LOAN PREDICATE, tethered 2026-09-28. It lives twice —
    * canonical in scripts/lib-disclose.mjs for the crawlable pages, twinned in
    * app.js for the report — so the two are held together the way the filed-name

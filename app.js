@@ -1788,6 +1788,65 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
     const s = String(name == null ? "" : name);
     return SENTENCE_PREDICATE.test(s) || CONTENTS_CAPTION.test(s);
   }
+  /* A DANGLING PREPOSITION IS NOT AN ISSUER — 2026-10-04 (13:4xZ).
+   *
+   * The page composes a holding as `issuer · name`, so the 4i identity column is
+   * published as an attribution. **422 published rows / 41 plans / 167,240
+   * participants / $1,111,872,870 attribute their holding to a fragment** —
+   * Ashland publishes `Shares of · VANG WINDSOR II ADM` on $98,806,045, 6.6% of
+   * its menu, where the row's own ticker (VWNAX) and fee are both correct;
+   * United Health Services on seven rows; Henry Schein on $89,744,575. **259 of
+   * the 422 publish a ticker**, which is the proof that the NAME is a real fund
+   * and only the attribution is noise.
+   *
+   * Seven distinct strings of the store's **15,683**: `Shares of` 366,
+   * `SHARES OF` 26, `Investments in shares of` 26, `Shares in` 12, `Investments
+   * in` 9, `Investment in` 8, `Interests in` 8. Each is a 4i identity column
+   * describing the FORM of the holding, with its continuation in the description
+   * column — so suppressing the cell loses nothing and the name keeps the fund.
+   *
+   * THIS IS A PRINT-SITE SUPPRESSION AND NOTHING ELSE, which is why ticker and
+   * fee cannot move. `lookupTicker` reads `f.iss` at its own call site
+   * (app.js:2471) and prepends it before asking the resolver; this predicate is
+   * applied only where the issuer SPAN is composed, so resolution sees exactly
+   * what it saw before. Ticker, fee, asterisk, name, type and the nameless
+   * verdict are all unchanged BY CONSTRUCTION.
+   *
+   * ANCHORED AT BOTH ENDS, which is the whole safety: a run of holding furniture
+   * joined by prepositions and ending on one, with no room for a proper name.
+   * Exercised against **every distinct issuer string in the store** — 7 reached,
+   * and the 264 strings that also end on a joiner are all KEPT, because they
+   * name an entity: `Alerus Financial, N.A.` 274, `Wilmington Trust, N.A.` 224,
+   * `John Hancock U.S.A.` 210, `JPMorgan Chase Bank, N.A.` 49.
+   *
+   * THE QUEUE ASKED A DIFFERENT QUESTION AND THE ANSWER TO THAT ONE IS NO. It
+   * asked whether a label-only issuer should stop a row reading as NAMED, i.e.
+   * whether to widen the call-site gate's issuer disjunct. Measured as a superset
+   * by construction: **396 candidate rows / 36 plans / 47,885 ppl, and the
+   * verdict moves on 0** — because wherever the issuer is empty of meaning the
+   * NAME is a real fund, so the name test correctly refuses. The gate stays on
+   * the narrower `isGenericName`, now by measurement rather than by deferral.
+   * *Reading the rows a NO answer leaves behind is what found the real defect.*
+   *
+   * AND MY FIRST SCREEN FOR THIS READ 1,199 ROWS, inflated by the exact trap
+   * `DANGLING_TAIL` above documents. I wrote the trailing-joiner test `/i`, so a
+   * trailing capital `A` counted as the article: `Leidos Stable Value, A`
+   * ($650,763,893), `SSGA S+P 500 INDEX SER A` (=SSSYX, $606,941,903),
+   * `Corebridge Separate Account A` and `Wilmington Trust, N.A` are a share
+   * class, a series letter, a separate-account designation and a trustee. *The
+   * shipped code already knew the discriminator and I did not read it.*
+   * **But case is the wrong guard for THIS predicate, and a fixture is what
+   * showed that too:** `SHARES OF` fails a lowercase test while being incapable
+   * of naming anything, because the case rule protects a trailing capital AFTER
+   * A REAL NAME and here the whole string is furniture with no name for a
+   * designation to attach to. So this one is case-insensitive and anchored
+   * instead. docs/accuracy-log.md 2026-10-04 (13:4xZ). */
+  const NON_ISSUER_FURNITURE = "(?:shares?|units?|interests?|holdings?|investments?|amounts?|balances?|participations?|value)";
+  const NON_ISSUER_CELL = new RegExp("^" + NON_ISSUER_FURNITURE
+    + "(?:\\s+(?:of|in)\\s+" + NON_ISSUER_FURNITURE + ")*\\s+(?:of|in)[\\s.,;:]*$", "i");
+  function isNonIssuerCell(iss) {
+    return NON_ISSUER_CELL.test(String(iss == null ? "" : iss).trim());
+  }
   const isGenericName = (n) => isGenericTypeName(n) || hasNoFundIdentity(n);
   /* the NAME half of the call-site gate, widened by the predicate above.
    * Injected into `isNamelessFundRow` rather than added beside it so that
@@ -1797,6 +1856,7 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
   const nameIsGeneric = (n) => isGenericName(n) || isLabelOnlyName(n) || isSentenceRow(n);
   window.__wampoLabelOnly = isLabelOnlyName;  // read by the smoke test only
   window.__wampoSentenceRow = isSentenceRow;  // read by the smoke test only
+  window.__wampoNonIssuer = isNonIssuerCell;  // read by the smoke test only
   window.__wampoGenericName = isGenericName;  // read by the smoke test only
   function isNamelessFundRow(f, cleanedName, isGenericName) {
     const type = String((f && f.type) || "");
@@ -3964,7 +4024,7 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
       const shownName = descLoanRow ? "Participant loans" : f.name;
       return `
       <tr${brokRow || subtotalRow || loanRow ? ` class="row-brokerage"` : ""}>
-        <td class="fund-name-col"><div class="fund-name">${f.iss && !descLoanRow ? `<span class="fund-issuer">${esc(f.iss.replace(/\*+/g, "").trim())} · </span>` : ""}${esc(shownName)}</div>${tk ? `<div class="fund-ticker">${esc(tk)}${star ? "*" : ""}</div>` : ""}</td>
+        <td class="fund-name-col"><div class="fund-name">${f.iss && !descLoanRow && !isNonIssuerCell(f.iss.replace(/\*+/g, "")) ? `<span class="fund-issuer">${esc(f.iss.replace(/\*+/g, "").trim())} · </span>` : ""}${esc(shownName)}</div>${tk ? `<div class="fund-ticker">${esc(tk)}${star ? "*" : ""}</div>` : ""}</td>
         <td class="fund-type">${esc(shownType)}</td>
         <td class="num">${er != null ? er.toFixed(er < 0.1 ? 3 : 2) + "%" + (star ? "*" : "") : "—"}</td>
         <td class="num">${money(f.value / 1e6)}</td>
