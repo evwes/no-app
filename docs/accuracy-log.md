@@ -7,6 +7,93 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-04 (15:3xZ) — the `fb-vanished` queue item: the DIAGNOSIS was right, the PRESCRIPTION was impossible, and the real gap was that the gate could not be tested
+
+**Worked the queue's `fb-vanished` item — "keyed on the ACK and must be keyed on
+EIN|PN, 104 plans / 30,897 ppl lose a menu on supersession" — and all three
+parts of it needed correcting.**
+
+### The diagnosis is right, and sharper than recorded
+
+`fetch-4i.mjs:925` reads `buckets[shardOf(plan.ack)][plan.ack]`, the plan's
+CURRENT ack, so a plan whose ack just changed has no stored entry there and the
+check cannot fire. Replayed across the 2026-09-30 DOL refresh, of the **22
+plans that actually stopped being served, 22 had their ack change and 0 did
+not** — so `fb-vanished` is blind not to some of the class but to **all of
+it**, at the only kind of event that produces it.
+
+### The prescription is not implementable where it is aimed
+
+Re-keying that check to EIN|PN needs an OLD-ack → plan join, and `fetch-4i` has
+none: a stored lineup entry carries `ack / planYear / confident / coverageRatio
+/ funds / features` and **no plan key**, while the superseded ack is already
+gone from the current `plans-all`. The join exists only where TWO stores are in
+hand.
+
+### Which is exactly where the plan-keyed check already lives
+
+`mirror-gate.mjs` builds `byAck` from **main's** `plans-all`, so it can name the
+plan an old ack belonged to, then asks `servedBranch(key)` whether that plan is
+still served by its own new ack **or by its trust**. Replaying the refresh
+reproduces its recorded figures to the digit: **7,830 ack losses → 7,585
+superseded / 171 wind-downs / 82 short-form / 1 gone / 22 real, 16,996
+participants.** So the safety net is already plan-keyed and already catches all
+22; what `fb-vanished` leaves is a DIAGNOSTIC gap (which plans, not why), not an
+unguarded loss. **SEVENTH queue entry found already covered by a different
+instrument** — and the first where the entry's own prescription was impossible
+rather than merely redundant.
+
+### THE REAL GAP, AND WHAT SHIPPED
+
+`mirror-gate`'s own comment says *"Overridable ONLY so the plan-keyed
+classification can be controlled against a real pair of stores — a gate whose
+behaviour cannot be reproduced on demand is a gate nobody can trust."* **That
+was true of one side.** `MIRROR_GATE_MAIN_REF` moved the MAIN side through
+`git show`; the BRANCH side was `readFileSync("plans-all.json")`. So the gate
+replayed any main ref against the LOCAL TREE and never an arbitrary pair — and
+**this file has been repeating that it "replays any pair on demand", which it
+did not.**
+
+That matters because **the plan-keyed path does nothing on a quiet pair**: every
+cycle it prints `+0 gained, -0 lost` and four zeroes, and *a check that prints 0
+on a quiet store has not been tested.* Its real behaviour — the 356x narrowing
+that keeps an operator off `--force-data` — has only ever been exercised by a
+live refresh.
+
+**Shipped:** `MIRROR_GATE_BRANCH_REF`, so both sides come from refs, plus
+`scripts/mirror-gate-test.mjs` which replays the refresh and asserts all seven
+figures. **REPLAY IS NOT A VERDICT:** with the branch side overridden the gate
+prints a banner and exits **2**, never 0, because `mirror.sh` reads exit 0 as
+"safe to mirror"; the test asserts the exit code is 2 and treats a clean return
+as a FAILURE.
+
+**THE NEGATIVE CONTROL IS WHY THE FIXTURE HAD TO BE A REFRESH.** The test also
+replays a QUIET pair and requires 0 across every bucket — without it the suite
+would pass against a gate whose plan-keyed code had been deleted outright, which
+is the precise failure it exists to catch. And a control on the control: the two
+fixtures must not expect the same figures, or the refresh is not a refresh.
+
+**AND A CHANGE TO A GATE MUST PROVE IT DID NOT MOVE THE GATE.** The gate's
+normal-mode output is **byte-identical to origin/main's copy of the gate**, same
+exit code, diffed rather than eyeballed. Both direct `readFileSync` calls are
+gone, so there is no path left that silently mixes a ref with the working tree.
+
+**Deliberately NOT in CI, with the reason named:** only `fund-facts.yml` sets
+`fetch-depth: 0`, so `site-test` and `build-data` clone shallow and could not
+reach `7f553567` — the test would SKIP (exit 99) every run, and *a red gate is
+worse than no gate*. Deepening those clones is not free: the history carries
+33 MB `plans-all` snapshots per data commit. It runs on demand, and a commit
+changing the classification is expected to cite it.
+
+**FIGURES NOT TO CARRY:** the queue's **104 plans / 30,897 ppl** matches nothing
+in the replay, and its "171 / 149,049 correct wind-downs" has the right COUNT
+with a participant total the replay does not produce. The refresh pair itself
+had to be found by reading `plans-all`'s own count across every data commit in
+the window (`7f553567` 111,782 → `52a9171f` 112,652, **+870**) rather than by
+trusting a date.
+
+`docs/accuracy-log.md` 2026-10-04 (15:3xZ).
+
 ## 2026-10-04 (14:4xZ) — how much of this plan is even in the trust: 21 plans / 1,038,102 participants, AND A CORRECTION TO THE 14:0xZ ENTRY
 
 **Shipped.** A plan whose fund lineup comes from a MASTER TRUST now reads, on

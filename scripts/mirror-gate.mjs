@@ -35,6 +35,31 @@ const PV_MIN_SHARE = 0.97;
  * classification can be controlled against a real pair of stores — a gate whose
  * behaviour cannot be reproduced on demand is a gate nobody can trust. */
 const MAIN_REF = process.env.MIRROR_GATE_MAIN_REF || "origin/main";
+/* AND THE BRANCH SIDE, WHICH THE COMMENT ABOVE PROMISED AND THE CODE DID NOT
+ * DELIVER — 2026-10-04. "Overridable ONLY so the plan-keyed classification can
+ * be controlled against a real pair of stores" was true of ONE side: the main
+ * side came from `git show` and the branch side from `readFileSync`, so the
+ * gate replayed any main ref against the LOCAL TREE and never an arbitrary
+ * pair. That matters because **the plan-keyed path only does anything at a DOL
+ * refresh**: on a quiet pair it reads +0 gained / -0 lost and every one of its
+ * four benign buckets prints zero, and *a check that prints 0 on a quiet store
+ * has not been tested.*
+ *
+ * With both sides overridable the 2026-09-30 refresh is a regression fixture:
+ * 7f553567 -> 52a9171f reproduces 7,830 ack losses classified as 7,585
+ * superseded / 171 wind-downs / 82 short-form / 1 gone / **22 real losses,
+ * 16,996 participants** — the figures this file's own comment records. See
+ * `scripts/mirror-gate-test.mjs`.
+ *
+ * REPLAY IS NOT A VERDICT. When the branch side is overridden this script
+ * exits **2**, never 0, so no caller can read a replay as a pass; `mirror.sh`
+ * treats any non-zero as a refusal and never sets this variable. */
+const BRANCH_REF = process.env.MIRROR_GATE_BRANCH_REF || "";
+const REPLAY = !!BRANCH_REF;
+const readBranch = (path) => REPLAY
+  ? execFileSync("git", ["show", `${BRANCH_REF}:${path}`], { encoding: "utf8", maxBuffer: 1024 * 1024 * 1024 })
+  : readFileSync(path, "utf8");
+if (REPLAY) console.error(`mirror-gate: REPLAY MODE — branch side read from ${BRANCH_REF}, main side from ${MAIN_REF}. This is NOT a mirror verdict and exits 2.`);
 
 const load = (label, read) => {
   try {
@@ -47,7 +72,7 @@ const load = (label, read) => {
   }
 };
 
-const branch = load("local lineups-status.json", () => readFileSync("lineups-status.json", "utf8"));
+const branch = load(REPLAY ? `${BRANCH_REF} lineups-status.json` : "local lineups-status.json", () => readBranch("lineups-status.json"));
 const main = load(`${MAIN_REF} lineups-status.json`, () =>
   execFileSync("git", ["show", `${MAIN_REF}:lineups-status.json`], { encoding: "utf8", maxBuffer: 512 * 1024 * 1024 }));
 
@@ -140,7 +165,7 @@ const planKeyed = (() => {
   };
   const M = rd(`${MAIN_REF} plans-all.json`, () =>
     execFileSync("git", ["show", `${MAIN_REF}:plans-all.json`], { encoding: "utf8", maxBuffer: 1024 * 1024 * 1024 }));
-  const B = rd("local plans-all.json", () => readFileSync("plans-all.json", "utf8"));
+  const B = rd(REPLAY ? `${BRANCH_REF} plans-all.json` : "local plans-all.json", () => readBranch("plans-all.json"));
   if (!M || !B) return null;
 
   const servedBranch = (key) => {
@@ -222,6 +247,11 @@ if (planKeyed && lost.length) {
   refuse = true;
 }
 
+/* A REPLAY MUST NEVER EXIT 0: mirror.sh reads exit 0 as "the data is safe to
+ * mirror", and in replay mode the verdict is about two historical refs rather
+ * than about what is on disk. Exit 2 is distinguishable from both the pass (0)
+ * and the genuine refusal (1). */
+if (REPLAY) { console.error("\nmirror-gate: replay complete \u2014 exiting 2 so this can never be read as a pass."); process.exit(2); }
 if (refuse && !FORCE) process.exit(1);
 if (refuse) console.error("\n  --force given: proceeding despite the above.");
 console.log("mirror-gate: ok");

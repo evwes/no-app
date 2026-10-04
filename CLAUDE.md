@@ -680,7 +680,10 @@ costs a night.
   that the gate reads 18 and silently drops Levi Strauss (8,288) and Motrex
   (2,939), which are served by their TRUST and never by their own ack, the fifth
   instance of a count keyed on plans being blind to a trust.
-  `MIRROR_GATE_MAIN_REF=<ref>` replays any pair on demand. The hand-rolled
+  **`MIRROR_GATE_MAIN_REF` + `MIRROR_GATE_BRANCH_REF` replay a pair on demand**
+  (both sides needed overriding; until 2026-10-04 only the main side did, so
+  "replays any pair" was false — see `scripts/mirror-gate-test.mjs`, and note a
+  replay exits **2**, never 0). The hand-rolled
   `git push --force-with-lease=main …` is retired: running the check by eye
   failed on 2026-09-02 — the check printed the offending commit and an
   unconditional "(nothing above…)" echo overrode the reading of it.
@@ -1522,11 +1525,40 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   it is one line in the next prep run. Also: the page says *"No recordkeeping
   provider identified in this filing's Schedule C"* for plans that attached no
   Schedule C at all.
-- `fb-vanished` is keyed on the ACK and must be keyed on **EIN|PN** — a plan
-  whose ack just changed has no stored entry under the new ack, so the check
-  written for exactly this failure cannot see it. 104 plans / 30,897 ppl lose a
-  menu on supersession (171 / 149,049 more are correct wind-downs, split by
-  `assetsEOY == 0`).
+- **`fb-vanished` — WORKED 2026-10-04 15:3xZ. The diagnosis was right, the
+  prescription was IMPOSSIBLE, and the real gap was elsewhere and is now
+  shipped.** Replayed across the 2026-09-30 refresh: of the **22 plans that
+  actually stopped being served, 22 had their ack change and 0 did not**, so the
+  check is blind to ALL of the class rather than part of it. **But re-keying it
+  to EIN|PN cannot be done in `fetch-4i`:** a stored lineup entry carries no
+  plan key and the superseded ack is already gone from the current `plans-all`,
+  so the join exists only where TWO stores are in hand — which is
+  `mirror-gate`, where the plan-keyed check ALREADY lives and already catches
+  all 22 (7,830 ack losses → 7,585 superseded / 171 wind-down / 82 short-form /
+  1 gone / 22 real, 16,996 ppl, reproduced to the digit). What `fb-vanished`
+  leaves is a DIAGNOSTIC gap — which plans, not why. **SEVENTH queue entry
+  already covered by a different instrument**, and the first whose own
+  prescription was impossible rather than redundant.
+  **DO NOT CARRY 104 plans / 30,897 ppl** — it matches nothing in the replay,
+  and the companion "171 / 149,049 wind-downs" has the right COUNT with a
+  participant total the replay does not produce.
+  **SHIPPED from it: `MIRROR_GATE_BRANCH_REF` + `scripts/mirror-gate-test.mjs`.**
+  This file has been claiming `MIRROR_GATE_MAIN_REF` "replays any pair on
+  demand" and it did not — the main side came from `git show`, the BRANCH side
+  from `readFileSync`, so it replayed any main ref against the LOCAL TREE. That
+  mattered because **the plan-keyed path does nothing on a quiet pair** (+0/-0
+  and four zeroes every cycle) and *a check that prints 0 on a quiet store has
+  not been tested*; its 356x narrowing had only ever been exercised by a live
+  refresh. Now both sides take a ref, **replay exits 2 and never 0** so
+  `mirror.sh` can never read one as a pass, and the test asserts all seven
+  figures plus a QUIET-pair control that must read 0 — without which the suite
+  would pass against a gate whose plan-keyed code had been deleted. Normal-mode
+  output is **byte-identical to origin/main's copy**, diffed not eyeballed.
+  **Not in CI on purpose:** only `fund-facts.yml` sets `fetch-depth: 0`, so the
+  other workflows clone shallow, could not reach `7f553567`, and the test would
+  SKIP (exit 99) every run — a red gate is worse than no gate. Runs on demand;
+  a commit changing the classification cites it.
+  `docs/accuracy-log.md` 2026-10-04 (15:3xZ).
 - **SHIPPED 2026-10-03 06:3xZ — A PUBLISHED NAME WITH NO FUND IN IT: 486 rows /
   325 plans / 1,131,917 ppl / $5,934,254,604 now qualified** "the filing names
   no specific fund". Behavioral Connections `Portfolio` at 96.0% of its menu,
