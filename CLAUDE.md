@@ -985,6 +985,35 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
+- **FOUND BY THE 13:07 DRAW — THE TRUST MENU IS A SLIVER OF THE PLAN, AND NO
+  CHECK CAN SEE IT: 57 trusts / 98 plans / 2,062,910 ppl / $306,439,109,070 of
+  plan assets outside the menu we publish.** FedEx (456,366 ppl) publishes a
+  **3-row** menu summing **$429,944,360** for plans holding **$30,370,260,526**
+  — ratio **0.014**; IBM 144,897 ppl, 3 rows, $15,599,911 against
+  $64,476,933,873; GE 68,934 ppl, 19 rows, ratio 0.001; Bank of America 246,394
+  ppl at 0.064. Motivating case: Grand Trunk / Canadian National (8,142 ppl),
+  $117,166,724 against $767,383,565.
+  **WHY NOTHING CATCHES IT, and this is the reusable part:** the parser judges a
+  TRUST's menu against the **TRUST's** assets, so every one of these entries
+  carries a `coverageRatio` near 1.0 — FedEx **1.00**, IBM **1.07**, GE
+  **1.18** — which is *correct for what it measures*. `audit-data` raises
+  `lineup-overshoot` when a menu EXCEEDS plan assets and **there is no
+  symmetric undershoot check**, so a menu covering 1.4% of a plan passes every
+  gate with a coverage metric that reads perfect. ***A ratio is only as
+  meaningful as its denominator, and the denominator here answers a different
+  question than the reader's.***
+  **BUT READ THE SHIPPED DISCLOSURE BEFORE CALLING IT A FALSE CLAIM — I nearly
+  did.** `app.js:4049` already prints *"Holdings of ‹trust› — this plan invests
+  through the master trust … · trust total ‹X› · **percentages are of the trust,
+  not this plan**"*, and the plan's own assets are on the same page. So both
+  numbers are published and the page never claims the menu is the plan's; what
+  is missing is the RELATIONSHIP between them. **This is disclosure
+  completeness, not a fabrication**, and the remedy is one clause stating the
+  share of THIS plan's assets the trust accounts for — display-side, no
+  re-parse. Size the clause against the honest cases first: a trust that IS
+  essentially the whole plan must not gain noise.
+  **Measured against the SUM over every member plan**, which is the
+  conservative denominator in this direction, and pinned on Grand Trunk.
 - **CLOSED 2026-10-04 01:5xZ — THE CVS TWO-FUND CLASS IS TWO NAMED INSTANCES AND
   NO NUMBER, after THREE screens each refuted themselves on their own output.**
   CVS Health (**385,927 ppl**) publishes `Vanguard International Growth Fund

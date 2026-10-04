@@ -7,6 +7,50 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-04 (14:0xZ) — the 13:07 draw: a TRUST menu that is a sliver of the plan, and a coverage metric that reads PERFECT on every one
+
+**Found by the participant-weighted draw.** Grand Trunk / Canadian National
+(8,142 ppl) publishes a 6-fund menu summing **$117,166,724** against the plan's
+own **$767,383,565** — ratio **0.153**. The ack is the plan's `mtiaAck`, a
+MASTER TRUST, and the stored entry's own `coverageRatio` is **0.91**.
+
+**Sized: 57 trusts / 98 plans / 2,062,910 participants / $306,439,109,070** of
+member-plan assets outside the menu we publish, taking the SUM over every member
+plan as the denominator because that is the conservative direction here and
+because a count keyed on plans is blind to a trust (recorded nine times). FedEx
+**456,366 ppl, 3 rows, $429,944,360 against $30,370,260,526 — ratio 0.014**;
+IBM 144,897 ppl, 3 rows, $15,599,911 against $64,476,933,873; GE 68,934 ppl,
+ratio 0.001; Bank of America 246,394 ppl at 0.064; PwC 78,776 at 0.054.
+
+**WHY NO CHECK CAN SEE IT, which is the transferable part.** The parser judges a
+trust's menu against the **TRUST's** assets, so these entries carry a
+`coverageRatio` near 1.0 — FedEx 1.00, IBM **1.07**, GE **1.18** — and that is
+*correct for what it measures*. `audit-data` raises `lineup-overshoot` when a
+menu EXCEEDS plan assets and there is **no symmetric undershoot check**, so a
+menu covering 1.4% of a plan clears every gate while its own coverage metric
+reads perfect. ***A ratio is only as meaningful as its denominator, and this
+denominator answers a different question than the reader's.***
+
+**AND READING THE SHIPPED DISCLOSURE CHANGED THE VERDICT.** My first framing was
+"a reader sees 3 funds for a $30B plan". `app.js:4049` already prints *"Holdings
+of ‹trust› — this plan invests through the master trust … · trust total ‹X› ·
+**percentages are of the trust, not this plan**"*, and the plan's own assets sit
+on the same page. Both numbers are published; the page never claims the menu is
+the plan's. **So this is disclosure COMPLETENESS, not a fabrication** — what is
+missing is the relationship between two figures the reader already has. Queued
+with that framing and a one-clause remedy (the share of THIS plan's assets the
+trust accounts for), display-side, no re-parse. *Read the shipped disclosure
+before calling it a false claim* — second time in two days that doing so shrank
+a finding from a fabrication to a gap, and the finding is still worth having.
+
+**A note on the instrument:** the draw's plan-level ratio is the number that
+surfaced this, and it is the same field that was WRONG in the opposite direction
+one cycle earlier (Meijer read 3.345 because the denominator was one member plan
+instead of the sum). Fixing it to sum the members is what made this reading
+trustworthy — *the same field, fixed once, then found a real class.*
+
+`docs/accuracy-log.md` 2026-10-04 (14:0xZ).
+
 ## 2026-10-04 (13:4xZ) — a DANGLING PREPOSITION published as a fund's issuer: 448 rows / 42 plans / 167,416 participants / $1,154,493,048
 
 **What was wrong.** The report and the crawlable pages both compose a holding as
