@@ -865,6 +865,14 @@ published cells:
   no blanket correction is available. Recommendation: correct the symbol on the
   exact-match population and WITHDRAW the fee rather than carry the other
   class's, with `fund-facts` filling per-class figures as they are sourced.
+  **LARGEST NAMED INSTANCE, FOUND BY THE 20:07 DRAW: Insperity Holdings,
+  231,912 ppl**, publishes `Dodge & Cox Stock Fund (X)` as **DODGX ASSERTED at
+  0.51** on $439,033,697 (4.8% of its menu) where this file already records
+  DODIX/DODGX/DODFX as **Class I**. **The control is one row away in the same
+  menu:** `T. Rowe Price Mid-Cap Growth Fund (I)` publishes **RPTIX**, the I
+  class exactly as filed — so the resolver honours a stated class it carries
+  and falls back to a different class **silently, with no asterisk**, when it
+  does not. `docs/accuracy-log.md` 2026-10-04 (20:4xZ).
 - **OUR OWN STORE CONTRADICTS OUR OWN PAGE — 5,692 rows / 3,860 plans /
   8,197,880 ppl / $50.7B, and 0 of 42 rows read favour the page (22 of them
   drawn PARTICIPANT-WEIGHTED AT RANDOM).** The parser stores a share-class-

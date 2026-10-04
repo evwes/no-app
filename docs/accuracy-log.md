@@ -7,6 +7,62 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-04 (20:4xZ) — the 20:07 draw: the largest named instance yet of the stated-share-class item, with its own control one row away
+
+**The draw** (`--seed 20082026`, participant-weighted over 60,163 published
+menus / 103,501,088 participants) drew **Insperity Holdings** (ein 760178498
+pn 001, **231,912 participants**, 26 funds, ratio 0.983, menu $9,229,538,403
+against $9,392,401,723) and Thermo Fisher Scientific (70,443 ppl, 28 funds,
+ratio 0.989).
+
+### The finding, and it is the biggest instance of a gated item so far
+
+`Dodge & Cox Stock Fund (X)` publishes **DODGX ASSERTED — no asterisk — at
+0.51**, on **$439,033,697, 4.8% of the menu, to 231,912 readers**. The filing
+states **Class X**, and this register already records (CLAUDE.md, the `and`/`&`
+item) that **DODIX / DODGX / DODFX are Class I**. So the page names a different
+share class than the filing does and prices the row to that class, with no
+asterisk to say it is an approximation.
+
+**THE CONTROL IS ONE ROW AWAY, IN THE SAME MENU, AND IT IS WHY THIS IS SHARP:**
+`T. Rowe Price Mid-Cap Growth Fund (I)` publishes **RPTIX asserted at 0.63** —
+the I class, exactly as filed. So the resolver gets the stated class right when
+it carries that class, and **falls back to a DIFFERENT class silently, without
+the comparable marker, when it does not.** That is the precise shape of the
+owner-gated 5,929-row / 11,144,696-ppl item, and the correct symbol for Class X
+is NOT inferred here: *a ticker is a FACT that must be SOURCED*, so it needs
+`fund-facts`, not a guess.
+
+### Two guards confirmed working at scale, which is the other half of reading a draw
+
+**Nine of the 26 rows are collective trusts carrying an asterisked comparable
+and the `noPublicPrice` flag** — `SSgA S&P 500 Index Fund (K)` at 17.3% /
+$1,595,436,032 reads `~SSSYX`, and seven SSgA Target Retirement vintages plus
+`T. Rowe Price Blue Chip Growth Fund (T7)` read the same way. **New York Life's
+`Anchor Account Fund`**, a pooled separate account at 3.4% / $309,664,270,
+publishes **neither a ticker nor a fee** — correct, a separate account has no
+public price. Thermo Fisher's menu is the same machinery: `Retirement 2035
+Active Trust Class K` → `~TRRJX`, asterisked, `noPublicPrice`.
+
+**AND ONE THING A DRAW MUST NOT FILE AS A CONTRADICTION, settled by reading the
+shipped expression.** Row 0 prints `er 0.02` *beside* a `noPublicPrice` flag,
+which looks like a suppressor that failed. It is not: `app.js:3882` reads
+`star ? info.er : (noPublicPrice ? null : fundERRow(f))`, so **on an asterisked
+row the published fee is the COMPARABLE fund's own expense ratio** and
+`noPublicPrice` only nulls a fee that would otherwise be a pattern estimate.
+The row says "comparable to SSSYX, which costs 0.02" and both cells are
+labelled. Recorded so the next draw does not open a defect against it.
+
+Also present, already-recorded and gated: `American Funds EUPAC Fund (R6)`
+publishes **0.4 with no ticker** at 2.2% / $201,678,847 — the ticker/fee
+asymmetry in the American Funds family, here with the share class STATED, which
+makes the blank a matcher gap rather than a refusal to infer.
+
+Nothing new to ship: both findings are owner-gated items, each with one more
+named instance and this one much the largest.
+
+`docs/accuracy-log.md` 2026-10-04 (20:4xZ).
+
 ## 2026-10-04 (20:1xZ) — the withheld vesting class, SIZED by reading all 41 filings: 24 plans / 172,406 participants have a publishable rule the extractor failed to select
 
 **The 09:0xZ ship withholds 41 vesting quotes that state a different plan rule.
