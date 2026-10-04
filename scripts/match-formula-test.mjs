@@ -70,8 +70,42 @@ for (const [t, why] of SILENT) ok(got(t) === null, `MUST REFUSE ${why}, got ${go
 /* ---- NEGATIVE CONTROL, one per condition, each required to FAIL BY NAME.
  * A control that cannot fail is decorative, so each mutation is asserted to
  * have LANDED and then required to change at least one verdict. ---------- */
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 const SRC = readFileSync(new URL("./lib-4i.mjs", import.meta.url), "utf8");
+
+/* LOADING A MUTANT: A `data:` MODULE CANNOT RESOLVE A RELATIVE IMPORT.
+ *
+ * The mutants below used to load from a base64 `data:` URL, which has no base
+ * to resolve `./lib-quote.mjs` against — so the moment v201 gave lib-4i its
+ * first relative import, EVERY negative control in this file died with
+ * ERR_UNSUPPORTED_RESOLUTION and the prep gate failed the run. (It failed it
+ * before the download, which is what that gate is for.)
+ *
+ * So the mutant goes to a temp FILE and its relative specifiers are rewritten
+ * to absolute file URLs — the same shape `diff-parser.mjs` has always used.
+ * The rewrite is general rather than a special case for one specifier, because
+ * the next import added to lib-4i must not break this file again. */
+const MUT_DIR = mkdtempSync(join(tmpdir(), "mf-mutant-"));
+const SCRIPTS = new URL(".", import.meta.url).href.replace(/\/$/, "");
+let mutantSeq = 0;
+async function loadMutant(source) {
+  const rebased = source.replace(/(\sfrom\s*)(["'])\.\/([^"']+)\2/g,
+    (_m, kw, q, rest) => `${kw}${q}${SCRIPTS}/${rest}${q}`);
+  if (/\sfrom\s*["']\.\//.test(rebased))
+    throw new Error("a relative import survived the rebase — the mutant would fail to resolve and every control below would pass vacuously");
+  const f = join(MUT_DIR, `mutant-${++mutantSeq}.mjs`);
+  writeFileSync(f, rebased);
+  return import(`file://${f}`);
+}
+/* and prove the loader works on the UNMUTATED source before any control
+ * depends on it: a loader that throws makes every control below a skip. */
+{
+  const probe = await loadMutant(SRC);
+  if (typeof probe.extractPlanFeatures !== "function")
+    throw new Error("the mutant loader cannot load the shipped source unchanged — every negative control below would be meaningless");
+}
 const slice = (() => {
   const h = SRC.indexOf("const MF_RATE =");
   const e = SRC.indexOf("\n}", SRC.indexOf("export function mfWidened"));
@@ -254,7 +288,7 @@ for (const [label, find, repl, probe] of V199) {
   const mutated = SRC.replace(find, repl);
   if (mutated === SRC) { fails.push(`the control for ${label} did not land`); continue; }
   // Load the mutated module from memory, so the shipped file is never touched.
-  const mod = await import("data:text/javascript;base64," + Buffer.from(mutated).toString("base64"));
+  const mod = await loadMutant(mutated);
   const saved = { mfEqualToWords, mfMisreadRateUnderCap };
   const flipped = (() => {
     const g = globalThis;
