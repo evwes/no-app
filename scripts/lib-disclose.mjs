@@ -2398,6 +2398,41 @@ const CAPTION_WORD = "(?:interest|interests|bearing|cash|equivalent|equivalents|
   + "|preferred|common|stock|stocks|share|shares|partnership|partnerships|joint|venture|ventures"
   + "|real|estate|properties|property|buildings|municipal|bond|bonds|note|notes|collective|trust|trusts"
   + "|pooled|separate|master|registered|investment|investments|company|companies|nav"
+  /* THE FILER'S OWN ABBREVIATIONS AND ONE ACRONYM, added 2026-10-04 (18:3xZ).
+   * The vocabulary above spells Schedule H's captions out in full, so a filer
+   * who abbreviated escaped it — found by READING Johnson & Johnson's own page
+   * after the first ship, where three untyped rows stayed unqualified two lines
+   * under rows that had just been fixed. 23 published rows / 30 plans / 601,843
+   * participants / $24,345,240,501, with ZERO tickers and ZERO fees on any of
+   * them, so this is a pure qualification:
+   *   `INTEREST IN CCT`  9 rows / 320,657 ppl / $23,480,896,904 — 60.6% of
+   *       Novartis's menu, 93.1% of Alcon's, 91.3% of Mondelez's, 66.8% of
+   *       Unilever's, 47.5% of Becton Dickinson's. CCT = common/collective trust
+   *   `CORP. DEBT INSTR. - PREFERRED`  Henkel, 50.3% of its whole menu
+   *   `CORP. DEBT INSTR. - ALL OTHER`  Johnson & Johnson, the motivating rows
+   *   `CORP DEBT INSTRUMENTS; ALL OTHER` / `; PREFERRED`  PepsiCo
+   *   `CCTs`, `Real Estate SEC`, `Real Estate Secs`
+   *
+   * FOUR TOKENS SHIP AND SEVEN CANDIDATES WERE REFUSED, chosen by measurement
+   * rather than by plausibility, and the two tests are different questions:
+   *   SUFFICIENCY — what does a token reach ON ITS OWN?
+   *   NECESSITY   — what is LOST if it is removed from the full set?
+   * `instr` is sufficient for NOTHING and necessary for THREE rows, because
+   * `CORP. DEBT INSTR. - ALL OTHER` needs `corp` AND `instr` together. A
+   * token-alone test would have dropped it. ***A token-alone test detects an
+   * INERT arm; a LEAVE-ONE-OUT is what decides whether an arm ships.***
+   * Refused as inert (necessary for 0 rows each): `govt`, `pfd`, `equiv`,
+   * `mtge`, `resid`, `coml` — all plausible abbreviations of captions this
+   * vocabulary knows, none of them filed anywhere in the store. `mtges` is
+   * doubly blocked: `LOANS SECURED BY MTGES-RESID.` still fails on the
+   * deliberate `loan` exclusion. *An arm real in principle and inert on the
+   * data is untested machinery.*
+   * AND `cit` IS LEFT OUT AS INERT, NOT AS A PROTECTION — it was excluded on
+   * instinct (CIT is a bank, and `Voya Stable Value Fund 20 CIT` is a real
+   * collective trust) and then measured at 0 rows necessary, like the other
+   * six. Both of those names are blocked by tokens OUTSIDE this vocabulary
+   * anyway, so the instinct bought nothing it can be credited for. */
+  + "|cct|ccts|corp|corps|instr|instrs|sec|secs"
   + "|value|other|all|and|or|the|at|of|in)";
 const CAPTION_SEP = "[\\s\\-\\u2010-\\u2015\\/,.:;()&*]+";
 /* NOTE the non-capturing wrappers on the optional leading and trailing
@@ -2428,6 +2463,12 @@ for (const [s, why] of [
   ["CASH", "77 rows / 762,812 ppl — the commonest member, so a regression to 0 would look quiet"],
   ["Real Estate", "65 rows"],
   ["Corporate Stock : Common", "84.2% of one plan's menu — a colon is a separator, not a word"],
+  ["INTEREST IN CCT", "9 rows / 320,657 ppl / $23,480,896,904 — 60.6% of Novartis's menu, the largest single string in the class"],
+  ["CCTs", "Roper Technologies — the plural"],
+  ["CORP. DEBT INSTR. - PREFERRED", "Henkel Of America, 50.3% of its whole menu"],
+  ["CORP. DEBT INSTR. - ALL OTHER", "Johnson & Johnson — needs `corp` AND `instr`, which is why a token-alone test is the wrong test"],
+  ["CORP DEBT INSTRUMENTS; ALL OTHER", "PepsiCo — a semicolon is a separator"],
+  ["Real Estate Secs", "Sterling Computers — the `sec` abbreviation"],
 ]) if (!isScheduleHCaption(s)) {
   throw new Error(`lib-disclose: isScheduleHCaption no longer reaches ${JSON.stringify(s)} (${why}) — the arm is inert, fix it rather than shipping a quiet guard`);
 }
@@ -2447,6 +2488,15 @@ for (const [s, why] of [
   ["Vanguard Institutional Index Plus", "a real fund"],
   ["Principal Real Estate Securities Fund", "a real fund that is four caption words plus a house and a vehicle word"],
   ["General Motors Common Stock", "employer stock wearing three caption words"],
+  /* SHAPE PINS for the four new tokens, and labelled as such: each of these
+   * carries MORE than one non-caption token, so none proves a single
+   * protection — *a case protected twice proves neither.* The measured safety
+   * claim for these tokens is not a fixture at all, it is that they newly
+   * reach exactly 23 published rows store-wide and all 23 were read. */
+  ["Costco Wholesale Corp", "=COST, $18.3B of EMPLOYER STOCK ending in the new `corp` token"],
+  ["CIT Group Inc", "a real company, and `cit` is deliberately NOT in the vocabulary"],
+  ["Voya Stable Value Fund 20 CIT", "a real collective trust"],
+  ["Sec Lending Collateral Fund", "a securities-lending vehicle, not a caption"],
 ]) if (isScheduleHCaption(s)) {
   throw new Error(`lib-disclose: isScheduleHCaption would qualify ${JSON.stringify(s)} (${why}) — it names something, fix the predicate rather than the control`);
 }

@@ -881,13 +881,16 @@ try {
     "Corporate stock - common", "Government Bond", "PARTNERSHIP/JOINT VENTURE INTEREST",
     "OTHER INVESTMENTS", "CASH", "Real Estate", "Corporate Stock : Common",
     "SECURITIES", "CASH/CASH EQUIVALENTS",
+    "INTEREST IN CCT", "CCTs", "CORP. DEBT INSTR. - PREFERRED",
+    "CORP DEBT INSTRUMENTS; ALL OTHER", "Real Estate Secs",
     "Real Estate Securities Fund", "US Bond Index", "OTHER ASSETS", "Employer Common Stock",
     "Total Bond", "Stable Value", "Government Bond A", "Investment Company of America",
     "Fidelity Government", "Cash Surrender Value", "General Account", "Loans",
     "Vanguard Institutional Index Plus", "Principal Real Estate Securities Fund",
-    "General Motors Common Stock",
+    "General Motors Common Stock", "Costco Wholesale Corp", "CIT Group Inc",
+    "Voya Stable Value Fund 20 CIT", "Sec Lending Collateral Fund",
   ];
-  const SHCAP_TRUE = 12;   /* the first N must be reached; the rest must be kept */
+  const SHCAP_TRUE = 17;   /* the first N must be reached; the rest must be kept */
   const { isScheduleHCaption } = await import("./lib-disclose.mjs");
   const shCapGot = await page.evaluate((cs) => {
     if (typeof window.__wampoCaption !== "function") return null;

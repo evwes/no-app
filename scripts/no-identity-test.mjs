@@ -484,6 +484,13 @@ const CAP_QUALIFY = [
   ["Corporate Stock : Common", "84.2% of one plan's menu — a colon is a separator, not a word"],
   ["SECURITIES", "Nordson, $88,353,968 at 15.4%"],
   ["CASH/CASH EQUIVALENTS", "UnitedHealth Group"],
+  /* the filer's own ABBREVIATIONS and one ACRONYM, 2026-10-04 (18:3xZ) */
+  ["INTEREST IN CCT", "9 rows / 320,657 ppl / $23,480,896,904 — 60.6% of Novartis's menu"],
+  ["CCTs", "Roper Technologies"],
+  ["CORP. DEBT INSTR. - PREFERRED", "Henkel Of America, 50.3% of its whole menu"],
+  ["CORP. DEBT INSTR. - ALL OTHER", "Johnson & Johnson — needs `corp` AND `instr` together"],
+  ["CORP DEBT INSTRUMENTS; ALL OTHER", "PepsiCo"],
+  ["Real Estate Secs", "Sterling Computers"],
 ];
 const CAP_KEEP = [
   ["Real Estate Securities Fund", "=DFREX, 433 rows / 581,803 ppl — `fund` excluded is the ONLY protection"],
@@ -503,6 +510,10 @@ const CAP_KEEP = [
   ["Vanguard Institutional Index Plus", "a real fund"],
   ["Principal Real Estate Securities Fund", "four caption words plus a house and a vehicle word"],
   ["General Motors Common Stock", "employer stock wearing three caption words"],
+  ["Costco Wholesale Corp", "=COST, $18.3B of employer stock ending in the `corp` token"],
+  ["CIT Group Inc", "a real company — `cit` is deliberately not in the vocabulary"],
+  ["Voya Stable Value Fund 20 CIT", "a real collective trust"],
+  ["Sec Lending Collateral Fund", "a securities-lending vehicle, not a caption"],
 ];
 for (const [n, why] of CAP_QUALIFY)
   ok(isScheduleHCaption(n), `CAPTION: ${JSON.stringify(n)} is not reached (${why}) — the arm is inert`);

@@ -7,6 +7,115 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-04 (18:3xZ) — the caption vocabulary was spelled out in full, so an abbreviating filer escaped it; and a CORRECTION to the figure I published two hours ago
+
+**SHIPPED: four tokens added to `isScheduleHCaption` — 21 reader-facing rows /
+24 plans / 542,097 participants / $24,025,795,169**, with **0 tickers and 0
+fees** on any of them, so it is a pure qualification. 11 crawlable pages.
+
+| | share of its menu | value |
+|---|---|---|
+| **Novartis `INTEREST IN CCT`** | **60.6%** | **$8,842,803,272** |
+| Alcon Vision `INTEREST IN CCT` | 93.1% | $3,707,071,803 |
+| Mondelez `INTEREST IN CCT` | 91.3% | $1,943,580,417 |
+| Unilever `INTEREST IN CCT` | 66.8% | $1,579,326,201 |
+| Becton Dickinson `INTEREST IN CCT` | 47.5% | $3,085,698,093 |
+| Henkel `CORP. DEBT INSTR. - PREFERRED` | 50.3% | $234,688,832 |
+| Johnson & Johnson `CORP. DEBT INSTR. - ALL OTHER` | 0.7% | the motivating rows |
+
+`CCT` is common/collective trust. **Found by READING Johnson & Johnson's own
+page after the 16:5xZ ship** — three untyped rows sat unqualified two lines
+under rows that ship had just fixed. *A fix for one phrasing of a class is not
+a fix for the class*, met on a hyphen at 16:0xZ, on an ABBREVIATION and an
+ACRONYM here.
+
+### SUFFICIENCY IS NOT NECESSITY, and a token-alone test would have dropped a load-bearing token
+
+Ten candidates were measured two ways:
+
+- **alone** — what does this token reach by itself? (detects an INERT arm)
+- **leave-one-out** — what is LOST if it is removed from the full set? (decides
+  whether the arm SHIPS)
+
+`instr` is sufficient for **0** rows and necessary for **3**, because
+`CORP. DEBT INSTR. - ALL OTHER` needs `corp` **and** `instr` together. The
+token-alone test printed a clean zero for it, which is exactly the shape this
+record already calls untested machinery — and here the zero meant the opposite.
+***A token-alone test detects an inert arm; a leave-one-out is what decides
+whether one ships.***
+
+Shipped: `cct/ccts` (necessary for 10), `corp/corps` (11), `instr/instrs` (6),
+`sec/secs` (2). **Refused as inert — necessary for 0 rows each: `govt`, `pfd`,
+`equiv`, `mtge`, `resid`, `coml`**, all plausible abbreviations of captions the
+vocabulary already knows and none of them filed anywhere in the store.
+`mtges` is doubly blocked: `LOANS SECURED BY MTGES-RESID.` still fails the
+deliberate `loan` exclusion.
+
+**AND `cit` WAS EXCLUDED ON INSTINCT AND IS INERT TOO.** I left it out because
+CIT is a bank and `Voya Stable Value Fund 20 CIT` is a real collective trust —
+then measured it at **0 rows necessary**, like the other six, and both of those
+names are blocked by tokens OUTSIDE this vocabulary anyway. *An exclusion that
+blocks nothing measurable is not a protection, and recording it as one would
+have been a guard with no population.*
+
+### THE CORRECTION, and it is the substance of this entry
+
+**The 16:5xZ entry published 574 rows / 577 plans / 4,564,065 ppl /
+$32,614,134,068. Re-derived on the current store the reader-facing figure is
+563 rows / 558 plans / 4,146,037 ppl / $31,831,125,339.** Two causes, and the
+larger one is mine:
+
+1. **The render diff iterates every PUBLISHED entry and credits every MEMBER
+   plan of its ack — but both surfaces serve a TRUST's menu only when the
+   member plan's OWN lineup is unusable** (`build-seo-pages.mjs:111`,
+   `app.js:2898`). So a trust row on an ack whose members all have their own
+   menus reaches no reader, and a trust row that IS served reaches only the
+   members it serves. On the current store that is **13 of 576 rows** and most
+   of the ~418,000-participant difference.
+2. The DOL data commit `cefaf76d` landed between the two measurements.
+
+**This is the THIRD time this condition has been missed and the second in three
+cycles** — it made a 98-plan / 2,062,910-ppl trust-share figure wrong two cycles
+ago, and the rule written then is *"a measurement of what a page PUBLISHES must
+apply every condition the page applies, in order."* I applied it to that class
+and then did not apply it to this one. **What caught it was not re-reading the
+rule: it was the PAGE.** PepsiCo's `CORP DEBT INSTRUMENTS;` rows were in my
+23-row count, PepsiCo has a crawlable page, and `grep` found the string on **no
+page at all** — because PepsiCo's own menu wins. *The page is the artifact, and
+it is also the only honest check on a store-side count.*
+
+**And my own re-derivation had the same error one column along:** its first
+print summed VALUE over all 576 rows while reporting a row count already
+narrowed to 563, giving $33.0B beside a 563-row figure. A row no reader sees
+contributes no dollars to what readers see.
+
+**`scripts/served.mjs`-style serving logic is now the thing to apply BEFORE
+publishing any row count from the lineup store**, and the figures it produces
+for this cycle are the ones above. The store-side counts (576 and 23 reached)
+are kept beside them because the predicate's own population is what the
+fixtures and the drift probes are about.
+
+### Gates
+
+6 new must-SEE and 4 new must-KEEP fixtures at import time, 6 and 4 in
+`no-identity-test` (caption 18 qualified / 21 kept), 5 and 4 in the smoke
+tether, and the twin was regenerated through `gen-generic-twin` rather than
+hand-edited — 16 caption drift probes, both composed gates checked over all 95
+names. The render diff returns **23 rows reached, shown-TYPE only, name 0 /
+ticker 0 / fee 0 / asterisk 0**, with the narrowing discharged on 4,441
+out-of-scope rows at 0 differing. **The must-KEEP fixtures are labelled SHAPE
+PINS, not single-protection cases** — each carries more than one non-caption
+token, so none proves a single protection, and *a case protected twice proves
+neither*. The measured safety claim is that the four tokens newly reach exactly
+23 rows store-wide and **all 23 were read**.
+
+**Residue, named:** a menu can carry the caption BOTH standalone and welded onto
+a fund name — `Br Lp Pck 2060 Interest In Cct` is on one of the 11 changed
+pages, correctly left alone by the whole-string rule, and is a member of the
+recorded welded-name class rather than this one.
+
+`docs/accuracy-log.md` 2026-10-04 (18:3xZ).
+
 ## 2026-10-04 (17:2xZ) — the 16:07 draw: it lands on two owner-gated items with exact numbers, and my own framing of it was refuted twice
 
 **The draw** (`scripts/draw-published.mjs --seed 16072026`, participant-weighted

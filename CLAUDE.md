@@ -917,10 +917,18 @@ published cells:
   labelled as one. **DO NOT CARRY the pre-split 1,951 rows / 7,599,688 ppl /
   $44.0B**, of which 1,171 are the guards working and whose vocabulary also
   swept in `Cash` ×466 and `Real Estate` ×229.
-  **SHIPPED 2026-10-04 16:5xZ as `isScheduleHCaption` — 574 rows / 577 plans /
-  4,564,065 ppl / $32,614,134,068, shown-TYPE only (name 0 / ticker 0 / fee 0 /
-  asterisk 0), 22 crawlable pages, browser-verified on both pins.** Verizon now
-  qualifies BOTH unnamed rows. **DO NOT CARRY the 780 / 4,950,732 above, nor the
+  **SHIPPED 2026-10-04 16:5xZ as `isScheduleHCaption`, and CORRECTED 18:3xZ:
+  the reader-facing figure is 563 rows / 558 plans / 4,146,037 ppl /
+  $31,831,125,339, NOT the 574 / 577 / 4,564,065 / $32,614,134,068 first
+  published** — shown-TYPE only (name 0 / ticker 0 / fee 0 / asterisk 0), 22
+  crawlable pages, browser-verified on both pins. Verizon now qualifies BOTH
+  unnamed rows. **THE CORRECTION'S CAUSE IS THE TRUST-SERVING CONDITION, missed
+  for the THIRD time:** the render diff credits every MEMBER plan of an ack, but
+  both surfaces serve a trust's menu only where the plan's OWN lineup is
+  unusable (`build-seo-pages.mjs:111`, `app.js:2898`), so 13 of 576 rows reach
+  no reader and a served row reaches only the members it serves. **Apply the
+  serving condition before publishing ANY row count read from the lineup
+  store.** **DO NOT CARRY the 780 / 4,950,732 above, nor the
   767 / 4,977,804 the ship's own screen read:** both are NAME-verdict counts,
   and **200 rows / 551,342 ppl are held by the CALL-SITE ISSUER GATE, correctly**
   — `Common shares · Cardinal Health, Inc.` is employer stock the issuer cell
@@ -929,16 +937,24 @@ published cells:
   `US Bond Index` for 947,172, `assets` keeps `OTHER ASSETS` / $2.58B,
   `employer` keeps `Employer Common Stock`, the article `a` keeps 41 SERIES
   letters). `isGenericTypeName` was NOT widened.
-  **STILL OPEN, and the THIRD phrasing was found by READING THE PAGE rather than
-  the predicate: 300 rows / 307 plans / 1,175,906 ppl / $26,834,718,172, 0 with a
-  ticker**, in three families. **The largest single string in the entire class is
-  an ACRONYM: `INTEREST IN CCT`, 9 rows / 320,657 ppl / $23,480,896,904** at
-  60.6% of Novartis's menu, 93.1% of Alcon's, 91.3% of Mondelez's, 66.8% of
-  Unilever's. Then an ABBREVIATION of a caption already spelled out (`CORP. DEBT
-  INSTR. - PREFERRED`, Henkel 50.3%; `Ins Co General Accts`; `Real Estate
-  Secs`), then the deliberate `general account` / `loan` exclusions. **Each needs
-  its OWN safety argument — an acronym vocabulary can collide with a ticker or a
-  brand — so none of the three is a widening of the shipped vocabulary.**
+  **THE ACRONYM AND ABBREVIATION FAMILIES SHIPPED 2026-10-04 18:3xZ — four
+  tokens (`cct`, `corp`, `instr`, `sec`), 21 reader-facing rows / 24 plans /
+  542,097 ppl / $24,025,795,169, 0 tickers and 0 fees, 11 crawlable pages.**
+  Novartis's `INTEREST IN CCT` at **60.6% / $8,842,803,272**, Alcon 93.1%,
+  Mondelez 91.3%, Unilever 66.8%, Henkel's `CORP. DEBT INSTR. - PREFERRED` at
+  50.3%. **SUFFICIENCY IS NOT NECESSITY and a token-alone test would have
+  dropped `instr`** — sufficient for 0 rows, necessary for 3, because
+  `CORP. DEBT INSTR. - ALL OTHER` needs `corp` AND `instr`. Six candidates were
+  REFUSED as necessary-for-0 (`govt`, `pfd`, `equiv`, `mtge`, `resid`, `coml`),
+  and `cit` was excluded on instinct then measured inert too — *an exclusion
+  that blocks nothing measurable is not a protection.*
+  **STILL OPEN from the 300-row residue: the deliberate `general account` and
+  `loan` exclusions** (`General Account` ×95 + ×43, `Loan`/`Loans` ×77, `Stock
+  Account`, `Real Estate Account` ×28, `Cash in Interest-Bearing Accounts`) —
+  each belongs to a class with its own machinery, and the `loan` tokens would
+  DOUBLE-LABEL a row because the loan label is appended by a different arm on
+  the same cell. **DO NOT CARRY the 300 rows / 1,175,906 ppl as shippable:** 23
+  of it shipped and the rest is those two exclusions.
   Also open and deliberately not split: the crawlable pages have no type column,
   so the 1,294 TYPED captions print there unqualified (Hallmark's
   `U.S. Government Securities $312,377,367`). Two copies of a rule is how two
@@ -2460,6 +2476,25 @@ These outlived the versions that produced them. The accuracy log has the case.
   composition rather than its parts.
 - **The page is the artifact.** A store-side proxy for what changed is not the
   page; regenerate and diff the files.
+  **AND IT IS THE ONLY HONEST CHECK ON A STORE-SIDE COUNT (2026-10-04 18:3xZ).**
+  A published figure of 574 rows / 4,564,065 ppl was wrong because the render
+  diff credits every MEMBER plan of an ack while both surfaces serve a TRUST's
+  menu only where the plan's own lineup is unusable — the THIRD miss of that
+  condition and the second in three cycles, one cycle after writing *"a
+  measurement of what a page PUBLISHES must apply every condition the page
+  applies, in order."* ***Re-reading the rule did not catch it; a `grep` of the
+  regenerated pages did*** — PepsiCo was in the count, PepsiCo has a page, and
+  the string was on no page at all. So: **after any store-side count of
+  published rows, pick one plan from it that has a crawlable page and grep for
+  the string.** A hit confirms the count's premise; a miss means a condition is
+  missing.
+- **SUFFICIENCY IS NOT NECESSITY — A TOKEN-ALONE TEST DETECTS AN INERT ARM, A
+  LEAVE-ONE-OUT DECIDES WHETHER ONE SHIPS (2026-10-04).** Measuring ten
+  candidate vocabulary tokens one at a time reported `instr` reaching **0 rows**
+  — the exact signature this record calls untested machinery — and it was
+  necessary for 3, because the filed string needs `corp` AND `instr` together.
+  Run both tests: alone (is it inert?) and leave-one-out (is it load-bearing?).
+  Six tokens failed both and were refused.
 - **DIAGNOSE a refusal before reporting it** — call the most harmless tool on the
   same server. And **a blocked tool is not a blocked goal**: enumerate the other
   mechanisms that reach the same outcome.

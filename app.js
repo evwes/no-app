@@ -1697,6 +1697,41 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
     + "|preferred|common|stock|stocks|share|shares|partnership|partnerships|joint|venture|ventures"
     + "|real|estate|properties|property|buildings|municipal|bond|bonds|note|notes|collective|trust|trusts"
     + "|pooled|separate|master|registered|investment|investments|company|companies|nav"
+    /* THE FILER'S OWN ABBREVIATIONS AND ONE ACRONYM, added 2026-10-04 (18:3xZ).
+     * The vocabulary above spells Schedule H's captions out in full, so a filer
+     * who abbreviated escaped it — found by READING Johnson & Johnson's own page
+     * after the first ship, where three untyped rows stayed unqualified two lines
+     * under rows that had just been fixed. 23 published rows / 30 plans / 601,843
+     * participants / $24,345,240,501, with ZERO tickers and ZERO fees on any of
+     * them, so this is a pure qualification:
+     *   `INTEREST IN CCT`  9 rows / 320,657 ppl / $23,480,896,904 — 60.6% of
+     *       Novartis's menu, 93.1% of Alcon's, 91.3% of Mondelez's, 66.8% of
+     *       Unilever's, 47.5% of Becton Dickinson's. CCT = common/collective trust
+     *   `CORP. DEBT INSTR. - PREFERRED`  Henkel, 50.3% of its whole menu
+     *   `CORP. DEBT INSTR. - ALL OTHER`  Johnson & Johnson, the motivating rows
+     *   `CORP DEBT INSTRUMENTS; ALL OTHER` / `; PREFERRED`  PepsiCo
+     *   `CCTs`, `Real Estate SEC`, `Real Estate Secs`
+     *
+     * FOUR TOKENS SHIP AND SEVEN CANDIDATES WERE REFUSED, chosen by measurement
+     * rather than by plausibility, and the two tests are different questions:
+     *   SUFFICIENCY — what does a token reach ON ITS OWN?
+     *   NECESSITY   — what is LOST if it is removed from the full set?
+     * `instr` is sufficient for NOTHING and necessary for THREE rows, because
+     * `CORP. DEBT INSTR. - ALL OTHER` needs `corp` AND `instr` together. A
+     * token-alone test would have dropped it. ***A token-alone test detects an
+     * INERT arm; a LEAVE-ONE-OUT is what decides whether an arm ships.***
+     * Refused as inert (necessary for 0 rows each): `govt`, `pfd`, `equiv`,
+     * `mtge`, `resid`, `coml` — all plausible abbreviations of captions this
+     * vocabulary knows, none of them filed anywhere in the store. `mtges` is
+     * doubly blocked: `LOANS SECURED BY MTGES-RESID.` still fails on the
+     * deliberate `loan` exclusion. *An arm real in principle and inert on the
+     * data is untested machinery.*
+     * AND `cit` IS LEFT OUT AS INERT, NOT AS A PROTECTION — it was excluded on
+     * instinct (CIT is a bank, and `Voya Stable Value Fund 20 CIT` is a real
+     * collective trust) and then measured at 0 rows necessary, like the other
+     * six. Both of those names are blocked by tokens OUTSIDE this vocabulary
+     * anyway, so the instinct bought nothing it can be credited for. */
+    + "|cct|ccts|corp|corps|instr|instrs|sec|secs"
     + "|value|other|all|and|or|the|at|of|in)";
   const CAPTION_SEP = "[\\s\\-\\u2010-\\u2015\\/,.:;()&*]+";
   /* NOTE the non-capturing wrappers on the optional leading and trailing
