@@ -7,6 +7,80 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-04 (17:2xZ) — the 16:07 draw: it lands on two owner-gated items with exact numbers, and my own framing of it was refuted twice
+
+**The draw** (`scripts/draw-published.mjs --seed 16072026`, participant-weighted
+over a pool of **60,163 PUBLISHED menus reaching 103,501,088 participants**) drew
+**Love's Travel Stops & Country Stores** (ein 731220756 pn 001, **32,514 ppl**,
+ack `20260730072934NAL0034979378001`, 23 funds, ratio 0.97, menu $522,809,108
+against $540,070,481 of plan assets).
+
+**Nothing is convictable: no fabricated ticker, no asterisk, no wrong class.**
+What it shows is a vintage ladder — **12 of its 23 rows / 46.6% of the menu** are
+`American <year> Target Retirement`, every one publishing **neither a ticker nor
+a fee**, while `VINIX` (0.02) and `VIMAX` (0.05) resolve two rows above and seven
+other rows publish a pattern fee with no symbol (`JPMorgan Large Cap Growth`
+0.44 on 16.5%, `EuroPacific Growth` 0.46, `Vanguard Explorer Fund` 0.3,
+`Vanguard Total Bond Index` 0.04).
+
+### Sized, and the measurement refuted the framing twice
+
+Screened through the page's own renderer **with the issuer column supplied**,
+because `lookupTicker` prepends it and a screen that drops it makes a correct
+page look wrong:
+
+| what the page publishes | rows | plans | ppl | value |
+|---|---|---|---|---|
+| **neither ticker nor fee** | 4,859 | 549 | 687,910 | $27,222,112,703 |
+| ticker only | 2,905 | 319 | 187,830 | $3,139,851,816 |
+| fee only | 14,630 | 1,645 | 1,367,415 | $25,539,736,883 |
+| both | 14,454 | 1,767 | 1,455,385 | $29,677,538,591 |
+
+**(1) THE `neither` BUCKET IS MOSTLY CORRECT, AND ITS LARGEST MEMBERS ARE NOT
+MUTUAL FUNDS AT ALL.** Read largest-first they are `Capital Group 20XX Target
+Date Retirement Trust TD9` — **COLLECTIVE TRUSTS**: Salesforce (57,193 ppl) on
+four rows at 10.9% / 9.8% / 8.7% / 6.7% ($1,216,366,000 the largest), Barnabas
+Health (35,605 ppl) on six rows up to 14.9%. **A collective trust has no ticker
+and no public expense ratio by nature**, so publishing neither is the honest
+answer and not a gap. My screen's `capital group` arm swept them in. *A count
+keyed on a vocabulary measures the vocabulary* — met on a HOUSE this time, where
+one house's name spans two vehicle kinds.
+
+**(2) THE DRAWN PLAN'S SPELLING IS NOT THE FAMILY'S COMMON ONE**, so the drawn
+row is not representative of what I measured. The commonest spellings are the
+FULL registered names — `American Funds 2050 Target Date Retirement Fund` 603
+rows / 519,136 ppl, and eleven sibling vintages — and every one of those
+publishes **a 0.32 fee and NO ticker**. The drawn `American 2035 Target
+Retirement` is a compressed form missing `Funds`, `Date` and `Fund`, which is
+why it reaches neither cell.
+
+### Which puts the draw exactly on a recorded owner-gated item, with numbers
+
+**`American Funds 20XX Target Date Retirement Fund` × 12 vintages = 6,286
+published rows, each publishing the R-6 expense ratio 0.32 while the TICKER
+column refuses to name a share class at all.** The register already says of this
+class: *"The TICKER column already refuses this inference and the FEE column does
+not; both cannot be right."* That was a 10.5M-participant estimate; this is the
+target-date sub-family named row by row, and the two columns' disagreement is
+visible on one line of output.
+
+**AND A NEW NAMED INSTANCE OF `ONE TICKER, TWO FEES`, which is the sharper
+claim because the fund IS identified:** `AMERICAN FUNDS 2055 TARGET R6` (285 rows
+/ **311,651 ppl**) resolves **RFKTX** and publishes **0.4**, while `American
+Funds 2055 Target Date Fund R6` (223 rows / 130,527 ppl) resolves **the same
+RFKTX** and publishes **0.32**. One fund, one symbol, two costs — decided by how
+much of the name the filer typed. Both owner-gated; neither touched.
+
+Of 5,586 distinct spellings in this family, 2,156 resolve a ticker and 3,194 a
+fee — the asymmetry recorded store-wide, reproduced inside one house.
+
+**No new entry is needed for the ticker/fee asymmetry itself** (recorded, and
+coverage rather than a false claim). What this draw adds is the two gated items'
+numbers and the collective-trust correction above, so a later cycle does not
+re-measure the `neither` bucket and mistake honest blanks for a gap.
+
+`docs/accuracy-log.md` 2026-10-04 (17:2xZ).
+
 ## 2026-10-04 (16:5xZ) — a Schedule H caption with no type cell, 574 rows / 4,564,065 readers; and the generated block had stopped being generated
 
 **SHIPPED: `isScheduleHCaption`. 574 published rows / 577 plans / 4,564,065

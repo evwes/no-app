@@ -884,6 +884,15 @@ published cells:
 - American Funds rows stating NO share class keeping the R-6 fee: **10.5M ppl**.
   The TICKER column already refuses this inference and the FEE column does not;
   both cannot be right.
+  **NAMED ROW BY ROW BY THE 16:07 DRAW: the target-date sub-family alone is 6,286
+  published rows across 12 vintages** — `American Funds 2050 Target Date
+  Retirement Fund` 603 rows / 519,136 ppl and eleven siblings, every one
+  publishing **0.32** with no ticker. **DO NOT read the family's `neither ticker
+  nor fee` bucket (4,859 rows / 687,910 ppl) as a gap:** its largest members are
+  `Capital Group 20XX Target Date Retirement Trust TD9` COLLECTIVE TRUSTS
+  (Salesforce 57,193 ppl on four rows to $1,216,366,000; Barnabas Health 35,605
+  on six), which have no ticker and no public ER by nature, so a blank is the
+  honest answer. `docs/accuracy-log.md` 2026-10-04 (17:2xZ).
 - A WHOLE-TABLE generic test beside the one-row test. `audit-dominant-row` needs
   90% on a SINGLE row, so Morgan Stanley (81,090 ppl, ten asset-class rows, the
   largest 62.1%) and Cummins (38,567 ppl, 65.1% of menu value naming no fund)
@@ -1379,9 +1388,13 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   priced under a fuller name gets its own fee and under a bare name a category
   estimate: `FXAIX` 0.015 as `Fidelity 500 Index Fund` vs **0.03** as `500 Index
   Fund`; `FSMDX` 0.025 vs **0.1**; `VBTLX` 0.04 vs **0.1**; `VFIAX` spans 0.02
-  to 0.4 (**×20**). **Adjacent to the gated fee pre-emption item but a sharper
-  claim: the page publishes two costs for one fund it has already named by
-  symbol.** Direction: where a row resolves to a ticker, the fee belongs to THAT
+  to 0.4 (**×20**). **AND A LIVE INSTANCE WITH BOTH POPULATIONS COUNTED, from
+  the 16:07 draw: `AMERICAN FUNDS 2055 TARGET R6` (285 rows / 311,651 ppl)
+  publishes 0.4 and `American Funds 2055 Target Date Fund R6` (223 rows /
+  130,527 ppl) publishes 0.32 — the SAME resolved symbol RFKTX**, the cost
+  decided by how much of the name the filer typed. **Adjacent to the gated fee
+  pre-emption item but a sharper claim: the page publishes two costs for one
+  fund it has already named by symbol.** Direction: where a row resolves to a ticker, the fee belongs to THAT
   fund. **GATED** — hundreds of thousands of fee cells, and a fee is SOURCED,
   never derived.
 - Double render: one holding published TWICE at an identical value under two
