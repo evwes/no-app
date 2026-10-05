@@ -799,8 +799,14 @@ VMware and Neiman Marcus. The witness must be **BOY** assets.
 `confident` **60,182** · lineups 59,833 · entries 65,495 ·
 match **43,312** · vesting 53,115 · roth 38,369 · **HIGH 4** ·
 warn **556** · overshoot 370 · overshootTrust 12 ·
-aggRow 114 · dl **48** · pvTopShare **99.9** (pv **200**) ·
-tkExact **37.76** · tkComparable **3.41**.
+aggRow 114 · dl **48** · pvTopShare **99.9** (pv **202**) ·
+tkExact **37.76** · tkComparable **3.41** · vestQuote **5,281**.
+
+**`vestQuote` 5,281 IS v202's OWN DELIVERY AND THE ONE FIGURE ITS
+REGISTRATION DENIED** — it counts STORED quotes carrying no vesting label, and
+v202 gave 103 plans a quote where nothing had been stored at all. Read it with
+WITHHELD **32** (`node scripts/vesting-quote-test.mjs`), down from 41 before
+v201.
 
 **`match` 43,312 IS LOWER THAN v199's 43,441 ON PURPOSE** — v199 and v200
 withhold a misread formula rather than publishing it, so the fall IS the
@@ -870,7 +876,24 @@ count must read **36, not 41**; or read the five pages. Named set:
 Employer Services is 42,571.** A coverage line that moves anything else is the
 thing to investigate. `docs/accuracy-log.md` 2026-10-04 (21:0xZ).
 
-**AND v202 IS COMMITTED `[skip ci]` BEHIND IT, NOT YET DISPATCHED.**
+**v202 LANDED (#579, `success`) AND IS MIRRORED TO MAIN** (`a99e3489` ->
+`7d5a83fe`, fast-forward, matched code/store pair). **THE NAMED SET HELD
+EXACTLY — WITHHELD 34 -> 32, both Polsinelli acks, 0 joined, 0 lost, 0 labels
+moved anywhere in the store — AND ONE REGISTERED FIGURE WAS WRONG: `vestQuote`
+5,178 -> 5,281.** Delivered **103 plans / 93,512 ppl gaining a quote** plus 11
+plans / 16,539 ppl where the reader sees a different sentence, against a
+registered 7 plans and "0 published quotes changed".
+**THE CAUSE IS NOT v201's (a cached-extraction harness) — I REUSED v201's
+SAFETY ARGUMENT ON A MECHANISM IT DOES NOT DESCRIBE.** v201's "a published
+quote can never change, so the touchable population is exactly the 41" holds
+because its only writer sits behind `vestingQuoteUpgrade`; **v202's arm fires
+on the FIRST-WINS disjunct `!out.vestingText`**, so it is a new WRITER inserted
+into a first-wins chain and the touchable population is every filing with a
+spelled-out graded schedule — 69,046 acks, not 364. Direction verified both
+ways (12 of 12 ranked, **14 of 14 on a uniform seeded draw**).
+`docs/accuracy-log.md` 2026-10-05 (00:1xZ).
+
+**ORIGINAL REGISTRATION, kept because it is what was predicted:**
 `PARSER_VERSION` is **202**: `lib-4i:7417`, the guard that stops a GRADED
 schedule being labelled "Immediate", was a bare `continue` and discarded the
 SENTENCE with the label — the FIFTH instance of *blocking a wrong ANSWER must
@@ -1135,6 +1158,61 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
+- **A PUBLISHED QUOTE THAT OPENS ON THE ATTACHMENT'S PAGE NUMBER AND RUNNING
+  HEADER — 1,615 quotes / 5,118,843 ppl, SIZED 2026-10-05 00:3xZ.** Walmart
+  (**1,996,659 ppl**) publishes, as its whole vesting answer, `6 Table of
+  Contents Vesting Participants are immediately vested in all elective…`;
+  Starbucks (314,112) opens `9 Starbucks Corporation 401(k) Plan and Trust
+  NOTES TO THE FINANCIAL STATEMENTS … NOTE 1 -`; Kroger 262,794; Nordstrom
+  109,402; Mount Sinai 75,936; Brinker 56,522; Leidos 54,080.
+  **It is a gap in a SHIPPED guard, asserted by a control:** the figures are
+  what `quoteTrim` LEAVES, and four fixture openers are required to survive it
+  so a later arm cannot make this sizing quietly read zero. Measured through
+  both guards over all 96,956 PUBLISHED quotes, **own-ack reach only** (a
+  trust's features are never published to member plans —
+  `build-seo-pages:111`, `app.js:2801` — and re-keying returned the IDENTICAL
+  figure, which is the control that the class holds no trust acks). **Stripping
+  the furniture flips a guard verdict on 0 of 1,615**, so a repair cannot
+  change which plans publish.
+  **THE BOUNDARY IS THE WHOLE PROBLEM AND IT IS WHY THIS DID NOT SHIP.** Split:
+  marker + document phrase 80 / 2,330,548 · "marker only" **425 / 1,086,426
+  (CONTAMINATED — DO NOT CARRY IT AS THE CLEAN NARROW HALF)** · marker +
+  sponsor/plan header 503 / 1,032,004 · heading only, no page number 459 /
+  521,756 · marker + SHOUTED run 148 / 148,109. That bucket's own examples
+  refute its name: NYU (12,699) is a running header with no `401(k)` token,
+  Bar Examiners was missed on a capital `403(B)`, `7 MAGO` is a sponsor
+  abbreviation, and **Motiva's leading `0` is a TABLE VALUE, not a page
+  number**. So a page-marker-only arm would leave `Table of Contents Vesting…`
+  in front of 2 million readers and call it done. Everything points at a
+  rule-start vocabulary (`Vesting`, `Participants`, `The Company`, `Employer`,
+  `Contributions`, `Discretionary`, `Generally`) but "strip up to the first
+  rule-start" is the greedy shape that published `Vanguard Windsor Fund` for
+  Windsor **II**. Needs single-protection cases drawn FROM the population, a
+  whole-store diff of both guards, the twin via `scripts/slice-vq.mjs --check`,
+  and the crawlable pages regenerated and READ. Two fixtures already pinned:
+  Motiva must be left alone, and the four openers must still survive
+  `quoteTrim`. `docs/accuracy-log.md` 2026-10-05 (00:3xZ).
+- **AND THE OLD FIRST-WINS ORDER PREFERS AN ACCELERATED-VESTING EXCEPTION OVER
+  THE SCHEDULE — UNSIZED, found by v202's verdict 2026-10-05.** All 7 of
+  v202's unambiguous quote improvements have one shape: the page was publishing
+  *"100% vested upon attaining age 65, qualifying for early retirement, or upon
+  total disability or death"* (Jefferson City Medical Group), *"However, a
+  participant will be deemed fully vested … upon death, disability, or
+  attainment of the normal retirement age"* (Koroseal), *"vest upon death,
+  attainment of normal retirement age (65), or total and permanent disability"*
+  (Center Id) — every one TRUE and every one answering a different question.
+  An accelerated-vesting clause is near-universal boilerplate and says nothing
+  about when a participant owns employer money; a QNEC vesting immediately is
+  required by law. v202 fixed only the plans where a graded sentence happened
+  to sit further down the same chain. **The class to size is plans publishing
+  an exception clause where NO ladder is reachable** — `vestingQuoteOk` accepts
+  these (they state a vesting rule), so the instrument is a new display-side
+  demotion or a ranking, not that guard. Related: 4 of v202's 11 changes are
+  TRADES, not gains, where the filing states two schedules for two money types
+  and the page has one slot (Unilever 11,516 ppl: match immediate vs a 3-year
+  NEC requirement) — the recorded "tiered, where the render has room for one
+  pair" item in another guise.
+  `docs/accuracy-log.md` 2026-10-05 (00:1xZ).
 - **SHIPPED 2026-10-04 14:4xZ — HOW MUCH OF THIS PLAN IS EVEN IN THE TRUST:
   21 plans / 1,038,102 ppl, 10 of them under 50%, 20 crawlable pages.** Kroger
   (**411,922 ppl**) now reads that the whole trust holds $10.1B against the
@@ -2600,6 +2678,25 @@ These outlived the versions that produced them. The accuracy log has the case.
   applies an ISSUER gate that is half the published verdict, and
   `isGenericTypeName` is imported from **lib-4i**, not lib-disclose — it is the
   PARSER's closed vocabulary, which is why the display predicates sit beside it.
+- **A SAFETY ARGUMENT BELONGS TO A MECHANISM, NOT TO A FILE (2026-10-05).**
+  v201's registration argued that a published quote could never change, *so the
+  touchable population is exactly the 41 withheld plans* — sound, because its
+  only new writer sat behind `vestingQuoteUpgrade`. I carried that argument
+  verbatim into v202's registration: same function, same two-line diff shape,
+  same template. **v202's arm fires on the OTHER disjunct, the first-wins
+  `!out.vestingText`**, so it is a plain WRITER inserted into a first-wins
+  chain, the touchable population is every filing with a graded schedule
+  (69,046 acks, not 364), and the store moved 103 plans where the registration
+  said 2. Nothing was harmed — 14 of 14 uniformly drawn gains are genuine — but
+  the prediction was wrong by 15x. *Before reusing a registration's safety
+  argument, name the disjunct the new code fires on.*
+- **AND ADDING A WRITER TO A FIRST-WINS CHAIN RE-ORDERS IT (2026-10-05).** The
+  consequence is not only "more plans get an answer": on 11 plans the new arm
+  writes earlier than whatever used to win, so the reader sees a DIFFERENT
+  sentence. 7 of those are improvements and **4 are trades** between two true
+  schedules. So a new writer in such a chain needs the changed-quote population
+  read, not just the gained one — a diff that counts only "was empty, now set"
+  is blind to the re-ordering it causes.
 - **A count of a condition is not a measure of a defect**, and the siblings:
   *a count keyed on a VOCABULARY measures the vocabulary*; *a count keyed on
   PLANS is blind to every master-trust row* (resolve a trust row through its

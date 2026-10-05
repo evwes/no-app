@@ -7,6 +7,258 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-05 (00:4xZ) — the cycle draw reads clean, and it narrows a recorded class by carrying its own control inside one menu
+
+`draw-published.mjs --seed 5102026`, participant-weighted over 60,163 PUBLISHED
+menus reaching 103,501,088 participants, drew **FedEx Corporation pn=004 —
+290,909 participants, 26 funds, ratio 0.961** ($3,380,167,342 against
+$3,515,516,850 of plan assets).
+
+Nothing convictable: no fabricated ticker, no wrong share class, no unnamed
+dominant row. The eight `Vanguard Target Retirement 20XX Trust Select` rows all
+publish a COMPARABLE (`~VFFVX`, `~VTTSX`, …) at that comparable fund's own
+0.08, each carrying `noPublicPrice` — which is the 20:4xZ design working, not a
+failed suppressor: `app.js:3882` reads
+`star ? info.er : (noPublicPrice ? null : fundERRow(f))`, so on an asterisked
+row the fee is the comparable's and `noPublicPrice` only nulls a PATTERN
+estimate.
+
+**What is worth recording is a sharper framing of the ticker/fee asymmetry,
+because the control sits in the same menu.** Four rows publish NEITHER a ticker
+nor a fee — `Vanguard U.S. Large Cap Equity Index Fund` ($334,370,212, **9.9%
+of the menu**), `Vanguard International Equity Index Fund` ($156,837,283),
+`Vanguard U.S. Small/Mid Cap Equity Index Fund` ($142,017,309) and
+`Vanguard U.S. Bond Index Fund` ($65,549,932): **$698,774,786, 20.6% of the
+menu, to 290,909 readers.**
+
+These are collective trusts, so a blank ticker and a blank public ER are
+HONEST — that is the recorded `Capital Group … Trust TD9` correction and it
+stands. ***But the eight target-date rows beside them are collective trusts
+too, and they get comparables.*** So within one menu, one vehicle kind, the
+same house: the difference is not a design decision about collective trusts,
+it is **coverage of broad-index trusts in the comparable table**. A store-wide
+count of "publishes neither cell" cannot see that distinction, because it mixes
+vehicles that have no comparable with vehicles whose comparable simply is not
+written yet.
+
+That is `fund-er.js`/`funds-and-tickers` territory and it is coverage rather
+than a false claim, so nothing is shipped from it. Recorded so the next
+measurement of that class splits on *"does a comparable exist for this index"*
+rather than on *"is this a registered fund"*.
+
+`docs/accuracy-log.md` 2026-10-05 (00:4xZ).
+
+## 2026-10-05 (00:1xZ) — v202's verdict: the named set held exactly, 103 plans gained a quote the registration said could not move, and the reason is that I reused v201's safety argument on a different mechanism
+
+**Run #579 concluded `success`. v202 is mirrored to main** (`a99e3489` ->
+`7d5a83fe`, a fast-forward, matched code/store pair at PARSER_VERSION 202 /
+dominant store pv 202 at 99.9%).
+
+### What was registered, and what the store says
+
+The named set held to the digit. `vesting-quote-test`'s WITHHELD count reads
+**32**, and the two acks that left are **exactly** the two Polsinelli Pc
+filings the registration named (1,998 + 1,444 ppl): both stop publishing *"Any
+Plan participant may withdraw vested profit sharing and matching contributions
+after the amounts have been allocated…"* — a WITHDRAWAL rule — and now publish
+*"the employer profit sharing contributions vested in 20% increments, with no
+vesting after the first year, 20% after the second year…"*. **0 joined the
+withheld set, 0 quotes were lost, and 0 vesting labels moved anywhere in the
+store** (asserted per-ack, not off the trail's count, because a swap can net to
+zero).
+
+**But the registration said "coverage line unchanged except `pv` 201 -> 202",
+and one figure moved: `vestQuote` 5,178 -> 5,281.** Every other field is
+identical — plans 112,652, confident 60,182, lineups 59,833, entries 65,495,
+match 43,312, vesting 53,115, roth 38,369, HIGH 4, warn 556, dl 48.
+
+Measured against the pre-#579 store through `git show`:
+
+```
+  quote GAINED where none was stored:  103   (of which NO label: 103)
+  quote CHANGED:                        13   (11 reader-visible, 2 the Polsinelli gains)
+  quote LOST:                            0
+  vesting LABEL moved:                   0
+```
+
+So v202 delivered **103 plans / 93,512 participants** that gain a vesting quote
+where the page said *"not stated in the audited notes"*, plus 11 plans /
+16,539 participants where the reader now sees a different sentence — against a
+registered **7 plans / 50,904 ppl and "0 published quotes changed"**.
+
+### WHY THE REGISTRATION WAS WRONG, AND IT IS NOT THE SAME MISS AS v201's
+
+v201 under-predicted because its harness read filings from a local `pdftotext`
+cache where production runs OCR. **This is a different error and a worse one:
+the POPULATION was wrong, because I carried v201's safety argument across to a
+mechanism it does not describe.**
+
+v201's argument, which was sound: *"the stored quote must be guard-REJECTED and
+the candidate ACCEPTED, so a published quote can never change — the touchable
+population is exactly the 41, and every one was replayed."* That holds because
+v201's only new writer sits behind `vestingQuoteUpgrade`.
+
+**v202's arm does not.** `lib-4i:7417` writes under
+`(!out.vestingText || vestingQuoteUpgrade(out, cap(s)))` — and for these 114
+plans it is the **first disjunct** that fires. v202 therefore did two things,
+one registered and one not:
+
+1. the upgrade path, exactly as registered: 2 Polsinelli plans;
+2. **a new WRITER inserted into a FIRST-WINS chain, which re-orders it** — on
+   103 plans nothing had written at all, and on 11 the new arm writes earlier
+   than whatever used to win.
+
+The touchable population is therefore not "the 41 withheld plans" but *every
+filing containing a spelled-out graded schedule*, which is a question about
+69,046 acks and not about 364. ***A safety argument belongs to a MECHANISM, not
+to a file*** — same function, same two-line diff shape, same registration
+template, and the argument silently stopped applying.
+
+### THE DIRECTION IS RIGHT, CHECKED BOTH WAYS BECAUSE A GAIN IS A CLAIM
+
+- **Ranked by participants, the 12 largest gains read**: all 12 genuine
+  employer-money graded schedules (LPL Financial 10,827 ppl "30%, 60% and 100%
+  after one, two, and three"; Shannon Medical 5,639; Mod Super Fast Pizza 3,447;
+  Endo USA ×2; Mapfre; Princess Cruise Lines; Dothan Security…).
+- **And a UNIFORM seeded draw of 14 of the 103** — because ranking is how to
+  choose what to OPEN and the wrong way to estimate a RATE — read **14 of 14
+  genuine**: Rightway Healthcare, Central Valley Automotive, F.G. Downing,
+  Tikigaq, Hanna Instruments, Atalys, Homestead, Bij Motors, Buffini, Easter
+  Seals Florida, David Lerner… every one a 20%/5-or-6-year ladder or an explicit
+  33/66/100.
+
+### THE 11 CHANGED QUOTES, READ IN FULL — and they expose a general defect in the OLD order
+
+**7 are unambiguous improvements, and all 7 have one shape: an
+ACCELERATED-VESTING EXCEPTION was beating the plan's actual schedule.**
+
+| plan | was published | now published |
+|---|---|---|
+| Jefferson City Medical Group (736) | "100% vested … upon attaining age 65, qualifying for early retirement, or upon total disability or death" | "20% after two years … with full vesting … after six years" |
+| Koroseal (364) | "However, a participant will be deemed fully vested … upon death, disability, or attainment of the normal retirement age" | "20% vested after two years … full vesting after six eligible years" |
+| Center Id (184) | "vest upon death, attainment of normal retirement age (65), or total and permanent disability" | "25% after one year of service with full vesting after four years" |
+| Bc International (153) | "100% vested … if employed on or after their early or normal retirement age or if they terminate … death or disability" | "twenty percent (20%) after two years … for each year thereafter" |
+| Scenic Living (132) | "In the event of permanent disability, death, reaching normal retirement age, or termination of the Plan…" | "after year 1 – 0%, after year 2 – 50%, after year 3 – 75%, after year 4 – 100%" |
+| Mission North (134) | "Participants vest in qualified nonelective contributions immediately" | "Discretionary profit sharing contributions vest 20% annually, commencing after two years" |
+| Bh Security (1,726) | "the Plan was amended to update the vesting schedules … and to preserve the prior vesting schedules…" | "…vest after 2 years of vesting service" |
+
+Every "was" column is a TRUE sentence that answers a different question. An
+accelerated-vesting clause is near-universal boilerplate and tells a reader
+nothing about when they own employer money; a QNEC vesting immediately is
+required by law. **That is a defect in the pre-existing first-wins order, not
+in v202**, and v202 only fixed the 7 where a graded sentence happened to exist
+further down. Queued below.
+
+**4 are TRADES rather than gains, and they are recorded as trades.** The filing
+states two schedules for two kinds of money and the page has one slot:
+
+- **Unilever (11,516 ppl, the largest single change)**: was *"Company matching
+  contributions are vested 100% immediately"*, now *"non-elective contributions
+  of 4% of compensation … subject to a three-year vesting requirement"*. Both
+  true. The new sentence is the one that is NOT immediate, which is arguably
+  the more consequential half, but neither is complete and this is not an
+  unambiguous improvement.
+- Schell & Kampeter (1,302): match 2-year cliff -> profit-sharing 6-year ladder.
+- Esi-Us (147): a 2025 amendment making match 100% vested -> a 0/50/75/100 ladder.
+- Roi Healthcare (145): safe-harbor match 100% after two years -> a six-year
+  20% ladder on match and non-elective.
+
+Nothing is false in any of the eight. The honest statement is that on 4 plans
+v202 changed WHICH true schedule a reader sees, and the slot problem is the
+recorded "tiered, where the render has room for one pair" item in another guise.
+
+### The adoption that let the mirror through
+
+Main carried `a99e3489` — run #578's scheduled incremental — that the branch
+lacked. It moved no `data/lineups/**` or `data/plans/**` shard and its coverage
+line is byte-identical to the pre-v201 one: an empty hour. **Adopted rather
+than assumed superseded, on two measurements:** a `mirror-gate` replay
+(`MIRROR_GATE_MAIN_REF=origin/main`, `BRANCH_REF=HEAD`) reporting **+0 gained,
+-0 lost by ack and 0 plans / 0 participants actually stopping being served**,
+and a trail comparison showing main holds 387 lines, the branch 388, and **zero
+lines on main absent from the branch**. Merged `-s ours` on that evidence, so
+a99e3489 is an ancestor and the mirror is a fast-forward rather than a history
+overwrite.
+
+`docs/accuracy-log.md` 2026-10-05 (00:1xZ).
+
+## 2026-10-05 (00:3xZ) — SIZED, NOT SHIPPED: a published quote that OPENS on the attachment's page number and running header — 1,615 quotes / 5,118,843 participants, and Walmart is 1,996,659 of them
+
+Found by reading v202's own output: two of a 25-row sample carried a page
+number welded mid-sentence. Sizing that led to the much larger leading case.
+
+**Walmart Inc. publishes, as its whole vesting answer:**
+
+> `6 Table of Contents Vesting Participants are immediately vested in all
+> elective, catch-up, rollover, Company matching and qualified non…`
+
+Starbucks (314,112 ppl) opens `9 Starbucks Corporation 401(k) Plan and Trust
+NOTES TO THE FINANCIAL STATEMENTS For the years ended December 31, 2025 and
+2024 NOTE 1 -`; Kroger (262,794) `5 Vesting All accounts…`; Nordstrom (109,402)
+`7 Table of Contents NORDSTROM 401(k) (Dollar and share amounts in thousands)
+Company contributions —`; Mount Sinai 75,936; Brinker 56,522; Leidos 54,080.
+
+**This is a gap in a SHIPPED guard, and that is asserted by a control rather
+than assumed:** `quoteTrim` (shipped 2026-10-03 at 64 quotes / 129,653 ppl,
+*"table debris stops leading a published quote"*) is run first, and the figures
+above are what it LEAVES. Four fixture openers are required to survive it, so
+if a later `quoteTrim` arm starts removing them this sizing fails loudly
+instead of quietly counting zero.
+
+**Measured through both guards over the whole store, PUBLISHED quotes only
+(96,956 of 110,765 stored), own-ack reach only** — `build-seo-pages:111` adopts
+a trust MENU while keeping `features: entry && entry.features`, and
+`app.js:2801` sets `filedFeatures` from the plan's own entry, so a trust's
+quote is never published to member plans. Crediting `mtiaAck` members first
+read 4,960,401 and **re-keying to the own ack returned the identical figure**,
+which is the control that this class contains no trust acks.
+
+**Stripping the furniture flips a guard verdict on 0 of 1,615**, so a repair
+cannot change which plans publish — the same safety property the 16:2xZ ship
+established for its own arms.
+
+### The split, which is the measurement that matters, because the BOUNDARY is the whole problem
+
+| bucket | quotes | ppl | |
+|---|---|---|---|
+| marker + document phrase | 80 | 2,330,548 | `6 Continued ABSOPURE WATER COMPANY, et al 401(k) The Company contributes…` |
+| "marker only" (CONTAMINATED — see below) | 425 | 1,086,426 | |
+| marker + sponsor/plan header | 503 | 1,032,004 | `Page 9 ENERGIZER 401(k) (Continued) Vesting Participants are fully vested…` |
+| heading only, no page number | 459 | 521,756 | `DESCRIPTION OF PLAN (Continued) Vesting Participants are immediately vested…` |
+| marker + SHOUTED run | 148 | 148,109 | `7 EASTMAN KODAK EMPLOYEES' Note 1 Description of Plan - Continued Vesting…` |
+
+***DO NOT CARRY THE 425 / 1,086,426 AS "THE CLEAN NARROW HALF" — my own
+classifier is too weak and that bucket is contaminated,*** which is the finding
+that stopped this from shipping tonight. Its own examples give it away: NYU
+(12,699 ppl) reads `5 NYU Grossman School of Medicine Retirement Plan for
+Members of the (In thousands) Vesting…` — a running header with no `401(k)`
+token for my `HEADER_RUN` to catch; National Conference of Bar Examiners reads
+`(6) NATIONAL CONFERENCE OF BAR EXAMINERS 403(B) NOTE 1 DESCRIPTION OF PLAN
+(CONTINUED)`, missed because the pattern wanted a lowercase `b`; Mago reads
+`7 MAGO The Company matched…`, where `MAGO` is the sponsor abbreviation; and
+Motiva's leading `0` is **a table value, not a page number** (`0 % For any
+portion exceeding 6%…`).
+
+**So the narrow "strip the page marker alone" arm is NOT the ship it looks
+like** — it would leave `Table of Contents Vesting…` in front of 2 million
+readers and call the job done. The real problem is finding where the HEADER
+ENDS, and that is a claim about text rather than a character class. Everything
+visible in all five buckets points one way — the rule begins on a recognisable
+start (`Vesting`, `Participants`, `The Company`, `Employer`, `Contributions`,
+`Discretionary`, `Generally`) — but "strip everything up to the first
+rule-start token" is exactly the kind of greedy repair that published
+`Vanguard Windsor Fund` for Windsor **II**, so it needs the full treatment: a
+per-condition single-protection case drawn FROM the population, a whole-store
+diff of both guards, the app.js twin via `scripts/slice-vq.mjs --check`, and a
+regeneration of the crawlable pages with the changed files read rather than
+counted.
+
+Two fixtures are already pinned for whoever takes it: Motiva's leading table
+value must be LEFT ALONE under any page-marker arm, and the four debris openers
+must still survive `quoteTrim` for the sizing to remain honest.
+
+`docs/accuracy-log.md` 2026-10-05 (00:3xZ).
+
 ## 2026-10-04 (23:2xZ) — the `Investment in` residue: the measurement was clean, the ship was WRONG, and a shipped fixture caught it before anything left the machine
 
 The queue's residue item said adding `in` to `LABEL_ONLY_WORD` was "a
