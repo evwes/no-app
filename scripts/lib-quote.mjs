@@ -329,11 +329,127 @@ export function vestingQuoteOk(text) {
  * also why it is applied at the render site rather than inside the guards. */
 const Q_LEAD = /^(?:[|│┃]|[)\]}]|[;:]|_)+[\s|)\]};:_.\-–]*/;
 const Q_SENTENCE = /^(?:[A-Z]|\d+(?:\.\d+)?\s*%|["“(])/;
+
+/* AND THE OTHER LEADING THING AN ATTACHMENT WELDS ONTO A SENTENCE: the PAGE
+ * NUMBER AND RUNNING HEADER. 1,890 published quotes / 1,887 acks /
+ * 6,096,337 participants open on it, and the largest is the largest plan in
+ * the universe — Walmart (1,996,659 ppl) publishes, as its WHOLE vesting
+ * answer, "6 Table of Contents Vesting Participants are immediately vested in
+ * all elective, catch-up, rollover, Company matching and qualified
+ * non-elective contributions." Starbucks (314,112) opens on nine words of
+ * statement title; Kroger (262,794) on a bare "5".
+ *
+ * THE SHAPE IS THE ARM LOOP ABOVE, not something new: each arm may remove only
+ * a segment it can NAME, and the SAME Q_SENTENCE gate judges the remainder. It
+ * is deliberately NOT "strip up to the first rule-start word" — that is the
+ * greedy shape that once published `Vanguard Windsor Fund` for Windsor II.
+ *
+ * SAFETY, measured over all 96,956 published quotes: 0 stop being publishable,
+ * so like the arm above this cannot change WHICH plans publish a quote.
+ *
+ * TWO FALSE POSITIVES WERE FOUND BY READING THE REMOVED PREFIXES, NOT BY ANY
+ * COUNT, and each earned a guard plus its own fixture:
+ *   - Honeywell (63,466 ppl) files "Participating Units 6 Honeywell 401(k) -
+ *     Continued covered by a non-variable match …" — the page number and
+ *     header are welded MID-sentence and the sentence's own subject is its
+ *     first two words. So a header run containing a bare integer is reaching
+ *     past a header that does not start the quote (`\d` guard).
+ *   - "In years in which the safe harbor provisions of Section 401(k) are
+ *     satisfied …" (28,272 ppl) has no finite verb and no page marker in its
+ *     run, so every other guard passed it. A running header is a PROPER NAME,
+ *     so every word of the run must be capitalised or a connector.
+ * A third came out of the integer distribution: 212 of 235 bare-integer
+ * removals are single digits, which is what a page number looks like, and
+ * every multi-digit one was read — two filings publish a SPACED "401 (k)",
+ * where cutting the number leaves "(k) Vesting …" and mutilates the plan-type
+ * token rather than removing a page number.
+ *
+ * NAMED RESIDUE, left alone on purpose: a quote opening on an orphaned union
+ * LOCAL number ("117 Affiliated with the International Brotherhood of
+ * Teamsters …", 160 ppl) is indistinguishable from a page number by shape. */
+const MONTH = "(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)";
+const Q_ARMS = [
+  ["page-word",   /^page\s+(?:no\.?\s*)?\d{1,3}\b[\s.:—–-]*/i],
+  ["paren-page",  /^\(\s*\d{1,3}\s*\)[\s.:—–-]*/],
+  ["toc",         /^table of contents\b[\s.:—–-]*/i],
+  ["continued",   /^(?:[-–—]\s*)?\(?\s*continued\s*\)?[\s.:—–-]*/i],
+  ["notes-title", /^notes? to (?:the )?(?:consolidated )?financial statements?\b[\s.:—–-]*/i],
+  ["period",      /^(?:for the )?(?:years?|periods?) ended MONTH \d{1,2},? \d{4}(?:\s+and\s+(?:MONTH \d{1,2},? )?\d{4})*[\s.:—–-]*/i],
+  /* A DATE-LINE MUST BE A DATE: `[a-z]+ \d{1,2}, \d{4}` matched the word
+   * FRAGMENT "er 31, 2025" (a truncated December), so the arm was accepting
+   * any word followed by numbers. It takes a RUN of dates because one filing
+   * was left opening on "AND DECEMBER 31, 2022", the second half of its own
+   * comparative period. All 14 removals were read and all 14 are the
+   * statement period, never a date the rule turns on. */
+  ["date-line",   /^MONTH \d{1,2},? \d{4}(?:\s+(?:and|to|through|[-–—])\s+(?:MONTH \d{1,2},? )?\d{4})*[\s.:—–-]*/i],
+  ["note-n",      /^note\s+\d+\s*[-–—:.]?\s*/i],
+  ["descr",       /^description of (?:the )?plan\b[\s.:—–-]*/i],
+  ["basis",       /^\((?:modified cash basis|in thousands|dollars? in thousands|dollar and share amounts in thousands)\)[\s.:—–-]*/i],
+];
+for (const a of Q_ARMS) if (/MONTH/.test(a[1].source)) a[1] = new RegExp(a[1].source.replace(/MONTH/g, MONTH), a[1].flags);
+if (Q_ARMS.some((a) => /MONTH/.test(a[1].source))) throw new Error("lib-quote: a MONTH placeholder survived compilation");
+
+/* a ladder/unit follower means a leading integer is table DATA, not a page
+ * number: Motiva files "0 % For any portion exceeding 6% …" */
+const Q_DATA_FOLLOWER = /^(?:%|percent\b|years?\b|yrs?\b|months?\b|or\s+(?:more|less)\b|but\s+less\b|and\s+(?:over|above)\b|to\s+\d)/i;
+const Q_PLAN_PAREN = /^\(\s*[kb]\s*\)/i;
+const Q_HEADER_VERB = /\b(?:is|are|was|were|will|may|shall|must|can|has|have|had|match(?:es|ed)?|contribut\w+|vest\w*|receive\w*|provide\w*|elect\w*|defer\w*|become\w*)\b/i;
+const Q_NAME_CONNECTOR = /^(?:and|of|the|for|at|et|al\.?|de|la|von|van|&|-|–|—)$/i;
+/* the plan-name suffix is a WORD RUN, not an alternation: alternation is
+ * FIRST-match, so `plan|…|plan and trust` matched Starbucks' " Plan" and
+ * stranded "and Trust", which then failed the gate and cost the whole trim. */
+const Q_PLAN_TYPE = /^((?:[^\s]+\s+){0,11}?)(401\s?\(\s?k\s?\)|403\s?\(\s?b\s?\)|457\s?\(\s?b\s?\))((?:\s+(?:savings|retirement|investment|profit|sharing|and|the|of|plan|trust|program|fund)\b)*)[\s.:—–-]*/i;
+
+function qHeaderArm(s) {
+  const m = s.match(Q_PLAN_TYPE);
+  if (!m) return null;
+  const run = m[1];
+  if (!run.trim()) return null;                /* the quote OPENS on 401(k) — no header */
+  if (/[%$]/.test(run)) return null;           /* a rule, not a name */
+  if (Q_HEADER_VERB.test(run)) return null;    /* a predicate, not a name */
+  if (/(?:^|\s)\d{1,4}(?:\s|$)/.test(run)) return null;   /* the Honeywell guard */
+  for (const w of run.trim().split(/\s+/)) {   /* a header is a proper NAME */
+    if (!w || Q_NAME_CONNECTOR.test(w)) continue;
+    if (!/^[(\["'“]*[A-Z0-9]/.test(w)) return null;
+  }
+  return m[0];
+}
+
+function quoteStripLead(input) {
+  let s = String(input || "").trim();
+  let best = null;
+  for (let i = 0; i < 12; i++) {
+    let fired = false;
+    for (const [, re] of Q_ARMS) {
+      const m = s.match(re);
+      if (m && m[0].trim()) { fired = true; s = s.slice(m[0].length).trim(); break; }
+    }
+    if (!fired) {
+      const h = qHeaderArm(s);
+      if (h) { fired = true; s = s.slice(h.length).trim(); }
+    }
+    if (!fired) {
+      const m = s.match(/^\d{1,3}\s+(?=\S)/);
+      const after = m ? s.slice(m[0].length) : "";
+      if (m && !Q_DATA_FOLLOWER.test(after) && !Q_PLAN_PAREN.test(after)) { fired = true; s = after.trim(); }
+    }
+    if (!fired) break;
+    /* KEEP THE LAST STATE THAT PASSES THE GATE. Judging only the final state
+     * lets a fired arm REFUSE THE WHOLE TRIM — measured, every arm had a
+     * population that trimmed only when that arm was switched off. Backing off
+     * can only return a prefix the shipped gate already accepts. */
+    if (Q_SENTENCE.test(s) && s.length >= 25) best = s;
+  }
+  return best;
+}
+
 export function quoteTrim(text) {
-  const t = String(text || "").trim();
-  if (!Q_LEAD.test(t)) return t;
-  const rest = t.replace(Q_LEAD, "").trim();
-  return Q_SENTENCE.test(rest) ? rest : t;
+  let t = String(text || "").trim();
+  if (Q_LEAD.test(t)) {
+    const rest = t.replace(Q_LEAD, "").trim();
+    if (Q_SENTENCE.test(rest)) t = rest;
+  }
+  return quoteStripLead(t) || t;
 }
 
 /* `node scripts/lib-quote.mjs --selftest` — the same convention lib-schema.mjs

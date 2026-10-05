@@ -321,6 +321,76 @@
    "why": "CONTROL Revela Foods 384 ppl: a bar followed by OCR noise, not punctuation -- a wider vocabulary is the wrong answer",
    "text": "| \u00a3 a a The Company contributes a safe harbor match of 100% of the first 3% of base compensation.",
    "expect": "| \u00a3 a a The Company contributes a safe harbor match of 100% of the first 3% of base compensation."
+  },
+  {
+   "why": "Walmart 1,996,659 ppl: a page number and the table-of-contents header, the largest plan in the universe",
+   "text": "6 Table of Contents Vesting Participants are immediately vested in all elective, catch-up, rollover, Company matching and qualified non-elective contributions.",
+   "expect": "Vesting Participants are immediately vested in all elective, catch-up, rollover, Company matching and qualified non-elective contributions."
+  },
+  {
+   "why": "Kroger 262,794 ppl: a bare page number is the whole of the debris",
+   "text": "5 Vesting All accounts of a participant are fully vested at all times.",
+   "expect": "Vesting All accounts of a participant are fully vested at all times."
+  },
+  {
+   "why": "HCA 379,101 ppl: the note heading with no page number at all",
+   "text": "Description of the Plan (continued) Contributions and Vesting (continued) The Company matching contribution vests ratably, beginning with the completion of two years of service.",
+   "expect": "Contributions and Vesting (continued) The Company matching contribution vests ratably, beginning with the completion of two years of service."
+  },
+  {
+   "why": "the five-arm cascade: paren page, note number, plan description, continued",
+   "text": "(7) NOTE 1 DESCRIPTION OF PLAN (CONTINUED) Vesting Participants are immediately vested in their deferral and Employer safe harbor matching contributions plus actual earnings thereon.",
+   "expect": "Vesting Participants are immediately vested in their deferral and Employer safe harbor matching contributions plus actual earnings thereon."
+  },
+  {
+   "why": "the sponsor/plan running header, and the suffix must take `Plan and Trust` WHOLE -- alternation is first-match, so a `plan` alternative stranded `and Trust` and cost the entire trim",
+   "text": "9 Starbucks Corporation 401(k) Plan and Trust Vesting All participant and Company matching contributions are immediately 100% vested.",
+   "expect": "Vesting All participant and Company matching contributions are immediately 100% vested."
+  },
+  {
+   "why": "the statement period is furniture; all 14 such removals were read and all 14 are a period, never a date the rule turns on",
+   "text": "June 30, 2025 and 2024 Wellstar matches 50% of the first 4% of each participants' compensation contributed by the participant.",
+   "expect": "Wellstar matches 50% of the first 4% of each participants' compensation contributed by the participant."
+  },
+  {
+   "why": "SINGLE PROTECTION, the page-marker guard on a header run: Honeywell 63,466 ppl welds the page number and header MID-sentence, and `Participating Units` is the sentence's own subject",
+   "text": "Participating Units 6 Honeywell 401(k) - Continued covered by a non-variable match receive basic matching contributions whereby the Company matches 87% of the first 8%.",
+   "expect": "Participating Units 6 Honeywell 401(k) - Continued covered by a non-variable match receive basic matching contributions whereby the Company matches 87% of the first 8%."
+  },
+  {
+   "why": "SINGLE PROTECTION, the proper-name guard: 28,272 ppl file a real sentence whose opening runs up to a Section 401(k) citation -- no finite verb and no page marker in the run, so every other guard passed it",
+   "text": "In years in which the safe harbor provisions of Section 401(k) are satisfied, the Company makes a fully vested contribution.",
+   "expect": "In years in which the safe harbor provisions of Section 401(k) are satisfied, the Company makes a fully vested contribution."
+  },
+  {
+   "why": "SINGLE PROTECTION, the plan-paren guard: two filings publish a SPACED `401 (k)`, where cutting the integer leaves `(k) Vesting ...` and mutilates the plan-type token",
+   "text": "401 (k) Vesting Participants are immediately vested in all contributions, plus actual earnings thereon.",
+   "expect": "401 (k) Vesting Participants are immediately vested in all contributions, plus actual earnings thereon."
+  },
+  {
+   "why": "SINGLE PROTECTION, the data-follower guard: Motiva's leading `0` is a TABLE VALUE, not a page number",
+   "text": "0 % For any portion exceeding 6% No additional contribution of base pay Vesting Participants are immediately 100% vested",
+   "expect": "0 % For any portion exceeding 6% No additional contribution of base pay Vesting Participants are immediately 100% vested"
+  },
+  {
+   "why": "SINGLE PROTECTION, the data-follower guard on a ladder row rather than a percentage",
+   "text": "3 Years of Service 40% vested, 4 Years of Service 60% vested, 5 or more 100% vested in employer contributions.",
+   "expect": "3 Years of Service 40% vested, 4 Years of Service 60% vested, 5 or more 100% vested in employer contributions."
+  },
+  {
+   "why": "SINGLE PROTECTION, the finite-verb guard: a rule that merely MENTIONS the plan type",
+   "text": "The Company matches 100% of the first 3% of 401(k) elective deferrals made by each participant.",
+   "expect": "The Company matches 100% of the first 3% of 401(k) elective deferrals made by each participant."
+  },
+  {
+   "why": "SINGLE PROTECTION, the date-line month vocabulary: a word FRAGMENT followed by numbers is not a date, and `[a-z]+ \\d{1,2}, \\d{4}` accepted the truncated `er 31, 2025`",
+   "text": "er 31, 2025 and 2024 Vesting Participants are immediately vested in their contributions here.",
+   "expect": "er 31, 2025 and 2024 Vesting Participants are immediately vested in their contributions here."
+  },
+  {
+   "why": "a plain rule needs no trimming at all -- the arm must be inert on ordinary text",
+   "text": "Participants vest in employer matching contributions at a rate of 20% after two years of service.",
+   "expect": "Participants vest in employer matching contributions at a rate of 20% after two years of service."
   }
  ]
 }

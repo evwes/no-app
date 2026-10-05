@@ -88,11 +88,77 @@
 
   const Q_LEAD = /^(?:[|│┃]|[)\]}]|[;:]|_)+[\s|)\]};:_.\-–]*/;
   const Q_SENTENCE = /^(?:[A-Z]|\d+(?:\.\d+)?\s*%|["“(])/;
+
+  const MONTH = "(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)";
+  const Q_ARMS = [
+    ["page-word",   /^page\s+(?:no\.?\s*)?\d{1,3}\b[\s.:—–-]*/i],
+    ["paren-page",  /^\(\s*\d{1,3}\s*\)[\s.:—–-]*/],
+    ["toc",         /^table of contents\b[\s.:—–-]*/i],
+    ["continued",   /^(?:[-–—]\s*)?\(?\s*continued\s*\)?[\s.:—–-]*/i],
+    ["notes-title", /^notes? to (?:the )?(?:consolidated )?financial statements?\b[\s.:—–-]*/i],
+    ["period",      /^(?:for the )?(?:years?|periods?) ended MONTH \d{1,2},? \d{4}(?:\s+and\s+(?:MONTH \d{1,2},? )?\d{4})*[\s.:—–-]*/i],
+    ["date-line",   /^MONTH \d{1,2},? \d{4}(?:\s+(?:and|to|through|[-–—])\s+(?:MONTH \d{1,2},? )?\d{4})*[\s.:—–-]*/i],
+    ["note-n",      /^note\s+\d+\s*[-–—:.]?\s*/i],
+    ["descr",       /^description of (?:the )?plan\b[\s.:—–-]*/i],
+    ["basis",       /^\((?:modified cash basis|in thousands|dollars? in thousands|dollar and share amounts in thousands)\)[\s.:—–-]*/i],
+  ];
+  for (const a of Q_ARMS) if (/MONTH/.test(a[1].source)) a[1] = new RegExp(a[1].source.replace(/MONTH/g, MONTH), a[1].flags);
+  if (Q_ARMS.some((a) => /MONTH/.test(a[1].source))) throw new Error("lib-quote: a MONTH placeholder survived compilation");
+
+  /* a ladder/unit follower means a leading integer is table DATA, not a page
+   * number: Motiva files "0 % For any portion exceeding 6% …" */
+  const Q_DATA_FOLLOWER = /^(?:%|percent\b|years?\b|yrs?\b|months?\b|or\s+(?:more|less)\b|but\s+less\b|and\s+(?:over|above)\b|to\s+\d)/i;
+  const Q_PLAN_PAREN = /^\(\s*[kb]\s*\)/i;
+  const Q_HEADER_VERB = /\b(?:is|are|was|were|will|may|shall|must|can|has|have|had|match(?:es|ed)?|contribut\w+|vest\w*|receive\w*|provide\w*|elect\w*|defer\w*|become\w*)\b/i;
+  const Q_NAME_CONNECTOR = /^(?:and|of|the|for|at|et|al\.?|de|la|von|van|&|-|–|—)$/i;
+  const Q_PLAN_TYPE = /^((?:[^\s]+\s+){0,11}?)(401\s?\(\s?k\s?\)|403\s?\(\s?b\s?\)|457\s?\(\s?b\s?\))((?:\s+(?:savings|retirement|investment|profit|sharing|and|the|of|plan|trust|program|fund)\b)*)[\s.:—–-]*/i;
+
+  function qHeaderArm(s) {
+    const m = s.match(Q_PLAN_TYPE);
+    if (!m) return null;
+    const run = m[1];
+    if (!run.trim()) return null;                /* the quote OPENS on 401(k) — no header */
+    if (/[%$]/.test(run)) return null;           /* a rule, not a name */
+    if (Q_HEADER_VERB.test(run)) return null;    /* a predicate, not a name */
+    if (/(?:^|\s)\d{1,4}(?:\s|$)/.test(run)) return null;   /* the Honeywell guard */
+    for (const w of run.trim().split(/\s+/)) {   /* a header is a proper NAME */
+      if (!w || Q_NAME_CONNECTOR.test(w)) continue;
+      if (!/^[(\["'“]*[A-Z0-9]/.test(w)) return null;
+    }
+    return m[0];
+  }
+
+  function quoteStripLead(input) {
+    let s = String(input || "").trim();
+    let best = null;
+    for (let i = 0; i < 12; i++) {
+      let fired = false;
+      for (const [, re] of Q_ARMS) {
+        const m = s.match(re);
+        if (m && m[0].trim()) { fired = true; s = s.slice(m[0].length).trim(); break; }
+      }
+      if (!fired) {
+        const h = qHeaderArm(s);
+        if (h) { fired = true; s = s.slice(h.length).trim(); }
+      }
+      if (!fired) {
+        const m = s.match(/^\d{1,3}\s+(?=\S)/);
+        const after = m ? s.slice(m[0].length) : "";
+        if (m && !Q_DATA_FOLLOWER.test(after) && !Q_PLAN_PAREN.test(after)) { fired = true; s = after.trim(); }
+      }
+      if (!fired) break;
+      if (Q_SENTENCE.test(s) && s.length >= 25) best = s;
+    }
+    return best;
+  }
+
   function quoteTrim(text) {
-    const t = String(text || "").trim();
-    if (!Q_LEAD.test(t)) return t;
-    const rest = t.replace(Q_LEAD, "").trim();
-    return Q_SENTENCE.test(rest) ? rest : t;
+    let t = String(text || "").trim();
+    if (Q_LEAD.test(t)) {
+      const rest = t.replace(Q_LEAD, "").trim();
+      if (Q_SENTENCE.test(rest)) t = rest;
+    }
+    return quoteStripLead(t) || t;
   }
   window.__wampoVestingQuoteOk = vestingQuoteOk;   // read by the smoke test only
   window.__wampoQuoteTrim = quoteTrim;             // read by the smoke test only
