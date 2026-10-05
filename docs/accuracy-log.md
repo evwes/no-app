@@ -7,6 +7,132 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-05 (02:5xZ) — the cycle draw reads clean on the second-largest plan drawn this session, and it is a shipped design CONFIRMED rather than merely unbroken
+
+`draw-published.mjs --seed 2072026` drew **The Kroger Co. pn=010 — 674,716
+participants across 2 member plans, 8 funds**, menu $6,404,551,509 against
+$11,809,161,000 of plan assets summed over both members: **ratio 0.542**.
+
+A menu accounting for 54% of a plan's money is exactly the shape the register
+flags as having **no symmetric undershoot check** in `audit-data`, so the first
+reading was that this is the largest named instance of that gap. **It is not,
+and checking before writing it down is the point:** `coverageBand`
+(`lib-disclose:136`) returns `{kind: "under", pct: 54.2}` for this pair, and it
+is called on BOTH surfaces — `app.js:4069` and imported by
+`build-seo-pages.mjs` — so the page already tells the reader the menu covers
+about half the plan. The audit has no undershoot check; the DISPLAY does.
+*A gap in a check is not a gap on the page.*
+
+The rows are clean too: eight white-label unit classes
+(`MFO KROGER US LARGE CAP UNIT S` at 43.1%, `… UNIT X` at 14.4%,
+`MFO KROGER NON US EQUITY UNIT Y`, `MFO US SMID CAP UNIT W`) publishing **no
+ticker and no fee**, which is the honest answer for a custom collective
+vehicle that has neither. The same fund appearing in two unit classes is a real
+filed distinction, not a double render.
+
+Also worth noting against the 08:3xZ draw defect: the denominator is printed as
+`summed over 2 member plans (lead alone: $11,809,161,000)`, so the fix for
+*a count keyed on PLANS is blind to a TRUST* is visibly working — here both
+figures coincide because the lead plan holds all the Schedule H assets.
+
+Nothing to ship. `docs/accuracy-log.md` 2026-10-05 (02:5xZ).
+
+## 2026-10-05 (02:3xZ) — the accelerated-vesting exception class: SIZED at 69 plans / 53,298 ppl, and reading six real filings REFUTES the remedy the queue prescribed for the bulk of it
+
+v202's verdict queued this: all 7 of its unambiguous quote improvements had one
+shape — the page publishing *"100% vested upon attaining age 65 … or upon
+death"* where a real ladder sat further down the same candidate chain. The
+queue said the class to size is plans publishing such a clause where **no**
+ladder is reachable, and prescribed *"a display-side demotion or a ranking"*.
+
+### The size, narrowed three times by READING members rather than by a better idea
+
+| screen | plans | ppl |
+|---|---|---|
+| first count | 115 | 80,858 |
+| after three leaks found by reading the top rows | 73 | 59,132 |
+| after three more found by reading SUSPECTS in full | **69** | **53,298** |
+
+Conditions, all three required: the quote is PUBLISHED (`vestingQuoteOk`
+accepts it, so it reaches a reader), the plan carries **no vesting LABEL** so
+the quote IS the whole answer, and the only vesting trigger in it is an
+exception event. Per the recorded rule, the screen requires the PRESENCE of the
+bad case and applies a deliberately generous refusal for any trace of a
+service-based rule. 126 more quotes are exception-only but carry a label, so
+the schedule reaches the reader anyway — correctly **not** the class.
+
+**Six leaks, every one found by reading, each now a single-protection fixture:**
+
+1. **A DISCLAIMED service phrase is not a service rule** — and the must-see
+   fixture caught this before the first count printed. Koroseal files *"… upon
+   death, disability, or attainment of the normal retirement age, **regardless
+   of** eligible years of service"*: the phrase is there to say the schedule
+   does NOT apply, and my generous refusal read the words rather than the sense.
+2. **A TABULAR ladder carries bare numbers and no `%` at all.** Church & Dwight
+   (2,875 + 2,573 ppl) publishes `3 years 25  3 years but less than 4 years 50
+   4 years but less than 5 years 75  5 years or more 100` — a complete schedule
+   that every percentage-shaped arm missed.
+3. **HOURS are service too** — IBEW Local's `completed 501 hours of service`,
+   Nature's Sunshine's `credited with the maximum 1,000 hours`.
+4. **A service UNIT that is not a year** — Bot-Oregon Sheet Metal (1,393 ppl)
+   files `the completion of three full vesting CREDITS`, the multiemployer unit.
+5. ***A FILER'S TYPO DEFEATS A YEAR TEST.*** Gilster-Mary Lee (2,501 ppl) files
+   *"after six (6) **yeas** of vesting services"* — a complete six-year rule the
+   page publishes, which this screen counted only because `years?` cannot match
+   the misspelling. **The truncated 128-character print showed `after six (6)
+   yea` and looked like a year**; only the full text settled it. *A lossy print
+   of a sound screen is a lossy measurement*, met again.
+6. **A FORFEITURE note is not a vesting rule** — Emeh (1,176 ppl) files *"The
+   non-vested account balances of participants who terminated for any reason
+   other than death, disability, or retirement can be used to offset future
+   Employer contributions"*, which belongs to the recorded 09:0xZ class (the
+   quote states a DIFFERENT plan rule), not to this one.
+
+And **plan termination is deliberately NOT a trigger**: Ipro Tech publishes
+*"Due to the Plan termination, all participants are 100 percent vested"*, and
+for a plan that HAS terminated that is a complete and correct answer. Residue
+named rather than guessed: Compass Senior Living's conditional *"In the event
+of … termination, affected participants **would** become 100 percent vested"*
+IS an exception clause, and the discriminator is grammatical MOOD, left unbuilt.
+
+### AND THE REMEDY QUESTION IS ANSWERED BY READING THE FILINGS, WHICH NO STORE-SIDE SCREEN COULD DO
+
+The queue's prescription only makes sense if a better sentence exists. So the
+six largest members were downloaded from the EFAST2 bucket and read, with the
+blank Form 5500 pages excluded first (their own printed 6g(2) question carries
+a vest word and a percentage):
+
+- **Smith And Nephew (8,883 ppl), Woodgrain (5,558), Hankey (4,292), U.S. Fire
+  (3,511) — NO LADDER ANYWHERE IN THE ATTACHMENT.** For Smith And Nephew,
+  filtering the form's own question leaves the word "vesting" appearing nowhere
+  but a Schedule C service-code list. Their exception clause **is** the most the
+  filing says.
+- **Ram Partners (2,405)**: its only schedule-shaped line is an amendment
+  mentioning *"change the vesting schedule"* — no schedule stated.
+- **Aaron Thomas (2,239)**: a textbook table the extractor missed —
+  `six-year vesting schedule as follows: Years of service / Vesting % — 2→20,
+  3→40, 4→60, 5→80, 6→100`.
+
+***So the queued remedy is RIGHT for about one member in six and HARMFUL for
+the rest.*** A demotion or ranking can only promote a sentence that exists; on
+the 5 of 6 with nothing better it would withdraw the only vesting fact the
+filing states and publish *"not stated in the audited notes"* about a filing
+that DID state something. **A guard that withdraws a true answer because it is
+incomplete makes the page less honest, not more.**
+
+**What the two halves actually need, and they are different changes:**
+
+- the majority: a DISPLAY LABEL saying the audited notes state only when
+  vesting **accelerates** — a new sentence, so *a guard and the claim it
+  licenses are one change*, and it must not be written as a withholding;
+- the minority: PARSER selection, the same shape as v202's seven. And the
+  table shape is nameable: **`Years of service | Vesting %` as a column table
+  with a blank line between the header and the rows** — which is exactly the
+  shape that leaked into my own screen as leak (2), so the parser's
+  vesting-table arm and my sizing screen missed the same construction.
+
+Nothing shipped. `docs/accuracy-log.md` 2026-10-05 (02:3xZ).
+
 ## 2026-10-05 (01:5xZ) — the cycle draw lands on Walmart, the plan this cycle's ship was about, and hands the bare-HOUSE-name class its largest named instance
 
 `draw-published.mjs --seed 1072026`, participant-weighted over 60,163

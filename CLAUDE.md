@@ -1223,8 +1223,51 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   and the crawlable pages regenerated and READ. Two fixtures already pinned:
   Motiva must be left alone, and the four openers must still survive
   `quoteTrim`. `docs/accuracy-log.md` 2026-10-05 (00:3xZ).
-- **AND THE OLD FIRST-WINS ORDER PREFERS AN ACCELERATED-VESTING EXCEPTION OVER
-  THE SCHEDULE — UNSIZED, found by v202's verdict 2026-10-05.** All 7 of
+- **THE ACCELERATED-VESTING EXCEPTION CLASS — SIZED 2026-10-05 02:3xZ at 69
+  plans / 53,298 ppl, AND READING SIX FILINGS REFUTED THE REMEDY THIS ENTRY
+  PRESCRIBED FOR THE BULK OF IT.** Narrowed 115 / 80,858 -> 73 / 59,132 ->
+  **69 / 53,298**, each step from READING members. 126 more quotes are
+  exception-only but carry a vesting LABEL, so the schedule reaches the reader
+  and they are correctly not the class.
+  **THE REMEDY SPLITS, and only the filings could say so** — the six largest
+  were downloaded and read with the blank Form 5500 pages excluded:
+  **Smith And Nephew (8,883 ppl), Woodgrain (5,558), Hankey (4,292) and
+  U.S. Fire (3,511) have NO LADDER ANYWHERE in the attachment** (for Smith And
+  Nephew, filtering the form's own 6g(2) question leaves "vesting" appearing
+  nowhere but a Schedule C code list), Ram Partners (2,405) states only an
+  amendment *mentioning* a schedule, and **only Aaron Thomas (2,239) files a
+  real table** (`six-year vesting schedule as follows: Years of service /
+  Vesting % — 2→20, 3→40, 4→60, 5→80, 6→100`).
+  ***So "a display-side demotion or a ranking" is right for about one member in
+  six and HARMFUL for the rest:*** a demotion can only promote a sentence that
+  exists, and on the 5 of 6 with nothing better it would withdraw the only
+  vesting fact filed and publish *"not stated in the audited notes"* about a
+  filing that DID state something. **A guard that withdraws a true answer
+  because it is incomplete makes the page less honest, not more.**
+  **TWO DIFFERENT CHANGES, neither shipped:** the majority needs a DISPLAY
+  LABEL saying the notes state only when vesting ACCELERATES — a new sentence,
+  so *a guard and the claim it licenses are one change*, and it must not be
+  written as a withholding; the minority needs PARSER selection, and the table
+  shape is nameable — **`Years of service | Vesting %` as a column table with a
+  blank line between header and rows**, which is the same construction that
+  leaked into my own sizing screen, so the parser's vesting-table arm and the
+  screen missed the same thing.
+  **SIX LEAKS IN THE SCREEN, each now a single-protection fixture and each
+  found by reading:** a DISCLAIMED service phrase (`regardless of eligible
+  years of service` — caught by the must-see fixture before the first count
+  printed); a TABULAR ladder with bare numbers and no `%` (Church & Dwight
+  `3 years 25 … 5 years or more 100`); HOURS (`501 hours of service`); a
+  service UNIT that is not a year (`three full vesting CREDITS`);
+  ***A FILER'S TYPO*** (Gilster-Mary Lee's `after six (6) **yeas** of vesting
+  services`, a complete six-year rule whose truncated print read as a year);
+  and a FORFEITURE note, which belongs to the 09:0xZ class. **Plan termination
+  is deliberately NOT a trigger** — for a plan that HAS terminated, full
+  vesting is a complete answer; the conditional *"would become"* form is
+  residue whose discriminator is grammatical MOOD, left unbuilt.
+  `docs/accuracy-log.md` 2026-10-05 (02:3xZ).
+- **ORIGINAL ENTRY, kept because it is what was predicted — THE OLD FIRST-WINS
+  ORDER PREFERS AN ACCELERATED-VESTING EXCEPTION OVER THE SCHEDULE, found by
+  v202's verdict 2026-10-05.** All 7 of
   v202's unambiguous quote improvements have one shape: the page was publishing
   *"100% vested upon attaining age 65, qualifying for early retirement, or upon
   total disability or death"* (Jefferson City Medical Group), *"However, a
@@ -2749,6 +2792,28 @@ These outlived the versions that produced them. The accuracy log has the case.
   invisible. Write such a suffix as a WORD RUN, and when an arm mysteriously
   does not fire on an obvious case, suspect the alternation order before the
   guards.
+- **A PRESCRIBED REMEDY NEEDS THE EVIDENCE THAT A BETTER ANSWER EXISTS, AND
+  ONLY THE SOURCE CAN SUPPLY IT (2026-10-05).** A queue entry prescribed "a
+  display-side demotion or a ranking" for 69 plans publishing an
+  accelerated-vesting exception as their whole vesting answer. Reading the six
+  largest FILINGS showed **5 of 6 state no schedule anywhere**, so a demotion
+  would withdraw the only vesting fact filed and publish *"not stated in the
+  audited notes"* about a filing that did state something. ***A guard that
+  withdraws a true answer because it is incomplete makes the page less honest,
+  not more*** — and no store-side screen could have told me, because the
+  question is about text the extractor never stored. Third instance of a
+  prescription being wrong about WHERE or WHETHER rather than about the
+  symptom (`fb-vanished` impossible, the vesting ranking aimed at the wrong
+  stage, this one harmful for the bulk).
+- **AND A TRUNCATED PRINT CAN TURN A COMPLETE ANSWER INTO A DEFECT (2026-10-05).**
+  A 128-character window showed `… after six (6) yea` and read as a year, so a
+  plan stating a complete six-year rule counted as a member of a class defined
+  by the ABSENCE of one. The full text says `after six (6) **yeas** of vesting
+  services` — a filer's typo my `years?` test could not match. Two lessons at
+  once: *print the full text of any member whose truncation hints at the
+  condition you are screening for*, and **a service test keyed on a correctly
+  spelled unit is defeated by the filings' own typos**, which is a general
+  hazard for every word-anchored screen over this corpus.
 - **A count of a condition is not a measure of a defect**, and the siblings:
   *a count keyed on a VOCABULARY measures the vocabulary*; *a count keyed on
   PLANS is blind to every master-trust row* (resolve a trust row through its
