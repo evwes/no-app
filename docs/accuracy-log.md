@@ -7,6 +7,46 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-05 (01:5xZ) — the cycle draw lands on Walmart, the plan this cycle's ship was about, and hands the bare-HOUSE-name class its largest named instance
+
+`draw-published.mjs --seed 1072026`, participant-weighted over 60,163
+PUBLISHED menus reaching 103,501,088 participants, drew **Walmart Inc. pn=003
+— 1,996,659 participants, 42 funds, ratio 0.952** ($56,223,063,956 against
+$59,079,158,994 of plan assets). The largest plan in the universe, and the
+plan whose vesting quote this cycle repaired.
+
+The menu reads clean: `Russell 1000 Index Non-Lendable Fund` at 28.1% is
+correctly issuer-qualified to `BlackRock Institutional Trust Comp…` and
+correctly publishes NO ticker and NO fee under `noPublicPrice` — a non-lendable
+collective trust has neither by nature. `Walmart Inc. Equity Securities`
+carries ticker **WMT** and `stockRow`, employer stock labelled as such. The
+managed-account row says `Managed account holdings (492 positions)` rather
+than pretending to name a fund.
+
+**What is new is a named instance of the recorded bare-HOUSE-name class at a
+scale nothing else on this record approaches: row 8 publishes
+`Fiera Asset Management USA` — a MANAGER's corporate name — as a holding, at
+3.2% of the menu, $1,773,620,398, to 1,996,659 readers**, typed `Collective
+trust`, with no issuer cell, no ticker and no fee.
+
+That class is recorded at 5,752 rows / 4,585 plans / 8,370,934 ppl with the
+note that *replacing the identity column's own text is a claim, not a repair*
+— and it is PARSER-side, so nothing is shipped from this. What the draw adds
+is the reader count: this single row is 23.8% of the whole class's recorded
+participant weight, because the class's figure counts a plan once per row
+while this is one row in the universe's largest plan.
+
+Two sibling rows are the same shape and are correctly LEFT alone, which is
+the useful contrast: `Core Plus Bond Fund` and `Long Duration Credit Fund`
+publish bare product names with the TRUSTEE in the issuer cell
+(`Prudential Trust Company`), so the page composes `issuer · name` into
+something a reader can act on. Fiera's row has an empty issuer, so the
+manager's name is all there is. ***The defect is not "a firm name appears" but
+"a firm name appears with nothing beside it"***, which is a narrower screen
+than the recorded one and worth trying when that class is next sized.
+
+`docs/accuracy-log.md` 2026-10-05 (01:5xZ).
+
 ## 2026-10-05 (01:3xZ) — SHIPPED: the attachment's page number and running header welded onto a published quote — 1,890 quotes / 1,887 acks / 6,096,337 readers, 188 crawlable pages, and my own measurement was wrong twice before it was right
 
 **Walmart — the largest plan in the universe, 1,996,659 participants —
