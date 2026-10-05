@@ -1158,8 +1158,39 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
-- **A PUBLISHED QUOTE THAT OPENS ON THE ATTACHMENT'S PAGE NUMBER AND RUNNING
-  HEADER — 1,615 quotes / 5,118,843 ppl, SIZED 2026-10-05 00:3xZ.** Walmart
+- **SHIPPED 2026-10-05 01:3xZ — A PUBLISHED QUOTE THAT OPENS ON THE
+  ATTACHMENT'S PAGE NUMBER AND RUNNING HEADER: 1,890 quotes / 1,887 acks /
+  6,096,337 ppl, 188 crawlable pages, 0 quotes GREW and 0 stopped being
+  publishable.** Measured through the shipped `quoteTrim` against
+  **origin/main's own copy** of `lib-quote.mjs`, not a retyped baseline.
+  Walmart's whole vesting answer stops being `6 Table of Contents Vesting …`;
+  Starbucks now reads *"Vesting All participant and Company matching
+  contributions are immediately 100% vested."*
+  **THE SIZING'S 1,615 / 5,118,843 IS SUPERSEDED — do not carry it**; the
+  shipped arm set reaches more, and its "marker only" bucket was contaminated
+  anyway.
+  **THE BACK-OFF IS THE REUSABLE PART:** the loop keeps the LAST state that
+  passes the gate, because judging only the final state lets a fired arm
+  REFUSE THE WHOLE TRIM — measured, **every single arm had a population that
+  trimmed only when that arm was switched off**. It recovered 56 quotes and can
+  only ever return a prefix the gate already accepts.
+  **THREE FALSE POSITIVES, ALL FOUND BY READING THE REMOVED PREFIXES and none
+  visible in a count** (one not visible in a 16-row uniform sample either):
+  Honeywell 63,466 ppl welds the marker MID-sentence where `Participating
+  Units` is the sentence's own subject (so a header run containing a bare
+  integer is reaching past a header that does not start the quote); 28,272 ppl
+  file *"In years in which the safe harbor provisions of Section 401(k) …"*,
+  which has no finite verb and no page marker in its run (so **a running
+  header is a PROPER NAME** — every word capitalised or a connector); and two
+  filings publish a SPACED `401 (k)` where cutting the integer leaves
+  `(k) Vesting …`. Each is a guard with its own single-protection fixture.
+  **NAMED RESIDUE:** a header whose plan-type token is absent or truncated
+  keeps its name (Western, Yale-New Haven lose only the page number), and an
+  orphaned union LOCAL number (`117 Affiliated with the International
+  Brotherhood of Teamsters`, 160 ppl) is indistinguishable from a page number
+  by shape. `docs/accuracy-log.md` 2026-10-05 (01:3xZ).
+- **ORIGINAL SIZING, kept for the contamination it recorded — 1,615 quotes /
+  5,118,843 ppl, SIZED 2026-10-05 00:3xZ.** Walmart
   (**1,996,659 ppl**) publishes, as its whole vesting answer, `6 Table of
   Contents Vesting Participants are immediately vested in all elective…`;
   Starbucks (314,112) opens `9 Starbucks Corporation 401(k) Plan and Trust
@@ -2697,6 +2728,27 @@ These outlived the versions that produced them. The accuracy log has the case.
   schedules. So a new writer in such a chain needs the changed-quote population
   read, not just the gained one — a diff that counts only "was empty, now set"
   is blind to the re-ordering it causes.
+- **IN A LOOP OF ARMS, NECESSITY IS A QUESTION ABOUT THE OUTPUT STRING, NOT
+  ABOUT WHETHER THE FUNCTION FIRED (2026-10-05).** My leave-one-out for a new
+  quote-trimming loop counted WHETHER each quote trims and reported the
+  `toc` arm *"necessary for 0"* — while the Walmart fixture needs it. Without
+  `toc`, the page-number arm still fires, the remainder still passes the gate,
+  so the quote still "trims", to `Table of Contents Vesting …` with the debris
+  intact. Re-keyed to the output text, that arm is 2 quotes and **2,009,873
+  readers**. **And "alone" is not an inertness test for such a loop either:**
+  two arms read 0 alone because they can only fire AFTER another arm has
+  removed the page marker, and both are load-bearing. The recorded rule that
+  *an arm inert on the data is untested machinery* stands; the TEST for it has
+  to be leave-one-out on the output.
+- **AND A SHORT ALTERNATION BRANCH COSTS A REPAIR THE WAY A GREEDY QUANTIFIER
+  LICENSES A WRONG ONE (2026-10-05).** Regex alternation is FIRST-match, not
+  longest-match, so a plan-name suffix written `plan|…|plan and trust` matched
+  Starbucks' `" Plan"` and stranded `"and Trust"`, which then failed the
+  capital-letter output gate and cost the **entire** trim — from outside, the
+  arm simply looked not to apply, and the whole nine-word cascade was
+  invisible. Write such a suffix as a WORD RUN, and when an arm mysteriously
+  does not fire on an obvious case, suspect the alternation order before the
+  guards.
 - **A count of a condition is not a measure of a defect**, and the siblings:
   *a count keyed on a VOCABULARY measures the vocabulary*; *a count keyed on
   PLANS is blind to every master-trust row* (resolve a trust row through its

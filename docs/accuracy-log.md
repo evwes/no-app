@@ -7,6 +7,127 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-05 (01:3xZ) — SHIPPED: the attachment's page number and running header welded onto a published quote — 1,890 quotes / 1,887 acks / 6,096,337 readers, 188 crawlable pages, and my own measurement was wrong twice before it was right
+
+**Walmart — the largest plan in the universe, 1,996,659 participants —
+published as its WHOLE vesting answer:**
+
+> `6 Table of Contents Vesting Participants are immediately vested in all
+> elective, catch-up, rollover, Company matching and qualified non-elective
+> contributions.`
+
+Starbucks (314,112) opened on nine words of statement title and now reads
+*"Vesting All participant and Company matching contributions are immediately
+100% vested."* Kroger (262,794) on a bare `5`; HCA 379,101; Nordstrom 109,402;
+Ahold 79,282; Mount Sinai 75,936; Brinker, Leidos, KPMG, Bank of New York
+Mellon, Topgolf, Bass Pro, Allegheny Health.
+
+Measured through the SHIPPED function against **origin/main's own copy** of
+`lib-quote.mjs` — not a retyped baseline — over all 96,956 published quotes:
+**1,890 differ / 1,887 acks / 6,096,337 ppl**, **0 grew** (the arm only
+removes), **0 stop being publishable**, 188 crawlable pages. Own-ack reach
+only; re-keying from `mtiaAck` returned the IDENTICAL figure, which is the
+control that the class holds no trust acks.
+
+### The shape is the shipped `quoteTrim`'s, and the back-off is the part worth reusing
+
+A loop of arms, each able to remove only a segment it can NAME, then the same
+`Q_SENTENCE` gate. Deliberately NOT "strip up to the first rule-start word" —
+the greedy shape that once published `Vanguard Windsor Fund` for Windsor II.
+
+**The loop keeps the LAST state that passes the gate.** Judging only the final
+state lets a fired arm *refuse the whole trim*, and measured, **every single
+arm had a population that trimmed only when that arm was switched off**.
+Backing off can only ever return a prefix the gate already accepts; it
+recovered 56 quotes. *A loop of guarded rewrites needs a back-off, not a
+verdict on its last state.*
+
+### THREE FALSE POSITIVES, ALL FOUND BY READING THE REMOVED PREFIXES
+
+Not one was visible in a count, and **one was not visible in a 16-row uniform
+sample either** — it took printing every distinct removed prefix by readers.
+
+- **Honeywell, 63,466 ppl.** Files *"Participating Units 6 Honeywell 401(k) -
+  Continued covered by a non-variable match …"* — the page number and header
+  are welded **mid-sentence** and the sentence's own subject is its first two
+  words. A header run containing a bare integer is reaching PAST a header that
+  does not start the quote.
+- **28,272 ppl on a real sentence.** *"In years in which the safe harbor
+  provisions of Section 401(k) are satisfied …"* has no finite verb and no page
+  marker in its run, so every other guard passed it. **A running header is a
+  PROPER NAME**, so every word of the run must be capitalised or a connector.
+- **A spaced `401 (k)`, 2 filings.** Cutting the integer leaves `(k) Vesting …`
+  and mutilates the plan-type token. Found by reading the integer
+  DISTRIBUTION: 212 of 235 bare-integer removals are single digits, which is
+  what a page number looks like, and every multi-digit one was then read.
+
+### AND MY MEASUREMENT WAS WRONG TWICE, which is why the arm set is what it is
+
+**(1) The leave-one-out counted WHETHER a quote trims, not WHAT it becomes.**
+It reported `toc` *"necessary for 0"* while the Walmart fixture needs it:
+without `toc`, `bare-page` still strips the `6`, the remainder still passes the
+gate, so the quote still "trims" — to `Table of Contents Vesting …`, debris
+intact. Re-keyed to the OUTPUT TEXT, `toc` is 2 quotes and **2,009,873
+readers**. ***In a LOOP of arms, necessity is a question about the output
+string, not about whether the function fired.***
+
+**(2) "Alone" is not an inertness test for such a loop.** `toc` and `basis`
+both read 0 alone — not because they are inert but because they can only fire
+AFTER another arm has removed the page marker. The recorded rule that *an arm
+inert on the data is untested machinery* still holds; the TEST for it has to
+be leave-one-out on the output. Both arms are load-bearing (`basis` 4 quotes /
+144,138 ppl).
+
+### Two arms can remove DATA rather than furniture, so both were read exhaustively
+
+- **`date-line`, all 14:** every one is the statement period
+  (`June 30, 2025 and 2024`), none a date the rule turns on. The arm now
+  requires a real **MONTH** — it had accepted the word fragment `er 31, 2025`,
+  a truncated December — and takes a RUN of dates, because one filing was left
+  opening on `AND DECEMBER 31, 2022`, the second half of its own comparative
+  period.
+- **`bare-page`, all 235:** a page-number distribution (7 ×98, 6 ×57, 8 ×33,
+  9 ×14, 5 ×10), and every multi-digit removal read.
+
+### A regex detail that hid the whole Starbucks cascade
+
+The plan-name suffix is a **WORD RUN, not an alternation**. Alternation is
+FIRST-match, not longest-match, so `plan|…|plan and trust` matched Starbucks'
+`" Plan"` and stranded `"and Trust"`, which then failed the capital-letter gate
+and cost the **entire** trim — the page kept all nine words of its header and
+the arm looked simply not to apply. *Sibling of the greedy-quantifier rule: a
+LAZY-or-short alternation branch can cost a repair as surely as a greedy one
+can license a wrong claim.*
+
+### Gates
+
+71 quote-guard fixtures (14 new: 6 must-see from real published quotes, 8
+must-spare of which **7 are a named guard's ONLY protection**);
+`vesting-quote-test`'s WITHHELD count holds at **32**, the independent check
+that publish status did not move; the app.js twin re-sliced by
+`scripts/slice-vq.mjs` with `--check` byte-identical; **every one of the nine
+new helpers verified present in the twin at a matching count**, because a
+missing one would throw in the browser and `node --check` cannot see it;
+stamps re-derived; smoke-test boots the page and cross-checks the twin.
+
+**And the store moved under the measurement.** #580's merge committed to BOTH
+main and the dev branch mid-ship (12 lineup shards). Rebased, re-verified
+against the new store — identical 1,890 / 1,887 / 6,096,337 — and the pages
+regenerated against it are **byte-identical** to the committed set, so the
+188-page figure is current rather than inherited.
+
+**NAMED RESIDUE, left alone:** a running header whose plan-type token is
+absent or truncated keeps its name — Western's `6 WESTERN Employer
+Contributions …` and Yale-New Haven's `6 Yale-New Haven Hospital and Tax-
+Vesting …` lose only the page number, since the header arm anchors on
+401(k)/403(b)/457(b). And a quote opening on an orphaned union LOCAL number
+(`117 Affiliated with the International Brotherhood of Teamsters …`, 160 ppl)
+is indistinguishable from a page number by shape.
+
+Display-side; `PARSER_VERSION` stays 202, nothing to pre-register.
+
+`docs/accuracy-log.md` 2026-10-05 (01:3xZ).
+
 ## 2026-10-05 (00:4xZ) — the cycle draw reads clean, and it narrows a recorded class by carrying its own control inside one menu
 
 `draw-published.mjs --seed 5102026`, participant-weighted over 60,163 PUBLISHED
