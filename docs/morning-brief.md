@@ -50,6 +50,46 @@ different changes and I shipped neither: a display LABEL for the majority (a
 new sentence, so the guard and the claim it licenses are one change), and
 parser selection for the minority.
 
+## Prepared during the pause, ready to build on Thursday
+
+The owner asked for the agentic rebuild to be *prepared* rather than started,
+and asked specifically which source should supply YTD / 1YR / 5YR / 10YR fund
+performance. **That decision is made and written up in
+`docs/performance-source.md`** — read it before touching the returns column.
+
+Three things in it change what the rebuild should do first:
+
+- **The returns column has never shipped because its only attempted source
+  blocks us by IP range.** `fund-facts.yml`'s schedule has been disabled since
+  2026-09-18 with the reason in the file — Yahoo returned HTTP 429 on *every*
+  call from a GitHub runner — which is why `data/fund-facts.json` holds 0
+  entries. *Before adding a source, ask what the pipeline already tried.*
+- **The ruling is SEC EDGAR**, because for a registered fund the standardized
+  return is the fund's own legally-required filing rather than a third party's
+  computation: 1/5/10YR from the Risk/Return Summary Inline XBRL (per share
+  class, calendar-year-end, so it must be labelled with that date), monthly
+  returns from N-PORT Item B.5(a). Issuer pages are used for month-end YTD
+  only, where filings lag. Morningstar is deferred, not assumed away: it is the
+  only aggregator covering collective trusts and the owner would have to pay.
+- **The key that path needs is already parsed and thrown away.**
+  `fetch-sec-funds.mjs` reads CIK, Series ID and Class ID and line 250 keeps
+  only `[name, ticker, kind, className]` — and N-PORT and the RR XBRL are
+  addressed by CIK + class. One line, in a `workflow_dispatch`-only script, no
+  `PARSER_VERSION` bump.
+
+**And the measurement says the returns feed is probably not the first thing to
+build.** Participant-weighted over 600 published menus: only **47.4%** of a
+typical participant's menu value sits in a row the page has identified by
+symbol, and **32.0% of draws are under 25%** (Kroger, AT&T and Morgan Stanley
+all draw at 0.0%). Of the 52.6% with no symbol, **42.7% is named collective
+trusts concentrated in seven managers — BlackRock 53.8%, Northern Trust 13.7%,
+Fidelity, State Street, Vanguard, JPMorgan, Prudential, 96% between them** —
+and they are mostly INDEX CITs whose index is named in the row, where a
+comparable is unambiguous and `fund-er.js` is the instrument. That is worth
+more published cells than any returns source and needs no new source at all.
+A further **20.0%** of the no-symbol money is managed-account aggregates and
+brokerage windows where `NA` is the accurate answer, not a gap.
+
 ## What continues during the pause, and what does not
 
 **The GitHub Actions pipeline keeps running and should.** It is the durable
