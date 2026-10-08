@@ -452,25 +452,13 @@ that changing visibility also unpublishes GitHub Pages.
 
 ## Work cadence (owner directive 2026-09-01)
 
-> **PAUSED BY OWNER DIRECTIVE 2026-10-05 — AND THIS NOTE OUTRANKS EVERY "NEVER
-> STOP" IN THIS FILE UNTIL IT EXPIRES.** All wampo work is paused until the
-> weekly reset, **Thursday 2026-10-08 7:00 PM ET (23:00Z)**: no cycles, no
-> dispatches, no ships, no mirrors. The three wampo Routines are DISABLED
-> (hourly cycle `trig_017vdX5dSSYh5v68Cwe6EUBu`, daily sweep
-> `trig_01X6KxJQfanGsm3tcHkCtwt3`, weekly status
-> `trig_01P9LK37jGLKc5FSAMerRZ7C`); each re-enables with one
-> `update_trigger(enabled=true)`. The **Actions pipeline is deliberately NOT
-> paused** — it is the durable layer and stopping it would lose new filings; its
-> data commits simply accumulate on main until a session adopts them.
-> **AFTER 2026-10-08T23:00Z THIS BLOCK IS STALE AND MUST BE DELETED RATHER THAN
-> OBEYED**, along with the `PAUSED` key in `docs/cadence-state.json`. *A stale
-> state file does not merely go unread; it blocks correct action* — this project
-> lost two weeks to a `DO NOT MIRROR` flag describing a cancelled August run.
-> State at the pause: everything committed, pushed and mirrored, local == dev ==
-> main at `63dc1542`, `PARSER_VERSION` 202, pv 202 at 99.9%, HIGH 4, nothing
-> mid-flight and nothing pre-registered. Handoff: `docs/morning-brief.md`.
-
 **Work, report, continue. NEVER delay finished work for a clock.**
+
+*(The one deliberate exception on this record: the owner paused all work
+2026-10-05 → 2026-10-08 7:00 PM ET. The pause carried its own expiry and
+was deleted at it rather than obeyed — which is the whole point of writing
+an expiry into a state key. The Actions pipeline ran throughout, as it
+should, and the 10 data commits it left on main were adopted on resume.)*
 
 This supersedes an earlier framing that batched parser work into the overnight
 window. That framing was justified partly by conserving Actions minutes, and
