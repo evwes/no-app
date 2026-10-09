@@ -1128,6 +1128,67 @@ published cells:
   comes off the fragment. Composing the two cells here is not a judgment about
   house-specific pricing, it is reading the name the filing gives.
   `docs/accuracy-log.md` 2026-10-04 (21:5xZ).
+- **THE CREF VARIABLE-ANNUITY-ACCOUNT CLASS — SIZED 2026-10-09 18:4xZ, NOT
+  SHIPPED, AND THE QUEUE'S OWN FRAMING WAS THE FIRST THING REFUTED: 15,028
+  published+served rows / 2,094 entries / 4,510,106 ppl / $81,796,462,796**, of
+  which **4,672 rows / 2,010,652 ppl / $32.6B publish shown TYPE `Mutual
+  fund`** and **3,559 rows / 2,008 entries / 4,187,734 ppl / $9.17B publish a
+  pattern-table FEE**. A seeded uniform draw of 24 reads **24 of 24 genuine**.
+  **"Names cut down to an asset-class word" IS NOT A DEFECT — the asset-class
+  word IS the product's name**; a screen for exactly that shape reads 3,590 rows
+  / 2,141,225 ppl and its members are `CREF Stock` (NYU at 8.3% of its menu,
+  Brown at **20.1%**), `CREF Growth`, `CREF Social Choice` — the accounts' own
+  names. *A name that is short is not thereby a name that was cut.*
+  **THE REGISTRY IS ALREADY IN THE REPO:** `sec-funds.json` registers EIGHT
+  accounts as `COLLEGE RETIREMENT EQUITIES FUND :: <X> Account`, classes R1-R4,
+  with symbols (QCSTRX…QCMMFX), and **0 TIAA/Nuveen registrants have a series
+  named bare `Stock` or `Growth`** — which is what convicts MGB's rows. Several
+  filed names are the RETIRED ones (Stock -> Total Global Stock, Equity Index ->
+  S&P 500 Index, Bond Market -> Core Bond), so this is the Oppenheimer/Spartan
+  shape too: *a rename is a FACT that must be SOURCED.*
+  **THE FEE IS GENERIC-PATTERN LEAKAGE AND THE CONTROL IS INTERNAL** — the same
+  eight accounts in the same menus publishing NOTHING: priced are Money Market
+  1,989 @ 0.2, Equity Index 1,608 @ 0.06, S&P 500 Index 353 @ 0.03, Growth 144 @
+  0.1 (the three that collide with `fund-er.js:498`'s index/money-market
+  patterns), while Stock 1,799 rows / **$35.5B**, Growth 2,349, Social Choice
+  2,108, Core Bond 2,103, Global Equities 1,878 and Inflation-Linked Bond 1,796
+  are blank. `fund-er.js:1451`'s `pooled` veto lists `tiaa traditional` and
+  **does not list `cref`**. And the recorded asymmetry again: the TICKER column
+  refuses these on 15,027 of 15,028 rows and the FEE column does not.
+  **THE DRAW'S OWN HEADLINE FEE CANNOT BE CONVICTED:** MGB's `EQUITY INDEX` at
+  0.06 / $140,358,000 is ambiguous because `TIAA-CREF FUNDS :: Nuveen Equity
+  Index Fund` is a registered fund priced near 0.06 and the issuer cell says
+  `TIAA-CREF Funds`. The convictable harm on that page is the TYPE on three
+  rows; the fifth row, `Global Quality Equity`, **has no house token anywhere**
+  and belongs to the no-fund-identity class — the first must-see fixture failing
+  was that finding.
+  **DO NOT CARRY the ambiguous half as shippable: 1,576 rows / 855,717 ppl**
+  where the house is only `TIAA-CREF`/`TIAA` is MIXED three ways on a uniform
+  draw (13 of 24 are **`TIAA Access` T3/T4 sub-accounts** — the same vehicle
+  defect under a THIRD brand, unsized; 4 are real TIAA-CREF registered funds).
+  **THREE SCREENS OF MINE WERE REFUTED, all by reading members:** a bare `CREF`
+  token alone takes **474** `CREF LIFECYCLE INDEX 2040 INST` rows (registered
+  mutual funds, caught by a must-NOT-SEE decoy); a house witness read from the
+  ISSUER cell takes **464** rows because *the issuer cell routinely holds the
+  CUSTODIAN* (`Nuveen Equity Index R6` =TIEIX, `JP Morgan Large Cap Growth R6`)
+  — **the tell was an implausible fee spread, 0.44/0.71/0.6/0.55, inside a
+  supposed single-product class, and only READING all 123 ticker rows showed
+  it**; and the class-word framing above. Per-condition necessity measured over
+  the live pool: account-name blocks 15,366, Lifecycle refusal 157, other-house
+  refusal 464 — none decorative.
+  **WHY IT IS THE OWNER'S CALL, and the first reason is a PIN:**
+  `lib-disclose.mjs:3995` lists `CREF Money Market Account` as a must-KEEP decoy
+  whose comment says firing on it *"would withdraw a real vehicle's expense
+  ratio"* — somebody already considered one route to this cell and pinned
+  against it. The fee half is 4.19M readers and belongs with the stable-value
+  and fee-pre-emption families (*a fee is SOURCED, never derived*; the honest
+  replacement is per-class figures from `data/fund-facts.json`, which do not
+  exist). The type half is the shape `lib-disclose.mjs:2950` already repaired for
+  the filer's own `annuity contract` phrasing on 186 rows — **tenth instance of
+  *a fix for one phrasing of a class is not a fix for the class*** — and
+  withdrawing `Mutual fund` needs new display wording, so a guard and the claim
+  it licenses are one change. Both are display-side; `PARSER_VERSION` stays 203.
+  `docs/accuracy-log.md` 2026-10-09 (18:4xZ).
 - Stable value / guaranteed accounts publishing a fabricated ER: 4,669 rows /
   **7,389,704 ppl**, 4,571 of them at exactly 0.35.
   **AND ITS CLEANEST SUB-CASE IS SIZED AND AWAITING A DECISION — FOUND BY THE

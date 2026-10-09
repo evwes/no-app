@@ -50171,3 +50171,150 @@ which looks like an index-fund pattern estimate landing on a CREF variable
 annuity account. The control is on the same page: the two TIAA Traditional rows
 are correctly suppressed (`noPublicPrice`, `guaranteeOnlyFee`). Sizing it needs
 the CREF account vocabulary and has not been done.
+
+## 2026-10-09 (18:4xZ) — the CREF variable-annuity-account class, SIZED: 15,028 published rows / 4,510,106 participants / $81.8B, and the queue's own framing is REFUTED
+
+Took the 18:07 draw's named-but-unsized item. Measured through the tracked
+`scripts/apppath.mjs` (`tab:"menu"`), with the publish gate
+(`lineups-index.json`'s `.plans` bit 1) and the serving condition
+(`lib-ledger`'s `servedLineup`) applied and every trust ack resolved through
+its MEMBER plans. **Nothing shipped — this is a sizing, and the two remedies it
+exposes are the owner's call for the reasons at the bottom.**
+
+**THE QUEUE'S FRAMING IS REFUTED AND THAT IS THE FIRST FINDING. "Names cut down
+to an asset-class word" is not a defect: the asset-class word IS the product's
+name.** A screen for exactly that shape — a TIAA/CREF house witness whose name,
+house removed, is nothing but a closed vocabulary of asset-class tokens — reads
+**3,590 rows / 1,132 entries / 2,141,225 ppl / $21.2B**, and its member list
+read largest-first is `CREF Stock` (Stanford $823,042,000, Mount Sinai
+$534,186,013, NYU $376,878,857 at 8.3% of its menu, Brown at **20.1%**),
+`CREF Growth`, `CREF Social Choice`, `CREF Global Equities` — every one the
+account's own name as TIAA itself writes it. ***A name that is short is not
+thereby a name that was cut.*** What is actually false on those pages is the
+TYPE and, where it fires, the FEE.
+
+**THE REGISTRY SETTLES WHAT THESE ARE, and it is already in this repo.**
+`sec-funds.json` registers **eight** CREF accounts as
+`COLLEGE RETIREMENT EQUITIES FUND :: <X> Account` with classes R1–R4 and their
+own symbols — `Total Global Stock` (QCSTRX/QCSTPX/QCSTIX/QCSTFX),
+`Global Equities`, `Growth`, `S&P 500 Index`, `Core Bond`,
+`Inflation-Linked Bond`, `Responsible Balanced`, `Money Market`. The names the
+filings use are in part the RETIRED ones (Stock → Total Global Stock, Equity
+Index → S&P 500 Index, Bond Market → Core Bond, Social Choice → Responsible
+Balanced), which makes this the Oppenheimer/Spartan shape as well: *a rename is
+a FACT that must be SOURCED, never inferred.* And **no TIAA or Nuveen
+registrant has a series named bare `Stock` or `Growth`** — 0 of them — which is
+the witness that MGB's `TIAA-CREF Funds STOCK` and `… GROWTH` are CREF accounts
+and not funds.
+
+**THE CLASS, unambiguous half (a bare `CREF` token, not `TIAA-CREF`, plus a
+registered CREF account name, minus the two refusals below):**
+
+| | rows | entries | ppl | $ |
+|---|---|---|---|---|
+| the class | **15,028** | 2,094 | **4,510,106** | $81,796,462,796 |
+| shown TYPE `Mutual fund` | **4,672** | 706 | **2,010,652** | $32,577,890,687 |
+| publishing a pattern FEE | **3,559** | 2,008 | **4,187,734** | $9,173,986,471 |
+| both | 822 | — | 1,589,494 | $3,066,566,903 |
+| ASSERTING a ticker | **1** (a false positive of mine) | — | — | — |
+| already suppressed by a flag | 635 | 188 | — | — |
+
+A **seeded uniform draw of 24** reads **24 of 24 genuine CREF accounts**, so the
+half is clean at roughly one contaminated row in fifteen thousand.
+
+**THE FEE IS GENERIC-PATTERN LEAKAGE OFF AN ASSET-CLASS PHRASE, AND THE CONTROL
+IS INTERNAL — the same eight accounts, in the same menus, publishing nothing.**
+The fee reaches only the accounts whose names collide with `fund-er.js:498`'s
+`/equity index|stock index|bond index|…/` row and its money-market arm:
+
+| account | priced | er | account | blank |
+|---|---|---|---|---|
+| Money Market | 1,989 | 0.2 | Stock | 1,799 ($35.5B) |
+| Equity Index | 1,608 | 0.06 | Growth | 2,349 |
+| S&P 500 Index | 353 | 0.03 | Social Choice | 2,108 |
+| Growth | 144 | 0.1 | Core Bond | 2,103 |
+| | | | Global Equities | 1,878 |
+| | | | Inflation-Linked Bond | 1,796 |
+
+So the page gives a cost for three of eight accounts of one product family and
+no cost for the other five, decided entirely by whether the account's
+asset-class name happens to match an index pattern. **`fund-er.js:1451`'s
+`pooled` veto lists `tiaa traditional` and does not list `cref`** — the recorded
+vehicle rule, met on a brand it does not name. **And the asymmetry is the
+recorded American-Funds one again: the TICKER column refuses these on 15,027 of
+15,028 rows and the FEE column does not; both cannot be right.**
+
+**THE DRAW'S OWN HEADLINE FEE CANNOT BE CONVICTED, and the registry is what
+refuses it.** MGB's `EQUITY INDEX` / iss `TIAA-CREF Funds` at er 0.06 on
+$140,358,000 was written up as a pattern estimate landing on a CREF account.
+`sec-funds.json` carries **`TIAA-CREF FUNDS :: Nuveen Equity Index Fund`**, a
+registered mutual fund whose real expense ratio is close to 0.06, and the
+filing's issuer cell says `TIAA-CREF Funds` — so that row is genuinely ambiguous
+between the CREF account and the fund, and a withdrawal there would be a guess.
+Of the draw's five rows the convictable harm is the **TYPE** on three
+(`TIAA-CREF Funds STOCK` $1,209,911,000 / 7.2% of the menu, `… GROWTH` $275.8M,
+`GLOBAL EQUITIES` $155.0M, all typed `Mutual fund`), and the fifth,
+`Global Quality Equity`, **carries no house token in its name or its issuer** —
+no witness exists anywhere in the data that it is TIAA at all, so it belongs to
+the no-fund-identity class and not to this one. *That was the first must-see
+fixture failing, and it was a finding rather than a bug.*
+
+**THE AMBIGUOUS HALF IS NOT SHIPPABLE AND IS REPORTED SEPARATELY: 1,576 rows /
+773 entries / 855,717 ppl / $4.6B** where the house is spelled `TIAA-CREF` or
+`TIAA` only. A uniform draw of 24 is MIXED three ways: 13 are **`TIAA Access`
+T3/T4 sub-accounts** (a different TIAA variable-annuity platform — the same
+vehicle defect under a third brand, typed `Mutual fund` and priced 0.06), 4 are
+real TIAA-CREF REGISTERED funds (`TIAA-CREF Social Choice Equity Fund`,
+`TIAA-CREF International Equity Index Instl`), and the rest are CREF accounts
+and third-party funds arriving through the custodian cell.
+
+**THREE OF MY OWN SCREENS WERE REFUTED, each by reading members and each caught
+by a fixture placed ahead of the count:**
+1. **A bare `CREF` token alone**: **474 false positives**, all
+   `CREF LIFECYCLE INDEX 2040 INST` and siblings — filers abbreviate the
+   REGISTERED `TIAA-CREF Lifecycle Index` mutual funds to `CREF Lifecycle`.
+   Caught by a must-NOT-SEE decoy drawn from the population (9,171 Lifecycle
+   rows are in the house pool, so the decoy was not hypothetical).
+2. **A house witness read from the ISSUER cell**: **464 rows**, because *the
+   issuer cell routinely holds the CUSTODIAN* — already recorded in this
+   project, met again. `Nuveen Equity Index R6` (=TIEIX), `Nuveen S&P 500 Index
+   R6` (=TISPX), `JP Morgan Large Cap Growth R6`, `American Europac Growth R6`
+   and `PRIMECAP Odyssey Stock Fund` were all being called CREF accounts because
+   their plan's recordkeeper is TIAA. **The tell was an implausible FEE SPREAD —
+   0.44 / 0.71 / 0.6 / 0.55 / 0.74 inside a supposed single-product class** —
+   and it surfaced by READING all 123 ticker-publishing rows, not from any
+   count. Fixed with an other-house refusal whose vocabulary is taken from
+   `lib-disclose`'s own `KERN_WORDS`; measured blocking population 464.
+3. **The class-word framing itself**, above: 3,590 rows reading
+   overwhelmingly correct-as-filed.
+Per-condition necessity was measured over the live pool by dropping each
+condition in turn: the account-name condition blocks **15,366** rows it would
+otherwise admit (`TIAA Traditional FA` first), the Lifecycle refusal **157**,
+the other-house refusal **464**. None is decorative. Two must-NOT-SEE controls
+hold: 0 of 9,171 Lifecycle rows and 0 of 3,672 `TIAA Traditional` rows are
+classified as a CREF account.
+
+**WHY NOTHING SHIPPED, and the first reason is a PIN.** `lib-disclose.mjs:3995`
+lists **`CREF Money Market Account`** as a must-KEEP decoy for the bank-deposit
+rule, whose comment says firing on it *"would withdraw a real vehicle's expense
+ratio"* — so somebody has already considered one route to withdrawing this exact
+fee and pinned against it. *A pin is newer evidence than a queue entry.* The pin
+binds `isBankDepositRow` and not a new predicate, but its reasoning is about the
+same cell. Second, the fee half touches **4,187,734 participants** and belongs
+with the owner-gated stable-value and fee-pre-emption families, where the
+recorded position is that *a fee is SOURCED, never derived* — and the honest
+replacement is a per-class figure for QCSTRX…QCMMFX from `data/fund-facts.json`,
+which does not exist yet. Third, the type half (**2,010,652 participants**) is
+the shape `lib-disclose.mjs:2950` already repaired for the filer's own
+`annuity contract` phrasing on 186 rows, which makes this the **tenth** instance
+of *a fix for one phrasing of a class is not a fix for the class* — but
+asserting the right type is a claim and withdrawing `Mutual fund` to blank is
+new display wording, so it is one change and not two.
+
+**PROPOSED, with its price, for the owner:** (a) withdraw the pattern fee on the
+3,559 priced rows — one-directional, and the internal control is that 12,181
+sibling rows of the same eight accounts already publish nothing; (b) stop typing
+a CREF account `Mutual fund` on the 4,672 rows. Both are display-side,
+`PARSER_VERSION` stays 203, and (b) needs the crawlable pages regenerated and
+read. **Found outside the item and unsized: the `TIAA Access` T3/T4 sub-account
+family**, same vehicle defect, third brand, living inside the ambiguous half.
