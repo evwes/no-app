@@ -2196,8 +2196,47 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 - The `iShares` abbreviated-name family: 11,334 of 13,927 published rows / 7.24M
   ppl publish no ticker while 7,947 publish a fee. Usable as a defect measure
   because the brand names REGISTERED ETFs, so a blank is a matcher gap and never
-  a vehicle fact. The **EAFE** series is genuinely ABSENT from the registry
-  (308 + 316 rows) — a separate unsized item, not an entity defect.
+  a vehicle fact.
+  **AND THE "EAFE IS GENUINELY ABSENT FROM THE REGISTRY" CLAIM THIS ENTRY USED
+  TO CARRY IS REFUTED (2026-10-09).** `sec-funds.json` holds **10 EAFE entries**,
+  the first being **EFA — `iSHARES TRUST :: iShares MSCI EAFE ETF`**. So the
+  blank is a matcher gap there too, exactly as the rest of the bullet says; the
+  one sub-item it exempted was not an exception at all. If that sentence meant
+  `fund-er.js`'s own table rather than the SEC file it was true of the wrong
+  noun, and either way the symbol is in this repo today. *A claim that was true
+  once may be false now* — `sec-funds.json` was rebuilt 2026-09-28, and the
+  converse of the re-probe rule applies to our own recorded facts.
+- **THE TICKERS ARE ALREADY IN THE REPO AND THE PAGE DOES NOT READ THEM —
+  MEASURED 2026-10-09, and this is the largest wiring gap on the record.**
+  `sec-funds.json` carries **29,406 SEC series/class rows, 12,328 distinct
+  series, 29,168 distinct tickers**, from the SEC's own Investment Company
+  Series and Class file, **with share classes** (`VWELX` Investor beside
+  `VWENX` Admiral — the exact distinction the owner-gated store-vs-page item
+  turns on). Coverage of the families an owner would reach for: **iShares 464 /
+  Fidelity 1,749 / Vanguard 422 / JPMorgan 775**, every one of them tickered.
+  **`scripts/match-sec-tickers.mjs` ALREADY RESOLVES 571,286 of 1,320,514
+  fund-like rows — 43.3% (348,744 exact + 222,542 correctly asterisked as
+  ambiguous share classes)** — and its accuracy rules are already the right
+  ones: exact-normalized or filed-tokens ⊇ series-tokens WITH the manager token,
+  never across managers, and an unstated share class gets the comparable
+  asterisk rather than a silently chosen class.
+  **NOTHING A READER SEES CONSUMES ANY OF IT.** `sec-funds.json` appears in
+  `app.js` and `fund-er.js` **only inside comments**, as the authority used to
+  hand-verify individual corrections; the runtime resolver is `fund-er.js`'s
+  hand-written pattern table, and the matcher's output feeds
+  `docs/fund-ticker-reference.md`, a markdown doc. *Before adding a SOURCE, ask
+  what the pipeline already reads and throws away* — fourth instance, and much
+  the biggest: the download, the parse and the matcher are all already paid for.
+  **It also subsumes two open queue items by construction:** the matcher reads
+  `Dodge and Cox Stock` → DODGX, which is the `and`-spelling item (228 rows),
+  and it pins share classes, which is the store-vs-page item's blocker.
+  **NOT SHIPPED AND NOT TO BE SHIPPED BLIND.** A ticker is what the page
+  ASSERTS, so this moves hundreds of thousands of published symbol cells and
+  must be sized through the tracked renderer first — gains, SWAPS and losses
+  separately, asserted vs comparable kept apart (`r.star` is a whole category
+  of claim), with a pre-registered figure and the crawlable pages regenerated
+  and read. The fee column is name-keyed and so does not move with it, which
+  is what makes the change separable at all.
 - The one-class residue: 511 shipped `stk` rows / 339 names / 395,265 ppl state
   a class the series does not register, dominated by `Vanguard Target Ret <year>
   Inst`. A pre-existing property of `resolve`'s one-class arm; refusing it in one

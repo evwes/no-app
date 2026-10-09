@@ -7,6 +7,62 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-09 (01:0xZ) — the owner offered four issuer fund lists; the tickers were already in the repo, with share classes, and the page reads none of them
+
+**What prompted it.** The owner offered to supply fund lists from Fidelity,
+Vanguard, iShares and JPMorgan to help close the ticker gap.
+
+**The sandbox cannot reach any of them, measured two ways.** `curl` returned
+`http=000 bytes=0` for all four hosts, and `WebFetch` — a different channel
+entirely — returned `getaddrinfo ENOTFOUND` for `www.ishares.com` and
+`www.fidelity.com`. The denial is at DNS, not a rate limit or a login wall.
+
+**But the lists were not needed, which is the finding.** `sec-funds.json`,
+already in this repo and rebuilt 2026-09-28 from the SEC's own Investment
+Company Series and Class file, holds **29,406 class rows / 12,328 distinct
+series / 29,168 distinct tickers** — **iShares 464, Fidelity 1,749, Vanguard
+422, JPMorgan 775**, all tickered, and **with share classes**: `VWELX` Investor
+beside `VWENX` Admiral, which is precisely the distinction the owner-gated
+store-vs-page item turns on. An issuer's own web page would not have given the
+share-class granularity more cleanly, and would not have given it free of a
+scrape.
+
+**And the matcher exists and works.** `scripts/match-sec-tickers.mjs` resolves
+**571,286 of 1,320,514 fund-like rows, 43.3%** — 348,744 exact and 222,542
+correctly asterisked as ambiguous share classes. A uniform 8-row sample reads
+clean: `Vanguard 500 Index Admiral` → **VFIAX** (superset+class),
+`Fidelity 500 Index Fund` → **FXAIX** (exact), `Dodge and Cox Stock` →
+**DODGX*** — which is the `and`-spelling queue item resolving itself as a side
+effect.
+
+**Nothing a reader sees consumes any of it.** `sec-funds.json` appears in
+`app.js` and `fund-er.js` **only inside comments**, as the authority for
+hand-verifying individual corrections; the runtime resolver is `fund-er.js`'s
+hand-written pattern table, and the matcher's output feeds
+`docs/fund-ticker-reference.md`. *Before adding a SOURCE, ask what the pipeline
+already reads and throws away* — fourth instance after `cct`, `i1` and the
+trusts' Schedule C, and much the largest: the download, the parse and the
+matcher are all already paid for and the only missing piece is the wire.
+
+**A recorded claim was refuted on the way.** The register's iShares bullet said
+*"The **EAFE** series is genuinely ABSENT from the registry (308 + 316 rows) —
+a separate unsized item, not an entity defect."* `sec-funds.json` holds **10
+EAFE entries**, the first being **EFA**, `iSHARES TRUST :: iShares MSCI EAFE
+ETF`. So the one sub-item that bullet exempted from its own "a blank is a
+matcher gap" conclusion was not an exception. The recorded re-probe rule is *a
+claim that was false once is not thereby false forever*; this is its converse
+— **a claim that was true once may be false now**, and the registry was
+rebuilt after that sentence was written. Corrected in place.
+
+**Deliberately NOT shipped.** A ticker is what the page ASSERTS, and this would
+move hundreds of thousands of published symbol cells. It needs sizing through
+the tracked renderer with gains, SWAPS and losses counted separately and
+asserted kept apart from comparable (`r.star` is a whole category of claim), a
+pre-registered figure, and the crawlable pages regenerated and read — the
+discipline the `Vanguard Windsor II` ship earned, where every gate passed and
+only the page caught a wrong fund. The fee column is name-keyed and does not
+move with the symbol, which is what makes the change separable at all.
+
 ## 2026-10-09 (00:1xZ) — the participant-weighted draw credited a trust's menu to plans that are served their own, 3,350,019 participants of mis-weighting, and it drew one to show me
 
 **What was wrong.** `scripts/draw-published.mjs` built its pool by collecting
