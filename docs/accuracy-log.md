@@ -49785,3 +49785,78 @@ pipeline explains it equally well — `head` cannot flush.** The narrowing that
 made the screen affordable is a superset BY CONSTRUCTION (`cleanFiledName` never
 adds digits) and was DISCHARGED as an implication on every rejected row:
 **0 of 1,724,453 cleaned into a leading number.**
+
+### 2026-10-09 (16:3xZ) — the 117 unclassified rows READ, and the class corrects to 162
+
+An item may not rest as unknown, so the 117 rows my family classifier could not
+assign were printed with every field the page acts on and read. **Ten shapes,
+and two of them change a published figure.**
+
+**THE WITNESS HAS A FALSE-POSITIVE FAMILY: A COMMA-SEPARATED YEAR LIST.**
+`Fidelity Freedom, 2020,2025,2030,2035,2040,2045,2050,2055,2060,2065` matches
+`\d{1,3}(?:,\d{3})+` twice — on `020,2025` — and it is a fund FAMILY poorly
+parsed, not a table row. 1 row / 1 plan / 127 ppl, publishing a 0.5 fee at 49.7%
+of a small menu. **So the class is 162 rows, not 163.** *A witness built to be
+unfalsifiable on fund names was falsified by a VINTAGE LIST*, which is the same
+trap as `\d{1,3}` filler cutting `500 Index Fund` off its ticker — a digit test
+does not know what the digits are for.
+
+**AND MY SECOND SCREEN WAS REFUTED 9 OF 9 BY HOUSE ABBREVIATIONS.** Looking for
+a row publishing an ASSERTED symbol whose house word appears nowhere in the name
+or issuer — meant to catch a trailing fragment winning the resolver — returned 9
+rows and **every one is correct**: `VANG TARGET RET 2035` → VTTHX,
+`VANG 500 INDEX ADM` → VFIAX, `FID CONTRAFUND` → FCNTX. `VANG` and `FID` are the
+filer's abbreviations, so the test measured the SPELLING and not the defect. *A
+count keyed on a vocabulary measures the vocabulary*, met on a house name for
+the second time this record. **Worse, it cannot see the case that motivated it**,
+because there the trailing fragment IS a literal house word.
+
+**THE CASE IT COULD NOT SEE IS A THIRD NAMED INSTANCE OF THE CLOSED CVS
+TWO-FUND CLASS:** `Franklin Dynatech Fund s 2,916,933 $ 2,787,09s Vanguard
+Federal` publishes **VMFXX at 0.11 on $1,887,836, 10.5% of its menu** — the row
+names TWO funds welded through OCR garble and the resolver took the TRAILING
+one, so a Franklin growth fund is published as a Vanguard money-market fund.
+That class is recorded CLOSED at "two named instances and no number" (CVS
+Health, Bright Wood); this is the third, and like them it needs a WITHHOLDING
+rather than a repair.
+
+**THE SHAPES, so none of the 117 rests as unknown** (counts are of rows read,
+not re-sized — the dominant families are one plan each):
+* **A whole TABLE ROW including the plan-name column** — `Blue & Co 401(k) Plan
+  JIGEX John Hancock Investment Grade Bond R6 1,862,201.59 208,299.` ×13+, one
+  plan. The ticker is IN the name and several resolve correctly.
+* **Fund name + share count + `#` + value** — the 9 `VANG`/`FID` rows above, one
+  plan (Nox Health, 282 ppl). Tickers and fees all correct: legibility only.
+* **`<share count> <fund name><value>` welded with NO issuer** —
+  `170,734.978 BlackRock LifePath Dynamic 2025 Fund2,042,602.87`,
+  `12,761.419 NT Collective S&P 500 Index Fund - DC2,899,482.32`. The same
+  welded family the classifier caught where the issuer was populated; the issuer
+  being empty is the only reason these fell through, which is the classifier's
+  own defect and not a different cause.
+* **A FAIR-VALUE HIERARCHY table** — `Pooled Separate Accounts $ 9,599,465 $ -
+  $9,599,465 $ - Guaranteed Fund`, `Registered Investment Companies $ 20,237,003
+  …`, `Mutual funds $ 17,572,736 $ 17,572,736`. **2 of these are ALREADY
+  QUALIFIED** "the filing names no specific fund", so the shipped guard reaches
+  part of this family already.
+* **A SENTENCE from the notes** — `2024 and 2023, was $22,429,460 and
+  $26,652,768, respectively. Interest income was`. It escapes the shipped
+  `isSentenceRow` because that predicate needs a finite verb followed by a
+  FUNCTION WORD and here `was` is followed by a figure.
+* **OCR garble** — `fund $3,278,402 $i.278'402 92.856,342` at **75.9% of its
+  menu**, the Franklin/VMFXX row above.
+* **A ledger row with parenthesised negatives under the wrong house** —
+  `TRP VTSAX Mutual Fund ($5,859,810) ($8,197,322) …`, issuer `T. Rowe Price`,
+  naming a VANGUARD ticker.
+* **Ticker-first unit rows** — `QCSTRX CREF Total Global Stock R1 $1,084.786000
+  3,907.2705` ×2.
+* **Employer stock with a custodian account number in the issuer** —
+  `COSTCO WHOLESALE CO 4,123 452,885`, issuer `Windward Capital Management Co.
+  23821189`.
+
+**WHAT THIS SETTLES ABOUT THE REMEDY:** the class is not one defect and must not
+get one label. The `VANG`/`FID` and `Blue & Co` families publish CORRECT tickers
+and fees and need their NAME repaired; the fair-value-hierarchy and note-table
+families name no fund and need qualifying (and the shipped guard already reaches
+2 of them); the Franklin row needs a WITHHOLDING because its symbol is wrong.
+*A row that names nothing, a row whose name we mangled, and a row that names the
+wrong fund are three classes.*

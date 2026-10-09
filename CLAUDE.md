@@ -2687,8 +2687,27 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   rows / 1 plan and is blind to one of the three rows of its own motivating
   menu**, and before an own-value refusal it was dominated by $1-NAV MONEY
   MARKET rows whose share count equals their value as ARITHMETIC (L Brands'
-  `85,408,028 - shares` publishes VMFXX correctly). `docs/accuracy-log.md`
-  2026-10-09 (15:5xZ).
+  `85,408,028 - shares` publishes VMFXX correctly).
+  **THE 117 WERE READ 16:3xZ AND THE CLASS CORRECTS TO 162 ROWS, not 163:** a
+  comma-separated YEAR LIST is a false positive of the witness (`Fidelity
+  Freedom, 2020,2025,2030,…` matches on `020,2025`), 1 row / 127 ppl. Ten shapes,
+  and the remedy SPLITS THREE WAYS — the `VANG TARGET RET`/`FID CONTRAFUND` and
+  `Blue & Co 401(k) Plan <TICKER> <name> <value>` families publish CORRECT
+  tickers and fees and need their NAME repaired; the FAIR-VALUE HIERARCHY and
+  note-table families name no fund and need qualifying (**2 are already
+  qualified**, so the shipped guard reaches part of it); and one row needs a
+  WITHHOLDING. *A row that names nothing, a row whose name we mangled, and a row
+  that names the WRONG fund are three classes.*
+  **A SECOND SCREEN OF MINE WAS REFUTED 9 OF 9 — do not rebuild it:** "an
+  ASSERTED symbol whose house word appears nowhere in the name or issuer" returns
+  9 rows and all 9 are correct, because `VANG` and `FID` are the filer's house
+  ABBREVIATIONS. It also cannot see its own motivating case.
+  **THIRD NAMED INSTANCE OF THE CLOSED CVS TWO-FUND CLASS, found there:**
+  `Franklin Dynatech Fund s 2,916,933 $ 2,787,09s Vanguard Federal` publishes
+  **VMFXX at 0.11 on $1,887,836, 10.5% of its menu** — two funds welded through
+  OCR garble, the resolver taking the TRAILING one, so a Franklin growth fund is
+  published as a Vanguard money-market fund. `docs/accuracy-log.md`
+  2026-10-09 (15:5xZ) and (16:3xZ).
 - **ORIGINAL SIZING, kept for the two sub-populations it correctly refuses —
   THE KROGER LOAN ASSET, MEASURED 2026-10-02.** Published
   rows whose cleaned name carries loan vocabulary and which NO shipped loan
