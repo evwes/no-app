@@ -433,11 +433,24 @@ that changing visibility also unpublishes GitHub Pages.
   the same ref**, and do not hold anything else.
   **WHAT DOES NOT RELAX: a run in flight on main is still a reason not to
   MIRROR.** #556 committed stale-code data eight minutes after a mirror
-  (`mirror.sh` now refuses on exactly that), and a scheduled run always leaves
-  main a data commit the branch lacks, which `mirror-gate` refuses until the
-  branch adopts it. **Pushing to dev is safe during a main run; mirroring is
-  not.** *A rule stated more broadly than its mechanism costs real hours, and
-  the cost is invisible because nothing fails.*
+  (`mirror.sh` now refuses on exactly that). **Pushing to dev is safe during a
+  main run; mirroring is not.** *A rule stated more broadly than its mechanism
+  costs real hours, and the cost is invisible because nothing fails.*
+  **AND THE SECOND HALF OF THIS LINE WAS STALE — CORRECTED 2026-10-09 BY
+  OBSERVING #610.** It read "a scheduled run ALWAYS leaves main a data commit
+  the branch lacks, which `mirror-gate` refuses until the branch adopts it",
+  and the workflow has shipped the opposite since 2026-09-06: the merge job's
+  last step (`build-data.yml:305`, `if: always() && github.ref_name == 'main'`)
+  does `git merge-base --is-ancestor origin/$BR HEAD` and, when the dev branch
+  is a strict ancestor, **fast-forwards the dev branch itself** — its own
+  comment says two sessionless days in 2026-09-05/06 are why. Observed: #610
+  committed `d0a5df78` to main and BOTH refs came back pointing at it, so the
+  adoption chore did not exist and the only local action was `git merge
+  --ff-only`. **The hazard survives only on REAL divergence**, where the step
+  prints "dev branch has diverged from main — leaving it for a session to
+  reconcile" and hands it to `mirror.sh`. *A procedure note can be made false
+  by a shipped automation, and nothing fails to tell you* — the tell is the
+  cycle finding nothing to adopt where the rule predicts something.
 - **One re-parse in flight at a time**, and every scheduled cycle
   de-duplicates by checking for an in-flight run before dispatching.
 - **Only a `PARSER_VERSION`/`OCR_VERSION` bump justifies a full re-parse.**
