@@ -1448,7 +1448,55 @@ function fundTickerInfo(name, type) {
   // exact mutual fund, with no asterisk, because "trust" never appears
   // spelled out. The trailing anchor is what keeps this from also matching
   // "TRP RETIRE 2030 F" (a bare class letter, no "Tr" marker at all).
-  const pooled = /trust|commingled|collective|pool\b|unitized|separate account|\bcit\b|annuity|tiaa traditional|guaranteed|\bgic\b|stable value|separately managed/i.test(name)
+  /* `tiaa access` IS A VEHICLE NAME, NOT A PRODUCT NAME (2026-10-09). The
+   * TIAA Access platform is a set of sub-accounts inside TIAA's variable
+   * annuity: the plan holds a separate account that invests in a registered
+   * fund, at the separate account's higher cost — the same claim this arm's
+   * own `separate account` disjunct exists to refuse. The name carries the
+   * vehicle, so the NAME is the witness and the TYPE cell is not needed.
+   *
+   * IT HAD TO BE THE NAME, because the type cell cannot answer: our own store
+   * files `TIAA ACCESS NUV INTL EQUITY T4` and each of the seven next most
+   * common products under ALL FOUR of `Pooled separate account`,
+   * `Separate account`, `Mutual fund` and blank. 651 of 2,399 distinct TIAA
+   * Access product names are filed as a separate account by at least one plan,
+   * and the page's verdict was therefore decided by which plan filed the row:
+   * The St. Paul's Schools filed `TIAA Access TRP Institutional Large-Cap
+   * Growth T3` as a pooled separate account and got `TRLGX*`, while Liberty
+   * Science Center filed `TIAA Access TRP Inst Large Cap Growth T4` as a
+   * `Mutual fund` and got **TRLGX asserted** — one product, two verdicts.
+   *
+   * REGISTRY WITNESS: `sec-funds.json` registers 589 TIAA/CREF/Nuveen rows and
+   * **0 of 29,406** series matching both `tiaa` and `access`, so no row in this
+   * family is a registered fund that an assertion could be right about.
+   *
+   * ONE-DIRECTIONAL BY CONSTRUCTION — `pooled` can only withdraw an assertion
+   * or downgrade it to a comparable; the `!pooled` branch is the only one that
+   * returns `comparable:false` from FUND_TICKER. Measured through
+   * `scripts/apppath.mjs` over all 1,721,920 published+served rows: 13 rows /
+   * 11 plans / 10,967 participants / $2,689,702 move — 7 rows / 4,490 ppl lose
+   * a ticker (VWENX, DODFX), 6 rows / 7,358 ppl go asserted -> comparable
+   * (TRLGX*) — with ticker GAINED 0, SWAPPED 0, fee changed 0, name 0,
+   * shownType 0, and 341,327 sampled non-candidate rows differing on 0.
+   *
+   * THE FEE DOES NOT MOVE, and that is a limit rather than a feature:
+   * `er = star ? info.er : fundERRow(f)` prices the NAME either way, so
+   * Association Of Independent Maryland And Dc Schools still publishes
+   * Wellington Admiral's 0.17 on a row that now names no fund. 1,000 rows /
+   * 596 plans / 431,094 ppl carry a pattern-table fee here (503 at 0.06, 343
+   * at 0.1, 65 at 0.2 — index and money-market patterns), which belongs with
+   * the owner-gated stable-value and fee-pre-emption families: a fee is
+   * SOURCED, never derived, and `data/fund-facts.json` holds no TIAA Access
+   * figures. `docs/accuracy-log.md` 2026-10-09.
+   *
+   * THE DECOYS ARE MEASURED, NOT IMAGINED: of 8,714 distinct stored
+   * (issuer, name) strings carrying `tiaa` and outside this family, the token
+   * wrongly takes **0** — `TIAA Real Estate`, `TIAA Traditional`, `TIAA Stable
+   * Value` and the 474 `CREF Lifecycle Index` rows (registered mutual funds)
+   * are all untouched. That last set is why the token is the two-word phrase
+   * and not a bare brand: a bare `CREF`/`TIAA` token admitted 474 registered
+   * funds when the CREF class was sized one cycle earlier. */
+  const pooled = /trust|commingled|collective|pool\b|unitized|separate account|\bcit\b|annuity|tiaa traditional|tiaa access|guaranteed|\bgic\b|stable value|separately managed/i.test(name)
     || new RegExp(TRUST_CLASS, "i").test(name)
     /* The TYPE column is the filing's own statement of the vehicle, and it is
      * a controlled vocabulary of 13 values -- so it can be matched exactly

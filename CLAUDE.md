@@ -1165,7 +1165,8 @@ published cells:
   **DO NOT CARRY the ambiguous half as shippable: 1,576 rows / 855,717 ppl**
   where the house is only `TIAA-CREF`/`TIAA` is MIXED three ways on a uniform
   draw (13 of 24 are **`TIAA Access` T3/T4 sub-accounts** — the same vehicle
-  defect under a THIRD brand, unsized; 4 are real TIAA-CREF registered funds).
+  defect under a THIRD brand, SIZED AND PART-SHIPPED 2026-10-09, see the entry
+  below; 4 are real TIAA-CREF registered funds).
   **THREE SCREENS OF MINE WERE REFUTED, all by reading members:** a bare `CREF`
   token alone takes **474** `CREF LIFECYCLE INDEX 2040 INST` rows (registered
   mutual funds, caught by a must-NOT-SEE decoy); a house witness read from the
@@ -1209,6 +1210,65 @@ published cells:
   (`TA Vanguard LifeStrategy Mod Gr`, VSMGX at 0.1) — and the record already
   calls a wrapper lead correct as filed, so it needs the registry, not a wider
   screen. `docs/accuracy-log.md` 2026-10-09 (20:2xZ).
+- **THE `TIAA Access` VARIABLE-ANNUITY SUB-ACCOUNT FAMILY — SIZED 2026-10-09
+  21:4xZ at 15,005 published+served rows / 963 entries / 963 plans / 737,940
+  ppl / $2,570,145,886, and the ASSERTED-TICKER HALF IS SHIPPED.** The queue
+  named this unsized at "13 of a 24-row draw inside a 1,576-row residue": it is
+  **10x that**, because *a class spotted inside another class's residue is sized
+  by that residue's conditions, not by its own.* `entries == plans == 963`, so
+  no trust resolution is in play. **SHIPPED: one token in `fund-er.js`'s
+  `pooled` veto beside `tiaa traditional` — 13 rows / 11 plans / 10,967 ppl /
+  $2,689,702 stop ASSERTING a registered fund's symbol** (7 rows / 4,490 ppl
+  withdraw VWENX and DODFX, 6 rows / 7,358 ppl go asserted -> **TRLGX\***), with
+  ticker GAINED 0 / SWAPPED 0 / **fee changed 0** / name 0 / shownType 0 and a
+  341,327-row non-candidate control differing on 0. **One surface by
+  construction:** `build-seo-pages.mjs` has 0 references to `fund-er`/
+  `lookupTicker`/`fundTickerInfo`, so the regenerate-and-diff control is
+  INAPPLICABLE rather than skipped. `PARSER_VERSION` stays 203.
+  **IT HAD TO BE THE NAME AND COULD NOT BE THE TYPE CELL — our own store files
+  ONE product FOUR ways, so the page's verdict was decided by WHICH PLAN FILED
+  THE ROW.** `TIAA ACCESS NUV INTL EQUITY T4` (385 rows) and the seven next
+  most common products each appear under all of `Pooled separate account`,
+  `Separate account`, `Mutual fund` and blank; **651 of 2,399 distinct product
+  names are filed as a separate account by at least one plan.** The control is
+  one page from the defect: St. Paul's Schools filed a pooled separate account
+  and published `TRLGX*`; Liberty Science Center filed the same product as
+  `Mutual fund` and published **TRLGX asserted**. Registry witness:
+  `sec-funds.json` has **589 TIAA/CREF/Nuveen rows and 0 of 29,406** series
+  matching both `tiaa` and `access`. Decoys measured from the data, not
+  imagined: of **8,714** distinct stored `tiaa` strings outside the family the
+  token takes **0** (`TIAA Real Estate` 1,006, `TIAA Traditional` 509+474,
+  `CREF Lifecycle Index` 474 registered funds) — which is why the anchor is the
+  two-word phrase and not a bare brand.
+  **STILL OPEN, OWNER-GATED, AND THE SHIPPED CHANGE DOES NOT TOUCH EITHER:**
+  (a) **the FEE, 1,000 rows / 596 plans / 431,094 ppl / $126,559,648** — `er =
+  star ? info.er : fundERRow(f)` prices the NAME on both branches, so
+  Association Of Independent Maryland And Dc Schools still publishes Wellington
+  Admiral's **0.17 on a row that now names no fund**, and Geisinger (27,871 ppl)
+  publishes 0.03 on `TIAA Access S&P 500 Index`. Pure pattern leakage, 0.06
+  ×503 / 0.1 ×343 / 0.2 ×65 / 0.03 ×31, and **53 of the 1,000 carry a filed type
+  that DOES say separate account** — so the TICKER column now refuses this
+  family on 14,990 of 15,005 rows and the FEE column still does not. Goes with
+  the stable-value and fee-pre-emption families: *a fee is SOURCED, never
+  derived*, and `data/fund-facts.json` has no TIAA Access figures.
+  (b) **the false vehicle TYPE, 4,678 rows / 304 plans / 358,676 ppl /
+  $734,433,119 publishing `Mutual fund`**, of which 3,452 rows / 304,719 ppl
+  have our own store filing that exact product as a separate account elsewhere.
+  Same gate as the CREF type half — withdrawing it needs new display wording, so
+  *a guard and the claim it licenses are one change* — and the **eleventh
+  instance of *a fix for one phrasing of a class is not a fix for the class***
+  (`lib-disclose.mjs:2950` repaired the filer's own `annuity contract` phrasing
+  on 186 rows).
+  **NOT a defect: the 8,992 blank-type rows** say nothing about the vehicle,
+  which is honest. **And qualification is the WRONG remedy for all of it** — a
+  seeded uniform draw of 24 reads **24 of 24 genuine** with names intact, a row
+  naming nothing is **0** and a row whose name we mangled is **23**, so *"the
+  filing names no specific fund"* would be false for essentially every row.
+  **DO NOT key this family on the T-class suffix:** T4 10,807 / T3 1,408 / T2
+  344 / T1 22 and **2,424 rows carry no T-token at all** (`TIAA Access
+  High-Yield`), so the suffix misses 16%. One draw row belongs to the 15:5xZ
+  welded-table-row class instead (California Community Foundation's `W436# …
+  $41.891700 951.5792`). `docs/accuracy-log.md` 2026-10-09 (21:4xZ).
 - Stable value / guaranteed accounts publishing a fabricated ER: 4,669 rows /
   **7,389,704 ppl**, 4,571 of them at exactly 0.35.
   **AND ITS CLEANEST SUB-CASE IS SIZED AND AWAITING A DECISION — FOUND BY THE

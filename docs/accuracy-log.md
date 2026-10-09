@@ -50416,3 +50416,186 @@ Also seen in passing and unsized: `Tafcott Resolution Life Insurance Company`,
 an OCR garble of Talcott in a published issuer cell.
 
 **Nothing shipped. `PARSER_VERSION` stays 203.**
+
+## 2026-10-09 (21:4xZ) — `TIAA Access` is a vehicle name, not a product name: 13 asserted symbols withdrawn or asterisked, and the family sized at 15,005 rows / 737,940 readers
+
+**TAKEN FROM THE QUEUE:** the `TIAA Access` T3/T4 variable-annuity sub-account
+family, named by the 18:4xZ CREF sizing as *"the same vehicle defect under a
+THIRD brand, unsized"* after 13 of a 24-row uniform draw inside a 1,576-row
+residue pool came back as members of it.
+
+**THE QUEUE'S FRAME UNDER-STATED IT BY 10x, AND THAT IS THE FIRST CORRECTION.**
+The family was spotted inside the CREF screen's 1,576-row ambiguous residue, so
+it read as a sub-population of that residue. Measured on its own terms through
+`scripts/apppath.mjs` over all **1,721,920** published+served rows — the publish
+gate (`lineups-index`'s bit 1) and the serving condition (`lib-ledger`'s
+`servedLineup`) both applied, members resolved per ack — the family is
+**15,005 rows / 963 entries / 963 plans / 737,940 participants /
+$2,570,145,886.** *A class spotted inside another class's residue is sized by
+that residue's conditions, not by its own.* Note also that **entries == plans ==
+963**: every member is a plan's OWN ack, so no trust resolution is in play here
+and the usual plan-keyed blindness cannot bite.
+
+**THE SPLIT, and the three halves have three different remedies:**
+
+| | rows | plans | ppl | $ |
+|---|---|---|---|---|
+| publishes shown TYPE `Mutual fund` | **4,678** | 304 | **358,676** | $734,433,119 |
+| …and our own store files that product as a SEPARATE ACCOUNT elsewhere | 3,452 | 275 | 304,719 | $554,106,617 |
+| publishes a pattern-table FEE | **1,000** | 596 | **431,094** | $126,559,648 |
+| publishes a TICKER | 15 | 13 | 12,379 | $3,175,536 |
+| …ASSERTED (no asterisk) | **13** | 11 | **10,967** | $2,689,702 |
+| shownType blank — a GAP, no false claim | 8,992 | 591 | 322,462 | $1,624,067,289 |
+
+**THE REGISTRY WITNESS IS UNAMBIGUOUS AND IT IS THE SAME ONE THE CREF WORK
+USED.** `sec-funds.json` carries **589 TIAA/CREF/Nuveen registrant rows and 0 of
+29,406 series matching both `tiaa` and `access`.** A TIAA Access sub-account is
+a separate account inside TIAA's variable annuity: the plan holds a wrapper that
+invests in a registered fund, at the wrapper's higher cost. So no row in this
+family is a registered fund that an assertion could be right about.
+
+### What shipped: the ASSERTED TICKER, 13 rows / 11 plans / 10,967 participants
+
+One token added to `fund-er.js`'s `pooled` veto, beside the `tiaa traditional`
+that was already there. **It had to be the NAME and could not be the TYPE
+CELL**, and that is the finding worth keeping:
+
+***OUR OWN STORE FILES ONE PRODUCT FOUR DIFFERENT WAYS, SO THE PAGE'S VERDICT
+WAS DECIDED BY WHICH PLAN FILED THE ROW.*** `TIAA ACCESS NUV INTL EQUITY T4`
+(385 rows) and each of the seven next most common products appear under ALL FOUR
+of `Pooled separate account`, `Separate account`, `Mutual fund` and blank.
+**651 of the 2,399 distinct TIAA Access product names are filed as a separate
+account by at least one plan.** The control is one page away from the defect:
+The St. Paul's Schools files `TIAA Access TRP Institutional Large-Cap Growth T3`
+as a pooled separate account and publishes **`TRLGX*`** — correctly hedged —
+while Liberty Science Center files `TIAA Access TRP Inst Large Cap Growth T4` as
+a `Mutual fund` and publishes **`TRLGX` ASSERTED**. One product, two verdicts,
+and the cell that decided it is the one cell the filers disagree about. *A
+type-reading suppressor is defeated by a filer's own mis-typing, and a blank
+type defeats it outright* — recorded for the target-date ladder and the CREF
+accounts, met here with the filer's spread made visible.
+
+**ONE-DIRECTIONAL BY CONSTRUCTION, read off the shipped expression rather than
+argued:** the `!pooled` branch is the only one that returns `comparable:false`
+out of `FUND_TICKER`, so making a row `pooled` can withdraw an assertion or
+downgrade it to a comparable and can never create one.
+
+**MEASURED, both directions, through the tracked harness** (`buildRenderer`,
+`renderRow(plan, f, "menu", total)`, `f.name = clean(row.name)`), BEFORE loaded
+from `git show HEAD:fund-er.js` via `buildRenderer({ funder })` so the "before"
+is origin's own copy and not a retyped baseline:
+
+- **MOVED 13 rows / 11 plans / 10,967 ppl / $2,689,702.**
+- ticker **WITHDRAWN** 7 rows / 4,490 ppl (VWENX ×6, DODFX ×1)
+- ticker **ASSERTED -> COMPARABLE** 6 rows / 7,358 ppl (TRLGX*)
+- ticker GAINED **0** · SWAPPED **0** · fee changed **0** · name **0** ·
+  shownType **0**
+- **CONTROL: 341,327 sampled non-candidate rows, 0 differ.**
+
+**THE NARROWING IS A SUPERSET BY CONSTRUCTION AND WAS DISCHARGED SEPARATELY.**
+`pooled` tests `/tiaa access/i` against the string `lookupTicker` hands
+`fundTickerInfo`, which is `iss + name` or `name` (`app.js:2612/2626/2656`), so
+a verdict can move only where the raw name or the issuer cell carries both
+tokens — and `cleanFiledName` only deletes characters, re-cases and collapses
+whitespace, so it can never insert one. Asserted over **every** excluded row,
+not a sample: **0 of 1,706,637 gain either token under `clean()`**. *Sampling
+cannot establish a superset*, so the regex does it and the sample only fails to
+refute it.
+
+**THE WITHDRAW/COMPARABLE SPLIT IS DECIDED BY WHICH TABLE THE NAME IS IN, NOT BY
+ANYTHING ABOUT THE HOLDING, and that asymmetry is named rather than hidden.**
+TRLGX is in `FUND_COMPARABLE`, so those six rows keep the symbol with the
+asterisk — the honest cell for a wrapper, *"this is what the holding tracks"*.
+VWENX and DODFX are in `FUND_TICKER` only, so those seven go blank. Both
+directions are improvements over an assertion; the shapes differ for a reason
+internal to our tables, and the comparable pin asserts the `*` explicitly
+because a pin on the bare symbol would have passed against the defect.
+
+**THE DECOYS ARE MEASURED, NOT IMAGINED.** Of **8,714** distinct stored
+(issuer, name) strings carrying `tiaa` and outside the family, the token
+wrongly takes **0**: `TIAA Real Estate` (1,006 rows), `TIAA Traditional Benefit
+Responsive` (509), `TIAA Stable Value` (303) and the `CREF Lifecycle Index`
+registered mutual funds all keep whatever they resolved before. **That last set
+is why the token is the two-word phrase and not a bare brand** — the CREF
+sizing one cycle earlier measured a bare `CREF` token admitting **474**
+`CREF LIFECYCLE INDEX 2040 INST` rows, which are registered funds.
+
+**FIXTURES: five added to `scripts/fund-er-test.mjs`, and all five FAIL BY NAME
+against `HEAD:fund-er.js`** (`node scripts/fund-er-test.mjs --file <before>`
+exits 1 with the five lines) and pass against the change — 104 must-resolve /
+40 must-not / 0 failures. Each is the only protection for its own spelling:
+`Vang`, the spelled-out `Vanguard`, the hyphen-joined `TIAA Access-Dodge & Cox`,
+and the two filer spellings of the TRLGX downgrade. The condition is a single
+token, so leave-one-out IS the negative control above: **necessary for 13 rows**,
+and token-alone it fires on 15,283 candidate rows, so it is not inert machinery.
+
+**ONE SURFACE, and that is a structural fact rather than a skipped step.**
+`build-seo-pages.mjs` contains **0** references to `fund-er`, `fundER`,
+`lookupTicker` or `fundTickerInfo` — the crawlable pages publish no ticker and
+no fee column at all — so the usual "regenerate the pages and diff" control is
+inapplicable here. `node scripts/stamp-assets.mjs` re-derived the `fund-er.js`
+cache-buster (`8bc0c0f0 -> ba9e49a9`) and `index.html` is committed with it;
+`--check` clean; `smoke-test` green including its five fund-er pricer
+cross-check witnesses. `PARSER_VERSION` stays **203** and nothing in the
+pipeline was touched.
+
+### What did NOT ship, with its size, and why
+
+**THE FABRICATED FEE — 1,000 rows / 596 plans / 431,094 participants /
+$126,559,648, and the shipped ticker change does not touch it.** `er = star ?
+info.er : fundERRow(f)` prices the NAME on both branches, so
+**Association Of Independent Maryland And Dc Schools (1,675 ppl) still publishes
+Wellington Admiral's 0.17 on a row that now names no fund**, and Geisinger
+System Services (27,871 ppl) publishes 0.03 on `TIAA Access S&P 500 Index`.
+The distribution is pure generic-pattern leakage and matches the CREF finding
+to the pattern: **0.06 ×503** (equity/bond index), **0.1 ×343** (small-cap
+blend index), **0.2 ×65** (money market), **0.03 ×31** (S&P 500) — i.e.
+`fund-er.js:498`'s index and money-market patterns, the same arms that priced
+the CREF accounts. **53 of the 1,000 carry a filed type that DOES say separate
+account**, which is a second instance of the fee column being less careful than
+the ticker column: the TICKER refuses this family on 14,990 of 15,005 rows and
+the FEE does not. It goes with the owner-gated stable-value and fee-pre-emption
+families — *a fee is SOURCED, never derived*, and `data/fund-facts.json` holds
+no TIAA Access figures, so the honest replacement does not exist.
+
+**THE FALSE VEHICLE TYPE — 4,678 rows / 304 plans / 358,676 participants /
+$734,433,119 publish shown type `Mutual fund` for a separate account**, of which
+**3,452 rows / 304,719 ppl have our own store filing that exact product as a
+separate account elsewhere.** This is the CREF type half under a third brand and
+is owner-gated for the same reason recorded there: withdrawing or correcting
+`Mutual fund` needs new display wording, and *a guard and the claim it licenses
+are one change*. It is also the shape `lib-disclose.mjs:2950` already repaired
+for the filer's own `annuity contract` phrasing on 186 rows — **the eleventh
+instance of *a fix for one phrasing of a class is not a fix for the class***.
+
+**THE 8,992 BLANK-TYPE ROWS ARE A GAP AND NOT A DEFECT** and are deliberately
+left: the page says nothing about the vehicle, which is honest, and filling the
+cell would be an assertion about a filing that left it empty.
+
+### The uniform draw, and the one thing it refuted
+
+**A SEEDED UNIFORM DRAW OF 24 from the 15,005 reads 24 of 24 GENUINE** TIAA
+Access sub-accounts with their names intact — `TIAA Access Nuveen Lifecycle 2040
+Fund`, `TIAA Access Nuv Core Pl Bd T3`, `TIAA Access T-C Large Cap Value Fund -
+Class T4` — so there is no fourth hidden class here. **The three-way split the
+method demands comes out lopsided and is worth stating: a row that names
+nothing is 0, a row whose name we MANGLED is 23** (the `(invested in equity and
+-income funds)` welded descriptions, already pinned in `lib-disclose`'s bracket
+arm), **and the whole rest of the family names its product correctly.** So
+*"the filing names no specific fund"* would be FALSE for essentially every row
+here, and qualification is the wrong remedy for all of it.
+
+**ONE ROW OF THE DRAW BELONGS TO AN ALREADY-QUEUED CLASS AND NOT TO THIS ONE:**
+California Community Foundation (204 ppl) publishes `W436# TIAA Access Nuv Core
+Pl Bd T4 $41.891700 951.5792` — a per-unit price and a unit count welded onto
+the name, which is the 15:5xZ *"table row published as a fund name"* family, not
+a vehicle defect.
+
+**THE T-CLASS SPREAD, recorded because the queue entry named only T3/T4:** T4
+10,807 rows, T3 1,408, T2 344, T1 22, and **2,424 rows carry no T-class token at
+all** (`TIAA Access High-Yield`, `TIAA Access Equity Index`). So keying this
+family on the share-class suffix would have missed 16% of it, and the brand
+phrase is the right anchor — which is also the constraint the queue imposed:
+anchor on the product's own filed NAME, because *the issuer cell routinely holds
+the custodian or the platform* and was priced at approximately nothing one hour
+earlier. The issuer cell is empty on the great majority of these rows anyway.

@@ -207,6 +207,15 @@ const MUST = [
   /* `Intl`/`Industrials` are load-bearing Vanguard words and the arm must not
    * swallow them: International Growth still resolves to its own fund. */
   ["Vanguard Intl Growth Adm", "VWILX"],
+  /* THE DOWNGRADE, pinned as a TICKER rather than as a blank (2026-10-09).
+   * The TIAA Access veto is one-directional but it is not uniform: a name the
+   * comparable table carries keeps its symbol WITH the asterisk, which is the
+   * honest cell for a wrapper ("this is what the holding tracks"). The two
+   * expectations below are the same product under two filers' spellings, and
+   * the `*` is the whole assertion — without it this pin would pass against a
+   * version that asserted the fund itself. 6 rows / 7,358 readers. */
+  ["TIAA Access TRP Inst Large Cap Growth T4", "TRLGX*"],
+  ["TIAA ACCESS TRP LARGE CAP GROWTH I T3", "TRLGX*"],
 ];
 
 /* MUST NOT RESOLVE. A blank is the honest answer for all of these. */
@@ -217,6 +226,16 @@ const MUST_NOT = [
   "LOAN FUND",
   "PENDING SETTLEMENT FUND",
   "TIAA REAL ESTATE",
+  /* THE TIAA ACCESS VARIABLE-ANNUITY SUB-ACCOUNTS, 2026-10-09. A sub-account
+   * of TIAA's variable annuity is not the registered fund it invests in, and
+   * the SEC registers 0 of 29,406 series matching both `tiaa` and `access`.
+   * Each of these three published an ASSERTED symbol before the `pooled` veto
+   * learned the phrase — VWENX for 1,675 + 741 + 478 + 403 + 366 readers and
+   * DODFX for 381 — and each is the ONLY protection for its own spelling:
+   * `Vang`, the spelled-out house, the hyphen-joined form. */
+  "TIAA Access Vang Wellington T4",
+  "TIAA Access Vanguard Wellington T4",
+  "TIAA Access-Dodge & Cox International Stock T4",
   "VOYA FIXED ACCOUNT",
   "BLF FEDFUND",
   "OAKMARK INTL SM CAP INST",        // Oakmark International SMALL CAP != OAKIX
