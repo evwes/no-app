@@ -292,7 +292,7 @@ const CONCAT_PART = new Set([...ASSET_WORDS, "cap", "caps"]);
 const VEHICLE_NOUN = new Set(["portfolio", "portfolios", "trust", "trusts", "account", "accounts"]);
 const vehiclesOf = (s) => new Set(norm(s).split(" ")
   .filter((w) => VEHICLE_NOUN.has(w)).map((w) => w.replace(/s$/, "")));
-function isAssetWord(w) {
+export function isAssetWord(w) {
   if (ASSET_WORDS.has(w)) return true;
   for (let i = 3; i <= w.length - 3; i++)
     if (CONCAT_PART.has(w.slice(0, i)) && CONCAT_PART.has(w.slice(i))) return true;
@@ -361,7 +361,7 @@ const GENERIC_LEAD = new Set(["etf", "etfs", "variable", "insurance", "mutual", 
  * contains (the vintage year sits between "funds" and "target"), and the whole
  * 20k-row family failed the gate. Filed names are matched against the same
  * un-stripped normalization, so both sides keep the house word. */
-const STRUCTURAL = new Set(["trust", "trusts", "fund", "funds", "portfolio", "portfolios",
+export const STRUCTURAL = new Set(["trust", "trusts", "fund", "funds", "portfolio", "portfolios",
   "series", "company", "companies", "group", "the", "of", "for", "and", "inc", "llc", "lp",
   "plc", "corporation", "corp", "holdings", "shares", "class", "account", "ii", "iii", "iv"]);
 /* Share-class and role words. A registrant named "INSTITUTIONAL FIDUCIARY
@@ -370,7 +370,7 @@ const STRUCTURAL = new Set(["trust", "trusts", "fund", "funds", "portfolio", "po
  * as "t" and "bond fund", one level along. These extend to a second token
  * rather than being dropped, so that registrant stays usable as "institutional
  * fiduciary" while the bare word stops naming every house. */
-const CLASS_WORDS = new Set(["institutional", "investor", "premier", "premium", "advisor",
+export const CLASS_WORDS = new Set(["institutional", "investor", "premier", "premium", "advisor",
   "advisors", "adviser", "retail", "service", "services", "fiduciary", "admiral", "select",
   "administrative", "signal", "founders", "flagship"]);
 /* Words that describe what a fund HOLDS. A registrant named after its own
@@ -381,7 +381,7 @@ const CLASS_WORDS = new Set(["institutional", "investor", "premier", "premium", 
  * built entirely from description is rejected; a single long token is kept,
  * because that is how genuine houses whose name is also a word appear
  * ("Russell", "Oakmark"). */
-const DESCRIPTIVE = new Set([...DISCRIMINATORS, "bond", "stock", "stocks", "equity",
+export const DESCRIPTIVE = new Set([...DISCRIMINATORS, "bond", "stock", "stocks", "equity",
   "equities", "money", "market", "return", "estate", "cap", "balanced", "date",
   "dividend", "fixed", "opportunity", "opportunities", "asset", "allocation",
   "target", "retirement", "total",

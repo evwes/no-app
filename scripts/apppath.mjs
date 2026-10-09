@@ -60,6 +60,23 @@ export function buildRenderer(opts = {}) {
   const appPath = opts.appjs || process.env.APPJS_PATH || (ROOT + "app.js");
   const app = readFileSync(appPath, "utf8");
   const fundEr = readFileSync(opts.funder || process.env.FUNDER_PATH || (ROOT + "fund-er.js"), "utf8");
+  /* `sec-tickers.js` IS ONE OF THE PAGE'S SCRIPTS (index.html loads it before
+   * app.js), so the default must load it: a harness missing one of the page's
+   * globals measures a page that does not exist — `lookupTicker`'s last arm
+   * would read `typeof SEC_TICKERS === "undefined"` and every row it answers
+   * would come back blank.
+   *
+   * `secTickers: false` EXISTS FOR EXACTLY ONE CALLER and the reason is a trap
+   * worth naming. `scripts/gen-sec-tickers.mjs` GENERATES that table, and its
+   * gate is "the page's own chain resolves nothing". Run with the table loaded,
+   * the generator would see its own previous output as an answer the page
+   * already has, every gain would fall into `already`, and the SECOND run would
+   * write an EMPTY table — a generator that silently erases its own work. The
+   * generator asserts the flag took effect rather than trusting it. */
+  const wantSec = opts.secTickers !== false && process.env.SEC_TICKERS_PATH !== "none";
+  const secTickers = wantSec
+    ? readFileSync(opts.secTickers || process.env.SEC_TICKERS_PATH || (ROOT + "sec-tickers.js"), "utf8")
+    : "";
 
   /* (1) the prologue: everything from the IIFE's first statement through the
    * lookupTicker hook. That region holds cleanFiledName, the GENERATED twin
@@ -81,6 +98,7 @@ export function buildRenderer(opts = {}) {
 
   const src = `
 ${fundEr}
+${secTickers}
 const window = {};
 const document = { getElementById: () => null };
 let state = { plans: [], lineupTab: {} };

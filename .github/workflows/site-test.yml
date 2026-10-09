@@ -18,6 +18,10 @@ on:
             # new filings. A red site-test blocks nothing but the verdict.
             "scripts/lib-4i.mjs", "scripts/slice-vq.mjs",
             "scripts/lib-disclose.mjs", "scripts/build-seo-pages.mjs",
+            # the SEC ticker table, its consumer's harness, and the matcher
+            # whose answers it carries
+            "sec-tickers.js", "scripts/sec-tickers-test.mjs",
+            "scripts/apppath.mjs", "scripts/match-sec-tickers.mjs",
             "plans-list.json", "plans-index.json", "map-points.json"]
   workflow_dispatch:
 
@@ -72,6 +76,18 @@ jobs:
       # browser rejects as a SyntaxError, loading no app.js at all.
       - name: Quote-guard twin — app.js must be a verbatim slice of lib-quote
         run: node scripts/slice-vq.mjs --check
+      # `sec-tickers.js` is GENERATED and its consumer in app.js is
+      # hand-written, which is the exact shape of every twin this project has
+      # lost. The failure mode is SILENT: if the table's keys stop matching the
+      # arm's key expression, every row it would answer simply stays blank —
+      # which is what the page shows today, so no reader and no count can tell.
+      # This asks the real `lookupTicker` for the pin, asserts the answer is
+      # ASSERTED and never a comparable, asserts the arm stands down where the
+      # page's own chain answers and where the filing's own `f.tk` is present,
+      # and asserts that `secTickers:false` disables it — which is the
+      # generator's own premise and, loaded, would make it write an empty table.
+      - name: SEC ticker table — the generated answers still reach the page
+        run: node scripts/sec-tickers-test.mjs
       # index.html cache-busts its assets with a query string, and that string
       # was typed by hand until 2026-10-02 -- when it was found SEVENTEEN DAYS
       # stale, with app.js and fund-er.js both changed that same day. A

@@ -48830,3 +48830,233 @@ locally: `no-identity-test` (0 failures, 3 new controls fire), `smoke-test`,
 `stamp-assets --check`. `map-test` is the known sandbox `ERR_CERT_AUTHORITY_INVALID`
 failure and settles in CI. No `PARSER_VERSION` bump: the parser is untouched and
 nothing is re-parsed.
+
+---
+
+## 2026-10-09 (07:0xZ) — the SEC registry is wired into `lookupTicker` as a last-resort fallback: 4,346 rows / 1,938 plans / 2,316,219 ppl gain an ASSERTED symbol, and the vehicle refusal is four fifths of the item
+
+**What was wrong.** `sec-funds.json` (29,406 SEC series/class rows, with share
+classes) and `scripts/match-sec-tickers.mjs` have been in this repo since
+2026-09-28, and the only thing a reader saw of them was `f.ftk`/`f.stk` — which
+`merge-4i` writes from the matcher's two NARROWEST entry points (a symbol the
+filing itself prints, leading the name). `resolveHolding`, the entry point built
+for exactly the question the page asks, had **no reader at all**. 767,460
+published rows carry no symbol; the registry can name some of them.
+
+**The change.** `lookupTicker` gains one arm, ABSOLUTELY LAST — after `ftk`, the
+issuer path, the misspelling repair and `stk` — reading a generated table:
+
+* `sec-tickers.js` — 2,590 keys, 170,750 bytes raw, **29,397 bytes gzipped**,
+  loaded by `index.html` BEFORE app.js (a top-level `const` is in the global
+  lexical scope, so reading it from app.js before that script ran would hit the
+  temporal dead zone and throw rather than read `undefined`).
+* `scripts/gen-sec-tickers.mjs` — the generator, which IS the measurement.
+* `scripts/sec-tickers-test.mjs` — the tether, wired into `site-test`.
+* `scripts/apppath.mjs` now loads the new asset by default, with
+  `secTickers: false` for the one caller that must not have it.
+* `scripts/match-sec-tickers.mjs` — four `export`s added (`STRUCTURAL`,
+  `CLASS_WORDS`, `DESCRIPTIVE`, `isAssetWord`); no behaviour change.
+
+Display-only. `PARSER_VERSION` untouched, nothing re-parsed, **0 crawlable pages
+moved** (regenerated all 5,000 and diffed — `build-seo-pages.mjs` resolves no
+tickers at all, verified rather than assumed).
+
+**Measured through the tracked harness over all 1,721,920 published + served
+rows** (confident gate + `servedLineup`), with the row the page passes and
+`tab: "menu"`:
+
+| | |
+|---|---|
+| already resolve today (untouched) | 699,057 |
+| the page never asks (gic/loan/stock/subtotal/annuity/contract) | 10,718 |
+| **REFUSED — POOLED VEHICLE** | **51,491 rows / 7,789 plans / 19,661,199 ppl** |
+| REFUSED — registrant unattested | 2 rows / 2 keys |
+| **GAIN an ASSERTED symbol** | **4,346 rows → 1,938 plans / 2,316,219 ppl** |
+| gain a COMPARABLE (refused, owner's call) | 188,846 rows / 35,353 plans / 49,065,090 ppl |
+| still blank | 767,460 |
+| **SWAPS / LOSSES / COMPARABLES SHIPPED** | **0 / 0 / 0** |
+
+**Why render-time and not `merge-4i`.** Widening `ftk` would reach the same rows
+with the same matcher — and `ftk` is consulted FIRST in `lookupTicker`, so a
+merge-time write can take a correct symbol AWAY as readily as add one. Here every
+earlier arm has already returned nothing, so swaps and losses are impossible by
+construction. *Same data, same matcher, opposite risk, decided purely by position
+in the chain.*
+
+**`!f.tk` IS LOAD-BEARING AND WAS NOT IN THE FIRST DRAFT.** `renderRow` computes
+`tk = info ? info.tk : (f.tk || null)`, so a row carrying the symbol the FILING's
+own code stated publishes it the moment this function returns null — and a
+non-null answer would DISPLACE it. 414 such rows exist; on 87 the registry gives
+the BASE class where the filing names the class held (`MFS Growth Fund R2` →
+MEGRX, base MFEGX). The 25 where the registry answers exactly all answer the SAME
+symbol, so the guard costs nothing and is what makes "0 swaps" true by
+construction rather than by luck.
+
+### THREE DEFECTS IN MY OWN SHIP, ALL FOUND BY READING AND NONE BY A COUNT
+
+**(1) A POOLED VEHICLE IS NOT THE REGISTERED FUND — 51,491 rows / 19,661,199
+participants, four fifths of the item.** `fund-er.js:1451` already carried this
+rule and its comment already named the failure: an insurance separate account
+filed as `VALIC Vanguard Windsor II Fund` resolving to VWNAX asserted is *"the
+claim that the plan holds the Vanguard fund itself. It does not; it holds a
+separate account that invests in it, at the separate account's higher cost."*
+`match-sec-tickers` has the same rule on the NAME and **cannot see the TYPE cell
+at all**, because `resolveHolding` is never given one. My first draft returned
+`comparable: false` unconditionally, so Bridgestone's `Fidelity Freedom Blend
+2055 Fund Class Z` — typed `Collective trust`, issuer `Fidelity Institutional
+Asset Management Trust Company`, $8,387,513 — would have ASSERTED the mutual
+fund's FHPEX. **The remedy is REFUSAL, not an asterisk**: returning
+`comparable: true` would be the owner-gated half arriving by a side door. The
+predicate is SLICED from fund-er.js, all three arms plus `TRUST_CLASS`, with a
+control pinning each arm alone.
+***It was found by a SEEDED UNIFORM DRAW that printed each row's own TYPE beside
+the answer. No count could have: the symbol is right for the FUND and wrong for
+the VEHICLE, so swaps read 0, losses read 0, every fixture passed and the
+whole-store diff was clean.***
+
+**(2) 10,718 ROWS WERE A GAIN NO READER COULD EVER SEE.** `renderRow` gates
+`lookupTicker` itself on `!gicRow && !subtotalRow && !loanRow && !annuityRow &&
+!contractRow`, and then overrides `tk` outright for a loan or employer-stock row.
+`Vanguard ® Target Retirement Income Fund- Investor Shares` is typed
+`Stable value / GIC`, which trips `gicRow`, so its VTINX could never have reached
+the page. Also found by the draw, from the type cell. *A count of what the
+predicate answers is not a count of what the page prints.*
+
+**(3) A PRE-EXISTING CROSS-MANAGER HOLE IN THE MATCHER, which this call site is
+the first thing to expose at corpus scale.** `(Vanguard Asset Allocation Fund)`
+resolves to **VCAAX**, asserted — the SEC registers VCAAX as `VALIC Co I :: Asset
+Allocation Fund`, A DIFFERENT HOUSE. The SUPERSET arm matched because VALIC's
+series name is the wholly generic `Asset Allocation Fund`, and the leftover
+`vanguard` was excused by that arm's own rule that *"a house name the filing
+states and the registrant's legal name omits"* is a legitimate leftover — right
+for `American Funds Growth Fund of America`, and it **never asks whether the
+registrant is THAT house.** The larger live instance is Homestead Funds' bare
+`Intermediate Bond Fund` taking Vanguard's and JPMorgan's bond funds and every
+Voya / Mutual of America / Transamerica separate account of that name; the file's
+own comment records the same registrant doing it before (`Short-Term Bond Fund` →
+HOSBX on 171 rows). **CLAUDE.md described the matcher's rule as "never across
+managers"; that is true of the exact arm and FALSE of the superset arm, and is
+corrected.** Refused at the new call site rather than patched in the matcher,
+because `merge-4i` shares `resolve` and a change there moves the stored
+`ftk`/`stk` and needs its own measurement.
+
+### THE ATTESTATION GUARD, AND TWO VERSIONS OF IT THAT WERE REFUTED BY THEIR OWN OUTPUT
+
+`registrantAttested`: take `entity :: series`, drop every word that is
+structural, a share-class word, descriptive or an asset word, keep what is left
+at three characters or more — the registrant's distinctive vocabulary — and
+require ONE of those words in the filed name or its issuer cell. An EMPTY
+distinctive set ALLOWS, deliberately (`GROWTH FUND OF AMERICA` is a real fund
+whose legal name says nothing; refusing it would withdraw correct answers on no
+evidence).
+
+* **A MANAGER TEST WAS WRITTEN FIRST AND FLAGGED 69 KEYS OF WHICH ~68 WERE
+  CORRECT.** `namesManager` works on multi-word phrases (`mfs series`,
+  `dimensional`), so "do the filed and registered manager phrases intersect"
+  convicted `Empower Annuity Insurance Company MFS Lifetime 2025 R6` → LTTKX
+  (Empower is the TRUSTEE prefix, MFS the house), `DFA Real Estate Securities
+  Portfolio` → DFREX (registrant says DIMENSIONAL), `Ishares S&P 500 Index K` →
+  WFSPX (registrant says `BlackRock Funds III`). *A count keyed on a vocabulary
+  measures the vocabulary.* **That screen also had its own defect: it asked the
+  managers of the NAME where `resolveHolding` is given name AND ISSUER**, so
+  every row whose name is a share count and whose issuer carries the fund was
+  convicted on no evidence.
+* **THE TOKEN-ONLY VERSION THEN REFUSED 25 CORRECT ANSWERS, EVERY ONE A BROKEN
+  FONT.** `F id e lity Large C ap Gro w th In d e x` resolves correctly to FSPGX
+  — `joinCandidates` repairs the seam — and the attestation looked for the token
+  `fidelity` in a string that spells it in six pieces. Fixed by accepting the
+  word as a substring of the filed string with all whitespace removed, which is
+  exactly that damage class; `MASS MUTUAL` → `massmutual` passes for the same
+  reason. ***Refuted by READING its own refusal list; 75 keys is a number, and
+  only the list says that a third of it is the guard misfiring on OCR damage.***
+* **AND A THIRD PASS: `norm` EXPANDS HOUSE ALIASES AND THE EXPANSION IS ONE-SIDED
+  ON DAMAGED TEXT.** `DFA INVESTMENT DIMENSIONS GROUP INC` normalises to
+  `dimensional …` while `D F A US S m all C ap F u n d` normalises to
+  `d f a us …`, where `dfa` is three tokens no alias can reach — the registrant
+  said `dimensional`, the filing said `DFA`, and a correct answer was refused.
+  The registrant's words are now taken BOTH normalised and raw.
+* It leaks in the SAFE direction, named: a three-character distinctive word could
+  appear by accident inside a de-spaced name. Attestation is a PERMISSION, so a
+  leak returns the decision to the matcher's own judgment, which is the status
+  quo; a false REFUSAL costs a correct symbol, which is the direction measured.
+
+### THE NON-IDEMPOTENCE TRAP, WHICH WOULD HAVE ERASED THE TABLE SILENTLY
+
+The generator's gate is "the page's own chain resolves nothing", and the page's
+chain now ENDS in the table the generator writes. Run with the table loaded, the
+generator would read its own previous output as an answer the page already has,
+every gain would fall into `already`, and **the SECOND run would write an EMPTY
+table** — invisibly, because an empty table publishes exactly what today's page
+does. `apppath` grew an explicit `secTickers: false`, the generator asserts the
+flag took effect (with a POSITIVE control that the rest of the chain is alive, so
+that assertion cannot pass because the whole renderer is broken), and
+`sec-tickers-test` asserts the flag still disables the arm.
+
+### THE SAMPLE
+
+**68 gain rows read across THREE seeded uniform draws (24 + 20 + 24). All 68
+correct** — and defects (1) and (2) above were found in them. Three answers were
+checked against `sec-funds.json` directly rather than recognised: `VMIDX` is
+`VALIC Co I :: MID CAP INDEX FUND` and one of exactly two registrants with a
+series of that exact name, the manager token disambiguating; `MXMCX` is
+`Empower Ariel Mid Cap Value Fund` **Investor Class**, one of two classes, which
+the filed `INV` pins; `RFDTX` is the R-6 class of
+`American Funds 2025 Target Date Retirement **Income** Fund`, the extra word
+being the registrant's own naming. Largest reader-facing gain: **UnitedHealth
+Group, 262,812 ppl**, whose `BERKSHIRE FOCUS FUND 0.40% USADDRESS 475 MILAN DR
+STE 103 SAN JOSE CA 95134 BERKSHIRE FUND` cleans to `BERKSHIRE FOCUS FUND` and
+now publishes **BFOCX** on $84,649,102 — one of the four blank rows CLAUDE.md
+names on that plan.
+
+### FIGURES CORRECTED
+
+**DO NOT CARRY 17,732 rows / 7,857 plans / 9,189,637 ppl** — that screen omitted
+the serving condition and the publish gate. **NOR 20,181 rows / 5,204 plans /
+6,310,636 ppl**, this ship's own intermediate figure before the vehicle refusal:
+**wrong by 2.7x on participants and wrong in the direction of a false claim.**
+The comparable half is also smaller than recorded — **188,846 rows / 49,065,090
+ppl, not 224,201 / 59.7M** — because pooled rows are classified as a vehicle
+refusal before the asserted/comparable split is reached. It remains the owner's
+call and nothing asterisked shipped.
+
+**THE FEE CANNOT MOVE WITH IT**, read off the shipped expression rather than
+argued: `er` takes `star ? info.er : fundERRow(f)`, the arm always returns
+`comparable: false`, so `star` stays false and the fee stays name-keyed. Verified
+on three named gains through the whole per-row block, before and after, with a
+pooled must-NOT-move control.
+
+**Prevention.** `scripts/sec-tickers-test.mjs` runs in `site-test` and asserts
+the EXPRESSION, not a comment: the pin resolves through the real `lookupTicker`,
+the answer is ASSERTED and never a comparable, the arm stands down where the
+page's own chain answers and where `f.tk` is present, a miss is a blank, the key
+expression in app.js is matched against the source, and `secTickers: false` still
+disables the arm. The failure mode without it is SILENT — a table whose keys stop
+matching the arm's key expression leaves every row blank, which is what the page
+shows today, so no reader and no count could tell.
+
+**Gates:** `sec-tickers-test`, `no-identity-test`, `fund-er-test`,
+`vesting-quote-test`, `slice-vq --check` (byte-identical), `stamp-assets --check`,
+`smoke-test` (green — it boots the page, so it is also the proof the new script
+loads in a browser), `build-seo-pages` regenerated with **0 files changed**.
+`map-test` is the known sandbox `ERR_CERT_AUTHORITY_INVALID` failure and settles
+in CI.
+
+**Residue, named and not fixed.**
+* The **comparable half**: 188,846 rows / 35,353 plans / 49,065,090 ppl. Owner's
+  call; a comparable is a published claim.
+* The **pooled 51,491 rows / 19,661,199 ppl** are not a gap we can close with a
+  registry: the plan holds a wrapper, and the wrapper has no public symbol. The
+  honest answer there is the blank it has today, or the fund's symbol labelled as
+  the vehicle's underlying — a display design, not a lookup.
+* The cross-manager hole is **refused here and still live in the matcher**, so
+  `merge-4i`'s `ftk`/`stk` can still carry it. Narrow there (the entry points
+  require a printed symbol), unmeasured, and fixing it needs its own cycle
+  because `resolve` is shared.
+* `registrantAttested` now blocks only **2 rows**, because the pooled gate
+  refuses most of its population earlier. Kept, with pinned controls proving it
+  fires on `VCAAX` and `HOIBX`; a later relaxation of the pooled gate would
+  need it.
+* **The table is GENERATED and drifts by omission.** A DOL refresh bringing a new
+  spelling leaves that row blank until `gen-sec-tickers.mjs` is re-run (~20
+  minutes). Neither direction can publish a wrong symbol, and there is no CI
+  check for staleness because the check costs the whole run.
