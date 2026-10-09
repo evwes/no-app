@@ -2311,6 +2311,44 @@ for (const [s, why] of [
   ["Managed Account Holdings (985 Positions)", "a POSITION count is not a page pointer"],
   ["Vanguard Total Stock Market Index Fund", "a real fund"],
   ["Costco Wholesale Corporation", "employer stock"],
+  /* A TRAILING BARE NUMBER MUST NOT JOIN `LABEL_ONLY_PAGE_REF` — REFUSED
+   * 2026-10-09, and the queue entry that asked for it was wrong about its own
+   * named member twice over.
+   *
+   * The register recorded a residue of "163 rows / 37 plans / 155,819 ppl"
+   * whose mechanism was "a trailing NUMBER defeats the end-anchor", named
+   * through Touro's `… companies 693`. Both halves fail:
+   *
+   *   THE BARE STRING IS ALREADY QUALIFIED. `isGenericTypeName("Registered
+   *     investment companies 693")` is TRUE — the parser's own closed
+   *     vocabulary tolerates the trailing number — so there was never anything
+   *     for this predicate to reach.
+   *   THE ROW AS FILED IS DEFEATED AT THE START, NOT AT THE END. Touro files
+   *     `FID SEL UTILITIES Registered investment companies 693`, and `FID` is
+   *     not a label word, so the leading-run test returns false before the
+   *     remainder is ever examined. That row is a WELDED real fund name
+   *     (Fidelity Select Utilities), which is a different recorded class and
+   *     the opposite remedy.
+   *   The entry's other named member, True Mfg's parenthesised `(Registered
+   *     Investment Company)`, is the same shape: all 27 rows carrying that
+   *     parenthetical name a real fund (`500 Index Fund (Registered Investment
+   *     Company)`, issuer `Fidelity`, publishing FXAIX at 0.03 on $36,299,009).
+   *
+   * MEASURED over the 1,721,920 published-and-served rows: a shown name that
+   * would be label-only but for a trailing number is **28 rows / 13 acks /
+   * 95,561 ppl**, and the widening gains NOTHING — 8 of the 28 (NYU and NYU
+   * Langone's `Mutual funds 3`, `Pooled separate accounts 2`) are already
+   * qualified by `isGenericTypeName`, and the rest are a welded SHARE COUNT
+   * whose issuer cell names the fund (`Mutual Fund 129,979` / iss `Fidelity
+   * Global Ex US Index`) or Capital Manor's target-date ladder, which this
+   * predicate's own pin below already refuses. *A count keyed on a character
+   * measures the character.*
+   *
+   * AND THE PIN THAT WOULD HAVE STOPPED IT WAS ALREADY HERE: `Fund 2030`, "the
+   * digits are the ONLY protection". One grep of the fixtures for the
+   * motivating shape settles this entry without a measurement. */
+  ["Registered investment companies 693", "Touro's trailing number — ALREADY qualified by isGenericTypeName, so this predicate has nothing to gain and widening it would reach Capital Manor's vintages"],
+  ["Mutual Fund 129,979", "TDK-Lambda — a welded SHARE COUNT whose issuer cell reads `Fidelity Global Ex US Index`"],
 ]) if (isLabelOnlyName(s)) {
   throw new Error(`lib-disclose: isLabelOnlyName would qualify ${JSON.stringify(s)} (${why}) — it names something, fix the predicate rather than the control`);
 }
@@ -2705,6 +2743,74 @@ for (const [s, why] of [
   ["Sec Lending Collateral Fund", "a securities-lending vehicle, not a caption"],
   ["U S TREASURY NOTE", "a REAL security wearing the spaced abbreviation — `note` IS in this vocabulary, so the absence of `treasury` is the ONLY protection"],
   ["Cohen & Steers U S Realty CIT Class A", "likewise, a real collective trust"],
+  /* THE `103-12 investment entities` CAPTION — REFUSED 2026-10-09 BY READING
+   * THE FILINGS, and the refusal is not about the vocabulary at all.
+   *
+   * The register carried this as a coverage residue of THIS predicate: 10 rows
+   * / 6 crawlable pages, needing "the vocabulary to accept a NUMERIC token".
+   * Re-measured over the 1,721,920 published-and-served rows
+   * (`scripts/size-caption-numeric.mjs`), the widening that reaches Schedule H
+   * line 1c(12)'s own caption moves **8 rows / 8 acks / 405,863 participants /
+   * $709,305,843**, and it needs TWO additions rather than one: `entit(y|ies)`
+   * is absent from this vocabulary too, so the numeric token ALONE reaches 0
+   * rows and `entity` ALONE reaches 0 — all 8 need BOTH. *The register named
+   * half the mechanism.*
+   *
+   * THEN THE FILINGS WERE INSTRUMENTED AND THE CLASS IS NOT A CAPTION CLASS.
+   * FIVE of the eight rows are VERIFIED to be N REAL NAMED FUNDS welded into
+   * one (two more, Thompson Coburn and HomeServices of America, share the
+   * signature and are UNMEASURED), because the parser took the DESCRIPTION
+   * column — which holds Schedule H's own item caption — over the IDENTITY
+   * column, which names the fund:
+   *
+   *   Deere & Company (26,538 ppl, $187,030,545) files four rows
+   *     `HARBOURVEST HIPEP IX`, `HIPEP VII PTNRSP FEEDER FD LP`,
+   *     `HIPEP VIII PTNRSP FEEDER FD LP`, `ALL WEATHER@12% LTD.`, each with
+   *     `103-12 INVESTMENT ENTITIES` in column (b). 31,204,681 + 44,526,222 +
+   *     51,603,849 + 59,695,793 = 187,030,545 EXACTLY.
+   *   RTX Corporation (214,241 ppl, $264,534,462) files
+   *     `INVESCO BALANCED RISK ALLOCATION MUTUAL FUND` and `RTX BRIDGEWATER
+   *     NAV`: 132,292,232 + 132,242,230 = 264,534,462 EXACTLY.
+   *   Roofers Local 54 (912 ppl, $4,640,355) files `Washington Capital JMT
+   *     Mortgage Income Fund` and `Washington Capital JMT Real Estate Equity
+   *     Fund`: 3,100,544 + 1,539,811 = 4,640,355 EXACTLY.
+   *   Propio LS (257 ppl, 60.3% of its menu) files one 4i row whose identity
+   *     column reads `Retirement Income Security Plan`.
+   *   MidAmerican Energy (8,969 ppl) files a `Goldman Sachs Term Fund 2026 /
+   *     2027 / 2028 …` ladder with the caption in column (b) on every row.
+   *
+   * So "the filing names no specific fund" would be FALSE for Deere, Roofers
+   * and Propio — 27,707 participants — to gain ONE true qualification, for
+   * Verizon (146,572 ppl, $164,190,569), whose trust really does file the 1c
+   * captions value for value.
+   *
+   * AND NO NAME-LEVEL PREDICATE CAN DECIDE IT, which is why this is a pin and
+   * not a to-do: **Verizon files `103-12 INVESTMENT ENTITY` and Roofers files
+   * `103-12 Investment Entity`** — the same string, and this predicate is
+   * case-insensitive. One is a genuine category caption and the other is two
+   * real funds we welded. *A row that names nothing and a row whose name we
+   * dropped are two classes, and here they are spelled identically.*
+   * The remedy is a PARSER change — prefer the identity column when the
+   * description column is a Schedule H ITEM caption, which `lib-4i`'s own
+   * `SCHED_H_ITEM` already recognises including `103-12` — and that needs a
+   * `PARSER_VERSION` bump and a full re-parse.
+   *
+   * THE WIDE FORM IS REFUSED SEPARATELY AND ITS PRICE IS MEASURED. `CAPTION_SEP`
+   * contains `-`, so `103-12` tokenises as `103` + sep + `12` and a bare digit
+   * run would admit any name made of digits plus caption words: a `\d{1,4}`
+   * alternative adds 15 rows / 9,058 ppl over the narrow literal, across four
+   * unrelated classes — `Common stock (234,055 shares and` publishing ADTN,
+   * Stellar Industrial's `469,421 Shares` at 25.0% of its menu, Ross & Yerger's
+   * `1,356.9400 shares`, Sioux City Foundry's `Note 3`. Only Howard Memorial's
+   * `Investments - Notes 2, 3 and 4` (73.5% of its menu) is a true gain, and
+   * that belongs to the note-table class.
+   *
+   * The register's companion residue — `isLabelOnlyName` and a TRAILING number
+   * — is NOT the same mechanism and is refuted at that predicate's own pins. */
+  ["103-12 INVESTMENT ENTITIES", "Deere, $187,030,545 — FOUR named HarbourVest/All Weather funds welded; the caption is in column (b) and the funds are in column (a)"],
+  ["103-12 Investment Entity", "Roofers Local 54 — two Washington Capital JMT funds welded, and THE SAME STRING as Verizon's genuine caption row"],
+  ["103-12 ENTITIES", "RTX, $264,534,462 — `INVESCO BALANCED RISK ALLOCATION MUTUAL FUND` + `RTX BRIDGEWATER NAV`"],
+  ["Interest in 103-12 investment entities", "Propio LS — its one 4i row names `Retirement Income Security Plan` in column (a)"],
 ]) if (isScheduleHCaption(s)) {
   throw new Error(`lib-disclose: isScheduleHCaption would qualify ${JSON.stringify(s)} (${why}) — it names something, fix the predicate rather than the control`);
 }

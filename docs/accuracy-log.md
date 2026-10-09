@@ -7,6 +7,180 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-09 (18:0xZ) — the "numeric token defeats an end-anchored caption vocabulary" item: TWO queue residues, NOT one mechanism, and the larger one is a PARSER defect. Nothing published moved; both refusals are now pinned with their evidence
+
+### What the queue said
+
+Two residues were recorded separately and taken to share one mechanism — a bare
+number in or at the end of a string defeating a whole-string label/caption
+vocabulary:
+
+* **(A)** the `103-12 investment entities` caption, "10 rows / 6 crawlable
+  pages" (Verizon $164,190,569), needing `SCHEDULE_H_CAPTION` to "accept a
+  NUMERIC token", flagged as risky because `hasNoFundIdentity`'s `\d{1,3}`
+  filler is what once cut `500 Index Fund` off its ticker.
+* **(B)** remedy (c)'s trailing-label residue, "163 rows / 37 plans / 155,819
+  ppl", named through Touro's `… companies 693`, where "a trailing NUMBER
+  defeats the end-anchor" of `isLabelOnlyName`.
+
+### What was actually true
+
+**THE `500 Index Fund` WARNING DOES NOT TRANSFER, and that half of the risk
+assessment HOLDS.** `SCHEDULE_H_CAPTION` is `^…$`-anchored over `CAPTION_WORD`,
+and neither `index` nor `fund` is in that vocabulary, so no numeric addition can
+let it match — verified under six candidate widenings including a bare
+`\d{1,4}`. The `\d{1,3}` hazard belongs to `hasNoFundIdentity`, which is a
+FILLER-strip and a differently structured predicate. *A predicate written to
+judge a whole string is not a predicate about its prefixes, and the converse
+holds too.*
+
+**(A) AND (B) DO NOT SHARE A MECHANISM.** (B)'s named member fails twice over:
+
+* `isGenericTypeName("Registered investment companies 693")` is **TRUE** — the
+  parser's own closed vocabulary already tolerates the trailing number, so
+  `isLabelOnlyName` never had anything to gain there.
+* Touro's row AS FILED is `FID SEL UTILITIES Registered investment companies
+  693`, and `FID` is not a label word, so the leading-run test returns false
+  **before the remainder is examined**. The row is a welded real fund name
+  (Fidelity Select Utilities) — a different recorded class with the opposite
+  remedy. The entry's other named member, True Mfg's parenthesised `(Registered
+  Investment Company)`, is the same shape: all 27 rows carrying that
+  parenthetical name a real fund (`500 Index Fund (Registered Investment
+  Company)`, issuer `Fidelity`, publishing **FXAIX at 0.03 on $36,299,009**).
+
+Measured over the **1,721,920 published-and-served rows** (`lineups-index` bit
+1, then `lib-ledger`'s serving condition, trust acks resolved through their
+member plans), a shown name that would be label-only but for a trailing number
+is **28 rows / 13 acks / 95,561 ppl**, and the widening gains **0**: 8 are
+already qualified (NYU and NYU Langone's `Mutual funds 3`, `Pooled separate
+accounts 2`), 10 are **Capital Manor's target-date ladder** (`Fund 2030` …
+`Fund 2065`), and the rest are a welded SHARE COUNT whose issuer cell names the
+fund (`Mutual Fund 129,979` / iss `Fidelity Global Ex US Index`). ***`Fund
+2030` was ALREADY A MUST-KEEP PIN in the very predicate the entry asked to
+widen***, with the comment "the digits are the ONLY protection" — one grep of
+the fixtures settles (B) with no measurement at all. *A count keyed on a
+character measures the character.*
+
+**(A) IS A PARSER DEFECT, NOT A VOCABULARY GAP — and the register named half
+the mechanism.** The widening that reaches Schedule H line 1c(12)'s own caption
+moves **8 rows / 8 acks / 405,863 participants / $709,305,843**, and it needs
+**TWO** additions, not one: `entit(y|ies)` is absent from `CAPTION_WORD` too.
+Leave-one-out over the 8: the numeric literal ALONE reaches **0**, `entity`
+ALONE reaches **0**, all 8 need BOTH. *Sufficiency is not necessity, in both
+directions at once.*
+
+Then the filings were instrumented — three downloaded and read directly, five
+traced through `trace-filing.mjs` — and **five of the eight rows are VERIFIED
+to be N REAL NAMED FUNDS welded into one** (two more, Thompson Coburn and
+HomeServices of America, are UNMEASURED and share the signature), because the
+parser took the DESCRIPTION column — which holds Schedule H's own item caption — over the
+IDENTITY column, which names the fund:
+
+| plan | ppl | published row | what the filing names |
+|---|---|---|---|
+| Deere & Company | 26,538 | `103-12 INVESTMENT ENTITIES` $187,030,545 | `HARBOURVEST HIPEP IX` 31,204,681 + `HIPEP VII PTNRSP FEEDER FD LP` 44,526,222 + `HIPEP VIII PTNRSP FEEDER FD LP` 51,603,849 + `ALL WEATHER@12% LTD.` 59,695,793 = **187,030,545 exactly** |
+| RTX Corporation | 214,241 | `103-12 ENTITIES` $264,534,462 | `INVESCO BALANCED RISK ALLOCATION MUTUAL FUND` 132,292,232 + `RTX BRIDGEWATER NAV` 132,242,230 = **264,534,462 exactly** |
+| Roofers Local 54 | 912 | `103-12 Investment Entity` $4,640,355 (30.8% of its menu) | `Washington Capital JMT Mortgage Income Fund` 3,100,544 + `… Real Estate Equity Fund` 1,539,811 = **4,640,355 exactly** |
+| Propio LS | 257 | `Interest in 103-12 investment entities` (60.3% of its menu) | its ONE 4i row reads `Retirement Income Security Plan` in column (a) |
+| MidAmerican Energy | 8,969 | `103-12 Investment entities` $47,361,377 | a `Goldman Sachs Term Fund 2026 / 2027 / 2028 …` ladder, each row's column (b) the caption |
+| HomeServices of America | 7,324 | `103-12 Investment entities` $15,587,054 | **UNMEASURED** — same type-cell signature, not traced |
+| Thompson Coburn LLP | 1,050 | `103-12 Investment Entity` $20,700,714 (4.4%) | **UNMEASURED** — likewise |
+
+So the widening would publish **"the filing names no specific fund" to 27,707
+participants about filings that DO name a fund** (Deere, Roofers, Propio), to
+gain **one** true qualification — Verizon's, whose trust really does file the
+1c captions value for value (`GENESIS EMERGING COMMINGLED FD` 163,386,620 +
+`GENESIS SIDE POCKET 2 NIGERIA` 803,949 = 164,190,569 sits in the DETAIL table,
+and the published menu is the 12-row summary).
+
+***AND NO NAME-LEVEL PREDICATE CAN DECIDE IT. Verizon files `103-12 INVESTMENT
+ENTITY` and Roofers files `103-12 Investment Entity` — the same string, and the
+predicate is case-insensitive.*** One is a genuine category caption, the other
+is two real funds we welded. *A row that names nothing and a row whose name we
+dropped are two classes, and here they are spelled identically* — the sharpest
+form yet of a distinction this log already carries from the `Investment in`
+pin.
+
+**THE WIDE FORM IS REFUSED SEPARATELY, PRICED.** `CAPTION_SEP` contains `-`, so
+`103-12` tokenises as `103` + sep + `12`; a bare digit run would admit any name
+made of digits plus caption words. A `\d{1,4}` alternative adds **15 rows /
+9,058 ppl** over the narrow literal, across four unrelated classes — Adtran's
+`Common stock (234,055 shares and` **publishing ADTN**, Stellar Industrial's
+`469,421 Shares` at 25.0% of its menu, Ross & Yerger's `1,356.9400 shares`,
+Sioux City Foundry's `Note 3`. Only Howard Memorial Hospital's `Investments -
+Notes 2, 3 and 4` (73.5% of its menu) is a true gain, and it belongs to the
+note-table class. The narrow literal and the wide one are **identical on all 8
+genuine rows**, so the narrow one would have been right had anything shipped.
+
+### The change
+
+**Nothing published moved: 0 reader-facing rows, 0 tickers, 0 fees, 0 names, 0
+types, 0 row memberships, and `build-seo-pages` regenerated all 5,000 crawlable
+pages for 0 changed files** (`app.js` untouched, so no re-stamp; the twin
+generator re-run for a 0-byte diff). What shipped is the evidence:
+
+* **six must-KEEP pins** in `lib-disclose.mjs` — four on `isScheduleHCaption`
+  (`103-12 INVESTMENT ENTITIES`, `103-12 Investment Entity`, `103-12 ENTITIES`,
+  `Interest in 103-12 investment entities`) and two on `isLabelOnlyName`
+  (`Registered investment companies 693`, `Mutual Fund 129,979`), each carrying
+  the filing arithmetic that refutes the widening;
+* **`scripts/size-caption-numeric.mjs`**, the tracked instrument — it slices
+  `CAPTION_WORD`, `CAPTION_SEP`, `LABEL_ONLY_WORD` and `LABEL_ONLY_PAGE_REF`
+  out of the shipped source rather than retyping them, splices a candidate
+  alternative into the real fragment, and asserts its slices reproduce the
+  shipped verdicts before it counts anything.
+
+**ALL SIX PINS ARE LOAD-BEARING, asserted rather than assumed:** each reads
+`false` today and `true` under exactly the widening it refuses, the caption
+widening fires on none of the label pins and vice versa, `500 Index Fund` and
+`Fidelity 500 Index Fund` stay out under the caption widening, and the label
+widening DOES reach `Fund 2030` — which is the recorded cost, now verified
+rather than quoted.
+
+### The prevention
+
+* **The motivating fixtures ran BEFORE the count**, and that is what made every
+  number here trustworthy: the harness refuses to count unless its sliced
+  caption predicate blocks Verizon's row, reaches `CORPORATE STOCK - COMMON`,
+  and refuses `500 Index Fund`, and unless its sliced label predicate blocks
+  `Registered investment companies 693` and reaches `Registered Investment
+  Companies (Page 166)`. The first run of the candidate splice **threw** on an
+  escaping fault (`103\\-12` written where `103\-12` was meant) instead of
+  reporting a plausible zero.
+* **A pin is newer evidence than a queue entry — grep the fixtures for the
+  motivating string first.** (B) was already decided, in the file the entry
+  asked to change, with the reason attached. This is the second time that rule
+  has cancelled a ship; here it would have cancelled it before any measurement.
+* **Two residues recorded as one mechanism must each be reproduced
+  independently.** Both of (B)'s named members turned out to fail at the START
+  of the string where the entry said they failed at the END, and the entry's
+  size (163 rows) does not reproduce under any reading. *A queue entry records
+  a symptom; its stated mechanism is a hypothesis with a citation.*
+
+### What is left, and it is the owner's call
+
+**A PARSER change, unsized beyond this class: prefer the IDENTITY column when
+the DESCRIPTION column is a Schedule H ITEM caption.** `lib-4i`'s own
+`SCHED_H_ITEM` already recognises those captions *including* `103-12`, so the
+vocabulary exists; what is missing is consulting it at the
+identity-vs-description choice. For this class alone it would unweld **7 rows
+across 7 plans / 259,291 participants / $545,115,274**, recovering **at least
+12 named funds verified by trace in five of the seven filings** (Deere 4, RTX 2,
+Roofers 2, MidAmerican 3+, Propio 1). **UNMEASURED, named as such: Thompson
+Coburn (1,050 ppl, $20,700,714) and HomeServices of America (7,324 ppl,
+$15,587,054) were not traced** — their rows carry the same type-cell signature
+as the five that were, which is suggestive and not evidence. It needs a
+`PARSER_VERSION` bump and a full re-parse, and its blast
+radius is every row where the two columns compete, so it is not started here.
+
+**The one row a display fix could honestly reach is Verizon's**, and the only
+instrument that separates it from the other seven is a WHOLE-TABLE test — a
+genuine category table is captions in every row, whereas Deere's menu is real
+funds with one caption among them. That is the owner-gated whole-table generic
+item, not this one.
+
+---
+
 ## 2026-10-09 (16:0xZ) — the custodian's country roll-up caption published as a fund: 371 rows / 339 served menus / 2,400,533 participants / $538,248,498 stop reading as menu choices
 
 ### What was wrong
