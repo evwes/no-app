@@ -7,6 +7,118 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-09 (02:3xZ) — the 02:07 draw: three sized findings, two of them refusals, and an oracle this file prescribes is shown to be insufficient
+
+Participant-weighted draw from PUBLISHED lineups, `scripts/draw-published.mjs 3
+--seed 20261009` (re-readable). Pool 60,070 menus / 100,151,069 participants.
+Drew Pvh Corp (10,478 ppl, 24 funds, ratio 0.992) and Mediacom Llc (3,979 ppl,
+27 funds, ratio 0.965).
+
+### FINDING 1 — a published fund named, in full, `Management`. SIZED AT 4 ROWS AND REFUSED.
+
+Pvh Corp publishes `Management` at 2.9% of its menu, **$25,459,026**, typed
+`Collective trust`, no issuer, no ticker, no fee, and with **no qualifier** —
+so the page asserts it is a fund.
+
+Asked of the shipped predicates, the vocabulary gap is exact: `Advisors` and
+`Trust` are both reached (`hasNoFundIdentity` carries them; `Trust` is reached
+by all four), and **`Management`, `Investment Management` and `Services` are
+reached by none**.
+
+Sized over published+served rows, plan counted once, trust rows resolved
+through member plans: 19 rows match a lone-fragment screen, **15 are already
+qualified** (the control: the shipped guards working), and the residue is
+**4 rows / 4 plans / 13,844 ppl / $28,022,091** — `Management` $25,459,026,
+`Capital` $2,519,234 (Mountville Mills), `Investment advisor` $31,785,
+`Investment management` $12,046.
+
+**REFUSED, for the reason the `Investment in` pin already records.** One of the
+four (Horizon Health Care) carries `iss "Wells Fargo Advisors"`, so the page
+prints `Wells Fargo Advisors · Investment management` and the issuer gate
+correctly spares it — reader-facing residue **3 rows / 12,320 ppl**. And
+`Management` is as likely a TRUNCATION as a non-name, which is the class
+CLAUDE.md pins as needing RECONSTRUCTION rather than suppression: qualifying it
+publishes *"the filing names no specific fund"* about a filing that may well
+have named one. Three rows is not worth widening a vocabulary against a pinned
+counter-case.
+
+### FINDING 2 — a trailing entity name cut off MID-WORD. THE DISCRIMINATOR IS CLOSED, REFUTED BY ITS OWN OUTPUT.
+
+Pvh Corp publishes `DFA U.S. Targeted Value Portfolio Dimensional Fund Advis`
+— the fund's name, then its manager's name truncated inside "Advisors" —
+**publishing a 0.3 fee priced off the welded string and no ticker**, where
+`DFA U.S. Targeted Value Portfolio` alone resolves.
+
+This looked like the clean sub-case of the reverted tail-strip, because no
+correct filed name ends in a *fragment* of a house's name, so the orientation
+is not in doubt. Built as "the last token is a proper prefix of an entity word,
+>= 4 chars, and not that word itself", with five pinned controls.
+
+**It reads 27,417 rows / 11,725 plans / 32,457,811 ppl / $410,855,252,582, and
+its own member list kills it.** The largest members are
+`Retirement Hybrid 2025 Trust`, `Empower Stable Value Trust`,
+`Pioneer Bond Fund Trust`, `VANGUARD TOTAL BD MKT IDX INST`,
+`Baird Core Plus Bond Inst`, `BlackRock Lifepath Dynamic Retire Fund Service`.
+
+***A FRAGMENT OF A LONGER WORD IS NOT THEREBY A FRAGMENT.*** `Trust`, `Inst`,
+`Advisor`, `Service` and `Retirement` are each a **complete and correct
+terminal token** in a fund name *and* a proper prefix of an entity word
+(`trustee`, `institutional`, `advisors`, `services`, `retirement`). So the
+shape measures the shape: it reads 32.4M participants where the real class is
+about one row. `ticker LOST` came back **29**, non-zero on its face.
+
+### AND THE ORIENTATION ORACLE THIS FILE PRESCRIBES IS NOT SUFFICIENT — A NEW NECESSARY CONDITION.
+
+CLAUDE.md's mid-name-house entry prescribes: *"build both candidates and let
+the shipped resolver say which is the fund — and it must ABSTAIN where both
+resolve."* That is right and it is **not enough**.
+
+Of the 324 rows that "gained" a ticker under the strip, one is
+`T. Rowe Price Mid-Cap Growth Fund Advisor` (Karl Storz Endoscopy-America,
+2,826 ppl, $11,759,138), which gains **RPMGX**. `Advisor` is not debris — it is
+**T. Rowe Price's Advisor SHARE CLASS**, whose symbol is **PAMCX**
+([Nasdaq](https://www.nasdaq.com/de/market-activity/mutual-fund/pamcx),
+[T. Rowe Price 497K](https://www.sec.gov/Archives/edgar/data/356476/000119312523123485/d454027d497k.htm)).
+RPMGX is the investor class, a **cheaper** fund than the one held.
+
+So the resolver answered, and answered wrongly, because both the whole string
+and the head belong to the same registrant and differ only in CLASS. ***A
+resolver gain is evidence the string reaches a fund, not evidence it reaches
+THIS fund.*** The abstention rule must therefore also fire where the stripped
+token is a share-class designation — otherwise the oracle launders a
+share-class error as a coverage gain, which is the owner-gated 5,929-row defect
+arriving by a new route. `CLASS_HINTS` in `scripts/match-sec-tickers.mjs` is
+the ready-made vocabulary for that test.
+
+### FINDING 3 — two live instances of already-queued classes, named for the record.
+
+- **The Class-X item (owner-gated, 5,929 rows / 11,144,696 ppl).** Pvh Corp
+  files `Dodge & Cox stock fund class x` and the page publishes **DODGX at
+  0.51** — Class I's symbol and Class I's fee — on $29,920,279. A second named
+  instance beside Insperity.
+- **The ticker/fee asymmetry, with NAME DAMAGE as the cause.** Pvh Corp files
+  `America EuroPacific Growth R6` (the "n Funds" lost) and publishes **RERGX
+  with no fee**; Mediacom files `American Funds EuroPacific Growth R6 Fund` and
+  publishes **RERGX and 0.46**. Same fund, same resolved symbol, one priced and
+  one blank, because `fundER` is name-keyed and the ticker resolver is not. The
+  91,423-row "symbol but no fee" bucket is not all coverage: part of it is
+  damaged names that the ticker resolver survives and the fee table does not.
+- Unsized, one character: Mediacom files `T. Rowe Price Health Science Fund`
+  (singular) and publishes no ticker, where `Health Sciences` is the registered
+  name.
+
+### PREVENTION
+
+- The lone-fragment screen and the truncated-tail screen both carried
+  must-see/must-not-see fixtures **ahead of the count**, and in both cases that
+  is what made the result readable rather than alarming: finding 2's five
+  controls all passed and the class was still wrong, which only the MEMBER LIST
+  showed. *Fixtures prove an arm reaches its case; only reading the members
+  proves the class is the class.*
+- Finding 2's refusal is recorded with its number so the shape is not retried:
+  a prefix test over an entity vocabulary reads **27,417 rows** and must not be
+  rebuilt.
+
 ## 2026-10-09 (01:1xZ) — the omitted participants figure, and the draw landed on a named instance of the class it sizes
 
 **The gap this closes is one I made.** The 01:3xZ sizing built per-bucket plan

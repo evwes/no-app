@@ -1591,6 +1591,38 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   which is the fund — and it must ABSTAIN where both resolve, which they do
   (`Vanguard High-Yield Corporate` and `Vanguard Government Money Market` both
   answer).
+  **AND A SECOND ABSTENTION IS NECESSARY, FOUND 2026-10-09 BY THE 02:07 DRAW —
+  THE ORACLE AS PRESCRIBED ABOVE LAUNDERS A SHARE-CLASS ERROR AS A COVERAGE
+  GAIN.** Testing a trailing-fragment strip through this very oracle, one of its
+  324 "gains" is `T. Rowe Price Mid-Cap Growth Fund Advisor` (Karl Storz
+  Endoscopy-America, 2,826 ppl, $11,759,138) gaining **RPMGX** — and `Advisor`
+  is not debris, it is T. Rowe Price's **Advisor SHARE CLASS**, whose symbol is
+  **PAMCX** (Nasdaq; the fund's own 497K). RPMGX is the investor class, a
+  CHEAPER fund than the one held. The resolver answered because the whole string
+  and the head belong to the same registrant and differ only in CLASS. ***A
+  resolver gain is evidence the string reaches a fund, not evidence it reaches
+  THIS fund.*** So the test must also abstain where the stripped token is a
+  share-class designation — otherwise this is the owner-gated 5,929-row
+  wrong-class defect arriving by a new route, wearing a coverage number.
+  `CLASS_HINTS` in `scripts/match-sec-tickers.mjs` is the ready-made vocabulary.
+  `docs/accuracy-log.md` 2026-10-09 (02:3xZ).
+  **AND THE TRUNCATED-TRAILING-ENTITY SHAPE IS CLOSED — do not rebuild it.** A
+  tail cut off MID-WORD looked like the clean sub-case of the reverted
+  tail-strip, since no correct filed name ends in a fragment of a house's name,
+  so the orientation is not in doubt. Built as "the last token is a proper
+  prefix of an entity word, ≥4 chars, and not that word", with five pinned
+  controls that ALL PASSED, it reads **27,417 rows / 11,725 plans / 32,457,811
+  ppl / $410,855,252,582** and `ticker LOST` 29. Its own member list kills it:
+  `Retirement Hybrid 2025 Trust`, `Empower Stable Value Trust`,
+  `VANGUARD TOTAL BD MKT IDX INST`, `Baird Core Plus Bond Inst`.
+  ***A FRAGMENT OF A LONGER WORD IS NOT THEREBY A FRAGMENT*** — `Trust`,
+  `Inst`, `Advisor`, `Service` and `Retirement` are each a COMPLETE and correct
+  terminal token in a fund name AND a proper prefix of an entity word
+  (`trustee`, `institutional`, `advisors`, `services`, `retirement`). The
+  motivating row is real (Pvh Corp's `DFA U.S. Targeted Value Portfolio
+  Dimensional Fund Advis`, publishing a 0.3 fee off the welded string and no
+  ticker) and needs a test that the fragment is not a word in its own right,
+  which is a dictionary or registry witness and not a prefix test.
   **THE SAME-MENU WITNESS WAS SIZED 2026-10-03 23:3xZ AND IS CLOSED — UNSOUND IN
   BOTH DIRECTIONS.** The 20:5xZ draw proposed it (Helen of Troy publishes
   `FID FDM IDX 2035 IPR` bare beside the prefixed 2045) and the queue said to
@@ -2220,6 +2252,16 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   symbol with no fee**; 314,299 publish a fee with no symbol (**not** a defect
   class — its commonest members are full house-and-product names whose pattern
   fee is right and whose ticker is missing).
+  **AND "mostly coverage" IS NOT ALL OF IT — the 02:07 draw of 2026-10-09 named
+  NAME DAMAGE as a cause, with its own control one plan away.** Pvh Corp files
+  `America EuroPacific Growth R6` (the `n Funds` lost) and publishes **RERGX
+  with NO fee**; Mediacom files `American Funds EuroPacific Growth R6 Fund` and
+  publishes **RERGX and 0.46**. Same fund, same resolved symbol, one priced and
+  one blank — because `fundER` is a NAME-pattern table and the ticker resolver
+  tolerates the damage the fee table does not. So part of the 91,423 is not a
+  missing fee at all but a broken name that one resolver survives; UNSIZED, and
+  sizing it means asking both resolvers for every row whose name differs from
+  another plan's spelling of the same resolved symbol.
 - The `iShares` abbreviated-name family: 11,334 of 13,927 published rows / 7.24M
   ppl publish no ticker while 7,947 publish a fee. Usable as a defect measure
   because the brand names REGISTERED ETFs, so a blank is a matcher gap and never
@@ -2954,7 +2996,13 @@ These outlived the versions that produced them. The accuracy log has the case.
   *a count keyed on a VOCABULARY measures the vocabulary*; *a count keyed on
   PLANS is blind to every master-trust row* (resolve a trust row through its
   MEMBER plans — met seven times); *a STORED field is not a PUBLISHED one*
-  (cost one class size a factor of 3.9).
+  (cost one class size a factor of 3.9); and ***a FRAGMENT OF A LONGER WORD IS
+  NOT THEREBY A FRAGMENT*** — a prefix test over an entity vocabulary read
+  **27,417 rows / 32,457,811 ppl** for a class of about one, because `Trust`,
+  `Inst`, `Advisor`, `Service` and `Retirement` are each a complete terminal
+  token in a fund name and a proper prefix of an entity word. **Its five pinned
+  controls ALL PASSED and only the MEMBER LIST showed it** — fixtures prove an
+  arm reaches its case; only reading the members proves the class is the class.
 - **A WITNESS THAT A ROW IS DAMAGED IS NOT A WITNESS TO WHICH SIDE THE DAMAGE IS
   ON** (2026-10-03, met twice in one cycle on two INDEPENDENT witnesses, and it
   retroactively explains a revert from the cycle before). A rotation witness
