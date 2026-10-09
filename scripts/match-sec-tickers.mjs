@@ -128,6 +128,16 @@ const ABBREV = [
   // no series name contains, so the whole American Funds R-6 family failed the
   // subset test. Rejoin them before anything else looks at the tokens.
   [/\br (\d)\b/g, "r$1"],
+  /* AND THE SAME FOR F, 2026-10-09. Adding `f1`/`f2`/`f3` to CLASS_HINTS was
+   * NOT sufficient and the probe is why: class DETECTION already worked on
+   * both sides (`Class F-2` -> [f2]), but `Class R-6` norms to the single
+   * token `class r6` where `Class F-1` stayed `class f 1` — two tokens, of
+   * which the stray `f` and `1` survive the subset test as words the series
+   * lacks, so the filed name reads as a DIFFERENT product. The rejoin above
+   * was written for exactly this and stopped at `r`.
+   * *A fix for one phrasing of a class is not a fix for the class* — and the
+   * sufficient fix was not the one the symptom pointed at. */
+  [/\bf (\d)\b/g, "f$1"],
   [/\btrgt\b/g, "target"],
   /* Spellings measured off the loss sample, 2026-08-23. Each one was costing
    * hundreds to thousands of holdings and none of them is ambiguous:
@@ -192,6 +202,30 @@ const CLASS_HINTS = [
   ["institutional", /\binstitutional\b(?!\s*(?:premium|select)\b)|\binst\b/],
   ["investor", /\binvestor\b|\binv\b/],
   ["r6", /\br ?6\b/], ["r5", /\br ?5\b/], ["r4", /\br ?4\b/], ["r3", /\br ?3\b/],
+  /* THE F CLASSES, ADDED 2026-10-09 — and their absence is the R-6 miss
+   * repeated on the same table. The comment above `[/\br (\d)\b/g, "r$1"]`
+   * records that "the whole American Funds R-6 family failed the subset test"
+   * and was fixed; F-1/F-2/F-3 were left out, so `AMERICAN THE NEW ECONOMY
+   * FUND CL F2` resolved to NOTHING while `New Economy Fund Class A` answered
+   * ANEFX from the same registrant. *A fix for one phrasing of a class is not
+   * a fix for the class* — ninth instance, here met on a share-class letter.
+   *
+   * F-2 and F-3 are the advisory and retirement classes American Funds uses
+   * throughout 401(k) menus, so this is not a corner of the registry: 97
+   * published+served rows / 42 plans / 350,506 participants / $3.15B state an
+   * F class and ALL 97 publish no ticker today.
+   *
+   * Safe in the only direction that matters: a class token can make a match
+   * STRICTER or enable a correct one, never license a wrong class, because
+   * class tokens are used for set-membership separation. A filed name carrying
+   * a stray `F1` gains a class the series lacks and is REFUSED, which is the
+   * harmless outcome. */
+  /* `529` is a class WORD here, not a number: the registry carries
+   * `Class 529-F-2` beside `Class F-2`, and without this arm both state
+   * only `f2`, two candidates match a filing that says F-2, and the
+   * answer falls through to an asterisk on Class A. */
+  ["529", /\b529\b/],
+  ["f3", /\bf ?3\b/], ["f2", /\bf ?2\b/], ["f1", /\bf ?1\b/],
   ["k6", /\bk ?6\b/], ["k", /\bclass k\b|\bk shares?\b/],
   ["z", /\bclass z\b|\bz shares?\b/], ["y", /\bclass y\b/], ["i", /\bclass i\b|\bi shares?\b/],
   ["a", /\bclass a\b/], ["c", /\bclass c\b/], ["r", /\bclass r\b/],
@@ -266,7 +300,7 @@ function isAssetWord(w) {
 }
 
 /* Share-class markers: words a filing adds that name a class, not a fund. */
-const CLASS_MARK = /^(?:r[1-6]|k6|[akyzci]|inv|investor|adm|admrl|admiral|adv|advisor|institutional|instl|inst|premier|premium|retail|service|select|shares?)$/;
+const CLASS_MARK = /^(?:r[1-6]|f[123]|k6|cl|cls|[akyzci]|inv|investor|adm|admrl|admiral|adv|advisor|institutional|instl|inst|premier|premium|retail|service|select|shares?)$/;
 /* …and the subset of those that also NAME A SEPARATE SERIES, which is the only
  * reason the interrupting-token guard below exists. Measured, not guessed: on
  * the v189 store, restricting the guard to this word costs 954 names / 1,551
@@ -999,7 +1033,7 @@ function resolveUncached(idx, filedName, issuerWords) {
       // Target Date Retirement R6" failed only because "r6" is absent from the
       // registered series name. Drop the class markers here; the class-hint
       // step below is what turns them back into the right ticker.
-      const core = ft.filter((w) => !/^(?:r[1-6]|k6|[akyzci]|investor|admiral|adv|advisor)$/.test(w));
+      const core = ft.filter((w) => !/^(?:r[1-6]|f[123]|k6|cl|cls|[akyzci]|investor|admiral|adv|advisor)$/.test(w));
       if (core.length === ft.length && ft.length > 3) {
         // a trailing bare class letter the strip above does not name
         const last = ft[ft.length - 1];
@@ -1169,7 +1203,7 @@ function resolveUncached(idx, filedName, issuerWords) {
     const sset = new Set(tokens(classes[0].series));
     const house = new Set(filedMgrs.flatMap((m) => m.split(" ")));
     const ok = ft.every((w) => sset.has(w) || house.has(w)
-      || /^(?:r[1-6]|k6|[akyzci]|investor|admiral|adv|advisor)$/.test(w));
+      || /^(?:r[1-6]|f[123]|k6|cl|cls|[akyzci]|investor|admiral|adv|advisor)$/.test(w));
     if (ok) mine = classes;
   }
   /* THE GATE REFUSES ITS OWN EXACT MATCHES. `MFS Mid Cap Growth Fund` matches
@@ -1240,7 +1274,20 @@ function resolveUncached(idx, filedName, issuerWords) {
      * is stored as `… Institutional Fund Class Y`, so all four carried the
      * hint `institutional` and a filing naming Class Y could not be matched.
      * Asking whether the class STATES the hint reads the whole name. */
-    const hit = uniq.filter((c) => hintsOf(c.className).includes(hs[0]));
+    let hit = uniq.filter((c) => hintsOf(c.className).includes(hs[0]));
+    /* A FILING STATING ONE CLASS WORD MEANS THE CLASS THAT STATES ONLY THAT
+     * WORD. `Class F-2` and `Class 529-F-2` both state `f2`, so a filing
+     * saying F-2 matched two candidates and fell through to the ambiguous
+     * branch, returning Class A behind an asterisk for a holding whose class
+     * the filing named exactly. Narrowing to the class whose hint set EQUALS
+     * what the filing said is the same principle the `premier ii` / `premier`
+     * split already encodes: a more specific class is a different class, and
+     * it is not what a bare mention selects. Only applied when it leaves
+     * exactly one, so a genuine tie still asterisks. */
+    if (hit.length > 1) {
+      const exact = hit.filter((c) => hintsOf(c.className).length === 1);
+      if (exact.length === 1) hit = exact;
+    }
     if (hit.length === 1) {
       return { ticker: hit[0].ticker, comparable: pooled, why: why + (pooled ? "+pooled" : "+class"), series: hit[0].series, className: hit[0].className };
     }
@@ -1305,6 +1352,27 @@ const SELFTEST = [
   ["Vanguard Explorer Fund: Admiral Shares", "VEXRX"],
   ["Federated Hermes Instl High Yield Bond", "FIHBX"],
   ["American Funds Capital World Growth and Income R-6", "RWIGX"],
+  /* THE F CLASSES. The first is the filed string EXACTLY as UnitedHealth
+   * (262,812 ppl) publishes it, pinned as the must-see case so a later change
+   * to CLASS_HINTS cannot make this family quietly read null again. The
+   * Class A control sits beside it because it resolved BEFORE this fix and
+   * must still resolve after — it is what proved the registrant was reachable
+   * and the share class was the only thing missing. */
+  /* NAMED RESIDUE, pinned to its CURRENT answer so a later fix shows up as a
+   * change rather than passing silently. A bare leading `AMERICAN` without
+   * `FUNDS` still refuses: it reads as a manager that does not match the
+   * registrant `NEW ECONOMY FUND`, and the cross-manager rule is right to
+   * be strict, because `American Beacon` and `American Century` are
+   * genuinely different houses and both file into this store (`AMERICAN
+   * BEACON SMALL CAP VALUE CIT CLASS F1` is in the same 97-row class).
+   * Mapping bare `american` to American Funds would be a house claim on no
+   * evidence. UnitedHealth (262,812 ppl) files exactly this string, so the
+   * residue is not academic -- it needs a witness, not a wider rule. */
+  ["AMERICAN THE NEW ECONOMY FUND CL F2", "\u2014"],
+  ["AMERICAN FUNDS THE NEW ECONOMY FUND CL F2", "NEFFX"],
+  ["American Funds The New Economy Fund Class F-2", "NEFFX"],
+  ["New Economy Fund Class F-1", "ANFFX"],
+  ["New Economy Fund Class A", "ANEFX"],
   ["Fidelity 500 Index Fund", "FXAIX"],
   ["Pimco Income Institutional Fund", "PIMIX"],
   ["Vanguard Small Cap Value Index Admiral", "VSIAX"],
