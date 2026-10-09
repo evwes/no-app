@@ -170,7 +170,55 @@ console.log(`accel class: ${accel} plans / ${accelPpl.toLocaleString()} ppl qual
 if (accel === 0) fail("the qualifier reaches 0 plans — on a store holding Smith And Nephew and U.S. Fire, a clean zero reports on the query");
 if (accel > ACCEL_CEILING) fail(`qualifier reaches ${accel} plans, ceiling ${ACCEL_CEILING} — read the members before raising it`);
 if (accelPpl > ACCEL_PPL_CEILING) fail(`qualifier reaches ${accelPpl} ppl, ceiling ${ACCEL_PPL_CEILING}`);
-if (accelLabelled === 0) fail("0 labelled quotes fire — the `!ff.vesting` gate is then untested against the population it exists for");
+/* THE `!ff.vesting` GATE IS NOW TESTED BY A FROZEN FIXTURE, BECAUSE v203
+ * EMPTIED ITS LIVE POPULATION ON PURPOSE AND PERMANENTLY.
+ *
+ * This line used to read `if (accelLabelled === 0) fail(...)`, demanding a live
+ * plan whose quote fires the qualifier AND carries a vesting label, so the gate
+ * was exercised against real data. On the pv-202 store that population was 123
+ * plans — and every one of them was the v203 defect: labelled `Immediate` over
+ * a sentence stating only an acceleration trigger. v203 repaired exactly those,
+ * so the check began FAILING the moment its own subject shipped, which is a RED
+ * GATE and worse than no gate (#47-#56 cost three days to that).
+ *
+ * ***A repair arm that runs on every merge destroys the evidence its own
+ * negative control depends on*** — already recorded for
+ * `scripts/merge-name-test.mjs`, met here for the second time, and the recorded
+ * remedy is the one taken: a FROZEN fixture instead of the live store.
+ *
+ * And the population is empty BY CONSTRUCTION rather than by luck, which is why
+ * restoring the old assertion would be wrong. The `IMMED` branch stores the
+ * sentence it labels FROM, so after v203 a plan either (a) loses the label and
+ * keeps the acceleration quote — it lands in `accel`, not here — or (b) gains a
+ * REAL schedule, and then stores the SCHEDULE sentence, which the qualifier
+ * rejects outright. There is no third shape. My own v203 registration predicted
+ * `accelLabelled 123 -> 29..41` by assuming (b) kept the acceleration quote;
+ * delivered 0, and the mechanism that refutes it is the one the registration
+ * itself described. *Having the mechanism right does not mean every consequence
+ * drawn from it is right.*
+ *
+ * So: `accelLabelled` is reported for watching, 0 is the HEALTHY reading, and
+ * the gate's logic is asserted below on frozen text. A rise means a plan is
+ * publishing a label over an acceleration-only quote again — the v203 defect
+ * returning — so it keeps a ceiling rather than a floor. */
+if (accelLabelled > 40) {
+  fail(`${accelLabelled} plans publish a vesting LABEL over an acceleration-only quote — ` +
+    "that is the v203 defect returning (our own label contradicting our own quote)");
+}
+{
+  /* The gate as the two surfaces compose it, on frozen text: the qualifier
+   * fires on the sentence, and the SENTENCE reaches the reader only where no
+   * label does. Both arms asserted, so neither a gate that never fires nor one
+   * that never suppresses can pass. */
+  const fires = accelCases.find((c) => c.expect);
+  if (!fires) fail("accelCases carries no must-fire case — the gate control has nothing to gate");
+  const shows = (ff) => !ff.vesting && accelerationOnlyVesting(quoteTrim(ff.vestingText));
+  if (!shows({ vestingText: fires.text, vesting: null }))
+    fail("the acceleration sentence is suppressed with NO label present — the gate is inverted or the qualifier does not fire");
+  if (shows({ vestingText: fires.text, vesting: "3-year cliff" }))
+    fail("the acceleration sentence is published BESIDE a vesting label — the `!ff.vesting` gate does not suppress");
+  console.log("accel gate: frozen fixture — shown without a label, suppressed with one");
+}
 /* both surfaces, and the LABEL GATE on each, because the gate is half the claim */
 if (!/window\.__wampoAccelOnly/.test(appjs))
   fail("app.js does not expose __wampoAccelOnly — the browser twin cannot be cross-checked by the smoke test");

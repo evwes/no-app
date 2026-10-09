@@ -7,6 +7,98 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-09 (12:4xZ) — v203 TURNED ITS OWN TEST RED BY SUCCEEDING: a control whose live population the ship was designed to empty
+
+### What was wrong
+
+**`scripts/vesting-quote-test.mjs` exits 1 on the complete v203 store, and it
+runs in `site-test.yml:66`** — so the next frontend push would have found a red
+gate, which is the failure mode that cost this project three days at #47–#56.
+Nothing about the data is wrong. The test is failing *because v203 worked.*
+
+The control read:
+
+```js
+if (accelLabelled === 0) fail("0 labelled quotes fire — the `!ff.vesting` gate is then untested against the population it exists for");
+```
+
+`accelLabelled` counts plans whose quote fires `accelerationOnlyVesting` **and**
+carries a vesting label, so the display's `!ff.vesting` gate is exercised against
+real data. On the pv-202 store that population was **123 plans — and every one of
+them WAS the v203 defect**, labelled `Immediate` over a sentence stating only an
+acceleration trigger. v203 repaired exactly those, so the check began failing the
+moment its own subject shipped.
+
+***A repair arm that runs on every merge destroys the evidence its own negative
+control depends on.*** Already recorded for `scripts/merge-name-test.mjs`, where
+#547's issuer repair removed the damaged spelling its control was built from.
+**This is the second instance, and the first where the destroying arm is a
+PARSER version rather than a merge-time repair** — so the pattern is not a
+property of `merge-4i`, it is a property of any check whose fixture is the live
+store.
+
+### Why restoring the old assertion would be wrong
+
+**The population is empty BY CONSTRUCTION, not by luck.** The `IMMED` branch
+stores the sentence it labels FROM, so after v203 a plan either
+
+- loses the label and keeps the acceleration quote → it lands in `accel`, not in
+  `accelLabelled`; or
+- gains a REAL schedule, and then stores the **schedule** sentence, which
+  `accelerationOnlyVesting` rejects outright.
+
+There is no third shape, so `accelLabelled` is now permanently 0 and **0 is the
+HEALTHY reading** — a rise means a plan is publishing a label over an
+acceleration-only quote again, i.e. the v203 defect returning. The assertion
+therefore flips from a FLOOR to a CEILING.
+
+### And it refutes a figure in v203's own registration
+
+The registration predicted `accelLabelled 123 -> 29..41`, reasoning that 29 plans
+gain the real schedule and *"stay labelled and stay gated off"*. Delivered **0**.
+The mechanism that refutes it is the one **the registration itself describes** in
+the sentence above — a relabelled plan stores the new sentence, so it leaves the
+qualifier entirely rather than staying in the gated bucket. ***Having a mechanism
+right does not make every consequence drawn from it right.***
+
+The registration's other two accel figures held: `accel` 59 → **151** against a
+registered 141–153, and `accelPpl` → **92,142** against ~90,000.
+
+### The change
+
+The live-store assertion is replaced by a **frozen fixture** — the recorded
+remedy from the `merge-name-test` entry — asserting the gate as the two surfaces
+compose it, on text that cannot be emptied by a future re-parse:
+
+```js
+const shows = (ff) => !ff.vesting && accelerationOnlyVesting(quoteTrim(ff.vestingText));
+```
+
+with **both arms required**: shown when no label is present, suppressed when one
+is. Neither a gate that never fires nor a gate that never suppresses can pass.
+`accelLabelled` is still printed, now watched by a ceiling of 40.
+
+### What prevents it
+
+**Three mutants, each required to fail BY NAME**, because I had just replaced a
+control that failed for the wrong reason and *a control that cannot fail is
+decorative*: gate **inverted** (`!ff.vesting` → `!!ff.vesting`), gate **removed**
+(→ `true`), and qualifier **inert** (→ `false`). All three fail on their own
+message and the unmutated copy passes. Mutants are applied to a COPY in a
+scratch layout, never to the tracked file, so a crash cannot leave a broken gate
+in the tree.
+
+### The reusable rule
+
+***A CHECK WHOSE FIXTURE IS THE LIVE STORE HAS A SHELF LIFE, AND SHIPPING THE
+FIX IS WHAT EXPIRES IT.*** When a change is designed to empty a population, ask
+what asserts against that population today — the defect's own guard may be the
+thing that breaks, and it will break *after* the ship, when the run looks
+successful and nobody is looking at the test. The tell is a gate that goes red
+with no code change of its own between green and red.
+
+---
+
 ## 2026-10-09 (10:3xZ) — RUN #605: ONE SHARD HUNG FOR 3h14m BECAUSE NOTHING BOUNDED THE BINARIES, AND THE ONE FAILURE MODE THAT NEEDS A LOG IS THE ONE THAT PRODUCED NONE
 
 ### What was wrong
