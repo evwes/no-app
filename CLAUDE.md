@@ -2807,10 +2807,38 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   recorded: 188,846 rows / 35,353 plans / 49,065,090 ppl**, not 224,201 /
   59.7M — the pooled rows are classified as a vehicle refusal before the
   asserted/comparable split is reached. `docs/accuracy-log.md` 2026-10-09.
-- **FOUND BY THE 21:07 DRAW, SIZED NOT SHIPPED — A VANGUARD COLLECTIVE TRUST
-  PUBLISHING THE RETAIL FUND'S TICKER AS FACT: 18 rows / 2 acks / 7 plans /
-  146,668 ppl / $11,497,614,236**, all 18 publishing a fee and all 18 with a
-  BLANK type cell. General Dynamics files nine `VANGUARD TARGET RET <vintage>
+- **SHIPPED 2026-10-09 23:3xZ — A VANGUARD COLLECTIVE TRUST PUBLISHING THE
+  RETAIL FUND'S TICKER AS FACT: 18 rows / 2 acks / 6 plans / 146,331 ppl /
+  $11,497,614,236 stop ASSERTING**, one disjunct in `fund-er.js`'s `pooled`
+  veto, `star` ON 18 with ticker withdrawn/gained/swapped 0, **fee changed 0**,
+  name 0, shownType 0; one surface by construction (`build-seo-pages` has 0
+  references to `fund-er`/`lookupTicker`/`fundTickerInfo`), `PARSER_VERSION`
+  stays 203. **DO NOT CARRY the sizing screen's 7 plans / 146,668 ppl** — it
+  omitted the SERVING CONDITION; 6 / 146,331 is authoritative.
+  **LEAVE-ONE-OUT WAS BLIND TO HALF THE NECESSITY AND I WROTE THE WRONG COST
+  INTO THE SHIPPED COMMENT BEFORE MEASURING THE OUTPUT.** `\bflex\b` is
+  load-bearing for **84,877 rows** (without it the arm pools every Vanguard
+  target-date MUTUAL fund); the `vanguard` and `target ret` conditions each read
+  **necessary for 0** because they are **MUTUALLY REDUNDANT**, so applying the
+  recorded "a condition blocking 0 rows is not a protection" rule mechanically
+  would have deleted a real guard — ***a conjunction's conditions cannot be
+  priced one at a time when two of them block the same population.*** And
+  dropping both costs **6 published rows, not the 479 routing rows**: the pooled
+  branch **never consults `FUND_TICKER`** (`fund-er.js:1541` is inside
+  `!pooled`), so `Fidelity Flex Government Money Market Fund` — a REGISTERED
+  fund — **loses its correct unasterisked SPAXX** on 6 rows / 1,843 ppl.
+  ***A guard whose job is to withhold a false assertion can cost a true one.***
+  **The six decoys I first reached for all resolve to NOTHING today**, so
+  pinning them would have been decorative; the two shipped single-protection
+  pins each fail by name against their own mutation, and the SPAXX pin is the
+  ONLY failure under drop-both. **And `fund-er-test.mjs` does NOT read
+  `FUNDER_PATH`** (it takes `--src`/`--file`), so my first baseline run reported
+  0 failures while reading the working tree twice — *a before that is silently
+  the after reads as a clean no-difference.* **STILL OWNER-GATED: the FEE** —
+  `er = star ? info.er : fundERRow(f)` prices the NAME either way, so the
+  Investor Shares 0.08 is still published on a row that now names no fund.
+  **ORIGINAL SIZING, kept because it is what was predicted:** all 18 publishing
+  a fee and all 18 with a BLANK type cell. General Dynamics files nine `VANGUARD TARGET RET <vintage>
   FLEX` rows publishing VTHRX / VTTHX / VTTVX / VFORX / VTIVX / VFIFX / VFFVX /
   VTTSX / VLXVX at **er 0.08, ASSERTED**, the 2030 row alone $1,067,037,798
   (4.6% of a $22.99B menu); the 18 is nine vintages × two acks whose menus are
@@ -2836,7 +2864,8 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   token is NAME-anchored so it does not touch the issuer cell, which was
   measured worthless two hours earlier. The FEE half (0.08 is the Investor
   Shares fee published as a trust's) goes with the owner-gated families — *a fee
-  is SOURCED, never derived.* `docs/accuracy-log.md` 2026-10-09 (21:2xZ).
+  is SOURCED, never derived.* `docs/accuracy-log.md` 2026-10-09 (21:2xZ) and
+  (23:3xZ).
 - **The one-class residue: 511 shipped `stk` rows / 339 names / 395,265 ppl
   state a class the series does not register, dominated by `Vanguard Target Ret
   <year> Inst` — AND "a pre-existing property of `resolve`'s one-class arm" IS

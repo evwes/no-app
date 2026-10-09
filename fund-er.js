@@ -1498,6 +1498,62 @@ function fundTickerInfo(name, type) {
    * funds when the CREF class was sized one cycle earlier. */
   const pooled = /trust|commingled|collective|pool\b|unitized|separate account|\bcit\b|annuity|tiaa traditional|tiaa access|guaranteed|\bgic\b|stable value|separately managed/i.test(name)
     || new RegExp(TRUST_CLASS, "i").test(name)
+    /* `FLEX` IS VANGUARD'S COLLECTIVE-TRUST EDITION, AND ONE SPELLING OF IT
+     * CARRIES NO `TRUST` TOKEN (2026-10-09). `Vanguard Target Retirement Trust
+     * Flex` is a collective trust sold to retirement plans; the SEC registers
+     * no series for it, so it has no ticker and no public expense ratio. The
+     * `trust` disjunct above already catches the two spellings that say
+     * "Trust", which is why our own page publishes `VFIFX*` for
+     * `Vanguard Target Retirement 2050 Trust Flex` and nothing at all for
+     * `VFTC Target Retirement 2050 Trust Flex`. The third spelling,
+     * `VANGUARD TARGET RET 2030 FLEX`, says neither `Trust` nor a vehicle in
+     * its TYPE cell -- so General Dynamics published VTHRX..VLXVX ASSERTED,
+     * er 0.08, on $11.5B. One product, three verdicts, and the only thing that
+     * varied was a cell the filer left blank: the `gicRow` shape for the
+     * fourth time after Accenture's stable value, the Fidelity Freedom ladder
+     * and the CREF accounts.
+     *
+     * REGISTRY WITNESS: `sec-funds.json` registers VTHRX as `VANGUARD CHESTER
+     * FUNDS :: Vanguard Target Retirement 2030 Fund`, class `Investor Shares`,
+     * and `FLEX` appears 145 times in the file with NOT ONE a Vanguard
+     * target-date series -- every hit is Janus Henderson Short Duration
+     * Flexible Bond and kin.
+     *
+     * A BARE `\bflex\b` IS WRONG AND WAS MEASURED SO, not assumed: over all
+     * 1,730,931 stored rows it takes 495 rows / 333 distinct names of
+     * genuinely different products, among them `Fidelity Flex International
+     * Index Fund` (a REGISTERED fund) and the `Flex Focus` and `Janus Henderson
+     * Flex Bond` families. That is the recorded CREF lesson -- a bare brand
+     * token admitted 474 registered Lifecycle Index funds -- so the anchor is
+     * the conjunction with the Vanguard target-date context, which takes 42
+     * rows / 33 names and NOTHING else. `Flexible` cannot match it at all:
+     * there is no word boundary after `flex` inside the word.
+     *
+     * NECESSITY, AND LEAVE-ONE-OUT IS BLIND TO HALF OF IT. Measured over the
+     * 1,617,526 stored rows the shipped name arms do NOT already pool: `flex`
+     * is load-bearing for **84,877 rows** — without it this disjunct pools
+     * every Vanguard Target Retirement MUTUAL fund and downgrades 84k correct
+     * assertions. The other two each read **necessary for 0**, and that is an
+     * artifact of the test rather than a finding: they are MUTUALLY REDUNDANT,
+     * each blocking the rows the other blocks, so dropping either ALONE costs
+     * nothing and dropping BOTH routes 479 further rows / 317 names into the
+     * pooled branch. So both stay: jointly necessary, individually redundant.
+     * *A conjunction's conditions cannot be priced one at a time when two of
+     * them block the same population.*
+     *
+     * AND THE PUBLISHED COST OF DROPPING BOTH IS 6 ROWS, NOT 479 — measured
+     * through the renderer rather than read off the routing, and it runs the
+     * OPPOSITE way to the one I assumed. Pooling does not merely downgrade:
+     * the pooled branch never consults FUND_TICKER at all, only
+     * FUND_COMPARABLE, so a row the TICKER table carries and the comparable
+     * table does not loses its symbol outright. `Fidelity Flex Government
+     * Money Market Fund` is a REGISTERED Fidelity fund, and dropping both
+     * conditions WITHDRAWS its correct, unasterisked SPAXX from 6 rows / 6
+     * plans / 1,843 participants / $847,023. *A count of what a condition
+     * admits is not a count of what the page publishes* — and a guard whose
+     * job is to withhold a false assertion can cost a true one. */
+    || (/\bflex\b/i.test(name) && /vanguard|\bvftc\b/i.test(name)
+        && /target\s*(?:ret\b|retirement)/i.test(name))
     /* The TYPE column is the filing's own statement of the vehicle, and it is
      * a controlled vocabulary of 13 values -- so it can be matched exactly
      * rather than guessed at. This arm listed only two of the five that name

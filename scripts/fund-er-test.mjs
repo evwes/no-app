@@ -216,6 +216,40 @@ const MUST = [
    * version that asserted the fund itself. 6 rows / 7,358 readers. */
   ["TIAA Access TRP Inst Large Cap Growth T4", "TRLGX*"],
   ["TIAA ACCESS TRP LARGE CAP GROWTH I T3", "TRLGX*"],
+  /* VANGUARD'S `FLEX` COLLECTIVE TRUST, AND THE ASTERISK IS THE WHOLE
+   * ASSERTION (2026-10-09). `Vanguard Target Retirement Trust Flex` is a
+   * collective trust the SEC registers no series for. Two of its three filed
+   * spellings say `Trust` and were already pooled; the third says neither
+   * `Trust` nor a vehicle in its TYPE cell, so General Dynamics published
+   * VTHRX..VLXVX ASSERTED on $11.5B. Without the `*` these pins would pass
+   * against the version that asserted the retail fund itself.
+   *
+   * The first is the DEFECT spelling and the only protection for it; the second
+   * and third are CONTROLS that the two already-correct spellings keep the
+   * verdict they already had — the second via the `trust` arm, and both must
+   * stay comparable rather than becoming blank. 18 rows / 6 plans / 146,331
+   * readers move. */
+  ["VANGUARD TARGET RET 2030 FLEX", "VTHRX*"],
+  ["Vanguard Target Retirement 2050 Trust Flex", "VFIFX*"],
+  ["VANGUARD TARGET RET 2065 FLEX", "VLXVX*"],
+  /* THE TWO SINGLE-PROTECTION CASES FOR THAT ARM'S OWN CONDITIONS, both found
+   * by measuring rather than by listing the strings that came to mind — the
+   * six `Flex`-family decoys I first reached for all resolve to nothing today,
+   * so pinning them would have been decorative.
+   *
+   * `flex` is the condition this first pin protects: without it the arm pools
+   * every Vanguard target-date MUTUAL fund, and this row — a registered fund,
+   * correctly ASSERTED with no asterisk — is 1 of 84,877 that would be
+   * downgraded.
+   *
+   * The second protects `vanguard` AND `td` JOINTLY (neither is individually
+   * necessary; see the arm's note). Dropping both pools this row, and because
+   * the pooled branch never consults FUND_TICKER, a registered Fidelity fund
+   * loses its symbol outright rather than gaining an asterisk: 6 rows / 1,843
+   * readers. The expectation is therefore the BARE symbol, and a `*` here
+   * would pass against the version that withdraws it. */
+  ["Vanguard Target Retirement 2030 Fund", "VTHRX"],
+  ["Fidelity Flex Government Money Market Fund", "SPAXX"],
 ];
 
 /* MUST NOT RESOLVE. A blank is the honest answer for all of these. */

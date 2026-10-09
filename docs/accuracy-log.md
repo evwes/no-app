@@ -50742,3 +50742,134 @@ remedy. *A real zero still needs a positive control before it becomes a finding.
 work:** row 9 publishes `CREF VARIABLE ANNUITY ACCOUNT` with **no ticker, no
 fee** and a blank type — the honest answer for a variable annuity account, from
 the same menu that carries the eight asserted rows above.
+
+## 2026-10-09 (23:3xZ) — SHIPPED: `FLEX` is Vanguard's collective-trust edition and one of its three spellings carried no `Trust` token — 18 rows / 146,331 ppl stop ASSERTING the retail fund — and leave-one-out was blind to half the necessity
+
+**SHIPPED** as one disjunct in `fund-er.js`'s `pooled` veto. `Vanguard Target
+Retirement Trust Flex` is a collective trust the SEC registers no series for,
+so it has no ticker and no public ER. **General Dynamics (6 member plans)
+published VTHRX / VTTHX / VTTVX / VFORX / VTIVX / VFIFX / VFFVX / VTTSX / VLXVX
+ASSERTED at er 0.08 on $11,497,614,236** — the 2030 row alone $1,067,037,798,
+4.6% of a $22.99B menu.
+
+**THE CONTROL IS INTERNAL AND IS WHAT MADE THIS CONVICTABLE:** our own page
+already handles this product correctly on other plans, and **the only thing
+that varied was the TYPE CELL**. Of the 33 distinct stored names in this family:
+`Vanguard Target Retirement <v> Trust Flex` (11 rows) publishes **`VFIFX*`**, an
+asterisked comparable, via the shipped `trust` arm; `VFTC Target Retirement <v>
+Trust Flex` (13 rows) publishes **nothing**, the most honest of the three; and
+`VANGUARD TARGET RET <v> FLEX` (18 rows) says neither `Trust` in the name nor a
+vehicle in its type cell and therefore **asserted the retail fund**. One
+product, three verdicts — **the `gicRow` shape for the FOURTH time** after
+Accenture's stable value, the Fidelity Freedom ladder and the CREF accounts.
+
+**REGISTRY WITNESS, asserted before the count and set to throw:**
+`sec-funds.json` registers VTHRX as `VANGUARD CHESTER FUNDS :: Vanguard Target
+Retirement 2030 Fund`, class **Investor Shares**, and `FLEX` appears 145 times
+in the file with **NOT ONE a Vanguard target-date series** — every hit is Janus
+Henderson Short Duration Flexible Bond and kin.
+
+**MEASURED** through `scripts/apppath.mjs` over all **1,721,920 published+served
+rows**, publish gate and **serving condition** applied: **18 rows / 6 plans /
+146,331 ppl**, `star` ON **18**, and ticker withdrawn **0** / gained **0** /
+swapped **0**, fee changed **0**, name **0**, shownType **0**.
+**AND IT CORRECTS THIS CLASS'S RECORDED SIZE:** the register said 18 rows / 2
+acks / **7 plans / 146,668 ppl** from the 21:07 sizing screen; applying the
+serving condition gives **6 plans / 146,331**, and the smaller figure is
+authoritative. *A measurement of what a page publishes must apply every
+condition the page applies, in order.*
+
+**THE NARROWING IS A SUPERSET BY CONSTRUCTION AND DISCHARGED OVER THE WHOLE
+STORE, not sampled:** the disjunct requires `\bflex\b` in the name and `clean()`
+never ADDS a word — of **416,887 distinct stored names, 0** gain `\bflex\b`
+under `clean()`. Plus a 4,303-row sampled control over non-candidates differing
+on **0**. *Sampling cannot establish a superset*, so the sample is the discharge
+and the whole-store pass is the claim.
+
+**A BARE `\bflex\b` IS WRONG AND WAS MEASURED SO:** over all 1,730,931 stored
+rows it takes **495 rows / 333 distinct names** of genuinely different products
+— `Fidelity Flex International Index Fund` (a REGISTERED fund), the `Flex Focus`
+ladder, `Janus Henderson Flex Bond`, `Day One Income Flex Target Balanced`. That
+is the recorded CREF lesson, where a bare brand token admitted 474 registered
+Lifecycle Index funds, so the anchor is the conjunction with the Vanguard
+target-date context: **42 rows / 33 names and nothing else**. `Flexible` cannot
+match it at all — there is no word boundary after `flex` inside the word, which
+is asserted in the measurement script rather than reasoned about.
+
+### LEAVE-ONE-OUT WAS BLIND TO HALF THE NECESSITY, AND TO THE DIRECTION OF IT
+
+Measured over the **1,617,526** stored rows the shipped name arms do NOT already
+pool:
+
+| condition | admits ALONE | newly pooled if DROPPED |
+|---|---|---|
+| `\bflex\b` | 497 rows | **84,877 rows / 4,289 names** |
+| `vanguard\|vftc` | 276,323 rows | **0** |
+| `target ret(irement)` | 117,043 rows | **0** |
+| **both of the latter** | — | **479 rows / 317 names** |
+
+`\bflex\b` is plainly load-bearing: without it the arm pools every Vanguard
+target-date **MUTUAL** fund and downgrades 84k correct assertions. **The other
+two each read "necessary for 0", and that is an artifact of the test rather
+than a finding** — they are **MUTUALLY REDUNDANT**, each blocking the rows the
+other blocks, so dropping either ALONE costs nothing while dropping BOTH routes
+479 further rows into the pooled branch. ***A conjunction's conditions cannot be
+priced one at a time when two of them block the same population.*** The
+recorded rule that *a condition blocking 0 rows is not a protection* deleted
+four conditions on the trustee ship and refused six on the acceleration ship,
+and applying it mechanically here would have deleted a real guard.
+
+**AND THE PUBLISHED COST OF DROPPING BOTH IS 6 ROWS, NOT 479 — I WROTE 479 INTO
+THE SHIPPED COMMENT AND IT WAS WRONG, caught by measuring the OUTPUT instead of
+the routing.** Pooling does not merely downgrade an assertion to a comparable:
+**the pooled branch never consults `FUND_TICKER` at all** (`fund-er.js:1541` is
+inside the `!pooled` arm), only `FUND_COMPARABLE` — so a row the TICKER table
+carries and the comparable table does not **loses its symbol outright**.
+`Fidelity Flex Government Money Market Fund` is a REGISTERED Fidelity fund, and
+dropping both conditions **WITHDRAWS its correct, unasterisked SPAXX from 6
+rows / 6 plans / 1,843 participants / $847,023**. ***A count of what a condition
+admits is not a count of what the page publishes*** — and **a guard whose job is
+to withhold a false assertion can cost a true one**, which is the opposite
+direction to the one I had assumed a `pooled` widening could ever run.
+
+### THE TWO SINGLE-PROTECTION FIXTURES WERE FOUND BY MEASURING, AND THE SIX I FIRST REACHED FOR WERE DECORATIVE
+
+Asked the shipped resolver directly, **all six** `Flex`-family decoys I would
+have pinned in `MUST_NOT` — `Fidelity Flex International Index Fund`, both
+Janus Henderson spellings, two `Flex Focus` vintages, `Day One Income Flex
+Target Balanced` — **resolve to nothing today**. Pinning them would have been
+the recorded *control that cannot fail*. What shipped instead:
+
+* **`Vanguard Target Retirement 2030 Fund` -> `VTHRX`** (bare, no asterisk) is
+  the single protection for `\bflex\b`; it FAILS by name against a drop-`flex`
+  mutation, one of 4 failures there.
+* **`Fidelity Flex Government Money Market Fund` -> `SPAXX`** protects
+  `vanguard` and `td` JOINTLY and is **the ONLY failure** under a drop-both
+  mutation, which is what makes it the single-protection case for the pair.
+* The three FLEX pins (`VANGUARD TARGET RET 2030 FLEX` -> `VTHRX*`,
+  `… 2065 FLEX` -> `VLXVX*`, `Vanguard Target Retirement 2050 Trust Flex` ->
+  `VFIFX*`) **assert the asterisk explicitly**, because a pin on the bare symbol
+  would have passed against the defect. Two fail by name against HEAD; the third
+  is a labelled CONTROL that an already-correct spelling keeps its verdict.
+
+**The harness pin was itself tested** by pointing `--file` at a path that does
+not exist and requiring a THROW — and in the course of that, `FUNDER_PATH` (the
+env var `apppath` reads) turned out **not** to be read by `fund-er-test.mjs` at
+all, which takes `--src <ref>` / `--file`. My first baseline run reported **0
+failures** and looked like a passing before-state; it was the working tree read
+twice. *A harness is only as honest as its "before", and a before that is
+silently the after reads as a clean no-difference.*
+
+**THE FEE DOES NOT MOVE, and that is a limit rather than a feature:**
+`er = star ? info.er : fundERRow(f)` prices the NAME on both branches and both
+read 0.08 here, so the **Investor Shares** fee is still published on a row that
+now names no fund. That half goes with the owner-gated stable-value and
+fee-pre-emption families — *a fee is SOURCED, never derived* — and
+`data/fund-facts.json` holds no figures for this trust.
+
+`PARSER_VERSION` stays **203**. `build-seo-pages.mjs` has **0** references to
+`fund-er`, `lookupTicker` or `fundTickerInfo`, so this is **one surface by
+construction** and the regenerate-and-diff control is *inapplicable rather than
+skipped*. `stamp-assets` re-derived the `fund-er.js` cache-buster
+(`ba9e49a9 -> 38f37b96`) and `index.html` carries it; `--check` clean,
+smoke-test green.
