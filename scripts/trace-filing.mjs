@@ -24,11 +24,17 @@
  * rounded figure) silently changes the ratio and has produced three
  * "experiments" that measured nothing.
  */
-import { readFileSync, existsSync, mkdirSync, unlinkSync, writeFileSync, mkdtempSync } from "node:fs";
+import { readFileSync, existsSync, mkdirSync, unlinkSync, writeFileSync, mkdtempSync,
+  symlinkSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import os from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { loadPlans, loadStatus, loadTrusts } from "./lib-schema.mjs";
+
+/* The repo root, for materialising a `--vs` baseline that can still reach the
+ * data files lib-4i resolves relative to its own directory. */
+const REPO = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 const ack = process.argv[2];
 if (!ack) { console.error("usage: node scripts/trace-filing.mjs <ack> [--vs <git-ref>]"); process.exit(2); }
@@ -93,6 +99,26 @@ const report = (tag, mod) => {
     }
     if (p.funds.length > ROWS) console.log(`   … ${p.funds.length - ROWS} more`);
   }
+  /* FEATURES, because a version can change nothing about the rows and still
+   * change what the page SAYS. v201, v202 and v203 are all feature-only — v203
+   * withholds `Employer-money vesting: Immediate` over an acceleration trigger
+   * on 123 plans — and this harness printed rows, ratio and confidence only,
+   * so `--vs` across exactly those versions reported two identical blocks and
+   * read as "no change". *An instrument that cannot observe the class of change
+   * under test reports a clean no-difference, which is a statement about the
+   * instrument.* Quotes are printed in full rather than truncated, because the
+   * v203 draft that cost 107 plans their best sentence was invisible to every
+   * count and visible only in the moved quote text. */
+  const ff = mod.extractPlanFeatures(text, sponsor);
+  const keys = [...new Set([...Object.keys(ff || {})])].sort();
+  console.log(`   features: ${keys.length ? "" : "(none)"}`);
+  for (const k of keys) {
+    const v = ff[k];
+    if (v === null || v === undefined || v === "" || v === false) continue;
+    const s = typeof v === "object" ? JSON.stringify(v) : String(v);
+    console.log(`     ${k} = ${s}`);
+  }
+  p.__features = ff;
   return p;
 };
 
@@ -103,9 +129,53 @@ console.log(`  text ${text.length.toLocaleString()} chars, ${(text.match(/\f/g) 
 
 const work = await import(new URL("./lib-4i.mjs", import.meta.url).href);
 if (vsRef) {
-  const tmp = mkdtempSync(path.join(os.tmpdir(), "trace-"));
-  const bp = path.join(tmp, "b.mjs");
-  writeFileSync(bp, execFileSync("git", ["show", `${vsRef}:scripts/lib-4i.mjs`], { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 }));
-  report(`baseline ${vsRef}`, await import(bp));
+  /* Materialise the baseline's WHOLE local module graph at <vsRef>, not just
+   * lib-4i.mjs. This used to write one file to a temp dir and import it, which
+   * threw ERR_MODULE_NOT_FOUND the moment lib-4i grew a sibling import —
+   * `import { vestingQuoteOk, accelerationOnlyVesting } from "./lib-quote.mjs"`,
+   * added for v201 — so every v201/v202/v203 comparison, exactly the versions
+   * whose behaviour TURNS ON those guards, was unrunnable.
+   *
+   * The graph is walked transitively and every file comes from the SAME ref.
+   * Copying only the entry point and letting a relative import resolve against
+   * the working tree would be WORSE than the throw: it would silently compare
+   * the baseline's lib-4i against the CURRENT lib-quote and report the result
+   * as "<vsRef>". A missing file at that ref therefore throws rather than
+   * falling back — a baseline assembled from two refs is not a baseline. */
+  /* The baseline is laid out as <root>/scripts/ with the repo's non-code
+   * assets symlinked beside it, because lib-4i resolves `../sec-funds.json`
+   * from its OWN directory (lib-4i.mjs:5707) behind an `existsSync` — so a
+   * bare temp dir makes the baseline run with NO SEC table while the working
+   * tree runs with one, and degrades silently. Holding the data file constant
+   * across both sides is also the right control for a PARSER comparison: vary
+   * the code, not the corpus. */
+  const root = mkdtempSync(path.join(os.tmpdir(), "trace-"));
+  const tmp = path.join(root, "scripts");
+  mkdirSync(tmp);
+  for (const asset of ["sec-funds.json", "plans-all.json", "mtias.json",
+    "lineups-status.json", "data"]) {
+    const from = path.join(REPO, asset);
+    if (existsSync(from)) symlinkSync(from, path.join(root, asset));
+  }
+  const seen = new Set();
+  const fetchAt = (rel) => {
+    if (seen.has(rel)) return;
+    seen.add(rel);
+    let src;
+    try {
+      src = execFileSync("git", ["show", `${vsRef}:scripts/${rel}`],
+        { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
+    } catch {
+      throw new Error(`--vs ${vsRef}: scripts/${rel} does not exist at that ref. ` +
+        `The baseline's module graph cannot be assembled, and resolving it against ` +
+        `the working tree instead would mix two versions into one "baseline".`);
+    }
+    writeFileSync(path.join(tmp, rel), src);
+    for (const m of src.matchAll(/\bfrom\s+["'](\.\/[^"']+)["']/g)) fetchAt(m[1].slice(2));
+    for (const m of src.matchAll(/\bimport\s*\(\s*["'](\.\/[^"']+)["']\s*\)/g)) fetchAt(m[1].slice(2));
+  };
+  fetchAt("lib-4i.mjs");
+  console.log(`  baseline graph at ${vsRef}: ${[...seen].join(", ")}`);
+  report(`baseline ${vsRef}`, await import(path.join(tmp, "lib-4i.mjs")));
 }
 report("working tree", work);
