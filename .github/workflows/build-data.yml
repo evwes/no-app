@@ -71,7 +71,14 @@ jobs:
           node-version: 20
       - name: Parser gate (ten live specimens — fails fast before the matrix)
         run: |
-          sudo apt-get install -y -q poppler-utils >/dev/null 2>&1 || true
+          # TOOLCHAIN PROBE — see the parse step below for what this cost.
+          # `apt-get update` first (a stale index makes install resolve
+          # nothing), output kept, and NO `|| true`: the parser cannot read a
+          # filing without pdftotext, so a missing binary must fail the job in
+          # four seconds rather than produce a confident-looking empty store.
+          sudo apt-get update -qq
+          sudo apt-get install -y -q poppler-utils
+          pdftotext -v
           node scripts/parser-gate.mjs
       # The ingest scanners have crafted-fixture tests that need no network and
       # run in under a second. They were written and never wired, so a
@@ -158,7 +165,29 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=12288
           OCR_CACHE_DIR: ocr-cache
         run: |
-          sudo apt-get install -y -q poppler-utils tesseract-ocr >/dev/null 2>&1 || true
+          # TOOLCHAIN PROBE. Run #604 — the v203 full re-parse — ran this line
+          # with no `apt-get update`, both streams sent to /dev/null and
+          # `|| true`, the install resolved nothing, and all twenty shards
+          # downloaded all 69,046 filings and could extract text from none.
+          # 60,033 confident lineups were destroyed, every shard exited 0, and
+          # the only thing that caught it was the publish gate's REPARSE
+          # VERDICT — the diagnosis did not exist, because the parse step's own
+          # account of itself had been thrown away on purpose.
+          #
+          # `apt-get install` is atomic: if EITHER package is unresolvable,
+          # neither lands. Prep asks for one package and parse asks for two, so
+          # prep's gate passed over ten live specimens at 04:50 while parse was
+          # already toolless at 05:17 — the two steps disagreeing is what made
+          # it look like a parser defect for forty-three minutes.
+          #
+          # So: update first, keep the output, and NO `|| true`. A job that
+          # cannot read a PDF must die in four seconds, not write 69,046 status
+          # rows saying it tried. docs/accuracy-log.md 2026-10-09.
+          sudo apt-get update -qq
+          sudo apt-get install -y -q poppler-utils tesseract-ocr
+          pdftotext -v
+          pdftoppm -v
+          tesseract -v
           # PUT THE FAILURE WHERE IT CAN BE READ. Runs #249 and #252 both died
           # with their parse shards exiting non-zero, and the reason was
           # unreachable: a shard log is ~430,000 lines and the tooling that

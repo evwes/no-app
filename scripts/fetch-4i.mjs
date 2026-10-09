@@ -834,6 +834,14 @@ for (const plan of work) {
     fbRescued++;
   }
   if (a.err === "pdftotext") {
+    /* TALLY IT. Run #604 lost 60,033 confident lineups to this branch and its
+     * twenty shards each printed `failures this shard: download=5` and exited
+     * 0, because this was the one error path that recorded a destroyed entry
+     * and incremented no counter. A 100%-failure mode reported five problems.
+     * The sibling paths (download, analyze, fb-*, feat-fb-*) are all tallied;
+     * this one was added later without it — the same shape as the guards that
+     * forgot `blockedButQuotable`. docs/accuracy-log.md 2026-10-09. */
+    failCounts["pdftotext"] = (failCounts["pdftotext"] || 0) + 1;
     summary.push(`${tag}: pdftotext failed`);
     record(plan, { confident: false, error: "pdftotext", funds: [] });
     continue;

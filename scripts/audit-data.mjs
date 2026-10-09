@@ -833,16 +833,28 @@ try {
   const acks = Object.entries(S);
   const pvCount = new Map();
   let dlFail = 0;
+  let exFail = 0;
   for (const [, st] of acks) {
     pvCount.set(st.pv || 0, (pvCount.get(st.pv || 0) || 0) + 1);
     if (st.e === "download") dlFail++;
+    /* A THIRD FAILURE SHAPE, and the one that got through: the run FINISHED,
+     * fetched everything, and could not EXTRACT. Run #604 carried
+     * `e:"pdftotext"` on 68,865 of 69,046 acks — 99.7% of the store — and this
+     * block printed `dominant pv 203 covers 68865 (99.7%); 181 download
+     * failures (0.26%)`, a clean bill of health, because it enumerated exactly
+     * two shapes: a pv spread and a download failure. An extraction failure is
+     * neither. Only the publish gate's REPARSE VERDICT caught it.
+     * docs/accuracy-log.md 2026-10-09. */
+    if (st.e === "pdftotext") exFail++;
   }
   const [topPv, topN] = [...pvCount].sort((a, b) => b[1] - a[1])[0] || [0, 0];
   const topShare = acks.length ? topN / acks.length : 1;
   const dlShare = acks.length ? dlFail / acks.length : 0;
+  const exShare = acks.length ? exFail / acks.length : 0;
   console.log(`\n== RUN COMPLETENESS: ${acks.length} status entries; ` +
     `dominant pv ${topPv} covers ${topN} (${(topShare * 100).toFixed(1)}%); ` +
-    `${dlFail} download failures (${(dlShare * 100).toFixed(2)}%)`);
+    `${dlFail} download failures (${(dlShare * 100).toFixed(2)}%); ` +
+    `${exFail} UNREADABLE (${(exShare * 100).toFixed(2)}%)`);
   if (topShare < 0.97) {
     const others = [...pvCount].sort((a, b) => b[1] - a[1]).slice(1, 4)
       .map(([v, n]) => `pv ${v}: ${n}`).join(", ");
@@ -854,6 +866,20 @@ try {
       `they kept their stored parse, so the coverage line below describes the PREVIOUS read of them, not this one. ` +
       `Baseline is under 0.1%; investigate before mirroring`);
   }
+  /* An extraction failure destroys the entry (fetch-4i's `record` keeps
+   * nothing without funds or features), so unlike a download failure it does
+   * NOT fall back to the stored parse. Any non-trivial share means the store
+   * now describes filings nobody read. The threshold is deliberately an order
+   * of magnitude tighter than `download-failures`: a download 403 is a fact
+   * about the EFAST2 bucket and has a 48-ack baseline, where an extraction
+   * failure is always ours and the healthy baseline is zero. */
+  if (exShare > 0.001) {
+    flag("high", "extraction-failures", `${exFail} filings (${(exShare * 100).toFixed(1)}%) were downloaded and could NOT be read ` +
+      `(pdftotext). Unlike a download failure this DESTROYS the stored entry rather than preserving it, so the ` +
+      `coverage line below describes a store those filings have dropped out of. Check the parse job's toolchain ` +
+      `probe before anything else — run #604 lost 60,033 lineups to a missing poppler-utils`);
+  }
+  auditCoverage.ex = exFail;
   auditCoverage.dl = dlFail;
   auditCoverage.pvTopShare = +(topShare * 100).toFixed(1);
   /* AND `pv` IS THE DOMINANT PER-ACK VERSION, NOT THE ONE IN THIS TREE —
