@@ -2837,10 +2837,31 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   measured worthless two hours earlier. The FEE half (0.08 is the Investor
   Shares fee published as a trust's) goes with the owner-gated families — *a fee
   is SOURCED, never derived.* `docs/accuracy-log.md` 2026-10-09 (21:2xZ).
-- The one-class residue: 511 shipped `stk` rows / 339 names / 395,265 ppl state
-  a class the series does not register, dominated by `Vanguard Target Ret <year>
-  Inst`. A pre-existing property of `resolve`'s one-class arm; refusing it in one
-  family alone would make two siblings of one registrant disagree.
+- **The one-class residue: 511 shipped `stk` rows / 339 names / 395,265 ppl
+  state a class the series does not register, dominated by `Vanguard Target Ret
+  <year> Inst` — AND "a pre-existing property of `resolve`'s one-class arm" IS
+  THE WRONG DIAGNOSIS, corrected 2026-10-09 22:2xZ.** Measured against
+  `sec-funds.json`: **all TWELVE** Vanguard Target Retirement series carry
+  **exactly one class, `Investor Shares`** (VTINX..VSVNX), **0** series match
+  `vanguard`+`institutional`+`target`, and VIRSX is absent. **Control: the file
+  is NOT generally one-class** — of 220 Vanguard series, 123 carry more than
+  one, and Wellington (VWELX/VWENX), Windsor, Windsor II and FTSE Social
+  (Institutional VFTNX + Admiral VFTAX) all carry multiple. So the resolver does
+  the only thing it can and the gap is in the SOURCE, which has a different fix.
+  **TWO CAUSES, UNDISTINGUISHABLE IN-SANDBOX, AND THE REMEDY DIFFERS:** (a) the
+  file is thin for this family -> these are a named live instance of the
+  owner-gated wrong-share-class item, fix = correct the symbol and withdraw the
+  fee; or (b) the Institutional funds are no longer registered -> the file is
+  right, the filed name names a gone product, and it is the Oppenheimer/Spartan
+  RETIRED-BRAND shape where *a rename is a FACT that must be SOURCED*. The one
+  in-repo witness is the silent file, and silence fits both — so it is a
+  `data/fund-facts.json` question, not a wider screen. **Named instance:
+  Nationwide Children's Hospital, 22,556 ppl**, publishes eight `VANGUARD
+  INSTITUTIONAL TARGET RETIREMENT <vintage>` rows ASSERTED at 0.08, VFORX alone
+  on $89,014,475 (10.7% of its menu). *And the 0-match query agreed with my
+  hypothesis and still did not mean what it looked like — only the multi-class
+  control turned it into the right claim.* `docs/accuracy-log.md` 2026-10-09
+  (22:2xZ).
 - Unverified costs of the 15:0xZ Vanguard change, recorded as inferences: 386
   rows / 30,686 ppl newly ASSERT where the issuer names an insurance platform
   (against 1,575 rows that already assert that way — pre-existing, cause located

@@ -50670,3 +50670,75 @@ with your hypothesis is the most dangerous kind*** — the same rule this file
 records for a clean zero reporting on the query, met where the zero was
 convenient. Reading the file's actual shape turned it into a real control with a
 named registrant and a named share class.
+
+## 2026-10-09 (22:2xZ) — the "one-class residue" is not a property of the resolver, it is the REGISTRY carrying one class for the whole Vanguard target-date family — and which of two causes it is decides the remedy
+
+**Found by the 22:07 draw.** Nationwide Children's Hospital (22,556 ppl, a
+120-fund $828M menu at ratio 0.984) publishes eight rows named
+`VANGUARD INSTITUTIONAL TARGET RETIREMENT <vintage>` — typed `Mutual fund`,
+**ASSERTED, no asterisk** — carrying VFORX $89,014,475 (10.7% of the menu),
+VFFVX, VFIFX, VTTHX, VTIVX, VTHRX, VTTSX, all at er 0.08. The filing says
+**INSTITUTIONAL** and **VFORX is registered as `VANGUARD CHESTER FUNDS ::
+Vanguard Target Retirement 2040 Fund`, class `Investor Shares`.**
+
+**THE RECORDED ENTRY FOR THIS IS INCOMPLETE, AND THE CORRECTION IS THE POINT.**
+The register says: *"The one-class residue: 511 shipped `stk` rows / 339 names /
+395,265 ppl state a class the series does not register, dominated by `Vanguard
+Target Ret <year> Inst`. A pre-existing property of `resolve`'s one-class arm."*
+Measured against `sec-funds.json` itself, that phrasing hides the cause:
+
+* **ALL TWELVE** Vanguard Target Retirement series in the file carry **exactly
+  one class, `Investor Shares`** — Income/2020/2025/2030/2035/2040/2045/2050/
+  2055/2060/2065/2070, VTINX through VSVNX, one symbol each.
+* **ZERO** series match both `vanguard` and `institutional` and `target`, and
+  **VIRSX is absent from the file entirely.**
+* **The control says the file is not generally one-class:** of 220 distinct
+  Vanguard series it carries, 97 have one class and the rest have more —
+  `VANGUARD WELLINGTON FUND` carries Investor **and** Admiral (VWELX / VWENX,
+  the exact pair the owner-gated store-vs-page item turns on), Windsor and
+  Windsor II each carry both, and `Vanguard FTSE Social Index Fund` carries
+  **Institutional=VFTNX and Admiral=VFTAX**. So multi-class coverage exists and
+  the target-date family's single class is specific, not a file-wide property.
+
+***So the resolver is doing the only thing it can: asked for a class the file
+does not carry, its one-class arm returns the one it has.*** That is not "a
+property of `resolve`" in the sense the entry implies — a design choice to be
+left alone — it is a SOURCE gap presenting as a resolver behaviour, and the two
+have different fixes.
+
+**AND THE TWO CANDIDATE CAUSES ARE NOT DISTINGUISHABLE FROM INSIDE THIS
+SANDBOX, so both are recorded and neither is asserted.** Either (a) the SEC
+series-and-class file is thin for this family, in which case the remedy is a
+better source and the published Investor symbol is a wrong-class claim on every
+one of these rows; or (b) the Vanguard **Institutional** Target Retirement Funds
+no longer exist as registered series, in which case the file is RIGHT, the filed
+name names a product that is gone, and this is the **Oppenheimer / Spartan
+retired-brand shape** — where the recorded position is that *a rename is a FACT
+that must be SOURCED, never inferred.* **I will not record which it is**: the
+one in-repo witness is the file that is silent, and silence is consistent with
+both. Settling it is a `data/fund-facts.json` question for the `fund-facts`
+agent, and that is the honest next step rather than a wider screen.
+
+**WHY THE DISTINCTION IS WORTH THE PARAGRAPH:** under (a) these rows are a named
+live instance of the owner-gated wrong-share-class item (5,929 rows / 11.1M ppl)
+and the direction is "correct the symbol, withdraw the fee"; under (b) they are a
+COVERAGE class and the direction is "withhold the symbol and say the product
+named is not registered". *A screen cannot choose between them, and shipping
+either remedy against the wrong cause publishes a new false claim.*
+
+**THE CONVENIENT ZERO ALMOST CLOSED THIS THE WRONG WAY, one hour after I wrote
+the rule.** My first two registry queries returned **0 matches** for an
+Institutional Target Retirement series, which reads as "unregistered, therefore
+the page is wrong" — the conclusion I was reaching for. The 21:2xZ entry in this
+log had just recorded that *a clean zero agreeing with your hypothesis is the
+most dangerous kind*, after a `rows 0` caused by a guessed field name. This time
+the field name was right and the zero was real, **and it still did not mean what
+it looked like** — only the multi-class CONTROL (Wellington, Windsow, FTSE
+Social) turned it from "the product is unregistered" into "the file carries one
+class here and several elsewhere", which is a different claim with a different
+remedy. *A real zero still needs a positive control before it becomes a finding.*
+
+**Also on that page and correct, recorded as a positive control for the CREF
+work:** row 9 publishes `CREF VARIABLE ANNUITY ACCOUNT` with **no ticker, no
+fee** and a blank type — the honest answer for a variable annuity account, from
+the same menu that carries the eight asserted rows above.
