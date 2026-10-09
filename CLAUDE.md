@@ -806,7 +806,10 @@ VMware and Neiman Marcus. The witness must be **BOY** assets.
 match **43,312** · vesting 53,115 · roth 38,369 · **HIGH 4** ·
 warn **556** · overshoot 370 · overshootTrust 12 ·
 aggRow 114 · dl **48** · pvTopShare **99.9** (pv **202**) ·
-tkExact **37.76** · tkComparable **3.41** · vestQuote **5,281**.
+tkExact **37.77** · tkComparable **3.41** · vestQuote **5,281**.
+(`tkExact` was 37.76 until #601 on 2026-10-09; ~9 rows of an 87,106-row sample
+whose size did not move, produced by the code at `4f6e29d1` — i.e. the DATA, not
+that hour's display ship. Re-derive before quoting.)
 
 **`vestQuote` 5,281 IS v202's OWN DELIVERY AND THE ONE FIGURE ITS
 REGISTRATION DENIED** — it counts STORED quotes carrying no vesting label, and
@@ -3114,6 +3117,38 @@ These outlived the versions that produced them. The accuracy log has the case.
   meanings and told readers a filing had been withdrawn when the failure was
   ours; a check re-implemented a lookup and published 65% false findings into a
   watched metric, which teaches the operator to skip the line.
+- **"MAIN IS AHEAD" HAS TWO CASES AND ONLY ONE IS A REBASE (2026-10-09).** The
+  recorded hazard — rebase main's data commit in or the mirror discards fresh
+  filings — is written for a SUCCESSIVE run. When the dev run and the scheduled
+  run are **CONCURRENT** (same `pv`, same extracts, minutes apart) both commit
+  and the refs diverge by one data commit each, and the stores are the SAME DATA
+  TWICE: measured on #601/#602, `lineups-status` 69,046 acks with 0/0/0
+  only-main / only-branch / different, `plans-all` 112,652 rows 0/0/0, the other
+  six identical once `generated` is stripped, and the coverage trail not in the
+  differing set at all (410 lines, same last line, both sides). ***So the entire
+  divergence was a timestamp*** — and then BOTH a rebase and `--force` on the git
+  check are wrong: the right move is to ADOPT one side and converge (`git reset
+  --hard origin/main` + force-with-lease on the DEV branch), which is lossless
+  because the duplicate was proved to be one and spends no force-push on main.
+  **A textual diff cannot tell these apart (every store is one line) and
+  `mirror-gate`'s +0/-0 is lineup-keyed, so it does not cover the six non-lineup
+  files.** Diff the stores STRUCTURALLY — one script, and it is what distinguishes
+  the two cases. `docs/accuracy-log.md` 2026-10-09 (03:0xZ).
+- **AND A GUARD THAT DOES NOT FIRE IS A PREMISE TO CHECK, NOT A FAILURE TO
+  REPORT (2026-10-09).** A mirror landed while a run was `in_progress` on main and
+  `mirror.sh` did not refuse, which read as the post-#556 guard failing. Its
+  actual condition is *changes data-producing code* AND a run in flight: diffed
+  across exactly the six path-filter files between what that run checked out and
+  what the mirror put on main, the answer was **empty**, so the stand-down was
+  correct by construction. *Read the guard's condition, not the rule's summary of
+  it* — and the check is a diff, not a reading of the comment.
+- **ATTRIBUTE A MOVED COVERAGE FIGURE BY THE PRODUCING RUN'S `head_sha`
+  (2026-10-09).** `tkExact` moved 37.76 -> 37.77 in the same hour as a display
+  ship, and the ship was the obvious suspect and innocent: the run's `head_sha`
+  was the commit BEFORE it, and `tkExact` is computed through app.js's own lookup
+  (`audit-data:774`), not through the matcher that had also changed. Two cheap
+  questions — which commit produced the store, and which function computes the
+  metric — before suspecting the hour's own change.
 - **While an agent holds the working tree, read through `git show <ref>:` and
   never the path.** A `grep` of the tree is a measurement and rots the same way
   a harness does. And **after a fetch, read `origin/<branch>`, not the local

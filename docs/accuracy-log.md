@@ -7,6 +7,109 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-09 (03:0xZ) — #601/#602 verdict, and TWO CONCURRENT RUNS ON TWO REFS DIVERGE BY A TIMESTAMP, NOT BY DATA
+
+### The verdict: clean, one figure moved, and it was not my change
+
+#601 (`workflow_dispatch`, dev) and #602 (`schedule`, main) both ran at
+`PARSER_VERSION` 202 against the same DOL extracts, ninety seconds apart, and
+both ended `success`. Nothing was pre-registered: no bump was pending, so the
+claim was that every coverage figure holds.
+
+It did, with one exception. Against the 2026-10-08 line: `confident` 60,182,
+`match` 43,312, `vesting` 53,115, `vestQuote` 5,281, HIGH **4**, warn 556,
+overshoot 370, `dl` **48**, `pvTopShare` 99.9 — all identical. The only move is
+**`tkExact` 37.76 -> 37.77**, about nine rows of an 87,106-row sample whose size
+did not change.
+
+**And the attribution matters more than the figure.** My instinct was to suspect
+the display ship that ran the same hour — but **#601's `head_sha` is
+`4f6e29d1`, the commit BEFORE it**, so that store was produced by code which
+does not contain the change. `tkExact` also goes through app.js's own lookup
+(`audit-data.mjs:774`) and not through `match-sec-tickers.mjs`, so the F-class
+matcher fix cannot reach it either. The move is in the data. *Read the run's own
+`head_sha` before attributing a metric move to the code you just shipped.*
+
+Completeness, re-derived rather than read: pv 202 covers **68,998 of 69,046
+acks (99.93%)** with a 48-ack tail at pv 196/192/197. Error codes `no-section`
+7,392 and `download` 48, **zero `analyze`** — the v118 null-deref class remains
+fully gone. `audit-dominant-row` **0** non-fund-shaped dominant rows.
+`audit-generic-names` 252 plans / 554 rows / $130.6B, above its 230 escalation
+threshold, which this record already carries as STANDING rather than absent.
+
+### The finding: "MAIN IS AHEAD" is not always a reason to rebase, and never a reason to force-mirror blind
+
+Both runs committed, so main and the dev branch each carried one data commit the
+other lacked, and the session hook raised the recorded hazard: *"Rebase it in
+BEFORE any mirror"* — a rule written for the case where main's scheduled run
+carried **fresher filings**, where a mirror would discard them.
+
+**These two commits were CONCURRENT, not successive, and that is a different
+situation with a different answer.** Eight files differed. A textual diff is
+useless here (every store is one line), and "they differ" is not a reason to
+discard either side, so the stores were diffed STRUCTURALLY:
+
+- `lineups-status.json`: 69,046 acks on both sides, **0 only-on-main, 0
+  only-on-branch, 0 present-in-both-but-different**
+- `plans-all.json`: 112,652 rows both, identical `fields`, **0 / 0 / 0**
+- the other six: **identical once the `generated` stamp is stripped**, and
+  `generated` is the only differing top-level key in each
+- `docs/coverage-history.jsonl` is **not in the differing set at all** — 410
+  lines on both sides with the same final line, so no trail entry was at risk
+
+So the entire divergence was a timestamp. `mirror-gate` replayed on the pair
+(`MIRROR_GATE_MAIN_REF` + `MIRROR_GATE_BRANCH_REF`) agreed: **+0 gained, -0 lost
+by ack; 0 plans / 0 participants stop being served.**
+
+***The right move was therefore to ADOPT and CONVERGE, not to mirror.*** A
+force-mirror would have replaced one equivalent commit with another, discarding
+`5e475c77` for no reader-facing gain and spending a force-push on main to do it.
+Instead the branch was reset to `origin/main` and force-pushed, which is lossless
+precisely because the duplicate was proved to be one: all three refs now read
+`5e475c77` and both `--not` comparisons are empty.
+
+**The rule: when main is ahead, ask whether its commit is SUCCESSIVE or
+CONCURRENT before choosing.** A successive run holds filings the branch has
+never seen and must be rebased in. A concurrent run at the same `pv` against the
+same extracts holds the same store, and a structural diff settles which it is in
+one script. *`--force` on the git check and a rebase are both wrong answers when
+the two commits are the same data twice.*
+
+### And the gate's in-flight guard stood down correctly, which I nearly misread
+
+The earlier mirror this cycle landed while #602 was still `in_progress` on main,
+and `mirror.sh` did not refuse. That looked like the guard failing, since this
+record carries *"a run in flight on main is still a reason not to MIRROR"* and
+*"mirror.sh now refuses on exactly that"* after #556.
+
+Reading the guard rather than the rule: it fires when the mirror **changes
+data-producing code** AND a run is in flight. Checked as a diff across exactly
+the six path-filter files (`build-data.mjs`, `fetch-4i.mjs`, `lib-4i.mjs`,
+`merge-4i.mjs`, `.kick`, the workflow) between what #602 checked out and what the
+mirror put on main: **empty**. So #602's data was not stale for that code and the
+stand-down was correct by construction, not lucky. *A guard that does not fire is
+a premise to check, not a failure to report* — and the check is a diff, not a
+reading of the comment.
+
+### Deployment verified
+
+`pages build and deployment` #932 on main's HEAD `5e475c77`: **success**. The
+ship read out of the mirrored tree with a positive control, per the standing rule
+that the live site is unreachable from this sandbox: `captionFiledType` present in
+`origin/main:scripts/lib-disclose.mjs`, Verizon's page carrying four of the new
+descriptors including the `U. S. Government Securities` row the space-defect
+spared, **54 pages with the new phrase and 136 still carrying the nameless
+phrase** — the second figure is what proves the change was targeted rather than
+broad.
+
+### Prevention
+
+- The structural store-diff is the instrument for any "main is ahead" that is not
+  obviously a successive run; it took one script and replaced a force-push with a
+  reset.
+- Attribute a moved coverage figure by the producing run's `head_sha` and by
+  which function computes the metric, before suspecting the hour's own ship.
+
 ## 2026-10-09 (02:3xZ) — the 02:07 draw: three sized findings, two of them refusals, and an oracle this file prescribes is shown to be insufficient
 
 Participant-weighted draw from PUBLISHED lineups, `scripts/draw-published.mjs 3
