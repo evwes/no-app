@@ -16,7 +16,7 @@
  *   4. a negative control per condition
  */
 import { readFileSync } from "node:fs";
-import { hasNoFundIdentity, cleanFiledName, isLabelOnlyName, isSentenceRow, isNonIssuerCell, isNamelessFundRow, coverageBand, trustShareBound, isScheduleHCaption } from "./lib-disclose.mjs";
+import { hasNoFundIdentity, cleanFiledName, isLabelOnlyName, isSentenceRow, isNonIssuerCell, isNamelessFundRow, coverageBand, trustShareBound, isScheduleHCaption, captionFiledType } from "./lib-disclose.mjs";
 import { isGenericTypeName } from "./lib-4i.mjs";
 
 const fails = [];
@@ -599,6 +599,96 @@ for (const [n, why] of CAP_QUALIFY.slice(0, 6)) {
   console.log(`  drop the TYPE gate: all ${c} typed Schedule H captions would be qualified, $3.5B at Verizon alone (control fires)`);
 }
 
+/* THE CAPTION'S TYPE CELL, ON THE SURFACE THAT HAS NO TYPE COLUMN — 2026-10-09.
+ *
+ * The block above asserts that a TYPED caption is NOT qualified as nameless,
+ * and that is right for the report, where a Type column describes the row. The
+ * crawlable pages emit `<th>Fund</th><th>Value</th>` and have no such column, so
+ * the same row prints there as a bare named holding: 70 rows / 54 pages /
+ * 801,791 participants / $26,711,989,748. `captionFiledType` returns the cell
+ * the generator must print instead, and the two assertions here are the SAME ROW
+ * reaching OPPOSITE verdicts on the two surfaces, which is the point.
+ *
+ * The remedy is the filed TYPE and not the nameless label because the class is
+ * two populations: a genuine category table (Verizon's trust files the Schedule
+ * H 1c captions value-for-value; Hallmark's table header reads ASSET CATEGORY)
+ * and a REAL holding whose name our parse truncated (Altria's `Shares` is
+ * employer stock whose identity column we dropped; Williams College's
+ * `Real Estate` is `TIAA | Real Estate` under `Pooled Separate Accounts`). For
+ * the second population "the filing names no specific fund" is simply false. */
+const CAP_TYPE_FIRE = [
+  [{ type: "Cash / short-term" }, "INTEREST-BEARING CASH (CASH & CASH EQUIVALENT)", false, "Cash / short-term",
+    "Verizon's trust, $1,767,488,802 served to 4 member plans / 153,901 ppl — the row CAP_TYPED pins as must-NOT-qualify"],
+  [{ type: "Company stock" }, "Shares", false, "Company stock",
+    "Altria, $1,456,691,207 at 26.6% of the menu; the nameless label would be FALSE here"],
+  [{ type: "Pooled separate account" }, "Real Estate", false, "Pooled separate account",
+    "Williams College — the TIAA Real Estate Account, a real participant option; 14 rows across TIAA 403(b) plans"],
+  [{ type: "Government securities" }, "U.S. GOVERNMENT SECURITIES", false, "Government securities",
+    "Hallmark 48.6% of its menu / Johnson & Johnson / Exelon"],
+  [{ type: "Corporate debt" }, "CORPORATE DEBT INSTRUMENTS - ALL OTHER", false, "Corporate debt",
+    "Verizon again, $1,060,409,593 — Schedule H line 1c(3)(B) filed as a menu row"],
+  [{ type: "Stable value / GIC" }, "Bonds: Corporate", false, "Stable value / GIC",
+    "Equitable Financial Life — the type is printed VERBATIM, so an acronym keeps its capitals"],
+];
+const CAP_TYPE_KEEP = [
+  [{ type: "" }, "CORPORATE STOCK - COMMON", false,
+    "NO TYPE CELL is the only protection — `isNamelessFundRow` already qualifies this row on both surfaces, and two descriptors is the same phrase twice"],
+  [{ type: "Collective trust" }, "Common collective trust", true,
+    "THE ISSUER is the only protection — Southern District's $720,038,195 row, issuer `UBC Russell 3000 Index Trust`. 18 rows / 16 pages / 108,165 ppl blocked this way and all 18 issuers were read"],
+  [{ type: "Mutual fund" }, "Vanguard 500 Index Fund Admiral Shares", false,
+    "THE CAPTION TEST is the only protection: a named fund carries a type too"],
+  [{ type: "Cash / short-term" }, "Fidelity Government", false,
+    "likewise — the caption predicate's own single-token case, 2,123 rows / 3,420,361 ppl"],
+  [{ type: "Mutual fund" }, "Real Estate Securities Fund", false,
+    "likewise, =DFREX, 433 rows / 581,803 ppl: `fund` is what keeps it named"],
+];
+for (const [f, n, iss, want, why] of CAP_TYPE_FIRE)
+  ok(captionFiledType(f, n, iss) === want,
+    `CAPTION TYPE: ${JSON.stringify(n)} typed ${JSON.stringify(f.type)} should print ${JSON.stringify(want)} (${why})`);
+for (const [f, n, iss, why] of CAP_TYPE_KEEP)
+  ok(captionFiledType(f, n, iss) === "",
+    `CAPTION TYPE: ${JSON.stringify(n)} typed ${JSON.stringify(f.type)} iss=${iss} must print NOTHING (${why})`);
+/* and the two surfaces must reach OPPOSITE verdicts on the same row — asserted,
+ * because "the report is already right" is the whole basis for changing only one
+ * of them. */
+for (const [f, n, , , why] of CAP_TYPE_FIRE) {
+  ok(isNamelessFundRow(f, n, () => false) === false,
+    `CAPTION TYPE: the REPORT must leave ${JSON.stringify(n)} unqualified — its type column is the protection (${why})`);
+}
+/* NEGATIVE CONTROL, ONE PER CONDITION, each a full restatement with exactly one
+ * condition removed, each required to CONVICT a case the shipped function keeps
+ * — and each case is the ONLY one its condition protects. */
+{
+  /* NO `noType` VARIANT, and that omission is the measurement rather than an
+   * oversight: with the type condition removed the function still cannot print
+   * a type the row does not have, so a neutered copy returns "" either way and
+   * the control could only ever print "breaks NOTHING". What that condition
+   * protects is DOUBLE labelling, so its control is the disjointness check
+   * below. *An arm whose negative control cannot fail is decorative.* */
+  const noIss = (f, n) => { const t = String((f && f.type) || "").trim(); return t && isScheduleHCaption(String(n)) ? t : ""; };
+  const noCaption = (f, n, iss) => { const t = String((f && f.type) || "").trim(); return t && !iss ? t : ""; };
+  ok(noIss({ type: "Collective trust" }, "Common collective trust", true) === "Collective trust",
+    "CONTROL IS DECORATIVE: dropping the issuer condition does not convict Southern District's issuer-named row");
+  ok(noCaption({ type: "Mutual fund" }, "Vanguard 500 Index Fund Admiral Shares", false) === "Mutual fund",
+    "CONTROL IS DECORATIVE: dropping the caption test does not convict a real fund, so the test proves nothing");
+  ok(noCaption({ type: "Cash / short-term" }, "Fidelity Government", false) === "Cash / short-term",
+    "CONTROL IS DECORATIVE: dropping the caption test does not convict `Fidelity Government`");
+  /* THE TYPE CONDITION'S control has to be asked the other way round: with it
+   * removed the function cannot print a type it does not have, so what it
+   * protects is not a FALSE string but the DOUBLE one — the untyped caption is
+   * already labelled "the filing names no specific fund" by the arm above, and
+   * the only honest control is that the two populations are disjoint. */
+  let both = 0;
+  for (const [f, n] of [[{ type: "" }, "CORPORATE STOCK - COMMON"], [{ type: "" }, "CASH"],
+                        [{ type: "" }, "Real Estate"], [{ type: "" }, "INTEREST IN CCT"]])
+    if (isNamelessFundRow(f, n, () => false) && captionFiledType(f, n, false)) both++;
+  ok(both === 0, `CONTROL: ${both} untyped captions would carry BOTH the nameless phrase and an asset-type phrase — the two must be disjoint`);
+  console.log("\nNEGATIVE CONTROL, one per caption-type condition:");
+  console.log("  drop the issuer condition: Southern District's `UBC Russell 3000 Index Trust · Common Collective Trust` grows a redundant descriptor (control fires)");
+  console.log("  drop the caption test: `Vanguard 500 Index Fund Admiral Shares` and `Fidelity Government` grow one too, on tens of thousands of rows (control fires)");
+  console.log("  the type condition is DISJOINTNESS, not a false string: 0 of 4 untyped captions carry both phrases (control fires)");
+}
+
 if (fails.length) { for (const f of fails) console.error("FAIL " + f); process.exit(1); }
 console.log(`\nno-identity: ${KEEP.length} real names kept, ${QUALIFY.length} qualified, `
   + `${BOTH_FORMS.length * 2} surface-agreement, idempotence over ${checked.toLocaleString()} names, `
@@ -607,4 +697,5 @@ console.log(`\nno-identity: ${KEEP.length} real names kept, ${QUALIFY.length} qu
   + `sentence ${SENT_QUALIFY.length} qualified / ${SENT_KEEP.length} kept / ${SENT_STOCK.length * 2} employer-stock, `
   + `non-issuer ${ISS_SUPPRESS.length} suppressed / ${ISS_KEEP.length} kept, 3 controls fire, `
   + `trust-bound ${TS_FIRE.length} fire / ${TS_KEEP.length} kept / 8 exclusivity, `
-  + `caption ${CAP_QUALIFY.length} qualified / ${CAP_KEEP.length} kept / ${CAP_TYPED.length * 2} type-gate / 4 row-gate / ${CAP_QUALIFY.slice(0, 6).length} surface-agreement / 3 controls fire — 0 failures`);
+  + `caption ${CAP_QUALIFY.length} qualified / ${CAP_KEEP.length} kept / ${CAP_TYPED.length * 2} type-gate / 4 row-gate / ${CAP_QUALIFY.slice(0, 6).length} surface-agreement / 3 controls fire, `
+  + `caption-type ${CAP_TYPE_FIRE.length} print / ${CAP_TYPE_KEEP.length} silent / ${CAP_TYPE_FIRE.length} surface-opposite / 3 controls fire — 0 failures`);

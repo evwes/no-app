@@ -1061,10 +1061,37 @@ published cells:
   DOUBLE-LABEL a row because the loan label is appended by a different arm on
   the same cell. **DO NOT CARRY the 300 rows / 1,175,906 ppl as shippable:** 23
   of it shipped and the rest is those two exclusions.
-  Also open and deliberately not split: the crawlable pages have no type column,
-  so the 1,294 TYPED captions print there unqualified (Hallmark's
-  `U.S. Government Securities $312,377,367`). Two copies of a rule is how two
-  surfaces drift. `docs/accuracy-log.md` 2026-10-04 (16:0xZ) and (16:5xZ).
+  **THE TYPED-CAPTION RESIDUE ON THE CRAWLABLE PAGES SHIPPED 2026-10-09 — 74
+  rows / 54 pages / 801,791 ppl / $37,775,479,800, and the rule was NOT split:**
+  `captionFiledType` is one shared predicate whose WORDING lives at the one call
+  site that needs a sentence where the report has a column
+  (`… — asset type as filed: Cash / short-term`). **The remedy is the filed TYPE
+  and NOT the nameless label, and only the FILINGS could say so:** the class is
+  two populations — a genuine category table (Verizon's trust files the Schedule
+  H `1c` captions value-for-value; Hallmark's table header reads
+  `ASSET CATEGORY`) and a REAL holding whose name we truncated (Altria's
+  `Shares` is $1,456,691,207 of employer stock whose identity column we dropped;
+  Williams College's `Real Estate` is `TIAA | Real Estate` under
+  `Pooled Separate Accounts`, a real option), so *"names no specific fund"* is
+  FALSE for the second. **DO NOT CARRY 1,294, nor the 88 rows / 70 pages /
+  909,956 ppl this condition reads:** 18 rows / 16 pages / 108,165 ppl are
+  blocked by the issuer gate and all 18 issuers were read — every one names a
+  fund, an employer or an insurer, which is the owner-gated
+  caption-with-an-issuer sub-family. **Targeting control: 3,158 UNCHANGED pages
+  whose twelve shown rows are ALL typed** (37,896 rows that could have grown a
+  parenthetical and did not), Walmart's read byte-identical. **And the PAGE
+  found a second defect no screen could: `CAPTION_WORD` spelled the
+  abbreviation as one token, so Verizon's `U. S. Government Securities`
+  ($2,765,872,513 × 4 member plans) escaped on a SPACE** — priced as a superset
+  over all 1,730,931 stored rows at **exactly ONE name moved**, nothing untyped,
+  so the report's verdict could not change. *One of two spellings of a caption
+  family is worse than neither.* **STILL OPEN from it:** the `103-12 investment
+  entities` caption, **10 rows / 6 pages** (Verizon $164,190,569), which needs
+  the vocabulary to accept a NUMERIC token — a different risk class, since
+  `hasNoFundIdentity`'s `\d{1,3}` filler is what cut `500 Index Fund` off its
+  ticker; and Altria's page publishing `Altria Group, Inc | $25,263,461`, which
+  is the SHARE COUNT, a parser defect and unsized.
+  `docs/accuracy-log.md` 2026-10-04 (16:0xZ), (16:5xZ) and 2026-10-09.
 - **Crawlable pages no run can ever repair — RE-SIZED 2026-10-02 and NEARLY
   DOUBLED: 62 → 118 pages / 169,447 → 324,028 ppl**, plus **1 serving a plan no
   longer in the universe at all.** `p/` holds **5,118** committed files against

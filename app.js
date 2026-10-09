@@ -1736,7 +1736,7 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
     return NON_ISSUER_CELL.test(String(iss == null ? "" : iss).trim());
   }
 
-  const CAPTION_WORD = "(?:interest|interests|bearing|cash|equivalent|equivalents|u\\.?s\\.?a?|united|states"
+  const CAPTION_WORD = "(?:interest|interests|bearing|cash|equivalent|equivalents|u\\.?\\s*s\\.?a?|united|states"
     + "|government|governmental|securities|security|corporate|corporation|debt|instrument|instruments"
     + "|preferred|common|stock|stocks|share|shares|partnership|partnerships|joint|venture|ventures"
     + "|real|estate|properties|property|buildings|municipal|bond|bonds|note|notes|collective|trust|trusts"

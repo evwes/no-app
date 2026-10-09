@@ -10,7 +10,7 @@
  * EIN-PN (stable forever, no orphans when a sponsor renames). */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { matchQuoteOk, vestingQuoteOk, quoteTrim } from "./lib-quote.mjs";
-import { coverageBand, filedUnit, cleanFiledName, isParticipantLoanRow, isNamelessFundRow, hasNoFundIdentity, isLoanDescriptionRow, isLoanAnswerRow, isLoanMaturityRow, isLoanVocabularyRow, isDirectionCaptionRow, isOfficeListRow, isPageBreakCaptionRow, isLabelOnlyName, isSentenceRow, isNonIssuerCell, trustShareBound, trustScheduleDMenu } from "./lib-disclose.mjs";
+import { coverageBand, filedUnit, cleanFiledName, isParticipantLoanRow, isNamelessFundRow, hasNoFundIdentity, isLoanDescriptionRow, isLoanAnswerRow, isLoanMaturityRow, isLoanVocabularyRow, isDirectionCaptionRow, isOfficeListRow, isPageBreakCaptionRow, isLabelOnlyName, isSentenceRow, isNonIssuerCell, captionFiledType, trustShareBound, trustScheduleDMenu } from "./lib-disclose.mjs";
 import { isGenericTypeName } from "./lib-4i.mjs";
 
 const BASE = "https://evwes.github.io/no-app"; // becomes the custom domain when DNS lands
@@ -292,7 +292,31 @@ for (const r of d.plans.slice(0, TOP_N)) {
       : (iss && !isNonIssuerCell(iss) ? titleCase(iss) + " · " : "") + titleCase(nm)
       + (isParticipantLoanRow(nm) || isLoanAnswerRow(nm) || isLoanMaturityRow(nm) || isLoanVocabularyRow(nm) ? " — participant loans, not a menu choice" : "")
       + (nameless ? " — the filing names no specific fund" : "");
-    return `<tr><td>${esc(label)}</td><td class="num">${usd(f.value || 0)}</td></tr>`;
+    /* A SCHEDULE H ASSET-CLASS CAPTION, WHOSE ONLY PROTECTION ON THE REPORT IS A
+     * COLUMN THIS PAGE DOES NOT HAVE — 2026-10-09. 70 rows / 54 pages / 801,791
+     * participants / $26,711,989,748. Verizon's `INTEREST-BEARING CASH (CASH &
+     * CASH EQUIVALENT)` is the row `isNamelessFundRow`'s own control pins as
+     * must-NOT-fire BECAUSE it is typed `Cash / short-term`; here the table is
+     * `<th>Fund</th><th>Value</th>` and that cell is nowhere, so the page
+     * asserts the caption is a fund. Same reasoning and same remedy as the loan
+     * description twenty lines above: the row has to say what it IS in the only
+     * cell it has. lib-disclose.mjs carries the measurement and why the label is
+     * the filed TYPE rather than "names no specific fund" — Altria's `Shares` is
+     * employer stock whose issuer we dropped and Williams College's `Real Estate`
+     * is the TIAA Real Estate Account, so for those the nameless claim is false.
+     *
+     * LAST IN THE CHAIN, like app.js's `shownType` fallback: a row already
+     * carrying the loan or nameless phrase has been described, and a second
+     * descriptor is the same phrase twice. Measured: 0 of the 70 overlap either. */
+    /* THE ISSUER GATE IS `issGeneric`, NOT "an issuer is printed" — the same
+     * disjunct the `nameless` line above uses, because the question is whether
+     * the row already NAMES something and an issuer reading `Investments
+     * measured at NAV` does not. The two spellings agree on all 88 rows of the
+     * live population (0 carry a present-but-generic issuer), so this is
+     * consistency with the sibling arm rather than a measured difference. */
+    const capType = nameless || descLoan ? "" : captionFiledType(f, nm, !!(iss && !issGeneric(iss)));
+    const labelOut = label + (capType ? ` — asset type as filed: ${capType}` : "");
+    return `<tr><td>${esc(labelOut)}</td><td class="num">${usd(f.value || 0)}</td></tr>`;
   }).join("") : "";
   const provRows = fee && fee.p ? fee.p.slice(0, 6).map((p) =>
     `<tr><td>${esc(titleCase(p.n))}</td><td>${esc(decodeServices(p.c).slice(0, 3).join(", ") || "—")}</td><td class="num">${usd(p.d || 0)}</td></tr>`).join("") : "";

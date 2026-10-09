@@ -2393,7 +2393,29 @@ for (const [s, why] of [
  * `Corporate Stock : Common` is 84.2% of one plan's menu. Reading the type cell
  * from `f` inside the shared function is also why the static generator needs no
  * change at all. docs/accuracy-log.md 2026-10-04 (16:5xZ). */
-const CAPTION_WORD = "(?:interest|interests|bearing|cash|equivalent|equivalents|u\\.?s\\.?a?|united|states"
+/* THE ABBREVIATION WITH A SPACE INSIDE IT, added 2026-10-09 and found by
+ * READING a page this ship had just changed rather than by a screen. Verizon's
+ * trust files `U. S. GOVERNMENT SECURITIES` — a space after the first period —
+ * two rows above `INTEREST-BEARING CASH` and `CORPORATE DEBT INSTRUMENTS`,
+ * which the caption arm reaches; the token was spelled `u\.?s\.?a?`, so the
+ * space leaves a bare `S` that no alternative matches and the predicate missed
+ * it. $2,765,872,513 served to FOUR member plans / 153,901 participants, from
+ * the same twelve rows as two captions already labelled: *one of two spellings
+ * of a caption family is worse than neither*, the National Rural Electric
+ * lesson, met on a space instead of a plural.
+ *
+ * PRICED AS A SUPERSET BY CONSTRUCTION — adding an alternative can only make
+ * the regex match MORE — over all 1,730,931 stored lineup rows: ONE name moves,
+ * and it is that one. Nothing UNTYPED moves, so the report's nameless label
+ * cannot change; the only consumer of the new verdict is the crawlable pages'
+ * asset-type descriptor. The ten other spaced-abbreviation names in the store
+ * are already blocked by the whole-string requirement and stay blocked —
+ * `U S TREASURY NOTE` (`treasury` is absent from this vocabulary while `note`
+ * is in it, so that one token is its ONLY protection), `U S TREASURY REPO`,
+ * `Cohen & Steers U S Realty CIT Class A`, `iShares U. S. Aggregate Bond Index
+ * K`. *A count keyed on a character measures the character*: a screen for the
+ * spaced form alone reads 14 rows / $12.5B and 10 of them are real securities. */
+const CAPTION_WORD = "(?:interest|interests|bearing|cash|equivalent|equivalents|u\\.?\\s*s\\.?a?|united|states"
   + "|government|governmental|securities|security|corporate|corporation|debt|instrument|instruments"
   + "|preferred|common|stock|stocks|share|shares|partnership|partnerships|joint|venture|ventures"
   + "|real|estate|properties|property|buildings|municipal|bond|bonds|note|notes|collective|trust|trusts"
@@ -2469,6 +2491,7 @@ for (const [s, why] of [
   ["CORP. DEBT INSTR. - ALL OTHER", "Johnson & Johnson — needs `corp` AND `instr`, which is why a token-alone test is the wrong test"],
   ["CORP DEBT INSTRUMENTS; ALL OTHER", "PepsiCo — a semicolon is a separator"],
   ["Real Estate Secs", "Sterling Computers — the `sec` abbreviation"],
+  ["U. S. GOVERNMENT SECURITIES", "Verizon's trust, $2,765,872,513 on 4 member plans / 153,901 ppl — the SPACED abbreviation, sitting in the same twelve rows as two captions already reached"],
 ]) if (!isScheduleHCaption(s)) {
   throw new Error(`lib-disclose: isScheduleHCaption no longer reaches ${JSON.stringify(s)} (${why}) — the arm is inert, fix it rather than shipping a quiet guard`);
 }
@@ -2497,6 +2520,8 @@ for (const [s, why] of [
   ["CIT Group Inc", "a real company, and `cit` is deliberately NOT in the vocabulary"],
   ["Voya Stable Value Fund 20 CIT", "a real collective trust"],
   ["Sec Lending Collateral Fund", "a securities-lending vehicle, not a caption"],
+  ["U S TREASURY NOTE", "a REAL security wearing the spaced abbreviation — `note` IS in this vocabulary, so the absence of `treasury` is the ONLY protection"],
+  ["Cohen & Steers U S Realty CIT Class A", "likewise, a real collective trust"],
 ]) if (isScheduleHCaption(s)) {
   throw new Error(`lib-disclose: isScheduleHCaption would qualify ${JSON.stringify(s)} (${why}) — it names something, fix the predicate rather than the control`);
 }
@@ -2532,6 +2557,99 @@ for (const [f, name, want, why] of [
   [{ type: "Brokerage window" }, "CASH", false, "a brokerage window is a real choice"],
 ]) if (isNamelessFundRow(f, name, () => false) !== want) {
   throw new Error(`lib-disclose: isNamelessFundRow(${JSON.stringify(f.type)}, ${JSON.stringify(name)}) should be ${want} (${why})`);
+}
+
+/* THE TYPE CELL IS THE ONLY PROTECTION, AND ONE SURFACE DOES NOT HAVE IT —
+ * 2026-10-09.
+ *
+ * `isNamelessFundRow`'s caption arm is gated on `!type.trim()`, and its own
+ * import-time control above pins Verizon's `INTEREST-BEARING CASH (CASH & CASH
+ * EQUIVALENT)` typed `Cash / short-term` as a must-NOT-fire case: on the REPORT
+ * a Type column tells the reader the row is a category, so nothing false is
+ * published. That gate is a property of ONE SURFACE and the comment above says
+ * so. The CRAWLABLE PAGES have two columns — `build-seo-pages.mjs` emits
+ * `<th>Fund</th><th>Value</th>` — so the cell that protects the row on the
+ * report does not exist there, and the page prints the caption under a header
+ * saying "Fund".
+ *
+ * 70 rows / 54 pages / 801,791 participants / $26,711,989,748 on the v202
+ * store, measured through the GENERATOR's own selection (stored order,
+ * `slice(0, 5000)`, the plan's own confident entry else the trust's, first 12
+ * rows) and excluding every row its existing arms already label.
+ *
+ * THE REMEDY IS A TRANSCRIPTION, NOT THE NAMELESS LABEL, and reading the
+ * filings is what decided that — the class is TWO populations and only one of
+ * them names nothing:
+ *
+ *   A GENUINE ASSET-CATEGORY TABLE. Verizon's trust files the Schedule H `1c`
+ *     captions as its 4i schedule, value for value ($1,767,488,802 IS line
+ *     1c(1)); Hallmark's table header is literally `ASSET CATEGORY`; Exelon and
+ *     Johnson & Johnson the same shape.
+ *   A REAL HOLDING WHOSE NAME WE TRUNCATED. Altria's `Shares` is the
+ *     description column — the filing names `Altria Group, Inc` in the identity
+ *     column our parse dropped, on $1,456,691,207 of employer stock. Williams
+ *     College's `Real Estate` is `TIAA | Real Estate` under the heading `Pooled
+ *     Separate Accounts`: the TIAA Real Estate Account, a real participant
+ *     option. Honda's `Shares of interest` and Sealed Air's `Shares of` are a
+ *     shares-count line and a cut-off `Sealed Air common stock`.
+ *
+ * So "the filing names no specific fund" is FALSE for Williams and misleading
+ * for Altria — *a row that names nothing and a row whose name we cut in half
+ * are two classes, and one label cannot serve both*, which this file already
+ * records from the `Investment in` pin. The filed TYPE is true of both, is a
+ * filed fact, and is exactly what the report's own Type column prints for these
+ * rows (`shownType` falls through to `filedType`, app.js:3967). The precedent is
+ * twenty lines from the call site: the loan-description arm says the row has to
+ * say what it IS in the only cell it has.
+ *
+ * NOT EXTENDED TO EVERY TYPED ROW, deliberately. On `Vanguard 500 Index Fund
+ * Admiral Shares` the type adds nothing the name does not already give and
+ * would put a parenthetical on tens of thousands of rows; on a caption it is the
+ * only thing standing between the row and reading as a fund.
+ *
+ * THE ISSUER ARGUMENT IS THE CALLER'S, and it is the same gate the nameless arm
+ * uses at the same call site, for the same reason: `issuer · name` already names
+ * the holding. It BLOCKS 18 rows / 16 pages / 108,165 participants, and all 18
+ * issuers were read — `UBC Russell 3000 Index Trust`, `Longview Core Bond
+ * Fund`, `Dodge & Cox Fund`, `Harbor Capital Appreciation Investment`,
+ * `Fidelity Select Technology`, `Skyworks Solutions, Inc.`, `Glacier Bancorp`,
+ * `Teachers Insurance and Annuity Association (TIAA)` — every one of them names
+ * a fund, an employer or an insurer. That is the owner-gated caption-with-an-
+ * issuer sub-family this file already names, left alone.
+ *
+ * Returns the type string to print, or "" when the row must be left alone. The
+ * WORDING lives at the call site, because only that surface needs a sentence
+ * where the report has a column. */
+export function captionFiledType(f, cleanedName, issuerNames) {
+  const type = String((f && f.type) || "").trim();
+  if (!type) return "";
+  if (issuerNames) return "";
+  if (!isScheduleHCaption(String(cleanedName == null ? "" : cleanedName))) return "";
+  return type;
+}
+/* Asserted at import, both directions, every case drawn FROM the measured
+ * population and every one a SINGLE protection — a case protected twice proves
+ * neither, which this file has paid for. */
+for (const [f, name, iss, want, why] of [
+  [{ type: "Cash / short-term" }, "INTEREST-BEARING CASH (CASH & CASH EQUIVALENT)", false, "Cash / short-term",
+    "Verizon's trust, $1,767,488,802 on 4 member plans / 153,901 ppl — the SAME row `isNamelessFundRow` must NOT fire on, and the opposite verdict here is the whole point"],
+  [{ type: "Company stock" }, "Shares", false, "Company stock",
+    "Altria, $1,456,691,207 at 26.6% of the menu — the filing names `Altria Group, Inc` in a column we dropped, so the nameless label would be FALSE"],
+  [{ type: "Pooled separate account" }, "Real Estate", false, "Pooled separate account",
+    "Williams College — `TIAA | Real Estate` under `Pooled Separate Accounts`, a real option; 14 rows across TIAA 403(b) plans"],
+  [{ type: "Government securities" }, "U.S. GOVERNMENT SECURITIES", false, "Government securities",
+    "Hallmark, 48.6% of its menu, from a table whose own header reads ASSET CATEGORY"],
+  [{ type: "" }, "CORPORATE STOCK - COMMON", false, "",
+    "NO TYPE CELL is the only protection: `isNamelessFundRow` already qualifies this row on both surfaces, and a second descriptor would be the same phrase twice"],
+  [{ type: "Collective trust" }, "Common collective trust", true, "",
+    "THE ISSUER is the only protection — Southern District's $720,038,195 row, whose issuer cell reads `UBC Russell 3000 Index Trust`"],
+  [{ type: "Mutual fund" }, "Vanguard 500 Index Fund Admiral Shares", false, "",
+    "THE CAPTION TEST is the only protection: a named fund is typed too, and 50,000 rows must not grow a parenthetical"],
+  [{ type: "Cash / short-term" }, "Fidelity Government", false, "",
+    "likewise, and this is the caption predicate's own single-token case — 2,123 rows / 3,420,361 ppl"],
+]) {
+  const got = captionFiledType(f, name, iss);
+  if (got !== want) throw new Error(`lib-disclose: captionFiledType(${JSON.stringify(f.type)}, ${JSON.stringify(name)}, iss=${iss}) returned ${JSON.stringify(got)}, want ${JSON.stringify(want)} (${why})`);
 }
 
 /* AN INSURANCE ANNUITY CONTRACT TYPED `Mutual fund` — canonical copy, 2026-09-29.

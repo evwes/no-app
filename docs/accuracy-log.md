@@ -47833,3 +47833,173 @@ the filing says. Worth a queue note rather than a fix: the wind-down
 explanation's trigger is exactly $0, which this plan meets, so it should fire
 here; what the queue already records as broken is the plan that collapsed to
 $2,094 and escapes the gate. Nothing to change from this draw.
+
+---
+
+## 2026-10-09 (02:xxZ) — A SCHEDULE H ASSET-CLASS CAPTION PUBLISHED AS A NAMED FUND ON THE SURFACE THAT HAS NO TYPE COLUMN: 74 rows / 54 crawlable pages / 801,791 participants / $37,775,479,800
+
+**WRONG.** `isNamelessFundRow`'s caption arm is gated on `!type.trim()`, and its
+own import-time control pins Verizon's `INTEREST-BEARING CASH (CASH & CASH
+EQUIVALENT)` typed `Cash / short-term` as a **must-NOT-fire** case. That gate is
+right on the REPORT, whose lineup table is
+`Holding | Type | Est. ER | Value | % of holdings` — the reader is shown a
+category labelled as one, and `shownType` falls through to `filedType`
+(`app.js:3967`) to do it. **The crawlable pages emit
+`<tr><th>Fund</th><th class="num">Value</th></tr>`** (`build-seo-pages.mjs:364`):
+two columns, and the header literally says "Fund". So the cell that protects the
+row on the report does not exist on the static surface, and the page asserts the
+caption IS a fund. `lib-disclose.mjs` named this residue at 1,294 typed captions
+with one example (Hallmark's `U.S. Government Securities $312,377,367`) and no
+number, and refused to split the predicate per surface — correctly: *two copies
+of a rule is how two surfaces drift.*
+
+**SIZED THROUGH THE GENERATOR'S OWN SELECTION, NOT A STORE SCREEN** — stored
+order, `d.plans.slice(0, TOP_N=5000)`, the plan's own confident entry else the
+trust's (`build-seo-pages.mjs:107-111`), only the first 12 rows
+(`build-seo-pages.mjs:117`), minus every row the generator's existing
+`nameless`/loan arms already label. **88 rows / 70 pages / 909,956 ppl /
+$28,131,599,117**, with two controls from the same pass: **44** typed captions
+are already qualified by another arm and **0** are loan-labelled.
+
+**THE ISSUER GATE SPLITS IT, AND THE SPLIT IS THE DECISION.** `nameless` fires
+only when `!iss || issGeneric(iss)`, because `issuer · name` already names the
+holding. **70 rows / 54 pages / 801,791 ppl move; 18 rows / 16 pages / 108,165
+ppl are blocked, and all 18 issuers were read** — `UBC Russell 3000 Index
+Trust`, `Longview Core Bond Fund`, `Dodge & Cox Fund`, `Harbor Capital
+Appreciation Investment`, `Fidelity Select Technology`, `Skyworks Solutions,
+Inc.`, `Glacier Bancorp`, `Teachers Insurance and Annuity Association (TIAA)` —
+every one of them names a fund, an employer or an insurer. That is the
+owner-gated caption-with-an-issuer sub-family this record already carries, left
+alone. **So the 88/70/909,956 above is the CONDITION and 70/54/801,791 was the
+reader-facing figure before the widening below.**
+
+**THE REMEDY IS NOT THE NAMELESS LABEL, AND ONLY READING THE FILINGS COULD SAY
+SO.** Six downloaded and read with `pdftotext -layout`, and the class is **two
+populations**:
+
+- **A genuine asset-category table.** Verizon's trust files the Schedule H `1c`
+  captions AS its 4i schedule, value for value — `INTEREST-BEARING CASH … 1c(1)
+  1,767,488,802` is the same figure on both pages of the filing. **Hallmark's
+  table header is literally `ASSET CATEGORY`.** Exelon and Johnson & Johnson the
+  same shape.
+- **A REAL HOLDING WHOSE NAME WE TRUNCATED.** Altria's `Shares` is the
+  *description* column; the filing names `Altria Group, Inc` in the identity
+  column our parse dropped, on **$1,456,691,207** of employer stock. Williams
+  College's `Real Estate` is `TIAA | Real Estate` under the heading
+  `Pooled Separate Accounts` — **the TIAA Real Estate Account, a real
+  participant option.** Honda's `Shares of interest` is a shares-count line
+  under `T. Rowe Price Trust Company | Stable Value Common Trust Fund`; Sealed
+  Air's `Shares of` is a cut-off `Sealed Air common stock`.
+
+For the second population *"the filing names no specific fund"* is **false**.
+***A row that names nothing and a row whose name we cut in half are two classes,
+and one label cannot serve both*** — the same rule the `Investment in` pin
+earned on 2026-10-04, met from the other direction. The filed TYPE is true of
+both, is a filed fact, and is exactly what the report prints for these rows.
+
+**CHANGE.** `captionFiledType(f, cleanedName, issuerNames)` in `lib-disclose.mjs`
+returns the type cell to print, or `""`. The WORDING lives at the generator's
+call site, because only that surface needs a sentence where the report has a
+column: `… — asset type as filed: Cash / short-term`. "as filed" is the page's
+own existing voice (it already says it five times). The precedent is twenty
+lines from the call site — the loan-description arm's comment: *this page has no
+type column, so the report's qualifier cannot be copied across; the row has to
+say what it IS in the only cell it has.*
+
+**LAST IN THE CHAIN, like `shownType`'s fallback**, so a row already carrying
+the loan or nameless phrase is not described twice. Verified on the artifact per
+`<td>`: **231 cells carry the nameless phrase, 74 the asset-type phrase, 0 carry
+both, 0 carry a loan phrase and an asset type.** *A line-level grep answered a
+different question and said 19* — the whole fund table is emitted on ONE line,
+so 19 is pages where both phrases appear on DIFFERENT rows.
+
+**NOT EXTENDED TO EVERY TYPED ROW, deliberately.** On `Vanguard 500 Index Fund
+Admiral Shares` the type adds nothing the name does not give. **The targeting
+control is 3,158 UNCHANGED pages whose twelve shown rows are ALL typed —
+37,896 rows that could have grown a parenthetical and did not**, led by Walmart
+(1,970,230 ppl), Amazon (1,336,478) and Paychex (645,304); Walmart's page was
+read and is byte-identical.
+
+**AND THE PAGE FOUND A SECOND DEFECT THE SCREEN COULD NOT — ONE OF TWO
+SPELLINGS OF THE SAME CAPTION FAMILY.** Reading Verizon's regenerated page,
+`U. S. Government Securities` at **$2,765,872,513** sat two rows above
+`Interest-Bearing Cash` and `Corporate Debt Instruments`, which the arm had just
+reached, and carried nothing: `CAPTION_WORD` spelled the abbreviation
+`u\.?s\.?a?` as ONE token, so a filer who typed a **space** after the first
+period leaves a bare `S` no alternative matches. This is the National Rural
+Electric lesson (*one of two spellings of a caption family is worse than
+neither*) met on a space instead of a plural. **Priced as a SUPERSET BY
+CONSTRUCTION over all 1,730,931 stored lineup rows — adding an alternative can
+only match MORE — and exactly ONE name moves**, that one, typed `Government
+securities`. **Nothing untyped moves, so the REPORT's nameless verdict cannot
+change on any row**; app.js's only consumer of the predicate is the
+`!type.trim()` arm. It reaches Verizon's four member plans / 153,901 ppl and
+adds $11,063,490,052 to the figure. ***A count keyed on a character measures the
+character***: a screen for the spaced form alone reads 14 rows / $12.5B and
+**10 of them are real securities** — `U S TREASURY NOTE`, `U S TREASURY REPO`,
+`Cohen & Steers U S Realty CIT Class A`, `iShares U. S. Aggregate Bond Index K`
+— all of which the whole-string requirement already blocks and still blocks.
+
+**MEASURED, twice and by two instruments that agree to the digit.** The
+store-side screen and a second pass that reads the participant cell and the row
+values **out of the generated HTML** both return **54 pages / 801,791
+participants**, 74 rows / $37,775,479,800 after the widening (70 /
+$26,711,989,748 before it; the difference is $2,765,872,513 × 4 member plans).
+`git diff --stat -- p/` is **54 files, 54 insertions, 54 deletions**, and the
+changed-file set is **IDENTICAL** to the set of files containing the new phrase —
+no collateral change anywhere. Types printed: Company stock 17, Cash /
+short-term 15, Pooled separate account 11, Corporate debt 11, Government
+securities 10, Separate account 5, Mutual fund 2, Collective trust 2, Stable
+value / GIC 1.
+
+**FOUR CHANGED PAGES READ, AND ONE UNCHANGED.** Verizon's page now describes 11
+of its 12 rows (`U. S. Government Securities — asset type as filed: Government
+securities`); Altria's $1.46B row reads `Shares — asset type as filed: Company
+stock`; Hallmark's two; Williams College's `Real Estate — asset type as filed:
+Pooled separate account`, which tells a reader the vehicle is an insurance
+separate account without denying that TIAA named it.
+
+**PREVENTION.** `captionFiledType` carries its own import-time fixtures in
+`lib-disclose.mjs`, and `scripts/no-identity-test.mjs` — which runs in
+`site-test` BEFORE the Playwright install — gains **6 must-print cases, 5
+must-be-silent cases, 6 surface-opposition assertions and 3 negative controls**.
+Every must-be-silent case is a measured SINGLE protection: `{type:""}` +
+`CORPORATE STOCK - COMMON` (the type condition), `Common collective trust` with
+an issuer (the issuer condition), `Vanguard 500 Index Fund Admiral Shares` and
+`Fidelity Government` and `Real Estate Securities Fund` (the caption test). The
+surface-opposition block asserts the REPORT still leaves all six must-print rows
+unqualified, because "the report is already right" is the entire basis for
+changing one surface.
+
+**AND ONE CONTROL WAS DELETED RATHER THAN WRITTEN, which is the reusable part.**
+A `noType` neutered copy was drafted and removed: with the type condition
+removed the function still cannot print a type the row does not have, so the
+copy returns `""` either way and the control could only ever print "breaks
+NOTHING". What that condition protects is **double labelling**, so its control
+is a disjointness check — 0 of 4 untyped captions carry both phrases.
+***A negative control that cannot fail is decorative, and the way to notice is
+to ask what its neutered copy would print.***
+
+**NAMED RESIDUE, measured not guessed.** (1) The Schedule H `103-12 investment
+entities` caption — **10 rows across 6 pages** (`103-12 Investment Entity` ×6,
+`103-12 Investments` ×2, `103-12 Investment Entities`, `103-12 Entities`),
+Verizon's at $164,190,569. Reaching it needs the vocabulary to accept a NUMERIC
+token, a different risk class: `hasNoFundIdentity`'s own `\d{1,3}` filler is
+what cut `500 Index Fund` off its ticker on 2026-10-04, so this is a separate
+measurement and not a token addition. (2) Altria's page publishes
+`Altria Group, Inc | $25,263,461` as a holding — that figure is the **SHARE
+COUNT** (25,263,461.80 shares) from the line below the $1.46B row, a parser
+defect on a different surface from this one and unsized. (3) `Employer Related
+Securities` ($3,871,715,429 at Verizon) is correctly spared: `employer` is a
+priced exclusion in the caption vocabulary and the row names what it is.
+
+**app.js moved by ONE LINE and only through the generator.**
+`node scripts/gen-generic-twin.mjs` propagated the widened regex (the predicate
+is twinned for the report), `node scripts/stamp-assets.mjs` re-derived the stamp
+`00efb1cf -> cc947099`, and `index.html` is committed with it — without that the
+page would keep the cached copy and no reader would see anything. Gates green
+locally: `no-identity-test` (0 failures, 3 new controls fire), `smoke-test`,
+`fund-er-test`, `vesting-quote-test`, `slice-vq --check` (byte-identical),
+`stamp-assets --check`. `map-test` is the known sandbox `ERR_CERT_AUTHORITY_INVALID`
+failure and settles in CI. No `PARSER_VERSION` bump: the parser is untouched and
+nothing is re-parsed.
