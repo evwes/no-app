@@ -2249,9 +2249,40 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   rows, most of which the page already resolves; quoting it as the gain
   over-stated this item by ~3x.* Family gains: Fidelity 1,637 exact / 47,955
   ambiguous, Vanguard 3,020 / 21,146, JPMorgan 798 / 10,702, iShares 1,078 / 47.
-  **Participants were NOT computed** — the bucket sets were built and never
-  printed — so there is no people figure for this item yet and none should be
-  quoted.
+  **PARTICIPANTS COMPUTED 2026-10-09 01:1xZ, and the people figures are what
+  make the comparable half the owner's call rather than mine.** Over the 60,327
+  plans / **100,151,069** participants with a published+served menu — a plan
+  counted ONCE per bucket, never once per row:
+
+  | at least one row on this plan's page would | plans | ppl |
+  |---|---|---|
+  | gain an **ASSERTED** symbol (B) | 7,857 | **9,189,637** |
+  | gain a **COMPARABLE** (C) | 39,178 | **59,327,082** |
+  | remain unresolved (D) | 59,726 | 99,915,818 |
+  | **gain anything** (B or C) | 41,562 | **61,821,621** |
+
+  ***THE BUCKETS OVERLAP AND MUST NEVER BE SUMMED*** — a plan appears in every
+  bucket its menu carries a row of, which is why D is 99.8% of participants:
+  **after the wiring, nearly every page still has a row neither resolver
+  reaches.** That is the honest ceiling and it belongs beside any gain claim.
+  **The comparable half would put a new asterisk on a page read by 59.3M
+  people**, which is the scale that makes it a decision and not a cleanup.
+  **A ship of the ASSERTED half alone touches 7,857 plans / 9,189,637 ppl**, of
+  which **2,384 plans / 2,494,539 ppl carry no comparable row at all** and are
+  the cleanly separable population.
+  **NAMED LIVE INSTANCE, FOUND BY THE 01:08 DRAW — UnitedHealth Group, 262,812
+  ppl, a healthy 95-fund menu at ratio 0.992**, publishes no ticker on
+  `AMERICAN NEW PERSPECTIVE CLASS F1`, `AMERICAN THE NEW ECONOMY FUND CL F2`,
+  `NEUBERGER LARGE CAP VALUE INST` and `TCW METWEST HIGH YLDBOND CL M` while
+  the row beside them, `TCW METWEST TOTAL RETURN BOND CLASS I`, resolves
+  **MWTIX at 0.45**. ***The filing STATES the share class on every one of
+  them*** (`CLASS F1`, `CL F2`, `INST`, `CLASS I`), so these are the ASSERTED
+  bucket and not the asterisk bucket — the blank is a house-ABBREVIATION gap
+  (`AMERICAN` for American Funds, `TCW METWEST` for Metropolitan West), which is
+  what `fund-er.js`'s pattern table cannot carry and the SEC matcher's
+  manager-token rule can. Two of the four also carry WELDED names
+  (`NEW ECONOMYCLASS`, `HIGH YLDBOND`), so part of this population needs the
+  name repaired before any resolver can reach it.
   **THE GAIN IS A LOWER BOUND BY CONSTRUCTION:** `lookupTicker` is asked without
   renderRow's later gates (the `tab === "menu"` gate, `stockRow`, the
   suppressors), so "resolves today" is an upper bound. Fixtures confirm the

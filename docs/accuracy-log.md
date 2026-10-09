@@ -7,6 +7,61 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-09 (01:1xZ) — the omitted participants figure, and the draw landed on a named instance of the class it sizes
+
+**The gap this closes is one I made.** The 01:3xZ sizing built per-bucket plan
+sets and never printed them, so the SEC-wiring item carried row counts and no
+people count in front of an owner decision. *A figure that was not computed is
+not a figure that is small.*
+
+**Computed**, over the 60,327 plans / 100,151,069 participants with a
+published+served menu, a plan counted ONCE per bucket rather than once per row:
+ASSERTED gain **7,857 plans / 9,189,637 ppl** · COMPARABLE gain **39,178 /
+59,327,082** · still unresolved **59,726 / 99,915,818** · union **41,562 /
+61,821,621**. Asserted-only, no comparable row anywhere on the page: **2,384 /
+2,494,539**.
+
+**Two things follow that the row counts could not show.** The comparable half
+would put a new asterisk on a page read by **59.3M people**, which is the scale
+that makes it a decision rather than a cleanup. And D is **99.8% of
+participants** — *after the wiring, nearly every page still carries a row
+neither resolver reaches*, which is the honest ceiling and belongs beside any
+gain claim.
+
+**THE BUCKETS OVERLAP AND MUST NEVER BE SUMMED.** A plan appears in every bucket
+its menu carries a row of. The unit is "people on a page where at least one row
+would gain a symbol", and it is stated wherever the number is quoted, because the
+alternative — summing per row — is the recorded 8x error that once put 93% of the
+weighted universe into one screen.
+
+**AND THE 01:08 DRAW HANDED THE CLASS A NAMED INSTANCE THAT SHARPENS IT.**
+UnitedHealth Group (**262,812 ppl**), a healthy 95-fund menu at ratio 0.992,
+publishes no ticker on `AMERICAN NEW PERSPECTIVE CLASS F1`, `AMERICAN THE NEW
+ECONOMY FUND CL F2`, `NEUBERGER LARGE CAP VALUE INST` and `TCW METWEST HIGH
+YLDBOND CL M`, while one row down `TCW METWEST TOTAL RETURN BOND CLASS I`
+resolves **MWTIX at 0.45**.
+
+***The filing states the share class on every one of them*** — `CLASS F1`,
+`CL F2`, `INST`, `CLASS I` — so they belong to the ASSERTED bucket, not the
+asterisk bucket, and the blank is a house-ABBREVIATION gap: `AMERICAN` for
+American Funds, `TCW METWEST` for Metropolitan West. That is exactly what a
+hand-written pattern table cannot carry and what the SEC matcher's
+manager-token rule can. **Two of the four also carry WELDED names**
+(`NEW ECONOMYCLASS`, `HIGH YLDBOND`), so part of this population needs the name
+repaired before any resolver can reach it — the wiring is necessary and not
+sufficient.
+
+**Second draw, Catalent Pharma (13,098 ppl):** `Fidelity Spartan 500 Index`
+publishes a 0.03 fee and no ticker, a live instance of the recorded Spartan
+retired-brand item; and `Fidelity Growth Company Fund` typed `Collective trust`
+correctly shows `~FDGRX` asterisked with its fee withheld by `noPublicPrice` —
+the machinery working, recorded because a draw should report what is right as
+readily as what is wrong.
+
+**Cycle state:** local == dev == main at `4aa0f35d`, nothing pre-registered, no
+parser change pending, so nothing was dispatched — only a version bump
+justifies a re-parse.
+
 ## 2026-10-09 (01:3xZ) — the SEC wiring sized, and the 43.3% I published an hour earlier was the wrong number
 
 **What was wrong.** I reported the SEC matcher's **43.3%** coverage of fund-like
