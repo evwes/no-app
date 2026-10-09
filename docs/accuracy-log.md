@@ -7,6 +7,60 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-09 (13:3xZ) — 122 vs 123 SETTLED: a population mismatch, and the guess recorded for it was wrong
+
+### What was unproved
+
+v203 was registered at *"labels that stop saying `Immediate`: **exactly 123**"*.
+The post-mirror index diff found bit 16 clearing on **122** acks. I published the
+122 with an explicit flag that the gap was **not proved**, and guessed that one
+of the 123 sat in the 46 acks still at pv 202 and would clear on a later run.
+
+**That guess was wrong twice over.** It was first refuted by `vesting-quote-test`
+reading `accelLabelled` **0** — no plan anywhere still carries the label — and
+then by the measurement below.
+
+### The measurement
+
+Re-derived from the **pre-v203 store at `7cde73d7`** (read through
+`git show <ref>:`, because a tracked path is the live tree and would answer for
+v203), the registered condition — labelled `Immediate*` AND the stored quote
+accepted by the shipped `accelerationOnlyVesting` — reproduces at **exactly
+123 entries**, so the registration's own figure holds.
+
+Of those 123:
+
+| | |
+|---|---|
+| carried bit 16 pre-v203 | **122** |
+| in the index WITHOUT it | **1** |
+| not in the index at all | 0 |
+| of the 122, bit cleared | **122** (0 still set) |
+
+The one is named: **`20260721102318NAL0008598403001`**, confident, index value
+**5** (bits 1 + 4 — lineup and features), labelled **`"Immediate (varies by hire
+date per the filing)"`**.
+
+### So 122 is complete, and the index is right
+
+The bit-16 setter withholds the flag from a **qualified** `Immediate`, and that
+is correct: a plan whose vesting varies by hire date should not carry an
+"immediate vesting" badge. Nothing is wrong in either number.
+
+### The reusable part
+
+***The 123 is ENTRY-keyed and the 122 is INDEX-BIT-keyed, so two counts of
+"the same" population were answering different questions.*** This is the record's
+most repeated error in a new costume — *a count of a condition is not a measure
+of a defect*, *a count keyed on PLANS is blind to a trust*, *a STORED field is
+not a PUBLISHED one* — and here the two keys differ by a predicate neither count
+mentions (strict vs qualified label). **Two figures that ought to match and
+differ by one are worth a measurement, not an explanation**: the explanation I
+reached for was plausible, cheap to believe, and false, and the measurement was
+one script.
+
+---
+
 ## 2026-10-09 (12:4xZ) — v203 TURNED ITS OWN TEST RED BY SUCCEEDING: a control whose live population the ship was designed to empty
 
 ### What was wrong

@@ -886,10 +886,22 @@ bit 1 (has a lineup) withdrawn on ZERO**. `--force-data` was NOT used: the data
 gate passed on its own, so the check that exists to stop a menu vanishing stayed
 armed. *mirror-gate is lineup-keyed and does not cover the six non-lineup
 stores, which is why the structural diff is a separate step.*
-**STILL OPEN AND NOT PROVED: 122 acks clear bit 16 where the registration said
-exactly 123.** Likeliest is one of the 123 sitting in the 46 acks still at
-pv 202, clearing on a later run — direction "not yet applied" rather than
-"wrong" — but it is unverified and must be checked rather than assumed.
+**CLOSED 2026-10-09 13:3xZ — 122 acks cleared bit 16 where the registration said
+123, and the gap is a POPULATION MISMATCH, not a residue. My recorded guess was
+WRONG.** Re-derived from the pre-v203 store at `7cde73d7`, the condition
+(labelled `Immediate*` AND the stored quote accepted by
+`accelerationOnlyVesting`) reproduces at **exactly 123** — the registration's
+figure holds — of which **122 carried bit 16 and ONE did not**:
+`20260721102318NAL0008598403001`, index value **5** (bits 1+4, lineup +
+features), labelled **`"Immediate (varies by hire date per the filing)"`**. All
+122 that carried the bit cleared it; **0 still set**. So 122 is complete and the
+index is RIGHT to withhold the bit — a plan whose vesting varies by hire date
+should not carry an "immediate vesting" badge. **The guess recorded here (one of
+the 123 sitting in the 46 pv-202 acks) was refuted first by `accelLabelled`
+reading 0** — no plan still carries the label anywhere — *and the real cause is
+the recorded class of error one more time: the 123 is ENTRY-keyed and the 122 is
+INDEX-BIT-keyed, so two counts of "the same" population answer different
+questions.* `docs/accuracy-log.md` 2026-10-09 (13:3xZ).
 
 **`PARSER_VERSION` is 203: `Employer-money vesting: Immediate` is
 withheld where the sentence that would set it states only an ACCELERATION
