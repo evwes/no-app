@@ -857,13 +857,27 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
-**v203 IS DISPATCHED AS #605 (06:56Z), ON THE COMMIT THAT FIXES THE TOOLCHAIN.
-ITS FIRST ATTEMPT, #604, FAILED FOR A REASON THAT HAD NOTHING TO DO WITH v203 —
-`pdftotext` was absent on all twenty shards, 68,865 filings were read as
-nothing, and the publish gate refused to commit** (`confident -60033`,
-`match -43211`, `vesting -52994`). **v203 is exonerated** by `trace-filing`
-(Amgen, 33 rows / 0.995 / CONFIDENT) and the registration below stands
-unchanged. `docs/accuracy-log.md` 2026-10-09 (06:5xZ).
+**v203 MERGED FROM #605 AND ITS REGISTRATION HELD — BUT THE COMMITTED STORE IS
+PARTIAL AT 94.87% AND MUST NOT BE MIRRORED. A RESIDUE RUN IS IN FLIGHT.**
+Delivered: `vesting` 53,115 -> **53,029 (falls 86**, registered 82-94),
+`vestQuote` 5,281 -> **5,367 (rises 86** — the fall and the rise are the SAME
+number, which is the registered "QUOTE LOST 0"), confident 60,182 / match 43,312
+/ entries 65,495 / warn 556 all unchanged, `pv` 203 at 94.9% with
+`partial-store` correctly the 5th HIGH. **pv 203 covers 65,502 acks and pv 202
+holds 3,496** — one shard's slice. **Take the verdict on the COMPLETE store.**
+**TWO FIGURES TO RE-PROBE RATHER THAN INHERIT: `dl` rose 48 -> 92, and one ack
+carries `e:"analyze"`**, a class that had read zero since v118.
+**WHY IT IS PARTIAL:** `parse (1)` hung 3h14m against nineteen siblings at
+38-55 minutes — ten binary spawn sites carried no `timeout` — and was cancelled,
+since `merge` runs under `if: always()` and the 355-minute backstop would have
+produced the same 19/20 merge 2h45m later. Lossless: the work list is
+`pv != current`, so the residue returns automatically.
+**#604, the FIRST attempt, failed for a reason that had nothing to do with v203**
+— `pdftotext` absent on all twenty shards, 68,865 filings read as nothing, the
+publish gate refusing to commit (`confident -60033`) — and **v203 is exonerated**
+by `trace-filing` (Amgen 33 rows / 0.995 / CONFIDENT, and Arcosa moving
+`Immediate` -> `2-year cliff` under a v202-vs-v203 comparison).
+`docs/accuracy-log.md` 2026-10-09 (06:5xZ) and (10:3xZ).
 
 **`PARSER_VERSION` is 203: `Employer-money vesting: Immediate` is
 withheld where the sentence that would set it states only an ACCELERATION
@@ -3516,6 +3530,33 @@ These outlived the versions that produced them. The accuracy log has the case.
   produce. *A no-difference is a finding only once the instrument has been shown
   able to see the difference* — the same shape as *a check that prints 0 on a
   quiet store has not been tested*, applied to a comparison instead of a count.
+- **A BUDGET ENFORCED AT THE TOP OF A LOOP IS NOT A BOUND ON THE BODY OF THE
+  LOOP (2026-10-09, run #605).** One shard ran **3h14m** against nineteen
+  siblings at 38–55 minutes, blocking the merge until it was cancelled by hand.
+  `TIME_BUDGET_MIN=320` is checked BETWEEN filings and a hang inside a filing
+  never returns to the loop to be checked; `timeout-minutes: 355` was 160
+  minutes away. The cause: **ten `execFileSync`/`execFile` sites spawn
+  `pdftotext`, `pdftoppm`, `pdfimages` and `tesseract` and not one passed
+  `timeout`**, so each waited forever by default. Fixed with per-binary ceilings
+  and `SIGKILL`, controlled both ways (a wedged sleep dies at 1507ms; a real
+  filing extracts 361,202 chars in 1076ms against a 180s ceiling — 167×
+  headroom, so the ceiling cannot refuse honest work). **The ceilings are
+  generous on purpose: too TIGHT reproduces #604 exactly, because `pdftotext`
+  throwing is stored as `e:"pdftotext"` and DESTROYS the entry — so the guard
+  pointed at this fix is #604's own `extraction-failures` HIGH.** *When a fix's
+  failure mode is the previous defect, aim the previous defect's instrument at
+  it.*
+  **AND THE DIAGNOSIS CAME FROM TWO STRUCTURAL FACTS, NOT A LOG:** no
+  `results-N.json` was written and that flushes every 250 filings, so the hang
+  was inside the first 250; and the work list is partitioned
+  `i % PARSE_SHARDS === PARSE_SHARD` over an assets-sorted list, so **every
+  shard's composition is near-identical by construction** and a 3.5× outlier
+  cannot be a load difference.
+  **PLUS: A CANCELLED STEP REACHES NO BRANCH GATED ON EXIT STATUS.** The shard's
+  40-line tail printed only `if [ "$ec" -ne 0 ]`, so the one failure mode where
+  the log is the sole evidence produced none — #604's defect one run later. Use a
+  `trap`, so the tail lands on success, failure, timeout and cancellation alike.
+  `docs/accuracy-log.md` 2026-10-09 (10:3xZ).
 - **AND THE NEXT LAYER OUT: A PROGRAM THAT SAYS WHAT HAPPENED AND NOTHING THAT
   ADDS IT UP (2026-10-09, run #604).** `>/dev/null 2>&1 || true` on the parse
   job's `apt-get install` — with no `apt-get update` — let an ATOMIC two-package

@@ -7,6 +7,100 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-09 (10:3xZ) — RUN #605: ONE SHARD HUNG FOR 3h14m BECAUSE NOTHING BOUNDED THE BINARIES, AND THE ONE FAILURE MODE THAT NEEDS A LOG IS THE ONE THAT PRODUCED NONE
+
+### What was wrong
+
+**Run #605 — v203 re-dispatched on the toolchain fix — had nineteen of twenty
+shards finish in 38–55 minutes each and `parse (1)` still running at 3h14m,
+blocking the merge.** The toolchain fix itself worked exactly as intended:
+shard 0 spent **48 minutes** reading filings against #604's 13 minutes of
+reading nothing.
+
+**TWO INDEPENDENT DEFECTS, and the second is why the first needed a
+cancellation to see.**
+
+**(1) Not one external binary was bounded.** Ten `execFileSync`/`execFile` call
+sites spawn `pdftotext`, `pdftoppm`, `pdfimages` and `tesseract`, and **not one
+passed `timeout`** — so every one of them waits forever by default. One
+malformed page wedges one decoder and the shard is gone.
+
+***`TIME_BUDGET_MIN=320` could not save it, and that is the reusable part: the
+budget is checked BETWEEN filings, and a hang inside a filing never returns to
+the loop to be checked.*** **A budget enforced at the top of a loop is not a
+bound on the body of the loop.** The job's own `timeout-minutes: 355` was still
+160 minutes away.
+
+**(2) A cancelled or hung shard emitted no log at all.** The step's 40-line
+tail was gated on `ec -ne 0`, and a cancelled step never reaches it — so the
+single failure mode where the log is the only evidence is the one that produced
+none. With no artifact either (see below), shard 1 left **nothing whatsoever**
+behind. ***That is #604's defect one run later:*** the program's account of
+itself is computed and then discarded unless one specific branch runs.
+
+### The diagnosis, which rests on two facts rather than on the log
+
+- **Shard 1 wrote no `results-1.json`.** That flushes every 250 filings, so it
+  hung **inside its first 250** — not late, and not slowly.
+- **The work list is partitioned `i % PARSE_SHARDS === PARSE_SHARD` over an
+  assets-sorted list**, so every shard carries a near-identical composition **by
+  construction**. A 3.5× outlier against nineteen siblings cannot be an OCR-load
+  difference. One filing, one binary.
+
+### The change
+
+Ceilings on all ten sites (`pdftotext` 180s whole-document, `pdftoppm` 60s per
+page, `tesseract` 120s per page, `pdfimages` 30s, OSD probe 60s), with
+**`SIGKILL`** rather than `SIGTERM` because a wedged decoder need not honour a
+polite signal; and a `trap` that dumps the tail on success, failure, timeout and
+cancellation alike.
+
+**The ceilings are deliberately generous, and the reason is #604:** a ceiling
+that is too TIGHT manufactures that failure exactly, because `pdftotext`
+throwing is recorded as `e:"pdftotext"`, which **destroys** the stored entry
+rather than preserving it. **The interlock is already shipped and watching** —
+`audit-data` raises `extraction-failures` above 0.1%, a tenth of the download
+threshold. *A fix whose failure mode is the previous defect wants the previous
+defect's instrument pointed at it.*
+
+**Controlled in both directions, because a broken arm and an inert arm read the
+same zero.** A 60-second sleep under a 1.5s ceiling is killed at **1507ms**,
+`signal=SIGKILL code=ETIMEDOUT`; a real filing extracts **361,202 chars in
+1076ms** against the shipped 180s ceiling — **167× headroom**, so the ceiling
+cannot refuse honest work. And the coverage claim is asserted mechanically
+rather than by eye: **10 of 10 spawn sites** carry a timeout (I had said eight
+from distinct grep lines; the toolchain probe is two more).
+
+### Why the run was cancelled rather than waited out
+
+`merge` runs under `if: always() && needs.prep.result == 'success'`, so the
+355-minute backstop would have produced the **same** 19/20 merge about 2h45m
+later. Cancelling is lossless here: acks absent from a delta keep their stored
+entry, and the work list is `pv ≠ current`, so shard 1's acks return on the next
+run. No `PARSER_VERSION` change ships with the fix, so that next run's work list
+is exactly the residue.
+
+### v203's registration held, on 94.87% of the store
+
+| registered | delivered |
+|---|---|
+| `vesting` falls 82–94 | **falls 86** |
+| `vestQuote` rises by the same, → 5,363–5,375 | **rises 86**, → 5,367 |
+| QUOTE LOST 0 | the fall and the rise are the **same number** |
+| confident / match / entries / warn unchanged | 60,182 / 43,312 / 65,495 / 556 |
+| `pv` 202 → 203 | at 94.9%, `partial-store` correctly the 5th HIGH |
+
+**THE COMMITTED STORE IS PARTIAL AND MUST NOT BE MIRRORED:** pv 203 covers
+65,502 acks and pv 202 holds **3,496** — shard 1's slice. The merge gate refuses
+only on `reparse-regression`, **never on `partial-store`**, so it committed as
+designed. *Take the v203 verdict on the COMPLETE store, not this one.*
+
+**Two figures to re-probe on the next verdict rather than inherit:** `dl` rose
+**48 → 92**, and **one ack now carries `e:"analyze"`**, a class that had read
+zero since the v118 null-deref was fixed.
+
+---
+
 ## 2026-10-09 (06:5xZ) — RUN #604 READ NONE OF THE UNIVERSE AND REPORTED 99.7% COVERAGE: an `apt-get install` with no `update`, and three instruments that each enumerated the wrong failure shapes
 
 ### What was wrong
