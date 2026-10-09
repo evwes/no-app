@@ -50034,3 +50034,72 @@ families name no fund and need qualifying (and the shipped guard already reaches
 2 of them); the Franklin row needs a WITHHOLDING because its symbol is wrong.
 *A row that names nothing, a row whose name we mangled, and a row that names the
 wrong fund are three classes.*
+
+## 2026-10-09 (17:4xZ) — ONE TARGET-DATE LADDER, ONE MENU, A FABRICATED FEE ON THE VINTAGE WHOSE TYPE CELL IS BLANK: 181 families / 503 rows / 174 plans / 360,090 ppl / $2,143,243,683
+
+**Found by the 17:07 draw** (`draw-published.mjs 2 --seed 17072026`). Acosta,
+Inc. publishes thirteen `Fidelity Freedom Index` vintages: eleven are typed
+`Collective trust`, carry `noPublicPrice` and correctly publish **no fee** — a
+collective trust has no public expense ratio — while **2040 and 2055 are typed
+`—` and publish 0.12** with no ticker and no asterisk.
+
+**THE WITNESS IS INTERNAL AND NEEDS NO REGISTRY, which is what makes this
+different from the owner-gated stable-value item.** We do not have to know
+whether 0.12 is the right number: *our own page gives two answers about one
+product on one screen*, and the ten siblings are the control. Every member of
+the class is a collective trust or separate account **by its own filed name** —
+`JPMCB SmartRetirement Pasv Blnd 2040-CF` (CF = collective fund),
+`State St Target Ret 2030 SL Cl IV` (SL = securities-lending CIT),
+`T Rowe Price Ret Blend Sel Tr 2050 CL 2`, `LifePath Index Non-Lendable 2040
+Fund N`, `FIAM Index Target Date 2035 Y`.
+
+**MECHANISM: the fee suppressors read the TYPE CELL, so a blank type defeats
+them.** This is the recorded Accenture shape (`PIMCO STABLE VALUE FUND` typed
+`Mutual fund` publishing 0.35 because `gicRow` reads the type) generalised from
+`gicRow` to `noPublicPrice`, and met on a target-date ladder where the
+contradiction is visible without leaving the page. The filer typed the type cell
+for most vintages and left it blank for one or a few; nothing downstream notices
+that the family already has an answer.
+
+**LARGEST INSTANCES, each read:** UKG Inc. (12,969 ppl) publishes `FIAM Index
+Target Date 2035 Y` at **0.1 on $275,047,511 — 14.0% of its whole menu** with
+eleven unpriced siblings; Bertelsmann (14,571) two rows at 0.12 on $142.0M;
+Cooley LLP `Indexed Retirement Fund 2035` 0.04 on $121.9M; Tishman Speyer
+**7 of 12** vintages at 0.1; Petvet Care Centers **5 of 12** at 0.41.
+
+**MY FIRST SCREEN WAS WRONG BY 4x ON PEOPLE AND MEASURED TWO OPPOSITE CLASSES
+AS ONE, BECAUSE I DROPPED `star` FROM THE PRINT.** It asked only "does some
+member of this family publish a fee while another does not" and read **460
+families / 463 plans / 1,451,530 ppl / $49.0B**. ***DO NOT CARRY THAT FIGURE.***
+Two things it could not see:
+* **The record already calls its biggest members correct.** Costco's thirteen
+  `T. Rowe Price … Active Trust K` rows printed as `tk=TRRKX er=0.6`, and this
+  file records them as **correctly-asterisked `~TRR*X` comparables** — a
+  labelled approximation, not an identification. *An asterisk is a whole
+  category of claim*, and the print erased it.
+* **The 460 is dominated by the INVERSE shape** — 10-13 vintages priced and 1-3
+  blank, which (if the comparable is legitimate) is a COVERAGE GAP on one
+  vintage and a false fee nowhere. The precise condition — a fee that is **not**
+  a labelled comparable (`star` false) and carries **no** ticker, i.e. a bare
+  name-pattern estimate, beside same-family siblings publishing none — reads
+  **181 / 503 / 360,090**.
+***This is the second time in two cycles that one of my own instruments printed
+fewer fields than the page acts on, and the recorded rule for it is three
+entries above where I was working.*** The fixture is what made the correction
+cheap: it prints Acosta's whole family with every field before the count, so
+the two shapes were visible side by side.
+
+**RECOMMENDATION, and it is deliberately not shipped unasked.** The direction is
+one-directional and conservative — **withdraw the fee, never add one** — and the
+evidence is internal, so this is the cleanly separable sub-case of the
+owner-gated stable-value item (4,669 rows / 7.4M ppl) rather than a new
+judgment about house pricing. The instrument would be a display-side arm asking
+whether the same menu already withholds a fee for the same vintage family, which
+is a NEW kind of predicate here: **every shipped suppressor judges a row alone,
+and this one needs its SIBLINGS.** That is why it is recorded for decision and
+not slipped in: *a fee is SOURCED, never derived*, and 503 fee cells is small
+enough to read and large enough to be the owner's call.
+
+**A FIELD NOTE, consistent with 15:5xZ:** Acosta reads 54,936 participants in
+the draw and 30,624 here — `partEOY` against `participants`. Both are right and
+they are different fields; this entry uses `participants` throughout.

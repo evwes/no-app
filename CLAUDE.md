@@ -1130,6 +1130,36 @@ published cells:
   `docs/accuracy-log.md` 2026-10-04 (21:5xZ).
 - Stable value / guaranteed accounts publishing a fabricated ER: 4,669 rows /
   **7,389,704 ppl**, 4,571 of them at exactly 0.35.
+  **AND ITS CLEANEST SUB-CASE IS SIZED AND AWAITING A DECISION — FOUND BY THE
+  17:07 DRAW: ONE TARGET-DATE LADDER, ONE MENU, A FABRICATED FEE ON THE VINTAGE
+  WHOSE TYPE CELL IS BLANK. 181 families / 503 rows / 174 plans / 360,090 ppl /
+  $2,143,243,683.** Acosta publishes thirteen `Fidelity Freedom Index` vintages:
+  eleven typed `Collective trust` carry `noPublicPrice` and correctly publish NO
+  fee, while **2040 and 2055 are typed `—` and publish 0.12** with no ticker and
+  no asterisk. UKG (12,969 ppl) publishes `FIAM Index Target Date 2035 Y` at
+  **0.1 on $275,047,511 — 14.0% of its whole menu** beside eleven unpriced
+  siblings; Tishman Speyer 7 of 12 vintages, Petvet 5 of 12.
+  **THE WITNESS IS INTERNAL AND NEEDS NO REGISTRY, which is what separates it
+  from the gated parent:** we need not know whether 0.12 is right, because our
+  own page gives two answers about one product on one screen and the siblings
+  are the control. Every member is a collective trust BY ITS OWN FILED NAME
+  (`JPMCB … Pasv Blnd 2040-CF`, `State St Target Ret 2030 SL Cl IV`,
+  `T Rowe Price Ret Blend Sel Tr 2050 CL 2`). Mechanism: the suppressors read
+  the TYPE CELL, so a blank type defeats them — the recorded Accenture `gicRow`
+  shape generalised to `noPublicPrice`.
+  **DO NOT CARRY MY FIRST SCREEN'S 460 families / 463 plans / 1,451,530 ppl /
+  $49.0B — wrong by 4x on people and MERGING TWO OPPOSITE CLASSES, because I
+  DROPPED `star` FROM THE PRINT.** It could not see that its largest members are
+  Costco's thirteen `~TRR*X` rows, which this file records as **correctly
+  asterisked comparables**, nor that the bulk of the 460 is the INVERSE shape
+  (10-13 vintages priced, 1-3 blank), which is a coverage gap and a false fee
+  nowhere. *An asterisk is a whole category of claim* — second instance in two
+  cycles of one of my instruments printing fewer fields than the page acts on.
+  **NOT SHIPPED, pending the owner:** the direction is one-directional
+  (withdraw a fee, never add one) and 503 cells is small, but the predicate it
+  needs is the FIRST here that must consult a row's SIBLINGS rather than judge
+  it alone — every shipped suppressor judges a row by itself. *A fee is SOURCED,
+  never derived.* `docs/accuracy-log.md` 2026-10-09 (17:4xZ).
 - American Funds rows stating NO share class keeping the R-6 fee: **10.5M ppl**.
   The TICKER column already refuses this inference and the FEE column does not;
   both cannot be right.
